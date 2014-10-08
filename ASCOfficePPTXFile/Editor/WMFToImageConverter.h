@@ -1,5 +1,8 @@
 #pragma once
 #include "../stdafx.h"
+#include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../../ASCHTMLRenderer/ASCSVGWriter.h"
+#include "../../ASCHTMLRenderer/CASCImage.h"
 
 #ifdef BUILD_CONFIG_FULL_VERSION
 
@@ -8,20 +11,17 @@ namespace NSWMFToImageConverter
 	class CImageExt
 	{
 	private:
-		IASCRenderer* m_pSVGRenderer;
+		NSHtmlRenderer::CASCSVGWriter* m_pSVGRenderer;
 
 		void Init()
 		{
 			if (NULL != m_pSVGRenderer)
 			{
-				VARIANT var;
-				var.vt = VT_I4;
-				var.lVal = 0;
-				m_pSVGRenderer->SetAdditionalParam(L"ReInit", var);
+				m_pSVGRenderer->ReInit();
 			}
 			else
 			{
-				CoCreateInstance( HtmlRenderer::CLSID_CASCSVGWriter, NULL, CLSCTX_ALL, __uuidof(IASCRenderer), (void**)(&m_pSVGRenderer) );
+				m_pSVGRenderer = new NSHtmlRenderer::CASCSVGWriter();
 			}
 		}
 
@@ -32,7 +32,7 @@ namespace NSWMFToImageConverter
 		}
 		~CImageExt()
 		{
-			RELEASEINTERFACE(m_pSVGRenderer);
+			RELEASEOBJECT(m_pSVGRenderer);
 		}		
 
 	public:
@@ -90,7 +90,8 @@ namespace NSWMFToImageConverter
 			return 0;
 		}
 
-		void MetaDrawOnRenderer(IASCRenderer* pRenderer, BSTR strFile, double dW, double dH)
+	private:
+		void MetaDrawOnRenderer(IRenderer* pRenderer, BSTR strFile, double dW, double dH)
 		{
 			if (NULL == pRenderer)
 				return;
@@ -101,7 +102,7 @@ namespace NSWMFToImageConverter
 			LONG brush_Color1 = 0;
 			LONG brush_Color2 = 0;
 			double brush_LinearAngle = 0;
-			BSTR brush_TexturePath = NULL;
+			std::wstring brush_TexturePath;
 			LONG brush_TextureMode = 0;
 			LONG brush_TextureAlpha = 0;
 			LONG brush_Type = 0;
@@ -116,8 +117,8 @@ namespace NSWMFToImageConverter
 			pRenderer->get_BrushTexturePath( &brush_TexturePath );
 			pRenderer->get_BrushType( &brush_Type );
 
-			BSTR font_Path = NULL;
-			BSTR font_Name = NULL;
+			std::wstring font_Path;
+			std::wstring font_Name;
 			double font_Size = 0;
 			LONG font_Style = 0;
 			BOOL font_GID = 0;
@@ -135,19 +136,17 @@ namespace NSWMFToImageConverter
 			pRenderer->get_PenAlpha( &pen_Alpha );
 			pRenderer->get_PenColor( &pen_Color );
 
-			ASCGraphics::IAVSImage *pImage = NULL;
-			CoCreateInstance( __uuidof(ASCGraphics::CAVSImage), NULL, CLSCTX_ALL, __uuidof(ASCGraphics::IAVSImage), (void**)(&pImage) );
+			NSHtmlRenderer::CASCImage oASCImage;
+			oASCImage.put_FontManager(NULL);
 
-			pImage->put_FontManager(NULL);
-
-			pImage->LoadFromFile( strFile );
+			oASCImage.LoadFromFile( strFile );
 
 			if (dW <= 0 && dH <= 0)
 			{
 				LONG _lw = 0;
 				LONG _lh = 0;
-				pImage->get_Width(&_lw);
-				pImage->get_Height(&_lh);
+				oASCImage.get_Width(&_lw);
+				oASCImage.get_Height(&_lh);
 
 				LONG lMax = max(_lw, _lh);
 				double dKoef = 1000.0 / lMax;
@@ -159,9 +158,7 @@ namespace NSWMFToImageConverter
 				m_pSVGRenderer->put_Height(dH);
 			}
 
-			pImage->DrawOnRenderer( pRenderer, 0, 0, dW, dH );
-
-			RELEASEINTERFACE( pImage );
+			oASCImage.DrawOnRenderer( pRenderer, 0, 0, dW, dH );
 
 			// Восстанавливаем параметры
 			pRenderer->put_BrushAlpha1( brush_Alpha1 );
@@ -171,11 +168,11 @@ namespace NSWMFToImageConverter
 			pRenderer->put_BrushLinearAngle( brush_LinearAngle );
 			pRenderer->put_BrushTextureMode( brush_TextureMode );
 			pRenderer->put_BrushTextureAlpha( brush_TextureAlpha );
-			pRenderer->put_BrushTexturePath( brush_TexturePath ); if ( brush_TexturePath ) ::SysFreeString( brush_TexturePath );
+			pRenderer->put_BrushTexturePath( brush_TexturePath );
 			pRenderer->put_BrushType( brush_Type );
 
-			pRenderer->put_FontName( font_Name ); if ( font_Name ) ::SysFreeString( font_Name );
-			pRenderer->put_FontPath( font_Path ); if ( font_Path ) ::SysFreeString( font_Path );
+			pRenderer->put_FontName( font_Name );
+			pRenderer->put_FontPath( font_Path );
 			pRenderer->put_FontSize( font_Size );
 			pRenderer->put_FontStyle( font_Style );
 			pRenderer->put_FontStringGID( font_GID );
@@ -187,7 +184,7 @@ namespace NSWMFToImageConverter
 			// на всякий случай скидываем path
 			pRenderer->PathCommandEnd();
 		}
-
+	public:
 		bool Convert(CString strPath, LONG lWidth, LONG lHeight, CString strDstPath)
 		{
 			Init();
@@ -199,16 +196,12 @@ namespace NSWMFToImageConverter
 			MetaDrawOnRenderer(m_pSVGRenderer, bsFilePath, (double)lWidth, (double)lHeight);
 			SysFreeString(bsFilePath);
 
-			VARIANT var;
-			m_pSVGRenderer->GetAdditionalParam(L"IsRaster", &var);
-
-			if (VARIANT_TRUE == var.boolVal)
+			bool bIsRaster = false;
+			m_pSVGRenderer->IsRaster(&bIsRaster);
+			if (bIsRaster)
 				return false;
 
-			var.vt = VT_BSTR;
-			var.bstrVal = strDstPath.AllocSysString();
-			m_pSVGRenderer->SetAdditionalParam(L"SaveFile", var);
-			SysFreeString((var.bstrVal));
+			m_pSVGRenderer->SaveFile(std::wstring(strDstPath.GetString()));
 
 			return true;
 		}

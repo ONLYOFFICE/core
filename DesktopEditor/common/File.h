@@ -499,7 +499,7 @@ namespace NSFile
 			size_t nCountWrite = fwrite((void*)pData, 1, nBytesCount, m_pFile);
 			return true;
 		}
-		void WriteStringUTF8(std::wstring& strXml, bool bIsBOM = false)
+		void WriteStringUTF8(const std::wstring& strXml, bool bIsBOM = false)
 		{
 			BYTE* pData = NULL;
 			LONG lLen = 0;
@@ -509,6 +509,14 @@ namespace NSFile
 			WriteFile(pData, lLen);
 
 			RELEASEARRAYOBJECTS(pData);
+		}
+		static bool SaveToFile(const std::wstring&  strFileName, const std::wstring& strXml, bool bIsBOM = false)
+		{
+			CFileBinary oFile;
+			oFile.CreateFileW(strFileName);
+			oFile.WriteStringUTF8(strXml, bIsBOM);
+			oFile.CloseFile();
+			return true;
 		}
 	};
 }

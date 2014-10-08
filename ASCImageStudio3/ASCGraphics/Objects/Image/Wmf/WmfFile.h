@@ -9,9 +9,13 @@
 #include "WmfRegion.h"
 #include "WmfOutputDevice.h"
 #include "WmfMemory.h"
-
+#ifdef DESKTOP_EDITOR_GRAPHICS
+#include "../../../../../DesktopEditor/fontengine/FontManager.h"
+#include "../../../../../DesktopEditor/fontengine/ApplicationFonts.h"
+#else
 #include "..\..\ASCFontManager.h"
 #include "..\..\Font\FontUtils.h"
+#endif
 
 #ifdef _DEBUG
 //#define DebugWriteXml
@@ -57,6 +61,7 @@ public:
 		pPlayer->ulFlags = 0;
 
 		m_pFontManager = NULL;
+		bDeleteFontManager = false;
 	}
 
 	~CWmfFile()
@@ -66,15 +71,23 @@ public:
 
 		if ( m_pBufferData )
 			delete m_pBufferData;
-
+#ifdef DESKTOP_EDITOR_GRAPHICS
+		if(bDeleteFontManager)
+			RELEASEOBJECT( m_pFontManager );
+#else
 		RELEASEINTERFACE( m_pFontManager );
+#endif
 
 		if ( m_pPlayerData )
 		{
 			m_oMemoryManager.Free( m_pPlayerData );
 		}		
 	}
+#ifdef DESKTOP_EDITOR_GRAPHICS
+	BOOL OpenFromFile(const wchar_t *wsFilePath)
+#else
 	BOOL OpenFromFile(wchar_t *wsFilePath)
+#endif
 	{
 		if ( m_pBufferData )
 			delete m_pBufferData;
@@ -102,7 +115,24 @@ public:
 
 		return TRUE;
 	}
+#ifdef DESKTOP_EDITOR_GRAPHICS
+	void SetFontManager(CFontManager* pManager = NULL)
+	{
+		if (NULL == pManager)
+		{
+			RELEASEOBJECT(m_pFontManager);
+			m_pFontManager = new CFontManager();
+			m_pFontManager->Initialize();
+			bDeleteFontManager = true;
+		}
+		else
+		{
+			m_pFontManager = pManager;
+		}
+	}
 
+	inline CFontManager* GetFontManager()
+#else
 	void SetFontManager(IASCFontManager* pManager = NULL)
 	{
 		if (NULL == pManager)
@@ -123,6 +153,7 @@ public:
 	}
 
 	inline IASCFontManager* GetFontManager()
+#endif
 	{
 		return m_pFontManager;
 	}
@@ -3449,9 +3480,19 @@ private:
 
 			float fTempX, fTempY, fTempW, fTempH;
 			m_pFontManager->LoadFontByName( A2W(pPlayer->pDC->pFont->sFaceName), (float)(oDrawText.dFontHeight * 72 / 25.4), lStyle, 72.0f, 72.0f );
+#ifdef DESKTOP_EDITOR_GRAPHICS
+			m_pFontManager->LoadString2( A2W(oDrawText.sText), 0, 0 );
+
+			TBBox oBox = m_pFontManager->MeasureString2();
+			fTempX = oBox.fMinX;
+			fTempY = oBox.fMinY;
+			fTempW = oBox.fMaxX - oBox.fMinX;
+			fTempH = oBox.fMaxX - oBox.fMinX;
+#else
 			m_pFontManager->LoadStringW( A2W(oDrawText.sText), 0, 0 );
 
 			m_pFontManager->MeasureString2( &fTempX, &fTempY, &fTempW, &fTempH );
+#endif
 
 			fWidth = fTempW * 25.4f / 72.0f;	
 		}
@@ -3900,8 +3941,14 @@ private:
 
 		// В спецификации Wmf сказано, что значение DEFAULT_CHARSET может означать, что
 		// шрифт ищется только по имени и размеру.
+#ifdef DESKTOP_EDITOR_GRAPHICS
+		//todo
+		//if ( DEFAULT_CHARSET == pFont->unCharSet )
+		//	pFont->unCharSet = GetDefaultCharset( FALSE );
+#else
 		if ( DEFAULT_CHARSET == pFont->unCharSet )
 			pFont->unCharSet = GetDefaultCharset( FALSE );
+#endif
 
 		ushParam = Record_GetUShortPar( pRecord, 7 );
 		pFont->unOutPrecision  = ushParam & 0xff;
@@ -3954,7 +4001,17 @@ private:
 			{
 				unsigned long ulBit = 0;
 				unsigned int unIndex = 0;
-
+#ifdef DESKTOP_EDITOR_GRAPHICS
+				//todo
+				//if ( UNKNOWN_CHARSET != pFont->unCharSet )
+				//{
+				//	GetCodePageByCharset( pFont->unCharSet, &ulBit, &unIndex );
+				//	VARIANT_BOOL vbSuccess;
+				//	m_pFontManager->IsUnicodeRangeAvailable( ulBit, unIndex, &vbSuccess );
+				//	if ( VARIANT_TRUE != vbSuccess )
+				//		bNeedFindByParams = TRUE;
+				//}
+#else
 				if ( UNKNOWN_CHARSET != pFont->unCharSet )
 				{
 					GetCodePageByCharset( pFont->unCharSet, &ulBit, &unIndex );
@@ -3963,6 +4020,7 @@ private:
 					if ( VARIANT_TRUE != vbSuccess )
 						bNeedFindByParams = TRUE;
 				}
+#endif
 			}
 			else
 				bNeedFindByParams = TRUE;
@@ -3971,6 +4029,33 @@ private:
 			{
 				USES_CONVERSION;
 				::SysFreeString( bsFontName );
+#ifdef DESKTOP_EDITOR_GRAPHICS
+				CFontSelectFormat oFontSelectFormat;
+				oFontSelectFormat.wsName = new std::wstring(A2W(pFont->sFaceName));
+				oFontSelectFormat.unCharset = new BYTE;
+				*oFontSelectFormat.unCharset = pFont->unCharSet;
+				oFontSelectFormat.usWeight = new USHORT;
+				*oFontSelectFormat.usWeight = pFont->ushWeight;
+				
+				CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
+
+				long lStyle = ( pFontInfo->m_bBold ? 1 : 0 ) + ( pFontInfo->m_bItalic ? 2 : 0 );
+				if ( NULL != pFontInfo && S_OK == m_pFontManager->LoadFontByName( pFontInfo->m_wsFontName, 11, lStyle, 96, 96 ) )
+				{
+					free( pFont->sFaceName );
+					char *sNewName = W2A( bsFontName );
+					int nLen = (int)strlen( sNewName );
+					pFont->sFaceName = (char*)m_oMemoryManager.Malloc( nLen + 1, _T("Meta_FontCreate function") );
+					if ( !pFont->sFaceName )
+						m_eError = wmf_error_NotEnoughMemory;
+					else
+					{
+						pFont->sFaceName[nLen] = '\0';
+						memcpy( pFont->sFaceName, sNewName, nLen );
+					}
+				}
+				::SysFreeString( bsFontName );
+#else
 				CString sXml;
 				sXml.Format( _T("<FontProperties><Name value='%s'/><Charset value='%X'/><Weight value='%d'/></FontProperties>"), A2W(pFont->sFaceName), pFont->unCharSet, pFont->ushWeight);
 				BSTR bsXml = sXml.AllocSysString();
@@ -4001,6 +4086,7 @@ private:
 				}
 
 				::SysFreeString( bsPath );
+#endif
 			}
 			else
 			{
@@ -5371,7 +5457,12 @@ private:
 	TWmfAttributeStore      m_oStore;               // Хранение Xml
 
 	TWmfPlayer             *m_pPlayerData;          // Проигрыватель Wmf файла
+#ifdef DESKTOP_EDITOR_GRAPHICS
+	CFontManager        *m_pFontManager;         // Интерефейс для работы с шрифтами
+	bool bDeleteFontManager;
+#else
 	IASCFontManager        *m_pFontManager;         // Интерефейс для работы с шрифтами
+#endif
 	CWmfColor               m_oColorData;           // Паллитра
 	CWmfOutputDevice       *m_pOutput;              // Выходное устройство, для изображения данного метафайла
 

@@ -197,60 +197,32 @@ namespace NSBinPptxRW
 
 	void CImageManager2::SaveImageAsPng(const CString& strFileSrc, const CString& strFileDst)
 	{
-#ifdef BUILD_CONFIG_FULL_VERSION
-		CString strLoadXml = _T("<transforms><ImageFile-LoadImage sourcepath=\"") + strFileSrc + 
-			_T("\"/><ImageFile-SaveAsPng destinationpath=\"") + strFileDst + _T("\" format=\"888\"/></transforms>");
+		NSFile::CFileBinary oFile;
+		if (!oFile.OpenFile(std::wstring(strFileSrc.GetString())))
+			return;
 
-		ImageStudio::IImageTransforms* pTransform = NULL;
-		CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
+		CxImage img;
 
-		VARIANT_BOOL vbRes = VARIANT_FALSE;
-		BSTR bsLoad = strLoadXml.AllocSysString();
-		pTransform->SetXml(bsLoad, &vbRes);
-		SysFreeString(bsLoad);
-
-		pTransform->Transform(&vbRes);
-		RELEASEINTERFACE(pTransform);
-#else
-		OfficeCore::IImageGdipFilePtr pImageFile;
-		pImageFile.CreateInstance(OfficeCore::CLSID_CImageGdipFile);
-
-		BSTR bs1 = strFileSrc.AllocSysString();
-		BSTR bs2 = strFileDst.AllocSysString();
-		pImageFile->OpenFile(bs1);
-		pImageFile->SaveFile(bs2, 4);
-		SysFreeString(bs1);
-		SysFreeString(bs2);
-#endif
+		if( img.Decode( oFile.GetFileNative(), 0 ) )
+		{
+			img.Encode( oFile.GetFileNative(), _CXIMAGE_FORMAT_PNG );
+		}
+		oFile.CloseFile();
 	}
 
 	void CImageManager2::SaveImageAsJPG(const CString& strFileSrc, const CString& strFileDst)
 	{
-#ifdef BUILD_CONFIG_FULL_VERSION
-		CString strLoadXml = _T("<transforms><ImageFile-LoadImage sourcepath=\"") + strFileSrc + 
-			_T("\"/><ImageFile-SaveAsJpeg destinationpath=\"") + strFileDst + _T("\" format=\"888\"/></transforms>");
+		NSFile::CFileBinary oFile;
+		if (!oFile.OpenFile(std::wstring(strFileSrc.GetString())))
+			return;
 
-		ImageStudio::IImageTransforms* pTransform = NULL;
-		CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
+		CxImage img;
 
-		VARIANT_BOOL vbRes = VARIANT_FALSE;
-		BSTR bsLoad = strLoadXml.AllocSysString();
-		pTransform->SetXml(bsLoad, &vbRes);
-		SysFreeString(bsLoad);
-
-		pTransform->Transform(&vbRes);
-		RELEASEINTERFACE(pTransform);
-#else
-		OfficeCore::IImageGdipFilePtr pImageFile;
-		pImageFile.CreateInstance(OfficeCore::CLSID_CImageGdipFile);
-
-		BSTR bs1 = strFileSrc.AllocSysString();
-		BSTR bs2 = strFileDst.AllocSysString();
-		pImageFile->OpenFile(bs1);
-		pImageFile->SaveFile(bs2, 3);
-		SysFreeString(bs1);
-		SysFreeString(bs2);
-#endif
+		if( img.Decode( oFile.GetFileNative(), 0 ) )
+		{
+			img.Encode( oFile.GetFileNative(), _CXIMAGE_FORMAT_JPG );
+		}
+		oFile.CloseFile();
 	}
 
 	bool CImageManager2::IsNeedDownload(const CString& strFile)

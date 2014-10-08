@@ -1,5 +1,6 @@
 #pragma once
 #include "GraphicsPath.h"
+//#include "../../../../DesktopEditor/graphics/GraphicsPath.h"
 
 #if defined(PPTX_DEF)
 #include "PPTXShape/Formula.h"
@@ -1946,7 +1947,7 @@ namespace NSPresentationEditor
 			return strResult;
 		}
 
-		void ToRenderer(IASCRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, 
+		void ToRenderer(IRenderer* pRenderer, CGeomShapeInfo& pGeomInfo, double dStartTime, 
 			double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
 		{
 			CGraphicPath oPath;

@@ -1,5 +1,5 @@
 #pragma once
-#include "../../../../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
+#include "../../../../DesktopEditor/graphics/GraphicsPath.h"
 
 #include "..\..\Metric.h"
 #include "..\..\Attributes.h"
@@ -142,7 +142,7 @@ namespace NSPresentationEditor
 			InternalClear();
 		}
 
-		virtual void Draw(IASCRenderer* pRenderer)
+		virtual void Draw(IRenderer* pRenderer)
 		{
 			if (NULL == pRenderer)
 				return;
@@ -180,7 +180,7 @@ namespace NSPresentationEditor
 			pRenderer->PathCommandEnd();
 			pRenderer->EndCommand(c_nPathType);
 		}
-		void ConvertVector(IASCRenderer* pRenderer)
+		void ConvertVector(IRenderer* pRenderer)
 		{
 			pRenderer->SetCommandParams(m_dAngle, m_oBounds.left, m_oBounds.top, m_oBounds.GetWidth(), m_oBounds.GetHeight(), m_lFlags);
 
@@ -300,7 +300,7 @@ namespace NSPresentationEditor
 				};
 			}
 
-			void CheckLastPoint(IASCRenderer* pRenderer, CDoublePoint& pointCur)
+			void CheckLastPoint(IRenderer* pRenderer, CDoublePoint& pointCur)
 			{
 				if (NULL == pRenderer)
 					return;
@@ -445,7 +445,7 @@ namespace NSPresentationEditor
 			}
 
 
-			void GetSafearrayPoints(IASCRenderer* pRenderer, SAFEARRAY** ppArray, CDoublePoint& pointCur, BOOL bR = FALSE)
+			void GetSafearrayPoints(IRenderer* pRenderer, SAFEARRAY** ppArray, CDoublePoint& pointCur, BOOL bR = FALSE)
 			{
 				if (NULL == ppArray)
 					return;
@@ -497,7 +497,7 @@ namespace NSPresentationEditor
 				*ppArray = pArray;
 			}
 
-			void Draw(IASCRenderer* pRenderer, CDoublePoint& pointCur)
+			void Draw(IRenderer* pRenderer, CDoublePoint& pointCur)
 			{
 				switch (m_eType)
 				{
@@ -518,7 +518,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pArray)
 						{
-							pRenderer->PathCommandLinesTo(pArray);
+							pRenderer->PathCommandLinesTo((double*)pArray->pvData, m_arPoints.GetSize());
 						}
 
 						RELEASEARRAY(pArray);
@@ -531,7 +531,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pArray)
 						{
-							pRenderer->PathCommandCurvesTo(pArray);
+							pRenderer->PathCommandCurvesTo((double*)pArray->pvData, m_arPoints.GetSize());
 						}
 
 						RELEASEARRAY(pArray);
@@ -561,7 +561,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pArray)
 						{
-							pRenderer->PathCommandLinesTo(pArray);
+							pRenderer->PathCommandLinesTo((double*)pArray->pvData, m_arPoints.GetSize());
 						}
 
 						RELEASEARRAY(pArray);
@@ -576,7 +576,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pArray)
 						{
-							pRenderer->PathCommandCurvesTo(pArray);
+							pRenderer->PathCommandCurvesTo((double*)pArray->pvData, m_arPoints.GetSize());
 						}
 
 						RELEASEARRAY(pArray);
@@ -779,7 +779,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pArray)
 						{
-							pRenderer->PathCommandLinesTo(pArray);
+							pRenderer->PathCommandLinesTo((double*)pArray->pvData, m_arPoints.GetSize());
 						}
 
 						RELEASEARRAY(pArray);
@@ -791,7 +791,7 @@ namespace NSPresentationEditor
 				};
 			}
 
-			inline void AddEllipticalQuadr(IASCRenderer*& pRenderer, bool& bIsX, double& x1, double& y1, double& x2, double& y2, double& dRadX, double& dRadY)
+			inline void AddEllipticalQuadr(IRenderer*& pRenderer, bool& bIsX, double& x1, double& y1, double& x2, double& y2, double& dRadX, double& dRadY)
 			{
 				if (bIsX)
 				{

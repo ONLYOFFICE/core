@@ -1,10 +1,17 @@
 #ifndef _RENDERER_OUTPUT_H
 #define _RENDERER_OUTPUT_H
 
+#ifdef DESKTOP_EDITOR_GRAPHICS
+#include "../../../../../DesktopEditor/graphics/IRenderer.h"
+#include "../../../../../DesktopEditor/graphics/structures.h"
+#include "../../../../../DesktopEditor/graphics/Image.h"
+#include "../../../../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#else
 #include "../../../stdafx.h"
 
 #include "..\..\..\Interfaces\ASCRenderer.h"
 #include "..\..\Structures.h"
+#endif
 #include "WmfUtils.h"
 #include "WmfCharsets.h"
 
@@ -28,8 +35,11 @@ class CRendererOutput : public CWmfOutputDevice
 {
 
 public:
-
+#ifdef DESKTOP_EDITOR_GRAPHICS
+	CRendererOutput(CWmfFile *pFile, IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
+#else
 	CRendererOutput(CWmfFile *pFile, IASCRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
+#endif
 	{
 		m_pWmfFile = pFile;
 
@@ -47,9 +57,10 @@ public:
 			return;
 
 		m_pRenderer = pRenderer;
-
+#ifndef DESKTOP_EDITOR_GRAPHICS
 		m_oShadow.Visible = FALSE;
 		m_pRenderer->put_ShadowVisible(m_oShadow.Visible);
+#endif
 		/*BSTR bsShadow = m_oShadow.ToXmlString().AllocSysString();
 		m_pRenderer->SetShadow( bsShadow );
 		::SysFreeString( bsShadow );*/
@@ -568,7 +579,16 @@ public:
 	void Bmp_Draw(TWmfBMPDraw *pDrawBitmap)
 	{
 		TWmfDC *pDC = pDrawBitmap->pDC;
-
+#ifdef DESKTOP_EDITOR_GRAPHICS
+		USHORT nWidth = pDrawBitmap->oBitmap.ushWidth;
+		USHORT nHeight = pDrawBitmap->oBitmap.ushHeight;
+		int nBufferSize = 4 * nWidth * nHeight;
+		if ( nBufferSize < 1 )
+			return;
+		Aggplus::CImage oImage;
+		BYTE* pBufferPtr = new BYTE[4 * nWidth * nHeight];
+		oImage.Create(pBufferPtr, nWidth, nHeight, 4 * nWidth);
+#else
 		// create result interface
 		IUnknown *pInterface = NULL;
 		HRESULT hRes = CoCreateInstance( MediaCore::CLSID_CAVSUncompressedVideoFrame, NULL, CLSCTX_ALL, MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pInterface );
@@ -604,6 +624,7 @@ public:
 
 		pInterface = pMediaData;
 
+#endif
 		// Пишем данные в pBufferPtr
 
 		for ( int nIndex = 0; nIndex < 4 * nWidth * nHeight; nIndex += 4 ) 
@@ -623,7 +644,11 @@ public:
 
 		Trans( pDC, &dX,  &dY );
 		Trans( pDC, &dX1, &dY1 );
+#ifdef DESKTOP_EDITOR_GRAPHICS
+		m_pRenderer->DrawImage( &oImage, (float)dX, (float)dY, (float)(dX1 - dX), (float)(dY1 - dY));
+#else
 		m_pRenderer->DrawImage( pInterface, (float)dX, (float)dY, (float)(dX1 - dX), (float)(dY1 - dY));
+#endif
 
 	}
 	void Bmp_Read(TWmfBMPRead *pReadBitmap)
@@ -676,10 +701,19 @@ public:
 			TWmfFont *pFont = pText->pDC->pFont;
 			long lStyle = ( pFont->ushWeight > 550 ? 1 : 0 ) + ( pFont->unItalic ? 2 : 0 );
 			m_pWmfFile->m_pFontManager->LoadFontByName( A2W(pText->pDC->pFont->sFaceName), dSize, lStyle, 72, 72 );
+#ifdef DESKTOP_EDITOR_GRAPHICS
+			m_pWmfFile->m_pFontManager->LoadString2( A2W(pText->sText), 0, 0 );
+			TBBox oBox = m_pWmfFile->m_pFontManager->MeasureString2();
+			fL = oBox.fMinX;
+			fT = oBox.fMinY;
+			fW = oBox.fMaxX - oBox.fMinX;
+			fH = oBox.fMaxY - oBox.fMinY;
+			m_pWmfFile->m_pFontManager->GetUnderline( &fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize );
+#else
 			m_pWmfFile->m_pFontManager->LoadStringW( A2W(pText->sText), 0, 0 );
 			m_pWmfFile->m_pFontManager->MeasureString2( &fL, &fT, &fW, &fH );
 			m_pWmfFile->m_pFontManager->GetUnderline( &fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize );
-
+#endif
 			double fKoef = 25.4 / 72;
 
 			fL *= fKoef;
@@ -1447,7 +1481,16 @@ private:
 		{
 			if ( NULL == pBrush->oBitmap.pData || 0 == pBrush->oBitmap.ushHeight || 0 == pBrush->oBitmap.ushWidth )
 				return false;
-
+#ifdef DESKTOP_EDITOR_GRAPHICS
+			USHORT nWidth = pBrush->oBitmap.ushWidth;
+			USHORT nHeight = pBrush->oBitmap.ushHeight;
+			int nBufferSize = 4 * nWidth * nHeight;
+			if ( nBufferSize < 1 )
+				return false;
+			Aggplus::CImage oImage;
+			BYTE* pBufferPtr = new BYTE[4 * nWidth * nHeight];
+			oImage.Create(pBufferPtr, nWidth, nHeight, 4 * nWidth);
+#else
 			// create result interface
 			IUnknown *pInterface = NULL;
 			HRESULT hRes = CoCreateInstance( MediaCore::CLSID_CAVSUncompressedVideoFrame, NULL, CLSCTX_ALL, MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pInterface );
@@ -1482,7 +1525,7 @@ private:
 				return false;
 
 			pInterface = pMediaData;
-
+#endif
 			// Пишем данные в pBufferPtr
 
 			for ( int nIndex = 0; nIndex < 4 * nWidth * nHeight; nIndex += 4 ) 
@@ -1498,16 +1541,22 @@ private:
 			CString wsTempFileName;
 			if ( !WmfOpenTempFile( &wsTempFileName, &pTempFile, _T("wb"), _T(".wmf0"), NULL ) ) 
 			{
+#ifndef DESKTOP_EDITOR_GRAPHICS
 				RELEASEINTERFACE( pInterface );
+#endif
 				return false;
 			}
 			::fclose( pTempFile );
 
+#ifdef DESKTOP_EDITOR_GRAPHICS
+			oImage.SaveFile(std::wstring(wsTempFileName.GetString()), _CXIMAGE_FORMAT_PNG);
+#else
 			BOOL bRet = ImageStudio::SaveImageAsPNG(pInterface, wsTempFileName);
 			if (!bRet)
 				return false;
 			
 			RELEASEINTERFACE( pInterface );
+#endif
 			
 			m_oBrush.TexturePath = wsTempFileName;
 			m_oBrush.TextureMode = c_BrushTextureModeTile;
@@ -1515,9 +1564,13 @@ private:
 
 			m_pRenderer->put_BrushTextureMode( m_oBrush.Type );
 			m_pRenderer->put_BrushType( m_oBrush.Type );
+#ifdef DESKTOP_EDITOR_GRAPHICS
+			m_pRenderer->put_BrushTexturePath(m_oBrush.TexturePath);
+#else
 			BSTR bsTexture = m_oBrush.TexturePath.AllocSysString();
 			m_pRenderer->put_BrushTexturePath(bsTexture);
 			::SysFreeString(bsTexture);
+#endif
 
 			//m_oBrush.SetTexturePath( wsTempFileName );
 			//m_oBrush.SetTextureMode( 1 );
@@ -1667,7 +1720,8 @@ private:
 				return false;
 
 			// Читаем через ImageStudio
-
+			//todo
+#ifndef DESKTOP_EDITOR_GRAPHICS
 			USES_CONVERSION;
 			CStringW wsTempFileName = _T("");
 			FILE *pTempFile = NULL;
@@ -1687,6 +1741,7 @@ private:
 			//pTransform->GetResult( 0, &oVar );
 
 			::_wunlink( wsTempFileName.GetBuffer() );
+#endif
 
 
 			return false;
@@ -1930,13 +1985,18 @@ private:
 	}
 	
 private:
-
+#ifdef DESKTOP_EDITOR_GRAPHICS
+	IRenderer *m_pRenderer;
+#else
 	IASCRenderer *m_pRenderer;
+#endif
 
 	NSStructures::CPen      m_oPen;
 	NSStructures::CBrush    m_oBrush;
+#ifndef DESKTOP_EDITOR_GRAPHICS
 	NSStructures::CShadow   m_oShadow;
 	NSStructures::CEdgeText m_oEdgeText;
+#endif
 	NSStructures::CFont     m_oFont;
 
 

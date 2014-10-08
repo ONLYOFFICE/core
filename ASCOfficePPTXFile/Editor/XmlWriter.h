@@ -1,6 +1,8 @@
 #pragma once
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "./BinReaderWriterDefines.h"
+#include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/Common.h"
 
 namespace NSBinPptxRW
 {
@@ -241,7 +243,7 @@ namespace NSBinPptxRW
 		CString m_strStyleMain;
 		CString m_strAttributesMain;
 		CString m_strNodes;
-		IASCRenderer* m_pOOXToVMLRenderer;
+		IRenderer* m_pOOXToVMLRenderer;
 		bool m_bIsTop;
 	
 	public:
@@ -265,7 +267,6 @@ namespace NSBinPptxRW
 		}
 		~CXmlWriter()
 		{
-			RELEASEINTERFACE(m_pOOXToVMLRenderer);
 		}
 		
 		AVSINLINE CString GetXmlString()

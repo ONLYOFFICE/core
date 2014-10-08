@@ -1,9 +1,10 @@
 #pragma once
-#include "Const.h"
+//#include "Const.h"
 
 #include "SVGWriter.h"
 #include "VMLWriter.h"
 #include "CanvasWriter.h"
+#include "../DesktopEditor/graphics/GraphicsPath.h"
 
 namespace NSHtmlRenderer
 {
@@ -14,12 +15,12 @@ namespace NSHtmlRenderer
 		CVMLWriter		m_oVML;
 		CCanvasWriter	m_oCanvas;
 
-		Graphics::IASCGraphicSimpleComverter*	m_pSimpleConverter;
+		Aggplus::CGraphicsPathSimpleConverter*	m_pSimpleConverter;
 
 		NSStructures::CPen*		m_pPen;
 		NSStructures::CBrush*	m_pBrush;
 
-		CMatrix*				m_pFullTransform;
+		Aggplus::CMatrix*				m_pFullTransform;
 
 		LONG					m_lCurrentObjectInPage;
 		
@@ -37,7 +38,7 @@ namespace NSHtmlRenderer
 		{
 		}
 
-		void SetSettings(NSStructures::CPen* pPen, NSStructures::CBrush* pBrush, Graphics::IASCGraphicSimpleComverter* pSimpleConverter)
+		void SetSettings(NSStructures::CPen* pPen, NSStructures::CBrush* pBrush, Aggplus::CGraphicsPathSimpleConverter* pSimpleConverter)
 		{
 			m_pPen				= pPen;
 			m_pBrush			= pBrush;
@@ -117,7 +118,7 @@ namespace NSHtmlRenderer
 				double y = 0;
 				double r = 0;
 				double b = 0;
-				m_pSimpleConverter->PathCommandGetBounds(&x, &y, &r, &b);
+				m_pSimpleConverter->PathCommandGetBounds(x, y, r, b);
 
 				r += x;
 				b += y;
@@ -211,12 +212,12 @@ namespace NSHtmlRenderer
 	{
 	public:
 		CSVGWriter		m_oSVG;
-		Graphics::IASCGraphicSimpleComverter*	m_pSimpleConverter;
+		Aggplus::CGraphicsPathSimpleConverter*	m_pSimpleConverter;
 
 		NSStructures::CPen*		m_pPen;
 		NSStructures::CBrush*	m_pBrush;
 
-		CMatrix*				m_pFullTransform;
+		Aggplus::CMatrix*				m_pFullTransform;
 
 		double					m_dWidth;
 		double					m_dHeight;
@@ -230,7 +231,7 @@ namespace NSHtmlRenderer
 		{
 		}
 
-		void SetSettings(NSStructures::CPen* pPen, NSStructures::CBrush* pBrush, Graphics::IASCGraphicSimpleComverter* pSimpleConverter)
+		void SetSettings(NSStructures::CPen* pPen, NSStructures::CBrush* pBrush, Aggplus::CGraphicsPathSimpleConverter* pSimpleConverter)
 		{
 			m_pPen				= pPen;
 			m_pBrush			= pBrush;

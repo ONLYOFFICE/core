@@ -2,6 +2,7 @@
 #define _BUILD_IRENDERER_H_
 
 #include "../common/Types.h"
+#include "Matrix.h"
 #include <string>
 
 class IGrObject
@@ -224,6 +225,40 @@ public:
 	virtual HRESULT DrawImageFromFile(const std::wstring&, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255)	= 0;	
 
 // transform --------------------------------------------------------------------------------
+	virtual HRESULT GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags)
+	{
+		return S_OK;
+	}
+	virtual HRESULT SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags)
+	{
+		if ((dWidth <= 1) || (dHeight <= 1))
+			lFlags = 0;
+
+		BOOL bFlipX = (0 != (c_nParamFlipX & lFlags));
+		BOOL bFlipY = (0 != (c_nParamFlipY & lFlags));
+
+		REAL m11 = bFlipX ? -1.0f : 1.0f;
+		REAL m22 = bFlipY ? -1.0f : 1.0f;
+
+		Aggplus::CMatrix oMatrix(1, 0, 0, 1, 0, 0);
+
+		if ((0 != dAngle) || (0 != lFlags))
+		{
+			REAL dCentreX = (REAL)(dLeft + dWidth / 2.0);
+			REAL dCentreY = (REAL)(dTop + dHeight / 2.0);
+
+			oMatrix.Translate(-dCentreX, -dCentreY	, Aggplus::MatrixOrderAppend);
+
+			oMatrix.Rotate((REAL)dAngle	, Aggplus::MatrixOrderAppend);
+			oMatrix.Scale(m11, m22					, Aggplus::MatrixOrderAppend);
+
+			oMatrix.Translate(dCentreX, dCentreY	, Aggplus::MatrixOrderAppend);
+		}
+		double mass[6];
+		oMatrix.GetElements(mass);
+		SetTransform(mass[0], mass[1], mass[2], mass[3], mass[4], mass[5]);
+		return S_OK;
+	}
 	virtual HRESULT SetTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6) = 0;
 	virtual HRESULT GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF)	= 0;
 	virtual HRESULT ResetTransform() = 0;

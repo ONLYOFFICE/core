@@ -1,6 +1,8 @@
 #pragma once
 #include "..\stdafx.h"
 #include "StringWriter.h"
+#include <atlbase.h>
+#include <atlcoll.h>
 
 namespace NSHtmlRenderer
 {
@@ -316,10 +318,10 @@ namespace NSHtmlRenderer
 			{
 				m_oDocument.WriteString(g_svg_bstr_svgClose);
 				//CDirectory::SaveToFile(strFile, m_oDocument.GetCString());
-				CFile oFile;
-				oFile.CreateFile(strFile);
+				NSFile::CFileBinary oFile;
+				oFile.CreateFile(std::wstring(strFile.GetString()));
 				CStringA strA(m_oDocument.GetBuffer(), (int)m_oDocument.GetCurSize());
-				oFile.WriteFile(strA.GetBuffer(), strA.GetLength());
+				oFile.WriteFile((BYTE*)strA.GetBuffer(), strA.GetLength());
 			}
 
 			if (3000000 < m_oDocument.GetSize())
@@ -466,7 +468,7 @@ namespace NSHtmlRenderer
 			m_oPath.AddIntNoCheck(round(y3));
 			m_oPath.AddSpaceNoCheck();
 		}
-		void WriteDrawPath(LONG nType, CMatrix* pTransform, Graphics::IASCGraphicSimpleComverter* pConverter, CImageInfo& oInfo, const double& dAngle)
+		void WriteDrawPath(LONG nType, Aggplus::CMatrix* pTransform, Aggplus::CGraphicsPathSimpleConverter* pConverter, CImageInfo& oInfo, const double& dAngle)
 		{
 			if (m_oPath.GetCurSize() < 3)
 				return;
@@ -528,7 +530,7 @@ namespace NSHtmlRenderer
 				double r = 0;
 				double b = 0;
 
-				pConverter->PathCommandGetBounds(&x, &y, &r, &b);
+				pConverter->PathCommandGetBounds(x, y, r, b);
 				r += x;
 				b += y;
 
@@ -539,7 +541,7 @@ namespace NSHtmlRenderer
 				}
 				else
 				{
-					NSHtmlRenderer::CMatrix oTemp  = *pTransform;
+					Aggplus::CMatrix oTemp  = *pTransform;
 					
 					double dCx = (x + r) / 2;
 					double dCy = (y + b) / 2;

@@ -1,313 +1,203 @@
 #pragma once
-#include "stdafx.h"
-#include "resource.h"       // main symbols
-#include <string>
+#include "../DesktopEditor/graphics/IRenderer.h"
+#include "IBaseMatrixUpdater.h"
 
-#include "..\Common\ASCUtils.h"
-#include "..\ASCImageStudio3\ASCGraphics\Interfaces\ASCRenderer.h"
-#include "..\Common\MediaFormatDefine.h"
-#include "..\Common\TemporaryCS.h"
-
-#include "Writer\Writer.h"
-#include "Graphics\Matrix.h"
-
-#if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
-#error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
-#endif
-
-// CASCSVGWriter
-[ coclass, default(IASCRenderer), threading(apartment), vi_progid("AVSHTMLRend.SvgWr"), progid("AVSHTMLRend.SvgWr.1"), version(1.0), uuid("EE5F599A-B5FE-48ec-A041-32528EAD4727") ]
-class ATL_NO_VTABLE CASCSVGWriter : 
-	public IASCRenderer,
-	public NSHtmlRenderer::IBaseMatrixUpdater
+namespace Aggplus
 {
-public:
-	DECLARE_PROTECT_FINAL_CONSTRUCT()
-	
-	CASCSVGWriter();
-	~CASCSVGWriter()
+	class CMatrix;
+	class CGraphicsPathSimpleConverter;
+}
+class CFontManager;
+namespace NSHtmlRenderer
+{
+	class CSVGGraphicsWriter;
+}
+namespace NSStructures
+{
+	class CPen;
+	class CBrush;
+	class CFont;
+}
+namespace NSHtmlRenderer
+{
+	class CASCSVGWriter : public IRenderer, public NSHtmlRenderer::IBaseMatrixUpdater
 	{
-	}
+	public:
+		CASCSVGWriter();
+		~CASCSVGWriter();
 
-public:
-	// ------------------------------------ renderer --------------------------------------------
-	STDMETHOD(get_Type)(LONG* lType);
-	//-------- Функции для работы со страницей --------------------------------------------------
-	STDMETHOD(NewPage)();
-	STDMETHOD(get_Height)(double* dHeight);
-	STDMETHOD(put_Height)(double dHeight);
-	STDMETHOD(get_Width)(double* dWidth);
-	STDMETHOD(put_Width)(double dWidth);
+	public:
+		// тип рендерера-----------------------------------------------------------------------------
+		HRESULT get_Type(LONG* lType);
+		//-------- Функции для работы со страницей --------------------------------------------------
+		HRESULT NewPage();
+		HRESULT get_Height(double* dHeight);
+		HRESULT put_Height(const double& dHeight);
+		HRESULT get_Width(double* dWidth);
+		HRESULT put_Width(const double& dWidth);
+		HRESULT get_DpiX(double* dDpiX);
+		HRESULT get_DpiY(double* dDpiY);
 
-	STDMETHOD(get_DpiX)(double* dDpiX);
-	STDMETHOD(get_DpiY)(double* dDpiY);
-// pen --------------------------------------------------------------------------------------
-	STDMETHOD(SetPen)(BSTR bsXML);
-	STDMETHOD(get_PenColor)(LONG* lColor);
-	STDMETHOD(put_PenColor)(LONG lColor);
-	STDMETHOD(get_PenAlpha)(LONG* lAlpha);
-	STDMETHOD(put_PenAlpha)(LONG lAlpha);
-	STDMETHOD(get_PenSize)(double* dSize);
-	STDMETHOD(put_PenSize)(double dSize);
-	STDMETHOD(get_PenDashStyle)(BYTE* val);
-	STDMETHOD(put_PenDashStyle)(BYTE val);
-	STDMETHOD(get_PenLineStartCap)(BYTE* val);
-	STDMETHOD(put_PenLineStartCap)(BYTE val);
-	STDMETHOD(get_PenLineEndCap)(BYTE* val);
-	STDMETHOD(put_PenLineEndCap)(BYTE val);
-	STDMETHOD(get_PenLineJoin)(BYTE* val);
-	STDMETHOD(put_PenLineJoin)(BYTE val);
-	STDMETHOD(get_PenDashOffset)(double* val);
-	STDMETHOD(put_PenDashOffset)(double val);
-	STDMETHOD(get_PenAlign)(LONG* val);
-	STDMETHOD(put_PenAlign)(LONG val);
-	STDMETHOD(get_PenMiterLimit)(double* val);
-	STDMETHOD(put_PenMiterLimit)(double val);
-	STDMETHOD(PenDashPattern)(SAFEARRAY* pPattern);
-// brush ------------------------------------------------------------------------------------
-	STDMETHOD(SetBrush)(BSTR bsXML);
-	STDMETHOD(get_BrushType)(LONG* lType);
-	STDMETHOD(put_BrushType)(LONG lType);
-	STDMETHOD(get_BrushColor1)(LONG* lColor);
-	STDMETHOD(put_BrushColor1)(LONG lColor);
-	STDMETHOD(get_BrushAlpha1)(LONG* lAlpha);
-	STDMETHOD(put_BrushAlpha1)(LONG lAlpha);
-	STDMETHOD(get_BrushColor2)(LONG* lColor);
-	STDMETHOD(put_BrushColor2)(LONG lColor);
-	STDMETHOD(get_BrushAlpha2)(LONG* lAlpha);
-	STDMETHOD(put_BrushAlpha2)(LONG lAlpha);
-	STDMETHOD(get_BrushTexturePath)(BSTR* bsPath);
-	STDMETHOD(put_BrushTexturePath)(BSTR bsPath);
-	STDMETHOD(get_BrushTextureMode)(LONG* lMode);
-	STDMETHOD(put_BrushTextureMode)(LONG lMode);
-	STDMETHOD(get_BrushTextureAlpha)(LONG* lTxAlpha);
-	STDMETHOD(put_BrushTextureAlpha)(LONG lTxAlpha);
-	STDMETHOD(get_BrushLinearAngle)(double* dAngle);
-	STDMETHOD(put_BrushLinearAngle)(double dAngle);
-	STDMETHOD(BrushRect)(BOOL val, double left, double top, double width, double height);
-// font -------------------------------------------------------------------------------------
-	STDMETHOD(SetFont)(BSTR bsXML);
-	STDMETHOD(get_FontName)(BSTR* bsName);
-	STDMETHOD(put_FontName)(BSTR bsName);
-	STDMETHOD(get_FontPath)(BSTR* bsName);
-	STDMETHOD(put_FontPath)(BSTR bsName);
-	STDMETHOD(get_FontSize)(double* dSize);
-	STDMETHOD(put_FontSize)(double dSize);
-	STDMETHOD(get_FontStyle)(LONG* lStyle);
-	STDMETHOD(put_FontStyle)(LONG lStyle);
-	STDMETHOD(get_FontStringGID)(BOOL* bGID);
-	STDMETHOD(put_FontStringGID)(BOOL bGID);
-	STDMETHOD(get_FontCharSpace)(double* dSpace);
-	STDMETHOD(put_FontCharSpace)(double dSpace);
-// shadow -----------------------------------------------------------------------------------
-	STDMETHOD(SetShadow)(BSTR bsXML);
-	STDMETHOD(get_ShadowDistanceX)(double* val);
-	STDMETHOD(put_ShadowDistanceX)(double val);
-	STDMETHOD(get_ShadowDistanceY)(double* val);
-	STDMETHOD(put_ShadowDistanceY)(double val);
-	STDMETHOD(get_ShadowBlurSize)(double* val);
-	STDMETHOD(put_ShadowBlurSize)(double val);
-	STDMETHOD(get_ShadowColor)(LONG* val);
-	STDMETHOD(put_ShadowColor)(LONG val);
-	STDMETHOD(get_ShadowAlpha)(LONG* val);
-	STDMETHOD(put_ShadowAlpha)(LONG val);
-	STDMETHOD(get_ShadowVisible)(BOOL* val);
-	STDMETHOD(put_ShadowVisible)(BOOL val);
-// edge -------------------------------------------------------------------------------------
-	STDMETHOD(SetEdgeText)(BSTR bsXML);
-	STDMETHOD(get_EdgeVisible)(LONG* val);
-	STDMETHOD(put_EdgeVisible)(LONG val);
-	STDMETHOD(get_EdgeColor)(LONG* val);
-	STDMETHOD(put_EdgeColor)(LONG val);
-	STDMETHOD(get_EdgeAlpha)(LONG* val);
-	STDMETHOD(put_EdgeAlpha)(LONG val);
-	STDMETHOD(get_EdgeDist)(double* val);
-	STDMETHOD(put_EdgeDist)(double val);
-//-------- Функции для вывода текста --------------------------------------------------------
-	STDMETHOD(CommandDrawText)(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset);
-	STDMETHOD(CommandDrawTextEx)(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags);
-//-------- Маркеры для команд ---------------------------------------------------------------
-	STDMETHOD(BeginCommand)(DWORD lType);
-	STDMETHOD(EndCommand)(DWORD lType);
-//-------- Функции для работы с Graphics Path -----------------------------------------------
-	STDMETHOD(PathCommandMoveTo)(double fX, double fY);
-	STDMETHOD(PathCommandLineTo)(double fX, double fY);
-	STDMETHOD(PathCommandLinesTo)(SAFEARRAY* pPoints);
-	STDMETHOD(PathCommandCurveTo)(double fX1, double fY1, double fX2, double fY2, double fX3, double fY3);
-	STDMETHOD(PathCommandCurvesTo)(SAFEARRAY* pPoints);
-	STDMETHOD(PathCommandArcTo)(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle);
-	STDMETHOD(PathCommandClose)();
-	STDMETHOD(PathCommandEnd)();
-	STDMETHOD(DrawPath)(long nType);
-	STDMETHOD(PathCommandStart)();
-	STDMETHOD(PathCommandGetCurrentPoint)(double* fX, double* fY);
-	STDMETHOD(PathCommandText)(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset);
-	STDMETHOD(PathCommandTextEx)(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags);
-//-------- Функции для вывода изображений ---------------------------------------------------
-	STDMETHOD(DrawImage)(IUnknown* pInterface, double fX, double fY, double fWidth, double fHeight);
-	STDMETHOD(DrawImageFromFile)(BSTR bstrVal, double fX, double fY, double fWidth, double fHeight);
-// transform --------------------------------------------------------------------------------
-	STDMETHOD(GetCommandParams)(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags);
-	STDMETHOD(SetCommandParams)(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags);
-	STDMETHOD(SetTransform)(double dA, double dB, double dC, double dD, double dE, double dF);
-	STDMETHOD(GetTransform)(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF);
-	STDMETHOD(ResetTransform)(void);
-// -----------------------------------------------------------------------------------------
-	STDMETHOD(get_ClipMode)(LONG* plMode);
-	STDMETHOD(put_ClipMode)(LONG lMode);
-// additiaonal params ----------------------------------------------------------------------
-	STDMETHOD(SetAdditionalParam)(BSTR ParamName, VARIANT ParamValue);
-	STDMETHOD(GetAdditionalParam)(BSTR ParamName, VARIANT* ParamValue);
-// --------------------------------------------------------------------------------------------
+		// pen --------------------------------------------------------------------------------------
+		HRESULT get_PenColor(LONG* lColor);
+		HRESULT put_PenColor(const LONG& lColor);
+		HRESULT get_PenAlpha(LONG* lAlpha);
+		HRESULT put_PenAlpha(const LONG& lAlpha);
+		HRESULT get_PenSize(double* dSize);
+		HRESULT put_PenSize(const double& dSize);
+		HRESULT get_PenDashStyle(BYTE* val);
+		HRESULT put_PenDashStyle(const BYTE& val);
+		HRESULT get_PenLineStartCap(BYTE* val);
+		HRESULT put_PenLineStartCap(const BYTE& val);
+		HRESULT get_PenLineEndCap(BYTE* val);
+		HRESULT put_PenLineEndCap(const BYTE& val);
+		HRESULT get_PenLineJoin(BYTE* val);
+		HRESULT put_PenLineJoin(const BYTE& val);
+		HRESULT get_PenDashOffset(double* dOffset);
+		HRESULT put_PenDashOffset(const double& dOffset);
+		HRESULT get_PenAlign(LONG* lAlign);
+		HRESULT put_PenAlign(const LONG& lAlign);
+		HRESULT get_PenMiterLimit(double* dOffset);
+		HRESULT put_PenMiterLimit(const double& dOffset);
+		HRESULT PenDashPattern(double* pPattern, LONG lCount);
 
-public:
-	HRESULT FinalConstruct();
-	void FinalRelease();
+		// brush ------------------------------------------------------------------------------------
+		HRESULT get_BrushType(LONG* lType);
+		HRESULT put_BrushType(const LONG& lType);
+		HRESULT get_BrushColor1(LONG* lColor);
+		HRESULT put_BrushColor1(const LONG& lColor);
+		HRESULT get_BrushAlpha1(LONG* lAlpha);
+		HRESULT put_BrushAlpha1(const LONG& lAlpha);
+		HRESULT get_BrushColor2(LONG* lColor);
+		HRESULT put_BrushColor2(const LONG& lColor);
+		HRESULT get_BrushAlpha2(LONG* lAlpha);
+		HRESULT put_BrushAlpha2(const LONG& lAlpha);
+		HRESULT get_BrushTexturePath(std::wstring* bsPath);
+		HRESULT put_BrushTexturePath(const std::wstring& bsPath);
+		HRESULT get_BrushTextureMode(LONG* lMode);
+		HRESULT put_BrushTextureMode(const LONG& lMode);
+		HRESULT get_BrushTextureAlpha(LONG* lTxAlpha);
+		HRESULT put_BrushTextureAlpha(const LONG& lTxAlpha);
+		HRESULT get_BrushLinearAngle(double* dAngle);
+		HRESULT put_BrushLinearAngle(const double& dAngle);
+		HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height);
+		HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height);
 
-public:
+		HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount);
 
-	virtual void OnBaseMatrixUpdate(const double& dWidth, const double& dHeight)
-	{
-		m_oBaseTransform.Reset();
+		// font -------------------------------------------------------------------------------------
+		HRESULT get_FontName(std::wstring* bsName);
+		HRESULT put_FontName(const std::wstring& bsName);
+		HRESULT get_FontPath(std::wstring* bsName);
+		HRESULT put_FontPath(const std::wstring& bsName);
+		HRESULT get_FontSize(double* dSize);
+		HRESULT put_FontSize(const double& dSize);
+		HRESULT get_FontStyle(LONG* lStyle)	;
+		HRESULT put_FontStyle(const LONG& lStyle);
+		HRESULT get_FontStringGID(INT* bGID);
+		HRESULT put_FontStringGID(const INT& bGID);
+		HRESULT get_FontCharSpace(double* dSpace);
+		HRESULT put_FontCharSpace(const double& dSpace);
+		HRESULT get_FontFaceIndex(int* lFaceIndex);
+		HRESULT put_FontFaceIndex(const int& lFaceIndex);
 
-		double dScaleX = m_dDpiX / NSHtmlRenderer::c_ag_Inch_to_MM;
-		double dScaleY = m_dDpiY / NSHtmlRenderer::c_ag_Inch_to_MM;
+		//-------- Функции для вывода текста --------------------------------------------------------
+		HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset);
+		HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset);
 
-		m_oBaseTransform.Scale(dScaleX, dScaleY, Aggplus::MatrixOrderAppend);
+		HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
+		HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
 
-		CalculateFullTransform();
+		//-------- Маркеры для команд ---------------------------------------------------------------
+		HRESULT BeginCommand(const DWORD& lType);
+		HRESULT EndCommand(const DWORD& lType);
 
-		double dWidthPix	= dScaleX * dWidth;
-		double dHeightPix	= dScaleY * dHeight;
-	}
+		//-------- Функции для работы с Graphics Path -----------------------------------------------
+		HRESULT PathCommandMoveTo(const double& x, const double& y);
+		HRESULT PathCommandLineTo(const double& x, const double& y);
+		HRESULT PathCommandLinesTo(double* points, const int& count);
+		HRESULT PathCommandCurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3);
+		HRESULT PathCommandCurvesTo(double* points, const int& count);
+		HRESULT PathCommandArcTo(const double& x, const double& y, const double& w, const double& h, const double& startAngle, const double& sweepAngle);
+		HRESULT PathCommandClose();
+		HRESULT PathCommandEnd();
+		HRESULT DrawPath(const LONG& nType);
+		HRESULT PathCommandStart();
+		HRESULT PathCommandGetCurrentPoint(double* x, double* y);
 
-private:
-	
-	NSHtmlRenderer::CSVGGraphicsWriter			m_oVectorWriter;
+		HRESULT PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset);
+		HRESULT PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset);
 
-	Graphics::IASCGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
-	Graphics::IASCFontManager*				m_pFontManager;					// менеджер шрифтов
+		HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
+		HRESULT PathCommandTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
 
-	NSHtmlRenderer::CMatrix			m_oBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
-	NSHtmlRenderer::CMatrix			m_oTransform;		// текущая матрица преобразований рендерера
-	NSHtmlRenderer::CMatrix			m_oFullTransform;	// полная матрица преобразований (m_oBaseTransform * m_oTransform)
+		//-------- Функции для вывода изображений ---------------------------------------------------
+		HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h);
+		HRESULT DrawImageFromFile(const std::wstring&, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha);
 
-	double							m_dTransformAngle;
+		// transform --------------------------------------------------------------------------------
+		HRESULT SetTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6);
+		HRESULT GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF);
+		HRESULT ResetTransform();
 
-	LONG							m_lCurrentCommandType;	// текущая команда
+		// -----------------------------------------------------------------------------------------
+		HRESULT get_ClipMode(LONG* plMode);
+		HRESULT put_ClipMode(const LONG& lMode);
+		// additiaonal params ----------------------------------------------------------------------
+		HRESULT SaveFile(const std::wstring& strFileSave);
+		HRESULT ReInit();
+		HRESULT IsRaster(bool* bVal);
+		// additiaonal params ----------------------------------------------------------------------
+		HRESULT CommandLong(const LONG& lType, const LONG& lCommand);
+		HRESULT CommandDouble(const LONG& lType, const double& dCommand);
+		HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
+	public:
 
-	double							m_dDpiX;				
-	double							m_dDpiY;
+		void OnBaseMatrixUpdate(const double& dWidth, const double& dHeight);
+		void SetFontManager(CFontManager* pFontManager);
 
-	double							m_dWidth;
-	double							m_dHeight;
+	private:
 
-	LONG							m_lClipMode;
+		NSHtmlRenderer::CSVGGraphicsWriter*			m_pVectorWriter;
 
-	NSStructures::CPen				m_oPen;				// настройки всей графики (скопирован ашник из AVSGraphics)
-	NSStructures::CBrush			m_oBrush;
-	NSStructures::CFont				m_oFont;
-	NSStructures::CShadow			m_oShadow;
-	NSStructures::CEdgeText			m_oEdge;
+		Aggplus::CGraphicsPathSimpleConverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
+		CFontManager*				m_pFontManager;					// менеджер шрифтов
+		bool						m_bDeleteFontManager;	
 
-	NSStructures::CFont				m_oInstalledFont;
+		Aggplus::CMatrix*			m_pBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
+		Aggplus::CMatrix*			m_pTransform;		// текущая матрица преобразований рендерера
+		Aggplus::CMatrix*			m_pFullTransform;	// полная матрица преобразований (m_oBaseTransform * m_oTransform)
 
-	Graphics::IASCWinFonts*		m_pFonts;
+		double							m_dTransformAngle;
 
-	bool m_bIsRaster;
+		LONG							m_lCurrentCommandType;	// текущая команда
 
-protected:
-	void CalculateFullTransform()
-	{
-		m_oFullTransform	= m_oBaseTransform;
-		m_oFullTransform.Multiply(&m_oTransform, Aggplus::MatrixOrderPrepend);
+		double							m_dDpiX;				
+		double							m_dDpiY;
 
-		m_dTransformAngle	= m_oTransform.z_Rotation();
-	}
+		double							m_dWidth;
+		double							m_dHeight;
 
-	inline void MoveTo(const double& dX, const double& dY)
-	{
-		double x = dX;
-		double y = dY;
-		m_oFullTransform.TransformPoint(x, y);
+		LONG							m_lClipMode;
 
-		m_oVectorWriter.WritePathMoveTo(x, y);
-	}
-	inline void LineTo(const double& dX, const double& dY)
-	{
-		double x = dX;
-		double y = dY;
-		m_oFullTransform.TransformPoint(x, y);
+		NSStructures::CPen*				m_pPen;				// настройки всей графики (скопирован ашник из AVSGraphics)
+		NSStructures::CBrush*			m_pBrush;
+		NSStructures::CFont*			m_pFont;
 
-		m_oVectorWriter.WritePathLineTo(x, y);
-	}
-	inline void CurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3)
-	{
-		double _x1 = x1;
-		double _y1 = y1;
-		m_oFullTransform.TransformPoint(_x1, _y1);
+		NSStructures::CFont*			m_pInstalledFont;
 
-		double _x2 = x2;
-		double _y2 = y2;
-		m_oFullTransform.TransformPoint(_x2, _y2);
+		bool m_bIsRaster;
+		//todo
+		//IASCWinFonts*					m_pFonts;
 
-		double _x3 = x3;
-		double _y3 = y3;
-		m_oFullTransform.TransformPoint(_x3, _y3);
-
-		m_oVectorWriter.WritePathCurveTo(_x1, _y1, _x2, _y2, _x3, _y3);
-	}
-	void Start()
-	{
-		m_oVectorWriter.WritePathStart();
-	}
-	void End()
-	{
-		m_oVectorWriter.WriteEndPath();
-	}
-	void Close()
-	{
-		m_oVectorWriter.WritePathClose();
-	}
-
-	void _SetFont()
-	{
-		if (NULL == m_pFontManager)
-		{
-			CoCreateInstance(__uuidof(Graphics::CASCFontManager), NULL, CLSCTX_ALL, __uuidof(Graphics::IASCFontManager), (void**)&m_pFontManager);
-			m_pFontManager->Initialize(L"");
-		}
-
-		double dPix = m_oFont.CharSpace * m_dDpiX / 25.4;
-		
-		if (m_oInstalledFont.IsEqual(&m_oFont))
-		{
-			if (1 < m_dWidth)
-			{
-				m_pFontManager->SetCharSpacing(dPix);
-			}
-			return;
-		}
-
-		m_pFontManager->SetStringGID(m_oFont.StringGID);
-		if (1 < m_dWidth)
-		{
-			m_pFontManager->SetCharSpacing(dPix);
-		}
-
-		if (_T("") == m_oFont.Path)
-		{
-			BSTR bsName = m_oFont.Name.AllocSysString();
-			m_pFontManager->LoadFontByName(bsName, (float)m_oFont.Size, m_oFont.GetStyle(), m_dDpiX, m_dDpiY);
-			SysFreeString(bsName);
-		}
-		else
-		{
-			BSTR bsName = m_oFont.Path.AllocSysString();
-			m_pFontManager->LoadFontFromFile(bsName, (float)m_oFont.Size, m_dDpiX, m_dDpiY, 0);
-			SysFreeString(bsName);
-		}
-
-		m_oInstalledFont = m_oFont;
-	}
-};
+	protected:
+		void CalculateFullTransform();
+		inline void MoveTo(const double& dX, const double& dY);
+		inline void LineTo(const double& dX, const double& dY);
+		inline void CurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3);
+		void Start();
+		void End();
+		void Close();
+		void _SetFont();
+	};
+}

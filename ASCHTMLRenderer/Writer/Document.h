@@ -1,14 +1,8 @@
 #pragma once
-#include "Writer\File.h"
+#include "File.h"
 
 namespace NSHtmlRenderer
 {
-	class IBaseMatrixUpdater
-	{
-	public: 
-		virtual void OnBaseMatrixUpdate(const double& dWidth, const double& dHeight) = 0;
-	};
-
 	class CPageInfo
 	{
 	private:

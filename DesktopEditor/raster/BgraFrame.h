@@ -81,7 +81,7 @@ public:
 public:
 	bool OpenFile(const std::wstring& strFileName);
 	bool SaveFile(const std::wstring& strFileName, uint32_t nFileType);
-
+	bool Resize(const long& nNewWidth, const long& nNewHeight);
 private:
 
 	void CxImageToMediaFrame( CxImage& img );

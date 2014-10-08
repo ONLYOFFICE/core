@@ -1,6 +1,17 @@
 #ifndef _WMF_TYPES_H_
 #define _WMF_TYPES_H_
 
+#ifdef DESKTOP_EDITOR_GRAPHICS
+// freetype
+#include <ft2build.h>
+#include FT_OUTLINE_H
+//#include FT_SIZES_H
+//#include FT_GLYPH_H
+//#include FT_TRUETYPE_IDS_H
+//#include FT_TRUETYPE_TABLES_H
+//#include FT_XFREE86_H
+//#include FT_ADVANCES_H
+#endif
 
 //---------------------------------------------------------------------------------------------------
 // Преобразование типов

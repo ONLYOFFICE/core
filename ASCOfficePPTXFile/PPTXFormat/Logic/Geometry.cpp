@@ -1,16 +1,17 @@
 //#include "stdafx.h"
 
-#ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
-
 #include "Geometry.h"
 #include "../../../ASCPresentationEditor/OfficeDrawing/Elements.h"
+#include "../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/Common.h"
 
 namespace PPTX
 {
 	namespace Logic
 	{
-		void Geometry::ConvertToCustomVML(IASCRenderer* pOOXToVMLRenderer, CString& strPath, CString& strRect, LONG& lWidth, LONG& lHeight)
+		void Geometry::ConvertToCustomVML(IRenderer* pOOXToVMLRenderer, CString& strPath, CString& strRect, LONG& lWidth, LONG& lHeight)
 		{
+#ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
+
 			NSPresentationEditor::CShapeElement* lpShapeElement = NULL;
 			if (this->is<PPTX::Logic::PrstGeom>())
 			{
@@ -56,9 +57,11 @@ namespace PPTX
 			VARIANT var;
 			var.vt = VT_I4;
 			var.lVal = 0;
-			pOOXToVMLRenderer->SetAdditionalParam(L"NewShape", var);
+			COOXToVMLGeometry* pOOXToVMLGeometry = dynamic_cast<COOXToVMLGeometry*>(pOOXToVMLRenderer);
+			if(NULL != pOOXToVMLGeometry)
+				pOOXToVMLGeometry->NewShape();
 
-			CGraphicPath oGrPath;			
+			NSPresentationEditor::CGraphicPath oGrPath;			
 			CMetricInfo oMetricInfo;
 
 			int nSize = oPath.m_arParts.GetSize();
@@ -75,9 +78,8 @@ namespace PPTX
 
 				oGrPath.Draw(pOOXToVMLRenderer);
 			}
-
-			pOOXToVMLRenderer->GetAdditionalParam(L"ResultPath", &var);
-			strPath = (CString)var.bstrVal;
+			if(NULL != pOOXToVMLGeometry)
+				pOOXToVMLGeometry->ResultPath(&strPath);
 
 			if (lpShapeElement->m_oShape.m_pShape->m_arTextRects.GetSize() <= 0)
 			{
@@ -103,7 +105,7 @@ namespace PPTX
 
 			SysFreeString((var.bstrVal));
 		}
+#endif
 	}
 }
 
-#endif

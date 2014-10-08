@@ -340,9 +340,7 @@ namespace PPTX
 					m_geometry->SetParentPointer(pParent);
 			};
 
-#ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
-			void ConvertToCustomVML(IASCRenderer* punkRenderer, CString& strPath, CString& strRect, LONG& lWidth, LONG& lHeight);
-#endif
+			void ConvertToCustomVML(IRenderer* punkRenderer, CString& strPath, CString& strRect, LONG& lWidth, LONG& lHeight);
 		};
 	} // namespace Logic
 } // namespace PPTX

@@ -291,6 +291,47 @@ int CFontManager::GetKerning(UINT unPrevGID, UINT unGID)
 	return m_pFont->GetKerning(unPrevGID, unGID);
 }
 
+INT CFontManager::GetUnderline(float *pfStartX, float *pfStartY, float *pfEndX, float *pfEndY, float *pfSize)
+{
+	if ( m_oString.GetLength() <= 0 || !m_pFont )
+	{
+		*pfStartX = 0;
+		*pfStartY = 0;
+		*pfEndX = 0;
+		*pfEndY = 0;
+		*pfSize = 0;
+
+		return FALSE;
+	}
+
+	float fStartX = m_oString.m_fX;
+	float fStartY = m_oString.m_fY;
+	float fEndX   = m_oString.m_fEndX;
+	float fEndY   = m_oString.m_fEndY;
+
+	short shUnderlinePos  = m_pFont->m_pFace->underline_position;
+	short shUnderlineSize = m_pFont->m_pFace->underline_thickness;	
+
+	float fKoef = (float)(m_pFont->m_dSize / 1000 * m_pFont->m_unVerDpi / 72.0f);
+	float fUnderlinePos  = shUnderlinePos  * fKoef;
+	float fUnderLineSize = shUnderlineSize * fKoef;
+
+	fStartY -= fUnderlinePos;
+	fEndY   -= fUnderlinePos;
+
+	m_oString.Transform( &fStartX, &fStartY );
+	m_oString.Transform( &fEndX, &fEndY );
+
+	*pfStartX = fStartX;
+	*pfStartY = fStartY;
+
+	*pfEndX = fEndX;
+	*pfEndY = fEndY;
+
+	*pfSize = fUnderLineSize;
+
+	return TRUE;
+}
 TBBox CFontManager::MeasureString()
 {
 	TBBox oBox;
@@ -390,6 +431,16 @@ void CFontManager::SetStringGID(const INT &bStringGID)
 		return;
 
 	m_pFont->SetStringGID(m_bStringGID);
+}
+
+void CFontManager::SetCharSpacing(const double &dCharSpacing)
+{
+	m_fCharSpacing = dCharSpacing;
+
+	if (NULL == m_pFont)
+		return;
+
+	m_pFont->SetCharSpacing(m_fCharSpacing);
 }
 
 INT CFontManager::GetStringPath(ISimpleGraphicsPath* pInterface)

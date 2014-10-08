@@ -1,6 +1,7 @@
 #pragma once
 #include "Theme.h"
 #include "Shapes\Shape.h"
+#include "../../ASCHTMLRenderer/CASCSVGRenderer.h"
 
 #ifdef _PRESENTATION_WRITER_
 #include "SVGConverter.h"
@@ -554,26 +555,22 @@ namespace NSPresentationEditor
 #ifdef BUILD_CONFIG_OPENSOURCE_VERSION
 			return _T("");
 #else
-			ASCGraphics::IASCSVGRenderer* pSVG = NULL;
-			CoCreateInstance(ASCGraphics::CLSID_CASCSVGRenderer, NULL, CLSCTX_ALL, ASCGraphics::IID_IASCSVGRenderer, (void**)&pSVG);
+			NSHtmlRenderer::CASCSVGRenderer* pSVG = new NSHtmlRenderer::CASCSVGRenderer();
 
 			pSVG->put_Width(m_oMetric.m_lMillimetresHor);
 			pSVG->put_Height(m_oMetric.m_lMillimetresVer);
 			
 			pSVG->CreateOfficeFile(L"", 0);
 
-			BSTR bsFileName = m_strFileName.AllocSysString();
-			pSVG->DrawImageFromFile(bsFileName, m_rcBounds.left, m_rcBounds.top, m_rcBounds.right - m_rcBounds.left, m_rcBounds.bottom - m_rcBounds.top);
-			SysFreeString(bsFileName);
+			pSVG->DrawImageFromFile(std::wstring(m_strFileName.GetString()), m_rcBounds.left, m_rcBounds.top, m_rcBounds.right - m_rcBounds.left, m_rcBounds.bottom - m_rcBounds.top, 255);
 
 			pSVG->CloseFile(0);
 
-			BSTR bsResult = NULL;
+			std::wstring bsResult;
 			pSVG->get_Data(&bsResult);
 
-			CString strXml = (CString)bsResult;
-			SysFreeString(bsResult);
-			RELEASEINTERFACE(pSVG);
+			CString strXml = CString(bsResult.c_str());
+			RELEASEOBJECT(pSVG);
 
 			int nIndexStart = strXml.Find((TCHAR)'>');
 			int nIndexEnd	= strXml.ReverseFind((TCHAR)'<');
@@ -966,8 +963,7 @@ namespace NSPresentationEditor
 			CString strXml	= _T("");
 			if (m_oShape.m_lDrawType & c_ShapeDrawType_Graphic)
 			{
-				ASCGraphics::IASCSVGRenderer* pSVG = NULL;
-				CoCreateInstance(ASCGraphics::CLSID_CASCSVGRenderer, NULL, CLSCTX_ALL, ASCGraphics::IID_IASCSVGRenderer, (void**)&pSVG);
+				NSHtmlRenderer::CASCSVGRenderer* pSVG = new NSHtmlRenderer::CASCSVGRenderer();
 
 				pSVG->put_Width(m_oMetric.m_lMillimetresHor);
 				pSVG->put_Height(m_oMetric.m_lMillimetresVer);
@@ -987,17 +983,16 @@ namespace NSPresentationEditor
 				//}
 				//else
 				{
-					m_oShape.ToRenderer((IASCRenderer*)pSVG, oInfo, m_oMetric, m_dStartTime, m_dEndTime);
+					m_oShape.ToRenderer((IRenderer*)pSVG, oInfo, m_oMetric, m_dStartTime, m_dEndTime);
 				}
 
 				pSVG->CloseFile(0);
 				
-				BSTR bsResult = NULL;
+				std::wstring bsResult;
 				pSVG->get_Data(&bsResult);
 
-				strXml = (CString)bsResult;
-				SysFreeString(bsResult);
-				RELEASEINTERFACE(pSVG);
+				strXml = CString(bsResult.c_str());
+				RELEASEOBJECT(pSVG);
 
 				int nIndexStart = strXml.Find((TCHAR)'>');
 				int nIndexEnd	= strXml.ReverseFind((TCHAR)'<');

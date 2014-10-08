@@ -116,6 +116,7 @@ public:
 	INT LoadString2C(const LONG& wsBuffer, const float& fX, const float& fY);
 
 	int GetKerning(UINT unPrevGID, UINT unGID);
+	INT GetUnderline(float *pfStartX, float *pfStartY, float *pfEndX, float *pfEndY, float *pfSize);
 
     TFontCacheSizes MeasureChar(const LONG& lUnicode);
 	TBBox MeasureString();
@@ -126,6 +127,7 @@ public:
     INT SetTextMatrix(const double& fA, const double& fB, const double& fC, const double& fD, const double& fE, const double& fF);
 	INT SetTextMatrix2(const double& fA, const double& fB, const double& fC, const double& fD, const double& fE, const double& fF);
 	void SetStringGID(const INT& bStringGID);
+	void SetCharSpacing(const double &dCharSpacing);
 
 	INT GetStringPath(ISimpleGraphicsPath* pPath);
 

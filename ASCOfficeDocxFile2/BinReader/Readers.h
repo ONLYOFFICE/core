@@ -2650,7 +2650,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 		}
 		else
@@ -3251,7 +3251,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -3268,7 +3268,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -3622,6 +3622,7 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSerRunType::rPr == type )
 		{
+			m_oMath_rPr.Reset();
 			res = oBinary_rPrReader.Read(length, &m_oMath_rPr);
 			if(m_oMath_rPr.IsNoEmpty())
 			m_oMath_rPr.Write(&GetRunStringWriter());
@@ -3659,7 +3660,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -3676,7 +3677,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -3941,7 +3942,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -3958,7 +3959,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -3975,7 +3976,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -3992,7 +3993,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4128,7 +4129,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4164,7 +4165,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4242,6 +4243,10 @@ public:
 		{
 			res = Read2(length, &Binary_DocumentTableReader::ReadMathLong, this, poResult);
 		}
+		else if ( c_oSer_OMathBottomNodesType::Column == type )
+		{
+			res = Read2(length, &Binary_DocumentTableReader::ReadMathLong, this, poResult);
+		}
 		else if ( c_oSer_OMathBottomNodesType::BaseJc == type )
 		{
 			res = Read2(length, &Binary_DocumentTableReader::ReadMathBaseJc, this, poResult);
@@ -4294,7 +4299,7 @@ public:
 			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
 			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
-		}		
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -4373,7 +4378,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4390,7 +4395,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4407,7 +4412,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4454,7 +4459,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4523,7 +4528,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4571,6 +4576,7 @@ public:
 		}
 		else if ( c_oSer_OMathContentType::RPr == type )
 		{
+			m_oMath_rPr.Reset();
 			res = oBinary_rPrReader.Read(length, &m_oMath_rPr);
 			if(m_oMath_rPr.IsNoEmpty())
 				m_oMath_rPr.Write(&GetRunStringWriter());
@@ -4753,7 +4759,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4958,7 +4964,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4975,7 +4981,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4992,7 +4998,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5009,7 +5015,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5048,7 +5054,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5065,7 +5071,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5082,7 +5088,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5141,7 +5147,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5158,7 +5164,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5175,7 +5181,7 @@ public:
 			if (bVal)
 				sVal += _T(" m:val=\"true\" />");
 			else
-				sVal += _T(" />");
+				sVal += _T(" m:val=\"false\" />");
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5345,7 +5351,7 @@ public:
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};
+	};	
 	int ReadComment(BYTE type, long length, void* poResult)
 	{
 		long* pVal = static_cast<long*>(poResult);

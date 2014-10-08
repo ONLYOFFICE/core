@@ -3047,7 +3047,18 @@ namespace BinDocxRW
 						OOX::Logic::CMatrix* pMatrix = static_cast<OOX::Logic::CMatrix*>(item);
 						nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Matrix);
 
-						WriteMathMatrix(pMatrix->m_arrItems, pMatrix->m_lRow);			
+						LONG lCol = 0;
+						for ( int j = 0; j < pMatrix->m_arrItems.size(); j++)
+						{
+							OOX::WritingElement* item = pMatrix->m_arrItems[j];
+							if (item->getType() == OOX::et_m_mr)
+							{
+								OOX::Logic::CMr* pMr = static_cast<OOX::Logic::CMr*>(item);
+								lCol = pMr->GetCol();
+								break;
+							}
+						}
+						WriteMathMatrix(pMatrix->m_arrItems, pMatrix->m_lRow, lCol);			
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}
@@ -3773,7 +3784,7 @@ namespace BinDocxRW
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
-		void WriteMathMatrix(const std::vector<OOX::WritingElement*>& m_arrItems, LONG &lRow)
+		void WriteMathMatrix(const std::vector<OOX::WritingElement*>& m_arrItems, LONG &lRow, LONG &lCol)
 		{
 			BOOL bColumn = false;
 			for(int i = 0; i< m_arrItems.size(); ++i)
@@ -3790,6 +3801,8 @@ namespace BinDocxRW
 
 						if (lRow)
 							WriteMathRow(lRow);
+						if (lCol)
+							WriteMathColumn(lCol);
 						if ( pMPr->m_oBaseJc.IsInit() )
 							WriteMathBaseJc(pMPr->m_oBaseJc.get());
 						if ( pMPr->m_oCGp.IsInit() )

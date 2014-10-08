@@ -854,6 +854,7 @@ namespace SimpleTypes
 		virtual EYAlign FromString(CString &sValue)
 		{
             if      ( _T("bottom")  == sValue ) this->m_eValue = yalignBottom;
+			else if ( _T("bot")		== sValue ) this->m_eValue = yalignBottom;
             else if ( _T("center")  == sValue ) this->m_eValue = yalignCenter;
             else if ( _T("inline")  == sValue ) this->m_eValue = yalignInline;
             else if ( _T("inside")  == sValue ) this->m_eValue = yalignInside;

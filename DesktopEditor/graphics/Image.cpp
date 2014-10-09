@@ -54,7 +54,7 @@ namespace Aggplus
 		m_Status = Ok;
 	}
 
-	bool CImage::SaveFile(const std::wstring& strFileName, uint32_t nFileType)
+	bool CImage::SaveFile(const std::wstring& strFileName, UINT nFileType)
 	{
 		CBgraFrame oBgraFrame;
 		oBgraFrame.put_Width(m_dwWidth);

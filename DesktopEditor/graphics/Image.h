@@ -28,7 +28,7 @@ public:
 
 	void Create(const std::wstring& filename);
 	void Create(BYTE* pImgData, const DWORD& dwWidth, const DWORD& dwHeight, const long& nStride);
-	bool SaveFile(const std::wstring& strFileName, unsigned __int32 nFileType);
+	bool SaveFile(const std::wstring& strFileName, uint32_t nFileType);
 	void Destroy();
 
 public:	

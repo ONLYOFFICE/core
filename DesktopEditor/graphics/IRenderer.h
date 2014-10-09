@@ -234,8 +234,8 @@ public:
 		if ((dWidth <= 1) || (dHeight <= 1))
 			lFlags = 0;
 
-		BOOL bFlipX = (0 != (c_nParamFlipX & lFlags));
-		BOOL bFlipY = (0 != (c_nParamFlipY & lFlags));
+		INT bFlipX = (0 != (c_nParamFlipX & lFlags));
+		INT bFlipY = (0 != (c_nParamFlipY & lFlags));
 
 		REAL m11 = bFlipX ? -1.0f : 1.0f;
 		REAL m22 = bFlipY ? -1.0f : 1.0f;

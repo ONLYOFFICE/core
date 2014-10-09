@@ -3796,6 +3796,11 @@ HRESULT CDrawingConverter::WriteRels(CString& bsType, CString& bsTarget, CString
 	*lId = m_pReader->m_pRels->WriteRels(bsType, bsTarget, bsTargetMode);
 	return S_OK;
 }
+HRESULT CDrawingConverter::SetFontPicker(COfficeFontPicker* pFontPicker)
+{
+	m_pBinaryWriter->m_pCommon->CreateFontPicker(pFontPicker);
+	return S_OK;
+}
 HRESULT CDrawingConverter::SetAdditionalParam(CString& ParamName, VARIANT ParamValue)
 {
 	CString name = (CString)ParamName;
@@ -3825,14 +3830,6 @@ HRESULT CDrawingConverter::SetAdditionalParam(CString& ParamName, VARIANT ParamV
 		NSBinPptxRW::CBinaryFileReader oReader;
 		oReader.Deserialize(m_pImageManager, ParamValue.parray);
 	}
-	else if (name == _T("FontPicker") && ParamValue.vt == VT_UNKNOWN && NULL != ParamValue.punkVal)
-	{
-		IOfficeFontPicker* pFontPicker = NULL;
-		ParamValue.punkVal->QueryInterface(__uuidof(IOfficeFontPicker), (void**)&pFontPicker);
-
-		m_pBinaryWriter->m_pCommon->CreateFontPicker(pFontPicker);
-		RELEASEINTERFACE(pFontPicker);
-	}
 	else if (name == _T("DocumentChartsCount") && ParamValue.vt == VT_I4)
 	{
 		m_pReader->m_lChartNumber = ParamValue.lVal + 1;
@@ -3855,14 +3852,6 @@ HRESULT CDrawingConverter::GetAdditionalParam(CString& ParamName, VARIANT* Param
 
 		ParamValue->vt = VT_ARRAY;
 		ParamValue->parray = oWriter.Serialize(m_pImageManager);
-	}
-	else if (name == _T("FontPicker"))
-	{
-		ParamValue->vt = VT_UNKNOWN;
-		ParamValue->punkVal = NULL;
-
-		if (NULL != m_pBinaryWriter->m_pCommon->m_pFontPicker)
-			m_pBinaryWriter->m_pCommon->m_pFontPicker->QueryInterface(IID_IUnknown, (void**)&(ParamValue->punkVal));
 	}
 	else if (name == _T("DocumentChartsCount"))
 	{

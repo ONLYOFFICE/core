@@ -22,6 +22,7 @@ namespace NSHtmlRenderer
 		m_dTransformAngle = 0.0;
 
 		m_pFontManager = NULL;
+		m_bDeleteFontManager = true;
 		m_pPen = new NSStructures::CPen();
 		m_pBrush = new NSStructures::CBrush();
 		m_pFont = new NSStructures::CFont();
@@ -44,7 +45,7 @@ namespace NSHtmlRenderer
 	{
 		RELEASEOBJECT(m_pSimpleGraphicsConverter);
 		if(m_bDeleteFontManager)
-		RELEASEOBJECT(m_pFontManager);
+			RELEASEOBJECT(m_pFontManager);
 		RELEASEOBJECT(m_pPen);
 		RELEASEOBJECT(m_pBrush);
 		RELEASEOBJECT(m_pFont);
@@ -834,6 +835,8 @@ namespace NSHtmlRenderer
 	{
 		if(NULL != pFontManager)
 		{
+			if(m_bDeleteFontManager)
+				RELEASEOBJECT(m_pFontManager);
 			m_pFontManager = pFontManager;
 			m_bDeleteFontManager = false;
 		}

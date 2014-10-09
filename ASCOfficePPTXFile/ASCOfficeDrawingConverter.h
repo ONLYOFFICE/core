@@ -11,6 +11,7 @@ class IRenderer;
 class CShape;
 class CPPTShape;
 class CFontManager;
+class COfficeFontPicker;
 namespace XmlUtils
 {
 	class CXmlNode;
@@ -192,6 +193,7 @@ namespace NSBinPptxRW
 		STDMETHOD(GetTxBodyXml)(LONG lStart, LONG lLength, CString** pbstrXml);
 		STDMETHOD(SetFontDir)(CString& bsFontDir);
 
+		HRESULT SetFontPicker(COfficeFontPicker* pFontPicker);
 		STDMETHOD(SetAdditionalParam)(CString& ParamName, VARIANT ParamValue);
 		STDMETHOD(GetAdditionalParam)(CString& ParamName, VARIANT* ParamValue);
 	public:

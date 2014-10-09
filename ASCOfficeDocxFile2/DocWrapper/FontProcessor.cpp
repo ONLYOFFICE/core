@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "FontProcessor.h"
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Styles/Fonts.h"
@@ -8,19 +8,20 @@ namespace DocWrapper {
 	TCHAR* gc_sNoNameFont = _T("NoNameFont");
 	TCHAR* gc_sDefaultFontName = _T("Arial");
 
-	FontProcessor::FontProcessor() : fontManager(NULL), m_pFontManager(NULL)
+	FontProcessor::FontProcessor() : m_pFontManager(NULL)
 	{
 	}
 	FontProcessor::~FontProcessor()
 	{
-		RELEASEINTERFACE(fontManager);
-		RELEASEOBJECT(m_pFontManager);
 	}
 	
-	void FontProcessor::setFontDir(const CString& fontDir)
+	void FontProcessor::setFontManager(CFontManager* pFontManager)
 	{
-		this->fontDir = fontDir;
-		initFontManager();
+		m_pFontManager = pFontManager;
+	}
+	CFontManager* FontProcessor::getFontManager()
+	{
+		return m_pFontManager;
 	}
 	void FontProcessor::setFontTable(OOX::CFontTable* fontTable)
 	{
@@ -87,30 +88,6 @@ namespace DocWrapper {
 			sRes = gc_sDefaultFontName;
 		fontMap[sFontName] = sRes;
 		return sRes;
-	}
-	void FontProcessor::initFontManager()
-	{
-		RELEASEINTERFACE(fontManager);
-
-		fontManager = NULL;
-		CoInitialize(NULL);
-		CoCreateInstance(ASCGraphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, __uuidof(ASCGraphics::IASCFontManager), (void**) &fontManager);
-
-		VARIANT var;
-		var.vt = VT_BSTR;
-		var.bstrVal = fontDir.AllocSysString();
-		fontManager->SetAdditionalParam(L"InitializeFromFolder", var);
-		RELEASESYSSTRING(var.bstrVal);
-
-#ifdef BUILD_CONFIG_FULL_VERSION
-		fontManager->SetDefaultFont(gc_sDefaultFontName);
-#endif
-
-		if(fontDir.IsEmpty())
-			m_oApplicationFonts.Initialize();
-		else
-			m_oApplicationFonts.InitializeFromFolder(string2std_string(fontDir));
-		m_pFontManager = m_oApplicationFonts.GenerateFontManager();
 	}
 	void FontProcessor::addToFontMap(OOX::CFont& font)
 	{

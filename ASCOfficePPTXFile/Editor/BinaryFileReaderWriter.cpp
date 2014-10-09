@@ -10,6 +10,7 @@
 #include "../PPTXFormat/FileContainer.h"
 #include "../PPTXFormat/DocxFormat/WritingElement.h"
 #include "../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
+#include "FontPicker.h"
 
 #define BYTE_SIZEOF		sizeof(BYTE)
 #define USHORT_SIZEOF	sizeof(USHORT)
@@ -48,32 +49,33 @@ namespace NSBinPptxRW
 	{
 		m_pNativePicker = NULL;
 		m_pFontPicker = NULL;
+		m_bDeleteFontPicker = true;
 		m_pImageManager = new NSShapeImageGen::CImageManager();
 	}
 	CCommonWriter::~CCommonWriter()
 	{
 		m_pNativePicker = NULL;
-		RELEASEINTERFACE(m_pFontPicker);
+		if(m_bDeleteFontPicker)
+			RELEASEOBJECT(m_pFontPicker);
 		RELEASEOBJECT(m_pImageManager);
 	}
-	void CCommonWriter::CreateFontPicker(IOfficeFontPicker* pPicker)
+	void CCommonWriter::CreateFontPicker(COfficeFontPicker* pPicker)
 	{
-		RELEASEINTERFACE(m_pFontPicker);
+		if(m_bDeleteFontPicker)
+			RELEASEOBJECT(m_pFontPicker);
 		m_pNativePicker = NULL;
 		if (pPicker != NULL)
 		{
 			m_pFontPicker = pPicker;
-			ADDREFINTERFACE(m_pFontPicker);
+			m_bDeleteFontPicker = false;
 		}
-
-		if (NULL == m_pFontPicker)
+		else
 		{
-			CoCreateInstance(__uuidof(COfficeFontPicker), NULL, CLSCTX_ALL, __uuidof(IOfficeFontPicker), (void**)&m_pFontPicker);
+			m_pFontPicker = new COfficeFontPicker();
+			m_bDeleteFontPicker = true;
 		}
-		VARIANT var;
-		m_pFontPicker->GetAdditionalParam(L"NativePicker", &var);
 
-		m_pNativePicker = (NSFontCutter::CFontDstManager*)var.pvRecord;
+		m_pNativePicker = m_pFontPicker->GetNativePicker();
 	}
 	void CCommonWriter::CheckFontPicker()
 	{

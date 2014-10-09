@@ -1,6 +1,9 @@
 #pragma once
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "BinReaderWriterDefines.h"
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../Common/Base64.h"
+#include "../../Common/DocxFormat/Source/Base/Nullable.h"
 
 namespace NSFontCutter
 {
@@ -79,7 +82,7 @@ namespace NSFontCutter
 			m_strEmbeddedFontsFolder = _T("");
 		}
 
-		void CheckFont(const CString& strName, ASCGraphics::IASCFontManager* pManager)
+		void CheckFont(const CString& strName, CFontManager* pManager)
 		{
 			CAtlMap<CString, CEmbeddedFontInfo>::CPair* pPair = m_mapFontsEmbeddded.Lookup(strName);
 			if (NULL != pPair)
@@ -88,48 +91,29 @@ namespace NSFontCutter
 			CEmbeddedFontInfo oInfo;
 			oInfo.Name = strName;
 
-			VARIANT var;
-			var.vt = VT_BSTR;
-			var.bstrVal = strName.AllocSysString();
-
-			pManager->GetAdditionalParam(L"GetAllStylesByFontName", &var);
-			CString strXml = (CString)var.bstrVal;
-
-			XmlUtils::CXmlNode oNode;
-			if (oNode.FromXmlString(strXml))
+			CArray<CFontInfo*> aFontInfos = pManager->GetAllStylesByFontName(std::wstring(strName.GetString()));
+			for(int i = 0; i < aFontInfos.GetCount(); ++i)
 			{
-				XmlUtils::CXmlNodes oNodes;
-				if (oNode.GetNodes(_T("font"), oNodes))
+				CFontInfo* pFontInfo = aFontInfos[i];
+				if(FALSE != pFontInfo->m_bBold && FALSE != pFontInfo->m_bItalic)
 				{
-					int nCount = oNodes.GetCount();
-					for (int i = 0; i < nCount; ++i)
-					{
-						XmlUtils::CXmlNode oNodeF;
-						oNodes.GetAt(i, oNodeF);
-
-						LONG lStyle = oNodeF.ReadAttributeInt(_T("style"));
-						switch (lStyle)
-						{
-						case 0:
-							oInfo.PathRegular = oNodeF.GetAttribute(_T("path"));
-							oInfo.FaceRegular = oNodeF.ReadAttributeInt(_T("faceindex"));
-							break;
-						case 1:
-							oInfo.PathBold = oNodeF.GetAttribute(_T("path"));
-							oInfo.FaceBold = oNodeF.ReadAttributeInt(_T("faceindex"));
-							break;
-						case 2:
-							oInfo.PathItalic = oNodeF.GetAttribute(_T("path"));
-							oInfo.FaceItalic = oNodeF.ReadAttributeInt(_T("faceindex"));
-							break;
-						case 3:
-							oInfo.PathBoldItalic = oNodeF.GetAttribute(_T("path"));
-							oInfo.FaceBoldItalic = oNodeF.ReadAttributeInt(_T("faceindex"));
-							break;
-						default:
-							break;
-						}
-					}
+					oInfo.PathBoldItalic = CString(pFontInfo->m_wsFontPath.c_str());
+					oInfo.FaceBoldItalic = pFontInfo->m_lIndex;
+				}
+				else if(FALSE != pFontInfo->m_bBold)
+				{
+					oInfo.PathBold = CString(pFontInfo->m_wsFontPath.c_str());
+					oInfo.FaceBold = pFontInfo->m_lIndex;
+				}
+				else if(FALSE != pFontInfo->m_bItalic)
+				{
+					oInfo.PathItalic = CString(pFontInfo->m_wsFontPath.c_str());
+					oInfo.FaceItalic = pFontInfo->m_lIndex;
+				}
+				else
+				{
+					oInfo.PathRegular = CString(pFontInfo->m_wsFontPath.c_str());
+					oInfo.FaceRegular = pFontInfo->m_lIndex;
 				}
 			}
 

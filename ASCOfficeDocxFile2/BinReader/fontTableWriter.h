@@ -2,6 +2,7 @@
 #define FONT_TABLE_WRITER
 
 #include "../../XlsxSerializerCom/Common/Common.h"
+#include "../../DesktopEditor/fontengine/FontManager.h"
 
 namespace Writers
 {
@@ -12,36 +13,22 @@ namespace Writers
 	{
 		XmlUtils::CStringWriter	m_oWriter;
 		CString	m_sDir;
-		ASCGraphics::IASCFontManager* m_pFontManager;
+		CApplicationFonts m_oApplicationFonts;
+		CFontManager* m_pFontManager;
 	public:
 		std::map<CString, int> m_mapFonts;
 	public:
 		FontTableWriter(CString sDir, CString sFontDir):m_sDir(sDir)
 		{
-			m_pFontManager = NULL;
-			if(!sFontDir.IsEmpty())
-			{
-				CoCreateInstance(ASCGraphics::CLSID_CASCFontManager, NULL, CLSCTX_ALL, __uuidof(ASCGraphics::IASCFontManager), (void**)&m_pFontManager);
-				if(NULL != m_pFontManager)
-				{
-					VARIANT var;
-					var.vt = VT_BSTR;
-					var.bstrVal = sFontDir.AllocSysString();
-					m_pFontManager->SetAdditionalParam(L"InitializeFromFolder", var);
-					RELEASESYSSTRING(var.bstrVal);
-
-#ifdef BUILD_CONFIG_FULL_VERSION
-					CString defaultFontName = _T("Arial");
-					BSTR defFontName = defaultFontName.AllocSysString();
-					m_pFontManager->SetDefaultFont(defFontName);
-					SysFreeString(defFontName);
-#endif
-				}
-			}
+			if(sFontDir.IsEmpty())
+				m_oApplicationFonts.Initialize();
+			else
+				m_oApplicationFonts.InitializeFromFolder(string2std_string(sFontDir));
+			m_pFontManager = m_oApplicationFonts.GenerateFontManager();
 		}
 		~FontTableWriter()
 		{
-			RELEASEINTERFACE(m_pFontManager);
+			RELEASEOBJECT(m_pFontManager);
 		}
 
 		void Write()
@@ -80,36 +67,32 @@ namespace Writers
 		void WriteFont(CString sFontName)
 		{
 			CString sPanose;
+			bool bUsePanose = false;
 			if(NULL != m_pFontManager)
 			{
-				long index = 0;
-				BSTR bstrFontName = sFontName.AllocSysString();
-				SAFEARRAY *psaArray = NULL;
-#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
-				m_pFontManager->GetParamsByFontName(bstrFontName, &psaArray, NULL);
-#else
-				m_pFontManager->LoadFontByName(bstrFontName, 12, 0, 72, 72);
-				m_pFontManager->GetPanose(&psaArray);
-#endif
-				SysFreeString(bstrFontName);
-				if(NULL != psaArray)
+				CFontSelectFormat oFontSelectFormat;
+				oFontSelectFormat.wsName = new std::wstring;
+				*oFontSelectFormat.wsName = std::wstring(sFontName.GetString());
+				CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
+				if(NULL != pFontInfo)
 				{
-					unsigned char* pData = static_cast<unsigned char*>(psaArray->pvData);
-					for(int i = 0; i < psaArray->rgsabound->cElements; ++i)
+					for(int i = 0; i < 10; ++i)
 					{
-						unsigned char cElem = pData[i];
+						BYTE cElem = pFontInfo->m_aPanose[i];
+						if(0 != cElem)
+							bUsePanose = true;
 						if(cElem > 0xF)
 							sPanose.AppendFormat(_T("%X"), cElem);
 						else
 							sPanose.AppendFormat(_T("0%X"), cElem);
 					}
+					
 				}
-				RELEASEARRAY(psaArray);
 			}
 
 			sFontName = XmlUtils::EncodeXmlString(sFontName);
 			m_oWriter.WriteString(_T("<w:font w:name=\"") + sFontName + _T("\">"));
-			if(!sPanose.IsEmpty())
+			if(bUsePanose && !sPanose.IsEmpty())
 				m_oWriter.WriteString(_T("<w:panose1 w:val=\"")+sPanose+_T("\"/>"));
 			m_oWriter.WriteString(CString(_T("</w:font>")));
 		}

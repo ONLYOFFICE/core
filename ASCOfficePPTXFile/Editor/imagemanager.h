@@ -115,6 +115,7 @@ namespace NSShapeImageGen
 		NSWMFToImageConverter::CImageExt	m_oExt;
 #endif
 
+		CFontManager* m_pFontManager;
 	public:
 
 		CImageManager()
@@ -123,6 +124,7 @@ namespace NSShapeImageGen
 			m_lMaxSizeImage = c_nMaxImageSize;
 			m_lNextIDImage	= 0;
 			m_lDstFormat	= 0;
+			m_pFontManager = NULL;
 		}
 
 		AVSINLINE void NewDocument()
@@ -279,7 +281,8 @@ namespace NSShapeImageGen
 		}
 		void SetFontManager(CFontManager* pFontManager)
 		{
-			//todo
+			m_pFontManager = pFontManager;
+			m_oExt.SetFontManager(pFontManager);
 		}
 	protected:
 		inline void CopyFile(CString& strFileSrc, CString& strFileDst)
@@ -460,6 +463,7 @@ namespace NSShapeImageGen
 					{
 						//случай wmf/emf преобризованного в Bitmap или ошибки
 						NSHtmlRenderer::CASCImage oImage;
+						oImage.put_FontManager(m_pFontManager);
 						oImage.LoadFromFile(std::wstring(strFileName.GetString()));
 						Aggplus::CImage* pImage = oImage.get_BitmapImage();
 						if(NULL != pImage)

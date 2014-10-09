@@ -1,5 +1,5 @@
 //Generated code
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "ChartFromToBinary.h"
 #include "../../ASCOfficePPTXFile/Editor/BinReaderWriterDefines.h"
 #include "../Common/BinReaderWriterDefines.h"

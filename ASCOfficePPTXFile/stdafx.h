@@ -90,7 +90,7 @@ namespace ASCGraphics
 //#import "../Redist/ASCImageStudio3.dll"			named_guids raw_interfaces_only rename_namespace("ImageStudio"), exclude("IASCRenderer")
 //#import "../Redist/ASCHTMLRenderer.dll"			named_guids raw_interfaces_only rename_namespace("HtmlRenderer"), exclude("IASCRenderer")
 
-#import "../Redist/ASCGraphics.dll"				named_guids raw_interfaces_only rename_namespace("ASCGraphics")
+//#import "../Redist/ASCGraphics.dll"				named_guids raw_interfaces_only rename_namespace("ASCGraphics")
 #import "../Redist/ASCFontConverter.dll"		named_guids raw_interfaces_only rename_namespace("Fonts")
 
 #endif

@@ -505,7 +505,19 @@ int CFontManager::Release()
 }
 CFontInfo* CFontManager::GetFontInfoByParams(const CFontSelectFormat& oFormat)
 {
-	return m_pApplication->GetList()->GetByParams(oFormat);
+	CFontInfo* pRes = NULL;
+	if (NULL != m_pApplication)
+	{
+		pRes = m_pApplication->GetList()->GetByParams(oFormat);
+	}
+	return pRes;
+}
+CArray<CFontInfo*> CFontManager::GetAllStylesByFontName(const std::wstring& strName)
+{
+	CArray<CFontInfo*> aRes;
+	if (NULL != m_pApplication)
+		aRes = m_pApplication->GetList()->GetAllByName(strName);
+	return aRes;
 }
 INT CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY)
 {

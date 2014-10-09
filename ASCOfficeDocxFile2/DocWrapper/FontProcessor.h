@@ -27,33 +27,20 @@ namespace OOX
 namespace DocWrapper {
 	
 	class FontProcessor {
-		CApplicationFonts m_oApplicationFonts;
 		CFontManager* m_pFontManager;
-		ASCGraphics::IASCFontManager* fontManager;
 		std::map<CString, CString> fontMap;
-
-		CString fontDir;
 
 	public:
 		FontProcessor();
 		~FontProcessor();
 		
-		void setFontDir(const CString& fontDir);
+		void setFontManager(CFontManager* pFontManager);
+		CFontManager* getFontManager();
 		void setFontTable(OOX::CFontTable* fontTable);
 		
 		CString getFont(const CString& name);
-		CString getFont(const NSCommon::nullable<OOX::Spreadsheet::CFontScheme>& oScheme, const NSCommon::nullable<ComplexTypes::Spreadsheet::CString_>& oRFont, const NSCommon::nullable<OOX::Spreadsheet::CCharset>& oCharset, const NSCommon::nullable<OOX::Spreadsheet::CFontFamily >& oFamily, OOX::CTheme* pTheme);
-
-		ASCGraphics::IASCFontManager* getFontManager() {
-			return fontManager;
-		}
-		CFontManager* getFontManager2() {
-			return m_pFontManager;
-		}
-		
+		CString getFont(const NSCommon::nullable<OOX::Spreadsheet::CFontScheme>& oScheme, const NSCommon::nullable<ComplexTypes::Spreadsheet::CString_>& oRFont, const NSCommon::nullable<OOX::Spreadsheet::CCharset>& oCharset, const NSCommon::nullable<OOX::Spreadsheet::CFontFamily >& oFamily, OOX::CTheme* pTheme);		
 	private:
-		void initFontManager();
-		
 		void addToFontMap(OOX::CFont& font);
 	};
 	

@@ -69,6 +69,7 @@ namespace NSHtmlRenderer
 		m_pSimpleGraphicsConverter->SetRenderer(this);
 
 		m_pFontManager = NULL;
+		m_bDeleteFontManager = true;
 		m_pPen = new NSStructures::CPen();
 		m_pBrush = new NSStructures::CBrush();
 		m_pFont = new NSStructures::CFont();
@@ -85,7 +86,8 @@ namespace NSHtmlRenderer
 	CASCSVGRenderer::~CASCSVGRenderer()
 	{
 		RELEASEOBJECT(m_pSimpleGraphicsConverter);
-		RELEASEOBJECT(m_pFontManager);
+		if(m_bDeleteFontManager)
+			RELEASEOBJECT(m_pFontManager);
 		RELEASEOBJECT(m_pPen);
 		RELEASEOBJECT(m_pBrush);
 		RELEASEOBJECT(m_pFont);
@@ -940,6 +942,13 @@ namespace NSHtmlRenderer
 	{
 		*bsData = std::wstring(m_pWriter->GetCString().GetString());
 		return S_OK;
+	}
+	void CASCSVGRenderer::SetFontManager(CFontManager* pFontManager)
+	{
+		if(m_bDeleteFontManager)
+			RELEASEOBJECT(m_pFontManager);
+		m_pFontManager = pFontManager;
+		m_bDeleteFontManager = false;
 	}
 	void CASCSVGRenderer::CalculateFullTransform()
 	{

@@ -4,6 +4,7 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../XlsxSerializerCom/Reader/BinaryWriter.h"
 #include "../XlsxSerializerCom/Writer/BinaryReader.h"
+#include "../ASCOfficePPTXFile/Editor/FontPicker.h"
 
 namespace BinXlsxRW{
 	int g_nCurFormatVersion = 0;
@@ -40,27 +41,20 @@ namespace BinXlsxRW{
 	}
 	bool CXlsxSerializer::saveToFile(CString& sDstFileName, CString& sSrcPath, CString& sXMLOptions)
 	{
+		COfficeFontPicker* pFontPicker = new COfficeFontPicker();
+		pFontPicker->Init(m_sFontDir);
+		CFontManager* pFontManager = pFontPicker->get_FontManager();
 		DocWrapper::FontProcessor fp;
-		fp.setFontDir(m_sFontDir);
-		PPTXFile::IOfficeFontPicker* pFontPicker = NULL;
-		CoCreateInstance(__uuidof(PPTXFile::COfficeFontPicker), NULL, CLSCTX_ALL, __uuidof(PPTXFile::IOfficeFontPicker), (void**)(&pFontPicker));
-		BSTR bstrFontDir1 = m_sFontDir.AllocSysString();
-		pFontPicker->Init(bstrFontDir1);
-		SysFreeString(bstrFontDir1);
+		fp.setFontManager(pFontManager);
+		
 		NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager = NULL;
 		if(false == m_sEmbeddedFontsDir.IsEmpty())
 		{
 			NSDirectory::CreateDirectory(string2std_string(m_sEmbeddedFontsDir));
 
-			BSTR bstrEmbeddedFontsDirectory = m_sEmbeddedFontsDir.AllocSysString();
-			pFontPicker->SetEmbeddedFontsDirectory(bstrEmbeddedFontsDirectory);
-			SysFreeString(bstrEmbeddedFontsDirectory);
+			pFontPicker->SetEmbeddedFontsDirectory(m_sEmbeddedFontsDir);
+			pEmbeddedFontsManager = pFontPicker->GetNativeCutter();
 
-			VARIANT vt;
-			pFontPicker->GetAdditionalParam(_T("NativeCutter"), &vt);
-			pEmbeddedFontsManager = (NSFontCutter::CEmbeddedFontsManager*)vt.pvRecord;
-
-			ASCGraphics::IASCFontManager* pFontManager = fp.getFontManager();
 			//המבאגטל לודא רנטפע
 			pEmbeddedFontsManager->CheckFont(_T("Wingdings 3"), pFontManager);
 			pEmbeddedFontsManager->CheckFont(_T("Arial"), pFontManager);
@@ -76,17 +70,14 @@ namespace BinXlsxRW{
 		}
 
 		NSBinPptxRW::CDrawingConverter oOfficeDrawingConverter;
-
+		oOfficeDrawingConverter.SetFontManager(pFontManager);
 		oOfficeDrawingConverter.SetFontDir(m_sFontDir);
-		VARIANT vt;
-		vt.vt = VT_UNKNOWN;
-		vt.punkVal = pFontPicker;
-		oOfficeDrawingConverter.SetAdditionalParam(CString(_T("FontPicker")), vt);
+		oOfficeDrawingConverter.SetFontPicker(pFontPicker);
 
 		BinXlsxRW::BinaryFileWriter oBinaryFileWriter(fp);
 		oBinaryFileWriter.Open(sSrcPath, sDstFileName, pEmbeddedFontsManager, &oOfficeDrawingConverter, sXMLOptions);
 
-		RELEASEINTERFACE(pFontPicker);
+		RELEASEOBJECT(pFontPicker);
 		return true;
 	}
 	bool CXlsxSerializer::loadChart(CString& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)

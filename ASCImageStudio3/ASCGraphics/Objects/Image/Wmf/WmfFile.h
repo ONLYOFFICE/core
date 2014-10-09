@@ -61,7 +61,7 @@ public:
 		pPlayer->ulFlags = 0;
 
 		m_pFontManager = NULL;
-		bDeleteFontManager = false;
+		m_bDeleteFontManager = true;
 	}
 
 	~CWmfFile()
@@ -72,7 +72,7 @@ public:
 		if ( m_pBufferData )
 			delete m_pBufferData;
 #ifdef DESKTOP_EDITOR_GRAPHICS
-		if(bDeleteFontManager)
+		if(m_bDeleteFontManager)
 			RELEASEOBJECT( m_pFontManager );
 #else
 		RELEASEINTERFACE( m_pFontManager );
@@ -118,16 +118,18 @@ public:
 #ifdef DESKTOP_EDITOR_GRAPHICS
 	void SetFontManager(CFontManager* pManager = NULL)
 	{
+		if(m_bDeleteFontManager)
+			RELEASEOBJECT(m_pFontManager);
 		if (NULL == pManager)
 		{
-			RELEASEOBJECT(m_pFontManager);
 			m_pFontManager = new CFontManager();
 			m_pFontManager->Initialize();
-			bDeleteFontManager = true;
+			m_bDeleteFontManager = true;
 		}
 		else
 		{
 			m_pFontManager = pManager;
+			m_bDeleteFontManager = false;
 		}
 	}
 
@@ -5459,7 +5461,7 @@ private:
 	TWmfPlayer             *m_pPlayerData;          // Проигрыватель Wmf файла
 #ifdef DESKTOP_EDITOR_GRAPHICS
 	CFontManager        *m_pFontManager;         // Интерефейс для работы с шрифтами
-	bool bDeleteFontManager;
+	bool m_bDeleteFontManager;
 #else
 	IASCFontManager        *m_pFontManager;         // Интерефейс для работы с шрифтами
 #endif

@@ -70,13 +70,13 @@ namespace ASCGraphics
 
 #else
 
-#import "../Redist/ASCGraphics.dll"			named_guids raw_interfaces_only rename_namespace("ASCGraphics")
+//#import "../Redist/ASCGraphics.dll"			named_guids raw_interfaces_only rename_namespace("ASCGraphics")
 #import "../Redist/ASCFontConverter.dll"	named_guids raw_interfaces_only rename_namespace("Fonts")
 
 #endif
 
 #import "../Redist/ASCOfficeUtils.dll"			named_guids raw_interfaces_only rename_namespace("OfficeUtils")
-#import "../Redist/ASCOfficePPTXFile.dll"	named_guids raw_interfaces_only rename_namespace("PPTXFile"), exclude("_IAVSOfficeFileTemplateEvents"), exclude("_IAVSOfficeFileTemplateEvents2"), exclude("IASCRenderer")
+//#import "../Redist/ASCOfficePPTXFile.dll"	named_guids raw_interfaces_only rename_namespace("PPTXFile"), exclude("_IAVSOfficeFileTemplateEvents"), exclude("_IAVSOfficeFileTemplateEvents2"), exclude("IASCRenderer")
 
 #include "../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"

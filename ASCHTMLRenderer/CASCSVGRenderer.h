@@ -177,7 +177,7 @@ namespace NSHtmlRenderer
 		HRESULT CreateOfficeFile(const std::wstring& bsFileName, const LONG& lFonts);
 		HRESULT CloseFile(const LONG& lSave);
 		HRESULT get_Data(std::wstring* pbstrSVG); 
-
+		void SetFontManager(CFontManager* pFontManager);
 	private:
 
 		NSStrings::CStringWriter*		m_pWriter;
@@ -186,6 +186,7 @@ namespace NSHtmlRenderer
 
 		Aggplus::CGraphicsPathSimpleConverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
 		CFontManager*				m_pFontManager;					// менеджер шрифтов
+		bool m_bDeleteFontManager;
 
 		Aggplus::CMatrix*				m_pBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
 		Aggplus::CMatrix*				m_pTransform;		// текущая матрица преобразований рендерера

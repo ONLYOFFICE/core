@@ -145,7 +145,7 @@ namespace NSHtmlRenderer
 
 
 			NSHtmlRenderer::CASCImage oImage;
-
+			//todo font manager
 			oImage.put_FontManager(NULL);
 
 			oImage.LoadFromFile( strFile );

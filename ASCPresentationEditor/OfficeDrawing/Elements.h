@@ -556,6 +556,7 @@ namespace NSPresentationEditor
 			return _T("");
 #else
 			NSHtmlRenderer::CASCSVGRenderer* pSVG = new NSHtmlRenderer::CASCSVGRenderer();
+			//todo FontManager
 
 			pSVG->put_Width(m_oMetric.m_lMillimetresHor);
 			pSVG->put_Height(m_oMetric.m_lMillimetresVer);
@@ -964,6 +965,7 @@ namespace NSPresentationEditor
 			if (m_oShape.m_lDrawType & c_ShapeDrawType_Graphic)
 			{
 				NSHtmlRenderer::CASCSVGRenderer* pSVG = new NSHtmlRenderer::CASCSVGRenderer();
+				//todo FontManager
 
 				pSVG->put_Width(m_oMetric.m_lMillimetresHor);
 				pSVG->put_Height(m_oMetric.m_lMillimetresVer);

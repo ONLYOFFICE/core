@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "CommonWriter.h"
 #include "../Common/BinReaderWriterDefines.h"
 

@@ -12,7 +12,7 @@
 
 #define MAX_STACK_SIZE 1024
 
-__interface IOfficeFontPicker;
+class COfficeFontPicker;
 namespace NSCommon
 {
 	template<typename Type> class smart_ptr;
@@ -77,14 +77,15 @@ namespace NSBinPptxRW
 		//NSFontCutter::CFontDstManager	m_oFontPicker;
 
 		NSFontCutter::CFontDstManager*	m_pNativePicker;
-		IOfficeFontPicker*				m_pFontPicker;
+		COfficeFontPicker*				m_pFontPicker;
+		bool m_bDeleteFontPicker;
 
 	public:
 		CCommonWriter();
 		~CCommonWriter();
 
 	public:
-		void CreateFontPicker(IOfficeFontPicker* pPicker);
+		void CreateFontPicker(COfficeFontPicker* pPicker);
 		void CheckFontPicker();
 	};
 

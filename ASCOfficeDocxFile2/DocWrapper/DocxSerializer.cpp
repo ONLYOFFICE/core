@@ -4,6 +4,7 @@
 #include "../../DesktopEditor/common/File.h"
 #include "../BinWriter/BinWriters.h"
 #include "../BinReader/Readers.h"
+#include "../ASCOfficePPTXFile/Editor/FontPicker.h"
 
 #ifndef _WIN32
 #include "../../DesktopEditor/common/Types.h"
@@ -25,30 +26,25 @@ bool BinDocxRW::CDocxSerializer::saveToFile(CString& sSrcFileName, CString& sDst
 	CString mediaDir = path.GetDirectory() + _T("media\\");
 	NSDirectory::CreateDirectory(string2std_string(mediaDir));
 
+	COfficeFontPicker* pFontPicker = new COfficeFontPicker();
+	pFontPicker->Init(m_sFontDir);
+	CFontManager* pFontManager = pFontPicker->get_FontManager();
 	DocWrapper::FontProcessor fp;
-	fp.setFontDir(m_sFontDir);
+	fp.setFontManager(pFontManager);
 	NSBinPptxRW::CDrawingConverter oDrawingConverter;
-	oDrawingConverter.SetFontManager(fp.getFontManager2());
+	oDrawingConverter.SetFontManager(pFontManager);
 	NSBinPptxRW::CBinaryFileWriter& oBufferedStream = *oDrawingConverter.m_pBinaryWriter;
 
 #ifdef _WIN32
-	PPTXFile::IOfficeFontPicker* pFontPicker = NULL;
-	CoCreateInstance(__uuidof(PPTXFile::COfficeFontPicker), NULL, CLSCTX_ALL, __uuidof(PPTXFile::IOfficeFontPicker), (void**)(&pFontPicker));
-	BSTR bstrFontDir1 = m_sFontDir.AllocSysString();
-	pFontPicker->Init(bstrFontDir1);
-	SysFreeString(bstrFontDir1);
+
 	NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager = NULL;
 	if(false == m_sEmbeddedFontsDir.IsEmpty())
 	{
 		NSDirectory::CreateDirectory(string2std_string(m_sEmbeddedFontsDir));
 
-		BSTR bstrEmbeddedFontsDirectory = m_sEmbeddedFontsDir.AllocSysString();
-		pFontPicker->SetEmbeddedFontsDirectory(bstrEmbeddedFontsDirectory);
-		SysFreeString(bstrEmbeddedFontsDirectory);
+		pFontPicker->SetEmbeddedFontsDirectory(m_sEmbeddedFontsDir);
 
-		VARIANT vt;
-		pFontPicker->GetAdditionalParam(_T("NativeCutter"), &vt);
-		pEmbeddedFontsManager = (NSFontCutter::CEmbeddedFontsManager*)vt.pvRecord;
+		pEmbeddedFontsManager = pFontPicker->GetNativeCutter();
 
 		//добавл€ем весь латинский алфавит дл€ списков.
 		pEmbeddedFontsManager->CheckString(CString(_T("abcdefghijklmnopqrstuvwxyz")));
@@ -60,10 +56,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(CString& sSrcFileName, CString& sDst
 	}
 
 	oDrawingConverter.SetFontDir(m_sFontDir);
-	VARIANT vt;
-	vt.vt = VT_UNKNOWN;
-	vt.punkVal = pFontPicker;
-	oDrawingConverter.SetAdditionalParam(CString(_T("FontPicker")), vt);
+	oDrawingConverter.SetFontPicker(pFontPicker);
 	oDrawingConverter.SetMainDocument(this);
 	oDrawingConverter.SetMediaDstPath(mediaDir);
 	ParamsWriter oParamsWriter(oBufferedStream, fp, &oDrawingConverter, pEmbeddedFontsManager);
@@ -94,7 +87,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(CString& sSrcFileName, CString& sDst
 		}
 	}
 	RELEASEOBJECT(m_oBinaryFileWriter);
-	RELEASEINTERFACE(pFontPicker);
+	RELEASEOBJECT(pFontPicker);
 	return true;
 }
 bool BinDocxRW::CDocxSerializer::loadFromFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions, CString& sThemePath, CString& sMediaPath)

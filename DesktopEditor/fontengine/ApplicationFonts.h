@@ -164,6 +164,7 @@ public:
 	bool CheckLoadFromFolderBin(const std::wstring& strDirectory);
 	void Add(CFontInfo* pInfo);
 	CFontInfo* GetByParams(const CFontSelectFormat& oSelect);
+	CArray<CFontInfo*> GetAllByName(const std::wstring& strFontName);
 };
 
 class CApplicationFonts

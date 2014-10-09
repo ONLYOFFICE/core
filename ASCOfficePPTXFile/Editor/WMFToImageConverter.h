@@ -12,6 +12,7 @@ namespace NSWMFToImageConverter
 	{
 	private:
 		NSHtmlRenderer::CASCSVGWriter* m_pSVGRenderer;
+		CFontManager* m_pFontManager;
 
 		void Init()
 		{
@@ -23,12 +24,15 @@ namespace NSWMFToImageConverter
 			{
 				m_pSVGRenderer = new NSHtmlRenderer::CASCSVGWriter();
 			}
+			if(NULL != m_pFontManager)
+				m_pSVGRenderer->SetFontManager(m_pFontManager);
 		}
 
 	public:
 		CImageExt()
 		{
 			m_pSVGRenderer = NULL;
+			m_pFontManager = NULL;
 		}
 		~CImageExt()
 		{
@@ -137,7 +141,7 @@ namespace NSWMFToImageConverter
 			pRenderer->get_PenColor( &pen_Color );
 
 			NSHtmlRenderer::CASCImage oASCImage;
-			oASCImage.put_FontManager(NULL);
+			oASCImage.put_FontManager(m_pFontManager);
 
 			oASCImage.LoadFromFile( strFile );
 
@@ -204,6 +208,11 @@ namespace NSWMFToImageConverter
 			m_pSVGRenderer->SaveFile(std::wstring(strDstPath.GetString()));
 
 			return true;
+		}
+
+		void SetFontManager(CFontManager* pFontManager)
+		{
+			m_pFontManager = pFontManager;
 		}
 	};
 }

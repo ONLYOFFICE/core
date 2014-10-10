@@ -3,7 +3,7 @@
 #define OOX_RID_INCLUDE_H_
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
-#include "../../../Common/DocxFormat/Source/XML/XmlUtils.h"
+#include "../../../Common/DocxFormat/Source/XML/xmlutils.h"
 
 namespace PPTX
 {

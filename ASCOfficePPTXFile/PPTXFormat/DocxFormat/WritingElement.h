@@ -1,8 +1,11 @@
 #pragma once
 
 #include "NamespaceOwn.h"
-#include "../../../Common/DocxFormat/Source/XML/XmlUtils.h"
+#include "../../../Common/DocxFormat/Source/XML/xmlutils.h"
+
+#ifdef _WIN32
 #include "atlstr.h"
+#endif
 
 namespace PPTX
 {

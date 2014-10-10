@@ -36,6 +36,7 @@
 // turns off ATL's hiding of some common and often safely ignored warning messages
 #define _ATL_ALL_WARNINGS
 
+#ifdef _WIN32
 #include <atlbase.h>
 #include <atlcom.h>
 #include <atlwin.h>
@@ -45,9 +46,13 @@
 #include <atlcoll.h>
 #include "../Common/atldefine.h"
 
+
+#include <wingdi.h>
+
+
+
 //#define _USE_MATH_DEFINES
 #include <math.h>
-#include <wingdi.h>
 
 //#define NODOCX
 //#define PPTX_DEF
@@ -63,6 +68,8 @@ using namespace ATL;
 #import "../Redist/ASCOfficeUtils.dll"			named_guids raw_interfaces_only rename_namespace("OfficeUtils")
 //#import "../Redist/ASCOfficeDocxFile2.dll"		named_guids raw_interfaces_only rename_namespace("DocxFile2")
 //#import "../Redist/XlsxSerializerCom.dll"		named_guids raw_interfaces_only rename_namespace("XlsxCom"), exclude("_IAVSOfficeFileTemplateEvents"), exclude("_IAVSOfficeFileTemplateEvents2")
+
+
 
 #ifdef BUILD_CONFIG_OPENSOURCE_VERSION
 
@@ -92,5 +99,7 @@ namespace ASCGraphics
 
 //#import "../Redist/ASCGraphics.dll"				named_guids raw_interfaces_only rename_namespace("ASCGraphics")
 #import "../Redist/ASCFontConverter.dll"		named_guids raw_interfaces_only rename_namespace("Fonts")
+
+#endif // #ifdef _WIN32
 
 #endif

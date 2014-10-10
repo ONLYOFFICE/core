@@ -6,7 +6,7 @@
 #include "DocxFormat/ContentTypes/File.h"
 #include "DocxFormat/FileType.h"
 #include "DocxFormat/FileTypes.h"
-#include "DocxFormat/External/Hyperlink.h"
+#include "DocxFormat/External/HyperLink.h"
 #include "WrapperFile.h"
 
 #include <map>
@@ -43,7 +43,7 @@ namespace PPTX
 			const PPTX::Rels::RelationShip* pRelation = &(rels.Relations.m_items[i]);
 			OOX::CPath normPath = path / pRelation->target();
 
-			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = map.find(normPath);
+            std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = map.find(normPath);
 
 			if (bIsSlide && (pRelation->type() == PPTX::FileTypes::Slide))
 			{
@@ -62,9 +62,9 @@ namespace PPTX
 			}
 			else
 			{
-				if (NULL != pPair)
+                if (pPair != map.m_map.end())
 				{
-					add(pRelation->rId(), pPair->m_value);
+                    add(pRelation->rId(), pPair->second);
 				}
 				else
 				{

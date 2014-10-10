@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef _WIN32
 #include <atlbase.h>
 #include <atlcom.h>
 #include <atlwin.h>
@@ -7,8 +8,13 @@
 #include <atlctl.h>
 #include <atlhost.h>
 #include <atlcoll.h>
+#else
+#include "../../Common/DocxFormat/Source/Base/ASCString.h"
+#include "../../DesktopEditor/common/Types.h"
+#endif
 
 #include <vector>
+#include <map>
 
 #define MAX_STACK_SIZE 1024
 
@@ -55,22 +61,22 @@ namespace NSBinPptxRW
 		LONG m_lThemeIndex;
 		CStringA m_strImageBase64;
 
-		CAtlArray<LONG> m_arLayoutIndexes;
-		CAtlArray<CStringA> m_arLayoutImagesBase64;
+        std::vector<LONG>       m_arLayoutIndexes;
+        std::vector<CStringA>   m_arLayoutImagesBase64;
 	};
 
 	class CCommonWriter
 	{
 	public:
-		CAtlMap<size_t, LONG> themes;
-		CAtlMap<size_t, LONG> slideMasters;
-		CAtlMap<size_t, LONG> slides;
-		CAtlMap<size_t, LONG> layouts;
-		CAtlMap<size_t, LONG> notes;
-		CAtlMap<size_t, LONG> notesMasters;		
+        std::map<size_t, LONG> themes;
+        std::map<size_t, LONG> slideMasters;
+        std::map<size_t, LONG> slides;
+        std::map<size_t, LONG> layouts;
+        std::map<size_t, LONG> notes;
+        std::map<size_t, LONG> notesMasters;
 
-		CAtlArray<CMasterSlideInfo> m_oRels;
-		CAtlArray<LONG> m_oSlide_Layout_Rels;
+        std::vector<CMasterSlideInfo> m_oRels;
+        std::vector<LONG> m_oSlide_Layout_Rels;
 
 		NSShapeImageGen::CImageManager*	m_pImageManager;
 		
@@ -92,7 +98,7 @@ namespace NSBinPptxRW
 	class CImageManager2
 	{
 	private:
-		CAtlMap<CString, CString>	m_mapImages;
+        std::map<CString, CString>	m_mapImages;
 		LONG						m_lIndexNextImage;
 		CString						m_strDstMedia;
 
@@ -114,17 +120,14 @@ namespace NSBinPptxRW
 			pWriter->WriteINT(m_lIndexNextImage);
 			pWriter->WriteString(m_strDstMedia);
 			
-			int lCount = (int)m_mapImages.GetCount();
+            int lCount = (int)m_mapImages.size();
 			pWriter->WriteINT(lCount);
 
-			POSITION pos = m_mapImages.GetStartPosition();
-			while (NULL != pos)
-			{
-				CAtlMap<CString, CString>::CPair* pPair = m_mapImages.GetNext(pos);
-
-				pWriter->WriteString(pPair->m_key);
-				pWriter->WriteString(pPair->m_value);
-			}
+            for (std::map<CString, CString>::const_iterator pPair = m_mapImages.begin(); pPair != m_mapImages.end(); ++pPair)
+            {
+                pWriter->WriteString(pPairfirst);
+                pWriter->WriteString(pPair->second);
+            }
 		}
 
 		template <typename T>

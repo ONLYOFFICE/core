@@ -28,7 +28,8 @@ namespace PPTX
 		{
 		}
 	protected:
-		CAtlMap<CString, smart_ptr<PPTX::File>>	m_container;
+        //CAtlMap<CString, smart_ptr<PPTX::File>>	m_container;
+        std::map<CString, smart_ptr<PPTX::File>>	m_container;
 		size_t m_lMaxRid;
 
 	protected:

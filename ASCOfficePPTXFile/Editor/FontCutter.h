@@ -5,6 +5,8 @@
 #include "../../Common/Base64.h"
 #include "../../Common/DocxFormat/Source/Base/Nullable.h"
 
+#include <map>
+
 namespace NSFontCutter
 {
 	class CEmbeddedFontsManager
@@ -70,8 +72,8 @@ namespace NSFontCutter
 			}
 		};
 
-		CAtlMap<CString, CEmbeddedFontInfo> m_mapFontsEmbeddded;
-		CAtlMap<WCHAR, BOOL> m_CharMap;
+		std::map<CString, CEmbeddedFontInfo> m_mapFontsEmbeddded;
+		std::map<WCHAR, BOOL> m_CharMap;
 		
 	public:
 		CString m_strEmbeddedFontsFolder;
@@ -84,8 +86,8 @@ namespace NSFontCutter
 
 		void CheckFont(const CString& strName, CFontManager* pManager)
 		{
-			CAtlMap<CString, CEmbeddedFontInfo>::CPair* pPair = m_mapFontsEmbeddded.Lookup(strName);
-			if (NULL != pPair)
+			std::map<CString, CEmbeddedFontInfo>::const_iterator pPair = m_mapFontsEmbeddded.find(strName);
+			if (pPair != m_mapFontsEmbeddded.end())
 				return;
 
 			CEmbeddedFontInfo oInfo;
@@ -117,7 +119,7 @@ namespace NSFontCutter
 				}
 			}
 
-			m_mapFontsEmbeddded.SetAt(strName, oInfo);
+			m_mapFontsEmbeddded [strName] = oInfo;
 		}
 
 		void CheckString(const nullable_string& val)
@@ -143,8 +145,8 @@ namespace NSFontCutter
 
 			for (int i = 0; i < len; ++i)
 			{
-				m_CharMap.SetAt(ch1[i], TRUE);
-				m_CharMap.SetAt(ch2[i], TRUE);
+				m_CharMap [ch1[i]] = TRUE;
+				m_CharMap [ch2[i]] = TRUE;
 			}
 
 			RELEASEARRAYOBJECTS(pCBuf1);
@@ -319,17 +321,17 @@ namespace NSFontCutter
 		{
 			// цифры нужны всем. остальное - каждый 
 			CheckString(_T("0123456789"));
-			m_CharMap.SetAt((WCHAR)0x00B0, TRUE);
-			m_CharMap.SetAt((WCHAR)0x00B7, TRUE);
-			m_CharMap.SetAt((WCHAR)0x00B6, TRUE);
-			m_CharMap.SetAt((WCHAR)0x00A4, TRUE);
-			m_CharMap.SetAt((WCHAR)0x00A0, TRUE);
-			m_CharMap.SetAt((WCHAR)0x0022, TRUE);
-			m_CharMap.SetAt((WCHAR)0x0032, TRUE);
-			m_CharMap.SetAt((WCHAR)0x0038, TRUE);
-			m_CharMap.SetAt((WCHAR)0x0097, TRUE);
+			m_CharMap [(WCHAR)0x00B0] = TRUE;
+			m_CharMap [(WCHAR)0x00B7] = TRUE;
+			m_CharMap [(WCHAR)0x00B6] = TRUE;
+			m_CharMap [(WCHAR)0x00A4] = TRUE;
+			m_CharMap [(WCHAR)0x00A0] = TRUE;
+			m_CharMap [(WCHAR)0x0022] = TRUE;
+			m_CharMap [(WCHAR)0x0032] = TRUE;
+			m_CharMap [(WCHAR)0x0038] = TRUE;
+			m_CharMap [(WCHAR)0x0097] = TRUE;
 			
-			ULONG nCount = (ULONG)m_CharMap.GetCount();
+			ULONG nCount = (ULONG)m_CharMap.size();
 			
 			SAFEARRAYBOUND rgsab;
 			rgsab.lLbound	= 0;
@@ -338,11 +340,9 @@ namespace NSFontCutter
 			SAFEARRAY* pArray = SafeArrayCreate(VT_UI2, 1, &rgsab);
 			USHORT* pBuffer = (USHORT*)(pArray->pvData);
 
-			POSITION pos = m_CharMap.GetStartPosition();
-			while (NULL != pos)
+			for (std::map<WCHAR, BOOL>::const_iterator pPair = m_CharMap.begin(); pPair != m_CharMap.end(); ++pPair)
 			{
-				CAtlMap<WCHAR, BOOL>::CPair* pPair = m_CharMap.GetNext(pos);
-				*pBuffer = pPair->m_key;
+				*pBuffer = pPair->first;
 				++pBuffer;
 			}
 			return pArray;

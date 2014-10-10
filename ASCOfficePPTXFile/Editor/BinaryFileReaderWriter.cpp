@@ -92,7 +92,7 @@ namespace NSBinPptxRW
 	}
 	void CImageManager2::Clear()
 	{
-		m_mapImages.RemoveAll();
+		m_mapImages.clear();
 		m_lIndexNextImage = 0;
 	}
 	void CImageManager2::SetDstMedia(const CString& strDst)
@@ -106,15 +106,10 @@ namespace NSBinPptxRW
 
 	CString CImageManager2::GenerateImage(const CString& strInput, CString strBase64Image)
 	{
-		CAtlMap<CString, CString>::CPair* pPair = NULL;
+		std::map<CString, CString>::const_iterator pPair = m_mapImages.find ((_T("") == strBase64Image) ? strInput : strBase64Image);
 
-		if (_T("") == strBase64Image)
-			pPair = m_mapImages.Lookup(strInput);
-		else 
-			pPair = m_mapImages.Lookup(strBase64Image);
-
-		if (NULL != pPair)
-			return pPair->m_value;
+		if (pPair != m_mapImages.end())
+			return pPair->second;
 
 		if (IsNeedDownload(strInput))
 			return DownloadImage(strInput);
@@ -164,9 +159,9 @@ namespace NSBinPptxRW
 				strImage  = _T("media/") + strImage + strExts;
 
 			if (_T("") == strBase64Image)
-				m_mapImages.SetAt(strInput, strImage);
+				m_mapImages[strInput] = strImage;
 			else
-				m_mapImages.SetAt(strBase64Image, strImage);
+				m_mapImages [strBase64Image] = strImage;
 
 			// теперь нужно скопировать картинку
 			if (_T("") != strMetafileImage)
@@ -188,9 +183,9 @@ namespace NSBinPptxRW
 				strImage  = _T("media/") + strImage + strExts;
 
 			if (_T("") == strBase64Image)
-				m_mapImages.SetAt(strInput, strImage);
+				m_mapImages [strInput] = strImage;
 			else
-				m_mapImages.SetAt(strBase64Image, strImage);
+				m_mapImages [strBase64Image] = strImage;
 
 			SaveImageAsPng(strInput, strOutput);
 		}

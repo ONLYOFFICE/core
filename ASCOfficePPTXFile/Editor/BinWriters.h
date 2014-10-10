@@ -3,7 +3,7 @@
 #include "BinReaderWriterDefines.h"
 
 #include "../../Common/Base64.h"
-#include "ImageManager.h"
+#include "imagemanager.h"
 #include "./XmlWriter.h"
 #include "../PPTXFormat/FileContainer.h"
 #include "../PPTXFormat/DocxFormat/WritingElement.h"

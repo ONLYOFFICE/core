@@ -2,8 +2,8 @@
 #ifndef OOX_MEDIA_INCLUDE_H_
 #define OOX_MEDIA_INCLUDE_H_
 
-#include "..\File.h"
-#include "..\FileTypes.h"
+#include "../File.h"
+#include "../FileTypes.h"
 
 #ifdef AVS_OFFICE_SVM_FILE
 #include "OfficeSvmFile.h"

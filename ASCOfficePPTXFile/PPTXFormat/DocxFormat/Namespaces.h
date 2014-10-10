@@ -3,7 +3,11 @@
 #define OOX_NAMESPACES_INCLUDE_H_
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
+#ifdef _WIN32
 #include <atlstr.h>
+#else
+#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
+#endif
 
 namespace PPTX
 {

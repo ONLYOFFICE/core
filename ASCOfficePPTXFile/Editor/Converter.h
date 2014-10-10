@@ -13,12 +13,12 @@ namespace PPTX2EditorAdvanced
 		// сначала соберем все объекты для конвертации и сформируем main-таблицы
 		NSBinPptxRW::CCommonWriter* pCommon = oBinaryWriter.m_pCommon;
 
-		CAtlArray<smart_ptr<PPTX::Theme>>			_themes;
-		CAtlArray<smart_ptr<PPTX::SlideMaster>>		_slideMasters;
-		CAtlArray<smart_ptr<PPTX::Slide>>			_slides;
-		CAtlArray<smart_ptr<PPTX::SlideLayout>>		_layouts;
-		CAtlArray<smart_ptr<PPTX::NotesSlide>>		_notes;
-		CAtlArray<smart_ptr<PPTX::NotesMaster>>		_notesMasters;
+		std::vector<smart_ptr<PPTX::Theme>>			_themes;
+		std::vector<smart_ptr<PPTX::SlideMaster>>		_slideMasters;
+		std::vector<smart_ptr<PPTX::Slide>>			_slides;
+		std::vector<smart_ptr<PPTX::SlideLayout>>		_layouts;
+		std::vector<smart_ptr<PPTX::NotesSlide>>		_notes;
+		std::vector<smart_ptr<PPTX::NotesMaster>>		_notesMasters;
 
 		smart_ptr<PPTX::Presentation> presentation = oFolder.get(PPTX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 		int cx = presentation->sldSz->cx;
@@ -42,18 +42,18 @@ namespace PPTX2EditorAdvanced
 			CMasterSlideInfo& oMasterInfo = oBinaryWriter.m_pCommon->m_oRels[oBinaryWriter.m_pCommon->m_oRels.size() - 1];
 
 			// записываем mainMaster
-			LONG lCountSM = (LONG)_slideMasters.GetCount();
+			LONG lCountSM = (LONG)_slideMasters.size();
 			pCommon->slideMasters [pPointerSM] = lCountSM;
-			_slideMasters.Add(slideMaster);
+			_slideMasters.push_back(slideMaster);
 
 			// проверяем theme
 			size_t pPointerTh = (size_t)(slideMaster->Theme.operator ->()); 
 			std::map<size_t, LONG>::const_iterator pSearchTh = pCommon->themes.find (pPointerTh);
 			if (pSearchTh == pCommon->themes.end())
 			{
-				LONG lCountTh = (LONG)_themes.GetCount();
+				LONG lCountTh = (LONG)_themes.size();
 				pCommon->themes [pPointerTh] = lCountTh;
-				_themes.Add(slideMaster->Theme);
+				_themes.push_back(slideMaster->Theme);
 				oMasterInfo.m_lThemeIndex = lCountTh;
 			}
 			else
@@ -71,9 +71,9 @@ namespace PPTX2EditorAdvanced
 				std::map<size_t, LONG>::const_iterator pSearchL = pCommon->layouts.find(pPointerL);
 				if (pSearchL == pCommon->layouts.end())
 				{
-					LONG lCountL = (LONG)_layouts.GetCount();
+					LONG lCountL = (LONG)_layouts.size();
 					pCommon->layouts [pPointerL] = lCountL;
-					_layouts.Add(slideLayout);
+					_layouts.push_back(slideLayout);
 
 					oMasterInfo.m_arLayoutIndexes.push_back(lCountL);
 					oMasterInfo.m_arLayoutImagesBase64.push_back("");
@@ -101,18 +101,18 @@ namespace PPTX2EditorAdvanced
 			}
 
 			// записываем mainMaster
-			LONG lCountNM = (LONG)_notesMasters.GetCount();
+			LONG lCountNM = (LONG)_notesMasters.size();
 			pCommon->notesMasters[pPointerNM] = lCountNM;
-			_notesMasters.Add(noteMaster);
+			_notesMasters.push_back(noteMaster);
 
 			// проверяем theme
 			size_t pPointerTh = (size_t)(noteMaster->Theme.operator ->()); 
 			std::map<size_t, LONG>::const_iterator pSearchTh = pCommon->themes.find(pPointerTh);
 			if (pSearchTh == pCommon->themes.end())
 			{
-				LONG lCountTh = (LONG)_themes.GetCount();
+				LONG lCountTh = (LONG)_themes.size();
 				pCommon->themes [pPointerTh] = lCountTh;
-				_themes.Add(noteMaster->Theme);
+				_themes.push_back(noteMaster->Theme);
 			}
 		}
 
@@ -143,9 +143,9 @@ namespace PPTX2EditorAdvanced
 				oBinaryWriter.m_pCommon->m_oSlide_Layout_Rels.push_back(pSearchL->second);
 			}
 
-			LONG lCountS = (LONG)_slides.GetCount();
+			LONG lCountS = (LONG)_slides.size();
 			pCommon->slides [pPointerS] = lCountS;
-			_slides.Add(slide);
+			_slides.push_back(slide);
 
 			// проверяем note
 			size_t pPointerN = (size_t)(slide->Note.operator ->()); 
@@ -155,9 +155,9 @@ namespace PPTX2EditorAdvanced
 				std::map<size_t, LONG>::const_iterator pSearchN = pCommon->notes.find(pPointerN);
 				if (pSearchN == pCommon->notes.end())
 				{
-					LONG lCountN = (LONG)_notes.GetCount();
+					LONG lCountN = (LONG)_notes.size();
 					pCommon->notes [pPointerN] = lCountN;
-					_notes.Add(slide->Note);
+					_notes.push_back(slide->Note);
 				}
 			}
 		}
@@ -210,7 +210,7 @@ namespace PPTX2EditorAdvanced
 
 		// themes
 		oBinaryWriter.StartMainRecord(NSMainTables::Themes);
-		ULONG nCountThemes = (ULONG)_themes.GetCount();
+		ULONG nCountThemes = (ULONG)_themes.size();
 		oBinaryWriter.WriteULONG(nCountThemes);
 		for (ULONG i = 0; i < nCountThemes; ++i)
 		{
@@ -219,7 +219,7 @@ namespace PPTX2EditorAdvanced
 
 		// slidemasters
 		oBinaryWriter.StartMainRecord(NSMainTables::SlideMasters);
-		ULONG nCountSM = (ULONG)_slideMasters.GetCount();
+		ULONG nCountSM = (ULONG)_slideMasters.size();
 		oBinaryWriter.WriteULONG(nCountSM);
 		for (ULONG i = 0; i < nCountSM; ++i)
 		{
@@ -228,7 +228,7 @@ namespace PPTX2EditorAdvanced
 
 		// slidelayouts
 		oBinaryWriter.StartMainRecord(NSMainTables::SlideLayouts);
-		ULONG nCountL = (ULONG)_layouts.GetCount();
+		ULONG nCountL = (ULONG)_layouts.size();
 		oBinaryWriter.WriteULONG(nCountL);
 		for (ULONG i = 0; i < nCountL; ++i)
 		{
@@ -237,7 +237,7 @@ namespace PPTX2EditorAdvanced
 
 		// slides
 		oBinaryWriter.StartMainRecord(NSMainTables::Slides);
-		ULONG nCountS = (ULONG)_slides.GetCount();
+		ULONG nCountS = (ULONG)_slides.size();
 		oBinaryWriter.WriteULONG(nCountS);
 		for (ULONG i = 0; i < nCountS; ++i)
 		{
@@ -250,7 +250,7 @@ namespace PPTX2EditorAdvanced
 
 			// notes
 			oBinaryWriter.StartMainRecord(NSMainTables::NotesSlides);
-			ULONG nCountN = (ULONG)_notes.GetCount();
+			ULONG nCountN = (ULONG)_notes.size();
 			oBinaryWriter.WriteULONG(nCountN);
 			for (ULONG i = 0; i < nCountN; ++i)
 			{
@@ -259,7 +259,7 @@ namespace PPTX2EditorAdvanced
 
 			// notesmasters
 			oBinaryWriter.StartMainRecord(NSMainTables::NotesMasters);
-			ULONG nCountNM = (ULONG)_notesMasters.GetCount();
+			ULONG nCountNM = (ULONG)_notesMasters.size();
 			oBinaryWriter.WriteULONG(nCountNM);
 			for (ULONG i = 0; i < nCountNM; ++i)
 			{

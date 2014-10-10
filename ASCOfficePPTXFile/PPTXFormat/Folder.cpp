@@ -11,6 +11,8 @@
 #include "Slide.h"
 #include "NotesMaster.h"
 
+#include <map>
+
 namespace PPTX
 {
 	Folder::Folder()
@@ -41,75 +43,68 @@ namespace PPTX
 			_presentation->commentAuthors = _presentation->get(PPTX::FileTypes::CommentAuthors).smart_dynamic_cast<PPTX::Authors>();
 		}
 
-		pos = map.m_map.GetStartPosition();
-		while (NULL != pos)
-		{
-			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = map.m_map.GetNext(pos);
-			const PPTX::FileType& curType = pPair->m_value->type();
+        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        {
+            const PPTX::FileType& curType = pPair->second->type();
 
-			if (PPTX::FileTypes::ThemePPTX == curType)
-			{
-				smart_ptr<PPTX::Theme> pTheme = pPair->m_value.smart_dynamic_cast<PPTX::Theme>();
-				if (pTheme.IsInit())
-					pTheme->Presentation = _presentation;
-			}
-		}
+            if (PPTX::FileTypes::ThemePPTX == curType)
+            {
+                smart_ptr<PPTX::Theme> pTheme = pPair->second.smart_dynamic_cast<PPTX::Theme>();
+                if (pTheme.IsInit())
+                    pTheme->Presentation = _presentation;
+            }
+        }
 
-		pos = map.m_map.GetStartPosition();
-		while (NULL != pos)
-		{
-			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = map.m_map.GetNext(pos);
-			const PPTX::FileType& curType = pPair->m_value->type();
+        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        {
+            const PPTX::FileType& curType = pPair->second->type();
 
-			if (PPTX::FileTypes::SlideMaster == curType)
-			{
-				smart_ptr<PPTX::SlideMaster> pointer = pPair->m_value.smart_dynamic_cast<PPTX::SlideMaster>();
-				if (pointer.is_init())
-					pointer->ApplyRels();
-			}
-		}
+            if (PPTX::FileTypes::SlideMaster == curType)
+            {
+                smart_ptr<PPTX::SlideMaster> pointer = pPair->second.smart_dynamic_cast<PPTX::SlideMaster>();
+                if (pointer.is_init())
+                    pointer->ApplyRels();
+            }
 
-		pos = map.m_map.GetStartPosition();
-		while (NULL != pos)
-		{
-			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = map.m_map.GetNext(pos);
-			const PPTX::FileType& curType = pPair->m_value->type();
+        }
 
-			if (PPTX::FileTypes::SlideLayout == curType)
-			{
-				smart_ptr<PPTX::SlideLayout> pointer = pPair->m_value.smart_dynamic_cast<PPTX::SlideLayout>();
-				if (pointer.is_init())
-					pointer->ApplyRels();
-			}
-		}
 
-		pos = map.m_map.GetStartPosition();
-		while (NULL != pos)
-		{
-			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = map.m_map.GetNext(pos);
-			const PPTX::FileType& curType = pPair->m_value->type();
+        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        {
+            const PPTX::FileType& curType = pPair->second->type();
 
-			if (PPTX::FileTypes::Slide == curType)
-			{
-				smart_ptr<PPTX::Slide> pointer = pPair->m_value.smart_dynamic_cast<PPTX::Slide>();
-				if (pointer.is_init())
-					pointer->ApplyRels();
-			}
-		}
+            if (PPTX::FileTypes::SlideLayout == curType)
+            {
+                smart_ptr<PPTX::SlideLayout> pointer = pPair->second.smart_dynamic_cast<PPTX::SlideLayout>();
+                if (pointer.is_init())
+                    pointer->ApplyRels();
+            }
 
-		pos = map.m_map.GetStartPosition();
-		while (NULL != pos)
-		{
-			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = map.m_map.GetNext(pos);
-			const PPTX::FileType& curType = pPair->m_value->type();
+        }
 
-			if (PPTX::FileTypes::NotesMaster == curType)
-			{
-				smart_ptr<PPTX::NotesMaster> pointer = pPair->m_value.smart_dynamic_cast<PPTX::NotesMaster>();
-				if (pointer.is_init())
-					pointer->ApplyRels();
-			}
-		}
+        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        {
+            const PPTX::FileType& curType = pPair->second->type();
+
+            if (PPTX::FileTypes::Slide == curType)
+            {
+                smart_ptr<PPTX::Slide> pointer = pPair->second.smart_dynamic_cast<PPTX::Slide>();
+                if (pointer.is_init())
+                    pointer->ApplyRels();
+            }
+        }
+
+
+        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = map.m_map.begin(); pPair != map.m_map.end(); ++pPair)
+        {
+            const PPTX::FileType& curType = pPair->second->type();
+            if (PPTX::FileTypes::NotesMaster == curType)
+            {
+                smart_ptr<PPTX::NotesMaster> pointer = pPair->second.smart_dynamic_cast<PPTX::NotesMaster>();
+                if (pointer.is_init())
+                    pointer->ApplyRels();
+            }
+        }
 
 		Event->Progress(0, 1000000);
 	}

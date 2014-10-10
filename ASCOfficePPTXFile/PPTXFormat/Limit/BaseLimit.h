@@ -4,6 +4,10 @@
 
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
 
+#ifndef _WIN32
+#include "../../../DesktopEditor/common/Types.h"
+#endif
+
 #define _USE_STRING_OPERATOR						\
 	virtual void operator=(const CString& value)	\
 	{												\

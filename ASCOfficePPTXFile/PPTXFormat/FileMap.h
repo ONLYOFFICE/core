@@ -3,6 +3,9 @@
 #define PPTX_FILEMAP_INCLUDE_H_
 
 #include "DocxFormat/File.h"
+
+#include <map>
+
 namespace PPTX
 {
 	class FileMap
@@ -16,22 +19,23 @@ namespace PPTX
 		{
 		}
 	public:
-		CAtlMap<CString, smart_ptr<PPTX::File>> m_map;
+
+        std::map<CString, smart_ptr<PPTX::File>> m_map;
 
 	public:
 
-		AVSINLINE CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* find(const OOX::CPath& path)
+        AVSINLINE std::map<CString, smart_ptr<PPTX::File>>::const_iterator find(const OOX::CPath& path)
 		{
-			return m_map.Lookup(path.m_strFilename);
+            return m_map.find(path.m_strFilename);
 		}
 
 		AVSINLINE void add(const OOX::CPath& key, const smart_ptr<PPTX::File>& value)
 		{
-			m_map.SetAt(key.m_strFilename, value);
+            m_map[key.m_strFilename] = value;
 		}
 
-		AVSINLINE bool empty() const {return m_map.IsEmpty();}
-		AVSINLINE size_t size() const {return m_map.GetCount();}
+        AVSINLINE bool empty() const {return m_map.empty();}
+        AVSINLINE size_t size() const {return m_map.size();}
 	};
 } // namespace PPTX
 

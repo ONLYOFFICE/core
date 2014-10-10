@@ -15,6 +15,9 @@ DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _LINUX_QT _USE_XMLLITE_READER_ 
 INCLUDEPATH += \
     /usr/include/libxml2
 
+INCLUDEPATH += \
+    ../../../../DesktopEditor/freetype-2.5.2/include
+
 SOURCES += pptxformatlib.cpp \
     ../../../PPTXFormat/DocxFormat/IFileContainer.cpp \
     ../../../PPTXFormat/Logic/Colors/SchemeClr.cpp \
@@ -52,7 +55,9 @@ SOURCES += pptxformatlib.cpp \
     ../../../PPTXFormat/FileContainer.cpp \
     ../../../PPTXFormat/FileFactory.cpp \
     ../../../PPTXFormat/FileMap.cpp \
-    ../../../PPTXFormat/Folder.cpp
+    ../../../PPTXFormat/Folder.cpp \
+    ../../../Editor/BinaryFileReaderWriter.cpp \
+    ../../../Editor/FontPicker.cpp
 
 HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/DocxFormat/ContentTypes/Default.h \
@@ -453,7 +458,18 @@ HEADERS += pptxformatlib.h \
     ../../../PPTXFormat/ViewProps.h \
     ../../../PPTXFormat/VmlDrawing.h \
     ../../../PPTXFormat/WrapperFile.h \
-    ../../../PPTXFormat/WrapperWritingElement.h
+    ../../../PPTXFormat/WrapperWritingElement.h \
+    ../../../Editor/BinaryFileReaderWriter.h \
+    ../../../Editor/BinReaderWriterDefines.h \
+    ../../../Editor/BinWriters.h \
+    ../../../Editor/CalculatorCRC32.h \
+    ../../../Editor/Converter.h \
+    ../../../Editor/FontCutter.h \
+    ../../../Editor/FontPicker.h \
+    ../../../Editor/imagemanager.h \
+    ../../../Editor/PPTXWriter.h \
+    ../../../Editor/WMFToImageConverter.h \
+    ../../../Editor/XmlWriter.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

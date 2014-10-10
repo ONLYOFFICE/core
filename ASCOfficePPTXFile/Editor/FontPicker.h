@@ -1,5 +1,5 @@
 #pragma once
-#include "../stdafx.h"
+//#include "../stdafx.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "BinReaderWriterDefines.h"
 #include "FontCutter.h"

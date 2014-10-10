@@ -3,14 +3,14 @@
 #define PPTX_LOGIC_EFFECTLST_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
-#include "Effects\Blur.h"
-#include "Effects\Glow.h"
-#include "Effects\OuterShdw.h"
-#include "Effects\PrstShdw.h"
-#include "Effects\InnerShdw.h"
-#include "Effects\Reflection.h"
-#include "Effects\SoftEdge.h"
-#include "Effects\FillOverlay.h"
+#include "Effects/Blur.h"
+#include "Effects/Glow.h"
+#include "Effects/OuterShdw.h"
+#include "Effects/PrstShdw.h"
+#include "Effects/InnerShdw.h"
+#include "Effects/Reflection.h"
+#include "Effects/SoftEdge.h"
+#include "Effects/FillOverlay.h"
 
 namespace PPTX
 {

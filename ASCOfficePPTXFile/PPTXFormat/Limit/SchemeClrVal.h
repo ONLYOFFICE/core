@@ -3,6 +3,9 @@
 #define PPTX_LIMIT_SCHEMECLRVAL_INCLUDE_H_
 
 #include "BaseLimit.h"
+#ifndef _WIN32
+#include "../../../DesktopEditor/common/Types.h"
+#endif
 
 
 namespace PPTX

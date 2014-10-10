@@ -9,6 +9,8 @@
 #include "DocxFormat/External/Hyperlink.h"
 #include "WrapperFile.h"
 
+#include <map>
+
 namespace PPTX
 {
 	void FileContainer::read(const OOX::CPath& filename)
@@ -103,17 +105,12 @@ namespace PPTX
 
 	void FileContainer::write(PPTX::Rels::File& rels, const OOX::CPath& curdir, const OOX::CPath& directory, PPTX::ContentTypes::File& content) const
 	{
-		CAtlMap<CString, size_t> namepair;
-
-		POSITION pos = m_container.GetStartPosition();
-		while (NULL != pos)
+		std::map<CString, size_t> mNamePair;
+		for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.begin(); pPair != m_container.end(); ++pPair)
 		{
-			const CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.GetNext(pos);
-
-			smart_ptr<PPTX::File>		pFile	= pPair->m_value;
-			smart_ptr<PPTX::External>	pExt	= pFile.smart_dynamic_cast<PPTX::External>();
-
-			if (!pExt.IsInit())
+			smart_ptr<PPTX::File>     pFile = pPair->second;
+			smart_ptr<PPTX::External> pExt  = pFile.smart_dynamic_cast<PPTX::External>();
+			if ( !pExt.IsInit() )
 			{
 				smart_ptr<PPTX::WrapperFile> file = pFile.smart_dynamic_cast<PPTX::WrapperFile>();
 
@@ -128,14 +125,14 @@ namespace PPTX
 
 						OOX::CSystemUtility::CreateDirectories(directory / defdir);
 						pFile->write(directory / defdir / name, directory, content);
-						rels.registration(pPair->m_key, pFile->type(), defdir / name);
+						rels.registration(pPair->first, pFile->type(), defdir / name);
 					}
 					else
 					{
 						OOX::CPath defdir	= pFile->DefaultDirectory();
 						OOX::CPath name		= file->GetWrittenFileName();
 
-						rels.registration(pPair->m_key, pFile->type(), defdir / name);
+						rels.registration(pPair->first, pFile->type(), defdir / name);
 					}
 				}
 				else
@@ -145,22 +142,21 @@ namespace PPTX
 
 					OOX::CSystemUtility::CreateDirectories(directory / defdir);
 					pFile->write(directory / defdir / name, directory, content);
-					rels.registration(pPair->m_key, pFile->type(), defdir / name);
+					rels.registration(pPair->first, pFile->type(), defdir / name);
 				}
 			}
 			else
 			{
-				rels.registration(pPair->m_key, pExt);
+				rels.registration(pPair->first, pExt);
 			}
 		}
 	}
 
 	void FileContainer::WrittenSetFalse()
 	{
-		POSITION pos = m_container.GetStartPosition();
-		while (NULL != pos)
+		for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.begin(); pPair != m_container.end(); ++pPair)
 		{
-			smart_ptr<PPTX::File> pFile = m_container.GetNextValue(pos);
+			smart_ptr<PPTX::File> pFile = pPair->second;
 
 			smart_ptr<PPTX::WrapperFile>	pWrapFile = pFile.smart_dynamic_cast<PPTX::WrapperFile>();
 			smart_ptr<PPTX::FileContainer>	pWrapCont = pFile.smart_dynamic_cast<PPTX::FileContainer>();
@@ -173,7 +169,7 @@ namespace PPTX
 				{
 					pWrapCont->WrittenSetFalse();
 				}
-			}			
+			}
 		}
 	}
 

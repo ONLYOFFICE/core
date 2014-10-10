@@ -86,14 +86,14 @@ namespace PPTX
 					CString strDir		= filename.GetDirectory() + _T("");
 					if (_T("") == filename.GetExtention())
 					{
-						if (type.RelationType() == "http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject")
+                        if (type.RelationType() == _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject"))
 						{
-							strFileName += L".bin";
+                            strFileName += _T(".bin");
 							Relations.registration(rId, type.RelationType(), strDir + strFileName);
 						}
-						else if (type.RelationType() =="http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")
+                        else if (type.RelationType() == _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"))
 						{
-							strFileName += L".wmf" ;
+                            strFileName += _T(".wmf");
 							Relations.registration(rId, type.RelationType(), strDir + strFileName);
 						}
 					}

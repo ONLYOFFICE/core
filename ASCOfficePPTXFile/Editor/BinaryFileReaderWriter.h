@@ -125,7 +125,7 @@ namespace NSBinPptxRW
 
             for (std::map<CString, CString>::const_iterator pPair = m_mapImages.begin(); pPair != m_mapImages.end(); ++pPair)
             {
-                pWriter->WriteString(pPairfirst);
+                pWriter->WriteString(pPair->first);
                 pWriter->WriteString(pPair->second);
             }
 		}
@@ -137,7 +137,7 @@ namespace NSBinPptxRW
 			m_lIndexNextImage = pReader->GetLong();
 			m_strDstMedia = pReader->GetString2();
 
-			m_mapImages.RemoveAll();
+			m_mapImages.clear();
 			LONG lCount = pReader->GetLong();
 
 			for (LONG i = 0; i < lCount; ++i)
@@ -145,7 +145,7 @@ namespace NSBinPptxRW
 				CString s1 = pReader->GetString2();
 				CString s2 = pReader->GetString2();
 
-				m_mapImages.SetAt(s1, s2);
+				m_mapImages [s1] = s2;
 			}
 		}
 

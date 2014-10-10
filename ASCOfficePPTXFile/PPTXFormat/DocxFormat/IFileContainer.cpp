@@ -15,6 +15,8 @@
 #include "Media/OleObject.h"
 #include "FileTypes.h"
 
+#include <map>
+#include <vector>
 
 namespace PPTX
 {
@@ -35,10 +37,10 @@ namespace PPTX
 			add(relation.rId(), PPTX::CreateFile(path, relation));
 		}*/
 
-		size_t nCount = rels.Relations.m_items.GetCount();
+        size_t nCount = rels.Relations.m_items.size();
 		for (size_t i = 0; i < nCount; ++i)
 		{
-			add(rels.Relations.m_items[i].rId(), PPTX::CreateFile(path, rels.Relations.m_items[i]));
+            add(rels.Relations.m_items[i].rId(), PPTX::CreateFile(path, rels.Relations.m_items[i]));
 		}
 #endif
 	}
@@ -55,36 +57,32 @@ namespace PPTX
 
 	void IFileContainer::write(Rels::File& rels, const OOX::CPath& curdir, const OOX::CPath& directory, ContentTypes::File& content) const
 	{
-		CAtlMap<CString, size_t> namepair;
-
-		POSITION pos = m_container.GetStartPosition();
-		while (NULL != pos)
-		{
-			const CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.GetNext(pos);
-			
-			smart_ptr<PPTX::File> pFile		= pPair->m_value;
-			smart_ptr<PPTX::External> pExt	= pFile.smart_dynamic_cast<PPTX::External>();
+        std::map<CString, size_t> namepair;
+        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
+        {
+            smart_ptr<PPTX::File>     pFile = it->second;
+            smart_ptr<PPTX::External> pExt  = pFile.smart_dynamic_cast<PPTX::External>();
 
 			if (!pExt.IsInit())
 			{
 				OOX::CPath defdir	= pFile->DefaultDirectory();
 				OOX::CPath name		= pFile->DefaultFileName();
 
-				CAtlMap<CString, size_t>::CPair* pNamePair = namepair.Lookup(name.m_strFilename);
-				if (NULL == pNamePair)
-					namepair.SetAt(name.m_strFilename, 1);
-				else
-					name = name + pNamePair->m_key;
+                std::map<CString, size_t>::const_iterator pNamePair = namepair.find( name.m_strFilename );
+                if ( pNamePair == namepair.end())
+                    namepair [name.m_strFilename] = 1;
+                else
+                    name = name + pNamePair->first;
 
 				OOX::CSystemUtility::CreateDirectories(curdir / defdir);
 				pFile->write(curdir / defdir / name, directory / defdir, content);
-				rels.registration(pPair->m_key, pFile->type(), defdir / name);
+                rels.registration(it->first, pFile->type(), defdir / name);
 			}
 			else
 			{
 				//const HyperLink hyperlink = static_cast<const HyperLink&>(*pair.second);
 				//rels.registration(pair.first, hyperlink);
-				rels.registration(pPair->m_key, pExt);
+                rels.registration(it->first, pExt);
 			}
 		}
 	}
@@ -92,30 +90,26 @@ namespace PPTX
 
 	void IFileContainer::Commit(const OOX::CPath& path)
 	{
-		CAtlMap<CString, size_t> namepair;
+        std::map<CString, size_t> namepair;
+        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
+        {
+            smart_ptr<PPTX::File>     pFile = it->second;
+            smart_ptr<PPTX::External> pExt  = pFile.smart_dynamic_cast<PPTX::External>();
 
-		POSITION pos = m_container.GetStartPosition();
-		while (NULL != pos)
-		{
-			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.GetNext(pos);
-			
-			smart_ptr<PPTX::File> pFile		= pPair->m_value;
-			smart_ptr<PPTX::External> pExt	= pFile.smart_dynamic_cast<PPTX::External>();
+            if (!pExt.IsInit())
+            {
+                OOX::CPath defdir	= pFile->DefaultDirectory();
+                OOX::CPath name		= pFile->DefaultFileName();
 
-			if (!pExt.IsInit())
-			{
-				OOX::CPath defdir	= pFile->DefaultDirectory();
-				OOX::CPath name		= pFile->DefaultFileName();
-
-				CAtlMap<CString, size_t>::CPair* pNamePair = namepair.Lookup(name.m_strFilename);
-				if (NULL == pNamePair)
-					namepair.SetAt(name.m_strFilename, 1);
-				else
-					name = name + pNamePair->m_key;
+                std::map<CString, size_t>::const_iterator pNamePair = namepair.find( name.m_strFilename );
+                if ( pNamePair == namepair.end())
+                    namepair [name.m_strFilename] = 1;
+                else
+                    name = name + pNamePair->first;
 
 				OOX::CSystemUtility::CreateDirectories(path / defdir);
 				
-				smart_ptr<PPTX::IFileBuilder> fileBuilder = pPair->m_value.smart_dynamic_cast<PPTX::IFileBuilder>();
+                smart_ptr<PPTX::IFileBuilder> fileBuilder = it->second.smart_dynamic_cast<PPTX::IFileBuilder>();
 				if (fileBuilder.is_init())
 					fileBuilder->Commit(path / defdir / name);
 			}
@@ -134,26 +128,22 @@ namespace PPTX
 	
 	void IFileContainer::Finalize(Rels::File& rels, const OOX::CPath& curdir, const OOX::CPath& directory, ContentTypes::File& content)
 	{
-		CAtlMap<CString, size_t> namepair;
+        std::map<CString, size_t> namepair;
+        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
+        {
+            smart_ptr<PPTX::File>     pFile = it->second;
+            smart_ptr<PPTX::External> pExt  = pFile.smart_dynamic_cast<PPTX::External>();
 
-		POSITION pos = m_container.GetStartPosition();
-		while (NULL != pos)
-		{
-			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.GetNext(pos);
-			
-			smart_ptr<PPTX::File> pFile		= pPair->m_value;
-			smart_ptr<PPTX::External> pExt	= pFile.smart_dynamic_cast<PPTX::External>();
+            if (!pExt.IsInit())
+            {
+                OOX::CPath defdir	= pFile->DefaultDirectory();
+                OOX::CPath name		= pFile->DefaultFileName();
 
-			if (!pExt.IsInit())
-			{
-				OOX::CPath defdir	= pFile->DefaultDirectory();
-				OOX::CPath name		= pFile->DefaultFileName();
-
-				CAtlMap<CString, size_t>::CPair* pNamePair = namepair.Lookup(name.m_strFilename);
-				if (NULL == pNamePair)
-					namepair.SetAt(name.m_strFilename, 1);
-				else
-					name = name + pNamePair->m_key;
+                std::map<CString, size_t>::const_iterator pNamePair = namepair.find( name.m_strFilename );
+                if ( pNamePair == namepair.end())
+                    namepair [name.m_strFilename] = 1;
+                else
+                    name = name + pNamePair->first;
 
 				OOX::CSystemUtility::CreateDirectories(curdir / defdir);
 				
@@ -168,11 +158,11 @@ namespace PPTX
 					pFile->write(curdir / defdir / name, directory / defdir, content);
 				}
 
-				rels.registration(pPair->m_key, pFile->type(), defdir / name);
+                rels.registration(it->first, pFile->type(), defdir / name);
 			}
 			else
 			{
-				rels.registration(pPair->m_key, pExt);
+                rels.registration(it->first, pExt);
 			}
 		}
 	}
@@ -180,97 +170,95 @@ namespace PPTX
 
 	void IFileContainer::extractPictures(const OOX::CPath& path) const
 	{
-		POSITION pos = m_container.GetStartPosition();
-		while (NULL != pos)
-		{
-			smart_ptr<PPTX::File> pFile		= m_container.GetNextValue(pos);
+        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
+        {
+            smart_ptr<PPTX::File> pFile  = it->second;
 
-			smart_ptr<Image> pImage = pFile.smart_dynamic_cast<Image>();
-			if (pImage.is_init())
-			{
-				pImage->copy_to(path);
-				continue;
-			}
-			smart_ptr<IFileContainer> pExt = pFile.smart_dynamic_cast<IFileContainer>();
-			if (pExt.is_init())
-			{
-				pExt->extractPictures(path);
-				continue;
-			}
-		}
+            smart_ptr<Image>     pImage = pFile.smart_dynamic_cast<Image>();
+            if ( pImage.is_init() )
+            {
+                pImage->copy_to( path );
+                continue;
+            }
+
+            smart_ptr<IFileContainer> pExt = pFile.smart_dynamic_cast<IFileContainer>();
+            if ( pExt.is_init() )
+            {
+                pExt->extractPictures( path );
+                continue;
+            }
+        }
 	}
 
 
 	smart_ptr<Image> IFileContainer::image(const RId& rId) const
 	{
-		const CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.Lookup(rId.get());
-		if (NULL == pPair)
-			return smart_ptr<Image>();
-		return pPair->m_value.smart_dynamic_cast<Image>();
+        std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.find(rId.get());
+        if (pPair == m_container.end ())
+            return smart_ptr<Image>();
+        return pPair->second.smart_dynamic_cast<Image>();
 	}
 
 	smart_ptr<HyperLink> IFileContainer::hyperlink(const RId& rId) const
 	{
-		const CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.Lookup(rId.get());
-		if (NULL == pPair)
-			return smart_ptr<HyperLink>();
-		return pPair->m_value.smart_dynamic_cast<HyperLink>();
+        std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.find(rId.get());
+        if (pPair == m_container.end ())
+            return smart_ptr<HyperLink>();
+        return pPair->second.smart_dynamic_cast<HyperLink>();
 	}
 
 	smart_ptr<OleObject> IFileContainer::oleObject(const RId& rId) const
 	{
-		const CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.Lookup(rId.get());
-		if (NULL == pPair)
-			return smart_ptr<OleObject>();
-		return pPair->m_value.smart_dynamic_cast<OleObject>();
+        std::map<CString, smart_ptr<PPTX::File>>::const_iterator pPair = m_container.find(rId.get());
+        if (pPair == m_container.end ())
+            return smart_ptr<OleObject>();
+        return pPair->second.smart_dynamic_cast<OleObject>();
 	}
 
 	const bool IFileContainer::exist(const FileType& type) const
 	{
-		POSITION pos = m_container.GetStartPosition();
-		while (NULL != pos)
-		{
-			const CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.GetNext(pos);
-			if (type == pPair->m_value->type())
-				return true;
-		}
-		return false;
+        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
+        {
+            if (type == it->second->type())
+                return true;
+        }
+
+        return false;
 	}
 
 
 	const bool IFileContainer::exist(const RId& rId) const
 	{
-		const CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.Lookup(rId.get());
-		return (NULL != pPair);
+        std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.find(rId.get());
+        return (it != m_container.end());
 	}
 
 
 	const bool IFileContainer::isExternal(const PPTX::RId& rId) const
 	{
-		const CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.Lookup(rId.get());
+        std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.find(rId.get());
 
-		if (NULL != pPair)
-		{
-			CString type	= pPair->m_value->type().RelationType();
-			CString name	= pPair->m_value->type().DefaultFileName().m_strFilename;
-			
-			return (((type == PPTX::FileTypes::ExternalAudio.RelationType()) || (type == PPTX::FileTypes::ExternalImage.RelationType())
-				|| (type == PPTX::FileTypes::ExternalVideo.RelationType())) && (name == _T("")));
-		}
-		return true;
+        if (it != m_container.end())
+        {
+            CString type = it->second->type().RelationType();
+            CString name = it->second->type().DefaultFileName().m_strFilename;
+
+            return (((type == PPTX::FileTypes::ExternalAudio.RelationType()) || (type == PPTX::FileTypes::ExternalImage.RelationType())
+                || (type == PPTX::FileTypes::ExternalVideo.RelationType())) && (name == _T("")));
+        }
+        return true;
 	}
 
 
 	smart_ptr<PPTX::File> IFileContainer::get(const FileType& type)
 	{
-		POSITION pos = m_container.GetStartPosition();
-		while (NULL != pos)
-		{
-			CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.GetNext(pos);
-			if (type == pPair->m_value->type())
-				return pPair->m_value;
-		}
-		return smart_ptr<PPTX::File>(new UnknowTypeFile(unknow));
+        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
+        {
+            if (type == it->second->type())
+                return it->second;
+        }
+
+        return smart_ptr<PPTX::File>(new UnknowTypeFile( unknow ));
 	}
 
 
@@ -285,27 +273,28 @@ namespace PPTX
 	void IFileContainer::add(const PPTX::RId rId, const smart_ptr<PPTX::File>& file)
 	{
 		//m_lMaxRid = max(m_lMaxRid, rId.get());
-		m_container.SetAt(rId.get(), file);
+        m_container [rId.get()] = file;
 	}
 
 
 	smart_ptr<PPTX::File> IFileContainer::find(const FileType& type) const
 	{
-		POSITION pos = m_container.GetStartPosition();
-		while (NULL != pos)
-		{
-			const CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.GetNext(pos);
-			if (type == pPair->m_value->type())
-				return pPair->m_value;
-		}
+        for (std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.begin(); it != m_container.end(); ++it)
+        {
+            if (type == it->second->type())
+                return it->second;
+
+        }
+
 		return smart_ptr<PPTX::File>((PPTX::File*)new UnknowTypeFile());
 	}
 
 	smart_ptr<PPTX::File> IFileContainer::find(const PPTX::RId& rId) const
 	{
-		const CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.Lookup(rId.get());
-		if (NULL != pPair)
-			return pPair->m_value;
+        std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.find(rId.get());
+
+        if (it != m_container.end())
+            return it->second;
 
 		smart_ptr<PPTX::File> pointer;
 		return pointer;
@@ -314,9 +303,10 @@ namespace PPTX
 
 	smart_ptr<PPTX::File> IFileContainer::operator [](const PPTX::RId rId)
 	{
-		CAtlMap<CString, smart_ptr<PPTX::File>>::CPair* pPair = m_container.Lookup(rId.get());
-		if (NULL != pPair)
-			return pPair->m_value;
+        std::map<CString, smart_ptr<PPTX::File>>::const_iterator it = m_container.find(rId.get());
+
+        if (it != m_container.end())
+            return it->second;
 
 		smart_ptr<PPTX::File> pointer;
 		return pointer;

@@ -77,7 +77,7 @@ namespace PPTX
 			{
 				if (!m_mode.IsInit())
 					return false;
-				return (*m_mode == "External");
+                return (*m_mode == _T("External"));
 			}
 			const RId rId() const
 			{

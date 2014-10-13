@@ -3,12 +3,15 @@
 
 #include "PPTXFormat/PPTXEvent.h"
 
+#ifdef _WIN32
 #include <shellapi.h>
 #include <shlobj.h>
 #include <shlwapi.h>
 #pragma comment( lib, "shell32.lib" ) // добавить shell32.lib
+#else
+#endif
 
-#include "Editor\PPTXWriter.h"
+#include "Editor/PPTXWriter.h"
 
 CPPTXFile::CPPTXFile(load_from_resource fCallbackResource, extract_to_directory fCallbackExtract, compress_from_directory fCallbackCompress, progress_operation fCallbackProgress, void* pCallbackArg)
 {

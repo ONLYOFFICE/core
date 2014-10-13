@@ -56,9 +56,35 @@ namespace OOX
 			return path;
 		}
 
-		AVSINLINE CString GetExtention(bool bIsPoint = true) const;
-		AVSINLINE CString GetDirectory(bool bIsSlash = true) const;
-        AVSINLINE CString GetPath() const;
+        AVSINLINE CString GetExtention(bool bIsPoint = true) const
+        {
+            int nFind = m_strFilename.ReverseFind('.');
+            if (-1 == nFind)
+                return _T("");
+
+            if (!bIsPoint)
+                ++nFind;
+
+            return m_strFilename.Mid(nFind);
+        }
+        AVSINLINE CString GetDirectory(bool bIsSlash = true) const
+        {
+                int nPos = m_strFilename.ReverseFind('\\');
+                if (-1 == nPos)
+                {
+                    return m_strFilename;
+                }
+                else
+                {
+                    if (bIsSlash)
+                        ++nPos;
+                    return m_strFilename.Mid(0, nPos);
+                }
+        }
+        AVSINLINE CString GetPath() const
+        {
+            return m_strFilename;
+        }
         AVSINLINE CString GetFilename() const
 		{
 			int nPos = m_strFilename.ReverseFind('\\');

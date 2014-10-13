@@ -2,8 +2,10 @@
 #define ASC_OFFICE_DRAWING_CONVERTER
 
 //todo ??
+#ifdef _WIN32
 #include <atlbase.h>
 #include <atlstr.h>
+#endif
 #include "../Common/DocxFormat/Source/Base/Base.h"
 #include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/PPTShapeEnum.h"
 

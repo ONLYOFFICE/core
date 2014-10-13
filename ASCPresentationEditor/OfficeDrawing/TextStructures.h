@@ -4,6 +4,7 @@
 
 namespace NSPresentationEditor
 {
+
 	#define DEFAULT_BEFORE(EXIST_PARAM, PARAM)  \
 	if (!EXIST_PARAM && oSrc.##EXIST_PARAM)     \
 	{										    \
@@ -1049,11 +1050,41 @@ namespace NSPresentationEditor
 		
 		void ApplyBefore(const CTextSIRun& oSrc)
 		{
-			DEFAULT_BEFORE(bSpell, Spell);
-			DEFAULT_BEFORE(bLang, Lang);
-			DEFAULT_BEFORE(bAltLang, AltLang);
-			DEFAULT_BEFORE(bBidi, Bidi);
-			DEFAULT_BEFORE(bPp10ext, pp10runid);
+            /*
+             * gcc 4.8 doesn't understand this construction:
+             *
+                        DEFAULT_BEFORE(bSpell, Spell);
+                        DEFAULT_BEFORE(bLang, Lang);
+                        DEFAULT_BEFORE(bAltLang, AltLang);
+                        DEFAULT_BEFORE(bBidi, Bidi);
+                        DEFAULT_BEFORE(bPp10ext, pp10runid);
+            */
+            if (!bSpell && oSrc.bSpell)
+            {
+                bSpell = true;
+                Spell = oSrc.Spell;
+            }
+            if (!bLang && oSrc.bLang)
+            {
+                bLang = true;
+                Lang = oSrc.Lang;
+            }
+            if (!bAltLang && oSrc.bAltLang)
+            {
+                bAltLang = true;
+                AltLang = oSrc.AltLang;
+            }
+            if (!bBidi && oSrc.bBidi)
+            {
+                bBidi = true;
+                Bidi = oSrc.Bidi;
+            }
+            if (!bPp10ext && oSrc.bPp10ext)
+            {
+                bPp10ext = true;
+                pp10runid = oSrc.pp10runid;
+            }
+
 
 			if (!bGramma)
 			{

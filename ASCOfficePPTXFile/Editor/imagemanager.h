@@ -10,7 +10,7 @@ using namespace NSFontCutter;
 #define AVSINLINE __forceinline
 #endif
 
-#include "../../ASCPresentationEditor/PPTXWriter/FileDownloader.h"
+//#include "../../ASCPresentationEditor/PPTXWriter/FileDownloader.h"
 #include "WMFToImageConverter.h"
 #include "../../Common/MediaFormatDefine.h"
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"

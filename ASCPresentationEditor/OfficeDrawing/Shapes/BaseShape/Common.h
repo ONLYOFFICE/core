@@ -1,9 +1,13 @@
 #pragma once
 //todo убрать include
+
+#include "../../../../DesktopEditor/graphics/GraphicsPath.h"
+
+#ifdef _WIN32
 #include <atlbase.h>
 #include <atlcom.h>
 #include "../../../../Common/atldefine.h"
-#include "../../../../DesktopEditor/graphics/GraphicsPath.h"
+#endif
 
 const double ShapeSize		= 43200.0;
 const LONG ShapeSizeVML		= 21600;

@@ -337,6 +337,7 @@ namespace NSFontCutter
 			rgsab.lLbound	= 0;
 			rgsab.cElements	= nCount;
 
+			// be sure that WCHAR is 2 bytes long
 			SAFEARRAY* pArray = SafeArrayCreate(VT_UI2, 1, &rgsab);
 			USHORT* pBuffer = (USHORT*)(pArray->pvData);
 

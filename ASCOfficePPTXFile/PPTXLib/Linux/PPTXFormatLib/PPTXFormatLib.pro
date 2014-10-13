@@ -16,9 +16,18 @@ INCLUDEPATH += \
     /usr/include/libxml2
 
 INCLUDEPATH += \
-    ../../../../DesktopEditor/freetype-2.5.2/include
+    ../../../../DesktopEditor/freetype-2.5.2/include \
+../../../../Common/ASCDocxFormat/Source/Utility \
+../../../../Common/ASCDocxFormat/Source/XML \
+../../../../Common/ASCDocxFormat/Source \
+../../../../Common/DocxFormat/Source/XML/libxml2/XML/include
 
 SOURCES += pptxformatlib.cpp \
+../../../ASCOfficeDrawingConverter.cpp \
+../../../ASCOfficePPTXFile.cpp \
+../../../ASCOfficePPTXFileRealization.cpp \
+../../../../Common/DocxFormat/Source/XML/libxml2/libxml2.cpp \
+../../../../Common/DocxFormat/Source/XML/stringcommon.cpp \
     ../../../PPTXFormat/DocxFormat/IFileContainer.cpp \
     ../../../PPTXFormat/Logic/Colors/SchemeClr.cpp \
     ../../../PPTXFormat/Logic/Fills/Blip.cpp \
@@ -57,9 +66,16 @@ SOURCES += pptxformatlib.cpp \
     ../../../PPTXFormat/FileMap.cpp \
     ../../../PPTXFormat/Folder.cpp \
     ../../../Editor/BinaryFileReaderWriter.cpp \
-    ../../../Editor/FontPicker.cpp
+    ../../../Editor/FontPicker.cpp \
+../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.cpp \
+../../Directory.cpp \
+../../File.cpp
 
 HEADERS += pptxformatlib.h \
+../../../ASCOfficeDrawingConverter.h \
+../../../ASCOfficePPTXFile.h \
+../../../../Common/DocxFormat/Source/XML/libxml2/libxml2.h \
+../../../../Common/DocxFormat/Source/XML/stringcommon.h \
     ../../../PPTXFormat/DocxFormat/ContentTypes/Default.h \
     ../../../PPTXFormat/DocxFormat/ContentTypes/DefaultTable.h \
     ../../../PPTXFormat/DocxFormat/ContentTypes/ExtensionTable.h \
@@ -469,7 +485,14 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/imagemanager.h \
     ../../../Editor/PPTXWriter.h \
     ../../../Editor/WMFToImageConverter.h \
-    ../../../Editor/XmlWriter.h
+    ../../../Editor/XmlWriter.h \
+../../../../Common/DocxFormat/Source/SystemUtility/File.h \
+../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/FileSystem.h \
+../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h \
+../../Directory.h \
+../../File.h \
+../../Settings.h
+
 unix {
     target.path = /usr/lib
     INSTALLS += target

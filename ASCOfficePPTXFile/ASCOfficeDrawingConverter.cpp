@@ -1,4 +1,4 @@
-#include "stdafx.h"
+//#include "stdafx.h"
 #include "ASCOfficeDrawingConverter.h"
 
 #include "./PPTXFormat/Logic/SpTreeElem.h"

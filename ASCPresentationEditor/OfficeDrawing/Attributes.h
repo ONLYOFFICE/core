@@ -1,16 +1,20 @@
 #pragma once
 
+#ifdef _WIN32
 #include <atlcoll.h>
+#include "Gdiplus.h"
+#endif
+
 #include "Metric.h"
 #include "Effects.h"
-#include "../../Common/DocxFormat/Source/XML/XmlUtils.h"
+#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 #include "../../Common/ASCUtils.h"
 #include "XmlWriter.h"
 
-#include "Gdiplus.h"
 
-#include "../../desktopeditor/graphics/IRenderer.h"
-#include "../../desktopeditor/graphics/structures.h"
+
+#include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../../DesktopEditor/graphics/structures.h"
 
 namespace NSPresentationEditor
 {

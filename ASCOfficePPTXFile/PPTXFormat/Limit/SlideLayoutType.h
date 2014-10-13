@@ -22,7 +22,7 @@ namespace PPTX
 				
 			virtual void set(const CString& strValue)
 			{
-				if ((_T("blank") == strValue) ||
+                if ((strValue == _T("blank")) ||
 					(_T("chart") == strValue) ||
 					(_T("chartAndTx") == strValue) ||
 					(_T("clipArtAndTx") == strValue) ||

@@ -1,8 +1,8 @@
 #pragma once
 #include "../../../../DesktopEditor/graphics/GraphicsPath.h"
 
-#include "..\..\Metric.h"
-#include "..\..\Attributes.h"
+#include "../../Metric.h"
+#include "../../Attributes.h"
 
 namespace NSPresentationEditor
 {

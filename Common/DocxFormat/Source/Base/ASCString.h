@@ -45,6 +45,8 @@ static bool caseInsensitiveStringCompare(const std::wstring& str1, const std::ws
     }
     return true;
 }
+
+/*
 static std::wstring stringUtf16ToWString (const UTF16 *pStr, uint32_t nLength)
 {
 #ifdef _WIN32
@@ -77,6 +79,7 @@ static std::wstring stringUtf16ToWString (const UTF16 *pStr, uint32_t nLength)
             return wsEntryName;
 #endif
 }
+*/
 
 static std::string stringWstingToUtf8String (const std::wstring& aaSrc)
 {

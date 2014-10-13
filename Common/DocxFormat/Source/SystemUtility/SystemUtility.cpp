@@ -68,6 +68,7 @@ namespace OOX
         return *this;
     }
 
+    /*
 	AVSINLINE CString CPath::GetExtention(bool bIsPoint) const
     {
         int nFind = m_strFilename.ReverseFind('.');
@@ -79,6 +80,8 @@ namespace OOX
 
         return m_strFilename.Mid(nFind);
     }
+    */
+    /*
     AVSINLINE CString CPath::GetDirectory(bool bIsSlash) const
     {
         int nPos = m_strFilename.ReverseFind('\\');
@@ -93,10 +96,13 @@ namespace OOX
             return m_strFilename.Mid(0, nPos);
         }
     }
+    */
+    /*
     AVSINLINE CString CPath::GetPath() const
     {
         return m_strFilename;
     }
+    */
 }
 
 namespace OOX

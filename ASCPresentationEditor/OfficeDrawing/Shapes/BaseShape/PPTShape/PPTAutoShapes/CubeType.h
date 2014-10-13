@@ -21,16 +21,16 @@ public:
         AddGuide(_T("prod @2 1 2"));
         AddGuide(_T("mid width #0"));
 
-        m_arAdjustments.Add(5400);
+        m_arAdjustments.push_back(5400);
 
         LoadConnectorsList(_T("@6,0;@4,@0;0,@3;@4,21600;@1,@3;21600,@5"));
 
-		m_arConnectorAngles.Add(270);
-		m_arConnectorAngles.Add(270);
-		m_arConnectorAngles.Add(180);
-		m_arConnectorAngles.Add(90);
-		m_arConnectorAngles.Add(0);
-		m_arConnectorAngles.Add(0);
+		m_arConnectorAngles.push_back(270);
+		m_arConnectorAngles.push_back(270);
+		m_arConnectorAngles.push_back(180);
+		m_arConnectorAngles.push_back(90);
+		m_arConnectorAngles.push_back(0);
+		m_arConnectorAngles.push_back(0);
 
         LoadTextRect(_T("0,@0,@1,21600"));
 
@@ -38,7 +38,7 @@ public:
         oHandle1.position = _T("topLeft,#0");
         oHandle1.switchHandle = _T("true");
         oHandle1.yrange = _T("0,21600");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
 
         m_lLimoX = 10800;
 		m_lLimoY = 10800;

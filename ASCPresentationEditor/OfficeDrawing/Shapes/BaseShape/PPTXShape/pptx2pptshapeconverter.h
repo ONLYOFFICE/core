@@ -34,8 +34,8 @@ namespace NSGuidesVML
 				point.y = 0;
 				pointType.x = eParType;
 				pointType.y = ptValue;
-				m_arPoints.Add(point);
-				m_arPointsType.Add(pointType);
+				m_arPoints.push_back(point);
+				m_arPointsType.push_back(pointType);
 			}
 			else
 			{
@@ -52,8 +52,8 @@ namespace NSGuidesVML
 		private:
 			CSimpleArray<CSlice> m_arSlices;
 			CPPTShape* pPPTShape;
-			CSimpleMap<CString, LONG> m_arMapFormula;	
-			CSimpleMap<CString, LONG> m_arMapAdj;
+			std::map<CString, LONG> m_arMapFormula;	
+			std::map<CString, LONG> m_arMapAdj;
 			CSimpleArray<CSlicePath> m_arSlicesPath;
 			LONG m_lIndexDst;
 			LONG m_lIndexAdj;
@@ -106,26 +106,26 @@ namespace NSGuidesVML
 					CHandle_ oHandle;
 					//TODO переименовать названия формул и прокинуть текстовые атрибуты topleft, rightbottom в полях хендла
 
-					pPPTShape->m_arHandles.Add(oHandle);
+					pPPTShape->m_arHandles.push_back(oHandle);
 				}
 				
 				return;
 			}
 
-			void ConvertAdjastments( CSimpleArray<long> &arAdj, CSimpleMap<CString, long> &mapAdj )
+			void ConvertAdjastments( CSimpleArray<long> &arAdj, std::map<CString, long> &mapAdj )
 			{
 				for(int i=0; i<arAdj.GetSize(); i++)
 				{
-					m_arMapAdj.Add(mapAdj.GetKeyAt(i), ++m_lIndexAdj);
-					pPPTShape->m_arAdjustments.Add(arAdj[i]);
+					m_arMapAdj.push_back(mapAdj.GetKeyAt(i), ++m_lIndexAdj);
+					pPPTShape->m_arAdjustments.push_back(arAdj[i]);
 				}
 				//это аджасменты для перевода углов  tan(angle, adj)
 				//тк все угла в формулах считаются в pptx
 				//pptx->ppt
-				pPPTShape->m_arAdjustments.Add(3114601);
+				pPPTShape->m_arAdjustments.push_back(3114601);
 				m_lPPTX2PPT = ++m_lIndexAdj;
 				//ppt->pptx
-				pPPTShape->m_arAdjustments.Add(2783638);
+				pPPTShape->m_arAdjustments.push_back(2783638);
 				m_lPPT2PPTX = ++m_lIndexAdj;
 				return;
 			}
@@ -158,19 +158,19 @@ namespace NSGuidesVML
 				pNewFmla3.m_lIndex = ++m_lIndexDst;
 				pNewFmla3.m_eType1 = ptValue;
 				pNewFmla3.m_lParam1 = 21600;// lWidth;
-				pPPTShape->m_oManager.m_arFormulas.Add(pNewFmla3);
-				m_arMapFormula.Add(_T("w"), m_lIndexDst);
+				pPPTShape->m_oManager.m_arFormulas.push_back(pNewFmla3);
+				m_arMapFormula.push_back(_T("w"), m_lIndexDst);
 
 				pNewFmla3.m_lIndex = ++m_lIndexDst;
 				pNewFmla3.m_eType1 = ptValue;
 				pNewFmla3.m_lParam1 = 21600;//lHeight;
-				pPPTShape->m_oManager.m_arFormulas.Add(pNewFmla3);
-				m_arMapFormula.Add(_T("h"), m_lIndexDst);		
+				pPPTShape->m_oManager.m_arFormulas.push_back(pNewFmla3);
+				m_arMapFormula.push_back(_T("h"), m_lIndexDst);		
 
 				return;
 			}
 
-			LONG ConvertFmlaParam (CString strParam, NSGuidesVML::ParamType &eType, CString strKey, CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, CSimpleMap<CString, long> &mapGuides)
+			LONG ConvertFmlaParam (CString strParam, NSGuidesVML::ParamType &eType, CString strKey, CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides)
 			{
 				LONG lVal = 0;
 				LONG lNumFmla = m_arMapFormula.FindKey(strParam);
@@ -234,7 +234,7 @@ namespace NSGuidesVML
 				pNewFmla.m_eType3 = eType3;
 				pNewFmla.m_lParam3 = lParam3;
 
-				pPPTShape->m_oManager.m_arFormulas.Add(pNewFmla);
+				pPPTShape->m_oManager.m_arFormulas.push_back(pNewFmla);
 				return;
 			}
 
@@ -250,7 +250,7 @@ namespace NSGuidesVML
 				pNewFmla.m_eType2 = eType2;
 				pNewFmla.m_lParam2 = lParam2;
 
-				pPPTShape->m_oManager.m_arFormulas.Add(pNewFmla);
+				pPPTShape->m_oManager.m_arFormulas.push_back(pNewFmla);
 				return;
 			}
 
@@ -263,11 +263,11 @@ namespace NSGuidesVML
 				pNewFmla.m_eType1 = eType1;
 				pNewFmla.m_lParam1 = lParam1;
 
-				pPPTShape->m_oManager.m_arFormulas.Add(pNewFmla);
+				pPPTShape->m_oManager.m_arFormulas.push_back(pNewFmla);
 				return;
 			}
 
-			void ConvertGuid ( NSGuidesOOXML::CFormula pFormula, CString strKey, CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, CSimpleMap<CString, long> &mapGuides)
+			void ConvertGuid ( NSGuidesOOXML::CFormula pFormula, CString strKey, CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides)
 			{				
 				LONG lParam1, lParam2, lParam3;
 				NSGuidesVML::ParamType eType1, eType2, eType3;
@@ -338,12 +338,12 @@ namespace NSGuidesVML
 						ConvertFmla( ftIf, m_lIndexDst-2, ptFormula, lParam1, eType1, m_lIndexDst, ptFormula);
 						break;
 				}	
-				m_arMapFormula.Add(strKey, m_lIndexDst);
+				m_arMapFormula.push_back(strKey, m_lIndexDst);
 				return;
 			}
 
 
-			void ConvertGuides ( CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, CSimpleMap<CString, long> &mapGuides )
+			void ConvertGuides ( CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides )
 			{
 				//стандартные формулы для пптх будем добавлять, если только они встретятся
 				for (int nIndex=32; nIndex<strGuides.GetSize(); ++nIndex)
@@ -354,7 +354,7 @@ namespace NSGuidesVML
 				}
 			}
 
-			void ConvertPath(const CString& xml, CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, CSimpleMap<CString, long> &mapGuides)
+			void ConvertPath(const CString& xml, CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides)
 			{
 				XmlUtils::CXmlNode pathLst;
 				if(pathLst.FromXmlString(xml))
@@ -545,7 +545,7 @@ namespace NSGuidesVML
 				return lVal;
 			}
 
-			CString ConvertPathPoint (CString strX, CString strY, BOOL &bNum, CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, CSimpleMap<CString, long> &mapGuides, BOOL bLPoint)
+			CString ConvertPathPoint (CString strX, CString strY, BOOL &bNum, CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides, BOOL bLPoint)
 			{
 				CString strRes = _T("");
 				ParamType eType1, eType2;

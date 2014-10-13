@@ -10,9 +10,6 @@
 #include "PPTShape/PPTShape.h"
 #endif
 
-#if defined(ODP_DEF)
-#include "OdpShape/OdpShape.h"
-#endif
 
 NSPresentationEditor::CBaseShape* NSPresentationEditor::CBaseShape::CreateByType(NSPresentationEditor::NSBaseShape::ClassType ClassType, int ShapeType)
 {
@@ -30,12 +27,7 @@ NSPresentationEditor::CBaseShape* NSPresentationEditor::CBaseShape::CreateByType
 	}
 #endif
 
-#if defined(ODP_DEF)
-	if(ClassType == NSPresentationEditor::NSBaseShape::odp)
-	{
-		return COdpShape::CreateByType((OdpShapes::ShapeType)ShapeType);
-	}
-#endif
+
 	return NULL;
 }
 
@@ -58,12 +50,7 @@ bool NSPresentationEditor::CBaseShape::SetType(NSPresentationEditor::NSBaseShape
 	}
 #endif
 
-#if defined(ODP_DEF)
-	if(ClassType == NSBaseShape::odp)
-	{
-		return ((COdpShape*)this)->SetShapeType((OdpShapes::ShapeType)ShapeType);
-	}
-#endif
+
 
 	return false;
 }

@@ -260,7 +260,7 @@ namespace PPTX
 	class Comments : public WrapperFile
 	{
 	private:
-		CAtlArray<PPTX::Logic::Comment> m_arComments;
+		std::vector<PPTX::Logic::Comment> m_arComments;
 
 	public:
 		Comments()
@@ -288,8 +288,9 @@ namespace PPTX
 				XmlUtils::CXmlNode oCm;
 				oNodes.GetAt(i, oCm);
 
-				m_arComments.Add();
-				m_arComments[m_arComments.GetCount() - 1].fromXML(oCm);
+				PPTX::Logic::Comment elm;
+				m_arComments.push_back(elm);
+				m_arComments.back().fromXML(oCm);
 			}
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
@@ -349,8 +350,10 @@ namespace PPTX
 						for (ULONG i = 0; i < lCount; ++i)
 						{
 							pReader->Skip(1);
-							m_arComments.Add();
-							m_arComments[m_arComments.GetCount() - 1].fromPPTY(pReader);
+							
+							PPTX::Logic::Comment elm;
+							m_arComments.push_back(elm);
+							m_arComments.back().fromPPTY(pReader);
 						}
 						
 						break;

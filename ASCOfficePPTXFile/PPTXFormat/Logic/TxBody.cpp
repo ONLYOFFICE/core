@@ -169,7 +169,7 @@ namespace PPTX
 					}
 				}
 
-				size_t nCountRuns = oPar.RunElems.GetCount();
+				size_t nCountRuns = oPar.RunElems.size();
 				for (size_t j = 0; j < nCountRuns; ++j)
 				{
 					if (oPar.RunElems[j].is<PPTX::Logic::Run>())

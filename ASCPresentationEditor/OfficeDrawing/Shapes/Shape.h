@@ -196,7 +196,7 @@ public:
 
 		if (!bIsFound)
 		{
-			if (0 < m_pShape->m_arTextRects.GetSize())
+			if (0 < m_pShape->m_arTextRects.size())
 			{
 				double koef = max(oInfo.m_dWidth, oInfo.m_dHeight)/ShapeSize;
 				oInfo.m_dLeft += m_pShape->m_arTextRects[0].left * koef;
@@ -284,7 +284,7 @@ public:
 
 		if (!bIsFound)
 		{
-			if (0 < m_pShape->m_arTextRects.GetSize())
+			if (0 < m_pShape->m_arTextRects.size())
 			{
 				double koef = max(dWidth, dHeight)/ShapeSize;
 				dLeft	+= m_pShape->m_arTextRects[0].left * koef;
@@ -499,7 +499,7 @@ public:
 				CString strCoordSize = oNodeTemplate.GetAttributeOrValue(_T("val"));
 				if (strCoordSize != _T(""))
 				{
-					CSimpleArray<CString> oArray;
+					std::vector<CString> oArray;
 					NSStringUtils::ParseString(_T(","), strCoordSize, &oArray);
 					m_dWidthLogic  = XmlUtils::GetInteger(oArray[0]);
 					m_dHeightLogic = XmlUtils::GetInteger(oArray[1]);
@@ -521,7 +521,7 @@ public:
 						CString strCoordSize = oNodeTemplate.GetAttributeOrValue(_T("coordsize"));
 						if (strCoordSize != _T(""))
 						{
-							CSimpleArray<CString> oArray;
+							std::vector<CString> oArray;
 							NSStringUtils::ParseString(_T(","), strCoordSize, &oArray);
 							m_dWidthLogic  = XmlUtils::GetInteger(oArray[0]);
 							m_dHeightLogic = XmlUtils::GetInteger(oArray[1]);

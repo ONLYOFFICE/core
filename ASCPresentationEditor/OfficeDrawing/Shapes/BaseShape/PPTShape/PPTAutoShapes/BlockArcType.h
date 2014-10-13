@@ -56,8 +56,8 @@ public:
         AddGuide(_T("if @4 @32 21600"));
         AddGuide(_T("if @6 @41 @33"));
 
-		m_arAdjustments.Add(11796480);
-		m_arAdjustments.Add(5400);
+		m_arAdjustments.push_back(11796480);
+		m_arAdjustments.push_back(5400);
 
 		LoadConnectorsList(_T("10800,@27;@22,@23;10800,@26;@24,@23"));
 
@@ -69,6 +69,6 @@ public:
         oHandle1.radiusrange = _T("0,10800"); 
         oHandle1.switchHandle = _T("true");
         oHandle1.xrange = _T("0,10800");
-		m_arHandles.Add(oHandle1);
+		m_arHandles.push_back(oHandle1);
     }
 };

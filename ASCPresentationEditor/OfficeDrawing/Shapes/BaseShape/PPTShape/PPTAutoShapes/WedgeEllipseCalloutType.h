@@ -36,14 +36,14 @@ public:
         AddGuide(_T("if @20 #0 @13"));
         AddGuide(_T("if @20 #1 @14"));
 
-		m_arAdjustments.Add(1350);
-		m_arAdjustments.Add(25920);
+		m_arAdjustments.push_back(1350);
+		m_arAdjustments.push_back(25920);
 
         LoadConnectorsList(_T("10800,0;3163,3163;0,10800;3163,18437;10800,21600;18437,18437;21600,10800;18437,3163;@21,@22"));
         LoadTextRect(_T("3163,3163,18437,18437"));
 
         CHandle_ oHandle1;
         oHandle1.position = _T("#0,#1");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
     }
 };

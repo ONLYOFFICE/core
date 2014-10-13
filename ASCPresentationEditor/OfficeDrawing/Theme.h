@@ -10,21 +10,21 @@ namespace NSPresentationEditor
 	class CTheme : public IBase
 	{
 	public:
-		CAtlArray<CColor>			m_arColorScheme;
-		CAtlArray<CFont>			m_arFonts;
-		CAtlArray<CBrush>			m_arBrushes;
-		CAtlArray<CPen>				m_arPens;
+		std::vector<CColor>				m_arColorScheme;
+		std::vector<CFont>				m_arFonts;
+		std::vector<CBrush>				m_arBrushes;
+		std::vector<CPen>				m_arPens;
 
-		CAtlArray<CEffects>			m_arEffects;
-		CTextStyles					m_pStyles[g_ThemeTextStylesCount];
-		CAtlArray<CLayout>			m_arLayouts;
+		std::vector<CEffects>			m_arEffects;
+		CTextStyles						m_pStyles[g_ThemeTextStylesCount];
+		std::vector<CLayout>			m_arLayouts;
 
-		bool						m_bIsBackground;
-		CBrush						m_oBackground;
+		bool							m_bIsBackground;
+		CBrush							m_oBackground;
 
-		CAtlArray<IElement*>		m_arElements;
+		std::vector<IElement*>			m_arElements;
 
-		CMetricInfo					m_oInfo;
+		CMetricInfo						m_oInfo;
 
 	public:
 		CTheme() : m_arColorScheme(), m_arFonts(), m_arBrushes(),
@@ -54,7 +54,7 @@ namespace NSPresentationEditor
 			m_oBackground	= oSrc.m_oBackground;
 
 			// теперь сделаем копию всех элементов layout'ов
-			size_t nCount = m_arLayouts.GetCount();
+			size_t nCount = m_arLayouts.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				m_arLayouts[i].CreateDublicateElements();
@@ -63,7 +63,7 @@ namespace NSPresentationEditor
 			Clear();
 			m_arElements.Copy(oSrc.m_arElements);
 
-			nCount = m_arElements.GetCount();
+			nCount = m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
 				ADDREFINTERFACE((m_arElements[nIndex]));
@@ -81,7 +81,7 @@ namespace NSPresentationEditor
 		void CreateDublicateElements()
 		{
 			// просто из всех своих элементов делаем дубликата
-			size_t nCount = m_arElements.GetCount();
+			size_t nCount = m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
 				IElement* pElem = m_arElements[nIndex];
@@ -95,13 +95,13 @@ namespace NSPresentationEditor
 
 		void Clear()
 		{
-			size_t nCount = m_arElements.GetCount();
+			size_t nCount = m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
 				RELEASEINTERFACE((m_arElements[nIndex]));
 			}
 
-			m_arElements.RemoveAll();
+			m_arElements.clear();
 		}
 
 		~CTheme()
@@ -118,7 +118,7 @@ namespace NSPresentationEditor
 
 		NSPresentationEditor::CColor GetColor(const LONG& lIndexScheme)
 		{
-			if (lIndexScheme < (LONG)m_arColorScheme.GetCount())
+			if (lIndexScheme < (LONG)m_arColorScheme.size())
 			{
 				return m_arColorScheme[lIndexScheme];
 			}
@@ -127,7 +127,7 @@ namespace NSPresentationEditor
 
 		void CalculateStyles()
 		{
-			LONG lCountColors = (LONG)m_arColorScheme.GetCount();
+			LONG lCountColors = (LONG)m_arColorScheme.size();
 
 			// пока здесь расчитываются только цвета
 			for (int pos = 0; pos < g_ThemeTextStylesCount; ++pos)
@@ -167,7 +167,7 @@ namespace NSPresentationEditor
 					if (pLevel->m_oCFRun.Typeface.IsInit())
 					{
 						WORD lFontIndex = pLevel->m_oCFRun.Typeface.get();
-						if (lFontIndex < (WORD)m_arFonts.GetCount())
+						if (lFontIndex < (WORD)m_arFonts.size())
 						{
 							if (!pLevel->m_oCFRun.FontProperties.is_init())
 								pLevel->m_oCFRun.FontProperties = new CFontProperties();
@@ -181,7 +181,7 @@ namespace NSPresentationEditor
 
 		static void CalculateStyle(CTheme* pTheme, CTextStyles& oStyle)
 		{
-			LONG lCountColors = (LONG)pTheme->m_arColorScheme.GetCount();
+			LONG lCountColors = (LONG)pTheme->m_arColorScheme.size();
 
 			// пока здесь расчитываются только цвета
 			size_t nLevels = 10;
@@ -217,7 +217,7 @@ namespace NSPresentationEditor
 				if (pLevel->m_oCFRun.Typeface.IsInit())
 				{
 					WORD lFontIndex = pLevel->m_oCFRun.Typeface.get();
-					if (lFontIndex < (WORD)pTheme->m_arFonts.GetCount())
+					if (lFontIndex < (WORD)pTheme->m_arFonts.size())
 					{
 						if (!pLevel->m_oCFRun.FontProperties.is_init())
 							pLevel->m_oCFRun.FontProperties = new CFontProperties();

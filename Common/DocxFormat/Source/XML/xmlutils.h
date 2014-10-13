@@ -4,6 +4,9 @@
 #include "stringcommon.h"
 
 #include "../Base/Base.h"
+
+#include <vector>
+
 class CWCharWrapper
 {
 public:
@@ -98,6 +101,13 @@ AVSINLINE const bool operator!=(const wchar_t* cwsStr1, const CWCharWrapper& cws
 
 namespace XmlUtils
 {
+	AVSINLINE std::wstring GetNamespace(std::wstring & strNodeName)
+	{
+		int nFind = strNodeName.find(_T(':'));
+		if (-1 == nFind)
+			return _T("");
+		return strNodeName.substr(0, nFind);
+	}
 	AVSINLINE CString GetNamespace(CString& strNodeName)
 	{
 		int nFind = strNodeName.Find(TCHAR(':'));
@@ -111,6 +121,13 @@ namespace XmlUtils
 		if(NULL == find)
 			return _T("");
 		return CString(strNodeName, find - strNodeName);
+	}
+	AVSINLINE std::wstring GetNameNoNS(const std::wstring & strNodeName)
+	{
+		int nFind = strNodeName.find(_T(':'));
+		if (-1 == nFind)
+			return strNodeName;
+		return strNodeName.substr(nFind + 1);
 	}
 	AVSINLINE CString GetNameNoNS(const CString& strNodeName)
 	{
@@ -2480,6 +2497,50 @@ namespace XmlUtils
 				}
 			}
 		}
+
+		//---------------------------------------------------------------------------------
+		template <typename T>
+		AVSINLINE void LoadArray(const CString& sName, std::vector<T>& arList)
+		{
+			XmlUtils::CXmlNodes oNodes;
+			if (GetNodes(sName, oNodes))
+			{
+				int nCount = oNodes.GetCount();
+				for (int i = 0; i < nCount; ++i)
+				{
+					XmlUtils::CXmlNode oItem;
+					oNodes.GetAt(i, oItem);
+
+					T elm;
+					arList.push_back(elm);
+					arList.back().fromXML(oItem);
+				}
+			}
+		}
+		template <typename T>
+		AVSINLINE void LoadArray(const CString& sName, const CString& sSubName, std::vector<T>& arList)
+		{
+			XmlUtils::CXmlNode oNode;
+			if (GetNode(sName, oNode))
+			{
+				XmlUtils::CXmlNodes oNodes;
+				if (oNode.GetNodes(sSubName, oNodes))
+				{
+					int nCount = oNodes.GetCount();
+					for (int i = 0; i < nCount; ++i)
+					{
+						XmlUtils::CXmlNode oItem;
+						oNodes.GetAt(i, oItem);
+
+						T elm;
+						arList.push_back(elm);
+						arList.back().fromXML(oItem);
+					}
+				}
+			}
+		}
+
+		//----------------------------------------------------------------------------------
 		AVSINLINE XmlUtils::CXmlNode ReadNode(const CString& strNodeName)
 		{
 			CXmlNode oNode;

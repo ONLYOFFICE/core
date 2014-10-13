@@ -17,7 +17,7 @@ public:
 	CString m_strPathLimoX;
 	CString m_strPathLimoY;
 
-	CAtlArray<CString> m_arStringTextRects;
+	std::vector<CString> m_arStringTextRects;
 	bool m_bIsShapeType;
 
 	bool m_bIsFilled;
@@ -28,7 +28,7 @@ public:
 	{
 		m_eType = PPTShapes::sptMin;
 
-		m_arStringTextRects.Add(_T("0,0,21600,21600"));
+		m_arStringTextRects.push_back(_T("0,0,21600,21600"));
 
 		m_strPathLimoX = _T("");
 		m_strPathLimoY = _T("");
@@ -256,33 +256,33 @@ public:
 		}
 		strXml.Replace(_T(",,"), _T(",defaultAdj,"));
 
-		CSimpleArray<CString> arAdj;
+		std::vector<CString> arAdj;
 		NSStringUtils::ParseString(_T(","), strXml, &arAdj);
 		
-		CSimpleArray<long> oOldAdj;
-		int nOldLen = m_arAdjustments.GetSize();
+		std::vector<long> oOldAdj;
+		int nOldLen = m_arAdjustments.size();
 		for (int ii = 0; ii < nOldLen; ++ii)
-			oOldAdj.Add(m_arAdjustments[ii]);
+			oOldAdj.push_back(m_arAdjustments[ii]);
 
-		m_arAdjustments.RemoveAll();
-		for (int nIndex = 0; nIndex < arAdj.GetSize(); ++nIndex)
+		m_arAdjustments.clear();
+		for (int nIndex = 0; nIndex < arAdj.size(); ++nIndex)
 		{
 			if (_T("defaultAdj") == arAdj[nIndex])
 			{
 				if (nIndex >= nOldLen)
-					m_arAdjustments.Add(0);
+					m_arAdjustments.push_back(0);
 				else
-					m_arAdjustments.Add(oOldAdj[nIndex]);
+					m_arAdjustments.push_back(oOldAdj[nIndex]);
 			}
 			else
 			{
-				m_arAdjustments.Add((LONG)XmlUtils::GetInteger(arAdj[nIndex]));
+				m_arAdjustments.push_back((LONG)XmlUtils::GetInteger(arAdj[nIndex]));
 			}
 		}
 
-		int newLen = m_arAdjustments.GetSize();
+		int newLen = m_arAdjustments.size();
 		for (int i = newLen; i < nOldLen; ++i)
-			m_arAdjustments.Add(oOldAdj[i]);
+			m_arAdjustments.push_back(oOldAdj[i]);
 		return true;
 	}
 
@@ -291,7 +291,7 @@ public:
 		XmlUtils::CXmlNode oNodeGuides;
 		if (oNodeGuides.FromXmlString(xml) && (_T("v:formulas") == oNodeGuides.GetName()))
 		{
-			m_oManager.RemoveAll();
+			m_oManager.Clear();
 			
 			XmlUtils::CXmlNodes oList;
 			if (oNodeGuides.GetNodes(_T("v:f"), oList))
@@ -326,7 +326,7 @@ public:
 
 	void LoadAHList(XmlUtils::CXmlNode& oNode)
 	{
-		m_arHandles.RemoveAll();
+		m_arHandles.clear();
 
 		XmlUtils::CXmlNodes oNodes;
 		if (oNode.GetNodes(_T("v:h"), oNodes))
@@ -345,7 +345,7 @@ public:
 				oH.xrange = oNodeH.GetAttribute(_T("xrange"));
 				oH.yrange = oNodeH.GetAttribute(_T("yrange"));
 
-				m_arHandles.Add(oH);
+				m_arHandles.push_back(oH);
 			}
 		}
 	}
@@ -357,18 +357,18 @@ public:
 
 	virtual bool LoadTextRect(const CString& xml)
 	{
-		CSimpleArray<CString> oArray;
+		std::vector<CString> oArray;
 		NSStringUtils::ParseString(_T(";"), xml, &oArray);
 
-		LONG lCount = (LONG)oArray.GetSize();
+		LONG lCount = (LONG)oArray.size();
 
 		if (lCount <= 0)
 			return true;
 
-		m_arStringTextRects.RemoveAll();
+		m_arStringTextRects.clear();
 		for (LONG i = 0; i < lCount; ++i)
 		{
-			m_arStringTextRects.Add(oArray[i]);
+			m_arStringTextRects.push_back(oArray[i]);
 		}
 		
 		return true;
@@ -481,19 +481,19 @@ public:
 		dPercentRight	= 0;
 		dPercentBottom	= 0;
 
-		if ((nIndex < 0) || (nIndex >= (LONG)m_arStringTextRects.GetCount()))
+		if ((nIndex < 0) || (nIndex >= (LONG)m_arStringTextRects.size()))
 			return;
 
-		if (m_oPath.m_arParts.GetSize() == 0)
+		if (m_oPath.m_arParts.size() == 0)
 			return;
 
 		LONG lWidth		= m_oPath.m_arParts[0].width;
 		LONG lHeight	= m_oPath.m_arParts[0].height;
 
-		CSimpleArray<CString> oArray;
+		std::vector<CString> oArray;
 		NSStringUtils::ParseString(_T(","), m_arStringTextRects[nIndex], &oArray);
 
-		if (4 != oArray.GetSize())
+		if (4 != oArray.size())
 			return;
 		
 		LONG lLeft		= 0;
@@ -542,7 +542,7 @@ protected:
 
 		if (bFormula)
 		{
-			if (lValue >= 0 || lValue < m_oManager.m_arResults.GetSize())
+			if (lValue >= 0 || lValue < m_oManager.m_arResults.size())
 			{
 				lValue = m_oManager.m_arResults[lValue];
 				return true;

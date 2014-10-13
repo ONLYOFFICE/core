@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8.00"
+	Version="8,00"
 	Name="PPTXFormat"
 	ProjectGUID="{36636678-AE25-4BE6-9A34-2561D1BCF302}"
 	RootNamespace="PPTXFormat"

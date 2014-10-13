@@ -452,7 +452,7 @@ namespace PPTX
 					}
 				}
 
-				if (oStylesWriter.GetSize() == 0)
+				if (oStylesWriter.empty())
 				{
 					pWriter->WriteAttribute(_T("style"), pWriter->m_strStyleMain);
 				}

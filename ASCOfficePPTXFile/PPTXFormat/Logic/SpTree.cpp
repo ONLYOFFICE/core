@@ -53,7 +53,7 @@ namespace PPTX
 					}
 				}
 
-				if (oStylesWriter.GetSize() == 0)
+				if (oStylesWriter.empty())
 				{
 					pWriter->WriteAttribute(_T("style"), pWriter->m_strStyleMain);
 				}
@@ -151,7 +151,7 @@ namespace PPTX
 
 			pWriter->EndAttributes();
 
-			size_t nCount = SpTreeElems.GetCount();
+			size_t nCount = SpTreeElems.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				if (SpTreeElems[i].is<PPTX::Logic::Shape>())

@@ -23,7 +23,9 @@ namespace PPTX
 
 				pPr			= oSrc.pPr;
 				endParaRPr	= oSrc.endParaRPr;
-				RunElems.Copy(oSrc.RunElems);
+
+				for (int i=0 ; i < oSrc.RunElems.size(); i++) 
+					RunElems.push_back(oSrc.RunElems[i]);
 
 				return *this;
 			}
@@ -31,7 +33,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				RunElems.RemoveAll();
+				RunElems.clear();
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -49,7 +51,7 @@ namespace PPTX
 						else if (_T("endParaRPr") == strName)
 							endParaRPr = oNode;
 						else if ((_T("r") == strName) || (_T("fld") == strName) || (_T("br") == strName))
-							RunElems.Add(RunElem(oNode));
+							RunElems.push_back(RunElem(oNode));
 					}
 				}
 				
@@ -74,7 +76,7 @@ namespace PPTX
 					pPr->m_name = _T("a:pPr");
 				pWriter->Write(pPr);
 
-				size_t nCount = RunElems.GetCount();
+				size_t nCount = RunElems.size();
 				for (size_t i = 0; i < nCount; ++i)
 					RunElems[i].toXmlWriter(pWriter);
 
@@ -157,8 +159,9 @@ namespace PPTX
 												pReader->SkipRecord();
 										}
 
-										RunElems.Add();
-										RunElems[RunElems.GetCount() - 1].InitRun(pRun);
+										RunElem elm;
+										RunElems.push_back(elm);
+										RunElems.back().InitRun(pRun);
 
 										pReader->Seek(_end);
 										break;
@@ -205,8 +208,9 @@ namespace PPTX
 												pReader->SkipRecord();
 										}
 
-										RunElems.Add();
-										RunElems[RunElems.GetCount() - 1].InitRun(pRun);
+										RunElem elm;
+										RunElems.push_back(elm);
+										RunElems.back().InitRun(pRun);
 
 										pReader->Seek(_end);
 										break;
@@ -230,8 +234,9 @@ namespace PPTX
 												pReader->SkipRecord();
 										}
 
-										RunElems.Add();
-										RunElems[RunElems.GetCount() - 1].InitRun(pRun);
+										RunElem elm;
+										RunElems.push_back(elm);
+										RunElems.back().InitRun(pRun);
 
 										pReader->Seek(_end);
 										break;
@@ -255,7 +260,7 @@ namespace PPTX
 			{
 				CString result = _T("");
 				
-				size_t count = RunElems.GetCount();
+				size_t count = RunElems.size();
 				for (size_t i = 0; i < count; ++i)
 					result += RunElems[i].GetText();
 				
@@ -265,7 +270,7 @@ namespace PPTX
 
 		public:
 			nullable<TextParagraphPr>	pPr;
-			CAtlArray<RunElem>			RunElems;
+			std::vector<RunElem>			RunElems;
 			nullable<RunProperties>		endParaRPr;
 		protected:
 			virtual void FillParentPointersForChilds()
@@ -275,7 +280,7 @@ namespace PPTX
 				if(endParaRPr.IsInit())
 					endParaRPr->SetParentPointer(this);
 
-				size_t count = RunElems.GetCount();
+				size_t count = RunElems.size();
 				for (size_t i = 0; i < count; ++i)
 					RunElems[i].SetParentPointer(this);
 			}

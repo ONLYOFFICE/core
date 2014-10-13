@@ -440,7 +440,7 @@ public:
 					//position = gdrefR, gdrefAng (adj)
 					//radiusrange = minR, maxR
 
-					m_arHandles.Add(oH);
+					m_arHandles.push_back(oH);
 				}
 			}
 			return true;
@@ -464,9 +464,9 @@ public:
 			TextRect.left = (long)FManager.GetValue(rect.GetAttribute(_T("l")));
 			TextRect.right = (long)FManager.GetValue(rect.GetAttribute(_T("r")));
 			TextRect.bottom = (long)FManager.GetValue(rect.GetAttribute(_T("b")));
-			if(m_arTextRects.GetSize() > 0)
+			if(m_arTextRects.size() > 0)
 				m_arTextRects[0] = TextRect;
-			else m_arTextRects.Add(TextRect);
+			else m_arTextRects.push_back(TextRect);
 			return true;
 		}
 		return false;

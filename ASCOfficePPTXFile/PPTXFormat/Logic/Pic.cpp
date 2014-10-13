@@ -137,7 +137,7 @@ namespace PPTX
 						file = parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get());						
 						if (CString (_T("NULL")) == file)	//	HAVE TRIM
 						{
-							if(nvPicPr.nvPr.extLst.GetCount())
+							if(nvPicPr.nvPr.extLst.size())
 							{
 								file = parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.extLst.GetAt(0).link.get());
 							}
@@ -167,7 +167,7 @@ namespace PPTX
 
 						if (CString (_T("NULL")) == file)	//	HAVE TRIM
 						{
-							if(nvPicPr.nvPr.extLst.GetCount())
+							if(nvPicPr.nvPr.extLst.size())
 							{
 								file = parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.extLst.GetAt(0).link.get());
 							}
@@ -237,9 +237,9 @@ namespace PPTX
 					{
 						if (CString (_T("NULL")) == parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get()) )	//	HAVE TRIM
 						{
-							if(nvPicPr.nvPr.extLst.GetCount())
+							if(nvPicPr.nvPr.extLst.size())
 							{
-								if (nvPicPr.nvPr.extLst.GetAt(0).st.is_init())
+								if (nvPicPr.nvPr.extLst[0].st.is_init())
 									trim = nvPicPr.nvPr.extLst.GetAt(0).st.get();
 							}
 						}		
@@ -264,7 +264,7 @@ namespace PPTX
 					{
 						if (CString (_T("NULL")) == parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.media.as<MediaFile>().link.get()))	//	HAVE TRIM
 						{
-							if(nvPicPr.nvPr.extLst.GetCount())
+							if(nvPicPr.nvPr.extLst.size())
 							{
 								if (nvPicPr.nvPr.extLst.GetAt(0).end.is_init())
 									trim = nvPicPr.nvPr.extLst.GetAt(0).end.get();

@@ -39,18 +39,18 @@ namespace NSPresentationEditor
 	class CBaseShape
 	{
 	public:
-		CSimpleArray<long>		m_arAdjustments;
-		CSimpleArray<double>	Guides;
+		std::vector<long>		m_arAdjustments;
+		std::vector<double>	Guides;
 	public: 
 		LONG					m_eJoin;
 		bool					m_bConcentricFill;
 
-		CSimpleArray<CPoint>	m_arConnectors;
-		CSimpleArray<LONG>		m_arConnectorAngles;
+		std::vector<CPoint>	m_arConnectors;
+		std::vector<LONG>		m_arConnectorAngles;
 
-		CSimpleArray<RECT>		m_arTextRects;
+		std::vector<RECT>		m_arTextRects;
 		
-		CSimpleArray<CHandle_>	m_arHandles;
+		std::vector<CHandle_>	m_arHandles;
 
 		CString					m_strTransformXml;
 
@@ -108,32 +108,32 @@ namespace NSPresentationEditor
 			m_strPath	= Shape->m_strPath;
 			m_strRect	= Shape->m_strRect;
 			
-			m_arAdjustments.RemoveAll();
-			for(int i = 0; i < Shape->m_arAdjustments.GetSize(); i++)
-				m_arAdjustments.Add(Shape->m_arAdjustments[i]);
+			m_arAdjustments.clear();
+			for(int i = 0; i < Shape->m_arAdjustments.size(); i++)
+				m_arAdjustments.push_back(Shape->m_arAdjustments[i]);
 
-			Guides.RemoveAll();
-			for(int i = 0; i < Shape->Guides.GetSize(); i++)
-				Guides.Add(Shape->Guides[i]);
+			Guides.clear();
+			for(int i = 0; i < Shape->Guides.size(); i++)
+				Guides.push_back(Shape->Guides[i]);
 
 			m_eJoin				= Shape->m_eJoin;
 			m_bConcentricFill	= Shape->m_bConcentricFill;
 
-			m_arConnectors.RemoveAll();
-			for(int i = 0; i < Shape->m_arConnectors.GetSize(); i++)
-				m_arConnectors.Add(Shape->m_arConnectors[i]);
+			m_arConnectors.clear();
+			for(int i = 0; i < Shape->m_arConnectors.size(); i++)
+				m_arConnectors.push_back(Shape->m_arConnectors[i]);
 
-			m_arConnectorAngles.RemoveAll();
-			for(int i = 0; i < Shape->m_arConnectorAngles.GetSize(); i++)
-				m_arConnectorAngles.Add(Shape->m_arConnectorAngles[i]);
+			m_arConnectorAngles.clear();
+			for(int i = 0; i < Shape->m_arConnectorAngles.size(); i++)
+				m_arConnectorAngles.push_back(Shape->m_arConnectorAngles[i]);
 
-			m_arTextRects.RemoveAll();
-			for(int i = 0; i < Shape->m_arTextRects.GetSize(); i++)
-				m_arTextRects.Add(Shape->m_arTextRects[i]);
+			m_arTextRects.clear();
+			for(int i = 0; i < Shape->m_arTextRects.size(); i++)
+				m_arTextRects.push_back(Shape->m_arTextRects[i]);
 
-			m_arHandles.RemoveAll();
-			for(int i = 0; i < Shape->m_arHandles.GetSize(); i++)
-				m_arHandles.Add(Shape->m_arHandles[i]);
+			m_arHandles.clear();
+			for(int i = 0; i < Shape->m_arHandles.size(); i++)
+				m_arHandles.push_back(Shape->m_arHandles[i]);
 
 
 			m_strRect = Shape->m_strRect;
@@ -150,33 +150,33 @@ namespace NSPresentationEditor
 			Shape->m_strPath	= m_strPath;
 			Shape->m_strRect	= m_strRect;
 			
-			Shape->m_arAdjustments.RemoveAll();
-			for(int i = 0; i < m_arAdjustments.GetSize(); i++)
-				Shape->m_arAdjustments.Add(m_arAdjustments[i]);
+			Shape->m_arAdjustments.clear();
+			for(int i = 0; i < m_arAdjustments.size(); i++)
+				Shape->m_arAdjustments.push_back(m_arAdjustments[i]);
 
-			Shape->Guides.RemoveAll();
-			for(int i = 0; i < Guides.GetSize(); i++)
-				Shape->Guides.Add(Guides[i]);
+			Shape->Guides.clear();
+			for(int i = 0; i < Guides.size(); i++)
+				Shape->Guides.push_back(Guides[i]);
 
 			Shape->m_eJoin				= m_eJoin;
 			Shape->m_bConcentricFill	= m_bConcentricFill;
 
-			Shape->m_arConnectors.RemoveAll();
-			for(int i = 0; i < m_arConnectors.GetSize(); i++)
-				Shape->m_arConnectors.Add(m_arConnectors[i]);
+			Shape->m_arConnectors.clear();
+			for(int i = 0; i < m_arConnectors.size(); i++)
+				Shape->m_arConnectors.push_back(m_arConnectors[i]);
 
-			Shape->m_arConnectorAngles.RemoveAll();
-			for(int i = 0; i < m_arConnectorAngles.GetSize(); i++)
-				Shape->m_arConnectorAngles.Add(m_arConnectorAngles[i]);
+			Shape->m_arConnectorAngles.clear();
+			for(int i = 0; i < m_arConnectorAngles.size(); i++)
+				Shape->m_arConnectorAngles.push_back(m_arConnectorAngles[i]);
 
-			Shape->m_arTextRects.RemoveAll();
-			for(int i = 0; i < m_arTextRects.GetSize(); i++)
-				Shape->m_arTextRects.Add(m_arTextRects[i]);
+			Shape->m_arTextRects.clear();
+			for(int i = 0; i < m_arTextRects.size(); i++)
+				Shape->m_arTextRects.push_back(m_arTextRects[i]);
 			Shape->m_strRect = m_strRect;
 
-			Shape->m_arHandles.RemoveAll();
-			for(int i = 0; i < m_arHandles.GetSize(); i++)
-				Shape->m_arHandles.Add(m_arHandles[i]);
+			Shape->m_arHandles.clear();
+			for(int i = 0; i < m_arHandles.size(); i++)
+				Shape->m_arHandles.push_back(m_arHandles[i]);
 
 			Shape->m_strTransformXml = m_strTransformXml;
 			return true;

@@ -44,15 +44,15 @@ public:
         AddGuide(_T("val width"));
         AddGuide(_T("val height"));
 
-		m_arAdjustments.Add(5400);
-		m_arAdjustments.Add(18900);
+		m_arAdjustments.push_back(5400);
+		m_arAdjustments.push_back(18900);
        
         LoadConnectorsList(_T("@25,0;2700,@22;@25,@10;@26,@22"));
 
-        m_arConnectorAngles.Add(270);
-		m_arConnectorAngles.Add(180);
-		m_arConnectorAngles.Add(90);
-		m_arConnectorAngles.Add(0);
+        m_arConnectorAngles.push_back(270);
+		m_arConnectorAngles.push_back(180);
+		m_arConnectorAngles.push_back(90);
+		m_arConnectorAngles.push_back(0);
 
         LoadTextRect(_T("@0,0,@9,@10"));
 
@@ -62,7 +62,7 @@ public:
         oHandle1.xrange = _T("2700,8100");
         oHandle2.position = _T("center,#1");
         oHandle2.yrange = _T("14400,21600");
-        m_arHandles.Add(oHandle1);
-        m_arHandles.Add(oHandle2);
+        m_arHandles.push_back(oHandle1);
+        m_arHandles.push_back(oHandle2);
     }
 };

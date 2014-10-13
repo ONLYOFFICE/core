@@ -20,6 +20,8 @@ using namespace NSFontCutter;
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DesktopEditor/graphics/Image.h"
 
+#include <list>
+
 namespace NSShapeImageGen
 {
 	const long c_nMaxImageSize = 2000;
@@ -99,11 +101,11 @@ namespace NSShapeImageGen
 	class CImageManager
 	{
 	public:
-		CAtlMap<CString, CImageInfo>	m_mapImagesFile;
-		CAtlMap<DWORD, CImageInfo>		m_mapImageData;
+		std::map<CString, CImageInfo>	m_mapImagesFile;
+		std::map<DWORD, CImageInfo>		m_mapImageData;
 
-		CAtlArray<void*>				m_listDrawings;
-		CAtlList<CImageInfo>			m_listImages;
+		std::vector<void*>				m_listDrawings;
+		std::list<CImageInfo>			m_listImages;
 
 		CString							m_strDstMedia;
 
@@ -136,9 +138,9 @@ namespace NSShapeImageGen
 			m_lMaxSizeImage = 1200;
 			m_lNextIDImage	= 0;
 
-			m_mapImageData.RemoveAll();
-			m_mapImagesFile.RemoveAll();
-			m_listImages.RemoveAll();
+			m_mapImageData.clear();
+			m_mapImagesFile.clear();
+			m_listImages.clear();
 		}
 
 	public:
@@ -156,12 +158,12 @@ namespace NSShapeImageGen
 			POSITION pos = m_mapImagesFile.GetStartPosition();
 			while (NULL != pos)
 			{
-				CAtlMap<CString, CImageInfo>::CPair* pPair = m_mapImagesFile.GetNext(pos);
+				std::map<CString, CImageInfo>::CPair* pPair = m_mapImagesFile.GetNext(pos);
 
 				pWriter->WriteString(pPair->m_key);
-				pWriter->WriteINT((int)pPair->m_value.m_eType);
-				pWriter->WriteINT((int)pPair->m_value.m_lID);
-				pWriter->WriteBYTE(pPair->m_value.m_bValid ? 1 : 0);
+				pWriter->WriteINT((int)pPair->second.m_eType);
+				pWriter->WriteINT((int)pPair->second.m_lID);
+				pWriter->WriteBYTE(pPair->second.m_bValid ? 1 : 0);
 			}
 
 			lCount = (int)m_mapImageData.GetCount();
@@ -170,12 +172,12 @@ namespace NSShapeImageGen
 			pos = m_mapImageData.GetStartPosition();
 			while (NULL != pos)
 			{
-				CAtlMap<DWORD, CImageInfo>::CPair* pPair = m_mapImageData.GetNext(pos);
+				std::map<DWORD, CImageInfo>::CPair* pPair = m_mapImageData.GetNext(pos);
 
 				pWriter->WriteULONG(pPair->m_key);
-				pWriter->WriteINT((int)pPair->m_value.m_eType);
-				pWriter->WriteINT((int)pPair->m_value.m_lID);
-				pWriter->WriteBYTE(pPair->m_value.m_bValid ? 1 : 0);
+				pWriter->WriteINT((int)pPair->second.m_eType);
+				pWriter->WriteINT((int)pPair->second.m_lID);
+				pWriter->WriteBYTE(pPair->second.m_bValid ? 1 : 0);
 			}
 		}
 
@@ -187,8 +189,8 @@ namespace NSShapeImageGen
 			m_lDstFormat = pReader->GetLong();
 			m_strDstMedia = pReader->GetString2();
 
-			m_mapImageData.RemoveAll();
-			m_mapImagesFile.RemoveAll();
+			m_mapImageData.clear();
+			m_mapImagesFile.clear();
 
 			LONG lCount = pReader->GetLong();
 			for (LONG i = 0; i < lCount; ++i)
@@ -200,7 +202,7 @@ namespace NSShapeImageGen
 				oInfo.m_lID = pReader->GetLong();
 				oInfo.m_bValid = pReader->GetBool();
 
-				m_mapImagesFile.SetAt(sKey, oInfo);
+				m_mapImagesFile.insert(std::pair<CString, CImageInfo>(sKey, oInfo));
 			}
 
 			lCount = pReader->GetLong();
@@ -213,7 +215,7 @@ namespace NSShapeImageGen
 				oInfo.m_lID = pReader->GetLong();
 				oInfo.m_bValid = pReader->GetBool();
 
-				m_mapImageData.SetAt(dwKey, oInfo);
+				m_mapImageData.insert(std::pair<DWORD, CImageInfo>(dwKey, oInfo));
 			}
 		}
 
@@ -255,9 +257,10 @@ namespace NSShapeImageGen
 
 
 				CImageInfo oInfo;
-				CAtlMap<CString, CImageInfo>::CPair* pPair = m_mapImagesFile.Lookup(strFile1);
-				if (pPair != NULL)
-					return pPair->m_value;
+				std::map<CString, CImageInfo>::iterator pPair = m_mapImagesFile.find(strFile1);
+				
+				if (pPair != m_mapImagesFile.end())
+					return pPair->second;
 
 				CString strDownload = _T("");
 
@@ -412,20 +415,21 @@ namespace NSShapeImageGen
 
 			DWORD dwSum = m_oCRC.Calc(pBuffer, lLen);
 
-			CAtlMap<DWORD, CImageInfo>::CPair* pPair = m_mapImageData.Lookup(dwSum);
-			if (NULL == pPair)
+			std::map<DWORD, CImageInfo>::iterator pPair = m_mapImageData.find(dwSum);
+			if (m_mapImageData.end() == pPair)
 			{
 				// нужно добавить
 				++m_lNextIDImage;
 				
 				oInfo.m_lID = m_lNextIDImage;
 				SaveImage(punkData, oInfo, lWidth, lHeight);
-				m_mapImageData.SetAt(dwSum, oInfo);
-				m_listImages.AddTail(oInfo);
+				
+				m_mapImageData.insert(std::pair<DWORD,CImageInfo>(dwSum, oInfo));
+				m_listImages.push_back(oInfo);
 			}
 			else
 			{
-				oInfo = pPair->m_value;
+				oInfo = pPair->second;
 			}
 
 			return oInfo;
@@ -434,12 +438,12 @@ namespace NSShapeImageGen
 		CImageInfo GenerateImageID(CString& strFileName, double dWidth, double dHeight)
 		{
 			CImageInfo oInfo;
-			CAtlMap<CString, CImageInfo>::CPair* pPair = m_mapImagesFile.Lookup(strFileName);
+			std::map<CString, CImageInfo>::iterator pPair = m_mapImagesFile.find(strFileName);
 
 			LONG lWidth		= (LONG)(dWidth * 96 / 25.4);
 			LONG lHeight	= (LONG)(dHeight * 96 / 25.4);
 
-			if (NULL == pPair)
+			if (m_mapImagesFile.end() == pPair)
 			{
 #ifdef BUILD_CONFIG_FULL_VERSION
 				LONG lImageType = m_oExt.GetImageType(strFileName);
@@ -467,8 +471,8 @@ namespace NSShapeImageGen
 							CDirectory::CopyFile(strFileName, strSaveItem + _T("emf"), NULL, NULL);
 						}
 
-						m_mapImagesFile.SetAt(strFileName, oInfo);
-						m_listImages.AddTail(oInfo);
+						m_mapImagesFile.insert(std::pair<CString,CImageInfo>(strFileName, oInfo));
+						m_listImages.push_back(oInfo);
 						return oInfo;
 					}
 					else
@@ -488,8 +492,9 @@ namespace NSShapeImageGen
 							SaveImage(oBgraFrame, oInfo, lWidth, lHeight);
 							//чтобы в деструкторе не удалялось
 							oBgraFrame.put_Data(NULL);
-							m_mapImagesFile.SetAt(strFileName, oInfo);
-							m_listImages.AddTail(oInfo);
+							
+							m_mapImagesFile.insert(std::pair<CString,CImageInfo>(strFileName, oInfo));
+							m_listImages.push_back(oInfo);
 							return oInfo;
 						}
 						else
@@ -506,12 +511,13 @@ namespace NSShapeImageGen
 				
 				oInfo.m_lID = m_lNextIDImage;
 				SaveImage(strFileName, oInfo, lWidth, lHeight);
-				m_mapImagesFile.SetAt(strFileName, oInfo);
-				m_listImages.AddTail(oInfo);
+			
+				m_mapImagesFile.insert(std::pair<CString,CImageInfo>(strFileName, oInfo));
+				m_listImages.push_back(oInfo);
 			}
 			else
 			{
-				oInfo = pPair->m_value;
+				oInfo = pPair->second;
 			}
 
 			return oInfo;
@@ -548,8 +554,8 @@ namespace NSShapeImageGen
 					{
 						CDirectory::CopyFile(strFileName, strSaveItem + _T("emf"), NULL, NULL);
 					}
-					m_mapImagesFile.SetAt(strFileName, oInfo);
-					m_listImages.AddTail(oInfo);
+					m_mapImagesFile.insert(std::pair<CString,CImageInfo>(strFileName, oInfo));
+					m_listImages.push_back(oInfo);
 					return oInfo;
 				}
 				else
@@ -565,8 +571,8 @@ namespace NSShapeImageGen
 			
 			oInfo.m_lID = m_lNextIDImage;
 			SaveImage(strFileName, oInfo, lWidth, lHeight);
-			m_mapImagesFile.SetAt(strUrl, oInfo);
-			m_listImages.AddTail(oInfo);
+			m_mapImagesFile.insert(std::pair<CString,CImageInfo>(strUrl, oInfo));
+			m_listImages.push_back(oInfo);
 			
 			return oInfo;
 		}

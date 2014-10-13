@@ -70,7 +70,7 @@ namespace NSPresentationEditor
 		CString			strPanose;
 		CString			strPitchFamily;
 		LONG			lFontFixed;
-		CAtlArray<BYTE> arFontCharsets;
+		std::vector<BYTE> arFontCharsets;
 
 	public:
 		CFontProperties() : FontNameProp(0), strFontName(_T("")), strPanose(_T("")), strPitchFamily(_T("")), lFontFixed(0), arFontCharsets()
@@ -90,7 +90,9 @@ namespace NSPresentationEditor
 			strPanose			= oSrc.strPanose;
 			strPitchFamily		= oSrc.strPitchFamily;
 			lFontFixed			= oSrc.lFontFixed;
-			arFontCharsets.Copy(oSrc.arFontCharsets);
+
+			for (int i =0 ; i< oSrc.arFontCharsets.size(); i++)
+				arFontCharsets.push_back(oSrc.arFontCharsets[i]);
 
 			return *this;
 		}
@@ -101,8 +103,8 @@ namespace NSPresentationEditor
 			strPanose		= oFont.Panose;
 			strPitchFamily	= oFont.PitchFamily;
 			lFontFixed		= (LONG)oFont.Monospace;
-			arFontCharsets.RemoveAll();
-			arFontCharsets.Add(oFont.Charset);
+			arFontCharsets.clear();
+			arFontCharsets.push_back(oFont.Charset);
 		}
 	};
 
@@ -317,7 +319,7 @@ namespace NSPresentationEditor
 				strXml = _T("<FontProperties>");
 				strXml += (_T("<Name value='") + FontProperties->strFontName + _T("' />"));
 
-				if (0 < FontProperties->arFontCharsets.GetCount())
+				if (0 < FontProperties->arFontCharsets.size())
 					strXml += (_T("<Charset value='") + XmlUtils::IntToString((int)FontProperties->arFontCharsets[0]) + _T("' />"));
 
 				if (_T("unknown") != FontProperties->strPitchFamily)
@@ -487,7 +489,7 @@ namespace NSPresentationEditor
 		NSCommon::nullable_base<LONG>		indent;
 		NSCommon::nullable_base<LONG>		defaultTabSize;
 
-		CAtlArray<DWORD>					tabStops;
+		std::vector<DWORD>					tabStops;
 
 		bool								bIsOneLine;
 
@@ -571,7 +573,7 @@ namespace NSPresentationEditor
 			if (!wrapFlags.is_init())
 				wrapFlags = oSrc.wrapFlags;
 
-			if ((0 == tabStops.GetCount()) && (0 != oSrc.tabStops.GetCount()))
+			if ((0 == tabStops.size()) && (0 != oSrc.tabStops.size()))
 			{
 				tabStops.Copy(oSrc.tabStops);
 			}
@@ -613,7 +615,7 @@ namespace NSPresentationEditor
 			if (oSrc.wrapFlags.is_init())
 				wrapFlags = oSrc.wrapFlags;
 
-			if (0 != oSrc.tabStops.GetCount())
+			if (0 != oSrc.tabStops.size())
 			{
 				tabStops.Copy(oSrc.tabStops);
 			}
@@ -671,7 +673,7 @@ namespace NSPresentationEditor
 				strXml += (_T("<wrapflags>") + XmlUtils::IntToString(lIsWord) + _T("</wrapflags>"));
 			}
 			
-			size_t nCount = tabStops.GetCount();
+			size_t nCount = tabStops.size();
 			if (0 < nCount)
 			{
 				strXml += _T("<tabstops>");
@@ -827,7 +829,7 @@ namespace NSPresentationEditor
 		NSCommon::nullable_base<SHORT>	Indent4;
 		NSCommon::nullable_base<SHORT>	Indent5;
 
-		CAtlArray<DWORD> tabsStops;
+		std::vector<DWORD> tabsStops;
 
 	public:
 		CTextRuler() : DefaultTabSize(), CLevels(), TabStops(),
@@ -950,7 +952,7 @@ namespace NSPresentationEditor
 				oWriter.WriteNodeValueLONG(_T("Indent5"), (LONG)Indent5.get());
 			}
 
-			size_t tabssize = tabsStops.GetCount();
+			size_t tabssize = tabsStops.size();
 			if (0 != tabssize)
 			{
 				oWriter.WriteNodeBegin(_T("TabStops"));
@@ -989,7 +991,7 @@ namespace NSPresentationEditor
 
 		bool bGramma;
 
-		CAtlArray<DWORD> arSmartTags;
+		std::vector<DWORD> arSmartTags;
 
 	public:
 
@@ -1122,7 +1124,7 @@ namespace NSPresentationEditor
 			if (bSmartTag)
 			{
 				oWriter.WriteNodeBegin(_T("SmartTags"));
-				for (size_t i = 0; i < arSmartTags.GetCount(); ++i)
+				for (size_t i = 0; i < arSmartTags.size(); ++i)
 				{
 					oWriter.WriteNodeValueDWORD(_T("tag"), arSmartTags[i]);
 				}
@@ -1535,7 +1537,7 @@ namespace NSPresentationEditor
 		LONG m_lTextLevel;
 
 		CTextPFRun m_oPFRun;
-		CAtlArray<CSpan> m_arSpans;
+		std::vector<CSpan> m_arSpans;
 
 	public:
 		CParagraph() : m_oPFRun(), m_arSpans()
@@ -1563,7 +1565,7 @@ namespace NSPresentationEditor
 			{
 				m_oPFRun.hasBullet = FALSE;
 			}
-			size_t nCountS = m_arSpans.GetCount();
+			size_t nCountS = m_arSpans.size();
 			for (size_t i = 0; i < nCountS; ++i)
 			{
 				m_arSpans[i].m_strText.Replace((TCHAR)(11), (TCHAR)('\n'));
@@ -1571,7 +1573,7 @@ namespace NSPresentationEditor
 		}
 		AVSINLINE bool IsEmpty()
 		{
-			size_t nCountSpans = m_arSpans.GetCount();
+			size_t nCountSpans = m_arSpans.size();
 			for (size_t i = 0; i < nCountSpans; ++i)
 			{
 				int nLen = m_arSpans[i].m_strText.GetLength();

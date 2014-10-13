@@ -18,7 +18,7 @@ public:
         AddGuide(_T("prod @0 1 3"));
         AddGuide(_T("sum @1 0 @2"));
 
-		m_arAdjustments.Add(17520);
+		m_arAdjustments.push_back(17520);
 
         LoadConnectorsList(_T("10800,0;3163,3163;0,10800;3163,18437;10800,21600;18437,18437;21600,10800;18437,3163"));
         LoadTextRect(_T("3163,3163,18437,18437"));
@@ -26,6 +26,6 @@ public:
         CHandle_ oHandle1;
         oHandle1.position = _T("center,#0");
         oHandle1.yrange = _T("15510,17520");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
     }
 };

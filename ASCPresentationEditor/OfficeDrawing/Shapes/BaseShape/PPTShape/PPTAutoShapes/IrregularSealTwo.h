@@ -15,10 +15,10 @@ public:
 
         LoadConnectorsList(_T("9722,1887;0,12877;11612,18842;21600,6645"));
 
-        m_arConnectorAngles.Add(270);
-		m_arConnectorAngles.Add(180);
-		m_arConnectorAngles.Add(90);
-		m_arConnectorAngles.Add(0);
+        m_arConnectorAngles.push_back(270);
+		m_arConnectorAngles.push_back(180);
+		m_arConnectorAngles.push_back(90);
+		m_arConnectorAngles.push_back(0);
 
         LoadTextRect(_T("5372,6382,14640,15935"));
 

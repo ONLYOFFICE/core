@@ -58,7 +58,7 @@ namespace PPTX
 		}
 
 		
-		CAtlMap<CString, OOX::CPath> SpIds;
+		std::map<CString, OOX::CPath> SpIds;
 	private:
 		CString m_strDocument;
 
@@ -107,7 +107,7 @@ namespace PPTX
 							if (rid.IsInit())
 							{
 								OOX::CPath path = image(*rid)->filename();
-						 		SpIds.SetAt(*id, path);
+								SpIds.insert(std::pair<CString, OOX::CPath>(*id, path));
 							}
 						}
 					}

@@ -7,8 +7,8 @@ namespace NSPresentationEditor
 	class CLayout : public IBase
 	{
 	public:
-		CAtlArray<IElement*>	m_arElements;
-		CAtlArray<CColor>		m_arColorScheme;
+		std::vector<IElement*>	m_arElements;
+		std::vector<CColor>		m_arColorScheme;
 		bool					m_bUseThemeColorScheme;
 
 		// "настоящие"(в логической системе координат), чтобы масштабировать
@@ -45,7 +45,7 @@ namespace NSPresentationEditor
 			Clear();
 			m_arElements.Copy(oSrc.m_arElements);
 
-			size_t nCount = m_arElements.GetCount();
+			size_t nCount = m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
 				ADDREFINTERFACE((m_arElements[nIndex]));
@@ -82,7 +82,7 @@ namespace NSPresentationEditor
 	public:
 		void Clear()
 		{
-			size_t nCount = m_arElements.GetCount();
+			size_t nCount = m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
 				RELEASEINTERFACE((m_arElements[nIndex]));
@@ -94,7 +94,7 @@ namespace NSPresentationEditor
 		void CreateDublicateElements()
 		{
 			// просто из всех своих элементов делаем дубликата
-			size_t nCount = m_arElements.GetCount();
+			size_t nCount = m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
 				IElement* pElem = m_arElements[nIndex];
@@ -115,7 +115,7 @@ namespace NSPresentationEditor
 
 		IElement* GetPlaceholder(LONG lID, BOOL bIsAddRef)
 		{
-			size_t nCount = m_arElements.GetCount();
+			size_t nCount = m_arElements.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				IElement* pElem = m_arElements[i];
@@ -135,7 +135,7 @@ namespace NSPresentationEditor
 		LONG GetCountPlaceholderWithType(LONG lType)
 		{
 			LONG lFound = 0;
-			size_t nCount = m_arElements.GetCount();
+			size_t nCount = m_arElements.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				if (m_arElements[i]->m_lPlaceholderType == lType)
@@ -157,7 +157,7 @@ namespace NSPresentationEditor
 
 		NSPresentationEditor::CColor GetColor(const LONG& lIndexScheme)
 		{
-			if (lIndexScheme < (LONG)m_arColorScheme.GetCount())
+			if (lIndexScheme < (LONG)m_arColorScheme.size())
 			{
 				return m_arColorScheme[lIndexScheme];
 			}

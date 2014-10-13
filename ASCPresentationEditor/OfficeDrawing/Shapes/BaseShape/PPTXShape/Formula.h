@@ -96,9 +96,9 @@ namespace NSGuidesOOXML
 
 		void FromString(CString strFormula)
 		{
-			CSimpleArray<CString> oArrayParams;
+			std::vector<CString> oArrayParams;
 			NSStringUtils::ParseString(_T(" "), strFormula, &oArrayParams);
-			int nCount = oArrayParams.GetSize();
+			int nCount = oArrayParams.size();
 			if (0 >= nCount)
 				return;
 
@@ -123,12 +123,12 @@ namespace NSGuidesOOXML
 		double m_lShapeWidth;
 		double m_lShapeHeight;
 	public:
-		CSimpleMap<CString, long> mapAdjustments;
-		CSimpleMap<CString, long> mapGuides;
-		CSimpleArray<CFormula> strAdjustments;
-		CSimpleArray<CFormula> strGuides;
-		CSimpleArray<long>* Adjustments;
-		CSimpleArray<double>* Guides;
+		std::map<CString, long> mapAdjustments;
+		std::map<CString, long> mapGuides;
+		std::vector<CFormula> strAdjustments;
+		std::vector<CFormula> strGuides;
+		std::vector<long>* Adjustments;
+		std::vector<double>* Guides;
 
 		void SetWidthHeight(double w, double h)
 		{
@@ -166,7 +166,7 @@ namespace NSGuidesOOXML
 		}
 
 	public:
-		CFormulaManager(CSimpleArray<long>& a, CSimpleArray<double>& g)
+		CFormulaManager(std::vector<long>& a, std::vector<double>& g)
 		{
 			Adjustments = &a;
 			Guides = &g;
@@ -213,12 +213,12 @@ namespace NSGuidesOOXML
 
 		~CFormulaManager()
 		{
-			mapAdjustments.RemoveAll();
-			mapGuides.RemoveAll();
-			strAdjustments.RemoveAll();
-			strGuides.RemoveAll();
-			Adjustments->RemoveAll();
-			Guides->RemoveAll();
+			mapAdjustments.clear();
+			mapGuides.clear();
+			strAdjustments.clear();
+			strGuides.clear();
+			Adjustments->clear();
+			Guides->clear();
 		}
 
 		CFormulaManager& operator =(const CFormulaManager& manager)
@@ -226,45 +226,64 @@ namespace NSGuidesOOXML
 			m_lShapeWidth = manager.m_lShapeWidth;
 			m_lShapeHeight = manager.m_lShapeWidth;
 
-			mapAdjustments.RemoveAll();
-			for(int i = 0; i < manager.mapAdjustments.GetSize(); i++)
-				mapAdjustments.Add(manager.mapAdjustments.GetKeyAt(i), manager.mapAdjustments.GetValueAt(i));
-			mapGuides.RemoveAll();
-			for(int i = 0; i < manager.mapGuides.GetSize(); i++)
-				mapGuides.Add(manager.mapGuides.GetKeyAt(i), manager.mapGuides.GetValueAt(i));
+			mapAdjustments.clear();
+			for (std::map<CString, long>::const_iterator pPair = manager.mapAdjustments.begin(); pPair != manager.mapAdjustments.end(); ++pPair)
+			{
+				mapAdjustments.insert(std::pair<CString, long>(pPair->first, pPair->second));
+			}
+			
+			mapGuides.clear();
+			for (std::map<CString, long>::const_iterator pPair = manager.mapGuides.begin(); pPair != manager.mapGuides.end(); ++pPair)
+			{
+				mapGuides.insert(std::pair<CString, long>(pPair->first, pPair->second));
+			}
 
-			strAdjustments.RemoveAll();
-			for(int i = 0; i < manager.strAdjustments.GetSize(); i++)
-				strAdjustments.Add(manager.strAdjustments[i]);
-			strGuides.RemoveAll();
-			for(int i = 0; i < manager.strGuides.GetSize(); i++)
-				strGuides.Add(manager.strGuides[i]);
+			strAdjustments.clear();
+			for(int i = 0; i < manager.strAdjustments.size(); i++)
+			{
+				strAdjustments.push_back(manager.strAdjustments[i]);
+			}
+		
+			strGuides.clear();
+			for(int i = 0; i < manager.strGuides.size(); i++)
+			{
+				strGuides.push_back(manager.strGuides[i]);
+			}
 
-			Adjustments->RemoveAll();
-			for(int i = 0; i < manager.Adjustments->GetSize(); i++)
-				Adjustments->Add((*manager.Adjustments)[i]);
-			Guides->RemoveAll();
-			for(int i = 0; i < manager.Guides->GetSize(); i++)
-				Guides->Add((*manager.Guides)[i]);
+			Adjustments->clear();
+			for(int i = 0; i < manager.Adjustments->size(); i++)
+			{
+				Adjustments->push_back((*manager.Adjustments)[i]);
+			}
+
+			Guides->clear();
+			for(int i = 0; i < manager.Guides->size(); i++)
+			{
+				Guides->push_back((*manager.Guides)[i]);
+			}
 
 			return *this;
 		}
 
 		void AddAdjustment(const CString& name, const CString& fmla)
 		{
-			long num = mapAdjustments.FindKey(name);
-			if(num >= 0)
+			std::map<CString, long>::const_iterator pPair = mapAdjustments.find(name);
+			
+			if(pPair != mapAdjustments.end())
 			{
-				strAdjustments[mapAdjustments.GetValueAt(num)].FromString(fmla);
-				(*Adjustments)[mapAdjustments.GetValueAt(num)] = NonDefResult;
+				strAdjustments[pPair->second].FromString(fmla);
+				(*Adjustments)[pPair->second] = NonDefResult;
+				
 				return;
 			}
-			CFormula formula( strAdjustments.GetSize() + 1);
+			CFormula formula( strAdjustments.size() + 1);
 			formula.m_sName = name;
 			formula.FromString(fmla);
-			strAdjustments.Add(formula);
-			Adjustments->Add(NonDefResult);
-			mapAdjustments.Add(name, strAdjustments.GetSize() - 1);
+			
+			strAdjustments.push_back(formula);
+			Adjustments->push_back(NonDefResult);
+			
+			mapAdjustments.insert(std::pair<CString, long>(name, strAdjustments.size() - 1));
 		}
 
 		void AddGuide(const CString& name, const CString& fmla)
@@ -280,12 +299,14 @@ namespace NSGuidesOOXML
 			*/
 			// формулы могут повторяться!!!
 			// тогда по мере расчитывания они перетирают друг друга
-			CFormula formula( -strGuides.GetSize() - 1);
+			CFormula formula( -strGuides.size() - 1);
 			formula.m_sName = name;
 			formula.FromString(fmla);
-			strGuides.Add(formula);
-			Guides->Add(dNonDefResult);
-			mapGuides.Add(name, strGuides.GetSize() - 1);
+			
+			strGuides.push_back(formula);
+			Guides->push_back(dNonDefResult);
+			
+			mapGuides.insert(std::pair<CString, long>(name, strGuides.size() - 1));
 		}
 
 		double GetValue(CString str)
@@ -293,37 +314,38 @@ namespace NSGuidesOOXML
 			if(str == _T("w")) return m_lShapeWidth;
 			if(str == _T("h")) return m_lShapeHeight;
 
-			long numGuide = mapGuides.FindKey(str);
-			long numAdj = mapAdjustments.FindKey(str);
-			if(numGuide >= 0)
+			std::map<CString, long>::iterator numGuide	= mapGuides.find(str);
+			std::map<CString, long>::iterator numAdj	= mapAdjustments.find(str);
+			
+			if(numGuide != mapGuides.end())
 			{
-				double res = (*Guides)[mapGuides.GetValueAt(numGuide)];
+				double res = (*Guides)[numGuide->second];
 				if(res < dNonDefResult)
 					return res;
-				return strGuides[mapGuides.GetValueAt(numGuide)].Calculate(*this);
+				return strGuides[numGuide->second].Calculate(*this);
 			}
-			if(numAdj >= 0)
+			if(numAdj != mapAdjustments.end())
 			{
-				long res = (*Adjustments)[mapAdjustments.GetValueAt(numAdj)];
+				long res = (*Adjustments)[numAdj->second];
 				if(res != NonDefResult)
 					return res;
-				return strAdjustments[mapAdjustments.GetValueAt(numAdj)].Calculate(*this);
+				return strAdjustments[numAdj->second].Calculate(*this);
 			}
 			return XmlUtils::GetInteger(str);
 		}
 
 		void Clear()
 		{
-			//for(long i = 0; i < Adjustments.GetSize(); i++)
+			//for(long i = 0; i < Adjustments.size(); i++)
 			//	Adjustments[i] = NonDefResult;
-			for(long i = 0; i < Guides->GetSize(); i++)
+			for(long i = 0; i < Guides->size(); i++)
 				(*Guides)[i] = dNonDefResult;
 		}
 
 		void ReCalculateGuides()
 		{
 			Clear();
-			for(long i = 0; i < strGuides.GetSize(); i++)
+			for(long i = 0; i < strGuides.size(); i++)
 				(*Guides)[i] = strGuides[i].Calculate(*this);
 		}
 	};

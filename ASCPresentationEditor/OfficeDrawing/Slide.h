@@ -10,7 +10,7 @@ namespace NSPresentationEditor
 		LONG m_lThemeID;
 		LONG m_lLayoutID;
 
-		CAtlArray<IElement*> m_arElements;
+		std::vector<IElement*> m_arElements;
 		CSlideShowInfo m_oSlideShow;
 
 		// размеры в миллиметрах
@@ -28,7 +28,7 @@ namespace NSPresentationEditor
 		bool m_bIsBackground;
 		CBrush m_oBackground;
 
-		CAtlArray<CColor>		m_arColorScheme;
+		std::vector<CColor>		m_arColorScheme;
 		bool					m_bUseLayoutColorScheme;
 		bool					m_bShowMasterShapes;
 
@@ -57,7 +57,7 @@ namespace NSPresentationEditor
 		}
 		~CSlide()
 		{
-			size_t nCount = m_arElements.GetCount();
+			size_t nCount = m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
 				IElement* pElem = m_arElements[nIndex];
@@ -68,7 +68,7 @@ namespace NSPresentationEditor
 
 		void Clear()
 		{
-			size_t nCount = m_arElements.GetCount();
+			size_t nCount = m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
 				IElement* pElem = m_arElements[nIndex];
@@ -81,10 +81,10 @@ namespace NSPresentationEditor
 		{
 			Clear();
 			
-			size_t nCount = oSrc.m_arElements.GetCount();
+			size_t nCount = oSrc.m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
-				m_arElements.Add(oSrc.m_arElements[nIndex]->CreateDublicate());
+				m_arElements.push_back(oSrc.m_arElements[nIndex]->CreateDublicate());
 			}
 
 			m_oSlideShow		= oSrc.m_oSlideShow;
@@ -123,14 +123,14 @@ namespace NSPresentationEditor
 
 			if (NULL != pTheme)
 			{
-				if ((0 <= m_lLayoutID) && (m_lLayoutID < (LONG)pTheme->m_arLayouts.GetCount()))
+				if ((0 <= m_lLayoutID) && (m_lLayoutID < (LONG)pTheme->m_arLayouts.size()))
 				{
 					pLayout = &pTheme->m_arLayouts[m_lLayoutID];
 				}
 			}
 
 			// все элементы добавлены
-			size_t nCount = m_arElements.GetCount();
+			size_t nCount = m_arElements.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				CalculateElement(i, pTheme, pLayout);
@@ -140,7 +140,7 @@ namespace NSPresentationEditor
 
 		void ClearPreset()
 		{
-			LONG nCount = (LONG)m_arElements.GetCount();
+			LONG nCount = (LONG)m_arElements.size();
 			for (LONG i = 0; i < nCount; ++i)
 			{
 				IElement* pElement = m_arElements[i];
@@ -193,7 +193,7 @@ namespace NSPresentationEditor
 		{
 			CString strSlide = _T("");
 			strSlide.Format(_T("<Slide tid='%d' lid='%d'>"), m_lThemeID, m_lLayoutID);
-			for (size_t i = 0; i < m_arElements.GetCount(); ++i)
+			for (size_t i = 0; i < m_arElements.size(); ++i)
 			{
 				strSlide += m_arElements[i]->SerializeToXml();
 			}
@@ -224,11 +224,11 @@ namespace NSPresentationEditor
 				CStylesCSS oStyles;
 				oStyles.LoadStyles(oNodeColors.GetText());
 
-				size_t nCount = oStyles.m_arStyles.GetCount();
+				size_t nCount = oStyles.m_arStyles.size();
 				LONG lColor = 0;
 				for (size_t i = 0; i < nCount; i += 3)
 				{
-					m_arColorScheme.Add();
+					m_arColorScheme.push_back();
 					oStyles.m_arStyles[i].LoadColor(m_arColorScheme[lColor]);
 					++lColor;
 				}
@@ -276,7 +276,7 @@ namespace NSPresentationEditor
 					pShapeEl->m_bFlipH				= (1 == oNodeMem.ReadAttributeInt(_T("flipx")));
 					pShapeEl->m_bFlipV				= (1 == oNodeMem.ReadAttributeInt(_T("flipy")));
 
-					m_arElements.Add(pShapeEl);
+					m_arElements.push_back(pShapeEl);
 				}
 			}
 
@@ -297,7 +297,7 @@ namespace NSPresentationEditor
 					{
 						LONG lFontRef	= XmlUtils::GetInteger(pPair->m_value);
 
-						size_t nCountEl = m_arElements.GetCount();
+						size_t nCountEl = m_arElements.size();
 						for (size_t j = 0; j < nCountEl; ++j)
 						{
 							if ((lElementID == m_arElements[j]->m_lID) && 
@@ -381,7 +381,7 @@ namespace NSPresentationEditor
 			CString strFontRefs = _T("");
 
 			// elements
-			size_t nCount = m_arElements.GetCount();
+			size_t nCount = m_arElements.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				IElement* pElement = m_arElements[i];
@@ -404,7 +404,7 @@ namespace NSPresentationEditor
 					if (NULL != pTextElement)
 					{
 						LONG lFontRef = pTextElement->m_oShape.m_oText.m_lFontRef;
-						if (pTextElement->m_oShape.m_oText.m_bIsSlideFontRef && (0 <= lFontRef) && (lFontRef < (LONG)pTheme->m_arFonts.GetCount()))
+						if (pTextElement->m_oShape.m_oText.m_bIsSlideFontRef && (0 <= lFontRef) && (lFontRef < (LONG)pTheme->m_arFonts.size()))
 						{
 							CString strRef = _T("");
 							strRef.Format(_T("s_font%d { font-index:%d;font-family:%s; }\n"), 
@@ -424,7 +424,7 @@ namespace NSPresentationEditor
 
 		void SetUpPlaceholderStyles(NSPresentationEditor::CLayout* pLayout)
 		{
-			size_t nCountElements = m_arElements.GetCount();
+			size_t nCountElements = m_arElements.size();
 			for (size_t nEl = 0; nEl < nCountElements; ++nEl)
 			{
 				if (-1 != m_arElements[nEl]->m_lPlaceholderType && etShape == m_arElements[nEl]->m_etType)
@@ -435,7 +435,7 @@ namespace NSPresentationEditor
 					{
 						LONG lCountThisType = pLayout->GetCountPlaceholderWithType(pSlideElement->m_lPlaceholderType);
 
-						size_t nCountLayout = pLayout->m_arElements.GetCount();
+						size_t nCountLayout = pLayout->m_arElements.size();
 						for (size_t i = 0; i < nCountLayout; ++i)
 						{
 							if (1 == lCountThisType)
@@ -471,7 +471,7 @@ namespace NSPresentationEditor
 
 		NSPresentationEditor::CColor GetColor(const LONG& lIndexScheme)
 		{
-			if (lIndexScheme < (LONG)m_arColorScheme.GetCount())
+			if (lIndexScheme < (LONG)m_arColorScheme.size())
 			{
 				return m_arColorScheme[lIndexScheme];
 			}

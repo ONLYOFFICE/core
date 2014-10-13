@@ -62,33 +62,33 @@ public:
         AddGuide(_T("prod height 4390 32768"));
         AddGuide(_T("prod height 28378 32768"));
 
-		m_arAdjustments.Add(12960);
-		m_arAdjustments.Add(19440);
-		m_arAdjustments.Add(14400);
+		m_arAdjustments.push_back(12960);
+		m_arAdjustments.push_back(19440);
+		m_arAdjustments.push_back(14400);
         
         LoadConnectorsList(_T("0,@17;@2,@14;@22,@8;@2,@12;@22,@16"));
         
-		m_arConnectorAngles.Add(180);
-		m_arConnectorAngles.Add(90);
-		m_arConnectorAngles.Add(0);
-		m_arConnectorAngles.Add(0);
-		m_arConnectorAngles.Add(0);
+		m_arConnectorAngles.push_back(180);
+		m_arConnectorAngles.push_back(90);
+		m_arConnectorAngles.push_back(0);
+		m_arConnectorAngles.push_back(0);
+		m_arConnectorAngles.push_back(0);
 
         LoadTextRect(_T("@47,@45,@48,@46"));
        
         CHandle_ oHandle1;
         oHandle1.position = _T("bottomRight,#0");
         oHandle1.yrange = _T("@40,@29"); 
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
         
         CHandle_ oHandle2;
         oHandle1.position = _T("bottomRight,#1"); 
         oHandle1.yrange = _T("@27,@21");  
-        m_arHandles.Add(oHandle2);
+        m_arHandles.push_back(oHandle2);
 
         CHandle_ oHandle3;
         oHandle3.position = _T("#2,bottomRight");
         oHandle3.xrange = _T("@44,@22");
-        m_arHandles.Add(oHandle3);
+        m_arHandles.push_back(oHandle3);
     }
 };

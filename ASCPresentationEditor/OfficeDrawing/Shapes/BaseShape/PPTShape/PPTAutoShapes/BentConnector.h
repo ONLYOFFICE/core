@@ -16,7 +16,7 @@ public:
 		m_strPath = _T("m,l@0,0@0,21600,21600,21600e");//m_strPathLimoX;
 
 		AddGuide(_T("val #0"));
-		m_arAdjustments.Add(10800);
+		m_arAdjustments.push_back(10800);
 
 		LoadConnectorsList(_T("0,0;21600,21600"));
     }

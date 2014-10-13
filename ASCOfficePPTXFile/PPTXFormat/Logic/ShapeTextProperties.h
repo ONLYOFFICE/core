@@ -62,7 +62,7 @@ namespace PPTX
 			BodyPr bodyPr;
 
 			// просто указатель - он должен выставиться из темы
-			CAtlArray<nullable<TextParagraphPr>*>*	m_masters;
+			std::vector<nullable<TextParagraphPr>*>*	m_masters;
 
 			TextFont					MajorLatin;
 			TextFont					MinorLatin;
@@ -83,7 +83,7 @@ namespace PPTX
 			__forceinline void SetMajorLatin(const TextFont& mjltFont){MajorLatin = mjltFont;};
 			__forceinline void SetMinorLatin(const TextFont& mnltFont){MinorLatin = mnltFont;};
 
-			__forceinline void SetMasterStyles(CAtlArray<nullable<TextParagraphPr>*>* pStyles) { m_masters = pStyles; }
+			__forceinline void SetMasterStyles(std::vector<nullable<TextParagraphPr>*>* pStyles) { m_masters = pStyles; }
 
 			__forceinline nullable<TextParagraphPr>* GetLevels()
 			{ 

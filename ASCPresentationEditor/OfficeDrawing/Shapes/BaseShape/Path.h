@@ -11,9 +11,6 @@
 using namespace NSGuidesVML;
 #endif
 
-#if defined(ODP_DEF)
-#include "OdpShape/Formula.h"
-#endif
 
 namespace NSPresentationEditor
 {
@@ -214,7 +211,7 @@ namespace NSPresentationEditor
 	{
 	public:
 		RulesType m_eRuler;
-		CSimpleArray<POINT> m_arPoints;
+		std::vector<POINT> m_arPoints;
 
 	private:
 		int m_nCountElementsPoint;
@@ -234,18 +231,18 @@ namespace NSPresentationEditor
 				POINT point;
 				point.x = lParam;
 				point.y = 0;
-				m_arPoints.Add(point);
+				m_arPoints.push_back(point);
 			}
 			else
 			{
-				m_arPoints[m_arPoints.GetSize() - 1].y = lParam;
+				m_arPoints[m_arPoints.size() - 1].y = lParam;
 			}
 			++m_nCountElementsPoint;
 		}
 	#if defined(PPTX_DEF)
 		void FromXML(XmlUtils::CXmlNode& Node, NSGuidesOOXML::CFormulaManager& pManager, double WidthKoef, double HeightKoef)
 		{
-			m_arPoints.RemoveAll();
+			m_arPoints.clear();
 			bool bRes = true;
 			m_eRuler = GetRuler(Node.GetName(), bRes);
 			if((m_eRuler != rtOOXMLClose) && (m_eRuler != rtOOXMLEnd))
@@ -261,7 +258,7 @@ namespace NSPresentationEditor
 						list.GetAt(i, pt);
 						lpoint.x = (long)(pManager.GetValue(pt.GetAttribute(_T("x")))*WidthKoef);
 						lpoint.y = (long)(pManager.GetValue(pt.GetAttribute(_T("y")))*HeightKoef);
-						m_arPoints.Add(lpoint);
+						m_arPoints.push_back(lpoint);
 					}
 				}
 				else
@@ -269,7 +266,7 @@ namespace NSPresentationEditor
 					POINT size;
 					size.x = (long)(pManager.GetValue(Node.GetAttribute(_T("wR")))*WidthKoef);
 					size.y = (long)(pManager.GetValue(Node.GetAttribute(_T("hR")))*HeightKoef);
-					m_arPoints.Add(size);
+					m_arPoints.push_back(size);
 					double stAng = pManager.GetValue(Node.GetAttribute(_T("stAng")));
 					double swAng = pManager.GetValue(Node.GetAttribute(_T("swAng")));
 					double stAng2 = atan2(HeightKoef * sin(stAng * RadKoef), WidthKoef * cos(stAng * RadKoef));
@@ -282,7 +279,7 @@ namespace NSPresentationEditor
 					if(angle.y == 0) angle.y = 21600000;
 					//angle.x = angle.x / 60000;
 					//angle.y = angle.y / 60000;
-					m_arPoints.Add(angle);
+					m_arPoints.push_back(angle);
 				}
 			}
 		}
@@ -319,7 +316,7 @@ namespace NSPresentationEditor
 					case rtOOXMLLineTo:
 					case rtOOXMLCubicBezTo:
 						{
-							int nCount = m_arPoints.GetSize();
+							int nCount = m_arPoints.size();
 							for (int nIndex = 0; nIndex < nCount; ++nIndex)
 							{			
 								double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
@@ -338,10 +335,10 @@ namespace NSPresentationEditor
 						}
 					case rtOOXMLQuadBezTo:
 						{
-							CAtlArray<CGeomShapeInfo::CPointD> arPoints;
-							arPoints.Add(pGeomInfo.m_oCurPoint);
+							std::vector<CGeomShapeInfo::CPointD> arPoints;
+							arPoints.push_back(pGeomInfo.m_oCurPoint);
 							
-							int nCount = m_arPoints.GetSize();
+							int nCount = m_arPoints.size();
 							for (int nIndex = 0; nIndex < nCount; ++nIndex)
 							{			
 								CGeomShapeInfo::CPointD oPoint;
@@ -349,7 +346,7 @@ namespace NSPresentationEditor
 								oPoint.dX = dLeft + (dKoefX * m_arPoints[nIndex].x);
 								oPoint.dY = dTop  + (dKoefY * m_arPoints[nIndex].y);
 
-								arPoints.Add(oPoint);
+								arPoints.push_back(oPoint);
 							}
 
 							Bez2_3(arPoints, m_eRuler);
@@ -357,7 +354,7 @@ namespace NSPresentationEditor
 							strRes = GetRulerName(m_eRuler);
 							strRes = _T("<part name='") + strRes + _T("' path='");
 							
-							size_t nCountNew = arPoints.GetCount();
+							size_t nCountNew = arPoints.size();
 							if (0 < nCountNew)
 							{
 								pGeomInfo.m_oCurPoint = arPoints[nCountNew - 1];
@@ -457,7 +454,7 @@ namespace NSPresentationEditor
 								pGeomInfo.m_oCurPoint.dX = 0;
 								pGeomInfo.m_oCurPoint.dY = 0;
 							}
-							int nCount = m_arPoints.GetSize();
+							int nCount = m_arPoints.size();
 							for (int nIndex = 0; nIndex < nCount; ++nIndex)
 							{			
 								double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
@@ -479,10 +476,10 @@ namespace NSPresentationEditor
 						}
 					case rtQuadrBesier:
 						{
-							CAtlArray<CGeomShapeInfo::CPointD> arPoints;
-							arPoints.Add(pGeomInfo.m_oCurPoint);
+							std::vector<CGeomShapeInfo::CPointD> arPoints;
+							arPoints.push_back(pGeomInfo.m_oCurPoint);
 							
-							int nCount = m_arPoints.GetSize();
+							int nCount = m_arPoints.size();
 							for (int nIndex = 0; nIndex < nCount; ++nIndex)
 							{			
 								CGeomShapeInfo::CPointD oPoint;
@@ -490,7 +487,7 @@ namespace NSPresentationEditor
 								oPoint.dX = dLeft + (dKoefX * m_arPoints[nIndex].x);
 								oPoint.dY = dTop  + (dKoefY * m_arPoints[nIndex].y);
 
-								arPoints.Add(oPoint);
+								arPoints.push_back(oPoint);
 							}
 
 							Bez2_3(arPoints, m_eRuler);
@@ -498,7 +495,7 @@ namespace NSPresentationEditor
 							strRes = GetRulerName(m_eRuler);
 							strRes = _T("<part name='") + strRes + _T("' path='");
 							
-							size_t nCountNew = arPoints.GetCount();
+							size_t nCountNew = arPoints.size();
 							if (0 < nCountNew)
 							{
 								pGeomInfo.m_oCurPoint = arPoints[nCountNew - 1];
@@ -515,7 +512,7 @@ namespace NSPresentationEditor
 					case rtArcTo:
 					case rtClockwiseArcTo:
 						{
-							int nCount = m_arPoints.GetSize();
+							int nCount = m_arPoints.size();
 							for (int nIndex = 0; nIndex < nCount; ++nIndex)
 							{			
 								double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
@@ -541,7 +538,7 @@ namespace NSPresentationEditor
 					case rtArc:
 					case rtClockwiseArc:
 						{
-							int nCount = m_arPoints.GetSize();
+							int nCount = m_arPoints.size();
 							for (int nIndex = 0; nIndex < nCount; ++nIndex)
 							{			
 								double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
@@ -568,7 +565,7 @@ namespace NSPresentationEditor
 					case rtRLineTo:
 					case rtRCurveTo:
 						{
-							int nCount = m_arPoints.GetSize();
+							int nCount = m_arPoints.size();
 							for (int nIndex = 0; nIndex < nCount; ++nIndex)
 							{
 								double lX = pGeomInfo.m_oCurPoint.dX + (dKoefX * m_arPoints[nIndex].x);
@@ -594,7 +591,7 @@ namespace NSPresentationEditor
 					case rtAngleEllipseTo:
 					case rtAngleEllipse:
 						{
-							int nCount = m_arPoints.GetSize();
+							int nCount = m_arPoints.size();
 							for (int nIndex = 0; nIndex < nCount; ++nIndex)
 							{			
 								double lX = 0;
@@ -703,7 +700,7 @@ namespace NSPresentationEditor
 								pGeomInfo.m_oCurPoint.dX = 0;
 								pGeomInfo.m_oCurPoint.dY = 0;
 							}
-							int nCount = m_arPoints.GetSize();
+							int nCount = m_arPoints.size();
 							for (int nIndex = 0; nIndex < nCount; ++nIndex)
 							{			
 								double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
@@ -725,10 +722,10 @@ namespace NSPresentationEditor
 						}
 					case rtQuadrBesier:
 						{
-							CAtlArray<CGeomShapeInfo::CPointD> arPoints;
-							arPoints.Add(pGeomInfo.m_oCurPoint);
+							std::vector<CGeomShapeInfo::CPointD> arPoints;
+							arPoints.push_back(pGeomInfo.m_oCurPoint);
 							
-							int nCount = m_arPoints.GetSize();
+							int nCount = m_arPoints.size();
 							for (int nIndex = 0; nIndex < nCount; ++nIndex)
 							{			
 								CGeomShapeInfo::CPointD oPoint;
@@ -736,7 +733,7 @@ namespace NSPresentationEditor
 								oPoint.dX = dLeft + (dKoefX * m_arPoints[nIndex].x);
 								oPoint.dY = dTop  + (dKoefY * m_arPoints[nIndex].y);
 
-								arPoints.Add(oPoint);
+								arPoints.push_back(oPoint);
 							}
 
 							Bez2_3(arPoints, m_eRuler);
@@ -744,7 +741,7 @@ namespace NSPresentationEditor
 							strRes = GetRulerName(m_eRuler);
 							strRes = _T("<part name='") + strRes + _T("' path='");
 							
-							size_t nCountNew = arPoints.GetCount();
+							size_t nCountNew = arPoints.size();
 							if (0 < nCountNew)
 							{
 								pGeomInfo.m_oCurPoint = arPoints[nCountNew - 1];
@@ -761,7 +758,7 @@ namespace NSPresentationEditor
 					case rtArcTo:
 					case rtClockwiseArcTo:
 						{
-							int nCount = m_arPoints.GetSize();
+							int nCount = m_arPoints.size();
 							for (int nIndex = 0; nIndex < nCount; ++nIndex)
 							{			
 								double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
@@ -787,7 +784,7 @@ namespace NSPresentationEditor
 					case rtArc:
 					case rtClockwiseArc:
 						{
-							int nCount = m_arPoints.GetSize();
+							int nCount = m_arPoints.size();
 							for (int nIndex = 0; nIndex < nCount; ++nIndex)
 							{			
 								double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
@@ -813,7 +810,7 @@ namespace NSPresentationEditor
 					case rtAngleEllipseTo:
 					case rtAngleEllipse:
 						{
-							int nCount = m_arPoints.GetSize();
+							int nCount = m_arPoints.size();
 							for (int nIndex = 0; nIndex < nCount; ++nIndex)
 							{			
 								double lX = 0;
@@ -939,7 +936,7 @@ namespace NSPresentationEditor
 						else if (rtOOXMLCubicBezTo == m_eRuler)
 							pRenderer->AddRuler(rtCurveTo);
 
-						int nCount = m_arPoints.GetSize();
+						int nCount = m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{			
 							double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
@@ -954,10 +951,10 @@ namespace NSPresentationEditor
 					}
 				case rtOOXMLQuadBezTo:
 					{
-						CAtlArray<CGeomShapeInfo::CPointD> arPoints;
-						arPoints.Add(pGeomInfo.m_oCurPoint);
+						std::vector<CGeomShapeInfo::CPointD> arPoints;
+						arPoints.push_back(pGeomInfo.m_oCurPoint);
 						
-						int nCount = m_arPoints.GetSize();
+						int nCount = m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{			
 							CGeomShapeInfo::CPointD oPoint;
@@ -965,14 +962,14 @@ namespace NSPresentationEditor
 							oPoint.dX = dLeft + (dKoefX * m_arPoints[nIndex].x);
 							oPoint.dY = dTop  + (dKoefY * m_arPoints[nIndex].y);
 
-							arPoints.Add(oPoint);
+							arPoints.push_back(oPoint);
 						}
 
 						Bez2_3(arPoints, m_eRuler);
 
 						pRenderer->AddRuler(rtCurveTo);
 						
-						size_t nCountNew = arPoints.GetCount();
+						size_t nCountNew = arPoints.size();
 						if (0 < nCountNew)
 						{
 							pGeomInfo.m_oCurPoint = arPoints[nCountNew - 1];
@@ -1052,7 +1049,7 @@ namespace NSPresentationEditor
 							pGeomInfo.m_oCurPoint.dX = 0;
 							pGeomInfo.m_oCurPoint.dY = 0;
 						}
-						int nCount = m_arPoints.GetSize();
+						int nCount = m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{			
 							double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
@@ -1067,10 +1064,10 @@ namespace NSPresentationEditor
 					}
 				case rtQuadrBesier:
 					{
-						CAtlArray<CGeomShapeInfo::CPointD> arPoints;
-						arPoints.Add(pGeomInfo.m_oCurPoint);
+						std::vector<CGeomShapeInfo::CPointD> arPoints;
+						arPoints.push_back(pGeomInfo.m_oCurPoint);
 						
-						int nCount = m_arPoints.GetSize();
+						int nCount = m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{			
 							CGeomShapeInfo::CPointD oPoint;
@@ -1078,14 +1075,14 @@ namespace NSPresentationEditor
 							oPoint.dX = dLeft + (dKoefX * m_arPoints[nIndex].x);
 							oPoint.dY = dTop  + (dKoefY * m_arPoints[nIndex].y);
 
-							arPoints.Add(oPoint);
+							arPoints.push_back(oPoint);
 						}
 
 						Bez2_3(arPoints, m_eRuler);
 
 						pRenderer->AddRuler(rtCurveTo);
 						
-						size_t nCountNew = arPoints.GetCount();
+						size_t nCountNew = arPoints.size();
 						if (0 < nCountNew)
 						{
 							pGeomInfo.m_oCurPoint = arPoints[nCountNew - 1];
@@ -1102,7 +1099,7 @@ namespace NSPresentationEditor
 					{
 						pRenderer->AddRuler(m_eRuler);
 						
-						int nCount = m_arPoints.GetSize();
+						int nCount = m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{			
 							double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
@@ -1123,7 +1120,7 @@ namespace NSPresentationEditor
 					{
 						pRenderer->AddRuler(m_eRuler);
 
-						int nCount = m_arPoints.GetSize();
+						int nCount = m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{			
 							double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
@@ -1145,7 +1142,7 @@ namespace NSPresentationEditor
 					{
 						pRenderer->AddRuler(m_eRuler);
 						
-						int nCount = m_arPoints.GetSize();
+						int nCount = m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{
 							double lX = pGeomInfo.m_oCurPoint.dX + (dKoefX * m_arPoints[nIndex].x);
@@ -1167,7 +1164,7 @@ namespace NSPresentationEditor
 					{
 						pRenderer->AddRuler(m_eRuler);
 						
-						int nCount = m_arPoints.GetSize();
+						int nCount = m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{			
 							double lX = 0;
@@ -1250,7 +1247,7 @@ namespace NSPresentationEditor
 							pGeomInfo.m_oCurPoint.dX = 0;
 							pGeomInfo.m_oCurPoint.dY = 0;
 						}
-						int nCount = m_arPoints.GetSize();
+						int nCount = m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{			
 							double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
@@ -1265,10 +1262,10 @@ namespace NSPresentationEditor
 					}
 				case rtQuadrBesier:
 					{
-						CAtlArray<CGeomShapeInfo::CPointD> arPoints;
-						arPoints.Add(pGeomInfo.m_oCurPoint);
+						std::vector<CGeomShapeInfo::CPointD> arPoints;
+						arPoints.push_back(pGeomInfo.m_oCurPoint);
 						
-						int nCount = m_arPoints.GetSize();
+						int nCount = m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{			
 							CGeomShapeInfo::CPointD oPoint;
@@ -1276,14 +1273,14 @@ namespace NSPresentationEditor
 							oPoint.dX = dLeft + (dKoefX * m_arPoints[nIndex].x);
 							oPoint.dY = dTop  + (dKoefY * m_arPoints[nIndex].y);
 
-							arPoints.Add(oPoint);
+							arPoints.push_back(oPoint);
 						}
 
 						Bez2_3(arPoints, m_eRuler);
 
 						pRenderer->AddRuler(m_eRuler);
 						
-						size_t nCountNew = arPoints.GetCount();
+						size_t nCountNew = arPoints.size();
 						if (0 < nCountNew)
 						{
 							pGeomInfo.m_oCurPoint = arPoints[nCountNew - 1];
@@ -1300,7 +1297,7 @@ namespace NSPresentationEditor
 					{
 						pRenderer->AddRuler(m_eRuler);
 						
-						int nCount = m_arPoints.GetSize();
+						int nCount = m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{			
 							double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
@@ -1321,7 +1318,7 @@ namespace NSPresentationEditor
 					{
 						pRenderer->AddRuler(m_eRuler);
 						
-						int nCount = m_arPoints.GetSize();
+						int nCount = m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{			
 							double lX = dLeft + (dKoefX * m_arPoints[nIndex].x);
@@ -1342,7 +1339,7 @@ namespace NSPresentationEditor
 					{
 						pRenderer->AddRuler(m_eRuler);
 						
-						int nCount = m_arPoints.GetSize();
+						int nCount = m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{			
 							double lX = 0;
@@ -1544,10 +1541,10 @@ namespace NSPresentationEditor
 		CSlice& operator =(const CSlice& oSrc)
 		{
 			m_eRuler = oSrc.m_eRuler;
-			m_arPoints.RemoveAll();
-			for (int nIndex = 0; nIndex < oSrc.m_arPoints.GetSize(); ++nIndex)
+			m_arPoints.clear();
+			for (int nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
 			{
-				m_arPoints.Add(oSrc.m_arPoints[nIndex]);
+				m_arPoints.push_back(oSrc.m_arPoints[nIndex]);
 			}
 			return (*this);
 		}
@@ -1594,7 +1591,7 @@ namespace NSPresentationEditor
 			}
 		}
 
-		void Bez2_3(CAtlArray<CGeomShapeInfo::CPointD>& oArray, RulesType& eType)
+		void Bez2_3(std::vector<CGeomShapeInfo::CPointD>& oArray, RulesType& eType)
 		{
 			if (rtQuadrBesier == eType)
 			{
@@ -1609,15 +1606,15 @@ namespace NSPresentationEditor
 				return;
 			}
 			
-			CAtlArray<CGeomShapeInfo::CPointD> arOld;
+			std::vector<CGeomShapeInfo::CPointD> arOld;
 			arOld.Copy(oArray);
 
-			oArray.RemoveAll();
+			oArray.clear();
 			
 			size_t nStart	= 0;
 			size_t nEnd	= 2;
 
-			size_t nCount = arOld.GetCount();
+			size_t nCount = arOld.size();
 			while (nStart < (nCount - 1))
 			{
 				if (2 >= (nCount - nStart))
@@ -1625,7 +1622,7 @@ namespace NSPresentationEditor
 					// по идее такого быть не может
 					for (size_t i = nStart; i < nCount; ++i)
 					{
-						oArray.Add(arOld[i]);
+						oArray.push_back(arOld[i]);
 					}
 					
 					nStart = nCount;
@@ -1635,10 +1632,10 @@ namespace NSPresentationEditor
 				if (4 == (nCount - nStart))
 				{
 					// ничего не поделаешь... делаем кривую третьего порядка
-					oArray.Add(arOld[nStart]);
-					oArray.Add(arOld[nStart + 1]);
-					oArray.Add(arOld[nStart + 2]);
-					oArray.Add(arOld[nStart + 3]);
+					oArray.push_back(arOld[nStart]);
+					oArray.push_back(arOld[nStart + 1]);
+					oArray.push_back(arOld[nStart + 2]);
+					oArray.push_back(arOld[nStart + 3]);
 
 					nStart += 4;
 					break;
@@ -1653,9 +1650,9 @@ namespace NSPresentationEditor
 				mem2.dX = (2 * arOld[nStart + 1].dX + arOld[nStart + 2].dX) / 3.0;
 				mem2.dY = (2 * arOld[nStart + 1].dY + arOld[nStart + 2].dY) / 3.0;
 
-				oArray.Add(mem1);
-				oArray.Add(mem2);
-				oArray.Add(arOld[nStart + 2]);
+				oArray.push_back(mem1);
+				oArray.push_back(mem2);
+				oArray.push_back(arOld[nStart + 2]);
 
 				nStart += 2;
 			}
@@ -1669,7 +1666,7 @@ namespace NSPresentationEditor
 		bool m_bStroke;
 		long width;
 		long height;
-		CSimpleArray<CSlice> m_arSlices;
+		std::vector<CSlice> m_arSlices;
 
 	public:
 		CPartPath() : m_arSlices()
@@ -1698,19 +1695,19 @@ namespace NSPresentationEditor
 				XmlUtils::CXmlNode node;
 				list.GetAt(i, node);
 				slice.FromXML(node, pManager, pManager.GetWidth()/width, pManager.GetHeight()/height);
-				m_arSlices.Add(slice);
+				m_arSlices.push_back(slice);
 			}
 
 			//CSlice EndSlice;
 			//EndSlice.m_eRuler = rtEnd;
-			//m_arSlices.Add(EndSlice);
+			//m_arSlices.push_back(EndSlice);
 		}
 	#endif
 	#if defined(PPT_DEF)
 		void FromXML(CString strPath, NSGuidesVML::CFormulasManager& pManager)
 		{
 			NSStringUtils::CheckPathOn_Fill_Stroke(strPath, m_bFill, m_bStroke);
-			CSimpleArray<CString> oArray;
+			std::vector<CString> oArray;
 
 			NSStringUtils::ParsePath2(strPath, &oArray);
 
@@ -1719,7 +1716,7 @@ namespace NSPresentationEditor
 			LONG lValue;
 			bool bRes = true;
 
-			for (int nIndex = 0; nIndex < oArray.GetSize(); ++nIndex)
+			for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
 			{
 				lValue = GetValue(oArray[nIndex], eParamType, bRes);
 				if (bRes)
@@ -1730,9 +1727,9 @@ namespace NSPresentationEditor
 					case ptAdjust:  { lValue = (*(pManager.m_pAdjustments))[lValue]; break; }
 					default: break;
 					};
-					if (0 != m_arSlices.GetSize())
+					if (0 != m_arSlices.size())
 					{
-						m_arSlices[m_arSlices.GetSize() - 1].AddParam(lValue);
+						m_arSlices[m_arSlices.size() - 1].AddParam(lValue);
 					}
 				}
 				else
@@ -1751,50 +1748,8 @@ namespace NSPresentationEditor
 						else
 						{				
 							CSlice oSlice(eRuler);
-							m_arSlices.Add(oSlice);
+							m_arSlices.push_back(oSlice);
 						}
-					}
-				}
-			}
-		}
-	#endif
-	#if defined(ODP_DEF)
-		void FromXML(CString strPath , NSGuidesOdp::CFormulaManager& pManager)
-		{
-			NSStringUtils::CheckPathOn_Fill_Stroke(strPath, m_bFill, m_bStroke);
-			CSimpleArray<CString> oArray;
-			//NSStringUtils::ParsePath(strPath, &oArray);
-			NSStringUtils::ParseString(_T(" "), strPath, &oArray);
-
-			RulesType eRuler = rtEnd; 
-			LONG lValue;
-			bool bRes = true;
-
-			for (int nIndex = 0; nIndex < oArray.GetSize(); ++nIndex)
-			{
-				eRuler = GetRuler(oArray[nIndex], bRes);
-				if (bRes)
-				{
-					if (rtNoFill == eRuler)
-					{
-						m_bFill = false;
-					}
-					else if (rtNoStroke == eRuler)
-					{
-						m_bStroke = false;
-					}
-					else
-					{				
-						CSlice oSlice(eRuler);
-						m_arSlices.Add(oSlice);
-					}
-				}
-				else
-				{
-					lValue = (long)pManager.GetValue(oArray[nIndex]);
-					if (0 != m_arSlices.GetSize())
-					{
-						m_arSlices[m_arSlices.GetSize() - 1].AddParam(lValue);
 					}
 				}
 			}
@@ -1818,7 +1773,7 @@ namespace NSPresentationEditor
 				strFill += pFore.ToString();
 
 			CString strResult = _T("<ImagePaint-DrawGraphicPath") + strFill;
-			for (int nIndex = 0; nIndex < m_arSlices.GetSize(); ++nIndex)
+			for (int nIndex = 0; nIndex < m_arSlices.size(); ++nIndex)
 			{
 				strResult += m_arSlices[nIndex].ToXml(pGeomInfo, width, height, ClassType);
 			}
@@ -1844,7 +1799,7 @@ namespace NSPresentationEditor
 
 			//pRenderer->BeginCommand(c_nPathType);
 
-			int nSlises = m_arSlices.GetSize();
+			int nSlises = m_arSlices.size();
 			for (int nIndex = 0; nIndex < nSlises; ++nIndex)
 			{
 				m_arSlices[nIndex].ToRenderer(pRenderer, pGeomInfo, width, height, ClassType);
@@ -1863,7 +1818,7 @@ namespace NSPresentationEditor
 			pRenderer->m_dWidthMM	= pInfo.m_lMillimetresHor;
 			pRenderer->m_dHeightMM	= pInfo.m_lMillimetresVer;
 
-			int nSlises = m_arSlices.GetSize();
+			int nSlises = m_arSlices.size();
 			for (int nIndex = 0; nIndex < nSlises; ++nIndex)
 			{
 				m_arSlices[nIndex].ToRenderer(pRenderer, pGeomInfo, width, height, ClassType);
@@ -1878,10 +1833,10 @@ namespace NSPresentationEditor
 			width = oSrc.width;
 			height = oSrc.height;
 
-			m_arSlices.RemoveAll();
-			for (int nIndex = 0; nIndex < oSrc.m_arSlices.GetSize(); ++nIndex)
+			m_arSlices.clear();
+			for (int nIndex = 0; nIndex < oSrc.m_arSlices.size(); ++nIndex)
 			{
-				m_arSlices.Add(oSrc.m_arSlices[nIndex]);
+				m_arSlices.push_back(oSrc.m_arSlices[nIndex]);
 			}
 			return (*this);
 		}
@@ -1890,49 +1845,34 @@ namespace NSPresentationEditor
 	class CPath
 	{
 	public:
-		CSimpleArray<CPartPath> m_arParts;
+		std::vector<CPartPath> m_arParts;
 	public:
 	#if defined(PPTX_DEF)
 		void FromXML(XmlUtils::CXmlNodes& list, NSGuidesOOXML::CFormulaManager& pManager)
 		{
-			m_arParts.RemoveAll();
+			m_arParts.clear();
 			for(long i = 0; i < list.GetCount(); i++)
 			{
 				XmlUtils::CXmlNode path;
 				list.GetAt(i, path);
 				CPartPath part;
 				part.FromXML(path, pManager);
-				m_arParts.Add(part);
+				m_arParts.push_back(part);
 			}
 		}
 	#endif
 	#if defined(PPT_DEF)
 		void FromXML(CString strPath, NSGuidesVML::CFormulasManager& pManager)
 		{
-			m_arParts.RemoveAll();
-			CSimpleArray<CString> oArray;
+			m_arParts.clear();
+			std::vector<CString> oArray;
 			NSStringUtils::ParseString(_T("e"), strPath, &oArray);
 
-			for (int nIndex = 0; nIndex < oArray.GetSize(); ++nIndex)
+			for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
 			{
 				CPartPath oPath;
-				m_arParts.Add(oPath);
-				m_arParts[m_arParts.GetSize() - 1].FromXML(oArray[nIndex], pManager);
-			}
-		}
-	#endif
-	#if defined(ODP_DEF)
-		void FromXML(CString strPath, NSGuidesOdp::CFormulaManager& pManager)
-		{
-			m_arParts.RemoveAll();
-			CSimpleArray<CString> oArray;
-			NSStringUtils::ParseString(_T("N"), strPath, &oArray);
-
-			for (int nIndex = 0; nIndex < oArray.GetSize(); ++nIndex)
-			{
-				CPartPath oPath;
-				m_arParts.Add(oPath);
-				m_arParts[m_arParts.GetSize() - 1].FromXML(oArray[nIndex], pManager);
+				m_arParts.push_back(oPath);
+				m_arParts.back().FromXML(oArray[nIndex], pManager);
 			}
 		}
 	#endif
@@ -1940,7 +1880,7 @@ namespace NSPresentationEditor
 		CString ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
 		{
 			CString strResult = _T("");
-			for (int nIndex = 0; nIndex < m_arParts.GetSize(); ++nIndex)
+			for (int nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
 			{
 				strResult += m_arParts[nIndex].ToXml(pGeomInfo, dStartTime, dEndTime, pPen, pFore, pInfo, ClassType);
 			}
@@ -1954,7 +1894,7 @@ namespace NSPresentationEditor
 			oPath.Pen	= pPen;
 			oPath.Brush	= pFore;
 
-			int nSize = m_arParts.GetSize();
+			int nSize = m_arParts.size();
 			for (int nIndex = 0; nIndex < nSize; ++nIndex)
 			{
 				oPath.Clear();
@@ -1966,17 +1906,17 @@ namespace NSPresentationEditor
 
 		CPath& operator =(const CPath& oSrc)
 		{
-			m_arParts.RemoveAll();
-			for (int nIndex = 0; nIndex < oSrc.m_arParts.GetSize(); ++nIndex)
+			m_arParts.clear();
+			for (int nIndex = 0; nIndex < oSrc.m_arParts.size(); ++nIndex)
 			{
-				m_arParts.Add(oSrc.m_arParts[nIndex]);
+				m_arParts.push_back(oSrc.m_arParts[nIndex]);
 			}
 			return (*this);
 		}
 
 		void SetCoordsize(LONG lWidth, LONG lHeight)
 		{
-			for (int nIndex = 0; nIndex < m_arParts.GetSize(); ++nIndex)
+			for (int nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
 			{
 				m_arParts[nIndex].width		= lWidth;
 				m_arParts[nIndex].height	= lHeight;

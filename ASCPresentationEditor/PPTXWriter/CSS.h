@@ -2,13 +2,13 @@
 #include "../../Common/ASCUtils.h"
 #include "../OfficeDrawing/TextAttributesEx.h"
 
-#define _USE_XMLLITE_READER_
+//#define _USE_XMLLITE_READER_
 
 class CCSS
 {
 public:
-	CAtlMap<CString, CString> m_mapSettings;
-	CString m_strClassName;
+	std::map<CString, CString>	m_mapSettings;
+	CString						m_strClassName;
 
 public:
 	CCSS()
@@ -21,7 +21,7 @@ public:
 	AVSINLINE void Clear()
 	{
 		m_strClassName = _T("");
-		m_mapSettings.RemoveAll();
+		m_mapSettings.clear();
 	}
 
 public:
@@ -100,7 +100,7 @@ public:
 
 			CString strValue = strParams.Mid(nPosOld, nPosition - nPosOld);
 
-			m_mapSettings.SetAt(strName, strValue);
+			m_mapSettings.insert(std::pair<CString, CString>(strName, strValue));
 		}
 	}
 
@@ -164,7 +164,7 @@ public:
 
 			CString strValue = strParams.Mid(nPosOld, nPosition - nPosOld);
 
-			m_mapSettings.SetAt(strName, strValue);
+			m_mapSettings.insert(std::pair<CString, CString>(strName, strValue));
 		}
 	}
 
@@ -172,17 +172,17 @@ public:
 
 	AVSINLINE void LoadColor(NSPresentationEditor::CColor& oColor)
 	{
-		CAtlMap<CString, CString>::CPair* pPair = m_mapSettings.Lookup(_T("color"));
-		if (NULL != pPair)
+		std::map<CString, CString>::iterator pPair = m_mapSettings.find(_T("color"));
+		if (m_mapSettings.end() != pPair)
 		{
-			int nLen = pPair->m_value.GetLength();
+			int nLen = pPair->second.GetLength();
 			if (0 == nLen)
 				return;
-			if (pPair->m_value.GetAt(0) == TCHAR('#'))
-				oColor.FromString(pPair->m_value);
-			else if ((3 < nLen) && (pPair->m_value.Mid(0, 3) == _T("rgb")))
+			if (pPair->second.GetAt(0) == TCHAR('#'))
+				oColor.FromString(pPair->second);
+			else if ((3 < nLen) && (pPair->second.Mid(0, 3) == _T("rgb")))
 			{
-				TCHAR* pBuffer		= pPair->m_value.GetBuffer();
+				TCHAR* pBuffer		= pPair->second.GetBuffer();
 				TCHAR* pBuffer1		= pBuffer;
 				TCHAR* pBuffer2		= pBuffer;
 				TCHAR* pBufferEnd	= pBuffer + nLen;
@@ -218,126 +218,125 @@ public:
 
 	AVSINLINE void LoadFont(NSPresentationEditor::CFont& oFont)
 	{
-		CAtlMap<CString, CString>::CPair* pPair = m_mapSettings.Lookup(_T("font-family"));
-		if (NULL != pPair)
+		std::map<CString, CString>::iterator pPair = m_mapSettings.find(_T("font-family"));
+		if (m_mapSettings.end() != pPair)
 		{
-			oFont.Name = pPair->m_value;
+			oFont.Name = pPair->second;
 		}
-		pPair = m_mapSettings.Lookup(_T("tmdocs_charset"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("tmdocs_charset"));
+		if (m_mapSettings.end() != pPair)
 		{
-			oFont.Charset = (BYTE)XmlUtils::GetInteger(pPair->m_value);
+			oFont.Charset = (BYTE)XmlUtils::GetInteger(pPair->second);
 		}
-		pPair = m_mapSettings.Lookup(_T("tmdocs_monospace"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("tmdocs_monospace"));
+		if (m_mapSettings.end() != pPair)
 		{
-			oFont.Monospace = (BOOL)(pPair->m_value == _T("1"));
+			oFont.Monospace = (BOOL)(pPair->second == _T("1"));
 		}
-		pPair = m_mapSettings.Lookup(_T("tmdocs_panose"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("tmdocs_panose"));
+		if (m_mapSettings.end() != pPair)
 		{
-			oFont.Panose = pPair->m_value;
+			oFont.Panose = pPair->second;
 		}
 	}
 
 	AVSINLINE void LoadTextStyle(NSPresentationEditor::CTextStyleLevel& oLevel)
 	{
-		CAtlMap<CString, CString>::CPair* pPair = NULL;
+		std::map<CString, CString>::iterator pPair = NULL;
 
-		pPair = m_mapSettings.Lookup(_T("text-align"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("text-align"));
+		if (m_mapSettings.end() != pPair)
 		{
 			WORD nAlign = 1;
-			if (_T("left") == pPair->m_value)
+			if (_T("left") == pPair->second)
 				nAlign = 0;
-			else if (_T("right") == pPair->m_value)
+			else if (_T("right") == pPair->second)
 				nAlign = 2;
-			else if (_T("justify") == pPair->m_value)
+			else if (_T("justify") == pPair->second)
 				nAlign = 3;
 
 			oLevel.m_oPFRun.textAlignment = nAlign;
 		}
 
-		pPair = m_mapSettings.Lookup(_T("lnspc"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("lnspc"));
+		if (m_mapSettings.end() != pPair)
 		{
-			oLevel.m_oPFRun.lineSpacing = (LONG)XmlUtils::GetInteger(pPair->m_value);			
+			oLevel.m_oPFRun.lineSpacing = (LONG)XmlUtils::GetInteger(pPair->second);			
 		}
-		pPair = m_mapSettings.Lookup(_T("spcafter"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("spcafter"));
+		if (m_mapSettings.end() != pPair)
 		{
-			oLevel.m_oPFRun.spaceAfter = (LONG)XmlUtils::GetInteger(pPair->m_value);			
+			oLevel.m_oPFRun.spaceAfter = (LONG)XmlUtils::GetInteger(pPair->second);			
 		}
-		pPair = m_mapSettings.Lookup(_T("spcbefore"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("spcbefore"));
+		if (m_mapSettings.end() != pPair)
 		{
-			oLevel.m_oPFRun.spaceBefore = (LONG)XmlUtils::GetInteger(pPair->m_value);			
+			oLevel.m_oPFRun.spaceBefore = (LONG)XmlUtils::GetInteger(pPair->second);			
 		}
 
 		WORD lStyle = 0;
-		pPair = m_mapSettings.Lookup(_T("font-weight"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("font-weight"));
+		if (m_mapSettings.end() != pPair)
 		{
-			if (_T("bold") == pPair->m_value)
+			if (_T("bold") == pPair->second)
 				oLevel.m_oCFRun.FontBold = TRUE;
 			else
 				oLevel.m_oCFRun.FontBold = FALSE;
 		}
 
-		pPair = m_mapSettings.Lookup(_T("font-style"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("font-style"));
+		if (m_mapSettings.end() != pPair)
 		{
-			if (_T("italic") == pPair->m_value)
+			if (_T("italic") == pPair->second)
 				oLevel.m_oCFRun.FontItalic = TRUE;
 			else
 				oLevel.m_oCFRun.FontItalic = FALSE;
 		}
 
-		pPair = m_mapSettings.Lookup(_T("text-decoration"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("text-decoration"));
+		if (m_mapSettings.end() != pPair)
 		{
-			if (_T("underline") == pPair->m_value)
+			if (_T("underline") == pPair->second)
 				oLevel.m_oCFRun.FontUnderline = TRUE;
 			else
 				oLevel.m_oCFRun.FontUnderline = FALSE;
 		}
 
-		pPair = m_mapSettings.Lookup(_T("font-size"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("font-size"));
+		if (m_mapSettings.end() != pPair)
 		{
-			CString strTemp = pPair->m_value.Mid(0, pPair->m_value.GetLength() - 2);
+			CString strTemp = pPair->second.Mid(0, pPair->second.GetLength() - 2);
 
 			oLevel.m_oCFRun.Size = (WORD)XmlUtils::GetInteger(strTemp);
 		}
 
-		pPair = m_mapSettings.Lookup(_T("color"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("color"));
+		if (m_mapSettings.end() != pPair)
 		{
 			oLevel.m_oCFRun.Color = new NSPresentationEditor::CColor();
-			oLevel.m_oCFRun.Color->FromString(pPair->m_value);
+			oLevel.m_oCFRun.Color->FromString(pPair->second);
 		}
 
-		pPair = m_mapSettings.Lookup(_T("font-family"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("font-family"));
+		if (m_mapSettings.end() != pPair)
 		{
 			oLevel.m_oCFRun.FontProperties = new NSPresentationEditor::CFontProperties();
-			oLevel.m_oCFRun.FontProperties->strFontName = pPair->m_value;
+			oLevel.m_oCFRun.FontProperties->strFontName = pPair->second;
 		}
 	}
 
 	AVSINLINE void LoadStylePF(NSPresentationEditor::CTextPFRun& oRun, const NSPresentationEditor::CMetricInfo& oInfo)
 	{
-		CAtlMap<CString, CString>::CPair* pPair = NULL;
-
-		pPair = m_mapSettings.Lookup(_T("text-align"));
-		if (NULL != pPair)
+		std::map<CString, CString>::iterator pPair  = m_mapSettings.find(_T("text-align"));
+		
+		if (m_mapSettings.end() != pPair)
 		{
 			WORD nAlign = 1;
-			if (_T("left") == pPair->m_value)
+			if (_T("left") == pPair->second)
 				nAlign = 0;
-			else if (_T("right") == pPair->m_value)
+			else if (_T("right") == pPair->second)
 				nAlign = 2;
-			else if (_T("justify") == pPair->m_value)
+			else if (_T("justify") == pPair->second)
 				nAlign = 3;
 
 			oRun.textAlignment = nAlign;
@@ -345,122 +344,122 @@ public:
 
 		double dKoef = (double)oInfo.m_lUnitsHor * 25.4 / (oInfo.m_lMillimetresHor * 96);
 
-		pPair = m_mapSettings.Lookup(_T("text-indent"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("text-indent"));
+		if (m_mapSettings.end() != pPair)
 		{
-			CString strVal = pPair->m_value;
+			CString strVal = pPair->second;
 			CorrectStringNum(strVal);
 
 			oRun.indent = (LONG)(XmlUtils::GetInteger(strVal) * dKoef);
 		}
-		pPair = m_mapSettings.Lookup(_T("margin-left"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("margin-left"));
+		if (m_mapSettings.end() != pPair)
 		{
-			CString strVal = pPair->m_value;
+			CString strVal = pPair->second;
 			CorrectStringNum(strVal);
 
 			oRun.leftMargin = (LONG)(XmlUtils::GetInteger(strVal) * dKoef);
 		}
-		pPair = m_mapSettings.Lookup(_T("color"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("color"));
+		if (m_mapSettings.end() != pPair)
 		{
 			oRun.bulletColor = new NSPresentationEditor::CColor();
-			oRun.bulletColor->FromString(pPair->m_value);
+			oRun.bulletColor->FromString(pPair->second);
 
-			pPair = m_mapSettings.Lookup(_T("tm_color"));
-			if (NULL != pPair)
+			pPair = m_mapSettings.find(_T("tm_color"));
+			if (m_mapSettings.end() != pPair)
 			{
-				oRun.bulletColor->m_lSchemeIndex = (LONG)XmlUtils::GetInteger(pPair->m_value) - 1;
+				oRun.bulletColor->m_lSchemeIndex = (LONG)XmlUtils::GetInteger(pPair->second) - 1;
 			}
 		}
 
-		pPair = m_mapSettings.Lookup(_T("lnspc"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("lnspc"));
+		if (m_mapSettings.end() != pPair)
 		{
-			oRun.lineSpacing = (LONG)XmlUtils::GetInteger(pPair->m_value);			
+			oRun.lineSpacing = (LONG)XmlUtils::GetInteger(pPair->second);			
 		}
-		pPair = m_mapSettings.Lookup(_T("spcafter"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("spcafter"));
+		if (m_mapSettings.end() != pPair)
 		{
-			oRun.spaceAfter = (LONG)XmlUtils::GetInteger(pPair->m_value);			
+			oRun.spaceAfter = (LONG)XmlUtils::GetInteger(pPair->second);			
 		}
-		pPair = m_mapSettings.Lookup(_T("spcbefore"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("spcbefore"));
+		if (m_mapSettings.end() != pPair)
 		{
-			oRun.spaceBefore = (LONG)XmlUtils::GetInteger(pPair->m_value);			
+			oRun.spaceBefore = (LONG)XmlUtils::GetInteger(pPair->second);			
 		}
 	}
 	AVSINLINE void LoadStyleCF(NSPresentationEditor::CTextCFRun& oRun, const NSPresentationEditor::CMetricInfo& oInfo)
 	{
-		CAtlMap<CString, CString>::CPair* pPair = NULL;
+		std::map<CString, CString>::iterator pPair = NULL;
 
-		pPair = m_mapSettings.Lookup(_T("font-weight"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("font-weight"));
+		if (m_mapSettings.end() != pPair)
 		{
-			if (_T("bold") == pPair->m_value)
+			if (_T("bold") == pPair->second)
 				oRun.FontBold = (BOOL)TRUE;
 			else
 				oRun.FontBold = (BOOL)FALSE;
 		}
 
-		pPair = m_mapSettings.Lookup(_T("font-style"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("font-style"));
+		if (m_mapSettings.end() != pPair)
 		{
-			if (_T("italic") == pPair->m_value)
+			if (_T("italic") == pPair->second)
 				oRun.FontItalic = (BOOL)TRUE;
 			else
 				oRun.FontItalic = (BOOL)FALSE;
 		}
 
-		pPair = m_mapSettings.Lookup(_T("text-transform"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("text-transform"));
+		if (m_mapSettings.end() != pPair)
 		{
-			if (_T("uppercase") == pPair->m_value)
+			if (_T("uppercase") == pPair->second)
 				oRun.Cap = (WORD)1;
-			else if (_T("lowercase") == pPair->m_value)
+			else if (_T("lowercase") == pPair->second)
 				oRun.Cap = (WORD)2;
 			else
 				oRun.Cap = (WORD)0;
 		}
-		pPair = m_mapSettings.Lookup(_T("text-decoration"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("text-decoration"));
+		if (m_mapSettings.end() != pPair)
 		{
-			if (_T("underline") == pPair->m_value)
+			if (_T("underline") == pPair->second)
 				oRun.FontUnderline = (BOOL)TRUE;
 			else 
 				oRun.FontUnderline = (BOOL)FALSE;
 		}
 
-		pPair = m_mapSettings.Lookup(_T("font-size"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("font-size"));
+		if (m_mapSettings.end() != pPair)
 		{
-			CString strVal = pPair->m_value;
+			CString strVal = pPair->second;
 			CorrectStringNum(strVal);
 
 			oRun.Size = (WORD)(XmlUtils::GetInteger(strVal));
 		}
 
-		pPair = m_mapSettings.Lookup(_T("color"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("color"));
+		if (m_mapSettings.end() != pPair)
 		{
 			oRun.Color = new NSPresentationEditor::CColor();
-			oRun.Color->FromString(pPair->m_value);
+			oRun.Color->FromString(pPair->second);
 		}
 		else
 		{
-			pPair = m_mapSettings.Lookup(_T("tm_color"));
-			if (NULL != pPair)
+			pPair = m_mapSettings.find(_T("tm_color"));
+			if (m_mapSettings.end() != pPair)
 			{
 				oRun.Color = new NSPresentationEditor::CColor();
-				oRun.Color->m_lSchemeIndex = (LONG)XmlUtils::GetInteger(pPair->m_value) - 1;
+				oRun.Color->m_lSchemeIndex = (LONG)XmlUtils::GetInteger(pPair->second) - 1;
 			}
 		}
 
-		pPair = m_mapSettings.Lookup(_T("font-family"));
-		if (NULL != pPair)
+		pPair = m_mapSettings.find(_T("font-family"));
+		if (m_mapSettings.end() != pPair)
 		{
 			oRun.FontProperties = new NSPresentationEditor::CFontProperties();
-			oRun.FontProperties->strFontName = pPair->m_value;
+			oRun.FontProperties->strFontName = pPair->second;
 		}
 		
 	}
@@ -506,7 +505,7 @@ public:
 class CStylesCSS
 {
 public: 
-	CAtlArray<CCSS> m_arStyles;
+	std::vector<CCSS> m_arStyles;
 
 public:
 	CStylesCSS() : m_arStyles()
@@ -517,7 +516,7 @@ public:
 	}
 	AVSINLINE void Clear()
 	{
-		m_arStyles.RemoveAll();
+		m_arStyles.clear();
 	}
 
 public:
@@ -537,8 +536,10 @@ public:
 			if (*pDataMem == TCHAR('}'))
 			{
 				CString strTemp = strParams.Mid(nPositionOld, nPosition - nPositionOld + 1);
-				m_arStyles.Add();
-				m_arStyles[m_arStyles.GetCount() - 1].LoadFromString(strTemp);
+				
+				CCSS elem;
+				m_arStyles.push_back(elem);
+				m_arStyles.back().LoadFromString(strTemp);
 
 				nPositionOld = nPosition + 1;
 			}
@@ -555,7 +556,7 @@ class CTextLoader
 public:
 	static void ConvertText(XmlUtils::CXmlNode& oNode, CTextAttributesEx& oText, CMetricInfo oMetric)
 	{
-		oText.m_arParagraphs.RemoveAll();
+		oText.m_arParagraphs.clear();
 
 		XmlUtils::CXmlNodes oParagraphs;
 		if (oNode.GetNodes(_T("*"), oParagraphs))
@@ -568,7 +569,9 @@ public:
 				XmlUtils::CXmlNode oNodePar;
 				oParagraphs.GetAt(i, oNodePar);
 
-				oText.m_arParagraphs.Add();
+				CParagraph elem;
+				oText.m_arParagraphs.push_back(elem);
+
 				CParagraph* pParagraph = &oText.m_arParagraphs[nNumberPF];
 				++nNumberPF;
 
@@ -615,14 +618,14 @@ public:
 								oStyleSpan.LoadFromString2(oNodeSpan.GetAttribute(_T("style")));
 								oStyleSpan.LoadStyleCF(oSpan.m_oRun, oMetric);
 
-								pParagraph->m_arSpans.Add(oSpan);
+								pParagraph->m_arSpans.push_back(oSpan);
 							}
 							else if (FALSE)
 							{
 								CSpan oSpan;
 								oSpan.m_strText = _T("\n");
 
-								pParagraph->m_arSpans.Add(oSpan);
+								pParagraph->m_arSpans.push_back(oSpan);
 							}
 						}
 					}
@@ -671,21 +674,21 @@ public:
 									oStyleSpan.LoadFromString2(oNodeSpan.GetAttribute(_T("style")));
 									oStyleSpan.LoadStyleCF(oSpan.m_oRun, oMetric);
 
-									pParagraph->m_arSpans.Add(oSpan);
+									pParagraph->m_arSpans.push_back(oSpan);
 								}
 								else if (FALSE)
 								{
 									CSpan oSpan;
 									oSpan.m_strText = _T("\n");
 
-									pParagraph->m_arSpans.Add(oSpan);
+									pParagraph->m_arSpans.push_back(oSpan);
 								}
 							}
 						}
 					}
 				}
 
-				size_t nCountS = pParagraph->m_arSpans.GetCount();
+				size_t nCountS = pParagraph->m_arSpans.size();
 				if (0 < nCountS)
 				{
 					if (_T("\n") == pParagraph->m_arSpans[nCountS - 1].m_strText)
@@ -701,7 +704,7 @@ public:
 
 	static void ConvertText2(XmlUtils::CXmlNode& oNode, CTextAttributesEx& oText, CMetricInfo oMetric)
 	{
-		oText.m_arParagraphs.RemoveAll();
+		oText.m_arParagraphs.clear();
 
 		XmlUtils::CXmlNodes oParagraphs;
 		if (oNode.GetNodes(_T("*"), oParagraphs))
@@ -714,7 +717,9 @@ public:
 				XmlUtils::CXmlNode oNodePar;
 				oParagraphs.GetAt(i, oNodePar);
 
-				oText.m_arParagraphs.Add();
+				CParagraph elem;
+				oText.m_arParagraphs.push_back(elem);
+
 				CParagraph* pParagraph = &oText.m_arParagraphs[nNumberPF];
 				++nNumberPF;
 
@@ -774,7 +779,9 @@ public:
 							}
 							else
 							{
-								oText.m_arParagraphs.Add();
+								CParagraph elem;
+								oText.m_arParagraphs.push_back(elem);
+
 								pParagraph = &oText.m_arParagraphs[nNumberPF];
 								++nNumberPF;
 
@@ -813,7 +820,7 @@ public:
 				{
 					CSpan oSpan;
 					oSpan.m_strText = oNodeS.GetXml();
-					pParagraph->m_arSpans.Add(oSpan);
+					pParagraph->m_arSpans.push_back(oSpan);
 				}
 				else if (_T("br") == sName)
 				{
@@ -825,7 +832,7 @@ public:
 
 					oSpan.m_oRun = oRunBR;
 					oSpan.m_strText = _T("\n");
-					pParagraph->m_arSpans.Add(oSpan);
+					pParagraph->m_arSpans.push_back(oSpan);
 				}
 				else if (_T("span") == sName)
 				{
@@ -866,7 +873,7 @@ public:
 
 					CorrectXmlString2(oSpan.m_strText);
 
-					pParagraph->m_arSpans.Add(oSpan);
+					pParagraph->m_arSpans.push_back(oSpan);
 				}
 				else if (_T("br") == sName)
 				{
@@ -879,7 +886,7 @@ public:
 					CSpan oSpan;
 					oSpan.m_oRun = oRunBR;
 					oSpan.m_strText = _T("\n");
-					pParagraph->m_arSpans.Add(oSpan);
+					pParagraph->m_arSpans.push_back(oSpan);
 				}
 				else if (_T("span") == sName)
 				{

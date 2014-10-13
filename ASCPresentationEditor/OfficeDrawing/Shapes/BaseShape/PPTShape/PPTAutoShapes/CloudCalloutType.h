@@ -54,14 +54,14 @@ public:
         AddGuide(_T("val #0"));
         AddGuide(_T("val #1"));
 
-        m_arAdjustments.Add(1350);
-		m_arAdjustments.Add(25920);
+        m_arAdjustments.push_back(1350);
+		m_arAdjustments.push_back(25920);
 
         LoadConnectorsList(_T("67,10800;10800,21577;21582,10800;10800,1235;@38,@39"));
         LoadTextRect(_T("2977,3262,17087,17337"));
 
         CHandle_ oHandle1;
         oHandle1.position = _T("#0,#1");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
     }
 };

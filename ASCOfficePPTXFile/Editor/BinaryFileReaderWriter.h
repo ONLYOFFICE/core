@@ -190,7 +190,7 @@ namespace NSBinPptxRW
 		ULONG		m_arStack[MAX_STACK_SIZE];
 		ULONG		m_lStackPosition;
 		
-		CAtlArray<CSeekTableEntry> m_arMainTables;
+		std::vector<CSeekTableEntry> m_arMainTables;
 
 	public:
 		LONG m_lWidthCurShape;
@@ -346,7 +346,7 @@ namespace NSBinPptxRW
 	{
 	public:
 		LONG			m_lThemeIndex;
-		CAtlArray<LONG> m_arLayouts;
+		std::vector<LONG> m_arLayouts;
 
 	public:
 		CSlideMasterInfo();
@@ -358,9 +358,9 @@ namespace NSBinPptxRW
 	private:
 		CStringWriter* m_pWriter;
 		int									m_lNextRelsID;
-		CAtlMap<CString, int>				m_mapImages;
+		std::map<CString, int>				m_mapImages;
 
-		CAtlMap<CString, int>				m_mapLinks;
+		std::map<CString, int>				m_mapLinks;
 
 	public:
 		CImageManager2*						m_pManager;
@@ -419,7 +419,7 @@ namespace NSBinPptxRW
 		LONG		m_lDocumentType;
 
 		CRelsGenerator* m_pRels;
-		CAtlArray<CRelsGenerator*> m_stackRels;
+		std::vector<CRelsGenerator*> m_stackRels;
 		int m_nCurrentRelsStack;
 	
 	public:

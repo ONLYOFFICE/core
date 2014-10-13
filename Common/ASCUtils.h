@@ -139,101 +139,102 @@ public:
 	{
 	}
 };
-
-template< typename E, class ETraits = CElementTraits< E > >
-class CPtrAtlArray:
-	public CAtlArray<E, ETraits>
-{
-public:
-	~CPtrAtlArray()
-	{
-		FreeAll();
-	}
-
-	inline E& GetFromBegin()
-	{
-		ATLASSERT( GetCount()>0 );
-		if (GetCount()==0)
-			ATL::AtlThrow(E_INVALIDARG);
-
-		return( GetAt(0) );
-	}
-
-	inline E& GetFromEnd()
-	{
-		ATLASSERT( GetCount()>0 );
-		if (GetCount()==0)
-			ATL::AtlThrow(E_INVALIDARG);
-
-		return( GetAt(GetCount()-1) );
-	}
-
-	void FreeAt(size_t iElement, size_t nCount = 1)
-	{
-		if (iElement >= GetCount()) return;
-		if (iElement + nCount > GetCount()) nCount = GetCount() - iElement;
-		for (size_t i = iElement; i < iElement + nCount; i++)
-	{
-			RELEASEOBJECT(GetAt(i))
-		}
-		RemoveAt(iElement, nCount);
-	}
-	void FreeAll()
-	{
-		for (unsigned int i = 0; i < GetCount(); i++)
-		{
-			RELEASEOBJECT(GetAt(i))
-		}
-		RemoveAll();
-	}
-};
-
-template< typename E, class ETraits = CElementTraits< E > >
-class CIPtrAtlArray:
-	public CAtlArray<E, ETraits>
-{
-public:
-	~CIPtrAtlArray()
-	{
-		FreeAll();
-	}
-	inline E& GetFromBegin()
-	{
-		ATLASSERT( GetCount()>0 );
-		if (GetCount()==0)
-			ATL::AtlThrow(E_INVALIDARG);
-
-		return( GetAt(0) );
-	}
-
-	inline E& GetFromEnd()
-	{
-		ATLASSERT( GetCount()>0 );
-		if (GetCount()==0)
-			AtlThrow(E_INVALIDARG);
-
-		return( GetAt(GetCount()-1) );
-	}
-
-	void FreeAt(size_t iElement, size_t nCount = 1)
-	{
-		if (iElement >= GetCount()) return;
-		if (iElement + nCount > GetCount()) nCount = GetCount() - iElement;
-		for (size_t i = iElement; i < iElement + nCount; i++)
-		{
-			RELEASEINTERFACE(GetAt(i))
-		}
-		RemoveAt(iElement, nCount);
-	}
-	void FreeAll()
-	{
-		for (unsigned int i = 0; i < GetCount(); i++)
-		{
-			RELEASEINTERFACE(GetAt(i))
-		}
-		RemoveAll();
-	}
-};
+//нигде не используется ...
+//template< typename E, class ETraits = CElementTraits< E > >
+//class CPtrAtlArray:
+//	public CAtlArray<E, ETraits>
+//{
+//public:
+//	~CPtrAtlArray()
+//	{
+//		FreeAll();
+//	}
+//
+//	inline E& GetFromBegin()
+//	{
+//		ATLASSERT( GetCount()>0 );
+//		if (GetCount()==0)
+//			ATL::AtlThrow(E_INVALIDARG);
+//
+//		return( GetAt(0) );
+//	}
+//
+//	inline E& GetFromEnd()
+//	{
+//		ATLASSERT( GetCount()>0 );
+//		if (GetCount()==0)
+//			ATL::AtlThrow(E_INVALIDARG);
+//
+//		return( GetAt(GetCount()-1) );
+//	}
+//
+//	void FreeAt(size_t iElement, size_t nCount = 1)
+//	{
+//		if (iElement >= GetCount()) return;
+//		if (iElement + nCount > GetCount()) nCount = GetCount() - iElement;
+//		for (size_t i = iElement; i < iElement + nCount; i++)
+//	{
+//			RELEASEOBJECT(GetAt(i))
+//		}
+//		RemoveAt(iElement, nCount);
+//	}
+//	void FreeAll()
+//	{
+//		for (unsigned int i = 0; i < GetCount(); i++)
+//		{
+//			RELEASEOBJECT(GetAt(i))
+//		}
+//		RemoveAll();
+//	}
+//};
+//
+//template< typename E, class ETraits = CElementTraits< E > >
+//class CIPtrAtlArray:
+//	public CAtlArray<E, ETraits>
+//{
+//public:
+//	~CIPtrAtlArray()
+//	{
+//		FreeAll();
+//	}
+//	inline E& GetFromBegin()
+//	{
+//		ATLASSERT( GetCount()>0 );
+//		if (GetCount()==0)
+//			ATL::AtlThrow(E_INVALIDARG);
+//
+//		return( GetAt(0) );
+//	}
+//
+//	inline E& GetFromEnd()
+//	{
+//		ATLASSERT( GetCount()>0 );
+//		if (GetCount()==0)
+//			AtlThrow(E_INVALIDARG);
+//
+//		return( GetAt(GetCount()-1) );
+//	}
+//
+//	void FreeAt(size_t iElement, size_t nCount = 1)
+//	{
+//		if (iElement >= GetCount()) return;
+//		if (iElement + nCount > GetCount()) nCount = GetCount() - iElement;
+//		for (size_t i = iElement; i < iElement + nCount; i++)
+//		{
+//			RELEASEINTERFACE(GetAt(i))
+//		}
+//		RemoveAt(iElement, nCount);
+//	}
+//	void FreeAll()
+//	{
+//		for (unsigned int i = 0; i < GetCount(); i++)
+//		{
+//			RELEASEINTERFACE(GetAt(i))
+//		}
+//		RemoveAll();
+//	}
+//};
+// то что выше нигде не используется
 
 class CPerfomanceCounter
 {

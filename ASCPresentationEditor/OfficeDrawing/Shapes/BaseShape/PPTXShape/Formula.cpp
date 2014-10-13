@@ -4,7 +4,7 @@
 
 double NSGuidesOOXML::CFormula::Calculate(NSGuidesOOXML::CFormulaManager& pManager)
 {
-	if ((0 == m_lIndex) || (-m_lIndex > pManager.Guides->GetSize()) || (m_lIndex > pManager.Adjustments->GetSize()))
+	if ((0 == m_lIndex) || (-m_lIndex > pManager.Guides->size()) || (m_lIndex > pManager.Adjustments->size()))
 		return 0.0;
 	if((m_lIndex < 0) && (dNonDefResult > (*pManager.Guides)[-m_lIndex-1]))
 		return (*pManager.Guides)[-m_lIndex-1];
@@ -53,7 +53,7 @@ double NSGuidesOOXML::CFormula::Calculate(NSGuidesOOXML::CFormulaManager& pManag
 	{
 		(*pManager.Guides)[-m_lIndex-1] = dRes;
 		// переопределим формулу
-		pManager.mapGuides.SetAt(m_sName, -m_lIndex-1);
+		pManager.mapGuides.insert(std::pair<CString, long>(m_sName, -m_lIndex-1));
 	}
 	else
 		(*pManager.Adjustments)[m_lIndex-1] = (long)dRes;

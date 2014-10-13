@@ -27,8 +27,8 @@ public:
         AddGuide(_T("sum 21600 0 @9"));
         AddGuide(_T("val #1"));
         
-		m_arAdjustments.Add(1800);
-		m_arAdjustments.Add(10800);
+		m_arAdjustments.push_back(1800);
+		m_arAdjustments.push_back(10800);
 
 		LoadConnectorsList(_T("21600,0;0,10800;21600,21600"));
         LoadTextRect(_T("13963,@4,21600,@5"));
@@ -41,7 +41,7 @@ public:
         oHandle2.position = _T("topLeft,#1");
         oHandle2.yrange = _T("@9,@10");
         
-		m_arHandles.Add(oHandle1);
-        m_arHandles.Add(oHandle2);
+		m_arHandles.push_back(oHandle1);
+        m_arHandles.push_back(oHandle2);
     }
 };

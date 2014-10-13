@@ -12,22 +12,22 @@ namespace NSBinPptxRW
 		CImageManager2		m_oImageManager;
 		CString				m_strDstFolder;
 
-		CAtlMap<BYTE, LONG> m_mainTables;
+		std::map<BYTE, LONG> m_mainTables;
 
-		CAtlArray<PPTX::Theme>			m_arThemes;
+		std::vector<PPTX::Theme>			m_arThemes;
 		
-		CAtlArray<PPTX::SlideMaster>	m_arSlideMasters;
-		CAtlArray<CSlideMasterInfo>		m_arSlideMasters_Theme;
+		std::vector<PPTX::SlideMaster>		m_arSlideMasters;
+		std::vector<CSlideMasterInfo>		m_arSlideMasters_Theme;
 		
-		CAtlArray<PPTX::SlideLayout>	m_arSlideLayouts;
-		CAtlArray<LONG>					m_arSlideLayouts_Master;
+		std::vector<PPTX::SlideLayout>		m_arSlideLayouts;
+		std::vector<LONG>					m_arSlideLayouts_Master;
 
-		CAtlArray<PPTX::Slide>			m_arSlides;
-		CAtlArray<LONG>					m_arSlides_Layout;
+		std::vector<PPTX::Slide>			m_arSlides;
+		std::vector<LONG>					m_arSlides_Layout;
 
-		CAtlArray<PPTX::NotesMaster>	m_arNotesMasters;
-		CAtlArray<PPTX::NotesSlide>		m_arNotesSlides;
-		CAtlArray<LONG>					m_arNotesSlides_Master;
+		std::vector<PPTX::NotesMaster>		m_arNotesMasters;
+		std::vector<PPTX::NotesSlide>		m_arNotesSlides;
+		std::vector<LONG>					m_arNotesSlides_Master;
 		
 		PPTX::Presentation				m_oPresentation;
 		PPTX::TableStyles				m_oTableStyles;
@@ -124,10 +124,10 @@ namespace NSBinPptxRW
 				if (0 == _type)
 					break;
 
-				m_mainTables.SetAt(_type, m_oReader.GetLong());				
+				m_mainTables.insert(std::pair<BYTE, LONG>(_type, m_oReader.GetLong()));				
 			}
 
-			CAtlMap<BYTE, LONG>::CPair* pPair = NULL;
+			std::map<BYTE, LONG>::iterator pPair;
 
 			// writer
 			CXmlWriter oXmlWriter;
@@ -138,28 +138,28 @@ namespace NSBinPptxRW
 			LONG nCountLayouts = 0;
 			LONG nCountSlides = 0;
 
-			pPair = m_mainTables.Lookup(NSMainTables::Themes);
-			if (NULL != pPair)
+			pPair = m_mainTables.find(NSMainTables::Themes);
+			if (m_mainTables.end()  != pPair)
 			{
-				m_oReader.Seek(pPair->m_value);
+				m_oReader.Seek(pPair->second);
 				nCountThemes = m_oReader.GetLong();
 			}
-			pPair = m_mainTables.Lookup(NSMainTables::SlideMasters);
-			if (NULL != pPair)
+			pPair = m_mainTables.find(NSMainTables::SlideMasters);
+			if (m_mainTables.end()  != pPair)
 			{
-				m_oReader.Seek(pPair->m_value);
+				m_oReader.Seek(pPair->second);
 				nCountMasters = m_oReader.GetLong();
 			}
-			pPair = m_mainTables.Lookup(NSMainTables::SlideLayouts);
-			if (NULL != pPair)
+			pPair = m_mainTables.find(NSMainTables::SlideLayouts);
+			if (m_mainTables.end()  != pPair)
 			{
-				m_oReader.Seek(pPair->m_value);
+				m_oReader.Seek(pPair->second);
 				nCountLayouts = m_oReader.GetLong();
 			}
-			pPair = m_mainTables.Lookup(NSMainTables::Slides);
-			if (NULL != pPair)
+			pPair = m_mainTables.find(NSMainTables::Slides);
+			if (m_mainTables.end()  != pPair)
 			{
-				m_oReader.Seek(pPair->m_value);
+				m_oReader.Seek(pPair->second);
 				nCountSlides = m_oReader.GetLong();
 			}
 
@@ -170,17 +170,22 @@ namespace NSBinPptxRW
 
 			// теперь создадим массивы для рельсов
 			for (LONG i = 0; i < nCountMasters; ++i)
-				m_arSlideMasters_Theme.Add();
+			{
+				CSlideMasterInfo elm;
+				m_arSlideMasters_Theme.push_back(elm);
+			}
 			for (LONG i = 0; i < nCountLayouts; ++i)
-				m_arSlideLayouts_Master.Add(0);
+			{
+				m_arSlideLayouts_Master.push_back(0);
+			}
 			for (LONG i = 0; i < nCountSlides; ++i)
-				m_arSlides_Layout.Add(0);
+				m_arSlides_Layout.push_back(0);
 
 			// ThemeRels
-			pPair = m_mainTables.Lookup(NSMainTables::ThemeRels);
-			if (NULL != pPair)
+			pPair = m_mainTables.find(NSMainTables::ThemeRels);
+			if (m_mainTables.end()  != pPair)
 			{
-				m_oReader.Seek(pPair->m_value);
+				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(5); // type + len
 				
 				LONG _count = m_oReader.GetLong();
@@ -194,7 +199,7 @@ namespace NSBinPptxRW
 			// нужно проставить всем шаблонам мастер.
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
-				size_t _countL = m_arSlideMasters_Theme[i].m_arLayouts.GetCount();				
+				size_t _countL = m_arSlideMasters_Theme[i].m_arLayouts.size();				
 				for (size_t j = 0; j < _countL; ++j)
 				{
 					m_arSlideLayouts_Master[m_arSlideMasters_Theme[i].m_arLayouts[j]] = (LONG)i;
@@ -202,10 +207,10 @@ namespace NSBinPptxRW
 			}
 
 			// готово, теперь нужно слайдам проставить шаблоны
-			pPair = m_mainTables.Lookup(NSMainTables::SlideRels);
-			if (NULL != pPair)
+			pPair = m_mainTables.find(NSMainTables::SlideRels);
+			if (m_mainTables.end()  != pPair)
 			{
-				m_oReader.Seek(pPair->m_value);
+				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(6); // type + len + start attr
 
 				while (true)
@@ -219,14 +224,14 @@ namespace NSBinPptxRW
 			}
 
 			// теперь нужно удалить все themes, которые не ведут на мастерслайд
-			CAtlArray<LONG> arThemes;
-			CAtlArray<LONG> arThemesDst;
-			CAtlArray<bool> arThemesSave;
+			std::vector<LONG> arThemes;
+			std::vector<LONG> arThemesDst;
+			std::vector<bool> arThemesSave;
 			for (LONG i = 0; i < nCountThemes; ++i)
 			{
-				arThemes.Add(i);
-				arThemesDst.Add(0);
-				arThemesSave.Add(false);
+				arThemes.push_back(i);
+				arThemesDst.push_back(0);
+				arThemesSave.push_back(false);
 			}
 			for (LONG i = 0; i < nCountMasters; ++i)
 			{
@@ -247,8 +252,8 @@ namespace NSBinPptxRW
 			}
 			
 			// themes
-			pPair = m_mainTables.Lookup(NSMainTables::Themes);
-			if (NULL != pPair)
+			pPair = m_mainTables.find(NSMainTables::Themes);
+			if (m_mainTables.end()  != pPair)
 			{
 				CString strFolder = m_strDstFolder + _T("\\ppt\\theme");
 				CString strFolderRels = strFolder + _T("\\_rels");
@@ -256,7 +261,7 @@ namespace NSBinPptxRW
 				CDirectory::CreateDirectory(strFolder);
 				CDirectory::CreateDirectory(strFolderRels);
 
-				m_oReader.Seek(pPair->m_value);
+				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
 								
 				for (LONG i = 0; i < nCountThemes; ++i)
@@ -267,7 +272,8 @@ namespace NSBinPptxRW
 						continue;
 					}
 
-					m_arThemes.Add();
+					PPTX::Theme elm;
+					m_arThemes.push_back(elm);
 
 					m_oReader.m_pRels->Clear();
 					m_oReader.m_pRels->StartTheme();
@@ -286,8 +292,8 @@ namespace NSBinPptxRW
 			}
 
 			// slideMasters
-			pPair = m_mainTables.Lookup(NSMainTables::SlideMasters);
-			if (NULL != pPair)
+			pPair = m_mainTables.find(NSMainTables::SlideMasters);
+			if (m_mainTables.end()  != pPair)
 			{
 				CString strFolder = m_strDstFolder + _T("\\ppt\\slideMasters");
 				CString strFolderRels = strFolder + _T("\\_rels");
@@ -295,21 +301,22 @@ namespace NSBinPptxRW
 				CDirectory::CreateDirectory(strFolder);
 				CDirectory::CreateDirectory(strFolderRels);
 
-				m_oReader.Seek(pPair->m_value);
+				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
 
 				LONG __nCountLayouts = 0;
 				
 				for (LONG i = 0; i < nCountMasters; ++i)
 				{
-					m_arSlideMasters.Add();
+					PPTX::SlideMaster elm;
+					m_arSlideMasters.push_back(elm);
 
 					m_oReader.m_pRels->Clear();
 					m_oReader.m_pRels->StartMaster(i, m_arSlideMasters_Theme[i]);
 					m_arSlideMasters[i].fromPPTY(&m_oReader);
 					
 					std::vector<PPTX::Logic::XmlId>& arrLays = m_arSlideMasters[i].sldLayoutIdLst;
-					LONG lLayouts = (LONG)m_arSlideMasters_Theme[i].m_arLayouts.GetCount();
+					LONG lLayouts = (LONG)m_arSlideMasters_Theme[i].m_arLayouts.size();
 					for (LONG j = 0; j < lLayouts; ++j)
 					{
 						arrLays.push_back(PPTX::Logic::XmlId());
@@ -337,8 +344,8 @@ namespace NSBinPptxRW
 			}
 
 			// slideLayouts
-			pPair = m_mainTables.Lookup(NSMainTables::SlideLayouts);
-			if (NULL != pPair)
+			pPair = m_mainTables.find(NSMainTables::SlideLayouts);
+			if (m_mainTables.end()  != pPair)
 			{
 				CString strFolder = m_strDstFolder + _T("\\ppt\\slideLayouts");
 				CString strFolderRels = strFolder + _T("\\_rels");
@@ -346,12 +353,13 @@ namespace NSBinPptxRW
 				CDirectory::CreateDirectory(strFolder);
 				CDirectory::CreateDirectory(strFolderRels);
 
-				m_oReader.Seek(pPair->m_value);
+				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
 				
 				for (LONG i = 0; i < nCountLayouts; ++i)
 				{
-					m_arSlideLayouts.Add();
+					PPTX::SlideLayout elm;
+					m_arSlideLayouts.push_back(elm);
 
 					m_oReader.m_pRels->Clear();
 					m_oReader.m_pRels->StartLayout(m_arSlideLayouts_Master[i]);
@@ -371,8 +379,8 @@ namespace NSBinPptxRW
 
 			// slides
 			int nComment = 1;
-			pPair = m_mainTables.Lookup(NSMainTables::Slides);
-			if (NULL != pPair)
+			pPair = m_mainTables.find(NSMainTables::Slides);
+			if (m_mainTables.end()  != pPair)
 			{
 				CString strFolder = m_strDstFolder + _T("\\ppt\\slides");
 				CString strFolderRels = strFolder + _T("\\_rels");
@@ -380,12 +388,13 @@ namespace NSBinPptxRW
 				CDirectory::CreateDirectory(strFolder);
 				CDirectory::CreateDirectory(strFolderRels);
 
-				m_oReader.Seek(pPair->m_value);
+				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
 				
 				for (LONG i = 0; i < nCountSlides; ++i)
 				{
-					m_arSlides.Add();
+					PPTX::Slide elm;
+					m_arSlides.push_back(elm);
 
 					m_oReader.m_pRels->Clear();
 					m_oReader.m_pRels->StartSlide(i, m_arSlides_Layout[i]);
@@ -424,29 +433,31 @@ namespace NSBinPptxRW
 			if (FALSE)
 			{
 				// noteMasters
-				pPair = m_mainTables.Lookup(NSMainTables::NotesMasters);
-				if (NULL != pPair)
+				pPair = m_mainTables.find(NSMainTables::NotesMasters);
+				if (m_mainTables.end()  != pPair)
 				{
-					m_oReader.Seek(pPair->m_value);
+					m_oReader.Seek(pPair->second);
 					LONG lCount = m_oReader.GetLong();
 					
 					for (LONG i = 0; i < lCount; ++i)
 					{
-						m_arNotesMasters.Add();
+						PPTX::NotesMaster elm;
+						m_arNotesMasters.push_back(elm);
 						m_arNotesMasters[i].fromPPTY(&m_oReader);
 					}
 				}
 
 				// notes
-				pPair = m_mainTables.Lookup(NSMainTables::NotesSlides);
-				if (NULL != pPair)
+				pPair = m_mainTables.find(NSMainTables::NotesSlides);
+				if (m_mainTables.end()  != pPair)
 				{
-					m_oReader.Seek(pPair->m_value);
+					m_oReader.Seek(pPair->second);
 					LONG lCount = m_oReader.GetLong();
 					
 					for (LONG i = 0; i < lCount; ++i)
 					{
-						m_arNotesSlides.Add();
+						PPTX::NotesSlide elm;
+						m_arNotesSlides.push_back(elm);
 						m_arNotesSlides[i].fromPPTY(&m_oReader);
 					}
 				}
@@ -454,7 +465,7 @@ namespace NSBinPptxRW
 			else
 			{
 				// create default
-				CreateDefaultNotesMasters((int)m_arThemes.GetCount() + 1);
+				CreateDefaultNotesMasters((int)m_arThemes.size() + 1);
 				CreateDefaultNote();
 
 				CString strFolder = m_strDstFolder + _T("\\ppt\\notesSlides");
@@ -463,7 +474,7 @@ namespace NSBinPptxRW
 				CDirectory::CreateDirectory(strFolder);
 				CDirectory::CreateDirectory(strFolderRels);
 
-				LONG lCount = (LONG)m_arSlides.GetCount();				
+				LONG lCount = (LONG)m_arSlides.size();				
 				for (LONG i = 0; i < lCount; ++i)
 				{
 					m_oReader.m_pRels->Clear();
@@ -484,34 +495,34 @@ namespace NSBinPptxRW
 			if (FALSE)
 			{
 				// app
-				pPair = m_mainTables.Lookup(NSMainTables::App);
-				if (NULL != pPair)
+				pPair = m_mainTables.find(NSMainTables::App);
+				if (m_mainTables.end()  != pPair)
 				{
-					m_oReader.Seek(pPair->m_value);
+					m_oReader.Seek(pPair->second);
 					m_oApp.fromPPTY(&m_oReader);
 				}
 
 				// core
-				pPair = m_mainTables.Lookup(NSMainTables::Core);
-				if (NULL != pPair)
+				pPair = m_mainTables.find(NSMainTables::Core);
+				if (m_mainTables.end()  != pPair)
 				{
-					m_oReader.Seek(pPair->m_value);
+					m_oReader.Seek(pPair->second);
 					m_oCore.fromPPTY(&m_oReader);
 				}
 
 				// tableStyles
-				pPair = m_mainTables.Lookup(NSMainTables::TableStyles);
-				if (NULL != pPair)
+				pPair = m_mainTables.find(NSMainTables::TableStyles);
+				if (m_mainTables.end()  != pPair)
 				{
-					m_oReader.Seek(pPair->m_value);
+					m_oReader.Seek(pPair->second);
 					m_oTableStyles.fromPPTY(&m_oReader);
 				}
 
 				// viewProps
-				pPair = m_mainTables.Lookup(NSMainTables::ViewProps);
-				if (NULL != pPair)
+				pPair = m_mainTables.find(NSMainTables::ViewProps);
+				if (m_mainTables.end()  != pPair)
 				{
-					m_oReader.Seek(pPair->m_value);
+					m_oReader.Seek(pPair->second);
 					m_oViewProps.fromPPTY(&m_oReader);
 				}
 
@@ -526,14 +537,14 @@ namespace NSBinPptxRW
 				//CreateDefaultTableStyles();
 				CreateDefaultViewProps();
 
-				pPair = m_mainTables.Lookup(NSMainTables::TableStyles);
-				if (NULL != pPair)
+				pPair = m_mainTables.find(NSMainTables::TableStyles);
+				if (m_mainTables.end()  != pPair)
 				{
-					m_oReader.Seek(pPair->m_value);
+					m_oReader.Seek(pPair->second);
 					m_oTableStyles.fromPPTY(&m_oReader);
 				}
 
-				if (0 == m_oTableStyles.Styles.GetCount())
+				if (m_oTableStyles.Styles.empty())
 				{
 					CreateDefaultTableStyles();
 				}
@@ -569,15 +580,15 @@ namespace NSBinPptxRW
 			
 			// presentation
 			bool bIsAuthors = false;
-			pPair = m_mainTables.Lookup(NSMainTables::Presentation);
-			if (NULL != pPair)
+			pPair = m_mainTables.find(NSMainTables::Presentation);
+			if (m_mainTables.end()  != pPair)
 			{
 				CString strFolder = m_strDstFolder + _T("\\ppt");
 				CString strFolderRels = strFolder + _T("\\_rels");
 
 				CDirectory::CreateDirectory(strFolderRels);
 
-				m_oReader.Seek(pPair->m_value);
+				m_oReader.Seek(pPair->second);
 				m_oPresentation.fromPPTY(&m_oReader);
 
 				m_oPresentation.sldMasterIdLst.clear();
@@ -591,7 +602,7 @@ namespace NSBinPptxRW
 					m_oPresentation.sldMasterIdLst[i].m_name = _T("sldMasterId");
 					m_oPresentation.sldMasterIdLst[i].id = sId;
 					m_oPresentation.sldMasterIdLst[i].rid = (size_t)(i + 1);
-					nCountLayouts += (LONG)(m_arSlideMasters_Theme[i].m_arLayouts.GetCount() + 1);
+					nCountLayouts += (LONG)(m_arSlideMasters_Theme[i].m_arLayouts.size() + 1);
 				}
 
 				m_oReader.m_pRels->WriteMasters(nCountMasters);
@@ -661,7 +672,7 @@ namespace NSBinPptxRW
 <Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\" />"));
 
 			// themes
-			for (LONG i = 0; i < (LONG)m_arThemes.GetCount(); ++i)
+			for (LONG i = 0; i < (LONG)m_arThemes.size(); ++i)
 			{
 				CString strTheme = _T("");
 				strTheme.Format(_T("<Override PartName=\"/ppt/theme/theme%d.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>"), i + 1);
@@ -671,7 +682,7 @@ namespace NSBinPptxRW
 			{
 				// notes theme
 				CString strTheme = _T("");
-				strTheme.Format(_T("<Override PartName=\"/ppt/theme/theme%d.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>"), m_arThemes.GetCount() + 1);
+				strTheme.Format(_T("<Override PartName=\"/ppt/theme/theme%d.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>"), m_arThemes.size() + 1);
 				oContentTypes.WriteString(strTheme);
 
 				oContentTypes.WriteString(_T("<Override PartName=\"/ppt/notesMasters/notesMaster1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml\"/>"));
@@ -796,8 +807,8 @@ namespace NSBinPptxRW
 					{
 						case 0:
 						{
-							oMaster.m_arLayouts.Add();
-							oMaster.m_arLayouts[oMaster.m_arLayouts.GetCount() - 1] = m_oReader.GetLong();
+							oMaster.m_arLayouts.push_back(0);
+							oMaster.m_arLayouts.back()= m_oReader.GetLong();
 							break;
 						}
 						case 1:
@@ -821,14 +832,14 @@ namespace NSBinPptxRW
 			m_oApp.Application = _T("Teamlab Office");
 			m_oApp.PresentationFormat = _T("On-screen Show (4:3)");
 			m_oApp.Paragraphs = 0;
-			m_oApp.Slides = (int)m_arSlides.GetCount();
-			m_oApp.Notes = (int)m_arSlides.GetCount();
+			m_oApp.Slides = (int)m_arSlides.size();
+			m_oApp.Notes = (int)m_arSlides.size();
 			m_oApp.HiddenSlides = 0;
 			m_oApp.MMClips = 2;
 			m_oApp.ScaleCrop = false;
 
-			int nCountThemes = (int)m_arSlideMasters.GetCount();
-			int nCountSlides = (int)m_arSlides.GetCount();
+			int nCountThemes = (int)m_arSlideMasters.size();
+			int nCountSlides = (int)m_arSlides.size();
 
 			m_oApp.HeadingPairs.push_back(PPTX::Logic::HeadingVariant());
 			m_oApp.HeadingPairs[0].m_type = _T("lpstr");
@@ -957,10 +968,12 @@ namespace NSBinPptxRW
 
 			pShape->txBody = pTxBody;
 
-			pTxBody->Paragrs[0].RunElems.Add();
+			PPTX::Logic::RunElem elm;
+			pTxBody->Paragrs[0].RunElems.push_back(elm);
 			pTxBody->Paragrs[0].RunElems[0].InitRun(pTxRun);
 
-			m_oDefaultNote.cSld.spTree.SpTreeElems.Add();
+			PPTX::Logic::SpTreeElem elm_tree;
+			m_oDefaultNote.cSld.spTree.SpTreeElems.push_back(elm_tree);
 			m_oDefaultNote.cSld.spTree.SpTreeElems[0].InitElem(pShape);
 
 			m_oDefaultNote.clrMapOvr = new PPTX::Logic::ClrMapOvr();

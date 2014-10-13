@@ -73,19 +73,19 @@ namespace NSPresentationEditor
 		CString m_strPresentationDirectory;
 		CString m_strSourceDirectory;
 
-		CAtlArray<CExFilesInfo> m_arVideos;
-		CAtlArray<CExFilesInfo> m_arImages;
-		CAtlArray<CExFilesInfo> m_arAudios;
+		std::vector<CExFilesInfo> m_arVideos;
+		std::vector<CExFilesInfo> m_arImages;
+		std::vector<CExFilesInfo> m_arAudios;
 
-		CAtlArray<CExFilesInfo> m_arAudioCollection;
+		std::vector<CExFilesInfo> m_arAudioCollection;
 
 	public:
 		void Clear()
 		{
-			m_arVideos.RemoveAll();
-			m_arImages.RemoveAll();
-			m_arAudios.RemoveAll();
-			m_arAudioCollection.RemoveAll();
+			m_arVideos.clear();
+			m_arImages.clear();
+			m_arAudios.clear();
+			m_arAudioCollection.clear();
 		}
 
 	public:
@@ -105,16 +105,19 @@ namespace NSPresentationEditor
 			m_strPresentationDirectory	= oSrc.m_strPresentationDirectory;
 			m_strSourceDirectory		= oSrc.m_strSourceDirectory;
 
-			m_arVideos.Copy(oSrc.m_arVideos);
-			m_arImages.Copy(oSrc.m_arImages);
-			m_arAudios.Copy(oSrc.m_arAudios);
+			for (int i=0; i < oSrc.m_arVideos.size(); i++)
+				m_arVideos.push_back(oSrc.m_arVideos[i]);
+			for (int i=0; i < oSrc.m_arVideos.size(); i++)
+				m_arImages.push_back(oSrc.m_arImages[i]);
+			for (int i=0; i < oSrc.m_arVideos.size(); i++)
+				m_arAudios.push_back(oSrc.m_arAudios[i]);
 
 			return *this;
 		}
 
 		CExFilesInfo* LockVideo(DWORD dwID)
 		{
-			size_t nCount = m_arVideos.GetCount();
+			size_t nCount = m_arVideos.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				if (dwID == m_arVideos[i].m_dwID)
@@ -127,7 +130,7 @@ namespace NSPresentationEditor
 		}
 		CExFilesInfo* LockImage(DWORD dwID)
 		{
-			size_t nCount = m_arImages.GetCount();
+			size_t nCount = m_arImages.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				if (dwID == m_arImages[i].m_dwID)
@@ -140,7 +143,7 @@ namespace NSPresentationEditor
 		}
 		CExFilesInfo* LockAudio(DWORD dwID)
 		{
-			size_t nCount = m_arAudios.GetCount();
+			size_t nCount = m_arAudios.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				if (dwID == m_arAudios[i].m_dwID)
@@ -153,7 +156,7 @@ namespace NSPresentationEditor
 		}
 		CExFilesInfo* LockAudioFromCollection(DWORD dwID)
 		{
-			size_t nCount = m_arAudioCollection.GetCount();
+			size_t nCount = m_arAudioCollection.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				if (dwID == m_arAudioCollection[i].m_dwID)
@@ -1239,13 +1242,13 @@ namespace NSPresentationEditor
 	};
 
 	static void ParseString(CString strDelimeters, CString strSource, 
-			CAtlArray<CString>* pArrayResults, bool bIsCleared = true)
+			std::vector<CString>* pArrayResults, bool bIsCleared = true)
 	{
 		if (NULL == pArrayResults)
 			return;
 
 		if (bIsCleared)
-			pArrayResults->RemoveAll();
+			pArrayResults->clear();
 
 		CString resToken;
 		int curPos= 0;
@@ -1253,7 +1256,7 @@ namespace NSPresentationEditor
 		resToken = strSource.Tokenize(strDelimeters, curPos);
 		while (resToken != _T(""))
 		{
-			pArrayResults->Add(resToken);
+			pArrayResults->push_back(resToken);
 			resToken = strSource.Tokenize(strDelimeters, curPos);
 		};
 	}

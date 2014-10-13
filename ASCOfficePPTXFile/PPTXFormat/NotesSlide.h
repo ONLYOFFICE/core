@@ -10,7 +10,7 @@
 
 namespace PPTX
 {
-	class NotesSlide : public WrapperFile, public PPTX::FileContainer
+	class NotesSlide : public WrapperFile, public FileContainer
 	{
 	public:
 		NotesSlide()

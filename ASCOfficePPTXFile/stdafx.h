@@ -60,7 +60,13 @@
 //#define PPT_DEF
 //#define ENABLE_PPT_TO_PPTX_CONVERT
 //#define _AVS_PPT_SHAPE_INCLUDE_
-
+////////////////////_USE_MATH_DEFINES
+////////////////////NODOCX
+////////////////////PPTX_DEF
+////////////////////PPT_DEF
+////////////////////ENABLE_PPT_TO_PPTX_CONVERT
+////////////////////_AVS_PPT_SHAPE_INCLUDE_
+////////////////////AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 using namespace ATL;
 //#include "../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
 #include "../Common/Config.h"

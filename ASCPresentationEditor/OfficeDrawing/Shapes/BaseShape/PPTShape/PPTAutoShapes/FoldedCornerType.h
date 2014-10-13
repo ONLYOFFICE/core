@@ -28,7 +28,7 @@ public:
         AddGuide(_T("prod @1 6144 32768"));
         AddGuide(_T("sum @12 @0 0"));
 
-		m_arAdjustments.Add(18900);
+		m_arAdjustments.push_back(18900);
 
         LoadConnectorsList(_T("Rectangle"));
         LoadTextRect(_T("0,0,21600,@13"));
@@ -36,7 +36,7 @@ public:
         CHandle_ oHandle1;
         oHandle1.position = _T("#0,bottomRight");
         oHandle1.xrange = _T("10800,21600");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
         
     }
 };

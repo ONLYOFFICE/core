@@ -14,10 +14,10 @@ public:
 
         LoadConnectorsList(_T("10860,2187;2928,10800;10860,21600;18672,10800"));
 
-		m_arConnectorAngles.Add(270);
-		m_arConnectorAngles.Add(180);
-		m_arConnectorAngles.Add(90);
-		m_arConnectorAngles.Add(0);
+		m_arConnectorAngles.push_back(270);
+		m_arConnectorAngles.push_back(180);
+		m_arConnectorAngles.push_back(90);
+		m_arConnectorAngles.push_back(0);
 
         LoadTextRect(_T("5037,2277,16557,13677"));
     }

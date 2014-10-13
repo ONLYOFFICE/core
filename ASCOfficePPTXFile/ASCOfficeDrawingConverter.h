@@ -1,10 +1,13 @@
 #ifndef ASC_OFFICE_DRAWING_CONVERTER
 #define ASC_OFFICE_DRAWING_CONVERTER
 
-//todo ??
 #ifdef _WIN32
 #include <atlbase.h>
 #include <atlstr.h>
+
+#include <vector>
+#include <map>
+
 #endif
 #include "../Common/DocxFormat/Source/Base/Base.h"
 #include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/PPTShapeEnum.h"
@@ -14,6 +17,7 @@ class CShape;
 class CPPTShape;
 class CFontManager;
 class COfficeFontPicker;
+
 namespace XmlUtils
 {
 	class CXmlNode;
@@ -47,7 +51,7 @@ namespace PPTX
 	class CStringTrimmer
 	{
 	public:
-		CAtlArray<CString>	m_arParams;
+		std::vector<CString>	m_arParams;
 		TCHAR				m_Separator;
 
 	public:
@@ -63,7 +67,7 @@ namespace PPTX
 	class CCSS
 	{
 	public:
-		CAtlMap<CString, CString> m_mapSettings;
+		std::map<CString, CString> m_mapSettings;
 		CString m_strClassName;
 
 	public:
@@ -79,7 +83,7 @@ namespace PPTX
 	class CStylesCSS
 	{
 	public: 
-		CAtlArray<CCSS> m_arStyles;
+		std::vector<CCSS> m_arStyles;
 
 	public:
 		CStylesCSS();
@@ -107,7 +111,7 @@ public:
 class CElementProps
 {
 public:
-	CAtlMap<LONG, VARIANT> m_Properties;
+	std::map<LONG, VARIANT> m_Properties;
 
 public:
 	CElementProps();
@@ -144,8 +148,8 @@ namespace NSBinPptxRW
 		};
 
 
-		CAtlMap<CString, ::CShape*>				m_mapShapeTypes;
-		CAtlMap<CString, NSCommon::smart_ptr<PPTX::CCommonRels>>	m_mapRels;
+		std::map<CString, CShape*>								m_mapShapeTypes;
+		std::map<CString, NSCommon::smart_ptr<PPTX::CCommonRels>>	m_mapRels;
 		CString									m_strCurrentRelsPath;
 
 		NSBinPptxRW::CBinaryFileWriter*			m_pBinaryWriter;

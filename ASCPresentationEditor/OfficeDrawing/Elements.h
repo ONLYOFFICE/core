@@ -1331,7 +1331,7 @@ namespace NSPresentationEditor
 				pFormulaConverter.ConvertCoef ( pCoef );
 
 			//guids----------------------------------------
-			int nGuidCount = pPPTShape->m_oManager.m_arFormulas.GetSize();
+			int nGuidCount = pPPTShape->m_oManager.m_arFormulas.size();
 			if (0 != nGuidCount)
 			{
 					pFormulaConverter.ConvertFormula ( pPPTShape->m_oManager.m_arFormulas);					
@@ -1350,8 +1350,8 @@ namespace NSPresentationEditor
 					pFormulaConverter.ConvertTextRect ( pPPTShape->m_arStringTextRects[0] );					
 				}
 
-				int nHandlesCount = pPPTShape->m_arHandles.GetSize();
-				int nAdjCount = pPPTShape->m_arAdjustments.GetSize();
+				int nHandlesCount = pPPTShape->m_arHandles.size();
+				int nAdjCount = pPPTShape->m_arAdjustments.size();
 
 				//handles
 				if (0 != nHandlesCount || 0 != nAdjCount)
@@ -1422,7 +1422,7 @@ namespace NSPresentationEditor
 			pFormulaConverter.ConvertCoef(pCoef);
 
 			//guids----------------------------------------
-			int nGuidCount = pPPTShape->m_oManager.m_arFormulas.GetSize();
+			int nGuidCount = pPPTShape->m_oManager.m_arFormulas.size();
 			if (0 != nGuidCount)
 			{
 				pFormulaConverter.ConvertFormula(pPPTShape->m_oManager.m_arFormulas);
@@ -1435,14 +1435,14 @@ namespace NSPresentationEditor
 				pFormulaConverter.ConvertPath(pPPTShape->m_strPath, pPPTShape->m_oPath);
 
 				//string rect
-				int nRectCount = (int)pPPTShape->m_arStringTextRects.GetCount();
+				int nRectCount = (int)pPPTShape->m_arStringTextRects.size();
 				if (0 != nRectCount)
 				{
 					pFormulaConverter.ConvertTextRect(pPPTShape->m_arStringTextRects[0]);
 				}
 
-				int nHandlesCount = pPPTShape->m_arHandles.GetSize();
-				int nAdjCount = pPPTShape->m_arAdjustments.GetSize();
+				int nHandlesCount = pPPTShape->m_arHandles.size();
+				int nAdjCount = pPPTShape->m_arAdjustments.size();
 
 				//handles
 				if (0 != nHandlesCount || 0 != nAdjCount)

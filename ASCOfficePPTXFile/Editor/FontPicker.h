@@ -9,7 +9,7 @@ namespace NSFontCutter
 	class CFontDstManager
 	{
 	public:		
-		CAtlMap<CString, CString> m_mapPicks;
+		std::map<CString, CString> m_mapPicks;
 		CApplicationFonts m_oApplicationFonts;
 		CFontManager* m_pFontManager;
 
@@ -57,9 +57,9 @@ namespace NSFontCutter
 				sFind = _T("Arial");
 			}
 
-			CAtlMap<CString, CString>::CPair* pPair = m_mapPicks.Lookup(sFind);
-			if (NULL != pPair)
-				return pPair->m_value;
+			std::map<CString, CString>::iterator pPair = m_mapPicks.find(sFind);
+			if (pPair != m_mapPicks.end())
+				return pPair->second;
 
 			CString sInputSave = sFind;
 
@@ -76,7 +76,7 @@ namespace NSFontCutter
 				if (m_bIsEmbeddedFonts)
 					m_oEmbeddedFonts.CheckFont(sRes, m_pFontManager);
 
-				m_mapPicks.SetAt(sInputSave, sRes);
+				m_mapPicks.insert(std::pair<CString,CString>(sInputSave, sRes));
 				
 			}
 			return sRes;

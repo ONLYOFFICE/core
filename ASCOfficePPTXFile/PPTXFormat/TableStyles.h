@@ -31,7 +31,7 @@ namespace PPTX
 
 			oNode.ReadAttributeBase(L"def", def);
 
-			Styles.RemoveAll();
+			Styles.clear();
 			Logic::TableStyle Style;
 
 			XmlUtils::CXmlNodes oNodes;
@@ -44,22 +44,20 @@ namespace PPTX
 				oNodes.GetAt(i, oMem);
 
 				Style = oMem;
-				Styles.SetAt(Style.styleId, Style);
+				Styles.insert(std::pair<CString, Logic::TableStyle>(Style.styleId, Style));
 			}
 
-			POSITION pos = Styles.GetStartPosition();
-			while (NULL != pos)
+			for (std::map<CString, Logic::TableStyle>::iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
 			{
-				Styles.GetNextValue(pos).SetParentFilePointer(this);
+				pPair->second.SetParentFilePointer(this);
 			}
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
 		{
 			CString strValue = _T("");
-			POSITION pos = Styles.GetStartPosition();
-			while (NULL != pos)
+			for (std::map<CString, Logic::TableStyle>::const_iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
 			{
-				strValue += Styles.GetNextValue(pos).toXML();
+				pPair->second.toXML();
 			}
 
 			XmlUtils::CAttribute oAttr;
@@ -73,9 +71,9 @@ namespace PPTX
 		}
 
 	public:
-		virtual const PPTX::FileType type() const
+		virtual const FileType type() const
 		{
-			return PPTX::FileTypes::TableStyles;
+			return FileTypes::TableStyles;
 		}
 		virtual const OOX::CPath DefaultDirectory() const
 		{
@@ -95,13 +93,10 @@ namespace PPTX
 			pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 			pWriter->StartRecord(0);
-			ULONG len = (ULONG)Styles.GetCount();
 
-			POSITION pos = Styles.GetStartPosition();
-			while (NULL != pos)
+			for (std::map<CString, Logic::TableStyle>::const_iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
 			{
-				const CAtlMap<CString, Logic::TableStyle>::CPair* pPair = Styles.GetNext(pos);
-				pWriter->WriteRecord1(1, pPair->m_value);
+				pWriter->WriteRecord1(1, pPair->second);
 			}
 
 			pWriter->EndRecord();
@@ -138,7 +133,7 @@ namespace PPTX
 			pReader->Skip(4); // len
 
 			LONG lPos = pReader->GetPos();
-			CAtlArray<CString> arrIds;
+			std::vector<CString> arrIds;
 
 			while (pReader->GetPos() < _end_rec)
 			{
@@ -157,7 +152,7 @@ namespace PPTX
 					{
 						case 0:
 						{
-							arrIds.Add(pReader->GetString2());
+							arrIds.push_back(pReader->GetString2());
 							break;
 						}
 						case 1:
@@ -181,11 +176,15 @@ namespace PPTX
 				pReader->Skip(1);
 	
 				Logic::TableStyle _style;
-				Styles.SetAt(arrIds[nIndex], _style);
+				Styles.insert(std::pair<CString, Logic::TableStyle>(arrIds[nIndex], _style));
 
-				CAtlMap<CString, Logic::TableStyle>::CPair* pPair = Styles.Lookup(arrIds[nIndex]);
-				pPair->m_value.m_name = _T("a:tblStyle");
-				pPair->m_value.fromPPTY(pReader);
+				std::map<CString, Logic::TableStyle>::iterator pPair = Styles.find(arrIds[nIndex]);
+				
+				if (Styles.end() != pPair)
+				{
+					pPair->second.m_name = _T("a:tblStyle");
+					pPair->second.fromPPTY(pReader);
+				}
 
 				nIndex++;
 			}
@@ -199,15 +198,14 @@ namespace PPTX
 
 			pWriter->StartAttributes();
 
-			pWriter->WriteAttribute(_T("xmlns:a"), PPTX::g_Namespaces.a.m_strLink);
+			pWriter->WriteAttribute(_T("xmlns:a"), g_Namespaces.a.m_strLink);
 			pWriter->WriteAttribute(_T("def"), def);			
 
 			pWriter->EndAttributes();
 
-			POSITION pos = Styles.GetStartPosition();
-			while (NULL != pos)
+			for (std::map<CString, Logic::TableStyle>::const_iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
 			{
-				Styles.GetNextValue(pos).toXmlWriter(pWriter);
+				pPair->second.toXmlWriter(pWriter);
 			}
 
 			pWriter->EndNode(_T("a:tblStyleLst"));
@@ -215,15 +213,16 @@ namespace PPTX
 
 	public:
 		CString def;
-		CAtlMap<CString, Logic::TableStyle> Styles;
+		std::map<CString, Logic::TableStyle> Styles;
 
 		void SetTheme(const smart_ptr<PPTX::Theme> theme)
 		{
 			m_Theme = theme;
 
-			POSITION pos = Styles.GetStartPosition();
-			while (NULL != pos)
-				Styles.GetNextValue(pos).SetTheme(m_Theme);
+			for (std::map<CString, Logic::TableStyle>::iterator pPair = Styles.begin(); pPair != Styles.end(); ++pPair)
+			{
+				pPair->second.SetTheme(m_Theme);
+			}
 		}
 
 		virtual DWORD GetRGBAFromMap(const CString& str)const

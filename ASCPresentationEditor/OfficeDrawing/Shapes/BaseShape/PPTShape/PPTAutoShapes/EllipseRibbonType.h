@@ -63,31 +63,31 @@ public:
 		AddGuide(_T("prod width 3 8"));  
 		AddGuide(_T("sum @46 0 4"));
 
-        m_arAdjustments.Add(5400);
-		m_arAdjustments.Add(5400);
-		m_arAdjustments.Add(18900);
+        m_arAdjustments.push_back(5400);
+		m_arAdjustments.push_back(5400);
+		m_arAdjustments.push_back(18900);
 
         LoadConnectorsList(_T("@6,0;@5,@36;@6,@1;@7,@36"));
         LoadTextRect(_T("@0,@22,@19,@1"));
 
-		m_arConnectorAngles.Add(270);
-		m_arConnectorAngles.Add(180);
-		m_arConnectorAngles.Add(90);
-		m_arConnectorAngles.Add(0);
+		m_arConnectorAngles.push_back(270);
+		m_arConnectorAngles.push_back(180);
+		m_arConnectorAngles.push_back(90);
+		m_arConnectorAngles.push_back(0);
 
 		CHandle_ oHandle1;
         oHandle1.position = _T("#0,bottomRight");
         oHandle1.xrange = _T("@5,@47");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
 
 		CHandle_ oHandle2;
         oHandle2.position = _T("center,#1");
         oHandle2.yrange = _T("@10,@43");
-        m_arHandles.Add(oHandle2);
+        m_arHandles.push_back(oHandle2);
 
 		CHandle_ oHandle3;
         oHandle3.position = _T("topLeft,#2");
         oHandle3.yrange = _T("@27,@45");
-        m_arHandles.Add(oHandle3);
+        m_arHandles.push_back(oHandle3);
     }
 };

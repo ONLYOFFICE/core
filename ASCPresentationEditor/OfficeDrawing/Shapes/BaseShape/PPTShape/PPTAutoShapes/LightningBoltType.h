@@ -14,13 +14,13 @@ public:
 
         LoadConnectorsList(_T("8472,0;0,3890;5022,9705;10012,14915;21600,21600;16577,12007;12860,6080"));
 
-		m_arConnectorAngles.Add(270);
-		m_arConnectorAngles.Add(270);
-		m_arConnectorAngles.Add(180);
-		m_arConnectorAngles.Add(180);
-		m_arConnectorAngles.Add(90);
-		m_arConnectorAngles.Add(0);
-		m_arConnectorAngles.Add(0);
+		m_arConnectorAngles.push_back(270);
+		m_arConnectorAngles.push_back(270);
+		m_arConnectorAngles.push_back(180);
+		m_arConnectorAngles.push_back(180);
+		m_arConnectorAngles.push_back(90);
+		m_arConnectorAngles.push_back(0);
+		m_arConnectorAngles.push_back(0);
 
         LoadTextRect(_T("8757,7437,13917,14277"));
     }

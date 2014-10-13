@@ -62,9 +62,9 @@ public:
 		AddGuide(_T("sum @35 10800 0"));
 		AddGuide(_T("sum @36 10800 0"));
 
-		m_arAdjustments.Add(-11796480);
-		m_arAdjustments.Add(0);
-		m_arAdjustments.Add(5400);
+		m_arAdjustments.push_back(-11796480);
+		m_arAdjustments.push_back(0);
+		m_arAdjustments.push_back(5400);
 		
 		LoadConnectorsList(_T("@44,@45;@48,@49;@46,@47;@17,@18;@24,@25;@15,@16"));
 		LoadTextRect(_T("3163,3163,18437,18437"));
@@ -72,13 +72,13 @@ public:
 		CHandle_ oHandle1;
 		oHandle1.position = _T("@3,#0");
 		oHandle1.polar = _T("10800,10800");
-		m_arHandles.Add(oHandle1);
+		m_arHandles.push_back(oHandle1);
 
 		CHandle_ oHandle2;
 		oHandle2.position = _T("#2,#1");
 		oHandle2.polar = _T("10800,10800");
 		oHandle2.radiusrange = _T("0,10800");
-		m_arHandles.Add(oHandle2);
+		m_arHandles.push_back(oHandle2);
 	}
 };
 

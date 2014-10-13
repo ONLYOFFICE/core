@@ -19,16 +19,16 @@ namespace NSGuidesOdp
 	class CFormulaManager
 	{
 	private:
-		CSimpleMap<CString, long> mapAdjustments;
+		std::map<CString, long> mapAdjustments;
 		
 
 	public:
-		CSimpleMap<CString, long> mapGuides;
-		CSimpleArray<CString> strGuides;
+		std::map<CString, long> mapGuides;
+		std::vector<CString> strGuides;
 
 	private:
-		CSimpleArray<long>* Adjustments;
-		CSimpleArray<double>* Guides;
+		std::vector<long>* Adjustments;
+		std::vector<double>* Guides;
 
 	public:
 
@@ -44,7 +44,7 @@ namespace NSGuidesOdp
 			return 0;
 		}
 
-		CFormulaManager(CSimpleArray<long>& a, CSimpleArray<double>& g)
+		CFormulaManager(std::vector<long>& a, std::vector<double>& g)
 		{
 			Adjustments = &a;
 			Guides = &g;
@@ -59,32 +59,32 @@ namespace NSGuidesOdp
 
 		~CFormulaManager()
 		{
-			mapAdjustments.RemoveAll();
-			mapGuides.RemoveAll();
-			strGuides.RemoveAll();
-			Adjustments->RemoveAll();
-			Guides->RemoveAll();
+			mapAdjustments.clear();
+			mapGuides.clear();
+			strGuides.clear();
+			Adjustments->clear();
+			Guides->clear();
 		}
 
 		CFormulaManager& operator =(const CFormulaManager& manager)
 		{
-			mapAdjustments.RemoveAll();
-			for(int i = 0; i < manager.mapAdjustments.GetSize(); i++)
-				mapAdjustments.Add(manager.mapAdjustments.GetKeyAt(i), manager.mapAdjustments.GetValueAt(i));
-			mapGuides.RemoveAll();
-			for(int i = 0; i < manager.mapGuides.GetSize(); i++)
-				mapGuides.Add(manager.mapGuides.GetKeyAt(i), manager.mapGuides.GetValueAt(i));
+			mapAdjustments.clear();
+			for(int i = 0; i < manager.mapAdjustments.size(); i++)
+				mapAdjustments.push_back(manager.mapAdjustments.GetKeyAt(i), manager.mapAdjustments.GetValueAt(i));
+			mapGuides.clear();
+			for(int i = 0; i < manager.mapGuides.size(); i++)
+				mapGuides.push_back(manager.mapGuides.GetKeyAt(i), manager.mapGuides.GetValueAt(i));
 
-			strGuides.RemoveAll();
-			for(int i = 0; i < manager.strGuides.GetSize(); i++)
-				strGuides.Add(manager.strGuides[i]);
+			strGuides.clear();
+			for(int i = 0; i < manager.strGuides.size(); i++)
+				strGuides.push_back(manager.strGuides[i]);
 
-			Adjustments->RemoveAll();
-			for(int i = 0; i < manager.Adjustments->GetSize(); i++)
-				Adjustments->Add((*manager.Adjustments)[i]);
-			Guides->RemoveAll();
-			for(int i = 0; i < manager.Guides->GetSize(); i++)
-				Guides->Add((*manager.Guides)[i]);
+			Adjustments->clear();
+			for(int i = 0; i < manager.Adjustments->size(); i++)
+				Adjustments->push_back((*manager.Adjustments)[i]);
+			Guides->clear();
+			for(int i = 0; i < manager.Guides->size(); i++)
+				Guides->push_back((*manager.Guides)[i]);
 
 			return *this;
 		}
@@ -97,8 +97,8 @@ namespace NSGuidesOdp
 				(*Adjustments)[mapAdjustments.GetValueAt(num)] = value;
 				return;
 			}
-			Adjustments->Add(value);
-			mapAdjustments.Add(name, Adjustments->GetSize() - 1);
+			Adjustments->push_back(value);
+			mapAdjustments.push_back(name, Adjustments->size() - 1);
 		}
 
 		void AddGuide(const CString& name, const CString& fmla)
@@ -110,9 +110,9 @@ namespace NSGuidesOdp
 				(*Guides)[mapGuides.GetValueAt(num)] = dNonDefResult;
 				return;
 			}
-			strGuides.Add(fmla);
-			Guides->Add(dNonDefResult);
-			mapGuides.Add(name, strGuides.GetSize() - 1);
+			strGuides.push_back(fmla);
+			Guides->push_back(dNonDefResult);
+			mapGuides.push_back(name, strGuides.size() - 1);
 		}
 
 		double GetValue(CString str)
@@ -140,16 +140,16 @@ namespace NSGuidesOdp
 
 		void Clear()
 		{
-			//for(long i = 0; i < Adjustments.GetSize(); i++)
+			//for(long i = 0; i < Adjustments.size(); i++)
 			//	Adjustments[i] = NonDefResult;
-			for(long i = 0; i < Guides->GetSize(); i++)
+			for(long i = 0; i < Guides->size(); i++)
 				(*Guides)[i] = dNonDefResult;
 		}
 
 		void ReCalculateGuides()
 		{
 			Clear();
-			for(long i = 0; i < strGuides.GetSize(); i++)
+			for(long i = 0; i < strGuides.size(); i++)
 			{
 				TParser parser;
 				parser.Compile(strGuides[i], *this);

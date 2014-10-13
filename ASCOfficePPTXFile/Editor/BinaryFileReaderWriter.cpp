@@ -532,7 +532,7 @@ namespace NSBinPptxRW
 		CSeekTableEntry oEntry;
 		oEntry.Type = lType;
 		oEntry.SeekPos = m_lPosition;
-		m_arMainTables.Add(oEntry);
+		m_arMainTables.push_back(oEntry);
 		//StartRecord(lType);
 	}
 
@@ -547,7 +547,7 @@ namespace NSBinPptxRW
 	void CBinaryFileWriter::WriteMainPart()
 	{
 		BYTE* pData = m_pStreamData;
-		size_t nCount = m_arMainTables.GetCount();
+		size_t nCount = m_arMainTables.size();
 
 		for (size_t i = 0; i < nCount; i++)
 		{
@@ -775,8 +775,8 @@ namespace NSBinPptxRW
 	{
 		m_pWriter->ClearNoAttack();
 		m_lNextRelsID = 1;
-		m_mapImages.RemoveAll();
-		m_mapLinks.RemoveAll();
+		m_mapImages.clear();
+		m_mapLinks.clear();
 	}
 
 	void CRelsGenerator::StartRels()
@@ -796,7 +796,7 @@ namespace NSBinPptxRW
 		m_pWriter->WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
 		m_pWriter->WriteString(_T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">"));
 
-		int nCountLayouts = (int)oInfo.m_arLayouts.GetCount();
+		int nCountLayouts = (int)oInfo.m_arLayouts.size();
 		for (int i = 0; i < nCountLayouts; ++i)
 		{
 			CString str = _T("");
@@ -928,14 +928,14 @@ namespace NSBinPptxRW
 	int CRelsGenerator::WriteImage(const CString& strImagePath, CString strBase64Image = _T(""))
 	{
 		CString strImage = m_pManager->GenerateImage(strImagePath, strBase64Image);
-		CAtlMap<CString, int>::CPair* pPair = m_mapImages.Lookup(strImage);
+		std::map<CString, int>::iterator pPair = m_mapImages.find(strImage);
 
-		if (NULL != pPair)
+		if (m_mapImages.end() != pPair)
 		{
-			return pPair->m_value;				
+			return pPair->second;				
 		}
 
-		m_mapImages.SetAt(strImage, m_lNextRelsID);
+		m_mapImages.insert(std::pair<CString, int>(strImage, m_lNextRelsID));
 		CString strRid = _T("");
 		strRid.Format(_T("rId%d"), m_lNextRelsID++);
 
@@ -986,14 +986,14 @@ namespace NSBinPptxRW
 
 	int CRelsGenerator::WriteHyperlink(const CString& strLink, const bool& bIsActionInit)
 	{
-		CAtlMap<CString, int>::CPair* pPair = m_mapLinks.Lookup(strLink);
+		std::map<CString, int>::iterator pPair = m_mapLinks.find(strLink);
 
-		if (NULL != pPair)
+		if (m_mapLinks.end() != pPair)
 		{
-			return pPair->m_value;				
+			return pPair->second;				
 		}
 
-		m_mapLinks.SetAt(strLink, m_lNextRelsID);
+		m_mapLinks.insert(std::pair<CString, int>(strLink, m_lNextRelsID));
 		CString strRid = _T("");
 		strRid.Format(_T("rId%d"), m_lNextRelsID++);
 
@@ -1045,13 +1045,13 @@ namespace NSBinPptxRW
 		//RELEASEINTERFACE(m_pMainDocument);
 		RELEASEOBJECT(m_pRels);
 
-		size_t nCountStackRels = m_stackRels.GetCount();
+		size_t nCountStackRels = m_stackRels.size();
 		for (size_t i = 0; i < nCountStackRels; ++i)
 		{
 			CRelsGenerator* pCur = m_stackRels[i];
 			RELEASEOBJECT(pCur);
 		}
-		m_stackRels.RemoveAll();
+		m_stackRels.clear();
 	}
 
 	void CBinaryFileReader::SetMainDocument(BinDocxRW::CDocxSerializer* pMainDoc)

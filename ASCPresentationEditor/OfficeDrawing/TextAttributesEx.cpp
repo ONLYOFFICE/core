@@ -16,7 +16,7 @@ namespace NSPresentationEditor
 		if (2 == m_lWrapMode)
 		{
 			LONG lAlign = 0;
-			if (m_arParagraphs.GetCount() > 0 && m_arParagraphs[0].m_oPFRun.textAlignment.is_init())
+			if (m_arParagraphs.size() > 0 && m_arParagraphs[0].m_oPFRun.textAlignment.is_init())
 				lAlign = m_arParagraphs[0].m_oPFRun.textAlignment.get();
 			else
 				lAlign = m_oAttributes.m_nTextAlignHorizontal;
@@ -49,7 +49,7 @@ namespace NSPresentationEditor
 		CString strInfoCFs	= _T("");
 		CString sText		= _T("");
 
-		size_t nCountPars = m_arParagraphs.GetCount();
+		size_t nCountPars = m_arParagraphs.size();
 		for (size_t nIndexPF = 0; nIndexPF < nCountPars; ++nIndexPF)
 		{
 			LONG lLevel = m_arParagraphs[nIndexPF].m_lTextLevel;
@@ -86,7 +86,7 @@ namespace NSPresentationEditor
 
 			LONG lCountParMem = 0;
 			
-			size_t nCountCFs = m_arParagraphs[nIndexPF].m_arSpans.GetCount();
+			size_t nCountCFs = m_arParagraphs[nIndexPF].m_arSpans.size();
 
 			if (0 == nCountCFs)
 			{
@@ -193,7 +193,7 @@ namespace NSPresentationEditor
 		//if (2 == m_lWrapMode)
 		//{
 		//	LONG lAlign = 0;
-		//	if (m_arPFs.GetCount() > 0)
+		//	if (m_arPFs.size() > 0)
 		//		lAlign = m_arPFs[0].textAlignment;
 		//	else
 		//		lAlign = m_oAttributes.m_nTextAlignHorizontal;
@@ -239,7 +239,7 @@ namespace NSPresentationEditor
 		#endif
 		#endif
 
-		size_t nCountPars = m_arParagraphs.GetCount();
+		size_t nCountPars = m_arParagraphs.size();
 		for (size_t i = 0; i < nCountPars; ++i)
 		{
 			CParagraph* pParagraph = &m_arParagraphs[i];
@@ -272,7 +272,7 @@ namespace NSPresentationEditor
 			oPFRun.ApplyAfter(pParagraph->m_oPFRun);
 
 			// теперь спаны
-			size_t nSpans = pParagraph->m_arSpans.GetCount();
+			size_t nSpans = pParagraph->m_arSpans.size();
 			CString strCFs = _T("");
 			for (size_t j = 0; j < nSpans; ++j)
 			{
@@ -346,10 +346,10 @@ namespace NSPresentationEditor
 	void CTextAttributesEx::RecalcParagraphs(CTheme* pTheme)
 	{
 		#ifdef PPT_FORMAT
-		for (LONG i = 0; i < (LONG)m_arParagraphs.GetCount(); ++i)
+		for (LONG i = 0; i < (LONG)m_arParagraphs.size(); ++i)
 		{
 			bool bIsBreak = true;
-			LONG lCountCFs = (LONG)m_arParagraphs[i].m_arSpans.GetCount();
+			LONG lCountCFs = (LONG)m_arParagraphs[i].m_arSpans.size();
 			for (LONG j = 0; j < lCountCFs; ++j)
 			{
 				CString s = m_arParagraphs[i].m_arSpans[j].m_strText;
@@ -363,8 +363,8 @@ namespace NSPresentationEditor
 					if (bIsBreakAttack)
 					{
 						CParagraph oParBreak = m_arParagraphs[i];
-						oParBreak.m_arSpans.RemoveAll();
-						oParBreak.m_arSpans.Add(m_arParagraphs[i].m_arSpans[j]);
+						oParBreak.m_arSpans.clear();
+						oParBreak.m_arSpans.push_back(m_arParagraphs[i].m_arSpans[j]);
 						oParBreak.m_arSpans[0].m_strText = _T("  ");
 					}
 
@@ -389,7 +389,7 @@ namespace NSPresentationEditor
 					else
 						oNewPar.m_arSpans[0].m_strText.Delete(0, lFound + 1);
 
-					if (0 != oNewPar.m_arSpans.GetCount())
+					if (0 != oNewPar.m_arSpans.size())
 						m_arParagraphs.InsertAt(i + 1, oNewPar);	
 
 					break;
@@ -404,7 +404,7 @@ namespace NSPresentationEditor
 		if (NULL != pTheme)
 		{
 			// теперь снаследуем все для буллета
-			size_t nCountPFs = m_arParagraphs.GetCount();
+			size_t nCountPFs = m_arParagraphs.size();
 			for (size_t nIndexP = 0; nIndexP < nCountPFs; ++nIndexP)
 			{
 				LONG lLevel = m_arParagraphs[nIndexP].m_lTextLevel;
@@ -459,7 +459,7 @@ namespace NSPresentationEditor
 
 		#endif
 
-		size_t nCount = m_arParagraphs.GetCount();
+		size_t nCount = m_arParagraphs.size();
 		for (size_t i = 0; i < nCount; ++i)
 		{
 			m_arParagraphs[i].CheckErrors();

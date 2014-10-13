@@ -42,7 +42,7 @@ namespace NSPresentationEditor
 
 		inline BOOL FromStr (const CString& Str)
 		{
-			m_Points.RemoveAll ();
+			m_Points.clear();
 
 			int To			=	0;
 			CString Tokens	=	_T(" mlczevh");
@@ -139,17 +139,17 @@ namespace NSPresentationEditor
 					dEndY			=	oPoint.Y [ 3 ];						
 				}
 
-				m_Points.Add ( oPoint );
+				m_Points.push_back ( oPoint );
 			}
 
-			return ( m_Points.GetCount () >= 2 );
+			return ( m_Points.size() >= 2 );
 		}
 
 		inline CString ToXml (double dW, double dH)
 		{
 			CString Xml;
 
-			for ( long i = 0; i < (long)m_Points.GetCount (); ++i )
+			for ( long i = 0; i < (long)m_Points.size(); ++i )
 			{
 				CString Fmt; 
 
@@ -189,7 +189,7 @@ namespace NSPresentationEditor
 
 	private:
 
-		CAtlArray <PathPoint> m_Points;
+		std::vector <PathPoint> m_Points;
 	};
 
 	class CAnimationSimple
@@ -265,12 +265,12 @@ namespace NSPresentationEditor
 	class CAnimationInfo
 	{
 	public:
-		CAtlArray<CAnimationSimple> m_arAnimations;
+		std::vector<CAnimationSimple> m_arAnimations;
 
 		double m_dSlideWidth;
 		double m_dSlideHeight;
 
-		CAtlArray <CString> m_oQuery;
+		std::vector <CString> m_oQuery;
 
 	public:
 		CAnimationInfo() : m_arAnimations()
@@ -301,7 +301,7 @@ namespace NSPresentationEditor
 
 			CString Source;
 
-			for ( long i = 0; i < (long)m_arAnimations.GetCount(); ++i )
+			for ( long i = 0; i < (long)m_arAnimations.size(); ++i )
 			{
 				CAnimationSimple* pEffect = &m_arAnimations[i];
 				if (NULL==pEffect)
@@ -315,26 +315,26 @@ namespace NSPresentationEditor
 
 				double dEffectBegin	=	dStartTime + pEffect->m_nBeginTime;
 
-				m_oQuery.RemoveAll ();				
+				m_oQuery.clear ();				
 				
-				m_oQuery.Add ( _T(" id		=	'") + NSPresentationEditor::ToString (pEffect->m_nEffectID)		+ _T("' "));
-				m_oQuery.Add ( _T(" type	=	'") + NSPresentationEditor::ToString (pEffect->m_nEffectType)	+ _T("' "));
-				m_oQuery.Add ( _T(" dir		=	'") + NSPresentationEditor::ToString (pEffect->m_nEffectDir)	+ _T("' "));
+				m_oQuery.push_back ( _T(" id		=	'") + NSPresentationEditor::ToString (pEffect->m_nEffectID)		+ _T("' "));
+				m_oQuery.push_back ( _T(" type	=	'")		+ NSPresentationEditor::ToString (pEffect->m_nEffectType)	+ _T("' "));
+				m_oQuery.push_back ( _T(" dir		=	'") + NSPresentationEditor::ToString (pEffect->m_nEffectDir)	+ _T("' "));
 
-				m_oQuery.Add ( _T(" begin	=	'") + NSPresentationEditor::ToString (dEffectBegin)				+ _T("' "));
-				m_oQuery.Add ( _T(" dur		=	'") + NSPresentationEditor::ToString (pEffect->m_nDuration)		+ _T("' "));
-				m_oQuery.Add ( _T(" accel	=	'") + NSPresentationEditor::ToString (pEffect->m_dTimeAccel)	+ _T("' "));
-				m_oQuery.Add ( _T(" decel	=	'") + NSPresentationEditor::ToString (pEffect->m_dTimeDecel)	+ _T("' "));				
+				m_oQuery.push_back ( _T(" begin	=	'")		+ NSPresentationEditor::ToString (dEffectBegin)				+ _T("' "));
+				m_oQuery.push_back ( _T(" dur		=	'") + NSPresentationEditor::ToString (pEffect->m_nDuration)		+ _T("' "));
+				m_oQuery.push_back ( _T(" accel	=	'")		+ NSPresentationEditor::ToString (pEffect->m_dTimeAccel)	+ _T("' "));
+				m_oQuery.push_back ( _T(" decel	=	'")		+ NSPresentationEditor::ToString (pEffect->m_dTimeDecel)	+ _T("' "));				
 
-				m_oQuery.Add ( _T(" sx		=	'") + NSPresentationEditor::ToString (pEffect->m_dSX)			+ _T("' "));
-				m_oQuery.Add ( _T(" sy		=	'") + NSPresentationEditor::ToString (pEffect->m_dSY)			+ _T("' "));
-				m_oQuery.Add ( _T(" alpha	=	'") + NSPresentationEditor::ToString (pEffect->m_dTransparency)	+ _T("' "));
+				m_oQuery.push_back ( _T(" sx		=	'")	+ NSPresentationEditor::ToString (pEffect->m_dSX)			+ _T("' "));
+				m_oQuery.push_back ( _T(" sy		=	'") + NSPresentationEditor::ToString (pEffect->m_dSY)			+ _T("' "));
+				m_oQuery.push_back ( _T(" alpha	=	'")		+ NSPresentationEditor::ToString (pEffect->m_dTransparency)	+ _T("' "));
 				
-				m_oQuery.Add ( _T(" angle	=	'") + NSPresentationEditor::ToString (pEffect->m_dRotateAngle)	+ _T("' "));
-				m_oQuery.Add ( _T(" color	=	'") + NSPresentationEditor::ToString (pEffect->m_nColorTo)		+ _T("' "));
+				m_oQuery.push_back ( _T(" angle	=	'")		+ NSPresentationEditor::ToString (pEffect->m_dRotateAngle)	+ _T("' "));
+				m_oQuery.push_back ( _T(" color	=	'")		+ NSPresentationEditor::ToString (pEffect->m_nColorTo)		+ _T("' "));
 				
-				m_oQuery.Add ( _T(" block	=	'")	+ NSPresentationEditor::ToString (pEffect->m_nTextSequence)	+ _T("' "));
-				m_oQuery.Add ( _T(" removeemptyblocks	=	'") + NSPresentationEditor::ToString (pEffect->m_bRemoveEmptyBlocks) + _T("' "));
+				m_oQuery.push_back ( _T(" block	=	'")		+ NSPresentationEditor::ToString (pEffect->m_nTextSequence)	+ _T("' "));
+				m_oQuery.push_back ( _T(" removeemptyblocks	=	'") + NSPresentationEditor::ToString (pEffect->m_bRemoveEmptyBlocks) + _T("' "));
 
 				CString Effect; 
 
@@ -425,7 +425,7 @@ namespace NSPresentationEditor
 		inline CString FormatXml ()
 		{
 			CString Xml;
-			for ( long i = 0; i < (long)m_oQuery.GetCount (); ++i )
+			for ( long i = 0; i < (long)m_oQuery.size(); ++i )
 				Xml	+=	m_oQuery.GetAt (i);
 
 			return Xml;

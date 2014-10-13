@@ -25,7 +25,7 @@ public:
         AddGuide(_T("prod width 1 2"));
         AddGuide(_T("prod height 1 2"));
         
-		m_arAdjustments.Add(3600);
+		m_arAdjustments.push_back(3600);
 
         LoadConnectorsList(_T("@8,0;0,@9;@8,@7;@6,@9"));
         LoadTextRect(_T("@3,@3,@4,@5"));
@@ -34,7 +34,7 @@ public:
         oHandle1.position = _T("#0,topLeft");
         oHandle1.switchHandle = _T("true");
         oHandle1.xrange = _T("0,10800");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
 
         m_lLimoX = 10800;
 		m_lLimoY = 10800;

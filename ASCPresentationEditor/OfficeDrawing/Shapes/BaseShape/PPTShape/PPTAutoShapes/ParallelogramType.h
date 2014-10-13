@@ -27,7 +27,7 @@ public:
         AddGuide(_T("if @10 @8 0"));
         AddGuide(_T("if @10 @7 height"));
 
-		m_arAdjustments.Add(5400);
+		m_arAdjustments.push_back(5400);
         
         LoadConnectorsList(_T("@4,0;10800,@11;@3,10800;@5,21600;10800,@12;@2,10800"));
         LoadTextRect(_T("1800,1800,19800,19800;8100,8100,13500,13500;10800,10800,10800,10800"));
@@ -35,6 +35,6 @@ public:
         CHandle_ oHandle1;
         oHandle1.position = _T("#0,topLeft");
         oHandle1.xrange = _T("0,21600");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
 	}
 };

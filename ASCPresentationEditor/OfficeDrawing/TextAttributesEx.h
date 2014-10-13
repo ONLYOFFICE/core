@@ -20,7 +20,7 @@ namespace NSPresentationEditor
 
 		// настройки по-умолчанию
 		CTextAttributes			m_oAttributes;
-		CAtlArray<CParagraph>	m_arParagraphs;
+		std::vector<CParagraph>	m_arParagraphs;
 
 		// параметры ВСЕГО текста (наверное тут их много будет потом)
 		BOOL	m_bVertical;
@@ -117,7 +117,7 @@ namespace NSPresentationEditor
 		
 		void CorrectRuler()
 		{
-			size_t lCount = m_arParagraphs.GetCount();
+			size_t lCount = m_arParagraphs.size();
 			for (size_t i = 0; i < lCount; ++i)
 			{
 				CTextPFRun* pPar = &m_arParagraphs[i].m_oPFRun;
@@ -252,7 +252,7 @@ namespace NSPresentationEditor
 
 		bool IsEmptyText()
 		{
-			return (0 == m_arParagraphs.GetCount()) ? true : false;
+			return (0 == m_arParagraphs.size()) ? true : false;
 		}
 	};
 }

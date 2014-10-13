@@ -18,7 +18,6 @@ namespace PPTX
 		public:
 			PPTX_LOGIC_BASE(TablePartStyle)
 
-		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				m_name = XmlUtils::GetNameNoNS(node.GetName());
@@ -82,11 +81,10 @@ namespace PPTX
 
 				pReader->Seek(_end_rec);
 			}
-		public:
 			nullable<TcTxStyle> tcTxStyle;
 			nullable<TcStyle>	tcStyle;
 
-			const UniFill GetFillStyle(UniColor& Color)const
+			const UniFill GetFillStyle(UniColor& Color) const
 			{
 				UniFill result;
 				result.SetParentFilePointer(parentFile);
@@ -106,8 +104,11 @@ namespace PPTX
 				return result;
 			}
 
-		//private:
-		public:
+			void SetTheme(const smart_ptr<PPTX::Theme> theme)
+			{
+				m_Theme = theme;
+			}
+			
 			CString m_name;
 		protected:
 			virtual void FillParentPointersForChilds()
@@ -118,11 +119,6 @@ namespace PPTX
 					tcStyle->SetParentPointer(this);
 			}
 
-		public:
-			void SetTheme(const smart_ptr<PPTX::Theme> theme)
-			{
-				m_Theme = theme;
-			}
 		private:
 			smart_ptr<PPTX::Theme> m_Theme;
 		};

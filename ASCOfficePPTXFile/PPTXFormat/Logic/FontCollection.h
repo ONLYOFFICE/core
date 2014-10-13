@@ -24,7 +24,9 @@ namespace PPTX
 				latin	= oSrc.latin;
 				ea		= oSrc.ea;
 				cs		= oSrc.cs;
-				Fonts.Copy(oSrc.Fonts);
+				
+				for (int i=0; i < oSrc.Fonts.size(); i++)
+					Fonts.push_back(oSrc.Fonts[i]);
 
 				m_name	= oSrc.m_name;
 
@@ -54,7 +56,7 @@ namespace PPTX
 						else if (_T("cs") == strName)
 							cs = oNode;
 						else if (_T("font") == strName)
-							Fonts.Add(SupplementalFont(oNode));
+							Fonts.push_back(SupplementalFont(oNode));
 					}
 				}
 
@@ -80,7 +82,7 @@ namespace PPTX
 				ea.toXmlWriter(pWriter);				
 				cs.toXmlWriter(pWriter);
 				
-				size_t nCount = Fonts.GetCount();
+				size_t nCount = Fonts.size();
 				for (size_t i = 0; i < nCount; ++i)
 					Fonts[i].toXmlWriter(pWriter);
 
@@ -129,7 +131,10 @@ namespace PPTX
 							for (ULONG i = 0; i < _c; ++i)
 							{
 								pReader->Skip(1); // type
-								Fonts.Add();
+
+								SupplementalFont elm;
+								Fonts.push_back(elm);
+								
 								Fonts[i].m_name = _T("a:font");
 								Fonts[i].fromPPTY(pReader);
 							}
@@ -147,7 +152,7 @@ namespace PPTX
 			TextFont					latin;
 			TextFont					ea;
 			TextFont					cs;
-			CAtlArray<SupplementalFont> Fonts;
+			std::vector<SupplementalFont> Fonts;
 		//private:
 		public:
 			CString m_name;
@@ -158,7 +163,7 @@ namespace PPTX
 				ea.SetParentPointer(this);
 				cs.SetParentPointer(this);
 
-				size_t count = Fonts.GetCount();
+				size_t count = Fonts.size();
 				for (size_t i = 0; i < count; ++i)
 					Fonts[i].SetParentPointer(this);
 			}

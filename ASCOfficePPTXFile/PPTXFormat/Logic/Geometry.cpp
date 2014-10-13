@@ -64,7 +64,7 @@ namespace PPTX
 			NSPresentationEditor::CGraphicPath oGrPath;			
 			CMetricInfo oMetricInfo;
 
-			int nSize = oPath.m_arParts.GetSize();
+			int nSize = oPath.m_arParts.size();
 			for (int nIndex = 0; nIndex < nSize; ++nIndex)
 			{
 				oGrPath.Clear();
@@ -81,7 +81,7 @@ namespace PPTX
 			if(NULL != pOOXToVMLGeometry)
 				pOOXToVMLGeometry->ResultPath(&strPath);
 
-			if (lpShapeElement->m_oShape.m_pShape->m_arTextRects.GetSize() <= 0)
+			if (lpShapeElement->m_oShape.m_pShape->m_arTextRects.size() <= 0)
 			{
 				strRect = _T("0,0,100000,100000");
 			}

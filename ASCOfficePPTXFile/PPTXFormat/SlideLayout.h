@@ -27,7 +27,7 @@
 
 namespace PPTX
 {
-	class SlideLayout : public WrapperFile, public PPTX::FileContainer
+	class SlideLayout : public WrapperFile, public FileContainer
 	{
 	public:
 		SlideLayout()
@@ -129,7 +129,7 @@ namespace PPTX
 				if(type == _T("ctrTitle"))
 					type = _T("title");
 
-				size_t count = cSld.spTree.SpTreeElems.GetCount();
+				size_t count = cSld.spTree.SpTreeElems.size();
 				for(size_t i = 0; i < count; ++i)
 				{
 					const PPTX::Logic::SpTreeElem* pElem = &cSld.spTree.SpTreeElems[i];
@@ -443,9 +443,9 @@ namespace PPTX
 			OOX::CPath filename = _T("");
 			if((Vml.is_init()) && (spid != _T("")))
 			{
-				const CAtlMap<CString, OOX::CPath>::CPair* pPair = Vml->SpIds.Lookup(spid);
-				if (NULL != pPair)
-					filename = pPair->m_value;
+				std::map<CString, OOX::CPath>::const_iterator pPair = Vml->SpIds.find(spid);
+				if (Vml->SpIds.end() != pPair)
+					filename = pPair->second;
 			}
 			return filename;
 		}

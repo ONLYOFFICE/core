@@ -108,7 +108,7 @@ namespace PPTX
 	class Authors : public WrapperFile
 	{
 	private:
-		CAtlArray<PPTX::Logic::CommentAuthor> m_arAuthors;
+		std::vector<PPTX::Logic::CommentAuthor> m_arAuthors;
 
 	public:
 		Authors()
@@ -136,8 +136,10 @@ namespace PPTX
 				XmlUtils::CXmlNode oCm;
 				oNodes.GetAt(i, oCm);
 
-				m_arAuthors.Add();
-				m_arAuthors[m_arAuthors.GetCount() - 1].fromXML(oCm);
+				PPTX::Logic::CommentAuthor comm;
+
+				m_arAuthors.push_back(comm);				
+				m_arAuthors.back().fromXML(oCm);
 			}		
 		}
 		virtual void write(const OOX::CPath& filename, const OOX::CPath& directory, PPTX::ContentTypes::File& content)const
@@ -197,8 +199,11 @@ namespace PPTX
 						for (ULONG i = 0; i < lCount; ++i)
 						{
 							pReader->Skip(1);
-							m_arAuthors.Add();
-							m_arAuthors[m_arAuthors.GetCount() - 1].fromPPTY(pReader);
+
+							PPTX::Logic::CommentAuthor comm;
+
+							m_arAuthors.push_back(comm);
+							m_arAuthors.back().fromPPTY(pReader);
 						}
 						
 						break;

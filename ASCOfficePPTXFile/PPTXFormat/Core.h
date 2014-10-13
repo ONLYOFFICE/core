@@ -83,29 +83,29 @@ namespace PPTX
 
 	/*
 			if(category.is_init())
-				root.Add(XML::XElement("category", XML::XText(category)));
+				root.push_back(XML::XElement("category", XML::XText(category)));
 			if(contentStatus.is_init())
-				root.Add(XML::XElement("contentStatus", XML::XText(contentStatus)));
+				root.push_back(XML::XElement("contentStatus", XML::XText(contentStatus)));
 			if(description.is_init())
-				root.Add(XML::XElement(ns.dc + "description", XML::XText(description)));
+				root.push_back(XML::XElement(ns.dc + "description", XML::XText(description)));
 			//identifier - ??? dc
 				//XML::XElement(ns.cp + "keywords", XML::XText(keywords)) +
 			if(language.is_init())
-				root.Add(XML::XElement(ns.dc + "language", XML::XText(language)));
+				root.push_back(XML::XElement(ns.dc + "language", XML::XText(language)));
 	//			if(lastModifiedBy.is_init())
-	//				root.Add(XML::XElement(ns.cp + "lastModifiedBy", XML::XText(lastModifiedBy)));
+	//				root.push_back(XML::XElement(ns.cp + "lastModifiedBy", XML::XText(lastModifiedBy)));
 				//XML::XElement("lastPrinted",
 				//	XML::XAttribute(,)+
 				//	XML::XText(lastPrinted)
 				//) + //??? namespace ???
 	//			if(revision.is_init())
-	//				root.Add(XML::XElement(ns.cp + "revision", XML::XText(revision)));
+	//				root.push_back(XML::XElement(ns.cp + "revision", XML::XText(revision)));
 			if(subject.is_init())
-				root.Add(XML::XElement(ns.dc + "subject", XML::XText(subject)));
+				root.push_back(XML::XElement(ns.dc + "subject", XML::XText(subject)));
 	//			if(title.is_init())
-	//				root.Add(XML::XElement(ns.dc + "title", XML::XText(title)));
+	//				root.push_back(XML::XElement(ns.dc + "title", XML::XText(title)));
 			if(version.is_init())
-				root.Add(XML::XElement("version", XML::XText(version)));
+				root.push_back(XML::XElement("version", XML::XText(version)));
 	*/
 			content.registration(type().OverrideType(), directory, filename);
 			m_written = true;

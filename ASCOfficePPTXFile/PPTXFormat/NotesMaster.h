@@ -12,7 +12,7 @@
 
 namespace PPTX
 {
-	class NotesMaster : public WrapperFile, public PPTX::FileContainer
+	class NotesMaster : public WrapperFile, public FileContainer
 	{
 	public:
 		NotesMaster()

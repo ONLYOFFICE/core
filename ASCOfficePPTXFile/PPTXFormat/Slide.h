@@ -28,7 +28,7 @@
 
 namespace PPTX
 {
-	class Slide : public WrapperFile, public PPTX::FileContainer
+	class Slide : public WrapperFile, public FileContainer
 	{
 	public:
 		Slide()
@@ -383,10 +383,10 @@ namespace PPTX
 			OOX::CPath filename = _T("");
 			if((Vml.is_init()) && (spid != ""))
 			{
-				const CAtlMap<CString, OOX::CPath>::CPair *pPair = Vml->SpIds.Lookup(spid);
+				std::map<CString, OOX::CPath>::const_iterator pPair = Vml->SpIds.find(spid);
 
-				if (NULL != pPair)
-					filename = pPair->m_value;
+				if (Vml->SpIds.end() != pPair)
+					filename = pPair->second;
 			}
 			return filename;
 		}

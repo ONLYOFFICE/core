@@ -26,7 +26,9 @@ namespace PPTX
 
 				nvGrpSpPr	= oSrc.nvGrpSpPr;
 				grpSpPr		= oSrc.grpSpPr;
-				SpTreeElems.Copy(oSrc.SpTreeElems);
+
+				for (int i=0; i < oSrc.SpTreeElems.size(); i++)
+					SpTreeElems.push_back(oSrc.SpTreeElems[i]);
 
 				m_name = oSrc.m_name;
 
@@ -41,7 +43,7 @@ namespace PPTX
 				nvGrpSpPr	= node.ReadNodeNoNS(_T("nvGrpSpPr"));
 				grpSpPr		= node.ReadNodeNoNS(_T("grpSpPr"));
 
-				SpTreeElems.RemoveAll();
+				SpTreeElems.clear();
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -66,7 +68,10 @@ namespace PPTX
 						{
 							SpTreeElem elem(oNode);
 							if (elem.is_init())
-								SpTreeElems.Add(elem);
+							{
+								SpTreeElem elem1;
+								SpTreeElems.push_back(elem1);
+							}
 						}
 					}
 				}
@@ -114,7 +119,7 @@ namespace PPTX
 				
 				pWriter->m_lGroupIndex++;
 
-				size_t nCount = SpTreeElems.GetCount();
+				size_t nCount = SpTreeElems.size();
 				for (size_t i = 0; i < nCount; ++i)
 					SpTreeElems[i].toXmlWriter(pWriter);
 
@@ -188,20 +193,17 @@ namespace PPTX
 							pReader->Skip(4); // len
 							ULONG _c = pReader->GetULong();
 
-							ULONG last = 0;
 							for (ULONG i = 0; i < _c; ++i)
 							{
 								pReader->Skip(5); // type (0) + len
-								SpTreeElems.Add();
-								SpTreeElems[last].fromPPTY(pReader);
+
+								SpTreeElem elm;
+								SpTreeElems.push_back(elm);
+								SpTreeElems.back().fromPPTY(pReader);
 								
-								if (!SpTreeElems[last].is_init())
+								if (!SpTreeElems.back().is_init())
 								{
-									SpTreeElems.RemoveAt(last);									
-								}
-								else
-								{
-									++last;
+									SpTreeElems.pop_back();									
 								}
 							}
 						}
@@ -217,7 +219,7 @@ namespace PPTX
 		public:
 			Logic::NvGrpSpPr		nvGrpSpPr;
 			Logic::GrpSpPr			grpSpPr;
-			CAtlArray<SpTreeElem>	SpTreeElems;
+			std::vector<SpTreeElem>	SpTreeElems;
 		//private:
 		public:
 			CString m_name;
@@ -227,7 +229,7 @@ namespace PPTX
 				nvGrpSpPr.SetParentPointer(this);
 				grpSpPr.SetParentPointer(this);
 
-				size_t count = SpTreeElems.GetCount();
+				size_t count = SpTreeElems.size();
 				for (size_t i = 0; i < count; ++i)
 					SpTreeElems[i].SetParentPointer(this);
 			}

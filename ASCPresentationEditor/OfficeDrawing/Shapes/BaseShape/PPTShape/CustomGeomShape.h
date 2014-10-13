@@ -407,10 +407,10 @@ namespace NSCustomVML
 	private:
 		RulesType m_ePath;
 
-		CAtlArray<POINT>	m_arVertices;
-		CAtlArray<CSegment> m_arSegments;
-		CAtlArray<CGuide>	m_arGuides;
-		CSimpleArray<LONG>*	m_pAdjustValues;
+		std::vector<POINT>	m_arVertices;
+		std::vector<CSegment> m_arSegments;
+		std::vector<CGuide>	m_arGuides;
+		std::vector<LONG>*	m_pAdjustValues;
 
 		BOOL m_bIsVerticesPresent;
 		BOOL m_bIsPathPresent;
@@ -437,13 +437,13 @@ namespace NSCustomVML
 		{
 			m_ePath		= oSrc.m_ePath;
 
-			m_arVertices.RemoveAll();
+			m_arVertices.clear();
 			m_arVertices.Copy(oSrc.m_arVertices);
 
-			m_arSegments.RemoveAll();
+			m_arSegments.clear();
 			m_arSegments.Copy(oSrc.m_arSegments);
 
-			m_arGuides.RemoveAll();
+			m_arGuides.clear();
 			m_arGuides.Copy(oSrc.m_arGuides);
 
 			m_pAdjustValues = oSrc.m_pAdjustValues;
@@ -477,7 +477,7 @@ namespace NSCustomVML
 		{
 			NSOfficeDrawing::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
 
-			m_arVertices.RemoveAll();
+			m_arVertices.clear();
 			
 			WORD lCount = (WORD)(pProperty->m_lValue / 8);
 			if (pProperty->m_bIsTruncated)
@@ -519,7 +519,7 @@ namespace NSCustomVML
 					bool b = false;
 				}
 
-				m_arVertices.Add(oPoint);
+				m_arVertices.push_back(oPoint);
 			}
 		}
 
@@ -529,7 +529,7 @@ namespace NSCustomVML
 		void LoadSegments(CProperty* pProperty)
 		{
 			NSOfficeDrawing::CBinaryReader oReader(pProperty->m_pOptions, pProperty->m_lValue);
-			m_arSegments.RemoveAll();
+			m_arSegments.clear();
 
 			WORD lCount = (WORD)(pProperty->m_lValue / 2);
 
@@ -558,10 +558,10 @@ namespace NSCustomVML
 				//{
 				//	// проводим линию					
 				//	CSegment oInfo2(rtLineTo, 1);
-				//	m_arSegments.Add(oInfo2);
+				//	m_arSegments.push_back(oInfo2);
 				//}
 
-				m_arSegments.Add(oInfo);
+				m_arSegments.push_back(oInfo);
 			}
 		}
 		void LoadGuides(CProperty* pProperty)
@@ -573,7 +573,7 @@ namespace NSCustomVML
 			{
 				CGuide oInfo;
 				oInfo.Read(oReader);
-				m_arGuides.Add(oInfo);
+				m_arGuides.push_back(oInfo);
 			}
 
 		}
@@ -582,18 +582,18 @@ namespace NSCustomVML
 			if (NULL == m_pAdjustValues)
 				return;
 			
-			LONG lCount = (LONG)m_pAdjustValues->GetSize();
+			LONG lCount = (LONG)m_pAdjustValues->size();
 			
 			while (lCount <= lIndex)
 			{
-				m_pAdjustValues->Add(0);
-				lCount = (LONG)m_pAdjustValues->GetSize();
+				m_pAdjustValues->push_back(0);
+				lCount = (LONG)m_pAdjustValues->size();
 			}
 
 			(*m_pAdjustValues)[lIndex] = lValue;
 		}
 
-		void SetAdjusts(CSimpleArray<LONG>* pList)
+		void SetAdjusts(std::vector<LONG>* pList)
 		{
 			m_pAdjustValues = pList;
 		}
@@ -603,9 +603,9 @@ namespace NSCustomVML
 			if ((NULL == pShape) || (!IsCustom()))
 				return;
 
-			oManager.RemoveAll();
+			oManager.Clear();
 			// сначала заполним формулы
-			for (size_t nIndex = 0; nIndex < m_arGuides.GetCount(); ++nIndex)
+			for (size_t nIndex = 0; nIndex < m_arGuides.size(); ++nIndex)
 			{
 				NSGuidesVML::CFormula oF;
 				m_arGuides[nIndex].SetToFormula(oF);
@@ -618,10 +618,10 @@ namespace NSCustomVML
 
 			bool bBreak = false;
 
-			if (0 == m_arSegments.GetCount())
+			if (0 == m_arSegments.size())
 			{
 				strPath = GetRulerVML(m_ePath);
-				for (size_t nIndex = 0; nIndex < m_arVertices.GetCount(); ++nIndex)
+				for (size_t nIndex = 0; nIndex < m_arVertices.size(); ++nIndex)
 				{
 					CString str = _T("");
 					str.Format(_T("%d,%d,"), m_arVertices[nIndex].x, m_arVertices[nIndex].y);
@@ -633,7 +633,7 @@ namespace NSCustomVML
 			{
 				size_t nStart	= 0;
 				size_t nEnd		= 0;
-				for (size_t nS = 0; nS < m_arSegments.GetCount(); ++nS)
+				for (size_t nS = 0; nS < m_arSegments.size(); ++nS)
 				{
 					if (bBreak)
 					{
@@ -649,7 +649,7 @@ namespace NSCustomVML
 
 					if ((rtFillColor == m_arSegments[nS].m_eRuler) || (rtLineColor == m_arSegments[nS].m_eRuler))
 					{
-						if (nStart <  m_arVertices.GetCount())
+						if (nStart <  m_arVertices.size())
 						{
 							if (rtFillColor == m_arSegments[nS].m_eRuler)
 							{
@@ -662,11 +662,11 @@ namespace NSCustomVML
 							}
 						}
 						nEnd = nStart + m_arSegments[nS].m_nCount;
-						if (nEnd > m_arVertices.GetCount())
-							nEnd = m_arVertices.GetCount();
+						if (nEnd > m_arVertices.size())
+							nEnd = m_arVertices.size();
 						nStart = nEnd;
 
-						if (nEnd == m_arVertices.GetCount())
+						if (nEnd == m_arVertices.size())
 						{
 							bBreak = true;
 						}
@@ -676,8 +676,8 @@ namespace NSCustomVML
 					strPath += GetRulerVML(m_arSegments[nS].m_eRuler);
 					
 					nEnd = nStart + m_arSegments[nS].m_nCount;
-					if (nEnd > m_arVertices.GetCount())
-						nEnd = m_arVertices.GetCount();
+					if (nEnd > m_arVertices.size())
+						nEnd = m_arVertices.size();
 
 					for (size_t nV = nStart; nV < nEnd; ++nV)
 					{
@@ -692,7 +692,7 @@ namespace NSCustomVML
 					}
 					nStart = nEnd;
 
-					if (nEnd == m_arVertices.GetCount())
+					if (nEnd == m_arVertices.size())
 					{
 						bBreak = true;
 					}

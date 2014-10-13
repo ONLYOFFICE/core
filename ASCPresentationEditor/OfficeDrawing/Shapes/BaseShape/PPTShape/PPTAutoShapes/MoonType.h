@@ -30,20 +30,20 @@ public:
         AddGuide(_T("sum 10800 0 @14"));
         AddGuide(_T("sum @14 10800 0"));
 
-		m_arAdjustments.Add(10800);
+		m_arAdjustments.push_back(10800);
 
 		LoadConnectorsList(_T("21600,0;0,10800;21600,21600;@0,10800"));
 
-		m_arConnectorAngles.Add(270);
-		m_arConnectorAngles.Add(180);
-		m_arConnectorAngles.Add(90);
-		m_arConnectorAngles.Add(0);
+		m_arConnectorAngles.push_back(270);
+		m_arConnectorAngles.push_back(180);
+		m_arConnectorAngles.push_back(90);
+		m_arConnectorAngles.push_back(0);
 
         LoadTextRect(_T("@12,@15,@0,@16"));
 
 		CHandle_ oHandle1;
         oHandle1.position = _T("#0,center");
         oHandle1.xrange = _T("0,18900");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
     }
 };

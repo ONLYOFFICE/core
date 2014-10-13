@@ -8,7 +8,7 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		static void ParseString(CString strDelimeters, CString strSource, CAtlArray<CString>* pArrayResults)
+		static void ParseString(CString strDelimeters, CString strSource, std::vector<CString>* pArrayResults)
 		{
 			if (NULL == pArrayResults)
 				return;
@@ -19,7 +19,7 @@ namespace PPTX
 			resToken = strSource.Tokenize(strDelimeters, curPos);
 			while (resToken != _T(""))
 			{
-				pArrayResults->Add(resToken);
+				pArrayResults->push_back(resToken);
 				resToken = strSource.Tokenize(strDelimeters, curPos);
 			};
 		}
@@ -119,7 +119,7 @@ namespace PPTX
 					}
 
 					/*
-					CAtlArray<CString> arr;
+					std::vector<CString> arr;
 					ParseString(_T(" "), fmla.get(), &arr);
 
 					size_t nLen = arr.GetCount();

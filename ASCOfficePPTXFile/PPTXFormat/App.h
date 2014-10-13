@@ -126,11 +126,11 @@ namespace PPTX
 			XmlUtils::SaveToFile(filename.m_strFilename, XmlUtils::CreateNode(_T("Properties"), oAttr, oValue));
 
 			//if(DocSecurity.is_init())
-			//	root.Add(XML::XElement("DocSecurity", XML::XText(DocSecurity)));
+			//	root.push_back(XML::XElement("DocSecurity", XML::XText(DocSecurity)));
 			//if(Manager.is_init())
-			//	root.Add(XML::XElement("Manager", XML::XText(Manager)));
+			//	root.push_back(XML::XElement("Manager", XML::XText(Manager)));
 			//if(HyperlinkBase.is_init())
-			//	root.Add(XML::XElement("HyperlinkBase", XML::XText(HyperlinkBase)));
+			//	root.push_back(XML::XElement("HyperlinkBase", XML::XText(HyperlinkBase)));
 			//XML::XElement("Characters", XML::XText(Characters)) +
 			//XML::XElement("Lines", XML::XText(Lines)) +
 			//XML::XElement("CharactersWithSpaces", XML::XText(CharactersWithSpaces))

@@ -30,7 +30,7 @@ public:
         AddGuide(_T("sum @11 #0 0"));
         AddGuide(_T("sum width 0 @13"));
 
-        m_arAdjustments.Add(1800);
+        m_arAdjustments.push_back(1800);
 
         LoadConnectorsList(_T("@3,0;0,@4;@3,@2;@1,@4"));
         LoadTextRect(_T("@13,@11,@14,@12"));
@@ -39,7 +39,7 @@ public:
         oHandle1.position = _T("topLeft,#0");
         oHandle1.switchHandle = _T("true");
         oHandle1.yrange = _T("0,5400");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
 
         m_lLimoX = 10800;
 		m_lLimoY = 10800;

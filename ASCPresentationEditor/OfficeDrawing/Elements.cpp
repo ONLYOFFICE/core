@@ -7,7 +7,7 @@ void NSPresentationEditor::CShapeElement::CalculateColor(CColor& oColor, CSlide*
 	if (-1 == oColor.m_lSchemeIndex)
 		return;
 
-	CAtlArray<CColor>* pArray = &pTheme->m_arColorScheme;
+	std::vector<CColor>* pArray = &pTheme->m_arColorScheme;
 	if ((NULL != pLayout) && (!pLayout->m_bUseThemeColorScheme))
 		pArray = &pLayout->m_arColorScheme;
 
@@ -29,9 +29,9 @@ void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CT
 	NSPresentationEditor::CTextAttributesEx* pAttributes = &m_oShape.m_oText;
 	int nCountColors = 0;
 	if (NULL != pTheme)
-		nCountColors = (int)pTheme->m_arColorScheme.GetCount();
+		nCountColors = (int)pTheme->m_arColorScheme.size();
 
-	size_t nCount = pAttributes->m_arParagraphs.GetCount();
+	size_t nCount = pAttributes->m_arParagraphs.size();
 	for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 	{
 		if (pAttributes->m_arParagraphs[nIndex].m_oPFRun.bulletColor.is_init())
@@ -44,7 +44,7 @@ void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CT
 			}
 		}
 
-		size_t nCountCFs = pAttributes->m_arParagraphs[nIndex].m_arSpans.GetCount();
+		size_t nCountCFs = pAttributes->m_arParagraphs[nIndex].m_arSpans.size();
 		for (size_t i = 0; i < nCountCFs; ++i)
 		{
 			CTextCFRun* pRun = &pAttributes->m_arParagraphs[nIndex].m_arSpans[i].m_oRun;
@@ -61,7 +61,7 @@ void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CT
 			
 			if (pRun->Typeface.is_init() && (NULL != pTheme))
 			{
-				if (pRun->Typeface.get() < pTheme->m_arFonts.GetCount())
+				if (pRun->Typeface.get() < pTheme->m_arFonts.size())
 				{
 					CFont* pFont = &(pTheme->m_arFonts[pRun->Typeface.get()]);
 
@@ -71,8 +71,8 @@ void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CT
 					pRun->FontProperties->strFontName = pFont->Name;
 
 					// charset
-					pRun->FontProperties->arFontCharsets.RemoveAll();
-					pRun->FontProperties->arFontCharsets.Add(pFont->Charset);
+					pRun->FontProperties->arFontCharsets.clear();
+					pRun->FontProperties->arFontCharsets.push_back(pFont->Charset);
 
 					// pitchfamily
 					pRun->FontProperties->strPitchFamily = pFont->PitchFamily;
@@ -85,7 +85,7 @@ void NSPresentationEditor::CShapeElement::SetupTextProperties(CSlide* pSlide, CT
 					if (1 < pRun->Typeface.get())
 						pRun->Typeface.reset();
 				}
-				/*if (m_arCFs[nIndex].fontEAFontRef < pContainer->m_pFonts->GetSize())
+				/*if (m_arCFs[nIndex].fontEAFontRef < pContainer->m_pFonts->size())
 				{
 					m_arCFs[nIndex].strFontName = (*(pContainer->m_pFonts))[m_arCFs[nIndex].fontEAFontRef].m_strFontName;
 				}*/

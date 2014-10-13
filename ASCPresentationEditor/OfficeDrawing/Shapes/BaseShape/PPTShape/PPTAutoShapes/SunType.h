@@ -34,13 +34,13 @@ public:
         AddGuide(_T("val #0"));
         AddGuide(_T("sum 21600 0 #0"));
         
-        m_arAdjustments.Add(5400);
+        m_arAdjustments.push_back(5400);
 
         LoadTextRect(_T("@9,@9,@8,@8"));
 
 		CHandle_ oHandle1;
         oHandle1.position = _T("#0,center");
         oHandle1.xrange = _T("2700,10125");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
     }
 };

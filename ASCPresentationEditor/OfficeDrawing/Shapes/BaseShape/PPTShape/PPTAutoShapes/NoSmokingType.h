@@ -30,7 +30,7 @@ public:
         AddGuide(_T("sum 10800 0 @11"));
         AddGuide(_T("sum 21600 0 @0"));
 
-		m_arAdjustments.Add(2700);
+		m_arAdjustments.push_back(2700);
 
         LoadConnectorsList(_T("10800,0;3163,3163;0,10800;3163,18437;10800,21600;18437,18437;21600,10800;18437,3163"));
 
@@ -39,7 +39,7 @@ public:
         CHandle_ oHandle1;
         oHandle1.position = _T("#0,center");
         oHandle1.xrange = _T("0,7200");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
     }
 };
 

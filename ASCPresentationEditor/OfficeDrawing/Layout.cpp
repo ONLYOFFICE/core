@@ -17,7 +17,7 @@ namespace NSPresentationEditor
 			// colors ----
 			oWriter.WriteString(_T("<Colors>"));
 			
-			size_t nCountColors = m_arColorScheme.GetCount();
+			size_t nCountColors = m_arColorScheme.size();
 			for (size_t i = 0; i < nCountColors; ++i)
 			{
 				CString strFormat = _T("");
@@ -35,19 +35,13 @@ namespace NSPresentationEditor
 		{
 			// background
 			#ifndef ENABLE_ODP_TO_PPTX_CONVERT
-			#ifdef PPT_DEF
-			CShapeElement oElem(NSPresentationEditor::NSBaseShape::ppt, PPTShapes::sptCRect);
+				#ifdef PPT_DEF
+					CShapeElement oElem(NSPresentationEditor::NSBaseShape::ppt, PPTShapes::sptCRect);
+				#else
+					CShapeElement oElem(NSPresentationEditor::NSBaseShape::pptx, OOXMLShapes::sptCRect);
+				#endif
 			#else
-			#ifdef ODP_DEF
-			CShapeElement oElem(NSPresentationEditor::NSBaseShape::odp, OdpShapes::sptCRect);
-			oElem.m_oShape.m_dWidthLogic	= ((COdpShape*)oElem.m_oShape.m_pShape)->FManager.GetValue(_T("width"));
-			oElem.m_oShape.m_dHeightLogic	= ((COdpShape*)oElem.m_oShape.m_pShape)->FManager.GetValue(_T("height"));
-			#else
-			CShapeElement oElem(NSPresentationEditor::NSBaseShape::pptx, OOXMLShapes::sptCRect);
-			#endif
-			#endif
-			#else
-			CShapeElement oElem(NSPresentationEditor::NSBaseShape::odp, OdpShapes::sptCRect);
+				CShapeElement oElem(NSPresentationEditor::NSBaseShape::odp, OdpShapes::sptCRect);
 			#endif
 
 			oElem.m_oMetric = oInfo;
@@ -74,7 +68,7 @@ namespace NSPresentationEditor
 		// elements (no placeholders)
 		oWriter.WriteString(_T("<Elements>"));
 
-		size_t nCountElems = m_arElements.GetCount();
+		size_t nCountElems = m_arElements.size();
 		for (size_t i = 0; i < nCountElems; ++i)
 		{
 			if (-1 == m_arElements[i]->m_lPlaceholderType)
@@ -124,7 +118,7 @@ namespace NSPresentationEditor
 						strStylesPh += pTextElement->m_oShape.m_oText.m_oStyles.ToXmlEditor(oInfo, true, pTextElement->m_lPlaceholderType, lID);
 
 						LONG lFontRef = pTextElement->m_oShape.m_oText.m_lFontRef;
-						if ((0 <= lFontRef) && (lFontRef < (LONG)pTheme->m_arFonts.GetCount()))
+						if ((0 <= lFontRef) && (lFontRef < (LONG)pTheme->m_arFonts.size()))
 						{
 							CString strRef = _T("");
 							strRef.Format(_T("l_font%d { font-index:%d;font-family:%s; }\n"), 
@@ -157,7 +151,7 @@ namespace NSPresentationEditor
 
 		m_bUseThemeColorScheme = true;
 		//colors
-		m_arColorScheme.RemoveAll();
+		m_arColorScheme.clear();
 		XmlUtils::CXmlNode oNodeColors;
 		if (oNode.GetNode(_T("Colors"), oNodeColors))
 		{
@@ -166,11 +160,11 @@ namespace NSPresentationEditor
 			CStylesCSS oStyles;
 			oStyles.LoadStyles(oNodeColors.GetText());
 
-			size_t nCount = oStyles.m_arStyles.GetCount();
+			size_t nCount = oStyles.m_arStyles.size();
 			LONG lColor = 0;
 			for (size_t i = 0; i < nCount; i += 3)
 			{
-				m_arColorScheme.Add();
+				m_arColorScheme.push_back(elm);
 				oStyles.m_arStyles[i].LoadColor(m_arColorScheme[lColor]);
 				++lColor;
 			}
@@ -209,7 +203,7 @@ namespace NSPresentationEditor
 					CShapeElement* pShapeEl = new CShapeElement();
 					pShapeEl->m_oMetric = m_oInfo;
 					pShapeEl->LoadFromXmlNode2(oNodeMem);
-					m_arElements.Add(pShapeEl);
+					m_arElements.push_back(pShapeEl);
 				}
 			}
 		}
@@ -242,12 +236,12 @@ namespace NSPresentationEditor
 					pShapeEl->m_lPlaceholderID		= oNodeMem.ReadAttributeInt(_T("id"), -1);
 					pShapeEl->m_lPlaceholderType	= oNodeMem.ReadAttributeInt(_T("type"), -1);
 
-					m_arElements.Add(pShapeEl);
+					m_arElements.push_back(pShapeEl);
 				}
 			}
 		}
 
-		size_t nCountElements = m_arElements.GetCount();
+		size_t nCountElements = m_arElements.size();
 
 		XmlUtils::CXmlNode oNodeStyles;
 		if (oNode.GetNode(_T("Styles"), oNodeStyles))
@@ -322,10 +316,10 @@ namespace NSPresentationEditor
 				oCSS.m_arStyles[i].m_strClassName.Delete(0, 6);
 				LONG lPhType	= XmlUtils::GetInteger(oCSS.m_arStyles[i].m_strClassName);
 
-				CAtlMap<CString, CString>::CPair* pPair = oCSS.m_arStyles[i].m_mapSettings.Lookup(_T("font-index"));
+				std::map<CString, CString>::CPair* pPair = oCSS.m_arStyles[i].m_mapSettings.find(_T("font-index"));
 				if (NULL != pPair)
 				{
-					LONG lFontRef	= XmlUtils::GetInteger(pPair->m_value);
+					LONG lFontRef	= XmlUtils::GetInteger(pPair->second);
 
 					size_t nCountEl = m_arElements.GetCount();
 					for (size_t j = 0; j < nCountEl; ++j)

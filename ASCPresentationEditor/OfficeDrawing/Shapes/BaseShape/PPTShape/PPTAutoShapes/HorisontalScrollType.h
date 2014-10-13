@@ -30,20 +30,20 @@ public:
 		AddGuide(_T("prod width 1 2"));  
 		AddGuide(_T("prod height 1 2"));
 
-        m_arAdjustments.Add(2700);
+        m_arAdjustments.push_back(2700);
 
         LoadConnectorsList(_T("@13,@1;0,@14;@13,@10;@12,@14"));
         LoadTextRect(_T("@1,@1,@7,@10"));
 
-		m_arConnectorAngles.Add(270);
-		m_arConnectorAngles.Add(180);
-		m_arConnectorAngles.Add(90);
-		m_arConnectorAngles.Add(0);
+		m_arConnectorAngles.push_back(270);
+		m_arConnectorAngles.push_back(180);
+		m_arConnectorAngles.push_back(90);
+		m_arConnectorAngles.push_back(0);
 
 		CHandle_ oHandle1;
         oHandle1.position = _T("topLeft,#0");
         oHandle1.yrange = _T("0,5400");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
 
 		m_lLimoX = 10800;
 		m_lLimoY = 10800;

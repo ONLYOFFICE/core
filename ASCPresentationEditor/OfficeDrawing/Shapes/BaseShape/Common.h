@@ -1,13 +1,10 @@
 #pragma once
-//todo убрать include
 
-#include "../../../../DesktopEditor/graphics/GraphicsPath.h"
+#include <atlstr.h>
+#include <vector>
 
-#ifdef _WIN32
-#include <atlbase.h>
-#include <atlcom.h>
 #include "../../../../Common/atldefine.h"
-#endif
+#include "../../../../DesktopEditor/graphics/GraphicsPath.h"
 
 const double ShapeSize		= 43200.0;
 const LONG ShapeSizeVML		= 21600;
@@ -63,13 +60,13 @@ namespace NSStringUtils
 	}
 	
 	static void ParseString(CString strDelimeters, CString strSource, 
-		CSimpleArray<CString>* pArrayResults, bool bIsCleared = true)
+		std::vector<CString>* pArrayResults, bool bIsCleared = true)
 	{
 		if (NULL == pArrayResults)
 			return;
 
 		if (bIsCleared)
-			pArrayResults->RemoveAll();
+			pArrayResults->clear();
 
 		CString resToken;
 		int curPos= 0;
@@ -77,24 +74,24 @@ namespace NSStringUtils
 		resToken = strSource.Tokenize(strDelimeters, curPos);
 		while (resToken != _T(""))
 		{
-			pArrayResults->Add(resToken);
+			pArrayResults->push_back(resToken);
 			resToken = strSource.Tokenize(strDelimeters, curPos);
 		};
 
 	}
-	static void ParseString(CSimpleArray<char>* pArrayDelimeters, CString strSource, 
-		CSimpleArray<CString>* pArrayResults, bool bIsCleared = true)
+	static void ParseString(std::vector<char>* pArrayDelimeters, CString strSource, 
+		std::vector<CString>* pArrayResults, bool bIsCleared = true)
 	{
 		if (NULL == pArrayDelimeters)
 			return;
 
 		CString strDelimeters = _T("");
-		for (int nIndex = 0; nIndex < pArrayDelimeters->GetSize(); ++nIndex)
+		for (int nIndex = 0; nIndex < pArrayDelimeters->size(); ++nIndex)
 			strDelimeters += (*pArrayDelimeters)[nIndex];
 
 		return ParseString(strDelimeters, strSource, pArrayResults, bIsCleared);
 	}
-	static void ParsePath(CString strSource, CSimpleArray<CString>* pArrayResults, bool bIsCleared = true)
+	static void ParsePath(CString strSource, std::vector<CString>* pArrayResults, bool bIsCleared = true)
 	{
 		if (NULL == pArrayResults)
 			return;
@@ -186,7 +183,7 @@ namespace NSStringUtils
 		return;
 	}
 
-	static void ParsePath2(CString strSource, CSimpleArray<CString>* pArrayResults, bool bIsCleared = true)
+	static void ParsePath2(CString strSource, std::vector<CString>* pArrayResults, bool bIsCleared = true)
     {
         if (NULL == pArrayResults)
             return;
@@ -249,7 +246,7 @@ namespace NSStringUtils
         {
             if (nIndex == (nLength - 1))
 			{
-				pArrayResults->Add(strPath.Mid(nIndexOld));
+				pArrayResults->push_back(strPath.Mid(nIndexOld));
 				//continue;
 			}
 
@@ -260,23 +257,23 @@ namespace NSStringUtils
 			{
 				if (',' == _c)
 				{
-					pArrayResults->Add(_T("0"));
+					pArrayResults->push_back(_T("0"));
 				}
 				else if (IS_ALPHA(_c))
 				{
-					pArrayResults->Add(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
-					pArrayResults->Add(_T("0"));
+					pArrayResults->push_back(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
+					pArrayResults->push_back(_T("0"));
 				}
 				else if (IS_DIGIT(_c))
 				{
-					pArrayResults->Add(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
+					pArrayResults->push_back(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
 				}
 			}
 			else if (',' == _c)
 			{
 				if (IS_ALPHA(_c1))
 				{
-					pArrayResults->Add(_T("0"));
+					pArrayResults->push_back(_T("0"));
 					nIndexOld = nIndex + 1;
 				}
 				else if (IS_DIGIT(_c1))
@@ -294,45 +291,45 @@ namespace NSStringUtils
 
 				if (_isA && _isD1)
 				{
-					pArrayResults->Add(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
+					pArrayResults->push_back(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
 					nIndexOld = nIndex + 1;
 				}
 				else if (_isD && _isA1)
 				{
-					pArrayResults->Add(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
+					pArrayResults->push_back(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
 					nIndexOld = nIndex + 1;
 				}
 				else if (_isD && ('@' == _c1))
 				{
-					pArrayResults->Add(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
+					pArrayResults->push_back(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
 
 					++nIndex;
 					nIndexOld = nIndex;
 				}
 				else if (_isD && ('#' == _c1))
 				{
-					pArrayResults->Add(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
+					pArrayResults->push_back(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
 
 					++nIndex;
 					nIndexOld = nIndex;
 				}
 				else if (_isA && ('@' == _c1))
 				{
-					pArrayResults->Add(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
+					pArrayResults->push_back(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
 
 					++nIndex;
 					nIndexOld = nIndex;
 				}
 				else if (_isA && ('#' == _c1))
 				{
-					pArrayResults->Add(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
+					pArrayResults->push_back(strPath.Mid(nIndexOld, nIndex - nIndexOld + 1));
 
 					++nIndex;
 					nIndexOld = nIndex;
 				}
 				else if (('x' == _c) && _isA1)
 				{
-					pArrayResults->Add(_T("x"));
+					pArrayResults->push_back(_T("x"));
 					nIndexOld = nIndex + 1;
 				}				
 			}            

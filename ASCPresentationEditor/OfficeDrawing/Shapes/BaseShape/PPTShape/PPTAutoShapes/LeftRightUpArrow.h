@@ -31,28 +31,28 @@ public:
         AddGuide(_T("sum @1 0 10800"));
         AddGuide(_T("prod @2 @16 @15"));
 
-		m_arAdjustments.Add(6480);
-		m_arAdjustments.Add(8640);
-		m_arAdjustments.Add(6171);
+		m_arAdjustments.push_back(6480);
+		m_arAdjustments.push_back(8640);
+		m_arAdjustments.push_back(6171);
 
         LoadConnectorsList(_T("10800,0;0,@8;10800,@9;21600,@8"));
         
-		m_arConnectorAngles.Add(270);
-		m_arConnectorAngles.Add(180);
-		m_arConnectorAngles.Add(90);
-		m_arConnectorAngles.Add(0);
+		m_arConnectorAngles.push_back(270);
+		m_arConnectorAngles.push_back(180);
+		m_arConnectorAngles.push_back(90);
+		m_arConnectorAngles.push_back(0);
 
         LoadTextRect(_T("@13,@6,@14,@9;@1,@17,@4,@9"));
        
         CHandle_ oHandle1;
         oHandle1.position = _T("#0,topLeft");
         oHandle1.xrange = _T("@2,@1");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
 
         CHandle_ oHandle2;
         oHandle2.position = _T("#1,#2");
         oHandle2.xrange = _T("@0,10800");
         oHandle2.yrange = _T("0,@5"); 
-        m_arHandles.Add(oHandle2);
+        m_arHandles.push_back(oHandle2);
     }
 };

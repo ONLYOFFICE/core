@@ -20,20 +20,20 @@ namespace PPTX
 				name = node.GetAttribute(_T("name"));
 
 				Logic::UniColor lColor;
-				Scheme.RemoveAll();
+				Scheme.clear();
 
-				lColor.GetColorFrom(node.ReadNode(_T("a:dk1")));		Scheme.SetAt(_T("dk1"), lColor);
-				lColor.GetColorFrom(node.ReadNode(_T("a:lt1")));		Scheme.SetAt(_T("lt1"), lColor);
-				lColor.GetColorFrom(node.ReadNode(_T("a:dk2")));		Scheme.SetAt(_T("dk2"), lColor);
-				lColor.GetColorFrom(node.ReadNode(_T("a:lt2")));		Scheme.SetAt(_T("lt2"), lColor);
-				lColor.GetColorFrom(node.ReadNode(_T("a:accent1")));	Scheme.SetAt(_T("accent1"), lColor);
-				lColor.GetColorFrom(node.ReadNode(_T("a:accent2")));	Scheme.SetAt(_T("accent2"), lColor);
-				lColor.GetColorFrom(node.ReadNode(_T("a:accent3")));	Scheme.SetAt(_T("accent3"), lColor);
-				lColor.GetColorFrom(node.ReadNode(_T("a:accent4")));	Scheme.SetAt(_T("accent4"), lColor);
-				lColor.GetColorFrom(node.ReadNode(_T("a:accent5")));	Scheme.SetAt(_T("accent5"), lColor);
-				lColor.GetColorFrom(node.ReadNode(_T("a:accent6")));	Scheme.SetAt(_T("accent6"), lColor);
-				lColor.GetColorFrom(node.ReadNode(_T("a:hlink")));		Scheme.SetAt(_T("hlink"), lColor);
-				lColor.GetColorFrom(node.ReadNode(_T("a:folHlink")));	Scheme.SetAt(_T("folHlink"), lColor);
+				lColor.GetColorFrom(node.ReadNode(_T("a:dk1")));		Scheme.insert(std::pair<CString,Logic::UniColor>(_T("dk1"), lColor));
+				lColor.GetColorFrom(node.ReadNode(_T("a:lt1")));		Scheme.insert(std::pair<CString,Logic::UniColor>(_T("lt1"), lColor));
+				lColor.GetColorFrom(node.ReadNode(_T("a:dk2")));		Scheme.insert(std::pair<CString,Logic::UniColor>(_T("dk2"), lColor));
+				lColor.GetColorFrom(node.ReadNode(_T("a:lt2")));		Scheme.insert(std::pair<CString,Logic::UniColor>(_T("lt2"), lColor));
+				lColor.GetColorFrom(node.ReadNode(_T("a:accent1")));	Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent1"), lColor));
+				lColor.GetColorFrom(node.ReadNode(_T("a:accent2")));	Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent2"), lColor));
+				lColor.GetColorFrom(node.ReadNode(_T("a:accent3")));	Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent3"), lColor));
+				lColor.GetColorFrom(node.ReadNode(_T("a:accent4")));	Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent4"), lColor));
+				lColor.GetColorFrom(node.ReadNode(_T("a:accent5")));	Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent5"), lColor));
+				lColor.GetColorFrom(node.ReadNode(_T("a:accent6")));	Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent6"), lColor));
+				lColor.GetColorFrom(node.ReadNode(_T("a:hlink")));		Scheme.insert(std::pair<CString,Logic::UniColor>(_T("hlink"), lColor));
+				lColor.GetColorFrom(node.ReadNode(_T("a:folHlink")));	Scheme.insert(std::pair<CString,Logic::UniColor>(_T("folHlink"), lColor));
 
 				FillParentPointersForChilds();
 			}
@@ -42,11 +42,9 @@ namespace PPTX
 			{
 				XmlUtils::CNodeValue oValue;
 
-				POSITION pos = Scheme.GetStartPosition();
-				while (NULL != pos)
+				for (std::map<CString, Logic::UniColor>::const_iterator pPair = Scheme.begin(); pPair != Scheme.end(); ++pPair)
 				{
-					const CAtlMap<CString, Logic::UniColor>::CPair* pPair = Scheme.GetNext(pos);
-					oValue.Write2(_T("a:") + pPair->m_key, pPair->m_value.toXML());
+					oValue.Write2(_T("a:") + pPair->first, pPair->second.toXML());
 				}
 
 				XmlUtils::CAttribute oAttr;
@@ -68,21 +66,25 @@ namespace PPTX
 
 				for (LONG i = 0; i < 12; ++i)
 				{
-					const CAtlMap<CString, Logic::UniColor>::CPair* pPair = Scheme.Lookup(arr[i]);
-					pWriter->StartNode(_T("a:") + arr[i]);
-					pWriter->EndAttributes();
-					pPair->m_value.toXmlWriter(pWriter);
-					pWriter->EndNode(_T("a:") + arr[i]);
+					std::map<CString, Logic::UniColor>::const_iterator pPair = Scheme.find(arr[i]);
+				
+					if (pPair != Scheme.end())
+					{
+						pWriter->StartNode(_T("a:") + arr[i]);
+						pWriter->EndAttributes();
+						pPair->second.toXmlWriter(pWriter);
+						pWriter->EndNode(_T("a:") + arr[i]);
+					}
 				}
 
 				/*
 				POSITION pos = Scheme.GetStartPosition();
 				while (NULL != pos)
 				{
-					const CAtlMap<CString, Logic::UniColor>::CPair* pPair = Scheme.GetNext(pos);
+					const std::map<CString, Logic::UniColor>::iterator pPair = Scheme.GetNext(pos);
 					pWriter->StartNode(_T("a:") + pPair->m_key);
 					pWriter->EndAttributes();
-					pPair->m_value.toXmlWriter(pWriter);
+					pPair->second.toXmlWriter(pWriter);
 					pWriter->EndNode(_T("a:") + pPair->m_key);					
 				}
 				*/
@@ -92,31 +94,31 @@ namespace PPTX
 
 			virtual DWORD GetRGBAFromScheme(const CString& str)const
 			{
-				const CAtlMap<CString, Logic::UniColor>::CPair* pPair = Scheme.Lookup(str);
-				if (NULL == pPair)
+				std::map<CString, Logic::UniColor>::const_iterator pPair = Scheme.find(str);
+				if (Scheme.end() == pPair)
 					return 0;
-				return pPair->m_value.GetRGBA();
+				return pPair->second.GetRGBA();
 			}
 			virtual DWORD GetARGBFromScheme(const CString& str)const
 			{
-				const CAtlMap<CString, Logic::UniColor>::CPair* pPair = Scheme.Lookup(str);
-				if (NULL == pPair)
+				std::map<CString, Logic::UniColor>::const_iterator pPair = Scheme.find(str);
+				if (Scheme.end() == pPair)
 					return 0;
-				return pPair->m_value.GetARGB();
+				return pPair->second.GetARGB();
 			}
 			virtual DWORD GetBGRAFromScheme(const CString& str)const
 			{
-				const CAtlMap<CString, Logic::UniColor>::CPair* pPair = Scheme.Lookup(str);
-				if (NULL == pPair)
+				std::map<CString, Logic::UniColor>::const_iterator pPair = Scheme.find(str);
+				if (Scheme.end() == pPair)
 					return 0;
-				return pPair->m_value.GetBGRA();
+				return pPair->second.GetBGRA();
 			}
 			virtual DWORD GetABGRFromScheme(const CString& str)const
 			{
-				const CAtlMap<CString, Logic::UniColor>::CPair* pPair = Scheme.Lookup(str);
-				if (NULL == pPair)
+				std::map<CString, Logic::UniColor>::const_iterator pPair = Scheme.find(str);
+				if (Scheme.end() == pPair)
 					return 0;
-				return pPair->m_value.GetABGR();
+				return pPair->second.GetABGR();
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -125,11 +127,9 @@ namespace PPTX
 				pWriter->WriteString1(0, name);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-				POSITION pos = Scheme.GetStartPosition();
-				while (NULL != pos)
+				for (std::map<CString, Logic::UniColor>::const_iterator pPair = Scheme.begin(); pPair != Scheme.end(); ++pPair)
 				{
-					const CAtlMap<CString, Logic::UniColor>::CPair* pPair = Scheme.GetNext(pos);
-					pWriter->WriteRecord1(SchemeClr_GetBYTECode(pPair->m_key), pPair->m_value);
+					pWriter->WriteRecord1(SchemeClr_GetBYTECode(pPair->first), pPair->second);
 				}
 			}
 
@@ -156,7 +156,7 @@ namespace PPTX
 					Logic::UniColor color;
 					color.fromPPTY(pReader);
 
-					Scheme.SetAt(SchemeClr_GetStringCode(_rec), color);
+					Scheme.insert(std::pair<CString,Logic::UniColor>(SchemeClr_GetStringCode(_rec), color));
 				}
 
 				pReader->Seek(_e);
@@ -164,7 +164,7 @@ namespace PPTX
 
 		public:
 			CString name;
-			CAtlMap<CString, Logic::UniColor> Scheme;
+			std::map<CString, Logic::UniColor> Scheme;
 
 			ClrScheme& operator=(const ClrScheme& oSrc)
 			{
@@ -173,12 +173,10 @@ namespace PPTX
 
 				name = oSrc.name;
 				
-				Scheme.RemoveAll();
-				POSITION pos = oSrc.Scheme.GetStartPosition();
-				while (NULL != pos)
+				Scheme.clear();
+				for (std::map<CString, Logic::UniColor>::const_iterator pPair = oSrc.Scheme.begin(); pPair != oSrc.Scheme.end(); ++pPair)
 				{
-					const CAtlMap<CString, Logic::UniColor>::CPair* pPair = oSrc.Scheme.GetNext(pos);
-					Scheme.SetAt(pPair->m_key, pPair->m_value);
+					Scheme.insert(std::pair<CString,Logic::UniColor>(pPair->first, pPair->second));
 				}
 
 				return *this;
@@ -187,10 +185,9 @@ namespace PPTX
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				POSITION pos = Scheme.GetStartPosition();
-				while (NULL != pos)
+				for (std::map<CString, Logic::UniColor>::iterator pPair = Scheme.begin(); pPair != Scheme.end(); ++pPair)
 				{
-					Scheme.GetNextValue(pos).SetParentPointer(this);
+					pPair->second.SetParentPointer(this);
 				}
 			}
 			//Logic::UniColor dk1; //Dark 1 

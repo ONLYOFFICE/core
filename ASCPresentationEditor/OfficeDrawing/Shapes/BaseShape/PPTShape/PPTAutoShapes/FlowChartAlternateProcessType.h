@@ -24,7 +24,7 @@ public:
         AddGuide(_T("prod width 1 2"));
         AddGuide(_T("prod height 1 2"));
 
-		m_arAdjustments.Add(2700);
+		m_arAdjustments.push_back(2700);
         
         LoadConnectorsList(_T("@8,0;0,@9;@8,@7;@6,@9"));
         LoadTextRect(_T("@3,@3,@4,@5"));

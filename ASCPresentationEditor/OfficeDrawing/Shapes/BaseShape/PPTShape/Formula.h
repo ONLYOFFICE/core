@@ -265,9 +265,9 @@ private:
 
 		void FromString(CString strFormula, long lShapeWidth = ShapeSizeVML, long lShapeHeight = ShapeSizeVML)
 		{
-			CSimpleArray<CString> oArrayParams;
+			std::vector<CString> oArrayParams;
 			NSStringUtils::ParseString(_T(" "), strFormula, &oArrayParams);
-			int nCount = oArrayParams.GetSize();
+			int nCount = oArrayParams.size();
 			if (0 >= nCount)
 				return;
 
@@ -297,10 +297,10 @@ private:
 	class CFormulasManager
 	{
 	public:
-		CSimpleArray<LONG>* m_pAdjustments;
-		CSimpleArray<LONG> m_arResults;
+		std::vector<LONG>* m_pAdjustments;
+		std::vector<LONG> m_arResults;
 
-		CSimpleArray<CFormula> m_arFormulas;
+		std::vector<CFormula> m_arFormulas;
 
 		long m_lShapeWidth;
 		long m_lShapeHeight;
@@ -318,63 +318,63 @@ private:
 			m_lShapeWidth	= oSrc.m_lShapeWidth;
 			m_lShapeHeight	= oSrc.m_lShapeHeight;
 
-			m_arResults.RemoveAll();
-			for (int nIndex = 0; nIndex < oSrc.m_arResults.GetSize(); ++nIndex)
+			m_arResults.clear();
+			for (int nIndex = 0; nIndex < oSrc.m_arResults.size(); ++nIndex)
 			{
-				m_arResults.Add(oSrc.m_arResults[nIndex]);
+				m_arResults.push_back(oSrc.m_arResults[nIndex]);
 			}
-			m_arFormulas.RemoveAll();
-			for (int nIndex = 0; nIndex < oSrc.m_arFormulas.GetSize(); ++nIndex)
+			m_arFormulas.clear();
+			for (int nIndex = 0; nIndex < oSrc.m_arFormulas.size(); ++nIndex)
 			{
-				m_arFormulas.Add(oSrc.m_arFormulas[nIndex]);
+				m_arFormulas.push_back(oSrc.m_arFormulas[nIndex]);
 			}
 			
 			return (*this);
 		}
 
-		void RemoveAll()
+		void Clear()
 		{
 			m_pAdjustments	= NULL;
 			m_lShapeWidth	= ShapeSizeVML;
 			m_lShapeHeight	= ShapeSizeVML;
 
-			m_arFormulas.RemoveAll();
-			m_arResults.RemoveAll();
+			m_arFormulas.clear();
+			m_arResults.clear();
 		}
 
-		void Clear(CSimpleArray<LONG>* pAdjusts)
+		void Clear(std::vector<LONG>* pAdjusts)
 		{
 			m_pAdjustments = pAdjusts;
 			
-			//m_arFormulas.RemoveAll();
-			//m_arResults.RemoveAll();
-			for (int nIndex = 0; nIndex < m_arResults.GetSize(); ++nIndex)
+			//m_arFormulas.clear();
+			//m_arResults.clear();
+			for (int nIndex = 0; nIndex < m_arResults.size(); ++nIndex)
 			{
 				m_arResults[nIndex] = 0xFFFFFFFF;
 			}
 		}
 		void AddFormula(CString strFormula)
 		{
-			CFormula oFormula(m_arFormulas.GetSize());
+			CFormula oFormula(m_arFormulas.size());
 			oFormula.FromString(strFormula, m_lShapeWidth, m_lShapeHeight);
-			m_arFormulas.Add(oFormula);
-			m_arResults.Add(0xFFFFFFFF);
+			m_arFormulas.push_back(oFormula);
+			m_arResults.push_back(0xFFFFFFFF);
 		}
 		void AddFormula(CFormula oFormula)
 		{
-			oFormula.m_lIndex = m_arFormulas.GetSize();
-			m_arFormulas.Add(oFormula);
-			m_arResults.Add(0xFFFFFFFF);
+			oFormula.m_lIndex = m_arFormulas.size();
+			m_arFormulas.push_back(oFormula);
+			m_arResults.push_back(0xFFFFFFFF);
 		}
 		void CalculateResults()
 		{
-			for (int index = 0; index < m_arFormulas.GetSize(); ++index)
+			for (int index = 0; index < m_arFormulas.size(); ++index)
 			{
 				LONG lResult = m_arFormulas[index].Calculate(this);
 			}
 
 			//m_pAdjustments = NULL;
-			//m_arFormulas.RemoveAll();
+			//m_arFormulas.clear();
 		}
 	};
 }

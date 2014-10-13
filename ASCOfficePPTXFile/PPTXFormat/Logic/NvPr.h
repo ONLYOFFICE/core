@@ -22,7 +22,8 @@ namespace PPTX
 				media		=	oSrc.media;
 				ph			=	oSrc.ph;
 
-				extLst.Copy(oSrc.extLst);
+				for (int i=0; i < oSrc.extLst.size(); i++)
+					extLst.push_back(oSrc.extLst[i]);
 				
 				return *this;
 			}
@@ -50,7 +51,7 @@ namespace PPTX
 
 							Ext element;
 							element.fromXML(oNode);
-							extLst.Add (element);
+							extLst.push_back (element);
 						}
 					}
 				}
@@ -157,7 +158,7 @@ namespace PPTX
 			nullable<Ph>			ph;
 			UniMedia				media;
 			//custDataLst
-			CAtlArray<Ext>			extLst;
+			std::vector<Ext>			extLst;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

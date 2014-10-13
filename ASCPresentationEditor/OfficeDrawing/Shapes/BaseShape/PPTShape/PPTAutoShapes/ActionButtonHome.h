@@ -64,7 +64,7 @@ public:
 		AddGuide(_T("sum @32 @5 0"));  
 		AddGuide(_T("sum @33 @5 0"));
 		
-		m_arAdjustments.Add(1350);
+		m_arAdjustments.push_back(1350);
 		LoadConnectorsList(_T("0,@4;@0,@4;@3,21600;@3,@2;21600,@4;@1,@4;@3,0;@3,@0"));
 		LoadTextRect(_T("@0,@0,@1,@2"));
 
@@ -72,7 +72,7 @@ public:
 		oHandle1.position = _T("#0,topLeft");
 		oHandle1.switchHandle = _T("true");
 		oHandle1.xrange = _T("0,5400");
-		m_arHandles.Add(oHandle1);
+		m_arHandles.push_back(oHandle1);
 
 		m_lLimoX = 10800;
 		m_lLimoY = 10800;

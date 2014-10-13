@@ -20,7 +20,7 @@ public:
         AddGuide(_T("sum width 0 @3"));
         AddGuide(_T("sum height 0 @3"));
 
-        m_arAdjustments.Add(5400);
+        m_arAdjustments.push_back(5400);
         
         LoadConnectorsList(_T("Rectangle"));
         LoadTextRect(_T("1800,1800,19800,19800;3600,3600,18000,18000;6300,6300,15300,15300"));
@@ -28,7 +28,7 @@ public:
         CHandle_ oHandle1;
         oHandle1.position = _T("#0,topLeft");
         oHandle1.xrange = _T("0,10800");
-        m_arHandles.Add(oHandle1);
+        m_arHandles.push_back(oHandle1);
 
     }
 };

@@ -272,7 +272,7 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.StartRecord(NSMainTables::ImageMap);
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-		CAtlMap<CString, NSShapeImageGen::CImageInfo>* pIMaps = &oBinaryWriter.m_pCommon->m_pImageManager->m_mapImagesFile;
+		std::map<CString, NSShapeImageGen::CImageInfo>* pIMaps = &oBinaryWriter.m_pCommon->m_pImageManager->m_mapImagesFile;
 		POSITION pos1 = pIMaps->GetStartPosition();
 
 		LONG lIndexI = 0;
@@ -292,7 +292,7 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.StartRecord(NSMainTables::FontMap);
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
-		CAtlMap<CString, CString>* pFMaps = &oBinaryWriter.m_pCommon->m_pNativePicker->m_mapPicks;
+		std::map<CString, CString>* pFMaps = &oBinaryWriter.m_pCommon->m_pNativePicker->m_mapPicks;
 		POSITION pos2 = pFMaps->GetStartPosition();
 
 		LONG lIndexF = 0;

@@ -162,7 +162,7 @@ namespace OOX
 			m_strFilename.Replace(_T("\\\\"), _T("\\"));
 			m_strFilename.Replace(TCHAR('/'), TCHAR('\\'));
 
-			CAtlArray<CString> arNames;
+			std::vector<CString> arNames;
 			CString resToken;
 			int curPos= 0;
 
@@ -177,10 +177,10 @@ namespace OOX
 					if (0 < nCount)
 						arNames.RemoveAt(nCount - 1);
 					else
-						arNames.Add(resToken);
+						arNames.push_back(resToken);
 				}
 				else 
-					arNames.Add(resToken);
+					arNames.push_back(resToken);
 				resToken = m_strFilename.Tokenize(_T("\\"), curPos);
 			}
 

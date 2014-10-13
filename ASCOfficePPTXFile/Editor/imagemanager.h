@@ -10,7 +10,10 @@ using namespace NSFontCutter;
 #define AVSINLINE __forceinline
 #endif
 
-//#include "../../ASCPresentationEditor/PPTXWriter/FileDownloader.h"
+#ifndef DISABLE_FILE_DOWNLOADER
+#include "../../ASCPresentationEditor/PPTXWriter/FileDownloader.h"
+#endif 
+
 #include "WMFToImageConverter.h"
 #include "../../Common/MediaFormatDefine.h"
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
@@ -243,11 +246,13 @@ namespace NSShapeImageGen
 
 			if (bIsDownload)
 			{
+
 				CString strFile1 = strFile;
 				strFile1.Replace(_T("\\"), _T("/"));
 				strFile1.Replace(_T("http:/"), _T("http://"));
 				strFile1.Replace(_T("https:/"), _T("https://"));
 				strFile1.Replace(_T("ftp:/"), _T("ftp://"));
+
 
 				CImageInfo oInfo;
 				CAtlMap<CString, CImageInfo>::CPair* pPair = m_mapImagesFile.Lookup(strFile1);
@@ -255,6 +260,9 @@ namespace NSShapeImageGen
 					return pPair->m_value;
 
 				CString strDownload = _T("");
+
+#ifndef DISABLE_FILE_DOWNLOADER
+
 				CFileDownloader oDownloader(strFile1, TRUE);
 				oDownloader.Start( 1 );
 				while ( oDownloader.IsRunned() )
@@ -265,7 +273,11 @@ namespace NSShapeImageGen
 				if ( oDownloader.IsFileDownloaded() )
 					strDownload = oDownloader.GetFilePath();
 
+#endif
+
 				return GenerateImageID_2(strDownload, strFile1, max(1.0, width), max(1.0, height));
+
+
 			}
 			
 			CImageInfo info;

@@ -7,7 +7,9 @@
 #include "SVGConverter.h"
 #endif
 
+#ifndef DISABLE_FILE_DOWNLOADER
 #include "../PPTXWriter/FileDownloader.h"
+#endif
 
 #ifdef ENABLE_ODP_TO_PPTX_CONVERT
 
@@ -600,6 +602,7 @@ namespace NSPresentationEditor
 
 		AVSINLINE CString DownloadImage(const CString& strFile)
 		{
+#ifndef DISABLE_FILE_DOWNLOADER
 			CFileDownloader oDownloader(strFile, TRUE);
 			oDownloader.Start( 1 );
 			while ( oDownloader.IsRunned() )
@@ -611,6 +614,7 @@ namespace NSPresentationEditor
 			{
 				m_strFileName = oDownloader.GetFilePath();
 			}
+#endif
 		}
 	};
 

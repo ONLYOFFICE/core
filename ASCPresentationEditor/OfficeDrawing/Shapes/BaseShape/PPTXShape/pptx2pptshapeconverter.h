@@ -1,5 +1,5 @@
 #pragma once
-#include "formula.h"
+#include "Formula.h"
 #include "../Path.h"
 
 namespace NSGuidesVML

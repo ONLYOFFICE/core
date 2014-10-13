@@ -6,7 +6,7 @@
 
 #include <math.h>
 #include "./../Common.h"
-#include "../../../../../Common/DocxFormat/Source/XML/XmlUtils.h"
+#include "../../../../../Common/DocxFormat/Source/XML/xmlutils.h"
 
 namespace NSGuidesOOXML
 {

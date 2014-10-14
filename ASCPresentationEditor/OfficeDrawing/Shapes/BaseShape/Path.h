@@ -11,6 +11,9 @@
 using namespace NSGuidesVML;
 #endif
 
+#if defined(ODP_DEF)
+#include "OdpShape/Formula.h"
+#endif
 
 namespace NSPresentationEditor
 {
@@ -1397,7 +1400,16 @@ namespace NSPresentationEditor
 			};
 
 		}
-		
+		CSlice& operator =(const CSlice& oSrc)
+		{
+			m_eRuler = oSrc.m_eRuler;
+			m_arPoints.clear();
+			for (int nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
+			{
+				m_arPoints.push_back(oSrc.m_arPoints[nIndex]);
+			}
+			return (*this);
+		}		
 	protected:
 		double GetAngle(double fCentreX, double fCentreY, double fX, double fY)
 		{
@@ -1538,16 +1550,7 @@ namespace NSPresentationEditor
 
 
 
-		CSlice& operator =(const CSlice& oSrc)
-		{
-			m_eRuler = oSrc.m_eRuler;
-			m_arPoints.clear();
-			for (int nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
-			{
-				m_arPoints.push_back(oSrc.m_arPoints[nIndex]);
-			}
-			return (*this);
-		}
+
 
 		void ApplyLimo(CGeomShapeInfo& pGeomInfo, double& lX, double& lY)
 		{
@@ -1607,7 +1610,7 @@ namespace NSPresentationEditor
 			}
 			
 			std::vector<CGeomShapeInfo::CPointD> arOld;
-			arOld.Copy(oArray);
+			arOld.insert(arOld.end(),oArray.begin(), oArray.end());
 
 			oArray.clear();
 			
@@ -1755,6 +1758,48 @@ namespace NSPresentationEditor
 			}
 		}
 	#endif
+	#if defined(ODP_DEF)
+		void FromXML(CString strPath , NSGuidesOdp::CFormulaManager& pManager)
+		{
+			NSStringUtils::CheckPathOn_Fill_Stroke(strPath, m_bFill, m_bStroke);
+			CSimpleArray<CString> oArray;
+			//NSStringUtils::ParsePath(strPath, &oArray);
+			NSStringUtils::ParseString(_T(" "), strPath, &oArray);
+
+			RulesType eRuler = rtEnd; 
+			LONG lValue;
+			bool bRes = true;
+
+			for (int nIndex = 0; nIndex < oArray.GetSize(); ++nIndex)
+			{
+				eRuler = GetRuler(oArray[nIndex], bRes);
+				if (bRes)
+				{
+					if (rtNoFill == eRuler)
+					{
+						m_bFill = false;
+					}
+					else if (rtNoStroke == eRuler)
+					{
+						m_bStroke = false;
+					}
+					else
+					{				
+						CSlice oSlice(eRuler);
+						m_arSlices.push_back(oSlice);
+					}
+				}
+				else
+				{
+					lValue = (long)pManager.GetValue(oArray[nIndex]);
+					if (0 != m_arSlices.GetSize())
+					{
+						m_arSlices[m_arSlices.GetSize() - 1].AddParam(lValue);
+					}
+				}
+			}
+		}
+	#endif
 
 		CString ToXml(CGeomShapeInfo& pGeomInfo, double dStartTime, double dEndTime, CPen& pPen, CBrush& pFore, CMetricInfo& pInfo, NSBaseShape::ClassType ClassType)
 		{
@@ -1873,6 +1918,21 @@ namespace NSPresentationEditor
 				CPartPath oPath;
 				m_arParts.push_back(oPath);
 				m_arParts.back().FromXML(oArray[nIndex], pManager);
+			}
+		}
+	#endif
+	#if defined(ODP_DEF)
+		void FromXML(CString strPath, NSGuidesOdp::CFormulaManager& pManager)
+		{
+			m_arParts.RemoveAll();
+			CSimpleArray<CString> oArray;
+			NSStringUtils::ParseString(_T("N"), strPath, &oArray);
+
+			for (int nIndex = 0; nIndex < oArray.GetSize(); ++nIndex)
+			{
+				CPartPath oPath;
+				m_arParts.push_back(oPath);
+				m_arParts[m_arParts.GetSize() - 1].FromXML(oArray[nIndex], pManager);
 			}
 		}
 	#endif

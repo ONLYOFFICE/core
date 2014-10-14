@@ -384,7 +384,12 @@ public:
 
 	virtual bool SetAdjustment(long index, long value)
 	{
-		return (TRUE == m_arAdjustments.SetAtIndex(index, value));
+		if (index < m_arAdjustments.size() && index >= 0)
+		{
+			m_arAdjustments[index] =  value;
+			return TRUE;
+		}
+		return FALSE;
 	}
 
 	virtual CString ToXML(CGeomShapeInfo& GeomInfo, CMetricInfo& MetricInfo, double StartTime, double EndTime, CBrush& Brush, CPen& Pen)
@@ -431,7 +436,7 @@ public:
 		m_strPathLimoX = ((CPPTShape*)Shape)->m_strPathLimoX;
 		m_strPathLimoY = ((CPPTShape*)Shape)->m_strPathLimoY;
 
-		m_arStringTextRects.Copy(((CPPTShape*)Shape)->m_arStringTextRects);
+		m_arStringTextRects.insert(m_arStringTextRects.end(), ((CPPTShape*)Shape)->m_arStringTextRects.begin(), ((CPPTShape*)Shape)->m_arStringTextRects.end());
 		
 		return CBaseShape::SetProperties(Shape);
 	}
@@ -452,7 +457,7 @@ public:
 		((CPPTShape*)Shape)->m_strPathLimoX = m_strPathLimoX;
 		((CPPTShape*)Shape)->m_strPathLimoY = m_strPathLimoY;
 
-		((CPPTShape*)Shape)->m_arStringTextRects.Copy(m_arStringTextRects);
+		((CPPTShape*)Shape)->m_arStringTextRects.insert(((CPPTShape*)Shape)->m_arStringTextRects.end(), m_arStringTextRects.begin(), m_arStringTextRects.end());
 
 		return CBaseShape::SetToDublicate(Shape);
 	}

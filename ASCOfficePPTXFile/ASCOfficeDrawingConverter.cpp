@@ -691,15 +691,10 @@ CElementProps::~CElementProps()
 }
 void CElementProps::FinalRelease()
 {
-	POSITION pos = m_Properties.GetStartPosition();
-	while (pos != NULL)
+	for (std::map<LONG, VARIANT>::iterator pPair = m_Properties.begin(); pPair != m_Properties.end(); ++pPair)
 	{
-		std::map<LONG, VARIANT>::iterator pPair = m_Properties.GetNext(pos);
-		if (NULL != pPair)
-		{
-			if (pPair->second.vt == VT_BSTR)
-				SysFreeString(pPair->second.bstrVal);
-		}
+		if (pPair->second.vt == VT_BSTR)
+			SysFreeString(pPair->second.bstrVal);
 	}
 	m_Properties.clear();
 }
@@ -1894,8 +1889,10 @@ CString CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::
 
 	bool bIsInline = false;
 
-	if ((NULL == oCssStyles.m_mapSettings.find(_T("left"))) && (NULL == oCssStyles.m_mapSettings.find(_T("margin-left"))) &&
-		(NULL == oCssStyles.m_mapSettings.find(_T("top"))) && (NULL == oCssStyles.m_mapSettings.find(_T("margin-top"))))
+	if ((oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(_T("left")))			&&
+		(oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(_T("margin-left")))	&&
+		(oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(_T("top")))			&& 
+		(oCssStyles.m_mapSettings.end() == oCssStyles.m_mapSettings.find(_T("margin-top"))))
 	{
 		bIsInline = true;
 	}
@@ -1926,7 +1923,7 @@ CString CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::
 	if (!bIsInline)
 	{
 		pPair = oCssStyles.m_mapSettings.find(_T("margin-left"));
-		if (NULL == pPair)
+		if (oCssStyles.m_mapSettings.end() == pPair)
 			pPair = oCssStyles.m_mapSettings.find(_T("left"));
 
 		if (oCssStyles.m_mapSettings.end() != pPair)
@@ -1935,7 +1932,8 @@ CString CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::
 		}
 
 		pPair = oCssStyles.m_mapSettings.find(_T("margin-top"));
-		if (NULL == pPair)
+		
+		if (oCssStyles.m_mapSettings.end() == pPair)
 			pPair = oCssStyles.m_mapSettings.find(_T("top"));
 
 		if (oCssStyles.m_mapSettings.end() != pPair)
@@ -3783,7 +3781,7 @@ HRESULT CDrawingConverter::SaveDstContentRels(CString& bsRelsPath)
 		{
 			NSBinPptxRW::CRelsGenerator* pCur = m_pReader->m_pRels;
 			m_pReader->m_pRels = m_pReader->m_stackRels[nIndex];
-			m_pReader->m_stackRels.RemoveAt(nIndex);
+			m_pReader->m_stackRels.erase(m_pReader->m_stackRels.begin() + nIndex);
 			RELEASEOBJECT(pCur);								
 		}
 	}
@@ -3869,10 +3867,9 @@ HRESULT CDrawingConverter::GetAdditionalParam(CString& ParamName, VARIANT* Param
 }
 void CDrawingConverter::Clear()
 {
-	POSITION pos = m_mapShapeTypes.GetStartPosition();
-	while (NULL != pos)
+	for (std::map<CString, CShape*>::iterator pPair = m_mapShapeTypes.begin(); pPair != m_mapShapeTypes.end(); ++pPair)
 	{
-		CShape* pMem = m_mapShapeTypes.GetNextValue(pos);
+		CShape* pMem = pPair->second;
 		RELEASEOBJECT(pMem);
 	}
 	m_mapShapeTypes.clear();
@@ -3883,7 +3880,7 @@ HRESULT CDrawingConverter::SetCurrentRelsPath()
 {
 	std::map<CString, smart_ptr<PPTX::CCommonRels>>::iterator pPair = m_mapRels.find(m_strCurrentRelsPath);
 
-	if (NULL == pPair)
+	if (m_mapRels.end() == pPair)
 	{
 		smart_ptr<PPTX::CCommonRels> pCR = new PPTX::CCommonRels();
 		m_mapRels.insert(std::pair<CString, NSCommon::smart_ptr<PPTX::CCommonRels>>(m_strCurrentRelsPath, pCR));

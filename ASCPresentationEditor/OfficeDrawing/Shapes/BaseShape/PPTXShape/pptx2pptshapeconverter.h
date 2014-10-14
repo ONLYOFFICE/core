@@ -98,10 +98,10 @@ namespace NSGuidesVML
 				int i=0;
 			}
 
-			void ConvertHandles (CSimpleArray<CHandle_>& arHnd)
+			void ConvertHandles (std::vector<CHandle_>& arHnd)
 			{
 				
-				for (int nIndex=0; nIndex<arHnd.GetSize(); nIndex++)
+				for (int nIndex=0; nIndex<arHnd.size(); nIndex++)
 				{
 					CHandle_ oHandle;
 					//TODO переименовать названи€ формул и прокинуть текстовые атрибуты topleft, rightbottom в пол€х хендла
@@ -112,11 +112,12 @@ namespace NSGuidesVML
 				return;
 			}
 
-			void ConvertAdjastments( CSimpleArray<long> &arAdj, std::map<CString, long> &mapAdj )
+			void ConvertAdjastments( std::vector<long> &arAdj, std::map<CString, long> &mapAdj )
 			{
-				for(int i=0; i<arAdj.GetSize(); i++)
+				int i=0;
+				for( std::map<CString, long>::iterator pPair = mapAdj.begin(); pPair != mapAdj.end(); i++, ++pPair)
 				{
-					m_arMapAdj.push_back(mapAdj.GetKeyAt(i), ++m_lIndexAdj);
+					m_arMapAdj.insert(std::pair<CString, LONG>(pPair->first, ++m_lIndexAdj));
 					pPPTShape->m_arAdjustments.push_back(arAdj[i]);
 				}
 				//это аджасменты дл€ перевода углов  tan(angle, adj)
@@ -130,9 +131,9 @@ namespace NSGuidesVML
 				return;
 			}
 
-			void ConvertTextRects (CAtlArray<CString> &arTextRects)
+			void ConvertTextRects (std::vector<CString> &arTextRects)
 			{
-				pPPTShape->m_arStringTextRects.Copy(arTextRects);
+				pPPTShape->m_arStringTextRects.insert( pPPTShape->m_arStringTextRects.end(), arTextRects.begin(), arTextRects.end());
 				return;
 			}
 
@@ -159,32 +160,36 @@ namespace NSGuidesVML
 				pNewFmla3.m_eType1 = ptValue;
 				pNewFmla3.m_lParam1 = 21600;// lWidth;
 				pPPTShape->m_oManager.m_arFormulas.push_back(pNewFmla3);
-				m_arMapFormula.push_back(_T("w"), m_lIndexDst);
+				m_arMapFormula.insert(std::pair<CString, LONG>(_T("w"), m_lIndexDst));
 
 				pNewFmla3.m_lIndex = ++m_lIndexDst;
 				pNewFmla3.m_eType1 = ptValue;
 				pNewFmla3.m_lParam1 = 21600;//lHeight;
+				
 				pPPTShape->m_oManager.m_arFormulas.push_back(pNewFmla3);
-				m_arMapFormula.push_back(_T("h"), m_lIndexDst);		
+				
+				m_arMapFormula.insert(std::pair<CString, LONG>(_T("h"), m_lIndexDst));		
 
 				return;
 			}
 
-			LONG ConvertFmlaParam (CString strParam, NSGuidesVML::ParamType &eType, CString strKey, CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides)
+			LONG ConvertFmlaParam (CString strParam, NSGuidesVML::ParamType &eType, CString strKey, std::vector<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides)
 			{
 				LONG lVal = 0;
-				LONG lNumFmla = m_arMapFormula.FindKey(strParam);
-				LONG lNumAdj = m_arMapAdj.FindKey(strParam);
-				LONG lNumGuides = mapGuides.FindKey(strParam);
-				if (lNumAdj != -1)
+				
+				std::map<CString, LONG>::iterator NumFmla	= m_arMapFormula.find(strParam);
+				std::map<CString, LONG>::iterator NumAdj	= m_arMapAdj.find(strParam);
+				std::map<CString, LONG>::iterator NumGuides = mapGuides.find(strParam);
+				
+				if (NumAdj != m_arMapAdj.end())
 				{
 					eType = ptAdjust;
-					lVal = lNumAdj;
+					lVal = NumAdj->second;
 				}				
-				else if (lNumFmla == -1)
+				else if (NumFmla == m_arMapFormula.end())
 				{
 					//пришло число
-					if (lNumGuides == -1)
+					if (NumGuides == mapGuides.end())
 					{						
 						lVal = (LONG)XmlUtils::GetInteger(strParam);
 						if (lVal > 65535)
@@ -204,8 +209,21 @@ namespace NSGuidesVML
 					}
 					else //пришла стандартна€ формула из набора, которую надо теперь добавить
 					{
+						LONG lNumGuides = NumGuides->second;
+
 						NSGuidesOOXML::CFormula pFormula = strGuides[lNumGuides];
-						strKey = mapGuides.GetKeyAt(lNumGuides);
+						
+						//strKey = mapGuides.GetKeyAt(lNumGuides);
+						int ind =0;
+						for (std::map<CString, long>::iterator p = mapGuides.begin(); p!= mapGuides.end(); ++p)
+						{
+							if (ind == lNumGuides)
+							{
+								strKey = p->first;
+								break;
+							}
+						}
+
 						ConvertGuid(pFormula, strKey, strGuides, mapGuides);
 						eType = ptFormula;
 						lVal = m_lIndexDst;
@@ -214,7 +232,8 @@ namespace NSGuidesVML
 				else
 				{
 					eType = ptFormula;
-					lVal = m_arMapFormula.Lookup(strParam);
+					std::map<CString, LONG>::iterator Val = m_arMapFormula.find(strParam);
+					lVal = Val->second;
 				}
 				return lVal;
 			}
@@ -267,10 +286,11 @@ namespace NSGuidesVML
 				return;
 			}
 
-			void ConvertGuid ( NSGuidesOOXML::CFormula pFormula, CString strKey, CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides)
+			void ConvertGuid ( NSGuidesOOXML::CFormula pFormula, CString strKey, std::vector<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides)
 			{				
 				LONG lParam1, lParam2, lParam3;
 				NSGuidesVML::ParamType eType1, eType2, eType3;
+				
 				lParam1 = ConvertFmlaParam(pFormula.m_lParam1, eType1, strKey, strGuides, mapGuides);
 				lParam2 = ConvertFmlaParam(pFormula.m_lParam2, eType2, strKey, strGuides, mapGuides);
 				lParam3 = ConvertFmlaParam(pFormula.m_lParam3, eType3, strKey, strGuides, mapGuides);
@@ -338,23 +358,33 @@ namespace NSGuidesVML
 						ConvertFmla( ftIf, m_lIndexDst-2, ptFormula, lParam1, eType1, m_lIndexDst, ptFormula);
 						break;
 				}	
-				m_arMapFormula.push_back(strKey, m_lIndexDst);
+				m_arMapFormula.insert(std::pair<CString, LONG>(strKey, m_lIndexDst));
 				return;
 			}
 
 
-			void ConvertGuides ( CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides )
+			void ConvertGuides ( std::vector<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides )
 			{
 				//стандартные формулы дл€ пптх будем добавл€ть, если только они встрет€тс€
-				for (int nIndex=32; nIndex<strGuides.GetSize(); ++nIndex)
+				for (int nIndex=32; nIndex < strGuides.size(); ++nIndex)
 				{
 					NSGuidesOOXML::CFormula pFormula = strGuides[nIndex];
-					CString strKey = mapGuides.GetKeyAt(nIndex);
+					
+					CString strKey;// = mapGuides.GetKeyAt(nIndex);
+					int ind =0;
+					for (std::map<CString, long>::iterator p = mapGuides.begin(); p!= mapGuides.end(); ++p)
+					{
+						if (ind == nIndex)
+						{
+							strKey = p->first;
+							break;
+						}
+					}
 					ConvertGuid(pFormula, strKey, strGuides, mapGuides);
 				}
 			}
 
-			void ConvertPath(const CString& xml, CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides)
+			void ConvertPath(const CString& xml, std::vector<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides)
 			{
 				XmlUtils::CXmlNode pathLst;
 				if(pathLst.FromXmlString(xml))
@@ -402,6 +432,7 @@ namespace NSGuidesVML
 											LONG lStartX = m_lIndexDst-1, lStartY = m_lIndexDst;
 											LONG lParam1, lParam2, lParam3, lParam4;
 											NSGuidesVML::ParamType eType1, eType2, eType3, eType4;
+											
 											lParam1 = ConvertFmlaParam(node.GetAttribute(_T("wR")), eType1, node.GetAttribute(_T("wR")), strGuides, mapGuides);
 											lParam2 = ConvertFmlaParam(node.GetAttribute(_T("hR")), eType2, node.GetAttribute(_T("hR")), strGuides, mapGuides);
 											lParam3 = ConvertFmlaParam(node.GetAttribute(_T("stAng")), eType3, node.GetAttribute(_T("stAng")), strGuides, mapGuides);
@@ -524,14 +555,16 @@ namespace NSGuidesVML
 			LONG ConvertArcParam (CString strParam, NSGuidesVML::ParamType &eType)
 			{
 				LONG lVal = 0;
-				LONG lNumFmla = m_arMapFormula.FindKey(strParam);
-				LONG lNumAdj = m_arMapAdj.FindKey(strParam);
-				if (lNumAdj != -1)
+				
+				std::map<CString, LONG>::iterator NumFmla	= m_arMapFormula.find(strParam);
+				std::map<CString, LONG>::iterator NumAdj	= m_arMapAdj.find(strParam);
+				
+				if (NumAdj != m_arMapAdj.end())
 				{
 					eType = ptAdjust;
-					lVal = lNumAdj;
+					lVal = NumAdj->second; //индекс в map ???
 				}				
-				else if (lNumFmla == -1)
+				else if (NumFmla == m_arMapFormula.end())
 				{
 					eType = ptValue;
 					lVal = (LONG)XmlUtils::GetInteger(strParam);
@@ -540,12 +573,12 @@ namespace NSGuidesVML
 				else
 				{
 					eType = ptFormula;
-					lVal = m_arMapFormula.Lookup(strParam);
+					lVal = m_arMapFormula.find(strParam)->second;
 				}
 				return lVal;
 			}
 
-			CString ConvertPathPoint (CString strX, CString strY, BOOL &bNum, CSimpleArray<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides, BOOL bLPoint)
+			CString ConvertPathPoint (CString strX, CString strY, BOOL &bNum, std::vector<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides, BOOL bLPoint)
 			{
 				CString strRes = _T("");
 				ParamType eType1, eType2;

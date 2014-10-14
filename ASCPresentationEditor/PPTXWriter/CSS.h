@@ -2,7 +2,9 @@
 #include "../../Common/ASCUtils.h"
 #include "../OfficeDrawing/TextAttributesEx.h"
 
-//#define _USE_XMLLITE_READER_
+#define _USE_XMLLITE_READER_
+
+#include <map>
 
 class CCSS
 {

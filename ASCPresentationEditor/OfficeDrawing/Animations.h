@@ -281,7 +281,7 @@ namespace NSPresentationEditor
 			m_dSlideWidth	= oSrc.m_dSlideWidth;
 			m_dSlideHeight	= oSrc.m_dSlideHeight;
 
-			m_arAnimations.Copy(oSrc.m_arAnimations);
+			m_arAnimations.insert(m_arAnimations.end(), oSrc.m_arAnimations.begin(), oSrc.m_arAnimations.end());
 			return *this;
 		}
 		CAnimationInfo(const CAnimationInfo& oSrc)
@@ -426,7 +426,7 @@ namespace NSPresentationEditor
 		{
 			CString Xml;
 			for ( long i = 0; i < (long)m_oQuery.size(); ++i )
-				Xml	+=	m_oQuery.GetAt (i);
+				Xml	+=	m_oQuery[i];
 
 			return Xml;
 		}

@@ -1,6 +1,8 @@
 ﻿#ifndef _BUILD_IRENDERER_H_
 #define _BUILD_IRENDERER_H_
 
+#pragma once
+
 #include "../common/Types.h"
 #include "Matrix.h"
 #include <string>

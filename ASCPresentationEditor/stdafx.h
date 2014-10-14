@@ -73,3 +73,4 @@ using namespace Gdiplus;
 #import "../Redist/ASCOfficeOdfFile.dll"	named_guids raw_interfaces_only rename_namespace("ODFFile"), exclude("IAVSOfficeFileTemplate", "_IAVSOfficeFileTemplateEvents", "_IAVSOfficeFileTemplateEvents2", "IAVSOfficeFile") 
 #endif
 
+typedef float REAL;

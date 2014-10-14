@@ -152,29 +152,23 @@ namespace NSShapeImageGen
 			pWriter->WriteINT(m_lDstFormat);
 			pWriter->WriteString(m_strDstMedia);
 
-			int lCount = (int)m_mapImagesFile.GetCount();
+			int lCount = (int)m_mapImagesFile.size();
 			pWriter->WriteINT(lCount);
 
-			POSITION pos = m_mapImagesFile.GetStartPosition();
-			while (NULL != pos)
+			for (std::map<CString, CImageInfo>::iterator pPair = m_mapImagesFile.begin(); pPair != m_mapImagesFile.end(); ++pPair)
 			{
-				std::map<CString, CImageInfo>::CPair* pPair = m_mapImagesFile.GetNext(pos);
-
-				pWriter->WriteString(pPair->m_key);
-				pWriter->WriteINT((int)pPair->second.m_eType);
-				pWriter->WriteINT((int)pPair->second.m_lID);
+				pWriter->WriteString(pPair->first);
+				pWriter->WriteINT((int)(pPair->second.m_eType));
+				pWriter->WriteINT((int)(pPair->second.m_lID));
 				pWriter->WriteBYTE(pPair->second.m_bValid ? 1 : 0);
 			}
 
-			lCount = (int)m_mapImageData.GetCount();
+			lCount = (int)m_mapImageData.size();
 			pWriter->WriteINT(lCount);
 
-			pos = m_mapImageData.GetStartPosition();
-			while (NULL != pos)
+			for (std::map<DWORD, CImageInfo>::iterator pPair = m_mapImageData.begin(); pPair != m_mapImageData.end(); ++pPair)
 			{
-				std::map<DWORD, CImageInfo>::CPair* pPair = m_mapImageData.GetNext(pos);
-
-				pWriter->WriteULONG(pPair->m_key);
+				pWriter->WriteULONG(pPair->first);
 				pWriter->WriteINT((int)pPair->second.m_eType);
 				pWriter->WriteINT((int)pPair->second.m_lID);
 				pWriter->WriteBYTE(pPair->second.m_bValid ? 1 : 0);

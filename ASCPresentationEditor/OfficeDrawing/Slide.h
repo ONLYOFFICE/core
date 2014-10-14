@@ -63,7 +63,7 @@ namespace NSPresentationEditor
 				IElement* pElem = m_arElements[nIndex];
 				RELEASEINTERFACE(pElem);
 			}
-			m_arElements.RemoveAll();
+			m_arElements.clear();
 		}
 
 		void Clear()
@@ -74,7 +74,7 @@ namespace NSPresentationEditor
 				IElement* pElem = m_arElements[nIndex];
 				RELEASEINTERFACE(pElem);
 			}
-			m_arElements.RemoveAll();
+			m_arElements.clear();
 		}
 
 		CSlide& operator=(const CSlide& oSrc)
@@ -147,14 +147,14 @@ namespace NSPresentationEditor
 
 				if (NULL == pElement)
 				{
-					m_arElements.RemoveAt(i);
+					m_arElements.erase(m_arElements.begin() + i);
 					--i;
 					--nCount;
 					continue;
 				}
 				else if (pElement->m_bIsLayoutElement)
 				{
-					m_arElements.RemoveAt(i);
+					m_arElements.erase(m_arElements.begin() + i);
 					--i;
 					--nCount;
 					RELEASEINTERFACE(pElement);

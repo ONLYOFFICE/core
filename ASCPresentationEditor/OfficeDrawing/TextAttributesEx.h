@@ -79,7 +79,7 @@ namespace NSPresentationEditor
 			m_bRightToLeft	= oSrc.m_bRightToLeft;
 			m_lWrapMode		= oSrc.m_lWrapMode;
 
-			m_arParagraphs.Copy(oSrc.m_arParagraphs);
+			m_arParagraphs.insert(m_arParagraphs.end(), oSrc.m_arParagraphs.begin(), oSrc.m_arParagraphs.end());
 			m_oRuler = oSrc.m_oRuler;
 
 			m_oLayoutStyles	= oSrc.m_oLayoutStyles;

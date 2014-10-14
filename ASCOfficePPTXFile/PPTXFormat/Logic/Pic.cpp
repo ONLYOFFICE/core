@@ -139,7 +139,7 @@ namespace PPTX
 						{
 							if(nvPicPr.nvPr.extLst.size())
 							{
-								file = parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.extLst.GetAt(0).link.get());
+								file = parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.extLst[0].link.get());
 							}
 						}		
 					}
@@ -169,7 +169,7 @@ namespace PPTX
 						{
 							if(nvPicPr.nvPr.extLst.size())
 							{
-								file = parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.extLst.GetAt(0).link.get());
+								file = parentFileAs<Slide>().GetLinkFromRId(nvPicPr.nvPr.extLst[0].link.get());
 							}
 						}		
 					}
@@ -240,7 +240,7 @@ namespace PPTX
 							if(nvPicPr.nvPr.extLst.size())
 							{
 								if (nvPicPr.nvPr.extLst[0].st.is_init())
-									trim = nvPicPr.nvPr.extLst.GetAt(0).st.get();
+									trim = nvPicPr.nvPr.extLst[0].st.get();
 							}
 						}		
 					}
@@ -266,8 +266,8 @@ namespace PPTX
 						{
 							if(nvPicPr.nvPr.extLst.size())
 							{
-								if (nvPicPr.nvPr.extLst.GetAt(0).end.is_init())
-									trim = nvPicPr.nvPr.extLst.GetAt(0).end.get();
+								if (nvPicPr.nvPr.extLst[0].end.is_init())
+									trim = nvPicPr.nvPr.extLst[0].end.get();
 							}
 						}		
 					}

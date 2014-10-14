@@ -273,14 +273,14 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
 		std::map<CString, NSShapeImageGen::CImageInfo>* pIMaps = &oBinaryWriter.m_pCommon->m_pImageManager->m_mapImagesFile;
-		POSITION pos1 = pIMaps->GetStartPosition();
 
 		LONG lIndexI = 0;
-		while (NULL != pos1)
+		for (std::map<CString, NSShapeImageGen::CImageInfo>::iterator pPair = pIMaps->begin(); pPair != pIMaps->end(); ++pPair)
 		{
-			NSShapeImageGen::CImageInfo& oRec = pIMaps->GetNextValue(pos1);
+			NSShapeImageGen::CImageInfo& oRec = pPair->second;
 			oBinaryWriter.WriteString1(lIndexI++, oRec.GetPath2());
 		}
+
 
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 		oBinaryWriter.EndRecord();
@@ -293,12 +293,11 @@ namespace PPTX2EditorAdvanced
 		oBinaryWriter.WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
 		std::map<CString, CString>* pFMaps = &oBinaryWriter.m_pCommon->m_pNativePicker->m_mapPicks;
-		POSITION pos2 = pFMaps->GetStartPosition();
 
 		LONG lIndexF = 0;
-		while (NULL != pos2)
+		for (std::map<CString, CString>::iterator pPair = pFMaps->begin(); pPair != pFMaps->end(); ++pPair)
 		{
-			CString& oRec = pFMaps->GetNextValue(pos2);
+			CString& oRec = pPair->second;
 			oBinaryWriter.WriteString1(lIndexF++, oRec);
 		}
 

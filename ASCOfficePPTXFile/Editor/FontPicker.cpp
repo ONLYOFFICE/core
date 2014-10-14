@@ -1,4 +1,4 @@
-//#include "stdafx.h"
+
 #include "BinWriters.h"
 
 HRESULT COfficeFontPicker::GetBinaryData(LONG lType, SAFEARRAY** ppBinaryArray)

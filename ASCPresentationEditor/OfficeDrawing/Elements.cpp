@@ -1,4 +1,4 @@
-//#include "stdafx.h"
+
 #include "Slide.h"
 
 void NSPresentationEditor::CShapeElement::CalculateColor(CColor& oColor, CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)

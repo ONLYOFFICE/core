@@ -5,6 +5,7 @@
 #include "../graphics/aggplustypes.h"
 
 #include <string>
+#include <string.h>
 #include <stdlib.h>
 
 // pen -----------------------------------------------------------

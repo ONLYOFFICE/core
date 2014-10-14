@@ -167,7 +167,7 @@ public:
             memmove((void*)(m_aT + nIndex), (void*)(m_aT + nIndex + nCount), (m_nSize - (nIndex + nCount)) * sizeof(T));
 #endif
         }
-		m_nSize--;
+		m_nSize -= nCount;
 		return TRUE;
 	}
 

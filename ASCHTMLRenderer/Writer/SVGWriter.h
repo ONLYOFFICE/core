@@ -1,37 +1,36 @@
-#pragma once
-#include "..\stdafx.h"
+п»ї#pragma once
+//#include "..\stdafx.h"
 #include "StringWriter.h"
-#include <atlbase.h>
-#include <atlcoll.h>
+#include <vector>
 
 namespace NSHtmlRenderer
 {
 	using namespace NSStrings;
 
 	static CString g_svg_string_svgOpen				= _T("<svg width=\"%dpx\" height=\"%dpx\" viewBox=\"0 0 %d %d\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n");
-	static _bstr_t g_svg_bstr_svgClose				= L"</svg>";
+	static CString g_svg_bstr_svgClose				= L"</svg>";
 
 	static CString g_svg_string_image				= _T("<image x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" xlink:href=\"%s\" preserveAspectRatio=\"none\"/>\n");
 
-	static _bstr_t g_svg_bstr_graphicOpen			= L"<g>\n";
-	static _bstr_t g_svg_bstr_graphicClose			= L"</g>\n";
+	static CString g_svg_bstr_graphicOpen			= L"<g>\n";
+	static CString g_svg_bstr_graphicClose			= L"</g>\n";
 
-	static _bstr_t g_svg_bstr_path_d				= L" d=\"";
-	static _bstr_t g_svg_bstr_path_d_end			= L"\" ";
+	static CString g_svg_bstr_path_d				= L" d=\"";
+	static CString g_svg_bstr_path_d_end			= L"\" ";
 	static CString g_svg_string_clip				= _T("clip-path=\"url(#clip%d)\" ");
 
 	static CString g_svg_string_clipCreate			= _T("<clipPath id=\"clip%d\"><path id=\"path%d\" d=\"");
-	static _bstr_t g_svg_bstr_clipendWinding		= _T("\" clip-rule=\"nonzero\" /></clipPath>");
-	static _bstr_t g_svg_bstr_clipendEvenodd		= _T("\" clip-rule=\"evenodd\" /></clipPath>");
+	static CString g_svg_bstr_clipendWinding		= _T("\" clip-rule=\"nonzero\" /></clipPath>");
+	static CString g_svg_bstr_clipendEvenodd		= _T("\" clip-rule=\"evenodd\" /></clipPath>");
 
 	static CString g_svg_string_gclip				= _T("<g clip-path=\"url(#clip%d)\">");
 
-	static _bstr_t g_svg_bstr_vml_ClosePath			= L"Z ";
+	static CString g_svg_bstr_vml_ClosePath			= L"Z ";
 	static CString g_svg_string_vml_MoveTo			= _T("M %d,%d ");
 	static CString g_svg_string_vml_LineTo			= _T("L %d,%d ");
 	static CString g_svg_string_vml_CurveTo			= _T("C %d,%d %d,%d %d,%d ");
-	static _bstr_t g_svg_bstr_vml_Path				= L"<path ";
-	static _bstr_t g_svg_bstr_nodeClose				= L" />\n";
+	static CString g_svg_bstr_vml_Path				= L"<path ";
+	static CString g_svg_bstr_nodeClose				= L" />\n";
 	static CString g_svg_string_vml_StyleStrokeDash = _T("style=\"fill:none;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf;stroke-dasharray: 2,2;\" ");
 	static CString g_svg_string_vml_StyleStroke		= _T("style=\"fill:none;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf;\" ");
 	static CString g_svg_string_vml_StyleFill		= _T("style=\"fill:#%06x;fill-opacity:%.2lf;fill-rule:%s;stroke:none\" ");
@@ -75,15 +74,15 @@ namespace NSHtmlRenderer
 	static CString g_svg_string_vml_StyleTx			= _T("style=\"fill:url(#pt%d);fill-opacity:%.2lf;fill-rule:%s;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
 
 	static CString g_svg_object_start				= _T("<object class=\"_svg\" data=\"page%d.svg\" type=\"image/svg+xml\">");
-	static _bstr_t g_svg_object_end					= L"</object>";
+	static CString g_svg_object_end					= L"</object>";
 
 	static CString g_string_intersect_clip			= _T("<clipPath id=\"clip%d\" clip-path=\"url(#clip%d)\"><use x=\"0\" y=\"0\" width=\"%d\" height=\"%d\" xlink:href=\"#path%d\"/></clipPath>");
 
 	class CClipSVG
 	{
 	public:
-		CAtlArray<CString> m_arPaths;
-		CAtlArray<LONG> m_arTypes;
+		std::vector<CString> m_arPaths;
+		std::vector<LONG> m_arTypes;
 
 		LONG m_lWidth;
 		LONG m_lHeight;
@@ -99,8 +98,8 @@ namespace NSHtmlRenderer
 
 		void Write(NSHtmlRenderer::CStringWriter& oWriter, LONG& lCurrentClipPath)
 		{
-			// сначала запишем все пути
-			size_t nCount = m_arPaths.GetCount();
+			// СЃРЅР°С‡Р°Р»Р° Р·Р°РїРёС€РµРј РІСЃРµ РїСѓС‚Рё
+			size_t nCount = m_arPaths.size();
 
 			for (size_t i = 0; i < nCount; ++i)
 			{
@@ -118,7 +117,7 @@ namespace NSHtmlRenderer
 			}
 
 			LONG lWritePathID = (LONG)lCurrentClipPath - 2;
-			// теперь запишем пересечения
+			// С‚РµРїРµСЂСЊ Р·Р°РїРёС€РµРј РїРµСЂРµСЃРµС‡РµРЅРёСЏ
 			for (size_t i = 1; i < nCount; ++i)
 			{
 				CString strWrite = _T("");
@@ -131,8 +130,8 @@ namespace NSHtmlRenderer
 
 		void Write2(NSHtmlRenderer::CStringWriter& oWriter, LONG& lCurrentClipPath)
 		{
-			// сначала запишем все пути
-			size_t nCount = m_arPaths.GetCount();
+			// СЃРЅР°С‡Р°Р»Р° Р·Р°РїРёС€РµРј РІСЃРµ РїСѓС‚Рё
+			size_t nCount = m_arPaths.size();
 			double dMemoryClipTypes = 0;
 			for (size_t i = 0; i < nCount; ++i)
 			{
@@ -159,22 +158,22 @@ namespace NSHtmlRenderer
 			++lCurrentClipPath;
 		}
 
-		__forceinline void Clear()
+        AVSINLINE void Clear()
 		{
-			m_arPaths.RemoveAll();
-			m_arTypes.RemoveAll();
+			m_arPaths.clear();
+			m_arTypes.clear();
 		}
-		__forceinline bool IsInit()
+        AVSINLINE bool IsInit()
 		{
-			return (0 != m_arPaths.GetCount());
+			return (0 != m_arPaths.size());
 		}
 	};
 
 	class CClipSVG2
 	{
 	public:
-		CAtlArray<CString> m_arPaths;
-		CAtlArray<LONG> m_arTypes;
+		std::vector<CString> m_arPaths;
+		std::vector<LONG> m_arTypes;
 
 		LONG m_lWidth;
 		LONG m_lHeight;
@@ -194,8 +193,8 @@ namespace NSHtmlRenderer
 
 		void Write(NSHtmlRenderer::CStringWriter& oWriter, LONG& lCurrentClipPath)
 		{
-			// сначала запишем все пути
-			size_t nCount = m_arPaths.GetCount();
+			// СЃРЅР°С‡Р°Р»Р° Р·Р°РїРёС€РµРј РІСЃРµ РїСѓС‚Рё
+			size_t nCount = m_arPaths.size();
 
 			LONG lOld = lCurrentClipPath;
 			for (size_t i = 0; i < nCount; ++i)
@@ -232,14 +231,14 @@ namespace NSHtmlRenderer
 			}			
 		}
 
-		__forceinline void Clear()
+        AVSINLINE void Clear()
 		{
-			m_arPaths.RemoveAll();
-			m_arTypes.RemoveAll();
+			m_arPaths.clear();
+			m_arTypes.clear();
 		}
-		__forceinline bool IsInit()
+        AVSINLINE bool IsInit()
 		{
-			return (0 != m_arPaths.GetCount());
+			return (0 != m_arPaths.size());
 		}
 	};
 
@@ -319,9 +318,12 @@ namespace NSHtmlRenderer
 				m_oDocument.WriteString(g_svg_bstr_svgClose);
 				//CDirectory::SaveToFile(strFile, m_oDocument.GetCString());
 				NSFile::CFileBinary oFile;
-				oFile.CreateFile(std::wstring(strFile.GetString()));
-				CStringA strA(m_oDocument.GetBuffer(), (int)m_oDocument.GetCurSize());
-				oFile.WriteFile((BYTE*)strA.GetBuffer(), strA.GetLength());
+                oFile.CreateFileW(std::wstring(strFile.GetString()));
+				BYTE* pData;
+				LONG nDataSize;
+				NSFile::CUtf8Converter::GetUtf8StringFromUnicode(m_oDocument.GetBuffer(), m_oDocument.GetCurSize(), pData, nDataSize);
+				oFile.WriteFile(pData, nDataSize);
+				RELEASEARRAYOBJECTS(pData);
 			}
 
 			if (3000000 < m_oDocument.GetSize())
@@ -557,7 +559,7 @@ namespace NSHtmlRenderer
 				int _w = round(r - x);
 				int _h = round(b - y);
 
-				// пока заглушка
+				// РїРѕРєР° Р·Р°РіР»СѓС€РєР°
 				return WriteImage(oInfo, _x, _y, _w, _h, dAngle);
 
 				CString strPattern = _T("");
@@ -656,8 +658,8 @@ namespace NSHtmlRenderer
 			if (0 == m_oPath.GetCurSize())
 				return;
 
-			m_oClip.m_arPaths.Add(m_oPath.GetCString());
-			m_oClip.m_arTypes.Add(m_lClipMode);
+			m_oClip.m_arPaths.push_back(m_oPath.GetCString());
+			m_oClip.m_arTypes.push_back(m_lClipMode);
 		}
 		void WritePathResetClip()
 		{

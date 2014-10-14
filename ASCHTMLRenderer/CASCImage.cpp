@@ -1,4 +1,4 @@
-#include "CASCImage.h"
+п»ї#include "CASCImage.h"
 
 #include "../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfFile.h"
 #include "../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/RendererOutput.h"
@@ -105,21 +105,21 @@ namespace NSHtmlRenderer
 	}
 	void CASCImage::Open(const std::wstring& bsFilePath)
 	{
-		// Закроем раннее открытый файл (если он был открыт)
+		// Р—Р°РєСЂРѕРµРј СЂР°РЅРЅРµРµ РѕС‚РєСЂС‹С‚С‹Р№ С„Р°Р№Р» (РµСЃР»Рё РѕРЅ Р±С‹Р» РѕС‚РєСЂС‹С‚)
 		Close();
 
-		// Сначала попытаемя открыть файл как WMF
+		// РЎРЅР°С‡Р°Р»Р° РїРѕРїС‹С‚Р°РµРјСЏ РѕС‚РєСЂС‹С‚СЊ С„Р°Р№Р» РєР°Рє WMF
 		m_pWmfFile->OpenFromFile( bsFilePath.c_str() );
 		m_pWmfFile->Scan( m_pRect );
 
-		// Файл открылся нормально
+		// Р¤Р°Р№Р» РѕС‚РєСЂС‹Р»СЃСЏ РЅРѕСЂРјР°Р»СЊРЅРѕ
 		if ( !m_pWmfFile->CheckError() )
 		{
 			m_lImageType = c_lImageTypeMetafile | c_lMetaWmf;
 			return;
 		}
 
-		// Это не Wmf, попробуем открыть его как Emf
+		// Р­С‚Рѕ РЅРµ Wmf, РїРѕРїСЂРѕР±СѓРµРј РѕС‚РєСЂС‹С‚СЊ РµРіРѕ РєР°Рє Emf
 		m_pWmfFile->Close();
 #ifdef _WIN32
 		CGdiPlusInit oCGdiPlusInit;
@@ -127,7 +127,7 @@ namespace NSHtmlRenderer
 		Gdiplus::Metafile *pMetaFile = new Gdiplus::Metafile( bsFilePath.c_str() );
 		if ( NULL != pMetaFile )
 		{
-			// Похоже это метафайл, конвертируем его в Wmf с помощью Gdi
+			// РџРѕС…РѕР¶Рµ СЌС‚Рѕ РјРµС‚Р°С„Р°Р№Р», РєРѕРЅРІРµСЂС‚РёСЂСѓРµРј РµРіРѕ РІ Wmf СЃ РїРѕРјРѕС‰СЊСЋ Gdi
 			HENHMETAFILE hEmf = pMetaFile->GetHENHMETAFILE();
 			if ( NULL != hEmf )
 			{
@@ -155,17 +155,17 @@ namespace NSHtmlRenderer
 					{
 						::fclose( pFile );
 
-						// Сохраняем Wmf
+						// РЎРѕС…СЂР°РЅСЏРµРј Wmf
 						HMETAFILE hTempWmf = CopyMetaFile( hWmf, m_wsTempFilePath.GetBuffer() );
 						DeleteMetaFile( hTempWmf );
 
-						// Открываем Wmf
+						// РћС‚РєСЂС‹РІР°РµРј Wmf
 						m_pWmfFile->OpenFromFile( m_wsTempFilePath.GetBuffer() );
 						m_pWmfFile->Scan( m_pRect );
 
 						if ( !m_pWmfFile->CheckError() )
 						{
-							// Wmf нормально открылся
+							// Wmf РЅРѕСЂРјР°Р»СЊРЅРѕ РѕС‚РєСЂС‹Р»СЃСЏ
 							m_lImageType = c_lImageTypeMetafile | c_lMetaWmf;
 
 							DeleteMetaFile( hWmf );
@@ -177,12 +177,12 @@ namespace NSHtmlRenderer
 						}
 						else if ( m_pWmfFile->UnSupportedWmf() )
 						{
-							// Исходный файл Emf, но после конвертации в Wmf он не открылся
+							// РСЃС…РѕРґРЅС‹Р№ С„Р°Р№Р» Emf, РЅРѕ РїРѕСЃР»Рµ РєРѕРЅРІРµСЂС‚Р°С†РёРё РІ Wmf РѕРЅ РЅРµ РѕС‚РєСЂС‹Р»СЃСЏ
 							m_lImageType = c_lImageTypeMetafile | c_lMetaEmf;
 						}
 						else
 						{
-							// Сконвертированный файл не прочитался
+							// РЎРєРѕРЅРІРµСЂС‚РёСЂРѕРІР°РЅРЅС‹Р№ С„Р°Р№Р» РЅРµ РїСЂРѕС‡РёС‚Р°Р»СЃСЏ
 							m_pWmfFile->Close();
 							m_lImageType = c_lImageTypeUnknown;
 						}
@@ -225,8 +225,8 @@ namespace NSHtmlRenderer
 		//}
 		//else
 		{
-			// Исходный файл не явлется метафайлом (Wmf/Emf)
-			// TODO: Сделать чтение Bitmap
+			// РСЃС…РѕРґРЅС‹Р№ С„Р°Р№Р» РЅРµ СЏРІР»РµС‚СЃСЏ РјРµС‚Р°С„Р°Р№Р»РѕРј (Wmf/Emf)
+			// TODO: РЎРґРµР»Р°С‚СЊ С‡С‚РµРЅРёРµ Bitmap
 			m_pMediaData = new Aggplus::CImage(bsFilePath);
 			if(Aggplus::Ok != m_pMediaData->GetLastStatus())
 				m_lImageType = c_lImageTypeBitmap;
@@ -244,8 +244,15 @@ namespace NSHtmlRenderer
 			m_pWmfFile->Close();
 			if ( m_lImageType & c_lMetaEmf )
 			{
-				// Удаляем временный файл
-				::_wunlink( m_wsTempFilePath.GetBuffer() );
+				// РЈРґР°Р»СЏРµРј РІСЂРµРјРµРЅРЅС‹Р№ С„Р°Р№Р»
+				//todo РјРѕР¶РµС‚ РїСЂРѕРІРµСЂСЏС‚СЊ РЅРµ РїСѓСЃС‚РѕР№ Р»Рё m_wsTempFilePath, Р° РЅРµ m_lImageType & c_lMetaEmf
+#ifdef _WIN32
+                ::_wunlink( m_wsTempFilePath.GetBuffer() );
+#else
+                std::string sTempFilePath = U_TO_UTF8(m_wsTempFilePath);
+                ::unlink( sTempFilePath.c_str() );
+#endif
+
 			}
 		}
 
@@ -335,7 +342,7 @@ namespace NSHtmlRenderer
 	}
 	HRESULT CASCImage::LoadFromFile(const std::wstring& bsFilePath)
 	{
-		// Внутри комманды Open выполняется команда Close
+		// Р’РЅСѓС‚СЂРё РєРѕРјРјР°РЅРґС‹ Open РІС‹РїРѕР»РЅСЏРµС‚СЃСЏ РєРѕРјР°РЅРґР° Close
 		Open( bsFilePath );
 
 		return S_OK;

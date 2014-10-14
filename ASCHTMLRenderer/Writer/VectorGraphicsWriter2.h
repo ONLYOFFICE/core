@@ -1,10 +1,10 @@
-#pragma once
+п»ї#pragma once
 //#include "Const.h"
 
 #include "SVGWriter.h"
 #include "VMLWriter.h"
-#include "CanvasWriter.h"
-#include "../DesktopEditor/graphics/GraphicsPath.h"
+//#include "CanvasWriter.h"
+#include "../../DesktopEditor/graphics/GraphicsPath.h"
 
 namespace NSHtmlRenderer
 {
@@ -13,7 +13,7 @@ namespace NSHtmlRenderer
 	public:
 		CSVGWriter		m_oSVG;
 		CVMLWriter		m_oVML;
-		CCanvasWriter	m_oCanvas;
+		//CCanvasWriter	m_oCanvas;
 
 		Aggplus::CGraphicsPathSimpleConverter*	m_pSimpleConverter;
 
@@ -29,7 +29,7 @@ namespace NSHtmlRenderer
 		double					m_dHeight;
 
 	public:
-		CVectorGraphicsWriter()	: m_oSVG(), m_oVML(), m_oCanvas()
+		CVectorGraphicsWriter()	: m_oSVG(), m_oVML()/*, m_oCanvas()*/
 		{
 			m_pSimpleConverter	= NULL;
 			m_lCurrentObjectInPage = 0;
@@ -108,10 +108,10 @@ namespace NSHtmlRenderer
 		}
 		inline void WriteDrawPath(LONG lType, CImageInfo& oInfo, const double& dAngle)
 		{
-			// вот мега заглушка под некоторые таблицы из pdf
-			// проблема в том, что приходит path нулевой толщины - а след-но он не рисуется.
-			// здесь это отслеживаем и правим пат. Не очень хорошо, так как всякие пунктирности 
-			// в таких патах - теряются при таком подходе
+			// РІРѕС‚ РјРµРіР° Р·Р°РіР»СѓС€РєР° РїРѕРґ РЅРµРєРѕС‚РѕСЂС‹Рµ С‚Р°Р±Р»РёС†С‹ РёР· pdf
+			// РїСЂРѕР±Р»РµРјР° РІ С‚РѕРј, С‡С‚Рѕ РїСЂРёС…РѕРґРёС‚ path РЅСѓР»РµРІРѕР№ С‚РѕР»С‰РёРЅС‹ - Р° СЃР»РµРґ-РЅРѕ РѕРЅ РЅРµ СЂРёСЃСѓРµС‚СЃСЏ.
+			// Р·РґРµСЃСЊ СЌС‚Рѕ РѕС‚СЃР»РµР¶РёРІР°РµРј Рё РїСЂР°РІРёРј РїР°С‚. РќРµ РѕС‡РµРЅСЊ С…РѕСЂРѕС€Рѕ, С‚Р°Рє РєР°Рє РІСЃСЏРєРёРµ РїСѓРЅРєС‚РёСЂРЅРѕСЃС‚Рё 
+			// РІ С‚Р°РєРёС… РїР°С‚Р°С… - С‚РµСЂСЏСЋС‚СЃСЏ РїСЂРё С‚Р°РєРѕРј РїРѕРґС…РѕРґРµ
 			if (0x00 == (lType & 0xFF))
 			{
 				double x = 0;
@@ -196,7 +196,7 @@ namespace NSHtmlRenderer
 
 		inline bool IsGraphics()
 		{
-			// 10 цифр на номер страницы
+			// 10 С†РёС„СЂ РЅР° РЅРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
 			return ((g_vml_string_document.GetLength() + 10) < (int)m_oVML.m_oDocument.GetCurSize());
 		}
 
@@ -307,7 +307,7 @@ namespace NSHtmlRenderer
 
 		inline bool IsGraphics()
 		{
-			// 10 цифр на номер страницы
+			// 10 С†РёС„СЂ РЅР° РЅРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
 			return ((g_vml_string_document.GetLength() + 10) < (int)m_oSVG.m_oDocument.GetCurSize());
 		}
 	};

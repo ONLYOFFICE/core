@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "../DesktopEditor/graphics/IRenderer.h"
 #include "IBaseMatrixUpdater.h"
 
@@ -27,9 +27,9 @@ namespace NSHtmlRenderer
 		~CASCSVGWriter();
 
 	public:
-		// тип рендерера-----------------------------------------------------------------------------
+		// С‚РёРї СЂРµРЅРґРµСЂРµСЂР°-----------------------------------------------------------------------------
 		HRESULT get_Type(LONG* lType);
-		//-------- Функции для работы со страницей --------------------------------------------------
+		//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂР°РЅРёС†РµР№ --------------------------------------------------
 		HRESULT NewPage();
 		HRESULT get_Height(double* dHeight);
 		HRESULT put_Height(const double& dHeight);
@@ -101,18 +101,18 @@ namespace NSHtmlRenderer
 		HRESULT get_FontFaceIndex(int* lFaceIndex);
 		HRESULT put_FontFaceIndex(const int& lFaceIndex);
 
-		//-------- Функции для вывода текста --------------------------------------------------------
+		//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р° --------------------------------------------------------
 		HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset);
 		HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset);
 
 		HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
 		HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
 
-		//-------- Маркеры для команд ---------------------------------------------------------------
+		//-------- РњР°СЂРєРµСЂС‹ РґР»СЏ РєРѕРјР°РЅРґ ---------------------------------------------------------------
 		HRESULT BeginCommand(const DWORD& lType);
 		HRESULT EndCommand(const DWORD& lType);
 
-		//-------- Функции для работы с Graphics Path -----------------------------------------------
+		//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Graphics Path -----------------------------------------------
 		HRESULT PathCommandMoveTo(const double& x, const double& y);
 		HRESULT PathCommandLineTo(const double& x, const double& y);
 		HRESULT PathCommandLinesTo(double* points, const int& count);
@@ -131,7 +131,7 @@ namespace NSHtmlRenderer
 		HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
 		HRESULT PathCommandTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
 
-		//-------- Функции для вывода изображений ---------------------------------------------------
+		//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№ ---------------------------------------------------
 		HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h);
 		HRESULT DrawImageFromFile(const std::wstring&, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha);
 
@@ -160,17 +160,17 @@ namespace NSHtmlRenderer
 
 		NSHtmlRenderer::CSVGGraphicsWriter*			m_pVectorWriter;
 
-		Aggplus::CGraphicsPathSimpleConverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
-		CFontManager*				m_pFontManager;					// менеджер шрифтов
+		Aggplus::CGraphicsPathSimpleConverter*	m_pSimpleGraphicsConverter;		// РєРѕРЅРІРµСЂС‚РµСЂ СЃР»РѕР¶РЅС‹С… РіР°С„РёС‡РµСЃРєРёС… РїСѓС‚РµР№ РІ РїСЂРѕСЃС‚С‹Рµ
+		CFontManager*				m_pFontManager;					// РјРµРЅРµРґР¶РµСЂ С€СЂРёС„С‚РѕРІ
 		bool						m_bDeleteFontManager;	
 
-		Aggplus::CMatrix*			m_pBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
-		Aggplus::CMatrix*			m_pTransform;		// текущая матрица преобразований рендерера
-		Aggplus::CMatrix*			m_pFullTransform;	// полная матрица преобразований (m_oBaseTransform * m_oTransform)
+		Aggplus::CMatrix*			m_pBaseTransform;	// РјР°С‚СЂРёС†Р° РїРµСЂРµСЂР°СЃС‡РµС‚Р° РєРѕРѕСЂРґРёРЅР°С‚РЅС‹С… РѕСЃРµР№ (Р·РґРµСЃСЊ: РјРёР»Р»РёРјРµС‚СЂС‹ -> РїРёРєСЃРµР»С‹)
+		Aggplus::CMatrix*			m_pTransform;		// С‚РµРєСѓС‰Р°СЏ РјР°С‚СЂРёС†Р° РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёР№ СЂРµРЅРґРµСЂРµСЂР°
+		Aggplus::CMatrix*			m_pFullTransform;	// РїРѕР»РЅР°СЏ РјР°С‚СЂРёС†Р° РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёР№ (m_oBaseTransform * m_oTransform)
 
 		double							m_dTransformAngle;
 
-		LONG							m_lCurrentCommandType;	// текущая команда
+		LONG							m_lCurrentCommandType;	// С‚РµРєСѓС‰Р°СЏ РєРѕРјР°РЅРґР°
 
 		double							m_dDpiX;				
 		double							m_dDpiY;
@@ -180,7 +180,7 @@ namespace NSHtmlRenderer
 
 		LONG							m_lClipMode;
 
-		NSStructures::CPen*				m_pPen;				// настройки всей графики (скопирован ашник из AVSGraphics)
+		NSStructures::CPen*				m_pPen;				// РЅР°СЃС‚СЂРѕР№РєРё РІСЃРµР№ РіСЂР°С„РёРєРё (СЃРєРѕРїРёСЂРѕРІР°РЅ Р°С€РЅРёРє РёР· AVSGraphics)
 		NSStructures::CBrush*			m_pBrush;
 		NSStructures::CFont*			m_pFont;
 

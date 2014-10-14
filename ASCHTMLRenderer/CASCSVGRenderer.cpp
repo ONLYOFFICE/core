@@ -1,4 +1,4 @@
-#include "CASCSVGRenderer.h"
+ï»¿#include "CASCSVGRenderer.h"
 #include "../DesktopEditor/graphics/GraphicsPath.h"
 #include "Writer/StringWriter.h"
 #include "CMetafile.h"
@@ -30,22 +30,22 @@ namespace NSSVG
 namespace NSHtmlRenderer
 {
 	static CString g_string_svgOpen									= _T("<svg width=\"%dpx\" height=\"%dpx\" viewBox=\"0 0 %d %d\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n");
-	static _bstr_t g_bstr_svgClose									= L"</svg>";
+	static CString g_bstr_svgClose									= L"</svg>";
 
 	static CString g_string_image									= _T("<image x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" xlink:href=\"%s\" preserveAspectRatio=\"none\"/>\n");
 
-	static _bstr_t g_bstr_graphicOpen								= L"<g>\n";
-	static _bstr_t g_bstr_graphicClose								= L"</g>\n";
+	static CString g_bstr_graphicOpen								= L"<g>\n";
+	static CString g_bstr_graphicClose								= L"</g>\n";
 
-	static _bstr_t g_bstr_path_d									= L" d=\"";
-	static _bstr_t g_bstr_path_d_end								= L"\" ";
+	static CString g_bstr_path_d									= L" d=\"";
+	static CString g_bstr_path_d_end								= L"\" ";
 
-	static _bstr_t g_bstr_vml_ClosePath								= L"Z ";
+	static CString g_bstr_vml_ClosePath								= L"Z ";
 	static CString g_string_vml_MoveTo								= _T("M %d,%d ");
 	static CString g_string_vml_LineTo								= _T("L %d,%d ");
 	static CString g_string_vml_CurveTo								= _T("C %d,%d %d,%d %d,%d ");
-	static _bstr_t g_bstr_vml_Path									= L"<path ";
-	static _bstr_t g_bstr_nodeClose									= L" />\n";
+	static CString g_bstr_vml_Path									= L"<path ";
+	static CString g_bstr_nodeClose									= L" />\n";
 	static CString g_string_vml_StyleStroke							= _T("style=\"fill:none;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
 	static CString g_string_vml_StyleStroke_class					= _T("class=\"stroke%d\" style=\"fill:none;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
 	static CString g_string_vml_StyleFill							= _T("style=\"fill:#%06x;fill-opacity:%.2lf;fill-rule:%s;stroke:none\" ");
@@ -106,7 +106,7 @@ namespace NSHtmlRenderer
 		*lType = c_nSVGRendrerer;
 		return S_OK;
 	}
-	//-------- Ôóíêöèè äëÿ ðàáîòû ñî ñòðàíèöåé --------------------------------------------------
+	//-------- Ð¤ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ ÑÐ¾ ÑÑ‚Ñ€Ð°Ð½Ð¸Ñ†ÐµÐ¹ --------------------------------------------------
 	HRESULT CASCSVGRenderer::NewPage()
 	{
 		return S_OK;
@@ -460,7 +460,7 @@ namespace NSHtmlRenderer
 		m_pFont->FaceIndex = lFaceIndex;
 		return S_OK;
 	}
-	//-------- Ôóíêöèè äëÿ âûâîäà òåêñòà --------------------------------------------------------
+	//-------- Ð¤ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ð²Ñ‹Ð²Ð¾Ð´Ð° Ñ‚ÐµÐºÑÑ‚Ð° --------------------------------------------------------
 	HRESULT CASCSVGRenderer::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset)
 	{
 		//todo new command
@@ -518,7 +518,7 @@ namespace NSHtmlRenderer
 		m_pFont->StringGID = FALSE;
 		return CommandDrawText(bsUnicodeText, x, y, w, h, baselineOffset);
 	}
-	//-------- Ìàðêåðû äëÿ êîìàíä ---------------------------------------------------------------
+	//-------- ÐœÐ°Ñ€ÐºÐµÑ€Ñ‹ Ð´Ð»Ñ ÐºÐ¾Ð¼Ð°Ð½Ð´ ---------------------------------------------------------------
 	HRESULT CASCSVGRenderer::BeginCommand(const DWORD& lType)
 	{
 		if (c_nClipType == lType)
@@ -551,7 +551,7 @@ namespace NSHtmlRenderer
 
 		return S_OK;
 	}
-	//-------- Ôóíêöèè äëÿ ðàáîòû ñ Graphics Path -----------------------------------------------
+	//-------- Ð¤ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ñ€Ð°Ð±Ð¾Ñ‚Ñ‹ Ñ Graphics Path -----------------------------------------------
 	HRESULT CASCSVGRenderer::PathCommandMoveTo(const double& fX, const double& fY)
 	{
 		if (c_nSimpleGraphicType == m_lCurrentCommandType)
@@ -793,7 +793,7 @@ namespace NSHtmlRenderer
 		m_pFont->StringGID = FALSE;
 		return PathCommandText(bsUnicodeText, x, y, w, h, baselineOffset);
 	}
-	//-------- Ôóíêöèè äëÿ âûâîäà èçîáðàæåíèé ---------------------------------------------------
+	//-------- Ð¤ÑƒÐ½ÐºÑ†Ð¸Ð¸ Ð´Ð»Ñ Ð²Ñ‹Ð²Ð¾Ð´Ð° Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ð¹ ---------------------------------------------------
 	HRESULT CASCSVGRenderer::DrawImage(IGrObject* pImage, const double& fX, const double& fY, const double& fWidth, const double& fHeight)
 	{
 		double x = fX;
@@ -823,7 +823,7 @@ namespace NSHtmlRenderer
 
 		if ((1 == lFileType) || (2 == lFileType))
 		{
-			// ìåòàôàéë
+			// Ð¼ÐµÑ‚Ð°Ñ„Ð°Ð¹Ð»
 			oExt.DrawOnRenderer(this, sVal, fX, fY, fWidth, fHeight, TRUE);
 			return S_OK;
 		}
@@ -930,7 +930,7 @@ namespace NSHtmlRenderer
 
 		NSFile::CFileBinary oFile;
 
-		if (S_OK == oFile.CreateFile(m_strDstFile))
+        if (S_OK == oFile.CreateFileW(m_strDstFile))
 		{
 			CString strData = m_pWriter->GetCString();
 			oFile.WriteFile((BYTE*)strData.GetBuffer(), sizeof(WCHAR) * strData.GetLength());

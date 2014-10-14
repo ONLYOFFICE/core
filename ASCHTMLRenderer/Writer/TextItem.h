@@ -1,5 +1,12 @@
-#pragma once
-#include "../stdafx.h"
+п»ї#pragma once
+//#include "../stdafx.h"
+
+#ifdef _WIN32
+#include <atlbase.h>
+#include <atlcom.h>
+#else
+#include "../../Common/DocxFormat/Source/Base/ASCString.h"
+#endif
 
 #ifndef AVSINLINE
 #if defined(_MSC_VER)
@@ -99,7 +106,7 @@ namespace NSStrings
 		{
 			if (NULL == m_pData)
 			{
-				m_lSize = max(nSize, 1000);				
+				m_lSize = nSize > 1000 ? nSize : 1000;
 				m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
 				
 				m_lSizeCur = 0;
@@ -117,7 +124,7 @@ namespace NSStrings
 				wchar_t* pRealloc = (wchar_t*)realloc(m_pData, m_lSize * sizeof(wchar_t));
 				if (NULL != pRealloc)
 				{
-					// реаллок сработал
+					// СЂРµР°Р»Р»РѕРє СЃСЂР°Р±РѕС‚Р°Р»
 					m_pData		= pRealloc;
 					m_pDataCur	= m_pData + m_lSizeCur;
 				}
@@ -138,11 +145,6 @@ namespace NSStrings
 		AVSINLINE void operator+=(const CTextItem& oTemp)
 		{
 			WriteString(oTemp.m_pData, oTemp.m_lSizeCur);
-		}
-		AVSINLINE void operator+=(_bstr_t& oTemp)
-		{
-			size_t nLen = oTemp.length();
-			WriteString(oTemp.GetBSTR(), nLen);
 		}
 		AVSINLINE void operator+=(CString& oTemp)
 		{
@@ -216,7 +218,7 @@ namespace NSStrings
 		}
 		
 	public:
-		AVSINLINE void WriteString(wchar_t* pString, const size_t& nLen)
+        AVSINLINE void WriteString(const wchar_t* pString, const size_t& nLen)
 		{
 			AddSize(nLen);
 			//memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
@@ -253,9 +255,9 @@ namespace NSStrings
 			m_lSizeCur	= 0;
 		}
 
-		AVSINLINE size_t GetStringLen(wchar_t* pData)
+        AVSINLINE size_t GetStringLen(const wchar_t* pData)
 		{
-			wchar_t* s = pData;
+            const wchar_t* s = pData;
 			for (; *s != 0; ++s);
 			return (size_t)(s - pData);
 		}

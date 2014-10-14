@@ -43,7 +43,8 @@ namespace NSHtmlRenderer
 	}
 
 
-
+#ifdef _WIN32
+	#import "../Redist/ASCMediaCore3.dll"		named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
 	static RECT GetImageBounds(MediaCore::IAVSUncompressedVideoFrame* pFrame)
 	{
 		BYTE* pBuffer = NULL;
@@ -244,6 +245,7 @@ namespace NSHtmlRenderer
 	}
 
 
+#endif
 	const double c_ag_Inch_to_MM	= 25.4;
 	const double c_ag_1pxWidth		= 25.4 / 96;
 
@@ -277,11 +279,11 @@ namespace NSHtmlRenderer
 		}
 	};
 
-	__forceinline static double FABS(double dVal)
+    AVSINLINE static double FABS(double dVal)
 	{
 		return (dVal >= 0) ? dVal : -dVal;
 	}
-	__forceinline static int round(double dVal)
+    AVSINLINE static int round(double dVal)
 	{
 		return (int)(dVal + 0.5);
 	}

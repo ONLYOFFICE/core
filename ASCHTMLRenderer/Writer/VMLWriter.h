@@ -1,12 +1,12 @@
 #pragma once
-#include "..\stdafx.h"
+//#include "..\stdafx.h"
 #include "StringWriter.h"
 
 namespace NSHtmlRenderer
 {
 	using namespace NSStrings;
 
-	static _bstr_t g_vml_bstr_ClosePath				= L"x";
+	static CString g_vml_bstr_ClosePath				= L"x";
 	static CString g_vml_string_MoveTo				= _T("m%d,%d ");
 	static CString g_vml_string_LineTo				= _T("l%d,%d ");
 	static CString g_vml_string_CurveTo				= _T("c%d,%d,%d,%d,%d,%d ");
@@ -24,7 +24,7 @@ namespace NSHtmlRenderer
 	static CString g_vml_string_shape_image_png		= _T("<v:image src=\"media/image%d.png\" style=\"left:%d;top:%d;width:%d;height:%d;\"/>");
 
 	static CString g_vml_string_document			= _T("<xml xmlns:v=\"urn:schemas-microsoft-com:vml\">\n<v:group id=\"page%d\" style=\"position: absolute; width:1; height:1;\" coordsize=\"1 1\">\n");
-	static _bstr_t g_vml_bstr_document_end			= L"</v:group>\n</xml>";
+	static CString g_vml_bstr_document_end			= L"</v:group>\n</xml>";
 
 	static CString g_vml_string_frame				= _T("<v:vmlframe clip=\"true\" origin=\"0,0\" size=\"%d,%d\" src=\"page%d.vml#page%d\" unselectable=\"on\"/>\n");
 
@@ -82,9 +82,12 @@ namespace NSHtmlRenderer
 				m_oDocument.WriteString(g_vml_bstr_document_end);
 				//CDirectory::SaveToFile(strFile, m_oDocument.GetCString());
 				NSFile::CFileBinary oFile;
-				oFile.CreateFile(std::wstring(strFile.GetString()));
-				CStringA strA(m_oDocument.GetBuffer(), (int)m_oDocument.GetCurSize());
-				oFile.WriteFile((BYTE*)strA.GetBuffer(), strA.GetLength());
+                oFile.CreateFileW(std::wstring(strFile.GetString()));
+				BYTE* pData;
+				LONG nDataSize;
+				NSFile::CUtf8Converter::GetUtf8StringFromUnicode(m_oDocument.GetBuffer(), m_oDocument.GetCurSize(), pData, nDataSize);
+				oFile.WriteFile(pData, nDataSize);
+				RELEASEARRAYOBJECTS(pData);
 			}
 
 			if (3000000 < m_oDocument.GetSize())

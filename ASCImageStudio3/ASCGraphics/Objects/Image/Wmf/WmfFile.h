@@ -1,4 +1,4 @@
-#ifndef _WMF_FILE_H
+п»ї#ifndef _WMF_FILE_H
 #define _WMF_FILE_H
 
 #include <stdio.h>
@@ -15,6 +15,14 @@
 #else
 #include "..\..\ASCFontManager.h"
 #include "..\..\Font\FontUtils.h"
+#endif
+
+#ifndef AVSINLINE
+#if defined(_MSC_VER)
+#define AVSINLINE __forceinline
+#else
+#define AVSINLINE inline
+#endif
 #endif
 
 #ifdef _DEBUG
@@ -93,8 +101,12 @@ public:
 			delete m_pBufferData;
 
 		FILE *pFile = NULL;
-
+#ifdef _WIN32
 		if ( NULL == ( pFile = _wfopen( wsFilePath, _T("rb") ) ) )
+#else
+		std::string sFilePath = U_TO_UTF8(wsFilePath);
+        if ( NULL == ( pFile = fopen( sFilePath.c_str(), "rb" ) ) )
+#endif
 		{
 			m_eError = wmf_error_BadFile;
 			return FALSE;
@@ -422,7 +434,7 @@ public:
 		double dBoundHeight = pPlayer->oBoundBR.fY - pPlayer->oBoundTL.fY;
 
 		
-		//// Если рисунок не убирается в границы заданные  в файле, тогда используем границы самого рисунка
+		//// Р•СЃР»Рё СЂРёСЃСѓРЅРѕРє РЅРµ СѓР±РёСЂР°РµС‚СЃСЏ РІ РіСЂР°РЅРёС†С‹ Р·Р°РґР°РЅРЅС‹Рµ  РІ С„Р°Р№Р»Рµ, С‚РѕРіРґР° РёСЃРїРѕР»СЊР·СѓРµРј РіСЂР°РЅРёС†С‹ СЃР°РјРѕРіРѕ СЂРёСЃСѓРЅРєР°
 		//if ( dDisplayWidth > dBoundWidth || dDisplayHeight > dBoundHeight )
 		//{
 		//	oRect.oBR = pPlayer->oBoundBR;
@@ -573,7 +585,7 @@ private:
 		return -1;
 	}
 //------------------------------------------------------------------------------------------------------------------------
-	__forceinline void WriteHeader (long lHeaderStart, long lHeaderEnd)
+    AVSINLINE void WriteHeader (long lHeaderStart, long lHeaderEnd)
 	{
 #ifndef DebugWriteXml
 		return;
@@ -623,7 +635,7 @@ private:
 		m_oMemoryManager.Free( sHeader );
 	}
 
-	__forceinline void Write(unsigned long ulSize, unsigned int unFunction, const char *sName, char **psAttrs, const unsigned char *sBuffer, unsigned long ulLength)
+    AVSINLINE void Write(unsigned long ulSize, unsigned int unFunction, const char *sName, char **psAttrs, const unsigned char *sBuffer, unsigned long ulLength)
 	{
 #ifndef DebugWriteXml
 		return;
@@ -682,7 +694,7 @@ private:
 		fprintf( pInfo->pFile, " </%s>\n", sName );
 	}
 
-	__forceinline void WriteBegin(const char *sFileName)
+    AVSINLINE void WriteBegin(const char *sFileName)
 	{
 #ifndef DebugWriteXml
 		return;
@@ -745,7 +757,7 @@ private:
 			WriteStr("<wmfxml>\n");
 		}
 	}
-	__forceinline void WriteEnd()
+    AVSINLINE void WriteEnd()
 	{
 #ifndef DebugWriteXml
 		return;
@@ -763,7 +775,7 @@ private:
 		m_pWriteData = 0;
 	}
 
-	__forceinline void WriteStr (const char *sString)
+    AVSINLINE void WriteStr (const char *sString)
 	{
 #ifndef DebugWriteXml
 		return;
@@ -783,7 +795,7 @@ private:
 
 		fputs( sString, pInfo->pFile );
 	}
-	__forceinline void WriteB64(const unsigned char *sBuffer, unsigned long ulLength)
+    AVSINLINE void WriteB64(const unsigned char *sBuffer, unsigned long ulLength)
 	{	
 #ifndef DebugWriteXml
 		return;
@@ -1006,7 +1018,7 @@ private:
 	void SetDefaults(TWmfPen *pPen, TWmfBrush *pBrush, TWmfFont *pFont)
 	{	
 		pPen->oColor   = c_oColorBlack;
-		pPen->dWidth   = 0; // 0 - это 1 при любом Dpi
+		pPen->dWidth   = 0; // 0 - СЌС‚Рѕ 1 РїСЂРё Р»СЋР±РѕРј Dpi
 		pPen->dHeight  = 1;
 		pPen->ushStyle = (pPen->ushStyle & ~PS_STYLE_MASK ) | (PS_SOLID & PS_STYLE_MASK );
 		pPen->ushStyle = (pPen->ushStyle & ~PS_ENDCAP_MASK) | (PS_ENDCAP_ROUND & PS_ENDCAP_MASK);
@@ -1331,7 +1343,7 @@ private:
 		case META_SETVIEWPORTEXT: // 2.3.5.28
 			pPlayer->unViewportWidth  = nParX;
 			pPlayer->unViewportHeight = nParY;
-			GetPixelWidth();  // пересчитываем Dpi 
+			GetPixelWidth();  // РїРµСЂРµСЃС‡РёС‚С‹РІР°РµРј Dpi 
 			GetPixelHeight(); //
 			break;
 
@@ -1342,7 +1354,7 @@ private:
 			pPlayer->oWindow.nWidth  = nParX;
 			pPlayer->oWindow.nHeight = nParY;
 
-			GetPixelWidth();  // пересчитываем Dpi 
+			GetPixelWidth();  // РїРµСЂРµСЃС‡РёС‚С‹РІР°РµРј Dpi 
 			GetPixelHeight(); //
 
 			{
@@ -1382,10 +1394,10 @@ private:
 	{	
 		TWmfPlayer *pPlayer = (TWmfPlayer*)m_pPlayerData;
 
-		double dNumX   = (double) Record_GetIntPar( pRecord, 3 ); // числитель по Х
-		double dDenomX = (double) Record_GetIntPar( pRecord, 2 ); // знаменатель по Х
-		double dNumY   = (double) Record_GetIntPar( pRecord, 1 ); // числитель по У
-		double dDenomY = (double) Record_GetIntPar( pRecord, 0 ); // знаменатель по У
+		double dNumX   = (double) Record_GetIntPar( pRecord, 3 ); // С‡РёСЃР»РёС‚РµР»СЊ РїРѕ РҐ
+		double dDenomX = (double) Record_GetIntPar( pRecord, 2 ); // Р·РЅР°РјРµРЅР°С‚РµР»СЊ РїРѕ РҐ
+		double dNumY   = (double) Record_GetIntPar( pRecord, 1 ); // С‡РёСЃР»РёС‚РµР»СЊ РїРѕ РЈ
+		double dDenomY = (double) Record_GetIntPar( pRecord, 0 ); // Р·РЅР°РјРµРЅР°С‚РµР»СЊ РїРѕ РЈ
 
 		if ( ( dDenomX == 0 ) || ( dDenomY == 0 ) )
 		{
@@ -1414,7 +1426,7 @@ private:
 			break;
 		}
 
-		GetPixelWidth();  // Пересчитываем Dpi
+		GetPixelWidth();  // РџРµСЂРµСЃС‡РёС‚С‹РІР°РµРј Dpi
 		GetPixelHeight(); //
 
 		return 0;
@@ -1450,7 +1462,7 @@ private:
 		oFlood.oPoint = TranslateCoordF( oPoint );
 		oFlood.oColor = CWmfColor::LongToRGB( ushRG, ushB );
 
-		// При сканировании мы добавляем цвет и точку
+		// РџСЂРё СЃРєР°РЅРёСЂРѕРІР°РЅРёРё РјС‹ РґРѕР±Р°РІР»СЏРµРј С†РІРµС‚ Рё С‚РѕС‡РєСѓ
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 		{	
 			m_oColorData.Add( &(oFlood.oColor) );
@@ -1502,7 +1514,7 @@ private:
 		oDrawPixel.dPixelWidth  = abs( pPlayer->pDC->dPixelWidth  );
 		oDrawPixel.dPixelHeight = abs( pPlayer->pDC->dPixelHeight );
 
-		// При сканировании мы добавляем цвет и точку
+		// РџСЂРё СЃРєР°РЅРёСЂРѕРІР°РЅРёРё РјС‹ РґРѕР±Р°РІР»СЏРµРј С†РІРµС‚ Рё С‚РѕС‡РєСѓ
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 		{	
 			m_oColorData.Add( &(oDrawPixel.oColor) );
@@ -1548,7 +1560,7 @@ private:
 
 		if ( ( ushEndX == ushX ) && ( ushEndY == ushY ) )
 		{
-			// TO DO: Начальная точка совпадает с конечной: возможно тут надо рисовать эллипс
+			// TO DO: РќР°С‡Р°Р»СЊРЅР°СЏ С‚РѕС‡РєР° СЃРѕРІРїР°РґР°РµС‚ СЃ РєРѕРЅРµС‡РЅРѕР№: РІРѕР·РјРѕР¶РЅРѕ С‚СѓС‚ РЅР°РґРѕ СЂРёСЃРѕРІР°С‚СЊ СЌР»Р»РёРїСЃ
 		}
 
 		oTempPoint = WmfCoord( ushEndX, ushEndY );
@@ -1568,7 +1580,7 @@ private:
 		oPointC.fX = (oDrawArc.oTL.fX + oDrawArc.oBR.fX) / 2;
 		oPointC.fY = (oDrawArc.oTL.fY + oDrawArc.oBR.fY) / 2;
 
-		// Для определения четверти, в котороый находятся начальная и конечная точки
+		// Р”Р»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ С‡РµС‚РІРµСЂС‚Рё, РІ РєРѕС‚РѕСЂРѕС‹Р№ РЅР°С…РѕРґСЏС‚СЃСЏ РЅР°С‡Р°Р»СЊРЅР°СЏ Рё РєРѕРЅРµС‡РЅР°СЏ С‚РѕС‡РєРё
 		oDrawArc.oStart.fX -= oPointC.fX;
 		oDrawArc.oStart.fY -= oPointC.fY;
 		oDrawArc.oEnd.fX   -= oPointC.fX;
@@ -1723,8 +1735,8 @@ private:
 			return 0;
 		}
 
-		oPointF.fX = (oDrawArc.oBR.fX - oDrawArc.oTL.fX) / 2; // Половина ширины эллипса
-		oPointF.fY = (oDrawArc.oBR.fY - oDrawArc.oTL.fY) / 2; // Половина высоты эллипса
+		oPointF.fX = (oDrawArc.oBR.fX - oDrawArc.oTL.fX) / 2; // РџРѕР»РѕРІРёРЅР° С€РёСЂРёРЅС‹ СЌР»Р»РёРїСЃР°
+		oPointF.fY = (oDrawArc.oBR.fY - oDrawArc.oTL.fY) / 2; // РџРѕР»РѕРІРёРЅР° РІС‹СЃРѕС‚С‹ СЌР»Р»РёРїСЃР°
 
 		if ( ( oDrawArc.oStart.fX == 0 ) && ( oDrawArc.oStart.fY == 0 ) ) 
 			oDrawArc.oStart.fX = oPointF.fX;
@@ -1846,7 +1858,7 @@ private:
 		TWmfPolyLine oPolyLine;
 		oPolyLine.ushCount = Record_GetUShortPar( pRecord, 0 );
 
-		// Во время сканирования регистрируем все точки
+		// Р’Рѕ РІСЂРµРјСЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј РІСЃРµ С‚РѕС‡РєРё
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
@@ -1907,7 +1919,7 @@ private:
 		TWmfPolyLine oPolyLine;
 		oPolyLine.ushCount = Record_GetUShortPar( pRecord, 0 );
 
-		// Во время сканирования регистрируем все точки
+		// Р’Рѕ РІСЂРµРјСЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј РІСЃРµ С‚РѕС‡РєРё
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
@@ -1985,18 +1997,18 @@ private:
 			return 0;
 		}
 
-		unsigned short ushCount   = 0; // Суммарное количество точек в PolyLine
-		unsigned short ushNumPars = 0; // Суммарное количество точек в PolyPoly
+		unsigned short ushCount   = 0; // РЎСѓРјРјР°СЂРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РІ PolyLine
+		unsigned short ushNumPars = 0; // РЎСѓРјРјР°СЂРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє РІ PolyPoly
 		int nSkipRecord = 0;
 		for ( unsigned short ushPolyIndex = 0; ushPolyIndex < oPolyPoly.ushPolyCount; ushPolyIndex++ )
 		{	
 			oPolyPoly.pCount[ushPolyIndex] = Record_GetUShortPar( pRecord, (unsigned long) (1 + ushPolyIndex) );
-			ushCount   += oPolyPoly.pCount[ushPolyIndex] + 2; // Для преобразования: PolyPoly -> PolyLine
+			ushCount   += oPolyPoly.pCount[ushPolyIndex] + 2; // Р”Р»СЏ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ: PolyPoly -> PolyLine
 			ushNumPars += oPolyPoly.pCount[ushPolyIndex];
 
 			if ( ( oPolyPoly.pCount[ushPolyIndex] < 3 ) && ( 0 == nSkipRecord ) )
 			{
-				// Странный полигон из 2-х или менее точек
+				// РЎС‚СЂР°РЅРЅС‹Р№ РїРѕР»РёРіРѕРЅ РёР· 2-С… РёР»Рё РјРµРЅРµРµ С‚РѕС‡РµРє
 				nSkipRecord = 1;
 			}
 			if ( nSkipRecord )
@@ -2016,7 +2028,7 @@ private:
 
 		if ( nSkipRecord )
 		{
-			// Тут можно выдать ошибку m_eError = wmf_error_BadFormat, но тут не так критично
+			// РўСѓС‚ РјРѕР¶РЅРѕ РІС‹РґР°С‚СЊ РѕС€РёР±РєСѓ m_eError = wmf_error_BadFormat, РЅРѕ С‚СѓС‚ РЅРµ С‚Р°Рє РєСЂРёС‚РёС‡РЅРѕ
 			for ( unsigned short ushPolyIndex = 0; ushPolyIndex < oPolyPoly.ushPolyCount; ushPolyIndex++ )
 			{	
 				if ( oPolyPoly.ppPoints[ushPolyIndex] ) 
@@ -2157,7 +2169,7 @@ private:
 		oPoint = WmfCoord( ushX, ushY );
 		oDrawRect.oBR = TranslateCoordF( oPoint );
 
-		// Во время сканирования регистрируем крайние точки
+		// Р’Рѕ РІСЂРµРјСЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј РєСЂР°Р№РЅРёРµ С‚РѕС‡РєРё
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
@@ -2199,7 +2211,7 @@ private:
 		oPoint = WmfCoord( ushX, ushY );
 		oDrawRect.oBR = TranslateCoordF( oPoint );
 
-		// Во время сканирования регистрируем крайние точки
+		// Р’Рѕ РІСЂРµРјСЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј РєСЂР°Р№РЅРёРµ С‚РѕС‡РєРё
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
@@ -2266,7 +2278,7 @@ private:
 			fHeight = 0;
 		}
 
-		// Во время сканирования регистрируем крайние точки региона
+		// Р’Рѕ РІСЂРµРјСЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј РєСЂР°Р№РЅРёРµ С‚РѕС‡РєРё СЂРµРіРёРѕРЅР°
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 		{	
 			TWmfCoordF oPoint = pRegion->oExtents.oTL;
@@ -2294,7 +2306,7 @@ private:
 		oPolyRect.fHeight = 0;
 
 		if ( m_pOutput )
-			m_pOutput->Region_Clip( &oPolyRect ); // Реально ничего не делается
+			m_pOutput->Region_Clip( &oPolyRect ); // Р РµР°Р»СЊРЅРѕ РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµС‚СЃСЏ
 
 		TWmfRegion *pClip = (TWmfRegion*)pPlayer->pDC->pClip;
 
@@ -2402,7 +2414,7 @@ private:
 
 		TWmfRegion *pRegion = &(pObject_Region->uObject.oRegion);
 
-		// Во время сканирования регистрируем крайние точки
+		// Р’Рѕ РІСЂРµРјСЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј РєСЂР°Р№РЅРёРµ С‚РѕС‡РєРё
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 		{	
 			TWmfCoordF oPoint = pRegion->oExtents.oTL;
@@ -2424,7 +2436,7 @@ private:
 		oPolyRect.fHeight = 0;
 
 		if ( m_pOutput )
-			m_pOutput->Region_Clip( &oPolyRect ); // Ничего не делается
+			m_pOutput->Region_Clip( &oPolyRect ); // РќРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµС‚СЃСЏ
 
 		TWmfRegion *pClip = (TWmfRegion*)pPlayer->pDC->pClip;
 
@@ -2556,7 +2568,7 @@ private:
 			TWmfRecord oStart = Record_OffsetRecord( &oEnd, 1 );
 			unsigned short ushCount = Record_GetUShortPar( &oStart, 0 );
 
-			// Проверяем значение ushCount на четность
+			// РџСЂРѕРІРµСЂСЏРµРј Р·РЅР°С‡РµРЅРёРµ ushCount РЅР° С‡РµС‚РЅРѕСЃС‚СЊ
 			if ( ushCount & 1 )
 			{	
 				m_oMemoryManager.Free( pRegion->pRects );
@@ -2570,7 +2582,7 @@ private:
 
 			oEnd = Record_OffsetRecord( &oStart, (unsigned long)( ushCount + 3 ) );
 
-			// В соответствии со спецификацией проверяем совпадение параметров count и count2
+			// Р’ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃРѕ СЃРїРµС†РёС„РёРєР°С†РёРµР№ РїСЂРѕРІРµСЂСЏРµРј СЃРѕРІРїР°РґРµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ count Рё count2
 			if ( Record_GetUShortPar( &oEnd, 0 ) != ushCount )
 			{	
 				m_oMemoryManager.Free( pRegion->pRects );
@@ -2618,10 +2630,10 @@ private:
 
 		if ( OBJ_REGION != pObject_Region->nType )
 		{	
-			// Некоторые метафайлы используют данную запись, даже когда ни одного
-			// региона не определено в файле. Возможно, в таких случаях область
-			// клипа мы должны сделать во весь файл. В любом случае данная ошибка
-			// не критична.
+			// РќРµРєРѕС‚РѕСЂС‹Рµ РјРµС‚Р°С„Р°Р№Р»С‹ РёСЃРїРѕР»СЊР·СѓСЋС‚ РґР°РЅРЅСѓСЋ Р·Р°РїРёСЃСЊ, РґР°Р¶Рµ РєРѕРіРґР° РЅРё РѕРґРЅРѕРіРѕ
+			// СЂРµРіРёРѕРЅР° РЅРµ РѕРїСЂРµРґРµР»РµРЅРѕ РІ С„Р°Р№Р»Рµ. Р’РѕР·РјРѕР¶РЅРѕ, РІ С‚Р°РєРёС… СЃР»СѓС‡Р°СЏС… РѕР±Р»Р°СЃС‚СЊ
+			// РєР»РёРїР° РјС‹ РґРѕР»Р¶РЅС‹ СЃРґРµР»Р°С‚СЊ РІРѕ РІРµСЃСЊ С„Р°Р№Р». Р’ Р»СЋР±РѕРј СЃР»СѓС‡Р°Рµ РґР°РЅРЅР°СЏ РѕС€РёР±РєР°
+			// РЅРµ РєСЂРёС‚РёС‡РЅР°.
 
 			return 0;
 		}
@@ -2657,7 +2669,7 @@ private:
 		pClip->oExtents.oBR.fX += oPoint.unX;
 		pClip->oExtents.oBR.fY += oPoint.unY;
 
-		// Во время сканирования в данной функции нам больше ничего не надо делать
+		// Р’Рѕ РІСЂРµРјСЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ РІ РґР°РЅРЅРѕР№ С„СѓРЅРєС†РёРё РЅР°Рј Р±РѕР»СЊС€Рµ РЅРёС‡РµРіРѕ РЅРµ РЅР°РґРѕ РґРµР»Р°С‚СЊ
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) ) 
 			return 0;
 
@@ -2734,7 +2746,7 @@ private:
 		if ( CheckError() )
 			return 0;
 
-		// Во время сканирования в данной функции больше ничего не делаем
+		// Р’Рѕ РІСЂРµРјСЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ РІ РґР°РЅРЅРѕР№ С„СѓРЅРєС†РёРё Р±РѕР»СЊС€Рµ РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) ) 
 			return 0;
 
@@ -2784,7 +2796,7 @@ private:
 		unsigned short ushW = 0;
 		unsigned short ushH = 0;
 
-		if ( ( pRecord->unFunction == META_DIBBITBLT ) && ( ( pRecord->ulSize ) == 9 ) ) // Специальный случай: 2.3.1.2.2
+		if ( ( pRecord->unFunction == META_DIBBITBLT ) && ( ( pRecord->ulSize ) == 9 ) ) // РЎРїРµС†РёР°Р»СЊРЅС‹Р№ СЃР»СѓС‡Р°Р№: 2.3.1.2.2
 		{	
 			return Meta_ROPDraw( pRecord, pAttrlist );
 		}
@@ -2808,7 +2820,7 @@ private:
 			oBmpDraw.oCrop.ushX = Record_GetUShortPar( pRecord, 4 );
 			oBmpDraw.oCrop.ushY = Record_GetUShortPar( pRecord, 3 );
 
-			oBmpRead.ushWidth  = Record_GetUShortPar( pRecord, 2 ); // Не уверен насчет этого :)
+			oBmpRead.ushWidth  = Record_GetUShortPar( pRecord, 2 ); // РќРµ СѓРІРµСЂРµРЅ РЅР°СЃС‡РµС‚ СЌС‚РѕРіРѕ :)
 			oBmpRead.ushHeight = Record_GetUShortPar( pRecord, 1 );
 
 			oBmpDraw.unType = SRCCOPY;
@@ -2898,7 +2910,7 @@ private:
 		int nWidth  = abs( (int)oPoint.unX );
 		int nHeight = abs( (int)oPoint.unY );
 
-		// Во время сканирования регистрируем граничные точки
+		// Р’Рѕ РІСЂРµРјСЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј РіСЂР°РЅРёС‡РЅС‹Рµ С‚РѕС‡РєРё
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 		{	
 			CoordFRegister( oBmpDraw.oPoint, 0 );
@@ -3052,7 +3064,7 @@ private:
 
 		switch ( pRecord->unFunction )
 		{
-		case META_DIBBITBLT: // META_DIBBITBLT: Специальный случай: Size = 9
+		case META_DIBBITBLT: // META_DIBBITBLT: РЎРїРµС†РёР°Р»СЊРЅС‹Р№ СЃР»СѓС‡Р°Р№: Size = 9
 			ushX = Record_GetUShortPar( pRecord, 8 );
 			ushY = Record_GetUShortPar( pRecord, 7 );
 
@@ -3094,7 +3106,7 @@ private:
 
 		oROPDraw.oBR = TranslateCoordF( oPoint );
 
-		// Во время сканирования регистрируем граничные точки
+		// Р’Рѕ РІСЂРµРјСЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј РіСЂР°РЅРёС‡РЅС‹Рµ С‚РѕС‡РєРё
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 		{	
 			CoordFRegister( oROPDraw.oTL, 0 );
@@ -3124,7 +3136,7 @@ private:
 			break;
 
 		case META_SETTEXTJUSTIFICATION: // 2.3.5.27
-			// TO DO: Здесь должно считываться два параметра
+			// TO DO: Р—РґРµСЃСЊ РґРѕР»Р¶РЅРѕ СЃС‡РёС‚С‹РІР°С‚СЊСЃСЏ РґРІР° РїР°СЂР°РјРµС‚СЂР°
 			pPlayer->pDC->ushBreakExtra = ushParameter;
 			break;
 
@@ -3150,7 +3162,7 @@ private:
 				pPlayer->pDC->ushBGMode = OPAQUE;
 				if ( OPAQUE != ushParameter )
 				{
-					// TO DO: Такого быть не должно, но данная ошибка не критичная
+					// TO DO: РўР°РєРѕРіРѕ Р±С‹С‚СЊ РЅРµ РґРѕР»Р¶РЅРѕ, РЅРѕ РґР°РЅРЅР°СЏ РѕС€РёР±РєР° РЅРµ РєСЂРёС‚РёС‡РЅР°СЏ
 				}
 			}
 			break;
@@ -3223,7 +3235,7 @@ private:
 
 		default:
 
-			// Согласно спецификации, смена палитры данной функцией не осуществляется
+			// РЎРѕРіР»Р°СЃРЅРѕ СЃРїРµС†РёС„РёРєР°С†РёРё, СЃРјРµРЅР° РїР°Р»РёС‚СЂС‹ РґР°РЅРЅРѕР№ С„СѓРЅРєС†РёРµР№ РЅРµ РѕСЃСѓС‰РµСЃС‚РІР»СЏРµС‚СЃСЏ
 			break;
 		}
 
@@ -3443,10 +3455,10 @@ private:
 
 		TWmfFont *pFont = pPlayer->pDC->pFont;
 
-		// TO DO: Возможна отрицательная высота шрифта
+		// TO DO: Р’РѕР·РјРѕР¶РЅР° РѕС‚СЂРёС†Р°С‚РµР»СЊРЅР°СЏ РІС‹СЃРѕС‚Р° С€СЂРёС„С‚Р°
 		oDrawText.dFontHeight = (double)pFont->ushHeight * abs( pPlayer->pDC->dPixelHeight );
 
-		// TO DO: Ширина и высота шрифта не обязательно имеют одинаковый коэффициент растяжения/сжатия
+		// TO DO: РЁРёСЂРёРЅР° Рё РІС‹СЃРѕС‚Р° С€СЂРёС„С‚Р° РЅРµ РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РёРјРµСЋС‚ РѕРґРёРЅР°РєРѕРІС‹Р№ РєРѕСЌС„С„РёС†РёРµРЅС‚ СЂР°СЃС‚СЏР¶РµРЅРёСЏ/СЃР¶Р°С‚РёСЏ
 		if ( 0 == pFont->ushHeight )
 		{
 			m_oMemoryManager.Free( oDrawText.sText );
@@ -3469,8 +3481,9 @@ private:
 			}
 		}
 		oDrawText.sText[ushLength] = '\0';
-
+#ifndef DESKTOP_EDITOR_GRAPHICS
 		USES_CONVERSION;
+#endif
 
 
 		float fWidth = 0;
@@ -3481,9 +3494,9 @@ private:
 			//m_pFontManager->LoadStringW( A2W(oDrawText.sText), 0, 0 );
 
 			float fTempX, fTempY, fTempW, fTempH;
-			m_pFontManager->LoadFontByName( A2W(pPlayer->pDC->pFont->sFaceName), (float)(oDrawText.dFontHeight * 72 / 25.4), lStyle, 72.0f, 72.0f );
 #ifdef DESKTOP_EDITOR_GRAPHICS
-			m_pFontManager->LoadString2( A2W(oDrawText.sText), 0, 0 );
+			m_pFontManager->LoadFontByName( UTF8_TO_U(pPlayer->pDC->pFont->sFaceName), (float)(oDrawText.dFontHeight * 72 / 25.4), lStyle, 72.0f, 72.0f );
+			m_pFontManager->LoadString2( UTF8_TO_U(oDrawText.sText), 0, 0 );
 
 			TBBox oBox = m_pFontManager->MeasureString2();
 			fTempX = oBox.fMinX;
@@ -3491,6 +3504,7 @@ private:
 			fTempW = oBox.fMaxX - oBox.fMinX;
 			fTempH = oBox.fMaxX - oBox.fMinX;
 #else
+			m_pFontManager->LoadFontByName( A2W(pPlayer->pDC->pFont->sFaceName), (float)(oDrawText.dFontHeight * 72 / 25.4), lStyle, 72.0f, 72.0f );
 			m_pFontManager->LoadStringW( A2W(oDrawText.sText), 0, 0 );
 
 			m_pFontManager->MeasureString2( &fTempX, &fTempY, &fTempW, &fTempH );
@@ -3548,11 +3562,11 @@ private:
 
 		if ( pPlayer->pDC->ushTextAlign & TA_BASELINE )
 		{	
-			// Ничего не делаем
+			// РќРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 		}
 		else if ( pPlayer->pDC->ushTextAlign & TA_BOTTOM )
 		{	
-			oPointD.fY = (float) ( -oDrawText.dFontHeight / 3 ); // Аппроксимация
+			oPointD.fY = (float) ( -oDrawText.dFontHeight / 3 ); // РђРїРїСЂРѕРєСЃРёРјР°С†РёСЏ
 			oPointT.fX = -oPointD.fY * fSinTheta;
 			oPointT.fY =  oPointD.fY * fCosTheta;
 			oDrawText.oPoint.fX += oPointT.fX;
@@ -3560,7 +3574,7 @@ private:
 		}
 		else // if ( pPlayer->pDC->ushTextAlign & TA_TOP )
 		{	
-			oPointD.fY = (float) oDrawText.dFontHeight; // Аппроксимация
+			oPointD.fY = (float) oDrawText.dFontHeight; // РђРїРїСЂРѕРєСЃРёРјР°С†РёСЏ
 			oPointT.fX = -oPointD.fY * fSinTheta;
 			oPointT.fY =  oPointD.fY * fCosTheta;
 			oDrawText.oPoint.fX += oPointT.fX;
@@ -3708,7 +3722,7 @@ private:
 			}
 		}
 
-		// Во время сканирования мы только регистриуем граничные точки
+		// Р’Рѕ РІСЂРµРјСЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ РјС‹ С‚РѕР»СЊРєРѕ СЂРµРіРёСЃС‚СЂРёСѓРµРј РіСЂР°РЅРёС‡РЅС‹Рµ С‚РѕС‡РєРё
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 		{	
 			m_oMemoryManager.Free( oDrawText.sText );
@@ -3760,7 +3774,7 @@ private:
 				oPointD.fX -= oPointO.fX;
 				oPointD.fY -= oPointO.fY;
 
-				fWidth = 100; // Временно
+				fWidth = 100; // Р’СЂРµРјРµРЅРЅРѕ
 				//fWidth = FD->stringwidth (API,font,drawtext.str);
 				fWidth = (float) ( (double)fWidth * oDrawText.dFontHeight * dRatio );
 
@@ -3844,7 +3858,7 @@ private:
 		TWmfRGB oColor = CWmfColor::LongToRGB( ushRG, ushB );
 		pPen->oColor = oColor;
 
-		// Во время сканирования регистрируем цвет
+		// Р’Рѕ РІСЂРµРјСЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј С†РІРµС‚
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 			m_oColorData.Add( &oColor );
 
@@ -3891,7 +3905,7 @@ private:
 
 		pBrush->oBitmap = oBitmap;
 
-		// Во время сканирования регистрируем цвет
+		// Р’Рѕ РІСЂРµРјСЏ СЃРєР°РЅРёСЂРѕРІР°РЅРёСЏ СЂРµРіРёСЃС‚СЂРёСЂСѓРµРј С†РІРµС‚
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 			m_oColorData.Add( &oColor );
 
@@ -3927,7 +3941,7 @@ private:
 		pFont->ushWidth  = abs( shWidth  );
 		pFont->ushHeight = abs( shHeight );
 
-		pFont->shEscapement  = Record_GetShortPar( pRecord, 2 ); // Угол текса
+		pFont->shEscapement  = Record_GetShortPar( pRecord, 2 ); // РЈРіРѕР» С‚РµРєСЃР°
 		pFont->shOrientation = Record_GetShortPar( pRecord, 3 );
 
 		pFont->ushWeight = Record_GetUShortPar( pRecord, 4 );
@@ -3941,8 +3955,8 @@ private:
 		pFont->unStrikeOut = ushParam & 0xff;
 		pFont->unCharSet   = (ushParam >> 8) & 0xff;
 
-		// В спецификации Wmf сказано, что значение DEFAULT_CHARSET может означать, что
-		// шрифт ищется только по имени и размеру.
+		// Р’ СЃРїРµС†РёС„РёРєР°С†РёРё Wmf СЃРєР°Р·Р°РЅРѕ, С‡С‚Рѕ Р·РЅР°С‡РµРЅРёРµ DEFAULT_CHARSET РјРѕР¶РµС‚ РѕР·РЅР°С‡Р°С‚СЊ, С‡С‚Рѕ
+		// С€СЂРёС„С‚ РёС‰РµС‚СЃСЏ С‚РѕР»СЊРєРѕ РїРѕ РёРјРµРЅРё Рё СЂР°Р·РјРµСЂСѓ.
 #ifdef DESKTOP_EDITOR_GRAPHICS
 		//todo
 		//if ( DEFAULT_CHARSET == pFont->unCharSet )
@@ -3995,8 +4009,12 @@ private:
 
 		if ( m_pFontManager )
 		{
-			// Проверим есть ли такой шрифт в системе, если запишем имя ближайшайшего шрифта
+			// РџСЂРѕРІРµСЂРёРј РµСЃС‚СЊ Р»Рё С‚Р°РєРѕР№ С€СЂРёС„С‚ РІ СЃРёСЃС‚РµРјРµ, РµСЃР»Рё Р·Р°РїРёС€РµРј РёРјСЏ Р±Р»РёР¶Р°Р№С€Р°Р№С€РµРіРѕ С€СЂРёС„С‚Р°
+#ifdef DESKTOP_EDITOR_GRAPHICS
+			std::wstring bsFontName = UTF8_TO_U( pFont->sFaceName );
+#else
 			BSTR bsFontName = CString( pFont->sFaceName ).AllocSysString();
+#endif
 
 			BOOL bNeedFindByParams = FALSE;
 			if ( S_OK == m_pFontManager->LoadFontByName( bsFontName, 1, 0, 0, 0 ) )
@@ -4029,11 +4047,9 @@ private:
 			
 			if ( bNeedFindByParams )
 			{
-				USES_CONVERSION;
-				::SysFreeString( bsFontName );
 #ifdef DESKTOP_EDITOR_GRAPHICS
 				CFontSelectFormat oFontSelectFormat;
-				oFontSelectFormat.wsName = new std::wstring(A2W(pFont->sFaceName));
+                oFontSelectFormat.wsName = new std::wstring(bsFontName);
 				oFontSelectFormat.unCharset = new BYTE;
 				*oFontSelectFormat.unCharset = pFont->unCharSet;
 				oFontSelectFormat.usWeight = new USHORT;
@@ -4045,19 +4061,21 @@ private:
 				if ( NULL != pFontInfo && S_OK == m_pFontManager->LoadFontByName( pFontInfo->m_wsFontName, 11, lStyle, 96, 96 ) )
 				{
 					free( pFont->sFaceName );
-					char *sNewName = W2A( bsFontName );
-					int nLen = (int)strlen( sNewName );
+                    std::string sNewName = U_TO_UTF8( pFontInfo->m_wsFontName.c_str());
+					int nLen = sNewName.length();
 					pFont->sFaceName = (char*)m_oMemoryManager.Malloc( nLen + 1, _T("Meta_FontCreate function") );
 					if ( !pFont->sFaceName )
 						m_eError = wmf_error_NotEnoughMemory;
 					else
 					{
 						pFont->sFaceName[nLen] = '\0';
-						memcpy( pFont->sFaceName, sNewName, nLen );
+						memcpy( pFont->sFaceName, sNewName.c_str(), nLen );
 					}
 				}
-				::SysFreeString( bsFontName );
+			}
 #else
+				USES_CONVERSION;
+				::SysFreeString( bsFontName );
 				CString sXml;
 				sXml.Format( _T("<FontProperties><Name value='%s'/><Charset value='%X'/><Weight value='%d'/></FontProperties>"), A2W(pFont->sFaceName), pFont->unCharSet, pFont->ushWeight);
 				BSTR bsXml = sXml.AllocSysString();
@@ -4088,12 +4106,12 @@ private:
 				}
 
 				::SysFreeString( bsPath );
-#endif
 			}
 			else
 			{
 				::SysFreeString( bsFontName );
 			}
+#endif
 		}
 
 		pFont->pUserData = NULL;
@@ -4236,7 +4254,7 @@ private:
 		unsigned short ushByteCount = Record_GetUShortPar( pRecord, 0 );
 
 		if ( 0x0014 != ushByteCount )
-			return -1; // Неправильная запись 
+			return -1; // РќРµРїСЂР°РІРёР»СЊРЅР°СЏ Р·Р°РїРёСЃСЊ 
 
 		long lX = Record_GetLongPar( pRecord, 1, 2 );
 		long lY = Record_GetLongPar( pRecord, 3, 4 );
@@ -4726,7 +4744,7 @@ private:
 			ulSize     = ReadLong( NULL, NULL );
 			unFunction = ReadShort();
 
-			if ( (3 == ulSize ) && ( /*META_EOF*/0 == unFunction ) ) // Проверяем на последнюю запись в метафайле
+			if ( (3 == ulSize ) && ( /*META_EOF*/0 == unFunction ) ) // РџСЂРѕРІРµСЂСЏРµРј РЅР° РїРѕСЃР»РµРґРЅСЋСЋ Р·Р°РїРёСЃСЊ РІ РјРµС‚Р°С„Р°Р№Р»Рµ
 			{	
 				if ( 0 == (pPlayer->ulFlags & PLAYER_PLAY) ) 
 					Write( ulSize, unFunction, "empty", pAtts->psAttrs, 0, 0 );
@@ -5072,7 +5090,7 @@ private:
 
 			//-----------------------------------------------------------------------------
 			// (c) BMP & ROP stuff
-			// Ширина и высота картинок может быть отрицательной
+			// РЁРёСЂРёРЅР° Рё РІС‹СЃРѕС‚Р° РєР°СЂС‚РёРЅРѕРє РјРѕР¶РµС‚ Р±С‹С‚СЊ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅРѕР№
 			//-----------------------------------------------------------------------------
 			case META_SETDIBTODEV: // 2.3.1.4
 
@@ -5446,29 +5464,29 @@ private:
 public:
 private:
 
-	void                   *m_pBufferData;          // Буфер
-	int                     m_nBufferType;          // Что храним в буфере: 0 - указатель на TFileInfo, 1 - указатель на TMemoryInfo, -1 - файл не открыт
-	EWmfError               m_eError;               // Ошибка
+	void                   *m_pBufferData;          // Р‘СѓС„РµСЂ
+	int                     m_nBufferType;          // Р§С‚Рѕ С…СЂР°РЅРёРј РІ Р±СѓС„РµСЂРµ: 0 - СѓРєР°Р·Р°С‚РµР»СЊ РЅР° TFileInfo, 1 - СѓРєР°Р·Р°С‚РµР»СЊ РЅР° TMemoryInfo, -1 - С„Р°Р№Р» РЅРµ РѕС‚РєСЂС‹С‚
+	EWmfError               m_eError;               // РћС€РёР±РєР°
 
 	TWmfHead                m_pHead;                //
-	TWmfPlaceableMetaHeader m_pPlaceableMetaHeader; // Заголовки метафайла
+	TWmfPlaceableMetaHeader m_pPlaceableMetaHeader; // Р—Р°РіРѕР»РѕРІРєРё РјРµС‚Р°С„Р°Р№Р»Р°
 	TWmfMetaHeader          m_pMetaHeader;          // 
 	TWmfFile                m_pFile;                //
 
-	void                   *m_pWriteData;           // Запись Xml в дебаге
-	TWmfAttributeStore      m_oStore;               // Хранение Xml
+	void                   *m_pWriteData;           // Р—Р°РїРёСЃСЊ Xml РІ РґРµР±Р°РіРµ
+	TWmfAttributeStore      m_oStore;               // РҐСЂР°РЅРµРЅРёРµ Xml
 
-	TWmfPlayer             *m_pPlayerData;          // Проигрыватель Wmf файла
+	TWmfPlayer             *m_pPlayerData;          // РџСЂРѕРёРіСЂС‹РІР°С‚РµР»СЊ Wmf С„Р°Р№Р»Р°
 #ifdef DESKTOP_EDITOR_GRAPHICS
-	CFontManager        *m_pFontManager;         // Интерефейс для работы с шрифтами
+	CFontManager        *m_pFontManager;         // РРЅС‚РµСЂРµС„РµР№СЃ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ С€СЂРёС„С‚Р°РјРё
 	bool m_bDeleteFontManager;
 #else
-	IASCFontManager        *m_pFontManager;         // Интерефейс для работы с шрифтами
+	IASCFontManager        *m_pFontManager;         // РРЅС‚РµСЂРµС„РµР№СЃ РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ С€СЂРёС„С‚Р°РјРё
 #endif
-	CWmfColor               m_oColorData;           // Паллитра
-	CWmfOutputDevice       *m_pOutput;              // Выходное устройство, для изображения данного метафайла
+	CWmfColor               m_oColorData;           // РџР°Р»Р»РёС‚СЂР°
+	CWmfOutputDevice       *m_pOutput;              // Р’С‹С…РѕРґРЅРѕРµ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ, РґР»СЏ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РґР°РЅРЅРѕРіРѕ РјРµС‚Р°С„Р°Р№Р»Р°
 
-	bool                    m_bWindow;              // Были ли заданы размеры картинки командой SETWINDOWEXT
+	bool                    m_bWindow;              // Р‘С‹Р»Рё Р»Рё Р·Р°РґР°РЅС‹ СЂР°Р·РјРµСЂС‹ РєР°СЂС‚РёРЅРєРё РєРѕРјР°РЅРґРѕР№ SETWINDOWEXT
 
 	CWmfMemoryManager       m_oMemoryManager;
 	friend class CRendererOutput;

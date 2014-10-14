@@ -438,13 +438,13 @@ namespace NSCustomVML
 			m_ePath		= oSrc.m_ePath;
 
 			m_arVertices.clear();
-			m_arVertices.Copy(oSrc.m_arVertices);
+			m_arVertices.insert(m_arVertices.end(), oSrc.m_arVertices.begin(), oSrc.m_arVertices.end());
 
 			m_arSegments.clear();
-			m_arSegments.Copy(oSrc.m_arSegments);
+			m_arSegments.insert(m_arSegments.end(), oSrc.m_arSegments.begin(), oSrc.m_arSegments.end());
 
 			m_arGuides.clear();
-			m_arGuides.Copy(oSrc.m_arGuides);
+			m_arGuides.insert(m_arGuides.end(), oSrc.m_arGuides.begin(), oSrc.m_arGuides.end());
 
 			m_pAdjustValues = oSrc.m_pAdjustValues;
 			

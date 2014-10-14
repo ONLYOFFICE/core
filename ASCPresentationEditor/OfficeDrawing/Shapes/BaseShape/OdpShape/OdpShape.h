@@ -358,7 +358,7 @@ public:
 				oHandle.xrange = hnd.GetAttributeNoSpace(_T("draw:handle-range-x-minimum")) + _T(" ") + hnd.GetAttributeNoSpace(_T("draw:handle-range-x-maximum"));
 				oHandle.yrange = hnd.GetAttributeNoSpace(_T("draw:handle-range-y-minimum")) + _T(" ") + hnd.GetAttributeNoSpace(_T("draw:handle-range-y-maximum"));
 
-				m_arHandles.Add(oHandle);
+				m_arHandles.push_back(oHandle);
 			}
 
 		}

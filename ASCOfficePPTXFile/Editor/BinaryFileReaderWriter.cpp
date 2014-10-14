@@ -759,7 +759,7 @@ namespace NSBinPptxRW
 	CSlideMasterInfo::CSlideMasterInfo(const CSlideMasterInfo& oSrc)
 	{
 		m_lThemeIndex	= oSrc.m_lThemeIndex;
-		m_arLayouts.Copy(oSrc.m_arLayouts);
+		m_arLayouts.insert(m_arLayouts.end(), oSrc.m_arLayouts.begin(), oSrc.m_arLayouts.end());
 	}
 
 	CRelsGenerator::CRelsGenerator(CImageManager2* pManager = NULL) : m_lNextRelsID(1), m_mapImages()

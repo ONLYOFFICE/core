@@ -2271,7 +2271,7 @@ namespace NSGuidesVML
 								}
 
 								LONG lVal = (LONG)(dScale * arAdj[oHandle.gdRef.y]);
-								arAdj.SetAtIndex(oHandle.gdRef.y, lVal);
+								arAdj[oHandle.gdRef.y] =  lVal;
 							}
 
 							//рассчитаем координаты точки handle

@@ -43,7 +43,7 @@ namespace NSPresentationEditor
 		CLayout& operator=(const CLayout& oSrc)
 		{
 			Clear();
-			m_arElements.Copy(oSrc.m_arElements);
+			m_arElements.insert(m_arElements.end(), oSrc.m_arElements.begin(), oSrc.m_arElements.end());
 
 			size_t nCount = m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
@@ -51,7 +51,7 @@ namespace NSPresentationEditor
 				ADDREFINTERFACE((m_arElements[nIndex]));
 			}
 
-			m_arColorScheme.Copy(oSrc.m_arColorScheme);
+			m_arColorScheme.insert(m_arColorScheme.end(), oSrc.m_arColorScheme.begin(), oSrc.m_arColorScheme.end());
 
 			m_bUseThemeColorScheme	= oSrc.m_bUseThemeColorScheme;
 
@@ -88,7 +88,7 @@ namespace NSPresentationEditor
 				RELEASEINTERFACE((m_arElements[nIndex]));
 			}
 
-			m_arElements.RemoveAll();
+			m_arElements.clear();
 		}
 
 		void CreateDublicateElements()

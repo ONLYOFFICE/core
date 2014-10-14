@@ -69,11 +69,16 @@ namespace NSGuidesOdp
 		CFormulaManager& operator =(const CFormulaManager& manager)
 		{
 			mapAdjustments.clear();
-			for(int i = 0; i < manager.mapAdjustments.size(); i++)
-				mapAdjustments.push_back(manager.mapAdjustments.GetKeyAt(i), manager.mapAdjustments.GetValueAt(i));
+			for (std::map<CString, long>::const_iterator pPair = manager.mapAdjustments.begin(); pPair != manager.mapAdjustments.end(); ++pPair)
+			{
+				mapAdjustments.insert(std::pair<CString, long>(pPair->first, pPair->second));
+			}
+			
 			mapGuides.clear();
-			for(int i = 0; i < manager.mapGuides.size(); i++)
-				mapGuides.push_back(manager.mapGuides.GetKeyAt(i), manager.mapGuides.GetValueAt(i));
+			for (std::map<CString, long>::const_iterator pPair = manager.mapGuides.begin(); pPair != manager.mapGuides.end(); ++pPair)
+			{
+				mapGuides.insert(std::pair<CString, long>(pPair->first, pPair->second));
+			}
 
 			strGuides.clear();
 			for(int i = 0; i < manager.strGuides.size(); i++)
@@ -112,7 +117,7 @@ namespace NSGuidesOdp
 			}
 			strGuides.push_back(fmla);
 			Guides->push_back(dNonDefResult);
-			mapGuides.push_back(name, strGuides.size() - 1);
+			mapGuides.insert(name, strGuides.size() - 1);
 		}
 
 		double GetValue(CString str)

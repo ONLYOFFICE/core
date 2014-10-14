@@ -526,7 +526,7 @@ namespace NSPresentationEditor
 			indent			= oSrc.indent;
 			defaultTabSize	= oSrc.defaultTabSize;
 
-			tabStops.Copy(oSrc.tabStops);
+			tabStops.insert(tabStops.end(), oSrc.tabStops.begin(), oSrc.tabStops.end());
 
 			fontAlign		= oSrc.fontAlign;
 			textDirection	= oSrc.textDirection;
@@ -575,7 +575,7 @@ namespace NSPresentationEditor
 
 			if ((0 == tabStops.size()) && (0 != oSrc.tabStops.size()))
 			{
-				tabStops.Copy(oSrc.tabStops);
+				tabStops.insert(tabStops.end(), oSrc.tabStops.begin(), oSrc.tabStops.end());
 			}
 		}
 
@@ -617,7 +617,7 @@ namespace NSPresentationEditor
 
 			if (0 != oSrc.tabStops.size())
 			{
-				tabStops.Copy(oSrc.tabStops);
+				tabStops.insert(tabStops.begin(), oSrc.tabStops.begin(), oSrc.tabStops.end());
 			}
 		}
 
@@ -861,7 +861,7 @@ namespace NSPresentationEditor
 			Indent4 = oSrc.Indent4;
 			Indent5 = oSrc.Indent5;
 
-			tabsStops.Copy(oSrc.tabsStops);
+			tabsStops.insert(tabsStops.end(), oSrc.tabsStops.begin(), oSrc.tabsStops.end());
 
 			return *this;
 		}
@@ -895,7 +895,7 @@ namespace NSPresentationEditor
 			if (!Indent5.is_init())
 				Indent5 = oSrc.Indent5;
 
-			tabsStops.Copy(oSrc.tabsStops);
+			tabsStops.insert(tabsStops.end(), oSrc.tabsStops.begin(), oSrc.tabsStops.end());
 		}
 
 		CString ToString()
@@ -1045,7 +1045,7 @@ namespace NSPresentationEditor
 
 			bGramma		= oSrc.bGramma;
 
-			arSmartTags.Copy(oSrc.arSmartTags);
+			arSmartTags.insert(arSmartTags.end(), oSrc.arSmartTags.begin(), oSrc.arSmartTags.end());
 
 			return *this;
 		}
@@ -1555,7 +1555,7 @@ namespace NSPresentationEditor
 			m_lTextType		= oSrc.m_lTextType;
 
 			m_oPFRun		= oSrc.m_oPFRun;
-			m_arSpans.Copy(oSrc.m_arSpans);
+			m_arSpans.insert(m_arSpans.end(), oSrc.m_arSpans.begin(), oSrc.m_arSpans.end());
 
 			return *this;
 		}

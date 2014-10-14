@@ -490,7 +490,12 @@ public:
 	virtual bool SetAdjustment(long index, long value)
 	{
 		FManager.Clear();
-		return (TRUE == m_arAdjustments.SetAtIndex(index, value));
+		if (index < m_arAdjustments.size() && index >=0)
+		{
+			m_arAdjustments[index] = value;
+			return TRUE;
+		}
+		return FALSE;
 	}
 
 	virtual CString ToXML(CGeomShapeInfo& GeomInfo, CMetricInfo& MetricInfo, double StartTime, double EndTime, CBrush& Brush, CPen& Pen)

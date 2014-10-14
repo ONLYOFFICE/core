@@ -378,7 +378,7 @@ namespace NSPresentationEditor
 				strFileName, m_dClipStartTime, m_dClipEndTime );
 
 			CString animations;
-			if((long)m_oAnimations.m_arAnimations.GetCount())
+			if(!m_oAnimations.m_arAnimations.empty())
 			{
 				m_oAnimations.m_dSlideWidth		=	m_oMetric.m_lMillimetresHor;
 				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
@@ -417,7 +417,7 @@ namespace NSPresentationEditor
 			element	+=	source;		
 
 			CString animations;
-			if((long)m_oAnimations.m_arAnimations.GetCount())								//	для audio только "media call's" - play - pause - stop
+			if(!m_oAnimations.m_arAnimations.empty())								//	для audio только "media call's" - play - pause - stop
 			{
 				m_oAnimations.m_dSlideWidth		=	m_oMetric.m_lMillimetresHor;
 				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
@@ -476,7 +476,7 @@ namespace NSPresentationEditor
 
 		virtual CString SaveToXML()
 		{
-			if (0 != m_oAnimations.m_arAnimations.GetCount())
+			if (!m_oAnimations.m_arAnimations.empty())
 				return ToAnimationXml();
 			
 			LONG lFlags = 0;
@@ -668,7 +668,7 @@ namespace NSPresentationEditor
 
 		virtual CString SaveToXML()
 		{
-			if (0 != m_oAnimations.m_arAnimations.GetCount())
+			if (!m_oAnimations.m_arAnimations.empty())
 				return ToAnimationXml();
 			
 			CGeomShapeInfo oInfo;
@@ -1545,7 +1545,7 @@ namespace NSPresentationEditor
 			element	+=	source;		
 
 			CString animations;
-			if((long)m_oAnimations.m_arAnimations.GetCount())								//	для audio только "media call's" - play - pause - stop
+			if(!m_oAnimations.m_arAnimations.empty())								//	для audio только "media call's" - play - pause - stop
 			{
 				m_oAnimations.m_dSlideWidth		=	m_oMetric.m_lMillimetresHor;
 				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;

@@ -17,10 +17,10 @@ void NSPresentationEditor::CShapeElement::CalculateColor(CColor& oColor, CSlide*
 			pArray = &pSlide->m_arColorScheme;
 	}
 
-	if ((0 > oColor.m_lSchemeIndex) || (oColor.m_lSchemeIndex >= (LONG)pArray->GetCount()))
+	if ((0 > oColor.m_lSchemeIndex) || (oColor.m_lSchemeIndex >= (LONG)pArray->size()))
 		return;
 
-	oColor = pArray->GetAt(oColor.m_lSchemeIndex);
+	oColor = pArray->at(oColor.m_lSchemeIndex);
 	oColor.m_lSchemeIndex = lOldIndex;
 }
 

@@ -92,6 +92,8 @@ namespace NSGuidesOOXML
 			m_lParam1 = src.m_lParam1;
 			m_lParam2 = src.m_lParam2;
 			m_lParam3 = src.m_lParam3;
+
+			return *this;
 		}
 
 		void FromString(CString strFormula)

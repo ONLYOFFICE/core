@@ -39,16 +39,16 @@ namespace NSPresentationEditor
 
 		CTheme& operator=(const CTheme& oSrc)
 		{
-			m_arColorScheme.Copy(oSrc.m_arColorScheme);
-			m_arFonts.Copy(oSrc.m_arFonts);
-			m_arBrushes.Copy(oSrc.m_arBrushes);
-			m_arPens.Copy(oSrc.m_arPens);
-			m_arEffects.Copy(oSrc.m_arEffects);
+			m_arColorScheme.insert	(m_arColorScheme.end(), oSrc.m_arColorScheme.begin(),	oSrc.m_arColorScheme.end());
+			m_arFonts.insert		(m_arFonts.end(),		oSrc.m_arFonts.begin(),			oSrc.m_arFonts.end());
+			m_arBrushes.insert		(m_arBrushes.end(),		oSrc.m_arBrushes.begin(),		oSrc.m_arBrushes.end());
+			m_arPens.insert			(m_arPens.end(),		oSrc.m_arPens.begin(),			oSrc.m_arPens.end());
+			m_arEffects.insert		(m_arEffects.end(),		oSrc.m_arEffects.begin(),		oSrc.m_arEffects.end());
 			
 			for (int i = 0; i < g_ThemeTextStylesCount; ++i)
 				m_pStyles[i] = oSrc.m_pStyles[i];
 			
-			m_arLayouts.Copy(oSrc.m_arLayouts);
+			m_arLayouts.insert(m_arLayouts.end(), oSrc.m_arLayouts.begin(), oSrc.m_arLayouts.end());
 
 			m_bIsBackground = oSrc.m_bIsBackground;
 			m_oBackground	= oSrc.m_oBackground;
@@ -61,7 +61,7 @@ namespace NSPresentationEditor
 			}
 
 			Clear();
-			m_arElements.Copy(oSrc.m_arElements);
+			m_arElements.insert(m_arElements.end(), oSrc.m_arElements.begin(), oSrc.m_arElements.end());
 
 			nCount = m_arElements.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)

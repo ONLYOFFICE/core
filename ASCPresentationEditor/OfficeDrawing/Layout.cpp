@@ -35,13 +35,19 @@ namespace NSPresentationEditor
 		{
 			// background
 			#ifndef ENABLE_ODP_TO_PPTX_CONVERT
-				#ifdef PPT_DEF
-					CShapeElement oElem(NSPresentationEditor::NSBaseShape::ppt, PPTShapes::sptCRect);
-				#else
-					CShapeElement oElem(NSPresentationEditor::NSBaseShape::pptx, OOXMLShapes::sptCRect);
-				#endif
+			#ifdef PPT_DEF
+			CShapeElement oElem(NSPresentationEditor::NSBaseShape::ppt, PPTShapes::sptCRect);
 			#else
-				CShapeElement oElem(NSPresentationEditor::NSBaseShape::odp, OdpShapes::sptCRect);
+			#ifdef ODP_DEF
+			CShapeElement oElem(NSPresentationEditor::NSBaseShape::odp, OdpShapes::sptCRect);
+			oElem.m_oShape.m_dWidthLogic	= ((COdpShape*)oElem.m_oShape.m_pShape)->FManager.GetValue(_T("width"));
+			oElem.m_oShape.m_dHeightLogic	= ((COdpShape*)oElem.m_oShape.m_pShape)->FManager.GetValue(_T("height"));
+			#else
+			CShapeElement oElem(NSPresentationEditor::NSBaseShape::pptx, OOXMLShapes::sptCRect);
+			#endif
+			#endif
+			#else
+			CShapeElement oElem(NSPresentationEditor::NSBaseShape::odp, OdpShapes::sptCRect);
 			#endif
 
 			oElem.m_oMetric = oInfo;

@@ -1583,7 +1583,8 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 		pShape->TextBoxBodyPr->upright = true;
 
 		std::map<CString, CString>::iterator pPair = oCSSParser.m_mapSettings.find(_T("v-text-anchor"));
-		if (pPair != NULL)
+		
+		if (pPair != oCSSParser.m_mapSettings.end())
 		{
 			if (_T("top") == pPair->second)
 				pShape->TextBoxBodyPr->anchor = _T("t");
@@ -1603,7 +1604,8 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 			pShape->spPr.xfrm->extX = oProps.Width;
 			pShape->spPr.xfrm->extY = oProps.Height;
 
-			std::map<CString, CString>::iterator pPair = NULL;
+			std::map<CString, CString>::iterator pPair;
+
 			pPair = oCSSParser.m_mapSettings.find(_T("flip"));
 			if (oCSSParser.m_mapSettings.end() != pPair)
 			{
@@ -1635,7 +1637,8 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 			pShape->spPr.xfrm->extX = oProps.Width;
 			pShape->spPr.xfrm->extY = oProps.Height;
 
-			std::map<CString, CString>::iterator pPair = NULL;
+			std::map<CString, CString>::iterator pPair;
+
 			pPair = oCSSParser.m_mapSettings.find(_T("flip"));
 			if (oCSSParser.m_mapSettings.end() != pPair)
 			{
@@ -1774,7 +1777,8 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadGroup(XmlUtils::CXmlNode& oNo
 		pTree->grpSpPr.xfrm->chExtX = lCoordSizeW;
 		pTree->grpSpPr.xfrm->chExtY = lCoordSizeH;
 
-		std::map<CString, CString>::iterator pPair = NULL;
+		std::map<CString, CString>::iterator pPair;
+
 		pPair = oCSSParser.m_mapSettings.find(_T("flip"));
 		if (oCSSParser.m_mapSettings.end() != pPair)
 		{
@@ -1808,7 +1812,8 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadGroup(XmlUtils::CXmlNode& oNo
 		pTree->grpSpPr.xfrm->chExtX = lCoordSizeW;
 		pTree->grpSpPr.xfrm->chExtY = lCoordSizeH;
 
-		std::map<CString, CString>::iterator pPair = NULL;
+		std::map<CString, CString>::iterator pPair;
+
 		pPair = oCSSParser.m_mapSettings.find(_T("flip"));
 		if (oCSSParser.m_mapSettings.end() != pPair)
 		{
@@ -1885,7 +1890,7 @@ void CDrawingConverter::LoadCoordSize(XmlUtils::CXmlNode& oNode, CShape* pShape)
 
 CString CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::CCSS& oCssStyles, CSpTreeElemProps& oProps)
 {
-	std::map<CString, CString>::iterator pPair = NULL;
+	std::map<CString, CString>::iterator pPair;
 
 	bool bIsInline = false;
 
@@ -1950,7 +1955,7 @@ CString CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::
 	else
 	{
 		pPair = oCssStyles.m_mapSettings.find(_T("margin-right"));
-		if (oCssStyles.m_mapSettings.end() != NULL)
+		if (oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.end())
 			width = (LONG)(dKoefSize * parserPoint.FromString(pPair->second)) - left;
 	}
 
@@ -1962,7 +1967,7 @@ CString CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::
 	else
 	{
 		pPair = oCssStyles.m_mapSettings.find(_T("margin-bottom"));
-		if (oCssStyles.m_mapSettings.end() != NULL)
+		if (oCssStyles.m_mapSettings.end() != oCssStyles.m_mapSettings.end())
 			height = (LONG)(dKoefSize * parserPoint.FromString(pPair->second)) - top;
 	}
 
@@ -2120,7 +2125,7 @@ CString CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::
 	oWriter.StartAttributes();
 
 	pPair = oCssStyles.m_mapSettings.find(_T("mso-position-horizontal-relative"));
-	if (pPair != NULL)
+	if (pPair != oCssStyles.m_mapSettings.end())
 	{
 		if (_T("char") == pPair->second)
 			oWriter.WriteAttribute(_T("relativeFrom"), (CString)_T("character"));
@@ -2171,7 +2176,7 @@ CString CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::
 	oWriter.StartAttributes();
 
 	pPair = oCssStyles.m_mapSettings.find(_T("mso-position-vertical-relative"));
-	if (pPair != NULL)
+	if (pPair != oCssStyles.m_mapSettings.end())
 	{
 		if (_T("margin") == pPair->second)
 			oWriter.WriteAttribute(_T("relativeFrom"), (CString)_T("margin"));

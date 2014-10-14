@@ -50,7 +50,7 @@ namespace NSBinPptxRW
 			RELEASEMEM(m_pData);
 		}
 
-		__forceinline void AddSize(size_t nSize)
+        AVSINLINE void AddSize(size_t nSize)
 		{
 			if (NULL == m_pData)
 			{
@@ -90,7 +90,7 @@ namespace NSBinPptxRW
 
 	public:
 		
-		__forceinline void WriteString(wchar_t* pString, size_t& nLen)
+        AVSINLINE void WriteString(wchar_t* pString, size_t& nLen)
 		{
 			AddSize(nLen);
 			//memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
@@ -98,12 +98,12 @@ namespace NSBinPptxRW
 			m_pDataCur += nLen;
 			m_lSizeCur += nLen;
 		}
-		__forceinline void WriteString(_bstr_t& bsString)
+        AVSINLINE void WriteString(_bstr_t& bsString)
 		{
 			size_t nLen = bsString.length();
 			WriteString(bsString.GetBSTR(), nLen);
 		}
-		__forceinline void WriteString(const CString& sString)
+        AVSINLINE void WriteString(const CString& sString)
 		{
 			size_t nLen = (size_t)sString.GetLength();
 			
@@ -117,7 +117,7 @@ namespace NSBinPptxRW
 			str.ReleaseBuffer();
 			#endif
 		}
-		__forceinline void WriteStringXML(const CString& strValue)
+        AVSINLINE void WriteStringXML(const CString& strValue)
 		{
 			// можно ускорить (см. как сделано в шейпах)
 			CString s = strValue;
@@ -129,17 +129,17 @@ namespace NSBinPptxRW
 			WriteString(s);
 		}
 
-		__forceinline size_t GetCurSize()
+        AVSINLINE size_t GetCurSize()
 		{
 			return m_lSizeCur;
 		}
 
-		__forceinline void Write(CStringWriter& oWriter)
+        AVSINLINE void Write(CStringWriter& oWriter)
 		{
 			WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
 		}
 
-		__forceinline void WriteBefore(CStringWriter& oWriter)
+        AVSINLINE void WriteBefore(CStringWriter& oWriter)
 		{
 			size_t nNewS = oWriter.GetCurSize();
 			AddSize(nNewS);
@@ -171,12 +171,12 @@ namespace NSBinPptxRW
 			return str;
 		}
 
-		__forceinline void AddCharNoCheck(const WCHAR& wc)
+        AVSINLINE void AddCharNoCheck(const WCHAR& wc)
 		{
 			*m_pDataCur++ = wc;
 			++m_lSizeCur;
 		}
-		__forceinline void AddIntNoCheck(int val)
+        AVSINLINE void AddIntNoCheck(int val)
 		{
 			if (0 == val)
 			{
@@ -211,13 +211,13 @@ namespace NSBinPptxRW
 			m_lSizeCur += len;
 		}
 
-		__forceinline void AddStringNoCheck(const wchar_t* pData, const int& len)
+        AVSINLINE void AddStringNoCheck(const wchar_t* pData, const int& len)
 		{
 			memcpy(m_pDataCur, pData, len << 1);
 			m_pDataCur += len;
 			m_lSizeCur += len;
 		}
-		__forceinline void AddSpaceNoCheck()
+        AVSINLINE void AddSpaceNoCheck()
 		{
 			*m_pDataCur = WCHAR(' ');
 			++m_pDataCur;

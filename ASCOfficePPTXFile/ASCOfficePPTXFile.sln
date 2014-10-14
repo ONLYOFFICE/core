@@ -1,6 +1,11 @@
 Microsoft Visual Studio Solution File, Format Version 9.00
-# Visual C++ Express 2005
+# Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficePPTXFile", "ASCOfficePPTXFile.vcproj", "{70078FE7-BE4F-493C-84F3-F98F151587F5}"
+	ProjectSection(ProjectDependencies) = postProject
+		{36636678-AE25-4BE6-9A34-2561D1BCF302} = {36636678-AE25-4BE6-9A34-2561D1BCF302}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "PPTXFormat", "PPTXLib\PPTXFormat.vcproj", "{36636678-AE25-4BE6-9A34-2561D1BCF302}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -18,6 +23,14 @@ Global
 		{70078FE7-BE4F-493C-84F3-F98F151587F5}.ReleaseASC|Win32.Build.0 = ReleaseASC|Win32
 		{70078FE7-BE4F-493C-84F3-F98F151587F5}.ReleaseOpenSource|Win32.ActiveCfg = ReleaseOpenSource|Win32
 		{70078FE7-BE4F-493C-84F3-F98F151587F5}.ReleaseOpenSource|Win32.Build.0 = ReleaseOpenSource|Win32
+		{36636678-AE25-4BE6-9A34-2561D1BCF302}.Debug|Win32.ActiveCfg = Debug|Win32
+		{36636678-AE25-4BE6-9A34-2561D1BCF302}.Debug|Win32.Build.0 = Debug|Win32
+		{36636678-AE25-4BE6-9A34-2561D1BCF302}.Release|Win32.ActiveCfg = Release|Win32
+		{36636678-AE25-4BE6-9A34-2561D1BCF302}.Release|Win32.Build.0 = Release|Win32
+		{36636678-AE25-4BE6-9A34-2561D1BCF302}.ReleaseASC|Win32.ActiveCfg = Release|Win32
+		{36636678-AE25-4BE6-9A34-2561D1BCF302}.ReleaseASC|Win32.Build.0 = Release|Win32
+		{36636678-AE25-4BE6-9A34-2561D1BCF302}.ReleaseOpenSource|Win32.ActiveCfg = Release|Win32
+		{36636678-AE25-4BE6-9A34-2561D1BCF302}.ReleaseOpenSource|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

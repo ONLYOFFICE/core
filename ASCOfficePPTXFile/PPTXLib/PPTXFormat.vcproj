@@ -154,15 +154,7 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath="..\.\ASCOfficeDrawingConverter.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\.\ASCOfficePPTXFile.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\.\ASCOfficePPTXFileRealization.cpp"
+				RelativePath="..\ASCOfficeDrawingConverter.cpp"
 				>
 			</File>
 			<File

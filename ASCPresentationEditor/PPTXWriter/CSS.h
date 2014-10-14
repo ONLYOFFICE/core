@@ -244,7 +244,7 @@ public:
 
 	AVSINLINE void LoadTextStyle(NSPresentationEditor::CTextStyleLevel& oLevel)
 	{
-		std::map<CString, CString>::iterator pPair = NULL;
+		std::map<CString, CString>::iterator pPair;
 
 		pPair = m_mapSettings.find(_T("text-align"));
 		if (m_mapSettings.end() != pPair)
@@ -393,7 +393,7 @@ public:
 	}
 	AVSINLINE void LoadStyleCF(NSPresentationEditor::CTextCFRun& oRun, const NSPresentationEditor::CMetricInfo& oInfo)
 	{
-		std::map<CString, CString>::iterator pPair = NULL;
+		std::map<CString, CString>::iterator pPair;
 
 		pPair = m_mapSettings.find(_T("font-weight"));
 		if (m_mapSettings.end() != pPair)

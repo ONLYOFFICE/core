@@ -2,7 +2,7 @@
 #define _GRAPHICS_ARRAY_H
 
 #include "Types.h"
-
+#include <string.h>
 #ifdef _LINUX
 #include "string.h"
 #endif

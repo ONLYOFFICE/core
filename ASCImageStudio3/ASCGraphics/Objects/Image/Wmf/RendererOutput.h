@@ -1,4 +1,4 @@
-#ifndef _RENDERER_OUTPUT_H
+п»ї#ifndef _RENDERER_OUTPUT_H
 #define _RENDERER_OUTPUT_H
 
 #ifdef DESKTOP_EDITOR_GRAPHICS
@@ -15,18 +15,18 @@
 #include "WmfUtils.h"
 #include "WmfCharsets.h"
 
-//------ Для дебага ----------------------------------------------------
-//#define NO_PIE       // отключаем команду Draw_Pie
-//#define NO_ARC       // отключаем команду Draw_Arc
-//#define NO_ELLIPSE   // отключаем команду Draw_Ellipse
-//#define NO_LINE      // отключаем команду Draw_Line
-//#define NO_POLYGON   // отключаем команду Draw_Polygon
-//#define NO_POLYGONS  // отключаем команду Draw_Polypolygon
-//#define NO_POLYLINE  // отключаем команду Draw_Polyline
-//#define NO_CLIP      // отключаем комануд Region_Clip
-//#define NO_RECT      // отключаем команду Draw_Rectangle
-//#define NO_TEXT      // отключаем комунду Draw_Text
-//#define DRAW_BOUNDS  // рисуем границы
+//------ Р”Р»СЏ РґРµР±Р°РіР° ----------------------------------------------------
+//#define NO_PIE       // РѕС‚РєР»СЋС‡Р°РµРј РєРѕРјР°РЅРґСѓ Draw_Pie
+//#define NO_ARC       // РѕС‚РєР»СЋС‡Р°РµРј РєРѕРјР°РЅРґСѓ Draw_Arc
+//#define NO_ELLIPSE   // РѕС‚РєР»СЋС‡Р°РµРј РєРѕРјР°РЅРґСѓ Draw_Ellipse
+//#define NO_LINE      // РѕС‚РєР»СЋС‡Р°РµРј РєРѕРјР°РЅРґСѓ Draw_Line
+//#define NO_POLYGON   // РѕС‚РєР»СЋС‡Р°РµРј РєРѕРјР°РЅРґСѓ Draw_Polygon
+//#define NO_POLYGONS  // РѕС‚РєР»СЋС‡Р°РµРј РєРѕРјР°РЅРґСѓ Draw_Polypolygon
+//#define NO_POLYLINE  // РѕС‚РєР»СЋС‡Р°РµРј РєРѕРјР°РЅРґСѓ Draw_Polyline
+//#define NO_CLIP      // РѕС‚РєР»СЋС‡Р°РµРј РєРѕРјР°РЅСѓРґ Region_Clip
+//#define NO_RECT      // РѕС‚РєР»СЋС‡Р°РµРј РєРѕРјР°РЅРґСѓ Draw_Rectangle
+//#define NO_TEXT      // РѕС‚РєР»СЋС‡Р°РµРј РєРѕРјСѓРЅРґСѓ Draw_Text
+//#define DRAW_BOUNDS  // СЂРёСЃСѓРµРј РіСЂР°РЅРёС†С‹
 //----------------------------------------------------------------------
 
 #define RGBA(r, g, b) ((DWORD)( ( (BYTE)(r) )| ( ( (BYTE)(g) ) << 8 ) | ( ( (BYTE)(b) ) << 16 ) | ( (BYTE)(0) << 24 ) ) )
@@ -98,18 +98,18 @@ public:
 
 	void Flood_Interior(TWmfFlood *pFlood)
 	{
-		// TO DO: Сделать, как будут тестовые файлы
+		// TO DO: РЎРґРµР»Р°С‚СЊ, РєР°Рє Р±СѓРґСѓС‚ С‚РµСЃС‚РѕРІС‹Рµ С„Р°Р№Р»С‹
 		int k = 10;
 	}
 	void Flood_Exterior(TWmfFlood *pFlood)
 	{
-		// TO DO: Сделать, как будут тестовые файлы
+		// TO DO: РЎРґРµР»Р°С‚СЊ, РєР°Рє Р±СѓРґСѓС‚ С‚РµСЃС‚РѕРІС‹Рµ С„Р°Р№Р»С‹
 		int k = 10;
 	}
 
 	void Draw_Pixel      (TWmfDrawPixel *pDrawPixel)
 	{
-		// TO DO: Сделать, как будут тестовые файлы
+		// TO DO: РЎРґРµР»Р°С‚СЊ, РєР°Рє Р±СѓРґСѓС‚ С‚РµСЃС‚РѕРІС‹Рµ С„Р°Р№Р»С‹
 		int k =10;
 	}
 
@@ -192,7 +192,7 @@ public:
 	}
 	void Draw_Chord      (TWmfDrawArc *pArc)
 	{
-		// TO DO: Сделать, как будут тестовые файлы
+		// TO DO: РЎРґРµР»Р°С‚СЊ, РєР°Рє Р±СѓРґСѓС‚ С‚РµСЃС‚РѕРІС‹Рµ С„Р°Р№Р»С‹
 		int k =10;
 	}
 	void Draw_Arc        (TWmfDrawArc *pArc)
@@ -479,7 +479,7 @@ public:
 		m_pRenderer->PathCommandEnd();
 
 
-		if ( 0 == pRect->fWidth && 0 == pRect->fHeight ) // Простой прямоугольник
+		if ( 0 == pRect->fWidth && 0 == pRect->fHeight ) // РџСЂРѕСЃС‚РѕР№ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє
 		{
 			double dX = pRect->oTL.fX;
 			double dY = pRect->oTL.fY;
@@ -504,7 +504,7 @@ public:
 
 			m_pRenderer->PathCommandClose();
 		}
-		else // прямоугольник с закругленными углами
+		else // РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє СЃ Р·Р°РєСЂСѓРіР»РµРЅРЅС‹РјРё СѓРіР»Р°РјРё
 		{
 			double dA = pRect->fWidth / 2;
 			double dB = pRect->fHeight / 2;
@@ -573,7 +573,7 @@ public:
 
 	void Rop_Draw(TWmfROPDraw *pROP)
 	{
-		// TO DO: Сделать, как будут тестовые файлы
+		// TO DO: РЎРґРµР»Р°С‚СЊ, РєР°Рє Р±СѓРґСѓС‚ С‚РµСЃС‚РѕРІС‹Рµ С„Р°Р№Р»С‹
 		int k =10;
 	}
 	void Bmp_Draw(TWmfBMPDraw *pDrawBitmap)
@@ -625,7 +625,7 @@ public:
 		pInterface = pMediaData;
 
 #endif
-		// Пишем данные в pBufferPtr
+		// РџРёС€РµРј РґР°РЅРЅС‹Рµ РІ pBufferPtr
 
 		for ( int nIndex = 0; nIndex < 4 * nWidth * nHeight; nIndex += 4 ) 
 		{
@@ -660,7 +660,7 @@ public:
 		BYTE *pBuffer = pReadBitmap->pBuffer;
 		long lBufLen  = pReadBitmap->lLength;
 
-		// Считываем заголовок
+		// РЎС‡РёС‚С‹РІР°РµРј Р·Р°РіРѕР»РѕРІРѕРє
 		unsigned int   unHeaderSize = ReadUInt  ( pBuffer ); pBuffer += 4; lBufLen -=4;
 
 		if ( unHeaderSize < 0x0000000C )
@@ -686,7 +686,9 @@ public:
 		double dSize = pText->dFontHeight * m_dScaleY * 72 / 25.4;
 		SetFont( pText->pDC, dSize );
 
+#ifndef DESKTOP_EDITOR_GRAPHICS
 		USES_CONVERSION;
+#endif
 
 		double dTheta = - ( ( ( (double)pText->pDC->pFont->shEscapement ) / 10 ) * M_PI / 180 );
 
@@ -700,9 +702,9 @@ public:
 		{
 			TWmfFont *pFont = pText->pDC->pFont;
 			long lStyle = ( pFont->ushWeight > 550 ? 1 : 0 ) + ( pFont->unItalic ? 2 : 0 );
-			m_pWmfFile->m_pFontManager->LoadFontByName( A2W(pText->pDC->pFont->sFaceName), dSize, lStyle, 72, 72 );
 #ifdef DESKTOP_EDITOR_GRAPHICS
-			m_pWmfFile->m_pFontManager->LoadString2( A2W(pText->sText), 0, 0 );
+			m_pWmfFile->m_pFontManager->LoadFontByName( UTF8_TO_U(pText->pDC->pFont->sFaceName), dSize, lStyle, 72, 72 );
+            m_pWmfFile->m_pFontManager->LoadString2( UTF8_TO_U(pText->sText), 0, 0 );
 			TBBox oBox = m_pWmfFile->m_pFontManager->MeasureString2();
 			fL = oBox.fMinX;
 			fT = oBox.fMinY;
@@ -710,6 +712,7 @@ public:
 			fH = oBox.fMaxY - oBox.fMinY;
 			m_pWmfFile->m_pFontManager->GetUnderline( &fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize );
 #else
+			m_pWmfFile->m_pFontManager->LoadFontByName( A2W(pText->pDC->pFont->sFaceName), dSize, lStyle, 72, 72 );
 			m_pWmfFile->m_pFontManager->LoadStringW( A2W(pText->sText), 0, 0 );
 			m_pWmfFile->m_pFontManager->MeasureString2( &fL, &fT, &fW, &fH );
 			m_pWmfFile->m_pFontManager->GetUnderline( &fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize );
@@ -733,11 +736,11 @@ public:
 			dY = pText->oOrigin.fY;
 			Trans( pText->pDC, &dX, &dY );
 
-			// Найдем начальную точку текста
+			// РќР°Р№РґРµРј РЅР°С‡Р°Р»СЊРЅСѓСЋ С‚РѕС‡РєСѓ С‚РµРєСЃС‚Р°
 
 			if ( pText->pDC->ushTextAlign & TA_BASELINE )
 			{	
-				// Ничего не делаем
+				// РќРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 			}
 			else if ( pText->pDC->ushTextAlign & TA_BOTTOM )
 			{	
@@ -766,7 +769,7 @@ public:
 			}
 			else //if ( pText->pDC->ushTextAlign & TA_LEFT )
 			{
-				// Ничего не делаем
+				// РќРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 			}
 		}
 		else
@@ -786,18 +789,21 @@ public:
 		}
 
 		CStringW wsText = TextToUnicode( pText->pDC, pText->sText );
+#ifdef DESKTOP_EDITOR_GRAPHICS
+		std::wstring bsText = wsText.GetString();
+#else
 		BSTR bsText = wsText.AllocSysString();
-
+#endif
 		bool bChangeCTM = false;
 
 		if ( 0 != pText->pDC->pFont->shEscapement )
 		{
-			// TO DO: тут реализован только параметр shEscapement, еще нужно реализовать параметр shOrientation
+			// TO DO: С‚СѓС‚ СЂРµР°Р»РёР·РѕРІР°РЅ С‚РѕР»СЊРєРѕ РїР°СЂР°РјРµС‚СЂ shEscapement, РµС‰Рµ РЅСѓР¶РЅРѕ СЂРµР°Р»РёР·РѕРІР°С‚СЊ РїР°СЂР°РјРµС‚СЂ shOrientation
 			m_pRenderer->SetTransform( fCosTheta, fSinTheta, -fSinTheta, fCosTheta, dX - dX * fCosTheta + dY * fSinTheta, dY - dX * fSinTheta - dY * fCosTheta );
 			bChangeCTM = true;
 		}
 
-		// Для начала нарисуем фон текста
+		// Р”Р»СЏ РЅР°С‡Р°Р»Р° РЅР°СЂРёСЃСѓРµРј С„РѕРЅ С‚РµРєСЃС‚Р°
 
 		if ( OPAQUE == pText->pDC->ushBGMode )
 		{
@@ -838,7 +844,7 @@ public:
 			m_pRenderer->put_BrushAlpha1(m_oBrush.Alpha1);
 		}
 
-		// Нарисуем подчеркивание 
+		// РќР°СЂРёСЃСѓРµРј РїРѕРґС‡РµСЂРєРёРІР°РЅРёРµ 
 		if ( pText->pDC->pFont->unUnderline )
 		{
 			double        dOldSize      = m_oPen.Size;
@@ -863,11 +869,13 @@ public:
 			m_pRenderer->put_PenLineStartCap( unOldStartCap );
 		}
 
-		// Рисуем сам текст
+		// Р РёСЃСѓРµРј СЃР°Рј С‚РµРєСЃС‚
 
 
 		m_pRenderer->CommandDrawText( bsText, (float)dX, (float)(dY ), 0, 0, 0 );
+#ifndef DESKTOP_EDITOR_GRAPHICS
 		::SysFreeString( bsText );
+#endif
 
 		if ( bChangeCTM )
 			m_pRenderer->ResetTransform( );
@@ -876,12 +884,12 @@ public:
 
 	void Region_Frame(TWmfPolyRectangle *pRect)
 	{
-		// TO DO: Сделать, как будут тестовые файлы
+		// TO DO: РЎРґРµР»Р°С‚СЊ, РєР°Рє Р±СѓРґСѓС‚ С‚РµСЃС‚РѕРІС‹Рµ С„Р°Р№Р»С‹
 		int k =10;
 	}
 	void Region_Paint(TWmfPolyRectangle *pRect)
 	{
-		// TO DO: Сделать, как будут тестовые файлы		
+		// TO DO: РЎРґРµР»Р°С‚СЊ, РєР°Рє Р±СѓРґСѓС‚ С‚РµСЃС‚РѕРІС‹Рµ С„Р°Р№Р»С‹		
 		int k =10;
 	}
 	void Region_Clip (TWmfPolyRectangle *pRect)
@@ -890,7 +898,7 @@ public:
 		return;
 #endif
 	
-		// TO DO: Сделать, как будут тестовые файлы
+		// TO DO: РЎРґРµР»Р°С‚СЊ, РєР°Рє Р±СѓРґСѓС‚ С‚РµСЃС‚РѕРІС‹Рµ С„Р°Р№Р»С‹
 		m_pRenderer->BeginCommand( c_nResetClipType );
 		m_pRenderer->EndCommand( c_nResetClipType );
 
@@ -1023,7 +1031,7 @@ private:
 
 	CStringW TextToUnicode(TWmfDC *pDC, char *sText)
 	{
-		// Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
+		// РЎРѕРѕС‚РІРµС‚СЃС‚РІРёРµ Charset -> Codepage: http://support.microsoft.com/kb/165478
 		// http://msdn.microsoft.com/en-us/library/cc194829.aspx
 
 		//  Charset Name       Charset Value(hex)  Codepage number
@@ -1096,7 +1104,7 @@ private:
 		}
 		else if ( SYMBOL_CHARSET == pDC->pFont->unCharSet )
 		{
-			// Ко всем символам, кроме пробела добавляем 0xF000 (Вот и вся кодировка :))
+			// РљРѕ РІСЃРµРј СЃРёРјРІРѕР»Р°Рј, РєСЂРѕРјРµ РїСЂРѕР±РµР»Р° РґРѕР±Р°РІР»СЏРµРј 0xF000 (Р’РѕС‚ Рё РІСЃСЏ РєРѕРґРёСЂРѕРІРєР° :))
 
 			wchar_t *wsText = new wchar_t[strlen(sText) + 1];
 			if ( NULL == wsText )
@@ -1118,7 +1126,7 @@ private:
 		}
 		else if ( MAC_CHARSET == pDC->pFont->unCharSet )
 		{
-			// Не используется
+			// РќРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 
 			return _T("");
 		}
@@ -1356,16 +1364,16 @@ private:
 				return _T("");
 
 			wsText[nLen] = '\0';
-
-			// Пытаемся воспользоваться системной функцией
+#ifdef _WIN32
+			// РџС‹С‚Р°РµРјСЃСЏ РІРѕСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ СЃРёСЃС‚РµРјРЅРѕР№ С„СѓРЅРєС†РёРµР№
 			if ( !OemToCharBuffW( sText, wsText, nLen ) )
 			{
-				// Системная функция почему-то не сработала. Конвертируем самостоятельно.
+				// РЎРёСЃС‚РµРјРЅР°СЏ С„СѓРЅРєС†РёСЏ РїРѕС‡РµРјСѓ-С‚Рѕ РЅРµ СЃСЂР°Р±РѕС‚Р°Р»Р°. РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј СЃР°РјРѕСЃС‚РѕСЏС‚РµР»СЊРЅРѕ.
 
-				// Запрашиваем кодировку
+				// Р—Р°РїСЂР°С€РёРІР°РµРј РєРѕРґРёСЂРѕРІРєСѓ
 				UINT unCP = GetOEMCP();
 
-				// Предполагаем, что кодировка CP866 (на самом деле, надо исходить из unCP)
+				// РџСЂРµРґРїРѕР»Р°РіР°РµРј, С‡С‚Рѕ РєРѕРґРёСЂРѕРІРєР° CP866 (РЅР° СЃР°РјРѕРј РґРµР»Рµ, РЅР°РґРѕ РёСЃС…РѕРґРёС‚СЊ РёР· unCP)
 				for ( int nIndex = 0; nIndex < nLen; nIndex++ )
 				{
 					unsigned char unChar = (unsigned char)(sText[nIndex]);
@@ -1375,7 +1383,7 @@ private:
 						wsText[nIndex] = (wchar_t)( c_anUnicodeMapCP866[unChar - MSCP_FIRST_CHAR] );
 				}
 			}
-
+#endif
 			CStringW wsResult( wsText ); 
 			delete []wsText;
 
@@ -1406,7 +1414,7 @@ private:
 		unsigned short ushPenJoin   = pPen->ushStyle & PS_JOIN_MASK;
 		unsigned short ushPenStyle  = pPen->ushStyle & PS_STYLE_MASK;
 
-		byte nCapStyle = 0;
+        BYTE nCapStyle = 0;
 		if ( 0 == ushPenEndCap )
 			nCapStyle = 2;
 		else if ( 1 == ushPenEndCap )
@@ -1417,7 +1425,7 @@ private:
 		m_oPen.LineStartCap = nCapStyle;
 		m_oPen.LineEndCap	= nCapStyle;
 
-		byte nJoinStyle = 0;
+        BYTE nJoinStyle = 0;
 		if ( 0 == ushPenJoin )
 			nJoinStyle = 2;
 		else if ( 1 == ushPenJoin )
@@ -1428,7 +1436,7 @@ private:
 		m_oPen.LineJoin = nJoinStyle;
 
 		if ( PS_NULL != ushPenStyle )
-			m_oPen.DashStyle = (byte)ushPenStyle;
+            m_oPen.DashStyle = (BYTE)ushPenStyle;
 
 		m_pRenderer->put_PenDashStyle( m_oPen.DashStyle );
 		m_pRenderer->put_PenLineJoin( m_oPen.LineJoin );
@@ -1438,9 +1446,9 @@ private:
 		m_pRenderer->put_PenSize( m_oPen.Size );
 		m_pRenderer->put_PenAlpha( 255 );
 
-		// TO DO: С текущим интерфейсом AVSRenderer, остальные случаи ushROPMode
-		//        реализовать невозможно. Потому что данный параметр нужно протаскивать
-		//        как параметр Pen'a, и тот кто рисует сам должен разруливать все случаи.
+		// TO DO: РЎ С‚РµРєСѓС‰РёРј РёРЅС‚РµСЂС„РµР№СЃРѕРј AVSRenderer, РѕСЃС‚Р°Р»СЊРЅС‹Рµ СЃР»СѓС‡Р°Рё ushROPMode
+		//        СЂРµР°Р»РёР·РѕРІР°С‚СЊ РЅРµРІРѕР·РјРѕР¶РЅРѕ. РџРѕС‚РѕРјСѓ С‡С‚Рѕ РґР°РЅРЅС‹Р№ РїР°СЂР°РјРµС‚СЂ РЅСѓР¶РЅРѕ РїСЂРѕС‚Р°СЃРєРёРІР°С‚СЊ
+		//        РєР°Рє РїР°СЂР°РјРµС‚СЂ Pen'a, Рё С‚РѕС‚ РєС‚Рѕ СЂРёСЃСѓРµС‚ СЃР°Рј РґРѕР»Р¶РµРЅ СЂР°Р·СЂСѓР»РёРІР°С‚СЊ РІСЃРµ СЃР»СѓС‡Р°Рё.
 
 		switch (pDC->ushROPMode)
 		{
@@ -1475,7 +1483,7 @@ private:
 		}
 		else if ( BS_PATTERN == pBrush->ushStyle )
 		{
-			// TO DO: сделать этот вариант
+			// TO DO: СЃРґРµР»Р°С‚СЊ СЌС‚РѕС‚ РІР°СЂРёР°РЅС‚
 		}
 		else if ( BS_DIBPATTERN == pBrush->ushStyle )
 		{
@@ -1526,7 +1534,7 @@ private:
 
 			pInterface = pMediaData;
 #endif
-			// Пишем данные в pBufferPtr
+			// РџРёС€РµРј РґР°РЅРЅС‹Рµ РІ pBufferPtr
 
 			for ( int nIndex = 0; nIndex < 4 * nWidth * nHeight; nIndex += 4 ) 
 			{
@@ -1574,13 +1582,13 @@ private:
 
 			//m_oBrush.SetTexturePath( wsTempFileName );
 			//m_oBrush.SetTextureMode( 1 );
-			//m_oBrush.SetType( 8 ); // Текстурный
+			//m_oBrush.SetType( 8 ); // РўРµРєСЃС‚СѓСЂРЅС‹Р№
 
 			//BSTR bsBrush = m_oBrush.ToXmlString().AllocSysString();
 			//m_pRenderer->SetBrush( bsBrush );
 			//::SysFreeString( bsBrush );
 
-			// TO DO: Либо переделать этот вариант, либо разобраться что делать с темповым файлом в конце
+			// TO DO: Р›РёР±Рѕ РїРµСЂРµРґРµР»Р°С‚СЊ СЌС‚РѕС‚ РІР°СЂРёР°РЅС‚, Р»РёР±Рѕ СЂР°Р·РѕР±СЂР°С‚СЊСЃСЏ С‡С‚Рѕ РґРµР»Р°С‚СЊ СЃ С‚РµРјРїРѕРІС‹Рј С„Р°Р№Р»РѕРј РІ РєРѕРЅС†Рµ
 
 			return true;
 		}
@@ -1623,11 +1631,14 @@ private:
 	bool SetFont (TWmfDC *pDC, double dFontHeight)
 	{
 		TWmfFont *pFont = pDC->pFont;
-
+#ifdef DESKTOP_EDITOR_GRAPHICS
+		m_pRenderer->put_FontName(UTF8_TO_U(pFont->sFaceName));
+#else
 		CString strName(pFont->sFaceName);
 		BSTR bsName = strName.AllocSysString();
 		m_pRenderer->put_FontName(bsName);
 		SysFreeString(bsName);
+#endif
 
 		m_pRenderer->put_FontSize(dFontHeight);
 
@@ -1644,7 +1655,7 @@ private:
 
 		m_pRenderer->put_FontStyle(lStyle);
 
-		// Установим цвет текста и фона
+		// РЈСЃС‚Р°РЅРѕРІРёРј С†РІРµС‚ С‚РµРєСЃС‚Р° Рё С„РѕРЅР°
 
 		m_oBrush.Color1 = ( RGB( pDC->oTextColor.r, pDC->oTextColor.g, pDC->oTextColor.b ) );
 		m_oBrush.Alpha1 = ( 255 );
@@ -1714,12 +1725,12 @@ private:
 			return false;
 
 
-		if ( BI_BITCOUNT_0 == ushBitCount ) // Значит компрессия либо PNG, либо JPEG
+		if ( BI_BITCOUNT_0 == ushBitCount ) // Р—РЅР°С‡РёС‚ РєРѕРјРїСЂРµСЃСЃРёСЏ Р»РёР±Рѕ PNG, Р»РёР±Рѕ JPEG
 		{
 			if ( BI_JPEG != unCompression || BI_PNG != unCompression )
 				return false;
 
-			// Читаем через ImageStudio
+			// Р§РёС‚Р°РµРј С‡РµСЂРµР· ImageStudio
 			//todo
 #ifndef DESKTOP_EDITOR_GRAPHICS
 			USES_CONVERSION;
@@ -1734,7 +1745,7 @@ private:
 			IUnknown* punkFrame = ImageStudio::ISLoadImage(bsFilePath);
 			SysFreeString(bsFilePath);
 
-			// TO DO: Сделать чтение
+			// TO DO: РЎРґРµР»Р°С‚СЊ С‡С‚РµРЅРёРµ
 			RELEASEINTERFACE(punkFrame);
 
 			//VARIANT oVar;
@@ -1748,7 +1759,7 @@ private:
 		}
 		else if ( BI_BITCOUNT_1 == ushBitCount )
 		{
-			// Двуцветная картинка, значит палитра состоит из 2-х цветов
+			// Р”РІСѓС†РІРµС‚РЅР°СЏ РєР°СЂС‚РёРЅРєР°, Р·РЅР°С‡РёС‚ РїР°Р»РёС‚СЂР° СЃРѕСЃС‚РѕРёС‚ РёР· 2-С… С†РІРµС‚РѕРІ
 			TWmfRGB oColor1, oColor2;
 
 			oColor1.r = ReadByte( pBuffer ); pBuffer++; lBufLen--;
@@ -1761,7 +1772,7 @@ private:
 			oColor2.b = ReadByte( pBuffer ); pBuffer++; lBufLen--;
 			pBuffer++; lBufLen--;
 
-			// Считываем саму картинку
+			// РЎС‡РёС‚С‹РІР°РµРј СЃР°РјСѓ РєР°СЂС‚РёРЅРєСѓ
 			long lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
 			if ( lCalcLen != lBufLen )
 				return false;
@@ -1814,7 +1825,7 @@ private:
 		}
 		else if ( BI_BITCOUNT_2 == ushBitCount )
 		{
-			// TO DO: Сделать данный вариант, как только будет файлы с данным типом
+			// TO DO: РЎРґРµР»Р°С‚СЊ РґР°РЅРЅС‹Р№ РІР°СЂРёР°РЅС‚, РєР°Рє С‚РѕР»СЊРєРѕ Р±СѓРґРµС‚ С„Р°Р№Р»С‹ СЃ РґР°РЅРЅС‹Рј С‚РёРїРѕРј
 
 			int nTODO = 100;
 
@@ -1832,7 +1843,7 @@ private:
 			if ( lBufLen < ushColorTableLen * 4 ) 
 				return false;
 
-			// Считываем палитру
+			// РЎС‡РёС‚С‹РІР°РµРј РїР°Р»РёС‚СЂСѓ
 			for ( unsigned short ushIndex = 0; ushIndex < ushColorTableLen; ushIndex++ )
 			{
 				oColorTable[ushIndex].r = ReadByte( pBuffer ); pBuffer++; lBufLen--;
@@ -1841,9 +1852,9 @@ private:
 				pBuffer++; lBufLen--;
 			}
 
-			// 1 байт - 1 пиксел
+			// 1 Р±Р°Р№С‚ - 1 РїРёРєСЃРµР»
 
-			// Ширина должна быть кратна 4.
+			// РЁРёСЂРёРЅР° РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РєСЂР°С‚РЅР° 4.
 			int nAdd = 0;
 			while ( 0 != div_t(div( nWidth + nAdd, 4 )).rem )
 			{
@@ -1902,7 +1913,7 @@ private:
 		}
 		else if ( BI_BITCOUNT_4 == ushBitCount )
 		{
-			// TO DO: Сделать данный вариант, как только будет файлы с данным типом
+			// TO DO: РЎРґРµР»Р°С‚СЊ РґР°РЅРЅС‹Р№ РІР°СЂРёР°РЅС‚, РєР°Рє С‚РѕР»СЊРєРѕ Р±СѓРґРµС‚ С„Р°Р№Р»С‹ СЃ РґР°РЅРЅС‹Рј С‚РёРїРѕРј
 
 			int nTODO = 100;
 
@@ -1910,19 +1921,19 @@ private:
 		}
 		else if ( BI_BITCOUNT_5 == ushBitCount )
 		{
-			// Пропускаем таблицу цветов (она не нужна)
+			// РџСЂРѕРїСѓСЃРєР°РµРј С‚Р°Р±Р»РёС†Сѓ С†РІРµС‚РѕРІ (РѕРЅР° РЅРµ РЅСѓР¶РЅР°)
 			pBuffer += unColorUsed * 4; lBufLen -= unColorUsed * 4;
 
 			if ( BI_RGB != unCompression )
-				return false; // TO DO: Сделать данный вариант, как только будет файлы с данным типом
+				return false; // TO DO: РЎРґРµР»Р°С‚СЊ РґР°РЅРЅС‹Р№ РІР°СЂРёР°РЅС‚, РєР°Рє С‚РѕР»СЊРєРѕ Р±СѓРґРµС‚ С„Р°Р№Р»С‹ СЃ РґР°РЅРЅС‹Рј С‚РёРїРѕРј
 
-			// Считываем саму картинку
+			// РЎС‡РёС‚С‹РІР°РµРј СЃР°РјСѓ РєР°СЂС‚РёРЅРєСѓ
 			long lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
 			if ( lCalcLen != lBufLen )
 				return false;
 
-			// 1 байт на каждый канал
-			// (Ширина * 3) должна быть кратна 4.
+			// 1 Р±Р°Р№С‚ РЅР° РєР°Р¶РґС‹Р№ РєР°РЅР°Р»
+			// (РЁРёСЂРёРЅР° * 3) РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РєСЂР°С‚РЅР° 4.
 			int nAdd = 0;
 			while ( 0 != div_t(div( 3 * nWidth + nAdd, 4 )).rem )
 			{
@@ -1973,7 +1984,7 @@ private:
 		}
 		else if ( BI_BITCOUNT_6 == ushBitCount )
 		{
-			// TO DO: Сделать данный вариант, как только будет файлы с данным типом
+			// TO DO: РЎРґРµР»Р°С‚СЊ РґР°РЅРЅС‹Р№ РІР°СЂРёР°РЅС‚, РєР°Рє С‚РѕР»СЊРєРѕ Р±СѓРґРµС‚ С„Р°Р№Р»С‹ СЃ РґР°РЅРЅС‹Рј С‚РёРїРѕРј
 
 			int nTODO = 100;
 
@@ -2003,11 +2014,11 @@ private:
 	double m_dDpiX;
 	double m_dDpiY;
 
-	TWmfRectF m_oWmfRect; // Общий рект, в котором рисуется вся картинка
-	double m_dX;        // Координаты левого верхнего угла
+	TWmfRectF m_oWmfRect; // РћР±С‰РёР№ СЂРµРєС‚, РІ РєРѕС‚РѕСЂРѕРј СЂРёСЃСѓРµС‚СЃСЏ РІСЃСЏ РєР°СЂС‚РёРЅРєР°
+	double m_dX;        // РљРѕРѕСЂРґРёРЅР°С‚С‹ Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ СѓРіР»Р°
 	double m_dY;        //
-	double m_dScaleX;   // Коэффициенты сжатия/растяжения, чтобы 
-	double m_dScaleY;   // результирующая картинка была нужных размеров.
+	double m_dScaleX;   // РљРѕСЌС„С„РёС†РёРµРЅС‚С‹ СЃР¶Р°С‚РёСЏ/СЂР°СЃС‚СЏР¶РµРЅРёСЏ, С‡С‚РѕР±С‹ 
+	double m_dScaleY;   // СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰Р°СЏ РєР°СЂС‚РёРЅРєР° Р±С‹Р»Р° РЅСѓР¶РЅС‹С… СЂР°Р·РјРµСЂРѕРІ.
 	double m_dX1;
 	double m_dY1;
 

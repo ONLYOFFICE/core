@@ -1,4 +1,4 @@
-#include "ASCSVGWriter.h"
+п»ї#include "ASCSVGWriter.h"
 
 #include "../DesktopEditor/graphics/GraphicsPath.h"
 #include "Writer/VectorGraphicsWriter2.h"
@@ -32,7 +32,7 @@ namespace NSHtmlRenderer
 		m_pTransform = new Aggplus::CMatrix();
 		m_pFullTransform = new Aggplus::CMatrix();
 
-		//todo вроде как подбора нет, но может нужно передавать?
+		//todo РІСЂРѕРґРµ РєР°Рє РїРѕРґР±РѕСЂР° РЅРµС‚, РЅРѕ РјРѕР¶РµС‚ РЅСѓР¶РЅРѕ РїРµСЂРµРґР°РІР°С‚СЊ?
 		m_pFontManager = new CFontManager();
 		m_pFontManager->Initialize();
 
@@ -62,7 +62,7 @@ namespace NSHtmlRenderer
 		*lType = c_nSVGRendrerer;
 		return S_OK;
 	}
-	//-------- Функции для работы со страницей --------------------------------------------------
+	//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂР°РЅРёС†РµР№ --------------------------------------------------
 	HRESULT CASCSVGWriter::NewPage()
 	{	
 		return S_OK;
@@ -393,7 +393,7 @@ namespace NSHtmlRenderer
 		m_pFont->FaceIndex = lFaceIndex;
 		return S_OK;
 	}
-	//-------- Функции для вывода текста --------------------------------------------------------
+	//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р° --------------------------------------------------------
 	HRESULT CASCSVGWriter::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset)
 	{
 		//todo new command
@@ -433,7 +433,7 @@ namespace NSHtmlRenderer
 		PathCommandEnd();
 		return S_OK;	
 	}
-	//-------- Маркеры для команд ---------------------------------------------------------------
+	//-------- РњР°СЂРєРµСЂС‹ РґР»СЏ РєРѕРјР°РЅРґ ---------------------------------------------------------------
 	HRESULT CASCSVGWriter::BeginCommand(const DWORD& lType)
 	{
 		if (m_bIsRaster)
@@ -467,7 +467,7 @@ namespace NSHtmlRenderer
 		m_lCurrentCommandType = -1;
 		return S_OK;
 	}
-	//-------- Функции для работы с Graphics Path -----------------------------------------------
+	//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Graphics Path -----------------------------------------------
 	HRESULT CASCSVGWriter::PathCommandMoveTo(const double& fX, const double& fY)
 	{
 		if (m_bIsRaster)
@@ -641,7 +641,7 @@ namespace NSHtmlRenderer
 		m_pFont->StringGID = bGid;
 		return S_OK;
 	}
-	//-------- Функции для вывода изображений ---------------------------------------------------
+	//-------- Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№ ---------------------------------------------------
 	HRESULT CASCSVGWriter::DrawImage(IGrObject* pImage, const double& fX, const double& fY, const double& fWidth, const double& fHeight)
 	{
 		m_bIsRaster = true;
@@ -797,7 +797,7 @@ namespace NSHtmlRenderer
 	}
 	HRESULT CASCSVGWriter::IsRaster(bool* bVal)
 	{
-		*bVal	= m_bIsRaster ? VARIANT_TRUE : VARIANT_FALSE;
+        *bVal	= m_bIsRaster;
 		return S_OK;
 	}
 	// additiaonal params ----------------------------------------------------------------------

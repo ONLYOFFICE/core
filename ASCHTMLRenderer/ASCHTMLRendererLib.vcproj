@@ -167,7 +167,6 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description=""
 				CommandLine=""
 			/>
 		</Configuration>
@@ -227,10 +226,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\DesktopEditor\editor\DibPainter.h"
-				>
-			</File>
-			<File
 				RelativePath=".\IBaseMatrixUpdater.h"
 				>
 			</File>
@@ -242,10 +237,6 @@
 		<Filter
 			Name="Writer"
 			>
-			<File
-				RelativePath=".\Writer\CanvasWriter.h"
-				>
-			</File>
 			<File
 				RelativePath=".\Writer\StringWriter.h"
 				>

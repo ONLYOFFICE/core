@@ -47,11 +47,6 @@ namespace NSStrings
 
 	public:
 		
-		AVSINLINE void WriteString(_bstr_t& bsString)
-		{
-			size_t nLen = bsString.length();
-			CTextItem::WriteString(bsString.GetBSTR(), nLen);
-		}
 		AVSINLINE void WriteString(CString& sString)
 		{
 			size_t nLen = (size_t)sString.GetLength();

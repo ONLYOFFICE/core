@@ -202,5 +202,27 @@ static DWORD GetSysColor(const int nIndex)
 }
 
 
+#else
+
+	#ifndef COLOR_HOTLIGHT
+		#define COLOR_HOTLIGHT          26
+	#endif
+
+	#ifndef COLOR_GRADIENTACTIVECAPTION
+		#define COLOR_GRADIENTACTIVECAPTION 27
+	#endif
+
+	#ifndef COLOR_GRADIENTINACTIVECAPTION
+		#define COLOR_GRADIENTINACTIVECAPTION 28
+	#endif
+
+	#ifndef COLOR_MENUHILIGHT
+		#define COLOR_MENUHILIGHT       29
+	#endif
+
+	#ifndef COLOR_MENUBAR
+		#define COLOR_MENUBAR           30
+	#endif
+
 #endif //#ifndef _WIN32
 #endif // #ifndef _ASC_WIN_API

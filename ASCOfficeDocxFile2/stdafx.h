@@ -43,7 +43,6 @@
 #include <atltypes.h>
 #include <atlctl.h>
 #include <atlhost.h>
-#include <atlcoll.h>
 
 using namespace ATL;
 #include "../Common/ASCUtils.h"

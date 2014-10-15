@@ -4,7 +4,6 @@
 #include "../Base/SmartPtr.h"
 
 #ifdef _WIN32
-#include <atlcoll.h>
 #include <atlenc.h>
 #include <comutil.h>
 #endif

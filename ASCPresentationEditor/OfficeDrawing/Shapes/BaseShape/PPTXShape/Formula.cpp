@@ -2,18 +2,18 @@
 
 #include "Formula.h"
 
-double NSGuidesOOXML::CFormula::Calculate(NSGuidesOOXML::CFormulaManager& pManager)
+double NSGuidesOOXML::CFormula::Calculate(NSGuidesOOXML::CFormulaManager* pManager)
 {
-	if ((0 == m_lIndex) || (-m_lIndex > pManager.Guides->size()) || (m_lIndex > pManager.Adjustments->size()))
+	if ((0 == m_lIndex) || (-m_lIndex > pManager->Guides->size()) || (m_lIndex > pManager->Adjustments->size()))
 		return 0.0;
-	if((m_lIndex < 0) && (dNonDefResult > (*pManager.Guides)[-m_lIndex-1]))
-		return (*pManager.Guides)[-m_lIndex-1];
-	if((m_lIndex > 0) && (NonDefResult != (*pManager.Adjustments)[m_lIndex-1]))
-		return (*pManager.Adjustments)[m_lIndex-1];
+	if((m_lIndex < 0) && (dNonDefResult > (*pManager->Guides)[-m_lIndex-1]))
+		return (*pManager->Guides)[-m_lIndex-1];
+	if((m_lIndex > 0) && (NonDefResult != (*pManager->Adjustments)[m_lIndex-1]))
+		return (*pManager->Adjustments)[m_lIndex-1];
 	
-	double a = pManager.GetValue(m_lParam1);
-	double b = pManager.GetValue(m_lParam2);
-	double c = pManager.GetValue(m_lParam3);
+	double a = pManager->GetValue(m_lParam1);
+	double b = pManager->GetValue(m_lParam2);
+	double c = pManager->GetValue(m_lParam3);
 	//double c = (double)c1;
 
 	double dRes = 0.0;
@@ -51,11 +51,11 @@ double NSGuidesOOXML::CFormula::Calculate(NSGuidesOOXML::CFormulaManager& pManag
 	//long lResult = (long)dRes;
 	if(m_lIndex < 0)
 	{
-		(*pManager.Guides)[-m_lIndex-1] = dRes;
+		(*pManager->Guides)[-m_lIndex-1] = dRes;
 		// переопределим формулу
-		pManager.mapGuides.insert(std::pair<CString, long>(m_sName, -m_lIndex-1));
+		pManager->mapGuides.insert(std::pair<CString, long>(m_sName, -m_lIndex-1));
 	}
 	else
-		(*pManager.Adjustments)[m_lIndex-1] = (long)dRes;
+		(*pManager->Adjustments)[m_lIndex-1] = (long)dRes;
 	return dRes;
 }

@@ -930,8 +930,8 @@ namespace NSPresentationEditor
 		}
 		void SetToRenderer(IRenderer *pRenderer)
 		{		
-            pRenderer->put_FontName(Name);
-            pRenderer->put_FontPath(Path);
+            pRenderer->put_FontName(string2std_string(Name));
+            pRenderer->put_FontPath(string2std_string(Path));
 
 
 			pRenderer->put_FontSize(Size);

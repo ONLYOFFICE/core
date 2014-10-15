@@ -537,6 +537,58 @@
 				RelativePath=".\DocWrapper\FontProcessor.h"
 				>
 			</File>
+			<File
+				RelativePath="..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTXShape\Formula.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseASC|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="ReleaseOpenSource|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						ObjectFile="$(IntDir)\$(InputName)1.obj"
+						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTXShape\Formula.h"
+				>
+			</File>
+			<File
+				RelativePath="..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="XLSX"

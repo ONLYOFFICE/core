@@ -116,7 +116,7 @@ namespace NSGuidesOOXML
 				m_lParam3 = oArrayParams[3];
 		}
 
-		double Calculate(CFormulaManager& pManager);
+		double Calculate(CFormulaManager* pManager);
 	};
 
 	class CFormulaManager
@@ -324,14 +324,14 @@ namespace NSGuidesOOXML
 				double res = (*Guides)[numGuide->second];
 				if(res < dNonDefResult)
 					return res;
-				return strGuides[numGuide->second].Calculate(*this);
+				return strGuides[numGuide->second].Calculate(this);
 			}
 			if(numAdj != mapAdjustments.end())
 			{
 				long res = (*Adjustments)[numAdj->second];
 				if(res != NonDefResult)
 					return res;
-				return strAdjustments[numAdj->second].Calculate(*this);
+				return strAdjustments[numAdj->second].Calculate(this);
 			}
 			return XmlUtils::GetInteger(str);
 		}
@@ -348,7 +348,7 @@ namespace NSGuidesOOXML
 		{
 			Clear();
 			for(long i = 0; i < strGuides.size(); i++)
-				(*Guides)[i] = strGuides[i].Calculate(*this);
+				(*Guides)[i] = strGuides[i].Calculate(this);
 		}
 	};
 }

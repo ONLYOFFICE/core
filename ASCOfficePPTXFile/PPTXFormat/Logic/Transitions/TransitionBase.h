@@ -4,6 +4,8 @@
 
 #include "./../../WrapperWritingElement.h"
 
+#include <list>
+
 namespace PPTX
 {
 	namespace Logic
@@ -86,12 +88,12 @@ namespace PPTX
 						}
 						case 1:
 						{
-							m_strAttributesNames.AddTail(pReader->GetString2());
+							m_strAttributesNames.push_back(pReader->GetString2());
 							break;
 						}
 						case 2:
 						{
-							m_strAttributesValues.AddTail(pReader->GetString2());
+							m_strAttributesValues.push_back(pReader->GetString2());
 							break;
 						}
 						default:
@@ -107,18 +109,21 @@ namespace PPTX
 
 				pWriter->WriteString1(0, m_strNodeName);
 				
-				POSITION pos = m_strAttributesNames.GetHeadPosition();
-				while (NULL != pos)
+				
+				std::list<CString>::const_iterator pos1 = m_strAttributesNames.begin();
+				while (pos1 != m_strAttributesNames.end())
 				{
-					const CString& s = m_strAttributesNames.GetNext(pos);
+					const CString& s = *pos1;
 					pWriter->WriteString1(1, s);
+					pos1++;
 				}
 
-				pos = m_strAttributesValues.GetHeadPosition();
-				while (NULL != pos)
+				std::list<CString>::const_iterator pos2 = m_strAttributesValues.begin();
+				while (pos2 != m_strAttributesValues.end())
 				{
-					const CString& s = m_strAttributesValues.GetNext(pos);
+					const CString& s = *pos2;;
 					pWriter->WriteString1(2, s);
+					pos2++;
 				}
 
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
@@ -129,20 +134,24 @@ namespace PPTX
 				
 				pWriter->StartAttributes();
 
-				size_t c1 = m_strAttributesNames.GetCount();
-				size_t c2 = m_strAttributesValues.GetCount();
+				//и нафига тогда листы?? - примем аксиомно что размеры одинаковые
+				//size_t c1 = m_strAttributesNames.GetCount();
+				//size_t c2 = m_strAttributesValues.GetCount();
 
-				if (c1 == c2)
+				//if (c1 == c2)
 				{
-					POSITION pos1 = m_strAttributesNames.GetHeadPosition();
-					POSITION pos2 = m_strAttributesValues.GetHeadPosition();
+					std::list<CString>::const_iterator pos1 = m_strAttributesNames.begin();
+					std::list<CString>::const_iterator pos2 = m_strAttributesValues.begin();
 
-					while (pos1 != NULL && pos2 != NULL)
+					while (pos1 != m_strAttributesNames.end() && pos2 != m_strAttributesValues.end())
 					{
-						const CString& s1 = m_strAttributesNames.GetNext(pos1);
-						const CString& s2 = m_strAttributesValues.GetNext(pos2);
+						const CString& s1 = *pos1;
+						const CString& s2 = *pos2;
 
 						pWriter->WriteAttribute(s1, s2);
+						
+						pos1++;
+						pos2++;
 					}
 				}				
 				
@@ -184,20 +193,23 @@ namespace PPTX
 				
 				pWriter->StartAttributes();
 
-				size_t c1 = m_strAttributesNames.GetCount();
-				size_t c2 = m_strAttributesValues.GetCount();
+				//size_t c1 = m_strAttributesNames.GetCount();
+				//size_t c2 = m_strAttributesValues.GetCount();
 
-				if (c1 == c2)
+				//if (c1 == c2)
 				{
-					POSITION pos1 = m_strAttributesNames.GetHeadPosition();
-					POSITION pos2 = m_strAttributesValues.GetHeadPosition();
+					std::list<CString>::const_iterator pos1 = m_strAttributesNames.begin();
+					std::list<CString>::const_iterator pos2 = m_strAttributesValues.begin();
 
-					while (pos1 != NULL && pos2 != NULL)
+					while (pos1 != m_strAttributesNames.end() && pos2 != m_strAttributesValues.end())
 					{
-						const CString& s1 = m_strAttributesNames.GetNext(pos1);
-						const CString& s2 = m_strAttributesValues.GetNext(pos2);
+						const CString& s1 = *pos1;
+						const CString& s2 = *pos2;
 
 						pWriter->WriteAttribute(s1, s2);
+
+						pos1++;
+						pos2++;
 					}
 				}				
 				
@@ -208,8 +220,8 @@ namespace PPTX
 
 		public:
 			CString				m_strNodeName;
-			CAtlList<CString>	m_strAttributesNames;
-			CAtlList<CString>	m_strAttributesValues;
+			std::list<CString>	m_strAttributesNames;
+			std::list<CString>	m_strAttributesValues;
 
 		protected:
 			virtual void FillParentPointersForChilds(){};

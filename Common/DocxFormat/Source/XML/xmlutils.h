@@ -1117,7 +1117,7 @@ namespace XmlUtils
 	};
 	
 	class CDispatchPropertyList 
-		: public CAtlArray<SDispatchProperty>
+		: public std::vector<SDispatchProperty>
 	{
 	public:
 		CDispatchPropertyList()
@@ -1135,6 +1135,24 @@ namespace XmlUtils
 				else if ((0!=(VT_ARRAY & GetAt(nIndex).m_varValue.vt))&&(NULL!=GetAt(nIndex).m_varValue.parray))
 					SafeArrayDestroy(GetAt(nIndex).m_varValue.parray);
 			}
+		}
+		const SDispatchProperty& GetAt( size_t iElement)
+		{
+			return at(iElement);
+		}
+		size_t GetCount() { return size();}
+		size_t Add()
+		{
+			SDispatchProperty elem;
+			push_back(elem);
+
+			return size()-1;
+		}
+		size_t Add(SDispatchProperty & elem)
+		{
+			push_back(elem);
+			
+			return size()-1;
 		}
 	};
 
@@ -1766,8 +1784,8 @@ namespace XmlUtils
 				tempNode->get_nodeName(&bsName);
 				tempNode->get_text(&bsValue);
 
-				strNames.AddTail((CString)bsName);
-				strValues.AddTail((CString)bsValue);
+				strNames.push_back((CString)bsName);
+				strValues.push_back((CString)bsValue);
 
 				SysFreeString(bsName);
 				SysFreeString(bsValue);
@@ -2457,47 +2475,6 @@ namespace XmlUtils
 			_bstr_t bsName = strName;
 			return UpdateAttributeOrValueStringBase(bsName, strVal);
 		}
-		//-----------------------------------------------------------------------------
-
-		template <typename T>
-		AVSINLINE void LoadArray(const CString& sName, CAtlArray<T>& arList)
-		{
-			XmlUtils::CXmlNodes oNodes;
-			if (GetNodes(sName, oNodes))
-			{
-				int nCount = oNodes.GetCount();
-				for (int i = 0; i < nCount; ++i)
-				{
-					XmlUtils::CXmlNode oItem;
-					oNodes.GetAt(i, oItem);
-
-					arList.Add();
-					arList[i].fromXML(oItem);
-				}
-			}
-		}
-		template <typename T>
-		AVSINLINE void LoadArray(const CString& sName, const CString& sSubName, CAtlArray<T>& arList)
-		{
-			XmlUtils::CXmlNode oNode;
-			if (GetNode(sName, oNode))
-			{
-				XmlUtils::CXmlNodes oNodes;
-				if (oNode.GetNodes(sSubName, oNodes))
-				{
-					int nCount = oNodes.GetCount();
-					for (int i = 0; i < nCount; ++i)
-					{
-						XmlUtils::CXmlNode oItem;
-						oNodes.GetAt(i, oItem);
-
-						arList.Add();
-						arList[i].fromXML(oItem);
-					}
-				}
-			}
-		}
-
 		//---------------------------------------------------------------------------------
 		template <typename T>
 		AVSINLINE void LoadArray(const CString& sName, std::vector<T>& arList)

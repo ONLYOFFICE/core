@@ -156,17 +156,10 @@ namespace XmlUtils
 		}
 #ifdef _WIN32
 		template <typename T>
-		AVSINLINE void WriteArray(const CAtlArray<T>& oArray)
-		{
-			size_t count = oArray.GetCount();
-			for (size_t i = 0; i < count; ++i)
-				m_strValue += oArray[i].toXML();
-		}
-		template <typename T>
-		AVSINLINE void WriteArray(const CString& strNodeName, const CAtlArray<T>& oArray)
+		AVSINLINE void WriteArray(const CString& strNodeName, const std::vector<T>& oArray)
 		{
 			m_strValue += (_T("<") + strNodeName + _T(">"));
-			size_t count = oArray.GetCount();
+			size_t count = oArray.size();
 			for (size_t i = 0; i < count; ++i)
 				m_strValue += oArray[i].toXML();
 			m_strValue += (_T("</") + strNodeName + _T(">"));
@@ -180,16 +173,6 @@ namespace XmlUtils
             for (size_t i = 0; i < count; ++i)
                 m_strValue += oArray[i].toXML();
         }
-        template <typename T>
-        AVSINLINE void WriteArray(const CString& strNodeName, const std::vector<T>& oArray)
-        {
-            m_strValue += (_T("<") + strNodeName + _T(">"));
-            size_t count = oArray.size();
-            for (size_t i = 0; i < count; ++i)
-                m_strValue += oArray[i].toXML();
-            m_strValue += (_T("</") + strNodeName + _T(">"));
-        }
-
 		// --------------------------------------------------------------- //
 		AVSINLINE void Write2(const CString& strName, const int& value)
 		{

@@ -52,7 +52,6 @@
 #include <atlstr.h>
 #include <atltypes.h>
 
-//#include <atlcoll.h>
 typedef unsigned int size_t;
 
 #include "../../../ASCUtils.h"

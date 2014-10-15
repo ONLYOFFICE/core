@@ -7,7 +7,7 @@
 #include <atltypes.h>
 #include <atlctl.h>
 #include <atlhost.h>
-#include <atlcoll.h>
+
 #else
 #include "../../Common/DocxFormat/Source/Base/ASCString.h"
 #include "../../DesktopEditor/common/Types.h"
@@ -298,21 +298,6 @@ namespace NSBinPptxRW
 			}
 		}
 
-#ifdef _WIN32
-		template<typename T>
-		void WriteRecordArray(int type, int subtype, const CAtlArray<T>& val)
-		{
-			StartRecord(type);
-
-			ULONG len = (ULONG)val.GetCount();
-			WriteULONG(len);
-
-			for (ULONG i = 0; i < len; ++i)
-				WriteRecord1(subtype, val[i]);
-
-			EndRecord();
-		}
-#endif #ifdef _WIN32
 		template<typename T>
 		void WriteRecordArray(int type, int subtype, const std::vector<T>& val)
 		{

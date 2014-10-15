@@ -45,7 +45,7 @@ namespace NSPresentationEditor
 			RELEASEMEM(m_pData);
 		}
 
-		__forceinline void AddSize(size_t nSize)
+        AVSINLINE void AddSize(size_t nSize)
 		{
 			if (NULL == m_pData)
 			{
@@ -85,7 +85,7 @@ namespace NSPresentationEditor
 
 	public:
 		
-		__forceinline void WriteString(const wchar_t* pString, size_t& nLen)
+        AVSINLINE void WriteString(const wchar_t* pString, size_t& nLen)
 		{
 			AddSize(nLen);
 			// memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
@@ -96,18 +96,18 @@ namespace NSPresentationEditor
 			m_lSizeCur += nLen;
 		}
 #ifdef _WIN32
-		__forceinline void WriteString(_bstr_t& bsString)
+        AVSINLINE void WriteString(_bstr_t& bsString)
 		{
 			size_t nLen = bsString.length();
 			WriteString(bsString.GetBSTR(), nLen);
 		}
 #endif // #ifdef _WIN32
-		__forceinline void WriteString(std::wstring& wString)
+        AVSINLINE void WriteString(std::wstring& wString)
 		{
 			size_t nLen = wString.length();
 			WriteString(wString.c_str(), nLen);
 		}
-		__forceinline void WriteString(const CString& sString)
+        AVSINLINE void WriteString(const CString& sString)
 		{
 			size_t nLen = (size_t)sString.GetLength();
 			
@@ -120,12 +120,12 @@ namespace NSPresentationEditor
 			#endif
 		}
 
-		__forceinline size_t GetCurSize()
+        AVSINLINE size_t GetCurSize()
 		{
 			return m_lSizeCur;
 		}
 
-		__forceinline void Write(CStringWriter& oWriter)
+        AVSINLINE void Write(CStringWriter& oWriter)
 		{
 			WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
 		}
@@ -190,36 +190,36 @@ namespace NSPresentationEditor
 		}
 
 		// write value
-		__forceinline void WriteString(CString strValue)
+        AVSINLINE void WriteString(CString strValue)
 		{
 			m_oWriter.WriteString(strValue);
 		}
-		__forceinline void WriteDouble(const double& val)
+        AVSINLINE void WriteDouble(const double& val)
 		{
 			CString str = _T("");
 			str.Format(_T("%lf"), val);
 			m_oWriter.WriteString(str);
 		}
-		__forceinline void WriteLONG(const long& val)
+        AVSINLINE void WriteLONG(const long& val)
 		{
 			CString str = _T("");
 			str.Format(_T("%d"), val);
 			m_oWriter.WriteString(str);
 		}
-		__forceinline void WriteDWORD(const DWORD& val)
+        AVSINLINE void WriteDWORD(const DWORD& val)
 		{
 			CString str = _T("");
 			str.Format(_T("%u"), val);
 			m_oWriter.WriteString(str);
 		}
-		__forceinline void WriteDWORD_hex(const DWORD& val)
+        AVSINLINE void WriteDWORD_hex(const DWORD& val)
 		{
 			CString str = _T("");
 			str.Format(_T("%x"), val);
 			m_oWriter.WriteString(str);
 		}
 		// write attribute
-		__forceinline void WriteAttributeString(const CString& strAttributeName, const CString& val)
+        AVSINLINE void WriteAttributeString(const CString& strAttributeName, const CString& val)
 		{
 			m_oWriter.WriteString(g_bstr_node_space);
 			m_oWriter.WriteString(strAttributeName);
@@ -228,7 +228,7 @@ namespace NSPresentationEditor
 			m_oWriter.WriteString(val);
 			m_oWriter.WriteString(g_bstr_node_quote);
 		}
-		__forceinline void WriteAttributeDouble(const CString& strAttributeName, const double& val)
+        AVSINLINE void WriteAttributeDouble(const CString& strAttributeName, const double& val)
 		{
 			m_oWriter.WriteString(g_bstr_node_space);
 			m_oWriter.WriteString(strAttributeName);
@@ -237,7 +237,7 @@ namespace NSPresentationEditor
 			WriteDouble(val);
 			m_oWriter.WriteString(g_bstr_node_quote);
 		}
-		__forceinline void WriteAttributeLONG(const CString& strAttributeName, const LONG& val)
+        AVSINLINE void WriteAttributeLONG(const CString& strAttributeName, const LONG& val)
 		{
 			m_oWriter.WriteString(g_bstr_node_space);
 			m_oWriter.WriteString(strAttributeName);
@@ -246,7 +246,7 @@ namespace NSPresentationEditor
 			WriteLONG(val);
 			m_oWriter.WriteString(g_bstr_node_quote);
 		}
-		__forceinline void WriteAttributeDWORD(const CString& strAttributeName, const DWORD& val)
+        AVSINLINE void WriteAttributeDWORD(const CString& strAttributeName, const DWORD& val)
 		{
 			m_oWriter.WriteString(g_bstr_node_space);
 			m_oWriter.WriteString(strAttributeName);
@@ -255,7 +255,7 @@ namespace NSPresentationEditor
 			WriteDWORD(val);
 			m_oWriter.WriteString(g_bstr_node_quote);
 		}
-		__forceinline void WriteAttributeDWORD_hex(const CString& strAttributeName, const DWORD& val)
+        AVSINLINE void WriteAttributeDWORD_hex(const CString& strAttributeName, const DWORD& val)
 		{
 			m_oWriter.WriteString(g_bstr_node_space);
 			m_oWriter.WriteString(strAttributeName);
@@ -265,7 +265,7 @@ namespace NSPresentationEditor
 			m_oWriter.WriteString(g_bstr_node_quote);
 		}
 		// document methods
-		__forceinline void WriteNodeBegin(CString strNodeName, BOOL bAttributed = FALSE)
+        AVSINLINE void WriteNodeBegin(CString strNodeName, BOOL bAttributed = FALSE)
 		{
 			m_oWriter.WriteString(g_bstr_nodeopen);
 			m_oWriter.WriteString(strNodeName);
@@ -273,7 +273,7 @@ namespace NSPresentationEditor
 			if (!bAttributed)
 				m_oWriter.WriteString(g_bstr_nodeclose);
 		}
-		__forceinline void WriteNodeEnd(CString strNodeName, BOOL bEmptyNode = FALSE, BOOL bEndNode = TRUE)
+        AVSINLINE void WriteNodeEnd(CString strNodeName, BOOL bEmptyNode = FALSE, BOOL bEndNode = TRUE)
 		{
 			if (bEmptyNode)
 			{
@@ -290,13 +290,13 @@ namespace NSPresentationEditor
 			}
 		}
 		// write node values
-		__forceinline void WriteNodeValueString(const CString& strNodeName, const CString& val)
+        AVSINLINE void WriteNodeValueString(const CString& strNodeName, const CString& val)
 		{
 			WriteNodeBegin(strNodeName);
 			WriteString(val);
 			WriteNodeEnd(strNodeName);
 		}
-		__forceinline void WriteNodeValueBool(const CString& strNodeName, const bool& val)
+        AVSINLINE void WriteNodeValueBool(const CString& strNodeName, const bool& val)
 		{
 			WriteNodeBegin(strNodeName);
 			
@@ -307,25 +307,25 @@ namespace NSPresentationEditor
 
 			WriteNodeEnd(strNodeName);
 		}
-		__forceinline void WriteNodeValueDouble(const CString& strNodeName, const double& val)
+        AVSINLINE void WriteNodeValueDouble(const CString& strNodeName, const double& val)
 		{
 			WriteNodeBegin(strNodeName);
 			WriteDouble(val);
 			WriteNodeEnd(strNodeName);
 		}
-		__forceinline void WriteNodeValueLONG(const CString& strNodeName, const LONG& val)
+        AVSINLINE void WriteNodeValueLONG(const CString& strNodeName, const LONG& val)
 		{
 			WriteNodeBegin(strNodeName);
 			WriteLONG(val);
 			WriteNodeEnd(strNodeName);
 		}
-		__forceinline void WriteNodeValueDWORD(const CString& strNodeName, const DWORD& val)
+        AVSINLINE void WriteNodeValueDWORD(const CString& strNodeName, const DWORD& val)
 		{
 			WriteNodeBegin(strNodeName);
 			WriteDWORD(val);
 			WriteNodeEnd(strNodeName);
 		}
-		__forceinline void WriteNodeValueDWORD_hex(const CString& strNodeName, const DWORD& val)
+        AVSINLINE void WriteNodeValueDWORD_hex(const CString& strNodeName, const DWORD& val)
 		{
 			WriteNodeBegin(strNodeName);
 			WriteDWORD_hex(val);

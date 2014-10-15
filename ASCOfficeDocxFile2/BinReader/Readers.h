@@ -1372,7 +1372,7 @@ public:
 		}
 		else if( c_oSer_tblpPrType::Paddings == type )
 		{
-			Paddings oPaddings;
+			PaddingsToWrite oPaddings;
 			res = Read2(length, &Binary_tblPrReader::ReadPaddings, this, &oPaddings);
 			if(oPaddings.bLeft)
 			{
@@ -1709,14 +1709,14 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	};
-	int ReadPaddingsOut(long length, Paddings* oPaddings)
+	int ReadPaddingsOut(long length, PaddingsToWrite* oPaddings)
 	{
 		return Read2(length, &Binary_tblPrReader::ReadPaddings, this, oPaddings);
 	}
 	int ReadPaddings(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		Paddings* oPaddings = static_cast<Paddings*>(poResult);
+		PaddingsToWrite* oPaddings = static_cast<PaddingsToWrite*>(poResult);
 		if (c_oSerPaddingType::left == type)
 		{
 			oPaddings->bLeft = true;

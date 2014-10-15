@@ -2402,7 +2402,7 @@ namespace BinXlsxRW {
 				if(S_OK == hRes && NULL != bstrXml)
 				{
 					pCellAnchor->m_oXml.Init();
-					pCellAnchor->m_oXml->AppendFormat(_T("%s<xdr:clientData/>"), *bstrXml);
+					pCellAnchor->m_oXml->AppendFormat(_T("%s<xdr:clientData/>"), (const TCHAR *) bstrXml);
 				}
 				RELEASEOBJECT(bstrXml);
 			}
@@ -2556,7 +2556,7 @@ namespace BinXlsxRW {
 					else
 						sRId = pPair->second;
 					pCellAnchor->m_oXml.Init();
-					pCellAnchor->m_oXml->AppendFormat(_T("<xdr:pic><xdr:nvPicPr><xdr:cNvPr id=\"1\" name=\"Image 1\"></xdr:cNvPr><xdr:cNvPicPr><a:picLocks noChangeAspect=\"1\"></a:picLocks></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip r:embed=\"%s\"></a:blip><a:stretch></a:stretch></xdr:blipFill><xdr:spPr><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/>"), sRId);
+					pCellAnchor->m_oXml->AppendFormat(_T("<xdr:pic><xdr:nvPicPr><xdr:cNvPr id=\"1\" name=\"Image 1\"></xdr:cNvPr><xdr:cNvPicPr><a:picLocks noChangeAspect=\"1\"></a:picLocks></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip r:embed=\"%s\"></a:blip><a:stretch></a:stretch></xdr:blipFill><xdr:spPr><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/>"), (const TCHAR *) sRId);
 				}
 			}
 			else
@@ -2703,7 +2703,7 @@ namespace BinXlsxRW {
 			{
 				double dValue = m_oBufferedStream.GetDoubleReal();
 				pCell->m_oValue.Init();
-				pCell->m_oValue->m_sText.AppendFormat(_T("%s"), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(dValue));
+				pCell->m_oValue->m_sText.AppendFormat(_T("%s"), (const TCHAR *) OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(dValue));
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;

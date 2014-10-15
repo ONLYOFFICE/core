@@ -3253,7 +3253,7 @@ namespace BinXlsxRW {
 			if(TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
 			{
 				CFile oFile;
-				oFile.CreateFileW(sFileDst);
+				oFile.CreateFile(sFileDst);
 				oFile.WriteStringUTF8(WriteFileHeader(nBinBufferLen));
 				oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 				oFile.CloseFile();
@@ -3400,7 +3400,7 @@ namespace BinXlsxRW {
 			if(TRUE == Base64::Base64Encode(pData, nLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
 			{
 				CFile oFile;
-				oFile.CreateFileW(sFileOutput);
+				oFile.CreateFile(sFileOutput);
 				oFile.WriteStringUTF8(WriteDefaultFileHeader(nLength));
 				oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 				oFile.CloseFile();
@@ -3585,7 +3585,7 @@ namespace BinXlsxRW {
 			if (TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
 			{
 				CFile oFile;
-				oFile.CreateFileW(sFileOutput);
+				oFile.CreateFile(sFileOutput);
 				oFile.WriteStringUTF8(WriteDefaultFileHeader(nBinBufferLen));
 				oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 				oFile.CloseFile();
@@ -3642,7 +3642,7 @@ namespace BinXlsxRW {
 			if(TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
 			{
 				CFile oFile;
-				oFile.CreateFileW(sFileOutput);
+				oFile.CreateFile(sFileOutput);
 				oFile.WriteStringUTF8(WriteDefaultFileHeader(nBinBufferLen));
 				oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 				oFile.CloseFile();

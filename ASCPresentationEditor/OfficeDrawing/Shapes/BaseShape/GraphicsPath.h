@@ -4,6 +4,8 @@
 #include "../../Metric.h"
 #include "../../Attributes.h"
 
+#include <vector>
+
 namespace NSPresentationEditor
 {
 	class CDoublePoint
@@ -109,7 +111,7 @@ namespace NSPresentationEditor
 				XmlUtils::CXmlNode oNode;
 				oNodes.GetAt(nIndex, oNode);
 				oPart.FromXmlNode(oNode);
-				m_arParts.Add(oPart);
+                m_arParts.push_back(oPart);
 			}
 
 			//XmlUtils::CXmlNode oPenNode;
@@ -158,7 +160,7 @@ namespace NSPresentationEditor
 			pRenderer->BeginCommand(c_nPathType);
 
 			CDoublePoint pointCur; pointCur.dX = 0; pointCur.dY = 0;
-			for (int nIndex = 0; nIndex < m_arParts.GetSize(); ++nIndex)
+            for (int nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
 			{
 				m_arParts[nIndex].Draw(pRenderer, pointCur);
 			}
@@ -187,7 +189,7 @@ namespace NSPresentationEditor
 			pRenderer->BeginCommand(c_nPathType);
 
 			CDoublePoint pointCur; pointCur.dX = 0; pointCur.dY = 0;
-			for (int nIndex = 0; nIndex < m_arParts.GetSize(); ++nIndex)
+            for (int nIndex = 0; nIndex < m_arParts.size(); ++nIndex)
 			{
 				m_arParts[nIndex].Draw(pRenderer, pointCur);
 			}
@@ -215,25 +217,25 @@ namespace NSPresentationEditor
 		{
 		public:
 			RulesType					m_eType;
-			CSimpleArray<CDoublePoint>	m_arPoints;
+            std::vector<CDoublePoint>	m_arPoints;
 
 		public:
-			CPart() : m_eType(rtMoveTo), m_arPoints()
+            CPart() : m_eType(rtMoveTo), m_arPoints()
 			{
 			}
 			CPart& operator=(const CPart& oSrc)
 			{
 				m_eType	= oSrc.m_eType;
-				m_arPoints.RemoveAll();
-				for (int nIndex = 0; nIndex < oSrc.m_arPoints.GetSize(); ++nIndex)
+                this->m_arPoints.clear();
+                for (int nIndex = 0; nIndex < oSrc.m_arPoints.size(); ++nIndex)
 				{
-					m_arPoints.Add(oSrc.m_arPoints[nIndex]);
+                    this->m_arPoints.push_back(oSrc.m_arPoints[nIndex]);
 				}
 				return (*this);
 			}
 			~CPart()
 			{
-				m_arPoints.RemoveAll();
+                this->m_arPoints.clear();
 			}
 			void FromXmlNode(XmlUtils::CXmlNode& oNode)
 			{
@@ -259,35 +261,35 @@ namespace NSPresentationEditor
 				if (_T("") == strPath)
 					return;
 
-				CSimpleArray<CString> arStrNums;
+                std::vector<CString> arStrNums;
 				ParseString(_T(" "), strPath, &arStrNums);
 
 				bool bIsX = true;
 				int nCurPoint = 0;
-				for (int nIndex = 0; nIndex < arStrNums.GetSize(); ++nIndex)
+                for (int nIndex = 0; nIndex < arStrNums.size(); ++nIndex)
 				{
 					if (bIsX)
 					{
 						++nCurPoint;
 						CDoublePoint point;
-						m_arPoints.Add(point);
-						m_arPoints[nCurPoint - 1].dX = XmlUtils::GetDouble(arStrNums[nIndex]);
+                        this->m_arPoints.push_back(point);
+                        this->m_arPoints[nCurPoint - 1].dX = XmlUtils::GetDouble(arStrNums[nIndex]);
 					}
 					else
 					{
-						m_arPoints[nCurPoint - 1].dY = XmlUtils::GetDouble(arStrNums[nIndex]);
+                        this->m_arPoints[nCurPoint - 1].dY = XmlUtils::GetDouble(arStrNums[nIndex]);
 					}
 					bIsX = !bIsX;
 				}
 			}
 			void ParseString(CString strDelimeters, CString strSource, 
-				CSimpleArray<CString>* pArrayResults, bool bIsCleared = true)
+                std::vector<CString>* pArrayResults, bool bIsCleared = true)
 			{
 				if (NULL == pArrayResults)
 					return;
 
 				if (bIsCleared)
-					pArrayResults->RemoveAll();
+                    pArrayResults->clear();
 
 				CString resToken;
 				int curPos= 0;
@@ -295,7 +297,7 @@ namespace NSPresentationEditor
 				resToken = strSource.Tokenize(strDelimeters, curPos);
 				while (resToken != _T(""))
 				{
-					pArrayResults->Add(resToken);
+                    pArrayResults->push_back(resToken);
 					resToken = strSource.Tokenize(strDelimeters, curPos);
 				};
 			}
@@ -450,7 +452,7 @@ namespace NSPresentationEditor
 				if (NULL == ppArray)
 					return;
 
-				int nCount = m_arPoints.GetSize();
+                int nCount = this->m_arPoints.size();
 
 				//    
 				SAFEARRAYBOUND rgsab;
@@ -469,13 +471,13 @@ namespace NSPresentationEditor
 				{
 					for (int nIndex = 0; nIndex < nCount; ++nIndex)
 					{
-						*pBuffer = (m_arPoints[nIndex].dX + pointCur.dX); ++pBuffer;
-						*pBuffer = (m_arPoints[nIndex].dY + pointCur.dY); ++pBuffer;
+                        *pBuffer = (this->m_arPoints[nIndex].dX + pointCur.dX); ++pBuffer;
+                        *pBuffer = (this->m_arPoints[nIndex].dY + pointCur.dY); ++pBuffer;
 
 						if (nIndex == (nCount - 1))
 						{
-							pointCur.dX += m_arPoints[nIndex].dX;
-							pointCur.dY += m_arPoints[nIndex].dY; 
+                            pointCur.dX += this->m_arPoints[nIndex].dX;
+                            pointCur.dY += this->m_arPoints[nIndex].dY;
 						}
 					}
 				}
@@ -483,13 +485,13 @@ namespace NSPresentationEditor
 				{
 					for (int nIndex = 0; nIndex < nCount; ++nIndex)
 					{
-						*pBuffer = m_arPoints[nIndex].dX; ++pBuffer;
-						*pBuffer = m_arPoints[nIndex].dY; ++pBuffer;
+                        *pBuffer = this->m_arPoints[nIndex].dX; ++pBuffer;
+                        *pBuffer = this->m_arPoints[nIndex].dY; ++pBuffer;
 
 						if (nIndex == (nCount - 1))
 						{
-							pointCur.dX = m_arPoints[nIndex].dX;
-							pointCur.dY = m_arPoints[nIndex].dY;
+                            pointCur.dX = this->m_arPoints[nIndex].dX;
+                            pointCur.dY = this->m_arPoints[nIndex].dY;
 						}
 					}
 				}
@@ -503,11 +505,11 @@ namespace NSPresentationEditor
 				{
 				case rtMoveTo:
 					{
-						if (0 < m_arPoints.GetSize())
+                        if (0 < this->m_arPoints.size())
 						{
-							pointCur.dX = m_arPoints[0].dX; 
-							pointCur.dY = m_arPoints[0].dY;
-							pRenderer->PathCommandMoveTo(m_arPoints[0].dX, m_arPoints[0].dY);
+                            pointCur.dX = this->m_arPoints[0].dX;
+                            pointCur.dY = this->m_arPoints[0].dY;
+                            pRenderer->PathCommandMoveTo(this->m_arPoints[0].dX, this->m_arPoints[0].dY);
 						}
 						break;
 					}
@@ -518,7 +520,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pArray)
 						{
-							pRenderer->PathCommandLinesTo((double*)pArray->pvData, m_arPoints.GetSize());
+                            pRenderer->PathCommandLinesTo((double*)pArray->pvData, this->m_arPoints.size());
 						}
 
 						RELEASEARRAY(pArray);
@@ -531,7 +533,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pArray)
 						{
-							pRenderer->PathCommandCurvesTo((double*)pArray->pvData, m_arPoints.GetSize());
+                            pRenderer->PathCommandCurvesTo((double*)pArray->pvData, this->m_arPoints.size());
 						}
 
 						RELEASEARRAY(pArray);
@@ -545,10 +547,10 @@ namespace NSPresentationEditor
 					}
 				case rtRMoveTo:
 					{
-						if (0 < m_arPoints.GetSize())
+                        if (0 < this->m_arPoints.size())
 						{
-							pointCur.dX = m_arPoints[0].dX + pointCur.dX;
-							pointCur.dY = m_arPoints[0].dY + pointCur.dY;
+                            pointCur.dX = this->m_arPoints[0].dX + pointCur.dX;
+                            pointCur.dY = this->m_arPoints[0].dY + pointCur.dY;
 							pRenderer->PathCommandMoveTo(pointCur.dX, pointCur.dY);
 						}
 						break;
@@ -561,7 +563,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pArray)
 						{
-							pRenderer->PathCommandLinesTo((double*)pArray->pvData, m_arPoints.GetSize());
+                            pRenderer->PathCommandLinesTo((double*)pArray->pvData, this->m_arPoints.size());
 						}
 
 						RELEASEARRAY(pArray);
@@ -572,11 +574,11 @@ namespace NSPresentationEditor
 						SAFEARRAY* pArray = NULL;
 						GetSafearrayPoints(pRenderer, &pArray, pointCur, TRUE);
 
-						Gdiplus::PointF oPointNewCur;
+                        //Gdiplus::PointF oPointNewCur;
 
 						if (NULL != pArray)
 						{
-							pRenderer->PathCommandCurvesTo((double*)pArray->pvData, m_arPoints.GetSize());
+                            pRenderer->PathCommandCurvesTo((double*)pArray->pvData, this->m_arPoints.size());
 						}
 
 						RELEASEARRAY(pArray);
@@ -585,14 +587,14 @@ namespace NSPresentationEditor
 				case rtAngleEllipseTo:
 					{
 						int nFigure = 0;
-						while ((nFigure + 3) <= m_arPoints.GetSize())
+                        while ((nFigure + 3) <= this->m_arPoints.size())
 						{
-							double nLeft	= m_arPoints[nFigure].dX - m_arPoints[nFigure + 1].dX / 2;
-							double nTop		= m_arPoints[nFigure].dY - m_arPoints[nFigure + 1].dY / 2;
+                            double nLeft	= this->m_arPoints[nFigure].dX - this->m_arPoints[nFigure + 1].dX / 2;
+                            double nTop		= this->m_arPoints[nFigure].dY - this->m_arPoints[nFigure + 1].dY / 2;
 
 							pRenderer->PathCommandArcTo(nLeft, nTop,
-								m_arPoints[nFigure + 1].dX, m_arPoints[nFigure + 1].dY,
-								m_arPoints[nFigure + 2].dX, m_arPoints[nFigure + 2].dY);
+                                this->m_arPoints[nFigure + 1].dX, this->m_arPoints[nFigure + 1].dY,
+                                this->m_arPoints[nFigure + 2].dX, this->m_arPoints[nFigure + 2].dY);
 
 							nFigure += 3;
 						}
@@ -604,14 +606,14 @@ namespace NSPresentationEditor
 					{
 						pRenderer->PathCommandStart();
 						int nFigure = 0;
-						while ((nFigure + 3) <= m_arPoints.GetSize())
+                        while ((nFigure + 3) <= this->m_arPoints.size())
 						{
-							double nLeft	= m_arPoints[nFigure].dX - m_arPoints[nFigure + 1].dX / 2;
-							double nTop		= m_arPoints[nFigure].dY - m_arPoints[nFigure + 1].dY / 2;
+                            double nLeft	= this->m_arPoints[nFigure].dX - this->m_arPoints[nFigure + 1].dX / 2;
+                            double nTop		= this->m_arPoints[nFigure].dY - this->m_arPoints[nFigure + 1].dY / 2;
 
 							pRenderer->PathCommandArcTo(nLeft, nTop,
-								m_arPoints[nFigure + 1].dX, m_arPoints[nFigure + 1].dY,
-								m_arPoints[nFigure + 2].dX, m_arPoints[nFigure + 2].dY);
+                                this->m_arPoints[nFigure + 1].dX, this->m_arPoints[nFigure + 1].dY,
+                                this->m_arPoints[nFigure + 2].dX, this->m_arPoints[nFigure + 2].dY);
 
 							nFigure += 3;
 						}
@@ -623,20 +625,20 @@ namespace NSPresentationEditor
 					{
 						pRenderer->PathCommandStart();
 						int nFigure = 0;
-						while ((nFigure + 4) <= m_arPoints.GetSize())
+                        while ((nFigure + 4) <= this->m_arPoints.size())
 						{
-							double nCentreX = (m_arPoints[nFigure].dX + m_arPoints[nFigure + 1].dX) / 2;
-							double nCentreY = (m_arPoints[nFigure].dY + m_arPoints[nFigure + 1].dY) / 2;
+                            double nCentreX = (this->m_arPoints[nFigure].dX + this->m_arPoints[nFigure + 1].dX) / 2;
+                            double nCentreY = (this->m_arPoints[nFigure].dY + this->m_arPoints[nFigure + 1].dY) / 2;
 
 							double angleStart = GetAngle(nCentreX, nCentreY, 
-								m_arPoints[nFigure + 2].dX, m_arPoints[nFigure + 2].dY);
+                                this->m_arPoints[nFigure + 2].dX, this->m_arPoints[nFigure + 2].dY);
 
 							double angleEnd = GetAngle(nCentreX, nCentreY, 
-								m_arPoints[nFigure + 3].dX, m_arPoints[nFigure + 3].dY);
+                                this->m_arPoints[nFigure + 3].dX, this->m_arPoints[nFigure + 3].dY);
 
-							pRenderer->PathCommandArcTo(m_arPoints[nFigure].dX, m_arPoints[nFigure].dY,
-								m_arPoints[nFigure + 1].dX - m_arPoints[nFigure].dX, 
-								m_arPoints[nFigure + 1].dY - m_arPoints[nFigure].dY,
+                            pRenderer->PathCommandArcTo(this->m_arPoints[nFigure].dX, this->m_arPoints[nFigure].dY,
+                                this->m_arPoints[nFigure + 1].dX - this->m_arPoints[nFigure].dX,
+                                this->m_arPoints[nFigure + 1].dY - this->m_arPoints[nFigure].dY,
 								angleStart, GetSweepAngle(angleStart, angleEnd));
 
 							nFigure += 4;
@@ -648,20 +650,20 @@ namespace NSPresentationEditor
 				case rtArcTo:
 					{
 						int nFigure = 0;
-						while ((nFigure + 4) <= m_arPoints.GetSize())
+                        while ((nFigure + 4) <= this->m_arPoints.size())
 						{
-							double nCentreX = (m_arPoints[nFigure].dX + m_arPoints[nFigure + 1].dX) / 2;
-							double nCentreY = (m_arPoints[nFigure].dY + m_arPoints[nFigure + 1].dY) / 2;
+                            double nCentreX = (this->m_arPoints[nFigure].dX + this->m_arPoints[nFigure + 1].dX) / 2;
+                            double nCentreY = (this->m_arPoints[nFigure].dY + this->m_arPoints[nFigure + 1].dY) / 2;
 
 							double angleStart = GetAngle(nCentreX, nCentreY, 
-								m_arPoints[nFigure + 2].dX, m_arPoints[nFigure + 2].dY);
+                                this->m_arPoints[nFigure + 2].dX, this->m_arPoints[nFigure + 2].dY);
 
 							double angleEnd = GetAngle(nCentreX, nCentreY, 
-								m_arPoints[nFigure + 3].dX, m_arPoints[nFigure + 3].dY);
+                                this->m_arPoints[nFigure + 3].dX, this->m_arPoints[nFigure + 3].dY);
 
-							pRenderer->PathCommandArcTo(m_arPoints[nFigure].dX, m_arPoints[nFigure].dY,
-								m_arPoints[nFigure + 1].dX - m_arPoints[nFigure].dX, 
-								m_arPoints[nFigure + 1].dY - m_arPoints[nFigure].dY,
+                            pRenderer->PathCommandArcTo(this->m_arPoints[nFigure].dX, this->m_arPoints[nFigure].dY,
+                                this->m_arPoints[nFigure + 1].dX - this->m_arPoints[nFigure].dX,
+                                this->m_arPoints[nFigure + 1].dY - this->m_arPoints[nFigure].dY,
 								angleStart, GetSweepAngle(angleStart, angleEnd));
 
 							nFigure += 4;
@@ -673,20 +675,20 @@ namespace NSPresentationEditor
 				case rtClockwiseArcTo:
 					{
 						int nFigure = 0;
-						while ((nFigure + 4) <= m_arPoints.GetSize())
+                        while ((nFigure + 4) <= this->m_arPoints.size())
 						{
-							double nCentreX = (m_arPoints[nFigure].dX + m_arPoints[nFigure + 1].dX) / 2;
-							double nCentreY = (m_arPoints[nFigure].dY + m_arPoints[nFigure + 1].dY) / 2;
+                            double nCentreX = (this->m_arPoints[nFigure].dX + this->m_arPoints[nFigure + 1].dX) / 2;
+                            double nCentreY = (this->m_arPoints[nFigure].dY + this->m_arPoints[nFigure + 1].dY) / 2;
 
 							double angleStart = GetAngle(nCentreX, nCentreY, 
-								m_arPoints[nFigure + 2].dX, m_arPoints[nFigure + 2].dY);
+                                this->m_arPoints[nFigure + 2].dX, this->m_arPoints[nFigure + 2].dY);
 
 							double angleEnd = GetAngle(nCentreX, nCentreY, 
-								m_arPoints[nFigure + 3].dX, m_arPoints[nFigure + 3].dY);
+                                this->m_arPoints[nFigure + 3].dX, this->m_arPoints[nFigure + 3].dY);
 
-							pRenderer->PathCommandArcTo(m_arPoints[nFigure].dX, m_arPoints[nFigure].dY,
-								m_arPoints[nFigure + 1].dX - m_arPoints[nFigure].dX, 
-								m_arPoints[nFigure + 1].dY - m_arPoints[nFigure].dY,
+                            pRenderer->PathCommandArcTo(this->m_arPoints[nFigure].dX, this->m_arPoints[nFigure].dY,
+                                this->m_arPoints[nFigure + 1].dX - this->m_arPoints[nFigure].dX,
+                                this->m_arPoints[nFigure + 1].dY - this->m_arPoints[nFigure].dY,
 								angleStart, 360 + GetSweepAngle(angleStart, angleEnd));
 
 							nFigure += 4;
@@ -699,20 +701,20 @@ namespace NSPresentationEditor
 					{
 						pRenderer->PathCommandStart();
 						int nFigure = 0;
-						while ((nFigure + 4) <= m_arPoints.GetSize())
+                        while ((nFigure + 4) <= this->m_arPoints.size())
 						{
-							double nCentreX = (m_arPoints[nFigure].dX + m_arPoints[nFigure + 1].dX) / 2;
-							double nCentreY = (m_arPoints[nFigure].dY + m_arPoints[nFigure + 1].dY) / 2;
+                            double nCentreX = (this->m_arPoints[nFigure].dX + this->m_arPoints[nFigure + 1].dX) / 2;
+                            double nCentreY = (this->m_arPoints[nFigure].dY + this->m_arPoints[nFigure + 1].dY) / 2;
 
 							double angleStart = GetAngle(nCentreX, nCentreY, 
-								m_arPoints[nFigure + 2].dX, m_arPoints[nFigure + 2].dY);
+                                this->m_arPoints[nFigure + 2].dX, this->m_arPoints[nFigure + 2].dY);
 
 							double angleEnd = GetAngle(nCentreX, nCentreY, 
-								m_arPoints[nFigure + 3].dX, m_arPoints[nFigure + 3].dY);
+                                this->m_arPoints[nFigure + 3].dX, this->m_arPoints[nFigure + 3].dY);
 
-							pRenderer->PathCommandArcTo(m_arPoints[nFigure].dX, m_arPoints[nFigure].dY,
-								m_arPoints[nFigure + 1].dX - m_arPoints[nFigure].dX, 
-								m_arPoints[nFigure + 1].dY - m_arPoints[nFigure].dY,
+                            pRenderer->PathCommandArcTo(this->m_arPoints[nFigure].dX, this->m_arPoints[nFigure].dY,
+                                this->m_arPoints[nFigure + 1].dX - this->m_arPoints[nFigure].dX,
+                                this->m_arPoints[nFigure + 1].dY - this->m_arPoints[nFigure].dY,
 								angleStart, 360 + GetSweepAngle(angleStart, angleEnd));
 
 							nFigure += 4;
@@ -726,14 +728,14 @@ namespace NSPresentationEditor
 						bool bIsX = true;
 						CheckLastPoint(pRenderer, pointCur);
 
-						int nCount = m_arPoints.GetSize();
+                        int nCount = this->m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{
 							double x1 = pointCur.dX;
 							double y1 = pointCur.dY;
 
-							double x2 = m_arPoints[nIndex].dX;
-							double y2 = m_arPoints[nIndex].dY;
+                            double x2 = this->m_arPoints[nIndex].dX;
+                            double y2 = this->m_arPoints[nIndex].dY;
 
 							double dRadX = fabs(x1 - x2);
 							double dRadY = fabs(y1 - y2);
@@ -751,14 +753,14 @@ namespace NSPresentationEditor
 						bool bIsX = false;
 						CheckLastPoint(pRenderer, pointCur);
 
-						int nCount = m_arPoints.GetSize();
+                        int nCount = this->m_arPoints.size();
 						for (int nIndex = 0; nIndex < nCount; ++nIndex)
 						{
 							double x1 = pointCur.dX;
 							double y1 = pointCur.dY;
 
-							double x2 = m_arPoints[nIndex].dX;
-							double y2 = m_arPoints[nIndex].dY;
+                            double x2 = this->m_arPoints[nIndex].dX;
+                            double y2 = this->m_arPoints[nIndex].dY;
 
 							double dRadX = fabs(x1 - x2);
 							double dRadY = fabs(y1 - y2);
@@ -779,7 +781,7 @@ namespace NSPresentationEditor
 
 						if (NULL != pArray)
 						{
-							pRenderer->PathCommandLinesTo((double*)pArray->pvData, m_arPoints.GetSize());
+                            pRenderer->PathCommandLinesTo((double*)pArray->pvData, this->m_arPoints.size());
 						}
 
 						RELEASEARRAY(pArray);
@@ -821,33 +823,33 @@ namespace NSPresentationEditor
 
 		void AddRuler(const RulesType& eType)
 		{
-			int lCount = m_arParts.GetSize();
+            int lCount = m_arParts.size();
 			
 			CPart oPart;
 			oPart.m_eType = eType;
 			
-			m_arParts.Add(oPart);
+            m_arParts.push_back(oPart);
 		}
 		void AddPoint(const double& x, const double& y)
 		{
-			int lCount = m_arParts.GetSize();
+            int lCount = m_arParts.size();
 			if (0 != lCount)
 			{
 				CDoublePoint point;
 				point.dX = x;
 				point.dY = y;
-				m_arParts[lCount - 1].m_arPoints.Add(point);
+                m_arParts[lCount - 1].m_arPoints.push_back(point);
 			}
 		}
 
 		void Clear()
 		{
-			m_arParts.RemoveAll();
+            m_arParts.clear();
 		}
 
 	public:
 
-		CSimpleArray<CPart> m_arParts;
+        std::vector<CPart> m_arParts;
 		int Metric;
 		bool m_bFill;
 		bool m_bStroke;

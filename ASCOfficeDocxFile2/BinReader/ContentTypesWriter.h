@@ -37,7 +37,7 @@ namespace Writers
 			CString sOverride;sOverride.Format(_T("<Override PartName=\"%s\" ContentType=\"%s\"/>"),PartName , ContentType);
 			m_oAdditional.WriteString(sOverride);
 		}
-		void AddOverrideRaw(CString& sXml)
+		void AddOverrideRaw(const CString& sXml)
 		{
 			m_oAdditional.WriteString(sXml);
 		}

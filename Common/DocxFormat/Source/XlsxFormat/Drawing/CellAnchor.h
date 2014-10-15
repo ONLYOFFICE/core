@@ -18,7 +18,7 @@ namespace OOX
 		{
 		public:
 			WritingElementSpreadsheet_AdditionConstructors(CCellAnchor)
-            CCellAnchor(SimpleTypes::Spreadsheet::CCellAnchorType<>& oAnchorType/* = SimpleTypes::Spreadsheet::CCellAnchorType<>()*/):m_oAnchorType(oAnchorType)
+            CCellAnchor(const SimpleTypes::Spreadsheet::CCellAnchorType<>& oAnchorType/* = SimpleTypes::Spreadsheet::CCellAnchorType<>()*/):m_oAnchorType(oAnchorType)
 			{
 			}
 			virtual ~CCellAnchor()

@@ -2332,9 +2332,11 @@ namespace BinDocxRW
 					nCurPos = m_oBcw.WriteItemStart(c_oSerNumTypes::lvl_LvlTextItem);
 
 					m_oBcw.m_oStream.WriteBYTE(c_oSerNumTypes::lvl_LvlTextItemText);
-					m_oBcw.m_oStream.WriteStringW(CString(text[i]));
+					CString strChar;
+					strChar.AppendChar(text[i]);
+					m_oBcw.m_oStream.WriteStringW(strChar);
 					if(NULL != m_oBcw.m_pEmbeddedFontsManager)
-						m_oBcw.m_pEmbeddedFontsManager->CheckString(CString(text[i]));
+						m_oBcw.m_pEmbeddedFontsManager->CheckString(strChar);
 
 					m_oBcw.WriteItemEnd(nCurPos);
 				}

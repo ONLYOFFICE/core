@@ -1772,7 +1772,8 @@ namespace BinXlsxRW {
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadWorksheet, this, poResult);
 				if(m_pCurSheet->m_oName.IsInit())
 				{
-					const OOX::RId oRId = m_oWorkbook.Add(smart_ptr<OOX::File>(m_pCurWorksheet));
+					smart_ptr<OOX::File> oCurFile(m_pCurWorksheet);
+					const OOX::RId oRId = m_oWorkbook.Add(oCurFile);
 					m_pCurSheet->m_oRid.Init();
 					m_pCurSheet->m_oRid->SetValue(oRId.get());
 					m_mapWorksheets [m_pCurSheet->m_oName.get()] = m_pCurWorksheet;
@@ -2384,7 +2385,7 @@ namespace BinXlsxRW {
 				{
 					VARIANT var;
 					var.vt = VT_I4;
-					var.intVal = m_pCurDrawing->GetGlobalNumberByType(OOX::Spreadsheet::FileTypes::Charts.OverrideType());
+					var.lVal = m_pCurDrawing->GetGlobalNumberByType(OOX::Spreadsheet::FileTypes::Charts.OverrideType());
 					m_pOfficeDrawingConverter->SetAdditionalParam(CString(_T("DocumentChartsCount")), var);
 				}
 
@@ -2397,7 +2398,7 @@ namespace BinXlsxRW {
 					VARIANT vt;
 					m_pOfficeDrawingConverter->GetAdditionalParam(CString(_T("DocumentChartsCount")), &vt);
 					if(VT_I4 == vt.vt)
-						m_pCurDrawing->SetGlobalNumberByType(OOX::Spreadsheet::FileTypes::Charts.OverrideType(), vt.intVal);
+						m_pCurDrawing->SetGlobalNumberByType(OOX::Spreadsheet::FileTypes::Charts.OverrideType(), vt.lVal);
 				}
 				if(S_OK == hRes && NULL != bstrXml)
 				{

@@ -2634,7 +2634,7 @@ namespace BinXlsxRW {
 			int nCurPos = 0;
 			if(NULL != pCommentText && pCommentText->IsInit())
 			{
-				CString& sText = (*pCommentText)->ToString();
+				const CString& sText = (*pCommentText)->ToString();
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_CommentData::Text);
 				m_oBcw.m_oStream.WriteStringW(sText);
 			}

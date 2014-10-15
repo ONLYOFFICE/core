@@ -175,9 +175,14 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(CString& sSrcFileName, CString& sD
 
 				VARIANT var;
 				var.vt = VT_BSTR;
+#ifdef _WIN32
 				var.bstrVal = sFileInDir.AllocSysString();
 				oDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir"), var);
 				RELEASESYSSTRING(var.bstrVal);
+#else
+				var.bstrVal = sFileInDir.GetString();
+				oDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir"), var);
+#endif
 
 				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter);
 				oBinaryFileReader.ReadFile();
@@ -246,7 +251,8 @@ bool BinDocxRW::CDocxSerializer::getBinaryContent(CString& bsTxContent, NSBinPpt
 
 	BinDocxRW::BinaryCommonWriter oBinaryCommonWriter(oParamsWriter);
 	int nCurPos = oBinaryCommonWriter.WriteItemWithLengthStart();
-	BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oParamsWriter, BinDocxRW::ParamsDocumentWriter(oParamsWriter.m_pCurRels, oParamsWriter.m_sCurDocumentPath), NULL, NULL);
+	BinDocxRW::ParamsDocumentWriter oParams(oParamsWriter.m_pCurRels, oParamsWriter.m_sCurDocumentPath);
+	BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oParamsWriter, oParams, NULL, NULL);
 	oBinaryDocumentTableWriter.WriteDocumentContent(oSdtContent.m_arrItems);
 	oBinaryCommonWriter.WriteItemWithLengthEnd(nCurPos);
 

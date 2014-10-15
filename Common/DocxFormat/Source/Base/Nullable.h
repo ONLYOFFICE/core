@@ -95,6 +95,13 @@ namespace NSCommon
 			else
                 this->m_pPointer = new Type( (const Type&)*(oOther.m_pPointer) );
 		}
+        nullable(const XmlUtils::CXmlNode& oNode)
+        {
+            if (oNode.IsValid())
+                this->m_pPointer = new Type(oNode);
+            else
+                this->m_pPointer = NULL;
+        }
 
 		nullable<Type>& operator=(XmlUtils::CXmlNode& oNode)
 		{

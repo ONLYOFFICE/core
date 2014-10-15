@@ -47,7 +47,7 @@ namespace PPTX
 			{
 				DWORD RGB = 0;
 				CString str = val.get();
-				if(str != "")
+                if (!str.empty())
 				{
 					switch((CHAR)str[0])
 					{

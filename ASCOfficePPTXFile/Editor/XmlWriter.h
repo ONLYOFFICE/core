@@ -6,17 +6,17 @@
 
 namespace NSBinPptxRW
 {
-	static _bstr_t	g_bstr_nodeopen				= L"<";
-	static _bstr_t	g_bstr_nodeclose			= L">";
-	static _bstr_t	g_bstr_nodeopen_slash		= L"</";
-	static _bstr_t	g_bstr_nodeclose_slash		= L"/>";
-	static _bstr_t	g_bstr_node_space			= L" ";
-	static _bstr_t	g_bstr_node_equal			= L"=";
-	static _bstr_t	g_bstr_node_quote			= L"\"";
-	static _bstr_t	g_bstr_boolean_true			= L"true";
-	static _bstr_t	g_bstr_boolean_false		= L"false";	
-	static _bstr_t	g_bstr_boolean_true2		= L"1";
-	static _bstr_t	g_bstr_boolean_false2		= L"0";	
+    static std::wstring	g_bstr_nodeopen				= L"<";
+    static std::wstring	g_bstr_nodeclose			= L">";
+    static std::wstring	g_bstr_nodeopen_slash		= L"</";
+    static std::wstring	g_bstr_nodeclose_slash		= L"/>";
+    static std::wstring	g_bstr_node_space			= L" ";
+    static std::wstring	g_bstr_node_equal			= L"=";
+    static std::wstring	g_bstr_node_quote			= L"\"";
+    static std::wstring	g_bstr_boolean_true			= L"true";
+    static std::wstring	g_bstr_boolean_false		= L"false";
+    static std::wstring	g_bstr_boolean_true2		= L"1";
+    static std::wstring	g_bstr_boolean_false2		= L"0";
 	
 	AVSINLINE static double FABS(double dVal)
 	{
@@ -98,11 +98,13 @@ namespace NSBinPptxRW
 			m_pDataCur += nLen;
 			m_lSizeCur += nLen;
 		}
+#ifdef _WIN32
         AVSINLINE void WriteString(_bstr_t& bsString)
 		{
 			size_t nLen = bsString.length();
 			WriteString(bsString.GetBSTR(), nLen);
 		}
+#endif // #ifdef _WIN32
         AVSINLINE void WriteString(const CString& sString)
 		{
 			size_t nLen = (size_t)sString.GetLength();
@@ -672,6 +674,7 @@ namespace NSBinPptxRW
 			m_oWriter.WriteString(g_bstr_nodeclose);
 		}
 
+#ifdef _WIN32
 		template<typename T>
 		AVSINLINE void WriteArray(const CString& strName, const CAtlArray<T>& arr)
 		{
@@ -685,6 +688,7 @@ namespace NSBinPptxRW
 				EndNode(strName);
 			}
 		}
+#endif //#ifdef _WIN32
 		template<typename T>
 		AVSINLINE void WriteArray(const CString& strName, const std::vector<T>& arr)
 		{
@@ -698,6 +702,8 @@ namespace NSBinPptxRW
 				EndNode(strName);
 			}
 		}
+
+#ifdef _WIN32
 		template<typename T>
 		AVSINLINE void WriteArray2(const CAtlArray<T>& arr)
 		{
@@ -708,6 +714,7 @@ namespace NSBinPptxRW
 					arr[i].toXmlWriter(this);
 			}
 		}
+#endif //#ifdef _WIN32
 		template<typename T>
 		AVSINLINE void WriteArray2(const std::vector<T>& arr)
 		{

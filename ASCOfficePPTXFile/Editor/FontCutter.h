@@ -158,10 +158,10 @@ namespace NSFontCutter
 		{
 #ifdef BUILD_CONFIG_FULL_VERSION
 			ULONG nCount = 0;
-			POSITION pos = m_mapFontsEmbeddded.GetStartPosition();
-			while (pos != NULL)
+
+			for(std::map<CString, CEmbeddedFontInfo>::iterator pPair = m_mapFontsEmbeddded.begin(); pPair != m_mapFontsEmbeddded.end(); ++pPair)
 			{
-				CEmbeddedFontInfo& oInfo = m_mapFontsEmbeddded.GetNextValue(pos);
+				CEmbeddedFontInfo& oInfo = pPair->second;
 
 				if (_T("") != oInfo.PathRegular)
 					++nCount;
@@ -193,10 +193,9 @@ namespace NSFontCutter
 			Fonts::IFontConverter* pFontConverter = NULL;
 			CoCreateInstance(__uuidof(Fonts::CFontConverter), NULL, CLSCTX_ALL, __uuidof(Fonts::IFontConverter), (void**)&pFontConverter);
 
-			pos = m_mapFontsEmbeddded.GetStartPosition();
-			while (pos != NULL)
+			for(std::map<CString, CEmbeddedFontInfo>::iterator pPair = m_mapFontsEmbeddded.begin(); pPair != m_mapFontsEmbeddded.end(); ++pPair)
 			{
-				CEmbeddedFontInfo& oInfo = m_mapFontsEmbeddded.GetNextValue(pos);
+				CEmbeddedFontInfo& oInfo = pPair->second;
 
 				if (_T("") != oInfo.PathRegular)
 				{

@@ -225,6 +225,12 @@ namespace NSPresentationEditor
 		str.Format(_T("%d"), val);
 		return str;
 	}
+    static inline CString ToString(long val)
+    {
+        CString str = _T("");
+        str.Format(_T("%d"), val);
+        return str;
+    }
 	static inline CString ToString(double val)
 	{
 		CString str = _T("");
@@ -923,14 +929,10 @@ namespace NSPresentationEditor
             Strikeout = (BYTE)(0x0180 & lStyle) >> 7;
 		}
 		void SetToRenderer(IRenderer *pRenderer)
-		{
-			BSTR bstrName = Name.AllocSysString();			
-			pRenderer->put_FontName(bstrName);			
-			SysFreeString(bstrName);
+		{		
+            pRenderer->put_FontName(Name);
+            pRenderer->put_FontPath(Path);
 
-			BSTR bstrPath = Path.AllocSysString();
-			pRenderer->put_FontPath(bstrPath);
-			SysFreeString(bstrPath);
 
 			pRenderer->put_FontSize(Size);
 			pRenderer->put_FontStyle(GetStyle());
@@ -1121,10 +1123,18 @@ namespace NSPresentationEditor
 		virtual CString ToString()
 		{
 			CString strEdge = _T("");
-			strEdge += (_T("edge-visible='") + NSPresentationEditor::ToString(Visible) + _T("' "));
-			strEdge += (_T("edge-dist='") + NSPresentationEditor::ToString(Dist) + _T("' "));
-			strEdge += (_T("edge-color='") + Color.ToString() + _T("' "));
-			strEdge += (_T("edge-alpha='") + NSPresentationEditor::ToString((int)Alpha) + _T("' "));
+            strEdge += _T("edge-visible='");
+            strEdge += NSPresentationEditor::ToString(Visible);
+            strEdge += _T("' ");
+            strEdge += _T("edge-dist='");
+            strEdge += NSPresentationEditor::ToString(Dist);
+            strEdge += _T("' ");
+            strEdge += _T("edge-color='");
+            strEdge += Color.ToString();
+            strEdge += _T("' ");
+            strEdge += _T("edge-alpha='");
+            strEdge += NSPresentationEditor::ToString((int)Alpha);
+            strEdge += _T("' ");
 			return strEdge;
 		}
 	};

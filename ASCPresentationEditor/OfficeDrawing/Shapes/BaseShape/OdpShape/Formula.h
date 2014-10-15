@@ -34,12 +34,13 @@ namespace NSGuidesOdp
 
 		double GetNum (CString str)
 		{
-			long numGuide = mapGuides.FindKey(str);
-			long numAdj = mapAdjustments.FindKey(str);
-			if (numGuide>=0)
-				return numGuide;
-			else if ( numAdj >=0)
-				return numAdj;
+			std::map<CString, long>::iterator numGuide	= mapGuides.find(str);
+			std::map<CString, long>::iterator numAdj	= mapAdjustments.find(str);
+			
+			if (numGuide != mapGuides.end())
+				return numGuide->second;
+			else if ( numAdj != mapAdjustments.end())
+				return numAdj->second;
 			
 			return 0;
 		}
@@ -87,6 +88,7 @@ namespace NSGuidesOdp
 			Adjustments->clear();
 			for(int i = 0; i < manager.Adjustments->size(); i++)
 				Adjustments->push_back((*manager.Adjustments)[i]);
+			
 			Guides->clear();
 			for(int i = 0; i < manager.Guides->size(); i++)
 				Guides->push_back((*manager.Guides)[i]);
@@ -96,49 +98,50 @@ namespace NSGuidesOdp
 
 		void AddAdjustment(const CString& name, const long value)
 		{
-			long num = mapAdjustments.FindKey(name);
-			if(num >= 0)
+			std::map<CString, long>::iterator num = mapAdjustments.find(name);
+			if(num != mapAdjustments.end())
 			{
-				(*Adjustments)[mapAdjustments.GetValueAt(num)] = value;
+				(*Adjustments)[num->second] = value;
 				return;
 			}
 			Adjustments->push_back(value);
-			mapAdjustments.push_back(name, Adjustments->size() - 1);
+			mapAdjustments.insert(std::pair<CString, long>(name, Adjustments->size() - 1));
 		}
 
 		void AddGuide(const CString& name, const CString& fmla)
 		{
-			long num = mapGuides.FindKey(name);
-			if(num >= 0)
+			std::map<CString, long>::iterator num = mapGuides.find(name);
+			if(num != mapGuides.end())
 			{
-				strGuides[mapGuides.GetValueAt(num)] = fmla;
-				(*Guides)[mapGuides.GetValueAt(num)] = dNonDefResult;
+				strGuides[num->second] = fmla;
+				(*Guides)[num->second] = dNonDefResult;
 				return;
 			}
 			strGuides.push_back(fmla);
 			Guides->push_back(dNonDefResult);
-			mapGuides.insert(name, strGuides.size() - 1);
+			
+			mapGuides.insert(std::pair<CString, long>(name, strGuides.size() - 1));
 		}
 
 		double GetValue(CString str)
 		{
-			long numGuide = mapGuides.FindKey(str);
-			long numAdj = mapAdjustments.FindKey(str);
-			if(numGuide >= 0)
+			std::map<CString, long>::iterator numGuide	= mapGuides.find(str);
+			std::map<CString, long>::iterator numAdj	= mapAdjustments.find(str);
+			if(numGuide != mapGuides.end())
 			{
-				double res = (*Guides)[mapGuides.GetValueAt(numGuide)];
+				double res = (*Guides)[numGuide->second];
 				if(res < dNonDefResult)
 					return res;
 				TParser parser;
-				parser.Compile(strGuides[mapGuides.GetValueAt(numGuide)], *this);
+				parser.Compile(strGuides[numGuide->second], *this);
 				parser.Evaluate();
 				parser.Decompile();
-				(*Guides)[mapGuides.GetValueAt(numGuide)] = parser.GetResult();
+				(*Guides)[numGuide->second] = parser.GetResult();
 				return parser.GetResult();
 			}
-			if(numAdj >= 0)
+			if(numAdj != mapAdjustments.end())
 			{
-				return (*Adjustments)[mapAdjustments.GetValueAt(numAdj)];
+				return (*Adjustments)[numAdj->second];
 			}
 			return XmlUtils::GetInteger(CString(str));
 		}

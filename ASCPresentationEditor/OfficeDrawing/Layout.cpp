@@ -170,7 +170,8 @@ namespace NSPresentationEditor
 			LONG lColor = 0;
 			for (size_t i = 0; i < nCount; i += 3)
 			{
-				m_arColorScheme.push_back(elm);
+				CColor elem;
+				m_arColorScheme.push_back(elem);
 				oStyles.m_arStyles[i].LoadColor(m_arColorScheme[lColor]);
 				++lColor;
 			}
@@ -282,7 +283,7 @@ namespace NSPresentationEditor
 						CStylesCSS oCSS;
 						oCSS.LoadStyles(oNodeS.GetText());
 
-						size_t nCountS = oCSS.m_arStyles.GetCount();
+						size_t nCountS = oCSS.m_arStyles.size();
 						for (size_t nIndexStyle = 0; nIndexStyle < nCountS; ++nIndexStyle)
 						{
 							LONG _lPhType		= 0;
@@ -316,18 +317,18 @@ namespace NSPresentationEditor
 			CStylesCSS oCSS;
 			oCSS.LoadStyles(oNodeFontRefs.GetText());
 
-			size_t nCountS = oCSS.m_arStyles.GetCount();
+			size_t nCountS = oCSS.m_arStyles.size();
 			for (size_t i = 0; i < nCountS; ++i)
 			{
 				oCSS.m_arStyles[i].m_strClassName.Delete(0, 6);
 				LONG lPhType	= XmlUtils::GetInteger(oCSS.m_arStyles[i].m_strClassName);
 
-				std::map<CString, CString>::CPair* pPair = oCSS.m_arStyles[i].m_mapSettings.find(_T("font-index"));
-				if (NULL != pPair)
+				std::map<CString, CString>::iterator pPair = oCSS.m_arStyles[i].m_mapSettings.find(_T("font-index"));
+				if (oCSS.m_arStyles[i].m_mapSettings.end() != pPair)
 				{
 					LONG lFontRef	= XmlUtils::GetInteger(pPair->second);
 
-					size_t nCountEl = m_arElements.GetCount();
+					size_t nCountEl = m_arElements.size();
 					for (size_t j = 0; j < nCountEl; ++j)
 					{
 						if ((lPhType == m_arElements[j]->m_lPlaceholderType) && 

@@ -1087,7 +1087,7 @@ namespace NSPresentationEditor
 				NormalizeCoordsByMetric();
 
 				m_oShape.m_pShape = new CPPTShape();
-				m_oShape.m_oText.m_arParagraphs.RemoveAll();
+				m_oShape.m_oText.m_arParagraphs.clear();
 
 				XmlUtils::CXmlNode oNodeBody;
 				if (oNode.GetNode(_T("body"), oNodeBody))

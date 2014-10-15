@@ -128,7 +128,7 @@ namespace NSPresentationEditor
 	class CAudioOverlay
 	{
 	public:
-		CAtlArray<CAudioPart> m_arParts;
+		std::vector<CAudioPart> m_arParts;
 		double m_dAllDuration;
 
 	public:
@@ -144,7 +144,7 @@ namespace NSPresentationEditor
 		}
 		CAudioOverlay& operator=(const CAudioOverlay& oSrc)
 		{
-			m_arParts.Copy(oSrc.m_arParts);
+			m_arParts.insert(m_arParts.end(), oSrc.m_arParts.begin(), oSrc.m_arParts.end());
 			m_dAllDuration = oSrc.m_dAllDuration;
 			return *this;
 		}
@@ -153,7 +153,7 @@ namespace NSPresentationEditor
 		
 		void Calculate()
 		{
-			size_t nCount = m_arParts.GetCount();
+			size_t nCount = m_arParts.size();
 
 			// нормализуем для начала
 			for (size_t i = 0; i < nCount; ++i)
@@ -233,7 +233,7 @@ namespace NSPresentationEditor
 		{
 			CString strRes = _T("");
 			
-			size_t nCount = m_arParts.GetCount();
+			size_t nCount = m_arParts.size();
 
 			for (size_t i = 0; i < nCount; ++i)
 			{

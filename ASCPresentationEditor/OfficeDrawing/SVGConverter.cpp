@@ -664,7 +664,7 @@ STDMETHODIMP NSPresentationEditor::CSVGConverter::DrawPath(long nType)
 	m_oSvgPen		= m_oPen;
 	m_oSvgBrush		= m_oBrush;
 
-	int lIndexPath = m_oSvgPath.m_arParts.GetSize() - 1;
+	int lIndexPath = m_oSvgPath.m_arParts.size() - 1;
 	if (lIndexPath < 0)
 		return S_OK;
 
@@ -741,7 +741,7 @@ STDMETHODIMP NSPresentationEditor::CSVGConverter::SetCommandParams(double dAngle
 	double m11 = bFlipX ? -1.0 : 1.0;
 	double m22 = bFlipY ? -1.0 : 1.0;
 	
-	CMatrix oMatrix(1, 0, 0, 1, 0, 0);
+	Aggplus::CMatrix oMatrix(1, 0, 0, 1, 0, 0);
 
 	if ((0 != dAngle) || (0 != lFlags))
 	{
@@ -763,7 +763,7 @@ STDMETHODIMP NSPresentationEditor::CSVGConverter::SetCommandParams(double dAngle
 }
 STDMETHODIMP NSPresentationEditor::CSVGConverter::SetTransform(double dA, double dB, double dC, double dD, double dE, double dF)
 {
-	CMatrix oTrans(dA, dB, dC, dD, dE, dF);
+	Aggplus::CMatrix oTrans(dA, dB, dC, dD, dE, dF);
 	m_oTransform = oTrans;
 
 	CalculateFullTransform();
@@ -870,6 +870,6 @@ STDMETHODIMP NSPresentationEditor::CSVGConverter::OpenFile(BSTR bsFilePath)
 }
 STDMETHODIMP NSPresentationEditor::CSVGConverter::CloseFile()
 {
-	m_oSvgPath.m_arParts.RemoveAll();
+	m_oSvgPath.m_arParts.clear();
 	return S_OK;
 }

@@ -1,8 +1,8 @@
 #pragma once
 
 #ifdef _WIN32
-#include <atlcoll.h>
-#include "Gdiplus.h"
+	#include <atlcoll.h>
+	#include <gdiplus.h>
 #endif
 
 #include "Metric.h"

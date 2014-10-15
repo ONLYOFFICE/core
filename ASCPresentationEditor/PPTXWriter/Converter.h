@@ -153,7 +153,7 @@ namespace NSPresentationEditor
 <Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\" />\
 <Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\" />");
 
-			int nThemes = (int)m_pDocument->m_arThemes.GetCount();
+			int nThemes = (int)m_pDocument->m_arThemes.size();
 			int nIndexLayout = 0;
 			for (int nT = 0; nT < nThemes; ++nT)
 			{
@@ -164,7 +164,7 @@ namespace NSPresentationEditor
 
 				strContentTypes += strTheme;
 
-				int nCountL = (int)m_pDocument->m_arThemes[nT].m_arLayouts.GetCount();
+				int nCountL = (int)m_pDocument->m_arThemes[nT].m_arLayouts.size();
 				for (int nL = 0; nL < nCountL; ++nL, ++nIndexLayout)
 				{
 					CString strL = _T("");
@@ -178,7 +178,7 @@ namespace NSPresentationEditor
 
 			strContentTypes += _T("<Override PartName=\"/ppt/notesMasters/notesMaster1.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.notesMaster+xml\"/>");
 
-			int nCountS = (int)m_pDocument->m_arSlides.GetCount();
+			int nCountS = (int)m_pDocument->m_arSlides.size();
 			for (int nS = 0; nS < nCountS; ++nS)
 			{
 				CString strS = _T("");
@@ -212,7 +212,7 @@ namespace NSPresentationEditor
 			oFile.WriteStringUTF8(str1);
 
 			CString str2 = _T("");
-			str2.Format(_T("<Slides>%d</Slides>"), (int)m_pDocument->m_arSlides.GetCount());
+			str2.Format(_T("<Slides>%d</Slides>"), (int)m_pDocument->m_arSlides.size());
 			oFile.WriteStringUTF8(str2);
 
 			CString str3 = _T("<Notes>0</Notes>\
@@ -223,8 +223,8 @@ namespace NSPresentationEditor
 <vt:vector size=\"4\" baseType=\"variant\">");
 			oFile.WriteStringUTF8(str3);
 
-			int nCountThemes = (int)m_pDocument->m_arThemes.GetCount();
-			int nCountSlides = (int)m_pDocument->m_arSlides.GetCount();
+			int nCountThemes = (int)m_pDocument->m_arThemes.size();
+			int nCountSlides = (int)m_pDocument->m_arSlides.size();
 
 			CString strThemes = _T("");
 			strThemes.Format(_T("<vt:variant><vt:lpstr>Theme</vt:lpstr></vt:variant><vt:variant><vt:i4>%d</vt:i4></vt:variant>"), nCountThemes);
@@ -307,7 +307,7 @@ namespace NSPresentationEditor
 			CString strPresSlides	= _T("");
 
 			size_t nCountLayouts = 0;
-			size_t nCountThemes = m_pDocument->m_arThemes.GetCount();
+			size_t nCountThemes = m_pDocument->m_arThemes.size();
 			for (size_t nIndexTheme = 0; nIndexTheme < nCountThemes; ++nIndexTheme)
 			{
 				CString strRels = _T("");
@@ -320,14 +320,14 @@ namespace NSPresentationEditor
 
 				strRels = _T("");
 				strRels.Format(_T("<p:sldMasterId id=\"%u\" r:id=\"rId%d\" />"), 0x80000000 + nCountLayouts, 2 * nIndexTheme + 1);
-				nCountLayouts += m_pDocument->m_arThemes[nIndexTheme].m_arLayouts.GetCount();
+				nCountLayouts += m_pDocument->m_arThemes[nIndexTheme].m_arLayouts.size();
 				nCountLayouts += 1;
 
 				strPresMasters += strRels;
 			}
 
 			int nCurrentRels = (int)(2 * nCountThemes + 1);
-			size_t nCountSlides = m_pDocument->m_arSlides.GetCount();
+			size_t nCountSlides = m_pDocument->m_arSlides.size();
 			for (size_t nIndexSlide = 0; nIndexSlide < nCountSlides; ++nIndexSlide, ++nCurrentRels)
 			{
 				CString strRels = _T("");
@@ -394,14 +394,14 @@ namespace NSPresentationEditor
 			
 			HINSTANCE hInst = _AtlBaseModule.GetModuleInstance();
 			CString strThemeNotes = _T("");
-			strThemeNotes.Format(_T("\\ppt\\theme\\theme%d.xml"), (int)m_pDocument->m_arThemes.GetCount() + 1);
+			strThemeNotes.Format(_T("\\ppt\\theme\\theme%d.xml"), (int)m_pDocument->m_arThemes.size() + 1);
 			LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_XML_NOTESTHEME), _T("PPTXW"), m_strTempDirectory + strThemeNotes);
 			LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_XML_NOTESMASTER), _T("PPTXW"), m_strTempDirectory + _T("\\ppt\\notesMasters\\notesMaster1.xml"));
 		
 			// - notesMasterRels -----------------------------------
 			CDirectory::CreateDirectory(m_strTempDirectory + _T("\\ppt\\notesMasters\\_rels"));
 			CString strThemeNotesNum = _T("");
-			strThemeNotesNum.Format(_T("%d"), (int)m_pDocument->m_arThemes.GetCount() + 1);
+			strThemeNotesNum.Format(_T("%d"), (int)m_pDocument->m_arThemes.size() + 1);
 			CString strVal = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
 <Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
 <Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme") + strThemeNotesNum + _T(".xml\"/></Relationships>");
@@ -411,7 +411,7 @@ namespace NSPresentationEditor
 			oFileRels.CloseFile();
 			// -----------------------------------------------------
 
-			int nCount = (int)m_pDocument->m_arThemes.GetCount();
+			int nCount = (int)m_pDocument->m_arThemes.size();
 			int nStartLayout = 0;
 			for (int nIndexTheme = 0; nIndexTheme < nCount; ++nIndexTheme)
 			{
@@ -453,10 +453,10 @@ namespace NSPresentationEditor
 				CString strFonts = _T("");
 
 				CString sFont1 = _T("");
-				if (0 < pTheme->m_arFonts.GetCount())
+				if (0 < pTheme->m_arFonts.size())
 					sFont1 = pTheme->m_arFonts[0].Name;
 				CString sFont2 = _T("");
-				if (1 < pTheme->m_arFonts.GetCount())
+				if (1 < pTheme->m_arFonts.size())
 					sFont2 = pTheme->m_arFonts[1].Name;
 
 				strFonts.Format(_T("<a:fontScheme name=\"default\"><a:majorFont><a:latin typeface=\"%d\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/>\
@@ -503,7 +503,7 @@ namespace NSPresentationEditor
 
 				// теперь masterslide
 				CRelsGenerator oRels(&m_oManager);
-				int nCountLayouts = (int)pTheme->m_arLayouts.GetCount();
+				int nCountLayouts = (int)pTheme->m_arLayouts.size();
 				oRels.StartMaster(nIndexTheme, nStartLayout, nCountLayouts);
 
 				CStringWriter oWriter;
@@ -520,7 +520,7 @@ namespace NSPresentationEditor
 <a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>");
 				oWriter.WriteString(strElems);
 
-				size_t nElements = pTheme->m_arElements.GetCount();
+				size_t nElements = pTheme->m_arElements.size();
 				for (size_t nEl = 0; nEl < nElements; ++nEl)
 					WriteElement(oWriter, oRels, pTheme->m_arElements[nEl]);
 
@@ -574,7 +574,7 @@ namespace NSPresentationEditor
 				nStartLayout += nCountLayouts;
 			}
 
-			size_t nCountSlides = m_pDocument->m_arSlides.GetCount();
+			size_t nCountSlides = m_pDocument->m_arSlides.size();
 			for (size_t nIndexS = 0; nIndexS < nCountSlides; ++nIndexS)
 			{
 				CRelsGenerator::StartNotes((int)nIndexS, m_strTempDirectory, m_pDocument->m_arSlides[nIndexS].m_strComment);
@@ -623,7 +623,7 @@ namespace NSPresentationEditor
 			{
 				if (-1 != pElement->m_lPlaceholderType)
 				{
-					size_t nCountElements = pLayout->m_arElements.GetCount();
+					size_t nCountElements = pLayout->m_arElements.size();
 					for (size_t nIndex = 0; nIndex < nCountElements; ++nIndex)
 					{
 						if ((pElement->m_lPlaceholderType == pLayout->m_arElements[nIndex]->m_lPlaceholderType) &&
@@ -668,7 +668,7 @@ namespace NSPresentationEditor
 <a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>");
 			oWriter.WriteString(strElems);
 
-			size_t nElements = oLayout.m_arElements.GetCount();
+			size_t nElements = oLayout.m_arElements.size();
 			for (size_t nEl = 0; nEl < nElements; ++nEl)
 				WriteElement(oWriter, oRels,  oLayout.m_arElements[nEl]);
 
@@ -704,7 +704,7 @@ namespace NSPresentationEditor
 			{
 				int nLayout = oSlide.m_lLayoutID;
 				for (int i = 0; i < oSlide.m_lThemeID; ++i)
-					nLayout += (int)m_pDocument->m_arThemes[i].m_arLayouts.GetCount();
+					nLayout += (int)m_pDocument->m_arThemes[i].m_arLayouts.size();
 
 				oRels.StartSlide(nLayout, nIndexSlide);
 			}
@@ -721,7 +721,7 @@ namespace NSPresentationEditor
 <a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"0\" cy=\"0\"/><a:chOff x=\"0\" y=\"0\"/><a:chExt cx=\"0\" cy=\"0\"/></a:xfrm></p:grpSpPr>");
 			oWriter.WriteString(strElems);
 
-			size_t nElements = oSlide.m_arElements.GetCount();
+			size_t nElements = oSlide.m_arElements.size();
 			for (size_t nEl = 0; nEl < nElements; ++nEl)
 				WriteElement(oWriter, oRels,  oSlide.m_arElements[nEl], &m_pDocument->m_arThemes[oSlide.m_lThemeID].m_arLayouts[oSlide.m_lLayoutID]);
 

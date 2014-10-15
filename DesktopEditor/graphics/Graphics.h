@@ -166,11 +166,11 @@ protected:
 
 	Unit	m_ePageUnits;
 
-	CMatrix m_oCoordTransform;
-	CMatrix m_oBaseTransform;
-	CMatrix m_oTransform;	
+	Aggplus::CMatrix m_oCoordTransform;
+	Aggplus::CMatrix m_oBaseTransform;
+	Aggplus::CMatrix m_oTransform;	
 
-	CMatrix	m_oFullTransform;
+	Aggplus::CMatrix	m_oFullTransform;
 
 	double m_dClipLeft;
 	double m_dClipTop;
@@ -226,9 +226,9 @@ public:
 	Unit GetPageUnit();
 	Status SetPageUnit(Unit lUnits);
 	
-	CMatrix* GetTransform();
+	Aggplus::CMatrix* GetTransform();
 	Status SetTransform(CMatrix* pTransform);
-	CMatrix* GetBaseTransform();
+	Aggplus::CMatrix* GetBaseTransform();
 	Status SetBaseTransform(CMatrix* pTransform);	
 	Status TranslateTransform(double x, double y, MatrixOrder order = MatrixOrderPrepend);
 	Status RotateTransform(double dAngle, MatrixOrder order = MatrixOrderPrepend);

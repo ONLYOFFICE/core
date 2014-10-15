@@ -407,10 +407,10 @@ namespace NSPresentationEditor
 		long Alpha;
 		double Size;
 
-		byte DashStyle;
-		byte LineStartCap;
-		byte LineEndCap;
-		byte LineJoin;
+        BYTE DashStyle;
+        BYTE LineStartCap;
+        BYTE LineEndCap;
+        BYTE LineJoin;
 
 		double* DashPattern;
 		long Count;
@@ -873,8 +873,8 @@ namespace NSPresentationEditor
 		double Size;
 		BOOL Bold;
 		BOOL Italic;
-		byte Underline;
-		byte Strikeout;
+        BYTE Underline;
+        BYTE Strikeout;
 
 		BOOL StringGID;
 		double CharSpace;
@@ -919,8 +919,8 @@ namespace NSPresentationEditor
 		{
 			Bold	= (0x01 == (0x01 & lStyle));
 			Italic	= (0x02 == (0x02 & lStyle));
-			Underline = (byte)(0x7C & lStyle) >> 2;
-			Strikeout = (byte)(0x0180 & lStyle) >> 7;
+            Underline = (BYTE)(0x7C & lStyle) >> 2;
+            Strikeout = (BYTE)(0x0180 & lStyle) >> 7;
 		}
 		void SetToRenderer(IRenderer *pRenderer)
 		{

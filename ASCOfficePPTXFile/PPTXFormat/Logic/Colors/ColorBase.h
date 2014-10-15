@@ -51,22 +51,22 @@ namespace PPTX
 
 		public:
 			//Эти функции возвращают цвет с учетом модификаторов
-			virtual DWORD ColorBase::GetRGBA(DWORD RGBA) const
+            virtual DWORD GetRGBA(DWORD RGBA) const
 			{
 				return ApplyModifiers(ctRGBA);
 			}
 
-			virtual DWORD ColorBase::GetARGB(DWORD ARGB) const
+            virtual DWORD GetARGB(DWORD ARGB) const
 			{
 				return ApplyModifiers(ctARGB);
 			}
 
-			virtual DWORD ColorBase::GetBGRA(DWORD BGRA) const
+            virtual DWORD GetBGRA(DWORD BGRA) const
 			{
 				return ApplyModifiers(ctBGRA);
 			}
 
-			virtual DWORD ColorBase::GetABGR(DWORD ABGR) const
+            virtual DWORD GetABGR(DWORD ABGR) const
 			{
 				return ApplyModifiers(ctABGR);
 			}

@@ -85,18 +85,27 @@ namespace NSPresentationEditor
 
 	public:
 		
-		__forceinline void WriteString(wchar_t* pString, size_t& nLen)
+		__forceinline void WriteString(const wchar_t* pString, size_t& nLen)
 		{
 			AddSize(nLen);
-			//memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
-			memcpy(m_pDataCur, pString, nLen << 1);
+			// memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
+			// wstring has 4 bytes length (not 2 in WIN32) in linux/macos
+			memcpy(m_pDataCur, pString, (2 == sizeof (wchar_t)) ? (nLen << 1) : (nLen << 2));
+			
 			m_pDataCur += nLen;
 			m_lSizeCur += nLen;
 		}
+#ifdef _WIN32
 		__forceinline void WriteString(_bstr_t& bsString)
 		{
 			size_t nLen = bsString.length();
 			WriteString(bsString.GetBSTR(), nLen);
+		}
+#endif // #ifdef _WIN32
+		__forceinline void WriteString(std::wstring& wString)
+		{
+			size_t nLen = wString.length();
+			WriteString(wString.c_str(), nLen);
 		}
 		__forceinline void WriteString(const CString& sString)
 		{

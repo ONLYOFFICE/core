@@ -298,6 +298,7 @@ namespace NSBinPptxRW
 			}
 		}
 
+#ifdef _WIN32
 		template<typename T>
 		void WriteRecordArray(int type, int subtype, const CAtlArray<T>& val)
 		{
@@ -311,6 +312,7 @@ namespace NSBinPptxRW
 
 			EndRecord();
 		}
+#endif #ifdef _WIN32
 		template<typename T>
 		void WriteRecordArray(int type, int subtype, const std::vector<T>& val)
 		{

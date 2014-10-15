@@ -12,6 +12,8 @@
 #include "../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
 #include "FontPicker.h"
 
+#include "../../DesktopEditor/Common/File.h"
+
 #define BYTE_SIZEOF		sizeof(BYTE)
 #define USHORT_SIZEOF	sizeof(USHORT)
 #define ULONG_SIZEOF	sizeof(ULONG)
@@ -195,6 +197,7 @@ namespace NSBinPptxRW
 	void CImageManager2::SaveImageAsPng(const CString& strFileSrc, const CString& strFileDst)
 	{
 		NSFile::CFileBinary oFile;
+		
 		if (!oFile.OpenFile(std::wstring(strFileSrc.GetString())))
 			return;
 

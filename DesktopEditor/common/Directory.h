@@ -65,7 +65,7 @@ namespace NSDirectory
 #elif MAC
 #endif
 	}
-	static bool Exists(std::wstring& strDirectory)
+	static bool Exists(const std::wstring& strDirectory)
 	{
 #ifdef WIN32
 		DWORD dwAttrib = ::GetFileAttributesW(strDirectory.c_str());

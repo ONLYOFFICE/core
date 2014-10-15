@@ -8,7 +8,7 @@
 
 using namespace OOX::Spreadsheet;
 namespace BinXlsxRW{
-	SaveParams::SaveParams(CString& _sThemePath)
+	SaveParams::SaveParams(const CString& _sThemePath)
 	{
 		sThemePath = _sThemePath;
 		sAdditionalContentTypes = _T("");

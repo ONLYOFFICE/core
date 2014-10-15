@@ -34,7 +34,7 @@ namespace BinDocxRW
 		OOX::IFileContainer* m_pRels;
 		CString m_sDocumentPath;
 	public:
-		ParamsDocumentWriter(OOX::IFileContainer* pRels, CString& sDocumentPath):m_pRels(pRels), m_sDocumentPath(sDocumentPath)
+		ParamsDocumentWriter(OOX::IFileContainer* pRels, const CString& sDocumentPath):m_pRels(pRels), m_sDocumentPath(sDocumentPath)
 		{
 		}
 	};
@@ -4656,7 +4656,7 @@ namespace BinDocxRW
 				}
 			}
 		}
-		void WriteText(CString& text)
+		void WriteText(const CString& text)
 		{
 			m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::run);
 			m_oBcw.m_oStream.WriteStringW(text);

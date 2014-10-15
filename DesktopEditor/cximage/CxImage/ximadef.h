@@ -119,10 +119,12 @@ typedef void*      HRGN;
 #define	FALSE false
 #endif
 
+#ifndef CXIMAGE_DONT_DECLARE_TCHAR // it brokes CString implementation
 #ifndef TCHAR
 #define TCHAR char
 #define _T
 #endif
+#endif // CXIMAGE_DONT_DECLARE_TCHAR
 
 typedef struct tagRECT
 {

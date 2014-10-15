@@ -1,9 +1,16 @@
 #pragma once
+
+#ifdef _WIN32
 #include <atlbase.h>
 #include <atlstr.h>
+#include "../../../../Common/atldefine.h"
+#else
+#include "../../../../Common/DocxFormat/Source/Base/ASCString.h"
+#endif
+
 #include <vector>
 
-#include "../../../../Common/atldefine.h"
+
 #include "../../../../DesktopEditor/graphics/GraphicsPath.h"
 
 const double ShapeSize		= 43200.0;

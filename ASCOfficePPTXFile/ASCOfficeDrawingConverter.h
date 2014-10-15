@@ -4,13 +4,15 @@
 #ifdef _WIN32
 #include <atlbase.h>
 #include <atlstr.h>
+#else
+#include "../../../../DesktopEditor/common/ASCVariant.h"
+#endif
+
+#include "../Common/DocxFormat/Source/Base/Base.h"
+#include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/PPTShapeEnum.h"
 
 #include <vector>
 #include <map>
-
-#endif
-#include "../Common/DocxFormat/Source/Base/Base.h"
-#include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/PPTShapeEnum.h"
 
 class IRenderer;
 class CShape;
@@ -121,11 +123,12 @@ public:
 	void FinalRelease();
 
 public:
-	STDMETHOD(GetProperty)(LONG lId, VARIANT* pProp);
-	STDMETHOD(SetProperty)(LONG lId, VARIANT prop);
+    HRESULT(GetProperty)(LONG lId, VARIANT* pProp);
+    HRESULT(SetProperty)(LONG lId, VARIANT prop);
 
 public:
-	static bool CopyProperty(VARIANT& oDst, const VARIANT& oSrc);
+    static bool CopyProperty(VARIANT& oDst, const VARIANT& oSrc);
+
 };
 
 namespace NSBinPptxRW
@@ -174,34 +177,34 @@ namespace NSBinPptxRW
 
 		~CDrawingConverter();
 	public:
-		STDMETHOD(SetMainDocument)(BinDocxRW::CDocxSerializer* pDocument);
-		STDMETHOD(SetRelsPath)(CString& bsRelsPath);
+        HRESULT SetMainDocument (BinDocxRW::CDocxSerializer* pDocument);
+        HRESULT SetRelsPath (CString& bsRelsPath);
 		CString GetRelsPath();
-		STDMETHOD(SetMediaDstPath)(CString& bsMediaPath);
+        HRESULT SetMediaDstPath (CString& bsMediaPath);
 
-		STDMETHOD(AddShapeType)(CString& bsXml);
-		STDMETHOD(AddObject)(CString& bsXml, CString** pMainProps);
-		STDMETHOD(GetThemeBinary)(BYTE** ppBinary, long& lBinarySize, CString& bsThemeFilePath);
+        HRESULT AddShapeType(CString& bsXml);
+        HRESULT AddObject(CString& bsXml, CString** pMainProps);
+        HRESULT GetThemeBinary(BYTE** ppBinary, long& lBinarySize, CString& bsThemeFilePath);
 
-		STDMETHOD(SaveThemeXml)(LONG lStart, LONG lLength, CString& bsThemePath);
-		STDMETHOD(SaveObject)(LONG lStart, LONG lLength, CString& bsMainProps, CString** bsXml);
-		STDMETHOD(SaveObjectEx)(LONG lStart, LONG lLength, CString& bsMainProps, LONG lDocType, CString** bsXml);
+        HRESULT SaveThemeXml(LONG lStart, LONG lLength, CString& bsThemePath);
+        HRESULT SaveObject(LONG lStart, LONG lLength, CString& bsMainProps, CString** bsXml);
+        HRESULT SaveObjectEx(LONG lStart, LONG lLength, CString& bsMainProps, LONG lDocType, CString** bsXml);
 
-		STDMETHOD(GetRecordBinary)(LONG lRecordType, CString& bsXml);
-		STDMETHOD(GetRecordXml)(LONG lStart, LONG lLength, LONG lRecType, LONG lDocType, CString** bsXml);
+        HRESULT GetRecordBinary(LONG lRecordType, CString& bsXml);
+        HRESULT GetRecordXml(LONG lStart, LONG lLength, LONG lRecType, LONG lDocType, CString** bsXml);
 
-		STDMETHOD(SetDstContentRels)();
-		STDMETHOD(SaveDstContentRels)(CString& bsRelsPath);
-		STDMETHOD(WriteRels)(CString& bsType, CString& bsTarget, CString& bsTargetMode, LONG* lId);
-		STDMETHOD(LoadClrMap)(CString& bsXml);
+        HRESULT SetDstContentRels();
+        HRESULT SaveDstContentRels(CString& bsRelsPath);
+        HRESULT WriteRels (CString& bsType, CString& bsTarget, CString& bsTargetMode, LONG* lId);
+        HRESULT LoadClrMap (CString& bsXml);
 
-		STDMETHOD(GetTxBodyBinary)(CString& bsXml);
-		STDMETHOD(GetTxBodyXml)(LONG lStart, LONG lLength, CString** pbstrXml);
-		STDMETHOD(SetFontDir)(CString& bsFontDir);
+        HRESULT(GetTxBodyBinary)(CString& bsXml);
+        HRESULT(GetTxBodyXml)(LONG lStart, LONG lLength, CString** pbstrXml);
+        HRESULT(SetFontDir)(CString& bsFontDir);
 
 		HRESULT SetFontPicker(COfficeFontPicker* pFontPicker);
-		STDMETHOD(SetAdditionalParam)(CString& ParamName, VARIANT ParamValue);
-		STDMETHOD(GetAdditionalParam)(CString& ParamName, VARIANT* ParamValue);
+        HRESULT(SetAdditionalParam)(CString& ParamName, VARIANT ParamValue);
+        HRESULT(GetAdditionalParam)(CString& ParamName, VARIANT* ParamValue);
 	public:
 		void SetFontManager(CFontManager* pFontManager);
 	protected:

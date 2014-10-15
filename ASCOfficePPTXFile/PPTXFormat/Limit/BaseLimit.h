@@ -6,17 +6,25 @@
 
 #ifndef _WIN32
 #include "../../../DesktopEditor/common/Types.h"
-#endif
-
 #define _USE_STRING_OPERATOR						\
-	virtual void operator=(const CString& value)	\
-	{												\
-		set(value);									\
-	}												\
-	virtual void operator=(const BSTR& value)		\
-	{												\
-		set((CString)value);						\
-	}										
+    virtual void operator=(const CString& value)	\
+    {												\
+        set(value);									\
+    }
+
+#else
+#define _USE_STRING_OPERATOR						\
+    virtual void operator=(const CString& value)	\
+    {												\
+        set(value);									\
+    }												\
+    virtual void operator=(const BSTR& value)		\
+    {												\
+        set((CString)value);						\
+    }
+#endif // #ifndef _WIN32
+
+
 
 namespace PPTX
 {

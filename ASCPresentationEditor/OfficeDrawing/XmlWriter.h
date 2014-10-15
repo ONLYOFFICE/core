@@ -3,15 +3,15 @@
 
 namespace NSPresentationEditor
 {
-	static _bstr_t	g_bstr_nodeopen				= L"<";
-	static _bstr_t	g_bstr_nodeclose			= L">";
-	static _bstr_t	g_bstr_nodeopen_slash		= L"</";
-	static _bstr_t	g_bstr_nodeclose_slash		= L"/>";
-	static _bstr_t	g_bstr_node_space			= L" ";
-	static _bstr_t	g_bstr_node_equal			= L"=";
-	static _bstr_t	g_bstr_node_quote			= L"\"";
-	static _bstr_t	g_bstr_boolean_true			= L"true";
-	static _bstr_t	g_bstr_boolean_false		= L"false";	
+    static std::wstring	g_bstr_nodeopen				= L"<";
+    static std::wstring	g_bstr_nodeclose			= L">";
+    static std::wstring	g_bstr_nodeopen_slash		= L"</";
+    static std::wstring	g_bstr_nodeclose_slash		= L"/>";
+    static std::wstring	g_bstr_node_space			= L" ";
+    static std::wstring	g_bstr_node_equal			= L"=";
+    static std::wstring	g_bstr_node_quote			= L"\"";
+    static std::wstring	g_bstr_boolean_true			= L"true";
+    static std::wstring	g_bstr_boolean_false		= L"false";
 	
 	inline static double FABS(double dVal)
 	{

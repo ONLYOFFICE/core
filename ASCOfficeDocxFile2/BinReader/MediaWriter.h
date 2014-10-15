@@ -19,7 +19,7 @@ namespace Writers
 			nImageCount = 0;
 			m_sMediaDir = m_sDir + _T("\\word\\media");
 		}
-		void AddImage(CString& sImg)
+		void AddImage(const CString& sImg)
 		{
 			NSDirectory::CreateDirectory(string2std_string(m_sMediaDir));
 

@@ -3209,7 +3209,7 @@ namespace BinXlsxRW {
 			OOX::CPath path(sFileDst);
 			//создаем папку для media
 			CString mediaDir = path.GetDirectory() + gc_sMediaDirName;
-			CreateDirectoryW(mediaDir, NULL);
+			NSDirectory::CreateDirectory(string2std_string(mediaDir));
 
 			pOfficeDrawingConverter->SetMediaDstPath(mediaDir);
 

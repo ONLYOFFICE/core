@@ -916,11 +916,11 @@ public:
 		bW = false;
 		bWDocx = false;
 	}
-	void Write(XmlUtils::CStringWriter& pCStringWriter ,CString& sName)
+	void Write(XmlUtils::CStringWriter& pCStringWriter, const CString& sName)
 	{
 		pCStringWriter.WriteString(Write(sName));
 	}
-	CString Write(CString& sName)
+	CString Write(const CString& sName)
 	{
 		CString sXml;
 		if(bW || (bType && bWDocx))
@@ -1376,9 +1376,9 @@ public:
 					sTooltip = item;
 				}
 
-				if("HYPERLINK" == item)
+				if(_T("HYPERLINK") == item)
 					bNextLink = true;
-				else if("\\o" == item)
+				else if(_T("\\o") == item)
 					bNextTooltip = true;
             }
 			if(false == sLink.IsEmpty())
@@ -1485,7 +1485,7 @@ public:
 			pComment->IdFormat = IdFormatStart + i + 1;
 		} 
 	}
-	CString writeRef(CString& sBefore, CString& sRef, CString& sAfter)
+	CString writeRef(const CString& sBefore, const CString& sRef, const CString& sAfter)
 	{
 		CString sRes;
 		sRes.Append(writeRef(this, sBefore, sRef, sAfter));
@@ -1501,7 +1501,7 @@ public:
 			sRes.Append(fReadFunction(replies[i]));
 		return sRes;
 	}
-	static CString writeRef(CComment* pComment, CString& sBefore, CString& sRef, CString& sAfter)
+	static CString writeRef(CComment* pComment, const CString& sBefore, const CString& sRef, const CString& sAfter)
 	{
 		CString sRes;
 		if(!pComment->bIdFormat)

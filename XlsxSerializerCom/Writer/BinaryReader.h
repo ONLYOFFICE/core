@@ -1741,14 +1741,14 @@ namespace BinXlsxRW {
 		OOX::Spreadsheet::CWorksheet* m_pCurWorksheet;
 		OOX::Spreadsheet::CDrawing* m_pCurDrawing;
 
-		CString& m_sDestinationDir;
-		CString m_sMediaDir;
+		const CString& m_sDestinationDir;
+		const CString m_sMediaDir;
 		SaveParams& m_oSaveParams;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
 		BinaryWorksheetsTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, OOX::Spreadsheet::CWorkbook& oWorkbook,
 			OOX::Spreadsheet::CSharedStrings* pSharedStrings, std::map<CString, OOX::Spreadsheet::CWorksheet*>& mapWorksheets,
-			std::map<long, ImageObject*>& mapMedia, CString& sDestinationDir, SaveParams& oSaveParams,
+			std::map<long, ImageObject*>& mapMedia, const CString& sDestinationDir, SaveParams& oSaveParams,
 			NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter) : Binary_CommonReader(oBufferedStream), m_oWorkbook(oWorkbook),
 			m_oBcr2(oBufferedStream), m_mapWorksheets(mapWorksheets), m_mapMedia(mapMedia), m_sDestinationDir(sDestinationDir), m_sMediaDir(m_sDestinationDir + _T("\\xl\\media")), m_oSaveParams(oSaveParams), m_pSharedStrings(pSharedStrings)
 		{
@@ -1772,7 +1772,7 @@ namespace BinXlsxRW {
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadWorksheet, this, poResult);
 				if(m_pCurSheet->m_oName.IsInit())
 				{
-					const OOX::RId& oRId = m_oWorkbook.Add(smart_ptr<OOX::File>(m_pCurWorksheet));
+					const OOX::RId oRId = m_oWorkbook.Add(smart_ptr<OOX::File>(m_pCurWorksheet));
 					m_pCurSheet->m_oRid.Init();
 					m_pCurSheet->m_oRid->SetValue(oRId.get());
 					m_mapWorksheets [m_pCurSheet->m_oName.get()] = m_pCurWorksheet;
@@ -2811,14 +2811,14 @@ namespace BinXlsxRW {
 	{
 		std::map<long, ImageObject*>& m_mapMedia;
 		std::vector<CString>& m_aDeleteFiles;
-		CString& m_sFileInDir;
+		const CString& m_sFileInDir;
 		long m_nCurId;
 		CString m_sCurSrc;
 		long m_nCurIndex;
 		SaveParams& m_oSaveParams;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
-		BinaryOtherTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, std::map<long, ImageObject*>& mapMedia, CString& sFileInDir, std::vector<CString>& aDeleteFiles, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream), m_mapMedia(mapMedia),m_aDeleteFiles(aDeleteFiles),m_sFileInDir(sFileInDir),m_oSaveParams(oSaveParams),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
+		BinaryOtherTableReader(NSBinPptxRW::CBinaryFileReader& oBufferedStream, std::map<long, ImageObject*>& mapMedia, const CString& sFileInDir, std::vector<CString>& aDeleteFiles, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter):Binary_CommonReader(oBufferedStream), m_mapMedia(mapMedia),m_aDeleteFiles(aDeleteFiles),m_sFileInDir(sFileInDir),m_oSaveParams(oSaveParams),m_pOfficeDrawingConverter(pOfficeDrawingConverter)
 		{
 			m_nCurId = 0;
 			m_sCurSrc = _T("");
@@ -3042,7 +3042,7 @@ namespace BinXlsxRW {
 				}
 				return S_OK;
 			}
-			int ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW::CBinaryFileReader& oBufferedStream, CString& sFileInDir, CString& sOutDir, std::vector<CString>& aDeleteFiles, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
+			int ReadMainTable(OOX::Spreadsheet::CXlsx& oXlsx, NSBinPptxRW::CBinaryFileReader& oBufferedStream, const CString& sFileInDir, const CString& sOutDir, std::vector<CString>& aDeleteFiles, SaveParams& oSaveParams, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter)
 			{
 				long res = c_oSerConstants::ReadOk;
 				//mtLen

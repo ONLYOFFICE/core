@@ -67,7 +67,7 @@ namespace SerializeCommon
 	{
 		return (long)(val+ 0.5);
 	}
-	CString changeExtention(CString& sSourcePath, CString& sTargetExt)
+	CString changeExtention(const CString& sSourcePath, const CString& sTargetExt)
 	{
 		wchar_t path_buffer[_MAX_PATH];
 		wchar_t drive[_MAX_DRIVE];

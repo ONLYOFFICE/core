@@ -18,7 +18,7 @@ namespace SerializeCommon
 	CString DownloadImage(const CString& strFile);
 	VOID convertBase64ToImage (CString sImage, CString &pBase64);
 	long Round(double val);
-	CString changeExtention(CString& sSourcePath, CString& sTargetExt);
+	CString changeExtention(const CString& sSourcePath, const CString& sTargetExt);
 	class CommentData
 	{
 	public :

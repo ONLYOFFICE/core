@@ -14,7 +14,7 @@ namespace BinXlsxRW {
 		CString sThemePath;
 		CString sAdditionalContentTypes;
 		int nThemeOverrideCount;
-		SaveParams(CString& _sThemePath);
+		SaveParams(const CString& _sThemePath);
 	};
 
 	class BinaryChartReader : public Binary_CommonReader<BinaryChartReader>

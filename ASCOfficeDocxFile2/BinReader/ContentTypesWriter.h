@@ -32,7 +32,7 @@ namespace Writers
 			oFile.WriteStringUTF8(m_oWriter.GetData());
 			oFile.CloseFile();
 		}
-		void AddOverride(CString& PartName, CString& ContentType)
+		void AddOverride(const CString& PartName, const CString& ContentType)
 		{
 			CString sOverride;sOverride.Format(_T("<Override PartName=\"%s\" ContentType=\"%s\"/>"),PartName , ContentType);
 			m_oAdditional.WriteString(sOverride);

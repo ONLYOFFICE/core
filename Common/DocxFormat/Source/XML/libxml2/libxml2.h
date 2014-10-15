@@ -1,7 +1,5 @@
 #pragma once
 
-#pragma comment(lib, "libxml2.lib")
-
 //#include "./win_build/config.h"
 #include "XML/include/libxml/xmlreader.h"
 

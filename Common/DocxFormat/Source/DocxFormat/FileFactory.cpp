@@ -9,7 +9,7 @@
 #include "Theme/ThemeOverride.h"
 #include "Settings/Settings.h"
 #include "Settings/WebSettings.h"
-#include "FontTable.h"
+#include "FontTable.h" 
 #include "Styles.h"
 #include "Bibliography.h"
 #include "Footnote.h"

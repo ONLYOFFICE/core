@@ -1,12 +1,24 @@
 #pragma once
-#include "../stdafx.h"
+//#include "../stdafx.h"
 
 #include <map>
+
+#ifdef _WIN32
+#include <atlbase.h>
+#include <atlstr.h>
+#else
+#include "../../Common/DocxFormat/Source/Base/ASCString.h"
+#endif
 
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 //#include "DocWrapper/Base.h"
 namespace NSCommon{
 	template<class Type> class nullable;
+}
+namespace ComplexTypes{
+    namespace Spreadsheet{
+        class CString_;
+    }
 }
 namespace OOX
 {

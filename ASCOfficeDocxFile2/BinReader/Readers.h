@@ -2333,8 +2333,7 @@ public:
 			}
 
 			//Проверяем что файл существует
-			DWORD dwFileAttr = ::GetFileAttributes( sFilePath );
-			if( dwFileAttr != INVALID_FILE_ATTRIBUTES && 0 == (dwFileAttr & FILE_ATTRIBUTE_DIRECTORY ) )
+			if(NSFile::CFileBinary::Exists(string2std_string(sFilePath)))
 			{
 				m_oFileWriter.m_oMediaWriter.AddImage(sFilePath);
 				if(bDeleteFile)
@@ -5552,8 +5551,7 @@ public:
 				//создаем папку для rels
 				CString sRelsDir;
 				sRelsDir.Format(_T("%s\\word\\charts\\_rels"), m_oFileWriter.m_oChartWriter.m_sDir);
-				DWORD dwFileAttr = ::GetFileAttributes( sRelsDir );
-				if( dwFileAttr == INVALID_FILE_ATTRIBUTES )
+				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
 					OOX::CSystemUtility::CreateDirectories(sRelsDir);
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 

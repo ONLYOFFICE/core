@@ -1,6 +1,5 @@
 #include "CSVReader.h"
 
-#include "../../Common/MappingFile.h"
 #include <map>
 
 namespace CSVReader
@@ -108,17 +107,18 @@ namespace CSVReader
 		pWorkbook->m_oSheets.Init();
 		pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 
-		MemoryMapping::CMappingFile oMappingFile = MemoryMapping::CMappingFile();
-		if(FALSE != oMappingFile.Open(sFileName))
+		NSFile::CFileBinary oFile;
+		if(oFile.OpenFile(string2std_string(sFileName)))
 		{
-			long nFileSize = oMappingFile.GetSize();
-			LPCSTR pFileData = (LPCSTR)oMappingFile.GetData();
+			DWORD nFileSize = 0;
+			BYTE* pFileData = new BYTE[oFile.GetFileSize()];
+			oFile.ReadFile(pFileData, oFile.GetFileSize(), nFileSize);
+			oFile.CloseFile();
 
-			INT nSize = MultiByteToWideChar(nCodePage, 0, pFileData, nFileSize, NULL, 0);
+			INT nSize = MultiByteToWideChar(nCodePage, 0, (LPCSTR)pFileData, nFileSize, NULL, 0);
 			WCHAR *pTemp = new WCHAR [nSize];
 			memset(pTemp, 0, sizeof(WCHAR) * nSize);
-			MultiByteToWideChar (nCodePage, 0, pFileData, nFileSize, pTemp, nSize);
-			oMappingFile.Close();
+			MultiByteToWideChar (nCodePage, 0, (LPCSTR)pFileData, nFileSize, pTemp, nSize);
 
 			CONST WCHAR wcNewLineN = _T('\n');
 			CONST WCHAR wcNewLineR = _T('\r');

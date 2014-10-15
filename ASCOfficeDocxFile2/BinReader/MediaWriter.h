@@ -21,7 +21,7 @@ namespace Writers
 		}
 		void AddImage(CString& sImg)
 		{
-			CreateDirectory(m_sMediaDir, NULL);
+			NSDirectory::CreateDirectory(string2std_string(m_sMediaDir));
 
 			//TCHAR tExt[256];
 			//TCHAR tFilename[256];

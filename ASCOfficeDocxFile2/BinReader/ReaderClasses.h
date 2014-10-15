@@ -18,7 +18,7 @@ public:
 	double Footer;
 	bool TitlePg;
 	bool EvenAndOddHeaders;
-	byte SectionType;
+	BYTE SectionType;
 	int PageNumStart;
 
 	bool bHeader;
@@ -115,9 +115,9 @@ public:
 class CThemeColor{
 public:
 	bool Auto;
-	byte Color;
-	byte Tint;
-	byte Shade;
+	BYTE Color;
+	BYTE Tint;
+	BYTE Shade;
 
 	bool bShade;
 	bool bTint;
@@ -295,7 +295,7 @@ public:
 	bool Caps;
 	bool SmallCaps;
 	double Position;
-	byte FontHint;
+	BYTE FontHint;
 	bool BoldCs;
 	bool ItalicCs;
 	long FontSizeCs;

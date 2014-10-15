@@ -504,7 +504,7 @@ namespace NSFile
 			BYTE* pData = NULL;
 			LONG lLen = 0;
 
-			CUtf8Converter::GetUtf8StringFromUnicode(strXml.c_str(), strXml.size(), pData, lLen, bIsBOM);
+			CUtf8Converter::GetUtf8StringFromUnicode(strXml.c_str(), strXml.length(), pData, lLen, bIsBOM);
 
 			WriteFile(pData, lLen);
 
@@ -517,6 +517,25 @@ namespace NSFile
 			oFile.WriteStringUTF8(strXml, bIsBOM);
 			oFile.CloseFile();
 			return true;
+		}
+		static bool Exists(const std::wstring&  strFileName)
+		{
+#if defined(WIN32) || defined(_WIN32_WCE)
+			FILE* pFile = _wfopen(strFileName.c_str(), L"rb");
+#else
+			BYTE* pUtf8 = NULL;
+			LONG lLen = 0;
+            CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
+			FILE* pFile = fopen((char*)pUtf8, "rb");
+			delete [] pUtf8;
+#endif
+			if(NULL != pFile)
+			{
+				fclose(pFile);
+				return true;
+			}
+			else
+				return false;
 		}
 	};
 }

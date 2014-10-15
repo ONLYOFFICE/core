@@ -1,8 +1,6 @@
 #ifndef BINARY_READER
 #define BINARY_READER
 
-#include "../../Common/FileWriter.h"
-#include "../../Common/MappingFile.h"
 #include "../../Common/Base64.h"
 #include "../../Common/ATLDefine.h"
 
@@ -1597,7 +1595,8 @@ namespace BinXlsxRW {
 					CString sGfxdata;
 					if(TRUE == Base64::Base64Encode(pWriteBuffer, nWriteBufferLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NONE))
 					{
-						sGfxdata = CString((LPSTR)pbBase64Buffer, nBase64BufferLen);
+						std::wstring strGfxdata = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pbBase64Buffer, nBase64BufferLen);
+						sGfxdata = CString(strGfxdata.c_str());
 						//важно иначе при редактировании и сохранении в Excel перетираетс€
 						sGfxdata.Append(_T("\r\n"));
 					}
@@ -1842,8 +1841,7 @@ namespace BinXlsxRW {
 			{
 				CString sRelsDir;
 				sRelsDir.Format(_T("%s\\xl\\drawings\\_rels"), m_sDestinationDir);
-				DWORD dwFileAttr = ::GetFileAttributes( sRelsDir );
-				if( dwFileAttr == INVALID_FILE_ATTRIBUTES )
+				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
 					OOX::CSystemUtility::CreateDirectories(sRelsDir);
 
 				m_pOfficeDrawingConverter->SetDstContentRels();
@@ -2421,8 +2419,7 @@ namespace BinXlsxRW {
 				//создаем папку дл€ rels
 				CString sRelsDir;
 				sRelsDir.Format(_T("%s\\xl\\charts\\_rels"), m_sDestinationDir);
-				DWORD dwFileAttr = ::GetFileAttributes( sRelsDir );
-				if( dwFileAttr == INVALID_FILE_ATTRIBUTES )
+				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
 					OOX::CSystemUtility::CreateDirectories(sRelsDir);
 				m_pOfficeDrawingConverter->SetDstContentRels();
 
@@ -2544,8 +2541,7 @@ namespace BinXlsxRW {
 						if(pair->second->bNeedCreate)
 						{
 							pair->second->bNeedCreate = false;
-							DWORD dwFileAttr = ::GetFileAttributes( m_sMediaDir );
-							if( dwFileAttr == INVALID_FILE_ATTRIBUTES )
+							if( !NSDirectory::Exists(string2std_string(m_sMediaDir)) )
 								OOX::CSystemUtility::CreateDirectories(m_sMediaDir);
 							::CopyFile(pair->second->sPath, sNewImagePath, FALSE);
 						}
@@ -2911,8 +2907,7 @@ namespace BinXlsxRW {
 					}
 				}
 				//ѕровер€ем что файл существует
-				DWORD dwFileAttr = ::GetFileAttributes( sImageSrc );
-				if( dwFileAttr != INVALID_FILE_ATTRIBUTES && 0 == (dwFileAttr & FILE_ATTRIBUTE_DIRECTORY ) )
+				if(NSFile::CFileBinary::Exists(string2std_string(sImageSrc)))
 				{
 					m_sCurSrc = sImageSrc;
 					if(bAddToDelete)
@@ -2936,11 +2931,13 @@ namespace BinXlsxRW {
 			int ReadFile(CString sSrcFileName, CString sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, CString& sXMLOptions)
 			{
 				bool bResultOk = false;
-				MemoryMapping::CMappingFile oMappingFile = MemoryMapping::CMappingFile();
-				if(FALSE != oMappingFile.Open(CString(sSrcFileName)))
+				NSFile::CFileBinary oFile;
+				if(oFile.OpenFile(string2std_string(sSrcFileName)))
 				{
-					long nBase64DataSize = oMappingFile.GetSize();
-					BYTE* pBase64Data = oMappingFile.GetData();
+					DWORD nBase64DataSize = 0;
+					BYTE* pBase64Data = new BYTE[oFile.GetFileSize()];
+					oFile.ReadFile(pBase64Data, oFile.GetFileSize(), nBase64DataSize);
+					oFile.CloseFile();
 
 					//провер€ем формат
 					bool bValidFormat = false;
@@ -3042,7 +3039,6 @@ namespace BinXlsxRW {
 							bResultOk = true;
 						}
 					}
-					oMappingFile.Close();
 				}
 				return S_OK;
 			}

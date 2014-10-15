@@ -6,6 +6,7 @@
 #include "../../Common/Base64.h"
 #include "../../ASCOfficePPTXFile/Editor/FontCutter.h"
 #include "../../XlsxSerializerCom/Reader/BinaryWriter.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../Common/DocxFormat/Source/MathEquation/MathEquation.h"
 #include "BinEquationWriter.h"
 

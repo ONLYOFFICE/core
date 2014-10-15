@@ -1,7 +1,8 @@
 //#include "stdafx.h"
 #include "FontProcessor.h"
 
-#include "../../Common/DocxFormat/Source/XlsxFormat/Styles/Fonts.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+#include "../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../../Common/ASCUtils.h"
 
 namespace DocWrapper {

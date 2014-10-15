@@ -2,9 +2,9 @@
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/File.h"
-#include "../XlsxSerializerCom/Reader/BinaryWriter.h"
-#include "../XlsxSerializerCom/Writer/BinaryReader.h"
-#include "../ASCOfficePPTXFile/Editor/FontPicker.h"
+#include "../../XlsxSerializerCom/Reader/BinaryWriter.h"
+#include "../../XlsxSerializerCom/Writer/BinaryReader.h"
+#include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
 
 namespace BinXlsxRW{
 	int g_nCurFormatVersion = 0;
@@ -139,8 +139,7 @@ namespace BinXlsxRW{
 
 				CString sRelsDir = sDrive + sFolder;
 				sRelsDir.Append(_T("_rels"));
-				DWORD dwFileAttr = ::GetFileAttributes( sRelsDir );
-				if( dwFileAttr == INVALID_FILE_ATTRIBUTES )
+				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
 					OOX::CSystemUtility::CreateDirectories(sRelsDir);
 
 				oChartSpace.write2(sFilepath);

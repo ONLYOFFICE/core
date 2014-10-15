@@ -19,7 +19,7 @@ namespace PPTX
 
 			_USE_STRING_OPERATOR
 				
-			virtual void CameraType::set(const CString& strValue)
+            virtual void set(const CString& strValue)
 			{
 				if ((_T("isometricBottomDown") == strValue) ||
 					(_T("isometricBottomUp") == strValue) ||

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <vector>
+
 namespace NSPresentationEditor
 {
 	class CEffect
@@ -28,7 +30,7 @@ namespace NSPresentationEditor
 	class CEffects
 	{
 	public:
-		CAtlArray<CEffect> m_arEffects;
+		std::vector<CEffect> m_arEffects;
 
 	public:
 		CEffects() : m_arEffects()
@@ -36,7 +38,7 @@ namespace NSPresentationEditor
 		}
 		CEffects& operator=(const CEffects& oSrc)
 		{
-			m_arEffects.Copy(oSrc.m_arEffects);
+			m_arEffects.insert(m_arEffects.end(), oSrc.m_arEffects.begin(), oSrc.m_arEffects.end());
 			return *this;
 		}
 		CEffects(const CEffects& oSrc)

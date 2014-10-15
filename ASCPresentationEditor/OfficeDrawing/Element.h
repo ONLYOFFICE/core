@@ -181,12 +181,11 @@ namespace NSPresentationEditor
 
 		virtual void SetupProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout)
 		{
-			CAtlMap<CElementProperty::Type, CElementProperty>* pMap = &m_oProperties.m_arProperties;
+			std::map<CElementProperty::Type, CElementProperty>* pMap = &m_oProperties.m_arProperties;
 			
-			POSITION pos = pMap->GetStartPosition();
-			while (NULL != pos)
+			for (std::map<CElementProperty::Type, CElementProperty>::iterator pPair = pMap->begin(); pPair != pMap->end(); ++pPair)
 			{
-				CElementProperty oProperty = pMap->GetNextValue(pos);
+				CElementProperty oProperty = pPair->second;
 				SetupProperty(pSlide, pTheme, pLayout, &oProperty);
 			}
 		}

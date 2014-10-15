@@ -1,6 +1,8 @@
 #pragma once
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 
+#include <map>
+
 namespace NSPresentationEditor
 {
 	// здесь xmlные константы
@@ -57,17 +59,16 @@ namespace NSPresentationEditor
 
 	// common function
 	template <typename TKey, typename TVal>
-	void AppendAtlMap(CAtlMap<TKey, TVal>* pMapDst, const CAtlMap<TKey, TVal>* pMapSrc)
+	void AppendAtlMap(std::map<TKey, TVal>* pMapDst, const std::map<TKey, TVal>* pMapSrc)
 	{
 		if ((NULL == pMapDst) || (NULL == pMapSrc))
 			return;
 
-		POSITION pos = pMapSrc->GetStartPosition();
-		while (NULL != pos)
+		for (std::map<TKey, TVal>::iterator pPair =  pMapSrc->begin(); pPair !=  pMapSrc->end(); ++pPair)
 		{
-			TKey key	= pMapSrc->GetKeyAt(pos);
-			TVal value	= pMapSrc->GetNextValue(pos);
-			pMapDst->SetAt(key, value);
+			TKey key	= pPair->first;
+			TVal value	= pPair->second;
+			(*pMapDst)[key] = value;
 		}
 	}
 }

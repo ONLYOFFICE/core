@@ -5,6 +5,7 @@
 #include "../BinWriter/BinReaderWriterDefines.h"
 #include "ReaderClasses.h"
 #include "../../XlsxSerializerCom/Writer/BinaryReader.h"
+#include "../../DesktopEditor/common/ASCVariant.h"
 
 
 namespace BinDocxRW {
@@ -5276,7 +5277,7 @@ public:
 				{
 					VARIANT var;
 					var.vt = VT_I4;
-					var.intVal = m_oFileWriter.m_oChartWriter.getChartCount();
+					var.lVal = m_oFileWriter.m_oChartWriter.getChartCount();
 					m_oFileWriter.m_pDrawingConverter->SetAdditionalParam(CString(_T("DocumentChartsCount")), var);
 
 					long nCurPos = m_oBufferedStream.GetPos();
@@ -5287,7 +5288,7 @@ public:
 					VARIANT vt;
 					m_oFileWriter.m_pDrawingConverter->GetAdditionalParam(CString(_T("DocumentChartsCount")), &vt);
 					if(VT_I4 == vt.vt)
-						m_oFileWriter.m_oChartWriter.setChartCount(vt.intVal);
+						m_oFileWriter.m_oChartWriter.setChartCount(vt.lVal);
 
 					if(NULL != bstrDrawingXml && false == bstrDrawingXml->IsEmpty())
 					{

@@ -37,7 +37,7 @@ namespace NSPresentationEditor
 	public:
 		bool	m_bPresent;
 
-		CAtlArray<CTextRange> m_arRanges;
+		std::vector<CTextRange> m_arRanges;
 
 	public:
 		CInteractiveInfo()
@@ -55,7 +55,7 @@ namespace NSPresentationEditor
 
 			m_bPresent		= oSrc.m_bPresent;
 
-			m_arRanges.Copy(oSrc.m_arRanges);
+			m_arRanges.insert(m_arRanges.end(), oSrc.m_arRanges.begin(), oSrc.m_arRanges.end());
 
 			return *this;
 		}

@@ -1,5 +1,7 @@
 #pragma once
 
+#include <map>
+
 namespace NSPresentationEditor
 {
 	class CElementProperty
@@ -114,7 +116,7 @@ namespace NSPresentationEditor
 	class CElementProperties
 	{
 	public:
-		CAtlMap<CElementProperty::Type, CElementProperty> m_arProperties;
+		std::map<CElementProperty::Type, CElementProperty> m_arProperties;
 
 	public:
 		CElementProperties() : m_arProperties()
@@ -123,14 +125,14 @@ namespace NSPresentationEditor
 	public:
 		CElementProperties& operator=(const CElementProperties& oSrc)
 		{
-			m_arProperties.RemoveAll();
+			m_arProperties.clear();
 
-			POSITION pos = oSrc.m_arProperties.GetStartPosition();
-			while (NULL != pos)
+			for (std::map<CElementProperty::Type, CElementProperty>::const_iterator pPair = oSrc.m_arProperties.begin(); pPair != oSrc.m_arProperties.end(); ++pPair)
 			{
-				CElementProperty oProperty = oSrc.m_arProperties.GetNextValue(pos);
-				m_arProperties.SetAt(oProperty.m_ID, oProperty);
+				CElementProperty oProperty = pPair->second;
+				m_arProperties[oProperty.m_ID] = oProperty;
 			}
+
 			return *this;
 		}
 		CElementProperties(const CElementProperties& oSrc)
@@ -140,7 +142,7 @@ namespace NSPresentationEditor
 
 		virtual ~CElementProperties()
 		{
-			m_arProperties.RemoveAll();
+			m_arProperties.clear();
 		}
 
 		inline void SetAt(const CElementProperty::Type& eType, const DWORD& dwValue)
@@ -148,28 +150,28 @@ namespace NSPresentationEditor
 			CElementProperty oProp(eType);
 			oProp.m_dwValue = dwValue;
 
-			m_arProperties.SetAt(eType, oProp);
+			m_arProperties[eType] = oProp;
 		}
 		inline void SetAt(const CElementProperty::Type& eType, const BYTE& nValue)
 		{
 			CElementProperty oProp(eType);
 			oProp.m_dwValue = (DWORD)nValue;
 
-			m_arProperties.SetAt(eType, oProp);
+			m_arProperties[eType] = oProp;
 		}
 		inline void SetAt(const CElementProperty::Type& eType, const long& lValue)
 		{
 			CElementProperty oProp(eType);
 			oProp.m_dwValue = (DWORD)lValue;
 
-			m_arProperties.SetAt(eType, oProp);
+			m_arProperties[eType] = oProp;
 		}
 		inline void SetAt(const CElementProperty::Type& eType, const bool& bValue)
 		{
 			CElementProperty oProp(eType);
 			oProp.m_dwValue = (true == bValue) ? 1 : 0;
 
-			m_arProperties.SetAt(eType, oProp);
+			m_arProperties[eType] = oProp;
 		}
 		inline void SetAt(const CElementProperty::Type& eType, CString strValue)
 		{
@@ -181,7 +183,7 @@ namespace NSPresentationEditor
 
 			oProp.m_strAdvanced[oProp.m_dwValue - 1] = 0;
 
-			m_arProperties.SetAt(eType, oProp);
+			m_arProperties[eType] = oProp;
 		}
 	};
 }

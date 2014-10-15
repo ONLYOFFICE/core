@@ -2,12 +2,13 @@
 #include "../stdafx.h"
 #include "FileDownloader.h"
 
+
 namespace NSPresentationEditor
 {
 	class CImageManager
 	{
 	private:
-		CAtlMap<CString, CString>	m_mapImages;
+		std::map<CString, CString>	m_mapImages;
 		LONG						m_lIndexNextImage;
 		CString						m_strDstMedia;
 
@@ -20,7 +21,7 @@ namespace NSPresentationEditor
 		}
 		AVSINLINE void Clear()
 		{
-			m_mapImages.RemoveAll();
+			m_mapImages.clear();
 			m_lIndexNextImage = 0;
 		}
 		AVSINLINE void SetDstMedia(const CString& strDst)
@@ -31,9 +32,9 @@ namespace NSPresentationEditor
 	public:
 		AVSINLINE CString GenerateImage(const CString& strInput)
 		{
-			CAtlMap<CString, CString>::CPair* pPair = m_mapImages.Lookup(strInput);
-			if (NULL != pPair)
-				return pPair->m_value;
+			std::map<CString, CString>::iterator pPair = m_mapImages.find(strInput);
+			if (m_mapImages.end() != pPair)
+				return pPair->second;
 
 			if (IsNeedDownload(strInput))
 				return DownloadImage(strInput);
@@ -51,7 +52,7 @@ namespace NSPresentationEditor
 
 			CString strOutput = m_strDstMedia + strImage + strExts;		
 			strImage  = _T("../media/") + strImage + strExts;
-			m_mapImages.SetAt(strInput, strImage);
+			m_mapImages[strInput] = strImage;
 
 			// теперь нужно скопировать картинку
 			if (strOutput != strInput)
@@ -91,7 +92,7 @@ namespace NSPresentationEditor
 	private:
 		NSPresentationEditor::CStringWriter m_oWriter;
 		int									m_lNextRelsID;
-		CAtlMap<CString, int>				m_mapImages;
+		std::map<CString, int>				m_mapImages;
 		CImageManager*						m_pManager;
 
 	public:
@@ -106,7 +107,7 @@ namespace NSPresentationEditor
 		{
 			m_oWriter.ClearNoAttack();
 			m_lNextRelsID = 1;
-			m_mapImages.RemoveAll();
+			m_mapImages.clear();
 		}
 
 		AVSINLINE void StartMaster(int nIndexTheme, int nStartLayoutIndex, int nCountLayouts)
@@ -212,16 +213,17 @@ namespace NSPresentationEditor
 		AVSINLINE CString WriteImage(const CString& strImagePath)
 		{
 			CString strImage = m_pManager->GenerateImage(strImagePath);
-			CAtlMap<CString, int>::CPair* pPair = m_mapImages.Lookup(strImage);
+			std::map<CString, int>::iterator pPair = m_mapImages.find(strImage);
 
-			if (NULL != pPair)
+			if (m_mapImages.end() != pPair)
 			{
 				CString strRid = _T("");
-				strRid.Format(_T("rId%d"), pPair->m_value);
+				strRid.Format(_T("rId%d"), pPair->second);
 				return strRid;
 			}
 
-			m_mapImages.SetAt(strImage, m_lNextRelsID);
+			m_mapImages[strImage] = m_lNextRelsID;
+
 			CString strRid = _T("");
 			strRid.Format(_T("rId%d"), m_lNextRelsID++);
 

@@ -290,12 +290,12 @@ namespace NSPresentationEditor
 		}
 	private:
 		// Скрываем методы работы с массивами
-		bool Save(CAtlArray<BYTE> &aTable)
+		bool Save(std::vector<BYTE> &aTable)
 		{
 			return false;
 		}
 
-		bool Load(CAtlArray<BYTE> &aTable)
+		bool Load(std::vector<BYTE> &aTable)
 		{
 			return false;
 		}
@@ -382,12 +382,12 @@ namespace NSPresentationEditor
 
 	private:
 		// Скрываем методы работы с массивами
-		bool Save(CAtlArray<BYTE> &aTable)
+		bool Save(std::vector<BYTE> &aTable)
 		{
 			return false;
 		}
 
-		bool Load(CAtlArray<BYTE> &aTable)
+		bool Load(std::vector<BYTE> &aTable)
 		{
 			return false;
 		}

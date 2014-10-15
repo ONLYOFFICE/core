@@ -156,7 +156,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\Common;..\..\..\..\Addons\ZLib"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_MATH_DEFINES"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_ATL_ATTRIBUTES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;LIBXML_READER_ENABLED;_USE_XMLLITE_READER_;USE_XMLLITE_READER;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -433,14 +433,6 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
-				RelativePath=".\ASCOfficePPTXFile.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\ASCOfficePPTXFileRealization.cpp"
-				>
-			</File>
-			<File
 				RelativePath="stdafx.cpp"
 				>
 				<FileConfiguration
@@ -498,19 +490,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\Common\DocxFormat\Source\XML\libxml2\libxml2.h"
-				>
-			</File>
-			<File
 				RelativePath="Resource.h"
 				>
 			</File>
 			<File
 				RelativePath="stdafx.h"
-				>
-			</File>
-			<File
-				RelativePath="..\Common\DocxFormat\Source\XML\stringcommon.h"
 				>
 			</File>
 		</Filter>
@@ -524,30 +508,6 @@
 			</File>
 			<File
 				RelativePath=".\ASCOfficePPTXFile.rgs"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Editor"
-			>
-			<File
-				RelativePath=".\Editor\BinaryFileReaderWriter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Editor\BinReaderWriterDefines.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Editor\BinWriters.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Editor\Converter.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Editor\PPTXWriter.h"
 				>
 			</File>
 		</Filter>

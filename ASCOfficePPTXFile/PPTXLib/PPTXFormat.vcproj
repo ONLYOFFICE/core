@@ -42,7 +42,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\XML;..\..\Common\ASCDocxFormat\Source\;.\;..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;&quot;../../DesktopEditor/freetype-2.5.2/include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_ATL_ATTRIBUTES;_USE_MATH_DEFINES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_ATL_ATTRIBUTES;_USE_MATH_DEFINES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;_DOCWRAPPER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -107,8 +107,8 @@
 				Name="VCCLCompilerTool"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="false"
-				AdditionalIncludeDirectories="..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\XML;..\..\Common\ASCDocxFormat\Source;..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;&quot;../../DesktopEditor/freetype-2.5.2/include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_ATL_ATTRIBUTES;_USE_MATH_DEFINES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML"
+				AdditionalIncludeDirectories="..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\XML;..\..\Common\ASCDocxFormat\Source;..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;&quot;..\..\DesktopEditor\freetype-2.5.2\include&quot;"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_ATL_ATTRIBUTES;_USE_MATH_DEFINES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -158,7 +158,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
+				RelativePath="..\ASCOfficePPTXFile.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\ASCOfficePPTXFileRealization.cpp"
 				>
 			</File>
 			<File
@@ -176,10 +180,6 @@
 			</File>
 			<File
 				RelativePath="..\.\ASCOfficePPTXFile.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.h"
 				>
 			</File>
 			<File
@@ -203,48 +203,12 @@
 				>
 			</File>
 			<File
-				RelativePath="..\.\Editor\FontPicker.cpp"
+				RelativePath="..\Editor\FontPicker.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTXShape\Formula.cpp"
 				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="ReleaseASC|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="ReleaseOpenSource|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.cpp"

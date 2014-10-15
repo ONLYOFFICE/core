@@ -731,7 +731,7 @@ STDMETHODIMP NSPresentationEditor::CShapeWriter::SetCommandParams(double dAngle,
 	double m11 = bFlipX ? -1.0 : 1.0;
 	double m22 = bFlipY ? -1.0 : 1.0;
 	
-	CMatrix oMatrix(1, 0, 0, 1, 0, 0);
+	Aggplus::CMatrix oMatrix(1, 0, 0, 1, 0, 0);
 
 	if ((0 != dAngle) || (0 != lFlags))
 	{
@@ -753,7 +753,7 @@ STDMETHODIMP NSPresentationEditor::CShapeWriter::SetCommandParams(double dAngle,
 }
 STDMETHODIMP NSPresentationEditor::CShapeWriter::SetTransform(double dA, double dB, double dC, double dD, double dE, double dF)
 {
-	CMatrix oTrans(dA, dB, dC, dD, dE, dF);
+	Aggplus::CMatrix oTrans(dA, dB, dC, dD, dE, dF);
 	m_oTransform = oTrans;
 
 	CalculateFullTransform();

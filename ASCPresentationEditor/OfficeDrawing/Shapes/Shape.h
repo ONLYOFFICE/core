@@ -216,7 +216,7 @@ public:
 #ifdef ODP_DEF
 		if (!bIsFound)
 		{
-			if (0 < m_pShape->m_arTextRects.GetSize())
+			if (0 < m_pShape->m_arTextRects.size())
 			{
 				double koefX = oInfo.m_dWidth / ShapeSizeVML;
 				double koefY = oInfo.m_dHeight / ShapeSizeVML;
@@ -305,7 +305,7 @@ public:
 #if defined(ODP_DEF)
 		if (!bIsFound)
 		{
-			if (0 < m_pShape->m_arTextRects.GetSize())
+			if (0 < m_pShape->m_arTextRects.size())
 			{
 				double koefX = dWidth  / ShapeSizeVML;
 				double koefY = dHeight / ShapeSizeVML;

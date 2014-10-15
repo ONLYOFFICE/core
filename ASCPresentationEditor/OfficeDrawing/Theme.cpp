@@ -12,7 +12,7 @@ namespace NSPresentationEditor
 		// colors ----
 		oWriter.WriteString(_T("<Colors>"));
 		
-		size_t nCountColors = m_arColorScheme.GetCount();
+		size_t nCountColors = m_arColorScheme.size();
 		for (size_t i = 0; i < nCountColors; ++i)
 		{
 			CString strFormat = _T("");
@@ -28,7 +28,7 @@ namespace NSPresentationEditor
 		// fonts -----
 		oWriter.WriteString(_T("<Fonts>"));
 		
-		size_t nCountFonts = m_arFonts.GetCount();
+		size_t nCountFonts = m_arFonts.size();
 		//if (nCountFonts > 1)
 		//	nCountFonts = 1;
 		for (size_t i = 0; i < nCountFonts; ++i)
@@ -109,7 +109,7 @@ namespace NSPresentationEditor
 		// elements
 		oWriter.WriteString(_T("<Elements>"));
 
-		size_t nCountElems = m_arElements.GetCount();
+		size_t nCountElems = m_arElements.size();
 		for (size_t i = 0; i < nCountElems; ++i)
 		{
 			m_arElements[i]->m_bIsBackground = false;
@@ -123,7 +123,7 @@ namespace NSPresentationEditor
 		// layouts
 		oWriter.WriteString(_T("<Layouts>"));
 
-		size_t nCountLayouts = m_arLayouts.GetCount();
+		size_t nCountLayouts = m_arLayouts.size();
 		for (size_t i = 0; i < nCountLayouts; ++i)
 		{
 			oWriter.WriteString(m_arLayouts[i].ToXmlEditor(this, oInfo));
@@ -140,18 +140,19 @@ namespace NSPresentationEditor
 	{
 #ifdef _PRESENTATION_WRITER_
 		//colors
-		m_arColorScheme.RemoveAll();
+		m_arColorScheme.clear();
 		XmlUtils::CXmlNode oNodeColors;
 		if (oNode.GetNode(_T("Colors"), oNodeColors))
 		{
 			CStylesCSS oStyles;
 			oStyles.LoadStyles(oNodeColors.GetText());
 
-			size_t nCount = oStyles.m_arStyles.GetCount();
+			size_t nCount = oStyles.m_arStyles.size();
 			LONG lColor = 0;
 			for (size_t i = 0; i < nCount; i += 3)
 			{
-				m_arColorScheme.Add();
+				CColor elem;
+				m_arColorScheme.push_back(elem);
 				oStyles.m_arStyles[i].LoadColor(m_arColorScheme[lColor]);
 				++lColor;
 			}
@@ -163,10 +164,11 @@ namespace NSPresentationEditor
 			CStylesCSS oStyles;
 			oStyles.LoadStyles(oNodeFonts.GetText());
 
-			size_t nCount = oStyles.m_arStyles.GetCount();
+			size_t nCount = oStyles.m_arStyles.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
-				m_arFonts.Add();
+				CFont elem;
+				m_arFonts.push_back(elem);
 				oStyles.m_arStyles[i].LoadFont(m_arFonts[i]);
 			}
 		}
@@ -191,7 +193,7 @@ namespace NSPresentationEditor
 						CStylesCSS oCSS;
 						oCSS.LoadStyles(oNodeStyle.GetText());
 
-						if (20 != oCSS.m_arStyles.GetCount())
+						if (20 != oCSS.m_arStyles.size())
 							continue;
 
 						for (int nIndexStyle = 0; nIndexStyle < 10; ++nIndexStyle)
@@ -242,7 +244,7 @@ namespace NSPresentationEditor
 
 					pShapeEl->m_pTheme = this;
 
-					m_arElements.Add(pShapeEl);
+					m_arElements.push_back(pShapeEl);
 				}
 			}
 		}
@@ -258,10 +260,12 @@ namespace NSPresentationEditor
 				{
 					XmlUtils::CXmlNode oNodeL;
 					oLayouts.GetAt(nL, oNodeL);
-					m_arLayouts.Add();
 					
-					m_arLayouts[m_arLayouts.GetCount() - 1].SetMetricInfo(m_oInfo);
-					m_arLayouts[m_arLayouts.GetCount() - 1].ReadFromXml(oNodeL);
+					CLayout elem;
+					m_arLayouts.push_back(elem);
+					
+					m_arLayouts.back().SetMetricInfo(m_oInfo);
+					m_arLayouts.back().ReadFromXml(oNodeL);
 				}
 			}
 		}

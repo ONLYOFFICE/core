@@ -39,19 +39,13 @@
 #include <atlctl.h>
 #include <atlhost.h>
 #include <atlcoll.h>
-#define _USE_MATH_DEFINES
-#include <math.h>
-#include <gdiplus.h>
 
 using namespace ATL;
-using namespace Gdiplus;
+
+#include <gdiplus.h>
 #pragma comment(lib, "gdiplus.lib")
 
-#define PPT_DEF
-#define PPTX_DEF
-#define ODP_DEF
-
-#define _PRESENTATION_WRITER_
+#include <math.h>
 
 #include "../Common/OfficeFileTemplate.h"
 #include "../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
@@ -62,15 +56,9 @@ using namespace Gdiplus;
 #import "../Redist/ASCHTMLRenderer.dll"		named_guids rename_namespace("HTMLRenderer"), raw_interfaces_only, exclude("IASCRenderer")
 
 #import "../Redist/ASCOfficePPTFile.dll"	named_guids rename_namespace("PPTFile"),  raw_interfaces_only, exclude("IAVSOfficeFileTemplate", "_IAVSOfficeFileTemplateEvents", "_IAVSOfficeFileTemplateEvents2", "IAVSOfficeFile") 
-//#import "../Redist/ASCOfficePPTXFile.dll"	named_guids rename_namespace("PPTXFile"), raw_interfaces_only, exclude("IAVSOfficeFileTemplate", "_IAVSOfficeFileTemplateEvents", "_IAVSOfficeFileTemplateEvents2", "IAVSOfficeFile")
 #import "../Redist/ASCOfficeDocxFile2.dll"	named_guids rename_namespace("PPTXFile"), raw_interfaces_only, exclude("IAVSOfficeFileTemplate", "_IAVSOfficeFileTemplateEvents", "_IAVSOfficeFileTemplateEvents2", "IAVSOfficeFile")
-//#import "../Redist/ASCOfficeOdpFile.dll"	named_guids rename_namespace("ODPFile"),  raw_interfaces_only, exclude("IAVSOfficeFileTemplate", "_IAVSOfficeFileTemplateEvents", "_IAVSOfficeFileTemplateEvents2", "IAVSOfficeFile") 
 #import "../Redist/ASCOfficePDFWriter.dll"	named_guids rename_namespace("PDFFile"),  raw_interfaces_only, exclude("IASCRenderer")
 
-#define USE_ODF_FILE
-
 #ifdef USE_ODF_FILE
-#import "../Redist/ASCOfficeOdfFile.dll"	named_guids raw_interfaces_only rename_namespace("ODFFile"), exclude("IAVSOfficeFileTemplate", "_IAVSOfficeFileTemplateEvents", "_IAVSOfficeFileTemplateEvents2", "IAVSOfficeFile") 
+#	import "../Redist/ASCOfficeOdfFile.dll"	named_guids raw_interfaces_only rename_namespace("ODFFile"), exclude("IAVSOfficeFileTemplate", "_IAVSOfficeFileTemplateEvents", "_IAVSOfficeFileTemplateEvents2", "IAVSOfficeFile") 
 #endif
-
-typedef float REAL;

@@ -149,7 +149,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				AdditionalIncludeDirectories="..\ASCPresentationEditor;..\Common"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_MATH_DEFINES;PPT_DEF;PPTX_DEF;ODP_DEF;_PRESENTATION_WRITER_;USE_ODF_FILE"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="2"
@@ -424,6 +424,14 @@
 			<File
 				RelativePath=".\OfficeDrawing\Elements.cpp"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\OfficeDrawing\Elements.h"
@@ -436,6 +444,14 @@
 			<File
 				RelativePath=".\OfficeDrawing\Layout.cpp"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\OfficeDrawing\Layout.h"
@@ -468,6 +484,14 @@
 			<File
 				RelativePath=".\OfficeDrawing\TextAttributesEx.cpp"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\OfficeDrawing\TextAttributesEx.h"
@@ -485,30 +509,6 @@
 				RelativePath=".\OfficeDrawing\Theme.h"
 				>
 			</File>
-			<Filter
-				Name="Graphics"
-				>
-				<File
-					RelativePath=".\OfficeDrawing\Shapes\Graphics\agg_trans_affine.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\OfficeDrawing\Shapes\Graphics\agg_trans_affine.h"
-					>
-				</File>
-				<File
-					RelativePath=".\OfficeDrawing\Shapes\Graphics\ap_AggPlusEnums.h"
-					>
-				</File>
-				<File
-					RelativePath=".\OfficeDrawing\Shapes\Graphics\ap_AggPlusTypes.h"
-					>
-				</File>
-				<File
-					RelativePath=".\OfficeDrawing\Shapes\Graphics\Matrix.h"
-					>
-				</File>
-			</Filter>
 		</Filter>
 		<Filter
 			Name="PPTXWriter"

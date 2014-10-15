@@ -382,7 +382,7 @@ public:
 
 		if(viewBox != _T(""))
 		{
-			CSimpleArray<CString> borders;
+			std::vector<CString> borders;
 //				CString left, top, right, bottom;
 			NSStringUtils::ParseString(_T(" "), viewBox, &borders);
 
@@ -397,7 +397,7 @@ public:
 			FManager.AddGuide(_T("bottom"), borders[3]);
 
 			FManager.Clear();
-			for(int i = 0; i < m_oPath.m_arParts.GetSize(); i++)
+			for(int i = 0; i < m_oPath.m_arParts.size(); i++)
 			{
 				m_oPath.m_arParts[i].height = (long)FManager.GetValue(_T("height"));
 				m_oPath.m_arParts[i].width = (long)FManager.GetValue(_T("width"));
@@ -414,11 +414,12 @@ public:
 	{
 		if(xml != _T(""))
 		{
-			CSimpleArray<CString> adjusts;
+			std::vector<CString> adjusts;
 			NSStringUtils::ParseString(_T(" "), xml, &adjusts);
-			m_arAdjustments.RemoveAll();
+			
+			m_arAdjustments.clear();
 			CString buffer;
-			for(int i = 0; i < adjusts.GetSize(); i++)
+			for(int i = 0; i < adjusts.size(); i++)
 			{
 				buffer.Format(_T("%i"), i);
 				FManager.AddAdjustment(CString(_T("$")) + buffer, XmlUtils::GetInteger(adjusts[i]));
@@ -447,7 +448,7 @@ public:
 	{
 		if(xml != _T(""))
 		{
-			CSimpleArray<CString> borders;
+			std::vector<CString> borders;
 			NSStringUtils::ParseString(_T(" "), xml, &borders);
 
 			RECT TextRect;
@@ -455,9 +456,10 @@ public:
 			TextRect.top = (long)FManager.GetValue(borders[1]);
 			TextRect.right = (long)FManager.GetValue(borders[2]);
 			TextRect.bottom = (long)FManager.GetValue(borders[3]);
-			if(m_arTextRects.GetSize() > 0)
+			
+			if(m_arTextRects.size() > 0)
 				m_arTextRects[0] = TextRect;
-			else m_arTextRects.Add(TextRect);
+			else m_arTextRects.push_back(TextRect);
 
 //			return true;
 		}
@@ -470,7 +472,7 @@ public:
 		{
 			m_oPath.FromXML(xml, FManager);
 
-			for(int i = 0; i < m_oPath.m_arParts.GetSize(); i++)
+			for(int i = 0; i < m_oPath.m_arParts.size(); i++)
 			{
 				m_oPath.m_arParts[i].height = (long)FManager.GetValue(_T("height"));
 				m_oPath.m_arParts[i].width = (long)FManager.GetValue(_T("width"));

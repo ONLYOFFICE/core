@@ -1762,7 +1762,7 @@ namespace NSPresentationEditor
 		void FromXML(CString strPath , NSGuidesOdp::CFormulaManager& pManager)
 		{
 			NSStringUtils::CheckPathOn_Fill_Stroke(strPath, m_bFill, m_bStroke);
-			CSimpleArray<CString> oArray;
+			std::vector<CString> oArray;
 			//NSStringUtils::ParsePath(strPath, &oArray);
 			NSStringUtils::ParseString(_T(" "), strPath, &oArray);
 
@@ -1770,7 +1770,7 @@ namespace NSPresentationEditor
 			LONG lValue;
 			bool bRes = true;
 
-			for (int nIndex = 0; nIndex < oArray.GetSize(); ++nIndex)
+			for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
 			{
 				eRuler = GetRuler(oArray[nIndex], bRes);
 				if (bRes)
@@ -1792,9 +1792,9 @@ namespace NSPresentationEditor
 				else
 				{
 					lValue = (long)pManager.GetValue(oArray[nIndex]);
-					if (0 != m_arSlices.GetSize())
+					if (0 != m_arSlices.size())
 					{
-						m_arSlices[m_arSlices.GetSize() - 1].AddParam(lValue);
+						m_arSlices[m_arSlices.size() - 1].AddParam(lValue);
 					}
 				}
 			}
@@ -1924,15 +1924,15 @@ namespace NSPresentationEditor
 	#if defined(ODP_DEF)
 		void FromXML(CString strPath, NSGuidesOdp::CFormulaManager& pManager)
 		{
-			m_arParts.RemoveAll();
-			CSimpleArray<CString> oArray;
+			m_arParts.clear();
+			std::vector<CString> oArray;
 			NSStringUtils::ParseString(_T("N"), strPath, &oArray);
 
-			for (int nIndex = 0; nIndex < oArray.GetSize(); ++nIndex)
+			for (int nIndex = 0; nIndex < oArray.size(); ++nIndex)
 			{
 				CPartPath oPath;
 				m_arParts.push_back(oPath);
-				m_arParts[m_arParts.GetSize() - 1].FromXML(oArray[nIndex], pManager);
+				m_arParts[m_arParts.size() - 1].FromXML(oArray[nIndex], pManager);
 			}
 		}
 	#endif

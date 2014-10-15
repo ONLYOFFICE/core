@@ -2,7 +2,8 @@
 #include "../stdafx.h"
 
 #include "Shapes\Shape.h"
-#include "Shapes\Graphics\Matrix.h"
+#include "Shapes\BaseShape\Path.h"
+#include "..\..\DesktopEditor\graphics\Matrix.h"
 #include "../../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"
 
 namespace NSPresentationEditor
@@ -187,9 +188,9 @@ namespace NSPresentationEditor
 		ASCGraphics::IASCGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
 		ASCGraphics::IASCFontManager*				m_pFontManager;					// менеджер шрифтов
 
-		CMatrix							m_oBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
-		CMatrix							m_oTransform;		// текущая матрица преобразований рендерера
-		CMatrix							m_oFullTransform;	// полная матрица преобразований (m_oBaseTransform * m_oTransform)
+		Aggplus::CMatrix							m_oBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
+		Aggplus::CMatrix							m_oTransform;		// текущая матрица преобразований рендерера
+		Aggplus::CMatrix							m_oFullTransform;	// полная матрица преобразований (m_oBaseTransform * m_oTransform)
 
 		double							m_dTransformAngle;
 
@@ -242,14 +243,16 @@ namespace NSPresentationEditor
 			double y = dY;
 			m_oFullTransform.TransformPoint(x, y);
 
-			int lIndexPath = m_oSvgPath.m_arParts.GetSize() - 1;
+			int lIndexPath = m_oSvgPath.m_arParts.size() - 1;
 			if (lIndexPath < 0)
 				return;
 
 			CSlice oSlice(rtMoveTo);
+			
 			oSlice.AddParam(x);
 			oSlice.AddParam(y);
-			m_oSvgPath.m_arParts[lIndexPath].m_arSlices.Add(oSlice);
+
+			m_oSvgPath.m_arParts[lIndexPath].m_arSlices.push_back(oSlice);
 		}
 		inline void LineTo(const double& dX, const double& dY)
 		{
@@ -257,14 +260,16 @@ namespace NSPresentationEditor
 			double y = dY;
 			m_oFullTransform.TransformPoint(x, y);
 
-			int lIndexPath = m_oSvgPath.m_arParts.GetSize() - 1;
+			int lIndexPath = m_oSvgPath.m_arParts.size() - 1;
 			if (lIndexPath < 0)
 				return;
 			
 			CSlice oSlice(rtLineTo);
+			
 			oSlice.AddParam(x);
 			oSlice.AddParam(y);
-			m_oSvgPath.m_arParts[lIndexPath].m_arSlices.Add(oSlice);
+
+			m_oSvgPath.m_arParts[lIndexPath].m_arSlices.push_back(oSlice);
 		}
 		inline void CurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3)
 		{
@@ -280,35 +285,37 @@ namespace NSPresentationEditor
 			double _y3 = y3;
 			m_oFullTransform.TransformPoint(_x3, _y3);
 
-			int lIndexPath = m_oSvgPath.m_arParts.GetSize() - 1;
+			int lIndexPath = m_oSvgPath.m_arParts.size() - 1;
 			if (lIndexPath < 0)
 				return;
 			
 			CSlice oSlice(rtCurveTo);
+
 			oSlice.AddParam(_x1);
 			oSlice.AddParam(_y1);
 			oSlice.AddParam(_x2);
 			oSlice.AddParam(_y2);
 			oSlice.AddParam(_x3);
 			oSlice.AddParam(_y3);
-			m_oSvgPath.m_arParts[lIndexPath].m_arSlices.Add(oSlice);
+
+			m_oSvgPath.m_arParts[lIndexPath].m_arSlices.push_back(oSlice);
 		}
 		void Start()
 		{
 			CPartPath oPart;
-			m_oSvgPath.m_arParts.Add(oPart);
+			m_oSvgPath.m_arParts.push_back(oPart);
 		}
 		void End()
 		{
 		}
 		void Close()
 		{
-			int lIndexPath = m_oSvgPath.m_arParts.GetSize() - 1;
+			int lIndexPath = m_oSvgPath.m_arParts.size() - 1;
 			if (lIndexPath < 0)
 				return;
 
 			CSlice oSlice(rtClose);
-			m_oSvgPath.m_arParts[lIndexPath].m_arSlices.Add(oSlice);
+			m_oSvgPath.m_arParts[lIndexPath].m_arSlices.push_back(oSlice);
 		}
 
 		void _SetFont()

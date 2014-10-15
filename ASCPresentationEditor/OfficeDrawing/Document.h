@@ -7,8 +7,8 @@ namespace NSPresentationEditor
 	class CDocument : public IBase
 	{
 	public:
-		CAtlArray<CTheme>	m_arThemes;
-		CAtlArray<CSlide>	m_arSlides;
+		std::vector<CTheme>	m_arThemes;
+		std::vector<CSlide>	m_arSlides;
 
 		CMetricInfo			m_oInfo;
 
@@ -24,8 +24,8 @@ namespace NSPresentationEditor
 
 		CDocument& operator=(const CDocument& oSrc)
 		{
-			m_arThemes.Copy(oSrc.m_arThemes);
-			m_arSlides.Copy(oSrc.m_arSlides);	
+			m_arThemes.insert(m_arThemes.end(), oSrc.m_arThemes.begin(), oSrc.m_arThemes.end());
+			m_arSlides.insert(m_arSlides.end(), oSrc.m_arSlides.begin(), oSrc.m_arSlides.end());	
 
 			m_oInfo = oSrc.m_oInfo;
 
@@ -47,15 +47,15 @@ namespace NSPresentationEditor
 		// работа с темами
 		inline void ClearThemes()
 		{
-			m_arThemes.RemoveAll();
+			m_arThemes.clear();
 		}
 		inline void AddTheme(const CTheme& oTheme)
 		{
-			m_arThemes.Add(oTheme);
+			m_arThemes.push_back(oTheme);
 		}
 		inline void UpdateTheme(size_t nIndex, const CTheme& oTheme)
 		{
-			if (nIndex >= m_arThemes.GetCount())
+			if (nIndex >= m_arThemes.size())
 				return;
 
 			m_arThemes[nIndex] = oTheme;
@@ -63,15 +63,15 @@ namespace NSPresentationEditor
 		// работа со слайдом
 		inline void ClearSlides()
 		{
-			m_arSlides.RemoveAll();
+			m_arSlides.clear();
 		}
 		inline void AddSlide(const CSlide& oSlide)
 		{
-			m_arSlides.Add(oSlide);
+			m_arSlides.push_back(oSlide);
 		}
 		inline void UpdateSlide(size_t nIndex, const CSlide& oSlide)
 		{
-			if (nIndex >= m_arSlides.GetCount())
+			if (nIndex >= m_arSlides.size())
 				return;
 
 			m_arSlides[nIndex] = oSlide;
@@ -82,17 +82,17 @@ namespace NSPresentationEditor
 		// расчет layouts
 		void CalculateLayouts()
 		{
-			size_t nCountThemes = m_arThemes.GetCount();
+			size_t nCountThemes = m_arThemes.size();
 			for (size_t i = 0; i < nCountThemes; ++i)
 			{
 				CTheme* pTheme = &m_arThemes[i];
-				size_t nCountLayouts = pTheme->m_arLayouts.GetCount();
+				size_t nCountLayouts = pTheme->m_arLayouts.size();
 
 				for (size_t j = 0; j < nCountLayouts; ++j)
 				{
 					CLayout* pLayout = &pTheme->m_arLayouts[j];
 
-					size_t nCountElements = pLayout->m_arElements.GetCount();
+					size_t nCountElements = pLayout->m_arElements.size();
 					for (size_t nElem = 0; nElem < nCountElements; ++nElem)
 					{
 						if (pLayout->m_bUseThemeColorScheme)
@@ -113,12 +113,12 @@ namespace NSPresentationEditor
 		{
 			CalculateLayouts();
 
-			size_t nCount = m_arSlides.GetCount();
+			size_t nCount = m_arSlides.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
 				LONG lThemeID	= m_arSlides[nIndex].m_lThemeID;
 				
-				if ((0 > lThemeID) || (lThemeID >= (LONG)m_arThemes.GetCount()))
+				if ((0 > lThemeID) || (lThemeID >= (LONG)m_arThemes.size()))
 				{
 					m_arSlides[nIndex].Calculate(NULL);
 					continue;
@@ -128,23 +128,23 @@ namespace NSPresentationEditor
 			}
 
 			// проставим стили темы всем элементам
-			size_t nCountThemes = m_arThemes.GetCount();
+			size_t nCountThemes = m_arThemes.size();
 			for (size_t i = 0; i < nCountThemes; ++i)
 			{
 				CTheme* pTheme = &m_arThemes[i];
 				
-				size_t nCountEl = pTheme->m_arElements.GetCount();
+				size_t nCountEl = pTheme->m_arElements.size();
 				for (size_t j = 0; j < nCountEl; ++j)
 				{
 					pTheme->m_arElements[j]->m_pTheme = pTheme;
 				}
 
-				size_t nCountLayouts = pTheme->m_arLayouts.GetCount();
+				size_t nCountLayouts = pTheme->m_arLayouts.size();
 				for (size_t j = 0; j < nCountLayouts; ++j)
 				{
 					CLayout* pLayout = &pTheme->m_arLayouts[j];
 
-					nCountEl = pLayout->m_arElements.GetCount();
+					nCountEl = pLayout->m_arElements.size();
 					for (size_t k = 0; k < nCountEl; ++k)
 					{
 						pLayout->m_arElements[k]->m_pTheme = pTheme;
@@ -156,7 +156,7 @@ namespace NSPresentationEditor
 		// функция нужна для отмены старой темы/шаблона
 		void ClearPreset()
 		{
-			size_t nCount = m_arSlides.GetCount();
+			size_t nCount = m_arSlides.size();
 			for (size_t nIndex = 0; nIndex < nCount; ++nIndex)
 			{
 				m_arSlides[nIndex].ClearPreset();
@@ -172,18 +172,18 @@ namespace NSPresentationEditor
 			CAudioOverlay oAudioOverlay;
 			CalculateTimes(oAudioOverlay);
 
-			size_t nCountSlides = m_arSlides.GetCount();
+			size_t nCountSlides = m_arSlides.size();
 			if ( nCountSlides > 0 )
 			{
 				double dDuration = 0.0;
-				for (size_t nIndex = 0; nIndex < m_arSlides.GetCount(); ++nIndex)
+				for (size_t nIndex = 0; nIndex < m_arSlides.size(); ++nIndex)
 				{
 					dDuration += m_arSlides[nIndex].m_dDuration;
 				}
 
 				CString XmlSlideSource	=	_T("");
 			
-				for ( size_t nIndex = 0; nIndex < m_arSlides.GetCount(); ++nIndex )
+				for ( size_t nIndex = 0; nIndex < m_arSlides.size(); ++nIndex )
 				{
 					CSlide* pSlide = &m_arSlides[nIndex];
 					
@@ -208,7 +208,7 @@ namespace NSPresentationEditor
 					}
 					else
 					{
-						int nElements = (int)pSlide->m_arElements.GetCount();
+						int nElements = (int)pSlide->m_arElements.size();
 						for ( int nElem = 0; nElem < nElements; ++nElem )
 						{
 							if (etVideo == pSlide->m_arElements[nElem]->m_etType)
@@ -490,7 +490,7 @@ namespace NSPresentationEditor
 		{
 			CaclulateSlideTimes();
 
-			LONG lCount = (LONG)m_arSlides.GetCount();
+			LONG lCount = (LONG)m_arSlides.size();
 
 			double dAllDuration = 0;
 			if (lCount > 0)
@@ -514,7 +514,7 @@ namespace NSPresentationEditor
 			double Duration		= 0;
 			double Transition2	= 0;
 
-			int nCount = (int)m_arSlides.GetCount();
+			int nCount = (int)m_arSlides.size();
 			for (int i = 0; i < nCount; ++i)
 			{
 				CSlide* pSlide = &m_arSlides[i];
@@ -530,7 +530,7 @@ namespace NSPresentationEditor
 					// длительность видео, лежащего на нем. Если таких нет - то дефолтовая длительность,
 					// впрочем она уже выставлена
 
-					size_t nSize = pSlide->m_arElements.GetCount();
+					size_t nSize = pSlide->m_arElements.size();
 					for (size_t j = 0; j < nSize; ++j)
 					{
 						if (etVideo == pSlide->m_arElements[j]->m_etType)
@@ -576,7 +576,7 @@ namespace NSPresentationEditor
 			
 			CSlide* pSlide = &m_arSlides[nIndex];
 			
-			size_t nCountElems = pSlide->m_arElements.GetCount();
+			size_t nCountElems = pSlide->m_arElements.size();
 			for (size_t i = 0; i < nCountElems; ++i)
 			{
 				IElement* pElement = pSlide->m_arElements[i];
@@ -617,7 +617,7 @@ namespace NSPresentationEditor
 							}
 
 							CAudioPart oPart(pAudioElem);
-							oAudioOverlay.m_arParts.Add(oPart);					
+							oAudioOverlay.m_arParts.push_back(oPart);					
 						}
 
 						break;
@@ -659,9 +659,10 @@ namespace NSPresentationEditor
 						XmlUtils::CXmlNode oNodeT;
 						oThemes.GetAt(i, oNodeT);
 
-						m_arThemes.Add();
+						CTheme elem;
+						m_arThemes.push_back(elem);
 
-						CTheme* pTheme = &m_arThemes[m_arThemes.GetCount() - 1];
+						CTheme* pTheme = &m_arThemes.back();
 						pTheme->m_oInfo = m_oInfo;
 						pTheme->ReadFromXml(oNodeT);
 					}
@@ -680,9 +681,10 @@ namespace NSPresentationEditor
 						XmlUtils::CXmlNode oNodeS;
 						oSlides.GetAt(i, oNodeS);
 
-						m_arSlides.Add();
+						CSlide elem;
+						m_arSlides.push_back(elem);
 						
-						CSlide* pSlide = &m_arSlides[m_arSlides.GetCount() - 1];
+						CSlide* pSlide = &m_arSlides.back();
 
 						pSlide->m_lThemeID	= oNodeS.ReadAttributeInt(_T("themeid"));
 						pSlide->m_lLayoutID	= oNodeS.ReadAttributeInt(_T("layoutid"));
@@ -714,18 +716,18 @@ namespace NSPresentationEditor
 			//CAudioOverlay oAudioOverlay;
 			//CalculateTimes(oAudioOverlay);
 
-			size_t nCountSlides = m_arSlides.GetCount();
+			size_t nCountSlides = m_arSlides.size();
 			if ( nCountSlides > 0 )
 			{
 				double dDuration = 0.0;
-				for (size_t nIndex = 0; nIndex < m_arSlides.GetCount(); ++nIndex)
+				for (size_t nIndex = 0; nIndex < m_arSlides.size(); ++nIndex)
 				{
 					dDuration += m_arSlides[nIndex].m_dDuration;
 				}
 
 				CString XmlSlideSource	=	_T("");
 			
-				for ( size_t nIndex = 0; nIndex < m_arSlides.GetCount(); ++nIndex )
+				for ( size_t nIndex = 0; nIndex < m_arSlides.size(); ++nIndex )
 				{
 					CSlide* pSlide = &m_arSlides[nIndex];
 					
@@ -753,11 +755,11 @@ namespace NSPresentationEditor
 						CTheme* pTheme = NULL;
 						CLayout* pLayout = NULL;
 						
-						if ((0 <= pSlide->m_lThemeID) && (pSlide->m_lThemeID < (LONG)m_arThemes.GetCount()))
+						if ((0 <= pSlide->m_lThemeID) && (pSlide->m_lThemeID < (LONG)m_arThemes.size()))
 						{
 							pTheme = &m_arThemes[pSlide->m_lThemeID];
 						}
-						if ((NULL != pTheme) && ((0 <= pSlide->m_lLayoutID) && (pSlide->m_lLayoutID < (LONG)pTheme->m_arLayouts.GetCount())))
+						if ((NULL != pTheme) && ((0 <= pSlide->m_lLayoutID) && (pSlide->m_lLayoutID < (LONG)pTheme->m_arLayouts.size())))
 						{
 							pLayout = &pTheme->m_arLayouts[pSlide->m_lLayoutID];
 						}
@@ -807,7 +809,7 @@ namespace NSPresentationEditor
 						// theme elements
 						if (pSlide->m_bShowMasterShapes && (NULL != pLayout) && pLayout->m_bShowMasterShapes && (NULL != pTheme))
 						{							
-							size_t nCount = pTheme->m_arElements.GetCount();
+							size_t nCount = pTheme->m_arElements.size();
 							for (size_t ii = 0; ii < nCount; ++ii)
 								XmlTransforms += pTheme->m_arElements[ii]->SaveToXML();
 						}
@@ -815,7 +817,7 @@ namespace NSPresentationEditor
 						// layout elements
 						if (NULL != pLayout)
 						{
-							size_t nCount = pLayout->m_arElements.GetCount();
+							size_t nCount = pLayout->m_arElements.size();
 							for (size_t ii = 0; ii < nCount; ++ii)
 							{
 								if (-1 == pLayout->m_arElements[ii]->m_lPlaceholderType)
@@ -823,7 +825,7 @@ namespace NSPresentationEditor
 							}
 						}
 						
-						int nElements = (int)pSlide->m_arElements.GetCount();
+						int nElements = (int)pSlide->m_arElements.size();
 						for ( int nElem = 0; nElem < nElements; ++nElem )
 						{
 							if (etVideo == pSlide->m_arElements[nElem]->m_etType)
@@ -882,7 +884,7 @@ namespace NSPresentationEditor
 			CAudioOverlay oAudioOverlay;
 			CalculateTimes(oAudioOverlay);
 
-			size_t nCountSlides = m_arSlides.GetCount();
+			size_t nCountSlides = m_arSlides.size();
 			if ( nCountSlides > 0 )
 			{
 				CString XmlSlideSource	=	_T("");
@@ -900,7 +902,7 @@ namespace NSPresentationEditor
 						pSlide->m_dDuration, lWidthPix, lHeightPix, 
 						pSlide->m_oSlideShow.m_oTransition.m_nEffectType, pSlide->m_oSlideShow.m_oTransition.m_dSpeed );
 
-					int nElements = (int)pSlide->m_arElements.GetCount();
+					int nElements = (int)pSlide->m_arElements.size();
 					for ( int nElem = 0; nElem < nElements; ++nElem )
 					{
 						if (etAudio == pSlide->m_arElements[nElem]->m_etType)
@@ -939,7 +941,7 @@ namespace NSPresentationEditor
 			oWriter.WriteString(_T("<Presentation xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"") + strMetric);
 
 			oWriter.WriteString(_T("<Themes>"));
-			size_t nCount = m_arThemes.GetCount();
+			size_t nCount = m_arThemes.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				oWriter.WriteString(m_arThemes[i].ToXmlEditor(m_oInfo));
@@ -947,7 +949,7 @@ namespace NSPresentationEditor
 			oWriter.WriteString(_T("</Themes>"));
 
 			oWriter.WriteString(_T("<Slides>"));
-			nCount = m_arSlides.GetCount();
+			nCount = m_arSlides.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				NSPresentationEditor::CTheme*		pThemeSlide = NULL;
@@ -955,11 +957,11 @@ namespace NSPresentationEditor
 
 				NSPresentationEditor::CSlide*		pSlide = &m_arSlides[i];
 
-				if ((0 <= pSlide->m_lThemeID) && (pSlide->m_lThemeID < (LONG)m_arThemes.GetCount()))
+				if ((0 <= pSlide->m_lThemeID) && (pSlide->m_lThemeID < (LONG)m_arThemes.size()))
 				{
 					pThemeSlide = &m_arThemes[pSlide->m_lThemeID];
 				}
-				if ((NULL != pThemeSlide) && (0 <= pSlide->m_lLayoutID) && (pSlide->m_lLayoutID < (LONG)pThemeSlide->m_arLayouts.GetCount()))
+				if ((NULL != pThemeSlide) && (0 <= pSlide->m_lLayoutID) && (pSlide->m_lLayoutID < (LONG)pThemeSlide->m_arLayouts.size()))
 				{
 					pLayoutSlide = &pThemeSlide->m_arLayouts[pSlide->m_lLayoutID];
 				}
@@ -981,13 +983,13 @@ namespace NSPresentationEditor
 			double dScaleX = (double)m_oInfo.m_lMillimetresHor / m_oInfo.m_lUnitsHor;
 			double dScaleY = (double)m_oInfo.m_lMillimetresVer / m_oInfo.m_lUnitsVer;
 
-			size_t nCountThemes = m_arThemes.GetCount();
+			size_t nCountThemes = m_arThemes.size();
 			for (size_t i = 0; i < nCountThemes; ++i)
 			{
 				CTheme* pTheme = &m_arThemes[i];
 				pTheme->CalculateStyles();
 
-				size_t nCountElems = pTheme->m_arElements.GetCount();
+				size_t nCountElems = pTheme->m_arElements.size();
 				for (size_t nIndexEl = 0; nIndexEl < nCountElems; ++nIndexEl)
 				{
 					IElement* pElement = pTheme->m_arElements[nIndexEl];
@@ -1001,7 +1003,7 @@ namespace NSPresentationEditor
 					pElement->SetupProperties(NULL, pTheme, NULL);
 				}
 
-				size_t nCountLayouts = pTheme->m_arLayouts.GetCount();
+				size_t nCountLayouts = pTheme->m_arLayouts.size();
 				for (size_t nIndexL = 0; nIndexL < nCountLayouts; ++nIndexL)
 				{
 					CLayout* pLayout = &pTheme->m_arLayouts[nIndexL];
@@ -1011,7 +1013,7 @@ namespace NSPresentationEditor
 					pLayout->m_lWidth			= m_oInfo.m_lMillimetresHor;
 					pLayout->m_lHeight			= m_oInfo.m_lMillimetresVer;
 
-					size_t nCountLayoutElements = pLayout->m_arElements.GetCount();
+					size_t nCountLayoutElements = pLayout->m_arElements.size();
 					for (size_t nIndexLayoutEl = 0; nIndexLayoutEl < nCountLayoutElements; ++nIndexLayoutEl)
 					{
 						IElement* pElement = pLayout->m_arElements[nIndexLayoutEl];
@@ -1069,7 +1071,7 @@ namespace NSPresentationEditor
 				}
 			}
 
-			size_t nCountSlides = m_arSlides.GetCount();
+			size_t nCountSlides = m_arSlides.size();
 			for (size_t i = 0; i < nCountSlides; ++i)
 			{
 				CSlide* pSlide = &m_arSlides[i];
@@ -1086,11 +1088,11 @@ namespace NSPresentationEditor
 				CLayout* pLayout = NULL;
 				if (NULL != pTheme)
 				{
-					if ((0 <= pSlide->m_lLayoutID) && (pSlide->m_lLayoutID < (LONG)pTheme->m_arLayouts.GetCount()))
+					if ((0 <= pSlide->m_lLayoutID) && (pSlide->m_lLayoutID < (LONG)pTheme->m_arLayouts.size()))
 						pLayout = &pTheme->m_arLayouts[pSlide->m_lLayoutID];
 				}
 
-				size_t nCountElems = pSlide->m_arElements.GetCount();
+				size_t nCountElems = pSlide->m_arElements.size();
 				for (size_t nIndexEl = 0; nIndexEl < nCountElems; ++nIndexEl)
 				{
 					IElement* pElement = pSlide->m_arElements[nIndexEl];
@@ -1112,7 +1114,7 @@ namespace NSPresentationEditor
 		virtual CString SerializeToXml()
 		{
 			CString strDoc = _T("<Document>");
-			for (size_t i = 0; i < m_arSlides.GetCount(); ++i)
+			for (size_t i = 0; i < m_arSlides.size(); ++i)
 			{
 				strDoc += m_arSlides[i].SerializeToXml();
 			}

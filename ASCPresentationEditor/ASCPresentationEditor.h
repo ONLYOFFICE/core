@@ -63,13 +63,14 @@ __interface IAVSPresentationEditor: IDispatch
 	[id(2001)]			HRESULT GetAdditionalParam([in] BSTR ParamName, [out, retval] VARIANT* ParamValue);
 };
 
-[dispinterface, uuid("34EC371F-3F73-4a40-B8A6-FD21B9C3E789")]
-__interface _IAVSPresentationEditorEvents
-{
-};
+//?????? нафига они тут были??? 
+//[dispinterface, uuid("34EC371F-3F73-4a40-B8A6-FD21B9C3E789")]
+//__interface _IAVSPresentationEditorEvents
+//{
+//};
 
 // CAVSPresentationEditor
-[coclass, uuid("29759D68-916E-4317-BC8B-35793F7448B3"), event_source(com), threading(apartment), vi_progid("AVSPptEditor.PptEditor"), progid("AVSPptEditor.PptEditor.1"), version(1.0)]
+[coclass, uuid("29759D68-916E-4317-BC8B-35793F7448B3")/*, event_source(com)*/, threading(apartment), vi_progid("AVSPptEditor.PptEditor"), progid("AVSPptEditor.PptEditor.1"), version(1.0)]
 class ATL_NO_VTABLE CAVSPresentationEditor:	
 	public IAVSPresentationEditor 
 {
@@ -109,8 +110,6 @@ protected:
 #endif
 
 public:
-	__event __interface _IAVSPresentationEditorEvents;
-
 	CAVSPresentationEditor()
 	{
 		m_hSynchMutex = CreateMutex(NULL, FALSE, NULL);

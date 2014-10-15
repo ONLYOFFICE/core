@@ -134,7 +134,7 @@ namespace NSPresentationEditor
 
 			if (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Graphic)
 			{
-				m_pShapeElement->m_oShape.ToRenderer(this, oInfo, m_oMetricInfo, 0.0, 1.0);
+				m_pShapeElement->m_oShape.ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, m_oMetricInfo, 0.0, 1.0);
 			}
 
 			if (m_oWriterVML.GetCurSize() >= 10)
@@ -151,7 +151,7 @@ namespace NSPresentationEditor
 					int __r = (int)((m_oTextRect.right	 - m_oBounds.left)	* 100000 / dW);
 					int __b = (int)((m_oTextRect.bottom - m_oBounds.top)	* 100000 / dH);
 
-					size_t __nCount = m_pShapeElement->m_oShape.m_oText.m_arParagraphs.GetCount();
+					size_t __nCount = m_pShapeElement->m_oShape.m_oText.m_arParagraphs.size();
 					if (0 == __nCount || (0x00 == (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Text)))
 					{
 						m_oWriter.WriteString(_T("<a:rect l=\"l\" t=\"t\" r=\"r\" b=\"b\"/>"));
@@ -443,9 +443,9 @@ namespace NSPresentationEditor
 		ASCGraphics::IASCGraphicSimpleComverter*	m_pSimpleGraphicsConverter;		// конвертер сложных гафических путей в простые
 		ASCGraphics::IASCFontManager*				m_pFontManager;					// менеджер шрифтов
 
-		CMatrix							m_oBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
-		CMatrix							m_oTransform;		// текущая матрица преобразований рендерера
-		CMatrix							m_oFullTransform;	// полная матрица преобразований (m_oBaseTransform * m_oTransform)
+		Aggplus::CMatrix							m_oBaseTransform;	// матрица перерасчета координатных осей (здесь: миллиметры -> пикселы)
+		Aggplus::CMatrix							m_oTransform;		// текущая матрица преобразований рендерера
+		Aggplus::CMatrix							m_oFullTransform;	// полная матрица преобразований (m_oBaseTransform * m_oTransform)
 
 		double							m_dTransformAngle;
 
@@ -565,7 +565,7 @@ namespace NSPresentationEditor
 
 		void WriteTextInfo()
 		{
-			size_t nCount = m_pShapeElement->m_oShape.m_oText.m_arParagraphs.GetCount();
+			size_t nCount = m_pShapeElement->m_oShape.m_oText.m_arParagraphs.size();
 			if (/*0 == nCount || */(0x00 == (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Text)))
 				return;
 
@@ -695,7 +695,7 @@ namespace NSPresentationEditor
 
 				m_oWriter.WriteString(_T("</a:pPr>"));
 
-				size_t nCountSpans = pParagraph->m_arSpans.GetCount();
+				size_t nCountSpans = pParagraph->m_arSpans.size();
 				for (size_t nSpan = 0; nSpan < nCountSpans; ++nSpan)
 				{
 					if (TRUE)

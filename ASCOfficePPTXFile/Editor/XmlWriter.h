@@ -90,13 +90,18 @@ namespace NSBinPptxRW
 
 	public:
 		
-        AVSINLINE void WriteString(wchar_t* pString, size_t& nLen)
+        AVSINLINE void WriteString(const wchar_t* pString, size_t& nLen)
 		{
 			AddSize(nLen);
 			//memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
 			memcpy(m_pDataCur, pString, nLen << 1);
 			m_pDataCur += nLen;
 			m_lSizeCur += nLen;
+		}
+		AVSINLINE void WriteString(std::wstring& wString)
+		{
+			size_t nLen = wString.length();
+			WriteString(wString.c_str(), nLen);
 		}
 #ifdef _WIN32
         AVSINLINE void WriteString(_bstr_t& bsString)

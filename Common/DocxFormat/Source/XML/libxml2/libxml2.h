@@ -64,7 +64,7 @@ namespace XmlUtils
 	//			wchar_t* pRealloc = (wchar_t*)realloc(m_pData, m_lSize * sizeof(wchar_t));
 	//			if (NULL != pRealloc)
 	//			{
-	//				// реаллок сработал
+	//				// пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 	//				m_pData		= pRealloc;
 	//				m_pDataCur	= m_pData + m_lSizeCur;
 	//			}
@@ -388,8 +388,8 @@ namespace XmlUtils
 		}
 		inline BOOL ReadNextSiblingNode(int nDepth)
 		{
-			// Перед использованием этой функции надо проверить,
-			// пустая ли родительская нода. 
+			// пїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ,
+			// пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ. 
 			if ( !IsValid() )
 				return FALSE;
 
@@ -405,7 +405,7 @@ namespace XmlUtils
 				eNodeType = (XmlNodeType)nTempType;
 				nCurDepth = nTempDepth;
 
-				// У закрывающего тэга глубина такая же как у открывающегося
+				// пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 				if (nCurDepth < nDepth)
 					break;
 
@@ -430,7 +430,7 @@ namespace XmlUtils
 			XmlNodeType eNodeType = XmlNodeType_None;
 
 			int nCurDepth = -1;
-			// У закрывающего тэга глубина такая же как у открывающегося
+			// пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 			while( TRUE )
 			{
 				if ( 1 != xmlTextReaderRead(reader) )
@@ -596,7 +596,7 @@ namespace XmlUtils
 				XmlNodeType eNodeType = XmlNodeType_None;
 
 				int nCurDepth = -1;
-				// У закрывающего тэга глубина такая же как у открывающегося
+				// пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅ пїЅпїЅ пїЅпїЅпїЅ пїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ
 				while( TRUE )
 				{
 					if ( 1 != xmlTextReaderRead(reader) )
@@ -782,7 +782,7 @@ namespace XmlUtils
 		}
 		bool FromXmlString(const std::wstring& sString);
 
-		bool IsValid();
+        bool IsValid() const;
 		void Clear();
 		CString GetName();
 		CString GetText();

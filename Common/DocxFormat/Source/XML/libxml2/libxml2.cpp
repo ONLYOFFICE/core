@@ -319,7 +319,7 @@ namespace XmlUtils
 		return (IsValid() ? m_pBase->m_sName : L"");
 	}
 
-	bool CXmlNode::IsValid()
+    bool CXmlNode::IsValid() const
 	{
 		return (NULL != m_pBase);
 	}

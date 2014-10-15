@@ -11,11 +11,17 @@
 	Class()	{}														\
 	virtual ~Class() {}												\
 	explicit Class(XmlUtils::CXmlNode& node)	{ fromXML(node); }	\
-	const Class& operator =(XmlUtils::CXmlNode& node)				\
+    explicit Class(const XmlUtils::CXmlNode& node)	{ fromXML(const_cast<XmlUtils::CXmlNode&> (node)); }	\
+    const Class& operator =(XmlUtils::CXmlNode& node)				\
 	{																\
 		fromXML(node);												\
 		return *this;												\
 	}																\
+    const Class& operator =(const XmlUtils::CXmlNode& node)				\
+    {																\
+        fromXML(const_cast<XmlUtils::CXmlNode&> (node));												\
+        return *this;												\
+    }																\
 	Class(const Class& oSrc) { *this = oSrc; }						\
 
 namespace PPTX

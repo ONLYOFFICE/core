@@ -88,28 +88,28 @@ namespace PPTX
 			template<class T> AVSINLINE T&			as()		{ return m_Color.as<T>(); }
 			template<class T> AVSINLINE const T&	as() const 	{ return m_Color.as<T>(); }
 
-			virtual DWORD BulletColor::GetRGBA()const
+            virtual DWORD GetRGBA()const
 			{
 				if(has_spec_color())
 					return as<BuClr>().GetRGBA();
 				return 0;
 			}
 
-			virtual DWORD BulletColor::GetARGB()const
+            virtual DWORD GetARGB()const
 			{
 				if(has_spec_color())
 					return as<BuClr>().GetARGB();
 				return 0;
 			}
 
-			virtual DWORD BulletColor::GetBGRA()const
+            virtual DWORD GetBGRA()const
 			{
 				if(has_spec_color())
 					return as<BuClr>().GetBGRA();
 				return 0;
 			}
 
-			virtual DWORD BulletColor::GetABGR()const
+            virtual DWORD GetABGR()const
 			{
 				if(has_spec_color())
 					return as<BuClr>().GetABGR();

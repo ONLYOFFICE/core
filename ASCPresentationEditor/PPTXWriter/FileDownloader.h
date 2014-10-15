@@ -1,5 +1,6 @@
 #pragma once
 
+#ifdef _WIN32
 #include "../../Common/BaseThread.h"
 
 #include <wininet.h>
@@ -362,3 +363,95 @@ protected :
 	BOOL     m_bDelete;         // Удалять ли файл в деструкторе
 
 };
+#else
+
+// not win32
+#include <boost/network/protocol/http/client.hpp>
+#include <iostream>
+
+namespace http = boost::network::http;
+
+class CFileDownloader
+{
+public :
+
+	CFileDownloader (CString sFileUrl, BOOL bDelete = TRUE)
+	{
+		try {
+			/*<< Creates the client. >>*/
+			http::client client;
+			/*<< Creates a request using a URI supplied on the command
+				 line. >>*/
+
+			std::string sUrl;
+			sUrl = CT2A (sFileUrl);
+			http::client::request request(sUrl);
+			/*<< Gets a response from the HTTP server. >>*/
+			http::client::response response = client.get(request);
+			/*<< Prints the response body to the console. >>*/
+			std::cout << body(response) << std::endl;
+		}
+		catch (std::exception &e) {
+			std::cerr << e.what() << std::endl;
+		}
+
+		m_pFile     = NULL;
+		m_sFilePath = _T("");
+		m_sFileUrl  = sFileUrl;
+		m_bComplete = FALSE;
+		m_bDelete   = bDelete;
+	}
+	~CFileDownloader ()
+	{
+
+	}
+
+	void Start (int n)
+	{
+	}
+
+	bool IsRunned()
+	{
+		return false;
+	}
+
+	CString GetFilePath()
+	{
+		return m_sFilePath;
+	}
+	BOOL    IsFileDownloaded()
+	{
+		return m_bComplete;
+	}
+protected :
+
+	unsigned int DownloadFile(CString sFileUrl)
+	{
+		return S_OK;
+	}
+	
+
+public:
+	static bool IsNeedDownload(CString FilePath)
+	{
+		int n1 = FilePath.Find(_T("www."));
+		int n2 = FilePath.Find(_T("http://"));
+		int n3 = FilePath.Find(_T("ftp://"));
+		int n4 = FilePath.Find(_T("https://"));
+
+		if (((n1 >= 0) && (n1 < 10)) || ((n2 >= 0) && (n2 < 10)) || ((n3 >= 0) && (n3 < 10)) || ((n4 >= 0) && (n4 < 10)))
+			return true;
+		return false;
+	}
+protected :
+
+	FILE    *m_pFile;           // Хэндл на временный файл
+	CString  m_sFilePath;       // Путь к сохраненному файлу на диске
+	CString  m_sFileUrl;        // Ссылка на скачивание файла
+
+	BOOL     m_bComplete;       // Закачался файл или нет
+	BOOL     m_bDelete;         // Удалять ли файл в деструкторе
+
+};
+
+#endif

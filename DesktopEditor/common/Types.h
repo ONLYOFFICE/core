@@ -138,7 +138,8 @@ typedef int RGB;
 // VARIANT
 #ifndef VARIANT
 
-/* 0 == FALSE, -1 == TRUE */
+/*
+// 0 == FALSE, -1 == TRUE
 typedef short VARIANT_BOOL;
 
 #define VARIANT_TRUE ((VARIANT_BOOL)-1)
@@ -202,7 +203,7 @@ enum VARENUM
 typedef VARIANT_BOOL _VARIANT_BOOL;
 
 typedef unsigned short VARTYPE;
-/*
+
 struct tagVARIANT
     {
     union

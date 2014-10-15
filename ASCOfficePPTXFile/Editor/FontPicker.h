@@ -148,7 +148,7 @@ public:
 		if (0 == lParamType)
 		{
 			CString strResult = m_oPicker.GetTypefacePickByName((CString)bsParams);
-			*pDstName = strResult.AllocSysString();
+            *pDstName = strResult;//strResult.AllocSysString();
 			return S_OK;
 		}
 		// not impl

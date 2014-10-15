@@ -279,27 +279,27 @@ public:
 		if (m_mapSettings.end() != pPair)
 		{
 			if (_T("bold") == pPair->second)
-				oLevel.m_oCFRun.FontBold = TRUE;
+                oLevel.m_oCFRun.FontBold = true;
 			else
-				oLevel.m_oCFRun.FontBold = FALSE;
+                oLevel.m_oCFRun.FontBold = false;
 		}
 
 		pPair = m_mapSettings.find(_T("font-style"));
 		if (m_mapSettings.end() != pPair)
 		{
 			if (_T("italic") == pPair->second)
-				oLevel.m_oCFRun.FontItalic = TRUE;
+                oLevel.m_oCFRun.FontItalic = true;
 			else
-				oLevel.m_oCFRun.FontItalic = FALSE;
+                oLevel.m_oCFRun.FontItalic = false;
 		}
 
 		pPair = m_mapSettings.find(_T("text-decoration"));
 		if (m_mapSettings.end() != pPair)
 		{
 			if (_T("underline") == pPair->second)
-				oLevel.m_oCFRun.FontUnderline = TRUE;
+                oLevel.m_oCFRun.FontUnderline = true;
 			else
-				oLevel.m_oCFRun.FontUnderline = FALSE;
+                oLevel.m_oCFRun.FontUnderline = false;
 		}
 
 		pPair = m_mapSettings.find(_T("font-size"));
@@ -596,7 +596,8 @@ public:
 					
 					
 					CCSS oStylePar;
-					oStylePar.LoadFromString2(oNodePar.GetAttribute(_T("style")));
+                    CString sAttribute = oNodePar.GetAttribute(_T("style"));
+                    oStylePar.LoadFromString2(sAttribute);
 
 					oStylePar.LoadStylePF(pParagraph->m_oPFRun, oMetric);
 
@@ -615,7 +616,8 @@ public:
 								oSpan.m_strText = oNodeSpan.GetTextExt();
 								
 								CCSS oStyleSpan;
-								oStyleSpan.LoadFromString2(oNodeSpan.GetAttribute(_T("style")));
+                                CString sAttribute = oNodeSpan.GetAttribute(_T("style"));
+                                oStyleSpan.LoadFromString2(sAttribute);
 								oStyleSpan.LoadStyleCF(oSpan.m_oRun, oMetric);
 
 								pParagraph->m_arSpans.push_back(oSpan);
@@ -653,7 +655,8 @@ public:
 					if (oNodePar.GetNode(_T("li"), oNodeLi))
 					{
 						CCSS oStylePar;
-						oStylePar.LoadFromString2(oNodeLi.GetAttribute(_T("style")));
+                        CString sAttribute = oNodeLi.GetAttribute(_T("style"));
+                        oStylePar.LoadFromString2(sAttribute);
 						oStylePar.LoadStylePF(pParagraph->m_oPFRun, oMetric);
 
 						XmlUtils::CXmlNodes oSpans;
@@ -671,7 +674,8 @@ public:
 									oSpan.m_strText = oNodeSpan.GetTextExt();
 									
 									CCSS oStyleSpan;
-									oStyleSpan.LoadFromString2(oNodeSpan.GetAttribute(_T("style")));
+                                    CString sAttribute = oNodeSpan.GetAttribute(_T("style"));
+                                    oStyleSpan.LoadFromString2(sAttribute);
 									oStyleSpan.LoadStyleCF(oSpan.m_oRun, oMetric);
 
 									pParagraph->m_arSpans.push_back(oSpan);
@@ -801,7 +805,8 @@ public:
 	static void ConvertParagraph(XmlUtils::CXmlNode& oNode, CParagraph* pParagraph, CMetricInfo oMetric)
 	{
 		CCSS oStylePar;
-		oStylePar.LoadFromString2(oNode.GetAttribute(_T("style")));
+        CString sAttribute = oNode.GetAttribute(_T("style"));
+        oStylePar.LoadFromString2(sAttribute);
 		oStylePar.LoadStylePF(pParagraph->m_oPFRun, oMetric);
 
 		XmlUtils::CXmlNodes oNodes;
@@ -827,7 +832,8 @@ public:
 					CSpan oSpan;
 					CTextCFRun oRunBR;
 					CCSS _oStyleCF;
-					_oStyleCF.LoadFromString2(oNodeS.GetAttribute(_T("style")));
+                    CString sAttribute = oNodeS.GetAttribute(_T("style"));
+                    _oStyleCF.LoadFromString2(sAttribute);
 					_oStyleCF.LoadStyleCF(oRunBR, oMetric);
 
 					oSpan.m_oRun = oRunBR;
@@ -847,7 +853,8 @@ public:
 		CTextCFRun oRun;
 
 		CCSS oStyleCF;
-		oStyleCF.LoadFromString2(oNode.GetAttribute(_T("style")));
+        CString sAttribute = oNode.GetAttribute(_T("style"));
+        oStyleCF.LoadFromString2(sAttribute);
 		oStyleCF.LoadStyleCF(oRun, oMetric);
 
 		if (NULL != pCFRun)
@@ -879,7 +886,8 @@ public:
 				{
 					CTextCFRun oRunBR;
 					CCSS _oStyleCF;
-					_oStyleCF.LoadFromString2(oNodeS.GetAttribute(_T("style")));
+                    CString sAttribute = oNodeS.GetAttribute(_T("style"));
+                    _oStyleCF.LoadFromString2(sAttribute);
 					_oStyleCF.LoadStyleCF(oRunBR, oMetric);
 					oRunBR.ApplyBefore(oRun);
 

@@ -521,6 +521,13 @@ namespace XmlUtils
 		return nRes;
 	}
 
+    CXmlNode CXmlNode::ReadNode(const TCHAR* strNodeName)
+    {
+        CXmlNode oNode;
+        CString sNodeName = strNodeName;
+        GetNode(sNodeName, oNode);
+        return oNode;
+    }
 	CXmlNode CXmlNode::ReadNode(const CString& strNodeName)
 	{
 		CXmlNode oNode;

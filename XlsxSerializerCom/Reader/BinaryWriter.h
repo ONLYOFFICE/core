@@ -701,7 +701,7 @@ namespace BinXlsxRW {
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSerBorderPropTypes::Style);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
-				m_oBcw.m_oStream.WriteBYTE((byte)borderProp.m_oStyle->GetValue());
+				m_oBcw.m_oStream.WriteBYTE((BYTE)borderProp.m_oStyle->GetValue());
 			}
 		};
 		void WriteCellStyleXfs(const OOX::Spreadsheet::CCellStyleXfs& cellStyleXfs)
@@ -2427,7 +2427,7 @@ namespace BinXlsxRW {
 						OOX::CPath oNormalizedPath  = OOX::CPath(pDrawing->GetReadPath().GetDirectory()) / oRels->Target().GetPath();
 						CString sChartPath = oNormalizedPath.GetPath();
 						//проверяем наличие файла
-						if( INVALID_FILE_ATTRIBUTES != ::GetFileAttributes( sChartPath ) )
+						if( NSFile::CFileBinary::Exists(string2std_string(sChartPath)) )
 						{
 							CString sOldRelsPath = m_pOfficeDrawingConverter->GetRelsPath();
 							m_pOfficeDrawingConverter->SetRelsPath(sChartPath);

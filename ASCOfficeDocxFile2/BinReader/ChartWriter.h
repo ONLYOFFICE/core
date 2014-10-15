@@ -40,7 +40,7 @@ namespace Writers
 			if(false == IsEmpty())
 			{
 				CString sChartDir = m_sDir + _T("/word/charts");
-				CreateDirectory(sChartDir, NULL);
+				NSDirectory::CreateDirectory(string2std_string(sChartDir));
 				for(int i = 0, length = m_aCharts.size(); i < length; ++i)
 				{
 					ChartElem* elem = m_aCharts[i];

@@ -1,10 +1,10 @@
-#include "DocxSerializer.h"
+ï»¿#include "DocxSerializer.h"
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../BinWriter/BinWriters.h"
 #include "../BinReader/Readers.h"
-#include "../ASCOfficePPTXFile/Editor/FontPicker.h"
+#include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
 
 #ifndef _WIN32
 #include "../../DesktopEditor/common/Types.h"
@@ -46,13 +46,13 @@ bool BinDocxRW::CDocxSerializer::saveToFile(CString& sSrcFileName, CString& sDst
 
 		pEmbeddedFontsManager = pFontPicker->GetNativeCutter();
 
-		//äîáàâëÿåì âåñü ëàòèíñêèé àëôàâèò äëÿ ñïèñêîâ.
+		//Ð´Ð¾Ð±Ð°Ð²Ð»ÑÐµÐ¼ Ð²ÐµÑÑŒ Ð»Ð°Ñ‚Ð¸Ð½ÑÐºÐ¸Ð¹ Ð°Ð»Ñ„Ð°Ð²Ð¸Ñ‚ Ð´Ð»Ñ ÑÐ¿Ð¸ÑÐºÐ¾Ð².
 		pEmbeddedFontsManager->CheckString(CString(_T("abcdefghijklmnopqrstuvwxyz")));
 
-		//äîáàâèì ìåãà øðèôò
+		//Ð´Ð¾Ð±Ð°Ð²Ð¸Ð¼ Ð¼ÐµÐ³Ð° ÑˆÑ€Ð¸Ñ„Ñ‚
 		pEmbeddedFontsManager->CheckFont(_T("Wingdings 3"), fp.getFontManager());
 		pEmbeddedFontsManager->CheckFont(_T("Arial"), fp.getFontManager());
-		//pEmbeddedFontsManager äîáàâëÿþòñÿ âñå öèôðû
+		//pEmbeddedFontsManager Ð´Ð¾Ð±Ð°Ð²Ð»ÑÑŽÑ‚ÑÑ Ð²ÑÐµ Ñ†Ð¸Ñ„Ñ€Ñ‹
 	}
 
 	oDrawingConverter.SetFontDir(m_sFontDir);
@@ -101,7 +101,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(CString& sSrcFileName, CString& sD
 		oFile.ReadFile(pBase64Data, oFile.GetFileSize(), nBase64DataSize);
 		oFile.CloseFile();
 
-		//ïðîâåðÿåì ôîðìàò
+		//Ð¿Ñ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚
 		bool bValidFormat = false;
 		CString sSignature(g_sFormatSignature);
 		int nSigLength = sSignature.GetLength();
@@ -115,7 +115,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(CString& sSrcFileName, CString& sD
 		}
 		if(bValidFormat)
 		{
-			//×èòàåì èç ôàéëà âåðñèþ è äëèíó base64
+			//Ð§Ð¸Ñ‚Ð°ÐµÐ¼ Ð¸Ð· Ñ„Ð°Ð¹Ð»Ð° Ð²ÐµÑ€ÑÐ¸ÑŽ Ð¸ Ð´Ð»Ð¸Ð½Ñƒ base64
 			int nIndex = nSigLength;
 			int nType = 0;
 			CStringA version = "";
@@ -165,7 +165,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(CString& sSrcFileName, CString& sD
 				oDrawingConverter.SetMediaDstPath(sMediaPath);
 				m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, nVersion, m_bSaveChartAsImg, &oDrawingConverter, sThemePath);
 
-				//ïàïêà ñ êàðòèíêàìè
+				//Ð¿Ð°Ð¿ÐºÐ° Ñ ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ°Ð¼Ð¸
 				TCHAR tFolder[256];
 				TCHAR tDrive[256];
 				_tsplitpath( sSrcFileName, tDrive, tFolder, NULL, NULL );
@@ -193,11 +193,11 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(CString& sSrcFileName, CString& sD
 				m_pCurFileWriter->m_oNumberingWriter.Write();
 				m_pCurFileWriter->m_oFontTableWriter.Write();
 				m_pCurFileWriter->m_oHeaderFooterWriter.Write();
-				//Setting ïèøåì ïîñëå HeaderFooter, ÷òîáû çàïîëíèòü evenAndOddHeaders
+				//Setting Ð¿Ð¸ÑˆÐµÐ¼ Ð¿Ð¾ÑÐ»Ðµ HeaderFooter, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð·Ð°Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÑŒ evenAndOddHeaders
 				m_pCurFileWriter->m_oSettingWriter.Write();
-				//Document ïèøåì ïîñëå HeaderFooter, ÷òîáû çàïîëíèòü sectPr
+				//Document Ð¿Ð¸ÑˆÐµÐ¼ Ð¿Ð¾ÑÐ»Ðµ HeaderFooter, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð·Ð°Ð¿Ð¾Ð»Ð½Ð¸Ñ‚ÑŒ sectPr
 				m_pCurFileWriter->m_oDocumentWriter.Write();
-				//Rels è ContentTypes ïèøåì â êîíöå
+				//Rels Ð¸ ContentTypes Ð¿Ð¸ÑˆÐµÐ¼ Ð² ÐºÐ¾Ð½Ñ†Ðµ
 				//m_pCurFileWriter->m_oDocumentRelsWriter.Write(_T("document.xml.rels"));
 				m_pCurFileWriter->m_oContentTypesWriter.Write();
 

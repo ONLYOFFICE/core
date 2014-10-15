@@ -9,6 +9,10 @@
 #include "windows.h"
 #include "windef.h"
 #elif LINUX
+#include <sys/types.h>
+#include <sys/stat.h>
+#include <unistd.h>
+#include "File.h"
 #elif MAC
 #endif
 
@@ -50,7 +54,32 @@ namespace NSDirectory
 #ifdef WIN32
 		::CreateDirectoryW(strDirectory.c_str(), NULL);
 #elif LINUX
+		BYTE* pUtf8 = NULL;
+		LONG lLen = 0;
+        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strDirectory.c_str(), strDirectory.length(), pUtf8, lLen, false);
+		struct stat st;
+		if (stat((char*)pUtf8, &st) == -1) {
+			mkdir((char*)pUtf8, S_IRWXU | S_IRWXG | S_IRWXO);
+		}
+		delete [] pUtf8;
 #elif MAC
+#endif
+	}
+	static bool Exists(std::wstring& strDirectory)
+	{
+#ifdef WIN32
+		DWORD dwAttrib = ::GetFileAttributesW(strDirectory.c_str());
+		return (dwAttrib != INVALID_FILE_ATTRIBUTES && 0 != (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+#elif LINUX
+        BYTE* pUtf8 = NULL;
+		LONG lLen = 0;
+        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strDirectory.c_str(), strDirectory.length(), pUtf8, lLen, false);
+		struct stat st;
+		bool bRes = (0 == stat((char*)pUtf8, &st)) && S_ISDIR(st.st_mode);
+		delete [] pUtf8;
+		return bRes;
+#elif MAC
+		return true;
 #endif
 	}
 }

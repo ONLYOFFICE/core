@@ -3,7 +3,7 @@
 
 #include "BinReaderWriterDefines.h"
 #include "../../Common/DocxFormat/Source/MathEquation/OutputDev.h"
-#include "String.h"
+//#include "String.h"
 #include <stack>
 
 /*namespace BinDocxRW

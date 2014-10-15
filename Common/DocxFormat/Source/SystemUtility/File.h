@@ -691,6 +691,12 @@ namespace CDirectory
         fwrite (aContentUtf8.c_str() , sizeof(char), aContentUtf8.size(), pFile);
         fclose (pFile);
     }
+    static CString ToString(DWORD val)
+    {
+        CString str = _T("");
+        str.Format(_T("%d"), (LONG)val);
+        return str;
+    }
 
 }
 #endif

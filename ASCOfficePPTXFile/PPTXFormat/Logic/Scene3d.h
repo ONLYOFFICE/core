@@ -20,9 +20,12 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				camera		= node.ReadNode(_T("a:camera"));
-				lightRig	= node.ReadNode(_T("a:lightRig"));
-				backdrop	= node.ReadNode(_T("a:backdrop"));
+                CString sCameraNodeName = _T("a:camera");
+                CString sLightRigNodeName = _T("a:lightRig");
+                CString sBackdropNodeName = _T("a:backdrop");
+                camera		= node.ReadNode(sCameraNodeName);
+                lightRig	= node.ReadNode(sLightRigNodeName);
+                backdrop	= node.ReadNode(sBackdropNodeName);
 				
 				FillParentPointersForChilds();
 			}

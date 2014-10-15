@@ -4,6 +4,7 @@
 
 #include "ColorBase.h"
 #include "./../../Limit/SysClrVal.h"
+#include "../../../DocxFormat/Source/Base/ASCWinAPI.h" // GetSysColor
 
 namespace PPTX
 {

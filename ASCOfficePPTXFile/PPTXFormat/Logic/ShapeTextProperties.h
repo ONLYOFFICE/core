@@ -80,20 +80,20 @@ namespace PPTX
 			void FillFontRef(const FontRef& Src, const bool& bIsSlideProperty);
 			void FillMasterFontSize(int size);
 
-			__forceinline void SetMajorLatin(const TextFont& mjltFont){MajorLatin = mjltFont;};
-			__forceinline void SetMinorLatin(const TextFont& mnltFont){MinorLatin = mnltFont;};
+            AVSINLINE void SetMajorLatin(const TextFont& mjltFont){MajorLatin = mjltFont;};
+            AVSINLINE void SetMinorLatin(const TextFont& mnltFont){MinorLatin = mnltFont;};
 
-			__forceinline void SetMasterStyles(std::vector<nullable<TextParagraphPr>*>* pStyles) { m_masters = pStyles; }
+            AVSINLINE void SetMasterStyles(std::vector<nullable<TextParagraphPr>*>* pStyles) { m_masters = pStyles; }
 
-			__forceinline nullable<TextParagraphPr>* GetLevels()
+            AVSINLINE nullable<TextParagraphPr>* GetLevels()
 			{ 
 				if (!m_bIsSlideShape) 
 					return NULL;
 				return m_levels; 
 			}
-			__forceinline nullable<TextParagraphPr>* GetLevelsBody() { return m_body; }
-			__forceinline LONG GetTextType() { return m_lTextType; }
-			__forceinline LONG GetFontRef(bool& bIsSlideSetUp) 
+            AVSINLINE nullable<TextParagraphPr>* GetLevelsBody() { return m_body; }
+            AVSINLINE LONG GetTextType() { return m_lTextType; }
+            AVSINLINE LONG GetFontRef(bool& bIsSlideSetUp)
 			{
 				bIsSlideSetUp = m_bIsFontRefFromSlide;
 

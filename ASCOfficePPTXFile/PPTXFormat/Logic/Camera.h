@@ -23,7 +23,8 @@ namespace PPTX
 				node.ReadAttributeBase(L"fov", fov);
 				node.ReadAttributeBase(L"zoom", zoom);
 
-				rot		= node.ReadNode(_T("a:rot"));
+                CString sRotNodeName = _T("a:rot");
+                rot		= node.ReadNode(sRotNodeName);
 				FillParentPointersForChilds();
 			}
 

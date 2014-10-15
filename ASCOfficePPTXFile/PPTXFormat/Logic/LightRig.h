@@ -23,7 +23,8 @@ namespace PPTX
 				dir = node.GetAttribute(_T("dir"));
 				rig = node.GetAttribute(_T("rig"));
 
-				rot = node.ReadNode(_T("a:rot"));
+                CString sRotNodeName = _T("a:rot");
+                rot = node.ReadNode(sRotNodeName);
 				FillParentPointersForChilds();
 			}
 			virtual CString toXML() const

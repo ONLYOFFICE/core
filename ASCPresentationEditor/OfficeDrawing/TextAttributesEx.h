@@ -108,9 +108,9 @@ namespace NSPresentationEditor
 			strText.Replace(_T("\""),	_T("&quot;"));
 
 			// и на всякий случай уберем в конце нули
-			BSTR bsText = strText.AllocSysString();
-			strText = (CString)bsText;
-			SysFreeString(bsText);
+            //BSTR bsText = strText.AllocSysString();
+            //strText = (CString)bsText;
+            //SysFreeString(bsText);
 		}
 
 		void RecalcParagraphs(CTheme* pTheme = NULL);

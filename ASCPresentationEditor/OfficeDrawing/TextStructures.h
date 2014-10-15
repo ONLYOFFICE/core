@@ -1563,7 +1563,7 @@ namespace NSPresentationEditor
 		{
 			if (IsEmpty())
 			{
-				m_oPFRun.hasBullet = FALSE;
+                m_oPFRun.hasBullet = false;
 			}
 			size_t nCountS = m_arSpans.size();
 			for (size_t i = 0; i < nCountS; ++i)

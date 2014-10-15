@@ -21,7 +21,8 @@ namespace PPTX
 			{
 				m_name = XmlUtils::GetNameNoNS(node.GetName());
 
-				snd	= node.ReadNodeNoNS(_T("snd"));
+                CString sSndNodeName = _T("snd");
+                snd	= node.ReadNodeNoNS(sSndNodeName);
 
 				node.ReadAttributeBase(L"r:id", id);
 				node.ReadAttributeBase(L"invalidUrl", invalidUrl);

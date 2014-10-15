@@ -1735,11 +1735,13 @@ namespace NSStrings
 		{
 			WriteString(oTemp.m_pData, oTemp.m_lSizeCur);
 		}
+#ifdef _WIN32
 		AVSINLINE void operator+=(_bstr_t& oTemp)
 		{
 			size_t nLen = oTemp.length();
 			WriteString(oTemp.GetBSTR(), nLen);
 		}
+#endif
 		AVSINLINE void operator+=(CString& oTemp)
 		{
 			size_t nLen = (size_t)oTemp.GetLength();

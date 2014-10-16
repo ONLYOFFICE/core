@@ -154,7 +154,6 @@ namespace XmlUtils
 			if (value.IsInit())
 				m_strValue += value->toXML();
 		}
-#ifdef _WIN32
 		template <typename T>
 		AVSINLINE void WriteArray(const CString& strNodeName, const std::vector<T>& oArray)
 		{
@@ -164,7 +163,6 @@ namespace XmlUtils
 				m_strValue += oArray[i].toXML();
 			m_strValue += (_T("</") + strNodeName + _T(">"));
 		}
-#endif
 
         template <typename T>
         AVSINLINE void WriteArray(const std::vector<T>& oArray)

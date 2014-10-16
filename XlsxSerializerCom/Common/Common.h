@@ -8,6 +8,7 @@
 #include "../../Common/DocxFormat/Source/Base/ASCString.h"
 #endif
 
+#include "../../DesktopEditor/common/File.h"
 #include <string>
 #include <vector>
 
@@ -16,7 +17,7 @@
 namespace SerializeCommon
 {
 	CString DownloadImage(const CString& strFile);
-	VOID convertBase64ToImage (CString sImage, CString &pBase64);
+	VOID convertBase64ToImage (NSFile::CFileBinary& oFile, CString &pBase64);
 	long Round(double val);
 	CString changeExtention(const CString& sSourcePath, const CString& sTargetExt);
 	class CommentData

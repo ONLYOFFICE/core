@@ -3,8 +3,12 @@
 
 #include <stdio.h>
 #include <string>
+#include <fstream>
 #include "Array.h"
 #include "errno.h"
+#if defined(WIN32) || defined(_WIN32_WCE)
+#include <wchar.h>
+#endif
 
 namespace NSFile
 {
@@ -230,7 +234,7 @@ namespace NSFile
 		{
 			if (NULL == pData)
 			{
-				pData = new BYTE[6 * lCount + 3];
+				pData = new BYTE[6 * lCount + 3 + 1];
 			}
 
 			BYTE* pCodesCur = pData;
@@ -298,7 +302,7 @@ namespace NSFile
 		{
 			if (NULL == pData)
 			{
-				pData = new BYTE[6 * lCount + 3];
+				pData = new BYTE[6 * lCount + 3 + 1];
 			}
 
 			BYTE* pCodesCur = pData;
@@ -363,6 +367,7 @@ namespace NSFile
 			}
 
 			lOutputCount = (LONG)(pCodesCur - pData);
+			*pCodesCur++ = 0;
 		}
 
 		static void GetUtf8StringFromUnicode(const wchar_t* pUnicodes, LONG lCount, BYTE*& pData, LONG& lOutputCount, bool bIsBOM = false)
@@ -482,6 +487,15 @@ namespace NSFile
 			m_lFilePosition = 0;
 			return true;
 		}
+		bool CreateTempFile()
+		{
+			m_pFile = tmpfile ();
+			if (NULL == m_pFile)
+				return false;
+			
+			m_lFilePosition = 0;
+			return true;
+		}
 
 		bool ReadFile(BYTE* pData, DWORD nBytesToRead, DWORD& dwSizeRead)
 		{
@@ -536,6 +550,59 @@ namespace NSFile
 			}
 			else
 				return false;
+		}
+		static bool Copy(const std::wstring&  strSrc, const std::wstring&  strDst)
+		{
+			if(strSrc == strDst)
+				return true;
+#if defined(WIN32) || defined(_WIN32_WCE)
+			std::wifstream  src(strSrc.c_str(), std::ios::binary);
+			std::wofstream  dst(strDst.c_str(), std::ios::binary);
+#else
+			BYTE* pUtf8Src = NULL;
+			LONG lLenSrc = 0;
+            CUtf8Converter::GetUtf8StringFromUnicode(strSrc.c_str(), strSrc.length(), pUtf8Src, lLenSrc, false);
+			BYTE* pUtf8Dst = NULL;
+			LONG lLenDst = 0;
+			CUtf8Converter::GetUtf8StringFromUnicode(strDst.c_str(), strDst.length(), pUtf8Dst, lLenDst, false);
+
+			std::ifstream  src((char*)pUtf8Src, std::ios::binary);
+			std::ofstream  dst((char*)pUtf8Dst, std::ios::binary);
+
+			delete [] pUtf8Src;
+			delete [] pUtf8Dst;
+#endif
+			if(src.is_open() && dst.is_open())
+			{
+				dst << src.rdbuf();
+				src.close();
+				dst.close();
+				return true;
+			}
+			else
+				return false;
+		}
+		static bool Remove(const std::wstring& strFileName)
+		{
+#if defined(WIN32) || defined(_WIN32_WCE)
+			int nRes = _wremove(strFileName.c_str());
+#else
+			BYTE* pUtf8 = NULL;
+			LONG lLen = 0;
+            CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
+			int nRes = std::remove((char*)pUtf8);
+			delete [] pUtf8;
+#endif
+			return 0 == nRes;
+		}
+		static bool Move(const std::wstring&  strSrc, const std::wstring&  strDst)
+		{
+			if(strSrc == strDst)
+				return true;
+			if(Copy(strSrc, strDst))
+				if(Remove(strSrc))
+					return true;
+			return false;
 		}
 	};
 }

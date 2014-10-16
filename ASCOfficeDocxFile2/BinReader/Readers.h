@@ -2309,17 +2309,11 @@ public:
 			CString sImage(m_oBufferedStream.GetString3(length));
 			CString sFilePath;
 			bool bDeleteFile = false;
+			NSFile::CFileBinary oFile;
 			if(0 == sImage.Find(_T("data:")))
 			{
-				char sTempPath[MAX_PATH], sTempFile[MAX_PATH];
-				if ( 0 == GetTempPathA( MAX_PATH, sTempPath ) )
-					return S_FALSE;
-
-				if ( 0 == GetTempFileNameA( sTempPath, "CSS", 0, sTempFile ) )
-					return S_FALSE;
-				sFilePath = CString(sTempFile);
-				SerializeCommon::convertBase64ToImage(sFilePath, sImage);
-				bDeleteFile = true;
+				if(oFile.CreateTempFile())
+					SerializeCommon::convertBase64ToImage(oFile, sImage);
 			}
 			else if(0 == sImage.Find(_T("http:")) || 0 == sImage.Find(_T("https:")) || 0 == sImage.Find(_T("ftp:")) || 0 == sImage.Find(_T("www")))
 			{
@@ -2334,11 +2328,16 @@ public:
 			}
 
 			//Проверяем что файл существует
-			if(NSFile::CFileBinary::Exists(string2std_string(sFilePath)))
+			FILE* pFileNative = oFile.GetFileNative();
+			if(NULL != pFileNative)
+			{
+				m_oFileWriter.m_oMediaWriter.AddImage2(pFileNative);
+			}
+			else if(NSFile::CFileBinary::Exists(string2std_string(sFilePath)))
 			{
 				m_oFileWriter.m_oMediaWriter.AddImage(sFilePath);
 				if(bDeleteFile)
-					DeleteFile(sFilePath);
+					NSFile::CFileBinary::Remove(string2std_string(sFilePath));
 			}
 		}
 		else

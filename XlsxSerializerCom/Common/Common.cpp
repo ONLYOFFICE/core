@@ -24,43 +24,34 @@ namespace SerializeCommon
 		}
 		return strFileName;
 	}
-	VOID convertBase64ToImage (CString sImage, CString &pBase64)
+	VOID convertBase64ToImage (NSFile::CFileBinary& oFile, CString &pBase64)
 	{
-		HANDLE hFileWriteHandle;
-		// Открываем на диске файл и получаем на него указатель
-		hFileWriteHandle = ::CreateFile (sImage, GENERIC_WRITE, FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, 0);
-		if (INVALID_HANDLE_VALUE != hFileWriteHandle)
+		INT nUTF8Len = WideCharToMultiByte (CP_UTF8, 0, pBase64, pBase64.GetLength (), NULL, NULL, NULL, NULL);
+		CHAR *pUTF8String = new CHAR [nUTF8Len + 1];
+		memset(pUTF8String, 0, sizeof (CHAR) * (nUTF8Len + 1));
+
+		WideCharToMultiByte (CP_UTF8, 0, pBase64, -1, pUTF8String, nUTF8Len, NULL, NULL);
+		CStringA sUnicode; sUnicode = pUTF8String;
+		delete[] pUTF8String;
+
+		//Убираем "data:image/jpg;base64,"
+		int nShift = 0;
+		int nIndex = sUnicode.Find("base64,");
+		if(-1 != nIndex)
 		{
-			INT nUTF8Len = WideCharToMultiByte (CP_UTF8, 0, pBase64, pBase64.GetLength (), NULL, NULL, NULL, NULL);
-			CHAR *pUTF8String = new CHAR [nUTF8Len + 1];
-			memset(pUTF8String, 0, sizeof (CHAR) * (nUTF8Len + 1));
-
-			WideCharToMultiByte (CP_UTF8, 0, pBase64, -1, pUTF8String, nUTF8Len, NULL, NULL);
-			CStringA sUnicode; sUnicode = pUTF8String;
-			delete[] pUTF8String;
-
-			//Убираем "data:image/jpg;base64,"
-			int nShift = 0;
-			int nIndex = sUnicode.Find("base64,");
-			if(-1 != nIndex)
-			{
-				nShift = nIndex + 7;
-			}
-			// Получаем размер файла
-			LONG lFileSize = sUnicode.GetLength () - nShift;
-			INT nDstLength = lFileSize;
-			BYTE *pBuffer = new BYTE [lFileSize];
-			memset(pBuffer, 0, lFileSize);
-			Base64::Base64Decode ((LPCSTR)sUnicode.GetBuffer () + nShift, lFileSize, pBuffer, &nDstLength);
-
-			// Пишем в файл
-			DWORD dwBytesWrite = 0;
-			::WriteFile (hFileWriteHandle, pBuffer, nDstLength, &dwBytesWrite, 0);
-
-			RELEASEARRAYOBJECTS (pBuffer);
-
-			CloseHandle (hFileWriteHandle);
+			nShift = nIndex + 7;
 		}
+		// Получаем размер файла
+		LONG lFileSize = sUnicode.GetLength () - nShift;
+		INT nDstLength = lFileSize;
+		BYTE *pBuffer = new BYTE [lFileSize];
+		memset(pBuffer, 0, lFileSize);
+		Base64::Base64Decode ((LPCSTR)sUnicode.GetBuffer () + nShift, lFileSize, pBuffer, &nDstLength);
+
+		// Пишем в файл
+		oFile.WriteFile(pBuffer, nDstLength);
+
+		RELEASEARRAYOBJECTS (pBuffer);
 	}
 
 	long Round(double val)

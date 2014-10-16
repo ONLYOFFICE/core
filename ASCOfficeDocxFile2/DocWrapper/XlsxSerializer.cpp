@@ -2,6 +2,7 @@
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Path.h"
 #include "../../XlsxSerializerCom/Reader/BinaryWriter.h"
 #include "../../XlsxSerializerCom/Writer/BinaryReader.h"
 #include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
@@ -22,18 +23,19 @@ namespace BinXlsxRW{
 		oOfficeDrawingConverter.SetMediaDstPath(sMediaDir);
 
 		//папка с бинарников
-		TCHAR tFolder[256];
-		TCHAR tDrive[256];
-		_tsplitpath( sSrcFileName, tDrive, tFolder, NULL, NULL );
-		CString sFolder = CString(tFolder);
-		CString sDrive = CString(tDrive);
-		CString sFileInDir = sDrive + sFolder;
+		std::wstring strFileInDir = NSSystemPath::GetDirectoryName(string2std_string(sSrcFileName));
+		CString sFileInDir = strFileInDir.c_str();
 
 		VARIANT var;
 		var.vt = VT_BSTR;
+#ifdef _WIN32
 		var.bstrVal = sFileInDir.AllocSysString();
 		oOfficeDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir2"), var);
 		RELEASESYSSTRING(var.bstrVal);
+#else
+		var.bstrVal = sFileInDir.GetString();
+		oOfficeDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir2"), var);
+#endif
 
 		BinXlsxRW::BinaryFileReader oBinaryFileReader;
 		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oOfficeDrawingConverter, sXMLOptions);
@@ -127,17 +129,12 @@ namespace BinXlsxRW{
 
 			if(oChartSpace.isValid())
 			{
-				TCHAR tDrive[256];
-				TCHAR tFolder[256];
-				TCHAR tFilename[256];
-				TCHAR tExt[256];
-				_tsplitpath( sFilepath, tDrive, tFolder, tFilename, tExt );
-				CString sDrive(tDrive);
-				CString sFolder(tFolder);
-				CString sFilename(tFilename);
-				CString sExt(tExt);
+				std::wstring strFilepath = string2std_string(sFilepath);
+				std::wstring strDir = NSSystemPath::GetDirectoryName(strFilepath);
+				std::wstring strFilename = NSSystemPath::GetFileName(strFilepath);
 
-				CString sRelsDir = sDrive + sFolder;
+				CString sRelsDir = strDir.c_str();
+				CString sFilename = strFilename.c_str();
 				sRelsDir.Append(_T("_rels"));
 				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
 					OOX::CSystemUtility::CreateDirectories(sRelsDir);
@@ -145,13 +142,12 @@ namespace BinXlsxRW{
 				oChartSpace.write2(sFilepath);
 
 				CString sRelsPath;
-				sRelsPath.Format(_T("%s\\%s.rels"), sRelsDir, sFilename + sExt);
+				sRelsPath.Format(_T("%s\\%s.rels"), sRelsDir, sFilename);
 
 				m_pExternalDrawingConverter->SaveDstContentRels(sRelsPath);
 
 				CString sContentType(sContentTypePath);
 				sContentType.Append(sFilename);
-				sContentType.Append(sExt);
 
 				(*sContentTypeElement) = new CString();
 				(*sContentTypeElement)->Format(_T("<Override PartName=\"%s\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>"), sContentType);

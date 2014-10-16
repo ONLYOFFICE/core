@@ -203,7 +203,7 @@ namespace NSBinPptxRW
         HRESULT(SetFontDir)(const CString& bsFontDir);
 
 		HRESULT SetFontPicker(COfficeFontPicker* pFontPicker);
-        HRESULT(SetAdditionalParam)(const CString& ParamName, BYTE **pArray, size_t& szCount);
+        HRESULT(SetAdditionalParam)(const CString& ParamName, BYTE *pArray, size_t szCount);
         HRESULT(SetAdditionalParam)(const CString& ParamName, VARIANT ParamValue);
         HRESULT(GetAdditionalParam)(const CString& ParamName, BYTE **pArray, size_t& szCount);
         HRESULT(GetAdditionalParam)(const CString& ParamName, VARIANT* ParamValue);

@@ -2316,6 +2316,22 @@ namespace NSEditorApi
 		{
 		}
 	};
+
+	class CAscClipboardFormats : public IMenuEventDataBase
+	{
+	public:
+		js_wrapper<std::string>		Doct;
+		js_wrapper<std::wstring>	TextUnicode;
+		js_wrapper<CAscInsertImage>	Image;
+
+		CAscClipboardFormats()
+		{
+		}
+
+		virtual ~CAscClipboardFormats()
+		{
+		}
+	};
 }
 
 

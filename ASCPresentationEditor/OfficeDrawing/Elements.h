@@ -1817,8 +1817,8 @@ namespace NSStrings
 		AVSINLINE void WriteString(wchar_t* pString, const size_t& nLen)
 		{
 			AddSize(nLen);
-			//memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
-			memcpy(m_pDataCur, pString, nLen << 1);
+            memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
+            //memcpy(m_pDataCur, pString, nLen << 1);
 			m_pDataCur += nLen;
 			m_lSizeCur += nLen;
 		}

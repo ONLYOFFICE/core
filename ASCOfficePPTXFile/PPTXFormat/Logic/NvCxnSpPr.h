@@ -30,7 +30,7 @@ namespace PPTX
 			}
 
 		public:
-			virtual void NvCxnSpPr::fromXML(XmlUtils::CXmlNode& node)
+            virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
 				cNvPr		= node.ReadNode(_T("p:cNvPr"));
 				cNvCxnSpPr	= node.ReadNode(_T("p:cNvCxnSpPr"));
@@ -39,7 +39,7 @@ namespace PPTX
 				FillParentPointersForChilds();
 			}
 
-			virtual CString NvCxnSpPr::toXML() const
+            virtual CString toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
 				oValue.Write(cNvPr);

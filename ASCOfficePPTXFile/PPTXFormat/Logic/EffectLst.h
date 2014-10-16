@@ -97,7 +97,7 @@ namespace PPTX
 			nullable<Reflection> reflection;
 			nullable<SoftEdge> softEdge;
 		protected:
-			virtual void EffectLst::FillParentPointersForChilds()
+            virtual void FillParentPointersForChilds()
 			{
 				if(blur.IsInit())
 					blur->SetParentPointer(this);

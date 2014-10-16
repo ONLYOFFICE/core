@@ -62,7 +62,7 @@ namespace PPTX
 			UniFill				Fill;
 			Limit::BlendMode	blend;
 		protected:
-			virtual void FillOverlay::FillParentPointersForChilds()
+            virtual void FillParentPointersForChilds()
 			{
 				Fill.SetParentPointer(this);
 			}

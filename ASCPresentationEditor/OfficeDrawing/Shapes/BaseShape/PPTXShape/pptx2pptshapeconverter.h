@@ -9,8 +9,8 @@ namespace NSGuidesVML
 	{
 	public:
 		RulesType m_eRuler;
-		CSimpleArray<POINT> m_arPoints;
-		CSimpleArray<SPointType> m_arPointsType;
+        std::vector<POINT> m_arPoints;
+        std::vector<SPointType> m_arPointsType;
 
 	private:
 		int m_nCountElementsPoint;
@@ -50,11 +50,11 @@ namespace NSGuidesVML
 	class CConverterPPTXPPT
 	{
 		private:
-			CSimpleArray<CSlice> m_arSlices;
+            std::vector<CSlice> m_arSlices;
 			CPPTShape* pPPTShape;
 			std::map<CString, LONG> m_arMapFormula;	
 			std::map<CString, LONG> m_arMapAdj;
-			CSimpleArray<CSlicePath> m_arSlicesPath;
+            std::vector<CSlicePath> m_arSlicesPath;
 			LONG m_lIndexDst;
 			LONG m_lIndexAdj;
 			SPointType pPointType1;

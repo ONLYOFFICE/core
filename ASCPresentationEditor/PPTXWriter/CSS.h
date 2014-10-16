@@ -577,7 +577,7 @@ public:
 
 				if (_T("p") == oNodePar.GetName())
 				{
-					pParagraph->m_oPFRun.hasBullet = FALSE;
+                    pParagraph->m_oPFRun.hasBullet = false;
 
 					CString strClass = oNodePar.GetAttribute(_T("class"));
 

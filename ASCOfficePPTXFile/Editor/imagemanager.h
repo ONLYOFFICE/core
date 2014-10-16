@@ -19,6 +19,7 @@ using namespace NSFontCutter;
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DesktopEditor/graphics/Image.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 
 #include <list>
 
@@ -28,8 +29,9 @@ namespace NSShapeImageGen
 
 	static BOOL _CopyFile(CString strExists, CString strNew, LPPROGRESS_ROUTINE lpFunc, LPVOID lpData) 
 	{
-		::DeleteFile(strNew);
-		return ::CopyFileEx(strExists, strNew, lpFunc, lpData, FALSE, 0); 
+        //::DeleteFile(strNew);
+        //return ::CopyFileEx(strExists, strNew, lpFunc, lpData, FALSE, 0);
+        return CDirectory::CopyFile (strExists, strNew, lpFunc, lpData);
 	}
 
 	enum ImageType

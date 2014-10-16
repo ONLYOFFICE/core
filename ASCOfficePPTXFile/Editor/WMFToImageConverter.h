@@ -196,10 +196,13 @@ namespace NSWMFToImageConverter
 			m_pSVGRenderer->put_Width(lWidth);
 			m_pSVGRenderer->put_Height(lHeight);
 
+#ifndef _WIN32
+            MetaDrawOnRenderer(m_pSVGRenderer, strPath, (double)lWidth, (double)lHeight);
+#else
 			BSTR bsFilePath = strPath.AllocSysString();
 			MetaDrawOnRenderer(m_pSVGRenderer, bsFilePath, (double)lWidth, (double)lHeight);
 			SysFreeString(bsFilePath);
-
+#endif
 			bool bIsRaster = false;
 			m_pSVGRenderer->IsRaster(&bIsRaster);
 			if (bIsRaster)

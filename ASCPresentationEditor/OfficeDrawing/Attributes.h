@@ -500,16 +500,11 @@ namespace NSPresentationEditor
 
 			if (DashStyle != Gdiplus::DashStyleSolid)
 			{
-				SAFEARRAYBOUND rgsab;
-				rgsab.lLbound	= 0;
-				rgsab.cElements	= Count;
 
-				SAFEARRAY* pArray = SafeArrayCreate(VT_R8, 1, &rgsab);
-				memcpy(pArray->pvData, DashPattern, Count * sizeof(double));
 
 				pRenderer->PenDashPattern(DashPattern, Count);
 
-				RELEASEARRAY(pArray);
+
 				pRenderer->put_PenDashOffset(DashOffset);
 			}
 		}
@@ -817,9 +812,9 @@ namespace NSPresentationEditor
 			}
 			else if (IsTexture())
 			{
-				BSTR bstrTexturePath = TexturePath.AllocSysString();
-				pRenderer->put_BrushTexturePath(bstrTexturePath);
-				SysFreeString(bstrTexturePath);
+                //BSTR bstrTexturePath = TexturePath.AllocSysString();
+                pRenderer->put_BrushTexturePath(TexturePath);
+                //SysFreeString(bstrTexturePath);
 				pRenderer->put_BrushTextureMode(TextureMode);
 				pRenderer->put_BrushTextureAlpha(TextureAlpha);
 				pRenderer->BrushRect(Rectable, Rect.X, Rect.Y, Rect.Width, Rect.Height);

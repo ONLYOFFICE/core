@@ -2,6 +2,7 @@
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Path.h"
 #include "../BinWriter/BinWriters.h"
 #include "../BinReader/Readers.h"
 #include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
@@ -166,12 +167,8 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(CString& sSrcFileName, CString& sD
 				m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, nVersion, m_bSaveChartAsImg, &oDrawingConverter, sThemePath);
 
 				//папка с картинками
-				TCHAR tFolder[256];
-				TCHAR tDrive[256];
-				_tsplitpath( sSrcFileName, tDrive, tFolder, NULL, NULL );
-				CString sFolder = CString(tFolder);
-				CString sDrive = CString(tDrive);
-				CString sFileInDir = sDrive + sFolder;
+				std::wstring strFileInDir = NSSystemPath::GetDirectoryName(string2std_string(sSrcFileName));
+				CString sFileInDir = strFileInDir.c_str();
 
 				VARIANT var;
 				var.vt = VT_BSTR;

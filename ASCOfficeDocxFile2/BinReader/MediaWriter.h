@@ -19,26 +19,44 @@ namespace Writers
 			nImageCount = 0;
 			m_sMediaDir = m_sDir + _T("\\word\\media");
 		}
+		CString AddImageGetNewPath()
+		{
+			if( !NSDirectory::Exists(string2std_string(m_sMediaDir)) )
+				OOX::CSystemUtility::CreateDirectories(m_sMediaDir);
+
+			CString sNewImgName;sNewImgName.Format(_T("image%d.jpg"), (nImageCount + 1));
+			CString sNewImg = m_sMediaDir + _T("\\") + sNewImgName;
+			nImageCount++;
+			return sNewImg;
+		}
+		void AddImage2(FILE* pFile)
+		{
+			long size = ftell(pFile);
+			if(size > 0)
+			{
+				rewind(pFile);
+				BYTE* pData = new BYTE[size];
+				DWORD dwSizeRead = (DWORD)fread((void*)pData, 1, size, pFile);
+				if(dwSizeRead > 0)
+				{
+					CString sNewImagePath = AddImageGetNewPath();
+					NSFile::CFileBinary oFile;
+					oFile.CreateFileW(string2std_string(sNewImagePath));
+					oFile.WriteFile(pData, dwSizeRead);
+					oFile.CloseFile();
+					CString sFilename = NSSystemPath::GetFileName(string2std_string(sNewImagePath)).c_str();
+					m_aImageNames.push_back(sFilename);
+				}
+				RELEASEARRAYOBJECTS(pData);
+			}
+		}
 		void AddImage(const CString& sImg)
 		{
-			NSDirectory::CreateDirectory(string2std_string(m_sMediaDir));
+			CString sNewImg = AddImageGetNewPath();
 
-			//TCHAR tExt[256];
-			//TCHAR tFilename[256];
-			//_tsplitpath( sImg, NULL, NULL, tFilename, tExt );
-			//CString sExt = CString(tExt);
-			//CString sFilename = CString(tFilename);
-			CString sNewImgName;sNewImgName.Format(_T("image%d.jpg"), (nImageCount + 1));
-			CString sNewImg = m_sMediaDir;
-			sNewImg += _T("\\") + sNewImgName;
-			
-			CopyFile(sImg, sNewImg, FALSE);
-			m_aImageNames.push_back(sNewImgName);
-
-			//CString sNewImgRel;sNewImgRel = _T("media\\") + sNewImgName;
-			//CorrectString(sNewImgRel);
-			//m_aImageRels.Add(m_poDocumentRelsWriter->AddRels(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image"), sNewImgRel, false));
-			nImageCount++;
+			NSFile::CFileBinary::Copy(string2std_string(sImg), string2std_string(sNewImg));
+			CString sFilename = NSSystemPath::GetFileName(string2std_string(sNewImg)).c_str();
+			m_aImageNames.push_back(sFilename);
 		}
 	};
 }

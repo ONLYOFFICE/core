@@ -1,201 +1,180 @@
 #pragma once
 
 #include "../XML/xmlutils.h"
+#include "../../../../DesktopEditor/common/File.h"
 
-#ifdef _WIN32
+
+//по аналогии с /DesktopEditor/common/File.h только для CString
 class CFile 
 {
+private:
+	HRESULT _Open(const CString& strFileName, bool bOpen = false, bool bCreate = false, bool bReadWrite = false)
+	{
+		HRESULT hRes = S_OK;
+		CloseFile();
+
+#if defined(WIN32) || defined(_WIN32_WCE)
+		wchar_t* pModeOpen;
+		wchar_t* pModeCreate;
+		if(bReadWrite)
+		{
+			pModeOpen = L"rb+";
+			pModeCreate = L"wb+";
+		}
+		else
+		{
+			pModeOpen = L"rb";
+			pModeCreate = L"wb";
+		}
+		if(NULL == m_pFile && bOpen)
+			m_pFile = _wfopen(strFileName, pModeOpen);
+		if(NULL == m_pFile && bCreate)
+			m_pFile = _wfopen(strFileName, pModeCreate);
+#else
+		BYTE* pUtf8 = NULL;
+		LONG lLen = 0;
+		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
+		char* pModeOpen;
+		char* pModeCreate;
+		if(bReadWrite)
+		{
+			pModeOpen = "rb+";
+			pModeCreate = "wb+";
+		}
+		else
+		{
+			pModeOpen = "rb";
+			pModeCreate = "wb";
+		}
+		if(NULL == m_pFile && bOpen)
+			m_pFile = fopen((char*)pUtf8, pModeOpen);
+		if(NULL == m_pFile && bCreate)
+			m_pFile = fopen((char*)pUtf8, pModeCreate);
+		RELEASEARRAYOBJECTS(pUtf8);
+#endif
+		if (NULL == m_pFile)
+			return S_FALSE;
+
+		fseek(m_pFile, 0, SEEK_END);
+		m_lFileSize = ftell(m_pFile);
+		fseek(m_pFile, 0, SEEK_SET);
+
+		m_lFilePosition = 0;
+
+		if (0 < strFileName.GetLength())
+		{
+			if (((wchar_t)'/') == strFileName[strFileName.GetLength() - 1])
+				m_lFileSize = 0x7FFFFFFF;
+		}
+
+		unsigned int err = 0x7FFFFFFF;
+		unsigned int cur = (unsigned int)m_lFileSize;
+		if (err == cur)
+		{
+			CloseFile();
+			return S_FALSE;
+		}
+
+		return hRes;
+	}
 public:
 	CFile() 
 	{
-		m_hFileHandle = NULL;
-		m_lFileSize = 0;
+		m_pFile = NULL;
 		m_lFilePosition = 0;
+		m_lFileSize = 0;
 	}
 
 	virtual ~CFile()
 	{
 		CloseFile();
 	}
-	HRESULT OpenOrCreate(CString strFileName)
+	
+	HRESULT OpenOrCreate(CString strFileName, bool bOnlyOpen = false, bool bReadWrite = false)
 	{
-		CloseFile();
-
-		HRESULT hRes = S_OK;
-		DWORD AccessMode =  GENERIC_READ | GENERIC_WRITE;
-		DWORD ShareMode = FILE_SHARE_WRITE;
-		DWORD Disposition = OPEN_ALWAYS;
-		m_hFileHandle = ::CreateFile(strFileName, AccessMode, ShareMode, NULL, Disposition, FILE_ATTRIBUTE_NORMAL, NULL);
-
-		if (NULL == m_hFileHandle || INVALID_HANDLE_VALUE == m_hFileHandle)
-			hRes = S_FALSE;
-		else 
-		{
-			ULARGE_INTEGER nTempSize;
-			nTempSize.LowPart = ::GetFileSize(m_hFileHandle, &nTempSize.HighPart);
-			m_lFileSize = nTempSize.QuadPart;
-
-			SetPosition(m_lFileSize);
-		}
-
-		return hRes;
+		return _Open(strFileName, true, true, true);
 	}
 	virtual HRESULT OpenFile(CString FileName)
 	{	
-		CloseFile();
-
-		HRESULT hRes = S_OK;
-		DWORD AccessMode = GENERIC_READ;
-		DWORD ShareMode = FILE_SHARE_READ;
-		DWORD Disposition = OPEN_EXISTING;
-		m_hFileHandle = ::CreateFile(FileName, AccessMode, ShareMode, NULL, Disposition, FILE_ATTRIBUTE_NORMAL, NULL);
-
-		if (NULL == m_hFileHandle || INVALID_HANDLE_VALUE == m_hFileHandle)
-			hRes = S_FALSE;
-		else 
-		{
-			ULARGE_INTEGER nTempSize;
-			nTempSize.LowPart = ::GetFileSize(m_hFileHandle, &nTempSize.HighPart);
-			m_lFileSize = nTempSize.QuadPart;
-
-			SetPosition(0);
-		}
-
-		return hRes;
+		return _Open(FileName, true, false, false);
 	}
 
 	virtual HRESULT OpenFileRW(CString FileName)
 	{	
-		CloseFile();
-
-		HRESULT hRes = S_OK;
-		DWORD AccessMode = GENERIC_READ | GENERIC_WRITE;
-		DWORD ShareMode = FILE_SHARE_READ;
-		DWORD Disposition = OPEN_EXISTING;
-		m_hFileHandle = ::CreateFile(FileName, AccessMode, ShareMode, NULL, Disposition, 0, 0);
-
-		if (NULL == m_hFileHandle || INVALID_HANDLE_VALUE == m_hFileHandle)
-		{
-			hRes = S_FALSE;
-		}
-		else 
-		{
-			ULARGE_INTEGER nTempSize;
-			nTempSize.LowPart = ::GetFileSize(m_hFileHandle, &nTempSize.HighPart);
-			m_lFileSize = nTempSize.QuadPart;
-
-			SetPosition(0);
-		}
-
-		return hRes;
+		return _Open(FileName, true, false, true);
 	}
 
 	HRESULT ReadFile(BYTE* pData, DWORD nBytesToRead)
 	{
-		DWORD nBytesRead = 0;
-		if(NULL == pData)
+		if (!m_pFile)
 			return S_FALSE;
 
-		if(m_hFileHandle && (pData))
-		{	
-			SetPosition(m_lFilePosition);
-			::ReadFile(m_hFileHandle, pData, nBytesToRead, &nBytesRead, NULL);
-			m_lFilePosition += nBytesRead; 
-		}
+		SetPosition(m_lFilePosition);
+		DWORD dwSizeRead = (DWORD)fread((void*)pData, 1, nBytesToRead, m_pFile);
+		m_lFilePosition += dwSizeRead; 
 		return S_OK;
 	}
 
 	HRESULT ReadFile2(BYTE* pData, DWORD nBytesToRead)
 	{
-		DWORD nBytesRead = 0;
-		if(NULL == pData)
-			return S_FALSE;
-
-		if(m_hFileHandle && (pData))
-		{	
-			SetPosition(m_lFilePosition);
-			::ReadFile(m_hFileHandle, pData, nBytesToRead, &nBytesRead, NULL);
-			m_lFilePosition += nBytesRead; 
-
-			for (size_t index = 0; index < nBytesToRead / 2; ++index)
-			{
-				BYTE temp = pData[index];
-				pData[index] = pData[nBytesToRead - index - 1];
-				pData[nBytesToRead - index - 1] = temp;
-			}
+		HRESULT hRes = ReadFile(pData, nBytesToRead);
+		//reverse bytes
+		for (size_t index = 0; index < nBytesToRead / 2; ++index)
+		{
+			BYTE temp = pData[index];
+			pData[index] = pData[nBytesToRead - index - 1];
+			pData[nBytesToRead - index - 1] = temp;
 		}
 		return S_OK;
 	}
 	HRESULT ReadFile3(void* pData, DWORD nBytesToRead)
 	{
-		DWORD nBytesRead = 0;
-		if(NULL == pData)
-			return S_FALSE;
-
-		if(m_hFileHandle && (pData))
-		{	
-			SetPosition(m_lFilePosition);
-			::ReadFile(m_hFileHandle, pData, nBytesToRead, &nBytesRead, NULL);
-			m_lFilePosition += nBytesRead; 
-		}
-		return S_OK;
+		return ReadFile((BYTE*)pData, nBytesToRead);
 	}
 
 	HRESULT WriteFile(void* pData, DWORD nBytesToWrite)
 	{
-		if(m_hFileHandle)
-		{	
-			DWORD dwWritten = 0;
-			::WriteFile(m_hFileHandle, pData, nBytesToWrite, &dwWritten, NULL);
-			m_lFilePosition += nBytesToWrite; 
-		}
+		if (!m_pFile)
+			return S_FALSE;
+
+		size_t nCountWrite = fwrite((void*)pData, 1, nBytesToWrite, m_pFile);
+		m_lFilePosition += nBytesToWrite; 
 		return S_OK;
 	}
 
 	HRESULT WriteFile2(void* pData, DWORD nBytesToWrite)
 	{
-		if(m_hFileHandle)
-		{	
-			BYTE* mem = new BYTE[nBytesToWrite];
-			memcpy(mem, pData, nBytesToWrite);
-			
-			for (size_t index = 0; index < nBytesToWrite / 2; ++index)
-			{
-				BYTE temp = mem[index];
-				mem[index] = mem[nBytesToWrite - index - 1];
-				mem[nBytesToWrite - index - 1] = temp;
-			}
-			
-			DWORD dwWritten = 0;
-			::WriteFile(m_hFileHandle, (void*)mem, nBytesToWrite, &dwWritten, NULL);
-			m_lFilePosition += nBytesToWrite; 
-			RELEASEARRAYOBJECTS(mem);
+		if (!m_pFile)
+			return S_FALSE;
+
+		BYTE* mem = new BYTE[nBytesToWrite];
+		memcpy(mem, pData, nBytesToWrite);
+
+		for (size_t index = 0; index < nBytesToWrite / 2; ++index)
+		{
+			BYTE temp = mem[index];
+			mem[index] = mem[nBytesToWrite - index - 1];
+			mem[nBytesToWrite - index - 1] = temp;
 		}
-		return S_OK;
+
+		return WriteFile(mem, nBytesToWrite);
 	}
 
 	HRESULT CreateFile(CString strFileName)
 	{
-		CloseFile();
-		DWORD AccessMode = GENERIC_WRITE;
-		DWORD ShareMode = FILE_SHARE_WRITE;
-		DWORD Disposition = CREATE_ALWAYS;
-		m_hFileHandle = ::CreateFile(strFileName, AccessMode, ShareMode, NULL, Disposition, FILE_ATTRIBUTE_NORMAL, NULL);
-		return SetPosition(0);
+		return _Open(strFileName, false, true, true);
 	}
 	HRESULT SetPosition( ULONG64 nPos )
 	{	
-		if (m_hFileHandle && nPos <= (ULONG)m_lFileSize)
+		if (m_pFile && nPos <= (ULONG)m_lFileSize)
 		{
-			LARGE_INTEGER nTempPos;
-			nTempPos.QuadPart = nPos;
-			::SetFilePointer(m_hFileHandle, nTempPos.LowPart, &nTempPos.HighPart, FILE_BEGIN);
 			m_lFilePosition = nPos;
+			fseek(m_pFile, m_lFilePosition, SEEK_SET);
 			return S_OK;
 		}
 		else 
 		{
-			return (INVALID_HANDLE_VALUE == m_hFileHandle) ? S_FALSE : S_OK;
+			return !m_pFile ? S_FALSE : S_OK;
 		}
 	}
 	LONG64  GetPosition()
@@ -209,9 +188,14 @@ public:
 
 	HRESULT CloseFile()
 	{
-		m_lFileSize = 0;
 		m_lFilePosition = 0;
-		RELEASEHANDLE(m_hFileHandle);
+		m_lFileSize = 0;
+
+		if (m_pFile != NULL)
+		{
+			fclose(m_pFile);
+			m_pFile = NULL;		
+		}
 		return S_OK;
 	}
 
@@ -267,45 +251,26 @@ public:
 		return lProgress;
 	}
 
-	void WriteStringUTF8(CString& strXml)
+    void WriteStringUTF8(const CString& strXml)
 	{
-        int nLength = strXml.GetLength();
+		BYTE* pData = NULL;
+		LONG lLen = 0;
 
-		CStringA saStr;
-		
-#ifdef UNICODE
-		// Encoding Unicode to UTF-8
-		WideCharToMultiByte(CP_UTF8, 0, strXml.GetBuffer(), nLength + 1, saStr.GetBuffer(nLength*3 + 1), nLength*3, NULL, NULL);
-		saStr.ReleaseBuffer();    
-#else
-		wchar_t* pWStr = new wchar_t[nLength + 1];
-		if (!pWStr)
-			return;
+		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strXml.GetString(), strXml.GetLength(), pData, lLen, false);
 
-		// set end string
-		pWStr[nLength] = 0;
+		WriteFile(pData, lLen);
 
-		// Encoding ASCII to Unicode
-        MultiByteToWideChar(CP_ACP, 0, strXml, nLength, pWStr, nLength);
-
-        int nLengthW = (int)wcslen(pWStr);
-
-		// Encoding Unicode to UTF-8
-        WideCharToMultiByte(CP_UTF8, 0, pWStr, nLengthW + 1, saStr.GetBuffer(nLengthW*3 + 1), nLengthW*3, NULL, NULL);
-		saStr.ReleaseBuffer();
-
-	    delete[] pWStr;
-#endif
-		
-		WriteFile((void*)saStr.GetBuffer(), saStr.GetLength());
+		RELEASEARRAYOBJECTS(pData);
 	}
 
 protected:
-	HANDLE m_hFileHandle;		
-	LONG64 m_lFileSize;
-	LONG64 m_lFilePosition;
+	FILE* m_pFile;
+
+	long m_lFilePosition;
+	long m_lFileSize;
 };
 
+#ifdef _WIN32
 namespace CDirectory
 {
 	static CString GetFolderName(CString strFolderPath)

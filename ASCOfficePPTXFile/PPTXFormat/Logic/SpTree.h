@@ -68,10 +68,7 @@ namespace PPTX
 						{
 							SpTreeElem elem(oNode);
 							if (elem.is_init())
-							{
-								SpTreeElem elem1;
-								SpTreeElems.push_back(elem1);
-							}
+								SpTreeElems.push_back(elem);
 						}
 					}
 				}

@@ -82,6 +82,7 @@ struct VARIANT
     SHORT iVal;
     FLOAT fltVal;
     BSTR bstrVal;
+    VARIANT_BOOL boolVal;
     double dblVal;
 };
 /*

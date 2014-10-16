@@ -22,7 +22,8 @@ namespace PPTX
 				Logic::UniColor lColor;
 				Scheme.clear();
 
-				lColor.GetColorFrom(node.ReadNode(_T("a:dk1")));		Scheme.insert(std::pair<CString,Logic::UniColor>(_T("dk1"), lColor));
+                lColor.GetColorFrom(node.ReadNode(_T("a:dk1")));
+                Scheme.insert(std::pair<CString,Logic::UniColor>(_T("dk1"), lColor));
 				lColor.GetColorFrom(node.ReadNode(_T("a:lt1")));		Scheme.insert(std::pair<CString,Logic::UniColor>(_T("lt1"), lColor));
 				lColor.GetColorFrom(node.ReadNode(_T("a:dk2")));		Scheme.insert(std::pair<CString,Logic::UniColor>(_T("dk2"), lColor));
 				lColor.GetColorFrom(node.ReadNode(_T("a:lt2")));		Scheme.insert(std::pair<CString,Logic::UniColor>(_T("lt2"), lColor));

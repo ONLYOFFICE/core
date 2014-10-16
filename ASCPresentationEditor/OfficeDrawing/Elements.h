@@ -1876,11 +1876,13 @@ namespace NSStrings
 
 	public:
 		
+#ifdef _WIN32
 		AVSINLINE void WriteString(_bstr_t& bsString)
 		{
 			size_t nLen = bsString.length();
 			CTextItem::WriteString(bsString.GetBSTR(), nLen);
 		}
+#endif
 		AVSINLINE void WriteString(CString& sString)
 		{
 			size_t nLen = (size_t)sString.GetLength();

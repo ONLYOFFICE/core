@@ -691,11 +691,13 @@ CElementProps::~CElementProps()
 }
 void CElementProps::FinalRelease()
 {
+#ifdef _WIN32 // linux: BSTR = CString
 	for (std::map<LONG, VARIANT>::iterator pPair = m_Properties.begin(); pPair != m_Properties.end(); ++pPair)
 	{
 		if (pPair->second.vt == VT_BSTR)
 			SysFreeString(pPair->second.bstrVal);
 	}
+#endif
 	m_Properties.clear();
 }
 HRESULT CElementProps::GetProperty(LONG lId, VARIANT* pProp)
@@ -934,7 +936,7 @@ HRESULT CDrawingConverter::AddObject(const CString& bsXml, CString** pMainProps)
 	return bResult ? S_OK : S_FALSE;
 }
 
-bool CDrawingConverter::ParceObject(const ATL::CString& strXml, CString** pMainProps)
+bool CDrawingConverter::ParceObject(const CString& strXml, CString** pMainProps)
 {
 	XmlUtils::CXmlNode oMainNode;
 	if (!oMainNode.FromXmlString(strXml))

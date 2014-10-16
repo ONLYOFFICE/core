@@ -223,7 +223,8 @@ public:
         if (name == _T("SerializeImageManager") || name == _T("SerializeImageManager2"))
         {
 #ifdef _WIN32
-            return m_oDrawingConverter.SetAdditionalParam(CString(ParamName), (BYTE*) pArray->pvData, pArrayData->rgsabound[0].cElements);
+			SAFEARRAY *pArray = ParamValue.parray;
+            return m_oDrawingConverter.SetAdditionalParam(CString(ParamName), (BYTE*) pArray->pvData, pArray->rgsabound[0].cElements);
 #endif
             return S_OK;
         }

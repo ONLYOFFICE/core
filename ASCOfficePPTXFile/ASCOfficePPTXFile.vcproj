@@ -156,7 +156,7 @@
 				Name="VCCLCompilerTool"
 				InlineFunctionExpansion="1"
 				AdditionalIncludeDirectories="..\Common;..\..\..\..\Addons\ZLib"
-				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_ATL_ATTRIBUTES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;LIBXML_READER_ENABLED;_USE_XMLLITE_READER_;USE_XMLLITE_READER;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML"
+				PreprocessorDefinitions="WIN32;NDEBUG;_WINDOWS;_USRDLL;_ATL_ATTRIBUTES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;LIBXML_READER_ENABLED;_USE_XMLLITE_READER_;USE_XMLLITE_READER;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;_USE_MATH_DEFINES"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
@@ -433,6 +433,34 @@
 			Filter="cpp;c;cxx;def;odl;idl;hpj;bat;asm"
 			>
 			<File
+				RelativePath=".\ASCOfficePPTXFile.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\ASCOfficePPTXFileRealization.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp"
+				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
 				RelativePath="stdafx.cpp"
 				>
 				<FileConfiguration
@@ -468,6 +496,151 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<Filter
+				Name="DocxReaderWriter"
+				>
+				<File
+					RelativePath="..\XlsxSerializerCom\Common\Common.cpp"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\XlsxSerializerCom\Reader\CommonWriter.cpp"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\XlsxSerializerCom\Reader\CSVReader.cpp"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\XlsxSerializerCom\Writer\CSVWriter.cpp"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
+			<Filter
+				Name="_"
+				>
+				<File
+					RelativePath="..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.cpp"
+					>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+						/>
+					</FileConfiguration>
+				</File>
+				<File
+					RelativePath="..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTXShape\Formula.cpp"
+					>
+					<FileConfiguration
+						Name="Debug|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="Release|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							UsePrecompiledHeader="0"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseASC|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseOpenSource|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							ObjectFile="$(IntDir)\$(InputName)1.obj"
+							XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
+						/>
+					</FileConfiguration>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Header Files"

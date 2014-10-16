@@ -808,8 +808,8 @@ namespace XmlUtils
 			std::map<CStringA, CStringA>::iterator p;
 			for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
 			{
-				strNames.AddTail(std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), TRUE)));
-				strValues.AddTail(std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), TRUE)));
+				strNames.push_back(std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), TRUE)));
+				strValues.push_back(std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), TRUE)));
 			}
 		}
 		
@@ -875,6 +875,7 @@ namespace XmlUtils
 			if (GetNode(sName, oNode))
 				oNode.LoadArray(sSubName, arList);
 		}
+		CXmlNode ReadNode(const TCHAR* strNodeName);
 		CXmlNode ReadNode(const CString& strNodeName);
 		CXmlNode ReadNodeNoNS(const CString& strNodeName);
 

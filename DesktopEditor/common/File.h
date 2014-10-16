@@ -388,7 +388,7 @@ namespace NSFile
 
 	class CFileBinary
 	{
-	private:
+    protected:
 		FILE* m_pFile;
 		
 		long m_lFilePosition;

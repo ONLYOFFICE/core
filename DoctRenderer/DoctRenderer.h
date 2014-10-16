@@ -5,7 +5,7 @@
 #include "stdafx.h"
 #include "NativeControl.h"
 
-#include "../../../../Common/TimeMeasurer.h"
+#include "../../../../../../Common/TimeMeasurer.h"
 
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "winmm.lib")

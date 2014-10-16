@@ -192,15 +192,19 @@ namespace PPTX
 
 							for (ULONG i = 0; i < _c; ++i)
 							{
-								pReader->Skip(5); // type (0) + len
-
-								SpTreeElem elm;
-								SpTreeElems.push_back(elm);
-								SpTreeElems.back().fromPPTY(pReader);
-								
-								if (!SpTreeElems.back().is_init())
+								pReader->Skip(1); // type (0)
+								LONG nElemLength = pReader->GetLong(); // len
+								//SpTreeElem::fromPPTY сразу делает GetChar, а toPPTY ничего не пишет если не инициализирован
+								if(nElemLength > 0)
 								{
-									SpTreeElems.pop_back();									
+									SpTreeElem elm;
+									SpTreeElems.push_back(elm);
+									SpTreeElems.back().fromPPTY(pReader);
+
+									if (!SpTreeElems.back().is_init())
+									{
+										SpTreeElems.pop_back();									
+									}
 								}
 							}
 						}

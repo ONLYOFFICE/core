@@ -2403,7 +2403,7 @@ namespace BinXlsxRW {
 				if(S_OK == hRes && NULL != bstrXml)
 				{
 					pCellAnchor->m_oXml.Init();
-					pCellAnchor->m_oXml->AppendFormat(_T("%s<xdr:clientData/>"), (const TCHAR *) bstrXml);
+					pCellAnchor->m_oXml->AppendFormat(_T("%s<xdr:clientData/>"), (const TCHAR *) (*bstrXml));
 				}
 				RELEASEOBJECT(bstrXml);
 			}

@@ -64,7 +64,7 @@ namespace PPTX
 			template<class T> AVSINLINE T&			as()		{ return m_Bullet.as<T>(); }
 			template<class T> AVSINLINE const T&	as() const 	{ return m_Bullet.as<T>(); }
 
-			virtual CString Bullet::toXML()const
+            virtual CString toXML()const
 			{
 				if (m_Bullet.IsInit())
 					return m_Bullet->toXML();

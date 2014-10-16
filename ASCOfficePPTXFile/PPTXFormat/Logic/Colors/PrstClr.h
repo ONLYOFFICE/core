@@ -48,14 +48,14 @@ namespace PPTX
 				pWriter->EndNode(_T("a:prstClr"));
 			}
 
-			virtual DWORD PrstClr::GetRGBA(DWORD RGBA) const
+            virtual DWORD GetRGBA(DWORD RGBA) const
 			{
 				PrstClr* pColor = const_cast<PrstClr*>(this);
 				pColor->FillRGBFromVal();
 				return ColorBase::GetRGBA(RGBA);
 			}
 
-			virtual DWORD PrstClr::GetARGB(DWORD ARGB) const
+            virtual DWORD GetARGB(DWORD ARGB) const
 			{
 				PrstClr* pColor = const_cast<PrstClr*>(this);
 				pColor->FillRGBFromVal();

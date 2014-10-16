@@ -219,10 +219,43 @@ public:
 		
 	STDMETHOD(SetAdditionalParam)(BSTR ParamName, VARIANT ParamValue)
 	{
-		return m_oDrawingConverter.SetAdditionalParam(CString(ParamName), ParamValue);
+        CString name = (CString)ParamName;
+        if (name == _T("SerializeImageManager") || name == _T("SerializeImageManager2"))
+        {
+#ifdef _WIN32
+            return m_oDrawingConverter.SetAdditionalParam(CString(ParamName), (BYTE*) pArray->pvData, pArrayData->rgsabound[0].cElements);
+#endif
+            return S_OK;
+        }
+        else
+            return m_oDrawingConverter.SetAdditionalParam(CString(ParamName), ParamValue);
 	}
 	STDMETHOD(GetAdditionalParam)(BSTR ParamName, VARIANT* ParamValue)
 	{
-		return m_oDrawingConverter.GetAdditionalParam(CString(ParamName), ParamValue);
+        // convert
+        CString name = (CString)ParamName;
+
+        if (name == _T("SerializeImageManager") || name == _T("SerializeImageManager2"))
+        {
+            BYTE* pBuffer = NULL;
+            size_t nCount = 0;
+            HRESULT hRes = m_oDrawingConverter.GetAdditionalParam(CString(ParamName), &pBuffer, nCount);
+            if (S_OK == hRes && NULL != pBuffer)
+            {
+#ifdef _WIN32
+                SAFEARRAY* pArray = SafeArrayCreateVector(VT_UI1, nCount);
+
+                BYTE* pDataD = (BYTE*) pArray->pvData;
+                memcpy(pDataD, pBuffer, nCount);
+
+                ParamValue->vt = VT_ARRAY;
+                ParamValue->parray = pArray;
+#endif
+            }
+            delete [] pBuffer;
+            return hRes;
+        }
+        else
+            return m_oDrawingConverter.GetAdditionalParam(CString(ParamName), ParamValue);
 	}
 };

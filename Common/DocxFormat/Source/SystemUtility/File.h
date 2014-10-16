@@ -343,6 +343,11 @@ namespace CDirectory
 	{
 		return ::CreateDirectory(strFolderPath, NULL);
 	}
+    static BOOL DeleteFile (CString strFileName)
+    {
+        ::DeleteFile (strFileName);
+        return TRUE;
+    }
 
 	static BOOL MoveFile(CString strExists, CString strNew, LPPROGRESS_ROUTINE lpFunc, LPVOID lpData) 
 	{
@@ -676,7 +681,9 @@ namespace StreamUtils
 #else
 
 #include <iostream>
-#include <fstream>
+#include <fstream>  // instream
+#include <unistd.h> // unlink
+
 #include "../../../DesktopEditor/common/Types.h"
 #include "../../../DesktopEditor/common/File.h"
 class CFile: public NSFile::CFileBinary
@@ -971,6 +978,11 @@ namespace CDirectory
         }
         fwrite (aContentUtf8.c_str() , sizeof(char), aContentUtf8.size(), pFile);
         fclose (pFile);
+    }
+    static bool DeleteFile (CString strFileName)
+    {
+        std::string aFileNameUtf8 = stringWstingToUtf8String (strFileName);
+        return 0 == unlink (aFileNameUtf8.c_str());
     }
     static CString ToString(DWORD val)
     {

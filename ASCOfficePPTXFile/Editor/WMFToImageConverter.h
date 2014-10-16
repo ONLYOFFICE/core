@@ -6,6 +6,8 @@
 
 #include "../../DocxFormat/Source/SystemUtility/File.h"
 
+#include <algorithm>
+
 #ifdef BUILD_CONFIG_FULL_VERSION
 
 namespace NSWMFToImageConverter
@@ -154,7 +156,7 @@ namespace NSWMFToImageConverter
 				oASCImage.get_Width(&_lw);
 				oASCImage.get_Height(&_lh);
 
-				LONG lMax = max(_lw, _lh);
+                LONG lMax = std::max (_lw, _lh);
 				double dKoef = 1000.0 / lMax;
 				
 				dW = (double)dKoef * _lw * 100;

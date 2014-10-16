@@ -447,6 +447,58 @@ namespace NSPresentationEditor
 			}
 
 
+            void GetSafearrayPoints(IRenderer* pRenderer, double** ppArray, size_t& szArray, CDoublePoint& pointCur, BOOL bR = FALSE)
+            {
+                if (NULL == ppArray)
+                    return;
+
+                const int nCount = this->m_arPoints.size();
+
+                const size_t cElements = 2 * (nCount + 1);
+
+                double* pArray = new double [cElements];
+                double* pBuffer = pArray;
+
+                memset (pBuffer, 0, cElements * sizeof(double));
+
+                *pBuffer = pointCur.dX; ++pBuffer;
+                *pBuffer = pointCur.dY; ++pBuffer;
+
+                if (bR)
+                {
+                    for (int nIndex = 0; nIndex < nCount; ++nIndex)
+                    {
+                        *pBuffer = (this->m_arPoints[nIndex].dX + pointCur.dX); ++pBuffer;
+                        *pBuffer = (this->m_arPoints[nIndex].dY + pointCur.dY); ++pBuffer;
+
+                        if (nIndex == (nCount - 1))
+                        {
+                            pointCur.dX += this->m_arPoints[nIndex].dX;
+                            pointCur.dY += this->m_arPoints[nIndex].dY;
+                        }
+                    }
+                }
+                else
+                {
+                    for (int nIndex = 0; nIndex < nCount; ++nIndex)
+                    {
+                        *pBuffer = this->m_arPoints[nIndex].dX; ++pBuffer;
+                        *pBuffer = this->m_arPoints[nIndex].dY; ++pBuffer;
+
+                        if (nIndex == (nCount - 1))
+                        {
+                            pointCur.dX = this->m_arPoints[nIndex].dX;
+                            pointCur.dY = this->m_arPoints[nIndex].dY;
+                        }
+                    }
+                }
+
+                szArray = cElements;
+                *ppArray = pArray;
+
+            }
+
+            /*
 			void GetSafearrayPoints(IRenderer* pRenderer, SAFEARRAY** ppArray, CDoublePoint& pointCur, BOOL bR = FALSE)
 			{
 				if (NULL == ppArray)
@@ -498,6 +550,7 @@ namespace NSPresentationEditor
 
 				*ppArray = pArray;
 			}
+            */
 
 			void Draw(IRenderer* pRenderer, CDoublePoint& pointCur)
 			{
@@ -515,28 +568,27 @@ namespace NSPresentationEditor
 					}
 				case rtLineTo:
 					{
-						SAFEARRAY* pArray = NULL;
-						GetSafearrayPoints(pRenderer, &pArray, pointCur);
+                        double* pArray = NULL;
+                        size_t nCount = 0;
+                        GetSafearrayPoints(pRenderer, &pArray, nCount, pointCur);
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandLinesTo((double*)pArray->pvData, this->m_arPoints.size());
+                            pRenderer->PathCommandLinesTo(pArray, this->m_arPoints.size());
 						}
 
-						RELEASEARRAY(pArray);
 						break;
 					}
 				case rtCurveTo:
 					{
-						SAFEARRAY* pArray = NULL;
-						GetSafearrayPoints(pRenderer, &pArray, pointCur);
+                        double* pArray = NULL;
+                        size_t nCount = 0;
+                        GetSafearrayPoints(pRenderer, &pArray, nCount, pointCur);
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandCurvesTo((double*)pArray->pvData, this->m_arPoints.size());
+                            pRenderer->PathCommandCurvesTo (pArray, this->m_arPoints.size());
 						}
-
-						RELEASEARRAY(pArray);
 
 						break;
 					}
@@ -556,32 +608,28 @@ namespace NSPresentationEditor
 						break;
 					}
 				case rtRLineTo:
-					{
-						//  
-						SAFEARRAY* pArray = NULL;
-						GetSafearrayPoints(pRenderer, &pArray, pointCur, TRUE);
+					{                       
+                        double* pArray = NULL;
+                        size_t nCount = 0;
+                        GetSafearrayPoints(pRenderer, &pArray, nCount, pointCur, TRUE);
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandLinesTo((double*)pArray->pvData, this->m_arPoints.size());
+                            pRenderer->PathCommandLinesTo(pArray, this->m_arPoints.size());
 						}
 
-						RELEASEARRAY(pArray);
 						break;
 					}
 				case rtRCurveTo:
-					{
-						SAFEARRAY* pArray = NULL;
-						GetSafearrayPoints(pRenderer, &pArray, pointCur, TRUE);
-
-                        //Gdiplus::PointF oPointNewCur;
+					{                        
+                        double* pArray = NULL;
+                        size_t nCount = 0;
+                        GetSafearrayPoints(pRenderer, &pArray, nCount, pointCur, TRUE);
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandCurvesTo((double*)pArray->pvData, this->m_arPoints.size());
+                            pRenderer->PathCommandCurvesTo(pArray, this->m_arPoints.size());
 						}
-
-						RELEASEARRAY(pArray);
 						break;
 					}
 				case rtAngleEllipseTo:
@@ -774,17 +822,15 @@ namespace NSPresentationEditor
 						break;
 					}
 				case rtQuadrBesier:
-					{
-						//  ...
-						SAFEARRAY* pArray = NULL;
-						GetSafearrayPoints(pRenderer, &pArray, pointCur);
+					{                        
+                        double* pArray = NULL;
+                        size_t nCount = 0;
+                        GetSafearrayPoints(pRenderer, &pArray, nCount, pointCur, TRUE);
 
 						if (NULL != pArray)
 						{
-                            pRenderer->PathCommandLinesTo((double*)pArray->pvData, this->m_arPoints.size());
+                            pRenderer->PathCommandLinesTo(pArray, this->m_arPoints.size());
 						}
-
-						RELEASEARRAY(pArray);
 
 						CheckLastPoint(pRenderer, pointCur);
 						break;

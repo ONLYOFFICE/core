@@ -700,6 +700,18 @@ public:
         DWORD dwRead = 0;
         return NSFile::CFileBinary::ReadFile(pData, nBytesToRead, dwRead) ? S_OK : S_FALSE;
     }
+    HRESULT SetPosition( ULONG64 nPos )
+    {
+        if ((NULL != m_pFile) && nPos <= (ULONG)m_lFileSize)
+        {
+            int res = fseek(m_pFile, 0, SEEK_SET);
+
+            m_lFilePosition = nPos;
+            return 0 == res ? S_OK : S_FALSE;
+        }
+
+        return S_FALSE;
+    }
 /*
     HRESULT OpenOrCreate(CString strFileName)
     {
@@ -833,21 +845,7 @@ public:
         return S_OK;
     }
 
-    HRESULT SetPosition( ULONG64 nPos )
-    {
-        if (m_hFileHandle && nPos <= (ULONG)m_lFileSize)
-        {
-            LARGE_INTEGER nTempPos;
-            nTempPos.QuadPart = nPos;
-            ::SetFilePointer(m_hFileHandle, nTempPos.LowPart, &nTempPos.HighPart, FILE_BEGIN);
-            m_lFilePosition = nPos;
-            return S_OK;
-        }
-        else
-        {
-            return (INVALID_HANDLE_VALUE == m_hFileHandle) ? S_FALSE : S_OK;
-        }
-    }
+
     LONG64  GetPosition()
     {
         return m_lFilePosition;

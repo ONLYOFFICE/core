@@ -4,6 +4,8 @@
 #include "../../ASCHTMLRenderer/ASCSVGWriter.h"
 #include "../../ASCHTMLRenderer/CASCImage.h"
 
+#include "../../DocxFormat/Source/SystemUtility/File.h"
+
 #ifdef BUILD_CONFIG_FULL_VERSION
 
 namespace NSWMFToImageConverter

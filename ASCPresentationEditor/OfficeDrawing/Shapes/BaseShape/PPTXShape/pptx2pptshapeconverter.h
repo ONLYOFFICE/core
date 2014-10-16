@@ -39,8 +39,8 @@ namespace NSGuidesVML
 			}
 			else
 			{
-				m_arPoints[m_arPoints.GetSize() - 1].y = lParam;
-				m_arPointsType[m_arPoints.GetSize() - 1].y = eParType;
+                m_arPoints[m_arPoints.size() - 1].y = lParam;
+                m_arPointsType[m_arPoints.size() - 1].y = eParType;
 			}
 			++m_nCountElementsPoint;
 		}

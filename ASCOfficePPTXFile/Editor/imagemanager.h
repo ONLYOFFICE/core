@@ -301,7 +301,7 @@ namespace NSShapeImageGen
 			_CopyFile(strFileSrc, strFileDst, NULL, NULL);
 		}
 
-		bool CheckImageSimpleCopy(CString& strFileSrc, CImageInfo& oInfo)
+		bool CheckImageSimpleCopy(const CString& strFileSrc, CImageInfo& oInfo)
 		{
 			CFile oFile;
 			HRESULT hr = oFile.OpenFile(strFileSrc);
@@ -342,7 +342,7 @@ namespace NSShapeImageGen
 			}
 			return false;
 		}
-		void SaveImage(CString& strFileSrc, CImageInfo& oInfo, LONG __width, LONG __height)
+		void SaveImage(const CString& strFileSrc, CImageInfo& oInfo, LONG __width, LONG __height)
 		{
 			if (CheckImageSimpleCopy(strFileSrc, oInfo))
 				return;
@@ -431,7 +431,7 @@ namespace NSShapeImageGen
 			return oInfo;
 		}
 
-		CImageInfo GenerateImageID(CString& strFileName, double dWidth, double dHeight)
+		CImageInfo GenerateImageID(const CString& strFileName, double dWidth, double dHeight)
 		{
 			CImageInfo oInfo;
 			std::map<CString, CImageInfo>::iterator pPair = m_mapImagesFile.find(strFileName);

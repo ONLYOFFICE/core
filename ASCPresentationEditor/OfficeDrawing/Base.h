@@ -64,7 +64,7 @@ namespace NSPresentationEditor
 		if ((NULL == pMapDst) || (NULL == pMapSrc))
 			return;
 
-		for (std::map<TKey, TVal>::iterator pPair =  pMapSrc->begin(); pPair !=  pMapSrc->end(); ++pPair)
+        for (std::map<TKey, TVal>::const_iterator pPair =  pMapSrc->begin(); pPair !=  pMapSrc->end(); ++pPair)
 		{
 			TKey key	= pPair->first;
 			TVal value	= pPair->second;

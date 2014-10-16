@@ -8,6 +8,7 @@
 #include <comutil.h>
 #endif
 
+#include <algorithm>
 
 #ifndef _USE_NULLABLE_PROPERTY_
 using namespace NSCommon;
@@ -287,7 +288,7 @@ namespace XmlUtils
 		{
 			if (NULL == m_pData)
 			{
-				m_lSize = max(nSize, 1000);				
+                m_lSize = std::max((int) nSize, 1000);
 				m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
 
 				m_lSizeCur = 0;

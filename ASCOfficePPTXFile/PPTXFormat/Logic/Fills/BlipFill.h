@@ -8,6 +8,7 @@
 #include "Tile.h"
 #include "Stretch.h"
 #include "../Effects/AlphaModFix.h"
+#include "../../../../Common/DocxFormat/Source/SystemUtility/File.h"
 
 namespace PPTX
 {
@@ -316,7 +317,8 @@ namespace PPTX
 										// -------------------
 										if (strTempFile != _T(""))
 										{
-											::DeleteFile(strTempFile);
+                                            CDirectory::DeleteFile(strTempFile);
+                                            //::DeleteFile(strTempFile);
 										}
 										// -------------------
 

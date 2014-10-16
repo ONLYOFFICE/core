@@ -1764,9 +1764,13 @@ namespace NSStrings
 		AVSINLINE void SetText(BSTR& bsText)
 		{
 			ClearNoAttack();
+#ifdef _WIN32
 			size_t nLen = GetStringLen(bsText);
-
-			WriteString(bsText, nLen);
+            WriteString(bsText, nLen);
+#else
+            size_t nLen = bsText.length();
+            WriteString(bsText.c_str(), nLen);
+#endif
 
 			for (size_t i = 0; i < nLen; ++i)
 			{
@@ -1814,7 +1818,7 @@ namespace NSStrings
 		}
 		
 	public:
-		AVSINLINE void WriteString(wchar_t* pString, const size_t& nLen)
+        AVSINLINE void WriteString(const wchar_t* pString, const size_t& nLen)
 		{
 			AddSize(nLen);
             memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));

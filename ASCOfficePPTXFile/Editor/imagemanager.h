@@ -231,7 +231,7 @@ namespace NSShapeImageGen
 			
 			return GenerateImageID(punkImage, max(1.0, width), max(1.0, height));
 		}
-		CImageInfo WriteImage(CString& strFile, double& x, double& y, double& width, double& height)
+        CImageInfo WriteImage(const CString& strFile, double& x, double& y, double& width, double& height)
 		{
 			bool bIsDownload = false;
 			int n1 = strFile.Find(_T("www"));

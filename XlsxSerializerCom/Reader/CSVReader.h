@@ -11,6 +11,7 @@
 #endif
 
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+#include "../../DesktopEditor/common/File.h"
 
 namespace CSVReader
 {

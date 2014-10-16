@@ -155,7 +155,9 @@ public:
 		return S_OK;
 	}
 
-	HRESULT GetBinaryData(LONG lType, SAFEARRAY** ppBinaryArray);
+	//HRESULT GetBinaryData(LONG lType, SAFEARRAY** ppBinaryArray);
+	HRESULT GetBinaryData(LONG lType, BYTE** ppyArray, size_t& szCount);
+
 	NSFontCutter::CFontDstManager* GetNativePicker()
 	{
 		return &m_oPicker;

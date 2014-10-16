@@ -324,10 +324,10 @@ namespace NSBinPptxRW
 		void WriteEmbeddedFonts();
 
 		// serialize ImageManagers
-		LPSAFEARRAY Serialize(NSBinPptxRW::CImageManager2* pManager);
-		LPSAFEARRAY Serialize(NSShapeImageGen::CImageManager* pManager);
+        bool Serialize(NSBinPptxRW::CImageManager2* pManager, BYTE **ppArray, size_t& szCount);
+        bool Serialize(NSShapeImageGen::CImageManager* pManager, BYTE **ppArray, size_t& szCount);
 
-		LPSAFEARRAY GetSafearray();
+        bool GetSafearray(BYTE **ppArray, size_t& szCount);
 	};
 	class CSlideMasterInfo
 	{
@@ -445,7 +445,8 @@ namespace NSBinPptxRW
 		CString GetString2();
 		CString GetString3(LONG len);
 
-		LPSAFEARRAY GetArray(LONG len);
+        //LPSAFEARRAY GetArray(LONG len);
+        bool GetArray(BYTE **pBuffer, LONG len);
 
 		CStringA GetString2A();
 		void SkipRecord();
@@ -457,7 +458,7 @@ namespace NSBinPptxRW
 		BYTE* GetData();
 		BYTE* GetPointer(int nSize);
 	public:
-		void Deserialize(NSBinPptxRW::CImageManager2* pManager, LPSAFEARRAY pArray);
-		void Deserialize(NSShapeImageGen::CImageManager* pManager, LPSAFEARRAY pArray);
+        void Deserialize(NSBinPptxRW::CImageManager2* pManager, BYTE* pData, LONG nSize/*, LPSAFEARRAY pArray*/);
+        void Deserialize(NSShapeImageGen::CImageManager* pManager, BYTE* pData, LONG nSize/*, LPSAFEARRAY pArray*/);
 	};
 }

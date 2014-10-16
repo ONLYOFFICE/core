@@ -730,17 +730,33 @@ namespace NSBinPptxRW
 	}
 
 	// serialize ImageManagers
-	LPSAFEARRAY CBinaryFileWriter::Serialize(NSBinPptxRW::CImageManager2* pManager)
+    bool CBinaryFileWriter::Serialize(NSBinPptxRW::CImageManager2* pManager, BYTE **ppArray, size_t& szCount)
 	{
 		pManager->Serialize(this);
-		return GetSafearray();
+        return GetSafearray(ppArray, szCount);
 	}
-	LPSAFEARRAY CBinaryFileWriter::Serialize(NSShapeImageGen::CImageManager* pManager)
+    bool CBinaryFileWriter::Serialize(NSShapeImageGen::CImageManager* pManager, BYTE **ppArray, size_t& szCount)
 	{
 		pManager->Serialize(this);
-		return GetSafearray();
+        return GetSafearray(ppArray, szCount);
 	}
 
+    bool CBinaryFileWriter::GetSafearray(BYTE **ppArray, size_t& szCount)
+    {
+        if (NULL == ppArray)
+            return false;
+
+        ULONG lBinarySize = this->GetPosition();
+        if (0 == lBinarySize)
+            return false;
+
+        *ppArray = new BYTE [lBinarySize];
+        szCount = lBinarySize;
+
+        memcpy(*ppArray, this->GetBuffer(), lBinarySize);
+        return true;
+    }
+    /*
 	LPSAFEARRAY CBinaryFileWriter::GetSafearray()
 	{			
 		ULONG lBinarySize = this->GetPosition();
@@ -755,6 +771,7 @@ namespace NSBinPptxRW
 
 		return pArray;
 	}
+    */
 	CSlideMasterInfo::CSlideMasterInfo() : m_arLayouts()
 	{
 		m_lThemeIndex = -1;				
@@ -1189,23 +1206,40 @@ namespace NSBinPptxRW
 		return res;			
 	}
 
-	LPSAFEARRAY CBinaryFileReader::GetArray(LONG len)
+    bool CBinaryFileReader::GetArray(BYTE **pBuffer, LONG len)
 	{
 		if (0 == len)
-			return NULL;
+            return false;
 		if (m_lPos + len > m_lSize)
-			return NULL;
+            return false;
 
-		SAFEARRAY* pArray = SafeArrayCreateVector(VT_UI1, (ULONG)len);
+        *pBuffer = new BYTE [len];
 
-		BYTE* pDataD = (BYTE*)pArray->pvData;
-		memcpy(pDataD, m_pDataCur, len);
+        memcpy(pBuffer, m_pDataCur, len);
 
 		m_lPos += len;
 		m_pDataCur += len;
 
-		return pArray;
+        return true;
 	}
+    /*LPSAFEARRAY CBinaryFileReader::GetArray(LONG len)
+    {
+        if (0 == len)
+            return NULL;
+        if (m_lPos + len > m_lSize)
+            return NULL;
+
+        SAFEARRAY* pArray = SafeArrayCreateVector(VT_UI1, (ULONG)len);
+
+        BYTE* pDataD = (BYTE*)pArray->pvData;
+        memcpy(pDataD, m_pDataCur, len);
+
+        m_lPos += len;
+        m_pDataCur += len;
+
+        return pArray;
+    }
+    */
 
 	CStringA CBinaryFileReader::GetString2A()
 	{
@@ -1244,17 +1278,19 @@ namespace NSBinPptxRW
 		return res;
 	}
 
-	void CBinaryFileReader::Deserialize(NSBinPptxRW::CImageManager2* pManager, LPSAFEARRAY pArray)
+    void CBinaryFileReader::Deserialize(NSBinPptxRW::CImageManager2* pManager, BYTE* pData, LONG nSize/*, LPSAFEARRAY pArray*/)
 	{
-		BYTE* pData = (BYTE*)pArray->pvData;
-		this->Init(pData, 0, pArray->rgsabound[0].cElements);
+        //BYTE* pData = (BYTE*)pArray->pvData;
+        //this->Init(pData, 0, pArray->rgsabound[0].cElements);
+        this->Init(pData, 0, nSize);
 
 		pManager->Deserialize(this);
 	}
-	void CBinaryFileReader::Deserialize(NSShapeImageGen::CImageManager* pManager, LPSAFEARRAY pArray)
+    void CBinaryFileReader::Deserialize(NSShapeImageGen::CImageManager* pManager, BYTE* pData, LONG nSize/*, LPSAFEARRAY pArray*/)
 	{
-		BYTE* pData = (BYTE*)pArray->pvData;
-		this->Init(pData, 0, pArray->rgsabound[0].cElements);
+        //BYTE* pData = (BYTE*)pArray->pvData;
+        //this->Init(pData, 0, pArray->rgsabound[0].cElements);
+        this->Init(pData, 0, nSize);
 
 		pManager->Deserialize(this);
 	}

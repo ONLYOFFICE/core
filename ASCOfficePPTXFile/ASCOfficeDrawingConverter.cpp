@@ -3808,6 +3808,22 @@ HRESULT CDrawingConverter::SetFontPicker(COfficeFontPicker* pFontPicker)
 	m_pBinaryWriter->m_pCommon->CreateFontPicker(pFontPicker);
 	return S_OK;
 }
+HRESULT CDrawingConverter::SetAdditionalParam(const CString& ParamName, BYTE *pArray, size_t szCount)
+{
+    CString name = (CString)ParamName;
+    if (name == _T("SerializeImageManager"))
+    {
+        NSBinPptxRW::CBinaryFileReader oReader;
+        oReader.Deserialize(m_pBinaryWriter->m_pCommon->m_pImageManager, pArray, szCount);
+    }
+    else if (name == _T("SerializeImageManager2"))
+    {
+        NSBinPptxRW::CBinaryFileReader oReader;
+        oReader.Deserialize(m_pImageManager, pArray, szCount);
+    }
+    return S_OK;
+
+}
 HRESULT CDrawingConverter::SetAdditionalParam(const CString& ParamName, VARIANT ParamValue)
 {
 	CString name = (CString)ParamName;
@@ -3827,40 +3843,70 @@ HRESULT CDrawingConverter::SetAdditionalParam(const CString& ParamName, VARIANT 
 	{
 		m_bIsUseConvertion2007 = (ParamValue.boolVal == VARIANT_TRUE) ? true : false;
 	}
-	else if (name == _T("SerializeImageManager"))
+    else if (name == _T("SerializeImageManager"))
 	{
-		NSBinPptxRW::CBinaryFileReader oReader;
-		oReader.Deserialize(m_pBinaryWriter->m_pCommon->m_pImageManager, ParamValue.parray);
+        // moved to CDrawingConverter::SetAdditionalParam(const CString& ParamName, BYTE **pArray, size_t& szCount)
+        return S_FALSE;
+        //NSBinPptxRW::CBinaryFileReader oReader;
+        //oReader.Deserialize(m_pBinaryWriter->m_pCommon->m_pImageManager, ParamValue.parray);
 	}
 	else if (name == _T("SerializeImageManager2"))
 	{
-		NSBinPptxRW::CBinaryFileReader oReader;
-		oReader.Deserialize(m_pImageManager, ParamValue.parray);
-	}
+        // moved to CDrawingConverter::SetAdditionalParam(const CString& ParamName, BYTE **pArray, size_t& szCount)
+        return S_FALSE;
+        //NSBinPptxRW::CBinaryFileReader oReader;
+        //oReader.Deserialize(m_pImageManager, ParamValue.parray);
+    }
 	else if (name == _T("DocumentChartsCount") && ParamValue.vt == VT_I4)
 	{
 		m_pReader->m_lChartNumber = ParamValue.lVal + 1;
 	}		
 	return S_OK;
 }
+HRESULT CDrawingConverter::GetAdditionalParam(const CString& ParamName, BYTE **pArray, size_t& szCount)
+{
+    CString name = (CString)ParamName;
+    if (name == _T("SerializeImageManager"))
+    {
+        NSBinPptxRW::CBinaryFileWriter oWriter;
+
+        return oWriter.Serialize(m_pBinaryWriter->m_pCommon->m_pImageManager, pArray, szCount) ? S_OK : S_FALSE;
+    }
+    else if (name == _T("SerializeImageManager2"))
+    {
+        NSBinPptxRW::CBinaryFileWriter oWriter;
+
+        return oWriter.Serialize(m_pImageManager, pArray, szCount) ? S_OK : S_FALSE;
+    }
+    return S_OK;
+}
 HRESULT CDrawingConverter::GetAdditionalParam(const CString& ParamName, VARIANT* ParamValue)
 {
 	CString name = (CString)ParamName;
-	if (name == _T("SerializeImageManager"))
+
+    if (name == _T("SerializeImageManager"))
 	{
+        // moved to GetAdditionalParam(const CString& ParamName, BYTE **pArray, size_t& szCount)
+        return S_FALSE;
+        /*
 		NSBinPptxRW::CBinaryFileWriter oWriter;
 
 		ParamValue->vt = VT_ARRAY;
 		ParamValue->parray = oWriter.Serialize(m_pBinaryWriter->m_pCommon->m_pImageManager);
+        */
 	}
 	else if (name == _T("SerializeImageManager2"))
 	{
+        // moved to GetAdditionalParam(const CString& ParamName, BYTE **pArray, size_t& szCount)
+        return S_FALSE;
+        /*
 		NSBinPptxRW::CBinaryFileWriter oWriter;
 
 		ParamValue->vt = VT_ARRAY;
 		ParamValue->parray = oWriter.Serialize(m_pImageManager);
+        */
 	}
-	else if (name == _T("DocumentChartsCount"))
+    else if (name == _T("DocumentChartsCount"))
 	{
 		ParamValue->vt = VT_I4;
 		ParamValue->lVal = m_pReader->m_lChartNumber;
@@ -3868,7 +3914,11 @@ HRESULT CDrawingConverter::GetAdditionalParam(const CString& ParamName, VARIANT*
 	else if (name == _T("ContentTypes"))
 	{
 		ParamValue->vt = VT_BSTR;
+#ifdef _WIN32
 		ParamValue->bstrVal = m_pReader->m_strContentTypes.AllocSysString();
+#else
+        ParamValue->bstrVal = m_pReader->m_strContentTypes;
+#endif
 	}
 	return S_OK;
 }

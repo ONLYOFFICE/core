@@ -4,7 +4,7 @@
 #include "../../ASCHTMLRenderer/ASCSVGWriter.h"
 #include "../../ASCHTMLRenderer/CASCImage.h"
 
-#include "../../DocxFormat/Source/SystemUtility/File.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 
 #include <algorithm>
 
@@ -156,7 +156,7 @@ namespace NSWMFToImageConverter
 				oASCImage.get_Width(&_lw);
 				oASCImage.get_Height(&_lh);
 
-                LONG lMax = std::max (_lw, _lh);
+                LONG lMax = (std::max) (_lw, _lh);
 				double dKoef = 1000.0 / lMax;
 				
 				dW = (double)dKoef * _lw * 100;

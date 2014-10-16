@@ -813,7 +813,7 @@ namespace NSPresentationEditor
 			else if (IsTexture())
 			{
                 //BSTR bstrTexturePath = TexturePath.AllocSysString();
-                pRenderer->put_BrushTexturePath(TexturePath);
+                pRenderer->put_BrushTexturePath(string2std_string(TexturePath));
                 //SysFreeString(bstrTexturePath);
 				pRenderer->put_BrushTextureMode(TextureMode);
 				pRenderer->put_BrushTextureAlpha(TextureAlpha);

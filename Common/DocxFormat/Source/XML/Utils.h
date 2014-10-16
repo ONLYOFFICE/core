@@ -288,7 +288,7 @@ namespace XmlUtils
 		{
 			if (NULL == m_pData)
 			{
-                m_lSize = std::max((int) nSize, 1000);
+                m_lSize = (std::max)((int) nSize, 1000);
 				m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
 
 				m_lSizeCur = 0;

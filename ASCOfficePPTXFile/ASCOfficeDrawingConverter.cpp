@@ -725,12 +725,14 @@ HRESULT CElementProps::SetProperty(LONG lId, VARIANT prop)
 	if (!bIsSupportProp)
 		return S_FALSE;
 
+#ifdef _WIN32
 	std::map<LONG, VARIANT>::iterator pPair = m_Properties.find(lId);
 	if (m_Properties.end() != pPair)
 	{
 		if (pPair->second.vt == VT_BSTR)
 			SysFreeString(pPair->second.bstrVal);
 	}
+#endif
 
 	m_Properties.insert(std::pair<LONG, VARIANT>(lId, var));
 	return S_OK;

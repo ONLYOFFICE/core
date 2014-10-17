@@ -6,6 +6,8 @@
 #include <fstream>
 #include "Array.h"
 #include "errno.h"
+#include "Base64.h"
+
 #if defined(WIN32) || defined(_WIN32_WCE)
 #include <wchar.h>
 #endif
@@ -603,6 +605,41 @@ namespace NSFile
 				if(Remove(strSrc))
 					return true;
 			return false;
+		}
+	};
+
+	class CBase64Converter
+	{
+	public:
+		static bool Encode(BYTE* pDataSrc, int nLenSrc, char*& pDataDst, int& nLenDst, DWORD dwFlags = NSBase64::B64_BASE64_FLAG_NONE)
+		{
+			if (!pDataSrc || nLenSrc < 1)
+				return false;
+
+			nLenDst = NSBase64::Base64EncodeGetRequiredLength(nLenSrc, dwFlags);
+			pDataDst = new char[nLenDst];
+
+			if (FALSE == NSBase64::Base64Encode(pDataSrc, nLenSrc, (BYTE*)pDataDst, &nLenDst, dwFlags))
+			{
+				RELEASEARRAYOBJECTS(pDataDst);
+				return false;
+			}
+			return true;
+		}
+		static bool Decode(char* pDataSrc, int nLenSrc, BYTE*& pDataDst, int& nLenDst)
+		{
+			if (!pDataSrc || nLenSrc < 1)
+				return false;
+
+			nLenDst = NSBase64::Base64DecodeGetRequiredLength(nLenSrc);
+			pDataDst = new BYTE[nLenDst];
+
+			if (FALSE == NSBase64::Base64Decode(pDataSrc, nLenSrc, pDataDst, &nLenDst))
+			{
+				RELEASEARRAYOBJECTS(pDataDst);
+				return false;
+			}
+			return true;
 		}
 	};
 }

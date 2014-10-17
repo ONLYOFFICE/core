@@ -518,17 +518,17 @@ const std::wstring xti_indexes2sheet_name(const short itabFirst, const short ita
 	}
 	return escaped_prefix;
 }
-//
-//const std::wstring make3dRef(const unsigned __int16 ixti, const std::wstring cell_ref, std::vector<std::wstring>& xti_parsed)
-//{
-//	std::wstring sheets_prefix = xti2sheets(ixti, xti_parsed);
-//	if(L"#REF!" == sheets_prefix)
-//	{
-//		return sheets_prefix;
-//	}
-//	return sheets_prefix + L'!' + cell_ref;
-//}
-//
+
+const std::wstring make3dRef(const unsigned __int16 ixti, const std::wstring cell_ref, std::vector<std::wstring>& xti_parsed)
+{
+	std::wstring sheets_prefix = xti2sheets(ixti, xti_parsed);
+	if(L"#REF!" == sheets_prefix)
+	{
+		return sheets_prefix;
+	}
+	return sheets_prefix + L'!' + cell_ref;
+}
+
 //
 //const std::wstring  sheet_name2tabid(const std::wstring sheet_name, MSXML2::IXMLDOMDocumentPtr doc)
 //{

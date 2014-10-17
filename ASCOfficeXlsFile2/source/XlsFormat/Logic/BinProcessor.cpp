@@ -14,6 +14,10 @@ BinProcessor::BinProcessor(BiffStructurePtr & parent, GlobalWorkbookInfoPtr glob
 	global_info_(global_info)
 {
 }
+BinProcessor::BinProcessor( GlobalWorkbookInfoPtr global_info)
+:	global_info_(global_info)
+{
+}
 
 
 BinProcessor::~BinProcessor()
@@ -52,6 +56,12 @@ BinReaderProcessor::BinReaderProcessor(CFStreamCacheReader& reader, BiffStructur
 {
 }
 
+BinReaderProcessor::BinReaderProcessor(CFStreamCacheReader& reader, const bool is_mandatory)
+:	reader_(reader),
+	BinProcessor(reader.getGlobalWorkbookInfo()),
+	is_mandatory_(is_mandatory)
+{
+}
 
 const bool BinReaderProcessor::optional(BaseObject& object)
 {

@@ -2,8 +2,8 @@
 
 #include "CFRecordType.h"
 #include "BinSmartPointers.h"
-#include "Logic\GlobalWorkbookInfo.h"
-#include "Logic/Biff_structures/ODRAW/OfficeArtRecordHeader.h"
+#include "../Logic/GlobalWorkbookInfo.h"
+#include "../Logic/Biff_structures/ODRAW/OfficeArtRecordHeader.h"
 
 namespace XLS
 {;

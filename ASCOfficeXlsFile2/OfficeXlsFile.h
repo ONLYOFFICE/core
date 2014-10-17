@@ -5,6 +5,10 @@
 
 #include "../Common/OfficeFileTemplate.h"
 
+#if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
+	#import "../Redist/ASCOfficeUtils.dll" rename_namespace("ASCOfficeUtils"), raw_interfaces_only
+#endif
+
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
 #endif
@@ -30,8 +34,6 @@ __interface IOfficeXlsFile : IAVSOfficeFileTemplate
 ]
 __interface _IOfficeXlsFileEvents
 {
-	[id(1), helpstring("method OnProgress")] HRESULT OnProgress([in] DOUBLE progress);
-	[id(2), helpstring("method OnComplete")] HRESULT OnComplete([in] LONG status);
 };
 
 
@@ -39,7 +41,7 @@ __interface _IOfficeXlsFileEvents
 
 [
 	coclass,
-	default(IOfficeXlsFile, _IOfficeXlsFileEvents),
+	default(IOfficeXlsFile, _IAVSOfficeFileTemplateEvents),
 	threading(apartment),
 	event_source(com),
 	vi_progid("ASCOfficeXlsFile2.OfficeXlsFile"),
@@ -52,11 +54,10 @@ class ATL_NO_VTABLE COfficeXlsFile :
 	public IOfficeXlsFile
 {
 public:
-	COfficeXlsFile()
-	{
-	}
+	COfficeXlsFile();
 
-	__event __interface _IOfficeXlsFileEvents;
+	__event __interface _IAVSOfficeFileTemplateEvents;
+	__event __interface _IAVSOfficeFileTemplateEvents2;
 
 
 	DECLARE_PROTECT_FINAL_CONSTRUCT()
@@ -73,6 +74,20 @@ public:
 public:
     STDMETHOD(LoadFromFile)	(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions);
 	STDMETHOD(SaveToFile)	(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions);
+   
+#if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
+	ATL::CComPtr< ASCOfficeUtils::IOfficeUtils > office_utils_;
+#endif
+    
+    bool initialized();
+   
+	HRESULT LoadFromFileImpl(const std::wstring & srcFileName,
+        const std::wstring & dstTempPath,
+        const std::wstring & dstPath);
 
+protected:
+
+	static void OnProgressFunc (LPVOID lpParam, long nID, long nPercent);
+	static void OnProgressExFunc (LPVOID lpParam, long nID, long nPercent, short* pStop);
 };
 

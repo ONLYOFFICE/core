@@ -2,7 +2,9 @@
 
 #include <string>
 #include <map>
-
+#include <vector>
+#include <boost/shared_ptr.hpp>
+#include <boost/smart_ptr/shared_array.hpp>
 class Document;
 typedef boost::shared_ptr<Document> DocumentPtr;
 

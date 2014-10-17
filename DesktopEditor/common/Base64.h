@@ -45,7 +45,7 @@ namespace NSBase64
 		return nSrcLen;
 	}
 
-	inline BOOL Base64Encode(const BYTE *pbSrcData, int nSrcLen, BYTE* szDest, int *pnDestLen, DWORD dwFlags = B64_BASE64_FLAG_NONE)
+	inline INT Base64Encode(const BYTE *pbSrcData, int nSrcLen, BYTE* szDest, int *pnDestLen, DWORD dwFlags = B64_BASE64_FLAG_NONE)
 	{
 		static const char s_chBase64EncodingTable[64] = {
 			'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
@@ -71,7 +71,7 @@ namespace NSBase64
 
 			for (int j=0; j<nLen3; j++)
 			{
-				DWORD dwCurr(0);
+				UINT dwCurr(0);
 				for (int n=0; n<3; n++)
 				{
 					dwCurr |= *pbSrcData++;
@@ -103,7 +103,7 @@ namespace NSBase64
 		nLen2 = (nSrcLen%3) ? (nSrcLen%3 + 1) : 0;
 		if (nLen2)
 		{
-			DWORD dwCurr(0);
+			UINT dwCurr(0);
 			for (int n=0; n<3; n++)
 			{
 				if (n<(nSrcLen%3))
@@ -151,7 +151,7 @@ namespace NSBase64
 		return -1;
 	}
 
-	inline BOOL Base64Decode(const char* szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen)
+	inline INT Base64Decode(const char* szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen)
 	{
 		// walk the source buffer
 		// each four character sequence is converted to 3 bytes
@@ -164,7 +164,7 @@ namespace NSBase64
 		const char* szSrcEnd = szSrc + nSrcLen;
 		int nWritten = 0;
 		
-		BOOL bOverflow = (pbDest == NULL) ? TRUE : FALSE;
+		INT bOverflow = (pbDest == NULL) ? TRUE : FALSE;
 		
 		while (szSrc < szSrcEnd &&(*szSrc) != 0)
 		{

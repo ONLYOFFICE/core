@@ -196,33 +196,34 @@ namespace NSBinPptxRW
 
 	void CImageManager2::SaveImageAsPng(const CString& strFileSrc, const CString& strFileDst)
 	{
-		NSFile::CFileBinary oFile;
-		
-		if (!oFile.OpenFile(std::wstring(strFileSrc.GetString())))
+		NSFile::CFileBinary oFileSrc, oFileDst;
+		if (!oFileSrc.OpenFile(std::wstring(strFileSrc.GetString())) || !oFileDst.CreateFileW(std::wstring(strFileDst.GetString())))
 			return;
 
 		CxImage img;
 
-		if( img.Decode( oFile.GetFileNative(), 0 ) )
+		if( img.Decode( oFileSrc.GetFileNative(), 0 ) )
 		{
-			img.Encode( oFile.GetFileNative(), _CXIMAGE_FORMAT_PNG );
+			img.Encode( oFileDst.GetFileNative(), _CXIMAGE_FORMAT_PNG );
 		}
-		oFile.CloseFile();
+		oFileSrc.CloseFile();
+		oFileDst.CloseFile();
 	}
 
 	void CImageManager2::SaveImageAsJPG(const CString& strFileSrc, const CString& strFileDst)
 	{
-		NSFile::CFileBinary oFile;
-		if (!oFile.OpenFile(std::wstring(strFileSrc.GetString())))
+		NSFile::CFileBinary oFileSrc, oFileDst;
+		if (!oFileSrc.OpenFile(std::wstring(strFileSrc.GetString())) || !oFileDst.CreateFileW(std::wstring(strFileDst.GetString())))
 			return;
 
 		CxImage img;
 
-		if( img.Decode( oFile.GetFileNative(), 0 ) )
+		if( img.Decode( oFileSrc.GetFileNative(), 0 ) )
 		{
-			img.Encode( oFile.GetFileNative(), _CXIMAGE_FORMAT_JPG );
+			img.Encode( oFileDst.GetFileNative(), _CXIMAGE_FORMAT_JPG );
 		}
-		oFile.CloseFile();
+		oFileSrc.CloseFile();
+		oFileDst.CloseFile();
 	}
 
 	bool CImageManager2::IsNeedDownload(const CString& strFile)

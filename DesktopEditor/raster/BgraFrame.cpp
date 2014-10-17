@@ -279,7 +279,7 @@ void CBgraFrame::CxImageToMediaFrame( CxImage& img )
 			for( DWORD i = 0; i < 256; ++i )
 			{
 				DWORD a = (i * 255 + nMaxAlpha / 2) / nMaxAlpha;
-				table[i] = (BYTE)min(a, 255);
+                table[i] = (a > 255) ? 255 : a;
 			}
 
 			BYTE* src = pAlpha;

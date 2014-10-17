@@ -3203,8 +3203,9 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 	//if (in_list, but not in paragraph)
 	odt_context->set_no_list();
 
-	bool styled_table	= false;
-	bool in_frame		= false;
+	bool styled_table		= false;
+	bool in_frame			= false;
+	int  in_frame_anchor	= odf::anchor_type::Paragraph;
 	
 	if (oox_table->m_oTableProperties && (oox_table->m_oTableProperties->m_oTblStyle.IsInit() && oox_table->m_oTableProperties->m_oTblStyle->m_sVal.IsInit()))
 	{//настройка предустановленного стиля
@@ -3227,11 +3228,12 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 		}
 		if (oox_table->m_oTableProperties->m_oTblpPr->m_oTblpY.IsInit())
 		{
+			in_frame = true;
 			if (oox_table->m_oTableProperties->m_oTblpPr->m_oVertAnchor.IsInit() && 
 				oox_table->m_oTableProperties->m_oTblpPr->m_oVertAnchor->GetValue() == SimpleTypes::vanchorText)
-				in_frame = false;
-			else 
-				in_frame = true;
+			{
+				//in_frame_anchor	= odf::anchor_type::Char;
+			}
 		}
 	}
 
@@ -3254,7 +3256,7 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 
 				odt_context->drawing_context()->set_drawings_rect(x, y, width, height);	
 				
-				odt_context->drawing_context()->set_anchor(odf::anchor_type::Paragraph); 
+				odt_context->drawing_context()->set_anchor(in_frame_anchor); 
 				odt_context->drawing_context()->set_wrap_style(odf::style_wrap::Dynamic);
 
 				if (oox_table->m_oTableProperties->m_oTblpPr->m_oVertAnchor.IsInit())
@@ -3276,15 +3278,22 @@ void DocxConverter::convert(OOX::Logic::CTbl *oox_table)
 
 				if (oox_table->m_oTableProperties->m_oTblpPr->m_oRightFromText.IsInit())
 				{
-					odt_context->drawing_context()->set_horizontal_pos(oox_table->m_oTableProperties->m_oTblpPr->m_oRightFromText->ToPoints());
+					if (!x) //x = *x + oox_table->m_oTableProperties->m_oTblpPr->m_oRightFromText->ToPoints();
+						x = oox_table->m_oTableProperties->m_oTblpPr->m_oRightFromText->ToPoints();
+
+					odt_context->drawing_context()->set_horizontal_pos(*x);
 				}
 				if (oox_table->m_oTableProperties->m_oTblpPr->m_oTopFromText.IsInit())
 				{
-					odt_context->drawing_context()->set_vertical_pos(oox_table->m_oTableProperties->m_oTblpPr->m_oTopFromText->ToPoints());
+					if (!y) //y = *y + oox_table->m_oTableProperties->m_oTblpPr->m_oTopFromText->ToPoints();
+						y = oox_table->m_oTableProperties->m_oTblpPr->m_oTopFromText->ToPoints();
+					
+					odt_context->drawing_context()->set_vertical_pos(*y);
 				}
 				odt_context->drawing_context()->start_drawing();	
 
 				odt_context->drawing_context()->start_text_box();
+					odt_context->drawing_context()->set_text_box_min_size(0, 1.);
 					odt_context->drawing_context()->set_z_order(0x7fffffff-1);
 					odt_context->drawing_context()->set_text_box_parent_style(L"Frame");
 					odt_context->drawing_context()->set_name(L"TableFrame");

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BaseObject.h"
-#include "Logic\BinProcessor.h"
+#include "BinProcessor.h"
 
 namespace XLS
 {;

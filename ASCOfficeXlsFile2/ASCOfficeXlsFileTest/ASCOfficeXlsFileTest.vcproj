@@ -2,9 +2,10 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="ASCOfficeXlsFile2"
-	ProjectGUID="{4260FEDF-E1DA-447F-991B-62F17DF5533E}"
-	Keyword="AtlProj"
+	Name="ASCOfficeXlsFileTest"
+	ProjectGUID="{C2882DDD-07E6-4314-AD4B-48F43F38D722}"
+	RootNamespace="ASCOfficeOdfFileTest"
+	Keyword="Win32Proj"
 	>
 	<Platforms>
 		<Platform
@@ -16,11 +17,9 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="2"
-			UseOfATL="2"
-			ATLMinimizesCRunTimeLibraryUsage="false"
+			OutputDirectory="$(SolutionDir)Debug"
+			IntermediateDirectory="$(SolutionDir)$(ConfigurationName)/$(ProjectName)"
+			ConfigurationType="1"
 			CharacterSet="1"
 			>
 			<Tool
@@ -37,22 +36,11 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="_DEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/ASCOfficeXlsFile2.tlb"
-				HeaderFileName="ASCOfficeXlsFile2.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="ASCOfficeXlsFile2_i.c"
-				ProxyFileName="ASCOfficeXlsFile2_p.c"
-				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="XlsFormat; source/XlsFormat"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;STANDALONE_USE=1"
+				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -66,21 +54,16 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="_DEBUG"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				RegisterOutput="true"
-				IgnoreImportLibrary="true"
+				AdditionalDependencies="kernel32.lib $(NoInherit)"
 				LinkIncremental="2"
-				MergedIDLBaseFileName="_ASCOfficeXlsFile2.idl"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				TargetMachine="1"
 			/>
 			<Tool
@@ -110,12 +93,11 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
-			ConfigurationType="2"
-			UseOfATL="2"
-			ATLMinimizesCRunTimeLibraryUsage="false"
+			OutputDirectory="$(SolutionDir)bin/Release"
+			IntermediateDirectory="$(SolutionDir)output/$(ConfigurationName)/$(ProjectName)"
+			ConfigurationType="1"
 			CharacterSet="1"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -131,21 +113,10 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				PreprocessorDefinitions="NDEBUG"
-				MkTypLibCompatible="false"
-				TargetEnvironment="1"
-				GenerateStublessProxies="true"
-				TypeLibraryName="$(IntDir)/ASCOfficeXlsFile2.tlb"
-				HeaderFileName="ASCOfficeXlsFile2.h"
-				DLLDataFileName=""
-				InterfaceIdentifierFileName="ASCOfficeXlsFile2_i.c"
-				ProxyFileName="ASCOfficeXlsFile2_p.c"
-				ValidateParameters="false"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="2"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;STANDALONE_USE=0"
+				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -157,21 +128,16 @@
 			/>
 			<Tool
 				Name="VCResourceCompilerTool"
-				PreprocessorDefinitions="NDEBUG"
-				Culture="1033"
-				AdditionalIncludeDirectories="$(IntDir)"
 			/>
 			<Tool
 				Name="VCPreLinkEventTool"
 			/>
 			<Tool
 				Name="VCLinkerTool"
-				RegisterOutput="true"
-				IgnoreImportLibrary="true"
+				AdditionalDependencies="kernel32.lib $(NoInherit)"
 				LinkIncremental="1"
-				MergedIDLBaseFileName="_ASCOfficeXlsFile2.idl"
 				GenerateDebugInformation="true"
-				SubSystem="2"
+				SubSystem="1"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
 				TargetMachine="1"
@@ -211,15 +177,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\ASCOfficeXlsFile2.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\source\ConvertXls2Xlsx.cpp"
-				>
-			</File>
-			<File
-				RelativePath=".\OfficeXlsFile.cpp"
+				RelativePath=".\ASCOfficeXlsFileTest.cpp"
 				>
 			</File>
 			<File
@@ -249,14 +207,6 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\OfficeXlsFile.h"
-				>
-			</File>
-			<File
-				RelativePath=".\Resource.h"
-				>
-			</File>
-			<File
 				RelativePath=".\stdafx.h"
 				>
 			</File>
@@ -266,15 +216,11 @@
 			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
 			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
 			>
-			<File
-				RelativePath=".\ASCOfficeXlsFile2.rc"
-				>
-			</File>
-			<File
-				RelativePath=".\ASCOfficeXlsFile2.rgs"
-				>
-			</File>
 		</Filter>
+		<File
+			RelativePath=".\ReadMe.txt"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

@@ -224,7 +224,7 @@ const std::string guid2str(const GUID guid)
 
 const bool bstr2guid(const std::wstring & guid_str, GUID& guid)
 {
-	HRESULT res = IIDFromString(static_cast<LPCOLESTR>(guid_str.c_str()), &guid);
+	HRESULT res = IIDFromString((LPWSTR)(guid_str.c_str()), &guid);
 	if(S_OK != res)
 	{
 		switch(res)

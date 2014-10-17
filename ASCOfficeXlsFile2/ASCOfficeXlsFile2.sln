@@ -8,6 +8,11 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeXlsFile2", "ASCOff
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "XlsFormat", "source\XlsFormat.vcproj", "{77DDC8D7-5B12-4FF2-9629-26AEBCA8436D}"
 EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeXlsFileTest", "ASCOfficeXlsFileTest\ASCOfficeXlsFileTest.vcproj", "{C2882DDD-07E6-4314-AD4B-48F43F38D722}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4260FEDF-E1DA-447F-991B-62F17DF5533E} = {4260FEDF-E1DA-447F-991B-62F17DF5533E}
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Win32 = Debug|Win32
@@ -22,6 +27,10 @@ Global
 		{77DDC8D7-5B12-4FF2-9629-26AEBCA8436D}.Debug|Win32.Build.0 = Debug|Win32
 		{77DDC8D7-5B12-4FF2-9629-26AEBCA8436D}.Release|Win32.ActiveCfg = Release|Win32
 		{77DDC8D7-5B12-4FF2-9629-26AEBCA8436D}.Release|Win32.Build.0 = Release|Win32
+		{C2882DDD-07E6-4314-AD4B-48F43F38D722}.Debug|Win32.ActiveCfg = Debug|Win32
+		{C2882DDD-07E6-4314-AD4B-48F43F38D722}.Debug|Win32.Build.0 = Debug|Win32
+		{C2882DDD-07E6-4314-AD4B-48F43F38D722}.Release|Win32.ActiveCfg = Release|Win32
+		{C2882DDD-07E6-4314-AD4B-48F43F38D722}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

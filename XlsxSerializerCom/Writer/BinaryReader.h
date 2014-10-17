@@ -2826,7 +2826,7 @@ namespace BinXlsxRW {
 				res = Read1(length, &BinaryOtherTableReader::ReadMediaContent, this, poResult);
 			else if(c_oSer_OtherType::Theme == type)
 			{
-				CString sThemePath;sThemePath.Format(_T("%s\\%s"), m_oSaveParams.sThemePath, OOX::FileTypes::Theme.DefaultFileName());
+				CString sThemePath;sThemePath.Format(_T("%s\\%s"), m_oSaveParams.sThemePath, OOX::FileTypes::Theme.DefaultFileName().GetPath());
 				long nCurPos = m_oBufferedStream.GetPos();
 				m_pOfficeDrawingConverter->SaveThemeXml(nCurPos, length, sThemePath);
 				m_oBufferedStream.Seek(nCurPos + length);

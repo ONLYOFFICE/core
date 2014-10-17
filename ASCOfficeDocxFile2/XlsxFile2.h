@@ -69,8 +69,8 @@ public:
 		if (BinXlsxRW::c_oFileTypes::CSV != fileType)
 		{
 			CString sXlDir;sXlDir.Format(_T("%s\\xl"), sDstPath);
-			CString sThemeDir;sThemeDir.Format(_T("%s\\xl\\%s"), sDstPath, OOX::FileTypes::Theme.DefaultDirectory());
-			CString sThemePath;sThemePath.Format(_T("%s\\%s"), sThemeDir, OOX::FileTypes::Theme.DefaultFileName());
+			CString sThemeDir;sThemeDir.Format(_T("%s\\xl\\%s"), sDstPath, OOX::FileTypes::Theme.DefaultDirectory().GetPath());
+			CString sThemePath;sThemePath.Format(_T("%s\\%s"), sThemeDir, OOX::FileTypes::Theme.DefaultFileName().GetPath());
 			CString sThemeRelsPath;sThemeRelsPath.Format(_T("%s\\_rels"), sThemeDir);
 
 			NSDirectory::CreateDirectory(string2std_string(sXlDir));

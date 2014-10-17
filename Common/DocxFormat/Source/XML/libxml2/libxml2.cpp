@@ -8,48 +8,23 @@ namespace XmlUtils
 {
 	CString CXmlNodeBase::GetXml()
 	{
-		CString sXml = L"<";
-		sXml += m_sName;
-		
-		std::map<CStringA, CStringA>::iterator p;
-		for (p = m_attributes.begin(); p != m_attributes.end(); ++p)
-		{
-			sXml += L" ";
-			sXml += std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), TRUE));
-			sXml += L"=\"";
-			sXml += std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), TRUE));
-			sXml += L"\"";
-		}
-
-		sXml += L">";
-
-		int nCount = m_nodes.size();
-		for (int i = 0; i < nCount; ++i)
-		{
-			sXml += m_nodes[i]->GetXml();
-		}
-
-		sXml += m_sText;
-
-		sXml += L"</";
-		sXml += m_sName;
-		sXml += L">";
-
-		return sXml;
+		CStringWriter oWriter;
+		GetXml(oWriter);
+		return oWriter.GetData();
 	}
 
 	void CXmlNodeBase::GetXml(CStringWriter& oWriter)
 	{
 		oWriter.WriteString(L"<", 1);
-		oWriter.WriteString(m_sName);
+		oWriter.WriteEncodeXmlString(m_sName.GetString());
 		
 		std::map<CStringA, CStringA>::iterator p;
 		for (p = m_attributes.begin(); p != m_attributes.end(); ++p)
 		{
 			oWriter.WriteString(L" ", 1);
-			oWriter.WriteString(std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), TRUE)));
+			oWriter.WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), TRUE).c_str());
 			oWriter.WriteString(L"=\"", 2);
-			oWriter.WriteString(std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), TRUE)));
+			oWriter.WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), TRUE).c_str());
 			oWriter.WriteString(L"\"", 1);
 		}
 
@@ -61,10 +36,10 @@ namespace XmlUtils
 			m_nodes[i]->GetXml(oWriter);
 		}
 
-		oWriter.WriteString(m_sText);
+		oWriter.WriteEncodeXmlString(m_sText.GetString());
 		
 		oWriter.WriteString(L"</", 2);
-		oWriter.WriteString(m_sName);
+		oWriter.WriteEncodeXmlString(m_sName.GetString());
 		oWriter.WriteString(L">", 1);
 	}
 

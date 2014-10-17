@@ -23,6 +23,7 @@ class BinProcessor
 {
 public:
 	BinProcessor(BiffStructurePtr & parent, GlobalWorkbookInfoPtr global_info);
+	BinProcessor(GlobalWorkbookInfoPtr global_info);
 	~BinProcessor();
 
 	// This function doesn't 
@@ -73,6 +74,7 @@ class BinReaderProcessor : public BinProcessor
 {
 public:
 	BinReaderProcessor(CFStreamCacheReader& reader, BiffStructurePtr parent, const bool is_mandatory);
+	BinReaderProcessor(CFStreamCacheReader& reader, const bool is_mandatory); //root ???
 
 	virtual const bool optional(BaseObject& object);
 	virtual const bool mandatory(BaseObject& object);

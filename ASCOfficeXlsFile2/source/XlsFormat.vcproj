@@ -182,6 +182,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\XlsFormat\Binary\CFStreamCacheWriter.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\XlsFormat\Binary\CFStreamCacheWriter.h"
+				>
+			</File>
+			<File
 				RelativePath=".\XlsFormat\Binary\CompoundFile.cpp"
 				>
 			</File>

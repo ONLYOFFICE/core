@@ -46,7 +46,8 @@ private:
 
 public:
 	BO_ATTRIB_MARKUP_BEGIN
-		is_contained_in_chart_substream = L"ChartSheetSubstream" == proc.getParent()->tagName_;
+		//todooo ????
+		//is_contained_in_chart_substream = L"ChartSheetSubstream" == proc.getParent()->tagName_;
 		BO_ATTRIB_MARKUP_ATTRIB(fSelected)
 		if(!is_contained_in_chart_substream)
 		{

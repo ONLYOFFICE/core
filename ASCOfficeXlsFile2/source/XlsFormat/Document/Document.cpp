@@ -52,6 +52,9 @@ void Document::newDoc(const std::wstring & root_name)
 
 const int Document::appendBinaryData(XLS::BiffStructurePtr &  elem, const char * data, const size_t size)
 {
+	if (elem == NULL) 
+		return 0;
+
 	boost::shared_array<char> buffer(new char[size]);
 	memcpy_s(buffer.get(), size, data, size);
 	return appendBinaryData(elem, buffer, size);
@@ -60,6 +63,9 @@ const int Document::appendBinaryData(XLS::BiffStructurePtr &  elem, const char *
 
 const int Document::appendBinaryData(XLS::BiffStructurePtr & elem, boost::shared_array<char>& pre_allocated_data, const size_t size)
 {
+	if (elem == NULL) 
+		return 0;
+
 	std::wstring name = elem->tagName_;
 	Document* doc = findDocumentByElement(elem);
 	if(!doc)

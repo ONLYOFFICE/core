@@ -16,7 +16,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost_filesystem_version.h>
 
-//#include "ConvertOO2OOX.h"
+#include "source\ConvertXls2Xlsx.h"
 
 #include "..\Common\XmlUtils.h"
 #include "..\Common\ASCATLError.h"
@@ -127,19 +127,13 @@ HRESULT COfficeXlsFile::LoadFromFileImpl(const std::wstring & srcFileName,
 {
     HRESULT hr = AVS_ERROR_UNEXPECTED;    
         
-#ifdef BOOST_FILESYSTEM_LEGACY
-    const std::wstring ext = boost::algorithm::to_lower_copy(boost::filesystem::wpath(srcFileName).extension());
-#else
-    const std::wstring ext = boost::algorithm::to_lower_copy(boost::filesystem::wpath(srcFileName).extension().string<std::wstring>());
-#endif
-
 	ProgressCallback ffCallBack;
 
 	ffCallBack.OnProgress	=	OnProgressFunc;
 	ffCallBack.OnProgressEx	=	OnProgressExFunc;
 	ffCallBack.caller		=	this;
 
-	//hr = ConvertXls2Xlsx(ext,srcFileName, dstTempPath, &ffCallBack);
+	hr = ConvertXls2Xlsx(srcFileName, dstTempPath, &ffCallBack);
 
 	if (hr != S_OK)  return hr;
    

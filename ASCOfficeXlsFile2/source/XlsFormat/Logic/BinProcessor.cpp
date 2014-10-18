@@ -9,7 +9,7 @@
 namespace XLS
 {;
 
-BinProcessor::BinProcessor(BiffStructurePtr & parent, GlobalWorkbookInfoPtr global_info)
+BinProcessor::BinProcessor(BaseObjectPtr & parent, GlobalWorkbookInfoPtr global_info)
 :	parent_(parent),
 	global_info_(global_info)
 {
@@ -49,7 +49,7 @@ const bool BinProcessor::repeated(BaseObject& object, const int fromN, const int
 // =========================== Reader ======================================
 
 
-BinReaderProcessor::BinReaderProcessor(CFStreamCacheReader& reader, BiffStructurePtr parent, const bool is_mandatory)
+BinReaderProcessor::BinReaderProcessor(CFStreamCacheReader& reader, BaseObjectPtr parent, const bool is_mandatory)
 :	reader_(reader),
 	BinProcessor(parent, reader.getGlobalWorkbookInfo()),
 	is_mandatory_(is_mandatory)
@@ -87,23 +87,22 @@ const bool BinReaderProcessor::mandatory(BaseObject& object)
 void BinReaderProcessor::markAttribute(BiffAttribute& attrib, const std::wstring & attrib_name)
 {
 	attrib.setName(attrib_name);
-	//attrib.toXML(parent_);
-	parent_->add_attributes(boost::shared_ptr<BiffStructure>(&attrib));
 }
 
 
 void BinReaderProcessor::markTaggedAttribute(BiffStructure& attrib)
 {
-	parent_->add_attributes(boost::shared_ptr<BiffStructure>(&attrib));
 }
 
 
 void BinReaderProcessor::markVector(BiffStructurePtrVector& vec, BiffStructure& exClone)
 {
-	for(std::vector<BiffStructurePtr>::iterator it = vec.begin(), itEnd = vec.end(); it != itEnd; ++it)
-	{
-		parent_->add_child(boost::shared_ptr<BiffStructure>(it->get()));
-	}
+	//if (parent_ == NULL) return;
+
+	//for(std::vector<BiffStructurePtr>::iterator it = vec.begin(), itEnd = vec.end(); it != itEnd; ++it)
+	//{
+	//	parent_->add_child(boost::shared_ptr<BiffStructure>(it->get()));
+	//}
 }
 
 
@@ -119,13 +118,15 @@ const bool BinReaderProcessor::readChild(BaseObject& object, const bool is_manda
 			// We don't update ret_val here because we are reading to the copy of the object.
 			// And the real object will remain uninitialized
 			wanted_objects.push_back(object.clone()); // store the copy of the object that was not found (this line is here to take another chance to be read after some trash processed)
-			for(BaseObjectPtrList::iterator it = wanted_objects.begin()/*, itEnd = */;
-				it != wanted_objects.end();)
+			
+			for(BaseObjectPtrList::iterator it = wanted_objects.begin()/*, itEnd = */; it != wanted_objects.end();)
 			{
 				const BaseObjectPtr w_object = *it;
+				
 				if(w_object->read(reader_, parent_, false))
 				{
 					// Remove successfully read object from the wanted objects list
+					parent_->add_child(w_object);
 					wanted_objects.erase(it++);
 				}
 				else

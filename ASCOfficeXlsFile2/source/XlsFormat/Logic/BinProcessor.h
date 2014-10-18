@@ -22,7 +22,7 @@ class CFStreamCacheWriter;
 class BinProcessor
 {
 public:
-	BinProcessor(BiffStructurePtr & parent, GlobalWorkbookInfoPtr global_info);
+	BinProcessor(BaseObjectPtr & parent, GlobalWorkbookInfoPtr global_info);
 	BinProcessor(GlobalWorkbookInfoPtr global_info);
 	~BinProcessor();
 
@@ -61,11 +61,10 @@ public:
 	virtual const bool getNextSubstreamType(WORD& type) = 0;
 	virtual void SeekToEOF() = 0;
 
-	BiffStructurePtr getParent() const { return parent_;};
+	BaseObjectPtr getParent() const { return parent_;};
 	GlobalWorkbookInfoPtr getGlobalWorkbookInfo() const { return global_info_;};
 protected:
-	//MSXML2::IXMLDOMElementPtr parent_;
-	BiffStructurePtr		parent_;
+	BaseObjectPtr			parent_;
 	GlobalWorkbookInfoPtr	global_info_;
 };
 
@@ -73,7 +72,7 @@ protected:
 class BinReaderProcessor : public BinProcessor
 {
 public:
-	BinReaderProcessor(CFStreamCacheReader& reader, BiffStructurePtr parent, const bool is_mandatory);
+	BinReaderProcessor(CFStreamCacheReader& reader, BaseObjectPtr parent, const bool is_mandatory);
 	BinReaderProcessor(CFStreamCacheReader& reader, const bool is_mandatory); //root ???
 
 	virtual const bool optional(BaseObject& object);

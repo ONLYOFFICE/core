@@ -474,13 +474,16 @@ namespace XMLSTUFF
 //
 //
 //// Makes a new XML tag and append it to parent (no attributes set)
-//MSXML2::IXMLDOMElementPtr createElement(const std::wstring & tag_name, BiffStructurePtr & parent)
+//BiffStructurePtr createElement(const std::wstring & tag_name, BiffStructurePtr & parent)
 //{
-//	MSXML2::IXMLDOMElementPtr own_tag = parent->GetownerDocument()->createElement(tag_name);
-//	parent->appendChild(own_tag);
+//	BiffStructurePtr own_tag;// = createElement(tag_name);
+//	
+//	if (parent)
+//		parent->appendChild(own_tag);
+//
 //	return own_tag;
 //}
-//
+
 
 const std::wstring tab2sheet_name(const short tabid, std::vector<std::wstring>& sheets_names)
 {

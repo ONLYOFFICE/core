@@ -22,7 +22,7 @@ public:
 	~CompositeObject();
 
 	//virtual const bool doSomething(BinProcessor& proc);
-	virtual const bool read(CFStreamCacheReader& reader, BaseObjectPtr & parent, const bool mandatory); // Read self and children
+	virtual const bool read(CFStreamCacheReader& reader, BaseObject* parent, const bool mandatory); // Read self and children
 	//virtual const bool write(BinWriterProcessor& proc, const bool is_mandatory); // Write self and children
 	virtual const bool loadContent(BinProcessor& proc) = 0;
 
@@ -43,7 +43,7 @@ class ABNFParenthesis : public CompositeObject
 public:
 	ABNFParenthesis(){};
 
-	virtual const bool read(CFStreamCacheReader& reader, BaseObjectPtr & parent, const bool is_mandatory);
+	virtual const bool read(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory);
 
 private:
 	virtual BiffStructurePtr createElement() { return BiffStructurePtr();};

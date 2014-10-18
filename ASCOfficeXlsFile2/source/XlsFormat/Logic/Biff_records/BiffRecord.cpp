@@ -19,7 +19,7 @@ BiffRecord::~BiffRecord()
 
 
 // Common algorithm of loading from bin to XML
-const bool BiffRecord::read(CFStreamCacheReader& reader, BaseObjectPtr & parent, const bool is_mandatory)
+const bool BiffRecord::read(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory)
 {
 	parent_ = parent;		
 
@@ -48,7 +48,9 @@ const bool BiffRecord::read(CFStreamCacheReader& reader, BaseObjectPtr & parent,
 
 		// XML generation
 		//BiffStructurePtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-		toFrom(BinReaderProcessor(reader, parent/*own_tag*/, is_mandatory));		
+		toFrom(BinReaderProcessor(reader, parent/*own_tag*/, is_mandatory));	
+
+		parent->add_child(this->clone());
 	}
 
 	return true; // Record reading OK

@@ -1,5 +1,5 @@
 #pragma once
-
+//#include <boost/enable_shared_from_this.hpp>
 #include <boost/shared_ptr.hpp>
 #include <list>
 
@@ -15,15 +15,17 @@ class BaseObject;
 typedef boost::shared_ptr<BaseObject>	BaseObjectPtr;
 
 // Logical representation of an XML record
-class BaseObject
+class BaseObject //: public boost::enable_shared_from_this<BaseObject>
 {
 public:
 	BaseObject(){}
 	~BaseObject(){}
 
+	//BaseObjectPtr get_BaseObjectPtr()  { return shared_from_this();  }
+
 	virtual boost::shared_ptr<BaseObject> clone() = 0;
 
-	virtual const bool read(CFStreamCacheReader& reader, BaseObjectPtr & parent, const bool mandatory) = 0; // Read self and children
+	virtual const bool read(CFStreamCacheReader& reader, BaseObject* parent, const bool mandatory) = 0; // Read self and children
 
 	virtual void toFrom(BinProcessor& proc) = 0; // This function shall contain only mark functions and is the universal XML serialiser
 

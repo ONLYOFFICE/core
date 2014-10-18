@@ -31,17 +31,14 @@ const bool CompositeObject::doSomething(BinProcessor& proc)
 
 */
 
-const bool CompositeObject::read(CFStreamCacheReader& reader, BaseObjectPtr & parent, const bool is_mandatory)
+const bool CompositeObject::read(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory)
 {
-	//BiffStructurePtr own_tag = XMLSTUFF::createElement(getClassName(), parent);	
-	
-	BinReaderProcessor reader_proc(reader, parent, is_mandatory);
+	BinReaderProcessor reader_proc(reader, this, is_mandatory);
 	if(loadContentRead(reader_proc))
 	{
-		//parent->add_child(own_tag);
+		parent->add_child(this->clone());
 		return true;
 	}
-	//parent->removeChild(own_tag); // When nothing was read for this composite. For example, if loadFirstMandatory returns false	
 
 	return false;
 }
@@ -56,10 +53,13 @@ const bool CompositeObject::loadContentRead(BinReaderProcessor& proc)
 
 
 
-const bool ABNFParenthesis::read(CFStreamCacheReader& reader, BaseObjectPtr & parent, const bool is_mandatory)
+const bool ABNFParenthesis::read(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory)
 {
 	BinReaderProcessor reader_proc(reader, parent, is_mandatory);
-	return loadContentRead(reader_proc);
+	bool res = loadContentRead(reader_proc);
+
+	//parent->add_child(this);
+	return res;
 };
 
 

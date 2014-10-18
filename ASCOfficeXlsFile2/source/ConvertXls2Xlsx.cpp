@@ -14,6 +14,7 @@
 #include "XlsFormat\Logic\BinProcessor.h"
 #include "XlsFormat\Logic\SummaryInformationStream\SummaryInformation.h"
 //#include "XlsFormat\Auxiliary\HelpersTagsGenerator.h"
+#include "XlsFormat\Logic\BaseObject.h"
 
 HRESULT ConvertXls2Xlsx(const std::wstring & srcFile, const std::wstring & dstPath, const ProgressCallback* CallBack)
 {
@@ -66,12 +67,13 @@ HRESULT ConvertXls2Xlsx(const std::wstring & srcFile, const std::wstring & dstPa
 		XLS::GlobalWorkbookInfoPtr global_info(new XLS::GlobalWorkbookInfo(workbook_code_page));
 
 		XLS::CFStreamCacheReader stream_reader(cfile.getWorkbookStream(), global_info);
-		
-		//XLS::BiffStructurePtr root = boost::shared_ptr<XLS::BiffStructure>(new XLS::BiffStructure());
-		XLS::BinReaderProcessor proc(stream_reader , true);
-		
+
 		XLS::WorkbookStreamObject workbook;
 		workbook.set_code_page(workbook_code_page);
+
+		//XLS::BaseObjectPtr workbook_ptr = boost::shared_ptr<XLS::BaseObject>(&workbook);
+		//XLS::BaseObjectPtr workbook_ptr = boost::shared_ptr<XLS::BaseObject>(new XLS::WorkbookStreamObject(workbook_code_page));
+		XLS::BinReaderProcessor proc(stream_reader , &workbook , true);
 		proc.mandatory(workbook);
 
 		return	S_OK;

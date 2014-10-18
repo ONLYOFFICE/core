@@ -9,7 +9,7 @@
 namespace XLS
 {;
 
-BinProcessor::BinProcessor(BaseObjectPtr & parent, GlobalWorkbookInfoPtr global_info)
+BinProcessor::BinProcessor(BaseObject* parent, GlobalWorkbookInfoPtr global_info)
 :	parent_(parent),
 	global_info_(global_info)
 {
@@ -49,7 +49,7 @@ const bool BinProcessor::repeated(BaseObject& object, const int fromN, const int
 // =========================== Reader ======================================
 
 
-BinReaderProcessor::BinReaderProcessor(CFStreamCacheReader& reader, BaseObjectPtr parent, const bool is_mandatory)
+BinReaderProcessor::BinReaderProcessor(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory)
 :	reader_(reader),
 	BinProcessor(parent, reader.getGlobalWorkbookInfo()),
 	is_mandatory_(is_mandatory)
@@ -97,19 +97,19 @@ void BinReaderProcessor::markTaggedAttribute(BiffStructure& attrib)
 
 void BinReaderProcessor::markVector(BiffStructurePtrVector& vec, BiffStructure& exClone)
 {
-	//if (parent_ == NULL) return;
+	if (parent_ == NULL) return;
 
-	//for(std::vector<BiffStructurePtr>::iterator it = vec.begin(), itEnd = vec.end(); it != itEnd; ++it)
-	//{
-	//	parent_->add_child(boost::shared_ptr<BiffStructure>(it->get()));
-	//}
+	for(std::vector<BiffStructurePtr>::iterator it = vec.begin(), itEnd = vec.end(); it != itEnd; ++it)
+	{
+		//parent_->add_child(*it);
+	}
 }
 
 
 // object_copy is necessary in case we haven't found the desired record and have to put it to the queue
 const bool BinReaderProcessor::readChild(BaseObject& object, const bool is_mandatory)
 {
-	bool ret_val;
+	bool ret_val = true;
 	try
 	{
 		ret_val = object.read(reader_, parent_, is_mandatory /* log warning if mandatory tag absent*/);
@@ -126,7 +126,6 @@ const bool BinReaderProcessor::readChild(BaseObject& object, const bool is_manda
 				if(w_object->read(reader_, parent_, false))
 				{
 					// Remove successfully read object from the wanted objects list
-					parent_->add_child(w_object);
 					wanted_objects.erase(it++);
 				}
 				else

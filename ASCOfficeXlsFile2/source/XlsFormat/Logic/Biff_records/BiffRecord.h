@@ -18,7 +18,7 @@ public:
 	~BiffRecord();
 
 //	virtual const bool doSomething(BinProcessor& proc);
-	virtual const bool read(CFStreamCacheReader& reader, BaseObjectPtr & parent, const bool is_mandatory); // Read self and children
+	virtual const bool read(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory); // Read self and children
 	//virtual const bool write(BinWriterProcessor& proc, const bool is_mandatory); // Write self and children
 	
 	virtual void readFields(CFRecord& record) = 0;
@@ -34,7 +34,7 @@ private:
 	virtual const bool storeRecordAndDecideProceeding(CFRecordPtr record); // This function is overridden in BiffRecordSplit
 
 protected:
-	BaseObjectPtr parent_;
+	BaseObject* parent_;
 };
 
 #define BIFF_RECORD_DEFINE_TYPE_INFO(class_name) public: const CFRecordType::TypeId getTypeId() const { return rt_ ## class_name; }

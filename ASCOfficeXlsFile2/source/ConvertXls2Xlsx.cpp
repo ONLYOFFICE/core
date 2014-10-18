@@ -15,7 +15,7 @@
 #include "XlsFormat\Logic\SummaryInformationStream\SummaryInformation.h"
 //#include "XlsFormat\Auxiliary\HelpersTagsGenerator.h"
 
-HRESULT ConvertXls2Xlsx(const std::wstring &ext, const std::wstring & srcFile, const std::wstring & dstPath, bool bOnlyPresentation, const ProgressCallback* CallBack)
+HRESULT ConvertXls2Xlsx(const std::wstring & srcFile, const std::wstring & dstPath, const ProgressCallback* CallBack)
 {
 	HRESULT hr = S_OK;
 
@@ -70,7 +70,9 @@ HRESULT ConvertXls2Xlsx(const std::wstring &ext, const std::wstring & srcFile, c
 		//XLS::BiffStructurePtr root = boost::shared_ptr<XLS::BiffStructure>(new XLS::BiffStructure());
 		XLS::BinReaderProcessor proc(stream_reader , true);
 		
-		proc.mandatory(XLS::WorkbookStreamObject(workbook_code_page));
+		XLS::WorkbookStreamObject workbook;
+		workbook.set_code_page(workbook_code_page);
+		proc.mandatory(workbook);
 
 		return	S_OK;
 

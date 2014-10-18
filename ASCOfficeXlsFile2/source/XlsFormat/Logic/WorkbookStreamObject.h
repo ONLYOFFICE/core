@@ -23,6 +23,8 @@ public:
 
 	static const unsigned __int16 DefaultCodePage = OLEPS::CodePage::DefaultCodePage;
 
+	void set_code_page(const unsigned __int16 code_page);
+
 private:
 	unsigned __int16 code_page_;
 };

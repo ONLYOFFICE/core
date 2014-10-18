@@ -26,6 +26,11 @@ WorkbookStreamObject::WorkbookStreamObject(const unsigned __int16 code_page)
 {
 }
 
+void WorkbookStreamObject::set_code_page(const unsigned __int16 code_page)
+{
+	code_page_ = code_page;
+}
+
 
 WorkbookStreamObject::~WorkbookStreamObject()
 {

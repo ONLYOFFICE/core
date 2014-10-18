@@ -33,9 +33,7 @@ typedef std::vector<BiffStructurePtr>		BiffStructurePtrVector;
 class BiffStructure : protected BiffStructure_NoVtbl
 {
 public:
-	virtual void add_child		(BiffStructurePtr & child)		{ childs_.push_back(child);}
-	virtual void add_attributes	(BiffStructurePtr & attribute)	{ attributes_.push_back(attribute);}
-	
+
 	virtual BiffStructurePtr clone() = 0;
 
 	Document*	get_document();
@@ -52,10 +50,6 @@ public:
 	virtual void store(CFRecord& record) = 0;
 
 	virtual const std::wstring & getClassName() const = 0;   // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter
-
-	//BiffStructurePtr		parent_;
-	BiffStructurePtrVector	childs_;
-	BiffStructurePtrVector	attributes_;
 
 	std::wstring tagName_;
 protected:

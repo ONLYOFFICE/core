@@ -19,7 +19,7 @@ BiffRecord::~BiffRecord()
 
 
 // Common algorithm of loading from bin to XML
-const bool BiffRecord::read(CFStreamCacheReader& reader, BiffStructurePtr & parent, const bool is_mandatory)
+const bool BiffRecord::read(CFStreamCacheReader& reader, BaseObjectPtr & parent, const bool is_mandatory)
 {
 	parent_ = parent;		
 

@@ -37,12 +37,13 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		if(!proc.mandatory(Pls(proc.getParent())))
+		//todooo ????
+		//if(!proc.mandatory(Pls(proc.getParent())))
 		{
 			return false;
 		}
-		proc.repeated<Continue>(0, 0);
-		return true;
+		//proc.repeated<Continue>(0, 0);
+		//return true;
 	};
 };
 
@@ -71,7 +72,8 @@ const bool PAGESETUP::loadContent(BinProcessor& proc)
 	proc.optional<TopMargin>();
 	proc.optional<BottomMargin>();
 	proc.optional<Parenthesis_PAGESETUP_1>();
-	proc.optional(Pls(proc.getParent())); // OpenOffice Calc stored files workaround
+	//proc.optional(Pls(proc.getParent())); // OpenOffice Calc stored files workaround
+	//todooo ?????
 	proc.mandatory<Setup>();
 	proc.optional<HeaderFooter>(); // Moved from WorksheetSubstream
 

@@ -33,6 +33,8 @@ const double g_emu_koef	= 25.4 * 36000 / 72.0;
 //#define AVS_OFFICE_DRAWING_DUMP_XML_TEST
 //#define AVS_OFFICE_DRAWING_DUMP_PPTX_TO_PPT_TEST
 
+using namespace NSGuidesVML;
+
 void DUMP_MESSAGE_TO_FILE(const char* strMessage)
 {
 	FILE* file = fopen("c:\\1.txt", "a+");

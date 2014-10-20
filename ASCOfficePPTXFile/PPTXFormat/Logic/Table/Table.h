@@ -24,7 +24,7 @@ namespace PPTX
 				TableCols = oSrc.TableCols;
 				TableRows = oSrc.TableRows;
 
-				TableProperties = oSrc.TableProperties;
+                tableProperties = oSrc.tableProperties;
 				return *this;
 			}
 
@@ -37,7 +37,7 @@ namespace PPTX
 
 				node.LoadArray(_T("a:tr"), TableRows);
 
-				TableProperties = node.ReadNode(_T("a:tblPr"));
+                tableProperties = node.ReadNode(_T("a:tblPr"));
 
 				FillParentPointersForChilds();
 			}
@@ -45,7 +45,7 @@ namespace PPTX
 			virtual CString toXML() const
 			{
 				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(TableProperties);
+                oValue.WriteNullable(tableProperties);
 				oValue.WriteArray(TableRows);
 				oValue.WriteArray(_T("a:tblGrid"), TableCols);
 
@@ -54,7 +54,7 @@ namespace PPTX
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
-				pWriter->WriteRecord2(0, TableProperties);
+                pWriter->WriteRecord2(0, tableProperties);
 				pWriter->WriteRecordArray(1, 0, TableCols);
 				pWriter->WriteRecordArray(2, 0, TableRows);
 			}
@@ -70,8 +70,8 @@ namespace PPTX
 					{
 						case 0:
 						{
-							TableProperties = new Logic::TableProperties();
-							TableProperties->fromPPTY(pReader);
+                            tableProperties = new Logic::TableProperties();
+                            tableProperties->fromPPTY(pReader);
 							break;
 						}
 						case 1:
@@ -112,7 +112,7 @@ namespace PPTX
 				pWriter->StartNode(_T("a:tbl"));
 				pWriter->EndAttributes();
 
-				pWriter->Write(TableProperties);
+                pWriter->Write(tableProperties);
 				
 				pWriter->WriteString(_T("<a:tblGrid>"));
 				size_t n1 = TableCols.size();
@@ -130,12 +130,12 @@ namespace PPTX
 		public:
 			std::vector<TableCol>			TableCols;
 			std::vector<TableRow>			TableRows;
-			nullable<TableProperties>	TableProperties;
+            nullable<TableProperties>	tableProperties;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				if (TableProperties.IsInit())
-					TableProperties->SetParentPointer(this);
+                if (tableProperties.IsInit())
+                    tableProperties->SetParentPointer(this);
 				
 				size_t count = TableRows.size();
 				for (size_t i = 0; i < count; ++i)

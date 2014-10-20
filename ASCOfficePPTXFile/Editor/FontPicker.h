@@ -2,7 +2,12 @@
 
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "BinReaderWriterDefines.h"
+#ifdef _WIN32
 #include "FontCutter.h"
+#endif
+
+//#include "../../DesktopEditor/fontengine/FontManager.h"
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
 namespace NSFontCutter
 {
@@ -16,7 +21,7 @@ namespace NSFontCutter
 		CString m_strFontsDir;
 
 		BOOL					m_bIsEmbeddedFonts;
-		CEmbeddedFontsManager	m_oEmbeddedFonts;
+        CEmbeddedFontsManager	m_oEmbeddedFonts;
 
 	public:
 		CFontDstManager() : m_mapPicks()

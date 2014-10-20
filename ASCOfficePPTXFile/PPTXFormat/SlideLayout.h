@@ -420,7 +420,7 @@ namespace PPTX
 
 		smart_ptr<SlideMaster>					Master;
 		smart_ptr<Theme>						theme;
-		smart_ptr<TableStyles>					TableStyles;
+        smart_ptr<TableStyles>					tableStyles;
 		smart_ptr<VmlDrawing>					Vml;
 		
 	public:
@@ -435,7 +435,7 @@ namespace PPTX
 			
 			if (theme.IsInit())
 			{	
-                TableStyles = theme->presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
+                tableStyles = theme->presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
 			}
 		}
 		const OOX::CPath GetPathBySpid(const CString& spid)const

@@ -52,8 +52,10 @@ namespace PPTX
 				lColorIndex._set(node.GetAttribute(_T("hlink")));	ColorMap.insert(std::pair<CString,Limit::ColorSchemeIndex>(_T("hlink"), lColorIndex));
 			}
 
-			void fromXMLW(XmlUtils::CXmlNode& node)
+            void fromXMLW(const XmlUtils::CXmlNode& cnode)
 			{
+                XmlUtils::CXmlNode& node = const_cast<XmlUtils::CXmlNode&> (cnode);
+
 				m_name = node.GetName();
 
 				ColorMap.clear();

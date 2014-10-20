@@ -2,8 +2,8 @@
 #include "Formula.h"
 #include "../Path.h"
 #include "../PPTShape/Formula.h"
+#include "../PPTXShape/PPTXShape.h"
 #include "../PPTShape/PPTShape.h"
-
 namespace NSGuidesVML
 {
 #ifndef ENABLE_PPT_TO_PPTX_CONVERT 

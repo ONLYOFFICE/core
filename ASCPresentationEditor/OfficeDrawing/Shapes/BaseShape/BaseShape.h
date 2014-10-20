@@ -1,6 +1,6 @@
 #pragma once
 #include "Path.h"
-
+#include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Base.h"
 namespace NSPresentationEditor
 {
 	using namespace NSBaseShape;
@@ -35,7 +35,7 @@ namespace NSPresentationEditor
 			return (*this);
 		}
 	};
-
+//
 	class CBaseShape
 	{
 	public:
@@ -45,7 +45,7 @@ namespace NSPresentationEditor
 		LONG					m_eJoin;
 		bool					m_bConcentricFill;
 
-		std::vector<CPoint>	m_arConnectors;
+        std::vector<SimpleTypes::CPoint>	m_arConnectors;
 		std::vector<LONG>		m_arConnectorAngles;
 
 		std::vector<RECT>		m_arTextRects;

@@ -28,7 +28,7 @@ namespace PPTX
 
 		void TableCell::fromXML(XmlUtils::CXmlNode& node)
 		{
-			TxBody			= node.ReadNodeNoNS(_T("txBody"));
+            txBody			= node.ReadNodeNoNS(_T("txBody"));
 			CellProperties	= node.ReadNode(_T("a:tcPr"));
 			node.ReadAttributeBase(L"rowSpan", RowSpan);
 			node.ReadAttributeBase(L"gridSpan", GridSpan);
@@ -49,7 +49,7 @@ namespace PPTX
 			oAttr.Write(_T("id"), Id);
 
 			XmlUtils::CNodeValue oValue;
-			oValue.WriteNullable(TxBody);
+            oValue.WriteNullable(txBody);
 			oValue.WriteNullable(CellProperties);
 
 			return XmlUtils::CreateNode(_T("a:tc"), oAttr, oValue);
@@ -57,8 +57,8 @@ namespace PPTX
 
 		void TableCell::FillParentPointersForChilds()
 		{
-			if(TxBody.IsInit())
-				TxBody->SetParentPointer(this);
+            if(txBody.IsInit())
+                txBody->SetParentPointer(this);
 			if(CellProperties.IsInit())
 				CellProperties->SetParentPointer(this);
 		}
@@ -68,7 +68,7 @@ namespace PPTX
 			if(parentFileIs<Slide>())
 			{
 				parentFileAs<Slide>().FillShapeProperties(props, _T("table-cell"));
-				props.FillFromTextBody(TxBody);
+                props.FillFromTextBody(txBody);
 
 				//props.SetParentFilePointer(parentFile);
 			}

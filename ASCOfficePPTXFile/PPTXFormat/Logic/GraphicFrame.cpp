@@ -56,7 +56,7 @@ namespace PPTX
 							XmlUtils::CXmlNode oNode1 = oNodeData.ReadNodeNoNS(_T("tbl"));
 							if (oNode1.IsValid())
 							{
-								Table = oNode1;
+                                table = oNode1;
 								return;
 							}
 							XmlUtils::CXmlNode oNode2 = oNodeData.ReadNodeNoNS(_T("oleObj"));
@@ -138,10 +138,10 @@ namespace PPTX
 			else
 				xfrm.toXmlWriter2(strNS, pWriter);
 
-			if (Table.is_init())
+            if (table.is_init())
 			{
 				pWriter->WriteString(_T("<a:graphic><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/table\">"));
-				Table->toXmlWriter(pWriter);
+                table->toXmlWriter(pWriter);
 				pWriter->WriteString(_T("</a:graphicData></a:graphic>"));
 			}
 			else if (chartRec.is_init())
@@ -167,7 +167,7 @@ namespace PPTX
 				return;
 			}
 
-			if (smartArt.is_init() && !Table.is_init() && !chartRec.is_init() && !spid.is_init())
+            if (smartArt.is_init() && !table.is_init() && !chartRec.is_init() && !spid.is_init())
 			{
 				smartArt->LoadDrawing(pWriter);
 				if (smartArt->diag.is_init())
@@ -207,7 +207,7 @@ namespace PPTX
 				return;
 			}
 
-			if (!Table.is_init() && !chartRec.is_init() && spid.is_init())
+            if (!table.is_init() && !chartRec.is_init() && spid.is_init())
 			{				
 				// заглушка!!! делаем картинку
 				pWriter->StartRecord(SPTREE_TYPE_PIC);
@@ -265,7 +265,7 @@ namespace PPTX
 
 			pWriter->WriteRecord1(0, nvGraphicFramePr);
 			pWriter->WriteRecord1(1, xfrm);
-			pWriter->WriteRecord2(2, Table);
+            pWriter->WriteRecord2(2, table);
 
 			if (chartRec.is_init())
 			{
@@ -318,8 +318,8 @@ namespace PPTX
 					}
 					case 2:
 					{
-						Table = new Logic::Table();
-						Table->fromPPTY(pReader);
+                        table = new Logic::Table();
+                        table->fromPPTY(pReader);
 						break;
 					}
 					case 3:
@@ -376,8 +376,8 @@ namespace PPTX
 		{
 			xfrm.SetParentPointer(this);
 			nvGraphicFramePr.SetParentPointer(this);
-			if(Table.IsInit())
-				Table->SetParentPointer(this);
+            if(table.IsInit())
+                table->SetParentPointer(this);
 			if (smartArt.is_init())
 				smartArt->SetParentPointer(this);
 			if (chartRec.is_init())

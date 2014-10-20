@@ -43,7 +43,7 @@ namespace PPTX
 			//nullable_property<PPTX::RId> qs;
 			//nullable_property<PPTX::RId> cs;
 			nullable_string			spid;
-			nullable<Table>			Table;
+            nullable<Table>			table;
 			nullable<SmartArt>		smartArt;
 			nullable<ChartRec>		chartRec;
 			nullable<Pic>			pic;

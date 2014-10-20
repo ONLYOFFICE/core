@@ -70,7 +70,6 @@ namespace NSPresentationEditor
 		// -----------------
 
 		// background
-		#ifndef ENABLE_ODP_TO_PPTX_CONVERT
 		#ifdef PPT_DEF
 		CShapeElement oElem(NSPresentationEditor::NSBaseShape::ppt, PPTShapes::sptCRect);
 		#else
@@ -81,9 +80,6 @@ namespace NSPresentationEditor
 		#else
 		CShapeElement oElem(NSPresentationEditor::NSBaseShape::pptx, OOXMLShapes::sptCRect);
 		#endif
-		#endif
-		#else
-		CShapeElement oElem(NSPresentationEditor::NSBaseShape::odp, OdpShapes::sptCRect);
 		#endif
 
 		oElem.m_oMetric = oInfo;

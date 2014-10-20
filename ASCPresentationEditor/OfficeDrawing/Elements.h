@@ -11,16 +11,6 @@
 #include "../PPTXWriter/FileDownloader.h"
 #endif
 
-#ifdef ENABLE_ODP_TO_PPTX_CONVERT
-
-// enable ppt to pptx shape convertation
-#ifndef ENABLE_PPT_TO_PPTX_CONVERT
-#define ENABLE_PPT_TO_PPTX_CONVERT
-#endif
-
-#include "Shapes/BaseShape/PPTShape/PPT2PPTXShapeConverter.h"
-#include "Shapes/BaseShape/ODPShape/ODP2PPTXShapeConverter.h"
-#endif
 
 #ifdef ENABLE_PPT_TO_PPTX_CONVERT
 #include "Shapes/BaseShape/PPTShape/PPT2PPTXShapeConverter.h"
@@ -946,10 +936,6 @@ namespace NSPresentationEditor
 				strPPTXShape = ConvertPPTShapeToPPTX();
 #endif
 
-#ifdef ENABLE_ODP_TO_PPTX_CONVERT
-			if (eShapeType == NSBaseShape::odp)
-				strPPTXShape = ConvertODPShapeToPPTX();
-#endif
 		
 			CGeomShapeInfo oInfo;
 			oInfo.SetBounds(m_rcBounds);
@@ -1253,42 +1239,6 @@ namespace NSPresentationEditor
 		}
 #endif
 
-#ifdef ENABLE_ODP_TO_PPTX_CONVERT
-		CString ConvertODPShapeToPPTX()				
-		{
-			CString strPPTXXml = _T("");
-
-			COdpShape* pODPShape = dynamic_cast<COdpShape*>(m_oShape.m_pShape);
-			NSGuidesVML::CFormulaConverterODP2PPT pODPConverter;
-			if(!pODPShape->m_eType || pODPShape->m_eType == 1)
-				return _T("");
-
-			pODPConverter.ConvertOdp ( pODPShape );
-			pODPConverter.ConvertType ( pODPShape->m_eType);
-
-			//CSupportShape pSupShapeODP (pODPShape, pODPConverter);
-
-			/*CBaseShape->m_strPath = pODPConverter.strPath;*/
-			CPPTShape* pPPTShape = new CPPTShape();
-			pPPTShape->m_strPath = pODPConverter.strPath;
-			pPPTShape->m_oManager.m_arFormulas = pODPConverter.m_arFormulas;
-			pPPTShape->m_arAdjustments = pODPShape->m_arAdjustments;
-			pPPTShape->m_oPath = pODPShape->m_oPath;
-			pPPTShape->m_arStringTextRects[0] = pODPConverter.strRect;
-			//pPPTShape->m_eType = pODPShape->m_eType;
-			pPPTShape->m_arHandles = pODPConverter.m_arHandles;
-
-			NSGuidesVML::CFormParam pParamCoef;
-			pParamCoef.m_eType = ptFormula;
-			pParamCoef.m_lParam = pODPConverter.m_lPiFormulaNum;
-			pParamCoef.m_lCoef = 1;
-
-			strPPTXXml = ConvertPPTtoPPTX ( pPPTShape, pParamCoef );		
-
-			return strPPTXXml;
-		}
-
-#endif
 
 #ifdef ENABLE_PPT_TO_PPTX_CONVERT
 

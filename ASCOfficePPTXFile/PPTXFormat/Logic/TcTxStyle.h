@@ -22,7 +22,7 @@ namespace PPTX
 				node.ReadAttributeBase(L"i", i);
 				node.ReadAttributeBase(L"b", b);
 
-				FontRef = node.ReadNodeNoNS(_T("fontRef"));
+                fontRef = node.ReadNodeNoNS(_T("fontRef"));
 				Color.GetColorFrom(node);
 
 				FillParentPointersForChilds();
@@ -34,7 +34,7 @@ namespace PPTX
 				oAttr.WriteLimitNullable(_T("b"), b);
 
 				XmlUtils::CNodeValue oValue;
-				oValue.WriteNullable(FontRef);
+                oValue.WriteNullable(fontRef);
 				oValue.Write(Color);
 
 				return XmlUtils::CreateNode(_T("a:tcTxStyle"), oAttr, oValue);
@@ -49,7 +49,7 @@ namespace PPTX
 				pWriter->WriteAttribute(_T("b"), b);
 				pWriter->EndAttributes();
 
-				pWriter->Write(FontRef);
+                pWriter->Write(fontRef);
 				Color.toXmlWriter(pWriter);
 
 				pWriter->EndNode(_T("a:tcTxStyle"));
@@ -62,7 +62,7 @@ namespace PPTX
 				pWriter->WriteLimit2(1, b);
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
-				pWriter->WriteRecord2(0, FontRef);
+                pWriter->WriteRecord2(0, fontRef);
 				pWriter->WriteRecord1(1, Color);
 			}
 
@@ -103,9 +103,9 @@ namespace PPTX
 					{
 						case 0:
 						{
-							FontRef = new Logic::FontRef();
-							FontRef->fromPPTY(pReader);	
-							FontRef->m_name = _T("a:fontRef");
+                            fontRef = new Logic::FontRef();
+                            fontRef->fromPPTY(pReader);
+                            fontRef->m_name = _T("a:fontRef");
 							break;
 						}
 						case 1:
@@ -129,13 +129,13 @@ font (Font)  §20.1.4.2.13
 //Здесь имеется ввиду fontCollection (см. ниже), это еще одна альтернатива для Font
 //Данный комментарий оставлен для напоминания
 */
-			nullable<FontRef> FontRef;
+            nullable<FontRef> fontRef;
 			UniColor Color;
 		protected:
 			virtual void FillParentPointersForChilds()
 			{
-				if(FontRef.IsInit())
-					FontRef->SetParentPointer(this);
+                if(fontRef.IsInit())
+                    fontRef->SetParentPointer(this);
 				Color.SetParentPointer(this);
 			}
 		};

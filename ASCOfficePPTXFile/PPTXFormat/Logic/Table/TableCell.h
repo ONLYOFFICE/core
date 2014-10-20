@@ -39,7 +39,7 @@ namespace PPTX
 
 				pWriter->EndAttributes();
 
-				pWriter->Write(TxBody);
+                pWriter->Write(txBody);
 				pWriter->Write(CellProperties);				
 
 				pWriter->EndNode(_T("a:tc"));
@@ -56,7 +56,7 @@ namespace PPTX
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 
 				pWriter->WriteRecord2(0, CellProperties);
-				pWriter->WriteRecord2(1, TxBody);
+                pWriter->WriteRecord2(1, txBody);
 			}
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -115,9 +115,9 @@ namespace PPTX
 						}
 						case 1:
 						{
-							TxBody = new Logic::TxBody();
-							TxBody->fromPPTY(pReader);
-							TxBody->m_ns = _T("a");
+                            txBody = new Logic::TxBody();
+                            txBody->fromPPTY(pReader);
+                            txBody->m_ns = _T("a");
 							break;
 						}
 						default:
@@ -129,7 +129,7 @@ namespace PPTX
 			}
 
 		public:
-			nullable<TxBody>				TxBody;
+            nullable<TxBody>				txBody;
 			nullable<TableCellProperties>	CellProperties;
 			nullable_int					RowSpan;
 			nullable_int					GridSpan;

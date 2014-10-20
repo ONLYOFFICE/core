@@ -26,6 +26,7 @@
 #include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/pptx2pptshapeconverter.h"
 #include "PPTXFormat/PPTX.h"
 #include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/PPTXShape.h"
+#include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/Formula.h"
 
 const double g_emu_koef	= 25.4 * 36000 / 72.0;
 

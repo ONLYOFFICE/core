@@ -5549,8 +5549,12 @@ public:
 			if(false == m_oFileWriter.m_bSaveChartAsImg)
 			{
 				//создаем папку для rels
+				CString sChartsDir;
+				sChartsDir.Format(_T("%s\\word\\charts"), m_oFileWriter.m_oChartWriter.m_sDir);
+				if( !NSDirectory::Exists(string2std_string(sChartsDir)) )
+					OOX::CSystemUtility::CreateDirectories(sChartsDir);
 				CString sRelsDir;
-				sRelsDir.Format(_T("%s\\word\\charts\\_rels"), m_oFileWriter.m_oChartWriter.m_sDir);
+				sRelsDir.Format(_T("%s\\_rels"), sChartsDir);
 				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
 					OOX::CSystemUtility::CreateDirectories(sRelsDir);
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();

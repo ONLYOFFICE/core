@@ -380,8 +380,8 @@ namespace PPTX
 		}
 		const OOX::CPath GetPathBySpid(const CString& spid)const
 		{
-			OOX::CPath filename = _T("");
-			if((Vml.is_init()) && (spid != ""))
+            OOX::CPath filename (_T(""));
+            if((Vml.is_init()) && (spid != _T("")))
 			{
 				std::map<CString, OOX::CPath>::const_iterator pPair = Vml->SpIds.find(spid);
 

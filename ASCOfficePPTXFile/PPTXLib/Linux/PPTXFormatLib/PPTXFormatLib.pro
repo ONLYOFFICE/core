@@ -488,7 +488,7 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/BinWriters.h \
     ../../../Editor/CalculatorCRC32.h \
     ../../../Editor/Converter.h \
-    ../../../Editor/FontCutter.h \
+    #../../../Editor/FontCutter.h \
     ../../../Editor/FontPicker.h \
     ../../../Editor/imagemanager.h \
     ../../../Editor/PPTXWriter.h \

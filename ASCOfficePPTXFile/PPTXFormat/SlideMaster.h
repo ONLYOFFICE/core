@@ -189,15 +189,15 @@ namespace PPTX
 		}
 		void FillShapeProperties(Logic::ShapeProperties& props, const CString& type)const
 		{
-			if((Theme.IsInit()) && (Theme->Presentation.IsInit()))
+            if((theme.IsInit()) && (theme->Presentation.IsInit()))
 			{
-				PPTX::Presentation* pPres = const_cast<PPTX::Presentation*>(Theme->Presentation.operator->());
+                PPTX::Presentation* pPres = const_cast<PPTX::Presentation*>(theme->Presentation.operator->());
 
 				pPres->SetClrMap(clrMap);
-				pPres->SetClrScheme(Theme->themeElements.clrScheme);
+                pPres->SetClrScheme(theme->themeElements.clrScheme);
 			}
-			if((Theme.IsInit()) && (type != _T("")))
-				Theme->FillShapeProperties(props, type);
+            if((theme.IsInit()) && (type != _T("")))
+                theme->FillShapeProperties(props, type);
 
 			if(txStyles.is_init())
 			{
@@ -236,19 +236,19 @@ namespace PPTX
 					props.FillFromTextListStyle(txStyles->otherStyle);
 					props.SetTextType(3);
 
-					if(Theme.IsInit())
-						Theme->FillShapeProperties(props, type);
+                    if(theme.IsInit())
+                        theme->FillShapeProperties(props, type);
 				}
 			}
 		}
 		void FillShapeTextProperties(Logic::CShapeTextProperties& props, const CString& type)const
 		{
-			if((Theme.IsInit()) && (Theme->Presentation.IsInit()))
+            if((theme.IsInit()) && (theme->Presentation.IsInit()))
 			{
-				PPTX::Presentation* pPres = const_cast<PPTX::Presentation*>(Theme->Presentation.operator->());
+                PPTX::Presentation* pPres = const_cast<PPTX::Presentation*>(theme->Presentation.operator->());
 
 				pPres->SetClrMap(clrMap);
-				pPres->SetClrScheme(Theme->themeElements.clrScheme);
+                pPres->SetClrScheme(theme->themeElements.clrScheme);
 			}
 
 			if (type == _T("table-cell"))
@@ -280,7 +280,7 @@ namespace PPTX
 				else if(cSld.bg->bgRef.is_init())
 				{
 					ARGB = cSld.bg->bgRef->Color.GetARGB();
-					Theme->themeElements.fmtScheme.GetFillStyle(cSld.bg->bgRef->idx.get_value_or(0), bg.Fill);
+                    theme->themeElements.fmtScheme.GetFillStyle(cSld.bg->bgRef->idx.get_value_or(0), bg.Fill);
 	//					bg.SetParentFilePointer(this);
 				}
 			}
@@ -305,44 +305,44 @@ namespace PPTX
 
 		DWORD GetRGBAFromMap(const CString& str)const
 		{
-			return Theme->GetRGBAFromScheme(clrMap.GetColorSchemeIndex(str));
+            return theme->GetRGBAFromScheme(clrMap.GetColorSchemeIndex(str));
 		}
 
 		DWORD GetARGBFromMap(const CString& str)const
 		{
-			return Theme->GetARGBFromScheme(clrMap.GetColorSchemeIndex(str));
+            return theme->GetARGBFromScheme(clrMap.GetColorSchemeIndex(str));
 		}
 
 		DWORD GetBGRAFromMap(const CString& str)const
 		{
-			return Theme->GetBGRAFromScheme(clrMap.GetColorSchemeIndex(str));
+            return theme->GetBGRAFromScheme(clrMap.GetColorSchemeIndex(str));
 		}
 
 		DWORD GetABGRFromMap(const CString& str)const
 		{
-			return Theme->GetABGRFromScheme(clrMap.GetColorSchemeIndex(str));
+            return theme->GetABGRFromScheme(clrMap.GetColorSchemeIndex(str));
 		}
 
 		//---------------------------Colors from scheme------------------------------
 
 		DWORD GetRGBAFromScheme(const CString& str)const
 		{
-			return Theme->GetRGBAFromScheme(str);
+            return theme->GetRGBAFromScheme(str);
 		}
 
 		DWORD GetARGBFromScheme(const CString& str)const
 		{
-			return Theme->GetARGBFromScheme(str);
+            return theme->GetARGBFromScheme(str);
 		}
 
 		DWORD GetBGRAFromScheme(const CString& str)const
 		{
-			return Theme->GetBGRAFromScheme(str);
+            return theme->GetBGRAFromScheme(str);
 		}
 
 		DWORD GetABGRFromScheme(const CString& str)const
 		{
-			return Theme->GetABGRFromScheme(str);
+            return theme->GetABGRFromScheme(str);
 		}
 
 		//void ApplyColors();
@@ -464,19 +464,19 @@ namespace PPTX
 		nullable<Logic::TxStyles>	txStyles;
 		nullable_bool				preserve;
 
-		smart_ptr<Theme>			Theme;
-		smart_ptr<TableStyles>		TableStyles;
+        smart_ptr<Theme>			theme;
+        smart_ptr<TableStyles>		tableStyles;
 		smart_ptr<VmlDrawing>		Vml;
 		
 	public:		
 		void ApplyRels()
 		{
-			Theme = (FileContainer::get(PPTX::FileTypes::ThemePPTX)).smart_dynamic_cast<PPTX::Theme>();
+            theme = (FileContainer::get(PPTX::FileTypes::ThemePPTX)).smart_dynamic_cast<PPTX::Theme>();
 
-			if (Theme.IsInit())
-				Theme->SetColorMap(clrMap);
+            if (theme.IsInit())
+                theme->SetColorMap(clrMap);
 			//Theme->Master.reset((PPTX::WrapperFile*)this);
-			TableStyles = (Theme->Presentation->get(PPTX::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
+            tableStyles = (theme->Presentation->get(PPTX::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
 		}
 		const OOX::CPath GetPathBySpid(const CString& spid)const
 		{

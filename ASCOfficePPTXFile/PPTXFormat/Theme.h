@@ -299,9 +299,9 @@ namespace PPTX
 
 		virtual void FillShapeProperties(Logic::ShapeProperties& props, const CString& type)const
 		{
-			if(Presentation.IsInit())
+            if(presentation.IsInit())
 			{
-				props.FillFromTextListStyle(Presentation->defaultTextStyle);
+                props.FillFromTextListStyle(presentation->defaultTextStyle);
 				props.SetTextType(0);
 			}
 			if(type == _T("table-cell"))
@@ -349,7 +349,7 @@ namespace PPTX
 
 		bool									isThemeOverride;
 
-		smart_ptr<Presentation>					Presentation;
+        smart_ptr<Presentation>					presentation;
 
 	public:
 		void SetColorMap(const Logic::ClrMap& map){m_map = &map;};

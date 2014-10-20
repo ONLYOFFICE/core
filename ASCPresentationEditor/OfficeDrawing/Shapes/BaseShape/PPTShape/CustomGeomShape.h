@@ -3,10 +3,12 @@
 #include "ElementSettings.h"
 #include "../BaseShape.h"
 #include "../../../Attributes.h"
+#include "Formula.h"
 
 namespace NSCustomVML
 {
 	using namespace NSPresentationEditor;
+    using namespace NSGuidesVML;
 
 	class CSegment
 	{
@@ -360,7 +362,7 @@ namespace NSCustomVML
 			
 			if (0x0140 == param)
 			{
-				param_type	= ptValue;
+                param_type	= ptValue;
 				param_value	= ShapeSizeVML / 2;
 				return;
 			}

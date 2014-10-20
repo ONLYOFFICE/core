@@ -132,7 +132,7 @@ public:
 class CProperties
 {
 public:
-	CAtlArray<CProperty> m_arProperties;
+    std::vector<CProperty> m_arProperties;
 	// по идее - это instance, но нам так удобнее,
 	// тем более это класс - не связанный с RecordHeader
 	long m_lCount;
@@ -144,7 +144,7 @@ public:
 	~CProperties()
 	{
 		m_lCount = 0;
-		m_arProperties.RemoveAll();
+        m_arProperties.clear();
 	}
 	
 	void FromStream(IStream* pStream, long lCount)
@@ -152,7 +152,8 @@ public:
 		m_lCount = lCount;
 		for (long lIndex = 0; lIndex < m_lCount; ++lIndex)
 		{
-			m_arProperties.Add();
+            CProperty elem;
+            m_arProperties.push_back(elem);
 			m_arProperties[lIndex].FromStream(pStream);
 		}
 		// теперь читаем дополнительную информацию 
@@ -166,7 +167,7 @@ public:
 	CString ToString()
 	{
 		CString str = _T("");
-		for (size_t nIndex = 0; nIndex < m_arProperties.GetCount(); ++nIndex)
+        for (size_t nIndex = 0; nIndex < m_arProperties.size(); ++nIndex)
 		{
 			str += m_arProperties[nIndex].ToString();
 		}

@@ -1838,8 +1838,12 @@ namespace BinXlsxRW {
 			}
 			else if(c_oSerWorksheetsTypes::Drawings == type)
 			{
+				CString sDrawingsDir;
+				sDrawingsDir.Format(_T("%s\\xl\\drawings"), m_sDestinationDir);
+				if( !NSDirectory::Exists(string2std_string(sDrawingsDir)) )
+					OOX::CSystemUtility::CreateDirectories(sDrawingsDir);
 				CString sRelsDir;
-				sRelsDir.Format(_T("%s\\xl\\drawings\\_rels"), m_sDestinationDir);
+				sRelsDir.Format(_T("%s\\_rels"), sDrawingsDir);
 				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
 					OOX::CSystemUtility::CreateDirectories(sRelsDir);
 
@@ -2416,8 +2420,12 @@ namespace BinXlsxRW {
 			if(c_oSer_DrawingType::Chart2 == type)
 			{
 				//создаем папку для rels
+				CString sChartsDir;
+				sChartsDir.Format(_T("%s\\xl\\charts"), m_sDestinationDir);
+				if( !NSDirectory::Exists(string2std_string(sChartsDir)) )
+					OOX::CSystemUtility::CreateDirectories(sChartsDir);
 				CString sRelsDir;
-				sRelsDir.Format(_T("%s\\xl\\charts\\_rels"), m_sDestinationDir);
+				sRelsDir.Format(_T("%s\\_rels"), sChartsDir);
 				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
 					OOX::CSystemUtility::CreateDirectories(sRelsDir);
 				m_pOfficeDrawingConverter->SetDstContentRels();

@@ -8,7 +8,7 @@
 #include "Fills/SolidFill.h"
 #include "Fills/GradFill.h"
 #include "Fills/PattFill.h"
-#include "../../../DocxFormat/Source/SystemUtility/File.h"
+#include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
 
 namespace PPTX
 {

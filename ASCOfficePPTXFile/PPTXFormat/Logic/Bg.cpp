@@ -73,11 +73,11 @@ namespace PPTX
 			{
 				ARGB = bgRef->Color.GetARGB();
 				if(parentFileIs<Slide>())
-					parentFileAs<Slide>().Theme->themeElements.fmtScheme.GetFillStyle(bgRef->idx.get_value_or(0), bg.Fill);
+					parentFileAs<Slide>().theme->themeElements.fmtScheme.GetFillStyle(bgRef->idx.get_value_or(0), bg.Fill);
 				else if(parentFileIs<SlideLayout>())
-					parentFileAs<SlideLayout>().Theme->themeElements.fmtScheme.GetFillStyle(bgRef->idx.get_value_or(0), bg.Fill);
+					parentFileAs<SlideLayout>().theme->themeElements.fmtScheme.GetFillStyle(bgRef->idx.get_value_or(0), bg.Fill);
 				else if(parentFileIs<SlideMaster>())
-					parentFileAs<SlideMaster>().Theme->themeElements.fmtScheme.GetFillStyle(bgRef->idx.get_value_or(0), bg.Fill);
+					parentFileAs<SlideMaster>().theme->themeElements.fmtScheme.GetFillStyle(bgRef->idx.get_value_or(0), bg.Fill);
 			}
 		}
 

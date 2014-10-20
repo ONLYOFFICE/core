@@ -206,7 +206,7 @@ namespace PPTX
 				else if(cSld.bg->bgRef.is_init())
 				{
 					ARGB = cSld.bg->bgRef->Color.GetARGB();
-					Theme->themeElements.fmtScheme.GetFillStyle(cSld.bg->bgRef->idx.get_value_or(0), bg.Fill);
+					theme->themeElements.fmtScheme.GetFillStyle(cSld.bg->bgRef->idx.get_value_or(0), bg.Fill);
 					//bg.SetParentFilePointer(this);
 				}
 			}
@@ -419,7 +419,7 @@ namespace PPTX
 		nullable_bool							userDrawn;
 
 		smart_ptr<SlideMaster>					Master;
-		smart_ptr<Theme>						Theme;
+		smart_ptr<Theme>						theme;
 		smart_ptr<TableStyles>					TableStyles;
 		smart_ptr<VmlDrawing>					Vml;
 		
@@ -431,11 +431,11 @@ namespace PPTX
 			Master = pFile.smart_dynamic_cast<PPTX::SlideMaster>();
 
 			if (Master.IsInit())
-				Theme = Master->Theme;
+				theme = Master->theme;
 			
-			if (Theme.IsInit())
+			if (theme.IsInit())
 			{	
-                TableStyles = Theme->presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
+                TableStyles = theme->presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
 			}
 		}
 		const OOX::CPath GetPathBySpid(const CString& spid)const

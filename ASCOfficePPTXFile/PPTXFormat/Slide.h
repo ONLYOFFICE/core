@@ -155,7 +155,7 @@ namespace PPTX
 				else if(cSld->bg->bgRef.is_init())
 				{
 					ARGB = cSld->bg->bgRef->Color.GetARGB();
-					Theme->themeElements.fmtScheme.GetFillStyle(cSld->bg->bgRef->idx.get_value_or(0), bg.Fill);
+					theme->themeElements.fmtScheme.GetFillStyle(cSld->bg->bgRef->idx.get_value_or(0), bg.Fill);
 				}
 				return true;
 			}
@@ -355,7 +355,7 @@ namespace PPTX
 		smart_ptr<SlideLayout>	Layout;
 		smart_ptr<SlideMaster>	Master;
 		smart_ptr<NotesSlide>	Note;
-		smart_ptr<Theme>		Theme;
+		smart_ptr<Theme>		theme;
 		smart_ptr<VmlDrawing>	Vml;
 		smart_ptr<TableStyles>	TableStyles;
 
@@ -368,9 +368,9 @@ namespace PPTX
 			Note	= FileContainer::get(PPTX::FileTypes::NotesSlide).smart_dynamic_cast<PPTX::NotesSlide>();
 			comments = FileContainer::get(PPTX::FileTypes::SlideComments).smart_dynamic_cast<PPTX::Comments>();
 			Master	= Layout->Master;
-			Theme	= Layout->Theme;
+			theme	= Layout->theme;
 			
-			TableStyles = Theme->Presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();//boost::shared_dynamic_cast<PPTX::TableStyles, PPTX::File>(Theme->Presentation->get(PPTX::FileTypes::TableStyles));
+			TableStyles = theme->presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();//boost::shared_dynamic_cast<PPTX::TableStyles, PPTX::File>(Theme->Presentation->get(PPTX::FileTypes::TableStyles));
 
 			if (exist(PPTX::FileTypes::VmlDrawing))
 			{

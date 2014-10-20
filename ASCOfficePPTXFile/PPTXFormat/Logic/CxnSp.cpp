@@ -99,11 +99,11 @@ namespace PPTX
 			if(style.is_init())
 			{
 				if(parentFileIs<PPTX::Slide>())
-					parentFileAs<PPTX::Slide>().Theme->GetLineStyle(style->lnRef.idx.get_value_or(0), line);
+					parentFileAs<PPTX::Slide>().theme->GetLineStyle(style->lnRef.idx.get_value_or(0), line);
 				else if(parentFileIs<PPTX::SlideLayout>())
-					parentFileAs<PPTX::SlideLayout>().Theme->GetLineStyle(style->lnRef.idx.get_value_or(0), line);
+					parentFileAs<PPTX::SlideLayout>().theme->GetLineStyle(style->lnRef.idx.get_value_or(0), line);
 				else if(parentFileIs<PPTX::SlideMaster>())
-					parentFileAs<PPTX::SlideMaster>().Theme->GetLineStyle(style->lnRef.idx.get_value_or(0), line);
+					parentFileAs<PPTX::SlideMaster>().theme->GetLineStyle(style->lnRef.idx.get_value_or(0), line);
 
 				BGRA = style->lnRef.Color.GetBGRA();
 			}
@@ -121,11 +121,11 @@ namespace PPTX
 			if (style.IsInit())
 			{
 				if(parentFileIs<PPTX::Slide>())
-					parentFileAs<PPTX::Slide>().Theme->GetFillStyle(style->fillRef.idx.get_value_or(0), fill);
+					parentFileAs<PPTX::Slide>().theme->GetFillStyle(style->fillRef.idx.get_value_or(0), fill);
 				else if(parentFileIs<PPTX::SlideLayout>())
-					parentFileAs<PPTX::SlideLayout>().Theme->GetFillStyle(style->fillRef.idx.get_value_or(0), fill);
+					parentFileAs<PPTX::SlideLayout>().theme->GetFillStyle(style->fillRef.idx.get_value_or(0), fill);
 				else if(parentFileIs<PPTX::SlideMaster>())
-					parentFileAs<PPTX::SlideMaster>().Theme->GetFillStyle(style->fillRef.idx.get_value_or(0), fill);
+					parentFileAs<PPTX::SlideMaster>().theme->GetFillStyle(style->fillRef.idx.get_value_or(0), fill);
 
 				BGRA = style->fillRef.Color.GetBGRA();
 			}

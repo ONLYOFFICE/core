@@ -46,13 +46,13 @@ namespace PPTX2EditorAdvanced
 			_slideMasters.push_back(slideMaster);
 
 			// проверяем theme
-			size_t pPointerTh = (size_t)(slideMaster->Theme.operator ->()); 
+			size_t pPointerTh = (size_t)(slideMaster->theme.operator ->()); 
 			std::map<size_t, LONG>::const_iterator pSearchTh = pCommon->themes.find (pPointerTh);
 			if (pSearchTh == pCommon->themes.end())
 			{
 				LONG lCountTh = (LONG)_themes.size();
 				pCommon->themes [pPointerTh] = lCountTh;
-				_themes.push_back(slideMaster->Theme);
+				_themes.push_back(slideMaster->theme);
 				oMasterInfo.m_lThemeIndex = lCountTh;
 			}
 			else

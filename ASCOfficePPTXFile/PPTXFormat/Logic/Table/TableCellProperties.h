@@ -30,7 +30,7 @@ namespace PPTX
 				LnB				= oSrc.LnB;
 				LnTlToBr		= oSrc.LnTlToBr;
 				LnBlToTr		= oSrc.LnBlToTr;
-				Cell3D			= oSrc.Cell3D;
+                cell3D			= oSrc.cell3D;
 				Fill			= oSrc.Fill;
 				
 				MarL			= oSrc.MarL;
@@ -53,7 +53,7 @@ namespace PPTX
 				LnB				= node.ReadNode(_T("a:lnB"));
 				LnTlToBr		= node.ReadNode(_T("a:lnTlToBr"));
 				LnBlToTr		= node.ReadNode(_T("a:lnBlToTr"));
-				Cell3D			= node.ReadNode(_T("a:cell3D"));
+                cell3D			= node.ReadNode(_T("a:cell3D"));
 				Fill.GetFillFrom(node);
 	//			<xsd:element name="headers" type="CT_Headers" minOccurs="0"/> 
 
@@ -88,7 +88,7 @@ namespace PPTX
 				oValue.WriteNullable(LnB);
 				oValue.WriteNullable(LnTlToBr);
 				oValue.WriteNullable(LnBlToTr);
-				oValue.WriteNullable(Cell3D);
+                oValue.WriteNullable(cell3D);
 				oValue.Write(Fill);
 
 				return XmlUtils::CreateNode(_T("a:tcPr"), oAttr, oValue);
@@ -118,7 +118,7 @@ namespace PPTX
 				pWriter->Write(LnTlToBr);
 				pWriter->Write(LnBlToTr);
 				Fill.toXmlWriter(pWriter);
-				pWriter->Write(Cell3D);
+                pWriter->Write(cell3D);
 
 				pWriter->EndNode(_T("a:tcPr"));
 			}
@@ -143,7 +143,7 @@ namespace PPTX
 				pWriter->WriteRecord2(4, LnTlToBr);
 				pWriter->WriteRecord2(5, LnBlToTr);
 				pWriter->WriteRecord1(6, Fill);
-				pWriter->WriteRecord2(7, Cell3D);
+                pWriter->WriteRecord2(7, cell3D);
 			}
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
@@ -261,8 +261,8 @@ namespace PPTX
 						}
 						case 7:
 						{
-							Cell3D = new Logic::Cell3D();
-							Cell3D->fromPPTY(pReader);
+                            cell3D = new Logic::Cell3D();
+                            cell3D->fromPPTY(pReader);
 							break;
 						}
 						default:
@@ -280,7 +280,7 @@ namespace PPTX
 			nullable<Ln>		LnB;
 			nullable<Ln>		LnTlToBr;
 			nullable<Ln>		LnBlToTr;
-			nullable<Cell3D>	Cell3D;
+            nullable<Cell3D>	cell3D;
 			UniFill				Fill;
 //			<xsd:element name="headers" type="CT_Headers" minOccurs="0"/> 
 
@@ -308,8 +308,8 @@ namespace PPTX
 				if(LnBlToTr.IsInit())
 					LnBlToTr->SetParentPointer(this);
 
-				if(Cell3D.IsInit())
-					Cell3D->SetParentPointer(this);
+                if(cell3D.IsInit())
+                    cell3D->SetParentPointer(this);
 				if(Fill.is_init())
 					Fill.SetParentPointer(this);
 			}

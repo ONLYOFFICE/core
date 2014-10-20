@@ -189,9 +189,9 @@ namespace PPTX
 		}
 		void FillShapeProperties(Logic::ShapeProperties& props, const CString& type)const
 		{
-            if((theme.IsInit()) && (theme->Presentation.IsInit()))
+            if((theme.IsInit()) && (theme->presentation.IsInit()))
 			{
-                PPTX::Presentation* pPres = const_cast<PPTX::Presentation*>(theme->Presentation.operator->());
+                PPTX::Presentation* pPres = const_cast<PPTX::Presentation*>(theme->presentation.operator->());
 
 				pPres->SetClrMap(clrMap);
                 pPres->SetClrScheme(theme->themeElements.clrScheme);
@@ -243,9 +243,9 @@ namespace PPTX
 		}
 		void FillShapeTextProperties(Logic::CShapeTextProperties& props, const CString& type)const
 		{
-            if((theme.IsInit()) && (theme->Presentation.IsInit()))
+            if((theme.IsInit()) && (theme->presentation.IsInit()))
 			{
-                PPTX::Presentation* pPres = const_cast<PPTX::Presentation*>(theme->Presentation.operator->());
+                PPTX::Presentation* pPres = const_cast<PPTX::Presentation*>(theme->presentation.operator->());
 
 				pPres->SetClrMap(clrMap);
                 pPres->SetClrScheme(theme->themeElements.clrScheme);
@@ -457,7 +457,7 @@ namespace PPTX
 	public:
 		Logic::CSld					cSld;
 		Logic::ClrMap				clrMap;
-		std::vector<Logic::XmlId>		sldLayoutIdLst;
+		std::vector<Logic::XmlId>	sldLayoutIdLst;
 		nullable<Logic::Transition> transition;
 		nullable<Logic::Timing>		timing;
 		nullable<Logic::HF>			hf;
@@ -476,7 +476,7 @@ namespace PPTX
             if (theme.IsInit())
                 theme->SetColorMap(clrMap);
 			//Theme->Master.reset((PPTX::WrapperFile*)this);
-            tableStyles = (theme->Presentation->get(PPTX::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
+            tableStyles = (theme->presentation->get(PPTX::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
 		}
 		const OOX::CPath GetPathBySpid(const CString& spid)const
 		{

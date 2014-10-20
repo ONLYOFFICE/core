@@ -89,7 +89,7 @@ namespace PPTX
 			if (Theme.IsInit())
 				Theme->SetColorMap(clrMap);
 
-			TableStyles = (Theme->Presentation->get(PPTX::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
+			TableStyles = (Theme->presentation->get(PPTX::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
 		}
 
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

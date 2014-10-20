@@ -51,7 +51,7 @@ namespace PPTX
             {
                 smart_ptr<PPTX::Theme> pTheme = pPair->second.smart_dynamic_cast<PPTX::Theme>();
                 if (pTheme.IsInit())
-                    pTheme->Presentation = _presentation;
+                    pTheme->presentation = _presentation;
             }
         }
 

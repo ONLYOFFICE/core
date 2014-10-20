@@ -196,4 +196,51 @@ public:
     REAL Height;
 };
 
+class CPoint : public tagPOINT
+{
+public:
+// Constructors
+
+	// create an uninitialized point
+	CPoint() throw();
+	// create from two integers
+	CPoint(int initX, int initY) throw();
+	// create from another point
+	CPoint(POINT initPt) throw();
+	// create from a size
+	CPoint(SIZE initSize) throw();
+	// create from an LPARAM: x = LOWORD(dw) y = HIWORD(dw)
+	CPoint(LPARAM dwPoint) throw();
+
+
+// Operations
+
+// translate the point
+	void Offset(int xOffset, int yOffset) throw();
+	void Offset(POINT point) throw();
+	void Offset(SIZE size) throw();
+	void SetPoint(int X, int Y) throw();
+
+	BOOL operator==(POINT point) const throw();
+	BOOL operator!=(POINT point) const throw();
+	void operator+=(SIZE size) throw();
+	void operator-=(SIZE size) throw();
+	void operator+=(POINT point) throw();
+	void operator-=(POINT point) throw();
+
+// Operators returning CPoint values
+	CPoint operator+(SIZE size) const throw();
+	CPoint operator-(SIZE size) const throw();
+	CPoint operator-() const throw();
+	CPoint operator+(POINT point) const throw();
+
+// Operators returning CSize values
+	CSize operator-(POINT point) const throw();
+
+// Operators returning CRect values
+	CRect operator+(const RECT* lpRect) const throw();
+	CRect operator-(const RECT* lpRect) const throw();
+};
+
+
 }

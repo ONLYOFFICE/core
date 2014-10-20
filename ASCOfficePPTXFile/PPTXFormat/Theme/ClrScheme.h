@@ -22,19 +22,32 @@ namespace PPTX
 				Logic::UniColor lColor;
 				Scheme.clear();
 
-                lColor.GetColorFrom(node.ReadNode(_T("a:dk1")));
-                Scheme.insert(std::pair<CString,Logic::UniColor>(_T("dk1"), lColor));
-				lColor.GetColorFrom(node.ReadNode(_T("a:lt1")));		Scheme.insert(std::pair<CString,Logic::UniColor>(_T("lt1"), lColor));
-				lColor.GetColorFrom(node.ReadNode(_T("a:dk2")));		Scheme.insert(std::pair<CString,Logic::UniColor>(_T("dk2"), lColor));
-				lColor.GetColorFrom(node.ReadNode(_T("a:lt2")));		Scheme.insert(std::pair<CString,Logic::UniColor>(_T("lt2"), lColor));
-				lColor.GetColorFrom(node.ReadNode(_T("a:accent1")));	Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent1"), lColor));
-				lColor.GetColorFrom(node.ReadNode(_T("a:accent2")));	Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent2"), lColor));
-				lColor.GetColorFrom(node.ReadNode(_T("a:accent3")));	Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent3"), lColor));
-				lColor.GetColorFrom(node.ReadNode(_T("a:accent4")));	Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent4"), lColor));
-				lColor.GetColorFrom(node.ReadNode(_T("a:accent5")));	Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent5"), lColor));
-				lColor.GetColorFrom(node.ReadNode(_T("a:accent6")));	Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent6"), lColor));
-				lColor.GetColorFrom(node.ReadNode(_T("a:hlink")));		Scheme.insert(std::pair<CString,Logic::UniColor>(_T("hlink"), lColor));
-				lColor.GetColorFrom(node.ReadNode(_T("a:folHlink")));	Scheme.insert(std::pair<CString,Logic::UniColor>(_T("folHlink"), lColor));
+                XmlUtils::CXmlNode node1;
+
+                node1 = node.ReadNode(_T("a:dk1"));
+                lColor.GetColorFrom( node1);        Scheme.insert(std::pair<CString,Logic::UniColor>(_T("dk1"), lColor));
+                node1 = node.ReadNode(_T("a:lt1"));
+                lColor.GetColorFrom( node1 );       Scheme.insert(std::pair<CString,Logic::UniColor>(_T("lt1"), lColor));
+                node1 = node.ReadNode(_T("a:dk2"));
+                lColor.GetColorFrom(node1);         Scheme.insert(std::pair<CString,Logic::UniColor>(_T("dk2"), lColor));
+                node1 = node.ReadNode(_T("a:lt2"));
+                lColor.GetColorFrom(node1);         Scheme.insert(std::pair<CString,Logic::UniColor>(_T("lt2"), lColor));
+                node1 = node.ReadNode(_T("a:accent1"));
+                lColor.GetColorFrom(node1);         Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent1"), lColor));
+                node1 = node.ReadNode(_T("a:accent2"));
+                lColor.GetColorFrom(node1);         Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent2"), lColor));
+                node1 = node.ReadNode(_T("a:accent3"));
+                lColor.GetColorFrom(node1);         Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent3"), lColor));
+                node1 = node.ReadNode(_T("a:accent4"));
+                lColor.GetColorFrom(node1);         Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent4"), lColor));
+                node1 = node.ReadNode(_T("a:accent5"));
+                lColor.GetColorFrom(node1);         Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent5"), lColor));
+                node1 = node.ReadNode(_T("a:accent6"));
+                lColor.GetColorFrom(node1);         Scheme.insert(std::pair<CString,Logic::UniColor>(_T("accent6"), lColor));
+                node1 = node.ReadNode(_T("a:hlink"));
+                lColor.GetColorFrom(node1);         Scheme.insert(std::pair<CString,Logic::UniColor>(_T("hlink"), lColor));
+                node1 = node.ReadNode(_T("a:folHlink"));
+                lColor.GetColorFrom(node1);         Scheme.insert(std::pair<CString,Logic::UniColor>(_T("folHlink"), lColor));
 
 				FillParentPointersForChilds();
 			}

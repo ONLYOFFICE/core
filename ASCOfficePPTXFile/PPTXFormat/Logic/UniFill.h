@@ -8,6 +8,7 @@
 #include "Fills/SolidFill.h"
 #include "Fills/GradFill.h"
 #include "Fills/PattFill.h"
+#include "../../../DocxFormat/Source/SystemUtility/File.h"
 
 namespace PPTX
 {
@@ -303,7 +304,8 @@ namespace PPTX
 													// -------------------
 													if (strTempFile != _T(""))
 													{
-														::DeleteFile(strTempFile);
+                                                        //::DeleteFile(strTempFile);
+                                                        CDirectory::DeleteFile(strTempFile);
 													}
 													// -------------------
 

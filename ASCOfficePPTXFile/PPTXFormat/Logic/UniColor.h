@@ -18,9 +18,9 @@ namespace PPTX
 			const UniColor& operator =(XmlUtils::CXmlNode& node);
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node);
+            virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual void GetColorFrom(XmlUtils::CXmlNode& element);
-			virtual bool is_init()const{return (Color.IsInit());};
+            virtual bool is_init()const{return (Color.IsInit());};
 
 			template<class T> AVSINLINE const bool	is() const	{ return Color.is<T>(); }
 			template<class T> AVSINLINE T&			as()		{ return Color.as<T>(); }

@@ -1,8 +1,8 @@
 #pragma once
 #include "BinaryReader.h"
 #include "ElementSettings.h"
-#include "..\BaseShape.h"
-#include "..\..\..\Attributes.h"
+#include "../BaseShape.h"
+#include "../../../Attributes.h"
 
 namespace NSCustomVML
 {

@@ -15,6 +15,9 @@ DEFINES += UNICODE \
     _USE_LIBXML2_READER_ \
     _LINUX_QT \
     _USE_XMLLITE_READER_ \
+    PPTX_DEF\
+    PPT_DEF\
+    ENABLE_PPT_TO_PPTX_CONVERT\
     NODOCX \
     DISABLE_FILE_DOWNLOADER \
     CXIMAGE_DONT_DECLARE_TCHAR \
@@ -499,7 +502,8 @@ HEADERS += pptxformatlib.h \
 ../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h \
 ../../Directory.h \
 ../../File.h \
-../../Settings.h
+../../Settings.h \
+    ../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/ppt2pptxshapeconverter.h
 
 unix {
     target.path = /usr/lib

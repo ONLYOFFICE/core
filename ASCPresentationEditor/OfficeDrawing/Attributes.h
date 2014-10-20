@@ -4,7 +4,7 @@
 	#include <atlcoll.h>
 	#include <gdiplus.h>
 #else
-	#include "../../ASCOfficePPTXFile/PPTXLib/Linux/PPTXFormatLib/linux_gdiplus.h"
+    #include "../../../ASCOfficePPTXFile/PPTXLib/Linux/PPTXFormatLib/linux_gdiplus.h"
 #endif
 
 #include "Metric.h"
@@ -525,7 +525,7 @@ namespace NSPresentationEditor
 			Count       = 0;
 
 			DashOffset = 0;
-			Align = Gdiplus::PenAlignmentCenter;
+            Align = Gdiplus::PenAlignmentCenter;
 			MiterLimit = 0.5;
 		}
 

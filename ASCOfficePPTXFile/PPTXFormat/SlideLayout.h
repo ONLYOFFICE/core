@@ -435,7 +435,7 @@ namespace PPTX
 			
 			if (Theme.IsInit())
 			{	
-				TableStyles = Theme->Presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
+                TableStyles = Theme->presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
 			}
 		}
 		const OOX::CPath GetPathBySpid(const CString& spid)const

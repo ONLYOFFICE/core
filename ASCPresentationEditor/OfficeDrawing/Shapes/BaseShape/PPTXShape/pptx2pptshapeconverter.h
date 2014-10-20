@@ -1,6 +1,8 @@
 #pragma once
 #include "Formula.h"
 #include "../Path.h"
+#include "../PPTShape/Formula.h"
+#include "../PPTShape/PPTShape.h"
 
 namespace NSGuidesVML
 {

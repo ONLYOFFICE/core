@@ -13,6 +13,11 @@ enum DashStyle
     DashStyleCustom          // 5
 };
 
+enum PenAlignment
+{
+    PenAlignmentCenter       = 0,
+    PenAlignmentInset        = 1
+};
 class RectF
 {
 public:

@@ -189,7 +189,13 @@ namespace NSFontCutter
 			bool bIsFirst = true;
 			ULONG lIndexF = 0;
 
-			SAFEARRAY* pArrayUnicodes = GenerateSafearray();
+
+            USHORT* pArrayUnicodes = NULL;
+            size_t pArrayUnicodesLength = 0;
+            bool bRes = GenerateSafearray(&pArrayUnicodes, pArrayUnicodesLength);
+            if (!bRes)  // what about error handling?
+                return;
+
 			Fonts::IFontConverter* pFontConverter = NULL;
 			CoCreateInstance(__uuidof(Fonts::CFontConverter), NULL, CLSCTX_ALL, __uuidof(Fonts::IFontConverter), (void**)&pFontConverter);
 
@@ -203,7 +209,7 @@ namespace NSFontCutter
 						oFile.WriteFile(strWrite.GetBuffer(), strWrite.GetLength());
 					
 					bIsFirst = false;
-					WriteFont(oInfo.Name, oInfo.FaceRegular, oInfo.PathRegular, &oFile, pArrayUnicodes, pFontConverter);
+                    WriteFont(oInfo.Name, oInfo.FaceRegular, oInfo.PathRegular, &oFile, pArrayUnicodes, pArrayUnicodesLength, pFontConverter);
 
 					pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 					
@@ -230,7 +236,7 @@ namespace NSFontCutter
 						oFile.WriteFile(strWrite.GetBuffer(), strWrite.GetLength());
 
 					bIsFirst = false;
-					WriteFont(oInfo.Name, oInfo.FaceBold, oInfo.PathBold, &oFile, pArrayUnicodes, pFontConverter);
+                    WriteFont(oInfo.Name, oInfo.FaceBold, oInfo.PathBold, &oFile, pArrayUnicodes, pArrayUnicodesLength, pFontConverter);
 
 					pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 					
@@ -257,7 +263,7 @@ namespace NSFontCutter
 						oFile.WriteFile(strWrite.GetBuffer(), strWrite.GetLength());
 
 					bIsFirst = false;
-					WriteFont(oInfo.Name, oInfo.FaceItalic, oInfo.PathItalic, &oFile, pArrayUnicodes, pFontConverter);
+                    WriteFont(oInfo.Name, oInfo.FaceItalic, oInfo.PathItalic, &oFile, pArrayUnicodes, pArrayUnicodesLength, pFontConverter);
 
 					pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 					
@@ -284,7 +290,7 @@ namespace NSFontCutter
 						oFile.WriteFile(strWrite.GetBuffer(), strWrite.GetLength());
 
 					bIsFirst = false;
-					WriteFont(oInfo.Name, oInfo.FaceBoldItalic, oInfo.PathBoldItalic, &oFile, pArrayUnicodes, pFontConverter);
+                    WriteFont(oInfo.Name, oInfo.FaceBoldItalic, oInfo.PathBoldItalic, &oFile, pArrayUnicodes, pArrayUnicodesLength, pFontConverter);
 
 					pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 					
@@ -311,12 +317,12 @@ namespace NSFontCutter
 
 			oFile.CloseFile();
 
-			RELEASEARRAY(pArrayUnicodes);
+            delete [] pArrayUnicodes;
 			RELEASEINTERFACE(pFontConverter);
 #endif
 		}
 
-		SAFEARRAY* GenerateSafearray()
+        bool GenerateSafearray(USHORT **ppArray, size_t& nCount)
 		{
 			// цифры нужны всем. остальное - каждый 
 			CheckString(_T("0123456789"));
@@ -330,40 +336,40 @@ namespace NSFontCutter
 			m_CharMap [(WCHAR)0x0038] = TRUE;
 			m_CharMap [(WCHAR)0x0097] = TRUE;
 			
-			ULONG nCount = (ULONG)m_CharMap.size();
-			
-			SAFEARRAYBOUND rgsab;
-			rgsab.lLbound	= 0;
-			rgsab.cElements	= nCount;
+            nCount = (ULONG)m_CharMap.size();
 
-			// be sure that WCHAR is 2 bytes long
-			SAFEARRAY* pArray = SafeArrayCreate(VT_UI2, 1, &rgsab);
-			USHORT* pBuffer = (USHORT*)(pArray->pvData);
+            USHORT *pArray = new USHORT [nCount];
+
+            if (NULL == pArray)
+                return false;
+
+            USHORT *pBuffer = pArray;
 
 			for (std::map<WCHAR, BOOL>::const_iterator pPair = m_CharMap.begin(); pPair != m_CharMap.end(); ++pPair)
 			{
 				*pBuffer = pPair->first;
 				++pBuffer;
 			}
-			return pArray;
+            *ppArray = pArray;
+            return true;
 		}
 
 #ifdef BUILD_CONFIG_FULL_VERSION
-		void WriteFont(CString& strName, LONG& lFaceIndex, CString& strFontPath, CFile* pFile, SAFEARRAY* pArrayUnicodes, Fonts::IFontConverter* pFontConverter)
+        void WriteFont(CString& strName, LONG& lFaceIndex, CString& strFontPath, CFile* pFile, USHORT* pArrayUnicodes, size_t pArrayUnicodesLength, Fonts::IFontConverter* pFontConverter)
 		{	
 			LONG lFontConverterFlag = 16; // truetype only
 
 			BSTR bsFontIn = strFontPath.AllocSysString();
 						
 			CString _strName = strName + _T("_Embedded");
-			BSTR bsName = _strName.AllocSysString();
+            //BSTR bsName = _strName.AllocSysString();
 
 			SAFEARRAY* pArrayData = NULL;
 
-			pFontConverter->ToOTF2(bsFontIn, pArrayUnicodes, bsName, lFontConverterFlag, lFaceIndex, &pArrayData); // TrueType only
+            pFontConverter->ToOTF2(bsFontIn, pArrayUnicodes, pArrayUnicodesLength, _strName, lFontConverterFlag, lFaceIndex, &pArrayData); // TrueType only
 
-			SysFreeString(bsFontIn);
-			SysFreeString(bsName);
+            //SysFreeString(bsFontIn);
+            //SysFreeString(bsName);
 
 			BYTE* pbBinBuffer = (BYTE*)pArrayData->pvData;
 			int nBinBufferLen = pArrayData->rgsabound[0].cElements;

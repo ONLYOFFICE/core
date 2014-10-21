@@ -89,7 +89,7 @@ namespace PPTX
 			if (Theme.IsInit())
 				Theme->SetColorMap(clrMap);
 
-			TableStyles = (Theme->presentation->get(PPTX::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
+			tableStyles_ = (Theme->presentation->get(PPTX::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
 		}
 
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -167,7 +167,7 @@ namespace PPTX
 
 	public:
 		smart_ptr<Theme>			Theme;
-		smart_ptr<TableStyles>		TableStyles;
+		smart_ptr<TableStyles>		tableStyles_;
 
 		Logic::CSld						cSld;
 		Logic::ClrMap					clrMap;

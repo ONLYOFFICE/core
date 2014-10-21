@@ -61,8 +61,10 @@ namespace NSBinPptxRW
 
 			CDirectory::CreateDirectory(m_strDstFolder);
 			CDirectory::CreateDirectory(m_strDstFolder, _T("docProps"));
-			CString strPPT = m_strDstFolder + _T("\\ppt");
-			CDirectory::CreateDirectory(strPPT);
+
+            CString strPPT = m_strDstFolder + _T("\\ppt");
+
+            CDirectory::CreateDirectory(strPPT);
 			CDirectory::CreateDirectory(strPPT, _T("media"));
 
 			m_oImageManager.Clear();
@@ -111,7 +113,7 @@ namespace NSBinPptxRW
 
 			BYTE* pDstBuffer = new BYTE[dstLenTemp];
 			int dstLen = dstLenTemp;
-			Base64Decode((LPCSTR)pBuffer, len, pDstBuffer, &dstLen);
+            Base64::Base64Decode((LPCSTR)pBuffer, len, pDstBuffer, &dstLen);
 
 			m_oReader.m_strContentTypes = _T("");
 			m_oReader.Init(pDstBuffer, 0, dstLen);
@@ -385,9 +387,12 @@ namespace NSBinPptxRW
 				CString strFolder = m_strDstFolder + _T("\\ppt\\slides");
 				CString strFolderRels = strFolder + _T("\\_rels");
 
-				CDirectory::CreateDirectory(strFolder);
+#ifdef WIN32
+                CDirectory::CreateDirectory(strFolder);
 				CDirectory::CreateDirectory(strFolderRels);
-
+#else
+               ????
+#endif
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
 				

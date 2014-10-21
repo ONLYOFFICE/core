@@ -105,13 +105,13 @@ namespace PPTX2EditorAdvanced
 			_notesMasters.push_back(noteMaster);
 
 			// проверяем theme
-			size_t pPointerTh = (size_t)(noteMaster->Theme.operator ->()); 
+            size_t pPointerTh = (size_t)(noteMaster->theme_.operator ->());
 			std::map<size_t, LONG>::const_iterator pSearchTh = pCommon->themes.find(pPointerTh);
 			if (pSearchTh == pCommon->themes.end())
 			{
 				LONG lCountTh = (LONG)_themes.size();
 				pCommon->themes [pPointerTh] = lCountTh;
-				_themes.push_back(noteMaster->Theme);
+                _themes.push_back(noteMaster->theme_);
 			}
 		}
 
@@ -377,8 +377,11 @@ namespace PPTX2EditorAdvanced
 		if (TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
 		{
 			CFile oFile;
-			oFile.CreateFileW(strDstFile);
-
+#ifdef WIN32
+            oFile.CreateFileW(strDstFile);
+#else
+            oFile.CreateFile(strDstFile);
+#endif
 			CString strPrefix = _T("");
 			strPrefix.Format(_T("PPTY;v1;%d;"), nBinBufferLen);
 			CStringA sW = (CStringA)strPrefix;

@@ -2,8 +2,14 @@
 #define ASC_OFFICE_PPTX_FILE
 
 //todo
-#include <atlbase.h>
-#include <atlstr.h>
+#ifdef _WIN32
+    #include <atlbase.h>
+    #include <atlstr.h>
+#else
+    #include "../DesktopEditor/common/ASCVariant.h"
+    #include "../../../Common/DocxFormat/Source/Base/ASCString.h"
+#endif
+
 #include "../Common/DocxFormat/Source/Base/Base.h"
 #include "PPTXFormat/PPTXEvent.h"
 
@@ -44,17 +50,18 @@ public:
 	CPPTXFile(load_from_resource fCallbackResource, extract_to_directory fCallbackExtract, compress_from_directory fCallbackCompress, progress_operation fCallbackProgress, void* pCallbackArg);
 
 	~CPPTXFile();
-public:
+
 	HRESULT LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions);
-public:
+
 	HRESULT SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions);
-public:
+
+#ifdef WIN32
 	STDMETHOD(get_TempDirectory)(BSTR* pVal);
 	STDMETHOD(put_TempDirectory)(BSTR newVal);
-public:
+
 	STDMETHOD(GetDVDXml)(BSTR* pbstrPTTXml);
 	STDMETHOD(GetBluRayXml)(BSTR* pbstrDVDXml);
-public:
+
 	STDMETHOD(get_DrawingXml)(BSTR* pVal);
 	STDMETHOD(SetAdditionalParam)(BSTR ParamName, VARIANT ParamValue);
 	STDMETHOD(GetAdditionalParam)(BSTR ParamName, VARIANT* ParamValue);
@@ -67,8 +74,30 @@ public:
 	STDMETHOD(OpenFileToPPTY)(BSTR bsInput, BSTR bsOutput);
 	STDMETHOD(OpenDirectoryToPPTY)(BSTR bsInput, BSTR bsOutput);
 	STDMETHOD(ConvertPPTYToPPTX)(BSTR bsInput, BSTR bsOutput);
+#else
+    HRESULT get_TempDirectory(BSTR* pVal);
+    HRESULT put_TempDirectory(BSTR newVal);
+
+    HRESULT GetDVDXml(BSTR* pbstrPTTXml);
+    HRESULT GetBluRayXml(BSTR* pbstrDVDXml);
+
+    HRESULT get_DrawingXml(BSTR* pVal);
+    HRESULT SetAdditionalParam(BSTR ParamName, VARIANT ParamValue);
+    HRESULT GetAdditionalParam(BSTR ParamName, VARIANT* ParamValue);
+
+    virtual bool Progress(long ID, long Percent);
+
+    // to PPTY
+    HRESULT SetMediaDir(BSTR bsMediaDir);
+    HRESULT SetFontDir(BSTR bsFontDir);
+    HRESULT SetThemesDir(BSTR bsDir);
+    HRESULT SetUseSystemFonts(VARIANT_BOOL useSystemFonts);
+    HRESULT OpenFileToPPTY(BSTR bsInput, BSTR bsOutput);
+    HRESULT OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput);
+    HRESULT ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput);
+#endif
 private:
 
-	INT32 RemoveDirOrFile(CString sPath, bool bIsRemoveHead = true);
+    int RemoveDirOrFile(CString sPath, bool bIsRemoveHead = true);
 };
 #endif //ASC_OFFICE_PPTX_FILE

@@ -25,6 +25,7 @@ namespace FileSystem {
 		
 		static bool CreateDirectory(LPCTSTR path);
         static bool CreateDirectory(const String& path);
+        static bool CreateDirectory(String strFolderPathRoot, String strFolderName);
         static bool CreateDirectories(LPCTSTR path);
 
 		static StringArray GetFilesInDirectory(LPCTSTR path, const bool& andSubdirectories = false);

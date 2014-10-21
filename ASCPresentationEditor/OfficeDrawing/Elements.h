@@ -13,7 +13,7 @@
 
 
 #ifdef ENABLE_PPT_TO_PPTX_CONVERT
-#include "Shapes/BaseShape/PPTShape/PPT2PPTXShapeConverter.h"
+#include "Shapes/BaseShape/PPTShape/ppt2pptxshapeconverter.h"
 #endif
 
 #if defined(PPTX_DEF)

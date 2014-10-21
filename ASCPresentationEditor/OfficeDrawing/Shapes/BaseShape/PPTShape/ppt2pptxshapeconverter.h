@@ -1,5 +1,5 @@
 #pragma once
-#include "formula.h"
+#include "Formula.h"
 #include "../Path.h"
 
 #define OPTIMIZE_COMPILE_CONVERT_PPT_TO_PPTX

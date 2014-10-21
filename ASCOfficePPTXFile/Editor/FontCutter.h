@@ -130,27 +130,15 @@ namespace NSFontCutter
 		void CheckString(const CString& val)
 		{
 			int len = val.GetLength();
-			LPWSTR pCBuf1 = new WCHAR[len + 1];
-			LPWSTR pCBuf2 = new WCHAR[len + 1];
 
-			LPCWSTR pSrc = (LPCWSTR)val;
-			memcpy(pCBuf1, pSrc, len * sizeof(WCHAR));
-			memcpy(pCBuf2, pSrc, len * sizeof(WCHAR));
-
-			pCBuf1[len] = 0;
-			pCBuf2[len] = 0;
-			
-			LPWSTR ch1 = CharLower(pCBuf1);
-			LPWSTR ch2 = CharUpper(pCBuf2);
+            CString str_lower = val;            str_lower.MakeLower();
+            CString str_upper = val;            str_upper.MakeUpper();
 
 			for (int i = 0; i < len; ++i)
 			{
-				m_CharMap [ch1[i]] = TRUE;
-				m_CharMap [ch2[i]] = TRUE;
+                m_CharMap [str_lower.c_str()[i]] = TRUE;
+                m_CharMap [str_upper.c_str()[i]] = TRUE;
 			}
-
-			RELEASEARRAYOBJECTS(pCBuf1);
-			RELEASEARRAYOBJECTS(pCBuf2);
 		}
 
 		template<typename T>

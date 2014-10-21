@@ -639,15 +639,20 @@ namespace NSPresentationEditor
 				
 				if (!bulletChar.is_init())
 				{
-                    strXml += (_T("<bulletchar>•</bulletchar>"));
+                    CString temp = _T("<bulletchar>");
+                    temp += _T('\x2022');
+                    temp += _T("</bulletchar>");
+                    strXml += temp;
 				}
 			}
 			
 			if (bulletChar.is_init())
-			{
-                strXml += (_T("<bulletchar>•</bulletchar>"));
+            {
+                CString temp = _T("<bulletchar>");
+                temp +=  _T('\x2022');
+                temp += _T("</bulletchar>");
+                strXml += temp;
 			}
-
 			strXml += ToNode(bulletFontRef, _T("bulletfontref"));
 			strXml += ToNode(bulletSize, _T("bulletsize"));
 			strXml += ToNode(bulletColor, _T("bulletcolor"));

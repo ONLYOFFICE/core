@@ -1,5 +1,7 @@
 #pragma once
 #include "Converter.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+
 
 typedef void (*load_from_resource)(void*, int, CString&);
 
@@ -58,14 +60,13 @@ namespace NSBinPptxRW
 		void Init(CString strFolder)
 		{
 			m_strDstFolder = strFolder;
-
-			CDirectory::CreateDirectory(m_strDstFolder);
-			CDirectory::CreateDirectory(m_strDstFolder, _T("docProps"));
-
             CString strPPT = m_strDstFolder + _T("\\ppt");
 
-            CDirectory::CreateDirectory(strPPT);
-			CDirectory::CreateDirectory(strPPT, _T("media"));
+
+            FileSystem::Directory::CreateDirectory(m_strDstFolder);
+            FileSystem::Directory::CreateDirectory(m_strDstFolder, _T("docProps"));
+            FileSystem::Directory::CreateDirectory(strPPT);
+            FileSystem::Directory::CreateDirectory(strPPT, _T("media"));
 
 			m_oImageManager.Clear();
 			m_oImageManager.SetDstMedia(m_strDstFolder + _T("\\ppt\\media"));
@@ -83,7 +84,8 @@ namespace NSBinPptxRW
 
 			if (cur_pos == len || cur_pos == start_pos)
 				return;
-			CString __str_ppty((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
+
+            CStringA __str_ppty((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
 			start_pos = cur_pos + 1;
 
 			cur_pos = start_pos;
@@ -93,7 +95,7 @@ namespace NSBinPptxRW
 			if (cur_pos == len || cur_pos == start_pos)
 				return;
 
-			CString __str_version((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
+            CStringA __str_version((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
 			start_pos = cur_pos + 1;
 
 			cur_pos = start_pos;
@@ -103,7 +105,7 @@ namespace NSBinPptxRW
 			if (cur_pos == len || cur_pos == start_pos)
 				return;
 
-			CString __str_decode_len((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
+            CStringA __str_decode_len((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
 			start_pos = cur_pos + 1;
 
 			pBuffer += start_pos;
@@ -260,8 +262,8 @@ namespace NSBinPptxRW
 				CString strFolder = m_strDstFolder + _T("\\ppt\\theme");
 				CString strFolderRels = strFolder + _T("\\_rels");
 
-				CDirectory::CreateDirectory(strFolder);
-				CDirectory::CreateDirectory(strFolderRels);
+                FileSystem::Directory::CreateDirectory(strFolder);
+                FileSystem::Directory::CreateDirectory(strFolderRels);
 
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
@@ -300,8 +302,8 @@ namespace NSBinPptxRW
 				CString strFolder = m_strDstFolder + _T("\\ppt\\slideMasters");
 				CString strFolderRels = strFolder + _T("\\_rels");
 
-				CDirectory::CreateDirectory(strFolder);
-				CDirectory::CreateDirectory(strFolderRels);
+                FileSystem::Directory::CreateDirectory(strFolder);
+                FileSystem::Directory::CreateDirectory(strFolderRels);
 
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
@@ -352,8 +354,8 @@ namespace NSBinPptxRW
 				CString strFolder = m_strDstFolder + _T("\\ppt\\slideLayouts");
 				CString strFolderRels = strFolder + _T("\\_rels");
 
-				CDirectory::CreateDirectory(strFolder);
-				CDirectory::CreateDirectory(strFolderRels);
+                FileSystem::Directory::CreateDirectory(strFolder);
+                FileSystem::Directory::CreateDirectory(strFolderRels);
 
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
@@ -387,12 +389,9 @@ namespace NSBinPptxRW
 				CString strFolder = m_strDstFolder + _T("\\ppt\\slides");
 				CString strFolderRels = strFolder + _T("\\_rels");
 
-#ifdef WIN32
-                CDirectory::CreateDirectory(strFolder);
-				CDirectory::CreateDirectory(strFolderRels);
-#else
-               ????
-#endif
+               FileSystem::Directory::CreateDirectory (strFolder);
+               FileSystem::Directory::CreateDirectory (strFolderRels);
+
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
 				
@@ -410,7 +409,7 @@ namespace NSBinPptxRW
 						m_oReader.m_pRels->WriteSlideComments(nComment);
 						if (1 == nComment)
 						{
-							CDirectory::CreateDirectory(m_strDstFolder + _T("\\ppt\\comments"));
+                            FileSystem::Directory::CreateDirectory (m_strDstFolder + _T("\\ppt\\comments"));
 						}
 						CString strCommentFile = _T("");
 						strCommentFile.Format(_T("\\ppt\\comments\\comment%d.xml"), nComment);
@@ -476,8 +475,8 @@ namespace NSBinPptxRW
 				CString strFolder = m_strDstFolder + _T("\\ppt\\notesSlides");
 				CString strFolderRels = strFolder + _T("\\_rels");
 
-				CDirectory::CreateDirectory(strFolder);
-				CDirectory::CreateDirectory(strFolderRels);
+                FileSystem::Directory::CreateDirectory (strFolder);
+                FileSystem::Directory::CreateDirectory (strFolderRels);
 
 				LONG lCount = (LONG)m_arSlides.size();				
 				for (LONG i = 0; i < lCount; ++i)
@@ -591,7 +590,7 @@ namespace NSBinPptxRW
 				CString strFolder = m_strDstFolder + _T("\\ppt");
 				CString strFolderRels = strFolder + _T("\\_rels");
 
-				CDirectory::CreateDirectory(strFolderRels);
+                FileSystem::Directory::CreateDirectory (strFolderRels);
 
 				m_oReader.Seek(pPair->second);
 				m_oPresentation.fromPPTY(&m_oReader);
@@ -756,7 +755,7 @@ namespace NSBinPptxRW
 <Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>\
 </Relationships>");
 
-			CDirectory::CreateDirectory(m_strDstFolder + _T("\\_rels"));
+            FileSystem::Directory::CreateDirectory (m_strDstFolder + _T("\\_rels"));
 			oFile.CreateFile(m_strDstFolder + _T("\\_rels\\.rels"));
 			oFile.WriteStringUTF8(strRELS);
 			oFile.CloseFile();

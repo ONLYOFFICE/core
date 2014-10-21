@@ -80,11 +80,15 @@ namespace FileSystem {
     bool Directory::CreateDirectory(const String& path) {
         return CreateDirectory(path.c_str());
     }
+    bool CreateDirectory(String strFolderPathRoot, String strFolderName)
+    {
+        String strFolder = strFolderPathRoot;
+        strFolder =+ _T("/");
+        strFolder =+ strFolderName;
+        return CreateDirectory(strFolder);
+    }
     bool Directory::CreateDirectories(LPCTSTR path) 
 	{
-        auto func = [] () { };
-            func(); // now call the function
-
         std::wstring pathWstring;
         pathWstring = path;
         std::string pathUtf8 = stringWstingToUtf8String (pathWstring);

@@ -120,6 +120,8 @@ namespace PPTX
 		{
 			return smart_ptr<PPTX::File>(new PPTX::Image(filename));
 		}
+		else if(strT == PPTX::FileTypes::HyperLink)
+			return smart_ptr<PPTX::File>(new PPTX::HyperLink(relation.target()));
 		
 		return smart_ptr<PPTX::File>(new PPTX::UnknowTypeFile());
 	}

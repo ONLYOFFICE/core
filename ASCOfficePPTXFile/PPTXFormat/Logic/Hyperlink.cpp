@@ -10,21 +10,30 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		CString Hyperlink::GetFullHyperlinkName()const
+		CString Hyperlink::GetFullHyperlinkName(FileContainer* pRels)const
 		{
 			if(id.IsInit() && *id != _T(""))
 			{
 				PPTX::RId rid(*id);
 
 				CString sLink = _T("");
-				if(parentFileIs<Slide>())
-					sLink = parentFileAs<Slide>().GetFullHyperlinkNameFromRId(rid);
-				else if(parentFileIs<SlideLayout>())
-					sLink = parentFileAs<SlideLayout>().GetFullHyperlinkNameFromRId(rid);
-				else if(parentFileIs<SlideMaster>())
-					sLink = parentFileAs<SlideMaster>().GetFullHyperlinkNameFromRId(rid);
-				else if(parentFileIs<Theme>())
-					sLink = parentFileAs<Theme>().GetFullHyperlinkNameFromRId(rid);
+				if (pRels != NULL)
+				{
+					smart_ptr<PPTX::HyperLink> p = pRels->hyperlink(rid);
+					if (p.is_init())
+						sLink = p->Uri().m_strFilename;
+				}
+				if(sLink.IsEmpty())
+				{
+					if(parentFileIs<Slide>())
+						sLink = parentFileAs<Slide>().GetFullHyperlinkNameFromRId(rid);
+					else if(parentFileIs<SlideLayout>())
+						sLink = parentFileAs<SlideLayout>().GetFullHyperlinkNameFromRId(rid);
+					else if(parentFileIs<SlideMaster>())
+						sLink = parentFileAs<SlideMaster>().GetFullHyperlinkNameFromRId(rid);
+					else if(parentFileIs<Theme>())
+						sLink = parentFileAs<Theme>().GetFullHyperlinkNameFromRId(rid);
+				}
 				
 				sLink.Replace(TCHAR('\\'), TCHAR('/'));
 				sLink.Replace(_T("//"), _T("/"));

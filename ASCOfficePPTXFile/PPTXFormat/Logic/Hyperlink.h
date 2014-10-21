@@ -57,7 +57,11 @@ namespace PPTX
 
 				if (id.is_init())
 				{
-					CString str = GetFullHyperlinkName();
+					FileContainer* pRels = NULL;
+					if (pWriter->m_pCommonRels->is_init())
+						pRels = pWriter->m_pCommonRels->operator ->();
+
+					CString str = GetFullHyperlinkName(pRels);
 					pWriter->WriteString1(0, str);
 				}
 
@@ -195,7 +199,7 @@ namespace PPTX
 					snd->SetParentPointer(this);
 			}
 
-			virtual CString GetFullHyperlinkName()const;
+			virtual CString GetFullHyperlinkName(FileContainer* pRels)const;
 		};
 	} // namespace Logic
 } // namespace PPTX

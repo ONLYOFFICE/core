@@ -37,6 +37,8 @@ public:
 		RELEASEARRAYOBJECTS(m_pOptions);
 	}
 
+#ifdef WIN32
+
 	void FromStream(IStream* pStream)
 	{
 		// читаем из стрима...
@@ -109,7 +111,7 @@ public:
 			}
 		}
 	}
-
+#endif
 	CString ToString()
 	{
 		CString str = _T("");
@@ -146,7 +148,8 @@ public:
 		m_lCount = 0;
         m_arProperties.clear();
 	}
-	
+
+#ifdef WIN32
 	void FromStream(IStream* pStream, long lCount)
 	{
 		m_lCount = lCount;
@@ -163,7 +166,7 @@ public:
 			m_arProperties[lIndex].ComplexFromStream(pStream);
 		}
 	}
-
+#endif
 	CString ToString()
 	{
 		CString str = _T("");

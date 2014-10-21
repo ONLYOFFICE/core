@@ -635,17 +635,17 @@ namespace NSPresentationEditor
 			CString strXml = _T("");
 			if (hasBullet.is_init() && (TRUE == hasBullet.get()))
 			{
-				strXml += _T("<bulletflag>255</bulletflag>");
+                strXml += (_T("<bulletflag>255</bulletflag>"));
 				
 				if (!bulletChar.is_init())
 				{
-					strXml += _T("<bulletchar>•</bulletchar>");
+                    strXml += (_T("<bulletchar>•</bulletchar>"));
 				}
 			}
 			
 			if (bulletChar.is_init())
 			{
-				strXml += _T("<bulletchar>•</bulletchar>");
+                strXml += (_T("<bulletchar>•</bulletchar>"));
 			}
 
 			strXml += ToNode(bulletFontRef, _T("bulletfontref"));

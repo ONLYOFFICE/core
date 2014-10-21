@@ -116,8 +116,10 @@ namespace PPTX
 
 				pWriter->EndRecord();
 
-				if (pWriter->m_pCommon->m_pNativePicker->m_bIsEmbeddedFonts)
+#ifdef _WIN32
+                if (pWriter->m_pCommon->m_pNativePicker->m_bIsEmbeddedFonts)
 					pWriter->m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckString(text);
+#endif
 			}
 
 			void SetText(const CString& src)

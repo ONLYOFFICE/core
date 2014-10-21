@@ -27,6 +27,7 @@
 #include "PPTXFormat/PPTX.h"
 #include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/PPTXShape.h"
 #include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/Formula.h"
+#include "../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
 const double g_emu_koef	= 25.4 * 36000 / 72.0;
 
@@ -842,7 +843,11 @@ HRESULT CDrawingConverter::SetMediaDstPath(const CString& bsMediaPath)
 	m_pBinaryWriter->m_pCommon->m_pImageManager->m_strDstMedia = (CString)bsMediaPath;
 	m_pImageManager->SetDstMedia(m_pBinaryWriter->m_pCommon->m_pImageManager->m_strDstMedia);
 
+#ifdef _WIN32
 	CreateDirectory(bsMediaPath, NULL);
+#else
+    FileSystem::Directory::CreateDirectory(bsMediaPath);
+#endif
 	return S_OK;
 }
 HRESULT CDrawingConverter::AddShapeType(const CString& bsXml)

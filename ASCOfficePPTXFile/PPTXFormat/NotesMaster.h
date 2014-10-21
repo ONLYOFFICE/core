@@ -84,12 +84,12 @@ namespace PPTX
 
 		void ApplyRels()
 		{
-			Theme = (FileContainer::get(PPTX::FileTypes::ThemePPTX)).smart_dynamic_cast<PPTX::Theme>();
+            theme_= (FileContainer::get(PPTX::FileTypes::ThemePPTX)).smart_dynamic_cast<PPTX::Theme>();
 
-			if (Theme.IsInit())
-				Theme->SetColorMap(clrMap);
+            if (theme_.IsInit())
+                theme_->SetColorMap(clrMap);
 
-			tableStyles_ = (Theme->presentation->get(PPTX::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
+            tableStyles_ = (theme_->presentation->get(PPTX::FileTypes::TableStyles)).smart_dynamic_cast<PPTX::TableStyles>();
 		}
 
 		virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
@@ -166,7 +166,7 @@ namespace PPTX
 		}
 
 	public:
-		smart_ptr<Theme>			Theme;
+        smart_ptr<Theme>			theme_;
 		smart_ptr<TableStyles>		tableStyles_;
 
 		Logic::CSld						cSld;

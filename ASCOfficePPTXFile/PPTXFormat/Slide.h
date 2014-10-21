@@ -357,7 +357,7 @@ namespace PPTX
 		smart_ptr<NotesSlide>	Note;
 		smart_ptr<Theme>		theme;
 		smart_ptr<VmlDrawing>	Vml;
-		smart_ptr<TableStyles>	TableStyles;
+        smart_ptr<TableStyles>	tableStyles_;
 
 		smart_ptr<PPTX::Comments>	comments;
 
@@ -370,7 +370,7 @@ namespace PPTX
 			Master	= Layout->Master;
 			theme	= Layout->theme;
 			
-			TableStyles = theme->presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();//boost::shared_dynamic_cast<PPTX::TableStyles, PPTX::File>(Theme->Presentation->get(PPTX::FileTypes::TableStyles));
+            tableStyles_= theme->presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();//boost::shared_dynamic_cast<PPTX::TableStyles, PPTX::File>(Theme->Presentation->get(PPTX::FileTypes::TableStyles));
 
 			if (exist(PPTX::FileTypes::VmlDrawing))
 			{

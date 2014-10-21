@@ -265,11 +265,11 @@ namespace PPTX
 
 														CStringA __s = (CStringA)strUrl;
 														int len = __s.GetLength();
-														int dstLenTemp = Base64DecodeGetRequiredLength(len);
+                                                        int dstLenTemp = Base64::Base64DecodeGetRequiredLength(len);
 
 														BYTE* pDstBuffer = new BYTE[dstLenTemp];
 														int dstLen = dstLenTemp;
-														Base64Decode(__s.GetBuffer(), len, pDstBuffer, &dstLen);
+                                                        Base64::Base64Decode(__s.GetBuffer(), len, pDstBuffer, &dstLen);
 
 														strTempFile = pReader->m_strFolder + _T("\\media\\temp.jpg");
 														CFile oTempFile;

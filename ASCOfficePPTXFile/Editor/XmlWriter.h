@@ -4,10 +4,6 @@
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/Common.h"
 
-#ifndef WIN32
-    #include <boost/locale.hpp>
-#endif
-
 namespace NSBinPptxRW
 {
     static std::wstring	g_bstr_nodeopen				= L"<";
@@ -584,7 +580,7 @@ namespace NSBinPptxRW
                     delete[] pWStr;
     #endif
 #else
-                saStr = boost::locale::conv::to_utf(strData);
+                saStr = stringWstingToUtf8String(strData);
 #endif
 				
 				CFile oFile;

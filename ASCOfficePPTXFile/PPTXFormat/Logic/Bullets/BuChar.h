@@ -53,10 +53,10 @@ namespace PPTX
 
 				pWriter->EndRecord();
 
-#ifdef _WIN32
+
                 if (pWriter->m_pCommon->m_pNativePicker->m_bIsEmbeddedFonts)
 					pWriter->m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckString(Char);
-#endif
+
 			}
 
 		public:

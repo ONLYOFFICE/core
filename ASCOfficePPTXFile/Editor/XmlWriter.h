@@ -4,6 +4,10 @@
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/Common.h"
 
+#ifndef WIN32
+    #include <boost/locale.hpp>
+#endif
+
 namespace NSBinPptxRW
 {
     static std::wstring	g_bstr_nodeopen				= L"<";
@@ -555,29 +559,32 @@ namespace NSBinPptxRW
 				int nLength = strData.GetLength();
 
 				CStringA saStr;
-				
-#ifdef UNICODE
-				// Encoding Unicode to UTF-8
-				WideCharToMultiByte(CP_UTF8, 0, strData.GetBuffer(), nLength + 1, saStr.GetBuffer(nLength*3 + 1), nLength*3, NULL, NULL);
-				saStr.ReleaseBuffer();    
+#ifdef WIN32
+    #ifdef UNICODE
+                    // Encoding Unicode to UTF-8
+                    WideCharToMultiByte(CP_UTF8, 0, strData.GetBuffer(), nLength + 1, saStr.GetBuffer(nLength*3 + 1), nLength*3, NULL, NULL);
+                    saStr.ReleaseBuffer();
+    #else
+                    wchar_t* pWStr = new wchar_t[nLength + 1];
+                    if (!pWStr)
+                        return;
+
+                    // set end string
+                    pWStr[nLength] = 0;
+
+                    // Encoding ASCII to Unicode
+                    MultiByteToWideChar(CP_ACP, 0, strData, nLength, pWStr, nLength);
+
+                    int nLengthW = (int)wcslen(pWStr);
+
+                    // Encoding Unicode to UTF-8
+                    WideCharToMultiByte(CP_UTF8, 0, pWStr, nLengthW + 1, saStr.GetBuffer(nLengthW*3 + 1), nLengthW*3, NULL, NULL);
+                    saStr.ReleaseBuffer();
+
+                    delete[] pWStr;
+    #endif
 #else
-				wchar_t* pWStr = new wchar_t[nLength + 1];
-				if (!pWStr)
-					return;
-
-				// set end string
-				pWStr[nLength] = 0;
-
-				// Encoding ASCII to Unicode
-				MultiByteToWideChar(CP_ACP, 0, strData, nLength, pWStr, nLength);
-
-				int nLengthW = (int)wcslen(pWStr);
-
-				// Encoding Unicode to UTF-8
-				WideCharToMultiByte(CP_UTF8, 0, pWStr, nLengthW + 1, saStr.GetBuffer(nLengthW*3 + 1), nLengthW*3, NULL, NULL);
-				saStr.ReleaseBuffer();
-
-				delete[] pWStr;
+                saStr = boost::locale::conv::to_utf(strData);
 #endif
 				
 				CFile oFile;

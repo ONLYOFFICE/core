@@ -36,7 +36,6 @@ INCLUDEPATH += \
 
 SOURCES += pptxformatlib.cpp \
 ../../../ASCOfficeDrawingConverter.cpp \
-../../../ASCOfficePPTXFile.cpp \
 ../../../ASCOfficePPTXFileRealization.cpp \
 ../../../../Common/DocxFormat/Source/XML/libxml2/libxml2.cpp \
 ../../../../Common/DocxFormat/Source/XML/stringcommon.cpp \

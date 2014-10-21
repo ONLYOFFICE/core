@@ -40,7 +40,7 @@ namespace NSCustomVML
 		~CSegment()
 		{
 		}
-
+#ifdef WIN32
 		void Read(IStream* pStream)
 		{
 			WORD mem = StreamUtils::ReadWORD(pStream);
@@ -136,7 +136,7 @@ namespace NSCustomVML
 
 			m_nCount = (mem >> 5) & 0x00FF;
 		}
-
+#endif
 		void Read(NSOfficeDrawing::CBinaryReader& oReader)
 		{
 			WORD mem = oReader.ReadWORD();
@@ -320,7 +320,7 @@ namespace NSCustomVML
 			SetParam(m_param_type2, m_param_value2, oFormula.m_eType2, oFormula.m_lParam2);
 			SetParam(m_param_type3, m_param_value3, oFormula.m_eType3, oFormula.m_lParam3);
 		}
-
+#ifdef WIN32
 		void Read(IStream* pStream)
 		{
 			WORD ftType = StreamUtils::ReadWORD(pStream);
@@ -335,7 +335,7 @@ namespace NSCustomVML
 			m_param_value2 = StreamUtils::ReadWORD(pStream);
 			m_param_value3 = StreamUtils::ReadWORD(pStream);
 		}
-
+#endif
 		void Read(NSOfficeDrawing::CBinaryReader& oReader)
 		{
 			WORD ftType = oReader.ReadWORD();

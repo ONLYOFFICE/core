@@ -136,8 +136,14 @@ namespace NSFontCutter
 
 			for (int i = 0; i < len; ++i)
 			{
-                m_CharMap [str_lower.c_str()[i]] = TRUE;
+#ifdef WIN32
+				m_CharMap [str_lower.GetBuffer()[i]] = TRUE;
+                m_CharMap [str_upper.GetBuffer()[i]] = TRUE;
+
+#else
+				m_CharMap [str_lower.c_str()[i]] = TRUE;
                 m_CharMap [str_upper.c_str()[i]] = TRUE;
+#endif
 			}
 		}
 

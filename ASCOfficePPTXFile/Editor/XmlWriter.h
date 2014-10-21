@@ -154,8 +154,8 @@ namespace NSBinPptxRW
 		{
 			size_t nNewS = oWriter.GetCurSize();
 			AddSize(nNewS);
-			memmove(m_pData + nNewS, m_pData, m_lSizeCur << 1);
-			memcpy(m_pData, oWriter.m_pData, nNewS << 1);
+            memmove(m_pData + nNewS, m_pData, m_lSizeCur * sizeof (wchar_t));
+            memcpy(m_pData, oWriter.m_pData, nNewS * sizeof (wchar_t));
 			m_pDataCur += nNewS;
 			m_lSizeCur += nNewS;
 		}

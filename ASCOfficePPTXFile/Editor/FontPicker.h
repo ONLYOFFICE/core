@@ -2,9 +2,9 @@
 
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "BinReaderWriterDefines.h"
-#ifdef _WIN32
+
     #include "FontCutter.h"
-#endif
+
 
 //#include "../../DesktopEditor/fontengine/FontManager.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"

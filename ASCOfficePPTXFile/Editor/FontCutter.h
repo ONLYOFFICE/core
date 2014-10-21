@@ -156,7 +156,7 @@ namespace NSFontCutter
 		template<typename T>
 		void WriteEmbeddedFonts(T* pWriter)
 		{
-#ifdef BUILD_CONFIG_FULL_VERSION
+#if defined(BUILD_CONFIG_FULL_VERSION) && !defined(DONT_WRITE_EMBEDDED_FONTS)
 			ULONG nCount = 0;
 
 			for(std::map<CString, CEmbeddedFontInfo>::iterator pPair = m_mapFontsEmbeddded.begin(); pPair != m_mapFontsEmbeddded.end(); ++pPair)
@@ -319,7 +319,7 @@ namespace NSFontCutter
 
             delete [] pArrayUnicodes;
 			RELEASEINTERFACE(pFontConverter);
-#endif
+#endif // #if defined(BUILD_CONFIG_FULL_VERSION) && !defined(DONT_WRITE_EMBEDDED_FONTS)
 		}
 
         bool GenerateSafearray(USHORT **ppArray, size_t& nCount)
@@ -354,7 +354,7 @@ namespace NSFontCutter
             return true;
 		}
 
-#ifdef BUILD_CONFIG_FULL_VERSION
+#if defined(BUILD_CONFIG_FULL_VERSION) && !defined(DONT_WRITE_EMBEDDED_FONTS)
         void WriteFont(CString& strName, LONG& lFaceIndex, CString& strFontPath, CFile* pFile, USHORT* pArrayUnicodes, size_t pArrayUnicodesLength, Fonts::IFontConverter* pFontConverter)
 		{	
 			LONG lFontConverterFlag = 16; // truetype only
@@ -389,7 +389,7 @@ namespace NSFontCutter
 
 			RELEASEARRAY(pArrayData);			
 		}
-#endif
+#endif // #if defined(BUILD_CONFIG_FULL_VERSION) && !defined(DONT_WRITE_EMBEDDED_FONTS)
 	};
 }
 

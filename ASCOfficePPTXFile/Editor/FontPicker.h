@@ -3,7 +3,7 @@
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "BinReaderWriterDefines.h"
 
-    #include "FontCutter.h"
+#include "FontCutter.h"
 
 
 //#include "../../DesktopEditor/fontengine/FontManager.h"
@@ -22,9 +22,8 @@ namespace NSFontCutter
 
 		BOOL					m_bIsEmbeddedFonts;
 
-#ifdef _WIN32
         CEmbeddedFontsManager	m_oEmbeddedFonts;
-#endif
+
 	public:
 		CFontDstManager() : m_mapPicks()
 		{
@@ -79,21 +78,22 @@ namespace NSFontCutter
 			{
 				sRes = CString(pFontInfo->m_wsFontName.c_str());
 
-#ifdef _WIN32
+
                 if (m_bIsEmbeddedFonts)
 					m_oEmbeddedFonts.CheckFont(sRes, m_pFontManager);
-#endif
-				m_mapPicks.insert(std::pair<CString,CString>(sInputSave, sRes));
+
+                m_mapPicks.insert(std::pair<CString,CString>(sInputSave, sRes));
 				
 			}
 			return sRes;
 		}
 
-		template<typename TTextFont>
+        template<typename TTextFont>
 		CString GetTypefacePick(TTextFont& textFont)
 		{
-			return GetTypefacePickByName(textFont.typeface);			
+            return GetTypefacePickByName(textFont.typeface);
 		}
+
 	};
 }
 
@@ -117,9 +117,7 @@ public:
 
 	HRESULT SetEmbeddedFontsDirectory(const CString& bsFontsDirectory)
 	{
-#ifdef _WIN32
         m_oPicker.m_oEmbeddedFonts.m_strEmbeddedFontsFolder = (CString)bsFontsDirectory;
-#endif
 		return S_OK;
 	}
 	HRESULT SetEmbeddedFontsParam(LONG lParam)
@@ -140,16 +138,16 @@ public:
 
 	HRESULT CheckString(const CString& bsText)
 	{
-#ifdef _WIN32
+
         m_oPicker.m_oEmbeddedFonts.CheckString((CString)bsText);
-#endif
+
 		return S_OK;
 	}
 	HRESULT CheckFont(const CString& bsFontName)
 	{
-#ifdef _WIN32
+
         m_oPicker.m_oEmbeddedFonts.CheckFont((CString)bsFontName, m_oPicker.m_pFontManager);
-#endif
+
 		return S_OK;
 	}
 
@@ -175,10 +173,10 @@ public:
 	{
 		return &m_oPicker;
 	}
-#ifdef _WIN32
+
     NSFontCutter::CEmbeddedFontsManager* GetNativeCutter()
 	{
 		return &m_oPicker.m_oEmbeddedFonts;
 	}
-#endif
+
 };

@@ -758,7 +758,11 @@ bool CElementProps::CopyProperty(VARIANT& oDst, const VARIANT& oSrc)
 		}
 	case VT_BSTR:
 		{
+#ifdef _WIN32
 			oDst.bstrVal = SysAllocString(oSrc.bstrVal);
+#else
+            oDst.bstrVal = oSrc.bstrVal;
+#endif
 			break;
 		}
 	default:

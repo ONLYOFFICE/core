@@ -3,10 +3,10 @@
 #include "PPTXFormat/PPTXEvent.h"
 
 #ifdef _WIN32
-#include <shellapi.h>
-#include <shlobj.h>
-#include <shlwapi.h>
-#pragma comment( lib, "shell32.lib" ) // добавить shell32.lib
+    #include <shellapi.h>
+    #include <shlobj.h>
+    #include <shlwapi.h>
+    #pragma comment( lib, "shell32.lib" ) // добавить shell32.lib
 #else
 #endif
 
@@ -346,7 +346,7 @@ HRESULT CPPTXFile::ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput)
 
 	return hRes;
 }
-INT32 CPPTXFile::RemoveDirOrFile(CString sPath, bool bIsRemoveHead)
+int CPPTXFile::RemoveDirOrFile(CString sPath, bool bIsRemoveHead)
 {
 	DWORD dwFileAttrib = ::GetFileAttributes( sPath );
 	if(  dwFileAttrib != INVALID_FILE_ATTRIBUTES )

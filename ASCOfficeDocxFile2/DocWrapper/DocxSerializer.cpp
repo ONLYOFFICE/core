@@ -6,6 +6,7 @@
 #include "../BinWriter/BinWriters.h"
 #include "../BinReader/Readers.h"
 #include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
+#include "../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 
 #ifndef _WIN32
 #include "../../DesktopEditor/common/Types.h"
@@ -20,7 +21,35 @@ BinDocxRW::CDocxSerializer::CDocxSerializer()
 	m_bIsNoBase64Save = false;
 	m_bSaveChartAsImg = false;
 }
-bool BinDocxRW::CDocxSerializer::saveToFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions)
+bool BinDocxRW::CDocxSerializer::ConvertDocxToDoct(const CString& sSrcFileName, const CString& sDstFileName, const CString& sTmpDir, const CString& sXMLOptions)
+{
+	std::wstring strDirSrc = NSSystemPath::Combine(string2std_string(sTmpDir), _T("from"));
+	std::wstring strEditorBin = NSSystemPath::Combine(strDirSrc, _T("Editor.bin"));
+	std::wstring strDirDst = NSSystemPath::Combine(string2std_string(sTmpDir), _T("to"));
+	CString sDirSrc = std_string2string(strDirSrc);
+	CString sEditorBin = std_string2string(strEditorBin);
+	COfficeUtils oCOfficeUtils(NULL);
+	if(oCOfficeUtils.ExtractToDirectory(string2std_string(sSrcFileName), strDirSrc, NULL, 0))
+		if(saveToFile(sDirSrc, sEditorBin, sXMLOptions))
+			if(oCOfficeUtils.CompressFileOrDirectory(strDirDst, string2std_string(sDstFileName), -1))
+				return true;
+	return false;
+}
+bool BinDocxRW::CDocxSerializer::ConvertDoctToDocx(const CString& sSrcFileName, const CString& sDstFileName, const CString& sTmpDir, const CString& sXMLOptions, const CString& sThemePath, const CString& sMediaPath)
+{
+	std::wstring strDirSrc = NSSystemPath::Combine(string2std_string(sTmpDir), _T("from"));
+	std::wstring strEditorBin = NSSystemPath::Combine(strDirSrc, _T("Editor.bin"));
+	std::wstring strDirDst = NSSystemPath::Combine(string2std_string(sTmpDir), _T("to"));
+	CString sDirSrc = std_string2string(strDirSrc);
+	CString sEditorBin = std_string2string(strEditorBin);
+	COfficeUtils oCOfficeUtils(NULL);
+	if(oCOfficeUtils.ExtractToDirectory(string2std_string(sSrcFileName), strDirSrc, NULL, 0))
+		if(loadFromFile(sDirSrc, sEditorBin, sXMLOptions, sThemePath, sMediaPath))
+			if(oCOfficeUtils.CompressFileOrDirectory(strDirDst, string2std_string(sDstFileName), -1))
+				return true;
+	return false;
+}
+bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions)
 {
 	//create mediadir
 	OOX::CPath path(sSrcFileName);
@@ -91,7 +120,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(CString& sSrcFileName, CString& sDst
 	RELEASEOBJECT(pFontPicker);
 	return true;
 }
-bool BinDocxRW::CDocxSerializer::loadFromFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions, CString& sThemePath, CString& sMediaPath)
+bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sThemePath, const CString& sMediaPath)
 {
 	bool bResultOk = false;
 	NSFile::CFileBinary oFile;
@@ -224,7 +253,7 @@ bool BinDocxRW::CDocxSerializer::getXmlContent(NSBinPptxRW::CBinaryFileReader& o
 	sOutputXml = oTempContentWriter.m_oContent.GetData().GetString();
 	return true;
 }
-bool BinDocxRW::CDocxSerializer::getBinaryContent(CString& bsTxContent, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)
+bool BinDocxRW::CDocxSerializer::getBinaryContent(const CString& bsTxContent, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)
 {
 	if(NULL == m_oBinaryFileWriter)
 		return false;
@@ -257,11 +286,11 @@ bool BinDocxRW::CDocxSerializer::getBinaryContent(CString& bsTxContent, NSBinPpt
 	lDataSize = nEndPos - nStartPos;
 	return true;
 }
-void BinDocxRW::CDocxSerializer::setFontDir(CString& sFontDir)
+void BinDocxRW::CDocxSerializer::setFontDir(const CString& sFontDir)
 {
 	m_sFontDir = sFontDir;
 }
-void BinDocxRW::CDocxSerializer::setEmbeddedFontsDir(CString& sEmbeddedFontsDir)
+void BinDocxRW::CDocxSerializer::setEmbeddedFontsDir(const CString& sEmbeddedFontsDir)
 {
 	m_sEmbeddedFontsDir = sEmbeddedFontsDir;
 }

@@ -6,7 +6,7 @@
 #include "File.h"
 
 #ifdef WIN32
-#include <wchar.h>
+#include <tchar.h>
 #elif LINUX
 #include <libgen.h>
 #elif MAC
@@ -76,7 +76,7 @@ namespace NSSystemPath
 			sRes = strLeft + strRight.substr(1);
 		}
 		else if(!bLeftSlash && !bRightSlash)
-			sRes = strLeft + _T("/") + strRight;
+            sRes = strLeft + L"/" + strRight;
 		else
 			sRes = strLeft + strRight;
 		return sRes;

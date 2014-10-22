@@ -6208,7 +6208,7 @@ namespace BinDocxRW
 				//Seek вобратно в MainTable
 				m_oBcw.m_oStream.SetPosition(nCurPos);
 			}
-			void intoBindoc(CString& sDir) {
+			void intoBindoc(const CString& sDir) {
 				NSBinPptxRW::CBinaryFileWriter& oBufferedStream = m_oBcw.m_oStream;
 				OOX::CDocx oDocx = OOX::CDocx(OOX::CPath(sDir));
 				

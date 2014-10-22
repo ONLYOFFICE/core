@@ -30,6 +30,28 @@ namespace ZLibZipUtils
 {
   NSCriticalSection::CRITICAL_SECTION  criticalSection;
 
+  static std::wstring ascii_to_unicode(const char *src)
+  {
+	  size_t nSize = mbstowcs(0, src, 0);
+	  wchar_t* pBuffer = new wchar_t[nSize];
+	  nSize = mbstowcs(pBuffer, src, nSize);
+	  std::wstring sRes;
+	  if (nSize != (size_t)-1)
+		  sRes = std::wstring(pBuffer, nSize);
+	  delete[] pBuffer;
+	  return sRes;
+  }
+  static std::string unicode_to_ascii(const wchar_t *src)
+  {
+	  size_t nSize = wcstombs(0, src, 0);
+	  char* pBuffer = new char[nSize];
+	  nSize = wcstombs(pBuffer, src, nSize);
+	  std::string sRes;
+	  if (nSize != (size_t)-1)
+		  sRes = std::string(pBuffer, nSize);
+	  delete[] pBuffer;
+	  return sRes;
+  }
   /*This static functions are copies from ZLib miniunz.c with some changes.*/ 
   static std::wstring codepage_issue_fixFromOEM( const char* sVal)
   {
@@ -41,7 +63,7 @@ namespace ZLibZipUtils
 	  RELEASEARRAYOBJECTS(pBuffer);
 	  return sRes;
 #else
-	  return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sVal, strlen(sVal)); 
+	  return ascii_to_unicode(sVal); 
 #endif
   }
   static std::string codepage_issue_fixToOEM(const std::wstring& sVal)
@@ -55,7 +77,7 @@ namespace ZLibZipUtils
 	  RELEASEARRAYOBJECTS(pBuffer);
 	  return sRes;
 #else
-	  return NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sVal.c_str(), sVal.length());
+	  return unicode_to_ascii(sVal.c_str()); 
 #endif
   }
   static void change_file_date( const wchar_t *filename, uLong dosdate, tm_unz tmu_date );

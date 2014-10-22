@@ -63,10 +63,10 @@ namespace NSBinPptxRW
             CString strPPT = m_strDstFolder + _T("\\ppt");
 
 
-            FileSystem::Directory::CreateDirectory(m_strDstFolder);
-            FileSystem::Directory::CreateDirectory(m_strDstFolder, _T("docProps"));
+            FileSystem::Directory::CreateDirectory(string2std_string(m_strDstFolder));
+            FileSystem::Directory::CreateDirectory(string2std_string(m_strDstFolder), _T("docProps"));
             FileSystem::Directory::CreateDirectory(strPPT);
-            FileSystem::Directory::CreateDirectory(strPPT, _T("media"));
+            FileSystem::Directory::CreateDirectory(string2std_string(strPPT), _T("media"));
 
 			m_oImageManager.Clear();
 			m_oImageManager.SetDstMedia(m_strDstFolder + _T("\\ppt\\media"));
@@ -105,7 +105,8 @@ namespace NSBinPptxRW
 			if (cur_pos == len || cur_pos == start_pos)
 				return;
 
-            CStringA __str_decode_len((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
+            CStringA __str_decode_len_ansi((LPSTR)(pBuffer + start_pos), cur_pos - start_pos);
+			CString  __str_decode_len = __str_decode_len_ansi;
 			start_pos = cur_pos + 1;
 
 			pBuffer += start_pos;

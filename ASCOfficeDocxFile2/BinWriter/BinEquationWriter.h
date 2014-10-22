@@ -764,6 +764,7 @@ namespace MathEquation
 				int nCurPos2 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
 				m_aLimitStack.push(nCurPos2);
 				int nCurPos3 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::GroupChr);
+				m_aLimitStack.push(nCurPos3);
 
 				int nCurPos4 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::GroupChrPr);
 				WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, chr);
@@ -771,12 +772,7 @@ namespace MathEquation
 				WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::VertJc, vertJc);
 				WriteItemEnd(nCurPos4);
 
-				int nCurPos5 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
 				PushCommand(commandVerticalBrace);
-				WriteItemEnd(nCurPos5);
-				
-				WriteItemEnd(nCurPos3);
-				WriteItemEnd(nCurPos2);
 				
 			}
 			virtual void EndVerticalBrace  ()
@@ -1224,6 +1220,7 @@ namespace MathEquation
 			}
 			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
 			{
+				bOpenNode = bBeginNode;
 				if (0 == nBlockNum)
 				{
 					if (bBeginNode)
@@ -1252,6 +1249,7 @@ namespace MathEquation
 			}
 			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
 			{
+				bOpenNode = bBeginNode;
 				if (0 == nBlockNum)
 				{
 					if (bBeginNode)
@@ -1288,6 +1286,7 @@ namespace MathEquation
 			}
 			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
 			{
+				bOpenNode = bBeginNode;
 				if (0 == nBlockNum)
 				{
 					if (bBeginNode)
@@ -1331,6 +1330,7 @@ namespace MathEquation
 
 			void Write(BinaryEquationWriter* pWriter, bool bBegin)
 			{
+				bOpenNode = bBegin;
 				if (bInline)
 				{
 					if (0 == nBlockNum)
@@ -1532,6 +1532,7 @@ namespace MathEquation
 
 			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
 			{
+				bOpenNode = bBeginNode;
 				if (0 == nBlockNum)
 				{
 					if (bBeginNode)
@@ -1573,6 +1574,7 @@ namespace MathEquation
 
 			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
 			{
+				bOpenNode = bBeginNode;
 				if (0 == nBlockNum)
 				{
 					if (bBeginNode)
@@ -1587,8 +1589,15 @@ namespace MathEquation
 							pCommand->WriteEndBlock(pWriter);
 						}*/
 						pWriter->PopCommand();
+						
 						int nCurPos = pWriter->m_aLimitStack.top();
-						pWriter->WriteItemEnd(nCurPos);
+						pWriter->WriteItemEnd(nCurPos); //groupChr
+						pWriter->m_aLimitStack.pop();
+
+						
+						nCurPos = pWriter->m_aLimitStack.top();
+						pWriter->WriteItemEnd(nCurPos); //lim element
+						pWriter->m_aLimitStack.pop();
 
 						
 						pWriter->PushCommand(commandVerticalBraceLim);
@@ -1620,6 +1629,7 @@ namespace MathEquation
 
 			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
 			{
+				bOpenNode = bBeginNode;
 				if (0 == nBlockNum)
 				{
 					if (bBeginNode)

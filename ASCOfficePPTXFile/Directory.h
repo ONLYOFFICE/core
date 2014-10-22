@@ -1,7 +1,12 @@
 #pragma once
 
 #include "Settings.h"
+
+#ifdef _WIN32
 #include <windows.h>
+#else
+
+#endif
 
 namespace FileSystem {
 	class Directory {

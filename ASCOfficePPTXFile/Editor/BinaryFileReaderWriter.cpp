@@ -4,7 +4,7 @@
 #include "BinReaderWriterDefines.h"
 
 #include "../../Common/Base64.h"
-#include "ImageManager.h"
+#include "imagemanager.h"
 #include "./XmlWriter.h"
 #include "BinaryFileReaderWriter.h"
 #include "../PPTXFormat/FileContainer.h"
@@ -12,7 +12,7 @@
 #include "../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.h"
 #include "FontPicker.h"
 
-#include "../../DesktopEditor/Common/File.h"
+#include "../../DesktopEditor/common/File.h"
 
 #define BYTE_SIZEOF		sizeof(BYTE)
 #define USHORT_SIZEOF	sizeof(USHORT)
@@ -239,6 +239,7 @@ namespace NSBinPptxRW
 	}
 	CString CImageManager2::DownloadImage(const CString& strFile)
 	{
+#ifndef DISABLE_FILE_DOWNLOADER
 		CFileDownloader oDownloader(strFile, TRUE);
 		oDownloader.Start( 1 );
 		while ( oDownloader.IsRunned() )
@@ -250,6 +251,7 @@ namespace NSBinPptxRW
 		{
 			return GenerateImage( oDownloader.GetFilePath(), strFile );
 		}
+#endif
 		return _T("");
 	}
 
@@ -681,10 +683,12 @@ namespace NSBinPptxRW
 		oFile.ReadFile(pBuffer, dwLen);
 
 		int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength((int)dwLen, Base64::B64_BASE64_FLAG_NOCRLF);
-		LPSTR pbBase64Buffer = new CHAR[nBase64BufferLen];
+        LPSTR pbBase64Buffer = new CHAR[nBase64BufferLen + 1];
+        pbBase64Buffer[nBase64BufferLen] = '\0';
 		if (TRUE == Base64::Base64Encode(pBuffer, (int)dwLen, pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
 		{
-			strDst64.SetString(pbBase64Buffer, nBase64BufferLen);
+            //strDst64.SetString(pbBase64Buffer, nBase64BufferLen);
+            strDst64 = pbBase64Buffer;
 		}
 
 		RELEASEARRAYOBJECTS(pBuffer);

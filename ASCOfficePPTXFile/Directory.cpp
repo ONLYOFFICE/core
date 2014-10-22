@@ -1,7 +1,7 @@
 //#include "stdafx.h"
 
 #include "Directory.h"
-#include <strsafe.h>
+//#include <strsafe.h>
 //#include <shlobj.h>
 
 namespace FileSystem {

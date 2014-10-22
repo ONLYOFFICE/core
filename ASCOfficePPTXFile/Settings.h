@@ -2,8 +2,11 @@
 
 #include <string>
 #include <vector>
+
+#ifdef _WIN32
 #include <atlbase.h>
 #include <atlstr.h>
+#endif
 
 namespace FileSystem {
 #ifdef UNICODE

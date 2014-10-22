@@ -5,28 +5,21 @@ namespace PPTX
 	namespace Logic
 	{
 
-		CNvGrpSpPr::CNvGrpSpPr()
-		{
-		}
+         CNvGrpSpPr& CNvGrpSpPr::operator=(const CNvGrpSpPr& oSrc)
+        {
+            parentFile		= oSrc.parentFile;
+            parentElement	= oSrc.parentElement;
 
+            noChangeAspect	= oSrc.noChangeAspect;
+            noGrp			= oSrc.noGrp;
+            noMove			= oSrc.noMove;
+            noResize		= oSrc.noResize;
+            noRot			= oSrc.noRot;
+            noSelect		= oSrc.noSelect;
+            noUngrp			= oSrc.noUngrp;
 
-		CNvGrpSpPr::~CNvGrpSpPr()
-		{
-		}
-	
-
-		CNvGrpSpPr::CNvGrpSpPr(XmlUtils::CXmlNode& node)
-		{
-			fromXML(node);
-		}
-
-
-		const CNvGrpSpPr& CNvGrpSpPr::operator =(XmlUtils::CXmlNode& node)
-		{
-			fromXML(node);
-			return *this;
-		}
-
+            return *this;
+        }
 
 		void CNvGrpSpPr::fromXML(XmlUtils::CXmlNode& node)
 		{

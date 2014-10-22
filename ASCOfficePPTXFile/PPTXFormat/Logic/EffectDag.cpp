@@ -4,31 +4,13 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		EffectDag::EffectDag()
-		{
-		}
-
-		EffectDag::~EffectDag()
-		{
-		}
-
-		EffectDag::EffectDag(XmlUtils::CXmlNode& node)
-		{
-			fromXML(node);
-		}
-
-		const EffectDag& EffectDag::operator =(XmlUtils::CXmlNode& node)
-		{
-			fromXML(node);
-			return *this;
-		}
 
 		void EffectDag::fromXML(XmlUtils::CXmlNode& node)
 		{
 			m_name	= node.GetName();
 			node.ReadAttributeBase(L"name", name);
 			node.ReadAttributeBase(L"type", type);
-			Effects.RemoveAll();
+            Effects.clear();
 			node.LoadArray(_T("*"), Effects);
 
 			FillParentPointersForChilds();
@@ -48,7 +30,7 @@ namespace PPTX
 
 		void EffectDag::FillParentPointersForChilds()
 		{
-			size_t count = Effects.GetCount();
+            size_t count = Effects.size();
 			for(size_t i = 0; i < count; ++i)
 				Effects[i].SetParentPointer(this);
 		}

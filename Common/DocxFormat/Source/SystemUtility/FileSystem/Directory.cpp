@@ -1,6 +1,7 @@
 #include "Directory.h"
 
-#include <shlobj.h>
+//#include <shlobj.h>
+#include <sys/stat.h>
 
 namespace FileSystem {
     LPCTSTR Directory::GetCurrentDirectory() {
@@ -122,11 +123,23 @@ namespace FileSystem {
     static CString GetLongPathNameW(const CString fileName)
     {
         return fileName;
+        //todo
     }
     static CString GetTempPath()
     {
         CString tempPath = P_tmpdir;
 
         return tempPath;
+    }
+    static bool PathIsDirectory(CString pathName)
+    {
+        struct stat s;
+        if (stat(pathName, &s) == 0)
+        {
+            if (s.st_mode & S_IFDR)return true;
+            else return false;
+        }
+
+        return false;
     }
 }

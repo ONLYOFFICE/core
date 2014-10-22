@@ -35,5 +35,6 @@ namespace FileSystem {
         static CString GetFolderPath(const CString& path);
         static CString GetLongPathNameW(const CString& fileName);
         static CString GetTempPath();
+        static bool PathIsDirectory(const CString& pathName);
     };
 }

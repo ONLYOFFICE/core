@@ -141,6 +141,8 @@ HRESULT CPPTXFile::get_TempDirectory(BSTR* pVal)
 HRESULT CPPTXFile::put_TempDirectory(BSTR newVal)
 {
 	CStringW TempStr(newVal);
+
+#ifdef WIN32
 	if(PathIsDirectoryW(TempStr.GetString()))
 	{
 		if(TempStr.Right(1) != L"\\")
@@ -148,6 +150,14 @@ HRESULT CPPTXFile::put_TempDirectory(BSTR newVal)
 		m_strTempDir = TempStr;
 		return S_OK;
 	}
+#else
+    if(FileSystem::Directory::PathIsDirectory(TempStr))
+    {
+        if(TempStr.Right(1) != _T("\\"))
+            TempStr += _T("\\");
+        m_strTempDir = TempStr;
+    }
+#endif
 	return S_FALSE;
 }
 HRESULT CPPTXFile::GetDVDXml(BSTR* pbstrPTTXml)

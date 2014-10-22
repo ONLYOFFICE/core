@@ -2,6 +2,7 @@
 #define _BUILD_BASE64_CROSSPLATFORM_DEFINE
 
 #include <stdio.h>
+#include <limits.h>
 #include "Types.h"
 
 namespace NSBase64

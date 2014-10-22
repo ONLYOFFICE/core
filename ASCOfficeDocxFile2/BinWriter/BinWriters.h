@@ -3050,8 +3050,8 @@ namespace BinDocxRW
 						OOX::Logic::CMatrix* pMatrix = static_cast<OOX::Logic::CMatrix*>(item);
 						nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Matrix);
 
-						LONG lCol = 0;
-						for ( int j = 0; j < pMatrix->m_arrItems.size(); j++)
+						LONG lCol = 0; 
+						for ( int j = 0; j < pMatrix->m_arrItems.size(); j++) //TODO убрать, тк при отсутствии m:mcs, к-во столбцов должно разруливаться динамически в скрипте
 						{
 							OOX::WritingElement* item = pMatrix->m_arrItems[j];
 							if (item->getType() == OOX::et_m_mr)
@@ -3366,11 +3366,11 @@ namespace BinDocxRW
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
 				m_oBcw.m_oStream.WriteLONG(pBrk.m_alnAt->GetValue());
 			}
-			//заглушка для </m:brk>
+			//заглушка для <m:brk>
 			else
 			{
 				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
-				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 				m_oBcw.m_oStream.WriteBOOL(false);
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
@@ -3804,8 +3804,6 @@ namespace BinDocxRW
 
 						if (lRow)
 							WriteMathRow(lRow);
-						if (lCol)
-							WriteMathColumn(lCol);
 						if ( pMPr->m_oBaseJc.IsInit() )
 							WriteMathBaseJc(pMPr->m_oBaseJc.get());
 						if ( pMPr->m_oCGp.IsInit() )
@@ -3818,6 +3816,8 @@ namespace BinDocxRW
 							WriteMathCtrlPr(pMPr->m_oCtrlPr.get());
 						if ( pMPr->m_oMcs.IsInit() )
 							WriteMathMcs(pMPr->m_oMcs.get());
+						else
+							WriteMathMcs(lCol);
 						if ( pMPr->m_oPlcHide.IsInit() )
 							WriteMathPlcHide(pMPr->m_oPlcHide.get());
 						if ( pMPr->m_oRSp.IsInit() )
@@ -3904,6 +3904,22 @@ namespace BinDocxRW
 				}
 			}
 								
+			m_oBcw.WriteItemEnd(nCurPos);
+		}
+		void WriteMathMcs ( LONG lColumn )
+		{
+			int nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathBottomNodesType::Mcs);
+			int nCurPos1 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Mc);
+			int nCurPos2 = m_oBcw.WriteItemStart(c_oSer_OMathContentType::McPr);
+
+			int nCurPos3 = m_oBcw.WriteItemStart(c_oSer_OMathBottomNodesType::Count);
+			m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
+			m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Long);
+			m_oBcw.m_oStream.WriteLONG(lColumn);
+			m_oBcw.WriteItemEnd(nCurPos3);
+
+			m_oBcw.WriteItemEnd(nCurPos2);
+			m_oBcw.WriteItemEnd(nCurPos1);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 		void WriteMathMPr(const OOX::Logic::CMPr &pMPr)

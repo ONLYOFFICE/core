@@ -16,12 +16,17 @@
 
 CPPTXFile::CPPTXFile(load_from_resource fCallbackResource, extract_to_directory fCallbackExtract, compress_from_directory fCallbackCompress, progress_operation fCallbackProgress, void* pCallbackArg)
 {
-	WCHAR buffer[4096];
-	GetTempPathW(4096, buffer);
-	m_strTempDir = CStringW(buffer);
-	GetLongPathNameW(m_strTempDir.GetString(), buffer, 4096);
-	m_strTempDir = CStringW(buffer) + CStringW("_PPTX\\");
+#ifdef WIN32
+    WCHAR buffer[4096];
+    GetTempPathW(4096, buffer);
+    m_strTempDir = CStringW(buffer);
 
+    GetLongPathNameW(m_strTempDir.GetString(), buffer, 4096);
+	m_strTempDir = CStringW(buffer) + CStringW("_PPTX\\");
+#else
+    m_strTempDir = FileSystem::Directory::GetTempPath();
+    m_strTempDir = FileSystem::Directory::GetLongPathNameW(m_strTempDir) + CString("_PPTX\\");
+#endif
 	//
 	m_strFontDirectory = _T("");
 	m_strMediaDirectory = _T("");

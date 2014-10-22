@@ -119,4 +119,14 @@ namespace FileSystem {
             return _T("");
         return strFolderPath.substr(0,n1);
     }
+    static CString GetLongPathNameW(const CString fileName)
+    {
+        return fileName;
+    }
+    static CString GetTempPath()
+    {
+        CString tempPath = P_tmpdir;
+
+        return tempPath;
+    }
 }

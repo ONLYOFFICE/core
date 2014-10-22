@@ -55,7 +55,7 @@ CPPTXFile::~CPPTXFile()
 HRESULT CPPTXFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions)
 {
 	CStringW localTempDir(sDstPath);
-	if((sDstPath != NULL) || (localTempDir != ""))
+    if((sDstPath != NULL) || (localTempDir != _T("")))
 	{
         bool res = FileSystem::Directory::CreateDirectory(localTempDir);
         if (res == false) return S_FALSE;
@@ -134,7 +134,7 @@ HRESULT CPPTXFile::get_TempDirectory(BSTR* pVal)
 #ifdef WIN32
     *pVal = m_strTempDir.AllocSysString();
 #else
-    *pVal = m_strTempDir.copy();
+    *pVal = m_strTempDir;
 #endif
 	return S_OK;
 }

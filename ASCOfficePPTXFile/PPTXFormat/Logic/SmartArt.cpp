@@ -1,9 +1,9 @@
 //#include "stdafx.h"
 
 #include "./SmartArt.h"
-#include "..\Slide.h"
-#include "..\SlideLayout.h"
-#include "..\SlideMaster.h"
+#include "../Slide.h"
+#include "../SlideLayout.h"
+#include "../SlideMaster.h"
 
 #include "../../ASCOfficeDrawingConverter.h"
 #include "../../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.h"
@@ -176,7 +176,7 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			strDstChart += _T("charts");
 			if (1 == m_lChartNumber)
 			{
-				CDirectory::CreateDirectory(strDstChart);
+                FileSystem::Directory::CreateDirectory(strDstChart);
 			}
 			CString strChart = _T("");
 			strChart.Format(_T("chart%d.xml"), m_lChartNumber);

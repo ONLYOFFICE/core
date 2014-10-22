@@ -1,6 +1,10 @@
 #pragma once
 #include "Attributes.h"
 
+#ifndef WIN32
+    #include "../../DesktopEditor/common/ASCVariant.h"
+#endif
+
 namespace NSPresentationEditor
 {
 	class CTextRange
@@ -32,7 +36,7 @@ namespace NSPresentationEditor
 	{
 	private:
 		long	m_lType;
-		VARIANT m_varParameter;
+        VARIANT m_varParameter;
 		
 	public:
 		bool	m_bPresent;

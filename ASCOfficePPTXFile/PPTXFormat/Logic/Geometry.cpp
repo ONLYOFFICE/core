@@ -104,8 +104,8 @@ namespace PPTX
 			}
 
 			SysFreeString((var.bstrVal));
-		}
 #endif
+        }
 	}
 }
 

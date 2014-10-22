@@ -14,7 +14,7 @@ static CString to_cstring(v8::Local<v8::Value> v)
 
 static CStringA to_cstringA(v8::Local<v8::Value> v)
 {
-	v8::String::AsciiValue data(v);
+	v8::String::Utf8Value data(v);
 	const char* p = (char*)*data;
 	if (NULL == p)
 		return "";
@@ -101,11 +101,11 @@ CNativeControl* unwrap_nativeobject(v8::Handle<v8::Object> obj)
 void _GetFilePath(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
 	CNativeControl* pNative = unwrap_nativeobject(args.This());
-	args.GetReturnValue().Set(v8::String::New((uint16_t*)pNative->GetFilePath().GetBuffer()));
+	args.GetReturnValue().Set(v8::String::NewFromTwoByte(v8::Isolate::GetCurrent(), (uint16_t*)pNative->GetFilePath().GetBuffer()));
 }
 void _SetFilePath(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
-	args.GetReturnValue().Set(v8::Undefined());
+	args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 
 	if (args.Length() < 1) 
 		return;
@@ -117,13 +117,13 @@ void _SetFilePath(const v8::FunctionCallbackInfo<v8::Value>& args)
 void _GetFontsDirectory(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
 	CNativeControl* pNative = unwrap_nativeobject(args.This());
-	args.GetReturnValue().Set(v8::String::New((uint16_t*)pNative->m_strFontsDirectory.GetBuffer()));
+	args.GetReturnValue().Set(v8::String::NewFromTwoByte(v8::Isolate::GetCurrent(), (uint16_t*)pNative->m_strFontsDirectory.GetBuffer()));
 }
 
 void _GetEditorType(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
 	CNativeControl* pNative = unwrap_nativeobject(args.This());
-    args.GetReturnValue().Set(v8::String::New((uint16_t*)pNative->m_strEditorType.GetBuffer()));
+	args.GetReturnValue().Set(v8::String::NewFromTwoByte(v8::Isolate::GetCurrent(), (uint16_t*)pNative->m_strEditorType.GetBuffer()));
 }
 
 void _GetChangesCount(const v8::FunctionCallbackInfo<v8::Value>& args)
@@ -133,14 +133,14 @@ void _GetChangesCount(const v8::FunctionCallbackInfo<v8::Value>& args)
 	int nCount = 0;
 	if (pNative->m_pChanges != NULL)
 		nCount = (int)pNative->m_pChanges->GetCount();
-	args.GetReturnValue().Set(v8::Integer::New(nCount));
+	args.GetReturnValue().Set(v8::Integer::New(v8::Isolate::GetCurrent(), nCount));
 }
 void _GetChangesFile(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
 	CNativeControl* pNative = unwrap_nativeobject(args.This());
 
 	if (args.Length() < 1) 
-		args.GetReturnValue().Set(v8::Undefined());
+		args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 
 	v8::Local<v8::Int32> intValue = args[0]->ToInt32();
 	int nIndex = (int)intValue->Value();
@@ -149,17 +149,17 @@ void _GetChangesFile(const v8::FunctionCallbackInfo<v8::Value>& args)
 	if (pNative->m_pChanges != NULL)
 		strFile = pNative->m_pChanges->GetAt((size_t)nIndex);
 
-	args.GetReturnValue().Set(v8::String::New((uint16_t*)strFile.GetBuffer()));
+	args.GetReturnValue().Set(v8::String::NewFromTwoByte(v8::Isolate::GetCurrent(), (uint16_t*)strFile.GetBuffer()));
 }
 
 void _GetFileId(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
 	CNativeControl* pNative = unwrap_nativeobject(args.This());
-	args.GetReturnValue().Set(v8::String::New((uint16_t*)pNative->GetFileId().GetBuffer()));
+	args.GetReturnValue().Set(v8::String::NewFromTwoByte(v8::Isolate::GetCurrent(), (uint16_t*)pNative->GetFileId().GetBuffer()));
 }
 void _SetFileId(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
-	args.GetReturnValue().Set(v8::Undefined());
+	args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 
 	if (args.Length() < 1) 
 		return;
@@ -177,18 +177,18 @@ void _CheckNextChange(const v8::FunctionCallbackInfo<v8::Value>& args)
 	{
 		if (pNative->m_nCurrentChangesNumber >= pNative->m_nMaxChangesNumber)
 		{
-			args.GetReturnValue().Set(v8::Boolean::New(false));
+			args.GetReturnValue().Set(v8::Boolean::New(v8::Isolate::GetCurrent(), false));
 			return;
 		}
 	}
-	args.GetReturnValue().Set(v8::Boolean::New(true));
+	args.GetReturnValue().Set(v8::Boolean::New(v8::Isolate::GetCurrent(), true));
 }
 
 void _GetFileArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
 	if (args.Length() < 1) 
 	{
-		args.GetReturnValue().Set(v8::Undefined());
+		args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 		return;
 	}
 
@@ -198,7 +198,7 @@ void _GetFileArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args)
 	DWORD len = 0;
 	pNative->getFileData(to_cstring(args[0]), pData, len);
 
-	v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New((void*)pData, (size_t)len);
+	v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)pData, (size_t)len);
 	v8::Local<v8::Uint8Array> _array = v8::Uint8Array::New(_buffer, 0, (size_t)len);
 
 	args.GetReturnValue().Set(_array);
@@ -208,7 +208,7 @@ void _GetFontArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
 	if (args.Length() < 1) 
 	{
-		args.GetReturnValue().Set(v8::Undefined());
+		args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 		return;
 	}
 
@@ -224,7 +224,7 @@ void _GetFontArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args)
 	strDir += to_cstring(args[0]);
 	pNative->getFileData(strDir, pData, len);
 
-	v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New((void*)pData, (size_t)len);
+	v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)pData, (size_t)len);
 	v8::Local<v8::Uint8Array> _array = v8::Uint8Array::New(_buffer, 0, (size_t)len);
 
 	args.GetReturnValue().Set(_array);
@@ -234,7 +234,7 @@ void _GetFileString(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
 	if (args.Length() < 1) 
 	{
-		args.GetReturnValue().Set(v8::Undefined());
+		args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 		return;
 	}
 
@@ -244,12 +244,12 @@ void _GetFileString(const v8::FunctionCallbackInfo<v8::Value>& args)
 	DWORD len = 0;
 	pNative->getFileData(to_cstring(args[0]), pData, len);
 
-	args.GetReturnValue().Set(v8::String::NewSymbol((char*)pData, len));
+	args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), (char*)pData, v8::String::kNormalString, len));
 }
 
 void _ConsoleLog(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
-	args.GetReturnValue().Set(v8::Undefined());
+	args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
 	if (args.Length() < 1) 
 		return;
 	
@@ -259,32 +259,36 @@ void _ConsoleLog(const v8::FunctionCallbackInfo<v8::Value>& args)
 
 v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
 {
-	v8::HandleScope handle_scope(isolate); 
+	//v8::HandleScope handle_scope(isolate); 
 
 	v8::Local<v8::ObjectTemplate> result = v8::ObjectTemplate::New();
 	result->SetInternalFieldCount(1); // отводим в нем место для хранения CNativeControl
 
+	v8::Isolate* current = v8::Isolate::GetCurrent();
+
 	// прописываем функции - методы объекта
-	result->Set(v8::String::NewSymbol("SetFilePath"), v8::FunctionTemplate::New(_SetFilePath));    
-	result->Set(v8::String::NewSymbol("GetFilePath"), v8::FunctionTemplate::New(_GetFilePath));
-	result->Set(v8::String::NewSymbol("SetFileId"), v8::FunctionTemplate::New(_SetFileId));
-	result->Set(v8::String::NewSymbol("GetFileId"), v8::FunctionTemplate::New(_GetFileId));
-	result->Set(v8::String::NewSymbol("GetFileBinary"), v8::FunctionTemplate::New(_GetFileArrayBuffer));
-	result->Set(v8::String::NewSymbol("GetFontBinary"), v8::FunctionTemplate::New(_GetFontArrayBuffer));
-	result->Set(v8::String::NewSymbol("GetFontsDirectory"), v8::FunctionTemplate::New(_GetFontsDirectory));
-	result->Set(v8::String::NewSymbol("GetFileString"), v8::FunctionTemplate::New(_GetFileString));
+	result->Set(v8::String::NewFromUtf8(current, "SetFilePath"), v8::FunctionTemplate::New(current, _SetFilePath));    
+	result->Set(v8::String::NewFromUtf8(current, "GetFilePath"), v8::FunctionTemplate::New(current, _GetFilePath));
+	result->Set(v8::String::NewFromUtf8(current, "SetFileId"), v8::FunctionTemplate::New(current, _SetFileId));
+	result->Set(v8::String::NewFromUtf8(current, "GetFileId"), v8::FunctionTemplate::New(current, _GetFileId));
+	result->Set(v8::String::NewFromUtf8(current, "GetFileBinary"), v8::FunctionTemplate::New(current, _GetFileArrayBuffer));
+	result->Set(v8::String::NewFromUtf8(current, "GetFontBinary"), v8::FunctionTemplate::New(current, _GetFontArrayBuffer));
+	result->Set(v8::String::NewFromUtf8(current, "GetFontsDirectory"), v8::FunctionTemplate::New(current, _GetFontsDirectory));
+	result->Set(v8::String::NewFromUtf8(current, "GetFileString"), v8::FunctionTemplate::New(current, _GetFileString));
 
-	result->Set(v8::String::NewSymbol("GetEditorType"), v8::FunctionTemplate::New(_GetEditorType));
-	result->Set(v8::String::NewSymbol("CheckNextChange"), v8::FunctionTemplate::New(_CheckNextChange));
+	result->Set(v8::String::NewFromUtf8(current, "GetEditorType"), v8::FunctionTemplate::New(current, _GetEditorType));
+	result->Set(v8::String::NewFromUtf8(current, "CheckNextChange"), v8::FunctionTemplate::New(current, _CheckNextChange));
 
-	result->Set(v8::String::NewSymbol("GetCountChanges"), v8::FunctionTemplate::New(_GetChangesCount));
-	result->Set(v8::String::NewSymbol("GetChangesFile"), v8::FunctionTemplate::New(_GetChangesFile));
+	result->Set(v8::String::NewFromUtf8(current, "GetCountChanges"), v8::FunctionTemplate::New(current, _GetChangesCount));
+	result->Set(v8::String::NewFromUtf8(current, "GetChangesFile"), v8::FunctionTemplate::New(current, _GetChangesFile));
 
-	result->Set(v8::String::NewSymbol("ConsoleLog"), v8::FunctionTemplate::New(_ConsoleLog));
+	result->Set(v8::String::NewFromUtf8(current, "ConsoleLog"), v8::FunctionTemplate::New(current, _ConsoleLog));
 
 	// возвращаем временный хэндл хитрым образом, который переносит наш хэндл в предыдущий HandleScope и не дает ему 
 	// уничтожиться при уничтожении "нашего" HandleScope - handle_scope
-	return handle_scope.Close(result);		
+	
+	//return handle_scope.Close(result);		
+	return result;
 }
 // --------------------------
 

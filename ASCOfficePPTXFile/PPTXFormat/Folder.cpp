@@ -36,7 +36,7 @@ namespace PPTX
 		if(m_bCancelled)
 			return;
 
-		POSITION pos = NULL;
+        //POSITION pos = NULL;
 		smart_ptr<PPTX::Presentation> _presentation = FileContainer::get(PPTX::FileTypes::Presentation).smart_dynamic_cast<PPTX::Presentation>();
 		if (_presentation.is_init())
 		{

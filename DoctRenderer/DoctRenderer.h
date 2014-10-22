@@ -22,7 +22,7 @@ void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args)
 	CNativeControl* pNativeObject = new CNativeControl();
 
 	v8::Local<v8::Object> obj = NativeObjectTemplate->NewInstance();
-	obj->SetInternalField(0, v8::External::New(pNativeObject));
+	obj->SetInternalField(0, v8::External::New(v8::Isolate::GetCurrent(), pNativeObject));
 
 	args.GetReturnValue().Set(obj);
 }
@@ -35,7 +35,7 @@ void CreateNativeMemoryStream(const v8::FunctionCallbackInfo<v8::Value>& args)
 	CMemoryStream* pMemoryObject = new CMemoryStream();
 
 	v8::Local<v8::Object> obj = MemoryObjectTemplate->NewInstance();
-	obj->SetInternalField(0, v8::External::New(pMemoryObject));
+	obj->SetInternalField(0, v8::External::New(v8::Isolate::GetCurrent(), pMemoryObject));
 
 	args.GetReturnValue().Set(obj);
 }
@@ -495,6 +495,12 @@ private:
 	{
 		CString strException = _T("");
 
+		v8::V8::InitializeICU();
+		v8::Platform* platform = v8::platform::CreateDefaultPlatform();
+		v8::V8::InitializePlatform(platform);
+
+		v8::V8::Initialize();
+
 		if (!m_bIsInitTypedArrays)
 		{
 			enableTypedArrays();
@@ -503,17 +509,24 @@ private:
 
 		WCHAR* javascript = (WCHAR*)strScript.GetBuffer();
 
-		v8::Isolate* isolate = v8::Isolate::GetCurrent();
+		v8::Isolate* isolate = v8::Isolate::New();
+		isolate->Enter();
+
+		v8::Isolate::Scope isolate_cope(isolate);
+		v8::Locker isolate_locker(isolate);
+
 		v8::HandleScope handle_scope(isolate);
 
 		v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New();
-		global->Set(v8::String::NewSymbol("CreateNativeEngine"), v8::FunctionTemplate::New(CreateNativeObject));
-		global->Set(v8::String::NewSymbol("CreateNativeMemoryStream"), v8::FunctionTemplate::New(CreateNativeMemoryStream));
+		global->Set(v8::String::NewFromUtf8(isolate, "CreateNativeEngine"), v8::FunctionTemplate::New(isolate, CreateNativeObject));
+		global->Set(v8::String::NewFromUtf8(isolate, "CreateNativeMemoryStream"), v8::FunctionTemplate::New(isolate, CreateNativeMemoryStream));
 		
 		v8::Local<v8::Context> context = v8::Context::New(isolate, NULL, global);
+		context->Enter();
+
 		v8::Context::Scope context_scope(context);
 		v8::TryCatch try_catch;
-		v8::Local<v8::String> source = v8::String::New((uint16_t*)javascript);
+		v8::Local<v8::String> source = v8::String::NewFromTwoByte(isolate, (uint16_t*)javascript);
 		v8::Local<v8::Script> script = v8::Script::Compile(source);
 
 		if (try_catch.HasCaught()) 
@@ -521,10 +534,11 @@ private:
 			CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 			strException = to_cstring(try_catch.Message()->Get());
 
+			CStringA ss = (CStringA)strException;
 			strError = _T("code=\"compile\"");
 			return FALSE;
 		}
-		
+
 		v8::Local<v8::Value> result = script->Run();
 		
 		if (try_catch.HasCaught()) 
@@ -539,22 +553,22 @@ private:
 		//---------------------------------------------------------------
 		v8::Local<v8::Object> global_js = context->Global();
 		v8::Handle<v8::Value> args[1];
-		args[0] = v8::Int32::New(0);
+		args[0] = v8::Int32::New(isolate, 0);
 
 		// all
-		v8::Handle<v8::Value> js_func_open			= global_js->Get(v8::String::New("NativeOpenFile"));
-		v8::Handle<v8::Value> js_func_id			= global_js->Get(v8::String::New("GetNativeId"));
+		v8::Handle<v8::Value> js_func_open			= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeOpenFile"));
+		v8::Handle<v8::Value> js_func_id			= global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeId"));
 
 		// changes
-		v8::Handle<v8::Value> js_func_apply_changes	= global_js->Get(v8::String::New("NativeApplyChanges"));
+		v8::Handle<v8::Value> js_func_apply_changes	= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeApplyChanges"));
 
 		// save T format
-		v8::Handle<v8::Value> js_func_get_file_s	= global_js->Get(v8::String::New("NativeGetFileString"));
+		v8::Handle<v8::Value> js_func_get_file_s	= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeGetFileString"));
 
 		// pdf
-		v8::Handle<v8::Value> js_func_calculate		= global_js->Get(v8::String::New("NativeCalculateFile"));
-		v8::Handle<v8::Value> js_func_pages_count	= global_js->Get(v8::String::New("GetNativeCountPages"));
-		v8::Handle<v8::Value> js_func_page			= global_js->Get(v8::String::New("GetNativePageBase64"));
+		v8::Handle<v8::Value> js_func_calculate		= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeCalculateFile"));
+		v8::Handle<v8::Value> js_func_pages_count	= global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeCountPages"));
+		v8::Handle<v8::Value> js_func_page			= global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativePageBase64"));
 
 		CString strDocumentId	= _T("");
 		LONG lPagesCount		= 0;
@@ -578,7 +592,7 @@ private:
 
 		CNativeControl* pNative = NULL;
 
-		v8::Handle<v8::Value> js_func_get_native = global_js->Get(v8::String::New("GetNativeEngine"));
+		v8::Handle<v8::Value> js_func_get_native = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeEngine"));
 		v8::Local<v8::Object> objNative;
 		if (js_func_get_native->IsFunction()) 
 		{
@@ -736,7 +750,7 @@ private:
 					
 					for (LONG i = 0; i < lPagesCount; i++)
 					{
-						args[0] = v8::Int32::New(i);
+						args[0] = v8::Int32::New(isolate, i);
 						v8::Local<v8::Value> js_result3 = func_page->Call(global_js, 1, args);
 
 						if (try_catch.HasCaught()) 
@@ -782,7 +796,6 @@ private:
 			break;
 		}
 		
-
 		return FALSE;
 	}
 

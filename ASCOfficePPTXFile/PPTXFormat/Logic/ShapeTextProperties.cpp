@@ -11,7 +11,7 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		__forceinline WORD GetTextAnchorFromStr(const CString& str)
+        AVSINLINE WORD GetTextAnchorFromStr(const CString& str)
 		{
 			if (str == _T("t"))		return 0;
 			if (str == _T("ctr"))	return 1;
@@ -19,7 +19,7 @@ namespace PPTX
 			return 0;
 		}
 
-		__forceinline WORD GetTextAlignFromStr(const CString& str)
+        AVSINLINE WORD GetTextAlignFromStr(const CString& str)
 		{
 			if (str == _T("l"))			return 0;
 			if (str == _T("ctr"))		return 1;
@@ -31,7 +31,7 @@ namespace PPTX
 			return 0;
 		}
 
-		__forceinline WORD GetFontAlignFromStr(const CString& str)
+        AVSINLINE WORD GetFontAlignFromStr(const CString& str)
 		{
 			if (str == _T("auto"))	return 0;
 			if (str == _T("base"))	return 0;
@@ -41,7 +41,7 @@ namespace PPTX
 			return 0;
 		}
 
-		__forceinline int GetIntegerFromHex(const CString& string)
+        AVSINLINE int GetIntegerFromHex(const CString& string)
 		{
 			return XmlUtils::GetInteger(string);
 		}

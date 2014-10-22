@@ -2,9 +2,9 @@
 
 #include "GraphicFrame.h"
 #include "SpTree.h"
-#include "..\Slide.h"
-#include "..\SlideLayout.h"
-#include "..\SlideMaster.h"
+#include "../Slide.h"
+#include "../SlideLayout.h"
+#include "../SlideMaster.h"
 
 //#include "../../ASCOfficeDrawingConverter.h"
 
@@ -388,7 +388,7 @@ namespace PPTX
 
 		OOX::CPath GraphicFrame::GetPathBySpid()const
 		{
-			OOX::CPath filename = _T("");
+            OOX::CPath filename;
 			if(parentFileIs<PPTX::Slide>())
 				filename = parentFileAs<PPTX::Slide>().GetPathBySpid(spid.get_value_or(_T("")));
 			else if(parentFileIs<PPTX::SlideLayout>())

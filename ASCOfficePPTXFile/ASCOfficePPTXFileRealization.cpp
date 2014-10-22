@@ -86,8 +86,8 @@ HRESULT CPPTXFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptio
 	if(SHFileOperationW(&shfos) != 0)
 	return S_FALSE;
 	*/
-
-	if(!m_fCallbackExtract(m_pCallbackArg, CString(sSrcFileName), localTempDir))
+    CString srcFileName = sSrcFileName;
+    if(!m_fCallbackExtract(m_pCallbackArg, srcFileName , localTempDir))
 		return S_FALSE;
 
 	RELEASEOBJECT(m_pFolder);
@@ -127,7 +127,9 @@ HRESULT CPPTXFile::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions
 	oPath.m_strFilename = CString(sSrcPath);
 	m_pFolder->write(oPath);
 
-	return m_fCallbackCompress(m_pCallbackArg, CString(sSrcPath), CString(sDstFileName)) ? S_OK : S_FALSE;
+    CString srcFilePath = sSrcPath;
+    CString dstFileName = sDstFileName;
+    return m_fCallbackCompress(m_pCallbackArg, srcFilePath, dstFileName) ? S_OK : S_FALSE;
 }
 HRESULT CPPTXFile::get_TempDirectory(BSTR* pVal)
 {
@@ -230,7 +232,8 @@ HRESULT CPPTXFile::OpenFileToPPTY(BSTR bsInput, BSTR bsOutput)
 
     FileSystem::Directory::CreateDirectory(m_strTempDir); // security options ???
 
-	if(!m_fCallbackExtract(m_pCallbackArg, CString(bsInput), m_strTempDir))
+    CString strBsInput = bsInput;
+    if(!m_fCallbackExtract(m_pCallbackArg, strBsInput , m_strTempDir))
 		return S_FALSE;
 
 	RELEASEOBJECT(m_pFolder);
@@ -366,7 +369,8 @@ HRESULT CPPTXFile::ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput)
 	oWriter.OpenPPTY(pSrcBuffer, lFileSize, srcFolder, m_strFolderThemes);
 	RELEASEARRAYOBJECTS(pSrcBuffer);
 
-	HRESULT hRes = m_fCallbackCompress(m_pCallbackArg, m_strTempDir, CString(bsOutput)) ? S_OK : S_FALSE;
+    CString strBsOutput = bsOutput;
+    HRESULT hRes = m_fCallbackCompress(m_pCallbackArg, m_strTempDir, strBsOutput) ? S_OK : S_FALSE;
 
 	// нужно удалить темповую папку
 	RemoveDirOrFile(m_strTempDir);

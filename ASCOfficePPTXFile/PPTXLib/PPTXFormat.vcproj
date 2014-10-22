@@ -2824,10 +2824,6 @@
 						Name="System"
 						>
 						<File
-							RelativePath="..\.\Directory.cpp"
-							>
-						</File>
-						<File
 							RelativePath="..\.\Directory.h"
 							>
 						</File>

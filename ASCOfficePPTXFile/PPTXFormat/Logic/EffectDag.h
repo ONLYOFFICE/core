@@ -30,28 +30,10 @@ namespace PPTX
 			}
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				m_name	= node.GetName();
-				node.ReadAttributeBase(L"name", name);
-				node.ReadAttributeBase(L"type", type);
-				Effects.clear();
-				node.LoadArray(_T("*"), Effects);
+            virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				FillParentPointersForChilds();
-			}
 
-			virtual CString toXML() const
-			{
-				XmlUtils::CAttribute oAttr;
-				oAttr.Write(_T("name"), name);
-				oAttr.WriteLimitNullable(_T("type"), type);
-
-				XmlUtils::CNodeValue oValue;
-				oValue.WriteArray(Effects);
-
-				return XmlUtils::CreateNode(m_name, oAttr, oValue);
-			}
+            virtual CString toXML() const;
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
@@ -82,12 +64,7 @@ namespace PPTX
 			nullable_limit<Limit::EffectContainerType>	type;
 			CString										m_name;
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				size_t count = Effects.size();
-				for(size_t i = 0; i < count; ++i)
-					Effects[i].SetParentPointer(this);
-			}
+            virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

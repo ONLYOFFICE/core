@@ -5,29 +5,6 @@ namespace PPTX
 	namespace Logic
 	{
 
-		EffectStyle::EffectStyle()
-		{
-		}
-
-
-		EffectStyle::~EffectStyle()
-		{
-		}
-
-
-		EffectStyle::EffectStyle(XmlUtils::CXmlNode& node)
-		{
-			fromXML(node);
-		}
-
-
-		const EffectStyle& EffectStyle::operator =(XmlUtils::CXmlNode& node)
-		{
-			fromXML(node);
-			return *this;
-		}
-
-
 		void EffectStyle::fromXML(XmlUtils::CXmlNode& node)
 		{
 			EffectList.GetEffectListFrom(node);

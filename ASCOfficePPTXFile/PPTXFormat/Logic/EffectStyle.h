@@ -29,24 +29,9 @@ namespace PPTX
 			}
 
 		public:
-			virtual void fromXML(XmlUtils::CXmlNode& node)
-			{
-				EffectList.GetEffectListFrom(node);
-				scene3d = node.ReadNode(_T("a:scene3d"));
-				sp3d	= node.ReadNode(_T("a:sp3d"));
+            virtual void fromXML(XmlUtils::CXmlNode& node);
 
-				FillParentPointersForChilds();
-			}
-
-			virtual CString toXML() const
-			{
-				XmlUtils::CNodeValue oValue;
-				oValue.Write(EffectList);
-				oValue.WriteNullable(scene3d);
-				oValue.WriteNullable(sp3d);
-
-				return XmlUtils::CreateNode(_T("a:effectStyle"), oValue);
-			}
+            virtual CString toXML() const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
@@ -65,14 +50,7 @@ namespace PPTX
 			nullable<Scene3d>	scene3d;
 			nullable<Sp3d>		sp3d;
 		protected:
-			virtual void FillParentPointersForChilds()
-			{
-				EffectList.SetParentPointer(this);
-				if(scene3d.IsInit())
-					scene3d->SetParentPointer(this);
-				if(sp3d.IsInit())
-					sp3d->SetParentPointer(this);
-			}
+            virtual void FillParentPointersForChilds();
 		};
 	} // namespace Logic
 } // namespace PPTX

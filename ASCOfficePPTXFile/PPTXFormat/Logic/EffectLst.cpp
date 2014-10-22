@@ -4,24 +4,7 @@ namespace PPTX
 {
 	namespace Logic
 	{
-		EffectLst::EffectLst()
-		{
-		}
 
-		EffectLst::~EffectLst()
-		{
-		}
-
-		EffectLst::EffectLst(XmlUtils::CXmlNode& node)
-		{
-			fromXML(node);
-		}
-
-		const EffectLst& EffectLst::operator =(XmlUtils::CXmlNode& node)
-		{
-			fromXML(node);
-			return *this;
-		}
 
 		void EffectLst::fromXML(XmlUtils::CXmlNode& node)
 		{

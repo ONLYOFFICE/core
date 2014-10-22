@@ -1438,10 +1438,6 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath="..\Source\SystemUtility\FileSystem\Directory.cpp"
-			>
-		</File>
-		<File
 			RelativePath="..\Source\DocxFormat\Docx.cpp"
 			>
 		</File>

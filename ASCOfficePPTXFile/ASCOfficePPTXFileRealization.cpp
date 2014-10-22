@@ -365,8 +365,11 @@ HRESULT CPPTXFile::ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput)
 	BYTE* pSrcBuffer = new BYTE[lFileSize];
 	oFileBinary.ReadFile(pSrcBuffer, (DWORD)lFileSize);
 	oFileBinary.CloseFile();
-    CString srcFolder = FileSystem::Directory::GetFolderPath((CString)bsInput);
+	
+	CString strBsInput = bsInput;
+    CString srcFolder = FileSystem::Directory::GetFolderPath(strBsInput);
 	oWriter.OpenPPTY(pSrcBuffer, lFileSize, srcFolder, m_strFolderThemes);
+	
 	RELEASEARRAYOBJECTS(pSrcBuffer);
 
     CString strBsOutput = bsOutput;

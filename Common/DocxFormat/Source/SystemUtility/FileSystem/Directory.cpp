@@ -118,5 +118,12 @@ namespace FileSystem
 
         return filesCount;
     }
+	CString Directory::GetFolderPath(const CString& strFolderPath)
+	{
+        int n1 = strFolderPath.ReverseFind('\\');
+        if (n1 < 0 )
+            return _T("");
+        return strFolderPath.Mid(0,n1);
+	}
 
 }

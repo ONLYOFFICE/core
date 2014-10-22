@@ -79,7 +79,7 @@ SOURCES += pptxformatlib.cpp \
     ../../../Editor/BinaryFileReaderWriter.cpp \
     ../../../Editor/FontPicker.cpp \
 ../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.cpp \
-../../Directory.cpp \
+../../../Directory.cpp \
 ../../File.cpp
 
 HEADERS += pptxformatlib.h \

@@ -12,6 +12,8 @@
 
 #include "Editor/PPTXWriter.h"
 
+#include "PPTXFormat/PPTXEvent.h"
+
 CPPTXFile::CPPTXFile(load_from_resource fCallbackResource, extract_to_directory fCallbackExtract, compress_from_directory fCallbackCompress, progress_operation fCallbackProgress, void* pCallbackArg)
 {
 	WCHAR buffer[4096];
@@ -50,16 +52,20 @@ HRESULT CPPTXFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptio
 	CStringW localTempDir(sDstPath);
 	if((sDstPath != NULL) || (localTempDir != ""))
 	{
-		int res = SHCreateDirectoryExW(NULL, localTempDir.GetString(), NULL);
-		if((res != ERROR_SUCCESS) && (res != ERROR_ALREADY_EXISTS) && (res != ERROR_FILE_EXISTS))
-			return S_FALSE;
+        bool res = FileSystem::Directory::CreateDirectory(localTempDir);
+        if (res == false) return S_FALSE;
+        //int res = SHCreateDirectoryExW(NULL, localTempDir.GetString(), NULL);
+        //if((res != ERROR_SUCCESS) && (res != ERROR_ALREADY_EXISTS) && (res != ERROR_FILE_EXISTS))
+        //	return S_FALSE;
 		put_TempDirectory(sDstPath);
 	}
 	else
 	{
-		int res = SHCreateDirectoryExW(NULL, m_strTempDir, NULL);
-		if((res != ERROR_SUCCESS) && (res != ERROR_ALREADY_EXISTS) && (res != ERROR_FILE_EXISTS))
-			return S_FALSE;
+        bool res = FileSystem::Directory::CreateDirectory(m_strTempDir);
+        if (res == false) return S_FALSE;
+    //	int res = SHCreateDirectoryExW(NULL, m_strTempDir, NULL);
+    //	if((res != ERROR_SUCCESS) && (res != ERROR_ALREADY_EXISTS) && (res != ERROR_FILE_EXISTS))
+    //		return S_FALSE;
 	}
 	localTempDir = m_strTempDir;
 
@@ -120,7 +126,11 @@ HRESULT CPPTXFile::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions
 }
 HRESULT CPPTXFile::get_TempDirectory(BSTR* pVal)
 {
-	*pVal = m_strTempDir.AllocSysString();
+#ifdef WIN32
+    *pVal = m_strTempDir.AllocSysString();
+#else
+    *pVal = m_strTempDir.copy();
+#endif
 	return S_OK;
 }
 HRESULT CPPTXFile::put_TempDirectory(BSTR newVal)
@@ -199,9 +209,11 @@ HRESULT CPPTXFile::SetUseSystemFonts(VARIANT_BOOL useSystemFonts)
 }
 HRESULT CPPTXFile::OpenFileToPPTY(BSTR bsInput, BSTR bsOutput)
 {
-	int res = SHCreateDirectoryExW(NULL, m_strTempDir, NULL);
-	if((res != ERROR_SUCCESS) && (res != ERROR_ALREADY_EXISTS) && (res != ERROR_FILE_EXISTS))
-		return S_FALSE;
+//	int res = SHCreateDirectoryExW(NULL, m_strTempDir, NULL);
+//	if((res != ERROR_SUCCESS) && (res != ERROR_ALREADY_EXISTS) && (res != ERROR_FILE_EXISTS))
+//		return S_FALSE;
+
+    FileSystem::Directory::CreateDirectory(m_strTempDir); // security options ???
 
 	if(!m_fCallbackExtract(m_pCallbackArg, CString(bsInput), m_strTempDir))
 		return S_FALSE;
@@ -246,11 +258,11 @@ HRESULT CPPTXFile::OpenFileToPPTY(BSTR bsInput, BSTR bsOutput)
 	m_strMediaDirectory = m_strMediaDirectory + _T("\\media");
 	oBinaryWriter.m_pCommon->m_pImageManager->m_strDstMedia = m_strMediaDirectory;
 
-	CDirectory::CreateDirectory(m_strMediaDirectory);
+    FileSystem::Directory::CreateDirectory(m_strMediaDirectory);
 
 	if (_T("") != m_strEmbeddedFontsDirectory)
 	{
-		CDirectory::CreateDirectory(m_strEmbeddedFontsDirectory);
+        FileSystem::Directory::CreateDirectory(m_strEmbeddedFontsDirectory);
 
 		if (NULL != oBinaryWriter.m_pCommon->m_pFontPicker)
 		{
@@ -307,7 +319,7 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput)
 	m_strMediaDirectory = m_strMediaDirectory + _T("\\media");
 	oBinaryWriter.m_pCommon->m_pImageManager->m_strDstMedia = m_strMediaDirectory;
 
-	CDirectory::CreateDirectory(m_strMediaDirectory);
+    FileSystem::Directory::CreateDirectory(m_strMediaDirectory);
 
 	PPTX2EditorAdvanced::Convert(oBinaryWriter, *m_pFolder, m_strDirectory, sDstFileOutput);
 
@@ -335,7 +347,7 @@ HRESULT CPPTXFile::ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput)
 	BYTE* pSrcBuffer = new BYTE[lFileSize];
 	oFileBinary.ReadFile(pSrcBuffer, (DWORD)lFileSize);
 	oFileBinary.CloseFile();
-	CString srcFolder = CDirectory::GetFolderPath((CString)bsInput);
+    CString srcFolder = FileSystem::Directory::GetFolderPath((CString)bsInput);
 	oWriter.OpenPPTY(pSrcBuffer, lFileSize, srcFolder, m_strFolderThemes);
 	RELEASEARRAYOBJECTS(pSrcBuffer);
 
@@ -348,7 +360,8 @@ HRESULT CPPTXFile::ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput)
 }
 int CPPTXFile::RemoveDirOrFile(CString sPath, bool bIsRemoveHead)
 {
-	DWORD dwFileAttrib = ::GetFileAttributes( sPath );
+ #ifdef WIN32
+    DWORD dwFileAttrib = ::GetFileAttributes( sPath );
 	if(  dwFileAttrib != INVALID_FILE_ATTRIBUTES )
 	{
 		DWORD dwResult = 0;
@@ -389,6 +402,9 @@ int CPPTXFile::RemoveDirOrFile(CString sPath, bool bIsRemoveHead)
 		}
 
 		return dwResult;
-	}// 0 - все закончилось хорошо
+    }// 0 - все закончилось хорошо
+#else
+
+#endif
 	return 0;
 }

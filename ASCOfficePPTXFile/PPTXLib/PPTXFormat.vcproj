@@ -909,7 +909,15 @@
 						>
 					</File>
 					<File
+						RelativePath="..\PPTXFormat\Logic\CNvGrpSpPr.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\.\PPTXFormat\Logic\CNvPr.h"
+						>
+					</File>
+					<File
+						RelativePath="..\PPTXFormat\Logic\ContentPart.cpp"
 						>
 					</File>
 					<File
@@ -918,6 +926,22 @@
 					</File>
 					<File
 						RelativePath="..\.\PPTXFormat\Logic\CustGeom.h"
+						>
+					</File>
+					<File
+						RelativePath="..\PPTXFormat\Logic\EffectDag.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\PPTXFormat\Logic\EffectLst.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\PPTXFormat\Logic\EffectProperties.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\PPTXFormat\Logic\EffectStyle.cpp"
 						>
 					</File>
 					<File
@@ -934,6 +958,10 @@
 					</File>
 					<File
 						RelativePath="..\.\PPTXFormat\Logic\Geometry.h"
+						>
+					</File>
+					<File
+						RelativePath="..\PPTXFormat\Logic\GrpSpPr.cpp"
 						>
 					</File>
 					<File
@@ -978,6 +1006,14 @@
 					</File>
 					<File
 						RelativePath="..\.\PPTXFormat\Logic\Ln.h"
+						>
+					</File>
+					<File
+						RelativePath="..\PPTXFormat\Logic\NvGraphicFramePr.cpp"
+						>
+					</File>
+					<File
+						RelativePath="..\PPTXFormat\Logic\NvGrpSpPr.cpp"
 						>
 					</File>
 					<File

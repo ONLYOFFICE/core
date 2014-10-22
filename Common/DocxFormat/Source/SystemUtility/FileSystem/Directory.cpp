@@ -1,10 +1,12 @@
 #include "Directory.h"
 
-//#include <shlobj.h>
-#include <sys/stat.h>
+#include <shlobj.h>
 
-namespace FileSystem {
-    LPCTSTR Directory::GetCurrentDirectory() {
+
+namespace FileSystem 
+{
+    LPCTSTR Directory::GetCurrentDirectory() 
+	{
         static const int bufferSize = MAX_PATH;
         LPTSTR directory = new TCHAR[bufferSize];
 
@@ -16,7 +18,8 @@ namespace FileSystem {
 
         return directory;
     }
-    String Directory::GetCurrentDirectoryS() {
+    String Directory::GetCurrentDirectoryS() 
+	{
         LPCTSTR directory = GetCurrentDirectory();
         if (directory == NULL)
             return String();
@@ -24,13 +27,15 @@ namespace FileSystem {
         return String(directory);
     }
 
-    bool Directory::CreateDirectory(LPCTSTR path) {
+    bool Directory::CreateDirectory(LPCTSTR path)
+	{
         bool directoryCreated = false;
         if (::CreateDirectory(path, NULL) == TRUE)
             directoryCreated = true;
         return directoryCreated;
     }
-    bool Directory::CreateDirectory(const String& path) {
+    bool Directory::CreateDirectory(const String& path) 
+	{
         return CreateDirectory(path.c_str());
     }
     bool Directory::CreateDirectory(String strFolderPathRoot, String strFolderName)
@@ -113,33 +118,5 @@ namespace FileSystem {
 
         return filesCount;
     }
-    static CString GetFolderPath(CString strFolderPath)
-    {
-        int n1 = strFolderPath.rfind(_T("\\"));
-        if (n1 < 0 )
-            return _T("");
-        return strFolderPath.substr(0,n1);
-    }
-    static CString GetLongPathNameW(const CString fileName)
-    {
-        return fileName;
-        //todo
-    }
-    static CString GetTempPath()
-    {
-        CString tempPath = P_tmpdir;
 
-        return tempPath;
-    }
-    static bool PathIsDirectory(CString pathName)
-    {
-        struct stat s;
-        if (stat(pathName, &s) == 0)
-        {
-            if (s.st_mode & S_IFDR)return true;
-            else return false;
-        }
-
-        return false;
-    }
 }

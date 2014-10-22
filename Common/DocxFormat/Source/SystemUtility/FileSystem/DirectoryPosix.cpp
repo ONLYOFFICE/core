@@ -65,7 +65,8 @@ namespace FileSystem {
         return stringUtf8ToWString (sDir);
     }
 
-    bool Directory::CreateDirectory(LPCTSTR path) {
+    bool Directory::CreateDirectory_(LPCTSTR path) 
+	{
         bool directoryCreated = false;
 
         std::wstring wsPath = path;
@@ -77,10 +78,11 @@ namespace FileSystem {
 
         return directoryCreated;
     }
-    bool Directory::CreateDirectory(const String& path) {
+    bool Directory::CreateDirectory_(const String& path) 
+	{
         return CreateDirectory(path.c_str());
     }
-    bool CreateDirectory(String strFolderPathRoot, String strFolderName)
+    bool CreateDirectory_(String strFolderPathRoot, String strFolderName)
     {
         String strFolder = strFolderPathRoot;
         strFolder =+ _T("/");
@@ -177,5 +179,35 @@ namespace FileSystem {
         listdir (path_utf8.c_str(), recursive, files);
 
         return files.size();
+    }
+    static CString GetFolderPath(CString strFolderPath)
+    {
+        int n1 = strFolderPath.rfind(_T("\\"));
+        if (n1 < 0 )
+            return _T("");
+        return strFolderPath.substr(0,n1);
+    }
+	 
+	static CString GetLongPathNameW(const CString fileName)
+    {
+        return fileName;
+        //todo
+    }
+    static CString GetTempPath()
+    {
+        CString tempPath = P_tmpdir;
+
+        return tempPath;
+    }
+    static bool PathIsDirectory(CString pathName)
+    {
+        struct stat s;
+        if (stat(pathName, &s) == 0)
+        {
+            if (s.st_mode & S_IFDR)return true;
+            else return false;
+        }
+
+        return false;
     }
 }

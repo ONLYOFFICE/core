@@ -15,6 +15,28 @@
 #include "../../../../../DesktopEditor/common/File.h"
 #define UTF8_TO_U(val) NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)val, strlen(val))
 #define U_TO_UTF8(val) NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(val, wcslen(val))
+static std::wstring ascii_to_unicode(const char *src)
+{
+	size_t nSize = mbstowcs(0, src, 0);
+	wchar_t* pBuffer = new wchar_t[nSize];
+	nSize = mbstowcs(pBuffer, src, nSize);
+	std::wstring sRes;
+	if (nSize != (size_t)-1)
+		sRes = std::wstring(pBuffer, nSize);
+	delete[] pBuffer;
+	return sRes;
+}
+static std::string unicode_to_ascii(const wchar_t *src)
+{
+	size_t nSize = wcstombs(0, src, 0);
+	char* pBuffer = new char[nSize];
+	nSize = wcstombs(pBuffer, src, nSize);
+	std::string sRes;
+	if (nSize != (size_t)-1)
+		sRes = std::string(pBuffer, nSize);
+	delete[] pBuffer;
+	return sRes;
+}
 #if !defined(WIN32) && !defined(_WIN32_WCE)
 //from MinGw wingdi.h
 

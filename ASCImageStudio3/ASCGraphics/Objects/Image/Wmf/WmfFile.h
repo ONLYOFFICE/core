@@ -3495,8 +3495,8 @@ private:
 
 			float fTempX, fTempY, fTempW, fTempH;
 #ifdef DESKTOP_EDITOR_GRAPHICS
-			m_pFontManager->LoadFontByName( UTF8_TO_U(pPlayer->pDC->pFont->sFaceName), (float)(oDrawText.dFontHeight * 72 / 25.4), lStyle, 72.0f, 72.0f );
-			m_pFontManager->LoadString2( UTF8_TO_U(oDrawText.sText), 0, 0 );
+			m_pFontManager->LoadFontByName( ascii_to_unicode(pPlayer->pDC->pFont->sFaceName), (float)(oDrawText.dFontHeight * 72 / 25.4), lStyle, 72.0f, 72.0f );
+			m_pFontManager->LoadString2( ascii_to_unicode(oDrawText.sText), 0, 0 );
 
 			TBBox oBox = m_pFontManager->MeasureString2();
 			fTempX = oBox.fMinX;
@@ -4011,7 +4011,7 @@ private:
 		{
 			// Проверим есть ли такой шрифт в системе, если запишем имя ближайшайшего шрифта
 #ifdef DESKTOP_EDITOR_GRAPHICS
-			std::wstring bsFontName = UTF8_TO_U( pFont->sFaceName );
+			std::wstring bsFontName = ascii_to_unicode( pFont->sFaceName );
 #else
 			BSTR bsFontName = CString( pFont->sFaceName ).AllocSysString();
 #endif
@@ -4061,7 +4061,7 @@ private:
 				if ( NULL != pFontInfo && S_OK == m_pFontManager->LoadFontByName( pFontInfo->m_wsFontName, 11, lStyle, 96, 96 ) )
 				{
 					free( pFont->sFaceName );
-                    std::string sNewName = U_TO_UTF8( pFontInfo->m_wsFontName.c_str());
+                    std::string sNewName = unicode_to_ascii( pFontInfo->m_wsFontName.c_str());
 					int nLen = sNewName.length();
 					pFont->sFaceName = (char*)m_oMemoryManager.Malloc( nLen + 1, _T("Meta_FontCreate function") );
 					if ( !pFont->sFaceName )

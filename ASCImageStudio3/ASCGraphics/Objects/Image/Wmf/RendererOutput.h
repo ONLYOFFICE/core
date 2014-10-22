@@ -703,8 +703,8 @@ public:
 			TWmfFont *pFont = pText->pDC->pFont;
 			long lStyle = ( pFont->ushWeight > 550 ? 1 : 0 ) + ( pFont->unItalic ? 2 : 0 );
 #ifdef DESKTOP_EDITOR_GRAPHICS
-			m_pWmfFile->m_pFontManager->LoadFontByName( UTF8_TO_U(pText->pDC->pFont->sFaceName), dSize, lStyle, 72, 72 );
-            m_pWmfFile->m_pFontManager->LoadString2( UTF8_TO_U(pText->sText), 0, 0 );
+			m_pWmfFile->m_pFontManager->LoadFontByName( ascii_to_unicode(pText->pDC->pFont->sFaceName), dSize, lStyle, 72, 72 );
+            m_pWmfFile->m_pFontManager->LoadString2( ascii_to_unicode(pText->sText), 0, 0 );
 			TBBox oBox = m_pWmfFile->m_pFontManager->MeasureString2();
 			fL = oBox.fMinX;
 			fT = oBox.fMinY;
@@ -1632,7 +1632,7 @@ private:
 	{
 		TWmfFont *pFont = pDC->pFont;
 #ifdef DESKTOP_EDITOR_GRAPHICS
-		m_pRenderer->put_FontName(UTF8_TO_U(pFont->sFaceName));
+		m_pRenderer->put_FontName(ascii_to_unicode(pFont->sFaceName));
 #else
 		CString strName(pFont->sFaceName);
 		BSTR bsName = strName.AllocSysString();

@@ -27,12 +27,14 @@ namespace BinDocxRW {
 		Writers::FileWriter* m_pCurFileWriter;
 	public:
 		CDocxSerializer();
-		bool loadFromFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions, CString& sThemePath, CString& sMediaPath);
-		bool saveToFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions);
+		bool ConvertDocxToDoct(const CString& sSrcFileName, const CString& sDstFileName, const CString& sTmpDir, const CString& sXMLOptions);
+		bool ConvertDoctToDocx(const CString& sSrcFileName, const CString& sDstFileName, const CString& sTmpDir, const CString& sXMLOptions, const CString& sThemePath, const CString& sMediaPath);
+		bool loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sThemePath, const CString& sMediaPath);
+		bool saveToFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions);
 		bool getXmlContent(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sOutputXml);
-		bool getBinaryContent(CString& bsTxContent, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
-		void setFontDir(CString& sFontDir);
-		void setEmbeddedFontsDir(CString& sEmbeddedFontsDir);
+		bool getBinaryContent(const CString& bsTxContent, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
+		void setFontDir(const CString& sFontDir);
+		void setEmbeddedFontsDir(const CString& sEmbeddedFontsDir);
 		void setIsNoBase64Save(bool bIsNoBase64Save);
 		void setSaveChartAsImg(bool bSaveChartAsImg);
 	};

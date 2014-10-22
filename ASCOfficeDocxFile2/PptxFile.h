@@ -8,6 +8,7 @@
 #include "../ASCOfficePPTXFile/ASCOfficePPTXFile.h"
 
 #include "../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 
 void comLoadTheme(void* pArg, int nIndex, CString& strDstFolder);
 bool comExtractFile(void* pArg, CString& sFile, CString& sDir);
@@ -194,39 +195,13 @@ void comLoadTheme(void* pArg, int nIndex, CString& strDstFolder)
 }
 bool comExtractFile(void* pArg, CString& sFile, CString& sDir)
 {
-	OfficeUtils::IOfficeUtils* pOfficeUtils	= NULL;
-
-	if (S_OK != CoCreateInstance(__uuidof(OfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(OfficeUtils::IOfficeUtils),(void**)&pOfficeUtils))
-		return false;
-
-	BSTR bsFile = sFile.AllocSysString();
-	BSTR bsDir = sDir.AllocSysString();
-	HRESULT hr = pOfficeUtils->ExtractToDirectory( bsFile, bsDir, NULL, 0);
-	SysFreeString(bsFile);
-	SysFreeString(bsDir);
-	if(hr != S_OK)
-		return false;
-
-	RELEASEINTERFACE(pOfficeUtils);
-	return true;
+	COfficeUtils oCOfficeUtils(NULL);
+	return S_OK == oCOfficeUtils.ExtractToDirectory(string2std_string(sFile), string2std_string(sDir), NULL, 0) ? true : false;
 }
 bool comCompressFile(void* pArg, CString& sDir, CString& sFile)
 {
-	OfficeUtils::IOfficeUtils* pOfficeUtils	= NULL;
-
-	if (S_OK != CoCreateInstance(__uuidof(OfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(OfficeUtils::IOfficeUtils),(void**)&pOfficeUtils))
-		return false;
-
-	BSTR bsDir = sDir.AllocSysString();
-	BSTR bsFile = sFile.AllocSysString();
-	HRESULT hr = pOfficeUtils->CompressFileOrDirectory( bsDir, bsFile, -1 );
-	SysFreeString(bsDir);
-	SysFreeString(bsFile);
-	if(hr != S_OK)
-		return false;
-
-	RELEASEINTERFACE(pOfficeUtils);
-	return true;
+	COfficeUtils oCOfficeUtils(NULL);
+	return S_OK == oCOfficeUtils.CompressFileOrDirectory(string2std_string(sDir), string2std_string(sFile), -1) ? true : false;
 }
 bool comProgress(void* pArg, long ID, long Percent)
 {

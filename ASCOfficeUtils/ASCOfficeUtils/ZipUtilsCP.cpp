@@ -121,10 +121,7 @@ namespace ZLibZipUtils
 
   static int mymkdir( const wchar_t* dirname )
   {
-    //todo return
-    NSDirectory::CreateDirectory(dirname);
-
-    return 0;
+	return NSDirectory::CreateDirectory(dirname) ? 0 : -1;
   }
 
   /*========================================================================================================*/
@@ -159,7 +156,7 @@ namespace ZLibZipUtils
         p++;
       hold = *p;
       *p = 0;
-      if ((mymkdir(buffer) == -1) && (errno == ENOENT))
+	  if ((mymkdir(buffer) == -1) && !NSDirectory::Exists(buffer))
       {
         delete[] buffer;
         return 0;

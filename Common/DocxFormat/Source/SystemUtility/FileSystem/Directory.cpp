@@ -33,11 +33,11 @@ namespace FileSystem {
     bool Directory::CreateDirectory(const String& path) {
         return CreateDirectory(path.c_str());
     }
-    static bool CreateDirectory(String strFolderPathRoot, String strFolderName)
+    bool Directory::CreateDirectory(String strFolderPathRoot, String strFolderName)
     {
         String strFolder = strFolderPathRoot;
-        strFolder =+ _T("/");
-        strFolder =+ strFolderName;
+        strFolder += _T("/");
+        strFolder += strFolderName;
         return CreateDirectory(strFolder);
     }
     bool Directory::CreateDirectories(LPCTSTR path) 

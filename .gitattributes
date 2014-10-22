@@ -3013,6 +3013,7 @@ Test/Applications/SpreadsheetEditor/bin/release/spreadsheeteditor_ru.qm svn_mime
 Test/Applications/SpreadsheetEditor/bin/release/ssleay32.dll svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/SpreadsheetEditor/bin/release/zlibwapi.dll svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/TeamlabDocControlService/TeamlabDocControlService/bin/Release/TeamlabDocControlService.exe svn_mime_002dtype=application%2Foctet-stream
+Test/Applications/TestASCOfficeUtils/test.zip svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/TestASCWord/ASCWord/ASCWord_big.bmp svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/TestASCWord/ASCWord/ASCWord_small.bmp svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/TestASCWord/ASCWord/PortableTools/TLBExtract.exe svn_mime_002dtype=application%2Foctet-stream

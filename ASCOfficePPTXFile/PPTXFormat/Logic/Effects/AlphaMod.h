@@ -48,7 +48,7 @@ namespace PPTX
 		public:
 			EffectDag cont;
 		protected:
-			virtual void AlphaMod::FillParentPointersForChilds()
+            virtual void FillParentPointersForChilds()
 			{
 				cont.SetParentPointer(this);
 			}

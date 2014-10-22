@@ -68,7 +68,7 @@ SOURCES += pptxformatlib.cpp \
     ../../../PPTXFormat/Logic/SpPr.cpp \
     ../../../PPTXFormat/Logic/SpTree.cpp \
     ../../../PPTXFormat/Logic/SpTreeElem.cpp \
-    ../../../PPTXFormat/Logic/Timing.cpp \
+    #../../../PPTXFormat/Logic/Timing.cpp \
     ../../../PPTXFormat/Logic/TxBody.cpp \
     ../../../PPTXFormat/Logic/UniColor.cpp \
     ../../../PPTXFormat/Logic/UniEffect.cpp \
@@ -491,7 +491,7 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/BinWriters.h \
     ../../../Editor/CalculatorCRC32.h \
     ../../../Editor/Converter.h \
-    #../../../Editor/FontCutter.h \
+    ../../../Editor/FontCutter.h \
     ../../../Editor/FontPicker.h \
     ../../../Editor/imagemanager.h \
     ../../../Editor/PPTXWriter.h \

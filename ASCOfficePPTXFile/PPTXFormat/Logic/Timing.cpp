@@ -36,7 +36,7 @@ namespace PPTX
 
 		CString Timing::toXML() const
 		{
-			return XML::XElement(ns.p + "timing");
+            return XML::XElement(ns.p + _T("timing"));
 		}
 
 	} // namespace Logic

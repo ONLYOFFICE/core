@@ -1,4 +1,5 @@
 #pragma once
+
 #ifndef PPTX_LIMIT_CHARTBUILDTYPE_INCLUDE_H_
 #define PPTX_LIMIT_CHARTBUILDTYPE_INCLUDE_H_
 
@@ -12,7 +13,7 @@ namespace PPTX
 		class ChartBuildType : public BaseLimit
 		{
 		public:
-			ChartBuildType::ChartBuildType()
+            ChartBuildType()
 			{
 				m_strValue = _T("allAtOnce");
 			}

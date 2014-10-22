@@ -72,25 +72,25 @@ typedef unsigned long		ULONG, ARGB;
 typedef long HRESULT;
 
 #ifdef WIN32
-#include "winerror.h"
+    #include "winerror.h"
+    #ifndef max
+        #define max(a,b)            (((a) > (b)) ? (a) : (b))
+    #endif
+
+    #ifndef min
+        #define min(a,b)            (((a) < (b)) ? (a) : (b))
+    #endif
 #else
-#ifndef S_OK
-#define S_OK                                   ((HRESULT)0x00000000L)
-#define S_FALSE                                ((HRESULT)0x00000001L)
-#endif
-#endif
-
-#ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
+    #ifndef S_OK
+        #define S_OK                                   ((HRESULT)0x00000000L)
+        #define S_FALSE                                ((HRESULT)0x00000001L)
+    #endif
 #endif
 
-#ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
 
 #ifndef RGB
-typedef int RGB;
-#define RGB(r,g,b) ((r)<<16|(g)<<8|(b))
+    typedef int RGB;
+    #define RGB(r,g,b) ((r)<<16|(g)<<8|(b))
 #endif
 
 

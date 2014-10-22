@@ -112,4 +112,11 @@ namespace FileSystem {
 
         return filesCount;
     }
+    static CString GetFolderPath(CString strFolderPath)
+    {
+        int n1 = strFolderPath.rfind(_T("\\"));
+        if (n1 < 0 )
+            return _T("");
+        return strFolderPath.substr(0,n1);
+    }
 }

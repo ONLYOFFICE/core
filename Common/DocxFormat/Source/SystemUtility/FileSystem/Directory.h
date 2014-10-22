@@ -32,5 +32,6 @@ namespace FileSystem {
         static StringArray GetFilesInDirectory(const String& path, const bool& andSubdirectories = false);
 
         static int GetFilesCount(const CString& path, const bool& recursive = false);
-	};
+        static CString GetFolderPath(const CString& path);
+    };
 }

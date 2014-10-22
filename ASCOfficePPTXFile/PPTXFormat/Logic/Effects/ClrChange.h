@@ -29,9 +29,13 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node)
 			{
-				ClrFrom.GetColorFrom(node.ReadNode(_T("a:clrFrom")));
-				ClrTo.GetColorFrom(node.ReadNode(_T("a:clrTo")));
-				node.ReadAttributeBase(L"useA", useA);
+                XmlUtils::CXmlNode node1 = node.ReadNode(_T("a:clrFrom"));
+                ClrFrom.GetColorFrom(node1);
+
+                node1 = node.ReadNode(_T("a:clrTo"));
+                ClrTo.GetColorFrom(node1);
+
+                node.ReadAttributeBase(L"useA", useA);
 				FillParentPointersForChilds();
 			}
 

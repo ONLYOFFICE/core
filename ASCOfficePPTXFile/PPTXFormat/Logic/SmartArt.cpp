@@ -184,12 +184,17 @@ xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" 
 			strChart = strDstChart + _T("\\") + strChart;
 
 			CString* sContentTypes = NULL;
-			if (pReader->m_lDocumentType == XMLWRITER_DOC_TYPE_DOCX)
-				oXlsxSerializer.saveChart(*pReader, lLen, strChart, CString(L"/word/charts/"), &sContentTypes);
+
+            CString strWordChartFolder  = _T("/word/charts/");
+            CString strXlChartFolder    = _T("/xl/charts/");
+            CString strPptChartFolder   = _T("/ppt/charts/");
+
+            if (pReader->m_lDocumentType == XMLWRITER_DOC_TYPE_DOCX)
+                oXlsxSerializer.saveChart(*pReader, lLen, strChart, strWordChartFolder, &sContentTypes);
 			else if (pReader->m_lDocumentType == XMLWRITER_DOC_TYPE_XLSX)
-				oXlsxSerializer.saveChart(*pReader, lLen, strChart, CString(L"/xl/charts/"), &sContentTypes);
+                oXlsxSerializer.saveChart(*pReader, lLen, strChart, strXlChartFolder, &sContentTypes);
 			else
-				oXlsxSerializer.saveChart(*pReader, lLen, strChart, CString(L"/ppt/charts/"), &sContentTypes);
+                oXlsxSerializer.saveChart(*pReader, lLen, strChart, strPptChartFolder, &sContentTypes);
 
 			pReader->m_strContentTypes += (*sContentTypes);
 			RELEASEOBJECT(sContentTypes);

@@ -3773,12 +3773,15 @@ HRESULT CDrawingConverter::SetDstContentRels()
 {
 	++m_pReader->m_nCurrentRelsStack;
 
-	if (0 == m_pReader->m_nCurrentRelsStack)
-	{
-		m_pReader->m_pRels->Clear();
-		m_pReader->m_pRels->StartRels();
-	}
-	else
+	//чистить текущий m_pRels хорошо при последовательной записи автофигур в word.
+	//плохо в случае записи перезентаций, с момента перехода на единственный обьект m_pReader.
+	//пример: презетации записали несколько Rels, записываем chart, вызывается SetDstContentRels и трутся Rels презентаций
+	//if (0 == m_pReader->m_nCurrentRelsStack)
+	//{
+	//	m_pReader->m_pRels->Clear();
+	//	m_pReader->m_pRels->StartRels();
+	//}
+	//else
 	{
 		m_pReader->m_stackRels.push_back(m_pReader->m_pRels);
 		NSBinPptxRW::CRelsGenerator* pGenerator = new NSBinPptxRW::CRelsGenerator(m_pReader->m_pRels->m_pManager);
@@ -3796,7 +3799,7 @@ HRESULT CDrawingConverter::SaveDstContentRels(const CString& bsRelsPath)
 	if (-1 > m_pReader->m_nCurrentRelsStack)
 		m_pReader->m_nCurrentRelsStack = -1;
 
-	if (-1 != m_pReader->m_nCurrentRelsStack)
+	//if (-1 != m_pReader->m_nCurrentRelsStack)
 	{
 		int nIndex = m_pReader->m_stackRels.size() - 1;
 

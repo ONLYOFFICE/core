@@ -634,7 +634,8 @@ namespace PPTX
 			if (pData[nPosOld] == WCHAR('.'))
 				strValue = (_T("0") + strValue);
 
-			m_mapSettings.insert(std::pair<CString, CString>(strName, strValue));
+			//добавляем через [], а не insert, потому что ключи могут дублироваться(а в предыдущей реализации использовалось последнее значение)
+			m_mapSettings[strName] = strValue;
 		}
 	}
 

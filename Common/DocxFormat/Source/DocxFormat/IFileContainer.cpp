@@ -272,7 +272,7 @@ namespace OOX
 
 	void      IFileContainer::Add(const OOX::RId& rId, const smart_ptr<OOX::File>& pFile)
 	{
-		m_lMaxRid = max( m_lMaxRid, rId.getNumber() );
+        m_lMaxRid = std::max( m_lMaxRid, rId.getNumber() );
 		m_mContainer [rId.get()] = pFile;
 	}
 	smart_ptr<OOX::File> IFileContainer::Find(const FileType& oType) const

@@ -79,8 +79,8 @@ SOURCES += pptxformatlib.cpp \
     ../../../Editor/BinaryFileReaderWriter.cpp \
     ../../../Editor/FontPicker.cpp \
 ../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.cpp \
-../../../Directory.cpp \
-../../File.cpp
+#../../../Directory.cpp \
+#../../File.cpp
 
 HEADERS += pptxformatlib.h \
 ../../../ASCOfficeDrawingConverter.h \
@@ -500,8 +500,8 @@ HEADERS += pptxformatlib.h \
 ../../../../Common/DocxFormat/Source/SystemUtility/File.h \
 ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/FileSystem.h \
 ../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h \
-../../Directory.h \
-../../File.h \
+#../../Directory.h \
+#../../File.h \
 ../../Settings.h \
     ../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/ppt2pptxshapeconverter.h
 

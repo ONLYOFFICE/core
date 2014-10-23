@@ -991,12 +991,12 @@ namespace SimpleTypes
 
 		void SetValue(int nValue)
 		{
-            this->m_eValue = min( 5400000, max( -5400000, nValue ) );
+            this->m_eValue = std::min( 5400000, std::max( -5400000, nValue ) );
 		}
 
 		virtual int     FromString(CString &sValue)
 		{
-            this->m_eValue = min( 5400000, max( -5400000, _wtoi( sValue.GetString() ) ) );
+            this->m_eValue = std::min( 5400000, std::max( -5400000, _wtoi( sValue.GetString() ) ) );
 
             return this->m_eValue;
 		}
@@ -1036,7 +1036,7 @@ namespace SimpleTypes
 
 		void   SetValue(double dValue)
 		{
-			m_dValue = min( 100, max( -100, dValue ) );
+            m_dValue = std::min( 100.0, std::max( -100.0, dValue ) );
 		}
 
         virtual double FromString(CString &sValue)
@@ -1048,14 +1048,14 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 				{
 					// Поправка 12.1.2.1 Part4
-					int nValue = min( 100000, max( -100000, _wtoi( sValue ) ) );
+                    int nValue = std::min( 100000, std::max( -100000, _wtoi( sValue ) ) );
 					m_dValue = nValue / 1000.0;
 				}
 				else
 					m_dValue = 0;
 			}
 			else
-				m_dValue = min( 100, max( -100, _wtof( sValue.Mid( 0, nLen - 1 ) ) ) );
+                m_dValue = std::min( 100.0, std::max( -100.0, _wtof( sValue.Mid( 0, nLen - 1 ) ) ) );
 
             return m_dValue;
         }
@@ -1141,12 +1141,12 @@ namespace SimpleTypes
 
 		void SetValue(int nValue)
 		{
-            this->m_eValue = min( 10800000, max( 0, nValue ) );
+            this->m_eValue = std::min( 10800000, std::max( 0, nValue ) );
 		}
 
 		virtual int     FromString(CString &sValue)
 		{
-            this->m_eValue = min( 10800000, max( 0, _wtoi( sValue.GetString() ) ) );
+            this->m_eValue = std::min( 10800000, std::max( 0, _wtoi( sValue.GetString() ) ) );
 
             return this->m_eValue;
 		}
@@ -2048,12 +2048,12 @@ namespace SimpleTypes
 
 		void SetValue(int nValue)
 		{
-            this->m_eValue = min( 21600000, max( 0, nValue ) );
+            this->m_eValue = std::min( 21600000, std::max( 0, nValue ) );
 		}
 
 		virtual int     FromString(CString &sValue)
 		{
-            this->m_eValue = min( 21600000, max( 0, _wtoi( sValue.GetString() ) ) );
+            this->m_eValue = std::min( 21600000, std::max( 0, _wtoi( sValue.GetString() ) ) );
 
             return this->m_eValue;
 		}
@@ -2090,7 +2090,7 @@ namespace SimpleTypes
 
 		void   SetValue(double dValue)
 		{
-			m_dValue = min( 100, max( 0, dValue ) );
+            m_dValue = std::min( 100.0, std::max( 0.0, dValue ) );
 		}
 
         virtual double FromString(CString &sValue)
@@ -2102,14 +2102,14 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 				{
 					// Поправка 12.1.2.3 (Part4)
-					int nValue = max( 0, min( 100000, _wtoi( sValue ) ) );
+                    int nValue = std::max( 0, std::min( 100000, _wtoi( sValue ) ) );
 					m_dValue = nValue / 1000.0;
 				}
 				else
 					m_dValue = 0;
 			}
 			else
-				m_dValue = min( 100, max( 0, _wtof( sValue.Mid( 0, nLen - 1 ) ) ) );
+                m_dValue = std::min( 100.0, std::max( 0.0, _wtof( sValue.Mid( 0, nLen - 1 ) ) ) );
 
             return m_dValue;
         }
@@ -2144,7 +2144,7 @@ namespace SimpleTypes
 
 		void   SetValue(double dValue)
 		{
-			m_dValue = max( 0, dValue );
+            m_dValue = std::max( 0.0, dValue );
 		}
 
         virtual double FromString(CString &sValue)
@@ -2156,14 +2156,14 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 				{
 					// Поправка 12.1.2.4 (Part4)
-					int nValue = max( 0, _wtoi( sValue ) );
+                    int nValue = std::max( 0, _wtoi( sValue ) );
 					m_dValue = nValue / 1000.0;
 				}
 				return
 					m_dValue;
 			}
 			else
-				m_dValue = max( 0, _wtof( sValue.Mid( 0, nLen - 1 ) ) );
+                m_dValue = std::max( 0.0, _wtof( sValue.Mid( 0, nLen - 1 ) ) );
 
             return m_dValue;
         }
@@ -4869,7 +4869,7 @@ namespace SimpleTypes
 
 		virtual void    SetValue  (unsigned char unValue)
 		{
-            this->m_eValue = min( 16, max( 1, unValue ) );
+            this->m_eValue = std::min( 16, std::max( 1, (int) unValue ) );
 		}
         virtual unsigned char FromString(CString &sValue)
         {
@@ -4988,7 +4988,7 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 				{
 					// Поправка 12.1.2.5 (Part4)
-					int nValue = min( 100000, max( 1000, _wtoi( sValue ) ) );
+                    int nValue = std::min( 100000, std::max( 1000, _wtoi( sValue ) ) );
 					m_dValue = nValue / 1000.0;
 				}
 				return
@@ -5441,7 +5441,7 @@ namespace SimpleTypes
 				if ( -1 == nPos )
 				{
 					// Поправка 12.1.2.7 (Part4)
-					int nValue = min( 13200000, max( 0, _wtoi( sValue ) ) );
+                    int nValue = std::min( 13200000, std::max( 0, _wtoi( sValue ) ) );
 					m_dValue = nValue / 1000.0;
 				}
 				return m_dValue;

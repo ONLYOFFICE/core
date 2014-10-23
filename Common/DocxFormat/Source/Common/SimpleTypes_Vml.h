@@ -2675,12 +2675,12 @@ namespace SimpleTypes
 
 			void   SetValue(double dValue)
 			{
-				m_dValue = max( 0, min( 1, dValue) );
+                m_dValue = std::max( 0.0, std::min( 1.0, dValue) );
 			}
 
 			void   SetValue(int nValue)
 			{
-				m_dValue = max( 0, min( 65536, nValue) ) / 65536.0;
+                m_dValue = std::max( 0.0, std::min( 65536.0, (double) nValue) ) / 65536.0;
 			}
 
 			virtual double FromString(CString &sValue)
@@ -4742,16 +4742,16 @@ namespace SimpleTypes
 
 			void   SetValue(double dValue)
 			{
-				m_dValue = max( 0, min( 1, dValue) );
+                m_dValue = std::max( 0.0, std::min( 1.0, dValue) );
 			}
 
 			void   SetValue(int nValue)
 			{
-				m_dValue = max( 0, min( 65536, nValue) ) / 65536.0;
+                m_dValue = std::max( 0.0, std::min( 65536.0, (double) nValue) ) / 65536.0;
 			}
 			void   SetPercentage(double dValue)
 			{
-				m_dValue = max( 0, min( 100, dValue ) ) / 100.0;
+                m_dValue = std::max( 0.0, std::min( 100.0, dValue ) ) / 100.0;
 			}
 
 			virtual double FromString(CString &sValue)

@@ -65,7 +65,7 @@ namespace FileSystem {
         return stringUtf8ToWString (sDir);
     }
 
-    bool Directory::CreateDirectory_(LPCTSTR path) 
+    bool Directory::CreateDirectory (LPCTSTR path)
 	{
         bool directoryCreated = false;
 
@@ -78,15 +78,15 @@ namespace FileSystem {
 
         return directoryCreated;
     }
-    bool Directory::CreateDirectory_(const String& path) 
+    bool Directory::CreateDirectory (const String& path)
 	{
-        return CreateDirectory(path.c_str());
+        return Directory::CreateDirectory(path.c_str());
     }
-    bool CreateDirectory_(String strFolderPathRoot, String strFolderName)
+    bool Directory::CreateDirectory (String strFolderPathRoot, String strFolderName)
     {
         String strFolder = strFolderPathRoot;
-        strFolder =+ _T("/");
-        strFolder =+ strFolderName;
+        strFolder += _T("/");
+        strFolder += strFolderName;
         return CreateDirectory(strFolder);
     }
     bool Directory::CreateDirectories(LPCTSTR path) 
@@ -199,12 +199,15 @@ namespace FileSystem {
 
         return tempPath;
     }
+
     static bool PathIsDirectory(CString pathName)
     {
         struct stat s;
-        if (stat(pathName, &s) == 0)
+
+        std::string sPathNameUtf8 = stringWstingToUtf8String (pathName);
+        if (stat(sPathNameUtf8.c_str(), &s) == 0)
         {
-            if (s.st_mode & S_IFDR)return true;
+            if (s.st_mode & S_IFDIR)return true;
             else return false;
         }
 

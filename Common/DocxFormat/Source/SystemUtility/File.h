@@ -649,8 +649,8 @@ namespace StreamUtils
 #include <fstream>  // instream
 #include <unistd.h> // unlink
 
-#include "../../../DesktopEditor/common/Types.h"
-#include "../../../DesktopEditor/common/File.h"
+#include "../../../../DesktopEditor/common/Types.h"
+#include "../../../../DesktopEditor/common/File.h"
 /*
 class CFile: public NSFile::CFileBinary
 {

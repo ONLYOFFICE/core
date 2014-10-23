@@ -2,6 +2,7 @@
 #define BINARY_COMMON_READER
 
 #include "../../ASCOfficePPTXFile/Editor/BinaryFileReaderWriter.h"
+#include "../../XlsxSerializerCom/Common/BinReaderWriterDefines.h"
 
 namespace BinXlsxRW {
 	template <typename CallbackType >

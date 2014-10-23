@@ -4,13 +4,20 @@
 #include "../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../Common/Base64.h"
 #include "../../DesktopEditor/common/Types.h"
+#ifndef DISABLE_FILE_DOWNLOADER
 #include "../../ASCOfficeDocxFile2/BinReader/FileDownloader.h"
+#endif
 #include "../../DesktopEditor/common/file.h"
+
+#ifndef CP_UTF8
+#define CP_UTF8 65001
+#endif
 
 namespace SerializeCommon
 {
 	CString DownloadImage(const CString& strFile)
 	{
+#ifndef DISABLE_FILE_DOWNLOADER
 		CFileDownloader oDownloader(strFile, FALSE);
 		oDownloader.Start( 1 );
 		while ( oDownloader.IsRunned() )
@@ -23,16 +30,17 @@ namespace SerializeCommon
 			strFileName = oDownloader.GetFilePath();
 		}
 		return strFileName;
+#else
+		return L"";
+#endif
 	}
 	VOID convertBase64ToImage (NSFile::CFileBinary& oFile, CString &pBase64)
 	{
-		INT nUTF8Len = WideCharToMultiByte (CP_UTF8, 0, pBase64, pBase64.GetLength (), NULL, NULL, NULL, NULL);
-		CHAR *pUTF8String = new CHAR [nUTF8Len + 1];
-		memset(pUTF8String, 0, sizeof (CHAR) * (nUTF8Len + 1));
-
-		WideCharToMultiByte (CP_UTF8, 0, pBase64, -1, pUTF8String, nUTF8Len, NULL, NULL);
-		CStringA sUnicode; sUnicode = pUTF8String;
-		delete[] pUTF8String;
+		BYTE* pUtf8 = NULL;
+		long nUtf8Size;
+		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(pBase64.GetString(), pBase64.GetLength(), pUtf8, nUtf8Size);
+		CStringA sUnicode((char*)pUtf8, nUtf8Size);
+		RELEASEARRAYOBJECTS(pUtf8);
 
 		//Убираем "data:image/jpg;base64,"
 		int nShift = 0;
@@ -60,14 +68,10 @@ namespace SerializeCommon
 	}
 	CString changeExtention(const CString& sSourcePath, const CString& sTargetExt)
 	{
-		wchar_t path_buffer[_MAX_PATH];
-		wchar_t drive[_MAX_DRIVE];
-		wchar_t dir[_MAX_DIR];
-		wchar_t fname[_MAX_FNAME];
-		wchar_t ext[_MAX_EXT];
-		_wsplitpath(sSourcePath, drive, dir, fname, ext);
-		_tmakepath(path_buffer, drive, dir, fname, sTargetExt);
-		return CString(path_buffer);
+		int nIndex = sSourcePath.ReverseFind('.');
+		if(-1 != nIndex)
+			return sSourcePath.Left(nIndex + 1) + sTargetExt;
+		return sSourcePath;
 	}
 	void ReadFileType(CString& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter)
 	{

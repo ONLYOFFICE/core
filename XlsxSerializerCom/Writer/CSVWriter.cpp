@@ -1,4 +1,8 @@
-#include "CSVWriter.h"
+п»ї#include "CSVWriter.h"
+
+#ifndef CP_UTF8
+#define CP_UTF8 65001
+#endif
 
 namespace CSVWriter
 {
@@ -10,8 +14,8 @@ namespace CSVWriter
 		if (0 == nCountChars && !bIsEnd)
 			return;
 
-		CONST INT c_nSize = 1048576; // 1024 * 1024
-		CONST INT nSizeWchar = sizeof(WCHAR);
+        const INT c_nSize = 1048576; // 1024 * 1024
+        const INT nSizeWchar = sizeof(WCHAR);
 		if (NULL == *pWriteBuffer)
 		{
 			*pWriteBuffer = new WCHAR[c_nSize];
@@ -21,19 +25,28 @@ namespace CSVWriter
 
 		if (nCountChars + nCurrentIndex > c_nSize || bIsEnd)
 		{
-			// Буффер заполнился, пишем
+			// Р‘СѓС„С„РµСЂ Р·Р°РїРѕР»РЅРёР»СЃСЏ, РїРёС€РµРј
 			if (nCodePage == CP_UTF16)
 			{
 				pFile->WriteFile((BYTE*)*pWriteBuffer, sizeof (WCHAR) * nCurrentIndex);
 			}
 			else
 			{
+//todo
+#ifdef _WIN32
 				INT nSize = WideCharToMultiByte(nCodePage, 0, *pWriteBuffer, nCurrentIndex, NULL, NULL, NULL, NULL);
 				CHAR *pString = new CHAR [nSize];
 				memset(pString, 0, sizeof (CHAR) * nSize);
-				WideCharToMultiByte (CP_UTF8, 0, *pWriteBuffer, -1, pString, nSize, NULL, NULL);
+				WideCharToMultiByte (nCodePage, 0, *pWriteBuffer, -1, pString, nSize, NULL, NULL);
 				pFile->WriteFile((BYTE*)pString, sizeof (CHAR) * nSize);
 				RELEASEARRAYOBJECTS(pString);
+#else
+				BYTE* pUtf8 = NULL;
+				long nUtf8Size;
+				NSFile::CUtf8Converter::GetUtf8StringFromUnicode(*pWriteBuffer, nCurrentIndex, pUtf8, nUtf8Size);
+				pFile->WriteFile(pUtf8, nUtf8Size);
+				RELEASEARRAYOBJECTS(pUtf8);
+#endif
 			}	
 			
 			memset(*pWriteBuffer, 0, nSizeWchar * c_nSize);
@@ -46,25 +59,25 @@ namespace CSVWriter
 			nCurrentIndex += nCountChars;
 		}
 	}
-	void WriteFromXlsxToCsv(CString &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, CONST WCHAR wcDelimiter)
+    void WriteFromXlsxToCsv(CString &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter)
 	{
 		NSFile::CFileBinary oFile;
 		oFile.CreateFileW(string2std_string(sFileDst));
 
-		// Нужно записать шапку
+		// РќСѓР¶РЅРѕ Р·Р°РїРёСЃР°С‚СЊ С€Р°РїРєСѓ
 		if (CP_UTF8 == nCodePage)
 		{
-			UCHAR arUTF8[3] = {0xEF, 0xBB, 0xBF};
+			BYTE arUTF8[3] = {0xEF, 0xBB, 0xBF};
 			oFile.WriteFile(arUTF8, 3);
 		}
 		else if (CP_UTF16 == nCodePage)
 		{
-			UCHAR arUTF16[2] = {0xFF, 0xFE};
+			BYTE arUTF16[2] = {0xFF, 0xFE};
 			oFile.WriteFile(arUTF16, 2);
 		}
 		else if (CP_unicodeFFFE == nCodePage)
 		{
-			UCHAR arBigEndian[2] = {0xFE, 0xFF};
+			BYTE arBigEndian[2] = {0xFE, 0xFF};
 			oFile.WriteFile(arBigEndian, 2);
 		}
 
@@ -73,7 +86,7 @@ namespace CSVWriter
 		INT nCurrentIndex = 0;
 		WCHAR *pWriteBuffer = NULL;
 
-		CString sSheetRId = _T("Sheet1"); // Читаем не по rId, а по имени листа
+		CString sSheetRId = _T("Sheet1"); // Р§РёС‚Р°РµРј РЅРµ РїРѕ rId, Р° РїРѕ РёРјРµРЅРё Р»РёСЃС‚Р°
 		OOX::Spreadsheet::CWorkbook *pWorkbook = oXlsx.GetWorkbook();
 		if (NULL != pWorkbook)
 		{
@@ -106,7 +119,7 @@ namespace CSVWriter
 				{
 					OOX::Spreadsheet::CSharedStrings *pSharedStrings = oXlsx.GetSharedStrings();
 					CString sDelimiter = _T(""); sDelimiter += wcDelimiter;
-					CONST WCHAR wcQuote = _T('"');
+                    const WCHAR wcQuote = _T('"');
 					CString sEscape = _T("\"\n");
 					sEscape += wcDelimiter;
 
@@ -182,7 +195,7 @@ namespace CSVWriter
 			}
 		}
 
-		// Теперь мы пишем как MS Excel (новую строку записываем в файл)
+		// РўРµРїРµСЂСЊ РјС‹ РїРёС€РµРј РєР°Рє MS Excel (РЅРѕРІСѓСЋ СЃС‚СЂРѕРєСѓ Р·Р°РїРёСЃС‹РІР°РµРј РІ С„Р°Р№Р»)
 		WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sNewLineN, nCodePage);
 		WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sNewLineN, nCodePage, TRUE);
 		RELEASEARRAYOBJECTS(pWriteBuffer);

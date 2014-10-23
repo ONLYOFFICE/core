@@ -1,4 +1,4 @@
-#include "CSVReader.h"
+п»ї#include "CSVReader.h"
 
 #include <map>
 
@@ -12,7 +12,7 @@ namespace CSVReader
 			sText.Delete(nIndex);
 			oDeleteChars.pop();
 		}
-		// Пустую не пишем
+		// РџСѓСЃС‚СѓСЋ РЅРµ РїРёС€РµРј
 		if (0 == sText.GetLength())
 			return;
 
@@ -23,7 +23,7 @@ namespace CSVReader
 		LONG lValue = wcstol(sText, &pEndPtr, 10);
 		if (NULL != *pEndPtr)
 		{
-			// Не число
+			// РќРµ С‡РёСЃР»Рѕ
 			pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeInlineStr);
 			pCell->m_oRichText.Init();
 			OOX::Spreadsheet::CText *pText = new OOX::Spreadsheet::CText();
@@ -32,7 +32,7 @@ namespace CSVReader
 		}
 		else
 		{
-			// Число
+			// Р§РёСЃР»Рѕ
 			pCell->m_oValue.Init();
 			pCell->m_oValue->m_sText = sText;
 		}
@@ -48,14 +48,14 @@ namespace CSVReader
 		pCell->m_oRef = OOX::Spreadsheet::CWorksheet::combineRef(nRow, nCol);
 		oRow.m_arrItems.push_back(pCell);
 	}
-	void ReadFromCsvToXlsx(CString &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, CONST WCHAR wcDelimiter)
+    void ReadFromCsvToXlsx(CString &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter)
 	{
-		// Создадим Workbook
+		// РЎРѕР·РґР°РґРёРј Workbook
 		oXlsx.CreateWorkbook();
-		// Создадим стили
+		// РЎРѕР·РґР°РґРёРј СЃС‚РёР»Рё
 		oXlsx.CreateStyles();
 
-		// Добавим стили для wrap-а
+		// Р”РѕР±Р°РІРёРј СЃС‚РёР»Рё РґР»СЏ wrap-Р°
 		OOX::Spreadsheet::CStyles *pStyles = oXlsx.GetStyles();
 		pStyles->m_oCellXfs.Init();
 		pStyles->m_oCellXfs->m_oCount.Init();
@@ -114,16 +114,22 @@ namespace CSVReader
 			BYTE* pFileData = new BYTE[oFile.GetFileSize()];
 			oFile.ReadFile(pFileData, oFile.GetFileSize(), nFileSize);
 			oFile.CloseFile();
-
+//todo
+#ifdef _WIN32
 			INT nSize = MultiByteToWideChar(nCodePage, 0, (LPCSTR)pFileData, nFileSize, NULL, 0);
 			WCHAR *pTemp = new WCHAR [nSize];
 			memset(pTemp, 0, sizeof(WCHAR) * nSize);
 			MultiByteToWideChar (nCodePage, 0, (LPCSTR)pFileData, nFileSize, pTemp, nSize);
+#else
+			std::wstring sFileDataW = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pFileData, nFileSize);
+			INT nSize = sFileDataW.length();
+			const WCHAR *pTemp = sFileDataW.c_str();
+#endif
 
-			CONST WCHAR wcNewLineN = _T('\n');
-			CONST WCHAR wcNewLineR = _T('\r');
-			CONST WCHAR wcQuote = _T('"');
-			CONST WCHAR wcTab = _T('\t');
+            const WCHAR wcNewLineN = _T('\n');
+            const WCHAR wcNewLineR = _T('\r');
+            const WCHAR wcQuote = _T('"');
+            const WCHAR wcTab = _T('\t');
 
 			BOOL bIsWrap = FALSE;
 			WCHAR wcCurrent;
@@ -158,7 +164,7 @@ namespace CSVReader
 				{
 					if (bInQuote)
 					{
-						// Добавим Wrap
+						// Р”РѕР±Р°РІРёРј Wrap
 						bIsWrap = TRUE;
 						continue;
 					}
@@ -172,7 +178,7 @@ namespace CSVReader
 
 					if (wcNewLineR == wcCurrent && nIndex + 1 != nSize && wcNewLineN == pTemp[nIndex + 1])
 					{
-						// На комбинацию \r\n должен быть только 1 перенос
+						// РќР° РєРѕРјР±РёРЅР°С†РёСЋ \r\n РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ С‚РѕР»СЊРєРѕ 1 РїРµСЂРµРЅРѕСЃ
 						++nIndex;
 					}
 					
@@ -189,16 +195,16 @@ namespace CSVReader
 					// Quote
 					if (FALSE == bInQuote && nStartCell == nIndex && nIndex + 1 != nSize)
 					{
-						// Начало новой ячейки (только если мы сразу после разделителя и не в конце файла)
+						// РќР°С‡Р°Р»Рѕ РЅРѕРІРѕР№ СЏС‡РµР№РєРё (С‚РѕР»СЊРєРѕ РµСЃР»Рё РјС‹ СЃСЂР°Р·Сѓ РїРѕСЃР»Рµ СЂР°Р·РґРµР»РёС‚РµР»СЏ Рё РЅРµ РІ РєРѕРЅС†Рµ С„Р°Р№Р»Р°)
 						bInQuote = !bInQuote;
 						nStartCell = nIndex + 1;
 					}
 					else if (TRUE == bInQuote)
 					{
-						// Нужно удалить кавычку ограничитель
+						// РќСѓР¶РЅРѕ СѓРґР°Р»РёС‚СЊ РєР°РІС‹С‡РєСѓ РѕРіСЂР°РЅРёС‡РёС‚РµР»СЊ
 						oDeleteChars.push(nIndex);
 
-						// Если следующий символ кавычка, то мы не закончили ограничитель строки (1997,Ford,E350,"Super, ""luxurious"" truck")
+						// Р•СЃР»Рё СЃР»РµРґСѓСЋС‰РёР№ СЃРёРјРІРѕР» РєР°РІС‹С‡РєР°, С‚Рѕ РјС‹ РЅРµ Р·Р°РєРѕРЅС‡РёР»Рё РѕРіСЂР°РЅРёС‡РёС‚РµР»СЊ СЃС‚СЂРѕРєРё (1997,Ford,E350,"Super, ""luxurious"" truck")
 						if (nIndex + 1 != nSize && wcQuote == pTemp[nIndex + 1])
 							++nIndex;
 						else
@@ -223,8 +229,9 @@ namespace CSVReader
 			{
 				RELEASEOBJECT(pRow);
 			}
-
+#ifdef _WIN32
 			RELEASEARRAYOBJECTS(pTemp);
+#endif
 		}
 
 		std::map<CString, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();

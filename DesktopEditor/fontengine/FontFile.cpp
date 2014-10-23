@@ -296,11 +296,11 @@ void CFontFile::SetSizeAndDpi(double dSize, UINT unHorDpi, UINT unVerDpi)
 void CFontFile::ClearCache()
 {
 	// TODO: total memory
-    ClearCacheNoAttack();
+    ClearCacheNoAttack(true);
 }
-void CFontFile::ClearCacheNoAttack()
+void CFontFile::ClearCacheNoAttack(bool bIsFree)
 {
-    m_oCacheSizes.Clear();
+    m_oCacheSizes.Clear(bIsFree);
 	::memset( m_arrCacheSizesIndexs, 0xFF, FONT_CACHE_SIZES_INDEXES_SIZE_2 );
 }
 

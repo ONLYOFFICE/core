@@ -61,8 +61,17 @@ public:
 	{
 		m_arrSizes.RemoveAll();
 	}
-	inline void Clear()
+	inline void Clear(bool bIsFree = false)
 	{
+		if (bIsFree)
+		{
+			int nCount = m_arrSizes.GetCount();
+			for (int i = 0; i < nCount; ++i)
+			{
+				m_arrSizes[i].oBitmap.bFreeData = TRUE;
+			}
+		}
+
 		m_arrSizes.RemoveAll();
 	}
 
@@ -183,7 +192,7 @@ public:
 	void SetSizeAndDpi(double dSize, UINT unHorDpi, UINT unVerDpi);
 	
 	void ClearCache();
-	void ClearCacheNoAttack();
+	void ClearCacheNoAttack(bool bIsFree = false);
     void Destroy();
 
 	bool SetTextMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF);

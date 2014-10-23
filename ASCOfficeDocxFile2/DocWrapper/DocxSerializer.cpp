@@ -8,10 +8,6 @@
 #include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
 #include "../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 
-#ifndef _WIN32
-#include "../../DesktopEditor/common/Types.h"
-#endif
-
 int BinDocxRW::g_nCurFormatVersion = 0;
 
 BinDocxRW::CDocxSerializer::CDocxSerializer()
@@ -65,8 +61,6 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 	oDrawingConverter.SetFontManager(pFontManager);
 	NSBinPptxRW::CBinaryFileWriter& oBufferedStream = *oDrawingConverter.m_pBinaryWriter;
 
-#ifdef _WIN32
-
 	NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager = NULL;
 	if(false == m_sEmbeddedFontsDir.IsEmpty())
 	{
@@ -92,7 +86,6 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 	ParamsWriter oParamsWriter(oBufferedStream, fp, &oDrawingConverter, pEmbeddedFontsManager);
 	m_oBinaryFileWriter = new BinaryFileWriter(oParamsWriter);
 	m_oBinaryFileWriter->intoBindoc(sDstPath);
-#endif
 	BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 	int nBinBufferLen = oBufferedStream.GetPosition();
 
@@ -115,6 +108,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 			oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
 			oFile.CloseFile();
 		}
+		RELEASEARRAYOBJECTS(pbBase64Buffer);
 	}
 	RELEASEOBJECT(m_oBinaryFileWriter);
 	RELEASEOBJECT(pFontPicker);

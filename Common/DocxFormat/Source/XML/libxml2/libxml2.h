@@ -282,7 +282,7 @@ namespace XmlUtils
 			reader = NULL;
 			m_pStream = NULL;
 		}
-		~CXmlLiteReader()
+		virtual ~CXmlLiteReader()
 		{
 			if (NULL != m_pStream)
 				delete []m_pStream;

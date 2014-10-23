@@ -690,7 +690,7 @@ namespace NSBinPptxRW
             //strDst64.SetString(pbBase64Buffer, nBase64BufferLen);
             strDst64 = pbBase64Buffer;
 		}
-
+		RELEASEARRAYOBJECTS(pbBase64Buffer);
 		RELEASEARRAYOBJECTS(pBuffer);
 
 		oFile.CloseFile();

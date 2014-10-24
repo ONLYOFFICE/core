@@ -717,7 +717,7 @@ namespace XmlUtils
 			{
 				CXmlNodeBase* pNode = m_nodes[i];
 				if (NULL != pNode)
-					delete pNode;
+					pNode->Release();
 			}
 		}
 
@@ -888,6 +888,7 @@ namespace XmlUtils
 
 		CXmlNode& operator=(const CXmlNode& oSrc);
 	private:
+		void SetBase(CXmlNodeBase* pBase);
 		CString GetNamespace(const CString& strNodeName);
 		CString GetNameNoNS(const CString& strNodeName);
 	public:

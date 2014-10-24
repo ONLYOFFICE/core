@@ -7,7 +7,7 @@
 #ifndef DISABLE_FILE_DOWNLOADER
 #include "../../ASCOfficeDocxFile2/BinReader/FileDownloader.h"
 #endif
-#include "../../DesktopEditor/common/file.h"
+#include "../../DesktopEditor/common/File.h"
 
 #ifndef CP_UTF8
 #define CP_UTF8 65001

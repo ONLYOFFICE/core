@@ -3,8 +3,8 @@
 #define CHART_FROM_TO_BINARY
 
 #include "CommonWriter.h"
-#include "..\..\Common\DocxFormat\Source\XlsxFormat\Chart\ChartSerialize.h"
-#include "..\Writer\BinaryCommonReader.h"
+#include "../../Common/DocxFormat/Source/XlsxFormat/Chart/ChartSerialize.h"
+#include "../Writer/BinaryCommonReader.h"
 #include "../../ASCOfficePPTXFile/ASCOfficeDrawingConverter.h"
 
 using namespace OOX::Spreadsheet;

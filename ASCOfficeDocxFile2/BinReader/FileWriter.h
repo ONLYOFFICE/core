@@ -2,7 +2,7 @@
 #define FILE_WRITER
 
 #include "NumberingWriter.h"
-#include "FontTableWriter.h"
+#include "fontTableWriter.h"
 #include "HeaderFooterWriter.h"
 #include "DocumentWriter.h"
 #include "MediaWriter.h"

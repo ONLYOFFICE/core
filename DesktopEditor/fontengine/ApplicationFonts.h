@@ -136,6 +136,22 @@ private:
 	std::wstring		m_sDirectory;
 	LONG			    m_lDefIndex;	// Номер стандартного шрифта (-1, если не задан)
 
+public:
+	CFontList()
+	{
+		m_lDefIndex = -1;
+	}
+	~CFontList()
+	{
+		int nCount = m_pList.GetCount();
+		for ( int nIndex = 0; nIndex < nCount; ++nIndex ) 
+		{
+			CFontInfo* pTemp = m_pList[nIndex];
+			RELEASEOBJECT(pTemp);
+		}
+		m_pList.RemoveAll();
+	}
+
 private:
 	int GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqCharset);
 	int GetSigPenalty(ULONG ulCandRanges[6], ULONG ulReqRanges[6], double dRangeWeight = 1, bool bPenaltyForSuperflouous = false);

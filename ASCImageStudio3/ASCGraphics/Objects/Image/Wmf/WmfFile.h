@@ -1518,7 +1518,7 @@ private:
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 		{	
 			m_oColorData.Add( &(oDrawPixel.oColor) );
-            float fScope = (float)std::max( oDrawPixel.dPixelWidth, oDrawPixel.dPixelHeight );
+            float fScope = (float)(std::max)( oDrawPixel.dPixelWidth, oDrawPixel.dPixelHeight );
 			CoordFRegister( oDrawPixel.oPoint, fScope );
 			return 0;
 		}
@@ -1570,7 +1570,7 @@ private:
 		{
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-            float fScope = (float)( std::max( pPen->dWidth, pPen->dHeight ) ) / 2;
+            float fScope = (float)( (std::max)( pPen->dWidth, pPen->dHeight ) ) / 2;
 
 			CoordFRegister( oDrawArc.oEnd, fScope );
 			CoordFRegister( oDrawArc.oStart, fScope );
@@ -1802,7 +1802,7 @@ private:
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-            float fScope = (float) ( std::max( pPen->dWidth, pPen->dHeight ) ) / 2;
+            float fScope = (float) ( (std::max)( pPen->dWidth, pPen->dHeight ) ) / 2;
 			CoordFRegister( oDrawArc.oTL, fScope );
 			CoordFRegister( oDrawArc.oBR, fScope );
 
@@ -1836,7 +1836,7 @@ private:
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-            float fScope = (float) ( std::max( pPen->dWidth, pPen->dHeight ) ) / 2;
+            float fScope = (float) ( (std::max)( pPen->dWidth, pPen->dHeight ) ) / 2;
 			CoordFRegister( oDrawLine.oFrom, fScope );
 			CoordFRegister( oDrawLine.oTo, fScope );
 			return 0;
@@ -1863,7 +1863,7 @@ private:
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-            float fScope = (float) ( std::max( pPen->dHeight, pPen->dWidth ) ) / 2;
+            float fScope = (float) ( (std::max)( pPen->dHeight, pPen->dWidth ) ) / 2;
 
 			ulParamIndex = 1;
 			for ( unsigned short ushPointIndex = 0; ushPointIndex < oPolyLine.ushCount; ushPointIndex++ )
@@ -1924,7 +1924,7 @@ private:
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-            float fScope = (float) ( std::max( pPen->dWidth, pPen->dHeight ) ) / 2;
+            float fScope = (float) ( (std::max)( pPen->dWidth, pPen->dHeight ) ) / 2;
 
 			ulParamIndex = 1;
 			for ( unsigned short ushPointIndex = 0; ushPointIndex < oPolyLine.ushCount; ushPointIndex++ )
@@ -2048,7 +2048,7 @@ private:
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-            float fScope = (float) ( std::max( pPen->dWidth, pPen->dHeight ) ) / 2;
+            float fScope = (float) ( (std::max)( pPen->dWidth, pPen->dHeight ) ) / 2;
 
 			ulParamIndex = 1 + oPolyPoly.ushPolyCount;
 			for ( unsigned short ushPointCount = 0; ushPointCount < ushNumPars; ushPointCount++ )
@@ -2174,7 +2174,7 @@ private:
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-            float fScope = (float) ( std::max ( pPen->dWidth, pPen->dHeight ) ) / 2;
+            float fScope = (float) ( (std::max) ( pPen->dWidth, pPen->dHeight ) ) / 2;
 			CoordFRegister( oDrawRect.oTL, fScope );
 			CoordFRegister( oDrawRect.oBR, fScope );
 			return 0;
@@ -2216,7 +2216,7 @@ private:
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-            float fScope = (float) ( std::max( pPen->dHeight, pPen->dWidth ) ) / 2;
+            float fScope = (float) ( (std::max)( pPen->dHeight, pPen->dWidth ) ) / 2;
 
 			CoordFRegister( oDrawRect.oTL, fScope );
 			CoordFRegister( oDrawRect.oBR, fScope );
@@ -2310,7 +2310,7 @@ private:
 
 		TWmfRegion *pClip = (TWmfRegion*)pPlayer->pDC->pClip;
 
-        oPolyRect.unCount = std::max( pClip->unNumRects, pRegion->unNumRects + 1 );
+        oPolyRect.unCount = (std::max)( pClip->unNumRects, pRegion->unNumRects + 1 );
 		oPolyRect.pTL = (TWmfCoordF *)m_oMemoryManager.Malloc( oPolyRect.unCount * sizeof(TWmfCoordF), _T("Meta_RegionBrush") );
 
 		if ( NULL == oPolyRect.pTL )
@@ -2440,7 +2440,7 @@ private:
 
 		TWmfRegion *pClip = (TWmfRegion*)pPlayer->pDC->pClip;
 
-        oPolyRect.unCount = std::max( pClip->unNumRects, pRegion->unNumRects + 1 );
+        oPolyRect.unCount = (std::max)( pClip->unNumRects, pRegion->unNumRects + 1 );
 
 		oPolyRect.pTL = (TWmfCoordF *)m_oMemoryManager.Malloc( oPolyRect.unCount * sizeof(TWmfCoordF), _T("Meta_RegionPaint") );
 		if ( NULL == oPolyRect.pTL )
@@ -3847,7 +3847,7 @@ private:
 		pPen->ushStyle = ( pPen->ushStyle & ~PS_TYPE_MASK   ) | ( ushStyle & PS_TYPE_MASK   );
 
 		unsigned short ushWidth = Record_GetUShortPar( pRecord, 1 );
-        ushWidth = std::max( (unsigned short) 1, ushWidth );
+        ushWidth = (std::max)( (unsigned short) 1, ushWidth );
 
 		pPen->dWidth  = (double) ushWidth * abs( pPlayer->pDC->dPixelWidth  );
 		pPen->dHeight = (double) ushWidth * abs( pPlayer->pDC->dPixelHeight );

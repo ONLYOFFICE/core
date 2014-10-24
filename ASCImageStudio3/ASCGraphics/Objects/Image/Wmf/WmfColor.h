@@ -255,7 +255,7 @@ public:
 			unsigned int unDistG = (unsigned int) abs(((int) (pRGB->g)) - ((int) (m_pRGB[ulIndex].g)));
 			unsigned int unDistB = (unsigned int) abs(((int) (pRGB->b)) - ((int) (m_pRGB[ulIndex].b)));
 
-            unsigned int unDist = std::max( std::max( unDistR, unDistG ),unDistB );
+            unsigned int unDist = (std::max)( (std::max)( unDistR, unDistG ),unDistB );
 
 			if ( unDist < unDistBest )
 			{
@@ -306,17 +306,17 @@ public:
 	{	
 		TWmfRGB oColor;
 
-        fRed   = std::max( 0.0f, std::min( 1.0f, fRed   ) );
-        fGreen = std::max( 0.0f, std::min( 1.0f, fGreen ) );
-        fBlue  = std::max( 0.0f, std::min( 1.0f, fBlue  ) );
+        fRed   = (std::max)( 0.0f, (std::min)( 1.0f, fRed   ) );
+        fGreen = (std::max)( 0.0f, (std::min)( 1.0f, fGreen ) );
+        fBlue  = (std::max)( 0.0f, (std::min)( 1.0f, fBlue  ) );
 
 		int nRed   = (int) (fRed   * (float) 256);
 		int nGreen = (int) (fGreen * (float) 256);
 		int nBlue  = (int) (fBlue  * (float) 256);
 
-        nRed   = std::max( 0, std::min( 255, nRed   ) );
-        nGreen = std::max( 0, std::min( 255, nGreen ) );
-        nBlue  = std::max( 0, std::min( 255, nBlue  ) );
+        nRed   = (std::max)( 0, (std::min)( 255, nRed   ) );
+        nGreen = (std::max)( 0, (std::min)( 255, nGreen ) );
+        nBlue  = (std::max)( 0, (std::min)( 255, nBlue  ) );
 
 		oColor.r = (unsigned char) nRed;
 		oColor.g = (unsigned char) nGreen;

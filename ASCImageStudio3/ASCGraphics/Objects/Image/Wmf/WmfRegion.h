@@ -185,10 +185,10 @@ static bool REGION_UnionRegion(TWmfRegion *pNewRegion, TWmfRegion *pRegionA, TWm
 
 	REGION_RegionOp( pNewRegion, pRegionA, pRegionB, REGION_UnionO, REGION_UnionNonO, REGION_UnionNonO);
 
-	pNewRegion->oExtents.oTL.fX = min( pRegionA->oExtents.oTL.fX, pRegionB->oExtents.oTL.fX );
-	pNewRegion->oExtents.oTL.fY = min( pRegionA->oExtents.oTL.fY, pRegionB->oExtents.oTL.fY );
-	pNewRegion->oExtents.oBR.fX = max( pRegionA->oExtents.oBR.fX, pRegionB->oExtents.oBR.fX );
-	pNewRegion->oExtents.oBR.fY = max( pRegionA->oExtents.oBR.fY, pRegionB->oExtents.oBR.fY );
+    pNewRegion->oExtents.oTL.fX = std::min( pRegionA->oExtents.oTL.fX, pRegionB->oExtents.oTL.fX );
+    pNewRegion->oExtents.oTL.fY = std::min( pRegionA->oExtents.oTL.fY, pRegionB->oExtents.oTL.fY );
+    pNewRegion->oExtents.oBR.fX = std::max( pRegionA->oExtents.oBR.fX, pRegionB->oExtents.oBR.fX );
+    pNewRegion->oExtents.oBR.fY = std::max( pRegionA->oExtents.oBR.fY, pRegionB->oExtents.oBR.fY );
 
 	pNewRegion->ushType = ( pNewRegion->unNumRects ? COMPLEXREGION : NULLREGION );
 
@@ -267,7 +267,7 @@ static void REGION_RegionOp   (TWmfRegion *pNewRegion, TWmfRegion *pRegionA, TWm
  * have to worry about using too much memory. I hope to be able to
  * nuke the Xrealloc() at the end of this function eventually.
  */
-	pNewRegion->unSize = max( pRegionA->unNumRects, pRegionB->unNumRects ) * 2;
+    pNewRegion->unSize = std::max( pRegionA->unNumRects, pRegionB->unNumRects ) * 2;
 
 	if ( NULL == ( pNewRegion->pRects = (TWmfRectF *)malloc( sizeof(TWmfRectF) * pNewRegion->unSize ) ) )
 	{
@@ -336,8 +336,8 @@ static void REGION_RegionOp   (TWmfRegion *pNewRegion, TWmfRegion *pRegionA, TWm
  */
 		if ( r1->oTL.fY < r2->oTL.fY )
 		{	
-			top = max( r1->oTL.fY, ybot );
-			bot = min( r1->oBR.fY, r2->oTL.fY );
+            top = std::max( r1->oTL.fY, ybot );
+            bot = std::min( r1->oBR.fY, r2->oTL.fY );
 
 			if ( ( top != bot ) && ( pNonOverlap1Func ) )
 			{	
@@ -348,8 +348,8 @@ static void REGION_RegionOp   (TWmfRegion *pNewRegion, TWmfRegion *pRegionA, TWm
 		}
 		else if ( r2->oTL.fY < r1->oTL.fY )
 		{	
-			top = max( r2->oTL.fY, ybot );
-			bot = min( r2->oBR.fY, r1->oTL.fY );
+            top = std::max( r2->oTL.fY, ybot );
+            bot = std::min( r2->oBR.fY, r1->oTL.fY );
 
 			if ( ( top != bot ) && ( pNonOverlap2Func ) )
 			{	
@@ -376,7 +376,7 @@ static void REGION_RegionOp   (TWmfRegion *pNewRegion, TWmfRegion *pRegionA, TWm
 /* Now see if we've hit an intersecting band. The two bands only
  * intersect if ybot > ytop
  */
-		ybot = min( r1->oBR.fY, r2->oBR.fY );
+        ybot = std::min( r1->oBR.fY, r2->oBR.fY );
 		curBand = pNewRegion->unNumRects;
 		if ( ( ybot > ytop ) && ( pOverlapFunc ) )
 		{	
@@ -411,7 +411,7 @@ static void REGION_RegionOp   (TWmfRegion *pNewRegion, TWmfRegion *pRegionA, TWm
 				while ( ( r1BandEnd < r1End ) && ( r1BandEnd->oTL.fY == r1->oTL.fY ) ) 
 					r1BandEnd++;
 
-				(*pNonOverlap1Func)( pNewRegion, r1, r1BandEnd, max( r1->oTL.fY, ybot ), r1->oBR.fY );
+                (*pNonOverlap1Func)( pNewRegion, r1, r1BandEnd, std::max( r1->oTL.fY, ybot ), r1->oBR.fY );
 
 				r1 = r1BandEnd;
 			} while ( r1 != r1End );
@@ -425,7 +425,7 @@ static void REGION_RegionOp   (TWmfRegion *pNewRegion, TWmfRegion *pRegionA, TWm
 			while ( ( r2BandEnd < r2End ) && ( r2BandEnd->oTL.fY == r2->oTL.fY ) ) 
 				r2BandEnd++;
 
-			(*pNonOverlap2Func)( pNewRegion, r2, r2BandEnd, max( r2->oTL.fY, ybot ), r2->oBR.fY );
+            (*pNonOverlap2Func)( pNewRegion, r2, r2BandEnd, std::max( r2->oTL.fY, ybot ), r2->oBR.fY );
 
 			r2 = r2BandEnd;
 		} while ( r2 != r2End );
@@ -840,8 +840,8 @@ static bool REGION_IntersectO (TWmfRegion *pRegion, TWmfRectF *pRect1, TWmfRectF
 
 	while ( ( pRect1 != pRect1End ) && ( pRect2 != pRect2End ) )
 	{	
-		float fLeft  = max( pRect1->oTL.fX, pRect2->oTL.fX );
-		float fRight = min( pRect1->oBR.fX, pRect2->oBR.fX );
+        float fLeft  = std::max( pRect1->oTL.fX, pRect2->oTL.fX );
+        float fRight = std::min( pRect1->oBR.fX, pRect2->oBR.fX );
 
 /* If there's any overlap between the two rectangles, add that
  * overlap to the new region.

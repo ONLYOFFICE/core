@@ -79,4 +79,4 @@ private:
 	bool isPgxFile(BYTE* pBuffer,DWORD dwBytes);
 };
 
-#endif _BUILD_IMAGE_FILE_CHECKER_
+#endif //_BUILD_IMAGE_FILE_CHECKER_

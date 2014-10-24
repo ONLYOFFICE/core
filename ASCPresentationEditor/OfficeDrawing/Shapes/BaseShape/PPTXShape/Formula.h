@@ -340,14 +340,14 @@ namespace NSGuidesOOXML
 		{
 			//for(long i = 0; i < Adjustments.size(); i++)
 			//	Adjustments[i] = NonDefResult;
-			for(long i = 0; i < Guides->size(); i++)
+            for(size_t i = 0; i < Guides->size(); i++)
 				(*Guides)[i] = dNonDefResult;
 		}
 
 		void ReCalculateGuides()
 		{
 			Clear();
-			for(long i = 0; i < strGuides.size(); i++)
+            for(size_t i = 0; i <  strGuides.size(); i++)
 				(*Guides)[i] = strGuides[i].Calculate(this);
 		}
 	};

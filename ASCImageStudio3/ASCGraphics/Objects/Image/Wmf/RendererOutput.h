@@ -1836,7 +1836,7 @@ private:
 			unsigned short ushColorTableLen = 256;
 			
 			if ( 0 != unColorUsed  )
-				ushColorTableLen = min( 256, unColorUsed );
+                ushColorTableLen = std::min( (unsigned short) 256, (unsigned short) unColorUsed );
 
 			TWmfRGB oColorTable[256];
 

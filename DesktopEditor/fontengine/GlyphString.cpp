@@ -23,7 +23,7 @@ TGlyphBitmap::~TGlyphBitmap()
 {
 	if (bFreeData && pData != NULL)
 	{
-		delete []pData;
+		free(pData);
 		pData = NULL;
 	}
 }

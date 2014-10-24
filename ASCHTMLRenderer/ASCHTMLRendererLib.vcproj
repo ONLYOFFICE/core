@@ -105,7 +105,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\Redist\VersionControl.exe $(ProjectDir)version.h"
+				CommandLine=""
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

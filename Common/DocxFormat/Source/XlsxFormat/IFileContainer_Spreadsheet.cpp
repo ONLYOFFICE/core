@@ -271,7 +271,7 @@ namespace OOX
 					m_mapAddNamePair [pFile->type().OverrideType()] = nIndex;
 			}
 
-            m_lMaxRid = std::max( m_lMaxRid, rId.getNumber() );
+            m_lMaxRid = (std::max)( m_lMaxRid, rId.getNumber() );
 			m_mContainer [rId.get()] = pFile;
 		}
 		smart_ptr<OOX::File> IFileContainer::Find(const FileType& oType) const

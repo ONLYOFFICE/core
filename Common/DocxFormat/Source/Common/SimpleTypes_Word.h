@@ -5804,14 +5804,14 @@ namespace SimpleTypes
 
 		virtual void    SetValue(int nValue)
 		{
-            this->m_eValue = std::min( 600, std::max( 0, nValue ) );
+            this->m_eValue = (std::min)( 600, (std::max)( 0, nValue ) );
 		}
 
 		virtual int     FromString(CString &sValue)
 		{
             this->m_eValue = _wtoi( sValue );
 
-            this->m_eValue = std::min( 600, std::max( 0, this->m_eValue ) );
+            this->m_eValue = (std::min)( 600, (std::max)( 0, this->m_eValue ) );
 
             return this->m_eValue;
 		}
@@ -6627,7 +6627,7 @@ namespace SimpleTypes
 
 		void Parse(CString &sValue)
 		{
-            int nLen = std::min( sValue.GetLength(), 12 );
+            int nLen = (std::min)( sValue.GetLength(), 12 );
 
 			for ( int nIndex = 0, nMult = 1; nIndex < nLen; nIndex++, nMult <<= 1 )
 			{

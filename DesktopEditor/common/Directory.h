@@ -59,8 +59,8 @@ namespace NSDirectory
 					oArray.Add(strDirectory + L"/" + sName);
 				}
 			}
+			closedir(dp);
 		}
-		closedir(dp);
 		delete [] pUtf8;
 #elif MAC
 #endif
@@ -110,8 +110,8 @@ namespace NSDirectory
 					}
 				}
 			}
+			closedir(dp);
 		}
-		closedir(dp);
 		delete [] pUtf8;
 #elif MAC
 #endif

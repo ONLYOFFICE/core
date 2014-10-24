@@ -625,7 +625,7 @@ namespace SimpleTypes
 			if ( m_sValue.GetLength() < 20 )
 				return 0;
 
-            nIndex = std::max( 0, std::min( 9, nIndex ) );
+            nIndex = (std::max)( 0, (std::min)( 9, nIndex ) );
 
 			unsigned int unChar1 = XmlUtils::GetDigit( m_sValue[2 * nIndex] );
 			unsigned int unChar2 = XmlUtils::GetDigit( m_sValue[2 * nIndex + 1] );

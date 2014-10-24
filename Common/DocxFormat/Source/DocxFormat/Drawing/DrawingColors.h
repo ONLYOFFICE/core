@@ -1645,7 +1645,7 @@ namespace OOX
 
 								double dVal = pAlphaTr->m_oVal.GetValue() / 100.0;
 
-                                int nA = (int)std::max( 0.0, std::min( 255.0, 255 * dVal ) );
+                                int nA = (int)(std::max)( 0.0, (std::min)( 255.0, 255 * dVal ) );
 								m_unA = static_cast<unsigned char>(nA);
 
 								break;
@@ -1656,7 +1656,7 @@ namespace OOX
 
 								double dVal = pAlphaTr->m_oVal.GetValue() / 100.0;
 
-                                int nA = (int)std::max( 0.0, std::min( 255.0, m_unA * dVal ) );
+                                int nA = (int)(std::max)( 0.0, (std::min)( 255.0, m_unA * dVal ) );
 								m_unA = static_cast<unsigned char>(nA);
 
 								break;
@@ -1667,7 +1667,7 @@ namespace OOX
 
 								double dVal = pAlphaTr->m_oVal.GetValue() / 100.0;
 
-                                int nA = (int)std::max( 0.0, std::min( 255.0, m_unA + 255 * dVal ) );
+                                int nA = (int)(std::max)( 0.0, (std::min)( 255.0, m_unA + 255 * dVal ) );
 								m_unA = static_cast<unsigned char>(nA);
 
 								break;
@@ -1678,7 +1678,7 @@ namespace OOX
 
 								double dVal = pBlueTr->m_oVal.GetValue() / 100.0;
 
-                                int nB = (int)std::max( 0.0, std::min( 255.0, 255 * dVal ) );
+                                int nB = (int)(std::max)( 0.0, (std::min)( 255.0, 255 * dVal ) );
 								m_unB = static_cast<unsigned char>(nB);
 
 								break;
@@ -1689,7 +1689,7 @@ namespace OOX
 
 								double dVal = pBlueTr->m_oVal.GetValue() / 100.0;
 
-                                int nB = (int)std::max( 0.0, std::min( 255.0, m_unB * dVal ) );
+                                int nB = (int)(std::max)( 0.0, (std::min)( 255.0, m_unB * dVal ) );
 								m_unB = static_cast<unsigned char>(nB);
 
 								break;
@@ -1700,7 +1700,7 @@ namespace OOX
 
 								double dVal = pBlueTr->m_oVal.GetValue() / 100.0;
 
-                                int nB = (int)std::max( 0.0, std::min( 255.0, m_unB + 255 * dVal ) );
+                                int nB = (int)(std::max)( 0.0, (std::min)( 255.0, m_unB + 255 * dVal ) );
 								m_unB = static_cast<unsigned char>(nB);
 
 								break;
@@ -1734,7 +1734,7 @@ namespace OOX
 
 								double dVal = pGreenTr->m_oVal.GetValue() / 100.0;
 
-                                int nG = (int)std::max( 0.0, std::min( 255.0, 255 * dVal ) );
+                                int nG = (int)(std::max)( 0.0, (std::min)( 255.0, 255 * dVal ) );
 								m_unG = static_cast<unsigned char>(nG);
 
 								break;
@@ -1745,7 +1745,7 @@ namespace OOX
 
 								double dVal = pGreenTr->m_oVal.GetValue() / 100.0;
 
-                                int nG = (int)std::max( 0.0, std::min( 255.0, m_unG * dVal ) );
+                                int nG = (int)(std::max)( 0.0, (std::min)( 255.0, m_unG * dVal ) );
 								m_unG = static_cast<unsigned char>(nG);
 
 								break;
@@ -1756,7 +1756,7 @@ namespace OOX
 
 								double dVal = pGreenTr->m_oVal.GetValue() / 100.0;
 
-                                int nG = (int)std::max( 0.0, std::min( 255.0, m_unG + 255 * dVal ) );
+                                int nG = (int)(std::max)( 0.0, (std::min)( 255.0, m_unG + 255 * dVal ) );
 								m_unG = static_cast<unsigned char>(nG);
 
 								break;
@@ -1769,7 +1769,7 @@ namespace OOX
 								double dH, dS, dL;
 								RGB2HSL( m_unR, m_unG, m_unB, dH, dS, dL );
 
-                                dH = std::max( 0.0, std::min( 1.0, dVal ) );
+                                dH = (std::max)( 0.0, (std::min)( 1.0, dVal ) );
 
 								HSL2RGB( dH, dS, dL, m_unR, m_unG, m_unB );
 
@@ -1783,7 +1783,7 @@ namespace OOX
 								double dH, dS, dL;
 								RGB2HSL( m_unR, m_unG, m_unB, dH, dS, dL );
 
-                                dH = std::max( 0.0, std::min( 1.0, dH * dVal ) );
+                                dH = (std::max)( 0.0, (std::min)( 1.0, dH * dVal ) );
 
 								HSL2RGB( dH, dS, dL, m_unR, m_unG, m_unB );
 
@@ -1797,7 +1797,7 @@ namespace OOX
 								double dH, dS, dL;
 								RGB2HSL( m_unR, m_unG, m_unB, dH, dS, dL );
 
-                                dH = std::max( 0.0, std::min( 1.0, dH + dVal ) );
+                                dH = (std::max)( 0.0, (std::min)( 1.0, dH + dVal ) );
 
 								HSL2RGB( dH, dS, dL, m_unR, m_unG, m_unB );
 
@@ -1823,7 +1823,7 @@ namespace OOX
 								double dH, dS, dL;
 								RGB2HSL( m_unR, m_unG, m_unB, dH, dS, dL );
 
-                                dL = std::max( 0.0, std::min( 1.0, dVal ) );
+                                dL = (std::max)( 0.0, (std::min)( 1.0, dVal ) );
 
 								HSL2RGB( dH, dS, dL, m_unR, m_unG, m_unB );
 
@@ -1837,7 +1837,7 @@ namespace OOX
 								double dH, dS, dL;
 								RGB2HSL( m_unR, m_unG, m_unB, dH, dS, dL );
 
-                                dL = std::max( 0.0, std::min( 1.0, dL * dVal ) );
+                                dL = (std::max)( 0.0, (std::min)( 1.0, dL * dVal ) );
 
 								HSL2RGB( dH, dS, dL, m_unR, m_unG, m_unB );
 
@@ -1851,7 +1851,7 @@ namespace OOX
 								double dH, dS, dL;
 								RGB2HSL( m_unR, m_unG, m_unB, dH, dS, dL );
 
-                                dL = std::max( 0.0, std::min( 1.0, dL + dVal ) );
+                                dL = (std::max)( 0.0, (std::min)( 1.0, dL + dVal ) );
 
 								HSL2RGB( dH, dS, dL, m_unR, m_unG, m_unB );
 
@@ -1863,7 +1863,7 @@ namespace OOX
 
 								double dVal = pRedTr->m_oVal.GetValue() / 100.0;
 
-                                int nR = (int)std::max( 0.0, std::min( 255.0, 255 * dVal ) );
+                                int nR = (int)(std::max)( 0.0, (std::min)( 255.0, 255 * dVal ) );
 								m_unR = static_cast<unsigned char>(nR);
 
 								break;
@@ -1874,7 +1874,7 @@ namespace OOX
 
 								double dVal = pRedTr->m_oVal.GetValue() / 100.0;
 
-                                int nR = (int)std::max( 0.0, std::min( 255.0, m_unR * dVal ) );
+                                int nR = (int)(std::max)( 0.0, (std::min)( 255.0, m_unR * dVal ) );
 								m_unR = static_cast<unsigned char>(nR);
 
 								break;
@@ -1885,7 +1885,7 @@ namespace OOX
 
 								double dVal = pRedTr->m_oVal.GetValue() / 100.0;
 
-                                int nR = (int)std::max( 0.0, std::min( 255.0, m_unR + 255 * dVal ) );
+                                int nR = (int)(std::max)( 0.0, (std::min)( 255.0, m_unR + 255 * dVal ) );
 								m_unR = static_cast<unsigned char>(nR);
 
 								break;
@@ -1898,7 +1898,7 @@ namespace OOX
 								double dH, dS, dL;
 								RGB2HSL( m_unR, m_unG, m_unB, dH, dS, dL );
 
-                                dS = std::max( 0.0, std::min( 1.0, dVal ) );
+                                dS = (std::max)( 0.0, (std::min)( 1.0, dVal ) );
 
 								HSL2RGB( dH, dS, dL, m_unR, m_unG, m_unB );
 
@@ -1912,7 +1912,7 @@ namespace OOX
 								double dH, dS, dL;
 								RGB2HSL( m_unR, m_unG, m_unB, dH, dS, dL );
 
-                                dS = std::max( 0.0, std::min( 1.0, dS * dVal ) );
+                                dS = (std::max)( 0.0, (std::min)( 1.0, dS * dVal ) );
 
 								HSL2RGB( dH, dS, dL, m_unR, m_unG, m_unB );
 
@@ -1926,7 +1926,7 @@ namespace OOX
 								double dH, dS, dL;
 								RGB2HSL( m_unR, m_unG, m_unB, dH, dS, dL );
 
-                                dS = std::max( 0.0, std::min( 1.0, dS + dVal ) );
+                                dS = (std::max)( 0.0, (std::min)( 1.0, dS + dVal ) );
 
 								HSL2RGB( dH, dS, dL, m_unR, m_unG, m_unB );
 
@@ -1962,8 +1962,8 @@ namespace OOX
 			private:
 				inline void RGB2HSL(unsigned char unR, unsigned char unG, unsigned char unB, double& dH, double& dS, double& dL)
 				{
-                    int nmin   = std::min( unR, std::min( unG, unB ) );
-                    int nmax   = std::max( unR, std::max( unG, unB ) );
+                    int nmin   = (std::min)( unR, (std::min)( unG, unB ) );
+                    int nmax   = (std::max)( unR, (std::max)( unG, unB ) );
                     int nDelta = nmax - nmin;
                     double dmax   = ( nmax + nmin ) / 255.0;
 					double dDelta = nDelta / 255.0;
@@ -2275,9 +2275,9 @@ namespace OOX
 				double dG = m_oG.GetValue() / 100.0;
 				double dB = m_oB.GetValue() / 100.0;
 
-                unsigned char unR = (unsigned char)std::min( 255.0, std::max( 0.0, 255 * dR ) );
-                unsigned char unG = (unsigned char)std::min( 255.0, std::max( 0.0, 255 * dG ) );
-                unsigned char unB = (unsigned char)std::min( 255.0, std::max( 0.0, 255 * dB ) );
+                unsigned char unR = (unsigned char)(std::min)( 255.0, (std::max)( 0.0, 255 * dR ) );
+                unsigned char unG = (unsigned char)(std::min)( 255.0, (std::max)( 0.0, 255 * dG ) );
+                unsigned char unB = (unsigned char)(std::min)( 255.0, (std::max)( 0.0, 255 * dB ) );
 
 				SetRGBA( unR, unG, unB );
 			}

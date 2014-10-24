@@ -133,9 +133,10 @@ namespace OOX
 				//docProps
 				//CApp
 				OOX::CApp* pApp = new OOX::CApp();
+				pApp->SetApplication(_T("OnlyOffice"));
+				pApp->SetAppVersion(_T("3.0000"));
 				pApp->SetDocSecurity(0);
 				pApp->SetScaleCrop(false);
-				pApp->SetCompany(_T("Ascensio System"));
 				pApp->SetLinksUpToDate(false);
 				pApp->SetSharedDoc(false);
 				pApp->SetHyperlinksChanged(false);

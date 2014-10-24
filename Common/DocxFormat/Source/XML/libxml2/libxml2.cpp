@@ -176,9 +176,8 @@ namespace XmlUtils
 	// CXmlNode
 	CXmlNode::CXmlNode(const CXmlNode& oSrc)
 	{
-		m_pBase = oSrc.m_pBase;
-		if (NULL != m_pBase)
-			m_pBase->AddRef();
+		m_pBase = NULL;
+		SetBase(oSrc.m_pBase);
 	}
 
 	CString CXmlNode::private_GetXml()
@@ -223,9 +222,10 @@ namespace XmlUtils
 			delete m_pDocument;
 			return false;
 		}
-
+		//присваиваем m_pBase без AddRef, чтобы при удалении CXmlNode начался удаляться m_pBase(после конструктора RefCount==1, а если сделать AddRef то не удалится)
 		m_pBase = m_pDocument->m_pNode;
-		m_pBase->AddRef();
+		//после Parse все Node из m_pDocument сделали ему AddRef, поэтому можем вызвать Release(потому что напрямую нигде его не используем), а окончательно он удалится после удаления всех Node
+		m_pDocument->Release();
 
 		return true;
 	}
@@ -251,10 +251,10 @@ namespace XmlUtils
 			delete m_pDocument;
 			return false;
 		}
-
+		//присваиваем m_pBase без AddRef, чтобы при удалении CXmlNode начался удаляться m_pBase(после конструктора RefCount==1, а если сделать AddRef то не удалится)
 		m_pBase = m_pDocument->m_pNode;
-		m_pBase->AddRef();
-
+		//после Parse все Node из m_pDocument сделали ему AddRef, поэтому можем вызвать Release(потому что напрямую нигде его не используем), а окончательно он удалится после удаления всех Node
+		m_pDocument->Release();
 		return true;
 	}
 	bool CXmlNode::FromXmlString(const std::wstring& sString)
@@ -300,10 +300,17 @@ namespace XmlUtils
 	}
 	void CXmlNode::Clear()
 	{
-		if (NULL != m_pBase)
-			m_pBase->Release();
+		this->SetBase(NULL);
 	}
-
+	void CXmlNode::SetBase(CXmlNodeBase* pBase)
+	{
+		CXmlNodeBase* pBaseOld = m_pBase;
+		m_pBase = pBase;
+		if(NULL != m_pBase)
+			m_pBase->AddRef();
+		if (NULL != pBaseOld)
+			pBaseOld->Release();
+	}
 	CString CXmlNode::ReadAttributeBase(const wchar_t* bstrName)
 	{
 		return GetAttribute(CString(bstrName));
@@ -520,8 +527,7 @@ namespace XmlUtils
 				if (strNodeName == GetNameNoNS(m_pBase->m_nodes[i]->m_sName))
 				{
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
-					pBase->AddRef();
-					node.m_pBase = pBase;
+					node.SetBase(pBase);
 					break;
 				}
 			}
@@ -546,8 +552,7 @@ namespace XmlUtils
 				if (sName == m_pBase->m_nodes[i]->m_sName)
 				{
 					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
-					pBase->AddRef();
-					oNode.m_pBase = pBase;
+					oNode.SetBase(pBase);
 					bRes = true;
 					break;
 				}
@@ -569,9 +574,8 @@ namespace XmlUtils
 				if (bGetAll || sName == m_pBase->m_nodes[i]->m_sName)
 				{
 					CXmlNode oNode;
-					oNode.m_pBase = m_pBase->m_nodes[i];
-					if (oNode.m_pBase)
-						oNode.m_pBase->AddRef();
+					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
+					oNode.SetBase(pBase);
 					oNodes.m_nodes.insert(oNodes.m_nodes.end(), oNode);
 				}
 			}
@@ -591,9 +595,8 @@ namespace XmlUtils
 				for (int i = 0; i < nCount; ++i)
 				{
 					CXmlNode oNode;
-					oNode.m_pBase = m_pBase->m_nodes[i];
-					if (oNode.m_pBase)
-						oNode.m_pBase->AddRef();
+					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
+					oNode.SetBase(pBase);
 					oXmlNodes.m_nodes.insert(oXmlNodes.m_nodes.end(), oNode);
 				}
 			}
@@ -608,10 +611,7 @@ namespace XmlUtils
 
 	CXmlNode& CXmlNode::operator=(const CXmlNode& oSrc)
 	{
-		m_pBase = oSrc.m_pBase;
-		if (NULL != m_pBase)
-			m_pBase->AddRef();			
-		
+		this->SetBase(oSrc.m_pBase);
 		return *this;
 	}
 	CString CXmlNode::GetNamespace(const CString& strNodeName)

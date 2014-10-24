@@ -284,8 +284,7 @@ namespace XmlUtils
 		}
 		virtual ~CXmlLiteReader()
 		{
-			if (NULL != m_pStream)
-				delete []m_pStream;
+			Clear();
 		}
 
 		xmlTextReaderPtr getNativeReader() { return reader; }
@@ -294,6 +293,7 @@ namespace XmlUtils
 
 		inline void Clear()
 		{
+			RELEASEMEM(reader);
 			if (NULL != m_pStream)
 				delete []m_pStream;
 			m_pStream = NULL;
@@ -461,7 +461,7 @@ namespace XmlUtils
 				return L"";
 
 			m_sTemp = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pName, (LONG)strlen((const char*)pName));
-			delete [] pName;
+			free(pName);
 			return m_sTemp.c_str();
 		}
 		inline const char* GetNameA()
@@ -475,7 +475,7 @@ namespace XmlUtils
 
 			//return std::string((const char*)pName);
 			m_sTempA = (const char*)pName;
-			delete [] pName;
+			free(pName);
 			return m_sTempA.c_str();
 		}
 		inline int GetDepth()
@@ -506,7 +506,7 @@ namespace XmlUtils
 				return L"";
 			
 			m_sTemp = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pValue, (LONG)strlen((const char*)pValue));
-			delete [] pValue;
+			free(pValue);
 			return m_sTemp.c_str();
 		}
 		inline const char* GetTextA()
@@ -519,7 +519,7 @@ namespace XmlUtils
 				return "";
 
 			m_sTempA = (const char*)pValue;
-			delete [] pValue;
+			free(pValue);
 			return m_sTempA.c_str();
 		}
 

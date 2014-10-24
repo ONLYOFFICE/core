@@ -1480,6 +1480,9 @@ namespace OOX
 				}
 				virtual ~CColorTransform()
 				{
+                    for ( unsigned int nIndex = 0; nIndex < m_arrTransform.size(); nIndex++ )
+						delete m_arrTransform[nIndex];
+					m_arrTransform.clear();
 				}
 
 			public:

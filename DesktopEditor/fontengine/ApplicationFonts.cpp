@@ -57,7 +57,7 @@ CFontSelectFormat::~CFontSelectFormat()
 
 	RELEASEOBJECT(bFixedWidth);
 
-	RELEASEOBJECT(pPanose);
+	RELEASEARRAYOBJECTS(pPanose);
 
 	RELEASEOBJECT(ulRange1);
 	RELEASEOBJECT(ulRange2);

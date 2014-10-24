@@ -375,7 +375,14 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
-
+		void SetApplication(const CString& sVal)
+		{
+			m_sApplication = sVal;
+		}
+		void SetAppVersion(const CString& sVal)
+		{
+			m_sAppVersion = sVal;
+		}
 		void SetDocSecurity(int nVal)
 		{
 			m_nDocSecurity = nVal;

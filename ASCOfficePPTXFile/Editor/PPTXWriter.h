@@ -834,7 +834,7 @@ namespace NSBinPptxRW
 		{
 			m_oApp.TotalTime = 0;
 			m_oApp.Words = 0;
-			m_oApp.Application = _T("Teamlab Office");
+			m_oApp.Application = _T("OnlyOffice");
 			m_oApp.PresentationFormat = _T("On-screen Show (4:3)");
 			m_oApp.Paragraphs = 0;
 			m_oApp.Slides = (int)m_arSlides.size();
@@ -875,18 +875,15 @@ namespace NSBinPptxRW
 				m_oApp.TitlesOfParts[nCountThemes + i].m_title = s;
 			}
 			
-			m_oApp.Company = _T("Teamlab Office");
 			m_oApp.LinksUpToDate = false;
 			m_oApp.SharedDoc = false;
 			m_oApp.HyperlinksChanged = false;
-			m_oApp.AppVersion = _T("1.0000");			
+			m_oApp.AppVersion = _T("3.0000");			
 		}
 		void CreateDefaultCore()
 		{
-			m_oCore.title = _T("Slide 1");
-			m_oCore.creator  = _T("Teamlab Office");
-			m_oCore.lastModifiedBy = _T("Teamlab Office");
-			m_oCore.revision = _T("1");
+			m_oCore.creator  = _T("");
+			m_oCore.lastModifiedBy = _T("");
 		}
 		void CreateDefaultViewProps()
 		{

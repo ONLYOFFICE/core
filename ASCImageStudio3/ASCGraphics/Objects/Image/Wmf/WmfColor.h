@@ -168,10 +168,10 @@ public:
 	{
 		m_pError = NULL;
 
-		m_ulMax   = 32;
+        m_ulmax   = 32;
 		m_ulCount = 0;
 
-		m_pRGB = (TWmfRGB *)malloc(m_ulMax * sizeof(TWmfRGB));
+        m_pRGB = (TWmfRGB *)malloc(m_ulmax * sizeof(TWmfRGB));
 		m_pRGB[0] = c_oColorRed;
 	}
 	~CWmfColor()
@@ -204,9 +204,9 @@ public:
 		if ( !bNewColor ) 
 			return;
 
-		if ( m_ulCount == m_ulMax )
+        if ( m_ulCount == m_ulmax )
 		{	
-			TWmfRGB *pData = (TWmfRGB *)realloc( m_pRGB, (m_ulMax + 32) * sizeof(TWmfRGB) );
+            TWmfRGB *pData = (TWmfRGB *)realloc( m_pRGB, (m_ulmax + 32) * sizeof(TWmfRGB) );
 			if ( NULL == pData )
 			{
 				SetError( wmf_error_NotEnoughMemory );
@@ -214,7 +214,7 @@ public:
 			}
 
 			m_pRGB   = pData;
-			m_ulMax += 32;
+            m_ulmax += 32;
 		}
 
 		m_pRGB[m_ulCount] = (*pRGB);
@@ -255,7 +255,7 @@ public:
 			unsigned int unDistG = (unsigned int) abs(((int) (pRGB->g)) - ((int) (m_pRGB[ulIndex].g)));
 			unsigned int unDistB = (unsigned int) abs(((int) (pRGB->b)) - ((int) (m_pRGB[ulIndex].b)));
 
-			unsigned int unDist = max( max( unDistR, unDistG ),unDistB );
+            unsigned int unDist = std::max( std::max( unDistR, unDistG ),unDistB );
 
 			if ( unDist < unDistBest )
 			{
@@ -306,17 +306,17 @@ public:
 	{	
 		TWmfRGB oColor;
 
-		fRed   = max( 0, min( 1, fRed   ) );
-		fGreen = max( 0, min( 1, fGreen ) );
-		fBlue  = max( 0, min( 1, fBlue  ) );
+        fRed   = std::max( 0.0f, std::min( 1.0f, fRed   ) );
+        fGreen = std::max( 0.0f, std::min( 1.0f, fGreen ) );
+        fBlue  = std::max( 0.0f, std::min( 1.0f, fBlue  ) );
 
 		int nRed   = (int) (fRed   * (float) 256);
 		int nGreen = (int) (fGreen * (float) 256);
 		int nBlue  = (int) (fBlue  * (float) 256);
 
-		nRed   = max( 0, min( 255, nRed   ) );
-		nGreen = max( 0, min( 255, nGreen ) );
-		nBlue  = max( 0, min( 255, nBlue  ) );
+        nRed   = std::max( 0, std::min( 255, nRed   ) );
+        nGreen = std::max( 0, std::min( 255, nGreen ) );
+        nBlue  = std::max( 0, std::min( 255, nBlue  ) );
 
 		oColor.r = (unsigned char) nRed;
 		oColor.g = (unsigned char) nGreen;
@@ -344,7 +344,7 @@ private:
 
 private:
 
-	unsigned long m_ulMax;
+    unsigned long m_ulmax;
 	unsigned long m_ulCount;
 
 	TWmfRGB      *m_pRGB;

@@ -52,7 +52,7 @@ public:
 		WriteBegin("C:\\WmfTest.xml");
 
 		m_oStore.pAttrlist = NULL;
-		m_oStore.ulMax     = 0;
+        m_oStore.ulMax     = 0;
 		m_oStore.ulCount   = 0;
 
 		m_oColorData.SetErrorHandler( &m_eError );
@@ -273,7 +273,7 @@ public:
 			return;
 		}
 
-		pPlayer->nDCStackMaxLen = 0;
+        pPlayer->nDCStackMaxLen = 0;
 		pPlayer->ppDCStack      = 0;
 
 		pPlayer->pObjects		= NULL;
@@ -310,8 +310,8 @@ public:
 			}
 		}
 
-		//pPlayer->pParameters = (unsigned char *)m_oMemoryManager.Malloc( (m_pFile->pHeader->unMaxRecordSize - 3) * 2 * sizeof(unsigned char) );
-		pPlayer->pParameters = (unsigned char *)m_oMemoryManager.Malloc( m_pFile->pHeader->unMaxRecordSize * 2 * sizeof(unsigned char), _T("Player->pParamters") );
+        //pPlayer->pParameters = (unsigned char *)m_oMemoryManager.Malloc( (m_pFile->pHeader->unMaxRecordSize - 3) * 2 * sizeof(unsigned char) );
+        pPlayer->pParameters = (unsigned char *)m_oMemoryManager.Malloc( m_pFile->pHeader->unMaxRecordSize * 2 * sizeof(unsigned char), _T("Player->pParamters") );
 
 		if ( NULL == pPlayer->pParameters )
 		{
@@ -887,7 +887,7 @@ private:
 	//	pList->ulOffset = 0;
 
 	//	pList->ulCount = 0;
-	//	pList->ulMax   = 0;
+    //	pList->ulmax   = 0;
 	//	pList->psAttrs = (char **)m_oMemoryManager.Malloc( 2 * (8 + 1) * sizeof (char *), _T("AttrNew function") );
 
 	//	if ( NULL == pList->psAttrs )
@@ -896,7 +896,7 @@ private:
 	//		return;
 	//	}
 
-	//	pList->ulMax = 8;
+    //	pList->ulmax = 8;
 	//	pList->psAttrs[pList->ulCount] = 0;
 	//}
 
@@ -934,7 +934,7 @@ private:
 	//		pList->psAttrs = 0;
 	//	}
 	//	
-	//	pList->ulMax = 0;
+    //	pList->ulmax = 0;
 	//}
 
 	//const char *AttrAdd  (TWmfAttributes *pList, const char *sName, const char *sValue)
@@ -973,9 +973,9 @@ private:
 	//		return NULL;
 	//	}
 
-	//	if ( pList->ulCount == pList->ulMax )
+    //	if ( pList->ulCount == pList->ulmax )
 	//	{	
-	//		char **psMore = (char **)m_oMemoryManager.Realloc( pList->psAttrs, 2 * (pList->ulMax + 8 + 1) * sizeof (char *) );
+    //		char **psMore = (char **)m_oMemoryManager.Realloc( pList->psAttrs, 2 * (pList->ulmax + 8 + 1) * sizeof (char *) );
 
 	//		if ( NULL == psMore )
 	//		{
@@ -984,7 +984,7 @@ private:
 	//		}
 
 	//		pList->psAttrs = psMore;
-	//		pList->ulMax  += 8;
+    //		pList->ulmax  += 8;
 	//	}
 	//	pList->psAttrs[pList->ulCount++] = sCopyName;
 	//	pList->psAttrs[pList->ulCount++] = sCopyValue;
@@ -1155,19 +1155,19 @@ private:
 				m_eError = wmf_error_NotEnoughMemory;
 				return;
 			}
-			pPlayer->nDCStackMaxLen = 8;
+            pPlayer->nDCStackMaxLen = 8;
 		}
 
-		if ( pPlayer->nDCStackLength == pPlayer->nDCStackMaxLen )
+        if ( pPlayer->nDCStackLength == pPlayer->nDCStackMaxLen )
 		{
-			TWmfDC **ppMore = (TWmfDC**)m_oMemoryManager.Realloc( pPlayer->ppDCStack, (pPlayer->nDCStackMaxLen + 8) * sizeof (TWmfDC*));
+            TWmfDC **ppMore = (TWmfDC**)m_oMemoryManager.Realloc( pPlayer->ppDCStack, (pPlayer->nDCStackMaxLen + 8) * sizeof (TWmfDC*));
 			if ( NULL == ppMore )
 			{
 				m_eError = wmf_error_NotEnoughMemory;
 				return;
 			}
 			pPlayer->ppDCStack = ppMore;
-			pPlayer->nDCStackMaxLen += 8;
+            pPlayer->nDCStackMaxLen += 8;
 		}
 
 		pPlayer->ppDCStack[pPlayer->nDCStackLength] = pDC;
@@ -1199,7 +1199,7 @@ private:
 		m_oMemoryManager.Free( pPlayer->ppDCStack );
 
 		pPlayer->ppDCStack      = NULL;
-		pPlayer->nDCStackMaxLen = 0;
+        pPlayer->nDCStackMaxLen = 0;
 	}
 
 
@@ -1518,7 +1518,7 @@ private:
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 		{	
 			m_oColorData.Add( &(oDrawPixel.oColor) );
-			float fScope = (float)max( oDrawPixel.dPixelWidth, oDrawPixel.dPixelHeight );
+            float fScope = (float)std::max( oDrawPixel.dPixelWidth, oDrawPixel.dPixelHeight );
 			CoordFRegister( oDrawPixel.oPoint, fScope );
 			return 0;
 		}
@@ -1570,7 +1570,7 @@ private:
 		{
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-			float fScope = (float)( max( pPen->dWidth, pPen->dHeight ) ) / 2;
+            float fScope = (float)( std::max( pPen->dWidth, pPen->dHeight ) ) / 2;
 
 			CoordFRegister( oDrawArc.oEnd, fScope );
 			CoordFRegister( oDrawArc.oStart, fScope );
@@ -1802,7 +1802,7 @@ private:
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-			float fScope = (float) ( max( pPen->dWidth, pPen->dHeight ) ) / 2;
+            float fScope = (float) ( std::max( pPen->dWidth, pPen->dHeight ) ) / 2;
 			CoordFRegister( oDrawArc.oTL, fScope );
 			CoordFRegister( oDrawArc.oBR, fScope );
 
@@ -1836,7 +1836,7 @@ private:
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-			float fScope = (float) ( max( pPen->dWidth, pPen->dHeight ) ) / 2;
+            float fScope = (float) ( std::max( pPen->dWidth, pPen->dHeight ) ) / 2;
 			CoordFRegister( oDrawLine.oFrom, fScope );
 			CoordFRegister( oDrawLine.oTo, fScope );
 			return 0;
@@ -1863,7 +1863,7 @@ private:
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-			float fScope = (float) ( max( pPen->dHeight, pPen->dWidth ) ) / 2;
+            float fScope = (float) ( std::max( pPen->dHeight, pPen->dWidth ) ) / 2;
 
 			ulParamIndex = 1;
 			for ( unsigned short ushPointIndex = 0; ushPointIndex < oPolyLine.ushCount; ushPointIndex++ )
@@ -1924,7 +1924,7 @@ private:
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-			float fScope = (float) ( max( pPen->dWidth, pPen->dHeight ) ) / 2;
+            float fScope = (float) ( std::max( pPen->dWidth, pPen->dHeight ) ) / 2;
 
 			ulParamIndex = 1;
 			for ( unsigned short ushPointIndex = 0; ushPointIndex < oPolyLine.ushCount; ushPointIndex++ )
@@ -2048,7 +2048,7 @@ private:
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-			float fScope = (float) ( max( pPen->dWidth, pPen->dHeight ) ) / 2;
+            float fScope = (float) ( std::max( pPen->dWidth, pPen->dHeight ) ) / 2;
 
 			ulParamIndex = 1 + oPolyPoly.ushPolyCount;
 			for ( unsigned short ushPointCount = 0; ushPointCount < ushNumPars; ushPointCount++ )
@@ -2174,7 +2174,7 @@ private:
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-			float fScope = (float) ( max ( pPen->dWidth, pPen->dHeight ) ) / 2;
+            float fScope = (float) ( std::max ( pPen->dWidth, pPen->dHeight ) ) / 2;
 			CoordFRegister( oDrawRect.oTL, fScope );
 			CoordFRegister( oDrawRect.oBR, fScope );
 			return 0;
@@ -2216,7 +2216,7 @@ private:
 		{	
 			TWmfPen *pPen = pPlayer->pDC->pPen;
 
-			float fScope = (float) ( max( pPen->dHeight, pPen->dWidth ) ) / 2;
+            float fScope = (float) ( std::max( pPen->dHeight, pPen->dWidth ) ) / 2;
 
 			CoordFRegister( oDrawRect.oTL, fScope );
 			CoordFRegister( oDrawRect.oBR, fScope );
@@ -2310,7 +2310,7 @@ private:
 
 		TWmfRegion *pClip = (TWmfRegion*)pPlayer->pDC->pClip;
 
-		oPolyRect.unCount = max( pClip->unNumRects, pRegion->unNumRects + 1 );
+        oPolyRect.unCount = std::max( pClip->unNumRects, pRegion->unNumRects + 1 );
 		oPolyRect.pTL = (TWmfCoordF *)m_oMemoryManager.Malloc( oPolyRect.unCount * sizeof(TWmfCoordF), _T("Meta_RegionBrush") );
 
 		if ( NULL == oPolyRect.pTL )
@@ -2440,7 +2440,7 @@ private:
 
 		TWmfRegion *pClip = (TWmfRegion*)pPlayer->pDC->pClip;
 
-		oPolyRect.unCount = max( pClip->unNumRects, pRegion->unNumRects + 1 );
+        oPolyRect.unCount = std::max( pClip->unNumRects, pRegion->unNumRects + 1 );
 
 		oPolyRect.pTL = (TWmfCoordF *)m_oMemoryManager.Malloc( oPolyRect.unCount * sizeof(TWmfCoordF), _T("Meta_RegionPaint") );
 		if ( NULL == oPolyRect.pTL )
@@ -2560,10 +2560,10 @@ private:
 
 		TWmfRecord oEnd = Record_OffsetRecord( pRecord, 10 );
 		
-		unsigned long ulMaxIndex = 10;
+        unsigned long ulmaxIndex = 10;
 		for ( unsigned short ushScanIndex = 0; ushScanIndex < ushScanCount; ushScanIndex++ )
 		{	
-			ulMaxIndex++;
+            ulmaxIndex++;
 
 			TWmfRecord oStart = Record_OffsetRecord( &oEnd, 1 );
 			unsigned short ushCount = Record_GetUShortPar( &oStart, 0 );
@@ -2578,7 +2578,7 @@ private:
 			}
 
 			unsigned ushPairCount = ushCount >> 1;
-			ulMaxIndex += ushCount + 3;
+            ulmaxIndex += ushCount + 3;
 
 			oEnd = Record_OffsetRecord( &oStart, (unsigned long)( ushCount + 3 ) );
 
@@ -3501,8 +3501,8 @@ private:
 			TBBox oBox = m_pFontManager->MeasureString2();
 			fTempX = oBox.fMinX;
 			fTempY = oBox.fMinY;
-			fTempW = oBox.fMaxX - oBox.fMinX;
-			fTempH = oBox.fMaxX - oBox.fMinX;
+            fTempW = oBox.fMaxX - oBox.fMinX;
+            fTempH = oBox.fMaxX - oBox.fMinX;
 #else
 			m_pFontManager->LoadFontByName( A2W(pPlayer->pDC->pFont->sFaceName), (float)(oDrawText.dFontHeight * 72 / 25.4), lStyle, 72.0f, 72.0f );
 			m_pFontManager->LoadStringW( A2W(oDrawText.sText), 0, 0 );
@@ -3847,7 +3847,7 @@ private:
 		pPen->ushStyle = ( pPen->ushStyle & ~PS_TYPE_MASK   ) | ( ushStyle & PS_TYPE_MASK   );
 
 		unsigned short ushWidth = Record_GetUShortPar( pRecord, 1 );
-		ushWidth = max( 1, ushWidth );
+        ushWidth = std::max( (unsigned short) 1, ushWidth );
 
 		pPen->dWidth  = (double) ushWidth * abs( pPlayer->pDC->dPixelWidth  );
 		pPen->dHeight = (double) ushWidth * abs( pPlayer->pDC->dPixelHeight );
@@ -4666,7 +4666,7 @@ private:
 			m_pFile->pHeader->ushVersion         = ReadShort();
 			m_pFile->pHeader->unFileSize         = ReadLong(NULL, NULL);
 			m_pFile->pHeader->ushNumberOfObjects = ReadShort();
-			m_pFile->pHeader->unMaxRecordSize    = ReadLong(NULL, NULL);
+            m_pFile->pHeader->unMaxRecordSize    = ReadLong(NULL, NULL);
 			m_pFile->pHeader->ushNumberOfMembers = ReadShort();
 
 			m_pFile->lPos = Tell();
@@ -4751,8 +4751,8 @@ private:
 				break;
 			}
 
-			//if ( ( ulSize > m_pFile->pHeader->unMaxRecordSize ) || ( ulSize < 3 ) )					
-			if ( ( (ulSize - 3) > m_pFile->pHeader->unMaxRecordSize ) || ( ulSize < 3 ) )
+            //if ( ( ulSize > m_pFile->pHeader->unMaxRecordSize ) || ( ulSize < 3 ) )
+            if ( ( (ulSize - 3) > m_pFile->pHeader->unMaxRecordSize ) || ( ulSize < 3 ) )
 			{	
 				m_eError = wmf_error_BadFormat;
 				break;

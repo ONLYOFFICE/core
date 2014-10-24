@@ -77,7 +77,8 @@ namespace NSGdiMeta
 		return bSuccess;
 	}
 }
-
+#else
+#include <unistd.h>
 #endif
 
 namespace NSHtmlRenderer

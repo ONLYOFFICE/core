@@ -7,7 +7,7 @@ CFontStream::CFontStream()
 {
 	m_pData	= NULL;
 	m_lSize = 0;
-	m_lRef = 0;
+	m_lRef = 1;
 }
 CFontStream::~CFontStream()
 {

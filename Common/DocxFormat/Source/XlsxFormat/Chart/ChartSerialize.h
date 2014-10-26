@@ -1617,6 +1617,7 @@ namespace OOX{
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
 		private: void toXML(XmlUtils::CStringWriter& writer, bool bIsAttribute, ItemsChoiceType3 eType, void* pVal) const;
+		private: void toDelete(ItemsChoiceType3 eType, void* pVal);
 		};
 		class CT_DLbl
 		{
@@ -1635,6 +1636,7 @@ namespace OOX{
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
 		private: void toXML(XmlUtils::CStringWriter& writer, bool bIsAttribute, ItemsChoiceType4 eType, void* pVal) const;
+		private: void toDelete(ItemsChoiceType4 eType, void* pVal);
 		};
 		class CT_DLblPos
 		{
@@ -2778,7 +2780,9 @@ namespace OOX{
 			void toXML(CString& sNodeName, XmlUtils::CStringWriter& writer) const;
 			EElementType getType();
 		private: void toXML(XmlUtils::CStringWriter& writer, bool bIsAttribute, ItemsChoiceType5 eType, void* pVal) const;
+		private: void toDelete(ItemsChoiceType5 eType, void* pVal);
 		private: void toXML(XmlUtils::CStringWriter& writer, bool bIsAttribute, ItemsChoiceType6 eType, void* pVal) const;
+ 		private: void toDelete(ItemsChoiceType6 eType, void* pVal);
 		};
 		class CT_Thickness
 		{

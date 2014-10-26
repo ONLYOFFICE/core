@@ -6582,12 +6582,12 @@ namespace OOX{
             for(int i = 0, length = m_dLbl.size(); i < length; ++i)
 				delete m_dLbl[i];
             m_dLbl.clear();
+            for(int i = 0, length = m_Items.size(), length2 = m_ItemsElementName0.size(); i < length && i < length2; ++i)
+				toDelete(*m_ItemsElementName0[i], m_Items[i]);
+            m_Items.clear();
             for(int i = 0, length = m_ItemsElementName0.size(); i < length; ++i)
 				delete m_ItemsElementName0[i];
             m_ItemsElementName0.clear();
-            for(int i = 0, length = m_Items.size(); i < length; ++i)
-				delete m_Items[i];
-            m_Items.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -6954,6 +6954,95 @@ namespace OOX{
 				break;
 			}
 		}
+		void CT_DLbls::toDelete(ItemsChoiceType3 eType, void* pVal){
+			switch(eType)
+			{
+			case itemschoicetype3DLBLPOS:
+				{
+					CT_DLblPos* pTypeVal = static_cast<CT_DLblPos*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype3DELETE:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype3LEADERLINES:
+				{
+					CT_ChartLines* pTypeVal = static_cast<CT_ChartLines*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype3NUMFMT:
+				{
+					CT_NumFmt* pTypeVal = static_cast<CT_NumFmt*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype3SEPARATOR:
+				{
+					CString* pTypeVal = static_cast<CString*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype3SHOWBUBBLESIZE:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype3SHOWCATNAME:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype3SHOWLEADERLINES:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype3SHOWLEGENDKEY:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype3SHOWPERCENT:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype3SHOWSERNAME:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype3SHOWVAL:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype3SPPR:
+				{
+					CString* pTypeVal = static_cast<CString*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype3TXPR:
+				{
+					CString* pTypeVal = static_cast<CString*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			}
+		}
 		CT_DLbl::CT_DLbl()
 		{
 			m_idx = NULL;
@@ -6963,12 +7052,12 @@ namespace OOX{
 		{
 			if(NULL != m_idx)
 				delete m_idx;
+			for(int i = 0, length = m_Items.size(), length2 = m_ItemsElementName0.size(); i < length && i < length2; ++i)
+				toDelete(*m_ItemsElementName0[i], m_Items[i]);
+            m_Items.clear();
             for(int i = 0, length = m_ItemsElementName0.size(); i < length; ++i)
 				delete m_ItemsElementName0[i];
             m_ItemsElementName0.clear();
-            for(int i = 0, length = m_Items.size(); i < length; ++i)
-				delete m_Items[i];
-            m_Items.clear();
 			if(NULL != m_extLst)
 				delete m_extLst;
 		}
@@ -7327,6 +7416,95 @@ namespace OOX{
 					{
 						writer.WriteString(_T("<c:txPr>") + *pTypeVal + _T("</c:txPr>"));
 					}
+				}
+				break;
+			}
+		}
+		void CT_DLbl::toDelete(ItemsChoiceType4 eType, void* pVal){
+			switch(eType)
+			{
+			case itemschoicetype4DLBLPOS:
+				{
+					CT_DLblPos* pTypeVal = static_cast<CT_DLblPos*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype4DELETE:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype4LAYOUT:
+				{
+					CT_Layout* pTypeVal = static_cast<CT_Layout*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype4NUMFMT:
+				{
+					CT_NumFmt* pTypeVal = static_cast<CT_NumFmt*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype4SEPARATOR:
+				{
+					CString* pTypeVal = static_cast<CString*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype4SHOWBUBBLESIZE:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype4SHOWCATNAME:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype4SHOWLEGENDKEY:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype4SHOWPERCENT:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype4SHOWSERNAME:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype4SHOWVAL:
+				{
+					CT_Boolean* pTypeVal = static_cast<CT_Boolean*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype4SPPR:
+				{
+					CString* pTypeVal = static_cast<CString*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype4TX:
+				{
+					CT_Tx* pTypeVal = static_cast<CT_Tx*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype4TXPR:
+				{
+					CString* pTypeVal = static_cast<CString*>(pVal);
+					RELEASEOBJECT(pTypeVal);
 				}
 				break;
 			}
@@ -13037,18 +13215,18 @@ namespace OOX{
 		{
 			if(NULL != m_layout)
 				delete m_layout;
+			for(int i = 0, length = m_Items.size(), length2 = m_ItemsElementName0.size(); i < length && i < length2; ++i)
+				toDelete(*m_ItemsElementName0[i], m_Items[i]);
+            m_Items.clear();
             for(int i = 0, length = m_ItemsElementName0.size(); i < length; ++i)
 				delete m_ItemsElementName0[i];
             m_ItemsElementName0.clear();
-            for(int i = 0, length = m_Items.size(); i < length; ++i)
-				delete m_Items[i];
-            m_Items.clear();
+			for(int i = 0, length = m_Items1.size(), length2 = m_ItemsElementName1.size(); i < length && i < length2; ++i)
+				toDelete(*m_ItemsElementName1[i], m_Items1[i]);
+            m_Items1.clear();
             for(int i = 0, length = m_ItemsElementName1.size(); i < length; ++i)
 				delete m_ItemsElementName1[i];
             m_ItemsElementName1.clear();
-            for(int i = 0, length = m_Items1.size(); i < length; ++i)
-				delete m_Items1[i];
-            m_Items1.clear();
 			if(NULL != m_dTable)
 				delete m_dTable;
 			if(NULL != m_spPr)
@@ -13522,6 +13700,107 @@ namespace OOX{
 				break;
 			}
 		}
+		void CT_PlotArea::toDelete(ItemsChoiceType5 eType, void* pVal){
+			switch(eType)
+			{
+			case itemschoicetype5AREA3DCHART:
+				{
+					CT_Area3DChart* pTypeVal = static_cast<CT_Area3DChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5AREACHART:
+				{
+					CT_AreaChart* pTypeVal = static_cast<CT_AreaChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5BAR3DCHART:
+				{
+					CT_Bar3DChart* pTypeVal = static_cast<CT_Bar3DChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5BARCHART:
+				{
+					CT_BarChart* pTypeVal = static_cast<CT_BarChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5BUBBLECHART:
+				{
+					CT_BubbleChart* pTypeVal = static_cast<CT_BubbleChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5DOUGHNUTCHART:
+				{
+					CT_DoughnutChart* pTypeVal = static_cast<CT_DoughnutChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5LINE3DCHART:
+				{
+					CT_Line3DChart* pTypeVal = static_cast<CT_Line3DChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5LINECHART:
+				{
+					CT_LineChart* pTypeVal = static_cast<CT_LineChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5OFPIECHART:
+				{
+					CT_OfPieChart* pTypeVal = static_cast<CT_OfPieChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5PIE3DCHART:
+				{
+					CT_Pie3DChart* pTypeVal = static_cast<CT_Pie3DChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5PIECHART:
+				{
+					CT_PieChart* pTypeVal = static_cast<CT_PieChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5RADARCHART:
+				{
+					CT_RadarChart* pTypeVal = static_cast<CT_RadarChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5SCATTERCHART:
+				{
+					CT_ScatterChart* pTypeVal = static_cast<CT_ScatterChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5STOCKCHART:
+				{
+					CT_StockChart* pTypeVal = static_cast<CT_StockChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5SURFACE3DCHART:
+				{
+					CT_Surface3DChart* pTypeVal = static_cast<CT_Surface3DChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype5SURFACECHART:
+				{
+					CT_SurfaceChart* pTypeVal = static_cast<CT_SurfaceChart*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			}
+		}
 		void CT_PlotArea::toXML(XmlUtils::CStringWriter& writer, bool bIsAttribute, ItemsChoiceType6 eType, void* pVal) const{
 			switch(eType)
 			{
@@ -13575,6 +13854,35 @@ namespace OOX{
                             pTypeVal->toXML(sNodeName, writer);
                         }
 					}
+				}
+				break;
+			}
+		}
+		void CT_PlotArea::toDelete(ItemsChoiceType6 eType, void* pVal){
+			switch(eType)
+			{
+			case itemschoicetype6CATAX:
+				{
+					CT_CatAx* pTypeVal = static_cast<CT_CatAx*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype6DATEAX:
+				{
+					CT_DateAx* pTypeVal = static_cast<CT_DateAx*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype6SERAX:
+				{
+					CT_SerAx* pTypeVal = static_cast<CT_SerAx*>(pVal);
+					RELEASEOBJECT(pTypeVal);
+				}
+				break;
+			case itemschoicetype6VALAX:
+				{
+					CT_ValAx* pTypeVal = static_cast<CT_ValAx*>(pVal);
+					RELEASEOBJECT(pTypeVal);
 				}
 				break;
 			}

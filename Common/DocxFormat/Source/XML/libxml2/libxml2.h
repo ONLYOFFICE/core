@@ -293,7 +293,8 @@ namespace XmlUtils
 
 		inline void Clear()
 		{
-			RELEASEMEM(reader);
+			xmlFreeTextReader(reader);
+			reader = NULL;
 			if (NULL != m_pStream)
 				delete []m_pStream;
 			m_pStream = NULL;

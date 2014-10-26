@@ -49,9 +49,11 @@ namespace NSHtmlRenderer
 		RELEASEOBJECT(m_pPen);
 		RELEASEOBJECT(m_pBrush);
 		RELEASEOBJECT(m_pFont);
+		RELEASEOBJECT(m_pInstalledFont);
 		RELEASEOBJECT(m_pBaseTransform);
 		RELEASEOBJECT(m_pTransform);
 		RELEASEOBJECT(m_pFullTransform);
+		RELEASEOBJECT(m_pVectorWriter);
 	}
 
 	HRESULT CASCSVGWriter::get_Type(LONG* lType)

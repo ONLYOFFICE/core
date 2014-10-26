@@ -58,18 +58,12 @@ namespace Writers
 			for(int i = 0, length = m_aHeaders.size(); i < length; ++i)
 			{
 				HdrFtrItem* pHeader = m_aHeaders[i];
-				if(false == pHeader->IsEmpty())
-				{
-					WriteItem(_T("header"), pHeader->m_sFilename, pHeader->Header, true);
-				}
+				WriteItem(_T("header"), pHeader->m_sFilename, pHeader->Header, true);
 			}
 			for(int i = 0, length = m_aFooters.size(); i < length; ++i)
 			{
 				HdrFtrItem* pFooter = m_aFooters[i];
-				if(false == pFooter->IsEmpty())
-				{
-					WriteItem(_T("footer"), pFooter->m_sFilename, pFooter->Header, false);
-				}
+				WriteItem(_T("footer"), pFooter->m_sFilename, pFooter->Header, false);
 			}
 		}
 		void WriteItem(CString sHeader, CString& sFilename, ContentWriter& m_oWriter, bool bHeader)

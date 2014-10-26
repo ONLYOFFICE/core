@@ -5943,11 +5943,8 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItem(BYTE type, long length, void* poRes
 			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header, NULL);
 			res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrItemContent, this, &oBinary_DocumentTableReader);
 
-			if(false == poHdrFtrItem->IsEmpty())
-			{
-				CString sRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir + _T("\\word\\_rels\\") + poHdrFtrItem->m_sFilename + _T(".rels");
-				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(sRelsPath);
-			}
+			CString sRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir + _T("\\word\\_rels\\") + poHdrFtrItem->m_sFilename + _T(".rels");
+			m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(sRelsPath);
 		}
 	}
 	else

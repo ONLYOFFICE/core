@@ -4017,11 +4017,11 @@ private:
 #endif
 
 			BOOL bNeedFindByParams = FALSE;
-			if ( S_OK == m_pFontManager->LoadFontByName( bsFontName, 1, 0, 0, 0 ) )
+#ifdef DESKTOP_EDITOR_GRAPHICS
+			if ( TRUE == m_pFontManager->LoadFontByName( bsFontName, 1, 0, 0, 0 ) )
 			{
 				unsigned long ulBit = 0;
 				unsigned int unIndex = 0;
-#ifdef DESKTOP_EDITOR_GRAPHICS
 				//todo
 				//if ( UNKNOWN_CHARSET != pFont->unCharSet )
 				//{
@@ -4032,6 +4032,10 @@ private:
 				//		bNeedFindByParams = TRUE;
 				//}
 #else
+			if ( S_OK == m_pFontManager->LoadFontByName( bsFontName, 1, 0, 0, 0 ) )
+			{
+				unsigned long ulBit = 0;
+				unsigned int unIndex = 0;
 				if ( UNKNOWN_CHARSET != pFont->unCharSet )
 				{
 					GetCodePageByCharset( pFont->unCharSet, &ulBit, &unIndex );
@@ -4056,20 +4060,22 @@ private:
 				*oFontSelectFormat.usWeight = pFont->ushWeight;
 				
 				CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
-
-				long lStyle = ( pFontInfo->m_bBold ? 1 : 0 ) + ( pFontInfo->m_bItalic ? 2 : 0 );
-				if ( NULL != pFontInfo && S_OK == m_pFontManager->LoadFontByName( pFontInfo->m_wsFontName, 11, lStyle, 96, 96 ) )
+				if ( NULL != pFontInfo)
 				{
-					free( pFont->sFaceName );
-                    std::string sNewName = unicode_to_ascii( pFontInfo->m_wsFontName.c_str());
-					int nLen = sNewName.length();
-					pFont->sFaceName = (char*)m_oMemoryManager.Malloc( nLen + 1, _T("Meta_FontCreate function") );
-					if ( !pFont->sFaceName )
-						m_eError = wmf_error_NotEnoughMemory;
-					else
+					long lStyle = ( pFontInfo->m_bBold ? 1 : 0 ) + ( pFontInfo->m_bItalic ? 2 : 0 );
+					if ( TRUE == m_pFontManager->LoadFontByName( pFontInfo->m_wsFontName, 11, lStyle, 96, 96 ) )
 					{
-						pFont->sFaceName[nLen] = '\0';
-						memcpy( pFont->sFaceName, sNewName.c_str(), nLen );
+						free( pFont->sFaceName );
+						std::string sNewName = unicode_to_ascii( pFontInfo->m_wsFontName.c_str());
+						int nLen = sNewName.length();
+						pFont->sFaceName = (char*)m_oMemoryManager.Malloc( nLen + 1, _T("Meta_FontCreate function") );
+						if ( !pFont->sFaceName )
+							m_eError = wmf_error_NotEnoughMemory;
+						else
+						{
+							pFont->sFaceName[nLen] = '\0';
+							memcpy( pFont->sFaceName, sNewName.c_str(), nLen );
+						}
 					}
 				}
 			}

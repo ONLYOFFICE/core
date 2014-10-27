@@ -6,7 +6,7 @@
 
 #include "../Common/OfficeFileTemplate.h"
 #include "ASCOfficePPTXFile.h"
-
+#include "../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 #include "../Common/DocxFormat/Source/SystemUtility/File.h"
 
 void comLoadTheme(void* pArg, int nIndex, CString& strDstFolder);
@@ -194,38 +194,40 @@ void comLoadTheme(void* pArg, int nIndex, CString& strDstFolder)
 }
 bool comExtractFile(void* pArg, CString& sFile, CString& sDir)
 {
-	OfficeUtils::IOfficeUtils* pOfficeUtils	= NULL;
-
-	if (S_OK != CoCreateInstance(__uuidof(OfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(OfficeUtils::IOfficeUtils),(void**)&pOfficeUtils))
-		return false;
+	COfficeUtils *pOfficeUtils = new COfficeUtils(NULL);
+	if (pOfficeUtils == NULL) return false;
 
 	BSTR bsFile = sFile.AllocSysString();
 	BSTR bsDir = sDir.AllocSysString();
+	
 	HRESULT hr = pOfficeUtils->ExtractToDirectory( bsFile, bsDir, NULL, 0);
+	
 	SysFreeString(bsFile);
 	SysFreeString(bsDir);
+
+	delete pOfficeUtils;
 	if(hr != S_OK)
 		return false;
 
-	RELEASEINTERFACE(pOfficeUtils);
 	return true;
 }
 bool comCompressFile(void* pArg, CString& sDir, CString& sFile)
 {
-	OfficeUtils::IOfficeUtils* pOfficeUtils	= NULL;
-
-	if (S_OK != CoCreateInstance(__uuidof(OfficeUtils::COfficeUtils), NULL, CLSCTX_INPROC_SERVER, __uuidof(OfficeUtils::IOfficeUtils),(void**)&pOfficeUtils))
-		return false;
-
+	COfficeUtils *pOfficeUtils = new COfficeUtils(NULL);
+	if (pOfficeUtils == NULL) return false;
+	
 	BSTR bsDir = sDir.AllocSysString();
 	BSTR bsFile = sFile.AllocSysString();
+
 	HRESULT hr = pOfficeUtils->CompressFileOrDirectory( bsDir, bsFile, -1 );
+	
 	SysFreeString(bsDir);
 	SysFreeString(bsFile);
+
+	delete pOfficeUtils;
+
 	if(hr != S_OK)
 		return false;
-
-	RELEASEINTERFACE(pOfficeUtils);
 	return true;
 }
 bool comProgress(void* pArg, long ID, long Percent)

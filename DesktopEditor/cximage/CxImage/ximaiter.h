@@ -32,6 +32,13 @@
 #include "ximage.h"
 #include "ximadef.h"
 
+#ifndef min
+#define min(a,b) (((a)<(b))?(a):(b))
+#endif
+#ifndef max
+#define max(a,b) (((a)>(b))?(a):(b))
+#endif
+
 class CImageIterator
 {
 friend class CxImage;
@@ -148,7 +155,7 @@ inline void CImageIterator::SetRow(uint8_t *buf, int32_t n)
 inline void CImageIterator::GetRow(uint8_t *buf, int32_t n)
 {
 	if ((IterImage!=NULL)&&(buf!=NULL)&&(n>0))
-		memcpy(buf,IterImage,min(n,(int32_t)ima->GetEffWidth()));
+        memcpy(buf,IterImage,min(n,(int32_t)ima->GetEffWidth()));
 }
 /////////////////////////////////////////////////////////////////////
 inline uint8_t* CImageIterator::GetRow()

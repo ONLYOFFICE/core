@@ -7,6 +7,15 @@
 
 #include "ximaiter.h"
 
+#include <queue>
+
+#ifndef min
+#define min(a,b) (((a)<(b))?(a):(b))
+#endif
+#ifndef max
+#define max(a,b) (((a)>(b))?(a):(b))
+#endif
+
 #if CXIMAGE_SUPPORT_DSP
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -3578,13 +3587,6 @@ bool CxImage::Trace(RGBQUAD color_target, RGBQUAD color_trace)
 
 #ifndef __MINGW32__ 
 ////////////////////////////////////////////////////////////////////////////////
-#include <queue>
-#ifndef min
-#define min(a,b) (((a)<(b))?(a):(b))
-#endif
-#ifndef max
-#define max(a,b) (((a)>(b))?(a):(b))
-#endif
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * Flood Fill

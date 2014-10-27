@@ -2,6 +2,12 @@
 #include "ximath.h"
 #include <math.h>
 
+#ifndef min
+#define min(a,b) (((a)<(b))?(a):(b))
+#endif
+#ifndef max
+#define max(a,b) (((a)>(b))?(a):(b))
+#endif
 //this module should contain some classes for geometrical transformations
 //usable with selections, etc... once it's done, that is. :)
 

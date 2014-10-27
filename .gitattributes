@@ -564,6 +564,7 @@ Common/DocxFormat/Source/XML/libxml2/XML/test/utf16lebom.xml svn_mime_002dtype=a
 Common/DocxFormat/Source/XML/libxml2/XML/test/valid/dtds/utf16b.ent svn_mime_002dtype=application%2Foctet-stream
 Common/DocxFormat/Source/XML/libxml2/XML/test/valid/dtds/utf16l.ent svn_mime_002dtype=application%2Foctet-stream
 Common/DocxFormat/Source/XML/libxml2/XML/win32/wince/libxml2.vco svn_mime_002dtype=application%2Foctet-stream
+Common/DocxFormat/Source/XML/libxml2/linux_build svnc_tsvn_003alogminsize=5
 DesktopEditor/Qt_build svnc_tsvn_003alogminsize=5
 DesktopEditor/Qt_build/editor svnc_tsvn_003alogminsize=5
 DesktopEditor/Qt_build/editor/Debug svnc_tsvn_003alogminsize=5

@@ -58,11 +58,13 @@
  #define CXIMAGE_SUPPORT_WINDOWS 0
 #endif
 
-#ifndef min
-#define min(a,b) (((a)<(b))?(a):(b))
-#endif
-#ifndef max
-#define max(a,b) (((a)>(b))?(a):(b))
+#ifdef WIN32
+    #ifndef min
+    #define min(a,b) (((a)<(b))?(a):(b))
+    #endif
+    #ifndef max
+    #define max(a,b) (((a)>(b))?(a):(b))
+    #endif
 #endif
 
 #ifndef PI

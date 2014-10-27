@@ -8,6 +8,9 @@
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
+#ifndef WIN32
+#endif
+
 TGlyphBitmap::TGlyphBitmap()
 {
 	nX			= 0;
@@ -23,7 +26,7 @@ TGlyphBitmap::~TGlyphBitmap()
 {
 	if (bFreeData && pData != NULL)
 	{
-		free(pData);
+        free(pData);
 		pData = NULL;
 	}
 }

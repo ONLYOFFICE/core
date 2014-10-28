@@ -27,15 +27,16 @@
  * At least I tested it with WinCE 5.0 for Emulator and WinCE 4.2/SH4 target
  */
 #include <win32config.h>
-#include <libxml/xmlversion.h>
+    #include <libxml/xmlversion.h>
 #else
 /*
  * Currently supported platforms use either autoconf or
  * copy to config.h own "preset" configuration file.
  * As result ifdef HAVE_CONFIG_H is omited here.
  */
-#include "config.h"
-#include <libxml/xmlversion.h>
+    //#include "config.h"
+    #include <inttypes.h>
+    #include <libxml/xmlversion.h>
 #endif
 
 #if defined(__Lynx__)

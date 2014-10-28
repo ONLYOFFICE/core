@@ -17,6 +17,7 @@ namespace OOX
 
 		class CWorksheet;
 		class CDrawing;
+		class CTable;
 		class CCol;
 		class CRow;
 		class CCell;
@@ -100,18 +101,20 @@ namespace Oox2Odf
 		virtual CString							 find_link_by_id (CString sId, int t);
 
 		void convert(OOX::Spreadsheet::WritingElement	*oox_unknown);
-    private:
-		OOX::Spreadsheet::CXlsx		*xlsx_document;
-		odf::package::odf_document	*output_document;
-		OOX::Spreadsheet::CDrawing	*xlsx_current_drawing; //пока сюда .. потом покрасивше, для внешних ссылок
+    private:		
+		OOX::Spreadsheet::CXlsx			*xlsx_document;
+		OOX::Spreadsheet::CDrawing		*xlsx_current_drawing; //пока сюда .. потом покрасивше, для внешних ссылок
 		
-		odf::ods_conversion_context	*ods_context;
+		odf::ods_conversion_context		*ods_context;
+
+		odf::package::odf_document		*output_document;
 
 		void convert_sheets();
 		void convert_styles();		
 		
 		void convert(OOX::Spreadsheet::CWorksheet			*oox_sheet);
 		void convert(OOX::Spreadsheet::CDefinedName			*oox_defined);
+		void convert(OOX::Spreadsheet::CTable				*oox_table_part);
 
 		void convert(OOX::Spreadsheet::CCol					*oox_column);
 		void convert(OOX::Spreadsheet::CRow					*oox_row);

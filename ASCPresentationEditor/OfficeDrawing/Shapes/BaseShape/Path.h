@@ -302,8 +302,8 @@ namespace NSPresentationEditor
 					double dLeft = pGeomInfo.m_dLeft;
 					double dTop = pGeomInfo.m_dTop;
 
-					double dKoefX = max(pGeomInfo.m_dWidth, pGeomInfo.m_dHeight)/ShapeSize;//pGeomInfo.m_dWidth / ShapeSize;
-					double dKoefY = max(pGeomInfo.m_dWidth, pGeomInfo.m_dHeight)/ShapeSize;//pGeomInfo.m_dHeight / ShapeSize;
+                    double dKoefX = (std::max)(pGeomInfo.m_dWidth, pGeomInfo.m_dHeight)/ShapeSize;//pGeomInfo.m_dWidth / ShapeSize;
+                    double dKoefY = (std::max)(pGeomInfo.m_dWidth, pGeomInfo.m_dHeight)/ShapeSize;//pGeomInfo.m_dHeight / ShapeSize;
 
 					strRes = _T("<part name='") + strRes + _T("' path='");
 
@@ -919,8 +919,8 @@ namespace NSPresentationEditor
 				double dLeft	= pGeomInfo.m_dLeft;
 				double dTop		= pGeomInfo.m_dTop;
 
-				double dKoefX = max(pGeomInfo.m_dWidth, pGeomInfo.m_dHeight) / ShapeSize;
-				double dKoefY = max(pGeomInfo.m_dWidth, pGeomInfo.m_dHeight) / ShapeSize;
+                double dKoefX = (std::max)(pGeomInfo.m_dWidth, pGeomInfo.m_dHeight) / ShapeSize;
+                double dKoefY = (std::max)(pGeomInfo.m_dWidth, pGeomInfo.m_dHeight) / ShapeSize;
 
 				switch (m_eRuler)
 				{

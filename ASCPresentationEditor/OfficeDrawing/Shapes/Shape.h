@@ -198,7 +198,7 @@ public:
 		{
 			if (0 < m_pShape->m_arTextRects.size())
 			{
-				double koef = max(oInfo.m_dWidth, oInfo.m_dHeight)/ShapeSize;
+                double koef = (std::max)(oInfo.m_dWidth, oInfo.m_dHeight)/ShapeSize;
 				oInfo.m_dLeft += m_pShape->m_arTextRects[0].left * koef;
 				oInfo.m_dTop += m_pShape->m_arTextRects[0].top * koef;
 				oInfo.m_dWidth = (m_pShape->m_arTextRects[0].right - m_pShape->m_arTextRects[0].left) * koef;
@@ -286,7 +286,7 @@ public:
 		{
 			if (0 < m_pShape->m_arTextRects.size())
 			{
-				double koef = max(dWidth, dHeight)/ShapeSize;
+                double koef = (std::max)(dWidth, dHeight)/ShapeSize;
 				dLeft	+= m_pShape->m_arTextRects[0].left * koef;
 				dTop	+= m_pShape->m_arTextRects[0].top * koef;
 				dWidth	= (m_pShape->m_arTextRects[0].right - m_pShape->m_arTextRects[0].left) * koef;

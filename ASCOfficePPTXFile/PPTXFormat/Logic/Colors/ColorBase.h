@@ -361,8 +361,8 @@ namespace PPTX
 			//Эти функции использовать для заполнения "origin color"
 			void SetRGB2HSL()
 			{
-				int iMin = min( red, min(green, blue));
-				int iMax = max( red, max(green, blue));
+                int iMin = (std::min)( red, (std::min)(green, blue));
+                int iMax = (std::max)( red, (std::max)(green, blue));
 				int iDelta = iMax - iMin;
 				double dMax = ( iMax + iMin )/255.0;
 				double dDelta = iDelta/255.0;
@@ -426,8 +426,8 @@ namespace PPTX
 			//Эти использовать при применении модификаторов
 			static void RGB2HSL(unsigned char* RGB, unsigned char* HSL)
 			{
-				int iMin = min( RGB[0], min(RGB[1], RGB[2]));
-				int iMax = max( RGB[0], max(RGB[1], RGB[2]));
+                int iMin = (std::min)( RGB[0], (std::min)(RGB[1], RGB[2]));
+                int iMax = (std::max)( RGB[0], (std::max)(RGB[1], RGB[2]));
 				int iDelta = iMax - iMin;
 				double dMax = ( iMax + iMin )/255.0;
 				double dDelta = iDelta/255.0;

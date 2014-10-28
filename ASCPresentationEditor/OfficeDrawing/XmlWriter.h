@@ -49,7 +49,7 @@ namespace NSPresentationEditor
 		{
 			if (NULL == m_pData)
 			{
-				m_lSize = max(nSize, 1000);				
+                m_lSize = (std::max)(nSize, (size_t) 1000);
 				m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
 				
 				m_lSizeCur = 0;

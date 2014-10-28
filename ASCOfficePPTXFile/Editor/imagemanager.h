@@ -229,7 +229,7 @@ namespace NSShapeImageGen
 				y -= height;
 			}
 			
-			return GenerateImageID(punkImage, max(1.0, width), max(1.0, height));
+            return GenerateImageID(punkImage, (std::max)(1.0, width), (std::max)(1.0, height));
 		}
         CImageInfo WriteImage(const CString& strFile, double& x, double& y, double& width, double& height)
 		{
@@ -274,7 +274,7 @@ namespace NSShapeImageGen
 
 #endif
 
-				return GenerateImageID_2(strDownload, strFile1, max(1.0, width), max(1.0, height));
+                return GenerateImageID_2(strDownload, strFile1, (std::max)(1.0, width), (std::max)(1.0, height));
 
 
 			}
@@ -288,7 +288,7 @@ namespace NSShapeImageGen
 
 			if (-1 == width && -1 == height)
 				return GenerateImageID(strFile, width, height);
-			return GenerateImageID(strFile, max(1.0, width), max(1.0, height));
+            return GenerateImageID(strFile, (std::max)(1.0, width), (std::max)(1.0, height));
 		}
 		void SetFontManager(CFontManager* pFontManager)
 		{
@@ -372,7 +372,7 @@ namespace NSShapeImageGen
 				nOutputFormat = _CXIMAGE_FORMAT_PNG;
 			}
 
-			LONG lMaxSize = min(max(lWidth, lHeight), m_lMaxSizeImage);
+            LONG lMaxSize = (std::min)((std::max)(lWidth, lHeight), m_lMaxSizeImage);
 
 			if (!((lWidth <= lMaxSize) && (lHeight <= lMaxSize)))
 			{

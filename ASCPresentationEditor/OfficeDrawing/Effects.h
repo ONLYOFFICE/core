@@ -8,6 +8,10 @@
     #include "../../DesktopEditor/common/ASCVariant.h"
     #include "../../../Common/DocxFormat/Source/Base/ASCString.h"
 #endif
+#ifndef _WIN32
+#include "../../Common/DocxFormat/Source/Base/ASCString.h"
+#endif
+
 namespace NSPresentationEditor
 {
 	class CEffect

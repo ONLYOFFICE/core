@@ -63,6 +63,8 @@ HEADERS +=  \
     ../../ZLIB/zlib-1.2.3/contrib/minizip/mztools.h \
     ../../ZLIB/zlib-1.2.3/contrib/minizip/unzip.h \
     ../../ZLIB/zlib-1.2.3/contrib/minizip/zip.h \
+    ../../ASCOfficeUtils/ASCOfficeCriticalSection.h \
+	../../ASCOfficeUtils/CSLocker.h \
     ../../ASCOfficeUtils/ZipUtilsCP.h
 	
 

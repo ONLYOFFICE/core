@@ -3,31 +3,8 @@
 #include "stdafx.h"
 #include "resource.h"       // main symbols
 
-#ifdef PPT_DEF
-#include "OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.cpp"
-#include "OfficeDrawing\Shapes\BaseShape\PPTShape\PPTShape.cpp"
-#ifndef BASE_SHAPE
-#define BASE_SHAPE
-#endif
-#endif
-#ifdef PPTX_DEF
-#include "OfficeDrawing\Shapes\BaseShape\PPTXShape\Formula.cpp"
-#include "OfficeDrawing\Shapes\BaseShape\PPTXShape\PPTXShape.cpp"
-#ifndef BASE_SHAPE
-#define BASE_SHAPE
-#endif
-#endif
-#ifdef ODP_DEF
-#include "OfficeDrawing\Shapes\BaseShape\ODPShape\parser.cpp"
-#include "OfficeDrawing\Shapes\BaseShape\ODPShape\OdpShape.cpp"
-#ifndef BASE_SHAPE
-#define BASE_SHAPE
-#endif
-#endif
+#include "ASCPresentationEditorDef.h"
 
-#ifdef BASE_SHAPE
-#include "OfficeDrawing\Shapes\BaseShape\BaseShape.cpp"
-#endif
 
 #include "PPTXWriter\Converter.h"
 #include "PPTStorage.h"

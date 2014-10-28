@@ -76,10 +76,3 @@ unix {
     target.path = /usr/lib
     INSTALLS += target
 }
-
-unix:!macx: LIBS += -L$$PWD/../../Common/DocxFormat/build-DocxFormatLib-Desktop-Debug/ -lDocxFormatLib
-
-INCLUDEPATH += $$PWD/../../Common/DocxFormat/build-DocxFormatLib-Desktop-Debug
-DEPENDPATH += $$PWD/../../Common/DocxFormat/build-DocxFormatLib-Desktop-Debug
-
-unix:!macx: PRE_TARGETDEPS += $$PWD/../../Common/DocxFormat/build-DocxFormatLib-Desktop-Debug/libDocxFormatLib.a

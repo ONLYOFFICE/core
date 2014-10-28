@@ -39,6 +39,9 @@ SOURCES += pptxformatlib.cpp \
 ../../../ASCOfficePPTXFileRealization.cpp \
 ../../../../Common/DocxFormat/Source/XML/libxml2/libxml2.cpp \
 ../../../../Common/DocxFormat/Source/XML/stringcommon.cpp \
+    ../../../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.cpp \
+    ../../../../ASCOfficeDocxFile2/DocWrapper/FontProcessor.cpp \
+    ../../../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.cpp \
     ../../../PPTXFormat/DocxFormat/IFileContainer.cpp \
     ../../../PPTXFormat/Logic/Colors/SchemeClr.cpp \
     ../../../PPTXFormat/Logic/Fills/Blip.cpp \

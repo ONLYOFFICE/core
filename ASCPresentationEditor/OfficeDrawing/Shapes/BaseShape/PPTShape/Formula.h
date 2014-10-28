@@ -9,6 +9,8 @@
 
 #include "./../../../../../Common/DocxFormat/Source/XML/xmlutils.h"
 
+#include "./../../../../../DesktopEditor/cximage/CxImage/ximadef.h"
+
 namespace NSGuidesVML
 {
 	enum FormulaType

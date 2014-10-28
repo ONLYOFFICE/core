@@ -125,6 +125,7 @@ void XlsxConverter::convertDocument()
 
 	if (UpdateProgress(850000))return;
 }
+
 void XlsxConverter::convert_sheets()
 {
 	if (!ods_context) return;
@@ -273,11 +274,52 @@ void XlsxConverter::convert(OOX::Spreadsheet::CWorksheet *oox_sheet)
 		}
 		ods_context->end_conditional_formats();
 	}
+	//выносные части таблицы
+	if (oox_sheet->m_oTableParts.IsInit())
+	{
+		for (unsigned int i=0 ; i < oox_sheet->m_oTableParts->m_arrItems.size(); i++)
+		{
+			OOX::Spreadsheet::CTablePart *oox_table_part = oox_sheet->m_oTableParts->m_arrItems[i];
+			if (!oox_table_part)continue;
+			if (!oox_table_part->m_oRId.IsInit())continue;
+
+			smart_ptr<OOX::File> oFile = oox_sheet->Find(oox_table_part->m_oRId->GetValue());
+			if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Table == oFile->type())
+			{
+				OOX::Spreadsheet::CTableFile* pTableFile = (OOX::Spreadsheet::CTableFile*)oFile.operator->();
+						
+				if ((pTableFile) && (pTableFile->m_oTable.IsInit()))
+				{				
+					oox_current_child_document_spreadsheet = dynamic_cast<OOX::Spreadsheet::IFileContainer*>(pTableFile);					
+						convert(pTableFile->m_oTable.GetPointer());				
+					oox_current_child_document_spreadsheet = NULL;
+				}
+			}
+		}
+	}
 /////////////////////////////////////////////////////////////////////////
 	convert(oox_sheet->m_oSheetViews.GetPointer());
 	convert(oox_sheet->m_oPageSetup.GetPointer());
 	convert(oox_sheet->m_oPageMargins.GetPointer());
 }
+
+void XlsxConverter::convert(OOX::Spreadsheet::CTable *oox_table_part)
+{
+	if (!oox_table_part) return;
+			//nullable<SimpleTypes::CRelationshipId > m_oRef;
+			//nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oHeaderRowCount;
+			//nullable<SimpleTypes::CUnsignedDecimalNumber<> > m_oTotalsRowCount;
+			//nullable<CString > m_oDisplayName;
+
+			//nullable<CSortState > m_oSortState;
+			//nullable<CTableColumns > m_oTableColumns;
+			//nullable<CTableStyleInfo > m_oTableStyleInfo;
+
+
+	convert(oox_table_part->m_oAutoFilter.GetPointer());
+
+}
+
 void XlsxConverter::convert(OOX::Spreadsheet::CCommentItem * oox_comment)
 {
 	if (!oox_comment) return;
@@ -535,7 +577,8 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 			case SimpleTypes::Spreadsheet::underlineDoubleAccounting	:
 					text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::Double);break;
 			case SimpleTypes::Spreadsheet::underlineNone				:
-					text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::None);break;
+					text_properties->content().style_text_underline_style_	= boost::none;
+					text_properties->content().style_text_underline_type_	= odf::line_type(odf::line_type::None);break;
 			case SimpleTypes::Spreadsheet::underlineSingle				:
 			case SimpleTypes::Spreadsheet::underlineSingleAccounting	:
 					text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::Single);break;	
@@ -589,8 +632,10 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 			text_properties->content().style_text_scale_ = odf::percent(-30.);
 		}
 	}
-	if (oox_run_pr->m_oStrike.IsInit())
+	if ((oox_run_pr->m_oStrike.IsInit()) && (oox_run_pr->m_oStrike->m_oVal.ToBool()))
+	{
 		text_properties->content().style_text_line_through_type_ = odf::line_type(odf::line_type::Single);
+	}
 
 			//nullable<CCharset>													m_oCharset;
 			//nullable<ComplexTypes::Spreadsheet::COnOff2<SimpleTypes::onoffTrue> >	m_oCondense;
@@ -926,6 +971,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf::style_text_prop
 			case SimpleTypes::Spreadsheet::underlineDoubleAccounting	:
 					text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::Double);break;
 			case SimpleTypes::Spreadsheet::underlineNone				:
+					text_properties->content().style_text_underline_style_ = boost::none;
 					text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::None);break;
 			case SimpleTypes::Spreadsheet::underlineSingle				:
 			case SimpleTypes::Spreadsheet::underlineSingleAccounting	:
@@ -981,7 +1027,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf::style_text_prop
 			text_properties->content().style_text_scale_ = odf::percent(-30.);
 		}
 	}
-	if (font->m_oStrike.IsInit())
+	if ((font->m_oStrike.IsInit()) && (font->m_oStrike->m_oVal.ToBool()))
 		text_properties->content().style_text_line_through_type_ = odf::line_type(odf::line_type::Single);
 
 	ods_context->calculate_font_metrix(font_name,font_size,font_italic,font_bold);

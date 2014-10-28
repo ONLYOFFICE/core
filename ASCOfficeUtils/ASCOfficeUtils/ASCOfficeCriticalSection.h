@@ -1,28 +1,28 @@
 #pragma once
-
+#include "../../DesktopEditor/graphics/TemporaryCS.h"
 class AVSOfficeCriticalSection
 {
   private:
-    CRITICAL_SECTION CriticalSection;
+    NSCriticalSection::CRITICAL_SECTION CriticalSection;
 
   public:
 	AVSOfficeCriticalSection()
     {
-	  InitializeCriticalSection( &(this->CriticalSection) );
+		CriticalSection.InitializeCriticalSection();
     }
 
 	~AVSOfficeCriticalSection()
 	{
-	  DeleteCriticalSection( &(this->CriticalSection) );
+		CriticalSection.DeleteCriticalSection();
 	}
 
 	void Enter()
 	{
-	  EnterCriticalSection( &(this->CriticalSection) );
+		CriticalSection.Enter();
 	}
 
 	void Leave()
 	{
-	  LeaveCriticalSection( &(this->CriticalSection) );
+		CriticalSection.Leave();
 	}
 };

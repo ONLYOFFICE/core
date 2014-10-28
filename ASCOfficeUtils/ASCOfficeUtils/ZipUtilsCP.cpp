@@ -1,34 +1,15 @@
 ﻿#include "ZipUtilsCP.h"
 #include <memory>
-#include "../../DesktopEditor/graphics/TemporaryCS.h"
+#include "CSLocker.h"
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/Path.h"
 
 #define WRITEBUFFERSIZE 8192
 #define READBUFFERSIZE 8192
 
-// This class helps to lock/unlock critical section and defend any using code from deadlocks due to unhandled exceptions
-class CSLocker
-{
-public:
-	CSLocker(NSCriticalSection::CRITICAL_SECTION &critical_section) : cs(critical_section)
-	{
-		cs.Enter();
-	}
-
-	~CSLocker(void)
-	{
-		cs.Leave();
-	}
-
-private:
-	NSCriticalSection::CRITICAL_SECTION &cs;
-
-};
-
 namespace ZLibZipUtils
 {
-  NSCriticalSection::CRITICAL_SECTION  criticalSection;
+  AVSOfficeCriticalSection  criticalSection;
 
   static std::wstring ascii_to_unicode(const char *src)
   {

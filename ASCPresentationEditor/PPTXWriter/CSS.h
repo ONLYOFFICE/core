@@ -791,7 +791,7 @@ public:
 
 								pParagraph->m_oPFRun.hasBullet = (BOOL)TRUE;
 								pParagraph->m_lTextType = oText.m_lTextType;
-								pParagraph->m_lTextLevel = max(0, lParLevel);
+                                pParagraph->m_lTextLevel = (std::max)((LONG)0, lParLevel);
 
 								CTextLoader::ConvertParagraph(oNodeLi, pParagraph, oMetric);
 							}

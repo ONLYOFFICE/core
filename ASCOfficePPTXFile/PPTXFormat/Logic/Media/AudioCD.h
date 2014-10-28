@@ -66,8 +66,8 @@ namespace PPTX
 
 			AVSINLINE void Normalize()
 			{
-				stTrack = max(0, min(255, stTrack));
-				stTrack = max(0, min(255, endTrack));
+                stTrack = (std::max)(0, (std::min)(255, stTrack));
+                stTrack = (std::max)(0, (std::min)(255, endTrack));
 
 				stTime.normalize_positive();
 				endTime.normalize_positive();

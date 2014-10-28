@@ -64,8 +64,8 @@ namespace PPTX
 
 			AVSINLINE void Normalize()
 			{
-				cx = min(max(cx, 914400), 51206400);
-				cy = min(max(cy, 914400), 51206400);
+                cx = (std::min)((std::max)(cx, 914400), 51206400);
+                cy = (std::min)((std::max)(cy, 914400), 51206400);
 			}
 		};
 	} // namespace nsPresentation

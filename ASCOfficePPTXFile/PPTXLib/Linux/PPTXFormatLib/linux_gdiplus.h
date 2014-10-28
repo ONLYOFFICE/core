@@ -143,10 +143,10 @@ public:
 
     static BOOL Intersect(RectF& c,                          const RectF& a,                          const RectF& b)
     {
-        REAL right = min(a.GetRight(), b.GetRight());
-        REAL bottom = min(a.GetBottom(), b.GetBottom());
-        REAL left = max(a.GetLeft(), b.GetLeft());
-        REAL top = max(a.GetTop(), b.GetTop());
+        REAL right = (std::min)(a.GetRight(), b.GetRight());
+        REAL bottom = (std::min)(a.GetBottom(), b.GetBottom());
+        REAL left = (std::max)(a.GetLeft(), b.GetLeft());
+        REAL top = (std::max)(a.GetTop(), b.GetTop());
 
         c.X = left;
         c.Y = top;
@@ -165,10 +165,10 @@ public:
 
     static BOOL Union(RectF& c,                      const RectF& a,                      const RectF& b)
     {
-        REAL right = max(a.GetRight(), b.GetRight());
-        REAL bottom = max(a.GetBottom(), b.GetBottom());
-        REAL left = min(a.GetLeft(), b.GetLeft());
-        REAL top = min(a.GetTop(), b.GetTop());
+        REAL right = (std::max)(a.GetRight(), b.GetRight());
+        REAL bottom = (std::max)(a.GetBottom(), b.GetBottom());
+        REAL left = (std::min)(a.GetLeft(), b.GetLeft());
+        REAL top = (std::min)(a.GetTop(), b.GetTop());
 
         c.X = left;
         c.Y = top;

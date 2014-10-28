@@ -1446,8 +1446,8 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 
 				strStyleAdvenced.Format(_T(";margin-left:%d;margin-top:%d;width:%d;height:%d;polyline_correct:true;"), _x, _y, _r - _x, _b - _y);
 
-				double dKoefX = 21600.0 / max(_r - _x, 1);
-				double dKoefY = 21600.0 / max(_b - _y, 1);
+                double dKoefX = 21600.0 / (std::max)((_r - _x), 1);
+                double dKoefY = 21600.0 / (std::max)((_b - _y), 1);
 				CString strPath = _T("");
 				for (int k = 0; k < nSize; k += 2)
 				{
@@ -1882,8 +1882,8 @@ void CDrawingConverter::LoadCoordSize(XmlUtils::CXmlNode& oNode, CShape* pShape)
 
 			if (oArray.size() >= 2)
 			{
-				pShape->m_dWidthLogic  = max(XmlUtils::GetInteger(oArray[0]), 1);
-				pShape->m_dHeightLogic = max(XmlUtils::GetInteger(oArray[1]), 1);
+                pShape->m_dWidthLogic  = (std::max)(XmlUtils::GetInteger(oArray[0]), 1);
+                pShape->m_dHeightLogic = (std::max)(XmlUtils::GetInteger(oArray[1]), 1);
 			}
 		}
 	}
@@ -1897,8 +1897,8 @@ void CDrawingConverter::LoadCoordSize(XmlUtils::CXmlNode& oNode, CShape* pShape)
 
 			if (oArray.size() >= 2)
 			{
-				pShape->m_dWidthLogic  = max(XmlUtils::GetInteger(oArray[0]), 1);
-				pShape->m_dHeightLogic = max(XmlUtils::GetInteger(oArray[1]), 1);
+                pShape->m_dWidthLogic  = (std::max)(XmlUtils::GetInteger(oArray[0]), 1);
+                pShape->m_dHeightLogic = (std::max)(XmlUtils::GetInteger(oArray[1]), 1);
 			}
 		}
 	}

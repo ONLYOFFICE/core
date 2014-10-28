@@ -1,6 +1,11 @@
 #pragma once
 #include <math.h>
 
+#ifndef WIN32
+    #include "./../../DesktopEditor/common/ASCVariant.h"
+    #include "../../../Common/DocxFormat/Source/Base/ASCString.h"
+#endif
+
 namespace NSPresentationEditor
 {
 	const double c_dMasterUnitsToInchKoef = 1.0 / 576;

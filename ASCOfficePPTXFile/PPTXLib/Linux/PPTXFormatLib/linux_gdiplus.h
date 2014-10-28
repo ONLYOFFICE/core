@@ -1,7 +1,15 @@
 #pragma once
 
+#include <algorithm>
+
 namespace Gdiplus
 {
+
+typedef float REAL;
+
+#ifndef REAL_EPSILON
+    #define REAL_EPSILON 1.192092896e-07F
+#endif
 
 enum DashStyle
 {
@@ -52,19 +60,19 @@ public:
         return new RectF(X, Y, Width, Height);
     }
 
-    /*VOID GetLocation(PointF* point) const
+    /*void GetLocation(PointF* point) const
     {
         point->X = X;
         point->Y = Y;
     }*/
 
-    /*VOID GetSize(SizeF* size) const
+    /*void GetSize(SizeF* size) const
     {
         size->Width = Width;
         size->Height = Height;
     }*/
 
-    VOID GetBounds(RectF* rect) const
+    void GetBounds(RectF* rect) const
     {
         rect->X = X;
         rect->Y = Y;
@@ -92,12 +100,12 @@ public:
         return Y+Height;
     }
 
-    BOOL IsEmptyArea() const
+    bool IsEmptyArea() const
     {
         return (Width <= REAL_EPSILON) || (Height <= REAL_EPSILON);
     }
 
-    BOOL Equals(const RectF & rect) const
+    bool Equals(const RectF & rect) const
     {
         return X == rect.X &&
                Y == rect.Y &&
@@ -105,25 +113,25 @@ public:
                Height == rect.Height;
     }
 
-    BOOL Contains(REAL x,
+    bool Contains(REAL x,
                   REAL y) const
     {
         return x >= X && x < X+Width &&
                y >= Y && y < Y+Height;
     }
 
-   /* BOOL Contains(const PointF& pt) const
+   /* bool Contains(const PointF& pt) const
     {
         return Contains(pt.X, pt.Y);
     }*/
 
-    BOOL Contains(const RectF& rect) const
+    bool Contains(const RectF& rect) const
     {
         return (X <= rect.X) && (rect.GetRight() <= GetRight()) &&
                (Y <= rect.Y) && (rect.GetBottom() <= GetBottom());
     }
 
-    VOID Inflate(REAL dx, REAL dy)
+    void Inflate(REAL dx, REAL dy)
     {
         X -= dx;
         Y -= dy;
@@ -131,17 +139,17 @@ public:
         Height += 2*dy;
     }
 
-    /*VOID Inflate(const PointF& point)
+    /*void Inflate(const PointF& point)
     {
         Inflate(point.X, point.Y);
     }
 */
-    BOOL Intersect(const RectF& rect)
+    bool Intersect(const RectF& rect)
     {
         return Intersect(*this, *this, rect);
     }
 
-    static BOOL Intersect(RectF& c,                          const RectF& a,                          const RectF& b)
+    static bool Intersect(RectF& c,                          const RectF& a,                          const RectF& b)
     {
         REAL right = (std::min)(a.GetRight(), b.GetRight());
         REAL bottom = (std::min)(a.GetBottom(), b.GetBottom());
@@ -155,7 +163,7 @@ public:
         return !c.IsEmptyArea();
     }
 
-    BOOL IntersectsWith(const RectF& rect) const
+    bool IntersectsWith(const RectF& rect) const
     {
         return (GetLeft() < rect.GetRight() &&
                 GetTop() < rect.GetBottom() &&
@@ -163,7 +171,7 @@ public:
                 GetBottom() > rect.GetTop());
     }
 
-    static BOOL Union(RectF& c,                      const RectF& a,                      const RectF& b)
+    static bool Union(RectF& c,                      const RectF& a,                      const RectF& b)
     {
         REAL right = (std::max)(a.GetRight(), b.GetRight());
         REAL bottom = (std::max)(a.GetBottom(), b.GetBottom());
@@ -177,12 +185,12 @@ public:
         return !c.IsEmptyArea();
     }
 
-   /* VOID Offset(const PointF& point)
+   /* void Offset(const PointF& point)
     {
         Offset(point.X, point.Y);
     }
 */
-    VOID Offset(REAL dx,                REAL dy)
+    void Offset(REAL dx,                REAL dy)
     {
         X += dx;
         Y += dy;

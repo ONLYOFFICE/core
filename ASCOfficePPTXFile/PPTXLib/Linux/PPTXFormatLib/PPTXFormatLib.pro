@@ -22,7 +22,8 @@ DEFINES += UNICODE \
     DISABLE_FILE_DOWNLOADER \
     CXIMAGE_DONT_DECLARE_TCHAR \
     BUILD_CONFIG_FULL_VERSION \
-    DONT_WRITE_EMBEDDED_FONTS
+    DONT_WRITE_EMBEDDED_FONTS \
+    AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 
 INCLUDEPATH += \
     /usr/include/libxml2
@@ -88,8 +89,8 @@ SOURCES += pptxformatlib.cpp \
 ../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/Formula.cpp \
 ../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/Formula.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp
-
+    ../../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
+    ../../../../XlsxSerializerCom/Reader/CSVReader.cpp
 #../../../Directory.cpp \
 #../../File.cpp
 

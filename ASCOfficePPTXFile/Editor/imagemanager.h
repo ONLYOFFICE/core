@@ -23,6 +23,13 @@ using namespace NSFontCutter;
 
 #include <list>
 
+#ifndef min
+#define min(a,b) (((a)<(b))?(a):(b))
+#endif
+#ifndef max
+#define max(a,b) (((a)>(b))?(a):(b))
+#endif
+
 namespace NSShapeImageGen
 {
 	const long c_nMaxImageSize = 2000;
@@ -632,7 +639,8 @@ namespace NSShapeImageGen
 			//if (NULL == punkImage)
 			//	return;
 
-			BYTE* pBuffer	= punkImage.get_Data();
+            BYTE* pBuffer	= punkImage.
+                    get_Data();
 			LONG lWidth		= punkImage.get_Width();
 			LONG lHeight	= punkImage.get_Height();
 			LONG lStride	= punkImage.get_Stride();

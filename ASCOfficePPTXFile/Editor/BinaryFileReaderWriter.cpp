@@ -4,7 +4,9 @@
 #include "BinReaderWriterDefines.h"
 
 #include "../../Common/Base64.h"
-#include "imagemanager.h"
+
+#include "./imagemanager.h"
+
 #include "./XmlWriter.h"
 #include "BinaryFileReaderWriter.h"
 #include "../PPTXFormat/FileContainer.h"

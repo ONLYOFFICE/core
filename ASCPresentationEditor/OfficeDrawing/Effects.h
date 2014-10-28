@@ -1,7 +1,13 @@
 #pragma once
 
 #include <vector>
-
+#ifdef _WIN32
+//    #include <atlbase.h>
+//    #include <atlstr.h>
+#else
+    #include "../../DesktopEditor/common/ASCVariant.h"
+    #include "../../../Common/DocxFormat/Source/Base/ASCString.h"
+#endif
 namespace NSPresentationEditor
 {
 	class CEffect

@@ -2,6 +2,13 @@
 
 #include "Formula.h"
 
+#ifndef min
+#define min(a,b) (((a)<(b))?(a):(b))
+#endif
+#ifndef max
+#define max(a,b) (((a)>(b))?(a):(b))
+#endif
+
 double NSGuidesOOXML::CFormula::Calculate(NSGuidesOOXML::CFormulaManager* pManager)
 {
 	if ((0 == m_lIndex) || (-m_lIndex > pManager->Guides->size()) || (m_lIndex > pManager->Adjustments->size()))

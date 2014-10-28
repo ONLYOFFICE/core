@@ -1556,6 +1556,9 @@ unsigned long  TTFontDefSaveFontData(FontDef pFontDef, Stream pStream, FontAttr 
 				memset( (void *)pUseGlyf, 0x00, pFace->num_glyphs * sizeof(unsigned char) );
 				for ( int nIndex = 0; nIndex < 256; nIndex++ )
 				{
+					if (arrCmap[nIndex] >= lGlyfsCount)
+						continue;
+
 					// Данный символ используется
 					pUseGlyf[arrCmap[nIndex]] = 1;
 

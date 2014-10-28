@@ -186,10 +186,11 @@ class Binary_HdrFtrTableReader : public Binary_CommonReader<Binary_HdrFtrTableRe
 	Writers::FileWriter& m_oFileWriter;
 	int nCurType;
 	int nCurHeaderType;
+	CComments* m_pComments;
 public:
 	Writers::HeaderFooterWriter& m_oHeaderFooterWriter;
 public:
-	Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter);
+	Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments);
     int Read();
     int ReadHdrFtrContent(BYTE type, long length, void* poResult);
     int ReadHdrFtrFEO(BYTE type, long length, void* poResult);
@@ -456,7 +457,7 @@ public:
 	long m_nCurLvl;
 
 	Binary_pPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):
-		m_oFontTableWriter(oFileWriter.m_oFontTableWriter),Binary_CommonReader(poBufferedStream),oBinary_CommonReader2(poBufferedStream),oBinary_rPrReader(poBufferedStream),oBinary_HdrFtrTableReader(poBufferedStream,oFileWriter),m_oFileWriter(oFileWriter)
+		m_oFontTableWriter(oFileWriter.m_oFontTableWriter),Binary_CommonReader(poBufferedStream),oBinary_CommonReader2(poBufferedStream),oBinary_rPrReader(poBufferedStream),oBinary_HdrFtrTableReader(poBufferedStream,oFileWriter, oFileWriter.m_pComments),m_oFileWriter(oFileWriter)
 	{
 		bDoNotWriteNullProp = false;
 		m_nCurNumId = -1;
@@ -5884,7 +5885,7 @@ public:
 		return oBinary_pPrReader.Read_SecPr(type, length, poResult);
 	}
 };
-Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter),m_oHeaderFooterWriter(oFileWriter.m_oHeaderFooterWriter)
+Binary_HdrFtrTableReader::Binary_HdrFtrTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, CComments* pComments):Binary_CommonReader(poBufferedStream),m_oFileWriter(oFileWriter),m_oHeaderFooterWriter(oFileWriter.m_oHeaderFooterWriter),m_pComments(pComments)
 {
 }
 int Binary_HdrFtrTableReader::Read()
@@ -5940,7 +5941,7 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItem(BYTE type, long length, void* poRes
 				poHdrFtrItem->m_sFilename.Format(_T("footer%d.xml"), m_oHeaderFooterWriter.m_aFooters.size());
 			}
 			m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
-			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header, NULL);
+			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header, m_pComments);
 			res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrItemContent, this, &oBinary_DocumentTableReader);
 
 			CString sRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir + _T("\\word\\_rels\\") + poHdrFtrItem->m_sFilename + _T(".rels");
@@ -6009,6 +6010,10 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 				{
 					nDocumentOffset = mtiOffBits;
 				}
+				else if(c_oSerTableTypes::Comments == mtiType)
+				{
+					nCommentsOffset = mtiOffBits;
+				}
 				else
 				{
 					aTypes.push_back(mtiType);
@@ -6039,16 +6044,17 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 				m_oFileWriter.m_pDrawingConverter->LoadClrMap(sClrMap);
 			}
 
-			BinaryStyleTableReader oBinaryStyleTableReader(m_oBufferedStream, m_oFileWriter);
-			if(-1 != nStyleOffset)
+			Binary_CommentsTableReader oBinary_CommentsTableReader(m_oBufferedStream, m_oFileWriter);
+			if(-1 != nCommentsOffset)
 			{
 				int nOldPos = m_oBufferedStream.GetPos();
-				m_oBufferedStream.Seek(nStyleOffset);
-				res = oBinaryStyleTableReader.Read();
+				m_oBufferedStream.Seek(nCommentsOffset);
+				res = oBinary_CommentsTableReader.Read();
+				m_oFileWriter.m_pComments = &oBinary_CommentsTableReader.m_oComments;
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}
-			Binary_CommentsTableReader oBinary_CommentsTableReader(m_oBufferedStream, m_oFileWriter);
+			
 			for(int i = 0, length = aTypes.size(); i < length; ++i)
 			{
 				BYTE mtiType = aTypes[i];
@@ -6066,15 +6072,15 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 				//	res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_oDocumentWriter).Read();
 				//	break;
 				case c_oSerTableTypes::HdrFtr:
-					res = Binary_HdrFtrTableReader(m_oBufferedStream, m_oFileWriter).Read();
+					res = Binary_HdrFtrTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_pComments).Read();
 					break;
 				case c_oSerTableTypes::Numbering:
 					res = Binary_NumberingTableReader(m_oBufferedStream, m_oFileWriter).Read();
 					break;
 				//Comments должны читаться раньше чем c_oSerTableTypes::Document
-				case c_oSerTableTypes::Comments:
-					res = oBinary_CommentsTableReader.Read();
-					break;
+				//case c_oSerTableTypes::Comments:
+				//	res = oBinary_CommentsTableReader.Read();
+				//	break;
 					//case c_oSerTableTypes::Other:
 					//	res = Binary_OtherTableReader(m_sFileInDir, m_oBufferedStream, m_oFileWriter).Read();
 					//	break;

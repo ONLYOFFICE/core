@@ -83,7 +83,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 	oDrawingConverter.SetFontPicker(pFontPicker);
 	oDrawingConverter.SetMainDocument(this);
 	oDrawingConverter.SetMediaDstPath(mediaDir);
-	ParamsWriter oParamsWriter(oBufferedStream, fp, &oDrawingConverter, pEmbeddedFontsManager);
+	ParamsWriter oParamsWriter(&oBufferedStream, &fp, &oDrawingConverter, pEmbeddedFontsManager);
 	m_oBinaryFileWriter = new BinaryFileWriter(oParamsWriter);
 	m_oBinaryFileWriter->intoBindoc(sDstPath);
 	BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
@@ -241,7 +241,7 @@ bool BinDocxRW::CDocxSerializer::getXmlContent(NSBinPptxRW::CBinaryFileReader& o
 {
 	long nLength = oBufferedStream.GetLong();
 	Writers::ContentWriter oTempContentWriter;
-	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, NULL);
+	BinDocxRW::Binary_DocumentTableReader oBinary_DocumentTableReader(oBufferedStream, *m_pCurFileWriter, oTempContentWriter, m_pCurFileWriter->m_pComments);
 	int res = oBinary_DocumentTableReader.Read1(nLength, &BinDocxRW::Binary_DocumentTableReader::ReadDocumentContent, &oBinary_DocumentTableReader, NULL);
 
 	sOutputXml = oTempContentWriter.m_oContent.GetData().GetString();
@@ -262,20 +262,18 @@ bool BinDocxRW::CDocxSerializer::getBinaryContent(const CString& bsTxContent, NS
 
 	OOX::Logic::CSdtContent oSdtContent;
 	oSdtContent.fromXML(oReader);
-	BinDocxRW::ParamsWriter oCurParamsWriter(m_oBinaryFileWriter->m_oParamsWriter);
-	BinDocxRW::ParamsWriter oParamsWriter(oBufferedStream, oCurParamsWriter.m_oFontProcessor, oCurParamsWriter.m_pOfficeDrawingConverter, oCurParamsWriter.m_pEmbeddedFontsManager);
-	oParamsWriter.m_poTheme = oCurParamsWriter.m_poTheme;
-	oParamsWriter.m_oSettings = oCurParamsWriter.m_oSettings;
-	oParamsWriter.m_pCurRels = oCurParamsWriter.m_pCurRels;
-	oParamsWriter.m_sCurDocumentPath = oCurParamsWriter.m_sCurDocumentPath;
+	BinDocxRW::ParamsWriter& oParamsWriter = m_oBinaryFileWriter->m_oParamsWriter;
+	NSBinPptxRW::CBinaryFileWriter* pBufferedStreamOld = oParamsWriter.m_pCBufferedStream;
+	oParamsWriter.m_pCBufferedStream = &oBufferedStream;
 
 	BinDocxRW::BinaryCommonWriter oBinaryCommonWriter(oParamsWriter);
 	int nCurPos = oBinaryCommonWriter.WriteItemWithLengthStart();
 	BinDocxRW::ParamsDocumentWriter oParams(oParamsWriter.m_pCurRels, oParamsWriter.m_sCurDocumentPath);
-	BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oParamsWriter, oParams, NULL, NULL);
+	BinDocxRW::BinaryDocumentTableWriter oBinaryDocumentTableWriter(oParamsWriter, oParams, &oParamsWriter.m_mapIgnoreComments, NULL);
 	oBinaryDocumentTableWriter.WriteDocumentContent(oSdtContent.m_arrItems);
 	oBinaryCommonWriter.WriteItemWithLengthEnd(nCurPos);
 
+	oParamsWriter.m_pCBufferedStream = pBufferedStreamOld;
 	long nEndPos = oBufferedStream.GetPosition();
 	lDataSize = nEndPos - nStartPos;
 	return true;

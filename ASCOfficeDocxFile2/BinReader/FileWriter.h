@@ -11,6 +11,9 @@
 #include "CommentsWriter.h"
 #include "ChartWriter.h"
 
+namespace BinDocxRW {
+	class CComments;
+}
 namespace Writers
 {
 	class FileWriter
@@ -30,6 +33,7 @@ namespace Writers
 		CommentsWriter m_oCommentsWriter;
 		ChartWriter m_oChartWriter;
 		int m_nDocPrIndex;
+		BinDocxRW::CComments* m_pComments;
 	public:
 		FileWriter(CString sDirOutput,CString sFontDir, int nVersion, bool bSaveChartAsImg, NSBinPptxRW::CDrawingConverter* pDrawingConverter, CString sThemePath):
 										m_pDrawingConverter(pDrawingConverter),m_sThemePath(sThemePath),m_bSaveChartAsImg(bSaveChartAsImg),
@@ -42,7 +46,8 @@ namespace Writers
 										m_oSettingWriter(sDirOutput, m_oHeaderFooterWriter),
 										m_oCommentsWriter(sDirOutput, m_oContentTypesWriter),
 										m_oChartWriter(sDirOutput, m_oContentTypesWriter),
-										m_nDocPrIndex(0)
+										m_nDocPrIndex(0),
+										m_pComments(NULL)
 		{
 		}
 	public: int getNextDocPr()

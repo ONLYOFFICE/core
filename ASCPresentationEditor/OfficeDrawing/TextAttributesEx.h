@@ -2,6 +2,9 @@
 #include "Structures.h"
 #include "TextStructures.h"
 
+#ifndef WIN32
+    #include "./../../DesktopEditor/cximage/CxImage/ximadef.h"
+#endif
 namespace NSPresentationEditor
 {
 	class CTheme;
@@ -16,7 +19,7 @@ namespace NSPresentationEditor
 		LONG	m_lPlaceholderID;
 
 		// граница
-		RECT m_oBounds;
+        RECT m_oBounds;
 
 		// настройки по-умолчанию
 		CTextAttributes			m_oAttributes;

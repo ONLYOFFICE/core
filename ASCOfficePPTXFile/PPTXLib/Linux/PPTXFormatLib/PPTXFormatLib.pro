@@ -86,7 +86,9 @@ SOURCES += pptxformatlib.cpp \
 ../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/PPTXShape.cpp \
 ../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/PPTShape.cpp \
 ../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/Formula.cpp \
-../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/Formula.cpp
+../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/Formula.cpp \
+    ../../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
+    ../../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp
 
 #../../../Directory.cpp \
 #../../File.cpp

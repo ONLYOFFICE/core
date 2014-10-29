@@ -254,7 +254,10 @@ bool BinDocxRW::CDocxSerializer::getBinaryContent(const CString& bsTxContent, NS
 	long nStartPos = oBufferedStream.GetPosition();
 
 	XmlUtils::CXmlLiteReader oReader;
-	oReader.FromString(bsTxContent);
+	
+	CString bsTxContentTemp = bsTxContent;
+	
+	oReader.FromString(bsTxContentTemp);
 	oReader.ReadNextNode();//v:textbox
 	CString sRootName = oReader.GetName();
 	if(_T("v:textbox") == sRootName)

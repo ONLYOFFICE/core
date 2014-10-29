@@ -191,10 +191,6 @@
 			Name="EditorSource"
 			>
 			<File
-				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\BaseShape.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\Editor\BinaryFileReaderWriter.cpp"
 				>
 			</File>
@@ -207,23 +203,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTXShape\Formula.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.cpp"
-				>
-			</File>
-			<File
 				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Layout.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\PPTShape.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTXShape\PPTXShape.cpp"
 				>
 			</File>
 			<File

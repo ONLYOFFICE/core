@@ -70,7 +70,8 @@ voidpf ZCALLBACK fopen_file_func (opaque, filename, mode)
    const wchar_t* filename;
    int mode;
 {
-    FILE* file = NULL;
+ #ifdef _WIN32
+   FILE* file = NULL;
     const wchar_t* mode_fopen = NULL;
     if ((mode & ZLIB_FILEFUNC_MODE_READWRITEFILTER)==ZLIB_FILEFUNC_MODE_READ)
         mode_fopen = L"rb";
@@ -84,6 +85,9 @@ voidpf ZCALLBACK fopen_file_func (opaque, filename, mode)
     if ((filename!=NULL) && (mode_fopen != NULL))
         file = _wfopen(filename, mode_fopen);
     return file;
+ #else
+    return NULL;
+ #endif
 }
 
 

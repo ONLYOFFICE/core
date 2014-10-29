@@ -30,7 +30,7 @@ private:
 	//todo
 	//OfficeUtils::IOfficeUtils*		m_pOfficeUtils;
 	PPTX::Folder*					m_pFolder;
-	CStringW						m_strTempDir;
+    CString                         m_strTempDir;
 	CString							m_strDirectory;
 
 	// writer to ppty

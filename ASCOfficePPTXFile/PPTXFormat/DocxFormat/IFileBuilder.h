@@ -10,8 +10,8 @@ namespace PPTX
 	class IFileBuilder
 	{
 	public:
-		IFileBuilder();
-		virtual ~IFileBuilder();
+        IFileBuilder() {}
+        virtual ~IFileBuilder() {}
 
 	public:
 	    virtual void Commit(const OOX::CPath& path)															= 0;

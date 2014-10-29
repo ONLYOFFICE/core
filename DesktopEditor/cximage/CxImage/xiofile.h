@@ -2,6 +2,9 @@
 #define __xiofile_h
 
 #include "xfile.h"
+#ifndef _WIN32
+#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
+#endif
 //#include <TCHAR.h>
 
 #ifndef WIN32

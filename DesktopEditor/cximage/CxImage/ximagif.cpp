@@ -516,7 +516,7 @@ bool CxImageGIF::Encode(CxFile * fp, CxImage ** pImages, int32_t pagecount, bool
 	ghost.EncodeHeader(fp);
 
 	if (m_loops!=1){
-		ghost.SetLoops(max(0,m_loops-1));
+        ghost.SetLoops((std::max)(0,m_loops-1));
 		ghost.EncodeLoopExtension(fp);
 	}
 
@@ -1383,10 +1383,10 @@ void CxImageGIF::GetComment(char* sz_comment_out)
 ////////////////////////////////////////////////////////////////////////////////
 void CxImageGIF::GifMix(CxImage & imgsrc2, struct_image & imgdesc)
 {
-	int32_t ymin = max(0,(int32_t)(GetHeight()-imgdesc.t - imgdesc.h));
+    int32_t ymin = (std::max)(0,(int32_t)(GetHeight()-imgdesc.t - imgdesc.h));
 	int32_t ymax = GetHeight()-imgdesc.t;
 	int32_t xmin = imgdesc.l;
-	int32_t xmax = min(GetWidth(), (uint32_t)(imgdesc.l + imgdesc.w));
+    int32_t xmax = (std::min)(GetWidth(), (uint32_t)(imgdesc.l + imgdesc.w));
 
 	int32_t ibg2= imgsrc2.GetTransIndex();
     uint8_t i2;

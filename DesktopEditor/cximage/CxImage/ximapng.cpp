@@ -137,7 +137,7 @@ bool CxImagePNG::Decode(CxFile *hFile)
 		SetPaletteColor(3,255,255,255);
 	} else SetGrayPalette(); //<DP> needed for grayscale PNGs
 	
-	int32_t nshift = max(0,(info_ptr->bit_depth>>3)-1)<<3;
+    int32_t nshift = (std::max)(0,(info_ptr->bit_depth>>3)-1)<<3;
 
 	if (info_ptr->num_trans!=0){ //palette transparency
 		if (info_ptr->num_trans==1){
@@ -151,7 +151,7 @@ bool CxImagePNG::Decode(CxFile *hFile)
 			RGBQUAD* pal=GetPalette();
 			if (pal){
 				uint32_t ip;
-				for (ip=0;ip<min(head.biClrUsed,(uint32_t)info_ptr->num_trans);ip++)
+                for (ip=0;ip<(std::min)(head.biClrUsed,(uint32_t)info_ptr->num_trans);ip++)
 					pal[ip].rgbReserved=info_ptr->trans_alpha[ip];
 				for (ip=info_ptr->num_trans;ip<head.biClrUsed;ip++){
 					pal[ip].rgbReserved=255;
@@ -480,7 +480,7 @@ bool CxImagePNG::Encode(CxFile *hFile)
 	}	}	}
 #endif // CXIMAGE_SUPPORT_ALPHA	// <vho>
 
-	int32_t row_size = max(info.dwEffWidth, info_ptr->width*info_ptr->channels*(info_ptr->bit_depth/8));
+    int32_t row_size = (std::max)(info.dwEffWidth, info_ptr->width*info_ptr->channels*(info_ptr->bit_depth/8));
 	info_ptr->rowbytes = row_size;
 	uint8_t *row_pointers = new uint8_t[row_size];
 

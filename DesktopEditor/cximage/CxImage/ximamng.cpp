@@ -6,6 +6,7 @@
  */
 
 #include "ximamng.h"
+#include "../../common/File.h"
 
 #if CXIMAGE_SUPPORT_MNG
 
@@ -191,7 +192,13 @@ bool CxImageMNG::Load(const TCHAR * imageFileName){
 #ifdef WIN32
 	if ((hFile=_tfopen(imageFileName,_T("rb")))==NULL)  return false;	// For UNICODE support
 #else
-	if ((hFile=fopen(imageFileName,"rb"))==NULL)  return false;
+    #ifdef UNICODE
+        std::string sFileName = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2 (imageFileName, wcslen (imageFileName));
+        if ((hFile=fopen(sFileName.c_str(),"rb"))==NULL)  return false;
+    #else
+        if ((hFile=fopen(imageFileName,"rb"))==NULL)  return false;
+    #endif // #ifdef UNICODE
+
 #endif
 	bool bOK = Decode(hFile);
 	fclose(hFile);

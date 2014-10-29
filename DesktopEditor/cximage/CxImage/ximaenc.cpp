@@ -3,6 +3,8 @@
  * CxImage version 7.0.2 07/Feb/2011
  */
 
+#include "../../common/File.h"
+
 #include "ximage.h"
 
 #if CXIMAGE_SUPPORT_JPG
@@ -111,7 +113,12 @@ bool CxImage::Save(const TCHAR * filename, uint32_t imagetype)
 #ifdef WIN32
 	if ((hFile=_tfopen(filename,_T("wb")))==NULL)  return false;	// For UNICODE support
 #else
-	if ((hFile=fopen(filename,"wb"))==NULL)  return false;
+    #ifdef UNICODE
+        std::string sFileName = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2 (filename, wcslen (filename));
+        if ((hFile=fopen(sFileName.c_str(),"wb"))==NULL)  return false;
+    #else
+        if ((hFile=fopen(filename,"wb"))==NULL)  return false;
+    #endif
 #endif
 
 	bool bOK = Encode(hFile,imagetype);
@@ -576,7 +583,12 @@ bool CxImage::Load(const TCHAR * filename, uint32_t imagetype)
 #ifdef WIN32
 		if ((hFile=_tfopen(filename,_T("rb")))==NULL)  return false;	// For UNICODE support
 #else
-		if ((hFile=fopen(filename,"rb"))==NULL)  return false;
+    #ifdef UNICODE
+        std::string sFileName = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2 (filename, wcslen (filename));
+        if ((hFile=fopen(sFileName.c_str(),"rb"))==NULL)  return false;
+    #else
+            if ((hFile=fopen(filename,"rb"))==NULL)  return false;
+    #endif
 #endif
 
 		bOK = Decode(hFile,imagetype);
@@ -593,7 +605,12 @@ bool CxImage::Load(const TCHAR * filename, uint32_t imagetype)
 #ifdef WIN32
 	if ((hFile=_tfopen(filename,_T("rb")))==NULL)  return false;	// For UNICODE support
 #else
-	if ((hFile=fopen(filename,"rb"))==NULL)  return false;
+    #ifdef UNICODE
+        std::string sFileName = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2 (filename, wcslen (filename));
+        if ((hFile=fopen(sFileName.c_str(),"rb"))==NULL)  return false;
+    #else
+        if ((hFile=fopen(filename,"rb"))==NULL)  return false;
+    #endif // #ifdef UNICODE
 #endif
 
 	bOK = Decode(hFile,CXIMAGE_FORMAT_UNKNOWN);

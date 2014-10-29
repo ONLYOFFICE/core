@@ -11,6 +11,7 @@
  */
 
 #include "ximaraw.h"
+#include "../../common/File.h"
 
 #ifndef min
 #define min(a,b) (((a)<(b))?(a):(b))
@@ -276,7 +277,17 @@ bool CxImageRAW::GetExifThumbnail(const TCHAR *filename, const TCHAR *outname, i
 	// THUMB.
 	if (dcr.thumb_offset != 0)
 	{
+#ifdef _WIN32
         FILE* file = fopen(outname, _T("wb"));
+#else
+    #ifdef UNICODE
+        std::string sOutname = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2 (outname, wcslen (outname));
+        FILE* file = fopen(sOutname.c_str(), "wb");
+    #else
+        FILE* file = fopen(outname, "wb");
+    #endif
+#endif
+
 		DCRAW* p = &dcr;
 		dcr_fseek(dcr.obj_, dcr.thumb_offset, SEEK_SET);
 		dcr.write_thumb(&dcr, file);

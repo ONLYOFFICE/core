@@ -1,16 +1,18 @@
 #pragma once
 
+#include <algorithm>
+#include <vector>
+
 #ifdef _WIN32
 #include <atlbase.h>
 #include <atlstr.h>
 #include "../../../../Common/atldefine.h"
+
 #else
-#include "../../../../Common/DocxFormat/Source/Base/ASCString.h"
+    #include "../../../../Common/DocxFormat/Source/Base/ASCString.h"
 #endif
 
-#include <vector>
-
-
+#include "../../../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../../../DesktopEditor/graphics/GraphicsPath.h"
 
 const double ShapeSize		= 43200.0;
@@ -423,11 +425,11 @@ private:
 			RELEASEMEM(m_pData);
 		}
 
-		__forceinline void AddSize(size_t nSize)
+        AVSINLINE void AddSize(size_t nSize)
 		{
 			if (NULL == m_pData)
 			{
-				m_lSize = max(nSize, 1000);				
+                m_lSize = (std::max)((int)nSize, (int)1000);
 				m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
 				
 				m_lSizeCur = 0;
@@ -462,12 +464,12 @@ private:
 		}
 
 	public:			
-		__forceinline size_t GetCurSize()
+        AVSINLINE size_t GetCurSize()
 		{
 			return m_lSizeCur;
 		}
 
-		__forceinline void Clear()
+        AVSINLINE void Clear()
 		{
 			RELEASEMEM(m_pData);
 			
@@ -477,24 +479,24 @@ private:
 			m_pDataCur	= m_pData;
 			m_lSizeCur	= 0;
 		}
-		__forceinline void ClearNoAttack()
+        AVSINLINE void ClearNoAttack()
 		{
 			m_pDataCur	= m_pData;
 			m_lSizeCur	= 0;
 		}
 
-		__forceinline CString GetData()
+        AVSINLINE CString GetData()
 		{
 			CString str(m_pData, (int)m_lSizeCur);
 			return str;
 		}
 
-		__forceinline void AddCharNoCheck(const WCHAR& wc)
+        AVSINLINE void AddCharNoCheck(const WCHAR& wc)
 		{
 			*m_pDataCur++ = wc;
 			++m_lSizeCur;
 		}
-		__forceinline void AddIntNoCheck(int val)
+        AVSINLINE void AddIntNoCheck(int val)
 		{
 			if (0 == val)
 			{
@@ -529,13 +531,13 @@ private:
 			m_lSizeCur += len;
 		}
 
-		__forceinline void AddStringNoCheck(const wchar_t* pData, const int& len)
+        AVSINLINE void AddStringNoCheck(const wchar_t* pData, const int& len)
 		{
 			memcpy(m_pDataCur, pData, len << 1);
 			m_pDataCur += len;
 			m_lSizeCur += len;
 		}
-		__forceinline void AddSpaceNoCheck()
+        AVSINLINE void AddSpaceNoCheck()
 		{
 			*m_pDataCur = WCHAR(' ');
 			++m_pDataCur;

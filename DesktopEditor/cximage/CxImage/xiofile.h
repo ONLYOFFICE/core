@@ -4,6 +4,14 @@
 #include "xfile.h"
 //#include <TCHAR.h>
 
+#ifndef WIN32
+    #ifdef _UNICODE
+        typedef wchar_t TCHAR;
+    #else
+        typedef char TCHAR;
+    #endif
+#endif
+
 class DLL_EXP CxIOFile : public CxFile
 	{
 public:

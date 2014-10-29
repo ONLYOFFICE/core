@@ -103,7 +103,9 @@ namespace PPTX
 					(int)(dkoefX * txRect.right), (int)(dkoefY * txRect.bottom));
 			}
 
-			SysFreeString((var.bstrVal));
+    #ifdef WIN32
+            SysFreeString((var.bstrVal));
+    #endif
 #endif
         }
 	}

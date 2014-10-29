@@ -67,8 +67,8 @@ LONG NSGuidesVML::CFormula::Calculate(NSGuidesVML::CFormulasManager* pManager)
 		case ftMid:			{ dRes = (a + b) / 2.0;			break; }
 		case ftAbsolute:	{ dRes = abs(a);				break; }
 		
-		case ftMin:			{ dRes = min(a, b);				break; }
-		case ftMax:			{ dRes = max(a, b);				break; }
+        case ftMin:			{ dRes = (std::min)(a, b);				break; }
+        case ftMax:			{ dRes = (std::max)(a, b);				break; }
 		case ftIf:			{ dRes = (a > 0) ? b : c;		break; }
 		case ftSqrt:		{ dRes = sqrt(a);				break; }
 		case ftMod:			{ dRes = sqrt(a*a + b*b + c*c); break; }

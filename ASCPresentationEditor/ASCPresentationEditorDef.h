@@ -2,20 +2,23 @@
 #pragma once
 
 #ifdef PPT_DEF
-	#include "OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.cpp"
-	#include "OfficeDrawing\Shapes\BaseShape\PPTShape\PPTShape.cpp"
+    #include "./OfficeDrawing/Shapes/BaseShape/PPTShape/Formula.cpp"
+    #include "./OfficeDrawing/Shapes/BaseShape/PPTShape/PPTShape.cpp"
 	#ifndef BASE_SHAPE
 		#define BASE_SHAPE
 	#endif
 #endif
 #ifdef PPTX_DEF
-	#include "OfficeDrawing\Shapes\BaseShape\PPTXShape\Formula.cpp"
-	#include "OfficeDrawing\Shapes\BaseShape\PPTXShape\PPTXShape.cpp"
+    #include "./OfficeDrawing/Shapes/BaseShape/PPTXShape/Formula.cpp"
+    #include "./OfficeDrawing/Shapes/BaseShape/PPTXShape/PPTXShape.cpp"
 	#ifndef BASE_SHAPE
 		#define BASE_SHAPE
 	#endif
+
+    #include "./OfficeDrawing/Shapes/BaseShape/PPTShape/ppt2pptxshapeconverter.h"
+
 #endif
 
 #ifdef BASE_SHAPE
-	#include "OfficeDrawing\Shapes\BaseShape\BaseShape.cpp"
+    #include "./OfficeDrawing/Shapes/BaseShape/BaseShape.cpp"
 #endif

@@ -180,15 +180,15 @@ namespace FileSystem {
 
         return files.size();
     }
-    static CString GetFolderPath(CString strFolderPath)
+    static CString Directory::GetFolderPath(CString strFolderPath)
     {
         int n1 = strFolderPath.rfind(_T("\\"));
         if (n1 < 0 )
             return _T("");
         return strFolderPath.substr(0,n1);
     }
-	 
-	static CString GetLongPathNameW(const CString fileName)
+
+    static CString Directory::GetLongPathNameW(const CString fileName)
     {
         return fileName;
         //todo
@@ -200,7 +200,7 @@ namespace FileSystem {
         return tempPath;
     }
 
-    static bool PathIsDirectory(CString pathName)
+    static bool Directory::PathIsDirectory(CString pathName)
     {
         struct stat s;
 

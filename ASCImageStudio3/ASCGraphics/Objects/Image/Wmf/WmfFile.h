@@ -3496,7 +3496,7 @@ private:
 			float fTempX, fTempY, fTempW, fTempH;
 #ifdef DESKTOP_EDITOR_GRAPHICS
 			m_pFontManager->LoadFontByName( ascii_to_unicode(pPlayer->pDC->pFont->sFaceName), (float)(oDrawText.dFontHeight * 72 / 25.4), lStyle, 72.0f, 72.0f );
-			m_pFontManager->LoadString2( ascii_to_unicode(oDrawText.sText), 0, 0 );
+			m_pFontManager->LoadString1( ascii_to_unicode(oDrawText.sText), 0, 0 );
 
 			TBBox oBox = m_pFontManager->MeasureString2();
 			fTempX = oBox.fMinX;

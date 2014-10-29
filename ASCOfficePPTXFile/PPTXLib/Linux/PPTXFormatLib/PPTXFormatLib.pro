@@ -87,7 +87,11 @@ SOURCES += pptxformatlib.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
     ../../../../XlsxSerializerCom/Reader/CSVReader.cpp \
-    ../../../../DesktopEditor/raster/BgraFrame.cpp
+    ../../../../DesktopEditor/raster/BgraFrame.cpp \
+    ../../../../XlsxSerializerCom/Writer/CSVWriter.cpp \
+    ../../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp \
+    ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
+    ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/FilePosix.cpp
 #../../../Directory.cpp \
 #../../File.cpp
 
@@ -513,7 +517,9 @@ HEADERS += pptxformatlib.h \
     #../../File.h \
     ../../Settings.h \
     ../../../../ASCPresentationEditor/ASCPresentationEditorDef.h \
-    ../../../../DesktopEditor/raster/BgraFrame.h
+    ../../../../DesktopEditor/raster/BgraFrame.h \
+    ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h \
+    ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/File.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

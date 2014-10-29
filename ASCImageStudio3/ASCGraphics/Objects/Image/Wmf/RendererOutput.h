@@ -704,7 +704,7 @@ public:
 			long lStyle = ( pFont->ushWeight > 550 ? 1 : 0 ) + ( pFont->unItalic ? 2 : 0 );
 #ifdef DESKTOP_EDITOR_GRAPHICS
 			m_pWmfFile->m_pFontManager->LoadFontByName( ascii_to_unicode(pText->pDC->pFont->sFaceName), dSize, lStyle, 72, 72 );
-            m_pWmfFile->m_pFontManager->LoadString2( ascii_to_unicode(pText->sText), 0, 0 );
+            m_pWmfFile->m_pFontManager->LoadString1( ascii_to_unicode(pText->sText), 0, 0 );
 			TBBox oBox = m_pWmfFile->m_pFontManager->MeasureString2();
 			fL = oBox.fMinX;
 			fT = oBox.fMinY;

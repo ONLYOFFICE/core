@@ -10,12 +10,12 @@
 #define __XML_LIBXML_H__
 
 #ifndef NO_LARGEFILE_SOURCE
-#ifndef _LARGEFILE_SOURCE
-#define _LARGEFILE_SOURCE
-#endif
-#ifndef _FILE_OFFSET_BITS
-#define _FILE_OFFSET_BITS 64
-#endif
+	#ifndef _LARGEFILE_SOURCE
+		#define _LARGEFILE_SOURCE
+	#endif
+	#ifndef _FILE_OFFSET_BITS
+		#define _FILE_OFFSET_BITS 64
+	#endif
 #endif
 
 #if defined(macintosh)
@@ -34,8 +34,11 @@
  * copy to config.h own "preset" configuration file.
  * As result ifdef HAVE_CONFIG_H is omited here.
  */
-    //#include "config.h"
-    #include <inttypes.h>
+	#ifdef _WIN32
+		#include "config.h"
+	#else
+		#include <inttypes.h>
+	#endif
     #include <libxml/xmlversion.h>
 #endif
 

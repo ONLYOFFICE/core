@@ -13,6 +13,7 @@
 #include "Editor/PPTXWriter.h"
 
 #include "PPTXFormat/PPTXEvent.h"
+#include "../ASCPresentationEditor/ASCPresentationEditorDef.h"
 
 CPPTXFile::CPPTXFile(load_from_resource fCallbackResource, extract_to_directory fCallbackExtract, compress_from_directory fCallbackCompress, progress_operation fCallbackProgress, void* pCallbackArg)
 {

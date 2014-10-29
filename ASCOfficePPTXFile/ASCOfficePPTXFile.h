@@ -13,8 +13,6 @@
 #include "../Common/DocxFormat/Source/Base/Base.h"
 #include "PPTXFormat/PPTXEvent.h"
 
-#include "../ASCPresentationEditor/ASCPresentationEditorDef.h"
-
 
 typedef void (*load_from_resource)(void*, int, CString&);
 typedef bool (*extract_to_directory)(void*, CString&, CString&);

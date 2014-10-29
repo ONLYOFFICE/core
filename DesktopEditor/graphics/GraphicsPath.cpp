@@ -402,7 +402,7 @@ namespace Aggplus
 		if (NULL == pFont)
 			return InvalidParameter;
 		
-		pFont->LoadString(strText, (float)x, (float)y);
+		pFont->LoadString1(strText, (float)x, (float)y);
 		return (TRUE == pFont->GetStringPath(this)) ? Ok : InvalidParameter;
 	}
 	Status CGraphicsPath::AddStringC(const LONG& lText, CFontManager* pFont, double x, double y)
@@ -411,7 +411,7 @@ namespace Aggplus
 			return InvalidParameter;
 
 		std::wstring strText((wchar_t)lText, 1);		
-		pFont->LoadString(strText, (float)x, (float)y);
+		pFont->LoadString1(strText, (float)x, (float)y);
 		return (TRUE == pFont->GetStringPath(this)) ? Ok : InvalidParameter;
 	}
 
@@ -956,7 +956,7 @@ namespace Aggplus
 		if (NULL == pFont)
 			return false;
 		
-		pFont->LoadString(bstrText, (float)x, (float)y);
+		pFont->LoadString1(bstrText, (float)x, (float)y);
 		return (TRUE == pFont->GetStringPath(this)) ? true : false;
 	}
 

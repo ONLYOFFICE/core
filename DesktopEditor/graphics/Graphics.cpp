@@ -456,7 +456,7 @@ namespace Aggplus
 		if (NULL == pManager || NULL == lWidth || NULL == lHeight)
 			return FALSE;
 
-		pManager->LoadString(strText, 0, 0);
+		pManager->LoadString1(strText, 0, 0);
 
 		TBBox oBox = pManager->MeasureString();
 

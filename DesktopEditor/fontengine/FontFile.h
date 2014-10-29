@@ -198,6 +198,7 @@ public:
 	bool SetTextMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF);
     void SetFontMatrix(const double& fA, const double& fB, const double& fC, const double fD, double fE, double fF);
     
+	INT GetString(CGlyphString& oString);
 	INT GetString2(CGlyphString& oString);
     INT GetString2C(CGlyphString& oString);
 	TFontCacheSizes GetChar(LONG lUnicode);

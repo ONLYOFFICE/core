@@ -215,15 +215,13 @@ double CFontManager::UpdateSize(const double &dOldSize, const double &dDpi, cons
 	return dOldSize * dDpi / dNewDpi;
 }
 
-INT CFontManager::LoadString(const std::wstring &wsBuffer, const float &fX, const float &fY)
+INT CFontManager::LoadString1(const std::wstring &wsBuffer, const float &fX, const float &fY)
 {
 	if (NULL == m_pFont)
 		return FALSE;
 
 	m_oString.SetString(wsBuffer, fX, fY);
-
-	// TODO: 1!!!
-	m_pFont->GetString2(m_oString);
+	m_pFont->GetString(m_oString);
 	return TRUE;
 }
 

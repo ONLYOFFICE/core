@@ -714,6 +714,209 @@ TFontCacheSizes CFontFile::GetChar(LONG lUnicode)
     return oSizes;
 }
 
+INT CFontFile::GetString(CGlyphString& oString)
+{
+	int nCountGlyph = oString.GetLength();
+	if (nCountGlyph <= 0)
+		return TRUE;
+
+	unsigned int unPrevGID = 0;
+	float fPenX = 0, fPenY = 0;
+
+	for (int nIndex = 0; nIndex < nCountGlyph; ++nIndex)
+	{
+        // Сначала мы все рассчитываем исходя только из матрицы шрифта FontMatrix
+        if (m_bIsNeedUpdateMatrix12)
+        {
+            if (m_pDefaultFont)
+                m_pDefaultFont->UpdateMatrix1();
+            UpdateMatrix1();
+        }
+
+        FT_Face pFace = m_pFace;
+		FT_GlyphSlot pCurentGliph = pFace->glyph;
+        
+		TGlyph* pCurGlyph = oString.GetAt(nIndex);
+
+		int ushUnicode = pCurGlyph->lUnicode;
+		
+		int unGID = 0;
+        USHORT charSymbolObj = m_arrCacheSizesIndexs[ushUnicode];
+		if (0xFFFF == charSymbolObj)
+		{
+            int nCMapIndex = 0;
+            unGID = SetCMapForCharCode(ushUnicode, &nCMapIndex);
+
+            TFontCacheSizes oSizes;
+            oSizes.ushUnicode = ushUnicode;
+
+            if (!((unGID > 0) || (-1 != m_nSymbolic && (ushUnicode < 0xF000)  && 0 < (unGID = SetCMapForCharCode(ushUnicode + 0xF000, &nCMapIndex)))))
+            {
+                // Пробуем загрузить через стандартный шрифт
+                if (FALSE == m_bUseDefaultFont || NULL == m_pDefaultFont || 0 >= (unGID = m_pDefaultFont->SetCMapForCharCode(ushUnicode, &nCMapIndex)))
+                {
+                    if (m_nDefaultChar < 0)
+                    {
+                        oSizes.ushGID    = -1;
+                        oSizes.eState    = glyphstateMiss;
+                        oSizes.fAdvanceX = (m_pFace->size->metrics.max_advance >> 6) / 2.0f;
+
+                        return FALSE;
+                    }
+                    else
+                    {
+                        unGID = m_nDefaultChar;
+                        oSizes.eState = glyphstateNormal;
+
+                        pFace = m_pFace;
+                        pCurentGliph = pFace->glyph;
+                    }
+                }
+                else
+                {
+                    oSizes.eState = glyphstateDeafault;
+
+                    pFace = m_pDefaultFont->m_pFace;
+                    pCurentGliph = pFace->glyph;
+                }
+            }
+            else
+            {
+                oSizes.eState = glyphstateNormal;
+            }
+
+            oSizes.ushGID     = unGID;
+            oSizes.nCMapIndex = nCMapIndex;
+
+            if (m_bIsNeedUpdateMatrix12)
+            {
+                if (m_pDefaultFont)
+                    m_pDefaultFont->UpdateMatrix2();
+                UpdateMatrix2();
+            }
+
+			FT_Int32 _LOAD_MODE = m_bHintsSupport ? m_pFontManager->m_nLOAD_MODE : 40970;
+            if (0 != FT_Load_Glyph(pFace, unGID, _LOAD_MODE))
+                return FALSE;
+
+			FT_Glyph pGlyph = NULL;
+			if ( FT_Get_Glyph( pFace->glyph, &pGlyph ) )
+                return FALSE;
+
+            FT_BBox oBBox;
+
+            FT_Glyph_Get_CBox(pGlyph, 1, &oBBox);
+            FT_Done_Glyph(pGlyph);
+
+            pCurentGliph = pFace->glyph;
+
+            oSizes.fAdvanceX = (float)(pFace->glyph->linearHoriAdvance * m_dUnitsKoef / pFace->units_per_EM);
+			oSizes.oBBox.fMinX = (float)(oBBox.xMin >> 6);
+			oSizes.oBBox.fMaxX = (float)(oBBox.xMax >> 6);
+			oSizes.oBBox.fMinY = (float)(oBBox.yMin >> 6);
+			oSizes.oBBox.fMaxY = (float)(oBBox.yMax >> 6);
+
+			oSizes.oMetrics.fHeight       = (float)(pFace->glyph->metrics.height       >> 6);
+			oSizes.oMetrics.fHoriAdvance  = (float)(pFace->glyph->metrics.horiAdvance  >> 6);
+			oSizes.oMetrics.fHoriBearingX = (float)(pFace->glyph->metrics.horiBearingX >> 6);
+			oSizes.oMetrics.fHoriBearingY = (float)(pFace->glyph->metrics.horiBearingY >> 6);
+			oSizes.oMetrics.fVertAdvance  = (float)(pFace->glyph->metrics.vertAdvance  >> 6);
+			oSizes.oMetrics.fVertBearingX = (float)(pFace->glyph->metrics.vertBearingX >> 6);
+			oSizes.oMetrics.fVertBearingY = (float)(pFace->glyph->metrics.vertBearingY >> 6);
+			oSizes.oMetrics.fWidth        = (float)(pFace->glyph->metrics.width        >> 6);
+
+            oSizes.bBitmap = false;
+			oSizes.oBitmap.nX        = 0;
+			oSizes.oBitmap.nY        = 0;
+			oSizes.oBitmap.nHeight   = 0;
+			oSizes.oBitmap.nWidth    = 0;
+			oSizes.oBitmap.bFreeData = FALSE;
+			oSizes.oBitmap.pData     = NULL;
+			oSizes.oBitmap.bAA       = FALSE;
+
+			if (m_bNeedDoBold)
+				oSizes.fAdvanceX += 1;
+
+			AddToSizesCache( oSizes );
+			charSymbolObj = m_arrCacheSizesIndexs[oSizes.ushUnicode];
+		}
+		if (0xFFFF != charSymbolObj)
+		{
+			TFontCacheSizes& oSizes = m_oCacheSizes[charSymbolObj];
+			int nCMapIndex = oSizes.nCMapIndex;
+
+			if (glyphstateMiss == oSizes.eState)
+            {
+                oString.SetStartPoint (nIndex, fPenX, fPenY);
+                oString.SetBBox(nIndex, 0, 0, 0, 0);
+                oString.SetState (nIndex, glyphstateMiss);
+
+                fPenX += (float)(oSizes.fAdvanceX + m_dCharSpacing);
+                unPrevGID = 0;
+
+                continue;
+            }
+            else if (glyphstateDeafault == oSizes.eState)
+            {
+                oString.SetState(nIndex, glyphstateDeafault);
+            }
+            else
+            {
+                oString.SetState(nIndex, glyphstateNormal);
+            }
+
+            if ( 0 != pFace->num_charmaps )
+			{
+				int nCurCMapIndex = FT_Get_Charmap_Index( pFace->charmap );
+				if ( nCurCMapIndex != nCMapIndex )
+				{
+					nCMapIndex = max( 0, nCMapIndex );
+					FT_Set_Charmap( pFace, pFace->charmaps[nCMapIndex] );
+				}
+			}
+
+            if (m_bUseKerning && unPrevGID && (nIndex >= 0 && oString.GetAt(nIndex)->eState == oString.GetAt(nIndex - 1)->eState))
+            {
+                fPenX += GetKerning(unPrevGID, unGID);
+            }
+
+            float fX = oString.m_fX + fPenX;
+            float fY = oString.m_fY + fPenY;
+
+            float fXX = (float)(oString.m_arrCTM[4] + fX * oString.m_arrCTM[0] + fY * oString.m_arrCTM[2] - oString.m_fX);
+            float fYY = (float)(oString.m_arrCTM[5] + fX * oString.m_arrCTM[1] + fY * oString.m_arrCTM[3] - oString.m_fY);
+
+            oString.SetStartPoint(nIndex, fXX, fYY);
+
+			oString.GetAt(nIndex)->oMetrics = oSizes.oMetrics;
+            oString.SetBBox(nIndex, oSizes.oBBox.fMinX, oSizes.oBBox.fMaxY, oSizes.oBBox.fMaxX, oSizes.oBBox.fMinY);
+            fPenX += (float)(oSizes.fAdvanceX + m_dCharSpacing);
+
+            if (m_bNeedDoBold)
+            {
+                // Когда текст делаем жирным сами, то мы увеличиваем расстояние на 1 пиксель в ширину (независимо от DPI и размера текста всегда 1 пиксель)
+                fPenX += 1;
+            }
+
+            pCurGlyph->bBitmap = oSizes.bBitmap;
+			pCurGlyph->oBitmap = oSizes.oBitmap;
+		}
+        unPrevGID = unGID;
+	}
+	
+	oString.m_fEndX = fPenX + oString.m_fX;
+	oString.m_fEndY = fPenY + oString.m_fY;
+
+    if (m_bIsNeedUpdateMatrix12)
+    {
+        if (m_pDefaultFont)
+            m_pDefaultFont->UpdateMatrix2();
+        UpdateMatrix2();
+    }
+
+	return TRUE;
+}
+
 INT CFontFile::GetString2(CGlyphString& oString)
 {
 	int nCountGlyph = oString.GetLength();

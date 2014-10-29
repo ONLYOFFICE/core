@@ -3,7 +3,7 @@
 #include "./BinReaderWriterDefines.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/Common.h"
-
+#include "../../../Common/DocxFormat/Source/Base/Nullable.h"
 namespace NSBinPptxRW
 {
     static std::wstring	g_bstr_nodeopen				= L"<";

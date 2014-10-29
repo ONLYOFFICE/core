@@ -24,9 +24,10 @@
 #include "../ASCPresentationEditor/OfficeDrawing/Elements.h"
 
 #include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/pptx2pptshapeconverter.h"
+#include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/Formula.h"
+
 #include "PPTXFormat/PPTX.h"
 #include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/PPTXShape.h"
-#include "../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/Formula.h"
 #include "../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
 const double g_emu_koef	= 25.4 * 36000 / 72.0;
@@ -888,7 +889,8 @@ HRESULT CDrawingConverter::AddShapeType(const CString& bsXml)
 
 	if (oNode.IsValid())
 	{
-		CPPTShape* pShape = new CPPTShape();
+#ifdef PPT_DEF
+        CPPTShape* pShape = new CPPTShape();
 		pShape->m_bIsShapeType = true;
 
 		XmlUtils::CXmlNode oNodeST = oNode.ReadNodeNoNS(_T("shapetype"));
@@ -901,7 +903,8 @@ HRESULT CDrawingConverter::AddShapeType(const CString& bsXml)
 		LoadCoordSize(oNodeST, pS);
 
 		m_mapShapeTypes.insert(std::pair<CString, CShape*>(strId, pS));			
-	}
+#endif
+    }
 
 	return S_OK;
 }
@@ -1521,8 +1524,11 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 			oShapeElem.m_oShape.m_pShape->m_oPath.SetCoordsize(21600, 21600);			
 		}
 
-		CString strXmlPPTX = oShapeElem.ConvertPPTShapeToPPTX(true);
+        CString strXmlPPTX;
 
+#ifdef ENABLE_PPT_TO_PPTX_CONVERT
+        strXmlPPTX= oShapeElem.ConvertPPTShapeToPPTX(true);
+#endif
 		PPTX::Logic::Shape* pShape = new PPTX::Logic::Shape();
 		
 		XmlUtils::CXmlNode oNodeG;

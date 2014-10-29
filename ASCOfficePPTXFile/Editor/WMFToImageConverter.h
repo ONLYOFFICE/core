@@ -135,7 +135,7 @@ namespace NSWMFToImageConverter
 			pRenderer->get_FontPath( &font_Path );
 			pRenderer->get_FontSize( &font_Size );
 			pRenderer->get_FontStyle( &font_Style );
-			pRenderer->get_FontStringGID( &font_GID );
+            //pRenderer->get_FontStringGID( &font_GID );
 
 			LONG pen_Align = 0;
 			LONG pen_Alpha = 0;

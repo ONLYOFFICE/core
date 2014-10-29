@@ -14,16 +14,17 @@ DEFINES += UNICODE \
     _UNICODE \
     _USE_LIBXML2_READER_ \
     _LINUX_QT \
+    _LINUX \
     _USE_XMLLITE_READER_ \
     PPTX_DEF\
     PPT_DEF\
-    ENABLE_PPT_TO_PPTX_CONVERT\
+ #   ENABLE_PPT_TO_PPTX_CONVERT \
+    AVS_USE_CONVERT_PPTX_TOCUSTOM_VML \
     NODOCX \
     DISABLE_FILE_DOWNLOADER \
     CXIMAGE_DONT_DECLARE_TCHAR \
     BUILD_CONFIG_FULL_VERSION \
-    DONT_WRITE_EMBEDDED_FONTS \
-    AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
+    DONT_WRITE_EMBEDDED_FONTS
 
 INCLUDEPATH += \
     /usr/include/libxml2
@@ -83,15 +84,10 @@ SOURCES += pptxformatlib.cpp \
     ../../../Editor/BinaryFileReaderWriter.cpp \
     ../../../Editor/FontPicker.cpp \
     ../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/BaseShape.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/PPTXShape.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/PPTShape.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/Formula.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTXShape/Formula.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
-    ../../../../XlsxSerializerCom/Reader/CSVReader.cpp
-../../../../DesktopEditor/raster/BgraFrame.cpp
+    ../../../../XlsxSerializerCom/Reader/CSVReader.cpp \
+    ../../../../DesktopEditor/raster/BgraFrame.cpp
 #../../../Directory.cpp \
 #../../File.cpp
 
@@ -516,9 +512,8 @@ HEADERS += pptxformatlib.h \
     #../../Directory.h \
     #../../File.h \
     ../../Settings.h \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Shapes/BaseShape/PPTShape/ppt2pptxshapeconverter.h \
+    ../../../../ASCPresentationEditor/ASCPresentationEditorDef.h \
     ../../../../DesktopEditor/raster/BgraFrame.h
-
 unix {
     target.path = /usr/lib
     INSTALLS += target

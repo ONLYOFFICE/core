@@ -109,8 +109,17 @@ typedef uint32_t   COLORREF;
 typedef void*      HANDLE;
 typedef void*      HRGN;
 
+#ifndef FALSE
+#define FALSE               0
+#endif
+
+#ifndef TRUE
+#define TRUE                1
+#endif
+
 #ifndef BOOL
-#define	BOOL bool
+//#define	BOOL bool
+typedef int                 BOOL;
 #endif
 
 #ifndef TRUE
@@ -121,7 +130,7 @@ typedef void*      HRGN;
 #define	FALSE false
 #endif
 
-#ifndef CXIMAGE_DONT_DECLARE_TCHAR // it brokes CString implementation
+#ifndef CXIMAGE_DONT_DECLARE_TCHAR // it breaks CString implementation
 #ifndef TCHAR
 #define TCHAR char
 #define _T

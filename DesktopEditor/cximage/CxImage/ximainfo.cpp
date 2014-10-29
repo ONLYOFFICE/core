@@ -6,7 +6,11 @@
 #include "ximage.h"
 
 #if defined(_LINUX) || defined(__APPLE__)
- #define _tcsnicmp(a,b,c) strcasecmp(a,b)
+    #ifdef UNICODE
+        #define _tcsnicmp(a,b,c) wcscasecmp(a,b)
+    #else
+        #define _tcsnicmp(a,b,c) strcasecmp(a,b)
+    #endif
 #endif
 
 ////////////////////////////////////////////////////////////////////////////////

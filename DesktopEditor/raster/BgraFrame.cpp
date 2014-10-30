@@ -1,5 +1,6 @@
 #include "BgraFrame.h"
 #include "../common/File.h"
+#include "../cximage/CxImage/ximage.h"
 
 bool CBgraFrame::OpenFile(const std::wstring& strFileName)
 {
@@ -16,7 +17,7 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName)
 	return true;
 }
 
-bool CBgraFrame::SaveFile(const std::wstring& strFileName, uint32_t nFileType)
+bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileType)
 {
 	NSFile::CFileBinary oFile;
 	if (!oFile.CreateFileW(strFileName))

@@ -108,6 +108,9 @@ bool CxImage::EncodeSafeCheck(CxFile *hFile)
  */
 bool CxImage::Save(const TCHAR * filename, uint32_t imagetype)
 {
+#ifdef CXIMAGE_DONT_USE_LOAD_SAVE
+    return false;
+#else
 	FILE* hFile;	//file handle to write the image
 
 #ifdef WIN32
@@ -124,6 +127,7 @@ bool CxImage::Save(const TCHAR * filename, uint32_t imagetype)
 	bool bOK = Encode(hFile,imagetype);
 	fclose(hFile);
 	return bOK;
+#endif //#ifdef CXIMAGE_DONT_USE_LOAD_SAVE
 }
 ////////////////////////////////////////////////////////////////////////////////
 /**
@@ -570,6 +574,9 @@ bool CxImage::Encode2RGBA(CxFile *hFile, bool bFlipY)
 bool CxImage::Load(const TCHAR * filename, uint32_t imagetype)
 //bool CxImage::Load(const char * filename, uint32_t imagetype)
 {
+#ifdef CXIMAGE_DONT_USE_LOAD_SAVE
+    return false;
+#else
 	/*FILE* hFile;	//file handle to read the image
 	if ((hFile=fopen(filename,"rb"))==NULL)  return false;
 	bool bOK = Decode(hFile,imagetype);
@@ -619,6 +626,7 @@ bool CxImage::Load(const TCHAR * filename, uint32_t imagetype)
 	if (!bOK && imagetype > 0) strcpy(info.szLastError,szError); //restore the first error
 
 	return bOK;
+#endif // #ifdef CXIMAGE_DONT_USE_LOAD_SAVE
 }
 ////////////////////////////////////////////////////////////////////////////////
 #ifdef WIN32

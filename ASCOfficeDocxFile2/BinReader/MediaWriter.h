@@ -25,7 +25,7 @@ namespace Writers
 				OOX::CSystemUtility::CreateDirectories(m_sMediaDir);
 
 			CString sNewImgName;sNewImgName.Format(_T("image%d.jpg"), (nImageCount + 1));
-			CString sNewImg = m_sMediaDir + _T("\\") + sNewImgName;
+            CString sNewImg = m_sMediaDir + _T("/") + sNewImgName;
 			nImageCount++;
 			return sNewImg;
 		}

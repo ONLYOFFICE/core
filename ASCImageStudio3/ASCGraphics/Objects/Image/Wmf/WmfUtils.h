@@ -5,6 +5,7 @@
 #include <stdio.h>
 #include <time.h>
 
+#include "../../../../../Common/DocxFormat/Source/Base/Base.h"
 #ifndef _USE_MATH_DEFINES
 #define _USE_MATH_DEFINES
 #endif
@@ -1357,12 +1358,12 @@ static BOOL WmfOpenTempFile(CString *pwsName, FILE **ppFile, wchar_t *wsMode, wc
         std::wstring wsTempDir = UTF8_TO_U( wsTempDirA );
         wsTemp = wsTempDir.c_str();
 #endif
-		wsTemp.Append( L"\\" );
+        wsTemp.Append( _T("/") );
 	} 
 	else if( wsFolder != NULL )
 	{
 		wsTemp = CString( wsFolder );
-		wsTemp.Append( L"\\" );
+        wsTemp.Append( _T("/") );
 	}
 	else
 	{ 

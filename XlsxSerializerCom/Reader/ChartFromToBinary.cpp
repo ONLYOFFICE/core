@@ -950,7 +950,7 @@ namespace BinXlsxRW{
 		{
 			CString sThemeOverrideName;sThemeOverrideName.Format(_T("themeOverride%d.xml"), m_oSaveParams.nThemeOverrideCount++);
 			CString sThemeOverrideRelsPath;sThemeOverrideRelsPath.Format(_T("../theme/%s"), sThemeOverrideName);
-			CString sThemeOverridePath;sThemeOverridePath.Format(_T("%s\\%s"), m_oSaveParams.sThemePath, sThemeOverrideName);
+            CString sThemeOverridePath;sThemeOverridePath.Format(_T("%s/%s"), m_oSaveParams.sThemePath, sThemeOverrideName);
 
 			long nCurPos = m_oBufferedStream.GetPos();
 			m_pOfficeDrawingConverter->SaveThemeXml(nCurPos, length, sThemeOverridePath);

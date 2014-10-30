@@ -28,7 +28,8 @@ namespace Writers
 			m_oWriter.WriteString(g_string_ct_End);
 
 			CFile oFile;
-			oFile.CreateFile(m_sDir + _T("\\[Content_Types].xml"));
+
+            oFile.CreateFile (m_sDir + _T("/[Content_Types].xml"));
 			oFile.WriteStringUTF8(m_oWriter.GetData());
 			oFile.CloseFile();
 		}

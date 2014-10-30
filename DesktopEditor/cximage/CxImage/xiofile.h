@@ -31,6 +31,9 @@ public:
 //////////////////////////////////////////////////////////
 	bool Open(const TCHAR * filename, const TCHAR * mode)
 	{
+#ifdef CXIMAGE_DONT_USE_LOAD_SAVE
+    return false;
+#else
 #ifdef WIN32
 		if (m_fp) return false;	// Can't re-open without closing first
 
@@ -41,6 +44,7 @@ public:
 #endif
 
 		return true;
+#endif // #ifdef CXIMAGE_DONT_USE_LOAD_SAVE
 	}
 //////////////////////////////////////////////////////////
 	virtual bool Close()

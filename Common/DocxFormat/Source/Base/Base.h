@@ -52,6 +52,13 @@
 #include <atlstr.h>
 #include <atltypes.h>
 
+// windows-stype separator for paths i.e. 'c:\home\documents\file.ext'
+#ifndef FILE_SEPARATOR
+#define FILE_SEPARATOR
+#define FILE_SEPARATOR_CHAR '\\'
+#define FILE_SEPARATOR_STR _T("\\")
+#endif
+
 typedef unsigned int size_t;
 
 #include "../../../ASCUtils.h"
@@ -61,6 +68,14 @@ using namespace ATL;
 #else
 #include "ASCString.h"
 #include "stdint.h"
+
+// linux-stype separator for paths i.e. '/home/documents/file.ext'
+#ifndef FILE_SEPARATOR
+#define FILE_SEPARATOR
+#define FILE_SEPARATOR_CHAR '/'
+#define FILE_SEPARATOR_STR _T("/")
+#endif
+
 
 /*
 typedef int BOOL;

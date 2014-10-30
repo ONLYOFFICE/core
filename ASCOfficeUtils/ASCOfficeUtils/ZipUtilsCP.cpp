@@ -10,7 +10,32 @@
 namespace ZLibZipUtils
 {
   AVSOfficeCriticalSection  criticalSection;
-
+  static zipFile zipOpenHelp(const wchar_t* filename)
+  {
+#ifdef _WIN32
+	  zipFile zf = zipOpen( filename, APPEND_STATUS_CREATE );
+#else
+	  BYTE* pUtf8 = NULL;
+	  LONG lLen = 0;
+	  NSFile::CUtf8Converter::GetUtf8StringFromUnicode(filename, wcslen(filename), pUtf8, lLen, false);
+	  zipFile zf = zipOpen( (char*)pUtf8, APPEND_STATUS_CREATE );
+	  delete [] pUtf8;
+#endif
+	  return zf;
+  }
+  static unzFile unzOpenHelp(const wchar_t* filename)
+  {
+#ifdef _WIN32
+	  unzFile uf = unzOpen (filename);
+#else
+	  BYTE* pUtf8 = NULL;
+	  LONG lLen = 0;
+	  NSFile::CUtf8Converter::GetUtf8StringFromUnicode(filename, wcslen(filename), pUtf8, lLen, false);
+	  unzFile uf = unzOpen( (char*)pUtf8 );
+	  delete [] pUtf8;
+#endif
+	  return uf;
+  }
   static std::wstring ascii_to_unicode(const char *src)
   {
 	  size_t nSize = mbstowcs(0, src, 0);
@@ -442,7 +467,7 @@ namespace ZLibZipUtils
       wstring zipFileName;
       wstring szText;
 
-      zipFile zf = zipOpen( outputFile, APPEND_STATUS_CREATE );
+	  zipFile zf = zipOpenHelp(outputFile);
 
       zip_fileinfo zi;
 
@@ -562,7 +587,7 @@ namespace ZLibZipUtils
 			BYTE* pData = new BYTE[oFile.GetFileSize()];
 			if(oFile.ReadFile(pData, oFile.GetFileSize(), dwSizeRead))
 			{
-				zipFile zf = zipOpen( outputFile, APPEND_STATUS_CREATE );
+				zipFile zf = zipOpenHelp(outputFile);
 
 				zip_fileinfo zi;
 
@@ -670,7 +695,7 @@ namespace ZLibZipUtils
 
     if ( ( zipFile != NULL ) && ( unzipDir != NULL ) )
     {
-	  uf = unzOpen (zipFile);
+	  uf = unzOpenHelp (zipFile);
     }
 
     if ( uf != NULL )
@@ -770,7 +795,7 @@ namespace ZLibZipUtils
 	  bool isZIP = false;
 
 	  if (( filename != NULL ))
-		  uf = unzOpen( filename );
+		  uf = unzOpenHelp( filename );
 
 	  if ( uf != NULL )
 	  {
@@ -793,7 +818,7 @@ namespace ZLibZipUtils
 	  bool isIn = false;
 
 	  if ( ( zipFile != NULL ) && ( filePathInZip != NULL ) )
-		  uf = unzOpen( zipFile );
+		  uf = unzOpenHelp( zipFile );
 	  if ( uf != NULL )
 	  {		  
 		  isIn = is_file_in_archive( uf, filePathInZip );
@@ -814,7 +839,7 @@ namespace ZLibZipUtils
 	  bool isIn = false;
 
 	  if ( ( zipFile != NULL ) && ( filePathInZip != NULL ) )
-		  uf = unzOpen( zipFile );
+		  uf = unzOpenHelp( zipFile );
 
 	  if ( uf != NULL )
 	  {		  
@@ -832,7 +857,7 @@ namespace ZLibZipUtils
 	{
 		CSLocker locker(criticalSection);
 
-		unzFile unzip_file_handle = unzOpen(zip_file_path);
+		unzFile unzip_file_handle = unzOpenHelp(zip_file_path);
 		if ( unzip_file_handle != NULL )
 		{		  
 			do 
@@ -861,7 +886,7 @@ namespace ZLibZipUtils
 	{
 		CSLocker locker(criticalSection);
 
-		zipFile zip_file_handle = zipOpen(zip_file_path, APPEND_STATUS_CREATE);
+		zipFile zip_file_handle = zipOpenHelp(zip_file_path);
 
 		if(NULL != zip_file_handle)
 		{

@@ -497,7 +497,11 @@ local uLong ziplocal_SearchCentralDir(pzlib_filefunc_def,filestream)
 
 /************************************************************/
 extern zipFile ZEXPORT zipOpen2 (pathname, append, globalcomment, pzlib_filefunc_def)
+#ifdef _WIN32
     const wchar_t *pathname;
+#else
+    const char *pathname;
+#endif
     int append;
     zipcharpc* globalcomment;
     zlib_filefunc_def* pzlib_filefunc_def;
@@ -681,7 +685,11 @@ extern zipFile ZEXPORT zipOpen2 (pathname, append, globalcomment, pzlib_filefunc
 }
 
 extern zipFile ZEXPORT zipOpen (pathname, append)
+#ifdef _WIN32
     const wchar_t *pathname;
+#else
+    const char *pathname;
+#endif
     int append;
 {
     return zipOpen2(pathname,append,NULL,NULL);

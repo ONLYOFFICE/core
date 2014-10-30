@@ -131,8 +131,11 @@ extern int ZEXPORT unzStringFileNameCompare OF ((const char* fileName1,
     (like 1 on Unix, 2 on Windows)
 */
 
-
+#ifdef _WIN32
 extern unzFile ZEXPORT unzOpen OF((const wchar_t *path));
+#else
+extern unzFile ZEXPORT unzOpen OF((const char *path));
+#endif
 /*
   Open a Zip file. path contain the full pathname (by example,
      on a Windows XP computer "c:\\zlib\\zlib113.zip" or on an Unix computer
@@ -142,9 +145,13 @@ extern unzFile ZEXPORT unzOpen OF((const wchar_t *path));
      Else, the return value is a unzFile Handle, usable with other function
        of this unzip package.
 */
-
+#ifdef _WIN32
 extern unzFile ZEXPORT unzOpen2 OF((const wchar_t *path,
                                     zlib_filefunc_def* pzlib_filefunc_def));
+#else
+extern unzFile ZEXPORT unzOpen2 OF((const char *path,
+                                    zlib_filefunc_def* pzlib_filefunc_def));
+#endif
 /*
    Open a Zip file, like unzOpen, but provide a set of file low level API
       for read/write the zip file (see ioapi.h)

@@ -20,13 +20,6 @@
 #define max(a,b) (((a)>(b))?(a):(b))
 #endif
 
-#ifdef UNICODE
-     #define _T(x)      L##x
-#else // UNICODE
-    #define _T(x)      x
-
-#endif // UNICODE
-
 #if CXIMAGE_SUPPORT_RAW
 
 ////////////////////////////////////////////////////////////////////////////////

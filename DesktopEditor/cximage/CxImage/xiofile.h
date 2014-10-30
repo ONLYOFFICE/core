@@ -2,13 +2,16 @@
 #define __xiofile_h
 
 #include "xfile.h"
+#ifndef _WIN32
+#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
+#endif
+//#include <TCHAR.h>
 
-#ifndef TCHAR
-    #ifdef  UNICODE
-#include <wchar.h>
-        #define TCHAR wchar_t
+#ifndef WIN32
+    #ifdef _UNICODE
+        typedef wchar_t TCHAR;
     #else
-        #define TCHAR char
+        typedef char TCHAR;
     #endif
 #endif
 

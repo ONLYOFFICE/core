@@ -151,7 +151,7 @@ bool CxImagePNG::Decode(CxFile *hFile)
 			RGBQUAD* pal=GetPalette();
 			if (pal){
 				uint32_t ip;
-                for (ip=0;ip<(std::min)(head.biClrUsed,(uint32_t)info_ptr->num_trans);ip++)
+                for (ip=0;ip<(std::min)((long)head.biClrUsed,(long)info_ptr->num_trans);ip++)
 					pal[ip].rgbReserved=info_ptr->trans_alpha[ip];
 				for (ip=info_ptr->num_trans;ip<head.biClrUsed;ip++){
 					pal[ip].rgbReserved=255;

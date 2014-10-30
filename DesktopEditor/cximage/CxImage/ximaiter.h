@@ -31,6 +31,8 @@
 
 #include "ximage.h"
 #include "ximadef.h"
+
+#include <algorithm>
 /*
 #ifndef min
 #define min(a,b) (((a)<(b))?(a):(b))

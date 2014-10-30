@@ -13,6 +13,14 @@
     #endif
 #endif
 
+#ifndef _T(x)
+    #ifdef UNICODE
+        #define _T(x) L##x
+    #else
+        #define _T(x) x
+    #endif
+#endif
+
 ////////////////////////////////////////////////////////////////////////////////
 /**
  * \return the color used for transparency, and/or for background color

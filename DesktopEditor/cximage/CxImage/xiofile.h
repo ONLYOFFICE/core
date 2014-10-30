@@ -3,6 +3,15 @@
 
 #include "xfile.h"
 
+#ifndef TCHAR
+    #ifdef  UNICODE
+#include <wchar.h>
+        #define TCHAR wchar_t
+    #else
+        #define TCHAR char
+    #endif
+#endif
+
 class DLL_EXP CxIOFile : public CxFile
 	{
 public:

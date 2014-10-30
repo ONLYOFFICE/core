@@ -24,6 +24,12 @@ namespace Writers
 				m_oApplicationFonts.Initialize();
 			else
 				m_oApplicationFonts.InitializeFromFolder(string2std_string(sFontDir));
+			CFontList* pFontList = m_oApplicationFonts.GetList();
+			if(NULL != pFontList)
+			{
+				std::wstring sDefaultFont(_T("Arial"));
+				pFontList->SetDefaultFont(sDefaultFont);
+			}
 			m_pFontManager = m_oApplicationFonts.GenerateFontManager();
 		}
 		~FontTableWriter()

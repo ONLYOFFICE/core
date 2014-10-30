@@ -3,8 +3,8 @@
 
 #include <string>
 #include "../common/Types.h"
-#include "../cximage/CxImage/ximage.h"
 
+class CxImage;
 class CBgraFrame
 {
 private:
@@ -80,7 +80,7 @@ public:
 
 public:
 	bool OpenFile(const std::wstring& strFileName);
-	bool SaveFile(const std::wstring& strFileName, uint32_t nFileType);
+	bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
 	bool Resize(const long& nNewWidth, const long& nNewHeight);
 private:
 

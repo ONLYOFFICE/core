@@ -30,15 +30,15 @@
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
 #endif
 
-#ifndef WIN32
+namespace agg
+{
+#if !defined(_LINUX) && !defined(WIN32)
     double _hypot(double x, double y)
     {
         return sqrt(x*x + y*y);
     }
-
+    
 #endif
-namespace agg
-{
 
     enum gradient_subpixel_scale_e
     {

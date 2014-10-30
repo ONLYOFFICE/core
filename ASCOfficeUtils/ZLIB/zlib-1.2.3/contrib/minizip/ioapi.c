@@ -29,10 +29,17 @@
 #define SEEK_SET    0
 #endif
 
+#ifdef _WIN32
 voidpf ZCALLBACK fopen_file_func OF((
    voidpf opaque,
    const wchar_t* filename,
    int mode));
+#else
+voidpf ZCALLBACK fopen_file_func OF((
+   voidpf opaque,
+   const char* filename,
+   int mode));
+#endif
 
 uLong ZCALLBACK fread_file_func OF((
    voidpf opaque,
@@ -64,13 +71,12 @@ int ZCALLBACK ferror_file_func OF((
    voidpf opaque,
    voidpf stream));
 
-
+#ifdef _WIN32
 voidpf ZCALLBACK fopen_file_func (opaque, filename, mode)
    voidpf opaque;
    const wchar_t* filename;
    int mode;
 {
- #ifdef _WIN32
    FILE* file = NULL;
     const wchar_t* mode_fopen = NULL;
     if ((mode & ZLIB_FILEFUNC_MODE_READWRITEFILTER)==ZLIB_FILEFUNC_MODE_READ)
@@ -85,11 +91,29 @@ voidpf ZCALLBACK fopen_file_func (opaque, filename, mode)
     if ((filename!=NULL) && (mode_fopen != NULL))
         file = _wfopen(filename, mode_fopen);
     return file;
- #else
-    return NULL;
- #endif
 }
+#else
+voidpf ZCALLBACK fopen_file_func (opaque, filename, mode)
+   voidpf opaque;
+   const char* filename;
+   int mode;
+{
+   FILE* file = NULL;
+    const char* mode_fopen = NULL;
+    if ((mode & ZLIB_FILEFUNC_MODE_READWRITEFILTER)==ZLIB_FILEFUNC_MODE_READ)
+        mode_fopen = "rb";
+    else
+    if (mode & ZLIB_FILEFUNC_MODE_EXISTING)
+        mode_fopen = "r+b";
+    else
+    if (mode & ZLIB_FILEFUNC_MODE_CREATE)
+        mode_fopen = "wb";
 
+    if ((filename!=NULL) && (mode_fopen != NULL))
+        file = fopen(filename, mode_fopen);
+    return file;
+}
+#endif
 
 uLong ZCALLBACK fread_file_func (opaque, stream, buf, size)
    voidpf opaque;

@@ -35,7 +35,11 @@
 extern "C" {
 #endif
 
+#ifdef _WIN32
+typedef voidpf (ZCALLBACK *open_file_func) OF((voidpf opaque, const wchar_t* filename, int mode));
+#else
 typedef voidpf (ZCALLBACK *open_file_func) OF((voidpf opaque, const char* filename, int mode));
+#endif
 typedef uLong  (ZCALLBACK *read_file_func) OF((voidpf opaque, voidpf stream, void* buf, uLong size));
 typedef uLong  (ZCALLBACK *write_file_func) OF((voidpf opaque, voidpf stream, const void* buf, uLong size));
 typedef long   (ZCALLBACK *tell_file_func) OF((voidpf opaque, voidpf stream));

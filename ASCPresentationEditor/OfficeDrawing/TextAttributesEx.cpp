@@ -325,9 +325,9 @@ namespace NSPresentationEditor
 				if (oCFRun.Cap.is_init())
 				{
 					if (1 == oCFRun.Cap.get())
-                        strRunText = strRunText.ToUpper();
+						strRunText.MakeUpper();
 					else if (2 == oCFRun.Cap.get())
-                        strRunText = strRunText.ToLower();
+						strRunText.MakeLower();
 				}
 				NormalizeString(strRunText);
 

@@ -12,6 +12,8 @@
 #include "Sp3d.h"
 #include "Geometry.h"
 
+#include "../../../../DesktopEditor/cximage/CxImage/ximadef.h" //for RECT
+
 namespace PPTX
 {
 	namespace Logic

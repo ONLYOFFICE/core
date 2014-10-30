@@ -53,7 +53,9 @@
 #endif 
 
 #ifdef _LINUX
-  #define _XOPEN_SOURCE
+  #pragma once
+
+    #define _XOPEN_SOURCE
   #include <unistd.h>
   #include <arpa/inet.h>
 #endif

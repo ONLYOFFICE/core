@@ -9,6 +9,8 @@
 #include "ShapeProperties.h"
 #include "ShapeTextProperties.h"
 
+#include "../../../../DesktopEditor/cximage/CxImage/ximadef.h" //for RECT
+
 namespace PPTX
 {
 	namespace Logic

@@ -16,6 +16,9 @@
 
 #include "../../DesktopEditor/common/File.h"
 
+#include "../../../../DesktopEditor/cximage/CxImage/ximage.h" //for CxImage
+
+
 #define BYTE_SIZEOF		sizeof(BYTE)
 #define USHORT_SIZEOF	sizeof(USHORT)
 #define ULONG_SIZEOF	sizeof(ULONG)

@@ -858,6 +858,29 @@ CArray<CFontInfo*> CFontList::GetAllByName(const std::wstring& strFontName)
 	}
 	return aRes;
 }
+void CFontList::SetDefaultFont(std::wstring& sName)
+{
+	m_lDefIndex = -1;
+	int nStyleMin = 100;
+	for ( int nIndex = 0; nIndex < m_pList.GetCount(); ++nIndex )
+	{
+		CFontInfo* pInfo = m_pList[nIndex];
+		if (pInfo->m_wsFontName == sName)
+		{
+			int nStyle = 0;
+			if (pInfo->m_bBold)
+				nStyle |= 2;
+			if (pInfo->m_bItalic)
+				nStyle |= 1;
+
+			if (nStyle < nStyleMin)
+			{
+				m_lDefIndex = nIndex;
+				nStyleMin = nStyle;
+			}
+		}
+	}
+}
 void CFontList::LoadFromFolder(const std::wstring& strDirectory)
 {
 	CArray<std::wstring> oArray = NSDirectory::GetFiles(strDirectory);

@@ -181,6 +181,7 @@ public:
 	void Add(CFontInfo* pInfo);
 	CFontInfo* GetByParams(const CFontSelectFormat& oSelect);
 	CArray<CFontInfo*> GetAllByName(const std::wstring& strFontName);
+	void SetDefaultFont(std::wstring& sName);
 };
 
 class CApplicationFonts

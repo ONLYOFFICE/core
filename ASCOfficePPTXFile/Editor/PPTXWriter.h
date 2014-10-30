@@ -743,7 +743,7 @@ namespace NSBinPptxRW
 			oContentTypes.WriteString(_T("</Types>"));
 
 			CFile oFile;
-			oFile.CreateFile(m_strDstFolder + _T("\\[Content_Types].xml"));
+            oFile.CreateFile(m_strDstFolder + _T("/[Content_Types].xml"));
 			CString strContentTypes = oContentTypes.GetData();
 			oFile.WriteStringUTF8(strContentTypes);
 			oFile.CloseFile();

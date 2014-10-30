@@ -69,7 +69,7 @@ namespace OOX
         }
         AVSINLINE CString GetDirectory(bool bIsSlash = true) const
         {
-                int nPos = m_strFilename.ReverseFind('\\');
+                int nPos = m_strFilename.ReverseFind(FILE_SEPARATOR_CHAR);
                 if (-1 == nPos)
                 {
                     return m_strFilename;
@@ -87,7 +87,7 @@ namespace OOX
         }
         AVSINLINE CString GetFilename() const
 		{
-			int nPos = m_strFilename.ReverseFind('\\');
+            int nPos = m_strFilename.ReverseFind(FILE_SEPARATOR_CHAR);
 			if (-1 == nPos)
 			{
 				return m_strFilename;
@@ -118,7 +118,7 @@ namespace OOX
 
 			while (nCurrent < nLen)
 			{
-				if (pData[nCurrent] == (TCHAR)'\\' || pData[nCurrent] == (TCHAR)'/')
+                if (pData[nCurrent] == (TCHAR) '\\' || pData[nCurrent] == (TCHAR)'/')
 				{
 					if (nStart < nCurrent)
 					{
@@ -137,7 +137,7 @@ namespace OOX
 						}
 						if (!bIsUp)
 						{
-							pDataNorm[nCurrentW++] = (TCHAR)'\\';
+                            pDataNorm[nCurrentW++] = (TCHAR) FILE_SEPARATOR_CHAR;
 							++nCurrentSlash;
 							pSlashPoints[nCurrentSlash] = nCurrentW;
 						}

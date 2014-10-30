@@ -1839,11 +1839,11 @@ namespace BinXlsxRW {
 			else if(c_oSerWorksheetsTypes::Drawings == type)
 			{
 				CString sDrawingsDir;
-				sDrawingsDir.Format(_T("%s\\xl\\drawings"), m_sDestinationDir);
+                sDrawingsDir.Format(_T("%s/xl/drawings"), m_sDestinationDir);
 				if( !NSDirectory::Exists(string2std_string(sDrawingsDir)) )
 					OOX::CSystemUtility::CreateDirectories(sDrawingsDir);
 				CString sRelsDir;
-				sRelsDir.Format(_T("%s\\_rels"), sDrawingsDir);
+                sRelsDir.Format(_T("%s/_rels"), sDrawingsDir);
 				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
 					OOX::CSystemUtility::CreateDirectories(sRelsDir);
 
@@ -1858,7 +1858,7 @@ namespace BinXlsxRW {
 
 				CString sFilename = m_pCurDrawing->m_sFilename;
 				CString sRelsPath;
-				sRelsPath.Format(_T("%s\\%s.rels"), sRelsDir, sFilename);
+                sRelsPath.Format(_T("%s/%s.rels"), sRelsDir, sFilename);
 				m_pOfficeDrawingConverter->SaveDstContentRels(sRelsPath);
 			}
 			else if(c_oSerWorksheetsTypes::SheetData == type)
@@ -2421,11 +2421,11 @@ namespace BinXlsxRW {
 			{
 				//создаем папку для rels
 				CString sChartsDir;
-				sChartsDir.Format(_T("%s\\xl\\charts"), m_sDestinationDir);
+                sChartsDir.Format(_T("%s/xl/charts"), m_sDestinationDir);
 				if( !NSDirectory::Exists(string2std_string(sChartsDir)) )
 					OOX::CSystemUtility::CreateDirectories(sChartsDir);
 				CString sRelsDir;
-				sRelsDir.Format(_T("%s\\_rels"), sChartsDir);
+                sRelsDir.Format(_T("%s/_rels"), sChartsDir);
 				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
 					OOX::CSystemUtility::CreateDirectories(sRelsDir);
 				m_pOfficeDrawingConverter->SetDstContentRels();
@@ -2437,7 +2437,7 @@ namespace BinXlsxRW {
 				pChartFile->m_bDoNotAddRels = true;
 				m_pCurDrawing->Add(pChartFile);
 
-				CString sRelsPath;sRelsPath.Format(_T("%s\\%s.rels"), sRelsDir, pChartFile->m_sFilename);
+                CString sRelsPath;sRelsPath.Format(_T("%s/%s.rels"), sRelsDir, pChartFile->m_sFilename);
 				m_pOfficeDrawingConverter->SaveDstContentRels(sRelsPath);
 
 				long rId;
@@ -2834,7 +2834,7 @@ namespace BinXlsxRW {
 				res = Read1(length, &BinaryOtherTableReader::ReadMediaContent, this, poResult);
 			else if(c_oSer_OtherType::Theme == type)
 			{
-				CString sThemePath;sThemePath.Format(_T("%s\\%s"), m_oSaveParams.sThemePath, OOX::FileTypes::Theme.DefaultFileName().GetPath());
+                CString sThemePath;sThemePath.Format(_T("%s/%s"), m_oSaveParams.sThemePath, OOX::FileTypes::Theme.DefaultFileName().GetPath());
 				long nCurPos = m_oBufferedStream.GetPos();
 				m_pOfficeDrawingConverter->SaveThemeXml(nCurPos, length, sThemePath);
 				m_oBufferedStream.Seek(nCurPos + length);
@@ -2894,7 +2894,7 @@ namespace BinXlsxRW {
 					else
 					{
 						//local
-						sImageSrc = m_sFileInDir + _T("media\\") + sImage;
+                        sImageSrc = m_sFileInDir + _T("media/") + sImage;
 					}
 				}
 				//Проверяем что файл существует
@@ -2925,7 +2925,7 @@ namespace BinXlsxRW {
 			CString sNewImageName;
 			sNewImageName.Format(_T("image%d%s"), m_nCurIndex, OOX::CPath(sTempPath).GetExtention(true));
 			m_nCurIndex++;
-			CString sNewImagePath = m_sMediaDir + _T("\\") + sNewImageName;
+            CString sNewImagePath = m_sMediaDir + FILE_SEPARATOR_STR + sNewImageName;
 			return sNewImagePath;
 		}
 		void ReadMediaItemSaveFileFILE(FILE* pFile)
@@ -3042,7 +3042,7 @@ namespace BinXlsxRW {
 								sDstPath += _T("Temp");
 
 							OOX::Spreadsheet::CXlsx oXlsx;
-							SaveParams oSaveParams(sDstPath + _T("\\") + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + _T("\\") + OOX::FileTypes::Theme.DefaultDirectory().GetPath());
+                            SaveParams oSaveParams(sDstPath + _T("/") + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + _T("/") + OOX::FileTypes::Theme.DefaultDirectory().GetPath());
 							ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
 							CString sAdditionalContentTypes = oSaveParams.sAdditionalContentTypes;
 							if(NULL != pOfficeDrawingConverter)
@@ -3101,7 +3101,7 @@ namespace BinXlsxRW {
 						aOffBits.push_back(mtiOffBits);
 					}
 				}
-				CString sMediaDir = sOutDir + _T("\\xl\\media");
+                CString sMediaDir = sOutDir + _T("/xl/media");
 				std::map<long, ImageObject*> mapMedia;
 				if(-1 != nOtherOffBits)
 				{

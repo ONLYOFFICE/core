@@ -1,6 +1,6 @@
 #include "Directory.h"
 #include "../../Base/ASCString.h"
-
+#include "../../Base/Base.h"
 
 #include <unistd.h>
 #include <sys/stat.h>
@@ -182,7 +182,7 @@ namespace FileSystem {
     }
     CString Directory::GetFolderPath(const CString& strFolderPath)
     {
-        int n1 = strFolderPath.rfind(_T("\\"));
+        int n1 = strFolderPath.rfind(FILE_SEPARATOR_STR);
         if (n1 < 0 )
             return _T("");
         return strFolderPath.substr(0,n1);

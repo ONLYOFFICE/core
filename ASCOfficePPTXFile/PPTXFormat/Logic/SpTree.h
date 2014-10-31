@@ -9,7 +9,7 @@
 #include "ShapeProperties.h"
 #include "ShapeTextProperties.h"
 
-#include "../../../../DesktopEditor/cximage/CxImage/ximadef.h" //for RECT
+#include "../../../DesktopEditor/graphics/aggplustypes.h" //for RECT
 
 namespace PPTX
 {
@@ -137,7 +137,7 @@ namespace PPTX
 					pWriter->EndNode(m_name);
 			}
 
-			void NormalizeRect(RECT& rect)const
+			void NormalizeRect(Aggplus::RECT& rect)const
 			{
 				if(grpSpPr.xfrm.IsInit())
 				{

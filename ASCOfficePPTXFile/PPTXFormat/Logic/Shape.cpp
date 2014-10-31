@@ -105,7 +105,7 @@ namespace PPTX
 			levelUp = NULL;
 		}
 
-		void Shape::GetRect(RECT& pRect)const
+		void Shape::GetRect(Aggplus::RECT& pRect)const
 		{
 			pRect.bottom = 0;
 			pRect.left = 0;

@@ -367,7 +367,7 @@ namespace NSShapeImageGen
 			oInfo.m_eType = GetImageType(oBgraFrame);
 
 			CString strSaveItem = _T("");
-			uint32_t nOutputFormat;
+			unsigned int nOutputFormat;
 			if (itJPG == oInfo.m_eType)
 			{
 				strSaveItem.Format(_T("%s\\image%d.jpg"), m_strDstMedia, oInfo.m_lID);

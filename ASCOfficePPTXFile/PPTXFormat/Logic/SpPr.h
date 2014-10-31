@@ -12,7 +12,7 @@
 #include "Sp3d.h"
 #include "Geometry.h"
 
-#include "../../../../DesktopEditor/cximage/CxImage/ximadef.h" //for RECT
+#include "../../../DesktopEditor/graphics/aggplustypes.h" //for RECT
 
 namespace PPTX
 {

@@ -73,7 +73,7 @@ namespace PPTX
 				style->SetParentPointer(this);
 		}
 
-		void CxnSp::GetRect(RECT& pRect)const
+		void CxnSp::GetRect(Aggplus::RECT& pRect)const
 		{
 			pRect.bottom = 0;
 			pRect.left = 0;

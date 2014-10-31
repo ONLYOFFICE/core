@@ -335,7 +335,7 @@ namespace PPTX
 			pReader->Seek(_end_rec);
 		}
 
-		void GraphicFrame::GetRect(RECT& pRect)const
+		void GraphicFrame::GetRect(Aggplus::RECT& pRect)const
 		{
 			pRect.left		= xfrm.offX.get();
 			pRect.top		= xfrm.offY.get();

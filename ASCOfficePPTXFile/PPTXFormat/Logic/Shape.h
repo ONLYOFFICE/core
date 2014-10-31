@@ -34,7 +34,7 @@ namespace PPTX
 			CString GetText()const{if(txBody.IsInit()) return txBody->GetText(); return _T(""); };
 
 			void GetShapeFullDescription(Shape& shape, int level = 0)const;
-			void GetRect(RECT& pRect)const;
+			void GetRect(Aggplus::RECT& pRect)const;
 			DWORD GetFill(UniFill& fill)const;
 			DWORD GetLine(Ln& line)const;
 

@@ -87,7 +87,7 @@ namespace PPTX
 			}
 			else
 			{
-				RECT& txRect = lpShapeElement->m_oShape.m_pShape->m_arTextRects[0];
+				Aggplus::RECT& txRect = lpShapeElement->m_oShape.m_pShape->m_arTextRects[0];
 				//double dkoefX = (double)lCoordSize / max(1, dCoordSizeX);
 				//double dkoefY = (double)lCoordSize / max(1, dCoordSizeY);
 

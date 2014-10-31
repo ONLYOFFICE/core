@@ -100,7 +100,7 @@ namespace PPTX
 				style->SetParentPointer(this);
 		}
 
-		void Pic::GetRect(RECT& pRect)const
+		void Pic::GetRect(Aggplus::RECT& pRect)const
 		{
 			pRect.bottom	= 0;
 			pRect.left		= 0;

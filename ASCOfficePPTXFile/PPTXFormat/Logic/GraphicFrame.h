@@ -27,7 +27,7 @@ namespace PPTX
 		public:
 			virtual void fromXML(XmlUtils::CXmlNode& node);
 			virtual CString toXML() const;
-			virtual void GetRect(RECT& pRect)const;
+			virtual void GetRect(Aggplus::RECT& pRect)const;
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const;
 	

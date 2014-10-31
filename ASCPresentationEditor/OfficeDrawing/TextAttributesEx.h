@@ -3,7 +3,8 @@
 #include "TextStructures.h"
 
 #ifndef WIN32
-    #include "./../../DesktopEditor/cximage/CxImage/ximadef.h"
+    //#include "./../../DesktopEditor/cximage/CxImage/ximadef.h"
+    #include "../../ASCOfficePPTXFile/PPTXFormat/Logic/rectdef.h"
 #endif
 namespace NSPresentationEditor
 {

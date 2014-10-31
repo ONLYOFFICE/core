@@ -88,7 +88,7 @@ SOURCES += pptxformatlib.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
     ../../../../XlsxSerializerCom/Reader/CSVReader.cpp \
-    ../../../../DesktopEditor/raster/BgraFrame.cpp \
+    #../../../../DesktopEditor/raster/BgraFrame.cpp \
     ../../../../XlsxSerializerCom/Writer/CSVWriter.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp \
     ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/DirectoryPosix.cpp \

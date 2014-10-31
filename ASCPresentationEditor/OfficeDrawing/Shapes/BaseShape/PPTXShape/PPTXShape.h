@@ -459,7 +459,7 @@ public:
 		XmlUtils::CXmlNode rect;
 		if(rect.FromXmlString(xml))
 		{
-			RECT TextRect;
+            Aggplus::RECT TextRect;
 			TextRect.top = (long)FManager.GetValue(rect.GetAttribute(_T("t")));
 			TextRect.left = (long)FManager.GetValue(rect.GetAttribute(_T("l")));
 			TextRect.right = (long)FManager.GetValue(rect.GetAttribute(_T("r")));

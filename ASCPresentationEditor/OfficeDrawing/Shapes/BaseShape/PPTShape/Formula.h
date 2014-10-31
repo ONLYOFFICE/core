@@ -9,7 +9,8 @@
 
 #include "./../../../../../Common/DocxFormat/Source/XML/xmlutils.h"
 
-#include "./../../../../../DesktopEditor/cximage/CxImage/ximadef.h"
+//#include "./../../../../../DesktopEditor/cximage/CxImage/ximadef.h"
+#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/rectdef.h"
 
 namespace NSGuidesVML
 {

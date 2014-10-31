@@ -7,6 +7,7 @@
 #include "SpPr.h"
 #include "ShapeStyle.h"
 
+
 namespace PPTX
 {
 	namespace Logic

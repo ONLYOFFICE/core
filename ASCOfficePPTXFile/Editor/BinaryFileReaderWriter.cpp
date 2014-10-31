@@ -16,9 +16,6 @@
 
 #include "../../DesktopEditor/common/File.h"
 
-#include "../../../../DesktopEditor/cximage/CxImage/ximage.h" //for CxImage
-
-
 #define BYTE_SIZEOF		sizeof(BYTE)
 #define USHORT_SIZEOF	sizeof(USHORT)
 #define ULONG_SIZEOF	sizeof(ULONG)
@@ -201,34 +198,16 @@ namespace NSBinPptxRW
 
 	void CImageManager2::SaveImageAsPng(const CString& strFileSrc, const CString& strFileDst)
 	{
-		NSFile::CFileBinary oFileSrc, oFileDst;
-		if (!oFileSrc.OpenFile(std::wstring(strFileSrc.GetString())) || !oFileDst.CreateFileW(std::wstring(strFileDst.GetString())))
-			return;
-
-		CxImage img;
-
-		if( img.Decode( oFileSrc.GetFileNative(), 0 ) )
-		{
-			img.Encode( oFileDst.GetFileNative(), _CXIMAGE_FORMAT_PNG );
-		}
-		oFileSrc.CloseFile();
-		oFileDst.CloseFile();
+		CBgraFrame oBgraFrame;
+		if(oBgraFrame.OpenFile(string2std_string(strFileSrc)))
+			oBgraFrame.SaveFile(string2std_string(strFileDst), _CXIMAGE_FORMAT_PNG);
 	}
 
 	void CImageManager2::SaveImageAsJPG(const CString& strFileSrc, const CString& strFileDst)
 	{
-		NSFile::CFileBinary oFileSrc, oFileDst;
-		if (!oFileSrc.OpenFile(std::wstring(strFileSrc.GetString())) || !oFileDst.CreateFileW(std::wstring(strFileDst.GetString())))
-			return;
-
-		CxImage img;
-
-		if( img.Decode( oFileSrc.GetFileNative(), 0 ) )
-		{
-			img.Encode( oFileDst.GetFileNative(), _CXIMAGE_FORMAT_JPG );
-		}
-		oFileSrc.CloseFile();
-		oFileDst.CloseFile();
+		CBgraFrame oBgraFrame;
+		if(oBgraFrame.OpenFile(string2std_string(strFileSrc)))
+			oBgraFrame.SaveFile(string2std_string(strFileDst), _CXIMAGE_FORMAT_JPG);
 	}
 
 	bool CImageManager2::IsNeedDownload(const CString& strFile)

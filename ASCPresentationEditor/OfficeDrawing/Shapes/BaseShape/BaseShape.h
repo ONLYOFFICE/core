@@ -48,7 +48,7 @@ namespace NSPresentationEditor
         std::vector<SimpleTypes::CPoint>	m_arConnectors;
 		std::vector<LONG>		m_arConnectorAngles;
 
-		std::vector<RECT>		m_arTextRects;
+        std::vector<Aggplus::RECT>		m_arTextRects;
 		
 		std::vector<CHandle_>	m_arHandles;
 

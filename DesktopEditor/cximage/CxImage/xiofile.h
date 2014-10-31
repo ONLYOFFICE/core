@@ -3,10 +3,11 @@
 
 #include "xfile.h"
 #ifndef _WIN32
-#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
+//#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
 #endif
 //#include <TCHAR.h>
 
+/*
 #ifndef WIN32
     #ifdef _UNICODE
         typedef wchar_t TCHAR;
@@ -14,6 +15,7 @@
         typedef char TCHAR;
     #endif
 #endif
+*/
 
 class DLL_EXP CxIOFile : public CxFile
 	{

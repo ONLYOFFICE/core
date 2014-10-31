@@ -6043,7 +6043,15 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 				m_oFileWriter.m_oSettingWriter.AddSetting(sClrMap);
 				m_oFileWriter.m_pDrawingConverter->LoadClrMap(sClrMap);
 			}
-
+			BinaryStyleTableReader oBinaryStyleTableReader(m_oBufferedStream, m_oFileWriter);
+			if(-1 != nStyleOffset)
+			{
+				int nOldPos = m_oBufferedStream.GetPos();
+				m_oBufferedStream.Seek(nStyleOffset);
+				res = oBinaryStyleTableReader.Read();
+				if(c_oSerConstants::ReadOk != res)
+					return res;
+			}
 			Binary_CommentsTableReader oBinary_CommentsTableReader(m_oBufferedStream, m_oFileWriter);
 			if(-1 != nCommentsOffset)
 			{

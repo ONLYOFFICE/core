@@ -29,57 +29,6 @@ public:
     }
 };
 
-// TODO: убрать, как только проверить линукс!!!
-#if 0
-void CVideoMemory::Init()
-{
-    CTemporaryCS oCS(&m_oCS);
-
-    QGLContext* ctx = const_cast<QGLContext *>(QGLContext::currentContext());
-
-    QGLWidget* pShare = static_cast<QGLWidget *>(ctx->device());
-
-    m_main_ctx = (void*)QGLContext::currentContext();
-
-    m_arThreads.Add((void*)QThread::currentThread());
-    m_arContext.Add((void*)pShare);
-
-    ctx->makeCurrent();
-}
-
-void CVideoMemory::SetCurrentCtx()
-{
-    QThread* pThread = QThread::currentThread();
-
-    int nCount = m_arThreads.GetCount();
-    for (int i = 0; i <  nCount; ++i)
-    {
-        if (pThread == m_arThreads[i])
-        {
-            QGLWidget* pCurrent = ((QGLWidget*)m_arContext[i]);
-            pCurrent->makeCurrent();
-            return;
-        }
-    }
-
-    QGLWidget *share = static_cast<QGLWidget *>(m_arContext[0]);
-
-    QGLWidget* pWorker = new QGLWidget(0, share);
-    pWorker->resize(8, 8);
-
-    m_arThreads.Add((void*)pThread);
-    m_arContext.Add((void*)pWorker);
-
-    pWorker->makeCurrent();
-}
-
-void CVideoMemory::UnSetCurrentCtx()
-{
-}
-#endif
-
-
-
 // Native control
 void CNativeCtrl::slot_threadRepaint()
 {
@@ -131,7 +80,7 @@ void CNativeCtrl::ChangeCountPagesInBlock()
 
 void CNativeCtrl::initializeGL()
 {
-    m_pWrapper->m_oDevicePainter.m_oFrameControls.m_oFrame.Init();
+    m_pWrapper->m_oDevicePainter.m_oFrameControls.m_oFrame.Init(m_pWrapper->GetCountThreadsUse());
     m_pWrapper->Resize(100, 100);
     m_pWrapper->InternalInit();
 

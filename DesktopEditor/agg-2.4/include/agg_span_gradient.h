@@ -22,14 +22,6 @@
 #include "agg_array.h"
 #include "agg_trans_affine.h"
 
-#ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
-#endif
-
-#ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
-
 namespace agg
 {
 #if !defined(_LINUX) && !defined(WIN32)
@@ -421,7 +413,9 @@ namespace agg
 			m_center.x = (bounds.x1 + bounds.x2) / 2;
 			m_center.y = (bounds.y1 + bounds.y2) / 2;
 			
-			double dmax = max(abs(bounds.x1 - bounds.x2), abs(bounds.y1 - bounds.y2));
+            double dmax = (abs(bounds.x1 - bounds.x2));
+            if (dmax < abs(bounds.y1 - bounds.y2))
+                dmax = abs(bounds.y1 - bounds.y2);
 			m_factor = 0;
 			
 			if (dmax > FLT_EPSILON)

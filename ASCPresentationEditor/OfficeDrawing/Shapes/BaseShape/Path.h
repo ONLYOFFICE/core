@@ -214,7 +214,7 @@ namespace NSPresentationEditor
 	{
 	public:
 		RulesType m_eRuler;
-		std::vector<POINT> m_arPoints;
+        std::vector<Aggplus::POINT> m_arPoints;
 
 	private:
 		int m_nCountElementsPoint;
@@ -231,7 +231,7 @@ namespace NSPresentationEditor
 			long lPoint = m_nCountElementsPoint % 2;
 			if (0 == lPoint)
 			{
-				POINT point;
+                Aggplus::POINT point;
 				point.x = lParam;
 				point.y = 0;
 				m_arPoints.push_back(point);
@@ -256,7 +256,7 @@ namespace NSPresentationEditor
 					Node.GetNodes(_T("pt"), list);
 					for(long i = 0; i < GetCountPoints(m_eRuler); i++)
 					{
-						POINT lpoint;
+                        Aggplus::POINT lpoint;
 						XmlUtils::CXmlNode pt;
 						list.GetAt(i, pt);
 						lpoint.x = (long)(pManager.GetValue(pt.GetAttribute(_T("x")))*WidthKoef);
@@ -266,7 +266,7 @@ namespace NSPresentationEditor
 				}
 				else
 				{
-					POINT size;
+                    Aggplus::POINT size;
 					size.x = (long)(pManager.GetValue(Node.GetAttribute(_T("wR")))*WidthKoef);
 					size.y = (long)(pManager.GetValue(Node.GetAttribute(_T("hR")))*HeightKoef);
 					m_arPoints.push_back(size);
@@ -274,7 +274,7 @@ namespace NSPresentationEditor
 					double swAng = pManager.GetValue(Node.GetAttribute(_T("swAng")));
 					double stAng2 = atan2(HeightKoef * sin(stAng * RadKoef), WidthKoef * cos(stAng * RadKoef));
 					double swAng2 = atan2(HeightKoef * sin((stAng + swAng) * RadKoef), WidthKoef * cos((stAng + swAng) * RadKoef)) - stAng2;
-					POINT angle;
+                    Aggplus::POINT angle;
 					angle.x = (long)(stAng2/RadKoef);//pManager.GetValue(Node.GetAttribute(_T("stAng")));
 					angle.y = (long)(swAng2/RadKoef);//pManager.GetValue(Node.GetAttribute(_T("swAng")));
 					if((angle.y > 0) && (swAng < 0)) angle.y = angle.y - 21600000;

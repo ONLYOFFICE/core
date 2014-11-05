@@ -1831,7 +1831,7 @@ namespace NSGuidesVML
 	{
 	public:
 		RulesType m_eRuler;
-		std::vector<POINT> m_arPoints;
+        std::vector<Aggplus::POINT> m_arPoints;
 		std::vector<SPointType> m_arPointsType;
 
 	private:
@@ -1849,7 +1849,7 @@ namespace NSGuidesVML
 			long lPoint = m_nCountElementsPoint % 2;
 			if (0 == lPoint)
 			{
-				POINT point;
+                Aggplus::POINT point;
 				SPointType pointType;
 
 				point.x = lParam;
@@ -1885,11 +1885,11 @@ namespace NSGuidesVML
 		CString strSign;
 		CString strFrmla;
 		CString strResult;
-		POINT pCurPoint;
+        Aggplus::POINT pCurPoint;
 		SPointType pCurPointType;
-		POINT pCurPoint1;
+        Aggplus::POINT pCurPoint1;
 		SPointType pCurPointType1;
-		POINT pTmpPoint;
+        Aggplus::POINT pTmpPoint;
 		CFormParam m_oParam;
 
 	public:
@@ -2811,7 +2811,7 @@ namespace NSGuidesVML
 			ptType = ptValue;
 			return (LONG)XmlUtils::GetInteger(strParam);
 		}
-		void ConvertQuadrX(POINT pPoint, SPointType pPointType)
+        void ConvertQuadrX(Aggplus::POINT pPoint, SPointType pPointType)
 		{
 			LONG nIndex = m_arIndexDst[m_lIndexSrc];
 
@@ -2850,7 +2850,7 @@ namespace NSGuidesVML
 			return;
 		}
 
-		void ConvertQuadrY(POINT pPoint, SPointType pPointType)
+        void ConvertQuadrY(Aggplus::POINT pPoint, SPointType pPointType)
 		{
 			LONG nIndex = m_arIndexDst[m_lIndexSrc];
 

@@ -11,7 +11,7 @@ namespace NSGuidesVML
 	{
 	public:
 		RulesType m_eRuler;
-        std::vector<POINT> m_arPoints;
+        std::vector<Aggplus::POINT> m_arPoints;
         std::vector<SPointType> m_arPointsType;
 
 	private:
@@ -29,7 +29,7 @@ namespace NSGuidesVML
 			long lPoint = m_nCountElementsPoint % 2;
 			if (0 == lPoint)
 			{
-				POINT point;
+                Aggplus::POINT point;
 				SPointType pointType;
 
 				point.x = lParam;
@@ -62,9 +62,9 @@ namespace NSGuidesVML
 			SPointType pPointType1;
 			SPointType pPointType2;
 			SPointType pPointType3;
-			POINT pPoint1;
-			POINT pPoint2;
-			POINT pPoint3;
+            Aggplus::POINT pPoint1;
+            Aggplus::POINT pPoint2;
+            Aggplus::POINT pPoint3;
 			LONG m_lPPTX2PPT;
 			LONG m_lPPT2PPTX;
 			

@@ -15,6 +15,13 @@ typedef struct tagRECT
     long    bottom;
 } RECT, *PRECT;
 
+typedef struct tagPOINT
+{
+    long    x;
+    long    y;
+
+} POINT, *PPOINT;
+
 #define REAL_MAX            FLT_MAX
 #define REAL_MIN            FLT_MIN
 #define REAL_TOLERANCE     (FLT_MIN * 100)

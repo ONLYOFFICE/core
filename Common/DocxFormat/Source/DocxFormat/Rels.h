@@ -192,7 +192,9 @@ namespace OOX
 #else
 
 				XmlUtils::CXmlNode oNode;
-				if ( oNode.FromXmlFile2( oFilePath.GetPath() ) && _T("Relationships") == oNode.GetName() )
+                CString nameNode = oNode.GetName() ;
+
+                if ( oNode.FromXmlFile2( oFilePath.GetPath() ) && _T("Relationships") == nameNode )
 				{
 					XmlUtils::CXmlNodes oNodes;
 					if ( oNode.GetNodes( _T("Relationship"), oNodes ) )
@@ -285,8 +287,13 @@ namespace OOX
 
 		const CPath CreateFileName(const CPath& oFilePath) const
 		{
-			CString strTemp = oFilePath.GetDirectory() + _T("\\_rels\\");
-			if ( _T("") == oFilePath.GetFilename() )
+            CString strTemp;
+#ifdef _WIN32
+            strTemp = oFilePath.GetDirectory() + _T("\\_rels\\");
+#else
+           strTemp = oFilePath.GetDirectory() + _T("/_rels/");
+#endif
+           if ( _T("") == oFilePath.GetFilename() )
 				strTemp += _T(".rels");
 			else
 				strTemp += ( oFilePath.GetFilename() + _T(".rels") );

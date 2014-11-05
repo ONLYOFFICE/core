@@ -10,8 +10,8 @@
 #include "./../../../../../Common/DocxFormat/Source/XML/xmlutils.h"
 
 //#include "./../../../../../DesktopEditor/cximage/CxImage/ximadef.h"
-#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/rectdef.h"
-
+//#include "../../../../../ASCOfficePPTXFile/PPTXFormat/Logic/rectdef.h"
+#include "./../../../../../DesktopEditor/graphics/aggplustypes.h"
 namespace NSGuidesVML
 {
 	enum FormulaType
@@ -185,25 +185,25 @@ namespace NSGuidesVML
 
 	struct SHandle
 	{
-			POINT gdRef;
+            Aggplus::POINT gdRef;
 			SPointType gdRefType;
 			SPointExist bRefExist;
 			SPointExist bRefPolarExist;
 
-			POINT Max;
+            Aggplus::POINT Max;
 			SPointType MaxType;
 			SPointExist bMaxExist;
 			SPointExist bMaxPolarExist;
 
-			POINT Min;
+            Aggplus::POINT Min;
 			SPointType MinType;
 			SPointExist bMinExist;
 			SPointExist bMinPolarExist;
 
-			POINT Pos;
+            Aggplus::POINT Pos;
 			SPointType PosType;
 
-			POINT PolarCentre;
+            Aggplus::POINT PolarCentre;
 			SPointType PolarCentreType;
 
 	};

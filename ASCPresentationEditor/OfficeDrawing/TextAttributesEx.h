@@ -4,7 +4,8 @@
 
 #ifndef WIN32
     //#include "./../../DesktopEditor/cximage/CxImage/ximadef.h"
-    #include "../../ASCOfficePPTXFile/PPTXFormat/Logic/rectdef.h"
+    //#include "../../ASCOfficePPTXFile/PPTXFormat/Logic/rectdef.h"
+    #include "../../DesktopEditor/graphics/aggplustypes.h"
 #endif
 namespace NSPresentationEditor
 {
@@ -20,7 +21,7 @@ namespace NSPresentationEditor
 		LONG	m_lPlaceholderID;
 
 		// граница
-        RECT m_oBounds;
+        Aggplus::RECT m_oBounds;
 
 		// настройки по-умолчанию
 		CTextAttributes			m_oAttributes;

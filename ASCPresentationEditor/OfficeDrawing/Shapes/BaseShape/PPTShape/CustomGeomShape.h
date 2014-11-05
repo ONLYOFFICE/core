@@ -409,7 +409,7 @@ namespace NSCustomVML
 	private:
 		RulesType m_ePath;
 
-		std::vector<POINT>	m_arVertices;
+        std::vector<Aggplus::POINT>	m_arVertices;
 		std::vector<CSegment> m_arSegments;
 		std::vector<CGuide>	m_arGuides;
 		std::vector<LONG>*	m_pAdjustValues;
@@ -494,7 +494,7 @@ namespace NSCustomVML
 
 			for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
 			{
-				POINT oPoint;
+                Aggplus::POINT oPoint;
 				if (pProperty->m_bIsTruncated)
 				{
 					oPoint.x = (LONG)oReader.ReadWORD();

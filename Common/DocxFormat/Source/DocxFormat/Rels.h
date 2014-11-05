@@ -192,9 +192,8 @@ namespace OOX
 #else
 
 				XmlUtils::CXmlNode oNode;
-                CString nameNode = oNode.GetName() ;
 
-                if ( oNode.FromXmlFile2( oFilePath.GetPath() ) && _T("Relationships") == nameNode )
+                if ( oNode.FromXmlFile2( oFilePath.GetPath() ) && _T("Relationships") == oNode.GetName() )
 				{
 					XmlUtils::CXmlNodes oNodes;
 					if ( oNode.GetNodes( _T("Relationship"), oNodes ) )

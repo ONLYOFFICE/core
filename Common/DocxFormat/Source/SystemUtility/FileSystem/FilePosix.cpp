@@ -6,7 +6,7 @@ namespace FileSystem {
         std::wstring path_wstring;
         path_wstring = path;
         std::string path_string = stringWstingToUtf8String(path_wstring);
-        return (-1 == access (path_string.c_str(), F_OK));
+        return (0 == access (path_string.c_str(), F_OK));
 	}
     bool File::Exists(const String& path) {
         return Exists(path.c_str());

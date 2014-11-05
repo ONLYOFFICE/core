@@ -115,7 +115,10 @@ namespace OOX
 			int nCurrentSlash = -1;
 			int nCurrentW = 0;
 			bool bIsUp = false;
-
+#ifndef _WIN32
+        if (pData[nCurrent] == (TCHAR)'/')
+           pDataNorm[nCurrentW++] = (TCHAR) FILE_SEPARATOR_CHAR;
+#endif
 			while (nCurrent < nLen)
 			{
                 if (pData[nCurrent] == (TCHAR) '\\' || pData[nCurrent] == (TCHAR)'/')

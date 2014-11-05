@@ -53,7 +53,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 {
 	//create mediadir
 	OOX::CPath path(sSrcFileName);
-	CString mediaDir = path.GetDirectory() + _T("media\\");
+    CString mediaDir = path.GetDirectory() + _T("media/");
 	NSDirectory::CreateDirectory(string2std_string(mediaDir));
 
 	COfficeFontPicker* pFontPicker = new COfficeFontPicker();

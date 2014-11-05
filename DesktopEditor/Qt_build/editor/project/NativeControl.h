@@ -8,7 +8,7 @@
 #include <QPaintEvent>
 #include <QGLWidget>
 
-//#define _USE_WEB_MENU_
+#define _USE_WEB_MENU_
 
 #ifdef _USE_WEB_MENU_
 #include <QGraphicsView>
@@ -166,8 +166,8 @@ public:
         settings->setOfflineStorageDefaultQuota(5*1024*1024);
         settings->setOfflineWebApplicationCacheQuota(5*1024*1024);
 
-        QString sMenu = "file:///D:/Office/Application/apps/api/documents/index.html";
-        QString sFile = "?url=file:///D:/Office/Application/sdk/Word/document/";
+        QString sMenu = "file:///E:/Office/Application/apps/api/documents/index.html";
+        QString sFile = "?url=file:///E:/Office/Application/sdk/Word/document/";
         QString sFullUrl = sMenu + sFile;
         QUrl url = sFullUrl;
 
@@ -302,15 +302,7 @@ public:
             return;
         }
 
-        m_pScene->LockGL();
-
-        m_pWidget->makeCurrent();
-
         QGraphicsView::paintEvent(event);
-
-        //m_pWidget->doneCurrent();
-
-        m_pScene->UnlockGL();
     }
 
 #endif

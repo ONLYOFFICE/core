@@ -20,14 +20,16 @@ BinDocxRW::CDocxSerializer::CDocxSerializer()
 bool BinDocxRW::CDocxSerializer::ConvertDocxToDoct(const CString& sSrcFileName, const CString& sDstFileName, const CString& sTmpDir, const CString& sXMLOptions)
 {
 	std::wstring strDirSrc = NSSystemPath::Combine(string2std_string(sTmpDir), _T("from"));
-	std::wstring strEditorBin = NSSystemPath::Combine(strDirSrc, _T("Editor.bin"));
 	std::wstring strDirDst = NSSystemPath::Combine(string2std_string(sTmpDir), _T("to"));
+    std::wstring strEditorBin = NSSystemPath::Combine(strDirDst, _T("Editor.bin"));
+	NSDirectory::CreateDirectory(strDirSrc);
+	NSDirectory::CreateDirectory(strDirDst);
 	CString sDirSrc = std_string2string(strDirSrc);
 	CString sEditorBin = std_string2string(strEditorBin);
 	COfficeUtils oCOfficeUtils(NULL);
-	if(oCOfficeUtils.ExtractToDirectory(string2std_string(sSrcFileName), strDirSrc, NULL, 0))
-		if(saveToFile(sDirSrc, sEditorBin, sXMLOptions))
-			if(oCOfficeUtils.CompressFileOrDirectory(strDirDst, string2std_string(sDstFileName), -1))
+    if(S_OK == oCOfficeUtils.ExtractToDirectory(string2std_string(sSrcFileName), strDirSrc, NULL, 0))
+		if(saveToFile(sEditorBin, sDirSrc, sXMLOptions))
+            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(strDirDst, string2std_string(sDstFileName), -1))
 				return true;
 	return false;
 }
@@ -36,12 +38,14 @@ bool BinDocxRW::CDocxSerializer::ConvertDoctToDocx(const CString& sSrcFileName, 
 	std::wstring strDirSrc = NSSystemPath::Combine(string2std_string(sTmpDir), _T("from"));
 	std::wstring strEditorBin = NSSystemPath::Combine(strDirSrc, _T("Editor.bin"));
 	std::wstring strDirDst = NSSystemPath::Combine(string2std_string(sTmpDir), _T("to"));
-	CString sDirSrc = std_string2string(strDirSrc);
+	NSDirectory::CreateDirectory(strDirSrc);
+	NSDirectory::CreateDirectory(strDirDst);
 	CString sEditorBin = std_string2string(strEditorBin);
+	CString sDirDst = std_string2string(strDirDst);
 	COfficeUtils oCOfficeUtils(NULL);
-	if(oCOfficeUtils.ExtractToDirectory(string2std_string(sSrcFileName), strDirSrc, NULL, 0))
-		if(loadFromFile(sDirSrc, sEditorBin, sXMLOptions, sThemePath, sMediaPath))
-			if(oCOfficeUtils.CompressFileOrDirectory(strDirDst, string2std_string(sDstFileName), -1))
+    if(S_OK == oCOfficeUtils.ExtractToDirectory(string2std_string(sSrcFileName), strDirSrc, NULL, 0))
+		if(loadFromFile(sEditorBin, sDirDst, sXMLOptions, sThemePath, sMediaPath))
+            if(S_OK == oCOfficeUtils.CompressFileOrDirectory(strDirDst, string2std_string(sDstFileName), -1))
 				return true;
 	return false;
 }

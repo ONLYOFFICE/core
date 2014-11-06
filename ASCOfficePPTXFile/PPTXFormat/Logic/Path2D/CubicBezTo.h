@@ -54,11 +54,11 @@ namespace PPTX
 			virtual CString toXML() const
 			{
 				CString str1 = _T("");
-				str1.Format(_T("<a:pt x=\"%s\" y=\"%s\" />"), x1, y1);
+				str1.Format(_T("<a:pt x=\"%ls\" y=\"%ls\" />"), x1, y1);
 				CString str2 = _T("");
-				str2.Format(_T("<a:pt x=\"%s\" y=\"%s\" />"), x2, y2);
+				str2.Format(_T("<a:pt x=\"%ls\" y=\"%ls\" />"), x2, y2);
 				CString str3 = _T("");
-				str3.Format(_T("<a:pt x=\"%s\" y=\"%s\" />"), x3, y3);
+				str3.Format(_T("<a:pt x=\"%ls\" y=\"%ls\" />"), x3, y3);
 
 				return _T("<a:cubicBezTo>") + str1 + str2 + str3 + _T("</a:cubicBezTo>");
 			}
@@ -122,11 +122,11 @@ namespace PPTX
 			virtual CString GetODString()const
 			{
 				CString str1 = _T("");
-				str1.Format(_T("<pt x=\"%s\" y=\"%s\" />"), x1, y1);
+				str1.Format(_T("<pt x=\"%ls\" y=\"%ls\" />"), x1, y1);
 				CString str2 = _T("");
-				str2.Format(_T("<pt x=\"%s\" y=\"%s\" />"), x2, y2);
+				str2.Format(_T("<pt x=\"%ls\" y=\"%ls\" />"), x2, y2);
 				CString str3 = _T("");
-				str3.Format(_T("<pt x=\"%s\" y=\"%s\" />"), x3, y3);
+				str3.Format(_T("<pt x=\"%ls\" y=\"%ls\" />"), x3, y3);
 
 				return _T("<cubicBezTo>") + str1 + str2 + str3 + _T("</cubicBezTo>");
 			}

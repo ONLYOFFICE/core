@@ -78,7 +78,7 @@ namespace OOX
 
 			// TO DO: Запись надо править. Она НЕ РАБОТАЕТ!!!! Проблемы в IFileContainer.
 
-			return FALSE;
+            //return FALSE;
 
 			// Создаем папку
 #ifdef _WIN32

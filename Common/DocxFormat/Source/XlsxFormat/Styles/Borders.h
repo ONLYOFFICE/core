@@ -35,7 +35,7 @@ namespace OOX
 				writer.WriteString(sName);
 				if(m_oStyle.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" style=\"%s\""), m_oStyle->ToString());
+					CString sVal;sVal.Format(_T(" style=\"%ls\""), m_oStyle->ToString());
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T(">"));
@@ -107,12 +107,12 @@ namespace OOX
 				writer.WriteString(_T("<border"));
 				if(m_oDiagonalDown.IsInit() && SimpleTypes::onoffTrue == m_oDiagonalDown->GetValue())
 				{
-					CString sVal;sVal.Format(_T(" diagonalDown=\"%s\""), m_oDiagonalDown->ToString2( SimpleTypes::onofftostring1));
+					CString sVal;sVal.Format(_T(" diagonalDown=\"%ls\""), m_oDiagonalDown->ToString2( SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oDiagonalUp.IsInit() && SimpleTypes::onoffTrue == m_oDiagonalUp->GetValue())
 				{
-					CString sVal;sVal.Format(_T(" diagonalUp=\"%s\""), m_oDiagonalUp->ToString2( SimpleTypes::onofftostring1));
+					CString sVal;sVal.Format(_T(" diagonalUp=\"%ls\""), m_oDiagonalUp->ToString2( SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T(">"));

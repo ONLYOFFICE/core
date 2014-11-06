@@ -949,7 +949,7 @@ namespace NSBinPptxRW
 		strRid.Format(_T("rId%d"), m_lNextRelsID++);
 
 		CString strRels = _T("");
-		strRels.Format(_T("<Relationship Id=\"%s\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"%s\"/>"),
+		strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"%ls\"/>"),
 			strRid, strImage);
 		m_pWriter->WriteString(strRels);
 
@@ -972,7 +972,7 @@ namespace NSBinPptxRW
 		strRid.Format(_T("rId%d"), m_lNextRelsID++);
 
 		CString strRels = _T("");
-		strRels.Format(_T("<Relationship Id=\"%s\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart\" Target=\"%s\"/>"),
+		strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart\" Target=\"%ls\"/>"),
 			strRid, strChart);
 		m_pWriter->WriteString(strRels);
 
@@ -1021,12 +1021,12 @@ namespace NSBinPptxRW
 
 		if (!bIsSlide)
 		{
-			strRels.Format(_T("<Relationship Id=\"%s\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"%s\" TargetMode=\"External\"/>"),
+			strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"%ls\" TargetMode=\"External\"/>"),
 				strRid, sLink);
 		}
 		else
 		{
-			strRels.Format(_T("<Relationship Id=\"%s\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"%s\"/>"), 
+			strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"%ls\"/>"), 
 				strRid ,sLink);
 		}
 

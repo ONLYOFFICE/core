@@ -31,52 +31,52 @@ namespace OOX
 				writer.WriteString(_T("<f"));
 				if(m_oAca.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" aca=\"%s\""), m_oAca->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" aca=\"%ls\""), m_oAca->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oBx.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" bx=\"%s\""), m_oBx->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" bx=\"%ls\""), m_oBx->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oCa.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" ca=\"%s\""), m_oCa->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" ca=\"%ls\""), m_oCa->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oDel1.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" del1=\"%s\""), m_oDel1->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" del1=\"%ls\""), m_oDel1->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oDel2.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" del2=\"%s\""), m_oDel2->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" del2=\"%ls\""), m_oDel2->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oDt2D.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" dt2D=\"%s\""), m_oDt2D->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" dt2D=\"%ls\""), m_oDt2D->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oDtr.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" dtr=\"%s\""), m_oDtr->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" dtr=\"%ls\""), m_oDtr->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oR1.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" r1=\"%s\""), m_oR1.get());
+					CString sVal; sVal.Format(_T(" r1=\"%ls\""), m_oR1.get());
 					writer.WriteString(sVal);
 				}
 				if(m_oR2.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" r2=\"%s\""), m_oR2.get());
+					CString sVal; sVal.Format(_T(" r2=\"%ls\""), m_oR2.get());
 					writer.WriteString(sVal);
 				}
 				if(m_oRef.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" ref=\"%s\""), m_oRef.get());
+					CString sVal; sVal.Format(_T(" ref=\"%ls\""), m_oRef.get());
 					writer.WriteString(sVal);
 				}
 				if(m_oSi.IsInit())
@@ -86,7 +86,7 @@ namespace OOX
 				}
 				if(m_oT.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" t=\"%s\""), m_oT->ToString());
+					CString sVal; sVal.Format(_T(" t=\"%ls\""), m_oT->ToString());
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T(">"));
@@ -174,12 +174,12 @@ namespace OOX
 				}
 				if(m_oShowPhonetic.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" ph=\"%s\""), m_oShowPhonetic->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" ph=\"%ls\""), m_oShowPhonetic->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oRef.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" r=\"%s\""), m_oRef.get());
+					CString sVal; sVal.Format(_T(" r=\"%ls\""), m_oRef.get());
 					writer.WriteString(sVal);
 				}
 				if(m_oStyle.IsInit())
@@ -189,7 +189,7 @@ namespace OOX
 				}
 				if(m_oType.IsInit() && SimpleTypes::Spreadsheet::celltypeNumber != m_oType->GetValue())
 				{
-					CString sVal; sVal.Format(_T(" t=\"%s\""), m_oType->ToString());
+					CString sVal; sVal.Format(_T(" t=\"%ls\""), m_oType->ToString());
 					writer.WriteString(sVal);
 				}
 				if(m_oValueMetadata.IsInit())
@@ -290,27 +290,27 @@ namespace OOX
 				writer.WriteString(_T("<row"));
 				if(m_oCollapsed.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" collapsed=\"%s\""), m_oCollapsed->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" collapsed=\"%ls\""), m_oCollapsed->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oCustomFormat.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" customFormat=\"%s\""), m_oCustomFormat->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" customFormat=\"%ls\""), m_oCustomFormat->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oHt.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" ht=\"%s\""), SpreadsheetCommon::WriteDouble(m_oHt->GetValue()));
+					CString sVal; sVal.Format(_T(" ht=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oHt->GetValue()));
 					writer.WriteString(sVal);
 				}
 				if(m_oCustomHeight.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" customHeight=\"%s\""), m_oCustomHeight->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" customHeight=\"%ls\""), m_oCustomHeight->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oHidden.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" hidden=\"%s\""), m_oHidden->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" hidden=\"%ls\""), m_oHidden->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 
@@ -321,7 +321,7 @@ namespace OOX
 				}
 				if(m_oPh.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" ph=\"%s\""), m_oPh->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" ph=\"%ls\""), m_oPh->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oR.IsInit())
@@ -336,12 +336,12 @@ namespace OOX
 				}
 				if(m_oThickBot.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" thickBot=\"%s\""), m_oThickBot->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" thickBot=\"%ls\""), m_oThickBot->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oThickTop.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" thickTop=\"%s\""), m_oThickTop->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" thickTop=\"%ls\""), m_oThickTop->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T(">"));

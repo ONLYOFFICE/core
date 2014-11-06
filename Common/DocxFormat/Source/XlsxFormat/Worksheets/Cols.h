@@ -32,22 +32,22 @@ namespace OOX
 				writer.WriteString(_T("<col"));
 				if(m_oBestFit.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" bestFit=\"%s\""), m_oBestFit->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" bestFit=\"%ls\""), m_oBestFit->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oCollapsed.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" collapsed=\"%s\""), m_oCollapsed->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" collapsed=\"%ls\""), m_oCollapsed->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oCustomWidth.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" customWidth=\"%s\""), m_oCustomWidth->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" customWidth=\"%ls\""), m_oCustomWidth->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oHidden.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" hidden=\"%s\""), m_oHidden->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" hidden=\"%ls\""), m_oHidden->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oMin.IsInit())
@@ -67,7 +67,7 @@ namespace OOX
 				}
 				if(m_oPhonetic.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" phonetic=\"%s\""), m_oPhonetic->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" phonetic=\"%ls\""), m_oPhonetic->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oStyle.IsInit())
@@ -77,7 +77,7 @@ namespace OOX
 				}
 				if(m_oWidth.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" width=\"%s\""), SpreadsheetCommon::WriteDouble(m_oWidth->GetValue()));
+					CString sVal; sVal.Format(_T(" width=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oWidth->GetValue()));
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T("/>"));

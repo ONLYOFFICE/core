@@ -33,7 +33,7 @@ namespace OOX
 			{
 				if(m_oId.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<drawing r:id=\"%s\"/>"), m_oId->GetValue());
+					CString sVal;sVal.Format(_T("<drawing r:id=\"%ls\"/>"), m_oId->GetValue());
 					writer.WriteString(sVal);
 				}
 				

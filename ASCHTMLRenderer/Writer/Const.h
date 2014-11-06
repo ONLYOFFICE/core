@@ -54,7 +54,7 @@ static CString g_string_vml_LineTo								= _T("l%d,%d ");
 static CString g_string_vml_CurveTo								= _T("c%d,%d,%d,%d,%d,%d ");
 
 // text (потом заменить на "умное" расположение текста)
-static CString g_string_text									= _T("<p style=\"position:absolute; left:%d; top:%d; font-family: %s; font-size: %dpx; color:#%x;\">%s</p>\n");
+static CString g_string_text									= _T("<p style=\"position:absolute; left:%d; top:%d; font-family: %ls; font-size: %dpx; color:#%x;\">%ls</p>\n");
 
 // image
 static CString g_string_image									= _T("<img style=\"position:absolute; left:%dpx; top: %dpx; width: %dpx; height:%dpx;\" src=\"media\\image%d.jpg\"");
@@ -62,11 +62,11 @@ static CString g_string_image									= _T("<img style=\"position:absolute; left
 //shape
 static CString g_bstr_shape_div									= L"<div style=\"position: absolute; width: 100%; height: 100%;\">\n";
 static CString g_string_shape									= _T("<canvas style=\"position:absolute left:0; top:0; width:%dpx; height:%dpx;\" id=\"shape_%d\" width=\"%dpx\" height=\"%dpx\">\n");
-static CString g_string_shape_vml								= _T("<v:shape style=\"position:absolute; width:1; height:1\" coordsize=\"1 1\" stroked=\"%s\" strokecolor=\"#%x\" filled=\"%s\" fillcolor=\"#%x\" path=\"%s\" />\n");
-static CString g_string_shape_vmlTexture						= _T("<v:shape style=\"position:absolute; width:1; height:1\" coordsize=\"1 1\" stroked=\"%s\" strokecolor=\"#%x\" filled=\"%s\" path=\"%s\"><v:fill src=\"media\\image%d.jpg\" type=\"frame\" opacity=\"%.2lf\"/></v:shape>\n");
-static CString g_string_shape_vmlAlpha							= _T("<v:shape style=\"position:absolute; width:1; height:1\" coordsize=\"1 1\" stroked=\"%s\" strokecolor=\"#%x\" filled=\"%s\" fillcolor=\"#%x\" path=\"%s\"><v:fill opacity=\"%.2lf\"/></v:shape>\n");
+static CString g_string_shape_vml								= _T("<v:shape style=\"position:absolute; width:1; height:1\" coordsize=\"1 1\" stroked=\"%ls\" strokecolor=\"#%x\" filled=\"%ls\" fillcolor=\"#%x\" path=\"%ls\" />\n");
+static CString g_string_shape_vmlTexture						= _T("<v:shape style=\"position:absolute; width:1; height:1\" coordsize=\"1 1\" stroked=\"%ls\" strokecolor=\"#%x\" filled=\"%ls\" path=\"%ls\"><v:fill src=\"media\\image%d.jpg\" type=\"frame\" opacity=\"%.2lf\"/></v:shape>\n");
+static CString g_string_shape_vmlAlpha							= _T("<v:shape style=\"position:absolute; width:1; height:1\" coordsize=\"1 1\" stroked=\"%ls\" strokecolor=\"#%x\" filled=\"%ls\" fillcolor=\"#%x\" path=\"%ls\"><v:fill opacity=\"%.2lf\"/></v:shape>\n");
 static CString g_bstr_shape_closecanvas							= L"</canvas>\n";
-static CString g_string_rect									= _T("<div class=\"rt\" style=\"border-width: %dpx; background-color: %s; border-color: %s; opacity:%.2lf; left: %dpx; top: %dpx; width: %dpx; height: %dpx;\"></div>\n");
+static CString g_string_rect									= _T("<div class=\"rt\" style=\"border-width: %dpx; background-color: %ls; border-color: %ls; opacity:%.2lf; left: %dpx; top: %dpx; width: %dpx; height: %dpx;\"></div>\n");
 
 // new
 static CString g_string_graphic_page							= _T("<canvas id=\"page%d_2D\" width=\"%dpx\" height=\"%dpx\">\n");
@@ -76,20 +76,20 @@ static CString g_string_page_method								= _T("function _tx%d(){\n");
 
 static CString g_string_canvas_page_script2						= _T("function drawpage%d()\n{\nvar drawingCanvas = document.getElementById('page%d_2D');\nif(drawingCanvas && drawingCanvas.getContext)\n{\nvar c = drawingCanvas.getContext('2d');\n");
 static CString g_bstr_paragraph1								= _T("<p class=\"bp\">");
-static CString g_string_paragraph2								= _T("<p class=\"bp\" style=\"font-family: %s; font-size: %dpx; color:#%x;\">");
-static CString g_string_paragraph3								= _T("<p class=\"bp\" style=\"left: %dpx; top: %dpx; font-family: %s; font-size: %dpx; color:#%x; white-space: nowrap;\">");
-static CString g_string_paragraph4								= _T("<p class=\"bp\" style=\"left: %dpx; top: %dpx; width: %dpx; height: %dpx; text-align: %s; line-height: %d; text-indent: %dpx\">");
-static CString g_string_paragraph5								= _T("<p id=\"l%d\" class=\"bp\" style=\"left: %dpx; top: %dpx; font-family: %s; font-size: %dpx; color:#%x;\" len=\"%d\">");
-static CString g_string_paragraph6								= _T("<p id=\"l%d\" class=\"bp\" style=\"left: %dpx; top: %dpx; width: %dpx; font-family: %s; font-size: %dpx; color:#%x;\">");
+static CString g_string_paragraph2								= _T("<p class=\"bp\" style=\"font-family: %ls; font-size: %dpx; color:#%x;\">");
+static CString g_string_paragraph3								= _T("<p class=\"bp\" style=\"left: %dpx; top: %dpx; font-family: %ls; font-size: %dpx; color:#%x; white-space: nowrap;\">");
+static CString g_string_paragraph4								= _T("<p class=\"bp\" style=\"left: %dpx; top: %dpx; width: %dpx; height: %dpx; text-align: %ls; line-height: %d; text-indent: %dpx\">");
+static CString g_string_paragraph5								= _T("<p id=\"l%d\" class=\"bp\" style=\"left: %dpx; top: %dpx; font-family: %ls; font-size: %dpx; color:#%x;\" len=\"%d\">");
+static CString g_string_paragraph6								= _T("<p id=\"l%d\" class=\"bp\" style=\"left: %dpx; top: %dpx; width: %dpx; font-family: %ls; font-size: %dpx; color:#%x;\">");
 static CString g_string_paragraph_style							= _T("<p class=\"bp s%d\" style=\"left: %dpx; top: %dpx; width: %dpx;\">");
 static CString g_string_paragraph_style_underline				= _T("<p class=\"bp s%d\" style=\"left: %dpx; top: %dpx; width: %dpx; text-decoration:underline;\">");
 static CString g_string_paragraph_style_strike					= _T("<p class=\"bp s%d\" style=\"left: %dpx; top: %dpx; width: %dpx; text-decoration:line-through;\">");
 static CString g_string_paragraph_style_underline_strike		= _T("<p class=\"bp s%d\" style=\"left: %dpx; top: %dpx; width: %dpx; text-decoration:underline line-through;\">");
 
-static CString g_string_text_css								= _T("font-family: %s; font-size: %dpx; color:#%06x; font-style:normal; font-weight:normal;");
-static CString g_string_text_css_ib								= _T("font-family: %s; font-size: %dpx; color:#%06x; font-style:italic; font-weight:bold;");
-static CString g_string_text_css_i								= _T("font-family: %s; font-size: %dpx; color:#%06x; font-style:italic; font-weight:normal;");
-static CString g_string_text_css_b								= _T("font-family: %s; font-size: %dpx; color:#%06x; font-weight:bold; font-style:normal;");
+static CString g_string_text_css								= _T("font-family: %ls; font-size: %dpx; color:#%06x; font-style:normal; font-weight:normal;");
+static CString g_string_text_css_ib								= _T("font-family: %ls; font-size: %dpx; color:#%06x; font-style:italic; font-weight:bold;");
+static CString g_string_text_css_i								= _T("font-family: %ls; font-size: %dpx; color:#%06x; font-style:italic; font-weight:normal;");
+static CString g_string_text_css_b								= _T("font-family: %ls; font-size: %dpx; color:#%06x; font-weight:bold; font-style:normal;");
 static CString g_string_style_name								= _T(".s%d {");
 
 static CString g_bstr_paragraph_end								= _T("</p>\n");
@@ -102,8 +102,8 @@ static CString g_string_lineFunc								= _T("mt(\"l%d\",%d);");
 static CString g_bstr_lineMeasure								= L"function mt(id,size){var el = document.getElementById(id);if (el.offsetWidth < size){el.className=\"pa\";el.style.width=size;}}\n";
 
 static CString g_string_span1									= _T("<span class=\"bt\" style=\"left:%d; top:%d;\">");
-static CString g_string_span2									= _T("<span class=\"bt\" style=\"left:%d; top:%d; font-family: %s; font-size: %dpx; color:#%x;\">");
-static CString g_string_span3									= _T("<span class=\"bs\" style=\"font-family: %s; font-size: %dpx; color:#%x;\">");
+static CString g_string_span2									= _T("<span class=\"bt\" style=\"left:%d; top:%d; font-family: %ls; font-size: %dpx; color:#%x;\">");
+static CString g_string_span3									= _T("<span class=\"bs\" style=\"font-family: %ls; font-size: %dpx; color:#%x;\">");
 static CString g_string_span_style								= _T("<span class=\"s%d\">");
 static CString g_string_span_style_underline					= _T("<span class=\"s%d\" style=\"text-decoration:underline;\">");
 static CString g_string_span_style_strike						= _T("<span class=\"s%d\" style=\"text-decoration:line-through;\">");

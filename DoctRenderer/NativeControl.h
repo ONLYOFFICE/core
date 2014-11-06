@@ -37,6 +37,12 @@ public:
 	int m_nCurrentChangesNumber;
 	int m_nMaxChangesNumber;
 
+	BYTE* m_pSaveBinary;
+	int m_nSaveLen;
+	
+	int m_nSaveBinaryLen;
+	CStringA m_sHeader;
+
 public:
 	CMemoryStream* m_pStream;
 
@@ -47,11 +53,51 @@ public:
 
 		m_nCurrentChangesNumber = -1;
 		m_nMaxChangesNumber = -1;
+
+		m_pSaveBinary = NULL;
+		m_nSaveLen = 0;
+		m_nSaveBinaryLen = 0;
 	}
 	~CNativeControl()
 	{
 		RELEASEOBJECT(m_pStream);
 		m_pChanges = NULL;
+
+		RELEASEARRAYOBJECTS(m_pSaveBinary);
+		m_nSaveLen = 0;
+	}
+
+public:
+
+	void Save_Alloc(int nLen)
+	{
+		m_nSaveLen = nLen;
+		m_pSaveBinary = new BYTE[m_nSaveLen];
+		memset(m_pSaveBinary, 0xFF, m_nSaveLen);
+	}
+
+	void Save_ReAlloc(int pos, int len)
+	{
+		BYTE* pOld = m_pSaveBinary;
+		m_nSaveLen = len;
+		m_pSaveBinary = new BYTE[m_nSaveLen];
+		
+		memcpy(m_pSaveBinary, pOld, pos);
+
+		RELEASEARRAYOBJECTS(pOld);
+	}
+
+	void Save_End(CStringA sHeader, int len)
+	{		
+		m_sHeader = sHeader;
+		m_nSaveBinaryLen = len;
+	}
+
+	void Save_Destroy()
+	{
+		RELEASEARRAYOBJECTS(m_pSaveBinary);
+		m_nSaveLen = 0;
+		m_nSaveBinaryLen = 0;
 	}
 
 public:	
@@ -247,6 +293,53 @@ void _GetFileString(const v8::FunctionCallbackInfo<v8::Value>& args)
 	args.GetReturnValue().Set(v8::String::NewFromUtf8(v8::Isolate::GetCurrent(), (char*)pData, v8::String::kNormalString, len));
 }
 
+void _Save_AllocNative(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+	args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
+	if (args.Length() < 1)
+		return;
+
+	CNativeControl* pNative = unwrap_nativeobject(args.This());
+	v8::Local<v8::Int32> intValue = args[0]->ToInt32();
+	int nLen = (int)intValue->Value();
+	
+	pNative->Save_Alloc(nLen);
+
+	v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)pNative->m_pSaveBinary, (size_t)pNative->m_nSaveLen);
+	v8::Local<v8::Uint8Array> _array = v8::Uint8Array::New(_buffer, 0, (size_t)pNative->m_nSaveLen);
+	args.GetReturnValue().Set(_array);
+}
+
+void _Save_ReAllocNative(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+	args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
+	if (args.Length() < 2)
+		return;
+
+	CNativeControl* pNative = unwrap_nativeobject(args.This());
+	int _pos = args[0]->Int32Value();
+	int _len = args[1]->Int32Value();
+	
+	pNative->Save_ReAlloc(_pos, _len);
+
+	v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)pNative->m_pSaveBinary, (size_t)pNative->m_nSaveLen);
+	v8::Local<v8::Uint8Array> _array = v8::Uint8Array::New(_buffer, 0, (size_t)pNative->m_nSaveLen);
+	args.GetReturnValue().Set(_array);
+}
+
+void _Save_End(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+	args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
+	if (args.Length() < 2)
+		return;
+
+	CNativeControl* pNative = unwrap_nativeobject(args.This());
+	CStringA sHeader = to_cstringA(args[0]);
+	int _len = args[1]->Int32Value();
+
+	pNative->Save_End(sHeader, _len);
+}
+
 void _ConsoleLog(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
 	args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
@@ -281,6 +374,10 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
 
 	result->Set(v8::String::NewFromUtf8(current, "GetCountChanges"), v8::FunctionTemplate::New(current, _GetChangesCount));
 	result->Set(v8::String::NewFromUtf8(current, "GetChangesFile"), v8::FunctionTemplate::New(current, _GetChangesFile));
+
+	result->Set(v8::String::NewFromUtf8(current, "Save_AllocNative"), v8::FunctionTemplate::New(current, _Save_AllocNative));
+	result->Set(v8::String::NewFromUtf8(current, "Save_ReAllocNative"), v8::FunctionTemplate::New(current, _Save_ReAllocNative));
+	result->Set(v8::String::NewFromUtf8(current, "Save_End"), v8::FunctionTemplate::New(current, _Save_End));
 
 	result->Set(v8::String::NewFromUtf8(current, "ConsoleLog"), v8::FunctionTemplate::New(current, _ConsoleLog));
 
@@ -491,3 +588,519 @@ enum CommandType
 
     ctError						    = 255
 };
+
+class CChangesWorker
+{
+private:
+	BYTE*	m_pData;
+	BYTE*	m_pDataCur;
+	int		m_nLen;
+
+	int		m_nMaxUnionSize = 100 * 1024 * 1024; // 100Mb
+	v8::Local<v8::ArrayBuffer> m_oArrayBuffer;
+
+	int		m_nFileType; // 0 - docx; 1 - excel
+
+public:
+	CChangesWorker()
+	{
+		m_pData = NULL;
+		m_pDataCur = m_pData;
+		m_nLen = 0;
+
+		m_nFileType = 0;
+	}
+	~CChangesWorker()
+	{
+		if (NULL != m_pData)
+			delete[] m_pData;
+	}
+
+	void SetFormatChanges(const int& nFileType)
+	{
+		m_nFileType = nFileType;
+	}
+
+public:	
+
+	void CheckFiles(CAtlArray<CString>& oFiles)
+	{
+		int nMax = 0;
+		int nLen = 0;
+
+		int nCount = (int)oFiles.GetCount();
+		for (int i = 0; i < nCount; ++i)
+		{
+			CFile oFile;
+			oFile.OpenFile(oFiles[i]);
+
+			int nSize = (int)oFile.GetFileSize();
+
+			if (nMax < nSize)
+				nMax = nSize;
+
+			nLen += nSize;
+			oFile.CloseFile();
+		}
+
+		if (nLen <= m_nMaxUnionSize)
+		{
+			// все убралось - выделяем один кусок
+			m_nLen = nLen + 4;
+		}
+		else
+		{
+			m_nLen = nMax + 4;
+			if (m_nLen < m_nMaxUnionSize)
+				m_nLen = m_nMaxUnionSize;
+		}
+
+		m_pData = new BYTE[m_nLen];
+		m_pDataCur = m_pData;
+
+		m_oArrayBuffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)m_pData, (size_t)m_nLen);
+	}
+
+	inline int Open(CAtlArray<CString>& oFiles, int nStart)
+	{
+		if (m_nFileType == 0)
+			return Open_docx(oFiles, nStart);
+		return Open_excel(oFiles, nStart);
+	}
+
+	int Open_docx(CAtlArray<CString>& oFiles, int nStart)
+	{
+		m_pDataCur += 4;
+		int nCountData = 0;
+
+		int nCount = oFiles.GetCount();
+		int nLenCurrect = 0;
+		int i = nStart;
+		for (; i < nCount; i++)
+		{
+			CFile oFile;
+			oFile.OpenFile(oFiles[i]);
+
+			int nLen = (int)oFile.GetFileSize();
+			nLenCurrect += nLen;
+
+			if (nLenCurrect > m_nLen)
+				break;
+
+			char* pData = new char[nLen];
+
+			oFile.ReadFile((BYTE*)pData, nLen);
+
+			// parse data
+			int nCur = 0;
+			while (nCur < nLen)
+			{
+				// Id
+				skip_name(pData, nCur, nLen);
+				if (nCur >= nLen)
+					break;
+
+				int nId = read_int(pData, nCur, nLen);
+				*((int*)m_pDataCur) = nId;
+				m_pDataCur += 4;
+
+				// data
+				skip_name(pData, nCur, nLen);
+				skip_int2(pData, nCur, nLen);
+
+				read_base64(pData, nCur, nLen);
+				++nCur;
+
+				++nCountData;
+			}
+
+			delete[]pData;
+		}
+
+		*((int*)m_pData) = nCountData;
+		return i;
+	}
+
+	int Open_excel(CAtlArray<CString>& oFiles, int nStart)
+	{
+		m_pDataCur += 4;
+		int nCountData = 0;
+
+		int nCount = oFiles.GetCount();
+		int nLenCurrect = 0;
+		int i = nStart;
+		for (; i < nCount; i++)
+		{
+			CFile oFile;
+			oFile.OpenFile(oFiles[i]);
+
+			int nLen = (int)oFile.GetFileSize();
+			nLenCurrect += nLen;
+
+			if (nLenCurrect > m_nLen)
+				break;
+
+			char* pData = new char[nLen];
+
+			oFile.ReadFile((BYTE*)pData, nLen);
+
+			// parse data
+			int nCur = 0;
+			while (nCur < nLen)
+			{
+				skip_int2(pData, nCur, nLen);
+
+				read_base64(pData, nCur, nLen);
+				++nCur;
+
+				++nCountData;
+			}
+
+			delete[]pData;
+		}
+
+		*((int*)m_pData) = nCountData;
+		return i;
+	}
+
+	v8::Local<v8::Uint8Array> GetData()
+	{
+		size_t len = (size_t)(m_pDataCur - m_pData);
+		v8::Local<v8::Uint8Array> _array = v8::Uint8Array::New(m_oArrayBuffer, 0, len);
+		return _array;
+	}
+
+public:
+	void OpenFull(CAtlArray<CString>& oFiles)
+	{
+		// определяем размер
+		int nCount = (int)oFiles.GetCount();
+		for (int i = 0; i < nCount; ++i)
+		{
+			CFile oFile;
+			oFile.OpenFile(oFiles[i]);
+			m_nLen += (int)oFile.GetFileSize();
+			oFile.CloseFile();
+		}
+
+		m_pData = new BYTE[m_nLen];
+		m_pDataCur = m_pData;
+
+		m_pDataCur += 4;
+		int nCountData = 0;
+
+		for (int i = 0; i < nCount; i++)
+		{
+			CFile oFile;
+			oFile.OpenFile(oFiles[i]);
+
+			int nLen = (int)oFile.GetFileSize();
+			char* pData = new char[nLen];
+
+			oFile.ReadFile((BYTE*)pData, nLen);
+
+			// parse data
+			int nCur = 0;
+			while (nCur < nLen)
+			{
+				// Id
+				skip_name(pData, nCur, nLen);
+				if (nCur >= nLen)
+					break;
+
+				int nId = read_int(pData, nCur, nLen);
+				*((int*)m_pDataCur) = nId;
+				m_pDataCur += 4;
+
+				// data
+				skip_name(pData, nCur, nLen);
+				skip_int2(pData, nCur, nLen);
+
+				read_base64(pData, nCur, nLen);
+				++nCur;
+
+				++nCountData;
+			}
+
+			delete[]pData;
+		}
+
+		*((int*)m_pData) = nCountData;
+	}
+
+	void OpenFull_excel(CAtlArray<CString>& oFiles)
+	{
+		// определяем размер
+		int nCount = (int)oFiles.GetCount();
+		for (int i = 0; i < nCount; ++i)
+		{
+			CFile oFile;
+			oFile.OpenFile(oFiles[i]);
+			m_nLen += (int)oFile.GetFileSize();
+			oFile.CloseFile();
+		}
+
+		m_pData = new BYTE[m_nLen];
+		m_pDataCur = m_pData;
+
+		m_pDataCur += 4;
+		int nCountData = 0;
+
+		for (int i = 0; i < nCount; i++)
+		{
+			CFile oFile;
+			oFile.OpenFile(oFiles[i]);
+
+			int nLen = (int)oFile.GetFileSize();
+			char* pData = new char[nLen];
+
+			oFile.ReadFile((BYTE*)pData, nLen);
+
+			// parse data
+			int nCur = 0;
+			while (nCur < nLen)
+			{
+				skip_int2(pData, nCur, nLen);
+
+				read_base64(pData, nCur, nLen);
+				++nCur;
+
+				++nCountData;
+			}
+
+			delete[]pData;
+		}
+
+		*((int*)m_pData) = nCountData;
+	}
+
+	v8::Local<v8::Uint8Array> GetDataFull()
+	{
+		size_t len = (size_t)(m_pDataCur - m_pData);
+		v8::Local<v8::ArrayBuffer> _buffer = v8::ArrayBuffer::New(v8::Isolate::GetCurrent(), (void*)m_pData, len);
+		v8::Local<v8::Uint8Array> _array = v8::Uint8Array::New(_buffer, 0, len);
+		return _array;
+	}
+
+	int OpenNative(CString strFile)
+	{
+		CFile oFile;
+		oFile.OpenFile(strFile);
+
+		int nLen = (int)oFile.GetFileSize();
+		char* pData = new char[nLen];
+
+		oFile.ReadFile((BYTE*)pData, nLen);
+
+		int nCur = 0;
+
+		// DOCY
+		skip_int2(pData, nCur, nLen);
+		// v
+		skip_no_digit(pData, nCur, nLen);
+		int nVersion = read_int2(pData, nCur, nLen);
+
+		m_nLen = read_int2(pData, nCur, nLen);
+		
+		m_pData = new BYTE[m_nLen];
+		m_pDataCur = m_pData;
+
+		read_base64_2(pData, nCur, nLen);
+
+		delete[]pData;
+
+		return nVersion;
+	}
+
+	__forceinline void skip_name(const char* data, int& cur, const int& len)
+	{
+		int nCount = 0;
+		while (cur < len)
+		{
+			if (data[cur] == '\"')
+				++nCount;
+
+			++cur;
+
+			if (3 == nCount)
+				break;
+		}
+	}
+
+	__forceinline int read_int(const char* data, int& cur, const int& len)
+	{
+		int res = 0;
+		while (cur < len)
+		{
+			if (data[cur] == '\"')
+			{
+				++cur;
+				break;
+			}
+
+			res *= 10;
+			res += (data[cur++] - '0');
+		}
+
+		return res;
+	}
+	__forceinline void skip_int2(const char* data, int& cur, const int& len)
+	{
+		while (cur < len)
+		{
+			if (data[cur++] == ';')
+				break;
+		}
+	}
+	__forceinline int read_int2(const char* data, int& cur, const int& len)
+	{
+		int res = 0;
+		while (cur < len)
+		{
+			if (data[cur] == ';')
+			{
+				++cur;
+				break;
+			}
+
+			res *= 10;
+			res += (data[cur++] - '0');
+		}
+
+		return res;
+	}
+	__forceinline void skip_no_digit(const char* data, int& cur, const int& len)
+	{
+		while (cur < len)
+		{
+			char _c = data[cur];
+			if (_c >= '0' && _c <= '9')
+				break;
+			++cur;
+		}
+	}
+
+	__forceinline void read_base64(const char* data, int& cur, const int& len)
+	{
+		Base64Decode(data, cur, len);
+	}
+	__forceinline void read_base64_2(const char* data, int& cur, const int& len)
+	{
+		Base64Decode2(data, cur, len);
+	}
+
+private:
+	__forceinline int DecodeBase64Char(unsigned int ch)
+	{
+		// returns -1 if the character is invalid
+		// or should be skipped
+		// otherwise, returns the 6-bit code for the character
+		// from the encoding table
+		if (ch >= 'A' && ch <= 'Z')
+			return ch - 'A' + 0;	// 0 range starts at 'A'
+		if (ch >= 'a' && ch <= 'z')
+			return ch - 'a' + 26;	// 26 range starts at 'a'
+		if (ch >= '0' && ch <= '9')
+			return ch - '0' + 52;	// 52 range starts at '0'
+		if (ch == '+')
+			return 62;
+		if (ch == '/')
+			return 63;
+		return -1;
+	}
+
+	void Base64Decode(const char* data, int& cur, const int& len)
+	{
+		// walk the source buffer
+		// each four character sequence is converted to 3 bytes
+		// CRLFs and =, and any characters not in the encoding table
+		// are skiped
+
+		BYTE* pDataLen = m_pDataCur;
+		m_pDataCur += 4;
+
+		int nWritten = 0;
+		while (cur < len && data[cur] != '\"')
+		{
+			DWORD dwCurr = 0;
+			int i;
+			int nBits = 0;
+			for (i = 0; i<4; i++)
+			{
+				if (data[cur] == '\"')
+					break;
+				int nCh = DecodeBase64Char(data[cur++]);
+				if (nCh == -1)
+				{
+					// skip this char
+					i--;
+					continue;
+				}
+				dwCurr <<= 6;
+				dwCurr |= nCh;
+				nBits += 6;
+			}
+
+			// dwCurr has the 3 bytes to write to the output buffer
+			// left to right
+			dwCurr <<= 24 - nBits;
+			for (i = 0; i<nBits / 8; i++)
+			{
+				*m_pDataCur = (BYTE)((dwCurr & 0x00ff0000) >> 16);
+				++m_pDataCur;
+
+				dwCurr <<= 8;
+				nWritten++;
+			}
+
+		}
+
+		*((int*)pDataLen) = nWritten;
+	}
+
+	void Base64Decode2(const char* data, int& cur, const int& len)
+	{
+		// walk the source buffer
+		// each four character sequence is converted to 3 bytes
+		// CRLFs and =, and any characters not in the encoding table
+		// are skiped
+
+		int nWritten = 0;
+		while (cur < len && data[cur] != '\"')
+		{
+			DWORD dwCurr = 0;
+			int i;
+			int nBits = 0;
+			for (i = 0; i<4; i++)
+			{
+				if (cur >= len)
+					break;
+				int nCh = DecodeBase64Char(data[cur++]);
+				if (nCh == -1)
+				{
+					// skip this char
+					i--;
+					continue;
+				}
+				dwCurr <<= 6;
+				dwCurr |= nCh;
+				nBits += 6;
+			}
+
+			// dwCurr has the 3 bytes to write to the output buffer
+			// left to right
+			dwCurr <<= 24 - nBits;
+			for (i = 0; i<nBits / 8; i++)
+			{
+				*m_pDataCur = (BYTE)((dwCurr & 0x00ff0000) >> 16);
+				++m_pDataCur;
+
+				dwCurr <<= 8;
+				nWritten++;
+			}
+
+		}
+	}
+};
+
+//////////////////////////////////////////////////////////////////////////////

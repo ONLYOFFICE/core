@@ -28,6 +28,8 @@
 
 #define _USE_LIBXML2_READER_
 
+#pragma comment(lib, "libxml2.lib")
+
 using namespace ATL;
 
 #include "../ASCImageStudio3/ASCGraphics/Interfaces/ASCRenderer.h"

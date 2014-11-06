@@ -11,14 +11,14 @@ namespace NSHtmlRenderer
 	static CString g_vml_string_LineTo				= _T("l%d,%d ");
 	static CString g_vml_string_CurveTo				= _T("c%d,%d,%d,%d,%d,%d ");
 
-	static CString g_vml_string_shape_vml			= _T("<v:shape style=\"position:absolute; width:1; height:1\" stroked=\"%s\" strokecolor=\"#%x\" filled=\"%s\" fillcolor=\"#%x\" path=\"%s\" />\n");
-	static CString g_vml_string_shape_vml_Dash		= _T("<v:shape style=\"position:absolute; width:1; height:1\" stroked=\"%s\" strokecolor=\"#%x\" filled=\"%s\" fillcolor=\"#%x\" path=\"%s\"><v:stroke dashstyle=\"dot\"/></v:shape>\n");
+	static CString g_vml_string_shape_vml			= _T("<v:shape style=\"position:absolute; width:1; height:1\" stroked=\"%ls\" strokecolor=\"#%x\" filled=\"%ls\" fillcolor=\"#%x\" path=\"%ls\" />\n");
+	static CString g_vml_string_shape_vml_Dash		= _T("<v:shape style=\"position:absolute; width:1; height:1\" stroked=\"%ls\" strokecolor=\"#%x\" filled=\"%ls\" fillcolor=\"#%x\" path=\"%ls\"><v:stroke dashstyle=\"dot\"/></v:shape>\n");
 
-	static CString g_vml_string_shape_vmlTextureJPG = _T("<v:shape style=\"position:absolute; width:1; height:1\" stroked=\"%s\" strokecolor=\"#%x\" filled=\"%s\" path=\"%s\"><v:fill src=\"media/image%d.jpg\" type=\"frame\" opacity=\"%.2lf\"/></v:shape>\n");
-	static CString g_vml_string_shape_vmlTexturePNG = _T("<v:shape style=\"position:absolute; width:1; height:1\" stroked=\"%s\" strokecolor=\"#%x\" filled=\"%s\" path=\"%s\"><v:fill src=\"media/image%d.png\" type=\"frame\" opacity=\"%.2lf\"/></v:shape>\n");
+	static CString g_vml_string_shape_vmlTextureJPG = _T("<v:shape style=\"position:absolute; width:1; height:1\" stroked=\"%ls\" strokecolor=\"#%x\" filled=\"%ls\" path=\"%ls\"><v:fill src=\"media/image%d.jpg\" type=\"frame\" opacity=\"%.2lf\"/></v:shape>\n");
+	static CString g_vml_string_shape_vmlTexturePNG = _T("<v:shape style=\"position:absolute; width:1; height:1\" stroked=\"%ls\" strokecolor=\"#%x\" filled=\"%ls\" path=\"%ls\"><v:fill src=\"media/image%d.png\" type=\"frame\" opacity=\"%.2lf\"/></v:shape>\n");
 	
-	static CString g_vml_string_shape_vmlAlpha		= _T("<v:shape style=\"position:absolute; width:1; height:1\" stroked=\"%s\" strokecolor=\"#%x\" filled=\"%s\" fillcolor=\"#%x\" path=\"%s\"><v:fill opacity=\"%.2lf\"/></v:shape>\n");
-	static CString g_vml_string_shape_vmlAlphaDash	= _T("<v:shape style=\"position:absolute; width:1; height:1\" stroked=\"%s\" strokecolor=\"#%x\" filled=\"%s\" fillcolor=\"#%x\" path=\"%s\"><v:fill opacity=\"%.2lf\"/><v:stroke dashstyle=\"dot\"/></v:shape>\n");
+	static CString g_vml_string_shape_vmlAlpha		= _T("<v:shape style=\"position:absolute; width:1; height:1\" stroked=\"%ls\" strokecolor=\"#%x\" filled=\"%ls\" fillcolor=\"#%x\" path=\"%ls\"><v:fill opacity=\"%.2lf\"/></v:shape>\n");
+	static CString g_vml_string_shape_vmlAlphaDash	= _T("<v:shape style=\"position:absolute; width:1; height:1\" stroked=\"%ls\" strokecolor=\"#%x\" filled=\"%ls\" fillcolor=\"#%x\" path=\"%ls\"><v:fill opacity=\"%.2lf\"/><v:stroke dashstyle=\"dot\"/></v:shape>\n");
 
 	static CString g_vml_string_shape_image_jpg		= _T("<v:image src=\"media/image%d.jpg\" style=\"left:%d;top:%d;width:%d;height:%d;\"/>");
 	static CString g_vml_string_shape_image_png		= _T("<v:image src=\"media/image%d.png\" style=\"left:%d;top:%d;width:%d;height:%d;\"/>");

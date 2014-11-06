@@ -2572,7 +2572,7 @@ namespace XmlUtils
 			try
 			{
 				//CString strXPath;
-				//strXPath.Format( _T("*[local-name(.) = '%s']"), strSubNodeName);
+				//strXPath.Format( _T("*[local-name(.) = '%ls']"), strSubNodeName);
 
 				_bstr_t bstrNode; bstrNode = strSubNodeName;
 				//_bstr_t bstrNode; bstrNode = strXPath;

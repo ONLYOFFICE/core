@@ -1272,7 +1272,7 @@ namespace OOX{
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -1318,7 +1318,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_id);
-				sXml.Format(_T(" r:id=\"%s\""), sVal);
+				sXml.Format(_T(" r:id=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T(" xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:c14=\"http://schemas.microsoft.com/office/drawing/2007/8/2/chart\"")));
@@ -1444,7 +1444,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_paperSize);
-				sXml.Format(_T(" paperSize=\"%s\""), sVal);
+				sXml.Format(_T(" paperSize=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_paperHeight)
@@ -1452,7 +1452,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_paperHeight);
-				sXml.Format(_T(" paperHeight=\"%s\""), sVal);
+				sXml.Format(_T(" paperHeight=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_paperWidth)
@@ -1460,7 +1460,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_paperWidth);
-				sXml.Format(_T(" paperWidth=\"%s\""), sVal);
+				sXml.Format(_T(" paperWidth=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_firstPageNumber)
@@ -1468,7 +1468,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_firstPageNumber);
-				sXml.Format(_T(" firstPageNumber=\"%s\""), sVal);
+				sXml.Format(_T(" firstPageNumber=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_orientation)
@@ -1477,7 +1477,7 @@ namespace OOX{
 				if(ToXml_ST_PageSetupOrientation(*m_orientation, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" orientation=\"%s\""), sEnumVal);
+					sVal.Format(_T(" orientation=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -1489,7 +1489,7 @@ namespace OOX{
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" blackAndWhite=\"%s\""), sVal);
+				sXml.Format(_T(" blackAndWhite=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_draft)
@@ -1500,7 +1500,7 @@ namespace OOX{
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" draft=\"%s\""), sVal);
+				sXml.Format(_T(" draft=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_useFirstPageNumber)
@@ -1511,7 +1511,7 @@ namespace OOX{
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" useFirstPageNumber=\"%s\""), sVal);
+				sXml.Format(_T(" useFirstPageNumber=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_horizontalDpi)
@@ -1519,7 +1519,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_horizontalDpi);
-				sXml.Format(_T(" horizontalDpi=\"%s\""), sVal);
+				sXml.Format(_T(" horizontalDpi=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_verticalDpi)
@@ -1527,7 +1527,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_verticalDpi);
-				sXml.Format(_T(" verticalDpi=\"%s\""), sVal);
+				sXml.Format(_T(" verticalDpi=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_copies)
@@ -1535,7 +1535,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_copies);
-				sXml.Format(_T(" copies=\"%s\""), sVal);
+				sXml.Format(_T(" copies=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -1678,7 +1678,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = SpreadsheetCommon::WriteDouble(*m_l);
-				sXml.Format(_T(" l=\"%s\""), sVal);
+				sXml.Format(_T(" l=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_r)
@@ -1686,7 +1686,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = SpreadsheetCommon::WriteDouble(*m_r);
-				sXml.Format(_T(" r=\"%s\""), sVal);
+				sXml.Format(_T(" r=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_t)
@@ -1694,7 +1694,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = SpreadsheetCommon::WriteDouble(*m_t);
-				sXml.Format(_T(" t=\"%s\""), sVal);
+				sXml.Format(_T(" t=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_b)
@@ -1702,7 +1702,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = SpreadsheetCommon::WriteDouble(*m_b);
-				sXml.Format(_T(" b=\"%s\""), sVal);
+				sXml.Format(_T(" b=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_header)
@@ -1710,7 +1710,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = SpreadsheetCommon::WriteDouble(*m_header);
-				sXml.Format(_T(" header=\"%s\""), sVal);
+				sXml.Format(_T(" header=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_footer)
@@ -1718,7 +1718,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = SpreadsheetCommon::WriteDouble(*m_footer);
-				sXml.Format(_T(" footer=\"%s\""), sVal);
+				sXml.Format(_T(" footer=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -1894,7 +1894,7 @@ namespace OOX{
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" alignWithMargins=\"%s\""), sVal);
+				sXml.Format(_T(" alignWithMargins=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_differentOddEven)
@@ -1905,7 +1905,7 @@ namespace OOX{
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" differentOddEven=\"%s\""), sVal);
+				sXml.Format(_T(" differentOddEven=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_differentFirst)
@@ -1916,7 +1916,7 @@ namespace OOX{
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" differentFirst=\"%s\""), sVal);
+				sXml.Format(_T(" differentFirst=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T(">")));
@@ -1926,9 +1926,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_oddHeader);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:oddHeader xml:space=\"preserve\">%s</c:oddHeader>"), sVal);
+					sXml.Format(_T("<c:oddHeader xml:space=\"preserve\">%ls</c:oddHeader>"), sVal);
 				else
-					sXml.Format(_T("<c:oddHeader>%s</c:oddHeader>"), sVal);
+					sXml.Format(_T("<c:oddHeader>%ls</c:oddHeader>"), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_oddFooter)
@@ -1937,9 +1937,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_oddFooter);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:oddFooter xml:space=\"preserve\">%s</c:oddFooter>"), sVal);
+					sXml.Format(_T("<c:oddFooter xml:space=\"preserve\">%ls</c:oddFooter>"), sVal);
 				else
-					sXml.Format(_T("<c:oddFooter>%s</c:oddFooter>"), sVal);
+					sXml.Format(_T("<c:oddFooter>%ls</c:oddFooter>"), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_evenHeader)
@@ -1948,9 +1948,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_evenHeader);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:evenHeader xml:space=\"preserve\">%s</c:evenHeader>"), sVal);
+					sXml.Format(_T("<c:evenHeader xml:space=\"preserve\">%ls</c:evenHeader>"), sVal);
 				else
-					sXml.Format(_T("<c:evenHeader>%s</c:evenHeader>"), sVal);
+					sXml.Format(_T("<c:evenHeader>%ls</c:evenHeader>"), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_evenFooter)
@@ -1959,9 +1959,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_evenFooter);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:evenFooter xml:space=\"preserve\">%s</c:evenFooter>"), sVal);
+					sXml.Format(_T("<c:evenFooter xml:space=\"preserve\">%ls</c:evenFooter>"), sVal);
 				else
-					sXml.Format(_T("<c:evenFooter>%s</c:evenFooter>"), sVal);
+					sXml.Format(_T("<c:evenFooter>%ls</c:evenFooter>"), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_firstHeader)
@@ -1970,9 +1970,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_firstHeader);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:firstHeader xml:space=\"preserve\">%s</c:firstHeader>"), sVal);
+					sXml.Format(_T("<c:firstHeader xml:space=\"preserve\">%ls</c:firstHeader>"), sVal);
 				else
-					sXml.Format(_T("<c:firstHeader>%s</c:firstHeader>"), sVal);
+					sXml.Format(_T("<c:firstHeader>%ls</c:firstHeader>"), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_firstFooter)
@@ -1981,9 +1981,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_firstFooter);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:firstFooter xml:space=\"preserve\">%s</c:firstFooter>"), sVal);
+					sXml.Format(_T("<c:firstFooter xml:space=\"preserve\">%ls</c:firstFooter>"), sVal);
 				else
-					sXml.Format(_T("<c:firstFooter>%s</c:firstFooter>"), sVal);
+					sXml.Format(_T("<c:firstFooter>%ls</c:firstFooter>"), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("</")));
@@ -2135,7 +2135,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_id);
-				sXml.Format(_T(" r:id=\"%s\""), sVal);
+				sXml.Format(_T(" r:id=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T(">")));
@@ -2187,7 +2187,7 @@ namespace OOX{
 				if(ToXml_ST_DispBlanksAs(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -2311,7 +2311,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -2366,7 +2366,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_uri);
-				sXml.Format(_T(" uri=\"%s\""), sVal);
+				sXml.Format(_T(" uri=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T(">")));
@@ -2376,9 +2376,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_Any);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:Any xml:space=\"preserve\">%s</c:Any>"), sVal);
+					sXml.Format(_T("<c:Any xml:space=\"preserve\">%ls</c:Any>"), sVal);
 				else
-					sXml.Format(_T("<c:Any>%s</c:Any>"), sVal);
+					sXml.Format(_T("<c:Any>%ls</c:Any>"), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("</")));
@@ -2423,7 +2423,7 @@ namespace OOX{
 				if(ToXml_ST_LegendPos(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -2814,7 +2814,7 @@ namespace OOX{
 				if(ToXml_ST_LayoutTarget(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -2861,7 +2861,7 @@ namespace OOX{
 				if(ToXml_ST_LayoutMode(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -2906,7 +2906,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = SpreadsheetCommon::WriteDouble(*m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -3456,7 +3456,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = SpreadsheetCommon::WriteDouble(*m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -3499,7 +3499,7 @@ namespace OOX{
 				if(ToXml_ST_Orientation(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -3544,7 +3544,7 @@ namespace OOX{
 				if(ToXml_ST_AxPos(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -3842,9 +3842,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_f);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:f xml:space=\"preserve\">%s</c:f>"), sVal);
+					sXml.Format(_T("<c:f xml:space=\"preserve\">%ls</c:f>"), sVal);
 				else
-					sXml.Format(_T("<c:f>%s</c:f>"), sVal);
+					sXml.Format(_T("<c:f>%ls</c:f>"), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_strCache)
@@ -3970,7 +3970,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_idx);
-				sXml.Format(_T(" idx=\"%s\""), sVal);
+				sXml.Format(_T(" idx=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T(">")));
@@ -3980,9 +3980,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_v);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:v xml:space=\"preserve\">%s</c:v>"), sVal);
+					sXml.Format(_T("<c:v xml:space=\"preserve\">%ls</c:v>"), sVal);
 				else
-					sXml.Format(_T("<c:v>%s</c:v>"), sVal);
+					sXml.Format(_T("<c:v>%ls</c:v>"), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("</")));
@@ -4027,7 +4027,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_formatCode);
-				sXml.Format(_T(" formatCode=\"%s\""), sVal);
+				sXml.Format(_T(" formatCode=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_sourceLinked)
@@ -4038,7 +4038,7 @@ namespace OOX{
 					sVal = _T("1");
 				else
 					sVal = _T("0");
-				sXml.Format(_T(" sourceLinked=\"%s\""), sVal);
+				sXml.Format(_T(" sourceLinked=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -4093,7 +4093,7 @@ namespace OOX{
 				if(ToXml_ST_TickMark(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -4140,7 +4140,7 @@ namespace OOX{
 				if(ToXml_ST_TickLblPos(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -4185,7 +4185,7 @@ namespace OOX{
 				if(ToXml_ST_Crosses(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -4228,7 +4228,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -4271,7 +4271,7 @@ namespace OOX{
 				if(ToXml_ST_TimeUnit(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -4681,7 +4681,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -4721,7 +4721,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = SpreadsheetCommon::WriteDouble(*m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -4762,7 +4762,7 @@ namespace OOX{
 				if(ToXml_ST_LblAlgn(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -5239,7 +5239,7 @@ namespace OOX{
 				if(ToXml_ST_BuiltInUnit(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -5363,7 +5363,7 @@ namespace OOX{
 				if(ToXml_ST_CrossBetween(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -5729,7 +5729,7 @@ namespace OOX{
 				if(ToXml_ST_SizeRepresents(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -5778,7 +5778,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -6077,9 +6077,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_v);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:v xml:space=\"preserve\">%s</c:v>"), sVal);
+					sXml.Format(_T("<c:v xml:space=\"preserve\">%ls</c:v>"), sVal);
 				else
-					sXml.Format(_T("<c:v>%s</c:v>"), sVal);
+					sXml.Format(_T("<c:v>%ls</c:v>"), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("</")));
@@ -6329,7 +6329,7 @@ namespace OOX{
 				if(ToXml_ST_MarkerStyle(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -6378,7 +6378,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -6513,7 +6513,7 @@ namespace OOX{
 				if(ToXml_ST_PictureFormat(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -6556,7 +6556,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = SpreadsheetCommon::WriteDouble(*m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -6833,12 +6833,12 @@ namespace OOX{
 						CString sVal;
 						sVal = XmlUtils::EncodeXmlString(*pTypeVal);
 						if(true == bIsAttribute)
-							sXml.Format(_T(" c:separator=\"%s\""), sVal);
+							sXml.Format(_T(" c:separator=\"%ls\""), sVal);
 						else
 							if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-								sXml.Format(_T("<c:separator xml:space=\"preserve\">%s</c:separator>"), sVal);
+								sXml.Format(_T("<c:separator xml:space=\"preserve\">%ls</c:separator>"), sVal);
 							else
-								sXml.Format(_T("<c:separator>%s</c:separator>"), sVal);
+								sXml.Format(_T("<c:separator>%ls</c:separator>"), sVal);
 						writer.WriteString(sXml);
 					}
 				}
@@ -7299,12 +7299,12 @@ namespace OOX{
 						CString sVal;
 						sVal = XmlUtils::EncodeXmlString(*pTypeVal);
 						if(true == bIsAttribute)
-							sXml.Format(_T(" c:separator=\"%s\""), sVal);
+							sXml.Format(_T(" c:separator=\"%ls\""), sVal);
 						else
 							if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-								sXml.Format(_T("<c:separator xml:space=\"preserve\">%s</c:separator>"), sVal);
+								sXml.Format(_T("<c:separator xml:space=\"preserve\">%ls</c:separator>"), sVal);
 							else
-								sXml.Format(_T("<c:separator>%s</c:separator>"), sVal);
+								sXml.Format(_T("<c:separator>%ls</c:separator>"), sVal);
 						writer.WriteString(sXml);
 					}
 				}
@@ -7533,7 +7533,7 @@ namespace OOX{
 				if(ToXml_ST_DLblPos(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -7689,9 +7689,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_name);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:name xml:space=\"preserve\">%s</c:name>"), sVal);
+					sXml.Format(_T("<c:name xml:space=\"preserve\">%ls</c:name>"), sVal);
 				else
-					sXml.Format(_T("<c:name>%s</c:name>"), sVal);
+					sXml.Format(_T("<c:name>%ls</c:name>"), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_spPr)
@@ -7779,7 +7779,7 @@ namespace OOX{
 				if(ToXml_ST_TrendlineType(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -7828,7 +7828,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -7873,7 +7873,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -8175,7 +8175,7 @@ namespace OOX{
 				if(ToXml_ST_ErrDir(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -8221,7 +8221,7 @@ namespace OOX{
 				if(ToXml_ST_ErrBarType(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -8267,7 +8267,7 @@ namespace OOX{
 				if(ToXml_ST_ErrValType(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -8401,9 +8401,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_formatCode);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:formatCode xml:space=\"preserve\">%s</c:formatCode>"), sVal);
+					sXml.Format(_T("<c:formatCode xml:space=\"preserve\">%ls</c:formatCode>"), sVal);
 				else
-					sXml.Format(_T("<c:formatCode>%s</c:formatCode>"), sVal);
+					sXml.Format(_T("<c:formatCode>%ls</c:formatCode>"), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_ptCount)
@@ -8471,7 +8471,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_idx);
-				sXml.Format(_T(" idx=\"%s\""), sVal);
+				sXml.Format(_T(" idx=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_formatCode)
@@ -8479,7 +8479,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_formatCode);
-				sXml.Format(_T(" formatCode=\"%s\""), sVal);
+				sXml.Format(_T(" formatCode=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T(">")));
@@ -8489,9 +8489,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_v);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:v xml:space=\"preserve\">%s</c:v>"), sVal);
+					sXml.Format(_T("<c:v xml:space=\"preserve\">%ls</c:v>"), sVal);
 				else
-					sXml.Format(_T("<c:v>%s</c:v>"), sVal);
+					sXml.Format(_T("<c:v>%ls</c:v>"), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("</")));
@@ -8570,9 +8570,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_f);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:f xml:space=\"preserve\">%s</c:f>"), sVal);
+					sXml.Format(_T("<c:f xml:space=\"preserve\">%ls</c:f>"), sVal);
 				else
-					sXml.Format(_T("<c:f>%s</c:f>"), sVal);
+					sXml.Format(_T("<c:f>%ls</c:f>"), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_numCache)
@@ -8737,9 +8737,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_f);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:f xml:space=\"preserve\">%s</c:f>"), sVal);
+					sXml.Format(_T("<c:f xml:space=\"preserve\">%ls</c:f>"), sVal);
 				else
-					sXml.Format(_T("<c:f>%s</c:f>"), sVal);
+					sXml.Format(_T("<c:f>%ls</c:f>"), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_multiLvlStrCache)
@@ -9477,7 +9477,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -9520,7 +9520,7 @@ namespace OOX{
 				if(ToXml_ST_SplitType(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -9566,7 +9566,7 @@ namespace OOX{
 				if(ToXml_ST_OfPieType(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -10011,7 +10011,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -10226,7 +10226,7 @@ namespace OOX{
 				if(ToXml_ST_BarDir(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -10272,7 +10272,7 @@ namespace OOX{
 				if(ToXml_ST_BarGrouping(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -10547,7 +10547,7 @@ namespace OOX{
 				if(ToXml_ST_Shape(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -10595,7 +10595,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -10816,7 +10816,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -10973,7 +10973,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -11417,7 +11417,7 @@ namespace OOX{
 				if(ToXml_ST_ScatterStyle(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -11748,7 +11748,7 @@ namespace OOX{
 				if(ToXml_ST_RadarStyle(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -12518,7 +12518,7 @@ namespace OOX{
 				if(ToXml_ST_Grouping(*m_val, sEnumVal))
 				{
 					CString sVal;
-					sVal.Format(_T(" val=\"%s\""), sEnumVal);
+					sVal.Format(_T(" val=\"%ls\""), sEnumVal);
 					writer.WriteString(sVal);
 				}
 			}
@@ -13910,7 +13910,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -14036,7 +14036,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -14081,7 +14081,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -14126,7 +14126,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -14171,7 +14171,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -14216,7 +14216,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -14860,9 +14860,9 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_name);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:name xml:space=\"preserve\">%s</c:name>"), sVal);
+					sXml.Format(_T("<c:name xml:space=\"preserve\">%ls</c:name>"), sVal);
 				else
-					sXml.Format(_T("<c:name>%s</c:name>"), sVal);
+					sXml.Format(_T("<c:name>%ls</c:name>"), sVal);
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_fmtId)
@@ -14907,7 +14907,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -14947,7 +14947,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal.Format(_T("%d"), *m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -14987,7 +14987,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_val);
-				sXml.Format(_T(" val=\"%s\""), sVal);
+				sXml.Format(_T(" val=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("/>")));
@@ -15097,7 +15097,7 @@ namespace OOX{
 				CString sXml;
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_Requires);
-				sXml.Format(_T(" Requires=\"%s\""), sVal);
+				sXml.Format(_T(" Requires=\"%ls\""), sVal);
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T(">")));

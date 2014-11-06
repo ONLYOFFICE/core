@@ -53,9 +53,9 @@ namespace Writers
 			CString srId;srId.Format(_T("rId%d"), m_nRid);
 			CString sRels;
 			if(bExternal)
-				sRels.Format(_T("<Relationship Id=\"%s\" Type=\"%s\" Target=\"%s\" TargetMode=\"External\"/>"), srId, sType, sTarget);
+				sRels.Format(_T("<Relationship Id=\"%ls\" Type=\"%ls\" Target=\"%ls\" TargetMode=\"External\"/>"), srId, sType, sTarget);
 			else
-				sRels.Format(_T("<Relationship Id=\"%s\" Type=\"%s\" Target=\"%s\"/>"), srId, sType, sTarget);
+				sRels.Format(_T("<Relationship Id=\"%ls\" Type=\"%ls\" Target=\"%ls\"/>"), srId, sType, sTarget);
 			m_nRid++;
 			m_aRels.push_back(sRels);
 			return srId;

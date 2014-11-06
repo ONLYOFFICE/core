@@ -158,7 +158,7 @@ namespace OOX
 				if(!sAdditionalContentTypes.IsEmpty())
 				{
 					CString sAdditionalContentTypesWrapped;
-					sAdditionalContentTypesWrapped.Format(_T("<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">%s</Types>"), sAdditionalContentTypes);
+					sAdditionalContentTypesWrapped.Format(_T("<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">%ls</Types>"), sAdditionalContentTypes);
 					OOX::CContentTypes oTempContentTypes;
 
 					oTempContentTypes.ReadFromString(sAdditionalContentTypesWrapped);

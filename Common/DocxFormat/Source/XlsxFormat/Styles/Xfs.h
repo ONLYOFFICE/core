@@ -29,7 +29,7 @@ namespace OOX
 				writer.WriteString(_T("<alignment"));
 				if(m_oHorizontal.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" horizontal=\"%s\""), m_oHorizontal->ToString());
+					CString sVal;sVal.Format(_T(" horizontal=\"%ls\""), m_oHorizontal->ToString());
 					writer.WriteString(sVal);
 				}
 				if(m_oIndent.IsInit())
@@ -39,7 +39,7 @@ namespace OOX
 				}
 				if(m_oJustifyLastLine.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" justifyLastLine=\"%s\""), m_oJustifyLastLine->ToString2(SimpleTypes::onofftostring1));
+					CString sVal;sVal.Format(_T(" justifyLastLine=\"%ls\""), m_oJustifyLastLine->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oReadingOrder.IsInit())
@@ -54,7 +54,7 @@ namespace OOX
 				}
 				if(m_oShrinkToFit.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" shrinkToFit=\"%s\""), m_oShrinkToFit->ToString2(SimpleTypes::onofftostring1));
+					CString sVal;sVal.Format(_T(" shrinkToFit=\"%ls\""), m_oShrinkToFit->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oTextRotation.IsInit())
@@ -64,12 +64,12 @@ namespace OOX
 				}
 				if(m_oVertical.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" vertical=\"%s\""), m_oVertical->ToString());
+					CString sVal;sVal.Format(_T(" vertical=\"%ls\""), m_oVertical->ToString());
 					writer.WriteString(sVal);
 				}
 				if(m_oWrapText.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" wrapText=\"%s\""), m_oWrapText->ToString2(SimpleTypes::onofftostring1));
+					CString sVal;sVal.Format(_T(" wrapText=\"%ls\""), m_oWrapText->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T("/>"));
@@ -215,32 +215,32 @@ namespace OOX
 				}
 				if(m_oApplyNumberFormat.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" applyNumberFormat=\"%s\""), m_oApplyNumberFormat->ToString2(SimpleTypes::onofftostring1));
+					CString sVal;sVal.Format(_T(" applyNumberFormat=\"%ls\""), m_oApplyNumberFormat->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oApplyFont.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" applyFont=\"%s\""), m_oApplyFont->ToString2(SimpleTypes::onofftostring1));
+					CString sVal;sVal.Format(_T(" applyFont=\"%ls\""), m_oApplyFont->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oApplyFill.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" applyFill=\"%s\""), m_oApplyFill->ToString2(SimpleTypes::onofftostring1));
+					CString sVal;sVal.Format(_T(" applyFill=\"%ls\""), m_oApplyFill->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oApplyBorder.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" applyBorder=\"%s\""), m_oApplyBorder->ToString2(SimpleTypes::onofftostring1));
+					CString sVal;sVal.Format(_T(" applyBorder=\"%ls\""), m_oApplyBorder->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oApplyAlignment.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" applyAlignment=\"%s\""), m_oApplyAlignment->ToString2(SimpleTypes::onofftostring1));
+					CString sVal;sVal.Format(_T(" applyAlignment=\"%ls\""), m_oApplyAlignment->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oQuotePrefix.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" quotePrefix=\"%s\""), m_oQuotePrefix->ToString2(SimpleTypes::onofftostring1));
+					CString sVal;sVal.Format(_T(" quotePrefix=\"%ls\""), m_oQuotePrefix->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oAligment.IsInit())

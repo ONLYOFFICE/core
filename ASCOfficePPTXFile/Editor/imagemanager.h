@@ -79,7 +79,7 @@ namespace NSShapeImageGen
 		AVSINLINE CString GetPath(const CString& strMedia)
 		{
 			CString strExt = _T("");
-			strExt.Format(_T("\\image%d.%s"), m_lID, (itJPG == m_eType) ? _T("jpg") : _T("png"));
+			strExt.Format(_T("\\image%d.%ls"), m_lID, (itJPG == m_eType) ? _T("jpg") : _T("png"));
 			return strMedia + strExt;
 		}
 
@@ -102,7 +102,7 @@ namespace NSShapeImageGen
 			}
 
 			CString strExt = _T("");
-			strExt.Format(_T("image%d.%s"), m_lID, _strExt);
+			strExt.Format(_T("image%d.%ls"), m_lID, _strExt);
 			return strExt;
 		}
 	};
@@ -370,12 +370,12 @@ namespace NSShapeImageGen
 			unsigned int nOutputFormat;
 			if (itJPG == oInfo.m_eType)
 			{
-				strSaveItem.Format(_T("%s\\image%d.jpg"), m_strDstMedia, oInfo.m_lID);
+				strSaveItem.Format(_T("%ls\\image%d.jpg"), m_strDstMedia, oInfo.m_lID);
 				nOutputFormat = _CXIMAGE_FORMAT_JPG;
 			}
 			else
 			{
-				strSaveItem.Format(_T("%s\\image%d.png"), m_strDstMedia, oInfo.m_lID);
+				strSaveItem.Format(_T("%ls\\image%d.png"), m_strDstMedia, oInfo.m_lID);
 				nOutputFormat = _CXIMAGE_FORMAT_PNG;
 			}
 

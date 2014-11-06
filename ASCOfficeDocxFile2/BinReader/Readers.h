@@ -650,7 +650,7 @@ public:
 						default: sVal=_T("left");break;
 						}
 						CString sTab;
-						sTab.Format(_T("<w:tab w:val=\"%s\" w:pos=\"%d\" />"), sVal, nTab);
+                        sTab.Format(_T("<w:tab w:val=\"%ls\" w:pos=\"%d\" />"), sVal, nTab);
 						pCStringWriter->WriteString(sTab);
 					}
 					pCStringWriter->WriteString(CString(_T("</w:tabs>")));
@@ -661,7 +661,7 @@ public:
 			{
 				CString sStyleName(m_oBufferedStream.GetString3(length));
 				sStyleName = XmlUtils::EncodeXmlString(sStyleName);
-				CString sStyle;sStyle.Format(_T("<w:pStyle w:val=\"%s\" />"), sStyleName);
+                CString sStyle;sStyle.Format(_T("<w:pStyle w:val=\"%ls\" />"), sStyleName);
 				pCStringWriter->WriteString(sStyle);
 				break;
 			}
@@ -1269,7 +1269,7 @@ public:
 		{
 			CString Name(m_oBufferedStream.GetString3(length));
 			Name = XmlUtils::EncodeXmlString(Name);
-			pWiterTblPr->Style.Format(_T("<w:tblStyle w:val=\"%s\"/>"), Name);
+            pWiterTblPr->Style.Format(_T("<w:tblStyle w:val=\"%ls\"/>"), Name);
 		}
 		else if( c_oSerProp_tblPrType::Look == type )
 		{
@@ -1293,7 +1293,7 @@ public:
 				case 2: sLayout = _T("fixed");break;
 			}
 			if(false == sLayout.IsEmpty())
-				pWiterTblPr->Layout.Format(_T("<w:tblLayout w:type=\"%s\"/>"), sLayout);
+                pWiterTblPr->Layout.Format(_T("<w:tblLayout w:type=\"%ls\"/>"), sLayout);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -2590,7 +2590,7 @@ public:
 				case 2: sBrkBin = _T("repeat");break;
 			}			
 
-			CString sVal; sVal.Format(_T("<m:brkBin m:val=\"%s\" />"), sBrkBin);
+            CString sVal; sVal.Format(_T("<m:brkBin m:val=\"%ls\" />"), sBrkBin);
 			m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 		}
 		else
@@ -2611,7 +2611,7 @@ public:
 				case 1: sBrkBinSub = _T("-+");break;
 				case 2: sBrkBinSub = _T("--");break;
 			}			
-			CString sVal; sVal.Format(_T("<m:brkBinSub m:val=\"%s\" />"), sBrkBinSub);
+            CString sVal; sVal.Format(_T("<m:brkBinSub m:val=\"%ls\" />"), sBrkBinSub);
 			m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 		}
 		else
@@ -2633,7 +2633,7 @@ public:
 				case 2: sDefJc = _T("left");break;
 				case 3: sDefJc = _T("right");break;
 			}			
-			CString sVal; sVal.Format(_T("<m:defJc m:val=\"%s\" />"), sDefJc);
+            CString sVal; sVal.Format(_T("<m:defJc m:val=\"%ls\" />"), sDefJc);
 			m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 		}
 		else
@@ -2684,7 +2684,7 @@ public:
 				case 0: sIntLim = _T("subSup");break;
 				case 1: sIntLim = _T("undOvr");break;
 			}			
-			CString sVal; sVal.Format(_T("<m:intLim m:val=\"%s\" />"), sIntLim);
+            CString sVal; sVal.Format(_T("<m:intLim m:val=\"%ls\" />"), sIntLim);
 			m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 		}
 		else
@@ -2727,7 +2727,7 @@ public:
 				CString sFontName(m_oBufferedStream.GetString3(length));
 				sFontName = XmlUtils::EncodeXmlString(sFontName);
 
-				CString sVal; sVal.Format(_T("<m:font m:val=\"%s\" />"), sFontName);
+                CString sVal; sVal.Format(_T("<m:font m:val=\"%ls\" />"), sFontName);
 				m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 		}
 		else
@@ -2748,7 +2748,7 @@ public:
 				case 0: sNaryLim = _T("subSup");break;
 				case 1: sNaryLim = _T("undOvr");break;
 			}			
-			CString sVal; sVal.Format(_T("<m:naryLim m:val=\"%s\" />"), sNaryLim);
+            CString sVal; sVal.Format(_T("<m:naryLim m:val=\"%ls\" />"), sNaryLim);
 			m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 		}
 		else
@@ -3359,7 +3359,7 @@ public:
 				case 4: sBaseJc = _T("outside");break;
 				case 5: sBaseJc = _T("top");break;
 			}			
-			CString sVal; sVal.Format(_T("<m:baseJc m:val=\"%s\" />"), sBaseJc);
+            CString sVal; sVal.Format(_T("<m:baseJc m:val=\"%ls\" />"), sBaseJc);
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -3372,7 +3372,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 				CString sChr = GetMathText (length);
-				CString sVal; sVal.Format(_T("<m:begChr m:val=\"%s\" />"), sChr);
+                CString sVal; sVal.Format(_T("<m:begChr m:val=\"%ls\" />"), sChr);
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -3570,7 +3570,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 				CString sChr = GetMathText (length);
-				CString sVal; sVal.Format(_T("<m:chr m:val=\"%s\" />"), sChr);
+                CString sVal; sVal.Format(_T("<m:chr m:val=\"%ls\" />"), sChr);
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -3727,7 +3727,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 				CString sChr = GetMathText (length);
-				CString sVal; sVal.Format(_T("<m:endChr m:val=\"%s\" />"), sChr);
+                CString sVal; sVal.Format(_T("<m:endChr m:val=\"%ls\" />"), sChr);
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4015,7 +4015,7 @@ public:
 				case 2: sMJc = _T("left");break;
 				case 3: sMJc = _T("right");break;
 			}			
-			CString sVal; sVal.Format(_T("<m:mJc m:val=\"%s\" />"), sMJc);
+            CString sVal; sVal.Format(_T("<m:mJc m:val=\"%ls\" />"), sMJc);
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4035,7 +4035,7 @@ public:
 				case 0: sLimLoc = _T("subSup");break;
 				case 1: sLimLoc = _T("undOvr");break;
 			}		
-			CString sVal; sVal.Format(_T("<m:limLoc m:val=\"%s\" />"), sLimLoc);
+            CString sVal; sVal.Format(_T("<m:limLoc m:val=\"%ls\" />"), sLimLoc);
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4201,7 +4201,7 @@ public:
 				case 3: sMcJc = _T("outside");break;
 				case 4: sMcJc = _T("right");break;
 			}			
-			CString sVal; sVal.Format(_T("<m:mcJc m:val=\"%s\" />"), sMcJc);
+            CString sVal; sVal.Format(_T("<m:mcJc m:val=\"%ls\" />"), sMcJc);
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4550,7 +4550,7 @@ public:
 				case 1: sPos = _T("top");break;
 			}
 			
-			CString sVal; sVal.Format(_T("<m:pos m:val=\"%s\" />"), sPos);
+            CString sVal; sVal.Format(_T("<m:pos m:val=\"%ls\" />"), sPos);
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4729,7 +4729,7 @@ public:
 				case 4: sScr = _T("sans-serif");break;
 				case 5: sScr = _T("script");break;
 			}			
-			CString sVal; sVal.Format(_T("<m:scr m:val=\"%s\" />"), sScr);
+            CString sVal; sVal.Format(_T("<m:scr m:val=\"%ls\" />"), sScr);
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4742,7 +4742,7 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 				CString sChr = GetMathText (length);
-				CString sVal; sVal.Format(_T("<m:sepChr m:val=\"%s\" />"), sChr);
+                CString sVal; sVal.Format(_T("<m:sepChr m:val=\"%ls\" />"), sChr);
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4779,7 +4779,7 @@ public:
 				case 0: sShp = _T("centered");break;
 				case 1: sShp = _T("match");break;
 			}			
-			CString sVal; sVal.Format(_T("<m:shp m:val=\"%s\" />"), sShp);
+            CString sVal; sVal.Format(_T("<m:shp m:val=\"%ls\" />"), sShp);
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5037,7 +5037,7 @@ public:
 				case 2: sSty = _T("i");break;
 				case 3: sSty = _T("p");break;
 			}			
-			CString sVal; sVal.Format(_T("<m:sty m:val=\"%s\" />"), sSty);
+            CString sVal; sVal.Format(_T("<m:sty m:val=\"%ls\" />"), sSty);
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5110,7 +5110,7 @@ public:
 				case 2: sType = _T("noBar");break;
 				case 3: sType = _T("skw");break;
 			}			
-			CString sVal; sVal.Format(_T("<m:type m:val=\"%s\" />"), sType);
+            CString sVal; sVal.Format(_T("<m:type m:val=\"%ls\" />"), sType);
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5130,7 +5130,7 @@ public:
 				case 0: sVertJc = _T("bot");break;
 				case 1: sVertJc = _T("top");break;
 			}			
-			CString sVal; sVal.Format(_T("<m:vertJc m:val=\"%s\" />"), sVertJc);
+            CString sVal; sVal.Format(_T("<m:vertJc m:val=\"%ls\" />"), sVertJc);
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -5551,11 +5551,11 @@ public:
 			{
 				//создаем папку для rels
 				CString sChartsDir;
-				sChartsDir.Format(_T("%s\\word\\charts"), m_oFileWriter.m_oChartWriter.m_sDir);
+                sChartsDir.Format(_T("%ls\\word\\charts"), m_oFileWriter.m_oChartWriter.m_sDir);
 				if( !NSDirectory::Exists(string2std_string(sChartsDir)) )
 					OOX::CSystemUtility::CreateDirectories(sChartsDir);
 				CString sRelsDir;
-				sRelsDir.Format(_T("%s\\_rels"), sChartsDir);
+                sRelsDir.Format(_T("%ls\\_rels"), sChartsDir);
 				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
 					OOX::CSystemUtility::CreateDirectories(sRelsDir);
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
@@ -5578,7 +5578,7 @@ public:
 				m_oFileWriter.m_oChartWriter.AddChart(sChartContent, sRelsName, sFilename, nChartIndex);
 				m_oFileWriter.m_oContentTypesWriter.AddOverrideRaw(oSaveParams.sAdditionalContentTypes);
 
-				CString sRelsPath;sRelsPath.Format(_T("%s\\%s.rels"), sRelsDir, sFilename);
+                CString sRelsPath;sRelsPath.Format(_T("%ls\\%ls.rels"), sRelsDir, sFilename);
 				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(sRelsPath);
 
 				long rId;

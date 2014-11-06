@@ -142,7 +142,7 @@ namespace BinXlsxRW{
 				oChartSpace.write2(sFilepath);
 
 				CString sRelsPath;
-				sRelsPath.Format(_T("%s\\%s.rels"), sRelsDir, sFilename);
+				sRelsPath.Format(_T("%ls\\%ls.rels"), sRelsDir, sFilename);
 
 				m_pExternalDrawingConverter->SaveDstContentRels(sRelsPath);
 
@@ -150,7 +150,7 @@ namespace BinXlsxRW{
 				sContentType.Append(sFilename);
 
 				(*sContentTypeElement) = new CString();
-				(*sContentTypeElement)->Format(_T("<Override PartName=\"%s\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>"), sContentType);
+				(*sContentTypeElement)->Format(_T("<Override PartName=\"%ls\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>"), sContentType);
 				(*sContentTypeElement)->Append(oSaveParams.sAdditionalContentTypes);
 				
 				bRes = true;

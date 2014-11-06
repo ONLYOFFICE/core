@@ -63,7 +63,7 @@ namespace OOX
 				writer.WriteString(CString("<authors>"));
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 				{
-					CString sAuthor;sAuthor.Format(_T("<author>%s</author>"), XmlUtils::EncodeXmlString(*m_arrItems[i]));
+					CString sAuthor;sAuthor.Format(_T("<author>%ls</author>"), XmlUtils::EncodeXmlString(*m_arrItems[i]));
 					writer.WriteString(sAuthor);
 				}
 				writer.WriteString(CString("</authors>"));
@@ -118,7 +118,7 @@ namespace OOX
 					writer.WriteString(CString("<comment"));
 					if(m_oRef.IsInit())
 					{
-						CString sRef;sRef.Format(_T(" ref=\"%s\""), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
+						CString sRef;sRef.Format(_T(" ref=\"%ls\""), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
 						writer.WriteString(sRef);
 					}
 					if(m_oAuthorId.IsInit())
@@ -332,7 +332,7 @@ namespace OOX
 			{
 				if(m_oId.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<legacyDrawing r:id=\"%s\"/>"), m_oId->GetValue());
+					CString sVal;sVal.Format(_T("<legacyDrawing r:id=\"%ls\"/>"), m_oId->GetValue());
 					writer.WriteString(sVal);
 				}
 				
@@ -470,8 +470,8 @@ namespace OOX
 							sClientData.Append(_T("</x:ClientData>"));
 							CString sGfxdata;
 							if(comment->m_sGfxdata.IsInit())
-								sGfxdata.Format(_T("o:gfxdata=\"%s\""), comment->m_sGfxdata.get2());
-							CString sShape;sShape.Format(_T("<v:shape id=\"_x0000_s%d\" type=\"#_x0000_t202\" style='position:absolute;%sz-index:4;visibility:hidden' %s fillcolor=\"#ffffe1\" o:insetmode=\"auto\"><v:fill color2=\"#ffffe1\"/><v:shadow on=\"t\" color=\"black\" obscured=\"t\"/><v:path o:connecttype=\"none\"/><v:textbox style='mso-direction-alt:auto'><div style='text-align:left'></div></v:textbox>%s</v:shape>"), nIndex, sStyle, sGfxdata, sClientData);
+								sGfxdata.Format(_T("o:gfxdata=\"%ls\""), comment->m_sGfxdata.get2());
+							CString sShape;sShape.Format(_T("<v:shape id=\"_x0000_s%d\" type=\"#_x0000_t202\" style='position:absolute;%sz-index:4;visibility:hidden' %ls fillcolor=\"#ffffe1\" o:insetmode=\"auto\"><v:fill color2=\"#ffffe1\"/><v:shadow on=\"t\" color=\"black\" obscured=\"t\"/><v:path o:connecttype=\"none\"/><v:textbox style='mso-direction-alt:auto'><div style='text-align:left'></div></v:textbox>%ls</v:shape>"), nIndex, sStyle, sGfxdata, sClientData);
 							sXml.WriteString(sShape);
 							nIndex++;
 					}

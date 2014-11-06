@@ -32,7 +32,7 @@ namespace NSHtmlRenderer
 	static CString g_string_svgOpen									= _T("<svg width=\"%dpx\" height=\"%dpx\" viewBox=\"0 0 %d %d\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n");
 	static CString g_bstr_svgClose									= L"</svg>";
 
-	static CString g_string_image									= _T("<image x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" xlink:href=\"%s\" preserveAspectRatio=\"none\"/>\n");
+    static CString g_string_image									= _T("<image x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" xlink:href=\"%ls\" preserveAspectRatio=\"none\"/>\n");
 
 	static CString g_bstr_graphicOpen								= L"<g>\n";
 	static CString g_bstr_graphicClose								= L"</g>\n";
@@ -48,12 +48,12 @@ namespace NSHtmlRenderer
 	static CString g_bstr_nodeClose									= L" />\n";
 	static CString g_string_vml_StyleStroke							= _T("style=\"fill:none;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
 	static CString g_string_vml_StyleStroke_class					= _T("class=\"stroke%d\" style=\"fill:none;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
-	static CString g_string_vml_StyleFill							= _T("style=\"fill:#%06x;fill-opacity:%.2lf;fill-rule:%s;stroke:none\" ");
-	static CString g_string_vml_StyleFill_class						= _T("class=\"fill%d\" style=\"fill-opacity:%.2lf;fill-rule:%s;stroke:none\" ");
-	static CString g_string_vml_Style								= _T("style=\"fill:#%06x;fill-opacity:%.2lf;fill-rule:%s;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
-	static CString g_string_vml_Style1								= _T("class=\"stroke%d\" style=\"fill:#%06x;fill-opacity:%.2lf;fill-rule:%s;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
-	static CString g_string_vml_Style2								= _T("class=\"fill%d\" style=\"fill-opacity:%.2lf;fill-rule:%s;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
-	static CString g_string_vml_Style3								= _T("class=\"stroke%d fill%d\" style=\"fill-opacity:%.2lf;fill-rule:%s;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
+    static CString g_string_vml_StyleFill							= _T("style=\"fill:#%06x;fill-opacity:%.2lf;fill-rule:%ls;stroke:none\" ");
+    static CString g_string_vml_StyleFill_class						= _T("class=\"fill%d\" style=\"fill-opacity:%.2lf;fill-rule:%ls;stroke:none\" ");
+    static CString g_string_vml_Style								= _T("style=\"fill:#%06x;fill-opacity:%.2lf;fill-rule:%ls;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
+    static CString g_string_vml_Style1								= _T("class=\"stroke%d\" style=\"fill:#%06x;fill-opacity:%.2lf;fill-rule:%ls;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
+    static CString g_string_vml_Style2								= _T("class=\"fill%d\" style=\"fill-opacity:%.2lf;fill-rule:%ls;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
+    static CString g_string_vml_Style3								= _T("class=\"stroke%d fill%d\" style=\"fill-opacity:%.2lf;fill-rule:%ls;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
 
 	CASCSVGRenderer::CASCSVGRenderer()
 	{

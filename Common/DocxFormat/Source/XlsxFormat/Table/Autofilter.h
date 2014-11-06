@@ -33,19 +33,19 @@ namespace OOX
 					if(m_oSortBy.IsInit())
 					{
 						CString sXml;
-						sXml.Format(_T(" sortBy=\"%s\""), m_oSortBy->ToString());
+						sXml.Format(_T(" sortBy=\"%ls\""), m_oSortBy->ToString());
 						writer.WriteString(sXml);
 					}
 					if(m_oDescending.IsInit())
 					{
 						CString sXml;
-						sXml.Format(_T(" descending=\"%s\""), m_oDescending->ToString2(SimpleTypes::onofftostring1));
+						sXml.Format(_T(" descending=\"%ls\""), m_oDescending->ToString2(SimpleTypes::onofftostring1));
 						writer.WriteString(sXml);
 					}
 					if(m_oRef.IsInit())
 					{
 						CString sXml;
-						sXml.Format(_T(" ref=\"%s\""), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
+						sXml.Format(_T(" ref=\"%ls\""), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
 						writer.WriteString(sXml);
 					}
 					if(m_oDxfId.IsInit())
@@ -110,9 +110,9 @@ namespace OOX
 				if(m_oRef.IsInit() && m_arrItems.size() > 0)
 				{
 					CString sXml;
-					sXml.Format(_T("<sortState ref=\"%s\""), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
+					sXml.Format(_T("<sortState ref=\"%ls\""), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
 					if(m_oCaseSensitive.IsInit())
-                        sXml.AppendFormat(_T(" caseSensitive=\"%s\""), (const TCHAR *) m_oCaseSensitive->ToString2(SimpleTypes::onofftostring1));
+                        sXml.AppendFormat(_T(" caseSensitive=\"%ls\""), (const TCHAR *) m_oCaseSensitive->ToString2(SimpleTypes::onofftostring1));
 					sXml.Append(_T(">"));
 					writer.WriteString(sXml);
 
@@ -238,18 +238,18 @@ namespace OOX
 				if(m_oType.IsInit())
 				{
 					CString sXml;
-					sXml.Format(_T("<dynamicFilter type=\"%s\""), m_oType->ToString());
+					sXml.Format(_T("<dynamicFilter type=\"%ls\""), m_oType->ToString());
 					writer.WriteString(sXml);
 					if(m_oVal.IsInit())
 					{
 						CString sVal;
-						sVal.Format(_T(" val=\"%s\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oVal->GetValue()));
+						sVal.Format(_T(" val=\"%ls\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oVal->GetValue()));
 						writer.WriteString(sVal);
 					}
 					if(m_oMaxVal.IsInit())
 					{
 						CString sVal;
-						sVal.Format(_T(" maxVal=\"%s\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oMaxVal->GetValue()));
+						sVal.Format(_T(" maxVal=\"%ls\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oMaxVal->GetValue()));
 						writer.WriteString(sVal);
 					}
 					writer.WriteString(CString(_T("/>")));
@@ -306,7 +306,7 @@ namespace OOX
 				if(m_oOperator.IsInit() && m_oVal.IsInit())
 				{
 					CString sXml;
-					sXml.Format(_T("<customFilter operator=\"%s\" val=\"%s\"/>"), m_oOperator->ToString(), m_oVal.get());
+					sXml.Format(_T("<customFilter operator=\"%ls\" val=\"%ls\"/>"), m_oOperator->ToString(), m_oVal.get());
 					writer.WriteString(sXml);
 				}
 			}
@@ -423,7 +423,7 @@ namespace OOX
 				if(m_oVal.IsInit())
 				{
 					CString sXml;
-					sXml.Format(_T("<filter val=\"%s\"/>"), XmlUtils::EncodeXmlString(m_oVal.get()));
+					sXml.Format(_T("<filter val=\"%ls\"/>"), XmlUtils::EncodeXmlString(m_oVal.get()));
 					writer.WriteString(sXml);
 				}
 			}
@@ -513,7 +513,7 @@ namespace OOX
 					if(m_oDateTimeGrouping.IsInit())
 					{
 						CString sXml;
-						sXml.Format(_T(" dateTimeGrouping=\"%s\""), m_oDateTimeGrouping->ToString());
+						sXml.Format(_T(" dateTimeGrouping=\"%ls\""), m_oDateTimeGrouping->ToString());
 						writer.WriteString(sXml);
 					}
 					writer.WriteString(CString(_T("/>")));
@@ -581,7 +581,7 @@ namespace OOX
 					if(m_oBlank.IsInit())
 					{
 						CString sXml;
-						sXml.Format(_T(" blank=\"%s\""), m_oBlank->ToString2(SimpleTypes::onofftostring1));
+						sXml.Format(_T(" blank=\"%ls\""), m_oBlank->ToString2(SimpleTypes::onofftostring1));
 						writer.WriteString(sXml);
 					}
 					writer.WriteString(_T(">"));
@@ -657,13 +657,13 @@ namespace OOX
 					if(m_oVal.IsInit())
 					{
 						CString sXml;
-						sXml.Format(_T(" val=\"%s\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oVal->GetValue()));
+						sXml.Format(_T(" val=\"%ls\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oVal->GetValue()));
 						writer.WriteString(sXml);
 					}
 					if(m_oFilterVal.IsInit())
 					{
 						CString sXml;
-						sXml.Format(_T(" filterVal=\"%s\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oFilterVal->GetValue()));
+						sXml.Format(_T(" filterVal=\"%ls\""), OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(m_oFilterVal->GetValue()));
 						writer.WriteString(sXml);
 					}
 					writer.WriteString(CString(_T("/>")));
@@ -729,7 +729,7 @@ namespace OOX
 						writer.WriteString(CString(_T(" showButton=\"0\"")));
 					if(m_oHiddenButton.IsInit())
 					{
-						CString sXml;sXml.Format(_T(" hiddenButton=\"%s\""), m_oHiddenButton->ToString2(SimpleTypes::onofftostring1));
+						CString sXml;sXml.Format(_T(" hiddenButton=\"%ls\""), m_oHiddenButton->ToString2(SimpleTypes::onofftostring1));
 						writer.WriteString(sXml);
 					}
 					writer.WriteString(CString(_T(">")));
@@ -820,7 +820,7 @@ namespace OOX
 				if(m_oRef.IsInit())
 				{
 					CString sXml;
-					sXml.Format(_T("<autoFilter ref=\"%s\">"), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
+					sXml.Format(_T("<autoFilter ref=\"%ls\">"), XmlUtils::EncodeXmlString(m_oRef->GetValue()));
 					writer.WriteString(sXml);
 					for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 						m_arrItems[i]->toXML(writer);

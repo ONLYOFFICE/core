@@ -37,12 +37,12 @@ namespace OOX
 				}
 				if(m_oDate1904.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" date1904=\"%s\""), m_oDate1904->ToString2(SimpleTypes::onofftostring1));
+					CString sVal;sVal.Format(_T(" date1904=\"%ls\""), m_oDate1904->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oDateCompatibility.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" dateCompatibility=\"%s\""), m_oDateCompatibility->ToString2(SimpleTypes::onofftostring1));
+					CString sVal;sVal.Format(_T(" dateCompatibility=\"%ls\""), m_oDateCompatibility->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T("/>"));

@@ -9,8 +9,8 @@ QT       -= core gui
 TARGET = ASCHTMLRendererLib
 TEMPLATE = lib
 CONFIG += staticlib
-QMAKE_CXXFLAGS += -std=c++0x -Wall -Wno-ignored-qualifiers -g
-DEFINES += UNICODE _UNICODE LINUX _LINUX_QT NODOCX DESKTOP_EDITOR_GRAPHICS
+QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers -g
+DEFINES += UNICODE _UNICODE _LINUX_QT NODOCX DESKTOP_EDITOR_GRAPHICS
 
 INCLUDEPATH += \
     ../../DesktopEditor/freetype-2.5.2/include \

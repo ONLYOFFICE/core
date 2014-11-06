@@ -7,6 +7,38 @@
 
 #include "../../../../../../Common/TimeMeasurer.h"
 
+#ifdef _DEBUG
+#define _LOG_ERRORS_TO_FILE_
+#endif
+
+// TEST!!!
+#define _LOG_ERRORS_TO_FILE_
+
+#ifdef _LOG_ERRORS_TO_FILE_
+
+void __log_error_(const CString& strType, const CString& strError)
+{
+	FILE* f = fopen("C:\\doct_renderer_errors.txt", "a+");
+
+	CStringA sT = (CStringA)strType;
+	fprintf(f, sT.GetBuffer());
+	fprintf(f, ": ");
+
+	CStringA s = (CStringA)strError;
+	fprintf(f, s.GetBuffer());
+	fprintf(f, "\n");
+	fclose(f);
+}
+
+#define _LOGGING_ERROR_(type, err) __log_error_(type, err);
+
+#else
+
+#define _LOGGING_ERROR_(type, err)
+
+#endif
+
+
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "winmm.lib")
 
@@ -365,6 +397,9 @@ public:
 		if (m_strEditorType == _T("spreadsheet"))
 			strScript += _T("\n$.ready();");
 
+		CTimeMeasurer oMeasurer;
+		oMeasurer.Reset();
+
 		CString strError = _T("");
 		BOOL bResult = ExecuteScript(strScript, strError);
 
@@ -373,6 +408,11 @@ public:
 			CString sDestError = _T("<result><error ") + strError + _T(" /></result>");
 			*pbsError = sDestError.AllocSysString();
 		}
+
+		int nTime = (int)(1000 * oMeasurer.GetTimeInterval());
+		CString strTime = _T("");
+		strTime.Format(_T("%d"), nTime);
+		_LOGGING_ERROR_(L"time_changes", strTime);
 
 		return bResult ? S_OK : S_FALSE;
 	}
@@ -534,7 +574,8 @@ private:
 			CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 			strException = to_cstring(try_catch.Message()->Get());
 
-			CStringA ss = (CStringA)strException;
+			_LOGGING_ERROR_(L"compile", strException)
+
 			strError = _T("code=\"compile\"");
 			return FALSE;
 		}
@@ -546,6 +587,8 @@ private:
 			CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 			strException = to_cstring(try_catch.Message()->Get());
 
+			_LOGGING_ERROR_(L"run", strException)
+
 			strError = _T("code=\"run\"");
 			return FALSE;
 		}
@@ -556,14 +599,26 @@ private:
 		args[0] = v8::Int32::New(isolate, 0);
 
 		// all
+#if 0
 		v8::Handle<v8::Value> js_func_open			= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeOpenFile"));
+#else
+		v8::Handle<v8::Value> js_func_open			= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeOpenFileData"));
+#endif
 		v8::Handle<v8::Value> js_func_id			= global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeId"));
 
 		// changes
+#if 0
 		v8::Handle<v8::Value> js_func_apply_changes	= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeApplyChanges"));
+#else
+		v8::Handle<v8::Value> js_func_apply_changes = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeApplyChangesData"));
+#endif
 
 		// save T format
+#if 0
 		v8::Handle<v8::Value> js_func_get_file_s	= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeGetFileString"));
+#else
+		v8::Handle<v8::Value> js_func_get_file_s	= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeGetFileData"));		
+#endif
 
 		// pdf
 		v8::Handle<v8::Value> js_func_calculate		= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeCalculateFile"));
@@ -625,21 +680,111 @@ private:
 
 		pNative->m_nMaxChangesNumber	= m_oParams.m_nCountChangesItems;
 
-		if (js_func_open->IsFunction()) 
+#if 1
+
+		if (js_func_open->IsFunction())
 		{
 			v8::Handle<v8::Function> func_open = v8::Handle<v8::Function>::Cast(js_func_open);
 
-			func_open->Call(global_js, 1, args);
-			
-			if (try_catch.HasCaught()) 
+			CChangesWorker oWorkerLoader;
+			int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
+
+			v8::Handle<v8::Value> args_changes[2];
+			args_changes[0] = oWorkerLoader.GetDataFull();
+			args_changes[1] = v8::Integer::New(isolate, nVersion);
+
+			func_open->Call(global_js, 2, args_changes);
+
+			if (try_catch.HasCaught())
 			{
 				CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 				strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
+				_LOGGING_ERROR_(L"open", strException)
+					strError = _T("code=\"open\"");
+				return FALSE;
+			}
+		}		
+
+#else
+
+		if (js_func_open->IsFunction())
+		{
+			v8::Handle<v8::Function> func_open = v8::Handle<v8::Function>::Cast(js_func_open);
+
+			func_open->Call(global_js, 1, args);
+
+			if (try_catch.HasCaught())
+			{
+				CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
+				strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+				_LOGGING_ERROR_(L"open", strException)
 				strError = _T("code=\"open\"");
 				return FALSE;
 			}
 		}
+
+#endif
+
+#if 1
+
+		if (m_oParams.m_arChanges.GetCount() != 0)
+		{
+			//CTimeMeasurer oMeasurer;
+			//oMeasurer.Reset();
+
+			int nCurrentIndex = 0;
+			CChangesWorker oWorker;
+
+			int nFileType = 0;
+			if (m_strEditorType == _T("spreadsheet"))
+				nFileType = 1;
+
+			oWorker.SetFormatChanges(nFileType);
+			oWorker.CheckFiles(m_oParams.m_arChanges);
+
+			while (true)
+			{
+				nCurrentIndex = oWorker.Open(m_oParams.m_arChanges, nCurrentIndex);
+				bool bIsFull = (nCurrentIndex == m_oParams.m_arChanges.GetCount()) ? true : false;
+
+				if (js_func_apply_changes->IsFunction())
+				{
+					v8::Handle<v8::Function> func_apply_changes = v8::Handle<v8::Function>::Cast(js_func_apply_changes);
+					v8::Handle<v8::Value> args_changes[2];
+					args_changes[0] = oWorker.GetData();
+					args_changes[1] = v8::Boolean::New(isolate, bIsFull);
+
+					func_apply_changes->Call(global_js, 2, args_changes);
+
+					if (try_catch.HasCaught())
+					{
+						int nLineError = try_catch.Message()->GetLineNumber();
+						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
+						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+						_LOGGING_ERROR_(L"change_code", strCode)
+						_LOGGING_ERROR_(L"change", strException)
+
+						strError = _T("");
+						strError.Format(_T("index=\"%d\""), pNative->m_nCurrentChangesNumber);
+						return FALSE;
+					}
+				}
+
+				if (bIsFull)
+					break;
+			}
+			
+			//int nTime = (oMeasurer.GetTimeInterval() * 1000);
+			//CString strTime = _T("");
+			//strTime.Format(_T("%d"), nTime);
+			//_LOGGING_ERROR_(L"time_changes", strTime);
+			
+		}
+
+#else
 
 		if (m_oParams.m_arChanges.GetCount() != 0)
 		{
@@ -654,6 +799,9 @@ private:
 					CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 					strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
+					_LOGGING_ERROR_(L"change_code", strCode)
+					_LOGGING_ERROR_(L"change", strException)
+
 					strError = _T("");
 					strError.Format(_T("index=\"%d\""), pNative->m_nCurrentChangesNumber);
 					return FALSE;
@@ -661,12 +809,56 @@ private:
 			}
 		}
 
+#endif
+
 		switch (m_oParams.m_eDstFormat)
 		{
 		case DoctRendererFormat::DOCT:
 		case DoctRendererFormat::PPTT:
 		case DoctRendererFormat::XLST:
 			{
+#if 1
+				if (js_func_get_file_s->IsFunction())
+				{
+					v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
+					v8::Local<v8::Value> js_result2 = func_get_file_s->Call(global_js, 1, args);
+
+					if (try_catch.HasCaught()) 
+					{
+						int nLineError = try_catch.Message()->GetLineNumber();
+						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
+						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+						strError = _T("code=\"save\"");
+
+						_LOGGING_ERROR_(L"save", strException)
+
+						return FALSE;
+					}
+
+					v8::Local<v8::Uint8Array> pArray = v8::Local<v8::Uint8Array>::Cast(js_result2);
+					BYTE* pData = (BYTE*)pArray->Buffer()->Externalize().Data();
+
+					CFile oFile;
+					if (S_OK == oFile.CreateFile(m_oParams.m_strDstFilePath))
+					{
+						oFile.WriteFile((void*)pNative->m_sHeader.GetBuffer(), (DWORD)pNative->m_sHeader.GetLength());
+
+						int nLen64 = Base64EncodeGetRequiredLength((DWORD)pNative->m_nSaveBinaryLen, ATL_BASE64_FLAG_NOCRLF);
+						char* pDst64 = new char[nLen64];
+						int nDstLen = nLen64;
+						Base64Encode(pData, pNative->m_nSaveBinaryLen, pDst64, &nDstLen, ATL_BASE64_FLAG_NOCRLF);
+
+						oFile.WriteFile((void*)pDst64, (DWORD)nDstLen);
+
+						RELEASEARRAYOBJECTS(pDst64);
+
+						oFile.CloseFile();
+						return TRUE;
+					}
+				}
+#else
+
 				if (js_func_get_file_s->IsFunction()) 
 				{
 					v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
@@ -679,6 +871,9 @@ private:
 						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
 						strError = _T("code=\"save\"");
+
+						_LOGGING_ERROR_(L"save", strException)
+
 						return FALSE;
 					}
 
@@ -691,6 +886,8 @@ private:
 						return TRUE;
 					}
 				}
+
+#endif
 				break;
 			}
 		case DoctRendererFormat::PDF:
@@ -707,6 +904,9 @@ private:
 						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
 						strError = _T("code=\"calculate\"");
+
+						_LOGGING_ERROR_(L"calculate", strException)
+
 						return FALSE;
 					}
 				}
@@ -759,6 +959,8 @@ private:
 							CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 							strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
+							_LOGGING_ERROR_(L"render", strException)
+
 							strError = _T("code=\"render\"");
 							return FALSE;
 						}
@@ -785,7 +987,10 @@ private:
 					RELEASEINTERFACE(pPDF);
 
 					if (S_OK != hr)
+					{
+						_LOGGING_ERROR_(L"save", L"pdfsave")
 						strError = _T("code=\"save\"");
+					}
 
 					return (hr == S_OK) ? TRUE : FALSE;
 				}

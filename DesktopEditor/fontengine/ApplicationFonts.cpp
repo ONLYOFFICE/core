@@ -1279,14 +1279,23 @@ void CApplicationFonts::InitFromReg()
 	std::wstring sName;
 	std::wstring sData;
 
+	std::map<std::wstring, bool> map_files;
 	CArray<std::wstring> oArray;
 	while (GetNextNameValue( HKEY_LOCAL_MACHINE, wsPath, sName, sData ) == ERROR_SUCCESS) 
 	{
+		if (wsPath.length())
+			wsPath = L"";
+
 		NSFile::CFileBinary oFile;
 		if (oFile.OpenFile(sData))
 		{
 			oFile.CloseFile();
-			oArray.Add(sData);
+
+			if (map_files.find(sData) == map_files.end())
+			{
+				oArray.Add(sData);
+				map_files.insert(map_files.begin(), std::pair<std::wstring,bool>(sData,true));
+			}
 			continue;
 		}
 		
@@ -1296,7 +1305,12 @@ void CApplicationFonts::InitFromReg()
 		if (oFile.OpenFile(sFileInDir))
 		{
 			oFile.CloseFile();
-			oArray.Add(sFileInDir);
+
+			if (map_files.find(sFileInDir) == map_files.end())
+			{
+				oArray.Add(sFileInDir);
+				map_files.insert(map_files.begin(), std::pair<std::wstring,bool>(sFileInDir,true));
+			}
 			continue;
 		}
 	}

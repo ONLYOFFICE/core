@@ -176,6 +176,7 @@ public:
 	static EFontFormat GetFontFormat(FT_Face pFace);
 
 public:
+	void LoadFromArrayFiles(CArray<std::wstring>& arrFiles);
 	void LoadFromFolder(const std::wstring& strDirectory);
 	bool CheckLoadFromFolderBin(const std::wstring& strDirectory);
 	void Add(CFontInfo* pInfo);
@@ -202,6 +203,10 @@ public:
 
 	void InitializeFromFolder(std::wstring strFolder);
 	void Initialize();
+
+#ifdef WIN32
+	void InitFromReg();
+#endif
 
 	CFontManager* GenerateFontManager();
 };

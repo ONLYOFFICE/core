@@ -881,9 +881,9 @@ void CFontList::SetDefaultFont(std::wstring& sName)
 		}
 	}
 }
-void CFontList::LoadFromFolder(const std::wstring& strDirectory)
+
+void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray)
 {
-	CArray<std::wstring> oArray = NSDirectory::GetFiles(strDirectory);
 	int nCount = oArray.GetCount();
 
 	FT_Library pLibrary = NULL;
@@ -1102,6 +1102,11 @@ void CFontList::LoadFromFolder(const std::wstring& strDirectory)
 	::free( pParams );
 	FT_Done_FreeType(pLibrary);
 }
+void CFontList::LoadFromFolder(const std::wstring& strDirectory)
+{
+	CArray<std::wstring> oArray = NSDirectory::GetFiles(strDirectory);
+	this->LoadFromArrayFiles(oArray);
+}
 
 bool CFontList::CheckLoadFromFolderBin(const std::wstring& strDirectory)
 {
@@ -1180,7 +1185,8 @@ void CApplicationFonts::InitializeFromFolder(std::wstring strFolder)
 void CApplicationFonts::Initialize()
 {
 #ifdef WIN32
-	m_oList.LoadFromFolder(L"C:/Windows/Fonts");
+	//m_oList.LoadFromFolder(L"C:/Windows/Fonts");
+	InitFromReg();
 #elif LINUX
 	m_oList.LoadFromFolder(L"/usr/share/fonts");
 #elif MAC
@@ -1196,3 +1202,106 @@ CFontManager* CApplicationFonts::GenerateFontManager()
 	pManager->m_pApplication = this;
 	return pManager;
 }
+
+#ifdef WIN32
+
+#include <shlobj.h>
+
+static long GetNextNameValue(HKEY key, const std::wstring& sSubkey, std::wstring& sName, std::wstring& sData)
+{
+	static HKEY hkey = NULL;	// registry handle, kept open between calls
+	static DWORD dwIndex = 0;	// count of values returned
+	long retval;
+
+	// if all parameters are NULL then close key
+	if (sSubkey.length() == 0 && sName.length() == 0 && sData.length() == 0)
+	{
+		if (hkey)
+			RegCloseKey(hkey);
+		hkey = NULL;
+		return ERROR_SUCCESS;
+	}
+
+	// if subkey is specified then open key (first time)
+	if (sSubkey.length() != 0)
+	{
+		retval = RegOpenKeyExW(key, sSubkey.c_str(), 0, KEY_READ, &hkey);
+		if (retval != ERROR_SUCCESS)
+		{
+			return retval;
+		}
+		dwIndex = 0;
+	}
+	else
+	{
+		dwIndex++;
+	}
+
+	wchar_t szValueName[MAX_PATH];
+	DWORD dwValueNameSize = sizeof(szValueName)-1;
+	BYTE szValueData[MAX_PATH];
+	DWORD dwValueDataSize = sizeof(szValueData)-1;
+	DWORD dwType = 0;
+
+	retval = RegEnumValueW(hkey, dwIndex, szValueName, &dwValueNameSize, NULL,
+		&dwType, szValueData, &dwValueDataSize);
+	if (retval == ERROR_SUCCESS)
+	{
+		sName = std::wstring(szValueName);
+		sData = std::wstring((wchar_t*)szValueData);
+	}
+
+	return retval;
+}
+
+void CApplicationFonts::InitFromReg()
+{
+	// Ищем директорию с фонтами (обычно это C:\Windows\Fonts)
+	wchar_t wsWinFontDir[MAX_PATH];
+	wsWinFontDir[0] = (wchar_t)'\0';
+
+	if ( !SHGetSpecialFolderPathW( NULL, wsWinFontDir, CSIDL_FONTS, FALSE ) )
+		wsWinFontDir[0] = '\0';
+
+	std::wstring sWinFontDir(wsWinFontDir);
+
+	OSVERSIONINFO oVersion;
+	oVersion.dwOSVersionInfoSize = sizeof(oVersion);
+	GetVersionEx( &oVersion );
+
+	std::wstring wsPath = L"";
+
+	if ( oVersion.dwPlatformId == VER_PLATFORM_WIN32_NT ) 
+		wsPath = L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\\";
+	else 
+		wsPath = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Fonts\\";
+
+	std::wstring sName;
+	std::wstring sData;
+
+	CArray<std::wstring> oArray;
+	while (GetNextNameValue( HKEY_LOCAL_MACHINE, wsPath, sName, sData ) == ERROR_SUCCESS) 
+	{
+		NSFile::CFileBinary oFile;
+		if (oFile.OpenFile(sData))
+		{
+			oFile.CloseFile();
+			oArray.Add(sData);
+			continue;
+		}
+		
+		oFile.CloseFile();
+
+		std::wstring sFileInDir = sWinFontDir + L"\\" + sData;
+		if (oFile.OpenFile(sFileInDir))
+		{
+			oFile.CloseFile();
+			oArray.Add(sFileInDir);
+			continue;
+		}
+	}
+
+	m_oList.LoadFromArrayFiles(oArray);
+}
+
+#endif

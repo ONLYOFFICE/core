@@ -1126,14 +1126,14 @@ void CGraphicsRenderer::Create(BYTE* pPixels, const Aggplus::CDoubleRect& oRect,
 	m_pRenderer = new Aggplus::CGraphics();
 	m_pPath		= new Aggplus::CGraphicsPath();
 
-	m_lClipLeft		= max(0, lRectLeft);
-	m_lClipTop		= max(0, lRectTop);
+    m_lClipLeft		= (std::max)(0, (int) lRectLeft);
+    m_lClipTop		= (std::max)(0, (int) lRectTop);
 
 	//LONG lClipRight		= min(lWidth, -lRectLeft + lWidthControl);
 	//LONG lClipBottom	= min(lHeight, -lRectTop + lHeightControl);
 
-	LONG lClipRight		= min((LONG)oRect.right, lWidthControl);
-	LONG lClipBottom	= min((LONG)oRect.bottom, lHeightControl);
+    LONG lClipRight		= (std::min)((LONG)oRect.right, lWidthControl);
+    LONG lClipBottom	= (std::min)((LONG)oRect.bottom, lHeightControl);
 
 	m_lClipWidth	= lClipRight - m_lClipLeft;
 	m_lClipHeight	= lClipBottom - m_lClipTop;
@@ -1166,14 +1166,14 @@ void CGraphicsRenderer::CreateFlip(BYTE* pPixels, const Aggplus::CDoubleRect& oR
 	m_pRenderer = new Aggplus::CGraphics();
 	m_pPath		= new Aggplus::CGraphicsPath();
 
-	m_lClipLeft		= max(0, lRectLeft);
-	m_lClipTop		= max(0, lRectTop);
+    m_lClipLeft		= (std::max) (0, (int) lRectLeft);
+    m_lClipTop		= (std::max) (0, (int) lRectTop);
 
 	//LONG lClipRight		= min(lWidth, -lRectLeft + lWidthControl);
 	//LONG lClipBottom	= min(lHeight, -lRectTop + lHeightControl);
 
-	LONG lClipRight		= min((LONG)oRect.right, lWidthControl);
-	LONG lClipBottom	= min((LONG)oRect.bottom, lHeightControl);
+    LONG lClipRight		= (std::min) ((LONG)oRect.right, lWidthControl);
+    LONG lClipBottom	= (std::min) ((LONG)oRect.bottom, lHeightControl);
 
 	m_lClipWidth	= lClipRight - m_lClipLeft;
 	m_lClipHeight	= lClipBottom - m_lClipTop;

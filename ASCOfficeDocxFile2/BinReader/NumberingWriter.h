@@ -34,8 +34,11 @@ namespace Writers
 				m_oWriter.Write(m_oNumList);
 				m_oWriter.WriteString(g_string_n_End);
 
+				OOX::CPath filePath = m_sDir + _T("\\word\\numbering.xml");
+
 				CFile oFile;
-				oFile.CreateFile(m_sDir + _T("\\word\\numbering.xml"));
+				oFile.CreateFile(filePath.GetPath());
+
 				oFile.WriteStringUTF8(m_oWriter.GetData());
 				oFile.CloseFile();
 

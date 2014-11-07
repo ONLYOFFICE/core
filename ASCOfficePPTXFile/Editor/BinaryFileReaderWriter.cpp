@@ -28,6 +28,10 @@
 
 #define DOUBLE_MAIN		10000
 
+#ifdef _WIN32
+	#include "../../Common/DocxFormat/Source/Base/unicode_util.h"
+#endif
+
 namespace NSBinPptxRW
 {
 	inline LONG __strlen(const char* str)

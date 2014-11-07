@@ -12,6 +12,8 @@
 #include <wchar.h>
 #endif
 
+#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+
 namespace NSFile
 {
 	#define WriteUtf16_WCHAR(code, p)				\

@@ -34,11 +34,13 @@ namespace Writers
 		{
 			if(false == m_sComment.IsEmpty())
 			{
+				OOX::CPath filePath = m_sDir + _T("\\word\\comments.xml");
+
 				CFile oFile;
-				oFile.CreateFile(m_sDir + _T("\\word\\comments.xml"));
-				oFile.WriteStringUTF8(g_string_comment_Start);
-				oFile.WriteStringUTF8(m_sComment);
-				oFile.WriteStringUTF8(g_string_comment_End);
+				oFile.CreateFile(filePath.GetPath());
+					oFile.WriteStringUTF8(g_string_comment_Start);
+					oFile.WriteStringUTF8(m_sComment);
+					oFile.WriteStringUTF8(g_string_comment_End);
 				oFile.CloseFile();
 
 				//Content_Types

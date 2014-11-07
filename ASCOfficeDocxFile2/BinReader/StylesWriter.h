@@ -48,8 +48,11 @@ namespace Writers
 			m_oWriter.Write(m_Styles);
 			m_oWriter.WriteString(g_string_st_End);
 
+			OOX::CPath filePath = m_sDir + _T("\\word\\styles.xml");
+
 			CFile oFile;
-			oFile.CreateFile(m_sDir + _T("\\word\\styles.xml"));
+			oFile.CreateFile(filePath.GetPath());
+
 			oFile.WriteStringUTF8(m_oWriter.GetData());
 			oFile.CloseFile();
 		}

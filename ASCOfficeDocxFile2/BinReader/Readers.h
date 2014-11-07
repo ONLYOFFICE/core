@@ -5944,8 +5944,9 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItem(BYTE type, long length, void* poRes
 			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header, m_pComments);
 			res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrItemContent, this, &oBinary_DocumentTableReader);
 
-			CString sRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir + _T("\\word\\_rels\\") + poHdrFtrItem->m_sFilename + _T(".rels");
-			m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(sRelsPath);
+            OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir + _T("\\word\\_rels\\") + poHdrFtrItem->m_sFilename + _T(".rels");
+
+            m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetFilename());
 		}
 	}
 	else
@@ -6133,9 +6134,10 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 					}
 				}
 				res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_oDocumentWriter, &oBinary_CommentsTableReader.m_oComments).Read();
-				CString sRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir + _T("\\word\\_rels\\document.xml.rels");
 
-				CComments& oComments = oBinary_CommentsTableReader.m_oComments;
+                OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir + _T("\\word\\_rels\\document.xml.rels");
+
+                CComments& oComments = oBinary_CommentsTableReader.m_oComments;
 				Writers::CommentsWriter& oCommentsWriter = m_oFileWriter.m_oCommentsWriter;
 				CString sContent = oComments.writeContent();
 				CString sContentEx = oComments.writeContentExt();//важно чтобы writeContentExt вызывался после writeContent
@@ -6157,7 +6159,7 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.microsoft.com/office/2011/relationships/people")), CString(_T("people.xml")), CString(), &rId);
 				}
 
-				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(sRelsPath);
+                m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetFilename());
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}

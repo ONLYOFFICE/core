@@ -111,8 +111,13 @@ namespace PPTX
 		private:
 			const OOX::CPath createFileName(const OOX::CPath& filename) const
 			{
-				CString strTemp = filename.GetDirectory() + _T("\\_rels\\");
-				if (filename.GetFilename() == _T(""))
+                CString strTemp = filename.GetDirectory();
+ #ifdef _WIN32
+                strTemp += _T("\\_rels\\");
+ #else
+                strTemp += _T("/_rels/");
+ #endif
+                if (filename.GetFilename() == _T(""))
 					strTemp += _T(".rels");
 				else
 					strTemp += (filename.GetFilename() + _T(".rels"));

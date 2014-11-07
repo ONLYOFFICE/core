@@ -40,8 +40,10 @@ namespace Writers
 				}
 				m_oWriter.WriteString(s_dr_End);
 
-				CFile oFile;
-				oFile.CreateFile(m_sDir + _T("\\word\\_rels\\") + sFileName);
+                OOX::CPath fileName = m_sDir + _T("\\word\\_rels\\") + sFileName;
+
+                CFile oFile;
+                oFile.CreateFile(fileName.GetFilename());
 				oFile.WriteStringUTF8(m_oWriter.GetData());
 				oFile.CloseFile();
 			}

@@ -599,6 +599,7 @@ public:
 
 	int Open_docx(CAtlArray<CString>& oFiles, int nStart)
 	{
+		m_pDataCur = m_pData;
 		m_pDataCur += 4;
 		int nCountData = 0;
 
@@ -652,6 +653,7 @@ public:
 
 	int Open_excel(CAtlArray<CString>& oFiles, int nStart)
 	{
+		m_pDataCur = m_pData;
 		m_pDataCur += 4;
 		int nCountData = 0;
 

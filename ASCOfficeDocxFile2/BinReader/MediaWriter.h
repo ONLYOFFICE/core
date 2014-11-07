@@ -18,11 +18,13 @@ namespace Writers
 		{
 			nImageCount = 0;
 			m_sMediaDir = m_sDir + _T("\\word\\media");
+
+			OOX::CPath filePath = m_sMediaDir;
+			m_sMediaDir = filePath.GetDirectory();
 		}
 		CString AddImageGetNewPath()
 		{
-			if( !NSDirectory::Exists(string2std_string(m_sMediaDir)) )
-				OOX::CSystemUtility::CreateDirectories(m_sMediaDir);
+			OOX::CSystemUtility::CreateDirectories(m_sMediaDir);
 
 			CString sNewImgName;sNewImgName.Format(_T("image%d.jpg"), (nImageCount + 1));
             CString sNewImg = m_sMediaDir + _T("/") + sNewImgName;

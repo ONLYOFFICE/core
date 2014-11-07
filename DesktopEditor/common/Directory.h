@@ -118,8 +118,27 @@ namespace NSDirectory
 
 		return oArray;
 	}
+	static bool Exists(const std::wstring& strDirectory)
+	{
+#ifdef WIN32
+		DWORD dwAttrib = ::GetFileAttributesW(strDirectory.c_str());
+		return (dwAttrib != INVALID_FILE_ATTRIBUTES && 0 != (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
+#elif LINUX
+        BYTE* pUtf8 = NULL;
+		LONG lLen = 0;
+        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strDirectory.c_str(), strDirectory.length(), pUtf8, lLen, false);
+		struct stat st;
+		bool bRes = (0 == stat((char*)pUtf8, &st)) && S_ISDIR(st.st_mode);
+		delete [] pUtf8;
+		return bRes;
+#elif MAC
+		return true;
+#endif
+	}
 	static bool CreateDirectory(const std::wstring& strDirectory)
 	{
+		if (Exists(strDirectory) == true)  return true;
+
 #ifdef WIN32
 		return FALSE != ::CreateDirectoryW(strDirectory.c_str(), NULL);
 #elif LINUX
@@ -158,23 +177,6 @@ namespace NSDirectory
 		rmdir((char*)pUtf8);
 		delete [] pUtf8;
 #elif MAC
-#endif
-	}
-	static bool Exists(const std::wstring& strDirectory)
-	{
-#ifdef WIN32
-		DWORD dwAttrib = ::GetFileAttributesW(strDirectory.c_str());
-		return (dwAttrib != INVALID_FILE_ATTRIBUTES && 0 != (dwAttrib & FILE_ATTRIBUTE_DIRECTORY));
-#elif LINUX
-        BYTE* pUtf8 = NULL;
-		LONG lLen = 0;
-        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strDirectory.c_str(), strDirectory.length(), pUtf8, lLen, false);
-		struct stat st;
-		bool bRes = (0 == stat((char*)pUtf8, &st)) && S_ISDIR(st.st_mode);
-		delete [] pUtf8;
-		return bRes;
-#elif MAC
-		return true;
 #endif
 	}
 }

@@ -65,8 +65,11 @@ namespace Writers
 
 			m_oWriter.WriteString(g_string_ft_End);
 
+			OOX::CPath filePath = m_sDir + _T("\\word\\fontTable.xml");
+
 			CFile oFile;
-			oFile.CreateFile(m_sDir + _T("\\word\\fontTable.xml"));
+			oFile.CreateFile(filePath.GetPath());
+
 			oFile.WriteStringUTF8(m_oWriter.GetData());
 			oFile.CloseFile();
 		}

@@ -27,9 +27,11 @@ namespace Writers
 			m_oWriter.Write(m_oAdditional);
 			m_oWriter.WriteString(g_string_ct_End);
 
-			CFile oFile;
+			OOX::CPath filePath = m_sDir + _T("/[Content_Types].xml");
 
-            oFile.CreateFile (m_sDir + _T("/[Content_Types].xml"));
+			CFile oFile;
+			oFile.CreateFile(filePath.GetPath());
+
 			oFile.WriteStringUTF8(m_oWriter.GetData());
 			oFile.CloseFile();
 		}

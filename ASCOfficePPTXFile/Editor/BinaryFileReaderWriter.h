@@ -229,9 +229,13 @@ namespace NSBinPptxRW
 		void WriteStringA(CStringA& sBuffer);
 		void WriteStringW(CString& sBuffer);
 		void WriteStringW2(const WCHAR* sBuffer);
+        void WriteStringW2_2(const WCHAR* sBuffer);
+        void WriteStringW2_4(const WCHAR* sBuffer);
 		void WriteStringW2(CString& sBuffer);
 		void WriteStringW3(const WCHAR* sBuffer);
 		void WriteStringW3(CString& sBuffer);
+        void WriteStringW3_2(const WCHAR* sBuffer);
+        void WriteStringW3_4(const WCHAR* sBuffer);
 		// --------------------------------------------------------
 
 	public: 

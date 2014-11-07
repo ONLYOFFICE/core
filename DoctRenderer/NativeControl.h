@@ -681,6 +681,9 @@ public:
 			{
 				skip_int2(pData, nCur, nLen);
 
+				if (nCur >= nLen)
+					break;
+
 				read_base64(pData, nCur, nLen);
 				++nCur;
 
@@ -792,6 +795,9 @@ public:
 			while (nCur < nLen)
 			{
 				skip_int2(pData, nCur, nLen);
+				
+				if (nCur >= nLen)
+					break;
 
 				read_base64(pData, nCur, nLen);
 				++nCur;

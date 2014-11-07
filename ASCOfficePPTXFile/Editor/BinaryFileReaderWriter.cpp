@@ -179,7 +179,7 @@ namespace NSBinPptxRW
 			strExts = _T(".png");
 			strImage.Format(_T("image%d"), m_lIndexNextImage++);
 
-			CString strOutput = m_strDstMedia + _T("\\") + strImage + strExts;		
+            CString strOutput = m_strDstMedia + _T("/") + strImage + strExts;
 
 			if (!m_bIsWord)
 				strImage  = _T("../media/") + strImage + strExts;

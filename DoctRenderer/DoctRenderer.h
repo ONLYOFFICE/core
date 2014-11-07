@@ -12,7 +12,7 @@
 #endif
 
 // TEST!!!
-#define _LOG_ERRORS_TO_FILE_
+//#define _LOG_ERRORS_TO_FILE_
 
 #ifdef _LOG_ERRORS_TO_FILE_
 
@@ -397,8 +397,10 @@ public:
 		if (m_strEditorType == _T("spreadsheet"))
 			strScript += _T("\n$.ready();");
 
+#if 0
 		CTimeMeasurer oMeasurer;
 		oMeasurer.Reset();
+#endif
 
 		CString strError = _T("");
 		BOOL bResult = ExecuteScript(strScript, strError);
@@ -409,10 +411,12 @@ public:
 			*pbsError = sDestError.AllocSysString();
 		}
 
+#if 0
 		int nTime = (int)(1000 * oMeasurer.GetTimeInterval());
 		CString strTime = _T("");
 		strTime.Format(_T("%d"), nTime);
-		_LOGGING_ERROR_(L"time_changes", strTime);
+		_LOGGING_ERROR_(L"time_doct_renderer", strTime);
+#endif
 
 		return bResult ? S_OK : S_FALSE;
 	}
@@ -547,411 +551,222 @@ private:
 			m_bIsInitTypedArrays = TRUE;
 		}
 
-		WCHAR* javascript = (WCHAR*)strScript.GetBuffer();
-
+		bool bIsBreak = false;
 		v8::Isolate* isolate = v8::Isolate::New();
-		isolate->Enter();
-
-		v8::Isolate::Scope isolate_cope(isolate);
-		v8::Locker isolate_locker(isolate);
-
-		v8::HandleScope handle_scope(isolate);
-
-		v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New();
-		global->Set(v8::String::NewFromUtf8(isolate, "CreateNativeEngine"), v8::FunctionTemplate::New(isolate, CreateNativeObject));
-		global->Set(v8::String::NewFromUtf8(isolate, "CreateNativeMemoryStream"), v8::FunctionTemplate::New(isolate, CreateNativeMemoryStream));
-		
-		v8::Local<v8::Context> context = v8::Context::New(isolate, NULL, global);
-		context->Enter();
-
-		v8::Context::Scope context_scope(context);
-		v8::TryCatch try_catch;
-		v8::Local<v8::String> source = v8::String::NewFromTwoByte(isolate, (uint16_t*)javascript);
-		v8::Local<v8::Script> script = v8::Script::Compile(source);
-
-		if (try_catch.HasCaught()) 
+		if (true)
 		{
-			CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
-			strException = to_cstring(try_catch.Message()->Get());
-
-			_LOGGING_ERROR_(L"compile", strException)
-
-			strError = _T("code=\"compile\"");
-			return FALSE;
-		}
-
-		v8::Local<v8::Value> result = script->Run();
-		
-		if (try_catch.HasCaught()) 
-		{
-			CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
-			strException = to_cstring(try_catch.Message()->Get());
-
-			_LOGGING_ERROR_(L"run", strException)
-
-			strError = _T("code=\"run\"");
-			return FALSE;
-		}
-
-		//---------------------------------------------------------------
-		v8::Local<v8::Object> global_js = context->Global();
-		v8::Handle<v8::Value> args[1];
-		args[0] = v8::Int32::New(isolate, 0);
-
-		// all
-#if 0
-		v8::Handle<v8::Value> js_func_open			= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeOpenFile"));
-#else
-		v8::Handle<v8::Value> js_func_open			= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeOpenFileData"));
-#endif
-		v8::Handle<v8::Value> js_func_id			= global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeId"));
-
-		// changes
-#if 0
-		v8::Handle<v8::Value> js_func_apply_changes	= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeApplyChanges"));
-#else
-		v8::Handle<v8::Value> js_func_apply_changes = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeApplyChangesData"));
-#endif
-
-		// save T format
-#if 0
-		v8::Handle<v8::Value> js_func_get_file_s	= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeGetFileString"));
-#else
-		v8::Handle<v8::Value> js_func_get_file_s	= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeGetFileData"));		
-#endif
-
-		// pdf
-		v8::Handle<v8::Value> js_func_calculate		= global_js->Get(v8::String::NewFromUtf8(isolate, "NativeCalculateFile"));
-		v8::Handle<v8::Value> js_func_pages_count	= global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeCountPages"));
-		v8::Handle<v8::Value> js_func_page			= global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativePageBase64"));
-
-		CString strDocumentId	= _T("");
-		LONG lPagesCount		= 0;
-
-		if (js_func_id->IsFunction()) 
-		{
-			v8::Handle<v8::Function> func_id = v8::Handle<v8::Function>::Cast(js_func_id);
-			v8::Local<v8::Value> js_result2 = func_id->Call(global_js, 1, args);
+			WCHAR* javascript = (WCHAR*)strScript.GetBuffer();
 			
-			if (try_catch.HasCaught()) 
-			{
-				int nLineError = try_catch.Message()->GetLineNumber();
-				strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+			v8::Isolate::Scope isolate_cope(isolate);
+			v8::Locker isolate_locker(isolate);
 
-				strError = _T("code=\"run\"");
-				return FALSE;
-			}
+			v8::HandleScope handle_scope(isolate);
 
-			strDocumentId = to_cstring(js_result2);
-		}
+			v8::Handle<v8::ObjectTemplate> global = v8::ObjectTemplate::New();
+			global->Set(v8::String::NewFromUtf8(isolate, "CreateNativeEngine"), v8::FunctionTemplate::New(isolate, CreateNativeObject));
+			global->Set(v8::String::NewFromUtf8(isolate, "CreateNativeMemoryStream"), v8::FunctionTemplate::New(isolate, CreateNativeMemoryStream));
 
-		CNativeControl* pNative = NULL;
-
-		v8::Handle<v8::Value> js_func_get_native = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeEngine"));
-		v8::Local<v8::Object> objNative;
-		if (js_func_get_native->IsFunction()) 
-		{
-			v8::Handle<v8::Function> func_get_native = v8::Handle<v8::Function>::Cast(js_func_get_native);
-			v8::Local<v8::Value> js_result2 = func_get_native->Call(global_js, 1, args);
+			v8::Local<v8::Context> context = v8::Context::New(isolate, NULL, global);
 			
-			if (try_catch.HasCaught()) 
-			{
-				int nLineError = try_catch.Message()->GetLineNumber();
-				strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
-				
-				isolate->Exit();
-				
-				strError = _T("code=\"run\"");
-				return FALSE;
-			}
-
-			objNative = js_result2->ToObject();
-			v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(objNative->GetInternalField(0));
+			v8::Context::Scope context_scope(context);
+			v8::TryCatch try_catch;
+			v8::Local<v8::String> source = v8::String::NewFromTwoByte(isolate, (uint16_t*)javascript);
+			v8::Local<v8::Script> script = v8::Script::Compile(source);
 			
-			pNative = static_cast<CNativeControl*>(field->Value());
-		}
-
-		pNative->m_pChanges				= &m_oParams.m_arChanges;
-		pNative->m_strFontsDirectory	= m_oParams.m_strFontsDirectory;
-		pNative->m_strImagesDirectory	= m_oParams.m_strImagesDirectory;
-
-		pNative->m_strEditorType		= m_strEditorType;
-		pNative->SetFilePath(m_strFilePath);
-
-		pNative->m_nMaxChangesNumber	= m_oParams.m_nCountChangesItems;
-
-#if 1
-
-		if (js_func_open->IsFunction())
-		{
-			v8::Handle<v8::Function> func_open = v8::Handle<v8::Function>::Cast(js_func_open);
-
-			CChangesWorker oWorkerLoader;
-			int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
-
-			v8::Handle<v8::Value> args_changes[2];
-			args_changes[0] = oWorkerLoader.GetDataFull();
-			args_changes[1] = v8::Integer::New(isolate, nVersion);
-
-			func_open->Call(global_js, 2, args_changes);
-
+			// COMPILE
 			if (try_catch.HasCaught())
 			{
 				CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
-				strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+				strException = to_cstring(try_catch.Message()->Get());
 
-				_LOGGING_ERROR_(L"open", strException)
-					strError = _T("code=\"open\"");
-				return FALSE;
+				_LOGGING_ERROR_(L"compile", strException)
+
+				strError = _T("code=\"compile\"");
+				bIsBreak = true;
 			}
-		}		
 
-#else
-
-		if (js_func_open->IsFunction())
-		{
-			v8::Handle<v8::Function> func_open = v8::Handle<v8::Function>::Cast(js_func_open);
-
-			func_open->Call(global_js, 1, args);
-
-			if (try_catch.HasCaught())
+			// RUN
+			if (!bIsBreak)
 			{
-				CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
-				strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+				v8::Local<v8::Value> result = script->Run();
 
-				_LOGGING_ERROR_(L"open", strException)
-				strError = _T("code=\"open\"");
-				return FALSE;
-			}
-		}
-
-#endif
-
-#if 1
-
-		if (m_oParams.m_arChanges.GetCount() != 0)
-		{
-			//CTimeMeasurer oMeasurer;
-			//oMeasurer.Reset();
-
-			int nCurrentIndex = 0;
-			CChangesWorker oWorker;
-
-			int nFileType = 0;
-			if (m_strEditorType == _T("spreadsheet"))
-				nFileType = 1;
-
-			oWorker.SetFormatChanges(nFileType);
-			oWorker.CheckFiles(m_oParams.m_arChanges);
-
-			while (true)
-			{
-				nCurrentIndex = oWorker.Open(m_oParams.m_arChanges, nCurrentIndex);
-				bool bIsFull = (nCurrentIndex == m_oParams.m_arChanges.GetCount()) ? true : false;
-
-				if (js_func_apply_changes->IsFunction())
+				if (try_catch.HasCaught())
 				{
-					v8::Handle<v8::Function> func_apply_changes = v8::Handle<v8::Function>::Cast(js_func_apply_changes);
-					v8::Handle<v8::Value> args_changes[2];
-					args_changes[0] = oWorker.GetData();
-					args_changes[1] = v8::Boolean::New(isolate, bIsFull);
+					CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
+					strException = to_cstring(try_catch.Message()->Get());
 
-					func_apply_changes->Call(global_js, 2, args_changes);
+					_LOGGING_ERROR_(L"run", strException)
+
+					strError = _T("code=\"run\"");
+					bIsBreak = true;
+				}
+			}
+
+			//---------------------------------------------------------------
+			v8::Local<v8::Object> global_js = context->Global();
+			v8::Handle<v8::Value> args[1];
+			args[0] = v8::Int32::New(isolate, 0);
+
+			CNativeControl* pNative = NULL;
+
+			// GET_NATIVE_ENGINE
+			if (!bIsBreak)
+			{
+				v8::Handle<v8::Value> js_func_get_native = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeEngine"));
+				v8::Local<v8::Object> objNative;
+				if (js_func_get_native->IsFunction())
+				{
+					v8::Handle<v8::Function> func_get_native = v8::Handle<v8::Function>::Cast(js_func_get_native);
+					v8::Local<v8::Value> js_result2 = func_get_native->Call(global_js, 1, args);
 
 					if (try_catch.HasCaught())
 					{
 						int nLineError = try_catch.Message()->GetLineNumber();
-						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
-						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+						strException = to_cstring(try_catch.Message()->Get());
 
-						_LOGGING_ERROR_(L"change_code", strCode)
-						_LOGGING_ERROR_(L"change", strException)
+						strError = _T("code=\"run\"");
+						bIsBreak = true;
+					}
+					else
+					{
+						objNative = js_result2->ToObject();
+						v8::Handle<v8::External> field = v8::Handle<v8::External>::Cast(objNative->GetInternalField(0));
 
-						strError = _T("");
-						strError.Format(_T("index=\"%d\""), pNative->m_nCurrentChangesNumber);
-						return FALSE;
+						pNative = static_cast<CNativeControl*>(field->Value());
 					}
 				}
-
-				if (bIsFull)
-					break;
 			}
-			
-			//int nTime = (oMeasurer.GetTimeInterval() * 1000);
-			//CString strTime = _T("");
-			//strTime.Format(_T("%d"), nTime);
-			//_LOGGING_ERROR_(L"time_changes", strTime);
-			
-		}
 
-#else
-
-		if (m_oParams.m_arChanges.GetCount() != 0)
-		{
-			if (js_func_apply_changes->IsFunction()) 
+			if (pNative != NULL)
 			{
-				v8::Handle<v8::Function> func_apply_changes = v8::Handle<v8::Function>::Cast(js_func_apply_changes);
-				func_apply_changes->Call(global_js, 1, args);
-				
-				if (try_catch.HasCaught()) 
-				{
-					int nLineError = try_catch.Message()->GetLineNumber();
-					CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
-					strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+				pNative->m_pChanges = &m_oParams.m_arChanges;
+				pNative->m_strFontsDirectory = m_oParams.m_strFontsDirectory;
+				pNative->m_strImagesDirectory = m_oParams.m_strImagesDirectory;
 
-					_LOGGING_ERROR_(L"change_code", strCode)
-					_LOGGING_ERROR_(L"change", strException)
+				pNative->m_strEditorType = m_strEditorType;
+				pNative->SetFilePath(m_strFilePath);
 
-					strError = _T("");
-					strError.Format(_T("index=\"%d\""), pNative->m_nCurrentChangesNumber);
-					return FALSE;
-				}
+				pNative->m_nMaxChangesNumber = m_oParams.m_nCountChangesItems;
 			}
-		}
 
-#endif
-
-		switch (m_oParams.m_eDstFormat)
-		{
-		case DoctRendererFormat::DOCT:
-		case DoctRendererFormat::PPTT:
-		case DoctRendererFormat::XLST:
+			// OPEN
+			if (!bIsBreak)
 			{
 #if 1
-				if (js_func_get_file_s->IsFunction())
+				v8::Handle<v8::Value> js_func_open = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeOpenFileData"));
+				if (js_func_open->IsFunction())
 				{
-					v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
-					v8::Local<v8::Value> js_result2 = func_get_file_s->Call(global_js, 1, args);
+					v8::Handle<v8::Function> func_open = v8::Handle<v8::Function>::Cast(js_func_open);
 
-					if (try_catch.HasCaught()) 
+					CChangesWorker oWorkerLoader;
+					int nVersion = oWorkerLoader.OpenNative(pNative->GetFilePath());
+
+					v8::Handle<v8::Value> args_open[2];
+					args_open[0] = oWorkerLoader.GetDataFull();
+					args_open[1] = v8::Integer::New(isolate, nVersion);
+
+					func_open->Call(global_js, 2, args_open);
+
+					if (try_catch.HasCaught())
 					{
-						int nLineError = try_catch.Message()->GetLineNumber();
 						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
-						strError = _T("code=\"save\"");
-
-						_LOGGING_ERROR_(L"save", strException)
-
-						return FALSE;
-					}
-
-					v8::Local<v8::Uint8Array> pArray = v8::Local<v8::Uint8Array>::Cast(js_result2);
-					BYTE* pData = (BYTE*)pArray->Buffer()->Externalize().Data();
-
-					CFile oFile;
-					if (S_OK == oFile.CreateFile(m_oParams.m_strDstFilePath))
-					{
-						oFile.WriteFile((void*)pNative->m_sHeader.GetBuffer(), (DWORD)pNative->m_sHeader.GetLength());
-
-						int nLen64 = Base64EncodeGetRequiredLength((DWORD)pNative->m_nSaveBinaryLen, ATL_BASE64_FLAG_NOCRLF);
-						char* pDst64 = new char[nLen64];
-						int nDstLen = nLen64;
-						Base64Encode(pData, pNative->m_nSaveBinaryLen, pDst64, &nDstLen, ATL_BASE64_FLAG_NOCRLF);
-
-						oFile.WriteFile((void*)pDst64, (DWORD)nDstLen);
-
-						RELEASEARRAYOBJECTS(pDst64);
-
-						oFile.CloseFile();
-						return TRUE;
+						_LOGGING_ERROR_(L"open", strException)
+						strError = _T("code=\"open\"");
+						bIsBreak = true;
 					}
 				}
-#else
 
-				if (js_func_get_file_s->IsFunction()) 
+#else
+				v8::Handle<v8::Value> js_func_open = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeOpenFile"));
+				if (js_func_open->IsFunction())
 				{
-					v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
-					v8::Local<v8::Value> js_result2 = func_get_file_s->Call(global_js, 1, args);
-					
-					if (try_catch.HasCaught()) 
+					v8::Handle<v8::Function> func_open = v8::Handle<v8::Function>::Cast(js_func_open);
+
+					func_open->Call(global_js, 1, args);
+
+					if (try_catch.HasCaught())
 					{
-						int nLineError = try_catch.Message()->GetLineNumber();
 						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
-						strError = _T("code=\"save\"");
-
-						_LOGGING_ERROR_(L"save", strException)
-
-						return FALSE;
-					}
-
-					CStringA strSave = to_cstringA(js_result2);
-					CFile oFile;
-					if (S_OK == oFile.CreateFile(m_oParams.m_strDstFilePath))
-					{
-						oFile.WriteFile((void*)strSave.GetBuffer(), (DWORD)strSave.GetLength());
-						oFile.CloseFile();
-						return TRUE;
+						_LOGGING_ERROR_(L"open", strException)
+						strError = _T("code=\"open\"");
+						bIsBreak = true;
 					}
 				}
 
 #endif
-				break;
 			}
-		case DoctRendererFormat::PDF:
+
+			// CHANGES
+			if (!bIsBreak)
 			{
-				if (js_func_calculate->IsFunction()) 
+#if 1
+				v8::Handle<v8::Value> js_func_apply_changes = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeApplyChangesData"));
+				if (m_oParams.m_arChanges.GetCount() != 0)
 				{
-					v8::Handle<v8::Function> func_calculate = v8::Handle<v8::Function>::Cast(js_func_calculate);
-					func_calculate->Call(global_js, 1, args);
-					
-					if (try_catch.HasCaught()) 
+					//CTimeMeasurer oMeasurer;
+					//oMeasurer.Reset();
+
+					int nCurrentIndex = 0;
+					CChangesWorker oWorker;
+
+					int nFileType = 0;
+					if (m_strEditorType == _T("spreadsheet"))
+						nFileType = 1;
+
+					oWorker.SetFormatChanges(nFileType);
+					oWorker.CheckFiles(m_oParams.m_arChanges);
+
+					while (!bIsBreak)
 					{
-						int nLineError = try_catch.Message()->GetLineNumber();
-						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
-						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+						nCurrentIndex = oWorker.Open(m_oParams.m_arChanges, nCurrentIndex);
+						bool bIsFull = (nCurrentIndex == m_oParams.m_arChanges.GetCount()) ? true : false;
 
-						strError = _T("code=\"calculate\"");
+						if (js_func_apply_changes->IsFunction())
+						{
+							v8::Handle<v8::Function> func_apply_changes = v8::Handle<v8::Function>::Cast(js_func_apply_changes);
+							v8::Handle<v8::Value> args_changes[2];
+							args_changes[0] = oWorker.GetData();
+							args_changes[1] = v8::Boolean::New(isolate, bIsFull);
 
-						_LOGGING_ERROR_(L"calculate", strException)
+							func_apply_changes->Call(global_js, 2, args_changes);
 
-						return FALSE;
+							if (try_catch.HasCaught())
+							{
+								int nLineError = try_catch.Message()->GetLineNumber();
+								CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
+								strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+								_LOGGING_ERROR_(L"change_code", strCode)
+									_LOGGING_ERROR_(L"change", strException)
+
+									strError = _T("");
+								strError.Format(_T("index=\"%d\""), pNative->m_nCurrentChangesNumber);
+								bIsBreak = true;
+							}
+						}
+
+						if (bIsFull)
+							break;
 					}
+
+					//int nTime = (oMeasurer.GetTimeInterval() * 1000);
+					//CString strTime = _T("");
+					//strTime.Format(_T("%d"), nTime);
+					//_LOGGING_ERROR_(L"time_changes", strTime);
 				}
 
-				LONG lPagesCount = 0;
-				if (js_func_pages_count->IsFunction()) 
+#else
+				v8::Handle<v8::Value> js_func_apply_changes = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeApplyChanges"));
+				if (m_oParams.m_arChanges.GetCount() != 0)
 				{
-					v8::Handle<v8::Function> func_pages_count = v8::Handle<v8::Function>::Cast(js_func_pages_count);
-					v8::Local<v8::Value> js_result1 = func_pages_count->Call(global_js, 1, args);
-					
-					if (try_catch.HasCaught()) 
+					if (js_func_apply_changes->IsFunction()) 
 					{
-						CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
-						strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
-
-						strError = _T("code=\"calculate\"");
-						return FALSE;
-					}
-
-					v8::Local<v8::Int32> intValue = js_result1->ToInt32();
-					lPagesCount = (LONG)intValue->Value();
-				}
-
-				if (js_func_page->IsFunction()) 
-				{
-					PDFWriter::IPDFWriter* pPDF = NULL;
-					CoCreateInstance(PDFWriter::CLSID_CPDFWriter, NULL, CLSCTX_ALL, PDFWriter::IID_IPDFWriter, (void**)&pPDF);
-					VARIANT var;
-					var.vt = VT_BSTR;
-					var.bstrVal = m_oParams.m_strFontsDirectory.AllocSysString();
-					pPDF->SetAdditionalParam(L"InitializeFromFolder", var);
-					SysFreeString(var.bstrVal);
-
-					pPDF->CreatePDF();
-					pPDF->SetPDFCompressionMode(15);
-					
-					RELEASEINTERFACE(m_pRenderer);
-					pPDF->QueryInterface(__uuidof(IASCRenderer), (void**)&m_pRenderer);
-
-					v8::Handle<v8::Function> func_page = v8::Handle<v8::Function>::Cast(js_func_page);
-					
-					for (LONG i = 0; i < lPagesCount; i++)
-					{
-						args[0] = v8::Int32::New(isolate, i);
-						v8::Local<v8::Value> js_result3 = func_page->Call(global_js, 1, args);
+						v8::Handle<v8::Function> func_apply_changes = v8::Handle<v8::Function>::Cast(js_func_apply_changes);
+						func_apply_changes->Call(global_js, 1, args);
 
 						if (try_catch.HasCaught()) 
 						{
@@ -959,49 +774,238 @@ private:
 							CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
 							strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
 
-							_LOGGING_ERROR_(L"render", strException)
+							_LOGGING_ERROR_(L"change_code", strCode)
+							_LOGGING_ERROR_(L"change", strException)
 
-							strError = _T("code=\"render\"");
-							return FALSE;
+							strError = _T("");
+							strError.Format(_T("index=\"%d\""), pNative->m_nCurrentChangesNumber);
+							bIsBreak = true;
+						}
+					}
+				}
+#endif
+			}
+
+			// SAVE
+			if (!bIsBreak)
+			{
+				switch (m_oParams.m_eDstFormat)
+				{
+				case DoctRendererFormat::DOCT:
+				case DoctRendererFormat::PPTT:
+				case DoctRendererFormat::XLST:
+				{
+#if 1
+					v8::Handle<v8::Value> js_func_get_file_s = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeGetFileData"));
+					if (js_func_get_file_s->IsFunction())
+					{
+						v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
+						v8::Local<v8::Value> js_result2 = func_get_file_s->Call(global_js, 1, args);
+
+						if (try_catch.HasCaught())
+						{
+							int nLineError = try_catch.Message()->GetLineNumber();
+							CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
+							strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+							strError = _T("code=\"save\"");
+
+							_LOGGING_ERROR_(L"save", strException)
+							bIsBreak = true;
+						}
+						else
+						{
+							v8::Local<v8::Uint8Array> pArray = v8::Local<v8::Uint8Array>::Cast(js_result2);
+							BYTE* pData = (BYTE*)pArray->Buffer()->Externalize().Data();
+
+							CFile oFile;
+							if (S_OK == oFile.CreateFile(m_oParams.m_strDstFilePath))
+							{
+								oFile.WriteFile((void*)pNative->m_sHeader.GetBuffer(), (DWORD)pNative->m_sHeader.GetLength());
+
+								int nLen64 = Base64EncodeGetRequiredLength((DWORD)pNative->m_nSaveBinaryLen, ATL_BASE64_FLAG_NOCRLF);
+								char* pDst64 = new char[nLen64];
+								int nDstLen = nLen64;
+								Base64Encode(pData, pNative->m_nSaveBinaryLen, pDst64, &nDstLen, ATL_BASE64_FLAG_NOCRLF);
+
+								oFile.WriteFile((void*)pDst64, (DWORD)nDstLen);
+
+								RELEASEARRAYOBJECTS(pDst64);
+
+								oFile.CloseFile();
+							}
+						}
+					}
+#else
+					v8::Handle<v8::Value> js_func_get_file_s = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeGetFileString"));
+					if (js_func_get_file_s->IsFunction()) 
+					{
+						v8::Handle<v8::Function> func_get_file_s = v8::Handle<v8::Function>::Cast(js_func_get_file_s);
+						v8::Local<v8::Value> js_result2 = func_get_file_s->Call(global_js, 1, args);
+
+						if (try_catch.HasCaught()) 
+						{
+							int nLineError = try_catch.Message()->GetLineNumber();
+							CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
+							strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+							strError = _T("code=\"save\"");
+
+							_LOGGING_ERROR_(L"save", strException)
+
+							bIsBreak = true;
 						}
 
-						CMemoryStream* pPageStream = unwrap_memorystream(js_result3->ToObject());
-						ParsePageBinary(i, pPageStream->GetData(), pPageStream->GetSize(), true);
+						CStringA strSave = to_cstringA(js_result2);
+						CFile oFile;
+						if (S_OK == oFile.CreateFile(m_oParams.m_strDstFilePath))
+						{
+							oFile.WriteFile((void*)strSave.GetBuffer(), (DWORD)strSave.GetLength());
+							oFile.CloseFile();
+						}
+					}
+#endif
+					break;
+				}
+				case DoctRendererFormat::PDF:
+				{
+					v8::Handle<v8::Value> js_func_calculate = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeCalculateFile"));
+					v8::Handle<v8::Value> js_func_pages_count = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativeCountPages"));
+					v8::Handle<v8::Value> js_func_page = global_js->Get(v8::String::NewFromUtf8(isolate, "GetNativePageBase64"));
+
+					// CALCULATE
+					if (js_func_calculate->IsFunction())
+					{
+						v8::Handle<v8::Function> func_calculate = v8::Handle<v8::Function>::Cast(js_func_calculate);
+						func_calculate->Call(global_js, 1, args);
+
+						if (try_catch.HasCaught())
+						{
+							int nLineError = try_catch.Message()->GetLineNumber();
+							CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
+							strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+							strError = _T("code=\"calculate\"");
+
+							_LOGGING_ERROR_(L"calculate", strException)
+
+							bIsBreak = true;
+						}
+					}
+
+
+					LONG lPagesCount = 0;
+
+					// PAGESCOUNT
+					if (bIsBreak)
+					{
+						if (js_func_pages_count->IsFunction())
+						{
+							v8::Handle<v8::Function> func_pages_count = v8::Handle<v8::Function>::Cast(js_func_pages_count);
+							v8::Local<v8::Value> js_result1 = func_pages_count->Call(global_js, 1, args);
+
+							if (try_catch.HasCaught())
+							{
+								CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
+								strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+								strError = _T("code=\"calculate\"");
+								bIsBreak = true;
+							}
+							else
+							{
+								v8::Local<v8::Int32> intValue = js_result1->ToInt32();
+								lPagesCount = (LONG)intValue->Value();
+							}
+						}
+					}
+
+					// RENDER
+					if (!bIsBreak)
+					{
+						if (js_func_page->IsFunction())
+						{
+							PDFWriter::IPDFWriter* pPDF = NULL;
+							CoCreateInstance(PDFWriter::CLSID_CPDFWriter, NULL, CLSCTX_ALL, PDFWriter::IID_IPDFWriter, (void**)&pPDF);
+							VARIANT var;
+							var.vt = VT_BSTR;
+							var.bstrVal = m_oParams.m_strFontsDirectory.AllocSysString();
+							pPDF->SetAdditionalParam(L"InitializeFromFolder", var);
+							SysFreeString(var.bstrVal);
+
+							pPDF->CreatePDF();
+							pPDF->SetPDFCompressionMode(15);
+
+							RELEASEINTERFACE(m_pRenderer);
+							pPDF->QueryInterface(__uuidof(IASCRenderer), (void**)&m_pRenderer);
+
+							v8::Handle<v8::Function> func_page = v8::Handle<v8::Function>::Cast(js_func_page);
+
+							for (LONG i = 0; i < lPagesCount; i++)
+							{
+								args[0] = v8::Int32::New(isolate, i);
+								v8::Local<v8::Value> js_result3 = func_page->Call(global_js, 1, args);
+
+								if (try_catch.HasCaught())
+								{
+									int nLineError = try_catch.Message()->GetLineNumber();
+									CString strCode = to_cstring(try_catch.Message()->GetSourceLine());
+									strException = to_cstring(try_catch.Message()->Get()); // ошибка компиляции? исключение бросаем
+
+									_LOGGING_ERROR_(L"render", strException)
+
+									strError = _T("code=\"render\"");
+									bIsBreak = true;
+									break;
+								}
+								else
+								{
+									CMemoryStream* pPageStream = unwrap_memorystream(js_result3->ToObject());
+									ParsePageBinary(i, pPageStream->GetData(), pPageStream->GetSize(), true);
 
 #if 0
-						CFile oFile;
-						CString sPageSave = _T("");
-						sPageSave.Format(_T("C:\\test\\DOCTRENDERER\\page%d.pagebin"), i + 1);
-						oFile.CreateFile(sPageSave);
-						oFile.WriteFile(pPageStream->GetData(), pPageStream->GetSize());
-						oFile.CloseFile();
+									CFile oFile;
+									CString sPageSave = _T("");
+									sPageSave.Format(_T("C:\\test\\DOCTRENDERER\\page%d.pagebin"), i + 1);
+									oFile.CreateFile(sPageSave);
+									oFile.WriteFile(pPageStream->GetData(), pPageStream->GetSize());
+									oFile.CloseFile();
 #endif
+								}
+							}
+
+							RELEASEINTERFACE(m_pRenderer);
+
+							HRESULT hr = S_FALSE;
+							if (!bIsBreak)
+							{
+								BSTR bsFileDst = m_oParams.m_strDstFilePath.AllocSysString();
+								hr = pPDF->SaveToFile(bsFileDst);
+								SysFreeString(bsFileDst);
+							}
+
+							RELEASEINTERFACE(pPDF);
+
+							if (S_OK != hr)
+							{
+								_LOGGING_ERROR_(L"save", L"pdfsave")
+								strError = _T("code=\"save\"");
+								bIsBreak = true;
+							}
+						}
 					}
-
-					RELEASEINTERFACE(m_pRenderer);
-
-					BSTR bsFileDst = m_oParams.m_strDstFilePath.AllocSysString();
-					HRESULT hr = pPDF->SaveToFile(bsFileDst);
-					SysFreeString(bsFileDst);
-
-					RELEASEINTERFACE(pPDF);
-
-					if (S_OK != hr)
-					{
-						_LOGGING_ERROR_(L"save", L"pdfsave")
-						strError = _T("code=\"save\"");
-					}
-
-					return (hr == S_OK) ? TRUE : FALSE;
+					break;
 				}
-
-				break;
+				default:
+					break;
+				}
 			}
-		default:
-			break;
 		}
+
+		isolate->Dispose();
+		v8::V8::Dispose();
 		
-		return FALSE;
+		return bIsBreak ? FALSE : TRUE;
 	}
 
 	void ParsePageBinary(LONG i, BYTE* pOutput, int lOutputLen, bool bIsPDF = false)

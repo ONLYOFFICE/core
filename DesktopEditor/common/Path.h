@@ -24,7 +24,6 @@ namespace NSSystemPath
 		_tsplitpath( strFileName.c_str(), tDrive, tFolder, NULL, NULL );
 		sRes.append(tDrive);
 		sRes.append(tFolder);
-		return sRes;
 #elif LINUX
 		BYTE* pUtf8 = NULL;
 		LONG lLen = 0;
@@ -34,6 +33,7 @@ namespace NSSystemPath
 		delete [] pUtf8;
 #elif MAC
 #endif
+        return sRes;
 	}
 	static std::wstring GetFileName(const std::wstring& strFileName)
 	{

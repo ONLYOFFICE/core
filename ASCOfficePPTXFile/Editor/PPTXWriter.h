@@ -756,8 +756,13 @@ namespace NSBinPptxRW
 <Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>\
 </Relationships>");
 
-            FileSystem::Directory::CreateDirectory (m_strDstFolder + _T("\\_rels"));
-			oFile.CreateFile(m_strDstFolder + _T("\\_rels\\.rels"));
+            OOX::CPath filePath = m_strDstFolder + _T("\\_rels");
+
+            FileSystem::Directory::CreateDirectory (filePath.GetFilename());
+
+            filePath = m_strDstFolder + _T("\\_rels\\.rels");
+
+            oFile.CreateFile(filePath.GetFilename());
 			oFile.WriteStringUTF8(strRELS);
 			oFile.CloseFile();
 

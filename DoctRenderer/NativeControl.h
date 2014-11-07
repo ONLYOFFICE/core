@@ -130,10 +130,12 @@ public:
 
 	void ConsoleLog(CString& strVal)
 	{
+#if 0
 		FILE* f = fopen("C:\\log.txt", "a+");
 		fprintf(f, (CStringA)strVal);
 		fprintf(f, "\n");
 		fclose(f);
+#endif
 	}
 };
 

@@ -36,7 +36,10 @@ namespace FileSystem
     }
     bool Directory::CreateDirectory(const String& path) 
 	{
-        return CreateDirectory(path.c_str());
+		DWORD dwAttrib = ::GetFileAttributesW(path.c_str());
+		if  (dwAttrib != INVALID_FILE_ATTRIBUTES && 0 != (dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) return true;
+		
+		return CreateDirectory(path.c_str());
     }
     bool Directory::CreateDirectory(String strFolderPathRoot, String strFolderName)
     {
@@ -47,6 +50,9 @@ namespace FileSystem
     }
     bool Directory::CreateDirectories(LPCTSTR path) 
 	{
+		DWORD dwAttrib = ::GetFileAttributesW(path);
+		if  (dwAttrib != INVALID_FILE_ATTRIBUTES && 0 != (dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) return true;
+
 		int codeResult = ERROR_SUCCESS;
 
 		codeResult = SHCreateDirectory(NULL, path);

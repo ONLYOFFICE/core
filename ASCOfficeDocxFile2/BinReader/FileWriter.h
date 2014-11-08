@@ -10,6 +10,10 @@
 #include "SettingWriter.h"
 #include "CommentsWriter.h"
 #include "ChartWriter.h"
+#include "ChartWriter.h"
+#include "DocumentRelsWriter.h"
+#include "webSettingsWriter.h"
+#include "DefaultThemeWriter.h"
 
 namespace BinDocxRW {
 	class CComments;
@@ -33,6 +37,9 @@ namespace Writers
 		SettingWriter			m_oSettingWriter;
 		CommentsWriter			m_oCommentsWriter;
 		ChartWriter				m_oChartWriter;
+		DocumentRelsWriter		m_oDocumentRelsWriter;
+		WebSettingsWriter		m_oWebSettingsWriter;
+		DefaultThemeWriter		m_oDefaultTheme;
 		
 		int m_nDocPrIndex;
 		BinDocxRW::CComments* m_pComments;
@@ -48,6 +55,9 @@ namespace Writers
 										m_oSettingWriter(sDirOutput, m_oHeaderFooterWriter),
 										m_oCommentsWriter(sDirOutput, m_oContentTypesWriter),
 										m_oChartWriter(sDirOutput, m_oContentTypesWriter),
+										m_oDocumentRelsWriter(sDirOutput),
+										m_oWebSettingsWriter(sDirOutput),
+										m_oDefaultTheme(sDirOutput),
 										m_nDocPrIndex(0),
 										m_pComments(NULL)
 		{

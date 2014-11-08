@@ -1838,14 +1838,11 @@ namespace BinXlsxRW {
 			}
 			else if(c_oSerWorksheetsTypes::Drawings == type)
 			{
-				CString sDrawingsDir;
-                sDrawingsDir.Format(_T("%ls/xl/drawings"), m_sDestinationDir);
-				if( !NSDirectory::Exists(string2std_string(sDrawingsDir)) )
-					OOX::CSystemUtility::CreateDirectories(sDrawingsDir);
-				CString sRelsDir;
-                sRelsDir.Format(_T("%ls/_rels"), sDrawingsDir);
-				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
-					OOX::CSystemUtility::CreateDirectories(sRelsDir);
+				OOX::CPath pathDrawingsDir = m_sDestinationDir + _T("\\xl\\drawings");
+				OOX::CSystemUtility::CreateDirectories(pathDrawingsDir.GetPath());
+			
+				OOX::CPath pathDrawingsRelsDir = pathDrawingsDir.GetPath() + _T("\\_rels");
+				OOX::CSystemUtility::CreateDirectories(pathDrawingsRelsDir.GetPath());
 
 				m_pOfficeDrawingConverter->SetDstContentRels();
 				m_pCurDrawing = new OOX::Spreadsheet::CDrawing();
@@ -1856,10 +1853,8 @@ namespace BinXlsxRW {
 				m_pCurWorksheet->m_oDrawing->m_oId.Init();
 				m_pCurWorksheet->m_oDrawing->m_oId->SetValue(oRId.get());
 
-				CString sFilename = m_pCurDrawing->m_sFilename;
-				CString sRelsPath;
-                sRelsPath.Format(_T("%ls/%ls.rels"), sRelsDir, sFilename);
-				m_pOfficeDrawingConverter->SaveDstContentRels(sRelsPath);
+				OOX::CPath pathDrawingsRels = pathDrawingsRelsDir.GetPath() + _T("\\") + m_pCurDrawing->m_sFilename + _T(".rels");
+				m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
 			}
 			else if(c_oSerWorksheetsTypes::SheetData == type)
 			{
@@ -2420,14 +2415,12 @@ namespace BinXlsxRW {
 			if(c_oSer_DrawingType::Chart2 == type)
 			{
 				//создаем папку для rels
-				CString sChartsDir;
-                sChartsDir.Format(_T("%ls/xl/charts"), m_sDestinationDir);
-				if( !NSDirectory::Exists(string2std_string(sChartsDir)) )
-					OOX::CSystemUtility::CreateDirectories(sChartsDir);
-				CString sRelsDir;
-                sRelsDir.Format(_T("%ls/_rels"), sChartsDir);
-				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
-					OOX::CSystemUtility::CreateDirectories(sRelsDir);
+				OOX::CPath pathChartsDir = m_sDestinationDir + _T("\\xl\\charts");
+				OOX::CSystemUtility::CreateDirectories(pathChartsDir.GetPath());
+
+				OOX::CPath pathChartsRelsDir = pathChartsDir.GetPath() + _T("\\_rels");
+				OOX::CSystemUtility::CreateDirectories(pathChartsRelsDir.GetPath());
+				
 				m_pOfficeDrawingConverter->SetDstContentRels();
 
 				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace();
@@ -2437,8 +2430,8 @@ namespace BinXlsxRW {
 				pChartFile->m_bDoNotAddRels = true;
 				m_pCurDrawing->Add(pChartFile);
 
-                CString sRelsPath;sRelsPath.Format(_T("%ls/%ls.rels"), sRelsDir, pChartFile->m_sFilename);
-				m_pOfficeDrawingConverter->SaveDstContentRels(sRelsPath);
+				OOX::CPath pathChartsRels = pathChartsRelsDir.GetPath() + _T("\\") + pChartFile->m_sFilename + _T(".rels");
+				m_pOfficeDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
 
 				long rId;
 				CString sNewImgRel;

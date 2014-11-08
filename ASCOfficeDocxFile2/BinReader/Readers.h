@@ -5549,37 +5549,38 @@ public:
 		{
 			if(false == m_oFileWriter.m_bSaveChartAsImg)
 			{
-				//создаем папку для rels
-				CString sChartsDir;
-                sChartsDir.Format(_T("%ls\\word\\charts"), m_oFileWriter.m_oChartWriter.m_sDir);
-				if( !NSDirectory::Exists(string2std_string(sChartsDir)) )
-					OOX::CSystemUtility::CreateDirectories(sChartsDir);
-				CString sRelsDir;
-                sRelsDir.Format(_T("%ls\\_rels"), sChartsDir);
-				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
-					OOX::CSystemUtility::CreateDirectories(sRelsDir);
+				OOX::CPath pathChartsDir = m_oFileWriter.m_oChartWriter.m_sDir + _T("\\word\\charts");			
+				OOX::CSystemUtility::CreateDirectories(pathChartsDir.GetPath());
+				
+				OOX::CPath pathChartsRelsDir = pathChartsDir.GetPath() + _T("\\_rels");                
+				OOX::CSystemUtility::CreateDirectories(pathChartsRelsDir.GetPath());
+
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
 
 				CString sThemeDir;
-				int nIndex = m_oFileWriter.m_sThemePath.ReverseFind('\\');
+				int nIndex = m_oFileWriter.m_sThemePath.ReverseFind(FILE_SEPARATOR_CHAR);
 				if(-1 != nIndex)
 					sThemeDir = m_oFileWriter.m_sThemePath.Left(nIndex);
-				BinXlsxRW::SaveParams oSaveParams(sThemeDir);
-				BinXlsxRW::BinaryChartReader oBinaryChartReader(m_oBufferedStream, oSaveParams, m_oFileWriter.m_pDrawingConverter);
+				
+				BinXlsxRW::SaveParams			oSaveParams(sThemeDir);
+				BinXlsxRW::BinaryChartReader	oBinaryChartReader(m_oBufferedStream, oSaveParams, m_oFileWriter.m_pDrawingConverter);
+				
 				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace();
 				oBinaryChartReader.ReadCT_ChartSpace(length, &pChartSpace->m_oChartSpace);
 
 				XmlUtils::CStringWriter sw;
 				pChartSpace->toXML(sw);
+			
 				CString sChartContent = sw.GetData();
 				CString sFilename;
 				CString sRelsName;
 				int nChartIndex;
+				
 				m_oFileWriter.m_oChartWriter.AddChart(sChartContent, sRelsName, sFilename, nChartIndex);
 				m_oFileWriter.m_oContentTypesWriter.AddOverrideRaw(oSaveParams.sAdditionalContentTypes);
 
-                CString sRelsPath;sRelsPath.Format(_T("%ls\\%ls.rels"), sRelsDir, sFilename);
-				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(sRelsPath);
+                OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + _T("\\") + sFilename + _T(".rels");
+				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
 
 				long rId;
 				CString bstrChartRelType = OOX::Spreadsheet::FileTypes::Charts.RelationType();
@@ -5946,7 +5947,7 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItem(BYTE type, long length, void* poRes
 
             OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir + _T("\\word\\_rels\\") + poHdrFtrItem->m_sFilename + _T(".rels");
 
-            m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetFilename());
+            m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetPath());
 		}
 	}
 	else
@@ -6159,7 +6160,7 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 					m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.microsoft.com/office/2011/relationships/people")), CString(_T("people.xml")), CString(), &rId);
 				}
 
-                m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetFilename());
+                m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetPath());
 				if(c_oSerConstants::ReadOk != res)
 					return res;
 			}

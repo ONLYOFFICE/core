@@ -3131,15 +3131,14 @@ HRESULT CDrawingConverter::SaveThemeXml(LONG lStart, LONG lLength, const CString
 	OOX::CPath filename = strThemePath;
     CString strTemp = filename.GetDirectory()  + _T("\\_rels\\");
 
-	CString strFileName = filename.GetFilename();
-	if (strFileName == _T(""))
-		strTemp += _T(".rels");
-	else
-		strTemp += (strFileName + _T(".rels"));
+	CString strFileName = filename.GetPath();
+	
+	if (strFileName == _T(""))	strTemp += _T(".rels");
+	else						strTemp += (strFileName + _T(".rels"));
 	
     filename = strTemp;
 
-    SaveDstContentRels(filename.GetFilename());
+    SaveDstContentRels(filename.GetPath());
 
 	m_pXmlWriter->ClearNoAttack();
 

@@ -286,18 +286,13 @@ namespace OOX
 
 		const CPath CreateFileName(const CPath& oFilePath) const
 		{
-            CString strTemp;
-#ifdef _WIN32
-            strTemp = oFilePath.GetDirectory() + _T("\\_rels\\");
-#else
-           strTemp = oFilePath.GetDirectory() + _T("/_rels/");
-#endif
-           if ( _T("") == oFilePath.GetFilename() )
-				strTemp += _T(".rels");
-			else
-				strTemp += ( oFilePath.GetFilename() + _T(".rels") );
+            CString strTemp = oFilePath.GetDirectory() + _T("\\_rels\\");
 
-			return strTemp;
+			if ( _T("") == oFilePath.GetFilename() )	strTemp += _T(".rels");
+			else										strTemp += ( oFilePath.GetFilename() + _T(".rels") );
+
+            CPath pathTemp = strTemp;
+			return pathTemp.GetPath();
 		}
 
 

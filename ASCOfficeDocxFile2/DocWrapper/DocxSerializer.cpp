@@ -35,11 +35,13 @@ bool BinDocxRW::CDocxSerializer::ConvertDocxToDoct(const CString& sSrcFileName, 
 }
 bool BinDocxRW::CDocxSerializer::ConvertDoctToDocx(const CString& sSrcFileName, const CString& sDstFileName, const CString& sTmpDir, const CString& sXMLOptions, const CString& sThemePath, const CString& sMediaPath)
 {
-	std::wstring strDirSrc = NSSystemPath::Combine(string2std_string(sTmpDir), _T("from"));
-	std::wstring strEditorBin = NSSystemPath::Combine(strDirSrc, _T("Editor.bin"));
-	std::wstring strDirDst = NSSystemPath::Combine(string2std_string(sTmpDir), _T("to"));
+	std::wstring strDirSrc		= NSSystemPath::Combine(string2std_string(sTmpDir), _T("from"));
+	std::wstring strEditorBin	= NSSystemPath::Combine(strDirSrc, _T("Editor.bin"));
+	std::wstring strDirDst		= NSSystemPath::Combine(string2std_string(sTmpDir), _T("to"));
+	
 	NSDirectory::CreateDirectory(strDirSrc);
 	NSDirectory::CreateDirectory(strDirDst);
+	
 	CString sEditorBin = std_string2string(strEditorBin);
 	CString sDirDst = std_string2string(strDirDst);
 	COfficeUtils oCOfficeUtils(NULL);
@@ -51,10 +53,10 @@ bool BinDocxRW::CDocxSerializer::ConvertDoctToDocx(const CString& sSrcFileName, 
 }
 bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions)
 {
-	//create mediadir
-	OOX::CPath path(sSrcFileName);
-    CString mediaDir = path.GetDirectory() + _T("media/");
-	NSDirectory::CreateDirectory(string2std_string(mediaDir));
+	OOX::CPath pathMain(sSrcFileName);
+    
+	OOX::CPath pathMedia = pathMain.GetDirectory() + FILE_SEPARATOR_STR + _T("media");
+	NSDirectory::CreateDirectory(string2std_string(pathMedia.GetPath()));
 
 	COfficeFontPicker* pFontPicker = new COfficeFontPicker();
 	pFontPicker->Init(m_sFontDir);
@@ -86,8 +88,10 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 	oDrawingConverter.SetFontDir(m_sFontDir);
 	oDrawingConverter.SetFontPicker(pFontPicker);
 	oDrawingConverter.SetMainDocument(this);
-	oDrawingConverter.SetMediaDstPath(mediaDir);
+	oDrawingConverter.SetMediaDstPath(pathMedia.GetPath());
+	
 	ParamsWriter oParamsWriter(&oBufferedStream, &fp, &oDrawingConverter, pEmbeddedFontsManager);
+
 	m_oBinaryFileWriter = new BinaryFileWriter(oParamsWriter);
 	m_oBinaryFileWriter->intoBindoc(sDstPath);
 	BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
@@ -118,9 +122,38 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 	RELEASEOBJECT(pFontPicker);
 	return true;
 }
+void BinDocxRW::CDocxSerializer::CreateDocxFolders(CString strDirectory, CString& sThemePath, CString& sMediaPath)
+{
+	// rels
+	OOX::CPath pathRels = strDirectory + _T("\\_rels");
+	CreateDirectory(pathRels.GetPath(), NULL);
+
+	// word
+	OOX::CPath pathWord = strDirectory + _T("\\word");
+	CreateDirectory(pathWord.GetPath(), NULL);
+
+	// documentRels
+	OOX::CPath pathWordRels = pathWord.GetPath() + _T("\\_rels");
+	CreateDirectory(pathWordRels.GetPath(), NULL);
+
+	//media
+	OOX::CPath pathMedia = pathWord.GetPath() + _T("\\media");
+	sMediaPath = pathMedia.GetPath();
+
+	// theme
+	OOX::CPath pathTheme = pathWord.GetPath() + _T("\\theme");
+	CreateDirectory(pathTheme.GetPath(), NULL);
+
+	OOX::CPath pathThemeRels = pathTheme.GetPath() + _T("\\_rels");
+	CreateDirectory(pathThemeRels.GetPath(), NULL);
+	
+	pathTheme = pathTheme.GetPath() + _T("\\theme1.xml");
+	sThemePath = pathTheme.GetPath();
+}
 bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sThemePath, const CString& sMediaPath)
 {
 	bool bResultOk = false;
+	
 	NSFile::CFileBinary oFile;
 	if(oFile.OpenFile(string2std_string(sSrcFileName)))
 	{
@@ -154,7 +187,6 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				BYTE _c = pBase64Data[nIndex];
 				if (_c == ';')
 				{
-
 					if(0 == nType)
 					{
 						nType = 1;
@@ -171,8 +203,10 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				else
 					dst_len.AppendChar(_c);
 			}
+			
 			int nDataSize = atoi(dst_len);
 			BYTE* pData = new BYTE[nDataSize];
+			
 			if(FALSE != Base64::Base64Decode((LPCSTR)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
 			{
 				NSBinPptxRW::CDrawingConverter oDrawingConverter;
@@ -207,10 +241,41 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				var.bstrVal = sFileInDir.GetString();
 				oDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir"), var);
 #endif
-
+				m_pCurFileWriter->m_oDefaultTheme.Write();
+				
 				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter);
 				oBinaryFileReader.ReadFile();
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+				OOX::CContentTypes oContentTypes;
+	//docProps
+				OOX::CPath pathDocProps = sDstPath + _T("\\docProps");
+				CreateDirectory(pathDocProps.GetPath(), NULL);
+				
+				OOX::CPath DocProps = L"docProps";
 
+				OOX::CApp* pApp = new OOX::CApp();
+				if (pApp)
+				{
+					pApp->SetApplication(_T("OnlyOffice"));
+					pApp->SetAppVersion(_T("3.0000"));
+					pApp->SetDocSecurity(0);
+					pApp->SetScaleCrop(false);
+					pApp->SetLinksUpToDate(false);
+					pApp->SetSharedDoc(false);
+					pApp->SetHyperlinksChanged(false);
+					
+					pApp->write(pathDocProps + _T("//app.xml"), DocProps, oContentTypes);
+					delete pApp;
+				}				
+				OOX::CCore* pCore = new OOX::CCore();
+				if (pCore)
+				{
+					pCore->SetCreator(_T(""));
+					pCore->SetLastModifiedBy(_T(""));
+					pCore->write(pathDocProps + _T("//core.xml"), DocProps, oContentTypes);
+					delete pCore;
+				}
+/////////////////////////////////////////////////////////////////////////////////////
 				VARIANT vt;
 				oDrawingConverter.GetAdditionalParam(CString(_T("ContentTypes")), &vt);
 				if(VT_BSTR == vt.vt)
@@ -224,10 +289,11 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				m_pCurFileWriter->m_oHeaderFooterWriter.Write();
 				//Setting пишем после HeaderFooter, чтобы заполнить evenAndOddHeaders
 				m_pCurFileWriter->m_oSettingWriter.Write();
+				m_pCurFileWriter->m_oWebSettingsWriter.Write();
 				//Document пишем после HeaderFooter, чтобы заполнить sectPr
 				m_pCurFileWriter->m_oDocumentWriter.Write();
 				//Rels и ContentTypes пишем в конце
-				//m_pCurFileWriter->m_oDocumentRelsWriter.Write(_T("document.xml.rels"));
+				m_pCurFileWriter->m_oDocumentRelsWriter.Write();
 				m_pCurFileWriter->m_oContentTypesWriter.Write();
 
 				//CSerializer oSerializer = CSerializer();

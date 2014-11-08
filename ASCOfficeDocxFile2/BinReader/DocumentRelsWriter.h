@@ -9,58 +9,29 @@ namespace Writers
 	{
 		XmlUtils::CStringWriter  m_oWriter;
 		CString	m_sDir;
-		int m_nRid;
-		std::vector<CString> m_aRels;
-		bool bDocumentRels;
 	public:
-		DocumentRelsWriter(CString sDir, bool bDocumentRels, int nRid = 1):m_sDir(sDir),bDocumentRels(bDocumentRels)
+		DocumentRelsWriter(CString sDir):m_sDir(sDir)
 		{
-			m_nRid = nRid;
 		}
-		void Write(CString sFileName)
+		void Write()
 		{
-			CString s_dr_Start;
-			CString s_dr_End;
-			if(true == bDocumentRels)
-			{
-				s_dr_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"><Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles\" Target=\"styles.xml\"/><Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings\" Target=\"settings.xml\"/><Relationship Id=\"rId4\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/webSettings\" Target=\"webSettings.xml\"/><Relationship Id=\"rId5\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable\" Target=\"fontTable.xml\"/><Relationship Id=\"rId6\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"theme/theme1.xml\"/>");
-				s_dr_End = _T("</Relationships>");
-			}
-			else
-			{
-				s_dr_Start = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">");
-				s_dr_End = _T("</Relationships>");
-			}
-			if(m_nRid > 1)
-			{
-				m_oWriter.WriteString(s_dr_Start);
-				for(int i = 0, length = m_aRels.size(); i < length; ++i)
-				{
-					m_oWriter.WriteString(m_aRels[i]);
-				}
-				m_oWriter.WriteString(s_dr_End);
+			CString s_Common;
 
-                OOX::CPath fileName = m_sDir + _T("\\word\\_rels\\") + sFileName;
+			s_Common = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \
+							<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\"> \
+							<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument\" Target=\"word/document.xml\"/> \
+							<Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties\" Target=\"docProps/core.xml\"/> \
+							<Relationship Id=\"rId3\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/> \
+						</Relationships>");
 
-                CFile oFile;
-                oFile.CreateFile(fileName.GetFilename());
-				oFile.WriteStringUTF8(m_oWriter.GetData());
-				oFile.CloseFile();
-			}
-		}
-		CString AddRels(CString sType, CString sTarget, bool bExternal = false)
-		{
-			sType = XmlUtils::EncodeXmlString(sType);
-			sTarget = XmlUtils::EncodeXmlString(sTarget);
-			CString srId;srId.Format(_T("rId%d"), m_nRid);
-			CString sRels;
-			if(bExternal)
-				sRels.Format(_T("<Relationship Id=\"%ls\" Type=\"%ls\" Target=\"%ls\" TargetMode=\"External\"/>"), srId, sType, sTarget);
-			else
-				sRels.Format(_T("<Relationship Id=\"%ls\" Type=\"%ls\" Target=\"%ls\"/>"), srId, sType, sTarget);
-			m_nRid++;
-			m_aRels.push_back(sRels);
-			return srId;
+			m_oWriter.WriteString(s_Common);
+
+            OOX::CPath fileName = m_sDir + _T("\\_rels\\.rels");
+
+            CFile oFile;
+            oFile.CreateFile(fileName.GetPath());
+			oFile.WriteStringUTF8(m_oWriter.GetData());
+			oFile.CloseFile();
 		}
 	};
 }

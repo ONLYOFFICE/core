@@ -56,10 +56,11 @@ public:
 	{
 	}
 public:
-	STDMETHOD(LoadFromFile)(BSTR sSrcFileName, BSTR sDstPath, BSTR bstrXMLOptions)
+	STDMETHOD(LoadFromFile)(BSTR sSrcFileName, BSTR bstrDstPath, BSTR bstrXMLOptions)
 	{
-		CString sMediaDir = sDstPath;
-		sMediaDir.Append(_T("\\xl\\media"));
+		CString sDstPath = bstrDstPath;
+		OOX::CPath pathMediaDir = sDstPath + _T("\\xl\\media");
+		
 		// File Type (Можно парсить не два раза, а один, если передавать в ReadFile не опции, а параметры)
 		BYTE fileType;
 		UINT nCodePage;
@@ -68,19 +69,22 @@ public:
 
 		if (BinXlsxRW::c_oFileTypes::CSV != fileType)
 		{
-			CString sXlDir;sXlDir.Format(_T("%s\\xl"), sDstPath);
-			CString sThemeDir;sThemeDir.Format(_T("%s\\xl\\%s"), sDstPath, OOX::FileTypes::Theme.DefaultDirectory().GetPath());
-			CString sThemePath;sThemePath.Format(_T("%s\\%s"), sThemeDir, OOX::FileTypes::Theme.DefaultFileName().GetPath());
-			CString sThemeRelsPath;sThemeRelsPath.Format(_T("%s\\_rels"), sThemeDir);
+			OOX::CPath pathXlDir = sDstPath + _T("\\xl");
 
-			NSDirectory::CreateDirectory(string2std_string(sXlDir));
-			NSDirectory::CreateDirectory(string2std_string(sThemeDir));
-			NSDirectory::CreateDirectory(string2std_string(sThemeRelsPath));
-			NSDirectory::CreateDirectory(string2std_string(sMediaDir));
+			OOX::CPath pathThemeDir = pathXlDir + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
+			
+			OOX::CPath pathThemeFile = pathThemeDir + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultFileName().GetPath();
+			
+			OOX::CPath pathThemeThemeRelsDir = pathThemeDir + _T("\\_rels");
 
-			CreateTheme(sThemePath);
+			NSDirectory::CreateDirectory(string2std_string(pathXlDir.GetPath()));
+			NSDirectory::CreateDirectory(string2std_string(pathThemeDir.GetPath()));
+			NSDirectory::CreateDirectory(string2std_string(pathThemeThemeRelsDir.GetPath()));
+			NSDirectory::CreateDirectory(string2std_string(pathMediaDir.GetPath()));
+
+			CreateTheme(pathThemeFile.GetPath());
 		}
-		bool bRes = m_oXlsxSerializer.loadFromFile(CString(sSrcFileName), CString(sDstPath), CString(bstrXMLOptions), sMediaDir);
+		bool bRes = m_oXlsxSerializer.loadFromFile(CString(sSrcFileName), CString(sDstPath), CString(bstrXMLOptions), pathMediaDir.GetPath());
 		return bRes ? S_OK : S_FALSE;
 	}
 	STDMETHOD(SaveToFile)(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions)

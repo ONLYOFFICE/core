@@ -260,11 +260,11 @@ namespace NSBinPptxRW
 			pPair = m_mainTables.find(NSMainTables::Themes);
 			if (m_mainTables.end()  != pPair)
 			{
-				CString strFolder = m_strDstFolder + _T("\\ppt\\theme");
-				CString strFolderRels = strFolder + _T("\\_rels");
+				OOX::CPath pathFolder = m_strDstFolder + _T("\\ppt\\theme");
+				OOX::CPath pathFolderRels = pathFolder.GetPath() + _T("\\_rels");
 
-                FileSystem::Directory::CreateDirectory(strFolder);
-                FileSystem::Directory::CreateDirectory(strFolderRels);
+                FileSystem::Directory::CreateDirectory(pathFolder.GetPath());
+                FileSystem::Directory::CreateDirectory(pathFolderRels.GetPath());
 
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
@@ -285,14 +285,18 @@ namespace NSBinPptxRW
 					m_arThemes[i].fromPPTY(&m_oReader);
 
 					CString strMasterXml = _T("");
-					strMasterXml.Format(_T("\\theme%d.xml"), i + 1);
+					strMasterXml.Format(_T("theme%d.xml"), i + 1);
 					oXmlWriter.ClearNoAttack();
 
 					m_oReader.m_pRels->CloseRels();
 
 					m_arThemes[i].toXmlWriter(&oXmlWriter);
-					oXmlWriter.SaveToFile(strFolder + strMasterXml);
-					m_oReader.m_pRels->SaveRels(strFolderRels + strMasterXml + _T(".rels"));
+					
+					pathFolder = pathFolder + FILE_SEPARATOR_STR + strMasterXml;
+					oXmlWriter.SaveToFile(pathFolder.GetPath());
+					
+					pathFolderRels = pathFolderRels + FILE_SEPARATOR_STR + strMasterXml + _T(".rels");
+					m_oReader.m_pRels->SaveRels(pathFolderRels.GetPath());
 				}
 			}
 
@@ -300,11 +304,11 @@ namespace NSBinPptxRW
 			pPair = m_mainTables.find(NSMainTables::SlideMasters);
 			if (m_mainTables.end()  != pPair)
 			{
-				CString strFolder = m_strDstFolder + _T("\\ppt\\slideMasters");
-				CString strFolderRels = strFolder + _T("\\_rels");
+				OOX::CPath pathFolder = m_strDstFolder + _T("\\ppt\\slideMasters");
+				OOX::CPath pathFolderRels = pathFolder + _T("\\_rels");
 
-                FileSystem::Directory::CreateDirectory(strFolder);
-                FileSystem::Directory::CreateDirectory(strFolderRels);
+                FileSystem::Directory::CreateDirectory(pathFolder.GetPath());
+                FileSystem::Directory::CreateDirectory(pathFolderRels.GetPath());
 
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
@@ -338,13 +342,16 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->CloseRels();
 
 					CString strMasterXml = _T("");
-					strMasterXml.Format(_T("\\slideMaster%d.xml"), i + 1);
+					strMasterXml.Format(_T("slideMaster%d.xml"), i + 1);
 					oXmlWriter.ClearNoAttack();
 
 					m_arSlideMasters[i].toXmlWriter(&oXmlWriter);
 
-					oXmlWriter.SaveToFile(strFolder + strMasterXml);
-					m_oReader.m_pRels->SaveRels(strFolderRels + strMasterXml + _T(".rels"));
+					pathFolder = pathFolder + FILE_SEPARATOR_STR + strMasterXml;
+					oXmlWriter.SaveToFile(pathFolder.GetPath());
+
+					pathFolderRels = pathFolderRels + FILE_SEPARATOR_STR + strMasterXml + _T(".rels");
+					m_oReader.m_pRels->SaveRels(pathFolderRels.GetPath());
 				}
 			}
 
@@ -352,11 +359,11 @@ namespace NSBinPptxRW
 			pPair = m_mainTables.find(NSMainTables::SlideLayouts);
 			if (m_mainTables.end()  != pPair)
 			{
-				CString strFolder = m_strDstFolder + _T("\\ppt\\slideLayouts");
-				CString strFolderRels = strFolder + _T("\\_rels");
+				OOX::CPath pathFolder = m_strDstFolder + _T("\\ppt\\slideLayouts");
+				OOX::CPath pathFolderRels = pathFolder + _T("\\_rels");
 
-                FileSystem::Directory::CreateDirectory(strFolder);
-                FileSystem::Directory::CreateDirectory(strFolderRels);
+				FileSystem::Directory::CreateDirectory(pathFolder.GetPath());
+				FileSystem::Directory::CreateDirectory(pathFolderRels.GetPath());
 
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
@@ -372,13 +379,16 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->CloseRels();
 
 					CString strMasterXml = _T("");
-					strMasterXml.Format(_T("\\slideLayout%d.xml"), i + 1);
+					strMasterXml.Format(_T("slideLayout%d.xml"), i + 1);
 					oXmlWriter.ClearNoAttack();
 
 					m_arSlideLayouts[i].toXmlWriter(&oXmlWriter);
 
-					oXmlWriter.SaveToFile(strFolder + strMasterXml);
-					m_oReader.m_pRels->SaveRels(strFolderRels + strMasterXml + _T(".rels"));	
+					pathFolder = pathFolder + FILE_SEPARATOR_STR + strMasterXml;
+					oXmlWriter.SaveToFile(pathFolder.GetPath());
+
+					pathFolderRels = pathFolderRels + FILE_SEPARATOR_STR + strMasterXml + _T(".rels");
+					m_oReader.m_pRels->SaveRels(pathFolderRels.GetPath());	
 				}
 			}
 
@@ -387,11 +397,11 @@ namespace NSBinPptxRW
 			pPair = m_mainTables.find(NSMainTables::Slides);
 			if (m_mainTables.end()  != pPair)
 			{
-				CString strFolder = m_strDstFolder + _T("\\ppt\\slides");
-				CString strFolderRels = strFolder + _T("\\_rels");
+				OOX::CPath pathFolder = m_strDstFolder + _T("\\ppt\\slides");
+				OOX::CPath pathFolderRels = pathFolder + _T("\\_rels");
 
-               FileSystem::Directory::CreateDirectory (strFolder);
-               FileSystem::Directory::CreateDirectory (strFolderRels);
+				FileSystem::Directory::CreateDirectory (pathFolder.GetPath());
+				FileSystem::Directory::CreateDirectory (pathFolderRels.GetPath());
 
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(4);
@@ -410,14 +420,17 @@ namespace NSBinPptxRW
 						m_oReader.m_pRels->WriteSlideComments(nComment);
 						if (1 == nComment)
 						{
-                            FileSystem::Directory::CreateDirectory (m_strDstFolder + _T("\\ppt\\comments"));
+							OOX::CPath pathFolderCommentDir = m_strDstFolder + _T("\\ppt\\comments");
+                            FileSystem::Directory::CreateDirectory (pathFolderCommentDir.GetPath());
 						}
 						CString strCommentFile = _T("");
 						strCommentFile.Format(_T("\\ppt\\comments\\comment%d.xml"), nComment);
 
 						oXmlWriter.ClearNoAttack();
 						m_arSlides[i].comments->toXmlWriter(&oXmlWriter);
-						oXmlWriter.SaveToFile(m_strDstFolder + strCommentFile);
+						
+						OOX::CPath pathComment = m_strDstFolder + strCommentFile;
+						oXmlWriter.SaveToFile(pathComment.GetPath());
 
 						++nComment;
 					}
@@ -425,13 +438,16 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->CloseRels();
 
 					CString strMasterXml = _T("");
-					strMasterXml.Format(_T("\\slide%d.xml"), i + 1);
+					strMasterXml.Format(_T("slide%d.xml"), i + 1);
 					oXmlWriter.ClearNoAttack();
 
 					m_arSlides[i].toXmlWriter(&oXmlWriter);
 
-					oXmlWriter.SaveToFile(strFolder + strMasterXml);
-					m_oReader.m_pRels->SaveRels(strFolderRels + strMasterXml + _T(".rels"));	
+					pathFolder = pathFolder + FILE_SEPARATOR_STR + strMasterXml;
+					oXmlWriter.SaveToFile(pathFolder.GetPath());
+
+					pathFolderRels = pathFolderRels + FILE_SEPARATOR_STR + strMasterXml + _T(".rels");
+					m_oReader.m_pRels->SaveRels(pathFolderRels.GetPath());	
 				}
 			}
 
@@ -473,11 +489,11 @@ namespace NSBinPptxRW
 				CreateDefaultNotesMasters((int)m_arThemes.size() + 1);
 				CreateDefaultNote();
 
-				CString strFolder = m_strDstFolder + _T("\\ppt\\notesSlides");
-				CString strFolderRels = strFolder + _T("\\_rels");
+				OOX::CPath pathFolder		= m_strDstFolder + _T("\\ppt\\notesSlides");
+				OOX::CPath pathFolderRels	= pathFolder + _T("\\_rels");
 
-                FileSystem::Directory::CreateDirectory (strFolder);
-                FileSystem::Directory::CreateDirectory (strFolderRels);
+                FileSystem::Directory::CreateDirectory (pathFolder.GetPath());
+                FileSystem::Directory::CreateDirectory (pathFolderRels.GetPath());
 
 				LONG lCount = (LONG)m_arSlides.size();				
 				for (LONG i = 0; i < lCount; ++i)
@@ -487,13 +503,16 @@ namespace NSBinPptxRW
 					m_oReader.m_pRels->CloseRels();
 
 					CString strMasterXml = _T("");
-					strMasterXml.Format(_T("\\notesSlide%d.xml"), i + 1);
+					strMasterXml.Format(_T("notesSlide%d.xml"), i + 1);
 					oXmlWriter.ClearNoAttack();
 
 					m_oDefaultNote.toXmlWriter(&oXmlWriter);
 
-					oXmlWriter.SaveToFile(strFolder + strMasterXml);
-					m_oReader.m_pRels->SaveRels(strFolderRels + strMasterXml + _T(".rels"));	
+					pathFolder = pathFolder + FILE_SEPARATOR_STR + strMasterXml;
+					oXmlWriter.SaveToFile(pathFolder.GetPath());
+				
+					pathFolderRels = pathFolderRels + FILE_SEPARATOR_STR + strMasterXml + _T(".rels");
+					m_oReader.m_pRels->SaveRels(pathFolderRels.GetPath());	
 				}
 			}
 
@@ -558,22 +577,30 @@ namespace NSBinPptxRW
 			// app 
 			oXmlWriter.ClearNoAttack();
 			m_oApp.toXmlWriter(&oXmlWriter);
-			oXmlWriter.SaveToFile(m_strDstFolder + _T("\\docProps\\app.xml"));
+			
+			OOX::CPath pathApp = m_strDstFolder + _T("\\docProps\\app.xml");
+			oXmlWriter.SaveToFile(pathApp.GetPath());
 
 			// core
 			oXmlWriter.ClearNoAttack();
 			m_oCore.toXmlWriter(&oXmlWriter);
-			oXmlWriter.SaveToFile(m_strDstFolder + _T("\\docProps\\core.xml"));
+
+			OOX::CPath pathCore = m_strDstFolder + _T("\\docProps\\core.xml");
+			oXmlWriter.SaveToFile(pathCore.GetPath());
 
 			// presProps
 			oXmlWriter.ClearNoAttack();
 			m_oPresProps.toXmlWriter(&oXmlWriter);
-			oXmlWriter.SaveToFile(m_strDstFolder + _T("\\ppt\\presProps.xml"));
+		
+			OOX::CPath pathPresProps = m_strDstFolder + _T("\\ppt\\presProps.xml");
+			oXmlWriter.SaveToFile(pathPresProps.GetPath());
 
 			// viewProps
 			oXmlWriter.ClearNoAttack();
 			m_oViewProps.toXmlWriter(&oXmlWriter);
-			oXmlWriter.SaveToFile(m_strDstFolder + _T("\\ppt\\viewProps.xml"));
+
+			OOX::CPath pathViewProps = m_strDstFolder + _T("\\ppt\\viewProps.xml");
+			oXmlWriter.SaveToFile(pathViewProps.GetPath());
 
 			m_oReader.m_pRels->Clear();
 			m_oReader.m_pRels->StartRels();
@@ -581,17 +608,19 @@ namespace NSBinPptxRW
 			// tablestyles
 			oXmlWriter.ClearNoAttack();
 			m_oTableStyles.toXmlWriter(&oXmlWriter);
-			oXmlWriter.SaveToFile(m_strDstFolder + _T("\\ppt\\tableStyles.xml"));
+
+			OOX::CPath pathTableStyles = m_strDstFolder + _T("\\ppt\\tableStyles.xml");
+			oXmlWriter.SaveToFile(pathTableStyles.GetPath());
 			
 			// presentation
 			bool bIsAuthors = false;
 			pPair = m_mainTables.find(NSMainTables::Presentation);
 			if (m_mainTables.end()  != pPair)
 			{
-				CString strFolder = m_strDstFolder + _T("\\ppt");
-				CString strFolderRels = strFolder + _T("\\_rels");
+				OOX::CPath pathFolder		= m_strDstFolder + _T("\\ppt");
+				OOX::CPath pathFolderRels	= pathFolder + _T("\\_rels");
 
-                FileSystem::Directory::CreateDirectory (strFolderRels);
+                FileSystem::Directory::CreateDirectory (pathFolderRels.GetPath());
 
 				m_oReader.Seek(pPair->second);
 				m_oPresentation.fromPPTY(&m_oReader);
@@ -641,15 +670,20 @@ namespace NSBinPptxRW
 				oXmlWriter.ClearNoAttack();
 				m_oPresentation.toXmlWriter(&oXmlWriter);
 
-				oXmlWriter.SaveToFile(strFolder + _T("\\presentation.xml"));
-				m_oReader.m_pRels->SaveRels(strFolderRels + _T("\\presentation.xml.rels"));	
+				pathFolder = pathFolder + FILE_SEPARATOR_STR + _T("presentation.xml");
+				oXmlWriter.SaveToFile(pathFolder.GetPath());
+
+				pathFolderRels = pathFolderRels + FILE_SEPARATOR_STR + _T("\\presentation.xml.rels");
+				m_oReader.m_pRels->SaveRels(pathFolderRels.GetPath());	
 
 				if (m_oPresentation.commentAuthors.is_init())
 				{
 					oXmlWriter.ClearNoAttack();
 					m_oPresentation.commentAuthors->toXmlWriter(&oXmlWriter);
+
+					OOX::CPath pathCommentAuthors = pathFolder + _T("\\commentAuthors.xml");					
+					oXmlWriter.SaveToFile(pathCommentAuthors.GetPath());
 					
-					oXmlWriter.SaveToFile(strFolder + _T("\\commentAuthors.xml"));
 					bIsAuthors = true;
 				}
 			}
@@ -659,22 +693,22 @@ namespace NSBinPptxRW
 			// content types
 			CStringWriter oContentTypes;
 			oContentTypes.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
-<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
-<Default Extension=\"png\" ContentType=\"image/png\" />\
-<Default Extension=\"jpeg\" ContentType=\"image/jpeg\" />\
-<Default Extension=\"wmf\" ContentType=\"image/x-wmf\" />\
-<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\" />\
-<Default Extension=\"xml\" ContentType=\"application/xml\" />\
-<Default Extension=\"gif\" ContentType=\"image/gif\"/>\
-<Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
-<Default Extension=\"jpg\" ContentType=\"image/jpeg\"/>\
-\
-<Override PartName=\"/ppt/presentation.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml\" />\
-<Override PartName=\"/ppt/presProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presProps+xml\" />\
-<Override PartName=\"/ppt/viewProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml\" />\
-<Override PartName=\"/ppt/tableStyles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml\"/>\
-<Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\" />\
-<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\" />"));
+				<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
+				<Default Extension=\"png\" ContentType=\"image/png\" />\
+				<Default Extension=\"jpeg\" ContentType=\"image/jpeg\" />\
+				<Default Extension=\"wmf\" ContentType=\"image/x-wmf\" />\
+				<Default Extension=\"rels\" ContentType=\"application/vnd.openxmlformats-package.relationships+xml\" />\
+				<Default Extension=\"xml\" ContentType=\"application/xml\" />\
+				<Default Extension=\"gif\" ContentType=\"image/gif\"/>\
+				<Default Extension=\"emf\" ContentType=\"image/x-emf\"/>\
+				<Default Extension=\"jpg\" ContentType=\"image/jpeg\"/>\
+				\
+				<Override PartName=\"/ppt/presentation.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml\" />\
+				<Override PartName=\"/ppt/presProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.presProps+xml\" />\
+				<Override PartName=\"/ppt/viewProps.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.viewProps+xml\" />\
+				<Override PartName=\"/ppt/tableStyles.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.presentationml.tableStyles+xml\"/>\
+				<Override PartName=\"/docProps/core.xml\" ContentType=\"application/vnd.openxmlformats-package.core-properties+xml\" />\
+				<Override PartName=\"/docProps/app.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.extended-properties+xml\" />"));
 
 			// themes
 			for (LONG i = 0; i < (LONG)m_arThemes.size(); ++i)
@@ -756,14 +790,13 @@ namespace NSBinPptxRW
 <Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>\
 </Relationships>");
 
-            OOX::CPath filePath = m_strDstFolder + _T("\\_rels");
+            OOX::CPath filePathRels = m_strDstFolder + _T("\\_rels");
+            FileSystem::Directory::CreateDirectory (filePathRels.GetPath());
 
-            FileSystem::Directory::CreateDirectory (filePath.GetFilename());
-
-            filePath = m_strDstFolder + _T("\\_rels\\.rels");
-
-            oFile.CreateFile(filePath.GetFilename());
-			oFile.WriteStringUTF8(strRELS);
+            filePathRels = filePathRels + _T("\\.rels");
+           
+			oFile.CreateFile(filePathRels.GetPath());
+				oFile.WriteStringUTF8(strRELS);
 			oFile.CloseFile();
 
 		}

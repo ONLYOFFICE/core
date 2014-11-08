@@ -411,11 +411,9 @@ namespace NSBinPptxRW
 	{
 		LONG lSize = __wstrlen(sBuffer);
 
-        if (lSize < 1) return;
-
         LONG lSizeMem =0;
 
-        if (sizeof (sBuffer[0]) == 4)
+        if (sizeof(wchar_t) == 4)
         {
             lSizeMem = lSize * sizeof(UTF16);
 

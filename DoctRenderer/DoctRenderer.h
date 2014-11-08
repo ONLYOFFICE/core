@@ -542,9 +542,10 @@ private:
 		v8::V8::InitializeICU();
 		v8::Platform* platform = v8::platform::CreateDefaultPlatform();
 		v8::V8::InitializePlatform(platform);
-
+				
 		v8::V8::Initialize();
-
+		v8::V8::InitializeICU();
+		
 		if (!m_bIsInitTypedArrays)
 		{
 			enableTypedArrays();
@@ -1004,6 +1005,9 @@ private:
 
 		isolate->Dispose();
 		v8::V8::Dispose();
+
+		v8::V8::ShutdownPlatform();
+		delete platform;
 		
 		return bIsBreak ? FALSE : TRUE;
 	}

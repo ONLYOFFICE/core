@@ -961,8 +961,8 @@ namespace BinXlsxRW{
 
 			CString sThemePathReverse = m_oSaveParams.sThemePath;sThemePathReverse.MakeReverse();
 			CString sContentTypesPath;
-			int nIndex = sThemePathReverse.Find('\\');
-			nIndex = sThemePathReverse.Find('\\', nIndex + 1);
+			int nIndex = sThemePathReverse.Find(FILE_SEPARATOR_CHAR);
+			nIndex = sThemePathReverse.Find(FILE_SEPARATOR_CHAR, nIndex + 1);
 			if(-1 != nIndex)
 			{
 				CString sContentTypesPath = m_oSaveParams.sThemePath.Right(nIndex);

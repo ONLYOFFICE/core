@@ -24,14 +24,14 @@ namespace OOX
 
 		friend CPath operator/(const CPath& path1, const CPath& path2)
 		{
-			CPath path(path1.m_strFilename + _T("//") + path2.m_strFilename);
+			CPath path(path1.m_strFilename + FILE_SEPARATOR_STR + path2.m_strFilename);
 			path.Normalize();
 
 			return path;
 		}
 		friend CPath operator/(const CPath& path1, const CString& path2)
 		{
-			CPath path(path1.m_strFilename + _T("//") + path2);
+			CPath path(path1.m_strFilename + FILE_SEPARATOR_STR + path2);
 			path.Normalize();
 
 			return path;

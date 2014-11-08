@@ -116,8 +116,9 @@ namespace BinXlsxRW{
 			//получаем sThemePath из bsFilename предполагая что папка theme находится на уровень выше bsFilename
 			CString sThemePath;
 			CString sFilenameReverse = sFilepath;sFilenameReverse.MakeReverse();
-			int nIndex = sFilenameReverse.Find('\\');
-			nIndex = sFilenameReverse.Find('\\', nIndex + 1);
+			
+			int nIndex	= sFilenameReverse.Find(FILE_SEPARATOR_CHAR);
+			nIndex		= sFilenameReverse.Find(FILE_SEPARATOR_CHAR, nIndex + 1);
 			if(-1 != nIndex)
 				sThemePath = sFilepath.Left(sFilepath.GetLength() - nIndex) + _T("theme");
 
@@ -129,22 +130,20 @@ namespace BinXlsxRW{
 
 			if(oChartSpace.isValid())
 			{
-				std::wstring strFilepath = string2std_string(sFilepath);
-				std::wstring strDir = NSSystemPath::GetDirectoryName(strFilepath);
-				std::wstring strFilename = NSSystemPath::GetFileName(strFilepath);
+				std::wstring strFilepath	= string2std_string(sFilepath);
+				std::wstring strDir			= NSSystemPath::GetDirectoryName(strFilepath);
+				std::wstring strFilename	= NSSystemPath::GetFileName(strFilepath);
 
 				CString sRelsDir = strDir.c_str();
 				CString sFilename = strFilename.c_str();
 				sRelsDir.Append(_T("_rels"));
-				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
-					OOX::CSystemUtility::CreateDirectories(sRelsDir);
+				
+				OOX::CSystemUtility::CreateDirectories(sRelsDir);
 
 				oChartSpace.write2(sFilepath);
 
-				CString sRelsPath;
-				sRelsPath.Format(_T("%ls\\%ls.rels"), sRelsDir, sFilename);
-
-				m_pExternalDrawingConverter->SaveDstContentRels(sRelsPath);
+				OOX::CPath pathRelsPath = sRelsDir + FILE_SEPARATOR_STR + sFilename + _T(".rels");
+				m_pExternalDrawingConverter->SaveDstContentRels(pathRelsPath.GetPath());
 
 				CString sContentType(sContentTypePath);
 				sContentType.Append(sFilename);

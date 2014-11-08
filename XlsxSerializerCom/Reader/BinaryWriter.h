@@ -1655,8 +1655,10 @@ namespace BinXlsxRW {
 				if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Drawings == oFile->type())
 				{
 					OOX::Spreadsheet::CDrawing* pDrawing = (OOX::Spreadsheet::CDrawing*)oFile.operator->();
+					
 					CString sOldRelsPath = m_pOfficeDrawingConverter->GetRelsPath();
 					CString sDrawingRelsPath = pDrawing->GetReadPath().GetPath();
+					
 					m_pOfficeDrawingConverter->SetRelsPath(sDrawingRelsPath);
 					
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawings);

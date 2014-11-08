@@ -238,7 +238,7 @@ namespace NSFile
 		{
 			if (NULL == pData)
 			{
-                pData = new BYTE[6 * lCount + 3 + 1 + 64];
+                pData = new BYTE[6 * lCount + 3 + 1 ];
 			}
 
 			BYTE* pCodesCur = pData;
@@ -446,12 +446,6 @@ namespace NSFile
 			LONG lLen = 0;
             CUtf8Converter::GetUtf8StringFromUnicode(sFileName.c_str(), sFileName.length(), pUtf8, lLen, false);
             m_pFile = fopen((char*)pUtf8, "rb");
-
-            if (NULL == m_pFile)
-            {
-                printf("Error: %s\n", strerror(errno));
-                m_pFile = fopen((char*)sFileName.c_str(), "rb");
-            }
 
             delete [] pUtf8;
 #endif		

@@ -46,6 +46,7 @@ namespace Joiner
                 "Common/Charts/ChartsDrawer.js",
                 "Common/Charts/DrawingArea.js",
                 "Common/NumFormat.js",
+                "Word/Editor/Search.js",
                 "Word/Editor/Serialize2.js",
                 "Common/trackFile.js",
                 "Word/Editor/Styles.js",

@@ -539,7 +539,6 @@ private:
 	{
 		CString strException = _T("");
 
-		v8::V8::InitializeICU();
 		v8::Platform* platform = v8::platform::CreateDefaultPlatform();
 		v8::V8::InitializePlatform(platform);
 				

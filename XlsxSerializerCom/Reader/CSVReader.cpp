@@ -1,7 +1,7 @@
 ﻿#include "CSVReader.h"
 
 #include <map>
-#include "..\..\DesktopEditor\Common\File.h"
+#include "../../DesktopEditor/common/File.h"
 
 namespace CSVReader
 {

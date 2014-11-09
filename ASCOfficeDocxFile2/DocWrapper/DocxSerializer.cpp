@@ -125,29 +125,29 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 void BinDocxRW::CDocxSerializer::CreateDocxFolders(CString strDirectory, CString& sThemePath, CString& sMediaPath)
 {
 	// rels
-	OOX::CPath pathRels = strDirectory + _T("\\_rels");
-	CreateDirectory(pathRels.GetPath(), NULL);
+    OOX::CPath pathRels = strDirectory + FILE_SEPARATOR_STR + _T("_rels");
+    FileSystem::Directory::CreateDirectory(pathRels.GetPath());
 
 	// word
-	OOX::CPath pathWord = strDirectory + _T("\\word");
-	CreateDirectory(pathWord.GetPath(), NULL);
+    OOX::CPath pathWord = strDirectory + FILE_SEPARATOR_STR + _T("word");
+    FileSystem::Directory::CreateDirectory(pathWord.GetPath());
 
 	// documentRels
-	OOX::CPath pathWordRels = pathWord.GetPath() + _T("\\_rels");
-	CreateDirectory(pathWordRels.GetPath(), NULL);
+    OOX::CPath pathWordRels = pathWord + FILE_SEPARATOR_STR + _T("_rels");
+    FileSystem::Directory::CreateDirectory(pathWordRels.GetPath());
 
 	//media
-	OOX::CPath pathMedia = pathWord.GetPath() + _T("\\media");
+    OOX::CPath pathMedia = pathWord + FILE_SEPARATOR_STR + _T("media");
 	sMediaPath = pathMedia.GetPath();
 
 	// theme
-	OOX::CPath pathTheme = pathWord.GetPath() + _T("\\theme");
-	CreateDirectory(pathTheme.GetPath(), NULL);
+    OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + _T("theme");
+    FileSystem::Directory::CreateDirectory(pathTheme.GetPath());
 
-	OOX::CPath pathThemeRels = pathTheme.GetPath() + _T("\\_rels");
-	CreateDirectory(pathThemeRels.GetPath(), NULL);
+    OOX::CPath pathThemeRels = pathTheme + FILE_SEPARATOR_STR + _T("_rels");
+    FileSystem::Directory::CreateDirectory(pathThemeRels.GetPath());
 	
-	pathTheme = pathTheme.GetPath() + _T("\\theme1.xml");
+    pathTheme = pathTheme + FILE_SEPARATOR_STR + _T("theme1.xml");
 	sThemePath = pathTheme.GetPath();
 }
 bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sThemePath, const CString& sMediaPath)
@@ -241,17 +241,17 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				var.bstrVal = sFileInDir.GetString();
 				oDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir"), var);
 #endif
-				m_pCurFileWriter->m_oDefaultTheme.Write();
+//				m_pCurFileWriter->m_oDefaultTheme.Write();
 				
 				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter);
 				oBinaryFileReader.ReadFile();
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 				OOX::CContentTypes oContentTypes;
 	//docProps
-				OOX::CPath pathDocProps = sDstPath + _T("\\docProps");
-				CreateDirectory(pathDocProps.GetPath(), NULL);
+                OOX::CPath pathDocProps = sDstPath + FILE_SEPARATOR_STR + _T("docProps");
+                FileSystem::Directory::CreateDirectory(pathDocProps.GetPath());
 				
-				OOX::CPath DocProps = L"docProps";
+                OOX::CPath DocProps = CString(_T("docProps"));
 
 				OOX::CApp* pApp = new OOX::CApp();
 				if (pApp)

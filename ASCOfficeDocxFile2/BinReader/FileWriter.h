@@ -13,8 +13,12 @@
 #include "ChartWriter.h"
 #include "DocumentRelsWriter.h"
 #include "webSettingsWriter.h"
-#include "DefaultThemeWriter.h"
 
+#ifdef _WIN32
+	#include "DefaultThemeWriterWin.h"
+#else
+	#include "DefaultThemeWriterLinux.h"
+#endif
 namespace BinDocxRW {
 	class CComments;
 }

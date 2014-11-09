@@ -52,6 +52,7 @@ ASCImageStudio3/AVSImageRaw3/trunk/workingcopy/lcmslib/release
 ASCOfficeDocxFile2/AVSOfficeDocxFile2.ncb
 ASCOfficeDocxFile2/AVSOfficeDocxFile2.suo
 ASCOfficeDocxFile2/AVSOfficeDocxFile2.vcproj.AVSMEDIA.Dmitry.Davydov.user
+ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h
 ASCOfficeDocxFile2/Debug
 ASCOfficeDocxFile2/DocWrapper/Debug
 ASCOfficeDocxFile2/DocWrapper/Release

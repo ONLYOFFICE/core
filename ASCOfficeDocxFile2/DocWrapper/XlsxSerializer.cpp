@@ -7,6 +7,12 @@
 #include "../../XlsxSerializerCom/Writer/BinaryReader.h"
 #include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
 
+#ifdef _WIN32
+	#include "../BinReader/DefaultThemeWriterWin.h"
+#else
+	#include "../BinReader/DefaultThemeWriterLinux.h"
+#endif
+
 namespace BinXlsxRW{
 	int g_nCurFormatVersion = 0;
 
@@ -16,6 +22,41 @@ namespace BinXlsxRW{
 	}
 	CXlsxSerializer::~CXlsxSerializer()
 	{
+	}
+
+	void CXlsxSerializer::CreateXlsxFolders(CString& sXmlOptions, CString sDstPath,  CString& sMediaPath)
+	{
+		OOX::CPath pathMediaDir = sDstPath + _T("\\xl\\media");
+		
+		// File Type (Можно парсить не два раза, а один, если передавать в ReadFile не опции, а параметры)
+		BYTE fileType;
+		UINT nCodePage;
+		WCHAR wcDelimiter;
+		SerializeCommon::ReadFileType(sXmlOptions, fileType, nCodePage, wcDelimiter);
+
+		if (c_oFileTypes::CSV != fileType)
+		{
+			OOX::CPath pathXlDir = sDstPath + _T("\\xl");
+
+			OOX::CPath pathThemeDir = pathXlDir + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
+			
+			OOX::CPath pathThemeFile = pathThemeDir + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultFileName().GetPath();
+			
+			OOX::CPath pathThemeThemeRelsDir = pathThemeDir + _T("\\_rels");
+
+			NSDirectory::CreateDirectory(string2std_string(pathXlDir.GetPath()));
+			NSDirectory::CreateDirectory(string2std_string(pathThemeDir.GetPath()));
+			NSDirectory::CreateDirectory(string2std_string(pathThemeThemeRelsDir.GetPath()));
+			NSDirectory::CreateDirectory(string2std_string(pathMediaDir.GetPath()));
+
+			//Create Default Theme
+			{
+				Writers::DefaultThemeWriter oDefaultThemeWriter;
+				oDefaultThemeWriter.Write(pathThemeFile.GetPath());
+			}
+		}
+
+		sMediaPath = pathMediaDir.GetPath();
 	}
 	bool CXlsxSerializer::loadFromFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions, CString& sMediaDir)
 	{

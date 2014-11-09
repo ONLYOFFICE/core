@@ -2,6 +2,11 @@
 
 #include <shlobj.h>
 
+#ifndef FILE_SEPARATOR
+	#define FILE_SEPARATOR
+	#define FILE_SEPARATOR_CHAR '\\'
+	#define FILE_SEPARATOR_STR _T("\\")
+#endif
 
 namespace FileSystem 
 {
@@ -44,7 +49,7 @@ namespace FileSystem
     bool Directory::CreateDirectory(String strFolderPathRoot, String strFolderName)
     {
         String strFolder = strFolderPathRoot;
-        strFolder += _T("/");
+        strFolder += FILE_SEPARATOR_STR;
         strFolder += strFolderName;
         return CreateDirectory(strFolder);
     }

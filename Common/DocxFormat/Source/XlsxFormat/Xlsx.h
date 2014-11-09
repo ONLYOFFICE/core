@@ -154,7 +154,7 @@ namespace OOX
 				CPath oXlPath = oDirPath / m_pWorkbook->DefaultDirectory();
 				WriteWorkbook(oXlPath);
 
-				IFileContainer::Write(oDirPath / _T("/"), OOX::CPath(_T("")), oContentTypes);
+				IFileContainer::Write(oDirPath / FILE_SEPARATOR_STR , OOX::CPath(_T("")), oContentTypes);
 				if(!sAdditionalContentTypes.IsEmpty())
 				{
 					CString sAdditionalContentTypesWrapped;

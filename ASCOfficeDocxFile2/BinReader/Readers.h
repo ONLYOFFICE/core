@@ -5549,10 +5549,10 @@ public:
 		{
 			if(false == m_oFileWriter.m_bSaveChartAsImg)
 			{
-				OOX::CPath pathChartsDir = m_oFileWriter.m_oChartWriter.m_sDir + _T("\\word\\charts");			
+				OOX::CPath pathChartsDir = m_oFileWriter.m_oChartWriter.m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR +_T("charts");			
 				OOX::CSystemUtility::CreateDirectories(pathChartsDir.GetPath());
 				
-				OOX::CPath pathChartsRelsDir = pathChartsDir.GetPath() + _T("\\_rels");                
+				OOX::CPath pathChartsRelsDir = pathChartsDir.GetPath() + FILE_SEPARATOR_STR +  _T("_rels");                
 				OOX::CSystemUtility::CreateDirectories(pathChartsRelsDir.GetPath());
 
 				m_oFileWriter.m_pDrawingConverter->SetDstContentRels();
@@ -5579,7 +5579,7 @@ public:
 				m_oFileWriter.m_oChartWriter.AddChart(sChartContent, sRelsName, sFilename, nChartIndex);
 				m_oFileWriter.m_oContentTypesWriter.AddOverrideRaw(oSaveParams.sAdditionalContentTypes);
 
-                OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + _T("\\") + sFilename + _T(".rels");
+                OOX::CPath pathChartsRels =  pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + sFilename + _T(".rels");
 				m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
 
 				long rId;
@@ -5945,7 +5945,9 @@ int Binary_HdrFtrTableReader::ReadHdrFtrItem(BYTE type, long length, void* poRes
 			Binary_DocumentTableReader oBinary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, poHdrFtrItem->Header, m_pComments);
 			res = Read1(length, &Binary_HdrFtrTableReader::ReadHdrFtrItemContent, this, &oBinary_DocumentTableReader);
 
-            OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir + _T("\\word\\_rels\\") + poHdrFtrItem->m_sFilename + _T(".rels");
+            OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir +	FILE_SEPARATOR_STR + _T("word") + 
+																				FILE_SEPARATOR_STR + _T("_rels")+ 
+																				FILE_SEPARATOR_STR + poHdrFtrItem->m_sFilename + _T(".rels");
 
             m_oFileWriter.m_pDrawingConverter->SaveDstContentRels(fileRelsPath.GetPath());
 		}
@@ -6136,7 +6138,9 @@ public: BinaryFileReader(CString& sFileInDir, NSBinPptxRW::CBinaryFileReader& oB
 				}
 				res = Binary_DocumentTableReader(m_oBufferedStream, m_oFileWriter, m_oFileWriter.m_oDocumentWriter, &oBinary_CommentsTableReader.m_oComments).Read();
 
-                OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir + _T("\\word\\_rels\\document.xml.rels");
+                OOX::CPath fileRelsPath = m_oFileWriter.m_oDocumentWriter.m_sDir	+ FILE_SEPARATOR_STR + _T("word")
+																					+ FILE_SEPARATOR_STR + _T("_rels")
+																					+ FILE_SEPARATOR_STR + _T("document.xml.rels");
 
                 CComments& oComments = oBinary_CommentsTableReader.m_oComments;
 				Writers::CommentsWriter& oCommentsWriter = m_oFileWriter.m_oCommentsWriter;

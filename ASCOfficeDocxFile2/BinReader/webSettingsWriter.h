@@ -18,9 +18,9 @@ namespace Writers
 			CString s_Common;
 
 			s_Common = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?> \
-							<w:webSettings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"> \
-							<w:optimizeForBrowser/> \
-						</w:webSettings>");
+<w:webSettings xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"> \
+<w:optimizeForBrowser/> \
+</w:webSettings>");
 
 			m_oWriter.WriteString(s_Common);
 

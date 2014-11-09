@@ -241,7 +241,8 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				var.bstrVal = sFileInDir.GetString();
 				oDrawingConverter.SetAdditionalParam(CString(L"SourceFileDir"), var);
 #endif
-//				m_pCurFileWriter->m_oDefaultTheme.Write();
+	//default theme
+				m_pCurFileWriter->m_oDefaultTheme.Write(sThemePath);
 				
 				BinaryFileReader oBinaryFileReader(sFileInDir, oBufferedStream, *m_pCurFileWriter);
 				oBinaryFileReader.ReadFile();
@@ -264,7 +265,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 					pApp->SetSharedDoc(false);
 					pApp->SetHyperlinksChanged(false);
 					
-					pApp->write(pathDocProps + _T("//app.xml"), DocProps, oContentTypes);
+					pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, oContentTypes);
 					delete pApp;
 				}				
 				OOX::CCore* pCore = new OOX::CCore();
@@ -272,9 +273,9 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				{
 					pCore->SetCreator(_T(""));
 					pCore->SetLastModifiedBy(_T(""));
-					pCore->write(pathDocProps + _T("//core.xml"), DocProps, oContentTypes);
+					pCore->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, oContentTypes);
 					delete pCore;
-				}
+				} 
 /////////////////////////////////////////////////////////////////////////////////////
 				VARIANT vt;
 				oDrawingConverter.GetAdditionalParam(CString(_T("ContentTypes")), &vt);

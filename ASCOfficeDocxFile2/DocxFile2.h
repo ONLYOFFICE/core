@@ -149,21 +149,4 @@ public:
 		return bRes ? S_OK : S_FALSE;
 	}
 private:
-	//void LoadResourceFile(HINSTANCE hInst, LPCTSTR sResName, LPCTSTR sResType, const CString& strDstFile)
-	//{
-	//	HRSRC hrRes = FindResource(hInst, sResName, sResType);
-	//	if (!hrRes)
-	//		return;
-
-	//	HGLOBAL hGlobal = LoadResource(hInst, hrRes);
-	//	DWORD sz = SizeofResource(hInst, hrRes);
-	//	void* ptrRes = LockResource(hGlobal);
-
-	//	CFile oFile;
-	//	oFile.CreateFile(strDstFile);
-	//	oFile.WriteFile(ptrRes, sz);
-
-	//	UnlockResource(hGlobal);
-	//	FreeResource(hGlobal);
-	//}	
 };

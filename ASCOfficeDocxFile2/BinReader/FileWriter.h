@@ -61,7 +61,6 @@ namespace Writers
 										m_oChartWriter(sDirOutput, m_oContentTypesWriter),
 										m_oDocumentRelsWriter(sDirOutput),
 										m_oWebSettingsWriter(sDirOutput),
-										m_oDefaultTheme(sDirOutput),
 										m_nDocPrIndex(0),
 										m_pComments(NULL)
 		{

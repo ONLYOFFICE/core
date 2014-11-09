@@ -609,7 +609,7 @@ namespace XmlUtils
 					eNodeType = (XmlNodeType)nTempType;
 
 					nCurDepth = GetDepth();
-					if ( eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace )
+					if ( eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE )
 						oResult.WriteEncodeXmlString(GetText());
 					else if(eNodeType == XmlNodeType_Element)
 						WriteElement(oResult);

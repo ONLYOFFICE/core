@@ -10,7 +10,7 @@ namespace NSHtmlRenderer
 	static CString g_svg_string_svgOpen				= _T("<svg width=\"%dpx\" height=\"%dpx\" viewBox=\"0 0 %d %d\" version=\"1.1\" xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\">\n");
 	static CString g_svg_bstr_svgClose				= L"</svg>";
 
-	static CString g_svg_string_image				= _T("<image x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" xlink:href=\"%ls\" preserveAspectRatio=\"none\"/>\n");
+	static CString g_svg_string_image				= _T("<image x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" xlink:href=\"%s\" preserveAspectRatio=\"none\"/>\n");
 
 	static CString g_svg_bstr_graphicOpen			= L"<g>\n";
 	static CString g_svg_bstr_graphicClose			= L"</g>\n";
@@ -33,8 +33,8 @@ namespace NSHtmlRenderer
 	static CString g_svg_bstr_nodeClose				= L" />\n";
 	static CString g_svg_string_vml_StyleStrokeDash = _T("style=\"fill:none;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf;stroke-dasharray: 2,2;\" ");
 	static CString g_svg_string_vml_StyleStroke		= _T("style=\"fill:none;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf;\" ");
-	static CString g_svg_string_vml_StyleFill		= _T("style=\"fill:#%06x;fill-opacity:%.2lf;fill-rule:%ls;stroke:none\" ");
-	static CString g_svg_string_vml_Style			= _T("style=\"fill:#%06x;fill-opacity:%.2lf;fill-rule:%ls;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
+	static CString g_svg_string_vml_StyleFill		= _T("style=\"fill:#%06x;fill-opacity:%.2lf;fill-rule:%s;stroke:none\" ");
+	static CString g_svg_string_vml_Style			= _T("style=\"fill:#%06x;fill-opacity:%.2lf;fill-rule:%s;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
 
 	static CString g_svg_string_image_clip_jpg		= _T("<image x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" clip-path=\"url(#clip%d)\" xlink:href=\"media/image%d.jpg\" preserveAspectRatio=\"none\"/>");
 	static CString g_svg_string_image_clip_jpg_rot	= _T("<image x=\"%d\" y=\"%d\" width=\"%d\" height=\"%d\" clip-path=\"url(#clip%d)\" xlink:href=\"media/image%d.jpg\" preserveAspectRatio=\"none\" transform=\"rotate(%.4lf, %.2lf,%.2lf)\"/>");
@@ -70,8 +70,8 @@ namespace NSHtmlRenderer
 														 <image x=\"0\" y=\"0\" width=\"%d\" height=\"%d\" xlink:href=\"image%d.jpg\" preserveAspectRatio=\"none\"/></pattern>");
 
 
-	static CString g_svg_string_vml_StyleFillTx		= _T("style=\"fill:url(#pt%d);fill-opacity:%.2lf;fill-rule:%ls;stroke:none;\" ");
-	static CString g_svg_string_vml_StyleTx			= _T("style=\"fill:url(#pt%d);fill-opacity:%.2lf;fill-rule:%ls;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
+	static CString g_svg_string_vml_StyleFillTx		= _T("style=\"fill:url(#pt%d);fill-opacity:%.2lf;fill-rule:%s;stroke:none;\" ");
+	static CString g_svg_string_vml_StyleTx			= _T("style=\"fill:url(#pt%d);fill-opacity:%.2lf;fill-rule:%s;stroke:#%06x;stroke-width:%dpx;stroke-opacity:%.2lf\" ");
 
 	static CString g_svg_object_start				= _T("<object class=\"_svg\" data=\"page%d.svg\" type=\"image/svg+xml\">");
 	static CString g_svg_object_end					= L"</object>";

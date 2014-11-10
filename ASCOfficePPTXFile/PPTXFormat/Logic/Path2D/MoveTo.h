@@ -38,7 +38,7 @@ namespace PPTX
 			virtual CString toXML() const
 			{
 				CString str;
-				str.Format(_T("<a:pt x=\"%ls\" y=\"%ls\" />"), x, y);
+				str.Format(_T("<a:pt x=\"%s\" y=\"%s\" />"), x, y);
 				return _T("<a:moveTo>") + str + _T("</a:moveTo>"); 
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
@@ -77,7 +77,7 @@ namespace PPTX
 			virtual CString GetODString()const
 			{
 				CString str;
-				str.Format(_T("<pt x=\"%ls\" y=\"%ls\" />"), x, y);
+				str.Format(_T("<pt x=\"%s\" y=\"%s\" />"), x, y);
 				return _T("<moveTo>") + str + _T("</moveTo>"); 
 			}
 		};

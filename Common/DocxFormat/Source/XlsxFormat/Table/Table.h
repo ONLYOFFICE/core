@@ -44,7 +44,7 @@ namespace OOX
 						nShowRowStripes = 1;
 
 					CString sXml;
-					sXml.Format(_T("<tableStyleInfo name=\"%ls\" showFirstColumn=\"%d\" showLastColumn=\"%d\" showRowStripes=\"%d\" showColumnStripes=\"%d\"/>"), XmlUtils::EncodeXmlString(m_oName.get()), nShowFirstColumn, nShowLastColumn, nShowRowStripes, nShowColumnStripes);
+					sXml.Format(_T("<tableStyleInfo name=\"%s\" showFirstColumn=\"%d\" showLastColumn=\"%d\" showRowStripes=\"%d\" showColumnStripes=\"%d\"/>"), XmlUtils::EncodeXmlString(m_oName.get()), nShowFirstColumn, nShowLastColumn, nShowRowStripes, nShowColumnStripes);
 					writer.WriteString(sXml);
 				}
 			}
@@ -111,20 +111,20 @@ namespace OOX
 				if(m_oName.IsInit())
 				{
 					CString sXml;
-					sXml.Format(_T(" name=\"%ls\""), XmlUtils::EncodeXmlString(m_oName.get()));
+					sXml.Format(_T(" name=\"%s\""), XmlUtils::EncodeXmlString(m_oName.get()));
 					writer.WriteString(sXml);
 				}
 				if(m_oTotalsRowLabel.IsInit())
 				{
 					CString sXml;
-					sXml.Format(_T(" totalsRowLabel=\"%ls\""), XmlUtils::EncodeXmlString(m_oTotalsRowLabel.get()));
+					sXml.Format(_T(" totalsRowLabel=\"%s\""), XmlUtils::EncodeXmlString(m_oTotalsRowLabel.get()));
 					writer.WriteString(sXml);
 				}
 				//есть такой баг: при сохранениии "sum" и названия таблицы "Table1" (русский excel), выдается ошибка в формулах
 				if(m_oTotalsRowFunction.IsInit())
 				{
 					CString sXml;
-					sXml.Format(_T(" totalsRowFunction=\"%ls\""), m_oTotalsRowFunction->ToString());
+					sXml.Format(_T(" totalsRowFunction=\"%s\""), m_oTotalsRowFunction->ToString());
 					writer.WriteString(sXml);
 				}
 				if(m_oDataDxfId.IsInit())
@@ -140,13 +140,13 @@ namespace OOX
 					if(m_oTotalsRowFormula.IsInit())
 					{
 						CString sXml;
-						sXml.Format(_T("<totalsRowFormula>%ls</totalsRowFormula>"), XmlUtils::EncodeXmlString(m_oTotalsRowFormula.get()));
+						sXml.Format(_T("<totalsRowFormula>%s</totalsRowFormula>"), XmlUtils::EncodeXmlString(m_oTotalsRowFormula.get()));
 						writer.WriteString(sXml);
 					}
 					if(m_oCalculatedColumnFormula.IsInit())
 					{
 						CString sXml;
-						sXml.Format(_T("<calculatedColumnFormula>%ls</calculatedColumnFormula>"), XmlUtils::EncodeXmlString(m_oCalculatedColumnFormula.get()));
+						sXml.Format(_T("<calculatedColumnFormula>%s</calculatedColumnFormula>"), XmlUtils::EncodeXmlString(m_oCalculatedColumnFormula.get()));
 						writer.WriteString(sXml);
 					}
 
@@ -291,7 +291,7 @@ namespace OOX
 				if(m_oRef.IsInit() && m_oDisplayName.IsInit())
 				{
 					CString sRoot;
-					sRoot.Format(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><table xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" id=\"%d\" name=\"%ls\" displayName=\"%ls\" ref=\"%ls\""), nIndex, m_oDisplayName.get(), m_oDisplayName.get(), m_oRef->GetValue());
+					sRoot.Format(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><table xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\" id=\"%d\" name=\"%s\" displayName=\"%s\" ref=\"%s\""), nIndex, m_oDisplayName.get(), m_oDisplayName.get(), m_oRef->GetValue());
 					writer.WriteString(sRoot);
 					if(m_oHeaderRowCount.IsInit() && 0 == m_oHeaderRowCount->GetValue())
 						writer.WriteString(CString(_T(" headerRowCount=\"0\"")));
@@ -386,7 +386,7 @@ namespace OOX
 				if(m_oRId.IsInit())
 				{
 					CString sXml;
-					sXml.Format(_T("<tablePart r:id=\"%ls\"/>"), m_oRId->GetValue());
+					sXml.Format(_T("<tablePart r:id=\"%s\"/>"), m_oRId->GetValue());
 					writer.WriteString(sXml);
 				}
 			}

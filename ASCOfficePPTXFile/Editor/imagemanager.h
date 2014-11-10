@@ -19,9 +19,8 @@ using namespace NSFontCutter;
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DesktopEditor/graphics/Image.h"
-
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+
 #include <list>
 
 #ifndef min
@@ -80,8 +79,8 @@ namespace NSShapeImageGen
 		AVSINLINE CString GetPath(const CString& strMedia)
 		{
 			CString strExt = _T("");
-            strExt.Format(_T("image%d.%ls"), m_lID, (itJPG == m_eType) ? _T("jpg") : _T("png"));
-            return strMedia + FILE_SEPARATOR_STR + strExt;
+			strExt.Format(_T("\\image%d.%s"), m_lID, (itJPG == m_eType) ? _T("jpg") : _T("png"));
+			return strMedia + strExt;
 		}
 
 		AVSINLINE CString GetPath2()
@@ -103,7 +102,7 @@ namespace NSShapeImageGen
 			}
 
 			CString strExt = _T("");
-			strExt.Format(_T("image%d.%ls"), m_lID, _strExt);
+			strExt.Format(_T("image%d.%s"), m_lID, _strExt);
 			return strExt;
 		}
 	};
@@ -330,12 +329,9 @@ namespace NSShapeImageGen
 			if ( (0xFF == pBuffer[0]) && (0xD8 == pBuffer[1]) && (0xFF == pBuffer[2]) )
 			{
 				CString strSaveItem = _T("");
-                strSaveItem.Format(_T("image%d.jpg"), oInfo.m_lID);
-
-                OOX::CPath pathSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + strSaveItem ;
-                CDirectory::CopyFile(strFileSrc, pathSaveItem.GetPath(), NULL, NULL);
-
-                oInfo.m_eType = itJPG;
+				strSaveItem.Format(_T("\\image%d.jpg"), oInfo.m_lID);
+				CDirectory::CopyFile(strFileSrc, m_strDstMedia + strSaveItem , NULL, NULL);
+				oInfo.m_eType = itJPG;
 				return true;
 			}
 
@@ -346,17 +342,13 @@ namespace NSShapeImageGen
 				&& (0x49 == pBuffer[12]) && (0x48 == pBuffer[13]) && (0x44 == pBuffer[14]) && (0x52 == pBuffer[15]))
 			{
 				CString strSaveItem = _T("");
-                strSaveItem.Format(_T("image%d.png"), oInfo.m_lID);
-
-                OOX::CPath pathSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + strSaveItem ;
-                CDirectory::CopyFile(strFileSrc, pathSaveItem.GetPath(), NULL, NULL);
-
-                oInfo.m_eType = itPNG;
+				strSaveItem.Format(_T("\\image%d.png"), oInfo.m_lID);
+				CDirectory::CopyFile(strFileSrc, m_strDstMedia + strSaveItem , NULL, NULL);
+				oInfo.m_eType = itPNG;
 				return true;
 			}
 			return false;
-        }
-
+		}
 		void SaveImage(const CString& strFileSrc, CImageInfo& oInfo, LONG __width, LONG __height)
 		{
 			if (CheckImageSimpleCopy(strFileSrc, oInfo))
@@ -378,17 +370,14 @@ namespace NSShapeImageGen
 			unsigned int nOutputFormat;
 			if (itJPG == oInfo.m_eType)
 			{
-                strSaveItem.Format(_T("image%d.jpg"), oInfo.m_lID);
-                strSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + strSaveItem ;
+				strSaveItem.Format(_T("%s\\image%d.jpg"), m_strDstMedia, oInfo.m_lID);
 				nOutputFormat = _CXIMAGE_FORMAT_JPG;
 			}
 			else
 			{
-                strSaveItem.Format(_T("image%d.png"), oInfo.m_lID);
-                strSaveItem =  m_strDstMedia + FILE_SEPARATOR_STR + strSaveItem ;
-                nOutputFormat = _CXIMAGE_FORMAT_PNG;
+				strSaveItem.Format(_T("%s\\image%d.png"), m_strDstMedia, oInfo.m_lID);
+				nOutputFormat = _CXIMAGE_FORMAT_PNG;
 			}
-            OOX::CPath pathSaveItem = strSaveItem;
 
             LONG lMaxSize = (std::min)((std::max)(lWidth, lHeight), m_lMaxSizeImage);
 
@@ -411,7 +400,7 @@ namespace NSShapeImageGen
 
 				oBgraFrame.Resize(lW, lH);
 			}
-            oBgraFrame.SaveFile(std::wstring(pathSaveItem.GetPath()), nOutputFormat);
+			oBgraFrame.SaveFile(std::wstring(strSaveItem.GetString()), nOutputFormat);
 		}
 
 		CImageInfo GenerateImageID(CBgraFrame& punkData, double dWidth, double dHeight)
@@ -469,19 +458,21 @@ namespace NSShapeImageGen
 					oInfo.m_eType = (1 == lImageType) ? itWMF : itEMF;
 
 					CString strSaveItem = _T("");
-                    strSaveItem.Format(_T("image%d."), oInfo.m_lID);
-                    strSaveItem = m_strDstMedia + FILE_SEPARATOR_STR + strSaveItem;
+					strSaveItem.Format(_T("\\image%d."), oInfo.m_lID);
+					strSaveItem = m_strDstMedia + strSaveItem;
 
-                    double dKoef = 100 * 96 / 25.4;
+					double dKoef = 100 * 96 / 25.4;
 					bool bIsSuccess = m_oExt.Convert(strFileName, LONG(dWidth * dKoef), LONG(dHeight * dKoef), strSaveItem + _T("svg"));
 					if (bIsSuccess)
 					{
-                        if (itWMF == oInfo.m_eType) strSaveItem += _T("wmf");
-                        else                        strSaveItem += _T("emf");
-
-                        OOX::CPath pathSaveItem = strSaveItem;
-
-                        CDirectory::CopyFile(strFileName, pathSaveItem.GetPath(), NULL, NULL);
+						if (itWMF == oInfo.m_eType)
+						{
+							CDirectory::CopyFile(strFileName, strSaveItem + _T("wmf"), NULL, NULL);
+						}
+						else
+						{
+							CDirectory::CopyFile(strFileName, strSaveItem + _T("emf"), NULL, NULL);
+						}
 
 						m_mapImagesFile.insert(std::pair<CString,CImageInfo>(strFileName, oInfo));
 						m_listImages.push_back(oInfo);
@@ -551,21 +542,22 @@ namespace NSShapeImageGen
 				oInfo.m_eType = (1 == lImageType) ? itWMF : itEMF;
 
 				CString strSaveItem = _T("");
-                strSaveItem.Format(_T("image%d."), oInfo.m_lID);
-
-               strSaveItem = m_strDstMedia + FILE_SEPARATOR_STR + strSaveItem;
+				strSaveItem.Format(_T("\\image%d."), oInfo.m_lID);
+				strSaveItem = m_strDstMedia + strSaveItem;
 
 				double dKoef = 100 * 96 / 25.4;
 				bool bIsSuccess = m_oExt.Convert(strFileName, LONG(dWidth * dKoef), LONG(dHeight * dKoef), strSaveItem + _T("svg"));
 				if (bIsSuccess)
 				{
-                    if (itWMF == oInfo.m_eType)	strSaveItem += _T("wmf");
-                    else                        strSaveItem += _T("emf");
-
-                    OOX::CPath pathSaveItem = strSaveItem;
-                    CDirectory::CopyFile(strFileName, pathSaveItem.GetPath(), NULL, NULL);
-
-                    m_mapImagesFile.insert(std::pair<CString,CImageInfo>(strFileName, oInfo));
+					if (itWMF == oInfo.m_eType)
+					{
+						CDirectory::CopyFile(strFileName, strSaveItem + _T("wmf"), NULL, NULL);
+					}
+					else
+					{
+						CDirectory::CopyFile(strFileName, strSaveItem + _T("emf"), NULL, NULL);
+					}
+					m_mapImagesFile.insert(std::pair<CString,CImageInfo>(strFileName, oInfo));
 					m_listImages.push_back(oInfo);
 					return oInfo;
 				}

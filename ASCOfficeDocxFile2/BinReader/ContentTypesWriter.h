@@ -27,17 +27,15 @@ namespace Writers
 			m_oWriter.Write(m_oAdditional);
 			m_oWriter.WriteString(g_string_ct_End);
 
-			OOX::CPath filePath = m_sDir + _T("/[Content_Types].xml");
-
 			CFile oFile;
-			oFile.CreateFile(filePath.GetPath());
 
+            oFile.CreateFile (m_sDir + _T("/[Content_Types].xml"));
 			oFile.WriteStringUTF8(m_oWriter.GetData());
 			oFile.CloseFile();
 		}
 		void AddOverride(const CString& PartName, const CString& ContentType)
 		{
-            CString sOverride;sOverride.Format(_T("<Override PartName=\"%ls\" ContentType=\"%ls\"/>"),PartName , ContentType);
+			CString sOverride;sOverride.Format(_T("<Override PartName=\"%s\" ContentType=\"%s\"/>"),PartName , ContentType);
 			m_oAdditional.WriteString(sOverride);
 		}
 		void AddOverrideRaw(const CString& sXml)

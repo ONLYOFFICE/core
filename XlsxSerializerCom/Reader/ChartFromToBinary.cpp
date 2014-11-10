@@ -949,8 +949,8 @@ namespace BinXlsxRW{
 		else if(c_oserct_chartspaceTHEMEOVERRIDE == type)
 		{
 			CString sThemeOverrideName;sThemeOverrideName.Format(_T("themeOverride%d.xml"), m_oSaveParams.nThemeOverrideCount++);
-            CString sThemeOverrideRelsPath;sThemeOverrideRelsPath.Format(_T("../theme/%ls"), sThemeOverrideName);
-            CString sThemeOverridePath;sThemeOverridePath.Format(_T("%ls/%ls"), m_oSaveParams.sThemePath, sThemeOverrideName);
+			CString sThemeOverrideRelsPath;sThemeOverrideRelsPath.Format(_T("../theme/%s"), sThemeOverrideName);
+            CString sThemeOverridePath;sThemeOverridePath.Format(_T("%s/%s"), m_oSaveParams.sThemePath, sThemeOverrideName);
 
 			long nCurPos = m_oBufferedStream.GetPos();
 			m_pOfficeDrawingConverter->SaveThemeXml(nCurPos, length, sThemeOverridePath);
@@ -961,13 +961,13 @@ namespace BinXlsxRW{
 
 			CString sThemePathReverse = m_oSaveParams.sThemePath;sThemePathReverse.MakeReverse();
 			CString sContentTypesPath;
-			int nIndex = sThemePathReverse.Find(FILE_SEPARATOR_CHAR);
-			nIndex = sThemePathReverse.Find(FILE_SEPARATOR_CHAR, nIndex + 1);
+			int nIndex = sThemePathReverse.Find('\\');
+			nIndex = sThemePathReverse.Find('\\', nIndex + 1);
 			if(-1 != nIndex)
 			{
 				CString sContentTypesPath = m_oSaveParams.sThemePath.Right(nIndex);
 				sContentTypesPath.Replace('\\', '/');
-                m_oSaveParams.sAdditionalContentTypes.AppendFormat(_T("<Override PartName=\"/%ls/%ls\" ContentType=\"application/vnd.openxmlformats-officedocument.themeOverride+xml\"/>"), (const TCHAR *) sContentTypesPath, (const TCHAR *) sThemeOverrideName);
+                m_oSaveParams.sAdditionalContentTypes.AppendFormat(_T("<Override PartName=\"/%s/%s\" ContentType=\"application/vnd.openxmlformats-officedocument.themeOverride+xml\"/>"), (const TCHAR *) sContentTypesPath, (const TCHAR *) sThemeOverrideName);
 			}
 		}
 		else

@@ -28,10 +28,6 @@
 
 #define DOUBLE_MAIN		10000
 
-#ifdef _WIN32
-	#include "../../Common/DocxFormat/Source/Base/unicode_util.h"
-#endif
-
 namespace NSBinPptxRW
 {
 	inline LONG __strlen(const char* str)
@@ -159,7 +155,7 @@ namespace NSBinPptxRW
 		{
 			strImage.Format(_T("image%d"), m_lIndexNextImage++);
 
-            OOX::CPath pathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
+			CString strOutput = m_strDstMedia + _T("\\") + strImage + strExts;	
 
 			if (!m_bIsWord)
 				strImage  = _T("../media/") + strImage + strExts;
@@ -173,9 +169,9 @@ namespace NSBinPptxRW
 
 			// теперь нужно скопировать картинку
 			if (_T("") != strMetafileImage)
-                CDirectory::CopyFile(strMetafileImage, pathOutput.GetPath(), NULL, NULL);
-            else if (pathOutput.GetPath() != strInput)
-                CDirectory::CopyFile(strInput, pathOutput.GetPath(), NULL, NULL);
+				CDirectory::CopyFile(strMetafileImage, strOutput, NULL, NULL);
+			else if (strOutput != strInput)
+				CDirectory::CopyFile(strInput, strOutput, NULL, NULL);
 		}
 		else
 		{
@@ -183,7 +179,7 @@ namespace NSBinPptxRW
 			strExts = _T(".png");
 			strImage.Format(_T("image%d"), m_lIndexNextImage++);
 
-            OOX::CPath pathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
+			CString strOutput = m_strDstMedia + _T("\\") + strImage + strExts;		
 
 			if (!m_bIsWord)
 				strImage  = _T("../media/") + strImage + strExts;
@@ -195,7 +191,7 @@ namespace NSBinPptxRW
 			else
 				m_mapImages [strBase64Image] = strImage;
 
-            SaveImageAsPng(strInput, pathOutput.GetPath());
+			SaveImageAsPng(strInput, strOutput);
 		}
 		return strImage;
 	}
@@ -410,56 +406,18 @@ namespace NSBinPptxRW
 	void CBinaryFileWriter::WriteStringW(const WCHAR* sBuffer)
 	{
 		LONG lSize = __wstrlen(sBuffer);
+		LONG lSizeMem = lSize * sizeof(wchar_t);
 
-        LONG lSizeMem =0;
+		CheckBufferSize(ULONG_SIZEOF + lSizeMem);
 
-        if (sizeof(wchar_t) == 4)
-        {
-            lSizeMem = lSize * sizeof(UTF16);
+		*((ULONG*)m_pStreamCur) = lSizeMem; 
+		m_lPosition += ULONG_SIZEOF;
+		m_pStreamCur += ULONG_SIZEOF;
 
-            CheckBufferSize(ULONG_SIZEOF + lSizeMem);
-
-            *((ULONG*)m_pStreamCur) = lSizeMem;
-
-            m_lPosition += ULONG_SIZEOF;
-            m_pStreamCur += ULONG_SIZEOF;
-
-            UTF16* pStrUtf16 = (UTF16 *) m_pStreamCur;
-            UTF32 *pStrUtf32 = (UTF32 *) sBuffer;
-
-            // this values will be modificated
-            UTF16 *pStrUtf16_Conv = pStrUtf16;
-            const UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-            ConversionResult eUnicodeConversionResult =
-            ConvertUTF32toUTF16 (&pStrUtf32_Conv
-                                , &pStrUtf32[lSize]
-                                , &pStrUtf16_Conv
-                                , &pStrUtf16 [lSize]
-                                , strictConversion);
-
-            if (conversionOK != eUnicodeConversionResult)
-            {
-                return;
-            }
-        }
-        else
-        {
-            lSizeMem = lSize * sizeof(wchar_t);
-
-            CheckBufferSize(ULONG_SIZEOF + lSizeMem);
-
-            *((ULONG*)m_pStreamCur) = lSizeMem;
-
-            m_lPosition += ULONG_SIZEOF;
-            m_pStreamCur += ULONG_SIZEOF;
-
-            memcpy(m_pStreamCur, sBuffer, lSizeMem);
-        }
-
-        m_lPosition += lSizeMem;
-        m_pStreamCur += lSizeMem;
-    }
+		memcpy(m_pStreamCur, sBuffer, lSizeMem);
+		m_lPosition += lSizeMem;
+		m_pStreamCur += lSizeMem;
+	}
 	void CBinaryFileWriter::WriteBYTEArray(const BYTE* pBuffer, size_t len)
 	{
 		CheckBufferSize(len);
@@ -492,34 +450,7 @@ namespace NSBinPptxRW
 		WCHAR* pChars = sBuffer.GetBuffer();
 		WriteStringW(pChars);
 	}
-    void CBinaryFileWriter::WriteStringW2(const WCHAR* sBuffer)
-    {
-        if (sizeof(wchar_t) == 4)
-        {
-            WriteStringW2_4(sBuffer);
-        }else
-        {
-            WriteStringW2_2(sBuffer);
-        }
-    }
-    void CBinaryFileWriter::WriteStringW2_2(const WCHAR* sBuffer)
-    {
-        LONG lSize = __wstrlen(sBuffer);
-        LONG lSizeMem = lSize * sizeof(UTF16);
-
-        CheckBufferSize(ULONG_SIZEOF + lSizeMem);
-
-        *((ULONG*)m_pStreamCur) = lSize;
-        m_lPosition += ULONG_SIZEOF;
-        m_pStreamCur += ULONG_SIZEOF;
-
-        memcpy(m_pStreamCur, sBuffer, lSizeMem);
-        m_lPosition += lSizeMem;
-        m_pStreamCur += lSizeMem;
-
-    }
-
-    void CBinaryFileWriter::WriteStringW2_4(const WCHAR* sBuffer)
+	void CBinaryFileWriter::WriteStringW2(const WCHAR* sBuffer)
 	{
 		LONG lSize = __wstrlen(sBuffer);
 		LONG lSizeMem = lSize * sizeof(wchar_t);
@@ -530,25 +461,8 @@ namespace NSBinPptxRW
 		m_lPosition += ULONG_SIZEOF;
 		m_pStreamCur += ULONG_SIZEOF;
 
-        UTF16* pStrUtf16 = (UTF16 *) m_pStreamCur;
-        UTF32 *pStrUtf32 = (UTF32 *) sBuffer;
-
-        // this values will be modificated
-        UTF16 *pStrUtf16_Conv = pStrUtf16;
-        const UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-        ConversionResult eUnicodeConversionResult =
-        ConvertUTF32toUTF16 (&pStrUtf32_Conv
-                            , &pStrUtf32[lSize]
-                            , &pStrUtf16_Conv
-                            , &pStrUtf16 [lSize]
-                            , strictConversion);
-
-        if (conversionOK != eUnicodeConversionResult)
-        {
-            return;
-        }
-        m_lPosition += lSizeMem;
+		memcpy(m_pStreamCur, sBuffer, lSizeMem);
+		m_lPosition += lSizeMem;
 		m_pStreamCur += lSizeMem;
 	}
 	void CBinaryFileWriter::WriteStringW2(CString& sBuffer)
@@ -556,58 +470,17 @@ namespace NSBinPptxRW
 		WriteStringW2(sBuffer.GetBuffer());
 	}
 	void CBinaryFileWriter::WriteStringW3(const WCHAR* sBuffer)
-	{   
-        if (sizeof(wchar_t) == 4)
-        {
-            WriteStringW3_4(sBuffer);
-        }else
-        {
-            WriteStringW3_2(sBuffer);
-        }
+	{
+		LONG lSize = __wstrlen(sBuffer);
+		LONG lSizeMem = lSize * sizeof(wchar_t);
+
+		CheckBufferSize(lSizeMem);
+
+		memcpy(m_pStreamCur, sBuffer, lSizeMem);
+		m_lPosition += lSizeMem;
+		m_pStreamCur += lSizeMem;
 	}
-    void CBinaryFileWriter::WriteStringW3_2(const WCHAR* sBuffer)
-    {
-        LONG lSize = __wstrlen(sBuffer);
-
-        LONG lSizeMem = lSize * sizeof(wchar_t);
-
-        CheckBufferSize(lSizeMem);
-
-        memcpy(m_pStreamCur, sBuffer, lSizeMem);
-        m_lPosition += lSizeMem;
-        m_pStreamCur += lSizeMem;
-    }
-    void CBinaryFileWriter::WriteStringW3_4(const WCHAR* sBuffer)
-    {
-        LONG lSize = __wstrlen(sBuffer);
-
-        LONG lSizeMem = lSize * sizeof(UTF16);
-
-        CheckBufferSize(lSizeMem);
-
-        UTF16* pStrUtf16 = (UTF16 *) m_pStreamCur;
-        UTF32 *pStrUtf32 = (UTF32 *) sBuffer;
-
-        // this values will be modificated
-        UTF16 *pStrUtf16_Conv = pStrUtf16;
-        const UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-        ConversionResult eUnicodeConversionResult =
-        ConvertUTF32toUTF16 (&pStrUtf32_Conv
-                            , &pStrUtf32[lSize]
-                            , &pStrUtf16_Conv
-                            , &pStrUtf16 [lSize]
-                            , strictConversion);
-
-        if (conversionOK != eUnicodeConversionResult)
-        {
-            return;
-        }
-
-        m_lPosition += lSizeMem;
-        m_pStreamCur += lSizeMem;
-    }
-    void CBinaryFileWriter::WriteStringW3(CString& sBuffer)
+	void CBinaryFileWriter::WriteStringW3(CString& sBuffer)
 	{
 		WriteStringW3(sBuffer.GetBuffer());
 	}
@@ -680,41 +553,15 @@ namespace NSBinPptxRW
 		BYTE bType = (BYTE)type;
 		WriteBYTE(bType);
 
-        ULONG lSize = (ULONG)val.GetLength() , len = lSize;
-        WriteULONG(lSize);
+		ULONG len = (ULONG)val.GetLength();
+		WriteULONG(len);
 
 		len <<= 1;
 
 		CString* s = const_cast<CString*>(&val);
 		CheckBufferSize(len);
 
-        WCHAR *buffer = s->GetBuffer();
-
-        if (sizeof(buffer[0]) == 4)
-        {
-            UTF16* pStrUtf16 = (UTF16 *) m_pStreamCur;
-            UTF32 *pStrUtf32 = (UTF32 *) buffer;
-
-            // this values will be modificated
-            UTF16 *pStrUtf16_Conv = pStrUtf16;
-            const UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-            ConversionResult eUnicodeConversionResult =
-            ConvertUTF32toUTF16 (&pStrUtf32_Conv
-                                , &pStrUtf32[lSize]
-                                , &pStrUtf16_Conv
-                                , &pStrUtf16 [lSize]
-                                , strictConversion);
-
-            if (conversionOK != eUnicodeConversionResult)
-            {
-                return;
-            }
-        }else
-        {
-
-            memcpy(m_pStreamCur, s->GetBuffer(), len);
-        }
+		memcpy(m_pStreamCur, s->GetBuffer(), len);
 		m_pStreamCur += len;
 		m_lPosition += len;
 	}
@@ -725,41 +572,15 @@ namespace NSBinPptxRW
 	}
 	void CBinaryFileWriter::WriteString(const CString& val)
 	{
-        ULONG lSize = (ULONG)val.GetLength() , len = lSize;
-        WriteULONG(len);
+		ULONG len = (ULONG)val.GetLength();
+		WriteULONG(len);
 
 		len <<= 1;
 
 		CString* s = const_cast<CString*>(&val);
 		CheckBufferSize(len);
 
-        WCHAR *buffer = s->GetBuffer();
-
-        if (sizeof(buffer[0]) == 4)
-        {
-            UTF16* pStrUtf16 = (UTF16 *) m_pStreamCur;
-            UTF32 *pStrUtf32 = (UTF32 *) buffer;
-
-            // this values will be modificated
-            UTF16 *pStrUtf16_Conv = pStrUtf16;
-            const UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-            ConversionResult eUnicodeConversionResult =
-            ConvertUTF32toUTF16 (&pStrUtf32_Conv
-                                , &pStrUtf32[lSize]
-                                , &pStrUtf16_Conv
-                                , &pStrUtf16 [lSize]
-                                , strictConversion);
-
-            if (conversionOK != eUnicodeConversionResult)
-            {
-                return;
-            }
-        }else
-        {
-
-            memcpy(m_pStreamCur, s->GetBuffer(), len);
-        }
+		memcpy(m_pStreamCur, s->GetBuffer(), len);
 		m_pStreamCur += len;
 		m_lPosition += len;
 	}
@@ -1128,7 +949,7 @@ namespace NSBinPptxRW
 		strRid.Format(_T("rId%d"), m_lNextRelsID++);
 
 		CString strRels = _T("");
-		strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"%ls\"/>"),
+		strRels.Format(_T("<Relationship Id=\"%s\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"%s\"/>"),
 			strRid, strImage);
 		m_pWriter->WriteString(strRels);
 
@@ -1151,7 +972,7 @@ namespace NSBinPptxRW
 		strRid.Format(_T("rId%d"), m_lNextRelsID++);
 
 		CString strRels = _T("");
-		strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart\" Target=\"%ls\"/>"),
+		strRels.Format(_T("<Relationship Id=\"%s\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart\" Target=\"%s\"/>"),
 			strRid, strChart);
 		m_pWriter->WriteString(strRels);
 
@@ -1200,12 +1021,12 @@ namespace NSBinPptxRW
 
 		if (!bIsSlide)
 		{
-			strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"%ls\" TargetMode=\"External\"/>"),
+			strRels.Format(_T("<Relationship Id=\"%s\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink\" Target=\"%s\" TargetMode=\"External\"/>"),
 				strRid, sLink);
 		}
 		else
 		{
-			strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"%ls\"/>"), 
+			strRels.Format(_T("<Relationship Id=\"%s\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slide\" Target=\"%s\"/>"), 
 				strRid ,sLink);
 		}
 

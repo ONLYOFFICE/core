@@ -7,12 +7,6 @@
 #include "../../XlsxSerializerCom/Writer/BinaryReader.h"
 #include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
 
-#ifdef _WIN32
-	#include "../BinReader/DefaultThemeWriterWin.h"
-#else
-	#include "../BinReader/DefaultThemeWriterLinux.h"
-#endif
-
 namespace BinXlsxRW{
 	int g_nCurFormatVersion = 0;
 
@@ -22,41 +16,6 @@ namespace BinXlsxRW{
 	}
 	CXlsxSerializer::~CXlsxSerializer()
 	{
-	}
-
-	void CXlsxSerializer::CreateXlsxFolders(CString& sXmlOptions, CString sDstPath,  CString& sMediaPath)
-	{
-        OOX::CPath pathMediaDir = sDstPath + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + _T("media");
-		
-		// File Type (Можно парсить не два раза, а один, если передавать в ReadFile не опции, а параметры)
-		BYTE fileType;
-		UINT nCodePage;
-		WCHAR wcDelimiter;
-		SerializeCommon::ReadFileType(sXmlOptions, fileType, nCodePage, wcDelimiter);
-
-		if (c_oFileTypes::CSV != fileType)
-		{
-            OOX::CPath pathXlDir = sDstPath + FILE_SEPARATOR_STR + _T("xl");
-
-			OOX::CPath pathThemeDir = pathXlDir + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
-			
-			OOX::CPath pathThemeFile = pathThemeDir + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultFileName().GetPath();
-			
-            OOX::CPath pathThemeThemeRelsDir = pathThemeDir + FILE_SEPARATOR_STR + _T("_rels");
-
-			NSDirectory::CreateDirectory(string2std_string(pathXlDir.GetPath()));
-			NSDirectory::CreateDirectory(string2std_string(pathThemeDir.GetPath()));
-			NSDirectory::CreateDirectory(string2std_string(pathThemeThemeRelsDir.GetPath()));
-			NSDirectory::CreateDirectory(string2std_string(pathMediaDir.GetPath()));
-
-			//Create Default Theme
-			{
-				Writers::DefaultThemeWriter oDefaultThemeWriter;
-				oDefaultThemeWriter.Write(pathThemeFile.GetPath());
-			}
-		}
-
-		sMediaPath = pathMediaDir.GetPath();
 	}
 	bool CXlsxSerializer::loadFromFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions, CString& sMediaDir)
 	{
@@ -159,9 +118,8 @@ namespace BinXlsxRW{
 			//получаем sThemePath из bsFilename предполагая что папка theme находится на уровень выше bsFilename
 			CString sThemePath;
 			CString sFilenameReverse = sFilepath;sFilenameReverse.MakeReverse();
-			
-			int nIndex	= sFilenameReverse.Find(FILE_SEPARATOR_CHAR);
-			nIndex		= sFilenameReverse.Find(FILE_SEPARATOR_CHAR, nIndex + 1);
+			int nIndex = sFilenameReverse.Find('\\');
+			nIndex = sFilenameReverse.Find('\\', nIndex + 1);
 			if(-1 != nIndex)
 				sThemePath = sFilepath.Left(sFilepath.GetLength() - nIndex) + _T("theme");
 
@@ -173,26 +131,28 @@ namespace BinXlsxRW{
 
 			if(oChartSpace.isValid())
 			{
-				std::wstring strFilepath	= string2std_string(sFilepath);
-				std::wstring strDir			= NSSystemPath::GetDirectoryName(strFilepath);
-				std::wstring strFilename	= NSSystemPath::GetFileName(strFilepath);
+				std::wstring strFilepath = string2std_string(sFilepath);
+				std::wstring strDir = NSSystemPath::GetDirectoryName(strFilepath);
+				std::wstring strFilename = NSSystemPath::GetFileName(strFilepath);
 
 				CString sRelsDir = strDir.c_str();
 				CString sFilename = strFilename.c_str();
 				sRelsDir.Append(_T("_rels"));
-				
-				OOX::CSystemUtility::CreateDirectories(sRelsDir);
+				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
+					OOX::CSystemUtility::CreateDirectories(sRelsDir);
 
 				oChartSpace.write2(sFilepath);
 
-				OOX::CPath pathRelsPath = sRelsDir + FILE_SEPARATOR_STR + sFilename + _T(".rels");
-				m_pExternalDrawingConverter->SaveDstContentRels(pathRelsPath.GetPath());
+				CString sRelsPath;
+				sRelsPath.Format(_T("%s\\%s.rels"), sRelsDir, sFilename);
+
+				m_pExternalDrawingConverter->SaveDstContentRels(sRelsPath);
 
 				CString sContentType(sContentTypePath);
 				sContentType.Append(sFilename);
 
 				(*sContentTypeElement) = new CString();
-				(*sContentTypeElement)->Format(_T("<Override PartName=\"%ls\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>"), sContentType);
+				(*sContentTypeElement)->Format(_T("<Override PartName=\"%s\" ContentType=\"application/vnd.openxmlformats-officedocument.drawingml.chart+xml\"/>"), sContentType);
 				(*sContentTypeElement)->Append(oSaveParams.sAdditionalContentTypes);
 				
 				bRes = true;

@@ -182,16 +182,14 @@ void comLoadTheme(void* pArg, int nIndex, CString& strDstFolder)
 	CDirectory::CreateDirectory(strDstFolder + _T("\\ppt\\notesMasters"));
 	pCAVSOfficePPTXFile->LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_XML_NOTESMASTER), _T("PPTXW"), strDstFolder + _T("\\ppt\\notesMasters\\notesMaster1.xml"));
 
-	OOX::CPath pathNotesMasterRels = strDstFolder + _T("\\ppt\\notesMasters\\_rels");
-	CDirectory::CreateDirectory(pathNotesMasterRels.GetPath());
-	
+	CDirectory::CreateDirectory(strDstFolder + _T("\\ppt\\notesMasters\\_rels"));
 	CString strThemeNotesNum = _T("");
 	strThemeNotesNum.Format(_T("%d"), nIndex);
 	CString strVal = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\
 						<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">\
 						<Relationship Id=\"rId1\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme\" Target=\"../theme/theme") + strThemeNotesNum + _T(".xml\"/></Relationships>");
 	CFile oFileRels;
-	oFileRels.CreateFile(pathNotesMasterRels.GetPath() + FILE_SEPARATOR_STR + _T("notesMaster1.xml.rels"));
+	oFileRels.CreateFile(strDstFolder + _T("\\ppt\\notesMasters\\_rels\\notesMaster1.xml.rels"));
 	oFileRels.WriteStringUTF8(strVal);
 	oFileRels.CloseFile();
 }

@@ -29,7 +29,7 @@ namespace OOX
 			}
 			virtual void toXML2(XmlUtils::CStringWriter& writer, CString sName) const
 			{
-				CString sStart;sStart.Format(_T("<%ls>"), sName);
+				CString sStart;sStart.Format(_T("<%s>"), sName);
 				writer.WriteString(sStart);
 				if(m_oCol.IsInit())
 				{
@@ -51,7 +51,7 @@ namespace OOX
 					CString sVal;sVal.Format(_T("<xdr:rowOff>%I64d</xdr:rowOff>"), m_oRowOff->ToEmu());
 					writer.WriteString(sVal);
 				}
-				CString sEnd;sEnd.Format(_T("</%ls>"), sName);
+				CString sEnd;sEnd.Format(_T("</%s>"), sName);
 				writer.WriteString(sEnd);
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)

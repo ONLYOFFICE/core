@@ -32,7 +32,7 @@ namespace OOX
 				writer.WriteString(_T("<definedName"));
 				if(m_oName.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" name=\"%ls\""), XmlUtils::EncodeXmlString(m_oName.get()));
+					CString sVal;sVal.Format(_T(" name=\"%s\""), XmlUtils::EncodeXmlString(m_oName.get()));
 					writer.WriteString(sVal);
 				}
 				if(m_oLocalSheetId.IsInit())

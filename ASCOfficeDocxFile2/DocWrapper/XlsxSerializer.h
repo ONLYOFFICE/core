@@ -25,15 +25,10 @@ namespace BinXlsxRW {
 	public:
 		CXlsxSerializer();
 		~CXlsxSerializer();
-		
-		void CreateXlsxFolders(CString& sXmlOptions, CString sDstPath,  CString& sMediaPath);
-
 		bool loadFromFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions, CString& sMediaDir);
 		bool saveToFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions);
-		
 		bool loadChart(CString& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);
 		bool saveChart(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sFilename, CString& sContentTypePath, CString** sContentTypeElement);
-		
 		void setFontDir(CString& sFontDir);
 		void setEmbeddedFontsDir(CString& sEmbeddedFontsDir);
 		void setDrawingConverter(NSBinPptxRW::CDrawingConverter* pDrawingConverter);

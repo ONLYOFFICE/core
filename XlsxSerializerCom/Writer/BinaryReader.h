@@ -1838,11 +1838,14 @@ namespace BinXlsxRW {
 			}
 			else if(c_oSerWorksheetsTypes::Drawings == type)
 			{
-                OOX::CPath pathDrawingsDir = m_sDestinationDir  + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + _T("drawings");
-				OOX::CSystemUtility::CreateDirectories(pathDrawingsDir.GetPath());
-			
-                OOX::CPath pathDrawingsRelsDir = pathDrawingsDir.GetPath()  + FILE_SEPARATOR_STR + _T("_rels");
-				OOX::CSystemUtility::CreateDirectories(pathDrawingsRelsDir.GetPath());
+				CString sDrawingsDir;
+                sDrawingsDir.Format(_T("%s/xl/drawings"), m_sDestinationDir);
+				if( !NSDirectory::Exists(string2std_string(sDrawingsDir)) )
+					OOX::CSystemUtility::CreateDirectories(sDrawingsDir);
+				CString sRelsDir;
+                sRelsDir.Format(_T("%s/_rels"), sDrawingsDir);
+				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
+					OOX::CSystemUtility::CreateDirectories(sRelsDir);
 
 				m_pOfficeDrawingConverter->SetDstContentRels();
 				m_pCurDrawing = new OOX::Spreadsheet::CDrawing();
@@ -1853,8 +1856,10 @@ namespace BinXlsxRW {
 				m_pCurWorksheet->m_oDrawing->m_oId.Init();
 				m_pCurWorksheet->m_oDrawing->m_oId->SetValue(oRId.get());
 
-                OOX::CPath pathDrawingsRels = pathDrawingsRelsDir.GetPath()  + FILE_SEPARATOR_STR + m_pCurDrawing->m_sFilename + _T(".rels");
-				m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
+				CString sFilename = m_pCurDrawing->m_sFilename;
+				CString sRelsPath;
+                sRelsPath.Format(_T("%s/%s.rels"), sRelsDir, sFilename);
+				m_pOfficeDrawingConverter->SaveDstContentRels(sRelsPath);
 			}
 			else if(c_oSerWorksheetsTypes::SheetData == type)
 			{
@@ -2400,7 +2405,7 @@ namespace BinXlsxRW {
 				if(S_OK == hRes && NULL != bstrXml)
 				{
 					pCellAnchor->m_oXml.Init();
-                    pCellAnchor->m_oXml->AppendFormat(_T("%ls<xdr:clientData/>"), (const TCHAR *) (*bstrXml));
+					pCellAnchor->m_oXml->AppendFormat(_T("%s<xdr:clientData/>"), (const TCHAR *) (*bstrXml));
 				}
 				RELEASEOBJECT(bstrXml);
 			}
@@ -2415,12 +2420,14 @@ namespace BinXlsxRW {
 			if(c_oSer_DrawingType::Chart2 == type)
 			{
 				//создаем папку для rels
-                OOX::CPath pathChartsDir = m_sDestinationDir + FILE_SEPARATOR_STR  + _T("xl")  + FILE_SEPARATOR_STR + _T("charts");
-				OOX::CSystemUtility::CreateDirectories(pathChartsDir.GetPath());
-
-                OOX::CPath pathChartsRelsDir = pathChartsDir + FILE_SEPARATOR_STR  + _T("_rels");
-				OOX::CSystemUtility::CreateDirectories(pathChartsRelsDir.GetPath());
-				
+				CString sChartsDir;
+                sChartsDir.Format(_T("%s/xl/charts"), m_sDestinationDir);
+				if( !NSDirectory::Exists(string2std_string(sChartsDir)) )
+					OOX::CSystemUtility::CreateDirectories(sChartsDir);
+				CString sRelsDir;
+                sRelsDir.Format(_T("%s/_rels"), sChartsDir);
+				if( !NSDirectory::Exists(string2std_string(sRelsDir)) )
+					OOX::CSystemUtility::CreateDirectories(sRelsDir);
 				m_pOfficeDrawingConverter->SetDstContentRels();
 
 				OOX::Spreadsheet::CChartSpace* pChartSpace = new OOX::Spreadsheet::CChartSpace();
@@ -2430,12 +2437,12 @@ namespace BinXlsxRW {
 				pChartFile->m_bDoNotAddRels = true;
 				m_pCurDrawing->Add(pChartFile);
 
-                OOX::CPath pathChartsRels = pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + pChartFile->m_sFilename + _T(".rels");
-				m_pOfficeDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
+                CString sRelsPath;sRelsPath.Format(_T("%s/%s.rels"), sRelsDir, pChartFile->m_sFilename);
+				m_pOfficeDrawingConverter->SaveDstContentRels(sRelsPath);
 
 				long rId;
 				CString sNewImgRel;
-                sNewImgRel.Format(_T("../charts/%ls"), pChartFile->m_sFilename);
+				sNewImgRel.Format(_T("../charts/%s"), pChartFile->m_sFilename);
 				m_pOfficeDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart")), sNewImgRel, CString(), &rId);
 				CString sNewRid;
 				sNewRid.Format(_T("rId%d"), rId);
@@ -2539,7 +2546,7 @@ namespace BinXlsxRW {
 
 						long rId;
 						CString sNewImgRel;
-                        sNewImgRel.Format(_T("../media/%ls"), sNewImageName.c_str());
+						sNewImgRel.Format(_T("../media/%s"), sNewImageName.c_str());
 						m_pOfficeDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")), sNewImgRel, CString(), &rId);
 
 						sRId.Format(_T("rId%d"), rId);
@@ -2548,7 +2555,7 @@ namespace BinXlsxRW {
 					else
 						sRId = pPair->second;
 					pCellAnchor->m_oXml.Init();
-                    pCellAnchor->m_oXml->AppendFormat(_T("<xdr:pic><xdr:nvPicPr><xdr:cNvPr id=\"1\" name=\"Image 1\"></xdr:cNvPr><xdr:cNvPicPr><a:picLocks noChangeAspect=\"1\"></a:picLocks></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip r:embed=\"%ls\"></a:blip><a:stretch></a:stretch></xdr:blipFill><xdr:spPr><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/>"), (const TCHAR *) sRId);
+					pCellAnchor->m_oXml->AppendFormat(_T("<xdr:pic><xdr:nvPicPr><xdr:cNvPr id=\"1\" name=\"Image 1\"></xdr:cNvPr><xdr:cNvPicPr><a:picLocks noChangeAspect=\"1\"></a:picLocks></xdr:cNvPicPr></xdr:nvPicPr><xdr:blipFill><a:blip r:embed=\"%s\"></a:blip><a:stretch></a:stretch></xdr:blipFill><xdr:spPr><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></xdr:spPr></xdr:pic><xdr:clientData/>"), (const TCHAR *) sRId);
 				}
 			}
 			else
@@ -2695,7 +2702,7 @@ namespace BinXlsxRW {
 			{
 				double dValue = m_oBufferedStream.GetDoubleReal();
 				pCell->m_oValue.Init();
-                pCell->m_oValue->m_sText.AppendFormat(_T("%ls"), (const TCHAR *) OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(dValue));
+				pCell->m_oValue->m_sText.AppendFormat(_T("%s"), (const TCHAR *) OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(dValue));
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;
@@ -2827,7 +2834,7 @@ namespace BinXlsxRW {
 				res = Read1(length, &BinaryOtherTableReader::ReadMediaContent, this, poResult);
 			else if(c_oSer_OtherType::Theme == type)
 			{
-                CString sThemePath;sThemePath.Format(_T("%ls/%ls"), m_oSaveParams.sThemePath, OOX::FileTypes::Theme.DefaultFileName().GetPath());
+                CString sThemePath;sThemePath.Format(_T("%s/%s"), m_oSaveParams.sThemePath, OOX::FileTypes::Theme.DefaultFileName().GetPath());
 				long nCurPos = m_oBufferedStream.GetPos();
 				m_pOfficeDrawingConverter->SaveThemeXml(nCurPos, length, sThemePath);
 				m_oBufferedStream.Seek(nCurPos + length);
@@ -3094,10 +3101,8 @@ namespace BinXlsxRW {
 						aOffBits.push_back(mtiOffBits);
 					}
 				}
-                OOX::CPath pathMedia = sOutDir + FILE_SEPARATOR_STR + _T("xl")   + FILE_SEPARATOR_STR + _T("media");
-                CString sMediaDir = pathMedia.GetPath();
-
-                std::map<long, ImageObject*> mapMedia;
+                CString sMediaDir = sOutDir + _T("/xl/media");
+				std::map<long, ImageObject*> mapMedia;
 				if(-1 != nOtherOffBits)
 				{
 					oBufferedStream.Seek(nOtherOffBits);

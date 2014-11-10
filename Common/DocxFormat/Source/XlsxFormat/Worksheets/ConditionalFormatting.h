@@ -33,13 +33,13 @@ namespace OOX
 				{
 					CString sValue;
 					CString sRoot;
-                    sRoot.Format(_T("<cfvo type=\"%ls\""), (const TCHAR *) m_oType.get().ToString());
+                    sRoot.Format(_T("<cfvo type=\"%s\""), (const TCHAR *) m_oType.get().ToString());
 					writer.WriteString(sRoot);
 					if (m_oGte.IsInit() && false == m_oGte->ToBool())
 						writer.WriteString(_T (" gte=\"0\""));
 					if (m_oVal.IsInit())
 					{
-						sValue.Format(_T(" val=\"%ls\""), m_oVal.get());
+						sValue.Format(_T(" val=\"%s\""), m_oVal.get());
 						writer.WriteString(sValue);
 					}
 					
@@ -288,7 +288,7 @@ namespace OOX
 					writer.WriteString(_T("<iconSet"));
 					if (m_oIconSet.IsInit())
 					{
-                        sValue.Format(_T(" iconSet=\"%ls\""), (const TCHAR *) m_oIconSet.get().ToString());
+                        sValue.Format(_T(" iconSet=\"%s\""), (const TCHAR *) m_oIconSet.get().ToString());
 						writer.WriteString(sValue);
 					}
 					if (m_oPercent.IsInit() && false == m_oPercent->ToBool())
@@ -379,7 +379,7 @@ namespace OOX
 				{
 					CString sValue;
 					CString sRoot;
-                    sRoot.Format(_T("<cfRule type=\"%ls\" priority=\"%d\""), (const TCHAR *) m_oType.get().ToString(), m_oPriority->GetValue());
+                    sRoot.Format(_T("<cfRule type=\"%s\" priority=\"%d\""), (const TCHAR *) m_oType.get().ToString(), m_oPriority->GetValue());
 					writer.WriteString(sRoot);
 					if (m_oAboveAverage.IsInit() && false == m_oAboveAverage->ToBool())
 						writer.WriteString(_T (" aboveAverage=\"0\""));
@@ -394,7 +394,7 @@ namespace OOX
 						writer.WriteString(_T (" equalAverage=\"1\""));
 					if (m_oOperator.IsInit())
 					{
-                        sValue.Format(_T(" text=\"%ls\""), (const TCHAR *) m_oOperator.get().ToString());
+                        sValue.Format(_T(" text=\"%s\""), (const TCHAR *) m_oOperator.get().ToString());
 						writer.WriteString(sValue);
 					}
 					if (m_oPercent.IsInit() && true == m_oPercent->ToBool())
@@ -413,12 +413,12 @@ namespace OOX
 						writer.WriteString(_T (" stopIfTrue=\"1\""));
 					if (m_oText.IsInit())
 					{
-						sValue.Format(_T(" text=\"%ls\""), m_oText.get());
+						sValue.Format(_T(" text=\"%s\""), m_oText.get());
 						writer.WriteString(sValue);
 					}
 					if (m_oTimePeriod.IsInit())
 					{
-						sValue.Format(_T(" timePeriod=\"%ls\""), m_oTimePeriod.get());
+						sValue.Format(_T(" timePeriod=\"%s\""), m_oTimePeriod.get());
 						writer.WriteString(sValue);
 					}
 
@@ -520,7 +520,7 @@ namespace OOX
 				if (m_oSqRef.IsInit() && 0 < m_arrItems.size())
 				{
 					CString sRoot;
-					sRoot.Format(_T("<conditionalFormatting sqref=\"%ls\""), m_oSqRef->GetValue());
+					sRoot.Format(_T("<conditionalFormatting sqref=\"%s\""), m_oSqRef->GetValue());
 					writer.WriteString(sRoot);
 
 					if (m_oPivot.IsInit() && true == m_oPivot->ToBool())

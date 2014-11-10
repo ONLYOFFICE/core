@@ -68,11 +68,8 @@ namespace Writers
 		}
 		void WriteItem(CString sHeader, CString& sFilename, ContentWriter& m_oWriter, bool bHeader)
 		{
-            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + sFilename;
-
 			CFile oFile;
-			oFile.CreateFile(filePath.GetPath());
-
+			oFile.CreateFile(m_sDir + _T("\\word\\" + sFilename));
 			if(bHeader)
 				oFile.WriteStringUTF8(g_string_hdr_Start);
 			else

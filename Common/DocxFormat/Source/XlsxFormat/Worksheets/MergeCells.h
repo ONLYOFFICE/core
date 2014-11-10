@@ -32,7 +32,7 @@ namespace OOX
 				writer.WriteString(_T("<mergeCell"));
 				if(m_oRef.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" ref=\"%ls\""), XmlUtils::EncodeXmlString(m_oRef.get()));
+					CString sVal; sVal.Format(_T(" ref=\"%s\""), XmlUtils::EncodeXmlString(m_oRef.get()));
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T("/>"));

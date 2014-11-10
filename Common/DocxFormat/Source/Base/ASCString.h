@@ -253,20 +253,20 @@ static std::wstring stringUtf8ToWString (const std::string& aSrc)
 //
 //          CString sName("Joe");
 //          CString sTmp;
-//          sTmp.Format("My name is %ls", sName);                    // WORKS!
+//          sTmp.Format("My name is %s", sName);                    // WORKS!
 //
 //      However if you were to try this with CStdString, your program would
 //      crash.
 //
 //          CStdString sName("Joe");
 //          CStdString sTmp;
-//          sTmp.Format("My name is %ls", sName);                    // CRASHES!
+//          sTmp.Format("My name is %s", sName);                    // CRASHES!
 //
 //      You must explicitly call c_str() or cast the object to the proper type
 //
-//          sTmp.Format("My name is %ls", sName.c_str());            // WORKS!
-//          sTmp.Format("My name is %ls", static_cast<PCSTR>(sName));// WORKS!
-//          sTmp.Format("My name is %ls", (PCSTR)sName);				// WORKS!
+//          sTmp.Format("My name is %s", sName.c_str());            // WORKS!
+//          sTmp.Format("My name is %s", static_cast<PCSTR>(sName));// WORKS!
+//          sTmp.Format("My name is %s", (PCSTR)sName);				// WORKS!
 //
 //      This is because it is illegal to pass anything but a POD type as a
 //      variadic argument to a variadic function (i.e. as one of the "..."
@@ -2519,7 +2519,7 @@ public:
     // Answer:  One reason only - CString compatability.  In short, by making
     //      the Format() function a template this way, I can do strong typing
     //      and allow people to pass CStdString arguments as fillers for
-    //      "%ls" format specifiers without crashing their program!  The downside
+    //      "%s" format specifiers without crashing their program!  The downside
     //      is that I need to overload on the number of arguments.   If you are
     //      passing more arguments than I have listed below in any of my
     //      overloads, just add another one.
@@ -4218,7 +4218,7 @@ inline CStdStringW WUFormatW(PCWSTR szwFormat, ...)
 
         if ( 0 != ::FormatMessageW(FORMAT_MESSAGE_FROM_SYSTEM, NULL, dwError,
                                    dwLangId, szBuf, 511, NULL) )
-            return WUFormatW(L"%ls (0x%X)", szBuf, dwError);
+            return WUFormatW(L"%s (0x%X)", szBuf, dwError);
         else
             return WUFormatW(L"Unknown error (0x%X)", dwError);
     }

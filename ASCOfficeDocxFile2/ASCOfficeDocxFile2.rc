@@ -137,6 +137,12 @@ END
 // Generated from the TEXTINCLUDE 3 resource.
 //
 
+IDB_DEFAULT_DOC_RELS				DOCXWR			"Resources\\.rels"
+IDB_DEFAULT_DOC_APP					DOCXWR			"Resources\\app.xml"
+IDB_DEFAULT_DOC_CORE				DOCXWR			"Resources\\core.xml"
+IDB_DEFAULT_DOC_THEME				DOCXWR			"Resources\\theme.xml"
+IDB_DEFAULT_DOC_WEBSETTINGS			DOCXWR			"Resources\\webSettings.xml"
+IDB_DEFAULT_XLSX_THEME				XLSXSER			"..\\XlsxSerializerCom\\Resource\\theme1.xml"
 IDB_XML_NOTESTHEME					PPTXW           "..\\ASCOfficePPTXFile\\Editor\\ResourceFiles\\notesTheme.xml"
 IDB_XML_NOTESMASTER					PPTXW           "..\\ASCOfficePPTXFile\\Editor\\ResourceFiles\\notesMaster.xml"
 /////////////////////////////////////////////////////////////////////////////

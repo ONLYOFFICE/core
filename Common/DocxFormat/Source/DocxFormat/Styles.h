@@ -441,7 +441,7 @@ namespace OOX
         virtual CString      toXML() const
 		{
 			CString sResult;
-			sResult.Format( _T("<w:latentStyles w:count=\"%d\" w:defLockedState=\"%ls\" w:defQFormat=\"%ls\" w:defSemiHidden=\"%ls\" w:defUIPriority=\"%d\" w:defUnhideWhenUsed=\"%ls\">"), m_oCount.GetValue(), m_oDefLockedState.ToString(), m_oDefQFormat.ToString(), m_oDefSemiHidden.ToString(), m_oDefUiPriority.GetValue(), m_oDefUnhideWhenUsed.ToString() );
+			sResult.Format( _T("<w:latentStyles w:count=\"%d\" w:defLockedState=\"%s\" w:defQFormat=\"%s\" w:defSemiHidden=\"%s\" w:defUIPriority=\"%d\" w:defUnhideWhenUsed=\"%s\">"), m_oCount.GetValue(), m_oDefLockedState.ToString(), m_oDefQFormat.ToString(), m_oDefSemiHidden.ToString(), m_oDefUiPriority.GetValue(), m_oDefUnhideWhenUsed.ToString() );
 
 			for (unsigned int nIndex = 0; nIndex < m_arrLsdException.size(); nIndex++ )
 			{

@@ -32,7 +32,7 @@ namespace OOX
 				writer.WriteString(_T("<sheet"));
 				if(m_oName.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" name=\"%ls\""), XmlUtils::EncodeXmlString(m_oName.get()));
+					CString sVal;sVal.Format(_T(" name=\"%s\""), XmlUtils::EncodeXmlString(m_oName.get()));
 					writer.WriteString(sVal);
 				}
 				if(m_oSheetId.IsInit())
@@ -42,12 +42,12 @@ namespace OOX
 				}
 				if(m_oState.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" state=\"%ls\""), m_oState->ToString());
+					CString sVal;sVal.Format(_T(" state=\"%s\""), m_oState->ToString());
 					writer.WriteString(sVal);
 				}
 				if(m_oRid.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" r:id=\"%ls\""), m_oRid->GetValue());
+					CString sVal;sVal.Format(_T(" r:id=\"%s\""), m_oRid->GetValue());
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T("/>"));

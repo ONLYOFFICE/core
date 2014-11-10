@@ -2,11 +2,6 @@
 
 #include <shlobj.h>
 
-#ifndef FILE_SEPARATOR
-	#define FILE_SEPARATOR
-	#define FILE_SEPARATOR_CHAR '\\'
-	#define FILE_SEPARATOR_STR _T("\\")
-#endif
 
 namespace FileSystem 
 {
@@ -41,23 +36,17 @@ namespace FileSystem
     }
     bool Directory::CreateDirectory(const String& path) 
 	{
-		DWORD dwAttrib = ::GetFileAttributesW(path.c_str());
-		if  (dwAttrib != INVALID_FILE_ATTRIBUTES && 0 != (dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) return true;
-		
-		return CreateDirectory(path.c_str());
+        return CreateDirectory(path.c_str());
     }
     bool Directory::CreateDirectory(String strFolderPathRoot, String strFolderName)
     {
         String strFolder = strFolderPathRoot;
-        strFolder += FILE_SEPARATOR_STR;
+        strFolder += _T("/");
         strFolder += strFolderName;
         return CreateDirectory(strFolder);
     }
     bool Directory::CreateDirectories(LPCTSTR path) 
 	{
-		DWORD dwAttrib = ::GetFileAttributesW(path);
-		if  (dwAttrib != INVALID_FILE_ATTRIBUTES && 0 != (dwAttrib & FILE_ATTRIBUTE_DIRECTORY)) return true;
-
 		int codeResult = ERROR_SUCCESS;
 
 		codeResult = SHCreateDirectory(NULL, path);

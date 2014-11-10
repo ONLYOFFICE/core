@@ -41,13 +41,13 @@ namespace OOX
 				}
 				if(m_oFormatCode.IsInit())
 				{
-                    CString sVal;sVal.Format(_T(" formatCode=\"%ls\""), XmlUtils::EncodeXmlString(m_oFormatCode.get()));
+					CString sVal;sVal.Format(_T(" formatCode=\"%s\""), XmlUtils::EncodeXmlString(m_oFormatCode.get()));
 					writer.WriteString(sVal);
 				}
 				if(m_oSourceLinked.IsInit())
 				{
 					CString sVal;
-                    sVal.Format(_T(" sourceLinked=\"%ls\""), m_oSourceLinked->ToString2(SimpleTypes::onofftostring1));
+					sVal.Format(_T(" sourceLinked=\"%s\""), m_oSourceLinked->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T("/>"));

@@ -47,10 +47,8 @@ namespace Writers
 					CString sRelPath = _T("/word/charts/") + elem->filename;
 					CString sAbsPath = m_sDir + sRelPath;
 
-					OOX::CPath filePath = sAbsPath;
-
 					CFile oFile;
-					oFile.CreateFile(filePath.GetPath());
+					oFile.CreateFile(sAbsPath);
 					oFile.WriteStringUTF8(CString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>\r\n")));
 					oFile.WriteStringUTF8(elem->content);
 					oFile.CloseFile();

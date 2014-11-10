@@ -32,37 +32,37 @@ namespace OOX
 					if(m_oLeft.IsInit())
 					{
 						CString sLeft;
-						sLeft.Format(_T(" left=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oLeft->ToInches()));
+						sLeft.Format(_T(" left=\"%s\""), SpreadsheetCommon::WriteDouble(m_oLeft->ToInches()));
 						writer.WriteString(sLeft);
 					}
 					if(m_oRight.IsInit())
 					{
 						CString sRight;
-						sRight.Format(_T(" right=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oRight->ToInches()));
+						sRight.Format(_T(" right=\"%s\""), SpreadsheetCommon::WriteDouble(m_oRight->ToInches()));
 						writer.WriteString(sRight);
 					}
 					if(m_oTop.IsInit())
 					{
 						CString sTop;
-						sTop.Format(_T(" top=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oTop->ToInches()));
+						sTop.Format(_T(" top=\"%s\""), SpreadsheetCommon::WriteDouble(m_oTop->ToInches()));
 						writer.WriteString(sTop);
 					}
 					if(m_oBottom.IsInit())
 					{
 						CString sBottom;
-						sBottom.Format(_T(" bottom=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oBottom->ToInches()));
+						sBottom.Format(_T(" bottom=\"%s\""), SpreadsheetCommon::WriteDouble(m_oBottom->ToInches()));
 						writer.WriteString(sBottom);
 					}
 					if(m_oHeader.IsInit())
 					{
 						CString sHeader;
-						sHeader.Format(_T(" header=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oHeader->ToInches()));
+						sHeader.Format(_T(" header=\"%s\""), SpreadsheetCommon::WriteDouble(m_oHeader->ToInches()));
 						writer.WriteString(sHeader);
 					}
 					if(m_oFooter.IsInit())
 					{
 						CString sFooter;
-						sFooter.Format(_T(" footer=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oFooter->ToInches()));
+						sFooter.Format(_T(" footer=\"%s\""), SpreadsheetCommon::WriteDouble(m_oFooter->ToInches()));
 						writer.WriteString(sFooter);
 					}
 					writer.WriteString(CString(_T("/>")));
@@ -130,13 +130,13 @@ namespace OOX
 					if(m_oPaperSize.IsInit())
 					{
 						CString sPaperSize;
-						sPaperSize.Format(_T(" paperSize=\"%ls\""), m_oPaperSize->ToString());
+						sPaperSize.Format(_T(" paperSize=\"%s\""), m_oPaperSize->ToString());
 						writer.WriteString(sPaperSize);
 					}
 					if(m_oOrientation.IsInit())
 					{
 						CString sOrientation;
-						sOrientation.Format(_T(" orientation=\"%ls\""), m_oOrientation->ToString());
+						sOrientation.Format(_T(" orientation=\"%s\""), m_oOrientation->ToString());
 						writer.WriteString(sOrientation);
 					}
 					writer.WriteString(CString(_T("/>")));
@@ -196,19 +196,19 @@ namespace OOX
 					if(m_oHeadings.IsInit())
 					{
 						CString sHeadings;
-						sHeadings.Format(_T(" headings=\"%ls\""), m_oHeadings->ToString2(SimpleTypes::onofftostring1));
+						sHeadings.Format(_T(" headings=\"%s\""), m_oHeadings->ToString2(SimpleTypes::onofftostring1));
 						writer.WriteString(sHeadings);
 					}
 					if(m_oGridLines.IsInit())
 					{
 						CString sGridLines;
-						sGridLines.Format(_T(" gridLines=\"%ls\""), m_oGridLines->ToString2(SimpleTypes::onofftostring1));
+						sGridLines.Format(_T(" gridLines=\"%s\""), m_oGridLines->ToString2(SimpleTypes::onofftostring1));
 						writer.WriteString(sGridLines);
 					}
 					if(m_oGridLinesSet.IsInit())
 					{
 						CString sGridLinesSet;
-						sGridLinesSet.Format(_T(" gridLinesSet=\"%ls\""), m_oGridLinesSet->ToString2(SimpleTypes::onofftostring1));
+						sGridLinesSet.Format(_T(" gridLinesSet=\"%s\""), m_oGridLinesSet->ToString2(SimpleTypes::onofftostring1));
 						writer.WriteString(sGridLinesSet);
 					}
 					writer.WriteString(CString(_T("/>")));
@@ -324,17 +324,17 @@ namespace OOX
 				}
 				if(m_oCustomHeight.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" customHeight=\"%ls\""), m_oCustomHeight->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" customHeight=\"%s\""), m_oCustomHeight->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oDefaultColWidth.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" defaultColWidth=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oDefaultColWidth->GetValue()));
+					CString sVal; sVal.Format(_T(" defaultColWidth=\"%s\""), SpreadsheetCommon::WriteDouble(m_oDefaultColWidth->GetValue()));
 					writer.WriteString(sVal);
 				}
 				if(m_oDefaultRowHeight.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" defaultRowHeight=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oDefaultRowHeight->GetValue()));
+					CString sVal; sVal.Format(_T(" defaultRowHeight=\"%s\""), SpreadsheetCommon::WriteDouble(m_oDefaultRowHeight->GetValue()));
 					writer.WriteString(sVal);
 				}
 				if(m_oOutlineLevelCol.IsInit())
@@ -349,17 +349,17 @@ namespace OOX
 				}
 				if(m_oThickBottom.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" thickBottom=\"%ls\""), m_oThickBottom->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" thickBottom=\"%s\""), m_oThickBottom->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oThickTop.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" thickTop=\"%ls\""), m_oThickTop->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" thickTop=\"%s\""), m_oThickTop->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oZeroHeight.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" zeroHeight=\"%ls\""), m_oZeroHeight->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" zeroHeight=\"%s\""), m_oZeroHeight->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 
@@ -431,22 +431,22 @@ namespace OOX
 				writer.WriteString(_T("<pane"));
 				if (m_oState.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" state=\"%ls\""), m_oState.get());
+					CString sVal; sVal.Format(_T(" state=\"%s\""), m_oState.get());
 					writer.WriteString(sVal);
 				}
 				if (m_oTopLeftCell.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" topLeftCell=\"%ls\""), m_oTopLeftCell.get());
+					CString sVal; sVal.Format(_T(" topLeftCell=\"%s\""), m_oTopLeftCell.get());
 					writer.WriteString(sVal);
 				}
 				if (m_oXSplit.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" xSplit=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oXSplit->GetValue()));
+					CString sVal; sVal.Format(_T(" xSplit=\"%s\""), SpreadsheetCommon::WriteDouble(m_oXSplit->GetValue()));
 					writer.WriteString(sVal);
 				}
 				if (m_oYSplit.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" ySplit=\"%ls\""), SpreadsheetCommon::WriteDouble(m_oYSplit->GetValue()));
+					CString sVal; sVal.Format(_T(" ySplit=\"%s\""), SpreadsheetCommon::WriteDouble(m_oYSplit->GetValue()));
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T("/>"));
@@ -517,67 +517,67 @@ namespace OOX
 				}
 				if(m_oDefaultGridColor.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" defaultGridColor=\"%ls\""), m_oDefaultGridColor->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" defaultGridColor=\"%s\""), m_oDefaultGridColor->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oRightToLeft.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" rightToLeft=\"%ls\""), m_oRightToLeft->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" rightToLeft=\"%s\""), m_oRightToLeft->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oShowFormulas.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" showFormulas=\"%ls\""), m_oShowFormulas->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" showFormulas=\"%s\""), m_oShowFormulas->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oShowGridLines.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" showGridLines=\"%ls\""), m_oShowGridLines->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" showGridLines=\"%s\""), m_oShowGridLines->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oShowOutlineSymbols.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" showOutlineSymbols=\"%ls\""), m_oShowOutlineSymbols->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" showOutlineSymbols=\"%s\""), m_oShowOutlineSymbols->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oShowRowColHeaders.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" showRowColHeaders=\"%ls\""), m_oShowRowColHeaders->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" showRowColHeaders=\"%s\""), m_oShowRowColHeaders->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oShowRuler.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" showRuler=\"%ls\""), m_oShowRuler->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" showRuler=\"%s\""), m_oShowRuler->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oShowWhiteSpace.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" showWhiteSpace=\"%ls\""), m_oShowWhiteSpace->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" showWhiteSpace=\"%s\""), m_oShowWhiteSpace->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oShowZeros.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" showZeros=\"%ls\""), m_oShowZeros->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" showZeros=\"%s\""), m_oShowZeros->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oTabSelected.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" tabSelected=\"%ls\""), m_oTabSelected->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" tabSelected=\"%s\""), m_oTabSelected->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oTopLeftCell.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" topLeftCell=\"%ls\""), m_oTopLeftCell.get());
+					CString sVal; sVal.Format(_T(" topLeftCell=\"%s\""), m_oTopLeftCell.get());
 					writer.WriteString(sVal);
 				}
 				if(m_oView.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" view=\"%ls\""), m_oView->ToString());
+					CString sVal; sVal.Format(_T(" view=\"%s\""), m_oView->ToString());
 					writer.WriteString(sVal);
 				}
 				if(m_oWindowProtection.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" windowProtection=\"%ls\""), m_oWindowProtection->ToString2(SimpleTypes::onofftostring1));
+					CString sVal; sVal.Format(_T(" windowProtection=\"%s\""), m_oWindowProtection->ToString2(SimpleTypes::onofftostring1));
 					writer.WriteString(sVal);
 				}
 				if(m_oWorkbookViewId.IsInit())

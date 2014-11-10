@@ -68,7 +68,7 @@ namespace Writers
 		}
 		void WriteItem(CString sHeader, CString& sFilename, ContentWriter& m_oWriter, bool bHeader)
 		{
-			OOX::CPath filePath = m_sDir + _T("\\word\\") + sFilename;
+            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + sFilename;
 
 			CFile oFile;
 			oFile.CreateFile(filePath.GetPath());

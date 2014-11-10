@@ -159,7 +159,7 @@ namespace NSBinPptxRW
 		{
 			strImage.Format(_T("image%d"), m_lIndexNextImage++);
 
-			CString strOutput = m_strDstMedia + _T("\\") + strImage + strExts;	
+            OOX::CPath pathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
 
 			if (!m_bIsWord)
 				strImage  = _T("../media/") + strImage + strExts;
@@ -173,9 +173,9 @@ namespace NSBinPptxRW
 
 			// теперь нужно скопировать картинку
 			if (_T("") != strMetafileImage)
-				CDirectory::CopyFile(strMetafileImage, strOutput, NULL, NULL);
-			else if (strOutput != strInput)
-				CDirectory::CopyFile(strInput, strOutput, NULL, NULL);
+                CDirectory::CopyFile(strMetafileImage, pathOutput.GetPath(), NULL, NULL);
+            else if (pathOutput.GetPath() != strInput)
+                CDirectory::CopyFile(strInput, pathOutput.GetPath(), NULL, NULL);
 		}
 		else
 		{
@@ -183,7 +183,7 @@ namespace NSBinPptxRW
 			strExts = _T(".png");
 			strImage.Format(_T("image%d"), m_lIndexNextImage++);
 
-            CString strOutput = m_strDstMedia + _T("/") + strImage + strExts;
+            OOX::CPath pathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
 
 			if (!m_bIsWord)
 				strImage  = _T("../media/") + strImage + strExts;
@@ -195,7 +195,7 @@ namespace NSBinPptxRW
 			else
 				m_mapImages [strBase64Image] = strImage;
 
-			SaveImageAsPng(strInput, strOutput);
+            SaveImageAsPng(strInput, pathOutput.GetPath());
 		}
 		return strImage;
 	}

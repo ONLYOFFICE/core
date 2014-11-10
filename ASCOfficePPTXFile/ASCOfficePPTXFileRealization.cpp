@@ -274,7 +274,11 @@ HRESULT CPPTXFile::OpenFileToPPTY(BSTR bsInput, BSTR bsOutput)
 		m_strMediaDirectory = m_strMediaDirectory.Mid(0, nIndex);
 
 	oBinaryWriter.m_strMainFolder = m_strMediaDirectory;
-	m_strMediaDirectory = m_strMediaDirectory + _T("\\media");
+    m_strMediaDirectory = m_strMediaDirectory + FILE_SEPARATOR_STR + _T("media");
+
+    OOX::CPath pathMedia = m_strMediaDirectory;
+    m_strMediaDirectory = pathMedia.GetPath();
+
 	oBinaryWriter.m_pCommon->m_pImageManager->m_strDstMedia = m_strMediaDirectory;
 
     FileSystem::Directory::CreateDirectory(m_strMediaDirectory);
@@ -335,9 +339,12 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput)
 		m_strMediaDirectory = m_strMediaDirectory.Mid(0, nIndex);
 
 	oBinaryWriter.m_strMainFolder = m_strMediaDirectory;
-	m_strMediaDirectory = m_strMediaDirectory + _T("\\media");
-	oBinaryWriter.m_pCommon->m_pImageManager->m_strDstMedia = m_strMediaDirectory;
+    m_strMediaDirectory = m_strMediaDirectory + FILE_SEPARATOR_STR + _T("media");
 
+    OOX::CPath pathMedia = m_strMediaDirectory;
+    m_strMediaDirectory = pathMedia.GetPath();
+
+    oBinaryWriter.m_pCommon->m_pImageManager->m_strDstMedia = m_strMediaDirectory;
     FileSystem::Directory::CreateDirectory(m_strMediaDirectory);
 
 	PPTX2EditorAdvanced::Convert(oBinaryWriter, *m_pFolder, m_strDirectory, sDstFileOutput);

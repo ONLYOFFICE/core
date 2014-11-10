@@ -26,7 +26,7 @@ namespace Writers
 
 			m_oWriter.WriteString(s_Common);
 
-            OOX::CPath fileName = m_sDir + _T("\\_rels\\.rels");
+            OOX::CPath fileName = m_sDir + FILE_SEPARATOR_STR + _T("_rels") + FILE_SEPARATOR_STR + _T(".rels");
 
             CFile oFile;
             oFile.CreateFile(fileName.GetPath());

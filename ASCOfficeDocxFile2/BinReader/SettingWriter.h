@@ -21,7 +21,7 @@ namespace Writers
 		void Write()
 		{
 			Prepare();
-			OOX::CPath filePath = m_sDir + _T("\\word\\settings.xml");
+            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR +_T("word") + FILE_SEPARATOR_STR + _T("settings.xml");
 
 			CFile oFile;
 			oFile.CreateFile(filePath.GetPath());

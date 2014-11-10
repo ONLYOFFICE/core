@@ -424,11 +424,14 @@ public:
                 sFont.AppendFormat(_T(" w:eastAsia=\"%ls\""), (const TCHAR *) FontAE);
 				m_mapFonts[FontAE] = 1;
 			}
-			switch(FontHint)
+			if(bFontHint)
 			{
-			case 0: sFont.Append(_T(" w:hint=\"cs\""));break;
-			case 2: sFont.Append(_T(" w:hint=\"eastAsia\""));break;
-			default:sFont.Append(_T(" w:hint=\"default\""));break;
+				switch(FontHint)
+				{
+				case 0: sFont.Append(_T(" w:hint=\"cs\""));break;
+				case 2: sFont.Append(_T(" w:hint=\"eastAsia\""));break;
+				default:sFont.Append(_T(" w:hint=\"default\""));break;
+				}
 			}
 			sFont += _T("/>");
 			pCStringWriter->WriteString(sFont);

@@ -19,8 +19,9 @@ using namespace NSFontCutter;
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DesktopEditor/graphics/Image.h"
-#include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 
+#include "../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 #include <list>
 
 #ifndef min

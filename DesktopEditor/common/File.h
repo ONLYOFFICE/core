@@ -12,8 +12,8 @@
 #include <wchar.h>
 #endif
 
-#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
-
+//#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
+//перенесено выше
 namespace NSFile
 {
 	#define WriteUtf16_WCHAR(code, p)				\

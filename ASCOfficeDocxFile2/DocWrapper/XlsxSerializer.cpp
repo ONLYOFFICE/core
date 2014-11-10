@@ -126,7 +126,9 @@ namespace BinXlsxRW{
 	bool CXlsxSerializer::loadChart(CString& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)
 	{
 		bool bRes = false;
-		OOX::Spreadsheet::CChartSpace oChart(sChartPath);
+		//todo передать нормальный oRootPath
+		OOX::CPath oRootPath;
+		OOX::Spreadsheet::CChartSpace oChart(oRootPath, sChartPath);
 		if(NULL != m_pExternalDrawingConverter)
 		{
 			long nStartPos = oBufferedStream.GetPosition();

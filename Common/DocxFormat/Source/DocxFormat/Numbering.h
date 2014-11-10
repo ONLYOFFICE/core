@@ -780,9 +780,9 @@ namespace OOX
 		CNumbering()
 		{
 		}
-		CNumbering(const CPath& oPath)
+		CNumbering(const CPath& oRootPath, const CPath& oPath)
 		{
-			read( oPath );
+			read( oRootPath, oPath );
 		}
 		virtual ~CNumbering()
 		{
@@ -811,7 +811,13 @@ namespace OOX
 
 		virtual void read(const CPath& oFilePath)
 		{
-			IFileContainer::Read( oFilePath );
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oFilePath);
+		}
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath)
+		{
+			IFileContainer::Read( oRootPath, oFilePath );
 #ifdef USE_LITE_READER
 
 			XmlUtils::CXmlLiteReader oReader;

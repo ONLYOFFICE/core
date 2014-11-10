@@ -19,9 +19,9 @@ namespace OOX
 		CFootnotes()
 		{
 		}
-		CFootnotes(const CPath& oPath)
+		CFootnotes(const CPath& oRootPath, const CPath& oPath)
 		{
-			read( oPath );
+			read( oRootPath, oPath );
 		}
 		virtual ~CFootnotes()
 		{
@@ -37,7 +37,13 @@ namespace OOX
 
 		virtual void read(const CPath& oPath)
 		{
-			IFileContainer::Read( oPath );
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oPath);
+		}
+		virtual void read(const CPath& oRootPath, const CPath& oPath)
+		{
+			IFileContainer::Read( oRootPath, oPath );
 
 			XmlUtils::CXmlNode oFootnotes;
 			oFootnotes.FromXmlFile( oPath.GetPath(), true );

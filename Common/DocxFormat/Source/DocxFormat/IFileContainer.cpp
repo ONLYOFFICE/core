@@ -18,17 +18,17 @@ namespace OOX
 {
 	UnknowTypeFile IFileContainer::Unknown;
 
-	void IFileContainer::Read (const OOX::CPath& oPath)
+	void IFileContainer::Read (const OOX::CPath& oRootPath, const OOX::CPath& oPath)
 	{
 		// Находим связи(рельсы) с данным файлом
 		OOX::CRels oRels( oPath );
 
 		// Читаем все файлы по рельсам
-		Read( oRels, oPath.GetDirectory() );
+		Read( oRels, oRootPath, oPath.GetDirectory() );
 	}
 
 
-	void IFileContainer::Read (const OOX::CRels& oRels, const OOX::CPath& oPath)
+	void IFileContainer::Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const OOX::CPath& oPath)
 	{
 		unsigned int nCount = oRels.m_arrRelations.size();
 
@@ -38,9 +38,9 @@ namespace OOX
 
 			if (oCurRels == NULL) continue;
 			
-			smart_ptr<OOX::File> oFile = OOX::CreateFile( oPath, oCurRels );
+			smart_ptr<OOX::File> oFile = OOX::CreateFile( oRootPath, oPath, oCurRels );
 			if(oFile.IsInit() && FileTypes::Unknow == oFile->type())
-				oFile = OOX::Spreadsheet::CreateFile( oPath, oCurRels );
+				oFile = OOX::Spreadsheet::CreateFile( oRootPath, oPath, oCurRels );
 			Add( oCurRels->rId(), oFile );
 		}
 	}

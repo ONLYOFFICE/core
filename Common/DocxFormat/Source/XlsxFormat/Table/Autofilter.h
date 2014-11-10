@@ -132,7 +132,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("sortCondition") == sName )
 						m_arrItems.push_back(new CSortCondition(oReader));
@@ -377,7 +377,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("customFilter") == sName )
 						m_arrItems.push_back( new CCustomFilter(oReader));
@@ -602,7 +602,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("dateGroupItem") == sName )
 						m_arrItems.push_back( new CDateGroupItem(oReader));
@@ -756,7 +756,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("colorFilter") == sName )
 						m_oColorFilter = oReader;
@@ -839,7 +839,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("filterColumn") == sName )
 						m_arrItems.push_back(new CFilterColumn(oReader));

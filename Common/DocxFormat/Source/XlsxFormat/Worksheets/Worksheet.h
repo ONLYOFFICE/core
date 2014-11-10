@@ -51,9 +51,9 @@ namespace OOX
 			CWorksheet()
 			{
 			}
-			CWorksheet(const CPath& oPath)
+			CWorksheet(const CPath& oRootPath, const CPath& oPath)
 			{
-				read( oPath );
+				read( oRootPath, oPath );
 			}
 			virtual ~CWorksheet()
 			{
@@ -63,8 +63,14 @@ namespace OOX
 
 			virtual void read(const CPath& oPath)
 			{
+				//don't use this. instead use read(const CPath& oRootPath, const CPath& oFilePath)
+				CPath oRootPath;
+				read(oRootPath, oPath);
+			}
+			virtual void read(const CPath& oRootPath, const CPath& oPath)
+			{
 				m_oReadPath = oPath;
-				IFileContainer::Read( oPath );
+				IFileContainer::Read( oRootPath, oPath );
 
 				XmlUtils::CXmlLiteReader oReader;
 
@@ -74,7 +80,7 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 
-				CWCharWrapper sName = oReader.GetName();
+				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if ( _T("worksheet") == sName || _T("chartsheet") == sName)
 				{
 					if ( !oReader.IsEmptyNode() )
@@ -82,7 +88,7 @@ namespace OOX
 						int nDocumentDepth = oReader.GetDepth();
 						while ( oReader.ReadNextSiblingNode( nDocumentDepth ) )
 						{
-							sName = oReader.GetName();
+							sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 							if ( _T("cols") == sName )
 								m_oCols = oReader;

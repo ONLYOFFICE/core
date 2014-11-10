@@ -42,8 +42,8 @@ namespace OOX
 
 		protected:
 
-			void Read (const OOX::CPath& oPath);
-			void Read (const OOX::CRels& oRels,     const CPath& oPath);
+			void Read (const OOX::CPath& oRootPath, const OOX::CPath& oPath);
+			void Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const CPath& oPath);
 			void Write(const OOX::CPath& oFileName, const CPath& oDir, OOX::CContentTypes& oContent) const;
 			void Write(OOX::CRels& oRels, const CPath& oCurrent, const CPath& oDir, OOX::CContentTypes& oContent) const;
 

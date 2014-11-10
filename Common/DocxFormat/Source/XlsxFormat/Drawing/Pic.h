@@ -40,12 +40,11 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					sName = oReader.GetName();
-					if ( _T("a:picLocks") == sName )
+					if ( _T("picLocks") == sName )
 						m_oPicLocks = oReader;
-					else if ( _T("a:extLst") == sName )
+					else if ( _T("extLst") == sName )
 						m_oExtLst = oReader;
 				}
 			}
@@ -104,11 +103,11 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("xdr:cNvPicPr") == sName )
+					if ( _T("cNvPicPr") == sName )
 						m_oCNvPicPr = oReader;
-					else if ( _T("xdr:cNvPr") == sName )
+					else if ( _T("cNvPr") == sName )
 						m_oCNvPr = oReader;
 				}
 			}
@@ -160,15 +159,15 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("a:blip") == sName )
+					if ( _T("blip") == sName )
 						m_oBlip = oReader;
-					else if ( _T("a:srcRect") == sName )
+					else if ( _T("srcRect") == sName )
 						m_oSrcRect = oReader;
-					else if ( _T("a:stretch") == sName )
+					else if ( _T("stretch") == sName )
 						m_oStretch      = oReader;
-					else if ( _T("a:tile") == sName )
+					else if ( _T("tile") == sName )
 						m_oTile         = oReader;
 				}
 			}
@@ -235,15 +234,15 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("xdr:blipFill") == sName )
+					if ( _T("blipFill") == sName )
 						m_oBlipFill = oReader;
-					if ( _T("xdr:nvPicPr") == sName )
+					if ( _T("nvPicPr") == sName )
 						m_oNvPicPr = oReader;
-					if ( _T("xdr:spPr") == sName )
+					if ( _T("spPr") == sName )
 						m_oSpPr = oReader;
-					if ( _T("xdr:style") == sName )
+					if ( _T("style") == sName )
 						m_oShapeStyle = oReader;				
 				}
 			}

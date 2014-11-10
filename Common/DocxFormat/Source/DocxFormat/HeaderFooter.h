@@ -32,10 +32,10 @@ namespace OOX
 		{
 			m_eType = et_Unknown;
 		}
-		CHdrFtr(const CPath& oFilePath)
+		CHdrFtr(const CPath& oRootPath, const CPath& oFilePath)
 		{
 			m_eType = et_Unknown;
-			read( oFilePath );
+			read( oRootPath, oFilePath );
 		}
 		virtual ~CHdrFtr()
 		{
@@ -54,8 +54,14 @@ namespace OOX
 	public:
 		virtual void read(const CPath& oFilePath)
 		{
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oFilePath);
+		}
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath)
+		{
 			m_oReadPath = oFilePath;
-			IFileContainer::Read( oFilePath );
+			IFileContainer::Read( oRootPath, oFilePath );
 #ifdef USE_LITE_READER
 			Common::readAllShapeTypes(oFilePath, m_arrShapeTypes);
 

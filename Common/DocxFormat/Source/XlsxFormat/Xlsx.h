@@ -63,7 +63,7 @@ namespace OOX
 			{
 				// Ищем "/_rels/.rels" и читаем все файлы по рельсам
 				OOX::CRels oRels( oFilePath / L"/" );
-				IFileContainer::Read( oRels, oFilePath );
+				IFileContainer::Read( oRels, oFilePath, oFilePath );
 
 				// Выполняем дополнительные действия для более удобной работы с файлом
 

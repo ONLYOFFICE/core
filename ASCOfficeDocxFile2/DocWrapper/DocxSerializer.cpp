@@ -330,8 +330,8 @@ bool BinDocxRW::CDocxSerializer::getBinaryContent(const CString& bsTxContent, NS
 	
 	oReader.FromString(bsTxContentTemp);
 	oReader.ReadNextNode();//v:textbox
-	CString sRootName = oReader.GetName();
-	if(_T("v:textbox") == sRootName)
+	CString sRootName = XmlUtils::GetNameNoNS(oReader.GetName());
+	if(_T("textbox") == sRootName)
 		oReader.ReadNextNode();//w:txbxContent
 
 	OOX::Logic::CSdtContent oSdtContent;

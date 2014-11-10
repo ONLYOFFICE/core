@@ -8,6 +8,8 @@ namespace OOX
 	{
 	public:
 		CString	m_strFilename;
+		//флаг введен, чтобы отличать относительные и абсолютные пути в rels
+		bool m_bIsRoot;
 
 	public:
 		CPath();
@@ -203,8 +205,20 @@ namespace OOX
 		void SetName(CString sName, bool bNormalize)
 		{
 			m_strFilename = sName;
+			CheckIsRoot();
 			if(bNormalize)
 				Normalize();
+		}
+		void CheckIsRoot()
+		{
+			if(m_strFilename.GetLength() > 0 && ('/' == m_strFilename[0] || '\\' == m_strFilename[0]))
+				m_bIsRoot = true;
+			else
+				m_bIsRoot = false;
+		}
+		bool GetIsRoot()
+		{
+			return m_bIsRoot;
 		}
 	};
 

@@ -71,9 +71,9 @@ namespace OOX
 			CCalcChain()
 			{
 			}
-			CCalcChain(const CPath& oPath)
+			CCalcChain(const CPath& oRootPath, const CPath& oPath)
 			{
-				read( oPath );
+				read( oRootPath, oPath );
 			}
 			virtual ~CCalcChain()
 			{
@@ -83,8 +83,14 @@ namespace OOX
 
 			virtual void read(const CPath& oPath)
 			{
+				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+				CPath oRootPath;
+				read(oRootPath, oPath);
+			}
+			virtual void read(const CPath& oRootPath, const CPath& oPath)
+			{
 				m_oReadPath = oPath;
-				IFileContainer::Read( oPath );
+				IFileContainer::Read( oRootPath, oPath );
 
 				XmlUtils::CXmlLiteReader oReader;
 
@@ -94,7 +100,7 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 
-				CWCharWrapper sName = oReader.GetName();
+				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if ( _T("calcChain") == sName )
 				{
 					ReadAttributes( oReader );
@@ -104,7 +110,7 @@ namespace OOX
 						int nStylesDepth = oReader.GetDepth();
 						while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
 						{
-							sName = oReader.GetName();
+							sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 							if ( _T("c") == sName )
 								m_arrItems.push_back(new CCalcCell(oReader));

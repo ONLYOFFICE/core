@@ -101,10 +101,10 @@ namespace OOX
 				if ( !oReader.MoveToFirstAttribute() )
 					return;
 
-				CWCharWrapper wsName = oReader.GetName();
-				while( !wsName.IsNull() )
+				CString wsName = XmlUtils::GetNameNoNS(oReader.GetName());
+				while( !wsName.IsEmpty() )
 				{
-					if ( _T("xml:space") == wsName )
+					if ( _T("space") == wsName )
 					{
 						m_oSpace = oReader.GetText();
 						break;
@@ -113,7 +113,7 @@ namespace OOX
 					if ( !oReader.MoveToNextAttribute() )
 						break;
 
-					wsName = oReader.GetName();
+					wsName = XmlUtils::GetNameNoNS(oReader.GetName());
 				}
 
 				oReader.MoveToElement();

@@ -3042,7 +3042,7 @@ namespace BinXlsxRW {
 								sDstPath += _T("Temp");
 
 							OOX::Spreadsheet::CXlsx oXlsx;
-                            SaveParams oSaveParams(sDstPath + _T("/") + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + _T("/") + OOX::FileTypes::Theme.DefaultDirectory().GetPath());
+                            SaveParams oSaveParams(sDstPath + _T("\\") + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + _T("\\") + OOX::FileTypes::Theme.DefaultDirectory().GetPath());
 							ReadMainTable(oXlsx, oBufferedStream, OOX::CPath(sSrcFileName).GetDirectory(), sDstPath, oSaveParams, pOfficeDrawingConverter);
 							CString sAdditionalContentTypes = oSaveParams.sAdditionalContentTypes;
 							if(NULL != pOfficeDrawingConverter)

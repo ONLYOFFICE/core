@@ -4208,7 +4208,7 @@ inline CStdStringW WUFormatW(PCWSTR szwFormat, ...)
 
         if ( 0 != ::FormatMessageA(FORMAT_MESSAGE_FROM_SYSTEM, NULL, dwError,
                                    dwLangId, szBuf, 511, NULL) )
-            return WUFormatA("%ls (0x%X)", szBuf, dwError);
+            return WUFormatA("%s (0x%X)", szBuf, dwError);
         else
             return WUFormatA("Unknown error (0x%X)", dwError);
     }

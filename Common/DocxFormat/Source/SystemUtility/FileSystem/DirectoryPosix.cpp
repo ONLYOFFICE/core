@@ -21,7 +21,7 @@ namespace FileSystem {
             size_t len;
             bool res = true;
 
-            snprintf(tmp, sizeof(tmp),"%ls",dir);
+            snprintf(tmp, sizeof(tmp),"%s",dir);
             len = strlen(tmp);
             if(tmp[len - 1] == '/')
                     tmp[len - 1] = 0;

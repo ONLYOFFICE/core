@@ -941,11 +941,11 @@ namespace OOX{
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("a:bodyPr") == sName )
+					if ( _T("bodyPr") == sName )
 						m_oBodyPr = oReader;
-					else if ( _T("a:p") == sName )
+					else if ( _T("p") == sName )
 						m_arrItems.push_back( new Drawing::CParagraph( oReader ));
 				}
 			}
@@ -997,11 +997,11 @@ namespace OOX{
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("a:bodyPr") == sName )
+					if ( _T("bodyPr") == sName )
 						m_oBodyPr = oReader;
-					else if ( _T("a:p") == sName )
+					else if ( _T("p") == sName )
 						m_arrItems.push_back( new Drawing::CParagraph( oReader ));
 				}
 			}

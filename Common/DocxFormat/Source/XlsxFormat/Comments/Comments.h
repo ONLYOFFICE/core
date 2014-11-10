@@ -78,7 +78,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("author") == sName )
 						m_arrItems.push_back(new CString(oReader.GetText2()));
@@ -144,7 +144,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("text") == sName )
 						m_oText  =oReader;
@@ -208,7 +208,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("comment") == sName )
 						m_arrItems.push_back(new CComment(oReader));
@@ -231,9 +231,9 @@ namespace OOX
 			CComments()
 			{
 			}
-			CComments(const CPath& oPath)
+			CComments(const CPath& oRootPath, const CPath& oPath)
 			{
-				read( oPath );
+				read( oRootPath, oPath );
 			}
 			virtual ~CComments()
 			{
@@ -242,8 +242,14 @@ namespace OOX
 
 			virtual void read(const CPath& oPath)
 			{
+				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+				CPath oRootPath;
+				read(oRootPath, oPath);
+			}
+			virtual void read(const CPath& oRootPath, const CPath& oPath)
+			{
 				m_oReadPath = oPath;
-				IFileContainer::Read( oPath );
+				IFileContainer::Read( oRootPath, oPath );
 
 				XmlUtils::CXmlLiteReader oReader;
 
@@ -253,7 +259,7 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 
-				CWCharWrapper sName = oReader.GetName();
+				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if ( _T("comments") == sName )
 				{
 					ReadAttributes( oReader );
@@ -263,7 +269,7 @@ namespace OOX
 						int nStylesDepth = oReader.GetDepth();
 						while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
 						{
-							sName = oReader.GetName();
+							sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 							if ( _T("authors") == sName )
 								m_oAuthors = oReader;
@@ -370,10 +376,10 @@ namespace OOX
 			{
 				m_mapComments = NULL;
 			}
-			CLegacyDrawing(const CPath& oPath)
+			CLegacyDrawing(const CPath& oRootPath, const CPath& oPath)
 			{
 				m_mapComments = NULL;
-				read( oPath );
+				read( oRootPath, oPath );
 			}
 			virtual ~CLegacyDrawing()
 			{
@@ -383,8 +389,14 @@ namespace OOX
 
 			virtual void read(const CPath& oPath)
 			{
+				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+				CPath oRootPath;
+				read(oRootPath, oPath);
+			}
+			virtual void read(const CPath& oRootPath, const CPath& oPath)
+			{
 				m_oReadPath = oPath;
-				IFileContainer::Read( oPath );
+				IFileContainer::Read( oRootPath, oPath );
 
 				XmlUtils::CXmlLiteReader oReader;
 
@@ -394,7 +406,7 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 
-				CWCharWrapper sName = oReader.GetName();
+				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 				if ( _T("xml") == sName )
 				{
 					ReadAttributes( oReader );
@@ -404,11 +416,11 @@ namespace OOX
 						int nStylesDepth = oReader.GetDepth();
 						while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
 						{
-							sName = oReader.GetName();
+							sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 							OOX::Vml::CShape *pItem = NULL;
 
-							if ( _T("v:shape") == sName )
+							if ( _T("shape") == sName )
 							{
 								pItem = new OOX::Vml::CShape( oReader );
 

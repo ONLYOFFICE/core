@@ -85,30 +85,30 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("xdr:from") == sName )
+					if ( _T("from") == sName )
 						m_oFrom = oReader;
-					else if ( _T("xdr:to") == sName )
+					else if ( _T("to") == sName )
 						m_oTo = oReader;
-					else if ( _T("xdr:pos") == sName )
+					else if ( _T("pos") == sName )
 						m_oPos = oReader;
-					else if ( _T("xdr:ext") == sName )
+					else if ( _T("ext") == sName )
 						m_oExt = oReader;
-					else if ( _T("xdr:graphicFrame") == sName )
+					else if ( _T("graphicFrame") == sName )
 						m_oGraphicFrame = oReader;
 	//Так читать правильнее ... но для совместимости нужно хранить и все xml !!!!
-					//else if (_T("xdr:pic") == sName )
+					//else if (_T("pic") == sName )
 					//	m_oPicture = oReader;
-					//else if (_T("xdr:sp") == sName)
+					//else if (_T("sp") == sName)
 					//	m_oShape = oReader;
-					//else if (_T("xdr:cxnSp") == sName)
+					//else if (_T("cxnSp") == sName)
 					//	m_oConnShape = oReader;
-					//else if (_T("xdr:grpSp") == sName || _T("mc:AlternateContent") == sName)
+					//else if (_T("grpSp") == sName || _T("AlternateContent") == sName)
 					//	m_oXml = oReader.GetOuterXml();
 /////////////////////////////////
 					//
-					else if ( _T("xdr:pic") == sName || _T("xdr:sp") == sName || _T("xdr:grpSp") == sName || _T("xdr:cxnSp") == sName || _T("mc:AlternateContent") == sName)
+					else if ( _T("pic") == sName || _T("sp") == sName || _T("grpSp") == sName || _T("cxnSp") == sName || _T("AlternateContent") == sName)
 					{			
 						m_oXml = oReader.GetOuterXml();
 						{
@@ -128,15 +128,15 @@ namespace OOX
 							result = oShapeReader.ReadNextNode();//root ... skiping
 							result = oShapeReader.ReadNextNode();
 
-							CWCharWrapper sName = oShapeReader.GetName();
+							CString sName = XmlUtils::GetNameNoNS(oShapeReader.GetName());
 							
-							if (_T("xdr:pic") == sName)
+							if (_T("pic") == sName)
 								m_oPicture = oShapeReader;
-							else if (_T("xdr:sp") == sName)
+							else if (_T("sp") == sName)
 								m_oShape = oShapeReader;
-							else if (_T("xdr:cxnSp") == sName)
+							else if (_T("cxnSp") == sName)
 								m_oConnShape = oShapeReader;
-							else if (_T("xdr:grpSp") == sName)
+							else if (_T("grpSp") == sName)
 								m_oGroupShape = oShapeReader;
 						}
 					}

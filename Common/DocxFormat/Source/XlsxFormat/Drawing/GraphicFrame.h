@@ -40,12 +40,11 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					sName = oReader.GetName();
-					if ( _T("a:picLocks") == sName )
+					if ( _T("picLocks") == sName )
 						m_oPicLocks = oReader;
-					else if ( _T("a:extLst") == sName )
+					else if ( _T("extLst") == sName )
 						m_oExtLst = oReader;
 				}
 			}
@@ -102,11 +101,11 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("xdr:cNvGraphicFramePr") == sName )
+					if ( _T("cNvGraphicFramePr") == sName )
 						m_oCNvGraphicFramePr = oReader;
-					else if ( _T("xdr:cNvPr") == sName )
+					else if ( _T("cNvPr") == sName )
 						m_oCNvPr = oReader;
 				}
 			}
@@ -207,9 +206,9 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("c:chart") == sName )
+					if ( _T("chart") == sName )
 						m_oChart = oReader;
 				}
 			}
@@ -260,9 +259,9 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("a:graphicData") == sName )
+					if ( _T("graphicData") == sName )
 						m_oGraphicData = oReader;
 				}
 			}
@@ -323,11 +322,11 @@ namespace OOX
 				int nCurDepth = oSubReader.GetDepth();
 				while( oSubReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oSubReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oSubReader.GetName());
 
-					if ( _T("a:graphic") == sName )
+					if ( _T("graphic") == sName )
 						m_oChartGraphic = oSubReader;
-					else if ( _T("xdr:nvGraphicFramePr") == sName )
+					else if ( _T("nvGraphicFramePr") == sName )
 						m_oNvGraphicFramePr = oSubReader;
 				}
 			}

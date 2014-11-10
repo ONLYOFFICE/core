@@ -31,16 +31,21 @@
 
 namespace OOX
 {
-	const smart_ptr<OOX::File> CreateFile(const OOX::CPath& oPath, const OOX::Rels::CRelationShip& oRelation)
+	const smart_ptr<OOX::File> CreateFile(const OOX::CPath& oRootPath, const OOX::CPath& oPath, const OOX::Rels::CRelationShip& oRelation)
 	{
-		const CPath oFileName = oPath / oRelation.Filename();
+		OOX::CPath oRelationFilename = oRelation.Filename();
+		CPath oFileName;
+		if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().GetLength() > 0)
+			oFileName = oRootPath / oRelationFilename;
+		else
+			oFileName = oPath / oRelationFilename;
 
 		if ( oRelation.Type() == FileTypes::App )
 			return smart_ptr<OOX::File>(new CApp( oFileName ));
 		else if ( oRelation.Type() == FileTypes::Core)
 			return smart_ptr<OOX::File>(new CCore( oFileName ));
 		else if ( oRelation.Type() == FileTypes::Document)
-			return smart_ptr<OOX::File>(new CDocument( oFileName ));
+			return smart_ptr<OOX::File>(new CDocument( oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Theme)
 			return smart_ptr<OOX::File>(new CTheme( oFileName ));
 		else if ( oRelation.Type() == FileTypes::ThemeOverride)
@@ -54,9 +59,9 @@ namespace OOX
 		else if ( oRelation.Type() == FileTypes::Bibliography)
 			return smart_ptr<OOX::File>(new CBibliography( oFileName ));
 		else if ( oRelation.Type() == FileTypes::FootNote)
-			return smart_ptr<OOX::File>(new CFootnotes( oFileName ));
+			return smart_ptr<OOX::File>(new CFootnotes( oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::EndNote)
-			return smart_ptr<OOX::File>(new CEndnotes( oFileName ));
+			return smart_ptr<OOX::File>(new CEndnotes( oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::WebSetting)
 			return smart_ptr<OOX::File>(new CWebSettings( oFileName ));
 		else if ( oRelation.Type() == FileTypes::HyperLink)
@@ -76,11 +81,11 @@ namespace OOX
 		else if ( oRelation.Type() == FileTypes::Video)
 			return smart_ptr<OOX::File>(new Video( oFileName ));
 		else if ( oRelation.Type() == FileTypes::Numbering)
-			return smart_ptr<OOX::File>(new CNumbering( oFileName ));
+			return smart_ptr<OOX::File>(new CNumbering( oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Header)
-			return smart_ptr<OOX::File>(new CHdrFtr( oFileName ));
+			return smart_ptr<OOX::File>(new CHdrFtr( oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Footer)
-			return smart_ptr<OOX::File>(new CHdrFtr( oFileName ));
+			return smart_ptr<OOX::File>(new CHdrFtr( oRootPath, oFileName ));
 		else if ( oRelation.Type() == FileTypes::Comments)
 			return smart_ptr<OOX::File>(new CComments( oFileName ));
 		else if ( oRelation.Type() == FileTypes::CommentsExt )
@@ -91,23 +96,28 @@ namespace OOX
 		else if (oRelation.Type() == FileTypes::Data)				// нужен только filepath
 			return smart_ptr<OOX::File>(new Image( oFileName ));
 		else if (oRelation.Type() == FileTypes::DiagDrawing)
-			return smart_ptr<OOX::File>(new CDiagramDrawing( oFileName )); 
+			return smart_ptr<OOX::File>(new CDiagramDrawing( oRootPath, oFileName )); 
 
 		return smart_ptr<OOX::File>( new UnknowTypeFile() );
 	}
 
-	const smart_ptr<OOX::File> CreateFile(const OOX::CPath& oPath, OOX::Rels::CRelationShip* pRelation)
+	const smart_ptr<OOX::File> CreateFile(const OOX::CPath& oRootPath, const OOX::CPath& oPath, OOX::Rels::CRelationShip* pRelation)
 	{
 		if (pRelation == NULL) return smart_ptr<OOX::File>( new UnknowTypeFile() );
 
-		const CPath oFileName = oPath / pRelation->Filename();
+		OOX::CPath oRelationFilename = pRelation->Filename();
+		CPath oFileName;
+		if(oRelationFilename.GetIsRoot() && oRootPath.GetPath().GetLength() > 0)
+			oFileName = oRootPath / oRelationFilename;
+		else
+			oFileName = oPath / oRelationFilename;
 
 		if ( pRelation->Type() == FileTypes::App )
 			return smart_ptr<OOX::File>(new CApp( oFileName ));
 		else if ( pRelation->Type() == FileTypes::Core)
 			return smart_ptr<OOX::File>(new CCore( oFileName ));
 		else if ( pRelation->Type() == FileTypes::Document)
-			return smart_ptr<OOX::File>(new CDocument( oFileName ));
+			return smart_ptr<OOX::File>(new CDocument( oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Theme)
 			return smart_ptr<OOX::File>(new CTheme( oFileName ));
 		else if ( pRelation->Type() == FileTypes::ThemeOverride)
@@ -121,9 +131,9 @@ namespace OOX
 		else if ( pRelation->Type() == FileTypes::Bibliography)
 			return smart_ptr<OOX::File>(new CBibliography( oFileName ));
 		else if ( pRelation->Type() == FileTypes::FootNote)
-			return smart_ptr<OOX::File>(new CFootnotes( oFileName ));
+			return smart_ptr<OOX::File>(new CFootnotes( oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::EndNote)
-			return smart_ptr<OOX::File>(new CEndnotes( oFileName ));
+			return smart_ptr<OOX::File>(new CEndnotes( oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::WebSetting)
 			return smart_ptr<OOX::File>(new CWebSettings( oFileName ));
 		else if ( pRelation->Type() == FileTypes::HyperLink)
@@ -143,11 +153,11 @@ namespace OOX
 		else if ( pRelation->Type() == FileTypes::Video)
 			return smart_ptr<OOX::File>(new Video( oFileName ));
 		else if ( pRelation->Type() == FileTypes::Numbering)
-			return smart_ptr<OOX::File>(new CNumbering( oFileName ));
+			return smart_ptr<OOX::File>(new CNumbering( oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Header)
-			return smart_ptr<OOX::File>(new CHdrFtr( oFileName ));
+			return smart_ptr<OOX::File>(new CHdrFtr( oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Footer)
-			return smart_ptr<OOX::File>(new CHdrFtr( oFileName ));
+			return smart_ptr<OOX::File>(new CHdrFtr( oRootPath, oFileName ));
 		else if ( pRelation->Type() == FileTypes::Comments)
 			return smart_ptr<OOX::File>(new CComments( oFileName ));
 		else if ( pRelation->Type() == FileTypes::CommentsExt )
@@ -158,7 +168,7 @@ namespace OOX
 		else if (pRelation->Type() == FileTypes::Data)				// нужен только filepath
 			return smart_ptr<OOX::File>(new Image( oFileName ));
 		else if (pRelation->Type() == FileTypes::DiagDrawing)
-			return smart_ptr<OOX::File>(new CDiagramDrawing( oFileName )); 
+			return smart_ptr<OOX::File>(new CDiagramDrawing( oRootPath, oFileName )); 
 
 		return smart_ptr<OOX::File>( new UnknowTypeFile() );
 	}

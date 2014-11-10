@@ -89,7 +89,7 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 					if ( _T("t") == sName )
 						m_arrItems.push_back( new CText( oReader ));

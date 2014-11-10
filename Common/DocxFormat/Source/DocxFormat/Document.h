@@ -163,9 +163,9 @@ namespace OOX
 		CDocument()
 		{
 		}
-		CDocument(const CPath& oPath)
+		CDocument(const CPath& oRootPath, const CPath& oPath)
 		{
-			read( oPath );
+			read( oRootPath, oPath );
 		}
 		virtual ~CDocument()
 		{
@@ -183,8 +183,14 @@ namespace OOX
 
 		virtual void read(const CPath& oPath)
 		{
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oPath);
+		}
+		virtual void read(const CPath& oRootPath, const CPath& oPath)
+		{
 			m_oReadPath = oPath;
-			IFileContainer::Read( oPath );
+			IFileContainer::Read( oRootPath, oPath );
 
 #ifdef USE_LITE_READER
 			Common::readAllShapeTypes(oPath, m_arrShapeTypes);

@@ -40,13 +40,13 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("a:bodyPr") == sName )
+					if ( _T("bodyPr") == sName )
 						m_oBodyPr = oReader;
-					//if ( _T("a:lstStyle") == sName )
+					//if ( _T("lstStyle") == sName )
 					//	m_oLstStyle = oReader;
-					else if ( _T("a:p") == sName )
+					else if ( _T("p") == sName )
 						m_arrItems.push_back( new Drawing::CParagraph( oReader ));
 				}
 			}
@@ -98,12 +98,11 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					sName = oReader.GetName();
-					if ( _T("a:spLocks") == sName )
+					if ( _T("spLocks") == sName )
 						m_oSpLocks = oReader;
-					else if ( _T("a:extLst") == sName )
+					else if ( _T("extLst") == sName )
 						m_oExtLst = oReader;
 				}
 			}
@@ -160,12 +159,11 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					sName = oReader.GetName();
-					if ( _T("a:extLst") == sName )
+					if ( _T("extLst") == sName )
 						m_oExtLst = oReader;
-					//else ( _T("a:grpSpLocks") == sName )
+					//else ( _T("grpSpLocks") == sName )
 					//	m_oSpLocks = oReader;
 				}
 			}
@@ -221,11 +219,11 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("xdr:cNvSpPr") == sName )
+					if ( _T("cNvSpPr") == sName )
 						m_oCNvSpPr = oReader;
-					else if ( _T("xdr:cNvPr") == sName )
+					else if ( _T("cNvPr") == sName )
 						m_oCNvPr = oReader;
 				}
 			}
@@ -279,15 +277,15 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("xdr:nvSpPr") == sName )
+					if ( _T("nvSpPr") == sName )
 						m_oNvSpPr = oReader;
-					else if ( _T("xdr:spPr") == sName )
+					else if ( _T("spPr") == sName )
 						m_oSpPr = oReader;
-					else if ( _T("xdr:style") == sName )
+					else if ( _T("style") == sName )
 						m_oShapeStyle = oReader;	
-					else if (_T("xdr:txBody") == sName)
+					else if (_T("txBody") == sName)
 						m_oTxBody = oReader; 		
 				}
 			}
@@ -340,12 +338,11 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					sName = oReader.GetName();
-					if ( _T("a:picLocks") == sName )
+					if ( _T("picLocks") == sName )
 						m_oPicLocks = oReader;
-					else if ( _T("a:extLst") == sName )
+					else if ( _T("extLst") == sName )
 						m_oExtLst = oReader;
 				}
 			}
@@ -403,11 +400,11 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("xdr:cNvCxnSpPr") == sName )
+					if ( _T("cNvCxnSpPr") == sName )
 						m_oCNvConnSpPr = oReader;
-					else if ( _T("xdr:cNvPr") == sName )
+					else if ( _T("cNvPr") == sName )
 						m_oCNvPr = oReader;
 				}
 			}
@@ -461,13 +458,13 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("xdr:nvCxnSpPr") == sName )
+					if ( _T("nvCxnSpPr") == sName )
 						m_oNvConnSpPr = oReader;
-					if ( _T("xdr:spPr") == sName )
+					if ( _T("spPr") == sName )
 						m_oSpPr = oReader;
-					if ( _T("xdr:style") == sName )
+					if ( _T("style") == sName )
 						m_oShapeStyle = oReader;				}
 			}
 
@@ -517,11 +514,11 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("xdr:cNvGrpSpPr") == sName )
+					if ( _T("cNvGrpSpPr") == sName )
 						m_oCNvGroupSpPr = oReader;
-					else if ( _T("xdr:cNvPr") == sName )
+					else if ( _T("cNvPr") == sName )
 						m_oCNvPr = oReader;
 				}
 			}
@@ -576,22 +573,22 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("xdr:nvGrpSpPr") == sName )
+					if ( _T("nvGrpSpPr") == sName )
 						m_oNvGroupSpPr = oReader;
-					else if ( _T("xdr:grpSpPr") == sName )
+					else if ( _T("grpSpPr") == sName )
 						m_oGroupSpPr = oReader;
 
-					else if ( _T("xdr:sp") == sName )
+					else if ( _T("sp") == sName )
 						m_arrItems.push_back( new OOX::Spreadsheet::CShape( oReader ));
-					else if ( _T("xdr:cxnSp") == sName )
+					else if ( _T("cxnSp") == sName )
 						m_arrItems.push_back( new OOX::Spreadsheet::CConnShape( oReader ));
-					else if ( _T("xdr:graphicFrame") == sName )
+					else if ( _T("graphicFrame") == sName )
 						m_arrItems.push_back( new OOX::Spreadsheet::CGraphicFrame( oReader ));
-					else if ( _T("xdr:pic") == sName )
+					else if ( _T("pic") == sName )
 						m_arrItems.push_back( new OOX::Spreadsheet::CPic( oReader ));
-					else if ( _T("xdr:grpSp") == sName )
+					else if ( _T("grpSp") == sName )
 						m_arrItems.push_back( new OOX::Spreadsheet::CGroupShape( oReader ));		
 				}
 			}

@@ -2419,30 +2419,20 @@ namespace BinXlsxRW {
 			if(oGraphicFrame.m_oChartGraphic.IsInit() && oGraphicFrame.m_oChartGraphic->m_oGraphicData.IsInit() &&
 				oGraphicFrame.m_oChartGraphic->m_oGraphicData->m_oChart.IsInit() && oGraphicFrame.m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId.IsInit())
 			{
-				//ищем картинку
-				if(NULL != pDrawing->GetCurRls())
+				smart_ptr<OOX::File> pFile = pDrawing->Find( OOX::RId(oGraphicFrame.m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->GetValue()));
+				if (pFile.IsInit() && OOX::FileTypes::Chart == pFile->type())
 				{
-					OOX::Rels::CRelationShip* oRels = NULL;
-					pDrawing->GetCurRls()->GetRel(OOX::RId(oGraphicFrame.m_oChartGraphic->m_oGraphicData->m_oChart->m_oRId->GetValue()), &oRels);
-					if(NULL != oRels)
-					{
-						OOX::CPath oNormalizedPath  = OOX::CPath(pDrawing->GetReadPath().GetDirectory()) / oRels->Target().GetPath();
-						CString sChartPath = oNormalizedPath.GetPath();
-						//проверяем наличие файла
-						if( NSFile::CFileBinary::Exists(string2std_string(sChartPath)) )
-						{
-							CString sOldRelsPath = m_pOfficeDrawingConverter->GetRelsPath();
-							m_pOfficeDrawingConverter->SetRelsPath(sChartPath);
+					OOX::Spreadsheet::CChartSpace* pChartFile = static_cast<OOX::Spreadsheet::CChartSpace*>(pFile.operator ->());
+					CString sOldRelsPath = m_pOfficeDrawingConverter->GetRelsPath();
+					CString sChartPath = pChartFile->GetReadPath().GetPath();
+					m_pOfficeDrawingConverter->SetRelsPath(sChartPath);
 
-							int nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::Chart2);
-							OOX::Spreadsheet::CChartSpace oChart(oNormalizedPath);
-							BinaryChartWriter oBinaryChartWriter(m_oBcw.m_oStream, m_pOfficeDrawingConverter);
-							oBinaryChartWriter.WriteCT_ChartSpace(oChart);
-							m_oBcw.WriteItemEnd(nCurPos);
+					int nCurPos = m_oBcw.WriteItemStart(c_oSer_DrawingType::Chart2);
+					BinaryChartWriter oBinaryChartWriter(m_oBcw.m_oStream, m_pOfficeDrawingConverter);
+					oBinaryChartWriter.WriteCT_ChartSpace(*pChartFile);
+					m_oBcw.WriteItemEnd(nCurPos);
 
-							m_pOfficeDrawingConverter->SetRelsPath(sOldRelsPath);
-						}
-					}
+					m_pOfficeDrawingConverter->SetRelsPath(sOldRelsPath);
 				}
 			}
 		};

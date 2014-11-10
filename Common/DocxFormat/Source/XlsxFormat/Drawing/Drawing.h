@@ -70,9 +70,9 @@ namespace OOX
 			CDrawing()
 			{
 			}
-			CDrawing(const CPath& oPath)
+			CDrawing(const CPath& oRootPath, const CPath& oPath)
 			{
-				read( oPath );
+				read( oRootPath, oPath );
 			}
 			virtual ~CDrawing()
 			{
@@ -81,8 +81,14 @@ namespace OOX
 
 			virtual void read(const CPath& oPath)
 			{
+				//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+				CPath oRootPath;
+				read(oRootPath, oPath);
+			}
+			virtual void read(const CPath& oRootPath, const CPath& oPath)
+			{
 				m_oReadPath = oPath;
-				IFileContainer::Read( oPath );
+				IFileContainer::Read( oRootPath, oPath );
 
 				XmlUtils::CXmlLiteReader oReader;
 
@@ -92,8 +98,8 @@ namespace OOX
 				if ( !oReader.ReadNextNode() )
 					return;
 
-				CWCharWrapper sName = oReader.GetName();
-				if ( _T("xdr:wsDr") == sName )
+				CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
+				if ( _T("wsDr") == sName )
 				{
 					ReadAttributes( oReader );
 
@@ -102,21 +108,21 @@ namespace OOX
 						int nStylesDepth = oReader.GetDepth();
 						while ( oReader.ReadNextSiblingNode( nStylesDepth ) )
 						{
-							sName = oReader.GetName();
+							sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
 							CCellAnchor *pItem = NULL;
 
-							if ( _T("xdr:absoluteAnchor") == sName )
+							if ( _T("absoluteAnchor") == sName )
 							{
 								pItem = new CCellAnchor( oReader );
 								pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorAbsolute);
 							}
-							else if ( _T("xdr:oneCellAnchor") == sName )
+							else if ( _T("oneCellAnchor") == sName )
 							{
 								pItem = new CCellAnchor( oReader );
 								pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorOneCell);
 							}
-							else if ( _T("xdr:twoCellAnchor") == sName )
+							else if ( _T("twoCellAnchor") == sName )
 							{
 								pItem = new CCellAnchor( oReader );
 								pItem->m_oAnchorType.SetValue(SimpleTypes::Spreadsheet::cellanchorTwoCell);

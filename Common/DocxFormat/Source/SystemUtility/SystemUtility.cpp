@@ -18,19 +18,23 @@ namespace OOX
 {
     CPath::CPath() : m_strFilename(L"") 
     {
+		CheckIsRoot();
     }
     CPath::CPath(const CString& sName, bool bIsNorm) : m_strFilename(sName)
     {
+		CheckIsRoot();
 		if (bIsNorm)
 			Normalize();
     }
     CPath::CPath(LPCSTR& sName, bool bIsNorm) : m_strFilename(sName)
     {
+		CheckIsRoot();
 		if (bIsNorm)
 			Normalize();
     }
     CPath::CPath(LPCWSTR& sName, bool bIsNorm) : m_strFilename(sName)
     {
+		CheckIsRoot();
 		if (bIsNorm)
 			Normalize();
     }
@@ -45,6 +49,7 @@ namespace OOX
     CPath& CPath::operator=(const CPath& oSrc)
     {
         m_strFilename = oSrc.m_strFilename;
+		m_bIsRoot = oSrc.m_bIsRoot;
 		//считаем вызывать ли Normalize решает oSrc
 		//Normalize();
         return *this;

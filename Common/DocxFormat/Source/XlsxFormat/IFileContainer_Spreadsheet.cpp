@@ -19,24 +19,24 @@ namespace OOX
 		std::map<CString, size_t> IFileContainer::m_mapEnumeratedGlobal;
 		UnknowTypeFile IFileContainer::Unknown;
 
-		void IFileContainer::Read (const OOX::CPath& oPath)
+		void IFileContainer::Read (const OOX::CPath& oRootPath, const OOX::CPath& oPath)
 		{
 			// Находим связи(рельсы) с данным файлом
 			RELEASEOBJECT(m_pCurRels);
 			m_pCurRels = new OOX::CRels(oPath);
 
 			// Читаем все файлы по рельсам
-			Read( *m_pCurRels, oPath.GetDirectory() );
+			Read( *m_pCurRels, oRootPath, oPath.GetDirectory() );
 		}
 
 
-		void IFileContainer::Read (const OOX::CRels& oRels, const OOX::CPath& oPath)
+		void IFileContainer::Read (const OOX::CRels& oRels, const OOX::CPath& oRootPath, const OOX::CPath& oPath)
 		{
 			unsigned int nCount = oRels.m_arrRelations.size();
 
 			for (unsigned int nIndex = 0; nIndex < nCount; ++nIndex )
 			{
-                smart_ptr<OOX::File> pFile = OOX::Spreadsheet::CreateFile( oPath, oRels.m_arrRelations[nIndex] );
+                smart_ptr<OOX::File> pFile = OOX::Spreadsheet::CreateFile( oRootPath, oPath, oRels.m_arrRelations[nIndex] );
 				Add( oRels.m_arrRelations[nIndex]->rId(), pFile );
 			}
 		}

@@ -22,9 +22,9 @@ namespace OOX{
 			result = oReaderLocal.ReadNextNode();//root ... skiping
 			result = oReaderLocal.ReadNextNode();
 
-			CWCharWrapper sName = oReaderLocal.GetName();
+			CString sName = XmlUtils::GetNameNoNS(oReaderLocal.GetName());
 			
-			if (_T("c:spPr") == sName)
+			if (_T("spPr") == sName)
 				oSpPr = oReaderLocal;
 		}
 		void FromString_txPr(CString *txPr, nullable<CTextProperties> & oTxPr)
@@ -45,9 +45,9 @@ namespace OOX{
 
 			result = oReaderLocal.ReadNextNode();//root ... skiping
 
-			CWCharWrapper sName = oReaderLocal.GetName();
+			CString sName = XmlUtils::GetNameNoNS(oReaderLocal.GetName());
 			
-			if (_T("c:txPr") == sName)
+			if (_T("txPr") == sName)
 				oTxPr = oReaderLocal;
 		}
 		bool FromXml_ST_PageSetupOrientation(CString& val, ST_PageSetupOrientation& eOut)
@@ -3757,9 +3757,9 @@ namespace OOX{
 
 						result = oReaderLocal.ReadNextNode();//root ... skiping
 
-						CWCharWrapper sName = oReaderLocal.GetName();
+						CString sName = XmlUtils::GetNameNoNS(oReaderLocal.GetName());
 						
-						if (_T("c:rich") == sName)
+						if (_T("rich") == sName)
 							m_oRich = oReaderLocal;
 					}
 				}

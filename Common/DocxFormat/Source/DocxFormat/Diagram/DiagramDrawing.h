@@ -159,9 +159,9 @@ namespace Diagram
 		CDiagramDrawing()
 		{
 		}
-		CDiagramDrawing(const CPath& oPath)
+		CDiagramDrawing(const CPath& oRootPath, const CPath& oPath)
 		{
-			read( oPath );
+			read( oRootPath, oPath );
 		}
 		virtual ~CDiagramDrawing()
 		{
@@ -173,7 +173,13 @@ namespace Diagram
 
 		virtual void read(const CPath& oFilePath)
 		{
-			IFileContainer::Read( oFilePath );
+			//don't use this. use read(const CPath& oRootPath, const CPath& oFilePath)
+			CPath oRootPath;
+			read(oRootPath, oFilePath);
+		}
+		virtual void read(const CPath& oRootPath, const CPath& oFilePath)
+		{
+			IFileContainer::Read( oRootPath, oFilePath );
 #ifdef USE_LITE_READER
 
 			XmlUtils::CXmlLiteReader oReader;

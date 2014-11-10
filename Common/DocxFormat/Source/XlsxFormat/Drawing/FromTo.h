@@ -64,15 +64,15 @@ namespace OOX
 				int nCurDepth = oReader.GetDepth();
 				while( oReader.ReadNextSiblingNode( nCurDepth ) )
 				{
-					CWCharWrapper sName = oReader.GetName();
+					CString sName = XmlUtils::GetNameNoNS(oReader.GetName());
 
-					if ( _T("xdr:col") == sName )
+					if ( _T("col") == sName )
 						m_oCol = oReader.GetText2().GetString();
-					else if ( _T("xdr:colOff") == sName )
+					else if ( _T("colOff") == sName )
 						m_oColOff = oReader.GetText2().GetString();
-					else if ( _T("xdr:row") == sName )
+					else if ( _T("row") == sName )
 						m_oRow = oReader.GetText2().GetString();
-					else if ( _T("xdr:rowOff") == sName )
+					else if ( _T("rowOff") == sName )
 						m_oRowOff = oReader.GetText2().GetString();
 				}
 			}

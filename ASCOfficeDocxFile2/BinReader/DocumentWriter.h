@@ -18,7 +18,7 @@ namespace Writers
 		}
 		void Write()
 		{
-			OOX::CPath filePath = m_sDir + _T("\\word\\document.xml");
+            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + _T("word") +FILE_SEPARATOR_STR + _T("document.xml");
 
 			CFile oFile;
 			oFile.CreateFile(filePath.GetPath());			

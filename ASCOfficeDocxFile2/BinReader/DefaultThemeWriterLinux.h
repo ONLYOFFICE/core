@@ -8,12 +8,11 @@ namespace Writers
     class DefaultThemeWriter
     {
         XmlUtils::CStringWriter  m_oWriter;
-        CString	m_sDir;
     public:
-        DefaultThemeWriter(CString sDir):m_sDir(sDir)
+        DefaultThemeWriter()
         {
         }
-        void Write()
+        void Write(CString sThemeFilePath)
         {
             CString s_Common;
 
@@ -303,7 +302,7 @@ s_Common +=
 
             m_oWriter.WriteString(s_Common);
 
-            OOX::CPath fileName = m_sDir + _T("\\word\\theme\\theme1.xml");
+            OOX::CPath fileName = sThemeFilePath;
 
             CFile oFile;
             oFile.CreateFile(fileName.GetPath());

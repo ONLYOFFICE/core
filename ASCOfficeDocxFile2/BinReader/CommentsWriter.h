@@ -34,7 +34,7 @@ namespace Writers
 		{
 			if(false == m_sComment.IsEmpty())
 			{
-				OOX::CPath filePath = m_sDir + _T("\\word\\comments.xml");
+                OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("comments.xml");
 
 				CFile oFile;
 				oFile.CreateFile(filePath.GetPath());
@@ -52,7 +52,7 @@ namespace Writers
 			if(false == m_sCommentExt.IsEmpty())
 			{
 				CFile oFile;
-				oFile.CreateFile(m_sDir + _T("\\word\\commentsExtended.xml"));
+                oFile.CreateFile(m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("commentsExtended.xml"));
 				oFile.WriteStringUTF8(g_string_commentExt_Start);
 				oFile.WriteStringUTF8(m_sCommentExt);
 				oFile.WriteStringUTF8(g_string_commentExt_End);
@@ -64,7 +64,7 @@ namespace Writers
 			if(false == m_sPeople.IsEmpty())
 			{
 				CFile oFile;
-				oFile.CreateFile(m_sDir + _T("\\word\\people.xml"));
+                oFile.CreateFile(m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("people.xml"));
 				oFile.WriteStringUTF8(g_string_people_Start);
 				oFile.WriteStringUTF8(m_sPeople);
 				oFile.WriteStringUTF8(g_string_people_End);

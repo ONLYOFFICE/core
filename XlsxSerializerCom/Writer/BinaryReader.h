@@ -1838,10 +1838,10 @@ namespace BinXlsxRW {
 			}
 			else if(c_oSerWorksheetsTypes::Drawings == type)
 			{
-				OOX::CPath pathDrawingsDir = m_sDestinationDir + _T("\\xl\\drawings");
+                OOX::CPath pathDrawingsDir = m_sDestinationDir  + FILE_SEPARATOR_STR + _T("xl")  + FILE_SEPARATOR_STR + _T("drawings");
 				OOX::CSystemUtility::CreateDirectories(pathDrawingsDir.GetPath());
 			
-				OOX::CPath pathDrawingsRelsDir = pathDrawingsDir.GetPath() + _T("\\_rels");
+                OOX::CPath pathDrawingsRelsDir = pathDrawingsDir.GetPath()  + FILE_SEPARATOR_STR + _T("_rels");
 				OOX::CSystemUtility::CreateDirectories(pathDrawingsRelsDir.GetPath());
 
 				m_pOfficeDrawingConverter->SetDstContentRels();
@@ -1853,7 +1853,7 @@ namespace BinXlsxRW {
 				m_pCurWorksheet->m_oDrawing->m_oId.Init();
 				m_pCurWorksheet->m_oDrawing->m_oId->SetValue(oRId.get());
 
-				OOX::CPath pathDrawingsRels = pathDrawingsRelsDir.GetPath() + _T("\\") + m_pCurDrawing->m_sFilename + _T(".rels");
+                OOX::CPath pathDrawingsRels = pathDrawingsRelsDir.GetPath()  + FILE_SEPARATOR_STR + m_pCurDrawing->m_sFilename + _T(".rels");
 				m_pOfficeDrawingConverter->SaveDstContentRels(pathDrawingsRels.GetPath());
 			}
 			else if(c_oSerWorksheetsTypes::SheetData == type)
@@ -3094,8 +3094,10 @@ namespace BinXlsxRW {
 						aOffBits.push_back(mtiOffBits);
 					}
 				}
-                CString sMediaDir = sOutDir + _T("/xl/media");
-				std::map<long, ImageObject*> mapMedia;
+                OOX::CPath pathMedia = sOutDir + FILE_SEPARATOR_STR + _T("xl")   + FILE_SEPARATOR_STR + _T("media");
+                CString sMediaDir = pathMedia.GetPath();
+
+                std::map<long, ImageObject*> mapMedia;
 				if(-1 != nOtherOffBits)
 				{
 					oBufferedStream.Seek(nOtherOffBits);

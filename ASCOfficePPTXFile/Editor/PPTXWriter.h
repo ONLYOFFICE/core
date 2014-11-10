@@ -69,7 +69,9 @@ namespace NSBinPptxRW
             FileSystem::Directory::CreateDirectory(string2std_string(strPPT), _T("media"));
 
 			m_oImageManager.Clear();
-			m_oImageManager.SetDstMedia(m_strDstFolder + _T("\\ppt\\media"));
+
+            OOX::CPath pathMedia = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("media");
+            m_oImageManager.SetDstMedia(pathMedia.GetPath());
 
 			m_oReader.m_pRels->m_pManager = &m_oImageManager;
 		}
@@ -578,28 +580,28 @@ namespace NSBinPptxRW
 			oXmlWriter.ClearNoAttack();
 			m_oApp.toXmlWriter(&oXmlWriter);
 			
-			OOX::CPath pathApp = m_strDstFolder + _T("\\docProps\\app.xml");
+            OOX::CPath pathApp = m_strDstFolder + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("app.xml");
 			oXmlWriter.SaveToFile(pathApp.GetPath());
 
 			// core
 			oXmlWriter.ClearNoAttack();
 			m_oCore.toXmlWriter(&oXmlWriter);
 
-			OOX::CPath pathCore = m_strDstFolder + _T("\\docProps\\core.xml");
+            OOX::CPath pathCore = m_strDstFolder + FILE_SEPARATOR_STR + _T("docProps") + FILE_SEPARATOR_STR + _T("core.xml");
 			oXmlWriter.SaveToFile(pathCore.GetPath());
 
 			// presProps
 			oXmlWriter.ClearNoAttack();
 			m_oPresProps.toXmlWriter(&oXmlWriter);
 		
-			OOX::CPath pathPresProps = m_strDstFolder + _T("\\ppt\\presProps.xml");
+            OOX::CPath pathPresProps = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("presProps.xml");
 			oXmlWriter.SaveToFile(pathPresProps.GetPath());
 
 			// viewProps
 			oXmlWriter.ClearNoAttack();
 			m_oViewProps.toXmlWriter(&oXmlWriter);
 
-			OOX::CPath pathViewProps = m_strDstFolder + _T("\\ppt\\viewProps.xml");
+            OOX::CPath pathViewProps = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("viewProps.xml");
 			oXmlWriter.SaveToFile(pathViewProps.GetPath());
 
 			m_oReader.m_pRels->Clear();
@@ -609,7 +611,7 @@ namespace NSBinPptxRW
 			oXmlWriter.ClearNoAttack();
 			m_oTableStyles.toXmlWriter(&oXmlWriter);
 
-			OOX::CPath pathTableStyles = m_strDstFolder + _T("\\ppt\\tableStyles.xml");
+            OOX::CPath pathTableStyles = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("tableStyles.xml");
 			oXmlWriter.SaveToFile(pathTableStyles.GetPath());
 			
 			// presentation
@@ -617,8 +619,8 @@ namespace NSBinPptxRW
 			pPair = m_mainTables.find(NSMainTables::Presentation);
 			if (m_mainTables.end()  != pPair)
 			{
-				OOX::CPath pathFolder		= m_strDstFolder + _T("\\ppt");
-				OOX::CPath pathFolderRels	= pathFolder + _T("\\_rels");
+                OOX::CPath pathFolder		= m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt");
+                OOX::CPath pathFolderRels	= pathFolder + FILE_SEPARATOR_STR + _T("_rels");
 
                 FileSystem::Directory::CreateDirectory (pathFolderRels.GetPath());
 
@@ -673,7 +675,7 @@ namespace NSBinPptxRW
 				pathFolder = pathFolder + FILE_SEPARATOR_STR + _T("presentation.xml");
 				oXmlWriter.SaveToFile(pathFolder.GetPath());
 
-				pathFolderRels = pathFolderRels + FILE_SEPARATOR_STR + _T("\\presentation.xml.rels");
+                pathFolderRels = pathFolderRels + FILE_SEPARATOR_STR + _T("presentation.xml.rels");
 				m_oReader.m_pRels->SaveRels(pathFolderRels.GetPath());	
 
 				if (m_oPresentation.commentAuthors.is_init())
@@ -681,7 +683,7 @@ namespace NSBinPptxRW
 					oXmlWriter.ClearNoAttack();
 					m_oPresentation.commentAuthors->toXmlWriter(&oXmlWriter);
 
-					OOX::CPath pathCommentAuthors = pathFolder + _T("\\commentAuthors.xml");					
+                    OOX::CPath pathCommentAuthors = pathFolder + FILE_SEPARATOR_STR + _T("commentAuthors.xml");
 					oXmlWriter.SaveToFile(pathCommentAuthors.GetPath());
 					
 					bIsAuthors = true;
@@ -790,10 +792,10 @@ namespace NSBinPptxRW
 <Relationship Id=\"rId2\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties\" Target=\"docProps/app.xml\"/>\
 </Relationships>");
 
-            OOX::CPath filePathRels = m_strDstFolder + _T("\\_rels");
+            OOX::CPath filePathRels = m_strDstFolder + FILE_SEPARATOR_STR + _T("_rels");
             FileSystem::Directory::CreateDirectory (filePathRels.GetPath());
 
-            filePathRels = filePathRels + _T("\\.rels");
+            filePathRels = filePathRels + FILE_SEPARATOR_STR + _T(".rels");
            
 			oFile.CreateFile(filePathRels.GetPath());
 				oFile.WriteStringUTF8(strRELS);

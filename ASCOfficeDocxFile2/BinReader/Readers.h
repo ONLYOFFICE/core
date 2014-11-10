@@ -2325,7 +2325,7 @@ public:
 			else
 			{
 				//local
-				sFilePath = m_sFileInDir + _T("media\\") + sImage;
+                sFilePath = m_sFileInDir + _T("media") + FILE_SEPARATOR_STR + sImage;
 			}
 
 			//Проверяем что файл существует
@@ -5248,8 +5248,9 @@ public:
 			if(odocImg.MediaId >= 0 && odocImg.MediaId < m_oMediaWriter.nImageCount)
 			{
 				CString sNewImgName = m_oMediaWriter.m_aImageNames[odocImg.MediaId];
-				CString sNewImgRel;sNewImgRel = _T("media/") + sNewImgName;
-				sNewImgRel = XmlUtils::EncodeXmlString(sNewImgRel);
+                CString sNewImgRel = _T("media/") + sNewImgName;
+
+                sNewImgRel = XmlUtils::EncodeXmlString(sNewImgRel);
 				long rId;
 				m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/image")), sNewImgRel, CString(), &rId);
 				odocImg.srId.Format(_T("rId%d"), rId);

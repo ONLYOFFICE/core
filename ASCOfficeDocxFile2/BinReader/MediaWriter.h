@@ -17,17 +17,17 @@ namespace Writers
 		MediaWriter(CString sDir):m_sDir(sDir)
 		{
 			nImageCount = 0;
-			m_sMediaDir = m_sDir + _T("\\word\\media");
 
-			OOX::CPath filePath = m_sMediaDir;
-			m_sMediaDir = filePath.GetDirectory();
+            OOX::CPath filePath = m_sDir + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("media");
+
+            m_sMediaDir = filePath.GetPath();
 		}
 		CString AddImageGetNewPath()
 		{
 			OOX::CSystemUtility::CreateDirectories(m_sMediaDir);
 
 			CString sNewImgName;sNewImgName.Format(_T("image%d.jpg"), (nImageCount + 1));
-            CString sNewImg = m_sMediaDir + _T("/") + sNewImgName;
+            CString sNewImg = m_sMediaDir + FILE_SEPARATOR_STR + sNewImgName;
 			nImageCount++;
 			return sNewImg;
 		}
@@ -54,10 +54,10 @@ namespace Writers
 		}
 		void AddImage(const CString& sImg)
 		{
-			CString sNewImg = AddImageGetNewPath();
+            OOX::CPath pathNewImg = AddImageGetNewPath();
 
-			NSFile::CFileBinary::Copy(string2std_string(sImg), string2std_string(sNewImg));
-			CString sFilename = NSSystemPath::GetFileName(string2std_string(sNewImg)).c_str();
+            NSFile::CFileBinary::Copy(string2std_string(sImg), string2std_string(pathNewImg.GetPath()));
+            CString sFilename = NSSystemPath::GetFileName(string2std_string(pathNewImg.GetPath())).c_str();
 			m_aImageNames.push_back(sFilename);
 		}
 	};

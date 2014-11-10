@@ -26,7 +26,7 @@ namespace BinXlsxRW{
 
 	void CXlsxSerializer::CreateXlsxFolders(CString& sXmlOptions, CString sDstPath,  CString& sMediaPath)
 	{
-		OOX::CPath pathMediaDir = sDstPath + _T("\\xl\\media");
+        OOX::CPath pathMediaDir = sDstPath + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + _T("media");
 		
 		// File Type (Можно парсить не два раза, а один, если передавать в ReadFile не опции, а параметры)
 		BYTE fileType;
@@ -36,13 +36,13 @@ namespace BinXlsxRW{
 
 		if (c_oFileTypes::CSV != fileType)
 		{
-			OOX::CPath pathXlDir = sDstPath + _T("\\xl");
+            OOX::CPath pathXlDir = sDstPath + FILE_SEPARATOR_STR + _T("xl");
 
 			OOX::CPath pathThemeDir = pathXlDir + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
 			
 			OOX::CPath pathThemeFile = pathThemeDir + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultFileName().GetPath();
 			
-			OOX::CPath pathThemeThemeRelsDir = pathThemeDir + _T("\\_rels");
+            OOX::CPath pathThemeThemeRelsDir = pathThemeDir + FILE_SEPARATOR_STR + _T("_rels");
 
 			NSDirectory::CreateDirectory(string2std_string(pathXlDir.GetPath()));
 			NSDirectory::CreateDirectory(string2std_string(pathThemeDir.GetPath()));

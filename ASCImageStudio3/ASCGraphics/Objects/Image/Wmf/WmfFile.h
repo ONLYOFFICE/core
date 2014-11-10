@@ -668,14 +668,14 @@ private:
 		if ( 0 == sName ) 
 			return;
 
-        fprintf( pInfo->pFile, " <%s", sName );
+		fprintf( pInfo->pFile, " <%s", sName );
 
 		if ( psAttrs )
 		{	
 			psAttr = psAttrs;
 			while ( *psAttr )
 			{	
-                fprintf( pInfo->pFile, " %s=\"", *psAttr++ );
+				fprintf( pInfo->pFile, " %s=\"", *psAttr++ );
 				if ( *psAttr ) 
 					fputs ( *psAttr, pInfo->pFile );
 				fputs ( "\"", pInfo->pFile );
@@ -691,7 +691,7 @@ private:
 		if ( sBuffer && ulLength ) 
 			WriteB64( sBuffer, ulLength );
 
-        fprintf( pInfo->pFile, " </%s>\n", sName );
+		fprintf( pInfo->pFile, " </%s>\n", sName );
 	}
 
     AVSINLINE void WriteBegin(const char *sFileName)
@@ -4083,7 +4083,7 @@ private:
 				USES_CONVERSION;
 				::SysFreeString( bsFontName );
 				CString sXml;
-				sXml.Format( _T("<FontProperties><Name value='%ls'/><Charset value='%X'/><Weight value='%d'/></FontProperties>"), A2W(pFont->sFaceName), pFont->unCharSet, pFont->ushWeight);
+				sXml.Format( _T("<FontProperties><Name value='%s'/><Charset value='%X'/><Weight value='%d'/></FontProperties>"), A2W(pFont->sFaceName), pFont->unCharSet, pFont->ushWeight);
 				BSTR bsXml = sXml.AllocSysString();
 				BSTR bsPath; LONG lIndex = 0;
 

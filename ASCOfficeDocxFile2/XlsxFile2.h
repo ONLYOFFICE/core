@@ -56,14 +56,31 @@ public:
 	{
 	}
 public:
-	STDMETHOD(LoadFromFile)(BSTR sSrcFileName, BSTR bstrDstPath, BSTR bstrXMLOptions)
+	STDMETHOD(LoadFromFile)(BSTR sSrcFileName, BSTR sDstPath, BSTR bstrXMLOptions)
 	{
-		CString sDstPath = bstrDstPath;
-		CString sMediaPath;
-		
-		m_oXlsxSerializer.CreateXlsxFolders(CString(bstrXMLOptions), sDstPath, sMediaPath);
+		CString sMediaDir = sDstPath;
+		sMediaDir.Append(_T("\\xl\\media"));
+		// File Type (Можно парсить не два раза, а один, если передавать в ReadFile не опции, а параметры)
+		BYTE fileType;
+		UINT nCodePage;
+		WCHAR wcDelimiter;
+		SerializeCommon::ReadFileType(CString(bstrXMLOptions), fileType, nCodePage, wcDelimiter);
 
-		bool bRes = m_oXlsxSerializer.loadFromFile(CString(sSrcFileName), sDstPath, CString(bstrXMLOptions), sMediaPath);
+		if (BinXlsxRW::c_oFileTypes::CSV != fileType)
+		{
+			CString sXlDir;sXlDir.Format(_T("%s\\xl"), sDstPath);
+			CString sThemeDir;sThemeDir.Format(_T("%s\\xl\\%s"), sDstPath, OOX::FileTypes::Theme.DefaultDirectory().GetPath());
+			CString sThemePath;sThemePath.Format(_T("%s\\%s"), sThemeDir, OOX::FileTypes::Theme.DefaultFileName().GetPath());
+			CString sThemeRelsPath;sThemeRelsPath.Format(_T("%s\\_rels"), sThemeDir);
+
+			NSDirectory::CreateDirectory(string2std_string(sXlDir));
+			NSDirectory::CreateDirectory(string2std_string(sThemeDir));
+			NSDirectory::CreateDirectory(string2std_string(sThemeRelsPath));
+			NSDirectory::CreateDirectory(string2std_string(sMediaDir));
+
+			CreateTheme(sThemePath);
+		}
+		bool bRes = m_oXlsxSerializer.loadFromFile(CString(sSrcFileName), CString(sDstPath), CString(bstrXMLOptions), sMediaDir);
 		return bRes ? S_OK : S_FALSE;
 	}
 	STDMETHOD(SaveToFile)(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions)
@@ -127,5 +144,26 @@ public:
 		return S_OK;
 	}
 private:
+	void CreateTheme(CString sThemePath)
+	{
+		HINSTANCE hInst = _AtlBaseModule.GetModuleInstance();
+		LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_XLSX_THEME), _T("XLSXSER"), sThemePath);
+	}
+	void LoadResourceFile(HINSTANCE hInst, LPCTSTR sResName, LPCTSTR sResType, const CString& strDstFile)
+	{
+		HRSRC hrRes = FindResource(hInst, sResName, sResType);
+		if (!hrRes)
+			return;
 
+		HGLOBAL hGlobal = LoadResource(hInst, hrRes);
+		DWORD sz = SizeofResource(hInst, hrRes);
+		void* ptrRes = LockResource(hGlobal);
+
+		CFile oFile;
+		oFile.CreateFile(strDstFile);
+		oFile.WriteFile(ptrRes, sz);
+
+		UnlockResource(hGlobal);
+		FreeResource(hGlobal);
+	}	
 };

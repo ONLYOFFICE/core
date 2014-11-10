@@ -31,7 +31,7 @@ namespace OOX
 				writer.WriteString(_T("<patternFill"));
 				if(m_oPatternType.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" patternType=\"%ls\""), m_oPatternType->ToString());
+					CString sVal;sVal.Format(_T(" patternType=\"%s\""), m_oPatternType->ToString());
 					writer.WriteString(sVal);
 				}
 				if(m_oBgColor.IsInit() || m_oFgColor.IsInit())

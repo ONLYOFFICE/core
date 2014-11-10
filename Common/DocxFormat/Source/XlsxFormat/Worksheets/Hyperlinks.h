@@ -32,27 +32,27 @@ namespace OOX
 				writer.WriteString(_T("<hyperlink"));
 				if(m_oDisplay.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" display=\"%ls\""), XmlUtils::EncodeXmlString(m_oDisplay.get()));
+					CString sVal; sVal.Format(_T(" display=\"%s\""), XmlUtils::EncodeXmlString(m_oDisplay.get()));
 					writer.WriteString(sVal);
 				}
 				if(m_oRid.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" r:id=\"%ls\""), m_oRid->GetValue());
+					CString sVal; sVal.Format(_T(" r:id=\"%s\""), m_oRid->GetValue());
 					writer.WriteString(sVal);
 				}
 				if(m_oLocation.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" location=\"%ls\""), XmlUtils::EncodeXmlString(m_oLocation.get()));
+					CString sVal; sVal.Format(_T(" location=\"%s\""), XmlUtils::EncodeXmlString(m_oLocation.get()));
 					writer.WriteString(sVal);
 				}
 				if(m_oRef.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" ref=\"%ls\""), XmlUtils::EncodeXmlString(m_oRef.get()));
+					CString sVal; sVal.Format(_T(" ref=\"%s\""), XmlUtils::EncodeXmlString(m_oRef.get()));
 					writer.WriteString(sVal);
 				}
 				if(m_oTooltip.IsInit())
 				{
-					CString sVal; sVal.Format(_T(" tooltip=\"%ls\""), XmlUtils::EncodeXmlString(m_oTooltip.get()));
+					CString sVal; sVal.Format(_T(" tooltip=\"%s\""), XmlUtils::EncodeXmlString(m_oTooltip.get()));
 					writer.WriteString(sVal);
 				}
 				writer.WriteString(_T("/>"));

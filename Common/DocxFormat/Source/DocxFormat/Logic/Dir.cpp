@@ -122,9 +122,9 @@ namespace OOX
 				if(m_oVal.IsInit())
                 {
 #ifdef _WIN32
-                    sResult.AppendFormat(_T(" val=\"%ls\""), m_oVal->ToString());
+                    sResult.AppendFormat(_T(" val=\"%s\""), m_oVal->ToString());
 #else
-                    sResult.AppendFormat(_T(" val=\"%ls\""), m_oVal->ToString().c_str());
+                    sResult.AppendFormat(_T(" val=\"%s\""), m_oVal->ToString().c_str());
 #endif
                 }
 				sResult += _T(">");

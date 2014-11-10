@@ -154,11 +154,11 @@ namespace OOX
 				CPath oXlPath = oDirPath / m_pWorkbook->DefaultDirectory();
 				WriteWorkbook(oXlPath);
 
-				IFileContainer::Write(oDirPath / FILE_SEPARATOR_STR , OOX::CPath(_T("")), oContentTypes);
+				IFileContainer::Write(oDirPath / _T("/"), OOX::CPath(_T("")), oContentTypes);
 				if(!sAdditionalContentTypes.IsEmpty())
 				{
 					CString sAdditionalContentTypesWrapped;
-					sAdditionalContentTypesWrapped.Format(_T("<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">%ls</Types>"), sAdditionalContentTypes);
+					sAdditionalContentTypesWrapped.Format(_T("<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">%s</Types>"), sAdditionalContentTypes);
 					OOX::CContentTypes oTempContentTypes;
 
 					oTempContentTypes.ReadFromString(sAdditionalContentTypesWrapped);

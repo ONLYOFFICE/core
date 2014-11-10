@@ -271,10 +271,9 @@ namespace PPTX
 														int dstLen = dstLenTemp;
                                                         Base64::Base64Decode(__s.GetBuffer(), len, pDstBuffer, &dstLen);
 
-                                                         OOX::CPath pathTemp = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media") + FILE_SEPARATOR_STR + _T("temp.jpg");
-
-                                                        CFile oTempFile;
-                                                        oTempFile.CreateFile(pathTemp.GetPath());
+														strTempFile = pReader->m_strFolder + _T("\\media\\temp.jpg");
+														CFile oTempFile;
+														oTempFile.CreateFile(strTempFile);
 														oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
 														oTempFile.CloseFile();
 														
@@ -290,11 +289,11 @@ namespace PPTX
 														{
 															if (0 == strUrl.Find(_T("theme")))
 															{
-                                                                strUrl = pReader->m_strFolderThemes + FILE_SEPARATOR_STR + strUrl;
+																strUrl = pReader->m_strFolderThemes + _T("\\") + strUrl;
 															}
 															else
 															{
-                                                                strUrl = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media") + FILE_SEPARATOR_STR + strUrl;
+																strUrl = pReader->m_strFolder + _T("\\media\\") + strUrl;
 															}
 														}
 													}

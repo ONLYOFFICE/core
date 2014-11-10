@@ -134,10 +134,8 @@ public:
 		CString sDirectoryOut = bstrDirectoryOut;
 		CString sThemePath;
 		CString sMediaPath;
-		
-		m_oCDocxSerializer.CreateDocxFolders(sDirectoryOut, sThemePath, sMediaPath);
+		CreateDocument(sDirectoryOut, sThemePath, sMediaPath);
 		bool bRes = m_oCDocxSerializer.loadFromFile(CString(bstrFileIn), CString(bstrDirectoryOut), CString(_T("")), CString(sThemePath.GetString()), CString(sMediaPath.GetString()));
-		
 		return bRes ? S_OK : S_FALSE;
 	}
 	STDMETHOD(GetXmlContent)(SAFEARRAY* pBinaryObj, LONG lStart, LONG lLength, BSTR* bsXml)
@@ -149,4 +147,60 @@ public:
 		return bRes ? S_OK : S_FALSE;
 	}
 private:
+	void CreateDocument(CString strDirectory, CString& sThemePath, CString& sMediaPath)
+	{
+		HINSTANCE hInst = _AtlBaseModule.GetModuleInstance();
+
+		// rels
+		CString strRels = strDirectory + _T("\\_rels");
+		CreateDirectory(strRels, NULL);
+
+		LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_RELS), _T("DOCXWR"), strRels + _T("\\.rels"));
+
+
+
+		// docProps
+		CString strDocProps = strDirectory + _T("\\docProps");
+		CreateDirectory(strDocProps, NULL);
+
+		LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_APP),  _T("DOCXWR"), strDocProps + _T("\\app.xml"));
+		LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_CORE), _T("DOCXWR"), strDocProps + _T("\\core.xml"));
+
+		// word
+		CString strWord = strDirectory + _T("\\word");
+		CreateDirectory(strWord, NULL);
+
+		sMediaPath = strWord + _T("\\media");
+
+		//LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_SETTINGS),		_T("DOCXWR"), strWord + _T("\\settings.xml"));
+		LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_WEBSETTINGS),	_T("DOCXWR"), strWord + _T("\\webSettings.xml"));
+
+		// theme
+		CString strTheme = strWord + _T("\\theme");
+		CreateDirectory(strTheme, NULL);
+		CString strThemeRels = strTheme + _T("\\_rels");
+		CreateDirectory(strThemeRels, NULL);
+		sThemePath = strTheme + _T("\\theme1.xml");
+		LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_DEFAULT_DOC_THEME),	_T("DOCXWR"), sThemePath);
+
+		// documentRels
+		CreateDirectory(strWord + _T("\\_rels"), NULL);
+	}
+	void LoadResourceFile(HINSTANCE hInst, LPCTSTR sResName, LPCTSTR sResType, const CString& strDstFile)
+	{
+		HRSRC hrRes = FindResource(hInst, sResName, sResType);
+		if (!hrRes)
+			return;
+
+		HGLOBAL hGlobal = LoadResource(hInst, hrRes);
+		DWORD sz = SizeofResource(hInst, hrRes);
+		void* ptrRes = LockResource(hGlobal);
+
+		CFile oFile;
+		oFile.CreateFile(strDstFile);
+		oFile.WriteFile(ptrRes, sz);
+
+		UnlockResource(hGlobal);
+		FreeResource(hGlobal);
+	}	
 };

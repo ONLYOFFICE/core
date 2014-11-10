@@ -1655,10 +1655,8 @@ namespace BinXlsxRW {
 				if (oFile.IsInit() && OOX::Spreadsheet::FileTypes::Drawings == oFile->type())
 				{
 					OOX::Spreadsheet::CDrawing* pDrawing = (OOX::Spreadsheet::CDrawing*)oFile.operator->();
-					
 					CString sOldRelsPath = m_pOfficeDrawingConverter->GetRelsPath();
 					CString sDrawingRelsPath = pDrawing->GetReadPath().GetPath();
-					
 					m_pOfficeDrawingConverter->SetRelsPath(sDrawingRelsPath);
 					
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Drawings);
@@ -3330,7 +3328,7 @@ namespace BinXlsxRW {
 		CString WriteFileHeader(int nDataSize)
 		{
 			CString sHeader;
-			sHeader.Format(_T("%ls;v%d;%d;"), g_sFormatSignature, g_nFormatVersion, nDataSize);
+			sHeader.Format(_T("%s;v%d;%d;"), g_sFormatSignature, g_nFormatVersion, nDataSize);
 			return sHeader;
 		}
 		void WriteMainTableStart()
@@ -3382,7 +3380,7 @@ namespace BinXlsxRW {
 		CString WriteDefaultFileHeader(int nDataSize)
 		{
 			CString sHeader;
-			sHeader.Format(_T("%ls;;%d;"), g_sFormatSignature, nDataSize);
+			sHeader.Format(_T("%s;;%d;"), g_sFormatSignature, nDataSize);
 			return sHeader;
 		}
 		void writeTheme(BYTE* pData, long nLength, CString& sFileOutput)

@@ -10,15 +10,7 @@
 #include "SettingWriter.h"
 #include "CommentsWriter.h"
 #include "ChartWriter.h"
-#include "ChartWriter.h"
-#include "DocumentRelsWriter.h"
-#include "webSettingsWriter.h"
 
-#ifdef _WIN32
-	#include "DefaultThemeWriterWin.h"
-#else
-	#include "DefaultThemeWriterLinux.h"
-#endif
 namespace BinDocxRW {
 	class CComments;
 }
@@ -30,21 +22,16 @@ namespace Writers
 		NSBinPptxRW::CDrawingConverter* m_pDrawingConverter;
 		CString m_sThemePath;
 		bool m_bSaveChartAsImg;
-		
-		ContentTypesWriter		m_oContentTypesWriter;
-		FontTableWriter			m_oFontTableWriter;
-		DocumentWriter			m_oDocumentWriter;
-		MediaWriter				m_oMediaWriter;
-		StylesWriter			m_oStylesWriter;
-		NumberingWriter			m_oNumberingWriter;
-		HeaderFooterWriter		m_oHeaderFooterWriter;
-		SettingWriter			m_oSettingWriter;
-		CommentsWriter			m_oCommentsWriter;
-		ChartWriter				m_oChartWriter;
-		DocumentRelsWriter		m_oDocumentRelsWriter;
-		WebSettingsWriter		m_oWebSettingsWriter;
-		DefaultThemeWriter		m_oDefaultTheme;
-		
+		ContentTypesWriter m_oContentTypesWriter;
+		FontTableWriter m_oFontTableWriter;
+		DocumentWriter m_oDocumentWriter;
+		MediaWriter m_oMediaWriter;
+		StylesWriter m_oStylesWriter;
+		NumberingWriter m_oNumberingWriter;
+		HeaderFooterWriter m_oHeaderFooterWriter;
+		SettingWriter m_oSettingWriter;
+		CommentsWriter m_oCommentsWriter;
+		ChartWriter m_oChartWriter;
 		int m_nDocPrIndex;
 		BinDocxRW::CComments* m_pComments;
 	public:
@@ -59,8 +46,6 @@ namespace Writers
 										m_oSettingWriter(sDirOutput, m_oHeaderFooterWriter),
 										m_oCommentsWriter(sDirOutput, m_oContentTypesWriter),
 										m_oChartWriter(sDirOutput, m_oContentTypesWriter),
-										m_oDocumentRelsWriter(sDirOutput),
-										m_oWebSettingsWriter(sDirOutput),
 										m_nDocPrIndex(0),
 										m_pComments(NULL)
 		{

@@ -167,7 +167,7 @@ namespace OOX
 
     bool CSystemUtility::CreateDirectories(const CPath& oPath)
     {
-		return FileSystem::Directory::CreateDirectory(oPath.GetPath());
+        return FileSystem::Directory::CreateDirectories(oPath.m_strFilename);
     }
 
     void CSystemUtility::ReplaceExtention(CString& strName, CString& str1, CString& str2)

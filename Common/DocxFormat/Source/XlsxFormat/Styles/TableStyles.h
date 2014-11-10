@@ -32,9 +32,9 @@ namespace OOX
 				{
 					CString sXml;
 					if(m_oSize.IsInit())
-						sXml.Format(_T("<tableStyleElement type=\"%ls\" size=\"%d\" dxfId=\"%d\"/>"), m_oType->ToString(), m_oSize->GetValue(), m_oDxfId->GetValue());
+						sXml.Format(_T("<tableStyleElement type=\"%s\" size=\"%d\" dxfId=\"%d\"/>"), m_oType->ToString(), m_oSize->GetValue(), m_oDxfId->GetValue());
 					else
-						sXml.Format(_T("<tableStyleElement type=\"%ls\" dxfId=\"%d\"/>"), m_oType->ToString(), m_oDxfId->GetValue());
+						sXml.Format(_T("<tableStyleElement type=\"%s\" dxfId=\"%d\"/>"), m_oType->ToString(), m_oDxfId->GetValue());
 					writer.WriteString(sXml);
 				}
 			}
@@ -92,7 +92,7 @@ namespace OOX
 					if(m_oName.IsInit())
 					{
 						CString sName;
-						sName.Format(_T(" name=\"%ls\""), XmlUtils::EncodeXmlString(m_oName.get2()));
+						sName.Format(_T(" name=\"%s\""), XmlUtils::EncodeXmlString(m_oName.get2()));
 						writer.WriteString(sName);
 					}
 					if((m_oPivot.IsInit() && true == m_oPivot->ToBool()) || (m_oTable.IsInit() && false == m_oTable->ToBool()))
@@ -181,12 +181,12 @@ namespace OOX
 				}
 				if(m_oDefaultTableStyle.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" defaultTableStyle=\"%ls\""), XmlUtils::EncodeXmlString(m_oDefaultTableStyle.get()));
+					CString sVal;sVal.Format(_T(" defaultTableStyle=\"%s\""), XmlUtils::EncodeXmlString(m_oDefaultTableStyle.get()));
 					writer.WriteString(sVal);
 				}
 				if(m_oDefaultPivotStyle.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" defaultPivotStyle=\"%ls\""), XmlUtils::EncodeXmlString(m_oDefaultPivotStyle.get()));
+					CString sVal;sVal.Format(_T(" defaultPivotStyle=\"%s\""), XmlUtils::EncodeXmlString(m_oDefaultPivotStyle.get()));
 					writer.WriteString(sVal);
 				}
 				if(m_arrItems.size() >  0)

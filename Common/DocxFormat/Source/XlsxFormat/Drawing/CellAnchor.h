@@ -38,7 +38,7 @@ namespace OOX
 					CString sEnd;
 					if(m_oFrom.IsInit() && m_oTo.IsInit())
 					{
-						sStart.Format(_T("<xdr:twoCellAnchor editAs=\"%ls\">"), m_oAnchorType.ToString());
+						sStart.Format(_T("<xdr:twoCellAnchor editAs=\"%s\">"), m_oAnchorType.ToString());
 						sEnd = _T("</xdr:twoCellAnchor>");
 						writer.WriteString(sStart);
 						if(m_oFrom.IsInit())

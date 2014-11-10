@@ -38,7 +38,7 @@ namespace PPTX
 			virtual CString toXML() const
 			{
 				CString str;
-				str.Format(_T("<a:pt x=\"%ls\" y=\"%ls\" />"), x, y);
+				str.Format(_T("<a:pt x=\"%s\" y=\"%s\" />"), x, y);
 				return _T("<a:lnTo>") + str + _T("</a:lnTo>");
 			}
 
@@ -79,7 +79,7 @@ namespace PPTX
 			virtual CString GetODString()const
 			{
 				CString str;
-				str.Format(_T("<pt x=\"%ls\" y=\"%ls\" />"), x, y);
+				str.Format(_T("<pt x=\"%s\" y=\"%s\" />"), x, y);
 				return _T("<lnTo>") + str + _T("</lnTo>");
 			}
 		};

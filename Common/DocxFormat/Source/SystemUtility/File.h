@@ -291,17 +291,17 @@ namespace CDirectory
 	}
 	static BOOL OpenFile(CString strFolderPath, CString strFileName, CFile* pFile)
 	{
-        CString strFile = strFolderPath  + FILE_SEPARATOR_CHAR + strFileName;
+		CString strFile = strFolderPath + '\\' + strFileName;
 		return (S_OK == pFile->OpenFile(strFile));
 	}
 	static BOOL CreateFile(CString strFolderPath, CString strFileName, CFile* pFile)
 	{
-        CString strFile = strFolderPath + FILE_SEPARATOR_CHAR + strFileName;
+		CString strFile = strFolderPath + '\\' + strFileName;
 		return (S_OK == pFile->CreateFile(strFile));
 	}
 	static BOOL CreateDirectory(CString strFolderPathRoot, CString strFolderName)
 	{
-        CString strFolder = strFolderPathRoot + FILE_SEPARATOR_CHAR + strFolderName;
+		CString strFolder = strFolderPathRoot + '\\' + strFolderName;
 		return ::CreateDirectory(strFolder, NULL);
 	}
 	static BOOL CreateDirectory(CString strFolderPath)

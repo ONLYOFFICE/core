@@ -263,14 +263,12 @@ namespace PPTX
 									}
 									case 3:
 									{
-                                    //todoo проверить с временным файлом на линухе
 										pReader->Skip(6); // len + start attributes + type
 
 										// -------------------
 										CString strUrl = pReader->GetString2();
+										CString strTempFile = _T("");
 										CString strOrigBase64 = _T("");
-
-                                        CString strTempFile = _T("");
 
 										if (0 == strUrl.Find(_T("data:")))
 										{
@@ -286,16 +284,14 @@ namespace PPTX
 											int dstLen = dstLenTemp;
                                             Base64::Base64Decode(__s.GetBuffer(), len, pDstBuffer, &dstLen);
 
-                                            OOX::CPath pathTempFile = pReader->m_strFolder  + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + _T("temp.jpg");
-
-                                            strUrl = strTempFile = pathTempFile.GetPath();
-
-                                            CFile oTempFile;
-                                            oTempFile.CreateFile(strUrl);
+											strTempFile = pReader->m_strFolder + _T("\\media\\temp.jpg");
+											CFile oTempFile;
+											oTempFile.CreateFile(strTempFile);
 											oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
 											oTempFile.CloseFile();
 											
-                                            RELEASEARRAYOBJECTS(pDstBuffer);
+											strUrl = strTempFile;
+											RELEASEARRAYOBJECTS(pDstBuffer);
 										}
 										else
 										{
@@ -306,19 +302,17 @@ namespace PPTX
 											{
 												if (0 == strUrl.Find(_T("theme")))
 												{
-                                                    strUrl = pReader->m_strFolderThemes  + FILE_SEPARATOR_STR  + strUrl;
+													strUrl = pReader->m_strFolderThemes + _T("\\") + strUrl;
 												}
 												else
 												{
-                                                    strUrl = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media")  + FILE_SEPARATOR_STR + strUrl;
+													strUrl = pReader->m_strFolder + _T("\\media\\") + strUrl;
 												}
 											}
 										}
 										// -------------------													
-                                        OOX::CPath pathUrl = strUrl;
-                                        strUrl = pathUrl.GetPath();
-
-                                        LONG lId = pReader->m_pRels->WriteImage(strUrl, strOrigBase64);
+										
+										LONG lId = pReader->m_pRels->WriteImage(strUrl, strOrigBase64);
 
 										// -------------------
 										if (strTempFile != _T(""))

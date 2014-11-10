@@ -8,7 +8,7 @@ namespace NSPresentationEditor
 		NSPresentationEditor::CStringWriter oWriter;
 
 		CString strStart = _T("");
-		strStart.Format(_T("<Layout usethemeobjects=\"%d\" type=\"%ls\">"), m_bShowMasterShapes ? 1 : 0, m_strLayoutType);
+		strStart.Format(_T("<Layout usethemeobjects=\"%d\" type=\"%s\">"), m_bShowMasterShapes ? 1 : 0, m_strLayoutType);
 
 		oWriter.WriteString(strStart);
 
@@ -123,7 +123,7 @@ namespace NSPresentationEditor
 						if ((0 <= lFontRef) && (lFontRef < (LONG)pTheme->m_arFonts.size()))
 						{
 							CString strRef = _T("");
-							strRef.Format(_T("l_font%d { font-index:%d;font-family:%ls; }\n"), 
+							strRef.Format(_T("l_font%d { font-index:%d;font-family:%s; }\n"), 
 								pTextElement->m_lPlaceholderType, lFontRef, pTheme->m_arFonts[lFontRef].Name);
 							strFontRefs += strRef;
 						}

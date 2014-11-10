@@ -85,7 +85,7 @@ namespace FileSystem {
     bool Directory::CreateDirectory (String strFolderPathRoot, String strFolderName)
     {
         String strFolder = strFolderPathRoot;
-        strFolder += _T("/");
+        strFolder += FILE_SEPARATOR_STR ;
         strFolder += strFolderName;
         return CreateDirectory(strFolder);
     }

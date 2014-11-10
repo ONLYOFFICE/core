@@ -2415,10 +2415,10 @@ namespace BinXlsxRW {
 			if(c_oSer_DrawingType::Chart2 == type)
 			{
 				//создаем папку для rels
-				OOX::CPath pathChartsDir = m_sDestinationDir + _T("\\xl\\charts");
+                OOX::CPath pathChartsDir = m_sDestinationDir + FILE_SEPARATOR_STR  + _T("xl")  + FILE_SEPARATOR_STR + _T("charts");
 				OOX::CSystemUtility::CreateDirectories(pathChartsDir.GetPath());
 
-				OOX::CPath pathChartsRelsDir = pathChartsDir.GetPath() + _T("\\_rels");
+                OOX::CPath pathChartsRelsDir = pathChartsDir + FILE_SEPARATOR_STR  + _T("_rels");
 				OOX::CSystemUtility::CreateDirectories(pathChartsRelsDir.GetPath());
 				
 				m_pOfficeDrawingConverter->SetDstContentRels();
@@ -2430,7 +2430,7 @@ namespace BinXlsxRW {
 				pChartFile->m_bDoNotAddRels = true;
 				m_pCurDrawing->Add(pChartFile);
 
-				OOX::CPath pathChartsRels = pathChartsRelsDir.GetPath() + _T("\\") + pChartFile->m_sFilename + _T(".rels");
+                OOX::CPath pathChartsRels = pathChartsRelsDir.GetPath() + FILE_SEPARATOR_STR + pChartFile->m_sFilename + _T(".rels");
 				m_pOfficeDrawingConverter->SaveDstContentRels(pathChartsRels.GetPath());
 
 				long rId;

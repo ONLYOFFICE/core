@@ -668,14 +668,14 @@ private:
 		if ( 0 == sName ) 
 			return;
 
-		fprintf( pInfo->pFile, " <%ls", sName );
+        fprintf( pInfo->pFile, " <%s", sName );
 
 		if ( psAttrs )
 		{	
 			psAttr = psAttrs;
 			while ( *psAttr )
 			{	
-				fprintf( pInfo->pFile, " %ls=\"", *psAttr++ );
+                fprintf( pInfo->pFile, " %s=\"", *psAttr++ );
 				if ( *psAttr ) 
 					fputs ( *psAttr, pInfo->pFile );
 				fputs ( "\"", pInfo->pFile );
@@ -691,7 +691,7 @@ private:
 		if ( sBuffer && ulLength ) 
 			WriteB64( sBuffer, ulLength );
 
-		fprintf( pInfo->pFile, " </%ls>\n", sName );
+        fprintf( pInfo->pFile, " </%s>\n", sName );
 	}
 
     AVSINLINE void WriteBegin(const char *sFileName)

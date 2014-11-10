@@ -262,8 +262,8 @@ namespace NSBinPptxRW
 			pPair = m_mainTables.find(NSMainTables::Themes);
 			if (m_mainTables.end()  != pPair)
 			{
-				OOX::CPath pathFolder = m_strDstFolder + _T("\\ppt\\theme");
-				OOX::CPath pathFolderRels = pathFolder.GetPath() + _T("\\_rels");
+                OOX::CPath pathFolder = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("theme");
+                OOX::CPath pathFolderRels = pathFolder.GetPath()  + FILE_SEPARATOR_STR + _T("_rels");
 
                 FileSystem::Directory::CreateDirectory(pathFolder.GetPath());
                 FileSystem::Directory::CreateDirectory(pathFolderRels.GetPath());
@@ -306,8 +306,8 @@ namespace NSBinPptxRW
 			pPair = m_mainTables.find(NSMainTables::SlideMasters);
 			if (m_mainTables.end()  != pPair)
 			{
-				OOX::CPath pathFolder = m_strDstFolder + _T("\\ppt\\slideMasters");
-				OOX::CPath pathFolderRels = pathFolder + _T("\\_rels");
+                OOX::CPath pathFolder = m_strDstFolder  + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("slideMasters");
+                OOX::CPath pathFolderRels = pathFolder  + FILE_SEPARATOR_STR + _T("_rels");
 
                 FileSystem::Directory::CreateDirectory(pathFolder.GetPath());
                 FileSystem::Directory::CreateDirectory(pathFolderRels.GetPath());
@@ -361,8 +361,8 @@ namespace NSBinPptxRW
 			pPair = m_mainTables.find(NSMainTables::SlideLayouts);
 			if (m_mainTables.end()  != pPair)
 			{
-				OOX::CPath pathFolder = m_strDstFolder + _T("\\ppt\\slideLayouts");
-				OOX::CPath pathFolderRels = pathFolder + _T("\\_rels");
+                OOX::CPath pathFolder = m_strDstFolder + FILE_SEPARATOR_STR+ _T("ppt")  + FILE_SEPARATOR_STR + _T("slideLayouts");
+                OOX::CPath pathFolderRels = pathFolder + FILE_SEPARATOR_STR + _T("_rels");
 
 				FileSystem::Directory::CreateDirectory(pathFolder.GetPath());
 				FileSystem::Directory::CreateDirectory(pathFolderRels.GetPath());
@@ -399,8 +399,8 @@ namespace NSBinPptxRW
 			pPair = m_mainTables.find(NSMainTables::Slides);
 			if (m_mainTables.end()  != pPair)
 			{
-				OOX::CPath pathFolder = m_strDstFolder + _T("\\ppt\\slides");
-				OOX::CPath pathFolderRels = pathFolder + _T("\\_rels");
+                OOX::CPath pathFolder = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt")  + FILE_SEPARATOR_STR + _T("slides");
+                OOX::CPath pathFolderRels = pathFolder + FILE_SEPARATOR_STR + _T("_rels");
 
 				FileSystem::Directory::CreateDirectory (pathFolder.GetPath());
 				FileSystem::Directory::CreateDirectory (pathFolderRels.GetPath());
@@ -419,19 +419,19 @@ namespace NSBinPptxRW
 
 					if (m_arSlides[i].comments.is_init())
 					{
-						m_oReader.m_pRels->WriteSlideComments(nComment);
-						if (1 == nComment)
+                        m_oReader.m_pRels->WriteSlideComments(nComment);
+                        OOX::CPath pathFolderCommentDir = m_strDstFolder + FILE_SEPARATOR_STR + _T("ppt") + FILE_SEPARATOR_STR + _T("comments");
+                        if (1 == nComment)
 						{
-							OOX::CPath pathFolderCommentDir = m_strDstFolder + _T("\\ppt\\comments");
                             FileSystem::Directory::CreateDirectory (pathFolderCommentDir.GetPath());
 						}
 						CString strCommentFile = _T("");
-						strCommentFile.Format(_T("\\ppt\\comments\\comment%d.xml"), nComment);
+                        strCommentFile.Format(_T("comment%d.xml"), nComment);
 
 						oXmlWriter.ClearNoAttack();
 						m_arSlides[i].comments->toXmlWriter(&oXmlWriter);
 						
-						OOX::CPath pathComment = m_strDstFolder + strCommentFile;
+                        OOX::CPath pathComment = pathFolderCommentDir + strCommentFile;
 						oXmlWriter.SaveToFile(pathComment.GetPath());
 
 						++nComment;
@@ -491,8 +491,8 @@ namespace NSBinPptxRW
 				CreateDefaultNotesMasters((int)m_arThemes.size() + 1);
 				CreateDefaultNote();
 
-				OOX::CPath pathFolder		= m_strDstFolder + _T("\\ppt\\notesSlides");
-				OOX::CPath pathFolderRels	= pathFolder + _T("\\_rels");
+                OOX::CPath pathFolder		= m_strDstFolder + FILE_SEPARATOR_STR  + _T("ppt")  + FILE_SEPARATOR_STR + _T("notesSlides");
+                OOX::CPath pathFolderRels	= pathFolder + FILE_SEPARATOR_STR  + _T("_rels");
 
                 FileSystem::Directory::CreateDirectory (pathFolder.GetPath());
                 FileSystem::Directory::CreateDirectory (pathFolderRels.GetPath());

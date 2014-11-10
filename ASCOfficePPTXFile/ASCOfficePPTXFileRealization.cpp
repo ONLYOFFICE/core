@@ -26,7 +26,7 @@ CPPTXFile::CPPTXFile(load_from_resource fCallbackResource, extract_to_directory 
 	m_strTempDir = CStringW(buffer) + CStringW("_PPTX\\");
 #else
     m_strTempDir = FileSystem::Directory::GetTempPath();
-    m_strTempDir = FileSystem::Directory::GetLongPathNameW(m_strTempDir) + CString("_PPTX\\");
+    m_strTempDir = FileSystem::Directory::GetLongPathNameW(m_strTempDir) + CString("_PPTX/");
 #endif
 	//
 	m_strFontDirectory = _T("");

@@ -593,9 +593,7 @@ public:
 	}
 
 	inline int Open(CAtlArray<CString>& oFiles, int nStart)
-	{
-		if (m_nFileType == 0)
-			return Open_docx(oFiles, nStart);
+	{		
 		return Open_excel(oFiles, nStart);
 	}
 

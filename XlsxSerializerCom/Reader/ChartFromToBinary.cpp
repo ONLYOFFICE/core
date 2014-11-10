@@ -969,8 +969,6 @@ namespace BinXlsxRW{
 				sContentTypesPath.Replace('\\', '/');
                 m_oSaveParams.sAdditionalContentTypes.AppendFormat(_T("<Override PartName=\"/%ls/%ls\" ContentType=\"application/vnd.openxmlformats-officedocument.themeOverride+xml\"/>"), (const TCHAR *) sContentTypesPath, (const TCHAR *) sThemeOverrideName);
 			}
-
-			res = c_oSerConstants::ReadUnknown;
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

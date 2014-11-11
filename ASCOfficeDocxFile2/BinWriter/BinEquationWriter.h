@@ -29,6 +29,7 @@ namespace MathEquation
 			std::stack<int> m_aAccentStack;
 			std::stack<int> m_aRowsCounter;
 			std::stack<int> m_aRowsPosCounter;
+			std::stack<int> m_aDelimiterStack;
 			
 			LONG nTextSize;
 			LONG nCtrlSize;
@@ -114,9 +115,12 @@ namespace MathEquation
 			}
 			virtual void EndEquation()
 			{
-				int nCurPos = m_aEquationStack.top();
-				WriteItemEnd(nCurPos);
-				m_aEquationStack.pop();
+				if (!m_aEquationStack.empty())
+				{
+					int nCurPos = m_aEquationStack.top();
+					WriteItemEnd(nCurPos);
+					m_aEquationStack.pop();
+				}
 			}
 			virtual void BeginBlock()
 			{
@@ -137,21 +141,13 @@ namespace MathEquation
 			}
 			virtual void SetSize(uint16_t nSize)
 			{
-				nTextSize = nSize*2;
-
-
-				if (!m_aCommandStack.empty())
-				{
-					ECommandType type; 
-					type = m_aCommandStack.top()->GetCommand();
-					int i = 1;
-				}
+				nTextSize = nSize*2;				
 			}
 			virtual void BeginChar(Unicode_t uChar, uint8_t nTypeFace, bool bSpecialSymbol)
 			{
 				BOOL bIsOpen;
 				if (!m_aCommandStack.empty())
-					bIsOpen = m_aCommandStack.top()->IsOpenNode(); //при false пишется ctrlPrp
+					bIsOpen = m_aCommandStack.top()->IsOpenNode(); //if false write ctrlPrp
 				else
 					bIsOpen = true;
 
@@ -228,26 +224,29 @@ namespace MathEquation
 			}
 			virtual void EndChar()
 			{
-				int nCurPos = m_aRunStack.top();
-				WriteItemEnd(nCurPos);
-				m_aRunStack.pop();
-
-				if (bEmbel)
+				if (!m_aRunStack.empty())
 				{
-					int nCurPos;
-					if (!m_aAccentStack.empty())
+					int nCurPos = m_aRunStack.top();
+					WriteItemEnd(nCurPos);
+					m_aRunStack.pop();
+
+					if (bEmbel)
 					{
-						nCurPos = m_aAccentStack.top();
-						m_aAccentStack.pop();
-						WriteItemEnd(nCurPos);
+						int nCurPos;
+						if (!m_aAccentStack.empty())
+						{
+							nCurPos = m_aAccentStack.top();
+							m_aAccentStack.pop();
+							WriteItemEnd(nCurPos);
+						}
+						if (!m_aAccentStack.empty())
+						{
+							nCurPos = m_aAccentStack.top();
+							m_aAccentStack.pop();
+							WriteItemEnd(nCurPos);
+						}
+						bEmbel = false;
 					}
-					if (!m_aAccentStack.empty())
-					{
-						nCurPos = m_aAccentStack.top();
-						m_aAccentStack.pop();
-						WriteItemEnd(nCurPos);
-					}
-					bEmbel = false;
 				}
 			}
 			virtual void BeginMatrix(uint8_t nVAlign, MMATRIXHORALIGN eHorAlign, MMATRIXVERALIGN eVerAlign, bool bEqualRows, bool bEqualCols, uint8_t nRows, uint8_t nCols, uint8_t* pVerBorders, uint8_t* pHorBorders)
@@ -287,9 +286,12 @@ namespace MathEquation
 			{
 				PopCommand();
 
-				int nCurPos = m_aMatrixStack.top();
-				WriteItemEnd(nCurPos);
-				m_aMatrixStack.pop();
+				if (!m_aMatrixStack.empty())
+				{
+					int nCurPos = m_aMatrixStack.top();
+					WriteItemEnd(nCurPos);
+					m_aMatrixStack.pop();
+				}
 			}
 			virtual void StartPile(uint8_t nHAlign, uint8_t nVAlign)
 			{
@@ -325,7 +327,7 @@ namespace MathEquation
 				PushCommand(commandBrackets);
 
 				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Delimiter);
-				m_aRadicalStack.push(nCurPos);
+				m_aDelimiterStack.push(nCurPos);
 
 				int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::DelimiterPr);
 
@@ -382,6 +384,13 @@ namespace MathEquation
 			virtual void EndBrackets  (MBRACKETSTYPE eType, bool bOpen, bool bClose)
 			{
 				PopCommand();
+
+				if (!m_aDelimiterStack.empty())
+				{
+					int nCurPos = m_aDelimiterStack.top();
+					WriteItemEnd(nCurPos);
+					m_aDelimiterStack.pop();
+				}
 			}
 			virtual void BeginRoot(bool bDegree)
 			{
@@ -399,9 +408,12 @@ namespace MathEquation
 			{
 				PopCommand();
 
-				int nCurPos = m_aRadicalStack.top();
-				WriteItemEnd(nCurPos);
-				m_aRadicalStack.pop();
+				if (!m_aRadicalStack.empty())
+				{
+					int nCurPos = m_aRadicalStack.top();
+					WriteItemEnd(nCurPos);
+					m_aRadicalStack.pop();
+				}
 			}
 			virtual void BeginFraction(MFRACTIONTYPES eType, bool bInline)
 			{
@@ -432,9 +444,12 @@ namespace MathEquation
 			{
 				PopCommand();
 
-				int nCurPos = m_aFractionStack.top();
-				WriteItemEnd(nCurPos);
-				m_aFractionStack.pop();
+				if (!m_aFractionStack.empty())
+				{
+					int nCurPos = m_aFractionStack.top();
+					WriteItemEnd(nCurPos);
+					m_aFractionStack.pop();
+				}
 			}
 			virtual void BeginScript(MSCRIPTALIGN eAlign, bool bBase = false, bool bSup = false, bool bSub = false, bool bInline = true)
 			{
@@ -443,51 +458,51 @@ namespace MathEquation
 
 				int nCurPos;
 				int nCurPos1;
-				if (bBase)
+				switch(eAlign)
 				{
-					switch(eAlign)
-					{
-						case scriptalignRight:
-							if (bSub)
-							{
-								if (bSup)
-								{
-									nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSubSup);
-									nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSubSupPr);
-								}
-								else
-								{
-									nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSub);
-									nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSubPr);
-								}
-							}
-							else if (bSup)
-							{
-								nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSup);
-								nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSupPr);
-							}
-							break;
-						case scriptalignCenter: break;
-						case scriptalignLeft:
+					case scriptalignRight:
+						if (bSub)
 						{
-							nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SPre);
-							nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SPrePr);
+							if (bSup)
+							{
+								nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSubSup);
+								nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSubSupPr);
+							}
+							else
+							{
+								nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSub);
+								nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSubPr);
+							}
 						}
-							break;
+						else if (bSup)
+						{
+							nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSup);
+							nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSupPr);
+						}
+						break;
+					case scriptalignCenter: break;
+					case scriptalignLeft:
+					{
+						nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SPre);
+						nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SPrePr);
 					}
-					if (bInline)
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::AlnScr, true);
-					WriteItemEnd(nCurPos1);
-					m_aScriptStack.push(nCurPos);
+						break;
 				}
+				if (bInline)
+					WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::AlnScr, true);
+				WriteItemEnd(nCurPos1);
+				m_aScriptStack.push(nCurPos);				
 			}
 			virtual void EndScript  ()
 			{
 				PopCommand();
 
-				int nCurPos = m_aScriptStack.top();
-				WriteItemEnd(nCurPos);
-				m_aScriptStack.pop();
+				if (!m_aScriptStack.empty())
+				{
+					int nCurPos = m_aScriptStack.top();
+					WriteItemEnd(nCurPos);
+					m_aScriptStack.pop();
+				}
 			}
 			virtual void BeginBar(MBARTYPE eType, bool bTop)
 			{
@@ -531,9 +546,12 @@ namespace MathEquation
 			{
 				PopCommand();
 
-				int nCurPos = m_aGroupChrStack.top();
-				WriteItemEnd(nCurPos);
-				m_aGroupChrStack.pop();
+				if (!m_aGroupChrStack.empty())
+				{
+					int nCurPos = m_aGroupChrStack.top();
+					WriteItemEnd(nCurPos);
+					m_aGroupChrStack.pop();
+				}
 			}
 			virtual void BeginArrow(MARROWTYPE eType, bool bTop)
 			{
@@ -574,9 +592,12 @@ namespace MathEquation
 			{
 				PopCommand();
 
-				int nCurPos = m_aGroupChrStack.top();
-				WriteItemEnd(nCurPos);
-				m_aGroupChrStack.pop();
+				if (!m_aGroupChrStack.empty())
+				{
+					int nCurPos = m_aGroupChrStack.top();
+					WriteItemEnd(nCurPos);
+					m_aGroupChrStack.pop();
+				}
 			}
 			virtual void BeginIntegral(MINTEGRALTYPE eType)
 			{
@@ -727,9 +748,12 @@ namespace MathEquation
 			{
 				PopCommand();
 
-				int nCurPos = m_aNArrayStack.top();
-				WriteItemEnd(nCurPos);
-				m_aNArrayStack.pop();
+				if (!m_aNArrayStack.empty())
+				{
+					int nCurPos = m_aNArrayStack.top();
+					WriteItemEnd(nCurPos);
+					m_aNArrayStack.pop();
+				}
 			}
 			virtual void BeginVerticalBrace(bool bTop)
 			{
@@ -779,9 +803,12 @@ namespace MathEquation
 			{
 				PopCommand();
 
-				int nCurPos = m_aLimitStack.top();
-				WriteItemEnd(nCurPos);
-				m_aLimitStack.pop();
+				if (!m_aLimitStack.empty())
+				{
+					int nCurPos = m_aLimitStack.top();
+					WriteItemEnd(nCurPos);
+					m_aLimitStack.pop();
+				}
 			}
 			virtual void BeingNArray(MNARRAYTYPE eType)
 			{
@@ -956,26 +983,83 @@ namespace MathEquation
 				MNARRAYTYPE eType = pCommand->GetType();
 				PopCommand();
 
-				int nCurPos = m_aNArrayStack.top();
-				WriteItemEnd(nCurPos);
-				m_aNArrayStack.pop();
+				if (!m_aNArrayStack.empty())
+				{
+					int nCurPos = m_aNArrayStack.top();
+					WriteItemEnd(nCurPos);
+					m_aNArrayStack.pop();
+				}
 			}
 			virtual void BeginLongDivision(MLONGDIVISION eType)
 			{
-				PushCommand(commandLongDivision);
+				//PushCommand(commandLongDivision);
+				if (eType == longdivisionWithResult)
+				{
+					BeginFraction(fractionRegular, true);
+				}
+				else if (eType == longdivisionRegular)
+				{
+					BeginBrackets(bracketsLine, true, false);
+				}
 			}
 			virtual void EndLongDivision  ()
 			{
-				PopCommand();
+				ECommandType eType;
+				CBaseCommand* pCommand = TopCommand();
+				eType = pCommand->GetCommand();
+				if (eType == commandFraction)
+				{
+					EndFraction();
+				}
+				else if (eType == commandBrackets)
+				{
+					MBRACKETSTYPE ebType;
+					EndBrackets(ebType, false,false);
+				}
 			}
 			virtual void BeginAngleBracketsWithSeparator(MANGLEBRACKETSWITHSEPARATORTYPE eType)
 			{
 				CBracketsWithSeparatorCommand* pCommand = (CBracketsWithSeparatorCommand*)PushCommand(commandBracketsSep);
 				pCommand->SetType(eType);
+
+				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Delimiter);
+				m_aDelimiterStack.push(nCurPos);
+
+				int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::DelimiterPr);
+				CString beg, sep, end;
+				switch (eType)
+				{
+					case angbrwithsepBoth:	// < | >
+						beg.Insert(0,0x27E8); sep.Insert(0, 0x007C); end.Insert(0, 0x27E9);
+						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::BegChr, beg);
+						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::SepChr, sep);
+						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::EndChr, end);
+						WriteItemValLong(BinDocxRW::c_oSer_OMathBottomNodesType::Column, 2);
+						break;
+					case angbrwithsepLeft:	// < |
+						beg.Insert(0,0x27E8); end.Insert(0, 0x007C);
+						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::BegChr, beg);
+						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::EndChr, end);
+						break;
+					case angbrwithsepRight:	// | >
+						beg.Insert(0,0x007C); end.Insert(0, 0x27E9);
+						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::BegChr, beg);
+						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::EndChr, end);
+						break;
+				}				
+				WriteItemEnd(nCurPos1);
+
 			}
 			virtual void EndAngleBracketsWithSeparator  ()
 			{
 				PopCommand();
+
+				if (!m_aDelimiterStack.empty())
+				{
+					int nCurPos = m_aDelimiterStack.top();
+					WriteItemEnd(nCurPos);
+					m_aDelimiterStack.pop();
+				}
 			}
 
 			void AddFont(uint8_t nTypeFace, std::string sName, bool bBold, bool bItalic)
@@ -1040,7 +1124,7 @@ namespace MathEquation
 			commandIntegral			 = 0x07,
 			commandVerticalBrace	 = 0x08,
 			commandNArray			 = 0x09,
-			commandLongDivision		 = 0x0a,
+			//commandLongDivision		 = 0x0a,
 			commandBracketsSep		 = 0x0b,
 			commandVerticalBraceLim	 = 0x0c
 		};
@@ -1461,14 +1545,6 @@ namespace MathEquation
 				}
 			}
 
-			void WriteNode(const char* sNodeName, BinaryEquationWriter* pWriter, bool bNodeBegin)
-			{
-				if (bNodeBegin)
-					pWriter->WriteNodeBegin(sNodeName);
-				else
-					pWriter->WriteNodeEnd(sNodeName);
-			}
-
 		private:
 			bool bBase;
 			bool bSup;
@@ -1582,12 +1658,6 @@ namespace MathEquation
 					else
 					{
 						WriteEndNode(pWriter);
-
-						/*if (!pWriter->m_aCommandStack.empty())
-						{
-							CBaseCommand* pCommand = pWriter->TopCommand();
-							pCommand->WriteEndBlock(pWriter);
-						}*/
 						pWriter->PopCommand();
 						
 						int nCurPos = pWriter->m_aLimitStack.top();
@@ -1700,7 +1770,7 @@ namespace MathEquation
 			MNARRAYTYPE eType;
 		};
 
-		class CLongDivisionCommand : public CBaseCommand
+		/*class CLongDivisionCommand : public CBaseCommand
 		{
 		public:
 			CLongDivisionCommand() {}
@@ -1724,7 +1794,7 @@ namespace MathEquation
 			}
 		private:
 			BOOL bPile;
-		};
+		};*/
 		class CBracketsWithSeparatorCommand : public CBaseCommand
 		{
 		public:
@@ -1750,26 +1820,23 @@ namespace MathEquation
 
 			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
 			{
+				bOpenNode = bBeginNode;
 				if (0 == nBlockNum)
 				{
-					if (angbrwithsepBoth == eType || angbrwithsepLeft == eType)
-						WriteNode("left", pWriter, bBeginNode);
-					else
-						WriteNode("right", pWriter, bBeginNode);
+					if (bBeginNode)
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Element);						
+					else 
+						WriteEndNode(pWriter);
 				}
 				else if (1 == nBlockNum)
 				{
-					WriteNode("right", pWriter, bBeginNode);
+					if (bBeginNode)
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Element);						
+					else 
+						WriteEndNode(pWriter);
 				}
 			}
 
-			void WriteNode(const char* sNodeName, BinaryEquationWriter* pWriter, bool bNodeBegin)
-			{
-				if (bNodeBegin)
-					pWriter->WriteNodeBegin(sNodeName);
-				else
-					pWriter->WriteNodeEnd(sNodeName);
-			}
 		private:
 			MANGLEBRACKETSWITHSEPARATORTYPE eType;
 
@@ -1790,7 +1857,7 @@ namespace MathEquation
 			case commandVerticalBrace:		pCommand = new CVerticalBraceCommand(); break;
 			case commandVerticalBraceLim:	pCommand = new CVerticalBraceLimCommand(); break;
 			case commandNArray:				pCommand = new CNArrayCommand(); break;
-			case commandLongDivision:		pCommand = new CLongDivisionCommand(); break;
+			//case commandLongDivision:		pCommand = new CLongDivisionCommand(); break;
 			case commandBracketsSep:		pCommand = new CBracketsWithSeparatorCommand(); break;
 			}
 
@@ -1810,63 +1877,6 @@ namespace MathEquation
 		CBaseCommand* TopCommand()
 		{
 			return m_aCommandStack.top();
-		}
-		void WriteNodeBegin(const char* sName, bool bAttributes = false)
-		{
-			rRet += "<";
-			rRet += sName;
-
-			if (!bAttributes)
-				rRet += ">";
-		}
-		void WriteNodeEnd(bool bEmpty = false)
-		{
-			if (bEmpty)
-				rRet += "/>";
-			else
-				rRet += ">";
-		}
-		void WriteNodeEnd(const char* sName)
-		{
-			rRet += "</";
-			rRet += sName;
-			rRet += ">";
-		}
-		void WriteBOOLAttribute(const char* sName, bool bValue)
-		{
-			rRet += " ";
-			rRet += sName;
-			rRet += "=\"";
-			if (bValue)
-				rRet += "true";
-			else
-				rRet += "false";
-			rRet += "\"";
-		}
-
-		void WriteStringAttribute(const char* sName, std::string sValue)
-		{
-			/*rRet += " ";
-			rRet += sName;
-			rRet += "=\"";
-			rRet += sValue;
-			rRet += "\"";*/
-		}
-		void WriteStringAttribute(const char* sName, Unicode_t uChar)
-		{
-			/*rRet += " ";
-			rRet += sName;
-			rRet += "=\"";
-			rRet += uChar;
-			rRet += "\"";*/
-		}
-		void WriteIntAttribute(const char* sName, int nValue)
-		{
-			/*rRet += " ";
-			rRet += sName;
-			rRet += "=\"";
-			rRet += String::CreateFromInt32(nValue);
-			rRet += "\"";*/
 		}
 
 		private:

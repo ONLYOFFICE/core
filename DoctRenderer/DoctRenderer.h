@@ -897,7 +897,7 @@ private:
 					LONG lPagesCount = 0;
 
 					// PAGESCOUNT
-					if (bIsBreak)
+					if (!bIsBreak)
 					{
 						if (js_func_pages_count->IsFunction())
 						{

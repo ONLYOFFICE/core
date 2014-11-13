@@ -908,7 +908,7 @@ void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray)
 			continue;
 
 		FT_Open_Args oOpenArgs;
-		oOpenArgs.flags			= FT_OPEN_MEMORY;
+		oOpenArgs.flags			= FT_OPEN_MEMORY | FT_OPEN_PARAMS;
 		oOpenArgs.memory_base	= oStream.m_pData;
 		oOpenArgs.memory_size	= oStream.m_lSize;
 

@@ -1,6 +1,7 @@
 ﻿#include "ApplicationFonts.h"
 #include "../common/File.h"
 #include <stdio.h>
+#include "ftsnames.h"
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////
 CFontStream::CFontStream()
@@ -80,13 +81,28 @@ void CApplicationFontStreams::CheckStreams(std::map<std::wstring,bool> &mapFiles
 CFontFile* CFontManager::LoadFontFile(FT_Library library, CFontStream* pStream, LONG lFaceIndex)
 {
 	FT_Open_Args oOpenArgs;
-	oOpenArgs.flags			= FT_OPEN_MEMORY;
+	oOpenArgs.flags			= FT_OPEN_MEMORY | FT_OPEN_PARAMS;
 	oOpenArgs.memory_base	= pStream->m_pData;
 	oOpenArgs.memory_size	= pStream->m_lSize;
+
+	FT_Parameter *pParams = (FT_Parameter *)::malloc( sizeof(FT_Parameter) * 4 );
+	pParams[0].tag  = FT_MAKE_TAG( 'i', 'g', 'p', 'f' );
+	pParams[0].data = NULL;
+	pParams[1].tag  = FT_MAKE_TAG( 'i', 'g', 'p', 's' );
+	pParams[1].data = NULL; 
+	pParams[2].tag  = FT_PARAM_TAG_IGNORE_PREFERRED_FAMILY;
+	pParams[2].data = NULL; 
+	pParams[3].tag  = FT_PARAM_TAG_IGNORE_PREFERRED_SUBFAMILY;
+	pParams[3].data = NULL; 
+
+	oOpenArgs.params = pParams;
+	oOpenArgs.num_params = 4;
 
 	FT_Face pFace;
 	if ( FT_Open_Face( library, &oOpenArgs, lFaceIndex, &pFace ) )
 		return NULL;
+
+	::free(pParams);
 
 	CFontFile* pFont = new CFontFile();
 	pFont->m_lFaceIndex = lFaceIndex;

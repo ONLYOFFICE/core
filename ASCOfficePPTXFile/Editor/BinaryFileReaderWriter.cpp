@@ -115,16 +115,40 @@ namespace NSBinPptxRW
 		if (pPair != m_mapImages.end())
 			return pPair->second;
 
-		if (IsNeedDownload(strInput))
-			return DownloadImage(strInput);
-
 		CString strExts = _T(".jpg");
 		int nIndexExt = strInput.ReverseFind(TCHAR('.'));
 		if (-1 != nIndexExt)
 			strExts = strInput.Mid(nIndexExt);
 
+		if (IsNeedDownload(strInput))
+		{
+			//todo поправить в js
+			//заглушка, приходят полные ссылки вместо относительных после copy/paste
+			if(strExts == _T(".svg"))
+			{
+				CString strInputMetafile = strInput.Left(strInput.GetLength() - strExts.GetLength());
+				CString sDownloadRes = DownloadImage(strInputMetafile + _T(".wmf"));
+				if(sDownloadRes.IsEmpty())
+					sDownloadRes = DownloadImage(strInputMetafile + _T(".emf"));
+				return sDownloadRes;
+			}
+			else
+				return DownloadImage(strInput);
+		}
+
 		if (strExts == _T(".tmp"))
+		{
+			//todo убрать вместе с заглушкой вверху
+			//сюда приходим после DownloadImage
 			strExts = _T(".png");
+			int nIndexExt = strBase64Image.ReverseFind(TCHAR('.'));
+			if (-1 != nIndexExt)
+			{
+				CString strExtsTemp = strBase64Image.Mid(nIndexExt);
+				if(_T(".wmf") == strExtsTemp || _T(".emf") == strExtsTemp)
+					strExts = strExtsTemp;
+			}
+		}
 
 		CString strMetafileImage = _T("");
 		if (strExts == _T(".svg"))

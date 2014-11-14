@@ -3454,6 +3454,7 @@
 					<color theme="10"/>
 					<name val="Calibri"/>
 					<family val="2"/>
+					<scheme val="minor"/>
 				</font>
 			</fonts>
 			<fills count="2">
@@ -3508,6 +3509,7 @@
 					<color theme="11"/>
 					<name val="Calibri"/>
 					<family val="2"/>
+					<scheme val="minor"/>
 				</font>
 			</fonts>
 			<fills count="2">

@@ -2558,6 +2558,7 @@ namespace BinDocxRW
 	FldStruct* ParseField(CString& sFld)
 	{
 		sFld.Trim();
+		sFld.MakeUpper();
 		FldStruct* pRes = NULL;
 		int nIndex = 0;
 		if(-1 != (nIndex = sFld.Find(_T("TOC"))))

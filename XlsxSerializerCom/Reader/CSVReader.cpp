@@ -20,7 +20,7 @@ namespace CSVReader
 		pCell->m_oType.Init();
 
 		WCHAR *pEndPtr;
-		LONG lValue = wcstol(sText, &pEndPtr, 10);
+		double dValue = wcstod(sText, &pEndPtr);
 		if (NULL != *pEndPtr)
 		{
 			// Не число

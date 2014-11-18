@@ -575,7 +575,7 @@ namespace OOX
 			}
 			virtual void toXML(XmlUtils::CStringWriter& writer) const
 			{
-				if(m_arrItems.size() > 0)
+				if(m_arrItems.size() > 0 || m_oBlank.IsInit())
 				{
 					writer.WriteString(_T("<filters"));
 					if(m_oBlank.IsInit())

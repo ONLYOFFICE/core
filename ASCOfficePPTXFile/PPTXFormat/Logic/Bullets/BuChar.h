@@ -38,7 +38,7 @@ namespace PPTX
 			{
 				pWriter->StartNode(_T("a:buChar"));
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("char"), Char);
+				pWriter->WriteAttribute2(_T("char"), Char);
 				pWriter->EndAttributes();
 				pWriter->EndNode(_T("a:buChar"));
 			}

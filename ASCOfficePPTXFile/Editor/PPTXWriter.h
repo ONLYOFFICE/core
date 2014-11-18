@@ -218,13 +218,16 @@ namespace NSBinPptxRW
 				m_oReader.Seek(pPair->second);
 				m_oReader.Skip(6); // type + len + start attr
 
+				int index =0;
 				while (true)
 				{
 					BYTE _at = m_oReader.GetUChar();
 					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
 						break;
 
-					m_arSlides_Layout[_at] = m_oReader.GetULong();
+					//m_arSlides_Layout[_at] = m_oReader.GetULong(); тут прописан не индекс, а тип - смотри - oBinaryWriter.WriteInt1(0, oBinaryWriter.m_pCommon->m_oSlide_Layout_Rels[i]);
+					if (index < m_arSlides_Layout.size())
+						m_arSlides_Layout[index++] = m_oReader.GetULong();
 				}
 			}
 

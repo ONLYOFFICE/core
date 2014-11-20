@@ -43,7 +43,7 @@ simple_element::simple_element(const std::wstring & FileName, const std::wstring
 void simple_element::write(const std::wstring & RootPath)
 {
     fs::ofstream file( fs::wpath(RootPath) / file_name_, std::ios_base::out | std::ios_base::binary );
-    file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+    file << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
     file << content_utf8_;
 }
 

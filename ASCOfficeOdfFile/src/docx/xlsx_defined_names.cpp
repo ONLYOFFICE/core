@@ -16,6 +16,11 @@ class xlsx_defined_names::Impl
 public:
     void add(std::wstring const & name, std::wstring const & ref)
     {
+		int is_file_link = 0;
+
+		if ((is_file_link = ref.find(L"\\")) >=0) return;
+		if ((is_file_link = ref.find(L"/")) >=0) return;
+	 
         formulasconvert::odf2oox_converter converter;
         std::wstring const f = converter.convert_named_ref(ref);
         name_and_ref_.push_back(name_and_ref(name, f));

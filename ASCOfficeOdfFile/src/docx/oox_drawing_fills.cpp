@@ -91,8 +91,8 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
 			{
 				if (val.bitmap->isInternal) 
 				{
-					CP_XML_ATTR(L"r:embed",val.bitmap->rId );
 					CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+					CP_XML_ATTR(L"r:embed",val.bitmap->rId );
 				}
 				else
 					CP_XML_ATTR(L"r:link",val.bitmap->rId );
@@ -105,6 +105,16 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
 					}
 				}		
 			}
+			if (val.bitmap->bCrop)
+			{
+				CP_XML_NODE(L"a:srcRect")
+				{
+					CP_XML_ATTR(L"l", static_cast<size_t>(val.bitmap->cropRect[0]*1000));
+					CP_XML_ATTR(L"t", static_cast<size_t>(val.bitmap->cropRect[1]*1000));
+					CP_XML_ATTR(L"r", static_cast<size_t>(val.bitmap->cropRect[2]*1000));
+					CP_XML_ATTR(L"b", static_cast<size_t>(val.bitmap->cropRect[3]*1000));
+				}
+			}
 			if (val.bitmap->bStretch)
 			{			
 				CP_XML_NODE(L"a:stretch")
@@ -114,16 +124,6 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
 						CP_XML_NODE(L"a:fillRect");
 					}
 
-				}
-			}
-			if (val.bitmap->bCrop)
-			{
-				CP_XML_NODE(L"a:srcRect")
-				{
-					CP_XML_ATTR(L"l", static_cast<size_t>(val.bitmap->cropRect[0]*1000));
-					CP_XML_ATTR(L"t", static_cast<size_t>(val.bitmap->cropRect[1]*1000));
-					CP_XML_ATTR(L"r", static_cast<size_t>(val.bitmap->cropRect[2]*1000));
-					CP_XML_ATTR(L"b", static_cast<size_t>(val.bitmap->cropRect[3]*1000));
 				}
 			}
 			if (val.bitmap->bTile)

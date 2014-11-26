@@ -1,5 +1,6 @@
 #pragma once
 #include "oMathContent.h"
+#include "../Logic/Run.h"
 
 namespace OOX
 {	
@@ -40,6 +41,8 @@ namespace OOX
 						pItem = new COMath( oReader );
 					else if ( _T("m:oMathParaPr") == sName )
 						pItem = new COMathParaPr( oReader );
+					else if ( _T("w:r") == sName )
+						pItem = new CRun( oReader );
 
 					if ( pItem )
 						m_arrItems.push_back( pItem );

@@ -2675,7 +2675,8 @@ namespace BinDocxRW
 				case OOX::et_w_r:
 					{
 						OOX::Logic::CRun* pRun = static_cast<OOX::Logic::CRun*>(item);
-						WriteRun(pRun->m_arrItems, bHyperlink);
+						bool bMathRun = false;
+						WriteRun(pRun->m_arrItems, bHyperlink, bMathRun);
 						break;
 					}
 				case OOX::et_w_sdt:
@@ -2847,7 +2848,7 @@ namespace BinDocxRW
 			}
 			return oCur_rPr;
 		}
-		void WriteRun(std::vector<OOX::WritingElement*>& m_arrItems, bool bHyperlink = false)
+		void WriteRun(std::vector<OOX::WritingElement*>& m_arrItems, bool bHyperlink = false, bool bMathRun = false)
 		{
 			int nCurPos = 0;
 			int nIndexStart = 0;
@@ -2874,7 +2875,10 @@ namespace BinDocxRW
 			}
 			if(nIndexStart < nLength)
 			{
-				nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Run);
+				if (bMathRun)
+					nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::Run);
+				else
+					nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Run);
 				WritePreparedRun(m_arrItems, bHyperlink, nIndexStart, nLength);
 				m_oBcw.WriteItemWithLengthEnd(nCurPos);
 			}
@@ -4058,6 +4062,13 @@ namespace BinDocxRW
 						WriteMathMJc(pOMathParaPr->m_oMJc.get());
 					m_oBcw.WriteItemEnd(nCurPos);
 				}
+				else if (eType == OOX::et_w_r)
+				{
+					bool bHyperlink = false;
+					bool bMathRun = true;
+					OOX::Logic::CRun* pRun = static_cast<OOX::Logic::CRun*>(item);
+					WriteRun(pRun->m_arrItems, bHyperlink, bMathRun);
+				}
 			}
 		}
 		void WriteMathOMathParaPr(const OOX::Logic::COMathParaPr &pOMathParaPr)
@@ -4349,8 +4360,9 @@ namespace BinDocxRW
 			int nCurPos = m_oBcw.WriteItemStart(c_oSer_OMathContentType::MText);
 			if(!pMText.m_sText.IsEmpty())
 			{
-				CString* pStringC = const_cast<CString*>(&pMText.m_sText);
-				m_oBcw.m_oStream.WriteStringW(*pStringC);
+				m_oBcw.m_oStream.WriteBYTE(c_oSer_OMathBottomNodesValType::Val);
+				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+				m_oBcw.m_oStream.WriteStringW(pMText.m_sText);
 			}
 			m_oBcw.WriteItemEnd(nCurPos);
 		}

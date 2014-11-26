@@ -2209,7 +2209,7 @@ namespace OOX
 				if ( m_oZeroWid.IsInit() )
 					sResult += m_oZeroWid->toXML();
 				
-				sResult += _T("</m:oMathPara>");
+				sResult += _T("</m:phantPr>");
 
 				return sResult;
 			}

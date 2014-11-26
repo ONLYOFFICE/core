@@ -767,7 +767,8 @@ extern int g_nCurFormatVersion;
 		MText = 57,
 		CtrlPr = 58,
 		pagebreak = 59,
-		linebreak = 60
+		linebreak = 60,
+		Run = 61
 	};}
 	namespace c_oSer_FramePrType{ enum c_oSer_FramePrType
 	{		

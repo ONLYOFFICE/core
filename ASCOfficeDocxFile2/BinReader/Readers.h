@@ -4434,6 +4434,13 @@ public:
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathOMathParaPr, this, poResult);
 			GetRunStringWriter().WriteString(CString(_T("</m:oMathParaPr>")));
 		}
+		else if ( c_oSer_OMathContentType::Run == type )
+		{
+			m_oCur_rPr.Reset();
+			GetRunStringWriter().WriteString(CString(_T("<w:r>")));
+			res = Read1(length, &Binary_DocumentTableReader::ReadRun, this, NULL);
+			GetRunStringWriter().WriteString(CString(_T("</w:r>")));
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -4562,16 +4569,25 @@ public:
 		CString strVal(m_oBufferedStream.GetString3(length));
 		return XmlUtils::EncodeXmlString(strVal, true);
 	}
+	int ReadMathText(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		if ( c_oSer_OMathBottomNodesValType::Val == type )
+		{
+			CString sText = GetMathText (length);			
+			GetRunStringWriter().WriteString(sText);
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
 	int ReadMathMRun(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathContentType::MText == type )
 		{
 			GetRunStringWriter().WriteString(CString(_T("<m:t>")));
-
-			CString sText = GetMathText (length);			
-			GetRunStringWriter().WriteString(sText);
-
+			res = Read2(length, &Binary_DocumentTableReader::ReadMathText, this, poResult);
 			GetRunStringWriter().WriteString(CString(_T("</m:t>")));
 		}
 		else if ( c_oSer_OMathContentType::RPr == type )
@@ -4789,13 +4805,7 @@ public:
 	int ReadMathSPre(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		if ( c_oSer_OMathContentType::Element == type )
-		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
-			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
-		}
-		else if ( c_oSer_OMathContentType::SPrePr == type )
+		if ( c_oSer_OMathContentType::SPrePr == type )
 		{
 			GetRunStringWriter().WriteString(CString(_T("<m:sPrePr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathSPrePr, this, poResult);
@@ -4812,6 +4822,12 @@ public:
 			GetRunStringWriter().WriteString(CString(_T("<m:sup>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
 			GetRunStringWriter().WriteString(CString(_T("</m:sup>")));
+		}
+		else if ( c_oSer_OMathContentType::Element == type )
+		{
+			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
+			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4833,13 +4849,7 @@ public:
 	int ReadMathSSub(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		if ( c_oSer_OMathContentType::Element == type )
-		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
-			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
-		}
-		else if ( c_oSer_OMathContentType::SSubPr == type )
+		if ( c_oSer_OMathContentType::SSubPr == type )
 		{
 			GetRunStringWriter().WriteString(CString(_T("<m:sSubPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathSSubPr, this, poResult);
@@ -4850,6 +4860,12 @@ public:
 			GetRunStringWriter().WriteString(CString(_T("<m:sub>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
 			GetRunStringWriter().WriteString(CString(_T("</m:sub>")));
+		}
+		else if ( c_oSer_OMathContentType::Element == type )
+		{
+			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
+			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4871,13 +4887,7 @@ public:
 	int ReadMathSSubSup(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		if ( c_oSer_OMathContentType::Element == type )
-		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
-			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
-		}
-		else if ( c_oSer_OMathContentType::SSubSupPr == type )
+		if ( c_oSer_OMathContentType::SSubSupPr == type )
 		{
 			GetRunStringWriter().WriteString(CString(_T("<m:sSubSupPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathSSubSupPr, this, poResult);
@@ -4894,6 +4904,12 @@ public:
 			GetRunStringWriter().WriteString(CString(_T("<m:sup>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
 			GetRunStringWriter().WriteString(CString(_T("</m:sup>")));
+		}
+		else if ( c_oSer_OMathContentType::Element == type )
+		{
+			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
+			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -4919,13 +4935,7 @@ public:
 	int ReadMathSSup(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
-		if ( c_oSer_OMathContentType::Element == type )
-		{
-			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
-			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
-			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
-		}
-		else if ( c_oSer_OMathContentType::SSupPr == type )
+		if ( c_oSer_OMathContentType::SSupPr == type )
 		{
 			GetRunStringWriter().WriteString(CString(_T("<m:sSupPr>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathSSupPr, this, poResult);
@@ -4936,6 +4946,12 @@ public:
 			GetRunStringWriter().WriteString(CString(_T("<m:sup>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
 			GetRunStringWriter().WriteString(CString(_T("</m:sup>")));
+		}
+		else if ( c_oSer_OMathContentType::Element == type )
+		{
+			GetRunStringWriter().WriteString(CString(_T("<m:e>")));
+			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
+			GetRunStringWriter().WriteString(CString(_T("</m:e>")));
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;
@@ -5348,10 +5364,27 @@ public:
 				}
 			}
 		}
+		else if ( c_oSerRunType::object == type)
+		{
+			res = Read1(length, &Binary_DocumentTableReader::ReadObject, this, poResult);
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
-	};	
+	};
+	int ReadObject(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		if( c_oSerParType::OMath == type )
+		{
+			GetRunStringWriter().WriteString(CString(_T("<m:oMath>")));
+			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
+			GetRunStringWriter().WriteString(CString(_T("</m:oMath>")));
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
 	int ReadComment(BYTE type, long length, void* poResult)
 	{
 		long* pVal = static_cast<long*>(poResult);

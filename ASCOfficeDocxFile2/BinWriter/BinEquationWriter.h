@@ -12,6 +12,72 @@
 }*/
 namespace MathEquation
 {
+	class EquationRun
+	{
+		public:
+			CString str;
+			TMathFont* pFont;
+			LONG nTextSize;
+
+		public:
+			void AddChar(CString sChar, TMathFont* pNewFont, LONG lSize)
+			{
+				str = sChar;
+				pFont = pNewFont;
+				nTextSize = lSize;
+			}
+			bool CompareFont(TMathFont* pNewFont)
+			{
+				if ( pNewFont->sName == pFont->sName && pNewFont->bBold == pFont->bBold && pNewFont->bItalic == pFont->bItalic )
+					return true;
+				else
+					return false;
+			}
+			/*TMathFont* GetFont ()
+			{
+				return pFont;
+			}*/
+
+	};
+
+	class RunManager
+	{
+		private:
+			TMathFont* oCurFont;
+			std::vector<EquationRun> arrRun;
+		public:
+			void Add(EquationRun oElem)
+			{				
+				arrRun.push_back(oElem);
+				return;
+			}			
+			bool IsEmpty()
+			{
+				return arrRun.empty();
+			}
+			LONG GetSize()
+			{
+				return arrRun.size();
+			}			
+			bool GetElem (LONG lPos, EquationRun &oRun)
+			{
+				if (lPos <= arrRun.size() )
+				{
+					oRun = arrRun[lPos];
+					return true;
+				}
+				return false;
+			}
+			void Clear()
+			{
+				arrRun.clear();
+			}
+			void RemoveElem (LONG lPos)
+			{
+				arrRun.erase(arrRun.begin()+lPos);
+			}
+	};
+
 	class BinaryEquationWriter : public IOutputDev
 	{
 		public:
@@ -30,12 +96,94 @@ namespace MathEquation
 			std::stack<int> m_aRowsCounter;
 			std::stack<int> m_aRowsPosCounter;
 			std::stack<int> m_aDelimiterStack;
+			RunManager oRManager;
 			
 			LONG nTextSize;
 			LONG nCtrlSize;
 		public:
 			BinaryEquationWriter(NSBinPptxRW::CBinaryFileWriter &oStream) : bEmbel(false), m_oStream(oStream)
 			{				
+			}
+
+			void WriteRPR(TMathFont* pFont, LONG nSize, BOOL bIsOpen)
+			{
+				if (NULL != pFont)
+				{
+					int nCurPos;
+					//if (bIsOpen)
+						nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::RPr);
+					//else
+					//	nCurPos = WriteItemStart(BinDocxRW::c_oSerRunType::rPr);
+
+					if (false != pFont->bBold)
+					{
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::Bold);
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Byte);
+						m_oStream.WriteBOOL(true);
+					}
+					if (false != pFont->bItalic)
+					{
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::Italic);
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Byte);
+						m_oStream.WriteBOOL(true);
+					}
+					CString sFontName;
+					//sFontName.Format(_T("%S"), pFont->sName.c_str());
+					sFontName.Insert(0, _T("Cambria Math"));
+					if (sFontName)
+					{
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontAscii);
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
+						m_oStream.WriteStringW(sFontName);
+
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontHAnsi);
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
+						m_oStream.WriteStringW(sFontName);
+					}
+					if (nTextSize)
+					{
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontSize);
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
+						m_oStream.WriteLONG(nSize);
+					}
+					WriteItemEnd(nCurPos);
+				}
+				return;
+			}
+			
+			void WriteRun()
+			{
+				BOOL bIsOpen;
+				if (!m_aCommandStack.empty())
+					bIsOpen = m_aCommandStack.top()->IsOpenNode(); //if false write ctrlPrp
+				else
+					bIsOpen = true;
+
+				CString sText;
+				LONG lSize = oRManager.GetSize();
+				if (lSize > 0)
+				{	
+					for (int i=0; i<lSize; i++)
+					{
+						EquationRun oRun;
+						bool bRes = oRManager.GetElem( i, oRun);
+						if (bRes)
+						{
+							TMathFont* pCurFont = oRun.pFont;
+							int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MRun);
+							WriteRPR(oRun.pFont, oRun.nTextSize, bIsOpen);
+
+							int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MText);
+							m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
+							m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
+							m_oStream.WriteStringW(oRun.str);
+							WriteItemEnd(nCurPos1);
+							WriteItemEnd(nCurPos);							
+						}
+					}
+					oRManager.Clear();
+				}
+				return;
 			}
 
 			int WriteItemStart(BYTE type)
@@ -63,50 +211,6 @@ namespace MathEquation
 				m_oStream.WriteLONG(nEnd - nStart - 4);
 				m_oStream.SetPosition(nEnd);
 			}
-			void WriteRPR(TMathFont* &pFont, LONG nSize, BOOL bIsOpen)
-			{
-				if (NULL != pFont)
-				{
-					int nCurPos;
-					if (bIsOpen)
-						nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::RPr);
-					else
-						nCurPos = WriteItemStart(BinDocxRW::c_oSerRunType::rPr);
-
-					if (false != pFont->bBold)
-					{
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::Bold);
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Byte);
-						m_oStream.WriteBOOL(true);
-					}
-					if (false != pFont->bItalic)
-					{
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::Italic);
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Byte);
-						m_oStream.WriteBOOL(true);
-					}
-					CString sFontName;
-					sFontName.Format(_T("%S"), pFont->sName.c_str());
-					if (sFontName)
-					{
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontAscii);
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
-						m_oStream.WriteStringW(sFontName);
-
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontHAnsi);
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
-						m_oStream.WriteStringW(sFontName);
-					}
-					if (nTextSize)
-					{
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontSize);
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
-						m_oStream.WriteLONG(nSize);
-					}
-					WriteItemEnd(nCurPos);
-				}
-			}
-
 
 			virtual void BeginEquation()
 			{
@@ -115,6 +219,9 @@ namespace MathEquation
 			}
 			virtual void EndEquation()
 			{
+				if (!oRManager.IsEmpty())
+					WriteRun();
+
 				if (!m_aEquationStack.empty())
 				{
 					int nCurPos = m_aEquationStack.top();
@@ -150,18 +257,12 @@ namespace MathEquation
 					bIsOpen = m_aCommandStack.top()->IsOpenNode(); //if false write ctrlPrp
 				else
 					bIsOpen = true;
+								
+				TMathFont* pFont = GetFont(nTypeFace);
+				if (!pFont)
+					return;
 
-				if (m_aRunStack.empty());
-				{
-					int nCurPos;
-					if (bIsOpen)
-						nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MRun);
-					else
-						nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::CtrlPr);
-
-					m_aRunStack.push(nCurPos);
-				}
-
+				EquationRun oRun;
 				if (uChar)
 				{
 					CString str;
@@ -180,12 +281,9 @@ namespace MathEquation
 					else
 						str.Insert(0,uChar);
 					
-					int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::MText);
-					m_oStream.WriteStringW(str);
-					WriteItemEnd(nCurPos1);
-				}
-				TMathFont* pFont = GetFont(nTypeFace);
-				WriteRPR(pFont, nTextSize, bIsOpen);				
+					oRun.AddChar(str, pFont, nTextSize);
+					oRManager.Add(oRun);
+				}							
 			}
 			virtual void AddCharEmbel(MEMBELTYPE eType)
 			{
@@ -224,7 +322,7 @@ namespace MathEquation
 			}
 			virtual void EndChar()
 			{
-				if (!m_aRunStack.empty())
+				/*if (!m_aRunStack.empty())
 				{
 					int nCurPos = m_aRunStack.top();
 					WriteItemEnd(nCurPos);
@@ -247,10 +345,13 @@ namespace MathEquation
 						}
 						bEmbel = false;
 					}
-				}
+				}*/
 			}
 			virtual void BeginMatrix(uint8_t nVAlign, MMATRIXHORALIGN eHorAlign, MMATRIXVERALIGN eVerAlign, bool bEqualRows, bool bEqualCols, uint8_t nRows, uint8_t nCols, uint8_t* pVerBorders, uint8_t* pHorBorders)
 			{
+				if (!oRManager.IsEmpty())
+					WriteRun();
+
 				CMatrixCommand* pCommand = (CMatrixCommand*)PushCommand(commandMatrix);
 				pCommand->SetProps(nRows, nCols);
 
@@ -324,12 +425,16 @@ namespace MathEquation
 			}
 			virtual void BeginBrackets(MBRACKETSTYPE eType, bool bOpen, bool bClose)
 			{
+				if (!oRManager.IsEmpty())
+					WriteRun();
+
 				PushCommand(commandBrackets);
 
 				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Delimiter);
 				m_aDelimiterStack.push(nCurPos);
 
 				int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::DelimiterPr);
+				WriteItemValLong(BinDocxRW::c_oSer_OMathBottomNodesType::Column, 2);
 
 				if (!bOpen)
 					WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::BegChr, _T(""));
@@ -394,6 +499,9 @@ namespace MathEquation
 			}
 			virtual void BeginRoot(bool bDegree)
 			{
+				if (!oRManager.IsEmpty())
+					WriteRun();
+
 				PushCommand(commandRoot);
 
 				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Rad);
@@ -417,6 +525,9 @@ namespace MathEquation
 			}
 			virtual void BeginFraction(MFRACTIONTYPES eType, bool bInline)
 			{
+				if (!oRManager.IsEmpty())
+					WriteRun();
+
 				PushCommand(commandFraction);
 
 				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Fraction);
@@ -453,7 +564,7 @@ namespace MathEquation
 			}
 			virtual void BeginScript(MSCRIPTALIGN eAlign, bool bBase = false, bool bSup = false, bool bSub = false, bool bInline = true)
 			{
-				CScriptCommand* pCommand = (CScriptCommand*)PushCommand(commandScript);
+				CScriptCommand* pCommand = (CScriptCommand*)PushCommand(commandScript);				
 				pCommand->SetProps(bInline, bBase, bSup, bSub);
 
 				int nCurPos;
@@ -491,7 +602,14 @@ namespace MathEquation
 				if (bInline)
 					WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::AlnScr, true);
 				WriteItemEnd(nCurPos1);
-				m_aScriptStack.push(nCurPos);				
+				m_aScriptStack.push(nCurPos);
+
+				if (!bBase && !oRManager.IsEmpty())
+				{
+					int nCurPos2 = nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+					WriteRun();
+					WriteItemEnd(nCurPos2);
+				}
 			}
 			virtual void EndScript  ()
 			{
@@ -506,6 +624,9 @@ namespace MathEquation
 			}
 			virtual void BeginBar(MBARTYPE eType, bool bTop)
 			{
+				if (!oRManager.IsEmpty())
+					WriteRun();
+
 				PushCommand(commandBar);
 
 				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::GroupChr);
@@ -555,6 +676,9 @@ namespace MathEquation
 			}
 			virtual void BeginArrow(MARROWTYPE eType, bool bTop)
 			{
+				if (!oRManager.IsEmpty())
+					WriteRun();
+
 				PushCommand(commandArrow);
 
 				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::GroupChr);
@@ -601,6 +725,9 @@ namespace MathEquation
 			}
 			virtual void BeginIntegral(MINTEGRALTYPE eType)
 			{
+				if (!oRManager.IsEmpty())
+					WriteRun();
+
 				PushCommand(commandIntegral);
 
 				int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Nary);
@@ -757,6 +884,9 @@ namespace MathEquation
 			}
 			virtual void BeginVerticalBrace(bool bTop)
 			{
+				if (!oRManager.IsEmpty())
+					WriteRun();
+
 				BYTE pos, vertJc;
 				CString chr;
 				if (bTop)
@@ -812,6 +942,9 @@ namespace MathEquation
 			}
 			virtual void BeingNArray(MNARRAYTYPE eType)
 			{
+				if (!oRManager.IsEmpty())
+					WriteRun();
+
 				CNArrayCommand* pCommand = (CNArrayCommand*)PushCommand(commandNArray);
 				pCommand->SetType(eType);
 
@@ -992,6 +1125,8 @@ namespace MathEquation
 			}
 			virtual void BeginLongDivision(MLONGDIVISION eType)
 			{
+				if (!oRManager.IsEmpty())
+					WriteRun();
 				//PushCommand(commandLongDivision);
 				if (eType == longdivisionWithResult)
 				{
@@ -1019,6 +1154,9 @@ namespace MathEquation
 			}
 			virtual void BeginAngleBracketsWithSeparator(MANGLEBRACKETSWITHSEPARATORTYPE eType)
 			{
+				if (!oRManager.IsEmpty())
+					WriteRun();
+
 				CBracketsWithSeparatorCommand* pCommand = (CBracketsWithSeparatorCommand*)PushCommand(commandBracketsSep);
 				pCommand->SetType(eType);
 
@@ -1211,13 +1349,17 @@ namespace MathEquation
 					nCurPos = m_aBaseStack.top();
 					m_aBaseStack.pop();
 				}
+				if (!pWriter->oRManager.IsEmpty())
+				{
+					pWriter->WriteRun();
+				}
 
 				if (bPile && bEqArrayStart)
 					pWriter->WriteItemEnd(nCurPos);
 				else if (!bPile && !bEqArrayStart)
 					pWriter->WriteItemEnd(nCurPos);
 				else if (!bPile && bEqArrayStart)
-				{
+				{					
 					pWriter->m_aRowsCounter.push(nRows);
 					bEqArrayStart = false;
 					pWriter->WriteItemEnd(nCurPos);//eqArr

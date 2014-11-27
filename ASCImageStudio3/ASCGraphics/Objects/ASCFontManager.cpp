@@ -125,9 +125,14 @@ void CASCFontManager::DumpToJSEditor(CString strDirectory, bool bIsUnionFamily)
 	// -------------------------------------------
 
 	// создаем картинку для табнейлов
+	int nDpi = 96;
+	if (FALSE)
+		nDpi <<= 1;
+
 	double dW_mm = 80;
-	LONG lH1_px = LONG(7 * 96 / 25.4);
-	LONG lWidthPix = (LONG)(dW_mm * 96 / 25.4);
+	LONG lH1_px = LONG(7 * nDpi / 25.4);
+	LONG lWidthPix = (LONG)(dW_mm * nDpi / 25.4);
+
 	LONG lHeightPix = (LONG)(nCountFonts * lH1_px);
 	MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
 	CoCreateInstance(MediaCore::CLSID_CAVSUncompressedVideoFrame, NULL, CLSCTX_ALL, MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
@@ -170,7 +175,7 @@ void CASCFontManager::DumpToJSEditor(CString strDirectory, bool bIsUnionFamily)
 	pRenderer->SetAdditionalParam( L"FontManager", vtVariant );
 
 	pRenderer->put_Width(dW_mm);
-	pRenderer->put_Height(lHeightPix * 25.4 / 96);
+	pRenderer->put_Height(lHeightPix * 25.4 / nDpi);
 	pRenderer->CreateFromMediaData((IUnknown*)pFrame, 0, 0, lWidthPix, lHeightPix);
 
 	// скидываем файлы шрифтов (в виде скриптов)

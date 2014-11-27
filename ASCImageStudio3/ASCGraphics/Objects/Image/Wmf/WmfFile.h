@@ -2,6 +2,7 @@
 #define _WMF_FILE_H
 
 #include <stdio.h>
+#include <algorithm>
 
 #include "WmfTypes.h"
 #include "WmfColor.h"
@@ -69,7 +70,10 @@ public:
 		pPlayer->ulFlags = 0;
 
 		m_pFontManager = NULL;
+
+#ifdef DESKTOP_EDITOR_GRAPHICS
 		m_bDeleteFontManager = true;
+#endif
 	}
 
 	~CWmfFile()

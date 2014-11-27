@@ -2371,7 +2371,7 @@ namespace BinXlsxRW {
 			else if(c_oSer_DrawingType::Ext == type)
 			{
 				pCellAnchor->m_oExt.Init();
-				res = Read1(length, &BinaryWorksheetsTableReader::ReadExt, this, pCellAnchor->m_oExt.GetPointer());
+				res = Read2(length, &BinaryWorksheetsTableReader::ReadExt, this, pCellAnchor->m_oExt.GetPointer());
 			}
 			else if(c_oSer_DrawingType::Pic == type)
 			{

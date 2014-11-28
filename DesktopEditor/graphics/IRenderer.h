@@ -7,7 +7,9 @@
 #include "Matrix.h"
 #include <string>
 
+#ifdef __APPLE__
 #include <libkern/OSAtomic.h>
+#endif
 
 class IGrObject
 {

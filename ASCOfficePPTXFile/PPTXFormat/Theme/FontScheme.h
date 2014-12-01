@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef PPTX_THEME_FONTSCHEME_INCLUDE_H_
 #define PPTX_THEME_FONTSCHEME_INCLUDE_H_
 
@@ -51,7 +51,7 @@ namespace PPTX
 				pWriter->StartNode(_T("a:fontScheme"));
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("name"), name);
+                pWriter->WriteAttribute2(_T("name"), name);
 				pWriter->EndAttributes();
 
 				majorFont.toXmlWriter(pWriter);

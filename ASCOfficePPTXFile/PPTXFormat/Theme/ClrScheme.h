@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef PPTX_THEME_CLRSCHEME_INCLUDE_H_
 #define PPTX_THEME_CLRSCHEME_INCLUDE_H_
 
@@ -72,7 +72,7 @@ namespace PPTX
 				pWriter->StartNode(_T("a:clrScheme"));
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("name"), name);				
+                pWriter->WriteAttribute2(_T("name"), name);
 				pWriter->EndAttributes();
 
 				CString arr[12] = {_T("dk1"), _T("lt1"), _T("dk2"), _T("lt2"), _T("accent1"), _T("accent2"), _T("accent3"), _T("accent4"), 

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef PPTX_LOGIC_CXNSP_INCLUDE_H_
 #define PPTX_LOGIC_CXNSP_INCLUDE_H_
 
@@ -41,14 +41,34 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("p:cxnSp"));
-				pWriter->EndAttributes();
+                if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+                    pWriter->StartNode(_T("wps:cxnSp"));
+                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
+                    pWriter->StartNode(_T("xdr:cxnSp"));
+                else
+                    pWriter->StartNode(_T("p:cxnSp"));
 
-				nvCxnSpPr.toXmlWriter(pWriter);
-				spPr.toXmlWriter(pWriter);
-				pWriter->Write(style);
+                pWriter->EndAttributes();
 
-				pWriter->EndNode(_T("p:cxnSp"));
+                nvCxnSpPr.toXmlWriter(pWriter);
+                spPr.toXmlWriter(pWriter);
+
+                if (style.is_init())
+                {
+                    if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+                        style->m_ns = _T("wps");
+                    else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
+                        style->m_ns = _T("xdr");
+
+                    pWriter->Write(style);
+                }
+
+                if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+                    pWriter->EndNode(_T("wps:cxnSp"));
+                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
+                    pWriter->EndNode(_T("xdr:cxnSp"));
+                else
+                     pWriter->EndNode(_T("p:cxnSp"));
 			}
 
 			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)

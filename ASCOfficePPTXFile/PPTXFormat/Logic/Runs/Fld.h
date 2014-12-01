@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef PPTX_LOGIC_FLD_INCLUDE_H_
 #define PPTX_LOGIC_FLD_INCLUDE_H_
 
@@ -78,7 +78,16 @@ namespace PPTX
 				oValue.WriteNullable(pPr);
 				
 				if (text.IsInit())
-					oValue.m_strValue += (_T("<a:t>") + *text + _T("</a:t>"));
+                {
+                    CString s = *text;
+                    s.Replace(_T("&"),	_T("&amp;"));
+                    s.Replace(_T("'"),	_T("&apos;"));
+                    s.Replace(_T("<"),	_T("&lt;"));
+                    s.Replace(_T(">"),	_T("&gt;"));
+                    s.Replace(_T("\""),	_T("&quot;"));
+
+                    oValue.m_strValue += (_T("<a:t>") + s + _T("</a:t>"));
+                }
 
 				return XmlUtils::CreateNode(_T("a:fld"), oAttr, oValue);
 			}
@@ -96,7 +105,11 @@ namespace PPTX
 				pWriter->Write(pPr);
 				
 				if (text.IsInit())
-					pWriter->WriteString(_T("<a:t>") + *text + _T("</a:t>"));
+                {
+                    pWriter->WriteString(_T("<a:t>"));
+                        pWriter->WriteStringXML(*text);
+                    pWriter->WriteString(_T("</a:t>"));
+                }
 				
 				pWriter->EndNode(_T("a:fld"));
 			}

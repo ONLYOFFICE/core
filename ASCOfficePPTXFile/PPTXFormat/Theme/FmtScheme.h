@@ -75,7 +75,7 @@ namespace PPTX
 				pWriter->StartNode(_T("a:fmtScheme"));
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("name"), name);
+                pWriter->WriteAttribute2(_T("name"), name);
 				pWriter->EndAttributes();
 
 				pWriter->WriteArray(_T("a:fillStyleLst"), fillStyleLst);

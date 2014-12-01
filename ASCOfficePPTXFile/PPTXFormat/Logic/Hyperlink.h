@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef PPTX_LOGIC_HYPERLINK_INCLUDE_H_
 #define PPTX_LOGIC_HYPERLINK_INCLUDE_H_
 
@@ -164,10 +164,10 @@ namespace PPTX
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("r:id"), id);
-				pWriter->WriteAttribute(_T("invalidUrl"), invalidUrl);
-				pWriter->WriteAttribute(_T("action"), action);
-				pWriter->WriteAttribute(_T("tgtFrame"), tgtFrame);
-				pWriter->WriteAttribute(_T("tooltip"), tooltip);
+				pWriter->WriteAttribute2(_T("invalidUrl"), invalidUrl);
+                pWriter->WriteAttribute2(_T("action"), action);
+				pWriter->WriteAttribute2(_T("tgtFrame"), tgtFrame);
+				pWriter->WriteAttribute2(_T("tooltip"), tooltip);
 				pWriter->WriteAttribute(_T("history"), history);
 				pWriter->WriteAttribute(_T("highlightClick"), highlightClick);
 				pWriter->WriteAttribute(_T("endSnd"), endSnd);

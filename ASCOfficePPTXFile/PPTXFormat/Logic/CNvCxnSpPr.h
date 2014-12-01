@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef PPTX_LOGIC_CNVCXNSPPR_INCLUDE_H_
 #define PPTX_LOGIC_CNVCXNSPPR_INCLUDE_H_
 
@@ -106,8 +106,14 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("p:cNvCxnSpPr"));
-				pWriter->EndAttributes();
+                if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+                    pWriter->StartNode(_T("wps:cNvCxnSpPr"));
+                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
+                    pWriter->StartNode(_T("xdr:cNvCxnSpPr"));
+                else
+                     pWriter->StartNode(_T("p:cNvCxnSpPr"));
+
+                pWriter->EndAttributes();
 
 				pWriter->StartNode(_T("a:cxnSpLocks"));
 				pWriter->StartAttributes();
@@ -144,7 +150,12 @@ namespace PPTX
 					pWriter->EndNode(_T("a:endCxn"));
 				}
 
-				pWriter->EndNode(_T("p:cNvCxnSpPr"));
+                if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+                    pWriter->EndNode(_T("wps:cNvCxnSpPr"));
+                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
+                    pWriter->EndNode(_T("xdr:cNvCxnSpPr"));
+                else
+                    pWriter->EndNode(_T("p:cNvCxnSpPr"));
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

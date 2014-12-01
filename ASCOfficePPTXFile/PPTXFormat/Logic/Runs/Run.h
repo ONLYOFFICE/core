@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef PPTX_LOGIC_RUN_INCLUDE_H_
 #define PPTX_LOGIC_RUN_INCLUDE_H_
 
@@ -61,7 +61,16 @@ namespace PPTX
 				oValue.WriteNullable(rPr);
 				
 				if (text.IsInit())
-					oValue.m_strValue += (_T("<a:t>") + *text + _T("</a:t>"));
+                {
+                    CString s = *text;
+                    s.Replace(_T("&"),	_T("&amp;"));
+                    s.Replace(_T("'"),	_T("&apos;"));
+                    s.Replace(_T("<"),	_T("&lt;"));
+                    s.Replace(_T(">"),	_T("&gt;"));
+                    s.Replace(_T("\""),	_T("&quot;"));
+
+                    oValue.m_strValue += (_T("<a:t>") + s + _T("</a:t>"));
+                }
 
 				return XmlUtils::CreateNode(_T("a:r"), oValue);
 			}

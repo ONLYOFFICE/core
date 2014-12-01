@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef PPTX_LOGIC_SHAPE_INCLUDE_H_
 #define PPTX_LOGIC_SHAPE_INCLUDE_H_
 
@@ -144,9 +144,9 @@ namespace PPTX
 						style->m_ns = _T("wps");
 					else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
 						style->m_ns = _T("xdr");
-				}
 
-				pWriter->Write(style);
+					pWriter->Write(style);
+				}
 
 				if (pWriter->m_lDocType != XMLWRITER_DOC_TYPE_DOCX)
 				{

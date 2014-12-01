@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef PPTX_COMMENTS_COMMENTSAUTHORS_H_
 #define PPTX_COMMENTS_COMMENTSAUTHORS_H_
 
@@ -43,8 +43,8 @@ namespace PPTX
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("id"), id);
-				pWriter->WriteAttribute(_T("name"), name);
-				pWriter->WriteAttribute(_T("initials"), initials);
+                pWriter->WriteAttribute2(_T("name"), name);
+				pWriter->WriteAttribute2(_T("initials"), initials);
 				pWriter->WriteAttribute(_T("lastIdx"), last_idx);
 				pWriter->WriteAttribute(_T("clrIdx"), clr_idx);
 				pWriter->EndAttributes();

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef PPTX_LOGIC_GD_INCLUDE_H_
 #define PPTX_LOGIC_GD_INCLUDE_H_
 
@@ -50,7 +50,7 @@ namespace PPTX
 				pWriter->StartNode(_T("a:gd"));
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("name"), name);
+                pWriter->WriteAttribute2(_T("name"), name);
 				pWriter->WriteAttribute(_T("fmla"), fmla);
 				pWriter->EndAttributes();
 

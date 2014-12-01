@@ -48,45 +48,16 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
+                CString namespace_;
 				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-					pWriter->StartNode(_T("pic:cNvPr"));
+                    namespace_= _T("pic");
 				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->StartNode(_T("xdr:cNvPr"));
+                    namespace_= _T("xdr");
 				else
-					pWriter->StartNode(_T("p:cNvPr"));
+                    namespace_= _T("p");
 
-				int _id = id;
-				if (_id < 0)
-				{
-					_id = pWriter->m_lObjectId;
-					++pWriter->m_lObjectId;
-				}
-				else
-				{
-					if (pWriter->m_lObjectId <= _id)
-					{
-						pWriter->m_lObjectId = _id + 1;
-					}
-				}
+                toXmlWriter2(namespace_, pWriter);
 
-				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("id"), _id);
-				pWriter->WriteAttribute(_T("name"), name);
-				pWriter->WriteAttribute(_T("descr"), descr);
-				pWriter->WriteAttribute(_T("hidden"), hidden);
-				pWriter->WriteAttribute(_T("title"), title);
-
-				pWriter->EndAttributes();
-
-				pWriter->Write(hlinkClick);
-				pWriter->Write(hlinkHover);
-
-				if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
-					pWriter->EndNode(_T("pic:cNvPr"));
-				else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
-					pWriter->EndNode(_T("xdr:cNvPr"));
-				else
-					pWriter->EndNode(_T("p:cNvPr"));
 			}
 			void toXmlWriter2(const CString& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
 			{
@@ -111,10 +82,10 @@ namespace PPTX
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("id"), _id);
-				pWriter->WriteAttribute(_T("name"), name);
-				pWriter->WriteAttribute(_T("descr"), descr);
+                pWriter->WriteAttribute2(_T("name"), name);
+                pWriter->WriteAttribute2(_T("descr"), descr);
 				pWriter->WriteAttribute(_T("hidden"), hidden);
-				pWriter->WriteAttribute(_T("title"), title);
+                pWriter->WriteAttribute2(_T("title"), title);
 
 				pWriter->EndAttributes();
 

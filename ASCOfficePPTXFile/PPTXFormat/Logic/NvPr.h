@@ -1,4 +1,4 @@
-#ifndef PPTX_LOGIC_NV_PROPERTIES_INCLUDE_H_
+﻿#ifndef PPTX_LOGIC_NV_PROPERTIES_INCLUDE_H_
 #define PPTX_LOGIC_NV_PROPERTIES_INCLUDE_H_
 
 #include "./../WrapperWritingElement.h"
@@ -68,10 +68,21 @@ namespace PPTX
 
 				return XmlUtils::CreateNode(_T("p:nvPr"), oAttr, oValue);
 			}
+            virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
+            {
+                CString namespace_;
+                if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_DOCX)
+                    namespace_= _T("pic");
+                else if (pWriter->m_lDocType == XMLWRITER_DOC_TYPE_XLSX)
+                    namespace_= _T("xdr");
+                else
+                    namespace_= _T("p");
 
-			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
-			{
-				pWriter->StartNode(_T("p:nvPr"));
+                toXmlWriter2(namespace_, pWriter);
+            }
+            void toXmlWriter2(const CString& strNS, NSBinPptxRW::CXmlWriter* pWriter) const
+            {
+                pWriter->StartNode(strNS + _T(":nvPr"));
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("isPhoto"), isPhoto);
@@ -82,7 +93,7 @@ namespace PPTX
 				media.toXmlWriter(pWriter);
 				pWriter->WriteArray(_T("p:extLst"), extLst);				
 				
-				pWriter->EndNode(_T("p:nvPr"));
+                pWriter->EndNode(strNS + _T(":nvPr"));
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

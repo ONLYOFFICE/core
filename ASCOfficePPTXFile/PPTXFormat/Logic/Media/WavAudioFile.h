@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #ifndef PPTX_LOGIC_WAVAUDIOFILE_INCLUDE_H_
 #define PPTX_LOGIC_WAVAUDIOFILE_INCLUDE_H_
 
@@ -48,7 +48,7 @@ namespace PPTX
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("r:embed"), embed.ToString());
-				pWriter->WriteAttribute(_T("name"), name);
+                pWriter->WriteAttribute2(_T("name"), name);
 				pWriter->EndAttributes();
 				
 				pWriter->EndNode(_T("a:") + m_name);

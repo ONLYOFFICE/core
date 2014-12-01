@@ -1521,7 +1521,7 @@ public:
 	{
 		CString sPart;
 		if(nPrevIndex < nCurIndex)
-			sPart = sText.Mid(nPrevIndex, nCurIndex - nPrevIndex);
+			sPart = XmlUtils::EncodeXmlString(sText.Mid(nPrevIndex, nCurIndex - nPrevIndex));
 		int nId = pComment->m_oParaIdCounter.getNextId();
 		CString sId;
 		sId.Format(_T("%08X"), nId);

@@ -3516,7 +3516,7 @@ namespace NSGuidesVML
 						GetValue(pCurPoint.x, pCurPointType.x, false, m_oPathRes);
 						m_oPathRes.WriteString(_T("\" y=\""));
 						GetValue(pCurPoint.y, pCurPointType.y, false, m_oPathRes);
-						m_oPathRes.WriteString(_T("\" /><a:lnTo/>"));
+						m_oPathRes.WriteString(_T("\" /></a:lnTo>"));
 					}
 				}
 
@@ -3558,7 +3558,7 @@ namespace NSGuidesVML
 						GetValue(pCurPoint.x, pCurPointType.x, false, m_oPathRes);
 						m_oPathRes.WriteString(_T("\" y=\""));
 						GetValue(pCurPoint.y, pCurPointType.y, false, m_oPathRes);
-						m_oPathRes.WriteString(_T("\" /><a:lnTo/>"));
+						m_oPathRes.WriteString(_T("\" /></a:lnTo>"));
 					}
 				}
 
@@ -3615,7 +3615,7 @@ namespace NSGuidesVML
 						GetValue(m_lIndexDst-2, ptFormula, true, m_oPathRes);
 						m_oPathRes.WriteString(_T("\" y=\""));
 						GetValue(m_lIndexDst-1, ptFormula, true, m_oPathRes);
-						m_oPathRes.WriteString(_T("\" /><a:lnTo/>"));
+						m_oPathRes.WriteString(_T("\" /></a:lnTo>"));
 					}									
 				}
 

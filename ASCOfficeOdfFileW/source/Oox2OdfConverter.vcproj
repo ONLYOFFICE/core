@@ -40,8 +40,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\src\odf\datatypes;.\OdfFormat;.\Oox2OdfConverter;..\..\Common\DocxFormat\Source;..\..\Common\DocxFormat\Source\XML;..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include;..\..\ASCOfficePPTXFile\PPTXFormat\"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;USE_LITE_READER;_USE_XMLLITE_READER_;_DOCWRAPPER_"
+				AdditionalIncludeDirectories="../../ASCOfficeOdfFile/src/odf/datatypes;./OdfFormat;./Oox2OdfConverter;../../Common/DocxFormat/Source;../../Common/DocxFormat/Source/XML;../../ASCOfficeOdfFile\include;../../ASCOfficeOdfFile/3dparty/utf8cpp/include;../../ASCOfficePPTXFile/PPTXFormat/;../Common/DocxFormat/Source/XML/libxml2/XML/include;../"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;LIBXML_READER_ENABLED;_USE_XMLLITE_READER_;USE_XMLLITE_READER;_USE_LIBXML2_READER_;_DOCWRAPPER_"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -103,8 +103,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\src\odf\datatypes;.\OdfFormat;.\Oox2OdfConverter;..\..\Common\DocxFormat\Source;..\..\Common\DocxFormat\Source\XML;..\..\ASCOfficeOdfFile\include;..\..\ASCOfficeOdfFile\3dparty\utf8cpp\include;..\..\ASCOfficePPTXFile\PPTXFormat\"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER"
+				AdditionalIncludeDirectories="../../ASCOfficeOdfFile/src/odf/datatypes;./OdfFormat;./Oox2OdfConverter;../../Common/DocxFormat/Source;../../Common/DocxFormat/Source/XML;../../ASCOfficeOdfFile\include;../../ASCOfficeOdfFile/3dparty/utf8cpp/include;../../ASCOfficePPTXFile/PPTXFormat/;../Common/DocxFormat/Source/XML/libxml2/XML/include;../"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;LIBXML_READER_ENABLED;_USE_XMLLITE_READER_;USE_XMLLITE_READER;_USE_LIBXML2_READER_"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -167,6 +167,26 @@
 			<File
 				RelativePath=".\Oox2OdfConverter\DocxConverter.cpp"
 				>
+			</File>
+			<File
+				RelativePath="..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath=".\Oox2OdfConverter\stdafx.cpp"

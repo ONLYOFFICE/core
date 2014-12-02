@@ -33,14 +33,17 @@ namespace PPTX
 				if (node.GetNodes(_T("a:pt"), oNodes))
 				{
 					int count = oNodes.GetCount();
-					XmlUtils::CXmlNode oNode;
+					if(count >= 2)
+					{
+						XmlUtils::CXmlNode oNode;
 
-					oNodes.GetAt(0, oNode);
-					x1 = oNode.GetAttribute(_T("x"));
-					y1 = oNode.GetAttribute(_T("y"));
-					oNodes.GetAt(1, oNode);
-					x2 = oNode.GetAttribute(_T("x"));
-					y2 = oNode.GetAttribute(_T("y"));
+						oNodes.GetAt(0, oNode);
+						x1 = oNode.GetAttribute(_T("x"));
+						y1 = oNode.GetAttribute(_T("y"));
+						oNodes.GetAt(1, oNode);
+						x2 = oNode.GetAttribute(_T("x"));
+						y2 = oNode.GetAttribute(_T("y"));
+					}
 				}
 			}
 

@@ -10,6 +10,7 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Oox2OdfConverter", "source\
 	ProjectSection(ProjectDependencies) = postProject
 		{E5A67556-44DA-4481-8F87-0A3AEDBD20DD} = {E5A67556-44DA-4481-8F87-0A3AEDBD20DD}
 		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
+		{21663823-DE45-479B-91D0-B4FEF4916EF0} = {21663823-DE45-479B-91D0-B4FEF4916EF0}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeOdfFileWTest", "ASCOfficeOdfFileWTest\ASCOfficeOdfFileWTest.vcproj", "{FBA8446A-150F-4A10-B4DA-1022048D6473}"
@@ -20,9 +21,14 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "DocxFormat", "..\Common\Doc
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeOdfFileW", "ASCOfficeOdfFileW.vcproj", "{6258296E-ABCE-4BC6-9F4A-8522CD615603}"
 	ProjectSection(ProjectDependencies) = postProject
-		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6} = {3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}
 		{BEE01B53-244A-44E6-8947-ED9342D9247E} = {BEE01B53-244A-44E6-8947-ED9342D9247E}
+		{A100103A-353E-45E8-A9B8-90B87CC5C0B0} = {A100103A-353E-45E8-A9B8-90B87CC5C0B0}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libxml2", "..\..\..\branches\Docx2DoctConverter\ServerComponents\Common\DocxFormat\Source\XML\libxml2\win_build\libxml2.vcproj", "{21663823-DE45-479B-91D0-B4FEF4916EF0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeUtilsLib", "..\..\..\branches\Docx2DoctConverter\ServerComponents\ASCOfficeUtils\ASCOfficeUtilsLib\Win\ASCOfficeUtilsLib.vcproj", "{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -80,6 +86,22 @@ Global
 		{6258296E-ABCE-4BC6-9F4A-8522CD615603}.ReleaseASC|Win32.Build.0 = Release|Win32
 		{6258296E-ABCE-4BC6-9F4A-8522CD615603}.ReleaseOpenSource|Win32.ActiveCfg = Release|Win32
 		{6258296E-ABCE-4BC6-9F4A-8522CD615603}.ReleaseOpenSource|Win32.Build.0 = Release|Win32
+		{21663823-DE45-479B-91D0-B4FEF4916EF0}.Debug|Win32.ActiveCfg = Debug|Win32
+		{21663823-DE45-479B-91D0-B4FEF4916EF0}.Debug|Win32.Build.0 = Debug|Win32
+		{21663823-DE45-479B-91D0-B4FEF4916EF0}.Release|Win32.ActiveCfg = Release|Win32
+		{21663823-DE45-479B-91D0-B4FEF4916EF0}.Release|Win32.Build.0 = Release|Win32
+		{21663823-DE45-479B-91D0-B4FEF4916EF0}.ReleaseASC|Win32.ActiveCfg = Release|Win32
+		{21663823-DE45-479B-91D0-B4FEF4916EF0}.ReleaseASC|Win32.Build.0 = Release|Win32
+		{21663823-DE45-479B-91D0-B4FEF4916EF0}.ReleaseOpenSource|Win32.ActiveCfg = Release|Win32
+		{21663823-DE45-479B-91D0-B4FEF4916EF0}.ReleaseOpenSource|Win32.Build.0 = Release|Win32
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.Debug|Win32.Build.0 = Debug|Win32
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.Release|Win32.ActiveCfg = Release|Win32
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.Release|Win32.Build.0 = Release|Win32
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.ReleaseASC|Win32.ActiveCfg = Release|Win32
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.ReleaseASC|Win32.Build.0 = Release|Win32
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.ReleaseOpenSource|Win32.ActiveCfg = Release|Win32
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.ReleaseOpenSource|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

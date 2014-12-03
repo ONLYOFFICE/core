@@ -416,9 +416,19 @@ namespace NSBinPptxRW
 	}
 	void CBinaryFileWriter::WriteDouble(const double& dValue)
 	{
-		//todo если dValue большое, то может случиться переполнение long
-		long _val = (long)(dValue * 100000);
-		WriteLONG(_val);
+		double _val = dValue * 100000;
+		if (_val > 0x7fffffff)
+		{
+			WriteLONG(0x7fffffff);
+		}
+		else if ( _val < -0x7fffffff)
+		{
+			WriteLONG(-0x7fffffff);
+		}		
+		else
+		{
+			WriteLONG((long)_val);
+		}
 	}
 	void CBinaryFileWriter::WriteDoubleReal(const double& dValue)
 	{

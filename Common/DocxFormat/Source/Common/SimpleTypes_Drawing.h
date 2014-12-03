@@ -6059,7 +6059,7 @@ namespace SimpleTypes
 
 		virtual __int64 FromString(CString &sValue)
 		{
-            this->m_eValue = _wtoi( sValue );
+            this->m_eValue = wcstoul( sValue, NULL, 10 );
 
             return this->m_eValue;
 		}
@@ -6067,7 +6067,7 @@ namespace SimpleTypes
 		virtual CString ToString  () const 
 		{
 			CString sResult;
-            sResult.Format( _T("%d"), this->m_eValue);
+            sResult.Format( _T("%lu"), this->m_eValue);
 
 			return sResult;
 		}

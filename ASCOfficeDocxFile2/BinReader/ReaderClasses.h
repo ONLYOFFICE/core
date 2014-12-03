@@ -870,23 +870,23 @@ public:
 					__int64 nY = (__int64)(g_dKoef_mm_to_emu * Y);
 					__int64 nWidth = (__int64)(g_dKoef_mm_to_emu * Width);
 					__int64 nHeight = (__int64)(g_dKoef_mm_to_emu * Height);
-					__int64 nPaddingLeft = 0;
-					__int64 nPaddingTop = 0;
-					__int64 nPaddingRight = 0;
-					__int64 nPaddingBottom = 0;
+					unsigned long nPaddingLeft = 0;
+					unsigned long nPaddingTop = 0;
+					unsigned long nPaddingRight = 0;
+					unsigned long nPaddingBottom = 0;
 					if(bPaddings)
 					{
 						if(Paddings.bLeft)
-							nPaddingLeft = (__int64)(g_dKoef_mm_to_emu * Paddings.Left);
+							nPaddingLeft = (unsigned long)(g_dKoef_mm_to_emu * Paddings.Left);
 						if(Paddings.bTop)
-							nPaddingTop = (__int64)(g_dKoef_mm_to_emu * Paddings.Top);
+							nPaddingTop = (unsigned long)(g_dKoef_mm_to_emu * Paddings.Top);
 						if(Paddings.bRight)
-							nPaddingRight = (__int64)(g_dKoef_mm_to_emu * Paddings.Right);
+							nPaddingRight = (unsigned long)(g_dKoef_mm_to_emu * Paddings.Right);
 						if(Paddings.bBottom)
-							nPaddingBottom = (__int64)(g_dKoef_mm_to_emu * Paddings.Bottom);
+							nPaddingBottom = (unsigned long)(g_dKoef_mm_to_emu * Paddings.Bottom);
 					}
 					CString sDrawing;
-					sDrawing.Format(_T("<w:drawing><wp:anchor distT=\"%I64d\" distB=\"%I64d\" distL=\"%I64d\" distR=\"%I64d\" simplePos=\"0\" relativeHeight=\"1\" behindDoc=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\"><wp:simplePos x=\"0\" y=\"0\"/><wp:positionH relativeFrom=\"page\"><wp:posOffset>%I64d</wp:posOffset></wp:positionH><wp:positionV relativeFrom=\"page\"><wp:posOffset>%I64d</wp:posOffset></wp:positionV><wp:extent cx=\"%I64d\" cy=\"%I64d\"/><wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/><wp:wrapSquare wrapText=\"bothSides\"/><wp:docPr id=\"%d\" name=\"Image\"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"0\" name=\"Image\"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"%s\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"%I64d\" cy=\"%I64d\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:anchor></w:drawing>"), nPaddingTop, nPaddingBottom, nPaddingLeft, nPaddingRight, nX, nY, nWidth, nHeight, m_nDocPr, srId, nWidth, nHeight);
+					sDrawing.Format(_T("<w:drawing><wp:anchor distT=\"%lu\" distB=\"%lu\" distL=\"%lu\" distR=\"%lu\" simplePos=\"0\" relativeHeight=\"1\" behindDoc=\"0\" locked=\"0\" layoutInCell=\"1\" allowOverlap=\"1\"><wp:simplePos x=\"0\" y=\"0\"/><wp:positionH relativeFrom=\"page\"><wp:posOffset>%I64d</wp:posOffset></wp:positionH><wp:positionV relativeFrom=\"page\"><wp:posOffset>%I64d</wp:posOffset></wp:positionV><wp:extent cx=\"%I64d\" cy=\"%I64d\"/><wp:effectExtent l=\"0\" t=\"0\" r=\"0\" b=\"0\"/><wp:wrapSquare wrapText=\"bothSides\"/><wp:docPr id=\"%d\" name=\"Image\"/><wp:cNvGraphicFramePr><a:graphicFrameLocks xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" noChangeAspect=\"1\"/></wp:cNvGraphicFramePr><a:graphic xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\"><a:graphicData uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:nvPicPr><pic:cNvPr id=\"0\" name=\"Image\"/><pic:cNvPicPr/></pic:nvPicPr><pic:blipFill><a:blip r:embed=\"%s\"><a:extLst><a:ext uri=\"{28A0092B-C50C-407E-A947-70E740481C1C}\"><a14:useLocalDpi xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" val=\"0\"/></a:ext></a:extLst></a:blip><a:stretch><a:fillRect/></a:stretch></pic:blipFill><pic:spPr><a:xfrm><a:off x=\"0\" y=\"0\"/><a:ext cx=\"%I64d\" cy=\"%I64d\"/></a:xfrm><a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom></pic:spPr></pic:pic></a:graphicData></a:graphic></wp:anchor></w:drawing>"), nPaddingTop, nPaddingBottom, nPaddingLeft, nPaddingRight, nX, nY, nWidth, nHeight, m_nDocPr, srId, nWidth, nHeight);
 					pCStringWriter->WriteString(sDrawing);
 				}
 			}
@@ -1928,19 +1928,19 @@ public:
 			{
 				if(bWidth && bHeight && ((bPositionHRelativeFrom && (bPositionHAlign || bPositionHPosOffset) && bPositionVRelativeFrom && (bPositionVAlign || bPositionVPosOffset)) || (bBSimplePos && bSimplePosX && bSimplePosY)))
 				{
-					__int64 emuDistL = 0;
-					__int64 emuDistT = 0;
-					__int64 emuDistR = 0;
-					__int64 emuDistB = 0;
+					unsigned long emuDistL = 0;
+					unsigned long emuDistT = 0;
+					unsigned long emuDistR = 0;
+					unsigned long emuDistB = 0;
 
 					if(bDistL)
-						emuDistL = (__int64)(g_dKoef_mm_to_emu * DistL);
+						emuDistL = (unsigned long)(g_dKoef_mm_to_emu * DistL);
 					if(bDistT)
-						emuDistT = (__int64)(g_dKoef_mm_to_emu * DistT);
+						emuDistT = (unsigned long)(g_dKoef_mm_to_emu * DistT);
 					if(bDistR)
-						emuDistR = (__int64)(g_dKoef_mm_to_emu * DistR);
+						emuDistR = (unsigned long)(g_dKoef_mm_to_emu * DistR);
 					if(bDistB)
-						emuDistB = (__int64)(g_dKoef_mm_to_emu * DistB);
+						emuDistB = (unsigned long)(g_dKoef_mm_to_emu * DistB);
 					int nSimplePos = 0;
 					if(bBSimplePos && BSimplePos)
 						nSimplePos = 1;
@@ -1957,7 +1957,7 @@ public:
 					if(bChart)
 						sXml.Append(_T("<w:drawing>"));
 
-					sXml.AppendFormat(_T("<wp:anchor xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" distT=\"%I64d\" distB=\"%I64d\" distL=\"%I64d\" distR=\"%I64d\" simplePos=\"%d\" relativeHeight=\"%lu\" behindDoc=\"%d\" locked=\"0\" layoutInCell=\"%d\" allowOverlap=\"1\">"), emuDistT, emuDistB, emuDistL, emuDistR, nSimplePos, nRelativeHeight, nBehindDoc, nLayoutInCell);
+					sXml.AppendFormat(_T("<wp:anchor xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" distT=\"%lu\" distB=\"%lu\" distL=\"%lu\" distR=\"%lu\" simplePos=\"%d\" relativeHeight=\"%lu\" behindDoc=\"%d\" locked=\"0\" layoutInCell=\"%d\" allowOverlap=\"1\">"), emuDistT, emuDistB, emuDistL, emuDistR, nSimplePos, nRelativeHeight, nBehindDoc, nLayoutInCell);
 					__int64 emuX = 0;
 					if(bSimplePosX)
 						emuX = (__int64)(g_dKoef_mm_to_emu * SimplePosX);

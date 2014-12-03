@@ -416,6 +416,7 @@ namespace NSBinPptxRW
 	}
 	void CBinaryFileWriter::WriteDouble(const double& dValue)
 	{
+		//todo если dValue большое, то может случиться переполнение long
 		long _val = (long)(dValue * 100000);
 		WriteLONG(_val);
 	}

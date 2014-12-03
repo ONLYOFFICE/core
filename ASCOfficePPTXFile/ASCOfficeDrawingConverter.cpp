@@ -1995,26 +1995,26 @@ CString CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::
 			height = (LONG)(dKoefSize * parserPoint.FromString(pPair->second)) - top;
 	}
 
-	LONG margL = (LONG)(9 * dKoef);
-	LONG margT = 0;
-	LONG margR = (LONG)(9 * dKoef);
-	LONG margB = 0;
+	unsigned long margL = (unsigned long)(9 * dKoef);
+	unsigned long margT = 0;
+	unsigned long margR = (unsigned long)(9 * dKoef);
+	unsigned long margB = 0;
 
 	pPair = oCssStyles.m_mapSettings.find(_T("mso-wrap-distance-left"));
 	if (oCssStyles.m_mapSettings.end() != pPair)
-		margL = (LONG)(dKoef * parserPoint.FromString(pPair->second));
+		margL = (unsigned long)(dKoef * parserPoint.FromString(pPair->second));
 
 	pPair = oCssStyles.m_mapSettings.find(_T("mso-wrap-distance-top"));
 	if (oCssStyles.m_mapSettings.end() != pPair)
-		margT = (LONG)(dKoef * parserPoint.FromString(pPair->second));
+		margT = (unsigned long)(dKoef * parserPoint.FromString(pPair->second));
 
 	pPair = oCssStyles.m_mapSettings.find(_T("mso-wrap-distance-right"));
 	if (oCssStyles.m_mapSettings.end() != pPair)
-		margR = (LONG)(dKoef * parserPoint.FromString(pPair->second));
+		margR = (unsigned long)(dKoef * parserPoint.FromString(pPair->second));
 
 	pPair = oCssStyles.m_mapSettings.find(_T("mso-wrap-distance-bottom"));
 	if (oCssStyles.m_mapSettings.end() != pPair)
-		margB = (LONG)(dKoef * parserPoint.FromString(pPair->second));
+		margB = (unsigned long)(dKoef * parserPoint.FromString(pPair->second));
 
 	oProps.X = left;
 	oProps.Y = top;

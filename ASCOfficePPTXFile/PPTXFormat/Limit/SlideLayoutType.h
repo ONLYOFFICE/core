@@ -103,6 +103,51 @@ namespace PPTX
 				if (_T("vertTx") == m_strValue) return 35;
 				return 0;				
 			}
+
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+					case 0: { m_strValue = _T("blank"); break; }
+					case 1: { m_strValue = _T("chart"); break; }
+					case 2: { m_strValue = _T("chartAndTx"); break; }
+					case 3: { m_strValue = _T("clipArtAndTx"); break; }
+					case 4: { m_strValue = _T("clipArtAndVertTx"); break; }
+					case 5: { m_strValue = _T("cust"); break; }
+					case 6: { m_strValue = _T("dgm"); break; }
+					case 7: { m_strValue = _T("fourObj"); break; }
+					case 8: { m_strValue = _T("mediaAndTx"); break; }
+					case 9: { m_strValue = _T("obj"); break; }
+					case 10: { m_strValue = _T("objAndTwoObj"); break; }
+					case 11: { m_strValue = _T("objAndTx"); break; }
+					case 12: { m_strValue = _T("objOnly"); break; }
+					case 13: { m_strValue = _T("objOverTx"); break; }
+					case 14: { m_strValue = _T("objTx"); break; }
+					case 15: { m_strValue = _T("picTx"); break; }
+					case 16: { m_strValue = _T("secHead"); break; }
+					case 17: { m_strValue = _T("tbl"); break; }
+					case 18: { m_strValue = _T("title"); break; }
+					case 19: { m_strValue = _T("titleOnly"); break; }
+					case 20: { m_strValue = _T("twoColTx"); break; }
+					case 21: { m_strValue = _T("twoObj"); break; }
+					case 22: { m_strValue = _T("twoObjAndObj"); break; }
+					case 23: { m_strValue = _T("twoObjAndTx"); break; }
+					case 24: { m_strValue = _T("twoObjOverTx"); break; }
+					case 25: { m_strValue = _T("twoTxTwoObj"); break; }
+					case 26: { m_strValue = _T("tx"); break; }
+					case 27: { m_strValue = _T("txAndChart"); break; }
+					case 28: { m_strValue = _T("txAndClipArt"); break; }
+					case 29: { m_strValue = _T("txAndMedia"); break; }
+					case 30: { m_strValue = _T("txAndObj"); break; }
+					case 31: { m_strValue = _T("txAndTwoObj"); break; }
+					case 32: { m_strValue = _T("txOverObj"); break; }
+					case 33: { m_strValue = _T("vertTitleAndTx"); break; }
+					case 34: { m_strValue = _T("vertTitleAndTxOverChart"); break; }
+					case 35: { m_strValue = _T("vertTx"); break; }
+				default:
+					break;
+				}
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX

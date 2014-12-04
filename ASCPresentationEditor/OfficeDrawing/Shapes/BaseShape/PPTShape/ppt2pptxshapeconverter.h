@@ -1892,6 +1892,8 @@ namespace NSGuidesVML
         Aggplus::POINT pTmpPoint;
 		CFormParam m_oParam;
 
+		int m_lMaxAdjUse;
+
 	public:
 		// все в одно не получитс€, формулы по€вл€ютс€ и при конвертации path/adj и т.д.
 		NSBinPptxRW::CXmlWriter m_oGuidsRes;
@@ -1908,6 +1910,8 @@ namespace NSGuidesVML
 			m_lIndexSrc = -1;
 			m_lWidth	= 0;
 			m_lHeight	= 0;
+
+			m_lMaxAdjUse = -1;
 		}
 		void ConvertCoef(NSGuidesVML::CFormParam pCoef)
 		{
@@ -1944,6 +1948,15 @@ namespace NSGuidesVML
 				m_oAdjRes.WriteINT(i);
 				m_oAdjRes.WriteString(_T("\" fmla=\"val "));
 				m_oAdjRes.WriteINT(arAdj[i]);
+				m_oAdjRes.WriteString(_T("\" />"));
+			}
+
+			for (int i = nAdjCount; i <= m_lMaxAdjUse; ++i)
+			{
+				m_oAdjRes.WriteString(_T("<a:gd name=\"adj"));
+				m_oAdjRes.WriteINT(i);
+				m_oAdjRes.WriteString(_T("\" fmla=\"val "));
+				m_oAdjRes.WriteINT(0);
 				m_oAdjRes.WriteString(_T("\" />"));
 			}
 		}
@@ -2439,6 +2452,10 @@ namespace NSGuidesVML
 					oWriter.m_oWriter.AddCharNoCheck((WCHAR)'d');
 					oWriter.m_oWriter.AddCharNoCheck((WCHAR)'j');
 					oWriter.m_oWriter.AddIntNoCheck(lParam);
+
+					if (lParam > m_lMaxAdjUse)
+						m_lMaxAdjUse = lParam;
+
 					break; 
 				}
 			case ptValue:

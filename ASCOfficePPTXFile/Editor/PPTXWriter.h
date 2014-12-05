@@ -168,7 +168,7 @@ namespace NSBinPptxRW
 				nCountSlides = m_oReader.GetLong();
 			}
 
-			if (0 == nCountThemes || 0 == nCountMasters || 0 == nCountLayouts || 0 == nCountSlides)
+			if (0 == nCountThemes || 0 == nCountMasters || 0 == nCountLayouts/* || 0 == nCountSlides*/)
 			{
 				return;
 			}

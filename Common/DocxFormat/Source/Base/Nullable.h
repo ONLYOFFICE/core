@@ -111,11 +111,11 @@ namespace NSCommon
                 this->m_pPointer = NULL;
         }
         */
-		nullable<Type>& operator=(XmlUtils::CXmlNode& oNode)
+		nullable<Type>& operator=(const XmlUtils::CXmlNode& oNode)
 		{
             RELEASEOBJECT(this->m_pPointer);
 			if (oNode.IsValid())
-                this->m_pPointer = new Type(oNode);
+                this->m_pPointer = new Type(const_cast<XmlUtils::CXmlNode&> (oNode));
 			return *this;
 		}
 	#ifdef _USE_XMLLITE_READER_

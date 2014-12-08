@@ -48,7 +48,7 @@ namespace PPTX
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const
 			{
-				if (_T("") != trSerialize.m_strNodeName)
+				//if (_T("") != trSerialize.m_strNodeName)
 				{
 					pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeStart);
 
@@ -113,8 +113,8 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				if (_T("") == trSerialize.m_strNodeName)
-					return;
+				//if (_T("") == trSerialize.m_strNodeName)
+				//	return;
 
 				pWriter->WriteString(_T("<mc:AlternateContent xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\">\
 <mc:Choice xmlns:p14=\"http://schemas.microsoft.com/office/powerpoint/2010/main\" Requires=\"p14\">"));

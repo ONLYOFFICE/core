@@ -625,6 +625,12 @@ typedef struct FD_FontMapRecW_\n\
 	for (int k = 0; k < nCount; ++k)
 	{
 		CWinFontInfo* pInfo = (CWinFontInfo*)m_pList->GetByIndex(k);
+
+#if 1
+		// CORRECT!!!
+		if (pInfo->m_wsFontName == _T("Monotype Sorts"))
+			pInfo->m_aPanose[0] = 5;
+#endif
 		
 		CString sMem = _T("");
 		sMem.Format(_T("\", %d, %d, %d, %d, { %d, %d, %d, %d, %d, %d, %d, %d, %d, %d }, %u, %u, %u, %u, %u, %u, %u, %u, %d, %d, %d, %d, %d, %d, %d, %d }"),

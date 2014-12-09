@@ -2,6 +2,7 @@
 #include "../common/File.h"
 #include "../common/Directory.h"
 #include FT_SFNT_NAMES_H
+#include "fontdictionaryworker.h"
 
 #ifndef min
 #define min(a,b)            (((a) < (b)) ? (a) : (b))
@@ -45,6 +46,79 @@ CFontSelectFormat::CFontSelectFormat()
 }
 
 CFontSelectFormat::~CFontSelectFormat()
+{
+	Destroy();
+}
+
+void CFontSelectFormat::CreateDuplicate(CFontSelectFormat& oFormat)
+{
+	oFormat.Destroy();
+
+	if (NULL != wsName)
+		oFormat.wsName = new std::wstring(*wsName);
+
+	if (NULL != wsAltName)
+		oFormat.wsAltName = new std::wstring(*wsAltName);
+
+	if (NULL != wsFamilyClass)
+		oFormat.wsFamilyClass = new std::wstring(*wsFamilyClass);
+
+	if (NULL != sFamilyClass)
+		oFormat.sFamilyClass = new SHORT(*sFamilyClass);
+	
+	if (NULL != bBold)
+		oFormat.bBold = new INT(*bBold);
+	if (NULL != bItalic)
+		oFormat.bItalic = new INT(*bItalic);
+
+	if (NULL != bFixedWidth)
+		oFormat.bFixedWidth = new INT(*bFixedWidth);
+
+	if (NULL != pPanose)
+	{
+		oFormat.pPanose = new BYTE[10];
+		memcpy( (void*)oFormat.pPanose , (const void *)pPanose, 10 );
+	}
+	
+	if (NULL != ulRange1)
+		oFormat.ulRange1 = new ULONG(*ulRange1);
+	if (NULL != ulRange2)
+		oFormat.ulRange2 = new ULONG(*ulRange2);
+	if (NULL != ulRange3)
+		oFormat.ulRange3 = new ULONG(*ulRange3);
+	if (NULL != ulRange4)
+		oFormat.ulRange4 = new ULONG(*ulRange4);
+	if (NULL != ulCodeRange1)
+		oFormat.ulCodeRange1 = new ULONG(*ulCodeRange1);
+	if (NULL != ulCodeRange2)
+		oFormat.ulCodeRange2 = new ULONG(*ulCodeRange2);
+
+	if (NULL != usWeight)
+		oFormat.usWeight = new USHORT(*usWeight);
+	if (NULL != usWidth)
+		oFormat.usWidth = new USHORT(*usWidth);
+
+	if (NULL != nFontFormat)
+		oFormat.nFontFormat = new int(*nFontFormat);
+
+	if (NULL != unCharset)
+		oFormat.unCharset = new BYTE(*unCharset);
+
+	if (NULL != shAvgCharWidth)
+		oFormat.shAvgCharWidth = new SHORT(*shAvgCharWidth);
+	if (NULL != shAscent)
+		oFormat.shAscent = new SHORT(*shAscent);
+	if (NULL != shDescent)
+		oFormat.shDescent = new SHORT(*shDescent);
+	if (NULL != shLineGap)
+		oFormat.shLineGap = new SHORT(*shLineGap);
+	if (NULL != shXHeight)
+		oFormat.shXHeight = new SHORT(*shXHeight);
+	if (NULL != shCapHeight)
+		oFormat.shCapHeight = new SHORT(*shCapHeight);
+}
+
+void CFontSelectFormat::Destroy()
 {
 	RELEASEOBJECT(wsName);
 	RELEASEOBJECT(wsAltName);
@@ -735,11 +809,16 @@ EFontFormat CFontList::GetFontFormat(FT_Face pFace)
 	return fontUnknown;
 }
 
-CFontInfo* CFontList::GetByParams(const CFontSelectFormat& oSelect)
+CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect)
 {
 	int nFontsCount = m_pList.GetCount();
 	if (0 == nFontsCount)
 		return NULL;
+
+#if 1
+	// дубликат не делаем!!! Серега создает объект только для подбора и дальше его не использует
+	NSFontDictionary::CorrectParamsFromDictionary(oSelect);
+#endif
 
 	int nMinIndex   = 0; // Номер шрифта в списке с минимальным весом
 	int nMinPenalty = 0; // Минимальный вес
@@ -757,12 +836,20 @@ CFontInfo* CFontList::GetByParams(const CFontSelectFormat& oSelect)
 		}
 
 		ULONG arrCandRanges[6] = { pInfo->m_ulUnicodeRange1, pInfo->m_ulUnicodeRange2, pInfo->m_ulUnicodeRange3, pInfo->m_ulUnicodeRange4, pInfo->m_ulCodePageRange1, pInfo->m_ulCodePageRange2 };
-		//if ( bIsRanges )
-		//{
-		//	ULONG arrReqRanges[6]  = { ulRange1, ulRange2, ulRange3, ulRange4, ulCodeRange1, ulCodeRange2 };
-
-		//	nCurPenalty += GetSigPenalty( arrCandRanges, arrReqRanges );
-		//}
+		
+		if (false)
+		{
+			if (NULL != oSelect.ulRange1 &&
+				NULL != oSelect.ulRange2 &&
+				NULL != oSelect.ulRange3 &&
+				NULL != oSelect.ulRange4 &&
+				NULL != oSelect.ulCodeRange1 &&
+				NULL != oSelect.ulCodeRange2)
+			{
+				ULONG arrReqRanges[6]  = { *oSelect.ulRange1, *oSelect.ulRange2, *oSelect.ulRange3, *oSelect.ulRange4, *oSelect.ulCodeRange1, *oSelect.ulCodeRange2 };
+				nCurPenalty += GetSigPenalty( arrCandRanges, arrReqRanges );
+			}
+		}
 
 		unsigned char unCharset = UNKNOWN_CHARSET; 
 		if (NULL != oSelect.unCharset)

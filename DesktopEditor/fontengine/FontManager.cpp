@@ -518,7 +518,7 @@ int CFontManager::Release()
 		delete this;
 	return ret;
 }
-CFontInfo* CFontManager::GetFontInfoByParams(const CFontSelectFormat& oFormat)
+CFontInfo* CFontManager::GetFontInfoByParams(CFontSelectFormat& oFormat)
 {
 	CFontInfo* pRes = NULL;
 	if (NULL != m_pApplication)

@@ -135,7 +135,7 @@ public:
 	virtual int AddRef();
 	virtual int Release();
 
-	CFontInfo* GetFontInfoByParams(const CFontSelectFormat& oFormat);
+	CFontInfo* GetFontInfoByParams(CFontSelectFormat& oFormat);
 	CArray<CFontInfo*> GetAllStylesByFontName(const std::wstring& strName);
 	INT LoadFontByName(const std::wstring& sName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY);
 	INT LoadFontFromFile(const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);

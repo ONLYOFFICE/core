@@ -345,7 +345,26 @@ namespace PPTX
 					}
 				}
 
-				// TODO: пока записи не поддерживаем
+				// TODO: поддержать все остальное
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _rec = pReader->GetUChar();
+
+					switch (_rec)
+					{
+						case 1:
+						{
+							Fit.fromPPTY(pReader);
+							break;
+						}						
+						default:
+						{
+							pReader->SkipRecord();
+							break;
+						}
+					}
+				}
+				
 				pReader->Seek(_end_rec);
 			}
 

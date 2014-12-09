@@ -193,6 +193,43 @@ namespace PPTX
 				pWriter->WriteBYTE(NSBinPptxRW::g_nodeAttributeEnd);
 			}
 
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+
+				pReader->Skip(1); // start attributes
+
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+						case 0:
+						{
+							type = (eFit)pReader->GetLong();
+							break;
+						}
+						case 1:
+						{
+							fontScale = pReader->GetLong();
+							break;
+						}
+						case 2:
+						{
+							lnSpcReduction = pReader->GetLong();
+							break;
+						}
+						default:
+							break;
+					}
+				}
+
+				pReader->Seek(_end_rec);
+			}
+
 		public:
 			eFit			type;
 			nullable_int	fontScale;

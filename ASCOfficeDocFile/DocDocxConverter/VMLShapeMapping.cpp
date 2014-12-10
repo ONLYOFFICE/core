@@ -29,18 +29,18 @@ namespace DocFileFormat
 		m_pCaller			=	pCaller;
 		m_pBlipStore		=	NULL;
 
-		_ctx				=	pConv;
-		_pict				=	pPicture;
+		m_ctx				=	pConv;
+		m_pict				=	pPicture;
 		m_nImageId			=	0;
 
-		_imagedata			=	XMLTools::XMLElement<WCHAR>(_T("v:imagedata"));
-		_fill				=	XMLTools::XMLElement<WCHAR>(_T("v:fill"));
-		_stroke				=	XMLTools::XMLElement<WCHAR>(_T("v:stroke"));
-		_shadow				=	XMLTools::XMLElement<WCHAR>(_T("v:shadow"));
-		_3dstyle			=	XMLTools::XMLElement<WCHAR>(_T("o:extrusion"));
-		_textpath			=	XMLTools::XMLElement<WCHAR>(_T("v:textpath"));
+		m_imagedata			=	XMLTools::XMLElement<WCHAR>(_T("v:imagedata"));
+		m_fill				=	XMLTools::XMLElement<WCHAR>(_T("v:fill"));
+		m_stroke			=	XMLTools::XMLElement<WCHAR>(_T("v:stroke"));
+		m_shadow			=	XMLTools::XMLElement<WCHAR>(_T("v:shadow"));
+		m_3dstyle			=	XMLTools::XMLElement<WCHAR>(_T("o:extrusion"));
+		m_textpath			=	XMLTools::XMLElement<WCHAR>(_T("v:textpath"));
 
-		Record* recBs		=	_ctx->_doc->GetOfficeArt()->GetDrawingGroup()->FirstChildWithType<BlipStoreContainer>();
+		Record* recBs		=	m_ctx->_doc->GetOfficeArt()->GetDrawingGroup()->FirstChildWithType<BlipStoreContainer>();
 
 		if (recBs)
 		{
@@ -58,18 +58,17 @@ namespace DocFileFormat
 	void VMLShapeMapping::Apply(IVisitable* visited)
 	{
 		ShapeContainer* pContainer = static_cast<ShapeContainer*>(visited);
-
-		if ((pContainer != NULL ) && (!pContainer->Children.empty()))
+		if ((pContainer != NULL) && (!pContainer->Children.empty()))
 		{
 			Record* firstRecord = pContainer->Children[0];
 			if (firstRecord != NULL)
 			{
-				if ( typeid(*firstRecord) == typeid(Shape) )
+				if (typeid(*firstRecord) == typeid(Shape))
 				{
 					// It's a single shape
 					WriteShape(pContainer);
 				}
-				else if ( typeid(*firstRecord) == typeid(GroupShapeRecord) )
+				else if (typeid(*firstRecord) == typeid(GroupShapeRecord))
 				{ 
 					// Its a group of shapes
 					WriteGroup(static_cast<GroupContainer*>(pContainer->_ParentRecord));
@@ -81,12 +80,12 @@ namespace DocFileFormat
 	/// Converts a group of shapes
 	void VMLShapeMapping::WriteGroup (const GroupContainer* container)
 	{
-		if ( ( container != NULL ) && ( !container->Children.empty() ) )
+		if ((container != NULL) && (!container->Children.empty()))
 		{
 			ShapeContainer* groupShape		=	static_cast<ShapeContainer*>(container->Children[0]);
 			GroupShapeRecord* gsr			=	static_cast<GroupShapeRecord*>(groupShape->Children[0]);
 			Shape* shape					=	static_cast<Shape*>(groupShape->Children[1]);
-			list<OptionEntry> options		=	groupShape->ExtractOptions();
+			std::list<OptionEntry> options	=	groupShape->ExtractOptions();
 			ChildAnchor* anchor				=	groupShape->FirstChildWithType<ChildAnchor>();
 
 			m_pXmlWriter->WriteNodeBegin( _T( "v:group" ), TRUE );
@@ -95,40 +94,41 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteAttribute( _T( "coordorigin" ), ( FormatUtils::IntToWideString(gsr->rcgBounds.topLeftAngle.x) + _T( "," ) + FormatUtils::IntToWideString( gsr->rcgBounds.topLeftAngle.y)).c_str() );
 			m_pXmlWriter->WriteAttribute( _T( "coordsize" ), ( FormatUtils::IntToWideString(gsr->rcgBounds.size.cx) + _T( "," ) + FormatUtils::IntToWideString(gsr->rcgBounds.size.cy)).c_str() );
 
-			// Write wrap coords
-
-			for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != options.end(); ++iter)
+			// Write wrap coords			
+			std::list<OptionEntry>::const_iterator end = options.end();
+			for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
 			{
 				switch (iter->pid)
 				{
 				case pWrapPolygonVertices:
 					{
-						std::wstring wrapCoords	=	getWrapCoords(*iter);
+						std::wstring wrapCoords	= getWrapCoords(*iter);
 						if (wrapCoords.length())
-							m_pXmlWriter->WriteAttribute( _T( "wrapcoords" ), wrapCoords.c_str() );
+							m_pXmlWriter->WriteAttribute(_T( "wrapcoords" ), wrapCoords.c_str());
 					}
 					break;
 				}
 			}
 
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+			m_pXmlWriter->WriteNodeEnd(_T( "" ), TRUE, FALSE);
 
 			// Convert the shapes/groups in the group
-
-			for (unsigned int i = 1; i < container->Children.size(); ++i)
+			
+			size_t count = container->Children.size();
+			for (size_t i = 1; i < count; ++i)
 			{
 				if (container->Children[i])
 				{
-					if ( typeid(*container->Children[i]) == typeid(ShapeContainer) )
+					if (typeid(*container->Children[i]) == typeid(ShapeContainer))
 					{
 						ShapeContainer* pChildShape	= static_cast<ShapeContainer*>(container->Children[i]);
 						if (pChildShape)
 						{
-							VMLShapeMapping vmlShapeMapping(m_pXmlWriter, m_pSpa, NULL, _ctx, m_pCaller);
+							VMLShapeMapping vmlShapeMapping(m_pXmlWriter, m_pSpa, NULL, m_ctx, m_pCaller);
 							pChildShape->Convert(&vmlShapeMapping);
 						}
 					}
-					else if ( typeid(*container->Children[i]) == typeid(GroupContainer) )
+					else if (typeid(*container->Children[i]) == typeid(GroupContainer))
 					{
 						GroupContainer* pChildGroup = static_cast<GroupContainer*>(container->Children[i]);
 						m_pSpa = NULL;
@@ -142,8 +142,7 @@ namespace DocFileFormat
 			if (m_pSpa)
 			{
 				std::wstring wrap = getWrapType(m_pSpa);
-
-				if( wrap != _T( "through" ) )
+				if (wrap != _T( "through" ))
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w10:wrap" ), TRUE );
 					m_pXmlWriter->WriteAttribute( _T( "type" ), wrap.c_str() );
@@ -156,18 +155,18 @@ namespace DocFileFormat
 	}
 
 	/// Converts a single shape
-	void VMLShapeMapping::WriteShape (const ShapeContainer* pContainer)
+	void VMLShapeMapping::WriteShape(const ShapeContainer* pContainer)
 	{
 		if ((NULL != pContainer) && (!pContainer->Children.empty()))
 		{
-			Shape* pShape					=	static_cast<Shape*>(pContainer->Children[0]);
+			Shape* pShape						=	static_cast<Shape*>(pContainer->Children[0]);
 			if (pShape)
 			{
-				bool freeform				=	true;
+				bool freeform					=	true;
 
-				list<OptionEntry> arOptions	=	pContainer->ExtractOptions();
-				ChildAnchor* pAnchor		=	pContainer->FirstChildWithType<ChildAnchor>();
-				ClientAnchor* clientAnchor	=	pContainer->FirstChildWithType<ClientAnchor>();
+				std::list<OptionEntry> options	=	pContainer->ExtractOptions();
+				ChildAnchor* pAnchor			=	pContainer->FirstChildWithType<ChildAnchor>();
+				ClientAnchor* clientAnchor		=	pContainer->FirstChildWithType<ClientAnchor>();
 
 				WriteBeginShapeNode (pShape);
 
@@ -175,11 +174,11 @@ namespace DocFileFormat
 
 				if (pShape->GetShapeType())
 				{
-					freeform				=	false;
+					freeform					=	false;
 					m_pXmlWriter->WriteAttribute( _T("type"), (std::wstring(_T("#")) + VMLShapeTypeMapping::GenerateTypeId(pShape->GetShapeType())).c_str());
 				}
 
-				m_pXmlWriter->WriteAttribute( _T("style"), FormatUtils::XmlEncode(buildStyle(pShape, pAnchor, arOptions, pContainer->Index)).c_str());
+				m_pXmlWriter->WriteAttribute( _T("style"), FormatUtils::XmlEncode(buildStyle(pShape, pAnchor, options, pContainer->Index)).c_str());
 
 				if (pShape->is<LineType>())
 				{
@@ -187,38 +186,39 @@ namespace DocFileFormat
 					m_pXmlWriter->WriteAttribute(_T("from"), GetLineFrom(pAnchor).c_str());
 					m_pXmlWriter->WriteAttribute(_T("to"), GetLineTo(pAnchor).c_str());
 				}
-
-				//temporary variables
+				
 				EmuValue ShadowOffsetX;
 				EmuValue ShadowOffsetY;
 				EmuValue SecondShadowOffsetX;
 				EmuValue SecondShadowOffsetY;
-				double ShadowOriginX = 0;
-				double ShadowOriginY = 0;
 				EmuValue ViewPointX;
 				EmuValue ViewPointY;
 				EmuValue ViewPointZ;
-				double viewPointOriginX = 0;
-				double viewPointOriginY = 0;
+
+				double viewPointOriginX	=	0;
+				double viewPointOriginY	=	0;
+				double ShadowOriginX	=	0;
+				double ShadowOriginY	=	0;
+				unsigned int xCoord		=	0;
+				unsigned int yCoord		=	0;
+				bool stroked			=	true;
+				bool filled				=	true;
+				bool hasTextbox			=	false;
+				bool layoutInCell		=	false;
+				int ndxTextLeft			=	-1;
+				int ndyTextTop			=	-1;
+				int ndxTextRight		=	-1;
+				int ndyTextBottom		=	-1;
+				bool bHavePath			=	false;
+				int	nAdjValues			=	0;
+				int	nLTxID				=	-1;
+				
 				std::wstring adjValues[8];
-				unsigned int xCoord	=	0;
-				unsigned int yCoord	=	0;
-				bool stroked		=	true;
-				bool filled			=	true;
-				bool hasTextbox		=	false;
-				int ndxTextLeft		=	-1;
-				int ndyTextTop		=	-1;
-				int ndxTextRight	=	-1;
-				int ndyTextBottom	=	-1;
+				ShadowStyleBooleanProperties shadowBoolean(0);
+				std::vector<CString> arrInscribe;
 
-				bool bHavePath		=	false;
-				int	nAdjValues		=	0;
-				int	nLTxID			=	-1;
-
-				ShadowStyleBooleanProperties	shadowBoolean(0);
-				std::vector<CString>			arrInscribe;
-
-				for (list<OptionEntry>::const_iterator iter = arOptions.begin(); iter != arOptions.end(); ++iter)
+				std::list<OptionEntry>::const_iterator end = options.end();
+				for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
 				{
 					switch (iter->pid)
 					{
@@ -226,14 +226,13 @@ namespace DocFileFormat
 
 					case geometryBooleans:
 						{
-							GeometryBooleanProperties oBooleans(iter->op);
-
-							if (oBooleans.fUsefLineOK && !oBooleans.fLineOK)
+							GeometryBooleanProperties booleans(iter->op);
+							if (booleans.fUsefLineOK && !booleans.fLineOK)
 							{
 								stroked	=	false;
 							}
 
-							if (!(oBooleans.fUsefFillOK && oBooleans.fFillOK))
+							if (!(booleans.fUsefFillOK && booleans.fFillOK))
 							{
 								filled	=	false;
 							}
@@ -242,9 +241,8 @@ namespace DocFileFormat
 
 					case fillStyleBooleanProperties:
 						{
-							FillStyleBooleanProperties fillBooleans( iter->op );
-
-							if ( fillBooleans.fUsefFilled && !fillBooleans.fFilled )
+							FillStyleBooleanProperties booleans(iter->op);
+							if (booleans.fUsefFilled && !booleans.fFilled)
 							{
 								filled = false;
 							}
@@ -253,9 +251,8 @@ namespace DocFileFormat
 
 					case lineStyleBooleans:
 						{
-							LineStyleBooleanProperties lineBooleans(iter->op);
-
-							if (lineBooleans.fUsefLine && !lineBooleans.fLine)
+							LineStyleBooleanProperties booleans(iter->op);
+							if (booleans.fUsefLine && !booleans.fLine)
 							{
 								stroked = false;
 							}
@@ -264,13 +261,23 @@ namespace DocFileFormat
 
 					case protectionBooleans:
 						{
-							ProtectionBooleanProperties protBools(iter->op);
+							ProtectionBooleanProperties booleans(iter->op);
 						}
 						break;
 
 					case diagramBooleans:
 						{
-							DiagramBooleanProperties diaBools(iter->op);
+							DiagramBooleanProperties booleans(iter->op);
+						}
+						break;
+
+					case groupShapeBooleans:
+						{
+							GroupShapeBooleanProperties booleans(iter->op);
+							if (booleans.fUsefLayoutInCell)
+							{
+								layoutInCell = booleans.fLayoutInCell;
+							}
 						}
 						break;
 
@@ -334,7 +341,7 @@ namespace DocFileFormat
 
 					case pWrapPolygonVertices:
 						{
-							wstring wrapCoords = getWrapCoords(*iter);
+							std::wstring wrapCoords = getWrapCoords(*iter);
 
 							if (!wrapCoords.empty())
 							{
@@ -385,49 +392,49 @@ namespace DocFileFormat
 
 					case lineDashing:
 						{
-							appendValueAttribute( &_stroke, _T( "dashstyle" ), FormatUtils::MapValueToWideString( iter->op, &Global::DashStyleMap[0][0], 11, 16 ).c_str() );
+							appendValueAttribute(&m_stroke, _T( "dashstyle" ), FormatUtils::MapValueToWideString( iter->op, &Global::DashStyleMap[0][0], 11, 16 ).c_str() );
 						}
 						break;
 
 					case lineStyle:
 						{
-							appendValueAttribute( &_stroke, _T( "linestyle" ), getLineStyle( iter->op ).c_str() );
+							appendValueAttribute(&m_stroke, _T( "linestyle" ), getLineStyle( iter->op ).c_str());
 						}
 						break;
 
 					case lineEndArrowhead:
 						{
-							appendValueAttribute( &_stroke, _T( "endarrow" ), getArrowStyle( iter->op ).c_str() );
+							appendValueAttribute(&m_stroke, _T( "endarrow" ), getArrowStyle( iter->op ).c_str());
 						}
 						break;
 
 					case lineEndArrowLength:
 						{
-							appendValueAttribute( &_stroke, _T( "endarrowlength" ), getArrowLength( iter->op ).c_str() );
+							appendValueAttribute(&m_stroke, _T( "endarrowlength" ), getArrowLength( iter->op ).c_str());
 						}
 						break;
 
 					case lineEndArrowWidth:
 						{
-							appendValueAttribute( &_stroke, _T( "endarrowwidth" ), getArrowWidth( iter->op ).c_str() );
+							appendValueAttribute(&m_stroke, _T( "endarrowwidth" ), getArrowWidth( iter->op ).c_str());
 						}
 						break;
 
 					case lineStartArrowhead:
 						{
-							appendValueAttribute( &_stroke, _T( "startarrow" ), getArrowStyle( iter->op ).c_str() );
+							appendValueAttribute(&m_stroke, _T( "startarrow" ), getArrowStyle( iter->op ).c_str());
 						}
 						break;
 
 					case lineStartArrowLength:
 						{
-							appendValueAttribute( &_stroke, _T( "startarrowlength" ), getArrowLength( iter->op ).c_str() );
+							appendValueAttribute(&m_stroke, _T( "startarrowlength" ), getArrowLength( iter->op ).c_str());
 						}
 						break;
 
 					case lineStartArrowWidth:
 						{
-							appendValueAttribute( &_stroke, _T( "startarrowwidth" ), getArrowWidth( iter->op ).c_str() );
+							appendValueAttribute(&m_stroke, _T( "startarrowwidth" ), getArrowWidth( iter->op ).c_str());
 						}
 						break;
 
@@ -435,46 +442,46 @@ namespace DocFileFormat
 
 					case fillColor:
 						{
-							RGBColor fillColor( (int)iter->op, RedFirst );
-							m_pXmlWriter->WriteAttribute( _T( "fillcolor" ), ( wstring( _T( "#" ) ) + fillColor.SixDigitHexCode ).c_str() );
+							RGBColor fillColor((int)iter->op, RedFirst);
+							m_pXmlWriter->WriteAttribute(_T( "fillcolor" ), ( std::wstring( _T( "#" ) ) + fillColor.SixDigitHexCode ).c_str());
 						}
 						break;
 
 					case fillBackColor:
 						{
 							RGBColor fillBackColor( (int)iter->op, RedFirst );
-							appendValueAttribute( &_fill, _T( "color2" ), ( wstring( _T( "#" ) ) + fillBackColor.SixDigitHexCode ).c_str() );
+							appendValueAttribute(&m_fill, _T( "color2" ), ( std::wstring( _T( "#" ) ) + fillBackColor.SixDigitHexCode ).c_str());
 						}
 						break;
 
 					case fillAngle:
 						{
 							FixedPointNumber fllAngl( iter->op );
-							appendValueAttribute( &_fill, _T( "angle" ), FormatUtils::DoubleToWideString( fllAngl.ToAngle() ).c_str() );
+							appendValueAttribute(&m_fill, _T( "angle" ), FormatUtils::DoubleToWideString( fllAngl.ToAngle() ).c_str());
 						}
 						break;
 
 					case fillShadeType:
 						{
-							appendValueAttribute( &_fill, _T( "method" ), getFillMethod( iter->op ).c_str() );
+							appendValueAttribute(&m_fill, _T( "method" ), getFillMethod( iter->op ).c_str());
 						}
 						break;
 
 					case fillShadeColors:
 						{
-							appendValueAttribute( &_fill, _T( "colors" ), getFillColorString( iter->opComplex, iter->op ).c_str() );
+							appendValueAttribute(&m_fill, _T( "colors" ), getFillColorString( iter->opComplex, iter->op ).c_str());
 						}
 						break;
 
 					case fillFocus:
 						{
-							appendValueAttribute( &_fill, _T( "focus" ), ( FormatUtils::IntToWideString( iter->op ) + _T( "%" ) ).c_str() );
+							appendValueAttribute(&m_fill, _T( "focus" ), ( FormatUtils::IntToWideString( iter->op ) + _T( "%" ) ).c_str());
 						}
 						break;
 
 					case fillType:
 						{
-							appendValueAttribute( &_fill, _T( "type" ), getFillType( iter->op ).c_str() );
+							appendValueAttribute(&m_fill, _T( "type" ), getFillType( iter->op ).c_str());
 						}
 						break;
 
@@ -482,7 +489,7 @@ namespace DocFileFormat
 						{
 							BlipStoreEntry* pFillBlip = NULL;
 
-							if ( (_pict != NULL ) && ( _pict->blipStoreEntry != NULL ) )
+							if ((m_pict != NULL ) && (m_pict->blipStoreEntry != NULL ))
 							{
 								// Word Art Texture
 								//fillBlip = this->_pict->BlipStoreEntry;
@@ -494,15 +501,15 @@ namespace DocFileFormat
 
 							if ( (pFillBlip != NULL) && copyPicture(pFillBlip) )
 							{
-								appendValueAttribute( &_fill, _T( "r:id" ), ( wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str() );
-								appendValueAttribute( &_imagedata, _T( "o:title" ), _T( "" ) );
+								appendValueAttribute(&m_fill, _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
+								appendValueAttribute(&m_imagedata, _T( "o:title" ), _T( "" ));
 							}
 						}
 						break;
 
 					case fillOpacity:
 						{
-							appendValueAttribute( &_fill, _T( "opacity" ), ( FormatUtils::IntToWideString( iter->op ) + _T( "f" ) ).c_str() );
+							appendValueAttribute(&m_fill, _T( "opacity" ), ( FormatUtils::IntToWideString( iter->op ) + _T( "f" ) ).c_str());
 						}
 						break;
 
@@ -510,14 +517,14 @@ namespace DocFileFormat
 
 					case shadowType:
 						{
-							appendValueAttribute(&_shadow, _T("type"), getShadowType(iter->op).c_str());
+							appendValueAttribute(&m_shadow, _T("type"), getShadowType(iter->op).c_str());
 						}
 						break;
 
 					case shadowColor:
 						{
 							RGBColor shadowColor((int)iter->op, RedFirst);
-							appendValueAttribute(&_shadow, _T( "color" ), ( wstring( _T( "#" ) ) + shadowColor.SixDigitHexCode ).c_str());
+							appendValueAttribute(&m_shadow, _T( "color" ), ( std::wstring( _T( "#" ) ) + shadowColor.SixDigitHexCode ).c_str());
 						}
 						break;
 
@@ -553,15 +560,15 @@ namespace DocFileFormat
 
 					case shadowOriginY:
 						{
-							ShadowOriginY = ( iter->op / pow( (double)2, (double)16 ) );
+							ShadowOriginY = (iter->op / pow( (double)2, (double)16));
 						}
 						break;
 
 					case shadowOpacity:
 						{
-							double shadowOpa = ( iter->op / pow( (double)2, (double)16 ) );
+							double shadowOpa = (iter->op / pow( (double)2, (double)16));
 
-							appendValueAttribute( &_shadow, _T( "opacity" ), FormatUtils::DoubleToFormattedWideString( shadowOpa, _T( "%.2f" ) ).c_str() );
+							appendValueAttribute(&m_shadow, _T( "opacity" ), FormatUtils::DoubleToFormattedWideString( shadowOpa, _T( "%.2f" ) ).c_str());
 						}
 						break;
 
@@ -580,10 +587,9 @@ namespace DocFileFormat
 							if ((m_pBlipStore != NULL) && (index < (int)m_pBlipStore->Children.size()))
 							{
 								BlipStoreEntry* oBlip = static_cast<BlipStoreEntry*>(m_pBlipStore->Children[index]);
-
 								if (copyPicture(oBlip))
 								{
-									appendValueAttribute( &this->_imagedata, _T( "r:id" ), ( wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str() );
+									appendValueAttribute(&m_imagedata, _T( "r:id" ), ( std::wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
 								}
 							}
 						}
@@ -591,11 +597,9 @@ namespace DocFileFormat
 
 					case pibName:
 						{
-							wstring name;
-
-							FormatUtils::GetSTLCollectionFromBytes<wstring>( &name, iter->opComplex, iter->op, ENCODING_UNICODE );
-
-							appendValueAttribute( &this->_imagedata, _T( "o:title" ), FormatUtils::XmlEncode(name).c_str() );
+							std::wstring name;
+							FormatUtils::GetSTLCollectionFromBytes<std::wstring>(&name, iter->opComplex, iter->op, ENCODING_UNICODE);
+							appendValueAttribute(&m_imagedata, _T( "o:title" ), FormatUtils::XmlEncode(name).c_str());
 						}
 						break;
 
@@ -609,14 +613,14 @@ namespace DocFileFormat
 					case c3DExtrudeBackward:
 						{
 							EmuValue backwardValue( (int)iter->op );
-							appendValueAttribute( &_3dstyle, _T( "backdepth" ), FormatUtils::DoubleToWideString( backwardValue.ToPoints() ).c_str() );
+							appendValueAttribute(&m_3dstyle, _T( "backdepth" ), FormatUtils::DoubleToWideString( backwardValue.ToPoints() ).c_str());
 						}
 						break; 
 
 					case c3DSkewAngle:
 						{
 							FixedPointNumber skewAngle( iter->op );
-							appendValueAttribute( &_3dstyle, _T( "skewangle" ), FormatUtils::DoubleToWideString( skewAngle.ToAngle() ).c_str() );
+							appendValueAttribute(&m_3dstyle, _T( "skewangle" ), FormatUtils::DoubleToWideString( skewAngle.ToAngle() ).c_str());
 						}
 						break;
 
@@ -713,7 +717,7 @@ namespace DocFileFormat
 						{
 							bHavePath			=	true;
 
-							std::wstring path	=	ParsePath(arOptions);
+							std::wstring path	=	ParsePath(options);
 
 							if (false == path.empty())
 								m_pXmlWriter->WriteAttribute (_T( "path" ), path.c_str());
@@ -724,7 +728,7 @@ namespace DocFileFormat
 
 				if (false == bHavePath)		//	фигура может быть задана только наборами вершин и индексов
 				{
-					std::wstring path	=	ParsePath(arOptions);
+					std::wstring path	=	ParsePath(options);
 
 					if (false == path.empty())
 						m_pXmlWriter->WriteAttribute (_T( "path" ), path.c_str());
@@ -738,6 +742,11 @@ namespace DocFileFormat
 				if ( !stroked )
 				{
 					m_pXmlWriter->WriteAttribute( _T( "stroked" ), _T( "f" ) );
+				}
+
+				if (!layoutInCell) 
+				{
+					m_pXmlWriter->WriteAttribute(_T("o:allowincell"), _T("f"));
 				}
 
 				if ( ( xCoord > 0 ) && ( yCoord > 0 ) )
@@ -793,7 +802,7 @@ namespace DocFileFormat
 
 				if ( !offset.empty() )
 				{
-					appendValueAttribute( &_shadow, _T( "offset" ), offset.c_str() );
+					appendValueAttribute(&m_shadow, _T( "offset" ), offset.c_str());
 				}
 
 				wstring offset2;
@@ -807,37 +816,37 @@ namespace DocFileFormat
 				if ( SecondShadowOffsetY != 0 )
 				{
 					offset2 += _T( "," );
-					offset2 += FormatUtils::DoubleToWideString( SecondShadowOffsetY.ToPoints() );
+					offset2 += FormatUtils::DoubleToWideString(SecondShadowOffsetY.ToPoints());
 					offset2 += _T( "pt" );
 				}
 
-				if ( !offset2.empty() )
+				if (!offset2.empty())
 				{
-					appendValueAttribute( &_shadow, _T( "offset2" ), offset2.c_str() );
+					appendValueAttribute(&m_shadow, _T("offset2"), offset2.c_str());
 				}
 
 				//build shadow origin
 				if ( ( ShadowOriginX != 0 ) && ( ShadowOriginY != 0 ) )
 				{
-					appendValueAttribute( &_shadow, _T( "origin" ), ( FormatUtils::DoubleToWideString( shadowOriginX ) + wstring( _T( "," ) ) + FormatUtils::DoubleToWideString( shadowOriginY ) ).c_str() );
+					appendValueAttribute(&m_shadow, _T("origin"), (FormatUtils::DoubleToWideString(shadowOriginX) + std::wstring(_T( "," )) + FormatUtils::DoubleToWideString(shadowOriginY)).c_str());
 				}
 
 				// write shadow
-				if (_shadow.GetAttributeCount() > 0)
+				if (m_shadow.GetAttributeCount() > 0)
 				{
 					if (shadowBoolean.fShadow)
 					{
-						appendValueAttribute( &_shadow, _T( "on" ), _T( "t" ) );
+						appendValueAttribute(&m_shadow, _T( "on" ), _T( "t" ));
 					}
 
-					m_pXmlWriter->WriteString( _shadow.GetXMLString().c_str() );
+					m_pXmlWriter->WriteString(m_shadow.GetXMLString().c_str());
 				}
 
 				//write 3d style 
-				if ( _3dstyle.GetAttributeCount() > 0 )
+				if (m_3dstyle.GetAttributeCount() > 0)
 				{
-					appendValueAttribute( &_3dstyle, _T( "v:ext" ), _T( "view" ) );
-					appendValueAttribute( &_3dstyle, _T( "on" ), _T( "t" ) );
+					appendValueAttribute(&m_3dstyle, _T( "v:ext" ), _T( "view" ));
+					appendValueAttribute(&m_3dstyle, _T( "on" ), _T( "t" ));
 
 					//write the viewpoint
 					if ( ( ViewPointX != 0 ) || ( ViewPointY != 0 ) || ( ViewPointZ != 0 ) )
@@ -861,13 +870,13 @@ namespace DocFileFormat
 							viewPoint += FormatUtils::IntToWideString( ViewPointZ );
 						}
 
-						appendValueAttribute( &_3dstyle, _T( "viewpoint" ), viewPoint.c_str() );
+						appendValueAttribute(&m_3dstyle, _T( "viewpoint" ), viewPoint.c_str());
 					}
 
 					// write the viewpointorigin
 					if ( ( viewPointOriginX != 0 ) || ( viewPointOriginY != 0 ) )
 					{
-						wstring viewPointOrigin;
+						std::wstring viewPointOrigin;
 
 						if ( viewPointOriginX != 0 )
 						{
@@ -880,18 +889,18 @@ namespace DocFileFormat
 							viewPointOrigin += FormatUtils::DoubleToFormattedWideString( viewPointOriginY, _T( "%.2f" ) );
 						}
 
-						appendValueAttribute( &_3dstyle, _T( "viewpointorigin" ), viewPointOrigin.c_str() );
+						appendValueAttribute(&m_3dstyle, _T( "viewpointorigin" ), viewPointOrigin.c_str());
 					}
 
-					m_pXmlWriter->WriteString( _3dstyle.GetXMLString().c_str() );
+					m_pXmlWriter->WriteString(m_3dstyle.GetXMLString().c_str());
 				}
 
 				// write wrap
 				if (m_pSpa)
 				{
-					wstring wrap = getWrapType(m_pSpa);
+					std::wstring wrap = getWrapType(m_pSpa);
 
-					if( wrap != _T( "through" ) )
+					if (wrap != _T("through"))
 					{
 						m_pXmlWriter->WriteNodeBegin( _T( "w10:wrap" ), TRUE );
 						m_pXmlWriter->WriteAttribute( _T( "type" ), wrap.c_str() );
@@ -900,28 +909,28 @@ namespace DocFileFormat
 				}
 
 				// write stroke
-				if (_stroke.GetAttributeCount() > 0)
+				if (m_stroke.GetAttributeCount())
 				{
-					m_pXmlWriter->WriteString(_stroke.GetXMLString().c_str());
+					m_pXmlWriter->WriteString(m_stroke.GetXMLString().c_str());
 				}
 
 				// write fill
-				if (_fill.GetAttributeCount() > 0)
+				if (m_fill.GetAttributeCount())
 				{
-					m_pXmlWriter->WriteString (_fill.GetXMLString().c_str());
+					m_pXmlWriter->WriteString(m_fill.GetXMLString().c_str());
 				}
 
 				// text path
-				if (_textpath.GetAttributeCount() > 0)
+				if (m_textpath.GetAttributeCount())
 				{
-					appendValueAttribute( &_textpath, _T( "style" ), _textPathStyle.c_str() );
-					m_pXmlWriter->WriteString( _textpath.GetXMLString().c_str() );
+					appendValueAttribute(&m_textpath, _T( "style" ), m_textPathStyle.c_str());
+					m_pXmlWriter->WriteString(m_textpath.GetXMLString().c_str());
 				}
 
 				// write imagedata
-				if (_imagedata.GetAttributeCount() > 0)
+				if (m_imagedata.GetAttributeCount())
 				{
-					m_pXmlWriter->WriteString(_imagedata.GetXMLString().c_str());
+					m_pXmlWriter->WriteString(m_imagedata.GetXMLString().c_str());
 				}
 
 				if (freeform)
@@ -947,9 +956,9 @@ namespace DocFileFormat
 					int nIndex = pTextBox->GetIndex();
 					if (nIndex)
 					{
-						TextboxMapping textboxMapping(_ctx, nIndex - 1, m_pXmlWriter, m_pCaller);
+						TextboxMapping textboxMapping(m_ctx, nIndex - 1, m_pXmlWriter, m_pCaller);
 						textboxMapping.SetInset(ndxTextLeft, ndyTextTop, ndxTextRight, ndyTextBottom);
-						_ctx->_doc->Convert(&textboxMapping);
+						m_ctx->_doc->Convert(&textboxMapping);
 					}
 				}
 				else if( hasTextbox )
@@ -962,15 +971,15 @@ namespace DocFileFormat
 
 					if (-1 != nLTxID)
 					{
-						TextboxMapping textboxMapping(_ctx, nLTxID - 1, m_pXmlWriter, m_pCaller);
+						TextboxMapping textboxMapping(m_ctx, nLTxID - 1, m_pXmlWriter, m_pCaller);
 						textboxMapping.SetInset(ndxTextLeft, ndyTextTop, ndxTextRight, ndyTextBottom);
-						_ctx->_doc->Convert(&textboxMapping);
+						m_ctx->_doc->Convert(&textboxMapping);
 					}
 					else
 					{
-						TextboxMapping textboxMapping(_ctx, m_pXmlWriter, m_pCaller);
+						TextboxMapping textboxMapping(m_ctx, m_pXmlWriter, m_pCaller);
 						textboxMapping.SetInset(ndxTextLeft, ndyTextTop, ndxTextRight, ndyTextBottom);
-						_ctx->_doc->Convert(&textboxMapping);
+						m_ctx->_doc->Convert(&textboxMapping);
 					}
 				}
 
@@ -1022,19 +1031,19 @@ namespace DocFileFormat
 	{
 		if (NULL != pShape)
 		{
-			if (pShape->is<OvalType>() )
+			if (pShape->is<OvalType>())
 			{
 				m_pXmlWriter->WriteNodeEnd( _T( "v:oval" ) );
 			}
-			else if (pShape->is<RoundedRectangleType>() )
+			else if (pShape->is<RoundedRectangleType>())
 			{
 				m_pXmlWriter->WriteNodeEnd( _T( "v:roundrect" ) );
 			}
-			else if (pShape->is<RectangleType>() )
+			else if (pShape->is<RectangleType>())
 			{
 				m_pXmlWriter->WriteNodeEnd( _T( "v:rect" ) );
 			}
-			else if (pShape->is<LineType>() )
+			else if (pShape->is<LineType>())
 			{
 				m_pXmlWriter->WriteNodeEnd( _T( "v:line" ) );
 			}
@@ -1112,7 +1121,6 @@ namespace DocFileFormat
 		return strXmlTo;
 	}
 
-
 	/// Build the VML wrapcoords string for a given pWrapPolygonVertices
 	std::wstring VMLShapeMapping::getWrapCoords(const OptionEntry& pWrapPolygonVertices) const
 	{
@@ -1133,9 +1141,10 @@ namespace DocFileFormat
 				arrVertices.push_back(oStream.ReadInt32());
 			}
 
-			for (std::list<int>::const_iterator oIter = arrVertices.begin(); oIter != arrVertices.end(); ++oIter)
+			std::list<int>::const_iterator end = arrVertices.end();
+			for (std::list<int>::const_iterator iter = arrVertices.begin(); iter != end; ++iter)
 			{
-				coords += FormatUtils::IntToWideString(*oIter);
+				coords += FormatUtils::IntToWideString(*iter);
 				coords += _T( "," );
 			}
 
@@ -1154,7 +1163,7 @@ namespace DocFileFormat
 		//write the blip
 		if (oBlip)
 		{
-			VirtualStreamReader reader(_ctx->_doc->WordDocumentStream, oBlip->foDelay);
+			VirtualStreamReader reader(m_ctx->_doc->WordDocumentStream, oBlip->foDelay);
 
 			switch (oBlip->btWin32)
 			{
@@ -1172,7 +1181,7 @@ namespace DocFileFormat
 						decompressedSize = metaBlip->Decompress(&decompressed);
 						if (0 != decompressedSize && NULL != decompressed)
 						{
-							_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), vector<byte>(decompressed, (decompressed + decompressedSize))));
+							m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), vector<byte>(decompressed, (decompressed + decompressedSize))));
 							RELEASEARRAYOBJECTS(decompressed);
 						}
 
@@ -1191,7 +1200,7 @@ namespace DocFileFormat
 					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(RecordFactory::ReadRecord(&reader, 0));
 					if (bitBlip)
 					{
-						_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), 
+						m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlip->btWin32), 
 							vector<byte>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlip->btWin32));
 						RELEASEOBJECT (bitBlip);
 					}
@@ -1206,7 +1215,7 @@ namespace DocFileFormat
 				break;
 			}
 
-			m_nImageId	=	_ctx->_docx->RegisterImage (m_pCaller, oBlip->btWin32);
+			m_nImageId	=	m_ctx->_docx->RegisterImage (m_pCaller, oBlip->btWin32);
 
 			result		=	true;
 		}
@@ -1219,35 +1228,35 @@ namespace DocFileFormat
 		switch ( _type )
 		{
 			//case msoblipBMP:
-			//  return wstring( _T( ".bmp" ) );
+			//  return std::wstring( _T( ".bmp" ) );
 
 		case Global::msoblipEMF:
-			return wstring( _T( ".emf" ) );
+			return std::wstring( _T( ".emf" ) );
 
 			//case msoblipGIF:
-			//  return wstring( _T( ".gif" ) );
+			//  return std::wstring( _T( ".gif" ) );
 
 			//case msoblipICON:
-			//  return wstring( _T( ".ico" ) );
+			//  return std::wstring( _T( ".ico" ) );
 
 		case Global::msoblipJPEG:
 		case Global::msoblipCMYKJPEG:
-			return wstring( _T( ".jpg" ) );
+			return std::wstring( _T( ".jpg" ) );
 
 			//case msoblipPCX:
-			//  return wstring( _T( ".pcx" ) );
+			//  return std::wstring( _T( ".pcx" ) );
 
 		case Global::msoblipPNG:
-			return wstring( _T( ".png" ) );
+			return std::wstring( _T( ".png" ) );
 
 		case Global::msoblipTIFF:
-			return wstring( _T( ".tif" ) );
+			return std::wstring( _T( ".tif" ) );
 
 		case Global::msoblipWMF:
-			return wstring( _T( ".wmf" ) );
+			return std::wstring( _T( ".wmf" ) );
 
 		default:
-			return wstring( _T( ".png" ) );
+			return std::wstring( _T( ".png" ) );
 		}
 	}
 
@@ -1270,8 +1279,8 @@ namespace DocFileFormat
 			wstring widthString = FormatUtils::DoubleToWideString( width.ToPoints() );
 			wstring heightString = FormatUtils::DoubleToWideString( height.ToPoints() );
 
-			style->operator += ( wstring( _T( "width:" ) ) + widthString + wstring( _T( "pt;" ) ) );
-			style->operator += ( wstring( _T( "height:" ) ) + heightString + wstring( _T( "pt;" ) ) );
+			style->operator += ( std::wstring( _T( "width:" ) ) + widthString + std::wstring( _T( "pt;" ) ) );
+			style->operator += ( std::wstring( _T( "height:" ) ) + heightString + std::wstring( _T( "pt;" ) ) );
 		}
 	}
 
@@ -1341,7 +1350,7 @@ namespace DocFileFormat
 		}
 	}
 
-	void VMLShapeMapping::appendStyleProperty(std::wstring* b, const wstring& propName, const wstring& propValue) const
+	void VMLShapeMapping::appendStyleProperty(std::wstring* b, const std::wstring& propName, const std::wstring& propValue) const
 	{
 		if ( b != NULL )
 		{
@@ -1602,34 +1611,35 @@ namespace DocFileFormat
 		}
 	}
 
-	void VMLShapeMapping::AppendOptionsToStyle (std::wstring* oStyle, const list<OptionEntry>& options) const
+	void VMLShapeMapping::AppendOptionsToStyle (std::wstring* oStyle, const std::list<OptionEntry>& options) const
 	{
-		for (std::list<OptionEntry>::const_iterator oIter = options.begin(); oIter != options.end(); ++oIter)
+		std::list<OptionEntry>::const_iterator end = options.end();
+		for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
 		{
-			switch (oIter->pid)
+			switch (iter->pid)
 			{
 				//	POSITIONING
 			case posh:
 				{
-					appendStyleProperty(oStyle, _T("mso-position-horizontal"), mapHorizontalPosition((PositionHorizontal)oIter->op));
+					appendStyleProperty(oStyle, _T("mso-position-horizontal"), mapHorizontalPosition((PositionHorizontal)iter->op));
 				}
 				break;
 
 			case posrelh:
 				{
-					appendStyleProperty(oStyle, _T("mso-position-horizontal-relative"), mapHorizontalPositionRelative((PositionHorizontalRelative)oIter->op));
+					appendStyleProperty(oStyle, _T("mso-position-horizontal-relative"), mapHorizontalPositionRelative((PositionHorizontalRelative)iter->op));
 				}
 				break;
 
 			case posv:
 				{
-					appendStyleProperty(oStyle, _T("mso-position-vertical"), mapVerticalPosition((PositionVertical)oIter->op));
+					appendStyleProperty(oStyle, _T("mso-position-vertical"), mapVerticalPosition((PositionVertical)iter->op));
 				}
 				break;
 
 			case posrelv:
 				{
-					appendStyleProperty(oStyle, _T("mso-position-vertical-relative"), mapVerticalPositionRelative((PositionVerticalRelative)oIter->op));
+					appendStyleProperty(oStyle, _T("mso-position-vertical-relative"), mapVerticalPositionRelative((PositionVerticalRelative)iter->op));
 				}
 				break;
 
@@ -1637,7 +1647,7 @@ namespace DocFileFormat
 
 			case groupShapeBooleans:
 				{
-					GroupShapeBooleanProperties groupShapeBooleans(oIter->op);
+					GroupShapeBooleanProperties groupShapeBooleans(iter->op);
 
 					if (groupShapeBooleans.fUsefBehindDocument && groupShapeBooleans.fBehindDocument)
 					{
@@ -1656,7 +1666,7 @@ namespace DocFileFormat
 
 			case PropertyId_rotation:
 				{
-					double dAngle = (double)((int)oIter->op) / 65535.0;
+					double dAngle = (double)((int)iter->op) / 65535.0;
 
 					if (dAngle < -360.0)
 						dAngle += 360.0;
@@ -1671,7 +1681,7 @@ namespace DocFileFormat
 
 			case anchorText:
 				{
-					appendStyleProperty(oStyle, _T("v-text-anchor"), getTextboxAnchor(oIter->op));
+					appendStyleProperty(oStyle, _T("v-text-anchor"), getTextboxAnchor(iter->op));
 				}
 				break;
 
@@ -1679,25 +1689,25 @@ namespace DocFileFormat
 
 			case dxWrapDistLeft:
 				{
-					appendStyleProperty(oStyle, _T("mso-wrap-distance-left"), (FormatUtils::DoubleToWideString(EmuValue((int)oIter->op).ToPoints()) + std::wstring(_T("pt"))));
+					appendStyleProperty(oStyle, _T("mso-wrap-distance-left"), (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(_T("pt"))));
 				}
 				break;
 
 			case dxWrapDistRight:
 				{
-					appendStyleProperty(oStyle, _T("mso-wrap-distance-right"), (FormatUtils::DoubleToWideString(EmuValue((int)oIter->op).ToPoints()) + std::wstring(_T("pt"))));
+					appendStyleProperty(oStyle, _T("mso-wrap-distance-right"), (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(_T("pt"))));
 				}
 				break;
 
 			case dyWrapDistBottom:
 				{
-					appendStyleProperty(oStyle, _T("mso-wrap-distance-bottom"), (FormatUtils::DoubleToWideString(EmuValue((int)oIter->op).ToPoints()) + std::wstring(_T("pt"))));
+					appendStyleProperty(oStyle, _T("mso-wrap-distance-bottom"), (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(_T("pt"))));
 				}
 				break;
 
 			case dyWrapDistTop:
 				{
-					appendStyleProperty(oStyle, _T("mso-wrap-distance-top"), (FormatUtils::DoubleToWideString(EmuValue((int)oIter->op).ToPoints()) + std::wstring(_T("pt"))));
+					appendStyleProperty(oStyle, _T("mso-wrap-distance-top"), (FormatUtils::DoubleToWideString(EmuValue((int)iter->op).ToPoints()) + std::wstring(_T("pt"))));
 				}
 				break;
 			}
@@ -1711,14 +1721,14 @@ namespace DocFileFormat
 
 		// Check if some properties are set that cause the dimensions to be twisted
 		bool twistDimensions = false;
-
-		for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != options.end(); ++iter)
+		std::list<OptionEntry>::const_iterator end = options.end();
+		for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
 		{
 			if (geometryTextBooleanProperties ==  iter->pid)
 			{
 				GeometryTextBooleanProperties props(iter->op);
 
-				if(props.fUsegtextFVertical && props.gtextFVertical)
+				if (props.fUsegtextFVertical && props.gtextFVertical)
 				{
 					twistDimensions = true;
 				}
@@ -1726,7 +1736,7 @@ namespace DocFileFormat
 
 			if (PropertyId_rotation ==  iter->pid)
 			{
-				double dAngle	=	(double)((int)iter->op) / 65535.0;
+				double dAngle = (double)((int)iter->op) / 65535.0;
 
 				if (dAngle < -360.0)
 					dAngle += 360.0;
@@ -1748,16 +1758,16 @@ namespace DocFileFormat
 				//so use the FSPA to build the style
 				AppendDimensionToStyle(&style, m_pSpa, twistDimensions);
 			}
-			else if( anchor != NULL )
+			else if (anchor)
 			{
 				//the style is part of a group, 
 				//so use the anchor
 				AppendDimensionToStyle(&style, anchor, twistDimensions);
 			}
-			else if( _pict != NULL )
+			else if (m_pict)
 			{
 				// it is some kind of PICT shape (e.g. WordArt)
-				AppendDimensionToStyle(&style, _pict, twistDimensions);
+				AppendDimensionToStyle(&style, m_pict, twistDimensions);
 			}
 		}
 		else
@@ -2175,14 +2185,15 @@ namespace DocFileFormat
 		return wrapType;
 	}
 
-	std::wstring VMLShapeMapping::ParsePath (const list<OptionEntry>& options) const
+	std::wstring VMLShapeMapping::ParsePath (const std::list<OptionEntry>& options) const
 	{
 		const byte* pVP		=	NULL;
 		unsigned int nVP	=	0;
 		const byte* pSI		=	NULL;
 		unsigned int nSI	=	0;
-
-		for (list<OptionEntry>::const_iterator iter = options.begin(); iter != options.end(); ++iter)
+		
+		std::list<OptionEntry>::const_iterator end = options.end();
+		for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
 		{
 			if (iter->pid == pVertices)
 			{

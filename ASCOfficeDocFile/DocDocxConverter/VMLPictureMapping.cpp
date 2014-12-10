@@ -7,14 +7,14 @@ namespace DocFileFormat
 {
 	VMLPictureMapping::VMLPictureMapping(ConversionContext* ctx, XmlUtils::CXmlWriter* writer, bool olePreview, IMapping* caller, bool isBulletPicture) : PropertiesMapping(writer)
 	{
-		_ctx				=	ctx;
-		_olePreview			=	olePreview;
-		_imageData			=	NULL;
+		m_ctx				=	ctx;
+		m_olePreview		=	olePreview;
+		m_imageData			=	NULL;
 		m_nImageId			=	0;
-		_caller				=	caller;
-		_isBulletPicture	=	isBulletPicture;
+		m_caller			=	caller;
+		m_isBulletPicture	=	isBulletPicture;
 
-		_imageData			=	new XMLTools::XMLElement<WCHAR>( _T( "v:imagedata" ) );
+		m_imageData			=	new XMLTools::XMLElement<WCHAR>( _T( "v:imagedata" ) );
 
 		GUID guid			=	GUID_NULL;
 		LPOLESTR guidString =	NULL;
@@ -27,7 +27,7 @@ namespace DocFileFormat
 
 	VMLPictureMapping::~VMLPictureMapping()
 	{
-		RELEASEOBJECT (_imageData);
+		RELEASEOBJECT(m_imageData);
 	}
 }
 
@@ -44,7 +44,7 @@ namespace DocFileFormat
 
 			//v:shapetype
 			PictureFrameType type;
-			VMLShapeTypeMapping* vmlShapeTypeMapping = new VMLShapeTypeMapping( m_pXmlWriter, this->_isBulletPicture );
+			VMLShapeTypeMapping* vmlShapeTypeMapping = new VMLShapeTypeMapping( m_pXmlWriter, m_isBulletPicture );
 			type.Convert( vmlShapeTypeMapping );
 			RELEASEOBJECT( vmlShapeTypeMapping );
 
@@ -69,12 +69,13 @@ namespace DocFileFormat
 
 			m_pXmlWriter->WriteAttribute( _T( "id" ), m_ShapeId.c_str() );
 
-			if ( this->_olePreview )
+			if (m_olePreview)
 			{
 				m_pXmlWriter->WriteAttribute( _T( "o:ole" ), _T( "" ) );
 			}
-
-			for ( list<OptionEntry>::iterator iter = options.begin(); iter != options.end(); iter++ )
+			
+			std::list<OptionEntry>::iterator end = options.end();
+			for (std::list<OptionEntry>::iterator iter = options.begin(); iter != end; ++iter)
 			{
 				switch ( iter->pid )
 				{
@@ -114,7 +115,7 @@ namespace DocFileFormat
 					{  
 						//cast to signed integer
 						int cropBottom = (int)iter->op;
-						appendValueAttribute( this->_imageData, _T( "cropbottom" ), ( FormatUtils::IntToWideString( cropBottom ) + wstring( _T( "f" ) ) ).c_str() );
+						appendValueAttribute(m_imageData, _T( "cropbottom" ), ( FormatUtils::IntToWideString( cropBottom ) + wstring( _T( "f" ) ) ).c_str() );
 					}
 					break;
 
@@ -122,7 +123,7 @@ namespace DocFileFormat
 					{  
 						//cast to signed integer
 						int cropLeft = (int)iter->op;
-						appendValueAttribute( this->_imageData, _T( "cropleft" ), ( FormatUtils::IntToWideString( cropLeft ) + wstring( _T( "f" ) ) ).c_str() );
+						appendValueAttribute(m_imageData, _T( "cropleft" ), ( FormatUtils::IntToWideString( cropLeft ) + wstring( _T( "f" ) ) ).c_str());
 					}
 					break;
 
@@ -130,7 +131,7 @@ namespace DocFileFormat
 					{
 						//cast to signed integer
 						int cropRight = (int)iter->op;
-						appendValueAttribute( this->_imageData, _T( "cropright" ), ( FormatUtils::IntToWideString( cropRight ) + wstring( _T( "f" ) ) ).c_str() );
+						appendValueAttribute(m_imageData, _T( "cropright" ), ( FormatUtils::IntToWideString( cropRight ) + wstring( _T( "f" ) ) ).c_str());
 					}
 					break;
 
@@ -138,7 +139,7 @@ namespace DocFileFormat
 					{
 						//cast to signed integer
 						int cropTop = (int)iter->op;
-						appendValueAttribute( this->_imageData, _T( "croptop" ), ( FormatUtils::IntToWideString( cropTop ) + wstring( _T( "f" ) ) ).c_str() );
+						appendValueAttribute(m_imageData, _T( "croptop" ), ( FormatUtils::IntToWideString( cropTop ) + wstring( _T( "f" ) ) ).c_str());
 					}
 					break;
 				}
@@ -147,9 +148,9 @@ namespace DocFileFormat
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
 			//v:imageData
-			appendValueAttribute( this->_imageData, _T( "r:id" ), ( wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str() );
-			appendValueAttribute( this->_imageData, _T( "o:title" ) , _T( "" ) );
-			m_pXmlWriter->WriteString( this->_imageData->GetXMLString().c_str() );
+			appendValueAttribute(m_imageData, _T( "r:id" ), ( wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
+			appendValueAttribute(m_imageData, _T( "o:title" ) , _T( "" ));
+			m_pXmlWriter->WriteString(m_imageData->GetXMLString().c_str());
 
 			//borders
 			writePictureBorder( _T( "bordertop" ), pict->brcTop );
@@ -201,7 +202,7 @@ namespace DocFileFormat
 						decompressedSize = metaBlip->Decompress(&decompressed);
 						if (0 != decompressedSize && NULL != decompressed)
 						{
-							_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), std::vector<byte>(decompressed, (decompressed + decompressedSize))));
+							m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), std::vector<byte>(decompressed, (decompressed + decompressedSize))));
 							RELEASEARRAYOBJECTS(decompressed);
 						}
 					}
@@ -217,7 +218,7 @@ namespace DocFileFormat
 					BitmapBlip* bitBlip = static_cast<BitmapBlip*>(oBlipEntry->Blip);
 					if (bitBlip)
 					{
-						_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), 
+						m_ctx->_docx->ImagesList.push_back(ImageFileStructure(GetTargetExt(oBlipEntry->btWin32), 
 							vector<byte>(bitBlip->m_pvBits, (bitBlip->m_pvBits + bitBlip->pvBitsSize)), oBlipEntry->btWin32));
 					}
 				}
@@ -232,7 +233,7 @@ namespace DocFileFormat
 				break;
 			}
 
-			m_nImageId	=	_ctx->_docx->RegisterImage(_caller, oBlipEntry->btWin32);
+			m_nImageId	=	m_ctx->_docx->RegisterImage(m_caller, oBlipEntry->btWin32);
 
 			result		=	true;
 		}

@@ -4,43 +4,43 @@
 
 namespace DocFileFormat
 {
-  class AnnotationReferenceDescriptor: public ByteStructure
-  {
-    private:
-      /// The initials of the user who left the annotation.
-      wstring UserInitials;
-      /// An index into the string table of comment author names.
-      unsigned short AuthorIndex;
-      /// Identifies a bookmark.
-      int BookmarkId;
+	class AnnotationReferenceDescriptor: public ByteStructure
+	{
+	public:
+		static const int STRUCTURE_SIZE = 30;
 
-    public:
-      static const int STRUCTURE_SIZE = 30;
+		inline std::wstring GetUserInitials() const
+		{
+			return m_UserInitials;
+		}
 
-	  wstring GetUserInitials() const
-	  {
-	    return UserInitials;
-	  }
+		inline unsigned short GetAuthorIndex() const
+		{
+			return m_AuthorIndex;
+		}
 
-      unsigned short GetAuthorIndex() const
-	  {
-	    return AuthorIndex;
-	  }
+		inline int GetBookmarkId() const
+		{
+			return m_BookmarkId;
+		}
 
-      int GetBookmarkId() const
-	  {
-	    return BookmarkId;
-	  }
-	  
-	  AnnotationReferenceDescriptor():
-	  UserInitials( _T( "" ) ), AuthorIndex(0), BookmarkId(0)
-	  {
-	  }
-	  
-	  virtual ~AnnotationReferenceDescriptor() 
-	  {
-	  }
+		AnnotationReferenceDescriptor() : m_UserInitials( _T( "" ) ), m_AuthorIndex(0), m_BookmarkId(0)
+		{
+		}
 
-	  virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
-  };
+		virtual ~AnnotationReferenceDescriptor() 
+		{
+		}
+
+		virtual ByteStructure* ConstructObject( VirtualStreamReader* reader, int length );
+
+	private:
+
+		/// The initials of the user who left the annotation.
+		std::wstring	m_UserInitials;
+		/// An index into the string table of comment author names.
+		unsigned short	m_AuthorIndex;
+		/// Identifies a bookmark.
+		int				m_BookmarkId;
+	};
 }

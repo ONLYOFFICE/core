@@ -72,25 +72,28 @@ namespace DocFileFormat
 		std::wstring ParsePath (const list<OptionEntry>& options) const;
 
 		void WriteBeginShapeNode (const Shape* pShape);
-		void WriteEndShapeNode   (const Shape* pShape);
-		std::wstring GetShapeID  (const Shape* pShape) const;
+		void WriteEndShapeNode (const Shape* pShape);
+		std::wstring GetShapeID (const Shape* pShape) const;
 
 		std::wstring GetLineFrom (const ChildAnchor* pAnchor) const;
-		std::wstring GetLineTo   (const ChildAnchor* pAnchor) const;
+		std::wstring GetLineTo (const ChildAnchor* pAnchor) const;
 
-		std::vector<CString>	GetTextRectangles(const OptionEntry& inscribe) const;
+		std::vector<CString> GetTextRectangles(const OptionEntry& inscribe) const;
 
 	private: 
 
-		Spa*				m_pSpa;
-		IMapping*			m_pCaller;
-
-		BlipStoreContainer*	m_pBlipStore;
-		int					m_nImageId;
-
-		ConversionContext* _ctx;
-		PictureDescriptor* _pict;
-		XMLTools::XMLElement<WCHAR> _fill, _stroke, _shadow, _imagedata, _3dstyle, _textpath;
-		wstring _textPathStyle;
+		Spa*						m_pSpa;
+		IMapping*					m_pCaller;
+		BlipStoreContainer*			m_pBlipStore;
+		int							m_nImageId;
+		std::wstring				m_textPathStyle;
+		ConversionContext*			m_ctx;
+		PictureDescriptor*			m_pict;
+		XMLTools::XMLElement<WCHAR> m_fill; 
+		XMLTools::XMLElement<WCHAR>	m_stroke;
+		XMLTools::XMLElement<WCHAR>	m_shadow; 
+		XMLTools::XMLElement<WCHAR>	m_imagedata;
+		XMLTools::XMLElement<WCHAR>	m_3dstyle; 
+		XMLTools::XMLElement<WCHAR>	m_textpath;
 	};
 }

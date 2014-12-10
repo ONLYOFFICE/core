@@ -36,15 +36,13 @@ namespace DocFileFormat
 		static std::wstring GetContentType (Global::BlipType nType);
 
 	private:
-
-		int				m_nImageId;
-		std::wstring	m_ShapeId;
-
-		bool _olePreview;
-		bool _isBulletPicture;
-		XMLTools::XMLElement<WCHAR> *_imageData;
-		ConversionContext* _ctx;
-
-		IMapping* _caller;
+		
+		ConversionContext*				m_ctx;
+		IMapping*						m_caller;
+		int								m_nImageId;
+		std::wstring					m_ShapeId;
+		bool							m_olePreview;
+		bool							m_isBulletPicture;
+		XMLTools::XMLElement<WCHAR>*	m_imageData;
 	};
 }

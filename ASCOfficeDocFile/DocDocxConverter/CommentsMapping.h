@@ -35,12 +35,12 @@ namespace DocFileFormat
 
 				int cp = m_document->FIB->m_RgLw97.ccpText + m_document->FIB->m_RgLw97.ccpFtn + m_document->FIB->m_RgLw97.ccpHdr;
 
-				for ( unsigned int i = 0; i < m_document->AnnotationsReferencePlex->Elements.size(); i++ )
+				size_t count = m_document->AnnotationsReferencePlex->Elements.size();
+				for (unsigned int i = 0; i < count; ++i)
 				{   
+					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>(m_document->AnnotationsReferencePlex->Elements[index]);
+
 					m_pXmlWriter->WriteNodeBegin( _T( "w:comment" ), TRUE );
-
-					AnnotationReferenceDescriptor* atrdPre10 = static_cast<AnnotationReferenceDescriptor*>( m_document->AnnotationsReferencePlex->Elements[index] );
-
 					m_pXmlWriter->WriteAttribute( _T( "w:id" ), FormatUtils::IntToWideString( index ).c_str() );
 					m_pXmlWriter->WriteAttribute( _T( "w:author" ), m_document->AnnotationOwners->at( atrdPre10->GetAuthorIndex() ).c_str() );
 					m_pXmlWriter->WriteAttribute( _T( "w:initials" ), atrdPre10->GetUserInitials().c_str() );
@@ -60,31 +60,30 @@ namespace DocFileFormat
 					{
 						int fc = m_document->FindFileCharPos(cp);
 
-						ParagraphPropertyExceptions* papx = findValidPapx( fc );
-						TableInfo tai( papx );
+						ParagraphPropertyExceptions* papx = findValidPapx(fc);
+						TableInfo tai(papx);
 
 						if ( tai.fInTable )
 						{
 							//this PAPX is for a table
-							Table table( this, cp, ( ( tai.iTap > 0 ) ? ( 1 ) : ( 0 ) ) );
-							table.Convert( this );
+							Table table(this, cp, ( ( tai.iTap > 0 ) ? ( 1 ) : ( 0 ) ));
+							table.Convert(this);
 							cp = table.GetCPEnd();
 						}
 						else
 						{
 							//this PAPX is for a normal paragraph
-							cp = writeParagraph( cp );
+							cp = writeParagraph(cp);
 						}
 					}
 
-					m_pXmlWriter->WriteNodeEnd( _T( "w:comment" ) );
+					m_pXmlWriter->WriteNodeEnd(_T( "w:comment" ));
 
-					index++;
+					++index;
 				}
 
 				m_pXmlWriter->WriteNodeEnd( _T( "w:comments" ) );
-
-				m_context->_docx->CommentsXML = wstring( m_pXmlWriter->GetXmlString() ); 
+				m_context->_docx->CommentsXML = std::wstring(m_pXmlWriter->GetXmlString()); 
 			}
 		}
 	};

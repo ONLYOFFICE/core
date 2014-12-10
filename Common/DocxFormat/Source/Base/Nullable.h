@@ -142,14 +142,14 @@ namespace NSCommon
                 this->m_pPointer = new Type( value );
 			return *this;
 		}
-#endif
+#else
         nullable<Type>& operator=(const std::wstring& cwsValue)
         {
             RELEASEOBJECT(this->m_pPointer);
             this->m_pPointer = new Type( cwsValue.c_str() );
             return *this;
         }
-
+#endif
 		nullable<Type>& operator=(const nullable<Type> &oOther)
 		{
             RELEASEOBJECT(this->m_pPointer);

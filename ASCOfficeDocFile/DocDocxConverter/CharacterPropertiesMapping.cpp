@@ -73,6 +73,7 @@ namespace DocFileFormat
 		//«аглушка под Google Docs, они пишут bullet в Arial
 		if (-1 != this->m_sAsciiFont.find (_T("Arial")) && -1 != this->m_sEastAsiaFont.find (_T("Arial")) && -1 != this->m_shAnsiFont.find (_T("Arial")))
 			return false;
+
 		return true;
 	}
 
@@ -87,8 +88,9 @@ namespace DocFileFormat
 
 		// флаг наличи€ стил€ дл€ баги - http://bugzserver/show_bug.cgi?id=13353 	TODO : найти в чем создан такой документ
 		BOOL haveStyle	=	FALSE;	
-
-		for (list<SinglePropertyModifier>::iterator iter = sprms->begin(); iter != sprms->end(); ++iter)
+		
+		std::list<SinglePropertyModifier>::iterator end = sprms->end();
+		for (std::list<SinglePropertyModifier>::iterator iter = sprms->begin(); iter != end; ++iter)
 		{
 			switch ( (int)( iter->OpCode ) )
 			{				
@@ -490,8 +492,8 @@ namespace DocFileFormat
 				node->AppendChild( *ele );
 			}
 
-			RELEASEOBJECT( ele );
-			RELEASEOBJECT( val );
+			RELEASEOBJECT(ele);
+			RELEASEOBJECT(val);
 		}
 	}
 
@@ -544,15 +546,16 @@ namespace DocFileFormat
 	{
 		bool ret = false;
 
-		for ( list<CharacterPropertyExceptions*>::const_iterator iter = this->_hierarchy.begin(); iter != this->_hierarchy.end(); iter++ )        
+		std::list<CharacterPropertyExceptions*>::const_iterator end = _hierarchy.end();
+		for (std::list<CharacterPropertyExceptions*>::const_iterator iter = this->_hierarchy.begin(); iter != end; ++iter)        
 		{
-			for ( list<SinglePropertyModifier>::const_iterator grpprlIter = (*iter)->grpprl->begin(); grpprlIter != (*iter)->grpprl->end(); grpprlIter++ )	 
+			std::list<SinglePropertyModifier>::const_iterator end_grpprl = (*iter)->grpprl->end();
+			for (std::list<SinglePropertyModifier>::const_iterator grpprlIter = (*iter)->grpprl->begin(); grpprlIter != end_grpprl; ++grpprlIter)	 
 			{
-				if ( grpprlIter->OpCode == sprm.OpCode )
+				if (grpprlIter->OpCode == sprm.OpCode)
 				{
 					byte ancient = grpprlIter->Arguments[0];
-					ret = toogleValue( ret, ancient );
-
+					ret = toogleValue(ret, ancient);
 					break;
 				}
 			}
@@ -563,7 +566,7 @@ namespace DocFileFormat
 
 	/*========================================================================================================*/
 
-	bool CharacterPropertiesMapping::toogleValue( bool currentValue, byte toggle )
+	bool CharacterPropertiesMapping::toogleValue(bool currentValue, byte toggle)
 	{
 		if ( toggle == 1 )
 		{

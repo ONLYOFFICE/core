@@ -92,7 +92,7 @@ namespace OfficeArt
 
 				//узнаем размер файла, и выделяем память в строке
 				xfile.seekg( 0, ios_base::end );
-				xstr.resize( xfile.tellg() );
+				xstr.resize( (size_t)xfile.tellg() );
 				xfile.seekg( 0, ios_base::beg );
 
 				//копируем данные
@@ -197,7 +197,7 @@ namespace OfficeArt
 
 				//узнаем размер файла, и выделяем память в строке
 				xfile.seekg( 0, ios_base::end );
-				xstr.resize( xfile.tellg() );
+				xstr.resize( (size_t)xfile.tellg() );
 				xfile.seekg( 0, ios_base::beg );
 
 				//копируем данные

@@ -43,17 +43,21 @@ namespace DocFileFormat
 		TablePropertyExceptions* tapx	=	static_cast<TablePropertyExceptions*>(visited);
 		int nComputedCellWidth			=	0;
 
-		for (list<SinglePropertyModifier>::const_reverse_iterator iter = tapx->grpprl->rbegin(); iter != tapx->grpprl->rend(); ++iter)
+		std::list<SinglePropertyModifier>::const_reverse_iterator rend = tapx->grpprl->rend();
+		for (std::list<SinglePropertyModifier>::const_reverse_iterator iter = tapx->grpprl->rbegin(); iter != rend; ++iter)
 		{
-			// SinglePropertyModifier oSpm	=	(*iter);
-
+#ifdef _DEBUG
+			SinglePropertyModifier spm	= (*iter);
+#endif
 			switch (iter->OpCode)
 			{				
-			case sprmTDefTable :	// Table definition SPRM
+			case sprmTDefTable:	// Table definition SPRM
 				{
-					SprmTDefTable tdef( iter->Arguments, iter->argumentsSize );
+					SprmTDefTable tdef(iter->Arguments, iter->argumentsSize);
+					int cc = tdef.numberOfColumns;
+
 					this->_tGrid = tdef.rgdxaCenter;
-					this->_tcDef = tdef.rgTc80[_cellIndex];
+					this->_tcDef = tdef.rgTc80[min(_cellIndex,  (int)tdef.rgTc80.size() - 1)];	// NOTE: fix for crash
 
 					appendValueElement( this->_tcPr, _T( "textDirection" ), FormatUtils::MapValueToWideString( this->_tcDef.textFlow, &Global::TextFlowMap[0][0], 5, 6 ).c_str(), false );
 
@@ -78,7 +82,8 @@ namespace DocFileFormat
 						appendValueElement( _tcPr, _T( "noWrap" ), _T( "" ), true );
 					}
 
-					nComputedCellWidth = (short)( tdef.rgdxaCenter[_cellIndex + 1] - tdef.rgdxaCenter[_cellIndex] );
+					nComputedCellWidth = (short)( tdef.rgdxaCenter[(size_t)min(_cellIndex,  (int)tdef.rgTc80.size() - 1) + 1] -
+						tdef.rgdxaCenter[min(_cellIndex, (int)tdef.rgTc80.size() - 1)] );	// NOTE: fix for crash
 
 					//borders
 					if (!IsTableBordersDefined(tapx->grpprl))
@@ -101,10 +106,10 @@ namespace DocFileFormat
 				//margins
 			case sprmTCellPadding:
 				{
-					byte first = iter->Arguments[0];
-					byte lim = iter->Arguments[1];
-					byte ftsMargin = iter->Arguments[3];
-					short wMargin = FormatUtils::BytesToInt16( iter->Arguments, 4, iter->argumentsSize );
+					byte first		=	iter->Arguments[0];
+					byte lim		=	iter->Arguments[1];
+					byte ftsMargin	=	iter->Arguments[3];
+					short wMargin	=	FormatUtils::BytesToInt16( iter->Arguments, 4, iter->argumentsSize );
 
 					if ( ( this->_cellIndex >= first ) && ( this->_cellIndex < lim ) )
 					{
@@ -189,9 +194,9 @@ namespace DocFileFormat
 					byte lim = iter->Arguments[1];
 
 					if ( ( this->_cellIndex >= first ) && ( this->_cellIndex < lim ) )
-			  {
-				  appendValueElement( this->_tcPr, _T( "tcFitText" ), FormatUtils::IntToWideString( iter->Arguments[2] ).c_str(), true );
-			  }
+					{
+						appendValueElement( this->_tcPr, _T( "tcFitText" ), FormatUtils::IntToWideString( iter->Arguments[2] ).c_str(), true );
+					}
 				}
 				break;
 
@@ -336,7 +341,7 @@ namespace DocFileFormat
 					appendShading (_tcPr, shd);
 				}
 
-				RELEASEARRAYOBJECTS( shdBytes );
+				RELEASEARRAYOBJECTS(shdBytes);
 			}
 		}
 	}
@@ -345,7 +350,8 @@ namespace DocFileFormat
 	{
 		if (grpprl)
 		{
-			for (list<SinglePropertyModifier>::const_iterator iter = grpprl->begin(); iter != grpprl->end(); ++iter)
+			std::list<SinglePropertyModifier>::const_iterator end = grpprl->end();
+			for (std::list<SinglePropertyModifier>::const_iterator iter = grpprl->begin(); iter != end; ++iter)
 			{
 				if ((iter->OpCode == sprmTTableBorders) || (iter->OpCode == sprmTTableBorders80) || (iter->OpCode == sprmTSetBrc))
 					return true;
@@ -359,7 +365,8 @@ namespace DocFileFormat
 	{
 		if (grpprl)
 		{
-			for (list<SinglePropertyModifier>::const_iterator iter = grpprl->begin(); iter != grpprl->end(); ++iter)
+			std::list<SinglePropertyModifier>::const_iterator end = grpprl->end();
+			for (std::list<SinglePropertyModifier>::const_iterator iter = grpprl->begin(); iter != end; ++iter)
 			{
 				if ( iter->OpCode == sprmTCellWidth )
 				{

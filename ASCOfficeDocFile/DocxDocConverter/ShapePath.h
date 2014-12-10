@@ -2,6 +2,8 @@
 
 
 #include <math.h>
+#include <vector>
+#include <atlcoll.h>
 
 #include "OfficeArt\Common.h"
 #include "OfficeArt\MSOArray.h"

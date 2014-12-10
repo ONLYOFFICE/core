@@ -17,14 +17,16 @@ namespace DocFileFormat
 				unsigned short nElems		=	FormatUtils::BytesToUInt16(pSegmentInfo, 0, pSegmentInfoSize);
 				unsigned short nElemsAlloc	=	FormatUtils::BytesToUInt16(pSegmentInfo, 2, pSegmentInfoSize);
 				unsigned short cb			=	FormatUtils::BytesToUInt16(pSegmentInfo, 4, pSegmentInfoSize);
-
-				if ((0xfff0 != cb) && (cb > 8)) // видимо без шапки сразу пишутся все элемент
+				
+				// видимо без шапки сразу пишутся все элементы
+				bool headerIs = ((0xfff0 != cb) && (cb > 8) || nElems > nElemsAlloc);
+				if (headerIs)
 				{	
 					cb		=	2;
 					offset	=	0;
 					nElems	=	pSegmentInfoSize / 2;
 
-					for (unsigned int i = 0; i < nElems; ++i)
+					for (unsigned short i = 0; i < nElems; ++i)
 					{
 						PathSegment oSegment = PathSegment(FormatUtils::BytesToUInt16(pSegmentInfo + offset, (i * cb), pSegmentInfoSize));
 						m_arSegments.push_back (oSegment);
@@ -43,7 +45,7 @@ namespace DocFileFormat
 					{
 						cb = 4;
 
-						for (unsigned int i = 0; i < nElems; ++i)
+						for (unsigned short i = 0; i < nElems; ++i)
 						{
 							PathSegment oSegment = PathSegment(FormatUtils::BytesToUInt16(pSegmentInfo + offset, (i * cb), pSegmentInfoSize));
 							m_arSegments.push_back (oSegment);
@@ -54,7 +56,7 @@ namespace DocFileFormat
 						if ((2 != cb) && (1 != cb))
 							cb = 8;
 
-						for (unsigned int i = 0; i < nElems; ++i)
+						for (unsigned short i = 0; i < nElems; ++i)
 						{
 							PathSegment oSegment = PathSegment(FormatUtils::BytesToInt32(pSegmentInfo + offset, (i * cb), pSegmentInfoSize));
 							m_arSegments.push_back (oSegment);
@@ -76,7 +78,7 @@ namespace DocFileFormat
 				{
 					cb	=	4;
 
-					for (unsigned int i = 0; i < nElems; ++i)
+					for (unsigned short i = 0; i < nElems; ++i)
 					{
 						POINT point;
 
@@ -88,7 +90,7 @@ namespace DocFileFormat
 				}
 				else
 				{
-					for (unsigned int i = 0; i < nElems; ++i)
+					for (unsigned short i = 0; i < nElems; ++i)
 					{
 						POINT point;
 
@@ -125,8 +127,10 @@ namespace DocFileFormat
 
 				return strVmlPath;
 			}
-
-			for (vector<PathSegment>::const_iterator iter = m_arSegments.begin(); iter != m_arSegments.end(); ++iter)
+			
+			int cc = 0;
+			std::vector<PathSegment>::const_iterator end = m_arSegments.end();
+			for (vector<PathSegment>::const_iterator iter = m_arSegments.begin(); iter != end; ++iter, cc++)
 			{
 				try
 				{
@@ -134,7 +138,7 @@ namespace DocFileFormat
 					{
 					case PathSegment::msopathLineTo:
 						{
-							for ( int i = 0; i < iter->Count; ++i)
+							for (int i = 0; i < iter->Count; ++i)
 							{
 								if (valuePointer >= (int)m_arPoints.size())
 								{
@@ -164,7 +168,7 @@ namespace DocFileFormat
 
 					case PathSegment::msopathCurveTo:
 						{
-							for ( int i = 0; i < iter->Count; ++i)
+							for (int i = 0; i < iter->Count; ++i)
 							{
 								strVmlPath += _T( "c" );
 								strVmlPath += FormatUtils::IntToWideString(m_arPoints[valuePointer].x );

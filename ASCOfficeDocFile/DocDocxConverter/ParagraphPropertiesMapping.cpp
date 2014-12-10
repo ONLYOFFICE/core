@@ -86,21 +86,22 @@ namespace DocFileFormat
 			RELEASEOBJECT( rev );
 			RELEASEOBJECT( rPr );
 		}
-
-		for ( list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != papx->grpprl->end(); iter++ )
+		
+		std::list<SinglePropertyModifier>::iterator end = papx->grpprl->end();
+		for (std::list<SinglePropertyModifier>::iterator iter = papx->grpprl->begin(); iter != end; ++iter)
 		{
 			switch ( iter->OpCode )
 			{
 			case sprmPIpgp:
 				{
-					appendValueElement( _pPr, _T( "divId" ), FormatUtils::IntToWideString( FormatUtils::BytesToUInt32( iter->Arguments, 0, iter->argumentsSize ) ).c_str(), true );
+					appendValueElement(_pPr, _T( "divId" ), FormatUtils::IntToWideString( FormatUtils::BytesToUInt32(iter->Arguments, 0, iter->argumentsSize)).c_str(), true);
 				}
 				break;
 
 				//element flags
 			case sprmPFAutoSpaceDE:
 				{
-					appendFlagElement( _pPr, *iter, _T( "autoSpaceDE" ), true );
+					appendFlagElement(_pPr, *iter, _T( "autoSpaceDE" ), true);
 				}
 				break;
 

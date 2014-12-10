@@ -162,47 +162,31 @@ public:
 		}
 	}
 
-	wstring ReadXst()
+	std::wstring ReadXst()
 	{
-		wstring wstrResult( _T( "" ) );
-
-		if ( this->stream != NULL )
+		std::wstring wstrResult( _T( "" ) );
+		if (stream)
 		{
 			int cchSize = 2;
 			byte* cch = this->ReadBytes( cchSize, true );
 
 			int xstzSize = FormatUtils::BytesToInt16( cch, 0, cchSize ) * 2;      
-			byte* xstz = this->ReadBytes( xstzSize, true );            
+			byte* xstz = ReadBytes(xstzSize, true);
 
 			FormatUtils::GetSTLCollectionFromBytes<wstring>( &wstrResult, xstz, xstzSize, ENCODING_UNICODE );
 
-			RELEASEARRAYOBJECTS( xstz );
-			RELEASEARRAYOBJECTS( cch );
+			RELEASEARRAYOBJECTS(xstz);
+			RELEASEARRAYOBJECTS(cch);
 		}
 
 		return wstrResult;
-	}
-
-	wstring ReadXstz()
-	{
-		wstring xst( _T( "" ) );
-
-		if ( this->stream != NULL )
-		{
-			xst = this->ReadXst();
-
-			//skip the termination
-			byte* termiantion = this->ReadBytes( 2, false );
-		}
-
-		return xst;
 	}
 
 	/// Read a length prefixed Unicode string from the given stream.
 	/// The string must have the following structure:
 	/// byte 1 - 4: Character count (cch)
 	/// byte 5 - (cch*2)+4: Unicode characters terminated by \0
-	wstring ReadLengthPrefixedUnicodeString()
+	std::wstring ReadLengthPrefixedUnicodeString()
 	{
 		wstring result;
 
@@ -225,7 +209,7 @@ public:
 	/// The string must have the following structure:
 	/// byte 1-4: Character count (cch)
 	/// byte 5-cch+4:   ANSI characters terminated by \0
-	wstring ReadLengthPrefixedAnsiString()
+	std::wstring ReadLengthPrefixedAnsiString()
 	{
 		wstring result;
 

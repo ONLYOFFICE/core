@@ -4666,29 +4666,49 @@ namespace BinDocxRW
 						WriteComment(OOX::et_w_commentReference, pCommentReference->m_oId);
 						break;
 					}
-				/*case OOX::et_w_object:
+				case OOX::et_w_object:
 					{
 						int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::object);
 
-						OOX::Logic::CObject* pObject = static_cast<OOX::Logic::CObject*>(item);
+						//write Picture
 
-						OOX::Rels::CRelationShip* oRels = NULL;
-						smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find( OOX::RId(pObject->m_oOleObject->m_oId.get().GetValue()));
+						if(m_nSkipFldChar > 0)
+							break;
+						CString* pXml = NULL;
 
-						CString sLink;
-						if (pFile.IsInit() && OOX::FileTypes::OleObject == pFile->type())
+						OOX::Logic::CPicture* pPicture = static_cast<OOX::Logic::CPicture*>(item);
+						pXml = pPicture->m_sXml.GetPointer();
+
+						int nCurPos1 = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
+						WriteDrawing(pXml, NULL, NULL);
+						m_oBcw.WriteItemEnd(nCurPos1);
+
+						//write equation
+						/*OOX::Logic::CObject* pObject = static_cast<OOX::Logic::CObject*>(item);
+						if (pObject->m_oOleObject.IsInit())
 						{
-							OOX::HyperLink* pHyperlinkFile = static_cast<OOX::HyperLink*>(pFile.operator ->());
-							sLink = pHyperlinkFile->Uri().GetPath();
-						}
-						MathEquation::BinaryEquationWriter oBinEqWriter(m_oBcw.m_oStream);
+							CString sProgID = pObject->m_oOleObject->m_sProgId.get().GetString();
+							if ( _T("Equation.3") == sProgID)
+							{
+								OOX::Rels::CRelationShip* oRels = NULL;
+								smart_ptr<OOX::File> pFile = m_oParamsDocumentWriter.m_pRels->Find( OOX::RId(pObject->m_oOleObject->m_oId.get().GetValue()));
 
-						MathEquation::CEquationReader oReader(sLink);
-						oReader.SetOutputDev(&oBinEqWriter);
-						oReader.Parse();
+								CString sLink;
+								if (pFile.IsInit() && OOX::FileTypes::OleObject == pFile->type())
+								{
+									OOX::HyperLink* pHyperlinkFile = static_cast<OOX::HyperLink*>(pFile.operator ->());
+									sLink = pHyperlinkFile->Uri().GetPath();
+								}
+								MathEquation::BinaryEquationWriter oBinEqWriter(m_oBcw.m_oStream);
+
+								MathEquation::CEquationReader oReader(sLink);
+								oReader.SetOutputDev(&oBinEqWriter);
+								oReader.Parse();								
+							}
+						}*/
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
-					}*/
+					}
 				}
 			}
 		}

@@ -140,7 +140,7 @@ namespace OOX
 							else if ( _T("w:noBreakHyphen") == sName )
 								pItem = new CNoBreakHyphen( oItem );
 							else if ( _T("w:object") == sName )
-								pItem = new CPicture( oItem );
+								pItem = new CObject( oItem );
 							else if ( _T("w:pgNum") == sName )
 								pItem = new CPgNum( oItem );
 							else if ( _T("w:pict") == sName )
@@ -235,7 +235,7 @@ namespace OOX
 					else if ( _T("w:noBreakHyphen") == sName )
 						pItem = new CNoBreakHyphen( oReader );
 					else if ( _T("w:object") == sName )
-						pItem = new CPicture( oReader );
+						pItem = new CObject( oReader );
 					else if ( _T("w:pgNum") == sName )
 						pItem = new CPgNum( oReader );
 					else if ( _T("w:pict") == sName )

@@ -5287,32 +5287,7 @@ public:
 				GetRunStringWriter().WriteString(oCDrawingProperty.Write());
 			}
 			else if(oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
-			{
-				CString sDrawingProperty = oCDrawingProperty.Write();
-				if(false == sDrawingProperty.IsEmpty())
-				{
-					VARIANT var;
-					var.vt = VT_I4;
-					var.lVal = m_oFileWriter.m_oChartWriter.getChartCount();
-					m_oFileWriter.m_pDrawingConverter->SetAdditionalParam(CString(_T("DocumentChartsCount")), var);
-
-					long nCurPos = m_oBufferedStream.GetPos();
-					CString* bstrDrawingXml = NULL;
-					m_oFileWriter.m_pDrawingConverter->SaveObjectEx(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, sDrawingProperty, XMLWRITER_DOC_TYPE_DOCX, &bstrDrawingXml);
-					m_oBufferedStream.Seek(nCurPos);
-
-					VARIANT vt;
-					m_oFileWriter.m_pDrawingConverter->GetAdditionalParam(CString(_T("DocumentChartsCount")), &vt);
-					if(VT_I4 == vt.vt)
-						m_oFileWriter.m_oChartWriter.setChartCount(vt.lVal);
-
-					if(NULL != bstrDrawingXml && false == bstrDrawingXml->IsEmpty())
-					{
-						GetRunStringWriter().WriteString(*bstrDrawingXml);
-					}
-					RELEASEOBJECT(bstrDrawingXml);
-				}
-			}
+				ReadDrawing(oCDrawingProperty);
 		}
 		else if(c_oSerRunType::table == type)
 		{
@@ -5372,6 +5347,33 @@ public:
 			res = c_oSerConstants::ReadUnknown;
 		return res;
 	};
+	void ReadDrawing(CDrawingProperty &oCDrawingProperty)
+	{
+		CString sDrawingProperty = oCDrawingProperty.Write();
+		if(false == sDrawingProperty.IsEmpty())
+		{
+			VARIANT var;
+			var.vt = VT_I4;
+			var.lVal = m_oFileWriter.m_oChartWriter.getChartCount();
+			m_oFileWriter.m_pDrawingConverter->SetAdditionalParam(CString(_T("DocumentChartsCount")), var);
+
+			long nCurPos = m_oBufferedStream.GetPos();
+			CString* bstrDrawingXml = NULL;
+			m_oFileWriter.m_pDrawingConverter->SaveObjectEx(oCDrawingProperty.DataPos, oCDrawingProperty.DataLength, sDrawingProperty, XMLWRITER_DOC_TYPE_DOCX, &bstrDrawingXml);
+			m_oBufferedStream.Seek(nCurPos);
+
+			VARIANT vt;
+			m_oFileWriter.m_pDrawingConverter->GetAdditionalParam(CString(_T("DocumentChartsCount")), &vt);
+			if(VT_I4 == vt.vt)
+				m_oFileWriter.m_oChartWriter.setChartCount(vt.lVal);
+
+			if(NULL != bstrDrawingXml && false == bstrDrawingXml->IsEmpty())
+			{
+				GetRunStringWriter().WriteString(*bstrDrawingXml);
+			}
+			RELEASEOBJECT(bstrDrawingXml);
+		}
+	}
 	int ReadObject(BYTE type, long length, void* poResult)
 	{
 		int res = c_oSerConstants::ReadOk;
@@ -5380,6 +5382,13 @@ public:
 			GetRunStringWriter().WriteString(CString(_T("<m:oMath>")));
 			res = Read1(length, &Binary_DocumentTableReader::ReadMathArg, this, poResult);
 			GetRunStringWriter().WriteString(CString(_T("</m:oMath>")));
+		}
+		else if(c_oSerRunType::pptxDrawing == type) 
+		{
+			CDrawingProperty oCDrawingProperty(m_oFileWriter.getNextDocPr());
+			res = Read2(length, &Binary_DocumentTableReader::ReadPptxDrawing, this, &oCDrawingProperty);
+			if(oCDrawingProperty.bDataPos && oCDrawingProperty.bDataLength)
+				ReadDrawing(oCDrawingProperty);
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

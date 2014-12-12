@@ -4676,16 +4676,15 @@ namespace BinDocxRW
 							break;
 						CString* pXml = NULL;
 
-						OOX::Logic::CPicture* pPicture = static_cast<OOX::Logic::CPicture*>(item);
-						pXml = pPicture->m_sXml.GetPointer();
+						OOX::Logic::CObject* pObject = static_cast<OOX::Logic::CObject*>(item);
+						pXml = pObject->m_sXml.GetPointer();
 
 						int nCurPos1 = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
 						WriteDrawing(pXml, NULL, NULL);
 						m_oBcw.WriteItemEnd(nCurPos1);
 
 						//write equation
-						/*OOX::Logic::CObject* pObject = static_cast<OOX::Logic::CObject*>(item);
-						if (pObject->m_oOleObject.IsInit())
+						/*if (pObject->m_oOleObject.IsInit())
 						{
 							CString sProgID = pObject->m_oOleObject->m_sProgId.get().GetString();
 							if ( _T("Equation.3") == sProgID)

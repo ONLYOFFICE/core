@@ -536,7 +536,7 @@ int CFontList::GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqChars
 
 	return 0;
 }
-int CFontList::GetSigPenalty(ULONG ulCandRanges[6], ULONG ulReqRanges[6], double dRangeWeight, bool bPenaltyForSuperflouous)
+int CFontList::GetSigPenalty(ULONG ulCandRanges[6], ULONG ulReqRanges[6], double dRangeWeight, double dRangeWeightSuferflouous)
 {
 	double dPenalty = 0;
 
@@ -581,8 +581,8 @@ int CFontList::GetSigPenalty(ULONG ulCandRanges[6], ULONG ulReqRanges[6], double
 	{
 		if ( 1 == arrRequest[nIndex] && 0 == arrCandidate[nIndex] )
 			dPenalty += dRangeWeight;
-		else if ( bPenaltyForSuperflouous && 0 == arrRequest[nIndex] && 1 == arrCandidate[nIndex] )
-			dPenalty += dRangeWeight; 
+		else if ( dRangeWeightSuferflouous != 0 && 0 == arrRequest[nIndex] && 1 == arrCandidate[nIndex] )
+			dPenalty += dRangeWeightSuferflouous; 
 	}
 
 	return (int)dPenalty;
@@ -837,7 +837,7 @@ CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect)
 
 		ULONG arrCandRanges[6] = { pInfo->m_ulUnicodeRange1, pInfo->m_ulUnicodeRange2, pInfo->m_ulUnicodeRange3, pInfo->m_ulUnicodeRange4, pInfo->m_ulCodePageRange1, pInfo->m_ulCodePageRange2 };
 		
-		if (false)
+		if (true)
 		{
 			if (NULL != oSelect.ulRange1 &&
 				NULL != oSelect.ulRange2 &&
@@ -847,7 +847,7 @@ CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect)
 				NULL != oSelect.ulCodeRange2)
 			{
 				ULONG arrReqRanges[6]  = { *oSelect.ulRange1, *oSelect.ulRange2, *oSelect.ulRange3, *oSelect.ulRange4, *oSelect.ulCodeRange1, *oSelect.ulCodeRange2 };
-				nCurPenalty += GetSigPenalty( arrCandRanges, arrReqRanges );
+				nCurPenalty += GetSigPenalty( arrCandRanges, arrReqRanges, nCurPenalty >= 1000 ? 50 : 10, 10 );
 			}
 		}
 

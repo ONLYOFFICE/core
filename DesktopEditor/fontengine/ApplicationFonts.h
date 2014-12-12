@@ -156,7 +156,7 @@ public:
 
 private:
 	int GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqCharset);
-	int GetSigPenalty(ULONG ulCandRanges[6], ULONG ulReqRanges[6], double dRangeWeight = 1, bool bPenaltyForSuperflouous = false);
+	int GetSigPenalty(ULONG ulCandRanges[6], ULONG ulReqRanges[6], double dRangeWeight = 1, double dRangeWeightSuferflouous = 0);
     int GetFixedPitchPenalty(INT bCandFixed, INT bReqFixed);
 	int GetFaceNamePenalty(std::wstring sCandName, std::wstring sReqName);
 	int GetFamilyUnlikelyPenalty(SHORT nCandFamilyClass, SHORT nReqFamilyClass);

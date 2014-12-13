@@ -395,11 +395,11 @@ namespace NSStreamReader
 		if (bTabStops_)
         {
             WORD tabStopsCount = StreamUtils::ReadWORD(pStream);
-			oRun.tabsStops.RemoveAll();
+			oRun.tabsStops.clear();
 
             for (int i = 0; i < (int)tabStopsCount; ++i)
             {
-				oRun.tabsStops.Add(StreamUtils::ReadDWORD(pStream));
+				oRun.tabsStops.push_back(StreamUtils::ReadDWORD(pStream));
             }
         }
 
@@ -568,17 +568,17 @@ public:
 		if (tabStops_)
 		{
 			WORD tabStopsCount = StreamUtils::ReadWORD(pStream);
-			m_oRun.tabStops.RemoveAll();
+			m_oRun.tabStops.clear();
 
 			if (tabStopsCount > 10)
 				tabStopsCount = 10;
 
 			for (int i = 0; i < (int)tabStopsCount; ++i)
 			{
-				m_oRun.tabStops.Add(StreamUtils::ReadDWORD(pStream));
+				m_oRun.tabStops.push_back(StreamUtils::ReadDWORD(pStream));
 			}
 
-			if (0 < m_oRun.tabStops.GetCount())
+			if (0 < m_oRun.tabStops.size())
 				m_oRun.defaultTabSize = m_oRun.tabStops[0];
 		}
 
@@ -727,7 +727,7 @@ namespace NSPresentationEditor
 		int nCountPFs = (int)oArrayPF.GetCount();
 		int nCountCFs = (int)oArrayCF.GetCount();
 
-		oAttributes.m_arParagraphs.RemoveAll();
+		oAttributes.m_arParagraphs.clear();
 		int nCurrentPF = 0;
 		int nCurrentCF = 0;
 		int nOffsetCF  = 0;
@@ -736,7 +736,7 @@ namespace NSPresentationEditor
 		int nIndexText = 0;
 		for (int nIndexPF = 0; nIndexPF < nCountPFs; ++nIndexPF)
 		{
-			oAttributes.m_arParagraphs.Add();
+			oAttributes.m_arParagraphs.push_back(CParagraph());
 			NSPresentationEditor::CParagraph* pPar = &oAttributes.m_arParagraphs[nIndexPF];
 
 			pPar->m_oPFRun = oArrayPF[nIndexPF].m_oRun;
@@ -759,7 +759,7 @@ namespace NSPresentationEditor
 					oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
 					oSpan.m_strText = strText.Mid(nIndexText, nCountInPF);
 
-					pPar->m_arSpans.Add(oSpan);
+					pPar->m_arSpans.push_back(oSpan);
 					
 					nIndexText += nCountInPF;
 					break;
@@ -772,7 +772,7 @@ namespace NSPresentationEditor
 					oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
 					oSpan.m_strText = strText.Mid(nIndexText, nCountAdd);
 
-					pPar->m_arSpans.Add(oSpan);
+					pPar->m_arSpans.push_back(oSpan);
 
 					nIndexText += nCountAdd;
 					++nCurrentCF;
@@ -786,7 +786,7 @@ namespace NSPresentationEditor
 					oSpan.m_oRun	= oArrayCF[nCurrentCF].m_oRun;
 					oSpan.m_strText = strText.Mid(nIndexText, nCountAdd);
 
-					pPar->m_arSpans.Add(oSpan);
+					pPar->m_arSpans.push_back(oSpan);
 
 					nIndexText += nCountAdd;
 					nCountInPF -= nCountAdd;

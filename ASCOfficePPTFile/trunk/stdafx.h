@@ -44,13 +44,11 @@
 #include <atlctl.h>
 #include <atlhost.h>
 #include <atlcoll.h>
-#define _USE_MATH_DEFINES
 #include <math.h>
-#include <gdiplus.h>
+//#include <gdiplus.h>
 
 using namespace ATL;
-using namespace Gdiplus;
-#pragma comment(lib, "gdiplus.lib")
+//#pragma comment(lib, "gdiplus.lib")
 
 // убрать когда перейдем на новый рендерер
 #pragma warning(disable: 4244)

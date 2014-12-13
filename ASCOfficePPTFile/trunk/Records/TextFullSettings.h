@@ -15,7 +15,7 @@ public:
 	CRecordTextSpecInfoAtom* m_pTextSpecInfo;
 	CRecordTextRulerAtom* m_pTextRuler;
 
-	CAtlArray<NSPresentationEditor::CTextRange> m_arRanges;
+	std::vector<NSPresentationEditor::CTextRange> m_arRanges;
 
 	CStringW m_strText;
 	DWORD m_nTextType;
@@ -42,7 +42,7 @@ public:
 
 		m_nTextType = oSrc.m_nTextType;
 		m_strText = oSrc.m_strText;
-		m_arRanges.Copy(oSrc.m_arRanges);
+		m_arRanges = oSrc.m_arRanges;
 		return (*this);
 	}
 	~CTextFullSettings()

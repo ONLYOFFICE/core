@@ -60,48 +60,48 @@ public:
 		return oWriter.GetXmlString();
 	}
 
-	void ToArray(CSimpleArray<SColorAtom>* pArray)
+	void ToArray(std::vector<SColorAtom>* pArray)
 	{
 		if (NULL != pArray)
 		{
-			pArray->Add(m_oBackgroundColor);
-			pArray->Add(m_oTextAndLinesColor);
-			pArray->Add(m_oShadowsColor);
-			pArray->Add(m_oTitleTextColor);
-			pArray->Add(m_oFillsColor);
-			pArray->Add(m_oAccentColor);
-			pArray->Add(m_oAccentAndHyperlinkColor);
-			pArray->Add(m_oAccentAndFollowingHyperlinkColor);
+			pArray->push_back(m_oBackgroundColor);
+			pArray->push_back(m_oTextAndLinesColor);
+			pArray->push_back(m_oShadowsColor);
+			pArray->push_back(m_oTitleTextColor);
+			pArray->push_back(m_oFillsColor);
+			pArray->push_back(m_oAccentColor);
+			pArray->push_back(m_oAccentAndHyperlinkColor);
+			pArray->push_back(m_oAccentAndFollowingHyperlinkColor);
 		}
 	}
-	void ToArray(CAtlArray<CColor>* pArray)
+	void ToArray(std::vector<CColor>* pArray)
 	{
 		CColor oColor;
 		if (NULL != pArray)
 		{
 			m_oBackgroundColor.ToColor(&oColor);
-			pArray->Add(oColor);
+			pArray->push_back(oColor);
 
 			m_oTextAndLinesColor.ToColor(&oColor);
-			pArray->Add(oColor);
+			pArray->push_back(oColor);
 
 			m_oShadowsColor.ToColor(&oColor);
-			pArray->Add(oColor);
+			pArray->push_back(oColor);
 
 			m_oTitleTextColor.ToColor(&oColor);
-			pArray->Add(oColor);
+			pArray->push_back(oColor);
 
 			m_oFillsColor.ToColor(&oColor);
-			pArray->Add(oColor);
+			pArray->push_back(oColor);
 
 			m_oAccentColor.ToColor(&oColor);
-			pArray->Add(oColor);
+			pArray->push_back(oColor);
 
 			m_oAccentAndHyperlinkColor.ToColor(&oColor);
-			pArray->Add(oColor);
+			pArray->push_back(oColor);
 
 			m_oAccentAndFollowingHyperlinkColor.ToColor(&oColor);
-			pArray->Add(oColor);
+			pArray->push_back(oColor);
 		}
 	}
 };

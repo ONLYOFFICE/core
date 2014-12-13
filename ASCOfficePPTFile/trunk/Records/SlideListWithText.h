@@ -124,7 +124,7 @@ public:
 						NSPresentationEditor::CTextRange oRange;
 						oRange.m_lStart	= pTxRanges->m_lStart;
 						oRange.m_lEnd	= pTxRanges->m_lEnd;
-						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_arRanges.Add(oRange);
+						m_arTextPlaceHolders[nCurrentSlide][nCurrentTextHeader].m_arRanges.push_back(oRange);
 					}
 				}
 

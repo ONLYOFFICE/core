@@ -52,8 +52,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=".;..\..\..\ASCOfficeStudio\Common\OfficeDrawing\Shapes;..\..\..\ASCOfficeStudio\Common\OfficeDrawing"
-				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES"
+				AdditionalIncludeDirectories=".;..\..\..\ASCOfficeStudio\Common\OfficeDrawing\Shapes;..\..\..\ASCOfficeStudio\Common\OfficeDrawing;&quot;..\..\..\..\DesktopEditor\freetype-2.5.2\include&quot;;&quot;..\..\DesktopEditor\freetype-2.5.2\include&quot;"
+				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_MATH_DEFINES;PPT_DEF"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="1"
@@ -79,6 +79,8 @@
 				RegisterOutput="true"
 				IgnoreImportLibrary="true"
 				LinkIncremental="2"
+				AdditionalLibraryDirectories=""
+				IgnoreDefaultLibraryNames=""
 				MergedIDLBaseFileName="_ASCOfficePPTFile.idl"
 				GenerateDebugInformation="true"
 				SubSystem="2"
@@ -149,8 +151,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories=".;..\..\ASCOfficeStudio\Common\OfficeDrawing\Shapes;..\..\ASCOfficeStudio\Common\OfficeDrawing"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES"
+				AdditionalIncludeDirectories=".;..\..\..\ASCOfficeStudio\Common\OfficeDrawing\Shapes;..\..\..\ASCOfficeStudio\Common\OfficeDrawing;&quot;..\..\..\..\DesktopEditor\freetype-2.5.2\include&quot;;&quot;..\..\DesktopEditor\freetype-2.5.2\include&quot;"
+				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_MATH_DEFINES;PPT_DEF"
 				StringPooling="true"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -176,6 +178,7 @@
 				IgnoreImportLibrary="true"
 				OutputFile="..\..\..\redist\$(ProjectName).dll"
 				LinkIncremental="1"
+				AdditionalLibraryDirectories=""
 				MergedIDLBaseFileName="_ASCOfficePPTFile.idl"
 				GenerateDebugInformation="true"
 				ProgramDatabaseFile="$(OutDir)/$(TargetName).pdb"
@@ -253,6 +256,26 @@
 					/>
 				</FileConfiguration>
 			</File>
+			<File
+				RelativePath="..\..\Common\DocxFormat\Source\XML\stringcommon.cpp"
+				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"
@@ -292,30 +315,142 @@
 			<File
 				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\BaseShape.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Elements.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\Formula.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Layout.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Shapes\BaseShape\PPTShape\PPTShape.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\TextAttributesEx.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Theme.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						UsePrecompiledHeader="0"
+					/>
+				</FileConfiguration>
 			</File>
 		</Filter>
 		<Filter
@@ -331,6 +466,10 @@
 			</File>
 			<File
 				RelativePath="..\ASCPresentationEditor\OfficeDrawing\Document.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Document.h"
 				>
 			</File>
 			<File

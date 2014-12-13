@@ -35,7 +35,7 @@ public:
 	double OffsetX() const;
 	double OffsetY() const;
 	
-	Status GetElements(REAL* m) const;
+	Status GetElements(float* m) const;
 	Status GetElements(double* m) const;
 
 	void Reset();

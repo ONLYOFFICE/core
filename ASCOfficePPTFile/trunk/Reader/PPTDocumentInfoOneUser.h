@@ -60,7 +60,7 @@ public:
 	// DEBUG information
 	CString								m_strXmlInfo;
 
-	CAtlArray<CColor>					m_oSchemeColors;
+	std::vector<CColor>					m_oSchemeColors;
 
 public:
 
@@ -127,28 +127,28 @@ public:
 		}
 	}
 
-	void CorrectColorScheme(CAtlArray<CColor>& oScheme)
+	void CorrectColorScheme(std::vector<CColor>& oScheme)
 	{
-		CAtlArray<CColor> oArrayMem;
-		oArrayMem.Add(CColor());
-		oArrayMem.Add(oScheme[1]);
-		oArrayMem.Add(oScheme[2]);
-		oArrayMem.Add(oScheme[3]);
-		oArrayMem.Add(oScheme[0]);
-		oArrayMem.Add(oScheme[4]);
-		oArrayMem.Add(oScheme[5]);
-		oArrayMem.Add(oScheme[5]);//
-		oArrayMem.Add(oScheme[5]);//
-		oArrayMem.Add(oScheme[5]);//
-		oArrayMem.Add(oScheme[5]);//
-		oArrayMem.Add(oScheme[6]);
-		oArrayMem.Add(oScheme[7]);
-		oArrayMem.Add(oScheme[1]);
-		oArrayMem.Add(oScheme[2]);
-		oArrayMem.Add(oScheme[3]);
-		oArrayMem.Add(oScheme[0]);
+		std::vector<CColor> oArrayMem;
+		oArrayMem.push_back(CColor());
+		oArrayMem.push_back(oScheme[1]);
+		oArrayMem.push_back(oScheme[2]);
+		oArrayMem.push_back(oScheme[3]);
+		oArrayMem.push_back(oScheme[0]);
+		oArrayMem.push_back(oScheme[4]);
+		oArrayMem.push_back(oScheme[5]);
+		oArrayMem.push_back(oScheme[5]);//
+		oArrayMem.push_back(oScheme[5]);//
+		oArrayMem.push_back(oScheme[5]);//
+		oArrayMem.push_back(oScheme[5]);//
+		oArrayMem.push_back(oScheme[6]);
+		oArrayMem.push_back(oScheme[7]);
+		oArrayMem.push_back(oScheme[1]);
+		oArrayMem.push_back(oScheme[2]);
+		oArrayMem.push_back(oScheme[3]);
+		oArrayMem.push_back(oScheme[0]);
 
-		oScheme.Copy(oArrayMem);
+		oScheme = oArrayMem;
 	}
 
 	CString ConvertLayoutType(INT nGeom, BYTE* pPlaceholders)

@@ -193,7 +193,7 @@ BOOL CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, IStream* pStream, 
 
 	oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory;
 	oInfo.m_dwID		= 0xFFFFFFFF;
-	m_oExMedia.m_arImages.Add(oInfo);
+	m_oExMedia.m_arImages.push_back(oInfo);
 
 	// читаем все внешние объекты
 	CSimpleArray<CRecordExObjListContainer*> oArrayExObjects;
@@ -255,7 +255,7 @@ BOOL CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, IStream* pStream, 
 void CPPTUserInfo::FromDocument()
 {
 	UpdateXMLInfo();
-	m_arSlides.RemoveAll();
+	m_arSlides.clear();
 
 	// здесь из документа читаем слайды в
 	// нормальном формате, и сразу их правильно расставляем...
@@ -293,7 +293,8 @@ void CPPTUserInfo::FromDocument()
 	{
 		DurationSlide	=	PPT_DEFAULT_SLIDE_DURATION;
 
-		m_arSlides.Add();
+		CSlide elm;
+		m_arSlides.push_back(elm);
 		// тут его заполняем...
 
 		// если на слайде есть анимации
@@ -392,7 +393,7 @@ void CPPTUserInfo::LoadSlide(int nIndex)
 		return;
 
 
-	size_t lCountSlides = m_arSlides.GetCount();
+	size_t lCountSlides = m_arSlides.size();
 	CSlide* pSlide = &m_arSlides[lCountSlides - 1];
 
 	pSlide->m_bUseLayoutColorScheme = true;
@@ -425,7 +426,7 @@ void CPPTUserInfo::LoadSlide(int nIndex)
 	CTheme* pTheme = &m_arThemes[pSlide->m_lThemeID];
 	CLayout* pLayout = &pTheme->m_arLayouts[pSlide->m_lLayoutID];
 
-	CAtlArray<NSPresentationEditor::CColor>* pArrayColorScheme = &pTheme->m_arColorScheme;
+	std::vector<NSPresentationEditor::CColor>* pArrayColorScheme = &pTheme->m_arColorScheme;
 	if (!pLayout->m_bUseThemeColorScheme)
 		pArrayColorScheme = &pLayout->m_arColorScheme;
 
@@ -445,13 +446,13 @@ void CPPTUserInfo::LoadSlide(int nIndex)
 				CorrectColorScheme(pSlide->m_arColorScheme);
 
 				// проверим на совпадение
-				size_t nCountC = pSlide->m_arColorScheme.GetCount();
+				size_t nCountC = pSlide->m_arColorScheme.size();
 				size_t nIndexC = 0;
-				if (nCountC == pArrayColorScheme->GetCount())
+				if (nCountC == pArrayColorScheme->size())
 				{
 					for (; nIndexC < nCountC; ++nIndexC)
 					{
-						if (pSlide->m_arColorScheme[i].IsEqual(pArrayColorScheme->GetAt(i)))
+						if (pSlide->m_arColorScheme[i].IsEqual(pArrayColorScheme->at(i)))
 							break;
 					}
 				}
@@ -459,7 +460,7 @@ void CPPTUserInfo::LoadSlide(int nIndex)
 				if (nIndexC == nCountC)
 				{
 					pSlide->m_bUseLayoutColorScheme = true;
-					pSlide->m_arColorScheme.RemoveAll();
+					pSlide->m_arColorScheme.clear();
 				}
 
 				break;
@@ -502,7 +503,7 @@ void CPPTUserInfo::LoadSlide(int nIndex)
 				continue;
 			}
 
-			pSlide->m_arElements.Add(pElem);
+			pSlide->m_arElements.push_back(pElem);
 		}
 	}
 }
@@ -554,14 +555,16 @@ void CPPTUserInfo::LoadMainMaster(int nIndexMaster, const LONG& lOriginWidth, co
 		return;
 	}
 
-	LONG lIndexTheme = (LONG)m_arThemes.GetCount();
+	LONG lIndexTheme = (LONG)m_arThemes.size();
 	m_mapMasterToTheme.SetAt(dwKey, lIndexTheme);
 	m_mapMasterToLayout.SetAt(dwKey, 0);
 
-	m_arThemes.Add();
+	CTheme elm;
+	m_arThemes.push_back(elm);
 	CTheme* pTheme = &m_arThemes[lIndexTheme];
 
-	pTheme->m_arLayouts.Add();
+	CLayout elm1;
+	pTheme->m_arLayouts.push_back(elm1);
 	CLayout* pLayout = &pTheme->m_arLayouts[0];
 
 	m_arMasterWrapper.Add();
@@ -571,7 +574,7 @@ void CPPTUserInfo::LoadMainMaster(int nIndexMaster, const LONG& lOriginWidth, co
 	int nCountFonts = m_arrFonts.GetSize();
 	for (int i = 0; i < nCountFonts; ++i)
 	{
-		pTheme->m_arFonts.Add(m_arrFonts[i]);
+		pTheme->m_arFonts.push_back(m_arrFonts[i]);
 	}
 	// ---------------------------------------------------------------------------------
 
@@ -677,9 +680,9 @@ void CPPTUserInfo::LoadMainMaster(int nIndexMaster, const LONG& lOriginWidth, co
 			}
 
 			if (-1 == pElem->m_lPlaceholderType)
-				pTheme->m_arElements.Add(pElem);
+				pTheme->m_arElements.push_back(pElem);
 			else
-				pLayout->m_arElements.Add(pElem);
+				pLayout->m_arElements.push_back(pElem);
 		}
 	}
 }
@@ -745,12 +748,13 @@ void CPPTUserInfo::LoadNoMainMaster(int nIndex, const LONG& lOriginWidth, const 
 		return;
 
 	CTheme* pTheme = &m_arThemes[pPair->m_value];
-	LONG lIndexLayout = (LONG)pTheme->m_arLayouts.GetCount();
+	LONG lIndexLayout = (LONG)pTheme->m_arLayouts.size();
 
 	m_mapMasterToTheme.SetAt(dwCurID, pPair->m_value);
 	m_mapMasterToLayout.SetAt(dwCurID, lIndexLayout);
 
-	pTheme->m_arLayouts.Add();
+	CLayout elm;
+	pTheme->m_arLayouts.push_back(elm);
 	CLayout* pLayout = &pTheme->m_arLayouts[lIndexLayout];
 
 	m_arMasterWrapper.Add();
@@ -765,14 +769,14 @@ void CPPTUserInfo::LoadNoMainMaster(int nIndex, const LONG& lOriginWidth, const 
 	pLayout->m_bShowMasterShapes	= (bMasterObjects == TRUE) ? true : false;
 	pLayout->m_strLayoutType = ConvertLayoutType(oArraySlideAtoms[0]->m_oLayout.m_nGeom, oArraySlideAtoms[0]->m_oLayout.m_pPlaceHolderID);
 
-	CAtlArray<NSPresentationEditor::CColor>* pArrayColorScheme = &pTheme->m_arColorScheme;
+	std::vector<NSPresentationEditor::CColor>* pArrayColorScheme = &pTheme->m_arColorScheme;
 	// читаем цветовую схему -----------------------------------------------------------
 	if (!bMasterColorScheme)
 	{
 		CSimpleArray<CRecordColorSchemeAtom*> oArrayColors;
 		pCurMaster->GetRecordsByType(&oArrayColors, false);
 
-		pLayout->m_arColorScheme.RemoveAll();
+		pLayout->m_arColorScheme.clear();
 		for (int i = 0; i < oArrayColors.GetSize(); ++i)
 		{
 			if (0x01 == oArrayColors[i]->m_oHeader.RecInstance)
@@ -782,13 +786,13 @@ void CPPTUserInfo::LoadNoMainMaster(int nIndex, const LONG& lOriginWidth, const 
 				CorrectColorScheme(pLayout->m_arColorScheme);
 
 				// проверим на совпадение
-				size_t nCountC = pLayout->m_arColorScheme.GetCount();
+				size_t nCountC = pLayout->m_arColorScheme.size();
 				size_t nIndexC = 0;
-				if (nCountC == pArrayColorScheme->GetCount())
+				if (nCountC == pArrayColorScheme->size())
 				{
 					for (; nIndexC < nCountC; ++nIndexC)
 					{
-						if (pLayout->m_arColorScheme[i].IsEqual(pArrayColorScheme->GetAt(i)))
+						if (pLayout->m_arColorScheme[i].IsEqual(pArrayColorScheme->at(i)))
 							break;
 					}
 				}
@@ -796,7 +800,7 @@ void CPPTUserInfo::LoadNoMainMaster(int nIndex, const LONG& lOriginWidth, const 
 				if (nIndexC == nCountC)
 				{
 					pLayout->m_bUseThemeColorScheme = true;
-					pLayout->m_arColorScheme.RemoveAll();
+					pLayout->m_arColorScheme.clear();
 				}
 
 				break;
@@ -844,7 +848,7 @@ void CPPTUserInfo::LoadNoMainMaster(int nIndex, const LONG& lOriginWidth, const 
 				continue;
 			}
 
-			pLayout->m_arElements.Add(pElem);
+			pLayout->m_arElements.push_back(pElem);
 		}
 	}
 }
@@ -1021,7 +1025,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 
 				oArrayData[0]->SaveToFile(oInfo.m_strFilePath);
 
-				m_oExMedia.m_arAudioCollection.Add(oInfo);
+				m_oExMedia.m_arAudioCollection.push_back(oInfo);
 			}
 		}
 	}
@@ -1079,7 +1083,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 			oAudio.m_strFilePath	= pInfo->m_strFilePath;
 			oAudio.m_bLoop			= oArrayAudioEmbedded[nIndex]->m_oMedia.m_bLoop;
 
-			m_oExMedia.m_arAudios.Add(oAudio);
+			m_oExMedia.m_arAudios.push_back(oAudio);
 		}
 	}
 	for (int nIndex = 0; nIndex < nSize1; ++nIndex)
@@ -1120,7 +1124,7 @@ void CPPTUserInfo::LoadExVideo(CRecordsContainer* pExObject)
 
 		oInfo.m_bLoop			= oArrayExMedia[0]->m_bLoop;
 
-		m_oExMedia.m_arVideos.Add(oInfo);
+		m_oExMedia.m_arVideos.push_back(oInfo);
 	}
 
 	oArrayExMedia.RemoveAll();
@@ -1143,7 +1147,7 @@ void CPPTUserInfo::LoadExAudio(CRecordsContainer* pExObject)
 
 		oInfo.m_bLoop			= oArrayExMedia[0]->m_bLoop;
 
-		m_oExMedia.m_arAudios.Add(oInfo);
+		m_oExMedia.m_arAudios.push_back(oInfo);
 	}
 
 	oArrayExMedia.RemoveAll();
@@ -1172,7 +1176,7 @@ void CPPTUserInfo::AddAnimation ( int SlideIndex, double Width, double Height, I
 				}
 				else if (2 == oEffect.m_nSchemeColor)	//	Index From Table
 				{
-					if ((int)oAnimation.m_nColorTo >= (int)m_oSchemeColors.GetCount())
+					if ((int)oAnimation.m_nColorTo >= (int)m_oSchemeColors.size())
 						continue;
 
 					oAnimation.m_nColorTo	=	m_oSchemeColors[oEffect.m_nColorTo].GetLONG();
@@ -1181,7 +1185,7 @@ void CPPTUserInfo::AddAnimation ( int SlideIndex, double Width, double Height, I
 				pElement->m_oAnimations.m_dSlideWidth		=	Width;
 				pElement->m_oAnimations.m_dSlideHeight		=	Height;
 
-				pElement->m_oAnimations.m_arAnimations.Add ( oAnimation );
+				pElement->m_oAnimations.m_arAnimations.push_back( oAnimation );
 			}
 		}
 	}

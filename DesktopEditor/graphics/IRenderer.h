@@ -265,19 +265,19 @@ public:
 		INT bFlipX = (0 != (c_nParamFlipX & lFlags));
 		INT bFlipY = (0 != (c_nParamFlipY & lFlags));
 
-		REAL m11 = bFlipX ? -1.0f : 1.0f;
-		REAL m22 = bFlipY ? -1.0f : 1.0f;
+		float m11 = bFlipX ? -1.0f : 1.0f;
+		float m22 = bFlipY ? -1.0f : 1.0f;
 
 		Aggplus::CMatrix oMatrix(1, 0, 0, 1, 0, 0);
 
 		if ((0 != dAngle) || (0 != lFlags))
 		{
-			REAL dCentreX = (REAL)(dLeft + dWidth / 2.0);
-			REAL dCentreY = (REAL)(dTop + dHeight / 2.0);
+			double dCentreX = (double)(dLeft + dWidth / 2.0);
+			double dCentreY = (double)(dTop + dHeight / 2.0);
 
 			oMatrix.Translate(-dCentreX, -dCentreY	, Aggplus::MatrixOrderAppend);
 
-			oMatrix.Rotate((REAL)dAngle	, Aggplus::MatrixOrderAppend);
+			oMatrix.Rotate(dAngle	, Aggplus::MatrixOrderAppend);
 			oMatrix.Scale(m11, m22					, Aggplus::MatrixOrderAppend);
 
 			oMatrix.Translate(dCentreX, dCentreY	, Aggplus::MatrixOrderAppend);

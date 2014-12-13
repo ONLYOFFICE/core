@@ -307,7 +307,7 @@ public:
 		case NSOfficeDrawing::adjust10Value:
 			{
 				LONG lIndexAdj = pProperty->m_ePID - NSOfficeDrawing::adjustValue;
-				if (lIndexAdj >= 0 && lIndexAdj < pShape->m_arAdjustments.GetSize())
+				if (lIndexAdj >= 0 && lIndexAdj < pShape->m_arAdjustments.size())
 				{
 					//SetAdjustment(lIndexAdj, (LONG)pProperty->m_lValue);
 					pShape->m_oCustomVML.LoadAdjusts(lIndexAdj, (LONG)pProperty->m_lValue);
@@ -949,7 +949,7 @@ public:
 					{
 						lMasterID = oArrayOptions[0]->m_oProperties.m_arProperties[i].m_lValue;
 
-						size_t nIndexMem = pLayout->m_arElements.GetCount();
+						size_t nIndexMem = pLayout->m_arElements.size();
 						for (size_t nIndex = 0; nIndex < nIndexMem; ++nIndex)
 						{
 							if (lMasterID == pLayout->m_arElements[nIndex]->m_lID && (elType == pLayout->m_arElements[nIndex]->m_etType))
@@ -960,7 +960,7 @@ public:
 								{
 									CShapeElement* pShape = dynamic_cast<CShapeElement*>(*ppElement);
 									if (NULL != pShape)
-										pShape->m_oShape.m_oText.m_arParagraphs.RemoveAll();
+										pShape->m_oShape.m_oText.m_arParagraphs.clear();
 								}
 
 								break;
@@ -1035,10 +1035,10 @@ public:
 							pAudioElem->m_dStartTime	= pSlide->m_dStartTime;
 							pAudioElem->m_dEndTime		= pSlide->m_dEndTime;
 
-							pSlide->m_arElements.Add(pAudioElem);
+							pSlide->m_arElements.push_back(pAudioElem);
 						}
 						else
-							pLayout->m_arElements.Add(pAudioElem);
+							pLayout->m_arElements.push_back(pAudioElem);
 
 						CImageElement* pImageElem	= new CImageElement();
 						pImageElem->m_strFileName	= strPathPicture;
@@ -1260,7 +1260,7 @@ public:
 					oRange.m_lStart = oArrayTextInteractive[i]->m_lStart;
 					oRange.m_lEnd	= oArrayTextInteractive[i]->m_lEnd;
 
-					pShapeElem->m_oActions.m_arRanges.Add(oRange);
+					pShapeElem->m_oActions.m_arRanges.push_back(oRange);
 				}
 			}
 
@@ -1428,7 +1428,7 @@ protected:
 
 			pTextSettings->m_lPlaceholderType = ph_type;
 
-			size_t lElemsCount = pLayout->m_arElements.GetCount();
+			size_t lElemsCount = pLayout->m_arElements.size();
 			for (size_t i = 0; i < lElemsCount; ++i)
 			{
 				IElement* pPh = pLayout->m_arElements[i];
@@ -1463,10 +1463,10 @@ protected:
 			eTypePersist = (NSOfficePPT::TextType)pSettings->m_nTextType;
 			strText = pSettings->ApplyProperties(pTextSettings);
 
-			if ((0 != pSettings->m_arRanges.GetCount()) && (0 == pShape->m_oActions.m_arRanges.GetCount()))
+			if ((0 != pSettings->m_arRanges.size()) && (0 == pShape->m_oActions.m_arRanges.size()))
 			{
 				pShape->m_oActions.m_bPresent = true;
-				pShape->m_oActions.m_arRanges.Copy(pSettings->m_arRanges);
+				pShape->m_oActions.m_arRanges = pSettings->m_arRanges;
 			}
 
 			bIsPersistPresentSettings = ((NULL != pSettings->m_pTextStyleProp) && (0 < pSettings->m_pTextStyleProp->m_lCount));
@@ -1702,7 +1702,7 @@ protected:
 			}
 		}
 
-		if ((_T("") != strText) && 0 == pTextSettings->m_arParagraphs.GetCount())
+		if ((_T("") != strText) && 0 == pTextSettings->m_arParagraphs.size())
 		{
 			// значит никаких своих настроек нету. Значит просто пустые свои настройки
 			CAtlArray<CTextPFRun_ppt> oArrayPF;
@@ -1783,7 +1783,7 @@ protected:
 			case sptTextCanUp:   
 			case sptTextCanDown:
 				{
-					pShape->m_oShape.m_oText.m_arParagraphs.RemoveAll();
+					pShape->m_oShape.m_oText.m_arParagraphs.clear();
 
 					pShape->m_oShape.m_oText.m_oAttributes.m_oTextBrush = pShape->m_oShape.m_oBrush;
 
@@ -1801,15 +1801,15 @@ protected:
 
 	void ApplyHyperlink(CShapeElement* pShape, CColor& oColor)
 	{
-		CAtlArray<CTextRange>* pRanges						= &pShape->m_oActions.m_arRanges;
+		std::vector<CTextRange>* pRanges					= &pShape->m_oActions.m_arRanges;
 		CTextAttributesEx* pTextAttributes					= &pShape->m_oShape.m_oText;
 
-		LONG lCountHyper	= (LONG)pRanges->GetCount();
+		LONG lCountHyper	= (LONG)pRanges->size();
 
 		if (0 == lCountHyper)
 			return;
 
-		size_t nCountPars = pTextAttributes->m_arParagraphs.GetCount();
+		size_t nCountPars = pTextAttributes->m_arParagraphs.size();
 		for (LONG nIndexRange = 0; nIndexRange < lCountHyper; ++nIndexRange)
 		{
 			LONG lStart = (*pRanges)[nIndexRange].m_lStart;
@@ -1820,7 +1820,7 @@ protected:
 			{
 				CParagraph* pParagraph = &pTextAttributes->m_arParagraphs[nIndexPar];
 
-				for (size_t nIndexSpan = 0; nIndexSpan < pParagraph->m_arSpans.GetCount(); ++nIndexSpan)
+				for (size_t nIndexSpan = 0; nIndexSpan < pParagraph->m_arSpans.size(); ++nIndexSpan)
 				{
 					LONG lCurrentEnd = lCurrentStart + pParagraph->m_arSpans[nIndexSpan].m_strText.GetLength() - 1;
 
@@ -1838,7 +1838,7 @@ protected:
 					CString strText = pParagraph->m_arSpans[nIndexSpan].m_strText;
 					if (lStart_ > lCurrentStart)
 					{
-						pParagraph->m_arSpans.InsertAt(nIndexSpan, oRunProp);
+						pParagraph->m_arSpans.insert(pParagraph->m_arSpans.begin() + nIndexSpan, oRunProp);
 						pParagraph->m_arSpans[nIndexSpan].m_strText = strText.Mid(0, lStart_ - lCurrentStart);
 
 						++nIndexSpan;
@@ -1848,7 +1848,7 @@ protected:
 					pParagraph->m_arSpans[nIndexSpan].m_strText = strText.Mid(lStart_ - lCurrentStart, lEnd_ - lStart_ + 1);
 					if (lEnd_ < lCurrentEnd)
 					{
-						pParagraph->m_arSpans.InsertAt(nIndexSpan + 1, oRunProp);
+						pParagraph->m_arSpans.insert(pParagraph->m_arSpans.begin() + nIndexSpan + 1, oRunProp);
 						++nIndexSpan;
 
 						pParagraph->m_arSpans[nIndexSpan].m_strText = strText.Mid(lEnd_ - lCurrentStart + 1, lCurrentEnd - lEnd_);

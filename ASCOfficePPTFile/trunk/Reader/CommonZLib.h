@@ -4,8 +4,6 @@
 
 #include "zlib.h"
 
-#pragma comment(lib, "zlib.lib")
-
 namespace NSZLib
 {
 	static BOOL Decompress(const BYTE* pSrcBuffer, const ULONG& lSrcBufferLen,

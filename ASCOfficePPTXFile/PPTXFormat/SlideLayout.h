@@ -437,6 +437,11 @@ namespace PPTX
 			{	
                 tableStyles = theme->presentation->get(PPTX::FileTypes::TableStyles).smart_dynamic_cast<PPTX::TableStyles>();
 			}
+			if (exist(PPTX::FileTypes::VmlDrawing))
+			{
+				Vml = FileContainer::get(PPTX::FileTypes::VmlDrawing).smart_dynamic_cast<PPTX::VmlDrawing>();//boost::shared_dynamic_cast<PPTX::VmlDrawing, PPTX::File>(FileContainer::get(PPTX::FileTypes::VmlDrawing));
+				Vml->FillRIds();
+			}
 		}
 		const OOX::CPath GetPathBySpid(const CString& spid)const
 		{

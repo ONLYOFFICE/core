@@ -80,8 +80,8 @@ public: static bool WriteDataToPicture( CString sPath, RtfPicture& oOutput, CStr
 			if( NULL == vImage.punkVal )
 				return false;
 			//выставляем свойства из медиадаты
-			OfficeCore::IUncompressedFrame* piFrame = NULL;
-			hRes = vImage.punkVal->QueryInterface( __uuidof(OfficeCore::IUncompressedFrame), (void**)&piFrame );
+			MediaCore::IAVSUncompressedVideoFrame* piFrame = NULL;
+			hRes = vImage.punkVal->QueryInterface( __uuidof(MediaCore::IAVSUncompressedVideoFrame), (void**)&piFrame );
 			RELEASEINTERFACE( vImage.punkVal );
 			if( FAILED( hRes ) || NULL == piFrame )
 				return false;

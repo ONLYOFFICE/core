@@ -501,7 +501,7 @@ namespace PPTX
 			{
 				kern.normalize(0, 400000);
 				smtId.normalize_positive();
-				spc.normalize(-4000, 4000);
+				spc.normalize(-400000, 400000);
 				sz.normalize(10, 400000);
 			}
 

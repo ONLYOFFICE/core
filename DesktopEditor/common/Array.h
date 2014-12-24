@@ -3,9 +3,6 @@
 
 #include "Types.h"
 #include <string.h>
-#ifdef _LINUX
-#include "string.h"
-#endif
 
 #if 0 //__APPLE__
 
@@ -116,6 +113,7 @@ private:
 };
 
 #else
+#include <stdlib.h>
 
 template <class T>
 class CArray
@@ -191,7 +189,7 @@ public:
 				return FALSE;
 
 			m_nAllocSize = nNewAllocSize;
-			m_nSize = 0;
+			m_nSize = nNewAllocSize;
 		}
 
 		return TRUE;
@@ -301,7 +299,7 @@ private:
 #ifdef WIN32
 		memmove_s((void*)dst, nCount * sizeof(T), (void*)src, nCount * sizeof(T));
 #else
-		memmove((void*)dst, (void*)(m_aT + nNewCount), nCount * sizeof(T));
+		memmove((void*)dst, (void*)src, nCount * sizeof(T));
 #endif
 	}
 };

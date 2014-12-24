@@ -155,7 +155,7 @@ public:
 
 		if (0 != nSrcSize)
 		{
-			m_aT = ::calloc(nSrcSize, sizeof(T));
+			m_aT = (T*)::calloc(nSrcSize, sizeof(T));
 			if (m_aT != NULL)
 			{
 				m_nAllocSize = nSrcSize;
@@ -185,7 +185,7 @@ public:
 		{
 			int nNewAllocSize = nAllocSize;
 
-			m_aT = ::calloc(nNewAllocSize, sizeof(T));
+			m_aT = (T*)::calloc(nNewAllocSize, sizeof(T));
 
 			if (NULL == m_aT)
 				return FALSE;

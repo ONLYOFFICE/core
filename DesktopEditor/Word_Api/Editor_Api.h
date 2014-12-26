@@ -2332,6 +2332,34 @@ namespace NSEditorApi
 		{
 		}
 	};
+    
+    class CAscContextMenuInfo : public IMenuEventDataBase
+    {
+    public:
+        bool Copy;
+        bool Cut;
+        bool Paste;
+        bool Delete;
+        bool Select;
+        bool SelectAll;
+        
+        // rect
+        CAscRect Rect;
+        
+    public:
+        CAscContextMenuInfo()
+        {
+            Copy        = false;
+            Cut         = false;
+            Paste       = false;
+            Delete      = false;
+            Select      = false;
+            SelectAll   = false;
+        }
+        virtual ~CAscContextMenuInfo()
+        {
+        }
+    };
 }
 
 

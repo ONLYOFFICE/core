@@ -314,9 +314,9 @@ namespace NSCommon
         }
     };
 
-    void SaveAllFontsJS(CFontList& fonts, std::wstring strFile, std::wstring strFolderThumbnails = L"")
+    void SaveAllFontsJS(CApplicationFonts& applicationFonts, std::wstring strFile, std::wstring strFolderThumbnails = L"")
     {
-        CArray<CFontInfo*>* pList = fonts.GetFonts();
+        CArray<CFontInfo*>* pList = applicationFonts.GetList()->GetFonts();
         int nCount = pList->GetCount();
 
         // сначала строим массив всех файлов шрифтов
@@ -430,12 +430,9 @@ namespace NSCommon
         }
         // -------------------------------------------
 
-
-        CApplicationFonts oApplicationFonts;
-        oApplicationFonts.InitializeFromFolder(L"C:/Windows/Fonts");
-        CFontManager* pManager = oApplicationFonts.GenerateFontManager();
+        CFontManager* pManager = applicationFonts.GenerateFontManager();
         CFontsCache* pCache = new CFontsCache();
-        pCache->SetStreams(oApplicationFonts.GetStreams());
+        pCache->SetStreams(applicationFonts.GetStreams());
         pManager->SetOwnerCache(pCache);
 
         if (L"" != strFolderThumbnails)
@@ -611,7 +608,7 @@ namespace NSCommon
             {
                 BYTE* pData = NULL;
                 LONG lLen = 0;
-                fonts.ToBuffer(&pData, &lLen);
+                applicationFonts.GetList()->ToBuffer(&pData, &lLen);
 
                 char* cData64 = NULL;
                 int nData64Dst = 0;
@@ -648,10 +645,10 @@ int wmain(int argc, wchar_t** argv)
     wcout << "]";
 #endif
 
-    CFontList oList;
-    oList.LoadFromFolder(L"C:/Windows/Fonts");
+    CApplicationFonts oApplicationF;
+    oApplicationF.InitializeFromFolder(L"C:/Windows/Fonts");
 
-    NSCommon::SaveAllFontsJS(oList, L"D:/AllFonts.js", L"D:/");
+    NSCommon::SaveAllFontsJS(oApplicationF, L"D:/AllFonts.js", L"D:/");
 
     return 0;
 }

@@ -396,6 +396,188 @@ CFontInfo* CFontInfo::FromBuffer(BYTE*& pBuffer, std::wstring strDir)
 	return pInfo;		
 }
 
+LONG CFontInfo::GetBufferLen(std::wstring strDirectory)
+{
+    std::wstring sPath = m_wsFontPath;
+    if (0 != strDirectory.length())
+    {
+        if (0 == sPath.find(strDirectory))
+        {
+            sPath = sPath.substr(strDirectory.length());
+        }
+    }
+    //return 4 * g_lSizeofLONG + 3 * g_lSizeofBOOL + (m_wsFontName.GetLength() + sPath.GetLength() + 2) * g_lSizeofWCHAR + 2 * g_lSizeofUSHORT + 6 * g_lSizeofULONG + 10 + 8 * g_lSizeofSHORT;
+    if (2 == sizeof(wchar_t))
+    {
+        return 4 * 4 + 3 * 4 + (m_wsFontName.length() + sPath.length() + 2) * 2 + 2 * 2 + 6 * 4 + 10 + 8 * 2;
+    }
+
+    NSFile::CStringUtf16 s1;
+    NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(m_wsFontName.c_str(), m_wsFontName.length(), s1);
+
+    NSFile::CStringUtf16 s2;
+    NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(sPath.c_str(), sPath.length(), s2);
+
+    return 4 * 4 + 3 * 4 + (s1.Length + s2.Length + 2) * 2 + 2 * 2 + 6 * 4 + 10 + 8 * 2;
+}
+void CFontInfo::ToBuffer(BYTE*& pBuffer, std::wstring strDirectory)
+{
+    // name
+    int lLen = 0;
+
+    if (2 == sizeof(wchar_t))
+    {
+        lLen = (m_wsFontName.length() + 1) * 2;
+
+        *((int*)(pBuffer))	= lLen;
+        pBuffer += 4;
+
+        memcpy(pBuffer, m_wsFontName.c_str(), lLen);
+        pBuffer += lLen;
+
+        // path
+        std::wstring sPath = m_wsFontPath;
+        if (0 != strDirectory.length())
+        {
+            if (0 == sPath.find(strDirectory))
+            {
+                sPath = sPath.substr(strDirectory.length());
+            }
+        }
+
+        lLen = (sPath.length() + 1) * 2;
+
+        *((INT*)(pBuffer))	= lLen;
+        pBuffer += sizeof(INT);
+
+        memcpy(pBuffer, sPath.c_str(), lLen);
+        pBuffer += lLen;
+    }
+    else
+    {
+        NSFile::CStringUtf16 s1;
+        NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(m_wsFontName.c_str(), m_wsFontName.length(), s1);
+
+        lLen = (s1.Length + 1) * 2;
+
+        *((int*)(pBuffer))	= lLen;
+        pBuffer += 4;
+
+        memcpy(pBuffer, s1.Data, lLen);
+        pBuffer += lLen;
+
+        // path
+        std::wstring sPath = m_wsFontPath;
+        if (0 != strDirectory.length())
+        {
+            if (0 == sPath.find(strDirectory))
+            {
+                sPath = sPath.substr(strDirectory.length());
+            }
+        }
+
+        NSFile::CStringUtf16 s2;
+        NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(sPath.c_str(), sPath.length(), s2);
+
+        lLen = (s2.Length + 1) * 2;
+
+        *((INT*)(pBuffer))	= lLen;
+        pBuffer += sizeof(INT);
+
+        memcpy(pBuffer, s2.Data, lLen);
+        pBuffer += lLen;
+    }
+
+    // index
+    *((INT*)(pBuffer))	= (INT)m_lIndex;
+    pBuffer += sizeof(INT);
+
+    // italic
+    *((INT*)(pBuffer))	= m_bItalic;
+    pBuffer += sizeof(INT);
+
+    // bold
+    *((INT*)(pBuffer))	= m_bBold;
+    pBuffer += sizeof(INT);
+
+    // FixedWidth
+    *((INT*)pBuffer) = m_bIsFixed;
+    pBuffer += sizeof(INT);
+
+    // Panose
+    lLen = 10;
+
+    *((INT*)(pBuffer))	= lLen;
+    pBuffer += sizeof(INT);
+
+    memcpy( (void *)pBuffer, (const void *)m_aPanose, lLen );
+    pBuffer += lLen;
+
+    // ulUnicodeRange1
+    *((UINT*)pBuffer) = (UINT)m_ulUnicodeRange1;
+    pBuffer += sizeof(UINT);
+
+    // ulUnicodeRange2
+    *((UINT*)pBuffer) = (UINT)m_ulUnicodeRange2;
+    pBuffer += sizeof(UINT);
+
+    // ulUnicodeRange3
+    *((UINT*)pBuffer) = (UINT)m_ulUnicodeRange3;
+    pBuffer += sizeof(UINT);
+
+    // ulUnicodeRange4
+    *((UINT*)pBuffer) = (UINT)m_ulUnicodeRange4;
+    pBuffer += sizeof(UINT);
+
+    // ulCodePageRange1
+    *((UINT*)pBuffer) = (UINT)m_ulCodePageRange1;
+    pBuffer += sizeof(UINT);
+
+    // ulCodePageRange2
+    *((UINT*)pBuffer) = (UINT)m_ulCodePageRange2;
+    pBuffer += sizeof(UINT);
+
+    // usWeightClass
+    *((USHORT*)pBuffer) = m_usWeigth;
+    pBuffer += sizeof(USHORT);
+
+    // usWidthClass
+    *((USHORT*)pBuffer) = m_usWidth;
+    pBuffer += sizeof(USHORT);
+
+    // sFamilyClass
+    *((SHORT*)pBuffer) = m_sFamilyClass;
+    pBuffer += sizeof(SHORT);
+
+    // FontFormat
+    *((SHORT*)pBuffer) = (SHORT)m_eFontFormat;
+    pBuffer += sizeof(SHORT);
+
+    // AvgCharWidth
+    *((SHORT*)pBuffer) = (SHORT)m_shAvgCharWidth;
+    pBuffer += sizeof(SHORT);
+
+    // Ascent
+    *((SHORT*)pBuffer) = (SHORT)m_shAscent;
+    pBuffer += sizeof(SHORT);
+
+    // Descent
+    *((SHORT*)pBuffer) = (SHORT)m_shDescent;
+    pBuffer += sizeof(SHORT);
+
+    // LineGap
+    *((SHORT*)pBuffer) = (SHORT)m_shLineGap;
+    pBuffer += sizeof(SHORT);
+
+    // XHeight
+    *((SHORT*)pBuffer) = (SHORT)m_shXHeight;
+    pBuffer += sizeof(SHORT);
+
+    // CapHeight
+    *((SHORT*)pBuffer) = (SHORT)m_shCapHeight;
+    pBuffer += sizeof(SHORT);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////
 namespace NSCharsets
 {
@@ -807,6 +989,30 @@ EFontFormat CFontList::GetFontFormat(FT_Face pFace)
 		return fontOpenType;
 
 	return fontUnknown;
+}
+
+void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory)
+{
+    LONG lDataSize = sizeof(INT);
+    size_t nFontsCount = (size_t)m_pList.GetCount();
+    for (size_t i = 0; i < nFontsCount; ++i)
+    {
+        lDataSize += m_pList[i]->GetBufferLen(strDirectory);
+    }
+
+    BYTE* pData = new BYTE[lDataSize];
+    BYTE* pDataMem = pData;
+
+    *(INT*)pDataMem = (INT)nFontsCount;
+    pDataMem += sizeof(INT);
+
+    for (size_t i = 0; i < nFontsCount; ++i)
+    {
+        m_pList[i]->ToBuffer(pDataMem, strDirectory);
+    }
+
+    *pDstData = pData;
+    *pLen = lDataSize;
 }
 
 CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect)

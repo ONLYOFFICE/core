@@ -26,6 +26,24 @@ namespace NSFile
 		*p++ = 0xDC00 | (code & 0x03FF);			\
 	}
 
+	class CStringUtf16
+	{
+	public:
+		BYTE* Data;
+		int Length;
+
+	public:
+		CStringUtf16()
+		{
+			Data = NULL;
+			Length = 0;
+		}
+		~CStringUtf16()
+		{
+			RELEASEARRAYOBJECTS(Data);
+		}
+	};
+
 	class CUtf8Converter
 	{
 	public:
@@ -392,6 +410,61 @@ namespace NSFile
 
 			RELEASEARRAYOBJECTS(pData);
 			return s;
+		}
+
+		// utf16
+                static void GetUtf16StringFromUnicode_4bytes(const wchar_t* pUnicodes, LONG lCount, BYTE*& pData, int& lOutputCount, bool bIsBOM = false)
+		{
+			if (NULL == pData)
+			{
+				pData = new BYTE[2 * lCount + 3 + 1];
+			}
+
+			BYTE* pCodesCur = pData;
+			if (bIsBOM)
+			{
+				pCodesCur[0] = 0xEF;
+				pCodesCur[1] = 0xBB;
+				pCodesCur[2] = 0xBF;
+				pCodesCur += 3;
+			}
+
+			const wchar_t* pEnd = pUnicodes + lCount;
+			const wchar_t* pCur = pUnicodes;
+
+			while (pCur < pEnd)
+			{
+				unsigned int code = (unsigned int)*pCur++;
+
+				if (code <= 0xFFFF)
+				{
+					USHORT usCode = (USHORT)(code & 0xFFFF);
+					memcpy(pCodesCur, &usCode, 2);
+					pCodesCur += 2;
+				}
+				else
+				{
+					code -= 0x10000;
+					code &= 0xFFFFF;
+					
+					USHORT us1 = 0xD800 | ((code >> 5) & 0x1F);
+					USHORT us2 = 0xDC00 | (code & 0x1F);
+
+					memcpy(pCodesCur, &us1, 2);
+					pCodesCur += 2;
+
+					memcpy(pCodesCur, &us2, 2);
+					pCodesCur += 2;
+				}				
+			}
+
+			lOutputCount = (LONG)(pCodesCur - pData);
+			*pCodesCur++ = 0;
+		}
+
+		static void GetUtf16StringFromUnicode_4bytes2(const wchar_t* pUnicodes, LONG lCount, CStringUtf16& data)
+		{
+			GetUtf16StringFromUnicode_4bytes(pUnicodes, lCount, data.Data, data.Length);
 		}
 	};
 

@@ -92,6 +92,9 @@ public:
     INT Equals(const CFontInfo *pFontInfo);
     static CFontInfo* FromBuffer(BYTE*& pBuffer, std::wstring strDir);
 
+    LONG GetBufferLen(std::wstring strDirectory = L"");
+    void ToBuffer(BYTE*& pBuffer, std::wstring strDirectory = L"");
+
 public:
 	std::wstring m_wsFontName;   // Имя шрифта
 	std::wstring m_wsFontPath;   // Путь к файлу с шрифтом
@@ -153,6 +156,7 @@ public:
 		}
 		m_pList.RemoveAll();
 	}
+        CArray<CFontInfo*>* GetFonts() { return &m_pList; }
 
 private:
 	int GetCharsetPenalty(ULONG ulCandRanges[6], unsigned char unReqCharset);
@@ -176,6 +180,8 @@ private:
 
 public:
 	static EFontFormat GetFontFormat(FT_Face pFace);
+
+    void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"");
 
 public:
 	void LoadFromArrayFiles(CArray<std::wstring>& arrFiles);

@@ -673,6 +673,7 @@ public:
 
 		if (lType == c_nPathType)
 		{
+			m_oWriter.AddSize(20);
 			if (!m_bIsFillPart)
 			{
 				m_oWriter.AddCharNoCheck((WCHAR)'n');
@@ -839,7 +840,7 @@ private:
 	}
 	inline void CurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3)
 	{
-		m_oWriter.AddSize(80);
+		m_oWriter.AddSize(90);
 		m_oWriter.AddCharNoCheck((WCHAR)'c');
 		m_oWriter.AddIntNoCheck(int(x1 + 0.5));
 		m_oWriter.AddCharNoCheck((WCHAR)',');

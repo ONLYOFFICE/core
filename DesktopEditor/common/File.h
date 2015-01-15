@@ -13,6 +13,10 @@
 #include <windows.h>
 #endif
 
+#if defined(_LINUX) || defined(_MAC) && !defined(_IOS)
+#include <unistd.h>
+#endif
+
 //#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 //перенесено выше
 namespace NSFile
@@ -43,55 +47,7 @@ namespace NSFile
 		{
 			RELEASEARRAYOBJECTS(Data);
 		}
-	};
-
-        #define NS_FILE_MAX_PATH 32768
-        static std::wstring GetProcessPath()
-        {
-#ifdef WIN32
-            wchar_t buf[NS_FILE_MAX_PATH];
-            GetModuleFileNameW(GetModuleHandleW(NULL), buf, NS_FILE_MAX_PATH);
-
-            return std::wstring(buf);
-#else
-#if defined(_LINUX) || defined(_MAC) && !defined(_IOS)
-            char buf[NS_FILE_MAX_PATH];
-            if (readlink ("/proc/self/exe", buf, NS_FILE_MAX_PATH) <= 0)
-                return L"";
-
-            std::string sUTF8(buf);
-            std::wstring sRet = CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sUTF8.c_str(), sUTF8.length());
-            return sRet;
-#endif
-#endif
-            return L"";
-        }
-
-        static std::wstring GetProcessDirectory()
-        {
-            std::wstring sPath = GetProcessPath();
-
-            size_t pos1 = sPath.find_last_of(wchar_t('/'));
-            size_t pos2 = sPath.find_last_of(wchar_t('\\'));
-
-            size_t pos = std::wstring::npos;
-            if (pos1 != std::wstring::npos)
-                pos = pos1;
-
-            if (pos2 != std::wstring::npos)
-            {
-                if (pos == std::wstring::npos)
-                    pos = pos2;
-                else if (pos2 > pos)
-                    pos = pos2;
-            }
-
-            if (pos != std::wstring::npos)
-            {
-                sPath = sPath.substr(0, pos);
-            }
-            return sPath;
-        }
+	};        
 
 	class CUtf8Converter
 	{
@@ -767,6 +723,57 @@ namespace NSFile
 			return true;
 		}
 	};
+}
+
+namespace NSFile
+{
+    #define NS_FILE_MAX_PATH 32768
+    static std::wstring GetProcessPath()
+    {
+    #ifdef WIN32
+        wchar_t buf[NS_FILE_MAX_PATH];
+        GetModuleFileNameW(GetModuleHandleW(NULL), buf, NS_FILE_MAX_PATH);
+
+        return std::wstring(buf);
+    #else
+    #if defined(_LINUX) || defined(_MAC) && !defined(_IOS)
+        char buf[NS_FILE_MAX_PATH];
+        if (readlink ("/proc/self/exe", buf, NS_FILE_MAX_PATH) <= 0)
+            return L"";
+
+        std::string sUTF8(buf);
+        std::wstring sRet = CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sUTF8.c_str(), sUTF8.length());
+        return sRet;
+    #endif
+    #endif
+        return L"";
+    }
+
+    static std::wstring GetProcessDirectory()
+    {
+        std::wstring sPath = GetProcessPath();
+
+        size_t pos1 = sPath.find_last_of(wchar_t('/'));
+        size_t pos2 = sPath.find_last_of(wchar_t('\\'));
+
+        size_t pos = std::wstring::npos;
+        if (pos1 != std::wstring::npos)
+            pos = pos1;
+
+        if (pos2 != std::wstring::npos)
+        {
+            if (pos == std::wstring::npos)
+                pos = pos2;
+            else if (pos2 > pos)
+                pos = pos2;
+        }
+
+        if (pos != std::wstring::npos)
+        {
+            sPath = sPath.substr(0, pos);
+        }
+        return sPath;
+    }
 }
 
 #endif //_BUILD_FILE_CROSSPLATFORM_H_

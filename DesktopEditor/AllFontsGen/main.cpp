@@ -107,7 +107,10 @@ namespace NSCommon
         {
             if (NULL == m_pData)
             {
-                m_lSize = max(nSize, 1000);
+                m_lSize = 1000;
+                if (nSize > m_lSize)
+                    m_lSize = nSize;
+
                 m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
 
                 m_lSizeCur = 0;
@@ -198,8 +201,7 @@ namespace NSCommon
         inline void WriteString(const wchar_t* pString, const size_t& nLen)
         {
             AddSize(nLen);
-            //memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
-            memcpy(m_pDataCur, pString, nLen << 1);
+            memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
             m_pDataCur += nLen;
             m_lSizeCur += nLen;
         }
@@ -507,7 +509,23 @@ namespace NSCommon
                     BOOL bIsSymbol = FALSE;
 
                     if (pManager->m_pFont)
+                    {
                         bIsSymbol = (-1 != (pManager->m_pFont->m_nSymbolic)) ? TRUE : FALSE;
+
+                        if (!bIsSymbol)
+                        {
+                            TT_OS2* pOS2 = (TT_OS2*)FT_Get_Sfnt_Table(pManager->m_pFont->m_pFace, ft_sfnt_os2);
+
+                            int y = 0;
+                            ++y;
+
+                            if (NULL != pOS2)
+                            {
+                                if (0 == (pOS2->ulCodePageRange1 & 0xF0000000))
+                                    bIsSymbol = TRUE;
+                            }
+                        }
+                    }
 
                     if (bIsSymbol)
                     {
@@ -517,7 +535,7 @@ namespace NSCommon
 
                         if (NULL != pInfoCur)
                         {
-                            pManager->LoadFontFromFile(pInfoCur->m_wsFontPath, lFaceIndex, 14, dDpi, dDpi);
+                            pManager->LoadFontFromFile(pInfoCur->m_wsFontPath, 0, 14, dDpi, dDpi);
                         }
                         oRenderer.put_FontPath(pInfoCur->m_wsFontPath);
                     }
@@ -588,15 +606,17 @@ namespace NSCommon
             {
                 std::map<std::wstring, CFontInfoJS>::iterator pPair = mapFonts.find(arrFonts[index]);
 
-                wchar_t buffer[1000];
-                swprintf(buffer, L"\",%d,%d,%d,%d,%d,%d,%d,%d]", pPair->second.m_lIndexR, pPair->second.m_lFaceIndexR,
+                char buffer[1000];
+                sprintf(buffer, "\",%d,%d,%d,%d,%d,%d,%d,%d]", pPair->second.m_lIndexR, pPair->second.m_lFaceIndexR,
                          pPair->second.m_lIndexI, pPair->second.m_lFaceIndexI,
                          pPair->second.m_lIndexB, pPair->second.m_lFaceIndexB,
                          pPair->second.m_lIndexBI, pPair->second.m_lFaceIndexBI);
 
+                std::string sBuffer(buffer);
+
                 oWriterJS += L"[\"";
                 oWriterJS += pPair->second.m_sName;
-                oWriterJS += std::wstring(buffer);
+                oWriterJS += NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sBuffer);
 
                 if (index != (nCountFonts - 1))
                     oWriterJS += (L",\n");
@@ -647,7 +667,11 @@ namespace NSCommon
     }
 }
 
+#ifdef WIN32
 int wmain(int argc, wchar_t** argv)
+#else
+int main(int argc, char** argv)
+#endif
 {
 #if 0
     char buf[10];
@@ -660,6 +684,9 @@ int wmain(int argc, wchar_t** argv)
     wcout << "]";
 #endif
 
+#if 0
+
+#ifdef WIN32
     std::wstring strFontsFolder = L"";
     if (1 < argc)
         strFontsFolder = std::wstring(argv[1]);
@@ -672,12 +699,38 @@ int wmain(int argc, wchar_t** argv)
     std::wstring strFontsSelectionBin = L"";
     if (4 < argc)
         strFontsSelectionBin = std::wstring(argv[4]);
+#else
+    std::wstring strFontsFolder = L"";
+    if (1 < argc)
+        strFontsFolder = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)argv[1], (LONG)strlen(argv[1]));
+    std::wstring strAllFontsJSPath = L"";
+    if (2 < argc)
+        strAllFontsJSPath = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)argv[2], (LONG)strlen(argv[2]));
+    std::wstring strThumbnailsFolder = L"";
+    if (3 < argc)
+        strThumbnailsFolder = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)argv[3], (LONG)strlen(argv[3]));
+    std::wstring strFontsSelectionBin = L"";
+    if (4 < argc)
+        strFontsSelectionBin = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)argv[4], (LONG)strlen(argv[4]));
+#endif
 
-#if 0
-    strFontsFolder = L"C:/Windows/Fonts";
-    strAllFontsJSPath = L"D:/AllFontsGenTest/AllFonts.js";
-    strThumbnailsFolder = L"D:/AllFontsGenTest";
-    strFontsSelectionBin = L"D:/AllFontsGenTest/font_selection.bin";
+#endif
+
+#if 1
+#ifdef WIN32
+    std::wstring strFontsFolder = L"C:/Windows/Fonts";
+    std::wstring strAllFontsJSPath = L"D:/AllFontsGenTest/AllFonts.js";
+    std::wstring strThumbnailsFolder = L"D:/AllFontsGenTest";
+    std::wstring strFontsSelectionBin = L"D:/AllFontsGenTest/font_selection.bin";
+#endif
+
+#ifdef _LINUX
+    std::wstring strFontsFolder = L"";
+    std::wstring strAllFontsJSPath = L"/home/oleg/AllFontsGen/AllFonts.js";
+    std::wstring strThumbnailsFolder = L"/home/oleg/AllFontsGen/";
+    std::wstring strFontsSelectionBin = L"/home/oleg/AllFontsGen/font_selection.bin";
+#endif
+
 #endif
 
     CApplicationFonts oApplicationF;

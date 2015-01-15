@@ -366,7 +366,8 @@ CFontInfo* CFontInfo::FromBuffer(BYTE*& pBuffer, std::wstring strDir)
 	SHORT shCapHeight = *((SHORT*)pBuffer);
 	pBuffer += sizeof(SHORT);
 
-	strPath = strDir + strPath;
+        if (strPath.find(wchar_t('/')) == std::wstring::npos && strPath.find(wchar_t('\\')) == std::wstring::npos)
+            strPath = strDir + strPath;
 
 	CFontInfo* pInfo = new CFontInfo(strName,
 		L"",
@@ -396,7 +397,7 @@ CFontInfo* CFontInfo::FromBuffer(BYTE*& pBuffer, std::wstring strDir)
 	return pInfo;		
 }
 
-LONG CFontInfo::GetBufferLen(std::wstring strDirectory)
+LONG CFontInfo::GetBufferLen(std::wstring strDirectory, bool bIsOnlyFileName)
 {
     std::wstring sPath = m_wsFontPath;
     if (0 != strDirectory.length())
@@ -404,6 +405,28 @@ LONG CFontInfo::GetBufferLen(std::wstring strDirectory)
         if (0 == sPath.find(strDirectory))
         {
             sPath = sPath.substr(strDirectory.length());
+        }
+    }
+    else if (bIsOnlyFileName)
+    {
+        size_t pos1 = sPath.find_last_of(wchar_t('/'));
+        size_t pos2 = sPath.find_last_of(wchar_t('\\'));
+
+        size_t pos = std::wstring::npos;
+        if (pos1 != std::wstring::npos)
+            pos = pos1;
+
+        if (pos2 != std::wstring::npos)
+        {
+            if (pos == std::wstring::npos)
+                pos = pos2;
+            else if (pos2 > pos)
+                pos = pos2;
+        }
+
+        if (pos != std::wstring::npos)
+        {
+            sPath = sPath.substr(pos + 1);
         }
     }
     //return 4 * g_lSizeofLONG + 3 * g_lSizeofBOOL + (m_wsFontName.GetLength() + sPath.GetLength() + 2) * g_lSizeofWCHAR + 2 * g_lSizeofUSHORT + 6 * g_lSizeofULONG + 10 + 8 * g_lSizeofSHORT;
@@ -420,7 +443,7 @@ LONG CFontInfo::GetBufferLen(std::wstring strDirectory)
 
     return 4 * 4 + 3 * 4 + (s1.Length + s2.Length + 2) * 2 + 2 * 2 + 6 * 4 + 10 + 8 * 2;
 }
-void CFontInfo::ToBuffer(BYTE*& pBuffer, std::wstring strDirectory)
+void CFontInfo::ToBuffer(BYTE*& pBuffer, std::wstring strDirectory, bool bIsOnlyFileName)
 {
     // name
     int lLen = 0;
@@ -442,6 +465,28 @@ void CFontInfo::ToBuffer(BYTE*& pBuffer, std::wstring strDirectory)
             if (0 == sPath.find(strDirectory))
             {
                 sPath = sPath.substr(strDirectory.length());
+            }
+        }
+        else if (bIsOnlyFileName)
+        {
+            size_t pos1 = sPath.find_last_of(wchar_t('/'));
+            size_t pos2 = sPath.find_last_of(wchar_t('\\'));
+
+            size_t pos = std::wstring::npos;
+            if (pos1 != std::wstring::npos)
+                pos = pos1;
+
+            if (pos2 != std::wstring::npos)
+            {
+                if (pos == std::wstring::npos)
+                    pos = pos2;
+                else if (pos2 > pos)
+                    pos = pos2;
+            }
+
+            if (pos != std::wstring::npos)
+            {
+                sPath = sPath.substr(pos + 1);
             }
         }
 
@@ -473,6 +518,28 @@ void CFontInfo::ToBuffer(BYTE*& pBuffer, std::wstring strDirectory)
             if (0 == sPath.find(strDirectory))
             {
                 sPath = sPath.substr(strDirectory.length());
+            }
+        }
+        else if (bIsOnlyFileName)
+        {
+            size_t pos1 = sPath.find_last_of(wchar_t('/'));
+            size_t pos2 = sPath.find_last_of(wchar_t('\\'));
+
+            size_t pos = std::wstring::npos;
+            if (pos1 != std::wstring::npos)
+                pos = pos1;
+
+            if (pos2 != std::wstring::npos)
+            {
+                if (pos == std::wstring::npos)
+                    pos = pos2;
+                else if (pos2 > pos)
+                    pos = pos2;
+            }
+
+            if (pos != std::wstring::npos)
+            {
+                sPath = sPath.substr(pos + 1);
             }
         }
 
@@ -991,13 +1058,13 @@ EFontFormat CFontList::GetFontFormat(FT_Face pFace)
 	return fontUnknown;
 }
 
-void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory)
+void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory, bool bIsOnlyFileName)
 {
     LONG lDataSize = sizeof(INT);
     size_t nFontsCount = (size_t)m_pList.GetCount();
     for (size_t i = 0; i < nFontsCount; ++i)
     {
-        lDataSize += m_pList[i]->GetBufferLen(strDirectory);
+        lDataSize += m_pList[i]->GetBufferLen(strDirectory, bIsOnlyFileName);
     }
 
     BYTE* pData = new BYTE[lDataSize];
@@ -1008,7 +1075,7 @@ void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory)
 
     for (size_t i = 0; i < nFontsCount; ++i)
     {
-        m_pList[i]->ToBuffer(pDataMem, strDirectory);
+        m_pList[i]->ToBuffer(pDataMem, strDirectory, bIsOnlyFileName);
     }
 
     *pDstData = pData;
@@ -1468,15 +1535,28 @@ CApplicationFontStreams* CApplicationFonts::GetStreams()
 	return &m_oStreams;
 }
 
-void CApplicationFonts::InitializeFromFolder(std::wstring strFolder)
+void CApplicationFonts::InitializeFromFolder(std::wstring strFolder, bool bIsCheckSelection)
 {
-	if (!m_oList.CheckLoadFromFolderBin(strFolder))
-		m_oList.LoadFromFolder(strFolder);
+    if (bIsCheckSelection)
+    {
+        if (m_oList.CheckLoadFromFolderBin(strFolder))
+            return;
 
-	m_oCache.m_pApplicationFontStreams = &m_oStreams;
+        if (m_oList.CheckLoadFromFolderBin(NSFile::GetProcessDirectory()))
+            return;
+    }
+
+    m_oList.LoadFromFolder(strFolder);
+    m_oCache.m_pApplicationFontStreams = &m_oStreams;
 }
-void CApplicationFonts::Initialize()
+void CApplicationFonts::Initialize(bool bIsCheckSelection)
 {
+    if (bIsCheckSelection)
+    {
+        if (m_oList.CheckLoadFromFolderBin(NSFile::GetProcessDirectory()))
+            return;
+    }
+
 #ifdef WIN32
 	//m_oList.LoadFromFolder(L"C:/Windows/Fonts");
 	InitFromReg();

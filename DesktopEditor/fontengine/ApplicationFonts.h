@@ -92,8 +92,8 @@ public:
     INT Equals(const CFontInfo *pFontInfo);
     static CFontInfo* FromBuffer(BYTE*& pBuffer, std::wstring strDir);
 
-    LONG GetBufferLen(std::wstring strDirectory = L"");
-    void ToBuffer(BYTE*& pBuffer, std::wstring strDirectory = L"");
+    LONG GetBufferLen(std::wstring strDirectory = L"", bool bIsOnlyFileName = false);
+    void ToBuffer(BYTE*& pBuffer, std::wstring strDirectory = L"", bool bIsOnlyFileName = false);
 
 public:
 	std::wstring m_wsFontName;   // Имя шрифта
@@ -181,7 +181,7 @@ private:
 public:
 	static EFontFormat GetFontFormat(FT_Face pFace);
 
-    void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"");
+    void ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory = L"", bool bIsOnlyFileName = false);
 
 public:
 	void LoadFromArrayFiles(CArray<std::wstring>& arrFiles);
@@ -209,8 +209,8 @@ public:
 	CFontList*					GetList();
 	CApplicationFontStreams*	GetStreams();
 
-	void InitializeFromFolder(std::wstring strFolder);
-	void Initialize();
+    void InitializeFromFolder(std::wstring strFolder, bool bIsCheckSelection = true);
+    void Initialize(bool bIsCheckSelection = true);
 
 #ifdef WIN32
 	void InitFromReg();

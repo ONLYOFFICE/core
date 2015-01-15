@@ -314,7 +314,7 @@ namespace NSCommon
         }
     };
 
-    void SaveAllFontsJS(CApplicationFonts& applicationFonts, std::wstring strFile, std::wstring strFolderThumbnails = L"")
+    void SaveAllFontsJS(CApplicationFonts& applicationFonts, std::wstring strFile, std::wstring strFolderThumbnails, std::wstring strFontSelectionBin)
     {
         CArray<CFontInfo*>* pList = applicationFonts.GetList()->GetFonts();
         int nCount = pList->GetCount();
@@ -429,14 +429,13 @@ namespace NSCommon
             }
         }
         // -------------------------------------------
-
-        CFontManager* pManager = applicationFonts.GenerateFontManager();
-        CFontsCache* pCache = new CFontsCache();
-        pCache->SetStreams(applicationFonts.GetStreams());
-        pManager->SetOwnerCache(pCache);
-
         if (L"" != strFolderThumbnails)
         {
+            CFontManager* pManager = applicationFonts.GenerateFontManager();
+            CFontsCache* pCache = new CFontsCache();
+            pCache->SetStreams(applicationFonts.GetStreams());
+            pManager->SetOwnerCache(pCache);
+
             for (int iX = 1; iX <= 2; ++iX)
             {
                 // создаем картинку для табнейлов
@@ -538,11 +537,13 @@ namespace NSCommon
 
                 oFrame.SaveFile(strThumbnailPath, 4);
             }
+
+            RELEASEOBJECT(pManager);
         }
 
         // и самое главное. Здесь должен скидываться скрипт для работы со всеми шрифтами.
         // все объекты, которые позволят не знать о существующих фонтах
-        if (TRUE)
+        if (0 != strFile.length())
         {
             CStringWriter oWriterJS;
 
@@ -608,7 +609,7 @@ namespace NSCommon
             {
                 BYTE* pData = NULL;
                 LONG lLen = 0;
-                applicationFonts.GetList()->ToBuffer(&pData, &lLen);
+                applicationFonts.GetList()->ToBuffer(&pData, &lLen, L"", true);
 
                 char* cData64 = NULL;
                 int nData64Dst = 0;
@@ -629,6 +630,20 @@ namespace NSCommon
             oFile.WriteStringUTF8(oWriterJS.GetCString(), true);
             oFile.CloseFile();
         }
+
+        if (0 != strFontSelectionBin.length())
+        {
+            BYTE* pData = NULL;
+            LONG lLen = 0;
+            applicationFonts.GetList()->ToBuffer(&pData, &lLen, L"", false);
+
+            NSFile::CFileBinary oFile;
+            oFile.CreateFileW(strFontSelectionBin);
+            oFile.WriteFile(pData, (DWORD)lLen);
+            oFile.CloseFile();
+
+            RELEASEARRAYOBJECTS(pData);
+        }
     }
 }
 
@@ -645,11 +660,35 @@ int wmain(int argc, wchar_t** argv)
     wcout << "]";
 #endif
 
+    std::wstring strFontsFolder = L"";
+    if (1 < argc)
+        strFontsFolder = std::wstring(argv[1]);
+    std::wstring strAllFontsJSPath = L"";
+    if (2 < argc)
+        strAllFontsJSPath = std::wstring(argv[2]);
+    std::wstring strThumbnailsFolder = L"";
+    if (3 < argc)
+        strThumbnailsFolder = std::wstring(argv[3]);
+    std::wstring strFontsSelectionBin = L"";
+    if (4 < argc)
+        strFontsSelectionBin = std::wstring(argv[4]);
+
+#if 0
+    strFontsFolder = L"C:/Windows/Fonts";
+    strAllFontsJSPath = L"D:/AllFontsGenTest/AllFonts.js";
+    strThumbnailsFolder = L"D:/AllFontsGenTest";
+    strFontsSelectionBin = L"D:/AllFontsGenTest/font_selection.bin";
+#endif
+
     CApplicationFonts oApplicationF;
-    oApplicationF.InitializeFromFolder(L"C:/Windows/Fonts");
 
-    NSCommon::SaveAllFontsJS(oApplicationF, L"D:/AllFonts.js", L"D:/");
+    if (strFontsFolder.length() != 0)
+        oApplicationF.InitializeFromFolder(strFontsFolder, false);
+    else
+        oApplicationF.Initialize(false);
 
+
+    NSCommon::SaveAllFontsJS(oApplicationF, strAllFontsJSPath, strThumbnailsFolder, strFontsSelectionBin);
     return 0;
 }
 

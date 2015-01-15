@@ -538,14 +538,26 @@ private: BOOL IsArchiveType(const CString &sFilePath)
 
 private: BOOL IsDOCXFile(const CString &sFilePath, long &lError)
 		 {				 
-			 lError = NOERROR;
 			 HRESULT hresult = S_FALSE;
 			 if (m_pOfficeUtils != NULL)
 			 {
+				 BYTE* pBuffer = NULL;
+				 const char *docxFormatLine = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml";
+				 const char *dotxFormatLine = "application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml";
+				 const char *docmFormatLine = "application/vnd.ms-word.document.macroEnabled.main+xml";
+				 const char *dotmFormatLine = "application/vnd.ms-word.template.macroEnabledTemplate.main+xml";
 				 CStringW sTemp = sFilePath;
 				 BSTR bstrFilePath = sTemp.AllocSysString();
-				 hresult = m_pOfficeUtils->IsFileExistInArchive(bstrFilePath, L"word/document.xml");
+				 hresult = m_pOfficeUtils->LoadFileFromArchive(bstrFilePath, L"[Content_Types].xml", &pBuffer);
+				 if (hresult == S_OK && pBuffer != NULL)
+				 {
+					 if (!strstr((char*)pBuffer, docxFormatLine) && !strstr((char*)pBuffer, dotxFormatLine) && !strstr((char*)pBuffer, docmFormatLine) && !strstr((char*)pBuffer, dotmFormatLine))
+						 hresult = S_FALSE;
+
+				 }
 				 SysFreeString( bstrFilePath );
+
+				 RELEASEHEAP(pBuffer);
 			 }
 
 			 return hresult == S_OK? TRUE: FALSE;	 
@@ -582,14 +594,26 @@ private: BOOL IsXPSFile(const CString &sFilePath, long &lError)
 
 private: BOOL IsXLSXFile(const CString &sFilePath, long &lError)
 		 {				
-			 lError = NOERROR;
 			 HRESULT hresult = S_FALSE;
 			 if (m_pOfficeUtils != NULL)
 			 {
+				 BYTE* pBuffer = NULL;
+				 const char *xlsxFormatLine = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml";
+				 const char *xltxFormatLine = "application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml";
+				 const char *xlsmFormatLine = "application/vnd.ms-excel.sheet.macroEnabled.main+xml";
+				 const char *xltmFormatLine = "application/vnd.ms-excel.template.macroEnabled.main+xml";
 				 CStringW sTemp = sFilePath;
 				 BSTR bstrFilePath = sTemp.AllocSysString();
-				 hresult = m_pOfficeUtils->IsFileExistInArchive(bstrFilePath, L"xl/workbook.xml");
+				 hresult = m_pOfficeUtils->LoadFileFromArchive(bstrFilePath, L"[Content_Types].xml", &pBuffer);
+				 if (hresult == S_OK && pBuffer != NULL)
+				 {
+					 if (!strstr((char*)pBuffer, xlsxFormatLine) &&!strstr((char*)pBuffer, xltxFormatLine)  &&!strstr((char*)pBuffer, xlsmFormatLine) &&!strstr((char*)pBuffer, xltmFormatLine))
+						 hresult = S_FALSE;
+
+				 }
 				 SysFreeString( bstrFilePath );
+
+				 RELEASEHEAP(pBuffer);
 			 }
 
 			 return hresult == S_OK? TRUE: FALSE;	 
@@ -598,14 +622,29 @@ private: BOOL IsXLSXFile(const CString &sFilePath, long &lError)
 
 private: BOOL IsPPTXFile(const CString &sFilePath, long &lError)
 		 {	
-			 lError = NOERROR;
 			 HRESULT hresult = S_FALSE;
 			 if (m_pOfficeUtils != NULL)
 			 {
+				 BYTE* pBuffer = NULL;
+				 const char *pptxFormatLine = "application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml";
+				 const char *ppsxFormatLine = "application/vnd.openxmlformats-officedocument.presentationml.slideshow.main+xml";
+				 const char *potxFormatLine = "application/vnd.openxmlformats-officedocument.presentationml.template.main+xml";
+				 const char *pptmFormatLine = "application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml";
+				 const char *ppsmFormatLine = "application/vnd.ms-powerpoint.slideshow.macroEnabled.main+xml";
+				 const char *potmFormatLine = "application/vnd.ms-powerpoint.template.macroEnabled.main+xml";
 				 CStringW sTemp = sFilePath;
 				 BSTR bstrFilePath = sTemp.AllocSysString();
-				 hresult = m_pOfficeUtils->IsFileExistInArchive(bstrFilePath, L"ppt/presentation.xml");
+				 hresult = m_pOfficeUtils->LoadFileFromArchive(bstrFilePath, L"[Content_Types].xml", &pBuffer);
+				 if (hresult == S_OK && pBuffer != NULL)
+				 {
+					 if (!strstr((char*)pBuffer, pptxFormatLine) && !strstr((char*)pBuffer, ppsxFormatLine) && !strstr((char*)pBuffer, potxFormatLine) &&
+						 !strstr((char*)pBuffer, pptmFormatLine) && !strstr((char*)pBuffer, ppsmFormatLine) && !strstr((char*)pBuffer, potmFormatLine))
+						 hresult = S_FALSE;
+
+				 }
 				 SysFreeString( bstrFilePath );
+
+				 RELEASEHEAP(pBuffer);
 			 }
 
 			 return hresult == S_OK? TRUE: FALSE;		 

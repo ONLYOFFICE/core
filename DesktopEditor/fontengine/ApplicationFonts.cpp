@@ -1417,6 +1417,12 @@ void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray)
 
 			EFontFormat eFormat = GetFontFormat( pFace );
 
+            if (eFormat != fontTrueType)
+            {
+                FT_Done_Face( pFace );
+                continue;
+            }
+
 			std::string sFamilyName = "";
 			if (NULL != pFace->family_name)
 				sFamilyName = pFace->family_name;
@@ -1464,7 +1470,7 @@ void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray)
 }
 void CFontList::LoadFromFolder(const std::wstring& strDirectory)
 {
-	CArray<std::wstring> oArray = NSDirectory::GetFiles(strDirectory);
+    CArray<std::wstring> oArray = NSDirectory::GetFiles(strDirectory, true);
 	this->LoadFromArrayFiles(oArray);
 }
 
@@ -1560,9 +1566,13 @@ void CApplicationFonts::Initialize(bool bIsCheckSelection)
 #ifdef WIN32
 	//m_oList.LoadFromFolder(L"C:/Windows/Fonts");
 	InitFromReg();
-#elif LINUX
+#endif
+
+#if defined(_LINUX) && !defined(_MAC)
 	m_oList.LoadFromFolder(L"/usr/share/fonts");
-#elif MAC
+#endif
+
+#if defined(_MAC) && !defined(_IOS)
 	m_oList.LoadFromFolder(L"/Library/Fonts/");
 #endif
 

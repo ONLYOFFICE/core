@@ -184,6 +184,8 @@ public:
 			int nNewAllocSize = nAllocSize;
 
 			m_aT = (T*)::calloc(nNewAllocSize, sizeof(T));
+            for (int i = 0; i < nNewAllocSize; i++)
+                ::new(m_aT + i) T;
 
 			if (NULL == m_aT)
 				return FALSE;
@@ -199,9 +201,10 @@ public:
 	{
 		if (m_nSize == m_nAllocSize)
 		{
-			int nNewAllocSize = (m_nAllocSize == 0) ? 1 : (m_nSize * 2);
+            int nNewAllocSize = (m_nAllocSize == 0) ? 1 : (m_nSize * 2);
 
-			T* newT = (T*)::calloc(nNewAllocSize, sizeof(T));
+            T* newT = (T*)::calloc(nNewAllocSize, sizeof(T));
+            //T* newT = (T*)malloc(nNewAllocSize * sizeof(T));
 
 			if (NULL == newT)
 				return FALSE;
@@ -216,6 +219,7 @@ public:
 			m_aT = newT;
 		}
 
+        ::new(m_aT + m_nSize) T;
 		m_nSize++;
 		return TRUE;
 	}

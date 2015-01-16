@@ -684,7 +684,7 @@ int main(int argc, char** argv)
     wcout << "]";
 #endif
 
-#if 0
+#if 1
 
 #ifdef WIN32
     std::wstring strFontsFolder = L"";
@@ -716,7 +716,7 @@ int main(int argc, char** argv)
 
 #endif
 
-#if 1
+#if 0
 #ifdef WIN32
     std::wstring strFontsFolder = L"C:/Windows/Fonts";
     std::wstring strAllFontsJSPath = L"D:/AllFontsGenTest/AllFonts.js";

@@ -23,6 +23,7 @@ DEFINES += \
 linux-g++ | linux-g++-64 | linux-g++-32 {
     DEFINES += \
     HAVE_UNISTD_H \
+    LINUX \
     _LINUX \
     _LINUX_QT
 

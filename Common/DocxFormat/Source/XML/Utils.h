@@ -324,7 +324,7 @@ namespace XmlUtils
 
 	public:
 
-        AVSINLINE void WriteString(wchar_t* pString, size_t nLen)
+        AVSINLINE void WriteString(const wchar_t* pString, size_t nLen)
 		{
 			AddSize(nLen);
 			//memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));

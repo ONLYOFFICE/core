@@ -113,6 +113,18 @@ CONFIG(debug, debug|release) {
     message(windows64)
 }
 win32:!contains(QMAKE_TARGET.arch, x86_64):{
+    LIBS += -L../../../../SDK/lib/win_32/DEBUG -lgraphics
+
+    LIBS += -L../../../../SDK/lib/win_32/DEBUG -llibxml2
+
+    LIBS += -L../../../../SDK/lib/win_32/DEBUG -lv8_libbase
+    LIBS += -L../../../../SDK/lib/win_32/DEBUG -lv8_base
+    LIBS += -L../../../../SDK/lib/win_32/DEBUG -lv8_nosnapshot
+    LIBS += -L../../../../SDK/lib/win_32/DEBUG -lv8_snapshot
+    LIBS += -L../../../../SDK/lib/win_32/DEBUG -lv8_libplatform
+    LIBS += -L../../../../SDK/lib/win_32/DEBUG -licui18n
+    LIBS += -L../../../../SDK/lib/win_32/DEBUG -licuuc
+} else {
     LIBS += -L../../../../SDK/lib/win_32 -lgraphics
 
     LIBS += -L../../../../SDK/lib/win_32 -llibxml2
@@ -124,6 +136,7 @@ win32:!contains(QMAKE_TARGET.arch, x86_64):{
     LIBS += -L../../../../SDK/lib/win_32 -lv8_libplatform
     LIBS += -L../../../../SDK/lib/win_32 -licui18n
     LIBS += -L../../../../SDK/lib/win_32 -licuuc
+}
 
     message(windows32)
 }

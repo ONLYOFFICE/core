@@ -59,8 +59,6 @@
 #define FILE_SEPARATOR_STR _T("\\")
 #endif
 
-typedef unsigned int size_t;
-
 #include "../../../ASCUtils.h"
 
 using namespace ATL;

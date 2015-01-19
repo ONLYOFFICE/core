@@ -136,8 +136,8 @@ namespace NSDoctRenderer
     {
         m_bIsInitTypedArrays = false;
 
-        m_strConfigPath = NSFile::GetProcessDirectory();
-        m_strConfigDir = m_strConfigDir + L"DoctRenderer.config";
+        m_strConfigDir = NSFile::GetProcessDirectory() + L"/";
+        m_strConfigPath = m_strConfigDir + L"DoctRenderer.config";
 
         XmlUtils::CXmlNode oNode;
         if (oNode.FromXmlFile(m_strConfigPath))
@@ -280,13 +280,25 @@ namespace NSDoctRenderer
         std::wstring strFileName = m_oParams.m_strSrcFilePath;
         strFileName += L"/Editor.bin";
 
-        string_replaceAll(strFileName, L"\\\\", L"\\");
-        string_replaceAll(strFileName, L"//", L"/");
-        string_replaceAll(strFileName, L"\\", L"/");
+        strFileName = string_replaceAll(strFileName, L"\\\\", L"\\");
+        strFileName = string_replaceAll(strFileName, L"//", L"/");
+        strFileName = string_replaceAll(strFileName, L"\\", L"/");
 
         m_strFilePath = strFileName;
 
-        std::string strScript = this->ReadScriptFile(sResourceFile);
+        std::string strScript = "";
+        for (size_t i = 0; i < m_arrFiles.GetCount(); ++i)
+        {
+#if 0
+            if (m_arrFiles[i].find(L"AllFonts.js") != std::wstring::npos)
+                continue;
+#endif
+
+            strScript += this->ReadScriptFile(m_arrFiles[i]);
+            strScript += "\n\n";
+        }
+
+        strScript += this->ReadScriptFile(sResourceFile);
         if (m_strEditorType == L"spreadsheet")
             strScript += "\n$.ready();";
 

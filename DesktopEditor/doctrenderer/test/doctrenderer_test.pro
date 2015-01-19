@@ -113,6 +113,8 @@ CONFIG(debug, debug|release) {
     message(windows64)
 }
 win32:!contains(QMAKE_TARGET.arch, x86_64):{
+
+CONFIG(debug, debug|release) {
     LIBS += -L../../../../SDK/lib/win_32/DEBUG -lgraphics
 
     LIBS += -L../../../../SDK/lib/win_32/DEBUG -llibxml2
@@ -146,7 +148,7 @@ INCLUDEPATH += \
     ../../../freetype-2.5.2/include \
     ../../../../../../../v8_trunk \
     ../../../../../../../v8_trunk/include \
-    ../../../Common/DocxFormat/Source/XML/libxml2/XML/include \
+    ../../../Common/DocxFormat/Source/XML/libxml2/XML/include
 
 
 SOURCES += main.cpp \

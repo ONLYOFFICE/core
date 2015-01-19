@@ -74,8 +74,6 @@ namespace NSFile
 		}
 		static std::wstring GetUnicodeStringFromUTF8_4bytes( BYTE* pBuffer, LONG lCount )
 		{
-			LONG lLenght = 0;
-
 			WCHAR* pUnicodeString = new WCHAR[lCount + 1];
 			LONG lIndexUnicode = 0;
 
@@ -417,6 +415,11 @@ namespace NSFile
 			return s;
 		}
 
+                static std::string GetUtf8StringFromUnicode(const std::wstring& sData)
+                {
+                        return GetUtf8StringFromUnicode2(sData.c_str(), (LONG)sData.length());
+                }
+
 		// utf16
                 static void GetUtf16StringFromUnicode_4bytes(const wchar_t* pUnicodes, LONG lCount, BYTE*& pData, int& lOutputCount, bool bIsBOM = false)
 		{
@@ -601,7 +604,7 @@ namespace NSFile
 			BYTE* pData = NULL;
 			LONG lLen = 0;
 
-			CUtf8Converter::GetUtf8StringFromUnicode(strXml.c_str(), strXml.length(), pData, lLen, bIsBOM);
+                        CUtf8Converter::GetUtf8StringFromUnicode(strXml.c_str(), (LONG)strXml.length(), pData, lLen, bIsBOM);
 
 			WriteFile(pData, lLen);
 

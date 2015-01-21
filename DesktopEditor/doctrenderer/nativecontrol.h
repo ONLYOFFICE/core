@@ -109,7 +109,7 @@ public:
     }
 
 public:
-    void getFileData(std::wstring& strFile, BYTE*& pData, DWORD& dwLen)
+    void getFileData(const std::wstring& strFile, BYTE*& pData, DWORD& dwLen)
     {
         NSFile::CFileBinary oFile;
         oFile.OpenFile(strFile);
@@ -138,7 +138,7 @@ public:
         return m_strFileId;
     }
 
-    void ConsoleLog(/*UTF8*/std::string& strVal)
+    void ConsoleLog(/*UTF8*/const std::string& strVal)
     {
 #if 1
         FILE* f = fopen("C:/log.txt", "a+");

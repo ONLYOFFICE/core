@@ -6,6 +6,7 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
+#if 1
     std::wstring strXml = L"<Settings>\
 <SrcFileType>0</SrcFileType>\
 <DstFileType>0</DstFileType>\
@@ -18,6 +19,20 @@ int main(int argc, char *argv[])
 <Change>D:\\build_doc\\changes\\changes0.json</Change>\
 </Changes>\
 </Settings>";
+#else
+    std::wstring strXml = L"<Settings>\
+<SrcFileType>0</SrcFileType>\
+<DstFileType>0</DstFileType>\
+<SrcFilePath>/home/oleg/build_doc</SrcFilePath>\
+<DstFilePath>/home/oleg/build_doc/EditorWithChanges.bin</DstFilePath>\
+<FontsDirectory>/home/oleg/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/Fonts/native</FontsDirectory>\
+<ImagesDirectory>/home/oleg/build_doc/media</ImagesDirectory>\
+<ThemesDirectory>/home/oleg/presentationthemes</ThemesDirectory>\
+<Changes TopItem=\"-1\">\
+<Change>/home/oleg/build_doc/changes/changes0.json</Change>\
+</Changes>\
+</Settings>";
+#endif
 
     NSDoctRenderer::CDoctrenderer oRenderer;
 

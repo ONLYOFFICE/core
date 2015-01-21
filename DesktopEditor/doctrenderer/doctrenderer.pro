@@ -10,6 +10,15 @@ TARGET = doctrenderer
 TEMPLATE = lib
 CONFIG += staticlib
 
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    DEFINES += \
+    LINUX \
+    _LINUX \
+    _LINUX_QT \
+    UNICODE \
+    _UNICODE
+}
+
 INCLUDEPATH += \
     ../../../../../../../v8_trunk \
     ../../../../../../../v8_trunk/include \

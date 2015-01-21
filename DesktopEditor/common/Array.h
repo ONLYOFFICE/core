@@ -115,6 +115,10 @@ private:
 #else
 #include <stdlib.h>
 
+#ifdef _IOS
+#include <new>
+#endif
+
 template <class T>
 class CArray
 {

@@ -52,12 +52,18 @@ linux-g++:contains(QMAKE_HOST.arch, x86_64):{
     message(linux64)
 }
 linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
-    #LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_base.ia32
-    #LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_snapshot
-    #LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_nosnapshot.ia32
-    #LIBS += -L../../../../../../../../../v8/out/native/obj.target/third_party/icu -licui18n
-    #LIBS += -L../../../../../../../../../v8/out/native/obj.target/third_party/icu -licuuc
-    #LIBS += -L../../../../../../../../../v8/out/native/obj.target/third_party/icu -licudata
+    LIBS += -L../../../../SDK/lib/linux_32 -lgraphics
+
+    LIBS += -L../../../../SDK/lib/linux_32 -llibxml2
+
+    LIBS += -L../../../../SDK/lib/linux_32 -lv8_base
+    LIBS += -L../../../../SDK/lib/linux_32 -lv8_libplatform
+    LIBS += -L../../../../SDK/lib/linux_32 -lv8_libbase
+    LIBS += -L../../../../SDK/lib/linux_32 -lv8_nosnapshot
+    LIBS += -L../../../../SDK/lib/linux_32 -lv8_snapshot    
+    LIBS += -L../../../../SDK/lib/linux_32 -licui18n
+    LIBS += -L../../../../SDK/lib/linux_32 -licuuc
+    LIBS += -L../../../../SDK/lib/linux_32 -licudata
 
     message(linux32)
 }

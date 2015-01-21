@@ -2085,8 +2085,9 @@ public:
 						}
 						else
 						{
-							if(c_oSerImageType2::WrapSquare == DrawingPropertyWrap.WrappingType)
-								sXml.AppendFormat(_T("<wp:%s wrapText=\"bothSides\"/>"), (const TCHAR *) sTagName);
+							//для wrapThrough и wrapTight wrapPolygon обязательное поле, если его нет - меняем тип.
+							if(c_oSerImageType2::WrapSquare == DrawingPropertyWrap.WrappingType || c_oSerImageType2::WrapThrough == DrawingPropertyWrap.WrappingType || c_oSerImageType2::WrapTight == DrawingPropertyWrap.WrappingType)
+								sXml.Append(_T("<wp:wrapSquare wrapText=\"bothSides\"/>"));
 							else
 								sXml.AppendFormat(_T("<wp:%s/>"), (const TCHAR *) sTagName);
 						}

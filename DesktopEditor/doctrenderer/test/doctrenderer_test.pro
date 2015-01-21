@@ -30,16 +30,24 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     DEFINES += \
     LINUX \
     _LINUX \
-    _LINUX_QT
+    _LINUX_QT \
+    UNICODE \
+    _UNICODE
 }
 
 linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-    #LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_base.x64
-    #LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_snapshot
-    #LIBS += -L../../../../../../../../../v8/out/native/obj.target/tools/gyp -lv8_nosnapshot.x64
-    #LIBS += -L../../../../../../../../../v8/out/native/obj.target/third_party/icu -licui18n
-    #LIBS += -L../../../../../../../../../v8/out/native/obj.target/third_party/icu -licuuc
-    #LIBS += -L../../../../../../../../../v8/out/native/obj.target/third_party/icu -licudata
+    LIBS += -L../../../../SDK/lib/linux_64 -lgraphics
+
+    LIBS += -L../../../../SDK/lib/linux_64 -llibxml2
+
+    LIBS += -L../../../../SDK/lib/linux_64 -lv8_base
+    LIBS += -L../../../../SDK/lib/linux_64 -lv8_libplatform
+    LIBS += -L../../../../SDK/lib/linux_64 -lv8_libbase
+    LIBS += -L../../../../SDK/lib/linux_64 -lv8_nosnapshot
+    LIBS += -L../../../../SDK/lib/linux_64 -lv8_snapshot    
+    LIBS += -L../../../../SDK/lib/linux_64 -licui18n
+    LIBS += -L../../../../SDK/lib/linux_64 -licuuc
+    LIBS += -L../../../../SDK/lib/linux_64 -licudata
 
     message(linux64)
 }
@@ -153,4 +161,5 @@ INCLUDEPATH += \
 
 SOURCES += main.cpp \
     ../../../Common/DocxFormat/Source/XML/libxml2/libxml2.cpp \
-    ../../../Common/DocxFormat/Source/XML/stringcommon.cpp
+    ../../../Common/DocxFormat/Source/XML/stringcommon.cpp \
+    ../../../Common/DocxFormat/Source/Base/unicode_util.cpp

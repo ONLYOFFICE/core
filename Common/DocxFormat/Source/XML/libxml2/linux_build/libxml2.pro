@@ -6,14 +6,17 @@
 
 QT       -= core gui
 
-TARGET = libxml2Lib
+TARGET = libxml2
 TEMPLATE = lib
 CONFIG += staticlib
 QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers -g
 DEFINES += UNICODE \
     _UNICODE \
     LINUX \
-    _LINUX_QT
+    _LINUX_QT \
+    _USE_LIBXML2_READER_ \
+    LIBXML_READER_ENABLED \
+    LIBXML_PUSH_ENABLED
 
 INCLUDEPATH += \
     ../XML/include \
@@ -31,6 +34,7 @@ SOURCES +=  \
     ../XML/entities.c \
     ../XML/error.c \
     ../XML/globals.c \
+    ../XML/hash.c \
     ../XML/HTMLparser.c \
     ../XML/HTMLtree.c \
     ../XML/legacy.c \
@@ -38,6 +42,7 @@ SOURCES +=  \
     ../XML/nanoftp.c \
     ../XML/nanohttp.c \
     ../XML/parser.c \
+    ../XML/parserInternals.c \
     ../XML/pattern.c \
     ../XML/relaxng.c \
     ../XML/SAX.c \
@@ -48,6 +53,7 @@ SOURCES +=  \
     ../XML/uri.c \
     ../XML/valid.c \
     ../XML/xinclude.c \
+    ../XML/xmlcatalog.c \
     ../XML/xlink.c \
     ../XML/xmlIO.c \
     ../XML/xmlmemory.c \
@@ -72,4 +78,6 @@ HEADERS +=  \
 unix {
     target.path = /usr/lib
     INSTALLS += target
+
+    DEFINES += HAVE_VA_COPY
 }

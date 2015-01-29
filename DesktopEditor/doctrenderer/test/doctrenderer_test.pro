@@ -24,4 +24,6 @@ CONFIG(debug, debug|release) {
     message(release)
 }
 
+INCLUDEPATH += C:/Qt/Qt5.4.0/5.4/msvc2013_64_opengl/include
+
 SOURCES += main.cpp

@@ -167,6 +167,8 @@ INCLUDEPATH += \
     ../agg-2.4/include \
     ../freetype-2.5.2/include
 
+INCLUDEPATH += C:/Qt/Qt5.4.0/5.4/msvc2013_64_opengl/include
+
 HEADERS += doctrenderer.h \
     memorystream.h \
     nativecontrol.h

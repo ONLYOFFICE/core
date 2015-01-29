@@ -5,6 +5,8 @@
 #include "../common/Types.h"
 #include "../common/Array.h"
 
+#include <QtCore/qglobal.h>
+
 namespace NSDoctRenderer
 {
     namespace DoctRendererFormat
@@ -20,7 +22,7 @@ namespace NSDoctRenderer
         };
     }
 
-    class CExecuteParams
+    class Q_DECL_EXPORT CExecuteParams
     {
     public:
         DoctRendererFormat::FormatFile m_eSrcFormat;
@@ -47,7 +49,7 @@ namespace NSDoctRenderer
 
 namespace NSDoctRenderer
 {
-    class CDoctrenderer
+    class Q_DECL_EXPORT CDoctrenderer
     {
     private:
         CExecuteParams m_oParams;

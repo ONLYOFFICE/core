@@ -1,11 +1,7 @@
-#include <QCoreApplication>
-
 #include "../doctrenderer.h"
 
 int main(int argc, char *argv[])
 {
-    //QCoreApplication a(argc, argv);
-
 #if 1
     std::wstring strXml = L"<Settings>\
 <SrcFileType>0</SrcFileType>\
@@ -39,6 +35,5 @@ int main(int argc, char *argv[])
     std::wstring sError;
     oRenderer.Execute(strXml, sError);
 
-    //return a.exec();
     return 0;
 }

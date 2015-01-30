@@ -12,7 +12,31 @@ TARGET = doctrenderer_test
 CONFIG   += console
 CONFIG   -= app_bundle
 
+DEFINES += UNICODE
 DEFINES += _UNICODE
+DEFINES += _USE_LIBXML2_READER_
+DEFINES += LIBXML_READER_ENABLED
+
+mac {
+    DEFINES += \
+    LINUX \
+    _LINUX \
+    _LINUX_QT \
+    _MAC \
+    QT_MAC
+}
+
+win32 {
+    DEFINES += \
+    WIN32
+}
+
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    DEFINES += \
+    LINUX \
+    _LINUX \
+    _LINUX_QT \
+}
 
 TEMPLATE = app
 

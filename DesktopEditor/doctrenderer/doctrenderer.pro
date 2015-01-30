@@ -12,6 +12,7 @@ TEMPLATE = lib
 
 CONFIG += static
 CONFIG += shared
+CONFIG += plugin
 
 DEFINES += UNICODE
 DEFINES += _UNICODE
@@ -19,34 +20,34 @@ DEFINES += _USE_LIBXML2_READER_
 DEFINES += LIBXML_READER_ENABLED
 
 linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-    LIBS += -L../../../../SDK/lib/linux_64 -lgraphics
+    LIBS += -L../../../SDK/lib/linux_64 -lgraphics
 
-    LIBS += -L../../../../SDK/lib/linux_64 -llibxml2
+    LIBS += -L../../../SDK/lib/linux_64 -llibxml2
 
-    LIBS += -L../../../../SDK/lib/linux_64 -lv8_base
-    LIBS += -L../../../../SDK/lib/linux_64 -lv8_libplatform
-    LIBS += -L../../../../SDK/lib/linux_64 -lv8_libbase
-    LIBS += -L../../../../SDK/lib/linux_64 -lv8_nosnapshot
-    LIBS += -L../../../../SDK/lib/linux_64 -lv8_snapshot
-    LIBS += -L../../../../SDK/lib/linux_64 -licui18n
-    LIBS += -L../../../../SDK/lib/linux_64 -licuuc
-    LIBS += -L../../../../SDK/lib/linux_64 -licudata
+    LIBS += -L../../../SDK/lib/linux_64 -lv8_base
+    LIBS += -L../../../SDK/lib/linux_64 -lv8_libplatform
+    LIBS += -L../../../SDK/lib/linux_64 -lv8_libbase
+    LIBS += -L../../../SDK/lib/linux_64 -lv8_nosnapshot
+    LIBS += -L../../../SDK/lib/linux_64 -lv8_snapshot
+    LIBS += -L../../../SDK/lib/linux_64 -licui18n
+    LIBS += -L../../../SDK/lib/linux_64 -licuuc
+    LIBS += -L../../../SDK/lib/linux_64 -licudata
 
     message(linux64)
 }
 linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
-    LIBS += -L../../../../SDK/lib/linux_32 -lgraphics
+    LIBS += -L../../../SDK/lib/linux_32 -lgraphics
 
-    LIBS += -L../../../../SDK/lib/linux_32 -llibxml2
+    LIBS += -L../../../SDK/lib/linux_32 -llibxml2
 
-    LIBS += -L../../../../SDK/lib/linux_32 -lv8_base
-    LIBS += -L../../../../SDK/lib/linux_32 -lv8_libplatform
-    LIBS += -L../../../../SDK/lib/linux_32 -lv8_libbase
-    LIBS += -L../../../../SDK/lib/linux_32 -lv8_nosnapshot
-    LIBS += -L../../../../SDK/lib/linux_32 -lv8_snapshot
-    LIBS += -L../../../../SDK/lib/linux_32 -licui18n
-    LIBS += -L../../../../SDK/lib/linux_32 -licuuc
-    LIBS += -L../../../../SDK/lib/linux_32 -licudata
+    LIBS += -L../../../SDK/lib/linux_32 -lv8_base
+    LIBS += -L../../../SDK/lib/linux_32 -lv8_libplatform
+    LIBS += -L../../../SDK/lib/linux_32 -lv8_libbase
+    LIBS += -L../../../SDK/lib/linux_32 -lv8_nosnapshot
+    LIBS += -L../../../SDK/lib/linux_32 -lv8_snapshot
+    LIBS += -L../../../SDK/lib/linux_32 -licui18n
+    LIBS += -L../../../SDK/lib/linux_32 -licuuc
+    LIBS += -L../../../SDK/lib/linux_32 -licudata
 
     message(linux32)
 }

@@ -418,9 +418,20 @@ INT CFontManager::SetTextMatrix(const double &fA, const double &fB, const double
 {
     if (NULL == m_pFont)
         return FALSE;
+    
+    if (fabs(fB) > 0.1)
+    {
+        int y = 0;
+        ++y;
+    }
 
+    /*
     if (m_pFont->SetTextMatrix(fA, fB, fC, fD, 0, 0))
 		m_oString.SetCTM((float)fA, (float)fB, (float)fC, (float)fD, 0, 0);
+     */
+    m_pFont->SetTextMatrix(fA, fB, fC, fD, 0, 0);
+    m_oString.SetCTM((float)fA, (float)fB, (float)fC, (float)fD, 0, 0);
+    
 	m_oString.SetTrans((float)fE, (float)fF);
 
     return TRUE;

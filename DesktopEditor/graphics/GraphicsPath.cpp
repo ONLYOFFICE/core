@@ -663,7 +663,7 @@ namespace Aggplus
 		if( fSweepAngle > 0 )
 			bClockDirection = TRUE;
 
-		if( abs(fSweepAngle) >= 360 ) // Целый эллипс
+		if( fabs(fSweepAngle) >= 360 ) // Целый эллипс
 		{
 			return (0 == Ellipse(fX + fWidth / 2, fY + fHeight / 2, fWidth / 2, fHeight / 2)) ? Ok : GenericError;
 		}
@@ -1143,7 +1143,7 @@ namespace Aggplus
 		if( fSweepAngle > 0 )
 			bClockDirection = TRUE;
 
-		if( abs(fSweepAngle) >= 360 ) // Целый эллипс
+		if( fabs(fSweepAngle) >= 360 ) // Целый эллипс
 		{
 			return (0 == Ellipse(fX + fWidth / 2, fY + fHeight / 2, fWidth / 2, fHeight / 2)) ? true : false;
 		}

@@ -1404,20 +1404,19 @@ INT CFontFile::GetString2C(CGlyphString& oString)
 			pCurGlyph->eState = glyphstateNormal;
         }
 
-        // кернинга нету пока.
-        if (true)
-        {
-            float fX = oString.m_fX + fPenX;
-            float fY = oString.m_fY + fPenY;
-
-            pCurGlyph->fX = (float)(oString.m_arrCTM[4] + fX * oString.m_arrCTM[0] + fY * oString.m_arrCTM[2] - oString.m_fX);
-            pCurGlyph->fY = (float)(oString.m_arrCTM[5] + fX * oString.m_arrCTM[1] + fY * oString.m_arrCTM[3] - oString.m_fY);
-        }
-
         pCurGlyph->oMetrics = oSizes.oMetrics;
 
 		pCurGlyph->bBitmap = oSizes.bBitmap;
 		pCurGlyph->oBitmap = oSizes.oBitmap;
+    }
+    
+    if (true)
+    {
+        float fX = oString.m_fX + fPenX;
+        float fY = oString.m_fY + fPenY;
+        
+        pCurGlyph->fX = (float)(oString.m_arrCTM[4] + fX * oString.m_arrCTM[0] + fY * oString.m_arrCTM[2] - oString.m_fX);
+        pCurGlyph->fY = (float)(oString.m_arrCTM[5] + fX * oString.m_arrCTM[1] + fY * oString.m_arrCTM[3] - oString.m_fY);
     }
     
 	fPenX += (float)(m_oCacheSizes[charSymbolObj].fAdvanceX + m_dCharSpacing);

@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_EDITOR_API_CROSSPLATFORM_H_
+#ifndef _BUILD_EDITOR_API_CROSSPLATFORM_H_
 #define _BUILD_EDITOR_API_CROSSPLATFORM_H_
 
 #include "./Editor_Defines.h"
@@ -433,6 +433,84 @@ namespace NSEditorApi
 	};
 }
 
+namespace NSEditorApi
+{
+    // not release data!!!
+    class CAscImageRaw
+    {
+    public:
+        unsigned char*	Data;
+        int				Width;
+        int				Height;
+        
+        bool			Release;
+        
+    public:
+        CAscImageRaw()
+        {
+            Data = NULL;
+            Width = 0;
+            Height = 0;
+            Release = false;
+        }
+        ~CAscImageRaw()
+        {
+            if (NULL != Data && Release)
+                delete [] Data;
+        }
+        
+        CAscImageRaw& operator=(const CAscImageRaw& oSrc)
+        {
+            Data	= oSrc.Data;
+            Width	= oSrc.Width;
+            Height	= oSrc.Height;
+            Release = false;
+            return *this;
+        }
+    };
+    
+    class CAscBinaryData
+    {
+    public:
+        unsigned char*	Data;
+        int				Size;
+        
+    public:
+        CAscBinaryData()
+        {
+            Data = NULL;
+            Size = 0;
+        }
+        ~CAscBinaryData()
+        {
+            if (NULL != Data)
+                delete [] Data;
+        }
+    };
+    
+    class CAscInsertImage : public IMenuEventDataBase
+    {
+    private:
+        js_wrapper<CAscImageRaw>	m_oRaw;
+        js_wrapper<std::wstring>	m_sPath;
+        js_wrapper<std::string>		m_sBase64;	
+        js_wrapper<CAscBinaryData>	m_oBinaryData;
+        
+    public:
+        CAscInsertImage()
+        {
+        }
+        virtual ~CAscInsertImage()
+        {
+        }
+        
+        LINK_PROPERTY_OBJECT_JS(CAscImageRaw, Raw)
+        LINK_PROPERTY_STRING_JS(Path)
+        LINK_PROPERTY_STRINGA_JS(Base64)
+        LINK_PROPERTY_OBJECT_JS(CAscBinaryData, BinaryData)
+    };
+}
+
 // document
 namespace NSEditorApi
 {
@@ -664,6 +742,9 @@ namespace NSEditorApi
 		js_wrapper<int>				m_nType; // c_oAscFillBlipType_
 		js_wrapper<std::wstring>	m_sUrl;
 		js_wrapper<int>				m_nTextureId;
+        
+        // для выставления заливки
+        js_wrapper<CAscInsertImage> m_oInsertData;
 
 	public:
 		CAscFillBlip()
@@ -676,6 +757,7 @@ namespace NSEditorApi
 		LINK_PROPERTY_INT_JS(Type)
 		LINK_PROPERTY_STRING_JS(Url)
 		LINK_PROPERTY_INT_JS(TextureId)
+        LINK_PROPERTY_OBJECT_JS(CAscInsertImage, InsertData)
 	};
 
 	class CAscFillHatch : public CAscFillBase
@@ -840,6 +922,8 @@ namespace NSEditorApi
 
 		js_wrapper<bool>			m_bCanFill;
 		js_wrapper<bool>			m_bFromChart;
+        
+        js_wrapper<int>             m_nInsertPageNum;
 
 	public:
 		CAscShapeProp()
@@ -857,7 +941,9 @@ namespace NSEditorApi
 
 		LINK_PROPERTY_OBJECT_JS(CAscFill, Fill)
 		LINK_PROPERTY_OBJECT_JS(CAscStroke, Stroke)
-		LINK_PROPERTY_OBJECT_JS(CAscPaddings, Paddings)	
+		LINK_PROPERTY_OBJECT_JS(CAscPaddings, Paddings)
+        
+        LINK_PROPERTY_INT_JS(InsertPageNum)
 	};
 
 	class CAscImagePosition
@@ -1117,6 +1203,10 @@ namespace NSEditorApi
 		js_wrapper<int> m_nSeveralChartStyles;
 
 		js_wrapper<int> m_nVerticalTextAlign;
+        
+        // только для выставления
+        js_wrapper<CAscInsertImage> m_oChangeImage;
+        js_wrapper<bool>            m_bSetOriginalSize;
 
 	public:
 		CAscImageProp()
@@ -1158,6 +1248,9 @@ namespace NSEditorApi
 		LINK_PROPERTY_INT_JS(SeveralChartTypes)
 		LINK_PROPERTY_INT_JS(SeveralChartStyles)
 		LINK_PROPERTY_INT_JS(VerticalTextAlign)
+        
+        LINK_PROPERTY_OBJECT_JS(CAscInsertImage, ChangeImage)
+        LINK_PROPERTY_BOOL_JS(SetOriginalSize)
 	};
 }
 
@@ -2020,81 +2113,6 @@ namespace NSEditorApi
 // insert
 namespace NSEditorApi
 {
-	// not release data!!!
-	class CAscImageRaw
-	{
-	public:
-		unsigned char*	Data;
-		int				Width;
-		int				Height;
-
-		bool			Release;
-
-	public:
-		CAscImageRaw()
-		{
-			Data = NULL;
-			Width = 0;
-			Height = 0;
-			Release = false;
-		}
-		~CAscImageRaw()
-		{
-			if (NULL != Data && Release)
-				delete [] Data;
-		}
-
-		CAscImageRaw& operator=(const CAscImageRaw& oSrc)
-		{
-			Data	= oSrc.Data;
-			Width	= oSrc.Width;
-			Height	= oSrc.Height;
-			Release = false;
-			return *this;
-		}
-	};
-
-	class CAscBinaryData
-	{
-	public:
-		unsigned char*	Data;
-		int				Size;
-
-	public:
-		CAscBinaryData()
-		{
-			Data = NULL;
-			Size = 0;
-		}
-		~CAscBinaryData()
-		{
-			if (NULL != Data)
-				delete [] Data;
-		}		
-	};
-
-	class CAscInsertImage : public IMenuEventDataBase
-	{
-	private:
-		js_wrapper<CAscImageRaw>	m_oRaw;
-		js_wrapper<std::wstring>	m_sPath;
-		js_wrapper<std::string>		m_sBase64;	
-		js_wrapper<CAscBinaryData>	m_oBinaryData;
-
-	public:
-		CAscInsertImage()
-		{
-		}
-		virtual ~CAscInsertImage()
-		{
-		}
-
-		LINK_PROPERTY_OBJECT_JS(CAscImageRaw, Raw)
-		LINK_PROPERTY_STRING_JS(Path)
-		LINK_PROPERTY_STRINGA_JS(Base64)
-		LINK_PROPERTY_OBJECT_JS(CAscBinaryData, BinaryData)
-	};
-
 	class CAscInsertTable : public IMenuEventDataBase
 	{
 	private:

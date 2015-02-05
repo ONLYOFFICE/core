@@ -124,7 +124,7 @@ namespace PPTX
 
 				pWriter->StartAttributes();
 				pWriter->WriteAttribute(_T("authorId"), authorId);
-				pWriter->WriteAttribute(_T("dt"), dt);
+				pWriter->WriteAttribute2(_T("dt"), dt);
 				pWriter->WriteAttribute(_T("idx"), idx);
 				pWriter->EndAttributes();
 
@@ -137,7 +137,7 @@ namespace PPTX
 				if (text.is_init())
 				{
 					pWriter->WriteString(_T("<p:text>"));
-					pWriter->WriteString(*text);
+					pWriter->WriteStringXML(*text);
 					pWriter->WriteString(_T("</p:text>"));
 				}
 

@@ -2865,7 +2865,7 @@ class Binary_DocumentTableReader : public Binary_CommonReader<Binary_DocumentTab
 	Binary_pPrReader oBinary_pPrReader;
 	Binary_rPrReader oBinary_rPrReader;
 	Binary_tblPrReader oBinary_tblPrReader;
-	CHyperlink* m_pCurHyperlink;
+	XmlUtils::CStringWriter* m_pCurWriter;
 	rPr m_oCur_rPr;
 	rPr m_oMath_rPr;
 	XmlUtils::CStringWriter m_oCur_pPr;
@@ -2878,7 +2878,7 @@ public:
 	Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, CComments* pComments):Binary_CommonReader(poBufferedStream),m_oDocumentWriter(oDocumentWriter),m_oFileWriter(oFileWriter),m_oMediaWriter(oFileWriter.m_oMediaWriter),m_oFontTableWriter(oFileWriter.m_oFontTableWriter),oBinary_pPrReader(poBufferedStream, oFileWriter),oBinary_rPrReader(poBufferedStream), oBinary_tblPrReader(poBufferedStream, oFileWriter),m_oCur_rPr(m_oFontTableWriter.m_mapFonts),m_oMath_rPr(m_oFontTableWriter.m_mapFonts),m_pComments(pComments)
 	{
 		m_byteLastElemType = c_oSerParType::Content;
-		m_pCurHyperlink = NULL;
+		m_pCurWriter = NULL;
 	}
 	~Binary_DocumentTableReader()
 	{
@@ -2889,8 +2889,8 @@ public:
 	};
 	XmlUtils::CStringWriter& GetRunStringWriter()
 	{
-		if(NULL != m_pCurHyperlink)
-			return m_pCurHyperlink->writer;
+		if(NULL != m_pCurWriter)
+			return *m_pCurWriter;
 		else
 			return m_oDocumentWriter.m_oContent;
 	}
@@ -3004,6 +3004,29 @@ public:
 			res = Read1(length, &Binary_DocumentTableReader::ReadHyperlink, this, &oHyperlink);
 			oHyperlink.Write(GetRunStringWriter());
 		}
+		else if ( c_oSerParType::FldSimple == type )
+		{
+			CFldSimple oFldSimple;
+			res = Read1(length, &Binary_DocumentTableReader::ReadFldSimple, this, &oFldSimple);
+			oFldSimple.Write(GetRunStringWriter());
+		}
+		else
+			res = c_oSerConstants::ReadUnknown;
+		return res;
+	}
+	int ReadFldSimple(BYTE type, long length, void* poResult)
+	{
+		int res = c_oSerConstants::ReadOk;
+		CFldSimple* pFldSimple = static_cast<CFldSimple*>(poResult);
+		if ( c_oSer_HyperlinkType::Link == type )
+			pFldSimple->sInstr = m_oBufferedStream.GetString3(length);
+		else if ( c_oSer_HyperlinkType::Content == type )
+		{
+			XmlUtils::CStringWriter* pPrevWriter = m_pCurWriter;
+			m_pCurWriter = &pFldSimple->writer;
+			res = Read1(length, &Binary_DocumentTableReader::ReadParagraphContent, this, NULL);
+			m_pCurWriter = pPrevWriter;
+		}
 		else
 			res = c_oSerConstants::ReadUnknown;
 		return res;
@@ -3029,15 +3052,15 @@ public:
 			pHyperlink->sTgtFrame = m_oBufferedStream.GetString3(length);
 		else if ( c_oSer_HyperlinkType::Content == type )
 		{
-			CHyperlink* pPrevHyperlink = m_pCurHyperlink;
-			m_pCurHyperlink = pHyperlink;
+			XmlUtils::CStringWriter* pPrevWriter = m_pCurWriter;
+			m_pCurWriter = &pHyperlink->writer;
 			res = Read1(length, &Binary_DocumentTableReader::ReadParagraphContent, this, NULL);
 			long rId;
 			CString sHref = XmlUtils::EncodeXmlString(pHyperlink->sLink);
 			m_oFileWriter.m_pDrawingConverter->WriteRels(CString(_T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink")), sHref, CString(_T("External")), &rId);
 			CString srId;srId.Format(_T("rId%d"), rId);
 			pHyperlink->rId = srId;
-			m_pCurHyperlink = pPrevHyperlink;
+			m_pCurWriter = pPrevWriter;
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

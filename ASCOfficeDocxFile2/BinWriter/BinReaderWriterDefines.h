@@ -84,9 +84,7 @@ const int styletype_Table = 0x04;
 
 const int fieldstruct_none = 0;
 const int fieldstruct_toc = 1;
-const int fieldstruct_pagenum = 2;
-const int fieldstruct_hyperlink = 3;
-const int fieldstruct_locallink = 4;
+const int fieldstruct_hyperlink = 2;
 
 const double g_dKoef_mm_to_pt = 72 / (2.54 * 10);
 const double g_dKoef_mm_to_twips = 20 * g_dKoef_mm_to_pt;
@@ -393,7 +391,8 @@ extern int g_nCurFormatVersion;
 		CommentEnd = 7,
 		OMathPara = 8,
 		OMath = 9,
-		Hyperlink = 10
+		Hyperlink = 10,
+		FldSimple = 11
 	};}
 	namespace c_oSerDocTableType{enum c_oSerDocTableType
 	{
@@ -796,6 +795,11 @@ extern int g_nCurFormatVersion;
 		History = 4,
 		DocLocation = 5,
 		TgtFrame = 6
+	};}
+	namespace c_oSer_FldSimpleType{ enum c_oSer_FldSimpleType
+	{
+		Content = 0,
+		Instr = 1
 	};}
 	namespace c_oSer_ColorThemeType{ enum c_oSer_ColorThemeType
 	{

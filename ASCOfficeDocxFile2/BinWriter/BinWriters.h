@@ -2436,7 +2436,6 @@ namespace BinDocxRW
 		//для fldChar
 		//todo в документации описан случай если нет fldchartypeEnd, у нас работает не так.
 		std::vector<FldStruct*> m_aFldChars;
-		int m_nSkipFldChar;
 		CString m_sFldChar;
 		SimpleTypes::EFldCharType m_eFldState;
 		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
@@ -2451,7 +2450,6 @@ namespace BinDocxRW
 		{
 			pSectPr = NULL;
 			m_bWriteSectPr = false;
-			m_nSkipFldChar = 0;
 			m_eFldState = SimpleTypes::fldchartypeEnd;
 		};
 		~BinaryDocumentTableWriter()
@@ -2562,74 +2560,13 @@ namespace BinDocxRW
 		FldStruct* pRes = NULL;
 		int nIndex = 0;
 		if(-1 != (nIndex = sFld.Find(_T("TOC"))))
-		{
 			pRes = new FldStruct(sFld, fieldstruct_toc);
-		}
-		else if(-1 != (nIndex = sFld.Find(_T("PAGE"))))
-		{
-			CString sFindStr(_T("PAGE"));
-			bool bPage = true;
-			//проверяем что это не PAGEREF
-			if(nIndex + sFindStr.GetLength() < sFld.GetLength())
-			{
-				TCHAR cNextChar = sFld[nIndex + sFindStr.GetLength()];
-				if('A' <= cNextChar && cNextChar <= 'Z')
-				{
-					bPage = false;
-				}
-			}
-			if(bPage)
-			{
-				pRes = new FldStruct(sFld, fieldstruct_pagenum);
-			}
-		}
 		else if(-1 != (nIndex = sFld.Find(_T("HYPERLINK"))))
-		{
-			if(-1 == sFld.Find(_T("\\l")))
-				pRes = new FldStruct(sFld, fieldstruct_hyperlink);
-			else
-				pRes = new FldStruct(sFld, fieldstruct_locallink);//локальные ссылки не открываем, они нужны для удаления стилей гиперссылки	
-		}
-		if(NULL == pRes)
+			pRes = new FldStruct(sFld, fieldstruct_hyperlink);
+		else
 			pRes = new FldStruct(sFld, fieldstruct_none);
 		return pRes;
 	}
-		bool WriteField(CString fld, FldStruct** ppFldStruct, bool bWrapRun)
-		{
-			bool bRes = false;
-			FldStruct* pFldStruct = ParseField(fld);
-			if(fieldstruct_pagenum == pFldStruct->GetType() || fieldstruct_hyperlink == pFldStruct->GetType())
-			{
-				int nCurPos = 0;
-				int nCurPos2 = 0;
-				if(bWrapRun)
-				{
-					nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Run);
-					nCurPos2 = m_oBcw.WriteItemStart(c_oSerRunType::Content);
-				}
-				if(fieldstruct_pagenum == pFldStruct->GetType())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::pagenum);
-					m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
-					bRes = true;
-				}
-				else if(fieldstruct_hyperlink == pFldStruct->GetType())
-				{
-					m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::fldstart);
-					m_oBcw.m_oStream.WriteStringW(pFldStruct->m_sFld);
-				}
-				if(bWrapRun)
-				{
-					m_oBcw.WriteItemEnd(nCurPos2);
-					m_oBcw.WriteItemEnd(nCurPos);
-				}
-			}
-			if(NULL != ppFldStruct)
-				(*ppFldStruct) = pFldStruct;
-			else
-				RELEASEOBJECT(pFldStruct);
-			return bRes;
-		}
 		void WriteParagraphContent(const std::vector<OOX::WritingElement *>& Content, bool bHyperlink = false)
 		{
 			int nCurPos = 0;
@@ -2641,27 +2578,7 @@ namespace BinDocxRW
 				case OOX::et_w_fldSimple:
 					{
 						OOX::Logic::CFldSimple* pFldSimple = static_cast<OOX::Logic::CFldSimple*>(item);
-						bool bUseFieldContent = false;
-						FldStruct* pFldStruct = NULL;
-						if(pFldSimple->m_sInstr.IsInit())
-						{
-							if(false == WriteField(pFldSimple->m_sInstr.get(), &pFldStruct, true))
-								bUseFieldContent = true;
-						}
-						if(true == bUseFieldContent)
-						{
-							WriteParagraphContent(pFldSimple->m_arrItems, NULL);
-						}
-						if( NULL != pFldStruct && fieldstruct_hyperlink == pFldStruct->GetType())
-						{
-							int nCurPos = m_oBcw.WriteItemStart(c_oSerParType::Run);
-							int nCurPos2 = m_oBcw.WriteItemStart(c_oSerRunType::Content);
-							m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::fldend);
-							m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
-							m_oBcw.WriteItemEnd(nCurPos2);
-							m_oBcw.WriteItemEnd(nCurPos);
-						}
-						RELEASEOBJECT(pFldStruct);
+						WriteFldSimple(pFldSimple);
 						break;
 					}
 				case OOX::et_w_hyperlink:
@@ -2683,31 +2600,31 @@ namespace BinDocxRW
 					{
 						OOX::Logic::CSdt* pStd = static_cast<OOX::Logic::CSdt*>(item);
 						if(pStd->m_oSdtContent.IsInit())
-							WriteParagraphContent(pStd->m_oSdtContent.get().m_arrItems, NULL);
+							WriteParagraphContent(pStd->m_oSdtContent.get().m_arrItems);
 						break;
 					}
 				case OOX::et_w_smartTag:
 					{
 						OOX::Logic::CSmartTag* pSmartTag = static_cast<OOX::Logic::CSmartTag*>(item);
-						WriteParagraphContent(pSmartTag->m_arrItems, NULL);
+						WriteParagraphContent(pSmartTag->m_arrItems);
 						break;
 					}
 				case OOX::et_w_dir:
 					{
 						OOX::Logic::CDir* pDir = static_cast<OOX::Logic::CDir*>(item);
-						WriteParagraphContent(pDir->m_arrItems, NULL);
+						WriteParagraphContent(pDir->m_arrItems);
 						break;
 					}
 				case OOX::et_w_bdo:
 					{
 						OOX::Logic::CBdo* pBdo = static_cast<OOX::Logic::CBdo*>(item);
-						WriteParagraphContent(pBdo->m_arrItems, NULL);
+						WriteParagraphContent(pBdo->m_arrItems);
 						break;
 					}
 				case OOX::et_w_ins:
 					{
 						OOX::Logic::CIns* pIns = static_cast<OOX::Logic::CIns*>(item);
-						WriteParagraphContent(pIns->m_arrItems, NULL);
+						WriteParagraphContent(pIns->m_arrItems);
 						break;
 					}
 				case OOX::et_w_commentRangeStart:
@@ -2760,6 +2677,32 @@ namespace BinDocxRW
 				m_oBcw.WriteItemEnd(nCurPos);
 			}
 		}
+		void WriteFldSimple(OOX::Logic::CFldSimple* pFldSimple)
+		{
+			int nCurPos = 0;
+			if(pFldSimple->m_sInstr.IsInit() && !pFldSimple->m_sInstr->IsEmpty())
+			{
+				nCurPos = m_oBcw.WriteItemStart(c_oSerParType::FldSimple);
+				WriteFldSimpleContent(pFldSimple);
+				m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			}
+			else
+				WriteParagraphContent(pFldSimple->m_arrItems);
+		}
+		void WriteFldSimpleContent(OOX::Logic::CFldSimple* pFldSimple)
+		{
+			int nCurPos = 0;
+			//порядок записи важен
+			//Instr
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::Instr);
+			m_oBcw.m_oStream.WriteStringW3(pFldSimple->m_sInstr.get());
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+			//Content
+			nCurPos = m_oBcw.WriteItemStart(c_oSer_FldSimpleType::Content);
+			WriteParagraphContent(pFldSimple->m_arrItems);
+			m_oBcw.WriteItemWithLengthEnd(nCurPos);
+		}
+		
 		void WriteHyperlink(OOX::Logic::CHyperlink* pHyperlink)
 		{
 			int nCurPos = 0;
@@ -4444,7 +4387,7 @@ namespace BinDocxRW
 				{
 					//Случай если Hyperlink задан как field
 					for(int i = 0, length = m_aFldChars.size(); i < length; ++i)
-						if(fieldstruct_hyperlink == m_aFldChars[i]->GetType() || fieldstruct_locallink == m_aFldChars[i]->GetType())
+						if(fieldstruct_hyperlink == m_aFldChars[i]->GetType())
 						{
 							bHyperlink = true;
 							break;
@@ -4522,8 +4465,6 @@ namespace BinDocxRW
 				{
 				case OOX::et_w_br:
 					{
-						if(m_nSkipFldChar > 0)
-							break;
 						OOX::Logic::CBr* pBr = static_cast<OOX::Logic::CBr*>(item);
 						int nBreakType = -1;
 						switch(pBr->m_oType.GetValue())
@@ -4543,8 +4484,6 @@ namespace BinDocxRW
 				case OOX::et_w_pict:
 				case OOX::et_w_drawing:
 					{
-						if(m_nSkipFldChar > 0)
-							break;
 						WriteDrawingPptx(item);
 						break;
 					}
@@ -4557,42 +4496,35 @@ namespace BinDocxRW
 							{
 								m_eFldState = SimpleTypes::fldchartypeBegin;
 								m_sFldChar.Empty();
-								if(m_nSkipFldChar > 0)
-									m_nSkipFldChar++;
 							}
 							else if(SimpleTypes::fldchartypeEnd == pFldChar->m_oFldCharType.get().GetValue())
 							{
 								m_eFldState = SimpleTypes::fldchartypeEnd;
-								if(m_nSkipFldChar > 0)
-									m_nSkipFldChar--;
 								if(m_aFldChars.size() > 0)
 								{
 									int nIndex = m_aFldChars.size() - 1;
 									FldStruct* pFldStruct = m_aFldChars[nIndex];
-									if( fieldstruct_hyperlink == pFldStruct->GetType())
-									{
-										m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::fldend);
-										m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
-									}
 									RELEASEOBJECT(pFldStruct);
 									m_aFldChars.erase(m_aFldChars.begin() + nIndex);
+
+									m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::fldend);
+									m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
 								}
 							}
 							else if(SimpleTypes::fldchartypeSeparate == pFldChar->m_oFldCharType.get().GetValue())
 							{
 								m_eFldState = SimpleTypes::fldchartypeSeparate;
-								FldStruct* pFldStruct = NULL;
-								if(WriteField(m_sFldChar, &pFldStruct, false) )
-									m_nSkipFldChar++;
+								FldStruct* pFldStruct = ParseField(m_sFldChar);
 								m_aFldChars.push_back(pFldStruct);
+
+								m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::fldstart);
+								m_oBcw.m_oStream.WriteStringW(m_sFldChar);
 							}
 						}
 					}
 					break;
 				case OOX::et_w_instrText:
 					{
-						if(m_nSkipFldChar > 0)
-							break;
 						OOX::Logic::CInstrText* pInstrText = static_cast<OOX::Logic::CInstrText*>(item);
 						if(SimpleTypes::fldchartypeBegin == m_eFldState)
 							m_sFldChar += pInstrText->m_sText;
@@ -4607,15 +4539,11 @@ namespace BinDocxRW
 					break;
 				case OOX::et_w_nonBreakHyphen:
 					{
-						if(m_nSkipFldChar > 0)
-							break;
 						WriteText(CString(_T("-")));
 					}
 					break;
 				case OOX::et_w_pgNum:
 					{
-						if(m_nSkipFldChar > 0)
-							break;
 						m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::pagenum);
 						m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
 					}
@@ -4626,16 +4554,12 @@ namespace BinDocxRW
 					break;
 				case OOX::et_w_softHyphen:
 					{
-						if(m_nSkipFldChar > 0)
-							break;
 						WriteText(CString(_T("-")));
 					}
 					break;
 				case OOX::et_w_sym:
 					{
 						OOX::Logic::CSym* oSym = static_cast<OOX::Logic::CSym*>(item);
-						if(m_nSkipFldChar > 0)
-							break;
 						CString sText;
 						sText.AppendChar(0x0FFF & oSym->m_oChar->GetValue());
 						WriteText(sText);
@@ -4643,8 +4567,6 @@ namespace BinDocxRW
 					}
 				case OOX::et_w_t:
 					{
-						if(m_nSkipFldChar > 0)
-							break;
 						CString& sText = static_cast<OOX::Logic::CText*>(item)->m_sText;
 						if(!sText.IsEmpty())
 						{
@@ -4654,8 +4576,6 @@ namespace BinDocxRW
 					break;
 				case OOX::et_w_tab:
 					{
-						if(m_nSkipFldChar > 0)
-							break;
 						m_oBcw.m_oStream.WriteBYTE(c_oSerRunType::tab);
 						m_oBcw.m_oStream.WriteLONG(c_oSerPropLenType::Null);
 					}
@@ -4672,8 +4592,6 @@ namespace BinDocxRW
 
 						//write Picture
 
-						if(m_nSkipFldChar > 0)
-							break;
 						CString* pXml = NULL;
 
 						OOX::Logic::CObject* pObject = static_cast<OOX::Logic::CObject*>(item);

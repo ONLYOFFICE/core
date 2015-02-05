@@ -2385,5 +2385,26 @@ public:
 		}
 	}
 };
+class CFldSimple{
+public:
+	CString sInstr;
+	XmlUtils::CStringWriter writer;
+public:
+	CFldSimple()
+	{
+	}
+	void Write(XmlUtils::CStringWriter& wr)
+	{
+		if(false == sInstr.IsEmpty())
+		{
+			CString sCorrect_Instr = XmlUtils::EncodeXmlString(sInstr);
+			CString sStart;
+			sStart.Format(_T("<w:fldSimple w:instr=\"%s\">"), (const TCHAR *) sCorrect_Instr);
+			wr.WriteString(sStart);
+			wr.Write(writer);
+			wr.WriteString(CString(_T("</w:fldSimple>")));
+		}
+	}
+};
 }
 #endif	// #ifndef READER_CLASSES

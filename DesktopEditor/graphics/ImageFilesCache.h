@@ -98,13 +98,13 @@ public:
 		if (nCount >= m_lMaxCount)
 		{
 			int nNeedDelete = nCount - m_lMaxCount;
-			for (std::map<std::wstring,CCacheImage*>::iterator it2 = m_mapImages.begin(); it2 != m_mapImages.end(); ++it2)
+            
+            std::map<std::wstring,CCacheImage*>::iterator it2 = m_mapImages.begin();
+            while (nNeedDelete > 0 && it2 != m_mapImages.end())
 			{
-				if (nNeedDelete == 0)
-					break;
-
 				it2->second->Release();
-				m_mapImages.erase(it2);
+				it2 = m_mapImages.erase(it2);
+                --nNeedDelete;
 			}
 		}
 

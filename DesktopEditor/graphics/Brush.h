@@ -168,6 +168,8 @@ public:
 
 	INT m_bUsePattern;
 	CColor m_colors[2];
+    
+    BYTE Alpha;
 };
 }
 

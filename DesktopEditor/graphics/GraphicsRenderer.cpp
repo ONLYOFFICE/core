@@ -806,6 +806,8 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 						pTextureBrush->m_colors[0] = Aggplus::CColor((BYTE)m_oBrush.Alpha1, m_oBrush.Color1);
 						pTextureBrush->m_colors[1] = Aggplus::CColor((BYTE)m_oBrush.Alpha2, m_oBrush.Color2);
 					}
+                    
+                    pTextureBrush->Alpha = (BYTE)m_oBrush.TextureAlpha;
 				}
 
 				pBrush = pTextureBrush;

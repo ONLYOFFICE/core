@@ -2517,7 +2517,7 @@ private:
 		TWmfObject *pObjects = pPlayer->pObjects;
 
 		unsigned short ushObjectIndex = 0;
-		while ( pObjects[ushObjectIndex].nType && ( ushObjectIndex < m_pFile->pHeader->ushNumberOfObjects ) ) 
+		while ( ( ushObjectIndex < m_pFile->pHeader->ushNumberOfObjects ) && pObjects[ushObjectIndex].nType ) 
 			ushObjectIndex++;
 
 		if ( ushObjectIndex == m_pFile->pHeader->ushNumberOfObjects )
@@ -2996,7 +2996,7 @@ private:
 		TWmfObject *pObjects = pPlayer->pObjects;
 
 		unsigned int unObjectIndex = 0;
-		while ( pObjects[unObjectIndex].nType && ( unObjectIndex < m_pFile->pHeader->ushNumberOfObjects ) )
+		while ( ( unObjectIndex < m_pFile->pHeader->ushNumberOfObjects ) && pObjects[unObjectIndex].nType )
 			unObjectIndex++;
 
 		if ( m_pFile->pHeader->ushNumberOfObjects == unObjectIndex )
@@ -3828,7 +3828,7 @@ private:
 		TWmfObject *pObjects = pPlayer->pObjects;
 
 		unsigned short ushObjectIndex = 0;
-		while ( pObjects[ushObjectIndex].nType && ( ushObjectIndex < m_pFile->pHeader->ushNumberOfObjects ) )
+		while ( ( ushObjectIndex < m_pFile->pHeader->ushNumberOfObjects ) && pObjects[ushObjectIndex].nType )
 			ushObjectIndex++;
 
 		if ( m_pFile->pHeader->ushNumberOfObjects == ushObjectIndex )
@@ -3877,7 +3877,7 @@ private:
 		TWmfObject *pObjects = pPlayer->pObjects;
 
 		unsigned short ushObjectIndex = 0;
-		while ( pObjects[ushObjectIndex].nType && ( ushObjectIndex < m_pFile->pHeader->ushNumberOfObjects ) ) 
+		while ( ( ushObjectIndex < m_pFile->pHeader->ushNumberOfObjects ) && pObjects[ushObjectIndex].nType ) 
 			ushObjectIndex++;
 
 		if ( m_pFile->pHeader->ushNumberOfObjects == ushObjectIndex )
@@ -3924,7 +3924,7 @@ private:
 		TWmfObject *pObjects = pPlayer->pObjects;
 
 		unsigned short ushObjectIndex = 0;
-		while ( pObjects[ushObjectIndex].nType && ( ushObjectIndex < m_pFile->pHeader->ushNumberOfObjects ) ) 
+		while ( ( ushObjectIndex < m_pFile->pHeader->ushNumberOfObjects ) && pObjects[ushObjectIndex].nType ) 
 			ushObjectIndex++;
 
 		if ( ushObjectIndex == m_pFile->pHeader->ushNumberOfObjects )
@@ -4137,7 +4137,7 @@ private:
 		TWmfObject *pObjects = pPlayer->pObjects;
 
 		unsigned short ushObjectIndex = 0;
-		while ( pObjects[ushObjectIndex].nType && ( ushObjectIndex < m_pFile->pHeader->ushNumberOfObjects ) ) 
+		while ( ( ushObjectIndex < m_pFile->pHeader->ushNumberOfObjects ) && pObjects[ushObjectIndex].nType ) 
 			ushObjectIndex++;
 
 		if ( ushObjectIndex == m_pFile->pHeader->ushNumberOfObjects )

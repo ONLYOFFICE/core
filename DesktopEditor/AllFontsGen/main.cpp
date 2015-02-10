@@ -5,6 +5,12 @@
 #include "../graphics/GraphicsRenderer.h"
 #include "../common/File.h"
 
+//#define _GENERATE_FONT_MAP_
+
+#ifdef _GENERATE_FONT_MAP_
+#include "../freetype_names/FontMaps/FontDictionary.h"
+#endif
+
 using namespace std;
 
 namespace NSCommon
@@ -665,6 +671,202 @@ namespace NSCommon
             RELEASEARRAYOBJECTS(pData);
         }
     }
+
+#ifdef _GENERATE_FONT_MAP_
+
+    void WriteMemoryInt4(const int& value, BYTE*& pData)
+    {
+        *((FT_Int32*)(pData)) = value;
+        pData += 4;
+    }
+    void WriteMemoryUInt4(const unsigned int& value, BYTE*& pData)
+    {
+        *((FT_UInt32*)(pData)) = value;
+        pData += 4;
+    }
+    void WriteMemoryInt1(const char& value, BYTE*& pData)
+    {
+        *((BYTE*)(pData)) = (BYTE)value;
+        pData += 1;
+    }
+    void WriteMemoryUInt1(const BYTE& value, BYTE*& pData)
+    {
+        *((BYTE*)(pData)) = value;
+        pData += 1;
+    }
+    void WriteMemoryInt2(const short& value, BYTE*& pData)
+    {
+        *((short*)(pData)) = value;
+        pData += 2;
+    }
+    void WriteMemoryUInt2(const unsigned short& value, BYTE*& pData)
+    {
+        *((unsigned short*)(pData)) = value;
+        pData += 2;
+    }
+    void WriteMemoryStringA(const std::string& value, BYTE*& pData)
+    {
+        size_t len = value.length();
+        WriteMemoryInt4((int)len, pData);
+        if (0 != len)
+        {
+            memcpy(pData, value.c_str(), len);
+            pData += len;
+        }
+    }
+
+    void DumpFontsDictionary(const std::wstring& strDumpFile)
+    {
+        int nFileDictionaryBinaryLen = 0;
+
+        // FD_Ascii_Names ---------------------------------------
+        nFileDictionaryBinaryLen += 4;
+        for (int i = 0; i < FONTS_DICT_ASCII_NAMES_COUNT; ++i)
+        {
+            const FD_FontMapRec _rec = FD_Ascii_Names[i];
+
+            std::string sName(_rec.m_name);
+            nFileDictionaryBinaryLen += 4;
+            nFileDictionaryBinaryLen += (int)sName.length();
+            nFileDictionaryBinaryLen += 4 * 4;
+        }
+
+        // FD_Ascii_Names_Offsets
+        nFileDictionaryBinaryLen += 4 * 256;
+        // ------------------------------------------------------
+
+        // FD_Unicode_Names -------------------------------------
+        nFileDictionaryBinaryLen += 4;
+        for (int i = 0; i < FONTS_DICT_UNICODE_NAMES_COUNT; ++i)
+        {
+            const FD_FontMapRecW _rec = FD_Unicode_Names[i];
+
+            std::wstring sName(_rec.m_name);
+            std::string sNameA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.c_str(), (LONG)sName.length());
+            nFileDictionaryBinaryLen += 4;
+            nFileDictionaryBinaryLen += (int)sNameA.length();
+            nFileDictionaryBinaryLen += 4 * 4;
+        }
+        // ------------------------------------------------------
+
+        // FD_Ascii_Files ---------------------------------------
+        nFileDictionaryBinaryLen += 4;
+        for (int i = 0; i < FONTS_DICT_ASCII_FONTS_COUNT; ++i)
+        {
+            const FD_Font _rec = FD_Ascii_Files[i];
+
+            std::string sName(_rec.m_name);
+            nFileDictionaryBinaryLen += 4;
+            nFileDictionaryBinaryLen += (int)sName.length();
+
+            nFileDictionaryBinaryLen += 4;
+            nFileDictionaryBinaryLen += 3 * 4;
+            nFileDictionaryBinaryLen += 10;
+            nFileDictionaryBinaryLen += 4 * 6;
+            nFileDictionaryBinaryLen += 2 * 3;
+            nFileDictionaryBinaryLen += 2;
+            nFileDictionaryBinaryLen += 2 * 6;
+        }
+        // ------------------------------------------------------
+
+        BYTE* pBinaryData = new BYTE[nFileDictionaryBinaryLen];
+        BYTE* pBinaryDataMem = pBinaryData;
+
+        // FD_Ascii_Names ---------------------------------------
+        WriteMemoryInt4((int)FONTS_DICT_ASCII_NAMES_COUNT, pBinaryDataMem);
+        for (int i = 0; i < FONTS_DICT_ASCII_NAMES_COUNT; ++i)
+        {
+            const FD_FontMapRec _rec = FD_Ascii_Names[i];
+
+            std::string sName(_rec.m_name);
+            WriteMemoryStringA(sName, pBinaryDataMem);
+
+            WriteMemoryInt4(_rec.m_index_r, pBinaryDataMem);
+            WriteMemoryInt4(_rec.m_index_i, pBinaryDataMem);
+            WriteMemoryInt4(_rec.m_index_b, pBinaryDataMem);
+            WriteMemoryInt4(_rec.m_index_bi, pBinaryDataMem);
+        }
+
+        // FD_Ascii_Names_Offsets
+        memcpy(pBinaryDataMem, FD_Ascii_Names_Offsets, 256 * 4);
+        pBinaryDataMem += 4 * 256;
+        // ------------------------------------------------------
+
+        // FD_Unicode_Names -------------------------------------
+        WriteMemoryInt4((int)FONTS_DICT_UNICODE_NAMES_COUNT, pBinaryDataMem);
+        for (int i = 0; i < FONTS_DICT_UNICODE_NAMES_COUNT; ++i)
+        {
+            const FD_FontMapRecW _rec = FD_Unicode_Names[i];
+
+            std::wstring sName(_rec.m_name);
+            std::string sNameA = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(sName.c_str(), (LONG)sName.length());
+
+            WriteMemoryStringA(sNameA, pBinaryDataMem);
+
+            WriteMemoryInt4(_rec.m_index_r, pBinaryDataMem);
+            WriteMemoryInt4(_rec.m_index_i, pBinaryDataMem);
+            WriteMemoryInt4(_rec.m_index_b, pBinaryDataMem);
+            WriteMemoryInt4(_rec.m_index_bi, pBinaryDataMem);
+        }
+        // ------------------------------------------------------
+
+        // FD_Ascii_Files ---------------------------------------
+        WriteMemoryInt4((int)FONTS_DICT_ASCII_FONTS_COUNT, pBinaryDataMem);
+        for (int i = 0; i < FONTS_DICT_ASCII_FONTS_COUNT; ++i)
+        {
+            const FD_Font _rec = FD_Ascii_Files[i];
+
+            std::string sName(_rec.m_name);
+            WriteMemoryStringA(sName, pBinaryDataMem);
+
+            WriteMemoryInt4((int)_rec.m_lIndex, pBinaryDataMem);
+
+            WriteMemoryInt4((FT_Int32)_rec.m_bBold, pBinaryDataMem);
+            WriteMemoryInt4((FT_Int32)_rec.m_bItalic, pBinaryDataMem);
+            WriteMemoryInt4((FT_Int32)_rec.m_bIsFixed, pBinaryDataMem);
+
+            memcpy(pBinaryDataMem, _rec.m_aPanose, 10);
+            pBinaryDataMem += 10;
+
+            WriteMemoryUInt4(_rec.m_ulUnicodeRange1, pBinaryDataMem);
+            WriteMemoryUInt4(_rec.m_ulUnicodeRange2, pBinaryDataMem);
+            WriteMemoryUInt4(_rec.m_ulUnicodeRange3, pBinaryDataMem);
+            WriteMemoryUInt4(_rec.m_ulUnicodeRange4, pBinaryDataMem);
+
+            WriteMemoryUInt4(_rec.m_ulCodePageRange1, pBinaryDataMem);
+            WriteMemoryUInt4(_rec.m_ulCodePageRange2, pBinaryDataMem);
+
+            WriteMemoryUInt2(_rec.m_usWeigth, pBinaryDataMem);
+            WriteMemoryUInt2(_rec.m_usWidth, pBinaryDataMem);
+
+            WriteMemoryInt2(_rec.m_sFamilyClass, pBinaryDataMem);
+
+            WriteMemoryInt2((short)_rec.m_eFontFormat, pBinaryDataMem);
+
+            WriteMemoryInt2(_rec.m_shAvgCharWidth, pBinaryDataMem);
+            WriteMemoryInt2(_rec.m_shAscent, pBinaryDataMem);
+            WriteMemoryInt2(_rec.m_shDescent, pBinaryDataMem);
+            WriteMemoryInt2(_rec.m_shLineGap, pBinaryDataMem);
+            WriteMemoryInt2(_rec.m_shXHeight, pBinaryDataMem);
+            WriteMemoryInt2(_rec.m_shCapHeight, pBinaryDataMem);
+        }
+        // ------------------------------------------------------
+
+        char* cData64 = NULL;
+        int nData64Dst = 0;
+        NSFile::CBase64Converter::Encode(pBinaryData, (int)nFileDictionaryBinaryLen, cData64, nData64Dst, NSBase64::B64_BASE64_FLAG_NOCRLF);
+
+        RELEASEARRAYOBJECTS(pBinaryData);
+
+        NSFile::CFileBinary oFile;
+        oFile.CreateFileW(strDumpFile);
+        oFile.WriteFile((BYTE*)cData64, (DWORD)nData64Dst);
+        oFile.CloseFile();
+
+        RELEASEARRAYOBJECTS(cData64);
+    }
+
+#endif
 }
 
 #ifdef WIN32
@@ -718,7 +920,8 @@ int main(int argc, char** argv)
 
 #if 0
 #ifdef WIN32
-    std::wstring strFontsFolder = L"C:/Windows/Fonts";
+    //std::wstring strFontsFolder = L"C:/Windows/Fonts";
+    std::wstring strFontsFolder = L"D:/activex/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/Fonts/native";
     std::wstring strAllFontsJSPath = L"D:/AllFontsGenTest/AllFonts.js";
     std::wstring strThumbnailsFolder = L"D:/AllFontsGenTest";
     std::wstring strFontsSelectionBin = L"D:/AllFontsGenTest/font_selection.bin";
@@ -740,8 +943,14 @@ int main(int argc, char** argv)
     else
         oApplicationF.Initialize(false);
 
-
     NSCommon::SaveAllFontsJS(oApplicationF, strAllFontsJSPath, strThumbnailsFolder, strFontsSelectionBin);
+
+#ifdef _GENERATE_FONT_MAP_
+
+    NSCommon::DumpFontsDictionary(L"D:\\fonts_dictionary.txt");
+
+#endif
+
     return 0;
 }
 

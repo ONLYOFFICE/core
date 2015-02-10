@@ -2,6 +2,6 @@
 //2
 //0
 //0
-//258
-#define INTVER 2,0,0,258
-#define STRVER "2,0,0,258\0"
+//259
+#define INTVER 2,0,0,259
+#define STRVER "2,0,0,259\0"

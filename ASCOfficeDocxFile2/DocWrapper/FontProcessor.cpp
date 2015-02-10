@@ -26,12 +26,16 @@ namespace DocWrapper {
 	}
 	void FontProcessor::setFontTable(OOX::CFontTable* fontTable)
 	{
+		//подбор перенесен в js
+		return;
 		for (int i = 0; i < fontTable->m_arrFonts.size(); ++i)
 			addToFontMap(*fontTable->m_arrFonts[i]);
 	}
 	
 	CString FontProcessor::getFont(const CString& name)
 	{
+		//подбор перенесен в js
+		return name;
 		CString fontName = gc_sDefaultFontName;
 		if (fontMap.find(name) != fontMap.end())
 			fontName = fontMap[name];
@@ -63,6 +67,8 @@ namespace DocWrapper {
 			sFontName = oRFont->ToString2();
 		if(sFontName.IsEmpty())
 			sFontName = CString(gc_sNoNameFont);
+		//подбор перенесен в js
+		return  sFontName;
 		oFontSelectFormat.wsName = new std::wstring;
 		*oFontSelectFormat.wsName = string2std_string(sFontName);
 		if(oCharset.IsInit() && oCharset->m_oCharset.IsInit())

@@ -2727,7 +2727,7 @@ public:
 				CString sFontName(m_oBufferedStream.GetString3(length));
 				sFontName = XmlUtils::EncodeXmlString(sFontName);
 
-				CString sVal; sVal.Format(_T("<m:font m:val=\"%s\" />"), sFontName);
+				CString sVal; sVal.Format(_T("<m:mathFont m:val=\"%s\" />"), sFontName);
 				m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 		}
 		else

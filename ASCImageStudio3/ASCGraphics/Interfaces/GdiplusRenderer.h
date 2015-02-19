@@ -635,10 +635,10 @@ public:
 		LONG lFillType = (nType & 0xFF00);
 		BOOL bIsStroke = (0x01 == (nType & 0x01));
 
-		REAL fLeft = 0;
-		REAL fTop = 0;
-		REAL fRight = 0;
-		REAL fBottom = 0;
+		float fLeft = 0;
+		float fTop = 0;
+		float fRight = 0;
+		float fBottom = 0;
 
 		/*Painter::CTextureManager oManager;
 
@@ -880,7 +880,7 @@ public:
 		Gdiplus::Matrix oMatrix;
 		m_pRenderer->GetTransform(&oMatrix);
 
-		REAL buffer[10];
+		float buffer[10];
 		oMatrix.GetElements(buffer);
 
 		*pdA = (double)buffer[0];
@@ -930,7 +930,7 @@ public:
 		pFont->GetFamily(&oFamily);
 
 		// так как пат рисуется в миллиметрах - надо перевести пункты в миллиметры
-		Gdiplus::REAL fSize = (Gdiplus::REAL)(0.3528 * pFont->GetSize());
+		float fSize = (float)(0.3528 * pFont->GetSize());
 		m_pPath->AddString(bsText, nLength, &oFamily, pFont->GetStyle(), fSize, pointOrigin, &m_oFormat);
 
 		RELEASEOBJECT(pFont);
@@ -953,7 +953,7 @@ protected:
 
 	void ApplyTransform(double d1, double d2, double d3, double d4, double d5, double d6)
 	{
-		Gdiplus::Matrix oMatrix((REAL)d1, (REAL)d2, (REAL)d3, (REAL)d4, (REAL)d5, (REAL)d6);
+		Gdiplus::Matrix oMatrix((float)d1, (float)d2, (float)d3, (float)d4, (float)d5, (float)d6);
 		ApplyTransform(&oMatrix);
 	}
 
@@ -965,19 +965,19 @@ protected:
 		BOOL bFlipX = (0 != (c_nParamFlipX & lFlags));
 		BOOL bFlipY = (0 != (c_nParamFlipY & lFlags));
 		
-		REAL m11 = bFlipX ? -1.0f : 1.0f;
-		REAL m22 = bFlipY ? -1.0f : 1.0f;
+		float m11 = bFlipX ? -1.0f : 1.0f;
+		float m22 = bFlipY ? -1.0f : 1.0f;
 		
 		Gdiplus::Matrix oMatrix(1, 0, 0, 1, 0, 0);
 
 		if ((0 != dAngle) || (0 != lFlags))
 		{
-			REAL dCentreX = (REAL)(dLeft + dWidth / 2.0);
-			REAL dCentreY = (REAL)(dTop + dHeight / 2.0);
+			float dCentreX = (float)(dLeft + dWidth / 2.0);
+			float dCentreY = (float)(dTop + dHeight / 2.0);
 			
 			oMatrix.Translate(-dCentreX, -dCentreY	, MatrixOrderAppend);
 			
-			oMatrix.Rotate((REAL)dAngle	, MatrixOrderAppend);
+			oMatrix.Rotate((float)dAngle	, MatrixOrderAppend);
 			oMatrix.Scale(m11, m22					, MatrixOrderAppend);
 			
 			oMatrix.Translate(dCentreX, dCentreY	, MatrixOrderAppend);
@@ -1046,7 +1046,7 @@ public:
 
 	void SetBaseMatrix(const Gdiplus::Matrix& oMatrix)
 	{
-		REAL elements[6];
+		float elements[6];
 		oMatrix.GetElements(elements);
 		m_oBaseMatrix.SetElements(elements[0], elements[1], elements[2], elements[3], elements[4], elements[5]);
 		m_bBaseMatrixUse = TRUE;

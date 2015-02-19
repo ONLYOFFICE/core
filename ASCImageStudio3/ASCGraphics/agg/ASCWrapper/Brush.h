@@ -292,14 +292,14 @@ public:
 		return Ok;
 	}
 
-	Status RotateTransform( REAL angle, MatrixOrder order = MatrixOrderPrepend )
+	Status RotateTransform( float angle, MatrixOrder order = MatrixOrderPrepend )
 	{
 		m_matrix.Rotate( angle, order );
 
 		return Ok;
 	}
 
-	Status ScaleTransform( REAL sx, REAL sy, MatrixOrder order = MatrixOrderPrepend )
+	Status ScaleTransform( float sx, float sy, MatrixOrder order = MatrixOrderPrepend )
 	{
 		m_matrix.Scale( sx, sy, order );
 
@@ -325,7 +325,7 @@ public:
 	}
 
 
-	Status SetInterpolationColors( const CColor *presetColors, const REAL *blendPositions, INT count )
+	Status SetInterpolationColors( const CColor *presetColors, const float *blendPositions, INT count )
 	{
 		m_subcolors.RemoveAll();
 
@@ -343,7 +343,7 @@ public:
 		return Ok;
 	}
 
-	Status GetInterpolationColors( CColor *presetColors, REAL *blendPositions, INT count ) const
+	Status GetInterpolationColors( CColor *presetColors, float *blendPositions, INT count ) const
 	{
 		if( count > 0 && count <= (INT)m_subcolors.GetCount() && presetColors && blendPositions )
 		{

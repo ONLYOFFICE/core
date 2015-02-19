@@ -77,7 +77,7 @@ namespace NSStructuresGDI
 		{
 			Gdiplus::Color color((BYTE)Alpha, GetRValue(Color), GetGValue(Color), GetBValue(Color));
 
-			Gdiplus::Pen* pPen = new Gdiplus::Pen(color, (Gdiplus::REAL)Size);
+			Gdiplus::Pen* pPen = new Gdiplus::Pen(color, (float)Size);
 			pPen->SetDashStyle((Gdiplus::DashStyle)DashStyle);
 			pPen->SetStartCap((Gdiplus::LineCap)LineStartCap);
 			pPen->SetEndCap((Gdiplus::LineCap)LineEndCap);
@@ -85,10 +85,10 @@ namespace NSStructuresGDI
 
 			if ((Count != 0) && (DashPattern != NULL))
 			{
-				Gdiplus::REAL* pPattern = new Gdiplus::REAL[Count];
+				float* pPattern = new Gdiplus::REAL[Count];
 				for (long i = 0; i < Count; ++i)
 				{
-					pPattern[i] = (Gdiplus::REAL)DashPattern[i];
+					pPattern[i] = (float)DashPattern[i];
 				}
 				
 				pPen->SetDashPattern(pPattern, Count);
@@ -175,7 +175,7 @@ namespace NSStructuresGDI
 			if( nAlpha < 0 || nAlpha >= 255 )
 				return NULL;
 
-			Gdiplus::REAL alph = (Gdiplus::REAL)(nAlpha / 255.0);
+			float alph = (float)(nAlpha / 255.0);
 			Gdiplus::ColorMatrix colorMatrix = {	
 				1.0f, 0.0f, 0.0f, 0.0f, 0.0f,
 				0.0f, 1.0f, 0.0f, 0.0f, 0.0f,
@@ -362,7 +362,7 @@ namespace NSStructuresGDI
 			if (Strikeout)
 				style |= Gdiplus::FontStyleStrikeout;
 
-			Gdiplus::Font* font = new Gdiplus::Font(family, (Gdiplus::REAL)Size, style, units);
+			Gdiplus::Font* font = new Gdiplus::Font(family, (float)Size, style, units);
 
 			SysFreeString(family);
 			return font;
@@ -383,7 +383,7 @@ namespace NSStructuresGDI
 			if (Strikeout)
 				style |= Gdiplus::FontStyleStrikeout;
 
-			Gdiplus::Font* font = new Gdiplus::Font(family, (Gdiplus::REAL)dSize, style, units);
+			Gdiplus::Font* font = new Gdiplus::Font(family, (float)dSize, style, units);
 
 			SysFreeString(family);
 			return font;
@@ -510,7 +510,7 @@ namespace NSStructuresGDI
 				int offset = int(Dist);
 				for (int i = 1; i <= offset; i++)
 				{
-					Gdiplus::Pen pen(Gdiplus::Color((BYTE)(Alpha*i*alpha/(offset*255)), GetRValue(Color), GetGValue(Color), GetBValue(Color)), (Gdiplus::REAL) 2*(offset - i + 1));
+					Gdiplus::Pen pen(Gdiplus::Color((BYTE)(Alpha*i*alpha/(offset*255)), GetRValue(Color), GetGValue(Color), GetBValue(Color)), (float) 2*(offset - i + 1));
 					pen.SetLineCap(Gdiplus::LineCapRound, Gdiplus::LineCapRound, Gdiplus::DashCapRound);
 					Gr->DrawPath(&pen, &path);
 				}

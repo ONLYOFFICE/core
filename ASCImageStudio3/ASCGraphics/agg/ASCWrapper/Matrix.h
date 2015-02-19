@@ -160,12 +160,12 @@ public:
 	Status GetElements(REAL* m) const
 	{
 		double M[6]; m_agg_mtx.store_to(M);
-		m[0]=(REAL)M[0];
-		m[1]=(REAL)M[1];
-		m[2]=(REAL)M[2];
-		m[3]=(REAL)M[3];
-		m[4]=(REAL)M[4];
-		m[5]=(REAL)M[5];
+		m[0]=(float)M[0];
+		m[1]=(float)M[1];
+		m[2]=(float)M[2];
+		m[3]=(float)M[3];
+		m[4]=(float)M[4];
+		m[5]=(float)M[5];
 		return Ok;
 	}
 

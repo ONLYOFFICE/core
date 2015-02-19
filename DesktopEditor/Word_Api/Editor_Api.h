@@ -2403,5 +2403,23 @@ namespace NSEditorApi
     };
 }
 
+// statistics
+namespace NSEditorApi
+{
+    class CStatistics : public IMenuEventDataBase
+    {
+    public:
+        js_wrapper<int> Pages;
+        js_wrapper<int> Paragraphs;
+        js_wrapper<int> Words;
+        js_wrapper<int> Symbols;
+        js_wrapper<int>	SymbolsWithSpaces;
+        
+    public:
+        CStatistics()
+        {
+        }
+    };
+}
 
 #endif //_BUILD_EDITOR_API_CROSSPLATFORM_H_

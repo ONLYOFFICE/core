@@ -2378,6 +2378,29 @@ namespace NSEditorApi
         {
         }
     };
+    
+    class CAscStatisticInfo : public IMenuEventDataBase
+    {
+    public:
+        int PageCount;
+        int WordsCount;
+        int ParagraphCount;
+        int SymbolsCount;
+        int SymbolsWSCount;
+        
+    public:
+        CAscStatisticInfo()
+        {
+            PageCount = 0;
+            WordsCount = 0;
+            ParagraphCount = 0;
+            SymbolsCount = 0;
+            SymbolsWSCount = 0;
+        }
+        virtual ~CAscStatisticInfo()
+        {
+        }
+    };
 }
 
 

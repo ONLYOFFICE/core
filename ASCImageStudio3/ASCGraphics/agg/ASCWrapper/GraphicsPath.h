@@ -387,8 +387,8 @@ public:
 			{
 				if(!(nTip & agg::path_flags_close))
 				{
-					points[k].X = REAL(x);
-					points[k].Y = REAL(y);
+					points[k].X = float(x);
+					points[k].Y = float(y);
 					++k;
 				}
 			}

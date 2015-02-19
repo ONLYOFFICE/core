@@ -24,6 +24,8 @@
 #include "../../../Common/XmlUtils.h"
 #include "../../../Common/OfficeDrawing/File.h"
 
+#include "../../DesktopEditor/common/File.h"
+
 #include FT_ADVANCES_H
 #include FT_GLYPH_H
 
@@ -193,6 +195,22 @@ public:
 	//----- Открытие/закрытие шрифта --------------------------------------------------------------------
 	STDMETHOD(Initialize)(BSTR bsXmlOptions)
 	{
+		// проверяем файл, лежащий с процессом
+		std::wstring sProcessPath = NSFile::GetProcessDirectory();
+		CString strFileSelection = (CString)(sProcessPath.c_str());
+		strFileSelection += _T("\\font_selection.bin");
+		CFile oFile;
+		if (S_OK == oFile.OpenFile(strFileSelection))
+		{
+			LONG lSize = (LONG)oFile.GetFileSize();
+			BYTE* pData = new BYTE[lSize];
+			oFile.ReadFile(pData, (DWORD)lSize);
+			
+			m_pFontEngine = new CFontEngine(TRUE, TRUE, TRUE, pData, _T(""));
+			RELEASEARRAYOBJECTS(pData);
+			return S_OK;
+		}
+
 		BOOL bLoadWinList = TRUE;
 		CString wsLoadDir = _T("");
 

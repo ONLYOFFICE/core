@@ -67,12 +67,14 @@ namespace NSFontCutter
 			{
 				sFind = _T("Arial");
 			}
-			//подбор перенесен в js
-			return sFind;
-
+			
 			std::map<CString, CString>::iterator pPair = m_mapPicks.find(sFind);
 			if (pPair != m_mapPicks.end())
 				return pPair->second;
+
+			//подбор перенесен в js
+			m_mapPicks.insert(std::pair<CString,CString>(sFind, sFind));
+			return sFind;
 
 			CString sInputSave = sFind;
 

@@ -2162,11 +2162,14 @@ namespace NSEditorApi
 	{
 	public:
 		std::wstring	Name;
+        int             NameNum;
+        
 		CAscImageRaw	Image;
 
 	public:
 		CAscStyleImage()
 		{
+            NameNum = -1;
 		}
 	};
 

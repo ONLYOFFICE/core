@@ -2308,6 +2308,11 @@ namespace NSEditorApi
 
 		js_wrapper<int>		TableStyleThumbnailWidth;
 		js_wrapper<int>		TableStyleThumbnailHeight;
+        
+        js_wrapper<int>		ChartStyleThumbnailWidth;
+        js_wrapper<int>		ChartStyleThumbnailHeight;
+        
+        js_wrapper<bool>	ViewerMode;
 
 		CAscEditorSettings()
 		{
@@ -2320,6 +2325,11 @@ namespace NSEditorApi
 
 			TableStyleThumbnailWidth		= oSrc.TableStyleThumbnailWidth;
 			TableStyleThumbnailHeight		= oSrc.TableStyleThumbnailHeight;
+            
+            ChartStyleThumbnailWidth        = oSrc.ChartStyleThumbnailWidth;
+            ChartStyleThumbnailHeight       = oSrc.ChartStyleThumbnailHeight;
+            
+            ViewerMode                      = oSrc.ViewerMode;
 		}
 
 		CAscEditorSettings& operator=(const CAscEditorSettings& oSrc)
@@ -2329,6 +2339,11 @@ namespace NSEditorApi
 
 			TableStyleThumbnailWidth		= oSrc.TableStyleThumbnailWidth;
 			TableStyleThumbnailHeight		= oSrc.TableStyleThumbnailHeight;
+            
+            ChartStyleThumbnailWidth        = oSrc.ChartStyleThumbnailWidth;
+            ChartStyleThumbnailHeight       = oSrc.ChartStyleThumbnailHeight;
+            
+            ViewerMode                      = oSrc.ViewerMode;
 
 			return *this;
 		}

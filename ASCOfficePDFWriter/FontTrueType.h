@@ -646,7 +646,8 @@ static unsigned long ParseCMap          (FontDef pFontDef, FT_Face pFace)
 
 	ulCharCode = FT_Get_First_Char( pFace, &unGlyphID );
 
-	while ( 0 != unGlyphID )                                            
+	FT_ULong ulCmapMaxLen = 0x001FFFFF;
+	while ( 0 != unGlyphID && pAttr->oCmap.unCount < ulCmapMaxLen )                                            
 	{
 		pAttr->oCmap.unCount++;
 		ulCharCode = FT_Get_Next_Char( pFace, ulCharCode, &unGlyphID );        
@@ -659,7 +660,7 @@ static unsigned long ParseCMap          (FontDef pFontDef, FT_Face pFace)
 	ulCharCode = FT_Get_First_Char( pFace, &unGlyphID );
 	unsigned int unIndex = 0;
 
-	while ( 0 != unGlyphID )                                            
+	while ( 0 != unGlyphID && unIndex < ulCmapMaxLen )                                            
 	{
 		pAttr->oCmap.pPairs[unIndex].ushCharCode = ulCharCode;
 		pAttr->oCmap.pPairs[unIndex].ushGlyphID  = unGlyphID;
@@ -892,7 +893,7 @@ static unsigned long ParseGlyf          (FontDef pFontDef, FT_Face pFace)
 	return OK;
 }
 Box                  TTFontDefGetCharBBox(FontDef pFontDef, unsigned short nUnicode);
-static unsigned long LoadFontData       (FontDef pFontDef, const wchar_t *wsFilePath, BOOL bEmbedding, const char *sToUnicodeName = NULL, unsigned int unIndex = 0)
+static unsigned long LoadFontData       (FontDef pFontDef, const wchar_t *wsFilePath, BOOL bEmbedding, const char *sToUnicodeName = NULL, unsigned int unIndex = 0, bool bFastParse = false)
 {
     TTFontDefAttr pAttr = (TTFontDefAttr)pFontDef->pAttr;
 	if ( NULL != sToUnicodeName )
@@ -937,7 +938,8 @@ static unsigned long LoadFontData       (FontDef pFontDef, const wchar_t *wsFile
     ParseHead( pFontDef, pFace );
     ParseMaxp( pFontDef, pFace );
     ParseHhea( pFontDef, pFace );
-    ParseCMap( pFontDef, pFace );
+	if (true != bFastParse)
+		ParseCMap( pFontDef, pFace );
     ParseHmtx( pFontDef, pFace );
 
 	//if ( OK != ( nRet = ParseLoca( pFontDef, pFace ) ) )
@@ -1328,7 +1330,7 @@ FontDef        TTFontDefNew         (MMgr oMMgr)
 
     return pFontDef;
 }
-FontDef        TTFontDefLoad        (MMgr oMMgr, const wchar_t *wsFilePath, BOOL bEmbedding, const char *sEncodingName = NULL, BOOL bEncoding = FALSE, BOOL bSymbolic = FALSE, BOOL bUsesMacRomanEncoding = FALSE)
+FontDef        TTFontDefLoad        (MMgr oMMgr, const wchar_t *wsFilePath, BOOL bEmbedding, const char *sEncodingName = NULL, BOOL bEncoding = FALSE, BOOL bSymbolic = FALSE, BOOL bUsesMacRomanEncoding = FALSE, bool bFastParse = false)
 {
     unsigned long nRet = OK;
     FontDef pFontDef = TTFontDefNew( oMMgr );
@@ -1344,7 +1346,7 @@ FontDef        TTFontDefLoad        (MMgr oMMgr, const wchar_t *wsFilePath, BOOL
 	wcscpy( pAttr->wsFilePath, wsFilePath );
 	pAttr->unFontIndex           = 0;
 
-    nRet = LoadFontData( pFontDef, wsFilePath, bEmbedding, sEncodingName );
+    nRet = LoadFontData( pFontDef, wsFilePath, bEmbedding, sEncodingName, 0, bFastParse );
     if ( OK != nRet ) 
 	{
         FontDefFree( pFontDef );

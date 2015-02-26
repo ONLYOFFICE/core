@@ -936,7 +936,7 @@ const char* LoadTTFontFromFile    (Doc pPDF, const wchar_t *wsFileName, BOOL bEm
 }
 static const char* LoadTTFontFromStream     (Doc pPDF, BOOL bEmbedding, const wchar_t *wsFileName, const char *sEncodingName, const char *sPrefix)
 {
-	FontDef pDef = TTFontDefLoad( pPDF->oMMgr, wsFileName, bEmbedding, sEncodingName );
+	FontDef pDef = TTFontDefLoad( pPDF->oMMgr, wsFileName, bEmbedding, sEncodingName, FALSE, FALSE, FALSE, true );
     if ( pDef ) 
 	{
 		if ( NULL != sPrefix )
@@ -948,6 +948,13 @@ static const char* LoadTTFontFromStream     (Doc pPDF, BOOL bEmbedding, const wc
 			FontDefFree( pDef );
 			SetError( &pPDF->oError, AVS_OFFICEPDFWRITER_ERROR_FONT_EXISTS, 0);
 			return pTempDef->sBaseFont;
+		}
+		else
+		{
+			FontDefFree(pDef);
+			pDef = TTFontDefLoad( pPDF->oMMgr, wsFileName, bEmbedding, sEncodingName, FALSE, FALSE, FALSE, false );
+			if ( NULL != sPrefix )
+				strcat( pDef->sBaseFont, sPrefix );
 		}
 
 		if ( OK != ListAdd( pPDF->pFontDefList, pDef ) ) 

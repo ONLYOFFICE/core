@@ -3219,7 +3219,8 @@ namespace BinXlsxRW {
 			BYTE fileType;
 			UINT nCodePage;
 			WCHAR wcDelimiter;
-			SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, wcDelimiter);
+			BYTE saveFileType;
+			SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, wcDelimiter, saveFileType);
 
 			OOX::Spreadsheet::CXlsx *pXlsx = NULL;
 			switch(fileType)
@@ -3234,21 +3235,30 @@ namespace BinXlsxRW {
 				break;
 			}
 			pXlsx->PrepareWorkbook();
-			intoBindoc(*pXlsx, oBufferedStream, pEmbeddedFontsManager, pOfficeDrawingConverter);
 
-			BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
-			int nBinBufferLen = oBufferedStream.GetPosition();
-			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
-			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-			if(TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+			if (BinXlsxRW::c_oFileTypes::JSON == saveFileType)
 			{
-				CFile oFile;
-				oFile.CreateFile(sFileDst);
-				oFile.WriteStringUTF8(WriteFileHeader(nBinBufferLen));
-				oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
-				oFile.CloseFile();
+				CSVWriter::WriteFromXlsxToCsv(sFileDst, *pXlsx, CP_UTF8, _T(','), TRUE);
 			}
-			RELEASEARRAYOBJECTS(pbBase64Buffer);
+			else
+			{
+				intoBindoc(*pXlsx, oBufferedStream, pEmbeddedFontsManager, pOfficeDrawingConverter);
+
+				BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
+				int nBinBufferLen = oBufferedStream.GetPosition();
+				int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
+				BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
+				if(TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+				{
+					CFile oFile;
+					oFile.CreateFile(sFileDst);
+					oFile.WriteStringUTF8(WriteFileHeader(nBinBufferLen));
+					oFile.WriteFile(pbBase64Buffer, nBase64BufferLen);
+					oFile.CloseFile();
+				}
+				RELEASEARRAYOBJECTS(pbBase64Buffer);
+			}
+
 			RELEASEOBJECT(pXlsx);
 		}
 	private:

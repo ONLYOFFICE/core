@@ -3036,7 +3036,8 @@ namespace BinXlsxRW {
 							BYTE fileType;
 							UINT nCodePage;
 							WCHAR wcDelimiter;
-							SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, wcDelimiter);
+							BYTE saveFileType;
+							SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, wcDelimiter, saveFileType);
 							// Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
 							if (BinXlsxRW::c_oFileTypes::CSV == fileType)
 								sDstPath += _T("Temp");
@@ -3057,7 +3058,7 @@ namespace BinXlsxRW {
 							switch(fileType)
 							{
 							case BinXlsxRW::c_oFileTypes::CSV:
-								CSVWriter::WriteFromXlsxToCsv(sDstPathCSV, oXlsx, nCodePage, wcDelimiter);
+								CSVWriter::WriteFromXlsxToCsv(sDstPathCSV, oXlsx, nCodePage, wcDelimiter, FALSE);
 								break;
 							case BinXlsxRW::c_oFileTypes::XLSX:
 							default:

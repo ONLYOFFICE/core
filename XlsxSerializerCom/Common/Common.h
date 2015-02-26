@@ -46,7 +46,7 @@ namespace SerializeCommon
 			aReplies.clear();
 		}
 	};
-	void ReadFileType(CString& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter);
+	void ReadFileType(CString& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter, BYTE& saveFileType);
 }
 
 #endif //SERIALIZER_COMMON

@@ -64,7 +64,8 @@ public:
 		BYTE fileType;
 		UINT nCodePage;
 		WCHAR wcDelimiter;
-		SerializeCommon::ReadFileType(CString(bstrXMLOptions), fileType, nCodePage, wcDelimiter);
+		BYTE saveFileType;
+		SerializeCommon::ReadFileType(CString(bstrXMLOptions), fileType, nCodePage, wcDelimiter, saveFileType);
 
 		if (BinXlsxRW::c_oFileTypes::CSV != fileType)
 		{

@@ -59,7 +59,7 @@ namespace CSVWriter
 			nCurrentIndex += nCountChars;
 		}
 	}
-    void WriteFromXlsxToCsv(CString &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter)
+    void WriteFromXlsxToCsv(CString &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter, BOOL bJSON)
 	{
 		NSFile::CFileBinary oFile;
 		oFile.CreateFileW(string2std_string(sFileDst));
@@ -101,13 +101,17 @@ namespace CSVWriter
 				}
 			}
 
-			// Get active sheet rId
+			// Get active sheet rId (для конвертации в CSV нужно использовать name, т.к. это наш бинарник из js-скриптов и еще нет rId
+			// А для json-а нужно пользовать rId, т.к. при открытии они используются
 			if (pWorkbook->m_oSheets.IsInit() && 0 <= pWorkbook->m_oSheets->m_arrItems.size())
 			{
+				OOX::Spreadsheet::CSheet *pSheet;
 				if (lActiveSheet <= pWorkbook->m_oSheets->m_arrItems.size())
-					sSheetRId = pWorkbook->m_oSheets->m_arrItems[lActiveSheet]->m_oName.get2();
+					pSheet = pWorkbook->m_oSheets->m_arrItems[lActiveSheet];
 				else
-					sSheetRId = pWorkbook->m_oSheets->m_arrItems[0]->m_oName.get2();
+					pSheet = pWorkbook->m_oSheets->m_arrItems[0];
+
+				sSheetRId = bJSON ? pSheet->m_oRid->GetValue() : pSheet->m_oName.get2();
 			}
 
 			std::map<CString, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();
@@ -119,9 +123,14 @@ namespace CSVWriter
 				{
 					OOX::Spreadsheet::CSharedStrings *pSharedStrings = oXlsx.GetSharedStrings();
 					CString sDelimiter = _T(""); sDelimiter += wcDelimiter;
-                    const WCHAR wcQuote = _T('"');
 					CString sEscape = _T("\"\n");
 					sEscape += wcDelimiter;
+					CString sEndJson = CString(_T("]"));
+					CString sQuote = _T("\"");
+					CString sDoubleQuote = _T("\"\"");
+
+					if (bJSON)
+						WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, CString(_T("[")), nCodePage);
 
 					INT nRowCurrent = 1;
 					for (INT i = 0; i < pWorksheet->m_oSheetData->m_arrItems.size(); ++i)
@@ -129,14 +138,20 @@ namespace CSVWriter
 						OOX::Spreadsheet::CRow *pRow = static_cast<OOX::Spreadsheet::CRow *>(pWorksheet->m_oSheetData->m_arrItems[i]);
 						INT nRow = pRow->m_oR.IsInit() ? pRow->m_oR->GetValue() : 0 == i ? nRowCurrent : nRowCurrent + 1;
 
-						while (nRow > nRowCurrent)
+						if (bJSON)
+							WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, CString(0 == i ? _T("[") : _T(",[")), nCodePage);
+						else
 						{
-							// Write new line
-							++nRowCurrent;
-							WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sNewLineN, nCodePage);
+							while (nRow > nRowCurrent)
+							{
+								// Write new line
+								++nRowCurrent;
+								WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sNewLineN, nCodePage);
+							}
 						}
 
 						INT nColCurrent = 1;
+						BOOL bIsWriteCell = FALSE; // Нужно только для записи JSON-а
 						for (INT j = 0; j < pRow->m_arrItems.size(); ++j)
 						{
 							INT nRowTmp = 0;
@@ -146,9 +161,15 @@ namespace CSVWriter
 
 							while (nCol > nColCurrent)
 							{
+								if (bJSON && FALSE == bIsWriteCell)
+								{
+									// Запишем пустые строки (для JSON-а)
+									WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sDoubleQuote, nCodePage);
+								}
 								// Write delimiter
 								++nColCurrent;
 								WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sDelimiter, nCodePage);
+								bIsWriteCell = FALSE;
 							}
 
 							OOX::Spreadsheet::CCell *pCell = static_cast<OOX::Spreadsheet::CCell *>(pRow->m_arrItems[j]);
@@ -182,22 +203,35 @@ namespace CSVWriter
 							}
 
 							// Escape cell value
-							if (-1 != sCellValue.FindOneOf(sEscape))
+							if (bJSON || -1 != sCellValue.FindOneOf(sEscape))
 							{
-								sCellValue.Replace(_T("\""), _T("\"\""));
-								sCellValue = wcQuote + sCellValue + wcQuote;
+								sCellValue.Replace(sQuote, sDoubleQuote);
+								sCellValue = sQuote + sCellValue + sQuote;
 							}
 							// Write cell value
 							WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sCellValue, nCodePage);
+							bIsWriteCell = TRUE;
 						}
+
+						if (bJSON)
+							WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sEndJson, nCodePage);
+					}
+
+					if (bJSON)
+					{
+						WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sEndJson, nCodePage);
+						WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sEndJson, nCodePage, TRUE);
 					}
 				}
 			}
 		}
 
 		// Теперь мы пишем как MS Excel (новую строку записываем в файл)
-		WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sNewLineN, nCodePage);
-		WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sNewLineN, nCodePage, TRUE);
+		if (!bJSON)
+		{
+			WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sNewLineN, nCodePage);
+			WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sNewLineN, nCodePage, TRUE);
+		}
 		RELEASEARRAYOBJECTS(pWriteBuffer);
 		oFile.CloseFile();
 	}

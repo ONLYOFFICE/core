@@ -73,13 +73,16 @@ namespace SerializeCommon
 			return sSourcePath.Left(nIndex + 1) + sTargetExt;
 		return sSourcePath;
 	}
-	void ReadFileType(CString& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter)
+	void ReadFileType(CString& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter, BYTE& cSaveFileType)
 	{
 		result = BinXlsxRW::c_oFileTypes::XLSX;
 		nCodePage = CP_UTF8;
 		wcDelimiter = _T(',');
+		cSaveFileType = BinXlsxRW::c_oFileTypes::XLSX;
+
 		nullable<SimpleTypes::CUnsignedDecimalNumber<>> fileType;
 		nullable<SimpleTypes::CUnsignedDecimalNumber<>> codePage;
+		nullable<SimpleTypes::CUnsignedDecimalNumber<>> saveFileType;
 		nullable<CString> delimiter;
 
 		// Read options
@@ -102,12 +105,21 @@ namespace SerializeCommon
 				WritingElement_ReadAttributes_Read_if (oReader, _T("fileType"), fileType)
 				WritingElement_ReadAttributes_Read_else_if (oReader, _T("codePage"), codePage)
 				WritingElement_ReadAttributes_Read_else_if (oReader, _T("delimiter"), delimiter)
+				WritingElement_ReadAttributes_Read_else_if (oReader, _T("saveFileType"), saveFileType)
 				WritingElement_ReadAttributes_End(oReader)
-				result = (BYTE)fileType->GetValue();
-				nCodePage = (UINT)codePage->GetValue();
-				const CString& sDelimiter = delimiter.get();
-				if (0 < sDelimiter.GetLength())
-					wcDelimiter = sDelimiter.GetAt(0);
+				
+				if (fileType.IsInit())
+					result = (BYTE)fileType->GetValue();
+				if (codePage.IsInit())
+					nCodePage = (UINT)codePage->GetValue();
+				if (saveFileType.IsInit())
+					cSaveFileType = (BYTE)saveFileType->GetValue();
+				if (delimiter.IsInit())
+				{
+					const CString& sDelimiter = delimiter.get();
+					if (0 < sDelimiter.GetLength())
+						wcDelimiter = sDelimiter.GetAt(0);
+				}
 				break;
 			}
 		}

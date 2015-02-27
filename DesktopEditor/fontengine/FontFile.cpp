@@ -533,6 +533,7 @@ int CFontFile::SetCMapForCharCode(long lUnicode, int *pnCMapIndex)
 		}
 		else if ( FT_ENCODING_NONE == pEncoding || FT_ENCODING_MS_SYMBOL == pEncoding || FT_ENCODING_APPLE_ROMAN == pEncoding )
 		{
+#if 0
 			FT_ULong  charcode;
 			FT_UInt   gindex;
 
@@ -546,7 +547,8 @@ int CFontFile::SetCMapForCharCode(long lUnicode, int *pnCMapIndex)
 					*pnCMapIndex = nIndex;
 					break;
 				}
-			}                                                               
+			}
+#endif
 
 			if ( nCharIndex = FT_Get_Char_Index( m_pFace, lUnicode ) )
 			{

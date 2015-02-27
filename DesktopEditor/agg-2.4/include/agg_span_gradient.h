@@ -313,7 +313,10 @@ namespace agg
 			}
 			if (!bFindColor)
 			{
-				m_color_table[index] = m_pSubColors[m_nCountSubColors - 1];
+                if (m_pSubColors != NULL && m_nCountSubColors > 0)
+                    m_color_table[index] = m_pSubColors[m_nCountSubColors - 1];
+                else
+                    m_color_table[index] = color_type();
 			}
 
 			m_valid_table[index] = true;

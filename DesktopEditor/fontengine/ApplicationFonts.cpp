@@ -1637,67 +1637,85 @@ static long GetNextNameValue(HKEY key, const std::wstring& sSubkey, std::wstring
 	return retval;
 }
 
+CArray<std::wstring> CApplicationFonts::GetSetupFontFiles()
+{
+#ifdef WIN32
+    // Ищем директорию с фонтами (обычно это C:\Windows\Fonts)
+    wchar_t wsWinFontDir[MAX_PATH];
+    wsWinFontDir[0] = (wchar_t)'\0';
+
+    if ( !SHGetSpecialFolderPathW( NULL, wsWinFontDir, CSIDL_FONTS, FALSE ) )
+        wsWinFontDir[0] = '\0';
+
+    std::wstring sWinFontDir(wsWinFontDir);
+
+    OSVERSIONINFO oVersion;
+    oVersion.dwOSVersionInfoSize = sizeof(oVersion);
+    GetVersionEx( &oVersion );
+
+    std::wstring wsPath = L"";
+
+    if ( oVersion.dwPlatformId == VER_PLATFORM_WIN32_NT )
+        wsPath = L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\\";
+    else
+        wsPath = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Fonts\\";
+
+    std::wstring sName;
+    std::wstring sData;
+
+    std::map<std::wstring, bool> map_files;
+    CArray<std::wstring> oArray;
+    while (GetNextNameValue( HKEY_LOCAL_MACHINE, wsPath, sName, sData ) == ERROR_SUCCESS)
+    {
+        if (wsPath.length())
+            wsPath = L"";
+
+        NSFile::CFileBinary oFile;
+        if (oFile.OpenFile(sData))
+        {
+            oFile.CloseFile();
+
+            if (map_files.find(sData) == map_files.end())
+            {
+                oArray.Add(sData);
+                map_files.insert(map_files.begin(), std::pair<std::wstring,bool>(sData,true));
+            }
+            continue;
+        }
+
+        oFile.CloseFile();
+
+        std::wstring sFileInDir = sWinFontDir + L"\\" + sData;
+        if (oFile.OpenFile(sFileInDir))
+        {
+            oFile.CloseFile();
+
+            if (map_files.find(sFileInDir) == map_files.end())
+            {
+                oArray.Add(sFileInDir);
+                map_files.insert(map_files.begin(), std::pair<std::wstring,bool>(sFileInDir,true));
+            }
+            continue;
+        }
+    }
+    return oArray;
+#endif
+
+#if defined(_LINUX) && !defined(_MAC)
+    return NSDirectory::GetFiles(L"/usr/share/fonts", true);
+#endif
+
+#if defined(_MAC) && !defined(_IOS)
+    return NSDirectory::GetFiles(L"/Library/Fonts", true);
+#endif
+
+    CArray<std::wstring> ret;
+    return ret;
+}
+
 void CApplicationFonts::InitFromReg()
 {
-	// Ищем директорию с фонтами (обычно это C:\Windows\Fonts)
-	wchar_t wsWinFontDir[MAX_PATH];
-	wsWinFontDir[0] = (wchar_t)'\0';
-
-	if ( !SHGetSpecialFolderPathW( NULL, wsWinFontDir, CSIDL_FONTS, FALSE ) )
-		wsWinFontDir[0] = '\0';
-
-	std::wstring sWinFontDir(wsWinFontDir);
-
-	OSVERSIONINFO oVersion;
-	oVersion.dwOSVersionInfoSize = sizeof(oVersion);
-	GetVersionEx( &oVersion );
-
-	std::wstring wsPath = L"";
-
-	if ( oVersion.dwPlatformId == VER_PLATFORM_WIN32_NT ) 
-		wsPath = L"SOFTWARE\\Microsoft\\Windows NT\\CurrentVersion\\Fonts\\";
-	else 
-		wsPath = L"SOFTWARE\\Microsoft\\Windows\\CurrentVersion\\Fonts\\";
-
-	std::wstring sName;
-	std::wstring sData;
-
-	std::map<std::wstring, bool> map_files;
-	CArray<std::wstring> oArray;
-	while (GetNextNameValue( HKEY_LOCAL_MACHINE, wsPath, sName, sData ) == ERROR_SUCCESS) 
-	{
-		if (wsPath.length())
-			wsPath = L"";
-
-		NSFile::CFileBinary oFile;
-		if (oFile.OpenFile(sData))
-		{
-			oFile.CloseFile();
-
-			if (map_files.find(sData) == map_files.end())
-			{
-				oArray.Add(sData);
-				map_files.insert(map_files.begin(), std::pair<std::wstring,bool>(sData,true));
-			}
-			continue;
-		}
-		
-		oFile.CloseFile();
-
-		std::wstring sFileInDir = sWinFontDir + L"\\" + sData;
-		if (oFile.OpenFile(sFileInDir))
-		{
-			oFile.CloseFile();
-
-			if (map_files.find(sFileInDir) == map_files.end())
-			{
-				oArray.Add(sFileInDir);
-				map_files.insert(map_files.begin(), std::pair<std::wstring,bool>(sFileInDir,true));
-			}
-			continue;
-		}
-	}
-
+    CArray<std::wstring> oArray = GetSetupFontFiles();
 	m_oList.LoadFromArrayFiles(oArray);
 }
 

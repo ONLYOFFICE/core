@@ -211,6 +211,7 @@ public:
 
     void InitializeFromFolder(std::wstring strFolder, bool bIsCheckSelection = true);
     void Initialize(bool bIsCheckSelection = true);
+    CArray<std::wstring> GetSetupFontFiles();
 
 #ifdef WIN32
 	void InitFromReg();

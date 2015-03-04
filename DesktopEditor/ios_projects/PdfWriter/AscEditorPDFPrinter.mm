@@ -10,10 +10,45 @@
 #include "./AscEditorPDFPrinter.h"
 
 #include "../../../ASCOfficePDFWriter/PdfWriterLib/PdfWriterLib.h"
+#include "../../common/File.h"
 
-bool CAscEditorPDFPrinter::Print(unsigned char *pSrcData, unsigned int nSrcLen, std::wstring strDstFile)
+bool CAscEditorPDFPrinter::Print(std::string strBase64, std::wstring strDstFile)
 {
-    return false;
+    CPdfWriterLib oWriter;
+    // TODO: fonts initialize
+    
+    HRESULT hRes = S_OK;
+    try
+    {
+        hRes = oWriter.CreatePDF();
+        if (S_OK != (hRes))
+            throw "CreatePDF failed!";
+        
+        hRes = oWriter.SetPDFCompressionMode(15);
+        if (S_OK != (hRes))
+            throw "SetPDFCompressionMode(15) failed!";
+        
+        int nCountPages = 0;
+        
+        std::wstring sHypers = L"";
+        
+        int	len			= NSBase64::Base64DecodeGetRequiredLength(strBase64.length());
+        BYTE* dstArray	= new BYTE[len];
+        
+        if (NSBase64::Base64Decode(strBase64.c_str(), strBase64.length(), dstArray, &len))
+        {
+            oWriter.OnlineWordToPdfInternal(dstArray, len, m_strImagesPath, sHypers, nCountPages, L"", 1);
+            oWriter.SaveToFile(strDstFile);
+        }
+        
+        RELEASEARRAYOBJECTS(dstArray);
+    }
+    catch (char *pcError)
+    {
+        //ATLTRACE2 (pcError);
+    }
+    
+    return (hRes == S_OK) ? true : false;
 }
 
 // file downloader realize

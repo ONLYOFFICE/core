@@ -7,7 +7,8 @@
 	typedef unsigned __int16	_UINT16;
 	typedef unsigned __int32	_UINT32;
 	typedef unsigned __int64	_UINT64;
-#elif __linux__
+#else
+// если нет таких типов - надо подключать stdint
         typedef int16_t             _INT16;
         typedef int32_t             _INT32;
         typedef int64_t             _INT64;

@@ -220,16 +220,10 @@ namespace FileSystem {
         return strFolderPath.substr(0,n1);
     }
 
-    CString Directory::GetLongPathNameW(const CString& fileName)
+    CString Directory::GetLongPathName_(const CString& fileName)
     {
         return fileName;
         //todo
-    }
-    CString Directory::GetTempPath()
-    {
-        CString tempPath = P_tmpdir;
-
-        return tempPath;
     }
 
     bool Directory::PathIsDirectory(const CString& pathName)

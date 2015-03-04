@@ -1,5 +1,7 @@
 ﻿#pragma once
 
+#ifndef FILEDOWNLOADER_OWN_IMPLEMENTATION
+
 #ifdef _WIN32
 #include "../../Common/BaseThread.h"
 
@@ -495,6 +497,95 @@ protected :
     BOOL     m_bComplete;       // Закачался файл или нет
     BOOL     m_bDelete;         // Удалять ли файл в деструкторе
 
+};
+
+#endif
+
+#else // FILEDOWNLOADER_OWN_IMPLEMENTATION
+
+#include "../DesktopEditor/graphics/BaseThread.h"
+#include "../DesktopEditor/common/File.h"
+
+class CFileDownloader : public NSThreads::CBaseThread
+{
+public :
+    
+    CFileDownloader (CString sFileUrl, int bDelete = TRUE) : NSThreads::CBaseThread()
+    {
+        m_pFile     = NULL;
+        m_sFilePath = _T("");
+        m_sFileUrl  = sFileUrl;
+        m_bComplete = FALSE;
+        m_bDelete   = bDelete;
+    }
+    ~CFileDownloader ()
+    {
+        if ( m_pFile )
+        {
+            ::fclose( m_pFile );
+            m_pFile = NULL;
+        }
+        if ( m_sFilePath.GetLength() > 0 && m_bDelete )
+        {
+            NSFile::CFileBinary::Remove(std::wstring(m_sFilePath.GetString()));
+            m_sFilePath = _T("");
+        }
+        
+    }
+    
+    
+    CString GetFilePath()
+    {
+        return m_sFilePath;
+    }
+    int    IsFileDownloaded()
+    {
+        return m_bComplete;
+    }
+protected :
+    
+    virtual      DWORD ThreadProc ()
+    {
+        m_bComplete = FALSE;
+        
+        HRESULT hrResultAll = DownloadFileAll(std::wstring(m_sFileUrl.GetString()), std::wstring(m_sFilePath.GetString()));
+            
+        if (S_OK != hrResultAll)
+        {
+            m_bRunThread = FALSE;
+            return 0;
+        }
+        
+        m_bRunThread = FALSE;
+        m_bComplete = TRUE;
+        return 0;
+    }
+
+    // OWN REALIZE!!!
+    HRESULT DownloadFileAll(std::wstring sFileURL, std::wstring strFileOutput);
+    
+public:
+    static bool IsNeedDownload(CString FilePath)
+    {
+        int n1 = FilePath.Find(_T("www."));
+        int n2 = FilePath.Find(_T("http://"));
+        int n3 = FilePath.Find(_T("ftp://"));
+        int n4 = FilePath.Find(_T("https://"));
+        
+        if (((n1 >= 0) && (n1 < 10)) || ((n2 >= 0) && (n2 < 10)) || ((n3 >= 0) && (n3 < 10)) || ((n4 >= 0) && (n4 < 10)))
+            return true;
+        return false;
+    }
+    
+    protected :
+    
+    FILE    *m_pFile;           // Хэндл на временный файл
+    CString  m_sFilePath;       // Путь к сохраненному файлу на диске
+    CString  m_sFileUrl;        // Ссылка на скачивание файла
+    
+    int     m_bComplete;       // Закачался файл или нет
+    int     m_bDelete;         // Удалять ли файл в деструкторе
+    
 };
 
 #endif

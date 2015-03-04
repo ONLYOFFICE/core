@@ -45,6 +45,15 @@ namespace FileSystem
         strFolder += strFolderName;
         return CreateDirectory(strFolder);
     }
+	CString Directory::CreateTempFileWithUniqueName (const CString & strFolderPathRoot, CString Prefix)
+	{
+        TCHAR pBuffer [MAX_PATH+1];
+        memset (pBuffer, 0, sizeof (TCHAR) * (MAX_PATH+1));
+
+		/*unRet = */GetTempFileName( strFolderPathRoot.GetString(), Prefix.GetString(), 0,pBuffer);
+
+		return CString(pBuffer);
+	}
     bool Directory::CreateDirectories(LPCTSTR path) 
 	{
 		int codeResult = ERROR_SUCCESS;

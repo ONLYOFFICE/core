@@ -33,7 +33,7 @@ namespace FileSystem {
 
         static int GetFilesCount(const CString& path, const bool& recursive = false);
         static CString GetFolderPath(const CString& path);
-        static CString GetLongPathNameW(const CString& fileName);
+        static CString GetLongPathName_(const CString& fileName);
         static CString GetTempPath();
         static CString CreateTempFileWithUniqueName (const CString & strFolderPathRoot,CString Prefix);
         static bool PathIsDirectory(const CString& pathName);

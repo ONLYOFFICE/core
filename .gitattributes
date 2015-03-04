@@ -2260,6 +2260,10 @@ DesktopEditor/freetype_names/FontsDictionaryFiles/wst_ital.fon svn_mime_002dtype
 DesktopEditor/freetype_names/FontsDictionaryFiles/wst_span.fon svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/freetype_names/FontsDictionaryFiles/wst_swed.fon svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/freetype_names/FontsDictionaryFiles/wt002.ttf svn_mime_002dtype=application%2Foctet-stream
+DesktopEditor/ios_projects svnc_tsvn_003alogminsize=5
+DesktopEditor/ios_projects/libxml2 svnc_tsvn_003alogminsize=5
+DesktopEditor/ios_projects/libxml2/libxml2.xcodeproj svnc_tsvn_003alogminsize=5
+DesktopEditor/ios_projects/libxml2/libxml2.xcodeproj/project.xcworkspace svnc_tsvn_003alogminsize=5
 DoctRenderer/COMMON/Dlls/AVSGraphics.dll svn_mime_002dtype=application%2Foctet-stream
 DoctRenderer/COMMON/Dlls/AVSOfficeFOFile.dll svn_mime_002dtype=application%2Foctet-stream
 DoctRenderer/COMMON/Joiner/bin/Debug/Joiner.exe svn_mime_002dtype=application%2Foctet-stream

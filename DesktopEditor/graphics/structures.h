@@ -526,6 +526,107 @@ namespace NSStructures
 		{
 		}
 	};
+	class CShadow
+	{
+	public:
+	
+		BOOL Visible;
+		double DistanceX;
+		double DistanceY;
+		double BlurSize;
+		long Color;
+		long Alpha;
+	
+	public:
+
+		void SetDefaultParams()
+		{
+			Visible   = FALSE;
+			DistanceX = 15;
+			DistanceY = 15;
+			BlurSize  = 0;
+			Color     = 0;
+			Alpha     = 120;
+		}
+		
+	public:
+	
+		CShadow()
+		{
+			SetDefaultParams();
+		}
+		CShadow( const CShadow& other )
+		{
+			Visible   = other.Visible;
+			DistanceX = other.DistanceX;
+			DistanceY = other.DistanceY;
+			BlurSize  = other.BlurSize;
+			Color     = other.Color;
+			Alpha     = other.Alpha;
+						
+		}
+		CShadow& operator=(const CShadow& other)
+		{
+			Visible   = other.Visible;
+			DistanceX = other.DistanceX;
+			DistanceY = other.DistanceY;
+			BlurSize  = other.BlurSize;
+			Color     = other.Color;
+			Alpha     = other.Alpha;
+
+			return *this;
+		}
+		virtual ~CShadow()
+		{
+		}
+	};
+
+	class CEdgeText
+	{
+	public:
+	
+		long Visible;
+		double Dist;
+		long Color;
+		long Alpha;
+	
+	public:
+
+		void SetDefaultParams()
+		{
+			Visible = 0;
+			Dist    = 5;
+			Color   = 0;
+			Alpha   = 255;
+		}
+		
+	public:
+	
+		CEdgeText()
+		{
+			SetDefaultParams();
+		}
+		CEdgeText( const CEdgeText& other )
+		{
+			Visible = other.Visible;
+			Dist    = other.Dist;
+			Color   = other.Color;
+			Alpha   = other.Alpha;
+		}
+		CEdgeText& operator=(const CEdgeText& other)
+		{
+			Visible = other.Visible;
+			Dist    = other.Dist;
+			Color   = other.Color;
+			Alpha   = other.Alpha;
+
+			return *this;
+		}
+		virtual ~CEdgeText()
+		{
+		}
+	};
+
 }
 
 #endif // _BUILD_GRAPHICS_STRUCTURES_H_

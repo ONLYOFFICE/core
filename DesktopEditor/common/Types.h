@@ -19,7 +19,7 @@
 
 typedef unsigned long       DWORD;
 #ifndef _XCODE
-typedef int                 BOOL;
+#define BOOL int
 #endif
 typedef unsigned char       BYTE;
 typedef unsigned short      WORD;

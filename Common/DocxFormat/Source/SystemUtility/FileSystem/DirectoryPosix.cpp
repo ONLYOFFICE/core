@@ -64,7 +64,20 @@ namespace FileSystem {
 
         return stringUtf8ToWString (sDir);
     }
+	CString Directory::GetTempPath()
+	{
+        char *folder = getenv ("TEMP");
 
+        if (NULL == folder)
+            folder = getenv ("TMP");
+        if (NULL == folder)
+            folder = getenv ("TMPDIR");
+
+        if (NULL == folder)
+            folder = "/tmp";
+
+        return stringUtf8ToWString(folder);
+	}
     bool Directory::CreateDirectory (LPCTSTR path)
 	{
         bool directoryCreated = false;
@@ -82,6 +95,25 @@ namespace FileSystem {
 	{
         return Directory::CreateDirectory(path.c_str());
     }
+    CString Directory::CreateTempFileWithUniqueName (const CString & strFolderPathRoot,CString Prefix)
+    {
+        char pcRes[MAX_PATH];
+        if (NULL == pcRes) return _T("");
+
+        Prefix = strFolderPathRoot + FILE_SEPARATOR_STR + Prefix + _T("_XXXXXX");
+
+        std::wstring w_str  = Prefix.GetBuffer();
+        std::string a_str   = stringWstingToUtf8String(w_str);
+
+        memcpy(pcRes, a_str.c_str(), a_str.length());
+        pcRes[a_str.length()] = '\0';
+
+        int res = mkstemp( pcRes);
+
+        std::string sRes = pcRes;
+        return stringUtf8ToWString (sRes);
+    }
+
     bool Directory::CreateDirectory (String strFolderPathRoot, String strFolderName)
     {
         String strFolder = strFolderPathRoot;

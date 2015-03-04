@@ -1,0 +1,555 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXAggregateTarget section */
+		7C560F891AA71AEA000E5860 /* BuildAll */ = {
+			isa = PBXAggregateTarget;
+			buildConfigurationList = 7C560F8A1AA71AEA000E5860 /* Build configuration list for PBXAggregateTarget "BuildAll" */;
+			buildPhases = (
+				7C560F8D1AA71AEF000E5860 /* ShellScript */,
+			);
+			dependencies = (
+			);
+			name = BuildAll;
+			productName = BuildAll;
+		};
+/* End PBXAggregateTarget section */
+
+/* Begin PBXBuildFile section */
+		7C560FD21AA71BF3000E5860 /* Annotation.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560F8E1AA71BF3000E5860 /* Annotation.cpp */; };
+		7C560FD31AA71BF3000E5860 /* Catalog.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560F901AA71BF3000E5860 /* Catalog.cpp */; };
+		7C560FD41AA71BF3000E5860 /* Common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560F921AA71BF3000E5860 /* Common.cpp */; };
+		7C560FD51AA71BF3000E5860 /* Destination.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560F951AA71BF3000E5860 /* Destination.cpp */; };
+		7C560FD61AA71BF3000E5860 /* Document.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560F971AA71BF3000E5860 /* Document.cpp */; };
+		7C560FD71AA71BF3000E5860 /* Encoder.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560F991AA71BF3000E5860 /* Encoder.cpp */; };
+		7C560FD81AA71BF3000E5860 /* Encrypt.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560F9C1AA71BF3000E5860 /* Encrypt.cpp */; };
+		7C560FD91AA71BF3000E5860 /* EncryptDictionary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560F9E1AA71BF3000E5860 /* EncryptDictionary.cpp */; };
+		7C560FDA1AA71BF3000E5860 /* Font.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FA11AA71BF3000E5860 /* Font.cpp */; };
+		7C560FDB1AA71BF3000E5860 /* FontBase.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FA31AA71BF3000E5860 /* FontBase.cpp */; };
+		7C560FDC1AA71BF3000E5860 /* FontCID.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FA61AA71BF3000E5860 /* FontCID.cpp */; };
+		7C560FDD1AA71BF3000E5860 /* FontTrueType.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FA81AA71BF3000E5860 /* FontTrueType.cpp */; };
+		7C560FDE1AA71BF3000E5860 /* FontTypes.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FAC1AA71BF3000E5860 /* FontTypes.cpp */; };
+		7C560FDF1AA71BF3000E5860 /* GraphicState.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FAE1AA71BF3000E5860 /* GraphicState.cpp */; };
+		7C560FE01AA71BF3000E5860 /* Image.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FB01AA71BF3000E5860 /* Image.cpp */; };
+		7C560FE11AA71BF3000E5860 /* List.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FB31AA71BF3000E5860 /* List.cpp */; };
+		7C560FE21AA71BF3000E5860 /* MemoryManager.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FB61AA71BF3000E5860 /* MemoryManager.cpp */; };
+		7C560FE31AA71BF3000E5860 /* MetaData.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FB81AA71BF3000E5860 /* MetaData.cpp */; };
+		7C560FE41AA71BF3000E5860 /* Objects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FBA1AA71BF3000E5860 /* Objects.cpp */; };
+		7C560FE51AA71BF3000E5860 /* OnlineOfficeBinToPdf.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FBC1AA71BF3000E5860 /* OnlineOfficeBinToPdf.cpp */; };
+		7C560FE61AA71BF3000E5860 /* Outline.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FBE1AA71BF3000E5860 /* Outline.cpp */; };
+		7C560FE71AA71BF3000E5860 /* PageLabel.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FC01AA71BF3000E5860 /* PageLabel.cpp */; };
+		7C560FE81AA71BF3000E5860 /* PageOperations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FC21AA71BF3000E5860 /* PageOperations.cpp */; };
+		7C560FE91AA71BF3000E5860 /* Pages.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FC41AA71BF3000E5860 /* Pages.cpp */; };
+		7C560FEA1AA71BF3000E5860 /* PdfWriterLib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FC81AA71BF3000E5860 /* PdfWriterLib.cpp */; };
+		7C560FEB1AA71BF3000E5860 /* PdfWriterRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FCA1AA71BF3000E5860 /* PdfWriterRenderer.cpp */; };
+		7C560FEC1AA71BF3000E5860 /* Streams.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FCB1AA71BF3000E5860 /* Streams.cpp */; };
+		7C560FED1AA71BF3000E5860 /* ToUnicode.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FCD1AA71BF3000E5860 /* ToUnicode.cpp */; };
+		7C560FEE1AA71BF3000E5860 /* Utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FD01AA71BF3000E5860 /* Utils.cpp */; };
+		7C560FF41AA71E27000E5860 /* unicode_util.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FF31AA71E27000E5860 /* unicode_util.cpp */; };
+		7C560FF61AA71E51000E5860 /* DirectoryPosix.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FF51AA71E51000E5860 /* DirectoryPosix.cpp */; };
+		7C560FF81AA71E70000E5860 /* stringcommon.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FF71AA71E70000E5860 /* stringcommon.cpp */; };
+		7C560FFA1AA71E83000E5860 /* libxml2.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FF91AA71E83000E5860 /* libxml2.cpp */; };
+		7C560FFC1AA73B7D000E5860 /* AscEditorPDFPrinter.mm in Sources */ = {isa = PBXBuildFile; fileRef = 7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		7C560F6D1AA71A91000E5860 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "include/$(PRODUCT_NAME)";
+			dstSubfolderSpec = 16;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
+
+/* Begin PBXFileReference section */
+		7C560F6F1AA71A91000E5860 /* libPdfWriter.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPdfWriter.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		7C560F8E1AA71BF3000E5860 /* Annotation.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Annotation.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Annotation.cpp; sourceTree = "<group>"; };
+		7C560F8F1AA71BF3000E5860 /* Annotation.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Annotation.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Annotation.h; sourceTree = "<group>"; };
+		7C560F901AA71BF3000E5860 /* Catalog.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Catalog.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Catalog.cpp; sourceTree = "<group>"; };
+		7C560F911AA71BF3000E5860 /* Catalog.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Catalog.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Catalog.h; sourceTree = "<group>"; };
+		7C560F921AA71BF3000E5860 /* Common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Common.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Common.cpp; sourceTree = "<group>"; };
+		7C560F931AA71BF3000E5860 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Common.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Common.h; sourceTree = "<group>"; };
+		7C560F941AA71BF3000E5860 /* Consts.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Consts.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Consts.h; sourceTree = "<group>"; };
+		7C560F951AA71BF3000E5860 /* Destination.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Destination.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Destination.cpp; sourceTree = "<group>"; };
+		7C560F961AA71BF3000E5860 /* Destination.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Destination.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Destination.h; sourceTree = "<group>"; };
+		7C560F971AA71BF3000E5860 /* Document.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Document.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Document.cpp; sourceTree = "<group>"; };
+		7C560F981AA71BF3000E5860 /* Document.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Document.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Document.h; sourceTree = "<group>"; };
+		7C560F991AA71BF3000E5860 /* Encoder.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Encoder.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Encoder.cpp; sourceTree = "<group>"; };
+		7C560F9A1AA71BF3000E5860 /* Encoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Encoder.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Encoder.h; sourceTree = "<group>"; };
+		7C560F9B1AA71BF3000E5860 /* EncoderConstants.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EncoderConstants.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/EncoderConstants.h; sourceTree = "<group>"; };
+		7C560F9C1AA71BF3000E5860 /* Encrypt.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Encrypt.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Encrypt.cpp; sourceTree = "<group>"; };
+		7C560F9D1AA71BF3000E5860 /* Encrypt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Encrypt.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Encrypt.h; sourceTree = "<group>"; };
+		7C560F9E1AA71BF3000E5860 /* EncryptDictionary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = EncryptDictionary.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/EncryptDictionary.cpp; sourceTree = "<group>"; };
+		7C560F9F1AA71BF3000E5860 /* EncryptDictionary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = EncryptDictionary.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/EncryptDictionary.h; sourceTree = "<group>"; };
+		7C560FA01AA71BF3000E5860 /* Errors.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Errors.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Errors.h; sourceTree = "<group>"; };
+		7C560FA11AA71BF3000E5860 /* Font.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Font.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Font.cpp; sourceTree = "<group>"; };
+		7C560FA21AA71BF3000E5860 /* Font.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Font.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Font.h; sourceTree = "<group>"; };
+		7C560FA31AA71BF3000E5860 /* FontBase.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FontBase.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/FontBase.cpp; sourceTree = "<group>"; };
+		7C560FA41AA71BF3000E5860 /* FontBase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FontBase.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/FontBase.h; sourceTree = "<group>"; };
+		7C560FA51AA71BF3000E5860 /* FontBase14.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FontBase14.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/FontBase14.h; sourceTree = "<group>"; };
+		7C560FA61AA71BF3000E5860 /* FontCID.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FontCID.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/FontCID.cpp; sourceTree = "<group>"; };
+		7C560FA71AA71BF3000E5860 /* FontCID.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FontCID.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/FontCID.h; sourceTree = "<group>"; };
+		7C560FA81AA71BF3000E5860 /* FontTrueType.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FontTrueType.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/FontTrueType.cpp; sourceTree = "<group>"; };
+		7C560FA91AA71BF3000E5860 /* FontTrueType.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FontTrueType.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/FontTrueType.h; sourceTree = "<group>"; };
+		7C560FAA1AA71BF3000E5860 /* FontTrueTypeWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FontTrueTypeWriter.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/FontTrueTypeWriter.h; sourceTree = "<group>"; };
+		7C560FAB1AA71BF3000E5860 /* FontType1.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FontType1.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/FontType1.h; sourceTree = "<group>"; };
+		7C560FAC1AA71BF3000E5860 /* FontTypes.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = FontTypes.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/FontTypes.cpp; sourceTree = "<group>"; };
+		7C560FAD1AA71BF3000E5860 /* FontTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FontTypes.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/FontTypes.h; sourceTree = "<group>"; };
+		7C560FAE1AA71BF3000E5860 /* GraphicState.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = GraphicState.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/GraphicState.cpp; sourceTree = "<group>"; };
+		7C560FAF1AA71BF3000E5860 /* GraphicState.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = GraphicState.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/GraphicState.h; sourceTree = "<group>"; };
+		7C560FB01AA71BF3000E5860 /* Image.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Image.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Image.cpp; sourceTree = "<group>"; };
+		7C560FB11AA71BF3000E5860 /* Image.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Image.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Image.h; sourceTree = "<group>"; };
+		7C560FB21AA71BF3000E5860 /* ImageExt.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ImageExt.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/ImageExt.h; sourceTree = "<group>"; };
+		7C560FB31AA71BF3000E5860 /* List.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = List.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/List.cpp; sourceTree = "<group>"; };
+		7C560FB41AA71BF3000E5860 /* List.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = List.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/List.h; sourceTree = "<group>"; };
+		7C560FB51AA71BF3000E5860 /* LZWEncoder.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = LZWEncoder.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/LZWEncoder.h; sourceTree = "<group>"; };
+		7C560FB61AA71BF3000E5860 /* MemoryManager.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MemoryManager.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/MemoryManager.cpp; sourceTree = "<group>"; };
+		7C560FB71AA71BF3000E5860 /* MemoryManager.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MemoryManager.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/MemoryManager.h; sourceTree = "<group>"; };
+		7C560FB81AA71BF3000E5860 /* MetaData.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = MetaData.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/MetaData.cpp; sourceTree = "<group>"; };
+		7C560FB91AA71BF3000E5860 /* MetaData.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = MetaData.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/MetaData.h; sourceTree = "<group>"; };
+		7C560FBA1AA71BF3000E5860 /* Objects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Objects.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Objects.cpp; sourceTree = "<group>"; };
+		7C560FBB1AA71BF3000E5860 /* Objects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Objects.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Objects.h; sourceTree = "<group>"; };
+		7C560FBC1AA71BF3000E5860 /* OnlineOfficeBinToPdf.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = OnlineOfficeBinToPdf.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/OnlineOfficeBinToPdf.cpp; sourceTree = "<group>"; };
+		7C560FBD1AA71BF3000E5860 /* OnlineOfficeBinToPdf.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = OnlineOfficeBinToPdf.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/OnlineOfficeBinToPdf.h; sourceTree = "<group>"; };
+		7C560FBE1AA71BF3000E5860 /* Outline.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Outline.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Outline.cpp; sourceTree = "<group>"; };
+		7C560FBF1AA71BF3000E5860 /* Outline.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Outline.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Outline.h; sourceTree = "<group>"; };
+		7C560FC01AA71BF3000E5860 /* PageLabel.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PageLabel.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/PageLabel.cpp; sourceTree = "<group>"; };
+		7C560FC11AA71BF3000E5860 /* PageLabel.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PageLabel.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/PageLabel.h; sourceTree = "<group>"; };
+		7C560FC21AA71BF3000E5860 /* PageOperations.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PageOperations.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/PageOperations.cpp; sourceTree = "<group>"; };
+		7C560FC31AA71BF3000E5860 /* PageOperations.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PageOperations.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/PageOperations.h; sourceTree = "<group>"; };
+		7C560FC41AA71BF3000E5860 /* Pages.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Pages.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Pages.cpp; sourceTree = "<group>"; };
+		7C560FC51AA71BF3000E5860 /* Pages.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pages.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Pages.h; sourceTree = "<group>"; };
+		7C560FC61AA71BF3000E5860 /* Pattern.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Pattern.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Pattern.h; sourceTree = "<group>"; };
+		7C560FC71AA71BF3000E5860 /* PDF.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PDF.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/PDF.h; sourceTree = "<group>"; };
+		7C560FC81AA71BF3000E5860 /* PdfWriterLib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PdfWriterLib.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/PdfWriterLib.cpp; sourceTree = "<group>"; };
+		7C560FC91AA71BF3000E5860 /* PdfWriterLib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = PdfWriterLib.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/PdfWriterLib.h; sourceTree = "<group>"; };
+		7C560FCA1AA71BF3000E5860 /* PdfWriterRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = PdfWriterRenderer.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/PdfWriterRenderer.cpp; sourceTree = "<group>"; };
+		7C560FCB1AA71BF3000E5860 /* Streams.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Streams.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Streams.cpp; sourceTree = "<group>"; };
+		7C560FCC1AA71BF3000E5860 /* Streams.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Streams.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Streams.h; sourceTree = "<group>"; };
+		7C560FCD1AA71BF3000E5860 /* ToUnicode.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ToUnicode.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/ToUnicode.cpp; sourceTree = "<group>"; };
+		7C560FCE1AA71BF3000E5860 /* ToUnicode.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ToUnicode.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/ToUnicode.h; sourceTree = "<group>"; };
+		7C560FCF1AA71BF3000E5860 /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Types.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Types.h; sourceTree = "<group>"; };
+		7C560FD01AA71BF3000E5860 /* Utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Utils.cpp; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Utils.cpp; sourceTree = "<group>"; };
+		7C560FD11AA71BF3000E5860 /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Utils.h; path = ../../../ASCOfficePDFWriter/PdfWriterLib/Utils.h; sourceTree = "<group>"; };
+		7C560FF01AA71C5C000E5860 /* AscEditorPDFPrinter.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AscEditorPDFPrinter.h; sourceTree = "<group>"; };
+		7C560FF31AA71E27000E5860 /* unicode_util.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = unicode_util.cpp; path = ../../../Common/DocxFormat/Source/Base/unicode_util.cpp; sourceTree = "<group>"; };
+		7C560FF51AA71E51000E5860 /* DirectoryPosix.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DirectoryPosix.cpp; path = ../../../Common/DocxFormat/Source/SystemUtility/FileSystem/DirectoryPosix.cpp; sourceTree = "<group>"; };
+		7C560FF71AA71E70000E5860 /* stringcommon.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = stringcommon.cpp; path = ../../../Common/DocxFormat/Source/XML/stringcommon.cpp; sourceTree = "<group>"; };
+		7C560FF91AA71E83000E5860 /* libxml2.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = libxml2.cpp; path = ../../../Common/DocxFormat/Source/XML/libxml2/libxml2.cpp; sourceTree = "<group>"; };
+		7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.objcpp; path = AscEditorPDFPrinter.mm; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		7C560F6C1AA71A91000E5860 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		7C560F661AA71A91000E5860 = {
+			isa = PBXGroup;
+			children = (
+				7C560FFB1AA73B7D000E5860 /* AscEditorPDFPrinter.mm */,
+				7C560FF91AA71E83000E5860 /* libxml2.cpp */,
+				7C560FF71AA71E70000E5860 /* stringcommon.cpp */,
+				7C560FF51AA71E51000E5860 /* DirectoryPosix.cpp */,
+				7C560FF31AA71E27000E5860 /* unicode_util.cpp */,
+				7C560FF01AA71C5C000E5860 /* AscEditorPDFPrinter.h */,
+				7C560FEF1AA71C0F000E5860 /* src */,
+				7C560F701AA71A91000E5860 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		7C560F701AA71A91000E5860 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				7C560F6F1AA71A91000E5860 /* libPdfWriter.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		7C560FEF1AA71C0F000E5860 /* src */ = {
+			isa = PBXGroup;
+			children = (
+				7C560F8E1AA71BF3000E5860 /* Annotation.cpp */,
+				7C560F8F1AA71BF3000E5860 /* Annotation.h */,
+				7C560F901AA71BF3000E5860 /* Catalog.cpp */,
+				7C560F911AA71BF3000E5860 /* Catalog.h */,
+				7C560F921AA71BF3000E5860 /* Common.cpp */,
+				7C560F931AA71BF3000E5860 /* Common.h */,
+				7C560F941AA71BF3000E5860 /* Consts.h */,
+				7C560F951AA71BF3000E5860 /* Destination.cpp */,
+				7C560F961AA71BF3000E5860 /* Destination.h */,
+				7C560F971AA71BF3000E5860 /* Document.cpp */,
+				7C560F981AA71BF3000E5860 /* Document.h */,
+				7C560F991AA71BF3000E5860 /* Encoder.cpp */,
+				7C560F9A1AA71BF3000E5860 /* Encoder.h */,
+				7C560F9B1AA71BF3000E5860 /* EncoderConstants.h */,
+				7C560F9C1AA71BF3000E5860 /* Encrypt.cpp */,
+				7C560F9D1AA71BF3000E5860 /* Encrypt.h */,
+				7C560F9E1AA71BF3000E5860 /* EncryptDictionary.cpp */,
+				7C560F9F1AA71BF3000E5860 /* EncryptDictionary.h */,
+				7C560FA01AA71BF3000E5860 /* Errors.h */,
+				7C560FA11AA71BF3000E5860 /* Font.cpp */,
+				7C560FA21AA71BF3000E5860 /* Font.h */,
+				7C560FA31AA71BF3000E5860 /* FontBase.cpp */,
+				7C560FA41AA71BF3000E5860 /* FontBase.h */,
+				7C560FA51AA71BF3000E5860 /* FontBase14.h */,
+				7C560FA61AA71BF3000E5860 /* FontCID.cpp */,
+				7C560FA71AA71BF3000E5860 /* FontCID.h */,
+				7C560FA81AA71BF3000E5860 /* FontTrueType.cpp */,
+				7C560FA91AA71BF3000E5860 /* FontTrueType.h */,
+				7C560FAA1AA71BF3000E5860 /* FontTrueTypeWriter.h */,
+				7C560FAB1AA71BF3000E5860 /* FontType1.h */,
+				7C560FAC1AA71BF3000E5860 /* FontTypes.cpp */,
+				7C560FAD1AA71BF3000E5860 /* FontTypes.h */,
+				7C560FAE1AA71BF3000E5860 /* GraphicState.cpp */,
+				7C560FAF1AA71BF3000E5860 /* GraphicState.h */,
+				7C560FB01AA71BF3000E5860 /* Image.cpp */,
+				7C560FB11AA71BF3000E5860 /* Image.h */,
+				7C560FB21AA71BF3000E5860 /* ImageExt.h */,
+				7C560FB31AA71BF3000E5860 /* List.cpp */,
+				7C560FB41AA71BF3000E5860 /* List.h */,
+				7C560FB51AA71BF3000E5860 /* LZWEncoder.h */,
+				7C560FB61AA71BF3000E5860 /* MemoryManager.cpp */,
+				7C560FB71AA71BF3000E5860 /* MemoryManager.h */,
+				7C560FB81AA71BF3000E5860 /* MetaData.cpp */,
+				7C560FB91AA71BF3000E5860 /* MetaData.h */,
+				7C560FBA1AA71BF3000E5860 /* Objects.cpp */,
+				7C560FBB1AA71BF3000E5860 /* Objects.h */,
+				7C560FBC1AA71BF3000E5860 /* OnlineOfficeBinToPdf.cpp */,
+				7C560FBD1AA71BF3000E5860 /* OnlineOfficeBinToPdf.h */,
+				7C560FBE1AA71BF3000E5860 /* Outline.cpp */,
+				7C560FBF1AA71BF3000E5860 /* Outline.h */,
+				7C560FC01AA71BF3000E5860 /* PageLabel.cpp */,
+				7C560FC11AA71BF3000E5860 /* PageLabel.h */,
+				7C560FC21AA71BF3000E5860 /* PageOperations.cpp */,
+				7C560FC31AA71BF3000E5860 /* PageOperations.h */,
+				7C560FC41AA71BF3000E5860 /* Pages.cpp */,
+				7C560FC51AA71BF3000E5860 /* Pages.h */,
+				7C560FC61AA71BF3000E5860 /* Pattern.h */,
+				7C560FC71AA71BF3000E5860 /* PDF.h */,
+				7C560FC81AA71BF3000E5860 /* PdfWriterLib.cpp */,
+				7C560FC91AA71BF3000E5860 /* PdfWriterLib.h */,
+				7C560FCA1AA71BF3000E5860 /* PdfWriterRenderer.cpp */,
+				7C560FCB1AA71BF3000E5860 /* Streams.cpp */,
+				7C560FCC1AA71BF3000E5860 /* Streams.h */,
+				7C560FCD1AA71BF3000E5860 /* ToUnicode.cpp */,
+				7C560FCE1AA71BF3000E5860 /* ToUnicode.h */,
+				7C560FCF1AA71BF3000E5860 /* Types.h */,
+				7C560FD01AA71BF3000E5860 /* Utils.cpp */,
+				7C560FD11AA71BF3000E5860 /* Utils.h */,
+			);
+			name = src;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		7C560F6E1AA71A91000E5860 /* PdfWriter */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 7C560F831AA71A91000E5860 /* Build configuration list for PBXNativeTarget "PdfWriter" */;
+			buildPhases = (
+				7C560F6B1AA71A91000E5860 /* Sources */,
+				7C560F6C1AA71A91000E5860 /* Frameworks */,
+				7C560F6D1AA71A91000E5860 /* CopyFiles */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = PdfWriter;
+			productName = PdfWriter;
+			productReference = 7C560F6F1AA71A91000E5860 /* libPdfWriter.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		7C560F671AA71A91000E5860 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0610;
+				ORGANIZATIONNAME = "Ascensio System";
+				TargetAttributes = {
+					7C560F6E1AA71A91000E5860 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+					7C560F891AA71AEA000E5860 = {
+						CreatedOnToolsVersion = 6.1.1;
+					};
+				};
+			};
+			buildConfigurationList = 7C560F6A1AA71A91000E5860 /* Build configuration list for PBXProject "PdfWriter" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 7C560F661AA71A91000E5860;
+			productRefGroup = 7C560F701AA71A91000E5860 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				7C560F6E1AA71A91000E5860 /* PdfWriter */,
+				7C560F891AA71AEA000E5860 /* BuildAll */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXShellScriptBuildPhase section */
+		7C560F8D1AA71AEF000E5860 /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "SIMULATOR_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphonesimulator/lib${PROJECT_NAME}.a\" &&\nDEVICE_LIBRARY_PATH=\"${BUILD_DIR}/${CONFIGURATION}-iphoneos/lib${PROJECT_NAME}.a\" &&\nUNIVERSAL_LIBRARY_DIR=\"${BUILD_DIR}/${CONFIGURATION}-iphoneuniversal\" &&\nFRAMEWORK=\"${UNIVERSAL_LIBRARY_DIR}/${PROJECT_NAME}_ios.framework\" &&\n\n# Create framework directory structure.\nrm -rf \"${FRAMEWORK}\" &&\nmkdir -p \"${UNIVERSAL_LIBRARY_DIR}\" &&\n\n# Generate universal binary for the device and simulator.\nlipo \"${SIMULATOR_LIBRARY_PATH}\" \"${DEVICE_LIBRARY_PATH}\" -create -output \"${FRAMEWORK}\"";
+		};
+/* End PBXShellScriptBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		7C560F6B1AA71A91000E5860 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				7C560FED1AA71BF3000E5860 /* ToUnicode.cpp in Sources */,
+				7C560FF81AA71E70000E5860 /* stringcommon.cpp in Sources */,
+				7C560FE31AA71BF3000E5860 /* MetaData.cpp in Sources */,
+				7C560FDA1AA71BF3000E5860 /* Font.cpp in Sources */,
+				7C560FD21AA71BF3000E5860 /* Annotation.cpp in Sources */,
+				7C560FEC1AA71BF3000E5860 /* Streams.cpp in Sources */,
+				7C560FFA1AA71E83000E5860 /* libxml2.cpp in Sources */,
+				7C560FDF1AA71BF3000E5860 /* GraphicState.cpp in Sources */,
+				7C560FE21AA71BF3000E5860 /* MemoryManager.cpp in Sources */,
+				7C560FDC1AA71BF3000E5860 /* FontCID.cpp in Sources */,
+				7C560FFC1AA73B7D000E5860 /* AscEditorPDFPrinter.mm in Sources */,
+				7C560FD91AA71BF3000E5860 /* EncryptDictionary.cpp in Sources */,
+				7C560FE81AA71BF3000E5860 /* PageOperations.cpp in Sources */,
+				7C560FE41AA71BF3000E5860 /* Objects.cpp in Sources */,
+				7C560FF61AA71E51000E5860 /* DirectoryPosix.cpp in Sources */,
+				7C560FE51AA71BF3000E5860 /* OnlineOfficeBinToPdf.cpp in Sources */,
+				7C560FE11AA71BF3000E5860 /* List.cpp in Sources */,
+				7C560FDE1AA71BF3000E5860 /* FontTypes.cpp in Sources */,
+				7C560FD81AA71BF3000E5860 /* Encrypt.cpp in Sources */,
+				7C560FE61AA71BF3000E5860 /* Outline.cpp in Sources */,
+				7C560FEE1AA71BF3000E5860 /* Utils.cpp in Sources */,
+				7C560FEB1AA71BF3000E5860 /* PdfWriterRenderer.cpp in Sources */,
+				7C560FE71AA71BF3000E5860 /* PageLabel.cpp in Sources */,
+				7C560FD61AA71BF3000E5860 /* Document.cpp in Sources */,
+				7C560FD71AA71BF3000E5860 /* Encoder.cpp in Sources */,
+				7C560FE01AA71BF3000E5860 /* Image.cpp in Sources */,
+				7C560FE91AA71BF3000E5860 /* Pages.cpp in Sources */,
+				7C560FD31AA71BF3000E5860 /* Catalog.cpp in Sources */,
+				7C560FF41AA71E27000E5860 /* unicode_util.cpp in Sources */,
+				7C560FD51AA71BF3000E5860 /* Destination.cpp in Sources */,
+				7C560FD41AA71BF3000E5860 /* Common.cpp in Sources */,
+				7C560FDD1AA71BF3000E5860 /* FontTrueType.cpp in Sources */,
+				7C560FDB1AA71BF3000E5860 /* FontBase.cpp in Sources */,
+				7C560FEA1AA71BF3000E5860 /* PdfWriterLib.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		7C560F811AA71A91000E5860 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		7C560F821AA71A91000E5860 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = YES;
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.1;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = iphoneos;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		7C560F841AA71A91000E5860 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_UNICODE,
+					UNICODE,
+					_LINUX_QT,
+					LINUX,
+					_USE_LIBXML2_READER_,
+					_USE_XMLLITE_READER_,
+					USE_LITE_READER,
+					BUILD_CONFIG_FULL_VERSION,
+					DONT_WRITE_EMBEDDED_FONTS,
+					LIBXML_READER_ENABLED,
+					FILEDOWNLOADER_OWN_IMPLEMENTATION,
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"../../agg-2.4/include",
+					"../../freetype-2.5.2/include",
+					../../cximage/zlib,
+					../../../Common/DocxFormat/Source/XML/libxml2/XML/include/libxml,
+					../../../Common/DocxFormat/Source/XML/libxml2/XML/include,
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Debug;
+		};
+		7C560F851AA71A91000E5860 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					_UNICODE,
+					UNICODE,
+					_LINUX_QT,
+					LINUX,
+					_USE_LIBXML2_READER_,
+					_USE_XMLLITE_READER_,
+					USE_LITE_READER,
+					BUILD_CONFIG_FULL_VERSION,
+					DONT_WRITE_EMBEDDED_FONTS,
+					LIBXML_READER_ENABLED,
+					FILEDOWNLOADER_OWN_IMPLEMENTATION,
+				);
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"../../agg-2.4/include",
+					"../../freetype-2.5.2/include",
+					../../cximage/zlib,
+					../../../Common/DocxFormat/Source/XML/libxml2/XML/include/libxml,
+					../../../Common/DocxFormat/Source/XML/libxml2/XML/include,
+				);
+				OTHER_LDFLAGS = "-ObjC";
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = YES;
+			};
+			name = Release;
+		};
+		7C560F8B1AA71AEA000E5860 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		7C560F8C1AA71AEA000E5860 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		7C560F6A1AA71A91000E5860 /* Build configuration list for PBXProject "PdfWriter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7C560F811AA71A91000E5860 /* Debug */,
+				7C560F821AA71A91000E5860 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		7C560F831AA71A91000E5860 /* Build configuration list for PBXNativeTarget "PdfWriter" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7C560F841AA71A91000E5860 /* Debug */,
+				7C560F851AA71A91000E5860 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+		7C560F8A1AA71AEA000E5860 /* Build configuration list for PBXAggregateTarget "BuildAll" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				7C560F8B1AA71AEA000E5860 /* Debug */,
+				7C560F8C1AA71AEA000E5860 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 7C560F671AA71A91000E5860 /* Project object */;
+}

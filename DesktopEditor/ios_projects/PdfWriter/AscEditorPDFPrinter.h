@@ -24,7 +24,7 @@ public:
     }
     
 public:
-    bool Print(unsigned char* pSrcData, unsigned int nSrcLen, std::wstring strDstFile);
+    bool Print(const std::string base64Data, std::wstring strDstFile);
 };
 
 #endif

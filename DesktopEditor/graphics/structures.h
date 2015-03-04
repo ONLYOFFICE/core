@@ -530,7 +530,7 @@ namespace NSStructures
 	{
 	public:
 	
-		BOOL Visible;
+		INT Visible;
 		double DistanceX;
 		double DistanceY;
 		double BlurSize;

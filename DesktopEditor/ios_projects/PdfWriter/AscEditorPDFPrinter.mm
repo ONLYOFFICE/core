@@ -15,7 +15,9 @@
 bool CAscEditorPDFPrinter::Print(std::string strBase64, std::wstring strDstFile)
 {
     CPdfWriterLib oWriter;
-    // TODO: fonts initialize
+    // TODO: fonts system parameter use
+    CString sFonts(m_strFontsDirectory.c_str());
+    oWriter.SetFontDir(sFonts);
     
     HRESULT hRes = S_OK;
     try

@@ -148,12 +148,16 @@ public:
 #endif
     }
 
-    void CheckSystemFonts()
+    void CheckFonts()
     {
-        if (L"" == m_strFontsDirectory && 0 == m_map_fonts.size())
+        if (0 == m_map_fonts.size())
         {
             CApplicationFonts oApplication;
-            oApplication.Initialize();
+            if (m_strFontsDirectory == L"")
+                oApplication.Initialize();
+            else
+                oApplication.InitializeFromFolder(m_strFontsDirectory);
+
             CArray<CFontInfo*>* pFonts = oApplication.GetList()->GetFonts();
 
             int nCount = pFonts->GetCount();
@@ -335,8 +339,9 @@ void _GetFontArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args)
     }
     else
     {
-        std::map<std::wstring, std::wstring>::iterator pair = pNative->m_map_fonts.find(to_cstring(args[0]));
-        if (pair == pNative->m_map_fonts.end())
+        std::wstring sFind = to_cstring(args[0]);
+        std::map<std::wstring, std::wstring>::iterator pair = pNative->m_map_fonts.find(sFind);
+        if (pair != pNative->m_map_fonts.end())
             strDir = pair->second;
         else
             strDir = pNative->m_sDefaultFont;

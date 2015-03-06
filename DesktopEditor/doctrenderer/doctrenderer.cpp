@@ -1,4 +1,9 @@
 #include "doctrenderer.h"
+
+#ifdef BOOL
+#undef BOOL
+#endif
+
 #include "nativecontrol.h"
 
 #define _USE_LIBXML2_READER_
@@ -420,6 +425,8 @@ namespace NSDoctRenderer
                 pNative->m_pChanges = &m_oParams.m_arChanges;
                 pNative->m_strFontsDirectory = m_oParams.m_strFontsDirectory;
                 pNative->m_strImagesDirectory = m_oParams.m_strImagesDirectory;
+
+                pNative->CheckFonts();
 
                 pNative->m_strEditorType = m_strEditorType;
                 pNative->SetFilePath(m_strFilePath);

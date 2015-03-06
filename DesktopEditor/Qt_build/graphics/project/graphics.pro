@@ -27,6 +27,8 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     _LINUX \
     _LINUX_QT
 
+    CONFIG += c++11
+
     message(linux)
 }
 

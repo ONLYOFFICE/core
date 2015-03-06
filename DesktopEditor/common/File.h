@@ -425,7 +425,7 @@ namespace NSFile
 		{
 			if (NULL == pData)
 			{
-				pData = new BYTE[2 * lCount + 3 + 1];
+            	pData = new BYTE[4 * lCount + 3 + 2];
 			}
 
 			BYTE* pCodesCur = pData;
@@ -468,6 +468,7 @@ namespace NSFile
 
 			lOutputCount = (LONG)(pCodesCur - pData);
 			*pCodesCur++ = 0;
+            *pCodesCur++ = 0;
 		}
 
 		static void GetUtf16StringFromUnicode_4bytes2(const wchar_t* pUnicodes, LONG lCount, CStringUtf16& data)

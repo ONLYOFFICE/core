@@ -15,12 +15,12 @@ DEFINES += \
     _QT
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../editor/Debug -lnative_control
-    LIBS += -L../../graphics/Debug -lgraphics
+    LIBS += -L../../editor/Debug/debug -lnative_control
+    LIBS += -L../../graphics/Debug/debug -lgraphics
     message(debug)
-} else {
-    LIBS += -L../../editor/Release -lnative_control
-    LIBS += -L../../graphics/Release -lgraphics
+} else {*/
+    LIBS += -L../../editor/Release/release -lnative_control
+    LIBS += -L../../graphics/Release/release -lgraphics
     message(release)
 }
 
@@ -81,11 +81,11 @@ win32 {
 }
 
 win32:contains(QMAKE_TARGET.arch, x86_64):{
-    LIBS += -L../../../../../../../../../v8/build/Release/lib -lv8_base.x64
-    LIBS += -L../../../../../../../../../v8/build/Release/lib -lv8_snapshot
-    LIBS += -L../../../../../../../../../v8/build/Release/lib -lv8_nosnapshot.x64
-    LIBS += -L../../../../../../../../../v8/build/Release/lib -licui18n
-    LIBS += -L../../../../../../../../../v8/build/Release/lib -licuuc
+    LIBS += -L../../../../SDK/lib/win_64 -lv8_base.x64
+    LIBS += -L../../../../SDK/lib/win_64 -lv8_snapshot
+    LIBS += -L../../../../SDK/lib/win_64 -lv8_nosnapshot.x64
+    LIBS += -L../../../../SDK/lib/win_64 -licui18n
+    LIBS += -L../../../../SDK/lib/win_64 -licuuc
 
     message(windows64)
 }

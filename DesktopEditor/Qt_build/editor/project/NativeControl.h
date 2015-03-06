@@ -6,9 +6,9 @@
 #include <QWheelEvent>
 #include <QKeyEvent>
 #include <QPaintEvent>
-#include <QGLWidget>
+#include <QtOpenGL/QGLWidget>
 
-#define _USE_WEB_MENU_
+//#define _USE_WEB_MENU_
 
 #ifdef _USE_WEB_MENU_
 #include <QGraphicsView>

@@ -503,7 +503,7 @@ void CFontInfo::ToBuffer(BYTE*& pBuffer, std::wstring strDirectory, bool bIsOnly
         NSFile::CStringUtf16 s1;
         NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(m_wsFontName.c_str(), m_wsFontName.length(), s1);
 
-        lLen = (s1.Length + 1) * 2;
+        lLen = s1.Length + 2;
 
         *((int*)(pBuffer))	= lLen;
         pBuffer += 4;
@@ -546,7 +546,7 @@ void CFontInfo::ToBuffer(BYTE*& pBuffer, std::wstring strDirectory, bool bIsOnly
         NSFile::CStringUtf16 s2;
         NSFile::CUtf8Converter::GetUtf16StringFromUnicode_4bytes2(sPath.c_str(), sPath.length(), s2);
 
-        lLen = (s2.Length + 1) * 2;
+        lLen = s2.Length + 2;
 
         *((INT*)(pBuffer))	= lLen;
         pBuffer += sizeof(INT);

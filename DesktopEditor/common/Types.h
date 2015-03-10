@@ -19,7 +19,7 @@
 
 typedef unsigned long       DWORD;
 
-#ifdef WIN32
+#ifndef _IOS
 
 typedef int                 BOOL;
 

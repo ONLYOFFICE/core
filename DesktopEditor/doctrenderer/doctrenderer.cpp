@@ -13,7 +13,9 @@
 #include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 
 // TEST!!!
+#if 0
 #define _LOG_ERRORS_TO_FILE_
+#endif
 
 #ifdef _LOG_ERRORS_TO_FILE_
 

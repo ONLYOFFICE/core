@@ -332,12 +332,19 @@ void _GetFontArrayBuffer(const v8::FunctionCallbackInfo<v8::Value>& args)
     DWORD len = 0;
     std::wstring strDir = pNative->m_strFontsDirectory;
 
+#if 0
     if (strDir.length() != 0)
     {
         strDir += L"/";
         strDir += to_cstring(args[0]);
     }
     else
+#endif
+
+    // TODO:
+    // по идее файлы могут совпадать по имени, но лежать в разных директориях.
+    // и поэтому в AllFonts.js надо бы писать пути полные.
+    // пока оставим по-старому
     {
         std::wstring sFind = to_cstring(args[0]);
         std::map<std::wstring, std::wstring>::iterator pair = pNative->m_map_fonts.find(sFind);

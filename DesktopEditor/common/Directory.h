@@ -19,6 +19,10 @@
 
 namespace NSDirectory
 {
+#ifdef _IOS
+    void GetFiles2_ios(std::wstring strDirectory, CArray<std::wstring>& oArray, bool bIsRecursion);
+#endif
+    
     static void GetFiles2(std::wstring strDirectory, CArray<std::wstring>& oArray, bool bIsRecursion = false)
     {
 #ifdef WIN32
@@ -78,6 +82,13 @@ namespace NSDirectory
 #endif
 
 #ifdef MAC
+#endif
+   
+#if 0
+        // нормально работает и линукс версия
+#ifdef _IOS
+        return GetFiles2_ios(strDirectory, oArray, bIsRecursion);
+#endif
 #endif
     }
 

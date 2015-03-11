@@ -1637,6 +1637,8 @@ static long GetNextNameValue(HKEY key, const std::wstring& sSubkey, std::wstring
 	return retval;
 }
 
+#endif
+
 CArray<std::wstring> CApplicationFonts::GetSetupFontFiles()
 {
 #ifdef WIN32
@@ -1708,10 +1710,22 @@ CArray<std::wstring> CApplicationFonts::GetSetupFontFiles()
 #if defined(_MAC) && !defined(_IOS)
     return NSDirectory::GetFiles(L"/Library/Fonts", true);
 #endif
+    
+#ifdef _IOS
+    // own realization (objective c code)
+    return GetSetupFontFiles_ios();
+#endif
 
     CArray<std::wstring> ret;
     return ret;
 }
+
+void CApplicationFonts::InitializeFromArrayFiles(CArray<std::wstring>& files)
+{
+    m_oList.LoadFromArrayFiles(files);
+}
+
+#ifdef WIN32
 
 void CApplicationFonts::InitFromReg()
 {

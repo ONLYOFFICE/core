@@ -1,4 +1,4 @@
-﻿#ifndef _BUILD_APPLICATIONFONTS_H_
+#ifndef _BUILD_APPLICATIONFONTS_H_
 #define _BUILD_APPLICATIONFONTS_H_
 
 #define UNKNOWN_CHARSET 3 // для случаев, когда задано значение DEFAULT_CHARSET, но 
@@ -211,10 +211,16 @@ public:
 
     void InitializeFromFolder(std::wstring strFolder, bool bIsCheckSelection = true);
     void Initialize(bool bIsCheckSelection = true);
+    
     CArray<std::wstring> GetSetupFontFiles();
+    void InitializeFromArrayFiles(CArray<std::wstring>& files);
 
 #ifdef WIN32
 	void InitFromReg();
+#endif
+    
+#ifdef _IOS
+    CArray<std::wstring> GetSetupFontFiles_ios();
 #endif
 
 	CFontManager* GenerateFontManager();

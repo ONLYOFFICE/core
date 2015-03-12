@@ -442,6 +442,7 @@
 					HAVE_TIME_H,
 					HAVE_MALLOC_H,
 					LIBXML_OUTPUT_ENABLED,
+					_IOS,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -481,12 +482,13 @@
 					HAVE_TIME_H,
 					HAVE_MALLOC_H,
 					LIBXML_OUTPUT_ENABLED,
+					_IOS,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					../../Common/DocxFormat/Source/XML/libxml2/XML/include,
-					../../Common/DocxFormat/Source/XML/libxml2/XML/include/libxml,
+					../../../Common/DocxFormat/Source/XML/libxml2/XML/include,
+					../../../Common/DocxFormat/Source/XML/libxml2/XML/include/libxml,
 				);
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";

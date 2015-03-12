@@ -463,6 +463,7 @@
 					DONT_WRITE_EMBEDDED_FONTS,
 					LIBXML_READER_ENABLED,
 					FILEDOWNLOADER_OWN_IMPLEMENTATION,
+					_IOS,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -496,6 +497,7 @@
 					DONT_WRITE_EMBEDDED_FONTS,
 					LIBXML_READER_ENABLED,
 					FILEDOWNLOADER_OWN_IMPLEMENTATION,
+					_IOS,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -549,6 +551,7 @@
 				7C560F851AA71A91000E5860 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 		7C560F8A1AA71AEA000E5860 /* Build configuration list for PBXAggregateTarget "BuildAll" */ = {
 			isa = XCConfigurationList;
@@ -557,6 +560,7 @@
 				7C560F8C1AA71AEA000E5860 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

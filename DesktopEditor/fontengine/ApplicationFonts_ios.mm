@@ -11,6 +11,12 @@ CArray<std::wstring> CApplicationFonts::GetSetupFontFiles_ios()
 {
     CArray<std::wstring> oArray;
     NSDirectory::GetFiles2(L"/System/Library/Fonts", oArray, true);
+    
+    if (oArray.GetCount() == 0)
+    {
+        NSDirectory::GetFiles2(L"/Library/Fonts", oArray, true);
+    }
+    
     return oArray;
 }
 

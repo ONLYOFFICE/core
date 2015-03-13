@@ -22,9 +22,17 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 	NSFile::CFileBinary oFile;
 	if (!oFile.CreateFileW(strFileName))
 		return false;
+    
+    uint32_t lStride = 4 * m_lWidth;
+    uint32_t lBitsPerPixel = 4;
+    if (0 != m_lStride)
+    {
+        lStride = (m_lStride > 0) ? (uint32_t)m_lStride : (uint32_t)(-m_lStride);
+        lBitsPerPixel = lStride / m_lWidth;
+    }
 
 	CxImage img;
-	if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, 32, 4 * m_lWidth, (m_lStride >= 0) ? true : false))
+	if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false))
 		return false;
 
 	if (!img.Encode( oFile.GetFileNative(), nFileType ))

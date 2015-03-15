@@ -57,6 +57,11 @@ CApplicationFontStreams::CApplicationFontStreams()
 }
 CApplicationFontStreams::~CApplicationFontStreams()
 {
+    for (std::map<std::wstring, CFontStream*>::iterator iter = m_mapStreams.begin(); iter != m_mapStreams.end(); ++iter)
+    {
+        CFontStream* pFile = iter->second;
+        RELEASEOBJECT(pFile);
+    }
 }
 
 CFontStream* CApplicationFontStreams::GetStream(const std::wstring &strFile)

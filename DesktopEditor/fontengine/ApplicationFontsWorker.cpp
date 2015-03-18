@@ -704,6 +704,14 @@ std::vector<std::wstring> CApplicationFontsWorker::CheckApplication(bool bIsNeed
         oStream.WriteStringA2(sTmp.c_str(), (int)sTmp.length());
     }
     
+    nCountF = (int)arrNames.size();
+    oStream.WriteLONG((LONG)nCountF);
+    for (std::vector<std::wstring>::iterator iter = arrNames.begin(); iter != arrNames.end(); ++iter)
+    {
+        std::string sTmp = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(*iter);
+        oStream.WriteStringA2(sTmp.c_str(), (int)sTmp.length());
+    }
+    
     nLenDst = (unsigned int)oStream.GetSize();
     pDataDst = new unsigned char[nLenDst];
     memcpy(pDataDst, oStream.GetData(), (size_t)nLenDst);

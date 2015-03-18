@@ -2184,6 +2184,15 @@ namespace NSEditorApi
 		virtual ~CAscStyleImages()
 		{
 		}
+        
+    public:
+        void SetReleaseAll()
+        {
+            for (std::vector<CAscStyleImage>::iterator iter = m_arStyles.begin(); iter != m_arStyles.end(); iter++)
+            {
+                iter->Image.Release = true;
+            }
+        }
 	};
 }
 

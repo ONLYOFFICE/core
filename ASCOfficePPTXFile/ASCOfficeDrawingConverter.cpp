@@ -2126,7 +2126,7 @@ CString CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::
 				}
 			}
 
-			strWrapPointsResult = _T("</wp:wrapPolygon>");
+			strWrapPointsResult += _T("</wp:wrapPolygon>");
 		}
 	}
 

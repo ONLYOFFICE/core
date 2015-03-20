@@ -282,7 +282,7 @@ public:
 	}
 	js_wrapper<Type>& operator=(Type* pType)
 	{
-		if (NULL != m_pPointer)
+		if (NULL != m_pPointer && m_pPointer != pType)
 			delete m_pPointer;
 
 		m_pPointer	= pType;

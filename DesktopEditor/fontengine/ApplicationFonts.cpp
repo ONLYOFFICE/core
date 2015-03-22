@@ -1258,13 +1258,36 @@ void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray)
 	pParams[2].tag  = FT_PARAM_TAG_IGNORE_PREFERRED_FAMILY;
 	pParams[2].data = NULL; 
 	pParams[3].tag  = FT_PARAM_TAG_IGNORE_PREFERRED_SUBFAMILY;
-	pParams[3].data = NULL; 
-
+	pParams[3].data = NULL;
+    
+    // определяем размер буфера, чтобы не выделять много кусков, а обойтись одним
+    int nMaxFontSize = 0;
+    for (int nIndex = 0; nIndex < nCount; ++nIndex)
+    {
+        NSFile::CFileBinary oFile;
+        if (oFile.OpenFile(oArray[nIndex]))
+        {
+            int nSizeTmp = (int)oFile.GetFileSize();
+            if (nSizeTmp > 100000000)
+            {
+                // такие огромные шрифты не учитываем
+                oArray.RemoveAt(nIndex);
+                nIndex--;
+                nCount--;
+            }
+            
+            if (nMaxFontSize < nSizeTmp)
+                nMaxFontSize = nSizeTmp;
+        }
+    }
+    
+    BYTE* pDataFontFile = new BYTE[nMaxFontSize];
+    
 	for (int nIndex = 0; nIndex < nCount; ++nIndex)
 	{
 		// open file
 		CFontStream oStream;
-		if (!oStream.CreateFromFile(oArray[nIndex]))
+		if (!oStream.CreateFromFile(oArray[nIndex], pDataFontFile))
 			continue;
 
 		FT_Open_Args oOpenArgs;
@@ -1464,6 +1487,8 @@ void CFontList::LoadFromArrayFiles(CArray<std::wstring>& oArray)
 			FT_Done_Face( pFace );
 		}
 	}
+    
+    RELEASEARRAYOBJECTS(pDataFontFile);
 
 	::free( pParams );
 	FT_Done_FreeType(pLibrary);

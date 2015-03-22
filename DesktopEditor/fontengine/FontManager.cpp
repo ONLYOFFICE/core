@@ -9,10 +9,12 @@ CFontStream::CFontStream()
 	m_pData	= NULL;
 	m_lSize = 0;
 	m_lRef = 1;
+    m_bIsAttach = false;
 }
 CFontStream::~CFontStream()
 {
-	RELEASEARRAYOBJECTS(m_pData);
+    if (!m_bIsAttach)
+        RELEASEARRAYOBJECTS(m_pData);
 }
 
 int CFontStream::AddRef()
@@ -28,14 +30,21 @@ int CFontStream::Release()
 	return ret;
 }
 
-INT CFontStream::CreateFromFile(const std::wstring& strFileName)
+INT CFontStream::CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse)
 {
 	NSFile::CFileBinary oFile;
 	if (!oFile.OpenFile(strFileName))
 		return FALSE;
 
 	m_lSize = oFile.GetFileSize();
-	m_pData = new BYTE[m_lSize];
+    
+    if (NULL == pDataUse)
+        m_pData = new BYTE[m_lSize];
+    else
+    {
+        m_bIsAttach = true;
+        m_pData = pDataUse;
+    }
 
 	DWORD dwRead = 0;
 	DWORD dwNeedRead = (DWORD)m_lSize;
@@ -43,7 +52,9 @@ INT CFontStream::CreateFromFile(const std::wstring& strFileName)
 
 	if (dwNeedRead != dwRead)
 	{
-		RELEASEARRAYOBJECTS(m_pData);
+        if (!m_bIsAttach)
+            RELEASEARRAYOBJECTS(m_pData);
+        
 		m_lSize = 0;
 		return FALSE;
 	}

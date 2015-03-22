@@ -14,6 +14,7 @@ private:
 public:
 	BYTE*	m_pData;
 	LONG	m_lSize;
+    bool    m_bIsAttach;
 
 public:
 	CFontStream();
@@ -24,7 +25,7 @@ public:
 	
 
 public:
-	virtual INT CreateFromFile(const std::wstring& strFileName);
+	virtual INT CreateFromFile(const std::wstring& strFileName, BYTE* pDataUse = NULL);
 };
 
 class CApplicationFontStreams

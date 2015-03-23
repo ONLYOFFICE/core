@@ -1969,6 +1969,28 @@ namespace NSEditorApi
 			return 0; 
 		}
 	};
+    
+    class CAscTableInsertDeleteRowColumn : public IMenuEventDataBase
+    {
+    public:
+        js_wrapper<bool>			m_bAbove;
+        js_wrapper<bool>			m_bBelow;
+        js_wrapper<bool>            m_bIsAdd;   // true - add, false - remove
+        js_wrapper<int>             m_nType;    // 1 - column, 2 - row
+        
+    public:
+        CAscTableInsertDeleteRowColumn()
+        {
+        }
+        virtual ~CAscTableInsertDeleteRowColumn()
+        {
+        }
+        
+        LINK_PROPERTY_BOOL_JS(Above)
+        LINK_PROPERTY_BOOL_JS(Below)
+        LINK_PROPERTY_BOOL_JS(IsAdd)
+        LINK_PROPERTY_INT_JS(Type)
+    };
 }
 
 // header/footer

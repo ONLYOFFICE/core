@@ -465,6 +465,7 @@
 					FILEDOWNLOADER_OWN_IMPLEMENTATION,
 					_IOS,
 					FILTER_FLATE_DECODE_ENABLED,
+					_ARM_ALIGN_,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -500,6 +501,7 @@
 					FILEDOWNLOADER_OWN_IMPLEMENTATION,
 					_IOS,
 					FILTER_FLATE_DECODE_ENABLED,
+					_ARM_ALIGN_,
 				);
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

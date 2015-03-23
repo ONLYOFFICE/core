@@ -2118,11 +2118,11 @@ CString CDrawingConverter::GetDrawingMainProps(XmlUtils::CXmlNode& oNode, PPTX::
 			{
 				if (i == 0)
 				{
-					strWrapPoints += (_T("<wp:start x=\"") + arPoints[i] + _T("\" y=\"") + arPoints[i + 1] + _T("\"/>"));
+					strWrapPointsResult += (_T("<wp:start x=\"") + arPoints[i] + _T("\" y=\"") + arPoints[i + 1] + _T("\"/>"));
 				}
 				else
 				{
-					strWrapPoints += (_T("<wp:lineTo x=\"") + arPoints[i] + _T("\" y=\"") + arPoints[i + 1] + _T("\"/>"));
+					strWrapPointsResult += (_T("<wp:lineTo x=\"") + arPoints[i] + _T("\" y=\"") + arPoints[i + 1] + _T("\"/>"));
 				}
 			}
 

@@ -704,7 +704,7 @@ void CEquationReader::HandleRuler()
 void CEquationReader::HandleFont()
 {
 	uint8_t nTFace, nStyle;
-	String sName;
+	MathString sName;
 
 	*pS >> nTFace;
 	*pS >> nStyle;

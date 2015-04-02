@@ -11,7 +11,7 @@ namespace OOX
 		// COMathPara 22.1.2.78 (Office Math Paragraph) 
 		//--------------------------------------------------------------------------------
 		
-		class COMathPara : public WritingElement
+		class COMathPara : public WritingElementWithChilds<WritingElement>
 		{
 		public:
 			WritingElement_AdditionConstructors(COMathPara)
@@ -56,10 +56,6 @@ namespace OOX
 			{
 				return et_m_oMathPara;
 			}
-
-		public:				
-			//Childs
-			std::vector<WritingElement* >	m_arrItems;
 		};
 	}//namespace Logic
 }//namespace OOX

@@ -1,0 +1,186 @@
+#pragma once
+
+#include "./DocxFormat/Source/SystemUtility/File.h"
+
+namespace NFileWriter
+{
+	//------------------------------------------------------------------------------------------------------
+	// CBufferedFileWriter
+	//------------------------------------------------------------------------------------------------------
+	// Абстрактный класс, который содержит в себе объявления функций
+	//------------------------------------------------------------------------------------------------------
+
+	class CFileWriter
+	{
+	public :
+
+		// Принимает данные на запись
+		virtual void Write ( BYTE* lpData, LONG64 lDataLength ) = 0;
+		// Флаш ( дописываем все данные )
+		virtual void Flush () = 0;
+		// Сик на указанную позицию по файлу
+		virtual void Seek ( LONG64 lPosition, DWORD dwFrom = FILE_CURRENT ) = 0;
+		// Текущая позиция 
+		virtual void GetPosition(ULONGLONG& nPos) = 0;
+		// Размер записанного файла
+		virtual void GetSize(ULONGLONG& nLen) = 0;
+
+	public :
+
+		// Конструктор
+		CFileWriter ()
+		{
+		}
+		// Виртуальный деструктор
+		virtual ~CFileWriter ()
+		{
+		}
+	};
+
+	//------------------------------------------------------------------------------------------------------
+	// CBufferedFileWriter
+	//------------------------------------------------------------------------------------------------------
+	// Класс, который занимается записью файла на диск
+	//------------------------------------------------------------------------------------------------------
+
+	class CBufferedFileWriter : public CFileWriter
+	{
+	private :
+
+		CFile m_oFile;
+		//HANDLE m_hFile;									// Хендл на файл, в который идет запись
+
+		LONG64 m_lBufferSize;							// Размер буффера
+
+		BYTE* m_lpBuffer;								// Сам буффер
+
+		LONG64 m_lWritePointer;							// Позиция для записи данных в буффер
+
+	public :
+
+		// Конструктор ( от имени файла, сам контрол открывает файл )
+		CBufferedFileWriter ( CString & sFileName, LONG64 lBufferSize = 10 * 1024 * 1024 ) : CFileWriter ()
+		{
+			if (m_oFile.CreateFile(sFileName) != S_OK)
+			// Если не получилось открыть файл
+			{
+				// Выдаем исключение
+				throw 1;
+			}
+
+			// Копируем данные
+			m_lBufferSize		= lBufferSize;
+
+			// Обнуляем переменные
+			m_lWritePointer		= 0;
+
+			// Выделяем буфер.
+			m_lpBuffer = ( BYTE* ) new BYTE[ m_lBufferSize ];
+
+			// Если буффер не выделился, возвращаем Exception
+			if ( !m_lpBuffer )
+			{
+				// Выдаем исключение
+				throw 1;
+			}
+
+			// Все отлично!!!
+		}
+
+		// Деструктор
+		virtual ~CBufferedFileWriter ()
+		{
+			Flush();
+			m_oFile.CloseFile();
+
+			// Удаляем буффер
+			RELEASEARRAYOBJECTS(m_lpBuffer);
+		}
+		// Принимает данные на запись
+		virtual void Write ( BYTE* lpData, LONG64 lDataLength )
+		{
+			// Пока размер данных не исчерпан
+			while ( 0 < lDataLength )
+			{
+				// Размер свободной памяти в буффере
+				LONG64 lBufferFreeLength = 0;
+
+				// Цикл, пока не появится свободное место для записи
+				while ( 0 >= ( lBufferFreeLength = m_lBufferSize - m_lWritePointer ) )
+				{
+					// Пишем данные, если не получилось, то генерируем исключение
+					if ( FALSE == WriteBuffer ( m_lBufferSize ) )
+						throw 1;
+				}
+
+				// Проверяем достаточно ли места, чтобы записать весь пришедший буфер в память
+				if ( lBufferFreeLength > lDataLength )
+					lBufferFreeLength = lDataLength;
+
+				// Копируем данные в буффер
+				memcpy ( m_lpBuffer + m_lWritePointer, lpData, (size_t) lBufferFreeLength);
+
+				// Уменьшаем размер данных ровно на столько, сколько записали в буффер
+				lDataLength -= lBufferFreeLength;
+				// Сдвигаем указатель на пришедшие данные
+				lpData = lpData + lBufferFreeLength;
+				// Сдвигаем позицию для записи данных в буффер
+				m_lWritePointer += lBufferFreeLength;
+			}
+		}
+		// Флаш ( дописываем все данные )
+		virtual void Flush ()
+		{
+			// Пишем все данные, которые есть
+			if ( 0 < m_lWritePointer )
+			{
+				// Если пришла ошибка, то генерируем исключение
+				if ( FALSE == WriteBuffer ( m_lWritePointer ) )
+					throw 1;
+			}
+		}
+		// Сик на указанную позицию по файлу
+		virtual void Seek ( LONG64 lPosition, DWORD dwFrom/* = FILE_CURRENT */)
+		{
+
+			// Допишем сначала все данные
+			Flush ();
+
+			if (dwFrom == 1/*FILE_CURRENT*/)
+			{
+				dwFrom += m_oFile.GetPosition();
+			}
+
+			if (m_oFile.SetPosition(lPosition) != S_OK)
+				throw 1;
+
+		}
+		// Текущая позиция 
+		virtual void GetPosition(ULONGLONG& nPos)
+		{
+			nPos = m_oFile.GetPosition() + m_lWritePointer;
+
+		}
+		// Размер записанного файла
+		virtual void GetSize(ULONGLONG& nLen) 
+		{
+			nLen = m_oFile.GetFileSize() + m_lWritePointer;	
+
+		}
+	private :
+
+		// Сама запись на диск
+		BOOL WriteBuffer ( LONG64 lSize )
+		{
+			// Пишем на диск
+			if (m_oFile.WriteFile(m_lpBuffer, ( DWORD ) lSize) != S_OK)
+			{
+				// Если что-то произошло не так, возвращаем FALSE
+				return FALSE;
+			}
+			// Сбрасываем в 0 указатель на позицию данных в буффере
+			m_lWritePointer = 0;
+			return TRUE;
+		}
+	};
+}

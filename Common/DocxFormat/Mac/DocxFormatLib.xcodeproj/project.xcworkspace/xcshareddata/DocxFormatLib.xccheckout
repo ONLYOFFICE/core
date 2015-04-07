@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>IDESourceControlProjectFavoriteDictionaryKey</key>
+	<false/>
+	<key>IDESourceControlProjectIdentifier</key>
+	<string>CB1F2F95-3177-4958-8521-230B7459E3E5</string>
+	<key>IDESourceControlProjectOriginsDictionary</key>
+	<dict>
+		<key>9FA37070950DC5C0D1942B0672AE0DB0AB097B6B</key>
+		<string>git://git.gnome.org/libxml2</string>
+	</dict>
+	<key>IDESourceControlProjectRelativeInstallPathDictionary</key>
+	<dict>
+		<key>9FA37070950DC5C0D1942B0672AE0DB0AB097B6B</key>
+		<string>XML/</string>
+	</dict>
+	<key>IDESourceControlProjectURL</key>
+	<string>git://git.gnome.org/libxml2</string>
+	<key>IDESourceControlProjectVersion</key>
+	<integer>111</integer>
+	<key>IDESourceControlProjectWCCIdentifier</key>
+	<string>9FA37070950DC5C0D1942B0672AE0DB0AB097B6B</string>
+	<key>IDESourceControlProjectWCConfigurations</key>
+	<array>
+		<dict>
+			<key>IDESourceControlRepositoryExtensionIdentifierKey</key>
+			<string>public.vcs.git</string>
+			<key>IDESourceControlWCCIdentifierKey</key>
+			<string>9FA37070950DC5C0D1942B0672AE0DB0AB097B6B</string>
+			<key>IDESourceControlWCCName</key>
+			<string>XML</string>
+		</dict>
+	</array>
+</dict>
+</plist>

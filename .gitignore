@@ -78,6 +78,11 @@ ASCOfficeOdpFile/ODPFormat/Release
 ASCOfficeOdpFile/Odp2DrawingXML/Debug
 ASCOfficeOdpFile/Odp2DrawingXML/Release
 ASCOfficeOdtFile/Projects/*
+ASCOfficePPTXFile/*.suo
+ASCOfficePPTXFile/Debug
+ASCOfficePPTXFile/PPTXFormat/!_
+ASCOfficePPTXFile/PPTXFormat/_
+ASCOfficePPTXFile/Release
 _tags/rev_61879/ASCImageStudio3/AVSImageRaw3/trunk/dcraw_8-94/Output
 _tags/rev_61879/ASCImageStudio3/AVSImageRaw3/trunk/dcraw_8-94/Test/AVSImageRawSimpleConverter/bin
 _tags/rev_61879/ASCImageStudio3/AVSImageRaw3/trunk/dcraw_8-94/Test/AVSImageRawSimpleConverter/obj

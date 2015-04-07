@@ -1,0 +1,681 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="ReleaseASC|Win32">
+      <Configuration>ReleaseASC</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectName>ASCOfficeDocFile</ProjectName>
+    <ProjectGuid>{da13d6d4-39b5-49db-b5d7-d1afdbb7c320}</ProjectGuid>
+    <RootNamespace>ASCOfficeDocFile</RootNamespace>
+    <Keyword>AtlProj</Keyword>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseASC|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <PlatformToolset>v110</PlatformToolset>
+    <UseOfAtl>Static</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseASC|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>11.0.60610.1</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>Debug\</OutDir>
+    <IntDir>Debug\</IntDir>
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <LinkIncremental>true</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>Release\</IntDir>
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseASC|Win32'">
+    <OutDir>.\Release\</OutDir>
+    <IntDir>Release\</IntDir>
+    <PreBuildEventUseInBuild>false</PreBuildEventUseInBuild>
+    <IgnoreImportLibrary>true</IgnoreImportLibrary>
+    <LinkIncremental>false</LinkIncremental>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Midl>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ASCOfficeDocFile.tlb</TypeLibraryName>
+      <HeaderFileName>ASCOfficeDocFile.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ASCOfficeDocFile_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ASCOfficeDocFile_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\DocxFormat;..\..\Common\ASCDocxFormat\Source\Common;..\..\Common\ASCDocxFormat\Source\XML;..\ZLIB\zlib-1.2.3\contrib\minizip;..\ZLIB\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0419</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <AdditionalDependencies>Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>$(OutDir)ASCOfficeDocFile.dll</OutputFile>
+      <AdditionalLibraryDirectories>..\..\ASCOfficeUtils\ZLIB\zlib123dll\static32;..\..\Common\ASCDocxFormat\Lib\Debug;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>LIBC.LIB;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <MergedIDLBaseFileName>_ASCOfficeDocFile.idl</MergedIDLBaseFileName>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <SubSystem>Windows</SubSystem>
+      <ImportLibrary>$(OutDir)ASCOfficeDocFile.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>Performing registration</Message>
+      <Command>regsvr32 /s /c "$(TargetPath)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <PreBuildEvent>
+      <Command>..\..\Redist\VersionControl.exe $(ProjectDir)version.h</Command>
+    </PreBuildEvent>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ASCOfficeDocFile.tlb</TypeLibraryName>
+      <HeaderFileName>ASCOfficeDocFile.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ASCOfficeDocFile_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ASCOfficeDocFile_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\DocxFormat;..\..\Common\ASCDocxFormat\Source\Common;..\..\Common\ASCDocxFormat\Source\XML;..\ZLIB\zlib-1.2.3\contrib\minizip;..\ZLIB\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0419</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <RegisterOutput>true</RegisterOutput>
+      <AdditionalDependencies>Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\..\Redist\$(ProjectName).dll</OutputFile>
+      <AdditionalLibraryDirectories>..\..\ASCOfficeUtils\ZLIB\zlib123dll\static32;..\..\Common\ASCDocxFormat\Lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>LIBC.LIB;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <MergedIDLBaseFileName>_ASCOfficeDocFile.idl</MergedIDLBaseFileName>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <ImportLibrary>$(OutDir)ASCOfficeDocFile.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>Performing registration</Message>
+      <Command>regsvr32 /s /c "$(TargetPath)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='ReleaseASC|Win32'">
+    <PreBuildEvent>
+      <Command>..\..\..\..\Redist\VersionControl.exe $(ProjectDir)version.h</Command>
+    </PreBuildEvent>
+    <Midl>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MkTypLibCompatible>false</MkTypLibCompatible>
+      <TargetEnvironment>Win32</TargetEnvironment>
+      <GenerateStublessProxies>true</GenerateStublessProxies>
+      <TypeLibraryName>$(IntDir)ASCOfficeDocFile.tlb</TypeLibraryName>
+      <HeaderFileName>ASCOfficeDocFile.h</HeaderFileName>
+      <DllDataFileName />
+      <InterfaceIdentifierFileName>ASCOfficeDocFile_i.c</InterfaceIdentifierFileName>
+      <ProxyFileName>ASCOfficeDocFile_p.c</ProxyFileName>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\DocxFormat;..\..\Common\ASCDocxFormat\Source\Common;..\..\Common\ASCDocxFormat\Source\XML;..\ZLIB\zlib-1.2.3\contrib\minizip;..\ZLIB\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <PrecompiledHeader>Use</PrecompiledHeader>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <ResourceCompile>
+      <PreprocessorDefinitions>NDEBUG;ASCBUILD;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <Culture>0x0419</Culture>
+      <AdditionalIncludeDirectories>$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+    </ResourceCompile>
+    <Link>
+      <RegisterOutput>true</RegisterOutput>
+      <AdditionalDependencies>Msimg32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <OutputFile>..\..\..\..\..\ASC\Redist\ASCOfficeStudio\ASCOfficeDocFile.dll</OutputFile>
+      <AdditionalLibraryDirectories>..\..\ASCOfficeUtils\ZLIB\zlib123dll\static32;..\..\Common\ASCDocxFormat\Lib\Release;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <IgnoreSpecificDefaultLibraries>LIBC.LIB;%(IgnoreSpecificDefaultLibraries)</IgnoreSpecificDefaultLibraries>
+      <MergedIDLBaseFileName>_ASCOfficeDocFile.idl</MergedIDLBaseFileName>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <ProgramDatabaseFile>$(OutDir)$(TargetName).pdb</ProgramDatabaseFile>
+      <SubSystem>Windows</SubSystem>
+      <OptimizeReferences>true</OptimizeReferences>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <ImportLibrary>$(OutDir)ASCOfficeDocFile.lib</ImportLibrary>
+      <TargetMachine>MachineX86</TargetMachine>
+    </Link>
+    <PostBuildEvent>
+      <Message>Performing registration</Message>
+      <Command>regsvr32 /s /c "$(TargetPath)"</Command>
+    </PostBuildEvent>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="ASCDocFile.cpp" />
+    <ClCompile Include="ASCOfficeDocFile.cpp" />
+    <ClCompile Include="stdafx.cpp">
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='ReleaseASC|Win32'">Create</PrecompiledHeader>
+      <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
+    </ClCompile>
+    <ClCompile Include="..\DocDocxConverter\AnnotationReferenceDescriptor.cpp" />
+    <ClCompile Include="..\DocDocxConverter\CharacterPropertiesMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\Converter.cpp" />
+    <ClCompile Include="..\DocDocxConverter\DocumentMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\DocumentProperties.cpp" />
+    <ClCompile Include="..\DocDocxConverter\FontFamilyName.cpp" />
+    <ClCompile Include="..\DocDocxConverter\FontTableMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\FooterMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\FormattedDiskPageCHPX.cpp" />
+    <ClCompile Include="..\DocDocxConverter\FormattedDiskPagePAPX.cpp" />
+    <ClCompile Include="..\DocDocxConverter\HeaderAndFooterTable.cpp" />
+    <ClCompile Include="..\DocDocxConverter\HeaderMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\LanguageIdMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\ListData.cpp" />
+    <ClCompile Include="..\DocDocxConverter\ListLevel.cpp" />
+    <ClCompile Include="..\DocDocxConverter\ListTable.cpp" />
+    <ClCompile Include="..\DocDocxConverter\MainDocumentMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\NumberingMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\OpenXmlPackage.cpp" />
+    <ClCompile Include="..\DocDocxConverter\ParagraphHeight.cpp" />
+    <ClCompile Include="..\DocDocxConverter\ParagraphPropertiesMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\ParagraphPropertyExceptions.cpp" />
+    <ClCompile Include="..\DocDocxConverter\PictureDescriptor.cpp" />
+    <ClCompile Include="..\DocDocxConverter\PieceTable.cpp" />
+    <ClCompile Include="..\DocDocxConverter\PropertiesMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\PropertyExceptions.cpp" />
+    <ClCompile Include="..\DocDocxConverter\RevisionData.cpp" />
+    <ClCompile Include="..\DocDocxConverter\SectionPropertiesMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\SettingsMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\SinglePropertyModifier.cpp" />
+    <ClCompile Include="..\DocDocxConverter\StyleSheet.cpp" />
+    <ClCompile Include="..\DocDocxConverter\StyleSheetDescription.cpp" />
+    <ClCompile Include="..\DocDocxConverter\StyleSheetInformation.cpp" />
+    <ClCompile Include="..\DocDocxConverter\StyleSheetMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\TableCellPropertiesMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\TableMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\TablePropertiesMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\TableRowPropertiesMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\TextboxMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\VMLPictureMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\VMLShapeMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\VMLShapeTypeMapping.cpp" />
+    <ClCompile Include="..\DocDocxConverter\WordDocument.cpp" />
+    <ClCompile Include="..\DocDocxConverter\WordprocessingDocument.cpp" />
+    <ClCompile Include="..\DocDocxConverter\OfficeDrawing\Record.cpp" />
+    <ClCompile Include="..\DocDocxConverter\OfficeDrawing\RecordFactory.cpp" />
+    <ClCompile Include="..\DocDocxConverter\OfficeDrawing\ShapeTypeFactory.cpp" />
+    <ClCompile Include="..\Common\MD4\md4c.cpp" />
+    <ClCompile Include="..\DocxDocConverter\Endnote.cpp" />
+    <ClCompile Include="..\DocxDocConverter\Footer.cpp" />
+    <ClCompile Include="..\DocxDocConverter\Footnote.cpp" />
+    <ClCompile Include="..\DocxDocConverter\Header.cpp" />
+    <ClCompile Include="..\DocxDocConverter\Hyperlink.cpp" />
+    <ClCompile Include="..\DocxDocConverter\InlineShape.cpp" />
+    <ClCompile Include="..\DocxDocConverter\List.cpp" />
+    <ClCompile Include="..\DocxDocConverter\Paragraph.cpp" />
+    <ClCompile Include="..\DocxDocConverter\Run.cpp" />
+    <ClCompile Include="..\DocxDocConverter\Table.cpp" />
+    <ClCompile Include="..\DocxDocConverter\TableCell.cpp" />
+    <ClCompile Include="..\DocxDocConverter\TableRow.cpp" />
+    <ClCompile Include="..\DocxDocConverter\Text.cpp" />
+    <ClCompile Include="..\DocxDocConverter\OfficeArt\BlipFactory.cpp" />
+    <ClCompile Include="..\DocxDocConverter\ShapeBuilder.cpp" />
+    <ClCompile Include="..\DocxDocConverter\ShapePath.cpp" />
+    <ClCompile Include="..\DocxDocConverter\ShapeSettings.cpp" />
+    <ClCompile Include="..\DocxDocConverter\StyleBooleans.cpp" />
+    <ClCompile Include="..\DocxDocConverter\TextBox.cpp" />
+    <ClCompile Include="..\DocxDocConverter\DocFile.cpp" />
+    <ClCompile Include="..\DocxDocConverter\FileConverter.cpp" />
+    <ClCompile Include="..\DocxDocConverter\TableUtils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ASCDocFile.h" />
+    <ClInclude Include="ASCOfficeCriticalSection.h" />
+    <ClInclude Include="..\..\Common\OfficeFileErrorDescription.h" />
+    <ClInclude Include="..\..\Common\OfficeFileTemplate.h" />
+    <ClInclude Include="Resource.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="version.h" />
+    <ClInclude Include="..\DocDocxConverter\AbstractOpenXmlMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\AnnotationOwnerList.h" />
+    <ClInclude Include="..\DocDocxConverter\AnnotationReferenceDescriptor.h" />
+    <ClInclude Include="..\DocDocxConverter\AutoSummaryInfo.h" />
+    <ClInclude Include="..\DocDocxConverter\BookmarkFirst.h" />
+    <ClInclude Include="..\DocDocxConverter\BorderCode.h" />
+    <ClInclude Include="..\DocDocxConverter\ByteStructure.h" />
+    <ClInclude Include="..\DocDocxConverter\CharacterPropertiesMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\CharacterPropertyExceptions.h" />
+    <ClInclude Include="..\DocDocxConverter\CharacterRange.h" />
+    <ClInclude Include="..\DocDocxConverter\CommentsMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\ContentTypes.h" />
+    <ClInclude Include="..\DocDocxConverter\ConversionContext.h" />
+    <ClInclude Include="..\DocDocxConverter\Converter.h" />
+    <ClInclude Include="..\DocDocxConverter\DateAndTime.h" />
+    <ClInclude Include="..\DocDocxConverter\DocumentMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\DocumentProperties.h" />
+    <ClInclude Include="..\DocDocxConverter\DocumentTypographyInfo.h" />
+    <ClInclude Include="..\DocDocxConverter\DrawingObjectGrid.h" />
+    <ClInclude Include="..\DocDocxConverter\EmuValue.h" />
+    <ClInclude Include="..\DocDocxConverter\EndnoteDescriptor.h" />
+    <ClInclude Include="..\DocDocxConverter\EndnotesMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\FieldCharacter.h" />
+    <ClInclude Include="..\DocDocxConverter\FileInformationBlock.h" />
+    <ClInclude Include="..\DocDocxConverter\FixedPointNumber.h" />
+    <ClInclude Include="..\DocDocxConverter\FontFamilyName.h" />
+    <ClInclude Include="..\DocDocxConverter\FontTableMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\FooterMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\FootnoteDescriptor.h" />
+    <ClInclude Include="..\DocDocxConverter\FootnotesMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\FormattedDiskPage.h" />
+    <ClInclude Include="..\DocDocxConverter\FormattedDiskPageCHPX.h" />
+    <ClInclude Include="..\DocDocxConverter\FormattedDiskPagePAPX.h" />
+    <ClInclude Include="..\DocDocxConverter\Global.h" />
+    <ClInclude Include="..\DocDocxConverter\HeaderAndFooterTable.h" />
+    <ClInclude Include="..\DocDocxConverter\HeaderMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\IBinaryReader.h" />
+    <ClInclude Include="..\DocDocxConverter\IMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\IVisitable.h" />
+    <ClInclude Include="..\DocDocxConverter\LanguageId.h" />
+    <ClInclude Include="..\DocDocxConverter\LanguageIdMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\LineSpacingDescriptor.h" />
+    <ClInclude Include="..\DocDocxConverter\ListData.h" />
+    <ClInclude Include="..\DocDocxConverter\ListFormatOverride.h" />
+    <ClInclude Include="..\DocDocxConverter\ListFormatOverrideLevel.h" />
+    <ClInclude Include="..\DocDocxConverter\ListFormatOverrideTable.h" />
+    <ClInclude Include="..\DocDocxConverter\ListLevel.h" />
+    <ClInclude Include="..\DocDocxConverter\ListTable.h" />
+    <ClInclude Include="..\DocDocxConverter\MainDocumentMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\MemoryStream.h" />
+    <ClInclude Include="..\DocDocxConverter\NumberingMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeArtContent.h" />
+    <ClInclude Include="..\DocDocxConverter\OleObject.h" />
+    <ClInclude Include="..\DocDocxConverter\OleObjectMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\OpenXmlPackage.h" />
+    <ClInclude Include="..\DocDocxConverter\ParagraphHeight.h" />
+    <ClInclude Include="..\DocDocxConverter\ParagraphPropertiesMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\ParagraphPropertyExceptions.h" />
+    <ClInclude Include="..\DocDocxConverter\PictureDescriptor.h" />
+    <ClInclude Include="..\DocDocxConverter\PieceDescriptor.h" />
+    <ClInclude Include="..\DocDocxConverter\PieceTable.h" />
+    <ClInclude Include="..\DocDocxConverter\Plex.h" />
+    <ClInclude Include="..\DocDocxConverter\PropertiesMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\PropertyExceptions.h" />
+    <ClInclude Include="..\DocDocxConverter\RevisionData.h" />
+    <ClInclude Include="..\DocDocxConverter\RGBColor.h" />
+    <ClInclude Include="..\DocDocxConverter\SectionDescriptor.h" />
+    <ClInclude Include="..\DocDocxConverter\SectionPropertiesMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\SectionPropertyExceptions.h" />
+    <ClInclude Include="..\DocDocxConverter\SettingsMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\ShadingDescriptor.h" />
+    <ClInclude Include="..\DocDocxConverter\SinglePropertyModifier.h" />
+    <ClInclude Include="..\DocDocxConverter\Spa.h" />
+    <ClInclude Include="..\DocDocxConverter\SprmTDefTable.h" />
+    <ClInclude Include="..\DocDocxConverter\StringTable.h" />
+    <ClInclude Include="..\DocDocxConverter\StructuredStorageReader.h" />
+    <ClInclude Include="..\DocDocxConverter\StyleSheet.h" />
+    <ClInclude Include="..\DocDocxConverter\StyleSheetDescription.h" />
+    <ClInclude Include="..\DocDocxConverter\StyleSheetInformation.h" />
+    <ClInclude Include="..\DocDocxConverter\StyleSheetMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\TabDescriptor.h" />
+    <ClInclude Include="..\DocDocxConverter\TableCellPropertiesMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\TableInfo.h" />
+    <ClInclude Include="..\DocDocxConverter\TableMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\TablePropertiesMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\TablePropertyExceptions.h" />
+    <ClInclude Include="..\DocDocxConverter\TableRowPropertiesMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\Tbkd.h" />
+    <ClInclude Include="..\DocDocxConverter\TextboxMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\TwipsValue.h" />
+    <ClInclude Include="..\DocDocxConverter\VirtualStreamReader.h" />
+    <ClInclude Include="..\DocDocxConverter\VMLPictureMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\VMLShapeMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\VMLShapeTypeMapping.h" />
+    <ClInclude Include="..\DocDocxConverter\WideString.h" />
+    <ClInclude Include="..\DocDocxConverter\WordDocument.h" />
+    <ClInclude Include="..\DocDocxConverter\WordprocessingDocument.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\BitmapBlip.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\BlipStoreContainer.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\BlipStoreEntry.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\ChildAnchor.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\ClientAnchor.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\ClientData.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\DiagramBooleanProperties.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\DrawingContainer.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\DrawingGroup.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\DrawingGroupRecord.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\DrawingRecord.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\FillStyleBooleanProperties.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\GeometryBooleanProperties.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\GeometryTextBooleanProperties.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\GroupContainer.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\GroupShapeBooleanProperties.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\GroupShapeRecord.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\LineStyleBooleanProperties.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\MetafilePictBlip.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\OfficeArtClientTextbox.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\PathParser.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\PathSegment.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\ProtectionBooleanProperties.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Record.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\RecordFactory.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\RegularContainer.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\ShadowStyleBooleanProperties.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shape.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\ShapeContainer.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\ShapeOptions.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\ShapeType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\ShapeTypeFactory.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\SplitMenuColorContainer.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\UnknownRecord.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\ArcType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\ArrowType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\BevelType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\BlockArcType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\BracketsType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\CalloutsType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\CanType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\Connector.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\CubeType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\DiamondType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\DonutType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\FlowChartType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\FoldedCornerlType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\HeartType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\HexagonType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\IsoscelesTriangleType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\LightningBoltType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\LineType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\MoonType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\NoSmokingType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\OctagonType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\OvalType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\ParallelogramType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\PentagonType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\PictureFrameType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\PlaqueType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\PlusType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\RectangleType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\RightTriangleType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\RoundedRectangleType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\SmileyFaceType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\StarType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\SunType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\TextboxType.h" />
+    <ClInclude Include="..\DocDocxConverter\OfficeDrawing\Shapetypes\TrapezoidType.h" />
+    <ClInclude Include="..\Common\Aggregat.h" />
+    <ClInclude Include="..\Common\FormatUtils.h" />
+    <ClInclude Include="..\Common\IOperand.h" />
+    <ClInclude Include="..\Common\IVirtualConstructor.h" />
+    <ClInclude Include="..\Common\LanguageCodes.h" />
+    <ClInclude Include="..\Common\Singleton.h" />
+    <ClInclude Include="..\Common\SPRMCodes.h" />
+    <ClInclude Include="..\Common\TargetOptions.h" />
+    <ClInclude Include="..\Common\TextMark.h" />
+    <ClInclude Include="..\Common\utf8.h" />
+    <ClInclude Include="..\Common\XmlTools.h" />
+    <ClInclude Include="..\Common\MD4\global.h" />
+    <ClInclude Include="..\Common\MD4\md4.h" />
+    <ClInclude Include="..\Common\MD4\md4c.h" />
+    <ClInclude Include="..\DocxDocConverter\BinaryStorage.h" />
+    <ClInclude Include="..\DocxDocConverter\BookmarkEnd.h" />
+    <ClInclude Include="..\DocxDocConverter\BookmarkStart.h" />
+    <ClInclude Include="..\DocxDocConverter\Brc.h" />
+    <ClInclude Include="..\DocxDocConverter\Brc80MayBeNil.h" />
+    <ClInclude Include="..\DocxDocConverter\BxPap.h" />
+    <ClInclude Include="..\DocxDocConverter\CellRangeVertAlign.h" />
+    <ClInclude Include="..\DocxDocConverter\Chpx.h" />
+    <ClInclude Include="..\DocxDocConverter\ChpxFkp.h" />
+    <ClInclude Include="..\DocxDocConverter\Clx.h" />
+    <ClInclude Include="..\DocxDocConverter\COLORREF.h" />
+    <ClInclude Include="..\DocxDocConverter\Constants.h" />
+    <ClInclude Include="..\DocxDocConverter\Copts60.h" />
+    <ClInclude Include="..\DocxDocConverter\CP.h" />
+    <ClInclude Include="..\DocxDocConverter\CSSAOperand.h" />
+    <ClInclude Include="..\DocxDocConverter\CSymbolOperand.h" />
+    <ClInclude Include="..\DocxDocConverter\Defines.h" />
+    <ClInclude Include="..\DocxDocConverter\DefTableShd80Operand.h" />
+    <ClInclude Include="..\DocxDocConverter\DefTableShdOperand.h" />
+    <ClInclude Include="..\DocxDocConverter\DopBase.h" />
+    <ClInclude Include="..\DocxDocConverter\DTTM.h" />
+    <ClInclude Include="..\DocxDocConverter\Endnote.h" />
+    <ClInclude Include="..\DocxDocConverter\EndnoteRef.h" />
+    <ClInclude Include="..\DocxDocConverter\EndnoteReference.h" />
+    <ClInclude Include="..\DocxDocConverter\FldChar.h" />
+    <ClInclude Include="..\DocxDocConverter\Footer.h" />
+    <ClInclude Include="..\DocxDocConverter\Footnote.h" />
+    <ClInclude Include="..\DocxDocConverter\FootnoteRef.h" />
+    <ClInclude Include="..\DocxDocConverter\FootnoteReference.h" />
+    <ClInclude Include="..\DocxDocConverter\FtsWWidth.h" />
+    <ClInclude Include="..\DocxDocConverter\grfhic.h" />
+    <ClInclude Include="..\DocxDocConverter\GRFSTD.h" />
+    <ClInclude Include="..\DocxDocConverter\GrLPUpxSw.h" />
+    <ClInclude Include="..\DocxDocConverter\GrpPrlAndIstd.h" />
+    <ClInclude Include="..\DocxDocConverter\Header.h" />
+    <ClInclude Include="..\DocxDocConverter\Hyperlink.h" />
+    <ClInclude Include="..\DocxDocConverter\InlineShape.h" />
+    <ClInclude Include="..\DocxDocConverter\IParagraphItem.h" />
+    <ClInclude Include="..\DocxDocConverter\IRunItem.h" />
+    <ClInclude Include="..\DocxDocConverter\IStreamWriter.h" />
+    <ClInclude Include="..\DocxDocConverter\ItcFirstLim.h" />
+    <ClInclude Include="..\DocxDocConverter\ITextItem.h" />
+    <ClInclude Include="..\DocxDocConverter\LFO.h" />
+    <ClInclude Include="..\DocxDocConverter\LFOData.h" />
+    <ClInclude Include="..\DocxDocConverter\LFOLVL.h" />
+    <ClInclude Include="..\DocxDocConverter\LID.h" />
+    <ClInclude Include="..\DocxDocConverter\List.h" />
+    <ClInclude Include="..\DocxDocConverter\ListFormattingInformation.h" />
+    <ClInclude Include="..\DocxDocConverter\LPStd.h" />
+    <ClInclude Include="..\DocxDocConverter\LPStshi.h" />
+    <ClInclude Include="..\DocxDocConverter\LPStshiGrpPrl.h" />
+    <ClInclude Include="..\DocxDocConverter\LPUpxChpx.h" />
+    <ClInclude Include="..\DocxDocConverter\LPUpxPapx.h" />
+    <ClInclude Include="..\DocxDocConverter\LPUpxTapx.h" />
+    <ClInclude Include="..\DocxDocConverter\LSD.h" />
+    <ClInclude Include="..\DocxDocConverter\LSPD.h" />
+    <ClInclude Include="..\DocxDocConverter\LSTF.h" />
+    <ClInclude Include="..\DocxDocConverter\LVL.h" />
+    <ClInclude Include="..\DocxDocConverter\LVLF.h" />
+    <ClInclude Include="..\DocxDocConverter\MFPF.h" />
+    <ClInclude Include="..\DocxDocConverter\PapxFkp.h" />
+    <ClInclude Include="..\DocxDocConverter\PapxInFkp.h" />
+    <ClInclude Include="..\DocxDocConverter\Paragraph.h" />
+    <ClInclude Include="..\DocxDocConverter\ParagraphItem.h" />
+    <ClInclude Include="..\DocxDocConverter\PChgTabs.h" />
+    <ClInclude Include="..\DocxDocConverter\PICF.h" />
+    <ClInclude Include="..\DocxDocConverter\PICF_Shape.h" />
+    <ClInclude Include="..\DocxDocConverter\PICFAndOfficeArtData.h" />
+    <ClInclude Include="..\DocxDocConverter\PICMID.h" />
+    <ClInclude Include="..\DocxDocConverter\Picture.h" />
+    <ClInclude Include="..\DocxDocConverter\PLC.h" />
+    <ClInclude Include="..\DocxDocConverter\PlcBteChpx.h" />
+    <ClInclude Include="..\DocxDocConverter\PlcBtePapx.h" />
+    <ClInclude Include="..\DocxDocConverter\Plcfbkf.h" />
+    <ClInclude Include="..\DocxDocConverter\Plcfld.h" />
+    <ClInclude Include="..\DocxDocConverter\PlcfSed.h" />
+    <ClInclude Include="..\DocxDocConverter\PlcfSpa.h" />
+    <ClInclude Include="..\DocxDocConverter\PlfLfo.h" />
+    <ClInclude Include="..\DocxDocConverter\PlfLst.h" />
+    <ClInclude Include="..\DocxDocConverter\PositionCodeOperand.h" />
+    <ClInclude Include="..\DocxDocConverter\Prl.h" />
+    <ClInclude Include="..\DocxDocConverter\Run.h" />
+    <ClInclude Include="..\DocxDocConverter\RunItem.h" />
+    <ClInclude Include="..\DocxDocConverter\SectionBreak.h" />
+    <ClInclude Include="..\DocxDocConverter\SectionProperties.h" />
+    <ClInclude Include="..\DocxDocConverter\Sepx.h" />
+    <ClInclude Include="..\DocxDocConverter\Shd80.h" />
+    <ClInclude Include="..\DocxDocConverter\SHDOperand.h" />
+    <ClInclude Include="..\DocxDocConverter\Spa.h" />
+    <ClInclude Include="..\DocxDocConverter\Stdf.h" />
+    <ClInclude Include="..\DocxDocConverter\StdfBase.h" />
+    <ClInclude Include="..\DocxDocConverter\StdfPost2000.h" />
+    <ClInclude Include="..\DocxDocConverter\STSH.h" />
+    <ClInclude Include="..\DocxDocConverter\STSHI.h" />
+    <ClInclude Include="..\DocxDocConverter\STSHIB.h" />
+    <ClInclude Include="..\DocxDocConverter\Stshif.h" />
+    <ClInclude Include="..\DocxDocConverter\StshiLsd.h" />
+    <ClInclude Include="..\DocxDocConverter\STTB.h" />
+    <ClInclude Include="..\DocxDocConverter\SttbfBkmk.h" />
+    <ClInclude Include="..\DocxDocConverter\SttbfFfn.h" />
+    <ClInclude Include="..\DocxDocConverter\Table.h" />
+    <ClInclude Include="..\DocxDocConverter\TableBordersOperand.h" />
+    <ClInclude Include="..\DocxDocConverter\TableBordersOperand80.h" />
+    <ClInclude Include="..\DocxDocConverter\TableBrc80Operand.h" />
+    <ClInclude Include="..\DocxDocConverter\TableBrcOperand.h" />
+    <ClInclude Include="..\DocxDocConverter\TableCell.h" />
+    <ClInclude Include="..\DocxDocConverter\TableCellWidthOperand.h" />
+    <ClInclude Include="..\DocxDocConverter\TableRow.h" />
+    <ClInclude Include="..\DocxDocConverter\TBD.h" />
+    <ClInclude Include="..\DocxDocConverter\TDefTableOperand.h" />
+    <ClInclude Include="..\DocxDocConverter\Text.h" />
+    <ClInclude Include="..\DocxDocConverter\TextItem.h" />
+    <ClInclude Include="..\DocxDocConverter\TLP.h" />
+    <ClInclude Include="..\DocxDocConverter\Tplc.h" />
+    <ClInclude Include="..\DocxDocConverter\XAS.h" />
+    <ClInclude Include="..\DocxDocConverter\Xstz.h" />
+    <ClInclude Include="..\DocxDocConverter\YAS.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\BlipFactory.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\Common.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\ComplexOfficeArtProperty.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\DrawingContainer.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\IOfficeArtAbstractContainer.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\IOfficeArtRecord.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtBlip.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtBlipEMF.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtBlipJPEG.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtBlipPNG.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtBlipTIFF.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtBlipWMF.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtBStoreContainer.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtBStoreContainerFileBlock.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtChildAnchor.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtClientAnchor.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtClientData.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtClientTextbox.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtCOLORREF.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtContent.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtDgContainer.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtDggContainer.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtFBSE.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtFDG.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtFDGGBlock.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtFOPT.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtFOPTE.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtFOPTEOPID.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtFSP.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtFSPGR.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtInlineSpContainer.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtMetafileHeader.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtRecordHeader.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtRGFOPTE.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtSpContainer.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtSpgrContainer.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtSplitMenuColorContainer.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\OfficeArtWordDrawing.h" />
+    <ClInclude Include="..\DocxDocConverter\ShapeBuilder.h" />
+    <ClInclude Include="..\DocxDocConverter\ShapePath.h" />
+    <ClInclude Include="..\DocxDocConverter\ShapeSettings.h" />
+    <ClInclude Include="..\DocxDocConverter\StyleBooleans.h" />
+    <ClInclude Include="..\DocxDocConverter\TextBox.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\Enumerations.h" />
+    <ClInclude Include="..\DocxDocConverter\OfficeArt\MSOArray.h" />
+    <ClInclude Include="..\DocxDocConverter\DocFile.h" />
+    <ClInclude Include="..\DocxDocConverter\DocxToDocUtils.h" />
+    <ClInclude Include="..\DocxDocConverter\FileConverter.h" />
+    <ClInclude Include="..\DocxDocConverter\InternalElements.h" />
+    <ClInclude Include="..\DocxDocConverter\PropertyReader.h" />
+    <ClInclude Include="..\DocxDocConverter\WordStreamWriter.h" />
+    <ClInclude Include="..\DocxDocConverter\TableUtils.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ASCOfficeDocFile.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ASCOfficeDocFile.rgs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\Common\ASCDocxFormat\Projects\Common2012.vcxproj">
+      <Project>{399893aa-3617-4cd8-a980-7f15cdafa3d2}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\ASCDocxFormat\Projects\DocxFormat2012.vcxproj">
+      <Project>{a100103a-353e-45e8-a9b8-90b87cc5c0b0}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\ASCDocxFormat\Projects\Utility2012.vcxproj">
+      <Project>{7b9f3647-32d3-4f82-8ca5-a43e490e1457}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Common\ASCDocxFormat\Projects\XML2012.vcxproj">
+      <Project>{c1587c15-6268-4451-9263-937e63a945f6}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

@@ -3450,6 +3450,8 @@ Test/Applications/AndroidTest/documentNavigatorTest/res/drawable-xhdpi/ic_launch
 Test/Applications/Base64/bin/Debug/Base64.exe svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/Base64/bin/Debug/Base64.pdb svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/Base64/bin/Debug/Base64.vshost.exe svn_mime_002dtype=application%2Foctet-stream
+Test/Applications/DocxFormatTests/DocFormatTest svnc_tsvn_003alogminsize=5
+Test/Applications/DocxFormatTests/DocFormatTest/win32 svnc_tsvn_003alogminsize=5
 Test/Applications/DocxFormatTests/DocxFormatTestRead/win32 svnc_tsvn_003alogminsize=5
 Test/Applications/PdfSorter/FontEngineTester/bin/Debug/FontEngineTester.exe svn_mime_002dtype=application%2Foctet-stream
 Test/Applications/PdfSorter/FontEngineTester/bin/Debug/Interop.AVSOfficeFile.dll svn_mime_002dtype=application%2Foctet-stream

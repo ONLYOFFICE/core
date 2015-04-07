@@ -153,3 +153,8 @@ _tags/rev_61879/ASCOfficeDocxFile2/debug
 _tags/rev_61879/ASCOfficeDocxFile2/msxml3.tlh
 _tags/rev_61879/ASCOfficeDocxFile2/msxml3.tli
 _tags/rev_61879/ASCOfficeDocxFile2/release
+_tags/rev_61879/ASCOfficePPTXFile/*.suo
+_tags/rev_61879/ASCOfficePPTXFile/Debug
+_tags/rev_61879/ASCOfficePPTXFile/PPTXFormat/!_
+_tags/rev_61879/ASCOfficePPTXFile/PPTXFormat/_
+_tags/rev_61879/ASCOfficePPTXFile/Release

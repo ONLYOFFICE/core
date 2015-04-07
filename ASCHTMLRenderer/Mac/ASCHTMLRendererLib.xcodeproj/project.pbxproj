@@ -1,0 +1,562 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		17C1FB481ACC40A0006B99B3 /* CMetafile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D91B6D1AC5ACB30096D788 /* CMetafile.cpp */; };
+		17C1FB491ACC40A0006B99B3 /* ASCSVGWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D91B611AC5AC9C0096D788 /* ASCSVGWriter.cpp */; };
+		17C1FB4A1ACC40A0006B99B3 /* CASCSVGRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D91B671AC5ACAA0096D788 /* CASCSVGRenderer.cpp */; };
+		17C1FB4B1ACC40A0006B99B3 /* CASCImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D91B651AC5ACAA0096D788 /* CASCImage.cpp */; };
+		17C1FB4E1ACC40A0006B99B3 /* CASCImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B661AC5ACAA0096D788 /* CASCImage.h */; };
+		17C1FB4F1ACC40A0006B99B3 /* WmfColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BAE1AC5AD350096D788 /* WmfColor.h */; };
+		17C1FB501ACC40A0006B99B3 /* StringWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B9A1AC5ACDE0096D788 /* StringWriter.h */; };
+		17C1FB511ACC40A0006B99B3 /* Common.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B741AC5ACC60096D788 /* Common.h */; };
+		17C1FB521ACC40A0006B99B3 /* WmfOutputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BB11AC5AD350096D788 /* WmfOutputDevice.h */; };
+		17C1FB531ACC40A0006B99B3 /* ASCSVGWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B621AC5AC9C0096D788 /* ASCSVGWriter.h */; };
+		17C1FB541ACC40A0006B99B3 /* WmfCodePage936.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BAB1AC5AD350096D788 /* WmfCodePage936.h */; };
+		17C1FB551ACC40A0006B99B3 /* WmfMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BB01AC5AD350096D788 /* WmfMemory.h */; };
+		17C1FB561ACC40A0006B99B3 /* SVGWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B9E1AC5ACF70096D788 /* SVGWriter.h */; };
+		17C1FB571ACC40A0006B99B3 /* WmfCodePage949.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BAC1AC5AD350096D788 /* WmfCodePage949.h */; };
+		17C1FB581ACC40A0006B99B3 /* TextItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B9C1AC5ACE70096D788 /* TextItem.h */; };
+		17C1FB591ACC40A0006B99B3 /* WmfTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BB31AC5AD350096D788 /* WmfTypes.h */; };
+		17C1FB5A1ACC40A0006B99B3 /* WmfCodePage932.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BAA1AC5AD350096D788 /* WmfCodePage932.h */; };
+		17C1FB5B1ACC40A0006B99B3 /* WmfCodePage950.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BAD1AC5AD350096D788 /* WmfCodePage950.h */; };
+		17C1FB5C1ACC40A0006B99B3 /* VectorGraphicsWriter2.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BA01AC5ACFD0096D788 /* VectorGraphicsWriter2.h */; };
+		17C1FB5D1ACC40A0006B99B3 /* Const.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B751AC5ACC60096D788 /* Const.h */; };
+		17C1FB5E1ACC40A0006B99B3 /* WmfRegion.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BB21AC5AD350096D788 /* WmfRegion.h */; };
+		17C1FB5F1ACC40A0006B99B3 /* WmfCharsets.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BA81AC5AD350096D788 /* WmfCharsets.h */; };
+		17C1FB601ACC40A0006B99B3 /* IBaseMatrixUpdater.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BA41AC5AD150096D788 /* IBaseMatrixUpdater.h */; };
+		17C1FB611ACC40A0006B99B3 /* CASCSVGRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B681AC5ACAA0096D788 /* CASCSVGRenderer.h */; };
+		17C1FB621ACC40A0006B99B3 /* VMLWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BA21AC5AD030096D788 /* VMLWriter.h */; };
+		17C1FB631ACC40A0006B99B3 /* RendererOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BA71AC5AD350096D788 /* RendererOutput.h */; };
+		17C1FB641ACC40A0006B99B3 /* CMetafile.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B6E1AC5ACB30096D788 /* CMetafile.h */; };
+		17C1FB651ACC40A0006B99B3 /* WmfUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BB41AC5AD350096D788 /* WmfUtils.h */; };
+		17C1FB661ACC40A0006B99B3 /* WmfCodePage1361.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BA91AC5AD350096D788 /* WmfCodePage1361.h */; };
+		17C1FB671ACC40A0006B99B3 /* WmfFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BAF1AC5AD350096D788 /* WmfFile.h */; };
+		17D91B631AC5AC9C0096D788 /* ASCSVGWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D91B611AC5AC9C0096D788 /* ASCSVGWriter.cpp */; };
+		17D91B641AC5AC9C0096D788 /* ASCSVGWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B621AC5AC9C0096D788 /* ASCSVGWriter.h */; };
+		17D91B691AC5ACAA0096D788 /* CASCImage.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D91B651AC5ACAA0096D788 /* CASCImage.cpp */; };
+		17D91B6A1AC5ACAA0096D788 /* CASCImage.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B661AC5ACAA0096D788 /* CASCImage.h */; };
+		17D91B6B1AC5ACAA0096D788 /* CASCSVGRenderer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D91B671AC5ACAA0096D788 /* CASCSVGRenderer.cpp */; };
+		17D91B6C1AC5ACAA0096D788 /* CASCSVGRenderer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B681AC5ACAA0096D788 /* CASCSVGRenderer.h */; };
+		17D91B6F1AC5ACB30096D788 /* CMetafile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D91B6D1AC5ACB30096D788 /* CMetafile.cpp */; };
+		17D91B701AC5ACB30096D788 /* CMetafile.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B6E1AC5ACB30096D788 /* CMetafile.h */; };
+		17D91B881AC5ACC60096D788 /* Common.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B741AC5ACC60096D788 /* Common.h */; };
+		17D91B891AC5ACC60096D788 /* Const.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B751AC5ACC60096D788 /* Const.h */; };
+		17D91B9B1AC5ACDE0096D788 /* StringWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B9A1AC5ACDE0096D788 /* StringWriter.h */; };
+		17D91B9D1AC5ACE70096D788 /* TextItem.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B9C1AC5ACE70096D788 /* TextItem.h */; };
+		17D91B9F1AC5ACF70096D788 /* SVGWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91B9E1AC5ACF70096D788 /* SVGWriter.h */; };
+		17D91BA11AC5ACFD0096D788 /* VectorGraphicsWriter2.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BA01AC5ACFD0096D788 /* VectorGraphicsWriter2.h */; };
+		17D91BA31AC5AD030096D788 /* VMLWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BA21AC5AD030096D788 /* VMLWriter.h */; };
+		17D91BA51AC5AD150096D788 /* IBaseMatrixUpdater.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BA41AC5AD150096D788 /* IBaseMatrixUpdater.h */; };
+		17D91BB51AC5AD350096D788 /* RendererOutput.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BA71AC5AD350096D788 /* RendererOutput.h */; };
+		17D91BB61AC5AD350096D788 /* WmfCharsets.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BA81AC5AD350096D788 /* WmfCharsets.h */; };
+		17D91BB71AC5AD350096D788 /* WmfCodePage1361.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BA91AC5AD350096D788 /* WmfCodePage1361.h */; };
+		17D91BB81AC5AD350096D788 /* WmfCodePage932.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BAA1AC5AD350096D788 /* WmfCodePage932.h */; };
+		17D91BB91AC5AD350096D788 /* WmfCodePage936.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BAB1AC5AD350096D788 /* WmfCodePage936.h */; };
+		17D91BBA1AC5AD350096D788 /* WmfCodePage949.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BAC1AC5AD350096D788 /* WmfCodePage949.h */; };
+		17D91BBB1AC5AD350096D788 /* WmfCodePage950.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BAD1AC5AD350096D788 /* WmfCodePage950.h */; };
+		17D91BBC1AC5AD350096D788 /* WmfColor.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BAE1AC5AD350096D788 /* WmfColor.h */; };
+		17D91BBD1AC5AD350096D788 /* WmfFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BAF1AC5AD350096D788 /* WmfFile.h */; };
+		17D91BBE1AC5AD350096D788 /* WmfMemory.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BB01AC5AD350096D788 /* WmfMemory.h */; };
+		17D91BBF1AC5AD350096D788 /* WmfOutputDevice.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BB11AC5AD350096D788 /* WmfOutputDevice.h */; };
+		17D91BC01AC5AD350096D788 /* WmfRegion.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BB21AC5AD350096D788 /* WmfRegion.h */; };
+		17D91BC11AC5AD350096D788 /* WmfTypes.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BB31AC5AD350096D788 /* WmfTypes.h */; };
+		17D91BC21AC5AD350096D788 /* WmfUtils.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D91BB41AC5AD350096D788 /* WmfUtils.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		17C1FB6B1ACC40A0006B99B3 /* libASCHTMLRendererLib_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libASCHTMLRendererLib_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		17D91B531AC5ABE80096D788 /* libASCHTMLRendererLib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libASCHTMLRendererLib.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		17D91B611AC5AC9C0096D788 /* ASCSVGWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ASCSVGWriter.cpp; path = ../../ASCSVGWriter.cpp; sourceTree = "<group>"; };
+		17D91B621AC5AC9C0096D788 /* ASCSVGWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ASCSVGWriter.h; path = ../../ASCSVGWriter.h; sourceTree = "<group>"; };
+		17D91B651AC5ACAA0096D788 /* CASCImage.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CASCImage.cpp; path = ../../CASCImage.cpp; sourceTree = "<group>"; };
+		17D91B661AC5ACAA0096D788 /* CASCImage.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCImage.h; path = ../../CASCImage.h; sourceTree = "<group>"; };
+		17D91B671AC5ACAA0096D788 /* CASCSVGRenderer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CASCSVGRenderer.cpp; path = ../../CASCSVGRenderer.cpp; sourceTree = "<group>"; };
+		17D91B681AC5ACAA0096D788 /* CASCSVGRenderer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CASCSVGRenderer.h; path = ../../CASCSVGRenderer.h; sourceTree = "<group>"; };
+		17D91B6D1AC5ACB30096D788 /* CMetafile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = CMetafile.cpp; path = ../../CMetafile.cpp; sourceTree = "<group>"; };
+		17D91B6E1AC5ACB30096D788 /* CMetafile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = CMetafile.h; path = ../../CMetafile.h; sourceTree = "<group>"; };
+		17D91B741AC5ACC60096D788 /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
+		17D91B751AC5ACC60096D788 /* Const.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Const.h; sourceTree = "<group>"; };
+		17D91B9A1AC5ACDE0096D788 /* StringWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StringWriter.h; sourceTree = "<group>"; };
+		17D91B9C1AC5ACE70096D788 /* TextItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = TextItem.h; sourceTree = "<group>"; };
+		17D91B9E1AC5ACF70096D788 /* SVGWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SVGWriter.h; sourceTree = "<group>"; };
+		17D91BA01AC5ACFD0096D788 /* VectorGraphicsWriter2.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VectorGraphicsWriter2.h; sourceTree = "<group>"; };
+		17D91BA21AC5AD030096D788 /* VMLWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = VMLWriter.h; sourceTree = "<group>"; };
+		17D91BA41AC5AD150096D788 /* IBaseMatrixUpdater.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = IBaseMatrixUpdater.h; path = ../../IBaseMatrixUpdater.h; sourceTree = "<group>"; };
+		17D91BA71AC5AD350096D788 /* RendererOutput.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RendererOutput.h; sourceTree = "<group>"; };
+		17D91BA81AC5AD350096D788 /* WmfCharsets.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WmfCharsets.h; sourceTree = "<group>"; };
+		17D91BA91AC5AD350096D788 /* WmfCodePage1361.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WmfCodePage1361.h; sourceTree = "<group>"; };
+		17D91BAA1AC5AD350096D788 /* WmfCodePage932.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WmfCodePage932.h; sourceTree = "<group>"; };
+		17D91BAB1AC5AD350096D788 /* WmfCodePage936.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WmfCodePage936.h; sourceTree = "<group>"; };
+		17D91BAC1AC5AD350096D788 /* WmfCodePage949.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WmfCodePage949.h; sourceTree = "<group>"; };
+		17D91BAD1AC5AD350096D788 /* WmfCodePage950.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WmfCodePage950.h; sourceTree = "<group>"; };
+		17D91BAE1AC5AD350096D788 /* WmfColor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WmfColor.h; sourceTree = "<group>"; };
+		17D91BAF1AC5AD350096D788 /* WmfFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WmfFile.h; sourceTree = "<group>"; };
+		17D91BB01AC5AD350096D788 /* WmfMemory.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WmfMemory.h; sourceTree = "<group>"; };
+		17D91BB11AC5AD350096D788 /* WmfOutputDevice.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WmfOutputDevice.h; sourceTree = "<group>"; };
+		17D91BB21AC5AD350096D788 /* WmfRegion.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WmfRegion.h; sourceTree = "<group>"; };
+		17D91BB31AC5AD350096D788 /* WmfTypes.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WmfTypes.h; sourceTree = "<group>"; };
+		17D91BB41AC5AD350096D788 /* WmfUtils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = WmfUtils.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		17C1FB4C1ACC40A0006B99B3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		17D91B501AC5ABE80096D788 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		17D91B4A1AC5ABE80096D788 = {
+			isa = PBXGroup;
+			children = (
+				17D91B551AC5ABE80096D788 /* ASCHTMLRendererLib */,
+				17D91B541AC5ABE80096D788 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		17D91B541AC5ABE80096D788 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				17D91B531AC5ABE80096D788 /* libASCHTMLRendererLib.a */,
+				17C1FB6B1ACC40A0006B99B3 /* libASCHTMLRendererLib_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		17D91B551AC5ABE80096D788 /* ASCHTMLRendererLib */ = {
+			isa = PBXGroup;
+			children = (
+				17D91BA61AC5AD350096D788 /* Wmf */,
+				17D91B711AC5ACC60096D788 /* Writer */,
+				17D91B6D1AC5ACB30096D788 /* CMetafile.cpp */,
+				17D91B6E1AC5ACB30096D788 /* CMetafile.h */,
+				17D91B651AC5ACAA0096D788 /* CASCImage.cpp */,
+				17D91B661AC5ACAA0096D788 /* CASCImage.h */,
+				17D91B671AC5ACAA0096D788 /* CASCSVGRenderer.cpp */,
+				17D91B681AC5ACAA0096D788 /* CASCSVGRenderer.h */,
+				17D91B611AC5AC9C0096D788 /* ASCSVGWriter.cpp */,
+				17D91B621AC5AC9C0096D788 /* ASCSVGWriter.h */,
+				17D91BA41AC5AD150096D788 /* IBaseMatrixUpdater.h */,
+			);
+			path = ASCHTMLRendererLib;
+			sourceTree = "<group>";
+		};
+		17D91B711AC5ACC60096D788 /* Writer */ = {
+			isa = PBXGroup;
+			children = (
+				17D91BA21AC5AD030096D788 /* VMLWriter.h */,
+				17D91BA01AC5ACFD0096D788 /* VectorGraphicsWriter2.h */,
+				17D91B9E1AC5ACF70096D788 /* SVGWriter.h */,
+				17D91B9C1AC5ACE70096D788 /* TextItem.h */,
+				17D91B9A1AC5ACDE0096D788 /* StringWriter.h */,
+				17D91B741AC5ACC60096D788 /* Common.h */,
+				17D91B751AC5ACC60096D788 /* Const.h */,
+			);
+			name = Writer;
+			path = ../../Writer;
+			sourceTree = "<group>";
+		};
+		17D91BA61AC5AD350096D788 /* Wmf */ = {
+			isa = PBXGroup;
+			children = (
+				17D91BA71AC5AD350096D788 /* RendererOutput.h */,
+				17D91BA81AC5AD350096D788 /* WmfCharsets.h */,
+				17D91BA91AC5AD350096D788 /* WmfCodePage1361.h */,
+				17D91BAA1AC5AD350096D788 /* WmfCodePage932.h */,
+				17D91BAB1AC5AD350096D788 /* WmfCodePage936.h */,
+				17D91BAC1AC5AD350096D788 /* WmfCodePage949.h */,
+				17D91BAD1AC5AD350096D788 /* WmfCodePage950.h */,
+				17D91BAE1AC5AD350096D788 /* WmfColor.h */,
+				17D91BAF1AC5AD350096D788 /* WmfFile.h */,
+				17D91BB01AC5AD350096D788 /* WmfMemory.h */,
+				17D91BB11AC5AD350096D788 /* WmfOutputDevice.h */,
+				17D91BB21AC5AD350096D788 /* WmfRegion.h */,
+				17D91BB31AC5AD350096D788 /* WmfTypes.h */,
+				17D91BB41AC5AD350096D788 /* WmfUtils.h */,
+			);
+			name = Wmf;
+			path = ../../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		17C1FB4D1ACC40A0006B99B3 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17C1FB4E1ACC40A0006B99B3 /* CASCImage.h in Headers */,
+				17C1FB4F1ACC40A0006B99B3 /* WmfColor.h in Headers */,
+				17C1FB501ACC40A0006B99B3 /* StringWriter.h in Headers */,
+				17C1FB511ACC40A0006B99B3 /* Common.h in Headers */,
+				17C1FB521ACC40A0006B99B3 /* WmfOutputDevice.h in Headers */,
+				17C1FB531ACC40A0006B99B3 /* ASCSVGWriter.h in Headers */,
+				17C1FB541ACC40A0006B99B3 /* WmfCodePage936.h in Headers */,
+				17C1FB551ACC40A0006B99B3 /* WmfMemory.h in Headers */,
+				17C1FB561ACC40A0006B99B3 /* SVGWriter.h in Headers */,
+				17C1FB571ACC40A0006B99B3 /* WmfCodePage949.h in Headers */,
+				17C1FB581ACC40A0006B99B3 /* TextItem.h in Headers */,
+				17C1FB591ACC40A0006B99B3 /* WmfTypes.h in Headers */,
+				17C1FB5A1ACC40A0006B99B3 /* WmfCodePage932.h in Headers */,
+				17C1FB5B1ACC40A0006B99B3 /* WmfCodePage950.h in Headers */,
+				17C1FB5C1ACC40A0006B99B3 /* VectorGraphicsWriter2.h in Headers */,
+				17C1FB5D1ACC40A0006B99B3 /* Const.h in Headers */,
+				17C1FB5E1ACC40A0006B99B3 /* WmfRegion.h in Headers */,
+				17C1FB5F1ACC40A0006B99B3 /* WmfCharsets.h in Headers */,
+				17C1FB601ACC40A0006B99B3 /* IBaseMatrixUpdater.h in Headers */,
+				17C1FB611ACC40A0006B99B3 /* CASCSVGRenderer.h in Headers */,
+				17C1FB621ACC40A0006B99B3 /* VMLWriter.h in Headers */,
+				17C1FB631ACC40A0006B99B3 /* RendererOutput.h in Headers */,
+				17C1FB641ACC40A0006B99B3 /* CMetafile.h in Headers */,
+				17C1FB651ACC40A0006B99B3 /* WmfUtils.h in Headers */,
+				17C1FB661ACC40A0006B99B3 /* WmfCodePage1361.h in Headers */,
+				17C1FB671ACC40A0006B99B3 /* WmfFile.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		17D91B511AC5ABE80096D788 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17D91B6A1AC5ACAA0096D788 /* CASCImage.h in Headers */,
+				17D91BBC1AC5AD350096D788 /* WmfColor.h in Headers */,
+				17D91B9B1AC5ACDE0096D788 /* StringWriter.h in Headers */,
+				17D91B881AC5ACC60096D788 /* Common.h in Headers */,
+				17D91BBF1AC5AD350096D788 /* WmfOutputDevice.h in Headers */,
+				17D91B641AC5AC9C0096D788 /* ASCSVGWriter.h in Headers */,
+				17D91BB91AC5AD350096D788 /* WmfCodePage936.h in Headers */,
+				17D91BBE1AC5AD350096D788 /* WmfMemory.h in Headers */,
+				17D91B9F1AC5ACF70096D788 /* SVGWriter.h in Headers */,
+				17D91BBA1AC5AD350096D788 /* WmfCodePage949.h in Headers */,
+				17D91B9D1AC5ACE70096D788 /* TextItem.h in Headers */,
+				17D91BC11AC5AD350096D788 /* WmfTypes.h in Headers */,
+				17D91BB81AC5AD350096D788 /* WmfCodePage932.h in Headers */,
+				17D91BBB1AC5AD350096D788 /* WmfCodePage950.h in Headers */,
+				17D91BA11AC5ACFD0096D788 /* VectorGraphicsWriter2.h in Headers */,
+				17D91B891AC5ACC60096D788 /* Const.h in Headers */,
+				17D91BC01AC5AD350096D788 /* WmfRegion.h in Headers */,
+				17D91BB61AC5AD350096D788 /* WmfCharsets.h in Headers */,
+				17D91BA51AC5AD150096D788 /* IBaseMatrixUpdater.h in Headers */,
+				17D91B6C1AC5ACAA0096D788 /* CASCSVGRenderer.h in Headers */,
+				17D91BA31AC5AD030096D788 /* VMLWriter.h in Headers */,
+				17D91BB51AC5AD350096D788 /* RendererOutput.h in Headers */,
+				17D91B701AC5ACB30096D788 /* CMetafile.h in Headers */,
+				17D91BC21AC5AD350096D788 /* WmfUtils.h in Headers */,
+				17D91BB71AC5AD350096D788 /* WmfCodePage1361.h in Headers */,
+				17D91BBD1AC5AD350096D788 /* WmfFile.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		17C1FB461ACC40A0006B99B3 /* ASCHTMLRendererLib_ios */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 17C1FB681ACC40A0006B99B3 /* Build configuration list for PBXNativeTarget "ASCHTMLRendererLib_ios" */;
+			buildPhases = (
+				17C1FB471ACC40A0006B99B3 /* Sources */,
+				17C1FB4C1ACC40A0006B99B3 /* Frameworks */,
+				17C1FB4D1ACC40A0006B99B3 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ASCHTMLRendererLib_ios;
+			productName = ASCHTMLRendererLib;
+			productReference = 17C1FB6B1ACC40A0006B99B3 /* libASCHTMLRendererLib_ios.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		17D91B521AC5ABE80096D788 /* ASCHTMLRendererLib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 17D91B5E1AC5ABE90096D788 /* Build configuration list for PBXNativeTarget "ASCHTMLRendererLib" */;
+			buildPhases = (
+				17D91B4F1AC5ABE80096D788 /* Sources */,
+				17D91B501AC5ABE80096D788 /* Frameworks */,
+				17D91B511AC5ABE80096D788 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = ASCHTMLRendererLib;
+			productName = ASCHTMLRendererLib;
+			productReference = 17D91B531AC5ABE80096D788 /* libASCHTMLRendererLib.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		17D91B4B1AC5ABE80096D788 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0620;
+				ORGANIZATIONNAME = "Ascensio System SIA";
+				TargetAttributes = {
+					17D91B521AC5ABE80096D788 = {
+						CreatedOnToolsVersion = 6.2;
+					};
+				};
+			};
+			buildConfigurationList = 17D91B4E1AC5ABE80096D788 /* Build configuration list for PBXProject "ASCHTMLRendererLib" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 17D91B4A1AC5ABE80096D788;
+			productRefGroup = 17D91B541AC5ABE80096D788 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				17D91B521AC5ABE80096D788 /* ASCHTMLRendererLib */,
+				17C1FB461ACC40A0006B99B3 /* ASCHTMLRendererLib_ios */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXSourcesBuildPhase section */
+		17C1FB471ACC40A0006B99B3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17C1FB481ACC40A0006B99B3 /* CMetafile.cpp in Sources */,
+				17C1FB491ACC40A0006B99B3 /* ASCSVGWriter.cpp in Sources */,
+				17C1FB4A1ACC40A0006B99B3 /* CASCSVGRenderer.cpp in Sources */,
+				17C1FB4B1ACC40A0006B99B3 /* CASCImage.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		17D91B4F1AC5ABE80096D788 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17D91B6F1AC5ACB30096D788 /* CMetafile.cpp in Sources */,
+				17D91B631AC5AC9C0096D788 /* ASCSVGWriter.cpp in Sources */,
+				17D91B6B1AC5ACAA0096D788 /* CASCSVGRenderer.cpp in Sources */,
+				17D91B691AC5ACAA0096D788 /* CASCImage.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		17C1FB691ACC40A0006B99B3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					NODOCX,
+					DESKTOP_EDITOR_GRAPHICS,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
+					"$(PROJECT_DIR)/../../DesktopEditor/agg-2.4/include",
+				);
+				PRODUCT_NAME = ASCHTMLRendererLib_ios;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		17C1FB6A1ACC40A0006B99B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					NODOCX,
+					DESKTOP_EDITOR_GRAPHICS,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
+					"$(PROJECT_DIR)/../../DesktopEditor/agg-2.4/include",
+				);
+				PRODUCT_NAME = ASCHTMLRendererLib_ios;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+		17D91B5C1AC5ABE90096D788 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		17D91B5D1AC5ABE90096D788 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		17D91B5F1AC5ABE90096D788 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					NODOCX,
+					DESKTOP_EDITOR_GRAPHICS,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
+					"$(PROJECT_DIR)/../../DesktopEditor/agg-2.4/include",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		17D91B601AC5ABE90096D788 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					NODOCX,
+					DESKTOP_EDITOR_GRAPHICS,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
+					"$(PROJECT_DIR)/../../DesktopEditor/agg-2.4/include",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		17C1FB681ACC40A0006B99B3 /* Build configuration list for PBXNativeTarget "ASCHTMLRendererLib_ios" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				17C1FB691ACC40A0006B99B3 /* Debug */,
+				17C1FB6A1ACC40A0006B99B3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		17D91B4E1AC5ABE80096D788 /* Build configuration list for PBXProject "ASCHTMLRendererLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				17D91B5C1AC5ABE90096D788 /* Debug */,
+				17D91B5D1AC5ABE90096D788 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		17D91B5E1AC5ABE90096D788 /* Build configuration list for PBXNativeTarget "ASCHTMLRendererLib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				17D91B5F1AC5ABE90096D788 /* Debug */,
+				17D91B601AC5ABE90096D788 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 17D91B4B1AC5ABE80096D788 /* Project object */;
+}

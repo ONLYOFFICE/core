@@ -1,0 +1,33 @@
+/***************************************************************
+ *  FC-TrackBar
+ *
+ *   Copyright (C) 2008 by Alexander Burtsev - fastcoder.org
+ *   designed by Svetlana Solov'eva - http://avis-solo.blogspot.com/
+ *
+ *  This code is a public domain.
+ ***************************************************************/
+
+/* Reset */
+table.trackbar div, table.trackbar td {margin:0; padding:0;}
+table.trackbar {border-collapse:collapse;border-spacing:0;}
+table.trackbar img{border:0;}
+div.tickdiv {margin:0; padding:0; border:0; float:none;}
+
+/* Styles */
+table.trackbar {width:250px; background:repeat-x url(./imgtrackbar/b_bg_on.gif) top left;}
+table.trackbar .l {width:1%; text-align: right; font-size: 1px; background:repeat-x url(./imgtrackbar/b_bg_off.gif) top left;}
+table.trackbar .l div {position:relative; width:0; text-align: right; z-index:500; white-space:nowrap;}
+table.trackbar .l div img {cursor:pointer;}
+table.trackbar .l div span {position:absolute;top:-12px; right:6px; z-index:1000; font:11px tahoma; color:#000;}
+table.trackbar .l div span.limit {text-align:left; position:absolute;top:-12px; right:100%; z-index:100; font:11px tahoma; color:#D0D0D0;}
+table.trackbar .r {width:1%; text-align: left; font-size: 1px; background:repeat-x url(./imgtrackbar/b_bg_off.gif) top right; cursor:default;}
+table.trackbar .r div {position:relative; width:0; text-align: left; z-index:500; white-space:nowrap;}
+table.trackbar .r div img {cursor:pointer;}
+table.trackbar .r div span {position:absolute;top:-12px; left:6px; z-index:1000; font:11px tahoma; color:#000;}
+table.trackbar .r div span.limit {position:absolute;top:-12px; left:100%; z-index:100; font:11px tahoma; color:#D0D0D0;}
+table.trackbar .c {font-size:1px; width:100%;}
+
+div.tickdiv {position:relative; height:1px; margin:10px 0 10px;}
+div.tickdiv div.tick {position:absolute; z-index:400; top:13px; height:12px; width:1px; background:#666; margin:0; padding:0; font:10px tahoma; color:#666;}
+div.tickdiv div.tick span {display:block; margin-top:14px; position:absolute; left:-50px; width:100px; text-align:center;}
+div.tickdiv div.stick {position:absolute; top:16px; height:6px; width:1px; background:#999; font-size:1px; line-height:1px; margin:0; padding:0;}

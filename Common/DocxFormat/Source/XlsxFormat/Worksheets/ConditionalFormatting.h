@@ -394,7 +394,10 @@ namespace OOX
 						writer.WriteString(_T (" equalAverage=\"1\""));
 					if (m_oOperator.IsInit())
 					{
-                        sValue.Format(_T(" text=\"%s\""), (const TCHAR *) m_oOperator.get().ToString());
+						sValue = _T("");
+                        sValue.Append(_T(" text=\""));
+						sValue.Append(m_oOperator.get().ToString());
+						sValue.Append(_T("\""));
 						writer.WriteString(sValue);
 					}
 					if (m_oPercent.IsInit() && true == m_oPercent->ToBool())
@@ -413,7 +416,10 @@ namespace OOX
 						writer.WriteString(_T (" stopIfTrue=\"1\""));
 					if (m_oText.IsInit())
 					{
-						sValue.Format(_T(" text=\"%s\""), m_oText.get());
+						sValue = _T("");
+						sValue.Append(_T(" text=\""));
+						sValue.Append(m_oText.get());
+						sValue.Append(_T("\""));
 						writer.WriteString(sValue);
 					}
 					if (m_oTimePeriod.IsInit())

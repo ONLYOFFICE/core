@@ -1192,7 +1192,7 @@ public:
 				docLvlText* item = Text[i];
 				if(item->bText)
 				{
-					sText.AppendFormat(_T("%s"), (const TCHAR *) item->Text);
+					sText.Append(item->Text);
 				}
 				else if(item->bNumber)
 				{
@@ -1412,9 +1412,17 @@ public:
 			CString sStart;
 			sStart.Format(_T("<w:hyperlink r:id=\"%s\""), (const TCHAR *) sCorrect_rId);
 			if(false == tooltip.IsEmpty())
-				sStart.AppendFormat(_T(" w:tooltip=\"%s\""), (const TCHAR *) sCorrect_tooltip);
+			{
+				sStart.Append(_T(" w:tooltip=\""));
+				sStart.Append(sCorrect_tooltip);
+				sStart.Append(_T("\""));
+			}
 			if(false == anchor.IsEmpty())
-				sStart.AppendFormat(_T(" w:anchor=\"%s\""), (const TCHAR *) sCorrect_anchor);
+			{
+				sStart.Append(_T(" w:anchor=\""));
+				sStart.Append(sCorrect_anchor);
+				sStart.Append(_T("\""));
+			}
 			sStart.Append(_T(" w:history=\"1\">"));
 			wr.WriteString(sStart);
 			wr.Write(writer);
@@ -1530,8 +1538,10 @@ public:
 			bFirst = false;
 			pComment->m_sParaId = sId;
 		}
-		CString sFormat = _T("<w:p w14:paraId=\"%s\" w14:textId=\"%s\"><w:pPr><w:spacing w:line=\"240\" w:after=\"0\" w:lineRule=\"auto\" w:before=\"0\"/><w:ind w:firstLine=\"0\" w:left=\"0\" w:right=\"0\"/><w:jc w:val=\"left\"/></w:pPr><w:r><w:rPr><w:rFonts w:eastAsia=\"Arial\" w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\"/><w:sz w:val=\"22\"/></w:rPr><w:t xml:space=\"preserve\">%s</w:t></w:r></w:p>");
-		sRes.AppendFormat((const TCHAR *) sFormat, (const TCHAR *) sId, (const TCHAR *) sId, (const TCHAR *) sPart);
+		CString sFormat = _T("<w:p w14:paraId=\"%s\" w14:textId=\"%s\"><w:pPr><w:spacing w:line=\"240\" w:after=\"0\" w:lineRule=\"auto\" w:before=\"0\"/><w:ind w:firstLine=\"0\" w:left=\"0\" w:right=\"0\"/><w:jc w:val=\"left\"/></w:pPr><w:r><w:rPr><w:rFonts w:eastAsia=\"Arial\" w:ascii=\"Arial\" w:hAnsi=\"Arial\" w:cs=\"Arial\"/><w:sz w:val=\"22\"/></w:rPr><w:t xml:space=\"preserve\">");
+		sRes.AppendFormat((const TCHAR *) sFormat, (const TCHAR *) sId, (const TCHAR *) sId);
+		sRes.Append(sPart);
+		sRes.Append(_T("</w:t></w:r></w:p>"));
 		return bFirst;
 	}
 	static CString writeContent(CComment* pComment)
@@ -1547,7 +1557,9 @@ public:
 		if(false == pComment->UserName.IsEmpty())
 		{
 			CString sUserName = XmlUtils::EncodeXmlString(pComment->UserName);
-			sRes.AppendFormat(_T(" w:author=\"%s\""), (const TCHAR *) sUserName);
+			sRes.Append(_T(" w:author=\""));
+			sRes.Append(sUserName);
+			sRes.Append(_T("\""));
 			//делаем initials
 			int nTokenPos = 0;
 			CString strToken = pComment->UserName.Tokenize(_T(" "), nTokenPos);
@@ -1562,12 +1574,16 @@ public:
 		if(false == pComment->Date.IsEmpty())
 		{
 			CString sDate = XmlUtils::EncodeXmlString(pComment->Date);
-			sRes.AppendFormat(_T(" w:date=\"%s\""), (const TCHAR *) sDate);
+			sRes.Append(_T(" w:date=\""));
+			sRes.Append(sDate);
+			sRes.Append(_T("\""));
 		}
 		if(false == sInitials.IsEmpty())
 		{
 			sInitials = XmlUtils::EncodeXmlString(sInitials);
-			sRes.AppendFormat(_T(" w:initials=\"%s\""), (const TCHAR *) sInitials);
+			sRes.Append(_T(" w:initials=\""));
+			sRes.Append(sInitials);
+			sRes.Append(_T("\""));
 		}
 		sRes.Append(_T(">"));
 		if(false == pComment->Text.IsEmpty())
@@ -1615,7 +1631,11 @@ public:
 		{
 			CString sUserName = XmlUtils::EncodeXmlString(pComment->UserName);
 			CString sUserId = XmlUtils::EncodeXmlString(pComment->UserId);
-			sRes.AppendFormat(_T("<w15:person w15:author=\"%s\"><w15:presenceInfo w15:providerId=\"Teamlab\" w15:userId=\"%s\"/></w15:person>"), (const TCHAR *) sUserName, (const TCHAR *) sUserId);
+			sRes.Append(_T("<w15:person w15:author=\""));
+			sRes.Append(sUserName);
+			sRes.Append(_T("\"><w15:presenceInfo w15:providerId=\"Teamlab\" w15:userId=\""));
+			sRes.Append(sUserId);
+			sRes.Append(_T("\"/></w15:person>"));
 		}
 		return sRes;
 	}
@@ -2375,9 +2395,17 @@ public:
 			CString sStart;
 			sStart.Format(_T("<w:hyperlink r:id=\"%s\""), (const TCHAR *) sCorrect_rId);
 			if(false == sTooltip.IsEmpty())
-				sStart.AppendFormat(_T(" w:tooltip=\"%s\""), (const TCHAR *) sCorrect_tooltip);
+			{
+				sStart.Append(_T(" w:tooltip=\""));
+				sStart.Append(sCorrect_tooltip);
+				sStart.Append(_T("\""));
+			}
 			if(false == sAnchor.IsEmpty())
-				sStart.AppendFormat(_T(" w:anchor=\"%s\""), (const TCHAR *) sCorrect_anchor);
+			{
+				sStart.Append(_T(" w:anchor=\""));
+				sStart.Append(sCorrect_anchor);
+				sStart.Append(_T("\""));
+			}
 			sStart.Append(_T(" w:history=\"1\">"));
 			wr.WriteString(sStart);
 			wr.Write(writer);
@@ -2398,8 +2426,9 @@ public:
 		if(false == sInstr.IsEmpty())
 		{
 			CString sCorrect_Instr = XmlUtils::EncodeXmlString(sInstr);
-			CString sStart;
-			sStart.Format(_T("<w:fldSimple w:instr=\"%s\">"), (const TCHAR *) sCorrect_Instr);
+			CString sStart(_T("<w:fldSimple w:instr=\""));
+			sStart.Append(sCorrect_Instr);
+			sStart.Append(_T("\">"));
 			wr.WriteString(sStart);
 			wr.Write(writer);
 			wr.WriteString(CString(_T("</w:fldSimple>")));

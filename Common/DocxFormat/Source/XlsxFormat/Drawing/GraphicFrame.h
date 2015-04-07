@@ -313,7 +313,9 @@ namespace OOX
 				m_sXml.Init();
 				m_sXml->Append(oReader.GetOuterXml());
 				CString sXml;
-				sXml.Format(_T("<root xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">%s</root>"), m_sXml.get());
+				sXml.Append(_T("<root xmlns:xdr=\"http://schemas.openxmlformats.org/drawingml/2006/spreadsheetDrawing\" xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\">"));
+				sXml.Append(m_sXml.get());
+				sXml.Append(_T("</root>"));
 				XmlUtils::CXmlLiteReader oSubReader;
 				oSubReader.FromString(sXml);
 				oSubReader.ReadNextNode();//root

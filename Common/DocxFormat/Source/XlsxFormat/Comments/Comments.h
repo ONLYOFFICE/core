@@ -63,7 +63,10 @@ namespace OOX
 				writer.WriteString(CString("<authors>"));
 				for(unsigned int i = 0, length = m_arrItems.size(); i < length; ++i)
 				{
-					CString sAuthor;sAuthor.Format(_T("<author>%s</author>"), XmlUtils::EncodeXmlString(*m_arrItems[i]));
+					CString sAuthor;
+					sAuthor.Append(_T("<author>"));
+					sAuthor.Append(XmlUtils::EncodeXmlString(*m_arrItems[i]));
+					sAuthor.Append(_T("</author>"));
 					writer.WriteString(sAuthor);
 				}
 				writer.WriteString(CString("</authors>"));
@@ -482,8 +485,19 @@ namespace OOX
 							sClientData.Append(_T("</x:ClientData>"));
 							CString sGfxdata;
 							if(comment->m_sGfxdata.IsInit())
-								sGfxdata.Format(_T("o:gfxdata=\"%s\""), comment->m_sGfxdata.get2());
-							CString sShape;sShape.Format(_T("<v:shape id=\"_x0000_s%d\" type=\"#_x0000_t202\" style='position:absolute;%sz-index:4;visibility:hidden' %s fillcolor=\"#ffffe1\" o:insetmode=\"auto\"><v:fill color2=\"#ffffe1\"/><v:shadow on=\"t\" color=\"black\" obscured=\"t\"/><v:path o:connecttype=\"none\"/><v:textbox style='mso-direction-alt:auto'><div style='text-align:left'></div></v:textbox>%s</v:shape>"), nIndex, sStyle, sGfxdata, sClientData);
+							{
+								sGfxdata.Append(_T("o:gfxdata=\""));
+								sGfxdata.Append(comment->m_sGfxdata.get2());
+								sGfxdata.Append(_T("\""));
+							}
+							CString sShape;
+							sShape.AppendFormat(_T("<v:shape id=\"_x0000_s%d\" type=\"#_x0000_t202\" style='position:absolute;"), nIndex);
+							sShape.Append(sStyle);
+							sShape.Append(_T("z-index:4;visibility:hidden' "));
+							sShape.Append(sGfxdata);
+							sShape.Append(_T(" fillcolor=\"#ffffe1\" o:insetmode=\"auto\"><v:fill color2=\"#ffffe1\"/><v:shadow on=\"t\" color=\"black\" obscured=\"t\"/><v:path o:connecttype=\"none\"/><v:textbox style='mso-direction-alt:auto'><div style='text-align:left'></div></v:textbox>"));
+							sShape.Append(sClientData);
+							sShape.Append(_T("</v:shape>"));
 							sXml.WriteString(sShape);
 							nIndex++;
 					}

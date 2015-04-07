@@ -1,0 +1,57 @@
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficePDFWriter", "ASCOfficePDFWriter_vs2012.vcxproj", "{FD508B11-154E-491B-BA4A-EA81978955EF}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestGradient", "Tests\TestGradient\TestGradient.csproj", "{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{FD508B11-154E-491B-BA4A-EA81978955EF} = {FD508B11-154E-491B-BA4A-EA81978955EF}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+		ReleaseOpenSource|Any CPU = ReleaseOpenSource|Any CPU
+		ReleaseOpenSource|Mixed Platforms = ReleaseOpenSource|Mixed Platforms
+		ReleaseOpenSource|Win32 = ReleaseOpenSource|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.Debug|Win32.ActiveCfg = Debug|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.Debug|Win32.Build.0 = Debug|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.Release|Any CPU.ActiveCfg = Release|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.Release|Win32.ActiveCfg = Release|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.Release|Win32.Build.0 = Release|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.ReleaseOpenSource|Any CPU.ActiveCfg = ReleaseOpenSource|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.ReleaseOpenSource|Mixed Platforms.ActiveCfg = ReleaseOpenSource|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.ReleaseOpenSource|Mixed Platforms.Build.0 = ReleaseOpenSource|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.ReleaseOpenSource|Win32.ActiveCfg = ReleaseOpenSource|Win32
+		{FD508B11-154E-491B-BA4A-EA81978955EF}.ReleaseOpenSource|Win32.Build.0 = ReleaseOpenSource|Win32
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.Debug|Mixed Platforms.ActiveCfg = Debug|Any CPU
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.Debug|Mixed Platforms.Build.0 = Debug|Any CPU
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.Debug|Win32.ActiveCfg = Debug|Any CPU
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.Release|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.Release|Mixed Platforms.Build.0 = Release|Any CPU
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.Release|Win32.ActiveCfg = Release|Any CPU
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.ReleaseOpenSource|Any CPU.ActiveCfg = Release|Any CPU
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.ReleaseOpenSource|Any CPU.Build.0 = Release|Any CPU
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.ReleaseOpenSource|Mixed Platforms.ActiveCfg = Release|Any CPU
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.ReleaseOpenSource|Mixed Platforms.Build.0 = Release|Any CPU
+		{026BC4D2-0BB0-4ACE-9693-93DD1D66C38D}.ReleaseOpenSource|Win32.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

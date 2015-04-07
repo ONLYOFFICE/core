@@ -4026,3 +4026,5 @@ _tags/rev_61879/ASCOfficePDFWriter/Tests/TestSvgToPDF/bin/Test.exe svn_mime_002d
 _tags/rev_61879/ASCOfficePDFWriter/Tests/TestSvgToPDF/bin/Test.pdb svn_mime_002dtype=application%2Foctet-stream
 _tags/rev_61879/ASCOfficePDFWriter/Tests/TestSvgToPDF/bin/files/coffe.jpg svn_mime_002dtype=application%2Foctet-stream
 _tags/rev_61879/ASCOfficePDFWriter/Zlib/zlib.lib svn_mime_002dtype=application%2Foctet-stream
+_tags/rev_61879/ASCOfficeTxtFile/Resource/DocxTemplate.docx svn_mime_002dtype=application%2Foctet-stream
+_tags/rev_61879/ASCOfficeTxtFile/Resource/XmlTemplate.docx svn_mime_002dtype=application%2Foctet-stream

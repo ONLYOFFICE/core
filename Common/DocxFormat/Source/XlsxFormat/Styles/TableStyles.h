@@ -92,7 +92,9 @@ namespace OOX
 					if(m_oName.IsInit())
 					{
 						CString sName;
-						sName.Format(_T(" name=\"%s\""), XmlUtils::EncodeXmlString(m_oName.get2()));
+						sName.Append(_T(" name=\""));
+						sName.Append(XmlUtils::EncodeXmlString(m_oName.get2()));
+						sName.Append(_T("\""));
 						writer.WriteString(sName);
 					}
 					if((m_oPivot.IsInit() && true == m_oPivot->ToBool()) || (m_oTable.IsInit() && false == m_oTable->ToBool()))
@@ -181,12 +183,18 @@ namespace OOX
 				}
 				if(m_oDefaultTableStyle.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" defaultTableStyle=\"%s\""), XmlUtils::EncodeXmlString(m_oDefaultTableStyle.get()));
+					CString sVal;
+					sVal.Append(_T(" defaultTableStyle=\""));
+					sVal.Append(XmlUtils::EncodeXmlString(m_oDefaultTableStyle.get()));
+					sVal.Append(_T("\""));
 					writer.WriteString(sVal);
 				}
 				if(m_oDefaultPivotStyle.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" defaultPivotStyle=\"%s\""), XmlUtils::EncodeXmlString(m_oDefaultPivotStyle.get()));
+					CString sVal;
+					sVal.Append(_T(" defaultPivotStyle=\""));
+					sVal.Append(XmlUtils::EncodeXmlString(m_oDefaultPivotStyle.get()));
+					sVal.Append(_T("\""));
 					writer.WriteString(sVal);
 				}
 				if(m_arrItems.size() >  0)

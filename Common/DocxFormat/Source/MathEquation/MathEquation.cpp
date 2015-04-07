@@ -1,4 +1,5 @@
 #include "MathEquation.h"
+#include "MathString.h"
 #include "OutputDev.h"
 
 using namespace MathEquation;

@@ -2405,7 +2405,8 @@ namespace BinXlsxRW {
 				if(S_OK == hRes && NULL != bstrXml)
 				{
 					pCellAnchor->m_oXml.Init();
-					pCellAnchor->m_oXml->AppendFormat(_T("%s<xdr:clientData/>"), (const TCHAR *) (*bstrXml));
+					pCellAnchor->m_oXml->Append(*bstrXml);
+					pCellAnchor->m_oXml->Append(_T("<xdr:clientData/>"));
 				}
 				RELEASEOBJECT(bstrXml);
 			}
@@ -2702,7 +2703,7 @@ namespace BinXlsxRW {
 			{
 				double dValue = m_oBufferedStream.GetDoubleReal();
 				pCell->m_oValue.Init();
-				pCell->m_oValue->m_sText.AppendFormat(_T("%s"), (const TCHAR *) OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(dValue));
+				pCell->m_oValue->m_sText.Append(OOX::Spreadsheet::SpreadsheetCommon::WriteDouble(dValue));
 			}
 			else
 				res = c_oSerConstants::ReadUnknown;

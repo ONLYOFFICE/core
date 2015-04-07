@@ -1926,9 +1926,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_oddHeader);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:oddHeader xml:space=\"preserve\">%s</c:oddHeader>"), sVal);
+					sXml.Append(_T("<c:oddHeader xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:oddHeader>%s</c:oddHeader>"), sVal);
+					sXml.Append(_T("<c:oddHeader>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:oddHeader>"));
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_oddFooter)
@@ -1937,9 +1939,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_oddFooter);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:oddFooter xml:space=\"preserve\">%s</c:oddFooter>"), sVal);
+					sXml.Append(_T("<c:oddFooter xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:oddFooter>%s</c:oddFooter>"), sVal);
+					sXml.Append(_T("<c:oddFooter>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:oddFooter>"));
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_evenHeader)
@@ -1948,9 +1952,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_evenHeader);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:evenHeader xml:space=\"preserve\">%s</c:evenHeader>"), sVal);
+					sXml.Append(_T("<c:evenHeader xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:evenHeader>%s</c:evenHeader>"), sVal);
+					sXml.Append(_T("<c:evenHeader>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:evenHeader>"));
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_evenFooter)
@@ -1959,9 +1965,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_evenFooter);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:evenFooter xml:space=\"preserve\">%s</c:evenFooter>"), sVal);
+					sXml.Append(_T("<c:evenFooter xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:evenFooter>%s</c:evenFooter>"), sVal);
+					sXml.Append(_T("<c:evenFooter>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:evenFooter>"));
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_firstHeader)
@@ -1970,9 +1978,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_firstHeader);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:firstHeader xml:space=\"preserve\">%s</c:firstHeader>"), sVal);
+					sXml.Append(_T("<c:firstHeader xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:firstHeader>%s</c:firstHeader>"), sVal);
+					sXml.Append(_T("<c:firstHeader>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:firstHeader>"));
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_firstFooter)
@@ -1981,9 +1991,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_firstFooter);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:firstFooter xml:space=\"preserve\">%s</c:firstFooter>"), sVal);
+					sXml.Append(_T("<c:firstFooter xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:firstFooter>%s</c:firstFooter>"), sVal);
+					sXml.Append(_T("<c:firstFooter>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:firstFooter>"));
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("</")));
@@ -3842,9 +3854,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_f);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:f xml:space=\"preserve\">%s</c:f>"), sVal);
+					sXml.Append(_T("<c:f xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:f>%s</c:f>"), sVal);
+					sXml.Append(_T("<c:f>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:f>"));
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_strCache)
@@ -3980,9 +3994,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_v);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:v xml:space=\"preserve\">%s</c:v>"), sVal);
+					sXml.Append(_T("<c:v xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:v>%s</c:v>"), sVal);
+					sXml.Append(_T("<c:v>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:v>"));
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("</")));
@@ -6077,9 +6093,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_v);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:v xml:space=\"preserve\">%s</c:v>"), sVal);
+					sXml.Append(_T("<c:v xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:v>%s</c:v>"), sVal);
+					sXml.Append(_T("<c:v>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:v>"));
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("</")));
@@ -6835,10 +6853,14 @@ namespace OOX{
 						if(true == bIsAttribute)
 							sXml.Format(_T(" c:separator=\"%s\""), sVal);
 						else
+						{
 							if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-								sXml.Format(_T("<c:separator xml:space=\"preserve\">%s</c:separator>"), sVal);
+								sXml.Append(_T("<c:separator xml:space=\"preserve\">"));
 							else
-								sXml.Format(_T("<c:separator>%s</c:separator>"), sVal);
+								sXml.Append(_T("<c:separator>"));
+							sXml.Append(sVal);
+							sXml.Append(_T("</c:separator>"));
+						}
 						writer.WriteString(sXml);
 					}
 				}
@@ -7301,10 +7323,14 @@ namespace OOX{
 						if(true == bIsAttribute)
 							sXml.Format(_T(" c:separator=\"%s\""), sVal);
 						else
+						{
 							if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-								sXml.Format(_T("<c:separator xml:space=\"preserve\">%s</c:separator>"), sVal);
+								sXml.Append(_T("<c:separator xml:space=\"preserve\">"));
 							else
-								sXml.Format(_T("<c:separator>%s</c:separator>"), sVal);
+								sXml.Append(_T("<c:separator>"));
+							sXml.Append(sVal);
+							sXml.Append(_T("</c:separator>"));
+						}
 						writer.WriteString(sXml);
 					}
 				}
@@ -7689,9 +7715,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_name);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:name xml:space=\"preserve\">%s</c:name>"), sVal);
+					sXml.Append(_T("<c:name xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:name>%s</c:name>"), sVal);
+					sXml.Append(_T("<c:name>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:name>"));
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_spPr)
@@ -8401,9 +8429,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_formatCode);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:formatCode xml:space=\"preserve\">%s</c:formatCode>"), sVal);
+					sXml.Append(_T("<c:formatCode xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:formatCode>%s</c:formatCode>"), sVal);
+					sXml.Append(_T("<c:formatCode>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:formatCode>"));
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_ptCount)
@@ -8489,9 +8519,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_v);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:v xml:space=\"preserve\">%s</c:v>"), sVal);
+					sXml.Append(_T("<c:v xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:v>%s</c:v>"), sVal);
+					sXml.Append(_T("<c:v>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:v>"));
 				writer.WriteString(sXml);
 			}
 			writer.WriteString(CString(_T("</")));
@@ -8570,9 +8602,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_f);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:f xml:space=\"preserve\">%s</c:f>"), sVal);
+					sXml.Append(_T("<c:f xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:f>%s</c:f>"), sVal);
+					sXml.Append(_T("<c:f>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:f>"));
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_numCache)
@@ -8737,9 +8771,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_f);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:f xml:space=\"preserve\">%s</c:f>"), sVal);
+					sXml.Append(_T("<c:f xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:f>%s</c:f>"), sVal);
+					sXml.Append(_T("<c:f>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:f>"));
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_multiLvlStrCache)
@@ -14860,9 +14896,11 @@ namespace OOX{
 				CString sVal;
 				sVal = XmlUtils::EncodeXmlString(*m_name);
 				if(-1 != sVal.Find(' ') || -1 != sVal.Find('\n'))
-					sXml.Format(_T("<c:name xml:space=\"preserve\">%s</c:name>"), sVal);
+					sXml.Append(_T("<c:name xml:space=\"preserve\">"));
 				else
-					sXml.Format(_T("<c:name>%s</c:name>"), sVal);
+					sXml.Append(_T("<c:name>"));
+				sXml.Append(sVal);
+				sXml.Append(_T("</c:name>"));
 				writer.WriteString(sXml);
 			}
 			if(NULL != m_fmtId)

@@ -688,7 +688,10 @@ namespace OOX
 				}
 				if(m_oRFont.IsInit() && m_oRFont->m_sVal.IsInit())
 				{
-					CString sVal;sVal.Format(_T("<rFont val=\"%s\"/>"), XmlUtils::EncodeXmlString(m_oRFont->m_sVal.get()));
+					CString sVal;
+					sVal.Append(_T("<rFont val=\""));
+					sVal.Append( XmlUtils::EncodeXmlString(m_oRFont->m_sVal.get()));
+					sVal.Append(_T("\"/>"));
 					writer.WriteString(sVal);
 				}
 				if(m_oScheme.IsInit() && m_oScheme->m_oFontScheme.IsInit())

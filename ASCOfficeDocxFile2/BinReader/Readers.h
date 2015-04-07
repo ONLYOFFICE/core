@@ -661,7 +661,10 @@ public:
 			{
 				CString sStyleName(m_oBufferedStream.GetString3(length));
 				sStyleName = XmlUtils::EncodeXmlString(sStyleName);
-				CString sStyle;sStyle.Format(_T("<w:pStyle w:val=\"%s\" />"), sStyleName);
+				CString sStyle;
+				sStyle.Append(_T("<w:pStyle w:val=\""));
+				sStyle.Append(sStyleName);
+				sStyle.Append(_T("\" />"));
 				pCStringWriter->WriteString(sStyle);
 				break;
 			}
@@ -2727,7 +2730,10 @@ public:
 				CString sFontName(m_oBufferedStream.GetString3(length));
 				sFontName = XmlUtils::EncodeXmlString(sFontName);
 
-				CString sVal; sVal.Format(_T("<m:mathFont m:val=\"%s\" />"), sFontName);
+				CString sVal;
+				sVal.Append(_T("<m:mathFont m:val=\""));
+				sVal.Append(sFontName);
+				sVal.Append(_T("\" />"));
 				m_oFileWriter.m_oSettingWriter.AddSetting(sVal);
 		}
 		else
@@ -3395,7 +3401,11 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 				CString sChr = GetMathText (length);
-				CString sVal; sVal.Format(_T("<m:begChr m:val=\"%s\" />"), sChr);
+				CString sVal;
+				sVal.Append(_T("<m:begChr m:val=\""));
+				sVal.Append(sChr);
+				sVal.Append(_T("\" />"));
+
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -3593,7 +3603,10 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 				CString sChr = GetMathText (length);
-				CString sVal; sVal.Format(_T("<m:chr m:val=\"%s\" />"), sChr);
+				CString sVal;
+				sVal.Append(_T("<m:chr m:val=\""));
+				sVal.Append(sChr);
+				sVal.Append(_T("\" />"));
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -3750,7 +3763,10 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 				CString sChr = GetMathText (length);
-				CString sVal; sVal.Format(_T("<m:endChr m:val=\"%s\" />"), sChr);
+				CString sVal;
+				sVal.Append(_T("<m:endChr m:val=\""));
+				sVal.Append(sChr);
+				sVal.Append(_T("\" />"));
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else
@@ -4781,7 +4797,10 @@ public:
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
 				CString sChr = GetMathText (length);
-				CString sVal; sVal.Format(_T("<m:sepChr m:val=\"%s\" />"), sChr);
+				CString sVal;
+				sVal.Append(_T("<m:sepChr m:val=\""));
+				sVal.Append(sChr);
+				sVal.Append(_T("\" />"));
 				GetRunStringWriter().WriteString(sVal);
 		}
 		else

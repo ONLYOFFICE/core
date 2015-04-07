@@ -1,0 +1,23 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCImageConverter", "ASCImageConverter.vcproj", "{CFE8498F-9D55-464B-962C-44EC2CA53D40}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+		ReleaseASC|Win32 = ReleaseASC|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CFE8498F-9D55-464B-962C-44EC2CA53D40}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CFE8498F-9D55-464B-962C-44EC2CA53D40}.Debug|Win32.Build.0 = Debug|Win32
+		{CFE8498F-9D55-464B-962C-44EC2CA53D40}.Release|Win32.ActiveCfg = Release|Win32
+		{CFE8498F-9D55-464B-962C-44EC2CA53D40}.Release|Win32.Build.0 = Release|Win32
+		{CFE8498F-9D55-464B-962C-44EC2CA53D40}.ReleaseASC|Win32.ActiveCfg = ReleaseASC|Win32
+		{CFE8498F-9D55-464B-962C-44EC2CA53D40}.ReleaseASC|Win32.Build.0 = ReleaseASC|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

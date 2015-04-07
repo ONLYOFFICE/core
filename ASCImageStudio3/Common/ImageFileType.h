@@ -1,0 +1,15 @@
+#pragma once
+	
+#define IMAGEFILE_TYPE_NONE				0
+#define IMAGEFILE_TYPE_BMP				1
+#define IMAGEFILE_TYPE_GIF				2
+#define IMAGEFILE_TYPE_JPEG				3
+#define IMAGEFILE_TYPE_PNG				4
+#define IMAGEFILE_TYPE_TIFF				5
+#define IMAGEFILE_TYPE_WMF				6
+#define IMAGEFILE_TYPE_EMF				7
+#define IMAGEFILE_TYPE_PCX				8
+#define IMAGEFILE_TYPE_TGA				9
+#define IMAGEFILE_TYPE_IPOD				10
+#define IMAGEFILE_TYPE_PSD				11
+#define IMAGEFILE_TYPE_JP2				12

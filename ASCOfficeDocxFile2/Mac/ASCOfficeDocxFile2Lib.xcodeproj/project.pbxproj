@@ -1,0 +1,767 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		17C1FE961ACC42C4006B99B3 /* Common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F1E1AC4549B00BEA2EA /* Common.cpp */; };
+		17C1FE971ACC42C4006B99B3 /* ChartFromToBinary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F221AC4549B00BEA2EA /* ChartFromToBinary.cpp */; };
+		17C1FE981ACC42C4006B99B3 /* CSVReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F261AC4549B00BEA2EA /* CSVReader.cpp */; };
+		17C1FE991ACC42C4006B99B3 /* DocxSerializer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F0E1AC4546100BEA2EA /* DocxSerializer.cpp */; };
+		17C1FE9A1ACC42C4006B99B3 /* CommonWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F241AC4549B00BEA2EA /* CommonWriter.cpp */; };
+		17C1FE9B1ACC42C4006B99B3 /* CSVWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F2F1AC4549B00BEA2EA /* CSVWriter.cpp */; };
+		17C1FE9C1ACC42C4006B99B3 /* XlsxSerializer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F121AC4546100BEA2EA /* XlsxSerializer.cpp */; };
+		17C1FE9D1ACC42C4006B99B3 /* FontProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F101AC4546100BEA2EA /* FontProcessor.cpp */; };
+		17C1FEA11ACC42C4006B99B3 /* fontTableWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF31AC4544900BEA2EA /* fontTableWriter.h */; };
+		17C1FEA21ACC42C4006B99B3 /* ChartFromToBinary.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F231AC4549B00BEA2EA /* ChartFromToBinary.h */; };
+		17C1FEA31ACC42C4006B99B3 /* MediaWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF51AC4544900BEA2EA /* MediaWriter.h */; };
+		17C1FEA41ACC42C4006B99B3 /* DefaultThemeWriterLinux.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEE1AC4544900BEA2EA /* DefaultThemeWriterLinux.h */; };
+		17C1FEA51ACC42C4006B99B3 /* CommonWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F251AC4549B00BEA2EA /* CommonWriter.h */; };
+		17C1FEA61ACC42C4006B99B3 /* NumberingWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF61AC4544900BEA2EA /* NumberingWriter.h */; };
+		17C1FEA71ACC42C4006B99B3 /* BinReaderWriterDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F1D1AC4549B00BEA2EA /* BinReaderWriterDefines.h */; };
+		17C1FEA81ACC42C4006B99B3 /* BinaryWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F211AC4549B00BEA2EA /* BinaryWriter.h */; };
+		17C1FEA91ACC42C4006B99B3 /* DocumentWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF11AC4544900BEA2EA /* DocumentWriter.h */; };
+		17C1FEAA1ACC42C4006B99B3 /* FontProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F111AC4546100BEA2EA /* FontProcessor.h */; };
+		17C1FEAB1ACC42C4006B99B3 /* StylesWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EFA1AC4544900BEA2EA /* StylesWriter.h */; };
+		17C1FEAC1ACC42C4006B99B3 /* Readers.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF81AC4544900BEA2EA /* Readers.h */; };
+		17C1FEAD1ACC42C4006B99B3 /* ChartWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEB1AC4544900BEA2EA /* ChartWriter.h */; };
+		17C1FEAE1ACC42C4006B99B3 /* DocumentRelsWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF01AC4544900BEA2EA /* DocumentRelsWriter.h */; };
+		17C1FEAF1ACC42C4006B99B3 /* CommentsWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEC1AC4544900BEA2EA /* CommentsWriter.h */; };
+		17C1FEB01ACC42C4006B99B3 /* BinaryCommonReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F2D1AC4549B00BEA2EA /* BinaryCommonReader.h */; };
+		17C1FEB11ACC42C4006B99B3 /* Common.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F1F1AC4549B00BEA2EA /* Common.h */; };
+		17C1FEB21ACC42C4006B99B3 /* XlsxSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F131AC4546100BEA2EA /* XlsxSerializer.h */; };
+		17C1FEB31ACC42C4006B99B3 /* CSVReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F271AC4549B00BEA2EA /* CSVReader.h */; };
+		17C1FEB41ACC42C4006B99B3 /* ContentTypesWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EED1AC4544900BEA2EA /* ContentTypesWriter.h */; };
+		17C1FEB51ACC42C4006B99B3 /* HeaderFooterWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF41AC4544900BEA2EA /* HeaderFooterWriter.h */; };
+		17C1FEB61ACC42C4006B99B3 /* webSettingsWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EFB1AC4544900BEA2EA /* webSettingsWriter.h */; };
+		17C1FEB71ACC42C4006B99B3 /* SettingWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF91AC4544900BEA2EA /* SettingWriter.h */; };
+		17C1FEB81ACC42C4006B99B3 /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F4E1AC454EF00BEA2EA /* FileDownloader.h */; };
+		17C1FEB91ACC42C4006B99B3 /* ReaderClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF71AC4544900BEA2EA /* ReaderClasses.h */; };
+		17C1FEBA1ACC42C4006B99B3 /* BinaryReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F2E1AC4549B00BEA2EA /* BinaryReader.h */; };
+		17C1FEBB1ACC42C4006B99B3 /* DefaultThemeWriterWin.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEF1AC4544900BEA2EA /* DefaultThemeWriterWin.h */; };
+		17C1FEBC1ACC42C4006B99B3 /* DocxSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F0F1AC4546100BEA2EA /* DocxSerializer.h */; };
+		17C1FEBD1ACC42C4006B99B3 /* FileWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF21AC4544900BEA2EA /* FileWriter.h */; };
+		17C1FEBE1ACC42C4006B99B3 /* CSVWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F301AC4549B00BEA2EA /* CSVWriter.h */; };
+		17C1FEC81ACC42FD006B99B3 /* libDocxFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17C1FEC51ACC42C4006B99B3 /* libDocxFormatLib_ios.a */; };
+		17D913C11AC5968B0096D788 /* libDocxFormatLib.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17D913B11AC596190096D788 /* libDocxFormatLib.a */; };
+		17E17EFC1AC4544900BEA2EA /* ChartWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEB1AC4544900BEA2EA /* ChartWriter.h */; };
+		17E17EFD1AC4544900BEA2EA /* CommentsWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEC1AC4544900BEA2EA /* CommentsWriter.h */; };
+		17E17EFE1AC4544900BEA2EA /* ContentTypesWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EED1AC4544900BEA2EA /* ContentTypesWriter.h */; };
+		17E17EFF1AC4544900BEA2EA /* DefaultThemeWriterLinux.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEE1AC4544900BEA2EA /* DefaultThemeWriterLinux.h */; };
+		17E17F001AC4544900BEA2EA /* DefaultThemeWriterWin.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEF1AC4544900BEA2EA /* DefaultThemeWriterWin.h */; };
+		17E17F011AC4544900BEA2EA /* DocumentRelsWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF01AC4544900BEA2EA /* DocumentRelsWriter.h */; };
+		17E17F021AC4544900BEA2EA /* DocumentWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF11AC4544900BEA2EA /* DocumentWriter.h */; };
+		17E17F031AC4544900BEA2EA /* FileWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF21AC4544900BEA2EA /* FileWriter.h */; };
+		17E17F041AC4544900BEA2EA /* fontTableWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF31AC4544900BEA2EA /* fontTableWriter.h */; };
+		17E17F051AC4544900BEA2EA /* HeaderFooterWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF41AC4544900BEA2EA /* HeaderFooterWriter.h */; };
+		17E17F061AC4544900BEA2EA /* MediaWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF51AC4544900BEA2EA /* MediaWriter.h */; };
+		17E17F071AC4544900BEA2EA /* NumberingWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF61AC4544900BEA2EA /* NumberingWriter.h */; };
+		17E17F081AC4544900BEA2EA /* ReaderClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF71AC4544900BEA2EA /* ReaderClasses.h */; };
+		17E17F091AC4544900BEA2EA /* Readers.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF81AC4544900BEA2EA /* Readers.h */; };
+		17E17F0A1AC4544900BEA2EA /* SettingWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF91AC4544900BEA2EA /* SettingWriter.h */; };
+		17E17F0B1AC4544900BEA2EA /* StylesWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EFA1AC4544900BEA2EA /* StylesWriter.h */; };
+		17E17F0C1AC4544900BEA2EA /* webSettingsWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EFB1AC4544900BEA2EA /* webSettingsWriter.h */; };
+		17E17F141AC4546100BEA2EA /* DocxSerializer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F0E1AC4546100BEA2EA /* DocxSerializer.cpp */; };
+		17E17F151AC4546100BEA2EA /* DocxSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F0F1AC4546100BEA2EA /* DocxSerializer.h */; };
+		17E17F161AC4546100BEA2EA /* FontProcessor.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F101AC4546100BEA2EA /* FontProcessor.cpp */; };
+		17E17F171AC4546100BEA2EA /* FontProcessor.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F111AC4546100BEA2EA /* FontProcessor.h */; };
+		17E17F181AC4546100BEA2EA /* XlsxSerializer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F121AC4546100BEA2EA /* XlsxSerializer.cpp */; };
+		17E17F191AC4546100BEA2EA /* XlsxSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F131AC4546100BEA2EA /* XlsxSerializer.h */; };
+		17E17F3A1AC4549B00BEA2EA /* BinReaderWriterDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F1D1AC4549B00BEA2EA /* BinReaderWriterDefines.h */; };
+		17E17F3B1AC4549B00BEA2EA /* Common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F1E1AC4549B00BEA2EA /* Common.cpp */; };
+		17E17F3C1AC4549B00BEA2EA /* Common.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F1F1AC4549B00BEA2EA /* Common.h */; };
+		17E17F3D1AC4549B00BEA2EA /* BinaryWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F211AC4549B00BEA2EA /* BinaryWriter.h */; };
+		17E17F3E1AC4549B00BEA2EA /* ChartFromToBinary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F221AC4549B00BEA2EA /* ChartFromToBinary.cpp */; };
+		17E17F3F1AC4549B00BEA2EA /* ChartFromToBinary.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F231AC4549B00BEA2EA /* ChartFromToBinary.h */; };
+		17E17F401AC4549B00BEA2EA /* CommonWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F241AC4549B00BEA2EA /* CommonWriter.cpp */; };
+		17E17F411AC4549B00BEA2EA /* CommonWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F251AC4549B00BEA2EA /* CommonWriter.h */; };
+		17E17F421AC4549B00BEA2EA /* CSVReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F261AC4549B00BEA2EA /* CSVReader.cpp */; };
+		17E17F431AC4549B00BEA2EA /* CSVReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F271AC4549B00BEA2EA /* CSVReader.h */; };
+		17E17F481AC4549B00BEA2EA /* BinaryCommonReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F2D1AC4549B00BEA2EA /* BinaryCommonReader.h */; };
+		17E17F491AC4549B00BEA2EA /* BinaryReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F2E1AC4549B00BEA2EA /* BinaryReader.h */; };
+		17E17F4A1AC4549B00BEA2EA /* CSVWriter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F2F1AC4549B00BEA2EA /* CSVWriter.cpp */; };
+		17E17F4B1AC4549B00BEA2EA /* CSVWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F301AC4549B00BEA2EA /* CSVWriter.h */; };
+		17E17F4F1AC454EF00BEA2EA /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F4E1AC454EF00BEA2EA /* FileDownloader.h */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXContainerItemProxy section */
+		17C1FEC41ACC42C4006B99B3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17C1FC9C1ACC4250006B99B3;
+			remoteInfo = DocxFormatLib_ios;
+		};
+		17C1FEC61ACC42EC006B99B3 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17C1FB8E1ACC4250006B99B3;
+			remoteInfo = DocxFormatLib_ios;
+		};
+		17D913B01AC596190096D788 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17E69FDC1AC4259800F28F8B;
+			remoteInfo = DocxFormatLib;
+		};
+		17D913BF1AC5967E0096D788 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17E69FDB1AC4259800F28F8B;
+			remoteInfo = DocxFormatLib;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXFileReference section */
+		17C1FEC21ACC42C4006B99B3 /* libASCOfficeDocxFile2Lib_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libASCOfficeDocxFile2Lib_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DocxFormatLib.xcodeproj; path = ../../Common/DocxFormat/Mac/DocxFormatLib.xcodeproj; sourceTree = "<group>"; };
+		17E17EDC1AC453F800BEA2EA /* libASCOfficeDocxFile2Lib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libASCOfficeDocxFile2Lib.a; sourceTree = BUILT_PRODUCTS_DIR; };
+		17E17EEB1AC4544900BEA2EA /* ChartWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChartWriter.h; sourceTree = "<group>"; };
+		17E17EEC1AC4544900BEA2EA /* CommentsWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentsWriter.h; sourceTree = "<group>"; };
+		17E17EED1AC4544900BEA2EA /* ContentTypesWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentTypesWriter.h; sourceTree = "<group>"; };
+		17E17EEE1AC4544900BEA2EA /* DefaultThemeWriterLinux.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultThemeWriterLinux.h; sourceTree = "<group>"; };
+		17E17EEF1AC4544900BEA2EA /* DefaultThemeWriterWin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultThemeWriterWin.h; sourceTree = "<group>"; };
+		17E17EF01AC4544900BEA2EA /* DocumentRelsWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentRelsWriter.h; sourceTree = "<group>"; };
+		17E17EF11AC4544900BEA2EA /* DocumentWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentWriter.h; sourceTree = "<group>"; };
+		17E17EF21AC4544900BEA2EA /* FileWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWriter.h; sourceTree = "<group>"; };
+		17E17EF31AC4544900BEA2EA /* fontTableWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = fontTableWriter.h; sourceTree = "<group>"; };
+		17E17EF41AC4544900BEA2EA /* HeaderFooterWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HeaderFooterWriter.h; sourceTree = "<group>"; };
+		17E17EF51AC4544900BEA2EA /* MediaWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MediaWriter.h; sourceTree = "<group>"; };
+		17E17EF61AC4544900BEA2EA /* NumberingWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = NumberingWriter.h; sourceTree = "<group>"; };
+		17E17EF71AC4544900BEA2EA /* ReaderClasses.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ReaderClasses.h; sourceTree = "<group>"; };
+		17E17EF81AC4544900BEA2EA /* Readers.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Readers.h; sourceTree = "<group>"; };
+		17E17EF91AC4544900BEA2EA /* SettingWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SettingWriter.h; sourceTree = "<group>"; };
+		17E17EFA1AC4544900BEA2EA /* StylesWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = StylesWriter.h; sourceTree = "<group>"; };
+		17E17EFB1AC4544900BEA2EA /* webSettingsWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = webSettingsWriter.h; sourceTree = "<group>"; };
+		17E17F0E1AC4546100BEA2EA /* DocxSerializer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = DocxSerializer.cpp; sourceTree = "<group>"; };
+		17E17F0F1AC4546100BEA2EA /* DocxSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocxSerializer.h; sourceTree = "<group>"; };
+		17E17F101AC4546100BEA2EA /* FontProcessor.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = FontProcessor.cpp; sourceTree = "<group>"; };
+		17E17F111AC4546100BEA2EA /* FontProcessor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FontProcessor.h; sourceTree = "<group>"; };
+		17E17F121AC4546100BEA2EA /* XlsxSerializer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = XlsxSerializer.cpp; sourceTree = "<group>"; };
+		17E17F131AC4546100BEA2EA /* XlsxSerializer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = XlsxSerializer.h; sourceTree = "<group>"; };
+		17E17F1D1AC4549B00BEA2EA /* BinReaderWriterDefines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinReaderWriterDefines.h; sourceTree = "<group>"; };
+		17E17F1E1AC4549B00BEA2EA /* Common.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Common.cpp; sourceTree = "<group>"; };
+		17E17F1F1AC4549B00BEA2EA /* Common.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
+		17E17F211AC4549B00BEA2EA /* BinaryWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryWriter.h; sourceTree = "<group>"; };
+		17E17F221AC4549B00BEA2EA /* ChartFromToBinary.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ChartFromToBinary.cpp; sourceTree = "<group>"; };
+		17E17F231AC4549B00BEA2EA /* ChartFromToBinary.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChartFromToBinary.h; sourceTree = "<group>"; };
+		17E17F241AC4549B00BEA2EA /* CommonWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CommonWriter.cpp; sourceTree = "<group>"; };
+		17E17F251AC4549B00BEA2EA /* CommonWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommonWriter.h; sourceTree = "<group>"; };
+		17E17F261AC4549B00BEA2EA /* CSVReader.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVReader.cpp; sourceTree = "<group>"; };
+		17E17F271AC4549B00BEA2EA /* CSVReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVReader.h; sourceTree = "<group>"; };
+		17E17F2D1AC4549B00BEA2EA /* BinaryCommonReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryCommonReader.h; sourceTree = "<group>"; };
+		17E17F2E1AC4549B00BEA2EA /* BinaryReader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BinaryReader.h; sourceTree = "<group>"; };
+		17E17F2F1AC4549B00BEA2EA /* CSVWriter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = CSVWriter.cpp; sourceTree = "<group>"; };
+		17E17F301AC4549B00BEA2EA /* CSVWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CSVWriter.h; sourceTree = "<group>"; };
+		17E17F4E1AC454EF00BEA2EA /* FileDownloader.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = FileDownloader.h; path = ../../../Common/FileDownloader.h; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		17C1FE9E1ACC42C4006B99B3 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17C1FEC81ACC42FD006B99B3 /* libDocxFormatLib_ios.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		17E17ED91AC453F800BEA2EA /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17D913C11AC5968B0096D788 /* libDocxFormatLib.a in Frameworks */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		17D913AC1AC596180096D788 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				17D913B11AC596190096D788 /* libDocxFormatLib.a */,
+				17C1FEC51ACC42C4006B99B3 /* libDocxFormatLib_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		17E17ED31AC453F800BEA2EA = {
+			isa = PBXGroup;
+			children = (
+				17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */,
+				17E17EDE1AC453F800BEA2EA /* ASCOfficeDocxFile2Lib */,
+				17E17EDD1AC453F800BEA2EA /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		17E17EDD1AC453F800BEA2EA /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				17E17EDC1AC453F800BEA2EA /* libASCOfficeDocxFile2Lib.a */,
+				17C1FEC21ACC42C4006B99B3 /* libASCOfficeDocxFile2Lib_ios.a */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		17E17EDE1AC453F800BEA2EA /* ASCOfficeDocxFile2Lib */ = {
+			isa = PBXGroup;
+			children = (
+				17E17F4D1AC454E200BEA2EA /* Common */,
+				17E17F1A1AC4549B00BEA2EA /* XlsxSerializerCom */,
+				17E17F0D1AC4546100BEA2EA /* DocWrapper */,
+				17E17EEA1AC4544900BEA2EA /* BinReader */,
+			);
+			path = ASCOfficeDocxFile2Lib;
+			sourceTree = "<group>";
+		};
+		17E17EEA1AC4544900BEA2EA /* BinReader */ = {
+			isa = PBXGroup;
+			children = (
+				17E17EEB1AC4544900BEA2EA /* ChartWriter.h */,
+				17E17EEC1AC4544900BEA2EA /* CommentsWriter.h */,
+				17E17EED1AC4544900BEA2EA /* ContentTypesWriter.h */,
+				17E17EEE1AC4544900BEA2EA /* DefaultThemeWriterLinux.h */,
+				17E17EEF1AC4544900BEA2EA /* DefaultThemeWriterWin.h */,
+				17E17EF01AC4544900BEA2EA /* DocumentRelsWriter.h */,
+				17E17EF11AC4544900BEA2EA /* DocumentWriter.h */,
+				17E17EF21AC4544900BEA2EA /* FileWriter.h */,
+				17E17EF31AC4544900BEA2EA /* fontTableWriter.h */,
+				17E17EF41AC4544900BEA2EA /* HeaderFooterWriter.h */,
+				17E17EF51AC4544900BEA2EA /* MediaWriter.h */,
+				17E17EF61AC4544900BEA2EA /* NumberingWriter.h */,
+				17E17EF71AC4544900BEA2EA /* ReaderClasses.h */,
+				17E17EF81AC4544900BEA2EA /* Readers.h */,
+				17E17EF91AC4544900BEA2EA /* SettingWriter.h */,
+				17E17EFA1AC4544900BEA2EA /* StylesWriter.h */,
+				17E17EFB1AC4544900BEA2EA /* webSettingsWriter.h */,
+			);
+			name = BinReader;
+			path = ../../BinReader;
+			sourceTree = "<group>";
+		};
+		17E17F0D1AC4546100BEA2EA /* DocWrapper */ = {
+			isa = PBXGroup;
+			children = (
+				17E17F0E1AC4546100BEA2EA /* DocxSerializer.cpp */,
+				17E17F0F1AC4546100BEA2EA /* DocxSerializer.h */,
+				17E17F101AC4546100BEA2EA /* FontProcessor.cpp */,
+				17E17F111AC4546100BEA2EA /* FontProcessor.h */,
+				17E17F121AC4546100BEA2EA /* XlsxSerializer.cpp */,
+				17E17F131AC4546100BEA2EA /* XlsxSerializer.h */,
+			);
+			name = DocWrapper;
+			path = ../../DocWrapper;
+			sourceTree = "<group>";
+		};
+		17E17F1A1AC4549B00BEA2EA /* XlsxSerializerCom */ = {
+			isa = PBXGroup;
+			children = (
+				17E17F1C1AC4549B00BEA2EA /* Common */,
+				17E17F201AC4549B00BEA2EA /* Reader */,
+				17E17F2C1AC4549B00BEA2EA /* Writer */,
+			);
+			name = XlsxSerializerCom;
+			path = ../../../XlsxSerializerCom;
+			sourceTree = "<group>";
+		};
+		17E17F1C1AC4549B00BEA2EA /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				17E17F1D1AC4549B00BEA2EA /* BinReaderWriterDefines.h */,
+				17E17F1E1AC4549B00BEA2EA /* Common.cpp */,
+				17E17F1F1AC4549B00BEA2EA /* Common.h */,
+			);
+			path = Common;
+			sourceTree = "<group>";
+		};
+		17E17F201AC4549B00BEA2EA /* Reader */ = {
+			isa = PBXGroup;
+			children = (
+				17E17F211AC4549B00BEA2EA /* BinaryWriter.h */,
+				17E17F221AC4549B00BEA2EA /* ChartFromToBinary.cpp */,
+				17E17F231AC4549B00BEA2EA /* ChartFromToBinary.h */,
+				17E17F241AC4549B00BEA2EA /* CommonWriter.cpp */,
+				17E17F251AC4549B00BEA2EA /* CommonWriter.h */,
+				17E17F261AC4549B00BEA2EA /* CSVReader.cpp */,
+				17E17F271AC4549B00BEA2EA /* CSVReader.h */,
+			);
+			path = Reader;
+			sourceTree = "<group>";
+		};
+		17E17F2C1AC4549B00BEA2EA /* Writer */ = {
+			isa = PBXGroup;
+			children = (
+				17E17F2D1AC4549B00BEA2EA /* BinaryCommonReader.h */,
+				17E17F2E1AC4549B00BEA2EA /* BinaryReader.h */,
+				17E17F2F1AC4549B00BEA2EA /* CSVWriter.cpp */,
+				17E17F301AC4549B00BEA2EA /* CSVWriter.h */,
+			);
+			path = Writer;
+			sourceTree = "<group>";
+		};
+		17E17F4D1AC454E200BEA2EA /* Common */ = {
+			isa = PBXGroup;
+			children = (
+				17E17F4E1AC454EF00BEA2EA /* FileDownloader.h */,
+			);
+			name = Common;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXHeadersBuildPhase section */
+		17C1FEA01ACC42C4006B99B3 /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17C1FEA11ACC42C4006B99B3 /* fontTableWriter.h in Headers */,
+				17C1FEA21ACC42C4006B99B3 /* ChartFromToBinary.h in Headers */,
+				17C1FEA31ACC42C4006B99B3 /* MediaWriter.h in Headers */,
+				17C1FEA41ACC42C4006B99B3 /* DefaultThemeWriterLinux.h in Headers */,
+				17C1FEA51ACC42C4006B99B3 /* CommonWriter.h in Headers */,
+				17C1FEA61ACC42C4006B99B3 /* NumberingWriter.h in Headers */,
+				17C1FEA71ACC42C4006B99B3 /* BinReaderWriterDefines.h in Headers */,
+				17C1FEA81ACC42C4006B99B3 /* BinaryWriter.h in Headers */,
+				17C1FEA91ACC42C4006B99B3 /* DocumentWriter.h in Headers */,
+				17C1FEAA1ACC42C4006B99B3 /* FontProcessor.h in Headers */,
+				17C1FEAB1ACC42C4006B99B3 /* StylesWriter.h in Headers */,
+				17C1FEAC1ACC42C4006B99B3 /* Readers.h in Headers */,
+				17C1FEAD1ACC42C4006B99B3 /* ChartWriter.h in Headers */,
+				17C1FEAE1ACC42C4006B99B3 /* DocumentRelsWriter.h in Headers */,
+				17C1FEAF1ACC42C4006B99B3 /* CommentsWriter.h in Headers */,
+				17C1FEB01ACC42C4006B99B3 /* BinaryCommonReader.h in Headers */,
+				17C1FEB11ACC42C4006B99B3 /* Common.h in Headers */,
+				17C1FEB21ACC42C4006B99B3 /* XlsxSerializer.h in Headers */,
+				17C1FEB31ACC42C4006B99B3 /* CSVReader.h in Headers */,
+				17C1FEB41ACC42C4006B99B3 /* ContentTypesWriter.h in Headers */,
+				17C1FEB51ACC42C4006B99B3 /* HeaderFooterWriter.h in Headers */,
+				17C1FEB61ACC42C4006B99B3 /* webSettingsWriter.h in Headers */,
+				17C1FEB71ACC42C4006B99B3 /* SettingWriter.h in Headers */,
+				17C1FEB81ACC42C4006B99B3 /* FileDownloader.h in Headers */,
+				17C1FEB91ACC42C4006B99B3 /* ReaderClasses.h in Headers */,
+				17C1FEBA1ACC42C4006B99B3 /* BinaryReader.h in Headers */,
+				17C1FEBB1ACC42C4006B99B3 /* DefaultThemeWriterWin.h in Headers */,
+				17C1FEBC1ACC42C4006B99B3 /* DocxSerializer.h in Headers */,
+				17C1FEBD1ACC42C4006B99B3 /* FileWriter.h in Headers */,
+				17C1FEBE1ACC42C4006B99B3 /* CSVWriter.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		17E17EDA1AC453F800BEA2EA /* Headers */ = {
+			isa = PBXHeadersBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17E17F041AC4544900BEA2EA /* fontTableWriter.h in Headers */,
+				17E17F3F1AC4549B00BEA2EA /* ChartFromToBinary.h in Headers */,
+				17E17F061AC4544900BEA2EA /* MediaWriter.h in Headers */,
+				17E17EFF1AC4544900BEA2EA /* DefaultThemeWriterLinux.h in Headers */,
+				17E17F411AC4549B00BEA2EA /* CommonWriter.h in Headers */,
+				17E17F071AC4544900BEA2EA /* NumberingWriter.h in Headers */,
+				17E17F3A1AC4549B00BEA2EA /* BinReaderWriterDefines.h in Headers */,
+				17E17F3D1AC4549B00BEA2EA /* BinaryWriter.h in Headers */,
+				17E17F021AC4544900BEA2EA /* DocumentWriter.h in Headers */,
+				17E17F171AC4546100BEA2EA /* FontProcessor.h in Headers */,
+				17E17F0B1AC4544900BEA2EA /* StylesWriter.h in Headers */,
+				17E17F091AC4544900BEA2EA /* Readers.h in Headers */,
+				17E17EFC1AC4544900BEA2EA /* ChartWriter.h in Headers */,
+				17E17F011AC4544900BEA2EA /* DocumentRelsWriter.h in Headers */,
+				17E17EFD1AC4544900BEA2EA /* CommentsWriter.h in Headers */,
+				17E17F481AC4549B00BEA2EA /* BinaryCommonReader.h in Headers */,
+				17E17F3C1AC4549B00BEA2EA /* Common.h in Headers */,
+				17E17F191AC4546100BEA2EA /* XlsxSerializer.h in Headers */,
+				17E17F431AC4549B00BEA2EA /* CSVReader.h in Headers */,
+				17E17EFE1AC4544900BEA2EA /* ContentTypesWriter.h in Headers */,
+				17E17F051AC4544900BEA2EA /* HeaderFooterWriter.h in Headers */,
+				17E17F0C1AC4544900BEA2EA /* webSettingsWriter.h in Headers */,
+				17E17F0A1AC4544900BEA2EA /* SettingWriter.h in Headers */,
+				17E17F4F1AC454EF00BEA2EA /* FileDownloader.h in Headers */,
+				17E17F081AC4544900BEA2EA /* ReaderClasses.h in Headers */,
+				17E17F491AC4549B00BEA2EA /* BinaryReader.h in Headers */,
+				17E17F001AC4544900BEA2EA /* DefaultThemeWriterWin.h in Headers */,
+				17E17F151AC4546100BEA2EA /* DocxSerializer.h in Headers */,
+				17E17F031AC4544900BEA2EA /* FileWriter.h in Headers */,
+				17E17F4B1AC4549B00BEA2EA /* CSVWriter.h in Headers */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXHeadersBuildPhase section */
+
+/* Begin PBXNativeTarget section */
+		17C1FE921ACC42C4006B99B3 /* ASCOfficeDocxFile2Lib_ios */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 17C1FEBF1ACC42C4006B99B3 /* Build configuration list for PBXNativeTarget "ASCOfficeDocxFile2Lib_ios" */;
+			buildPhases = (
+				17C1FE951ACC42C4006B99B3 /* Sources */,
+				17C1FE9E1ACC42C4006B99B3 /* Frameworks */,
+				17C1FEA01ACC42C4006B99B3 /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				17C1FEC71ACC42EC006B99B3 /* PBXTargetDependency */,
+			);
+			name = ASCOfficeDocxFile2Lib_ios;
+			productName = ASCOfficeDocxFile2Lib;
+			productReference = 17C1FEC21ACC42C4006B99B3 /* libASCOfficeDocxFile2Lib_ios.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+		17E17EDB1AC453F800BEA2EA /* ASCOfficeDocxFile2Lib */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = 17E17EE71AC453F800BEA2EA /* Build configuration list for PBXNativeTarget "ASCOfficeDocxFile2Lib" */;
+			buildPhases = (
+				17E17ED81AC453F800BEA2EA /* Sources */,
+				17E17ED91AC453F800BEA2EA /* Frameworks */,
+				17E17EDA1AC453F800BEA2EA /* Headers */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				17D913C01AC5967E0096D788 /* PBXTargetDependency */,
+			);
+			name = ASCOfficeDocxFile2Lib;
+			productName = ASCOfficeDocxFile2Lib;
+			productReference = 17E17EDC1AC453F800BEA2EA /* libASCOfficeDocxFile2Lib.a */;
+			productType = "com.apple.product-type.library.static";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		17E17ED41AC453F800BEA2EA /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0620;
+				ORGANIZATIONNAME = "Ascensio System SIA";
+				TargetAttributes = {
+					17E17EDB1AC453F800BEA2EA = {
+						CreatedOnToolsVersion = 6.2;
+					};
+				};
+			};
+			buildConfigurationList = 17E17ED71AC453F800BEA2EA /* Build configuration list for PBXProject "ASCOfficeDocxFile2Lib" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = 17E17ED31AC453F800BEA2EA;
+			productRefGroup = 17E17EDD1AC453F800BEA2EA /* Products */;
+			projectDirPath = "";
+			projectReferences = (
+				{
+					ProductGroup = 17D913AC1AC596180096D788 /* Products */;
+					ProjectRef = 17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */;
+				},
+			);
+			projectRoot = "";
+			targets = (
+				17E17EDB1AC453F800BEA2EA /* ASCOfficeDocxFile2Lib */,
+				17C1FE921ACC42C4006B99B3 /* ASCOfficeDocxFile2Lib_ios */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXReferenceProxy section */
+		17C1FEC51ACC42C4006B99B3 /* libDocxFormatLib_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDocxFormatLib_ios.a;
+			remoteRef = 17C1FEC41ACC42C4006B99B3 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		17D913B11AC596190096D788 /* libDocxFormatLib.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libDocxFormatLib.a;
+			remoteRef = 17D913B01AC596190096D788 /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+/* End PBXReferenceProxy section */
+
+/* Begin PBXSourcesBuildPhase section */
+		17C1FE951ACC42C4006B99B3 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17C1FE961ACC42C4006B99B3 /* Common.cpp in Sources */,
+				17C1FE971ACC42C4006B99B3 /* ChartFromToBinary.cpp in Sources */,
+				17C1FE981ACC42C4006B99B3 /* CSVReader.cpp in Sources */,
+				17C1FE991ACC42C4006B99B3 /* DocxSerializer.cpp in Sources */,
+				17C1FE9A1ACC42C4006B99B3 /* CommonWriter.cpp in Sources */,
+				17C1FE9B1ACC42C4006B99B3 /* CSVWriter.cpp in Sources */,
+				17C1FE9C1ACC42C4006B99B3 /* XlsxSerializer.cpp in Sources */,
+				17C1FE9D1ACC42C4006B99B3 /* FontProcessor.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		17E17ED81AC453F800BEA2EA /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				17E17F3B1AC4549B00BEA2EA /* Common.cpp in Sources */,
+				17E17F3E1AC4549B00BEA2EA /* ChartFromToBinary.cpp in Sources */,
+				17E17F421AC4549B00BEA2EA /* CSVReader.cpp in Sources */,
+				17E17F141AC4546100BEA2EA /* DocxSerializer.cpp in Sources */,
+				17E17F401AC4549B00BEA2EA /* CommonWriter.cpp in Sources */,
+				17E17F4A1AC4549B00BEA2EA /* CSVWriter.cpp in Sources */,
+				17E17F181AC4546100BEA2EA /* XlsxSerializer.cpp in Sources */,
+				17E17F161AC4546100BEA2EA /* FontProcessor.cpp in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin PBXTargetDependency section */
+		17C1FEC71ACC42EC006B99B3 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DocxFormatLib_ios;
+			targetProxy = 17C1FEC61ACC42EC006B99B3 /* PBXContainerItemProxy */;
+		};
+		17D913C01AC5967E0096D788 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = DocxFormatLib;
+			targetProxy = 17D913BF1AC5967E0096D788 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
+
+/* Begin XCBuildConfiguration section */
+		17C1FEC01ACC42C4006B99B3 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					NODOCX,
+					_USE_XMLLITE_READER_,
+					USE_LITE_READER,
+					USE_ATL_CSTRING,
+					USE_AVSOFFICESTUDIO_XMLUTILS,
+					SOLUTION_ASCOFFICEDOCXFILE2,
+					_USE_LIBXML2_READER_,
+					LIBXML_READER_ENABLED,
+					MAC,
+					unix,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/include/libxml2,
+					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
+				);
+				PRODUCT_NAME = ASCOfficeDocxFile2Lib_ios;
+				SDKROOT = iphoneos;
+			};
+			name = Debug;
+		};
+		17C1FEC11ACC42C4006B99B3 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					NODOCX,
+					_USE_XMLLITE_READER_,
+					USE_LITE_READER,
+					USE_ATL_CSTRING,
+					USE_AVSOFFICESTUDIO_XMLUTILS,
+					SOLUTION_ASCOFFICEDOCXFILE2,
+					_USE_LIBXML2_READER_,
+					LIBXML_READER_ENABLED,
+					MAC,
+					unix,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/include/libxml2,
+					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
+				);
+				PRODUCT_NAME = ASCOfficeDocxFile2Lib_ios;
+				SDKROOT = iphoneos;
+			};
+			name = Release;
+		};
+		17E17EE51AC453F800BEA2EA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		17E17EE61AC453F800BEA2EA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.10;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		17E17EE81AC453F800BEA2EA /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					NODOCX,
+					_USE_XMLLITE_READER_,
+					USE_LITE_READER,
+					USE_ATL_CSTRING,
+					USE_AVSOFFICESTUDIO_XMLUTILS,
+					SOLUTION_ASCOFFICEDOCXFILE2,
+					_USE_LIBXML2_READER_,
+					LIBXML_READER_ENABLED,
+					MAC,
+					unix,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/include/libxml2,
+					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Debug;
+		};
+		17E17EE91AC453F800BEA2EA /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				EXECUTABLE_PREFIX = lib;
+				GCC_ENABLE_CPP_EXCEPTIONS = YES;
+				GCC_ENABLE_CPP_RTTI = YES;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					UNICODE,
+					_UNICODE,
+					NODOCX,
+					_USE_XMLLITE_READER_,
+					USE_LITE_READER,
+					USE_ATL_CSTRING,
+					USE_AVSOFFICESTUDIO_XMLUTILS,
+					SOLUTION_ASCOFFICEDOCXFILE2,
+					_USE_LIBXML2_READER_,
+					LIBXML_READER_ENABLED,
+					MAC,
+					unix,
+				);
+				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				HEADER_SEARCH_PATHS = (
+					"$(inherited)",
+					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
+					/usr/include/libxml2,
+					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
+				);
+				PRODUCT_NAME = "$(TARGET_NAME)";
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		17C1FEBF1ACC42C4006B99B3 /* Build configuration list for PBXNativeTarget "ASCOfficeDocxFile2Lib_ios" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				17C1FEC01ACC42C4006B99B3 /* Debug */,
+				17C1FEC11ACC42C4006B99B3 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		17E17ED71AC453F800BEA2EA /* Build configuration list for PBXProject "ASCOfficeDocxFile2Lib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				17E17EE51AC453F800BEA2EA /* Debug */,
+				17E17EE61AC453F800BEA2EA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		17E17EE71AC453F800BEA2EA /* Build configuration list for PBXNativeTarget "ASCOfficeDocxFile2Lib" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				17E17EE81AC453F800BEA2EA /* Debug */,
+				17E17EE91AC453F800BEA2EA /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = 17E17ED41AC453F800BEA2EA /* Project object */;
+}

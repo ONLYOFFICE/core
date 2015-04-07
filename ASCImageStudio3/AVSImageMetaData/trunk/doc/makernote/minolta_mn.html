@@ -1,0 +1,622 @@
+<html>
+        <head>
+                <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+                <link rel=StyleSheet href="style.css" type="text/css">
+                <META NAME="keywords" CONTENT="Konica Minolta Makernote JPEG Metadata Information EXIF">
+
+                <title>Konica / Minolta Makernote Format Specification</title>
+        </head>
+
+        <body>
+                <a href="makernotes.html">EXIF Makernotes - Reference Information</a>
+                
+                <H1>Konica / Minolta Makernote Format Specification</H1>
+
+                <br>
+                <p>There are several types of Konica / Minolta Makernote:</p>
+                <br>
+
+                <h2>Konica / Minolta Type 1 Makernote</h2>
+
+                <table border cellpadding=10 align="center">
+                        <tr>
+                                <th>Field</th>
+                                <th>Size</th>
+                                <th>Description</th>
+                        </tr>
+                        <tr>
+                                <td>Header</td>
+                                <td>3 Bytes</td>
+                                <td>&quot;MLY&quot;</td>
+                        </tr>
+                        <tr>
+                                <td>Unknown Data</td>
+                                <td>Variable</td>
+                                <td>Unknown Data</td>
+                        </tr>
+                </table>
+                
+                <br>
+                <br>
+                
+                <h2>Konica / Minolta Type 2 Makernote</h2>
+
+                <table border cellpadding=10 align="center">
+                        <tr>
+                                <th>Field</th>
+                                <th>Size</th>
+                                <th>Description</th>
+                        </tr>
+                        <tr>
+                                <td>Header</td>
+                                <td>2 Bytes</td>
+                                <td>&quot;KC&quot;</td>
+                        </tr>
+                        <tr>
+                                <td>Unknown Data</td>
+                                <td>Variable</td>
+                                <td>Unknown Data</td>
+                        </tr>
+                </table>
+
+                <br>
+                <br>
+                
+                <h2>Konica / Minolta Type 3 Makernote</h2>
+
+                <table border cellpadding=10 align="center">
+                        <tr>
+                                <th>Field</th>
+                                <th>Size</th>
+                                <th>Description</th>
+                        </tr>
+                        <tr>
+                                <td>Header</td>
+                                <td>8 Bytes</td>
+                                <td>&quot;+M+M+M+M&quot;</td>
+                        </tr>
+                        <tr>
+                                <td>Unknown Data</td>
+                                <td>Variable</td>
+                                <td>Unknown Data</td>
+                        </tr>
+                </table>
+
+                <br>
+                <br>
+
+                <h2>Konica / Minolta Type 4 Makernote</h2>
+
+                <table border cellpadding=10 align="center">
+                        <tr>
+                                <th>Field</th>
+                                <th>Size</th>
+                                <th>Description</th>
+                        </tr>
+                        <tr>
+                                <td>Header</td>
+                                <td>5 Bytes</td>
+                                <td>&quot;MINOL&quot;</td>
+                        </tr>
+                        <tr>
+                                <td>Unknown Data</td>
+                                <td>Variable</td>
+                                <td>Unknown Data</td>
+                        </tr>
+                </table>
+
+                <br>
+                <br>
+
+                <h2>Konica / Minolta Type 5 Makernote</h2>
+
+                <table border cellpadding=10 align="center">
+                        <tr>
+                                <th>Field</th>
+                                <th>Size</th>
+                                <th>Description</th>
+                        </tr>
+                        <tr>
+                                <td>IFD Data</td>
+                                <td>Variable</td>
+                                <td>Standard TIFF IFD with Olympus Tags</td>
+                        </tr>
+                </table>
+                <p>This makernote has no header - the IFD starts immediately</p>
+
+                <br>
+                <br>
+
+                <p>For format specifications of TIFF Image File Directory data, see
+                Section 2 of: <a href="standards.html#TIFF">TIFF, Revision 6.0, June 3, 1992, Adobe Systems Incorporated</a></p>
+
+                <p>For details of Olympus tags, <a href="olympus_mn.html#Olympus_Tags">See the Olympus Makernote Page Here</a></p>
+
+                <p>All EXIF offsets are relative to the start of the TIFF header at the beginning of the EXIF segment</p>
+
+
+
+                <br>
+                <br>
+                <br>
+                <br>
+
+                <h2><a name="Minolta_Camera_Settings">Minolta Camera Settings Definition (Tag 1 or Tag 3)</a></h2>
+
+                <p>
+                        Camera settings are defined using binary string containing 4 byte LONG values.<br>
+                        The position of a value in the string determines what the value represents.<br>
+                        A lookup table is used to determine the meaning of each value
+                </p>
+                
+                <br>
+                <table border cellpadding=7 align="center">
+                        <tr>
+                                <th>Position #</th>
+                                <th>Setting Name</th>
+                                <th>Type</th>
+                                <th>Values</th>
+                        </tr>
+                        <tr>
+                                <td>2</td>
+                                <td>Exposure Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = P<br>
+                                        1 = A<br>
+                                        2 = S<br>
+                                        3 = M
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>3</td>
+                                <td>Flash Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Normal<br>
+                                        1 = Red-eye reduction<br>
+                                        2 = Rear flash sync<br>
+                                        3 = Wireless
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4</td>
+                                <td>White Balance</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Auto<br>
+                                        1 = Daylight<br>
+                                        2 = Cloudy<br>
+                                        3 = Tungsten<br>
+                                        5 = Custom<br>
+                                        7 = Fluorescent<br>
+                                        8 = Fluorescent 2<br>
+                                        11 = Custom 2<br>
+                                        12 = Custom 3
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>5</td>
+                                <td>Image Size</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = 2560 x 1920 (2048x1536 - DiMAGE 5 only)<br>
+                                        1 = 1600 x 1200<br>
+                                        2 = 1280 x 960<br>
+                                        3 = 640 x 480
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>6</td>
+                                <td>Image Quality</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Raw<br>
+                                        1 = Super Fine<br>
+                                        2 = Fine<br>
+                                        3 = Standard<br>
+                                        4 = Economy<br>
+                                        5 = Extra Fine
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>7</td>
+                                <td>Shooting Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Single<br>
+                                        1 = Continuous<br>
+                                        2 = Self-timer<br>
+                                        4 = Bracketing<br>
+                                        5 = Interval<br>
+                                        6 = UHS Continuous<br>
+                                        7 = HS Continuous
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>8</td>
+                                <td>Metering Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Multi-Segment<br>
+                                        1 = Centre Weighted<br>
+                                        2 = Spot
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>9</td>
+                                <td>Apex Film Speed Value</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Apex Speed value = value/8-1 ,<br>
+                                        ISO= (2^(value/8-1))*3.125
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>10</td>
+                                <td>Apex Shutter Speed Time Value</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Apex Time value = value/8-6 ,<br>
+                                        ShutterSpeed = 2^( (48-value)/8 ),<br>
+                                        Due to rounding error value=8 should be displayed as 30 sec.
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>11</td>
+                                <td>Apex Aperture Value</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Apex Aperture Value = value/8-1  ,<br>
+                                        Aperture F-stop = 2^( value/16-0.5 )
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>12</td>
+                                <td>Macro Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Off<br>
+                                        1 = On
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>13</td>
+                                <td>Digital Zoom</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Off<br>
+                                        1 = Electronic magnification was used<br>
+                                        2 = Digital zoom 2x
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>14</td>
+                                <td>Exposure Compensation</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Exposure compensation in EV = value/3 - 2
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>15</td>
+                                <td>Bracket Step</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = 1/3 EV<br>
+                                        1 = 2/3 EV<br>
+                                        2 = 1 EV
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>17</td>
+                                <td>Interval Length</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Interval is value+1 minutes in interval mode
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>18</td>
+                                <td>Interval Number</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Units = Frames
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>19</td>
+                                <td>Focal Length</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Focal Length in millimetres = value/256
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>20</td>
+                                <td>Focus Distance</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Units = millimetres ( 0 = Infinity )
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>21</td>
+                                <td>Flash Fired</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = No<br>
+                                        1 = Yes
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>22</td>
+                                <td>Date</td>
+                                <td>Numeric</td>
+                                <td>
+                                        day = value%256,<br>
+                                        month = floor( (value - floor( value/65536 )*65536 )/256 )<br>
+                                        year = floor( value/65536)
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>23</td>
+                                <td>Time</td>
+                                <td>Numeric</td>
+                                <td>
+                                        hours = floor( value/65536 ),<br>
+                                        minutes = floor( ( value - floor( value/65536 )*65536 )/256 ),<br>
+                                        seconds = value%256
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>24</td>
+                                <td>Max Aperture at this focal length</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Apeture F-Stop = 2^(value/16-0.5)
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>27</td>
+                                <td>File Number Memory</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Off<br>
+                                        1 = On
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>28</td>
+                                <td>Last File Number</td>
+                                <td>Numeric</td>
+                                <td>
+                                        ( 0 = File Number Memory is Off)
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>29</td>
+                                <td>White Balance Red</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Red white balance coefficient = value/256
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>30</td>
+                                <td>White Balance Green</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Green white balance coefficient = value/256
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>31</td>
+                                <td>White Balance Blue</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Blue white balance coefficient = value/256
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>32</td>
+                                <td>Saturation</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Saturation = value-3
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>33</td>
+                                <td>Contrast</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Contrast = value-3
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>34</td>
+                                <td>Sharpness</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Hard<br>
+                                        1 = Normal<br>
+                                        2 = Soft
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>35</td>
+                                <td>Subject Program</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = none<br>
+                                        1 = portrait<br>
+                                        2 = text<br>
+                                        3 = night portrait<br>
+                                        4 = sunset<br>
+                                        5 = sports action
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>36</td>
+                                <td>Flash Compensation</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Flash compensation in EV = (value-6)/3
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>37</td>
+                                <td>ISO Setting</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = 100<br>
+                                        1 = 200<br>
+                                        2 = 400<br>
+                                        3 = 800<br>
+                                        4 = auto<br>
+                                        5 = 64
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>38</td>
+                                <td>Camera Model</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = DiMAGE 7<br>
+                                        1 = DiMAGE 5<br>
+                                        2 = DiMAGE S304<br>
+                                        3 = DiMAGE S404<br>
+                                        4 = DiMAGE 7i<br>
+                                        5 = DiMAGE 7Hi<br>
+                                        6 = DiMAGE A1<br>
+                                        7 = DiMAGE S414
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>39</td>
+                                <td>Interval Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Still Image<br>
+                                        1 = Time-lapse Movie
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>40</td>
+                                <td>Folder Name</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Standard Form<br>
+                                        1 = Data Form
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>41</td>
+                                <td>Color Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Natural Color<br>
+                                        1 = Black & White<br>
+                                        2 = Vivid Color<br>
+                                        3 = Solarization<br>
+                                        4 = Adobe RGB
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>42</td>
+                                <td>Color Filter</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Colour Filter = value-3
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>43</td>
+                                <td>Black & White Filter</td>
+                                <td>Numeric</td>
+                                <td>
+                                        &nbsp;
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>44</td>
+                                <td>Internal Flash</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Not Fired<br>
+                                        1 = Fired
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>45</td>
+                                <td>Apex Brightness Value</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Apex Brightness Value = value/8-6
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>46</td>
+                                <td>Spot Focus Point X Coordinate</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Pixel Coordinate
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>47</td>
+                                <td>Spot Focus Point Y Coordinate</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Pixel Coordinate
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>48</td>
+                                <td>Wide Focus Zone</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = No Zone or AF Failed<br>
+                                        1 = Center Zone (Horizontal Orientation)<br>
+                                        2 = Center Zone (Vertical Orientation)<br>
+                                        3 = Left Zone<br>
+                                        4 = Right Zone
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>49</td>
+                                <td>Focus Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Auto Focus<br>
+                                        1 = Manual Focus
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>50</td>
+                                <td>Focus Area</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Wide Focus (normal)<br>
+                                        1 = Spot Focus
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>51</td>
+                                <td>DEC Switch Position</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Exposure<br>
+                                        1 = Contrast<br>
+                                        2 = Saturation<br>
+                                        3 = Filter
+                                </td>
+                        </tr>
+                </table>
+
+                <br>
+                <br>
+                <a href="http://electronics.ozhiker.com">http://electronics.ozhiker.com</a>
+        </BODY>
+</HTML>

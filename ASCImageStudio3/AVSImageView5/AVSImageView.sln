@@ -1,0 +1,45 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual C++ Express 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "AVSImageView", "AVSImageView.vcproj", "{67F776CE-AB0C-4DFD-BA40-2766B84DC677}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug Unicode|Any CPU = Debug Unicode|Any CPU
+		Debug Unicode|Mixed Platforms = Debug Unicode|Mixed Platforms
+		Debug Unicode|Win32 = Debug Unicode|Win32
+		Debug|Any CPU = Debug|Any CPU
+		Debug|Mixed Platforms = Debug|Mixed Platforms
+		Debug|Win32 = Debug|Win32
+		Release Unicode|Any CPU = Release Unicode|Any CPU
+		Release Unicode|Mixed Platforms = Release Unicode|Mixed Platforms
+		Release Unicode|Win32 = Release Unicode|Win32
+		Release|Any CPU = Release|Any CPU
+		Release|Mixed Platforms = Release|Mixed Platforms
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Debug Unicode|Any CPU.ActiveCfg = Debug Unicode|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Debug Unicode|Mixed Platforms.ActiveCfg = Debug Unicode|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Debug Unicode|Mixed Platforms.Build.0 = Debug Unicode|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Debug Unicode|Win32.ActiveCfg = Debug Unicode|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Debug Unicode|Win32.Build.0 = Debug Unicode|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Debug|Any CPU.ActiveCfg = Debug|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Debug|Mixed Platforms.ActiveCfg = Debug|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Debug|Mixed Platforms.Build.0 = Debug|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Debug|Win32.ActiveCfg = Debug|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Debug|Win32.Build.0 = Debug|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Release Unicode|Any CPU.ActiveCfg = Release Unicode|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Release Unicode|Mixed Platforms.ActiveCfg = Release Unicode|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Release Unicode|Mixed Platforms.Build.0 = Release Unicode|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Release Unicode|Win32.ActiveCfg = Release Unicode|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Release Unicode|Win32.Build.0 = Release Unicode|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Release|Any CPU.ActiveCfg = Release|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Release|Mixed Platforms.ActiveCfg = Release|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Release|Mixed Platforms.Build.0 = Release|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Release|Win32.ActiveCfg = Release|Win32
+		{67F776CE-AB0C-4DFD-BA40-2766B84DC677}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

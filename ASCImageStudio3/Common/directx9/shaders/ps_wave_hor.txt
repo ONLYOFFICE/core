@@ -1,0 +1,60 @@
+//
+// Файл    : ps_wave_hor.txt
+//
+
+//
+// глобальные константы
+//
+
+sampler BaseTex; // текстура
+
+float ampl  = 0;
+float phase = 0;
+float disp  = 0;
+
+//
+// стуктуры
+//
+
+struct PS_INPUT
+{
+     float2 base : TEXCOORD0;
+};
+
+struct PS_OUTPUT
+{
+     vector diffuse : COLOR0;
+};
+
+//
+// главная функция
+//
+
+PS_OUTPUT Main(PS_INPUT input)
+{
+	// Обнуляем члены выходной структуры
+	PS_OUTPUT output = (PS_OUTPUT)0;
+
+	float y = input.base.y + ampl * sin(input.base.x * phase + disp);
+	
+	float absampl = abs(ampl);
+	float maxdisp = 1.0f - absampl;
+	
+	if( y < absampl )
+	{
+		y += absampl;
+		y *= 0.5f;
+	}
+	
+	if( y > maxdisp )
+	{
+		y += maxdisp;
+		y *= 0.5f;
+	}
+	
+	input.base.y = y;
+	
+	output.diffuse = tex2D(BaseTex, input.base);
+     
+	return output;
+}

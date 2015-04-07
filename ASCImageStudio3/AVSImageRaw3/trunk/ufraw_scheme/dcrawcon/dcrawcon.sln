@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 10.00
+# Visual Studio 2008
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "dcrawcon", "dcrawcon\dcrawcon.vcproj", "{AC62F6ED-8A42-478A-A56D-675E70DB5348}"
+	ProjectSection(ProjectDependencies) = postProject
+		{90076AA2-066C-46BE-A609-5B9A2F91644A} = {90076AA2-066C-46BE-A609-5B9A2F91644A}
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lcmslib", "..\lcmslib\lcmslib.vcproj", "{90076AA2-066C-46BE-A609-5B9A2F91644A}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "testxml", "testxml\testxml.vcproj", "{8FD70FBB-CBD3-4370-A916-6089CDCB8D14}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{AC62F6ED-8A42-478A-A56D-675E70DB5348}.Debug|Win32.ActiveCfg = Debug|Win32
+		{AC62F6ED-8A42-478A-A56D-675E70DB5348}.Debug|Win32.Build.0 = Debug|Win32
+		{AC62F6ED-8A42-478A-A56D-675E70DB5348}.Release|Win32.ActiveCfg = Release|Win32
+		{AC62F6ED-8A42-478A-A56D-675E70DB5348}.Release|Win32.Build.0 = Release|Win32
+		{90076AA2-066C-46BE-A609-5B9A2F91644A}.Debug|Win32.ActiveCfg = Debug|Win32
+		{90076AA2-066C-46BE-A609-5B9A2F91644A}.Debug|Win32.Build.0 = Debug|Win32
+		{90076AA2-066C-46BE-A609-5B9A2F91644A}.Release|Win32.ActiveCfg = Release|Win32
+		{90076AA2-066C-46BE-A609-5B9A2F91644A}.Release|Win32.Build.0 = Release|Win32
+		{8FD70FBB-CBD3-4370-A916-6089CDCB8D14}.Debug|Win32.ActiveCfg = Debug|Win32
+		{8FD70FBB-CBD3-4370-A916-6089CDCB8D14}.Debug|Win32.Build.0 = Debug|Win32
+		{8FD70FBB-CBD3-4370-A916-6089CDCB8D14}.Release|Win32.ActiveCfg = Release|Win32
+		{8FD70FBB-CBD3-4370-A916-6089CDCB8D14}.Release|Win32.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

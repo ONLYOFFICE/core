@@ -1,0 +1,11 @@
+HKCR
+{
+	NoRemove AppID
+	{
+		'%APPID%' = s 'ASCImageJBig2'
+		'ASCImageJBig2.DLL'
+		{
+			val AppID = s '%APPID%'
+		}
+	}
+}

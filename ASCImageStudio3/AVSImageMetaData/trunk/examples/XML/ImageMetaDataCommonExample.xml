@@ -1,0 +1,3113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<AVSImageMetaDataCommon>
+    <CommonTag>
+      <Name>ImageDescription</Name>
+      <Value>Processed by: Helicon Filter;</Value>
+      <Description>Image title</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>Make</Name>
+      <Value>NIKON CORPORATION</Value>
+      <Description>Image input equipment manufacturer</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>Model</Name>
+      <Value>NIKON D90</Value>
+      <Description>Image input equipment model</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>Orientation</Name>
+      <Value>1</Value>
+      <Description>Orientation of image</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>XResolution</Name>
+      <Value>300</Value>
+      <Description>Image resolution in width direction</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>YResolution</Name>
+      <Value>300</Value>
+      <Description>Image resolution in height direction</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>ResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Unit of X and Y resolution</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>Software</Name>
+      <Value>Nikon Transfer 1.1 W</Value>
+      <Description>Software used</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTime</Name>
+      <Value>2009:04:25 18:40:07</Value>
+      <Description>File change date and time</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>YCbCrPositioning</Name>
+      <Value>1</Value>
+      <Description>Y and C positioning</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifIFD</Name>
+      <Value>220</Value>
+      <Description>Exif IFD Pointer</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureTime</Name>
+      <Value>0.0125</Value>
+      <Description>Exposure time</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FNumber</Name>
+      <Value>4</Value>
+      <Description>F number</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureProgram</Name>
+      <Value>3</Value>
+      <Description>Exposure program</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifVersion</Name>
+      <Value>[48,50,50,49]</Value>
+      <Description>Exif version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeOriginal</Name>
+      <Value>2009:04:25 18:33:17</Value>
+      <Description>Date and time of original data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeDigitized</Name>
+      <Value>2009:04:25 18:33:17</Value>
+      <Description>Date and time of digital data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ComponentsConfiguration</Name>
+      <Value>[1,2,3,0]</Value>
+      <Description>Meaning of each component</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureBiasValue</Name>
+      <Value>0</Value>
+      <Description>Exposure bias</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>MaxApertureValue</Name>
+      <Value>3.2</Value>
+      <Description>Maximum lens aperture</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>MeteringMode</Name>
+      <Value>5</Value>
+      <Description>Metering mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>LightSource</Name>
+      <Value>0</Value>
+      <Description>Light source</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Flash</Name>
+      <Value>0</Value>
+      <Description>Flash</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalLength</Name>
+      <Value>60</Value>
+      <Description>Lens focal length</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>UserComment</Name>
+      <Value>[65,83,67,73,73,0,0,0,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32,32]</Value>
+      <Description>User comments</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SubSecTime</Name>
+      <Value>00</Value>
+      <Description>DateTime subseconds</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SubSecTimeOriginal</Name>
+      <Value>00</Value>
+      <Description>DateTimeOriginal subseconds</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SubSecTimeDigitized</Name>
+      <Value>00</Value>
+      <Description>DateTimeDigitized subseconds</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FlashpixVersion</Name>
+      <Value>[48,49,48,48]</Value>
+      <Description>Supported Flashpix version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ColorSpace</Name>
+      <Value>1</Value>
+      <Description>Color space information</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelXDimension</Name>
+      <Value>4288</Value>
+      <Description>Valid image width</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelYDimension</Name>
+      <Value>2848</Value>
+      <Description>Valid image height</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>InteroperabilityIFD</Name>
+      <Value>822</Value>
+      <Description>Interoperability IFD Pointer</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SensingMethod</Name>
+      <Value>2</Value>
+      <Description>Sensing method</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FileSource</Name>
+      <Value>3</Value>
+      <Description>File source</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SceneType</Name>
+      <Value>1</Value>
+      <Description>Scene type</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CFAPattern</Name>
+      <Value>[0,2,0,2,1,2,0,1]</Value>
+      <Description>CFA pattern</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CustomRendered</Name>
+      <Value>0</Value>
+      <Description>Custom image processing</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureMode</Name>
+      <Value>0</Value>
+      <Description>Exposure mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>WhiteBalance</Name>
+      <Value>0</Value>
+      <Description>White balance</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DigitalZoomRatio</Name>
+      <Value>1</Value>
+      <Description>Digital zoom ratio</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalLengthIn35mmFilm</Name>
+      <Value>90</Value>
+      <Description>Focal length in 35 mm film</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SceneCaptureType</Name>
+      <Value>0</Value>
+      <Description>Scene capture type</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>GainControl</Name>
+      <Value>0</Value>
+      <Description>Gain control</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Contrast</Name>
+      <Value>0</Value>
+      <Description>Contrast</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Saturation</Name>
+      <Value>0</Value>
+      <Description>Saturation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Sharpness</Name>
+      <Value>0</Value>
+      <Description>Sharpness</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SubjectDistanceRange</Name>
+      <Value>0</Value>
+      <Description>Subject distance range</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>XResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in width direction</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>YResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in height direction</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Unit of X and Y resolution</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormat</Name>
+      <Value>10106</Value>
+      <Description>Offset to JPEG SOI</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormatLength</Name>
+      <Value>10527</Value>
+      <Description>Bytes of JPEG data</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+  </AVSImageMetaDataCommon><?xml version="1.0" encoding="utf-8"?>
+  <AVSImageMetaDataCommon>
+    <CommonTag>
+      <Name>Make</Name>
+      <Value>Canon</Value>
+      <Description>Image input equipment manufacturer</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>Model</Name>
+      <Value>Canon EOS 350D DIGITAL</Value>
+      <Description>Image input equipment model</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>Orientation</Name>
+      <Value>1</Value>
+      <Description>Orientation of image</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>XResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in width direction</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>YResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in height direction</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>ResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Unit of X and Y resolution</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTime</Name>
+      <Value>2008:05:08 14:52:17</Value>
+      <Description>File change date and time</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>YCbCrPositioning</Name>
+      <Value>2</Value>
+      <Description>Y and C positioning</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifIFD</Name>
+      <Value>196</Value>
+      <Description>Exif IFD Pointer</Description>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureTime</Name>
+      <Value>0.01</Value>
+      <Description>Exposure time</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FNumber</Name>
+      <Value>8</Value>
+      <Description>F number</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureProgram</Name>
+      <Value>2</Value>
+      <Description>Exposure program</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ISOSpeedRatings</Name>
+      <Value>400</Value>
+      <Description>ISO speed rating</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifVersion</Name>
+      <Value>[48,50,50,49]</Value>
+      <Description>Exif version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeOriginal</Name>
+      <Value>2008:05:08 14:52:17</Value>
+      <Description>Date and time of original data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeDigitized</Name>
+      <Value>2008:05:08 14:52:17</Value>
+      <Description>Date and time of digital data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ComponentsConfiguration</Name>
+      <Value>[1,2,3,0]</Value>
+      <Description>Meaning of each component</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ShutterSpeedValue</Name>
+      <Value>6.64386</Value>
+      <Description>Shutter speed</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ApertureValue</Name>
+      <Value>6</Value>
+      <Description>Aperture</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureBiasValue</Name>
+      <Value>0</Value>
+      <Description>Exposure bias</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>MeteringMode</Name>
+      <Value>5</Value>
+      <Description>Metering mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Flash</Name>
+      <Value>16</Value>
+      <Description>Flash</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalLength</Name>
+      <Value>30</Value>
+      <Description>Lens focal length</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>UserComment</Name>
+      <Value>[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]</Value>
+      <Description>User comments</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FlashpixVersion</Name>
+      <Value>[48,49,48,48]</Value>
+      <Description>Supported Flashpix version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ColorSpace</Name>
+      <Value>1</Value>
+      <Description>Color space information</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelXDimension</Name>
+      <Value>2304</Value>
+      <Description>Valid image width</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelYDimension</Name>
+      <Value>3456</Value>
+      <Description>Valid image height</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>InteroperabilityIFD</Name>
+      <Value>9230</Value>
+      <Description>Interoperability IFD Pointer</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneXResolution</Name>
+      <Value>3954.23</Value>
+      <Description>Focal plane X resolution</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneYResolution</Name>
+      <Value>3958.76</Value>
+      <Description>Focal plane Y resolution</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Focal plane resolution unit</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CustomRendered</Name>
+      <Value>0</Value>
+      <Description>Custom image processing</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureMode</Name>
+      <Value>0</Value>
+      <Description>Exposure mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>WhiteBalance</Name>
+      <Value>0</Value>
+      <Description>White balance</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SceneCaptureType</Name>
+      <Value>0</Value>
+      <Description>Scene capture type</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>XResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in width direction</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>YResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in height direction</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Unit of X and Y resolution</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormat</Name>
+      <Value>9716</Value>
+      <Description>Offset to JPEG SOI</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormatLength</Name>
+      <Value>9772</Value>
+      <Description>Bytes of JPEG data</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+  </AVSImageMetaDataCommon><?xml version="1.0" encoding="utf-8"?>
+  <AVSImageMetaDataCommon>
+    <CommonTag>
+      <Name>ImageWidth</Name>
+      <Value>1536</Value>
+      <Description>Image width</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageLength</Name>
+      <Value>1024</Value>
+      <Description>Image height</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>BitsPerSample</Name>
+      <Value>[8,8,8]</Value>
+      <Description>Number of bits per component</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Make</Name>
+      <Value>Canon</Value>
+      <Description>Image input equipment manufacturer</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Model</Name>
+      <Value>Canon EOS 350D DIGITAL</Value>
+      <Description>Image input equipment model</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>9728</Value>
+      <Description>Image data location</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Orientation</Name>
+      <Value>6</Value>
+      <Description>Orientation of image</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>303922</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>XResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in width direction</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>YResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in height direction</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Unit of X and Y resolution</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTime</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>File change date and time</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifIFD</Name>
+      <Value>270</Value>
+      <Description>Exif IFD Pointer</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureTime</Name>
+      <Value>0.0025</Value>
+      <Description>Exposure time</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FNumber</Name>
+      <Value>5.6</Value>
+      <Description>F number</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureProgram</Name>
+      <Value>3</Value>
+      <Description>Exposure program</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ISOSpeedRatings</Name>
+      <Value>400</Value>
+      <Description>ISO speed rating</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifVersion</Name>
+      <Value>[48,50,50,49]</Value>
+      <Description>Exif version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeOriginal</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>Date and time of original data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeDigitized</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>Date and time of digital data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ComponentsConfiguration</Name>
+      <Value>[0,0,0,0]</Value>
+      <Description>Meaning of each component</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ShutterSpeedValue</Name>
+      <Value>8.64386</Value>
+      <Description>Shutter speed</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ApertureValue</Name>
+      <Value>4.97086</Value>
+      <Description>Aperture</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureBiasValue</Name>
+      <Value>0</Value>
+      <Description>Exposure bias</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>MeteringMode</Name>
+      <Value>5</Value>
+      <Description>Metering mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Flash</Name>
+      <Value>16</Value>
+      <Description>Flash</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalLength</Name>
+      <Value>55</Value>
+      <Description>Lens focal length</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>UserComment</Name>
+      <Value>[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]</Value>
+      <Description>User comments</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FlashpixVersion</Name>
+      <Value>[48,49,48,48]</Value>
+      <Description>Supported Flashpix version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ColorSpace</Name>
+      <Value>1</Value>
+      <Description>Color space information</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelXDimension</Name>
+      <Value>3456</Value>
+      <Description>Valid image width</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelYDimension</Name>
+      <Value>2304</Value>
+      <Description>Valid image height</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>InteroperabilityIFD</Name>
+      <Value>9304</Value>
+      <Description>Interoperability IFD Pointer</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneXResolution</Name>
+      <Value>3954.23</Value>
+      <Description>Focal plane X resolution</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneYResolution</Name>
+      <Value>3958.76</Value>
+      <Description>Focal plane Y resolution</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Focal plane resolution unit</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CustomRendered</Name>
+      <Value>0</Value>
+      <Description>Custom image processing</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureMode</Name>
+      <Value>0</Value>
+      <Description>Exposure mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>WhiteBalance</Name>
+      <Value>0</Value>
+      <Description>White balance</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SceneCaptureType</Name>
+      <Value>0</Value>
+      <Description>Scene capture type</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormat</Name>
+      <Value>314162</Value>
+      <Description>Offset to JPEG SOI</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormatLength</Name>
+      <Value>8519</Value>
+      <Description>Bytes of JPEG data</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageWidth</Name>
+      <Value>384</Value>
+      <Description>Image width</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageLength</Name>
+      <Value>256</Value>
+      <Description>Image height</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>BitsPerSample</Name>
+      <Value>[8,8,8]</Value>
+      <Description>Number of bits per component</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PhotometricInterpretation</Name>
+      <Value>2</Value>
+      <Description>Pixel composition</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>323193</Value>
+      <Description>Image data location</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SamplesPerPixel</Name>
+      <Value>3</Value>
+      <Description>Number of components</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>RowsPerStrip</Name>
+      <Value>256</Value>
+      <Description>Number of rows per strip</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>294912</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PlanarConfiguration</Name>
+      <Value>1</Value>
+      <Description>Image data arrangement</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>618617</Value>
+      <Description>Image data location</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>6549932</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonUnknownTag</Name>
+      <Value>1</Value>
+      <Description>Canon Unknown Tag</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonUnknownTag</Name>
+      <Value>1</Value>
+      <Description>Canon Unknown Tag</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonCR2Slice</Name>
+      <Value>[1,1758,1758]</Value>
+      <Description>Canon CR2 Slice</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+  </AVSImageMetaDataCommon><?xml version="1.0" encoding="utf-8"?>
+  <AVSImageMetaDataCommon>
+    <CommonTag>
+      <Name>NewSubfileType</Name>
+      <Value>1</Value>
+      <Description>New Subfile Type</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageWidth</Name>
+      <Value>3872</Value>
+      <Description>Image width</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageLength</Name>
+      <Value>2592</Value>
+      <Description>Image height</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageDescription</Name>
+      <Value>SONY DSC</Value>
+      <Description>Image title</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Make</Name>
+      <Value>SONY</Value>
+      <Description>Image input equipment manufacturer</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Model</Name>
+      <Value>DSLR-A100</Value>
+      <Description>Image input equipment model</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Orientation</Name>
+      <Value>8</Value>
+      <Description>Orientation of image</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>XResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in width direction</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>YResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in height direction</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Unit of X and Y resolution</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Software</Name>
+      <Value>DSLR-A100 v1.00</Value>
+      <Description>Software used</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTime</Name>
+      <Value>2006:08:27 11:29:37</Value>
+      <Description>File change date and time</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>WhitePoint</Name>
+      <Value>[0.313,0.329]</Value>
+      <Description>White point chromaticity</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PrimaryChromaticities</Name>
+      <Value>[0.64,0.33,0.21,0.71,0.15,0.06]</Value>
+      <Description>Chromaticities of primaries</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SubIFDs</Name>
+      <Value>98304</Value>
+      <Description>Offset to child IFDs</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormat</Name>
+      <Value>25683</Value>
+      <Description>Offset to JPEG SOI</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormatLength</Name>
+      <Value>50031</Value>
+      <Description>Bytes of JPEG data</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>YCbCrCoefficients</Name>
+      <Value>[0.299,0.587,0.114]</Value>
+      <Description>Color space transformation matrix coefficients</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifIFD</Name>
+      <Value>600</Value>
+      <Description>Exif IFD Pointer</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PrintImageMatching</Name>
+      <Value>[80,114,105,110,116,73,77,0,48,51,48,48,0,0,6,0,1,0,22,0,22,0,2,0,0,0,0,1,3,0,46,0,0,0,0,1,0,0,0,5,1,1,0,0,0,0,16,1,0,0,0,-128,-47,23,0,0,16,39,0,0,5,8,0,0,16,39,0,0,-44,5,0,0,16,39,0,0,39,12,0,0,16,39,0,0,113,24,0,0,16,39,0,0,120,2,0,0,16,39,0,0,-61,0,0,0,16,39,0,0,97,2,0,0,16,39,0,0,22,29,0,0,16,39,0,0]</Value>
+      <Description>Print Image Matching</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DNGPrivateData</Name>
+      <Value>[212,53,1,0]</Value>
+      <Description>DNGPrivateData</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureTime</Name>
+      <Value>0.00625</Value>
+      <Description>Exposure time</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FNumber</Name>
+      <Value>10</Value>
+      <Description>F number</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureProgram</Name>
+      <Value>3</Value>
+      <Description>Exposure program</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ISOSpeedRatings</Name>
+      <Value>100</Value>
+      <Description>ISO speed rating</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifVersion</Name>
+      <Value>[48,50,50,49]</Value>
+      <Description>Exif version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeOriginal</Name>
+      <Value>2006:08:27 11:29:37</Value>
+      <Description>Date and time of original data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeDigitized</Name>
+      <Value>2006:08:27 11:29:37</Value>
+      <Description>Date and time of digital data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ComponentsConfiguration</Name>
+      <Value>[1,2,3,0]</Value>
+      <Description>Meaning of each component</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CompressedBitsPerPixel</Name>
+      <Value>8</Value>
+      <Description>Image compression mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>BrightnessValue</Name>
+      <Value>9</Value>
+      <Description>Brightness</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureBiasValue</Name>
+      <Value>0</Value>
+      <Description>Exposure bias</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>MaxApertureValue</Name>
+      <Value>4.64</Value>
+      <Description>Maximum lens aperture</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>MeteringMode</Name>
+      <Value>5</Value>
+      <Description>Metering mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>LightSource</Name>
+      <Value>0</Value>
+      <Description>Light source</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Flash</Name>
+      <Value>16</Value>
+      <Description>Flash</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalLength</Name>
+      <Value>135</Value>
+      <Description>Lens focal length</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SubjectArea</Name>
+      <Value>[1936,1296,3872,2592]</Value>
+      <Description>Subject area</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>UserComment</Name>
+      <Value>[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]</Value>
+      <Description>User comments</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FlashpixVersion</Name>
+      <Value>[48,49,48,48]</Value>
+      <Description>Supported Flashpix version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ColorSpace</Name>
+      <Value>65535</Value>
+      <Description>Color space information</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelXDimension</Name>
+      <Value>3872</Value>
+      <Description>Valid image width</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelYDimension</Name>
+      <Value>2592</Value>
+      <Description>Valid image height</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>InteroperabilityIFD</Name>
+      <Value>25442</Value>
+      <Description>Interoperability IFD Pointer</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FileSource</Name>
+      <Value>3</Value>
+      <Description>File source</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SceneType</Name>
+      <Value>1</Value>
+      <Description>Scene type</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CustomRendered</Name>
+      <Value>0</Value>
+      <Description>Custom image processing</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureMode</Name>
+      <Value>0</Value>
+      <Description>Exposure mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>WhiteBalance</Name>
+      <Value>0</Value>
+      <Description>White balance</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DigitalZoomRatio</Name>
+      <Value>0</Value>
+      <Description>Digital zoom ratio</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalLengthIn35mmFilm</Name>
+      <Value>202</Value>
+      <Description>Focal length in 35 mm film</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SceneCaptureType</Name>
+      <Value>0</Value>
+      <Description>Scene capture type</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>GainControl</Name>
+      <Value>0</Value>
+      <Description>Gain control</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Contrast</Name>
+      <Value>0</Value>
+      <Description>Contrast</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Saturation</Name>
+      <Value>0</Value>
+      <Description>Saturation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Sharpness</Name>
+      <Value>0</Value>
+      <Description>Sharpness</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>GammaExif</Name>
+      <Value>2.2</Value>
+      <Description>Gamma Exif</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>NewSubfileType</Name>
+      <Value>1</Value>
+      <Description>New Subfile Type</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Make</Name>
+      <Value>SONY</Value>
+      <Description>Image input equipment manufacturer</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Model</Name>
+      <Value>DSLR-A100</Value>
+      <Description>Image input equipment model</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Orientation</Name>
+      <Value>8</Value>
+      <Description>Orientation of image</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>XResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in width direction</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>YResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in height direction</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Unit of X and Y resolution</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTime</Name>
+      <Value>2006:08:27 11:29:37</Value>
+      <Description>File change date and time</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormat</Name>
+      <Value>10180</Value>
+      <Description>Offset to JPEG SOI</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormatLength</Name>
+      <Value>3600</Value>
+      <Description>Bytes of JPEG data</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+  </AVSImageMetaDataCommon><?xml version="1.0" encoding="utf-8"?>
+  <AVSImageMetaDataCommon>
+    <CommonTag>
+      <Name>ImageWidth</Name>
+      <Value>1536</Value>
+      <Description>Image width</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageLength</Name>
+      <Value>1024</Value>
+      <Description>Image height</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>BitsPerSample</Name>
+      <Value>[8,8,8]</Value>
+      <Description>Number of bits per component</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Make</Name>
+      <Value>Canon</Value>
+      <Description>Image input equipment manufacturer</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Model</Name>
+      <Value>Canon EOS 350D DIGITAL</Value>
+      <Description>Image input equipment model</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>9728</Value>
+      <Description>Image data location</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Orientation</Name>
+      <Value>6</Value>
+      <Description>Orientation of image</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>303922</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>XResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in width direction</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>YResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in height direction</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Unit of X and Y resolution</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTime</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>File change date and time</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifIFD</Name>
+      <Value>270</Value>
+      <Description>Exif IFD Pointer</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureTime</Name>
+      <Value>0.0025</Value>
+      <Description>Exposure time</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FNumber</Name>
+      <Value>5.6</Value>
+      <Description>F number</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureProgram</Name>
+      <Value>3</Value>
+      <Description>Exposure program</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ISOSpeedRatings</Name>
+      <Value>400</Value>
+      <Description>ISO speed rating</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifVersion</Name>
+      <Value>[48,50,50,49]</Value>
+      <Description>Exif version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeOriginal</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>Date and time of original data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeDigitized</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>Date and time of digital data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ComponentsConfiguration</Name>
+      <Value>[0,0,0,0]</Value>
+      <Description>Meaning of each component</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ShutterSpeedValue</Name>
+      <Value>8.64386</Value>
+      <Description>Shutter speed</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ApertureValue</Name>
+      <Value>4.97086</Value>
+      <Description>Aperture</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureBiasValue</Name>
+      <Value>0</Value>
+      <Description>Exposure bias</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>MeteringMode</Name>
+      <Value>5</Value>
+      <Description>Metering mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Flash</Name>
+      <Value>16</Value>
+      <Description>Flash</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalLength</Name>
+      <Value>55</Value>
+      <Description>Lens focal length</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>UserComment</Name>
+      <Value>[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]</Value>
+      <Description>User comments</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FlashpixVersion</Name>
+      <Value>[48,49,48,48]</Value>
+      <Description>Supported Flashpix version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ColorSpace</Name>
+      <Value>1</Value>
+      <Description>Color space information</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelXDimension</Name>
+      <Value>3456</Value>
+      <Description>Valid image width</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelYDimension</Name>
+      <Value>2304</Value>
+      <Description>Valid image height</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>InteroperabilityIFD</Name>
+      <Value>9304</Value>
+      <Description>Interoperability IFD Pointer</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneXResolution</Name>
+      <Value>3954.23</Value>
+      <Description>Focal plane X resolution</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneYResolution</Name>
+      <Value>3958.76</Value>
+      <Description>Focal plane Y resolution</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Focal plane resolution unit</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CustomRendered</Name>
+      <Value>0</Value>
+      <Description>Custom image processing</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureMode</Name>
+      <Value>0</Value>
+      <Description>Exposure mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>WhiteBalance</Name>
+      <Value>0</Value>
+      <Description>White balance</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SceneCaptureType</Name>
+      <Value>0</Value>
+      <Description>Scene capture type</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormat</Name>
+      <Value>314162</Value>
+      <Description>Offset to JPEG SOI</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormatLength</Name>
+      <Value>8519</Value>
+      <Description>Bytes of JPEG data</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageWidth</Name>
+      <Value>384</Value>
+      <Description>Image width</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageLength</Name>
+      <Value>256</Value>
+      <Description>Image height</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>BitsPerSample</Name>
+      <Value>[8,8,8]</Value>
+      <Description>Number of bits per component</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PhotometricInterpretation</Name>
+      <Value>2</Value>
+      <Description>Pixel composition</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>323193</Value>
+      <Description>Image data location</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SamplesPerPixel</Name>
+      <Value>3</Value>
+      <Description>Number of components</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>RowsPerStrip</Name>
+      <Value>256</Value>
+      <Description>Number of rows per strip</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>294912</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PlanarConfiguration</Name>
+      <Value>1</Value>
+      <Description>Image data arrangement</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>618617</Value>
+      <Description>Image data location</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>6549932</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonUnknownTag</Name>
+      <Value>1</Value>
+      <Description>Canon Unknown Tag</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonUnknownTag</Name>
+      <Value>1</Value>
+      <Description>Canon Unknown Tag</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonCR2Slice</Name>
+      <Value>[1,1758,1758]</Value>
+      <Description>Canon CR2 Slice</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+  </AVSImageMetaDataCommon><?xml version="1.0" encoding="utf-8"?>
+  <AVSImageMetaDataCommon>
+    <CommonTag>
+      <Name>ImageWidth</Name>
+      <Value>1536</Value>
+      <Description>Image width</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageLength</Name>
+      <Value>1024</Value>
+      <Description>Image height</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>BitsPerSample</Name>
+      <Value>[8,8,8]</Value>
+      <Description>Number of bits per component</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Make</Name>
+      <Value>Canon</Value>
+      <Description>Image input equipment manufacturer</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Model</Name>
+      <Value>Canon EOS 350D DIGITAL</Value>
+      <Description>Image input equipment model</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>9728</Value>
+      <Description>Image data location</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Orientation</Name>
+      <Value>6</Value>
+      <Description>Orientation of image</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>303922</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>XResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in width direction</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>YResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in height direction</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Unit of X and Y resolution</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTime</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>File change date and time</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifIFD</Name>
+      <Value>270</Value>
+      <Description>Exif IFD Pointer</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureTime</Name>
+      <Value>0.0025</Value>
+      <Description>Exposure time</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FNumber</Name>
+      <Value>5.6</Value>
+      <Description>F number</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureProgram</Name>
+      <Value>3</Value>
+      <Description>Exposure program</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ISOSpeedRatings</Name>
+      <Value>400</Value>
+      <Description>ISO speed rating</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifVersion</Name>
+      <Value>[48,50,50,49]</Value>
+      <Description>Exif version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeOriginal</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>Date and time of original data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeDigitized</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>Date and time of digital data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ComponentsConfiguration</Name>
+      <Value>[0,0,0,0]</Value>
+      <Description>Meaning of each component</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ShutterSpeedValue</Name>
+      <Value>8.64386</Value>
+      <Description>Shutter speed</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ApertureValue</Name>
+      <Value>4.97086</Value>
+      <Description>Aperture</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureBiasValue</Name>
+      <Value>0</Value>
+      <Description>Exposure bias</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>MeteringMode</Name>
+      <Value>5</Value>
+      <Description>Metering mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Flash</Name>
+      <Value>16</Value>
+      <Description>Flash</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalLength</Name>
+      <Value>55</Value>
+      <Description>Lens focal length</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>UserComment</Name>
+      <Value>[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]</Value>
+      <Description>User comments</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FlashpixVersion</Name>
+      <Value>[48,49,48,48]</Value>
+      <Description>Supported Flashpix version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ColorSpace</Name>
+      <Value>1</Value>
+      <Description>Color space information</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelXDimension</Name>
+      <Value>3456</Value>
+      <Description>Valid image width</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelYDimension</Name>
+      <Value>2304</Value>
+      <Description>Valid image height</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>InteroperabilityIFD</Name>
+      <Value>9304</Value>
+      <Description>Interoperability IFD Pointer</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneXResolution</Name>
+      <Value>3954.23</Value>
+      <Description>Focal plane X resolution</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneYResolution</Name>
+      <Value>3958.76</Value>
+      <Description>Focal plane Y resolution</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Focal plane resolution unit</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CustomRendered</Name>
+      <Value>0</Value>
+      <Description>Custom image processing</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureMode</Name>
+      <Value>0</Value>
+      <Description>Exposure mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>WhiteBalance</Name>
+      <Value>0</Value>
+      <Description>White balance</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SceneCaptureType</Name>
+      <Value>0</Value>
+      <Description>Scene capture type</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormat</Name>
+      <Value>314162</Value>
+      <Description>Offset to JPEG SOI</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormatLength</Name>
+      <Value>8519</Value>
+      <Description>Bytes of JPEG data</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageWidth</Name>
+      <Value>384</Value>
+      <Description>Image width</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageLength</Name>
+      <Value>256</Value>
+      <Description>Image height</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>BitsPerSample</Name>
+      <Value>[8,8,8]</Value>
+      <Description>Number of bits per component</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PhotometricInterpretation</Name>
+      <Value>2</Value>
+      <Description>Pixel composition</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>323193</Value>
+      <Description>Image data location</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SamplesPerPixel</Name>
+      <Value>3</Value>
+      <Description>Number of components</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>RowsPerStrip</Name>
+      <Value>256</Value>
+      <Description>Number of rows per strip</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>294912</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PlanarConfiguration</Name>
+      <Value>1</Value>
+      <Description>Image data arrangement</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>618617</Value>
+      <Description>Image data location</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>6549932</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonUnknownTag</Name>
+      <Value>1</Value>
+      <Description>Canon Unknown Tag</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonUnknownTag</Name>
+      <Value>1</Value>
+      <Description>Canon Unknown Tag</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonCR2Slice</Name>
+      <Value>[1,1758,1758]</Value>
+      <Description>Canon CR2 Slice</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+  </AVSImageMetaDataCommon><?xml version="1.0" encoding="utf-8"?>
+  <AVSImageMetaDataCommon>
+    <CommonTag>
+      <Name>ImageWidth</Name>
+      <Value>1536</Value>
+      <Description>Image width</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageLength</Name>
+      <Value>1024</Value>
+      <Description>Image height</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>BitsPerSample</Name>
+      <Value>[8,8,8]</Value>
+      <Description>Number of bits per component</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Make</Name>
+      <Value>Canon</Value>
+      <Description>Image input equipment manufacturer</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Model</Name>
+      <Value>Canon EOS 350D DIGITAL</Value>
+      <Description>Image input equipment model</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>9728</Value>
+      <Description>Image data location</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Orientation</Name>
+      <Value>6</Value>
+      <Description>Orientation of image</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>303922</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>XResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in width direction</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>YResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in height direction</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Unit of X and Y resolution</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTime</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>File change date and time</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifIFD</Name>
+      <Value>270</Value>
+      <Description>Exif IFD Pointer</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureTime</Name>
+      <Value>0.0025</Value>
+      <Description>Exposure time</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FNumber</Name>
+      <Value>5.6</Value>
+      <Description>F number</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureProgram</Name>
+      <Value>3</Value>
+      <Description>Exposure program</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ISOSpeedRatings</Name>
+      <Value>400</Value>
+      <Description>ISO speed rating</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifVersion</Name>
+      <Value>[48,50,50,49]</Value>
+      <Description>Exif version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeOriginal</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>Date and time of original data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeDigitized</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>Date and time of digital data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ComponentsConfiguration</Name>
+      <Value>[0,0,0,0]</Value>
+      <Description>Meaning of each component</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ShutterSpeedValue</Name>
+      <Value>8.64386</Value>
+      <Description>Shutter speed</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ApertureValue</Name>
+      <Value>4.97086</Value>
+      <Description>Aperture</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureBiasValue</Name>
+      <Value>0</Value>
+      <Description>Exposure bias</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>MeteringMode</Name>
+      <Value>5</Value>
+      <Description>Metering mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Flash</Name>
+      <Value>16</Value>
+      <Description>Flash</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalLength</Name>
+      <Value>55</Value>
+      <Description>Lens focal length</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>UserComment</Name>
+      <Value>[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]</Value>
+      <Description>User comments</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FlashpixVersion</Name>
+      <Value>[48,49,48,48]</Value>
+      <Description>Supported Flashpix version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ColorSpace</Name>
+      <Value>1</Value>
+      <Description>Color space information</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelXDimension</Name>
+      <Value>3456</Value>
+      <Description>Valid image width</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelYDimension</Name>
+      <Value>2304</Value>
+      <Description>Valid image height</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>InteroperabilityIFD</Name>
+      <Value>9304</Value>
+      <Description>Interoperability IFD Pointer</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneXResolution</Name>
+      <Value>3954.23</Value>
+      <Description>Focal plane X resolution</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneYResolution</Name>
+      <Value>3958.76</Value>
+      <Description>Focal plane Y resolution</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Focal plane resolution unit</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CustomRendered</Name>
+      <Value>0</Value>
+      <Description>Custom image processing</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureMode</Name>
+      <Value>0</Value>
+      <Description>Exposure mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>WhiteBalance</Name>
+      <Value>0</Value>
+      <Description>White balance</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SceneCaptureType</Name>
+      <Value>0</Value>
+      <Description>Scene capture type</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormat</Name>
+      <Value>314162</Value>
+      <Description>Offset to JPEG SOI</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormatLength</Name>
+      <Value>8519</Value>
+      <Description>Bytes of JPEG data</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageWidth</Name>
+      <Value>384</Value>
+      <Description>Image width</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageLength</Name>
+      <Value>256</Value>
+      <Description>Image height</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>BitsPerSample</Name>
+      <Value>[8,8,8]</Value>
+      <Description>Number of bits per component</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PhotometricInterpretation</Name>
+      <Value>2</Value>
+      <Description>Pixel composition</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>323193</Value>
+      <Description>Image data location</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SamplesPerPixel</Name>
+      <Value>3</Value>
+      <Description>Number of components</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>RowsPerStrip</Name>
+      <Value>256</Value>
+      <Description>Number of rows per strip</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>294912</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PlanarConfiguration</Name>
+      <Value>1</Value>
+      <Description>Image data arrangement</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>618617</Value>
+      <Description>Image data location</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>6549932</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonUnknownTag</Name>
+      <Value>1</Value>
+      <Description>Canon Unknown Tag</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonUnknownTag</Name>
+      <Value>1</Value>
+      <Description>Canon Unknown Tag</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonCR2Slice</Name>
+      <Value>[1,1758,1758]</Value>
+      <Description>Canon CR2 Slice</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+  </AVSImageMetaDataCommon><?xml version="1.0" encoding="utf-8"?>
+  <AVSImageMetaDataCommon>
+    <CommonTag>
+      <Name>ImageWidth</Name>
+      <Value>1536</Value>
+      <Description>Image width</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageLength</Name>
+      <Value>1024</Value>
+      <Description>Image height</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>BitsPerSample</Name>
+      <Value>[8,8,8]</Value>
+      <Description>Number of bits per component</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Make</Name>
+      <Value>Canon</Value>
+      <Description>Image input equipment manufacturer</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Model</Name>
+      <Value>Canon EOS 350D DIGITAL</Value>
+      <Description>Image input equipment model</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>9728</Value>
+      <Description>Image data location</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Orientation</Name>
+      <Value>6</Value>
+      <Description>Orientation of image</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>303922</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>XResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in width direction</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>YResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in height direction</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Unit of X and Y resolution</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTime</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>File change date and time</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifIFD</Name>
+      <Value>270</Value>
+      <Description>Exif IFD Pointer</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureTime</Name>
+      <Value>0.0025</Value>
+      <Description>Exposure time</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FNumber</Name>
+      <Value>5.6</Value>
+      <Description>F number</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureProgram</Name>
+      <Value>3</Value>
+      <Description>Exposure program</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ISOSpeedRatings</Name>
+      <Value>400</Value>
+      <Description>ISO speed rating</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifVersion</Name>
+      <Value>[48,50,50,49]</Value>
+      <Description>Exif version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeOriginal</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>Date and time of original data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeDigitized</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>Date and time of digital data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ComponentsConfiguration</Name>
+      <Value>[0,0,0,0]</Value>
+      <Description>Meaning of each component</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ShutterSpeedValue</Name>
+      <Value>8.64386</Value>
+      <Description>Shutter speed</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ApertureValue</Name>
+      <Value>4.97086</Value>
+      <Description>Aperture</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureBiasValue</Name>
+      <Value>0</Value>
+      <Description>Exposure bias</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>MeteringMode</Name>
+      <Value>5</Value>
+      <Description>Metering mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Flash</Name>
+      <Value>16</Value>
+      <Description>Flash</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalLength</Name>
+      <Value>55</Value>
+      <Description>Lens focal length</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>UserComment</Name>
+      <Value>[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]</Value>
+      <Description>User comments</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FlashpixVersion</Name>
+      <Value>[48,49,48,48]</Value>
+      <Description>Supported Flashpix version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ColorSpace</Name>
+      <Value>1</Value>
+      <Description>Color space information</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelXDimension</Name>
+      <Value>3456</Value>
+      <Description>Valid image width</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelYDimension</Name>
+      <Value>2304</Value>
+      <Description>Valid image height</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>InteroperabilityIFD</Name>
+      <Value>9304</Value>
+      <Description>Interoperability IFD Pointer</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneXResolution</Name>
+      <Value>3954.23</Value>
+      <Description>Focal plane X resolution</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneYResolution</Name>
+      <Value>3958.76</Value>
+      <Description>Focal plane Y resolution</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Focal plane resolution unit</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CustomRendered</Name>
+      <Value>0</Value>
+      <Description>Custom image processing</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureMode</Name>
+      <Value>0</Value>
+      <Description>Exposure mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>WhiteBalance</Name>
+      <Value>0</Value>
+      <Description>White balance</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SceneCaptureType</Name>
+      <Value>0</Value>
+      <Description>Scene capture type</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormat</Name>
+      <Value>314162</Value>
+      <Description>Offset to JPEG SOI</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormatLength</Name>
+      <Value>8519</Value>
+      <Description>Bytes of JPEG data</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageWidth</Name>
+      <Value>384</Value>
+      <Description>Image width</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageLength</Name>
+      <Value>256</Value>
+      <Description>Image height</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>BitsPerSample</Name>
+      <Value>[8,8,8]</Value>
+      <Description>Number of bits per component</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PhotometricInterpretation</Name>
+      <Value>2</Value>
+      <Description>Pixel composition</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>323193</Value>
+      <Description>Image data location</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SamplesPerPixel</Name>
+      <Value>3</Value>
+      <Description>Number of components</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>RowsPerStrip</Name>
+      <Value>256</Value>
+      <Description>Number of rows per strip</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>294912</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PlanarConfiguration</Name>
+      <Value>1</Value>
+      <Description>Image data arrangement</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>618617</Value>
+      <Description>Image data location</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>6549932</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonUnknownTag</Name>
+      <Value>1</Value>
+      <Description>Canon Unknown Tag</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonUnknownTag</Name>
+      <Value>1</Value>
+      <Description>Canon Unknown Tag</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonCR2Slice</Name>
+      <Value>[1,1758,1758]</Value>
+      <Description>Canon CR2 Slice</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+  </AVSImageMetaDataCommon><?xml version="1.0" encoding="utf-8"?>
+  <AVSImageMetaDataCommon>
+    <CommonTag>
+      <Name>ImageWidth</Name>
+      <Value>1536</Value>
+      <Description>Image width</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageLength</Name>
+      <Value>1024</Value>
+      <Description>Image height</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>BitsPerSample</Name>
+      <Value>[8,8,8]</Value>
+      <Description>Number of bits per component</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Make</Name>
+      <Value>Canon</Value>
+      <Description>Image input equipment manufacturer</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Model</Name>
+      <Value>Canon EOS 350D DIGITAL</Value>
+      <Description>Image input equipment model</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>9728</Value>
+      <Description>Image data location</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Orientation</Name>
+      <Value>6</Value>
+      <Description>Orientation of image</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>303922</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>XResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in width direction</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>YResolution</Name>
+      <Value>72</Value>
+      <Description>Image resolution in height direction</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Unit of X and Y resolution</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTime</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>File change date and time</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifIFD</Name>
+      <Value>270</Value>
+      <Description>Exif IFD Pointer</Description>
+      <Category>common</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureTime</Name>
+      <Value>0.0025</Value>
+      <Description>Exposure time</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FNumber</Name>
+      <Value>5.6</Value>
+      <Description>F number</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureProgram</Name>
+      <Value>3</Value>
+      <Description>Exposure program</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ISOSpeedRatings</Name>
+      <Value>400</Value>
+      <Description>ISO speed rating</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExifVersion</Name>
+      <Value>[48,50,50,49]</Value>
+      <Description>Exif version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeOriginal</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>Date and time of original data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>DateTimeDigitized</Name>
+      <Value>2009:05:08 14:19:49</Value>
+      <Description>Date and time of digital data generation</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ComponentsConfiguration</Name>
+      <Value>[0,0,0,0]</Value>
+      <Description>Meaning of each component</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ShutterSpeedValue</Name>
+      <Value>8.64386</Value>
+      <Description>Shutter speed</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ApertureValue</Name>
+      <Value>4.97086</Value>
+      <Description>Aperture</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureBiasValue</Name>
+      <Value>0</Value>
+      <Description>Exposure bias</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>MeteringMode</Name>
+      <Value>5</Value>
+      <Description>Metering mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Flash</Name>
+      <Value>16</Value>
+      <Description>Flash</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalLength</Name>
+      <Value>55</Value>
+      <Description>Lens focal length</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>UserComment</Name>
+      <Value>[0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0]</Value>
+      <Description>User comments</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FlashpixVersion</Name>
+      <Value>[48,49,48,48]</Value>
+      <Description>Supported Flashpix version</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ColorSpace</Name>
+      <Value>1</Value>
+      <Description>Color space information</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelXDimension</Name>
+      <Value>3456</Value>
+      <Description>Valid image width</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PixelYDimension</Name>
+      <Value>2304</Value>
+      <Description>Valid image height</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>InteroperabilityIFD</Name>
+      <Value>9304</Value>
+      <Description>Interoperability IFD Pointer</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneXResolution</Name>
+      <Value>3954.23</Value>
+      <Description>Focal plane X resolution</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneYResolution</Name>
+      <Value>3958.76</Value>
+      <Description>Focal plane Y resolution</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>FocalPlaneResolutionUnit</Name>
+      <Value>2</Value>
+      <Description>Focal plane resolution unit</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CustomRendered</Name>
+      <Value>0</Value>
+      <Description>Custom image processing</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ExposureMode</Name>
+      <Value>0</Value>
+      <Description>Exposure mode</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>WhiteBalance</Name>
+      <Value>0</Value>
+      <Description>White balance</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SceneCaptureType</Name>
+      <Value>0</Value>
+      <Description>Scene capture type</Description>
+      <Category>exif</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormat</Name>
+      <Value>314162</Value>
+      <Description>Offset to JPEG SOI</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>JPEGInterchangeFormatLength</Name>
+      <Value>8519</Value>
+      <Description>Bytes of JPEG data</Description>
+      <Category>thumbnail</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageWidth</Name>
+      <Value>384</Value>
+      <Description>Image width</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>ImageLength</Name>
+      <Value>256</Value>
+      <Description>Image height</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>BitsPerSample</Name>
+      <Value>[8,8,8]</Value>
+      <Description>Number of bits per component</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PhotometricInterpretation</Name>
+      <Value>2</Value>
+      <Description>Pixel composition</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>323193</Value>
+      <Description>Image data location</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>SamplesPerPixel</Name>
+      <Value>3</Value>
+      <Description>Number of components</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>RowsPerStrip</Name>
+      <Value>256</Value>
+      <Description>Number of rows per strip</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>294912</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>PlanarConfiguration</Name>
+      <Value>1</Value>
+      <Description>Image data arrangement</Description>
+      <Category>additional 2</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>Compression</Name>
+      <Value>6</Value>
+      <Description>Compression scheme</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripOffsets</Name>
+      <Value>618617</Value>
+      <Description>Image data location</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>StripByteCounts</Name>
+      <Value>6549932</Value>
+      <Description>Bytes per compressed strip</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonUnknownTag</Name>
+      <Value>1</Value>
+      <Description>Canon Unknown Tag</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonUnknownTag</Name>
+      <Value>1</Value>
+      <Description>Canon Unknown Tag</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+    <CommonTag>
+      <Name>CanonCR2Slice</Name>
+      <Value>[1,1758,1758]</Value>
+      <Description>Canon CR2 Slice</Description>
+      <Category>additional 3</Category>
+    </CommonTag>
+  </AVSImageMetaDataCommon>

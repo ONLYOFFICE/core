@@ -3,11 +3,15 @@
 #include <boost/lexical_cast.hpp>
 #include <cpdoccore/CPOptional.h>
 
-#include <atlcoll.h>
+#include "../../../Common/boost_filesystem_version.h"
+#include "../progressCallback.h"
 
-#include "..\..\..\Common\boost_filesystem_version.h"
-#include "..\progressCallback.h"
-
+#if defined(_WIN32) || defined (_WIN64)
+	#include <atlbase.h>
+	#include <atlstr.h>
+#else
+	#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
+#endif
 
 namespace cpdoccore
 {

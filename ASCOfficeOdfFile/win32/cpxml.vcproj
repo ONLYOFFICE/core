@@ -290,7 +290,7 @@
 			Name="xmllite"
 			>
 			<File
-				RelativePath=".\src\xml\sax_win32_xmllite.cpp"
+				RelativePath="..\src\xml\sax_win32_xmllite.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -302,7 +302,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\src\xml\sax_win32_xmllite.h"
+				RelativePath="..\src\xml\sax_win32_xmllite.h"
 				>
 			</File>
 		</Filter>
@@ -310,44 +310,44 @@
 			Name="include"
 			>
 			<File
-				RelativePath=".\include\cpdoccore\xml\attributes.h"
+				RelativePath="..\include\cpdoccore\xml\attributes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\cpdoccore\xml\nodetype.h"
+				RelativePath="..\include\cpdoccore\xml\nodetype.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\cpdoccore\xml\sax.h"
+				RelativePath="..\include\cpdoccore\xml\sax.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\cpdoccore\xml\serialize.h"
+				RelativePath="..\include\cpdoccore\xml\serialize.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\cpdoccore\xml\serialize_attributes.h"
+				RelativePath="..\include\cpdoccore\xml\serialize_attributes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\cpdoccore\xml\simple_xml_writer.h"
+				RelativePath="..\include\cpdoccore\xml\simple_xml_writer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\cpdoccore\xml\xmlchar.h"
+				RelativePath="..\include\cpdoccore\xml\xmlchar.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\cpdoccore\xml\xmlelement.h"
+				RelativePath="..\include\cpdoccore\xml\xmlelement.h"
 				>
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\src\xml\attributes.cpp"
+			RelativePath="..\src\xml\attributes.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\xml\precompiled_cpxml.cpp"
+			RelativePath="..\src\xml\precompiled_cpxml.cpp"
 			>
 			<FileConfiguration
 				Name="Debug|Win32"
@@ -383,23 +383,11 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath=".\src\xml\precompiled_cpxml.h"
+			RelativePath="..\src\xml\precompiled_cpxml.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\xml\sax.cpp"
-			>
-			<FileConfiguration
-				Name="Debug|Win32"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-					UsePrecompiledHeader="0"
-				/>
-			</FileConfiguration>
-		</File>
-		<File
-			RelativePath=".\src\xml\serialize_attributes.cpp"
+			RelativePath="..\src\xml\sax.cpp"
 			>
 			<FileConfiguration
 				Name="Debug|Win32"
@@ -411,7 +399,7 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath=".\src\xml\utils.cpp"
+			RelativePath="..\src\xml\serialize_attributes.cpp"
 			>
 			<FileConfiguration
 				Name="Debug|Win32"
@@ -423,11 +411,7 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath=".\include\cpdoccore\xml\utils.h"
-			>
-		</File>
-		<File
-			RelativePath=".\src\xml\xmlchar.cpp"
+			RelativePath="..\src\xml\utils.cpp"
 			>
 			<FileConfiguration
 				Name="Debug|Win32"
@@ -439,7 +423,23 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath=".\src\xml\xmlelement.cpp"
+			RelativePath="..\include\cpdoccore\xml\utils.h"
+			>
+		</File>
+		<File
+			RelativePath="..\src\xml\xmlchar.cpp"
+			>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="0"
+				/>
+			</FileConfiguration>
+		</File>
+		<File
+			RelativePath="..\src\xml\xmlelement.cpp"
 			>
 			<FileConfiguration
 				Name="Debug|Win32"

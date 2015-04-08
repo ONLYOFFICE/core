@@ -1,4 +1,4 @@
-#include <cpdoccore/formulasconvert.h>
+#include "../include/cpdoccore/formulasconvert.h"
 
 #include <boost/algorithm/string.hpp>
 #include <boost/regex.hpp>

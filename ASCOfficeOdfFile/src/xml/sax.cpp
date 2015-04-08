@@ -14,15 +14,15 @@ sax_ptr create_sax(const wchar_t * FileName)
     return create_sax_win32_xmllite(FileName);
 }
 
-sax_ptr create_sax(shared_ptr< std::istream >::Type istreamPtr)
-{
-    return create_sax_win32_xmllite(istreamPtr);
-}
-
-sax_ptr create_sax(std::istream & istreamVal)
-{
-    return create_sax_win32_xmllite(istreamVal);
-}
+//sax_ptr create_sax(shared_ptr< std::istream >::Type istreamPtr)
+//{
+//    return create_sax_win32_xmllite(istreamPtr);
+//}
+//
+//sax_ptr create_sax(std::istream & istreamVal)
+//{
+//    return create_sax_win32_xmllite(istreamVal);
+//}
 
 /*
 sax_ptr create_sax(const std::string & String)

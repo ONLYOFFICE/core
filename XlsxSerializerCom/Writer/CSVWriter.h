@@ -4,6 +4,10 @@
 #define CP_UTF16		1200
 #define CP_unicodeFFFE	1201
 
+#ifndef CP_UTF8
+#define CP_UTF8 65001
+#endif
+
 #if defined(_WIN32) || defined (_WIN64)
 	#include <atlbase.h>
 	#include <atlstr.h>

@@ -1,9 +1,5 @@
 ﻿#include "CSVWriter.h"
 
-#ifndef CP_UTF8
-#define CP_UTF8 65001
-#endif
-
 namespace CSVWriter
 {
 	void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, CString &sWriteString, UINT &nCodePage, BOOL bIsEnd)

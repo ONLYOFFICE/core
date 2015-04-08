@@ -7,11 +7,9 @@
 
 #if defined(_WIN32) || defined (_WIN64)
     #include <tchar.h>
-#elif __linux__
+#elif __linux__ || MAC
     #include <libgen.h>
-#elif MAC
 #endif
-
 
 namespace NSSystemPath
 {
@@ -24,14 +22,13 @@ namespace NSSystemPath
 		_tsplitpath( strFileName.c_str(), tDrive, tFolder, NULL, NULL );
 		sRes.append(tDrive);
 		sRes.append(tFolder);
-#elif __linux__
+#elif __linux__ || MAC
 		BYTE* pUtf8 = NULL;
 		LONG lLen = 0;
 		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
 		char* pDirName = dirname((char*)pUtf8);
 		sRes = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pDirName, strlen(pDirName));
 		delete [] pUtf8;
-#elif MAC
 #endif
         return sRes;
 	}
@@ -45,14 +42,13 @@ namespace NSSystemPath
 		sRes.append(tFilename);
 		sRes.append(tExt);
 		return sRes;
-#elif __linux__
+#elif __linux__ || MAC
 		BYTE* pUtf8 = NULL;
 		LONG lLen = 0;
 		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
 		char* pBaseName = basename((char*)pUtf8);
 		sRes = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pBaseName, strlen(pBaseName));
 		delete [] pUtf8;
-#elif MAC
 #endif
 		return sRes;
 	}

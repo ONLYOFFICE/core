@@ -1,13 +1,15 @@
 #include "precompiled_cpodf.h"
 #include <iostream>
 #include "style_table_properties.h"
-#include <cpdoccore/xml/serialize.h>
+
+#include <cpdoccore/xml/attributes.h>
+#include <cpdoccore/xml/simple_xml_writer.h>
+
 #include "serialize_elements.h"
-#include "borderstyle.h"
+#include "datatypes/borderstyle.h"
 #include "odfcontext.h"
 #include "odf_document_impl.h"
 
-#include <cpdoccore/xml/simple_xml_writer.h>
 
 
 namespace cpdoccore { 

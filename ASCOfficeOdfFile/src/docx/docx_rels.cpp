@@ -1,6 +1,5 @@
-#include "precompiled_cpodf.h"
+#include "../odf/precompiled_cpodf.h"
 #include "docx_rels.h"
-#include <cpdoccore/xml/serialize.h>
 #include <cpdoccore/xml/attributes.h>
 #include <boost/foreach.hpp>
 #include "namespaces.h"

@@ -1,6 +1,6 @@
 #include "precompiled_cpodf.h"
 #include "draw_common.h"
-#include "custom_shape_types_convert.h"
+#include "datatypes/custom_shape_types_convert.h"
 
 #include <ostream>
 #include <sstream>
@@ -18,12 +18,12 @@
 #include <cpdoccore/odf/odf_document.h>
 #include "../docx/xlsx_utils.h"
 #include "style_graphic_properties.h"
-#include "length.h"
-#include "borderstyle.h"
 #include "odfcontext.h"
 #include "calcs_styles.h"
 #include "svg_parser.h"
 
+#include "datatypes/length.h"
+#include "datatypes/borderstyle.h"
 namespace cpdoccore { 
 namespace odf {
 

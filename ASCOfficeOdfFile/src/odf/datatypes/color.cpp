@@ -1,6 +1,6 @@
-#include "precompiled_cpodf.h"
+#include ".././precompiled_cpodf.h"
 #include "color.h"
-#include "logging.h"
+#include <logging.h>
 
 #include <ostream>
 #include <sstream>

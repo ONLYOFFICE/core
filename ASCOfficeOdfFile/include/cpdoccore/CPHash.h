@@ -1,7 +1,7 @@
 #ifndef _CPDOCCORE_HASH_H_
 #define _CPDOCCORE_HASH_H_
 
-#include <cpdoccore/CPOptional.h>
+#include "../../include/cpdoccore/CPOptional.h"
 
 namespace boost 
 {

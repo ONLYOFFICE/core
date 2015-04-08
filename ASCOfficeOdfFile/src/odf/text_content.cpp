@@ -6,7 +6,7 @@
 #include <boost/foreach.hpp>
 
 #include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/serialize.h>
+#include <cpdoccore/xml/attributes.h>
 
 namespace cpdoccore { 
 namespace odf {

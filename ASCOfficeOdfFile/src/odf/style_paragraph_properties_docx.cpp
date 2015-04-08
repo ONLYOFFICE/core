@@ -6,7 +6,7 @@
 
 #include "../docx/docx_conversion_context.h"
 
-#include "borderstyle.h"
+#include "datatypes/borderstyle.h"
 
 namespace cpdoccore { 
 namespace odf {

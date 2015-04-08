@@ -1,15 +1,14 @@
-#ifndef _CPDOCCORE_XMLATTRIBUTES_H_
-#define _CPDOCCORE_XMLATTRIBUTES_H_
+#pragma once
 
 #include <string>
 #include <vector>
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPOptional.h>
 
-#include <logging.h>
+#include "../../cpdoccore/CPSharedPtr.h"
+#include "../../cpdoccore/CPOptional.h"
+#include "../../cpdoccore/xml/xmlchar.h"
 
-#include <boost_string.h>
-#include <cpdoccore/xml/xmlchar.h>
+#include "../../logging.h"
+#include "../../boost_string.h"
 
 #include <boost/variant.hpp>
 #include <boost/foreach.hpp>
@@ -225,5 +224,3 @@ namespace cpdoccore
 
 	}
 }
-
-#endif // #ifndef _CPDOCCORE_XMLATTRIBUTES_H_

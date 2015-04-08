@@ -1,6 +1,6 @@
 #include "precompiled_cpodf.h"
 #include "draw_shapes.h"
-#include "custom_shape_types_convert.h"
+#include "datatypes/custom_shape_types_convert.h"
 
 #include <ostream>
 #include <sstream>
@@ -17,8 +17,10 @@
 #include "serialize_elements.h"
 #include <cpdoccore/odf/odf_document.h>
 #include "style_graphic_properties.h"
-#include "length.h"
-#include "borderstyle.h"
+
+#include "datatypes/length.h"
+#include "datatypes/borderstyle.h"
+
 #include "odfcontext.h"
 #include "../odf/svg_parser.h"
 

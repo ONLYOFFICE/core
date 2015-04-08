@@ -1,4 +1,4 @@
-#include "precompiled_cpodf.h"
+#include "../odf/precompiled_cpodf.h"
 #include "docx_package.h"
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>

@@ -3,8 +3,9 @@
 
 #include "precompiled_cpxml.h"
 
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/sax.h>
+#include "../../include/cpdoccore/xml/attributes.h"
+#include "../../include/cpdoccore/xml/sax.h"
+
 #include <boost/foreach.hpp>
 #include <map>
 #include <vector>

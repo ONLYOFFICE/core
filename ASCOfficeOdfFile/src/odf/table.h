@@ -6,12 +6,13 @@
 #include <cpdoccore/xml/nodetype.h>
 #include "office_elements.h"
 #include "office_elements_create.h"
-#include "style_ref.h"
-#include "tablevisibility.h"
-#include "common_attlists.h"
-#include "tablemode.h"
+
 #include "table_named_expressions.h"
 
+#include "datatypes/tablemode.h"
+#include "datatypes/common_attlists.h"
+#include "datatypes/style_ref.h"
+#include "datatypes/tablevisibility.h"
 namespace cpdoccore { 
 namespace odf {
 

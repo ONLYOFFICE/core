@@ -2,37 +2,39 @@
 #define _CPDOCCORE_TEXT_FORMAT_PROP_H_
 
 #include <iosfwd>
+
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
+
 #include "office_elements.h"
 #include "office_elements_create.h"
 
-#include "style_ref.h"
-#include "fontvariant.h"
-#include "texttransform.h"
-#include "color.h"
-#include "linetype.h"
-#include "linestyle.h"
-#include "linewidth.h"
-#include "textposition.h"
-#include "fontfamilygeneric.h"
-#include "fontpitch.h"
-#include "fontsize.h"
-#include "scripttype.h"
-#include "letterspacing.h"
-#include "fontstyle.h"
-#include "shadowtype.h"
-#include "fontweight.h"
-#include "linemode.h"
-#include "backgroundcolor.h"
-#include "underlinecolor.h"
-#include "fontrelief.h"
-#include "textcombine.h"
-#include "textemphasize.h"
-#include "textrotationscale.h"
-#include "textdisplay.h"
+#include "datatypes/style_ref.h"
+#include "datatypes/fontvariant.h"
+#include "datatypes/texttransform.h"
+#include "datatypes/color.h"
+#include "datatypes/linetype.h"
+#include "datatypes/linestyle.h"
+#include "datatypes/linewidth.h"
+#include "datatypes/textposition.h"
+#include "datatypes/fontfamilygeneric.h"
+#include "datatypes/fontpitch.h"
+#include "datatypes/fontsize.h"
+#include "datatypes/scripttype.h"
+#include "datatypes/letterspacing.h"
+#include "datatypes/fontstyle.h"
+#include "datatypes/shadowtype.h"
+#include "datatypes/fontweight.h"
+#include "datatypes/linemode.h"
+#include "datatypes/backgroundcolor.h"
+#include "datatypes/underlinecolor.h"
+#include "datatypes/fontrelief.h"
+#include "datatypes/textcombine.h"
+#include "datatypes/textemphasize.h"
+#include "datatypes/textrotationscale.h"
+#include "datatypes/textdisplay.h"
 
 namespace cpdoccore { 
 namespace odf {

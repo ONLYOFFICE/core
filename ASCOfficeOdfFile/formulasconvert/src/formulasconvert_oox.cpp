@@ -4,6 +4,7 @@
 #include <boost/regex.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+
 namespace cpdoccore {
 namespace formulasconvert {
 

@@ -2,6 +2,7 @@
 
 #include <iosfwd>
 #include <boost/noncopyable.hpp>
+
 #include <cpdoccore/CPScopedPtr.h>
 #include <cpdoccore/CPSharedPtr.h>
 

@@ -1,8 +1,8 @@
-#include "precompiled_cpodf.h"
+#include "../odf/precompiled_cpodf.h"
 #include <boost/foreach.hpp>
 #include <iostream>
 #include <cpdoccore/common/boost_filesystem_version.h>
-#include <cpdoccore/formulasconvert.h>
+#include "../formulasconvert/include/cpdoccore/formulasconvert.h"
 
 #include "mediaitems_utils.h"
 

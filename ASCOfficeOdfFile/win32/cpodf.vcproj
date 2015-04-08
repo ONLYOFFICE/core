@@ -20,8 +20,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)bin/Debug"
-			IntermediateDirectory="$(SolutionDir)output/$(ConfigurationName)/$(ProjectName)"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;;&quot;$(SolutionDir)include&quot;;&quot;$(SolutionDir)3dparty\gtest\include\&quot;;&quot;$(SolutionDir)3dparty\utf8cpp\include&quot;;&quot;$(SolutionDir)formulasconvert\include\&quot;;.\src\odf\datatypes;.\src\odf\"
+				AdditionalIncludeDirectories="../include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;USE_LITE_READER;_USE_XMLLITE_READER_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -86,7 +86,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
@@ -110,7 +110,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;;&quot;$(SolutionDir)include&quot;;&quot;$(SolutionDir)3dparty\gtest\include\&quot;;&quot;$(SolutionDir)3dparty\utf8cpp\include&quot;;&quot;$(SolutionDir)formulasconvert\include\&quot;;.\src\odf\datatypes;.\src\odf\"
+				AdditionalIncludeDirectories="../include"
 				PreprocessorDefinitions="WIN32;_DEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -153,8 +153,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)bin/Release"
-			IntermediateDirectory="$(SolutionDir)output/$(ConfigurationName)/$(ProjectName)"
+			OutputDirectory="$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -177,7 +177,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;;&quot;$(SolutionDir)include&quot;;&quot;$(SolutionDir)3dparty\gtest\include\&quot;;&quot;$(SolutionDir)3dparty\utf8cpp\include&quot;;&quot;$(SolutionDir)formulasconvert\include\&quot;;.\src\odf\datatypes;.\src\odf\"
+				AdditionalIncludeDirectories="../include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -219,7 +219,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
@@ -244,7 +244,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;;&quot;$(SolutionDir)include&quot;;&quot;$(SolutionDir)3dparty\gtest\include\&quot;;&quot;$(SolutionDir)3dparty\utf8cpp\include&quot;;&quot;$(SolutionDir)formulasconvert\include\&quot;;.\src\odf\datatypes;.\src\odf\"
+				AdditionalIncludeDirectories="../include"
 				PreprocessorDefinitions="WIN32;NDEBUG;_CONSOLE;_CRT_SECURE_NO_WARNINGS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"

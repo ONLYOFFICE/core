@@ -1,14 +1,18 @@
 #pragma once
 
 #include <iosfwd>
+
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
+
 #include "text_content.h"
-#include "style_ref.h"
 #include "office_elements_create.h"
-#include "textdisplay.h"
-#include "common_attlists.h"
+
+#include "datatypes/textdisplay.h"
+
+#include "datatypes/common_attlists.h"
+#include "datatypes/style_ref.h"
 
 namespace cpdoccore { 
 namespace odf {

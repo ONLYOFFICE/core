@@ -20,15 +20,9 @@
 
 #include "ConvertOO2OOX.h"
 
-#include "..\..\Common\XmlUtils.h"
+#include "../../Common/XmlUtils.h"
 
-#include "..\..\Common\ASCATLError.h"
-
-#ifdef _DEBUG
-	#pragma comment(lib, "../../ASCImageStudio3/ASCGraphics/OfficeSvmFile/Debug/OfficeSvmFile.lib")
-#else
-	#pragma comment(lib, "../../ASCImageStudio3/ASCGraphics/OfficeSvmFile/Release/OfficeSvmFile.lib")
-#endif
+#include "../../Common/ASCATLError.h"
 
 // ВНИМАНИЕ:    значение 1 используется для тестирования, на выходе получаем заархивированный файл xlsx или docx
 //              значение 0 используется для релиза, так как на выходе по спецификации нам требуется распакованный package

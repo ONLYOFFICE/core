@@ -1,11 +1,12 @@
 #include "precompiled_cpodf.h"
 #include "styles_list.h"
 
-#include <cpdoccore/xml/serialize.h>
+#include <cpdoccore/xml/attributes.h>
+#include <cpdoccore/xml/simple_xml_writer.h>
+
 #include "serialize_elements.h"
 #include "style_text_properties.h"
 
-#include <cpdoccore/xml/simple_xml_writer.h>
 
 namespace cpdoccore { 
 namespace odf {

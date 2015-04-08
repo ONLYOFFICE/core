@@ -7,15 +7,15 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
-#include "fontstyle.h"
-#include "fontvariant.h"
-#include "fontweight.h"
-#include "fontstretch.h"
-#include "length.h"
-#include "fontfamilygeneric.h"
-#include "fontpitch.h"
+#include "datatypes/fontstyle.h"
+#include "datatypes/fontvariant.h"
+#include "datatypes/fontweight.h"
+#include "datatypes/fontstretch.h"
+#include "datatypes/length.h"
+#include "datatypes/fontfamilygeneric.h"
+#include "datatypes/fontpitch.h"
 
-#include "common_attlists.h"
+#include "datatypes/common_attlists.h"
 
 
 namespace cpdoccore { 

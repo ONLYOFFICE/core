@@ -1,9 +1,9 @@
-#include "precompiled_cpodf.h"
+#include "../precompiled_cpodf.h"
 #include "style_ref.h"
 
 #include <iostream>
 #include <sstream>
-#include <lexical_cast.h>
+#include <cpdoccore/CPScopedPtr.h>
 #include <cpdoccore/CPAssert.h>
 
 namespace cpdoccore { 

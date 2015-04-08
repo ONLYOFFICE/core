@@ -16,9 +16,10 @@
 #include "serialize_elements.h"
 #include <cpdoccore/odf/odf_document.h>
 #include "style_graphic_properties.h"
-#include "length.h"
-#include "borderstyle.h"
 #include "odfcontext.h"
+
+#include "datatypes/length.h"
+#include "datatypes/borderstyle.h"
 
 namespace cpdoccore { 
 namespace odf {

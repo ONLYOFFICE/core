@@ -4,20 +4,22 @@
 
 #include "serialize_elements.h"
 #include <cpdoccore/odf/odf_document.h>
-#include <cpdoccore/formulasconvert.h>
+
+#include "../formulasconvert/include/cpdoccore/formulasconvert.h"
 
 #include "style_graphic_properties.h"
 #include "style_chart_properties.h"
 #include "style_text_properties.h"
 
-#include "length.h"
-#include "borderstyle.h"
 #include "odfcontext.h"
 
 #include "draw_common.h"
 
 #include "calcs_styles.h"
 #include "chart_build_oox.h"
+
+#include "datatypes/length.h"
+#include "datatypes/borderstyle.h"
 
 namespace cpdoccore { 
 namespace odf {

@@ -1,5 +1,6 @@
 #pragma once
 #include "oox_package.h"
+
 #include <cpdoccore/CPNoncopyable.h>
 
 #include <cpdoccore/CPScopedPtr.h>

@@ -2,8 +2,10 @@
 
 #include <string>
 #include <vector>
-#include <cpdoccore/CPSharedPtr.h>
 #include <boost/foreach.hpp>
+
+#include <cpdoccore/CPSharedPtr.h>
+
 #include "docx_rels.h"
 #include "docx_content_type.h"
 #include "oox_package.h"

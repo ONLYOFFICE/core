@@ -2,9 +2,12 @@
 
 #include "styles.h"
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
+#include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
+
+#include <cpdoccore/odf/odf_document.h>
+
 #include <iostream>
 #include <boost/foreach.hpp>
 
@@ -19,7 +22,6 @@
 #include "style_presentation.h"
 
 #include "serialize_elements.h"
-#include <cpdoccore/odf/odf_document.h>
 #include "odfcontext.h"
 
 #include "draw_common.h"

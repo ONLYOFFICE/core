@@ -4,7 +4,8 @@
 #include <string>
 #include <iosfwd>
 #include <sstream>
-#include <cpdoccore/xml/nodetype.h>
+
+#include "nodetype.h"
 
 namespace cpdoccore {
 namespace xml {

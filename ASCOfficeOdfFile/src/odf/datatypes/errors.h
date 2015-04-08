@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_ODF_ERRORS_H_
-#define _CPDOCCORE_ODF_ERRORS_H_
+#pragma once
 
 #include <exception>
 #include <boost/exception/all.hpp>
@@ -20,4 +19,3 @@ struct invalid_attribute : virtual error {};
 
 } }
 
-#endif

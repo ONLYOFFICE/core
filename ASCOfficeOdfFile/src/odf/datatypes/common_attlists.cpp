@@ -1,6 +1,5 @@
-#include "precompiled_cpodf.h"
+#include "../precompiled_cpodf.h"
 #include <iostream>
-#include <cpdoccore/xml/serialize.h>
 #include "common_attlists.h"
 #include <cpdoccore/xml/attributes.h>
 

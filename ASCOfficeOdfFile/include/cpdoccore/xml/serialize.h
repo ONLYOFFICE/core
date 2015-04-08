@@ -2,7 +2,7 @@
 #define _CPDOCCORE_XML_SERIALIZE_H_
 
 #include <ostream>
-#include <cpdoccore/xml/xmlchar.h>
+#include "xmlchar.h"
 
 namespace cpdoccore {
 namespace xml {

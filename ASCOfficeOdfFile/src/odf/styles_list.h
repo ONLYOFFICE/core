@@ -6,12 +6,14 @@
 #include <cpdoccore/CPSharedPtr.h>
 #include <cpdoccore/CPOptional.h>
 
+
 #include <cpdoccore/xml/nodetype.h>
 
 #include "office_elements.h"
 #include "office_elements_create.h"
-#include "common_attlists.h"
-#include "style_ref.h"
+
+#include "datatypes/common_attlists.h"
+#include "datatypes/style_ref.h"
 
 namespace cpdoccore { namespace odf { 
 

@@ -2,7 +2,8 @@
 #define _CPDOCCORE_READDOCELEMENT_H_
 
 #include <string>
-#include <cpdoccore/CPSharedPtr.h>
+
+#include "../CPSharedPtr.h"
 
 namespace cpdoccore { 
 

@@ -1,10 +1,10 @@
-#include "precompiled_cpodf.h"
+#include "../odf/precompiled_cpodf.h"
 #include "oox_plot_area.h"
 #include <boost/foreach.hpp>
 #include <boost/functional.hpp>
 #include <cpdoccore/CPHash.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include "..\odf\style_text_properties.h"
+#include "../odf/style_text_properties.h"
 
 #include "oox_chart_shape.h"
 

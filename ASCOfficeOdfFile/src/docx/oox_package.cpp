@@ -1,10 +1,10 @@
-#include "precompiled_cpodf.h"
+#include "../odf/precompiled_cpodf.h"
 #include "oox_package.h"
 
 #include <boost/foreach.hpp>
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
-#include <utf8cpp/utf8.h>
+#include <cpdoccore/utf8cpp/utf8.h>
 #include <cpdoccore/common/boost_filesystem_version.h>
 
 #include "mediaitems.h"

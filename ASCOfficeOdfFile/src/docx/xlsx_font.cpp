@@ -1,9 +1,9 @@
-#include "precompiled_cpodf.h"
+#include "../odf/precompiled_cpodf.h"
 #include "xlsx_font.h"
 #include <boost/foreach.hpp>
 #include <boost/functional.hpp>
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include "..\odf\style_text_properties.h"
+#include "../odf/style_text_properties.h"
 
 namespace cpdoccore {
 namespace oox {

@@ -289,62 +289,54 @@
 	</References>
 	<Files>
 		<Filter
-			Name="include"
-			>
-			<File
-				RelativePath=".\include\cpdoccore\odf\odfformat.h"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="utility"
 			>
 			<File
-				RelativePath=".\src\odf\abstract_xml.cpp"
+				RelativePath="..\src\odf\abstract_xml.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\abstract_xml.h"
+				RelativePath="..\src\odf\abstract_xml.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\boost_string.h"
+				RelativePath="..\include\boost_string.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\createandread.cpp"
+				RelativePath="..\src\odf\createandread.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\errors.h"
+				RelativePath="..\src\odf\errors.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\lexical_cast.h"
+				RelativePath="..\include\lexical_cast.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\logging.cpp"
+				RelativePath="..\src\odf\logging.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\include\logging.h"
+				RelativePath="..\include\logging.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\odfattributes.h"
+				RelativePath="..\src\odf\odfattributes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\office_elements_create.cpp"
+				RelativePath="..\src\odf\office_elements_create.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\office_elements_create.h"
+				RelativePath="..\src\odf\office_elements_create.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\precompiled_cpodf.cpp"
+				RelativePath="..\src\odf\precompiled_cpodf.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -380,23 +372,23 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\src\odf\precompiled_cpodf.h"
+				RelativePath="..\src\odf\precompiled_cpodf.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\regex.h"
+				RelativePath="..\include\regex.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\serialize_elements.h"
+				RelativePath="..\src\odf\serialize_elements.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\svg_parser.cpp"
+				RelativePath="..\src\odf\svg_parser.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\svg_parser.h"
+				RelativePath="..\src\odf\svg_parser.h"
 				>
 			</File>
 		</Filter>
@@ -404,119 +396,119 @@
 			Name="style"
 			>
 			<File
-				RelativePath=".\src\odf\calcs_styles.cpp"
+				RelativePath="..\src\odf\calcs_styles.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\calcs_styles.h"
+				RelativePath="..\src\odf\calcs_styles.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\header_footer.cpp"
+				RelativePath="..\src\odf\header_footer.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\header_footer.h"
+				RelativePath="..\src\odf\header_footer.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_chart_properties.cpp"
+				RelativePath="..\src\odf\style_chart_properties.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_chart_properties.h"
+				RelativePath="..\src\odf\style_chart_properties.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_graphic_properties.cpp"
+				RelativePath="..\src\odf\style_graphic_properties.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_graphic_properties.h"
+				RelativePath="..\src\odf\style_graphic_properties.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_map.cpp"
+				RelativePath="..\src\odf\style_map.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_map.h"
+				RelativePath="..\src\odf\style_map.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_paragraph_properties.cpp"
+				RelativePath="..\src\odf\style_paragraph_properties.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_paragraph_properties.h"
+				RelativePath="..\src\odf\style_paragraph_properties.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_paragraph_properties_docx.cpp"
+				RelativePath="..\src\odf\style_paragraph_properties_docx.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_paragraph_properties_pptx.cpp"
+				RelativePath="..\src\odf\style_paragraph_properties_pptx.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_presentation.cpp"
+				RelativePath="..\src\odf\style_presentation.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_presentation.h"
+				RelativePath="..\src\odf\style_presentation.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_ref.h"
+				RelativePath="..\src\odf\style_ref.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_table_properties.cpp"
+				RelativePath="..\src\odf\style_table_properties.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_table_properties.h"
+				RelativePath="..\src\odf\style_table_properties.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_text_properties.cpp"
+				RelativePath="..\src\odf\style_text_properties.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\style_text_properties.h"
+				RelativePath="..\src\odf\style_text_properties.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\styles.cpp"
+				RelativePath="..\src\odf\styles.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\styles.h"
+				RelativePath="..\src\odf\styles.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\styles_list.cpp"
+				RelativePath="..\src\odf\styles_list.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\styles_list.h"
+				RelativePath="..\src\odf\styles_list.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\styles_lite_container.cpp"
+				RelativePath="..\src\odf\styles_lite_container.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\styles_lite_container.h"
+				RelativePath="..\src\odf\styles_lite_container.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\templates.cpp"
+				RelativePath="..\src\odf\templates.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\templates.h"
+				RelativePath="..\src\odf\templates.h"
 				>
 			</File>
 		</Filter>
@@ -524,135 +516,135 @@
 			Name="datatypes odf"
 			>
 			<File
-				RelativePath=".\src\odf\datatypes\anchortype.cpp"
+				RelativePath="..\src\odf\datatypes\anchortype.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\anchortype.h"
+				RelativePath="..\src\odf\datatypes\anchortype.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\backgroundcolor.cpp"
+				RelativePath="..\src\odf\datatypes\backgroundcolor.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\backgroundcolor.h"
+				RelativePath="..\src\odf\datatypes\backgroundcolor.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\bool.cpp"
+				RelativePath="..\src\odf\datatypes\bool.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\bool.h"
+				RelativePath="..\src\odf\datatypes\bool.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\bordermodel.cpp"
+				RelativePath="..\src\odf\datatypes\bordermodel.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\bordermodel.h"
+				RelativePath="..\src\odf\datatypes\bordermodel.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\borderstyle.cpp"
+				RelativePath="..\src\odf\datatypes\borderstyle.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\borderstyle.h"
+				RelativePath="..\src\odf\datatypes\borderstyle.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\borderwidths.cpp"
+				RelativePath="..\src\odf\datatypes\borderwidths.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\borderwidths.h"
+				RelativePath="..\src\odf\datatypes\borderwidths.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\chartdatalabelnumber.cpp"
+				RelativePath="..\src\odf\datatypes\chartdatalabelnumber.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\chartdatalabelnumber.h"
+				RelativePath="..\src\odf\datatypes\chartdatalabelnumber.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\charterrorcategory.cpp"
+				RelativePath="..\src\odf\datatypes\charterrorcategory.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\charterrorcategory.h"
+				RelativePath="..\src\odf\datatypes\charterrorcategory.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\chartinterpolation.cpp"
+				RelativePath="..\src\odf\datatypes\chartinterpolation.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\chartinterpolation.h"
+				RelativePath="..\src\odf\datatypes\chartinterpolation.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\chartlabelarrangement.cpp"
+				RelativePath="..\src\odf\datatypes\chartlabelarrangement.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\chartlabelarrangement.h"
+				RelativePath="..\src\odf\datatypes\chartlabelarrangement.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\chartregressiontype.cpp"
+				RelativePath="..\src\odf\datatypes\chartregressiontype.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\chartregressiontype.h"
+				RelativePath="..\src\odf\datatypes\chartregressiontype.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\chartseriessource.cpp"
+				RelativePath="..\src\odf\datatypes\chartseriessource.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\chartseriessource.h"
+				RelativePath="..\src\odf\datatypes\chartseriessource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\chartsolidtype.cpp"
+				RelativePath="..\src\odf\datatypes\chartsolidtype.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\chartsolidtype.h"
+				RelativePath="..\src\odf\datatypes\chartsolidtype.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\chartsymbol.cpp"
+				RelativePath="..\src\odf\datatypes\chartsymbol.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\chartsymbol.h"
+				RelativePath="..\src\odf\datatypes\chartsymbol.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\clockvalue.cpp"
+				RelativePath="..\src\odf\datatypes\clockvalue.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\clockvalue.h"
+				RelativePath="..\src\odf\datatypes\clockvalue.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\color.cpp"
+				RelativePath="..\src\odf\datatypes\color.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\color.h"
+				RelativePath="..\src\odf\datatypes\color.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\common_attlists.cpp"
+				RelativePath="..\src\odf\datatypes\common_attlists.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -692,583 +684,583 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\common_attlists.h"
+				RelativePath="..\src\odf\datatypes\common_attlists.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\direction.cpp"
+				RelativePath="..\src\odf\datatypes\direction.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\direction.h"
+				RelativePath="..\src\odf\datatypes\direction.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\drawfill.cpp"
+				RelativePath="..\src\odf\datatypes\drawfill.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\drawfill.h"
+				RelativePath="..\src\odf\datatypes\drawfill.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\dropcaplength.cpp"
+				RelativePath="..\src\odf\datatypes\dropcaplength.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\dropcaplength.h"
+				RelativePath="..\src\odf\datatypes\dropcaplength.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\errors.h"
+				RelativePath="..\src\odf\datatypes\errors.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fillimagerefpoint.cpp"
+				RelativePath="..\src\odf\datatypes\fillimagerefpoint.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fillimagerefpoint.h"
+				RelativePath="..\src\odf\datatypes\fillimagerefpoint.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fobreak.cpp"
+				RelativePath="..\src\odf\datatypes\fobreak.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fobreak.h"
+				RelativePath="..\src\odf\datatypes\fobreak.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontfamilygeneric.cpp"
+				RelativePath="..\src\odf\datatypes\fontfamilygeneric.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontfamilygeneric.h"
+				RelativePath="..\src\odf\datatypes\fontfamilygeneric.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontpitch.cpp"
+				RelativePath="..\src\odf\datatypes\fontpitch.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontpitch.h"
+				RelativePath="..\src\odf\datatypes\fontpitch.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontrelief.cpp"
+				RelativePath="..\src\odf\datatypes\fontrelief.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontrelief.h"
+				RelativePath="..\src\odf\datatypes\fontrelief.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontsize.cpp"
+				RelativePath="..\src\odf\datatypes\fontsize.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontsize.h"
+				RelativePath="..\src\odf\datatypes\fontsize.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontstretch.cpp"
+				RelativePath="..\src\odf\datatypes\fontstretch.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontstretch.h"
+				RelativePath="..\src\odf\datatypes\fontstretch.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontstyle.cpp"
+				RelativePath="..\src\odf\datatypes\fontstyle.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontstyle.h"
+				RelativePath="..\src\odf\datatypes\fontstyle.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontvariant.cpp"
+				RelativePath="..\src\odf\datatypes\fontvariant.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontvariant.h"
+				RelativePath="..\src\odf\datatypes\fontvariant.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontweight.cpp"
+				RelativePath="..\src\odf\datatypes\fontweight.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\fontweight.h"
+				RelativePath="..\src\odf\datatypes\fontweight.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\gradientstyle.cpp"
+				RelativePath="..\src\odf\datatypes\gradientstyle.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\gradientstyle.h"
+				RelativePath="..\src\odf\datatypes\gradientstyle.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\hatchstyle.cpp"
+				RelativePath="..\src\odf\datatypes\hatchstyle.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\hatchstyle.h"
+				RelativePath="..\src\odf\datatypes\hatchstyle.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\hyphenationkeep.cpp"
+				RelativePath="..\src\odf\datatypes\hyphenationkeep.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\hyphenationkeep.h"
+				RelativePath="..\src\odf\datatypes\hyphenationkeep.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\hyphenationladdercount.cpp"
+				RelativePath="..\src\odf\datatypes\hyphenationladdercount.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\hyphenationladdercount.h"
+				RelativePath="..\src\odf\datatypes\hyphenationladdercount.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\keeptogether.cpp"
+				RelativePath="..\src\odf\datatypes\keeptogether.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\keeptogether.h"
+				RelativePath="..\src\odf\datatypes\keeptogether.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\layoutgridmode.cpp"
+				RelativePath="..\src\odf\datatypes\layoutgridmode.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\layoutgridmode.h"
+				RelativePath="..\src\odf\datatypes\layoutgridmode.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\length.cpp"
+				RelativePath="..\src\odf\datatypes\length.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\length.h"
+				RelativePath="..\src\odf\datatypes\length.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\lengthorpercent.cpp"
+				RelativePath="..\src\odf\datatypes\lengthorpercent.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\lengthorpercent.h"
+				RelativePath="..\src\odf\datatypes\lengthorpercent.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\letterspacing.cpp"
+				RelativePath="..\src\odf\datatypes\letterspacing.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\letterspacing.h"
+				RelativePath="..\src\odf\datatypes\letterspacing.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\linebreak.cpp"
+				RelativePath="..\src\odf\datatypes\linebreak.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\linebreak.h"
+				RelativePath="..\src\odf\datatypes\linebreak.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\linemode.cpp"
+				RelativePath="..\src\odf\datatypes\linemode.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\linemode.h"
+				RelativePath="..\src\odf\datatypes\linemode.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\linestyle.cpp"
+				RelativePath="..\src\odf\datatypes\linestyle.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\linestyle.h"
+				RelativePath="..\src\odf\datatypes\linestyle.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\linetype.cpp"
+				RelativePath="..\src\odf\datatypes\linetype.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\linetype.h"
+				RelativePath="..\src\odf\datatypes\linetype.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\linewidth.cpp"
+				RelativePath="..\src\odf\datatypes\linewidth.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\linewidth.h"
+				RelativePath="..\src\odf\datatypes\linewidth.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\markerstyle.cpp"
+				RelativePath="..\src\odf\datatypes\markerstyle.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\markerstyle.h"
+				RelativePath="..\src\odf\datatypes\markerstyle.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\noteclass.cpp"
+				RelativePath="..\src\odf\datatypes\noteclass.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\noteclass.h"
+				RelativePath="..\src\odf\datatypes\noteclass.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\odfattributes.h"
+				RelativePath="..\src\odf\datatypes\odfattributes.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\officevaluetype.cpp"
+				RelativePath="..\src\odf\datatypes\officevaluetype.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\officevaluetype.h"
+				RelativePath="..\src\odf\datatypes\officevaluetype.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\pageusage.cpp"
+				RelativePath="..\src\odf\datatypes\pageusage.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\pageusage.h"
+				RelativePath="..\src\odf\datatypes\pageusage.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\percent.cpp"
+				RelativePath="..\src\odf\datatypes\percent.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\percent.h"
+				RelativePath="..\src\odf\datatypes\percent.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\percentorscale.cpp"
+				RelativePath="..\src\odf\datatypes\percentorscale.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\percentorscale.h"
+				RelativePath="..\src\odf\datatypes\percentorscale.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\presentationclass.cpp"
+				RelativePath="..\src\odf\datatypes\presentationclass.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\presentationclass.h"
+				RelativePath="..\src\odf\datatypes\presentationclass.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\punctuationwrap.cpp"
+				RelativePath="..\src\odf\datatypes\punctuationwrap.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\punctuationwrap.h"
+				RelativePath="..\src\odf\datatypes\punctuationwrap.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\rotationalign.cpp"
+				RelativePath="..\src\odf\datatypes\rotationalign.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\rotationalign.h"
+				RelativePath="..\src\odf\datatypes\rotationalign.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\runthrough.cpp"
+				RelativePath="..\src\odf\datatypes\runthrough.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\runthrough.h"
+				RelativePath="..\src\odf\datatypes\runthrough.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\scripttype.cpp"
+				RelativePath="..\src\odf\datatypes\scripttype.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\scripttype.h"
+				RelativePath="..\src\odf\datatypes\scripttype.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\shadowtype.cpp"
+				RelativePath="..\src\odf\datatypes\shadowtype.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\shadowtype.h"
+				RelativePath="..\src\odf\datatypes\shadowtype.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\smil_transitiontype.cpp"
+				RelativePath="..\src\odf\datatypes\smil_transitiontype.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\smil_transitiontype.h"
+				RelativePath="..\src\odf\datatypes\smil_transitiontype.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\style_ref.cpp"
+				RelativePath="..\src\odf\datatypes\style_ref.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\style_ref.h"
+				RelativePath="..\src\odf\datatypes\style_ref.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\stylefamily.cpp"
+				RelativePath="..\src\odf\datatypes\stylefamily.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\stylefamily.h"
+				RelativePath="..\src\odf\datatypes\stylefamily.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\stylehorizontalpos.cpp"
+				RelativePath="..\src\odf\datatypes\stylehorizontalpos.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\stylehorizontalpos.h"
+				RelativePath="..\src\odf\datatypes\stylehorizontalpos.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\stylehorizontalrel.cpp"
+				RelativePath="..\src\odf\datatypes\stylehorizontalrel.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\stylehorizontalrel.h"
+				RelativePath="..\src\odf\datatypes\stylehorizontalrel.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\styleleadercolor.cpp"
+				RelativePath="..\src\odf\datatypes\styleleadercolor.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\styleleadercolor.h"
+				RelativePath="..\src\odf\datatypes\styleleadercolor.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\styleposition.cpp"
+				RelativePath="..\src\odf\datatypes\styleposition.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\styleposition.h"
+				RelativePath="..\src\odf\datatypes\styleposition.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\stylerepeat.cpp"
+				RelativePath="..\src\odf\datatypes\stylerepeat.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\stylerepeat.h"
+				RelativePath="..\src\odf\datatypes\stylerepeat.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\styletype.cpp"
+				RelativePath="..\src\odf\datatypes\styletype.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\styletype.h"
+				RelativePath="..\src\odf\datatypes\styletype.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\styleverticalpos.cpp"
+				RelativePath="..\src\odf\datatypes\styleverticalpos.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\styleverticalpos.h"
+				RelativePath="..\src\odf\datatypes\styleverticalpos.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\styleverticalrel.cpp"
+				RelativePath="..\src\odf\datatypes\styleverticalrel.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\styleverticalrel.h"
+				RelativePath="..\src\odf\datatypes\styleverticalrel.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\stylewrap.cpp"
+				RelativePath="..\src\odf\datatypes\stylewrap.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\stylewrap.h"
+				RelativePath="..\src\odf\datatypes\stylewrap.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\stylewrapcontourmode.cpp"
+				RelativePath="..\src\odf\datatypes\stylewrapcontourmode.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\stylewrapcontourmode.h"
+				RelativePath="..\src\odf\datatypes\stylewrapcontourmode.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\tablealign.cpp"
+				RelativePath="..\src\odf\datatypes\tablealign.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\tablealign.h"
+				RelativePath="..\src\odf\datatypes\tablealign.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\tablecentering.cpp"
+				RelativePath="..\src\odf\datatypes\tablecentering.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\tablecentering.h"
+				RelativePath="..\src\odf\datatypes\tablecentering.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\tablemode.cpp"
+				RelativePath="..\src\odf\datatypes\tablemode.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\tablemode.h"
+				RelativePath="..\src\odf\datatypes\tablemode.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\tablevisibility.cpp"
+				RelativePath="..\src\odf\datatypes\tablevisibility.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\tablevisibility.h"
+				RelativePath="..\src\odf\datatypes\tablevisibility.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\targetframename.cpp"
+				RelativePath="..\src\odf\datatypes\targetframename.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\targetframename.h"
+				RelativePath="..\src\odf\datatypes\targetframename.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textalign.cpp"
+				RelativePath="..\src\odf\datatypes\textalign.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textalign.h"
+				RelativePath="..\src\odf\datatypes\textalign.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textalignsource.cpp"
+				RelativePath="..\src\odf\datatypes\textalignsource.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textalignsource.h"
+				RelativePath="..\src\odf\datatypes\textalignsource.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textautospace.cpp"
+				RelativePath="..\src\odf\datatypes\textautospace.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textautospace.h"
+				RelativePath="..\src\odf\datatypes\textautospace.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textcombine.cpp"
+				RelativePath="..\src\odf\datatypes\textcombine.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textcombine.h"
+				RelativePath="..\src\odf\datatypes\textcombine.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textdisplay.cpp"
+				RelativePath="..\src\odf\datatypes\textdisplay.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textdisplay.h"
+				RelativePath="..\src\odf\datatypes\textdisplay.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textemphasize.cpp"
+				RelativePath="..\src\odf\datatypes\textemphasize.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textemphasize.h"
+				RelativePath="..\src\odf\datatypes\textemphasize.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textposition.cpp"
+				RelativePath="..\src\odf\datatypes\textposition.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textposition.h"
+				RelativePath="..\src\odf\datatypes\textposition.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textrotationscale.cpp"
+				RelativePath="..\src\odf\datatypes\textrotationscale.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\textrotationscale.h"
+				RelativePath="..\src\odf\datatypes\textrotationscale.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\texttransform.cpp"
+				RelativePath="..\src\odf\datatypes\texttransform.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\texttransform.h"
+				RelativePath="..\src\odf\datatypes\texttransform.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\underlinecolor.cpp"
+				RelativePath="..\src\odf\datatypes\underlinecolor.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\underlinecolor.h"
+				RelativePath="..\src\odf\datatypes\underlinecolor.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\verticalalign.cpp"
+				RelativePath="..\src\odf\datatypes\verticalalign.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\verticalalign.h"
+				RelativePath="..\src\odf\datatypes\verticalalign.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\wrapoption.cpp"
+				RelativePath="..\src\odf\datatypes\wrapoption.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\wrapoption.h"
+				RelativePath="..\src\odf\datatypes\wrapoption.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\writingmode.cpp"
+				RelativePath="..\src\odf\datatypes\writingmode.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\writingmode.h"
+				RelativePath="..\src\odf\datatypes\writingmode.h"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\xlink.cpp"
+				RelativePath="..\src\odf\datatypes\xlink.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\odf\datatypes\xlink.h"
+				RelativePath="..\src\odf\datatypes\xlink.h"
 				>
 			</File>
 		</Filter>
@@ -1279,75 +1271,75 @@
 				Name="docx"
 				>
 				<File
-					RelativePath=".\src\docx\docx_content_type.cpp"
+					RelativePath="..\src\docx\docx_content_type.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\docx_content_type.h"
+					RelativePath="..\src\docx\docx_content_type.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\docx_conversion_context.cpp"
+					RelativePath="..\src\docx\docx_conversion_context.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\docx_conversion_context.h"
+					RelativePath="..\src\docx\docx_conversion_context.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\docx_conversion_state.h"
+					RelativePath="..\src\docx\docx_conversion_state.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\docx_drawing.cpp"
+					RelativePath="..\src\docx\docx_drawing.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\docx_drawing.h"
+					RelativePath="..\src\docx\docx_drawing.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\docx_package.cpp"
+					RelativePath="..\src\docx\docx_package.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\docx_package.h"
+					RelativePath="..\src\docx\docx_package.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\docx_rels.cpp"
+					RelativePath="..\src\docx\docx_rels.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\docx_rels.h"
+					RelativePath="..\src\docx\docx_rels.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\docx_table_context.cpp"
+					RelativePath="..\src\docx\docx_table_context.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\docx_table_context.h"
+					RelativePath="..\src\docx\docx_table_context.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\headers_footers.cpp"
+					RelativePath="..\src\docx\headers_footers.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\headers_footers.h"
+					RelativePath="..\src\docx\headers_footers.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\hyperlinks.cpp"
+					RelativePath="..\src\docx\hyperlinks.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\hyperlinks.h"
+					RelativePath="..\src\docx\hyperlinks.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\namespaces.cpp"
+					RelativePath="..\src\docx\namespaces.cpp"
 					>
 					<FileConfiguration
 						Name="Debug|Win32"
@@ -1387,7 +1379,7 @@
 					</FileConfiguration>
 				</File>
 				<File
-					RelativePath=".\src\docx\namespaces.h"
+					RelativePath="..\src\docx\namespaces.h"
 					>
 				</File>
 			</Filter>
@@ -1395,287 +1387,287 @@
 				Name="xlsx"
 				>
 				<File
-					RelativePath=".\src\docx\xlsx_alignment.cpp"
+					RelativePath="..\src\docx\xlsx_alignment.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_alignment.h"
+					RelativePath="..\src\docx\xlsx_alignment.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_border.cpp"
+					RelativePath="..\src\docx\xlsx_border.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_border.h"
+					RelativePath="..\src\docx\xlsx_border.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_borders.cpp"
+					RelativePath="..\src\docx\xlsx_borders.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_borders.h"
+					RelativePath="..\src\docx\xlsx_borders.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_cell_format.cpp"
+					RelativePath="..\src\docx\xlsx_cell_format.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_cell_format.h"
+					RelativePath="..\src\docx\xlsx_cell_format.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_cell_style.cpp"
+					RelativePath="..\src\docx\xlsx_cell_style.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_cell_style.h"
+					RelativePath="..\src\docx\xlsx_cell_style.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_cell_styles.cpp"
+					RelativePath="..\src\docx\xlsx_cell_styles.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_cell_styles.h"
+					RelativePath="..\src\docx\xlsx_cell_styles.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_color.cpp"
+					RelativePath="..\src\docx\xlsx_color.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_color.h"
+					RelativePath="..\src\docx\xlsx_color.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_comments.cpp"
+					RelativePath="..\src\docx\xlsx_comments.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_comments.h"
+					RelativePath="..\src\docx\xlsx_comments.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_comments_context.cpp"
+					RelativePath="..\src\docx\xlsx_comments_context.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_comments_context.h"
+					RelativePath="..\src\docx\xlsx_comments_context.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_complex_number_format.cpp"
+					RelativePath="..\src\docx\xlsx_complex_number_format.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_complex_number_format.h"
+					RelativePath="..\src\docx\xlsx_complex_number_format.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_defined_names.cpp"
+					RelativePath="..\src\docx\xlsx_defined_names.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_defined_names.h"
+					RelativePath="..\src\docx\xlsx_defined_names.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_drawing.cpp"
+					RelativePath="..\src\docx\xlsx_drawing.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_drawing.h"
+					RelativePath="..\src\docx\xlsx_drawing.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_drawing_context.cpp"
+					RelativePath="..\src\docx\xlsx_drawing_context.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_drawing_context.h"
+					RelativePath="..\src\docx\xlsx_drawing_context.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_drawings.cpp"
+					RelativePath="..\src\docx\xlsx_drawings.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_drawings.h"
+					RelativePath="..\src\docx\xlsx_drawings.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_fill.cpp"
+					RelativePath="..\src\docx\xlsx_fill.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_fill.h"
+					RelativePath="..\src\docx\xlsx_fill.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_fills.cpp"
+					RelativePath="..\src\docx\xlsx_fills.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_fills.h"
+					RelativePath="..\src\docx\xlsx_fills.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_font.cpp"
+					RelativePath="..\src\docx\xlsx_font.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_font.h"
+					RelativePath="..\src\docx\xlsx_font.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_fonts.cpp"
+					RelativePath="..\src\docx\xlsx_fonts.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_fonts.h"
+					RelativePath="..\src\docx\xlsx_fonts.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_formula.h"
+					RelativePath="..\src\docx\xlsx_formula.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_hyperlinks.cpp"
+					RelativePath="..\src\docx\xlsx_hyperlinks.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_hyperlinks.h"
+					RelativePath="..\src\docx\xlsx_hyperlinks.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_merge_cells.cpp"
+					RelativePath="..\src\docx\xlsx_merge_cells.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_merge_cells.h"
+					RelativePath="..\src\docx\xlsx_merge_cells.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_num_format_context.cpp"
+					RelativePath="..\src\docx\xlsx_num_format_context.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_num_format_context.h"
+					RelativePath="..\src\docx\xlsx_num_format_context.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_numFmts.cpp"
+					RelativePath="..\src\docx\xlsx_numFmts.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_numFmts.h"
+					RelativePath="..\src\docx\xlsx_numFmts.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_output_xml.cpp"
+					RelativePath="..\src\docx\xlsx_output_xml.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_output_xml.h"
+					RelativePath="..\src\docx\xlsx_output_xml.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_package.cpp"
+					RelativePath="..\src\docx\xlsx_package.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_package.h"
+					RelativePath="..\src\docx\xlsx_package.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_protection.cpp"
+					RelativePath="..\src\docx\xlsx_protection.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_protection.h"
+					RelativePath="..\src\docx\xlsx_protection.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_row_spanned.h"
+					RelativePath="..\src\docx\xlsx_row_spanned.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_sharedstrings.cpp"
+					RelativePath="..\src\docx\xlsx_sharedstrings.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_sharedstrings.h"
+					RelativePath="..\src\docx\xlsx_sharedstrings.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_styles.cpp"
+					RelativePath="..\src\docx\xlsx_styles.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_styles.h"
+					RelativePath="..\src\docx\xlsx_styles.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_table_metrics.cpp"
+					RelativePath="..\src\docx\xlsx_table_metrics.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_table_metrics.h"
+					RelativePath="..\src\docx\xlsx_table_metrics.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_table_position.h"
+					RelativePath="..\src\docx\xlsx_table_position.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_table_state.cpp"
+					RelativePath="..\src\docx\xlsx_table_state.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_table_state.h"
+					RelativePath="..\src\docx\xlsx_table_state.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_tablecontext.cpp"
+					RelativePath="..\src\docx\xlsx_tablecontext.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_tablecontext.h"
+					RelativePath="..\src\docx\xlsx_tablecontext.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_textcontext.cpp"
+					RelativePath="..\src\docx\xlsx_textcontext.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_textcontext.h"
+					RelativePath="..\src\docx\xlsx_textcontext.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_utils.cpp"
+					RelativePath="..\src\docx\xlsx_utils.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_utils.h"
+					RelativePath="..\src\docx\xlsx_utils.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_xf.cpp"
+					RelativePath="..\src\docx\xlsx_xf.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsx_xf.h"
+					RelativePath="..\src\docx\xlsx_xf.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsxconversioncontext.cpp"
+					RelativePath="..\src\docx\xlsxconversioncontext.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\xlsxconversioncontext.h"
+					RelativePath="..\src\docx\xlsxconversioncontext.h"
 					>
 				</File>
 			</Filter>
@@ -1683,162 +1675,162 @@
 				Name="oox"
 				>
 				<File
-					RelativePath=".\src\conversionelement.cpp"
+					RelativePath="..\src\conversionelement.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\conversionelement.h"
+					RelativePath="..\src\conversionelement.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\drawing_object_description.h"
+					RelativePath="..\src\docx\drawing_object_description.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\measuredigits.cpp"
+					RelativePath="..\src\docx\measuredigits.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\measuredigits.h"
+					RelativePath="..\src\docx\measuredigits.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\mediaitems.cpp"
+					RelativePath="..\src\docx\mediaitems.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\mediaitems.h"
+					RelativePath="..\src\docx\mediaitems.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\mediaitems_utils.cpp"
+					RelativePath="..\src\docx\mediaitems_utils.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\mediaitems_utils.h"
+					RelativePath="..\src\docx\mediaitems_utils.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\oox_conversion_context.cpp"
+					RelativePath="..\src\docx\oox_conversion_context.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\oox_conversion_context.h"
+					RelativePath="..\src\docx\oox_conversion_context.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\oox_drawing.cpp"
+					RelativePath="..\src\docx\oox_drawing.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\oox_drawing.h"
+					RelativePath="..\src\docx\oox_drawing.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\oox_drawing_fills.cpp"
+					RelativePath="..\src\docx\oox_drawing_fills.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\oox_drawing_fills.h"
+					RelativePath="..\src\docx\oox_drawing_fills.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\oox_package.cpp"
+					RelativePath="..\src\docx\oox_package.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\oox_package.h"
+					RelativePath="..\src\docx\oox_package.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\ooxtablerowspanned.h"
+					RelativePath="..\src\docx\ooxtablerowspanned.h"
 					>
 				</File>
 				<Filter
 					Name="chart"
 					>
 					<File
-						RelativePath=".\src\docx\oox_chart_axis.cpp"
+						RelativePath="..\src\docx\oox_chart_axis.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_chart_axis.h"
+						RelativePath="..\src\docx\oox_chart_axis.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_chart_context.cpp"
+						RelativePath="..\src\docx\oox_chart_context.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_chart_context.h"
+						RelativePath="..\src\docx\oox_chart_context.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_chart_legend.cpp"
+						RelativePath="..\src\docx\oox_chart_legend.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_chart_legend.h"
+						RelativePath="..\src\docx\oox_chart_legend.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_chart_series.cpp"
+						RelativePath="..\src\docx\oox_chart_series.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_chart_series.h"
+						RelativePath="..\src\docx\oox_chart_series.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_chart_shape.cpp"
+						RelativePath="..\src\docx\oox_chart_shape.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_chart_shape.h"
+						RelativePath="..\src\docx\oox_chart_shape.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_chart_values.h"
+						RelativePath="..\src\docx\oox_chart_values.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_data_labels.cpp"
+						RelativePath="..\src\docx\oox_data_labels.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_data_labels.h"
+						RelativePath="..\src\docx\oox_data_labels.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_layout.cpp"
+						RelativePath="..\src\docx\oox_layout.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_layout.h"
+						RelativePath="..\src\docx\oox_layout.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_plot_area.cpp"
+						RelativePath="..\src\docx\oox_plot_area.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_plot_area.h"
+						RelativePath="..\src\docx\oox_plot_area.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_title.cpp"
+						RelativePath="..\src\docx\oox_title.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_title.h"
+						RelativePath="..\src\docx\oox_title.h"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_types_chart.cpp"
+						RelativePath="..\src\docx\oox_types_chart.cpp"
 						>
 					</File>
 					<File
-						RelativePath=".\src\docx\oox_types_chart.h"
+						RelativePath="..\src\docx\oox_types_chart.h"
 						>
 					</File>
 				</Filter>
@@ -1847,233 +1839,233 @@
 				Name="pptx"
 				>
 				<File
-					RelativePath=".\src\docx\pptx_comments.cpp"
+					RelativePath="..\src\docx\pptx_comments.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_comments.h"
+					RelativePath="..\src\docx\pptx_comments.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_comments_context.cpp"
+					RelativePath="..\src\docx\pptx_comments_context.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_comments_context.h"
+					RelativePath="..\src\docx\pptx_comments_context.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_conversion_context.cpp"
+					RelativePath="..\src\docx\pptx_conversion_context.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_conversion_context.h"
+					RelativePath="..\src\docx\pptx_conversion_context.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_default_serializes.h"
+					RelativePath="..\src\docx\pptx_default_serializes.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_drawing.cpp"
+					RelativePath="..\src\docx\pptx_drawing.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_drawing.h"
+					RelativePath="..\src\docx\pptx_drawing.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_drawings.cpp"
+					RelativePath="..\src\docx\pptx_drawings.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_drawings.h"
+					RelativePath="..\src\docx\pptx_drawings.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_output_xml.cpp"
+					RelativePath="..\src\docx\pptx_output_xml.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_output_xml.h"
+					RelativePath="..\src\docx\pptx_output_xml.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_package.cpp"
+					RelativePath="..\src\docx\pptx_package.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_package.h"
+					RelativePath="..\src\docx\pptx_package.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_slide_context.cpp"
+					RelativePath="..\src\docx\pptx_slide_context.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_slide_context.h"
+					RelativePath="..\src\docx\pptx_slide_context.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_table_context.cpp"
+					RelativePath="..\src\docx\pptx_table_context.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_table_context.h"
+					RelativePath="..\src\docx\pptx_table_context.h"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_text_context.cpp"
+					RelativePath="..\src\docx\pptx_text_context.cpp"
 					>
 				</File>
 				<File
-					RelativePath=".\src\docx\pptx_text_context.h"
+					RelativePath="..\src\docx\pptx_text_context.h"
 					>
 				</File>
 			</Filter>
 		</Filter>
 		<File
-			RelativePath=".\src\odf\all_elements.h"
+			RelativePath="..\src\odf\all_elements.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\anim_elements.cpp"
+			RelativePath="..\src\odf\anim_elements.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\anim_elements.h"
+			RelativePath="..\src\odf\anim_elements.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\chart_build_oox.cpp"
+			RelativePath="..\src\odf\chart_build_oox.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\chart_build_oox.h"
+			RelativePath="..\src\odf\chart_build_oox.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\chart_objects.h"
+			RelativePath="..\src\odf\chart_objects.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\datatypes\custom_shape_types_convert.h"
+			RelativePath="..\src\odf\datatypes\custom_shape_types_convert.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\documentcontext.cpp"
+			RelativePath="..\src\odf\documentcontext.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\documentcontext.h"
+			RelativePath="..\src\odf\documentcontext.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_common.cpp"
+			RelativePath="..\src\odf\draw_common.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_common.h"
+			RelativePath="..\src\odf\draw_common.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_frame.cpp"
+			RelativePath="..\src\odf\draw_frame.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_frame.h"
+			RelativePath="..\src\odf\draw_frame.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_frame_docx.cpp"
+			RelativePath="..\src\odf\draw_frame_docx.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_frame_pptx.cpp"
+			RelativePath="..\src\odf\draw_frame_pptx.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_frame_xlsx.cpp"
+			RelativePath="..\src\odf\draw_frame_xlsx.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_page.cpp"
+			RelativePath="..\src\odf\draw_page.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_page.h"
+			RelativePath="..\src\odf\draw_page.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_shapes.cpp"
+			RelativePath="..\src\odf\draw_shapes.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_shapes.h"
+			RelativePath="..\src\odf\draw_shapes.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_shapes_docx.cpp"
+			RelativePath="..\src\odf\draw_shapes_docx.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_shapes_pptx.cpp"
+			RelativePath="..\src\odf\draw_shapes_pptx.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\draw_shapes_xlsx.cpp"
+			RelativePath="..\src\odf\draw_shapes_xlsx.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\font_face.cpp"
+			RelativePath="..\src\odf\font_face.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\font_face.h"
+			RelativePath="..\src\odf\font_face.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\list.cpp"
+			RelativePath="..\src\odf\list.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\list.h"
+			RelativePath="..\src\odf\list.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\namespaces.cpp"
+			RelativePath="..\src\odf\namespaces.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\namespaces.h"
+			RelativePath="..\src\odf\namespaces.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\note.cpp"
+			RelativePath="..\src\odf\note.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\note.h"
+			RelativePath="..\src\odf\note.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\number_style.cpp"
+			RelativePath="..\src\odf\number_style.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\number_style.h"
+			RelativePath="..\src\odf\number_style.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\odf_content_xml.cpp"
+			RelativePath="..\src\odf\odf_content_xml.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\odf_content_xml.h"
+			RelativePath="..\src\odf\odf_content_xml.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\odf_document.cpp"
+			RelativePath="..\src\odf\odf_document.cpp"
 			>
 		</File>
 		<File
@@ -2081,215 +2073,215 @@
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\odf_document_impl.cpp"
+			RelativePath="..\src\odf\odf_document_impl.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\odf_document_impl.h"
+			RelativePath="..\src\odf\odf_document_impl.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\odfcontext.cpp"
+			RelativePath="..\src\odf\odfcontext.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\odfcontext.h"
+			RelativePath="..\src\odf\odfcontext.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_annotation.cpp"
+			RelativePath="..\src\odf\office_annotation.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_annotation.h"
+			RelativePath="..\src\odf\office_annotation.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_binary_data.cpp"
+			RelativePath="..\src\odf\office_binary_data.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_binary_data.h"
+			RelativePath="..\src\odf\office_binary_data.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_body.cpp"
+			RelativePath="..\src\odf\office_body.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_body.h"
+			RelativePath="..\src\odf\office_body.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_chart.cpp"
+			RelativePath="..\src\odf\office_chart.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_chart.h"
+			RelativePath="..\src\odf\office_chart.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_document.cpp"
+			RelativePath="..\src\odf\office_document.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_document.h"
+			RelativePath="..\src\odf\office_document.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_elements.h"
+			RelativePath="..\src\odf\office_elements.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_elements_type.h"
+			RelativePath="..\src\odf\office_elements_type.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_event_listeners.cpp"
+			RelativePath="..\src\odf\office_event_listeners.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_event_listeners.h"
+			RelativePath="..\src\odf\office_event_listeners.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_presentation.cpp"
+			RelativePath="..\src\odf\office_presentation.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_presentation.h"
+			RelativePath="..\src\odf\office_presentation.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_scripts.cpp"
+			RelativePath="..\src\odf\office_scripts.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_scripts.h"
+			RelativePath="..\src\odf\office_scripts.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_settings.cpp"
+			RelativePath="..\src\odf\office_settings.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_settings.h"
+			RelativePath="..\src\odf\office_settings.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_spreadsheet.cpp"
+			RelativePath="..\src\odf\office_spreadsheet.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_spreadsheet.h"
+			RelativePath="..\src\odf\office_spreadsheet.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_text.cpp"
+			RelativePath="..\src\odf\office_text.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\office_text.h"
+			RelativePath="..\src\odf\office_text.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\paragraph_content.h"
+			RelativePath="..\src\odf\paragraph_content.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\paragraph_elements.cpp"
+			RelativePath="..\src\odf\paragraph_elements.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\paragraph_elements.h"
+			RelativePath="..\src\odf\paragraph_elements.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\ruby.cpp"
+			RelativePath="..\src\odf\ruby.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\ruby.h"
+			RelativePath="..\src\odf\ruby.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\search_table_cell.cpp"
+			RelativePath="..\src\odf\search_table_cell.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\search_table_cell.h"
+			RelativePath="..\src\odf\search_table_cell.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\skipelement.cpp"
+			RelativePath="..\src\odf\skipelement.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\skipelement.h"
+			RelativePath="..\src\odf\skipelement.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\style_regions.cpp"
+			RelativePath="..\src\odf\style_regions.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\style_regions.h"
+			RelativePath="..\src\odf\style_regions.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\table.cpp"
+			RelativePath="..\src\odf\table.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\table.h"
+			RelativePath="..\src\odf\table.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\table_calculation_settings.cpp"
+			RelativePath="..\src\odf\table_calculation_settings.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\table_calculation_settings.h"
+			RelativePath="..\src\odf\table_calculation_settings.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\table_docx.cpp"
+			RelativePath="..\src\odf\table_docx.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\table_named_expressions.cpp"
+			RelativePath="..\src\odf\table_named_expressions.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\table_named_expressions.h"
+			RelativePath="..\src\odf\table_named_expressions.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\table_pptx.cpp"
+			RelativePath="..\src\odf\table_pptx.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\table_xlsx.cpp"
+			RelativePath="..\src\odf\table_xlsx.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\text_content.cpp"
+			RelativePath="..\src\odf\text_content.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\text_content.h"
+			RelativePath="..\src\odf\text_content.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\text_elements.cpp"
+			RelativePath="..\src\odf\text_elements.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\text_elements.h"
+			RelativePath="..\src\odf\text_elements.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\odf\visitor.h"
+			RelativePath="..\src\odf\visitor.h"
 			>
 		</File>
 	</Files>

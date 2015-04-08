@@ -290,64 +290,64 @@
 			Name="include"
 			>
 			<File
-				RelativePath=".\include\cpdoccore\common\boost_filesystem_version.h"
+				RelativePath="..\include\cpdoccore\common\boost_filesystem_version.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\cpdoccore\common\readdocelement.h"
+				RelativePath="..\include\cpdoccore\common\readdocelement.h"
 				>
 			</File>
 			<File
-				RelativePath=".\include\cpdoccore\common\writedocelement.h"
+				RelativePath="..\include\cpdoccore\common\writedocelement.h"
 				>
 			</File>
 		</Filter>
 		<File
-			RelativePath=".\include\cpdoccore\CPAssert.h"
+			RelativePath="..\include\cpdoccore\CPAssert.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\common\CPColorUtils.cpp"
+			RelativePath="..\src\common\CPColorUtils.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\include\cpdoccore\CPColorUtils.h"
+			RelativePath="..\include\cpdoccore\CPColorUtils.h"
 			>
 		</File>
 		<File
-			RelativePath=".\include\cpdoccore\CPHash.h"
+			RelativePath="..\include\cpdoccore\CPHash.h"
 			>
 		</File>
 		<File
-			RelativePath=".\include\cpdoccore\CPNoncopyable.h"
+			RelativePath="..\include\cpdoccore\CPNoncopyable.h"
 			>
 		</File>
 		<File
-			RelativePath=".\include\cpdoccore\CPOptional.h"
+			RelativePath="..\include\cpdoccore\CPOptional.h"
 			>
 		</File>
 		<File
-			RelativePath=".\include\cpdoccore\CPScopedPtr.h"
+			RelativePath="..\include\cpdoccore\CPScopedPtr.h"
 			>
 		</File>
 		<File
-			RelativePath=".\include\cpdoccore\CPSharedPtr.h"
+			RelativePath="..\include\cpdoccore\CPSharedPtr.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\common\CPString.cpp"
+			RelativePath="..\src\common\CPString.cpp"
 			>
 		</File>
 		<File
-			RelativePath=".\include\cpdoccore\CPString.h"
+			RelativePath="..\include\cpdoccore\CPString.h"
 			>
 		</File>
 		<File
-			RelativePath=".\include\cpdoccore\CPWeakPtr.h"
+			RelativePath="..\include\cpdoccore\CPWeakPtr.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\common\precompiled_cpcommon.cpp"
+			RelativePath="..\src\common\precompiled_cpcommon.cpp"
 			>
 			<FileConfiguration
 				Name="Debug|Win32"
@@ -383,11 +383,11 @@
 			</FileConfiguration>
 		</File>
 		<File
-			RelativePath=".\src\common\precompiled_cpcommon.h"
+			RelativePath="..\src\common\precompiled_cpcommon.h"
 			>
 		</File>
 		<File
-			RelativePath=".\src\common\readdocelement.cpp"
+			RelativePath="..\src\common\readdocelement.cpp"
 			>
 		</File>
 	</Files>

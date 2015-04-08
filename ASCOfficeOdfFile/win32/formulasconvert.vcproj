@@ -19,8 +19,8 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)bin/Debug"
-			IntermediateDirectory="$(SolutionDir)output/$(ConfigurationName)/$(ProjectName)"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
 			>
@@ -42,7 +42,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;;..\include;..\3dparty\gtest\include\;..\dparty\utf8cpp\include"
+				AdditionalIncludeDirectories=""
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -106,7 +106,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;;..\include;..\3dparty\gtest\include\;..\dparty\utf8cpp\include"
+				AdditionalIncludeDirectories=""
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -146,8 +146,8 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)bin/Release"
-			IntermediateDirectory="$(SolutionDir)output/$(ConfigurationName)/$(ProjectName)"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="2"
 			WholeProgramOptimization="1"
@@ -169,7 +169,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;;..\include;..\3dparty\gtest\include\;..\3dparty\utf8cpp\include"
+				AdditionalIncludeDirectories=""
 				RuntimeLibrary="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -231,7 +231,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;;..\include;..\3dparty\gtest\include\;..\3dparty\utf8cpp\include"
+				AdditionalIncludeDirectories=""
 				RuntimeLibrary="2"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -277,11 +277,11 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\src\formulasconvert_odf.cpp"
+				RelativePath="..\formulasconvert\src\formulasconvert_odf.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\src\formulasconvert_oox.cpp"
+				RelativePath="..\formulasconvert\src\formulasconvert_oox.cpp"
 				>
 			</File>
 		</Filter>
@@ -291,7 +291,7 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\include\cpdoccore\formulasconvert.h"
+				RelativePath="..\formulasconvert\include\cpdoccore\formulasconvert.h"
 				>
 			</File>
 		</Filter>

@@ -1,1 +1,0 @@
-Документация по OpenOffice Format и OOX лежит тут: \\mediaserver\Exchange\Documents\

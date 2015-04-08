@@ -7,8 +7,9 @@
 #include <cpdoccore/xml/nodetype.h>
 #include "office_elements.h"
 #include "office_elements_create.h"
-#include "common_attlists.h"
 #include "text_elements.h"
+
+#include "datatypes/common_attlists.h"
 
 namespace cpdoccore {
 namespace odf {

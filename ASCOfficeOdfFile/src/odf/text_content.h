@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iosfwd>
+
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/CPNoncopyable.h>
 #include <cpdoccore/CPSharedPtr.h>
@@ -9,7 +10,7 @@
 #include <cpdoccore/xml/nodetype.h>
 
 #include "office_elements.h"
-#include "style_ref.h"
+#include "datatypes/style_ref.h"
 
 namespace cpdoccore { 
 namespace xml {

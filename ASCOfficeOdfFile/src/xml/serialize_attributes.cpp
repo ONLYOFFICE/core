@@ -5,9 +5,9 @@
 
 #include <ostream>
 
-#include <cpdoccore/xml/serialize_attributes.h>
-#include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/xml/xmlchar.h>
+#include "../../include/cpdoccore/xml/serialize_attributes.h"
+#include "../../include/cpdoccore/xml/attributes.h"
+#include "../../include/cpdoccore/xml/xmlchar.h"
 
 
 namespace cpdoccore {

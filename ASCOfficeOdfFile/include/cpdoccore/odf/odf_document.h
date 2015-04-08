@@ -1,8 +1,8 @@
 #pragma once
 
 #include <string>
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/CPScopedPtr.h>
+#include "../CPSharedPtr.h"
+#include "../CPScopedPtr.h"
 
 
 struct ProgressCallback;

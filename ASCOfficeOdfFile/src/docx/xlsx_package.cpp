@@ -1,11 +1,13 @@
-#include "precompiled_cpodf.h"
+#include "../odf/precompiled_cpodf.h"
 #include "xlsx_package.h"
-#include <utf8cpp/utf8.h>
+
 #include <boost/filesystem.hpp>
 #include <boost/filesystem/fstream.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+
 #include <cpdoccore/common/boost_filesystem_version.h>
+#include <cpdoccore/utf8cpp/utf8.h>
 
 namespace cpdoccore { 
 namespace oox {

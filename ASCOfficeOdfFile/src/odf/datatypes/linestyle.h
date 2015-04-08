@@ -7,6 +7,7 @@
 
 #include <string>
 #include <iosfwd>
+
 #include <cpdoccore/xml/attributes.h>
 #include "odfattributes.h"
 

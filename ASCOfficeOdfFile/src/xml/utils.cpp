@@ -1,8 +1,8 @@
 #include "precompiled_cpxml.h"
 
-#include <cpdoccore/xml/utils.h>
-#include <regex.h>
-#include <boost_string.h>
+#include "../../include/cpdoccore/xml/utils.h"
+#include "../../include/regex.h"
+#include "../../include/boost_string.h"
 
 namespace cpdoccore {
 namespace xml {

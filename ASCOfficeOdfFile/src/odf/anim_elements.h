@@ -7,8 +7,8 @@
 #include "office_elements.h"
 #include "office_elements_create.h"
 
-#include "common_attlists.h"
-#include "smil_transitiontype.h"
+#include "datatypes/common_attlists.h"
+#include "datatypes/smil_transitiontype.h"
 
 namespace cpdoccore { 
 namespace odf {

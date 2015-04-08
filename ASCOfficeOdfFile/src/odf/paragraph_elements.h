@@ -5,14 +5,17 @@
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/CPWeakPtr.h>
 #include <cpdoccore/xml/nodetype.h>
+
 #include "paragraph_content.h"
 #include "office_elements_create.h"
-#include "style_ref.h"
-#include "targetframename.h"
-#include "noteclass.h"
+
+#include "datatypes/style_ref.h"
+#include "datatypes/targetframename.h"
+#include "datatypes/noteclass.h"
+
 #include "../docx/docx_conversion_context.h"
 
-#include "common_attlists.h"
+#include "datatypes/common_attlists.h"
 
 namespace cpdoccore { 
 namespace odf {

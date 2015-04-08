@@ -1,17 +1,18 @@
 #pragma once
 
-#include "common_attlists.h"
+#include "datatypes/common_attlists.h"
 
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
 
+
 #include "office_elements.h"
 #include "office_elements_create.h"
-
-#include "presentationclass.h"
 #include "anim_elements.h"
 
-#include "drawfill.h"
+#include "datatypes/presentationclass.h"
+
+#include "datatypes/drawfill.h"
 
 namespace cpdoccore { 
 namespace odf {

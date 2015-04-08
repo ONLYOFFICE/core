@@ -8,7 +8,7 @@
 #include <boost_string.h>
 
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
+#include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/utils.h>
 #include <cpdoccore/common/readstring.h>
@@ -20,12 +20,13 @@
 #include "ruby.h"
 #include "office_elements_create.h"
 
-#include "targetframename.h"
 #include "serialize_elements.h"
 #include <cpdoccore/odf/odf_document.h>
 #include "odfcontext.h"
 
 #include "style_text_properties.h"
+
+#include "datatypes/targetframename.h"
 
 namespace cpdoccore { 
 namespace odf {

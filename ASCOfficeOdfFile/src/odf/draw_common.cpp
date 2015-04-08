@@ -16,9 +16,11 @@
 #include <cpdoccore/odf/odf_document.h>
 
 #include "draw_common.h"
-#include "length.h"
-#include "borderstyle.h"
+
+#include "datatypes/length.h"
+#include "datatypes/borderstyle.h"
 #include "odfcontext.h"
+
 /////////////////////////////////////////////////////////////////////////////////
 #include <Windows.h>
 #include <gdiplus.h>

@@ -5,7 +5,7 @@
 #include <iostream>
 #include <boost/thread/mutex.hpp>
 #include <boost/thread/shared_mutex.hpp>
-#include "logging.h"
+#include <logging.h>
 #include "skipelement.h"
 
 namespace cpdoccore { 

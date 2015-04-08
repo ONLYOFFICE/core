@@ -2,7 +2,7 @@
 
 #include <boost/program_options/detail/convert.hpp>
 
-#include <cpdoccore/CPString.h>
+#include "../../include/cpdoccore/CPString.h"
 #include <cstdlib>
 
 namespace cpdoccore {

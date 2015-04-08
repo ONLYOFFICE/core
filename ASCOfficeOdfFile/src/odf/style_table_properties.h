@@ -1,26 +1,28 @@
 #pragma once
 
 #include <iosfwd>
+
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
+
 #include "office_elements.h"
 #include "office_elements_create.h"
 
-#include "length.h"
-#include "percent.h"
-#include "lengthorpercent.h"
-#include "fobreak.h"
-#include "tablealign.h"
-#include "common_attlists.h"
-#include "bordermodel.h"
-#include "verticalalign.h"
-#include "borderwidths.h"
-#include "textalignsource.h"
-#include "direction.h"
-#include "wrapoption.h"
-#include "rotationalign.h"
+#include "datatypes/length.h"
+#include "datatypes/percent.h"
+#include "datatypes/lengthorpercent.h"
+#include "datatypes/fobreak.h"
+#include "datatypes/tablealign.h"
+#include "datatypes/common_attlists.h"
+#include "datatypes/bordermodel.h"
+#include "datatypes/verticalalign.h"
+#include "datatypes/borderwidths.h"
+#include "datatypes/textalignsource.h"
+#include "datatypes/direction.h"
+#include "datatypes/wrapoption.h"
+#include "datatypes/rotationalign.h"
 
 namespace cpdoccore { 
 namespace odf {

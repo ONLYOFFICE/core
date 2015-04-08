@@ -1,11 +1,11 @@
-#include "precompiled_cpodf.h"
+#include "../odf/precompiled_cpodf.h"
 
 #include <boost/foreach.hpp>
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include "..\odf\style_text_properties.h"
+#include "../odf/style_text_properties.h"
 
 #include "oox_chart_series.h"
-#include <cpdoccore/formulasconvert.h>
+#include "../formulasconvert/include/cpdoccore/formulasconvert.h"
 
 #include "oox_chart_shape.h"
 

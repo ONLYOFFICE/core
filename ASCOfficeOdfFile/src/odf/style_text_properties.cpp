@@ -1,12 +1,14 @@
 #include "precompiled_cpodf.h"
 #include <iostream>
-#include "style_text_properties.h"
-#include <cpdoccore/xml/serialize.h>
-#include "odfcontext.h"
-#include "fontvariant.h"
-#include "logging.h"
 #include <cpdoccore/odf/odf_document.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
+#include <cpdoccore/xml/attributes.h>
+#include <logging.h>
+
+#include "style_text_properties.h"
+
+#include "odfcontext.h"
+#include "datatypes/fontvariant.h"
 
 #include "../docx/oox_drawing_fills.h"
 

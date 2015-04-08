@@ -6,8 +6,9 @@
 #include <string>
 #include <exception>
 #include <iosfwd>
-#include <cpdoccore/CPSharedPtr.h>
-#include <cpdoccore/xml/nodetype.h>
+
+#include "../CPSharedPtr.h"
+#include "nodetype.h"
 
 namespace cpdoccore {
 namespace xml {

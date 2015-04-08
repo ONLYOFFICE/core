@@ -1,6 +1,6 @@
 #include "precompiled_cpxml.h"
 
-#include <cpdoccore/xml/xmlchar.h>
+#include "../../include/cpdoccore/xml/xmlchar.h"
 
 namespace cpdoccore {
 namespace xml {

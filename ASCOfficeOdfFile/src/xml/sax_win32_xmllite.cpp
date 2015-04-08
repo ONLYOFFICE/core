@@ -27,7 +27,8 @@
 #include "../../../common/docxformat/source/xml/libxml2/libxml2.h"
 
 
-#include <cpdoccore/xml/sax.h>
+#include "../../include/cpdoccore/xml/sax.h"
+
 #include "sax_win32_xmllite.h"
 //#include "istream2Win32Stream.h"
 
@@ -68,7 +69,7 @@ public:
     
     virtual bool isEof();
 
-    virtual bool moveToAttrByName(const wchar_t * Name, const wchar_t * nsURI);
+    //virtual bool moveToAttrByName(const wchar_t * Name, const wchar_t * nsURI);
     virtual bool moveToAttrFirst();
     virtual bool moveToAttrNext();
     virtual void moveToAttrOwner();

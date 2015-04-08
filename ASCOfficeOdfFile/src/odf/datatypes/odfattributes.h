@@ -4,7 +4,7 @@
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/CPOptional.h>
 #include "errors.h"
-#include "logging.h"
+#include <logging.h>
 
 namespace cpdoccore {
 namespace xml {

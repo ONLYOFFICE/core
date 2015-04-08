@@ -1,5 +1,5 @@
 #include "precompiled_cpodf.h"
-#include "logging.h"
+#include <logging.h>
 #include <iostream>
 
 namespace cpdoccore {

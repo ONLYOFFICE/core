@@ -4,19 +4,21 @@
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
+
 #include "office_elements.h"
 #include "office_elements_create.h"
-#include "chartsymbol.h"
-#include "length.h"
-#include "chartinterpolation.h"
-#include "chartsolidtype.h"
-#include "chartlabelarrangement.h"
-#include "common_attlists.h"
-#include "chartdatalabelnumber.h"
-#include "charterrorcategory.h"
-#include "chartseriessource.h"
-#include "chartregressiontype.h"
-#include "direction.h"
+
+#include "datatypes/chartsymbol.h"
+#include "datatypes/length.h"
+#include "datatypes/chartinterpolation.h"
+#include "datatypes/chartsolidtype.h"
+#include "datatypes/chartlabelarrangement.h"
+#include "datatypes/common_attlists.h"
+#include "datatypes/chartdatalabelnumber.h"
+#include "datatypes/charterrorcategory.h"
+#include "datatypes/chartseriessource.h"
+#include "datatypes/chartregressiontype.h"
+#include "datatypes/direction.h"
 
 namespace cpdoccore { 
 namespace odf {

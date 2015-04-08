@@ -3,14 +3,13 @@
 #include "style_paragraph_properties.h"
 
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/utils.h>
 
 #include <boost/foreach.hpp>
 
 #include "office_elements_create.h"
-#include "borderstyle.h"
+#include "datatypes/borderstyle.h"
 
 namespace cpdoccore { 
 namespace odf {

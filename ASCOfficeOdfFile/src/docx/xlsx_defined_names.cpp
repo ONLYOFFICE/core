@@ -1,4 +1,4 @@
-#include "precompiled_cpodf.h"
+#include "../odf/precompiled_cpodf.h"
 #include "xlsx_defined_names.h"
 
 #include <vector>
@@ -6,7 +6,8 @@
 #include <boost/functional.hpp>
 #include <boost/unordered_set.hpp>
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include <cpdoccore/formulasconvert.h>
+
+#include "../formulasconvert/include/cpdoccore/formulasconvert.h"
 
 namespace cpdoccore {
 namespace oox {

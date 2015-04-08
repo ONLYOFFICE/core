@@ -9,8 +9,8 @@
 #endif
 
 #include <iosfwd>
-#include <cpdoccore/xml/sax.h>
-#include <cpdoccore/CPSharedPtr.h>
+#include "../../include/cpdoccore/xml/sax.h"
+#include "../../include/cpdoccore/CPSharedPtr.h"
 
 namespace cpdoccore {
 namespace xml {

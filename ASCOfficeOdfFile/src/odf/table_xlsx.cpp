@@ -2,10 +2,11 @@
 #include "table.h"
 
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
+#include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/utils.h>
-#include <cpdoccore/formulasconvert.h>
+
+#include "../formulasconvert/include/cpdoccore/formulasconvert.h"
 
 #include <boost/lexical_cast.hpp>
 
@@ -16,7 +17,7 @@
 #include "../docx/xlsx_utils.h"
 #include "../docx/xlsx_cell_format.h"
 
-#include <cpdoccore/formulasconvert.h>
+#include "../formulasconvert/include/cpdoccore/formulasconvert.h"
 #include "search_table_cell.h"
 
 #include <cpdoccore/xml/simple_xml_writer.h>

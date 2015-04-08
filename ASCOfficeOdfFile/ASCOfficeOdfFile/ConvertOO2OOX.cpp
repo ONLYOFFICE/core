@@ -2,17 +2,17 @@
 
 #include "ConvertOO2OOX.h"
 
-#include "..\..\Common\OfficeFileErrorDescription.h"
+#include "../../Common/OfficeFileErrorDescription.h"
 
-#include <cpdoccore/../../src/docx/docx_package.h>
-#include <cpdoccore/../../src/docx/xlsx_package.h>
-#include <cpdoccore/../../src/docx/pptx_package.h>
+#include "../src/docx/docx_package.h"
+#include "../src/docx/xlsx_package.h"
+#include "../src/docx/pptx_package.h"
 
-#include <cpdoccore/../../src/docx/docx_conversion_context.h>
-#include <cpdoccore/../../src/docx/pptx_conversion_context.h>
-#include <cpdoccore/../../src/docx/xlsxconversioncontext.h>
+#include "../src/docx/docx_conversion_context.h"
+#include "../src/docx/pptx_conversion_context.h"
+#include "../src/docx/xlsxconversioncontext.h"
 
-#include <cpdoccore/odf/odf_document.h>
+#include "../include/cpdoccore/odf/odf_document.h"
 
 
 HRESULT ConvertOds2Xlsx(cpdoccore::odf::odf_document & inputOdf, const std::wstring & dstPath)

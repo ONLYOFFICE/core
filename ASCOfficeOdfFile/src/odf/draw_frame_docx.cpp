@@ -11,8 +11,7 @@
 
 #include "serialize_elements.h"
 
-#include "length.h"
-#include "borderstyle.h"
+
 #include "odfcontext.h"
 #include "odf_document_impl.h"
 #include <cpdoccore/common/boost_filesystem_version.h>
@@ -25,6 +24,8 @@
 
 #include "calcs_styles.h"
 
+#include "datatypes/length.h"
+#include "datatypes/borderstyle.h"
 namespace cpdoccore { 
 namespace odf {
 

@@ -4,16 +4,20 @@
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
+
 #include "office_elements.h"
 #include "office_elements_create.h"
-#include "common_attlists.h"
+
 #include "../docx/xlsxconversioncontext.h"
 #include "../docx/xlsx_utils.h"
+
 #include "style_graphic_properties.h"
 #include "draw_frame.h"
 #include "draw_shapes.h"
-#include "xlink.h"
-#include "targetframename.h"
+
+#include "datatypes/xlink.h"
+#include "datatypes/targetframename.h"
+#include "datatypes/common_attlists.h"
 
 namespace _image_file_
 {

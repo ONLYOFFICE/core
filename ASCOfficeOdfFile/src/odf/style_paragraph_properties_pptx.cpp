@@ -5,7 +5,7 @@
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "../docx/pptx_conversion_context.h"
-#include "borderstyle.h"
+#include "datatypes/borderstyle.h"
 
 namespace cpdoccore { 
 namespace odf {

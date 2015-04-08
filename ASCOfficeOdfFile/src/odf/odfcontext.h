@@ -5,8 +5,8 @@
 
 #include <vector>
 #include <boost/unordered_map.hpp>
-#include "stylefamily.h"
-#include "noteclass.h"
+#include "datatypes/stylefamily.h"
+#include "datatypes/noteclass.h"
 
 #include "styles_lite_container.h"
 

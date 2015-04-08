@@ -1,28 +1,31 @@
 #pragma once
 
 #include <iosfwd>
+
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/CPOptional.h>
+
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
+
 #include "office_elements.h"
 #include "office_elements_create.h"
 
-#include "common_attlists.h"
-#include "lengthorpercent.h"
-#include "stylehorizontalpos.h"
-#include "stylehorizontalrel.h"
-#include "styleverticalrel.h"
-#include "styleverticalpos.h"
-#include "anchortype.h"
-#include "stylewrap.h"
-#include "hyphenationladdercount.h"
-#include "stylewrapcontourmode.h"
-#include "runthrough.h"
-#include "linestyle.h"
-#include "markerstyle.h"
-#include "verticalalign.h"
-#include "gradientstyle.h"
+#include "datatypes/common_attlists.h"
+#include "datatypes/lengthorpercent.h"
+#include "datatypes/stylehorizontalpos.h"
+#include "datatypes/stylehorizontalrel.h"
+#include "datatypes/styleverticalrel.h"
+#include "datatypes/styleverticalpos.h"
+#include "datatypes/anchortype.h"
+#include "datatypes/stylewrap.h"
+#include "datatypes/hyphenationladdercount.h"
+#include "datatypes/stylewrapcontourmode.h"
+#include "datatypes/runthrough.h"
+#include "datatypes/linestyle.h"
+#include "datatypes/markerstyle.h"
+#include "datatypes/verticalalign.h"
+#include "datatypes/gradientstyle.h"
 
 
 namespace cpdoccore { 

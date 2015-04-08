@@ -59,19 +59,19 @@ namespace fs = ::boost::filesystem;
 namespace {
 content_xml_t_ptr read_file_content(const fs::wpath & Path)
 {
-    fs::ifstream content_file;
-    content_file.open(Path);
-    if (content_file)
+    //fs::ifstream content_file;
+    //content_file.open(Path);
+   // if (content_file)
     {
-        xml::sax_ptr sax = xml::create_sax( content_file );
+        xml::sax_ptr sax = xml::create_sax( /*content_file*/ Path);
         content_xml_t_ptr result( new content_xml_t() );
         result->read_sax(sax.get());
         return result;
     }
-    else
-    {
-        _CP_LOG(info) << L"[warning] open file error (" <<  BOOST_STRING_PATH(Path) << L")\n";
-    }
+    //else
+    //{
+    //    _CP_LOG(info) << L"[warning] open file error (" <<  BOOST_STRING_PATH(Path) << L")\n";
+    //}
     return content_xml_t_ptr();
 }
 }

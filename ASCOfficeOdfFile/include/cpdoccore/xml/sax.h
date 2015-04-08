@@ -1,11 +1,7 @@
 /// \brief  Абстрактный интерфейс Simple API XML
 
-#ifndef _CPDOCCORE_XML_SAX_H_
-#define _CPDOCCORE_XML_SAX_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
+
 
 #include <string>
 #include <exception>
@@ -43,7 +39,7 @@ public:
 
 public:
     virtual unsigned int attrCount() = 0;
-    virtual std::wstring baseURI() = 0;
+    //virtual std::wstring baseURI() = 0;
     virtual unsigned int depth() = 0;
 
     // <p:abc/>, returns "abc".
@@ -55,8 +51,8 @@ public:
     // <xyz:abc xmlns:xyz="u://1" />, it returns "xyz".
     virtual std::wstring namespacePrefix() = 0;
 
-    // Returns "u://1" for the element <xyz:abc xmlns:xyz="u://1" />.
-    virtual std::wstring namespaceUri() = 0;
+    //// Returns "u://1" for the element <xyz:abc xmlns:xyz="u://1" />.
+    //virtual std::wstring namespaceUri() = 0;
 
     virtual NodeType nodeType() = 0;
     virtual std::wstring value() = 0;
@@ -67,7 +63,6 @@ public:
     
     virtual bool isEof() = 0;
 
-    virtual bool moveToAttrByName(const wchar_t * Name, const wchar_t * nsURI) = 0;
     virtual bool moveToAttrFirst() = 0;
     virtual bool moveToAttrNext() = 0;
     virtual void moveToAttrOwner() = 0;
@@ -75,10 +70,7 @@ public:
 
     virtual NodeType next() = 0;
     
-    virtual unsigned int lineNumber() = 0;
-    virtual unsigned int linePosition() = 0;
-
-    virtual unsigned int readChunk(wchar_t * Buffer, unsigned int Size) = 0;
+    //virtual unsigned int readChunk(wchar_t * Buffer, unsigned int Size) = 0;
 
     virtual ~sax() = 0;
 
@@ -88,13 +80,11 @@ public:
 inline sax::~sax() {};
 
 sax_ptr create_sax(const wchar_t * FileName);
-sax_ptr create_sax(shared_ptr< std::istream >::Type istreamPtr);
-sax_ptr create_sax(std::istream & istreamVal);
+//sax_ptr create_sax(shared_ptr< std::istream >::Type istreamPtr);
+//sax_ptr create_sax(std::istream & istreamVal);
 
 //sax_ptr create_sax(const std::string & String);
 
 } // namespace xml
 } // namespace cpdoccore
 
-
-#endif // #ifndef _CPDOCCORE_XML_SAX_H_

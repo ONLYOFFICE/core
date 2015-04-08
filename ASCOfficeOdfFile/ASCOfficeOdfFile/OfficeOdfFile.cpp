@@ -24,11 +24,6 @@
 
 #include "..\..\Common\ASCATLError.h"
 
-#pragma comment(lib, "cpformulasconvert-static.lib")
-#pragma comment(lib, "cpxml-static.lib")
-#pragma comment(lib, "cpodf-static.lib")
-#pragma comment(lib, "cpcommon-static.lib")
-
 #ifdef _DEBUG
 	#pragma comment(lib, "../../ASCImageStudio3/ASCGraphics/OfficeSvmFile/Debug/OfficeSvmFile.lib")
 #else

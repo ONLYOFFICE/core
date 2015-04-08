@@ -5,8 +5,6 @@
 #undef BOOL
 #endif
 
-#ifdef _IOS
-
 #import <UIKit/UIKit.h>
 
 CArray<std::wstring> CApplicationFonts::GetSetupFontFiles_ios()
@@ -44,5 +42,3 @@ namespace NSDirectory
         }
     }
 }
-
-#endif

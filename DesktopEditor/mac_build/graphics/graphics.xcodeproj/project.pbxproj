@@ -76,7 +76,6 @@
 		17D9135E1AC58F000096D788 /* Timer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913421AC58F000096D788 /* Timer.h */; };
 		17D913711AC58F400096D788 /* ApplicationFonts.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913601AC58F400096D788 /* ApplicationFonts.cpp */; };
 		17D913721AC58F400096D788 /* ApplicationFonts.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913611AC58F400096D788 /* ApplicationFonts.h */; };
-		17D913731AC58F400096D788 /* ApplicationFonts_ios.mm in Sources */ = {isa = PBXBuildFile; fileRef = 17D913621AC58F400096D788 /* ApplicationFonts_ios.mm */; };
 		17D913741AC58F400096D788 /* ApplicationFontsWorker.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913631AC58F400096D788 /* ApplicationFontsWorker.cpp */; };
 		17D913751AC58F400096D788 /* ApplicationFontsWorker.h in Headers */ = {isa = PBXBuildFile; fileRef = 17D913641AC58F400096D788 /* ApplicationFontsWorker.h */; };
 		17D913771AC58F400096D788 /* FontFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17D913691AC58F400096D788 /* FontFile.cpp */; };
@@ -390,7 +389,6 @@
 				17D913591AC58F000096D788 /* Matrix.cpp in Sources */,
 				17D913711AC58F400096D788 /* ApplicationFonts.cpp in Sources */,
 				17D913771AC58F400096D788 /* FontFile.cpp in Sources */,
-				17D913731AC58F400096D788 /* ApplicationFonts_ios.mm in Sources */,
 				17D913741AC58F400096D788 /* ApplicationFontsWorker.cpp in Sources */,
 				17D9134A1AC58F000096D788 /* Clip.cpp in Sources */,
 				17D9137B1AC58F400096D788 /* FontPath.cpp in Sources */,
@@ -422,6 +420,7 @@
 					unix,
 					LINUX,
 					_LINUX,
+					_IOS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
@@ -448,6 +447,7 @@
 					unix,
 					LINUX,
 					_LINUX,
+					_IOS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (

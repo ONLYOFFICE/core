@@ -11,7 +11,6 @@
 #include <cpdoccore/CPWeakPtr.h>
 #include <cpdoccore/CPOptional.h>
 
-#include "office_elements.h"
 #include "office_elements_create.h"
 
 #include "common_attlists.h"

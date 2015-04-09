@@ -41,4 +41,4 @@ using namespace ATL;
 	importidl(ASCOfficeOdfFileW.idl)
 ];
 
-#include "source\progressCallback.h"
+#include "../source/progressCallback.h"

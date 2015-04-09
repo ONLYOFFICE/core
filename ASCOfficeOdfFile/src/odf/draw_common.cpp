@@ -22,15 +22,18 @@
 #include "odfcontext.h"
 
 /////////////////////////////////////////////////////////////////////////////////
-#include <Windows.h>
-#include <gdiplus.h>
-#pragma comment(lib, "gdiplus.lib")
 
+#if defined(_WIN32) || defined(_WIN64)
+	#include <Windows.h>
+	#include <gdiplus.h>
+	#pragma comment(lib, "gdiplus.lib")
+#endif
 namespace _image_file_
 {
 	bool GetResolution(const WCHAR* fileName, int & Width, int &Height)
 	{
 		bool result =false;
+#if defined(_WIN32) || defined(_WIN64)
 		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 		ULONG_PTR gdiplusToken=0;
 		Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
@@ -45,6 +48,9 @@ namespace _image_file_
 			delete file;
 		}
 		Gdiplus::GdiplusShutdown(gdiplusToken);
+#else
+		//todooo - через CxImage !!!!
+#endif
 		return result;
 	}
 };

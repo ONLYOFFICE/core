@@ -20,7 +20,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
@@ -43,8 +43,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../ASCOfficeOdfFile/src/odf/datatypes;./OdfFormat;./Oox2OdfConverter;../../Common/DocxFormat/Source;../../Common/DocxFormat/Source/XML;../../ASCOfficeOdfFile\include;../../ASCOfficeOdfFile/3dparty/utf8cpp/include;../../ASCOfficePPTXFile/PPTXFormat/;../Common/DocxFormat/Source/XML/libxml2/XML/include;../"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION"
+				AdditionalIncludeDirectories="../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes"
+				PreprocessorDefinitions="NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
@@ -83,7 +83,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
@@ -107,7 +107,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../ASCOfficeOdfFile/src/odf/datatypes;./OdfFormat;./Oox2OdfConverter;../../Common/DocxFormat/Source;../../Common/DocxFormat/Source/XML;../../ASCOfficeOdfFile\include;../../ASCOfficeOdfFile/3dparty/utf8cpp/include;../../ASCOfficePPTXFile/PPTXFormat/;../Common/DocxFormat/Source/XML/libxml2/XML/include;../"
+				AdditionalIncludeDirectories="../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -147,7 +147,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
@@ -170,8 +170,8 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../ASCOfficeOdfFile/src/odf/datatypes;./OdfFormat;./Oox2OdfConverter;../../Common/DocxFormat/Source;../../Common/DocxFormat/Source/XML;../../ASCOfficeOdfFile\include;../../ASCOfficeOdfFile/3dparty/utf8cpp/include;../../ASCOfficePPTXFile/PPTXFormat/;../Common/DocxFormat/Source/XML/libxml2/XML/include;../"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION"
+				AdditionalIncludeDirectories="../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes"
+				PreprocessorDefinitions="NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
 				WarningLevel="3"
@@ -208,7 +208,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
@@ -232,7 +232,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="../../ASCOfficeOdfFile/src/odf/datatypes;./OdfFormat;./Oox2OdfConverter;../../Common/DocxFormat/Source;../../Common/DocxFormat/Source/XML;../../ASCOfficeOdfFile\include;../../ASCOfficeOdfFile/3dparty/utf8cpp/include;../../ASCOfficePPTXFile/PPTXFormat/;../Common/DocxFormat/Source/XML/libxml2/XML/include;../"
+				AdditionalIncludeDirectories="../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -278,27 +278,27 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath=".\Oox2OdfConverter\ConvertDiagram.cpp"
+				RelativePath="..\Oox2OdfConverter\ConvertDiagram.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Oox2OdfConverter\Converter.cpp"
+				RelativePath="..\Oox2OdfConverter\Converter.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Oox2OdfConverter\ConverterChart.cpp"
+				RelativePath="..\Oox2OdfConverter\ConverterChart.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Oox2OdfConverter\ConvertVml.cpp"
+				RelativePath="..\Oox2OdfConverter\ConvertVml.cpp"
 				>
 			</File>
 			<File
-				RelativePath=".\Oox2OdfConverter\DocxConverter.cpp"
+				RelativePath="..\Oox2OdfConverter\DocxConverter.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
+				RelativePath="..\..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -334,7 +334,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\Oox2OdfConverter\stdafx.cpp"
+				RelativePath="..\Oox2OdfConverter\stdafx.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -370,11 +370,11 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath=".\Oox2OdfConverter\VmlShapeTypes2Oox.h"
+				RelativePath="..\Oox2OdfConverter\VmlShapeTypes2Oox.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Oox2OdfConverter\XlsxConverter.cpp"
+				RelativePath="..\Oox2OdfConverter\XlsxConverter.cpp"
 				>
 			</File>
 		</Filter>
@@ -384,32 +384,22 @@
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
 			<File
-				RelativePath=".\Oox2OdfConverter\Converter.h"
+				RelativePath="..\Oox2OdfConverter\Converter.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Oox2OdfConverter\DocxConverter.h"
+				RelativePath="..\Oox2OdfConverter\DocxConverter.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Oox2OdfConverter\stdafx.h"
+				RelativePath="..\Oox2OdfConverter\stdafx.h"
 				>
 			</File>
 			<File
-				RelativePath=".\Oox2OdfConverter\XlsxConverter.h"
+				RelativePath="..\Oox2OdfConverter\XlsxConverter.h"
 				>
 			</File>
 		</Filter>
-		<Filter
-			Name="Resource Files"
-			Filter="rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav"
-			UniqueIdentifier="{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}"
-			>
-		</Filter>
-		<File
-			RelativePath=".\ReadMe.txt"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

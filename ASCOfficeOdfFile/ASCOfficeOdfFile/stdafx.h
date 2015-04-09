@@ -45,12 +45,12 @@
 #include <wingdi.h>
 using namespace ATL;
 
-typedef void (*OnProgressCallback)( LPVOID lpParam, long nID, long nPercent );
-typedef void (*OnProgressExCallback)( LPVOID lpParam, long nID, long nPercent, short* Cancel );
+typedef void (*OdfOnProgressCallback)( LPVOID lpParam, long nID, long nPercent );
+typedef void (*OdfOnProgressExCallback)( LPVOID lpParam, long nID, long nPercent, short* Cancel );
 
 struct ProgressCallback
 {
-  OnProgressCallback OnProgress;
-  OnProgressExCallback OnProgressEx;
+  OdfOnProgressCallback OnProgress;
+  OdfOnProgressExCallback OnProgressEx;
   LPVOID caller;
 };

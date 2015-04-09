@@ -5,18 +5,13 @@
 
 #include <string>
 
-#include "./../Common/OfficeFileTemplate.h"
-#include "./../Common/OfficeFileErrorDescription.h"
+#include "../../Common/OfficeFileTemplate.h"
+#include "../../Common/OfficeFileErrorDescription.h"
 
 #if defined(_WIN32_WCE) && !defined(_CE_DCOM) && !defined(_CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA)
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
 #endif
 
-#ifdef _DEBUG
-	#import "..\Redist\ASCOfficeUtils.dll" rename_namespace("ASCOfficeUtils") raw_interfaces_only
-#else
-	#import "..\Redist\ASCOfficeUtils.dll" rename_namespace("ASCOfficeUtils") raw_interfaces_only
-#endif
 
 // IOfficeOdfFileW
 [
@@ -70,8 +65,6 @@ public:
 
 	HRESULT FinalConstruct()
 	{
-		office_utils_.CoCreateInstance(__uuidof(ASCOfficeUtils::COfficeUtils));    
-
 		return S_OK;
 	}
 
@@ -84,10 +77,6 @@ public:
 	STDMETHOD(SaveToFile)(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions);
 
 private:
-    ATL::CComPtr< ASCOfficeUtils::IOfficeUtils > office_utils_;
-
-    bool initialized();
-
 	HRESULT SaveToFileImpl(const std::wstring & srcPath, const std::wstring & srcTempPath,
 						   const std::wstring & dstTempPath,	 const std::wstring & dstFileName);
 

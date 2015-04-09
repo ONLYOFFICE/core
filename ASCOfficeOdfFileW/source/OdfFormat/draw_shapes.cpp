@@ -1,6 +1,5 @@
 #include "precompiled_cpodf.h"
 #include "draw_shapes.h"
-#include "custom_shape_types_convert.h"
 
 #include <ostream>
 #include <sstream>
@@ -15,8 +14,10 @@
 #include <cpdoccore/xml/attributes.h>
 
 #include "style_graphic_properties.h"
+
 #include "length.h"
 #include "borderstyle.h"
+#include "custom_shape_types_convert.h"
 
 #include "odf_conversion_context.h"
 

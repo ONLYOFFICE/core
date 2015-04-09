@@ -8,7 +8,6 @@
 
 #include "office_elements_create.h"
 
-
 #include "bool.h"
 #include "length.h"
 #include "style_ref.h"

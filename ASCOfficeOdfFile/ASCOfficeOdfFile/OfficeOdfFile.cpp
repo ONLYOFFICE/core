@@ -1,7 +1,9 @@
 /// \file   OfficeOdfFile.cpp
 
 #include "stdafx.h"
+
 #include "OfficeOdfFile.h"
+#include "../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 
 #include <string>
 #include <boost/uuid/uuid.hpp>
@@ -34,7 +36,6 @@
 COfficeOdfFile::COfficeOdfFile()
 {
 	bOnlyPresentation = false;
-    office_utils_.CoCreateInstance(__uuidof(ASCOfficeUtils::COfficeUtils));    
 }
 
 namespace {
@@ -83,9 +84,6 @@ bool COfficeOdfFile::loadOptionFromXML(CString parametr,BSTR sXMLOptions)
 HRESULT COfficeOdfFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions)
 {
     HRESULT hr;
-    if (!initialized())
-        return E_FAIL;
-
     if (!sDstPath)
     {
         _ASSERTE(!!sDstPath);
@@ -167,11 +165,9 @@ HRESULT COfficeOdfFile::LoadFromFileImpl(const std::wstring & srcFileName,
 #endif
 
     // распаковываем исходник во временную директорию
-    if FAILED(hr = office_utils_->ExtractToDirectory(
-        ATL::CComBSTR(srcFileName.c_str()),
-        ATL::CComBSTR(srcTempPath.c_str()),
-        NULL, 0))
-        return hr;
+	COfficeUtils oCOfficeUtils(NULL);
+    if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), srcTempPath.c_str(), NULL, 0))
+		return hr;
 
 	ProgressCallback ffCallBack;
 
@@ -184,7 +180,7 @@ HRESULT COfficeOdfFile::LoadFromFileImpl(const std::wstring & srcFileName,
 	if (hr != S_OK)  return hr;
    
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
-    if FAILED(hr = office_utils_->CompressFileOrDirectory(ATL::CComBSTR(dstTempPath.c_str()), ATL::CComBSTR(dstPath.c_str()), (-1)))
+	if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstPath.c_str(), -1))
         return hr;
 #endif
 
@@ -197,33 +193,20 @@ HRESULT COfficeOdfFile::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOp
     return E_NOTIMPL;
 }
 
-bool COfficeOdfFile::initialized()
-{
-    return (!!office_utils_);
-}
-
 void COfficeOdfFile::OnProgressFunc (LPVOID lpParam, long nID, long nPercent)
 {
-	//g_oCriticalSection.Enter();
-
 	COfficeOdfFile* pOdfFile = reinterpret_cast<COfficeOdfFile*>(lpParam);
 	if (pOdfFile != NULL)
 	{
 		pOdfFile->OnProgress(nID, nPercent);
 	}
-
-	//g_oCriticalSection.Leave();
 }
 
 void COfficeOdfFile::OnProgressExFunc (LPVOID lpParam, long nID, long nPercent, short* pStop)
 {
-	//g_oCriticalSection.Enter();
-
 	COfficeOdfFile* pOdfFile = reinterpret_cast<COfficeOdfFile*>(lpParam);
 	if (pOdfFile != NULL)
 	{
 		pOdfFile->OnProgressEx(nID, nPercent, pStop);
 	}
-
-	//g_oCriticalSection.Leave();
 }

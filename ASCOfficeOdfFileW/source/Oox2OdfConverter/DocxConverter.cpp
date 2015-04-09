@@ -5,27 +5,27 @@
 #include "DocxConverter.h"
 #include "../utils.h"
 
-#include <DocxFormat\Docx.h>
-#include <DocxFormat\External\Hyperlink.h>
-#include <XlsxFormat\Chart\Chart.h>
-#include <DocxFormat\Diagram\DiagramDrawing.h>
+#include "../../../Common/DocxFormat/source/DocxFormat/Docx.h"
+#include "../../../Common/DocxFormat/source/DocxFormat/External/Hyperlink.h"
+#include "../../../Common/DocxFormat/source/XlsxFormat/Chart/Chart.h"
+#include "../../../Common/DocxFormat/source/DocxFormat/Diagram/DiagramDrawing.h"
 
 #include "VmlShapeTypes2Oox.h"
 
 #include <boost/foreach.hpp>
 
-#include "odt_conversion_context.h"
+#include "../OdfFormat/odt_conversion_context.h"
 
-#include "odf_text_context.h"
-#include "odf_drawing_context.h"
+#include "../OdfFormat/odf_text_context.h"
+#include "../OdfFormat/odf_drawing_context.h"
 
-#include "styles.h"
+#include "../OdfFormat/styles.h"
 
-#include "style_table_properties.h"
-#include "style_text_properties.h"
-#include "style_paragraph_properties.h"
-#include "style_graphic_properties.h"
-#include "styles_list.h"
+#include "../OdfFormat/style_table_properties.h"
+#include "../OdfFormat/style_text_properties.h"
+#include "../OdfFormat/style_paragraph_properties.h"
+#include "../OdfFormat/style_graphic_properties.h"
+#include "../OdfFormat/styles_list.h"
 
 
 using namespace cpdoccore;

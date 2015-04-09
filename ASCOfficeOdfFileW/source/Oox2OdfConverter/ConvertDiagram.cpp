@@ -3,12 +3,12 @@
 #include "Converter.h"
 #include "../utils.h"
 
-#include <DocxFormat\Diagram\DiagramDrawing.h>
+#include "../../../Common/DocxFormat/source/DocxFormat/Diagram/DiagramDrawing.h"
 
-#include "odf_conversion_context.h"
+#include "../OdfFormat/odf_conversion_context.h"
 
-#include "odf_text_context.h"
-#include "odf_drawing_context.h"
+#include "../OdfFormat/odf_text_context.h"
+#include "../OdfFormat/odf_drawing_context.h"
 
 namespace Oox2Odf
 {

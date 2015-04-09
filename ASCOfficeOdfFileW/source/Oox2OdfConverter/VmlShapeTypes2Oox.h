@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Common\SimpleTypes_Drawing.h>
+#include "../../../Common/DocxFormat/source/Common/SimpleTypes_Drawing.h"
 
 namespace OOX
 {

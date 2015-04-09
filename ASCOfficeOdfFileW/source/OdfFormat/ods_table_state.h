@@ -7,7 +7,6 @@
 
 #include "odf_drawing_context.h"
 
-#include "office_elements.h"
 #include "office_elements_create.h"
 
 #include "officevaluetype.h"

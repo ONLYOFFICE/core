@@ -3,9 +3,9 @@
 #include <string>
 
 #include "odf_page_layout_state.h"
+
 #include "length.h"
 #include "color.h"
-
 
 namespace cpdoccore {
 namespace odf {

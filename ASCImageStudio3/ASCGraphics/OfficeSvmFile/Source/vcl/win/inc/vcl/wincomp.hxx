@@ -156,37 +156,65 @@ inline HFONT GetWindowFont( HWND hWnd )
 
 inline void SetClassCursor( HWND hWnd, HCURSOR hCursor )
 {
+#ifdef _WIN64
+	SetClassLong( hWnd, GCLP_HCURSOR, (DWORD)hCursor );
+#else //_WIN32
 	SetClassLong( hWnd, GCL_HCURSOR, (DWORD)hCursor );
+#endif
 }
 
 inline HCURSOR GetClassCursor( HWND hWnd )
 {
+#ifdef _WIN64
+	return (HCURSOR)GetClassLong( hWnd, GCLP_HCURSOR );
+#else //_WIN32
 	return (HCURSOR)GetClassLong( hWnd, GCL_HCURSOR );
+#endif
 }
 
 inline void SetClassIcon( HWND hWnd, HICON hIcon )
 {
+#ifdef _WIN64
+	SetClassLong( hWnd, GCLP_HICON, (DWORD)hIcon );
+#else //_WIN32
 	SetClassLong( hWnd, GCL_HICON, (DWORD)hIcon );
+#endif
 }
 
 inline HICON GetClassIcon( HWND hWnd )
 {
+#ifdef _WIN64
+	return (HICON)GetClassLong( hWnd, GCLP_HICON );
+#else //_WIN32
 	return (HICON)GetClassLong( hWnd, GCL_HICON );
+#endif
 }
 
 inline HBRUSH SetClassBrush( HWND hWnd, HBRUSH hBrush )
 {
+#ifdef _WIN64
+	return (HBRUSH)SetClassLong( hWnd, GCLP_HBRBACKGROUND, (DWORD)hBrush );
+#else //_WIN32
 	return (HBRUSH)SetClassLong( hWnd, GCL_HBRBACKGROUND, (DWORD)hBrush );
+#endif
 }
 
 inline HBRUSH GetClassBrush( HWND hWnd )
 {
+#ifdef _WIN64
+	return (HBRUSH)GetClassLong( hWnd, GCLP_HBRBACKGROUND );
+#else //_WIN32
 	return (HBRUSH)GetClassLong( hWnd, GCL_HBRBACKGROUND );
+#endif
 }
 
 inline HINSTANCE GetWindowInstance( HWND hWnd )
 {
+#ifdef _WIN64
+	return (HINSTANCE)GetWindowLong( hWnd, GWLP_HINSTANCE );
+#else //_WIN32
 	return (HINSTANCE)GetWindowLong( hWnd, GWL_HINSTANCE );
+#endif
 }
 #ifdef AVS
 // ------------------------

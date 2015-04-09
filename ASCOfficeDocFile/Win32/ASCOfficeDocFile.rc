@@ -3,7 +3,7 @@
 #include "resource.h"
 #define COMPONENT_NAME "OfficeDocFile"
 #include "../../Common/FileInfo.h"
-#include "version.h"
+#include "../version.h"
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////
 //

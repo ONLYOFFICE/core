@@ -293,7 +293,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="&quot;../../../../DesktopEditor/freetype-2.5.2/include&quot;;../../../../DocxFormat/Source/XML/libxml2/XML/include;D:\WORK\AVS\Sources\TeamlabOffice\branches\Docx2DoctConverter\ServerComponents\Common\DocxFormat\Source\XML\libxml2\XML\include;&quot;D:\WORK\AVS\Sources\TeamlabOffice\branches\Docx2DoctConverter\ServerComponents\ASCOfficeUtils\ZLIB\zlib-1.2.3&quot;"
+				AdditionalIncludeDirectories="&quot;../../../DesktopEditor/freetype-2.5.2/include&quot;;../../../DocxFormat/Source/XML/libxml2/XML/include"
 				PreprocessorDefinitions="NDEBUG;_LIB;_USE_MATH_DEFINES;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;PPT_FORMAT;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;BUILD_CONFIG_FULL_VERSION;_PRESENTATION_WRITER_;_SVG_CONVERT_TO_IMAGE_;DONT_WRITE_EMBEDDED_FONTS"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -343,39 +343,27 @@
 			Name="Common"
 			>
 			<File
-				RelativePath="..\..\..\..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp"
+				RelativePath="..\..\..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\XlsxSerializerCom\Common\Common.cpp"
+				RelativePath="..\..\..\XlsxSerializerCom\Common\Common.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\XlsxSerializerCom\Reader\CommonWriter.cpp"
+				RelativePath="..\..\..\XlsxSerializerCom\Reader\CommonWriter.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\XlsxSerializerCom\Reader\CSVReader.cpp"
+				RelativePath="..\..\..\XlsxSerializerCom\Reader\CSVReader.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\XlsxSerializerCom\Writer\CSVWriter.cpp"
+				RelativePath="..\..\..\XlsxSerializerCom\Writer\CSVWriter.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
-				>
-				<FileConfiguration
-					Name="Release|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalOptions="/bigobj"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\..\..\..\DesktopEditor\fontengine\FontManager.cpp"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
 				>
 				<FileConfiguration
 					Name="Release|x64"
@@ -387,11 +375,23 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"
+				RelativePath="..\..\..\DesktopEditor\fontengine\FontManager.cpp"
+				>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\..\ASCOfficeDocxFile2\DocWrapper\FontProcessor.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
 				>
 				<FileConfiguration
 					Name="Release|x64"
@@ -406,11 +406,11 @@
 				Name="pole"
 				>
 				<File
-					RelativePath="..\..\..\..\ASCOfficeDocFile\pole\pole.cpp"
+					RelativePath="..\..\..\ASCOfficeDocFile\pole\pole.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\..\ASCOfficeDocFile\pole\pole.h"
+					RelativePath="..\..\..\ASCOfficeDocFile\pole\pole.h"
 					>
 				</File>
 			</Filter>
@@ -423,7 +423,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\Document.h"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Document.h"
 				>
 			</File>
 			<File
@@ -903,107 +903,107 @@
 			Name="PresentationEditor"
 			>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\PPTXWriter\Converter.cpp"
+				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\Converter.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\PPTXWriter\Converter.h"
+				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\Converter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\PPTXWriter\CSS.h"
+				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\CSS.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\Effects.h"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Effects.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\Element.h"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Element.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\ElementProperties.h"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\ElementProperties.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\Elements.cpp"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Elements.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\Elements.h"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Elements.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\PPTXWriter\ImageManager.h"
+				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\ImageManager.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\Layout.cpp"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Layout.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\Layout.h"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Layout.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\PPTXWriter\ShapeWriter.cpp"
+				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\ShapeWriter.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\PPTXWriter\ShapeWriter.h"
+				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\ShapeWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\Slide.h"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Slide.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\PPTXWriter\StylesWriter.h"
+				RelativePath="..\..\..\ASCPresentationEditor\PPTXWriter\StylesWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\SVGConverter.cpp"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\SVGConverter.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\SVGConverter.h"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\SVGConverter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\SVGFramework.cpp"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\SVGFramework.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\SVGFramework.h"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\SVGFramework.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\SVGTransformer.cpp"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\SVGTransformer.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\SVGTransformer.h"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\SVGTransformer.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\TextAttributesEx.cpp"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\TextAttributesEx.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\TextAttributesEx.h"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\TextAttributesEx.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\TextStructures.h"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\TextStructures.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\Theme.cpp"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Theme.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCPresentationEditor\OfficeDrawing\Theme.h"
+				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\Theme.h"
 				>
 			</File>
 		</Filter>
@@ -1011,59 +1011,59 @@
 			Name="OOXWriter"
 			>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\BinReader\ChartWriter.h"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\ChartWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\BinReader\CommentsWriter.h"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\CommentsWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\BinReader\ContentTypesWriter.h"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\ContentTypesWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\BinReader\DefaultThemeWriterWin.h"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\DefaultThemeWriterWin.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\BinReader\DocumentRelsWriter.h"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentRelsWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\BinReader\DocumentWriter.h"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\DocumentWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\BinReader\FileWriter.h"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\FileWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\BinReader\fontTableWriter.h"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\fontTableWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\BinReader\HeaderFooterWriter.h"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\HeaderFooterWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\BinReader\MediaWriter.h"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\MediaWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\BinReader\NumberingWriter.h"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\NumberingWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\BinReader\SettingWriter.h"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\SettingWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\BinReader\StylesWriter.h"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\StylesWriter.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\..\ASCOfficeDocxFile2\BinReader\webSettingsWriter.h"
+				RelativePath="..\..\..\ASCOfficeDocxFile2\BinReader\webSettingsWriter.h"
 				>
 			</File>
 		</Filter>

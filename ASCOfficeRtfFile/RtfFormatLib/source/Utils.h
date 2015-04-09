@@ -80,34 +80,6 @@ namespace Strings
 
 		return d;
 	}
-	//static BOOL ToBinary(const CString& strValue, BYTE*& pData, int& nSizeAllocated, int& nSizeArray)
-	//{
-	//	pData = NULL;
-	//	nSizeArray = 0;
-	//	nSizeAllocated = Base64::Base64DecodeGetRequiredLength(strValue.GetLength());
-
-	//	if (nSizeAllocated < 1)
-	//		return FALSE;
-	//	
-	//	pData = new BYTE[nSizeAllocated];
-	//	if (!pData)
-	//		return FALSE;
-
-	//	nSizeArray = nSizeAllocated;
-
-	//	CT2A convert(strValue);
-
-	//	if (!Base64::Base64Decode(convert, strValue.GetLength(), pData, &nSizeArray))
-	//	{
-	//		delete[] pData;
-	//		pData = NULL;
-	//		nSizeArray = 0;
-	//		nSizeAllocated = 0;
-	//		return FALSE;
-	//	}
-
-	//	return TRUE;
-	//}
 	
 	static CString FromInteger(int Value, int Base = 10)
 	{
@@ -132,113 +104,7 @@ namespace Strings
 
 		return _T("false");
 	}
-	//static CStringA FromBinary(const BYTE* pData, long lSize)
-	//{
-	//	if ((NULL == pData) || (0 == lSize))
-	//		return "";
-
-	//	CStringA sResult;
-	//	int nStrSize = Base64::Base64EncodeGetRequiredLength(lSize);
-
-	//	LPSTR pStrData = sResult.GetBuffer(nStrSize + 1);
-	//	BOOL bSuccess = Base64::Base64Encode(pData, lSize, pStrData, &nStrSize);
-	//	
-	//	pStrData[nStrSize] = '\0';
-	//	sResult.ReleaseBuffer();
-	//	return sResult;
-	//}
-
-	//static CString FromVariant(VARIANT val)
-	//{
-	//	CString sVal = _T("");
-	//	switch (VT_TYPEMASK & val.vt)
-	//	{
-	//	case VT_EMPTY:
-	//		break;
-	//	case VT_NULL:
-	//		sVal = _T("");
-	//		break;
-	//	case VT_I2:
-	//		sVal.Format(_T("%d"), val.iVal);
-	//		break;
-	//	case VT_I4:
-	//		sVal.Format(_T("%d"), val.lVal);
-	//		break;
-	//	case VT_R4:
-	//		sVal.Format(_T("%f"), val.fltVal);
-	//		break;
-	//	case VT_R8:
-	//		sVal.Format(_T("%f"), val.dblVal);
-	//		break;
-	//	case VT_DATE:
-	//		sVal.Format(_T("%f"), val.date);
-	//		break;
-	//	case VT_BSTR:
-	//		sVal = val.bstrVal;
-	//		break;
-	//	case VT_BOOL:
-	//		sVal = (VARIANT_TRUE == val.boolVal) ? _T("1") : _T("0");
-	//		break;
-	//	case VT_VARIANT:
-	//		sVal = _T("");
-	//		break;
-	//	case VT_UNKNOWN:
-	//		sVal = _T("");
-	//		//ìîæíî ñîõðàíÿòü ïûòàÿñü ïîëó÷èòü IDispatch èíòåðôåéñ, íî âðîäå íàì îí íå íàäî
-	//		break;
-	//	case VT_I1:
-	//		sVal.Format(_T("%d"), val.cVal);
-	//		break;
-	//	case VT_UI1:
-	//		sVal.Format(_T("%d"), val.bVal);
-	//		break;
-	//	case VT_UI2:
-	//		sVal.Format(_T("%d"), val.uiVal);
-	//		break;
-	//	case VT_UI4:
-	//		sVal.Format(_T("%d"), val.ulVal);
-	//		break;
-	//	case VT_I8:
-	//		sVal.Format(_T("%d"), val.llVal);
-	//		break;
-	//	case VT_UI8:
-	//		sVal.Format(_T("%d"), val.ullVal);
-	//		break;
-	//	case VT_INT:
-	//		sVal.Format(_T("%d"), val.intVal);
-	//		break;
-	//	case VT_UINT:
-	//		sVal.Format(_T("%d"), val.uintVal);
-	//		break;
-	//	case VT_DECIMAL:
-	//	case VT_CY:
-	//	case VT_SAFEARRAY:
-	//	case VT_VOID:
-	//	case VT_HRESULT:
-	//	case VT_CARRAY:
-	//	case VT_USERDEFINED:
-	//	case VT_LPSTR:
-	//	case VT_LPWSTR:
-	//	case VT_RECORD:
-	//	case VT_INT_PTR:
-	//	case VT_UINT_PTR:
-	//	case VT_FILETIME:
-	//	case VT_BLOB:
-	//	case VT_STREAM:
-	//	case VT_STORAGE:
-	//	case VT_STREAMED_OBJECT:
-	//	case VT_STORED_OBJECT:
-	//	case VT_BLOB_OBJECT:
-	//	case VT_CF:
-	//	case VT_CLSID:
-	//	case VT_VERSIONED_STREAM:
-	//	case VT_BSTR_BLOB:
-	//		sVal = _T("");
-	//		break;
-	//	}
-
-	//	return sVal;
-	//}
+	
 }
 
 class Convert
@@ -272,6 +138,7 @@ public:
 	 }
 	static bool MultybyteToUnicode(CStringA sInputStr, CStringW& sOutputStr, int nCodepage)
 	{
+		//todooo ÏÅÐÅÏÈÑÀÒÜ 
 		sOutputStr = _T("");
 		int nBufSize = MultiByteToWideChar(nCodepage, 0, sInputStr, -1, NULL, NULL);
 		LPWSTR p = new WCHAR[ nBufSize + 1 ];
@@ -288,6 +155,7 @@ public:
 	}
 	static CStringW Utf8ToUnicode(CStringA sInputStr)//todo
 	{
+		//todooo ÏÅÐÅÏÈÑÀÒÜ 
 		CStringW sResult;
 		int nBufSize = MultiByteToWideChar(CP_UTF8, 0, sInputStr, -1, NULL, NULL);
 		LPWSTR p = new WCHAR[ nBufSize + 1 ];
@@ -299,6 +167,7 @@ public:
 	}
 	static CStringA UnicodeToUtf8(CStringW sInputStr)//todo
 	{
+		//todooo ÏÅÐÅÏÈÑÀÒÜ 
 		CStringA sResult;
 		int nBufSize = WideCharToMultiByte(CP_UTF8, 0, sInputStr, -1, NULL, NULL, NULL, NULL);
 		LPSTR p = new CHAR[ nBufSize + 1 ];
@@ -421,17 +290,19 @@ public:
 		{
 			if( NULL == pbData )
 				return;
-			HANDLE hFile = ::CreateFile( sFilename, GENERIC_WRITE, 0, 0, CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL, 0);
+
+			CFile file;
+			if (file.CreateFileW(sFilename) != S_OK) return;
 
 			DWORD dwBytesWritten;
-			::WriteFile(hFile,pbData ,nLength, &dwBytesWritten, NULL);	
-			CloseHandle( hFile );
+			file.WriteFile(pbData ,nLength);	
+			file.CloseFile();
 		}
 		static void WriteDataToFile(CString& sFilename, CString& sData)
 		{
-			HANDLE hFile = ::CreateFile( sFilename, GENERIC_WRITE, 0, 0, CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL, 0);
+			CFile file;
 
-			DWORD dwBytesWritten;
+			if (file.CreateFileW(sFilename) != S_OK) return;
 
 			TCHAR * buf  = sData.GetBuffer();
 			int nLengthText = sData.GetLength();
@@ -444,10 +315,11 @@ public:
 				nByte |= ToByte( buf[2 * i + 1] );
 				buf2[i] = nByte;
 			}
-			::WriteFile(hFile,buf2 ,nLengthData, &dwBytesWritten, NULL);	
+			file.WriteFile(buf2 ,nLengthData);	
 			sData.ReleaseBuffer();
 			delete[] buf2;
-			CloseHandle( hFile );
+			file.CloseFile();
+
 		}
 		static void WriteDataToBinary( CString sData, BYTE** ppData, long& nSize)
 		{

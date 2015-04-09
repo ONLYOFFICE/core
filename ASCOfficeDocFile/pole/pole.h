@@ -158,12 +158,13 @@ public:
 
   std::list<std::string> GetAllStreams( const std::string& storageName );
 
+  Storage( const Storage& );
+  Storage& operator=( const Storage& );
+
 private:
   StorageIO* io;
   
   // no copy or assign
-  Storage( const Storage& );
-  Storage& operator=( const Storage& );
 
 };
 

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
 #include "PPTDocumentInfo.h"
 

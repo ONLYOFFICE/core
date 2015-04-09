@@ -225,7 +225,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
+				CommandLine="$(SolutionDir)..\..\Redist\VersionControl.exe $(SolutionDir)..\version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -325,7 +325,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\..\Redist\VersionControl.exe $(ProjectDir)version.h"
+				CommandLine="$(SolutionDir)..\..\Redist\VersionControl.exe $(SolutionDir)..\version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"

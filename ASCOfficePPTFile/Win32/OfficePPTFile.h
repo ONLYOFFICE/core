@@ -2,11 +2,11 @@
 #pragma once
 #include "resource.h"       // main symbols
 
-#include "../../../Common/OfficeFileTemplate.h"
-#include "../../../Common/ATLDefine.h"
-#include "../../../Common/ASCUtils.h"
+#include "../../Common/OfficeFileTemplate.h"
+#include "../../Common/ATLDefine.h"
+#include "../../Common/ASCUtils.h"
 
-#include "../../../Common/VideoFileErrorDescription.h"
+#include "../../Common/VideoFileErrorDescription.h"
 
 #include "../PPTFormatLib/PPTFormatLib.h"
 

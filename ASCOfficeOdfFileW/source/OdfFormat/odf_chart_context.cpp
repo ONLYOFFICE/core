@@ -3,7 +3,7 @@
 
 #include <boost/foreach.hpp>
 
-#include <cpdoccore/formulasconvert.h>
+#include "../../../ASCOfficeOdfFile/formulasconvert/include/cpdoccore/formulasconvert.h"
 
 #include <iostream>
 

@@ -6,15 +6,15 @@
 #include "XlsxConverter.h"
 #include "DocxConverter.h"
 
-#include "odf_conversion_context.h"
+#include "../OdfFormat/odf_conversion_context.h"
 
-#include "odf_text_context.h"
-#include "odf_drawing_context.h"
+#include "../OdfFormat/odf_text_context.h"
+#include "../OdfFormat/odf_drawing_context.h"
 
-#include "style_text_properties.h"
-#include "style_paragraph_properties.h"
+#include "../OdfFormat/style_text_properties.h"
+#include "../OdfFormat/style_paragraph_properties.h"
 
-#include <DocxFormat\Logic\Vml.h>
+#include "../../../Common/DocxFormat/source/DocxFormat/Logic/Vml.h"
 
 #include "VmlShapeTypes2Oox.h"
 

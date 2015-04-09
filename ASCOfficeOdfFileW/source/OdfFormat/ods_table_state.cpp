@@ -1,7 +1,7 @@
 #include "precompiled_cpodf.h"
 #include "logging.h"
 
-#include <cpdoccore/formulasconvert.h>
+#include "../../../ASCOfficeOdfFile/formulasconvert/include/cpdoccore/formulasconvert.h"
 
 #include "ods_table_state.h"
 #include "odf_text_context.h"

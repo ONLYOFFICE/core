@@ -7,7 +7,6 @@
 #include <iostream>
 #include <boost/foreach.hpp>
 
-#include "office_elements.h"
 #include "office_elements_create.h"
 
 #include "style_section_properties.h"

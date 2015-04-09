@@ -4,7 +4,7 @@
 
 #define COMPONENT_NAME "OfficeOdfFileW"
 #include "..\..\Common\FileInfo.h"
-#include "version.h"
+#include "../version.h"
 
 #define APSTUDIO_READONLY_SYMBOLS
 /////////////////////////////////////////////////////////////////////////////

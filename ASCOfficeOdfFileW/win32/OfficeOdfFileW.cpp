@@ -2,6 +2,7 @@
 
 #include "stdafx.h"
 #include "OfficeOdfFileW.h"
+#include "../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 
 #include <string>
 
@@ -10,9 +11,8 @@
 #include <boost/uuid/random_generator.hpp>
 #include <boost/algorithm/string.hpp> 
 
-#include "source\Oox2OdfConverter\Converter.h"
+#include "../source/Oox2OdfConverter/Converter.h"
 
-#import "../Redist/ASCOfficeOdfFile.dll" rename_namespace("ASCOfficeOdfFile"), raw_interfaces_only
 
 #ifndef STANDALONE_USE
 	#define STANDALONE_USE 0// что на входе: файл (1) или папка (0)
@@ -34,34 +34,14 @@ std::wstring bstr2wstring(BSTR str)
 
 STDMETHODIMP COfficeOdfFileW::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions)
 {
-    ATL::CComPtr<IAVSOfficeFileTemplate> odfFile;
-   
-	HRESULT hr = odfFile.CoCreateInstance(__uuidof(ASCOfficeOdfFile::COfficeOdfFile));
-
-	if (hr == S_OK && odfFile)
-	{
-		
-		hr = odfFile->LoadFromFile(sSrcFileName, sDstPath, sXMLOptions);
-		
-	}
-    return hr;
+   return S_FALSE;
 }
-
-bool COfficeOdfFileW::initialized()
-{
-    return (!!office_utils_);
-}
-
-
 STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions)
 {
     HRESULT hr;
-    if (!initialized())
-        return E_FAIL;
 
     if (!sSrcPath)
     {
-        _ASSERTE(!!sSrcPath);
         return E_FAIL;
     }
 
@@ -128,12 +108,12 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
                                         const std::wstring & dstFileName)
 {
     HRESULT hr = E_FAIL;
-  
+	COfficeUtils oCOfficeUtils(NULL);  
 
     // распаковываем исходник (если он файл) во временную директорию
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
-    if FAILED(hr = office_utils_->ExtractToDirectory(CComBSTR(srcPath.c_str()), CComBSTR(srcTempPath.c_str()), NULL, 0))
-        return hr;
+        if (S_OK != oCOfficeUtils.ExtractToDirectory(srcPath.c_str(), srcTempPath.c_str(), NULL, 0))
+            return hr;
 #endif
 
 	try
@@ -155,9 +135,10 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
 	catch(...)
 	{
 	}
-   
-    if FAILED(hr = office_utils_->CompressFileOrDirectory(CComBSTR(dstTempPath.c_str()), CComBSTR(dstFileName.c_str()), (-1)))
+
+	if (S_OK != oCOfficeUtils.CompressFileOrDirectory(dstTempPath.c_str(), dstFileName.c_str(), -1))
         return hr;
+
 
     return S_OK;
 }
@@ -212,26 +193,19 @@ std::wstring COfficeOdfFileW::DetectTypeDocument(const std::wstring & Path)
 
 void COfficeOdfFileW::OnProgressFunc (LPVOID lpParam, long nID, long nPercent)
 {
-	//g_oCriticalSection.Enter();
-
 	COfficeOdfFileW* pOdfFile = reinterpret_cast<COfficeOdfFileW*>(lpParam);
 	if (pOdfFile != NULL)
 	{
 		pOdfFile->OnProgress(nID, nPercent);
 	}
-
-	//g_oCriticalSection.Leave();
 }
 
 void COfficeOdfFileW::OnProgressExFunc (LPVOID lpParam, long nID, long nPercent, short* pStop)
 {
-	//g_oCriticalSection.Enter();
-
 	COfficeOdfFileW* pOdfFile = reinterpret_cast<COfficeOdfFileW*>(lpParam);
 	if (pOdfFile != NULL)
 	{
 		pOdfFile->OnProgressEx(nID, nPercent, pStop);
 	}
 
-	//g_oCriticalSection.Leave();
 }

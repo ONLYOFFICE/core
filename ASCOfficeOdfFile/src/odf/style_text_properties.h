@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_TEXT_FORMAT_PROP_H_
-#define _CPDOCCORE_TEXT_FORMAT_PROP_H_
+#pragma once
 
 #include <iosfwd>
 
@@ -8,7 +7,6 @@
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
 
-#include "office_elements.h"
 #include "office_elements_create.h"
 
 #include "datatypes/style_ref.h"
@@ -306,5 +304,3 @@ CP_REGISTER_OFFICE_ELEMENT2(style_text_properties);
 
 }
 }
-
-#endif //#ifndef _CPDOCCORE_TEXT_FORMAT_PROP_H_

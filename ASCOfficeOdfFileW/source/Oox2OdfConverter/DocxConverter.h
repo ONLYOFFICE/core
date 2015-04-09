@@ -6,7 +6,7 @@
 #include <cpdoccore/CPSharedPtr.h>
 #include <cpdoccore/CPOptional.h>
 
-#include <Common/SimpleTypes_Word.h>
+#include "../../../Common/DocxFormat/source/Common/SimpleTypes_Word.h"
 
 namespace OOX 
 {

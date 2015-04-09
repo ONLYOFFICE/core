@@ -23,7 +23,7 @@
 			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfATL="2"
+			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
 			>
@@ -55,7 +55,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\ASCOfficeOdfFile\include"
+				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;LIBXML_READER_ENABLED;_USE_XMLLITE_READER_;USE_XMLLITE_READER;_USE_LIBXML2_READER_;STANDALONE_USE=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -118,7 +118,7 @@
 			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfATL="2"
+			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
 			>
@@ -149,7 +149,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\ASCOfficeOdfFile\include"
+				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;LIBXML_READER_ENABLED;_USE_XMLLITE_READER_;USE_XMLLITE_READER;_USE_LIBXML2_READER_;STANDALONE_USE=1"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -245,7 +245,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\ASCOfficeOdfFile\include"
+				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION;STANDALONE_USE=0"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -301,7 +301,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;../Redist&quot;&#x0D;&#x0A;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\..\Redist&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -315,7 +315,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\Redist\VersionControl.exe $(ProjectDir)\version.h"
+				CommandLine="$(SolutionDir)..\..\Redist\VersionControl.exe $(SolutionDir)..\version.h"
 			/>
 			<Tool
 				Name="VCCustomBuildTool"
@@ -341,7 +341,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="2"
-				AdditionalIncludeDirectories="..\ASCOfficeOdfFile\include"
+				AdditionalIncludeDirectories="..\..\ASCOfficeOdfFile\include"
 				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION;STANDALONE_USE=0"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="2"
@@ -397,7 +397,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;../Redist/x64&quot;&#x0D;&#x0A;"
+				CommandLine="regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\..\Redist\x64&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 	</Configurations>

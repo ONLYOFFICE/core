@@ -4,7 +4,6 @@
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/CPOptional.h>
 
-#include "office_elements.h"
 #include "office_elements_create.h"
 
 #include "linewidth.h"

@@ -10,8 +10,6 @@
 #error "Single-threaded COM objects are not properly supported on Windows CE platform, such as the Windows Mobile platforms that do not include full DCOM support. Define _CE_ALLOW_SINGLE_THREADED_OBJECTS_IN_MTA to force ATL to support creating single-thread COM object's and allow use of it's single-threaded COM object implementations. The threading model in your rgs file was set to 'Free' as that is the only threading model supported in non DCOM Windows CE platforms."
 #endif
 
-#import "../../Redist/ASCOfficeUtils.dll" rename_namespace("ASCOfficeUtils"), raw_interfaces_only
-
 // IOfficeOdfFile
 [
 	object,
@@ -76,12 +74,11 @@ public:
 	STDMETHOD(SaveToFile)(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions);
 
 private:
-    ATL::CComPtr< ASCOfficeUtils::IOfficeUtils > office_utils_;
     
 	bool bOnlyPresentation;
 	bool loadOptionFromXML(CString parametr,BSTR sXMLOptions);
-    bool initialized();
-    HRESULT LoadFromFileImpl(const std::wstring & srcFileName,
+
+	HRESULT LoadFromFileImpl(const std::wstring & srcFileName,
         const std::wstring & srcTempPath,
         const std::wstring & dstTempPath,
         const std::wstring & dstPath);

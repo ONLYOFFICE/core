@@ -7,19 +7,19 @@
 
 #include <boost/foreach.hpp>
 
-#include "ods_conversion_context.h"
+#include "../OdfFormat/ods_conversion_context.h"
 
-#include "odf_text_context.h"
-#include "odf_drawing_context.h"
+#include "../OdfFormat/odf_text_context.h"
+#include "../OdfFormat/odf_drawing_context.h"
 
-#include "styles.h"
+#include "../OdfFormat/styles.h"
 
-#include "style_table_properties.h"
-#include "style_text_properties.h"
-#include "style_paragraph_properties.h"
-#include "style_graphic_properties.h"
+#include "../OdfFormat/style_table_properties.h"
+#include "../OdfFormat/style_text_properties.h"
+#include "../OdfFormat/style_paragraph_properties.h"
+#include "../OdfFormat/style_graphic_properties.h"
 
-#include <XlsxFormat\Xlsx.h>
+#include "../../../Common/DocxFormat/source/XlsxFormat/Xlsx.h"
 
 using namespace cpdoccore;
 

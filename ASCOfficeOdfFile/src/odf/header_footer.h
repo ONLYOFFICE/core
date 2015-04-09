@@ -1,12 +1,10 @@
-#ifndef _CPDOCCORE_ODF_HEADER_FOOTER_H_
-#define _CPDOCCORE_ODF_HEADER_FOOTER_H_
+#pragma once 
 
 #include <iosfwd>
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/nodetype.h>
 
-#include "office_elements.h"
 #include "office_elements_create.h"
 
 #include "datatypes/common_attlists.h"
@@ -84,5 +82,3 @@ public:
 
 }
 }
-
-#endif

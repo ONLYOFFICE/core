@@ -1,7 +1,6 @@
 #pragma once
 
 #include <cpdoccore/CPOptional.h>
-#include "office_elements.h"
 #include "office_elements_create.h"
 
 namespace cpdoccore {

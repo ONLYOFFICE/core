@@ -9,7 +9,7 @@
 #include <boost/foreach.hpp>
 #include <iostream>
 
-#include <cpdoccore/formulasconvert.h>
+#include "../../../ASCOfficeOdfFile/formulasconvert/include/cpdoccore/formulasconvert.h"
 
 namespace cpdoccore {
 namespace odf {

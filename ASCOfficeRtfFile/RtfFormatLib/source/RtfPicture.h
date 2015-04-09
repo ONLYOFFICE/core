@@ -88,15 +88,15 @@ public:
 	static DataType GetPictureType( CString sFilename )
 	{
 		BYTE	pBuffer[ 16 ];
-		DWORD	dwBytesRead;
+		DWORD	dwBytesRead = 0;
 		HANDLE	hFile;
 
-		hFile = ::CreateFile(sFilename, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0);
-		if (INVALID_HANDLE_VALUE == hFile) 
-			return dt_none;
+		CFile file;
+		if (file.OpenFile(sFilename) != S_OK) return dt_none;
 
-		::ReadFile(hFile, pBuffer, 16, &dwBytesRead, NULL);
-		::CloseHandle(hFile); 
+		file.ReadFile(pBuffer, 16);
+		dwBytesRead = file.GetPosition();
+		file.CloseFile();
 
 		//jpeg	
 		// Hex: FF D8 FF

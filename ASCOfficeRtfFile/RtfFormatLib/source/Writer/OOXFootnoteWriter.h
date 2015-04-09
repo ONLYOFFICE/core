@@ -38,25 +38,20 @@ public:
 	}
 	bool Save( CString sFolder )
 	{
-		if( false == m_sFootnotes.IsEmpty() )
-		{
-			HANDLE hFile = ::CreateFile(sFolder + _T("\\footnotes.xml"), GENERIC_WRITE,0,0,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0);
-			//ATLASSERT( INVALID_HANDLE_VALUE != hFile );
+		if(  m_sFootnotes.IsEmpty() ) return false;
 
-			if( INVALID_HANDLE_VALUE != hFile )
-			{
-				m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes"), _T("footnotes.xml") );
-				m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"), _T("/word/footnotes.xml") );
+		CFile file;
+		if (file.CreateFileW(sFolder + FILE_SEPARATOR_STR + _T("footnotes.xml"))) return false;
+		
+		m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes"), _T("footnotes.xml") );
+		m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"), _T("/word/footnotes.xml") );
 
-				 DWORD dwBytesWritten;
-				 CString sXml = CreateXml();
-				 CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
-				 ::WriteFile(hFile, sXmlUTF, sXmlUTF.GetLength(), &dwBytesWritten, NULL);
-				 CloseHandle( hFile );
-				 return true;
-			}
-		}
-		return false;
+		 CString sXml = CreateXml();
+		 CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
+		
+		 file.WriteFile(sXmlUTF.GetBuffer(), sXmlUTF.GetLength());
+		 file.CloseFile();
+		 return true;
 	}
 private: 
 	RtfDocument& m_oDocument;
@@ -110,24 +105,19 @@ public:
 	}
 	bool Save( CString sFolder )
 	{
-		if( false == m_sEndnotes.IsEmpty() )
-		{
-			HANDLE hFile = ::CreateFile(sFolder + _T("\\endnotes.xml"), GENERIC_WRITE,0,0,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0);
-			//ATLASSERT( INVALID_HANDLE_VALUE != hFile );
+		if( m_sEndnotes.IsEmpty() ) return false;
 
-			if( INVALID_HANDLE_VALUE != hFile )
-			{
-				m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes"), _T("endnotes.xml") );
-				m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml"), _T("/word/endnotes.xml") );
+		CFile file;
+		if (file.CreateFileW(sFolder + FILE_SEPARATOR_STR + _T("endnotes.xml"))) return false;
 
-				 DWORD dwBytesWritten;
-				 CStringA sXml = CreateXml();
-				 ::WriteFile(hFile,sXml ,sXml.GetLength(), &dwBytesWritten, NULL);
-				 CloseHandle(hFile);
-				 return true;
-			}
-		}
-		return false;
+		m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes"), _T("endnotes.xml") );
+		m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml"), _T("/word/endnotes.xml") );
+
+		CStringA sXml = CreateXml();
+
+		file.WriteFile(sXml.GetBuffer(), sXml.GetLength());
+		file.CloseFile();
+		return true;
 	}
 private: 
 	RtfDocument& m_oDocument;

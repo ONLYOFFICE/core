@@ -266,161 +266,121 @@ public:
 	{
 		return (int)(pt * 20);
 	}
-		static float Twip2pt(int pt)
-		{
-			return (float)(pt / 20.0);
-		}
-		static int pt2HalfPt(float pt)
-		{
-			return (int)(pt * 2);
-		}
-		static int Twips2Emu(int pt)
-		{
-			return (int)(pt * 635);
-		}
-		static int Emu2Twips(int pt)
-		{
-			return (int)(pt / 635);
-		}
-		static float Emu2Pt(int emu)
-		{
-			return (float)(1.0 * emu / (635 * 20.0));
-		}
-		static void WriteDataToFileBinary(CString& sFilename, byte* pbData, int nLength)
-		{
-			if( NULL == pbData )
-				return;
+	static float Twip2pt(int pt)
+	{
+		return (float)(pt / 20.0);
+	}
+	static int pt2HalfPt(float pt)
+	{
+		return (int)(pt * 2);
+	}
+	static int Twips2Emu(int pt)
+	{
+		return (int)(pt * 635);
+	}
+	static int Emu2Twips(int pt)
+	{
+		return (int)(pt / 635);
+	}
+	static float Emu2Pt(int emu)
+	{
+		return (float)(1.0 * emu / (635 * 20.0));
+	}
+	static void WriteDataToFileBinary(CString& sFilename, byte* pbData, int nLength)
+	{
+		if( NULL == pbData )
+			return;
 
-			CFile file;
-			if (file.CreateFileW(sFilename) != S_OK) return;
+		CFile file;
+		if (file.CreateFileW(sFilename) != S_OK) return;
 
-			DWORD dwBytesWritten;
-			file.WriteFile(pbData ,nLength);	
-			file.CloseFile();
-		}
-		static void WriteDataToFile(CString& sFilename, CString& sData)
-		{
-			CFile file;
+		DWORD dwBytesWritten;
+		file.WriteFile(pbData ,nLength);	
+		file.CloseFile();
+	}
+	static void WriteDataToFile(CString& sFilename, CString& sData)
+	{
+		CFile file;
 
-			if (file.CreateFileW(sFilename) != S_OK) return;
+		if (file.CreateFileW(sFilename) != S_OK) return;
 
-			TCHAR * buf  = sData.GetBuffer();
-			int nLengthText = sData.GetLength();
-			int nLengthData = nLengthText/2;
-			BYTE * buf2 = new BYTE[ nLengthData];
-			BYTE nByte=0;
-			for( int i=0; i < nLengthData ; i++ )
-			{
-				nByte = ToByte( buf[2 * i] ) << 4;
-				nByte |= ToByte( buf[2 * i + 1] );
-				buf2[i] = nByte;
-			}
-			file.WriteFile(buf2 ,nLengthData);	
-			sData.ReleaseBuffer();
-			delete[] buf2;
-			file.CloseFile();
+		TCHAR * buf  = sData.GetBuffer();
+		int nLengthText = sData.GetLength();
+		int nLengthData = nLengthText/2;
+		BYTE * buf2 = new BYTE[ nLengthData];
+		BYTE nByte=0;
+		for( int i=0; i < nLengthData ; i++ )
+		{
+			nByte = ToByte( buf[2 * i] ) << 4;
+			nByte |= ToByte( buf[2 * i + 1] );
+			buf2[i] = nByte;
+		}
+		file.WriteFile(buf2 ,nLengthData);	
+		sData.ReleaseBuffer();
+		delete[] buf2;
+		file.CloseFile();
 
-		}
-		static void WriteDataToBinary( CString sData, BYTE** ppData, long& nSize)
+	}
+	static void WriteDataToBinary( CString sData, BYTE** ppData, long& nSize)
+	{
+		TCHAR * buf  = sData.GetBuffer();
+		int nLengthText = sData.GetLength();
+		nSize = nLengthText/2;
+		BYTE * buf2 = new BYTE[ nSize];
+		(*ppData) = buf2;
+		BYTE nByte=0;
+		for( int i=0; i < nSize ; i++ )
 		{
-			TCHAR * buf  = sData.GetBuffer();
-			int nLengthText = sData.GetLength();
-			nSize = nLengthText/2;
-			BYTE * buf2 = new BYTE[ nSize];
-			(*ppData) = buf2;
-			BYTE nByte=0;
-			for( int i=0; i < nSize ; i++ )
-			{
-				nByte = ToByte(buf[ 2*i])<<4;
-				nByte |= ToByte(buf[ 2*i+1]);
-				buf2[i] = nByte;
-			}
-			sData.ReleaseBuffer();
+			nByte = ToByte(buf[ 2*i])<<4;
+			nByte |= ToByte(buf[ 2*i+1]);
+			buf2[i] = nByte;
 		}
-		static void ReadDataFromFile(CString sName, CString& sData)
+		sData.ReleaseBuffer();
+	}
+	static CString DecodeHex( CString sText )
+	{
+		CString sHexText;
+		for( int i = 0; i < sText.GetLength(); i++ )
 		{
-			HANDLE hFile = ::CreateFile(sName, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL, 0);
-			DWORD dwBytesRead = 0;
-			BYTE byteBuffer[ BUF_SIZE ];
-
-			::ReadFile(hFile,byteBuffer ,BUF_SIZE, &dwBytesRead, NULL);
-			while( 0 != dwBytesRead )
-			{
-				for( int i = 0; i < (int)dwBytesRead; i++ )
-				{
-					int n1 =(byteBuffer[i]&0xF0) >> 4;
-					int n2 = byteBuffer[i]&0x0F;
-					sData.AppendFormat( _T("%x"), n1);
-					sData.AppendFormat( _T("%x"), n2);
-				}
-				::ReadFile(hFile,byteBuffer ,BUF_SIZE, &dwBytesRead, NULL);
-			}
-			CloseHandle( hFile );
+			TBYTE byteChar = sText[i];
+			sHexText.AppendFormat( _T("%x"), byteChar );
 		}
-		static CString DecodeHex( CString sText )
+		return sHexText;
+	}
+	static CString EncodeHex( CString sHexText )
+	{
+		CString sText;
+		for( int i = 0; i < sHexText.GetLength() -1 ; i+=2 )
 		{
-			CString sHexText;
-			for( int i = 0; i < sText.GetLength(); i++ )
-			{
-				TBYTE byteChar = sText[i];
-				sHexText.AppendFormat( _T("%x"), byteChar );
-			}
-			return sHexText;
+			int byte1 = ToByte( sHexText[i] );
+			int byte2 = ToByte(sHexText[i + 1] );
+			int cChar = (byte1 << 4) + byte2;
+			sText.AppendFormat( _T("%c"), cChar );
 		}
-		static CString EncodeHex( CString sHexText )
-		{
-			CString sText;
-			for( int i = 0; i < sHexText.GetLength() -1 ; i+=2 )
-			{
-				int byte1 = ToByte( sHexText[i] );
-				int byte2 = ToByte(sHexText[i + 1] );
-				int cChar = (byte1 << 4) + byte2;
-				sText.AppendFormat( _T("%c"), cChar );
-			}
-			return sText;
-		}
-		static byte ToByte( TCHAR cChar )
-		{
-			return (byte)(cChar > 'F' ? cChar - 0x57 : cChar > '9' ? cChar - 0x37 : cChar - 0x30);
-		}
-		static bool IsAlpha( int nChar )
-		{
-			return ( nChar >= 'a' && nChar <= 'z' || nChar >= 'A' && nChar <= 'Z' );
-		}
-		static bool IsDigit( int nChar )
-		{
-			return nChar >= '0' && nChar <= '9';
-		}
+		return sText;
+	}
+	static byte ToByte( TCHAR cChar )
+	{
+		return (byte)(cChar > 'F' ? cChar - 0x57 : cChar > '9' ? cChar - 0x37 : cChar - 0x30);
+	}
+	static bool IsAlpha( int nChar )
+	{
+		return ( nChar >= 'a' && nChar <= 'z' || nChar >= 'A' && nChar <= 'Z' );
+	}
+	static bool IsDigit( int nChar )
+	{
+		return nChar >= '0' && nChar <= '9';
+	}
 	static CString Preserve( CString sText )
-		{
-			CString sResult = sText;
-			//обрезавем лишние пробелы
-			sResult.Trim();
-			//удаляем дублирующие пробелы
-			while( sResult.Replace( _T("  "), _T(" ") ) > 0 )
-				;
-			return sResult;
-		}
-		static int GetFolderSize( CString sFolder )
-		{
-			HANDLE Handle;
-			WIN32_FIND_DATA FindData;
-			DWORDLONG Result=0;
-
-			int nCount = 0;
-			Handle = FindFirstFile(( sFolder + _T("\\*.*") ), &FindData);
-			if (Handle == INVALID_HANDLE_VALUE)
-				return 0;
-			do
-			{
-				if(( CString( FindData.cFileName) != _T("."))&&(CString(FindData.cFileName) != _T("..")))
-					nCount++;
-			}
-			while(FindNextFile(Handle, &FindData) != 0);
-
-			FindClose(Handle);
-			return nCount;
-		}
+	{
+		CString sResult = sText;
+		//обрезавем лишние пробелы
+		sResult.Trim();
+		//удаляем дублирующие пробелы
+		while( sResult.Replace( _T("  "), _T(" ") ) > 0 )
+			;
+		return sResult;
+	}
 	static int CharsetToCodepage( int nCharset )
 	{
 		CHARSETINFO Info;
@@ -534,13 +494,18 @@ public:
 private:
 	static void DecodeFromFile( CString& sFilename, NFileWriter::CBufferedFileWriter& oFileWriter )
 	 {
-		HANDLE hFile = ::CreateFile( sFilename, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL, 0);
+		CFile file;
+
+		if (file.OpenFile(sFilename) != S_OK) return;
+
 		DWORD dwBytesRead = 0;
 		BYTE byteBuffer[ BUF_SIZE ];
 
 		char aLookup[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
 
-		::ReadFile(hFile,byteBuffer ,BUF_SIZE, &dwBytesRead, NULL);
+		file.ReadFile(byteBuffer ,BUF_SIZE);
+
+		dwBytesRead = file.GetPosition();
 		while( 0 != dwBytesRead )
 		{
 			for( int i = 0; i < (int)dwBytesRead; i++ )
@@ -551,8 +516,10 @@ private:
 				oFileWriter.Write( &byteFirst, 1 );
 				oFileWriter.Write( &byteSecond, 1 );
 			}
-			::ReadFile( hFile, byteBuffer, BUF_SIZE, &dwBytesRead, NULL );
+			dwBytesRead = file.GetPosition();
+			file.ReadFile(byteBuffer ,BUF_SIZE);
+			dwBytesRead = file.GetPosition() - dwBytesRead;
 		}
-		CloseHandle( hFile );
+		file.CloseFile();
 	 }
 };

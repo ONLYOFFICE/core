@@ -30,43 +30,26 @@ public:
 	}
 	bool Save( CString sFolder)
 	{
+		CString pathDocProps = sFolder + FILE_SEPARATOR_STR + _T("docProps");
+		FileSystem::Directory::CreateDirectoryW(pathDocProps) ;
+
 		if( false == m_sFileXml.IsEmpty() )
 		{
 			m_oWriter.m_oRels.AddRelationship( _T("http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties"), _T("docProps/core.xml") );
 			m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-package.core-properties+xml"), _T("/docProps/core.xml") );
 
-			//CreateDirectory(sFolder + _T("\\docProps"),NULL) ;
-			//HANDLE hFile = ::CreateFile(sFolder + _T("\\docProps\\core.xml"),
-			//		GENERIC_WRITE,
-			//		0,
-			//		0,
-			//		CREATE_ALWAYS,
-			//		FILE_ATTRIBUTE_NORMAL,
-			//		0);
-			////ATLASSERT( INVALID_HANDLE_VALUE != hFile );
-
-			//if( INVALID_HANDLE_VALUE != hFile )
-			//{	
-			//	 DWORD dwBytesWritten;
-			//	 CString sXml = CreateXml();
-			//	 CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
-			//	 ::WriteFile(hFile, sXmlUTF, sXmlUTF.GetLength(), &dwBytesWritten, NULL);
-			//	 CloseHandle( hFile );
-			//	 return true;
-			//}
+			CFile file;
+			if (file.CreateFileW(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"))) return false;
+	
+			 CString sXml = CreateXml();
+			 CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
+			 file.WriteFile(sXmlUTF.GetBuffer(), sXmlUTF.GetLength());
+			 file.CloseFile();
+			 return true;
 		}
 		else
 		{
-			//FileSystem::Directory::CreateDirectory(sFolder + _T("\\docProps"), NULL) ;
-			//if( true == RtfUtility:: SaveResourceToFile( IDR_CORE, L"XML", sFolder + _T("\\docProps\\core.xml") ) )
-			//{
-			//	m_oWriter.m_oRels.AddRelationship( _T("http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties"), _T("docProps/core.xml") );
-			//	m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-package.core-properties+xml"), _T("/docProps/core.xml") );
-			//}
-			//else
-			//{
-			//	RemoveDirectory( sFolder + _T("\\docProps") );
-			//}
+			//todooo - default core !!!
 		}
 		return false;
 	}

@@ -762,20 +762,27 @@ CString RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderParame
 			sRootName = _T("w:ftr");
 		sContent.AppendFormat( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n") );
 		sContent.AppendFormat( _T("<%ls xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\">"), sRootName );
+		
 		RenderParameter oNewParameter = oRenderParameter;
 		OOXRelsWriterPtr oNewRelsWr = OOXRelsWriterPtr( new OOXRelsWriter( sFilename, *poRtfDocument ) );
 		poOOXWriter->m_oCustomRelsWriter.push_back( oNewRelsWr );
 		oNewParameter.poRels = oNewRelsWr.get();
+		
 		sContent.Append( oTarget->RenderToOOX(oNewParameter) );
 		sContent.AppendFormat( _T("</%ls>"), sRootName );
 		CStringA sContentUTF = Convert::UnicodeToUtf8( sContent );
 
 		
-		CString sFilePath = poOOXWriter->m_sTargetFolder + _T("\\") +poOOXWriter->m_sDocumentFolder+ _T("\\")+sFilename;
+		CString sFilePath = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + poOOXWriter->m_sDocumentFolder+ FILE_SEPARATOR_STR + sFilename;
+		
 		DWORD dwBytesWritten = 0;
-		HANDLE hFile = ::CreateFile(sFilePath,GENERIC_WRITE,0,0,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0);
-		::WriteFile(hFile, sContentUTF, sContentUTF.GetLength(), &dwBytesWritten, NULL);
-		CloseHandle( hFile );
+		CFile file;
+		
+		if (file.CreateFileW(sFilePath) == S_OK)
+		{
+			file.WriteFile(sContentUTF.GetBuffer(), sContentUTF.GetLength());
+			file.CloseFile();
+		}
 
 		CString sContentTarget = _T("/") + poOOXWriter->m_sDocumentFolder + _T("/") +  sFilename;
 		CString srID;

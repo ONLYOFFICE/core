@@ -1,8 +1,8 @@
 #pragma once
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <ctype.h>
+//#include <stdio.h>
+//#include <stdlib.h>
+//#include <ctype.h>
 
 #include "RtfToken.h"
 #include "Utils.h"
@@ -36,20 +36,21 @@ public:
 	void SetSource( CString sPath  )
 	{
 		Clear();
-		HANDLE hSrc = CreateFile((LPCWSTR)sPath,               // file to open
-			GENERIC_READ,          // open for reading
-			FILE_SHARE_READ| FILE_SHARE_WRITE,       // share for reading
-			NULL,                  // default security
-			OPEN_EXISTING,         // existing file only
-			FILE_ATTRIBUTE_NORMAL, // normal file
-			NULL);                 // no attr. template
-		__int64 totalFileSize;
-		GetFileSizeEx(hSrc,(LARGE_INTEGER *)&totalFileSize);
+
+		CFile srcFile;
+		
+		if (srcFile.OpenFile(sPath) != S_OK) return;
+
+		__int64 totalFileSize = srcFile.GetFileSize();
+
 		m_nSizeAbs = (long)totalFileSize;
 		m_aBuffer = new unsigned char[m_nSizeAbs];
 		DWORD dwBytesRead = 0;
-		ReadFile(hSrc, m_aBuffer, m_nSizeAbs, &dwBytesRead, NULL);
-		RELEASEHANDLE( hSrc );
+
+		srcFile.ReadFile(m_aBuffer, m_nSizeAbs);
+
+		dwBytesRead = srcFile.GetPosition();
+		srcFile.CloseFile();
 	}
 	void getBytes( int nCount, byte** pbData )
 	{

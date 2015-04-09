@@ -25,25 +25,18 @@ public:
 	}
 	bool Save(CString sFolder)
 	{
-		HANDLE hFile = ::CreateFile(sFolder + _T("\\[Content_Types].xml"),
-				GENERIC_WRITE,
-				0,
-				0,
-				CREATE_ALWAYS,
-				FILE_ATTRIBUTE_NORMAL,
-				0);
-		//ATLASSERT( INVALID_HANDLE_VALUE != hFile );
+		CFile file;
 
-		if( INVALID_HANDLE_VALUE != hFile )
-		{
-			 DWORD dwBytesWritten;
-			 CString sXml = CreateXml();
-			 CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
-			 ::WriteFile( hFile, sXmlUTF, sXmlUTF.GetLength(), &dwBytesWritten, NULL );
-			 CloseHandle( hFile );
-			 return true;
-		}
-		return false;
+		if (file.CreateFileW(sFolder + FILE_SEPARATOR_STR + _T("[Content_Types].xml")) != S_OK) return false;
+
+		 DWORD dwBytesWritten;
+		 CString sXml = CreateXml();
+		 CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );//todooo UTF32 !!!
+		
+		 file.WriteFile( sXmlUTF.GetBuffer(), sXmlUTF.GetLength());
+		 
+		 file.CloseFile();
+		 return true;
 	}
 
 private: 

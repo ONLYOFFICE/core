@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.h"
+#include "../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.h"
 #include "SlidePersist.h"
 
 #include <zlib.h>

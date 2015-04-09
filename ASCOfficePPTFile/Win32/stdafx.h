@@ -56,5 +56,5 @@ using namespace ATL;
 #endif
 
 
-#include "../../../Common/ASCATLError.h"
+#include "../../Common/ASCATLError.h"
 

@@ -32,7 +32,9 @@ CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
 
 	//сохраняем в темповую директорию и загружаем файл как текст
 	RtfWriter * poWriter = static_cast<RtfWriter*>( oRenderParameter.poWriter );
-	//IUnknown* piTempPict = NULL;
+	IUnknown* piTempPict = NULL;
+	
+	//todooo ??? переписать
 	//if( true == LoadPicture( &piTempPict, m_sPicFilename ) )
 	//{
 	//	CString sTempFile = Utils::CreateTempFile( poWriter->m_sTempFolder );
@@ -40,11 +42,9 @@ CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
 	//	{
 	//		m_aTempFiles.push_back( sTempFile );
 	//		sResult.Append( RtfInternalEncoder::Encode( sTempFile ) );
-	//		//RtfUtility::ReadDataFromFile( sTempFile, sResult );
 	//	}
-	//	//Utils::RemoveDirOrFile( sTempFile );
 	//}
-	//RELEASEINTERFACE( piTempPict );
+	RELEASEINTERFACE( piTempPict );
 
 	sResult.Append(_T("}"));
 	return sResult;
@@ -82,9 +82,7 @@ CString RtfPicture::RenderToRtf(RenderParameter oRenderParameter)
 	}
 	sResult.Append( _T(" "));
 
-	//m_aTempFiles.push_back( m_sPicFilename );
 	sResult.Append( RtfInternalEncoder::Encode( m_sPicFilename ) );
-	//RtfUtility::ReadDataFromFile( m_sPicFilename, sResult );
 
 	sResult.Append(_T("}"));
 	return sResult;

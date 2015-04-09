@@ -1,148 +1,153 @@
 #pragma once
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <ctype.h>
+
 #include "RtfToken.h"
 #include "Utils.h"
 #include "Basic.h"
 
 class StringStream
 {
-private: LONGLONG m_nSizeAbs;//размер файла
-private: LONGLONG m_nPosAbs;//позиция в файле
+private: 
+	LONGLONG m_nSizeAbs;//размер файла
+	LONGLONG m_nPosAbs;//позиция в файле
 
-//private: CStringA m_sBuffer;
-private: unsigned char* m_aBuffer;
-public:StringStream()
-	   {
-		   m_aBuffer = NULL;
-		   Clear();
-	   }
-public:~StringStream()
-	   {
-		   Clear();
-	   }
-public: void Clear()
+	//CStringA m_sBuffer;
+	unsigned char* m_aBuffer;
+public:
+	StringStream()
+	{
+	   m_aBuffer = NULL;
+	   Clear();
+	}
+	~StringStream()
+	{
+	   Clear();
+	}
+	void Clear()
+	{
+		RELEASEARRAYOBJECTS( m_aBuffer );
+		//m_sBuffer = _T("");
+		m_nSizeAbs = 0;
+		m_nPosAbs = -1;			
+	} 
+	void SetSource( CString sPath  )
+	{
+		Clear();
+		HANDLE hSrc = CreateFile((LPCWSTR)sPath,               // file to open
+			GENERIC_READ,          // open for reading
+			FILE_SHARE_READ| FILE_SHARE_WRITE,       // share for reading
+			NULL,                  // default security
+			OPEN_EXISTING,         // existing file only
+			FILE_ATTRIBUTE_NORMAL, // normal file
+			NULL);                 // no attr. template
+		__int64 totalFileSize;
+		GetFileSizeEx(hSrc,(LARGE_INTEGER *)&totalFileSize);
+		m_nSizeAbs = (long)totalFileSize;
+		m_aBuffer = new unsigned char[m_nSizeAbs];
+		DWORD dwBytesRead = 0;
+		ReadFile(hSrc, m_aBuffer, m_nSizeAbs, &dwBytesRead, NULL);
+		RELEASEHANDLE( hSrc );
+	}
+	void getBytes( int nCount, byte** pbData )
+	{
+		if( m_nPosAbs + nCount < m_nSizeAbs )
 		{
-			RELEASEARRAYOBJECTS( m_aBuffer );
-			//m_sBuffer = _T("");
-			m_nSizeAbs = 0;
-			m_nPosAbs = -1;			
+			(*pbData) = new byte[nCount];
+			memcpy( (*pbData), (m_aBuffer + m_nPosAbs + 1), nCount);
+			m_nPosAbs += nCount;
 		}
-public: void SetSource( CString sPath  )
+	}
+	int getc()
+	{
+		int nResult = EOF;
+		if( m_nPosAbs + 1 < m_nSizeAbs )
 		{
-			Clear();
-			HANDLE hSrc = CreateFile((LPCWSTR)sPath,               // file to open
-				GENERIC_READ,          // open for reading
-				FILE_SHARE_READ| FILE_SHARE_WRITE,       // share for reading
-				NULL,                  // default security
-				OPEN_EXISTING,         // existing file only
-				FILE_ATTRIBUTE_NORMAL, // normal file
-				NULL);                 // no attr. template
-			__int64 totalFileSize;
-			GetFileSizeEx(hSrc,(LARGE_INTEGER *)&totalFileSize);
-			m_nSizeAbs = (long)totalFileSize;
-			m_aBuffer = new unsigned char[m_nSizeAbs];
-			DWORD dwBytesRead = 0;
-			ReadFile(hSrc, m_aBuffer, m_nSizeAbs, &dwBytesRead, NULL);
-			RELEASEHANDLE( hSrc );
+			m_nPosAbs++;
+			nResult = m_aBuffer[ m_nPosAbs ];
 		}
-public: void getBytes( int nCount, byte** pbData )
-		{
-			if( m_nPosAbs + nCount < m_nSizeAbs )
-			{
-				(*pbData) = new byte[nCount];
-				memcpy( (*pbData), (m_aBuffer + m_nPosAbs + 1), nCount);
-				m_nPosAbs += nCount;
-			}
-		}
-public: int getc()
-		{
-			int nResult = EOF;
-			if( m_nPosAbs + 1 < m_nSizeAbs )
-			{
-				m_nPosAbs++;
-				nResult = m_aBuffer[ m_nPosAbs ];
-			}
-			return nResult;
-		}
-public: void ungetc()
-		{
-			//в проекте используется ungetcб только после getc
-			//поэтому проблем с выходом в 0 нет
-			m_nPosAbs--;
-		}
-public: void putString( CStringA sText )
-		{
-			int nExtBufSize = sText.GetLength();
-			//копируем буфер в темповый буфер
-			unsigned char* aTempBuf = new unsigned char[ m_nSizeAbs ];
-			memcpy( aTempBuf, m_aBuffer, m_nSizeAbs );
-			//создаем новый буфер большего размера
-			RELEASEARRAYOBJECTS( m_aBuffer );
-			m_aBuffer = new unsigned char[ m_nSizeAbs + nExtBufSize ];
-			//копируем все в новый буфер
-			unsigned long nDelimiter = m_nPosAbs + 1;
-			memcpy( m_aBuffer, aTempBuf, nDelimiter );
-			char* bf = sText.GetBuffer();
-			memcpy( m_aBuffer + nDelimiter , bf, nExtBufSize );
-			sText.ReleaseBuffer();
-			memcpy( m_aBuffer + nDelimiter + nExtBufSize , aTempBuf + nDelimiter , m_nSizeAbs - nDelimiter );
-			RELEASEARRAYOBJECTS( aTempBuf );
+		return nResult;
+	}
+	void ungetc()
+	{
+		//в проекте используется ungetcб только после getc
+		//поэтому проблем с выходом в 0 нет
+		m_nPosAbs--;
+	}
+	void putString( CStringA sText )
+	{
+		int nExtBufSize = sText.GetLength();
+		//копируем буфер в темповый буфер
+		unsigned char* aTempBuf = new unsigned char[ m_nSizeAbs ];
+		memcpy( aTempBuf, m_aBuffer, m_nSizeAbs );
+		//создаем новый буфер большего размера
+		RELEASEARRAYOBJECTS( m_aBuffer );
+		m_aBuffer = new unsigned char[ m_nSizeAbs + nExtBufSize ];
+		//копируем все в новый буфер
+		unsigned long nDelimiter = m_nPosAbs + 1;
+		memcpy( m_aBuffer, aTempBuf, nDelimiter );
+		char* bf = sText.GetBuffer();
+		memcpy( m_aBuffer + nDelimiter , bf, nExtBufSize );
+		sText.ReleaseBuffer();
+		memcpy( m_aBuffer + nDelimiter + nExtBufSize , aTempBuf + nDelimiter , m_nSizeAbs - nDelimiter );
+		RELEASEARRAYOBJECTS( aTempBuf );
 
-			m_nSizeAbs += nExtBufSize;
-		}
-public: LONGLONG getCurPosition()
-		{
-			return m_nPosAbs;
-		}
-public: LONGLONG getSize()
-		{
-			return m_nSizeAbs;
-		}
+		m_nSizeAbs += nExtBufSize;
+	}
+	LONGLONG getCurPosition()
+	{
+		return m_nPosAbs;
+	}
+	LONGLONG getSize()
+	{
+		return m_nSizeAbs;
+	}
 };
 
 class RtfLex
 {
-
-private: StringStream m_oStream;
-private: RtfToken m_oCurToken;
-public: NFileWriter::CBufferedFileWriter* m_oFileWriter;
-public: char* m_caReadBuffer;
-public: int m_nReadBufSize;
 private: 
-public: RtfLex()
+	StringStream	m_oStream;
+	RtfToken		m_oCurToken;
+public: 
+	NFileWriter::CBufferedFileWriter* m_oFileWriter;
+	char* m_caReadBuffer;
+	int m_nReadBufSize;
+ 
+	RtfLex()
 	{
 		m_oFileWriter = NULL;
 		m_nReadBufSize = 1024 * 1024 * 5; // 5мб
 		m_caReadBuffer = (char*)::HeapAlloc(GetProcessHeap(), 0, m_nReadBufSize);
 	}
-public: ~RtfLex()
+	~RtfLex()
 	{
 		RELEASEHEAP( m_caReadBuffer );
 		RELEASEOBJECT( m_oFileWriter );
 	}
-public: double GetProgress()
-		{
-			return 1.0 * m_oStream.getCurPosition() / m_oStream.getSize();
-		}
-public: void SetSource( CString sPath )
-		{
-			m_oStream.SetSource( sPath);
-		}
-public: void CloseSource()
-		{
-			m_oStream.Clear();
-		}
-public: RtfToken NextCurToken()
-		{
-			return m_oCurToken;
-		}
-public: void ReadBytes( int nCount, byte** pbData )
-		{
-			m_oStream.getBytes(nCount, pbData);
-		}
-public: RtfToken NextToken()
+	double GetProgress()
+	{
+		return 1.0 * m_oStream.getCurPosition() / m_oStream.getSize();
+	}
+	void SetSource( CString sPath )
+	{
+		m_oStream.SetSource( sPath);
+	}
+	void CloseSource()
+	{
+		m_oStream.Clear();
+	}
+	RtfToken NextCurToken()
+	{
+		return m_oCurToken;
+	}
+	void ReadBytes( int nCount, byte** pbData )
+	{
+		m_oStream.getBytes(nCount, pbData);
+	}
+	RtfToken NextToken()
 	{
 		int c;
 
@@ -183,23 +188,27 @@ public: RtfToken NextToken()
 
 		return m_oCurToken;
 	}
-
-private: void parseKeyword(RtfToken& token)
-    {
-        CStringA palabraClave;
+	void putString( CStringA sText )
+	{
+		m_oStream.putString( sText );
+	}
+private: 
+	void parseKeyword(RtfToken& token)
+	{
+		CStringA palabraClave;
 		palabraClave.GetBuffer( 20 );
 		palabraClave.ReleaseBuffer();
 
-        CString parametroStr ;
-        int parametroInt = 0;
+		CString parametroStr ;
+		int parametroInt = 0;
 
-        int c = m_oStream.getc();
+		int c = m_oStream.getc();
 		m_oStream.ungetc();
-        bool negativo = false;
+		bool negativo = false;
 		
 		if ( !RtfUtility::IsAlpha( c ) )
-        {
-            c = m_oStream.getc();
+		{
+			c = m_oStream.getc();
 
 			if(c == '\\' || c == '{' || c == '}') 
 			{
@@ -229,25 +238,25 @@ private: void parseKeyword(RtfToken& token)
 				token.Type = RtfToken::Control;
 				token.Key = Convert::ToString(c);
 
-                if (c == '\'')
-                {
-                    token.HasParameter = true;
+				if (c == '\'')
+				{
+					token.HasParameter = true;
 					int nCharCode = RtfUtility::ToByte( m_oStream.getc() ) << 4;
 					nCharCode |= RtfUtility::ToByte( m_oStream.getc() );
 					if( nCharCode >= 0 && nCharCode <=30 )//искуственно сидвигаем на 1 чтобы не потерять \'00 ( символов от 0 до 0x20 служебные)
 						nCharCode++;
 					token.Parameter = nCharCode;
-                }
+				}
 				else if( c == '|' || c == '~' || c == '-' || c == '_' || c == ':' )
 				{
 					token.Type = RtfToken::Keyword;
 					token.Key.Empty();
 					token.Key.AppendChar( c );
 				}
-		    }
+			}
 			return;
-        }
-        c = m_oStream.getc();
+		}
+		c = m_oStream.getc();
 		m_oStream.ungetc();
 
 		while (RtfUtility::IsAlpha(c))
@@ -299,17 +308,17 @@ private: void parseKeyword(RtfToken& token)
 		{
 			m_oStream.getc();
 		}
-    }
-private: void parseText(int car, RtfToken& token)
-    {
+	}
+	void parseText(int car, RtfToken& token)
+	{
 		int nTempBufPos = 0; //1 мб
 
-        int c = car;
+		int c = car;
 		//while ((isalnum(c) || c == '"'|| c == ':'|| c == '/' || c == '.') &&c != '\\' && c != '}' && c != '{' && c != Eof) // иправиЃEЃEрвьD усЃEвиЃE
 		//while (c != '\\' && c != '}' && c != '{' && c != Eof) 
 		//while (c != ';' &&c ! = '\\' && c != '}' && c != '{' && c != EOF) 
 		while (c != '\\' && c != '}' && c != '{' && c != EOF) 
-        {
+		{
 			if( nTempBufPos >= m_nReadBufSize )
 			{
 				m_caReadBuffer[nTempBufPos++] = '\0';
@@ -319,39 +328,39 @@ private: void parseText(int car, RtfToken& token)
 			m_caReadBuffer[nTempBufPos++] = c;
 
 			c = m_oStream.getc();
-            //Se ignoran los retornos de carro, tabuladores y caracteres nulos
-            while (c == '\r' || c == '\n')
+			//Se ignoran los retornos de carro, tabuladores y caracteres nulos
+			while (c == '\r' || c == '\n')
 				c = m_oStream.getc();	
-        }
+		}
 		m_oStream.ungetc();
 		if( nTempBufPos > 0 )
 		{
 			m_caReadBuffer[nTempBufPos++] = '\0';
 			token.Key.Append( m_caReadBuffer );
 		}
-    }
-private: bool GetNextChar( int& nChar )
-		 {
-			 int c = m_oStream.getc();
-			 m_oStream.ungetc();
-			 //Se ignoran los retornos de carro, tabuladores y caracteres nulos
-			 while (c == '\r' || c == '\n')
-			 {
-				 m_oStream.getc();
-				 c = m_oStream.getc();
-				 m_oStream.ungetc();
-			 }
-			 if( c != '\\' && c != '}' && c != '{' && c != EOF )
-			 {
-				 m_oStream.getc();
-				 nChar = c;
-				 return true;
-			 }
-			 else
-				 return false;
-		 }
-private: void parseTextFile(int car, RtfToken& token)
-    {
+	}
+	bool GetNextChar( int& nChar )
+	{
+		int c = m_oStream.getc();
+		m_oStream.ungetc();
+		//Se ignoran los retornos de carro, tabuladores y caracteres nulos
+		while (c == '\r' || c == '\n')
+		{
+		 m_oStream.getc();
+		 c = m_oStream.getc();
+		 m_oStream.ungetc();
+		}
+		if( c != '\\' && c != '}' && c != '{' && c != EOF )
+		{
+		 m_oStream.getc();
+		 nChar = c;
+		 return true;
+		}
+		else
+		 return false;
+	}
+	void parseTextFile(int car, RtfToken& token)
+	{
 		if( NULL != m_oFileWriter )
 		{
 			try
@@ -381,9 +390,6 @@ private: void parseTextFile(int car, RtfToken& token)
 			{
 			}
 		}
-    }
-public: void putString( CStringA sText )
-		{
-			m_oStream.putString( sText );
-		}
+}
+
 };

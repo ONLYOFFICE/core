@@ -21,27 +21,21 @@ public:
 	{
 		if( false == m_sFileXml.IsEmpty() )
 		{
-			HANDLE hFile = ::CreateFile(sFolder + _T("\\word\\numbering.xml"),
-					GENERIC_WRITE,
-					0,
-					0,
-					CREATE_ALWAYS,
-					FILE_ATTRIBUTE_NORMAL,
-					0);
-			//ATLASSERT( INVALID_HANDLE_VALUE != hFile );
+			CFile file;
 
-			if( INVALID_HANDLE_VALUE != hFile )
-			{	
-				m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering"), _T("numbering.xml") );
-				m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"), _T("/word/numbering.xml") );
+			if (file.CreateFileW(sFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("numbering.xml")) != S_OK) return false;
+				
+			m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering"), _T("numbering.xml") );
+			m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.numbering+xml"), _T("/word/numbering.xml") );
 
-				 DWORD dwBytesWritten;
-				 CString sXml = CreateXml();
-				 CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
-				 ::WriteFile(hFile, sXmlUTF, sXmlUTF.GetLength(), &dwBytesWritten, NULL);
-				 CloseHandle( hFile );
-				 return true;
-			}
+			 DWORD dwBytesWritten;
+			 CString sXml = CreateXml();
+			 CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
+			
+			 file.WriteFile(sXmlUTF.GetBuffer(), sXmlUTF.GetLength());
+			 file.CloseFile();
+			 return true;
+			
 		}
 		return false;
 	}

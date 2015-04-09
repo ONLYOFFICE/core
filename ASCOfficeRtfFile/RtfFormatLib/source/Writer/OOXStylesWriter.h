@@ -21,38 +21,28 @@ public:
 	}
 	bool Save( CString sFolder )
 	{
-		//if( false == m_sFileXml.IsEmpty() )
-		//{
-		//	HANDLE hFile = ::CreateFile(sFolder + _T("\\word\\styles.xml"),
-		//			GENERIC_WRITE,
-		//			0,
-		//			0,
-		//			CREATE_ALWAYS,
-		//			FILE_ATTRIBUTE_NORMAL,
-		//			0);
-		//	//ATLASSERT( INVALID_HANDLE_VALUE != hFile );
+		CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
+		
+		if( false == m_sFileXml.IsEmpty() ) 
+		{		
+			CFile file;
+			if (file.CreateFileW(pathWord + FILE_SEPARATOR_STR + _T("styles.xml"))) return false;
 
-		//	if( INVALID_HANDLE_VALUE != hFile )
-		//	{	
-		//		m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles"), _T("styles.xml") );
-		//		m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"), _T("/word/styles.xml") );
+			m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles"), _T("styles.xml") );
+			m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"), _T("/word/styles.xml") );
 
-		//		 DWORD dwBytesWritten;
-		//		 CString sXml = CreateXml();
-		//		 CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
-		//		 ::WriteFile(hFile, sXmlUTF, sXmlUTF.GetLength(), &dwBytesWritten, NULL);
-		//		 CloseHandle( hFile );
-		//		 return true;
-		//	}
-		//}
-		//else
-		//{
-		//	if( true == RtfUtility:: SaveResourceToFile( IDR_STYLES, L"XML", sFolder +  _T("\\word\\styles.xml") ) )
-		//	{
-		//		m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles"), _T("styles.xml") );
-		//		m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"), _T("/word/styles.xml") );
-		//	}
-		//}
+			DWORD dwBytesWritten;
+			CString sXml = CreateXml();
+			CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
+
+			file.WriteFile(sXmlUTF.GetBuffer(), sXmlUTF.GetLength());
+			file.CloseFile();
+			return true;
+		}
+		else
+		{
+			//todooo default style !!
+		}
 		return false;
 	}
 private: 

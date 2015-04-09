@@ -49,24 +49,19 @@ public:
 
 	bool Save( CString sFolder )
 	{
-		if( m_aTargets.size() > 0 )
-		{
-			CreateDirectory(sFolder + _T("\\_rels"),NULL) ;
+		if( m_aTargets.size() < 1 )return false;
+		
+		CString pathRels = sFolder + FILE_SEPARATOR_STR + _T("_rels");
+		FileSystem::Directory::CreateDirectoryW(pathRels) ;
 
-			HANDLE hFile = ::CreateFile(sFolder + _T("\\_rels\\") + m_sFileName +  _T(".rels"), GENERIC_WRITE,0,0,CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL,0);
-			//ATLASSERT( INVALID_HANDLE_VALUE != hFile );
+		CFile file;
+		if (file.CreateFileW(pathRels + FILE_SEPARATOR_STR + _T(".rels"))) return false;
 
-			if( INVALID_HANDLE_VALUE != hFile )
-			{
-				 DWORD dwBytesWritten;
-				 CString sXml = CreateXml();
-				 CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
-				 ::WriteFile(hFile, sXmlUTF, sXmlUTF.GetLength(), &dwBytesWritten, NULL);
-				 CloseHandle( hFile );
-				 return true;
-			}
-		}
-		return false;
+		DWORD dwBytesWritten;
+		CString sXml = CreateXml();
+		CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
+		file.WriteFile(sXmlUTF.GetBuffer(), sXmlUTF.GetLength());
+		file.CloseFile();
 	}
 };
 typedef boost::shared_ptr<OOXRelsWriter> OOXRelsWriterPtr;

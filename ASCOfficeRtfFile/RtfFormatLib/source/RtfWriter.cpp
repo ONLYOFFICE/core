@@ -110,26 +110,6 @@ bool RtfWriter::SaveByItem()
 		}
 		//удаляем секцию
 		m_oDocument.RemoveItem( 0 );
-
-		////копируем параграфы из темпового файла
-		//HANDLE hFile = ::CreateFile(m_sTempFile, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL, 0);
-		//DWORD dwBytesRead = 1;
-		//BYTE byteBuffer[ 4096 ];
-
-		//while( 0 != dwBytesRead )
-		//{
-		//	::ReadFile(hFile,byteBuffer ,4096, &dwBytesRead, NULL);
-		//	m_oFileWriter->Write( (BYTE*)&byteBuffer, dwBytesRead );
-		//}
-		//CloseHandle( hFile );
-		////ставим конец секции
-		//CStringA sRtfExt = "\\sect";
-		//m_oFileWriter->Write( (BYTE*)(LPCSTR)sRtfExt, sRtfExt.GetLength() );
-
-		////очищаем темповый файл
-		//BSTR bstrFileName = m_sTempFile.AllocSysString();
-		//m_oTempFileWriter = new NFileWriter::CBufferedFileWriter( bstrFileName );
-		//SysFreeString( bstrFileName );
 	}
 	//пишем параграф
 	if( m_oDocument.GetCount() > 0 && m_oDocument[0]->GetCount() > 0 )
@@ -183,23 +163,6 @@ bool RtfWriter::SaveByItemEnd()
 		m_oDocument.RemoveItem( 0 );
 	}
 
-	////копируем параграфы из темпового файла
-	//HANDLE hFile = ::CreateFile(m_sTempFile, GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING,FILE_ATTRIBUTE_NORMAL, 0);
-	//DWORD dwBytesRead = 1;
-	//BYTE byteBuffer[ 4096 ];
-
-	//while( 0 != dwBytesRead )
-	//{
-	//	::ReadFile(hFile,byteBuffer ,4096, &dwBytesRead, NULL);
-	//	m_oFileWriter->Write( (BYTE*)&byteBuffer, dwBytesRead );
-	//}
-	//CloseHandle( hFile );
-
-	////завершаем документ
-	//sRtf = CreateRtfEnd();
-	//RtfInternalEncoder::Decode( sRtf, *m_oFileWriter );
-	////m_oFileWriter->Write( (BYTE*)(LPCSTR)sRtf, sRtf.GetLength() );
-	//RELEASEOBJECT( m_oFileWriter );
 	//формируем выходной файл
 	try
 	{
@@ -215,32 +178,38 @@ bool RtfWriter::SaveByItemEnd()
 		for( int i = 0 ; i < (int)m_aTempFiles.size() && i < (int)m_aTempFilesSectPr.size(); i++ )
 		{
 			//свойства секции
-			HANDLE hFile = ::CreateFile( m_aTempFilesSectPr[i], GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0 );
-			if( INVALID_HANDLE_VALUE != hFile )
+
+			CFile file;
+			if (file.OpenFile(m_aTempFilesSectPr[i]) == S_OK)
 			{
 				DWORD dwBytesRead = 1;
 				BYTE byteBuffer[ 4096 ];
 
 				while( 0 != dwBytesRead )
 				{
-					::ReadFile( hFile, byteBuffer, 4096, &dwBytesRead, NULL);
+					dwBytesRead  = file.GetPosition();
+					file.ReadFile( byteBuffer, 4096);
+					dwBytesRead  = file.GetPosition() - dwBytesRead;
+
 					oTargetFileWriter.Write( byteBuffer,  dwBytesRead );
 				}
-				CloseHandle( hFile );
+				file.CloseFile();
 			}
 			//параграфы
-			hFile = ::CreateFile( m_aTempFiles[i], GENERIC_READ, FILE_SHARE_READ, 0, OPEN_EXISTING, FILE_ATTRIBUTE_NORMAL, 0 );
-			if( INVALID_HANDLE_VALUE != hFile )
+			if (file.OpenFile(m_aTempFiles[i]) == S_OK)
 			{
 				DWORD dwBytesRead = 1;
 				BYTE byteBuffer[ 4096 ];
 
 				while( 0 != dwBytesRead )
 				{
-					::ReadFile( hFile, byteBuffer, 4096, &dwBytesRead, NULL);
+					dwBytesRead  = file.GetPosition();
+					file.ReadFile(byteBuffer, 4096);
+					dwBytesRead  = file.GetPosition() - dwBytesRead;
+					
 					oTargetFileWriter.Write( byteBuffer,  dwBytesRead );
 				}
-				CloseHandle( hFile );
+				file.CloseFile();
 			}
 		}
 

@@ -8,15 +8,15 @@ private:
 	OOXWriter& m_oWriter;
 
 	CString CreateXml()
-		{
-			CString sResult;
-			sResult.Append( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>") );
-			sResult.Append( _T("\n") );
-			sResult.Append( _T("<w:settings xmlns:w = \"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:m = \"http://schemas.openxmlformats.org/officeDocument/2006/math\">") );
-			sResult.Append( m_sFileXml );
-			sResult.Append( _T("</w:settings>") );
-			return sResult;
-		}
+	{
+		CString sResult;
+		sResult.Append( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>") );
+		sResult.Append( _T("\n") );
+		sResult.Append( _T("<w:settings xmlns:w = \"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:m = \"http://schemas.openxmlformats.org/officeDocument/2006/math\">") );
+		sResult.Append( m_sFileXml );
+		sResult.Append( _T("</w:settings>") );
+		return sResult;
+	}
 public: 
 	OOXRelsWriterPtr m_oRelsWriter;
 
@@ -31,10 +31,14 @@ public:
 	}
 	bool Save( CString sFolder )
 	{
+		CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
+
 		if( false == m_sFileXml.IsEmpty() )
 		{
 			//генерируем свою xml
 			CString sXml = CreateXml();
+
+			//todoooo ѕ≈–≈ѕ»—ј“№
 
 			////берем xml из шаблона
 			//CString sFilename = sFolder +  _T("\\word\\settings.xml");

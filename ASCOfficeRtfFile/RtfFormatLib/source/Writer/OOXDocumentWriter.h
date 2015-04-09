@@ -27,10 +27,12 @@ public:
 
 	bool SaveByItemStart( CString sFolder )
 	{
-		CreateDirectory( sFolder + _T("\\word"), NULL);
+		CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
+		FileSystem::Directory::CreateDirectoryW(pathWord) ;
+	
 		try
 		{
-			CString sFilename = sFolder + _T("\\word\\document.xml");
+			CString sFilename = pathWord + FILE_SEPARATOR_STR + _T("document.xml");
 			m_oFileWriter = new NFileWriter::CBufferedFileWriter( sFilename );
 		}
 		catch(...)

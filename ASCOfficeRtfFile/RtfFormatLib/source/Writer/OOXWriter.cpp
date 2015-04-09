@@ -59,37 +59,37 @@ bool OOXWriter::Save()
 }
 bool OOXWriter::SaveByItemStart()
 {
-	//((OOXFootnoteWriter*)m_poFootnoteWriter)->Save(m_sTargetFolder + _T("\\") + m_sDocumentFolder);
-	//((OOXEndnoteWriter*)m_poEndnoteWriter)->Save(m_sTargetFolder + _T("\\") + m_sDocumentFolder);
+	((OOXFootnoteWriter*)m_poFootnoteWriter)->Save(m_sTargetFolder + FILE_SEPARATOR_STR + m_sDocumentFolder);
+	((OOXEndnoteWriter*)m_poEndnoteWriter)->Save(m_sTargetFolder + FILE_SEPARATOR_STR + m_sDocumentFolder);
 
-	//if( m_oFootnoteSep->GetCount() )
-	//{
-	//	oNewParam = oRenderParameter;
-	//	oNewParam.poRels = &poFootnoteWriter->m_oRelsWriter;
-	//	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-	//	poFootnoteWriter->AddFootnote( _T("separator"), -1, m_oFootnoteSep->RenderToOOX(oNewParam) );
-	//}
-	//if( m_oFootnoteCon->GetCount() )
-	//{
-	//	oNewParam = oRenderParameter;
-	//	oNewParam.poRels = &poFootnoteWriter->m_oRelsWriter;
-	//	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-	//	poFootnoteWriter->AddFootnote( _T("continuationSeparator"), 0, m_oFootnoteCon->RenderToOOX( oNewParam ) );
-	//}
-	//if( m_oEndnoteSep->GetCount() )
-	//{
-	//	oNewParam = oRenderParameter;
-	//	oNewParam.poRels = &poEndnoteWriter->m_oRelsWriter;
-	//	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-	//	poEndnoteWriter->AddEndnote( _T("separator"), -1, m_oEndnoteSep->RenderToOOX(oNewParam) );
-	//}
-	//if( m_oEndnoteCon->GetCount() )
-	//{
-	//	oNewParam = oRenderParameter;
-	//	oNewParam.poRels = &poEndnoteWriter->m_oRelsWriter;
-	//	oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-	//	poEndnoteWriter->AddEndnote( _T("continuationSeparator"), 0, m_oEndnoteSep->RenderToOOX(oNewParam) );
-	//}
+	if( m_oFootnoteSep->GetCount() )
+	{
+		oNewParam = oRenderParameter;
+		oNewParam.poRels = &poFootnoteWriter->m_oRelsWriter;
+		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
+		poFootnoteWriter->AddFootnote( _T("separator"), -1, m_oFootnoteSep->RenderToOOX(oNewParam) );
+	}
+	if( m_oFootnoteCon->GetCount() )
+	{
+		oNewParam = oRenderParameter;
+		oNewParam.poRels = &poFootnoteWriter->m_oRelsWriter;
+		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
+		poFootnoteWriter->AddFootnote( _T("continuationSeparator"), 0, m_oFootnoteCon->RenderToOOX( oNewParam ) );
+	}
+	if( m_oEndnoteSep->GetCount() )
+	{
+		oNewParam = oRenderParameter;
+		oNewParam.poRels = &poEndnoteWriter->m_oRelsWriter;
+		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
+		poEndnoteWriter->AddEndnote( _T("separator"), -1, m_oEndnoteSep->RenderToOOX(oNewParam) );
+	}
+	if( m_oEndnoteCon->GetCount() )
+	{
+		oNewParam = oRenderParameter;
+		oNewParam.poRels = &poEndnoteWriter->m_oRelsWriter;
+		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
+		poEndnoteWriter->AddEndnote( _T("continuationSeparator"), 0, m_oEndnoteSep->RenderToOOX(oNewParam) );
+	}
 
 	return ((OOXDocumentWriter*)m_poDocumentWriter)->SaveByItemStart( m_sTargetFolder );
 }
@@ -137,8 +137,8 @@ bool OOXWriter::SaveByItemEnd()
 
 	((OOXDocumentWriter*)m_poDocumentWriter)->SaveByItemEnd();
 
-	((OOXFootnoteWriter*)m_poFootnoteWriter)->Save(m_sTargetFolder + _T("\\") + m_sDocumentFolder);
-	((OOXEndnoteWriter*)m_poEndnoteWriter)->Save(m_sTargetFolder + _T("\\") + m_sDocumentFolder);
+	((OOXFootnoteWriter*)m_poFootnoteWriter)->Save(m_sTargetFolder + FILE_SEPARATOR_STR + m_sDocumentFolder);
+	((OOXEndnoteWriter*)m_poEndnoteWriter)->Save(m_sTargetFolder + FILE_SEPARATOR_STR + m_sDocumentFolder);
 	((OOXNumberingWriter*)m_poNumberingWriter)->Save(m_sTargetFolder);
 	((OOXStylesWriter*)m_poStylesWriter)->Save(m_sTargetFolder);
 	((OOXFontTableWriter*)m_poFontTableWriter)->Save(m_sTargetFolder);
@@ -149,8 +149,8 @@ bool OOXWriter::SaveByItemEnd()
 	bool nResult = true;
 	nResult &= m_oContentTypes.Save(m_sTargetFolder);
 	nResult &= m_oRels.Save(m_sTargetFolder);
-	nResult &= m_oDocRels.Save(m_sTargetFolder + _T("\\") + m_sDocumentFolder);
+	nResult &= m_oDocRels.Save(m_sTargetFolder + FILE_SEPARATOR_STR + m_sDocumentFolder);
 	for( int i = 0; i < (int)m_oCustomRelsWriter.size(); i++ )
-		m_oCustomRelsWriter[i]->Save(m_sTargetFolder + _T("\\") + m_sDocumentFolder);
+		m_oCustomRelsWriter[i]->Save(m_sTargetFolder + FILE_SEPARATOR_STR + m_sDocumentFolder);
 	return nResult;
 }

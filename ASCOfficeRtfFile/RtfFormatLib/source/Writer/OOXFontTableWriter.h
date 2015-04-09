@@ -18,37 +18,27 @@ public:
 	}
 	bool Save(  CString sFolder )
 	{
+		CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
+		FileSystem::Directory::CreateDirectoryW(pathWord) ;
+
 		if( false == m_sFileXml.IsEmpty() )
 		{
-			HANDLE hFile = ::CreateFile(sFolder +  _T("\\word\\fontTable.xml"),
-					GENERIC_WRITE,
-					0,
-					0,
-					CREATE_ALWAYS,
-					FILE_ATTRIBUTE_NORMAL,
-					0);
-			//ATLASSERT( INVALID_HANDLE_VALUE != hFile );
+			CFile file;
+			if (file.CreateFileW(pathWord + FILE_SEPARATOR_STR + _T("fontTable.xml"))) return false;
 
-			if( INVALID_HANDLE_VALUE != hFile )
-			{	
-				m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable"), _T("fontTable.xml") );
-				m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"), _T("/word/fontTable.xml") );
+			m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable"), _T("fontTable.xml") );
+			m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"), _T("/word/fontTable.xml") );
 
-				 DWORD dwBytesWritten;
-				 CString sXml = CreateXml();
-				 CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
-				 ::WriteFile(hFile, sXmlUTF, sXmlUTF.GetLength(), &dwBytesWritten, NULL);
-				 CloseHandle( hFile );
-				 return true;
-			}
+			CString sXml = CreateXml();
+			CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
+			file.WriteFile(sXmlUTF.GetBuffer(), sXmlUTF.GetLength());
+			
+			file.CloseFile();
+			return true;
 		}
 		else
 		{
-			//if( true == RtfUtility:: SaveResourceToFile( IDR_FONT_TABLE, L"XML", sFolder +  _T("\\word\\fontTable.xml") ) )
-			//{
-			//	m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable"), _T("fontTable.xml") );
-			//	m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml"), _T("/word/fontTable.xml") );
-			//}
+			//todooo - default fontTable !!!
 		}
 		return false;
 	}

@@ -12,8 +12,12 @@ public:
 	}
 	bool Save( CString sFolder ) //todo доделать очистку поле ошибок
 	{
-		//CreateDirectory(sFolder + _T("\\word"), NULL);
-		//CreateDirectory(sFolder + _T("\\word\\theme"),NULL);
+		CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
+		
+		FileSystem::Directory::CreateDirectoryW(pathWord) ;
+		FileSystem::Directory::CreateDirectoryW(pathWord + FILE_SEPARATOR_STR + _T("theme")) ;
+
+		//todooo default theme !!!!!
 		//
 		//if( true == RtfUtility:: SaveResourceToFile( IDR_THEME, L"XML", sFolder + _T("\\word\\theme\\theme1.xml") ) )
 		//{

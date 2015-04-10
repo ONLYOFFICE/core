@@ -14,10 +14,10 @@
             buildForAnalyzing = "YES">
             <BuildableReference
                BuildableIdentifier = "primary"
-               BlueprintIdentifier = "17D918341AC5A0870096D788"
-               BuildableName = "libfontengine.a"
-               BlueprintName = "fontengine"
-               ReferencedContainer = "container:fontengine.xcodeproj">
+               BlueprintIdentifier = "CD8AE2B316187F770095DC1B"
+               BuildableName = "libcurl.a"
+               BlueprintName = "curl"
+               ReferencedContainer = "container:libcurl.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -42,10 +42,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "17D918341AC5A0870096D788"
-            BuildableName = "libfontengine.a"
-            BlueprintName = "fontengine"
-            ReferencedContainer = "container:fontengine.xcodeproj">
+            BlueprintIdentifier = "CD8AE2B316187F770095DC1B"
+            BuildableName = "libcurl.a"
+            BlueprintName = "curl"
+            ReferencedContainer = "container:libcurl.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
       <AdditionalOptions>
@@ -60,10 +60,10 @@
       <MacroExpansion>
          <BuildableReference
             BuildableIdentifier = "primary"
-            BlueprintIdentifier = "17D918341AC5A0870096D788"
-            BuildableName = "libfontengine.a"
-            BlueprintName = "fontengine"
-            ReferencedContainer = "container:fontengine.xcodeproj">
+            BlueprintIdentifier = "CD8AE2B316187F770095DC1B"
+            BuildableName = "libcurl.a"
+            BlueprintName = "curl"
+            ReferencedContainer = "container:libcurl.xcodeproj">
          </BuildableReference>
       </MacroExpansion>
    </ProfileAction>

@@ -34,6 +34,10 @@
 
 //----------------------------------------------------------------------------------------
 
+#ifdef _IOS //|| defined(MAC)
+#include "curlbuild.h"
+#else
+
 //old (original) #include "curlbuild.h"       /* libcurl build definitions */
 
 //http://ubuntuforums.org/showthread.php?t=1680426 cборка в x64 релиза x86
@@ -47,6 +51,8 @@
 #else
 #error "Unknown word size"
 #endif
+
+#endif /* _IOS || MAC */
 
 //------------------------------------------------------------------------------------------
 

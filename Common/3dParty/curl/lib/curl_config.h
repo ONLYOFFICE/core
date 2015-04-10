@@ -124,8 +124,10 @@
 /* Define to 1 if bool is an available type. */
 #define HAVE_BOOL_T 1
 
+#ifndef _IOS
 /* Define to 1 if you have the clock_gettime function and monotonic timer. */
 #define HAVE_CLOCK_GETTIME_MONOTONIC 1
+#endif
 
 /* Define to 1 if you have the closesocket function. */
 /* #undef HAVE_CLOSESOCKET */
@@ -189,6 +191,11 @@
 
 /* fsetxattr() takes 6 args */
 /* #undef HAVE_FSETXATTR_6 */
+
+#ifdef _IOS
+#define HAVE_FSETXATTR_6 1
+#undef HAVE_FSETXATTR_5
+#endif
 
 /* Define to 1 if you have the ftruncate function. */
 #define HAVE_FTRUNCATE 1
@@ -428,8 +435,10 @@
 /* Define to 1 if you have the memrchr function or macro. */
 /* #undef HAVE_MEMRCHR */
 
+#ifndef _IOS
 /* Define to 1 if you have the MSG_NOSIGNAL flag. */
 #define HAVE_MSG_NOSIGNAL 1
+#endif /* _IOS */
 
 /* Define to 1 if you have the <netdb.h> header file. */
 #define HAVE_NETDB_H 1
@@ -633,8 +642,10 @@
 /* Define to 1 if you have the strnicmp function. */
 /* #undef HAVE_STRNICMP */
 
+#ifndef _IOS
 /* Define to 1 if you have the <stropts.h> header file. */
 #define HAVE_STROPTS_H 1
+#endif
 
 /* Define to 1 if you have the strstr function. */
 #define HAVE_STRSTR 1

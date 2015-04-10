@@ -138,6 +138,8 @@
  * is the same as the one reported by sizeof() at compile time.
  */
 
+#ifndef _IOS
+
 typedef char
   __curl_rule_01__
     [CurlchkszEQ(long, CURL_SIZEOF_LONG)];
@@ -151,6 +153,8 @@ typedef char
 typedef char
   __curl_rule_02__
     [CurlchkszEQ(curl_off_t, CURL_SIZEOF_CURL_OFF_T)];
+
+#endif /* _IOS */
 
 /*
  * Verify at compile time that the size of curl_off_t as reported

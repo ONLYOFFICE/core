@@ -688,6 +688,12 @@ Common/3dParty/curl/docs/libcurl/opts/CURLOPT_XFERINFODATA.pdf svn_mime_002dtype
 Common/3dParty/curl/docs/libcurl/opts/CURLOPT_XFERINFOFUNCTION.pdf svn_mime_002dtype=application%2Foctet-stream
 Common/3dParty/curl/docs/libcurl/opts/CURLOPT_XOAUTH2_BEARER.pdf svn_mime_002dtype=application%2Foctet-stream
 Common/3dParty/curl/docs/mk-ca-bundle.pdf svn_mime_002dtype=application%2Foctet-stream
+Common/3dParty/curl/projects/Mac svnc_tsvn_003alogminsize=5
+Common/3dParty/curl/projects/Mac/curl svnc_tsvn_003alogminsize=5
+Common/3dParty/curl/projects/Mac/libcurl.xcodeproj svnc_tsvn_003alogminsize=5
+Common/3dParty/curl/projects/Mac/libcurl.xcodeproj/xcuserdata svnc_tsvn_003alogminsize=5
+Common/3dParty/curl/projects/Mac/libcurl.xcodeproj/xcuserdata/alexey.musinov.xcuserdatad svnc_tsvn_003alogminsize=5
+Common/3dParty/curl/projects/Mac/libcurl.xcodeproj/xcuserdata/alexey.musinov.xcuserdatad/xcschemes svnc_tsvn_003alogminsize=5
 Common/3dParty/curl/tests/certs/EdelCurlRoot-ca.der svn_mime_002dtype=application%2Foctet-stream
 Common/3dParty/curl/tests/certs/Server-localhost-sv.der svn_mime_002dtype=application%2Foctet-stream
 Common/3dParty/curl/tests/certs/Server-localhost-sv.p12 svn_mime_002dtype=application%2Foctet-stream

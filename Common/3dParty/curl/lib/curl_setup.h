@@ -38,7 +38,9 @@
 
 #ifdef HAVE_CONFIG_H
 
-//#include "curl_config.h"
+#ifdef _IOS //|| defined(MAC)
+    #include "curl_config.h"
+#else
 
 #include <bits/wordsize.h>
 
@@ -49,6 +51,8 @@
 #else
 #error "Unknown word size"
 #endif
+
+#endif /* _IOS || MAC */
 
 #else /* HAVE_CONFIG_H */
 
@@ -141,6 +145,10 @@
 
 //----------------------------------------------------------------------------------------
 
+#ifdef _IOS //|| defined(MAC)
+    #include "curlbuild.h"
+#else
+
 //old (original) #include "curlbuild.h"       /* libcurl build definitions */
 
 //http://ubuntuforums.org/showthread.php?t=1680426 cборка в x64 релиза x86
@@ -154,6 +162,8 @@
 #else
 #error "Unknown word size"
 #endif
+
+#endif /* _IOS || MAC*/
 
 //------------------------------------------------------------------------------------------
 

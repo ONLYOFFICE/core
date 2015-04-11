@@ -55,6 +55,12 @@ namespace Metafile
 		long y;
 	};
 
+	struct TEmfPointS
+	{
+		short x;
+		short y;
+	};
+
 	struct TEmfHeader
 	{
 		TEmfRectL      oBounds;
@@ -170,6 +176,79 @@ namespace Metafile
 				Copy(&oOther);
 			}
 		}
+	};
+
+	struct TEmfEmrText
+	{
+		TEmfPointL     Reference;
+		unsigned long  Chars;
+		unsigned long  offString;
+		unsigned long  Options;
+		TEmfRectL      Rectangle;
+		unsigned long  offDx;
+		void*          OutputString; // unsinged short* либо unsigned char*
+		unsigned long* OutputDx;
+	};
+
+	struct TEmfExtTextoutW
+	{
+		TEmfRectL     Bounds;
+		unsigned long iGraphicsMode;
+		double        exScale;
+		double        eyScale;
+		TEmfEmrText   wEmrText;
+	};
+
+	struct TEmfLogFont
+	{
+		long          Height;
+		long          Width;
+		long          Escapement;
+		long          Orientation;
+		long          Weight;
+		unsigned char Italic;
+		unsigned char Underline;
+		unsigned char StrikOut;
+		unsigned char CharSet;
+		unsigned char OutPrecision;
+		unsigned char ClipPrecision;
+		unsigned char Quality;
+		unsigned char PitchAndFamily;
+		unsigned short FaceName[32];
+	};
+
+	struct TEmfLogFontEx
+	{
+		TEmfLogFont   LogFont;
+		unsigned short FullName[64];
+		unsigned short Style[32];
+		unsigned short Script[32];
+	};
+
+	struct TEmfDesignVector
+	{
+		unsigned long Signature;
+		unsigned long NumAxes;
+		long*         Values;
+	};
+
+	struct TEmfBitBlt
+	{
+		TEmfRectL     Bounds;
+		long          xDest;
+		long          yDest;
+		long          cxDest;
+		long          cyDest;
+		unsigned long BitBltRasterOperation;
+		long          xSrc;
+		long          ySrc;
+		TEmfXForm     XfromSrc;
+		TEmfColor     BkColorSrc;
+		unsigned long UsageSrc;
+		unsigned long offBmiSrc;
+		unsigned long cbBmiSrc;
+		unsigned long offBitsSrc;
+		unsigned long cbBitsSrc;
 	};
 };
 #endif //_EMF_TYPES_H

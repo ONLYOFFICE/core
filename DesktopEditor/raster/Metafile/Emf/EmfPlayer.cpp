@@ -101,15 +101,31 @@ namespace Metafile
 		{ 
 			CEmfObjectBase* pOldObject = oPos->second;
 			delete pOldObject;
+			m_mObjects.erase(ulIndex);
 		}
 
 		m_mObjects.insert(std::pair<unsigned long, CEmfObjectBase*>(ulIndex, pObject));
+	}
+	void CEmfPlayer::SelectObject(unsigned long ulIndex)
+	{
+		CEmfObjectMap::const_iterator oPos = m_mObjects.find(ulIndex);
+		if (m_mObjects.end() != oPos)
+		{
+			CEmfObjectBase* pObject = oPos->second;
+
+			switch (pObject->GetType())
+			{
+				case EMF_OBJECT_BRUSH: m_pDC->SetBrush((CEmfLogBrushEx*)pObject); break;
+				case EMF_OBJECT_FONT: m_pDC->SetFont((CEmfLogFont*)pObject); break;
+			}
+		}
 	}
 
 	CEmfDC::CEmfDC()
 	{
 		m_oTransform.Init();
 		m_oTextColor.Init();
+		m_pBrush = NULL;
 	}
 	CEmfDC::~CEmfDC()
 	{
@@ -122,6 +138,7 @@ namespace Metafile
 
 		pNewDC->m_oTransform.Copy(&m_oTransform);
 		pNewDC->m_oTextColor.Copy(&m_oTextColor);
+		pNewDC->m_pBrush = m_pBrush;
 
 		return pNewDC;
 	}
@@ -132,5 +149,49 @@ namespace Metafile
 	void CEmfDC::SetTextColor(TEmfColor& oColor)
 	{
 		m_oTextColor.Copy(&oColor);
+	}
+	TEmfColor& CEmfDC::GetTextColor()
+	{
+		return m_oTextColor;
+	}
+	void CEmfDC::SetBrush(CEmfLogBrushEx* pBrush)
+	{
+		m_pBrush = pBrush;
+	}
+	CEmfLogBrushEx* CEmfDC::GetBrush()
+	{
+		return m_pBrush;
+	}
+	void CEmfDC::SetFont(CEmfLogFont* pFont)
+	{
+		m_pFont = pFont;
+	}
+	CEmfLogFont* CEmfDC::GetFont()
+	{
+		return m_pFont;
+	}
+	void CEmfDC::SetTextAlign(unsigned long ulAlign)
+	{
+		m_ulTextAlign = ulAlign;
+	}
+	unsigned long CEmfDC::GetTextAlign()
+	{
+		return m_ulTextAlign;
+	}
+	void CEmfDC::SetBgMode(unsigned long ulBgMode)
+	{
+		m_ulBgMode = ulBgMode;
+	}
+	unsigned long CEmfDC::GetBgMode()
+	{
+		return m_ulBgMode;
+	}
+	void CEmfDC::SetBgColor(TEmfColor& oColor)
+	{
+		m_oBgColor.Copy(&oColor);
+	}
+	TEmfColor& CEmfDC::GetBgColor()
+	{
+		return m_oBgColor;
 	}
 }

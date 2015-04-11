@@ -22,6 +22,7 @@ namespace Metafile
 		CEmfDC* RestoreDC();
 		CEmfDC* GetDC();
 		void RegisterObject(unsigned long ulIndex, CEmfObjectBase* pObject);
+		void SelectObject(unsigned long ulIndex);
 
 	private:
 
@@ -40,13 +41,29 @@ namespace Metafile
 		CEmfDC();
 		~CEmfDC();
 		CEmfDC* Copy();
-		TEmfXForm* GetTransform();
-		void SetTextColor(TEmfColor& oColor);
+		TEmfXForm*      GetTransform();
+		void            SetTextColor(TEmfColor& oColor);
+		TEmfColor&      GetTextColor();
+		void            SetBrush(CEmfLogBrushEx* pBrush);
+		CEmfLogBrushEx* GetBrush();
+		void            SetFont(CEmfLogFont* pFont);
+		CEmfLogFont*    GetFont();
+		void            SetTextAlign(unsigned long ulAlign);
+		unsigned long   GetTextAlign();
+		void            SetBgMode(unsigned long ulBgMode);
+		unsigned long   GetBgMode();
+		void            SetBgColor(TEmfColor& oColor);
+		TEmfColor&      GetBgColor();
 
 	private:
 
-		TEmfXForm m_oTransform;
-		TEmfColor m_oTextColor;
+		CEmfLogBrushEx* m_pBrush;
+		CEmfLogFont*    m_pFont;
+		TEmfXForm       m_oTransform;
+		TEmfColor       m_oTextColor;
+		TEmfColor       m_oBgColor;
+		unsigned long   m_ulTextAlign;
+		unsigned long   m_ulBgMode;
 	};
 }
 

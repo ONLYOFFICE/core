@@ -14,21 +14,21 @@
 #include "WmfOutputDevice.h"
 #include "WmfFile.h"
 
+#include "../Common.h"
+
 //------ Для дебага ----------------------------------------------------
-#define NO_PIE       // отключаем команду Draw_Pie
+//#define NO_PIE       // отключаем команду Draw_Pie
 //#define NO_ARC       // отключаем команду Draw_Arc
-#define NO_ELLIPSE   // отключаем команду Draw_Ellipse
-#define NO_LINE      // отключаем команду Draw_Line
-#define NO_POLYGON   // отключаем команду Draw_Polygon
-#define NO_POLYGONS  // отключаем команду Draw_Polypolygon
-#define NO_POLYLINE  // отключаем команду Draw_Polyline
-#define NO_CLIP      // отключаем комануд Region_Clip
-#define NO_RECT      // отключаем команду Draw_Rectangle
-#define NO_TEXT      // отключаем комунду Draw_Text
+//#define NO_ELLIPSE   // отключаем команду Draw_Ellipse
+//#define NO_LINE      // отключаем команду Draw_Line
+//#define NO_POLYGON   // отключаем команду Draw_Polygon
+//#define NO_POLYGONS  // отключаем команду Draw_Polypolygon
+//#define NO_POLYLINE  // отключаем команду Draw_Polyline
+//#define NO_CLIP      // отключаем комануд Region_Clip
+//#define NO_RECT      // отключаем команду Draw_Rectangle
+//#define NO_TEXT      // отключаем комунду Draw_Text
 //#define DRAW_BOUNDS  // рисуем границы
 //----------------------------------------------------------------------
-
-#define WMF_RGBA(r, g, b) ((DWORD)( ( (BYTE)(r) )| ( ( (BYTE)(g) ) << 8 ) | ( ( (BYTE)(b) ) << 16 ) | ( (BYTE)(0) << 24 ) ) )
 
 class CRendererOutput : public CWmfOutputDevice
 {
@@ -1328,7 +1328,7 @@ private:
 	{
 		TWmfPen *pPen = pDC->pPen;
 
-		long lColor = WMF_RGBA(pPen->oColor.r, pPen->oColor.g, pPen->oColor.b);
+		long lColor = METAFILE_RGBA(pPen->oColor.r, pPen->oColor.g, pPen->oColor.b);
 		double dWidth = pPen->dWidth * m_dScaleX ;
 
 		if ( dWidth <= 0.01 )
@@ -1386,7 +1386,7 @@ private:
 		case R2_BLACK:   m_pRenderer->put_PenColor( 0 ); break;
 		case R2_NOP:     m_pRenderer->put_PenAlpha( 0 ); break;
 		case R2_COPYPEN: break;
-		case R2_WHITE:   m_pRenderer->put_PenColor(WMF_RGBA(255, 255, 255)); break;
+		case R2_WHITE:   m_pRenderer->put_PenColor(METAFILE_RGBA(255, 255, 255)); break;
 		}
 
 		if ( PS_NULL == ushPenStyle )
@@ -1398,7 +1398,7 @@ private:
 	bool SetBrush(TWmfDC *pDC)
 	{
 		TWmfBrush *pBrush = pDC->pBrush;
-		long lColor = WMF_RGBA(pBrush->oColor.r, pBrush->oColor.g, pBrush->oColor.b);
+		long lColor = METAFILE_RGBA(pBrush->oColor.r, pBrush->oColor.g, pBrush->oColor.b);
 		
 		if ( BS_NULL == pBrush->ushStyle )
 			return false;

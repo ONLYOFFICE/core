@@ -18,6 +18,9 @@ typedef unsigned char BYTE;
 
 namespace Metafile
 {
+
+#define METAFILE_RGBA(r, g, b) ((DWORD)( ( (BYTE)(r) )| ( ( (BYTE)(g) ) << 8 ) | ( ( (BYTE)(b) ) << 16 ) | ( (BYTE)(0) << 24 ) ) )
+
 	class CDataStream
 	{
 	public:
@@ -86,7 +89,7 @@ namespace Metafile
 		{
 			return (long)ReadULong();
 		};
-		void           ReadBytes(BYTE* pBuffer, unsigned long ulSize)
+		void           ReadBytes(unsigned char*  pBuffer, unsigned long ulSize)
 		{
 			size_t ulRemainSize = (pEnd - pCur);
 			size_t ulFinalSize  = (ulRemainSize > ulSize ? ulSize : ulRemainSize);
@@ -96,7 +99,26 @@ namespace Metafile
 				pBuffer[ulIndex] = ReadChar();
 			}
 		};
+		void           ReadBytes(unsigned short* pBuffer, unsigned long ulSize)
+		{
+			size_t ulRemainSize = (pEnd - pCur) / 2;
+			size_t ulFinalSize  = (ulRemainSize > ulSize ? ulSize : ulRemainSize);
 
+			for (size_t ulIndex = 0; ulIndex < ulFinalSize; ulIndex++)
+			{
+				pBuffer[ulIndex] = ReadUShort();
+			}
+		}
+		void           ReadBytes(unsigned long*  pBuffer, unsigned long ulSize)
+		{
+			size_t ulRemainSize = (pEnd - pCur) / 4;
+			size_t ulFinalSize  = (ulRemainSize > ulSize ? ulSize : ulRemainSize);
+
+			for (size_t ulIndex = 0; ulIndex < ulFinalSize; ulIndex++)
+			{
+				pBuffer[ulIndex] = ReadULong();
+			}
+		}
 		CDataStream& operator>>(unsigned char&  nValue)
 		{
 			nValue = ReadUChar();
@@ -181,6 +203,147 @@ namespace Metafile
 			*this >> oBrush.BrushStyle;
 			*this >> oBrush.Color;
 			*this >> oBrush.BrushHatch;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPointL& oPoint)
+		{
+			*this >> oPoint.x;
+			*this >> oPoint.y;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPointS& oPoint)
+		{
+			*this >> oPoint.x;
+			*this >> oPoint.y;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfEmrText& oText)
+		{
+			*this >> oText.Reference;
+			*this >> oText.Chars;
+			*this >> oText.offString;
+			*this >> oText.Options;
+			*this >> oText.Rectangle;
+			*this >> oText.offDx;
+
+			oText.OutputString = NULL;
+			oText.OutputDx     = NULL;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfExtTextoutW& oText)
+		{
+			*this >> oText.Bounds;
+			*this >> oText.iGraphicsMode;
+			*this >> oText.exScale;
+			*this >> oText.eyScale;
+			*this >> oText.wEmrText;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfLogFont& oFont)
+		{
+			*this >> oFont.Height;
+			*this >> oFont.Width;
+			*this >> oFont.Escapement;
+			*this >> oFont.Orientation;
+			*this >> oFont.Weight;
+			*this >> oFont.Italic;
+			*this >> oFont.Underline;
+			*this >> oFont.StrikOut;
+			*this >> oFont.CharSet;
+			*this >> oFont.OutPrecision;
+			*this >> oFont.ClipPrecision;
+			*this >> oFont.Quality;
+			*this >> oFont.PitchAndFamily;
+			ReadBytes(oFont.FaceName, 32);
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfLogFontEx& oFont)
+		{
+			*this >> oFont.LogFont;
+			ReadBytes(oFont.FullName, 64);
+			ReadBytes(oFont.Style, 32);
+			ReadBytes(oFont.Script, 32);
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfDesignVector& oVector)
+		{
+			*this >> oVector.Signature;
+			*this >> oVector.NumAxes;
+			oVector.Values = NULL;
+
+			if (oVector.NumAxes <= 0)
+				return *this;
+
+			oVector.Values = new long[oVector.NumAxes];
+			if (!oVector.Values)
+				return *this;
+
+			for (unsigned long ulIndex = 0; ulIndex < oVector.NumAxes; ulIndex++)
+				*this >> oVector.Values[ulIndex];
+
+			return *this;
+		}
+		CDataStream& operator>>(CEmfLogFont& oFont)
+		{
+			*this >> oFont.LogFontEx;
+			*this >> oFont.DesignVector;
+			return *this;
+		}
+		CDataStream& operator>>(TEmfBitBlt& oBitBtl)
+		{
+			*this >> oBitBtl.Bounds;
+			*this >> oBitBtl.xDest;
+			*this >> oBitBtl.yDest;
+			*this >> oBitBtl.cxDest;
+			*this >> oBitBtl.cyDest;
+			*this >> oBitBtl.BitBltRasterOperation;
+			*this >> oBitBtl.xSrc;
+			*this >> oBitBtl.ySrc;
+			*this >> oBitBtl.XfromSrc;
+			*this >> oBitBtl.BkColorSrc;
+			*this >> oBitBtl.UsageSrc;
+			*this >> oBitBtl.offBmiSrc;
+			*this >> oBitBtl.cbBmiSrc;
+			*this >> oBitBtl.offBitsSrc;
+			*this >> oBitBtl.cbBitsSrc;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfXForm& oXForm)
+		{
+			*this >> oXForm.M11;
+			*this >> oXForm.M12;
+			*this >> oXForm.M21;
+			*this >> oXForm.M22;
+			*this >> oXForm.Dx;
+			*this >> oXForm.Dy;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfStretchDIBITS& oBitmap)
+		{
+			*this >> oBitmap.Bounds;
+			*this >> oBitmap.xDest;
+			*this >> oBitmap.yDest;
+			*this >> oBitmap.xSrc;
+			*this >> oBitmap.ySrc;
+			*this >> oBitmap.cxSrc;
+			*this >> oBitmap.cySrc;
+			*this >> oBitmap.offBmiSrc;
+			*this >> oBitmap.cbBmiSrc;
+			*this >> oBitmap.offBitsSrc;
+			*this >> oBitmap.cbBitsSrc;
+			*this >> oBitmap.UsageSrc;
+			*this >> oBitmap.BitBltRasterOperation;
+			*this >> oBitmap.cxDest;
+			*this >> oBitmap.cyDest;
 
 			return *this;
 		}

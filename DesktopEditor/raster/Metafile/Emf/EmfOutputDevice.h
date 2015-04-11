@@ -18,7 +18,16 @@ namespace Metafile
 		virtual void End() = 0;
 
 		// pBuffer - BGRA картинка размерами ulWidth, ulHeight, которую надо нарисовать в заданном ректе
-		virtual void Draw_Bitmap(long lX, long lY, long lW, long lH, BYTE* pBuffer, unsigned long ulWidth, unsigned long ulHeight) = 0;
+		virtual void DrawBitmap(long lX, long lY, long lW, long lH, BYTE* pBuffer, unsigned long ulWidth, unsigned long ulHeight) = 0;
+
+		virtual void DrawText(const wchar_t* wsText, unsigned long ulCharsCount, long lX, long lY) = 0;
+
+		virtual void StartPath() = 0;
+		virtual void MoveTo(long lX, long lY) = 0;
+		virtual void LineTo(long lX, long lY) = 0;
+		virtual void ClosePath() = 0;
+		virtual void DrawPath() = 0;
+		virtual void EndPath() = 0;
 	};
 
 }

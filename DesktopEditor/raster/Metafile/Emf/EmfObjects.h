@@ -10,7 +10,8 @@ namespace Metafile
 	{
 		EMF_OBJECT_UNKNOWN = 0x00,
 		EMF_OBJECT_BRUSH   = 0x01,
-		EMF_OBJECT_FONT    = 0x02
+		EMF_OBJECT_FONT    = 0x02,
+		EMF_OBJECT_PEN     = 0x03
 	} EEmfObjectType;
 
 	class CEmfObjectBase
@@ -68,6 +69,32 @@ namespace Metafile
 
 		TEmfLogFontEx    LogFontEx;
 		TEmfDesignVector DesignVector;
+	};
+
+	class CEmfLogPen : public CEmfObjectBase
+	{
+	public:
+		CEmfLogPen()
+		{
+			StyleEntry = NULL;
+		}
+		virtual ~CEmfLogPen()
+		{
+			if (StyleEntry)
+				delete[] StyleEntry;
+		}
+		virtual EEmfObjectType GetType()
+		{
+			return EMF_OBJECT_PEN;
+		}
+
+	public:
+
+		unsigned long  PenStyle;
+		unsigned long  Width;
+		TEmfColor      Color;
+		unsigned long  NumStyleEntries;
+		unsigned long* StyleEntry;
 	};
 }
 

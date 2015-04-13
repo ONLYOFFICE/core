@@ -117,6 +117,7 @@ namespace Metafile
 			{
 				case EMF_OBJECT_BRUSH: m_pDC->SetBrush((CEmfLogBrushEx*)pObject); break;
 				case EMF_OBJECT_FONT: m_pDC->SetFont((CEmfLogFont*)pObject); break;
+				case EMF_OBJECT_PEN: m_pDC->SetPen((CEmfLogPen*)pObject); break;
 			}
 		}
 	}
@@ -138,7 +139,14 @@ namespace Metafile
 
 		pNewDC->m_oTransform.Copy(&m_oTransform);
 		pNewDC->m_oTextColor.Copy(&m_oTextColor);
-		pNewDC->m_pBrush = m_pBrush;
+		pNewDC->m_oBgColor.Copy(&m_oBgColor);
+		pNewDC->m_pBrush       = m_pBrush;
+		pNewDC->m_pFont        = m_pFont;
+		pNewDC->m_pPen         = m_pPen;
+		pNewDC->m_ulTextAlign  = m_ulTextAlign;
+		pNewDC->m_ulBgMode     = m_ulBgMode;
+		pNewDC->m_ulMiterLimit = m_ulMiterLimit;
+		pNewDC->m_ulFillMode   = m_ulFillMode;
 
 		return pNewDC;
 	}
@@ -194,4 +202,29 @@ namespace Metafile
 	{
 		return m_oBgColor;
 	}
+	void CEmfDC::SetMiterLimit(unsigned long ulMiter)
+	{
+		m_ulMiterLimit = ulMiter;
+	}
+	unsigned long CEmfDC::GetMiterLimit()
+	{
+		return m_ulMiterLimit;
+	}
+	void CEmfDC::SetFillMode(unsigned long ulFillMode)
+	{
+		m_ulFillMode = ulFillMode;
+	}
+	unsigned long CEmfDC::GetFillMode()
+	{
+		return m_ulFillMode;
+	}
+	void CEmfDC::SetPen(CEmfLogPen* pPen)
+	{
+		m_pPen = pPen;
+	}
+	CEmfLogPen* CEmfDC::GetPen()
+	{
+		return m_pPen;
+	}
+
 }

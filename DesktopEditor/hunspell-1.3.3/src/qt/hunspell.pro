@@ -16,7 +16,7 @@ CONFIG += staticlib
 
 DEFINES += _QT
 DEFINES += HUNSPELL_STATIC
-#DEFINES += BUILDING_LIBHUNSPELL
+DEFINES += BUILDING_LIBHUNSPELL
 
 linux-g++ | linux-g++-64 | linux-g++-32 {
     message(linux)

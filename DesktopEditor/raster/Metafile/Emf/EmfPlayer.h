@@ -54,16 +54,25 @@ namespace Metafile
 		unsigned long   GetBgMode();
 		void            SetBgColor(TEmfColor& oColor);
 		TEmfColor&      GetBgColor();
+		void            SetMiterLimit(unsigned long ulMiter);
+		unsigned long   GetMiterLimit();
+		void            SetFillMode(unsigned long ulFillMode);
+		unsigned long   GetFillMode();
+		void            SetPen(CEmfLogPen* pPen);
+		CEmfLogPen*     GetPen();
 
 	private:
 
 		CEmfLogBrushEx* m_pBrush;
+		CEmfLogPen*     m_pPen;
 		CEmfLogFont*    m_pFont;
 		TEmfXForm       m_oTransform;
 		TEmfColor       m_oTextColor;
 		TEmfColor       m_oBgColor;
 		unsigned long   m_ulTextAlign;
 		unsigned long   m_ulBgMode;
+		unsigned long   m_ulMiterLimit;
+		unsigned long   m_ulFillMode;
 	};
 }
 

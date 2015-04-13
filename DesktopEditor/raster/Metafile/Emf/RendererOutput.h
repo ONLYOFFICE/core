@@ -32,6 +32,14 @@ namespace Metafile
 				return;
 
 			m_pRenderer = pRenderer;
+
+			long lL = m_pEmfFile->m_oHeader.oBounds.lLeft;
+			long lR = m_pEmfFile->m_oHeader.oBounds.lRight;
+			long lT = m_pEmfFile->m_oHeader.oBounds.lTop;
+			long lB = m_pEmfFile->m_oHeader.oBounds.lBottom;
+
+			m_dScaleX = (lR - lL <= 0) ? 1 : m_dW / (double)(lR - lL);
+			m_dScaleY = (lB - lT <= 0) ? 1 : m_dH / (double)(lB - lT);
 		}
 		~CEmfRendererOutput()
 		{
@@ -242,7 +250,24 @@ namespace Metafile
 		void StartPath()
 		{
 			UpdateTransform();
-			UpdateBrush();
+
+			m_lDrawPathType = -1;
+			if (true == UpdateBrush())
+			{
+				CEmfDC* pDC = m_pEmfFile->GetDC();
+				if (ALTERNATE == pDC->GetFillMode())
+					m_lDrawPathType = c_nEvenOddFillMode;
+				else// if (WINDING == pDC->GetFillMode())
+					m_lDrawPathType = c_nWindingFillMode;
+			}
+
+			if (true == UpdatePen())
+			{
+				if (-1 == m_lDrawPathType)
+					m_lDrawPathType = c_nStroke;
+				else
+					m_lDrawPathType |= c_nStroke;
+			}
 
 			m_pRenderer->BeginCommand(c_nPathType);
 			m_pRenderer->PathCommandStart();
@@ -265,7 +290,8 @@ namespace Metafile
 		}
 		void DrawPath()
 		{
-			m_pRenderer->DrawPath(c_nWindingFillMode);
+			if (-1 != m_lDrawPathType)
+				m_pRenderer->DrawPath(m_lDrawPathType);
 		}
 		void EndPath()
 		{
@@ -278,22 +304,12 @@ namespace Metafile
 		double TransX(long lX)
 		{
 			long lL = m_pEmfFile->m_oHeader.oBounds.lLeft;
-			long lR = m_pEmfFile->m_oHeader.oBounds.lRight;
-
-			if (lR - lL <= 0)
-				return 0;
-
-			return m_dW * (double)(lX - lL) / (double)(lR - lL);
+			return m_dScaleX * (double)(lX - lL);
 		}
 		double TransY(long lY)
 		{
 			long lT = m_pEmfFile->m_oHeader.oBounds.lTop;
-			long lB = m_pEmfFile->m_oHeader.oBounds.lBottom;
-
-			if (lB - lT <= 0)
-				return 0;
-
-			return m_dH * (double)(lY - lT) / (double)(lB - lT);
+			return m_dScaleY * (double)(lY - lT);
 		}
 
 		bool UpdateBrush()
@@ -325,21 +341,87 @@ namespace Metafile
 			if (!pDC)
 				return;
 
-			long lL = m_pEmfFile->m_oHeader.oBounds.lLeft;
-			long lR = m_pEmfFile->m_oHeader.oBounds.lRight;
-			long lT = m_pEmfFile->m_oHeader.oBounds.lTop;
-			long lB = m_pEmfFile->m_oHeader.oBounds.lBottom;
-
-			if (lB - lT <= 0 || lR - lL <= 0)
-				return;
-
-			double dKoefX = m_dW / (double)(lR - lL);
-			double dKoefY = m_dW / (double)(lR - lL);
+			double dKoefX = m_dScaleX;
+			double dKoefY = m_dScaleY;
 
 			TEmfXForm* pMatrix = pDC->GetTransform();
 
 			m_pRenderer->ResetTransform();
 			m_pRenderer->SetTransform(pMatrix->M11, pMatrix->M12 * dKoefY / dKoefX, pMatrix->M21 * dKoefX / dKoefY, pMatrix->M22, pMatrix->Dx * dKoefX, pMatrix->Dy * dKoefY);
+		}
+		bool UpdatePen()
+		{
+			CEmfDC* pDC = m_pEmfFile->GetDC();
+			if (!pDC)
+				return false;
+
+			CEmfLogPen* pPen = pDC->GetPen();
+			if (!pPen)
+				return false;
+
+			long lColor = METAFILE_RGBA(pPen->Color.r, pPen->Color.g, pPen->Color.b);
+
+			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
+			double dWidth = pPen->Width * m_dScaleX;
+			if (dWidth <= 0.01)
+				dWidth = 0;
+
+			unsigned long ulPenType   = pPen->PenStyle & PS_TYPE_MASK;
+			unsigned long ulPenEndCap = pPen->PenStyle & PS_ENDCAP_MASK;
+			unsigned long ulPenJoin   = pPen->PenStyle & PS_JOIN_MASK;
+			unsigned long ulPenStyle  = pPen->PenStyle & PS_STYLE_MASK;
+
+			BYTE nCapStyle = 0;
+			if (0 == ulPenEndCap)
+				nCapStyle = 2;
+			else if (1 == ulPenEndCap)
+				nCapStyle = 1;
+			else if (2 == ulPenEndCap)
+				nCapStyle = 0;
+
+			BYTE nJoinStyle = 0;
+			if (0 == ulPenJoin)
+				nJoinStyle = 2;
+			else if (1 == ulPenJoin)
+				nJoinStyle = 1;
+			else if (2 == ulPenJoin)
+				nJoinStyle = 2;
+
+			double dMiterLimit = pDC->GetMiterLimit() * m_dScaleX;
+
+			// TODO: Некоторые типы пена невозможно реализовать с текущим интерфейсом рендерера, поэтому мы делаем его пока PS_SOLID.
+			// TODO: Реализовать PS_USERSTYLE
+			unsigned long ulDashStyle;
+			if (PS_ALTERNATE == ulPenStyle || PS_USERSTYLE == ulPenStyle || PS_INSIDEFRAME == ulPenStyle)
+				ulDashStyle = (BYTE)PS_SOLID;
+			else if (PS_NULL != ulPenStyle)
+				ulDashStyle = (BYTE)ulPenStyle;
+
+			m_pRenderer->put_PenDashStyle(ulDashStyle);
+			m_pRenderer->put_PenLineJoin(nJoinStyle);
+			m_pRenderer->put_PenLineStartCap(nCapStyle);
+			m_pRenderer->put_PenLineEndCap(nCapStyle);
+			m_pRenderer->put_PenColor(lColor);
+			m_pRenderer->put_PenSize(dWidth);
+			m_pRenderer->put_PenAlpha(255);
+			m_pRenderer->put_PenMiterLimit(dMiterLimit);
+
+			//// TO DO: С текущим интерфейсом AVSRenderer, остальные случаи ushROPMode
+			////        реализовать невозможно. Потому что данный параметр нужно протаскивать
+			////        как параметр Pen'a, и тот кто рисует сам должен разруливать все случаи.
+
+			//switch (pDC->ushROPMode)
+			//{
+			//	case R2_BLACK:   m_pRenderer->put_PenColor(0); break;
+			//	case R2_NOP:     m_pRenderer->put_PenAlpha(0); break;
+			//	case R2_COPYPEN: break;
+			//	case R2_WHITE:   m_pRenderer->put_PenColor(METAFILE_RGBA(255, 255, 255)); break;
+			//}
+
+			if (PS_NULL == ulPenStyle)
+				return false;
+
+			return true;
 		}
 
 	private:
@@ -355,6 +437,8 @@ namespace Metafile
 		double                  m_dY;        //
 		double                  m_dW;   // Коэффициенты сжатия/растяжения, чтобы 
 		double                  m_dH;   // результирующая картинка была нужных размеров.
+		double                  m_dScaleX;
+		double                  m_dScaleY;
 		CEmfFile*               m_pEmfFile;
 	};
 }

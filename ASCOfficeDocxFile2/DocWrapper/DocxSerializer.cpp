@@ -186,8 +186,8 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 			CStringA sCurSig((char*)pBase64Data, nSigLength);
 			if((CStringA)sSignature == sCurSig)
 			{
-				bValidFormat = true;
-			}
+                bValidFormat = true;
+            }
 		}
 		if(bValidFormat)
 		{
@@ -207,7 +207,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 						nType = 1;
 						continue;
 					}
-					else
+                    else
 					{
 						nIndex++;
 						break;

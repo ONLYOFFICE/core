@@ -527,7 +527,10 @@ HEADERS += pptxformatlib.h \
     ../../../../Common/FileDownloader.h \
     ../../../PPTXFormat/DocxFormat/Drawing/LegacyDiagramText.h \
     ../../../PPTXFormat/DocxFormat/Drawing/VmlDrawing.h \
-    ../../../PPTXFormat/Logic/Controls.h
+    ../../../PPTXFormat/Logic/Controls.h \
+    ../../../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h \
+    ../../../../ASCOfficeDocxFile2/BinReader/FileWriter.h \
+    ../../../../ASCOfficeDocxFile2/BinReader/SettingWriter.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

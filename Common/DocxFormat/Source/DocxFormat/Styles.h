@@ -820,7 +820,7 @@ namespace OOX
 						{
 							if (oStyle->m_oName.IsInit())
 							{
-								m_arrStyleNamesMap[oStyle->m_oName->ToString2(] = m_arrStyle.size();
+								m_arrStyleNamesMap[oStyle->m_oName->ToString2()] = m_arrStyle.size();
 							}        
 							m_arrStyle.push_back( oStyle );
 						}

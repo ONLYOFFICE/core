@@ -1,21 +1,21 @@
-﻿#ifndef DEFAULTTHEMEWRITER_H
-#define DEFAULTTHEMEWRITER_H
+﻿#ifndef DEFAULT_THEME_WRITER
+#define DEFAULT_THEME_WRITER
 
 #include "../../XlsxSerializerCom/Common/Common.h"
 
 namespace Writers
 {
-    class DefaultThemeWriter
-    {
-    public:
-        DefaultThemeWriter()
-        {
-        }
-        void Write(CString sThemeFilePath)
-        {
-            CString s_Common;
+	class DefaultThemeWriter
+	{
+	public:
+		DefaultThemeWriter()
+		{
+		}
+		void Write(CString sThemeFilePath)
+		{
+			CString s_Common;
 
-            s_Common = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?> \
+			s_Common = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?> \
 <a:theme xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" name=\"Office Theme\"> \
   <a:themeElements> \
     <a:clrScheme name=\"Office\"> \
@@ -62,10 +62,10 @@ s_Common +=
         <a:latin typeface=\"Cambria\"/> \
         <a:ea typeface=\"\"/> \
         <a:cs typeface=\"\"/> \
-        <a:font script=\"Jpan\" typeface=\"?? ????\"/> \
-        <a:font script=\"Hang\" typeface=\"?? ??\"/> \
-        <a:font script=\"Hans\" typeface=\"??\"/> \
-        <a:font script=\"Hant\" typeface=\"????\"/> \
+        <a:font script=\"Jpan\" typeface=\"ＭＳ ゴシック\"/> \
+        <a:font script=\"Hang\" typeface=\"맑은 고딕\"/> \
+        <a:font script=\"Hans\" typeface=\"宋体\"/> \
+        <a:font script=\"Hant\" typeface=\"新細明體\"/> \
         <a:font script=\"Arab\" typeface=\"Times New Roman\"/> \
         <a:font script=\"Hebr\" typeface=\"Times New Roman\"/> \
         <a:font script=\"Thai\" typeface=\"Angsana New\"/> \
@@ -96,10 +96,10 @@ s_Common +=
         <a:latin typeface=\"Calibri\"/> \
         <a:ea typeface=\"\"/> \
         <a:cs typeface=\"\"/> \
-        <a:font script=\"Jpan\" typeface=\"?? ??\"/> \
-        <a:font script=\"Hang\" typeface=\"?? ??\"/> \
-        <a:font script=\"Hans\" typeface=\"??\"/> \
-        <a:font script=\"Hant\" typeface=\"????\"/> \
+        <a:font script=\"Jpan\" typeface=\"ＭＳ 明朝\"/> \
+        <a:font script=\"Hang\" typeface=\"맑은 고딕\"/> \
+        <a:font script=\"Hans\" typeface=\"宋体\"/> \
+        <a:font script=\"Hant\" typeface=\"新細明體\"/> \
         <a:font script=\"Arab\" typeface=\"Arial\"/> \
         <a:font script=\"Hebr\" typeface=\"Arial\"/> \
         <a:font script=\"Thai\" typeface=\"Cordia New\"/> \
@@ -299,14 +299,14 @@ s_Common +=
   <a:extraClrSchemeLst/> \
 </a:theme>");
 
+
             OOX::CPath fileName = sThemeFilePath;
 
             CFile oFile;
             oFile.CreateFile(fileName.GetPath());
-            oFile.WriteStringUTF8(s_Common);
-            oFile.CloseFile();
-        }
-    };
+			oFile.WriteStringUTF8(s_Common);
+			oFile.CloseFile();
+		}
+	};
 }
-
-#endif // DEFAULTTHEMEWRITER_H
+#endif	// #ifndef DEFAULT_THEME_WRITER

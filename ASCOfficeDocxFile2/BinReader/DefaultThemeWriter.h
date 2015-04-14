@@ -1,4 +1,4 @@
-#ifndef DEFAULTTHEMEWRITER_H
+﻿#ifndef DEFAULTTHEMEWRITER_H
 #define DEFAULTTHEMEWRITER_H
 
 #include "../../XlsxSerializerCom/Common/Common.h"

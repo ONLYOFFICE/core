@@ -70,7 +70,7 @@ namespace XmlUtils
 
 		return RGB(red, green, blue);
 	}
-	AVSINLINE static BOOL    GetBoolean (const CString& string)
+        AVSINLINE static bool    GetBoolean (const CString& string)
 	{
 		CString s = string; s.MakeLower();
 
@@ -314,7 +314,7 @@ namespace XmlUtils
 			m_pDataCur	= m_pData;
 			m_lSizeCur	= m_lSize;
 
-			m_bInitTable = FALSE;
+            m_bInitTable = false;
 		}
 		~CStringWriter()
 		{
@@ -507,7 +507,7 @@ namespace XmlUtils
 
 	protected:
 		BYTE m_arTableUnicodes[65536];
-		BOOL m_bInitTable;
+                bool m_bInitTable;
 
 	protected:
 		BYTE CheckCode(const WCHAR& c)
@@ -528,7 +528,7 @@ namespace XmlUtils
 				m_arTableUnicodes['>'] = 5;
 				m_arTableUnicodes['\"'] = 6;
 
-				m_bInitTable = TRUE;
+                                m_bInitTable = true;
 			}
 #if !defined(_WIN32) && !defined (_WIN64)
             if (sizeof (wchar_t) == 4)

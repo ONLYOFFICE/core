@@ -29,8 +29,8 @@ namespace NSPresentationEditor
 		std::vector<CParagraph>	m_arParagraphs;
 
 		// параметры ВСЕГО текста (наверное тут их много будет потом)
-		BOOL	m_bVertical;
-		BOOL	m_bRightToLeft;
+                bool	m_bVertical;
+                bool	m_bRightToLeft;
 		LONG	m_lWrapMode; // 0 - square, default; 1 - none wrap
 
 		// для ппт. чтобы не менять счас ничего
@@ -63,8 +63,8 @@ namespace NSPresentationEditor
 			m_oBounds.right		= 50;
 			m_oBounds.bottom	= 50;
 
-			m_bVertical			= FALSE;
-			m_bRightToLeft		= FALSE;
+                        m_bVertical			= false;
+                        m_bRightToLeft		= false;
 			m_lWrapMode			= 0;
 
 			m_lTextMasterType	= -1;

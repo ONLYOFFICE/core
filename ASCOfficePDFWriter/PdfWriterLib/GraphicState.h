@@ -65,12 +65,12 @@ const static char  *BM_NAMES[] =
 	"Exclusion"
 };
 
-BOOL          ExtGStateValidate            (ExtGState pExtGState);
+bool          ExtGStateValidate            (ExtGState pExtGState);
 unsigned long ExtGStateCheck               (ExtGState pExtGState);
 ExtGState     ExtGStateNew                 (MMgr oMMgr, Xref pXref);
 unsigned long ExtGStateSetAlphaStroke      (ExtGState pExtGState, float fValue);
 unsigned long ExtGStateSetAlphaFill        (ExtGState pExtGState, float fValue);
 unsigned long ExtGStateSetBlendMode        (ExtGState pExtGState, BlendMode eBlendMode);
-unsigned long ExtGStateSetStrokeAdjustment (ExtGState pExtGState, BOOL bValue);
+unsigned long ExtGStateSetStrokeAdjustment (ExtGState pExtGState, bool bValue);
 #endif /* _GSTATE_H */
 

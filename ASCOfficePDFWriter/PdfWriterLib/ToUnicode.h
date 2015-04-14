@@ -87,7 +87,7 @@ void           ToUnicodeBuiltFree               (PToUnicode pToUnicode);
 
 PToUnicode    ToUnicodeBuiltNew               (MMgr oMMgr, char *sName, unsigned int unBitCount = 8);
 void          ToUnicodeBuiltSetUnicodeArray   (PToUnicode pToUnicode, const UnicodeMapRec *pArray);
-BOOL          ToUnicodeUpdateUnicodeArray     (PToUnicode pToUnicode, unsigned short *pArray, unsigned int unSize = 0);
-BOOL          ToUnicodeWCharToString  (PToUnicode pToUnicide, std::wstring sSrc, std::wstring & psDst);
+bool          ToUnicodeUpdateUnicodeArray     (PToUnicode pToUnicode, unsigned short *pArray, unsigned int unSize = 0);
+bool          ToUnicodeWCharToString  (PToUnicode pToUnicide, std::wstring sSrc, std::wstring & psDst);
 #endif /* _TO_UNICODE_H */
 

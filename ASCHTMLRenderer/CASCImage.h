@@ -73,7 +73,7 @@ namespace NSHtmlRenderer
 
 		Aggplus::CImage* m_pMediaData;
 
-		BOOL      m_bLoadOnlyMeta; // Загружаем только метафайл
+        bool      m_bLoadOnlyMeta; // Загружаем только метафайл
 
 	public:
 

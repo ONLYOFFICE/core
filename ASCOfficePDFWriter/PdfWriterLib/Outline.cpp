@@ -175,24 +175,24 @@ Outline OutlineGetParent(Outline pOutline)
 {
     return (Outline)DictGetItem( pOutline, "Parent", OCLASS_DICT);
 }
-BOOL    OutlineGetOpened(Outline pOutline)
+bool    OutlineGetOpened(Outline pOutline)
 {
     Number oNumber = (Number)DictGetItem( pOutline, "_OPENED", OCLASS_NUMBER);
 
     if ( !oNumber )
-        return FALSE;
+        return false;
 
-	return (BOOL)oNumber->nValue;
+    return (bool)oNumber->nValue;
 }
-BOOL    OutlineValidate (Outline pOutline)
+bool    OutlineValidate (Outline pOutline)
 {
     if ( !pOutline )
-        return FALSE;
+        return false;
 
     if ( pOutline->pHeader.nObjClass != (OSUBCLASS_OUTLINE | OCLASS_DICT) )
-        return FALSE;
+        return false;
 
-    return TRUE;
+    return true;
 }
 
 
@@ -216,7 +216,7 @@ unsigned long OutlineSetDestination(Outline pOutline, Destination pDst)
 }
 
 
-unsigned long OutlineSetOpened     (Outline pOutline, BOOL bOpened)
+unsigned long OutlineSetOpened     (Outline pOutline, bool bOpened)
 {
     Number oNumber = NULL;
 

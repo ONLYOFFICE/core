@@ -52,7 +52,7 @@
 
 int UtilsAToI(const char*  str)
 {
-	BOOL bFlag = FALSE;
+    bool bFlag = false;
     int  nRes = 0;
 
     // ищем первый не пустой символ
@@ -65,7 +65,7 @@ int UtilsAToI(const char*  str)
 		{
             if ( *str == '-') 
 			{
-                bFlag = TRUE;
+                bFlag = true;
                 str++;
 			}
             break;
@@ -87,7 +87,7 @@ int UtilsAToI(const char*  str)
 
 double UtilsAToF(const char  *str)
 {
-    BOOL bFlag = FALSE;
+    bool bFlag = false;
     int nVal = 0;
     double dRes = 0;
     int nTmp = 1;
@@ -101,7 +101,7 @@ double UtilsAToF(const char  *str)
         else 
 		{
             if (*str == '-') {
-                bFlag = TRUE;
+                bFlag = true;
                 str++;
             }
             break;
@@ -408,12 +408,12 @@ void UtilsUIntArrayClearRepeat(unsigned short** ppArray, int *pnCount, unsigned 
 
 	for ( int nIndex = 0; nIndex < nCount; nIndex++ )
 	{
-		BOOL bRepeat = FALSE;
+        bool bRepeat = false;
 		for ( int nClearIndex = 0; nClearIndex < nCurCount; nClearIndex++  )
 		{
 			if ( pClearArray[nClearIndex] == pArray[nIndex] )
 			{
-				bRepeat = TRUE;
+                bRepeat = true;
 				break;
 			}
 		}
@@ -625,7 +625,7 @@ long   GetNextNameValue(HKEY key, LPCTSTR pszSubkey, LPTSTR pszName, LPTSTR pszD
 // CE						3
 
 #if defined(_WIN32) || defined(_WIN64)
-	BOOL GetFontFile (NSStructures::CFont *pFont, std::wstring & wsFontName, std::wstring & wsDisplayName, std::wstring & wsFontFile, BOOL *bBold, BOOL *bItalic)
+    bool GetFontFile (NSStructures::CFont *pFont, std::wstring & wsFontName, std::wstring & wsDisplayName, std::wstring & wsFontFile, bool *bBold, bool *bItalic)
 	{
 		TCHAR szName[2 * MAX_PATH];
 		TCHAR szData[2 * MAX_PATH];
@@ -641,7 +641,7 @@ long   GetNextNameValue(HKEY key, LPCTSTR pszSubkey, LPTSTR pszName, LPTSTR pszD
 		else
 			_tcscpy(szFontPath, _T("Software\\Microsoft\\Windows\\CurrentVersion\\Fonts"));
 
-		BOOL bResult = FALSE;
+        bool bResult = false;
 
 	// Сначала пробежимся по списку фонтов и узнаем сколько из них начинаются с имени lpszFontName
 		string_replaceAll(wsFontName, _T("Adobe"), _T("A"));
@@ -670,21 +670,21 @@ long   GetNextNameValue(HKEY key, LPCTSTR pszSubkey, LPTSTR pszName, LPTSTR pszD
 
 		//_ASSERTE(lpszFontName && lpszFontName[0] != 0);
 		if (wsFontName.length() < 1)
-			return FALSE;
+            return false;
 
 		//_ASSERTE(lpszDisplayName);
 		if (wsDisplayName.length() < 1)
-			return FALSE;
+            return false;
 
 		//_ASSERTE(lpszFontFile);
 		if (wsFontFile.length() < 1)
-			return FALSE;
+            return false;
 
 		wsDisplayName	= _T("");
 		wsFontFile		= _T("");
 
-		BOOL blBold   = *bBold;
-		BOOL blItalic = *bItalic;
+        bool blBold   = *bBold;
+        bool blItalic = *bItalic;
 	
 		string_replaceAll(wsFontName, _T("Adobe"), _T("A"));
 		UtilsStrClear( wsFontName );
@@ -699,14 +699,14 @@ long   GetNextNameValue(HKEY key, LPCTSTR pszSubkey, LPTSTR pszName, LPTSTR pszD
 
 			if ( sName.find(wsFontName) >=0 )//todooo проверить
 			{
-				bResult = TRUE;
+                bResult = true;
 				arr_wsDisplayName.push_back(sName);
 				arr_wsFontFile.push_back(szData);
 			}
 
 			//if (_tcsnicmp(lpszFontName, szName, _tcslen(lpszFontName)) == 0)
 			//{
-			//	bResult = TRUE;
+            //	bResult = true;
 			//	_tcsncpy( arrlpszDisplayName[nCurFontIndex], szName, nDisplayNameSize - 1);
 			//	_tcsncpy( arrlpszFontFile[nCurFontIndex],    szData, nFontFileSize - 1);
 			//	nCurFontIndex++;
@@ -782,20 +782,20 @@ long   GetNextNameValue(HKEY key, LPCTSTR pszSubkey, LPTSTR pszName, LPTSTR pszD
 			{
 				wsDisplayName	= arr_wsDisplayName[arrFont[3]];
 				wsFontFile		= arr_wsFontFile[arrFont[3]];
-				blBold   = FALSE;
-				blItalic = FALSE;
+                blBold   = false;
+                blItalic = false;
 			}
 			else if ( blBold && blItalic && arrFont[3] < 0 && arrFont[1] >= 0 )
 			{
 				wsDisplayName	= arr_wsDisplayName[arrFont[1]];
 				wsFontFile		= arr_wsFontFile[arrFont[1]];
-				blBold = FALSE;
+                blBold = false;
 			}
 			else if ( blBold && blItalic && arrFont[3] < 0 && arrFont[2] >= 0 )
 			{
 				wsDisplayName	= arr_wsDisplayName[arrFont[2]];
 				wsFontFile		= arr_wsFontFile[arrFont[2]];
-				blItalic = FALSE;
+                blItalic = false;
 			}
 			else if ( blBold && blItalic && arrFont[3] < 0 && arrFont[0] >= 0 )
 			{
@@ -806,7 +806,7 @@ long   GetNextNameValue(HKEY key, LPCTSTR pszSubkey, LPTSTR pszName, LPTSTR pszD
 			{
 				wsDisplayName	= arr_wsDisplayName[arrFont[1]];
 				wsFontFile		= arr_wsFontFile[arrFont[1]];
-				blBold = FALSE;
+                blBold = false;
 			}
 			else if ( blBold && !blItalic && arrFont[1] < 0 && arrFont[0] >= 0 )
 			{
@@ -817,7 +817,7 @@ long   GetNextNameValue(HKEY key, LPCTSTR pszSubkey, LPTSTR pszName, LPTSTR pszD
 			{
 				wsDisplayName	= arr_wsDisplayName[arrFont[2]];
 				wsFontFile		= arr_wsFontFile[arrFont[2]];
-				blItalic = FALSE;
+                blItalic = false;
 			}
 			else if ( !blBold && blItalic && arrFont[2] < 0 && arrFont[0] >= 0 )
 			{
@@ -838,16 +838,16 @@ long   GetNextNameValue(HKEY key, LPCTSTR pszSubkey, LPTSTR pszName, LPTSTR pszD
 					if ( arrFont[nIndex] >= 0 )
 						break;
 				if ( nIndex >= 4 )
-					bResult = FALSE;
+                    bResult = false;
 
 				if ( bResult )
 				{
 					switch ( nIndex )
 					{
 						case 0: break;
-						case 1: blBold = FALSE; break;
-						case 2: blItalic = FALSE; break;
-						case 3: blItalic = FALSE; blBold = FALSE; break;
+                        case 1: blBold = false; break;
+                        case 2: blItalic = false; break;
+                        case 3: blItalic = false; blBold = false; break;
 					}
 					wsDisplayName	=  arr_wsDisplayName[arrFont[nIndex]];
 					wsFontFile		= arr_wsFontFile[arrFont[nIndex]];
@@ -868,21 +868,21 @@ long   GetNextNameValue(HKEY key, LPCTSTR pszSubkey, LPTSTR pszName, LPTSTR pszD
 
 
 #elif defined(__linux__)
-BOOL GetFontFile (NSStructures::CFont *pFont, std::wstring & wsFontName, std::wstring & wsDisplayName, std::wstring & wsFontFile, BOOL *bBold, BOOL *bItalic)
+bool GetFontFile (NSStructures::CFont *pFont, std::wstring & wsFontName, std::wstring & wsDisplayName, std::wstring & wsFontFile, bool *bBold, bool *bItalic)
 {
 	//todooo linux
-	return FALSE;
+    return false;
 }
 
 #else
-BOOL GetFontFile (NSStructures::CFont *pFont, std::wstring & wsFontName, std::wstring & wsDisplayName, std::wstring & wsFontFile, BOOL *bBold, BOOL *bItalic)
+bool GetFontFile (NSStructures::CFont *pFont, std::wstring & wsFontName, std::wstring & wsDisplayName, std::wstring & wsFontFile, bool *bBold, bool *bItalic)
 {
 	//todooo mac
-	return FALSE;
+    return false;
 }
 #endif
 #ifdef BUILD_CONFIG_OPENSOURCE_VERSION
-	BOOL GetFontFile2(NSStructures::CFont *pFont, LPCTSTR lpszFontName, LPTSTR lpszDisplayName, int nDisplayNameSize, LPTSTR lpszFontFile, int nFontFileSize, BOOL *bBold, BOOL *bItalic, CFontManager *pFontManager)
+    bool GetFontFile2(NSStructures::CFont *pFont, LPCTSTR lpszFontName, LPTSTR lpszDisplayName, int nDisplayNameSize, LPTSTR lpszFontFile, int nFontFileSize, bool *bBold, bool *bItalic, CFontManager *pFontManager)
 	{
 		if ( pFontManager )
 		{
@@ -903,7 +903,7 @@ BOOL GetFontFile (NSStructures::CFont *pFont, std::wstring & wsFontName, std::ws
 			//	::SysFreeString( bsFontName );
 			//	::SysFreeString( bsFontPath );
 			//	::SysFreeString( bsFontStyle );
-			//	return FALSE;
+            //	return false;
 			//}
 
 			::SysFreeString( bsParams );
@@ -923,12 +923,12 @@ BOOL GetFontFile (NSStructures::CFont *pFont, std::wstring & wsFontName, std::ws
 			::SysFreeString( bsFontStyle );
 
 			if ( *bBold && -1 != sStyle.Find( _T("Bold") ) )
-				*bBold = FALSE;
+                *bBold = false;
 
 			if ( *bItalic && ( -1 != sStyle.Find( _T("Italic") ) || -1 != sStyle.Find( _T("Oblique") ) ) )
-				*bItalic = FALSE;
+                *bItalic = false;
 
-			return TRUE;
+            return true;
 		}
 		else
 		{
@@ -936,7 +936,7 @@ BOOL GetFontFile (NSStructures::CFont *pFont, std::wstring & wsFontName, std::ws
 		}
 	}
 #else
-BOOL GetFontFile2(NSStructures::CFont *pFont, std::wstring & wsFontName, std::wstring & wsDisplayName, std::wstring & wsFontFile, BOOL *bBold, BOOL *bItalic, CFontManager *pFontManager)
+bool GetFontFile2(NSStructures::CFont *pFont, std::wstring & wsFontName, std::wstring & wsDisplayName, std::wstring & wsFontFile, bool *bBold, bool *bItalic, CFontManager *pFontManager)
 	{
 		if ( pFontManager )
 		{
@@ -947,17 +947,17 @@ BOOL GetFontFile2(NSStructures::CFont *pFont, std::wstring & wsFontName, std::ws
             oFontSelectFormat.bItalic = new INT(*bItalic);
             CFontInfo* pFontInfo = pFontManager->GetFontInfoByParams(oFontSelectFormat);
             if(NULL == pFontInfo)
-                return FALSE;
+                return false;
             wsFontFile = pFontInfo->m_wsFontPath;
             wsDisplayName = pFontInfo->m_wsFontName;
             
             if (*bBold && pFontInfo->m_bBold)
-                *bBold = FALSE;
+                *bBold = false;
             
             if (*bItalic && pFontInfo->m_bItalic)
-                *bItalic = FALSE;
+                *bItalic = false;
             
-            return TRUE;
+            return true;
 		}
 		else
 		{
@@ -967,7 +967,7 @@ BOOL GetFontFile2(NSStructures::CFont *pFont, std::wstring & wsFontName, std::ws
 #endif
 
 
-BOOL  GetWinVer(LPTSTR lpszVersion, int nVersionSize, int *pnVersion)
+bool  GetWinVer(LPTSTR lpszVersion, int nVersionSize, int *pnVersion)
 {
 #if defined (_WIN32) || defined(_WIN64)
     _tcsncpy(lpszVersion, WUNKNOWNSTR, nVersionSize-1);
@@ -979,7 +979,7 @@ BOOL  GetWinVer(LPTSTR lpszVersion, int nVersionSize, int *pnVersion)
 	osinfo.dwOSVersionInfoSize = sizeof(OSVERSIONINFO);
 
 	if ( !GetVersionEx(&osinfo) )
-		return FALSE;
+        return false;
 
 	DWORD dwPlatformId   = osinfo.dwPlatformId;
 	DWORD dwMinorVersion = osinfo.dwMinorVersion;
@@ -1072,9 +1072,9 @@ BOOL  GetWinVer(LPTSTR lpszVersion, int nVersionSize, int *pnVersion)
 
 	_tcsncpy(lpszVersion, cp, nVersionSize-1);
 
-	return TRUE;
+    return true;
 #else
-    return FALSE;
+    return false;
 #endif
 }
 

@@ -74,10 +74,10 @@ typedef struct TPageAttrRec
 //----- PagesObject -----------------------------------------------------------
 unsigned long PagesAddKids     (Pages pParent, Dict pKid);
 Pages         PagesNew         (MMgr  oMMgr, Pages pParent, Xref pXref);
-BOOL          PagesValidate    (Pages pPages);
+bool          PagesValidate    (Pages pPages);
 unsigned long PageInsertBefore (Page  pPage, Page pTarget);
 //----- PageObject ------------------------------------------------------------
-BOOL          PageValidate            (Page pPage);
+bool          PageValidate            (Page pPage);
 Page          PageNew                 (MMgr oMMgr, Xref pXref);
 void*         PageGetInheritableItem  (Page pPage, const char *sKey, unsigned short nObjClass);
 const char*   PageGetXObjectName      (Page pPage, XObject pXobj);
@@ -89,7 +89,7 @@ void          PageSetFilter           (Page pPage, unsigned int nFilter);
 unsigned long PageCheckState          (Page pPage, unsigned int nMode);
 //------ Внешние функции ------------------------------------------------------
 float             PageTextWidth            (Page pPage, const BYTE *sText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID);
-unsigned int      PageMeasureText          (Page pPage, const char *sText, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, BOOL bWordWrap, float *fRealWidth);
+unsigned int      PageMeasureText          (Page pPage, const char *sText, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, bool bWordWrap, float *fRealWidth);
 float             PageGetWidth             (Page pPage);
 float             PageGetHeight            (Page pPage);
 FontDict          PageGetCurrentFont       (Page pPage);

@@ -29,12 +29,12 @@ class CFileDownloader : public CBaseThread
 {
 public :
 
-	CFileDownloader (CString sFileUrl, BOOL bDelete = TRUE) : CBaseThread(0)
+    CFileDownloader (CString sFileUrl, bool bDelete = true) : CBaseThread(0)
 	{
 		m_pFile     = NULL;
 		m_sFilePath = _T("");
 		m_sFileUrl  = sFileUrl;
-		m_bComplete = FALSE;
+        m_bComplete = false;
 		m_bDelete   = bDelete;
 	}
 	~CFileDownloader ()
@@ -57,7 +57,7 @@ public :
 	{
 		return m_sFilePath;
 	}
-	BOOL    IsFileDownloaded()
+    bool    IsFileDownloaded()
 	{
 		return m_bComplete;
 	}
@@ -214,7 +214,7 @@ protected :
 	}
 	virtual      DWORD ThreadProc ()
 	{
-		m_bComplete = FALSE;
+        m_bComplete = false;
 
 		CoInitialize ( NULL );
 
@@ -233,7 +233,7 @@ protected :
 		m_bRunThread = FALSE;
 		CoUninitialize ();
 
-		m_bComplete = TRUE;
+        m_bComplete = true;
 		return 0;
 	}
 
@@ -359,8 +359,8 @@ protected :
 	CString  m_sFilePath;       // Путь к сохраненному файлу на диске
 	CString  m_sFileUrl;        // Ссылка на скачивание файла
 
-	BOOL     m_bComplete;       // Закачался файл или нет
-	BOOL     m_bDelete;         // Удалять ли файл в деструкторе
+    bool     m_bComplete;       // Закачался файл или нет
+    bool     m_bDelete;         // Удалять ли файл в деструкторе
 
 };
 #else
@@ -394,7 +394,7 @@ class CFileDownloader
 {
 public :
 
-    CFileDownloader (CString sFileUrl, BOOL bDelete = TRUE)
+    CFileDownloader (CString sFileUrl, bool bDelete = true)
     {
 
         char filename[L_tmpnam];
@@ -402,7 +402,7 @@ public :
 
         m_sFilePath;
         m_sFileUrl  = sFileUrl;
-        m_bComplete = FALSE;
+        m_bComplete = false;
         m_bDelete   = bDelete;
     }
     ~CFileDownloader ()
@@ -444,7 +444,7 @@ public :
                close(fp);
            }
 
-           m_bComplete = CURLE_OK == res;
+           m_bComplete = (CURLE_OK == res);
            if (m_bComplete)
                m_sFilePath = sOut;
         //int nRes = execl("/usr/bin/wget", stringWstingToUtf8String (m_sFileUrl).c_str(), "-P", stringWstingToUtf8String (m_sFilePath).c_str(), (char *)NULL);
@@ -460,7 +460,7 @@ public :
     {
         return m_sFilePath;
     }
-    BOOL    IsFileDownloaded()
+    bool    IsFileDownloaded()
     {
         return m_bComplete;
     }
@@ -501,8 +501,8 @@ protected :
     CString  m_sFilePath;       // Путь к сохраненному файлу на диске
     CString  m_sFileUrl;        // Ссылка на скачивание файла
 
-    BOOL     m_bComplete;       // Закачался файл или нет
-    BOOL     m_bDelete;         // Удалять ли файл в деструкторе
+    bool     m_bComplete;       // Закачался файл или нет
+    bool     m_bDelete;         // Удалять ли файл в деструкторе
 
 };
 

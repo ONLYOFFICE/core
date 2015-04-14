@@ -232,7 +232,7 @@ public:
 		pPair = m_mapSettings.find(_T("tmdocs_monospace"));
 		if (m_mapSettings.end() != pPair)
 		{
-			oFont.Monospace = (BOOL)(pPair->second == _T("1"));
+                        oFont.Monospace = (bool)(pPair->second == _T("1"));
 		}
 		pPair = m_mapSettings.find(_T("tmdocs_panose"));
 		if (m_mapSettings.end() != pPair)
@@ -398,18 +398,18 @@ public:
 		if (m_mapSettings.end() != pPair)
 		{
 			if (_T("bold") == pPair->second)
-				oRun.FontBold = (BOOL)TRUE;
+                                oRun.FontBold = true;
 			else
-				oRun.FontBold = (BOOL)FALSE;
+                                oRun.FontBold = false;
 		}
 
 		pPair = m_mapSettings.find(_T("font-style"));
 		if (m_mapSettings.end() != pPair)
 		{
 			if (_T("italic") == pPair->second)
-				oRun.FontItalic = (BOOL)TRUE;
+                                oRun.FontItalic = true;
 			else
-				oRun.FontItalic = (BOOL)FALSE;
+                                oRun.FontItalic = false;
 		}
 
 		pPair = m_mapSettings.find(_T("text-transform"));
@@ -426,9 +426,9 @@ public:
 		if (m_mapSettings.end() != pPair)
 		{
 			if (_T("underline") == pPair->second)
-				oRun.FontUnderline = (BOOL)TRUE;
+                                oRun.FontUnderline = true;
 			else 
-				oRun.FontUnderline = (BOOL)FALSE;
+                                oRun.FontUnderline = false;
 		}
 
 		pPair = m_mapSettings.find(_T("font-size"));
@@ -730,7 +730,7 @@ public:
 
 				if (_T("p") == oNodePar.GetName())
 				{
-					pParagraph->m_oPFRun.hasBullet = (BOOL)FALSE;
+                                        pParagraph->m_oPFRun.hasBullet = false;
 
 					CString strClass = oNodePar.GetAttribute(_T("class"));
 
@@ -751,7 +751,7 @@ public:
 				}
 				else
 				{
-					pParagraph->m_oPFRun.hasBullet = (BOOL)TRUE;
+                                        pParagraph->m_oPFRun.hasBullet = true;
 
 					CString strClass = oNodePar.GetAttribute(_T("class"));
 
@@ -790,7 +790,7 @@ public:
 								pParagraph = &oText.m_arParagraphs[nNumberPF];
 								++nNumberPF;
 
-								pParagraph->m_oPFRun.hasBullet = (BOOL)TRUE;
+                                                                pParagraph->m_oPFRun.hasBullet = true;
 								pParagraph->m_lTextType = oText.m_lTextType;
                                 pParagraph->m_lTextLevel = (std::max)((LONG)0, lParLevel);
 

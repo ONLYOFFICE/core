@@ -9,7 +9,7 @@ namespace NSHtmlRenderer
 	public:
 		LONG GetImageType(const std::wstring& strFile);
 
-		void DrawOnRenderer(IRenderer* pRenderer, const std::wstring& strFile, const double& dX, const double& dY, const double& dW, const double& dH, const BOOL& bIsFromFileUse);
+        void DrawOnRenderer(IRenderer* pRenderer, const std::wstring& strFile, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bIsFromFileUse);
 	};
 }
 #endif

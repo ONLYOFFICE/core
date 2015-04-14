@@ -130,7 +130,7 @@ namespace MathEquation
 			{				
 			}
 
-			void WriteRPR(TMathFont* pFont, LONG nSize, BOOL bIsOpen)
+            void WriteRPR(TMathFont* pFont, LONG nSize, bool bIsOpen)
 			{
 				if (NULL != pFont)
 				{
@@ -202,7 +202,7 @@ namespace MathEquation
 
 			void WriteRun(bool bLast = false)
 			{
-				BOOL bIsOpen;
+                bool bIsOpen;
 				if (!m_aCommandStack.empty())
 					bIsOpen = m_aCommandStack.top()->IsOpenNode(); //if false write ctrlPrp
 				else
@@ -335,7 +335,7 @@ namespace MathEquation
 			}
 			virtual void BeginChar(Unicode_t uChar, uint8_t nTypeFace, bool bSpecialSymbol)
 			{
-				BOOL bIsOpen;
+                bool bIsOpen;
 				if (!m_aCommandStack.empty())
 					bIsOpen = m_aCommandStack.top()->IsOpenNode(); //if false write ctrlPrp
 				else
@@ -816,10 +816,11 @@ namespace MathEquation
 				CString str;
 				switch(eType)
 				{		
+                //todooo проверить запись .. (BYTE)SimpleTypes::ххх
 					case integraltypeSingle:
 						str.Insert(0,0x222B);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						lCount = 1;
@@ -827,20 +828,20 @@ namespace MathEquation
 					case integraltypeSingleRSub:
 						str.Insert(0,0x222B);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true);
 						lCount = 1;
 						break;
 					case integraltypeSingleRSubSup:
 						str.Insert(0,0x222B);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						lCount = 1;
 						break;
 					case integraltypeSingleOriented:
 						str.Insert(0,0x222E);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						lCount = 1;
@@ -848,7 +849,7 @@ namespace MathEquation
 					case integraltypeSingleOrientedRSub:
 						str.Insert(0,0x222E);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true);
 						lCount = 1;
 						break;
@@ -856,7 +857,7 @@ namespace MathEquation
 					case integraltypeDouble:
 						str.Insert(0,0x222C);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						lCount = 2;
@@ -864,14 +865,14 @@ namespace MathEquation
 					case integraltypeDoubleRSub:
 						str.Insert(0,0x222C);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true);
 						lCount = 2;
 						break;
 					case integraltypeDoubleOriented:
 						str.Insert(0,0x222F);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						lCount = 2;
@@ -879,7 +880,7 @@ namespace MathEquation
 					case integraltypeDoubleOrientedRSub:
 						str.Insert(0,0x222F);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						lCount = 2;
 						break;
@@ -887,7 +888,7 @@ namespace MathEquation
 					case integraltypeTriple:
 						str.Insert(0,0x222D);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						lCount = 3;
@@ -895,14 +896,14 @@ namespace MathEquation
 					case integraltypeTripleRSub:
 						str.Insert(0,0x222D);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						lCount = 3;
 						break;
 					case integraltypeTripleOriented:
 						str.Insert(0,0x2230);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr); 
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						lCount = 3;
@@ -910,7 +911,7 @@ namespace MathEquation
 					case integraltypeTripleOrientedRSub:
 						str.Insert(0,0x2230);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						lCount = 3;
 						break;
@@ -918,20 +919,20 @@ namespace MathEquation
 					case integraltypeSingleCSubSup:
 						str.Insert(0,0x222B);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						lCount = 1;
 						break;
 					case integraltypeSingleCSub:
 						str.Insert(0,0x222B);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true);
 						lCount = 1;
 						break;
 					case integraltypeSingleOrientedCSub:
 						str.Insert(0,0x222E);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						lCount = 1;
 						break;
@@ -939,14 +940,14 @@ namespace MathEquation
 					case integraltypeDoubleOrientedCSub:
 						str.Insert(0,0x222F);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						lCount = 2;
 						break;
 					case integraltypeDoubleCSub:
 						str.Insert(0,0x222C);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						lCount = 2;
 						break;
@@ -954,14 +955,14 @@ namespace MathEquation
 					case integraltypeTripleOrientedCSub:
 						str.Insert(0,0x2230);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						lCount = 3;
 						break;
 					case integraltypeTripleCSub:
 						str.Insert(0,0x222D);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						lCount = 3;
 						break;
@@ -1066,151 +1067,151 @@ namespace MathEquation
 					case narySumCSub:
 						str.Insert(0,0x2211);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case narySumCSubSup:
 						str.Insert(0,0x2211);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr); 
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						break;
 					case narySum:
 						str.Insert(0,0x2211);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						break;
 					case narySumRSub:
 						str.Insert(0,0x2211);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case narySumRSubSup:
 						str.Insert(0,0x2211);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						break;
 
 					case naryProdCSub:
 						str.Insert(0,0x220F);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryProdCSubSup:
 						str.Insert(0,0x220F);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr); 
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						break;
 					case naryProd:
 						str.Insert(0,0x220F);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						break;
 					case naryProdRSub:
 						str.Insert(0,0x220F);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryProdRSubSup:
 						str.Insert(0,0x220F);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						break;
 
 					case naryCoProdCSub:
 						str.Insert(0,0x2210);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryCoProdCSubSup:
 						str.Insert(0,0x2210);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr); 
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						break;
 					case naryCoProd:
 						str.Insert(0,0x2210);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						break;
 					case naryCoProdRSub:
 						str.Insert(0,0x2210);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryCoProdRSubSup:
 						str.Insert(0,0x2210);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						break;
 
 					case naryUnionCSub:
 						str.Insert(0,0x22C3);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryUnionCSubSup:
 						str.Insert(0,0x22C3);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr); 
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						break;
 					case naryUnion:
 						str.Insert(0,0x22C3);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						break;
 					case naryUnionRSub:
 						str.Insert(0,0x22C3);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryUnionRSubSup:
 						str.Insert(0,0x22C3);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						break;
 
 					case naryIntersectCSub:
 						str.Insert(0,0x22C2);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryIntersectCSubSup:
 						str.Insert(0,0x22C2);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr); 
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						break;
 					case naryIntersect:
 						str.Insert(0,0x22C2);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocUndOvr);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocUndOvr);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SubHide, true);
 						break;
 					case naryIntersectRSub:
 						str.Insert(0,0x22C2);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::SupHide, true); 
 						break;
 					case naryIntersectRSubSup:
 						str.Insert(0,0x22C2);
 						WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-						WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, SimpleTypes::limLocSubSup);
+                        WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::LimLoc, (BYTE)SimpleTypes::limLocSubSup);
 						break;
 
 				}
@@ -1344,7 +1345,7 @@ namespace MathEquation
 
 				WriteItemEnd(nCurPos);
 			}
-			void WriteItemVal(BYTE name, BOOL val)
+            void WriteItemVal(BYTE name, bool val)
 			{
 				int nCurPos = WriteItemStart(name);
 
@@ -1397,13 +1398,13 @@ namespace MathEquation
 
 			void Next() 
 			{
-				BOOL bCurPile;
+                bool bCurPile;
 				bCurPile = GetPile();
 				if (!bCurPile || (nBlockNum == -1))
 					nBlockNum++;
 			}
 
-			BOOL IsOpenNode()
+            bool IsOpenNode()
 			{
 				return bOpenNode;
 			}
@@ -1411,7 +1412,7 @@ namespace MathEquation
 			{
 				return nCount;
 			}
-			void SetPile(BOOL bSetPile)
+            void SetPile(bool bSetPile)
 			{
 				bPile = bSetPile;
 				bEqArrayStart = !bSetPile;
@@ -1504,9 +1505,9 @@ namespace MathEquation
 			int nCount;
 			int nRows;
 			std::stack<int> m_aBaseStack;
-			BOOL bOpenNode;
-			BOOL bPile;
-			BOOL bEqArrayStart;
+            bool bOpenNode;
+            bool bPile;
+            bool bEqArrayStart;
 			int nBlockNum;
 		};
 
@@ -2070,7 +2071,7 @@ namespace MathEquation
 					pWriter->WriteNodeEnd("result");
 			}
 		private:
-			BOOL bPile;
+            bool bPile;
 		};*/
 		class CBracketsWithSeparatorCommand : public CBaseCommand
 		{

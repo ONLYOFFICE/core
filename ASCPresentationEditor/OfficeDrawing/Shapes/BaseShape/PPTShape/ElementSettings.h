@@ -19,7 +19,7 @@ public:
 	// чтобы не плодить классы - это value, когда m_bComplex == true
 	BYTE* m_pOptions;
 
-	BOOL m_bIsTruncated;
+        bool m_bIsTruncated;
 
 public:
 	CProperty()
@@ -30,7 +30,7 @@ public:
 		m_lValue = 0;
 		m_pOptions = NULL;
 
-		m_bIsTruncated = FALSE;
+                m_bIsTruncated = false;
 	}
 	~CProperty()
 	{
@@ -86,7 +86,7 @@ public:
 
 				if (m_lValue != (dwSize + 6))
 				{
-					BOOL b = FALSE;
+                                        bool b = false;
 				}
 
 				m_lValue = dwSize;

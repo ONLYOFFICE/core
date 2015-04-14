@@ -403,9 +403,9 @@ namespace NSGuidesVML
 								XmlUtils::CXmlNodes listNode;
 								PathNode.GetNodes(_T("*"), listNode);
 
-								BOOL bFill = PathNode.GetAttribute(_T("fill"), _T("norm")) != _T("none");
+                                                                bool bFill = PathNode.GetAttribute(_T("fill"), _T("norm")) != _T("none");
 								CString stroke = PathNode.GetAttribute(_T("stroke"), _T("true"));
-								BOOL bStroke = (stroke == _T("true")) || (stroke == _T("1"));
+                                                                bool bStroke = (stroke == _T("true")) || (stroke == _T("1"));
 	
 								int nNodeCount = listNode.GetCount();
 								for (int j=0; j<nNodeCount; j++)
@@ -413,7 +413,7 @@ namespace NSGuidesVML
 									XmlUtils::CXmlNode node;
 									if(listNode.GetAt(j, node))
 									{										
-										BOOL bNum = false; //управляем запятыми
+                                                                                bool bNum = false; //управляем запятыми
 
 										CString strName = node.GetName();
 										if (strName == _T("moveTo"))
@@ -526,7 +526,7 @@ namespace NSGuidesVML
 
 											for (int k=0; k<nPtCount; k++)
 											{
-												BOOL bLastPount = false;
+                                                                                                bool bLastPount = false;
 												if ( k == nPtCount-1)
 													bLastPount = true;
 
@@ -580,7 +580,7 @@ namespace NSGuidesVML
 				return lVal;
 			}
 
-			CString ConvertPathPoint (CString strX, CString strY, BOOL &bNum, std::vector<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides, BOOL bLPoint)
+                        CString ConvertPathPoint (CString strX, CString strY, bool &bNum, std::vector<NSGuidesOOXML::CFormula> &strGuides, std::map<CString, long> &mapGuides, bool bLPoint)
 			{
 				CString strRes = _T("");
 				ParamType eType1, eType2;
@@ -605,7 +605,7 @@ namespace NSGuidesVML
 				return strRes;
 			}
 
-			CString ConvertPathParam (LONG lParam, ParamType eType, BOOL &bNum)
+                        CString ConvertPathParam (LONG lParam, ParamType eType, bool &bNum)
 			{				
 				CString strRes = _T("");
 				if (eType == ptAdjust)

@@ -111,10 +111,10 @@ void	UtilsStrClear(std::wstring	& sString);
     long	GetNextNameValue(HKEY key, LPCTSTR pszSubkey, LPTSTR pszName, LPTSTR pszData);
 #endif
 
-BOOL	GetWinVer(LPTSTR lpszVersion, int nVersionSize, int *pnVersion);
-BOOL	GetFontFile (NSStructures::CFont *pFont, std::wstring & wsFontName, std::wstring & wsDisplayName, std::wstring & wsFontFile, BOOL *bBold, BOOL *bItalic);
+bool	GetWinVer(LPTSTR lpszVersion, int nVersionSize, int *pnVersion);
+bool	GetFontFile (NSStructures::CFont *pFont, std::wstring & wsFontName, std::wstring & wsDisplayName, std::wstring & wsFontFile, bool *bBold, bool *bItalic);
 
-BOOL	GetFontFile2(NSStructures::CFont *pFont, std::wstring & wsFontName, std::wstring & wsDisplayName, std::wstring & wsFontFile, BOOL *bBold, BOOL *bItalic, CFontManager *pFontManager = NULL);
+bool	GetFontFile2(NSStructures::CFont *pFont, std::wstring & wsFontName, std::wstring & wsDisplayName, std::wstring & wsFontFile, bool *bBold, bool *bItalic, CFontManager *pFontManager = NULL);
 
 //-----------------------------------------------------------------------------------------------------
 //  CRC 32

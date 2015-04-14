@@ -9,7 +9,7 @@ public:
 	CString m_strDstFilePath;
 	CString m_strAdditionalPath;
 	CString m_strDstMedia;
-	BOOL	m_bIsWeb;
+    bool	m_bIsWeb;
 
 public:
 	CDstInfo()

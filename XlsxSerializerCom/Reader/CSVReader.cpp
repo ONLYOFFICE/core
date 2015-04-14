@@ -5,7 +5,7 @@
 
 namespace CSVReader
 {
-	void AddCell(CString &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, BOOL bIsWrap)
+    void AddCell(CString &sText, INT nStartCell, std::stack<INT> &oDeleteChars, OOX::Spreadsheet::CRow &oRow, INT nRow, INT nCol, bool bIsWrap)
 	{
 		while(!oDeleteChars.empty())
 		{
@@ -132,11 +132,12 @@ namespace CSVReader
             const WCHAR wcQuote = _T('"');
             const WCHAR wcTab = _T('\t');
 
-			BOOL bIsWrap = FALSE;
+            bool bIsWrap = false;
 			WCHAR wcCurrent;
 			INT nStartCell = 0;
 			std::stack<INT> oDeleteChars;
-			BOOL bInQuote = FALSE;
+
+            bool bInQuote = false;
 			INT nIndexRow = 0;
 			INT nIndexCol = 0;
 			OOX::Spreadsheet::CRow *pRow = new OOX::Spreadsheet::CRow();
@@ -152,7 +153,7 @@ namespace CSVReader
 					// New Cell
 					CString sCellText(pTemp + nStartCell, nIndex - nStartCell);
 					AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
-					bIsWrap = FALSE;
+                    bIsWrap = false;
 
 					nStartCell = nIndex + 1;
 					if (nStartCell == nSize)
@@ -166,7 +167,7 @@ namespace CSVReader
 					if (bInQuote)
 					{
 						// Добавим Wrap
-						bIsWrap = TRUE;
+                        bIsWrap = true;
 						continue;
 					}
 					// New line
@@ -174,7 +175,7 @@ namespace CSVReader
 					{
 						CString sCellText(pTemp + nStartCell, nIndex - nStartCell);
 						AddCell(sCellText, nStartCell, oDeleteChars, *pRow, nIndexRow, nIndexCol++, bIsWrap);
-						bIsWrap = FALSE;
+                        bIsWrap = false;
 					}
 
 					if (wcNewLineR == wcCurrent && nIndex + 1 != nSize && wcNewLineN == pTemp[nIndex + 1])
@@ -194,13 +195,13 @@ namespace CSVReader
 				else if (wcQuote == wcCurrent)
 				{
 					// Quote
-					if (FALSE == bInQuote && nStartCell == nIndex && nIndex + 1 != nSize)
+                    if (false == bInQuote && nStartCell == nIndex && nIndex + 1 != nSize)
 					{
 						// Начало новой ячейки (только если мы сразу после разделителя и не в конце файла)
 						bInQuote = !bInQuote;
 						nStartCell = nIndex + 1;
 					}
-					else if (TRUE == bInQuote)
+                    else if ( bInQuote )
 					{
 						// Нужно удалить кавычку ограничитель
 						oDeleteChars.push(nIndex);

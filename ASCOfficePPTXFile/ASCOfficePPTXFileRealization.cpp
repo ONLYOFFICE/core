@@ -31,7 +31,7 @@ CPPTXFile::CPPTXFile(extract_to_directory fCallbackExtract, compress_from_direct
 	//
 	m_strFontDirectory = _T("");
 	m_strMediaDirectory = _T("");
-	m_bIsUseSystemFonts = FALSE;
+    m_bIsUseSystemFonts = false;
 	m_strEmbeddedFontsDirectory = _T("");
 
     m_strFolderThemes = _T("");
@@ -334,7 +334,7 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput)
 
 		if (NULL != oBinaryWriter.m_pCommon->m_pFontPicker)
 		{
-			oBinaryWriter.m_pCommon->m_pNativePicker->m_bIsEmbeddedFonts = TRUE;
+            oBinaryWriter.m_pCommon->m_pNativePicker->m_bIsEmbeddedFonts = true;
 			oBinaryWriter.m_pCommon->m_pNativePicker->m_oEmbeddedFonts.m_strEmbeddedFontsFolder = m_strEmbeddedFontsDirectory;
 		}
 	}

@@ -63,7 +63,7 @@ namespace NSHtmlRenderer
 		return 0;
 	}
 
-	void CImageExt::DrawOnRenderer(IRenderer* pRenderer, const std::wstring& strFile, const double& dX, const double& dY, const double& dW, const double& dH, const BOOL& bIsFromFileUse = TRUE)
+    void CImageExt::DrawOnRenderer(IRenderer* pRenderer, const std::wstring& strFile, const double& dX, const double& dY, const double& dW, const double& dH, const bool& bIsFromFileUse = true)
 	{
 		if (NULL == pRenderer)
 			return;
@@ -84,7 +84,7 @@ namespace NSHtmlRenderer
 		if (c_nEbookWriter != lRendType)
 			lFileType = GetImageType(strFile);
 
-		BOOL bIsGraphics = FALSE;
+        bool bIsGraphics = false;
 
 		//todo
 		//IASCGraphicsRenderer* pGR = NULL;

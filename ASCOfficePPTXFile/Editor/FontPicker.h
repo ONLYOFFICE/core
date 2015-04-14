@@ -20,7 +20,7 @@ namespace NSFontCutter
 
 		CString m_strFontsDir;
 
-		BOOL					m_bIsEmbeddedFonts;
+        bool					m_bIsEmbeddedFonts;
 
         CEmbeddedFontsManager	m_oEmbeddedFonts;
 
@@ -30,7 +30,7 @@ namespace NSFontCutter
 			m_strFontsDir = _T("");
 
 			m_pFontManager = NULL;
-			m_bIsEmbeddedFonts = FALSE;
+            m_bIsEmbeddedFonts = false;
 		}
 		~CFontDstManager()
 		{
@@ -135,10 +135,10 @@ public:
 		switch (lParam)
 		{
 		case 0:
-			m_oPicker.m_bIsEmbeddedFonts = FALSE;
+            m_oPicker.m_bIsEmbeddedFonts = false;
 			break;
 		case 1:
-			m_oPicker.m_bIsEmbeddedFonts = TRUE;
+            m_oPicker.m_bIsEmbeddedFonts = true;
 			break;
 		default:
 			break;

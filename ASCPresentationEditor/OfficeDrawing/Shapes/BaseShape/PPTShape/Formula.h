@@ -173,8 +173,8 @@ namespace NSGuidesVML
 	};
 	struct SPointExist
 	{
-			BOOL x;
-			BOOL y;
+                        bool x;
+                        bool y;
 
 			SPointExist()
 			{

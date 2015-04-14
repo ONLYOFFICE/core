@@ -146,32 +146,32 @@ Annotation    TextAnnotNew              (MMgr oMMgr, Xref pXref, TRect oRect, co
 }
 
 
-BOOL          AnnotationValidate        (Annotation  pAnnot )
+bool          AnnotationValidate        (Annotation  pAnnot )
 {
     if ( !pAnnot )
-        return FALSE;
+        return false;
 
     if ( pAnnot->pHeader.nObjClass != (OSUBCLASS_ANNOTATION | OCLASS_DICT) )
-        return FALSE;
+        return false;
 
-    return TRUE;
+    return true;
 }
-static BOOL   CheckSubType              (Annotation  pAnnot, AnnotType eType )
+static bool   CheckSubType              (Annotation  pAnnot, AnnotType eType )
 {
     Name oSubtype;
 
     if ( !AnnotationValidate( pAnnot ) )
-        return FALSE;
+        return false;
 
     oSubtype = (Name)DictGetItem( pAnnot, "Subtype", OCLASS_NAME );
 
 	if ( !oSubtype || UtilsStrCmp( oSubtype->sValue, ANNOT_TYPE_NAMES[ (int)eType ] ) != 0 ) 
 	{
 		RaiseError( pAnnot->oError, AVS_OFFICEPDFWRITER_ERROR_INVALID_ANNOTATION, 0 );
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 
 
@@ -326,7 +326,7 @@ unsigned long TextAnnotSetIcon          (Annotation  pAnnot, AnnotIcon eIcon)
     return OK;
 }
 
-unsigned long TextAnnotSetOpened        (Annotation  pAnnot, BOOL bOpened)
+unsigned long TextAnnotSetOpened        (Annotation  pAnnot, bool bOpened)
 {
     BooleanRecPtr oBool;
 

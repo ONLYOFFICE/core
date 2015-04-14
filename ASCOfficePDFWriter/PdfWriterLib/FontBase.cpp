@@ -21,7 +21,7 @@ FontDef       BaseFontDefNew           (MMgr oMMgr, const char *sFontName)
 	pFontDef->pCleanFn      = NULL;
 	pFontDef->pFreeFn       = NULL;
 	pFontDef->pDescriptor   = NULL;
-    pFontDef->bValid        = FALSE;
+    pFontDef->bValid        = false;
 	pFontDef->nMissingWidth = 0;
 	pFontDef->pAttr         = NULL;
 	pFontDef->nFlags        = FONT_STD_CHARSET;
@@ -219,7 +219,7 @@ static TextWidth     BaseFontTextWidth       (FontDict pFont, const BYTE *pText,
 
 	return oRet;
 }
-static unsigned int  BaseFontMeasureText     (FontDict pFont, const BYTE *pText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, BOOL bWordWrap, float *pfRealWidth)
+static unsigned int  BaseFontMeasureText     (FontDict pFont, const BYTE *pText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, bool bWordWrap, float *pfRealWidth)
 {
     float fTempWidth = 0;
     unsigned int nTempLen = 0;
@@ -4672,7 +4672,7 @@ static const CharData c_aoCharDataSymbol[190] =
 //{
 //	const char      *sFontName;//[LIMIT_MAX_NAME_LEN + 1];
 //    const CharData  *pWidthsTable;
-//    BOOL             bIsFontSpecific;
+//    bool             bIsFontSpecific;
 //    short            nAscent;
 //    short            nDescent;
 //    unsigned short   nXHeight;
@@ -4686,7 +4686,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         FONT_COURIER,
         c_aoCharDataCourier,
-        FALSE,
+        false,
         629,
         -157,
         426,
@@ -4696,7 +4696,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         FONT_COURIER_BOLD,
         c_aoCharDataCourierBold,
-        FALSE,
+        false,
         629,
         -157,
         439,
@@ -4706,7 +4706,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         FONT_COURIER_OBLIQUE,
         c_aoCharDataCourierOblique,
-        FALSE,
+        false,
         629,
         -157,
         426,
@@ -4716,7 +4716,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         FONT_COURIER_BOLD_OBLIQUE,
         c_aoCharDataCourierBoldOblique,
-        FALSE,
+        false,
         629,
         -157,
         439,
@@ -4726,7 +4726,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         FONT_HELVETICA,
         c_aoCharDataHelvetica,
-        FALSE,
+        false,
         718,
         -207,
         523,
@@ -4736,7 +4736,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         FONT_HELVETICA_BOLD,
         c_aoCharDataHelveticaBold,
-        FALSE,
+        false,
         718,
         -207,
         532,
@@ -4746,7 +4746,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         FONT_HELVETICA_OBLIQUE,
         c_aoCharDataHelveticaOblique,
-        FALSE,
+        false,
         718,
         -207,
         532,
@@ -4756,7 +4756,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         FONT_HELVETICA_BOLD_OBLIQUE,
         c_aoCharDataHelveticaBoldOblique,
-        FALSE,
+        false,
         718,
         -207,
         532,
@@ -4766,7 +4766,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         FONT_TIMES_ROMAN,
         c_aoCharDataTimes,
-        FALSE,
+        false,
         683,
         -217,
         450,
@@ -4776,7 +4776,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         FONT_TIMES_BOLD,
         c_aoCharDataTimesBold,
-        FALSE,
+        false,
         683,
         -217,
         461,
@@ -4786,7 +4786,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         FONT_TIMES_ITALIC,
         c_aoCharDataTimesItalic,
-        FALSE,
+        false,
         683,
         -217,
         441,
@@ -4796,7 +4796,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         FONT_TIMES_BOLD_ITALIC,
         c_aoCharDataTimesBoldItalic,
-        FALSE,
+        false,
         683,
         -217,
         462,
@@ -4806,7 +4806,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         FONT_SYMBOL,
         c_aoCharDataSymbol,
-        TRUE,
+        true,
         0,
         0,
         0,
@@ -4816,7 +4816,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         FONT_ZAPF_DINGBATS,
         c_aoCharDataZapfDingbats,
-        TRUE,
+        true,
         0,
         0,
         0,
@@ -4826,7 +4826,7 @@ static const Base14FontDefData  c_aoBuiltinFonts[] =
     {
         NULL,
         c_aoCharDataCourier,
-        FALSE,
+        false,
         629,
         -157,
         426,
@@ -4870,7 +4870,7 @@ FontDef                    Base14FontDefNew            (MMgr oMMgr, const char *
 	UtilsStrCpy( pFontDef->sBaseFont, pData->sFontName, pEndPointer );
 
     Type1FontDefAttr pAttr = (Type1FontDefAttr)pFontDef->pAttr;
-    pAttr->bIsBase14Font = TRUE;
+    pAttr->bIsBase14Font = true;
 
 	if ( pData->bIsFontSpecific )
         UtilsStrCpy( pAttr->sEncodingScheme, ENCODING_FONT_SPECIFIC, pAttr->sEncodingScheme + LIMIT_MAX_NAME_LEN);
@@ -4889,7 +4889,7 @@ FontDef                    Base14FontDefNew            (MMgr oMMgr, const char *
 	pFontDef->nXHeight   = pData->nXHeight;
 	pFontDef->nCapHeight = pData->nCapHeight;
 
-	pFontDef->bValid = TRUE;
+    pFontDef->bValid = true;
 
     return pFontDef;
 }

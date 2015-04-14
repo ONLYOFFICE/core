@@ -263,14 +263,14 @@ namespace PPTX
 		bool bulletScheme_			= (0x01 == (0x01 & flag4));
 		bool bulletHasScheme_		= (0x02 == (0x02 & flag4));
 
-		BOOL Bulleted = FALSE;
+        bool Bulleted = false;
 		if (hasBullet_ || bulletHasFont_ || bulletHasColor_ || bulletHasSize_)
 		{
 			WORD bulletFlag		= *(_UINT16*)(Data + pos); pos += 2;
 			if (bulletFlag & 0x0F)
-				Bulleted	= (BOOL)(0x01 == (bulletFlag & 0x01));
+                Bulleted	=  (0x01 == (bulletFlag & 0x01));
 			else
-				Bulleted	= (BOOL)FALSE;
+                Bulleted	= false;
 		}
 //todooo протестировано тока align
 		if (bulletChar_)
@@ -448,9 +448,9 @@ namespace PPTX
 			WORD fontStyle = *(_UINT16*)(Data + pos); pos += 2;
 
 			if (0x01 == (0x01 & fontStyle))
-				props.b = (BOOL)TRUE;
+                props.b = true;
 			if (0x02 == (0x02 & fontStyle))
-				props.i = (BOOL)TRUE;
+                props.i = true;
 			if (0x04 == (0x04 & fontStyle))
 				props.u = Limit::TextUnderline();
 			if (0x10 == (0x10 & fontStyle))

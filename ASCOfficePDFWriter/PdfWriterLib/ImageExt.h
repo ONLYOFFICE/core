@@ -62,10 +62,10 @@ namespace NSImageExt
 		}
 
 #ifdef BUILD_CONFIG_FULL_VERSION
-		BOOL DrawOnRenderer(IRenderer* pRenderer, CString strFile, double dX, double dY, double dW, double dH)
+        bool DrawOnRenderer(IRenderer* pRenderer, CString strFile, double dX, double dY, double dW, double dH)
 		{
 			if (NULL == pRenderer)
-				return FALSE;
+                return false;
 
 			LONG lFileType = GetImageType(strFile);
 
@@ -130,10 +130,10 @@ namespace NSImageExt
 				// на всякий случай скидываем path
 				pRenderer->PathCommandEnd();
 
-				return TRUE;
+                return true;
 			}
 		
-			return FALSE;
+            return false;
 		}
 #endif
 	};

@@ -270,7 +270,7 @@ namespace NSPresentationEditor
 			m_lSchemeIndex = oSrc.m_lSchemeIndex;
 			return (*this);
 		}
-		AVSINLINE BOOL IsEqual(const CColor& oSrc)
+                AVSINLINE bool IsEqual(const CColor& oSrc)
 		{
 			return ((R == oSrc.R) && (G == oSrc.G) && (B == oSrc.B) && (m_lSchemeIndex == oSrc.m_lSchemeIndex));
 		}
@@ -473,10 +473,10 @@ namespace NSPresentationEditor
 			Alpha = dNewAlpha;
 		}
 
-		BOOL IsEqual(CPen* pPen)
+                bool IsEqual(CPen* pPen)
 		{
 			if (NULL == pPen)
-				return FALSE;
+                                return false;
 
 			return ((Color == pPen->Color) && (Alpha == pPen->Alpha) && (Size == pPen->Size) &&
 				(DashStyle == pPen->DashStyle) && (LineStartCap == pPen->LineStartCap) &&
@@ -603,7 +603,7 @@ namespace NSPresentationEditor
         }
 		inline CString ToXmlWriter(NSPresentationEditor::CXmlWriter* pWriter)
 		{
-			pWriter->WriteNodeBegin(_T("pen"), TRUE);
+                        pWriter->WriteNodeBegin(_T("pen"), true);
 			pWriter->WriteAttributeString(_T("color"), Color.ToString());
 			pWriter->WriteAttributeLONG(_T("alpha"), Alpha);
 			pWriter->WriteAttributeDouble(_T("size"), Size);
@@ -612,7 +612,7 @@ namespace NSPresentationEditor
 			pWriter->WriteAttributeDouble(_T("line-start-cap"), (LONG)LineStartCap);
 			pWriter->WriteAttributeDouble(_T("line-end-cap"), (LONG)LineEndCap);
 			pWriter->WriteAttributeDouble(_T("line-join"), (LONG)LineJoin);
-			pWriter->WriteNodeEnd(_T("pen"), TRUE);
+                        pWriter->WriteNodeEnd(_T("pen"), true);
             
             return CString(_T(""));
 		}
@@ -633,7 +633,7 @@ namespace NSPresentationEditor
 		long TextureAlpha;
 		long TextureMode;
 		
-		BOOL	Rectable;
+                bool	Rectable;
 		Gdiplus::RectF	Rect;
 
 		double LinearAngle;
@@ -693,10 +693,10 @@ namespace NSPresentationEditor
 		}
 
 		
-		BOOL IsEqual(CBrush* pBrush)
+                bool IsEqual(CBrush* pBrush)
 		{
 			if (NULL == pBrush)
-				return FALSE;
+                                return false;
 
 			/*return ((Type == pBrush->Type) && 
 				(Color1 == pBrush->Color1) && (Color2 == pBrush->Color2) &&
@@ -725,7 +725,7 @@ namespace NSPresentationEditor
 
 			TexturePath = _T("");
 
-			Rectable = FALSE;
+                        Rectable = false;
 
 			Rect.X      = 0.0F;
 			Rect.Y      = 0.0F;
@@ -781,15 +781,15 @@ namespace NSPresentationEditor
 		{
 		}
 
-		BOOL IsTexture()
+                bool IsTexture()
 		{
 			return (c_BrushTypeTexture == Type);
 		}
-		BOOL IsOneColor()
+                bool IsOneColor()
 		{
 			return (c_BrushTypeSolid == Type);
 		}
-		BOOL IsTwoColor()
+                bool IsTwoColor()
 		{
 			return ((c_BrushTypeHorizontal <= Type && c_BrushTypeCylinderVer >= Type) ||
 					(c_BrushTypeHatch1 <= Type && c_BrushTypeHatch53 >= Type));
@@ -853,7 +853,7 @@ namespace NSPresentationEditor
 		}
 		inline CString ToXmlWriter(NSPresentationEditor::CXmlWriter* pWriter)
 		{
-			pWriter->WriteNodeBegin(_T("brush"), TRUE);
+                        pWriter->WriteNodeBegin(_T("brush"), true);
 			pWriter->WriteAttributeLONG(_T("brush-type"), Type);
 			pWriter->WriteAttributeString(_T("brush-color1"), Color1.ToString());
 			pWriter->WriteAttributeString(_T("brush-color2"), Color2.ToString());
@@ -865,7 +865,7 @@ namespace NSPresentationEditor
 			pWriter->WriteAttributeDouble(_T("brush-texturealpha"), TextureAlpha);
 			pWriter->WriteAttributeDouble(_T("brush-texturemode"), TextureMode);
 
-			pWriter->WriteNodeEnd(_T("brush"), TRUE);
+                        pWriter->WriteNodeEnd(_T("brush"), true);
            
             return CString(_T(""));
 		}
@@ -878,34 +878,34 @@ namespace NSPresentationEditor
 		CString Path;
 		CString Name;
 		double Size;
-		BOOL Bold;
-		BOOL Italic;
+                bool Bold;
+                bool Italic;
         BYTE Underline;
         BYTE Strikeout;
 
-		BOOL StringGID;
+                bool StringGID;
 		double CharSpace;
 
 		CString PitchFamily;
 		BYTE	Charset;
 		CString Panose;
-		BOOL	Monospace;
+                bool	Monospace;
 	
 	public:
 
-		BOOL IsEqual(CFont* pFont)
+                bool IsEqual(CFont* pFont)
 		{
 			if (NULL == pFont)
-				return FALSE;
+                                return false;
 
 			return ((Name == pFont->Name) && (Path == pFont->Path)  && (StringGID == pFont->StringGID) && (Size == pFont->Size) &&
 				(Bold == pFont->Bold) && (Italic == pFont->Italic) &&
 				(Underline == pFont->Underline) && (Strikeout == pFont->Strikeout));
 		}
-		BOOL IsEqual2(CFont* pFont)
+                bool IsEqual2(CFont* pFont)
 		{
 			if (NULL == pFont)
-				return FALSE;
+                                return false;
 
 			return ((Name == pFont->Name) && (Path == pFont->Path)  && (StringGID == pFont->StringGID) && (Size == pFont->Size) &&
 				(Bold == pFont->Bold) && (Italic == pFont->Italic));
@@ -946,18 +946,18 @@ namespace NSPresentationEditor
 			Path = _T("");
 			
 			Size      = 0;
-			Bold      = FALSE;
-			Italic    = FALSE;
+                        Bold      = false;
+                        Italic    = false;
 			Underline = 0;
 			Strikeout = 0;
 
-			StringGID = FALSE;
+                        StringGID = false;
 			CharSpace = 0.0;
 
 			PitchFamily	= _T("");
 			Charset		= 0;
 			Panose		= _T("");
-			Monospace	= FALSE;
+                        Monospace	= false;
 		}
 		
 	public:
@@ -1011,7 +1011,7 @@ namespace NSPresentationEditor
 	{
 	public:
 	
-		BOOL Visible;
+                bool Visible;
 		double DistanceX;
 		double DistanceY;
 		double BlurSize;
@@ -1022,7 +1022,7 @@ namespace NSPresentationEditor
 
 		void SetDefaultParams()
 		{
-			Visible   = FALSE;
+                        Visible   = false;
 			DistanceX = 15;
 			DistanceY = 15;
 			BlurSize  = 0;
@@ -1214,7 +1214,7 @@ namespace NSPresentationEditor
 
 		void ToXmlWriter(NSPresentationEditor::CXmlWriter* pWriter)
 		{
-			pWriter->WriteNodeBegin(_T("Attributes"), TRUE);
+                        pWriter->WriteNodeBegin(_T("Attributes"), true);
 
 			// add Brush Param
 			pWriter->WriteAttributeLONG(_T("brush-type"), m_oTextBrush.Type);
@@ -1248,7 +1248,7 @@ namespace NSPresentationEditor
 				pWriter->WriteString(m_oTextEdge.ToString());
 			}
 			
-			pWriter->WriteNodeEnd(_T("Attributes"), TRUE);
+                        pWriter->WriteNodeEnd(_T("Attributes"), true);
 		}
 	};
 

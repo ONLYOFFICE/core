@@ -10,7 +10,7 @@ void Common::readAllShapeTypes(const OOX::CPath& oPath, std::vector<CString>& aS
 	if ( !oReader.FromFile( oPath.GetPath() ) )
 		return;
 
-	while ( FALSE != oReader.ReadNextNode() )
+    while ( false != oReader.ReadNextNode() )
 	{
 		CString sName = oReader.GetName();
 		if(_T("v:shapetype") == sName)

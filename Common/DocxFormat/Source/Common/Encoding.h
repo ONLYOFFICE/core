@@ -1,4 +1,5 @@
 #pragma once
+
 #ifndef UTILITY_ENCODING_INCLUDE_H_
 #define UTILITY_ENCODING_INCLUDE_H_
 
@@ -6,8 +7,13 @@
 #include "../Base/ASCString.h"
 
 #if !defined(_WIN32) && !defined (_WIN64)
-#define CP_ACP 0   //
-#define CP_UTF8 1
+
+    #ifndef CP_ACP
+        #define CP_ACP 0   //
+    #endif
+    #ifndef CP_UTF8
+        #define CP_UTF8 1
+    #endif
 #endif
 class Encoding
 {

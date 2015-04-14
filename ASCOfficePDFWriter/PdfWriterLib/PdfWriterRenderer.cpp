@@ -21,9 +21,9 @@ HRESULT CPdfWriterLib::get_Type (LONG *plType)
 //-------- Функции для работы со страницей -------------------------------------------------------
 HRESULT CPdfWriterLib::NewPage ()
 {
-	m_bStartSubPath = FALSE;
-	m_bGStateChange = FALSE;
-	m_bClipPath     = FALSE;
+    m_bStartSubPath = false;
+    m_bGStateChange = false;
+    m_bClipPath     = false;
 
 	m_dCharSpace    = 0.0;
 
@@ -42,7 +42,7 @@ HRESULT CPdfWriterLib::NewPage ()
 	// Сбрасываем состояние
 	m_oRendererState.Reset();
 
-	m_bFirstMoveTo = TRUE;
+    m_bFirstMoveTo = true;
 
 	m_oContiniousText.Reset();
 
@@ -115,7 +115,7 @@ HRESULT CPdfWriterLib::get_DpiY (double *pdDpiY)
 //{
 //	CString strXML( bsXML );
 //	m_oPen.FromXmlString( strXML );
-//	m_bGStateChange = TRUE; 
+//	m_bGStateChange = true;
 //
 //	return S_OK;
 //}
@@ -127,7 +127,7 @@ HRESULT CPdfWriterLib::get_PenColor (LONG *plColor)
 }
 HRESULT CPdfWriterLib::put_PenColor (const LONG & lColor)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oPen.Color = lColor;
 
 	return S_OK;
@@ -140,7 +140,7 @@ HRESULT CPdfWriterLib::get_PenAlpha (LONG *plAlpha)
 }
 HRESULT CPdfWriterLib::put_PenAlpha (const LONG & lAlpha)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oPen.Alpha = lAlpha;
 
 	return S_OK;
@@ -153,7 +153,7 @@ HRESULT CPdfWriterLib::get_PenSize (double *pdSize)
 }
 HRESULT CPdfWriterLib::put_PenSize (const double & dSize)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oPen.Size = dSize;
 
 	return S_OK;
@@ -166,7 +166,7 @@ HRESULT CPdfWriterLib::get_PenDashStyle (BYTE *pnStyle)
 }
 HRESULT CPdfWriterLib::put_PenDashStyle (const BYTE & nStyle)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oPen.DashStyle = nStyle;
 
 	return S_OK;
@@ -179,7 +179,7 @@ HRESULT CPdfWriterLib::get_PenLineStartCap (BYTE *pnStartCap)
 }
 HRESULT CPdfWriterLib::put_PenLineStartCap (const BYTE & nStartCap)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oPen.LineStartCap = nStartCap;
 
 	return S_OK;
@@ -192,7 +192,7 @@ HRESULT CPdfWriterLib::get_PenLineEndCap (BYTE *pnEndCap)
 }
 HRESULT CPdfWriterLib::put_PenLineEndCap (const BYTE & nEndCap)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oPen.LineEndCap = nEndCap;
 
 	return S_OK;
@@ -205,7 +205,7 @@ HRESULT CPdfWriterLib::get_PenLineJoin (BYTE *pnJointStyle)
 }
 HRESULT CPdfWriterLib::put_PenLineJoin (const BYTE & nJointStyle)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oPen.LineJoin = nJointStyle;
 
 	return S_OK;
@@ -218,7 +218,7 @@ HRESULT CPdfWriterLib::get_PenDashOffset (double *pdOffset)
 }
 HRESULT CPdfWriterLib::put_PenDashOffset (const double & dOffset)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oPen.DashOffset = dOffset;
 
 	return S_OK;
@@ -231,7 +231,7 @@ HRESULT CPdfWriterLib::get_PenAlign (LONG *plAlign)
 }
 HRESULT CPdfWriterLib::put_PenAlign (const LONG & lAlign)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oPen.Align = lAlign;
 
 	return S_OK;
@@ -244,14 +244,14 @@ HRESULT CPdfWriterLib::get_PenMiterLimit (double *pdMiterLimit)
 }
 HRESULT CPdfWriterLib::put_PenMiterLimit (const double & dMiterLimit)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oPen.MiterLimit = dMiterLimit;
 
 	return S_OK;
 }
 HRESULT CPdfWriterLib::PenDashPattern (double * pPattern, LONG lCount)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oPen.SetDashPattern(  pPattern, lCount );
 
 	return S_OK;
@@ -261,7 +261,7 @@ HRESULT CPdfWriterLib::PenDashPattern (double * pPattern, LONG lCount)
 //{
 //	CString strXML( bsXML );
 //	m_oBrush.FromXmlString( strXML );
-//	m_bGStateChange = TRUE; 
+//	m_bGStateChange = true;
 //
 //	return S_OK;
 //}
@@ -273,7 +273,7 @@ HRESULT CPdfWriterLib::get_BrushType (LONG *plType)
 }
 HRESULT CPdfWriterLib::put_BrushType (const LONG & lType)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oBrush.Type = lType;
 
 	return S_OK;
@@ -286,7 +286,7 @@ HRESULT CPdfWriterLib::get_BrushColor1 (LONG *plColor)
 }
 HRESULT CPdfWriterLib::put_BrushColor1 (const LONG & lColor)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oBrush.Color1 = lColor;
 
 	return S_OK;
@@ -299,7 +299,7 @@ HRESULT CPdfWriterLib::get_BrushAlpha1 (LONG *plAlpha)
 }
 HRESULT CPdfWriterLib::put_BrushAlpha1 (const LONG &  lAlpha)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oBrush.Alpha1 = lAlpha;
 
 	return S_OK;
@@ -312,7 +312,7 @@ HRESULT CPdfWriterLib::get_BrushColor2 (LONG *plColor)
 }
 HRESULT CPdfWriterLib::put_BrushColor2 (const LONG &  lColor)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oBrush.Color2 = lColor;
 
 	return S_OK;
@@ -325,7 +325,7 @@ HRESULT CPdfWriterLib::get_BrushAlpha2 (LONG *plAlpha)
 }
 HRESULT CPdfWriterLib::put_BrushAlpha2 (const LONG &  lAlpha)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oBrush.Alpha2 = lAlpha;
 
 	return S_OK;
@@ -338,7 +338,7 @@ HRESULT CPdfWriterLib::get_BrushTexturePath (std::wstring *pbsPath)
 }
 HRESULT CPdfWriterLib::put_BrushTexturePath (const std::wstring & bsPath)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oBrush.TexturePath = bsPath;
 
 	return S_OK;
@@ -351,11 +351,11 @@ HRESULT CPdfWriterLib::get_BrushTextureMode (LONG *plMode)
 }
 HRESULT CPdfWriterLib::put_BrushTextureMode (const LONG &  lMode)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oBrush.TextureMode = lMode;
 
 	if (c_BrushTextureModeTile == m_oBrush.TextureMode)
-		m_oPatternState.SetTileMode(TRUE);
+        m_oPatternState.SetTileMode(true);
 
 	return S_OK;
 }
@@ -367,7 +367,7 @@ HRESULT CPdfWriterLib::get_BrushTextureAlpha (LONG *plTxAlpha)
 }
 HRESULT CPdfWriterLib::put_BrushTextureAlpha (const LONG &  lTxAlpha)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oBrush.TextureAlpha = lTxAlpha;
 
 	return S_OK;
@@ -380,12 +380,12 @@ HRESULT CPdfWriterLib::get_BrushLinearAngle (double *pdAngle)
 }
 HRESULT CPdfWriterLib::put_BrushLinearAngle (const double & dAngle)
 {
-	m_bGStateChange = TRUE;
+    m_bGStateChange = true;
 	m_oBrush.LinearAngle = dAngle;
 
 	return S_OK;
 }
-HRESULT CPdfWriterLib::BrushRect (const BOOL & bVal, const double & dLeft, const double & dTop, const double & dWidth, const double & dHeight)
+HRESULT CPdfWriterLib::BrushRect (const INT & bVal, const double & dLeft, const double & dTop, const double & dWidth, const double & dHeight)
 {
 	m_oBrush.Rectable    = bVal;
 	m_oBrush.Rect.X      = (float)dLeft;
@@ -411,7 +411,7 @@ HRESULT CPdfWriterLib::BrushBounds(const double& left, const double& top, const 
 //
 //	//if ( m_bCurFontGIDString && !m_bEncoderGID )
 //	//{
-//	//	BOOL bNew = FALSE;
+//	//	bool bNew = false;
 //
 //	//	wchar_t wsString[255];
 //	//	for ( int nCode = 1; nCode < 256; nCode++ )
@@ -420,7 +420,7 @@ HRESULT CPdfWriterLib::BrushBounds(const double& left, const double& top, const 
 //	//	}
 //	//	FindEncoderForString( m_pDocument, (std::wstring)wsString ,&bNew);
 //	//}
-//	//unsigned long unRes = GdiFontToPdfFont(/*L""*/(CStringW(L"qwertyuiop[]';lkjhgfdsazxcvbnm,./QWERTYUIOP{}\":LKJHGFDSAZXCVBNM<>?ЙЦУКЕНГШЩЗХЪЭЖДЛОРПАВЫФЯЧСМИТЬБЮ,.юбьтимсчяфывапролджэъхзщшгнекуцйЁё1234567890-=+_ (*?:%;№!qwertyuiop[]';lkjhgfdsazxcvbnm,./QWERTYUIOP{}\":LKJHGFDSAZXCVBNM<>?ЙЦУКЕНГ ")).AllocSysString(), TRUE);
+//	//unsigned long unRes = GdiFontToPdfFont(/*L""*/(CStringW(L"qwertyuiop[]';lkjhgfdsazxcvbnm,./QWERTYUIOP{}\":LKJHGFDSAZXCVBNM<>?ЙЦУКЕНГШЩЗХЪЭЖДЛОРПАВЫФЯЧСМИТЬБЮ,.юбьтимсчяфывапролджэъхзщшгнекуцйЁё1234567890-=+_ (*?:%;№!qwertyuiop[]';lkjhgfdsazxcvbnm,./QWERTYUIOP{}\":LKJHGFDSAZXCVBNM<>?ЙЦУКЕНГ ")).AllocSysString(), true);
 //	//if ( S_OK != unRes )
 //	//	return unRes;
 //
@@ -429,7 +429,7 @@ HRESULT CPdfWriterLib::BrushBounds(const double& left, const double& top, const 
 //
 //	//TFontEncodingPair *pPair = new TFontEncodingPair;
 //	//const char *sPdfFontName  = FontGetFontName( m_pCurrentFont );
-//	//const char *sRealFontName = FontGetFontName( m_pCurrentFont, TRUE );
+//	//const char *sRealFontName = FontGetFontName( m_pCurrentFont, true );
 //	//const char *sEncodingName = FontGetEncodingName( m_pCurrentFont );
 //
 //	//UtilsMemCpy( (BYTE *)pPair->sPdfFontName,  (BYTE *)sPdfFontName,  LIMIT_MAX_NAME_LEN + 1 );
@@ -495,13 +495,13 @@ HRESULT CPdfWriterLib::put_FontStyle (const LONG &  lStyle)
 	m_oFont.SetStyle( lStyle );
 	return S_OK;
 }
-HRESULT CPdfWriterLib::get_FontStringGID (BOOL *pbGID)
+HRESULT CPdfWriterLib::get_FontStringGID (INT *pbGID)
 {
 	*pbGID = m_oFont.StringGID;
 
 	return S_OK;
 }
-HRESULT CPdfWriterLib::put_FontStringGID (const BOOL & bGID)
+HRESULT CPdfWriterLib::put_FontStringGID (const INT & bGID)
 {
 	m_oFont.StringGID = bGID;
 
@@ -604,13 +604,13 @@ HRESULT CPdfWriterLib::put_ShadowAlpha (const LONG &lAlpha)
 
 	return S_OK;
 }
-HRESULT CPdfWriterLib::get_ShadowVisible (BOOL *pbVisible)
+HRESULT CPdfWriterLib::get_ShadowVisible (bool *pbVisible)
 {
 	*pbVisible = m_oShadow.Visible;
 
 	return S_OK;
 }
-HRESULT CPdfWriterLib::put_ShadowVisible (const BOOL &bVisible)
+HRESULT CPdfWriterLib::put_ShadowVisible (const bool &bVisible)
 {
 	m_oShadow.Visible = bVisible;
 
@@ -692,11 +692,11 @@ HRESULT CPdfWriterLib::CommandDrawTextExCHAR(const LONG& c, const LONG& gid, con
 {
 	if (gid >= 0)
 	{
-		m_oFont.StringGID = TRUE;
+        m_oFont.StringGID = true;
 		return CommandDrawTextCHAR(gid, x, y, w, h, baselineOffset);
 	}
 	
-	m_oFont.StringGID = FALSE;
+    m_oFont.StringGID = false;
 	return CommandDrawTextCHAR(c, x, y, w, h, baselineOffset);
 }
 
@@ -757,13 +757,13 @@ HRESULT CPdfWriterLib::CommandDrawText (const std::wstring & bsText,const double
 		return S_OK;
 
     std::wstring bsCodedString;
-    BOOL bResult = ToUnicodeWCharToString( pToUnicode, bsText, bsCodedString );
+    bool bResult = ToUnicodeWCharToString( pToUnicode, bsText, bsCodedString );
 
 	// Запоминаем значения Bold и Italic, потому что в функции GdiFontToPdfFont они могут измениться
-	BOOL bOldBold   = m_oFont.Bold;
-	BOOL bOldItalic = m_oFont.Italic;
+    bool bOldBold   = m_oFont.Bold;
+    bool bOldItalic = m_oFont.Italic;
 
-	BOOL bDefaultFont = FALSE;
+    bool bDefaultFont = false;
 
 	CString name(pToUnicode->sName);//ansi to unicode todooo
 
@@ -774,7 +774,7 @@ HRESULT CPdfWriterLib::CommandDrawText (const std::wstring & bsText,const double
 		{
 			ResetError( m_pDocument );
             bsCodedString = std_string2string( bsText );
-			bDefaultFont = TRUE;
+            bDefaultFont = true;
 		}
 		else
 		{
@@ -890,16 +890,16 @@ HRESULT CPdfWriterLib::CommandDrawText (const std::wstring & bsText,const double
 
 			if ( 255 != fAlpha )
 			{
-				oWriter.WriteNodeBegin( _T("AlphaFill"), TRUE );
+                oWriter.WriteNodeBegin( _T("AlphaFill"), true );
 				oWriter.WriteAttribute( _T("value"), (double)fAlpha );
-				oWriter.WriteNodeEnd( _T("AlphaFill"), TRUE, TRUE );
+                oWriter.WriteNodeEnd( _T("AlphaFill"), true, true );
 			}
 
 			if ( 255 != fAlpha )
 			{
-				oWriter.WriteNodeBegin( _T("AlphaStroke"), TRUE );
+                oWriter.WriteNodeBegin( _T("AlphaStroke"), true );
 				oWriter.WriteAttribute( _T("value"), (double)fAlpha );
-				oWriter.WriteNodeEnd( _T("AlphaStroke"), TRUE, TRUE );
+                oWriter.WriteNodeEnd( _T("AlphaStroke"), true, true );
 			}
 
 			oWriter.WriteNodeEnd( _T("ExtGState") );
@@ -1350,9 +1350,9 @@ HRESULT CPdfWriterLib::CommandDrawTextEx (const std::wstring & bsUnicodeText,con
 	std::wstring bsCodedString;
 
 	// Запоминаем значения Bold и Italic, потому что в функции GdiFontToPdfFont они могут измениться
-	BOOL bOldBold   = m_oFont.Bold;
-	BOOL bOldItalic = m_oFont.Italic;
-	BOOL bDefaultFont = FALSE;
+    bool bOldBold   = m_oFont.Bold;
+    bool bOldItalic = m_oFont.Italic;
+    bool bDefaultFont = false;
 //todooo непонятка с заданием имени пути к файлу bsSrcCodeText !!! ?????
 
 	// Проверяем как задан шрифт, через путь к файлу, или по имени
@@ -1412,7 +1412,7 @@ HRESULT CPdfWriterLib::CommandDrawTextEx (const std::wstring & bsUnicodeText,con
 			return S_OK;
 
         std::wstring sCodedString;
-        BOOL bResult = ToUnicodeWCharToString( pToUnicode, bsUnicodeText, sCodedString );
+        bool bResult = ToUnicodeWCharToString( pToUnicode, bsUnicodeText, sCodedString );
 
 		CString name(pToUnicode->sName);//ansi to unicode todooo
 		//todooo
@@ -1422,7 +1422,7 @@ HRESULT CPdfWriterLib::CommandDrawTextEx (const std::wstring & bsUnicodeText,con
 			{
 				ResetError( m_pDocument );
 				sCodedString = std_string2string( bsUnicodeText );
-				bDefaultFont = TRUE;
+                bDefaultFont = true;
 			}
 			else
 			{
@@ -1548,16 +1548,16 @@ HRESULT CPdfWriterLib::CommandDrawTextEx (const std::wstring & bsUnicodeText,con
 
 			if ( 255 != fAlpha )
 			{
-				oWriter.WriteNodeBegin( _T("AlphaFill"), TRUE );
+                oWriter.WriteNodeBegin( _T("AlphaFill"), true );
 				oWriter.WriteAttribute( _T("value"), (double)fAlpha );
-				oWriter.WriteNodeEnd( _T("AlphaFill"), TRUE, TRUE );
+                oWriter.WriteNodeEnd( _T("AlphaFill"), true, true );
 			}
 
 			if ( 255 != fAlpha )
 			{
-				oWriter.WriteNodeBegin( _T("AlphaStroke"), TRUE );
+                oWriter.WriteNodeBegin( _T("AlphaStroke"), true );
 				oWriter.WriteAttribute( _T("value"), (double)fAlpha );
-				oWriter.WriteNodeEnd( _T("AlphaStroke"), TRUE, TRUE );
+                oWriter.WriteNodeEnd( _T("AlphaStroke"), true, true );
 			}
 
 			oWriter.WriteNodeEnd( _T("ExtGState") );
@@ -1994,19 +1994,19 @@ HRESULT CPdfWriterLib::BeginCommand (const DWORD & nFlag)
 	else if ( c_nClipType == nFlag )
 	{
 		// Запоминаем состояние без обрезающего пата
-		if ( FALSE == m_bClipPath )
+        if ( false == m_bClipPath )
 		{
 //			ATLTRACE2( _T("GSave: ClipPathType\n") );
             if ( S_OK != ( hRes = GSave() ) )
 				return hRes;
 
-			m_bClipPath = TRUE;
+            m_bClipPath = true;
 		}
 	}
 	else if ( c_nResetClipType == nFlag )
 	{
 		// Откатываемся к состоянию без обрезающего пата
-		if ( TRUE == m_bClipPath )
+        if ( true == m_bClipPath )
 		{
 			SetState( rendstateClipReset );
 
@@ -2016,7 +2016,7 @@ HRESULT CPdfWriterLib::BeginCommand (const DWORD & nFlag)
 
 			m_oClipCTM.Set( 1, 0, 0, 1, 0, 0 );
 
-			m_bClipPath = FALSE;
+            m_bClipPath = false;
 		}
 	}
 
@@ -2118,7 +2118,7 @@ HRESULT CPdfWriterLib::PathCommandStart ()
 	//HRESULT hRes = S_OK;
     //if ( S_OK !=  ( hRes = EndPath() ) )
 	//	return hRes;
-	m_bStartSubPath = TRUE;
+    m_bStartSubPath = true;
 	return S_OK;
 }	
 HRESULT CPdfWriterLib::PathCommandEnd ()
@@ -2131,7 +2131,7 @@ HRESULT CPdfWriterLib::PathCommandEnd ()
 	//HRESULT hRes = S_OK;
     //if ( S_OK !=  ( hRes = EndPath() ) )
 	//	return hRes;
-	//m_bStartSubPath = TRUE;
+    //m_bStartSubPath = true;
 
 	// NOTE : решение хардкорное 
 
@@ -2192,7 +2192,7 @@ HRESULT CPdfWriterLib::PathCommandEnd ()
 
 		m_XForm					=	NULL;
 		m_MaskWithFormCommands	=	L"";
-		m_IsStrokeShape			=	FALSE;
+        m_IsStrokeShape			=	false;
 		
 		m_strPatternFill		=	L"";
 		m_strPatternStroke		=	L"";
@@ -2207,12 +2207,12 @@ HRESULT CPdfWriterLib::PathCommandMoveTo (const double &fX1,  const double &fY1)
 
 	HRESULT hRes = S_OK;
 
-	if ( TRUE == m_bFirstMoveTo )
+    if ( true == m_bFirstMoveTo )
 	{
 		// Текущее состояние - Path
 		SetState( /*m_bClip ? rendstateClipPath :*/ rendstatePath );
 
-		m_bFirstMoveTo = FALSE;
+        m_bFirstMoveTo = false;
 	}
 
 	if ( !m_bStartSubPath || m_oPatternState.IsUse())
@@ -2245,7 +2245,7 @@ HRESULT CPdfWriterLib::PathCommandMoveTo (const double &fX1,  const double &fY1)
 	double fX = MMToPDFCoords( fX1 );
 	double fY = MMToPDFCoords( fY1 );
 
-	m_bStartSubPath = FALSE;
+    m_bStartSubPath = false;
 	float fPageHeight = 0.0f;
 
     if ( S_OK != ( hRes = GetHeight( &fPageHeight ) ) )
@@ -2386,7 +2386,7 @@ HRESULT CPdfWriterLib::PathCommandArcTo (const double &fX1, const double &fY1, c
 		float fStartY = fY + fHeight / 2.0f + fHeight / 2 * sin( AngToEllPrm ( dStartAngle, fWidth / 2, fHeight / 2 ) );
 
 		// Аналог PathCommandMoveTo, но без пересчета координат
-		m_bStartSubPath = FALSE;
+        m_bStartSubPath = false;
 
 		// В случае, когда эллипс рисуется целиком используется команда AppendEllipse, в которой команда MoveTo уже есть
 		if ( !( fSweepAngle >= 360 ) )
@@ -2396,11 +2396,11 @@ HRESULT CPdfWriterLib::PathCommandArcTo (const double &fX1, const double &fY1, c
 	}
 
 
-	BOOL bClockDirection = FALSE;
+    bool bClockDirection = false;
 	float fEndAngle = 360 - ( fSweepAngle + fStartAngle );
 	float fSrtAngle = 360 - fStartAngle;
 	if( fSweepAngle > 0 )
-		bClockDirection = TRUE;
+        bClockDirection = true;
 
 	if( fSweepAngle >= 360 ) // Целый эллипс
 	{
@@ -2425,15 +2425,15 @@ HRESULT CPdfWriterLib::PathCommandClose ()
     if (S_OK != (hRes = ClosePath()))
 		return hRes;
 
-	m_bStartSubPath = TRUE;
+    m_bStartSubPath = true;
 
 	return S_OK;
 }
 //
 HRESULT CPdfWriterLib::DrawPath (const LONG & nType1)
 {
-	m_bFirstMoveTo	=	TRUE;
-	m_IsStrokeShape	=	FALSE;
+    m_bFirstMoveTo	=	true;
+    m_IsStrokeShape	=	false;
 
 	// Обводка текста делается в CommandDrawText (а эта команда приходит для согласования с вьювером)
 	
@@ -2448,11 +2448,11 @@ HRESULT CPdfWriterLib::DrawPath (const LONG & nType1)
 	if ( 0 == nType )
 		nType = c_nStroke;
 
-	m_bStartSubPath = FALSE;
+    m_bStartSubPath = false;
 
-	BOOL IsBrushTexture		=	c_BrushTypeTexture == m_oBrush.Type;
-	BOOL IsNoStroke			=	c_nStroke != nType;
-	BOOL IsBrushFileExist	=	FileExist(std_string2string(m_oBrush.TexturePath));
+    bool IsBrushTexture		=	c_BrushTypeTexture == m_oBrush.Type;
+    bool IsNoStroke			=	c_nStroke != nType;
+    bool IsBrushFileExist	=	FileExist(std_string2string(m_oBrush.TexturePath));
 
 	HRESULT hRes = S_OK;
 	if (IsBrushTexture && IsNoStroke && IsBrushFileExist && (m_pCurPath || m_bUseTextureRect))
@@ -2484,7 +2484,7 @@ HRESULT CPdfWriterLib::DrawPath (const LONG & nType1)
 
 			double fX = 0, fY = 0, fW = 0, fH = 0;
 
-			if (TRUE != m_bUseTextureRect)
+            if (true != m_bUseTextureRect)
 			{
 				m_pCurPath->GetBounds(fX, fY, fW, fH);
 			}
@@ -2499,8 +2499,8 @@ HRESULT CPdfWriterLib::DrawPath (const LONG & nType1)
 			CString sPath = std_string2string(m_oBrush.TexturePath);
             std::wstring bsPath = m_oBrush.TexturePath;
 
-			m_bUseImageTransform    =	FALSE;
-			m_bUseImageTextureAlpha =	TRUE;	
+            m_bUseImageTransform    =	false;
+            m_bUseImageTextureAlpha =	true;
 
             if (S_OK != (hRes = DrawImageFromFile(bsPath, fX, fY, fW, fH)))
 			{
@@ -2508,8 +2508,8 @@ HRESULT CPdfWriterLib::DrawPath (const LONG & nType1)
 				return hRes;
 			}
 
-			m_bUseImageTransform    =	TRUE;
-			m_bUseImageTextureAlpha	=	FALSE;	
+            m_bUseImageTransform    =	true;
+            m_bUseImageTextureAlpha	=	false;
 
 			return S_OK;
 		}
@@ -2533,7 +2533,7 @@ HRESULT CPdfWriterLib::DrawPath (const LONG & nType1)
 
 	if (c_nWindingFillMode != nType && c_nEvenOddFillMode != nType)
 	{
-		m_IsStrokeShape = TRUE;
+        m_IsStrokeShape = true;
 	}
 
 	RELEASEOBJECT(m_pCurPath);
@@ -2612,16 +2612,16 @@ HRESULT CPdfWriterLib::PathCommandTextExCHAR(const LONG& c, const LONG& gid, con
 {
 	if (gid >= 0)
 	{
-		m_oFont.StringGID = TRUE;
+        m_oFont.StringGID = 1;
 		return PathCommandTextCHAR(gid, x, y, w, h, baselineOffset);
 	}
 	
-	m_oFont.StringGID = FALSE;
+    m_oFont.StringGID = 0;
 	return PathCommandTextCHAR(c, x, y, w, h, baselineOffset);
 }
 
 //--------- Функции для вывода изображений -------------------------------------------------------
-HRESULT CPdfWriterLib::LoadImageFromInterface (IGrObject *pInterface , BOOL bAlpha)
+HRESULT CPdfWriterLib::LoadImageFromInterface (IGrObject *pInterface , bool bAlpha)
 {
 	Aggplus::CImage *image = dynamic_cast<Aggplus::CImage *>(pInterface);
 
@@ -2639,7 +2639,7 @@ HRESULT CPdfWriterLib::LoadImageFromInterface (IGrObject *pInterface , BOOL bAlp
 	
 	BYTE* pImagePointer = pImage; 
 	BYTE* pAlphaPointer = pAlpha;
-	BOOL  bHaveAlpha = FALSE;
+    bool  bHaveAlpha = false;
 
 	// Разделяем саму картинку и альфа-канал. Одновременно с этим, посчитаем количество цветов в картинке.
 	std::vector<TRGBColor>	arrColors;
@@ -2669,16 +2669,16 @@ HRESULT CPdfWriterLib::LoadImageFromInterface (IGrObject *pInterface , BOOL bAlp
 
 		pAlphaPointer[ 0 ] = pSourceBuffer[ 3 ];
 		if ( 255 != pAlphaPointer[0] )
-			bHaveAlpha = TRUE;
+            bHaveAlpha = true;
 	}
 
 	TRGBColor oBlack = {   0,   0,   0 };
 	TRGBColor oWhite = { 255, 255, 255 };
 
-	BOOL bBnW = FALSE; // Черно-белая картинка
+    bool bBnW = false; // Черно-белая картинка
 	if ( ( ( arrColors.size() == 2 && ( ( arrColors[0] == oBlack && arrColors[1] == oWhite ) || ( arrColors[1] == oBlack && arrColors[0] == oWhite ) ) ) ||
 		 ( arrColors.size() == 1 && ( arrColors[0] == oBlack || arrColors[1] == oWhite ) ) ) && !bHaveAlpha )
-		bBnW = TRUE;
+        bBnW = true;
 
 	unsigned long nRet = OK;
 	if ( !m_pXObjectList )
@@ -2706,7 +2706,7 @@ HRESULT CPdfWriterLib::LoadImageFromInterface (IGrObject *pInterface , BOOL bAlp
 		}
 
 		if ( bFakeAlpha )
-			bAlpha = FALSE;
+            bAlpha = false;
 	}
 
 	// Проверяем, возможно, такая картинка уже есть в нашем файле
@@ -2825,7 +2825,7 @@ HRESULT CPdfWriterLib::DrawImage (IGrObject *pInterface, const double& fX1, cons
 
     if ( S_OK != ( hRes = GetHeight( &fPageHeight ) ) )
 		return hRes;
-    if ( S_OK !=  ( hRes = LoadImageFromInterface( pInterface, TRUE ) ) )
+    if ( S_OK !=  ( hRes = LoadImageFromInterface( pInterface, true ) ) )
 		return hRes;
 
 //	ATLTRACE2( _T("GSave: DrawImage\n") );
@@ -2835,7 +2835,7 @@ HRESULT CPdfWriterLib::DrawImage (IGrObject *pInterface, const double& fX1, cons
     //if ( S_OK != ( hRes = UpdateCoordSpace() ) )
 	//	return hRes;
 
-	if ( TRUE == m_bUseImageTransform )
+    if ( true == m_bUseImageTransform )
 	{
 		DWORD  nFlags  = m_oCommandParams.nFlag;
 		if ( !( nFlags == 16 ) )
@@ -2870,8 +2870,8 @@ HRESULT CPdfWriterLib::DrawImage (IGrObject *pInterface, const double& fX1, cons
 				double dE = dX0 - dX0 * cos ( dAngle ) + dY0 * sin( dAngle );
 				double dF = dY0 - dX0 * sin ( dAngle ) - dY0 * cos( dAngle );
 
-				BOOL bFlipX = nFlags & 1;
-				BOOL bFlipY = nFlags & 2;
+                bool bFlipX = nFlags & 1;
+                bool bFlipY = nFlags & 2;
 
 				if ( !bFlipX && !bFlipY )
 				{
@@ -2931,7 +2931,7 @@ HRESULT CPdfWriterLib::DrawImageFromFile(const std::wstring& bsFilePath, const d
 {
 	NSImageExt::CImageExt oExt;
 
-	BOOL bRes = oExt.DrawOnRenderer(this, std_string2string(bsFilePath), fX, fY, fWidth, fHeight);
+    bool bRes = oExt.DrawOnRenderer(this, std_string2string(bsFilePath), fX, fY, fWidth, fHeight);
 
 	if (bRes)
 		return S_OK;
@@ -3022,8 +3022,8 @@ HRESULT CPdfWriterLib::SetCommandParams (double   dAngle, double   dLeft, double
 		double dY0 = lTop  + lHeight / 2;
 
 		// Рассчитываем flip
-		BOOL bFlipX = ( 0 != ( 1 & nFlags ) );
-		BOOL bFlipY = ( 0 != ( 2 & nFlags ) );
+        bool bFlipX = ( 0 != ( 1 & nFlags ) );
+        bool bFlipY = ( 0 != ( 2 & nFlags ) );
 
 		LONG lFlipX = bFlipX ? -1 : 1;
 		LONG lFlipY = bFlipY ? -1 : 1;

@@ -804,7 +804,7 @@ CDrawingConverter::CDrawingConverter()
 	m_lNextId = 1;
 	m_lCurrentObjectTop = 0;
 	m_pOOXToVMLRenderer = NULL;
-	m_bIsUseConvertion2007 = TRUE;
+    m_bIsUseConvertion2007 = true;
 	m_pBinaryWriter = new NSBinPptxRW::CBinaryFileWriter();
 	m_pReader = new NSBinPptxRW::CBinaryFileReader();
 	m_pImageManager = new NSBinPptxRW::CImageManager2();
@@ -1179,7 +1179,7 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 				if (oParseNode.GetNodes(_T("*"), oChilds))
 				{
 					LONG lChildsCount = oChilds.GetCount();
-					BOOL bIsFound = FALSE;
+                    bool bIsFound = false;
 
 					for (LONG k = 0; k < lChildsCount; k++)
 					{
@@ -1197,7 +1197,7 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 							PPTX::Logic::SpTreeElem oElem = doc_LoadShape(oNodeP, pMainProps, true);
 							m_pBinaryWriter->WriteRecord1(1, oElem);
 
-							bIsFound = TRUE;
+                            bIsFound = true;
 
 #ifdef AVS_OFFICE_DRAWING_DUMP_XML_TEST
 							NSBinPptxRW::CXmlWriter oXmlW;
@@ -1211,7 +1211,7 @@ rIns=\"91440\" bIns=\"45720\" numCol=\"1\" spcCol=\"0\" rtlCol=\"0\" fromWordArt
 							PPTX::Logic::SpTreeElem oElem = doc_LoadGroup(oNodeP, pMainProps, true);
 							m_pBinaryWriter->WriteRecord1(1, oElem);
 
-							bIsFound = TRUE;
+                            bIsFound = true;
 
 #ifdef AVS_OFFICE_DRAWING_DUMP_XML_TEST
 							NSBinPptxRW::CXmlWriter oXmlW;
@@ -3325,19 +3325,19 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const CString& 
 	oXmlWriter.m_pOOXToVMLRenderer = m_pOOXToVMLRenderer;
 #endif
 	
-	BOOL bIsNeedConvert2007 = FALSE;
+    bool bIsNeedConvert2007 = false;
 #ifdef BUILD_CONFIG_FULL_VERSION
 	if (m_bIsUseConvertion2007)
 	{
 		if (oElem.is<PPTX::Logic::SpTree>())
 		{
 			oXmlWriter.WriteString(_T("<mc:AlternateContent><mc:Choice Requires=\"wpg\">"));
-			bIsNeedConvert2007 = TRUE;
+            bIsNeedConvert2007 = true;
 		}
 		else if (oElem.is<PPTX::Logic::Shape>())
 		{
 			oXmlWriter.WriteString(_T("<mc:AlternateContent><mc:Choice Requires=\"wps\">"));
-			bIsNeedConvert2007 = TRUE;
+            bIsNeedConvert2007 = true;
 		}
 	}
 #endif
@@ -3397,7 +3397,7 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const CString
 {
 	if (XMLWRITER_DOC_TYPE_DOCX == lDocType)
 	{
-		m_pImageManager->m_bIsWord = TRUE;
+        m_pImageManager->m_bIsWord = true;
 		// нужно писать всякие inline/anchor + word2007 format
 		return SaveObject(lStart, lLength, bsMainProps, bsXml);
 	}
@@ -3408,9 +3408,9 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const CString
 	m_pReader->Seek(lStart);
 
 	if (lDocType != XMLWRITER_DOC_TYPE_DOCX)
-		m_pImageManager->m_bIsWord = FALSE;
+        m_pImageManager->m_bIsWord = false;
 	else
-		m_pImageManager->m_bIsWord = TRUE;
+        m_pImageManager->m_bIsWord = true;
 	
 	++m_nCurrentIndexObject;
 
@@ -3428,7 +3428,7 @@ HRESULT CDrawingConverter::SaveObjectEx(LONG lStart, LONG lLength, const CString
 
 	NSBinPptxRW::CXmlWriter oXmlWriter;
 	oXmlWriter.m_lDocType = (BYTE)lDocType;
-	oXmlWriter.m_bIsUseOffice2007 = FALSE;
+    oXmlWriter.m_bIsUseOffice2007 = false;
 
 	oXmlWriter.m_bIsTop = (1 == m_nCurrentIndexObject) ? true : false;
 
@@ -3928,9 +3928,9 @@ HRESULT CDrawingConverter::GetRecordXml(LONG lStart, LONG lLength, LONG lRecType
 		return S_FALSE;
 
 	if (lDocType != XMLWRITER_DOC_TYPE_DOCX)
-		m_pReader->m_pRels->m_pManager->m_bIsWord = FALSE;
+        m_pReader->m_pRels->m_pManager->m_bIsWord = false;
 	else
-		m_pReader->m_pRels->m_pManager->m_bIsWord = TRUE;
+        m_pReader->m_pRels->m_pManager->m_bIsWord = true;
 
 	m_pReader->Seek(lStart);
 	
@@ -3963,7 +3963,7 @@ HRESULT CDrawingConverter::GetRecordXml(LONG lStart, LONG lLength, LONG lRecType
 
 	NSBinPptxRW::CXmlWriter oXmlWriter;
 	oXmlWriter.m_lDocType = (BYTE)lDocType;
-	oXmlWriter.m_bIsUseOffice2007 = FALSE;
+    oXmlWriter.m_bIsUseOffice2007 = false;
 	oXmlWriter.m_bIsTop = true;
 
 	pWritingElem->toXmlWriter(&oXmlWriter);
@@ -4063,13 +4063,13 @@ HRESULT CDrawingConverter::SetAdditionalParam(const CString& ParamName, VARIANT 
 	if (name == _T("SourceFileDir"))
 	{
 		m_pReader->m_pRels->m_pManager = m_pImageManager;
-		m_pImageManager->m_bIsWord = TRUE;
+        m_pImageManager->m_bIsWord = true;
 		m_pReader->m_strFolder = CString(ParamValue.bstrVal);
 	}
 	else if (name == _T("SourceFileDir2"))
 	{
 		m_pReader->m_pRels->m_pManager = m_pImageManager;
-		m_pImageManager->m_bIsWord = FALSE;
+        m_pImageManager->m_bIsWord = false;
 		m_pReader->m_strFolder = CString(ParamValue.bstrVal);
 	}
 	else if (name == _T("UseConvertion2007"))

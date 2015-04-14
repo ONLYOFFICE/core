@@ -133,25 +133,25 @@ static unsigned long LoadJpegHeader(ImageDict pImage, StreamRecPtr pStream)
     return OK;
 }
 
-static BOOL          ReadJpxBoxHeader   (StreamRecPtr pStream, unsigned int *punBoxType, unsigned int *punBoxLen, unsigned int *punDataLen) 
+static bool          ReadJpxBoxHeader   (StreamRecPtr pStream, unsigned int *punBoxType, unsigned int *punBoxLen, unsigned int *punDataLen)
 {
 	unsigned int unLen, unLenH;
 	unsigned int unReadLen = 4;
 
 	if ( OK != StreamReadULong( pStream,  &unLen ) || OK != StreamReadULong( pStream, punBoxType ) ) 
 	{
-		return FALSE;
+        return false;
 	}
 	if ( 1 == unLen ) 
 	{
 		if ( OK != StreamReadULong( pStream,  &unLenH ) || OK != StreamReadULong( pStream,  &unLen ) ) 
 		{
-			return FALSE;
+            return false;
 		}
 		if ( unLenH ) 
 		{
 			// TO DO: Error "JPX stream contains a box larger than 2^32 bytes"
-			return FALSE;
+            return false;
 		}
 		*punBoxLen  = unLen;
 		*punDataLen = unLen - 16;
@@ -166,7 +166,7 @@ static BOOL          ReadJpxBoxHeader   (StreamRecPtr pStream, unsigned int *pun
 		*punBoxLen  = unLen;
 		*punDataLen = unLen - 8;
 	}
-	return TRUE;
+    return true;
 }
 
 static int           ReadJpxMarkerHeader(StreamRecPtr pStream, int *pnSegmentType, unsigned int *pnSegmentLen) 
@@ -179,22 +179,22 @@ static int           ReadJpxMarkerHeader(StreamRecPtr pStream, int *pnSegmentTyp
 		{
 			unsigned int nReadLen = 1;
 			if ( OK != StreamRead( pStream, (BYTE*)&nChar, &nReadLen ) )
-				return FALSE;
+                return false;
 
 			if ( nChar == EOF ) 
 			{
-				return FALSE;
+                return false;
 			}
 		} while ( nChar != 0xff );
 		do 
 		{
 			unsigned int nReadLen = 1;
 			if ( OK != StreamRead( pStream, (BYTE*)&nChar, &nReadLen ) )
-				return FALSE;
+                return false;
 
 			if ( nChar == EOF)  
 			{
-				return FALSE;
+                return false;
 			}
 		} while ( nChar == 0xff );
 	} while ( nChar == 0x00 );
@@ -202,13 +202,13 @@ static int           ReadJpxMarkerHeader(StreamRecPtr pStream, int *pnSegmentTyp
 	if ( ( nChar >= 0x30 && nChar <= 0x3f ) || nChar == 0x4f || nChar == 0x92 || nChar == 0x93 || nChar == 0xd9 ) 
 	{
 		*pnSegmentLen = 0;
-		return TRUE;
+        return true;
 	}
 
 	if ( OK != StreamReadUShort( pStream, pnSegmentLen ) )
-		return FALSE;
+        return false;
 
-	return TRUE;
+    return true;
 }
 
 static const char*   ReadJpxCodestream  (StreamRecPtr pStream, unsigned int *pnBitsPerComponent, unsigned int *pnWidth, unsigned int *pnHeight)
@@ -258,7 +258,7 @@ static unsigned long LoadJpxHeader (ImageDict pImage, StreamRecPtr pStream, long
 
 	StreamSeek( pStream, 0, SeekSet );
 
-	BOOL bHaveBPC = FALSE, bHaveModeCS = FALSE;
+    bool bHaveBPC = false, bHaveModeCS = false;
 	unsigned int nBitsPerComponent = 0;
 	const char *sColorSpaceName = "";
 	unsigned int nCSPrec = 0;
@@ -285,7 +285,7 @@ static unsigned long LoadJpxHeader (ImageDict pImage, StreamRecPtr pStream, long
 					 OK == StreamReadUByte( pStream, &nTemp ) ) 
 				{
 					nBitsPerComponent = nBPC + 1;
-					bHaveBPC = TRUE;
+                    bHaveBPC = true;
 				}
 			} 
 			else if ( nBoxType == 0x636F6C72 ) // Color specification
@@ -316,7 +316,7 @@ static unsigned long LoadJpxHeader (ImageDict pImage, StreamRecPtr pStream, long
 							{
 								sColorSpaceName = sTempCS;
 								nCSPrec = nPrecedenceCS;
-								bHaveModeCS = TRUE;
+                                bHaveModeCS = true;
 							}
 
 							StreamSeek( pStream, nDataLen - 7, SeekCur );
@@ -540,7 +540,7 @@ ImageDict ImageLoadAlphaFromMem    (MMgr oMMgr, const BYTE *pBuffer,       Xref 
         return NULL;
     }
 
-    Dict pImage = DictStreamNew( oMMgr, pXref, FALSE );
+    Dict pImage = DictStreamNew( oMMgr, pXref, false );
     if ( !pImage )
         return NULL;
 
@@ -571,7 +571,7 @@ ImageDict ImageLoadAlphaFromMem    (MMgr oMMgr, const BYTE *pBuffer,       Xref 
 
     return pImage;
 }
-ImageDict ImageLoadRawImageFromMem (MMgr oMMgr, const BYTE *pBuffer,       Xref pXref, unsigned int nWidth, unsigned int nHeight, ColorSpace eColorSpace, unsigned int nBitsPerComponent, BOOL bAlpha /*= FALSE*/, const BYTE *pAlphaBuffer /*= NULL*/)
+ImageDict ImageLoadRawImageFromMem (MMgr oMMgr, const BYTE *pBuffer,       Xref pXref, unsigned int nWidth, unsigned int nHeight, ColorSpace eColorSpace, unsigned int nBitsPerComponent, bool bAlpha /*= false*/, const BYTE *pAlphaBuffer /*= NULL*/)
 {
     unsigned long nRet = OK;
     unsigned int nSize = 0;
@@ -588,7 +588,7 @@ ImageDict ImageLoadRawImageFromMem (MMgr oMMgr, const BYTE *pBuffer,       Xref 
         return NULL;
     }
 
-    Dict pImage = DictStreamNew( oMMgr, pXref, FALSE );
+    Dict pImage = DictStreamNew( oMMgr, pXref, false );
     if ( !pImage )
         return NULL;
 
@@ -644,7 +644,7 @@ ImageDict ImageLoadJBig2Image      (MMgr oMMgr, const wchar_t *wsTempFile, Xref 
 	Dict pImage = NULL;
 	unsigned long nRet = OK;
 
-	pImage = DictStreamNew( oMMgr, pXref, FALSE, wsTempFile, unImageCheckSum );
+    pImage = DictStreamNew( oMMgr, pXref, false, wsTempFile, unImageCheckSum );
 	if ( !pImage )
 		return NULL;
 
@@ -672,12 +672,12 @@ ImageDict ImageLoadJBig2Image      (MMgr oMMgr, const wchar_t *wsTempFile, Xref 
 
 	return pImage;
 }
-ImageDict ImageLoadJpxImage        (MMgr oMMgr, const wchar_t *wsTempFile, Xref pXref, unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, BOOL bAlpha/* = FALSE*/, const wchar_t *wsAlphaPath/*= NULL*/, unsigned int unAlphaCheckSum/*= 0*/)
+ImageDict ImageLoadJpxImage        (MMgr oMMgr, const wchar_t *wsTempFile, Xref pXref, unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, bool bAlpha/* = false*/, const wchar_t *wsAlphaPath/*= NULL*/, unsigned int unAlphaCheckSum/*= 0*/)
 {
 	Dict pImage = NULL;
 	unsigned long nRet = OK;
 
-	pImage = DictStreamNew( oMMgr, pXref, FALSE, wsTempFile, unImageCheckSum );
+    pImage = DictStreamNew( oMMgr, pXref, false, wsTempFile, unImageCheckSum );
 	if ( !pImage )
 		return NULL;
 
@@ -697,7 +697,7 @@ ImageDict ImageLoadJpxImage        (MMgr oMMgr, const wchar_t *wsTempFile, Xref 
 
 	if ( bAlpha )
 	{
-		Dict pImageSMask = DictStreamNew( oMMgr, pXref, FALSE, wsAlphaPath, unAlphaCheckSum );
+        Dict pImageSMask = DictStreamNew( oMMgr, pXref, false, wsAlphaPath, unAlphaCheckSum );
 		if ( !pImageSMask )
 			return NULL;
 
@@ -727,12 +727,12 @@ ImageDict ImageLoadJpxImage        (MMgr oMMgr, const wchar_t *wsTempFile, Xref 
 
 	return pImage;
 }
-ImageDict ImageLoadJpegImage       (MMgr oMMgr, const wchar_t *wsTempFile, Xref pXref, unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, BOOL bAlpha/* = FALSE*/, const wchar_t *wsAlphaPath/* = NULL*/, unsigned int unAlphaCheckSum/* = 0*/)
+ImageDict ImageLoadJpegImage       (MMgr oMMgr, const wchar_t *wsTempFile, Xref pXref, unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, bool bAlpha/* = false*/, const wchar_t *wsAlphaPath/* = NULL*/, unsigned int unAlphaCheckSum/* = 0*/)
 {
 	Dict pImage = NULL;
 	unsigned long nRet = OK;
 
-	pImage = DictStreamNew( oMMgr, pXref, FALSE, wsTempFile, unImageCheckSum );
+    pImage = DictStreamNew( oMMgr, pXref, false, wsTempFile, unImageCheckSum );
 	if ( !pImage )
 		return NULL;
 
@@ -752,7 +752,7 @@ ImageDict ImageLoadJpegImage       (MMgr oMMgr, const wchar_t *wsTempFile, Xref 
 
 	if ( bAlpha )
 	{
-		Dict pImageSMask = DictStreamNew( oMMgr, pXref, FALSE, wsAlphaPath, unAlphaCheckSum );
+        Dict pImageSMask = DictStreamNew( oMMgr, pXref, false, wsAlphaPath, unAlphaCheckSum );
 		if ( !pImageSMask )
 			return NULL;
 
@@ -777,25 +777,25 @@ ImageDict ImageLoadJpegImage       (MMgr oMMgr, const wchar_t *wsTempFile, Xref 
 
 	return pImage;
 }
-BOOL          ImageValidate           (ImageDict pImage)
+bool          ImageValidate           (ImageDict pImage)
 {
     if ( !pImage )
-        return FALSE;
+        return false;
 
     if ( pImage->pHeader.nObjClass != (OSUBCLASS_XOBJECT | OCLASS_DICT) ) 
 	{
         RaiseError( pImage->oError, AVS_OFFICEPDFWRITER_ERROR_INVALID_IMAGE, 0);
-        return FALSE;
+        return false;
     }
 
     Name pSubtype = (Name)DictGetItem( pImage, "Subtype", OCLASS_NAME );
     if ( !pSubtype || 0 != UtilsStrCmp( pSubtype->sValue, "Image" ) ) 
 	{
         RaiseError( pImage->oError, AVS_OFFICEPDFWRITER_ERROR_INVALID_IMAGE, 0);
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }
 TPoint        ImageGetSize            (ImageDict pImage)
 {
@@ -886,7 +886,7 @@ ImageDict     ImageGetSMask           (ImageDict pImage)
 
 	return oSMask;
 }
-unsigned long ImageSetMask            (ImageDict pImage, BOOL bMask)
+unsigned long ImageSetMask            (ImageDict pImage, bool bMask)
 {
     if ( !ImageValidate( pImage ) )
         return AVS_OFFICEPDFWRITER_ERROR_INVALID_IMAGE;
@@ -899,7 +899,7 @@ unsigned long ImageSetMask            (ImageDict pImage, BOOL bMask)
 	if ( !oImageMask ) 
 	{
         unsigned long nRet = OK;
-		oImageMask = BooleanNew( pImage->oMMgr, FALSE);
+        oImageMask = BooleanNew( pImage->oMMgr, false);
         if ( OK != ( nRet = DictAdd( pImage, "ImageMask", oImageMask ) ) )
             return nRet;
     }
@@ -915,7 +915,7 @@ unsigned long ImageSetMaskImage       (ImageDict pImage, ImageDict pMaskImage)
     if ( !ImageValidate( pMaskImage ) )
         return AVS_OFFICEPDFWRITER_ERROR_INVALID_IMAGE;
 
-    if ( OK != ImageSetMask( pMaskImage, TRUE ) )
+    if ( OK != ImageSetMask( pMaskImage, true ) )
         return CheckError( pImage->oError );
 
     return DictAdd( pImage, "Mask", pMaskImage );

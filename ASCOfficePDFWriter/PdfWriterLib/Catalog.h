@@ -41,6 +41,6 @@ unsigned long CatalogSetOpenAction      (Catalog pCatalog, Destination pOpenActi
 unsigned long CatalogAddPageLabel       (Catalog pCatalog, unsigned int nPageNum, Dict pPageLabel);
 unsigned int  CatalogGetViewerPreference(Catalog pCatalog);
 unsigned long CatalogSetViewerPreference(Catalog pCatalog, unsigned int nValue);
-BOOL          CatalogValidate           (Catalog pCatalog);
+bool          CatalogValidate           (Catalog pCatalog);
 #endif /* _CATALOG_H */
 

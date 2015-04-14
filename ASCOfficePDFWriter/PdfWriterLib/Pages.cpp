@@ -201,14 +201,14 @@ Pages         PagesNew         (MMgr  oMMgr, Pages pParent, Xref pXref)
 }
 
 
-BOOL          PagesValidate    (Pages pPages)
+bool          PagesValidate    (Pages pPages)
 {
     ObjHeader *pHeader = (ObjHeader *)pPages;
 
 	if ( !pPages || pHeader->nObjClass != (OCLASS_DICT | OSUBCLASS_PAGES) )
-        return FALSE;
+        return false;
 
-    return TRUE;
+    return true;
 }
 
 unsigned long PageInsertBefore (Page  pPage, Page pTarget)
@@ -240,17 +240,17 @@ unsigned long PageInsertBefore (Page  pPage, Page pTarget)
 }
 
 //----- PageObject ------------------------------------------------------------
-BOOL          PageValidate            (Page pPage)
+bool          PageValidate            (Page pPage)
 {
     ObjHeader *pHeader = (ObjHeader *)pPage;
 
 	if ( !pPage || !pPage->pAttr)
-        return FALSE;
+        return false;
 
 	if ( pHeader->nObjClass != (OCLASS_DICT | OSUBCLASS_PAGE) )
-        return FALSE;
+        return false;
 
-    return TRUE;
+    return true;
 }
 
 Page          PageNew                 (MMgr oMMgr, Xref pXref)
@@ -310,7 +310,7 @@ Page          PageNew                 (MMgr oMMgr, Xref pXref)
 
 void*         PageGetInheritableItem  (Page pPage, const char *sKey, unsigned short nObjClass)
 {
-    BOOL bCheck = FALSE;
+    bool bCheck = false;
     int nIndex = 0;
     void * pObj = NULL;
 
@@ -319,14 +319,14 @@ void*         PageGetInheritableItem  (Page pPage, const char *sKey, unsigned sh
 	{
         if ( UtilsStrCmp( sKey, c_asInheritableEntries[nIndex] ) == 0 ) 
 		{
-            bCheck = TRUE;
+            bCheck = true;
             break;
         }
         nIndex++;
     }
 
     // значение sKey не допустимо
-    if ( TRUE != bCheck ) 
+    if ( true != bCheck )
 	{
 		SetError( pPage->oError, AVS_OFFICEPDFWRITER_ERROR_INVALID_PARAMETER, 0);
         return NULL;
@@ -611,7 +611,7 @@ float             PageTextWidth            (Page pPage, const BYTE *sText, unsig
 
     return fRes;
 }
-unsigned int      PageMeasureText          (Page pPage, const char *sText, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, BOOL bWordWrap, float *fRealWidth)
+unsigned int      PageMeasureText          (Page pPage, const char *sText, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, bool bWordWrap, float *fRealWidth)
 {
     unsigned int nLen = UtilsStrLen( sText, LIMIT_MAX_STRING_LEN + 1 );
 

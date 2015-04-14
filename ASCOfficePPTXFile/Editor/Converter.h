@@ -269,7 +269,7 @@ namespace PPTX2EditorAdvanced
 			_slides[i]->toPPTY(&oBinaryWriter);
 		}
 
-		if (FALSE)
+        if (false)
 		{
 			// œŒ ¿ ÌÂÚÛ NOTES
 
@@ -400,8 +400,8 @@ namespace PPTX2EditorAdvanced
 		int nBinBufferLen = (int)oBinaryWriter.GetPosition();
 		int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
         BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen+64];
-//		if (TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
-        if (TRUE == Base64_1::Base64Encode(pbBinBuffer, nBinBufferLen, pbBase64Buffer, &nBase64BufferLen))
+//		if (true == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+        if (true == Base64_1::Base64Encode(pbBinBuffer, nBinBufferLen, pbBase64Buffer, &nBase64BufferLen))
         {
 			CFile oFile;
 #if defined(_WIN32) || defined (_WIN64)

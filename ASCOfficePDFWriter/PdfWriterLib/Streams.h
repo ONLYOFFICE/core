@@ -203,7 +203,7 @@ unsigned long StreamWriteToStream   (StreamRecPtr  pSrc, StreamRecPtr pDst, unsi
 //	BYTE pBuf[STREAM_BUF_SIZ];
 //    BYTE pEBuf[STREAM_BUF_SIZ];
 //    
-//	BOOL bFlag = FALSE;
+//	bool bFlag = false;
 //
 //	if ( !pDst || ! ( pDst->pWriteFn ) ) 
 //	{
@@ -223,7 +223,7 @@ unsigned long StreamWriteToStream   (StreamRecPtr  pSrc, StreamRecPtr pDst, unsi
 //    if ( OK != nRet )
 //        return nRet;
 //
-//    bFlag = FALSE;
+//    bFlag = false;
 //    for (;;) 
 //	{
 //        unsigned int nSize = STREAM_BUF_SIZ;
@@ -307,13 +307,13 @@ unsigned long StreamWriteUInt       (StreamRecPtr  pStream, unsigned int nValue)
 unsigned long StreamWriteHex        (StreamRecPtr  pStream, int nValue, int nLen);
 unsigned long StreamWriteReal       (StreamRecPtr  pStream, float fValue);
 int           StreamTell            (StreamRecPtr  pStream);
-BOOL          StreamEOF             (StreamRecPtr  pStream);
+bool          StreamEOF             (StreamRecPtr  pStream);
 unsigned long StreamFlush           (StreamRecPtr  pStream);
 unsigned long StreamWriteEscapeName (StreamRecPtr  pStream, const char *sValue);
 unsigned long StreamWriteEscapeText2(StreamRecPtr  pStream, const BYTE *sText, unsigned int nLen);
 unsigned long StreamWriteEscapeText (StreamRecPtr  pStream, const BYTE *sText, unsigned int nLen);
 unsigned long StreamWriteBinary (StreamRecPtr  pStream, const BYTE *pData, unsigned int nLen, EncryptRecPtr pEncrypt);
-unsigned long StreamValidate        (StreamRecPtr  pStream);
+bool          StreamValidate        (StreamRecPtr  pStream);
 namespace MemoryUtils
 {
 	class ZipBuffer
@@ -344,7 +344,7 @@ namespace MemoryUtils
 
 	private:
 
-		inline BOOL DeflateString(const CString& source)
+        inline bool DeflateString(const CString& source)
 		{
 //#ifdef NOZLIB
 
@@ -353,12 +353,12 @@ namespace MemoryUtils
 			if (buffer)
 			{
 				memcpy(buffer,source.GetString(), size); 
-				return TRUE;
+                return true;
 			}
 //#else
 
 //#endif
-			return FALSE;
+            return false;
 		}
 
 	private:

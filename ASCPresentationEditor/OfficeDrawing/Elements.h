@@ -281,20 +281,20 @@ namespace NSPresentationEditor
 		double		m_dClipStartTime;
 		double		m_dClipEndTime;
 
-		BOOL		m_bLoop;
+                bool		m_bLoop;
 
 	public:
 		CVideoElement() : IElement()
 		{
-			m_etType			=	etVideo;
+                        m_etType		=	etVideo;
 			
 			m_strFileName		=	_T("");
 			m_dVideoDuration	=	0.0;
-			m_nAlpha			=	0xFF;
+                        m_nAlpha		=	0xFF;
 					
 			m_dClipStartTime	=	-1.0;
 			m_dClipEndTime		=	-1.0;
-			m_bLoop				=	FALSE;
+                        m_bLoop			=	false;
 		}
 
 		virtual ~CVideoElement()
@@ -374,9 +374,9 @@ namespace NSPresentationEditor
 			CString animations;
 			if(!m_oAnimations.m_arAnimations.empty())
 			{
-				m_oAnimations.m_dSlideWidth		=	m_oMetric.m_lMillimetresHor;
+                                m_oAnimations.m_dSlideWidth	=	m_oMetric.m_lMillimetresHor;
 				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
-				animations						=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
+                                animations			=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
 
 				element		+=	animations;
 			}
@@ -413,9 +413,9 @@ namespace NSPresentationEditor
 			CString animations;
 			if(!m_oAnimations.m_arAnimations.empty())								//	для audio только "media call's" - play - pause - stop
 			{
-				m_oAnimations.m_dSlideWidth		=	m_oMetric.m_lMillimetresHor;
+                                m_oAnimations.m_dSlideWidth	=	m_oMetric.m_lMillimetresHor;
 				m_oAnimations.m_dSlideHeight	=	m_oMetric.m_lMillimetresVer;
-				animations						=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
+                                animations			=	m_oAnimations.ToXml(m_dStartTime, m_dEndTime);
 
 				element		+=	animations;
 			}
@@ -667,7 +667,7 @@ namespace NSPresentationEditor
 		AVSINLINE CString DownloadImage(const CString& strFile)
 		{
 #ifndef DISABLE_FILE_DOWNLOADER
-			CFileDownloader oDownloader(strFile, TRUE);
+                        CFileDownloader oDownloader(strFile, true);
 			oDownloader.Start( 1 );
 			while ( oDownloader.IsRunned() )
 			{
@@ -775,7 +775,7 @@ namespace NSPresentationEditor
 
 			if ( -1 != baseXML.Find ( _T("<ImagePaint-DrawGraphicPath") ) )
 			{
-				CString sAnim = m_oAnimations.ToXml(m_dStartTime, m_dEndTime, TRUE);
+                                CString sAnim = m_oAnimations.ToXml(m_dStartTime, m_dEndTime, true);
 				if (sAnim.GetLength())
 				{
 					CString sReplace = sAnim + timeXML + _T("</ImagePaint-DrawGraphicPathAnimate>");
@@ -970,12 +970,12 @@ namespace NSPresentationEditor
 				}
 			case CElementProperty::epFontBold:
 				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Bold			= (BOOL)pProperty->m_dwValue;
+                                        m_oShape.m_oText.m_oAttributes.m_oFont.Bold			= (bool)pProperty->m_dwValue;
 					break;
 				}
 			case CElementProperty::epFontItalic:
 				{
-					m_oShape.m_oText.m_oAttributes.m_oFont.Italic		= (BOOL)pProperty->m_dwValue;
+                                        m_oShape.m_oText.m_oAttributes.m_oFont.Italic		= (bool)pProperty->m_dwValue;
 					break;
 				}
 			case CElementProperty::epFontStrikeout:
@@ -1563,7 +1563,7 @@ namespace NSPresentationEditor
 
 		double		m_dClipStartTime;
 		double		m_dClipEndTime;
-		BOOL		m_bLoop;
+                bool		m_bLoop;
 
 	public:
 		CAudioElement() : IElement()

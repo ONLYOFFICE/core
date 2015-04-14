@@ -168,7 +168,7 @@ namespace NSBinPptxRW
 		NSBinPptxRW::CXmlWriter*				m_pXmlWriter;
 		int										m_nCurrentIndexObject;
 		IRenderer*								m_pOOXToVMLRenderer;
-		BOOL									m_bIsUseConvertion2007;
+        bool									m_bIsUseConvertion2007;
 
 		NSCommon::smart_ptr<PPTX::WrapperFile>*				m_pTheme;
 		NSCommon::smart_ptr<PPTX::WrapperWritingElement>*	m_pClrMap;

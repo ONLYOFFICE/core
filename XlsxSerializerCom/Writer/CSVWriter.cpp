@@ -2,7 +2,7 @@
 
 namespace CSVWriter
 {
-	void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, CString &sWriteString, UINT &nCodePage, BOOL bIsEnd)
+    void WriteFile(NSFile::CFileBinary *pFile, WCHAR **pWriteBuffer, INT &nCurrentIndex, CString &sWriteString, UINT &nCodePage, bool bIsEnd)
 	{
 		if (NULL == pFile || NULL == pWriteBuffer)
 			return;
@@ -55,7 +55,7 @@ namespace CSVWriter
 			nCurrentIndex += nCountChars;
 		}
 	}
-    void WriteFromXlsxToCsv(CString &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter, BOOL bJSON)
+    void WriteFromXlsxToCsv(CString &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter, bool bJSON)
 	{
 		NSFile::CFileBinary oFile;
 		oFile.CreateFileW(string2std_string(sFileDst));
@@ -149,7 +149,7 @@ namespace CSVWriter
 						}
 
 						INT nColCurrent = 1;
-						BOOL bIsWriteCell = FALSE; // Нужно только для записи JSON-а
+                        bool bIsWriteCell = false; // Нужно только для записи JSON-а
 						for (INT j = 0; j < pRow->m_arrItems.size(); ++j)
 						{
 							INT nRowTmp = 0;
@@ -159,7 +159,7 @@ namespace CSVWriter
 
 							while (nCol > nColCurrent)
 							{
-								if (bJSON && FALSE == bIsWriteCell)
+                                if (bJSON && false == bIsWriteCell)
 								{
 									// Запишем пустые строки (для JSON-а)
 									WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sDoubleQuote, nCodePage);
@@ -167,7 +167,7 @@ namespace CSVWriter
 								// Write delimiter
 								++nColCurrent;
 								WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sDelimiter, nCodePage);
-								bIsWriteCell = FALSE;
+                                bIsWriteCell = false;
 							}
 
 							OOX::Spreadsheet::CCell *pCell = static_cast<OOX::Spreadsheet::CCell *>(pRow->m_arrItems[j]);
@@ -208,7 +208,7 @@ namespace CSVWriter
 							}
 							// Write cell value
 							WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sCellValue, nCodePage);
-							bIsWriteCell = TRUE;
+                            bIsWriteCell = true;
 						}
 
 						if (bJSON)
@@ -218,7 +218,7 @@ namespace CSVWriter
 					if (bJSON)
 					{
 						WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sEndJson, nCodePage);
-						WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sEndJson, nCodePage, TRUE);
+                        WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sEndJson, nCodePage, true);
 					}
 				}
 			}
@@ -228,7 +228,7 @@ namespace CSVWriter
 		if (!bJSON)
 		{
 			WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sNewLineN, nCodePage);
-			WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sNewLineN, nCodePage, TRUE);
+            WriteFile(&oFile, &pWriteBuffer, nCurrentIndex, sNewLineN, nCodePage, true);
 		}
 		RELEASEARRAYOBJECTS(pWriteBuffer);
 		oFile.CloseFile();

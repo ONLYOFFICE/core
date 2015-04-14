@@ -61,9 +61,9 @@ namespace PPTX
 					OOX::CSystemUtility::CreateDirectories(file.GetDirectory());
 
 					XmlUtils::CXmlWriter oWriter;
-					oWriter.WriteNodeBegin(_T("Relationship"), TRUE);
+                    oWriter.WriteNodeBegin(_T("Relationship"), true);
 					oWriter.WriteAttribute(_T("xmlns"), _T("http://schemas.openxmlformats.org/package/2006/relationships"));
-					oWriter.WriteNodeEnd(_T("Relationship"), FALSE, TRUE);
+                    oWriter.WriteNodeEnd(_T("Relationship"), false, true);
 
 					oWriter.WriteString(Relations.toXML());
 

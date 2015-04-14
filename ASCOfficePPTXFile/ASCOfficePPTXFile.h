@@ -36,7 +36,7 @@ private:
 	// writer to ppty
 	CString		m_strFontDirectory;
 	CString		m_strMediaDirectory;
-	BOOL		m_bIsUseSystemFonts;
+    bool		m_bIsUseSystemFonts;
 	CString		m_strEmbeddedFontsDirectory;
 
 	CString		m_strFolderThemes;

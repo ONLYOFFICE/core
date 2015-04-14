@@ -1634,8 +1634,8 @@ namespace BinXlsxRW {
 					int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nWriteBufferLength, Base64::B64_BASE64_FLAG_NONE);
                     BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen+64];
 					CString sGfxdata;
-//					if(TRUE == Base64::Base64Encode(pWriteBuffer, nWriteBufferLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NONE))
-                    if(TRUE == Base64_1::Base64Encode(pWriteBuffer, nWriteBufferLength, pbBase64Buffer, &nBase64BufferLen))
+//					if(true == Base64::Base64Encode(pWriteBuffer, nWriteBufferLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NONE))
+                    if(true == Base64_1::Base64Encode(pWriteBuffer, nWriteBufferLength, pbBase64Buffer, &nBase64BufferLen))
                     {
 						std::wstring strGfxdata = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pbBase64Buffer, nBase64BufferLen);
 						sGfxdata = CString(strGfxdata.c_str());
@@ -3078,7 +3078,7 @@ namespace BinXlsxRW {
 						}
 						int nDataSize = atoi(dst_len);
 						BYTE* pData = new BYTE[nDataSize];
-						if(FALSE != Base64::Base64Decode((LPCSTR)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
+                        if(false != Base64::Base64Decode((LPCSTR)(pBase64Data + nIndex), nBase64DataSize - nIndex, pData, &nDataSize))
 						{
 							NSBinPptxRW::CBinaryFileReader& oBufferedStream = *pOfficeDrawingConverter->m_pReader;
 							oBufferedStream.Init(pData, 0, nDataSize);
@@ -3120,7 +3120,7 @@ namespace BinXlsxRW {
 							switch(fileType)
 							{
 							case BinXlsxRW::c_oFileTypes::CSV:
-								CSVWriter::WriteFromXlsxToCsv(sDstPathCSV, oXlsx, nCodePage, wcDelimiter, FALSE);
+                                CSVWriter::WriteFromXlsxToCsv(sDstPathCSV, oXlsx, nCodePage, wcDelimiter, false);
 								break;
 							case BinXlsxRW::c_oFileTypes::XLSX:
 							default:

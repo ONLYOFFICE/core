@@ -134,7 +134,7 @@ namespace NSWMFToImageConverter
 			std::wstring font_Name;
 			double font_Size = 0;
 			LONG font_Style = 0;
-			BOOL font_GID = 0;
+            INT font_GID = 0;
 
 			pRenderer->get_FontName( &font_Name );
 			pRenderer->get_FontPath( &font_Path );

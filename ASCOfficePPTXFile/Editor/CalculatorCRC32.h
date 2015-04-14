@@ -8,7 +8,7 @@ public:
 	{
 		m_dwMagicWord = 0xEDB88320;
 		m_dwInitCrc = 0xFFFFFFFF;	
-		m_bInitTable = FALSE;
+        m_bInitTable = false;
 	}
 public:
 	DWORD Calc(BYTE const*pStream, int nSize)
@@ -83,5 +83,5 @@ private:
 	DWORD m_dwMagicWord;
 	DWORD m_dwInitCrc;	
 	DWORD m_arCRCTable[255];
-	BOOL m_bInitTable;
+    bool m_bInitTable;
 };

@@ -271,7 +271,7 @@ namespace NSPresentationEditor
 			m_oWriter.WriteString(g_bstr_node_quote);
 		}
 		// document methods
-        AVSINLINE void WriteNodeBegin(CString strNodeName, BOOL bAttributed = FALSE)
+        AVSINLINE void WriteNodeBegin(CString strNodeName, bool bAttributed = false)
 		{
 			m_oWriter.WriteString(g_bstr_nodeopen);
 			m_oWriter.WriteString(strNodeName);
@@ -279,7 +279,7 @@ namespace NSPresentationEditor
 			if (!bAttributed)
 				m_oWriter.WriteString(g_bstr_nodeclose);
 		}
-        AVSINLINE void WriteNodeEnd(CString strNodeName, BOOL bEmptyNode = FALSE, BOOL bEndNode = TRUE)
+        AVSINLINE void WriteNodeEnd(CString strNodeName, bool bEmptyNode = false, bool bEndNode = true)
 		{
 			if (bEmptyNode)
 			{
@@ -339,7 +339,7 @@ namespace NSPresentationEditor
 		}
 
 		
-		BOOL SaveToFile(CString strFilePath, BOOL bEncodingToUTF8 = FALSE)
+                bool SaveToFile(CString strFilePath, bool bEncodingToUTF8 = false)
 		{
 			CString strData = m_oWriter.GetData();
 			if (!bEncodingToUTF8)
@@ -354,7 +354,7 @@ namespace NSPresentationEditor
 				CDirectory::SaveToFile(strFilePath, strData);
 			}
 			
-			return TRUE;
+                        return true;
 		}
 	};
 }

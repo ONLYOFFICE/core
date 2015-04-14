@@ -454,7 +454,7 @@ public:
 
 	void Reset()
 	{
-		m_bFirstEntry = TRUE;
+        m_bFirstEntry = true;
 		m_fX          = 0;
 		m_fY          = 0;
 		m_oMatrix.Reset();
@@ -502,7 +502,7 @@ public:
 
 		if ( m_bFirstEntry )
 		{
-			m_bFirstEntry = FALSE;
+            m_bFirstEntry = false;
 
 			m_fX = dX;
 			m_fY = dY;
@@ -535,7 +535,7 @@ public:
 		}
 		if ( 1 == m_arrTexts.size() )
 		{
-			m_bFirstEntry = FALSE;
+            m_bFirstEntry = false;
 
 			m_fX = m_arrTexts[0].fX;
 			m_fY = m_arrTexts[0].fY;
@@ -544,7 +544,7 @@ public:
 		}
 		else
 		{
-			m_bFirstEntry = TRUE;
+            m_bFirstEntry = true;
 
 			m_fX = 0;
 			m_fY = 0;
@@ -600,7 +600,7 @@ public:
 	}
 private:
 
-	BOOL                              m_bFirstEntry;
+    bool                              m_bFirstEntry;
 
 	float                             m_fX;             // Координаты первого текста 
 	float                             m_fY;             //
@@ -630,7 +630,7 @@ public:
 
 		m_mapPathMap[sFilePath] =  m_arrFilePath.size() - 1 ;
 	}
-	BOOL Find(std::wstring sFilePath, std::wstring *psFontName, std::wstring *psEncodingName, std::wstring *psToUnicodeName)
+    bool Find(std::wstring sFilePath, std::wstring *psFontName, std::wstring *psEncodingName, std::wstring *psToUnicodeName)
 	{
 		std::map<std::wstring, int>::iterator pEl = m_mapPathMap.find( sFilePath );
 
@@ -640,10 +640,10 @@ public:
 			*psFontName			= m_arrFontName[nIndex];
 			*psEncodingName		= m_arrEncodingName[nIndex];
 			*psToUnicodeName	= m_arrToUnicodeName[nIndex];
-			return TRUE;
+            return true;
 		}
 
-		return FALSE;
+        return false;
 	}
 
 private:
@@ -702,7 +702,7 @@ public:
 		m_nSize  = 0;
 	}
 
-	void Add(std::wstring sFontName, std::wstring sFontFile, BOOL bBoldIn, BOOL bItalicIn, BOOL bBoldOut, BOOL bItalicOut)
+    void Add(std::wstring sFontName, std::wstring sFontFile, bool bBoldIn, bool bItalicIn, bool bBoldOut, bool bItalicOut)
 	{
 		Resize(1);
 		
@@ -719,7 +719,7 @@ public:
 		return;
 	}
 
-	BOOL Find(std::wstring sFontName, std::wstring *pbsFontFile, BOOL *pbBold, BOOL *pbItalic)
+    bool Find(std::wstring sFontName, std::wstring *pbsFontFile, bool *pbBold, bool *pbItalic)
 	{
 		for ( int nIndex = 0; nIndex < m_nCount; ++nIndex )
 		{
@@ -730,11 +730,11 @@ public:
 				*pbBold   = m_pBoldOut[nIndex];
 				*pbItalic = m_pItalicOut[nIndex];
 
-				return TRUE;
+                return true;
 			}
 		}
 
-		return FALSE;
+        return false;
 	}
 
 private:
@@ -751,11 +751,11 @@ private:
 			{
 				m_nSize *= 2;
 			}
-			m_pBoldOut   = (BOOL *)realloc( m_pBoldOut,   m_nSize * sizeof(BOOL));
-			m_pItalicOut = (BOOL *)realloc( m_pItalicOut, m_nSize * sizeof(BOOL)); 
+            m_pBoldOut   = (bool *)realloc( m_pBoldOut,   m_nSize * sizeof(bool));
+            m_pItalicOut = (bool *)realloc( m_pItalicOut, m_nSize * sizeof(bool));
 
-			m_pBoldIn    = (BOOL *)realloc( m_pBoldIn,    m_nSize * sizeof(BOOL));
-			m_pItalicIn  = (BOOL *)realloc( m_pItalicIn,  m_nSize * sizeof(BOOL)); 
+            m_pBoldIn    = (bool *)realloc( m_pBoldIn,    m_nSize * sizeof(bool));
+            m_pItalicIn  = (bool *)realloc( m_pItalicIn,  m_nSize * sizeof(bool));
 		}
 
 	}
@@ -765,11 +765,11 @@ private:
 	std::vector<std::wstring>	m_arrFontName;
 	std::vector<std::wstring>	m_arrFontFile;
 
-	BOOL *m_pBoldIn;
-	BOOL *m_pItalicIn;
+    bool *m_pBoldIn;
+    bool *m_pItalicIn;
 
-	BOOL *m_pBoldOut;
-	BOOL *m_pItalicOut;
+    bool *m_pBoldOut;
+    bool *m_pItalicOut;
 
 	int   m_nCount;
 	int   m_nSize;
@@ -970,7 +970,7 @@ private:
 //
 //private:
 //
-//	inline BOOL CheckValidate()
+//	inline bool CheckValidate()
 //	{
 //		return ( NULL != m_pPath );
 //	}
@@ -1027,7 +1027,7 @@ private:
 //		CFileDownloader* loader = NULL;
 //		if (CFileDownloader::IsNeedDownload(sFilePath))
 //		{
-//			loader = new CFileDownloader(sFilePath, TRUE);
+//			loader = new CFileDownloader(sFilePath, true);
 //			if (loader)
 //			{
 //				//loader->StartWork(1);
@@ -1082,7 +1082,7 @@ private:
 
 struct ParseUtils
 {
-	static inline BOOL DoubleValues (const CString& src, std::vector<double>& numbers)
+    static inline bool DoubleValues (const CString& src, std::vector<double>& numbers)
 	{
 		CString number	=	_T("");			
 		int length		=	src.GetLength();

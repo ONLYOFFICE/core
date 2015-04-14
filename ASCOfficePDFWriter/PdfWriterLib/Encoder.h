@@ -284,7 +284,7 @@ typedef struct TBasicEncoderAttrRec
       BYTE           nLastChar;
       unsigned short anUnicodeMap[BASIC_ENCODER_MAX_CHAR_INDEX];
 	  char           asGlyphNameMap[BASIC_ENCODER_MAX_CHAR_INDEX][LIMIT_MAX_NAME_LEN + 1];
-      BOOL           bHasDifferences;
+      bool           bHasDifferences;
       BYTE           anDifferences[BASIC_ENCODER_MAX_CHAR_INDEX];
 } BasicEncoderAttrRec;
 
@@ -306,7 +306,7 @@ EncoderRecPtr        BasicEncoderNew      (MMgr oMMgr, const char *sEncodingName
 
 struct CMapVectorEntry 
 {
-	BOOL                 bIsVector;
+    bool                 bIsVector;
 	//union 
 	//{
 		int              nCID;
@@ -358,7 +358,7 @@ void           CMapEncoderStreamGetCodeByCID (EncoderRecPtr pEncoder, int nCID, 
 void           CMapEncoderStreamAddCIDtoCode (EncoderRecPtr pEncoder, int nCID, char sBuffer[4], int nLen);
 //-- CMapEncoder ---------------------------------------------------------------------------------
 
-typedef BOOL (*CMapEncoderByteTypeFunc) (EncoderRecPtr pEncoder, BYTE nByte);
+typedef bool (*CMapEncoderByteTypeFunc) (EncoderRecPtr pEncoder, BYTE nByte);
 
 typedef struct TCIDRangeRec 
 {
@@ -421,14 +421,14 @@ unsigned long CMapEncoderAddNotDefRange    (EncoderRecPtr pEncoder, CIDRangeRec 
 unsigned long CMapEncoderAddCodeSpaceRange (EncoderRecPtr pEncoder, CIDRangeRec oRange);
 void          CMapEncoderSetUnicodeArray   (EncoderRecPtr pEncoder, const UnicodeMapRec *pArray);
 unsigned long CMapEncoderAddJWWLineHead    (EncoderRecPtr pEncoder, const unsigned short *pnCode);
-BOOL          EncoderCheckJWWLineHead      (EncoderRecPtr pEncoder, const unsigned short nCode);
-BOOL          CMapEncoderUpdateUnicodeArray(EncoderRecPtr pEncoder, unsigned short *pArray);
+bool          EncoderCheckJWWLineHead      (EncoderRecPtr pEncoder, const unsigned short nCode);
+bool          CMapEncoderUpdateUnicodeArray(EncoderRecPtr pEncoder, unsigned short *pArray);
 //-- Дополнительные внешние функции -------------------------------------------------------------- 
 
 unsigned short EncoderGetUnicode    (EncoderRecPtr pEncoder, unsigned short nCode);
 ByteType       EncoderGetByteType   (EncoderRecPtr pEncoder, const char *sText, unsigned int nIndex);
 EncoderType    EncoderGetType       (EncoderRecPtr pEncoder);
 WritingMode    EncoderGetWritingMode(EncoderRecPtr pEncoder);
-BOOL           EncoderWCharToString (EncoderRecPtr pEncoder, CString bsSrc, CString *psDst);
+bool           EncoderWCharToString (EncoderRecPtr pEncoder, CString bsSrc, CString *psDst);
 #endif /* _ENCODER_H */
 

@@ -14,7 +14,7 @@ void CIDFontDefFreeWidth  (FontDef pFontDef)
     ListFree( pAttr->pW );
 	pAttr->pW = NULL;
 
-	pFontDef->bValid = FALSE;
+    pFontDef->bValid = false;
 }
 void CIDFontDefFreeFunc   (FontDef pFontDef)
 {
@@ -53,7 +53,7 @@ FontDef       CIDFontDefNew         (MMgr oMMgr, char *sName, FontDefInitFunc pI
     pFontDef->eType   = FontDefCID;
 	pFontDef->pFreeFn = CIDFontDefFreeFunc;
 	pFontDef->pInitFn = pInitFn;
-	pFontDef->bValid  = FALSE;
+    pFontDef->bValid  = false;
 
     CIDFontDefAttr pFontDefAttr = (CIDFontDefAttr)GetMem( oMMgr, sizeof(CIDFontDefAttrRec) );
     if ( !pFontDefAttr ) 
@@ -312,7 +312,7 @@ unsigned long CIDFontDefSetCIDtoGID (FontDef pFontDef, BYTE *pBuffer, int nSize)
 
 	return OK;
 }
-unsigned long CIDFontDefChangeStyle (FontDef pFontDef, BOOL bBold, BOOL bItalic)
+unsigned long CIDFontDefChangeStyle (FontDef pFontDef, bool bBold, bool bItalic)
 {
     if ( !pFontDef || !pFontDef->pAttr )
         return AVS_OFFICEPDFWRITER_ERROR_INVALID_FONTDEF_DATA;
@@ -994,7 +994,7 @@ static TextWidth     CIDTextWidth                 (FontDict pFont, const BYTE *p
 
     return oTextWidth;
 }
-static unsigned int  CIDMeasureText               (FontDict pFont, const BYTE *pText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, BOOL bWordWrap, float *pfRealWidth)
+static unsigned int  CIDMeasureText               (FontDict pFont, const BYTE *pText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, bool bWordWrap, float *pfRealWidth)
 {
     float fTempWidth = 0;
     unsigned int nTempLen = 0;
@@ -1154,7 +1154,7 @@ static TextWidth     CIDTextWidth2                (FontDict pFont, const BYTE *p
 
     return oTextWidth;
 }
-static unsigned int  CIDMeasureText2              (FontDict pFont, const BYTE *pText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, BOOL bWordWrap, float *pfRealWidth)
+static unsigned int  CIDMeasureText2              (FontDict pFont, const BYTE *pText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, bool bWordWrap, float *pfRealWidth)
 {
 	// TO DO : Релизовать данную функцию
 	return 0;

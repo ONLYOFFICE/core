@@ -10,7 +10,7 @@ static void          Type1FreeWidth   (FontDef pFontDef)
 	FreeMem( pFontDef->oMMgr, pAttr->aoWidths );
     pAttr->aoWidths = NULL;
 
-    pFontDef->bValid = FALSE;
+    pFontDef->bValid = false;
 }
 static void          Type1FreeFunc    (FontDef pFontDef)
 {
@@ -198,7 +198,7 @@ static unsigned long LoadType1   (FontDef pFontDef, CStringW wsFilePath/*, Strea
  //   char sBuffer[STREAM_BUF_SIZ];
  //   char* pBufPointer = sBuffer;
  //   unsigned int nLen = 0;
- //   BOOL bEndFlag = FALSE;
+ //   bool bEndFlag = false;
 
 	//pAttr->pFontData = MemStreamNew( pFontDef->oMMgr, STREAM_BUF_SIZ );
 
@@ -217,7 +217,7 @@ static unsigned long LoadType1   (FontDef pFontDef, CStringW wsFilePath/*, Strea
  //       nRet = StreamRead( pStream, (BYTE*)pBufPointer, &nLen );
  //       if ( AVS_OFFICEPDFWRITER_ERROR_STREAM_EOF == nRet ) 
 	//	{
- //           bEndFlag = TRUE;
+ //           bEndFlag = true;
  //       } 
 	//	else if ( OK != nRet )
  //           return nRet;
@@ -462,7 +462,7 @@ static unsigned long LoadFontData(FontDef pFontDef, StreamRecPtr pStream, short 
 		char* pBufPointer = sBuffer;
 		unsigned int nLen = 0;
 		unsigned long nRet = OK;
-		BOOL bEndFlag = FALSE;
+        bool bEndFlag = false;
 
 		pAttr->pFontData = MemStreamNew( pFontDef->oMMgr, STREAM_BUF_SIZ );
 
@@ -481,7 +481,7 @@ static unsigned long LoadFontData(FontDef pFontDef, StreamRecPtr pStream, short 
 			nRet = StreamRead( pStream, (BYTE*)pBufPointer, &nLen );
 			if ( AVS_OFFICEPDFWRITER_ERROR_STREAM_EOF == nRet ) 
 			{
-				bEndFlag = TRUE;
+                bEndFlag = true;
 			} 
 			else if ( OK != nRet )
 				return nRet;
@@ -566,7 +566,7 @@ FontDef       Type1FontDefNew            (MMgr oMMgr)
 	pFontDef->pCleanFn      = NULL;
 	pFontDef->pFreeFn       = Type1FreeFunc;
 	pFontDef->pDescriptor   = NULL;
-    pFontDef->bValid        = FALSE;
+    pFontDef->bValid        = false;
 	//pFontDef->nMissingWidth = 0;
 
     Type1FontDefAttr pFontDefAttr = (Type1FontDefAttr)GetMem( oMMgr, sizeof(Type1FontDefAttrRec) );
@@ -1034,7 +1034,7 @@ static TextWidth     Type1FontTextWidth       (FontDict pFont, const BYTE *pText
 	}
     return oRet;
 }
-static unsigned int  Type1FontMeasureText     (FontDict pFont, const BYTE *pText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, BOOL bWordWrap, float *pfRealWidth)
+static unsigned int  Type1FontMeasureText     (FontDict pFont, const BYTE *pText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, bool bWordWrap, float *pfRealWidth)
 {
     float fTempWidth = 0;
     unsigned int nTempLen = 0;
@@ -1199,10 +1199,10 @@ void FontDefCleanup (FontDef pFontDef)
 
 	pFontDef->pDescriptor = NULL;
 }
-BOOL FontDefValidate(FontDef pFontDef)
+bool FontDefValidate(FontDef pFontDef)
 {
     if ( !pFontDef || pFontDef->nSigBytes != FONTDEF_SIG_BYTES )
-        return FALSE;
+        return false;
     else
-        return TRUE;
+        return true;
 }

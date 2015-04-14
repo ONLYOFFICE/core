@@ -100,17 +100,17 @@ unsigned long EncryptDictSetPassword(EncryptDict pDict, const char *sOwnerPasswo
 
     return OK;
 }
-BOOL          EncryptDictValidate   (EncryptDict pDict)
+bool          EncryptDictValidate   (EncryptDict pDict)
 {
     ObjHeader *pHeader = (ObjHeader *)pDict;
 
     if ( !pDict || !pDict->pAttr )
-        return FALSE;
+        return false;
 
     if ( pHeader->nObjClass != (OCLASS_DICT | OSUBCLASS_ENCRYPT) )
-        return FALSE;
+        return false;
 
-    return TRUE;
+    return true;
 }
 unsigned long EncryptDictPrepare    (EncryptDict pDict, Dict pInfo, Xref pXref)
 {

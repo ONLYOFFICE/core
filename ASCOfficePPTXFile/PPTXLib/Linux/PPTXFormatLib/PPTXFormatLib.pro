@@ -94,7 +94,8 @@ SOURCES += pptxformatlib.cpp \
     ../../../../XlsxSerializerCom/Writer/CSVWriter.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp \
     ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
-    ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/FilePosix.cpp
+    ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/FilePosix.cpp \
+    ../../../PPTXFormat/Logic/Controls.cpp
 #../../../Directory.cpp \
 #../../File.cpp
 
@@ -525,7 +526,8 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/DefaultNotesTheme.h \
     ../../../../Common/FileDownloader.h \
     ../../../PPTXFormat/DocxFormat/Drawing/LegacyDiagramText.h \
-    ../../../PPTXFormat/DocxFormat/Drawing/VmlDrawing.h
+    ../../../PPTXFormat/DocxFormat/Drawing/VmlDrawing.h \
+    ../../../PPTXFormat/Logic/Controls.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

@@ -248,106 +248,106 @@ namespace PPTX
 			return prop;
 		}
 
-		nullable_base<BOOL>	CShapeTextProperties::GetHasBullet(int level, const nullable<TextParagraphPr>& pParagraph)const
+        nullable_base<bool>	CShapeTextProperties::GetHasBullet(int level, const nullable<TextParagraphPr>& pParagraph)const
 		{
-			nullable_base<BOOL> prop;
+            nullable_base<bool> prop;
 
 			if (pParagraph.is_init())
 				if (pParagraph->ParagraphBullet.is_init())
 				{
-					prop = (BOOL)pParagraph->ParagraphBullet.has_bullet();
+                    prop = (bool)pParagraph->ParagraphBullet.has_bullet();
 					return prop;
 				}
 
 			if (m_body[level].is_init())
 				if (m_body[level]->ParagraphBullet.is_init())
 				{
-					prop = (BOOL)m_body[level]->ParagraphBullet.has_bullet();
+                    prop = (bool)m_body[level]->ParagraphBullet.has_bullet();
 					return prop;
 				}
 
 			if (m_levels[level].is_init())
 				if (m_levels[level]->ParagraphBullet.is_init())
 				{
-					prop = (BOOL)m_levels[level]->ParagraphBullet.has_bullet();
+                    prop = (bool)m_levels[level]->ParagraphBullet.has_bullet();
 					return prop;
 				}
 				
 			return prop;
 		}
 
-		nullable_base<BOOL> CShapeTextProperties::GetRunBold(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
+        nullable_base<bool> CShapeTextProperties::GetRunBold(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
 		{
-			nullable_base<BOOL> prop;
+            nullable_base<bool> prop;
 
 			if (pRun.is_init())
 				if (pRun->b.is_init())
 				{
-					prop = (BOOL)pRun->b.get();
+                    prop = (bool)pRun->b.get();
 					return prop;
 				}
 			if (pParagraph.is_init())
 				if (pParagraph->defRPr.is_init())
 					if (pParagraph->defRPr->b.is_init())
 					{
-						 prop = (BOOL)pParagraph->defRPr->b.get();
+                         prop = (bool)pParagraph->defRPr->b.get();
 					}
 
 			return prop;
 		}
-		nullable_base<BOOL> CShapeTextProperties::GetRunItalic(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
+        nullable_base<bool> CShapeTextProperties::GetRunItalic(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
 		{
-			nullable_base<BOOL> prop;
+            nullable_base<bool> prop;
 
 			if (pRun.is_init())
 				if (pRun->i.is_init())
 				{
-					prop = (BOOL)pRun->i.get();
+                    prop = (bool)pRun->i.get();
 					return prop;
 				}
 			if (pParagraph.is_init())
 				if (pParagraph->defRPr.is_init())
 					if (pParagraph->defRPr->i.is_init())
 					{
-						 prop = (BOOL)pParagraph->defRPr->i.get();
+                         prop = (bool)pParagraph->defRPr->i.get();
 					}
 
 			return prop;
 		}
-		nullable_base<BOOL> CShapeTextProperties::GetRunUnderline(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
+        nullable_base<bool> CShapeTextProperties::GetRunUnderline(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
 		{
-			nullable_base<BOOL> prop;
+            nullable_base<bool> prop;
 
 			if (pRun.is_init())
 				if (pRun->u.is_init())
 				{
-					prop = (_T("none") != pRun->u->get()) ? TRUE : FALSE;
+                    prop = (_T("none") != pRun->u->get()) ? true : false;
 					return prop;
 				}
 			if (pParagraph.is_init())
 				if (pParagraph->defRPr.is_init())
 					if (pParagraph->defRPr->u.is_init())
 					{
-						prop = (_T("none") != pParagraph->defRPr->u->get()) ? TRUE : FALSE;
+                        prop = (_T("none") != pParagraph->defRPr->u->get()) ? true : false;
 						return prop;
 					}
 
 			return prop;
 		}
-		nullable_base<BOOL> CShapeTextProperties::GetRunStrike(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
+        nullable_base<bool> CShapeTextProperties::GetRunStrike(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const
 		{
-			nullable_base<BOOL> prop;
+            nullable_base<bool> prop;
 
 			if (pRun.is_init())
 				if (pRun->strike.is_init())
 				{
-					prop = (_T("noStrike") != pRun->strike->get()) ? TRUE : FALSE;
+                    prop = (_T("noStrike") != pRun->strike->get()) ? true : false;
 					return prop;
 				}
 			if (pParagraph.is_init())
 				if (pParagraph->defRPr.is_init())
 					if (pParagraph->defRPr->strike.is_init())
-						prop = (_T("noStrike") != pParagraph->defRPr->strike->get()) ? TRUE : FALSE;
+                        prop = (_T("noStrike") != pParagraph->defRPr->strike->get()) ? true : false;
 
 			return prop;
 		}

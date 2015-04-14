@@ -164,7 +164,7 @@ namespace XmlUtils
 			m_str = strValue;
 		}
 		
-		BOOL SaveToFile(const CString& strFilePath, BOOL bEncodingToUTF8 = FALSE)
+                bool SaveToFile(const CString& strFilePath, bool bEncodingToUTF8 = false)
 		{
 #if defined(_WIN32) || defined (_WIN64)
             // win32 unicode and multibyte strings
@@ -182,7 +182,7 @@ namespace XmlUtils
 #endif
 
 			if (!pFile)
-				return FALSE;
+                                return false;
 
 			CStringA str; str = m_str;
 			if (bEncodingToUTF8)
@@ -196,7 +196,7 @@ namespace XmlUtils
 
 			fclose(pFile);
 
-			return TRUE;
+                        return true;
 		}
 #ifdef _UNICODE
         CStringA EncodingUnicodeToUTF8()
@@ -269,21 +269,21 @@ namespace XmlUtils
 
 			m_str += str;
 		}
-		void WriteBoolean(BOOL Value)
+                void WriteBoolean(bool Value)
 		{
 			if (Value)
 				m_str += _T("true");
 			else
 				m_str += _T("false");
 		}
-		void WriteNodeBegin(const CString& strNodeName, BOOL bAttributed = FALSE)
+                void WriteNodeBegin(const CString& strNodeName, bool bAttributed = false)
 		{
 			m_str += _T("<") + strNodeName;
 
 			if (!bAttributed)
 				m_str += _T(">");
 		}
-		void WriteNodeEnd(const CString& strNodeName, BOOL bEmptyNode = FALSE, BOOL bEndNode = TRUE)
+                void WriteNodeEnd(const CString& strNodeName, bool bEmptyNode = false, bool bEndNode = true)
 		{
 			if (bEmptyNode)
 			{
@@ -552,12 +552,12 @@ namespace XmlUtils
 
 		return sDef;
 	}
-	static BOOL GetNodeTextTyped(XML::IXMLDOMNodePtr node, _variant_t* variant, const CString& type = _T("bin.base64"))
+        static bool GetNodeTextTyped(XML::IXMLDOMNodePtr node, _variant_t* variant, const CString& type = _T("bin.base64"))
 	{
 		try
 		{
 			if (node == NULL)
-				return FALSE;
+                                return false;
 
 			BSTR bstrType = type.AllocSysString();
 
@@ -567,13 +567,13 @@ namespace XmlUtils
 
 			*variant = node->nodeTypedValue;
 
-			return TRUE;
+                        return true;
 		}
 		catch (...)
 		{
 		}
 
-		return FALSE;
+                return false;
 	}
 		
 	static CString GetNodeAttrib(XML::IXMLDOMNodeListPtr nodes, int index, const CString& attrib, const CString& def = _T(""))
@@ -644,12 +644,12 @@ namespace XmlUtils
 
 		return def;
 	}
-	static BOOL GetNodeTextTyped(XML::IXMLDOMNodeListPtr nodes, int index, _variant_t* variant, const CString& type = _T("bin.base64"))
+        static bool GetNodeTextTyped(XML::IXMLDOMNodeListPtr nodes, int index, _variant_t* variant, const CString& type = _T("bin.base64"))
 	{
 		try
 		{
 			if (nodes == NULL || index < 0 || index >= nodes->length)
-				return FALSE;
+                                return false;
 
 			return GetNodeTextTyped(nodes->item[index], variant, type);
 		}
@@ -657,7 +657,7 @@ namespace XmlUtils
 		{
 		}
 
-		return FALSE;
+                return false;
 	}
 	
 	class CXmlReader
@@ -690,7 +690,7 @@ namespace XmlUtils
 				m_pXmlDocument->setProperty( _bstr_t(_T("SelectionLanguage")), _variant_t(_T("XPath")) );
 			}
 		}
-		CXmlReader(BOOL bCreateDocument)
+                CXmlReader(bool bCreateDocument)
 		{
 			Clear();
 
@@ -723,10 +723,10 @@ namespace XmlUtils
 		{
 			return m_str;
 		}
-		BOOL SetXmlString(const CString& strValue)
+                bool SetXmlString(const CString& strValue)
 		{
 			if (NULL == m_pXmlDocument)
-				return FALSE;
+                                return false;
 
 			try
 			{
@@ -738,7 +738,7 @@ namespace XmlUtils
 					{
 						m_str = strValue;
 
-						return TRUE;
+                                                return true;
 					}
 				}
 			}
@@ -749,7 +749,7 @@ namespace XmlUtils
 
 			Clear();
 
-			return FALSE;
+                        return false;
 		}
 		void SetProperty(const CString& strName, const CString& strValue)
 		{
@@ -757,26 +757,26 @@ namespace XmlUtils
 				m_pXmlDocument->setProperty( _bstr_t((LPCTSTR)strName), _variant_t((LPCTSTR)strValue));
 		}
 	
-		BOOL OpenFromXmlString(const CString& strXml)
+                bool OpenFromXmlString(const CString& strXml)
 		{
 			return SetXmlString(strXml);
 		}
-		BOOL OpenFromXmlNode(XML::IXMLDOMNodePtr& pXmlNode)
+                bool OpenFromXmlNode(XML::IXMLDOMNodePtr& pXmlNode)
 		{
 			m_pXmlNode = pXmlNode;
 
 			if (pXmlNode == NULL)
-				return FALSE;
+                                return false;
 
-			return TRUE;
+                        return true;
 		}
-		BOOL OpenFromFile(const CString& strFilePath)
+                bool OpenFromFile(const CString& strFilePath)
 		{
 			if (NULL == m_pXmlDocument)
-				return FALSE;
+                                return true;
 
 			BSTR bstrFilePath = strFilePath.AllocSysString();
-			BOOL bSuccess = FALSE;
+                        bool bSuccess = false;
 
 			try
 			{
@@ -813,16 +813,16 @@ namespace XmlUtils
 			}			
 			return sName;
 		}
-		BOOL ReadRootNode()
+                bool ReadRootNode()
 		{
 			if (NULL == m_pXmlDocument)
-				return FALSE;
+                                return false;
 
 			try
 			{
 				m_pXmlNode = m_pXmlDocument->firstChild;
 
-				return TRUE;
+                                return true;
 			}
 			catch (...)
 			{
@@ -831,15 +831,15 @@ namespace XmlUtils
 			m_pXmlNode = NULL;
 			m_pXmlNodeList = NULL;
 
-			return FALSE;
+                        return false;
 		}
-		BOOL ReadRootNode(const CString& strRootNodeName)
+                bool ReadRootNode(const CString& strRootNodeName)
 		{
 			if (_T("") == strRootNodeName)
 				return ReadRootNode();
 
 			if (NULL == m_pXmlDocument)
-				return FALSE;
+                                return false;
 
 			try
 			{
@@ -847,7 +847,7 @@ namespace XmlUtils
 
 				m_pXmlNode = m_pXmlDocument->selectSingleNode(bstrNode);
 
-				return TRUE;
+                                return true;
 			}
 			catch (...)
 			{
@@ -856,12 +856,12 @@ namespace XmlUtils
 			m_pXmlNode = NULL;
 			m_pXmlNodeList = NULL;
 
-			return FALSE;
+                        return false;
 		}
-		BOOL ReadNode(const CString& strSubNodeName)
+                bool ReadNode(const CString& strSubNodeName)
 		{
 			if (NULL == m_pXmlNode)
-				return FALSE;
+                                return false;
 
 			try
 			{
@@ -872,7 +872,7 @@ namespace XmlUtils
 				if (NULL != pNewNode)
 				{
 					m_pXmlNode = pNewNode;
-					return TRUE;
+                                        return true;
 				}
 			}
 			catch (...)
@@ -881,12 +881,12 @@ namespace XmlUtils
 
 			m_pXmlNode = NULL;
 
-			return FALSE;
+                        return false;
 		}
-		BOOL ReadChilds()
+                bool ReadChilds()
 		{
 			if (NULL == m_pXmlNode)
-				return FALSE;
+                                return false;
 
 			try
 			{
@@ -895,7 +895,7 @@ namespace XmlUtils
 				if (NULL != pNewNodeList)
 				{
 					m_pXmlNodeList = pNewNodeList;
-					return TRUE;
+                                        return true;
 				}
 			}
 			catch (...)
@@ -904,12 +904,12 @@ namespace XmlUtils
 
 			m_pXmlNodeList = NULL;
 
-			return FALSE;
+                        return false;
 		}
-		BOOL ReadNodeList(const CString& strSubNodesName)
+                bool ReadNodeList(const CString& strSubNodesName)
 		{
 			if (NULL == m_pXmlNode)
-				return FALSE;
+                                return false;
 
 			try
 			{
@@ -920,7 +920,7 @@ namespace XmlUtils
 				if (NULL != pNewNodeList)
 				{
 					m_pXmlNodeList = pNewNodeList;
-					return TRUE;
+                                        return true;
 				}
 			}
 			catch (...)
@@ -929,7 +929,7 @@ namespace XmlUtils
 
 			m_pXmlNodeList = NULL;
 
-			return FALSE;
+                        return false;
 		}
 	
 		CString ReadNodeAttributeOrValue(const CString& strSubNodeName, const CString& def = _T(""))
@@ -976,10 +976,10 @@ namespace XmlUtils
 
 			return GetNodeXml(m_pXmlNode, def);
 		}
-		BOOL ReadNodeTextTyped(_variant_t* variant, const CString& type = _T("bin.base64"))
+                bool ReadNodeTextTyped(_variant_t* variant, const CString& type = _T("bin.base64"))
 		{
 			if (NULL == m_pXmlNode)
-				return FALSE;
+                                return false;
 
 			return GetNodeTextTyped(m_pXmlNode, variant, type);
 		}
@@ -1046,10 +1046,10 @@ namespace XmlUtils
 
 			return GetNodeXml(m_pXmlNodeList, nIndex, def);
 		}
-		BOOL ReadNodeTextTyped(int nIndex, _variant_t* variant, const CString& type = _T("bin.base64"))
+                bool ReadNodeTextTyped(int nIndex, _variant_t* variant, const CString& type = _T("bin.base64"))
 		{
 			if (NULL == m_pXmlNodeList)
-				return FALSE;
+                                return false;
 
 			return GetNodeTextTyped(m_pXmlNodeList, nIndex, variant, type);
 		}
@@ -1071,20 +1071,20 @@ namespace XmlUtils
 
 			return 0;
 		}
-		BOOL GetNode(XML::IXMLDOMNodePtr& pXmlNode)
+        bool GetNode(XML::IXMLDOMNodePtr& pXmlNode)
 		{
 			pXmlNode = m_pXmlNode;
 
 			return (m_pXmlNode != NULL);
 		}
-		BOOL GetNode(int nIndex, XML::IXMLDOMNodePtr& pXmlNode)
+        bool GetNode(int nIndex, XML::IXMLDOMNodePtr& pXmlNode)
 		{
 			if (m_pXmlNodeList == NULL)
-				return FALSE;
+                                return false;
 
 			pXmlNode = m_pXmlNodeList->item[nIndex];
 
-			return TRUE;
+            return true;
 		}
 	};
 };
@@ -1157,21 +1157,21 @@ namespace XmlUtils
 	};
 
 	//Только свойства которые не имеют дополнительных параметров на вход
-	static BOOL GetPropertyList(IDispatch *pDisp, CDispatchPropertyList &arProp, INVOKEKIND nType)
+        static bool GetPropertyList(IDispatch *pDisp, CDispatchPropertyList &arProp, INVOKEKIND nType)
 	{
 		if (NULL==pDisp)
-			return FALSE;
+                        return false;
 		ITypeInfo *pTypeInfo = NULL;
 		pDisp->GetTypeInfo(0, LOCALE_SYSTEM_DEFAULT, &pTypeInfo);
 		if (NULL==pTypeInfo)
-			return FALSE;
+                        return false;
 		
 		TYPEATTR* pTypeAttr = NULL;
 		HRESULT hRes = pTypeInfo->GetTypeAttr(&pTypeAttr);
 		if (S_OK!=hRes)
 		{
 			pTypeInfo->Release();
-			return FALSE;
+                        return false;
 		}
 		int nMethodCount = pTypeAttr->cFuncs;
 		for (int i=0; i<nMethodCount; i++)
@@ -1212,12 +1212,12 @@ namespace XmlUtils
 		}			
 		pTypeInfo->ReleaseTypeAttr(pTypeAttr);
 		pTypeInfo->Release();		
-		return TRUE;
+        return true;
 	}
-	static BOOL ApplyPropertyList(IDispatch *pDisp, CDispatchPropertyList &arProp)
+        static bool ApplyPropertyList(IDispatch *pDisp, CDispatchPropertyList &arProp)
 	{
 		if (NULL==pDisp)
-			return FALSE;
+                        return false;
 		
 		long lCount = (long)arProp.GetCount();
 		for (long i=0; i<lCount; i++)
@@ -1238,7 +1238,7 @@ namespace XmlUtils
 				&dispParam, NULL, NULL, NULL);
 
 		}
-		return TRUE;
+        return true;
 	}
 
 	class CDispatchXmlWriter 
@@ -1273,7 +1273,7 @@ namespace XmlUtils
 				return;
 
 			CString sTemp;
-			CXmlWriter::WriteNodeBegin(g_cpszSADescriptorNodeName, TRUE);
+            CXmlWriter::WriteNodeBegin(g_cpszSADescriptorNodeName, true);
 			CXmlWriter::WriteAttribute(g_cpszSADimsAttributeName, (int)nDim);
 			CXmlWriter::WriteString(_T(">"));
 			for (UINT nIndex = 0; nIndex < nDim; nIndex++)
@@ -1281,7 +1281,7 @@ namespace XmlUtils
 				sTemp.Format(g_cpszSASizeNodeNameFormat,nIndex);
 				CXmlWriter::WriteNode(sTemp, (long)(psa->rgsabound[nIndex].cElements));
 			}
-			CXmlWriter::WriteNodeEnd(g_cpszSADescriptorNodeName, FALSE);
+                        CXmlWriter::WriteNodeEnd(g_cpszSADescriptorNodeName, false);
 			if (BinaryToBase64((LPBYTE)psa->pvData, ulSADataSize, sTemp))			
 				CXmlWriter::WriteNode(g_cpszSADataNodeName, sTemp);
 			else
@@ -1294,14 +1294,14 @@ namespace XmlUtils
 			if ((0!=(VT_ARRAY & val.vt))&&(VT_UI1 != (VT_TYPEMASK & val.vt)))
 				return;
 
-			CXmlWriter::WriteNodeBegin(sName, TRUE);
+            CXmlWriter::WriteNodeBegin(sName, true);
 			CXmlWriter::WriteAttribute(g_cpszVariantTypeNodeAttr, val.vt);
 			CXmlWriter::WriteString(_T(">"));
 			if (0!=(VT_ARRAY & val.vt))
 				WriteNode(val.parray);
 			else
 				WriteString(VariantToString(val));
-			CXmlWriter::WriteNodeEnd(sName, FALSE);
+                        CXmlWriter::WriteNodeEnd(sName, false);
 		}
 		void WritePropertyList(CDispatchPropertyList &arProp)
 		{
@@ -1313,16 +1313,16 @@ namespace XmlUtils
 			}
 		}
 	protected:
-		static BOOL BinaryToBase64(const BYTE* pData, long lSize, CString& sResult)
+                static bool BinaryToBase64(const BYTE* pData, long lSize, CString& sResult)
 		{
 			if ((NULL==pData) || (0==lSize))
-				return FALSE;
+                                return false;
 
 			int nStrSize = Base64EncodeGetRequiredLength(lSize);
 
 			CStringA saTemp;
 			LPSTR pStrData = saTemp.GetBuffer(nStrSize + 1);
-			BOOL bSuccess = Base64Encode(pData, lSize, pStrData, &nStrSize);
+                        bool bSuccess = Base64Encode(pData, lSize, pStrData, &nStrSize);
 			
 			pStrData[nStrSize] = '\0';
 			saTemp.ReleaseBuffer();
@@ -1485,7 +1485,7 @@ namespace XmlUtils
 			return (arProp.GetCount());
 		}
 	protected:
-		BOOL GetSafeArray(XML::IXMLDOMNodePtr ptrNode, LPSAFEARRAY &psa)
+                bool GetSafeArray(XML::IXMLDOMNodePtr ptrNode, LPSAFEARRAY &psa)
 		{
 			long lDims = 0;
 			LPSAFEARRAYBOUND psabound = NULL;
@@ -1498,11 +1498,11 @@ namespace XmlUtils
 					CString sTemp = XmlUtils::GetNodeAttrib(pDescriptionNode, g_cpszSADimsAttributeName);
 					lDims = _ttoi(sTemp);
 					if (0==lDims)
-						return FALSE;
+                                                return false;
 
 					psabound = new SAFEARRAYBOUND[lDims];
 					if (NULL==psabound)
-						return FALSE;
+                                                return false;
 
 
 					for (long i=0; i<lDims; i++)
@@ -1516,12 +1516,12 @@ namespace XmlUtils
 					if (0==lSize)
 					{
 						delete []psabound;
-						return FALSE;
+                                                return false;
 					}
 				}
 				psa = SafeArrayCreate(VT_UI1, lDims, psabound);
 				if (NULL==psa)
-					return FALSE;
+                                        return false;
 
 				_bstr_t bstrNode; bstrNode = g_cpszSADataNodeName;
 				XML::IXMLDOMElementPtr pDataNode = ptrNode->selectSingleNode(bstrNode);
@@ -1530,25 +1530,25 @@ namespace XmlUtils
 				if (!Base64ToBinary(sTemp, (LPBYTE)psa->pvData, lSize))
 				{
 					delete []psabound;
-					return FALSE;
+                                        return false;
 				}
 			}
 			catch (...)
 			{
 				if (NULL != psabound)
 					delete []psabound;
-				return FALSE;
+                                return false;
 			}
 			delete []psabound;
-			return TRUE;
+                        return true;
 		}
-		BOOL GetVariantValue(const CString &sType, const CString &sValue, VARIANT &val)
+                bool GetVariantValue(const CString &sType, const CString &sValue, VARIANT &val)
 		{
 			if ((sType.IsEmpty())||(sValue.IsEmpty()))
-				return FALSE;
+                                return false;
 			val.vt = _ttoi(sType);
 
-			BOOL bRet = TRUE;
+                        bool bRet = true;
 			switch (VT_TYPEMASK & val.vt)
 			{
 			case VT_I2:
@@ -1621,16 +1621,16 @@ namespace XmlUtils
 			case VT_CLSID:
 			case VT_VERSIONED_STREAM:
 			case VT_BSTR_BLOB:
-				bRet = FALSE;
+                                bRet = false;
 				break;
 			}
 
 			return bRet;
 		}
-		static BOOL Base64ToBinary(const CString& sData, BYTE* pData, int nSize)
+                static bool Base64ToBinary(const CString& sData, BYTE* pData, int nSize)
 		{
 			if ((NULL==pData) || (0==nSize))
-				return FALSE;
+                                return false;
 //			LPSTR pStrData = sData.GetBuffer(nStrSize + 1);
 			CStringA saData; saData = sData;
 			return Base64Decode((LPCSTR)saData/*.GetBuffer()*/, saData.GetLength(), pData, &nSize);
@@ -1645,9 +1645,9 @@ namespace XmlUtils
 	{
 	public:
 
-		virtual BOOL FromXmlNode(XML::IXMLDOMNodePtr& pXmlNode) = 0;
-		virtual BOOL FromXmlString(const CString& strXml) = 0;
-		virtual BOOL FromXmlFile(const CString& strXmlFilePath, bool bRemoveRootNode = false) = 0;
+                virtual bool FromXmlNode(XML::IXMLDOMNodePtr& pXmlNode) = 0;
+                virtual bool FromXmlString(const CString& strXml) = 0;
+                virtual bool FromXmlFile(const CString& strXmlFilePath, bool bRemoveRootNode = false) = 0;
 	};
 	class CXmlNodes
 	{
@@ -1664,12 +1664,12 @@ namespace XmlUtils
 		{
 			m_pXmlNodes = NULL;
 		}
-		BOOL IsValid()
+                bool IsValid()
 		{
 			return (NULL != m_pXmlNodes);
 		}
 		
-		BOOL FromXmlNodes(XML::IXMLDOMNodeListPtr& pXmlNodes)
+                bool FromXmlNodes(XML::IXMLDOMNodeListPtr& pXmlNodes)
 		{
 			try
 			{
@@ -1692,10 +1692,10 @@ namespace XmlUtils
 
 			return m_pXmlNodes->length;
 		}
-		BOOL GetAt(int nIndex, IXmlNode& oXmlNode)
+                bool GetAt(int nIndex, IXmlNode& oXmlNode)
 		{
 			if (nIndex < 0)
-				return FALSE;
+                                return false;
 
 			try
 			{
@@ -1709,7 +1709,7 @@ namespace XmlUtils
 			{
 			}
 
-			return FALSE;
+                        return false;
 		}
 	};
 	class CXmlNode : public IXmlNode
@@ -1806,12 +1806,12 @@ namespace XmlUtils
 
 			m_pAttributes	= NULL;
 		}
-		inline BOOL IsValid() const
+                inline bool IsValid() const
 		{
 			return (NULL != m_pXmlNode);
 		}
 		
-		virtual BOOL FromXmlNode(XML::IXMLDOMNodePtr& pXmlNode)
+                virtual bool FromXmlNode(XML::IXMLDOMNodePtr& pXmlNode)
 		{
 			try
 			{
@@ -1826,11 +1826,11 @@ namespace XmlUtils
 
 			return IsValid();
 		}
-		virtual BOOL FromXmlString(const CString& strXml)
+                virtual bool FromXmlString(const CString& strXml)
 		{
 			return FromXmlString(strXml, _T(""));
 		}
-		virtual BOOL FromXmlString(const CString& strXml, const CString& strNamespaces)
+                virtual bool FromXmlString(const CString& strXml, const CString& strNamespaces)
 		{
 			try
 			{
@@ -1855,10 +1855,10 @@ namespace XmlUtils
 
 			return IsValid();
 		}
-		virtual BOOL FromXmlFile(const CString& strXmlFilePath, bool bRemoveRootNode = false)
+                virtual bool FromXmlFile(const CString& strXmlFilePath, bool bRemoveRootNode = false)
 		{
 			BSTR bstrFilePath = strXmlFilePath.AllocSysString();
-			BOOL bSuccess = FALSE;
+                        bool bSuccess = false;
 
 			try
 			{
@@ -1881,19 +1881,19 @@ namespace XmlUtils
 						}
 					}
 
-					bSuccess = TRUE;
+                                        bSuccess = true;
 				}
 				else
 				{
 					if (VARIANT_TRUE == m_pXmlDocument->load(bstrFilePath))
-						bSuccess = TRUE;
+                                                bSuccess = true;
 
 					ReadRootNode();
 				}
 			}
 			catch (...)
 			{
-				bSuccess = FALSE;
+                                bSuccess = false;
 			}
 
 			SysFreeString(bstrFilePath);
@@ -1903,10 +1903,10 @@ namespace XmlUtils
 
 			return IsValid();
 		}
-		virtual BOOL FromXmlFile2(const CString& strXmlFilePath)
+                virtual bool FromXmlFile2(const CString& strXmlFilePath)
 		{
 			BSTR bstrFilePath = strXmlFilePath.AllocSysString();
-			BOOL bSuccess = FALSE;
+                        bool bSuccess = false;
 
 			try
 			{
@@ -1915,13 +1915,13 @@ namespace XmlUtils
 				CreateDocument();
 
 				if (VARIANT_TRUE == m_pXmlDocument->load(bstrFilePath))
-					bSuccess = TRUE;
+                                        bSuccess = true;
 
 				m_pXmlNode = m_pXmlDocument->lastChild;
 			}
 			catch (...)
 			{
-				bSuccess = FALSE;
+                                bSuccess = false;
 			}
 
 			SysFreeString(bstrFilePath);
@@ -2557,17 +2557,17 @@ namespace XmlUtils
 
 			return GetNodeText(m_pXmlNode, strDefaultValue);
 		}
-		BOOL GetTextTyped(_variant_t* pVariant, const CString& strNodeType = _T("bin.base64"))
+                bool GetTextTyped(_variant_t* pVariant, const CString& strNodeType = _T("bin.base64"))
 		{
 			if (!IsValid())
-				return FALSE;
+                                return false;
 
 			return GetNodeTextTyped(m_pXmlNode, pVariant, strNodeType);
 		}
-		BOOL GetNode(const CString& strSubNodeName, CXmlNode& oXmlNode)
+                bool GetNode(const CString& strSubNodeName, CXmlNode& oXmlNode)
 		{
 			if (!IsValid())
-				return FALSE;
+                                return false;
 
 			try
 			{
@@ -2586,12 +2586,12 @@ namespace XmlUtils
 			{
 			}
 
-			return FALSE;
+                        return false;
 		}
-		BOOL GetNodes(const CString& strSubNodesName, CXmlNodes& oXmlNodes)
+                bool GetNodes(const CString& strSubNodesName, CXmlNodes& oXmlNodes)
 		{
 			if (!IsValid())
-				return FALSE;
+                                return false;
 
 			try
 			{
@@ -2606,12 +2606,12 @@ namespace XmlUtils
 			{
 			}
 
-			return FALSE;
+                        return false;
 		}
-		BOOL GetChilds(CXmlNodes& oXmlNodes)
+                bool GetChilds(CXmlNodes& oXmlNodes)
 		{
 			if (!IsValid())
-				return FALSE;
+                                return false;
 
 			try
 			{
@@ -2623,7 +2623,7 @@ namespace XmlUtils
 			{
 			}
 
-			return FALSE;
+                        return false;
 		}
 
 		CString GetTextExt(const CString& strDefaultValue = _T(""))
@@ -2896,91 +2896,91 @@ namespace XmlUtils
 			RELEASEINTERFACE( m_pStream );
 		}
 
-		inline BOOL IsValid()
+                inline bool IsValid()
 		{
 			return ( NULL != m_pReader );
 		}
 
-		inline BOOL FromFile(CString& sFilePath)
+                inline bool FromFile(CString& sFilePath)
 		{
 			Clear();
 
 			if ( FAILED( ::SHCreateStreamOnFileW( sFilePath, STGM_READ, &m_pStream ) ) )
-				return FALSE;
+                                return false;
 
 			if ( FAILED( ::CreateXmlReader( __uuidof(IXmlReader), reinterpret_cast<void**>(&m_pReader), 0 ) ) )
 			{
 				RELEASEINTERFACE( m_pStream );
-				return FALSE;
+                                return false;
 			}
 			m_pReader->SetInput( m_pStream );
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL FromString(CString& sXml)
+                inline bool FromString(CString& sXml)
 		{
 			Clear();
 
-			if ( FAILED( ::CreateStreamOnHGlobal( NULL, TRUE, &m_pStream ) ) )
-				return FALSE;
+            if ( FAILED( ::CreateStreamOnHGlobal( NULL, true, &m_pStream ) ) )
+                                return false;
 
 			ULONG cbWritten = 0;
 			if ( FAILED( m_pStream->Write( sXml.GetBuffer(), sXml.GetLength() * sizeof(TCHAR), &cbWritten ) ) )
 			{
 				RELEASEINTERFACE( m_pStream );
-				return FALSE;
+                                return false;
 			}
 
 			LARGE_INTEGER liBeggining = { 0 };
 			if ( FAILED( m_pStream->Seek( liBeggining, STREAM_SEEK_SET, NULL ) ) )
 			{
 				RELEASEINTERFACE( m_pStream );
-				return FALSE;
+                                return false;
 			}
 			
 			if ( FAILED( ::CreateXmlReader( __uuidof(IXmlReader), reinterpret_cast<void**>(&m_pReader), 0 ) ) )
 			{
 				RELEASEINTERFACE( m_pStream );
-				return FALSE;
+                                return false;
 			}
 			if ( FAILED( m_pReader->SetInput( m_pStream )))
 			{
 				RELEASEINTERFACE( m_pStream );
-				return FALSE;
+                                return false;
 			}
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL Read(XmlNodeType &oNodeType)
+                inline bool Read(XmlNodeType &oNodeType)
 		{
 			if ( !IsValid() )
-				return FALSE;
+                                return false;
 
 			if ( FAILED( m_pReader->Read( &oNodeType ) ) )
-				return FALSE;
+                                return false;
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL ReadNextNode()
+                inline bool ReadNextNode()
 		{
 			if ( !IsValid() )
-				return FALSE;
+                                return false;
 
 			XmlNodeType oNodeType = XmlNodeType_None;
 			
 			while ( S_OK == m_pReader->Read( &oNodeType ) && XmlNodeType_Element != oNodeType );
 
 			if ( XmlNodeType_Element == oNodeType )
-				return TRUE;
+                                return true;
 
-			return FALSE;
+                        return false;
 		}
-		inline BOOL ReadNextSiblingNode(int nDepth)
+                inline bool ReadNextSiblingNode(int nDepth)
 		{
 			// Перед использованием этой функции надо проверить,
 			// пустая ли родительская нода. 
 			if ( !IsValid() )
-				return FALSE;
+                                return false;
 
 			XmlNodeType eNodeType = XmlNodeType_None;
 			int nCurDepth = -1;
@@ -2988,28 +2988,28 @@ namespace XmlUtils
 			while ( S_OK == m_pReader->Read( &eNodeType ) && (nCurDepth = GetDepth()) > nDepth )
 			{
 				if ( XmlNodeType_Element == eNodeType && nCurDepth == nDepth + 1 )
-					return TRUE;
+                                        return true;
 				else if ( XmlNodeType_EndElement == eNodeType && nCurDepth == nDepth + 1 )
-					return FALSE;
+                                        return false;
 			}
 
-			return FALSE;
+                        return false;
 		}
-		inline BOOL ReadTillEnd(int nDepth = -2)
+                inline bool ReadTillEnd(int nDepth = -2)
 		{
 			if ( !IsValid() )
-				return FALSE;
+                                return false;
 
 			if ( -2 == nDepth )
 				nDepth = GetDepth();
 			else if ( nDepth == GetDepth() && m_pReader->IsEmptyElement() )
-				return TRUE;
+                                return true;
 
 			XmlNodeType eNodeType = XmlNodeType_None;
 
 			int nCurDepth = -1;
 			// У закрывающего тэга глубина на 1 больше, чем у открывающего
-			while( TRUE )
+                        while( true )
 			{
 				if ( S_OK != m_pReader->Read( &eNodeType ) )
 					break;
@@ -3022,7 +3022,7 @@ namespace XmlUtils
 					break;
 			}
 
-			return TRUE;
+                        return true;
 		}
 		inline const wchar_t* GetName()
 		{
@@ -3046,10 +3046,10 @@ namespace XmlUtils
 
 			return unDepth;
 		}
-		inline BOOL IsEmptyNode()
+                inline bool IsEmptyNode()
 		{
 			if ( !IsValid() )
-				return FALSE;
+                                return false;
 
 			return m_pReader->IsEmptyElement();
 		}
@@ -3105,36 +3105,36 @@ namespace XmlUtils
 
 			return (int)unAttrsCount;
 		}
-		inline BOOL MoveToFirstAttribute()
+                inline bool MoveToFirstAttribute()
 		{
 			if ( !IsValid() )
-				return FALSE;
+                                return false;
 
 			if ( S_OK != m_pReader->MoveToFirstAttribute() )
-				return FALSE;
+                                return false;
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL MoveToNextAttribute()
+                inline bool MoveToNextAttribute()
 		{
 			if ( !IsValid() )
-				return FALSE;
+                                return false;
 
 			if ( S_OK != m_pReader->MoveToNextAttribute() )
-				return FALSE;
+                                return false;
 
-			return TRUE;
+                        return true;
 		}
 
-		inline BOOL MoveToElement()
+                inline bool MoveToElement()
 		{
 			if ( !IsValid() )
-				return FALSE;
+                                return false;
 
 			if ( FAILED( m_pReader->MoveToElement() ) )
-				return FALSE;
+                                return false;
 
-			return TRUE;
+                        return true;
 		}
 	private:
 		inline CString GetXml(bool bInner)
@@ -3153,7 +3153,7 @@ namespace XmlUtils
 
 				int nCurDepth = -1;
 				// У закрывающего тэга глубина на 1 больше, чем у открывающего
-				while( TRUE )
+                                while( true )
 				{
 					if ( S_OK != m_pReader->Read( &eNodeType ) )
 						break;
@@ -3546,25 +3546,25 @@ namespace XmlUtils
 
 		virtual ~CXmlLiteWrapper() {}			
 
-		inline BOOL FromFile(CString& sFilePath)
+                inline bool FromFile(CString& sFilePath)
 		{
 			CXmlLiteReader oReader;
 			if ( !oReader.FromFile( sFilePath ) )
-				return FALSE;
+                                return false;
 
 			Parse( this, oReader );
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL FromString(CString& sXml)
+                inline bool FromString(CString& sXml)
 		{
 			CXmlLiteReader oReader;
 			if ( !oReader.FromString( sXml ) )
-				return FALSE;
+                                return false;
 
 			Parse( this, oReader );
 
-			return TRUE;	
+                        return true;
 		}
 
 	private:

@@ -224,9 +224,9 @@ namespace OOX
 
 				oWriter.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>"));
 
-				oWriter.WriteNodeBegin( _T("Relationships"), TRUE );
+                oWriter.WriteNodeBegin( _T("Relationships"), true );
 				oWriter.WriteAttribute( _T("xmlns"), _T("http://schemas.openxmlformats.org/package/2006/relationships") );
-				oWriter.WriteNodeEnd( _T("Relationships"), TRUE, FALSE );
+                oWriter.WriteNodeEnd( _T("Relationships"), true, false );
 
 				for ( unsigned int nIndex = 0; nIndex < m_arrRelations.size(); nIndex++ )
 				{

@@ -3548,8 +3548,7 @@ public:
 		}
 		else if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			BOOL bVal;
-			bVal = m_oBufferedStream.GetBool();
+            bool bVal = m_oBufferedStream.GetBool();
 			CString sVal(_T("<m:brk/>"));
 				GetRunStringWriter().WriteString(sVal);
 		}

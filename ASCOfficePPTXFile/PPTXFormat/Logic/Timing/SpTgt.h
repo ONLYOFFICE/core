@@ -22,7 +22,7 @@ namespace PPTX
 				spid	= node.GetAttribute(_T("spid"));
 
 				XmlUtils::CXmlNode oNode;
-				bg		= (TRUE == node.GetNode(_T("p:bg"), oNode)) ? true : false;
+                bg		= (true == node.GetNode(_T("p:bg"), oNode)) ? true : false;
 
 				XmlUtils::CXmlNode oNodeMem;
 				if (node.GetNode(_T("p:subSp"), oNodeMem))

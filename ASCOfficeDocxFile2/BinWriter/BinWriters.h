@@ -3742,7 +3742,7 @@ namespace BinDocxRW
 		}
 		void WriteMathMatrix(const std::vector<OOX::WritingElement*>& m_arrItems, LONG &lRow, LONG &lCol)
 		{
-			BOOL bColumn = false;
+            bool bColumn = false;
 			for(int i = 0; i< m_arrItems.size(); ++i)
 			{
 				OOX::WritingElement* item = m_arrItems[i];

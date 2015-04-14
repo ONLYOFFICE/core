@@ -35,10 +35,10 @@ namespace NSShapeImageGen
 {
 	const long c_nMaxImageSize = 2000;
 
-	static BOOL _CopyFile(CString strExists, CString strNew, LPVOID lpFunc, LPVOID lpData) 
+    static bool _CopyFile(CString strExists, CString strNew, LPVOID lpFunc, LPVOID lpData)
 	{
         //::DeleteFile(strNew);
-        //return ::CopyFileEx(strExists, strNew, lpFunc, lpData, FALSE, 0);
+        //return ::CopyFileEx(strExists, strNew, lpFunc, lpData, false, 0);
         return CDirectory::CopyFile (strExists, strNew, lpFunc, lpData);
 	}
 
@@ -270,7 +270,7 @@ namespace NSShapeImageGen
 
 #ifndef DISABLE_FILE_DOWNLOADER
 
-				CFileDownloader oDownloader(strFile1, TRUE);
+                CFileDownloader oDownloader(strFile1, true);
 				oDownloader.Start( 1 );
 				while ( oDownloader.IsRunned() )
 				{

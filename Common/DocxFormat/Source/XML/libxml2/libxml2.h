@@ -37,7 +37,7 @@ namespace XmlUtils
 	//		m_pDataCur	= m_pData;
 	//		m_lSizeCur	= m_lSize;
 
-	//		m_bInitTable = FALSE;
+    //		m_bInitTable = false;
 
 	//		m_lBinaryFactor = (((sizeof(wchar_t)) >> 1));
 	//	}
@@ -219,7 +219,7 @@ namespace XmlUtils
 
 	//protected:
 	//	BYTE m_arTableUnicodes[65536];
-	//	BOOL m_bInitTable;
+    //	bool m_bInitTable;
 
 	//protected:
 	//	BYTE CheckCode(const WCHAR& c)
@@ -240,7 +240,7 @@ namespace XmlUtils
 	//			m_arTableUnicodes['>'] = 5;
 	//			m_arTableUnicodes['\"'] = 6;
 
-	//			m_bInitTable = TRUE;
+    //			m_bInitTable = true;
 	//		}
 	//		return m_arTableUnicodes[c];
 	//	}
@@ -305,16 +305,16 @@ namespace XmlUtils
 			m_lStreamLen = 0;
 		}
 
-		inline BOOL IsValid()
+        inline bool IsValid()
 		{
 			return ( NULL != reader );
 		}
 
-		inline BOOL FromFile(const wchar_t* sFilePath)
+        inline bool FromFile(const wchar_t* sFilePath)
 		{
 			return FromFile(std::wstring(sFilePath));
 		}
-		inline BOOL FromFile(const std::wstring& sFilePath)
+        inline bool FromFile(const std::wstring& sFilePath)
 		{
 			Clear();
 
@@ -328,49 +328,49 @@ namespace XmlUtils
 
 			reader = xmlReaderForMemory((char*)m_pStream, m_lStreamLen, NULL, NULL, 0);
 
-			return TRUE;
+            return true;
 		}
-		inline BOOL FromString(const wchar_t* sXml)
+        inline bool FromString(const wchar_t* sXml)
 		{
 			return FromString(std::wstring(sXml));
 		}
-		inline BOOL FromString(const std::wstring& sXml)
+        inline bool FromString(const std::wstring& sXml)
 		{
 			Clear();
 
 			NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.c_str(), sXml.length(), m_pStream, m_lStreamLen, false);
 			reader = xmlReaderForMemory((char*)m_pStream, m_lStreamLen, NULL, NULL, 0);
 
-			return TRUE;
+            return true;
 		}
-		inline BOOL FromStringA(const std::string& sXml)
+        inline bool FromStringA(const std::string& sXml)
 		{
 			Clear();
 
 			reader = xmlReaderForMemory((char*)sXml.c_str(), sXml.length(), NULL, NULL, 0);
 
-			return TRUE;
+            return true;
 		}
-		inline BOOL Read(XmlNodeType &oNodeType)
+        inline bool Read(XmlNodeType &oNodeType)
 		{
 			if ( !IsValid() )
-				return FALSE;
+                return false;
 
 			if ( 1 != xmlTextReaderRead(reader) )
-				return FALSE;
+                return false;
 
 			int nTempType = xmlTextReaderNodeType(reader);
 			if(-1 == nTempType)
-				return FALSE;
+                return false;
 
 			oNodeType = (XmlNodeType)nTempType;
 
-			return TRUE;
+            return true;
 		}
-		inline BOOL ReadNextNode()
+        inline bool ReadNextNode()
 		{
 			if ( !IsValid() )
-				return FALSE;
+                return false;
 
 			XmlNodeType oNodeType = XmlNodeType_None;
 			
@@ -387,16 +387,16 @@ namespace XmlUtils
 			}
 
 			if ( XmlNodeType_Element == oNodeType )
-				return TRUE;
+                return true;
 
-			return FALSE;
+            return false;
 		}
-		inline BOOL ReadNextSiblingNode(int nDepth)
+        inline bool ReadNextSiblingNode(int nDepth)
 		{
 			// ����� �������������� ���� ������� ���� ���������,
 			// ������ �� ������������ ����. 
 			if ( !IsValid() )
-				return FALSE;
+                return false;
 
 			XmlNodeType eNodeType = XmlNodeType_None;
 			int nCurDepth = -1;
@@ -406,7 +406,7 @@ namespace XmlUtils
 				int nTempType = xmlTextReaderNodeType(reader);
 				int nTempDepth = xmlTextReaderDepth(reader);
 				if(-1 == nTempType || -1 == nTempDepth)
-					return FALSE;
+                    return false;
 				eNodeType = (XmlNodeType)nTempType;
 				nCurDepth = nTempDepth;
 
@@ -415,35 +415,35 @@ namespace XmlUtils
 					break;
 
 				if ( XmlNodeType_Element == eNodeType && nCurDepth == nDepth + 1 )
-					return TRUE;
+                    return true;
 				else if ( XmlNodeType_EndElement == eNodeType && nCurDepth == nDepth )
-					return FALSE;
+                    return false;
 			}
 
-			return FALSE;
+            return false;
 		}
-		inline BOOL ReadTillEnd(int nDepth = -2)
+        inline bool ReadTillEnd(int nDepth = -2)
 		{
 			if ( !IsValid() )
-				return FALSE;
+                return false;
 
 			if ( -2 == nDepth )
 				nDepth = GetDepth();
 			else if ( nDepth == GetDepth() && 0 != xmlTextReaderIsEmptyElement(reader) )
-				return TRUE;
+                return true;
 
 			XmlNodeType eNodeType = XmlNodeType_None;
 
 			int nCurDepth = -1;
 			// � ������������ ���� ������� ����� �� ��� � ��������������
-			while( TRUE )
+            while( true )
 			{
 				if ( 1 != xmlTextReaderRead(reader) )
 					break;
 
 				int nTempType = xmlTextReaderNodeType(reader);
 				if(-1 == nTempType)
-					return FALSE;
+                    return false;
 				eNodeType = (XmlNodeType)nTempType;
 				nCurDepth = GetDepth();
 
@@ -454,7 +454,7 @@ namespace XmlUtils
 					break;
 			}
 
-			return TRUE;
+            return true;
 		}
 		inline const wchar_t* GetName()
 		{
@@ -493,12 +493,12 @@ namespace XmlUtils
 				return -1;
 			return nTempDepth;
 		}
-		inline BOOL IsEmptyNode()
+        inline bool IsEmptyNode()
 		{
 			if ( !IsValid() )
-				return FALSE;
+                return false;
 
-			return 0 != xmlTextReaderIsEmptyElement(reader) ? TRUE : FALSE;
+            return 0 != xmlTextReaderIsEmptyElement(reader) ? true : false;
 		}
 
 		inline const wchar_t* GetText()
@@ -563,27 +563,27 @@ namespace XmlUtils
 
 			return xmlTextReaderAttributeCount(reader);
 		}
-		inline BOOL MoveToFirstAttribute()
+        inline bool MoveToFirstAttribute()
 		{
 			if ( !IsValid() )
-				return FALSE;
+                return false;
 
-			return 1 == xmlTextReaderMoveToFirstAttribute(reader) ? TRUE: FALSE;
+            return 1 == xmlTextReaderMoveToFirstAttribute(reader) ? true: false;
 		}
-		inline BOOL MoveToNextAttribute()
+        inline bool MoveToNextAttribute()
 		{
 			if ( !IsValid() )
-				return FALSE;
+                return false;
 
-			return 1 == xmlTextReaderMoveToNextAttribute(reader) ? TRUE: FALSE;
+            return 1 == xmlTextReaderMoveToNextAttribute(reader) ? true: false;
 		}
 
-		inline BOOL MoveToElement()
+        inline bool MoveToElement()
 		{
 			if ( !IsValid() )
-				return FALSE;
+                return false;
 
-			return 1 == xmlTextReaderMoveToElement(reader) ? TRUE: FALSE;
+            return 1 == xmlTextReaderMoveToElement(reader) ? true: false;
 		}
 	private:
 		inline CString GetXml(bool bInner)
@@ -602,7 +602,7 @@ namespace XmlUtils
 
 				int nCurDepth = -1;
 				// � ������������ ���� ������� ����� �� ��� � ��������������
-				while( TRUE )
+                while( true )
 				{
 					if ( 1 != xmlTextReaderRead(reader) )
 						break;
@@ -749,7 +749,7 @@ namespace XmlUtils
 
     public:
         CXmlNodes();
-        BOOL IsValid();
+        bool IsValid();
         int GetCount();
         bool GetAt(int nIndex, CXmlNode& oXmlNode);
 
@@ -779,7 +779,7 @@ namespace XmlUtils
 			return FromXmlFile(std::wstring(sFile), bRemoveRootNode);
 		}
 		bool FromXmlFile(const std::wstring& sFile, bool bRemoveRootNode = false);
-		BOOL FromXmlFile2(const CString& strXmlFilePath);
+        bool FromXmlFile2(const CString& strXmlFilePath);
 		bool FromXmlStringA(const std::string& sString);
 		bool FromXmlString(const wchar_t* sString)
 		{
@@ -813,8 +813,8 @@ namespace XmlUtils
 			std::map<CStringA, CStringA>::iterator p;
 			for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
 			{
-				strNames.push_back(std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), TRUE)));
-				strValues.push_back(std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), TRUE)));
+                strNames.push_back(std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), true)));
+                strValues.push_back(std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), true)));
 			}
 		}
 		
@@ -887,7 +887,7 @@ namespace XmlUtils
 
 		CXmlNode GetNode(const CString& sName);
 		CXmlNodes GetNodes(const CString& sName);
-		BOOL GetChilds(CXmlNodes& oXmlNodes);
+        bool GetChilds(CXmlNodes& oXmlNodes);
 
 		bool GetNode(const CString& sName, CXmlNode& oNode);
 		bool GetNodes(const CString& sName, CXmlNodes& oNodes);
@@ -939,12 +939,12 @@ namespace XmlUtils
 		{
 		}
 
-		inline BOOL IsValid()
+        inline bool IsValid()
 		{
 			return ( NULL != reader );
 		}
 
-		inline BOOL FromFile(CString& sFilePath)
+        inline bool FromFile(CString& sFilePath)
 		{
 			Clear();
 
@@ -958,9 +958,9 @@ namespace XmlUtils
 			reader = htmlReadMemory((char*)m_pStream, m_lStreamLen, "baseUrl", NULL, HTML_PARSE_NOBLANKS | HTML_PARSE_NOERROR | 
 				HTML_PARSE_NOWARNING | HTML_PARSE_NONET);
 
-			return TRUE;
+            return true;
 		}
-		inline BOOL FromString(CString& sXml)
+        inline bool FromString(CString& sXml)
 		{
 			Clear();
 			UnicodeToUtf8(sXml, m_pStream, m_lStreamLen);
@@ -968,7 +968,7 @@ namespace XmlUtils
 			reader = htmlReadMemory((char*)m_pStream, m_lStreamLen, "baseUrl", "utf-8", HTML_PARSE_NOBLANKS | HTML_PARSE_NOERROR | 
 				HTML_PARSE_NOWARNING | HTML_PARSE_NONET);
 
-			return TRUE;
+            return true;
 		}
 
 		CString Parse()

@@ -66,8 +66,8 @@ unsigned long PageSetCMYKFill    (Page pPage, float fC, float fM, float fY, floa
 unsigned long PageExecuteXObject  (Page pPage, XObject pXobj);
 unsigned long PageCircle      (Page pPage, float fX, float fY, float fRad);
 unsigned long PageEllipse     (Page pPage, float fX, float fY, float fXRay, float fYRay);
-unsigned long PageEllipseArc  (Page pPage, float fX, float fY, float fXRad, float fYRad, float fAngle1, float fAngle2, BOOL bClockDirection);
-unsigned long PageEllipseArc2 (Page pPage, float fX, float fY, float fXRad, float fYRad, float fAngle1, float fAngle2, BOOL bClockDirection = FALSE);
+unsigned long PageEllipseArc  (Page pPage, float fX, float fY, float fXRad, float fYRad, float fAngle1, float fAngle2, bool bClockDirection);
+unsigned long PageEllipseArc2 (Page pPage, float fX, float fY, float fXRad, float fYRad, float fAngle1, float fAngle2, bool bClockDirection = false);
 unsigned long PageArc         (Page pPage, float fX, float fY, float fRay, float fAng1, float fAng2);
 unsigned long PageDrawImage   (Page pPage, ImageDict pImage, float fX, float fY, float fWidth, float fHeight);
 unsigned long PageTextOut     (Page pPage, float fXPos, float fYPos, const BYTE *sText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID);

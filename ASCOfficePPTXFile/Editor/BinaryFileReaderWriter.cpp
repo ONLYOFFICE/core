@@ -491,7 +491,6 @@ namespace NSBinPptxRW
 
             if (conversionOK != eUnicodeConversionResult)
             {
-                return;
             }
         }
         else
@@ -597,7 +596,6 @@ namespace NSBinPptxRW
 
         if (conversionOK != eUnicodeConversionResult)
         {
-            return;
         }
         m_lPosition += lSizeMem;
 		m_pStreamCur += lSizeMem;
@@ -652,7 +650,6 @@ namespace NSBinPptxRW
 
         if (conversionOK != eUnicodeConversionResult)
         {
-            return;
         }
 
         m_lPosition += lSizeMem;
@@ -761,7 +758,6 @@ namespace NSBinPptxRW
 
             if (conversionOK != eUnicodeConversionResult)
             {
-                return;
             }
         }else
         {
@@ -806,7 +802,6 @@ namespace NSBinPptxRW
 
             if (conversionOK != eUnicodeConversionResult)
             {
-                return;
             }
         }else
         {
@@ -847,7 +842,6 @@ namespace NSBinPptxRW
 
             if (conversionOK != eUnicodeConversionResult)
             {
-                return;
             }
         }else
         {

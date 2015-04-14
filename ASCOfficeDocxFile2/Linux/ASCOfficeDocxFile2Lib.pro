@@ -73,8 +73,8 @@ HEADERS += ../DocWrapper/DocxSerializer.h \
     ../../XlsxSerializerCom/Writer/BinaryReader.h \
     ../../XlsxSerializerCom/Writer/CSVWriter.h \
     ../BinReader/webSettingsWriter.h \
-    ../BinReader/DefaultThemeWriterLinux.h \
-    ../../Common/FileDownloader.h
+    ../../Common/FileDownloader.h \
+    ../BinReader/DefaultThemeWriter.h
 
 unix {
     target.path = /usr/lib

@@ -7,11 +7,7 @@
 #include "../../XlsxSerializerCom/Writer/BinaryReader.h"
 #include "../../ASCOfficePPTXFile/Editor/FontPicker.h"
 
-#if defined(_WIN32) || defined (_WIN64)
-	#include "../BinReader/DefaultThemeWriterWin.h"
-#else
-	#include "../BinReader/DefaultThemeWriterLinux.h"
-#endif
+#include "../BinReader/DefaultThemeWriter.h"
 
 namespace BinXlsxRW{
 	int g_nCurFormatVersion = 0;

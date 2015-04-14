@@ -72,7 +72,7 @@ typedef struct TDocRec
     // default compression mode 
     unsigned short  nCompressionMode;
 
-    BOOL            bEncryptOn;
+    bool            bEncryptOn;
     EncryptDict     pEncryptDict;
 
     EncoderRecPtr         pDefEncoder;
@@ -121,7 +121,7 @@ EncoderRecPtr   GetEncoder              (Doc pPDF, const char *sEncodingName, un
 EncoderRecPtr   DocGetCurrentEncoder    (Doc pPDF);
 unsigned long   DocSetCurrentEncoder    (Doc pPDF, const char *sEncodingName);
 void            FreeEncoderList         (Doc pPDF);
-EncoderRecPtr   FindEncoderForString    (Doc pPDF, CString sSrc, BOOL *pbNew);
+EncoderRecPtr   FindEncoderForString    (Doc pPDF, CString sSrc, bool *pbNew);
 //----------------- Функции для работы с фонтами ---------------------------------------------------
 void            FreeFontDefList         (Doc pPDF);
 void            CleanupFontDefList      (Doc pPDF);
@@ -133,10 +133,10 @@ FontDict        DocFindFont             (Doc pPDF, const char *sFontName, const 
 FontDict        GetFont                 (Doc pPDF, const char *sFontName, const char *sEncodingName, const char *sToUnicodeName = NULL, unsigned short *pUnicode = NULL, int nCount = 0);
 const char*     LoadType1FontFromFile   (Doc pPDF, std::wstring & wsAFMFileName, std::wstring & wsDataFileName, short nType = 0);
 const char*     LoadType1FontFromStream (Doc pPDF, StreamRecPtr pAFMData, StreamRecPtr pPFMData, short nType);
-const char*     LoadTTFontFromFile      (Doc pPDF, std::wstring & wsFileName, BOOL bEmbedding, const char* sEncodingName = NULL, const char *sPrefix = NULL);
-const char*     LoadTTFontFromStream    (Doc pPDF, BOOL bEmbedding, std::wstring & wsFileName, const char *sEncodingName, const char *sPrefix);
-const char*     LoadTTFontFromFile2     (Doc pPDF, std::wstring & wsFileName, unsigned int nIndex, BOOL bEmbedding);
-const char*     LoadTTFontFromStream2   (Doc pPDF, unsigned int nIndex, BOOL bEmbedding, std::wstring & wsFileName);
+const char*     LoadTTFontFromFile      (Doc pPDF, std::wstring & wsFileName, bool bEmbedding, const char* sEncodingName = NULL, const char *sPrefix = NULL);
+const char*     LoadTTFontFromStream    (Doc pPDF, bool bEmbedding, std::wstring & wsFileName, const char *sEncodingName, const char *sPrefix);
+const char*     LoadTTFontFromFile2     (Doc pPDF, std::wstring & wsFileName, unsigned int nIndex, bool bEmbedding);
+const char*     LoadTTFontFromStream2   (Doc pPDF, unsigned int nIndex, bool bEmbedding, std::wstring & wsFileName);
 ////----------------- Images --------------------------------------------------------------------------
 //ImageDict LoadRawImageFromFile (Doc pPDF, const wchar_t *wsFileName, unsigned int nWidth, unsigned int nHeight, ColorSpace eColorSpace)
 //{
@@ -167,7 +167,7 @@ const char*     LoadTTFontFromStream2   (Doc pPDF, unsigned int nIndex, BOOL bEm
 //    return pImage;
 //}
 //
-//ImageDict LoadRawImageFromMem  (Doc pPDF, const BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, ColorSpace eColorSpace, unsigned int nBitsPerComponent, BOOL bAlpha = FALSE, const BYTE *pAlphaBuffer = NULL)
+//ImageDict LoadRawImageFromMem  (Doc pPDF, const BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, ColorSpace eColorSpace, unsigned int nBitsPerComponent, bool bAlpha = false, const BYTE *pAlphaBuffer = NULL)
 //{
 //    if ( !HasDoc( pPDF ))
 //        return NULL;
@@ -188,9 +188,9 @@ ImageDict LoadJpxImageFromFile (Doc pPDF, std::wstring wsFileName, long nOpacity
 ImageDict LoadJbig2ImageFromMem(Doc pPDF, BYTE *pBuffer, unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum);
 
 ImageDict LoadJpegImageFromFile(Doc pPDF, std::wstring wsFileName);
-ImageDict LoadJpegImageFromMem (Doc pPDF, BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, BOOL bAlpha = FALSE, const BYTE *pAlphaBuffer = NULL, unsigned int unAlphaCheckSum = 0);
+ImageDict LoadJpegImageFromMem (Doc pPDF, BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, bool bAlpha = false, const BYTE *pAlphaBuffer = NULL, unsigned int unAlphaCheckSum = 0);
 
-//ImageDict LoadJpxImageFromMem  (Doc pPDF, const BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, BOOL bAlpha = FALSE, const BYTE *pAlphaBuffer = NULL, unsigned int unAlphaCheckSum = 0)
+//ImageDict LoadJpxImageFromMem  (Doc pPDF, const BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, bool bAlpha = false, const BYTE *pAlphaBuffer = NULL, unsigned int unAlphaCheckSum = 0)
 //{
 //#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
 //	return NULL;
@@ -367,8 +367,8 @@ unsigned long GetError           (Doc pPDF);
 unsigned long GetErrorDetail     (Doc pPDF);
 void          ResetError         (Doc pPDF);
 //----------------- Основные функции -----------------------------------------------------------------
-BOOL          DocValidate            (Doc pPDF);
-BOOL          HasDoc                 (Doc pPDF);
+bool          DocValidate            (Doc pPDF);
+bool          HasDoc                 (Doc pPDF);
 void          FreeDoc                (Doc pPDF);
 void          FreeDocAll             (Doc pPDF);
 void          Free                   (Doc pPDF);

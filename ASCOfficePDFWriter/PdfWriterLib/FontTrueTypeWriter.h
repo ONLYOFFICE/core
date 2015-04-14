@@ -24,7 +24,7 @@ public:
 
 protected:
 
-	CFontFileBase(char *sFile, int nLen, BOOL bFreeFileData) 
+    CFontFileBase(char *sFile, int nLen, bool bFreeFileData)
 	{
 		m_sFileData = m_sFile = (unsigned char *)sFile;
 		m_nLen = nLen;
@@ -66,13 +66,13 @@ protected:
 	// S = signed / U = unsigned
 	// 8/16/32/Var = word length, in bytes
 	// BE = big endian
-	int          GetS8    (int nPos, BOOL *pbSuccess) 
+    int          GetS8    (int nPos, bool *pbSuccess)
 	{
-		*pbSuccess = TRUE;
+        *pbSuccess = true;
 
 		if ( nPos < 0 || nPos >= m_nLen ) 
 		{
-			*pbSuccess = FALSE;
+            *pbSuccess = false;
 			return 0;
 		}
 		int nRes = m_sFile[ nPos ];
@@ -80,23 +80,23 @@ protected:
 			nRes |= ~0xff;
 		return nRes;
 	}
-	int          GetU8    (int nPos, BOOL *pbSuccess) 
+    int          GetU8    (int nPos, bool *pbSuccess)
 	{
-		*pbSuccess = TRUE;
+        *pbSuccess = true;
 		if ( nPos < 0 || nPos >= m_nLen ) 
 		{
-			*pbSuccess = FALSE;
+            *pbSuccess = false;
 			return 0;
 		}
 		return m_sFile[ nPos ];
 	}
-	int          GetS16BE (int nPos, BOOL *pbSuccess) 
+    int          GetS16BE (int nPos, bool *pbSuccess)
 	{
-		*pbSuccess = TRUE;
+        *pbSuccess = true;
 
 		if ( nPos < 0 || nPos + 1 >= m_nLen ) 
 		{
-			*pbSuccess = FALSE;
+            *pbSuccess = false;
 			return 0;
 		}
 		int nRes = m_sFile[nPos];
@@ -105,26 +105,26 @@ protected:
 			nRes |= ~0xffff;
 		return nRes;
 	}
-	int          GetU16BE (int nPos, BOOL *pbSuccess) 
+    int          GetU16BE (int nPos, bool *pbSuccess)
 	{
-		*pbSuccess = TRUE;
+        *pbSuccess = true;
 
 		if ( nPos < 0 || nPos + 1 >= m_nLen) 
 		{
-			*pbSuccess = FALSE;
+            *pbSuccess = false;
 			return 0;
 		}
 		int nRes = m_sFile[ nPos ];
 		nRes = (nRes << 8) + m_sFile[ nPos + 1 ];
 		return nRes;
 	}
-	int          GetS32BE (int nPos, BOOL *pbSuccess) 
+    int          GetS32BE (int nPos, bool *pbSuccess)
 	{
-		*pbSuccess = TRUE;
+        *pbSuccess = true;
 
 		if ( nPos < 0 || nPos + 3 >= m_nLen ) 
 		{
-			*pbSuccess = FALSE;
+            *pbSuccess = false;
 			return 0;
 		}
 		int nRes = m_sFile[ nPos ];
@@ -136,13 +136,13 @@ protected:
 
 		return nRes;
 	}
-	unsigned int GetU32BE (int nPos, BOOL *pbSuccess) 
+    unsigned int GetU32BE (int nPos, bool *pbSuccess)
 	{
-		*pbSuccess = TRUE;
+        *pbSuccess = true;
 
 		if ( nPos < 0 || nPos + 3 >= m_nLen ) 
 		{
-			*pbSuccess = FALSE;
+            *pbSuccess = false;
 			return 0;
 		}
 		unsigned int nRes = m_sFile[nPos];
@@ -151,13 +151,13 @@ protected:
 		nRes = (nRes << 8) + m_sFile[nPos + 3];
 		return nRes;
 	}
-	unsigned int GetUVarBE(int nPos, int nSize, BOOL *pbSuccess) 
+    unsigned int GetUVarBE(int nPos, int nSize, bool *pbSuccess)
 	{
-		*pbSuccess = TRUE;
+        *pbSuccess = true;
 
 		if ( nPos < 0 || nPos + nSize > m_nLen ) 
 		{
-			*pbSuccess = FALSE;
+            *pbSuccess = false;
 			return 0;
 		}
 		unsigned int nRes = 0;
@@ -167,7 +167,7 @@ protected:
 		return nRes;
 	}
 
-	BOOL CheckRegion(int nPos, int nSize) 
+    bool CheckRegion(int nPos, int nSize)
 	{
 		return (nPos >= 0 && nPos + nSize >= nPos && nPos + nSize <= m_nLen);
 	}
@@ -178,7 +178,7 @@ protected:
   unsigned char *m_sFileData;
   unsigned char *m_sFile;
   int            m_nLen;
-  BOOL           m_bFreeFileData;
+  bool           m_bFreeFileData;
 
 };
 
@@ -341,7 +341,7 @@ public:
 	// Создаем объект TTF из буфера.
 	static CFontFileTrueType *LoadFromBuffer(char *sBuffer, int nLen) 
 	{
-		CFontFileTrueType *pTTF = new CFontFileTrueType( sBuffer, nLen, FALSE );
+        CFontFileTrueType *pTTF = new CFontFileTrueType( sBuffer, nLen, false );
 		if ( !pTTF->m_bSuccess ) 
 		{
 			delete pTTF;
@@ -359,7 +359,7 @@ public:
 		if ( !( sBuffer = CFontFileBase::ReadFile( wsFileName, &nLen ) ) ) 
 			return NULL;
 
-		CFontFileTrueType *pTTF = new CFontFileTrueType( sBuffer, nLen, TRUE );
+        CFontFileTrueType *pTTF = new CFontFileTrueType( sBuffer, nLen, true );
 		if ( !pTTF->m_bSuccess ) 
 		{
 			delete pTTF;
@@ -377,9 +377,9 @@ public:
 	}
 
 
-	// TRUE, если данный OpenType фонт содержите данные формата CFF.
-	// FALSE,если это TrueType фонт ( или OpenType фонт с данными в формате TrueType).
-	BOOL IsOpenTypeCFF() 
+    // true, если данный OpenType фонт содержите данные формата CFF.
+    // false,если это TrueType фонт ( или OpenType фонт с данными в формате TrueType).
+    bool IsOpenTypeCFF()
 	{ 
 		return m_bOpenTypeCFF; 
 	}
@@ -420,7 +420,7 @@ public:
 		int nSegmentCount = 0, nSegmentEnd = 0, nSegmentStart = 0, nSegmentDelta = 0, nSegmentOffset = 0;
 		int nCMapFirst = 0, nCMapLen = 0;
 		int  a, b, m;
-		BOOL bSuccess = TRUE;
+        bool bSuccess = true;
 
 		if ( nCMapIndex < 0 || nCMapIndex >= m_nCMapsCount) 
 			return 0;
@@ -504,7 +504,7 @@ public:
 		if ( ( nIndex = SeekTable("OS/2" ) ) < 0) 
 			return 4;
 
-		BOOL bSuccess = TRUE;
+        bool bSuccess = true;
 		int nType = GetU16BE( m_pTables[ nIndex ].nOffset + 8, &bSuccess );
 
 		if ( !bSuccess ) 
@@ -604,7 +604,7 @@ public:
 			0, 0, 0, 0,     // ulCodePageRange1
 			0, 0, 0, 0      // ulCodePageRange2
 		};
-		BOOL badCmapLen, abbrevHMTX;
+        bool badCmapLen, abbrevHMTX;
 
 		int nZeroLengthTables;
 		int nHMetrics, nAdvWidth, nLeftSideBearing;
@@ -626,16 +626,16 @@ public:
 		}
 
 		// Проверяем недостающие таблицы
-		BOOL bMissingCmap = (nCmapIndex = SeekTable("cmap")) < 0;
-		BOOL bMissingName = SeekTable("name") < 0;
-		BOOL bMissingPost = SeekTable("post") < 0;
-		BOOL bMissingOS2  = SeekTable("OS/2") < 0;
+        bool bMissingCmap = (nCmapIndex = SeekTable("cmap")) < 0;
+        bool bMissingName = SeekTable("name") < 0;
+        bool bMissingPost = SeekTable("post") < 0;
+        bool bMissingOS2  = SeekTable("OS/2") < 0;
 
 		TrueTypeLoca *pLocaTable = (TrueTypeLoca *)malloc( (m_nGlyphs + 1) * sizeof(TrueTypeLoca) );
-		BOOL bUnsortedLoca = FALSE;
+        bool bUnsortedLoca = false;
 		i = SeekTable("loca");
 		nPos = m_pTables[i].nOffset;
-		BOOL bSuccess = TRUE;
+        bool bSuccess = true;
 
 		for (i = 0; i <= m_nGlyphs; ++i) 
 		{
@@ -649,14 +649,14 @@ public:
 			}
 			if (i > 0 && pLocaTable[i].nOrigOffset < pLocaTable[i-1].nOrigOffset) 
 			{
-				bUnsortedLoca = TRUE;
+                bUnsortedLoca = true;
 			}
 			// Описание глифа должны быть как минимум 12 байт (nContours,
 			// xMin, yMin, xMax, yMax, instructionLength - каждый по 2 байта);
 			if (i > 0 && pLocaTable[i].nOrigOffset - pLocaTable[i-1].nOrigOffset > 0 && pLocaTable[i].nOrigOffset - pLocaTable[i-1].nOrigOffset < 12) 
 			{ 
 				pLocaTable[i-1].nOrigOffset = pLocaTable[i].nOrigOffset;
-				bUnsortedLoca = TRUE;
+                bUnsortedLoca = true;
 			}
 			pLocaTable[i].nIndex = i;
 		}
@@ -670,7 +670,7 @@ public:
 		}
 
 		// Проверяем длину таблицы Cmap
-		badCmapLen = FALSE;
+        badCmapLen = false;
 		nCmapLen = 0;
 		if ( !bMissingCmap ) 
 		{
@@ -685,7 +685,7 @@ public:
 			nCmapLen -= m_pTables[nCmapIndex].nOffset;
 			if ( nCmapLen > m_pTables[nCmapIndex].nLen ) 
 			{
-				badCmapLen = TRUE;
+                badCmapLen = true;
 			}
 		}
 
@@ -1316,13 +1316,13 @@ public:
 
 private:
 
-	CFontFileTrueType(char *sBuffer, int nLen, BOOL bFreeFileData):CFontFileBase( sBuffer, nLen, bFreeFileData )
+    CFontFileTrueType(char *sBuffer, int nLen, bool bFreeFileData):CFontFileBase( sBuffer, nLen, bFreeFileData )
 	{
 		m_pTables      = NULL;
 		m_nTablesCount = 0;
 		m_pCMaps       = NULL;
 		m_nCMapsCount  = 0;
-		m_bSuccess     = FALSE;
+        m_bSuccess     = false;
 
 		Parse();
 	}
@@ -1360,7 +1360,7 @@ private:
 	{
 		int nPos = 0, nIndex = 0, nJ;
 
-		m_bSuccess = TRUE;
+        m_bSuccess = true;
 
 		// Проверяем является ли данный файл (TTC)
 		unsigned int usTopTag = GetU32BE(0, &m_bSuccess);
@@ -1399,7 +1399,7 @@ private:
 			m_pTables[nIndex].nLen = (int)GetU32BE( nPos + 12, &m_bSuccess);
 			if ( m_pTables[nIndex].nOffset + m_pTables[nIndex].nLen < m_pTables[nIndex].nOffset || m_pTables[nIndex].nOffset + m_pTables[nIndex].nLen > m_nLen ) 
 			{
-				m_bSuccess = FALSE;
+                m_bSuccess = false;
 			}
 			nPos += 16;
 		}
@@ -1409,7 +1409,7 @@ private:
 		// ищем таблицы необходимые как и для TrueType так и для Type 42 
 		if ( SeekTable("head") < 0 || SeekTable("hhea") < 0 || SeekTable("maxp") < 0 || SeekTable("hmtx") < 0 || ( !m_bOpenTypeCFF && SeekTable("loca") < 0 ) || ( !m_bOpenTypeCFF && SeekTable("glyf" ) < 0) || ( m_bOpenTypeCFF && SeekTable("CFF " ) < 0 ) ) 
 		{
-			m_bSuccess = FALSE;
+            m_bSuccess = false;
 			return;
 		}
 
@@ -1460,7 +1460,7 @@ private:
 			nIndex = SeekTable("loca");
 			if ( m_pTables[nIndex].nLen < 0 ) 
 			{
-				m_bSuccess = FALSE;
+                m_bSuccess = false;
 				return;
 			}
 			if ( m_pTables[nIndex].nLen < ( m_nGlyphs + 1) * ( m_nLocaFormat ? 4 : 2 ) ) 
@@ -1475,7 +1475,7 @@ private:
 					nPos = GetU16BE(m_pTables[nIndex].nOffset + nJ * 2, &m_bSuccess);
 
 				if ( nPos < 0 || nPos > m_nLen ) 
-					m_bSuccess = FALSE;
+                    m_bSuccess = false;
 			}
 			if ( !m_bSuccess )
 				return;
@@ -1504,9 +1504,9 @@ private:
 	int              m_nGlyphs;
 	int              m_nLocaFormat;
 	int              m_arrBBox[4];
-	BOOL             m_bOpenTypeCFF;
+    bool             m_bOpenTypeCFF;
 
-	BOOL             m_bSuccess;
+    bool             m_bSuccess;
 };
 
 #endif /* _FONT_FILE_TRUETYPE_H */

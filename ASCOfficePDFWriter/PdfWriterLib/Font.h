@@ -23,7 +23,7 @@ typedef enum EFontType
 typedef Dict FontDict;
 
 typedef TextWidth   (*FontTextWidthsFunc)  (FontDict pFont, const BYTE *sText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID);
-typedef unsigned int(*FontMeasureTextFunc) (FontDict pFont, const BYTE *sText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, BOOL bWordWrap, float *fRealWidth);
+typedef unsigned int(*FontMeasureTextFunc) (FontDict pFont, const BYTE *sText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, bool bWordWrap, float *fRealWidth);
 
 typedef struct TFontAttrRec  *FontAttr;
 
@@ -36,7 +36,7 @@ typedef struct TFontAttrRec
     FontDef                pFontDef;
 
 	EncoderRecPtr          pEncoder;
-	BOOL                   bFreeEncoder; // TRUE только для OTF, потому что эти кодировки строятся перед записью и не регистрируются в файле
+    bool                   bFreeEncoder; // TRUE только для OTF, потому что эти кодировки строятся перед записью и не регистрируются в файле
 	PToUnicode             pToUnicode;
 
 	// Если тип кодировки EncoderTypeSingleByte, тогда ширина каждого 
@@ -69,9 +69,9 @@ typedef struct TFontAttrRec
 
 //---------------------------------------------------------------------------------------------------
 
-BOOL          FontValidate        (FontDict pFont);
+bool          FontValidate        (FontDict pFont);
 TextWidth     FontTextWidth       (FontDict pFont, const BYTE *sText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID);
-unsigned int  FontMeasureText     (FontDict pFont, const BYTE *sText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, BOOL bWordWrap, float *pfRealWidth);
+unsigned int  FontMeasureText     (FontDict pFont, const BYTE *sText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, bool bWordWrap, float *pfRealWidth);
 const char*   FontGetFontName     (FontDict pFont);
 const char*   FontGetEncodingName (FontDict pFont);
 const char*   FontGetToUnicodeName(FontDict pFont);

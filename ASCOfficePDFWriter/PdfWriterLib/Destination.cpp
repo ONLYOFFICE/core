@@ -13,7 +13,7 @@ const char *c_asDestinationType[] =
 	NULL
 };
 
-BOOL          PageValidate            (Page pPage);
+bool          PageValidate            (Page pPage);
 
 //----- DestinationObject -----------------------------------------------------------------------
 
@@ -48,25 +48,25 @@ Destination   DestinationNew       (MMgr oMMgr, Page pTarget, Xref pXref)
     return pDst;
 }
 
-BOOL          DestinationValidate  (Destination pDst)
+bool          DestinationValidate  (Destination pDst)
 {
     ObjHeader *pHeader = (ObjHeader *)pDst;
     
 	Page pTarget = NULL;
 
     if ( !pDst || pHeader->nObjClass != (OCLASS_ARRAY | OSUBCLASS_DESTINATION) )
-        return FALSE;
+        return false;
 
     // тип Destination не определен.
 	if ( pDst->pList->nCount < 2 )
-        return FALSE;
+        return false;
 
     pTarget = (Page)ArrayGetItem( pDst, 0, OCLASS_DICT );
 
     if ( !PageValidate( pTarget ) )
 		return SetError( pDst->oError, AVS_OFFICEPDFWRITER_ERROR_INVALID_PAGE, 0 );
 
-    return TRUE;
+    return true;
 }
 
 //----- Внешние функции --------------------------------------------------------------------------

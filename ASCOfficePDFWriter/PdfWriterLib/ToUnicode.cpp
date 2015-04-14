@@ -3,9 +3,9 @@
 unsigned long  ToUnicodeValidate     (PToUnicode pToUnicode)
 {
 	if ( !pToUnicode || TO_UNICODE_SIG_BYTES != pToUnicode->nSigBytes )
-        return FALSE;
+        return false;
     else
-        return TRUE;
+        return true;
 }
 unsigned short ToUnicodeToUnicode    (PToUnicode pToUnicode, unsigned short nCode)
 {
@@ -365,19 +365,19 @@ void          ToUnicodeBuiltSetUnicodeArray   (PToUnicode pToUnicode, const Unic
 		pAttr->anUnicodeMap[nLen][nHei] = pArray->nUnicode;
 	}
 }
-BOOL          ToUnicodeUpdateUnicodeArray     (PToUnicode pToUnicode, unsigned short *pArray, unsigned int unSize/* = 0*/)
+bool          ToUnicodeUpdateUnicodeArray     (PToUnicode pToUnicode, unsigned short *pArray, unsigned int unSize/* = 0*/)
 {
 	if ( ToUnicodeBuilt != pToUnicode->eType )
-		return FALSE;
+        return false;
 
 	ToUnicodeBuiltAttr pAttr = (ToUnicodeBuiltAttr)pToUnicode->pAttr;
 
 	if ( 8 != pAttr->nBitCount )
-		return FALSE;
+        return false;
 
 	UnicodeMapRec* pResultArray = new UnicodeMapRec[257]; // 0-ой символ + 255 символов кодировки + 1 символ 0xFFFF
 	if ( !pResultArray )
-		return FALSE;
+        return false;
 
 	int nIndex = 0;
 
@@ -425,7 +425,7 @@ BOOL          ToUnicodeUpdateUnicodeArray     (PToUnicode pToUnicode, unsigned s
 	if ( 255 < nIndex )
 	{
 		delete []pResultArray;
-		return FALSE;
+        return false;
 	}
 	else
 	{
@@ -434,12 +434,12 @@ BOOL          ToUnicodeUpdateUnicodeArray     (PToUnicode pToUnicode, unsigned s
 		ToUnicodeBuiltSetUnicodeArray( pToUnicode, pResultArray );
 		pAttr->nLastChar = nIndex - 1;
 		delete []pResultArray;
-		return TRUE;
+        return true;
 	}
 
 }
 
-BOOL    ToUnicodeWCharToString  (PToUnicode pToUnicide, std::wstring sSrc, std::wstring & sResult)
+bool    ToUnicodeWCharToString  (PToUnicode pToUnicide, std::wstring sSrc, std::wstring & sResult)
 {
 	// Данная функция проверяет все ли символы из usSrc присутствуют в данной кодировке;
 	// если присутствуют все, тогда в psDst записывается строка usSrc, в соответствии с данной кодировкой.
@@ -451,10 +451,10 @@ BOOL    ToUnicodeWCharToString  (PToUnicode pToUnicide, std::wstring sSrc, std::
 		unsigned short unUnicodeChar = (unsigned short)sSrc.at( nIndex );
 		unsigned short unCode = ToUnicodeToCode( pToUnicide, unUnicodeChar );
 		if ( 0xFFFF == unCode )
-			return FALSE;
+            return false;
 		else
 			sResult += wchar_t(unCode);
 	}
 
-	return TRUE;
+    return true;
 }

@@ -40,7 +40,7 @@ namespace NSPresentationEditor
 
 	public:
 
-		inline BOOL FromStr (const CString& Str)
+                inline bool FromStr (const CString& Str)
 		{
 			m_Points.clear();
 
@@ -197,48 +197,48 @@ namespace NSPresentationEditor
 	public:
 		CAnimationSimple()
 		{
-			m_nRefID				=	-1;
+                        m_nRefID			=	-1;
 
 			m_nBeginTime			=	0;
-			m_nDuration				=	0;	
+                        m_nDuration			=	0;
 
-			m_nEffectID				=	0;
+                        m_nEffectID			=	0;
 			m_nEffectDir			=	0;
 			m_nEffectType			=	0;
 			m_nEffectNodeType		=	0;
 
-			m_dSX					=	1.0;
-			m_dSY					=	1.0;
+                        m_dSX				=	1.0;
+                        m_dSY				=	1.0;
 
 			m_dRotateAngle			=	0.0;
 
 			m_dTransparency			=	1.0;
 
 			m_nSchemeColor			=	0;
-			m_nColorTo				=	0;
+                        m_nColorTo			=	0;
 
 
 			m_dTimeAccel			=	0.0;	
 			m_dTimeDecel			=	0.0;
 
-			m_bIgnoreShape			=	FALSE;
+                        m_bIgnoreShape			=	false;
 			m_nTextSequence			=	-1;
-			m_bRemoveEmptyBlocks	=	FALSE;
+                        m_bRemoveEmptyBlocks            =	false;
 
-			m_nMediaCMD				=	-1;
+                        m_nMediaCMD			=	-1;
 		}
 
 	public:
 
-		unsigned long	m_nRefID;
+                unsigned long           m_nRefID;
 
 		double			m_nBeginTime;
 		double			m_nDuration;	
 
-		unsigned long	m_nEffectID;
-		unsigned long	m_nEffectDir;
-		unsigned long	m_nEffectType;
-		unsigned long	m_nEffectNodeType;
+                unsigned long           m_nEffectID;
+                unsigned long           m_nEffectDir;
+                unsigned long           m_nEffectType;
+                unsigned long           m_nEffectNodeType;
 
 		CString			m_MotionPath;
 
@@ -249,15 +249,15 @@ namespace NSPresentationEditor
 
 		double			m_dTransparency;
 
-		int				m_nSchemeColor;
-		unsigned long	m_nColorTo;		
+                int			m_nSchemeColor;
+                unsigned long           m_nColorTo;
 
 		double			m_dTimeAccel;
 		double			m_dTimeDecel;
 
-		int				m_nTextSequence;
-		BOOL			m_bIgnoreShape;
-		BOOL			m_bRemoveEmptyBlocks;
+                int			m_nTextSequence;
+                bool			m_bIgnoreShape;
+                bool			m_bRemoveEmptyBlocks;
 
 		long			m_nMediaCMD;
 	};
@@ -294,7 +294,7 @@ namespace NSPresentationEditor
 
 	public:
 
-		CString ToXml(const double& dStartTime, const double& dEndTime, BOOL bIgnore = FALSE)
+                CString ToXml(const double& dStartTime, const double& dEndTime, bool bIgnore = false)
 		{
 			CString baseXML;
 			baseXML.Format ( _T("<animations width = '%f' height = '%f'>"), m_dSlideWidth, m_dSlideHeight );

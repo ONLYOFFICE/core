@@ -72,13 +72,13 @@ namespace OOX
 
 	public:
 
-		BOOL Read(const CPath& oFilePath);
-		BOOL Write(const CPath& oFilePath)
+                bool Read(const CPath& oFilePath);
+                bool Write(const CPath& oFilePath)
 		{
 
 			// TO DO: Запись надо править. Она НЕ РАБОТАЕТ!!!! Проблемы в IFileContainer.
 
-            //return FALSE;
+            //return false;
 
 			// Создаем папку
 #if defined(_WIN32) || defined (_WIN64)
@@ -95,7 +95,7 @@ namespace OOX
 			oRels.Write( oFilePath / FILE_SEPARATOR_STR );
 			oContent.Write( oFilePath );
 
-			return TRUE;
+                        return true;
 		}
 
 

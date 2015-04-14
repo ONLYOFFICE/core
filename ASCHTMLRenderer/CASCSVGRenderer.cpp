@@ -640,8 +640,8 @@ namespace NSHtmlRenderer
 
 		//m_pWriter->WriteDrawPath(nType);
 
-		BOOL bStroke	= (0x01 == (0x01 & nType));
-		BOOL bFill		= (0x01 < nType);
+        bool bStroke	= (0x01 == (0x01 & nType));
+        bool bFill		= (0x01 < nType);
 
 		if (0 == m_pPen->Alpha)
 			bStroke = false;

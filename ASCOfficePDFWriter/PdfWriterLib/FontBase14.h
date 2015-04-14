@@ -25,7 +25,7 @@ typedef struct TBase14FontDefData
 {
 	const char      *sFontName;//[LIMIT_MAX_NAME_LEN + 1];
     const CharData  *pWidthsTable;
-    BOOL             bIsFontSpecific;
+    bool             bIsFontSpecific;
     short            nAscent;
     short            nDescent;
     unsigned short   nXHeight;

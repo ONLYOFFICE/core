@@ -15,8 +15,8 @@ unsigned short TTFontDefGetGlyphID  (FontDef pFontDef, unsigned short nUnicode);
 //----- ќсновные функции ----------------------------------------------------------------------------
 
 FontDef        TTFontDefNew         (MMgr oMMgr);
-FontDef        TTFontDefLoad        (MMgr oMMgr, std::wstring & wsFilePath, BOOL bEmbedding, const char *sEncodingName = NULL, BOOL bEncoding = FALSE, BOOL bSymbolic = FALSE, BOOL bUsesMacRomanEncoding = FALSE, bool bFastParse = false);
-FontDef        TTFontDefLoad2       (MMgr oMMgr, std::wstring & wsFilePath, unsigned int nIndex, BOOL bEmbedding, const char *sEncodingName = NULL, BOOL bEncoding = FALSE, BOOL bSymbolic = FALSE, BOOL bUsesMacRomanEncoding = FALSE);
+FontDef        TTFontDefLoad        (MMgr oMMgr, std::wstring & wsFilePath, bool bEmbedding, const char *sEncodingName = NULL, bool bEncoding = false, bool bSymbolic = false, bool bUsesMacRomanEncoding = false, bool bFastParse = false);
+FontDef        TTFontDefLoad2       (MMgr oMMgr, std::wstring & wsFilePath, unsigned int nIndex, bool bEmbedding, const char *sEncodingName = NULL, bool bEncoding = false, bool bSymbolic = false, bool bUsesMacRomanEncoding = false);
 
 unsigned short TTFontDefGetGlyphID  (FontDef pFontDef, unsigned short nUnicode);
 Box            TTFontDefGetCharBBox (FontDef pFontDef, unsigned short nUnicode);

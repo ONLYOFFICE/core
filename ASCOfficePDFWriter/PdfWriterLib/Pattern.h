@@ -559,12 +559,12 @@ namespace PDF
 			m_Encode.push_back(encode);
 		}
 
-		inline BOOL IsValid()
+        inline bool IsValid()
 		{
 			if (m_Functions.size() < 2)
-				return FALSE;
+                return false;
 
-			return TRUE;
+            return true;
 		}
 
 		virtual CString Define() const
@@ -726,12 +726,12 @@ namespace PDF
 		{
 			m_Type			=	AxialShadingType;
 			m_line			=	float4(0.0f, 0.0f, 1.0f, 0.0f);		//	horizontal
-			m_normalized	=	TRUE;
+            m_normalized	=	true;
 			
 			m_ColorSpace	=	L"DeviceRGB";
 
-			m_Extend.push_back(TRUE);
-			m_Extend.push_back(TRUE);
+            m_Extend.push_back(true);
+            m_Extend.push_back(true);
 		}
 		AxialShading(const AxialShading& shading)
 		{
@@ -903,7 +903,7 @@ namespace PDF
 			}
 		}
 
-		inline void SetGradientVector(float4 line, BOOL normalized = TRUE)		
+        inline void SetGradientVector(float4 line, bool normalized = true)
 		{
 			m_line			=	line;
 			m_normalized	=	normalized;
@@ -1037,13 +1037,13 @@ namespace PDF
 		float2					m_Domain;			//	Optional
 		Matrix					m_Matrix;			//	Optional
 
-		std::vector<BOOL>			m_Extend;			//	Optional
+        std::vector<bool>		m_Extend;			//	Optional
 		CString					m_ColorSpace;		
 
 		// work
 	
 		float4					m_line;
-		BOOL					m_normalized;
+        bool					m_normalized;
 		float2					m_mapBB;
 		float2					m_centerBB;
 		Matrix					m_transform;		//	дополнительное преобразование
@@ -1055,12 +1055,12 @@ namespace PDF
 		RadialShading()
 		{
 			m_Type			=	RadialShadingType;
-			m_normalized	=	TRUE;
+            m_normalized	=	true;
 			
 			m_ColorSpace	=	L"DeviceRGB";
 		
-			m_Extend.push_back(TRUE);
-			m_Extend.push_back(TRUE);
+            m_Extend.push_back(true);
+            m_Extend.push_back(true);
 
 			m_Radius		=	float2(0.5, 1.0);
 		}
@@ -1113,7 +1113,7 @@ namespace PDF
 			m_transform		=	matrix;
 		}
 	
-		inline void SetGradientCircles(float2 c0, float2 c1, float2 r, BOOL normalized = TRUE)		
+        inline void SetGradientCircles(float2 c0, float2 c1, float2 r, bool normalized = true)
 		{
 			m_c0			=	c0;
 			m_c1			=	c1;
@@ -1205,13 +1205,13 @@ namespace PDF
 		float2				m_Domain;			//	Optional
 		Matrix				m_Matrix;			//	Optional
 
-		std::vector<BOOL>		m_Extend;			//	Optional
+        std::vector<bool>		m_Extend;			//	Optional
 		CString				m_ColorSpace;		
 
 		// work
 		
 		Matrix				m_transform;		//	дополнительное преобразование
-		BOOL				m_normalized;
+        bool				m_normalized;
 		float2				m_c0;
 		float2				m_c1;
 		float2				m_r;
@@ -1988,7 +1988,7 @@ namespace PDF
 			m_stroke	=	NULL;
 			m_tiling	=	NULL;
 
-			m_TileMode	=	FALSE;
+            m_TileMode	=	false;
 		}
 
 		inline Pattern* GetFill()
@@ -2016,7 +2016,7 @@ namespace PDF
 		{
 			m_tiling	=	pattern;
 		}
-		inline void SetTileMode(BOOL mode)
+        inline void SetTileMode(bool mode)
 		{
 			m_TileMode = mode;
 		}
@@ -2027,23 +2027,23 @@ namespace PDF
 			m_stroke	=	NULL;
 			m_tiling	=	NULL;
 
-			m_TileMode	=	FALSE;
+            m_TileMode	=	false;
 		}
 
-		inline BOOL IsUse()
+        inline bool IsUse()
 		{
 			return m_TileMode || (NULL != m_fill) || (NULL != m_stroke) || (NULL != m_tiling);
 		}
 
-		inline BOOL IsFill() const
+        inline bool IsFill() const
 		{
 			return (NULL != m_fill);
 		}
-		inline BOOL IsStroke() const
+        inline bool IsStroke() const
 		{
 			return (NULL != m_stroke);
 		}
-		inline BOOL IsTiling() const
+        inline bool IsTiling() const
 		{
 			return (NULL != m_tiling);
 		}
@@ -2054,6 +2054,6 @@ namespace PDF
 		Pattern*	m_stroke;
 		Pattern*	m_tiling;
 
-		BOOL		m_TileMode;
+        bool		m_TileMode;
 	};
 }

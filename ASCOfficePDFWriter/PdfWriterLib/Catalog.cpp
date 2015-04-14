@@ -214,7 +214,7 @@ unsigned long CatalogSetViewerPreference(Catalog pCatalog, unsigned int nValue)
 
     if ( nValue & HIDE_TOOLBAR) 
 	{
-        if ( OK != ( nRet = DictAddBoolean( pPreferences, "HideToolbar", TRUE ) ) )
+        if ( OK != ( nRet = DictAddBoolean( pPreferences, "HideToolbar", true ) ) )
             return nRet;
     } 
 	else 
@@ -226,7 +226,7 @@ unsigned long CatalogSetViewerPreference(Catalog pCatalog, unsigned int nValue)
 
     if ( nValue & HIDE_MENUBAR) 
 	{
-        if ( OK != ( nRet = DictAddBoolean( pPreferences, "HideMenubar", TRUE ) ) )
+        if ( OK != ( nRet = DictAddBoolean( pPreferences, "HideMenubar", true) ) )
             return nRet;
     } 
 	else 
@@ -238,7 +238,7 @@ unsigned long CatalogSetViewerPreference(Catalog pCatalog, unsigned int nValue)
 
     if ( nValue & HIDE_WINDOW_UI ) 
 	{
-        if ( OK != ( nRet = DictAddBoolean( pPreferences, "HideWindowUI", TRUE ) ) )
+        if ( OK != ( nRet = DictAddBoolean( pPreferences, "HideWindowUI", true ) ) )
             return nRet;
     } 
 	else 
@@ -250,7 +250,7 @@ unsigned long CatalogSetViewerPreference(Catalog pCatalog, unsigned int nValue)
 
     if ( nValue & FIT_WINDOW ) 
 	{
-        if ( OK != ( nRet = DictAddBoolean( pPreferences, "FitWindow", TRUE ) ) )
+        if ( OK != ( nRet = DictAddBoolean( pPreferences, "FitWindow", true ) ) )
             return nRet;
     } 
 	else 
@@ -262,7 +262,7 @@ unsigned long CatalogSetViewerPreference(Catalog pCatalog, unsigned int nValue)
 
     if ( nValue & CENTER_WINDOW ) 
 	{
-        if ( OK != ( nRet = DictAddBoolean( pPreferences, "CenterWindow", TRUE ) ) )
+        if ( OK != ( nRet = DictAddBoolean( pPreferences, "CenterWindow", true ) ) )
             return nRet;
     } 
 	else 
@@ -276,16 +276,16 @@ unsigned long CatalogSetViewerPreference(Catalog pCatalog, unsigned int nValue)
 }
 
 
-BOOL          CatalogValidate           (Catalog pCatalog)
+bool    CatalogValidate           (Catalog pCatalog)
 {
     if ( !pCatalog )
-        return FALSE;
+        return false;
 
 	if ( pCatalog->pHeader.nObjClass != (OSUBCLASS_CATALOG | OCLASS_DICT) ) 
 	{
 		SetError( pCatalog->oError, AVS_OFFICEPDFWRITER_ERROR_INVALID_OBJECT, 0);
-        return FALSE;
+        return false;
     }
 
-    return TRUE;
+    return true;
 }

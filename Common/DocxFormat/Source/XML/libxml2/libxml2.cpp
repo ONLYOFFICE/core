@@ -22,9 +22,9 @@ namespace XmlUtils
 		for (p = m_attributes.begin(); p != m_attributes.end(); ++p)
 		{
 			oWriter.WriteString(L" ", 1);
-			oWriter.WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), TRUE).c_str());
+            oWriter.WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), true).c_str());
 			oWriter.WriteString(L"=\"", 2);
-			oWriter.WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), TRUE).c_str());
+            oWriter.WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), true).c_str());
 			oWriter.WriteString(L"\"", 1);
 		}
 
@@ -131,7 +131,7 @@ namespace XmlUtils
 
 				int nCurDepth = -1;
 				// У закрывающего тэга глубина на 1 больше, чем у открывающего
-				while( TRUE )
+                while( true )
 				{
 					if ( 1 != xmlTextReaderRead(reader) )
 						break;
@@ -207,9 +207,9 @@ namespace XmlUtils
 	{
 		//ignore bRemoveRootNode
 		CXmlDOMDocument* m_pDocument = new CXmlDOMDocument();
-		BOOL bRes = m_pDocument->FromFile(sFile);
+        bool bRes = m_pDocument->FromFile(sFile);
 		
-		if (FALSE == bRes)
+        if (false == bRes)
 		{
 			delete m_pDocument;
 			return false;
@@ -229,16 +229,16 @@ namespace XmlUtils
 
 		return true;
 	}
-	BOOL CXmlNode::FromXmlFile2(const CString& strXmlFilePath)
+    bool CXmlNode::FromXmlFile2(const CString& strXmlFilePath)
 	{
-		return FromXmlFile(strXmlFilePath.GetString()) ? TRUE : FALSE;
+        return FromXmlFile(strXmlFilePath.GetString()) ? true : false;
 	}
 	bool CXmlNode::FromXmlStringA(const std::string& sString)
 	{
 		CXmlDOMDocument* m_pDocument = new CXmlDOMDocument();
-		BOOL bRes = m_pDocument->FromStringA(sString);
+        bool bRes = m_pDocument->FromStringA(sString);
 		
-		if (FALSE == bRes)
+        if (false == bRes)
 		{
 			delete m_pDocument;
 			return false;
@@ -355,7 +355,7 @@ namespace XmlUtils
 		if (pFind == m_pBase->m_attributes.end())
 			return _default;
 
-		return std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.GetString(), pFind->second.GetLength(), TRUE));
+        return std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.GetString(), pFind->second.GetLength(), true));
 	}
 	CString CXmlNode::GetAttribute(const CString& sName, const CString& _default)
 	{
@@ -368,7 +368,7 @@ namespace XmlUtils
 		if (pFind == m_pBase->m_attributes.end())
 			return _default;
 
-		return std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.GetString(), pFind->second.GetLength(), TRUE));
+        return std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.GetString(), pFind->second.GetLength(), true));
 	}
 	bool CXmlNode::GetAttributeIfExist(const CString& sName, CString& sOutput)
 	{
@@ -380,7 +380,7 @@ namespace XmlUtils
 
 			if (pFind != m_pBase->m_attributes.end())
 			{
-				sOutput = std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.GetString(), pFind->second.GetLength(), TRUE));
+                sOutput = std_string2string(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second.GetString(), pFind->second.GetLength(), true));
 				bRes = true;
 			}
 		}
@@ -586,15 +586,15 @@ namespace XmlUtils
 
 		return oNodes;
 	}
-	BOOL CXmlNode::GetChilds(CXmlNodes& oXmlNodes)
+    bool CXmlNode::GetChilds(CXmlNodes& oXmlNodes)
 	{
-		BOOL bRes = FALSE;
+        bool bRes = false;
 		if (IsValid())
 		{
 			int nCount = (int)m_pBase->m_nodes.size();
 			if(nCount > 0)
 			{
-				bRes = TRUE;
+                bRes = true;
 				for (int i = 0; i < nCount; ++i)
 				{
 					CXmlNode oNode;
@@ -636,9 +636,9 @@ namespace XmlUtils
     CXmlNodes::CXmlNodes() : m_nodes()
     {
     }
-    BOOL CXmlNodes::IsValid()
+    bool CXmlNodes::IsValid()
     {
-        return TRUE;
+        return true;
     }
     int CXmlNodes::GetCount()
     {

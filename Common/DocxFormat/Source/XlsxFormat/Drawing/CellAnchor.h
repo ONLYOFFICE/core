@@ -131,7 +131,7 @@ namespace OOX
 							xmlString += L">";
 							xmlString += *m_oXml;
 							xmlString += L"</root>";
-							BOOL result =oShapeReader.FromString(xmlString);
+                                                        bool result =oShapeReader.FromString(xmlString);
 
 							result = oShapeReader.ReadNextNode();//root
 							result = oShapeReader.ReadNextNode();

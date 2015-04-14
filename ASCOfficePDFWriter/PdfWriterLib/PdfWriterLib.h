@@ -92,7 +92,7 @@ public:
 	//	{
 	//		// check for valid pixel array size
 	//		if ( 1 != SafeArrayGetDim(*ppnDashPtn) )
-	//			return FALSE;
+    //			return false;
 
 	//		VARTYPE vType;
 	//		// check for valid array element type
@@ -231,17 +231,17 @@ public:
 	HRESULT AppendCircle (float fX, float fY, float fRad);
 	HRESULT AppendEllipse (float fX, float fY, float fXRad, float fYRad);
 	HRESULT AppendArc (float fX, float fY, float fRad, float fAngle1, float fAngle2);
-	HRESULT AppendEllipseArc (float fX, float fY, float fXRad, float fYRad, float fAngle1, float fAngle2, BOOL bClockDirection = FALSE);
+    HRESULT AppendEllipseArc (float fX, float fY, float fXRad, float fYRad, float fAngle1, float fAngle2, bool bClockDirection = false);
     HRESULT TextOut_ (float fXPos, float fYPos, std::wstring & bsText);
 	HRESULT TextRect (float fLeft, float fTop, float fRight, float fBottom, CString bsText, long nAlign, unsigned int *pnLen);
 	HRESULT SetSlideShow (long nType, float fDispTime, float fTransTime);
 	HRESULT GetTextWidth (std::wstring bsText, float *pfResult);
-	HRESULT MeasureText (CString bsText, float fWidth, BOOL bWordWrap, float *pfRealWidth, long *pnLength);
+    HRESULT MeasureText (CString bsText, float fWidth, bool bWordWrap, float *pfRealWidth, long *pnLength);
 	//-----------------------------------------------------------------------------------------------------
 	HRESULT LoadT1FFromFile ( CString bsAFMFileName, CString bsDataFileName, CString *bsFontName);
-	HRESULT LoadTTFFromFile ( CString bsFileName, BOOL bEmbedding, CString bsEncodingName, CString *bsFontName);
-	HRESULT LoadTTCFromFile ( CString bsFileName, long nIndex, BOOL bEmbedding, CString *bsFontName);
-	HRESULT SetCurrentFont ( CString bsFontName, CString bsEncodingName, BOOL bNameIsUnicodeArray, CString bsToUnicodeName);
+    HRESULT LoadTTFFromFile ( CString bsFileName, bool bEmbedding, CString bsEncodingName, CString *bsFontName);
+    HRESULT LoadTTCFromFile ( CString bsFileName, long nIndex, bool bEmbedding, CString *bsFontName);
+    HRESULT SetCurrentFont ( CString bsFontName, CString bsEncodingName, bool bNameIsUnicodeArray, CString bsToUnicodeName);
 	HRESULT GetCurrentFont ( CString *pbsFontName, CString *pbsEncodingName );
 	HRESULT GetFontUnicodeWidth (long nCode, long *pnUnicode);
 	HRESULT GetFontBBox         (float *pfLeft, float *pfBottom, float *pfRight, float *pfTop);
@@ -276,14 +276,14 @@ public:
 	HRESULT LinkAnnotationSetBorderStyle (float fWidth, long nDashOn, long nDashOff );
 	HRESULT LinkAnnotationSetHighlightMode (long nMode);
 	HRESULT TextAnnotationSetIcon (long nIcon);
-	HRESULT TextAnnotationSetOpened (BOOL bOpened);
+    HRESULT TextAnnotationSetOpened (bool bOpened);
 	HRESULT SetCurrentAnnot (long nIndex);
 	HRESULT GetCurrentAnnotIndex (long *pnIndex);
 	HRESULT MakeAnnotationFromXml (CString bsXML);
 	//------------------------------------------------------------------------------------------------
 	HRESULT CreateNewOutline (long nParentIndex, CString bsTitle, CString bsEncoder);
 	HRESULT OutlineSetCurrentDestination ();
-	HRESULT SetOutlineOpened (BOOL bOpened);
+    HRESULT SetOutlineOpened (bool bOpened);
 	HRESULT SetCurrentOutline (long nIndex);
 	HRESULT GetCurrentOutlineIndex (long *pnIndex);
 	HRESULT MakeOutlineFromXml (CString bsXML);
@@ -347,7 +347,7 @@ public:
 //
 //		return S_OK;
 //	}
-	HRESULT LoadImageFromInterface (IGrObject *pInterface , BOOL bAlpha = FALSE);
+    HRESULT LoadImageFromInterface (IGrObject *pInterface , bool bAlpha = false);
 	HRESULT DrawCurrentImage (float fX, float fY, float fWidth, float fHeight);
 
 	HRESULT GetImageBitsPerComponent (long *pnBitsPerComponent);
@@ -520,8 +520,8 @@ public:
 	HRESULT put_ShadowColor (const LONG &lColor);
 	HRESULT get_ShadowAlpha (LONG *plAlpha);
 	HRESULT put_ShadowAlpha (const LONG &lAlpha);
-	HRESULT get_ShadowVisible (BOOL *pbVisible);
-	HRESULT put_ShadowVisible (const BOOL &bVisible);
+    HRESULT get_ShadowVisible (bool *pbVisible);
+    HRESULT put_ShadowVisible (const bool &bVisible);
 	//-------- Функции для работы с Edge Text --------------------------------------------------------
 	HRESULT get_EdgeVisible (LONG *plVisible);
 	HRESULT put_EdgeVisible (const LONG &lVisible);
@@ -557,7 +557,7 @@ private:
 	PDF::XForm*						m_XForm;
 	CString							m_MaskWithFormCommands;
 	int								m_BlockCommandsStart;
-	BOOL							m_IsStrokeShape;
+    bool							m_IsStrokeShape;
 
 	// для вырезки, хардкор
 
@@ -576,10 +576,10 @@ private:
 
 	double							m_dCharSpace;
 
-	BOOL							m_bStartSubPath;
-	BOOL							m_bGStateChange;
+    bool							m_bStartSubPath;
+    bool							m_bGStateChange;
 
-	BOOL							m_bClipPath;
+    bool							m_bClipPath;
 	TMatrix							m_oClipCTM;
 	TMatrix							m_oBaseTransform;
 	TCommandParams					m_oCommandParams;
@@ -587,8 +587,8 @@ private:
 
 	CFindFonts*						m_pFindFonts;
 	Aggplus::CGraphicsPath*			m_pCurPath;
-	BOOL                            m_bUseTextureRect; // Используем ли рект для текстурной заливки (заданный в m_oBrush)
-	BOOL                            m_bUseImageTransform; // Заглушка для функции DrawImage (использовать ли там трансформ)
+    bool                            m_bUseTextureRect; // Используем ли рект для текстурной заливки (заданный в m_oBrush)
+    bool                            m_bUseImageTransform; // Заглушка для функции DrawImage (использовать ли там трансформ)
 
 	CFontLoader						m_oFontLoader;
 
@@ -598,17 +598,17 @@ private:
 	CFontManager*					m_pFontManager;
 	CApplicationFonts				m_oFontsApplication;
 
-	BOOL							m_bIsWhiteBackImage;
-	BOOL							m_bUseImageTextureAlpha;
+    bool							m_bIsWhiteBackImage;
+    bool							m_bUseImageTextureAlpha;
 
 	CMatrix							m_oTransform;   // Текущая матрица преобразования
 	CContiniousText					m_oContiniousText;
 	CRendererState					m_oRendererState;
-	BOOL                            m_bFirstMoveTo;
+    bool                            m_bFirstMoveTo;
 
 	//CGdiPlusInit					m_oGdiplusInit;
 
-	BOOL							m_bIsFontsInitialize;
+    bool							m_bIsFontsInitialize;
 
 	void FreePDF();
 
@@ -616,7 +616,7 @@ private:
 	
 	unsigned long FontFromFileToPdfFont();
 
-	unsigned long GdiFontToPdfFont	(CString bsEncodingName		= L"CP1251", BOOL bNameIsUnicodeArray = FALSE);
+    unsigned long GdiFontToPdfFont	(CString bsEncodingName		= L"CP1251", bool bNameIsUnicodeArray = false);
 	unsigned long GdiFontToPdfFont2	(CString bsToUnicodeName	= _T(""), CString bsEncodingName = _T(""));
 	unsigned long GdiDashToPDFDash	( int nDashStyle = 0, double *pDashPattern = NULL, int nDashPatternSize = 0, float fDashOffset = 0 );
 	unsigned long ReadOutlineChilds	(CString sXml, int nRootIndex);
@@ -625,20 +625,20 @@ private:
 	unsigned long UpdateCoordSpace2(CMatrix *pTransform);
 	bool          FileExist(CString sFilePath );
 	// Устанавливаем текущее состояние рендерера
-	BOOL SetState ( ERendererState eState );
+    bool SetState ( ERendererState eState );
 
 
 	// NODE: пока в виде заглушки
 	// NOTE: пока градиенты выставим в виде svg-xml
 
-	BOOL ApplyFillGradient();
-	BOOL ApplyStrokeGradient();
-    BOOL CreateLinearGradientFromSvgXml(const std::wstring& sXml, BOOL fill);
-    BOOL CreateRadialGradientFromSvgXml(const std::wstring& sXml, BOOL fill);
+    bool ApplyFillGradient();
+    bool ApplyStrokeGradient();
+    bool CreateLinearGradientFromSvgXml(const std::wstring& sXml, bool fill);
+    bool CreateRadialGradientFromSvgXml(const std::wstring& sXml, bool fill);
 
-	BOOL ApplyTileFill();
+    bool ApplyTileFill();
 
-	BOOL RebuildResources();
+    bool RebuildResources();
 	
 	//  
 	

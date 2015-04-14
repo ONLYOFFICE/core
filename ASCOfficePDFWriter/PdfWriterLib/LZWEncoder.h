@@ -41,7 +41,7 @@ class CEncoderLZW
 {
 public:
 
-	CEncoderLZW(const BYTE* pBuffer, long lSize, BOOL bCopyBuffer = FALSE)
+    CEncoderLZW(const BYTE* pBuffer, long lSize, bool bCopyBuffer = false)
 	{
 		m_nError = LZW_NO_ERROR;
 
@@ -61,7 +61,7 @@ public:
 			if ( !m_pBuffer )
 			{
 				m_lSize = 0;
-				m_bDeleteBuffer = FALSE;
+                m_bDeleteBuffer = false;
 				m_nError = LZW_BAD_MEM_ALLOC;
 
 				return;
@@ -369,7 +369,7 @@ private:
 	BYTE *m_pBuffer;
 	long  m_lPos;
 	long  m_lSize;
-	BOOL  m_bDeleteBuffer;
+    bool  m_bDeleteBuffer;
 
     NSFile::CFileBinary m_oFile;
 	int   m_nError;

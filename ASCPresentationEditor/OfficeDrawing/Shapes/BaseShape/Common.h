@@ -549,8 +549,8 @@ private:
 public:
 	COOXToVMLGeometry()
 	{
-		m_bIsFillPart = FALSE;
-		m_bIsStrokePart = FALSE;
+                m_bIsFillPart = false;
+                m_bIsStrokePart = false;
 		
 		m_dScaleX = 1.0;
 		m_dScaleY = 1.0;
@@ -589,7 +589,7 @@ public:
 	virtual HRESULT get_PenAlpha(LONG* lAlpha){ return S_OK; }
 	virtual HRESULT put_PenAlpha(const LONG& lAlpha)
 	{
-		m_bIsStrokePart = (0 != lAlpha) ? TRUE : FALSE;
+                m_bIsStrokePart = (0 != lAlpha) ? true : false;
 		return S_OK; 
 	}
 	virtual HRESULT get_PenSize(double* dSize){ return S_OK; }
@@ -617,7 +617,7 @@ public:
 	virtual HRESULT put_BrushColor1(const LONG& lColor){ return S_OK; }
 	virtual HRESULT get_BrushAlpha1(LONG* lAlpha)
 	{
-		m_bIsFillPart = (0 != lAlpha) ? TRUE : FALSE;
+                m_bIsFillPart = (0 != lAlpha) ? true : false;
 		return S_OK; 
 	}
 	virtual HRESULT put_BrushAlpha1(const LONG& lAlpha){ return S_OK; }
@@ -806,8 +806,8 @@ public:
 private:
 	
 	Aggplus::CGraphicsPathSimpleConverter*	m_pSimpleGraphicsConverter;
-	BOOL m_bIsFillPart;
-	BOOL m_bIsStrokePart;
+        bool m_bIsFillPart;
+        bool m_bIsStrokePart;
 
 	double m_dScaleX;
 	double m_dScaleY;

@@ -11,7 +11,7 @@
 #include "FileTypes.h"
 
 #include "../XlsxFormat/FileFactory_Spreadsheet.h"
-//BOOL XmlUtils::CStringWriter::m_bInitTable = FALSE;
+//BOOL XmlUtils::CStringWriter::m_bInitTable = false;
 //BYTE XmlUtils::CStringWriter::m_arTableUnicodes[65536];
 
 namespace OOX

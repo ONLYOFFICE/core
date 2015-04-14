@@ -550,8 +550,8 @@ static unsigned long ParseCMap          (FontDef pFontDef, FT_Face pFace)
 		}
     }
 
-	BOOL bUseMacRoman = FALSE;
-	BOOL bUseUnicode = FALSE;
+    bool bUseMacRoman = false;
+    bool bUseUnicode = false;
 	
 	if ( pAttr->bEncoding ) 
 	{
@@ -841,7 +841,7 @@ static unsigned long ParseGlyf          (FontDef pFontDef, FT_Face pFace)
 
 	return OK;
 }
-static unsigned long LoadFontData       (FontDef pFontDef, std::wstring & wsFilePath, BOOL bEmbedding, const char *sToUnicodeName = NULL, unsigned int unIndex = 0, bool bFastParse = false)
+static unsigned long LoadFontData       (FontDef pFontDef, std::wstring & wsFilePath, bool bEmbedding, const char *sToUnicodeName = NULL, unsigned int unIndex = 0, bool bFastParse = false)
 {
     TTFontDefAttrRecPtr pAttr = (TTFontDefAttrRecPtr)pFontDef->pAttr;
 	if ( NULL != sToUnicodeName )
@@ -915,7 +915,7 @@ static unsigned long LoadFontData       (FontDef pFontDef, std::wstring & wsFile
 
     return OK;
 }
-static unsigned long LoadFontData2      (FontDef pFontDef, std::wstring & wsFilePath, unsigned int unIndex, BOOL bEmbedding, const char *sEncoding = NULL)
+static unsigned long LoadFontData2      (FontDef pFontDef, std::wstring & wsFilePath, unsigned int unIndex, bool bEmbedding, const char *sEncoding = NULL)
 {
     return LoadFontData( pFontDef, wsFilePath, bEmbedding, sEncoding, unIndex );
 }
@@ -1413,7 +1413,7 @@ static TextWidth     GetTextWidth      (FontDict pFont, const BYTE *sText, unsig
 
     return oRet;
 }
-static unsigned int  MeasureText       (FontDict pFont, const BYTE *sText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, BOOL bWordWrap, float *pfRealWidth)
+static unsigned int  MeasureText       (FontDict pFont, const BYTE *sText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, bool bWordWrap, float *pfRealWidth)
 {
     double dWidth = 0;
     unsigned int nTempLen = 0;
@@ -1737,7 +1737,7 @@ FontDef        TTFontDefNew         (MMgr oMMgr)
 
     return pFontDef;
 }
-FontDef        TTFontDefLoad        (MMgr oMMgr, std::wstring & wsFilePath, BOOL bEmbedding, const char *sEncodingName/* = NULL*/, BOOL bEncoding/* = FALSE*/, BOOL bSymbolic/* = FALSE*/, BOOL bUsesMacRomanEncoding/* = FALSE*/, bool bFastParse /*= false*/)
+FontDef        TTFontDefLoad        (MMgr oMMgr, std::wstring & wsFilePath, bool bEmbedding, const char *sEncodingName/* = NULL*/, bool bEncoding/* = false*/, bool bSymbolic/* = false*/, bool bUsesMacRomanEncoding/* = false*/, bool bFastParse /*= false*/)
 {
     unsigned long nRet = OK;
     FontDef pFontDef = TTFontDefNew( oMMgr );
@@ -1762,7 +1762,7 @@ FontDef        TTFontDefLoad        (MMgr oMMgr, std::wstring & wsFilePath, BOOL
 
     return pFontDef;
 }
-FontDef        TTFontDefLoad2       (MMgr oMMgr, std::wstring & wsFilePath, unsigned int nIndex, BOOL bEmbedding, const char *sEncodingName/* = NULL*/, BOOL bEncoding/* = FALSE*/, BOOL bSymbolic/* = FALSE*/, BOOL bUsesMacRomanEncoding/* = FALSE*/)
+FontDef        TTFontDefLoad2       (MMgr oMMgr, std::wstring & wsFilePath, unsigned int nIndex, bool bEmbedding, const char *sEncodingName/* = NULL*/, bool bEncoding/* = false\*/, bool bSymbolic/* = false*/, bool bUsesMacRomanEncoding/* = false*/)
 {
     unsigned long nRet = OK;
     FontDef pFontDef = TTFontDefNew( oMMgr );
@@ -1956,7 +1956,7 @@ unsigned long  TTFontDefSaveFontData(FontDef pFontDef, StreamRecPtr pStream, Fon
 			{
 				EncoderRecPtr pEncoder = BasicEncoderNew( pFontDef->oMMgr, ENCODING_FONT_SPECIFIC );
 				BasicEncoderAttr pEncoderAttr = (BasicEncoderAttr)pEncoder->pAttr;
-				pEncoderAttr->bHasDifferences = TRUE;
+                pEncoderAttr->bHasDifferences = true;
 				pEncoderAttr->nFirstChar = ((ToUnicodeBuiltAttr)pToUnicode->pAttr)->nFirstChar;
 				pEncoderAttr->nLastChar  = ((ToUnicodeBuiltAttr)pToUnicode->pAttr)->nLastChar;
 			
@@ -1977,7 +1977,7 @@ unsigned long  TTFontDefSaveFontData(FontDef pFontDef, StreamRecPtr pStream, Fon
 				}
 
 				(*ppFontAttr)->pEncoder     = pEncoder;
-				(*ppFontAttr)->bFreeEncoder = TRUE;
+                (*ppFontAttr)->bFreeEncoder = true;
 			}
 			else
 			{
@@ -2123,7 +2123,7 @@ FontDict TTFontNew  (MMgr oMMgr, FontDef pFontDef, EncoderRecPtr pEncoder, Xref 
 	pAttr->pToUnicode     = pToUnicode;
     pAttr->pXref          = pXref;
 
-	pAttr->bFreeEncoder   = FALSE;
+    pAttr->bFreeEncoder   = false;
 
 	pAttr->oExternWidths.bUse       = false;
 	pAttr->oExternWidths.nLastChar  = 0;

@@ -18,7 +18,7 @@ namespace SerializeCommon
 	CString DownloadImage(const CString& strFile)
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
-        CFileDownloader oDownloader(strFile, FALSE);
+        CFileDownloader oDownloader(strFile, false);
 		oDownloader.Start( 1 );
 		while ( oDownloader.IsRunned() )
 		{
@@ -87,7 +87,7 @@ namespace SerializeCommon
 
 		// Read options
 		XmlUtils::CXmlLiteReader oReader;
-		if (TRUE != oReader.FromString(sXMLOptions) || TRUE != oReader.IsValid())
+        if (true != oReader.FromString(sXMLOptions) || true != oReader.IsValid())
 			return;
 
 		oReader.ReadNextNode(); // XmlOptions

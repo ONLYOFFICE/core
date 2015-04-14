@@ -120,7 +120,7 @@ namespace NSPresentationEditor
 			return pNew;
 		}
 
-		IElement* GetPlaceholder(LONG lID, BOOL bIsAddRef)
+                IElement* GetPlaceholder(LONG lID, bool bIsAddRef)
 		{
 			size_t nCount = m_arElements.size();
 			

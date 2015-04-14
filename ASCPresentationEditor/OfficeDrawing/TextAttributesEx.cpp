@@ -158,8 +158,8 @@ namespace NSPresentationEditor
 		
 		strText += (_T("text='") + sText + _T("' "));
 
-		strText += (_T("vertical='") + NSPresentationEditor::BoolToString(m_bVertical == TRUE) + _T("' "));
-		strText += (_T("righttoleft='") + NSPresentationEditor::BoolToString(m_bRightToLeft == TRUE) + _T("' "));
+        strText += (_T("vertical='") + NSPresentationEditor::BoolToString(m_bVertical == true) + _T("' "));
+        strText += (_T("righttoleft='") + NSPresentationEditor::BoolToString(m_bRightToLeft == true) + _T("' "));
 
 		strText += (_T("widthmm='") + NSPresentationEditor::ToString(pMetricInfo.m_lMillimetresHor) + _T("' "));
 		strText += (_T("heightmm='") + NSPresentationEditor::ToString(pMetricInfo.m_lMillimetresVer) + _T("' "));
@@ -409,7 +409,7 @@ namespace NSPresentationEditor
 			for (size_t nIndexP = 0; nIndexP < nCountPFs; ++nIndexP)
 			{
 				LONG lLevel = m_arParagraphs[nIndexP].m_lTextLevel;
-				nullable_base<BOOL>		hasBullet;
+                nullable_base<bool>		hasBullet;
 				nullable_base<CColor>	bulletColor;
 				nullable_base<LONG>		indent;
 				nullable_base<LONG>		margin;

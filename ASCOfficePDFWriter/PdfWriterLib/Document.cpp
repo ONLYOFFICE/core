@@ -431,9 +431,9 @@ unsigned long DocSetCurrentEncoder(Doc pPDF, const char *sEncodingName)
 
     pPDF->pEncoderList = NULL;
 }
-EncoderRecPtr       FindEncoderForString(Doc pPDF, CString sSrc, BOOL *pbNew)
+EncoderRecPtr       FindEncoderForString(Doc pPDF, CString sSrc, bool *pbNew)
 {
-	*pbNew = FALSE;
+    *pbNew = false;
 	// Среди всех кодировок, имеющихся в документе, ищем ту, в которой можно написать заданную строку
 	List pEncoderList = pPDF->pEncoderList;
 	
@@ -442,7 +442,7 @@ EncoderRecPtr       FindEncoderForString(Doc pPDF, CString sSrc, BOOL *pbNew)
 		EncoderRecPtr pCurEncoder = (EncoderRecPtr)ListItemAt( pEncoderList, nIndex );
 		if ( EncoderTypeToUnicode != pCurEncoder->eType )
 			continue;
-		BOOL bResult = FALSE;
+        bool bResult = false;
 		CString sDst;
 		if ( NULL != pCurEncoder )
 			bResult = EncoderWCharToString( pCurEncoder, sSrc, &sDst );
@@ -471,7 +471,7 @@ EncoderRecPtr       FindEncoderForString(Doc pPDF, CString sSrc, BOOL *pbNew)
 	{
 		EncoderRecPtr pNewEncoder = GetEncoder( pPDF, "", aUnicodeMap, nCount );
 		delete []aUnicodeMap;
-		*pbNew = TRUE;
+        *pbNew = true;
 		return pNewEncoder;
 	}
 }
@@ -778,7 +778,7 @@ const char* LoadType1FontFromFile (Doc pPDF, std::wstring & wsAFMFileName, std::
     }
     return pDef->sBaseFont;
 }
-const char* LoadTTFontFromFile    (Doc pPDF, std::wstring & wsFileName, BOOL bEmbedding, const char* sEncodingName/* = NULL*/, const char *sPrefix /*= NULL*/)
+const char* LoadTTFontFromFile    (Doc pPDF, std::wstring & wsFileName, bool bEmbedding, const char* sEncodingName/* = NULL*/, const char *sPrefix /*= NULL*/)
 {
     if ( !HasDoc( pPDF ) )
 		return NULL;
@@ -790,9 +790,9 @@ const char* LoadTTFontFromFile    (Doc pPDF, std::wstring & wsFileName, BOOL bEm
 
     return sRet;
 }
- const char* LoadTTFontFromStream     (Doc pPDF, BOOL bEmbedding, std::wstring & wsFileName, const char *sEncodingName, const char *sPrefix)
+ const char* LoadTTFontFromStream     (Doc pPDF, bool bEmbedding, std::wstring & wsFileName, const char *sEncodingName, const char *sPrefix)
 {
-	FontDef pDef = TTFontDefLoad( pPDF->oMMgr, wsFileName, bEmbedding, sEncodingName, FALSE, FALSE, FALSE, true );
+    FontDef pDef = TTFontDefLoad( pPDF->oMMgr, wsFileName, bEmbedding, sEncodingName, false, false, false, true );
     if ( pDef ) 
 	{
 		if ( NULL != sPrefix )
@@ -808,7 +808,7 @@ const char* LoadTTFontFromFile    (Doc pPDF, std::wstring & wsFileName, BOOL bEm
 		else
 		{
 			FontDefFree(pDef);
-			pDef = TTFontDefLoad( pPDF->oMMgr, wsFileName, bEmbedding, sEncodingName, FALSE, FALSE, FALSE, false );
+            pDef = TTFontDefLoad( pPDF->oMMgr, wsFileName, bEmbedding, sEncodingName, false, false, false, false );
 			if ( NULL != sPrefix )
 				strcat( pDef->sBaseFont, sPrefix );
 		}
@@ -843,7 +843,7 @@ const char* LoadTTFontFromFile    (Doc pPDF, std::wstring & wsFileName, BOOL bEm
 
 	return pDef->sBaseFont;
 }
-const char* LoadTTFontFromFile2   (Doc pPDF, std::wstring & wsFileName, unsigned int nIndex, BOOL bEmbedding)
+const char* LoadTTFontFromFile2   (Doc pPDF, std::wstring & wsFileName, unsigned int nIndex, bool bEmbedding)
 {
     if ( !HasDoc( pPDF ) )
         return NULL;
@@ -855,7 +855,7 @@ const char* LoadTTFontFromFile2   (Doc pPDF, std::wstring & wsFileName, unsigned
 
     return sRet;
 }
- const char* LoadTTFontFromStream2    (Doc pPDF, unsigned int nIndex, BOOL bEmbedding, std::wstring & wsFileName)
+ const char* LoadTTFontFromStream2    (Doc pPDF, unsigned int nIndex, bool bEmbedding, std::wstring & wsFileName)
 {
 	FontDef pDef = TTFontDefLoad2( pPDF->oMMgr, wsFileName, nIndex, bEmbedding );
     if ( pDef ) 
@@ -930,7 +930,7 @@ const char* LoadTTFontFromFile2   (Doc pPDF, std::wstring & wsFileName, unsigned
 //    return pImage;
 //}
 //
-//ImageDict LoadRawImageFromMem  (Doc pPDF, const BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, ColorSpace eColorSpace, unsigned int nBitsPerComponent, BOOL bAlpha = FALSE, const BYTE *pAlphaBuffer = NULL)
+//ImageDict LoadRawImageFromMem  (Doc pPDF, const BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, ColorSpace eColorSpace, unsigned int nBitsPerComponent, bool bAlpha = false, const BYTE *pAlphaBuffer = NULL)
 //{
 //    if ( !HasDoc( pPDF ))
 //        return NULL;
@@ -1028,7 +1028,7 @@ ImageDict LoadJpxImageFromFile (Doc pPDF, std::wstring wsFileName, long nOpacity
 
 	return pImage;
 }
-//ImageDict LoadJpxImageFromMem  (Doc pPDF, const BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, BOOL bAlpha = FALSE, const BYTE *pAlphaBuffer = NULL, unsigned int unAlphaCheckSum = 0)
+//ImageDict LoadJpxImageFromMem  (Doc pPDF, const BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, bool bAlpha = false, const BYTE *pAlphaBuffer = NULL, unsigned int unAlphaCheckSum = 0)
 //{
 //#ifdef BUILD_CONFIG_OPENSOURCE_VERSION
 //	return NULL;
@@ -1181,7 +1181,7 @@ ImageDict LoadJpxImageFromFile (Doc pPDF, std::wstring wsFileName, long nOpacity
 //    return pImage;
 //#endif
 //}
-ImageDict LoadJpegImageFromMem (Doc pPDF,  BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, BOOL bAlpha/* = FALSE*/, const BYTE *pAlphaBuffer/* = NULL*/, unsigned int unAlphaCheckSum/* = 0*/)
+ImageDict LoadJpegImageFromMem (Doc pPDF,  BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, bool bAlpha/* = false*/, const BYTE *pAlphaBuffer/* = NULL*/, unsigned int unAlphaCheckSum/* = 0*/)
 {
     if ( !HasDoc( pPDF ))
         return NULL;
@@ -1217,7 +1217,7 @@ ImageDict LoadJpegImageFromMem (Doc pPDF,  BYTE *pBuffer,   unsigned int nWidth,
 			return NULL;
 		}
 
-		CEncoderLZW oLZW( pAlphaBuffer, nWidth * nHeight, FALSE );
+        CEncoderLZW oLZW( pAlphaBuffer, nWidth * nHeight, false );
 		oLZW.Encode( wsTempAlpha.GetBuffer() );
 	}
 
@@ -1544,7 +1544,7 @@ ExtGState     FindExtGState      (Doc pPDF, float fAlphaStroke/* = -1*/, float f
 		}
 		else
 		{
-			if ( -1 == nStrokeAdjustment || ( 0 == nStrokeAdjustment && TRUE == pSA->bValue ) || ( 1 == nStrokeAdjustment && FALSE == pSA->bValue ) )
+            if ( -1 == nStrokeAdjustment || ( 0 == nStrokeAdjustment && true == pSA->bValue ) || ( 1 == nStrokeAdjustment && false == pSA->bValue ) )
 				continue;
 		}
 
@@ -1571,7 +1571,7 @@ ExtGState     GetExtGState       (Doc pPDF, float fAlphaStroke/* = -1*/, float f
 		if ( BMEOF != eMode )
 			ExtGStateSetBlendMode( pExtGState, eMode );
 		if ( -1 != nStrokeAdjustment )
-			ExtGStateSetStrokeAdjustment( pExtGState, (BOOL)nStrokeAdjustment );
+            ExtGStateSetStrokeAdjustment( pExtGState, (bool)nStrokeAdjustment );
 
 		ListAdd( pPDF->pExtGStateList, pExtGState );
 	}
@@ -1625,27 +1625,27 @@ void          ResetError         (Doc pPDF)
 
 
 //----------------- Основные функции -----------------------------------------------------------------
-BOOL          DocValidate            (Doc pPDF)
+bool          DocValidate            (Doc pPDF)
 {
 	if ( !pPDF || pPDF->nSigBytes != SIG_BYTES )
-        return FALSE;
+        return false;
     else
-        return TRUE;
+        return true;
 }
 
 
-BOOL          HasDoc                 (Doc pPDF)
+bool          HasDoc                 (Doc pPDF)
 {
 	if ( !pPDF || pPDF->nSigBytes != SIG_BYTES )
-        return FALSE;
+        return false;
 
 	if ( !pPDF->pCatalog/* || pPDF->oError.nErrorNo != NOERROR*/) 
 	{
 		RaiseError( &pPDF->oError, AVS_OFFICEPDFWRITER_ERROR_INVALID_DOCUMENT, 0 );
-        return FALSE;
+        return false;
     } 
 	else
-        return TRUE;
+        return true;
 }
 
 
@@ -1676,7 +1676,7 @@ void          FreeDoc                (Doc pPDF)
 		pPDF->pRootPages  = NULL;
 		pPDF->pCurPages   = NULL;
 		pPDF->pCurPage    = NULL;
-        pPDF->bEncryptOn  = FALSE;
+        pPDF->bEncryptOn  = false;
 		pPDF->nCurPageNum = 0;
 		pPDF->pCurEncoder = NULL;
 		pPDF->pDefEncoder = NULL;
@@ -1926,7 +1926,7 @@ unsigned long DocSetEncryptOn        (Doc pPDF)
 	if ( OK != DictAdd( pPDF->pTrailer, "EncryptRecPtr", pPDF->pEncryptDict ) )
 		return pPDF->oError.nErrorNo;
 
-    pPDF->bEncryptOn = TRUE;
+    pPDF->bEncryptOn = true;
 
     return OK;
 }
@@ -2021,7 +2021,7 @@ unsigned long DocSetEncryptOff       (Doc pPDF)
         }
     }
 
-    pPDF->bEncryptOn = FALSE;
+    pPDF->bEncryptOn = false;
     return OK;
 }
 unsigned long DocPrepareEncryption   (Doc pPDF)
@@ -2109,8 +2109,8 @@ unsigned long InternalSaveToStream   (Doc pPDF, StreamRecPtr pStream)
 }
 
 //const char*   LoadType1FontFromStream(Doc pPDF, StreamRecPtr pAfmData, StreamRecPtr pPfmData, short nType/* = 0*/);
-//const char*   LoadTTFontFromStream   (Doc pPDF, BOOL bEmbedding, std::wstring & wsFileName, const char *sEncodingName = NULL, const char *sPrefix = NULL);
-//const char*   LoadTTFontFromStream2  (Doc pPDF, unsigned int nIndex, BOOL bEmbedding, std::wstring & wsFileName);
+//const char*   LoadTTFontFromStream   (Doc pPDF, bool bEmbedding, std::wstring & wsFileName, const char *sEncodingName = NULL, const char *sPrefix = NULL);
+//const char*   LoadTTFontFromStream2  (Doc pPDF, unsigned int nIndex, bool bEmbedding, std::wstring & wsFileName);
 
 unsigned int  GetStreamSize          (Doc pPDF)
 {

@@ -40,7 +40,7 @@ namespace NSBinPptxRW
 		PPTX::ViewProps					m_oViewProps;
 		PPTX::PresProps					m_oPresProps;
 
-		BOOL							m_bIsDefaultNoteMaster;
+        bool							m_bIsDefaultNoteMaster;
 		PPTX::NotesSlide				m_oDefaultNote;
 
 	public:
@@ -48,7 +48,7 @@ namespace NSBinPptxRW
 		CPPTXWriter()
 		{
 			m_strDstFolder = _T("");
-			m_bIsDefaultNoteMaster = TRUE;
+            m_bIsDefaultNoteMaster = true;
 		}
 		~CPPTXWriter()
 		{
@@ -457,7 +457,7 @@ namespace NSBinPptxRW
 				}
 			}
 
-			if (FALSE)
+            if (false)
 			{
 				// noteMasters
 				pPair = m_mainTables.find(NSMainTables::NotesMasters);
@@ -522,7 +522,7 @@ namespace NSBinPptxRW
 				}
 			}
 
-			if (FALSE)
+            if (false)
 			{
 				// app
 				pPair = m_mainTables.find(NSMainTables::App);
@@ -723,7 +723,7 @@ namespace NSBinPptxRW
 				strTheme.Format(_T("<Override PartName=\"/ppt/theme/theme%d.xml\" ContentType=\"application/vnd.openxmlformats-officedocument.theme+xml\"/>"), i + 1);
 				oContentTypes.WriteString(strTheme);
 			}
-			if (TRUE)
+            if (true)
 			{
 				// notes theme
 				CString strTheme = _T("");

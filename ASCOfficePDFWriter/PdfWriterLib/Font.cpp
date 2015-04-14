@@ -1,11 +1,11 @@
 ﻿#include "Font.h"
 
-BOOL          FontValidate        (FontDict pFont)
+bool          FontValidate        (FontDict pFont)
 {
     if ( !pFont || !pFont->pAttr || pFont->pHeader.nObjClass != (OSUBCLASS_FONT | OCLASS_DICT) )
-        return FALSE;
+        return false;
 
-    return TRUE;
+    return true;
 }
 TextWidth     FontTextWidth       (FontDict pFont, const BYTE *sText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID)
 {
@@ -32,7 +32,7 @@ TextWidth     FontTextWidth       (FontDict pFont, const BYTE *sText, unsigned i
 
     return oTextWidth;
 }
-unsigned int  FontMeasureText     (FontDict pFont, const BYTE *sText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, BOOL bWordWrap, float *pfRealWidth)
+unsigned int  FontMeasureText     (FontDict pFont, const BYTE *sText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, bool bWordWrap, float *pfRealWidth)
 {
     if ( !FontValidate( pFont ) )
         return 0;

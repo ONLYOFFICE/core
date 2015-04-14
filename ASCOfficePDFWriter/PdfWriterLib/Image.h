@@ -139,25 +139,25 @@
 //    return OK;
 //}
 //
-//static BOOL          ReadJpxBoxHeader   (StreamRecPtr pStream, unsigned int *punBoxType, unsigned int *punBoxLen, unsigned int *punDataLen) 
+//static bool          ReadJpxBoxHeader   (StreamRecPtr pStream, unsigned int *punBoxType, unsigned int *punBoxLen, unsigned int *punDataLen)
 //{
 //	unsigned int unLen, unLenH;
 //	unsigned int unReadLen = 4;
 //
 //	if ( OK != StreamReadULong( pStream,  &unLen ) || OK != StreamReadULong( pStream, punBoxType ) ) 
 //	{
-//		return FALSE;
+//		return false;
 //	}
 //	if ( 1 == unLen ) 
 //	{
 //		if ( OK != StreamReadULong( pStream,  &unLenH ) || OK != StreamReadULong( pStream,  &unLen ) ) 
 //		{
-//			return FALSE;
+//			return false;
 //		}
 //		if ( unLenH ) 
 //		{
 //			// TO DO: Error "JPX stream contains a box larger than 2^32 bytes"
-//			return FALSE;
+//			return false;
 //		}
 //		*punBoxLen  = unLen;
 //		*punDataLen = unLen - 16;
@@ -172,7 +172,7 @@
 //		*punBoxLen  = unLen;
 //		*punDataLen = unLen - 8;
 //	}
-//	return TRUE;
+//	return true;
 //}
 //
 //static int           ReadJpxMarkerHeader(StreamRecPtr pStream, int *pnSegmentType, unsigned int *pnSegmentLen) 
@@ -185,22 +185,22 @@
 //		{
 //			unsigned int nReadLen = 1;
 //			if ( OK != StreamRead( pStream, (BYTE*)&nChar, &nReadLen ) )
-//				return FALSE;
+//				return false;
 //
 //			if ( nChar == EOF ) 
 //			{
-//				return FALSE;
+//				return false;
 //			}
 //		} while ( nChar != 0xff );
 //		do 
 //		{
 //			unsigned int nReadLen = 1;
 //			if ( OK != StreamRead( pStream, (BYTE*)&nChar, &nReadLen ) )
-//				return FALSE;
+//				return false;
 //
 //			if ( nChar == EOF)  
 //			{
-//				return FALSE;
+//				return false;
 //			}
 //		} while ( nChar == 0xff );
 //	} while ( nChar == 0x00 );
@@ -208,13 +208,13 @@
 //	if ( ( nChar >= 0x30 && nChar <= 0x3f ) || nChar == 0x4f || nChar == 0x92 || nChar == 0x93 || nChar == 0xd9 ) 
 //	{
 //		*pnSegmentLen = 0;
-//		return TRUE;
+//		return true;
 //	}
 //
 //	if ( OK != StreamReadUShort( pStream, pnSegmentLen ) )
-//		return FALSE;
+//		return false;
 //
-//	return TRUE;
+//	return true;
 //}
 //
 //static const char*   ReadJpxCodestream  (StreamRecPtr pStream, unsigned int *pnBitsPerComponent, unsigned int *pnWidth, unsigned int *pnHeight)
@@ -264,7 +264,7 @@
 //
 //	StreamSeek( pStream, 0, SeekSet );
 //
-//	BOOL bHaveBPC = FALSE, bHaveModeCS = FALSE;
+//	bool bHaveBPC = false, bHaveModeCS = false;
 //	unsigned int nBitsPerComponent = 0;
 //	const char *sColorSpaceName = "";
 //	unsigned int nCSPrec = 0;
@@ -291,7 +291,7 @@
 //					 OK == StreamReadUByte( pStream, &nTemp ) ) 
 //				{
 //					nBitsPerComponent = nBPC + 1;
-//					bHaveBPC = TRUE;
+//					bHaveBPC = true;
 //				}
 //			} 
 //			else if ( nBoxType == 0x636F6C72 ) // Color specification
@@ -322,7 +322,7 @@
 //							{
 //								sColorSpaceName = sTempCS;
 //								nCSPrec = nPrecedenceCS;
-//								bHaveModeCS = TRUE;
+//								bHaveModeCS = true;
 //							}
 //
 //							StreamSeek( pStream, nDataLen - 7, SeekCur );
@@ -373,11 +373,11 @@ ImageDict ImageLoadJpegImage       (MMgr oMMgr, StreamRecPtr pJpegData,         
 ImageDict ImageLoadJpxImage        (MMgr oMMgr, StreamRecPtr pJpxData,           Xref pXref, long nOpacityFlag);
 ImageDict ImageLoadRawImage        (MMgr oMMgr, StreamRecPtr pRawData,           Xref pXref, unsigned int nWidth, unsigned int nHeight, ColorSpace eColorSpace);
 ImageDict ImageLoadAlphaFromMem    (MMgr oMMgr, const BYTE *pBuffer,       Xref pXref, unsigned int nWidth, unsigned int nHeight, unsigned int nBitsPerComponent);
-ImageDict ImageLoadRawImageFromMem (MMgr oMMgr, const BYTE *pBuffer,       Xref pXref, unsigned int nWidth, unsigned int nHeight, ColorSpace eColorSpace, unsigned int nBitsPerComponent, BOOL bAlpha = FALSE, const BYTE *pAlphaBuffer = NULL);
+ImageDict ImageLoadRawImageFromMem (MMgr oMMgr, const BYTE *pBuffer,       Xref pXref, unsigned int nWidth, unsigned int nHeight, ColorSpace eColorSpace, unsigned int nBitsPerComponent, bool bAlpha = false, const BYTE *pAlphaBuffer = NULL);
 ImageDict ImageLoadJBig2Image      (MMgr oMMgr, const wchar_t *wsTempFile, Xref pXref, unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum);
-ImageDict ImageLoadJpxImage        (MMgr oMMgr, const wchar_t *wsTempFile, Xref pXref, unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, BOOL bAlpha = FALSE, const wchar_t *wsAlphaPath = NULL, unsigned int unAlphaCheckSum = 0);
-ImageDict ImageLoadJpegImage       (MMgr oMMgr, const wchar_t *wsTempFile, Xref pXref, unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, BOOL bAlpha = FALSE, const wchar_t *wsAlphaPath = NULL, unsigned int unAlphaCheckSum = 0);
-BOOL          ImageValidate           (ImageDict pImage);
+ImageDict ImageLoadJpxImage        (MMgr oMMgr, const wchar_t *wsTempFile, Xref pXref, unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, bool bAlpha = false, const wchar_t *wsAlphaPath = NULL, unsigned int unAlphaCheckSum = 0);
+ImageDict ImageLoadJpegImage       (MMgr oMMgr, const wchar_t *wsTempFile, Xref pXref, unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum, bool bAlpha = false, const wchar_t *wsAlphaPath = NULL, unsigned int unAlphaCheckSum = 0);
+bool          ImageValidate           (ImageDict pImage);
 TPoint        ImageGetSize            (ImageDict pImage);
 unsigned long ImageGetSize2           (ImageDict pImage, TPoint *poSize);
 unsigned int  ImageGetBitsPerComponent(ImageDict pImage);
@@ -386,7 +386,7 @@ EColorSpace   ImageGetColorSpace2     (ImageDict pImage);
 unsigned int  ImageGetWidth           (ImageDict pImage);
 unsigned int  ImageGetHeight          (ImageDict pImage);
 ImageDict     ImageGetSMask           (ImageDict pImage);
-unsigned long ImageSetMask            (ImageDict pImage, BOOL bMask);
+unsigned long ImageSetMask            (ImageDict pImage, bool bMask);
 unsigned long ImageSetMaskImage       (ImageDict pImage, ImageDict pMaskImage);
 unsigned long ImageSetColorMask       (ImageDict pImage, unsigned int nRMin, unsigned int nRMax, unsigned int nGMin, unsigned int nGMax, unsigned int nBMin, unsigned int nBMax);
 #endif /* _IMAGE_H */

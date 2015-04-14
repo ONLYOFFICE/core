@@ -411,8 +411,8 @@ namespace NSCustomVML
 		std::vector<CGuide>	m_arGuides;
 		std::vector<LONG>*	m_pAdjustValues;
 
-		BOOL m_bIsVerticesPresent;
-		BOOL m_bIsPathPresent;
+                bool m_bIsVerticesPresent;
+                bool m_bIsPathPresent;
 
 		CBrush	m_oBrush;
 		CPen	m_oPen;
@@ -423,8 +423,8 @@ namespace NSCustomVML
 		{
 			m_ePath = rtCurveTo/*rtLineTo*/;
 			
-			m_bIsVerticesPresent	= FALSE;
-			m_bIsPathPresent		= FALSE;
+                        m_bIsVerticesPresent	= false;
+                        m_bIsPathPresent		= false;
 		}
 		
 		CCustomVML(const CCustomVML& oSrc)
@@ -461,7 +461,7 @@ namespace NSCustomVML
 		}
 
 	public:
-		BOOL IsCustom()
+                bool IsCustom()
 		{
 			return (m_bIsVerticesPresent && m_bIsPathPresent);
 		}
@@ -470,7 +470,7 @@ namespace NSCustomVML
 		void SetPath(RulesType ePath)
 		{
 			m_ePath = ePath;
-			m_bIsPathPresent = TRUE;
+                        m_bIsPathPresent = true;
 		}
 		void LoadVertices(CProperty* pProperty)
 		{
@@ -486,7 +486,7 @@ namespace NSCustomVML
 
 			if (lCount > 0)
 			{
-				m_bIsVerticesPresent = TRUE;
+                                m_bIsVerticesPresent = true;
 			}
 
 			for (WORD lIndex = 0; lIndex < lCount; ++lIndex)
@@ -534,7 +534,7 @@ namespace NSCustomVML
 
 			if (lCount > 0)
 			{
-				m_bIsPathPresent = TRUE;
+                                m_bIsPathPresent = true;
 			}
 
 			for (WORD lIndex = 0; lIndex < lCount; ++lIndex)

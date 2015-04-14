@@ -630,17 +630,17 @@ namespace NSHtmlRenderer
 		if (m_bIsRaster)
 			return S_OK;
 
-		BOOL bGid = m_pFont->StringGID;
+        bool bGid = m_pFont->StringGID != 0 ? true : false;
 		if (bsGidText.empty())
 		{
-			m_pFont->StringGID = TRUE;
+            m_pFont->StringGID = 1;
 			PathCommandText(bsGidText, x, y, w, h, baselineOffset);
 		}
 
-		m_pFont->StringGID = FALSE;
+        m_pFont->StringGID = 0;
 		PathCommandText(bsUnicodeText, x, y, w, h, baselineOffset);
 
-		m_pFont->StringGID = bGid;
+        m_pFont->StringGID = bGid ? 1 : 0;
 		return S_OK;
 	}
 	//-------- Функции для вывода изображений ---------------------------------------------------

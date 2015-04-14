@@ -447,7 +447,7 @@ namespace NSPresentationEditor
 			}
 
 
-            void GetSafearrayPoints(IRenderer* pRenderer, double** ppArray, size_t& nCountOut, CDoublePoint& pointCur, BOOL bR = FALSE)
+            void GetSafearrayPoints(IRenderer* pRenderer, double** ppArray, size_t& nCountOut, CDoublePoint& pointCur, bool bR = false)
             {
                 if (NULL == ppArray)
                     return;
@@ -497,7 +497,7 @@ namespace NSPresentationEditor
             }
 
             /*
-			void GetSafearrayPoints(IRenderer* pRenderer, SAFEARRAY** ppArray, CDoublePoint& pointCur, BOOL bR = FALSE)
+                        void GetSafearrayPoints(IRenderer* pRenderer, SAFEARRAY** ppArray, CDoublePoint& pointCur, bool bR = false)
 			{
 				if (NULL == ppArray)
 					return;

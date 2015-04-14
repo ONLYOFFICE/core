@@ -102,7 +102,7 @@ namespace NSBinPptxRW
 		CString						m_strDstMedia;
 
 	public:
-		BOOL						m_bIsWord;
+        bool						m_bIsWord;
 
 	public:
 		CImageManager2();
@@ -132,7 +132,7 @@ namespace NSBinPptxRW
 		template <typename T>
 		void Deserialize(T* pReader)
 		{
-			m_bIsWord = ((true == pReader->GetBool()) ? TRUE : FALSE);
+            m_bIsWord = ((true == pReader->GetBool()) ? true : false);
 			m_lIndexNextImage = pReader->GetLong();
 			m_strDstMedia = pReader->GetString2();
 

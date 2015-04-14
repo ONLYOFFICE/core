@@ -110,12 +110,12 @@ GState GStateFree (MMgr oMMgr, GState pGState)
 
 
 
-BOOL          ExtGStateValidate            (ExtGState pExtGState)
+bool          ExtGStateValidate            (ExtGState pExtGState)
 {
     if ( !pExtGState || (pExtGState->pHeader.nObjClass != (OSUBCLASS_EXT_GSTATE | OCLASS_DICT) && pExtGState->pHeader.nObjClass != (OSUBCLASS_EXT_GSTATE_R | OCLASS_DICT) ) )
-        return FALSE;
+        return false;
 
-    return TRUE;
+    return true;
 }
 
 unsigned long ExtGStateCheck               (ExtGState pExtGState)
@@ -186,7 +186,7 @@ unsigned long ExtGStateSetBlendMode        (ExtGState pExtGState, BlendMode eBle
     return DictAddName( pExtGState, "BM", BM_NAMES[ (int)eBlendMode ] );
 }
 
-unsigned long ExtGStateSetStrokeAdjustment (ExtGState pExtGState, BOOL bValue)
+unsigned long ExtGStateSetStrokeAdjustment (ExtGState pExtGState, bool bValue)
 {
     unsigned long nRet = ExtGStateCheck( pExtGState );
     

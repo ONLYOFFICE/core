@@ -17,7 +17,7 @@ namespace OOX{
 			xmlString += L">";
 			xmlString += *spPr;
 			xmlString += L"</c:chart>";
-			BOOL result =oReaderLocal.FromString(xmlString);
+            bool result =oReaderLocal.FromString(xmlString);
 
 			result = oReaderLocal.ReadNextNode();//root ... skiping
 			result = oReaderLocal.ReadNextNode();
@@ -41,7 +41,7 @@ namespace OOX{
 			xmlString += L">";
 			xmlString += *txPr;
 			xmlString += L"</c:txPr>";
-			BOOL result =oReaderLocal.FromString(xmlString);
+            bool result =oReaderLocal.FromString(xmlString);
 
 			result = oReaderLocal.ReadNextNode();//root ... skiping
 
@@ -3765,7 +3765,7 @@ namespace OOX{
 						xmlString += L">";
 						xmlString += *m_rich;
 						xmlString += L"</c:rich>";
-						BOOL result =oReaderLocal.FromString(xmlString);
+                        bool result =oReaderLocal.FromString(xmlString);
 
 						result = oReaderLocal.ReadNextNode();//root ... skiping
 

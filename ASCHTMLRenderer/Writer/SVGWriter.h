@@ -497,8 +497,8 @@ namespace NSHtmlRenderer
 					nType &= 0xFF;
 			}
 			
-			BOOL bStroke	= (0x01 == (0x01 & nType));
-			BOOL bFill		= (0x01 < nType);
+            bool bStroke	= (0x01 == (0x01 & nType));
+            bool bFill		= (0x01 < nType);
 
 			if (!bFill)
 			{
@@ -670,7 +670,7 @@ namespace NSHtmlRenderer
 
 		void WriteImage(CImageInfo& oInfo, const double& x, const double& y, const double& w, const double& h, const double& dAngle)
 		{
-			BOOL bIsClipping = FALSE;
+            bool bIsClipping = false;
 			if ((1 < h) && (1 < w) && (1 > fabs(dAngle)))
 			{
 				WriteClip();

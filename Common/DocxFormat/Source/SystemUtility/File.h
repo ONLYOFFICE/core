@@ -60,7 +60,7 @@ private:
 		RELEASEARRAYOBJECTS(pUtf8);
 #endif
 		if (NULL == m_pFile)
-			return S_FALSE;
+            return S_FALSE;
 
 		fseek(m_pFile, 0, SEEK_END);
 		m_lFileSize = ftell(m_pFile);
@@ -458,32 +458,32 @@ namespace CDirectory
 
 		return strFolderPath.Mid(0, n1);
 	}
-	static BOOL OpenFile(CString strFolderPath, CString strFileName, CFile* pFile)
+    static bool OpenFile(CString strFolderPath, CString strFileName, CFile* pFile)
 	{
         CString strFile = strFolderPath  + FILE_SEPARATOR_CHAR + strFileName;
 		return (S_OK == pFile->OpenFile(strFile));
 	}
-	static BOOL CreateFile(CString strFolderPath, CString strFileName, CFile* pFile)
+    static bool CreateFile(CString strFolderPath, CString strFileName, CFile* pFile)
 	{
         CString strFile = strFolderPath + FILE_SEPARATOR_CHAR + strFileName;
 		return (S_OK == pFile->CreateFile(strFile));
 	}
-	static BOOL CreateDirectory(CString strFolderPathRoot, CString strFolderName)
+    static bool CreateDirectory(CString strFolderPathRoot, CString strFolderName)
 	{
         CString strFolder = strFolderPathRoot + FILE_SEPARATOR_CHAR + strFolderName;
 		return ::CreateDirectory(strFolder, NULL);
 	}
-	static BOOL CreateDirectory(CString strFolderPath)
+    static bool CreateDirectory(CString strFolderPath)
 	{
 		return ::CreateDirectory(strFolderPath, NULL);
 	}
-    static BOOL DeleteFile (CString strFileName)
+    static bool DeleteFile (CString strFileName)
     {
         ::DeleteFile (strFileName);
-        return TRUE;
+        return true;
     }
 
-	static BOOL MoveFile(CString strExists, CString strNew, LPVOID lpFunc, LPVOID lpData) 
+    static bool MoveFile(CString strExists, CString strNew, LPVOID lpFunc, LPVOID lpData)
 	{
 #if (_WIN32_WINNT >= 0x0500) && !defined (_WIN64)
 		return ::MoveFileWithProgress(strExists, strNew, (LPPROGRESS_ROUTINE)lpFunc, lpData, MOVEFILE_REPLACE_EXISTING | MOVEFILE_WRITE_THROUGH); 
@@ -492,7 +492,7 @@ namespace CDirectory
 #endif
 	}
 
-	static BOOL CopyFile(CString strExists, CString strNew, LPVOID lpFunc, LPVOID lpData) 
+    static bool CopyFile(CString strExists, CString strNew, LPVOID lpFunc, LPVOID lpData)
 	{
 		DeleteFile(strNew);
 #if defined (_WIN64)
@@ -688,9 +688,9 @@ namespace CDirectory
         return str;
     }
 
-    static BOOL CopyFile (CString strExists, CString strNew, LPVOID lpFunc = NULL, LPVOID lpData = NULL)
+    static bool CopyFile (CString strExists, CString strNew, LPVOID lpFunc = NULL, LPVOID lpData = NULL)
     {
-        BOOL bRes = TRUE;
+        bool bRes = true;
         try
         {
             std::string stdstrFrom = stringWstingToUtf8String(strExists);
@@ -702,7 +702,7 @@ namespace CDirectory
         }
         catch (...)
         {
-            bRes = FALSE;
+            bRes = false;
         }
         return bRes;
     }

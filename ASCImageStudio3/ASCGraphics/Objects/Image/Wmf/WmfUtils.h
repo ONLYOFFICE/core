@@ -1346,7 +1346,7 @@ static void PolyPoly_To_PolyLine(TWmfPolyPoly *pPolyPoly, TWmfPolyLine *pPolyLin
 	pPolyLine->ushCount++;
 }
 
-static BOOL WmfOpenTempFile(CString *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder) 
+static bool WmfOpenTempFile(CString *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder)
 {
 	CStringW wsTemp, wsFileName;
 	FILE *pTempFile;
@@ -1385,17 +1385,17 @@ static BOOL WmfOpenTempFile(CString *pwsName, FILE **ppFile, wchar_t *wsMode, wc
             if ( !( pTempFile = fopen( sFileName.c_str(), sMode.c_str() ) ) )
 #endif
 			{
-				return FALSE;
+                return false;
 			}
 			*pwsName = wsFileName;
 			*ppFile = pTempFile;
-			return TRUE;
+            return true;
 		}
 
 		fclose( pTempFile );
 	}
 
-	return FALSE;
+    return false;
 }
 
 

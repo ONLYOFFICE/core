@@ -1021,7 +1021,7 @@ unsigned long StreamWriteToStreamWithDeflate( StreamRecPtr  pSrc, StreamRecPtr  
 #define DEFLATE_BUF_SIZ  ((int)(STREAM_BUF_SIZ * 1.1) + 13)
 
     unsigned long nRet = OK;
-    BOOL bFlag = FALSE;
+    bool bFlag = false;
 
     z_stream pZStream;
     Bytef inbuf[STREAM_BUF_SIZ];
@@ -1058,7 +1058,7 @@ unsigned long StreamWriteToStreamWithDeflate( StreamRecPtr  pSrc, StreamRecPtr  
 		{
             if ( AVS_OFFICEPDFWRITER_ERROR_STREAM_EOF == nRet ) 
 			{
-                bFlag = TRUE;
+                bFlag = true;
                 if ( 0 == nSize )
                     break;
             } 
@@ -1102,7 +1102,7 @@ unsigned long StreamWriteToStreamWithDeflate( StreamRecPtr  pSrc, StreamRecPtr  
             break;
     }
 
-    bFlag = FALSE;
+    bFlag = false;
     for (;;) 
 	{
         nRet = deflate(&pZStream, Z_FINISH );
@@ -1113,7 +1113,7 @@ unsigned long StreamWriteToStreamWithDeflate( StreamRecPtr  pSrc, StreamRecPtr  
         }
 
         if ( Z_STREAM_END == nRet )
-            bFlag = TRUE;
+            bFlag = true;
 
         if ( pZStream.avail_out < DEFLATE_BUF_SIZ ) 
 		{
@@ -1157,7 +1157,7 @@ unsigned long StreamWriteToStream   (StreamRecPtr  pSrc, StreamRecPtr pDst, unsi
 	BYTE pBuf[STREAM_BUF_SIZ];
     BYTE pEBuf[STREAM_BUF_SIZ];
     
-	BOOL bFlag = FALSE;
+    bool bFlag = false;
 
 	if ( !pDst || ! ( pDst->pWriteFn ) ) 
 	{
@@ -1180,7 +1180,7 @@ unsigned long StreamWriteToStream   (StreamRecPtr  pSrc, StreamRecPtr pDst, unsi
     if ( OK != nRet )
         return nRet;
 
-    bFlag = FALSE;
+    bFlag = false;
     for (;;) 
 	{
         unsigned int nSize = STREAM_BUF_SIZ;
@@ -1191,7 +1191,7 @@ unsigned long StreamWriteToStream   (StreamRecPtr  pSrc, StreamRecPtr pDst, unsi
 		{
             if ( AVS_OFFICEPDFWRITER_ERROR_STREAM_EOF == nRet ) 
 			{
-                bFlag = TRUE;
+                bFlag = true;
                 if ( 0 == nSize )
                     break;
             } 
@@ -1228,7 +1228,7 @@ unsigned long StreamWriteToStream   (StreamRecPtr  pSrc, StreamRecPtr pDst, unsi
 //	BYTE pBuf[STREAM_BUF_SIZ];
 //    BYTE pEBuf[STREAM_BUF_SIZ];
 //    
-//	BOOL bFlag = FALSE;
+//	bool bFlag = false;
 //
 //	if ( !pDst || ! ( pDst->pWriteFn ) ) 
 //	{
@@ -1248,7 +1248,7 @@ unsigned long StreamWriteToStream   (StreamRecPtr  pSrc, StreamRecPtr pDst, unsi
 //    if ( OK != nRet )
 //        return nRet;
 //
-//    bFlag = FALSE;
+//    bFlag = false;
 //    for (;;) 
 //	{
 //        unsigned int nSize = STREAM_BUF_SIZ;
@@ -1259,7 +1259,7 @@ unsigned long StreamWriteToStream   (StreamRecPtr  pSrc, StreamRecPtr pDst, unsi
 //		{
 //            if ( AVS_OFFICEPDFWRITER_ERROR_STREAM_EOF == nRet ) 
 //			{
-//                bFlag = TRUE;
+//                bFlag = true;
 //                if ( 0 == nSize )
 //                    break;
 //            } 
@@ -1658,7 +1658,7 @@ int           StreamTell            (StreamRecPtr  pStream)
 }
 
 
-BOOL          StreamEOF             (StreamRecPtr  pStream);
+bool          StreamEOF             (StreamRecPtr  pStream);
 unsigned long StreamFlush           (StreamRecPtr  pStream);
 unsigned long StreamWriteEscapeName (StreamRecPtr  pStream, const char *sValue)
 {
@@ -1772,7 +1772,7 @@ unsigned long StreamWriteBinary (StreamRecPtr  pStream, const BYTE *pData, unsig
 
     BYTE pEBuf[TEXT_DEFAULT_LEN];
     BYTE *pBuf = NULL;
-    BOOL bFlag = FALSE;
+    bool bFlag = false;
     unsigned int nIndex = 0;
 
 	const BYTE* pBuffer = NULL;
@@ -1785,7 +1785,7 @@ unsigned long StreamWriteBinary (StreamRecPtr  pStream, const BYTE *pData, unsig
         else 
 		{
 			pBuf = (BYTE *)GetMem( pStream->oMMgr, nLen);
-            bFlag = TRUE;
+            bFlag = true;
         }
 
         EncryptCryptBuf( pEncrypt, pData, pBuf, nLen);
@@ -1837,10 +1837,10 @@ unsigned long StreamWriteBinary (StreamRecPtr  pStream, const BYTE *pData, unsig
     return nRet;
 }
 
-unsigned long StreamValidate        (StreamRecPtr  pStream)
+bool StreamValidate        (StreamRecPtr  pStream)
 {
     if ( !pStream || STREAM_SIG_BYTES != pStream->nSigBytes )
-        return FALSE;
+        return false;
     else
-        return TRUE;
+        return true;
 }

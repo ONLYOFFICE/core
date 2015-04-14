@@ -103,7 +103,7 @@ namespace PPTX
 						oWriter.EndNode(_T("w:ind"));
 					}
 
-					if (TRUE)
+                    if (true)
 					{
 						oWriter.WriteString(_T("<w:spacing w:before=\"0\" w:after=\"0\" />"));
 					}
@@ -284,7 +284,7 @@ namespace PPTX
 								}
 							}
 							
-							oWriter.WriteNodeEnd(_T("w:rFonts"), TRUE, TRUE);
+                            oWriter.WriteNodeEnd(_T("w:rFonts"), true, true);
 						}
 
 						if (bIsWriteColor)

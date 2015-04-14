@@ -93,7 +93,7 @@ namespace NSBinPptxRW
 
 	CImageManager2::CImageManager2() : m_mapImages(), m_lIndexNextImage(0)
 	{
-		m_bIsWord = FALSE;
+        m_bIsWord = false;
 	}
 	CImageManager2::~CImageManager2()
 	{
@@ -252,7 +252,7 @@ namespace NSBinPptxRW
 	CString CImageManager2::DownloadImage(const CString& strFile)
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
-		CFileDownloader oDownloader(strFile, TRUE);
+        CFileDownloader oDownloader(strFile, true);
 		oDownloader.Start( 1 );
 		while ( oDownloader.IsRunned() )
 		{
@@ -925,8 +925,8 @@ namespace NSBinPptxRW
 		int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength((int)dwLen, Base64::B64_BASE64_FLAG_NOCRLF);
         BYTE *pbBase64Buffer = new BYTE[nBase64BufferLen + 1 + 64];
         pbBase64Buffer[nBase64BufferLen] = '\0';
-        //if (TRUE == Base64::Base64Encode(pBuffer, (int)dwLen, pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
-        if (TRUE == Base64_1::Base64Encode(pBuffer, (int)dwLen, pbBase64Buffer, &nBase64BufferLen))
+        //if (true == Base64::Base64Encode(pBuffer, (int)dwLen, pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+        if (true == Base64_1::Base64Encode(pBuffer, (int)dwLen, pbBase64Buffer, &nBase64BufferLen))
 		{
             //strDst64.SetString(pbBase64Buffer, nBase64BufferLen);
             strDst64 = (char*)pbBase64Buffer;

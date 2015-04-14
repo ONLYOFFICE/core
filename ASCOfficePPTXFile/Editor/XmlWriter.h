@@ -251,7 +251,7 @@ namespace NSBinPptxRW
 		LONG m_lObjectIdVML;
 
 	public:
-		BOOL m_bIsUseOffice2007;
+        bool m_bIsUseOffice2007;
 		CString m_strStyleMain;
 		CString m_strAttributesMain;
 		CString m_strNodes;
@@ -269,7 +269,7 @@ namespace NSBinPptxRW
 			m_lObjectId = 0;
 			m_lObjectIdVML		= 0;
 
-			m_bIsUseOffice2007	= FALSE;
+            m_bIsUseOffice2007	= false;
 			m_strStyleMain		= _T("");
 			m_strAttributesMain = _T("");
 			m_strNodes			= _T("");
@@ -470,7 +470,7 @@ namespace NSBinPptxRW
 			m_oWriter.WriteString(g_bstr_node_quote);
 		}
 		// document methods
-		AVSINLINE void WriteNodeBegin(CString strNodeName, BOOL bAttributed = FALSE)
+        AVSINLINE void WriteNodeBegin(CString strNodeName, bool bAttributed = false)
 		{
 			m_oWriter.WriteString(g_bstr_nodeopen);
 			m_oWriter.WriteString(strNodeName);
@@ -478,7 +478,7 @@ namespace NSBinPptxRW
 			if (!bAttributed)
 				m_oWriter.WriteString(g_bstr_nodeclose);
 		}
-		AVSINLINE void WriteNodeEnd(CString strNodeName, BOOL bEmptyNode = FALSE, BOOL bEndNode = TRUE)
+        AVSINLINE void WriteNodeEnd(CString strNodeName, bool bEmptyNode = false, bool bEndNode = true)
 		{
 			if (bEmptyNode)
 			{
@@ -543,7 +543,7 @@ namespace NSBinPptxRW
 			WriteNodeEnd(strNodeName);
 		}
 		
-		BOOL SaveToFile(CString strFilePath, BOOL bEncodingToUTF8 = TRUE, BOOL bIsClearNoAttack = TRUE)
+        bool SaveToFile(CString strFilePath, bool bEncodingToUTF8 = true, bool bIsClearNoAttack = true)
 		{
 			CString strData = m_oWriter.GetData();
 			if (!bEncodingToUTF8)
@@ -601,7 +601,7 @@ namespace NSBinPptxRW
 				m_oWriter.ClearNoAttack();
 			}
 			
-			return TRUE;
+            return true;
 		}
 
 	public:

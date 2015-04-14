@@ -19,13 +19,13 @@ Outline OutlineGetLast  (Outline pOutline);
 Outline OutlineGetPrev  (Outline pOutline);
 Outline OutlineGetNext  (Outline pOutline);
 Outline OutlineGetParent(Outline pOutline);
-BOOL    OutlineGetOpened(Outline pOutline);
-BOOL    OutlineValidate (Outline pOutline);
+bool    OutlineGetOpened(Outline pOutline);
+bool    OutlineValidate (Outline pOutline);
 
 
 //----------------------------------------------------------------------------
 unsigned long OutlineSetDestination(Outline pOutline, Destination pDst);
-unsigned long OutlineSetOpened     (Outline pOutline, BOOL bOpened);
+unsigned long OutlineSetOpened     (Outline pOutline, bool bOpened);
 //----------------------------------------------------------------------------
 
 #endif /* _OUTLINE_H */

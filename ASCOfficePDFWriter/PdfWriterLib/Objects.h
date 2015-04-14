@@ -99,13 +99,13 @@ Null NullNew  (MMgr oMMgr);
 //----- BooleanObject --------------------------------------------------------
 typedef struct TBooleanRec {
     ObjHeader pHeader;
-    BOOL      bValue;
+    bool      bValue;
 } BooleanRec;
 
 typedef BooleanRec* BooleanRecPtr;
 
 
-BooleanRecPtr       BooleanNew   (MMgr oMMgr, BOOL bValue);
+BooleanRecPtr       BooleanNew   (MMgr oMMgr, bool bValue);
 unsigned long BooleanWrite (BooleanRecPtr pObj, StreamRecPtr pStream);
 //----- NumberObject (int value) ---------------------------------------------
 
@@ -264,14 +264,14 @@ typedef struct TDictElementRec
 Dict          DictNew           (MMgr oMMgr);
 DictElement   GetElement        (Dict oDict, const char *sKey);
 unsigned long DictAdd           (Dict oDict, const char *sKey, void *pObj);
-Dict          DictStreamNew     (MMgr oMMgr, Xref oXref, BOOL bMemoryStream = TRUE, const wchar_t *wsTempFile = NULL, unsigned int unCheckSum = 0);
+Dict          DictStreamNew     (MMgr oMMgr, Xref oXref, bool bMemoryStream = true, const wchar_t *wsTempFile = NULL, unsigned int unCheckSum = 0);
 void          DictFree          (Dict oDict);
 unsigned long DictRemoveElement (Dict oDict, const char *sKey);
 void*         DictGetItem       (Dict oDict, const char *sKey, unsigned short nObjClass );
 unsigned long DictAddName       (Dict oDict, const char *sKey, const char *sValue);
 unsigned long DictAddNumber     (Dict oDict, const char *sKey, int         nValue);
 unsigned long DictAddReal       (Dict oDict, const char *sKey, float       fValue);
-unsigned long DictAddBoolean    (Dict oDict, const char *sKey, BOOL        bValue);
+unsigned long DictAddBoolean    (Dict oDict, const char *sKey, bool        bValue);
 unsigned long DictWrite         (Dict oDict, StreamRecPtr pStream, EncryptRecPtr pEncrypt );
 const char*   DictGetKeyByObj   (Dict oDict, void *pObj);
 //----- XrefObject -----------------------------------------------------------

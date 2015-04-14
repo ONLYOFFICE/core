@@ -1270,7 +1270,7 @@ namespace NSGuidesVML
 		}
 	private:
 
-		CString GetValue ( LONG lParam, ParamType eParamType, BOOL bExtShape)
+                CString GetValue ( LONG lParam, ParamType eParamType, bool bExtShape)
 		{
 			CString strValue;
 			
@@ -1309,7 +1309,7 @@ namespace NSGuidesVML
 			return _T("<a:gd name=") + strFmlaNum + _T("fmla=\"") + strSign + strFrmla + _T("\" />");
 		}
 
-		CString ConvertVal (LONG lparam1, ParamType eType1, BOOL bExtShape1)
+                CString ConvertVal (LONG lparam1, ParamType eType1, bool bExtShape1)
 		{
 			
 			strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst); 
@@ -1319,7 +1319,7 @@ namespace NSGuidesVML
 			return GetXML (strFmlaNum, strSign, strFrmla);
 		}
 
-		CString ConvertSum (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, BOOL bExtShape1, BOOL bExtShape2, BOOL bExtShape3)
+                CString ConvertSum (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, bool bExtShape1, bool bExtShape2, bool bExtShape3)
 		{
 			
 			strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst); 
@@ -1329,7 +1329,7 @@ namespace NSGuidesVML
 			return GetXML (strFmlaNum, strSign, strFrmla);
 		}
 
-		CString ConvertProd (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, BOOL bExtShape1, BOOL bExtShape2, BOOL bExtShape3)
+                CString ConvertProd (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, bool bExtShape1, bool bExtShape2, bool bExtShape3)
 		{
 			
 			strSign = _T("*/ ");
@@ -1339,7 +1339,7 @@ namespace NSGuidesVML
 			return GetXML (strFmlaNum, strSign, strFrmla);
 		}
 
-		CString ConvertAbs (LONG lparam1, ParamType eType1, BOOL bExtShape1)
+                CString ConvertAbs (LONG lparam1, ParamType eType1, bool bExtShape1)
 		{
 			
 			strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst); 
@@ -1349,7 +1349,7 @@ namespace NSGuidesVML
 			return GetXML (strFmlaNum, strSign, strFrmla);
 		}
 
-		CString ConvertMin (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, BOOL bExtShape1, BOOL bExtShape2)
+                CString ConvertMin (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, bool bExtShape1, bool bExtShape2)
 		{
 			
 			strSign = _T("min ");
@@ -1359,7 +1359,7 @@ namespace NSGuidesVML
 			return GetXML (strFmlaNum, strSign, strFrmla);
 		}
 
-		CString ConvertMax (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, BOOL bExtShape1, BOOL bExtShape2)
+                CString ConvertMax (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, bool bExtShape1, bool bExtShape2)
 		{
 			
 			strSign = _T("max ");
@@ -1369,7 +1369,7 @@ namespace NSGuidesVML
 			return GetXML (strFmlaNum, strSign, strFrmla);
 		}
 
-		CString ConvertIf (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, BOOL bExtShape1, BOOL bExtShape2, BOOL bExtShape3)
+                CString ConvertIf (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, bool bExtShape1, bool bExtShape2, bool bExtShape3)
 		{
 			
 			strSign = _T("?: ");
@@ -1379,7 +1379,7 @@ namespace NSGuidesVML
 			return GetXML (strFmlaNum, strSign, strFrmla);
 		}
 
-		CString ConvertSqrt (LONG lparam1, ParamType eType1, BOOL bExtShape1)
+                CString ConvertSqrt (LONG lparam1, ParamType eType1, bool bExtShape1)
 		{
 			
 			strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst); 
@@ -1389,7 +1389,7 @@ namespace NSGuidesVML
 			return GetXML (strFmlaNum, strSign, strFrmla);
 		}
 
-		CString ConvertAt2 (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, BOOL bExtShape1, BOOL bExtShape2)
+                CString ConvertAt2 (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, bool bExtShape1, bool bExtShape2)
 		{
 			
 			strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst); 
@@ -1399,7 +1399,7 @@ namespace NSGuidesVML
 			return GetXML (strFmlaNum, strSign, strFrmla);
 		}
 
-		CString ConvertSin (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, BOOL bExtShape1, BOOL bExtShape2)
+                CString ConvertSin (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, bool bExtShape1, bool bExtShape2)
 		{
 			
 			strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst); 
@@ -1409,7 +1409,7 @@ namespace NSGuidesVML
 			return GetXML (strFmlaNum, strSign, strFrmla);
 		}
 
-		CString ConvertCos (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2,  BOOL bExtShape1, BOOL bExtShape2)
+                CString ConvertCos (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2,  bool bExtShape1, bool bExtShape2)
 		{
 			
 			strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst); 
@@ -1419,7 +1419,7 @@ namespace NSGuidesVML
 			return GetXML (strFmlaNum, strSign, strFrmla);
 		}
 
-		CString ConvertCat2 (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, BOOL bExtShape1, BOOL bExtShape2, BOOL bExtShape3)
+                CString ConvertCat2 (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, bool bExtShape1, bool bExtShape2, bool bExtShape3)
 		{				
 			strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst); 
 			strSign = _T("cat2 ");
@@ -1428,7 +1428,7 @@ namespace NSGuidesVML
 			return GetXML (strFmlaNum, strSign, strFrmla);
 		}
 
-		CString ConvertSat2 (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, BOOL bExtShape1, BOOL bExtShape2, BOOL bExtShape3)
+                CString ConvertSat2 (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, bool bExtShape1, bool bExtShape2, bool bExtShape3)
 		{
 			strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst); 
 			strSign = _T("sat2 ");
@@ -1437,7 +1437,7 @@ namespace NSGuidesVML
 			return GetXML (strFmlaNum, strSign, strFrmla);
 		}
 
-		CString ConvertMod (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, BOOL bExtShape1, BOOL bExtShape2, BOOL bExtShape3)
+                CString ConvertMod (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, LONG lParam3, ParamType eType3, bool bExtShape1, bool bExtShape2, bool bExtShape3)
 		{
 			strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst); 
 			strSign = _T("mod ");
@@ -1446,7 +1446,7 @@ namespace NSGuidesVML
 			return GetXML (strFmlaNum, strSign, strFrmla);
 		}
 
-		CString ConvertTag (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, BOOL bExtShape1, BOOL bExtShape2)
+                CString ConvertTag (LONG lParam1, ParamType eType1, LONG lParam2, ParamType eType2, bool bExtShape1, bool bExtShape2)
 		{
 			strFmlaNum.Format(_T("\"gd%d\" "), m_lIndexDst);
 			strSign = _T("tag ");
@@ -2429,7 +2429,7 @@ namespace NSGuidesVML
 		}
 	private:
 
-		AVSINLINE void GetValue(const LONG& lParam, const ParamType& eParamType, const BOOL& bExtShape, NSBinPptxRW::CXmlWriter& oWriter)
+                AVSINLINE void GetValue(const LONG& lParam, const ParamType& eParamType, const bool& bExtShape, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			oWriter.m_oWriter.AddSize(15);
 			switch (eParamType)
@@ -2466,7 +2466,7 @@ namespace NSGuidesVML
 				break;
 			}
 		}
-		CString GetValue2(const LONG& lParam, const ParamType& eParamType, const BOOL& bExtShape)
+                CString GetValue2(const LONG& lParam, const ParamType& eParamType, const bool& bExtShape)
 		{
 			CString strValue;			
 			switch (eParamType)
@@ -2499,89 +2499,89 @@ namespace NSGuidesVML
 		}
 		//---------------------------------------
 
-		void ConvertVal(const LONG& lParam1, const ParamType& eType1, const BOOL& bExtShape1, NSBinPptxRW::CXmlWriter& oWriter)
+                void ConvertVal(const LONG& lParam1, const ParamType& eType1, const bool& bExtShape1, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_1(val)
 		}
 
 		void ConvertSum(const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-			const LONG& lParam3, const ParamType& eType3, const BOOL& bExtShape1, const BOOL& bExtShape2, const BOOL& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
+                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_3(sum)
 		}
 
 		void ConvertProd(const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-			const LONG& lParam3, const ParamType& eType3, const BOOL& bExtShape1, const BOOL& bExtShape2, const BOOL& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
+                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_3(prod)
 		}
 
-		void ConvertAbs(const LONG& lParam1, const ParamType& eType1, const BOOL& bExtShape1, NSBinPptxRW::CXmlWriter& oWriter)
+                void ConvertAbs(const LONG& lParam1, const ParamType& eType1, const bool& bExtShape1, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_1(abs)
 		}
 
 		void ConvertMin(const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-			const BOOL& bExtShape1, const BOOL& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
+                        const bool& bExtShape1, const bool& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_2(min)
 		}
 
 		void ConvertMax (const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-			const BOOL& bExtShape1, const BOOL& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
+                        const bool& bExtShape1, const bool& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_2(max)
 		}
 
 		void ConvertIf(const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-			const LONG& lParam3, const ParamType& eType3, const BOOL& bExtShape1, const BOOL& bExtShape2, const BOOL& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
+                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_3(_if)
 		}
 
-		void ConvertSqrt(const LONG& lParam1, const ParamType& eType1, const BOOL& bExtShape1, NSBinPptxRW::CXmlWriter& oWriter)
+                void ConvertSqrt(const LONG& lParam1, const ParamType& eType1, const bool& bExtShape1, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_1(sqrt)
 		}
 
 		void ConvertAt2 (const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-			const BOOL& bExtShape1, const BOOL& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
+                        const bool& bExtShape1, const bool& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_2(at2)
 		}
 
 		void ConvertSin (const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-			const BOOL& bExtShape1, const BOOL& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
+                        const bool& bExtShape1, const bool& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_2(sin)
 		}
 
 		void ConvertCos (const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-			const BOOL& bExtShape1, const BOOL& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
+                        const bool& bExtShape1, const bool& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_2(cos)
 		}
 
 		void ConvertCat2(const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-			const LONG& lParam3, const ParamType& eType3, const BOOL& bExtShape1, const BOOL& bExtShape2, const BOOL& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
+                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_3(cat2)
 		}
 
 		void ConvertSat2(const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-			const LONG& lParam3, const ParamType& eType3, const BOOL& bExtShape1, const BOOL& bExtShape2, const BOOL& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
+                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_3(sat2)
 		}
 
 		void ConvertMod(const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-			const LONG& lParam3, const ParamType& eType3, const BOOL& bExtShape1, const BOOL& bExtShape2, const BOOL& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
+                        const LONG& lParam3, const ParamType& eType3, const bool& bExtShape1, const bool& bExtShape2, const bool& bExtShape3, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_3(mod)
 		}
 
 		void ConvertTag (const LONG& lParam1, const ParamType& eType1, const LONG& lParam2, const ParamType& eType2, 
-			const BOOL& bExtShape1, const BOOL& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
+                        const bool& bExtShape1, const bool& bExtShape2, NSBinPptxRW::CXmlWriter& oWriter)
 		{
 			GUIDE_PARAM_2(tag)
 		}

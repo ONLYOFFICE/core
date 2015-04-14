@@ -112,11 +112,11 @@ namespace NSPresentationEditor
 	{
 	public:
 
-		NSCommon::nullable_base<BOOL>			FontBold;
-		NSCommon::nullable_base<BOOL>			FontItalic;
-		NSCommon::nullable_base<BOOL>			FontUnderline;
-		NSCommon::nullable_base<BOOL>			FontStrikeout;
-		NSCommon::nullable_base<BOOL>			FontShadow;
+                NSCommon::nullable_base<bool>			FontBold;
+                NSCommon::nullable_base<bool>			FontItalic;
+                NSCommon::nullable_base<bool>			FontUnderline;
+                NSCommon::nullable_base<bool>			FontStrikeout;
+                NSCommon::nullable_base<bool>			FontShadow;
 		
 		NSCommon::nullable_base<WORD>			Typeface;			// fontRef
 		NSCommon::nullable_base<WORD>			EAFontRef;			// eaFontRef
@@ -258,9 +258,9 @@ namespace NSPresentationEditor
 		CString ToString(LONG lCount)
 		{
 			NSPresentationEditor::CXmlWriter oWriter;
-			oWriter.WriteNodeBegin(_T("Character"), TRUE);
+                        oWriter.WriteNodeBegin(_T("Character"), true);
 			oWriter.WriteAttributeLONG(_T("count"), lCount);
-			oWriter.WriteNodeEnd(_T("Character"), TRUE, FALSE);
+                        oWriter.WriteNodeEnd(_T("Character"), true, false);
 
 			oWriter.WriteNodeBegin(_T("Attributes"));
 
@@ -446,7 +446,7 @@ namespace NSPresentationEditor
 				}
 			}
 
-			BOOL bIsFontNamPres = (FontProperties.is_init() && (_T("") != FontProperties->strFontName));
+                        bool bIsFontNamPres = (FontProperties.is_init() && (_T("") != FontProperties->strFontName));
 			if (Typeface.is_init() && !bIsFontNamPres)
 			{
 				CString strFont = _T("");
@@ -478,7 +478,7 @@ namespace NSPresentationEditor
 	{
 	public:
 
-		NSCommon::nullable_base<BOOL>		hasBullet;
+                NSCommon::nullable_base<bool>		hasBullet;
 
 		NSCommon::nullable_base<WORD>		bulletFontRef;
 		NSCommon::nullable_base<WORD>		bulletSize;
@@ -628,16 +628,16 @@ namespace NSPresentationEditor
 		CString ToString(LONG lCount)
 		{
 			XmlUtils::CXmlWriter oWriter;
-			oWriter.WriteNodeBegin(_T("Paragraph"), TRUE);
+                        oWriter.WriteNodeBegin(_T("Paragraph"), true);
 			//oWriter.WriteAttribute(_T("type"), CDirectory::ToString(TextType));
 			//oWriter.WriteAttribute(_T("level"), CDirectory::ToString(Level));
 			oWriter.WriteAttribute(_T("count"), CDirectory::ToString(lCount));
 			oWriter.WriteAttribute(_T("oneline"), bIsOneLine ? _T("1") : _T("0"));
 			
-			oWriter.WriteNodeEnd(_T("Paragraph"), TRUE, FALSE);
+                        oWriter.WriteNodeEnd(_T("Paragraph"), true, false);
 			
 			CString strXml = _T("");
-			if (hasBullet.is_init() && (TRUE == hasBullet.get()))
+                        if (hasBullet.is_init() && (true == hasBullet.get()))
 			{
                 strXml += (_T("<bulletflag>255</bulletflag>"));
 				
@@ -810,7 +810,7 @@ namespace NSPresentationEditor
 				}
 			}
 
-			if (hasBullet.is_init() && (hasBullet.get() == TRUE))
+                        if (hasBullet.is_init() && (hasBullet.get() == true))
 			{
 				return _T("<ul style=\"padding:0px;margin:0px 0px 0px 20px;list-style-position:outside;\"><li class=\"" + strClass + "\" style=\"") + 
 											strStyle + _T("\">") + strSpans + _T("</li></ul>\n");
@@ -984,7 +984,7 @@ namespace NSPresentationEditor
 	class CTextSIRun
 	{
 	public:
-		BOOL bIsExt;
+                bool bIsExt;
 		DWORD lCount;
 
 		bool bSpell;
@@ -1010,7 +1010,7 @@ namespace NSPresentationEditor
 
 		CTextSIRun()
 		{
-			bIsExt = TRUE;
+                        bIsExt = true;
 			lCount  = 0;
 
 			bSpell = false;

@@ -190,7 +190,7 @@ static unsigned long InternalWriteText(PageAttr pAttr, const BYTE *sText, unsign
     }
 	return StreamWriteEscapeText( pAttr->pStream, sText, nLen );
 }
-static unsigned long InternalArc      (Page pPage, float fX, float fY, float fRay, float fAng1, float fAng2, BOOL bContFlag)
+static unsigned long InternalArc      (Page pPage, float fX, float fY, float fRay, float fAng1, float fAng2, bool bContFlag)
 {
     const float fPIE = 3.14159F;
 
@@ -258,7 +258,7 @@ static unsigned long InternalArc      (Page pPage, float fX, float fY, float fRa
 
 
 
-static char* EllipseArc     (char *pBufPointer, char *pEndBufPointer, float fX, float fY, float fXRad, float fYRad, double dAngle1, double dAngle2, float *pfXCur, float *pfYCur, BOOL bClockDirection = FALSE)
+static char* EllipseArc     (char *pBufPointer, char *pEndBufPointer, float fX, float fY, float fXRad, float fYRad, double dAngle1, double dAngle2, float *pfXCur, float *pfYCur, bool bClockDirection = false)
 {
 	// Рассчитаем начальную, конечную и контрольные точки
 	float fX1  = 0.0f, fX2  = 0.0f, fY1  = 0.0f, fY2  = 0.0f;
@@ -450,12 +450,12 @@ unsigned long PageSetDash              (Page pPage, const double *pdDashPtn, uns
     UtilsMemSet( sBuffer, 0, TEMP_BUFFER_SIZE);
     *pBufPointer++ = '[';
 
-	BOOL bFalseDash = TRUE;
+    bool bFalseDash = true;
     for ( unsigned int nIndex = 0; nIndex < nNumParam; nIndex++) 
 	{
         if ( 0 != pdTempDashPtn[nIndex] )
 		{
-			bFalseDash = FALSE;
+            bFalseDash = false;
 			break;
 		}
     }
@@ -2018,7 +2018,7 @@ unsigned long PageEllipse     (Page pPage, float fX, float fY, float fXRay, floa
 }
 
 
-unsigned long PageEllipseArc  (Page pPage, float fX, float fY, float fXRad, float fYRad, float fAngle1, float fAngle2, BOOL bClockDirection)
+unsigned long PageEllipseArc  (Page pPage, float fX, float fY, float fXRad, float fYRad, float fAngle1, float fAngle2, bool bClockDirection)
 {
     unsigned long nRet = PageCheckState( pPage, GMODE_PAGE_DESCRIPTION | GMODE_PATH_OBJECT);
 
@@ -2071,7 +2071,7 @@ unsigned long PageEllipseArc  (Page pPage, float fX, float fY, float fXRad, floa
 			if ( !( nIndex == nFirstPointQuard ) )
 				dStartAngle = (90 * (nIndex - 1 ) ) * 3.141592f / 180;
 
-			pBufPointer = EllipseArc( pBufPointer, pEndBufPointer, fX, fY, fXRad, fYRad, AngToEllPrm( dStartAngle, fXRad, fYRad ), AngToEllPrm( dEndAngle, fXRad, fYRad ), &fEndX, &fEndY, FALSE);
+            pBufPointer = EllipseArc( pBufPointer, pEndBufPointer, fX, fY, fXRad, fYRad, AngToEllPrm( dStartAngle, fXRad, fYRad ), AngToEllPrm( dEndAngle, fXRad, fYRad ), &fEndX, &fEndY, false);
 		}
 	}
 	else
@@ -2087,7 +2087,7 @@ unsigned long PageEllipseArc  (Page pPage, float fX, float fY, float fXRad, floa
 			else
 				dEndAngle = dAngle2;
 
-			pBufPointer = EllipseArc( pBufPointer, pEndBufPointer, fX, fY, fXRad, fYRad, AngToEllPrm( dStartAngle, fXRad, fYRad ), AngToEllPrm( dEndAngle, fXRad, fYRad ), &fEndX, &fEndY, FALSE);
+            pBufPointer = EllipseArc( pBufPointer, pEndBufPointer, fX, fY, fXRad, fYRad, AngToEllPrm( dStartAngle, fXRad, fYRad ), AngToEllPrm( dEndAngle, fXRad, fYRad ), &fEndX, &fEndY, false);
 		}
 	}
 
@@ -2101,7 +2101,7 @@ unsigned long PageEllipseArc  (Page pPage, float fX, float fY, float fXRad, floa
 
     return nRet;
 }
-unsigned long PageEllipseArc2 (Page pPage, float fX, float fY, float fXRad, float fYRad, float fAngle1, float fAngle2, BOOL bClockDirection/* = FALSE*/)
+unsigned long PageEllipseArc2 (Page pPage, float fX, float fY, float fXRad, float fYRad, float fAngle1, float fAngle2, bool bClockDirection/* = false*/)
 {
 	unsigned long nRet = OK;
 
@@ -2143,21 +2143,21 @@ unsigned long PageEllipseArc2 (Page pPage, float fX, float fY, float fXRad, floa
 	if ( !bClockDirection )
 	{
 		if ( fAngle1 <= fAngle2 )
-			nRet = PageEllipseArc( pPage, fX, fY, fXRad, fYRad, fAngle1, fAngle2, FALSE );
+            nRet = PageEllipseArc( pPage, fX, fY, fXRad, fYRad, fAngle1, fAngle2, false );
 		else
 		{
-			nRet += PageEllipseArc( pPage, fX, fY, fXRad, fYRad, fAngle1, 360, FALSE );
-			nRet += PageEllipseArc( pPage, fX, fY, fXRad, fYRad, 0, fAngle2, FALSE );
+            nRet += PageEllipseArc( pPage, fX, fY, fXRad, fYRad, fAngle1, 360, false );
+            nRet += PageEllipseArc( pPage, fX, fY, fXRad, fYRad, 0, fAngle2, false );
 		}
 	}
 	else
 	{
 		if ( fAngle1 >= fAngle2 )
-			nRet = PageEllipseArc( pPage, fX, fY, fXRad, fYRad, fAngle1, fAngle2, TRUE );
+            nRet = PageEllipseArc( pPage, fX, fY, fXRad, fYRad, fAngle1, fAngle2, true );
 		else
 		{
-			nRet += PageEllipseArc( pPage, fX, fY, fXRad, fYRad, fAngle1, 0, TRUE );
-			nRet += PageEllipseArc( pPage, fX, fY, fXRad, fYRad, 360, fAngle2, TRUE );
+            nRet += PageEllipseArc( pPage, fX, fY, fXRad, fYRad, fAngle1, 0, true );
+            nRet += PageEllipseArc( pPage, fX, fY, fXRad, fYRad, 360, fAngle2, true );
 		}
 	}
     return nRet;
@@ -2167,7 +2167,7 @@ unsigned long PageEllipseArc2 (Page pPage, float fX, float fY, float fXRad, floa
 //   http://www.whizkidtech.redprince.net/bezier/circle/
 unsigned long PageArc         (Page pPage, float fX, float fY, float fRay, float fAng1, float fAng2)
 {
-    BOOL bContFlag = FALSE;
+    bool bContFlag = false;
 
     unsigned long nRet = PageCheckState( pPage, GMODE_PAGE_DESCRIPTION | GMODE_PATH_OBJECT);
 
@@ -2201,7 +2201,7 @@ unsigned long PageArc         (Page pPage, float fX, float fY, float fRay, float
         if ( fAng1 >= fAng2 )
             break;
 
-        bContFlag = TRUE;
+        bContFlag = true;
     }
 
     return OK;
@@ -2262,8 +2262,8 @@ unsigned long PageTextRect    (Page pPage, float fLeft, float fTop, float fRight
 	const char *ptr = sText;
 
 	float fSaveCharSpace = 0.0f;
-    BOOL bIsInsufficientSpace = FALSE;
-    BOOL bCharSpaceChanged = FALSE;
+    bool bIsInsufficientSpace = false;
+    bool bCharSpaceChanged = false;
 
 	if ( !pAttr->pGState->pFont ) 
 		return RaiseError( pPage->oError, AVS_OFFICEPDFWRITER_ERROR_PAGE_FONT_NOT_FOUND, 0 );
@@ -2321,11 +2321,11 @@ unsigned long PageTextRect    (Page pPage, float fLeft, float fTop, float fRight
         EncoderRecPtr pEncoder;
         unsigned int nIndex = 0;
 
-        unsigned int nTempLen = PageMeasureText( pPage, ptr, pCIDs, nLenCID, fRight - fLeft, TRUE, &fRealWidth );
+        unsigned int nTempLen = PageMeasureText( pPage, ptr, pCIDs, nLenCID, fRight - fLeft, true, &fRealWidth );
         
 		if ( 0 == nTempLen ) 
 		{
-            bIsInsufficientSpace = TRUE;
+            bIsInsufficientSpace = true;
             break;
         }
 
@@ -2392,13 +2392,13 @@ unsigned long PageTextRect    (Page pPage, float fLeft, float fTop, float fRight
 				{
                     if ( OK != ( nRet = PageSetCharSpace( pPage, fSaveCharSpace ) ) )
                         return nRet;
-                    bCharSpaceChanged = FALSE;
+                    bCharSpaceChanged = false;
                 } 
 				else 
 				{
                     if ( OK != ( nRet = PageSetCharSpace( pPage, fXAdjust ) ) )
                         return nRet;
-                    bCharSpaceChanged = TRUE;
+                    bCharSpaceChanged = true;
                 }
 
                 if ( OK != ( nRet = InternalShowTextNextLine( pPage, (BYTE *)ptr, nTempLen, pCIDs, nLenCID ) ) )
@@ -2419,7 +2419,7 @@ unsigned long PageTextRect    (Page pPage, float fLeft, float fTop, float fRight
 
         if ( pAttr->oTextPos.fY - pAttr->pGState->fTextLeading < fBottom ) 
 		{
-            bIsInsufficientSpace = TRUE;
+            bIsInsufficientSpace = true;
             break;
         }
 

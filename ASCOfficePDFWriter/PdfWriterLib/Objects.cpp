@@ -17,7 +17,7 @@ Null NullNew  (MMgr oMMgr)
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
-BooleanRecPtr       BooleanNew   (MMgr oMMgr, BOOL bValue)
+BooleanRecPtr       BooleanNew   (MMgr oMMgr, bool bValue)
 {
     BooleanRecPtr pObj = (BooleanRecPtr)GetMem( oMMgr, sizeof(BooleanRec) );
 
@@ -843,7 +843,7 @@ unsigned long DictAdd           (Dict oDict, const char *sKey, void *pObj)
 }
 
 
-Dict          DictStreamNew     (MMgr oMMgr, Xref oXref, BOOL bMemoryStream /*= TRUE*/, const wchar_t *wsTempFile/* = NULL*/, unsigned int unCheckSum/* = 0*/)
+Dict          DictStreamNew     (MMgr oMMgr, Xref oXref, bool bMemoryStream /*= TRUE*/, const wchar_t *wsTempFile/* = NULL*/, unsigned int unCheckSum/* = 0*/)
 {
     Dict pObj = DictNew( oMMgr );
 
@@ -1017,7 +1017,7 @@ unsigned long DictAddReal       (Dict oDict, const char *sKey, float       fValu
 }
 
 
-unsigned long DictAddBoolean    (Dict oDict, const char *sKey, BOOL        bValue)
+unsigned long DictAddBoolean    (Dict oDict, const char *sKey, bool        bValue)
 {
 	BooleanRecPtr oBool = BooleanNew( oDict->oMMgr, bValue );
 

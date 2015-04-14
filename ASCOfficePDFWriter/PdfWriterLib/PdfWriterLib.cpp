@@ -19,11 +19,11 @@ CPdfWriterLib::CPdfWriterLib()
 {
 	m_pFontManager = NULL;
 
-	m_bIsFontsInitialize = FALSE;
+    m_bIsFontsInitialize = false;
 	
 	m_pFindFonts = NULL;
 
-	//m_hSynchMutex = CreateMutex(NULL, FALSE, _T("AVSPDFWriterMutex") );
+    //m_hSynchMutex = CreateMutex(NULL, false, _T("AVSPDFWriterMutex") );
 
 	m_pDocument         = NULL;
 	m_pCurrentFont      = NULL;
@@ -38,8 +38,8 @@ CPdfWriterLib::CPdfWriterLib()
 
 	m_pFontEncodingList   = NULL;
 
-	m_bStartSubPath = FALSE;
-	m_bGStateChange = FALSE;
+    m_bStartSubPath = false;
+    m_bGStateChange = false;
 
 	m_oCommandParams.dAngle  =  0;
 	m_oCommandParams.dHeight = -1;
@@ -54,7 +54,7 @@ CPdfWriterLib::CPdfWriterLib()
 	m_oCommandParams.oMatrix.fE = 0.0f;
 	m_oCommandParams.oMatrix.fF = 0.0f;
 
-	m_oShadow.Visible = FALSE;
+    m_oShadow.Visible = false;
 
 	m_oFont.Name = CString( _T("Arial") );
 	m_oFont.Size = 12.0;
@@ -65,17 +65,17 @@ CPdfWriterLib::CPdfWriterLib()
 
 	m_pCurPath = NULL;
 
-	m_bClipPath = FALSE;
+    m_bClipPath = false;
 
 	m_wsTempDir = _T("");
 
-	m_bIsWhiteBackImage     = FALSE;
-	m_bUseTextureRect       = FALSE;
-	m_bUseImageTransform    = TRUE;
-	m_bUseImageTextureAlpha = FALSE;
+    m_bIsWhiteBackImage     = false;
+    m_bUseTextureRect       = false;
+    m_bUseImageTransform    = true;
+    m_bUseImageTextureAlpha = false;
 
 	m_XForm					=	NULL;
-	m_IsStrokeShape			=	FALSE;
+    m_IsStrokeShape			=	false;
 }
 
 CPdfWriterLib::~CPdfWriterLib()
@@ -94,7 +94,7 @@ void CPdfWriterLib::SetFontDir(CString& sFontDir)
     m_oFontsApplication.InitializeFromFolder(std::wstring(sFontDir.GetString()));
     m_pFontManager = m_oFontsApplication.GenerateFontManager();
 
-	m_bIsFontsInitialize = TRUE;
+    m_bIsFontsInitialize = true;
 }
 
 void CPdfWriterLib::SetThemesPlace(const CString& sThemesPlace)
@@ -120,7 +120,7 @@ void CPdfWriterLib::InitializeFonts(bool bIsUseSystem, std::vector<std::wstring>
     
     m_pFontManager = m_oFontsApplication.GenerateFontManager();
     
-    m_bIsFontsInitialize = TRUE;
+    m_bIsFontsInitialize = true;
 }
 
 HRESULT CPdfWriterLib::SetAdditionalParam (CString ParamName, VARIANT	ParamValue)
@@ -134,7 +134,7 @@ HRESULT CPdfWriterLib::SetAdditionalParam (CString ParamName, VARIANT	ParamValue
 	}
 	else if ( _T("WhiteBackImage") == sParamName && VT_BOOL == ParamValue.vt )
 	{
-		m_bIsWhiteBackImage = (ParamValue.boolVal == VARIANT_TRUE) ? TRUE : FALSE;
+        m_bIsWhiteBackImage = (ParamValue.boolVal == VARIANT_TRUE) ? true : false;
 	}
 	else if ( _T("BaseTransform") == sParamName && VT_ARRAY == ParamValue.vt )
 	{
@@ -154,34 +154,34 @@ HRESULT CPdfWriterLib::SetAdditionalParam (CString ParamName, VARIANT	ParamValue
 	}
 	else if ( _T("BrushFillBoundsEnable") == sParamName && VT_BOOL == ParamValue.vt )
 	{
-		m_bUseTextureRect = (ParamValue.boolVal == VARIANT_TRUE) ? TRUE : FALSE;
+        m_bUseTextureRect = (ParamValue.boolVal == VARIANT_TRUE) ? true : false;
 	}
 	// NOTE: пока градиенты выставим в виде svg-xml
 	// TODO: потом убрать
 	else if (_T("Fill-LinearGradient") == sParamName && VT_BSTR == ParamValue.vt)
 	{
-        if (!CreateLinearGradientFromSvgXml(std::wstring(ParamValue.bstrVal), TRUE))
+        if (!CreateLinearGradientFromSvgXml(std::wstring(ParamValue.bstrVal), true))
 			return S_FALSE;
 	}
 	// NOTE: пока градиенты выставим в виде svg-xml
 	// TODO: потом убрать
 	else if (_T("Stroke-LinearGradient") == sParamName && VT_BSTR == ParamValue.vt)
 	{
-        if (!CreateLinearGradientFromSvgXml(std::wstring(ParamValue.bstrVal), FALSE))
+        if (!CreateLinearGradientFromSvgXml(std::wstring(ParamValue.bstrVal), false))
 			return S_FALSE;
 	}
 	// NOTE: пока градиенты выставим в виде svg-xml
 	// TODO: потом убрать
 	else if (_T("Fill-RadialGradient") == sParamName && VT_BSTR == ParamValue.vt)
 	{
-        if (!CreateRadialGradientFromSvgXml(std::wstring(ParamValue.bstrVal), TRUE))
+        if (!CreateRadialGradientFromSvgXml(std::wstring(ParamValue.bstrVal), true))
 			return S_FALSE;
 	}
 	// NOTE: пока градиенты выставим в виде svg-xml
 	// TODO: потом убрать
 	else if (_T("Stroke-RadialGradient") == sParamName && VT_BSTR == ParamValue.vt)
 	{
-        if (!CreateRadialGradientFromSvgXml(std::wstring(ParamValue.bstrVal), FALSE))
+        if (!CreateRadialGradientFromSvgXml(std::wstring(ParamValue.bstrVal), false))
 			return S_FALSE;
 	}
 
@@ -197,11 +197,11 @@ HRESULT CPdfWriterLib::CreatePDF ()
 	if ( m_pFontManager && !m_bIsFontsInitialize )
 	{
 #ifdef BUILD_CONFIG_OPENSOURCE_VERSION
-		m_pFontManager->Init( L"", TRUE, TRUE );
+        m_pFontManager->Init( L"", true, true );
 #else
 		m_pFontManager->Initialize();
 #endif
-		m_bIsFontsInitialize = TRUE;
+        m_bIsFontsInitialize = true;
 	}
 	m_pDocument = New();
 	if ( !m_pDocument )
@@ -217,12 +217,12 @@ HRESULT CPdfWriterLib::CreatePDF ()
 
 	m_pFindFonts = new CFindFonts();
 
-	m_bClipPath = FALSE;
+    m_bClipPath = false;
 	m_wsTempDir = _T("");
 
 	m_oTransform.Reset();
 	m_oRendererState.Reset();
-	m_bFirstMoveTo = TRUE;
+    m_bFirstMoveTo = true;
 
 	return S_OK;
 }
@@ -537,7 +537,7 @@ HRESULT CPdfWriterLib::GetMiterLimit (float *pfMiterLimit)
 //	{
 //		// check for valid pixel array size
 //		if ( 1 != SafeArrayGetDim(*ppnDashPtn) )
-//			return FALSE;
+//			return false;
 
 //		VARTYPE vType;
 //		// check for valid array element type
@@ -650,7 +650,7 @@ HRESULT CPdfWriterLib::ExtGraphicsStateSetBlendMode (long nBlendMode)
 }
 HRESULT CPdfWriterLib::ExtGraphicsStateSetStrokeAdjustment (int nFlag)
 {
-	BOOL bFlag = ( 0 == nFlag ? FALSE : TRUE);
+    bool bFlag = ( 0 == nFlag ? false : true);
 
 	unsigned long nRet = ExtGStateSetStrokeAdjustment( m_pCurrentExtGState, bFlag );
 	if ( OK != nRet )
@@ -676,13 +676,13 @@ HRESULT CPdfWriterLib::GSave ()
 }
 HRESULT CPdfWriterLib::GRestore ()
 {
-	BOOL bIsPrevGState = FALSE;
+    bool bIsPrevGState = false;
 
 	if ( m_pDocument->pCurPage && m_pDocument->pCurPage )
 	{
 		PageAttr pAttr = (PageAttr)m_pDocument->pCurPage->pAttr;
 		if ( pAttr->pGState->pPrev )
-			bIsPrevGState = TRUE;
+            bIsPrevGState = true;
 	}
 	if ( bIsPrevGState )
 	{
@@ -1372,7 +1372,7 @@ HRESULT CPdfWriterLib::AppendArc (float fX, float fY, float fRad, float fAngle1,
 		return nRet;
 	return S_OK;
 }
-HRESULT CPdfWriterLib::AppendEllipseArc (float fX, float fY, float fXRad, float fYRad, float fAngle1, float fAngle2, BOOL bClockDirection /*= FALSE*/)
+HRESULT CPdfWriterLib::AppendEllipseArc (float fX, float fY, float fXRad, float fYRad, float fAngle1, float fAngle2, bool bClockDirection /*= false*/)
 {
 	unsigned long nRet = PageEllipseArc2( m_pDocument->pCurPage, fX, fY, fXRad, fYRad, fAngle1, fAngle2, bClockDirection );
 	if ( OK != nRet )
@@ -1393,13 +1393,13 @@ HRESULT CPdfWriterLib::TextOut_ (float fXPos, float fYPos, std::wstring & bsText
         char* sText = new char[bsText.length() + 1];
         sText[bsText.length()] = '\0';
 
-        BOOL *pZeros = new BOOL[bsText.length()];
-		BOOL bCodedString = TRUE;
+        bool *pZeros = new bool[bsText.length()];
+        bool bCodedString = true;
         for ( int nIndex = 0; nIndex < bsText.length(); nIndex++ )
 		{
 			if ( (unsigned int)bsText[nIndex] >= 256 )
 			{
-				bCodedString = FALSE;
+                bCodedString = false;
 			}
 
 			if ( 0xFFFE == (unsigned int)bsText[nIndex] )
@@ -1555,7 +1555,7 @@ HRESULT CPdfWriterLib::GetTextWidth (std::wstring bsText, float *pfResult)
 
 	return S_OK;
 }
-HRESULT CPdfWriterLib::MeasureText (CString bsText, float fWidth, BOOL bWordWrap, float *pfRealWidth, long *pnLength)
+HRESULT CPdfWriterLib::MeasureText (CString bsText, float fWidth, bool bWordWrap, float *pfRealWidth, long *pnLength)
 {
 	const char* sText = NULL;
 #if defined(_WIN32) || defined (_WIN64)
@@ -1565,7 +1565,7 @@ HRESULT CPdfWriterLib::MeasureText (CString bsText, float fWidth, BOOL bWordWrap
     std::string ansiStr(bsText.begin(), bsText.end());
     sText = ansiStr.c_str();
 #endif
-	BOOL bWW = ( bWordWrap == 0 ? FALSE : TRUE);
+    bool bWW = ( bWordWrap == 0 ? false : true);
 	*pnLength = PageMeasureText( m_pDocument->pCurPage, sText, NULL, 0, fWidth, bWW, pfRealWidth );
 
 	// проверяем не появилась ли ошибка
@@ -1619,7 +1619,7 @@ HRESULT CPdfWriterLib::LoadT1FFromFile ( CString bsAFMFileName, CString bsDataFi
 
 	return S_OK;
 }
-HRESULT CPdfWriterLib::LoadTTFFromFile ( CString bsFileName, BOOL bEmbedding, CString bsEncodingName, CString *bsFontName)
+HRESULT CPdfWriterLib::LoadTTFFromFile ( CString bsFileName, bool bEmbedding, CString bsEncodingName, CString *bsFontName)
 {
     std::wstring sFileName = string2std_string( bsFileName );
 	if ( !FileExist( bsFileName ) )
@@ -1636,7 +1636,7 @@ HRESULT CPdfWriterLib::LoadTTFFromFile ( CString bsFileName, BOOL bEmbedding, CS
 	if ( NULL != sEncodingName && strlen( sEncodingName ) < 1 )
 		sEncodingName = NULL;
 
-	BOOL bEmbed = ( bEmbedding == 0 ? FALSE : TRUE);
+    bool bEmbed = ( bEmbedding == 0 ? false : true);
 
     const char *sFontName = ( bsFontName == NULL ? LoadTTFontFromFile( m_pDocument, sFileName, bEmbed, sEncodingName ) : LoadTTFontFromFile( m_pDocument, sFileName, bEmbed, sEncodingName, "_Embedded" ) );
 
@@ -1656,7 +1656,7 @@ HRESULT CPdfWriterLib::LoadTTFFromFile ( CString bsFileName, BOOL bEmbedding, CS
 
 	return S_OK;
 }
-HRESULT CPdfWriterLib::LoadTTCFromFile ( CString bsFileName, long nIndex, BOOL bEmbedding, CString *bsFontName)
+HRESULT CPdfWriterLib::LoadTTCFromFile ( CString bsFileName, long nIndex, bool bEmbedding, CString *bsFontName)
 {
     std::wstring sFileName = string2std_string( bsFileName );
 
@@ -1675,7 +1675,7 @@ HRESULT CPdfWriterLib::LoadTTCFromFile ( CString bsFileName, long nIndex, BOOL b
 
 	return S_OK;
 }
-HRESULT CPdfWriterLib::SetCurrentFont ( CString bsFontName, CString bsEncodingName, BOOL bNameIsUnicodeArray, CString bsToUnicodeName)
+HRESULT CPdfWriterLib::SetCurrentFont ( CString bsFontName, CString bsEncodingName, bool bNameIsUnicodeArray, CString bsToUnicodeName)
 {
 	const char* sFontName      = NULL;
 	const char* sEncodingName  = NULL;
@@ -1704,7 +1704,7 @@ HRESULT CPdfWriterLib::SetCurrentFont ( CString bsFontName, CString bsEncodingNa
 		m_pCurrentFont = GetFont( m_pDocument, sFontName, sEncodingName, sToUnicodeName );
 	else
 	{
-		BOOL bNewEncoding;
+        bool bNewEncoding;
 		EncoderRecPtr pCurEncoder = FindEncoderForString( m_pDocument, bsEncodingName, &bNewEncoding );
 
 		m_pCurrentFont = GetFont( m_pDocument, sFontName, pCurEncoder->sName, sToUnicodeName );
@@ -2152,7 +2152,7 @@ HRESULT CPdfWriterLib::TextAnnotationSetIcon (long nIcon)
 		return nRet;
 	return S_OK;
 }
-HRESULT CPdfWriterLib::TextAnnotationSetOpened (BOOL bOpened)
+HRESULT CPdfWriterLib::TextAnnotationSetOpened (bool bOpened)
 {
 	unsigned long nRet = TextAnnotSetOpened( m_pCurrentAnnotation, bOpened );
 	if( OK != nRet )
@@ -2262,7 +2262,7 @@ HRESULT CPdfWriterLib::MakeAnnotationFromXml (CString bsXML)
 			float fDstW = 0;
 			int nDstPageIndex = nStartPageIndex;
 			CString sURL = _T("");
-			BOOL bLinkURL = FALSE;
+            bool bLinkURL = false;
 
 			if ( oLink.GetNode( _T("target"), oTarget ) )
 			{
@@ -2272,7 +2272,7 @@ HRESULT CPdfWriterLib::MakeAnnotationFromXml (CString bsXML)
 				if ( sValue.GetLength() > 0 )
 				{
 					sURL = sValue;
-					bLinkURL = TRUE;
+                    bLinkURL = true;
 				}
 				else
 				{
@@ -2403,7 +2403,7 @@ HRESULT CPdfWriterLib::OutlineSetCurrentDestination ()
 		return nRet;
 	return S_OK;
 }
-HRESULT CPdfWriterLib::SetOutlineOpened (BOOL bOpened)
+HRESULT CPdfWriterLib::SetOutlineOpened (bool bOpened)
 {
 	unsigned long nRet = OutlineSetOpened( m_pCurrentOutline, bOpened );
 	if( OK != nRet )
@@ -2960,7 +2960,7 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                         
                         ResetTransform();
                         
-                        BOOL bWriteTextFile = TRUE;
+                        bool bWriteTextFile = true;
                         if (sTempLogo.IsEmpty())
                         {
                             sTempLogo = FileSystem::Directory::GetTempPath();
@@ -3130,9 +3130,9 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                     
                     CString strAttrMain = L"";
                     CString strColors = L"";
-                    BOOL bIsLinear = TRUE;
+                    bool bIsLinear = true;
                     
-                    while (TRUE)
+                    while (true)
                     {
                         BYTE _command = *current;
                         current++;
@@ -3207,12 +3207,12 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                     if (bIsLinear)
                     {
                         strXml = L"<linearGradient " + strAttrMain + L">" + strColors + L"</linearGradient>";
-                        CreateLinearGradientFromSvgXml(strXml, TRUE);
+                        CreateLinearGradientFromSvgXml(strXml, true);
                     }
                     else
                     {
                         strXml = L"<radialGradient " + strAttrMain + L">" + strColors + L"</radialGradient>";
-                        CreateRadialGradientFromSvgXml(strXml, TRUE);
+                        CreateRadialGradientFromSvgXml(strXml, true);
                     }
                 }
                     
@@ -3482,7 +3482,7 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                         
                         if (stops)
                         {
-                            CreateLinearGradientFromSvgXml(sXml, TRUE);
+                            CreateLinearGradientFromSvgXml(sXml, true);
                         }
                     }
                     else if (1 == gradientType)
@@ -3514,7 +3514,7 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                         
                         if (stops)
                         {
-                            CreateRadialGradientFromSvgXml(sXml, TRUE);
+                            CreateRadialGradientFromSvgXml(sXml, true);
                         }
                     }
                 }
@@ -3527,9 +3527,9 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                     std::wstring wsTempString = NSCommonReader::ReadString16(current, curindex, _sLen);
                     
                     if (0 == gradientType)			//	linearGradient
-                        CreateLinearGradientFromSvgXml(wsTempString, TRUE);
+                        CreateLinearGradientFromSvgXml(wsTempString, true);
                     else if (1 == gradientType)	//	radialGradient	
-                        CreateRadialGradientFromSvgXml(wsTempString, TRUE);
+                        CreateRadialGradientFromSvgXml(wsTempString, true);
                 }
                     break;		
                 case ctGradientStroke:
@@ -3566,7 +3566,7 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                         
                         if (stops)
                         {
-                            CreateLinearGradientFromSvgXml(string2std_string(sXml), FALSE);
+                            CreateLinearGradientFromSvgXml(string2std_string(sXml), false);
                         }
                     }
                     else if (1 == gradientType)
@@ -3598,7 +3598,7 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                         
                         if (stops)
                         {
-                            CreateRadialGradientFromSvgXml(string2std_string(sXml), FALSE);
+                            CreateRadialGradientFromSvgXml(string2std_string(sXml), false);
                         }
                     }
                 }
@@ -3611,9 +3611,9 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
 						std::wstring wsTempString = NSCommonReader::ReadString16(current, curindex, _sLen);
 
 						if (0 == gradientType)			//	linearGradient
-							CreateLinearGradientFromSvgXml(wsTempString, FALSE);
+                            CreateLinearGradientFromSvgXml(wsTempString, false);
 						else if (1 == gradientType)		//	radialGradient
-							CreateRadialGradientFromSvgXml(wsTempString, FALSE);
+                            CreateRadialGradientFromSvgXml(wsTempString, false);
 					}
                     break;							
                     
@@ -3849,7 +3849,7 @@ inline static PDF::Matrix BuildFromSvgMatrix(CString sXml)
 	return PDF::Matrix();
 }
 
-BOOL CPdfWriterLib::ApplyFillGradient()
+bool CPdfWriterLib::ApplyFillGradient()
 {		
 	PDF::Rect pageBounds	=	PageBounds();		
 	PDF::Rect pathBounds	=	PathBounds();
@@ -3978,12 +3978,12 @@ BOOL CPdfWriterLib::ApplyFillGradient()
 
 		m_oPatternState.SetFill(NULL);
 
-		return TRUE;
+        return true;
 	}
 
-	return FALSE;
+    return false;
 }
-BOOL CPdfWriterLib::ApplyStrokeGradient()
+bool CPdfWriterLib::ApplyStrokeGradient()
 {			
 	PDF::Rect pageBounds	=	PageBounds();		
 	PDF::Rect pathBounds	=	PathBounds();
@@ -4113,13 +4113,13 @@ BOOL CPdfWriterLib::ApplyStrokeGradient()
 
 		m_oPatternState.SetStroke(NULL);
 
-		return TRUE;
+        return true;
 	}
 
-	return FALSE;
+    return false;
 }
 
-BOOL CPdfWriterLib::CreateLinearGradientFromSvgXml(const std::wstring & sXml, BOOL fill)
+bool CPdfWriterLib::CreateLinearGradientFromSvgXml(const std::wstring & sXml, bool fill)
 {
     //ATLTRACE2(_T("CreateLinearGradientFromSvgXml\n"));
 
@@ -4151,8 +4151,8 @@ BOOL CPdfWriterLib::CreateLinearGradientFromSvgXml(const std::wstring & sXml, BO
 			{
 				// единицы измерения (координаты документа или нормализованые)
 
-				BOOL userSpaceOnUse			=	(L"userSpaceOnUse" == oXml.GetAttribute(L"gradientUnits"));
-				BOOL isSvgElement			=	(L"svg" == oXml.GetAttribute(L"sourceType"));
+                bool userSpaceOnUse			=	(L"userSpaceOnUse" == oXml.GetAttribute(L"gradientUnits"));
+                bool isSvgElement			=	(L"svg" == oXml.GetAttribute(L"sourceType"));
 
 				// направление
 
@@ -4161,7 +4161,7 @@ BOOL CPdfWriterLib::CreateLinearGradientFromSvgXml(const std::wstring & sXml, BO
 				double x2					=	_wtof(oXml.GetAttributeOrValue(L"x2", L"1"));
 				double y2					=	_wtof(oXml.GetAttributeOrValue(L"y2", L"0"));
 
-				if (FALSE == isSvgElement)
+                if (false == isSvgElement)
 				{
 					if (userSpaceOnUse)
 					{
@@ -4193,7 +4193,7 @@ BOOL CPdfWriterLib::CreateLinearGradientFromSvgXml(const std::wstring & sXml, BO
 					std::vector<float> offsets;
 					std::vector<float> opacity;	
 
-					BOOL alphaPatternEnable = FALSE;
+                    bool alphaPatternEnable = false;
 
 					for (int i = 0; i < oNodes.GetCount(); ++i)
 					{									
@@ -4218,12 +4218,12 @@ BOOL CPdfWriterLib::CreateLinearGradientFromSvgXml(const std::wstring & sXml, BO
 							
 							if (fabs(alpha - 1.0) > DBL_EPSILON)
 							{
-								alphaPatternEnable	=	TRUE;
+                                alphaPatternEnable	=	true;
 							}
 						}
 					}
 
-					if (colors.size())//  && FALSE == isSvgElement)
+                    if (colors.size())//  && false == isSvgElement)
 					{
 						if (offsets[0] > DBL_EPSILON)
 						{
@@ -4441,14 +4441,14 @@ BOOL CPdfWriterLib::CreateLinearGradientFromSvgXml(const std::wstring & sXml, BO
 
 				RebuildResources();
 
-				return TRUE;
+                return true;
 			}
 		}
 	}
 
-	return FALSE;
+    return false;
 }
-BOOL CPdfWriterLib::CreateRadialGradientFromSvgXml(const std::wstring & sXml, BOOL fill)
+bool CPdfWriterLib::CreateRadialGradientFromSvgXml(const std::wstring & sXml, bool fill)
 {
     //ATLTRACE2(_T("CreateRadialGradientFromSvgXml\n"));
 
@@ -4480,8 +4480,8 @@ BOOL CPdfWriterLib::CreateRadialGradientFromSvgXml(const std::wstring & sXml, BO
 			{
 				// единицы измерения (координаты документа или нормализованые)
 
-				BOOL userSpaceOnUse		=	(L"userSpaceOnUse" == oXml.GetAttribute(L"gradientUnits"));
-				BOOL isSvgElement		=	(L"svg" == oXml.GetAttribute(L"sourceType"));
+                bool userSpaceOnUse		=	(L"userSpaceOnUse" == oXml.GetAttribute(L"gradientUnits"));
+                bool isSvgElement		=	(L"svg" == oXml.GetAttribute(L"sourceType"));
 
 				// направление
 
@@ -4498,7 +4498,7 @@ BOOL CPdfWriterLib::CreateRadialGradientFromSvgXml(const std::wstring & sXml, BO
 				if (oXml.GetAttribute(L"ry").GetLength())
 					fy					=	_wtof(oXml.GetAttributeOrValue(L"ry", L"0"));
 
-				if (FALSE == isSvgElement)
+                if (false == isSvgElement)
 				{
 					if (userSpaceOnUse)
 					{
@@ -4547,7 +4547,7 @@ BOOL CPdfWriterLib::CreateRadialGradientFromSvgXml(const std::wstring & sXml, BO
 					std::vector<float> offsets;
 					std::vector<float> opacity;								
 
-					BOOL alphaPatternEnable = FALSE;
+                    bool alphaPatternEnable = false;
 
 					for (int i = 0; i < oNodes.GetCount(); ++i)
 					{									
@@ -4585,7 +4585,7 @@ BOOL CPdfWriterLib::CreateRadialGradientFromSvgXml(const std::wstring & sXml, BO
 
 							if (fabs(alpha - 1.0) > DBL_EPSILON)
 							{
-								alphaPatternEnable	=	TRUE;
+                                alphaPatternEnable	=	true;
 							}
 						}
 					}
@@ -4807,15 +4807,15 @@ BOOL CPdfWriterLib::CreateRadialGradientFromSvgXml(const std::wstring & sXml, BO
 
 				RebuildResources();
 
-				return TRUE;
+                return true;
 			}
 		}
 	}
 
-	return FALSE;
+    return false;
 }
 
-BOOL CPdfWriterLib::RebuildResources()
+bool CPdfWriterLib::RebuildResources()
 {
 	Dict element			=	(Dict)(GetElement(m_pDocument->pCurPage, "Resources")->pValue);
 	if (element)
@@ -4829,11 +4829,11 @@ BOOL CPdfWriterLib::RebuildResources()
 			RELEASEOBJECT(patternDict->sBuffer);
 			patternDict->sBuffer = new CString(m_oPatterns.Defines());
 
-			return TRUE;
+            return true;
 		}
 	}
 
-	return FALSE;
+    return false;
 }
 
 template <typename T> Proxy CPdfWriterLib::GenXRef(T* object, int Type)
@@ -4898,12 +4898,12 @@ unsigned long CPdfWriterLib::FontFromFileToPdfFont()
 		{
 			if ( wsFontName.length() <= 0 )
 			{
-				nRet = SetCurrentFont( _T("Helvetica"), _T(""), FALSE, _T("") );
+                nRet = SetCurrentFont( _T("Helvetica"), _T(""), false, _T("") );
 
 				return nRet;
 			}
 
-			nRet = SetCurrentFont( std_string2string(wsFontName), std_string2string(wsEncodingName), FALSE, std_string2string(wsToUnicodeName) );
+            nRet = SetCurrentFont( std_string2string(wsFontName), std_string2string(wsEncodingName), false, std_string2string(wsToUnicodeName) );
 
 			return nRet;
 		}
@@ -4918,13 +4918,13 @@ unsigned long CPdfWriterLib::FontFromFileToPdfFont()
 
         CString bsPDFFontName;
 
-		BOOL bEmb = TRUE, bCIDfont = FALSE;
+        bool bEmb = true, bCIDfont = false;
 		if ( _T(".non") == sExt )
-			bEmb = FALSE;
+            bEmb = false;
 		else if ( _T(".cid_non") == sExt )
 		{
-			bEmb = FALSE;
-			bCIDfont = TRUE;
+            bEmb = false;
+            bCIDfont = true;
 		}
 		else if ( _T(".n022003l") == sExt )
 			bsPDFFontName = CString( _T(FONT_COURIER) );
@@ -4976,7 +4976,7 @@ unsigned long CPdfWriterLib::FontFromFileToPdfFont()
 			if ( OK != nRes )
 			{
 				ResetError( m_pDocument );
-				SetCurrentFont( _T(FONT_HELVETICA), _T("CP1251"), FALSE, _T("") );
+                SetCurrentFont( _T(FONT_HELVETICA), _T("CP1251"), false, _T("") );
 				return AVS_OFFICEPDFWRITER_ERROR_FONT_NOT_FOUND;
 			}
 		}
@@ -4984,23 +4984,23 @@ unsigned long CPdfWriterLib::FontFromFileToPdfFont()
 		{
 			CString sTTFpath(m_oFont.Path.c_str());
 
-			unsigned long nRes = LoadTTFFromFile( sTTFpath, TRUE, _T(""), &bsPDFFontName );
+            unsigned long nRes = LoadTTFFromFile( sTTFpath, true, _T(""), &bsPDFFontName );
 
 			if ( OK != nRes )
 			{
 				ResetError( m_pDocument );
-				SetCurrentFont( _T(FONT_HELVETICA), _T("CP1251"), FALSE, _T("") );
+                SetCurrentFont( _T(FONT_HELVETICA), _T("CP1251"), false, _T("") );
 				return AVS_OFFICEPDFWRITER_ERROR_FONT_NOT_FOUND;
 			}
 		}
 		else if ( _T(".cid_0") == sExt || _T(".cid_0c") == sExt || _T(".cid_0cot") == sExt || _T(".cid_2") == sExt || _T(".cid_2ot") == sExt )
 		{
-			bCIDfont = TRUE;
+            bCIDfont = true;
 		}
 		else
 		{
 			ResetError( m_pDocument );
-			SetCurrentFont( _T(FONT_HELVETICA), _T("CP1251"), FALSE, _T("") );
+            SetCurrentFont( _T(FONT_HELVETICA), _T("CP1251"), false, _T("") );
 			return AVS_OFFICEPDFWRITER_ERROR_FONT_NOT_FOUND;
 		}
 
@@ -5015,7 +5015,7 @@ unsigned long CPdfWriterLib::FontFromFileToPdfFont()
         wsEncodingPath += _T(".enc");
 
 		if ( !FileExist( wsEncodingPath ) )
-			return SetCurrentFont( bsPDFFontName, _T(""), FALSE, _T("") );
+            return SetCurrentFont( bsPDFFontName, _T(""), false, _T("") );
 
 		XmlUtils::CXmlNode oMainNode;
 		oMainNode.FromXmlFile( wsEncodingPath );
@@ -5074,7 +5074,7 @@ unsigned long CPdfWriterLib::FontFromFileToPdfFont()
 						if ( 1 == nEncodingType )
 						{
 							BasicEncoderAttr pAttr = (BasicEncoderAttr)pEncoding->pAttr;
-							pAttr->bHasDifferences = TRUE;
+                            pAttr->bHasDifferences = true;
 
 							XmlUtils::CXmlNode oDiff;
 							if( oNode.GetNode( _T("Differences"), oDiff ) )
@@ -5149,7 +5149,7 @@ unsigned long CPdfWriterLib::FontFromFileToPdfFont()
 					m_oFontLoader.Add( m_oFont.Path, _T(""), string2std_string(wsEncodingName),string2std_string(wsToUnicodeName) );
 
 
-				nRet = SetCurrentFont( bsPDFFontName, wsEncodingName, FALSE, wsToUnicodeName );
+                nRet = SetCurrentFont( bsPDFFontName, wsEncodingName, false, wsToUnicodeName );
 
 
 				if ( OK != nRet )
@@ -5827,7 +5827,7 @@ unsigned long CPdfWriterLib::FontFromFileToPdfFont()
 							m_oFontLoader.Add( m_oFont.Path, _T(""), string2std_string(wsEncodingName), string2std_string(wsToUnicodeName));
 
 
-						nRet = SetCurrentFont( bsPDFFontName, wsEncodingName, FALSE, wsToUnicodeName );
+                        nRet = SetCurrentFont( bsPDFFontName, wsEncodingName, false, wsToUnicodeName );
 
 						return nRet;
 					}
@@ -5836,20 +5836,20 @@ unsigned long CPdfWriterLib::FontFromFileToPdfFont()
 		}
 
 		if ( _T("") != bsPDFFontName )
-			nRet = SetCurrentFont( bsPDFFontName, _T(""), FALSE, _T(""));
+            nRet = SetCurrentFont( bsPDFFontName, _T(""), false, _T(""));
 
 		return nRet;
 	}
 
 	return OK;
 }
-unsigned long CPdfWriterLib::GdiFontToPdfFont(CString bsEncodingName/* = L"CP1251"*/, BOOL bNameIsUnicodeArray/* = FALSE*/)
+unsigned long CPdfWriterLib::GdiFontToPdfFont(CString bsEncodingName/* = L"CP1251"*/, bool bNameIsUnicodeArray/* = false*/)
 {
 	CString bsDefaultFont     = L"Helvetica";
 	CString bsDefaultEncoding = L"CP1251"; 
 	
-	BOOL bBold   = m_oFont.Bold;
-	BOOL bItalic = m_oFont.Italic;
+    bool bBold   = m_oFont.Bold;
+    bool bItalic = m_oFont.Italic;
 
 	std::wstring wsDisplayName;
 	std::wstring wsFontName;
@@ -5858,8 +5858,8 @@ unsigned long CPdfWriterLib::GdiFontToPdfFont(CString bsEncodingName/* = L"CP125
 	std::wstring bsFileName;
 	if ( !m_pFindFonts->Find( m_oFont.Name, &bsFileName, &bBold, &bItalic ) )
 	{
-		BOOL bOldBold   = bBold;
-		BOOL bOldItalic = bItalic;
+        bool bOldBold   = bBold;
+        bool bOldItalic = bItalic;
 
 		if ( !GetFontFile( &m_oFont, m_oFont.Name, wsDisplayName, wsFontName, &bBold, &bItalic ) )
 		{
@@ -5895,7 +5895,7 @@ unsigned long CPdfWriterLib::GdiFontToPdfFont(CString bsEncodingName/* = L"CP125
 	CString bsPDFFontName	= _T("Embedded");
 	CString bsFontFile		= std_string2string(wsFontName);
 
-	unsigned long nRes = LoadTTFFromFile( bsFontFile, TRUE, bsEncodingName, &bsPDFFontName );
+    unsigned long nRes = LoadTTFFromFile( bsFontFile, true, bsEncodingName, &bsPDFFontName );
 	if ( OK == nRes )
 	{
 		nRes = SetCurrentFont( bsPDFFontName, bsEncodingName, bNameIsUnicodeArray, _T("") );
@@ -5923,7 +5923,7 @@ unsigned long CPdfWriterLib::GdiFontToPdfFont(CString bsEncodingName/* = L"CP125
 	sFontFilePath += bsFontFile;
 	bsFontFile = sFontFilePath;
 
-	nRes = LoadTTFFromFile( bsFontFile, TRUE, bsEncodingName, &bsPDFFontName );
+    nRes = LoadTTFFromFile( bsFontFile, true, bsEncodingName, &bsPDFFontName );
 	if ( OK == nRes )
 	{
 		nRes = SetCurrentFont( bsPDFFontName, bsEncodingName, bNameIsUnicodeArray, _T(""));
@@ -5940,8 +5940,8 @@ unsigned long CPdfWriterLib::GdiFontToPdfFont2(CString bsToUnicodeName/* = NULL*
 {
 	CString bsDefaultFont     = L"Helvetica";
 
-	BOOL bBold   = m_oFont.Bold;
-	BOOL bItalic = m_oFont.Italic;
+    bool bBold   = m_oFont.Bold;
+    bool bItalic = m_oFont.Italic;
 
 	std::wstring wsDisplayName;
 	std::wstring wsFontName;
@@ -5949,14 +5949,14 @@ unsigned long CPdfWriterLib::GdiFontToPdfFont2(CString bsToUnicodeName/* = NULL*
 	// получаем фонт по его названию
 	std::wstring bsFileName;
 
-	BOOL bPath = ( m_oFont.Path != _T("") ? TRUE : FALSE );
+    bool bPath = ( m_oFont.Path != _T("") ? true : false );
 	if ( bPath )
 		m_oFont.Name = m_oFont.Path;
 
 	if ( !m_pFindFonts->Find( m_oFont.Name, &bsFileName, &bBold, &bItalic ) )
 	{
-		BOOL bOldBold   = bBold;
-		BOOL bOldItalic = bItalic;
+        bool bOldBold   = bBold;
+        bool bOldItalic = bItalic;
 
 		if ( !bPath )
 		{
@@ -5964,7 +5964,7 @@ unsigned long CPdfWriterLib::GdiFontToPdfFont2(CString bsToUnicodeName/* = NULL*
 			{
 				m_pFindFonts->Add( m_oFont.Name, std::wstring(_T("")), bOldBold, bOldItalic, bBold, bItalic );
 
-				SetCurrentFont( bsDefaultFont, _T(""), FALSE, _T(""));
+                SetCurrentFont( bsDefaultFont, _T(""), false, _T(""));
 				return AVS_OFFICEPDFWRITER_ERROR_FONT_NOT_FOUND;
 			}
 		}
@@ -5985,7 +5985,7 @@ unsigned long CPdfWriterLib::GdiFontToPdfFont2(CString bsToUnicodeName/* = NULL*
 		CString sFName = std_string2string( bsFileName );
 		if ( sFName.GetLength() <= 0 || sFName.GetLength() >= 1000 )
 		{
-			SetCurrentFont( bsDefaultFont, _T(""), FALSE, _T(""));
+            SetCurrentFont( bsDefaultFont, _T(""), false, _T(""));
 			return AVS_OFFICEPDFWRITER_ERROR_FONT_NOT_FOUND;
 		}
 		else
@@ -6005,10 +6005,10 @@ unsigned long CPdfWriterLib::GdiFontToPdfFont2(CString bsToUnicodeName/* = NULL*
 
 	if (bsFontFile.GetLength() < 1) bsFontFile = std_string2string(m_oFont.Name);
 
-	unsigned long nRes = LoadTTFFromFile( bsFontFile, TRUE, bsToUnicodeName, &bsPDFFontName );
+    unsigned long nRes = LoadTTFFromFile( bsFontFile, true, bsToUnicodeName, &bsPDFFontName );
 	if ( OK == nRes )
 	{
-		nRes = SetCurrentFont( bsPDFFontName, bsEncodingName, FALSE, bsToUnicodeName );
+        nRes = SetCurrentFont( bsPDFFontName, bsEncodingName, false, bsToUnicodeName );
 		return nRes;
 	}
 	else if ( AVS_OFFICEPDFWRITER_ERROR_FILE_OPEN_ERROR == nRes )
@@ -6016,7 +6016,7 @@ unsigned long CPdfWriterLib::GdiFontToPdfFont2(CString bsToUnicodeName/* = NULL*
 	else
 	{
 		ResetError( m_pDocument );
-		SetCurrentFont( bsDefaultFont, _T(""), FALSE, _T("") );
+        SetCurrentFont( bsDefaultFont, _T(""), false, _T("") );
 		return nRes;
 	}
 
@@ -6037,16 +6037,16 @@ unsigned long CPdfWriterLib::GdiFontToPdfFont2(CString bsToUnicodeName/* = NULL*
 	sFontFilePath += CString(FILE_SEPARATOR_STR) + _T("Fonts") + FILE_SEPARATOR_STR;
 	sFontFilePath += bsFontFile;
 
-	nRes = LoadTTFFromFile(sFontFilePath, TRUE, bsEncodingName, &bsPDFFontName );
+    nRes = LoadTTFFromFile(sFontFilePath, true, bsEncodingName, &bsPDFFontName );
 	if ( OK == nRes )
 	{
-		nRes = SetCurrentFont( bsPDFFontName, bsEncodingName, FALSE, bsToUnicodeName );
+        nRes = SetCurrentFont( bsPDFFontName, bsEncodingName, false, bsToUnicodeName );
 		return nRes;
 	}
 	else 
 	{
 		ResetError( m_pDocument );
-		SetCurrentFont( bsDefaultFont, _T(""), FALSE, _T(""));
+        SetCurrentFont( bsDefaultFont, _T(""), false, _T(""));
 		return AVS_OFFICEPDFWRITER_ERROR_FONT_NOT_FOUND;
 	}
 }
@@ -6120,7 +6120,7 @@ unsigned long CPdfWriterLib::ReadOutlineChilds(CString sXml, int nRootIndex)
 				return hRes;
             if ( S_OK !=  ( hRes = OutlineSetCurrentDestination() ) )
 				return hRes;
-            if ( S_OK !=  ( hRes = SetOutlineOpened( FALSE ) ) )
+            if ( S_OK !=  ( hRes = SetOutlineOpened( false ) ) )
 				return hRes;
 
 			long nCurrentIndex = -1;
@@ -6192,9 +6192,9 @@ unsigned long CPdfWriterLib::UpdateGState()
 
 				if (255 != m_oBrush.Alpha1)
 				{
-					oWriter.WriteNodeBegin(_T("AlphaFill"), TRUE);
+                    oWriter.WriteNodeBegin(_T("AlphaFill"), true);
 					oWriter.WriteAttribute(_T("value"), (double)m_oBrush.TextureAlpha/255.0f);
-					oWriter.WriteNodeEnd(_T("AlphaFill"), TRUE, TRUE);
+                    oWriter.WriteNodeEnd(_T("AlphaFill"), true, true);
 				}
 
 				oWriter.WriteNodeEnd(_T("ExtGState"));
@@ -6216,16 +6216,16 @@ unsigned long CPdfWriterLib::UpdateGState()
 
 				if (255 != m_oBrush.Alpha1)
 				{
-					oWriter.WriteNodeBegin( _T("AlphaFill"), TRUE);
+                    oWriter.WriteNodeBegin( _T("AlphaFill"), true);
 					oWriter.WriteAttribute( _T("value"), (double)m_oBrush.Alpha1/255.0f);
-					oWriter.WriteNodeEnd( _T("AlphaFill"), TRUE, TRUE);
+                    oWriter.WriteNodeEnd( _T("AlphaFill"), true, true);
 				}
 
 				if ( 255 != m_oPen.Alpha )
 				{
-					oWriter.WriteNodeBegin(_T("AlphaStroke"), TRUE);
+                    oWriter.WriteNodeBegin(_T("AlphaStroke"), true);
 					oWriter.WriteAttribute(_T("value"), (double)m_oPen.Alpha/255.0f);
-					oWriter.WriteNodeEnd(_T("AlphaStroke"), TRUE, TRUE);
+                    oWriter.WriteNodeEnd(_T("AlphaStroke"), true, true);
 				}
 
 				oWriter.WriteNodeEnd(_T("ExtGState"));
@@ -6297,8 +6297,8 @@ unsigned long CPdfWriterLib::UpdateCoordSpace()
 		double dE = dX0 - dX0 * cos ( dAngle ) + dY0 * sin( dAngle );
 		double dF = dY0 - dX0 * sin ( dAngle ) - dY0 * cos( dAngle );
 
-		BOOL bFlipX = nFlags & 1;
-		BOOL bFlipY = nFlags & 2;
+        bool bFlipX = nFlags & 1;
+        bool bFlipY = nFlags & 2;
 
 		if ( !bFlipX && !bFlipY )
 		{
@@ -6398,7 +6398,7 @@ bool CPdfWriterLib::FileExist(CString sFilePath )
 }
 
 // Устанавливаем текущее состояние рендерера
-BOOL CPdfWriterLib::SetState ( ERendererState eState )
+bool CPdfWriterLib::SetState ( ERendererState eState )
 {
 	m_oRendererState.set_NewState( eState, m_oTransform );
 
@@ -6441,16 +6441,16 @@ BOOL CPdfWriterLib::SetState ( ERendererState eState )
 			float fFillR, fFillG, fFillB, fStrokeR, fStrokeG, fStrokeB;
 
             if ( S_OK != ( GetLineWidth( &fOldLineWidth ) ) )
-				return FALSE;
+                return false;
 
             if ( S_OK != ( GetRGBFill( &fFillR, &fFillG, &fFillB ) ) )
-				return FALSE;
+                return false;
 
             if ( S_OK != ( GetRGBStroke( &fStrokeR, &fStrokeG, &fStrokeB ) ) )
-				return FALSE;
+                return false;
 
 
-			BOOL bDefaultFont = FALSE;
+            bool bDefaultFont = false;
 			bool bWasHorScale = false;
 			bool bFirst = true;
 			NSStructures::CFont oPrevFont;
@@ -6473,27 +6473,27 @@ BOOL CPdfWriterLib::SetState ( ERendererState eState )
 			float fB = 0;
 
             if ( S_OK != ( GetHeight( &fPageHeight ) ) )
-				return FALSE;
+                return false;
 
 			// Делаем сохранение состояния
             //ATLTRACE2( _T("GSave: DrawText\n") );
             if ( S_OK != ( GSave() ) )
-				return FALSE;
+                return false;
 
 			// Выставляем систему координат
 			CMatrix oTransform = m_oContiniousText.get_Matrix();
             if ( S_OK != ( UpdateCoordSpace2( &oTransform ) ) )
-				return FALSE;
+                return false;
 
 			// Устанавливаем альфу для данного текста
 			float fAlphaFill   = (float)m_oContiniousText.get_Color( 0 )->unA / 255.0f;
 			float fAlphaStroke = (float)m_oContiniousText.get_Color( 0 )->unA / 255.0f;
 			m_pCurrentExtGState = GetExtGState( m_pDocument, fAlphaStroke, fAlphaFill );
 			if ( OK != ( PageSetExtGState( m_pDocument->pCurPage, m_pCurrentExtGState ) ) )
-				return FALSE;
+                return false;
 
             if ( S_OK != ( BeginText() ) )
-				return FALSE;
+                return false;
 
 			// Выясним как нам рисовать текст (пока сделаем всегда fill)
 			// TODO: В будущем надо добавить данную настройку в ContiniusText, и следить
@@ -6503,7 +6503,7 @@ BOOL CPdfWriterLib::SetState ( ERendererState eState )
 			//	eRenderingMode = ETextRenderingMode::Stroke; // Stroke
 
             if ( S_OK != ( SetTextRenderingMode( (long)eRenderingMode ) ) )
-				return FALSE;
+                return false;
 
 			/*
 			if ( ETextRenderingMode::Fill == eRenderingMode )
@@ -6585,8 +6585,8 @@ BOOL CPdfWriterLib::SetState ( ERendererState eState )
 				dPrevCharSpacing = dCharSp;
 
 				m_oFont = *pFont;
-				BOOL bOldBold     = m_oFont.Bold;
-				BOOL bOldItalic   = m_oFont.Italic;
+                bool bOldBold     = m_oFont.Bold;
+                bool bOldItalic   = m_oFont.Italic;
 
 				if ( bSizeChange )
 					fFontSize = (float)m_oFont.Size;
@@ -6605,7 +6605,7 @@ BOOL CPdfWriterLib::SetState ( ERendererState eState )
 						{
 							ResetError( m_pDocument );
 							sCodedString = std_string2string( pText->sText );
-							bDefaultFont = TRUE;
+                            bDefaultFont = true;
 						}
 						else
 						{
@@ -6614,7 +6614,7 @@ BOOL CPdfWriterLib::SetState ( ERendererState eState )
 					}
 					else
 					{
-						bDefaultFont = FALSE;
+                        bDefaultFont = false;
 
 						if ( bWasHorScale )
 						{
@@ -6740,22 +6740,22 @@ BOOL CPdfWriterLib::SetState ( ERendererState eState )
 
 			// Заканчиваем запись текста
             if ( S_OK != ( EndText() ) )
-				return FALSE;
+                return false;
 
 			// Восстанавливаем систему координат
             //ATLTRACE2( _T("GRestore: DrawText\n") );
             if ( S_OK != ( GRestore() ) )
-				return FALSE;
+                return false;
 
 			// Восстанавливаем старые настройки
             if ( S_OK != ( SetLineWidth( fOldLineWidth ) ) )
-				return FALSE;
+                return false;
 
             if ( S_OK != ( SetRGBFill( fFillR, fFillG, fFillB ) ) )
-				return FALSE;
+                return false;
 
             if ( S_OK != ( SetRGBStroke( fStrokeR, fStrokeG, fStrokeB ) ) )
-				return FALSE;
+                return false;
 
 			// Восстанавливаем текущий шрифт
 			m_oFont = CurFont;
@@ -6767,19 +6767,19 @@ BOOL CPdfWriterLib::SetState ( ERendererState eState )
 			m_oContiniousText.Reset();
 	}
 
-	return TRUE;
+    return true;
 }
-BOOL CPdfWriterLib::ApplyTileFill()
+bool CPdfWriterLib::ApplyTileFill()
 {
     //todooo проверить
 	Aggplus::CImage image(m_oBrush.TexturePath);
 
-	if (image.m_Status != Aggplus::Ok) return FALSE;
+    if (image.m_Status != Aggplus::Ok) return false;
 	
 	LONG width  =	image.m_dwWidth;
 	LONG height	=	image.m_dwHeight;
 
-	m_bUseImageTextureAlpha		=	TRUE;	
+    m_bUseImageTextureAlpha		=	true;
 
 	if ((m_bUseImageTextureAlpha || m_bIsWhiteBackImage))
 	{
@@ -6811,9 +6811,9 @@ BOOL CPdfWriterLib::ApplyTileFill()
 		}
 	}
 
-	m_bUseImageTextureAlpha	=	FALSE;	
+    m_bUseImageTextureAlpha	=	false;
 
-	if (LoadImageFromInterface(&image, TRUE) == S_OK)
+    if (LoadImageFromInterface(&image, true) == S_OK)
 	{
 		if (m_pCurrentXObject)
 		{
@@ -6862,12 +6862,12 @@ BOOL CPdfWriterLib::ApplyTileFill()
 				m_oPatternState.SetFill(NULL);
 				
 				image.Destroy();
-				return TRUE;
+                return true;
 			}
 		}
 	}
 
 	image.Destroy();
 
-	return FALSE;
+    return false;
 }

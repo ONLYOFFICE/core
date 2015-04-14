@@ -9,7 +9,7 @@
 //----- DestinationObject -----------------------------------------------------------------------
 
 Destination   DestinationNew       (MMgr oMMgr, Page pTarget, Xref pXref);
-BOOL          DestinationValidate  (Destination pDst);
+bool          DestinationValidate  (Destination pDst);
 //----- Внешние функции --------------------------------------------------------------------------
 unsigned long DestinationSetXYZ    (Destination pDst, float fLeft, float fTop, float fZoom);
 unsigned long DestinationSetFit    (Destination pDst);

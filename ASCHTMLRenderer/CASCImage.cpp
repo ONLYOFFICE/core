@@ -89,7 +89,7 @@ namespace NSHtmlRenderer
 		m_pRect = new TWmfRectF();
 		m_pMediaData	= NULL;
 
-		m_bLoadOnlyMeta = FALSE;
+        m_bLoadOnlyMeta = false;
 
 		m_lImageType = c_lImageTypeUnknown;
 

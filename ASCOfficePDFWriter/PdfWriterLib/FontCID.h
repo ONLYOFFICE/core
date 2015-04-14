@@ -24,7 +24,7 @@ unsigned long CIDFontDefAddWidth2   (FontDef pFontDef, const CIDWidth2 *pWidths)
 unsigned long CIDFontDefAddWidth2   (FontDef pFontDef, CIDWidth2 oWidths2);
 unsigned long CIDFontDefSetCIDtoGID (FontDef pFontDef, char *sName);
 unsigned long CIDFontDefSetCIDtoGID (FontDef pFontDef, BYTE *pBuffer, int nSize);
-unsigned long CIDFontDefChangeStyle (FontDef pFontDef, BOOL bBold, BOOL bItalic);
+unsigned long CIDFontDefChangeStyle (FontDef pFontDef, bool bBold, bool bItalic);
 //----- CIDTypeFont вспомогательные функции ---------------------------------------------------------
 //static unsigned long CIDFontType2BeforeWriteFunc  (Dict pObj)
 //{
@@ -687,7 +687,7 @@ unsigned long CIDFontDefChangeStyle (FontDef pFontDef, BOOL bBold, BOOL bItalic)
 //
 //    return oTextWidth;
 //}
-//static unsigned int  CIDMeasureText               (FontDict pFont, const BYTE *pText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, BOOL bWordWrap, float *pfRealWidth)
+//static unsigned int  CIDMeasureText               (FontDict pFont, const BYTE *pText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, bool bWordWrap, float *pfRealWidth)
 //{
 //    float fTempWidth = 0;
 //    unsigned int nTempLen = 0;
@@ -847,7 +847,7 @@ unsigned long CIDFontDefChangeStyle (FontDef pFontDef, BOOL bBold, BOOL bItalic)
 //
 //    return oTextWidth;
 //}
-//static unsigned int  CIDMeasureText2              (FontDict pFont, const BYTE *pText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, BOOL bWordWrap, float *pfRealWidth)
+//static unsigned int  CIDMeasureText2              (FontDict pFont, const BYTE *pText, unsigned int nLen, unsigned int *pCIDs, unsigned int nLenCID, float fWidth, float fFontSize, float fCharSpace, float fWordSpace, bool bWordWrap, float *pfRealWidth)
 //{
 //	// TO DO : Релизовать данную функцию
 //	return 0;

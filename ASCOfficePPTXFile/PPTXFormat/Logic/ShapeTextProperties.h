@@ -117,12 +117,12 @@ namespace PPTX
 			nullable_base<LONG> GetParagraphSpcAft		(int level, const nullable<TextParagraphPr>& pParagraph)const;
 			nullable_base<LONG> GetParagraphSpcBef		(int level, const nullable<TextParagraphPr>& pParagraph)const;
 
-			nullable_base<BOOL>	GetHasBullet			(int level, const nullable<TextParagraphPr>& pParagraph)const;
+            nullable_base<bool>	GetHasBullet			(int level, const nullable<TextParagraphPr>& pParagraph)const;
 
-			nullable_base<BOOL> GetRunBold				(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
-			nullable_base<BOOL> GetRunItalic			(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
-			nullable_base<BOOL> GetRunUnderline			(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
-			nullable_base<BOOL> GetRunStrike			(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
+            nullable_base<bool> GetRunBold				(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
+            nullable_base<bool> GetRunItalic			(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
+            nullable_base<bool> GetRunUnderline			(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
+            nullable_base<bool> GetRunStrike			(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
 			nullable_base<WORD> GetRunCap				(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
 			nullable_base<double> GetRunBaseline		(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph)const;
 			nullable_base<WORD> GetRunSize				(int level, const nullable<RunProperties>& pRun, const nullable<TextParagraphPr>& pParagraph, const double& FontScale)const;

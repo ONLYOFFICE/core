@@ -2579,7 +2579,7 @@ namespace BinXlsxRW {
 					CStringA sGfxDataA = (CStringA)sGfxData;
 					int nDataSize = sGfxDataA.GetLength();
 					BYTE* pBuffer = new BYTE[nDataSize];
-					if(FALSE != Base64::Base64Decode((LPCSTR)sGfxDataA.GetBuffer(), sGfxDataA.GetLength(), pBuffer, &nDataSize))
+                    if(false != Base64::Base64Decode((LPCSTR)sGfxDataA.GetBuffer(), sGfxDataA.GetLength(), pBuffer, &nDataSize))
 					{
 						int nLength = *((long*)(pBuffer + nSignatureSize));
 						NSBinPptxRW::CBinaryFileReader oBufferedStream;
@@ -3344,7 +3344,7 @@ namespace BinXlsxRW {
 
 			if (BinXlsxRW::c_oFileTypes::JSON == saveFileType)
 			{
-				CSVWriter::WriteFromXlsxToCsv(sFileDst, *pXlsx, CP_UTF8, _T(','), TRUE);
+                CSVWriter::WriteFromXlsxToCsv(sFileDst, *pXlsx, CP_UTF8, _T(','), true);
 			}
 			else
 			{
@@ -3354,7 +3354,7 @@ namespace BinXlsxRW {
 				int nBinBufferLen = oBufferedStream.GetPosition();
 				int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
 				BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-				if(TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+                if(true == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
 				{
 					CFile oFile;
 					oFile.CreateFile(sFileDst);
@@ -3503,7 +3503,7 @@ namespace BinXlsxRW {
 		{
 			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nLength, Base64::B64_BASE64_FLAG_NOCRLF);
 			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-			if(TRUE == Base64::Base64Encode(pData, nLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+            if(true == Base64::Base64Encode(pData, nLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
 			{
 				CFile oFile;
 				oFile.CreateFile(sFileOutput);
@@ -3688,7 +3688,7 @@ namespace BinXlsxRW {
 			int nBinBufferLen = oBufferedStream.GetPosition();
 			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
 			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-			if (TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+            if (true == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
 			{
 				CFile oFile;
 				oFile.CreateFile(sFileOutput);
@@ -3745,7 +3745,7 @@ namespace BinXlsxRW {
 			int nBinBufferLen = oBufferedStream.GetPosition();
 			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
 			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-			if(TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+            if(true == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
 			{
 				CFile oFile;
 				oFile.CreateFile(sFileOutput);

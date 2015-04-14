@@ -47,7 +47,7 @@ namespace Base64
 		return nSrcLen;
 	}
 
-	inline BOOL Base64Encode(const BYTE *pbSrcData, int nSrcLen, LPSTR szDest, int *pnDestLen, DWORD dwFlags = B64_BASE64_FLAG_NONE) throw()
+        inline bool Base64Encode(const BYTE *pbSrcData, int nSrcLen, LPSTR szDest, int *pnDestLen, DWORD dwFlags = B64_BASE64_FLAG_NONE) throw()
 	{
 		static const char s_chBase64EncodingTable[64] = {
 			'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
@@ -56,10 +56,10 @@ namespace Base64
 			'z', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '+', '/' };
 
 		if (!pbSrcData || !szDest || !pnDestLen)
-			return FALSE;
+                        return false;
 
 		if (*pnDestLen < Base64EncodeGetRequiredLength(nSrcLen, dwFlags))
-			return FALSE;
+                        return false;
 
 		int nWritten( 0 );
 		int nLen1( (nSrcLen/3)*4 );
@@ -131,7 +131,7 @@ namespace Base64
 		}
 
 		*pnDestLen = nWritten;
-		return TRUE;
+                return true;
 	}
 
 	inline int DecodeBase64Char(unsigned int ch) throw()
@@ -153,7 +153,7 @@ namespace Base64
 		return -1;
 	}
 
-	inline BOOL Base64Decode(LPCSTR szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen) throw()
+        inline bool Base64Decode(LPCSTR szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen) throw()
 	{
 		// walk the source buffer
 		// each four character sequence is converted to 3 bytes
@@ -161,12 +161,12 @@ namespace Base64
 		// are skiped
 
 		if (szSrc == NULL || pnDestLen == NULL)
-			return FALSE;
+                        return false;
 		
 		LPCSTR szSrcEnd = szSrc + nSrcLen;
 		int nWritten = 0;
 		
-		BOOL bOverflow = (pbDest == NULL) ? TRUE : FALSE;
+                bool bOverflow = (pbDest == NULL) ? true : false;
 		
 		while (szSrc < szSrcEnd &&(*szSrc) != 0)
 		{
@@ -191,7 +191,7 @@ namespace Base64
 			}
 
 			if(!bOverflow && nWritten + (nBits/8) > (*pnDestLen))
-				bOverflow = TRUE;
+                                bOverflow = true;
 
 			// dwCurr has the 3 bytes to write to the output buffer
 			// left to right
@@ -215,10 +215,10 @@ namespace Base64
 		{
 			// if (pbDest != NULL) ATLASSERT(FALSE);
 		
-			return FALSE;
+                        return false;
 		}
 		
-		return TRUE;
+                return true;
 	}
 }
 
@@ -242,7 +242,7 @@ static const BYTE map2[] =
     0x24, 0x25, 0x26, 0x27, 0x28, 0x29, 0x2a, 0x2b,
     0x2c, 0x2d, 0x2e, 0x2f, 0x30, 0x31, 0x32, 0x33
 };
-static BOOL Base64Decode(LPCSTR szSrc, int nSrcLen, BYTE *& pbDest, int *pnDestLen)
+static bool Base64Decode(LPCSTR szSrc, int nSrcLen, BYTE *& pbDest, int *pnDestLen)
 {
 	const char *in = szSrc;
 	BYTE *out = pbDest;
@@ -252,10 +252,11 @@ static BOOL Base64Decode(LPCSTR szSrc, int nSrcLen, BYTE *& pbDest, int *pnDestL
     BYTE *dst = out;
 
     v = 0;
-    for (i = 0; in[i] && in[i] != '='; i++) {
+    for (i = 0; in[i] && in[i] != '='; i++)
+    {
         unsigned int index= in[i]-43;
         if (index>=FF_ARRAY_ELEMS(map2) || map2[index] == 0xff)
-            return -1;
+            return false; ///???? было -1
         v = (v << 6) + map2[index];
         if (i & 3) {
             if (dst - out < out_size) {
@@ -264,10 +265,10 @@ static BOOL Base64Decode(LPCSTR szSrc, int nSrcLen, BYTE *& pbDest, int *pnDestL
         }
     }
 
-    return TRUE;
+    return true;
 }
 
-static BOOL Base64Encode(const BYTE *pbSrcData, int nSrcLen, BYTE *& szDest, int *pnDestLen)
+static bool Base64Encode(const BYTE *pbSrcData, int nSrcLen, BYTE *& szDest, int *pnDestLen)
 {
 	const BYTE *in = pbSrcData;
 	int in_size = nSrcLen;
@@ -284,7 +285,7 @@ static BOOL Base64Encode(const BYTE *pbSrcData, int nSrcLen, BYTE *& szDest, int
 	int out_size_1 =BASE64_SIZE(in_size);
 
     //if (/*in_size >= UINT_MAX / 4 ||*/out_size < BASE64_SIZE(in_size))
-    //    return FALSE;
+    //    return false;
    
 	ret = dst = out;
     while (bytes_remaining) {
@@ -301,7 +302,7 @@ static BOOL Base64Encode(const BYTE *pbSrcData, int nSrcLen, BYTE *& szDest, int
         *dst++ = '=';
     *dst = '\0';
 
-    return TRUE;
+    return true;
 }
 
 }

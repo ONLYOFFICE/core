@@ -73,7 +73,7 @@ namespace NSFontCutter
 		};
 
 		std::map<CString, CEmbeddedFontInfo> m_mapFontsEmbeddded;
-		std::map<WCHAR, BOOL> m_CharMap;
+        std::map<WCHAR, bool> m_CharMap;
 		
 	public:
 		CString m_strEmbeddedFontsFolder;
@@ -97,17 +97,17 @@ namespace NSFontCutter
 			for(int i = 0; i < aFontInfos.GetCount(); ++i)
 			{
 				CFontInfo* pFontInfo = aFontInfos[i];
-				if(FALSE != pFontInfo->m_bBold && FALSE != pFontInfo->m_bItalic)
+                if(0 != pFontInfo->m_bBold && 0 != pFontInfo->m_bItalic)
 				{
 					oInfo.PathBoldItalic = CString(pFontInfo->m_wsFontPath.c_str());
 					oInfo.FaceBoldItalic = pFontInfo->m_lIndex;
 				}
-				else if(FALSE != pFontInfo->m_bBold)
+                else if(0 != pFontInfo->m_bBold)
 				{
 					oInfo.PathBold = CString(pFontInfo->m_wsFontPath.c_str());
 					oInfo.FaceBold = pFontInfo->m_lIndex;
 				}
-				else if(FALSE != pFontInfo->m_bItalic)
+                else if(0 != pFontInfo->m_bItalic)
 				{
 					oInfo.PathItalic = CString(pFontInfo->m_wsFontPath.c_str());
 					oInfo.FaceItalic = pFontInfo->m_lIndex;
@@ -137,12 +137,12 @@ namespace NSFontCutter
 			for (int i = 0; i < len; ++i)
 			{
 #if defined(_WIN32) || defined (_WIN64)
-				m_CharMap [str_lower.GetBuffer()[i]] = TRUE;
-                m_CharMap [str_upper.GetBuffer()[i]] = TRUE;
+                m_CharMap [str_lower.GetBuffer()[i]] = true;
+                m_CharMap [str_upper.GetBuffer()[i]] = true;
 
 #else
-				m_CharMap [str_lower.c_str()[i]] = TRUE;
-                m_CharMap [str_upper.c_str()[i]] = TRUE;
+                m_CharMap [str_lower.c_str()[i]] = true;
+                m_CharMap [str_upper.c_str()[i]] = true;
 #endif
 			}
 		}
@@ -320,15 +320,15 @@ namespace NSFontCutter
 		{
 			// цифры нужны всем. остальное - каждый 
 			CheckString(_T("0123456789"));
-			m_CharMap [(WCHAR)0x00B0] = TRUE;
-			m_CharMap [(WCHAR)0x00B7] = TRUE;
-			m_CharMap [(WCHAR)0x00B6] = TRUE;
-			m_CharMap [(WCHAR)0x00A4] = TRUE;
-			m_CharMap [(WCHAR)0x00A0] = TRUE;
-			m_CharMap [(WCHAR)0x0022] = TRUE;
-			m_CharMap [(WCHAR)0x0032] = TRUE;
-			m_CharMap [(WCHAR)0x0038] = TRUE;
-			m_CharMap [(WCHAR)0x0097] = TRUE;
+            m_CharMap [(WCHAR)0x00B0] = true;
+            m_CharMap [(WCHAR)0x00B7] = true;
+            m_CharMap [(WCHAR)0x00B6] = true;
+            m_CharMap [(WCHAR)0x00A4] = true;
+            m_CharMap [(WCHAR)0x00A0] = true;
+            m_CharMap [(WCHAR)0x0022] = true;
+            m_CharMap [(WCHAR)0x0032] = true;
+            m_CharMap [(WCHAR)0x0038] = true;
+            m_CharMap [(WCHAR)0x0097] = true;
 			
             nCount = (ULONG)m_CharMap.size();
 
@@ -339,7 +339,7 @@ namespace NSFontCutter
 
             USHORT *pBuffer = pArray;
 
-			for (std::map<WCHAR, BOOL>::const_iterator pPair = m_CharMap.begin(); pPair != m_CharMap.end(); ++pPair)
+            for (std::map<WCHAR, bool>::const_iterator pPair = m_CharMap.begin(); pPair != m_CharMap.end(); ++pPair)
 			{
 				*pBuffer = pPair->first;
 				++pBuffer;
@@ -376,7 +376,7 @@ namespace NSFontCutter
 			int nBinBufferLen = pArrayData->rgsabound[0].cElements;
 			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
 			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-			if (TRUE == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
+            if (true == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
 			{
 				CStringA s = "\"";
 				pFile->WriteFile(s.GetBuffer(), s.GetLength());

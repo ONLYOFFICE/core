@@ -92,9 +92,9 @@ public:
 		}		
 	}
 #ifdef DESKTOP_EDITOR_GRAPHICS
-	BOOL OpenFromFile(const wchar_t *wsFilePath)
+    bool OpenFromFile(const wchar_t *wsFilePath)
 #else
-	BOOL OpenFromFile(wchar_t *wsFilePath)
+    bool OpenFromFile(wchar_t *wsFilePath)
 #endif
 	{
 		if ( m_pBufferData )
@@ -109,7 +109,7 @@ public:
 #endif
 		{
 			m_eError = wmf_error_BadFile;
-			return FALSE;
+            return false;
 		}
 
 		m_pBufferData = new TFileInfo;
@@ -117,7 +117,7 @@ public:
 		{
 			m_eError = wmf_error_NotEnoughMemory;
 			::fclose( pFile );
-			return FALSE;
+            return false;
 		}
 
 		TFileInfo *pData = (TFileInfo *)m_pBufferData;
@@ -125,7 +125,7 @@ public:
 
 		m_nBufferType = WMF_OPEN_FROM_FILE;
 
-		return TRUE;
+        return true;
 	}
 #ifdef DESKTOP_EDITOR_GRAPHICS
 	void SetFontManager(CFontManager* pManager = NULL)
@@ -172,7 +172,7 @@ public:
 		return m_pFontManager;
 	}
 
-	BOOL OpenFromMemory(unsigned char *pMemory, long lLength)
+    bool OpenFromMemory(unsigned char *pMemory, long lLength)
 	{
 		if ( m_pBufferData )
 			delete m_pBufferData;
@@ -180,7 +180,7 @@ public:
 		if ( ( NULL == pMemory ) || ( lLength <= 0 ) )
 		{	
 			m_eError = wmf_error_BadFile;
-			return FALSE;
+            return false;
 		}
 
 
@@ -188,7 +188,7 @@ public:
 		if ( !m_pBufferData )
 		{
 			m_eError = wmf_error_NotEnoughMemory;
-			return FALSE;
+            return false;
 		}
 
 		TMemoryInfo *pData = (TMemoryInfo *)m_pBufferData;
@@ -200,7 +200,7 @@ public:
 
 		m_nBufferType = WMF_OPEN_FROM_MEMORY;
 
-		return TRUE;
+        return true;
 	}
 
 
@@ -4037,9 +4037,9 @@ private:
 			BSTR bsFontName = CString( pFont->sFaceName ).AllocSysString();
 #endif
 
-			BOOL bNeedFindByParams = FALSE;
+            bool bNeedFindByParams = false;
 #ifdef DESKTOP_EDITOR_GRAPHICS
-			if ( TRUE == m_pFontManager->LoadFontByName( bsFontName, 1, 0, 0, 0 ) )
+            if (  m_pFontManager->LoadFontByName( bsFontName, 1, 0, 0, 0 ) != 0)
 			{
 				unsigned long ulBit = 0;
 				unsigned int unIndex = 0;
@@ -4063,12 +4063,12 @@ private:
 					VARIANT_BOOL vbSuccess;
 					m_pFontManager->IsUnicodeRangeAvailable( ulBit, unIndex, &vbSuccess );
 					if ( VARIANT_TRUE != vbSuccess )
-						bNeedFindByParams = TRUE;
+                        bNeedFindByParams = true;
 				}
 #endif
 			}
 			else
-				bNeedFindByParams = TRUE;
+                bNeedFindByParams = true;
 			
 			if ( bNeedFindByParams )
 			{
@@ -4084,7 +4084,7 @@ private:
 				if ( NULL != pFontInfo)
 				{
 					long lStyle = ( pFontInfo->m_bBold ? 1 : 0 ) + ( pFontInfo->m_bItalic ? 2 : 0 );
-					if ( TRUE == m_pFontManager->LoadFontByName( pFontInfo->m_wsFontName, 11, lStyle, 96, 96 ) )
+                    if ( 0 != m_pFontManager->LoadFontByName( pFontInfo->m_wsFontName, 11, lStyle, 96, 96 ) )
 					{
 						free( pFont->sFaceName );
 						std::string sNewName = unicode_to_ascii( pFontInfo->m_wsFontName.c_str());

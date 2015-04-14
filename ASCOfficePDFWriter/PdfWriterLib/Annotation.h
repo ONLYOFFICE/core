@@ -13,5 +13,5 @@ unsigned long AnnotationSetBorderStyle  (Annotation  pAnnot, BSSubtype eSubtype,
 unsigned long LinkAnnotSetBorderStyle   (Annotation  pAnnot, float fWidth, unsigned short nDashOn, unsigned short nDashOff );
 unsigned long LinkAnnotSetHighlightMode (Annotation  pAnnot, AnnotHighlightMode eMode);
 unsigned long TextAnnotSetIcon          (Annotation  pAnnot, AnnotIcon eIcon);
-unsigned long TextAnnotSetOpened        (Annotation  pAnnot, BOOL bOpened);
+unsigned long TextAnnotSetOpened        (Annotation  pAnnot, bool bOpened);
 #endif /* _ANNOTATION_H */

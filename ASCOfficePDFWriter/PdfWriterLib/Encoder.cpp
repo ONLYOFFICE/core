@@ -9,9 +9,9 @@
 unsigned long  EncoderValidate     (EncoderRecPtr pEncoder)
 {
 	if ( !pEncoder || ENCODER_SIG_BYTES != pEncoder->nSigBytes )
-        return FALSE;
+        return false;
     else
-        return TRUE;
+        return true;
 }
 void           EncoderSetParseText (EncoderRecPtr pEncoder, ParseTextRec *pState, const BYTE *pText, unsigned int nLen)
 {
@@ -124,7 +124,7 @@ unsigned long              BasicEncoderOverrideMap    (EncoderRecPtr pEncoder, c
         pnDst++;
         pFlags++;
     }
-	pData->bHasDifferences = TRUE;
+    pData->bHasDifferences = true;
 
     return OK;
 }
@@ -140,14 +140,14 @@ unsigned long  BasicEncoderWrite    (EncoderRecPtr pEncoder, StreamRecPtr pOut)
     BasicEncoderAttr pAttr = (BasicEncoderAttr)pEncoder->pAttr;
 
     //  Если записан ENCODING_FONT_SPECIFIC, тогда у объекта объект Encoding не пишется BaseEncoding
-	BOOL bFontSpecific = FALSE;
+    bool bFontSpecific = false;
 	if ( 0 == UtilsStrCmp( pAttr->sBaseEncoding, ENCODING_FONT_SPECIFIC ) )
-		bFontSpecific = TRUE;
+        bFontSpecific = true;
 
     // Если EncoderRecPtr имеет различные данные, тогда объект Еncoding пишется как 
     // Dictionary-object, в противном случаем мы его пишем как name-object.
     
-	if ( TRUE == pAttr->bHasDifferences ) 
+    if ( true == pAttr->bHasDifferences )
 	{
 		if ( !bFontSpecific )
 			nRet = StreamWriteStr( pOut, "/Encoding <<\012/Type /Encoding\012/BaseEncoding ");
@@ -179,7 +179,7 @@ unsigned long  BasicEncoderWrite    (EncoderRecPtr pEncoder, StreamRecPtr pOut)
 		return nRet;
 
     /* write differences data */
-	if ( TRUE == pAttr->bHasDifferences ) 
+    if ( true == pAttr->bHasDifferences )
 	{
         nRet = StreamWriteStr( pOut, "/Differences [" );
         if ( OK != nRet )
@@ -264,7 +264,7 @@ EncoderRecPtr        BasicEncoderNew      (MMgr oMMgr, const char *sEncodingName
 
 	pEncoderAttr->nFirstChar = BASIC_ENCODER_FIRST_CHAR;
 	pEncoderAttr->nLastChar  = BASIC_ENCODER_LAST_CHAR;
-	pEncoderAttr->bHasDifferences = FALSE;
+    pEncoderAttr->bHasDifferences = false;
 
 	pEndPointer = pEncoderAttr->sBaseEncoding + LIMIT_MAX_NAME_LEN;
 
@@ -384,7 +384,7 @@ EncoderRecPtr        CMapEncoderStreamNew          (MMgr oMMgr, int nType, char 
 	}
 	for ( int nIndex = 0; nIndex < 256; nIndex++ )
 	{
-		pAttr->pVector[nIndex].bIsVector = FALSE;
+        pAttr->pVector[nIndex].bIsVector = false;
 		pAttr->pVector[nIndex].pVector   = NULL;
 		pAttr->pVector[nIndex].nCID      = 0;
 	}
@@ -443,13 +443,13 @@ unsigned long  CMapEncoderStreamLoadVector2  (EncoderRecPtr pEncoder, XmlUtils::
 			sValue = oVector.GetAttribute( _T("index") );
 			int nVectorIndex = XmlUtils::GetInteger( sValue );
 			sValue = oVector.GetAttribute( _T("isvector") );
-			BOOL bIsVector = ( 1 == XmlUtils::GetInteger( sValue ) ? TRUE : FALSE ) ;
+            bool bIsVector = ( 1 == XmlUtils::GetInteger( sValue ) ? true : false ) ;
 			sValue = oVector.GetAttribute( _T("cid") );
 			int nCID = XmlUtils::GetInteger( sValue );
 
 			if ( bIsVector )
 			{
-				pVector[nVectorIndex].bIsVector = TRUE;
+                pVector[nVectorIndex].bIsVector = true;
 				pVector[nVectorIndex].pVector   = (CMapVectorEntry *)GetMem( pEncoder->oMMgr, 256 * sizeof(CMapVectorEntry) );
 				if ( !pVector[nVectorIndex].pVector )
 					return AVS_OFFICEPDFWRITER_ERROR_NOT_ENOUGH_MEMORY;
@@ -458,7 +458,7 @@ unsigned long  CMapEncoderStreamLoadVector2  (EncoderRecPtr pEncoder, XmlUtils::
 				{
 					pVector[nVectorIndex].pVector[nVIndex].pVector   = NULL;
 					pVector[nVectorIndex].pVector[nVIndex].nCID      = 0;
-					pVector[nVectorIndex].pVector[nVIndex].bIsVector = FALSE;
+                    pVector[nVectorIndex].pVector[nVIndex].bIsVector = false;
 				}
 
 				if ( OK != ( nRet = CMapEncoderStreamLoadVector2( pEncoder, oVector, &(pVector[nVectorIndex].pVector) ) ) )
@@ -1028,37 +1028,37 @@ unsigned long CMapEncoderAddJWWLineHead    (EncoderRecPtr pEncoder, const unsign
 
     return OK;
 }
-BOOL          EncoderCheckJWWLineHead      (EncoderRecPtr pEncoder, const unsigned short nCode)
+bool          EncoderCheckJWWLineHead      (EncoderRecPtr pEncoder, const unsigned short nCode)
 {
     if ( !EncoderValidate( pEncoder ) )
-        return FALSE;
+        return false;
 
 	if ( EncoderTypeDoubleByteBuilt != pEncoder->eType )
-        return FALSE;
+        return false;
 
 	CMapEncoderAttr pAttr = (CMapEncoderAttr)pEncoder->pAttr;
 
     for ( unsigned int nIndex = 0; nIndex < MAX_JWW_NUM; nIndex++) 
 	{
 		if ( nCode == pAttr->anJWWLineHead[nIndex] )
-            return TRUE;
+            return true;
 
 		if ( 0 == pAttr->anJWWLineHead[nIndex] )
-            return FALSE;
+            return false;
     }
 
-    return FALSE;
+    return false;
 }
-BOOL          CMapEncoderUpdateUnicodeArray(EncoderRecPtr pEncoder, unsigned short *pArray)
+bool          CMapEncoderUpdateUnicodeArray(EncoderRecPtr pEncoder, unsigned short *pArray)
 {
 	// Используется только для кодировок типа EncoderTypeToUnicode
 	if ( EncoderTypeToUnicode != pEncoder->eType )
-		return FALSE;
+        return false;
 
 	CMapEncoderAttr pAttr = (CMapEncoderAttr)pEncoder->pAttr;
 	UnicodeMapRec* pResultArray = new UnicodeMapRec[257]; // 0-ой символ + 255 символов кодировки + 1 символ 0xFFFF
 	if ( !pResultArray )
-		return FALSE;
+        return false;
 
 	int nIndex = 0;
 	pResultArray[0].nCode    = 0;
@@ -1086,7 +1086,7 @@ BOOL          CMapEncoderUpdateUnicodeArray(EncoderRecPtr pEncoder, unsigned sho
 	if ( 255 < nIndex )
 	{
 		delete []pResultArray;
-		return FALSE;
+        return false;
 	}
 	else
 	{
@@ -1095,7 +1095,7 @@ BOOL          CMapEncoderUpdateUnicodeArray(EncoderRecPtr pEncoder, unsigned sho
 		CMapEncoderSetUnicodeArray( pEncoder, pResultArray );
 		pAttr->nLastChar = nIndex - 1;
 		delete []pResultArray;
-		return TRUE;
+        return true;
 	}
 
 }
@@ -1155,7 +1155,7 @@ WritingMode    EncoderGetWritingMode(EncoderRecPtr pEncoder)
 
     return WModeHorizontal;
 }
-BOOL           EncoderWCharToString (EncoderRecPtr pEncoder, CString bsSrc, CString *psDst)
+bool           EncoderWCharToString (EncoderRecPtr pEncoder, CString bsSrc, CString *psDst)
 {
 	CStringW sSrc( bsSrc );
 	// Данная функция проверяет все ли символы из usSrc присутствуют в данной кодировке;
@@ -1167,14 +1167,14 @@ BOOL           EncoderWCharToString (EncoderRecPtr pEncoder, CString bsSrc, CStr
 		unsigned short unUnicodeChar = (unsigned short)sSrc.GetAt( nIndex );
 		unsigned short unCode = EncoderToCode( pEncoder, unUnicodeChar );
 		if ( 0xFFFF == unCode )
-			return FALSE;
+            return false;
 		else
 			sResult += wchar_t(unCode);
 	}
 
 	*psDst = sResult;
 
-	return TRUE;
+    return true;
 }
 
 

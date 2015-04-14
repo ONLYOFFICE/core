@@ -226,23 +226,23 @@ namespace OOX
 
 	public:
 
-		BOOL Read (const CPath& oDirPath)
+                bool Read (const CPath& oDirPath)
 		{
 			OOX::CPath oFullPath = oDirPath / c_oContentTypeFileName;
 
 			XmlUtils::CXmlLiteReader oReader;
 			if ( !oReader.FromFile( oFullPath.m_strFilename ) )
-				return FALSE;
+                                return false;
 			return ReadFromReader(oReader);
 		}
-		BOOL ReadFromString (CString& sXml)
+                bool ReadFromString (CString& sXml)
 		{
 			XmlUtils::CXmlLiteReader oReader;
 			if ( !oReader.FromString( sXml ) )
-				return FALSE;
+                                return false;
 			return ReadFromReader(oReader);
 		}
-		BOOL Write(const CPath& oDirPath) const
+                bool Write(const CPath& oDirPath) const
 		{
 			CString sXml = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?><Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">");
 
@@ -265,7 +265,7 @@ namespace OOX
 			OOX::CPath oFullPath = oDirPath / c_oContentTypeFileName;
 			XmlUtils::SaveToFile( oFullPath.m_strFilename, sXml );
 
-			return TRUE;
+                        return true;
 		}
 
 	public:
@@ -297,11 +297,11 @@ namespace OOX
 		}
 
 	private:
-		BOOL ReadFromReader (XmlUtils::CXmlLiteReader& oReader)
+                bool ReadFromReader (XmlUtils::CXmlLiteReader& oReader)
 		{
 			CWCharWrapper sName;
 			if ( !oReader.ReadNextNode() || _T("Types") != ( sName = oReader.GetName() ) || oReader.IsEmptyNode() )
-				return FALSE;
+                                return false;
 
 			int nTypesDepth = oReader.GetDepth();
 			while ( oReader.ReadNextSiblingNode( nTypesDepth ) )
@@ -320,7 +320,7 @@ namespace OOX
 				}
 			}
 
-			return TRUE;
+                        return true;
 		}
         void AddOverride(const CString& sType, CString& sPath)
 		{

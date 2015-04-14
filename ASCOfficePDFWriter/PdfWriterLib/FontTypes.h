@@ -105,7 +105,7 @@ typedef struct TFontDefRec
 
 	unsigned int        nID; // идентефикатор, для случая различных FontDef с одинаковым BaseFont
 
-    BOOL                bValid;
+    bool                bValid;
     void               *pAttr;
 } FontDefRec;
 
@@ -113,7 +113,7 @@ typedef struct TFontDefRec
 
 void FontDefFree    (FontDef pFontDef);
 void FontDefCleanup (FontDef pFontDef);
-BOOL FontDefValidate(FontDef pFontDef);
+bool FontDefValidate(FontDef pFontDef);
 //------ Type1FontDef  --------------------------------------------------------------
 
 typedef struct TType1FontDefAttrRec   *Type1FontDefAttr;
@@ -131,8 +131,8 @@ typedef struct TType1FontDefAttrRec
     unsigned int  nLength1;
     unsigned int  nLength2;
     unsigned int  nLength3;
-    BOOL          bIsBase14Font;
-    BOOL          bIsFixedPitch;
+    bool          bIsBase14Font;
+    bool          bIsFixedPitch;
 	short         nType;          // Type1 = 0, Type1C = 1, Type1COT = 2
 
     StreamRecPtr        pFontData;
@@ -308,14 +308,14 @@ typedef struct TTrueTypeFontDefAttrRec
 
     unsigned int        nLength1;
 
-    BOOL                bEmbedding;
-    BOOL                bIsCIDFont;
+    bool                bEmbedding;
+    bool                bIsCIDFont;
 
-	BOOL                bCFF;                  // FALSE - работаем как с чистым TTF, TRUE - работаем как с OTF с таблицей 'CFF '
+    bool                bCFF;                  // FALSE - работаем как с чистым TTF, TRUE - работаем как с OTF с таблицей 'CFF '
 
-	BOOL                bEncoding;             // Три данных параметра необходимы для точного определения
-	BOOL                bSymbolic;             // таблицы Cmap.
-	BOOL                bUsesMacRomanEncoding; // 
+    bool                bEncoding;             // Три данных параметра необходимы для точного определения
+    bool                bSymbolic;             // таблицы Cmap.
+    bool                bUsesMacRomanEncoding; //
 
     wchar_t             wsFilePath[MAX_PATH];
     unsigned int        unFontIndex;

@@ -59,7 +59,9 @@ CString RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 	CString sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("embeddings");
 	
 	FileSystem::Directory::CreateDirectory( sFilenameFull );
+	
 	sFilenameFull += FILE_SEPARATOR_STR + sFilenameRels;
+	sFilenameRels = _T("embeddings/") + sFilenameRels;
 
 	Utils::CopyDirOrFile( m_sOleFilename, sFilenameFull );
 

@@ -111,7 +111,9 @@ CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 	CString sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR +_T("media");
 	
 	FileSystem::Directory::CreateDirectory( sFilenameFull );
+	
 	sFilenameFull += FILE_SEPARATOR_STR + sFilenameRels;
+	sFilenameRels = _T("media/") + sFilenameRels;
 
 	if( m_sPicFilename != sFilenameFull )
 		Utils::CopyDirOrFile( m_sPicFilename, sFilenameFull );

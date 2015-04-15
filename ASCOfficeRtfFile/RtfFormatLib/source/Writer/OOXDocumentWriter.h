@@ -54,10 +54,10 @@ public:
 		else
 		{
 			RenderParameter oNewParam;
-			oNewParam.poDocument = &m_oDocument;
-			oNewParam.poWriter = &m_oWriter;
-			oNewParam.poRels = &m_oWriter.m_oDocRels;
-			oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
+			oNewParam.poDocument	= &m_oDocument;
+			oNewParam.poWriter		= &m_oWriter;
+			oNewParam.poRels		= &m_oWriter.m_oDocRels;
+			oNewParam.nType			= RENDER_TO_OOX_PARAM_UNKNOWN;
 
 			if( m_oDocument.GetCount() > 1 && m_oDocument[1]->GetCount() > 0 )//если что-то есть в следующей секции значит предудущая закончилась
 			{
@@ -101,10 +101,10 @@ public:
 	bool SaveByItemEnd()
 	{
 		RenderParameter oNewParam;
-		oNewParam.poDocument = &m_oDocument;
-		oNewParam.poWriter = &m_oWriter;
-		oNewParam.poRels = &m_oWriter.m_oDocRels;
-		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
+		oNewParam.poDocument	= &m_oDocument;
+		oNewParam.poWriter		= &m_oWriter;
+		oNewParam.poRels		= &m_oWriter.m_oDocRels;
+		oNewParam.nType			= RENDER_TO_OOX_PARAM_UNKNOWN;
 
 		if( m_oDocument.GetCount() > 0 && m_oDocument[0]->GetCount() > 0 )//дописываем последний параграф
 		{

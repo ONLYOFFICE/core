@@ -179,10 +179,11 @@ public: CString RenderToRtf(RenderParameter oRenderParameter)
 		if( true == m_bReferenceToEndnote )
 			sResult.Append( _T("\\fldalt") );
 		if( false == m_sData.IsEmpty() )
-			sResult.AppendFormat( _T("{\\*\\datafield %ls}"), m_sData);
+            sResult.AppendFormat( _T("{\\*\\datafield %ls}"), m_sData.GetBuffer());
 		sResult.Append(_T("}"));
 
-		sResult.AppendFormat(_T("{\\fldrslt %ls}"),  m_oResult->RenderToRtf( oRenderParameter ) );
+        CString str = m_oResult->RenderToRtf( oRenderParameter ) ;
+        sResult.AppendFormat(_T("{\\fldrslt %ls}"),  str.GetBuffer());
 		sResult.Append(_T("}"));
 		return sResult;
 	}
@@ -206,7 +207,7 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 			{
 				//оставляем только одну ссылку
 				CString sHyperlink = sInsertText;
-				sHyperlink.Delete( nIndex, (int)_tcslen( _T("HYPERLINK") ) );
+                sHyperlink.Delete( nIndex, 9/*(int)_tcslen( _T("HYPERLINK") )*/ );
 				sHyperlink.Remove( '\"' );
 				sHyperlink.Trim();
 				//заменяем пробелы на %20
@@ -216,7 +217,7 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 				OOXRelsWriter* poRelsWriter = static_cast<OOXRelsWriter*>( oRenderParameter.poRels );
 				CString sId = poRelsWriter->AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"), Utils::PrepareToXML( sHyperlink ), false );
 				//добавляем гиперссылку в документ
-				sResult.AppendFormat( _T("<w:hyperlink r:id=\"%ls\" >"), sId );
+                sResult.AppendFormat( _T("<w:hyperlink r:id=\"%ls\" >"), sId.GetBuffer() );
 				oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
 				sResult.Append(m_oResult->RenderToOOX(oNewParam));
 				sResult.Append( _T("</w:hyperlink>") );
@@ -228,7 +229,9 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 					RenderParameter oNewParametr = oRenderParameter;
 					oNewParametr.nType = RENDER_TO_OOX_PARAM_PLAIN;
 					//sResult.Append(_T("<w:r>"));
-					sResult.AppendFormat(_T("<w:fldSimple w:instr=\"%ls\">"), Utils::PrepareToXML( m_oInsert->RenderToOOX(oNewParametr) ).Trim() );
+
+                    CString str = Utils::PrepareToXML( m_oInsert->RenderToOOX(oNewParametr) ).Trim();
+                    sResult.AppendFormat(_T("<w:fldSimple w:instr=\"%ls\">"), str.GetBuffer() );
 					RenderParameter oNewParam = oRenderParameter;
 					oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
 					sResult.Append(m_oResult->RenderToOOX(oNewParam));
@@ -241,7 +244,10 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 					RenderParameter oNewParametr = oRenderParameter;
 					oNewParametr.nType = RENDER_TO_OOX_PARAM_PLAIN;
 					sResult.Append(_T("<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>"));
-					sResult.AppendFormat(_T("<w:r><w:instrText xml:space=\"preserve\">%ls</w:instrText></w:r>"), Utils::PrepareToXML( m_oInsert->RenderToOOX(oNewParametr) ));
+
+                    CString str = Utils::PrepareToXML( m_oInsert->RenderToOOX(oNewParametr) );
+
+                    sResult.AppendFormat(_T("<w:r><w:instrText xml:space=\"preserve\">%ls</w:instrText></w:r>"), str.GetBuffer());
 					sResult.Append(_T("<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>"));
 					//заканчиваем этот параграф
 					sResult.Append(_T("</w:p>"));

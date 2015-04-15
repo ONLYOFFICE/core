@@ -23,7 +23,7 @@ CString RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
 				RenderParameter oNewParameter = oRenderParameter;
 				oNewParameter.nType = RENDER_TO_RTF_PARAM_FONT_TBL;
 				for( int i = 0; i < (int)m_aArray.size(); i++ )
-					sResult.AppendFormat(_T("%ls"),m_aArray[i].RenderToRtf( oNewParameter ));
+                    sResult.AppendFormat(_T("%ls"),m_aArray[i].RenderToRtf( oNewParameter ).GetBuffer());
 				sResult.Append(_T("}"));
 			}
 			return sResult;

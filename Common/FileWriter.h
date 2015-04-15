@@ -19,11 +19,11 @@ namespace NFileWriter
 		// Флаш ( дописываем все данные )
 		virtual void Flush () = 0;
 		// Сик на указанную позицию по файлу
-		virtual void Seek ( LONG64 lPosition, DWORD dwFrom = FILE_CURRENT ) = 0;
+                virtual void Seek ( LONG64 lPosition, DWORD dwFrom = 0 ) = 0;
 		// Текущая позиция 
-		virtual void GetPosition(ULONGLONG& nPos) = 0;
+                virtual void GetPosition(ULONG64& nPos) = 0;
 		// Размер записанного файла
-		virtual void GetSize(ULONGLONG& nLen) = 0;
+                virtual void GetSize(ULONG64& nLen) = 0;
 
 	public :
 
@@ -109,7 +109,7 @@ namespace NFileWriter
 				while ( 0 >= ( lBufferFreeLength = m_lBufferSize - m_lWritePointer ) )
 				{
 					// Пишем данные, если не получилось, то генерируем исключение
-					if ( FALSE == WriteBuffer ( m_lBufferSize ) )
+                                        if ( false == WriteBuffer ( m_lBufferSize ) )
 						throw 1;
 				}
 
@@ -135,7 +135,7 @@ namespace NFileWriter
 			if ( 0 < m_lWritePointer )
 			{
 				// Если пришла ошибка, то генерируем исключение
-				if ( FALSE == WriteBuffer ( m_lWritePointer ) )
+                                if ( false == WriteBuffer ( m_lWritePointer ) )
 					throw 1;
 			}
 		}
@@ -156,13 +156,13 @@ namespace NFileWriter
 
 		}
 		// Текущая позиция 
-		virtual void GetPosition(ULONGLONG& nPos)
+                virtual void GetPosition(ULONG64& nPos)
 		{
 			nPos = m_oFile.GetPosition() + m_lWritePointer;
 
 		}
 		// Размер записанного файла
-		virtual void GetSize(ULONGLONG& nLen) 
+                virtual void GetSize(ULONG64& nLen)
 		{
 			nLen = m_oFile.GetFileSize() + m_lWritePointer;	
 
@@ -170,17 +170,17 @@ namespace NFileWriter
 	private :
 
 		// Сама запись на диск
-		BOOL WriteBuffer ( LONG64 lSize )
+                bool WriteBuffer ( LONG64 lSize )
 		{
 			// Пишем на диск
 			if (m_oFile.WriteFile(m_lpBuffer, ( DWORD ) lSize) != S_OK)
 			{
 				// Если что-то произошло не так, возвращаем FALSE
-				return FALSE;
+                                return false;
 			}
 			// Сбрасываем в 0 указатель на позицию данных в буффере
 			m_lWritePointer = 0;
-			return TRUE;
+                        return true;
 		}
 	};
 }

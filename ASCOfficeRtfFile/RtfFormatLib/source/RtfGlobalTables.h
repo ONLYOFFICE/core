@@ -114,7 +114,10 @@ public:
 			RenderParameter oNewParameter = oRenderParameter;
 			oNewParameter.nType = RENDER_TO_RTF_PARAM_COLOR_TBL;
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
-				sResult.AppendFormat(_T("%ls"),m_aArray[i].RenderToRtf( oNewParameter ));
+            {
+                CString str = m_aArray[i].RenderToRtf( oNewParameter );
+                sResult.AppendFormat(_T("%ls"), str.GetBuffer());
+            }
 			sResult.Append(_T("}"));
 		}
 		return sResult;
@@ -212,7 +215,10 @@ public:
 		{
 			sResult.Append(_T("{\\stylesheet"));
 			for( int i = 0; i < (int)m_aArray.size(); i++ )
-				sResult.AppendFormat(_T("%ls\n\n"),m_aArray[i]->RenderToRtf( oRenderParameter ));
+            {
+                CString str = m_aArray[i]->RenderToRtf( oRenderParameter );
+                sResult.AppendFormat(_T("%ls\n\n"), str.GetBuffer());
+            }
 			sResult.Append(_T("}"));
 		}
 		return sResult;
@@ -341,11 +347,16 @@ public:
 			{
 				sResult.Append(_T("{\\*\\listpicture") );
 				for( int i = 0; i < (int)m_aPictureList.GetCount(); i++ )
+                {
 					sResult.Append( m_aPictureList[i]->RenderToRtf( oRenderParameter ) );
+                }
 				sResult.Append(_T("}") );
 			}
 			for( int i = 0; i < (int)m_aArray.size(); i++)
-				sResult.AppendFormat(_T("{%ls}"), m_aArray[i].RenderToRtf( oRenderParameter ) );
+            {
+                CString str = m_aArray[i].RenderToRtf( oRenderParameter );
+                sResult.AppendFormat(_T("{%ls}"), str.GetBuffer() );
+            }
 			sResult.Append(_T("}"));
 		}
 		return sResult;
@@ -372,7 +383,10 @@ public:
 			{
 				sResult.Append(_T("{\\*\\listoverridetable"));
 				for( int i = 0; i < (int)m_aArray.size(); i++)
-					sResult.AppendFormat(_T("{%ls}"), m_aArray[i].RenderToRtf( oRenderParameter ) );
+                {
+                    CString str = m_aArray[i].RenderToRtf( oRenderParameter );
+                    sResult.AppendFormat(_T("{%ls}"), str.GetBuffer() );
+                }
 				sResult.Append(_T("}"));
 			}
 			return sResult;

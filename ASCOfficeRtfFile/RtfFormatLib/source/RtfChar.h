@@ -276,60 +276,66 @@ private: CString renderTextToXML( CString sParam )
 		{
 			CString sResult;
 			if( _T("Text") == sParam )
-				sResult.AppendFormat( _T("<w:t xml:space= \"preserve\">%ls</w:t>"), Utils::PrepareToXML( m_sChars ) );
+            {
+                sResult.AppendFormat( _T("<w:t xml:space= \"preserve\">%ls</w:t>"), Utils::PrepareToXML( m_sChars ).GetBuffer() );
+            }
 			else if( _T("Math") == sParam )
-				sResult.AppendFormat( _T("<m:t xml:space= \"preserve\">%ls</m:t>"), Utils::PrepareToXML( m_sChars ));
+            {
+                sResult.AppendFormat( _T("<m:t xml:space= \"preserve\">%ls</m:t>"), Utils::PrepareToXML( m_sChars ).GetBuffer());
+            }
 			return sResult;
 		}
+public:
+    CString RenderToOOX(RenderParameter oRenderParameter)
+    {
+        CString sResult;
+        if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
+        {
+            sResult.Append(_T("<w:r>"));
+            sResult.Append(_T("<w:rPr>"));
+            sResult.Append( m_oProperty.RenderToOOX(oRenderParameter) );
+            sResult.Append(_T("</w:rPr>"));
+            sResult.Append( renderTextToXML(_T("Text")) );
+            sResult.Append(_T("</w:r>"));
+        }
+        else if(RENDER_TO_OOX_PARAM_TEXT == oRenderParameter.nType)
+            sResult = renderTextToXML( _T("Text") );
+        else if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType)
+            sResult = renderTextToXML( _T("Math") );
+        else if( RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType)
+            sResult = m_sChars;
+        return sResult;
+    }
 
-public: CString RenderToOOX(RenderParameter oRenderParameter)
-		{
-			CString sResult;
-			if(RENDER_TO_OOX_PARAM_RUN == oRenderParameter.nType)
-			{
-				sResult.Append(_T("<w:r>"));
-				sResult.Append(_T("<w:rPr>"));
-				sResult.Append( m_oProperty.RenderToOOX(oRenderParameter) );
-				sResult.Append(_T("</w:rPr>"));
-				sResult.Append( renderTextToXML(_T("Text")) );
-				sResult.Append(_T("</w:r>"));
-			}
-			else if(RENDER_TO_OOX_PARAM_TEXT == oRenderParameter.nType)
-				sResult = renderTextToXML( _T("Text") );
-			else if( RENDER_TO_OOX_PARAM_MATH == oRenderParameter.nType)
-				sResult = renderTextToXML( _T("Math") );
-			else if( RENDER_TO_OOX_PARAM_PLAIN == oRenderParameter.nType)
-				sResult = m_sChars;
-			return sResult;
-		}
-public: static CString renderRtfText( CString& sText, void* poDocument, RtfCharProperty* oCharProperty = NULL );
-public: CString RenderToRtf(RenderParameter oRenderParameter)
-		{
-			CString result;
-			if( RENDER_TO_RTF_PARAM_CHAR ==  oRenderParameter.nType )
-			{
-				if( true == m_bRtfEncode )
-					result.Append( renderRtfText( m_sChars, oRenderParameter.poDocument, &m_oProperty ) );
-				else
-					result.Append( m_sChars );
-			}
-			else
-			{
-				CString sText;
-				if( true == m_bRtfEncode )
-					sText = renderRtfText( m_sChars, oRenderParameter.poDocument, &m_oProperty );
-				else
-					sText = m_sChars;
-				if( _T("") != sText )
-				{
-					result.Append(_T("{"));
-					result.Append( m_oProperty.RenderToRtf( oRenderParameter ) );
-					result.Append( _T(" ") + sText );
-					result.Append(_T("}"));
-				}
-			}
-			return result;
-		}
+    static CString renderRtfText( CString& sText, void* poDocument, RtfCharProperty* oCharProperty = NULL );
+
+    CString RenderToRtf(RenderParameter oRenderParameter)
+    {
+        CString result;
+        if( RENDER_TO_RTF_PARAM_CHAR ==  oRenderParameter.nType )
+        {
+            if( true == m_bRtfEncode )
+                result.Append( renderRtfText( m_sChars, oRenderParameter.poDocument, &m_oProperty ) );
+            else
+                result.Append( m_sChars );
+        }
+        else
+        {
+            CString sText;
+            if( true == m_bRtfEncode )
+                sText = renderRtfText( m_sChars, oRenderParameter.poDocument, &m_oProperty );
+            else
+                sText = m_sChars;
+            if( _T("") != sText )
+            {
+                result.Append(_T("{"));
+                result.Append( m_oProperty.RenderToRtf( oRenderParameter ) );
+                result.Append( _T(" ") + sText );
+                result.Append(_T("}"));
+            }
+        }
+        return result;
+    }
 };
 class RtfCharNative : public RtfChar
 {            

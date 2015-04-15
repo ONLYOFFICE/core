@@ -111,7 +111,7 @@ public:
 				int res = file_inp.OpenFile(sPath);
 				if (res != S_OK) return false;
 
-				res = file_out.CreateFileW(sTargetFile);
+                res = file_out.CreateFile(sTargetFile);
 				if (res != S_OK) return false;
 
 				DWORD dwBytesRead = 0;

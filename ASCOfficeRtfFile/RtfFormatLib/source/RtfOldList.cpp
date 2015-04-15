@@ -27,7 +27,7 @@ CString RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 			sResult.Append(_T("<w:lvl w:ilvl=\"0\">"));
 			sResult.Append(_T("<w:numFmt w:val=\"bullet\"/>"));
 			if( false == sText.IsEmpty() )
-				sResult.AppendFormat(_T("<w:lvlText w:val=\"%ls\"/>"), Utils::PrepareToXML( sText ) );
+                sResult.AppendFormat(_T("<w:lvlText w:val=\"%ls\"/>"), Utils::PrepareToXML( sText ).GetBuffer() );
 			else
 			{
 				sResult.Append(_T("<w:lvlText w:val=\"") );
@@ -35,9 +35,9 @@ CString RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 				sResult.Append(_T("\"/>") );
 			}
 			if( false == sParProp.IsEmpty() )
-				sResult.AppendFormat(_T("<w:pPr>%ls</w:pPr>"), sParProp );
+                sResult.AppendFormat(_T("<w:pPr>%ls</w:pPr>"), sParProp.GetBuffer() );
 			if( false == sCharProp.IsEmpty() )
-				sResult.AppendFormat(_T("<w:rPr>%ls</w:rPr>"), sCharProp );
+                sResult.AppendFormat(_T("<w:rPr>%ls</w:rPr>"), sCharProp.GetBuffer() );
 			if( lj_none != m_eLevelJust )
 			{
 				switch( m_eLevelJust )

@@ -82,7 +82,7 @@ public:
 		if( RENDER_TO_RTF_PARAM_NESTED != oRenderParameter.nType )
 			sResult.Append(_T("{\\mmath"));
 
-		sResult.AppendFormat(_T("{\\%ls"), m_sRtfName);
+        sResult.AppendFormat(_T("{\\%ls"), m_sRtfName.GetBuffer());
 		RenderParameter oNewParameter = oRenderParameter;
 
 		oNewParameter.nType = RENDER_TO_RTF_PARAM_UNKNOWN;
@@ -107,7 +107,7 @@ public:
 		sResult.Append(_T("}"));
 
 		if( RENDER_TO_RTF_PARAM_NESTED != oRenderParameter.nType )
-			sResult.AppendFormat(_T("}"), m_sRtfName);
+            sResult.AppendFormat(_T("}"), m_sRtfName.GetBuffer());
 		return sResult;
 	}
 	CString RenderToOOX(RenderParameter oRenderParameter)

@@ -45,16 +45,16 @@ CString RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 		case ot_link: sResult.Append( _T(" Type=\"Link\"") );break;
 		default: sResult.Append( _T(" Type=\"Embed\"") );break;
 	}
-	sResult.AppendFormat( _T(" ProgID=\"%ls\""), m_sOleClass );
-	sResult.AppendFormat( _T(" ShapeID=\"_x0000_s%d\""), poDocument->GetShapeId( oRenderParameter.nValue ) );
+    sResult.AppendFormat( _T(" ProgID=\"%ls\""), m_sOleClass.GetBuffer() );
+    sResult.AppendFormat( _T(" ShapeID=\"_x0000_s%d\""), poDocument->GetShapeId( oRenderParameter.nValue ) );
 	sResult.Append( _T(" DrawAspect=\"Content\"") );
-	sResult.AppendFormat( _T(" ObjectID=\"%ls\""), poDocument->m_oIdGenerator.Generate_OleId() );
+    sResult.AppendFormat( _T(" ObjectID=\"%ls\""), poDocument->m_oIdGenerator.Generate_OleId().GetBuffer() );
 
 	CString sExtension = _T("bin");
 	CString sMime = _T("application/vnd.openxmlformats-officedocument.oleObject");
 	
 	CString sFilenameRels;
-	sFilenameRels.AppendFormat( _T("oleObject%d.%ls"), poDocument->m_oIdGenerator.Generate_OleIndex(), sExtension);
+    sFilenameRels.AppendFormat( _T("oleObject%d.%ls"), poDocument->m_oIdGenerator.Generate_OleIndex(), sExtension.GetBuffer());
 	
 	CString sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("embeddings");
 	
@@ -66,34 +66,8 @@ CString RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 	Utils::CopyDirOrFile( m_sOleFilename, sFilenameFull );
 
 	poOOXWriter->m_oContentTypes.AddExtension( sMime, sExtension);
-	CString srId = poRelsWriter->AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject"), sFilenameRels);
-	sResult.AppendFormat( _T(" r:id=\"%ls\""), srId );
+    CString srId = poRelsWriter->AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject"), sFilenameRels);
+    sResult.AppendFormat( _T(" r:id=\"%ls\""), srId.GetBuffer() );
 	sResult.Append( _T("/>") );
 	return sResult;
-}
-
-DWORD CALLBACK OleGet1(POLE::Stream *pStream, void FAR* pTarget, DWORD dwRead)
-{
-	RtfOle1ToOle2Stream* piStream = static_cast<RtfOle1ToOle2Stream*>(pStream);
-	if( piStream->nCurPos + (int)dwRead > piStream->nBufferSize )
-		return 0;
-	memcpy( pTarget, (piStream->pBuffer + piStream->nCurPos) , dwRead );
-	piStream->nCurPos += dwRead;
-	return dwRead;
-}
-DWORD CALLBACK OlePut1(POLE::Stream *pStream, const void FAR* pTarget, DWORD dwRead)
-{
-	return 0;
-}
-DWORD CALLBACK OleGet2(POLE::Stream *pStream, void FAR* pTarget, DWORD dwRead)
-{
-	return 0;
-}
-DWORD CALLBACK OlePut2(POLE::Stream *pStream, const void FAR* pTarget, DWORD dwWrite)
-{
-	RtfOle2ToOle1Stream* piStream = static_cast<RtfOle2ToOle1Stream*>(pStream);
-	BYTE* pSource = (BYTE*)pTarget;
-	for( int i = 0; i < (int)dwWrite; i++ )
-		piStream->aBuffer.push_back( pSource[i] );
-	return dwWrite;
 }

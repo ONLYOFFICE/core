@@ -162,7 +162,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 						RtfCharPtr oNewChar( new RtfChar() );
 						oNewChar->m_bRtfEncode = false;
 						CString sFieldText;
-						sFieldText.AppendFormat(_T("HYPERLINK \"%ls\""), sTarget );
+                        sFieldText.AppendFormat(_T("HYPERLINK \"%ls\""), sTarget.GetBuffer() );
 						oNewChar->setText( sFieldText );
 						RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
 						oNewInsertParagraph->AddItem( oNewChar );
@@ -716,7 +716,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 					int nFontSize = 10;
 					if( PROP_DEF != oNewProperty.m_nFontSize )
 						nFontSize = oNewProperty.m_nFontSize / 2;
-					sFieldText.AppendFormat(_T("SYMBOL %d \\\\f \"%ls\" \\\\s %d"), nChar, sFont, nFontSize );
+                    sFieldText.AppendFormat(_T("SYMBOL %d \\\\f \"%ls\" \\\\s %d"), nChar, sFont.GetBuffer(), nFontSize );
 					oNewChar->setText( sFieldText );
 					RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
 					oNewInsertParagraph->AddItem( oNewChar );

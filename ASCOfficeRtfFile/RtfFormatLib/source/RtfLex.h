@@ -11,8 +11,8 @@
 class StringStream
 {
 private: 
-	LONGLONG m_nSizeAbs;//размер файла
-	LONGLONG m_nPosAbs;//позиция в файле
+    LONG64 m_nSizeAbs;//размер файла
+    LONG64 m_nPosAbs;//позиция в файле
 
 	//CStringA m_sBuffer;
 	unsigned char* m_aBuffer;
@@ -52,11 +52,11 @@ public:
 		dwBytesRead = srcFile.GetPosition();
 		srcFile.CloseFile();
 	}
-	void getBytes( int nCount, byte** pbData )
+    void getBytes( int nCount, BYTE** pbData )
 	{
 		if( m_nPosAbs + nCount < m_nSizeAbs )
 		{
-			(*pbData) = new byte[nCount];
+            (*pbData) = new BYTE[nCount];
 			memcpy( (*pbData), (m_aBuffer + m_nPosAbs + 1), nCount);
 			m_nPosAbs += nCount;
 		}
@@ -97,11 +97,11 @@ public:
 
 		m_nSizeAbs += nExtBufSize;
 	}
-	LONGLONG getCurPosition()
+    LONG64 getCurPosition()
 	{
 		return m_nPosAbs;
 	}
-	LONGLONG getSize()
+    LONG64 getSize()
 	{
 		return m_nSizeAbs;
 	}
@@ -121,11 +121,12 @@ public:
 	{
 		m_oFileWriter = NULL;
 		m_nReadBufSize = 1024 * 1024 * 5; // 5мб
-		m_caReadBuffer = (char*)::HeapAlloc(GetProcessHeap(), 0, m_nReadBufSize);
+        m_caReadBuffer = (char*)new char[m_nReadBufSize];
 	}
 	~RtfLex()
 	{
-		RELEASEHEAP( m_caReadBuffer );
+        if (m_caReadBuffer) delete []m_caReadBuffer;
+        m_caReadBuffer = NULL;
 		RELEASEOBJECT( m_oFileWriter );
 	}
 	double GetProgress()
@@ -144,7 +145,7 @@ public:
 	{
 		return m_oCurToken;
 	}
-	void ReadBytes( int nCount, byte** pbData )
+    void ReadBytes( int nCount, BYTE** pbData )
 	{
 		m_oStream.getBytes(nCount, pbData);
 	}
@@ -214,7 +215,7 @@ private:
 			if(c == '\\' || c == '{' || c == '}') 
 			{
 				token.Type = RtfToken::Text;
-				token.Key = CStringA((TCHAR)c);
+                token.Key = (char)c;
 			}
 			else if( c > 0 && c <= 31 )
 			{
@@ -296,7 +297,7 @@ private:
 				c = m_oStream.getc();
 				m_oStream.ungetc();
 			}
-			parametroInt = _ttol(parametroStr);
+            parametroInt = _wtoi(parametroStr.GetBuffer());
 
 			if (negativo)
 				parametroInt = -parametroInt;

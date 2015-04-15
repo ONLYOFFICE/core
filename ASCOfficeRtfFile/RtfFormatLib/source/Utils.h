@@ -7,6 +7,17 @@
 #define BUF_SIZE 2048
 #define ONE_INCH 2.54
 
+#ifndef CP_ACP          //ansi code page
+    #define CP_ACP 0
+#endif
+
+#ifndef CP_MACCP        //mac code page
+    #define CP_MACCP 2
+#endif
+
+#ifndef CP_SYMBOL        //Symbol
+    #define CP_SYMBOL 42
+#endif
 namespace Strings
 {	
 	static int ToDigit(TCHAR c)
@@ -20,29 +31,29 @@ namespace Strings
 
 		return 0;
 	}
-	static COLORREF ToColor(const CString& strValue)
-	{
-		// variables
-		int blue = 0;
-		int green = 0;
-		int red = 0;
+    static int ToColor(const CString& strValue)
+    {
+        // variables
+        int blue = 0;
+        int green = 0;
+        int red = 0;
 
-		CString color = strValue; color = color.Trim();
+        CString color = strValue; color = color.Trim();
 				
-		if (color.Find(_T("0x"))!=-1)
-			color.Delete(0,2);
-		if (color.Find(_T("#"))!=-1)
-			color.Delete(0,1);
+        if (color.Find(_T("0x"))!=-1)
+            color.Delete(0,2);
+        if (color.Find(_T("#"))!=-1)
+            color.Delete(0,1);
 
-		while (color.GetLength() < 6)
-			color = _T("0") + color;
+        while (color.GetLength() < 6)
+            color = _T("0") + color;
 
-		red = 16*ToDigit(color[0]) + ToDigit(color[1]);
-		green = 16*ToDigit(color[2]) + ToDigit(color[3]);
-		blue = 16*ToDigit(color[4]) + ToDigit(color[5]);
+        red = 16*ToDigit(color[0]) + ToDigit(color[1]);
+        green = 16*ToDigit(color[2]) + ToDigit(color[3]);
+        blue = 16*ToDigit(color[4]) + ToDigit(color[5]);
 
-		return RGB(red, green, blue);
-	}
+        return RGB(red, green, blue);
+    }
 	static void ToColor(const CString& strValue, int& nR, int& nG, int& nB, int& nA)
 	{
 		CString color = strValue; color = color.Trim();
@@ -136,54 +147,113 @@ public:
 			 _stscanf(str, _T("%d"), &nResult);
 		 return nResult;
 	 }
-	static bool MultybyteToUnicode(CStringA sInputStr, CStringW& sOutputStr, int nCodepage)
-	{
-		//todooo ПЕРЕПИСАТЬ 
-		sOutputStr = _T("");
-		int nBufSize = MultiByteToWideChar(nCodepage, 0, sInputStr, -1, NULL, NULL);
-		LPWSTR p = new WCHAR[ nBufSize + 1 ];
-		int nRes = MultiByteToWideChar(nCodepage, MB_ERR_INVALID_CHARS, sInputStr, -1, p, nBufSize);
-		p[ nBufSize ] = 0;
-		if( 0 != nRes )
-		{
-			sOutputStr.Append( p );
-			delete p;
-			return true;
-		}
-		else
-			return false;
-	}
-	static CStringW Utf8ToUnicode(CStringA sInputStr)//todo
-	{
-		//todooo ПЕРЕПИСАТЬ 
-		CStringW sResult;
-		int nBufSize = MultiByteToWideChar(CP_UTF8, 0, sInputStr, -1, NULL, NULL);
-		LPWSTR p = new WCHAR[ nBufSize + 1 ];
-		MultiByteToWideChar(CP_UTF8, 0, sInputStr, -1, p, nBufSize);
-		p[ nBufSize ] = 0;
-		sResult.Append( p );
-		delete p;
-		return sResult;
-	}
-	static CStringA UnicodeToUtf8(CStringW sInputStr)//todo
-	{
-		//todooo ПЕРЕПИСАТЬ 
-		CStringA sResult;
-		int nBufSize = WideCharToMultiByte(CP_UTF8, 0, sInputStr, -1, NULL, NULL, NULL, NULL);
-		LPSTR p = new CHAR[ nBufSize + 1 ];
-		WideCharToMultiByte(CP_UTF8, 0, sInputStr, -1, p, nBufSize, NULL, NULL);
-		p[ nBufSize ] = 0;
-		sResult.Append( p );
-		delete p;
-		return sResult;
-	}
 };
-
+static const int aCodePages[][2] = {
+    //charset	codepage
+    0,	1252, //ANSI
+    1,	0,//Default
+    2,	42,//Symbol
+    77,	10000,//Mac Roman
+    78,	10001,//Mac Shift Jis
+    79,	10003,//Mac Hangul
+    80,	10008,//Mac GB2312
+    81,	10002,//Mac Big5
+    83,	10005,//Mac Hebrew
+    84,	10004,//Mac Arabic
+    85,	10006,//Mac Greek
+    86,	10081,//Mac Turkish
+    87,	10021,//Mac Thai
+    88,	10029,//Mac East Europe
+    89,	10007,//Mac Russian
+    128,	932,//Shift JIS
+    129,	949,//Hangul
+    130,	1361,//Johab
+    134,	936,//GB2312
+    136,	950,//Big5
+    238,	1250,//Greek
+    161,	1253,//Greek
+    162,	1254,//Turkish
+    163,	1258,//Vietnamese
+    177,	1255,//Hebrew
+    178,	1256, //Arabic
+    186,	1257,//Baltic
+    204,	1251,//Russian
+    222,	874,//Thai
+    238,	1250,//Eastern European
+    254,	437,//PC 437
+    255,	850//OEM
+};
 class RtfUtility
 {
 public: 
 
-	static float String2Percent( CString sValue )
+    class RtfInternalEncoder
+    {
+    public:
+        static CString Encode( CString sFilename )
+        {
+            return _T("{\\*filename ") + sFilename + _T("\\*end}");
+        }
+        static void Decode( CString& sText, NFileWriter::CBufferedFileWriter& oFileWriter ) //сразу записывает в файл
+        {
+            CStringA sAnsiText; sAnsiText = sText;
+            int nStart = 0;
+            int nLenth = sAnsiText.GetLength();
+            int nFindRes = -1;
+            CString sFindString = _T("{\\*filename ");
+            int nFindStringLen = sFindString.GetLength();
+            CString sFindEnd = _T("\\*end}");
+            int nFindEndLen = sFindEnd.GetLength();
+            while( -1 != (nFindRes = sText.Find( sFindString, nStart )) )
+            {
+                oFileWriter.Write( (BYTE*)sAnsiText.GetBuffer() + nStart, nFindRes - nStart );
+                sText.ReleaseBuffer();
+
+                int nRightBound = 0;
+                nRightBound = sText.Find( sFindEnd, nStart + nFindStringLen );
+
+                CString sTargetFilename = sText.Mid( nFindRes + nFindStringLen, nRightBound - nFindRes - nFindStringLen );
+
+                DecodeFromFile( sTargetFilename, oFileWriter );
+
+                nStart = nRightBound + nFindEndLen;
+            }
+            oFileWriter.Write( (BYTE*)sAnsiText.GetBuffer() + nStart, nLenth - nStart );
+            sText.ReleaseBuffer();
+        }
+    private:
+        static void DecodeFromFile( CString& sFilename, NFileWriter::CBufferedFileWriter& oFileWriter )
+         {
+            CFile file;
+
+            if (file.OpenFile(sFilename) != S_OK) return;
+
+            DWORD dwBytesRead = 0;
+            BYTE byteBuffer[ BUF_SIZE ];
+
+            char aLookup[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
+
+            file.ReadFile(byteBuffer ,BUF_SIZE);
+
+            dwBytesRead = file.GetPosition();
+            while( 0 != dwBytesRead )
+            {
+                for( int i = 0; i < (int)dwBytesRead; i++ )
+                {
+                    BYTE byteData = byteBuffer[ i ];
+                    BYTE byteFirst = aLookup[ byteData / 0x10 ];
+                    BYTE byteSecond = aLookup[ byteData % 0x10 ];
+                    oFileWriter.Write( &byteFirst, 1 );
+                    oFileWriter.Write( &byteSecond, 1 );
+                }
+                dwBytesRead = file.GetPosition();
+                file.ReadFile(byteBuffer ,BUF_SIZE);
+                dwBytesRead = file.GetPosition() - dwBytesRead;
+            }
+            file.CloseFile();
+         }
+    };
+    static float String2Percent( CString sValue )
 	{
 		int nPosition;
 		if( (nPosition = sValue.Find( _T("f") )) != -1 )
@@ -286,13 +356,13 @@ public:
 	{
 		return (float)(1.0 * emu / (635 * 20.0));
 	}
-	static void WriteDataToFileBinary(CString& sFilename, byte* pbData, int nLength)
+    static void WriteDataToFileBinary(CString& sFilename, BYTE* pbData, int nLength)
 	{
 		if( NULL == pbData )
 			return;
 
 		CFile file;
-		if (file.CreateFileW(sFilename) != S_OK) return;
+        if (file.CreateFile(sFilename) != S_OK) return;
 
 		DWORD dwBytesWritten;
 		file.WriteFile(pbData ,nLength);	
@@ -302,7 +372,7 @@ public:
 	{
 		CFile file;
 
-		if (file.CreateFileW(sFilename) != S_OK) return;
+        if (file.CreateFile(sFilename) != S_OK) return;
 
 		TCHAR * buf  = sData.GetBuffer();
 		int nLengthText = sData.GetLength();
@@ -342,7 +412,7 @@ public:
 		CString sHexText;
 		for( int i = 0; i < sText.GetLength(); i++ )
 		{
-			TBYTE byteChar = sText[i];
+            BYTE byteChar = sText[i];
 			sHexText.AppendFormat( _T("%x"), byteChar );
 		}
 		return sHexText;
@@ -359,9 +429,9 @@ public:
 		}
 		return sText;
 	}
-	static byte ToByte( TCHAR cChar )
+    static BYTE ToByte( TCHAR cChar )
 	{
-		return (byte)(cChar > 'F' ? cChar - 0x57 : cChar > '9' ? cChar - 0x37 : cChar - 0x30);
+        return (BYTE)(cChar > 'F' ? cChar - 0x57 : cChar > '9' ? cChar - 0x37 : cChar - 0x30);
 	}
 	static bool IsAlpha( int nChar )
 	{
@@ -381,30 +451,34 @@ public:
 			;
 		return sResult;
 	}
-	static int CharsetToCodepage( int nCharset )
-	{
-		CHARSETINFO Info;
-		DWORD* dwAcp = (DWORD*)nCharset;
-		if( TRUE == TranslateCharsetInfo(dwAcp, &Info, TCI_SRCCHARSET) )
-			return Info.ciACP;
+    static int CharsetToCodepage( int nCharset )
+    {
+#if defined (_WIN32) || defined(_WIN64)
+        CHARSETINFO Info;
+        DWORD* dwAcp = (DWORD*)nCharset;
+        if( TRUE == TranslateCharsetInfo(dwAcp, &Info, TCI_SRCCHARSET) )
+            return Info.ciACP;
 
-		for( int i = 0; i < nCodePagesLength; i++ )
-			if( aCodePages[i][0] == nCharset )
-				return aCodePages[i][1];
-		return 1252;//ANSI
-	}
-	static int CodepageToCharset( int nCodepage )
-	{
-		CHARSETINFO Info;
-		DWORD* dwAcp = (DWORD*)nCodepage;
-		if( TRUE == TranslateCharsetInfo(dwAcp, &Info, TCI_SRCCODEPAGE) )
-			return Info.ciCharset;
+      int CodePagesLength =  sizeof( aCodePages ) / ( sizeof( int ) );
+        for( int i = 0; i < nCodePagesLength; i++ )
+            if( aCodePages[i][0] == nCharset )
+                return aCodePages[i][1];
+#endif
+        return 1252;//ANSI
+    }
+//	static int CodepageToCharset( int nCodepage )
+//	{
+//		CHARSETINFO Info;
+//		DWORD* dwAcp = (DWORD*)nCodepage;
+//		if( TRUE == TranslateCharsetInfo(dwAcp, &Info, TCI_SRCCODEPAGE) )
+//			return Info.ciCharset;
 
-		for( int i = 0; i < nCodePagesLength; i++ )
-			if( aCodePages[i][1] == nCodepage )
-				return aCodePages[i][0];
-		return 0;//ANSI
-	}
+//      int CodePagesLength =  sizeof( aCodePages ) / ( sizeof( int ) );
+//		for( int i = 0; i < nCodePagesLength; i++ )
+//			if( aCodePages[i][1] == nCodepage )
+//				return aCodePages[i][0];
+//		return 0;//ANSI
+//	}
 	static bool IsMacCharset( int nCharset )
 	{
 		return nCharset == 77 || nCharset == 78 || nCharset == 79 || nCharset == 80 ||
@@ -417,109 +491,5 @@ public:
 				nCodepage == 10002 || nCodepage == 10005 || nCodepage == 10004 || nCodepage == 10006 ||
 				nCodepage == 10081 || nCodepage == 10021 || nCodepage == 10029 || nCodepage == 10007;
 	}
-private: 
-	static const int aCodePages[][2];
-	static const int nCodePagesLength;
-};
-__declspec(selectany) const int RtfUtility::aCodePages[][2] = {
-	//charset	codepage
-	0,	1252, //ANSI
-	1,	0,//Default
-	2,	42,//Symbol
-	77,	10000,//Mac Roman
-	78,	10001,//Mac Shift Jis
-	79,	10003,//Mac Hangul
-	80,	10008,//Mac GB2312
-	81,	10002,//Mac Big5
-	83,	10005,//Mac Hebrew
-	84,	10004,//Mac Arabic
-	85,	10006,//Mac Greek
-	86,	10081,//Mac Turkish
-	87,	10021,//Mac Thai
-	88,	10029,//Mac East Europe
-	89,	10007,//Mac Russian
-	128,	932,//Shift JIS
-	129,	949,//Hangul
-	130,	1361,//Johab
-	134,	936,//GB2312
-	136,	950,//Big5
-	238,	1250,//Greek
-	161,	1253,//Greek
-	162,	1254,//Turkish
-	163,	1258,//Vietnamese
-	177,	1255,//Hebrew
-	178,	1256, //Arabic 
-	186,	1257,//Baltic
-	204,	1251,//Russian
-	222,	874,//Thai
-	238,	1250,//Eastern European
-	254,	437,//PC 437
-	255,	850//OEM
-};
-__declspec(selectany) const int RtfUtility::nCodePagesLength =  sizeof( aCodePages ) / ( sizeof( int ) );
-class RtfInternalEncoder
-{
-public: 
-	static CString Encode( CString sFilename )
-	{
-		return _T("{\\*filename ") + sFilename + _T("\\*end}");
-	}
-	static void Decode( CString& sText, NFileWriter::CBufferedFileWriter& oFileWriter ) //сразу записывает в файл
-	{
-		CStringA sAnsiText; sAnsiText = sText;
-		int nStart = 0;
-		int nLenth = sAnsiText.GetLength();
-		int nFindRes = -1;
-		CString sFindString = _T("{\\*filename ");
-		int nFindStringLen = sFindString.GetLength();
-		CString sFindEnd = _T("\\*end}");
-		int nFindEndLen = sFindEnd.GetLength();
-		while( -1 != (nFindRes = sText.Find( sFindString, nStart )) )
-		{
-			oFileWriter.Write( (BYTE*)sAnsiText.GetBuffer() + nStart, nFindRes - nStart );
-			sText.ReleaseBuffer();
 
-			int nRightBound = 0;
-			nRightBound = sText.Find( sFindEnd, nStart + nFindStringLen );
-
-			CString sTargetFilename = sText.Mid( nFindRes + nFindStringLen, nRightBound - nFindRes - nFindStringLen );
-
-			DecodeFromFile( sTargetFilename, oFileWriter );
-
-			nStart = nRightBound + nFindEndLen;
-		}
-		oFileWriter.Write( (BYTE*)sAnsiText.GetBuffer() + nStart, nLenth - nStart );
-		sText.ReleaseBuffer();
-	}
-private:
-	static void DecodeFromFile( CString& sFilename, NFileWriter::CBufferedFileWriter& oFileWriter )
-	 {
-		CFile file;
-
-		if (file.OpenFile(sFilename) != S_OK) return;
-
-		DWORD dwBytesRead = 0;
-		BYTE byteBuffer[ BUF_SIZE ];
-
-		char aLookup[] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f' };
-
-		file.ReadFile(byteBuffer ,BUF_SIZE);
-
-		dwBytesRead = file.GetPosition();
-		while( 0 != dwBytesRead )
-		{
-			for( int i = 0; i < (int)dwBytesRead; i++ )
-			{
-				byte byteData = byteBuffer[ i ];
-				byte byteFirst = aLookup[ byteData / 0x10 ];
-				byte byteSecond = aLookup[ byteData % 0x10 ];
-				oFileWriter.Write( &byteFirst, 1 );
-				oFileWriter.Write( &byteSecond, 1 );
-			}
-			dwBytesRead = file.GetPosition();
-			file.ReadFile(byteBuffer ,BUF_SIZE);
-			dwBytesRead = file.GetPosition() - dwBytesRead;
-		}
-		file.CloseFile();
-	 }
 };

@@ -26,16 +26,16 @@ public:
 		if( false == m_sFileXml.IsEmpty() ) 
 		{		
 			CFile file;
-			if (file.CreateFileW(pathWord + FILE_SEPARATOR_STR + _T("styles.xml"))) return false;
+            if (file.CreateFile(pathWord + FILE_SEPARATOR_STR + _T("styles.xml"))) return false;
 
 			m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles"), _T("styles.xml") );
 			m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.styles+xml"), _T("/word/styles.xml") );
 
-			DWORD dwBytesWritten;
-			CString sXml = CreateXml();
-			CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
+            std::wstring sXml = CreateXml();
+            std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
 
-			file.WriteFile(sXmlUTF.GetBuffer(), sXmlUTF.GetLength());
+            file.WriteFile((void*)sXmlUTF.c_str(), sXmlUTF.length());
+
 			file.CloseFile();
 			return true;
 		}
@@ -49,14 +49,14 @@ private:
 	CString			m_sFileXml;
 	OOXWriter&		m_oWriter;
  
-	CString CreateXml()
+    std::wstring CreateXml()
 	{
-		CString sResult;
-		sResult.Append( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>") );
-		sResult.Append( _T("\n") );
-		sResult.Append( _T("<w:styles xmlns:w = \"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">") );
-		sResult.Append( m_sFileXml );
-		sResult.Append( _T("</w:styles>") );
+        std::wstring sResult;
+        sResult.append( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>") );
+        sResult.append( _T("\n") );
+        sResult.append( _T("<w:styles xmlns:w = \"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">") );
+        sResult.append( m_sFileXml.GetBuffer() );
+        sResult.append( _T("</w:styles>") );
 		return sResult;
 	}
 };

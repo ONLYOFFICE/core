@@ -42,13 +42,13 @@ CString RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 		RENDER_RTF_INT( m_nPitch, sResult, _T("fprq") )
 
 		if( _T("") != m_sPanose )
-			sResult.AppendFormat(_T("{\\*\\panose %ls}"),m_sPanose);
+            sResult.AppendFormat(_T("{\\*\\panose %ls}"),m_sPanose.GetBuffer());
 		RENDER_RTF_INT( m_nCodePage, sResult, _T("cpg") )
 
 		RtfCharProperty oFontNameCharProp;
-		sResult.AppendFormat(_T(" %ls"), RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, &oFontNameCharProp ));
+        sResult.AppendFormat(_T(" %ls"), RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, &oFontNameCharProp ).GetBuffer());
 		if( _T("") != m_sAltName )
-			sResult.AppendFormat(_T("{\\*\\falt %ls}"),  RtfChar::renderRtfText( m_sAltName, oRenderParameter.poDocument ) );
+            sResult.AppendFormat(_T("{\\*\\falt %ls}"),  RtfChar::renderRtfText( m_sAltName, oRenderParameter.poDocument ).GetBuffer() );
 		//важно
 		sResult.AppendFormat(_T(";"));
 		sResult.AppendFormat(_T("}"));
@@ -88,7 +88,7 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 				case ft_fbiminor: sTag = _T("cs");break;
 			}
 			if( _T("") != sTag )
-				sResult.AppendFormat(_T("<%ls typeface=\"%ls\"/>"), sTag, Utils::PrepareToXML( sFontName ) );
+                sResult.AppendFormat(_T("<%ls typeface=\"%ls\"/>"), sTag.GetBuffer(), Utils::PrepareToXML( sFontName ).GetBuffer() );
 		}
 		else if( RENDER_TO_OOX_PARAM_MAJOR_FONT == oRenderParameter.nType )
 		{
@@ -101,15 +101,15 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 				case ft_fbimajor: sTag = _T("cs");break;
 			}
 			if( _T("") != sTag )
-				sResult.AppendFormat(_T("<%ls typeface=\"%ls\"/>"), sTag, Utils::PrepareToXML( sFontName ));
+                sResult.AppendFormat(_T("<%ls typeface=\"%ls\"/>"), sTag.GetBuffer(), Utils::PrepareToXML( sFontName ).GetBuffer());
 		}
 		else if( RENDER_TO_OOX_PARAM_FONTTABLE == oRenderParameter.nType )
 		{
-			sResult.AppendFormat(_T("<w:font w:name=\"%ls\">"), Utils::PrepareToXML( sFontName ) );
+            sResult.AppendFormat(_T("<w:font w:name=\"%ls\">"), Utils::PrepareToXML( sFontName ).GetBuffer() );
 			if( _T("") != m_sAltName )
-				sResult.AppendFormat(_T("<w:altName w:val=\"%ls\" />"), Utils::PrepareToXML( m_sAltName ));
+                sResult.AppendFormat(_T("<w:altName w:val=\"%ls\" />"), Utils::PrepareToXML( m_sAltName ).GetBuffer());
 			if( _T("") != m_sPanose )
-				sResult.AppendFormat(_T("<w:panose1 w:val=\"%ls\" />"),m_sPanose);
+                sResult.AppendFormat(_T("<w:panose1 w:val=\"%ls\" />"),m_sPanose.GetBuffer());
 
 			CString sFamily = _T("");
 			switch( m_eFontFamily )
@@ -124,9 +124,9 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 				case ff_fbidi:sFamily = _T("auto");break;
 			}
 			if( _T("") != sFamily )
-				sResult.AppendFormat(_T("<w:family w:val=\"%ls\" />"),sFamily);
+                sResult.AppendFormat(_T("<w:family w:val=\"%ls\" />"),sFamily.GetBuffer());
 			if( PROP_DEF != m_nCharset )
-				sResult.AppendFormat(_T("<w:charset w:val=\"%ls\" />"), Convert::ToStringHex( m_nCharset, 2 ));
+                sResult.AppendFormat(_T("<w:charset w:val=\"%ls\" />"), Convert::ToStringHex( m_nCharset, 2 ).GetBuffer());
 
 			if( PROP_DEF != m_nPitch )
 			{
@@ -137,7 +137,7 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 					case 1: sPitch = _T("fixed");break;
 					case 2: sPitch = _T("variable");break;
 				}
-				sResult.AppendFormat(_T("<w:pitch w:val=\"%ls\" />"),sPitch);
+                sResult.AppendFormat(_T("<w:pitch w:val=\"%ls\" />"),sPitch.GetBuffer());
 			}
 
 			//важно
@@ -148,7 +148,8 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 			RtfFont oCurFont;
 			if( true == poRtfDocument->m_oFontTable.GetFont(m_nID,oCurFont) )
 			{
-				sResult.AppendFormat(_T("<w:rFonts w:ascii=\"%ls\" w:eastAsia=\"%ls\" w:hAnsi=\"%ls\" w:cs=\"%ls\"/>"), sFontName, sFontName, sFontName, sFontName);
+                sResult.AppendFormat(_T("<w:rFonts w:ascii=\"%ls\" w:eastAsia=\"%ls\" w:hAnsi=\"%ls\" w:cs=\"%ls\"/>"),
+                                     sFontName.GetBuffer(), sFontName.GetBuffer(), sFontName.GetBuffer(), sFontName.GetBuffer());
 			}
 		}
 	}
@@ -212,11 +213,11 @@ CString RtfColor::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	else if( RENDER_TO_OOX_PARAM_COLOR_TAG == oRenderParameter.nType )
 	{
-		sResult.AppendFormat( _T("<w:color %ls/>"),WriteOOXAttribute(oRenderParameter.sValue) );
+        sResult.AppendFormat( _T("<w:color %ls/>"),WriteOOXAttribute(oRenderParameter.sValue).GetBuffer() );
 	}
 	else
 	{
-		sResult.AppendFormat( _T("<w:color  w:val=\"%ls\"/>"),ToHexColor() );
+        sResult.AppendFormat( _T("<w:color  w:val=\"%ls\"/>"),ToHexColor().GetBuffer());
 	}
 	return sResult;
 }
@@ -359,13 +360,13 @@ CString RtfShading::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		RtfColor oForeColor;
 		if( true == poRtfDocument->m_oColorTable.GetColor( m_nForeColor, oForeColor ) )
-			sShading.AppendFormat( _T(" w:color=\"%ls\""), oForeColor.RenderToOOX(oNewParam));
+            sShading.AppendFormat( _T(" w:color=\"%ls\""), oForeColor.RenderToOOX(oNewParam).GetBuffer());
 	}
 	if( PROP_DEF != m_nBackColor )
 	{
 		RtfColor oBackColor;
 		if( true == poRtfDocument->m_oColorTable.GetColor( m_nBackColor, oBackColor ) )
-			sShading.AppendFormat( _T(" w:fill=\"%ls\""), oBackColor.RenderToOOX(oNewParam));
+            sShading.AppendFormat( _T(" w:fill=\"%ls\""), oBackColor.RenderToOOX(oNewParam).GetBuffer());
 	}
 	if( PROP_DEF != m_nValue )
 	{
@@ -491,7 +492,7 @@ CString RtfBorder::RenderToOOX(RenderParameter oRenderParameter)
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_COLOR_VALUE;
 		if( true == poRtfDocument->m_oColorTable.GetColor( m_nColor, oColor ) )
-			sResult.AppendFormat( _T(" w:color=\"%ls\""), oColor.RenderToOOX(oNewParam) );
+            sResult.AppendFormat( _T(" w:color=\"%ls\""), oColor.RenderToOOX(oNewParam).GetBuffer() );
 	}
 	if( PROP_DEF != m_nWidth ) //w:sz  1/8 twips (equivalent to 1/576th of an inch)
 		sResult.AppendFormat( _T(" w:sz=\"%d\""), 2 * m_nWidth / 5 );
@@ -643,13 +644,13 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nFitText )
 		if( -1 == m_nFitText )
 		{
-			sResult.AppendFormat(_T("<w:fitText w:id=\"%d\" w:val=\"%d\" />"),poOOXWriter->nCurFitId,poOOXWriter->nCurFitWidth);
+            sResult.AppendFormat(_T("<w:fitText w:id=\"%d\" w:val=\"%d\" />"),poOOXWriter->nCurFitId.GetBuffer(), poOOXWriter->nCurFitWidth);
 		}
 		else 
 		{
 			poOOXWriter->nCurFitId = poRtfDocument->m_oIdGenerator.Generate_FitTextId();
 			poOOXWriter->nCurFitWidth = m_nFitText;
-			sResult.AppendFormat(_T("<w:fitText w:id=\"%d\" w:val=\"%d\" />"),poOOXWriter->nCurFitId,poOOXWriter->nCurFitWidth);
+            sResult.AppendFormat(_T("<w:fitText w:id=\"%d\" w:val=\"%d\" />"),poOOXWriter->nCurFitId.GetBuffer(), poOOXWriter->nCurFitWidth);
 		}
 	if( PROP_DEF == m_nFont )
 		m_nFont = poRtfDocument->m_oProperty.m_nDeffFont;
@@ -685,7 +686,7 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		RtfColor oCurColor;
 		if( true == poRtfDocument->m_oColorTable.GetColor( m_nHightlited, oCurColor ) )
 		{
-			sResult.AppendFormat(_T("<w:highlight w:val=\"%ls\" />"), oCurColor.GetHighLight() );
+            sResult.AppendFormat(_T("<w:highlight w:val=\"%ls\" />"), oCurColor.GetHighLight().GetBuffer());
 		}
 	}
 		
@@ -715,24 +716,24 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		switch( m_eUnderStyle )
 		{
-			case uls_Single: sResult.AppendFormat(_T("<w:u %ls w:val=\"single\"/>"),sUnderColor);break;
-			case uls_Dotted: sResult.AppendFormat(_T("<w:u %ls w:val=\"dotted\"/>"),sUnderColor);break;
-			case uls_Dashed: sResult.AppendFormat(_T("<w:u %ls w:val=\"dash\"/>"),sUnderColor);break;
-			case uls_Dash_dotted: sResult.AppendFormat(_T("<w:u %ls w:val=\"dotDash\"/>"),sUnderColor);break;
-			case uls_Dash_dot_dotted: sResult.AppendFormat(_T("<w:u %ls w:val=\"dotDotDash\"/>"),sUnderColor);break;
-			case uls_Double: sResult.AppendFormat(_T("<w:u %ls w:val=\"double\"/>"),sUnderColor);break;
-			case uls_Heavy_wave: sResult.AppendFormat(_T("<w:u %ls w:val=\"wavyHeavy\"/>"),sUnderColor);break;
-			case uls_Long_dashe: sResult.AppendFormat(_T("<w:u %ls w:val=\"dashLong\"/>"),sUnderColor);break;
-			case uls_Stops_all: sResult.AppendFormat(_T("<w:u %ls w:val=\"single\"/>"),sUnderColor);break;//todo
-			case uls_Thick: sResult.AppendFormat(_T("<w:u %ls w:val=\"thick\"/>"),sUnderColor);break;
-			case uls_Thick_dotted: sResult.AppendFormat(_T("<w:u %ls w:val=\"dottedHeavy\"/>"),sUnderColor);break;
-			case uls_Thick_dashed: sResult.AppendFormat(_T("<w:u %ls w:val=\"dashedHeavy\"/>"),sUnderColor);break;
-			case uls_Thick_dash_dotted: sResult.AppendFormat(_T("<w:u %ls w:val=\"dashDotHeavy\"/>"),sUnderColor);break;
-			case uls_Thick_dash_dot_dotted: sResult.AppendFormat(_T("<w:u %ls w:val=\"dashDotDotHeavy\"/>"),sUnderColor);break;
-			case uls_Thick_long_dashed: sResult.AppendFormat(_T("<w:u %ls w:val=\"dashLongHeavy\"/>"),sUnderColor);break;
-			case uls_Double_wave: sResult.AppendFormat(_T("<w:u %ls w:val=\"wavyDouble\"/>"),sUnderColor);break;
-			case uls_Word: sResult.AppendFormat(_T("<w:u %ls w:val=\"words\"/>"),sUnderColor);break;
-			case uls_Wave: sResult.AppendFormat(_T("<w:u %ls w:val=\"wave\"/>"),sUnderColor);break;
+            case uls_Single: sResult.AppendFormat(_T("<w:u %ls w:val=\"single\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Dotted: sResult.AppendFormat(_T("<w:u %ls w:val=\"dotted\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Dashed: sResult.AppendFormat(_T("<w:u %ls w:val=\"dash\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Dash_dotted: sResult.AppendFormat(_T("<w:u %ls w:val=\"dotDash\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Dash_dot_dotted: sResult.AppendFormat(_T("<w:u %ls w:val=\"dotDotDash\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Double: sResult.AppendFormat(_T("<w:u %ls w:val=\"double\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Heavy_wave: sResult.AppendFormat(_T("<w:u %ls w:val=\"wavyHeavy\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Long_dashe: sResult.AppendFormat(_T("<w:u %ls w:val=\"dashLong\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Stops_all: sResult.AppendFormat(_T("<w:u %ls w:val=\"single\"/>"),sUnderColor.GetBuffer());break;//todo
+            case uls_Thick: sResult.AppendFormat(_T("<w:u %ls w:val=\"thick\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Thick_dotted: sResult.AppendFormat(_T("<w:u %ls w:val=\"dottedHeavy\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Thick_dashed: sResult.AppendFormat(_T("<w:u %ls w:val=\"dashedHeavy\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Thick_dash_dotted: sResult.AppendFormat(_T("<w:u %ls w:val=\"dashDotHeavy\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Thick_dash_dot_dotted: sResult.AppendFormat(_T("<w:u %ls w:val=\"dashDotDotHeavy\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Thick_long_dashed: sResult.AppendFormat(_T("<w:u %ls w:val=\"dashLongHeavy\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Double_wave: sResult.AppendFormat(_T("<w:u %ls w:val=\"wavyDouble\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Word: sResult.AppendFormat(_T("<w:u %ls w:val=\"words\"/>"),sUnderColor.GetBuffer());break;
+            case uls_Wave: sResult.AppendFormat(_T("<w:u %ls w:val=\"wave\"/>"),sUnderColor.GetBuffer());break;
 		}
 	}
 
@@ -760,8 +761,8 @@ CString RtfListLevelProperty::RenderToRtf(RenderParameter oRenderParameter)
 	//чтобы при последующем чтении из rtf не потерялась информация о шрифте
 	sResult.Append( m_oCharProp.RenderToRtf( oRenderParameter ) );
 
-	sResult.AppendFormat( _T("{\\leveltext %ls;}"), RtfChar::renderRtfText( m_sText, oRenderParameter.poDocument, &m_oCharProp ) );
-	sResult.AppendFormat(_T("{\\levelnumbers %ls;}"), RtfChar::renderRtfText( m_sNumber, oRenderParameter.poDocument, &m_oCharProp ) );
+    sResult.AppendFormat( _T("{\\leveltext %ls;}"), RtfChar::renderRtfText( m_sText, oRenderParameter.poDocument, &m_oCharProp ).GetBuffer() );
+    sResult.AppendFormat(_T("{\\levelnumbers %ls;}"), RtfChar::renderRtfText( m_sNumber, oRenderParameter.poDocument, &m_oCharProp ).GetBuffer() );
 
 	RENDER_RTF_INT( m_nFirstIndent, sResult, _T("fi") )
 	RENDER_RTF_INT( m_nIndent, sResult, _T("li") )
@@ -809,8 +810,8 @@ CString RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter, int
 		if( 1 ==  m_nLegal)
 			sResult.Append(_T("<w:isLgl />")); 
 
-		sResult.AppendFormat( _T("<w:lvlText w:val=\"%ls\"/>"), GetLevelTextOOX() ); 
-		sResult.AppendFormat(_T("<w:numFmt w:val=\"%ls\" />"), GetFormat(m_nNumberType) );
+        sResult.AppendFormat( _T("<w:lvlText w:val=\"%ls\"/>"), GetLevelTextOOX().GetBuffer() );
+        sResult.AppendFormat(_T("<w:numFmt w:val=\"%ls\" />"), GetFormat(m_nNumberType).GetBuffer() );
 		RENDER_OOX_INT( m_nPictureIndex, sResult, _T("w:lvlPicBulletId") )
 		RENDER_OOX_INT( m_nStart, sResult, _T("w:start") )
 		if( PROP_DEF != m_nFollow )
@@ -835,19 +836,19 @@ CString RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter, int
 		RENDER_OOX_INT_ATTRIBUTE( m_nIndent, sIndent, _T("w:left") )
 		RENDER_OOX_INT_ATTRIBUTE( m_nIndentStart, sIndent, _T("w:start") )
 		if( false == sIndent.IsEmpty() )
-			spPr.AppendFormat(_T("<w:ind %ls/>"), sIndent);
+            spPr.AppendFormat(_T("<w:ind %ls/>"), sIndent.GetBuffer());
 
 		spPr.Append( m_oTabs.RenderToOOX( oRenderParameter ) );
 
 		if( false == spPr.IsEmpty() )
-			sResult.AppendFormat(_T("<w:pPr>%ls</w:pPr>"), spPr);
+            sResult.AppendFormat(_T("<w:pPr>%ls</w:pPr>"), spPr.GetBuffer());
 
 		CString srPr;
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 		srPr.Append( m_oCharProp.RenderToOOX(oNewParam) ); 
 		if( false == srPr.IsEmpty() )
-			sResult.AppendFormat(_T("<w:rPr>%ls</w:rPr>"), srPr);
+            sResult.AppendFormat(_T("<w:rPr>%ls</w:rPr>"), srPr.GetBuffer());
 
 		sResult.Append(_T("</w:lvl>")); 
 	}
@@ -869,7 +870,7 @@ CString RtfListProperty::RenderToRtf(RenderParameter oRenderParameter)
 	for( int i = 0; i < (int)m_aArray.size(); i++ )
 		sResult.Append( m_aArray[i].RenderToRtf( oRenderParameter ) );
 
-	sResult.AppendFormat(_T("{\\listname %ls;}"), RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument ));
+    sResult.AppendFormat(_T("{\\listname %ls;}"), RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument ).GetBuffer());
 	RENDER_RTF_INT( m_nID, sResult, _T("listid") )
 	return sResult;
 }
@@ -887,7 +888,7 @@ CString RtfListProperty::RenderToOOX(RenderParameter oRenderParameter)
 		sResult.Append(_T("<w:multiLevelType w:val=\"multilevel\" />"));
 
 	if( false == m_sName.IsEmpty() )
-		sResult.AppendFormat(_T("<w:name w:val=\"%ls\" />"), Utils::PrepareToXML( m_sName ) );
+        sResult.AppendFormat(_T("<w:name w:val=\"%ls\" />"), Utils::PrepareToXML( m_sName ).GetBuffer() );
 	//if( false == m_nStyleName )
 	//{
 	//	sResult.AppendFormat(_T("<w:name w:val=\"%ls\" />"), Utils::PrepareToXML( m_sName ) );
@@ -948,14 +949,14 @@ CString RtfStyle::RenderToOOXBegin(RenderParameter oRenderParameter)
 		case stSection : sType = _T("numbering");break;
 		case stTable :sType = _T("table"); break;
 	}
-	sResult.AppendFormat(_T("<w:style w:type=\"%ls\" w:styleId=\"%ls\">"), sType, Utils::PrepareToXML( m_sName ) );//Todo
-	sResult.AppendFormat(_T("<w:name w:val=\"%ls\"/>"), Utils::PrepareToXML( m_sName ) );
+    sResult.AppendFormat(_T("<w:style w:type=\"%ls\" w:styleId=\"%ls\">"), sType.GetBuffer(), Utils::PrepareToXML( m_sName ).GetBuffer() );//Todo
+    sResult.AppendFormat(_T("<w:name w:val=\"%ls\"/>"), Utils::PrepareToXML( m_sName ).GetBuffer() );
 
 	if( PROP_DEF != m_nBasedOn )
 	{
 		RtfStylePtr oBaseStyle;
 		if( true == poDocument->m_oStyleTable.GetStyle( m_nBasedOn, oBaseStyle ) )
-			sResult.AppendFormat(_T("<w:basedOn w:val=\"%ls\"/>"), Utils::PrepareToXML( oBaseStyle->m_sName ));//Todo
+            sResult.AppendFormat(_T("<w:basedOn w:val=\"%ls\"/>"), Utils::PrepareToXML( oBaseStyle->m_sName ).GetBuffer());//Todo
 	}
 	//if( PROP_DEF != m_nNext )
 	//	sResult.AppendFormat(_T("<w:next w:val=\"%ls\"/>"), Utils::PrepareToXML( m_sName ));//Todo
@@ -1011,7 +1012,7 @@ CString RtfStyle::RenderToRtfEnd( RenderParameter oRenderParameter )
 	RENDER_RTF_INT( m_nPriority, sResult, _T("spriority") )
 	RENDER_RTF_BOOL( m_bUnhiddenWhenUse, sResult, _T("sunhideused") )
 
-	sResult.AppendFormat(_T(" %ls;}"), RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument ));
+    sResult.AppendFormat(_T(" %ls;}"), RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument ).GetBuffer());
 	return sResult;
 }
 CString RtfCharStyle::RenderToRtf(RenderParameter oRenderParameter)
@@ -1028,7 +1029,7 @@ CString RtfCharStyle::RenderToOOX(RenderParameter oRenderParameter)
 	sResult.Append( RenderToOOXBegin( oRenderParameter ) );
 	CString sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
 	if( false == sCharProp.IsEmpty() )
-		sResult.AppendFormat( _T("<w:rPr>%ls</w:rPr>"), sCharProp );
+        sResult.AppendFormat( _T("<w:rPr>%ls</w:rPr>"), sCharProp.GetBuffer() );
 	sResult.Append( RenderToOOXEnd( oRenderParameter ) );
 	return sResult;
 }
@@ -1048,10 +1049,10 @@ CString RtfParagraphStyle::RenderToOOX(RenderParameter oRenderParameter)
 	sResult.Append( RenderToOOXBegin( oRenderParameter ) );
 	CString sParProp = m_oParProp.RenderToOOX(oRenderParameter);
 	if( false == sParProp.IsEmpty() )
-		sResult.AppendFormat( _T("<w:pPr>%ls</w:pPr>"), sParProp );
+        sResult.AppendFormat( _T("<w:pPr>%ls</w:pPr>"), sParProp.GetBuffer() );
 	CString sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
 	if( false == sCharProp.IsEmpty() )
-		sResult.AppendFormat( _T("<w:rPr>%ls</w:rPr>"), sCharProp );
+        sResult.AppendFormat( _T("<w:rPr>%ls</w:rPr>"), sCharProp.GetBuffer() );
 	sResult.Append( RenderToOOXEnd( oRenderParameter ) );
 	return sResult;
 }
@@ -1168,19 +1169,19 @@ CString RtfTableStyle::RenderToOOX(RenderParameter oRenderParameter)
 		sResult.Append( RenderToOOXBegin( oRenderParameter ) );
 		CString sTablProp = m_oTableProp.RenderToOOX(oRenderParameter);
 		if( false == sTablProp.IsEmpty() )
-			sResult.AppendFormat( _T("<w:tblPr>%ls</w:tblPr>"), sTablProp );
+            sResult.AppendFormat( _T("<w:tblPr>%ls</w:tblPr>"), sTablProp.GetBuffer() );
 		CString sRowProp = m_oRowProp.RenderToOOX(oRenderParameter);
 		if( false == sRowProp.IsEmpty() )
-			sResult.AppendFormat( _T("<w:trPr>%ls</w:trPr>"), sRowProp );
+            sResult.AppendFormat( _T("<w:trPr>%ls</w:trPr>"), sRowProp.GetBuffer() );
 		CString sCellProp = m_oCellProp.RenderToOOX(oRenderParameter);
 		if( false == sCellProp.IsEmpty() )
-			sResult.AppendFormat( _T("<w:tcPr>%ls</w:tcPr>"), sCellProp );
+            sResult.AppendFormat( _T("<w:tcPr>%ls</w:tcPr>"), sCellProp.GetBuffer() );
 		CString sParProp = m_oParProp.RenderToOOX(oRenderParameter);
 		if( false == sParProp.IsEmpty() )
-			sResult.AppendFormat( _T("<w:pPr>%ls</w:pPr>"), sParProp );
+            sResult.AppendFormat( _T("<w:pPr>%ls</w:pPr>"), sParProp.GetBuffer() );
 		CString sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
 		if( false == sCharProp.IsEmpty() )
-			sResult.AppendFormat( _T("<w:rPr>%ls</w:rPr>"), sCharProp );
+            sResult.AppendFormat( _T("<w:rPr>%ls</w:rPr>"), sCharProp.GetBuffer() );
 
 		RenderParameter oNewParam = oRenderParameter;
 		oNewParam.nType = RENDER_TO_OOX_PARAM_NESTED;
@@ -1252,19 +1253,19 @@ CString RtfTableStyle::RenderToOOX(RenderParameter oRenderParameter)
 		sResult.Append( _T("<w:tblStylePr w:type=\"") + oRenderParameter.sValue + _T("\">") );
 		CString sTablProp = m_oTableProp.RenderToOOX(oRenderParameter);
 		if( false == sTablProp.IsEmpty() )
-			sResult.AppendFormat( _T("<w:tblPr>%ls</w:tblPr>"), sTablProp );
+            sResult.AppendFormat( _T("<w:tblPr>%ls</w:tblPr>"), sTablProp.GetBuffer() );
 		CString sRowProp = m_oRowProp.RenderToOOX(oRenderParameter);
 		if( false == sRowProp.IsEmpty() )
-			sResult.AppendFormat( _T("<w:trPr>%ls</w:trPr>"), sRowProp );
+            sResult.AppendFormat( _T("<w:trPr>%ls</w:trPr>"), sRowProp.GetBuffer() );
 		CString sCellProp = m_oCellProp.RenderToOOX(oRenderParameter);
 		if( false == sCellProp.IsEmpty() )
-			sResult.AppendFormat( _T("<w:tcPr>%ls</w:tcPr>"), sCellProp );
+            sResult.AppendFormat( _T("<w:tcPr>%ls</w:tcPr>"), sCellProp.GetBuffer() );
 		CString sParProp = m_oParProp.RenderToOOX(oRenderParameter);
 		if( false == sParProp.IsEmpty() )
-			sResult.AppendFormat( _T("<w:pPr>%ls</w:pPr>"), sParProp );
+            sResult.AppendFormat( _T("<w:pPr>%ls</w:pPr>"), sParProp.GetBuffer() );
 		CString sCharProp = m_oCharProp.RenderToOOX(oRenderParameter);
 		if( false == sCharProp.IsEmpty() )
-			sResult.AppendFormat( _T("<w:rPr>%ls</w:rPr>"), sCharProp );
+            sResult.AppendFormat( _T("<w:rPr>%ls</w:rPr>"), sCharProp.GetBuffer() );
 		sResult.Append( _T("</w:tblStylePr>") );
 	}
 	return sResult;
@@ -1638,7 +1639,9 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 					sResult.Append(_T("{\\listtext\\pard\\plain"));
 					sResult.Append( poLevelProp.m_oCharProp.RenderToRtf( oRenderParameter ) );
 					//пишем текст 
-					sResult.Append( RtfChar::renderRtfText( poLevelProp.GenerateListText(), oRenderParameter.poDocument, NULL ) );
+                    CString strLevelProp = poLevelProp.GenerateListText();
+                    CString strChar = RtfChar::renderRtfText( strLevelProp, oRenderParameter.poDocument, NULL );
+                    sResult.Append( strChar );
 					//или картинку
 					if( PROP_DEF != poLevelProp.m_nPictureIndex )
 					{
@@ -1718,7 +1721,7 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	RENDER_OOX_INT_ATTRIBUTE( m_nIndStart, sIndent, _T("w:start") );
 	RENDER_OOX_INT_ATTRIBUTE( m_nIndEnd, sIndent, _T("w:end") );
 	if( false == sIndent.IsEmpty() )
-		sResult.AppendFormat(_T("<w:ind %ls/>"), sIndent);
+        sResult.AppendFormat(_T("<w:ind %ls/>"), sIndent.GetBuffer());
 
 	RENDER_OOX_BOOL( m_bIndRightAuto, sResult, _T("w:adjustRightInd") );
 	RENDER_OOX_BOOL( m_bIndMirror, sResult, _T("w:mirrorIndents") );
@@ -1751,7 +1754,7 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//else
 	//	sSpacing.AppendFormat(_T(" w:line=\"240\"")); //по умолчанию - единичный
 	if( false == sSpacing.IsEmpty() )
-		sResult.AppendFormat(_T("<w:spacing %ls/>"), sSpacing);
+        sResult.AppendFormat(_T("<w:spacing %ls/>"), sSpacing.GetBuffer());
 
 	RENDER_OOX_BOOL( m_bSnapToGrid, sResult, _T("w:snapToGrid") );
 	RENDER_OOX_BOOL( m_bContextualSpacing, sResult, _T("w:contextualSpacing") );
@@ -1781,27 +1784,27 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( true == m_oBorderBox.IsValid() )
 	{
 		CString sBorderContent = m_oBorderBox.RenderToOOX(oNewParam);
-		sBorder.AppendFormat(_T("<w:left %ls />"), sBorderContent );
-		sBorder.AppendFormat(_T("<w:top %ls />"), sBorderContent );
-		sBorder.AppendFormat(_T("<w:right %ls />"), sBorderContent );
-		sBorder.AppendFormat(_T("<w:bottom %ls />"), sBorderContent );
+        sBorder.AppendFormat(_T("<w:left %ls />"), sBorderContent.GetBuffer() );
+        sBorder.AppendFormat(_T("<w:top %ls />"), sBorderContent.GetBuffer() );
+        sBorder.AppendFormat(_T("<w:right %ls />"), sBorderContent.GetBuffer() );
+        sBorder.AppendFormat(_T("<w:bottom %ls />"), sBorderContent.GetBuffer() );
 	}
 	else
 	{
 		if( true == m_oBorderTop.IsValid() )
-			sBorder.AppendFormat(_T("<w:top %ls />"), m_oBorderTop.RenderToOOX(oNewParam) );
+            sBorder.AppendFormat(_T("<w:top %ls />"), m_oBorderTop.RenderToOOX(oNewParam).GetBuffer() );
 		if( true == m_oBorderLeft.IsValid() )
-			sBorder.AppendFormat(_T("<w:left %ls />"), m_oBorderLeft.RenderToOOX(oNewParam) );
+            sBorder.AppendFormat(_T("<w:left %ls />"), m_oBorderLeft.RenderToOOX(oNewParam).GetBuffer() );
 		if( true == m_oBorderBottom.IsValid() )
-			sBorder.AppendFormat( _T("<w:bottom %ls />"),m_oBorderBottom.RenderToOOX(oNewParam) );
+            sBorder.AppendFormat( _T("<w:bottom %ls />"),m_oBorderBottom.RenderToOOX(oNewParam).GetBuffer() );
 		if( true == m_oBorderRight.IsValid() )
-			sBorder.AppendFormat(_T("<w:right %ls />"), m_oBorderRight.RenderToOOX(oNewParam) );
+            sBorder.AppendFormat(_T("<w:right %ls />"), m_oBorderRight.RenderToOOX(oNewParam).GetBuffer() );
 	}
 
 	if( true == m_oBorderBar.IsValid() )
-		sBorder.AppendFormat(_T("<w:between %ls />"), m_oBorderBar.RenderToOOX(oNewParam) );
+        sBorder.AppendFormat(_T("<w:between %ls />"), m_oBorderBar.RenderToOOX(oNewParam).GetBuffer() );
 	if( false == sBorder.IsEmpty() )
-		sResult.AppendFormat( _T("<w:pBdr>%ls</w:pBdr>"), sBorder );
+        sResult.AppendFormat( _T("<w:pBdr>%ls</w:pBdr>"), sBorder.GetBuffer() );
 
 	if( true == m_oFrame.IsValid() )
 		sResult.Append( m_oFrame.RenderToOOX( oRenderParameter ) );
@@ -1819,7 +1822,7 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		sResult.AppendFormat( m_oTabs.RenderToOOX( oRenderParameter ) );
 	CString sCharProp = m_oCharProperty.RenderToOOX( oRenderParameter );
 	if( false == sCharProp.IsEmpty() )
-		sResult.AppendFormat( _T("<w:rPr>%ls</w:rPr>"), sCharProp );
+        sResult.AppendFormat( _T("<w:rPr>%ls</w:rPr>"), sCharProp.GetBuffer() );
 	return sResult;
 }
 CString RtfCellProperty::RenderToRtf(RenderParameter oRenderParameter)
@@ -1941,7 +1944,7 @@ CString RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( 3 == m_nIsPaddingBottom && PROP_DEF != m_nPaddingBottom)
 		sResult.AppendFormat(_T("<w:bottom w:w=\"%d\" w:type=\"dxa\"/>"),m_nPaddingBottom);
 	if( false == sMargin.IsEmpty() )
-		sResult.AppendFormat(_T("<w:tcMar>%ls</w:tcMar>"),sMargin);
+        sResult.AppendFormat(_T("<w:tcMar>%ls</w:tcMar>"),sMargin.GetBuffer());
 
 	//if( true == m_bIsSpacingLeft )
 	//	sResult.Append(_T("trspdl3"));
@@ -2021,7 +2024,7 @@ CString RtfCellProperty::RenderToOOX(RenderParameter oRenderParameter)
 		sBorder.Append( m_oBorderInsideV.RenderToOOX(oNewParam) );
 	}
 	if( false == sBorder.IsEmpty() )
-		sResult.AppendFormat( _T("<w:tcBorders>%ls</w:tcBorders>"), sBorder );
+        sResult.AppendFormat( _T("<w:tcBorders>%ls</w:tcBorders>"), sBorder.GetBuffer() );
 
 	if( true == m_oShading.IsValid() )
 		sResult.Append( m_oShading.RenderToOOX(oRenderParameter) );
@@ -2282,7 +2285,7 @@ CString RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case vp_posyout: sFloatingPosition.Append( _T(" w:tblpYSpec=\"outside\"") );break;
 	}
 	if( false == sFloatingPosition.IsEmpty() )
-		sResult.AppendFormat( _T("<w:tblpPr %ls/>"), sFloatingPosition );
+        sResult.AppendFormat( _T("<w:tblpPr %ls/>"), sFloatingPosition.GetBuffer() );
 
 	if( PROP_DEF != m_nWidth && ( 2 == m_eMUWidth || 3 == m_eMUWidth ))
 	{
@@ -2304,7 +2307,7 @@ CString RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nDefCellMarTop && 3 == m_nDefCellMarTopUnits )
 		sDefCellMargins.AppendFormat( _T("<w:top w:w=\"%d\" w:type=\"dxa\"/>"), m_nDefCellMarTop );
 	if( false == sDefCellMargins.IsEmpty() )
-		sResult.AppendFormat( _T("<w:tblCellMar>%ls</w:tblCellMar>"), sDefCellMargins );
+        sResult.AppendFormat( _T("<w:tblCellMar>%ls</w:tblCellMar>"), sDefCellMargins.GetBuffer() );
 	
 	if( PROP_DEF != m_nDefCellSpBottom && 3 == m_nDefCellSpBottomUnits ) 
 		sResult.AppendFormat( _T("<w:tblCellSpacing w:w=\"%d\" w:type=\"dxa\"/>"), m_nDefCellSpBottom );
@@ -2316,19 +2319,19 @@ CString RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 	oNewParam.nType = RENDER_TO_OOX_PARAM_BORDER_ATTRIBUTE;
 	CString sBorders;
 	if( m_oBorderLeft.IsValid() == true )
-		sBorders.AppendFormat(_T("<w:left %ls/>"),m_oBorderLeft.RenderToOOX(oNewParam) );
+        sBorders.AppendFormat(_T("<w:left %ls/>"),m_oBorderLeft.RenderToOOX(oNewParam).GetBuffer() );
 	if( m_oBorderRight.IsValid() == true )
-		sBorders.AppendFormat(_T("<w:right %ls/>"),m_oBorderRight.RenderToOOX(oNewParam) );
+        sBorders.AppendFormat(_T("<w:right %ls/>"),m_oBorderRight.RenderToOOX(oNewParam).GetBuffer() );
 	if( m_oBorderTop.IsValid() == true )
-		sBorders.AppendFormat(_T("<w:top %ls/>"),m_oBorderTop.RenderToOOX(oNewParam) );
+        sBorders.AppendFormat(_T("<w:top %ls/>"),m_oBorderTop.RenderToOOX(oNewParam).GetBuffer() );
 	if( m_oBorderBottom.IsValid() == true )
-		sBorders.AppendFormat(_T("<w:bottom %ls/>"),m_oBorderBottom.RenderToOOX(oNewParam) );
+        sBorders.AppendFormat(_T("<w:bottom %ls/>"),m_oBorderBottom.RenderToOOX(oNewParam).GetBuffer() );
 	if( m_oBorderVert.IsValid() == true )
-		sBorders.AppendFormat(_T("<w:insideV %ls/>"),m_oBorderVert.RenderToOOX(oNewParam) );
+        sBorders.AppendFormat(_T("<w:insideV %ls/>"),m_oBorderVert.RenderToOOX(oNewParam).GetBuffer() );
 	if( m_oBorderHor.IsValid() == true )
-		sBorders.AppendFormat(_T("<w:insideH %ls/>"),m_oBorderHor.RenderToOOX(oNewParam) );
+        sBorders.AppendFormat(_T("<w:insideH %ls/>"),m_oBorderHor.RenderToOOX(oNewParam).GetBuffer() );
 	if( false == sBorders.IsEmpty() )
-	sResult.AppendFormat(_T("<w:tblBorders>%ls</w:tblBorders>"), sBorders );
+    sResult.AppendFormat(_T("<w:tblBorders>%ls</w:tblBorders>"), sBorders.GetBuffer() );
 
 	if( m_oShading.IsValid() == true )
 		sResult.Append(m_oShading.RenderToOOX(oRenderParameter) );
@@ -2460,7 +2463,7 @@ CString RtfRowProperty::RenderToOOX(RenderParameter oRenderParameter)
 	//if( false == scnfStyle.IsEmpty() )
 	//	sResult.Append( _T("<w:cnfStyle %ls/>") );
 
-	_bstr_t hk;
+//	_bstr_t hk;
 	return sResult;
 }
 
@@ -2469,47 +2472,47 @@ CString RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 	CString sResult;
 
 	if( _T("") != m_sTitle )
-		sResult.AppendFormat( _T("{\\title %ls}"), RtfChar::renderRtfText( m_sTitle, oRenderParameter.poDocument ) );
+        sResult.AppendFormat( _T("{\\title %ls}"), RtfChar::renderRtfText( m_sTitle, oRenderParameter.poDocument ).GetBuffer() );
 	if( _T("") != m_sSubject )
-		sResult.AppendFormat( _T("{\\subject %ls}"), RtfChar::renderRtfText( m_sSubject, oRenderParameter.poDocument ) );
+        sResult.AppendFormat( _T("{\\subject %ls}"), RtfChar::renderRtfText( m_sSubject, oRenderParameter.poDocument ).GetBuffer() );
 	if( _T("") != m_sAuthor )
-		sResult.AppendFormat( _T("{\\author %ls}"), RtfChar::renderRtfText( m_sAuthor, oRenderParameter.poDocument ) );
+        sResult.AppendFormat( _T("{\\author %ls}"), RtfChar::renderRtfText( m_sAuthor, oRenderParameter.poDocument ).GetBuffer() );
 	if( _T("") != m_sManager )
-		sResult.AppendFormat( _T("{\\manager %ls}"), RtfChar::renderRtfText( m_sManager, oRenderParameter.poDocument ) );
+        sResult.AppendFormat( _T("{\\manager %ls}"), RtfChar::renderRtfText( m_sManager, oRenderParameter.poDocument ).GetBuffer() );
 	if( _T("") != m_sCompany )
-		sResult.AppendFormat( _T("{\\company %ls}"), RtfChar::renderRtfText( m_sCompany, oRenderParameter.poDocument ) );
+        sResult.AppendFormat( _T("{\\company %ls}"), RtfChar::renderRtfText( m_sCompany, oRenderParameter.poDocument ).GetBuffer() );
 	if( _T("") != m_sOperator )
-		sResult.AppendFormat( _T("{\\operator %ls}"), RtfChar::renderRtfText( m_sOperator, oRenderParameter.poDocument ) );
+        sResult.AppendFormat( _T("{\\operator %ls}"), RtfChar::renderRtfText( m_sOperator, oRenderParameter.poDocument ).GetBuffer() );
 	if( _T("") != m_sCategory )
-		sResult.AppendFormat( _T("{\\category %ls}"), RtfChar::renderRtfText( m_sCategory, oRenderParameter.poDocument ) );
+        sResult.AppendFormat( _T("{\\category %ls}"), RtfChar::renderRtfText( m_sCategory, oRenderParameter.poDocument ).GetBuffer() );
 	if( _T("") != m_sKeywords )
-		sResult.AppendFormat( _T("{\\keywords %ls}"), RtfChar::renderRtfText( m_sKeywords, oRenderParameter.poDocument ) );
+        sResult.AppendFormat( _T("{\\keywords %ls}"), RtfChar::renderRtfText( m_sKeywords, oRenderParameter.poDocument ).GetBuffer() );
 	if( _T("") != m_sComment )
-		sResult.AppendFormat( _T("{\\comment %ls}"), RtfChar::renderRtfText( m_sComment, oRenderParameter.poDocument ) );
+        sResult.AppendFormat( _T("{\\comment %ls}"), RtfChar::renderRtfText( m_sComment, oRenderParameter.poDocument ).GetBuffer() );
 
 	if( PROP_DEF != m_nVersion )
 		sResult.AppendFormat( _T("{\\version%d}"),m_nVersion );
 
 	if( _T("") != m_sDocCom )
-		sResult.AppendFormat( _T("{\\doccomm %ls}"), RtfChar::renderRtfText( m_sDocCom, oRenderParameter.poDocument ) );
+        sResult.AppendFormat( _T("{\\doccomm %ls}"), RtfChar::renderRtfText( m_sDocCom, oRenderParameter.poDocument ).GetBuffer() );
 	if( PROP_DEF != m_nInternalVersion )
 		sResult.AppendFormat( _T("{\\vern%d}"),m_nInternalVersion );
 	if( _T("") != m_sLinkBase )
-		sResult.AppendFormat( _T("{\\hlinkbase %ls}"), RtfChar::renderRtfText( m_sLinkBase, oRenderParameter.poDocument ) );
+        sResult.AppendFormat( _T("{\\hlinkbase %ls}"), RtfChar::renderRtfText( m_sLinkBase, oRenderParameter.poDocument ).GetBuffer() );
 
 
 	CString sCreateTime = m_oCreateTime.RenderToRtf( oRenderParameter );
 	if( _T("") != sCreateTime )
-		sResult.AppendFormat( _T("{\\creatim%ls}"),sCreateTime );
+        sResult.AppendFormat( _T("{\\creatim%ls}"),sCreateTime.GetBuffer() );
 	CString sRevTime = m_oRevTime.RenderToRtf( oRenderParameter );
 	if( _T("") != sRevTime )
-		sResult.AppendFormat( _T("{\\revtim%ls}"),sRevTime );
+        sResult.AppendFormat( _T("{\\revtim%ls}"),sRevTime.GetBuffer() );
 	CString sPrintTime = m_oPrintTime.RenderToRtf( oRenderParameter );
 	if( _T("") != sPrintTime )
-		sResult.AppendFormat( _T("{\\printim%ls}"),sPrintTime );
+        sResult.AppendFormat( _T("{\\printim%ls}"),sPrintTime.GetBuffer() );
 	CString sBackupTime = m_oBackupTime.RenderToRtf( oRenderParameter );
 	if( _T("") != sBackupTime )
-		sResult.AppendFormat( _T("{\\buptim%ls}"),sBackupTime );
+        sResult.AppendFormat( _T("{\\buptim%ls}"),sBackupTime.GetBuffer() );
 	if( PROP_DEF != m_nEndingTime )
 		sResult.AppendFormat( _T("{\\edmins%d}"),m_nEndingTime );
 	if( PROP_DEF != m_nNumberOfPages )
@@ -2647,7 +2650,7 @@ if( PROP_DEF != mmathFont )
 RtfDocument* poDoc = static_cast<RtfDocument*>(oRenderParameter.poDocument);
 RtfFont oFont;
 if( true == poDoc->m_oFontTable.GetFont(mmathFont, oFont) )
-	sProperty.AppendFormat(_T("<m:mathFont m:val=\"%ls\"/>"), oFont.m_sName);
+    sProperty.AppendFormat(_T("<m:mathFont m:val=\"%ls\"/>"), oFont.m_sName.GetBuffer());
 
 }
 switch( mbrkBin )
@@ -2687,7 +2690,7 @@ RENDER_OOX_INT( mwrapIndent, sProperty, _T("m:wrapIndent") )
 RENDER_OOX_INT( mwrapRight, sProperty, _T("m:wrapRight") )
 CString sResult;
 if( false == sProperty.IsEmpty() )
-sResult.AppendFormat( _T("<m:mathPr>%ls</m:mathPr>"), sProperty );
+sResult.AppendFormat( _T("<m:mathPr>%ls</m:mathPr>"), sProperty.GetBuffer() );
 return sResult;
 }
 CString RtfMathSpecProp::RenderToRtf(RenderParameter oRenderParameter)

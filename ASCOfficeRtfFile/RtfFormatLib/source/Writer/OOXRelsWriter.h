@@ -38,7 +38,7 @@ public:
 		sResult.Append( _T("<Relationships xmlns=\"http://schemas.openxmlformats.org/package/2006/relationships\">") );
 		for( int i = 0; i < (int)m_aTargets.size(); i++ )
 		{
-			sResult.AppendFormat( _T("<Relationship Id=\"%ls\" Type=\"%ls\" Target=\"%ls\""), m_aIDs[i], m_aTypes[i], m_aTargets[i]);
+            sResult.AppendFormat( _T("<Relationship Id=\"%ls\" Type=\"%ls\" Target=\"%ls\""), m_aIDs[i].GetBuffer(), m_aTypes[i].GetBuffer(), m_aTargets[i].GetBuffer());
 			if( false == m_aModes[i] )
 				sResult.Append( _T(" TargetMode=\"External\"") );
 			sResult.Append( _T("/>") );
@@ -52,15 +52,16 @@ public:
 		if( m_aTargets.size() < 1 )return false;
 		
 		CString pathRels = sFolder + FILE_SEPARATOR_STR + _T("_rels");
-		FileSystem::Directory::CreateDirectoryW(pathRels) ;
+        FileSystem::Directory::CreateDirectory(pathRels) ;
 
 		CFile file;
-		if (file.CreateFileW(pathRels + FILE_SEPARATOR_STR + m_sFileName + _T(".rels"))) return false;
+        if (file.CreateFile(pathRels + FILE_SEPARATOR_STR + m_sFileName + _T(".rels"))) return false;
 
-		DWORD dwBytesWritten;
 		CString sXml = CreateXml();
-		CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
-		file.WriteFile(sXmlUTF.GetBuffer(), sXmlUTF.GetLength());
+
+        std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+
+        file.WriteFile((void*)sXmlUTF.c_str(), sXmlUTF.length());
 		file.CloseFile();
 	}
 };

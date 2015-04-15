@@ -6,13 +6,19 @@
 
 #include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Drawing.h"
 
-#define MERGE_PROPERTY(propName, propObj)\
-	if( PROP_DEF != ##propObj##.##propName## )\
-		propName = ##propObj##.##propName##;
+#if defined (_WIN32) || defined (_WIN64)
+    #define MERGE_PROPERTY(propName, propObj)\
+        if( PROP_DEF != ##propObj##.##propName## )	propName = ##propObj##.##propName##;
 
-#define MERGE_PROPERTY_DEF(propName, propObj, defval)\
-	if( defval != ##propObj##.##propName## )\
-		propName = ##propObj##.##propName##;
+    #define MERGE_PROPERTY_DEF(propName, propObj, defval)\
+        if( defval != ##propObj##.##propName## )	propName = ##propObj##.##propName##;
+#else
+    #define MERGE_PROPERTY(propName, propObj)\
+        if( PROP_DEF != propObj.propName )	propName = propObj.propName;
+
+    #define MERGE_PROPERTY_DEF(propName, propObj, defval)\
+        if( defval != propObj.propName )	propName = propObj.propName;
+#endif
 
 #define DEFAULT_PROPERTY(propName)\
 		propName= PROP_DEF;
@@ -127,11 +133,11 @@ public:
 	typedef enum {TC_NONE,cmaindarkone ,cmainlightone ,cmaindarktwo ,cmainlighttwo ,caccentone ,caccenttwo ,caccentthree ,caccentfour ,caccentfive ,caccentsix ,chyperlink ,cfollowedhyperlink ,cbackgroundone ,ctextone ,cbackgroundtwo ,ctexttwo} ThemeColor;
 	
 	ThemeColor m_eTheme;
-	byte m_byteRed;
-	byte m_byteGreen;
-	byte m_byteBlue;
-	byte m_byteTint;
-	byte m_byteShade;
+    BYTE m_byteRed;
+    BYTE m_byteGreen;
+    BYTE m_byteBlue;
+    BYTE m_byteTint;
+    BYTE m_byteShade;
 	
 	RtfColor()
 	{
@@ -141,7 +147,7 @@ public:
 	{
 		SetHEX( nHex );
 	}
-		RtfColor(byte r, byte g, byte b)
+        RtfColor(BYTE r, BYTE g, BYTE b)
 	{
 		SetRGB( r, g, b );
 	}
@@ -162,21 +168,21 @@ public:
 		m_byteShade = 0;
 		m_eTheme = TC_NONE;
 	}
-	byte GetR()
+    BYTE GetR()
 	{
-		byte byteRed = SetShade( m_byteRed );
+        BYTE byteRed = SetShade( m_byteRed );
 		byteRed = SetTint( byteRed );
 		return byteRed;
 	}
-	byte GetG()
+    BYTE GetG()
 	{
-		byte byteGreen = SetShade( m_byteGreen );
+        BYTE byteGreen = SetShade( m_byteGreen );
 		byteGreen = SetTint( byteGreen );
 		return byteGreen;
 	}
-	byte GetB()
+    BYTE GetB()
 	{
-		byte byteBlue = SetShade( m_byteBlue );
+        BYTE byteBlue = SetShade( m_byteBlue );
 		byteBlue = SetTint( byteBlue );
 		return byteBlue;
 	}
@@ -193,7 +199,7 @@ public:
 		m_byteGreen = (color&0xFF00) >>4;
 		m_byteBlue =  (color&0xFF);
 	}
-		void SetRGB(byte red, byte green, byte blue)
+        void SetRGB(BYTE red, BYTE green, BYTE blue)
 	{
 		SetDefault();
 		m_byteRed = red;
@@ -261,12 +267,12 @@ public:
                           break;
               }
         }
-		m_byteRed = (byte)(r * 255.0f);
-		m_byteGreen = (byte)(g * 255.0f);
-		m_byteBlue = (byte)(b * 255.0f);
-		m_byteRed = (byte)(r * 255);
-		m_byteGreen = (byte)(g * 255);
-		m_byteBlue = (byte)(b * 255);
+        m_byteRed = (BYTE)(r * 255.0f);
+        m_byteGreen = (BYTE)(g * 255.0f);
+        m_byteBlue = (BYTE)(b * 255.0f);
+        m_byteRed = (BYTE)(r * 255);
+        m_byteGreen = (BYTE)(g * 255);
+        m_byteBlue = (BYTE)(b * 255);
 	}
 	void SetRGBPercent(int nRedPer, int nGreenPer, int nBluePer)
 	{
@@ -289,21 +295,21 @@ public:
 	}
 	CString ToHexColor()
 	{
-		byte byteRed = SetShade( m_byteRed );
+        BYTE byteRed = SetShade( m_byteRed );
 		byteRed = SetTint( byteRed );
 		CString sRed;
 		if( byteRed < 0x10 )
 			sRed.AppendFormat( _T("0%x"), byteRed );
 		else
 			sRed.AppendFormat( _T("%x"), byteRed );
-		byte byteGreen = SetShade( m_byteGreen );
+        BYTE byteGreen = SetShade( m_byteGreen );
 		byteGreen = SetTint( byteGreen );
 		CString sGreen;
 		if( byteGreen < 0x10 )
 			sGreen.AppendFormat( _T("0%x"), byteGreen );
 		else
 			sGreen.AppendFormat( _T("%x"), byteGreen );
-		byte byteBlue = SetShade( m_byteBlue );
+        BYTE byteBlue = SetShade( m_byteBlue );
 		byteBlue = SetTint( byteBlue );
 		CString sBlue;
 		if( byteBlue < 0x10 )
@@ -316,11 +322,11 @@ public:
 	int ToInt()const
 	{
 		CString sResult;
-		byte byteRed = SetShade( m_byteRed );
+        BYTE byteRed = SetShade( m_byteRed );
 		byteRed = SetTint( byteRed );
-		byte byteGreen = SetShade( m_byteGreen );
+        BYTE byteGreen = SetShade( m_byteGreen );
 		byteGreen = SetTint( byteGreen );
-		byte byteBlue = SetShade( m_byteBlue );
+        BYTE byteBlue = SetShade( m_byteBlue );
 		byteBlue = SetTint( byteBlue );
 
 		int nColor = (byteRed << 16) | (byteGreen << 8) | byteBlue;
@@ -328,14 +334,14 @@ public:
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter);
 	CString RenderToOOX(RenderParameter oRenderParameter);
-	byte SetShade(byte bColor)const
+    BYTE SetShade(BYTE bColor)const
 	{
-		//return (byte)( ( 1.0 - m_byteShade / 255 ) * bColor );
+        //return (BYTE)( ( 1.0 - m_byteShade / 255 ) * bColor );
 		return bColor;
 	}
-	byte SetTint(byte bColor)const
+    BYTE SetTint(BYTE bColor)const
 	 {
-		//return (byte)( ( 1.0 - m_byteTint / 255 ) * ( 255 - bColor ) + bColor );
+        //return (BYTE)( ( 1.0 - m_byteTint / 255 ) * ( 255 - bColor ) + bColor );
 		return bColor;
 	 }
 	static bool GetHighlightByColor( RtfColor oOutputColor,CString& oStr ) //todo
@@ -578,7 +584,7 @@ public:
 		//CString white = _T("FFFFFF");
 		//CString yellow = _T("FFFF00");
 
-		long nMinDelta = MAXLONG;
+        long nMinDelta = 0x7FFFFFFF; //MAXLONG;
 		int nIndex = -1;
 		for( int i = 0; i < (int)sColors.size(); i++ )
 		{
@@ -616,20 +622,31 @@ private:
 	CString WriteOOXAttribute( CString sParam )
 	 {
 		 CString sResult;
-			if( m_eTheme == TC_NONE )
-				if( _T("") == sParam )
-					sResult.AppendFormat(_T("color = \"%ls\""),ToHexColor());
-				else if( _T("Fill") == sParam )
-					sResult.AppendFormat(_T("fill = \"%ls\""),ToHexColor());
-			else
-			{
-				CString sTheme;
-				if( true == GetStringByTheme( sTheme, m_eTheme ) )
-				{
-					sResult.AppendFormat(_T("theme%sColor = \"%ls\" theme%sShade = \"%d\" theme%sTint = \"%d\""),sParam,sTheme,sParam,m_byteShade ,sParam,m_byteTint);
-				}
-			}
-		return sResult;
+         if( m_eTheme == TC_NONE )
+         {
+             if( _T("") == sParam )
+             {
+                 sResult = _T("color = \"");
+                 sResult.Append(ToHexColor());
+                 sResult.Append(_T("\""));
+             }
+             else if( _T("Fill") == sParam )
+             {
+                 sResult = _T("fill = \"");
+                 sResult.Append(ToHexColor());
+                 sResult.Append(_T("\""));
+             }
+         }
+         else
+         {
+             CString sTheme;
+             if( true == GetStringByTheme( sTheme, m_eTheme ) )
+             {
+                 sResult.AppendFormat(_T("theme%sColor = \"%ls\" theme%sShade = \"%d\" theme%sTint = \"%d\""),
+                                      sParam.GetBuffer(), sTheme.GetBuffer(), sParam.GetBuffer(), m_byteShade ,sParam.GetBuffer(), m_byteTint);
+             }
+         }
+         return sResult;
 	 }
 
 };
@@ -950,7 +967,7 @@ public:
 		for( int i = 0; i < (int)m_aTabs.size(); i++ )
 			sTabs.Append( m_aTabs[i].RenderToOOX( oRenderParameter ) );
 		if( false == sTabs.IsEmpty() )
-			sResult.AppendFormat( _T("<w:tabs>%ls</w:tabs>"), sTabs ); 
+            sResult.AppendFormat( _T("<w:tabs>%ls</w:tabs>"), sTabs.GetBuffer() );
 		return sResult;
 	}
 };

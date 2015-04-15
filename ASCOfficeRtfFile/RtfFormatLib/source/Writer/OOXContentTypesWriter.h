@@ -27,13 +27,13 @@ public:
 	{
 		CFile file;
 
-		if (file.CreateFileW(sFolder + FILE_SEPARATOR_STR + _T("[Content_Types].xml")) != S_OK) return false;
+        if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("[Content_Types].xml")) != S_OK) return false;
 
-		 DWORD dwBytesWritten;
 		 CString sXml = CreateXml();
-		 CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );//todooo UTF32 !!!
-		
-		 file.WriteFile( sXmlUTF.GetBuffer(), sXmlUTF.GetLength());
+
+         std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+
+         file.WriteFile((void*)sXmlUTF.c_str(), sXmlUTF.length());
 		 
 		 file.CloseFile();
 		 return true;
@@ -57,10 +57,10 @@ private:
 		sResult.Append( _T("<Default Extension=\"xml\" ContentType=\"application/xml\"/>") );
 
 		for( int i = 0; i < (int)m_aExtensions.size(); i++ )
-			sResult.AppendFormat( _T("<Default Extension=\"%ls\" ContentType=\"%ls\"/>"), m_aExtensions[i], m_aExtTypes[i]);
+            sResult.AppendFormat( _T("<Default Extension=\"%ls\" ContentType=\"%ls\"/>"), m_aExtensions[i].GetBuffer(), m_aExtTypes[i].GetBuffer());
 
 		for( int i = 0; i < (int)m_aTargets.size(); i++ )
-			sResult.AppendFormat( _T("<Override PartName=\"%ls\" ContentType=\"%ls\"/>"), m_aTargets[i], m_aTypes[i]);
+            sResult.AppendFormat( _T("<Override PartName=\"%ls\" ContentType=\"%ls\"/>"), m_aTargets[i].GetBuffer(), m_aTypes[i].GetBuffer());
 		sResult.Append( _T("</Types>") );
 		return sResult;
 	}

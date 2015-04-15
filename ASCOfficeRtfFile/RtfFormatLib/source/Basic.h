@@ -1,6 +1,7 @@
 ﻿#pragma once
 
 #include <vector>
+#include <string>
 
 #include "IdGenerator.h"
 #include "RtfDefine.h"
@@ -57,12 +58,15 @@ public:
 };
 
 
-template<class T> class ItemContainer
+template<class T>
+class ItemContainer
 {
-protected: 
-	std::vector<T> m_aArray;
-public: 
-	ItemContainer( )
+protected:
+    std::vector<T> m_aArray;
+
+public:
+
+    ItemContainer( )
 	{
 	}
 	ItemContainer( const ItemContainer& oItemContainer )
@@ -157,31 +161,31 @@ public:
 template<class T> class ItemSingleContainer: public ItemContainer<T>
 {
 public: 
-	int AddItem( T piRend)
+    int AddItem( T piRend)
 	{
-		for( int i = 0; i < (int)m_aArray.size(); i++ )
-			if( m_aArray[i] == piRend )
+        for( int i = 0; i < ItemContainer<T>::m_aArray.size(); i++ )
+            if( ItemContainer<T>::m_aArray[i] == piRend )
 				return i;
-		m_aArray.push_back(piRend);
-		return (int)m_aArray.size() - 1;
+        ItemContainer<T>::m_aArray.push_back(piRend);
+        return (int)ItemContainer<T>::m_aArray.size() - 1;
 	}
 };
 
 template<class T> class ItemWithLastContainer: public ItemContainer<T>
 {
 public:
-	void RemoveItem( T piRend )
+    void RemoveItem( T piRend )
 	{
-		if( (int)m_aArray.size() > 1 )
+        if( ItemContainer<T>::m_aArray.size() > 1 )
 		{
-			ItemContainer::RemoveItem( piRend );
+            ItemContainer<T>::RemoveItem( piRend );
 		}
 	}
-	void RemoveItem( int nIndex = -1 )
+    void RemoveItem( int nIndex = -1 )
 	{
-		if( (int)m_aArray.size() > 1 )
+        if( ItemContainer<T>::m_aArray.size() > 1 )
 		{
-			ItemContainer::RemoveItem( nIndex );
+            ItemContainer<T>::RemoveItem( nIndex );
 		}
 	}
 };

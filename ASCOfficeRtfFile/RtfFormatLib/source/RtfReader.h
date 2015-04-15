@@ -104,7 +104,7 @@ public:
 						break;
 				case RtfToken::Keyword:
 						ExecuteTextInternal2(oDocument, oReader, m_oTok.Key, m_nSkipChars);
-						if( _T("u") == m_oTok.Key )
+                        if( m_oTok.Key ==  "u")
 						{
 							ExecuteText( oDocument, oReader, ExecuteTextInternal( oDocument, oReader, m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter, m_nSkipChars) );
 							break;
@@ -124,9 +124,9 @@ public:
 							m_bCanStartNewReader = false;
 						break;
 				case RtfToken::Control:
-						if( m_oTok.Key == _T("42") )
+                        if( m_oTok.Key == "42" )
 							m_bSkip = true;
-						if( m_oTok.Key == _T("39") && true == m_oTok.HasParameter )
+                        if( m_oTok.Key == "39" && true == m_oTok.HasParameter )
 							oReader.m_oState->m_sCurText.AppendChar( m_oTok.Parameter );
 						break;
 				case RtfToken::Text:
@@ -206,7 +206,7 @@ public:
 	{
 		CString sResult;
 
-		if( _T("u") == sKey )
+        if( "u" == sKey )
 		{
 			if( true == bHasPar )
 				sResult.AppendChar( nPar );
@@ -214,7 +214,7 @@ public:
 		else
 		{
 			CStringA sCharString;
-			if( _T("39") == sKey )
+            if( "39" == sKey )
 			{
 				if( true == bHasPar )
 					sCharString.AppendChar( nPar );
@@ -236,7 +236,8 @@ public:
 			oReader.m_oState->m_sCurText.Empty();
 			if(sResult.GetLength() > 0)
 			{
-				ExecuteTextInternalSkipChars(sResult, oReader, CStringA(""), nSkipChars);
+                CStringA str;
+                ExecuteTextInternalSkipChars(sResult, oReader, str, nSkipChars);
 				ExecuteText( oDocument, oReader, sResult);
 			}
 		}
@@ -258,7 +259,7 @@ public:
 				nSkipChars = 0;
 			}
 		}
-		if( _T("u") == sKey )
+        if( "u" == sKey )
 		{
 			//надо правильно установить m_nSkipChars по значению \ucN
 			nSkipChars = oReader.m_oState->m_nUD;
@@ -292,19 +293,25 @@ public:
 							nCodepage = CP_ACP;
 						break;
 					}
-				case RtfDocumentProperty::cp_mac: nCodepage = CP_MACCP;break;
-				case RtfDocumentProperty::cp_pc: nCodepage = 437;break;
-				case RtfDocumentProperty::cp_pca: nCodepage = 850;break;
+                case RtfDocumentProperty::cp_mac:   nCodepage = CP_MACCP;   break;
+                case RtfDocumentProperty::cp_pc:    nCodepage = 437;        break; //ms dos latin us
+                case RtfDocumentProperty::cp_pca:   nCodepage = 850;        break; //ms dos latin eu
 				}
 			}
 			//если ничего нет ставим ANSI
 			if( -1 == nCodepage )
 				nCodepage = CP_ACP;
 
-			int nLengthW ;
-			nLengthW = MultiByteToWideChar(nCodepage, 0, sCharString, -1, NULL, NULL);
-			MultiByteToWideChar(nCodepage, 0, sCharString, -1, sResult.GetBuffer( nLengthW ), nLengthW);
-			sResult.ReleaseBuffer();
+#if defined (_WIN32) || defined (_WIN64)
+            int nLengthW ;
+            nLengthW = MultiByteToWideChar(nCodepage, 0, sCharString, -1, NULL, NULL);
+            MultiByteToWideChar(nCodepage, 0, sCharString, -1, sResult.GetBuffer( nLengthW ), nLengthW);
+            sResult.ReleaseBuffer();
+#else
+            //todooo расширить до других codepages (щас тока анси)
+            std::string sAnsi(sCharString.GetBuffer());
+            std::wstring s(sAnsi.begin(), sAnsi.end());
+#endif
 			//sResult = sKey;
 		}
 		return sResult;

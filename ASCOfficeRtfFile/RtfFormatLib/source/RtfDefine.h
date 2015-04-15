@@ -2,7 +2,11 @@
 
 const long g_cdMaxPercent = 1000000;
 
-#define PROP_DEF INT_MIN
+#ifdef INT_MIN
+    #define PROP_DEF INT_MIN
+#else
+    #define PROP_DEF (-0x7FFFFFFF-1)
+#endif
 
 #define RTF_MAX 1
 #define RTF_MID 2

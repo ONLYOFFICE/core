@@ -29,8 +29,8 @@ public:
 	}
 	bool IsValid()
 	{
-		return PROP_DEF != m_nWidth && PROP_DEF != m_nHeight
-				&& ::GetFileAttributes( m_sOleFilename ) != DWORD( -1 ) && _T("") != m_sOleFilename;
+        return PROP_DEF != m_nWidth && PROP_DEF != m_nHeight && _T("") != m_sOleFilename;
+                /*&& ::GetFileAttributes( m_sOleFilename ) != DWORD( -1 )*/
 	}
 	CString RenderToRtf(RenderParameter oRenderParameter)
 	{
@@ -48,13 +48,18 @@ public:
 		}
 		RENDER_RTF_INT( m_nWidth, sResult, _T("objw") );
 		RENDER_RTF_INT( m_nHeight, sResult, _T("objh") );
-		if( _T("") != m_sOleClass )
-			sResult.AppendFormat( _T("{\\*\\objclass %ls}"), m_sOleClass );
+
+        if( _T("") != m_sOleClass )
+            sResult.AppendFormat( _T("{\\*\\objclass %ls}"), m_sOleClass.GetBuffer() );
 		if( _T("") != m_sOleFilename )
-			sResult.AppendFormat( _T("{\\*\\objdata %ls}"), RtfInternalEncoder::Encode( m_sOleFilename ) );
+        {
+            CString str = RtfUtility::RtfInternalEncoder::Encode( m_sOleFilename );
+            sResult.AppendFormat( _T("{\\*\\objdata %ls}"), str.GetBuffer() );
+        }
 		if( NULL != m_oResultPic )
 		{
-			sResult.AppendFormat( _T("{\\result \\pard\\plain%ls}"), m_oResultPic->RenderToRtf( oRenderParameter ) );
+            CString str = m_oResultPic->RenderToRtf( oRenderParameter );
+            sResult.AppendFormat( _T("{\\result \\pard\\plain%ls}"), str.GetBuffer() );
 		}
 		sResult.Append( _T("}") );
 		return sResult;
@@ -101,7 +106,7 @@ struct RtfOle2ToOle1Stream : POLE::Stream
 {
 	std::vector<BYTE> aBuffer;
 };
-DWORD CALLBACK OleGet1(POLE::Stream* oStream, void FAR* pTarget, DWORD dwRead);;
-DWORD CALLBACK OlePut1(POLE::Stream*, const void FAR*, DWORD);
-DWORD CALLBACK OleGet2(POLE::Stream* oStream, void FAR* pTarget, DWORD dwRead);;
-DWORD CALLBACK OlePut2(POLE::Stream*, const void FAR*, DWORD);
+//DWORD CALLBACK OleGet1(POLE::Stream* oStream, void FAR* pTarget, DWORD dwRead);;
+//DWORD CALLBACK OlePut1(POLE::Stream*, const void FAR*, DWORD);
+//DWORD CALLBACK OleGet2(POLE::Stream* oStream, void FAR* pTarget, DWORD dwRead);;
+//DWORD CALLBACK OlePut2(POLE::Stream*, const void FAR*, DWORD);

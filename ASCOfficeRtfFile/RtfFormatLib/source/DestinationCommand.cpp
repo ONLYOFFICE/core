@@ -273,7 +273,7 @@ bool OleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CStrin
 
 			//delete oStream.lpstbl;
 			delete[] pData;
-			if( FAILED( hRes ) )
+            if(  hRes != S_OK )
 				Utils::RemoveDirOrFile( sOleStorageName );
 		}
 	}
@@ -325,7 +325,7 @@ bool ParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 		AddItem( m_oCurParagraph, oReader, true, false );
 		m_oCurParagraph = RtfParagraphPtr(new RtfParagraph());
 	}
-	else if( _T("row" == sCommand || "nestrow") == sCommand)
+    else if( _T("row") == sCommand || _T("nestrow") == sCommand)
 	{
 		m_oCurParagraph->m_oProperty = oReader.m_oState->m_oParagraphProp;
 		m_oCurParagraph->m_oOldList = RtfOldListPtr( new RtfOldList() );

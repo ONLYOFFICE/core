@@ -32,7 +32,7 @@ CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
 
 	//сохраняем в темповую директорию и загружаем файл как текст
 	RtfWriter * poWriter = static_cast<RtfWriter*>( oRenderParameter.poWriter );
-	IUnknown* piTempPict = NULL;
+    //IUnknown* piTempPict = NULL;
 	
 	//todooo ??? переписать
 	//if( true == LoadPicture( &piTempPict, m_sPicFilename ) )
@@ -44,7 +44,7 @@ CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
 	//		sResult.Append( RtfInternalEncoder::Encode( sTempFile ) );
 	//	}
 	//}
-	RELEASEINTERFACE( piTempPict );
+    //RELEASEINTERFACE( piTempPict );
 
 	sResult.Append(_T("}"));
 	return sResult;
@@ -82,7 +82,7 @@ CString RtfPicture::RenderToRtf(RenderParameter oRenderParameter)
 	}
 	sResult.Append( _T(" "));
 
-	sResult.Append( RtfInternalEncoder::Encode( m_sPicFilename ) );
+    sResult.Append( RtfUtility::RtfInternalEncoder::Encode( m_sPicFilename ) );
 
 	sResult.Append(_T("}"));
 	return sResult;
@@ -107,7 +107,7 @@ CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 	}
 
 	CString sFilenameRels;
-	sFilenameRels.AppendFormat( _T("Image%d.%ls"), poRtfDocument->m_oIdGenerator.Generate_ImageIndex(), sExtension);
+    sFilenameRels.AppendFormat( _T("Image%d.%ls"), poRtfDocument->m_oIdGenerator.Generate_ImageIndex(), sExtension.GetBuffer());
 	CString sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR +_T("media");
 	
 	FileSystem::Directory::CreateDirectory( sFilenameFull );

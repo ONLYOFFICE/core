@@ -156,7 +156,7 @@ CString RtfShape::RenderToRtfShapeProperty(RenderParameter oRenderParameter)
 				sResult.AppendFormat( _T("{\\sp{\\sn colSpan}{\\sv %d}}"),m_nColSpan);
 			//Rehydration
 			if(  _T("") != m_sMetroBlob )
-				sResult.AppendFormat( _T("{\\sp{\\sn metroBlob}{\\sv %d}}"),m_sMetroBlob);
+                sResult.AppendFormat( _T("{\\sp{\\sn metroBlob}{\\sv %d}}"),m_sMetroBlob.GetBuffer());
 
 			//Object Type
 			if(  PROP_DEF != m_bIsBullet )
@@ -335,7 +335,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 								sResult.Append( _T("<pic:cNvPicPr><a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/></pic:cNvPicPr>") );
 							sResult.Append( _T("</pic:nvPicPr>") );
 
-							sResult.AppendFormat( _T("<pic:blipFill><a:blip r:embed=\"%ls\"/>"), m_oPicture->RenderToOOX(oRenderParameter) );
+                            sResult.AppendFormat( _T("<pic:blipFill><a:blip r:embed=\"%ls\"/>"), m_oPicture->RenderToOOX(oRenderParameter).GetBuffer() );
 							CString sCrop;
 							if( PROP_DEF != nCropLeft )
 								sCrop.AppendFormat( _T(" l=\"%d\""), nCropLeft ); //тысячный доли процента
@@ -346,7 +346,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 							if( PROP_DEF != nCropBottom )
 								sCrop.AppendFormat( _T(" b=\"%d\""), nCropBottom );
 							if( false == sCrop.IsEmpty() )
-								sResult.AppendFormat( _T("<a:srcRect %ls/>"), sCrop );
+                                sResult.AppendFormat( _T("<a:srcRect %ls/>"), sCrop.GetBuffer() );
 							sResult.Append( _T("<a:stretch><a:fillRect/></a:stretch>") );
 							sResult.Append( _T("</pic:blipFill>") );
 							if( PROP_DEF != m_oPicture->m_nWidthGoal && PROP_DEF != m_oPicture->m_nHeightGoal )
@@ -561,7 +561,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 									for( int i = 2; i < (int)m_aWrapPoints.size() - 1; i+=2 )
 										sResult.AppendFormat( _T("<wp:lineTo x=\"%d\" y=\"%d\" />"), m_aWrapPoints[i], m_aWrapPoints[i+1] );
 									sResult.Append( _T("</wp:wrapPolygon>") );
-									sResult.AppendFormat( _T("</%ls>"), sTag );	
+                                    sResult.AppendFormat( _T("</%ls>"), sTag.GetBuffer() );
 								}
 							}
 							int nImageID = poDocument->m_oIdGenerator.Generate_ImagePropId();
@@ -599,7 +599,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 									sResult.Append( _T("<pic:cNvPicPr><a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/></pic:cNvPicPr>") );
 								sResult.Append( _T("</pic:nvPicPr>") );
 
-								sResult.AppendFormat( _T("<pic:blipFill><a:blip r:embed=\"%ls\"/>"), m_oPicture->RenderToOOX(oRenderParameter) );
+                                sResult.AppendFormat( _T("<pic:blipFill><a:blip r:embed=\"%ls\"/>"), m_oPicture->RenderToOOX(oRenderParameter).GetBuffer() );
 								CString sCrop;
 								if( PROP_DEF != nCropLeft )
 									sCrop.AppendFormat( _T(" l=\"%d\""), nCropLeft ); //тысячный доли процента
@@ -610,7 +610,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 								if( PROP_DEF != nCropBottom )
 									sCrop.AppendFormat( _T(" b=\"%d\""), nCropBottom );
 								if( false == sCrop.IsEmpty() )
-									sResult.AppendFormat( _T("<a:srcRect %ls/>"), sCrop );
+                                    sResult.AppendFormat( _T("<a:srcRect %ls/>"), sCrop.GetBuffer() );
 								sResult.Append( _T("<a:stretch><a:fillRect/></a:stretch>") );
 
 								sResult.Append( _T("</pic:blipFill>") );
@@ -720,7 +720,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			if( _T("") == oRenderParameter.sValue )
 				sResult.Append( _T("<v:shape") );
 			else
-				sResult.AppendFormat( _T("<%ls"),oRenderParameter.sValue );
+                sResult.AppendFormat( _T("<%ls"),oRenderParameter.sValue.GetBuffer() );
 
 			sResult.AppendFormat( _T(" id=\"_x0000_s%d\""), poDocument->GetShapeId( m_nID ) );
 			if( PROP_DEF != m_nShapeType )
@@ -922,7 +922,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			if( false == sStyle.IsEmpty() )
 			{
 				sStyle.Delete( sStyle.GetLength() - 1 );
-				sResult.AppendFormat( _T(" style=\"%ls\""),sStyle );
+                sResult.AppendFormat( _T(" style=\"%ls\""),sStyle.GetBuffer() );
 			}
 
 			if( PROP_DEF != m_bLayoutInCell )
@@ -982,7 +982,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 						}
 					}
 				}
-			sResult.AppendFormat( _T(" adj=\"%ls\""),sAdjust );
+            sResult.AppendFormat( _T(" adj=\"%ls\""),sAdjust.GetBuffer() );
 			}
 			//Geometry
 			if( m_aWrapPoints.size() > 0 )
@@ -1098,7 +1098,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 				}
 			}
 			if( false == sStroke.IsEmpty() )
-				sResult.AppendFormat( _T("<v:stroke %ls/>"), sStroke );
+                sResult.AppendFormat( _T("<v:stroke %ls/>"), sStroke.GetBuffer() );
 
 			if( 0 != m_aTextItems )
 			{
@@ -1138,7 +1138,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 				CString sPicture = m_oPicture->RenderToOOX(oRenderParameter);
 				if( _T("") == sPicture )//если не сохранилась картинка, то весь shape будет бесполезным
 					return _T("");
-				sResult.AppendFormat( _T("<v:imagedata r:id=\"%ls\""), sPicture );
+                sResult.AppendFormat( _T("<v:imagedata r:id=\"%ls\""), sPicture.GetBuffer() );
 				if( PROP_DEF != nCropLeft )
 					sResult.AppendFormat( _T(" cropleft=\"%df\""), nCropLeft );
 				if( PROP_DEF != nCropTop )
@@ -1157,7 +1157,7 @@ CString RtfShape::RenderToOOXEnd(RenderParameter oRenderParameter)
 	if( _T("") == oRenderParameter.sValue )
 		sResult.Append( _T("</v:shape>") );
 	else
-		sResult.AppendFormat( _T("</%ls>"), oRenderParameter.sValue );
+        sResult.AppendFormat( _T("</%ls>"), oRenderParameter.sValue.GetBuffer() );
 	if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE2 == oRenderParameter.nType )
 		;
 	else if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE == oRenderParameter.nType )

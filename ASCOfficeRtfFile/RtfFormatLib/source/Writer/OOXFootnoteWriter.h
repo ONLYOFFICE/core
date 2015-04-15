@@ -16,7 +16,7 @@ public:
 		CString sFootnote;
 		sFootnote.Append( _T("<w:footnote") );
 		if( false == sType.IsEmpty() )
-			sFootnote.AppendFormat( _T(" w:type=\"%ls\""), sType );
+            sFootnote.AppendFormat( _T(" w:type=\"%ls\""), sType.GetBuffer() );
 		if( PROP_DEF != nID )
 			sFootnote.AppendFormat( _T(" w:id=\"%d\""), nID );
 		sFootnote.Append( _T(">") );
@@ -29,7 +29,7 @@ public:
 	{
 		m_sFootnotes.Append( _T("<w:footnote") );
 		if( false == sType.IsEmpty() )
-			m_sFootnotes.AppendFormat( _T(" w:type=\"%ls\""), sType );
+            m_sFootnotes.AppendFormat( _T(" w:type=\"%ls\""), sType.GetBuffer() );
 		if( PROP_DEF != nID )
 			m_sFootnotes.AppendFormat( _T(" w:id=\"%d\""), nID );
 		m_sFootnotes.Append( _T(">") );
@@ -41,23 +41,27 @@ public:
 		if(  m_sFootnotes.IsEmpty() ) return false;
 
 		CFile file;
-		if (file.CreateFileW(sFolder + FILE_SEPARATOR_STR + _T("footnotes.xml"))) return false;
+        if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("footnotes.xml"))) return false;
 		
 		m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/footnotes"), _T("footnotes.xml") );
 		m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml"), _T("/word/footnotes.xml") );
 
 		 CString sXml = CreateXml();
-		 CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
 		
-		 file.WriteFile(sXmlUTF.GetBuffer(), sXmlUTF.GetLength());
+         std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+
+         file.WriteFile((void*)sXmlUTF.c_str(), sXmlUTF.length());
+
 		 file.CloseFile();
 		 return true;
 	}
 private: 
 	RtfDocument& m_oDocument;
 	OOXWriter& m_oWriter;
-	CString m_sFootnotes;
-	CString CreateXml()
+
+    CString m_sFootnotes;
+
+    CString CreateXml()
 	{
 		CString sResult;
 		sResult.Append( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>") );
@@ -83,7 +87,7 @@ public:
 		CString sEndnote;
 		sEndnote.Append( _T("<w:endnote") );
 		if( false == sType.IsEmpty() )
-			sEndnote.AppendFormat( _T(" w:type=\"%ls\""), sType );
+            sEndnote.AppendFormat( _T(" w:type=\"%ls\""), sType.GetBuffer() );
 		if( -2 != nID )
 			sEndnote.AppendFormat( _T(" w:id=\"%d\""), nID );
 		sEndnote.Append( _T(">") );
@@ -96,7 +100,7 @@ public:
 	{
 		m_sEndnotes.Append( _T("<w:endnote") );
 		if( false == sType.IsEmpty() )
-			m_sEndnotes.AppendFormat( _T(" w:type=\"%ls\""), sType );
+            m_sEndnotes.AppendFormat( _T(" w:type=\"%ls\""), sType.GetBuffer() );
 		if( -2 != nID )
 			m_sEndnotes.AppendFormat( _T(" w:id=\"%d\""), nID );
 		m_sEndnotes.Append( _T(">") );
@@ -108,14 +112,14 @@ public:
 		if( m_sEndnotes.IsEmpty() ) return false;
 
 		CFile file;
-		if (file.CreateFileW(sFolder + FILE_SEPARATOR_STR + _T("endnotes.xml"))) return false;
+        if (file.CreateFile(sFolder + FILE_SEPARATOR_STR + _T("endnotes.xml"))) return false;
 
 		m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/endnotes"), _T("endnotes.xml") );
 		m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml"), _T("/word/endnotes.xml") );
 
-		CStringA sXml = CreateXml();
+        std::string sXml = CreateXml();
 
-		file.WriteFile(sXml.GetBuffer(), sXml.GetLength());
+        file.WriteFile((void*)sXml.c_str(), sXml.length());
 		file.CloseFile();
 		return true;
 	}
@@ -123,14 +127,15 @@ private:
 	RtfDocument& m_oDocument;
 	OOXWriter& m_oWriter;
 	CString m_sEndnotes;
-	CStringA CreateXml()
+
+    std::string CreateXml()
 	{
-		CString sResult;
-		sResult.Append( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>") );
-		sResult.AppendChar('\n');
-		sResult.Append( _T("<w:endnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2008/9/16/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2009/2/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingShape\" >") );
-		sResult.Append( m_sEndnotes );
-		sResult.Append( _T("</w:endnotes>") );
-		return  Convert::UnicodeToUtf8( sResult);
+        std::wstring sResult;
+        sResult.append( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>") );
+        sResult.append( _T("<w:endnotes xmlns:wpc=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingCanvas\" xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp14=\"http://schemas.microsoft.com/office/word/2008/9/16/wordprocessingDrawing\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:w14=\"http://schemas.microsoft.com/office/word/2009/2/wordml\" xmlns:wpg=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingGroup\" xmlns:wpi=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingInk\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" xmlns:wps=\"http://schemas.microsoft.com/office/word/2008/6/28/wordprocessingShape\" >") );
+        sResult.append( m_sEndnotes.GetBuffer() );
+        sResult.append( _T("</w:endnotes>") );
+
+        return  NSFile::CUtf8Converter::GetUtf8StringFromUnicode( sResult);
 	}
 };

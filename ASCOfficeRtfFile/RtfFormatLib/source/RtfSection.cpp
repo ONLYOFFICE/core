@@ -151,7 +151,7 @@ CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 	for( int i = 0; i < (int)m_aSpecialFootnotes.size(); i++ )
 		sFootnoteProp.AppendFormat( _T("<w:footnote w:id=\"%d\" />"), m_aSpecialFootnotes[i] );
 	if( PROP_DEF != m_nFootnoteNumberingFormat )
-		sFootnoteProp.AppendFormat( _T("<w:numRestart w:val=\"%ls\" />"), RtfListLevelProperty::GetFormat( m_nFootnoteNumberingFormat ) );
+        sFootnoteProp.AppendFormat( _T("<w:numRestart w:val=\"%ls\" />"), RtfListLevelProperty::GetFormat( m_nFootnoteNumberingFormat ).GetBuffer() );
 	RENDER_OOX_INT( m_nFootnoteStart, sFootnoteProp, _T("w:numStart") );
 	if( PROP_DEF != m_eFootnoteRestart )
 	{
@@ -173,13 +173,13 @@ CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 		}
 	}
 	if( false == sFootnoteProp.IsEmpty() )
-		sResult.AppendFormat( _T("<w:footnotePr>%ls</w:footnotePr>"), sFootnoteProp );
+        sResult.AppendFormat( _T("<w:footnotePr>%ls</w:footnotePr>"), sFootnoteProp.GetBuffer() );
 
 	CString sEndnoteProp;
 	for( int i = 0; i < (int)m_aSpecialEndnotes.size(); i++ )
 		sEndnoteProp.AppendFormat( _T("<w:endnote w:id=\"%d\" />"), m_aSpecialEndnotes[i] );
 	if( PROP_DEF != m_nFootnoteNumberingFormat )
-		sFootnoteProp.AppendFormat( _T("<w:numRestart w:val=\"%ls\" />"), RtfListLevelProperty::GetFormat( m_nFootnoteNumberingFormat ) );
+        sFootnoteProp.AppendFormat( _T("<w:numRestart w:val=\"%ls\" />"), RtfListLevelProperty::GetFormat( m_nFootnoteNumberingFormat ).GetBuffer() );
 	RENDER_OOX_INT( m_nEndnoteStart, sEndnoteProp, _T("w:numStart") );
 	if( PROP_DEF != m_eEndnoteRestart )
 	{
@@ -200,7 +200,7 @@ CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 		}
 	}
 	if( false == sEndnoteProp.IsEmpty() )
-		sResult.AppendFormat( _T("<w:endnotePr>%ls</w:endnotePr>"), sEndnoteProp );
+        sResult.AppendFormat( _T("<w:endnotePr>%ls</w:endnotePr>"), sEndnoteProp.GetBuffer() );
 
 	CString sCompat;
 	if( 1 != m_bHtmlAutoSpace )
@@ -208,7 +208,7 @@ CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( 0 == m_bUseTabAlignment )
 		sCompat.Append( _T("<w:forgetLastTabAlignment/>") );
 	if( false == sCompat.IsEmpty() )
-		sResult.AppendFormat( _T("<w:compat>%ls</w:compat>"), sCompat );
+        sResult.AppendFormat( _T("<w:compat>%ls</w:compat>"), sCompat.GetBuffer() );
 
 	return sResult;
 }
@@ -465,7 +465,7 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nPaperSourceFirst )
 		sPaperSource.AppendFormat( _T(" w:other=\"%d\""), m_nPaperSourceOther );
 	if( false == sPaperSource.IsEmpty() )
-		sResult.AppendFormat(_T("<w:paperSrc %ls/>"), sPaperSource );
+        sResult.AppendFormat(_T("<w:paperSrc %ls/>"), sPaperSource.GetBuffer() );
 	if( 1 == m_bRtlGutter )
 		sResult.Append(_T("<w:rtlGutter/>"));
 
@@ -554,7 +554,7 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case ff_sftnnzodiacl:sFootnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
 	}
 	if( false == sFootnotesProp.IsEmpty() )
-		sResult.AppendFormat( _T("<w:footnotePr>%ls</w:footnotePr>"), sFootnotesProp );
+        sResult.AppendFormat( _T("<w:footnotePr>%ls</w:footnotePr>"), sFootnotesProp.GetBuffer() );
 
 	CString sEndnotesProp;
 	RENDER_OOX_INT( m_nEndnotesStart, sEndnotesProp, _T("w:numStart") )
@@ -588,7 +588,7 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case ef_saftnnzodiacl:sEndnotesProp.Append( _T("<w:numFmt w:val=\"upperLetter\" />") );break; 
 	}
 	if( false == sEndnotesProp.IsEmpty() )
-		sResult.AppendFormat( _T("<w:endnotePr>%ls</w:endnotePr>"), sEndnotesProp );
+        sResult.AppendFormat( _T("<w:endnotePr>%ls</w:endnotePr>"), sEndnotesProp.GetBuffer() );
 
 	//Line Numbering
 	CString sLineNumbering;
@@ -605,7 +605,7 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 		case lnr_linecont:sLineNumbering.Append( _T(" w:restart=\"continuous\"") );break; 
 	}
 	if( false == sLineNumbering.IsEmpty() )
-		sResult.AppendFormat( _T("<w:lnNumType %ls/>"), sLineNumbering );
+        sResult.AppendFormat( _T("<w:lnNumType %ls/>"), sLineNumbering.GetBuffer() );
 
 	//Page Information
 	CString sPageSize;
@@ -616,7 +616,7 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( 1 == m_bLandscapeFormat )
 		sPageSize.Append(_T(" w:orient=\"landscape\""));
 	if( false == sPageSize.IsEmpty() )
-		sResult.AppendFormat(_T("<w:pgSz %ls/>"), sPageSize );
+        sResult.AppendFormat(_T("<w:pgSz %ls/>"), sPageSize.GetBuffer() );
 
 	CString sMargin;
 	if( PROP_DEF != m_nMarginLeft )
@@ -634,7 +634,7 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nFooterBottom )
 		sMargin.AppendFormat(_T(" w:footer=\"%d\""), m_nFooterBottom);
 	if( false == sMargin.IsEmpty() )
-		sResult.AppendFormat(_T("<w:pgMar %ls/>"), sMargin);
+        sResult.AppendFormat(_T("<w:pgMar %ls/>"), sMargin.GetBuffer());
 	if( 1 == m_bTitlePage )
 		sResult.Append(_T("<w:titlePg/>"));
 
@@ -643,7 +643,7 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( PROP_DEF != m_nPageNumberStart )
 		sPageNumber.AppendFormat( _T(" w:start=\"%d\""), m_nPageNumberStart );
 	if( false == sPageNumber.IsEmpty() )
-		sResult.AppendFormat( _T("<w:pgNumType %ls/>"), sPageNumber );
+        sResult.AppendFormat( _T("<w:pgNumType %ls/>"), sPageNumber.GetBuffer() );
 	//Vertical Alignment
 	switch( m_eVerticalAlignment )
 	{
@@ -713,32 +713,32 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 	if( 0 != m_oHeaderLeft )
 	{
 		CString sId = SaveFile(m_oHeaderLeft,oRenderParameter, true);
-		sResult.AppendFormat(_T("<w:headerReference w:type=\"even\" r:id=\"%ls\"/>"), sId);
+        sResult.AppendFormat(_T("<w:headerReference w:type=\"even\" r:id=\"%ls\"/>"), sId.GetBuffer());
 	}
 	if( 0 != m_oHeaderFirst )
 	{
 		CString sId = SaveFile(m_oHeaderFirst,oRenderParameter, true);
-		sResult.AppendFormat(_T("<w:headerReference w:type=\"first\" r:id=\"%ls\"/>"), sId);
+        sResult.AppendFormat(_T("<w:headerReference w:type=\"first\" r:id=\"%ls\"/>"), sId.GetBuffer());
 	}
 	if( 0 != m_oHeaderRight )
 	{
 		CString sId = SaveFile(m_oHeaderRight,oRenderParameter, true);
-		sResult.AppendFormat(_T("<w:headerReference w:type=\"default\" r:id=\"%ls\"/>"), sId);
+        sResult.AppendFormat(_T("<w:headerReference w:type=\"default\" r:id=\"%ls\"/>"), sId.GetBuffer());
 	}
 	if( 0 != m_oFooterLeft )
 	{
 		CString sId = SaveFile(m_oFooterLeft,oRenderParameter, false);
-		sResult.AppendFormat(_T("<w:footerReference w:type=\"even\" r:id=\"%ls\"/>"), sId);
+        sResult.AppendFormat(_T("<w:footerReference w:type=\"even\" r:id=\"%ls\"/>"), sId.GetBuffer());
 	}
 	if( 0 != m_oFooterFirst )
 	{
 		CString sId = SaveFile(m_oFooterFirst,oRenderParameter, false);
-		sResult.AppendFormat(_T("<w:footerReference w:type=\"first\" r:id=\"%ls\"/>"), sId);
+        sResult.AppendFormat(_T("<w:footerReference w:type=\"first\" r:id=\"%ls\"/>"), sId.GetBuffer());
 	}
 	if( 0 != m_oFooterRight )
 	{
 		CString sId = SaveFile(m_oFooterRight,oRenderParameter, false);
-		sResult.AppendFormat(_T("<w:footerReference w:type=\"default\" r:id=\"%ls\"/>"), sId);
+        sResult.AppendFormat(_T("<w:footerReference w:type=\"default\" r:id=\"%ls\"/>"), sId.GetBuffer());
 	}
 	sResult.Append(_T("</w:sectPr>"));
 	return sResult;
@@ -761,7 +761,7 @@ CString RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderParame
 		else
 			sRootName = _T("w:ftr");
 		sContent.AppendFormat( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n") );
-		sContent.AppendFormat( _T("<%ls xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\">"), sRootName );
+        sContent.AppendFormat( _T("<%ls xmlns:ve=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" xmlns:o=\"urn:schemas-microsoft-com:office:office\" xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" xmlns:v=\"urn:schemas-microsoft-com:vml\" xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" xmlns:w10=\"urn:schemas-microsoft-com:office:word\" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\">"), sRootName.GetBuffer() );
 		
 		RenderParameter oNewParameter = oRenderParameter;
 		OOXRelsWriterPtr oNewRelsWr = OOXRelsWriterPtr( new OOXRelsWriter( sFilename, *poRtfDocument ) );
@@ -769,18 +769,18 @@ CString RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderParame
 		oNewParameter.poRels = oNewRelsWr.get();
 		
 		sContent.Append( oTarget->RenderToOOX(oNewParameter) );
-		sContent.AppendFormat( _T("</%ls>"), sRootName );
-		CStringA sContentUTF = Convert::UnicodeToUtf8( sContent );
+        sContent.AppendFormat( _T("</%ls>"), sRootName.GetBuffer() );
 
+
+        std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sContent.GetBuffer());
 		
 		CString sFilePath = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + sFilename;
 		
-		DWORD dwBytesWritten = 0;
 		CFile file;
 		
-		if (file.CreateFileW(sFilePath) == S_OK)
-		{
-			file.WriteFile(sContentUTF.GetBuffer(), sContentUTF.GetLength());
+        if (file.CreateFile(sFilePath) == S_OK)
+		{            
+            file.WriteFile((void*)sXmlUTF.c_str(), sXmlUTF.length());
 			file.CloseFile();
 		}
 

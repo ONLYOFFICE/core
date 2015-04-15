@@ -95,7 +95,7 @@ bool RtfWriter::SaveByItem()
 				oNewParam.nType = RENDER_TO_OOX_PARAM_FIRST_SECTION;
 			}
 			sRtf = m_oDocument[0]->m_oProperty.RenderToRtf(oNewParam);
-			RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileSectWriter );
+            RtfUtility::RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileSectWriter );
 			//дописываем в файл
 			RELEASEOBJECT( m_oCurTempFileSectWriter );
 			//создаем новый
@@ -121,7 +121,7 @@ bool RtfWriter::SaveByItem()
 			sRtf.Append( _T("\\par") );
 			//oNewParam.nValue = RENDER_TO_RTF_PARAM_NO_PAR;
 		}
-		RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileWriter );
+        RtfUtility::RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileWriter );
 		//m_oTempFileWriter->Write( (BYTE*)(LPCSTR)sRtf, sRtf.GetLength() );
 
 		//удаляем элемент который только что написали
@@ -152,7 +152,7 @@ bool RtfWriter::SaveByItemEnd()
 				oNewParam.nType = RENDER_TO_OOX_PARAM_FIRST_SECTION;
 			}
 			sRtf = m_oDocument[0]->m_oProperty.RenderToRtf(oNewParam);
-			RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileSectWriter );
+            RtfUtility::RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileSectWriter );
 			//дописываем в файл
 			RELEASEOBJECT( m_oCurTempFileSectWriter );
 		}
@@ -171,7 +171,7 @@ bool RtfWriter::SaveByItemEnd()
 		//пишем заголовок потом все содежимое
 		sRtf = CreateRtfStart();
 		DWORD dwBytesWrite = 0;
-		RtfInternalEncoder::Decode( sRtf, oTargetFileWriter );
+        RtfUtility::RtfInternalEncoder::Decode( sRtf, oTargetFileWriter );
 		//WriteFile ( hTargetFile, sRtf, ( DWORD ) sRtf.GetLength(), &dwBytesWrite, NULL );
 
 		//копируем заголовки из массива и параграфы из темповых файлов
@@ -215,8 +215,8 @@ bool RtfWriter::SaveByItemEnd()
 
 		//завершаем документ
 		sRtf = CreateRtfEnd();
-		RtfInternalEncoder::Decode( sRtf, oTargetFileWriter );
-		byte nEndFile = 0;
+        RtfUtility::RtfInternalEncoder::Decode( sRtf, oTargetFileWriter );
+        BYTE nEndFile = 0;
 		oTargetFileWriter.Write( &nEndFile, 1);
 	}
 	catch(...)
@@ -265,25 +265,25 @@ CString RtfWriter::CreateRtfStart()
 	{
 		sFootnote = m_oDocument.m_oFootnoteSep->RenderToRtf( oRenderParameter );
 		if( _T("") != sFootnote )
-			sResult.AppendFormat( _T("{\\*\\ftnsep %ls}"), sFootnote );
+            sResult.AppendFormat( _T("{\\*\\ftnsep %ls}"), sFootnote.GetBuffer() );
 	}
 	if( NULL != m_oDocument.m_oFootnoteCon )
 	{
 		sFootnote = m_oDocument.m_oFootnoteCon->RenderToRtf( oRenderParameter );
 		if( _T("") != sFootnote )
-			sResult.AppendFormat( _T("{\\*\\ftnsepc %ls}"), sFootnote );
+            sResult.AppendFormat( _T("{\\*\\ftnsepc %ls}"), sFootnote.GetBuffer() );
 	}
 	if( NULL != m_oDocument.m_oEndnoteSep )
 	{
 		sFootnote = m_oDocument.m_oEndnoteSep->RenderToRtf( oRenderParameter );
 		if( _T("") != sFootnote )
-			sResult.AppendFormat( _T("{\\*\\aftnsep %ls}"), sFootnote );
+            sResult.AppendFormat( _T("{\\*\\aftnsep %ls}"), sFootnote.GetBuffer() );
 	}
 	if( NULL != m_oDocument.m_oEndnoteCon )
 	{
 		sFootnote = m_oDocument.m_oEndnoteCon->RenderToRtf( oRenderParameter );
 		if( _T("") != sFootnote )
-			sResult.AppendFormat( _T("{\\*\\aftnsepc %ls}"), sFootnote );
+            sResult.AppendFormat( _T("{\\*\\aftnsepc %ls}"), sFootnote.GetBuffer() );
 	}
 
 	sResult.Append(_T("\n\n"));

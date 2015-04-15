@@ -89,9 +89,8 @@ public:
 	{
 		BYTE	pBuffer[ 16 ];
 		DWORD	dwBytesRead = 0;
-		HANDLE	hFile;
 
-		CFile file;
+        CFile file;
 		if (file.OpenFile(sFilename) != S_OK) return dt_none;
 
 		file.ReadFile(pBuffer, 16);

@@ -64,26 +64,4 @@ public:
 		 sResult.Replace(_T("'"), _T("&apos;"));
 		 return sResult;
 	 }
-	//static CStringA UnicodeToCodepage( CStringW sUni, UINT nCodepage = CP_UTF8 )
-	//{
-	//	CStringA sUtf;
-	//	int nBufSize = WideCharToMultiByte(nCodepage, 0, sUni, -1, NULL, NULL, NULL, NULL);
-	//	LPSTR pBuff = new CHAR[ nBufSize + 1 ];
-	//	WideCharToMultiByte(nCodepage, 0, sUni, -1, pBuff, nBufSize, NULL, NULL);
-	//	pBuff[ nBufSize ] = 0;
-	//	sUtf.Append( pBuff );
-	//	delete pBuff;
-	//	return sUtf;
-	//}
-//public: static CStringW CodepageToUnicode( CStringA sUtf, UINT nCodepage = CP_UTF8 )
-//		{
-//			CStringW sUni;
-//			int nBufSize = MultiByteToWideChar(nCodepage, 0, sUtf, -1, NULL, NULL);
-//			LPWSTR pBuff = new WCHAR[ nBufSize + 1 ];
-//			MultiByteToWideChar(nCodepage, 0, sUtf, -1, pBuff, nBufSize);
-//			pBuff[ nBufSize ] = 0;
-//			sUni.Append( pBuff );
-//			delete pBuff;
-//			return sUni;
-//		}
 };

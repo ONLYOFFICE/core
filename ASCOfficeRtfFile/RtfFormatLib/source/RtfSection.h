@@ -124,12 +124,13 @@ public:
 			m_nZoom = 100;
 
 			//вычисляем стандартный default ansi codepage для системы
-			TCHAR codepage[7];
-			int nRes = GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_IDEFAULTANSICODEPAGE, codepage, 6 );
-			if( nRes != 0 )
+#if defined (_WIN32) || defined(_WIN64)
+            TCHAR codepage[7];
+            if( GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_IDEFAULTANSICODEPAGE, codepage, 6 ) != 0)
 				m_nAnsiCodePage = _ttoi(codepage);
 			else
-				m_nAnsiCodePage = CP_ACP;
+ #endif
+                m_nAnsiCodePage = CP_ACP;
 
 			m_bDorderSurroundHeader = PROP_DEF;
 			m_bDorderSurroundFotter = PROP_DEF;

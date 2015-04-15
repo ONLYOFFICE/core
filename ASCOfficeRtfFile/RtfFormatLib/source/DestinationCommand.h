@@ -1078,7 +1078,7 @@ private: RtfShape& m_oShape;
 		CString m_sFile;
 		CString m_sData;
 		bool  m_bBin;
-		byte* m_pbBin;
+        BYTE* m_pbBin;
 		int m_nBinLength;
 public: PictureReader( RtfReader& oReader, RtfShape& oShape ):m_oShape(oShape)
 		{
@@ -1802,8 +1802,9 @@ private: void TryToPepairResult( RtfDocument& oDocument, RtfReader& oReader )
 				return;
 			sResTokenize = sField.Tokenize( _T(" \""), nStartTokenize );
 			int nCommand = 0; //0 - none; 1 - \f; 3 - other
-			bool bWaitRightBreak = false;
-			while( sResTokenize != "" )
+
+            bool bWaitRightBreak = false;
+            while( sResTokenize != _T("") )
 			{
 				int nTokenLen = sResTokenize.GetLength();
 				if( nTokenLen > 0 && sResTokenize[0] == '\"' && sResTokenize[nTokenLen - 1] != '\"' ) //текст в кавычках считается как один
@@ -3199,9 +3200,9 @@ public: RtfSectionCommand()
 			COMMAND_RTF_INT( _T("brdrart"), oReader.m_oCurSectionProp.m_nBorderArt, sCommand, hasParameter, parameter)
 			COMMAND_RTF_INT( _T("pgbrdropt"), oReader.m_oCurSectionProp.m_nBorderMeasure, sCommand, hasParameter, parameter)
 			COMMAND_RTF_BOOL( _T("pgbrdrsna"), oReader.m_oCurSectionProp.m_nBorderAlign, sCommand, hasParameter, parameter)
-			else if( _T("header" == sCommand || "footer" == sCommand ||  "headerl") == sCommand || 
-					 _T("headerr" == sCommand ||  "headerf" == sCommand ||  "footerl") == sCommand || 
-					 _T("footerr" == sCommand ||  "footerf") == sCommand )
+            else if( _T("header") == sCommand || _T("footer") == sCommand ||  _T("headerl") == sCommand ||
+                     _T("headerr") == sCommand ||  _T("headerf") == sCommand ||  _T("footerl") == sCommand ||
+                     _T("footerr") == sCommand ||  _T("footerf") == sCommand )
 			{
 				ParagraphReader oParagraphReader(sCommand, oReader);
 				oAbstrReader.StartSubReader( oParagraphReader, oDocument, oReader );
@@ -3326,8 +3327,8 @@ public:
 				RtfMathPropReader oMathPropReader;
 				return StartSubReader( oMathPropReader, oDocument, oReader );
 			}
-			else if( _T("ftnsep" == sCommand || "ftnsepc") == sCommand || 
-					_T("aftnsep" == sCommand || "aftnsepc") == sCommand )
+            else if( _T("ftnsep") == sCommand || _T("ftnsepc") == sCommand ||
+                    _T("aftnsep")== sCommand || _T("aftnsepc") == sCommand )
 			{
 				ParagraphReader oParagraphReader(sCommand, oReader);
 				StartSubReader( oParagraphReader, oDocument, oReader );

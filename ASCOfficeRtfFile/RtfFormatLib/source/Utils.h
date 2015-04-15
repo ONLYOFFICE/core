@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "../../../Common/FileWriter.h"
 
@@ -138,7 +138,7 @@ public:
 	 }
 	static bool MultybyteToUnicode(CStringA sInputStr, CStringW& sOutputStr, int nCodepage)
 	{
-		//todooo ПЕРЕПИСАТЬ 
+		//todooo РџР•Р Р•РџРРЎРђРўР¬ 
 		sOutputStr = _T("");
 		int nBufSize = MultiByteToWideChar(nCodepage, 0, sInputStr, -1, NULL, NULL);
 		LPWSTR p = new WCHAR[ nBufSize + 1 ];
@@ -155,7 +155,7 @@ public:
 	}
 	static CStringW Utf8ToUnicode(CStringA sInputStr)//todo
 	{
-		//todooo ПЕРЕПИСАТЬ 
+		//todooo РџР•Р Р•РџРРЎРђРўР¬ 
 		CStringW sResult;
 		int nBufSize = MultiByteToWideChar(CP_UTF8, 0, sInputStr, -1, NULL, NULL);
 		LPWSTR p = new WCHAR[ nBufSize + 1 ];
@@ -167,7 +167,7 @@ public:
 	}
 	static CStringA UnicodeToUtf8(CStringW sInputStr)//todo
 	{
-		//todooo ПЕРЕПИСАТЬ 
+		//todooo РџР•Р Р•РџРРЎРђРўР¬ 
 		CStringA sResult;
 		int nBufSize = WideCharToMultiByte(CP_UTF8, 0, sInputStr, -1, NULL, NULL, NULL, NULL);
 		LPSTR p = new CHAR[ nBufSize + 1 ];
@@ -244,7 +244,7 @@ public:
 	}
 	static int px2Twip(int px)
 	{
-		return 15 * px; //из наблюдений за word
+		return 15 * px; //РёР· РЅР°Р±Р»СЋРґРµРЅРёР№ Р·Р° word
 	}
 	static int pc2Twip(double pc)
 	{
@@ -374,9 +374,9 @@ public:
 	static CString Preserve( CString sText )
 	{
 		CString sResult = sText;
-		//обрезавем лишние пробелы
+		//РѕР±СЂРµР·Р°РІРµРј Р»РёС€РЅРёРµ РїСЂРѕР±РµР»С‹
 		sResult.Trim();
-		//удаляем дублирующие пробелы
+		//СѓРґР°Р»СЏРµРј РґСѓР±Р»РёСЂСѓСЋС‰РёРµ РїСЂРѕР±РµР»С‹
 		while( sResult.Replace( _T("  "), _T(" ") ) > 0 )
 			;
 		return sResult;
@@ -464,7 +464,7 @@ public:
 	{
 		return _T("{\\*filename ") + sFilename + _T("\\*end}");
 	}
-	static void Decode( CString& sText, NFileWriter::CBufferedFileWriter& oFileWriter ) //сразу записывает в файл
+	static void Decode( CString& sText, NFileWriter::CBufferedFileWriter& oFileWriter ) //СЃСЂР°Р·Сѓ Р·Р°РїРёСЃС‹РІР°РµС‚ РІ С„Р°Р№Р»
 	{
 		CStringA sAnsiText; sAnsiText = sText;
 		int nStart = 0;

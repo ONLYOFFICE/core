@@ -1,4 +1,4 @@
-#include "OOXWriter.h"
+п»ї#include "OOXWriter.h"
 
 #include "../RtfDocument.h"
 
@@ -127,7 +127,7 @@ bool OOXWriter::SaveByItemEnd()
 	((OOXStylesWriter*)m_poStylesWriter)->Save(m_sTargetFolder);
 	((OOXFontTableWriter*)m_poFontTableWriter)->Save(m_sTargetFolder);
 	
-	((OOXSettingsWriter*)m_poSettingsWriter)->Save(m_sTargetFolder); //setting в последнюю очередь
+	((OOXSettingsWriter*)m_poSettingsWriter)->Save(m_sTargetFolder); //setting РІ РїРѕСЃР»РµРґРЅСЋСЋ РѕС‡РµСЂРµРґСЊ
 
 	bool nResult = true;
 	nResult &= m_oContentTypes.Save(m_sTargetFolder);

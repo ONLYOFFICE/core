@@ -1,4 +1,4 @@
-#pragma once
+Ôªø#pragma once
 #include "Basic.h"
 #include "RtfChar.h"
 #include "RtfWriter.h"
@@ -16,12 +16,12 @@ public:
 	LevelType m_eLevelType;
 	int m_nLevelType;
 	LevelJust m_eLevelJust;
-	RtfParagraphPtr m_oLevelText;//ÙÓÏ‡Ú ÚÂÍÒÚ‡ ÒÔËÒÍ‡
+	RtfParagraphPtr m_oLevelText;//—Ñ–æ–º–∞—Ç —Ç–µ–∫—Å—Ç–∞ —Å–ø–∏—Å–∫–∞
 
 	int m_nLs;
 	int m_nIlvl;
 
-	RtfParagraphPtr m_oText;//Á‡ÏÂ˘‡˛˘ËÈ ÚÂÍÒÚ
+	RtfParagraphPtr m_oText;//–∑–∞–º–µ—â–∞—é—â–∏–π —Ç–µ–∫—Å—Ç
 	RtfOldList()
 	{
 		SetDefault();
@@ -50,7 +50,7 @@ public:
 	{
 		if( TYPE_RTF_CHAR == piRend->GetType() )
 		{
-			if( m_aArray.size() > 0 && TYPE_RTF_CHAR == m_aArray[ m_aArray.size() - 1 ]->GetType() )//ÒÓÂ‰ËÌˇÂÏ ‰‚‡ ÚÂÍÒÚ‡ Ò Ó‰ËÌ‡ÍÓ‚˚ÏË Ò‚ÓÈÒÚ‚‡ÏË
+			if( m_aArray.size() > 0 && TYPE_RTF_CHAR == m_aArray[ m_aArray.size() - 1 ]->GetType() )//—Å–æ–µ–¥–∏–Ω—è–µ–º –¥–≤–∞ —Ç–µ–∫—Å—Ç–∞ —Å –æ–¥–∏–Ω–∞–∫–æ–≤—ã–º–∏ —Å–≤–æ–π—Å—Ç–≤–∞–º–∏
 			{
 				RtfCharPtr oCurChar = boost::shared_static_cast<RtfChar,IDocumentElement>( piRend );
 				RtfCharPtr oPrevChar = boost::shared_static_cast<RtfChar,IDocumentElement>( m_aArray[ m_aArray.size() - 1 ] );
@@ -114,7 +114,7 @@ public:
 
 			if( NULL != m_oOldList )
 			{
-				//‰Îˇ OldList
+				//–¥–ª—è OldList
 				if( true == bCanConvertToNumbering )
 					sResult.Append(  m_oOldList->RenderToOOX( oRenderParameter ) );
 			}
@@ -122,7 +122,7 @@ public:
 
 			if( NULL != m_oOldList )
 			{
-				//‰Îˇ OldList
+				//–¥–ª—è OldList
 				if( false == bCanConvertToNumbering && NULL != m_oOldList->m_oText)
 				{
 					RtfCharProperty oCharProp = m_oProperty.m_oCharProperty;

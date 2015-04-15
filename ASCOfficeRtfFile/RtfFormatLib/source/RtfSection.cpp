@@ -1,4 +1,4 @@
-#include "Writer/OOXWriter.h"
+п»ї#include "Writer/OOXWriter.h"
 #include "IdGenerator.h"
 
 CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
@@ -32,7 +32,7 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_BOOL( m_bAlignBordersAndEdges, sResult, _T("pgbrdrsnap") )
 
 //Page Information
-//эти свойства пишутся в первой секции
+//СЌС‚Рё СЃРІРѕР№СЃС‚РІР° РїРёС€СѓС‚СЃСЏ РІ РїРµСЂРІРѕР№ СЃРµРєС†РёРё
 //public: int m_nPaperWidth; //\paperwN	Paper width in twips (default is 12,240).
 //public: int m_nPaperHeight; //\paperhN	Paper height in twips (default is 15,840).
 //public: int m_nMarginLeft; //\marglN	Left margin in twips (default is 1800).
@@ -97,7 +97,7 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 		}
 	}
 
-//для схоранения в RTF
+//РґР»СЏ СЃС…РѕСЂР°РЅРµРЅРёСЏ РІ RTF
 	RENDER_RTF_INT( m_bSplitPageBrake, sResult, _T("spltpgpar") )
 
 	if( 0 != m_bHtmlAutoSpace )
@@ -216,7 +216,7 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
 	CString sResult;
 
-	if( RENDER_TO_OOX_PARAM_FIRST_SECTION == oRenderParameter.nType ) //Пишем как свойства документа
+	if( RENDER_TO_OOX_PARAM_FIRST_SECTION == oRenderParameter.nType ) //РџРёС€РµРј РєР°Рє СЃРІРѕР№СЃС‚РІР° РґРѕРєСѓРјРµРЅС‚Р°
 	{
 		//Page Information
 		RENDER_RTF_INT( m_nPageWidth, sResult, _T("paperw") )
@@ -340,7 +340,7 @@ CString RtfSectionProperty::RenderToRtf(RenderParameter oRenderParameter)
 		case lnr_linecont: sResult.Append( _T("\\linecont") );break;
 	}
 
-	if( RENDER_TO_OOX_PARAM_FIRST_SECTION != oRenderParameter.nType )//Пишем как свойства секции
+	if( RENDER_TO_OOX_PARAM_FIRST_SECTION != oRenderParameter.nType )//РџРёС€РµРј РєР°Рє СЃРІРѕР№СЃС‚РІР° СЃРµРєС†РёРё
 	{
 		//Page Information
 		RENDER_RTF_INT( m_nPageWidth, sResult, _T("pgwsxn") )

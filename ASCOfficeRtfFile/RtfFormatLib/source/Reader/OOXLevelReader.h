@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "../RtfDocument.h"
 
 #include "../RtfProperty.h"
@@ -38,7 +38,7 @@ public:
 			int nVal = m_ooxLvlNum->m_oLvlRestart->m_oVal->GetValue();
 			if( 0 == nVal )
 				oLevelProperty.m_nNoRestart = 0;
-			//todooo íåïîíÿòêà ÷òî áóäåò åñëè ðåñòàðò ñïèñêà ñ íå "0"
+			//todooo Ð½ÐµÐ¿Ð¾Ð½ÑÑ‚ÐºÐ° Ñ‡Ñ‚Ð¾ Ð±ÑƒÐ´ÐµÑ‚ ÐµÑÐ»Ð¸ Ñ€ÐµÑÑ‚Ð°Ñ€Ñ‚ ÑÐ¿Ð¸ÑÐºÐ° Ñ Ð½Ðµ "0"
 		}
 		if (m_ooxLvlNum->m_oIsLgl.IsInit() )
 			oLevelProperty.m_nLegal = m_ooxLvlNum->m_oIsLgl->m_oVal.ToBool();

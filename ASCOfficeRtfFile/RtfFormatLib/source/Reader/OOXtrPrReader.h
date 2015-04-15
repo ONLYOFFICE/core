@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "OOXReader.h"
 #include "OOXReaderBasic.h"
 #include "OOXcnfStyleReader.h"
@@ -19,7 +19,7 @@ public:
 	{
 		if (m_ooxTableRowProps == NULL) return false;
 
-		//èùåì cnfStyle  è ïðèìåíÿåì âíåøíèé ñòèëü
+		//Ð¸Ñ‰ÐµÐ¼ cnfStyle  Ð¸ Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ Ð²Ð½ÐµÑˆÐ½Ð¸Ð¹ ÑÑ‚Ð¸Ð»ÑŒ
 		if( NULL != oParam.poTableStyle )
 		{
 			if( m_ooxTableRowProps->m_oCnfStyle.IsInit() )

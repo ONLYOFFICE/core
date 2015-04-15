@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "../RtfDocument.h"
 #include "OOXWriter.h"
@@ -10,7 +10,7 @@ private:
 	OOXWriter& m_oWriter;
 	RtfDocument& m_oDocument;
 	NFileWriter::CBufferedFileWriter* m_oFileWriter;
-	bool m_bFirst; //îäèí ïàðàãðàô ïèøåì äðóãîé õðàíèì â ïàìÿòè
+	bool m_bFirst; //Ð¾Ð´Ð¸Ð½ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„ Ð¿Ð¸ÑˆÐµÐ¼ Ð´Ñ€ÑƒÐ³Ð¾Ð¹ Ñ…Ñ€Ð°Ð½Ð¸Ð¼ Ð² Ð¿Ð°Ð¼ÑÑ‚Ð¸
 public: 
 	OOXDocumentWriter( OOXWriter& oWriter,RtfDocument& oDocument ): m_oWriter(oWriter), m_oDocument(oDocument)
 	{
@@ -59,12 +59,12 @@ public:
 			oNewParam.poRels		= &m_oWriter.m_oDocRels;
 			oNewParam.nType			= RENDER_TO_OOX_PARAM_UNKNOWN;
 
-			if( m_oDocument.GetCount() > 1 && m_oDocument[1]->GetCount() > 0 )//åñëè ÷òî-òî åñòü â ñëåäóþùåé ñåêöèè çíà÷èò ïðåäóäóùàÿ çàêîí÷èëàñü
+			if( m_oDocument.GetCount() > 1 && m_oDocument[1]->GetCount() > 0 )//ÐµÑÐ»Ð¸ Ñ‡Ñ‚Ð¾-Ñ‚Ð¾ ÐµÑÑ‚ÑŒ Ð² ÑÐ»ÐµÐ´ÑƒÑŽÑ‰ÐµÐ¹ ÑÐµÐºÑ†Ð¸Ð¸ Ð·Ð½Ð°Ñ‡Ð¸Ñ‚ Ð¿Ñ€ÐµÐ´ÑƒÐ´ÑƒÑ‰Ð°Ñ Ð·Ð°ÐºÐ¾Ð½Ñ‡Ð¸Ð»Ð°ÑÑŒ
 			{
 				if( m_oDocument[0]->GetCount() > 0 )
 				{
 					CString sXml = m_oDocument[0]->operator[](0)->RenderToOOX(oNewParam);
-					//ïèøåì âñòàâëÿåì ñâîéñòâà ñåêöèè
+					//Ð¿Ð¸ÑˆÐµÐ¼ Ð²ÑÑ‚Ð°Ð²Ð»ÑÐµÐ¼ ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð° ÑÐµÐºÑ†Ð¸Ð¸
 					CString sSectPr = m_oDocument[0]->m_oProperty.RenderToOOX(oNewParam);
 					CString sFindStr = _T("</w:pPr>");
 					int nIndexpPr = sXml.Find( sFindStr );
@@ -79,18 +79,18 @@ public:
 						if( -1 != nIndexP )
 							sXml.Insert( nIndexP + sFindStr.GetLength(), _T("<w:pPr>") + sSectPr + _T("</w:pPr>") );
 					}
-					//óäàëÿåì ïåðâûé ïàðàãðàô
+					//ÑƒÐ´Ð°Ð»ÑÐµÐ¼ Ð¿ÐµÑ€Ð²Ñ‹Ð¹ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„
 					m_oDocument[0]->RemoveItem( 0 );
 					CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
 					m_oFileWriter->Write( (BYTE*)(LPCSTR)sXmlUTF, sXmlUTF.GetLength() );
 				}
-				//óäàëÿåì ñåêöèþ
+				//ÑƒÐ´Ð°Ð»ÑÐµÐ¼ ÑÐµÐºÑ†Ð¸ÑŽ
 				m_oDocument.RemoveItem( 0 );
 			}
-			else if( m_oDocument.GetCount() > 0 && m_oDocument[0]->GetCount() > 0 )//ïèøåì ïàðàãðàô
+			else if( m_oDocument.GetCount() > 0 && m_oDocument[0]->GetCount() > 0 )//Ð¿Ð¸ÑˆÐµÐ¼ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„
 			{
 				CString sXml = m_oDocument[0]->operator[](0)->RenderToOOX(oNewParam);
-				//óäàëÿåì ïåðâûé ïàðàãðàô
+				//ÑƒÐ´Ð°Ð»ÑÐµÐ¼ Ð¿ÐµÑ€Ð²Ñ‹Ð¹ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„
 				m_oDocument[0]->RemoveItem( 0 );
 				CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
 				m_oFileWriter->Write( (BYTE*)(LPCSTR)sXmlUTF, sXmlUTF.GetLength() );
@@ -106,10 +106,10 @@ public:
 		oNewParam.poRels		= &m_oWriter.m_oDocRels;
 		oNewParam.nType			= RENDER_TO_OOX_PARAM_UNKNOWN;
 
-		if( m_oDocument.GetCount() > 0 && m_oDocument[0]->GetCount() > 0 )//äîïèñûâàåì ïîñëåäíèé ïàðàãðàô
+		if( m_oDocument.GetCount() > 0 && m_oDocument[0]->GetCount() > 0 )//Ð´Ð¾Ð¿Ð¸ÑÑ‹Ð²Ð°ÐµÐ¼ Ð¿Ð¾ÑÐ»ÐµÐ´Ð½Ð¸Ð¹ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„
 		{
 			CString sXml = m_oDocument[0]->operator[](0)->RenderToOOX(oNewParam);
-			//óäàëÿåì ïåðâûé ïàðàãðàô
+			//ÑƒÐ´Ð°Ð»ÑÐµÐ¼ Ð¿ÐµÑ€Ð²Ñ‹Ð¹ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„
 			m_oDocument[0]->RemoveItem( 0 );
 			CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
 			m_oFileWriter->Write( (BYTE*)(LPCSTR)sXmlUTF, sXmlUTF.GetLength() );

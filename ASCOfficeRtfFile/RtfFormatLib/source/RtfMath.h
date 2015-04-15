@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "Basic.h"
 #include "RtfProperty.h"
 
@@ -47,7 +47,7 @@ public:
 		const TCHAR* mc_aRtfControlWords[]		= {_T("macc"),_T("maccPr"),_T("maln"),_T("malnScr"),_T("margPr"),_T("margSz"),_T("mbar"),_T("mbarPr"),_T("mbaseJc"),_T("mbegChr"),_T("mborderBox"),_T("mborderBoxPr"),_T("mbox"),_T("mboxPr"),_T("mbrkN"),_T("mbrkBinN"),_T("mbrkBinSubN"),_T("mcGpN"),_T("mcGpRuleN"),_T("mchr"),_T("mcount"),_T("mcSpN"),_T("mctrlPr"),_T("md"),_T("mdefJcN"),_T("mdeg"),_T("mdegHide"),_T("mden"),_T("mdiff"),_T("mdiffStyN"),_T("mdispDefN"),_T("mdPr"),_T("me"),_T("mendChr"),_T("meqArr"),_T("meqArrPr"),_T("mf"),_T("mfName"),_T("mfPr"),_T("mfunc"),_T("mfuncPr"),_T("mgroupChr"),_T("mgroupChrPr"),_T("mgrow"),_T("mhideBot"),_T("mhideLeft"),_T("mhideRight"),_T("mhideTop"),_T("minterSpN"),_T("mintLimN"),_T("mintraSpN"),_T("mjcN"),_T("mlim"),_T("mlimLoc"),_T("mlimLow"),_T("mlimLowPr"),_T("mlimUpp"),_T("mlimUppPr"),_T("mlit"),_T("mlMarginN"),_T("mm"),_T("mmath"),_T("mmathFontN"),_T("mmathPict"),_T("mmathPr"),_T("mmaxDist"),_T("mmc"),_T("mmcJc"),_T("mmcPr"),_T("mmcs"),_T("mmPr"),_T("mmr"),_T("mnary"),_T("mnaryLimN"),_T("mnaryPr"),_T("mnoBreak"),_T("mnor"),_T("mnum"),_T("mobjDist"),_T("moMath"),_T("moMathPara"),_T("moMathParaPr"),_T("mopEmu"),_T("mphant"),_T("mphantPr"),_T("mplcHide"),_T("mpos"),_T("mpostSpN"),_T("mpreSpN"),_T("mr"),_T("mrad"),_T("mradPr"),_T("mrMarginN"),_T("mrPr"),_T("mrSpN"),_T("mrSpRuleN"),_T("mscrN"),_T("msepChr"),_T("mshow"),_T("mshp"),_T("msmallFracN"),_T("msPre"),_T("msPrePr"),_T("msSub"),_T("msSubPr"),_T("msSubSup"),_T("msSubSupPr"),_T("msSup"),_T("msSupPr"),_T("mstrikeBLTR"),_T("mstrikeH"),_T("mstrikeTLBR"),_T("mstrikeV"),_T("mstyN"),_T("msub"),_T("msubHide"),_T("msup"),_T("msupHide"),_T("mtransp"),_T("mtype"),_T("mvertJc"),_T("mwrapIndentN"),_T("mwrapRightN"),_T("mzeroAsc"),_T("mzeroDesc"),_T("mzeroWid")};
 		int mc_nRtfControlWordsSize	=  sizeof( mc_aRtfControlWords ) / sizeof( TCHAR* );
 		
-		//можно бинарный поиск вставить
+		//РјРѕР¶РЅРѕ Р±РёРЅР°СЂРЅС‹Р№ РїРѕРёСЃРє РІСЃС‚Р°РІРёС‚СЊ
 		for( int i = 0; i < mc_nRtfControlWordsSize; i++ )
 			if( mc_aRtfControlWords[ i ] == sControlW )
 				return true;
@@ -58,7 +58,7 @@ public:
 		const TCHAR* mc_aOOXControlWords[]		= {_T("m:acc"),_T("m:accPr"),_T("m:aln"),_T("m:alnScr"),_T("m:argPr"),_T("m:argSz"),_T("m:bar"),_T("m:barPr"),_T("m:baseJc"),_T("m:begChr"),_T("m:borderBox"),_T("m:borderBoxPr"),_T("m:box"),_T("m:boxPr"),_T("m:brkN"),_T("m:brkBinN"),_T("m:brkBinSubN"),_T("m:cGpN"),_T("m:cGpRuleN"),_T("m:chr"),_T("m:count"),_T("m:cSpN"),_T("m:ctrlPr"),_T("m:d"),_T("m:defJcN"),_T("m:deg"),_T("m:degHide"),_T("m:den"),_T("m:diff"),_T("m:diffStyN"),_T("m:dispDefN"),_T("m:dPr"),_T("m:e"),_T("m:endChr"),_T("m:eqArr"),_T("m:eqArrPr"),_T("m:f"),_T("m:fName"),_T("m:fPr"),_T("m:func"),_T("m:funcPr"),_T("m:groupChr"),_T("m:groupChrPr"),_T("m:grow"),_T("m:hideBot"),_T("m:hideLeft"),_T("m:hideRight"),_T("m:hideTop"),_T("m:interSpN"),_T("m:intLimN"),_T("m:intraSpN"),_T("m:jcN"),_T("m:lim"),_T("m:limLoc"),_T("m:limLow"),_T("m:limLowPr"),_T("m:limUpp"),_T("m:limUppPr"),_T("m:lit"),_T("m:lMarginN"),_T("m:m"),_T("m:math"),_T("m:mathFontN"),_T("m:mathPict"),_T("m:mathPr"),_T("m:maxDist"),_T("m:mc"),_T("m:mcJc"),_T("m:mcPr"),_T("m:mcs"),_T("m:mPr"),_T("m:mr"),_T("m:nary"),_T("m:naryLimN"),_T("m:naryPr"),_T("m:noBreak"),_T("m:nor"),_T("m:num"),_T("m:objDist"),_T("m:oMath"),_T("m:oMathPara"),_T("m:oMathParaPr"),_T("m:opEmu"),_T("m:phant"),_T("m:phantPr"),_T("m:plcHide"),_T("m:pos"),_T("m:postSpN"),_T("m:preSpN"),_T("m:r"),_T("m:rad"),_T("m:radPr"),_T("m:rMarginN"),_T("m:rPr"),_T("m:rSpN"),_T("m:rSpRuleN"),_T("m:scrN"),_T("m:sepChr"),_T("m:show"),_T("m:shp"),_T("m:smallFracN"),_T("m:sPre"),_T("m:sPrePr"),_T("m:sSub"),_T("m:sSubPr"),_T("m:sSubSup"),_T("m:sSubSupPr"),_T("m:sSup"),_T("m:sSupPr"),_T("m:strikeBLTR"),_T("m:strikeH"),_T("m:strikeTLBR"),_T("m:strikeV"),_T("m:styN"),_T("m:sub"),_T("m:subHide"),_T("m:sup"),_T("m:supHide"),_T("m:transp"),_T("m:type"),_T("m:vertJc"),_T("m:wrapIndentN"),_T("m:wrapRightN"),_T("m:zeroAsc"),_T("m:zeroDesc"),_T("m:zeroWid")};
 		int mc_nOOXControlWordsSize	=  sizeof( mc_aOOXControlWords ) / sizeof( TCHAR* );
 		
-		//можно бинарный поиск вставить
+		//РјРѕР¶РЅРѕ Р±РёРЅР°СЂРЅС‹Р№ РїРѕРёСЃРє РІСЃС‚Р°РІРёС‚СЊ
 		for( int i = 0; i < mc_nOOXControlWordsSize; i++ )
 			if( mc_aOOXControlWords[ i ] == sControlW )
 				return true;

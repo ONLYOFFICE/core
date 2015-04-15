@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "OOXWriter.h"
 #include "../RtfDocument.h"
 

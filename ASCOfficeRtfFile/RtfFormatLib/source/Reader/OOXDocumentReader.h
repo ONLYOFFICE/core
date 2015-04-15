@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "OOXTextItemReader.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Document.h"
@@ -33,7 +33,7 @@ public:
 		if( true == oParam.oRtf->GetItem( oCurSection ) )
 		{
 			oCurSection->m_oProperty.SetDefaultOOX();
-			//сначала считаем количесво секций и заполняем их свойства .. 
+			//СЃРЅР°С‡Р°Р»Р° СЃС‡РёС‚Р°РµРј РєРѕР»РёС‡РµСЃРІРѕ СЃРµРєС†РёР№ Рё Р·Р°РїРѕР»РЅСЏРµРј РёС… СЃРІРѕР№СЃС‚РІР° .. 
 
 			for (long i = 0; i < m_ooxDocument->m_arrItems.size(); i++)
 			{
@@ -50,7 +50,7 @@ public:
 							OOXSectionPropertyReader oSectReader(para->m_oParagraphProperty->m_oSectPr.GetPointer());
 							if( true == oSectReader.Parse( oParam, oCurSection->m_oProperty ) )
 							{
-								//создаем новую секцию
+								//СЃРѕР·РґР°РµРј РЅРѕРІСѓСЋ СЃРµРєС†РёСЋ
 								oCurSection = RtfSectionPtr( new RtfSection() );
 								oCurSection->m_oProperty.SetDefaultOOX();
 								oParam.oRtf->AddItem( oCurSection );
@@ -59,7 +59,7 @@ public:
 					}
 				}
 			}
-			if (m_ooxDocument->m_oSectPr.IsInit())// свойства последней секции
+			if (m_ooxDocument->m_oSectPr.IsInit())// СЃРІРѕР№СЃС‚РІР° РїРѕСЃР»РµРґРЅРµР№ СЃРµРєС†РёРё
 			{
 				OOXSectionPropertyReader oSectReader(m_ooxDocument->m_oSectPr.GetPointer());
 				oSectReader.Parse( oParam, oCurSection->m_oProperty );

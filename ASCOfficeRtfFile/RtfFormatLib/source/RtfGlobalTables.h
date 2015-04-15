@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "RtfProperty.h"
 #include "RtfShape.h"
 
@@ -61,7 +61,7 @@ public:
 	}
 	bool GetColor( int nId, RtfColor& oColor)
 	{
-		 //0 - ID àâòîöâåò
+		 //0 - ID Ð°Ð²Ñ‚Ð¾Ñ†Ð²ÐµÑ‚
 		nId--;
 		 if( nId >= 0 && nId < (int)m_aArray.size() )
 		 {
@@ -163,7 +163,7 @@ public:
 		 {
 			eStyleType = RtfStyle::stParagraph;
 			oResultStyle = RtfParagraphStylePtr( new RtfParagraphStyle() );
-			nLinked = oInputStyle->m_nLink;//linked áóäåì ñìîòðåòü òîëüêî ó ñòèëåé ïàðàãðàôà, ÷òîáû èçáåæàòü ðåêóðñèè
+			nLinked = oInputStyle->m_nLink;//linked Ð±ÑƒÐ´ÐµÐ¼ ÑÐ¼Ð¾Ñ‚Ñ€ÐµÑ‚ÑŒ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ Ñƒ ÑÑ‚Ð¸Ð»ÐµÐ¹ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„Ð°, Ñ‡Ñ‚Ð¾Ð±Ñ‹ Ð¸Ð·Ð±ÐµÐ¶Ð°Ñ‚ÑŒ Ñ€ÐµÐºÑƒÑ€ÑÐ¸Ð¸
 		 }
 		 else if( RtfStyle::stTable == oInputStyle->m_eType )
 		 {
@@ -192,7 +192,7 @@ public:
 			 return oInputStyle;
 		 else
 		 {
-			 //Îïûòíûì ïóòåì óñòàíîâëåíî - Base ñòàðøå Link
+			 //ÐžÐ¿Ñ‹Ñ‚Ð½Ñ‹Ð¼ Ð¿ÑƒÑ‚ÐµÐ¼ ÑƒÑÑ‚Ð°Ð½Ð¾Ð²Ð»ÐµÐ½Ð¾ - Base ÑÑ‚Ð°Ñ€ÑˆÐµ Link
 			 if( NULL != oLinkedStyle )
 			 {
 				oResultStyle->Merge( oLinkedStyle );

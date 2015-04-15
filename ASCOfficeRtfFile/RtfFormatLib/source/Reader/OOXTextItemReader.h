@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "../RtfDocument.h"
 #include "../RtfTable.h"
 
@@ -28,7 +28,7 @@ public:
 				bool bStartNewSection = false;
 				OOXParagraphReader	m_oParagraphReader(pParagraph);
 				RtfParagraphPtr oNewParagraph( new RtfParagraph() );
-				//ïðèìåíÿåì ê íîâîìó ïàðàãðàôó default property
+				//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ Ðº Ð½Ð¾Ð²Ð¾Ð¼Ñƒ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„Ñƒ default property
 				oNewParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
 				oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
 				oNewParagraph->m_oProperty.m_nItap = 0;
@@ -39,7 +39,7 @@ public:
 					if( true == bStartNewSection )
 					{
 						RtfSectionPtr oCurSection;
-						//1 - ò.ê. ñåêöèè óäàëÿþòñÿ êîãäà ïîëíîñòüþ çàïèøóòñÿ
+						//1 - Ñ‚.Ðº. ÑÐµÐºÑ†Ð¸Ð¸ ÑƒÐ´Ð°Ð»ÑÑŽÑ‚ÑÑ ÐºÐ¾Ð³Ð´Ð° Ð¿Ð¾Ð»Ð½Ð¾ÑÑ‚ÑŒÑŽ Ð·Ð°Ð¿Ð¸ÑˆÑƒÑ‚ÑÑ
 						if( true == oParam.oRtf->GetItem( oCurSection, 1 ) )
 						{
 							m_oTextItems = oCurSection;

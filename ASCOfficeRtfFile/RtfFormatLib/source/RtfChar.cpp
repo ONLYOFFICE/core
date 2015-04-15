@@ -1,4 +1,4 @@
-#include "RtfChar.h"
+п»ї#include "RtfChar.h"
 #include "RtfDocument.h"
 
 CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharProperty* oCharProperty )
@@ -7,7 +7,7 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharPropert
 			CString sResult;
 
 			int nCodePage = -1;
-			//применяем параметры codepage от текущего шрифта todo associated fonts.
+			//РїСЂРёРјРµРЅСЏРµРј РїР°СЂР°РјРµС‚СЂС‹ codepage РѕС‚ С‚РµРєСѓС‰РµРіРѕ С€СЂРёС„С‚Р° todo associated fonts.
 			RtfFont oFont;
 			if( NULL != oCharProperty && true == oDocument->m_oFontTable.GetFont( oCharProperty->m_nFont, oFont ) )
 			{
@@ -17,7 +17,7 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharPropert
 					nCodePage = oFont.m_nCodePage;
 			}
 
-			//от настроек документа
+			//РѕС‚ РЅР°СЃС‚СЂРѕРµРє РґРѕРєСѓРјРµРЅС‚Р°
 			if( -1 == nCodePage && RtfDocumentProperty::cp_none != oDocument->m_oProperty.m_eCodePage )
 			{
 				switch ( oDocument->m_oProperty.m_eCodePage )
@@ -35,17 +35,17 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharPropert
 					case RtfDocumentProperty::cp_pca: nCodePage = 850;break;
 				}
 			}
-			//если ничего нет ставим ANSI
+			//РµСЃР»Рё РЅРёС‡РµРіРѕ РЅРµС‚ СЃС‚Р°РІРёРј ANSI
 			if( -1 == nCodePage )
 				nCodePage = CP_ACP;
 
-			//делаем Ansi строку
+			//РґРµР»Р°РµРј Ansi СЃС‚СЂРѕРєСѓ
 			int nBufSize = ::WideCharToMultiByte(nCodePage, 0, sText, -1, NULL, 0, NULL, NULL);
 			CStringA sTempResultAnsi;
 			LPSTR pcBuffer = sTempResultAnsi.GetBuffer(nBufSize);
 			::WideCharToMultiByte(nCodePage, 0, sText, -1, pcBuffer, nBufSize, NULL, NULL);
 			sTempResultAnsi.ReleaseBuffer();
-			//делаем обратное преобразование чтобы понять какие символы свонвертировались неправильно
+			//РґРµР»Р°РµРј РѕР±СЂР°С‚РЅРѕРµ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ С‡С‚РѕР±С‹ РїРѕРЅСЏС‚СЊ РєР°РєРёРµ СЃРёРјРІРѕР»С‹ СЃРІРѕРЅРІРµСЂС‚РёСЂРѕРІР°Р»РёСЃСЊ РЅРµРїСЂР°РІРёР»СЊРЅРѕ
 			nBufSize = ::MultiByteToWideChar(nCodePage, 0, sTempResultAnsi, -1, NULL, 0);
 			CStringW sTempResultUni;
 			LPWSTR pwBuffer = sTempResultUni.GetBuffer(nBufSize);
@@ -59,7 +59,7 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharPropert
 				{
 					CString sUniChar; sUniChar.AppendChar( sText[i] );
 					
-					//делаем Ansi строку
+					//РґРµР»Р°РµРј Ansi СЃС‚СЂРѕРєСѓ
 					int nBufSize = ::WideCharToMultiByte(nCodePage, 0, sUniChar, -1, NULL, 0, NULL, NULL);
 					CStringA sTempAnsiChars;
 					LPSTR pcBuffer = sTempAnsiChars.GetBuffer(nBufSize);

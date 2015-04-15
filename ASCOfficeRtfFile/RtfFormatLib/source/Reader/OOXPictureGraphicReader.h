@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "OOXReaderBasic.h"
 
@@ -27,14 +27,14 @@ public:
 		switch(m_ooxGraphic->m_eGraphicType)
 		{
 			case OOX::Drawing::graphictypePicture:
-				//собственно тока этот объект пока и есть (
+				//СЃРѕР±СЃС‚РІРµРЅРЅРѕ С‚РѕРєР° СЌС‚РѕС‚ РѕР±СЉРµРєС‚ РїРѕРєР° Рё РµСЃС‚СЊ (
 				break;
 			case OOX::Drawing::graphictypeLockedCanvas:
 			case OOX::Drawing::graphictypeChart:
 			case OOX::Drawing::graphictypeDiagram:
 			case OOX::Drawing::graphictypeShape:
 			case OOX::Drawing::graphictypeGroupShape:
-				///todooo воткнуть конвертацию pptx->ppt->vml !!!
+				///todooo РІРѕС‚РєРЅСѓС‚СЊ РєРѕРЅРІРµСЂС‚Р°С†РёСЋ pptx->ppt->vml !!!
 				break;
 		}
 
@@ -49,7 +49,7 @@ public:
 				{
 					CString sImageId = picture->m_oBlipFill.m_oBlip->m_oEmbed.GetValue();
 
-					//todooo ... вынести отдельно (для встроенных документов)
+					//todooo ... РІС‹РЅРµСЃС‚Рё РѕС‚РґРµР»СЊРЅРѕ (РґР»СЏ РІСЃС‚СЂРѕРµРЅРЅС‹С… РґРѕРєСѓРјРµРЅС‚РѕРІ)
 					smart_ptr<OOX::File> oFile = oParam.oDocx->GetDocument()->Find(sImageId);
 					if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
 					{
@@ -67,7 +67,7 @@ public:
 
 	static bool WriteDataToPicture( CString sPath, RtfPicture& oOutput, CString sTempPath )
 	{
-		OOX::CPath ooxPath = sPath;	//для target 
+		OOX::CPath ooxPath = sPath;	//РґР»СЏ target 
 
 		if (sTempPath.GetLength() > 0)
 			ooxPath = sTempPath;
@@ -75,16 +75,16 @@ public:
 		oOutput.m_dScaleX = 100;
 		oOutput.m_dScaleY = 100;
 
-		//Выставляем тип картинки
+		//Р’С‹СЃС‚Р°РІР»СЏРµРј С‚РёРї РєР°СЂС‚РёРЅРєРё
 		oOutput.eDataType = RtfPicture::GetPictureType( sPath );
-		//ecли тип не поддерживается rtf конвертируем в png
+		//ecР»Рё С‚РёРї РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ rtf РєРѕРЅРІРµСЂС‚РёСЂСѓРµРј РІ png
 		if( RtfPicture::dt_none == oOutput.eDataType )
 		{
-			//в туже папку что и исходная картинка
+			//РІ С‚СѓР¶Рµ РїР°РїРєСѓ С‡С‚Рѕ Рё РёСЃС…РѕРґРЅР°СЏ РєР°СЂС‚РёРЅРєР°
 			CBgraFrame image;
 			if (image.OpenFile(string2std_string(sPath)) == FALSE ) return false;
 			
-			//правильно выставляем размеры
+			//РїСЂР°РІРёР»СЊРЅРѕ РІС‹СЃС‚Р°РІР»СЏРµРј СЂР°Р·РјРµСЂС‹
 			oOutput.m_nWidthGoal = image.get_Width(); 
 			oOutput.m_nHeightGoal = image.get_Height();
 		
@@ -93,16 +93,16 @@ public:
 			if (image.SaveFile(string2std_string(sTargetFile), 4 /*_CXIMAGE_FORMAT_PNG*/) )
 			{
 				oOutput.eDataType = RtfPicture::dt_png;
-				//Запоминаем имя
+				//Р—Р°РїРѕРјРёРЅР°РµРј РёРјСЏ
 				oOutput.m_sPicFilename = sTargetFile;
-				oOutput.m_bIsCopy = true;//выставляем флаг чтобы потом удалить файл
+				oOutput.m_bIsCopy = true;//РІС‹СЃС‚Р°РІР»СЏРµРј С„Р»Р°Рі С‡С‚РѕР±С‹ РїРѕС‚РѕРј СѓРґР°Р»РёС‚СЊ С„Р°Р№Р»
 			}
 		}
 		else
 		{
 			if( RtfPicture::dt_apm ==  oOutput.eDataType )
 			{
-				//убираем заголовок apm (22 byte)
+				//СѓР±РёСЂР°РµРј Р·Р°РіРѕР»РѕРІРѕРє apm (22 byte)
 				CFile file_inp; //mpa
 				CFile file_out;//wmf
 
@@ -146,7 +146,7 @@ public:
 				file_out.CloseFile();
 
 				oOutput.eDataType = RtfPicture::dt_wmf;
-				//Запоминаем имя
+				//Р—Р°РїРѕРјРёРЅР°РµРј РёРјСЏ
 				oOutput.m_sPicFilename = sTargetFile;
 				oOutput.m_bIsCopy = true;
 			}
@@ -157,13 +157,13 @@ public:
 				CBgraFrame image;
 				
 				if (image.OpenFile(string2std_string(sPath), cxFormats[oOutput.eDataType]) == FALSE ) return false;
-				//правильно выставляем размеры
+				//РїСЂР°РІРёР»СЊРЅРѕ РІС‹СЃС‚Р°РІР»СЏРµРј СЂР°Р·РјРµСЂС‹
 				oOutput.m_nWidthGoal = image.get_Width(); 
 				oOutput.m_nHeightGoal = image.get_Height();
 
-				//Запоминаем только имя
+				//Р—Р°РїРѕРјРёРЅР°РµРј С‚РѕР»СЊРєРѕ РёРјСЏ
 				oOutput.m_sPicFilename = sPath;
-				oOutput.m_bIsCopy = false; //не удалять 
+				oOutput.m_bIsCopy = false; //РЅРµ СѓРґР°Р»СЏС‚СЊ 
 			}
 		}
 

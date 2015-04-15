@@ -1,9 +1,9 @@
-#include "RtfGlobalTables.h"
+п»ї#include "RtfGlobalTables.h"
 #include "RtfDocument.h"
 
 CString RtfFontTable::RenderToRtf(RenderParameter oRenderParameter)
 		{
-			////записывает default charset и codepage
+			////Р·Р°РїРёСЃС‹РІР°РµС‚ default charset Рё codepage
 			//RtfDocument* poDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
 			//if( PROP_DEF != poDocument->m_oProperty.m_nAnsiCodePage )
 			//{

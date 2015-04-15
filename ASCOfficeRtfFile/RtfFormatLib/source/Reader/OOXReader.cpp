@@ -1,4 +1,4 @@
-#include "OOXReader.h"
+п»ї#include "OOXReader.h"
 #include "OOXSettingsReader.h"
 #include "OOXFontTableReader.h"
 #include "OOXStyleTableReader.h"
@@ -29,7 +29,7 @@ bool OOXReader::Parse()
 
 	OOX::CSettings* settings = inputDocxFile.GetSettings();		
 	if (settings)
-	{ //важно чтобы первыми читались именно settings (например для footnote)
+	{ //РІР°Р¶РЅРѕ С‡С‚РѕР±С‹ РїРµСЂРІС‹РјРё С‡РёС‚Р°Р»РёСЃСЊ РёРјРµРЅРЅРѕ settings (РЅР°РїСЂРёРјРµСЂ РґР»СЏ footnote)
 		OOXSettingsReader oSettingsReader( settings );
 		oSettingsReader.Parse( oReaderParameter );
 	}

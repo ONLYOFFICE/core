@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "Basic.h"
 
 #include "RtfGlobalTables.h"
@@ -25,7 +25,7 @@ public:
 	TextItemContainerPtr m_oEndnoteSep;
 	TextItemContainerPtr m_oEndnoteCon;
 
-//для того чтобы конвертировать старый формат List в Numbering
+//РґР»СЏ С‚РѕРіРѕ С‡С‚РѕР±С‹ РєРѕРЅРІРµСЂС‚РёСЂРѕРІР°С‚СЊ СЃС‚Р°СЂС‹Р№ С„РѕСЂРјР°С‚ List РІ Numbering
 	std::vector<RtfOldListPtr> m_aOldLists;
 
 private: 

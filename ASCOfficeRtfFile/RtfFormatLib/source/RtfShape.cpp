@@ -1,4 +1,4 @@
-#include "RtfShape.h"
+п»ї#include "RtfShape.h"
 #include "Writer/OOXWriter.h"
 #include "RtfOle.h"
 
@@ -7,7 +7,7 @@ CString RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 			CString sResult;
 			if( PROP_DEF != m_nShapeType && 0 != m_nShapeType )
 			{
-				//запоминаем координаты и если нужно поворачиваем
+				//Р·Р°РїРѕРјРёРЅР°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ Рё РµСЃР»Рё РЅСѓР¶РЅРѕ РїРѕРІРѕСЂР°С‡РёРІР°РµРј
 				int nLeft = m_nLeft;
 				int nTop = m_nTop;
 				int nRight = m_nRight;
@@ -104,7 +104,7 @@ CString RtfShape::RenderToRtf(RenderParameter oRenderParameter)
 					}
 					sResult.Append(_T("}"));
 				}
-				//восстанавливаем координаты и если нужно поворачиваем
+				//РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ Рё РµСЃР»Рё РЅСѓР¶РЅРѕ РїРѕРІРѕСЂР°С‡РёРІР°РµРј
 				m_nLeft = nLeft;
 				m_nTop = nTop;
 				m_nRight = nRight;
@@ -273,7 +273,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 			RtfDocument* poDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
 			if( PROP_DEF != m_nShapeType && 0 != m_nShapeType )
 			{
-				if( false && RENDER_TO_OOX_PARAM_SHAPE_WSHAPE != oRenderParameter.nType && NULL != m_oPicture ) //картинки пишем как drawing
+				if( false && RENDER_TO_OOX_PARAM_SHAPE_WSHAPE != oRenderParameter.nType && NULL != m_oPicture ) //РєР°СЂС‚РёРЅРєРё РїРёС€РµРј РєР°Рє drawing
 				{
 					if( st_inline == m_eShapeType )
 					{
@@ -338,7 +338,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 							sResult.AppendFormat( _T("<pic:blipFill><a:blip r:embed=\"%ls\"/>"), m_oPicture->RenderToOOX(oRenderParameter) );
 							CString sCrop;
 							if( PROP_DEF != nCropLeft )
-								sCrop.AppendFormat( _T(" l=\"%d\""), nCropLeft ); //тысячный доли процента
+								sCrop.AppendFormat( _T(" l=\"%d\""), nCropLeft ); //С‚С‹СЃСЏС‡РЅС‹Р№ РґРѕР»Рё РїСЂРѕС†РµРЅС‚Р°
 							if( PROP_DEF != nCropTop )
 								sCrop.AppendFormat( _T(" t=\"%d\""), nCropTop );
 							if( PROP_DEF != nCropRight )
@@ -360,7 +360,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 									nRotation = m_nRelRotation;
 								if( PROP_DEF != nRotation )
 								{
-									int nOOXRotation = (int)( 60000.0 * nRotation / 0x10000 );//Опытным путем 1 градус == 60000
+									int nOOXRotation = (int)( 60000.0 * nRotation / 0x10000 );//РћРїС‹С‚РЅС‹Рј РїСѓС‚РµРј 1 РіСЂР°РґСѓСЃ == 60000
 									sResult.AppendFormat( _T(" rot=\"%d\""), nOOXRotation );
 								}
 								sResult.Append( _T(">") );
@@ -379,7 +379,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 						if( PROP_DEF != m_oPicture->m_nWidthGoal && PROP_DEF != m_oPicture->m_nHeightGoal )
 						{
 							sResult.Append( _T("<w:r><w:drawing><wp:anchor") );
-							int nDistLeft = 0;//аттрибуты обязательные
+							int nDistLeft = 0;//Р°С‚С‚СЂРёР±СѓС‚С‹ РѕР±СЏР·Р°С‚РµР»СЊРЅС‹Рµ
 							int nDistTop = 0;
 							int nDistRight = 0;
 							int nDistBottom = 0;
@@ -602,7 +602,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 								sResult.AppendFormat( _T("<pic:blipFill><a:blip r:embed=\"%ls\"/>"), m_oPicture->RenderToOOX(oRenderParameter) );
 								CString sCrop;
 								if( PROP_DEF != nCropLeft )
-									sCrop.AppendFormat( _T(" l=\"%d\""), nCropLeft ); //тысячный доли процента
+									sCrop.AppendFormat( _T(" l=\"%d\""), nCropLeft ); //С‚С‹СЃСЏС‡РЅС‹Р№ РґРѕР»Рё РїСЂРѕС†РµРЅС‚Р°
 								if( PROP_DEF != nCropTop )
 									sCrop.AppendFormat( _T(" t=\"%d\""), nCropTop );
 								if( PROP_DEF != nCropRight )
@@ -625,7 +625,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 										nRotation = m_nRelRotation;
 									if( PROP_DEF != nRotation )
 									{
-										int nOOXRotation = (int)( 60000.0 * nRotation / 65536 );//Опытным путем 1 градус == 60000
+										int nOOXRotation = (int)( 60000.0 * nRotation / 65536 );//РћРїС‹С‚РЅС‹Рј РїСѓС‚РµРј 1 РіСЂР°РґСѓСЃ == 60000
 										sResult.AppendFormat( _T(" rot=\"%d\""), nOOXRotation );
 									}
 									sResult.Append( _T(">") );
@@ -644,7 +644,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 				{
 					TextItemContainerPtr aTempTextItems;
 					if( 75 == m_nShapeType && 0 != m_aTextItems )
-					{//Значит это Ole обьект с anchor, для него все также только TextBox надо делать по-другому
+					{//Р—РЅР°С‡РёС‚ СЌС‚Рѕ Ole РѕР±СЊРµРєС‚ СЃ anchor, РґР»СЏ РЅРµРіРѕ РІСЃРµ С‚Р°РєР¶Рµ С‚РѕР»СЊРєРѕ TextBox РЅР°РґРѕ РґРµР»Р°С‚СЊ РїРѕ-РґСЂСѓРіРѕРјСѓ
 						aTempTextItems = m_aTextItems;
 						m_aTextItems = TextItemContainerPtr();
 						m_bIsOle = true;
@@ -656,8 +656,8 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 
 					CString sOle;
 					if( 0 != aTempTextItems )
-					{//пишем только Ole обьект
-						//ищем первый ole обьект
+					{//РїРёС€РµРј С‚РѕР»СЊРєРѕ Ole РѕР±СЊРµРєС‚
+						//РёС‰РµРј РїРµСЂРІС‹Р№ ole РѕР±СЊРµРєС‚
 						RtfOlePtr poFirstOle;
 						int nTempTextItemsCount = aTempTextItems->GetCount();
 						for( int i = 0; i < nTempTextItemsCount; i++ )
@@ -676,7 +676,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 										poCurParagraph->GetItem( piCurIDocumentElement, j );
 										if( NULL != piCurIDocumentElement && TYPE_RTF_OLE == piCurIDocumentElement->GetType() )
 										{
-											//рендерим только Ole часть
+											//СЂРµРЅРґРµСЂРёРј С‚РѕР»СЊРєРѕ Ole С‡Р°СЃС‚СЊ
 											RenderParameter oNewParam = oRenderParameter;
 											oNewParam.nType = RENDER_TO_OOX_PARAM_OLE_ONLY;
 											oNewParam.nValue = m_nID;
@@ -695,7 +695,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 								}
 							}
 						}
-						//возвращаем text box на место
+						//РІРѕР·РІСЂР°С‰Р°РµРј text box РЅР° РјРµСЃС‚Рѕ
 						m_aTextItems = aTempTextItems;
 					}
 					if( false == sOle.IsEmpty() )
@@ -716,7 +716,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			else if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE == oRenderParameter.nType )
 				sResult.Append(_T("<w:pict>"));
 			else
-				sResult.Append(_T("<w:r><w:pict>"));//работает по умолчанию
+				sResult.Append(_T("<w:r><w:pict>"));//СЂР°Р±РѕС‚Р°РµС‚ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 			if( _T("") == oRenderParameter.sValue )
 				sResult.Append( _T("<v:shape") );
 			else
@@ -747,7 +747,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			CString sStyle ;
 			if( PROP_DEF != m_nLeft &&  PROP_DEF != m_nRight && PROP_DEF != m_nTop && PROP_DEF != m_nBottom   )
 			{
-				//не пишем если inline
+				//РЅРµ РїРёС€РµРј РµСЃР»Рё inline
 				if( 3 != m_nPositionHRelative || 3 != m_nPositionVRelative )
 				{
 					sStyle .Append( _T("position:absolute;") );
@@ -898,10 +898,10 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 			else if( PROP_DEF != m_nZOrder )
 				nZIndex = m_nZOrder;
 			else
-				nZIndex = 100; //на свое усмотрение ставлю 100
+				nZIndex = 100; //РЅР° СЃРІРѕРµ СѓСЃРјРѕС‚СЂРµРЅРёРµ СЃС‚Р°РІР»СЋ 100
 			if( PROP_DEF != m_nZOrderRelative )
 			{
-				//берем большое значение чтобы сделать строго выше или ниже текста
+				//Р±РµСЂРµРј Р±РѕР»СЊС€РѕРµ Р·РЅР°С‡РµРЅРёРµ С‡С‚РѕР±С‹ СЃРґРµР»Р°С‚СЊ СЃС‚СЂРѕРіРѕ РІС‹С€Рµ РёР»Рё РЅРёР¶Рµ С‚РµРєСЃС‚Р°
 				if( 0 == m_nZOrderRelative )
 					sStyle.AppendFormat( _T("z-index:%d;"), 10000 + nZIndex );//Text is below shape
 				else
@@ -1136,7 +1136,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 					nCropBottom = (int)( 65536 * ( 1.0 * m_oPicture->m_nCropB / m_oPicture->m_nHeightGoal) );
 
 				CString sPicture = m_oPicture->RenderToOOX(oRenderParameter);
-				if( _T("") == sPicture )//если не сохранилась картинка, то весь shape будет бесполезным
+				if( _T("") == sPicture )//РµСЃР»Рё РЅРµ СЃРѕС…СЂР°РЅРёР»Р°СЃСЊ РєР°СЂС‚РёРЅРєР°, С‚Рѕ РІРµСЃСЊ shape Р±СѓРґРµС‚ Р±РµСЃРїРѕР»РµР·РЅС‹Рј
 					return _T("");
 				sResult.AppendFormat( _T("<v:imagedata r:id=\"%ls\""), sPicture );
 				if( PROP_DEF != nCropLeft )
@@ -1163,7 +1163,7 @@ CString RtfShape::RenderToOOXEnd(RenderParameter oRenderParameter)
 	else if( RENDER_TO_OOX_PARAM_SHAPE_WSHAPE == oRenderParameter.nType )
 		sResult.Append(_T("</w:pict>"));
 	else
-		sResult.Append(_T("</w:pict></w:r>"));//работает по умолчанию
+		sResult.Append(_T("</w:pict></w:r>"));//СЂР°Р±РѕС‚Р°РµС‚ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
 	return sResult;
 }
 CString RtfShapeGroup::RenderToRtf(RenderParameter oRenderParameter)

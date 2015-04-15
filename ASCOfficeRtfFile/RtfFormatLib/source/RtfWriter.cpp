@@ -1,4 +1,4 @@
-
+п»ї
 #include "RtfWriter.h"
 #include "RtfDocument.h"
 
@@ -20,7 +20,7 @@ bool RtfWriter::SaveByItemStart()
 	//	BSTR bstrFileName = m_sTempFileResult.AllocSysString();
 	//	m_oFileWriter = new NFileWriter::CBufferedFileWriter( bstrFileName );
 	//	SysFreeString( bstrFileName );
-	//	//создаем темповый файл куда пишем параграфы( потом копируем свойства секции и содержимое файла )
+	//	//СЃРѕР·РґР°РµРј С‚РµРјРїРѕРІС‹Р№ С„Р°Р№Р» РєСѓРґР° РїРёС€РµРј РїР°СЂР°РіСЂР°С„С‹( РїРѕС‚РѕРј РєРѕРїРёСЂСѓРµРј СЃРІРѕР№СЃС‚РІР° СЃРµРєС†РёРё Рё СЃРѕРґРµСЂР¶РёРјРѕРµ С„Р°Р№Р»Р° )
 	//	m_sTempFile = Utils::CreateTempFile( m_sTempFolder );
 	//	BSTR bstrTempFileName = m_sTempFile.AllocSysString();
 	//	m_oTempFileWriter = new NFileWriter::CBufferedFileWriter( bstrTempFileName );
@@ -68,10 +68,10 @@ bool RtfWriter::SaveByItem()
 
 	if( m_oDocument.GetCount() > 1 && m_oDocument[0]->GetCount() == 0 )
 	{
-		//пишем конец секции
+		//РїРёС€РµРј РєРѕРЅРµС† СЃРµРєС†РёРё
 		CStringA sRtfExt = "\\sect";
 		m_oCurTempFileWriter->Write( (BYTE*)(LPCSTR)sRtfExt, sRtfExt.GetLength() );
-		//окончательно дописываем темповый файл
+		//РѕРєРѕРЅС‡Р°С‚РµР»СЊРЅРѕ РґРѕРїРёСЃС‹РІР°РµРј С‚РµРјРїРѕРІС‹Р№ С„Р°Р№Р»
 		RELEASEOBJECT( m_oCurTempFileWriter )
 		try
 		{
@@ -86,19 +86,19 @@ bool RtfWriter::SaveByItem()
 		}
 		if( NULL != m_oCurTempFileSectWriter )
 		{
-			//пишем свойства секции
+			//РїРёС€РµРј СЃРІРѕР№СЃС‚РІР° СЃРµРєС†РёРё
 			CString sRtf;
 			if( true == m_bFirst )
 			{
-				//первый свойства секции пишем как свойства документа
+				//РїРµСЂРІС‹Р№ СЃРІРѕР№СЃС‚РІР° СЃРµРєС†РёРё РїРёС€РµРј РєР°Рє СЃРІРѕР№СЃС‚РІР° РґРѕРєСѓРјРµРЅС‚Р°
 				m_bFirst = false;
 				oNewParam.nType = RENDER_TO_OOX_PARAM_FIRST_SECTION;
 			}
 			sRtf = m_oDocument[0]->m_oProperty.RenderToRtf(oNewParam);
 			RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileSectWriter );
-			//дописываем в файл
+			//РґРѕРїРёСЃС‹РІР°РµРј РІ С„Р°Р№Р»
 			RELEASEOBJECT( m_oCurTempFileSectWriter );
-			//создаем новый
+			//СЃРѕР·РґР°РµРј РЅРѕРІС‹Р№
 			CString sNewTempFileSect = Utils::CreateTempFile( m_sTempFolder );
 			m_aTempFilesSectPr.push_back( sNewTempFileSect );
 
@@ -108,15 +108,15 @@ bool RtfWriter::SaveByItem()
 			//RtfInternalEncoder::Decode( sRtf, *m_oFileWriter );
 			//m_oFileWriter->Write( (BYTE*)(LPCSTR)sRtf, sRtf.GetLength() );
 		}
-		//удаляем секцию
+		//СѓРґР°Р»СЏРµРј СЃРµРєС†РёСЋ
 		m_oDocument.RemoveItem( 0 );
 	}
-	//пишем параграф
+	//РїРёС€РµРј РїР°СЂР°РіСЂР°С„
 	if( m_oDocument.GetCount() > 0 && m_oDocument[0]->GetCount() > 0 )
 	{
 		CString sRtf;
 		sRtf = m_oDocument[0]->operator[](0)->RenderToRtf(oNewParam);
-		if( TYPE_RTF_PARAGRAPH == m_oDocument[0]->operator[](0)->GetType() && !(m_oDocument[0]->GetCount() == 0 && m_oDocument.GetCount() > 1) )//для последнего параграфа секции не пишем \par
+		if( TYPE_RTF_PARAGRAPH == m_oDocument[0]->operator[](0)->GetType() && !(m_oDocument[0]->GetCount() == 0 && m_oDocument.GetCount() > 1) )//РґР»СЏ РїРѕСЃР»РµРґРЅРµРіРѕ РїР°СЂР°РіСЂР°С„Р° СЃРµРєС†РёРё РЅРµ РїРёС€РµРј \par
 		{
 			sRtf.Append( _T("\\par") );
 			//oNewParam.nValue = RENDER_TO_RTF_PARAM_NO_PAR;
@@ -124,14 +124,14 @@ bool RtfWriter::SaveByItem()
 		RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileWriter );
 		//m_oTempFileWriter->Write( (BYTE*)(LPCSTR)sRtf, sRtf.GetLength() );
 
-		//удаляем элемент который только что написали
+		//СѓРґР°Р»СЏРµРј СЌР»РµРјРµРЅС‚ РєРѕС‚РѕСЂС‹Р№ С‚РѕР»СЊРєРѕ С‡С‚Рѕ РЅР°РїРёСЃР°Р»Рё
 		m_oDocument[0]->RemoveItem( 0 );
 	}
 	return true;
 }
 bool RtfWriter::SaveByItemEnd()
 {
-	//окончательно дописываем темповый файл
+	//РѕРєРѕРЅС‡Р°С‚РµР»СЊРЅРѕ РґРѕРїРёСЃС‹РІР°РµРј С‚РµРјРїРѕРІС‹Р№ С„Р°Р№Р»
 	RELEASEOBJECT( m_oCurTempFileWriter );
 
 	CString sRtf;
@@ -144,40 +144,40 @@ bool RtfWriter::SaveByItemEnd()
 
 		if( NULL != m_oCurTempFileSectWriter )
 		{
-			//пишем последнюю секцию
+			//РїРёС€РµРј РїРѕСЃР»РµРґРЅСЋСЋ СЃРµРєС†РёСЋ
 			if( true == m_bFirst )
 			{
-				//первый свойства секции пишем как свойства документа
+				//РїРµСЂРІС‹Р№ СЃРІРѕР№СЃС‚РІР° СЃРµРєС†РёРё РїРёС€РµРј РєР°Рє СЃРІРѕР№СЃС‚РІР° РґРѕРєСѓРјРµРЅС‚Р°
 				m_bFirst = false;
 				oNewParam.nType = RENDER_TO_OOX_PARAM_FIRST_SECTION;
 			}
 			sRtf = m_oDocument[0]->m_oProperty.RenderToRtf(oNewParam);
 			RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileSectWriter );
-			//дописываем в файл
+			//РґРѕРїРёСЃС‹РІР°РµРј РІ С„Р°Р№Р»
 			RELEASEOBJECT( m_oCurTempFileSectWriter );
 		}
 		//RtfInternalEncoder::Decode( sRtf, *m_oCurTempFileWriter );
 		//m_oFileWriter->Write( (BYTE*)(LPCSTR)sRtf, sRtf.GetLength() );
 
-		//удаляем секцию
+		//СѓРґР°Р»СЏРµРј СЃРµРєС†РёСЋ
 		m_oDocument.RemoveItem( 0 );
 	}
 
-	//формируем выходной файл
+	//С„РѕСЂРјРёСЂСѓРµРј РІС‹С…РѕРґРЅРѕР№ С„Р°Р№Р»
 	try
 	{
 		NFileWriter::CBufferedFileWriter oTargetFileWriter( m_sFilename );
 
-		//пишем заголовок потом все содежимое
+		//РїРёС€РµРј Р·Р°РіРѕР»РѕРІРѕРє РїРѕС‚РѕРј РІСЃРµ СЃРѕРґРµР¶РёРјРѕРµ
 		sRtf = CreateRtfStart();
 		DWORD dwBytesWrite = 0;
 		RtfInternalEncoder::Decode( sRtf, oTargetFileWriter );
 		//WriteFile ( hTargetFile, sRtf, ( DWORD ) sRtf.GetLength(), &dwBytesWrite, NULL );
 
-		//копируем заголовки из массива и параграфы из темповых файлов
+		//РєРѕРїРёСЂСѓРµРј Р·Р°РіРѕР»РѕРІРєРё РёР· РјР°СЃСЃРёРІР° Рё РїР°СЂР°РіСЂР°С„С‹ РёР· С‚РµРјРїРѕРІС‹С… С„Р°Р№Р»РѕРІ
 		for( int i = 0 ; i < (int)m_aTempFiles.size() && i < (int)m_aTempFilesSectPr.size(); i++ )
 		{
-			//свойства секции
+			//СЃРІРѕР№СЃС‚РІР° СЃРµРєС†РёРё
 
 			CFile file;
 			if (file.OpenFile(m_aTempFilesSectPr[i]) == S_OK)
@@ -195,7 +195,7 @@ bool RtfWriter::SaveByItemEnd()
 				}
 				file.CloseFile();
 			}
-			//параграфы
+			//РїР°СЂР°РіСЂР°С„С‹
 			if (file.OpenFile(m_aTempFiles[i]) == S_OK)
 			{
 				DWORD dwBytesRead = 1;
@@ -213,7 +213,7 @@ bool RtfWriter::SaveByItemEnd()
 			}
 		}
 
-		//завершаем документ
+		//Р·Р°РІРµСЂС€Р°РµРј РґРѕРєСѓРјРµРЅС‚
 		sRtf = CreateRtfEnd();
 		RtfInternalEncoder::Decode( sRtf, oTargetFileWriter );
 		byte nEndFile = 0;

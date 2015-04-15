@@ -1,10 +1,10 @@
-#pragma once 
+п»ї#pragma once 
 #include "Basic.h"
 
 #include "RtfTableRow.h"
 
 
-//TODO не работает если сделать вертикальный мерж и убрать разделение на пераграфы
+//TODO РЅРµ СЂР°Р±РѕС‚Р°РµС‚ РµСЃР»Рё СЃРґРµР»Р°С‚СЊ РІРµСЂС‚РёРєР°Р»СЊРЅС‹Р№ РјРµСЂР¶ Рё СѓР±СЂР°С‚СЊ СЂР°Р·РґРµР»РµРЅРёРµ РЅР° РїРµСЂР°РіСЂР°С„С‹
 class RtfTable : public ITextItem, public ItemContainer< RtfTableRowPtr >
 {
 public: 
@@ -56,12 +56,12 @@ public:
 
 	void CalculateGridProp()
 	{
-		//массив всевозможных cellx
-		std::vector<int> aCellx; // упорядочен по возрастанию
+		//РјР°СЃСЃРёРІ РІСЃРµРІРѕР·РјРѕР¶РЅС‹С… cellx
+		std::vector<int> aCellx; // СѓРїРѕСЂСЏРґРѕС‡РµРЅ РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ
 		int nLastCellx = 0;
 
 
-		//m_aArray - строки
+		//m_aArray - СЃС‚СЂРѕРєРё
 		for( int nCurRow = 0; nCurRow < (int)m_aArray.size(); nCurRow++ ) 
 		{
 			nLastCellx = 0;
@@ -74,8 +74,8 @@ public:
 			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthEndInvCell && mu_Twips == oCurRow->m_oProperty.m_eMUEndInvCell)
 				nWidthAfter = oCurRow->m_oProperty.m_nWidthEndInvCell;
 
-			int nDelta = 0;// поправка на margin и  indent и spacing
-			if( PROP_DEF != oCurRow->m_oProperty.m_nLeft ) //для каждого row свой
+			int nDelta = 0;// РїРѕРїСЂР°РІРєР° РЅР° margin Рё  indent Рё spacing
+			if( PROP_DEF != oCurRow->m_oProperty.m_nLeft ) //РґР»СЏ РєР°Р¶РґРѕРіРѕ row СЃРІРѕР№
 				nDelta = -oCurRow->m_oProperty.m_nLeft;
 			else
 			{
@@ -89,7 +89,7 @@ public:
 					nDelta -= oCurRow->m_oProperty.m_nWidthStartInvCell;
 			}
 
-			//добавляем widthBefore
+			//РґРѕР±Р°РІР»СЏРµРј widthBefore
 			if( 0 != nWidthBefore )
 			{
 				AddToArray( aCellx, nWidthBefore );
@@ -103,18 +103,18 @@ public:
 				
 				int nCellx = nWidthBefore + nDelta + oCurCell->m_oProperty.m_nCellx;
 				AddToArray( aCellx, nCellx );
-				//те свойства, что остались в row не трогаем - они не важны для конвертации в oox
+				//С‚Рµ СЃРІРѕР№СЃС‚РІР°, С‡С‚Рѕ РѕСЃС‚Р°Р»РёСЃСЊ РІ row РЅРµ С‚СЂРѕРіР°РµРј - РѕРЅРё РЅРµ РІР°Р¶РЅС‹ РґР»СЏ РєРѕРЅРІРµСЂС‚Р°С†РёРё РІ oox
 				nLastCellx = nCellx;
 			}
-			//добавляем widthAfter
+			//РґРѕР±Р°РІР»СЏРµРј widthAfter
 			if(  0 != nWidthAfter)
 				AddToArray( aCellx, nLastCellx + nWidthAfter );
 		}
-		//вычисляем Span
+		//РІС‹С‡РёСЃР»СЏРµРј Span
 		for(int i = 0; i < (int)m_aArray.size();i++) 
 		{
 			RtfTableRowPtr oCurRow= m_aArray[ i ];
-			//индекс последнего минимального элемента
+			//РёРЅРґРµРєСЃ РїРѕСЃР»РµРґРЅРµРіРѕ РјРёРЅРёРјР°Р»СЊРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
 			int nLastIndex = 0;
 			int nLastCellx = 0;
 
@@ -125,8 +125,8 @@ public:
 			if( PROP_DEF != oCurRow->m_oProperty.m_nWidthEndInvCell && mu_Twips == oCurRow->m_oProperty.m_eMUEndInvCell)
 				nWidthAfter = oCurRow->m_oProperty.m_nWidthEndInvCell;
 
-			int nDelta = 0;// поправка на margin и  indent и spacing и border
-			if( PROP_DEF != oCurRow->m_oProperty.m_nLeft ) //для каждого row свой
+			int nDelta = 0;// РїРѕРїСЂР°РІРєР° РЅР° margin Рё  indent Рё spacing Рё border
+			if( PROP_DEF != oCurRow->m_oProperty.m_nLeft ) //РґР»СЏ РєР°Р¶РґРѕРіРѕ row СЃРІРѕР№
 				nDelta = -oCurRow->m_oProperty.m_nLeft;
 			else
 			{
@@ -140,7 +140,7 @@ public:
 					nDelta -= oCurRow->m_oProperty.m_nWidthStartInvCell;
 			}
 
-			//добавляем gridBefore
+			//РґРѕР±Р°РІР»СЏРµРј gridBefore
 			if( 0 != nWidthBefore )
 				for( int k = nLastIndex; k < (int)aCellx.size(); k++ )
 				{
@@ -174,7 +174,7 @@ public:
 				nLastCellx = nCellx;
 
 			}
-			//добавляем gridAfter
+			//РґРѕР±Р°РІР»СЏРµРј gridAfter
 			if( 0 != nWidthAfter )
 				for(int k = nLastIndex; k < (int)aCellx.size(); k++)
 				{
@@ -186,7 +186,7 @@ public:
 					}
 				}
 		}
-		//вычисляем gridTable
+		//РІС‹С‡РёСЃР»СЏРµРј gridTable
 		for( int i = 0; i < (int)aCellx.size(); i++ )
 		{
 			if( i == 0 )
@@ -196,18 +196,18 @@ public:
 		}
 	}	
 
-	void CalculateCellx( RtfDocument& oDocument )//todo учитывать margin indent
+	void CalculateCellx( RtfDocument& oDocument )//todo СѓС‡РёС‚С‹РІР°С‚СЊ margin indent
 	{
 		if( m_aTableGrid.size() == 0 && m_aArray.size() > 0 )
 		{
-			//если отсутствует <w:tblGrid/> делаем пропорционально
+			//РµСЃР»Рё РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚ <w:tblGrid/> РґРµР»Р°РµРј РїСЂРѕРїРѕСЂС†РёРѕРЅР°Р»СЊРЅРѕ
 			m_oProperty.m_nAutoFit = 1;
 			if( ( PROP_DEF == m_oProperty.m_nWidth || m_oProperty.m_nWidth <= 0 ) )
 			{
-				//если не задана ширина таблицы, считаем ее 100%
+				//РµСЃР»Рё РЅРµ Р·Р°РґР°РЅР° С€РёСЂРёРЅР° С‚Р°Р±Р»РёС†С‹, СЃС‡РёС‚Р°РµРј РµРµ 100%
 				// Width = PageWidth - MarginLeft - MarginRight - Gutter
 				int nGutter = oDocument.m_oProperty.m_nGutterWidth;
-				if( 1 == oDocument.m_oProperty.m_bGutterAtTop )//не учитываем если это Top gutter
+				if( 1 == oDocument.m_oProperty.m_bGutterAtTop )//РЅРµ СѓС‡РёС‚С‹РІР°РµРј РµСЃР»Рё СЌС‚Рѕ Top gutter
 					nGutter = 0;
 				m_oProperty.m_nWidth = oDocument.m_oProperty.m_nPaperWidth - oDocument.m_oProperty.m_nMarginLeft - oDocument.m_oProperty.m_nMarginRight - nGutter;
 				m_oProperty.m_eMUWidth = mu_Twips;
@@ -246,7 +246,7 @@ public:
 					nLeft -= m_oProperty.m_nDefCellMarLeft;
 				if( PROP_DEF != m_oProperty.m_nDefCellSpLeft && 3 == m_oProperty.m_nDefCellSpLeftUnits )
 					nLeft += 2 * m_oProperty.m_nDefCellSpLeft;
-				int nDelta = nLeft;//в left учитывается GrindBefore
+				int nDelta = nLeft;//РІ left СѓС‡РёС‚С‹РІР°РµС‚СЃСЏ GrindBefore
 
 				if( PROP_DEF != oCurRow->m_oProperty.m_nGridBefore )
 				{
@@ -307,7 +307,7 @@ public:
 	}
 
 private: 
-	void AddToArray( std::vector<int>& aArray, int nValue )//todo можно применить то что он упорядоченный
+	void AddToArray( std::vector<int>& aArray, int nValue )//todo РјРѕР¶РЅРѕ РїСЂРёРјРµРЅРёС‚СЊ С‚Рѕ С‡С‚Рѕ РѕРЅ СѓРїРѕСЂСЏРґРѕС‡РµРЅРЅС‹Р№
 	{
 		bool bNeedAdd = true;
 		for(int k = 0; k < (int)aArray.size(); k++)

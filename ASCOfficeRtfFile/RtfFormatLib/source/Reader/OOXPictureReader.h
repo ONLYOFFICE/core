@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../RtfPicture.h"
 #include "OOXPictureAnchorReader.h"
 #include "OOXPictureInlineReader.h"

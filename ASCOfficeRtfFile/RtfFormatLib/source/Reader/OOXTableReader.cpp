@@ -1,4 +1,4 @@
-#include "OOXtblPrReader.h"
+п»ї#include "OOXtblPrReader.h"
 #include "OOXTableRowReader.h"
 #include "OOXTableReader.h"
 
@@ -7,7 +7,7 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 	if (m_ooxTable == NULL) return false;
 
 	bool bExistTablPr = false;
-	//сначала читаем свойства
+	//СЃРЅР°С‡Р°Р»Р° С‡РёС‚Р°РµРј СЃРІРѕР№СЃС‚РІР°
 	if(m_ooxTable->m_oTableProperties )
 	{
 		OOXtblPrReader otblPrReader(m_ooxTable->m_oTableProperties);
@@ -15,7 +15,7 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 		bExistTablPr = true;
 	}
 
-	//формируем внешний стиль для вложенных элементов
+	//С„РѕСЂРјРёСЂСѓРµРј РІРЅРµС€РЅРёР№ СЃС‚РёР»СЊ РґР»СЏ РІР»РѕР¶РµРЅРЅС‹С… СЌР»РµРјРµРЅС‚РѕРІ
 	RtfTableStylePtr poTableStyle;
 	if( PROP_DEF != oOutputTable.m_oProperty.m_nStyle )
 	{
@@ -26,8 +26,8 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 			if( RtfStyle::stTable == oResultStyle->m_eType )
 			{
 				poTableStyle = boost::shared_static_cast<RtfTableStyle, RtfStyle>( oResultStyle );
-				poTableStyle->m_oTableProp = oOutputTable.m_oProperty; //TableProperty ставим как уже прочитали чтобы не терять порядок применения свойст
-				//например индент последовательно затирает друг друга в стилях, numbering, просто в свойствах
+				poTableStyle->m_oTableProp = oOutputTable.m_oProperty; //TableProperty СЃС‚Р°РІРёРј РєР°Рє СѓР¶Рµ РїСЂРѕС‡РёС‚Р°Р»Рё С‡С‚РѕР±С‹ РЅРµ С‚РµСЂСЏС‚СЊ РїРѕСЂСЏРґРѕРє РїСЂРёРјРµРЅРµРЅРёСЏ СЃРІРѕР№СЃС‚
+				//РЅР°РїСЂРёРјРµСЂ РёРЅРґРµРЅС‚ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ Р·Р°С‚РёСЂР°РµС‚ РґСЂСѓРі РґСЂСѓРіР° РІ СЃС‚РёР»СЏС…, numbering, РїСЂРѕСЃС‚Рѕ РІ СЃРІРѕР№СЃС‚РІР°С…
 			}
 		}
 	}
@@ -54,8 +54,8 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 		if (m_ooxTable->m_arrItems[i]->getType() != OOX::et_w_tr) continue;
 
 		RtfTableRowPtr oNewRow( new RtfTableRow() );
-		//применяем свойства таблицы к каждому row
-		//т.к. в RTF нет свойств таблиц и все свойства записываются в свойства row
+		//РїСЂРёРјРµРЅСЏРµРј СЃРІРѕР№СЃС‚РІР° С‚Р°Р±Р»РёС†С‹ Рє РєР°Р¶РґРѕРјСѓ row
+		//С‚.Рє. РІ RTF РЅРµС‚ СЃРІРѕР№СЃС‚РІ С‚Р°Р±Р»РёС† Рё РІСЃРµ СЃРІРѕР№СЃС‚РІР° Р·Р°РїРёСЃС‹РІР°СЋС‚СЃСЏ РІ СЃРІРѕР№СЃС‚РІР° row
 		(*((RtfTableProperty*)&oNewRow->m_oProperty)).Merge( oOutputTable.m_oProperty );
 		
 		OOX::Logic::CTr *ooxRow = dynamic_cast<OOX::Logic::CTr *>(m_ooxTable->m_arrItems[i]);
@@ -68,7 +68,7 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 	ApplyParagraphProperty( oOutputTable );
 	return true;
 }
-//применяет свойства параграфа связанные с положением
+//РїСЂРёРјРµРЅСЏРµС‚ СЃРІРѕР№СЃС‚РІР° РїР°СЂР°РіСЂР°С„Р° СЃРІСЏР·Р°РЅРЅС‹Рµ СЃ РїРѕР»РѕР¶РµРЅРёРµРј
 void OOXTableReader::ApplyParagraphProperty( RtfTable& oOutputTable )
 {
 	for( int i = 0; i < oOutputTable.GetCount(); i++ )

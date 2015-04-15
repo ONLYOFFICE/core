@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "RtfProperty.h"
 #include "Utils.h"
 //#include "../Common/MediaFormatDefine.h"
@@ -26,8 +26,8 @@ public:
 	int m_nCropR;
 	int m_nCropB;
 
-	bool m_bIsCopy; // true - надо удалять m_sPicFilename, false - не надо удалять
-	CString m_sPicFilename; //всегда содержит имя картинки, тип которой поддерживает rtf
+	bool m_bIsCopy; // true - РЅР°РґРѕ СѓРґР°Р»СЏС‚СЊ m_sPicFilename, false - РЅРµ РЅР°РґРѕ СѓРґР°Р»СЏС‚СЊ
+	CString m_sPicFilename; //РІСЃРµРіРґР° СЃРѕРґРµСЂР¶РёС‚ РёРјСЏ РєР°СЂС‚РёРЅРєРё, С‚РёРї РєРѕС‚РѕСЂРѕР№ РїРѕРґРґРµСЂР¶РёРІР°РµС‚ rtf
 
 	std::vector<CString> m_aTempFiles;
 

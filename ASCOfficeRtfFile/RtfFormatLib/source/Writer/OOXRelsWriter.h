@@ -55,7 +55,7 @@ public:
 		FileSystem::Directory::CreateDirectoryW(pathRels) ;
 
 		CFile file;
-		if (file.CreateFileW(pathRels + FILE_SEPARATOR_STR + _T(".rels"))) return false;
+		if (file.CreateFileW(pathRels + FILE_SEPARATOR_STR + m_sFileName + _T(".rels"))) return false;
 
 		DWORD dwBytesWritten;
 		CString sXml = CreateXml();

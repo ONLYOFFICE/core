@@ -8,8 +8,7 @@
 class OOXWriter
 {
 public: 
-	__event void OnProgress( long nProgress, short* shCancel );
-	
+
 	CString nCurFitId;
 	int nCurFitWidth;
 
@@ -22,18 +21,18 @@ public:
 	void* m_poDocumentWriter;
 	void* m_poFootnoteWriter;
 	void* m_poEndnoteWriter;
-	void* m_poDocPropAppWriter;
-	void* m_poDocPropCoreWriter;
 	void* m_poFontTableWriter;
 	void* m_poNumberingWriter;
 	void* m_poSettingsWriter;
 	void* m_poStylesWriter;
 
+	void* m_poDocPropsApp;
+	void* m_poDocPropsCore;
+
 //TempFolder
 	CString m_sTempFolder;
 
 	CString m_sTargetFolder;
-	CString m_sDocumentFolder;
 	std::map<CString, int> m_aBookmarksId;
 	
 	OOXWriter( RtfDocument& oDocument, CString sPath );

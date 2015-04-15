@@ -60,7 +60,7 @@ namespace Strings
 		nG = 16*ToDigit(color[4]) + ToDigit(color[5]);
 		nB = 16*ToDigit(color[6]) + ToDigit(color[7]);
 	}
-	static BOOL ToBoolean(const CString& strValue)
+	static bool ToBoolean(const CString& strValue)
 	{
 		CString s = strValue;
 		
@@ -97,7 +97,7 @@ namespace Strings
 
 		return str;
 	}
-	static CString FromBoolean(BOOL Value)
+	static CString FromBoolean(bool Value)
 	{
 		if (Value)
 			return _T("true");

@@ -32,7 +32,7 @@ public:
 		int nDistRight	= m_ooxAnchor->m_oDistR.IsInit() ? m_ooxAnchor->m_oDistR->ToTwips() : PROP_DEF;
 		int nDistBottom = m_ooxAnchor->m_oDistB.IsInit() ? m_ooxAnchor->m_oDistB->ToTwips() : PROP_DEF;
 
-		BOOL bSimplePos = m_ooxAnchor->m_oSimplePos.IsInit() ? true : false;
+		bool bSimplePos = m_ooxAnchor->m_oSimplePos.IsInit() ? true : false;
 
 		int nWidth = PROP_DEF;
 		int nHeight = PROP_DEF;

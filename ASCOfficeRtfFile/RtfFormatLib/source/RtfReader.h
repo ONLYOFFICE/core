@@ -3,12 +3,16 @@
 #include "RtfProperty.h"
 #include "RtfDocument.h"
 
+class ConvertationManager;
+
 class RtfReader
 {
 public: 
 	class ReaderState;
 	typedef boost::shared_ptr<ReaderState> ReaderStatePtr;
 
+	ConvertationManager *m_convertationManager;
+	
 	class ReaderState
 	{
 		public: 
@@ -21,6 +25,7 @@ public:
 		//		RtfSectionProperty m_oSectionProp;
 			ReaderStatePtr psave;
 			CStringA m_sCurText;
+			
 			ReaderState()
 			{
 				m_nUD = 1;
@@ -60,6 +65,7 @@ private:
 	RtfDocument& m_oDocument;
 	CString m_sFilename;
 };
+
 class RtfAbstractReader
 {
 public:
@@ -72,6 +78,7 @@ public:
 		m_nSkipChars = 0;
 		m_nCurGroups = 1;
 		m_oFileWriter = NULL;
+		m_bStopReader = false;
 	}
 	bool Parse(RtfDocument& oDocument, RtfReader& oReader )
 	{
@@ -83,7 +90,7 @@ public:
 		if( m_oTok.Type == m_oTok.None )
 			m_oTok = oReader.m_oLex.NextToken();
 	
-		while (m_oTok.Type != RtfToken::Eof)
+		while (m_oTok.Type != RtfToken::Eof && false == m_bStopReader)
 		{
 			switch (m_oTok.Type)
 			{
@@ -126,7 +133,8 @@ public:
 						oReader.m_oState->m_sCurText.Append( m_oTok.Key );
 						break;
 			}
-			m_oTok = oReader.m_oLex.NextToken();
+			if( false == m_bStopReader)
+				m_oTok = oReader.m_oLex.NextToken();
 		}
 
 		oReader.m_oLex.m_oFileWriter = poOldWriter;
@@ -147,6 +155,7 @@ public:
 			;//ATLASSERT(false);
 		if( m_nCurGroups == 0 )
 		{
+			m_bStopReader = true;
 			ExitReader( oDocument, oReader );
 		}
 		oReader.PopState();
@@ -301,11 +310,12 @@ public:
 		return sResult;
 	}
 private: 
-	RtfToken m_oTok;
-	bool m_bCanStartNewReader;
+	RtfToken	m_oTok;
+	bool		m_bCanStartNewReader;
 
-	int m_nSkipChars;
-	bool m_bSkip;
+	int			m_nSkipChars;
+	bool		m_bSkip;
+	bool		m_bStopReader;
 protected: 
 	int m_nCurGroups;
 };

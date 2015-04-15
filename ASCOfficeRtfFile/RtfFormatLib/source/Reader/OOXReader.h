@@ -3,22 +3,19 @@
 #include "../RtfField.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 
-//#include "OOXRelsReader.h"
+class ConvertationManager;
 
 class OOXReader
 {
 public: 
+
+	ConvertationManager *	m_convertationManager;
 	CString					m_sPath;
-	//CString				m_sDocumentPath;
 
 	int						m_nCurItap; //для определение вложенности таблицы
 
 	int						m_nCurFittextId;
 	std::map<int, CString>	m_aBookmarks;
-
-	//OOXRelsReader			m_oRelsReader;
-	//OOXRelsReaderPtr		m_oDocRelsReader;
-	//OOXRelsReader			m_oNumRelsReader;
 
 	std::map<int, int>					m_mapPictureBullet;
 	std::map<int, TextItemContainerPtr> m_mapFootnotes;

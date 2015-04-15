@@ -3,6 +3,10 @@
 #include "Writer/OOXWriter.h"
 #include "RtfProperty.h"
 
+#include "../../../Common/DocxFormat/Source/DocxFormat/FileTypes.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/App.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Core.h"
+
 CString RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 {
 	//ATLASSERT( IsValid() );
@@ -2526,26 +2530,22 @@ CString RtfInformation::RenderToRtf(RenderParameter oRenderParameter)
 }
 CString RtfInformation::RenderToOOX(RenderParameter oRenderParameter)
 {
-	CString sResult;
 	if( RENDER_TO_OOX_PARAM_CORE == oRenderParameter.nType )
 	{
-		if( _T("") != m_sTitle )
-			sResult.AppendFormat( _T("<dc:title>%ls</dc:title>"), Utils::PrepareToXML( m_sTitle ) );
-		if( _T("") != m_sSubject )
-			sResult.AppendFormat( _T("<dc:subject>%ls</dc:subject>"), Utils::PrepareToXML( m_sSubject ) );
-		if( _T("") != m_sAuthor )
-			sResult.AppendFormat( _T("<dc:creator>%ls</dc:creator>"), Utils::PrepareToXML( m_sAuthor ) );
-		if( _T("") != m_sKeywords )
-			sResult.AppendFormat( _T("<cp:keywords>%ls</cp:keywords>"), Utils::PrepareToXML( m_sKeywords ) );
-		if( _T("") != m_sComment )
-			sResult.AppendFormat( _T("<dc:description>%ls</dc:description>"), Utils::PrepareToXML( m_sComment ) );
+		OOX::CCore *pCore = static_cast<OOX::CCore*>( oRenderParameter.poWriter );
+		
+		if( m_sTitle.GetLength() > 0 )		pCore->m_sTitle			= m_sTitle;
+		if( m_sSubject.GetLength() > 0 )	pCore->m_sSubject		= m_sSubject;
+		if( m_sAuthor.GetLength() > 0 )		pCore->m_sCreator		= m_sAuthor;
+		if( m_sKeywords.GetLength() > 0 )	pCore->m_sKeywords		= m_sKeywords;
+		if(  m_sComment.GetLength() > 0 )	pCore->m_sDescription	= m_sComment;
 
-		//CString sCreateTime = m_oCreateTime.RenderToOOX( oRenderParameter );
-		//if( false == sCreateTime.IsEmpty() )
-		//	sResult.AppendFormat( _T("<dcterms:created xsi:type=\"dcterms:W3CDTF\">%ls</dcterms:created>"), sCreateTime );
-		//CString sRevTime = m_oRevTime.RenderToOOX( oRenderParameter );
-		//if( false == sRevTime.IsEmpty() )
-		//	sResult.AppendFormat( _T("<dcterms:modified xsi:type=\"dcterms:W3CDTF\">%ls</dcterms:modified>"), sCreateTime );
+		CString sCreateTime = m_oCreateTime.RenderToOOX( oRenderParameter );
+		if( false == sCreateTime.IsEmpty() ) pCore->m_sCreated		= sCreateTime;
+		
+		CString sRevTime = m_oRevTime.RenderToOOX( oRenderParameter );
+		if( false == sRevTime.IsEmpty() )	pCore->m_sModified		= sRevTime;
+
 		//CString sPrintTime = m_oPrintTime.RenderToOOX( oRenderParameter );
 		//if( _T("") != sPrintTime )
 		//	sResult.AppendFormat( _T("<dcterms:created xsi:type=\"dcterms:W3CDTF\">%ls</dcterms:created>"), sCreateTime );
@@ -2555,20 +2555,17 @@ CString RtfInformation::RenderToOOX(RenderParameter oRenderParameter)
 	}
 	else if( RENDER_TO_OOX_PARAM_APP == oRenderParameter.nType )
 	{
-		if( PROP_DEF != m_nEndingTime )
-			sResult.AppendFormat(_T("<TotalTime>%d</TotalTime>"), m_nEndingTime );
-		if( PROP_DEF != m_nNumberOfPages )
-			sResult.AppendFormat( _T("<Pages>%d</Pages>"),m_nNumberOfPages );
-		if( PROP_DEF != m_nNumberOfWords )
-			sResult.AppendFormat( _T("<Words>%d</Words>"),m_nNumberOfWords );
-		if( PROP_DEF != m_nNumberOfCharactersWithSpace )
-			sResult.AppendFormat( _T("<Characters>%d</Characters>"),m_nNumberOfCharactersWithSpace );
-		if( PROP_DEF != m_nNumberOfCharactersWithoutSpace )
-			sResult.AppendFormat( _T("<CharactersWithSpaces>%d</CharactersWithSpaces>"),m_nNumberOfCharactersWithoutSpace );		
-		//if( PROP_DEF != m_nVersion )
-		//	sResult.AppendFormat( _T("<AppVersion>%f</AppVersion>"),m_nVersion );
+		OOX::CApp *pApp = static_cast<OOX::CApp*>( oRenderParameter.poWriter );
+		
+		if( PROP_DEF != m_nEndingTime)						pApp->m_nTotalTime				= m_nEndingTime;
+		if( PROP_DEF != m_nNumberOfPages )					pApp->m_nPages					= m_nNumberOfPages;
+		if( PROP_DEF != m_nNumberOfWords )					pApp->m_nWords					= m_nNumberOfWords;
+		if( PROP_DEF != m_nNumberOfCharactersWithSpace )	pApp->m_nCharactersWithSpaces	= m_nNumberOfCharactersWithSpace;
+		
+		//if( PROP_DEF != m_nNumberOfCharactersWithoutSpace )	
+		//	sResult.AppendFormat( _T("<CharactersWithSpaces>%d</CharactersWithSpaces>"),m_nNumberOfCharactersWithoutSpace );		
 	}
-	return sResult;
+	return _T("");
 }
 CString RtfTime::RenderToRtf(RenderParameter oRenderParameter)
 {

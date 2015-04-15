@@ -1,7 +1,7 @@
 #include "OOXWriter.h"
 
 #include "../RtfDocument.h"
-//#include "OOXContentTypesWriter.h"
+
 #include "OOXRelsWriter.h"
 #include "OOXDocumentWriter.h"
 #include "OOXNumberingWriter.h"
@@ -9,9 +9,11 @@
 #include "OOXStylesWriter.h"
 #include "OOXSettingsWriter.h"
 #include "OOXThemeWriter.h"
-#include "OOXDocPropAppWriter.h"
-#include "OOXDocPropCoreWriter.h"
 #include "OOXFootnoteWriter.h"
+
+#include "../../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+
+#include "../../../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h"
 
 OOXWriter::OOXWriter( RtfDocument& oDocument, CString sPath ) : 
 		m_oDocument(oDocument),
@@ -19,33 +21,48 @@ OOXWriter::OOXWriter( RtfDocument& oDocument, CString sPath ) :
 		m_oRels( _T(""), oDocument ),
 		m_oDocRels( _T("document.xml"), oDocument )
 {
-	nCurFitWidth = PROP_DEF;
-	m_poFootnoteWriter = NULL;
-	m_poEndnoteWriter = NULL;
-	m_sDocumentFolder = _T("word");
+	nCurFitWidth		= PROP_DEF;
+	m_poFootnoteWriter	= NULL;
+	m_poEndnoteWriter	= NULL;
 
-	m_poDocumentWriter = new OOXDocumentWriter( *this, m_oDocument );
-	m_poFootnoteWriter = new OOXFootnoteWriter( *this, m_oDocument );
-	m_poEndnoteWriter = new OOXEndnoteWriter( *this, m_oDocument );
-	m_poDocPropAppWriter = new OOXDocPropAppWriter( *this, m_oDocument );
-	m_poDocPropCoreWriter = new OOXDocPropCoreWriter( *this, m_oDocument );
+	m_poDocumentWriter	= new OOXDocumentWriter( *this, m_oDocument );
+	m_poFootnoteWriter	= new OOXFootnoteWriter( *this, m_oDocument );
+	m_poEndnoteWriter	= new OOXEndnoteWriter( *this, m_oDocument );
 	m_poFontTableWriter = new OOXFontTableWriter( *this, m_oDocument );
 	m_poNumberingWriter = new OOXNumberingWriter( *this, m_oDocument );
-	m_poSettingsWriter = new OOXSettingsWriter( *this, m_oDocument );
-	m_poStylesWriter = new OOXStylesWriter( *this, m_oDocument );
+	m_poSettingsWriter	= new OOXSettingsWriter( *this, m_oDocument );
+	m_poStylesWriter	= new OOXStylesWriter( *this, m_oDocument );
 
+	m_poDocPropsApp		= new OOX::CApp();
+	m_poDocPropsCore	= new OOX::CCore();
+
+//default properties
+
+	if (m_poDocPropsApp)
+	{		
+		((OOX::CApp*)m_poDocPropsApp)->SetDocSecurity(0);
+		((OOX::CApp*)m_poDocPropsApp)->SetScaleCrop(false);
+		((OOX::CApp*)m_poDocPropsApp)->SetLinksUpToDate(false);
+		((OOX::CApp*)m_poDocPropsApp)->SetSharedDoc(false);
+		((OOX::CApp*)m_poDocPropsApp)->SetHyperlinksChanged(false);
+	}
+	if (m_poDocPropsCore)
+	{
+		((OOX::CCore*)m_poDocPropsCore)->SetCreator(_T(""));
+		((OOX::CCore*)m_poDocPropsCore)->SetLastModifiedBy(_T(""));
+	}
 }
 OOXWriter::~OOXWriter()
 {
 	delete ((OOXDocumentWriter*)m_poDocumentWriter);
 	delete ((OOXFootnoteWriter*)m_poFootnoteWriter);
 	delete ((OOXEndnoteWriter*)m_poEndnoteWriter);
-	delete ((OOXDocPropAppWriter*)m_poDocPropAppWriter);
-	delete ((OOXDocPropCoreWriter*)m_poDocPropCoreWriter);
 	delete ((OOXFontTableWriter*)m_poFontTableWriter);
 	delete ((OOXNumberingWriter*)m_poNumberingWriter);
 	delete ((OOXSettingsWriter*)m_poSettingsWriter);
 	delete ((OOXStylesWriter*)m_poStylesWriter);
+	delete ((OOX::CApp*)m_poDocPropsApp);
+	delete ((OOX::CCore*)m_poDocPropsCore);
 }
 bool OOXWriter::Save()
 {
@@ -59,38 +76,6 @@ bool OOXWriter::Save()
 }
 bool OOXWriter::SaveByItemStart()
 {
-	((OOXFootnoteWriter*)m_poFootnoteWriter)->Save(m_sTargetFolder + FILE_SEPARATOR_STR + m_sDocumentFolder);
-	((OOXEndnoteWriter*)m_poEndnoteWriter)->Save(m_sTargetFolder + FILE_SEPARATOR_STR + m_sDocumentFolder);
-
-	if( m_oFootnoteSep->GetCount() )
-	{
-		oNewParam = oRenderParameter;
-		oNewParam.poRels = &poFootnoteWriter->m_oRelsWriter;
-		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		poFootnoteWriter->AddFootnote( _T("separator"), -1, m_oFootnoteSep->RenderToOOX(oNewParam) );
-	}
-	if( m_oFootnoteCon->GetCount() )
-	{
-		oNewParam = oRenderParameter;
-		oNewParam.poRels = &poFootnoteWriter->m_oRelsWriter;
-		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		poFootnoteWriter->AddFootnote( _T("continuationSeparator"), 0, m_oFootnoteCon->RenderToOOX( oNewParam ) );
-	}
-	if( m_oEndnoteSep->GetCount() )
-	{
-		oNewParam = oRenderParameter;
-		oNewParam.poRels = &poEndnoteWriter->m_oRelsWriter;
-		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		poEndnoteWriter->AddEndnote( _T("separator"), -1, m_oEndnoteSep->RenderToOOX(oNewParam) );
-	}
-	if( m_oEndnoteCon->GetCount() )
-	{
-		oNewParam = oRenderParameter;
-		oNewParam.poRels = &poEndnoteWriter->m_oRelsWriter;
-		oNewParam.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
-		poEndnoteWriter->AddEndnote( _T("continuationSeparator"), 0, m_oEndnoteSep->RenderToOOX(oNewParam) );
-	}
-
 	return ((OOXDocumentWriter*)m_poDocumentWriter)->SaveByItemStart( m_sTargetFolder );
 }
 bool OOXWriter::SaveByItem()
@@ -99,58 +84,57 @@ bool OOXWriter::SaveByItem()
 }
 bool OOXWriter::SaveByItemEnd()
 {
-	//OOX::CContentTypes oContentTypes;
-	//
-	////docProps
- //   OOX::CPath pathDocProps = sDstPath + FILE_SEPARATOR_STR + _T("docProps");
- //   FileSystem::Directory::CreateDirectory(pathDocProps.GetPath());
-	//
- //   OOX::CPath DocProps = CString(_T("docProps"));
+	OOX::CContentTypes oContentTypes;
 
-	//OOX::CApp* pApp = new OOX::CApp();
-	//if (pApp)
-	//{
-	//	pApp->SetApplication(_T("OnlyOffice"));
-	//	pApp->SetAppVersion(_T("3.0000"));
-	//	pApp->SetDocSecurity(0);
-	//	pApp->SetScaleCrop(false);
-	//	pApp->SetLinksUpToDate(false);
-	//	pApp->SetSharedDoc(false);
-	//	pApp->SetHyperlinksChanged(false);
-	//	
-	//	pApp->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), DocProps, oContentTypes);
-	//	delete pApp;
-	//}				
-	//OOX::CCore* pCore = new OOX::CCore();
-	//if (pCore)
-	//{
-	//	pCore->SetCreator(_T(""));
-	//	pCore->SetLastModifiedBy(_T(""));
-	//	pCore->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), DocProps, oContentTypes);
-	//	delete pCore;
-	//} 
+	OOX::CPath pathWord = m_sTargetFolder + FILE_SEPARATOR_STR + _T("word");
+    FileSystem::Directory::CreateDirectory(pathWord.GetPath());
+	
+//-------------------------------------------------------------------------------------
+	OOX::CPath pathDocProps = m_sTargetFolder + FILE_SEPARATOR_STR + _T("docProps");
+    FileSystem::Directory::CreateDirectory(pathDocProps.GetPath());
+	
+	if (m_poDocPropsApp)
+	{
+		((OOX::CApp*)m_poDocPropsApp)->SetApplication(_T("OnlyOffice"));
+		((OOX::CApp*)m_poDocPropsApp)->SetAppVersion(_T("3.0000"));
+		
+		((OOX::CApp*)m_poDocPropsApp)->write(pathDocProps + FILE_SEPARATOR_STR + _T("app.xml"), pathDocProps.GetDirectory(), oContentTypes);
+		
+		m_oRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties"), _T("docProps/app.xml") );
+		m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.extended-properties+xml"), _T("/docProps/app.xml") );
+	}				
+	if (m_poDocPropsCore)
+	{
+		((OOX::CCore*)m_poDocPropsCore)->write(pathDocProps + FILE_SEPARATOR_STR + _T("core.xml"), pathDocProps.GetDirectory(), oContentTypes);
+		
+		m_oRels.AddRelationship( _T("http://schemas.openxmlformats.org/package/2006/relationships/metadata/core-properties"), _T("docProps/core.xml") );
+		m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-package.core-properties+xml"), _T("/docProps/core.xml") );
+	} 
+//-----------------------------------------------------------------------------------------------------
+	OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + _T("theme");
+	FileSystem::Directory::CreateDirectoryW(pathTheme.GetPath()) ;	
+	Writers::DefaultThemeWriter themeWriter;
 
-///////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-	OOXThemeWriter oThemeWr(*this, m_oDocument);
-	oThemeWr.Save(m_sTargetFolder);
-
+	themeWriter.Write(pathTheme.GetPath() + FILE_SEPARATOR_STR + _T("theme1.xml"));
+	m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme"), _T("theme/theme1.xml") );
+	m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.theme+xml"), _T("/word/theme/theme1.xml") );
+//-----------------------------------------------------------------------------------------------------
 	((OOXDocumentWriter*)m_poDocumentWriter)->SaveByItemEnd();
 
-	((OOXFootnoteWriter*)m_poFootnoteWriter)->Save(m_sTargetFolder + FILE_SEPARATOR_STR + m_sDocumentFolder);
-	((OOXEndnoteWriter*)m_poEndnoteWriter)->Save(m_sTargetFolder + FILE_SEPARATOR_STR + m_sDocumentFolder);
+	((OOXFootnoteWriter*)m_poFootnoteWriter)->Save(pathWord.GetPath());
+	((OOXEndnoteWriter*)m_poEndnoteWriter)->Save(pathWord.GetPath());
 	((OOXNumberingWriter*)m_poNumberingWriter)->Save(m_sTargetFolder);
 	((OOXStylesWriter*)m_poStylesWriter)->Save(m_sTargetFolder);
 	((OOXFontTableWriter*)m_poFontTableWriter)->Save(m_sTargetFolder);
-	((OOXDocPropAppWriter*)m_poDocPropAppWriter)->Save(m_sTargetFolder);
-	((OOXDocPropCoreWriter*)m_poDocPropCoreWriter)->Save(m_sTargetFolder);
+	
 	((OOXSettingsWriter*)m_poSettingsWriter)->Save(m_sTargetFolder); //setting в последнюю очередь
 
 	bool nResult = true;
 	nResult &= m_oContentTypes.Save(m_sTargetFolder);
 	nResult &= m_oRels.Save(m_sTargetFolder);
-	nResult &= m_oDocRels.Save(m_sTargetFolder + FILE_SEPARATOR_STR + m_sDocumentFolder);
+	nResult &= m_oDocRels.Save(pathWord.GetPath());
+	
 	for( int i = 0; i < (int)m_oCustomRelsWriter.size(); i++ )
-		m_oCustomRelsWriter[i]->Save(m_sTargetFolder + FILE_SEPARATOR_STR + m_sDocumentFolder);
+		m_oCustomRelsWriter[i]->Save(pathWord.GetPath());
 	return nResult;
 }

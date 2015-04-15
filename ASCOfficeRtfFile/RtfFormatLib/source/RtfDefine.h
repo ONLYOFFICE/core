@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 const long g_cdMaxPercent = 1000000;
 

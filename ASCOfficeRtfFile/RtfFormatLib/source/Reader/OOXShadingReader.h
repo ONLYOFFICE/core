@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../../../../Common/DocxFormat/Source/Common/ComplexTypes.h"
 

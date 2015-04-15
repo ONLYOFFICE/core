@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "OOXpPrReader.h"
 #include "OOXrPrReader.h"
 #include "OOXtblPrReader.h"
@@ -70,7 +70,7 @@ public:
 		if (m_ooxStyle->m_oUiPriority.IsInit())
 			oNewStyle->m_bCompose = m_ooxStyle->m_oUiPriority->m_oVal->GetValue();
 		
-		if (m_ooxStyle->m_oRunPr.IsInit() && ( RtfStyle::stCharacter == eStyleType || RtfStyle::stParagraph == eStyleType || RtfStyle::stTable == eStyleType ))//todo с rtf стилями
+		if (m_ooxStyle->m_oRunPr.IsInit() && ( RtfStyle::stCharacter == eStyleType || RtfStyle::stParagraph == eStyleType || RtfStyle::stTable == eStyleType ))//todo СЃ rtf СЃС‚РёР»СЏРјРё
 		{
 			RtfCharStylePtr oNewCharStyle = boost::shared_static_cast<RtfCharStyle, RtfStyle>( oNewStyle );
 			
@@ -89,7 +89,7 @@ public:
 			bool bStartNewSection;			
 			opPrReader.Parse( oParam, oNewParStyle->m_oParProp, CcnfStyle(), bStartNewSection );
 			
-			oNewParStyle->m_oParProp.m_nListId = PROP_DEF; //экспериментально вроде нельзя иметь numbering в параграф стиле
+			oNewParStyle->m_oParProp.m_nListId = PROP_DEF; //СЌРєСЃРїРµСЂРёРјРµРЅС‚Р°Р»СЊРЅРѕ РІСЂРѕРґРµ РЅРµР»СЊР·СЏ РёРјРµС‚СЊ numbering РІ РїР°СЂР°РіСЂР°С„ СЃС‚РёР»Рµ
 			oNewParStyle->m_oParProp.m_nListLevel = PROP_DEF;
 
 		}
@@ -147,7 +147,7 @@ public:
 							case SimpleTypes::tblstyleoverridetypeBand1Vert  : 
 							{
 								oTableStyle->m_oBandVerOdd = boost::shared_static_cast<RtfTableStyle, RtfStyle>( oNewSubStyle );
-								oTableStyle->m_oBandVerOdd->m_oParProp.m_bStyleOddColBand = 1; //для конвертации в Rtf
+								oTableStyle->m_oBandVerOdd->m_oParProp.m_bStyleOddColBand = 1; //РґР»СЏ РєРѕРЅРІРµСЂС‚Р°С†РёРё РІ Rtf
 							}break;
 							case SimpleTypes::tblstyleoverridetypeBand2Horz  :
 							{
@@ -228,10 +228,10 @@ public:
 	{
 		if (oox_tableStyle == NULL) return false;
 
-		RtfStyle::StyleType eStyleType = oOutputStyle->m_eType;//todooo проверить
+		RtfStyle::StyleType eStyleType = oOutputStyle->m_eType;//todooo РїСЂРѕРІРµСЂРёС‚СЊ
 
 		if (oox_tableStyle->m_oRunPr.IsInit() && 
-			( RtfStyle::stCharacter == eStyleType || RtfStyle::stParagraph == eStyleType || RtfStyle::stTable == eStyleType ))//todo с rtf стилями
+			( RtfStyle::stCharacter == eStyleType || RtfStyle::stParagraph == eStyleType || RtfStyle::stTable == eStyleType ))//todo СЃ rtf СЃС‚РёР»СЏРјРё
 		{
 			RtfCharStylePtr oNewCharStyle = boost::shared_static_cast<RtfCharStyle, RtfStyle>( oOutputStyle );
 			
@@ -250,7 +250,7 @@ public:
 			bool bStartNewSection;			
 			opPrReader.Parse( oParam, oNewParStyle->m_oParProp, CcnfStyle(), bStartNewSection );
 			
-			oNewParStyle->m_oParProp.m_nListId = PROP_DEF; //экспериментально вроде нельзя иметь numbering в параграф стиле
+			oNewParStyle->m_oParProp.m_nListId = PROP_DEF; //СЌРєСЃРїРµСЂРёРјРµРЅС‚Р°Р»СЊРЅРѕ РІСЂРѕРґРµ РЅРµР»СЊР·СЏ РёРјРµС‚СЊ numbering РІ РїР°СЂР°РіСЂР°С„ СЃС‚РёР»Рµ
 			oNewParStyle->m_oParProp.m_nListLevel = PROP_DEF;
 
 		}

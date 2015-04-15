@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "OOXRelsWriter.h"
 
 class OOXSettingsWriter
@@ -35,12 +35,12 @@ public:
 
 		if( false == m_sFileXml.IsEmpty() )
 		{
-			//генерируем свою xml
+			//РіРµРЅРµСЂРёСЂСѓРµРј СЃРІРѕСЋ xml
 			CString sXml = CreateXml();
 
-			//todoooo ПЕРЕПИСАТЬ
+			//todoooo РџР•Р Р•РџРРЎРђРўР¬
 
-			////берем xml из шаблона
+			////Р±РµСЂРµРј xml РёР· С€Р°Р±Р»РѕРЅР°
 			//CString sFilename = sFolder +  _T("\\word\\settings.xml");
 			//if( true == RtfUtility:: SaveResourceToFile( IDR_SETTINGS, L"XML", sFilename ) )
 			//{

@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "RtfChar.h"
 
 class RtfBookmarkStart : public IDocumentElement

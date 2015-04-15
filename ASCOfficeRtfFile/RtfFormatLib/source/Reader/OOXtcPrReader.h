@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "../RtfDocument.h"
 
 #include "OOXBorderReader.h"
@@ -16,7 +16,7 @@ public:
 	{
 		if (m_ooxTableCellProps == NULL) return false;
 
-		//èùåì cnfStyle  è ïðèìåíÿåì âíåøíèé ñòèëü
+		//Ð¸Ñ‰ÐµÐ¼ cnfStyle  Ð¸ Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ Ð²Ð½ÐµÑˆÐ½Ð¸Ð¹ ÑÑ‚Ð¸Ð»ÑŒ
 		if( NULL != oParam.poTableStyle )
 		{
 			if( m_ooxTableCellProps->m_oCnfStyle.IsInit() )
@@ -56,7 +56,7 @@ public:
 
 		if( m_ooxTableCellProps->m_oTcMar.IsInit() )
 		{
-			//todooo ñäåëàòü ðåàëèçàöèþ ñ ïðîöåíòàìè
+			//todooo ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ Ñ€ÐµÐ°Ð»Ð¸Ð·Ð°Ñ†Ð¸ÑŽ Ñ Ð¿Ñ€Ð¾Ñ†ÐµÐ½Ñ‚Ð°Ð¼Ð¸
 			if( m_ooxTableCellProps->m_oTcMar->m_oBottom.IsInit() && m_ooxTableCellProps->m_oTcMar->m_oBottom->m_oW.IsInit())
 			{
 				oOutputProperty.m_nPaddingBottom = m_ooxTableCellProps->m_oTcMar->m_oBottom->m_oW->GetValue();

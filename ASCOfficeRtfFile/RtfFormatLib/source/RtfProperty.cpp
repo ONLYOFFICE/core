@@ -1,4 +1,4 @@
-#include "RtfDocument.h"
+п»ї#include "RtfDocument.h"
 #include "RtfWriter.h"
 #include "Writer/OOXWriter.h"
 #include "RtfProperty.h"
@@ -49,7 +49,7 @@ CString RtfFont::RenderToRtf(RenderParameter oRenderParameter)
 		sResult.AppendFormat(_T(" %ls"), RtfChar::renderRtfText( m_sName, oRenderParameter.poDocument, &oFontNameCharProp ));
 		if( _T("") != m_sAltName )
 			sResult.AppendFormat(_T("{\\*\\falt %ls}"),  RtfChar::renderRtfText( m_sAltName, oRenderParameter.poDocument ) );
-		//важно
+		//РІР°Р¶РЅРѕ
 		sResult.AppendFormat(_T(";"));
 		sResult.AppendFormat(_T("}"));
 	}
@@ -140,7 +140,7 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 				sResult.AppendFormat(_T("<w:pitch w:val=\"%ls\" />"),sPitch);
 			}
 
-			//важно
+			//РІР°Р¶РЅРѕ
 			sResult.AppendFormat(_T("</w:font>"));
 		}
 		else
@@ -187,7 +187,7 @@ CString RtfColor::RenderToRtf(RenderParameter  oRenderParameter )
 		//	sResult.AppendFormat(_T("\\ctint%d\\cshade%d"), m_byteTint, m_byteShade);
 		//}
 		sResult.AppendFormat(_T("\\red%d\\green%d\\blue%d"), m_byteRed, m_byteGreen, m_byteBlue);
-		//важно
+		//РІР°Р¶РЅРѕ
 		sResult.Append(_T(";"));
 	}
 	else
@@ -757,7 +757,7 @@ CString RtfListLevelProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nStart, sResult, _T("levelstartat") )
 	RENDER_RTF_INT( m_nNoRestart, sResult, _T("levelnorestart") )
 	RENDER_RTF_INT( m_nPictureIndex, sResult, _T("levelpicture") )
-	//чтобы при последующем чтении из rtf не потерялась информация о шрифте
+	//С‡С‚РѕР±С‹ РїСЂРё РїРѕСЃР»РµРґСѓСЋС‰РµРј С‡С‚РµРЅРёРё РёР· rtf РЅРµ РїРѕС‚РµСЂСЏР»Р°СЃСЊ РёРЅС„РѕСЂРјР°С†РёСЏ Рѕ С€СЂРёС„С‚Рµ
 	sResult.Append( m_oCharProp.RenderToRtf( oRenderParameter ) );
 
 	sResult.AppendFormat( _T("{\\leveltext %ls;}"), RtfChar::renderRtfText( m_sText, oRenderParameter.poDocument, &m_oCharProp ) );
@@ -1619,27 +1619,27 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 	//RENDER_RTF_BOOL( m_bStyleSECell, sResult, _T("tscsecell") );
 
 
-	//дописываем текст списка (для старых reader например  wordPad)
+	//РґРѕРїРёСЃС‹РІР°РµРј С‚РµРєСЃС‚ СЃРїРёСЃРєР° (РґР»СЏ СЃС‚Р°СЂС‹С… reader РЅР°РїСЂРёРјРµСЂ  wordPad)
 	if( PROP_DEF != m_nListId && PROP_DEF != m_nListLevel )
 	{
 		RtfListProperty oListProperty;
 		RtfDocument* poRtfDocument = static_cast<RtfDocument*>(  oRenderParameter.poDocument );
 		RtfListOverrideProperty oListOverrideProperty;
-		//ищем по override table
+		//РёС‰РµРј РїРѕ override table
 		if( true == poRtfDocument->m_oListOverrideTabel.GetList( m_nListId, oListOverrideProperty ) )
 		{
-			//Ищем по List Table
+			//РС‰РµРј РїРѕ List Table
 			if( true == poRtfDocument->m_oListTabel.GetList( oListOverrideProperty.m_nListID, oListProperty) )
 			{
-				//дописываем свойства параграфа firstIndent Indent
+				//РґРѕРїРёСЃС‹РІР°РµРј СЃРІРѕР№СЃС‚РІР° РїР°СЂР°РіСЂР°С„Р° firstIndent Indent
 				RtfListLevelProperty poLevelProp ;
 				if( true == oListProperty.GetItem( poLevelProp , m_nListLevel ) )
 				{
 					sResult.Append(_T("{\\listtext\\pard\\plain"));
 					sResult.Append( poLevelProp.m_oCharProp.RenderToRtf( oRenderParameter ) );
-					//пишем текст 
+					//РїРёС€РµРј С‚РµРєСЃС‚ 
 					sResult.Append( RtfChar::renderRtfText( poLevelProp.GenerateListText(), oRenderParameter.poDocument, NULL ) );
-					//или картинку
+					//РёР»Рё РєР°СЂС‚РёРЅРєСѓ
 					if( PROP_DEF != poLevelProp.m_nPictureIndex )
 					{
 						int nIndex = poLevelProp.m_nPictureIndex;
@@ -1647,7 +1647,7 @@ CString RtfParagraphProperty::RenderToRtf(RenderParameter oRenderParameter)
 						if( 0 < nIndex && nIndex < poRtfDocument->m_oListTabel.m_aPictureList.GetCount() )
 							sResult.Append( poRtfDocument->m_oListTabel.m_aPictureList[nIndex]->RenderToRtf( oRenderParameter ) );
 					}
-					//ставим tab
+					//СЃС‚Р°РІРёРј tab
 					if( PROP_DEF != poLevelProp.m_nFollow )
 					{
 						switch( poLevelProp.m_nFollow )
@@ -1749,7 +1749,7 @@ CString RtfParagraphProperty::RenderToOOX(RenderParameter oRenderParameter)
 		}
 	}
 	//else
-	//	sSpacing.AppendFormat(_T(" w:line=\"240\"")); //по умолчанию - единичный
+	//	sSpacing.AppendFormat(_T(" w:line=\"240\"")); //РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ - РµРґРёРЅРёС‡РЅС‹Р№
 	if( false == sSpacing.IsEmpty() )
 		sResult.AppendFormat(_T("<w:spacing %ls/>"), sSpacing);
 
@@ -2212,7 +2212,7 @@ CString RtfTableProperty::RenderToOOX(RenderParameter oRenderParameter)
 	else if( 1 == m_nAutoFit )
 			sResult.Append( _T("<w:tblLayout w:type=\"autofit\"/>") );
 
-	//сделаем не по документации, а как все остальные юниты !!!
+	//СЃРґРµР»Р°РµРј РЅРµ РїРѕ РґРѕРєСѓРјРµРЅС‚Р°С†РёРё, Р° РєР°Рє РІСЃРµ РѕСЃС‚Р°Р»СЊРЅС‹Рµ СЋРЅРёС‚С‹ !!!
 	if( PROP_DEF != nTableIndent && 1 != nTableIndentUnits  )
 	{
 		switch(nTableIndentUnits)

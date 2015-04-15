@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../RtfDocument.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Math/oMathContent.h"
 

@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "OOXReader.h"
 #include "OOXBorderReader.h"
@@ -25,9 +25,9 @@ public:
 	{
 		if (m_ooxTableProps == NULL) return false;
 
-		//ñíà÷àëà ïðèìåíÿåì ñòèëè
+		//ÑÐ½Ð°Ñ‡Ð°Ð»Ð° Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ ÑÑ‚Ð¸Ð»Ð¸
 
-		//ïðèìåíÿåì ñòèëü ïî-óìîë÷àíèþ,åñëè íå îïðåäåëåí ñâîé
+		//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ ÑÑ‚Ð¸Ð»ÑŒ Ð¿Ð¾-ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ,ÐµÑÐ»Ð¸ Ð½Ðµ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½ ÑÐ²Ð¾Ð¹
 		if( m_ooxTableProps->m_oTblStyle.IsInit() == false && true == m_bDefStyle && NULL != oParam.oReader->m_oDefTableStyle )
 		{
 			oOutputProperty.Merge( oParam.oReader->m_oDefTableStyle->m_oTableProp );
@@ -53,7 +53,7 @@ public:
 		
 			switch(eType)
 			{
-			case SimpleTypes::tblwidthDxa://ñäåëàåì íå ïî äîêóìåíòàöèè, à êàê âñå îñòàëüíûå þíèòû !!!
+			case SimpleTypes::tblwidthDxa://ÑÐ´ÐµÐ»Ð°ÐµÐ¼ Ð½Ðµ Ð¿Ð¾ Ð´Ð¾ÐºÑƒÐ¼ÐµÐ½Ñ‚Ð°Ñ†Ð¸Ð¸, Ð° ÐºÐ°Ðº Ð²ÑÐµ Ð¾ÑÑ‚Ð°Ð»ÑŒÐ½Ñ‹Ðµ ÑŽÐ½Ð¸Ñ‚Ñ‹ !!!
 				{
 					oOutputProperty.nTableIndentUnits	= 3;
 					oOutputProperty.nTableIndent		= dValue;
@@ -124,7 +124,7 @@ public:
 			MetricUnits eMetric = mu_none;
 			int nValue = PROP_DEF;
 			//if( mu_Twips == eMetric && PROP_DEF != nValue )
-			//todooo ñäåëàòü âàðèàíò ñ ïðîöåíòìè
+			//todooo ÑÐ´ÐµÐ»Ð°Ñ‚ÑŒ Ð²Ð°Ñ€Ð¸Ð°Ð½Ñ‚ Ñ Ð¿Ñ€Ð¾Ñ†ÐµÐ½Ñ‚Ð¼Ð¸
 			if( m_ooxTableProps->m_oTblCellMar->m_oBottom.IsInit() && m_ooxTableProps->m_oTblCellMar->m_oBottom->m_oW.IsInit())
 			{
 				oOutputProperty.m_nDefCellMarBottomUnits = 3;
@@ -148,7 +148,7 @@ public:
 		}
 		if( m_ooxTableProps->m_oTblCellSpacing.IsInit() && m_ooxTableProps->m_oTblCellSpacing->m_oW.IsInit())
 		{
-			//todooo òóò òîæå íå áûëî èçíà÷àëüíî âàðèàíòà ñ ïðîöåíòàìè
+			//todooo Ñ‚ÑƒÑ‚ Ñ‚Ð¾Ð¶Ðµ Ð½Ðµ Ð±Ñ‹Ð»Ð¾ Ð¸Ð·Ð½Ð°Ñ‡Ð°Ð»ÑŒÐ½Ð¾ Ð²Ð°Ñ€Ð¸Ð°Ð½Ñ‚Ð° Ñ Ð¿Ñ€Ð¾Ñ†ÐµÐ½Ñ‚Ð°Ð¼Ð¸
 			//mu_Twips == eMetric && PROP_DEF != nValue )
 			{
 				double nValue = m_ooxTableProps->m_oTblCellSpacing->m_oW->GetValue();

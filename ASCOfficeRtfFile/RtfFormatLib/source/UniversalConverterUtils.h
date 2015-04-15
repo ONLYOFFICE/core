@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #define BUFSIZE 2048
 #include <time.h>
 
@@ -10,16 +10,16 @@ class Utils
 public:	
 	static int CopyDirOrFile(CString sSource, CString sDestination)
 	{
-		//удаляем sDestination, чтобы там не было.
+		//СѓРґР°Р»СЏРµРј sDestination, С‡С‚РѕР±С‹ С‚Р°Рј РЅРµ Р±С‹Р»Рѕ.
 		if( 0 != RemoveDirOrFile( sDestination ) )
 			return 1;
 
-		//копируем
+		//РєРѕРїРёСЂСѓРµРј
 		CDirectory::CopyFile(sSource, sDestination, NULL, NULL);
 
 		return 0;
 	}
-// return "" если не удалось создать
+// return "" РµСЃР»Рё РЅРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ
  
 	static int RemoveDirOrFile(CString sPath)
 	{
@@ -39,8 +39,8 @@ public:
 		else
 			return CreateTempFile();
 	}
-// return "" если не удалось создать
-	static CString CreateTempDir( CString sDir )//создаем файл в папке sDir
+// return "" РµСЃР»Рё РЅРµ СѓРґР°Р»РѕСЃСЊ СЃРѕР·РґР°С‚СЊ
+	static CString CreateTempDir( CString sDir )//СЃРѕР·РґР°РµРј С„Р°Р№Р» РІ РїР°РїРєРµ sDir
 	{
 		if( _T("") != sDir )
 		{
@@ -56,7 +56,7 @@ public:
 	static  CString PrepareToXML( CString sInput)
 	{
 		 CString sResult = sInput;
-		 //&amp; («&»), &lt; («<»), &gt; («>»), &apos; («'»), и &quot; («"») 
+		 //&amp; (В«&В»), &lt; (В«<В»), &gt; (В«>В»), &apos; (В«'В»), Рё &quot; (В«"В») 
 		 sResult.Replace(_T("&"), _T("&amp;"));
 		 sResult.Replace(_T("<"), _T("&lt;"));
 		 sResult.Replace(_T(">"), _T("&gt;"));

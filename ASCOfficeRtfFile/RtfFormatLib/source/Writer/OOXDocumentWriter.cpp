@@ -1,4 +1,4 @@
-#include "OOXDocumentWriter.h"
+п»ї#include "OOXDocumentWriter.h"
 //#include "OOXContentTypesWriter.h"
 #include "OOXRelsWriter.h"
 #include "OOXDocumentWriter.h"
@@ -13,7 +13,7 @@
 
 CString OOXDocumentWriter::CreateXmlStart()
 {
-	//пишем Footnotes
+	//РїРёС€РµРј Footnotes
 	RenderParameter oNewParam;
 	oNewParam.poDocument = &m_oDocument;
 	oNewParam.poWriter = &m_oWriter;
@@ -22,7 +22,7 @@ CString OOXDocumentWriter::CreateXmlStart()
 
 
 
-	//пишем document.xml
+	//РїРёС€РµРј document.xml
 	CString sResult = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\n");
 	sResult.Append( _T("<w:document") );
 	sResult.Append( _T(" xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\"") );
@@ -42,7 +42,7 @@ CString OOXDocumentWriter::CreateXmlEnd( )
 {
 	CString sResult ;
 
-	//пишем все кроме document.xml
+	//РїРёС€РµРј РІСЃРµ РєСЂРѕРјРµ document.xml
 	RenderParameter oNewParam;
 	oNewParam.poDocument = &m_oDocument;
 	oNewParam.poWriter = &m_oWriter;
@@ -110,7 +110,7 @@ CString OOXDocumentWriter::CreateXmlEnd( )
 	m_oDocument.m_oInformation.RenderToOOX(oNewParam);
 
 
-	//пишем финальные свойства секции
+	//РїРёС€РµРј С„РёРЅР°Р»СЊРЅС‹Рµ СЃРІРѕР№СЃС‚РІР° СЃРµРєС†РёРё
 	oNewParam.poDocument = &m_oDocument;
 	oNewParam.poWriter = &m_oWriter;
 	oNewParam.poRels = &m_oWriter.m_oDocRels;

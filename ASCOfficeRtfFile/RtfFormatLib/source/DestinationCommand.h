@@ -1,4 +1,4 @@
-#pragma once 
+п»ї#pragma once 
 
 #include "RtfReader.h"
 #include "RtfDocument.h"
@@ -35,7 +35,7 @@
 			oNewChar->m_oProperty = oReader.m_oState->m_oCharProp;\
 			target->AddItem( oNewChar );\
 		}
-//Command не имеет состояний
+//Command РЅРµ РёРјРµРµС‚ СЃРѕСЃС‚РѕСЏРЅРёР№
 #include "math.h"
 class RtfBorderCommand
 {
@@ -188,7 +188,7 @@ class RtfShadingCellCommand
 public: 
 		static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter, RtfShading& oOutput)
 		{
-			//для свойст таблицы и для стилей таблицы
+			//РґР»СЏ СЃРІРѕР№СЃС‚ С‚Р°Р±Р»РёС†С‹ Рё РґР»СЏ СЃС‚РёР»РµР№ С‚Р°Р±Р»РёС†С‹
 			if( _T("clshdrawnil") == sCommand )
 				oOutput.m_eType = RtfShading::st_clshdrawnil;
 			else if( _T("rawclbgvert") == sCommand || _T("clbgvert") == sCommand || _T("tsbgvert") == sCommand )
@@ -353,7 +353,7 @@ public:
 };
 class RtfCharPropCommand
 {
-//bool bLookOnBorder; Надо ли читать свойства border( актуалЃEЃEдля ParagraphReader )
+//bool bLookOnBorder; РќР°РґРѕ Р»Рё С‡РёС‚Р°С‚СЊ СЃРІРѕР№СЃС‚РІР° border( Р°РєС‚СѓР°Р»РѓEРѓEРґР»СЏ ParagraphReader )
 public:
 	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter, bool bLookOnBorder = true)
 	{
@@ -457,7 +457,7 @@ public:
 		return true;
 	}
 };
-//Reader выражения в скобках
+//Reader РІС‹СЂР°Р¶РµРЅРёСЏ РІ СЃРєРѕР±РєР°С…
 class RtfOldListReader : public RtfAbstractReader
 {
 private: 
@@ -992,7 +992,7 @@ public: RtfInfoReader()
 };
 class PictureReader:  public RtfAbstractReader
 {
-	class PLACEABLEMETAHEADER //заголовок для wmf из rtf ( в rtf wmf не содержит размеров картинки )
+	class PLACEABLEMETAHEADER //Р·Р°РіРѕР»РѕРІРѕРє РґР»СЏ wmf РёР· rtf ( РІ rtf wmf РЅРµ СЃРѕРґРµСЂР¶РёС‚ СЂР°Р·РјРµСЂРѕРІ РєР°СЂС‚РёРЅРєРё )
 	{
 	public:
 		DWORD Key;           /* Magic number (always 9AC6CDD7h) */
@@ -1111,7 +1111,7 @@ public: PictureReader( RtfReader& oReader, RtfShape& oShape ):m_oShape(oShape)
 		{
 			//if( NULL != m_oFileWriter )
 			//{
-			//	//есЃE ыD задаЃEтиЃEзадаем егЃEсаЃE
+			//	//РµСЃРѓE С‹D Р·Р°РґР°РѓEС‚РёРѓEР·Р°РґР°РµРј РµРіРѓEСЃР°РѓE
 			//	if( RtfPicture::dt_none ==  m_oShape.m_oPicture->eDataType )
 			//		RtfPicture::DataType eDataType = RtfPicture::GetPictureType( m_sFile );
 			//	m_oShape.m_oPicture->m_bIsCopy = true;
@@ -1394,7 +1394,7 @@ public: ShapeReader( RtfShape& oShape ):m_oShape(oShape)
 		bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter);
 		void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 		{
-			//если задан поворот, то надо повернуть и исходный rect, если угол от 45 до 135 и от 225 до 315
+			//РµСЃР»Рё Р·Р°РґР°РЅ РїРѕРІРѕСЂРѕС‚, С‚Рѕ РЅР°РґРѕ РїРѕРІРµСЂРЅСѓС‚СЊ Рё РёСЃС…РѕРґРЅС‹Р№ rect, РµСЃР»Рё СѓРіРѕР» РѕС‚ 45 РґРѕ 135 Рё РѕС‚ 225 РґРѕ 315
 			if( (PROP_DEF != m_oShape.m_nRotation || PROP_DEF != m_oShape.m_nRelRotation) && 
 					 (( PROP_DEF != m_oShape.m_nLeft && PROP_DEF != m_oShape.m_nTop &&
 					PROP_DEF != m_oShape.m_nBottom && PROP_DEF != m_oShape.m_nRight ) ||
@@ -1402,12 +1402,12 @@ public: ShapeReader( RtfShape& oShape ):m_oShape(oShape)
 					PROP_DEF != m_oShape.m_nRelRight && PROP_DEF != m_oShape.m_nRelBottom ) )
 					)
 			{
-				int nAngel = 0; // в градусах
+				int nAngel = 0; // РІ РіСЂР°РґСѓСЃР°С…
 				if( PROP_DEF != m_oShape.m_nRotation )
 					nAngel = m_oShape.m_nRotation / 65536;
 				else
 					nAngel = m_oShape.m_nRelRotation / 65536;
-				int nSourceAngel = nAngel; // в градусах
+				int nSourceAngel = nAngel; // РІ РіСЂР°РґСѓСЃР°С…
 				bool bRel = false;
 				int nLeft;
 				int nRight;
@@ -1428,16 +1428,16 @@ public: ShapeReader( RtfShape& oShape ):m_oShape(oShape)
 					nTop = m_oShape.m_nRelTop;
 					nBottom = m_oShape.m_nRelBottom;
 				}
-				//поворачиваем на 45 градусов
+				//РїРѕРІРѕСЂР°С‡РёРІР°РµРј РЅР° 45 РіСЂР°РґСѓСЃРѕРІ
 				nAngel -= 45;
-				//делаем угол от 0 до 360
+				//РґРµР»Р°РµРј СѓРіРѕР» РѕС‚ 0 РґРѕ 360
 				nAngel = nAngel % 360;
 				if( nAngel < 0 )
 					nAngel += 360;
-				int nQuater = nAngel / 90; // определяем четверть
+				int nQuater = nAngel / 90; // РѕРїСЂРµРґРµР»СЏРµРј С‡РµС‚РІРµСЂС‚СЊ
 				if( 0 == nQuater || 2 == nQuater )
 				{
-					//поворачиваем относительно центра на 90 градусов обратно
+					//РїРѕРІРѕСЂР°С‡РёРІР°РµРј РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ С†РµРЅС‚СЂР° РЅР° 90 РіСЂР°РґСѓСЃРѕРІ РѕР±СЂР°С‚РЅРѕ
 					int nCenterX = ( nLeft + nRight ) / 2;
 					int nCenterY = ( nTop + nBottom ) / 2;
 					int nWidth = nRight - nLeft;
@@ -1464,7 +1464,7 @@ public: ShapeReader( RtfShape& oShape ):m_oShape(oShape)
 class ShapeGroupReader : public ShapeReader
 {
 public: RtfShapeGroup& m_oShapeGroup;
-		bool m_bHeader; //чтобы отличать заголовок от вложенных групп
+		bool m_bHeader; //С‡С‚РѕР±С‹ РѕС‚Р»РёС‡Р°С‚СЊ Р·Р°РіРѕР»РѕРІРѕРє РѕС‚ РІР»РѕР¶РµРЅРЅС‹С… РіСЂСѓРїРї
 		ShapeGroupReader( RtfShapeGroup& oShape ):ShapeReader(oShape),m_oShapeGroup(oShape)
 		{
 			m_bHeader = true;
@@ -1665,7 +1665,7 @@ public: RtfMath& m_oMath;
 		bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
 		{
 			if( _T("mmath") == sCommand )
-			{//ставим выравнивание параграфа по default свойствам Math
+			{//СЃС‚Р°РІРёРј РІС‹СЂР°РІРЅРёРІР°РЅРёРµ РїР°СЂР°РіСЂР°С„Р° РїРѕ default СЃРІРѕР№СЃС‚РІР°Рј Math
 				if( PROP_DEF != oDocument.m_oMathProp.mdefJc )
 				{
 					switch( oDocument.m_oMathProp.mdefJc )
@@ -1759,7 +1759,7 @@ public: FieldReader( RtfField& oField ):m_oField(oField)
 		bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter);
 		void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 		{
-			//если результат пустой пытаемся его сгенерировать
+			//РµСЃР»Рё СЂРµР·СѓР»СЊС‚Р°С‚ РїСѓСЃС‚РѕР№ РїС‹С‚Р°РµРјСЃСЏ РµРіРѕ СЃРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ
 			if( true == IsEmptyText( oDocument ) )
 				TryToPepairResult( oDocument, oReader );
 		}
@@ -1806,9 +1806,9 @@ private: void TryToPepairResult( RtfDocument& oDocument, RtfReader& oReader )
 			while( sResTokenize != "" )
 			{
 				int nTokenLen = sResTokenize.GetLength();
-				if( nTokenLen > 0 && sResTokenize[0] == '\"' && sResTokenize[nTokenLen - 1] != '\"' ) //текст в кавычках считается как один
+				if( nTokenLen > 0 && sResTokenize[0] == '\"' && sResTokenize[nTokenLen - 1] != '\"' ) //С‚РµРєСЃС‚ РІ РєР°РІС‹С‡РєР°С… СЃС‡РёС‚Р°РµС‚СЃСЏ РєР°Рє РѕРґРёРЅ
 				{
-					//ищем следующую кавычку
+					//РёС‰РµРј СЃР»РµРґСѓСЋС‰СѓСЋ РєР°РІС‹С‡РєСѓ
 					int nNextQuot = sField.Find( '\"', nStartTokenize );
 					if( -1 != nNextQuot )
 					{
@@ -1910,35 +1910,35 @@ public: RtfBookmarkEnd& m_oBookmarkEnd;
 		}
 };
 class FootnoteReader;
-//Destination имеет состояния
-class ParagraphPropDestination // todo - последний параграф не обрабатывается
+//Destination РёРјРµРµС‚ СЃРѕСЃС‚РѕСЏРЅРёСЏ
+class ParagraphPropDestination // todo - РїРѕСЃР»РµРґРЅРёР№ РїР°СЂР°РіСЂР°С„ РЅРµ РѕР±СЂР°Р±Р°С‚С‹РІР°РµС‚СЃСЏ
 {
 public:
 	typedef enum{ is_normal,is_charBorder, is_borderTop, is_borderLeft, is_borderBottom, is_borderRight, is_borderBox, is_borderBar,
 		is_borderCellLeft,is_borderCellTop,is_borderCellRight,is_borderCellBottom,is_borderCellLR,is_borderCellRL,
 		is_borderRowLeft,is_borderRowTop,is_borderRowRight,is_borderRowBottom,is_borderRowVer,is_borderRowHor} InternalState;
-//только для определения бордера
+//С‚РѕР»СЊРєРѕ РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ Р±РѕСЂРґРµСЂР°
 	
 private: 
 	InternalState m_eInternalState;
 //		ItemContainer< RtfReaderParagraphPtr > m_aArray;
 	RtfParagraphPtr m_oCurParagraph;
 
-//реальные параграфы и таблицы
+//СЂРµР°Р»СЊРЅС‹Рµ РїР°СЂР°РіСЂР°С„С‹ Рё С‚Р°Р±Р»РёС†С‹
 	std::vector< ITextItemPtr > aCellRenderables;
-	std::vector< int > aItaps; //вложенность параграфов
+	std::vector< int > aItaps; //РІР»РѕР¶РµРЅРЅРѕСЃС‚СЊ РїР°СЂР°РіСЂР°С„РѕРІ
 	std::vector< RtfTableCellPtr > aCells;
-	std::vector< int > aCellItaps; //вложенность cell
+	std::vector< int > aCellItaps; //РІР»РѕР¶РµРЅРЅРѕСЃС‚СЊ cell
 	std::vector< RtfTableRowPtr > aRows;
-	std::vector< int > aRowItaps; //вложенность row
+	std::vector< int > aRowItaps; //РІР»РѕР¶РµРЅРЅРѕСЃС‚СЊ row
 	int nCurItap;
 	RtfRowProperty oCurRowProperty;
 
 	RtfReader* m_oReader;
-	bool m_bPar;// если последняя команда была par, то не надо добавлять параграф
+	bool m_bPar;// РµСЃР»Рё РїРѕСЃР»РµРґРЅСЏСЏ РєРѕРјР°РЅРґР° Р±С‹Р»Р° par, С‚Рѕ РЅРµ РЅР°РґРѕ РґРѕР±Р°РІР»СЏС‚СЊ РїР°СЂР°РіСЂР°С„
 public: 
-	TextItemContainerPtr m_oTextItems;	//для разбивки на TextItem
-	int nTargetItap;		//уровень который считается не таблицей ( для того чтобы читать параграфы в таблицах )
+	TextItemContainerPtr m_oTextItems;	//РґР»СЏ СЂР°Р·Р±РёРІРєРё РЅР° TextItem
+	int nTargetItap;		//СѓСЂРѕРІРµРЅСЊ РєРѕС‚РѕСЂС‹Р№ СЃС‡РёС‚Р°РµС‚СЃСЏ РЅРµ С‚Р°Р±Р»РёС†РµР№ ( РґР»СЏ С‚РѕРіРѕ С‡С‚РѕР±С‹ С‡РёС‚Р°С‚СЊ РїР°СЂР°РіСЂР°С„С‹ РІ С‚Р°Р±Р»РёС†Р°С… )
 	RtfTab m_oCurTab;
 
 	ParagraphPropDestination( )
@@ -1960,7 +1960,7 @@ public:
 		m_oCurParagraph->AddItem( oNewChar );
 	}
 	void AddItem( RtfParagraphPtr oItem, RtfReader& oReader, bool bEndCell, bool bEndRow );
-	void Finalize( RtfReader& oReader ) // потому что это не reader и нужно как-то загонять последний параграф
+	void Finalize( RtfReader& oReader ) // РїРѕС‚РѕРјСѓ С‡С‚Рѕ СЌС‚Рѕ РЅРµ reader Рё РЅСѓР¶РЅРѕ РєР°Рє-С‚Рѕ Р·Р°РіРѕРЅСЏС‚СЊ РїРѕСЃР»РµРґРЅРёР№ РїР°СЂР°РіСЂР°С„
 	{
 		if( false == m_bPar )
 		{
@@ -2007,8 +2007,8 @@ public:
 
 	//	int nCurItap = 0;//main document
 	//	RtfRowProperty oCurRowProperty;
-	//	//убрал -1 для последнего параграфа
-	//	//todo подумать
+	//	//СѓР±СЂР°Р» -1 РґР»СЏ РїРѕСЃР»РµРґРЅРµРіРѕ РїР°СЂР°РіСЂР°С„Р°
+	//	//todo РїРѕРґСѓРјР°С‚СЊ
 	//	for( int i = 0; i < (int)m_aArray.size() - 1 ; i++ )
 	//	{
 	//		if( m_aArray[i]->m_oProperty.m_bInTable == false )
@@ -2260,7 +2260,7 @@ public:
 //{
 //class RtfStyleReader: public RtfAbstractReader
 //{
-////только для определения бордеров
+////С‚РѕР»СЊРєРѕ РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ Р±РѕСЂРґРµСЂРѕРІ
 //private: typedef enum { is_normal, is_tsbrdrt, is_tsbrdrb, is_tsbrdrl, is_tsbrdrr, is_tsbrdrh, is_tsbrdrv } InternalState;
 //		InternalState m_eInternalState;
 //		ParagraphPropDestination m_oParDest;
@@ -2500,16 +2500,16 @@ public:
 //						m_oCurTableStyle->m_oCharProp = oReader.m_oState->m_oCharProp;
 //						m_oCurTableStyle->m_oParProp = oReader.m_oState->m_oParagraphProp;
 //						if( PROP_DEF == m_oCurTableStyle->m_oParProp.m_nSpaceBetween )
-//							m_oCurTableStyle->m_oParProp.m_nSpaceBetween = 240;//интервал - единичный
+//							m_oCurTableStyle->m_oParProp.m_nSpaceBetween = 240;//РёРЅС‚РµСЂРІР°Р» - РµРґРёРЅРёС‡РЅС‹Р№
 //						m_oCurTableStyle->m_oTableProp = oReader.m_oState->m_oRowProperty;
 //						m_oCurTableStyle->m_oRowProp = oReader.m_oState->m_oRowProperty;
 //						//m_oCurTableStyle->m_oTableStyleProperty = m_oTableStyleProperty;
-//						//надо определить базовый это стиль или например firstRow
+//						//РЅР°РґРѕ РѕРїСЂРµРґРµР»РёС‚СЊ Р±Р°Р·РѕРІС‹Р№ СЌС‚Рѕ СЃС‚РёР»СЊ РёР»Рё РЅР°РїСЂРёРјРµСЂ firstRow
 //						RtfStylePtr oStyle;
 //						if( true == oDocument.m_oStyleTable.GetStyle(m_oCurTableStyle->m_nID, oStyle) )
 //						{
 //							if( oStyle->m_eType == RtfStyle::stTable )
-//							{//определяем какой это conditionalFormating
+//							{//РѕРїСЂРµРґРµР»СЏРµРј РєР°РєРѕР№ СЌС‚Рѕ conditionalFormating
 //								RtfTableStylePtr oStyleTable = boost::shared_static_cast<RtfTableStyle, RtfStyle>(oStyle);
 //								if( 1 == m_oCurTableStyle->m_oParProp.m_bStyleFirstRow )
 //									oStyleTable->m_oFirstRow = m_oCurTableStyle;
@@ -2614,7 +2614,7 @@ public:
 		void ExitReader( RtfDocument& oDocument, RtfReader& oReader )
 		{
 			m_oListLevelProp.m_oCharProp = oReader.m_oState->m_oCharProp;
-			//убираем shading и border (word тоже так делает)
+			//СѓР±РёСЂР°РµРј shading Рё border (word С‚РѕР¶Рµ С‚Р°Рє РґРµР»Р°РµС‚)
 			m_oListLevelProp.m_oCharProp.m_poBorder.SetDefaultRtf();
 			m_oListLevelProp.m_oCharProp.m_poShading.SetDefaultRtf();
 
@@ -3357,7 +3357,7 @@ public:
 				RtfSectionPtr oCurSection;
 				if(true == oDocument.GetItem( oCurSection ) )
 					oCurSection->m_oProperty = oReader.m_oCurSectionProp;
-				//вручную обнуляем footer, т.к. sectd может встретиться и после field
+				//РІСЂСѓС‡РЅСѓСЋ РѕР±РЅСѓР»СЏРµРј footer, С‚.Рє. sectd РјРѕР¶РµС‚ РІСЃС‚СЂРµС‚РёС‚СЊСЃСЏ Рё РїРѕСЃР»Рµ field
 				oReader.m_oCurSectionProp.m_oHeaderLeft = TextItemContainerPtr();
 				oReader.m_oCurSectionProp.m_oHeaderFirst = TextItemContainerPtr();
 				oReader.m_oCurSectionProp.m_oHeaderRight = TextItemContainerPtr();
@@ -3453,7 +3453,7 @@ private:
 	void SectDef( RtfDocument& oDocument, RtfReader& oReader )
 	 {
 		oReader.m_oCurSectionProp.SetDefaultRtf();
-		//в соответствии с документацией ставим Page Information свойства как у документа
+		//РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРё СЃ РґРѕРєСѓРјРµРЅС‚Р°С†РёРµР№ СЃС‚Р°РІРёРј Page Information СЃРІРѕР№СЃС‚РІР° РєР°Рє Сѓ РґРѕРєСѓРјРµРЅС‚Р°
 		oReader.m_oCurSectionProp.m_nPageWidth = oDocument.m_oProperty.m_nPaperWidth;
 		oReader.m_oCurSectionProp.m_nPageHeight = oDocument.m_oProperty.m_nPaperHeight;
 		oReader.m_oCurSectionProp.m_nMarginLeft = oDocument.m_oProperty.m_nMarginLeft;

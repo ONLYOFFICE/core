@@ -1,4 +1,4 @@
-
+﻿
 #include "RtfBookmark.h"
 
 #include "Writer/OOXWriter.h"

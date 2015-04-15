@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "../RtfDocument.h"
 #include "../RtfField.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
@@ -12,7 +12,7 @@ public:
 	ConvertationManager *	m_convertationManager;
 	CString					m_sPath;
 
-	int						m_nCurItap; //для определение вложенности таблицы
+	int						m_nCurItap; //РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёРµ РІР»РѕР¶РµРЅРЅРѕСЃС‚Рё С‚Р°Р±Р»РёС†С‹
 
 	int						m_nCurFittextId;
 	std::map<int, CString>	m_aBookmarks;

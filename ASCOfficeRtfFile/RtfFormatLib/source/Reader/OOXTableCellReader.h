@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "OOXTableReader.h"
 #include "OOXParagraphReader.h"
@@ -23,7 +23,7 @@ public:
 		if( m_ooxTableCell->m_oTableCellProperties )
 		{
 			OOXtcPrReader oCellPropReader(m_ooxTableCell->m_oTableCellProperties);
-			oCellPropReader.Parse( oParam, oOutputCell.m_oProperty, oConditionalTableStyle, nCurCell, nCellCount, nCurRow, nRowCount );//может поменяться на любой condition (firstRow)
+			oCellPropReader.Parse( oParam, oOutputCell.m_oProperty, oConditionalTableStyle, nCurCell, nCellCount, nCurRow, nRowCount );//РјРѕР¶РµС‚ РїРѕРјРµРЅСЏС‚СЊСЃСЏ РЅР° Р»СЋР±РѕР№ condition (firstRow)
 		}
 		else
 		{
@@ -42,7 +42,7 @@ public:
 					OOX::Logic::CParagraph * pParagraph = static_cast<OOX::Logic::CParagraph*>(m_ooxTableCell->m_arrItems[i]);
 			
 					RtfParagraphPtr oNewParagraph( new RtfParagraph() );
-					//применяем к новому параграфу default property
+					//РїСЂРёРјРµРЅСЏРµРј Рє РЅРѕРІРѕРјСѓ РїР°СЂР°РіСЂР°С„Сѓ default property
 					oNewParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
 					oNewParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
 					
@@ -50,7 +50,7 @@ public:
 					bool bStartNewSection;
 					oParagraphReader.Parse( oParam, (*oNewParagraph), oConditionalTableStyle, bStartNewSection );
 					
-					//ставим стиль таблицы
+					//СЃС‚Р°РІРёРј СЃС‚РёР»СЊ С‚Р°Р±Р»РёС†С‹
 					if( NULL != oParam.poTableStyle )
 						oNewParagraph->m_oProperty.m_nTableStyle = oParam.poTableStyle->m_nID;
 					oNewParagraph->m_oProperty.m_nItap = oParam.oReader->m_nCurItap;
@@ -71,7 +71,7 @@ public:
 				}break;
 				default:
 				{
-					//todooo - универсальный риадер
+					//todooo - СѓРЅРёРІРµСЂСЃР°Р»СЊРЅС‹Р№ СЂРёР°РґРµСЂ
 					//OOXElementReader oElementReader(m_ooxTableCell->m_arrItems[i]);
 					//ITextItemPtr *rtfElement = oElementReader.Parse( oParam);
 					//oOutputCell.AddItem( rtfElement );

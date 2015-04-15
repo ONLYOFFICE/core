@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "OOXPictureGraphicReader.h"
 #include "OOXReaderBasic.h"
 
@@ -102,7 +102,7 @@ public:
 		//
 		//OOXShapeReader oShapeReader(m_vmlGroup);
 		//oShapeReader.Parse( oParam, oBaseShape );
-		//todooo притащить сюда атрибуты группы
+		//todooo РїСЂРёС‚Р°С‰РёС‚СЊ СЃСЋРґР° Р°С‚СЂРёР±СѓС‚С‹ РіСЂСѓРїРїС‹
 
 		for( int i = 0; i < m_vmlGroup->m_arrItems.size() ; i++ )
 		{
@@ -135,7 +135,7 @@ public:
 			else
 			{
 				//??? todooo
-				//shapetype как минимум нужен !!!
+				//shapetype РєР°Рє РјРёРЅРёРјСѓРј РЅСѓР¶РµРЅ !!!
 			}
 		}
 		return true;

@@ -1,4 +1,4 @@
-#include "OOXShapeReader.h"
+п»ї#include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
 
 bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
@@ -28,13 +28,13 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 
 					CString sImagePath = pImage->filename().GetPath();
 					
-					//todooo проверить что за путь тут выставляется
+					//todooo РїСЂРѕРІРµСЂРёС‚СЊ С‡С‚Рѕ Р·Р° РїСѓС‚СЊ С‚СѓС‚ РІС‹СЃС‚Р°РІР»СЏРµС‚СЃСЏ
 					OOXPictureGraphicReader::WriteDataToPicture( sImagePath, *oOutput->m_oPicture, oParam.oReader->m_sPath );
 				}
 				int nCropedWidthGoal = oOutput->m_oPicture->m_nWidthGoal;
 				if( PROP_DEF != nCropedWidthGoal )
 				{
-					//делаем crop
+					//РґРµР»Р°РµРј crop
 					if( image_data->m_oCropLeft.IsInit() )
 					{
 						float nCropLeft = image_data->m_oCropLeft->GetValue();
@@ -72,7 +72,7 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 						nCropedHeightGoal -= oOutput->m_oPicture->m_nCropB;
 					}
 				}
-				//устанавливаем scale
+				//СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј scale
 				if( PROP_DEF != oOutput->m_nLeft && PROP_DEF != oOutput->m_nRight && PROP_DEF != nCropedWidthGoal && 0 != nCropedWidthGoal )
 				{
 					int nWidth = oOutput->m_nRight - oOutput->m_nLeft;
@@ -87,7 +87,7 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 				}
 
 
-				//проверяем на inline
+				//РїСЂРѕРІРµСЂСЏРµРј РЅР° inline
 				if( (PROP_DEF == oOutput->m_nLeft || 0 == oOutput->m_nLeft ) && ( PROP_DEF == oOutput->m_nTop || 0 == oOutput->m_nTop ) && PROP_DEF == oOutput->m_nPositionH && PROP_DEF == oOutput->m_nPositionV )
 					oOutput->m_eShapeType = RtfShape::st_inline;
 			}break;
@@ -137,7 +137,7 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 			}break;
 		}
 	}
-	//если ничего не задали делаем inline
+	//РµСЃР»Рё РЅРёС‡РµРіРѕ РЅРµ Р·Р°РґР°Р»Рё РґРµР»Р°РµРј inline
 	if( (PROP_DEF == oOutput->m_nLeft || 0 == oOutput->m_nLeft ) && ( PROP_DEF == oOutput->m_nTop || 0 == oOutput->m_nTop ) && PROP_DEF == oOutput->m_nPositionH && PROP_DEF == oOutput->m_nPositionV )
 	{
 		oOutput->m_nLeft = 0;
@@ -160,7 +160,7 @@ bool OOXShapeReader::Parse( ReaderParameter oParam , RtfShapePtr& oOutput)
 	if( m_vmlElement->m_sId.IsInit())
 		oOutput->m_nID = oParam.oReader->m_oOOXIdGenerator.GetId( m_vmlElement->m_sId.get());
 
-	oOutput->m_nLeft = 0; //стили только с widht height (например в Numbering)
+	oOutput->m_nLeft = 0; //СЃС‚РёР»Рё С‚РѕР»СЊРєРѕ СЃ widht height (РЅР°РїСЂРёРјРµСЂ РІ Numbering)
 	oOutput->m_nTop = 0;
 	
 	if ( m_vmlElement->m_oStyle.IsInit())
@@ -245,9 +245,9 @@ bool OOXShapeReader::ParseStyle(RtfShape& oShape, SimpleTypes::Vml::CCssProperty
 		case SimpleTypes::Vml::cssptHeight : 
 			{
 				int nHeight = (int)(20 * prop->get_Value().dValue);
-				if( PROP_DEF != oShape.m_nTop )//todooo переделать !!!
+				if( PROP_DEF != oShape.m_nTop )//todooo РїРµСЂРµРґРµР»Р°С‚СЊ !!!
 					oShape.m_nBottom = oShape.m_nTop + nHeight;
-				if( PROP_DEF != oShape.m_nRelTop)//todooo переделать !!!
+				if( PROP_DEF != oShape.m_nRelTop)//todooo РїРµСЂРµРґРµР»Р°С‚СЊ !!!
 					oShape.m_nRelBottom = oShape.m_nRelTop + nHeight;
 			}break;
 		case SimpleTypes::Vml::cssptLeft : 

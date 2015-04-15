@@ -1,4 +1,4 @@
-#pragma once 
+п»ї#pragma once 
 #include "RtfParagraph.h"
 #include "Writer/OOXRelsWriter.h"
 
@@ -197,25 +197,25 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 		}
 		else
 		{
-			//поверяем на наличие гиперссылки
+			//РїРѕРІРµСЂСЏРµРј РЅР° РЅР°Р»РёС‡РёРµ РіРёРїРµСЂСЃСЃС‹Р»РєРё
 			RenderParameter oNewParam = oRenderParameter;
 			oNewParam.nType = RENDER_TO_OOX_PARAM_PLAIN;
 			CString sInsertText = m_oInsert->RenderToOOX( oNewParam );
 			int nIndex = sInsertText.Find( _T("HYPERLINK") );
 			if( -1 != nIndex )
 			{
-				//оставляем только одну ссылку
+				//РѕСЃС‚Р°РІР»СЏРµРј С‚РѕР»СЊРєРѕ РѕРґРЅСѓ СЃСЃС‹Р»РєСѓ
 				CString sHyperlink = sInsertText;
 				sHyperlink.Delete( nIndex, (int)_tcslen( _T("HYPERLINK") ) );
 				sHyperlink.Remove( '\"' );
 				sHyperlink.Trim();
-				//заменяем пробелы на %20
+				//Р·Р°РјРµРЅСЏРµРј РїСЂРѕР±РµР»С‹ РЅР° %20
 				sHyperlink.Replace( _T(" "), _T("%20") );
 
-				//добавляем в rels
+				//РґРѕР±Р°РІР»СЏРµРј РІ rels
 				OOXRelsWriter* poRelsWriter = static_cast<OOXRelsWriter*>( oRenderParameter.poRels );
 				CString sId = poRelsWriter->AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/hyperlink"), Utils::PrepareToXML( sHyperlink ), false );
-				//добавляем гиперссылку в документ
+				//РґРѕР±Р°РІР»СЏРµРј РіРёРїРµСЂСЃСЃС‹Р»РєСѓ РІ РґРѕРєСѓРјРµРЅС‚
 				sResult.AppendFormat( _T("<w:hyperlink r:id=\"%ls\" >"), sId );
 				oNewParam.nType = RENDER_TO_OOX_PARAM_RUN;
 				sResult.Append(m_oResult->RenderToOOX(oNewParam));
@@ -237,22 +237,22 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 				}
 				else
 				{
-					//так добавляются лишние параграфы
+					//С‚Р°Рє РґРѕР±Р°РІР»СЏСЋС‚СЃСЏ Р»РёС€РЅРёРµ РїР°СЂР°РіСЂР°С„С‹
 					RenderParameter oNewParametr = oRenderParameter;
 					oNewParametr.nType = RENDER_TO_OOX_PARAM_PLAIN;
 					sResult.Append(_T("<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>"));
 					sResult.AppendFormat(_T("<w:r><w:instrText xml:space=\"preserve\">%ls</w:instrText></w:r>"), Utils::PrepareToXML( m_oInsert->RenderToOOX(oNewParametr) ));
 					sResult.Append(_T("<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>"));
-					//заканчиваем этот параграф
+					//Р·Р°РєР°РЅС‡РёРІР°РµРј СЌС‚РѕС‚ РїР°СЂР°РіСЂР°С„
 					sResult.Append(_T("</w:p>"));
-					//пишем параграфы содержания
+					//РїРёС€РµРј РїР°СЂР°РіСЂР°С„С‹ СЃРѕРґРµСЂР¶Р°РЅРёСЏ
 					oNewParametr.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 					sResult.Append(m_oResult->RenderToOOX(oNewParametr));
-					//заканчиваем Field
+					//Р·Р°РєР°РЅС‡РёРІР°РµРј Field
 					sResult.Append(_T("<w:p>"));
 					sResult.Append(_T("<w:r><w:fldChar w:fldCharType=\"end\"/></w:r>"));
 
-					////пишем параграфы содержания
+					////РїРёС€РµРј РїР°СЂР°РіСЂР°С„С‹ СЃРѕРґРµСЂР¶Р°РЅРёСЏ
 					//RenderParameter oNewParametr = oRenderParameter;
 					//oNewParametr.nType = RENDER_TO_OOX_PARAM_UNKNOWN;
 					//sResult.Append(m_oResult->RenderToOOX(oNewParametr));
@@ -261,12 +261,12 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 					//sFieldBegin.Append(_T("<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>"));
 					//sFieldBegin.AppendFormat(_T("<w:r><w:instrText xml:space=\"preserve\">%ls</w:instrText></w:r>"), Utils::PrepareToXML( m_oInsert->RenderToOOX(oNewParametr) ));
 					//sFieldBegin.Append(_T("<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>"));
-					////пишем после первого w:pPr
+					////РїРёС€РµРј РїРѕСЃР»Рµ РїРµСЂРІРѕРіРѕ w:pPr
 					//CString sFindStr = _T("</w:pPr>");
 					//int nIndex = sResult.Find( sFindStr );
 					//if( nIndex >= 0 && nIndex < sResult.GetLength() )
 					//	sResult.Inset( sFieldBegin, nIndex + sFindStr.GetLength() );
-					//else//пишем после первого w:p
+					//else//РїРёС€РµРј РїРѕСЃР»Рµ РїРµСЂРІРѕРіРѕ w:p
 					//{
 					//	sFindStr = _T("<w:p>");
 					//	nIndex = sResult.Find( sFindStr );
@@ -277,7 +277,7 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 					//sFieldEnd.Append(_T("<w:r><w:fldChar w:fldCharType=\"begin\"/></w:r>"));
 					//sFieldEnd.AppendFormat(_T("<w:r><w:instrText xml:space=\"preserve\">%ls</w:instrText></w:r>"), Utils::PrepareToXML( m_oInsert->RenderToOOX(oNewParametr) ));
 					//sFieldEnd.Append(_T("<w:r><w:fldChar w:fldCharType=\"separate\"/></w:r>"));
-					////пишем после последнего w:pPr
+					////РїРёС€РµРј РїРѕСЃР»Рµ РїРѕСЃР»РµРґРЅРµРіРѕ w:pPr
 				}
 			}
 		}

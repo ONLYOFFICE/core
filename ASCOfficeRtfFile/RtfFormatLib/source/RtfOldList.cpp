@@ -1,4 +1,4 @@
-#include "RtfParagraph.h"
+ï»¿#include "RtfParagraph.h"
 #include "Writer/OOXWriter.h"
 
 CString RtfOldList::RenderToRtf(RenderParameter oRenderParameter)
@@ -12,7 +12,7 @@ CString RtfOldList::RenderToOOX(RenderParameter oRenderParameter)
 {
 	CString sResult;
 	if( true == CanConvertToNumbering() )
-	{//ñîõðàíÿåì êàê ñïèñîê
+	{//ÑÐ¾Ñ…Ñ€Ð°Ð½ÑÐµÐ¼ ÐºÐ°Ðº ÑÐ¿Ð¸ÑÐ¾Ðº
 		if( RENDER_TO_OOX_PARAM_OLDLIST_ABS == oRenderParameter.nType )
 		{
 			CString sCharProp = m_oLevelText->m_oProperty.m_oCharProperty.RenderToOOX( oRenderParameter );

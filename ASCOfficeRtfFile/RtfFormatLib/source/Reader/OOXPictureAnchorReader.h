@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "OOXPictureGraphicReader.h"
 #include "OOXReaderBasic.h"
 
@@ -49,7 +49,7 @@ public:
 			nWidth	= m_ooxAnchor->m_oExtent->m_oCx.ToTwips();
 			nHeight = m_ooxAnchor->m_oExtent->m_oCy.ToTwips();
 
-			if( PROP_DEF != oOutput.m_nLeft && PROP_DEF != oOutput.m_nTop )//âñåãäà !!
+			if( PROP_DEF != oOutput.m_nLeft && PROP_DEF != oOutput.m_nTop )//Ð²ÑÐµÐ³Ð´Ð° !!
 			{
 				oOutput.m_nRight = oOutput.m_nLeft + nWidth;
 				oOutput.m_nBottom = oOutput.m_nTop + nHeight;
@@ -273,7 +273,7 @@ public:
 			OOXPictureGraphicReader oGraphicReader(m_ooxAnchor->m_oGraphic.GetPointer());
 			oGraphicReader.Parse( oParam, *oOutput.m_oPicture );
 		}
-		//èçìåíÿåì scale â ñîîòâåòñÿâèè ñ âûõîäíûì ðàçìåðîì
+		//Ð¸Ð·Ð¼ÐµÐ½ÑÐµÐ¼ scale Ð² ÑÐ¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑÐ²Ð¸Ð¸ Ñ Ð²Ñ‹Ñ…Ð¾Ð´Ð½Ñ‹Ð¼ Ñ€Ð°Ð·Ð¼ÐµÑ€Ð¾Ð¼
 		if( PROP_DEF != nWidth && PROP_DEF != oOutput.m_oPicture->m_nWidthGoal )
 		{
 			int nNewScale = (int)(100 * ( 1.0 * nWidth / oOutput.m_oPicture->m_nWidthGoal ));

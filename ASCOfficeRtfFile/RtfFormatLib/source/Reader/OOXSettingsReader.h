@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "OOXFontReader.h"
 #include "OOXMathPropReader.h"
 #include "../Utils.h"
@@ -27,7 +27,7 @@ public:
 		}
 
 		if (m_ooxSettings->m_oDoNotHyphenateCaps.IsInit())
-		{//todooo ïðîâåðèòü ÷òîá 1 è 0 áûëî
+		{//todooo Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ Ñ‡Ñ‚Ð¾Ð± 1 Ð¸ 0 Ð±Ñ‹Ð»Ð¾
 			oParam.oRtf->m_oProperty.m_bHypCaps = !m_ooxSettings->m_oDoNotHyphenateCaps->m_oVal.ToBool();
 		}
 		if (m_ooxSettings->m_oAutoHyphenation.IsInit() )
@@ -40,18 +40,18 @@ public:
 		}
 		if (m_ooxSettings->m_oHyphenationZone.IsInit() && m_ooxSettings->m_oHyphenationZone->m_oVal.IsInit())
 		{
-			oParam.oRtf->m_oProperty.m_nHyphenationRight = m_ooxSettings->m_oHyphenationZone->m_oVal->ToTwips(); //todooo ïðîâåðèòü ðàçìåðíîñòü
+			oParam.oRtf->m_oProperty.m_nHyphenationRight = m_ooxSettings->m_oHyphenationZone->m_oVal->ToTwips(); //todooo Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ Ñ€Ð°Ð·Ð¼ÐµÑ€Ð½Ð¾ÑÑ‚ÑŒ
 		}
 		if (m_ooxSettings->m_oDefaultTabStop.IsInit() && m_ooxSettings->m_oDefaultTabStop->m_oVal.IsInit())
 		{
 			oParam.oRtf->m_oProperty.m_nTabWidth = m_ooxSettings->m_oDefaultTabStop->m_oVal->ToTwips();//todooo
 		}
 		if (m_ooxSettings->m_oBordersDoNotSurroundHeader.IsInit())
-		{//todooo ïðîâåðèòü ÷òîá 1 è 0 áûëî
+		{//todooo Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ Ñ‡Ñ‚Ð¾Ð± 1 Ð¸ 0 Ð±Ñ‹Ð»Ð¾
 			oParam.oRtf->m_oProperty.m_bDorderSurroundHeader = !m_ooxSettings->m_oBordersDoNotSurroundHeader->m_oVal.ToBool();
 		}
 		if (m_ooxSettings->m_oBordersDoNotSurroundFooter.IsInit())
-		{//todooo ïðîâåðèòü ÷òîá 1 è 0 áûëî
+		{//todooo Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ Ñ‡Ñ‚Ð¾Ð± 1 Ð¸ 0 Ð±Ñ‹Ð»Ð¾
 			oParam.oRtf->m_oProperty.m_bDorderSurroundFotter = !m_ooxSettings->m_oBordersDoNotSurroundFooter->m_oVal.ToBool();
 		}
 		if (m_ooxSettings->m_oAlignBordersAndEdges.IsInit())
@@ -76,7 +76,7 @@ public:
 		}
 		if (m_ooxSettings->m_oCompat.IsInit())
 		{
-			// todooo - ðåàëèçîâàòü â DocxFormat
+			// todooo - Ñ€ÐµÐ°Ð»Ð¸Ð·Ð¾Ð²Ð°Ñ‚ÑŒ Ð² DocxFormat
 
 			//if( _T("w:doNotUseHTMLParagraphAutoSpacing") == sNodeName )
 			//	oParam.oRtf->m_oProperty.m_bHtmlAutoSpace = 0;

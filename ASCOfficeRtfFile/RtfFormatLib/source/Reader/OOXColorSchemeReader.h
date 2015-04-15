@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "OOXColorReader.h"
 #include "../RtfProperty.h"
 

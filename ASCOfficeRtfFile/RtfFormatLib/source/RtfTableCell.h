@@ -1,4 +1,4 @@
-#pragma once 
+п»ї#pragma once 
 
 #include "Basic.h"
 #include "RtfProperty.h"
@@ -40,7 +40,7 @@ public:
 		if( RENDER_TO_RTF_PARAM_NESTED != oRenderParameter.nType )
 			result.Append( _T("\\cell"));
 		else
-			result.Append( _T("\\nestcell{\\nonesttables  }")); //todo как бы вернуть
+			result.Append( _T("\\nestcell{\\nonesttables  }")); //todo РєР°Рє Р±С‹ РІРµСЂРЅСѓС‚СЊ
 		return result;
 	}
 	CString RenderToOOX(RenderParameter oRenderParameter)

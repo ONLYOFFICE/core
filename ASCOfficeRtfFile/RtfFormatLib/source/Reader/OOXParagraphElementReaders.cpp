@@ -1,4 +1,4 @@
-
+ï»¿
 #include "OOXParagraphReader.h"
 
 #include "OOXpPrFrameReader.h"
@@ -11,12 +11,12 @@ bool OOXParagraphReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputPa
 {
 	if (m_ooxParagraph == NULL) return false;
 
-	//íàäî default ñòèëü ïðèìåíÿòü äî OOXParagraphReader
-	////ïðèìåíÿåì default
+	//Ð½Ð°Ð´Ð¾ default ÑÑ‚Ð¸Ð»ÑŒ Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÑ‚ÑŒ Ð´Ð¾ OOXParagraphReader
+	////Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ default
 	//oOutputParagraph.m_oProperty = oParam.oRtf->m_oDefaultParagraphProp; 
 
 	RtfTableStylePtr oResultTableStyle;
-	//ñíà÷àëà ïðèìåíÿåì default ñòèëü (åñëè ýòî íóæíî)
+	//ÑÐ½Ð°Ñ‡Ð°Ð»Ð° Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ default ÑÑ‚Ð¸Ð»ÑŒ (ÐµÑÐ»Ð¸ ÑÑ‚Ð¾ Ð½ÑƒÐ¶Ð½Ð¾)
 
 	if (m_ooxParagraph->m_oParagraphProperty)
 	{
@@ -33,7 +33,7 @@ bool OOXParagraphReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputPa
 			oOutputParagraph.m_oProperty.m_oCharProperty.Merge( oResultTableStyle->m_oCharProp );
 		}
 	}
-	//ôîðìèðóåì âíåøíèé ñòèëü äëÿ âëîæåííûõ ýëåìåíòîâ
+	//Ñ„Ð¾Ñ€Ð¼Ð¸Ñ€ÑƒÐµÐ¼ Ð²Ð½ÐµÑˆÐ½Ð¸Ð¹ ÑÑ‚Ð¸Ð»ÑŒ Ð´Ð»Ñ Ð²Ð»Ð¾Ð¶ÐµÐ½Ð½Ñ‹Ñ… ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ð¾Ð²
 	RtfCharStylePtr poExternalStyle;
 	if( NULL != oResultTableStyle || PROP_DEF != oOutputParagraph.m_oProperty.m_nStyle )
 	{
@@ -93,7 +93,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				RtfFieldPtr oCurField( new RtfField() );
 				oCurField->m_oInsert = TextItemContainerPtr( new TextItemContainer() );
 				oCurField->m_oResult = TextItemContainerPtr( new TextItemContainer() );
-				//äîáàâëÿåì insert
+				//Ð´Ð¾Ð±Ð°Ð²Ð»ÑÐµÐ¼ insert
 				RtfCharPtr oNewChar( new RtfChar() );
 				oNewChar->m_bRtfEncode = false;
 				if (pFldSimple->m_sInstr.IsInit())
@@ -104,7 +104,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 				oNewInsertParagraph->AddItem( oNewChar );
 				oCurField->m_oInsert->AddItem( oNewInsertParagraph );
 				
-				//äîáàëÿåì ñâîéñòâà
+				//Ð´Ð¾Ð±Ð°Ð»ÑÐµÐ¼ ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð°
 				if( TRUE == pFldSimple->m_oFldLock.ToBool() )
 					oCurField->m_eMode = RtfField::fm_fldlock;
 
@@ -112,10 +112,10 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					oCurField->m_eMode = RtfField::fm_flddirty;
 
 				RtfParagraphPtr oNewResultParagraph( new RtfParagraph() );
-				//ïðèìåíÿåì ê íîâîìó ïàðàãðàôó default property
+				//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ Ðº Ð½Ð¾Ð²Ð¾Ð¼Ñƒ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„Ñƒ default property
 				oNewResultParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
 				oNewResultParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
-				//ïðèìåíÿåì ê íîâîìó ïàðàãðàôó ñâîéñòâà äàííîãî ïàðàãðàôà
+				//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ Ðº Ð½Ð¾Ð²Ð¾Ð¼Ñƒ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„Ñƒ ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð° Ð´Ð°Ð½Ð½Ð¾Ð³Ð¾ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„Ð°
 				oNewResultParagraph->m_oProperty = oOutputParagraph.m_oProperty;
 
 				if (pFldSimple->m_arrItems.size() >0)
@@ -142,7 +142,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					}
 					if( _T("") != sTarget )
 					{
-						//çàìåíÿåì ïðîáåëû íà %20
+						//Ð·Ð°Ð¼ÐµÐ½ÑÐµÐ¼ Ð¿Ñ€Ð¾Ð±ÐµÐ»Ñ‹ Ð½Ð° %20
 						sTarget.Replace( _T(" "), _T("%20") );
 						CString sFileUrl = _T("file:///");
 						if( 0 == sTarget.Find( sFileUrl ) )
@@ -158,7 +158,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 						RtfFieldPtr oCurField( new RtfField() );
 						oCurField->m_oInsert = TextItemContainerPtr( new TextItemContainer() );
 						oCurField->m_oResult = TextItemContainerPtr( new TextItemContainer() );
-						//äîáàâëÿåì insert
+						//Ð´Ð¾Ð±Ð°Ð²Ð»ÑÐµÐ¼ insert
 						RtfCharPtr oNewChar( new RtfChar() );
 						oNewChar->m_bRtfEncode = false;
 						CString sFieldText;
@@ -167,7 +167,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 						RtfParagraphPtr oNewInsertParagraph( new RtfParagraph() );
 						oNewInsertParagraph->AddItem( oNewChar );
 						oCurField->m_oInsert->AddItem( oNewInsertParagraph );
-						//äîáàâëÿåì ñâîéñòâà
+						//Ð´Ð¾Ð±Ð°Ð²Ð»ÑÐµÐ¼ ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð°
 
 						//pHyperlink->m_arrItems todoooo 
 						//BOOL bLock = Strings::ToBoolean(oXmlReader.ReadNodeAttribute(i,_T("w:fldLock"),_T("false")));
@@ -178,10 +178,10 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 						//	oCurField->m_eMode = RtfField::fm_flddirty;
 
 						RtfParagraphPtr oNewResultParagraph( new RtfParagraph() );
-						//ïðèìåíÿåì ê íîâîìó ïàðàãðàôó default property
+						//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ Ðº Ð½Ð¾Ð²Ð¾Ð¼Ñƒ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„Ñƒ default property
 						oNewResultParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
 						oNewResultParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
-						//ïðèìåíÿåì ê íîâîìó ïàðàãðàôó ñâîéñòâà äàííîãî ïàðàãðàôà
+						//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ Ðº Ð½Ð¾Ð²Ð¾Ð¼Ñƒ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„Ñƒ ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð° Ð´Ð°Ð½Ð½Ð¾Ð³Ð¾ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„Ð°
 						oNewResultParagraph->m_oProperty = oOutputParagraph.m_oProperty;
 						
 						if (pHyperlink->m_arrItems.size() >0)
@@ -199,7 +199,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					RtfFieldPtr oCurField( new RtfField() );
 					oCurField->m_oInsert = TextItemContainerPtr( new TextItemContainer() );
 					oCurField->m_oResult = TextItemContainerPtr( new TextItemContainer() );
-					//äîáàâëÿåì insert
+					//Ð´Ð¾Ð±Ð°Ð²Ð»ÑÐµÐ¼ insert
 					RtfCharPtr oNewCharHYPER( new RtfChar() );
 					oNewCharHYPER->m_bRtfEncode = false;
 					oNewCharHYPER->setText( _T("HYPERLINK \\l \"") + pHyperlink->m_sAnchor.get() +_T("\"") );
@@ -208,7 +208,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					oNewInsertParagraph->AddItem( oNewCharHYPER );
 
 					oCurField->m_oInsert->AddItem( oNewInsertParagraph );
-					////äîáàëÿåì ñâîéñòâà
+					////Ð´Ð¾Ð±Ð°Ð»ÑÐµÐ¼ ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð°
 					//BOOL bLock = Strings::ToBoolean(oXmlReader.ReadNodeAttribute(i,_T("w:fldLock"),_T("false")));
 					//if( TRUE == bLock )
 					//	oCurField->m_eMode = RtfField::fm_fldlock;
@@ -217,10 +217,10 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 					//	oCurField->m_eMode = RtfField::fm_flddirty;
 
 					RtfParagraphPtr oNewResultParagraph( new RtfParagraph() );
-					//ïðèìåíÿåì ê íîâîìó ïàðàãðàôó default property
+					//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ Ðº Ð½Ð¾Ð²Ð¾Ð¼Ñƒ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„Ñƒ default property
 					oNewResultParagraph->m_oProperty = oParam.oRtf->m_oDefaultParagraphProp;
 					oNewResultParagraph->m_oProperty.m_oCharProperty = oParam.oRtf->m_oDefaultCharProp;
-					//ïðèìåíÿåì ê íîâîìó ïàðàãðàôó ñâîéñòâà äàííîãî ïàðàãðàôà
+					//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ Ðº Ð½Ð¾Ð²Ð¾Ð¼Ñƒ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„Ñƒ ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð° Ð´Ð°Ð½Ð½Ð¾Ð³Ð¾ Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„Ð°
 					oNewResultParagraph->m_oProperty = oOutputParagraph.m_oProperty;
 					
 					if (pHyperlink->m_arrItems.size() > 0)
@@ -319,9 +319,9 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 
 	RtfCharProperty oNewProperty;
 	oNewProperty.SetDefaultOOX();
-	//ïðèìåíÿåì default
+	//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ default
 	oNewProperty = oParam.oRtf->m_oDefaultCharProp; 
-	//ïðèìåíÿåì âíåøíèé ñòèëü
+	//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ Ð²Ð½ÐµÑˆÐ½Ð¸Ð¹ ÑÑ‚Ð¸Ð»ÑŒ
 	if( NULL != poStyle && TYPE_RTF_PROPERTY_STYLE_CHAR == poStyle->GetType() )
 	{
 		RtfCharStylePtr oCharStyle = boost::shared_static_cast<RtfCharStyle, RtfStyle>( poStyle );
@@ -469,7 +469,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 						if( PROP_DEF != nShapeId )
 						{
 							oNewOle->m_nShapeId = nShapeId;
-							//ñòàâèì ñîîòâåòñòâóþùèé shape
+							//ÑÑ‚Ð°Ð²Ð¸Ð¼ ÑÐ¾Ð¾Ñ‚Ð²ÐµÑ‚ÑÑ‚Ð²ÑƒÑŽÑ‰Ð¸Ð¹ shape
 							if( NULL != aPictShape && aPictShape->m_nID == nShapeId )
 								aPictShape->m_bIsOle = true;									
 						}
@@ -494,7 +494,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 								OOX::OleObject* pO = (OOX::OleObject*)oFile.operator->();
 								sRelativePath = pO->m_sFilename;
 							}
-							//todooo ïðîâåðèòü ÷òî òóò çà ïóòü ..
+							//todooo Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ Ñ‡Ñ‚Ð¾ Ñ‚ÑƒÑ‚ Ð·Ð° Ð¿ÑƒÑ‚ÑŒ ..
 							CString sOlePath = oParam.oReader->m_sPath + FILE_SEPARATOR_STR + sRelativePath;
 
 							POLE::Storage *storage = new POLE::Storage(sOlePath.GetBuffer());
@@ -507,7 +507,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 								//todooo convert ole2 to ole1
 								//if( SUCCEEDED( OleConvertIStorageToOLESTREAM( piStorage, &oStream ) ) )
 								//{
-								//	//ñîõðàíÿåì â ôàéë
+								//	//ÑÐ¾Ñ…Ñ€Ð°Ð½ÑÐµÐ¼ Ð² Ñ„Ð°Ð¹Ð»
 								//	CString sOleStorageName = Utils::CreateTempFile( oParam.oReader->m_sTempFolder );
 								//	HANDLE hFile = CreateFile ( sOleStorageName, GENERIC_WRITE, FILE_SHARE_READ | FILE_SHARE_WRITE, NULL, CREATE_ALWAYS, FILE_ATTRIBUTE_NORMAL, NULL );
 								//	if( INVALID_HANDLE_VALUE != hFile )
@@ -517,7 +517,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 								//		CloseHandle( hFile );
 
 								//		oNewOle->SetFilename( sOleStorageName );
-								//		//òîëüêî ñåé÷àñ çàïîìèíàåì
+								//		//Ñ‚Ð¾Ð»ÑŒÐºÐ¾ ÑÐµÐ¹Ñ‡Ð°Ñ Ð·Ð°Ð¿Ð¾Ð¼Ð¸Ð½Ð°ÐµÐ¼
 								//		oCurOle = oNewOle;
 								//	}
 								//	else
@@ -529,8 +529,8 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 					}
 					if( NULL != aPictShape && NULL != oCurOle )
 					{
-						//íàäî ïåðåñ÷èòàòü ðàçìåðû êàðòèíêè òàê ÷òîáû scalex == 100 è scaley = 100
-						//åñëè scalex != 100, òî ïîñëå ðåäàêòèðîâàíèå ole êèðòèíêà ñæèìàåòñÿ(ðàñòÿãèâàåòñÿ)
+						//Ð½Ð°Ð´Ð¾ Ð¿ÐµÑ€ÐµÑÑ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ Ñ€Ð°Ð·Ð¼ÐµÑ€Ñ‹ ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ¸ Ñ‚Ð°Ðº Ñ‡Ñ‚Ð¾Ð±Ñ‹ scalex == 100 Ð¸ scaley = 100
+						//ÐµÑÐ»Ð¸ scalex != 100, Ñ‚Ð¾ Ð¿Ð¾ÑÐ»Ðµ Ñ€ÐµÐ´Ð°ÐºÑ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ ole ÐºÐ¸Ñ€Ñ‚Ð¸Ð½ÐºÐ° ÑÐ¶Ð¸Ð¼Ð°ÐµÑ‚ÑÑ(Ñ€Ð°ÑÑ‚ÑÐ³Ð¸Ð²Ð°ÐµÑ‚ÑÑ)
 						if( NULL != aPictShape->m_oPicture )
 						{
 							if( PROP_DEF != (int)aPictShape->m_oPicture->m_dScaleX && PROP_DEF != (int)aPictShape->m_oPicture->m_dScaleY &&
@@ -575,7 +575,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 			case OOX::et_w_pict:
 			{
 				OOX::Logic::CPicture *ooxPicture = dynamic_cast<OOX::Logic::CPicture*>(m_ooxRun->m_arrItems[i]);
-				if( (ooxPicture) && (ooxPicture->m_oShape.IsInit())) //??? todooo âàùå òî ìîãóò áûòü è äð ýëåìåíòû/èíèöèàëèçöèè
+				if( (ooxPicture) && (ooxPicture->m_oShape.IsInit())) //??? todooo Ð²Ð°Ñ‰Ðµ Ñ‚Ð¾ Ð¼Ð¾Ð³ÑƒÑ‚ Ð±Ñ‹Ñ‚ÑŒ Ð¸ Ð´Ñ€ ÑÐ»ÐµÐ¼ÐµÐ½Ñ‚Ñ‹/Ð¸Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ñ†Ð¸Ð¸
 				{
 					RtfShapePtr oNewPicture( new RtfShape() );
 					OOXShapeReader oShapeReader(ooxPicture->m_oShape.GetPointer());
@@ -691,10 +691,10 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 					//CString sChar = ooxSym->m_oChar->GetValue();
 
 					//sChar.MakeLower();
-					////îñòàâëÿåì òîëüêî 2 áàéòà (4 ñèìâîëà)
+					////Ð¾ÑÑ‚Ð°Ð²Ð»ÑÐµÐ¼ Ñ‚Ð¾Ð»ÑŒÐºÐ¾ 2 Ð±Ð°Ð¹Ñ‚Ð° (4 ÑÐ¸Ð¼Ð²Ð¾Ð»Ð°)
 					//if( sChar.GetLength() > 4 )
 					//	sChar = sChar.Right( 4 );
-					////óáèðàåì ìàñêó F000
+					////ÑƒÐ±Ð¸Ñ€Ð°ÐµÐ¼ Ð¼Ð°ÑÐºÑƒ F000
 					//if( sChar.GetLength() == 4 && 'f' == sChar[0] )
 					//	sChar = sChar.Right( 3 );
 					
@@ -735,7 +735,7 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 {
 	if (m_ooxParaProps == NULL) return false;
 
-	//ïðèìåíÿåì âíåøíèé ñòèëü 
+	//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ Ð²Ð½ÐµÑˆÐ½Ð¸Ð¹ ÑÑ‚Ð¸Ð»ÑŒ 
 	if( NULL != oParam.poTableStyle )
 	{
 		if( m_ooxParaProps->m_oCnfStyle.IsInit() )
@@ -753,14 +753,14 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 		oOutputProperty.Merge( oResultStyle->m_oParProp );
 		oOutputProperty.m_oCharProperty.Merge( oResultStyle->m_oCharProp );
 	}
-	//ïðèìåíÿåì ñòèëü ïî-óìîë÷àíèþ,åñëè íå îïðåäåëåí ñâîé
+	//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ ÑÑ‚Ð¸Ð»ÑŒ Ð¿Ð¾-ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ,ÐµÑÐ»Ð¸ Ð½Ðµ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½ ÑÐ²Ð¾Ð¹
 	if(( m_ooxParaProps->m_oPStyle.IsInit() == false ) && (true == m_bDefStyle && NULL != oParam.oReader->m_oDefParStyle ))
 	{
 		oOutputProperty.Merge( oParam.oReader->m_oDefParStyle->m_oParProp );
 		oOutputProperty.m_nStyle = oParam.oReader->m_oDefParStyle->m_nID;
 	}
 
-	//ïðèìåíÿåì âñå îñòàëüíûå ñâîé÷òâà direct formating
+	//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ Ð²ÑÐµ Ð¾ÑÑ‚Ð°Ð»ÑŒÐ½Ñ‹Ðµ ÑÐ²Ð¾Ð¹Ñ‡Ñ‚Ð²Ð° direct formating
 	if( m_ooxParaProps->m_oPStyle.IsInit() && m_ooxParaProps->m_oPStyle->m_sVal.IsInit())
 	{
 		CString sStyleName = m_ooxParaProps->m_oPStyle->m_sVal.get2();
@@ -928,16 +928,16 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 		}
 		if( PROP_DEF != oOutputProperty.m_nListLevel && PROP_DEF != oOutputProperty.m_nListId )
 		{
-			//ïðèìåíÿåì direct ñâîéñòâà ñïèñêà ê ïàðàãðàôó
+			//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ direct ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð° ÑÐ¿Ð¸ÑÐºÐ° Ðº Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„Ñƒ
 			RtfListOverrideProperty oListOverrideProperty;
-			//èùåì ïî override table
+			//Ð¸Ñ‰ÐµÐ¼ Ð¿Ð¾ override table
 			if( true == oParam.oRtf->m_oListOverrideTabel.GetList( oOutputProperty.m_nListId, oListOverrideProperty ) )
 			{
 				RtfListProperty oListProperty;
-				//Èùåì ïî List Table
+				//Ð˜Ñ‰ÐµÐ¼ Ð¿Ð¾ List Table
 				if( true == oParam.oRtf->m_oListTabel.GetList( oListOverrideProperty.m_nListID, oListProperty) )
 				{
-					//äîïèñûâàåì ñâîéñòâà ïàðàãðàôà firstIndent Indent
+					//Ð´Ð¾Ð¿Ð¸ÑÑ‹Ð²Ð°ÐµÐ¼ ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð° Ð¿Ð°Ñ€Ð°Ð³Ñ€Ð°Ñ„Ð° firstIndent Indent
 					RtfListLevelProperty poLevelProp ;
 					if( true == oListProperty.GetItem( poLevelProp , oOutputProperty.m_nListLevel ) )
 					{
@@ -1029,7 +1029,7 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 		oTabReader.Parse( oParam, oOutputProperty.m_oTabs );
 	}
 	if( m_ooxParaProps->m_oSectPr.IsInit())
-	{//todooo ÷òî òî òóò íå òîîîîî 
+	{//todooo Ñ‡Ñ‚Ð¾ Ñ‚Ð¾ Ñ‚ÑƒÑ‚ Ð½Ðµ Ñ‚Ð¾Ð¾Ð¾Ð¾Ð¾ 
 		bStartNewSection = true;
 		//OOXSectionPropertyReader oSectReader;
 		//oSectReader.Parse( oParam, oParam.oReader->m_oCurSectionProp );
@@ -1046,8 +1046,8 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 {
 	if (m_ooxRunProps == NULL) return false;
 
-	//ñíà÷àëà ïðèìåíÿåì ñòèëè
-	//ïðèìåíÿåì ñòèëü ïî-óìîë÷àíèþ,åñëè íå îïðåäåëåí ñâîé
+	//ÑÐ½Ð°Ñ‡Ð°Ð»Ð° Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ ÑÑ‚Ð¸Ð»Ð¸
+	//Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ ÑÑ‚Ð¸Ð»ÑŒ Ð¿Ð¾-ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ,ÐµÑÐ»Ð¸ Ð½Ðµ Ð¾Ð¿Ñ€ÐµÐ´ÐµÐ»ÐµÐ½ ÑÐ²Ð¾Ð¹
 	if(( m_ooxRunProps->m_oRStyle.IsInit() == false) && (true == m_bDefStyle && NULL != oParam.oReader->m_oDefCharStyle ))
 	{
 		oOutputProperty.Merge( oParam.oReader->m_oDefCharStyle->m_oCharProp );
@@ -1178,7 +1178,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 	if( m_ooxRunProps->m_oHighlight.IsInit() && m_ooxRunProps->m_oHighlight->m_oVal.IsInit() )
 	{
 		//switch(m_ooxRunProps->m_oHighlight->m_oVal->GetValue())
-		//{//íåçà÷åì
+		//{//Ð½ÐµÐ·Ð°Ñ‡ÐµÐ¼
 		//}
 		oOutputProperty.m_nHightlited = oParam.oRtf->m_oColorTable.AddItem(RtfColor(m_ooxRunProps->m_oHighlight->m_oVal->Get_R(),
 																					m_ooxRunProps->m_oHighlight->m_oVal->Get_G(),
@@ -1308,7 +1308,7 @@ bool OOXpPrFrameReader::Parse( ReaderParameter oParam ,RtfFrame& oOutputProperty
 			case SimpleTypes::dropcapNone   : break;
 		}
 	}
-	oOutputProperty.m_DropcapLines = m_ooxFramePr->m_oLines.IsInit() ? m_ooxFramePr->m_oLines->GetValue() : 0; //todoo ??? èëè 1 ???
+	oOutputProperty.m_DropcapLines = m_ooxFramePr->m_oLines.IsInit() ? m_ooxFramePr->m_oLines->GetValue() : 0; //todoo ??? Ð¸Ð»Ð¸ 1 ???
 
 	if( m_ooxFramePr->m_oHSpace.IsInit() )
 	{
@@ -1390,7 +1390,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 			{
 				switch(m_ooxSectionProperty->m_oEndnotePr->m_oNumRestart->m_oVal->GetValue())
 				{
-					case SimpleTypes::restartnumberContinious : break;// ???? todooo ïðîâåðèòü
+					case SimpleTypes::restartnumberContinious : break;// ???? todooo Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ
 					case SimpleTypes::restartnumberEachPage   : oOutput.m_eEndnotesRestart = RtfSectionProperty::er_saftnrestart; break;
 					case SimpleTypes::restartnumberEachSect   : oOutput.m_eEndnotesRestart = RtfSectionProperty::er_saftnrstcont; break;
 				}
@@ -1535,7 +1535,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 			case SimpleTypes::textdirectionRlV : oOutput.m_nTextFollow = 3; break;
 			case SimpleTypes::textdirectionTb  : oOutput.m_nTextFollow = 0; break;
 			case SimpleTypes::textdirectionTbV : oOutput.m_nTextFollow = 5; break;
-				//oOutput.m_nTextFollow = 2; bottom to top ( .. todooo ïåðåäåëàòü DocxFormat
+				//oOutput.m_nTextFollow = 2; bottom to top ( .. todooo Ð¿ÐµÑ€ÐµÐ´ÐµÐ»Ð°Ñ‚ÑŒ DocxFormat
 		}
 	}
 	if (m_ooxSectionProperty->m_oPgBorders.IsInit() )

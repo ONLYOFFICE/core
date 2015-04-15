@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "Basic.h"
 #include "RtfParagraph.h"
 
@@ -84,7 +84,7 @@ public:
 					}EndnotePlacement;
 		EndnotePlacement m_eEndnotePlacement;
 
-//äëÿ ñõîğàíåíèÿ â RTF
+//Ğ´Ğ»Ñ ÑÑ…Ğ¾Ñ€Ğ°Ğ½ĞµĞ½Ğ¸Ñ Ğ² RTF
 		int m_bSplitPageBrake; //\spltpgpar
 
 
@@ -123,7 +123,7 @@ public:
 			m_nHyphenationRight = PROP_DEF;
 			m_nZoom = 100;
 
-			//âû÷èñëÿåì ñòàíäàğòíûé default ansi codepage äëÿ ñèñòåìû
+			//Ğ²Ñ‹Ñ‡Ğ¸ÑĞ»ÑĞµĞ¼ ÑÑ‚Ğ°Ğ½Ğ´Ğ°Ñ€Ñ‚Ğ½Ñ‹Ğ¹ default ansi codepage Ğ´Ğ»Ñ ÑĞ¸ÑÑ‚ĞµĞ¼Ñ‹
 			TCHAR codepage[7];
 			int nRes = GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_IDEFAULTANSICODEPAGE, codepage, 6 );
 			if( nRes != 0 )
@@ -316,12 +316,12 @@ public:
 		FootnotesRestart m_eFootnotesRestart;
 		typedef enum {
 			ff_none,
-			ff_sftnnar, //\sftnnar	Footnote numbering—Arabic numbering (1, 2, 3, …).
-			ff_sftnnalc, //\sftnnalc	Footnote numbering—Alphabetical lowercase (a, b, c, …).
-			ff_sftnnauc, //\sftnnauc	Footnote numbering—Alphabetical uppercase (A, B, C, …).
-			ff_sftnnrlc, //\sftnnrlc	Footnote numbering—Roman lowercase (i, ii, iii, …).
-			ff_sftnnruc, //\sftnnruc	Footnote numbering—Roman uppercase (I, II, III, …).
-			ff_sftnnchi, //\sftnnchi	Footnote numbering—Chicago Manual of Style (*, †, ‡, §).
+			ff_sftnnar, //\sftnnar	Footnote numberingâ€”Arabic numbering (1, 2, 3, â€¦).
+			ff_sftnnalc, //\sftnnalc	Footnote numberingâ€”Alphabetical lowercase (a, b, c, â€¦).
+			ff_sftnnauc, //\sftnnauc	Footnote numberingâ€”Alphabetical uppercase (A, B, C, â€¦).
+			ff_sftnnrlc, //\sftnnrlc	Footnote numberingâ€”Roman lowercase (i, ii, iii, â€¦).
+			ff_sftnnruc, //\sftnnruc	Footnote numberingâ€”Roman uppercase (I, II, III, â€¦).
+			ff_sftnnchi, //\sftnnchi	Footnote numberingâ€”Chicago Manual of Style (*, â€ , â€¡, Â§).
 			ff_sftnnchosung, //\sftnnchosung	Footnote Korean numbering 1 (CHOSUNG).
 			ff_sftnncnum, //\sftnncnum	Footnote Circle numbering (CIRCLENUM).
 			ff_sftnndbnum, //\sftnndbnum	Footnote kanji numbering without the digit character (DBNUM1).
@@ -334,9 +334,9 @@ public:
 			ff_sftnngbnumd, //\sftnngbnumd	Footnote Chinese numbering 2 (GB2).
 			ff_sftnngbnuml, //\sftnngbnuml	Footnote Chinese numbering 3 (GB3).
 			ff_sftnngbnumk, //\sftnngbnumk	Footnote Chinese numbering 4 (GB4).
-			ff_sftnnzodiac, //\sftnnzodiac	Footnote numbering—Chinese Zodiac numbering 1 (ZODIAC1).  
-			ff_sftnnzodiacd, //\sftnnzodiacd	Footnote numbering—Chinese Zodiac numbering 2 (ZODIAC2). 
-			ff_sftnnzodiacl, //\sftnnzodiacl	Footnote numbering—Chinese Zodiac numbering 3 (ZODIAC3).
+			ff_sftnnzodiac, //\sftnnzodiac	Footnote numberingâ€”Chinese Zodiac numbering 1 (ZODIAC1).  
+			ff_sftnnzodiacd, //\sftnnzodiacd	Footnote numberingâ€”Chinese Zodiac numbering 2 (ZODIAC2). 
+			ff_sftnnzodiacl, //\sftnnzodiacl	Footnote numberingâ€”Chinese Zodiac numbering 3 (ZODIAC3).
 		}FootnotesFormat;
 		FootnotesFormat m_eFootnotesFormat;
 
@@ -349,12 +349,12 @@ public:
 		EndnotesRestart m_eEndnotesRestart;
 		typedef enum {
 			ef_none,
-			ef_saftnnar, //\saftnnar	Endnote numbering—Arabic numbering (1, 2, 3, …).
-			ef_saftnnalc, //\saftnnalc	Endnote numbering—Alphabetical lowercase (a, b, c, …).
-			ef_saftnnauc, //\saftnnauc	Endnote numbering—Alphabetical uppercase (A, B, C, …).
-			ef_saftnnrlc, //\saftnnrlc	Endnote numbering—Roman lowercase (i, ii, iii, …).
-			ef_saftnnruc, //\saftnnruc	Endnote numbering—Roman uppercase (I, II, III, …).
-			ef_saftnnchi, //\saftnnchi	Endnote numbering—Chicago Manual of Style (*, †, ‡, §).
+			ef_saftnnar, //\saftnnar	Endnote numberingâ€”Arabic numbering (1, 2, 3, â€¦).
+			ef_saftnnalc, //\saftnnalc	Endnote numberingâ€”Alphabetical lowercase (a, b, c, â€¦).
+			ef_saftnnauc, //\saftnnauc	Endnote numberingâ€”Alphabetical uppercase (A, B, C, â€¦).
+			ef_saftnnrlc, //\saftnnrlc	Endnote numberingâ€”Roman lowercase (i, ii, iii, â€¦).
+			ef_saftnnruc, //\saftnnruc	Endnote numberingâ€”Roman uppercase (I, II, III, â€¦).
+			ef_saftnnchi, //\saftnnchi	Endnote numberingâ€”Chicago Manual of Style (*, â€ , â€¡, Â§).
 			ef_saftnnchosung, //\saftnnchosung	Endnote Korean numbering 1 (CHOSUNG).
 			ef_saftnncnum, //\saftnncnum	Endnote Circle numbering (CIRCLENUM).
 			ef_saftnndbnum, //\saftnndbnum	Endnote kanji numbering without the digit character (DBNUM1).
@@ -367,9 +367,9 @@ public:
 			ef_saftnngbnumd, //\saftnngbnumd	Endnote Chinese numbering 2 (GB2).
 			ef_saftnngbnuml, //\saftnngbnuml	Endnote Chinese numbering 3 (GB3).
 			ef_saftnngbnumk, //\saftnngbnumk	Endnote Chinese numbering 4 (GB4).
-			ef_saftnnzodiac, //\saftnnzodiac	Endnote numbering—Chinese Zodiac numbering 1 (ZODIAC1).  
-			ef_saftnnzodiacd, //\saftnnzodiacd	Endnote numbering—Chinese Zodiac numbering 2 (ZODIAC2).  
-			ef_saftnnzodiacl, //\saftnnzodiacl	Endnote numbering—Chinese Zodiac numbering 3 (ZODIAC3).
+			ef_saftnnzodiac, //\saftnnzodiac	Endnote numberingâ€”Chinese Zodiac numbering 1 (ZODIAC1).  
+			ef_saftnnzodiacd, //\saftnnzodiacd	Endnote numberingâ€”Chinese Zodiac numbering 2 (ZODIAC2).  
+			ef_saftnnzodiacl, //\saftnnzodiacl	Endnote numberingâ€”Chinese Zodiac numbering 3 (ZODIAC3).
 		}EndnotesFormat;
 		EndnotesFormat m_eEndnotesFormat;
 
@@ -444,7 +444,7 @@ public:
 		TextItemContainerPtr m_oFooterFirst;
 		TextItemContainerPtr m_oFooterRight;
 
-		CString m_sIDHeaderLeft; //äëÿ OOX
+		CString m_sIDHeaderLeft; //Ğ´Ğ»Ñ OOX
 		CString m_sIDHeaderFirst;
 		CString m_sIDHeaderRight;
 		CString m_sIDFooterLeft;
@@ -559,7 +559,7 @@ public:
 			DEFAULT_PROPERTY( m_nBorderMeasure )
 			DEFAULT_PROPERTY( m_nBorderAlign )
 
-			//footer - header íàäî îáíóëÿòü âğó÷íóş
+			//footer - header Ğ½Ğ°Ğ´Ğ¾ Ğ¾Ğ±Ğ½ÑƒĞ»ÑÑ‚ÑŒ Ğ²Ñ€ÑƒÑ‡Ğ½ÑƒÑ
 			//m_oHeaderLeft = TextItemContainerPtr();
 			//m_oHeaderFirst = TextItemContainerPtr();
 			//m_oHeaderRight = TextItemContainerPtr();

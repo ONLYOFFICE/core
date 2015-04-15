@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "RtfReader.h"
 #include "RtfDocument.h"
 #include "RtfWriter.h"
@@ -43,8 +43,8 @@ public:
 
 		bool succes = oReader.Load( );
 
-		//сохранение будет поэлементое в обработчике OnCompleteItemRtf
-		//надо только завершить
+		//СЃРѕС…СЂР°РЅРµРЅРёРµ Р±СѓРґРµС‚ РїРѕСЌР»РµРјРµРЅС‚РѕРµ РІ РѕР±СЂР°Р±РѕС‚С‡РёРєРµ OnCompleteItemRtf
+		//РЅР°РґРѕ С‚РѕР»СЊРєРѕ Р·Р°РІРµСЂС€РёС‚СЊ
 		if( true == m_bParseFirstItem )
 		{
 			m_bParseFirstItem = false;

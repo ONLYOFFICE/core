@@ -1,4 +1,4 @@
-#include "RtfPicture.h"
+п»ї#include "RtfPicture.h"
 #include "Writer/OOXWriter.h"
 #include "Utils.h"
 
@@ -10,7 +10,7 @@ CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
 	//	sResult.AppendFormat(_T("{\\*\\picprop\\shplid%d%ls}"), m_nShapeId, m_oShapeProp.RenderToRtf( oRenderParameter ) );
 	//else
 	//	sResult.AppendFormat(_T("{\\*\\picprop%ls}"), m_oShapeProp.RenderToRtf( oRenderParameter ) );
-	////"наши" wmf не растягиваются
+	////"РЅР°С€Рё" wmf РЅРµ СЂР°СЃС‚СЏРіРёРІР°СЋС‚СЃСЏ
 	RENDER_RTF_INT( 100, sResult, _T("picscalex") )
 		RENDER_RTF_INT( 100, sResult, _T("picscaley") )
 
@@ -30,11 +30,11 @@ CString RtfPicture::GenerateWMF(RenderParameter oRenderParameter)
 
 	sResult.Append( _T(" "));
 
-	//сохраняем в темповую директорию и загружаем файл как текст
+	//СЃРѕС…СЂР°РЅСЏРµРј РІ С‚РµРјРїРѕРІСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ Рё Р·Р°РіСЂСѓР¶Р°РµРј С„Р°Р№Р» РєР°Рє С‚РµРєСЃС‚
 	RtfWriter * poWriter = static_cast<RtfWriter*>( oRenderParameter.poWriter );
 	IUnknown* piTempPict = NULL;
 	
-	//todooo ??? переписать
+	//todooo ??? РїРµСЂРµРїРёСЃР°С‚СЊ
 	//if( true == LoadPicture( &piTempPict, m_sPicFilename ) )
 	//{
 	//	CString sTempFile = Utils::CreateTempFile( poWriter->m_sTempFolder );

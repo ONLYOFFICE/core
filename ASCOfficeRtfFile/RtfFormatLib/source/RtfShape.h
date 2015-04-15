@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "RtfPicture.h"
 
 class RtfShape: public IRenderableProperty
@@ -93,7 +93,7 @@ public:
 		int m_nConnectorStyle; //cxstyle Connector style
 
 //WordArt Effects
-		int m_nCropFromTop; //cropFromTop	Top cropping percentage. Измеряется в fraction 1 /65536
+		int m_nCropFromTop; //cropFromTop	Top cropping percentage. РР·РјРµСЂСЏРµС‚СЃСЏ РІ fraction 1 /65536
 		int m_nCropFromBottom; //cropFromBottom	Bottom cropping percentage.
 		int m_nCropFromLeft; //cropFromLeft	Left cropping percentage.
 		int m_nCropFromRight; //cropFromRight	Right cropping percentage.
@@ -161,8 +161,8 @@ public:
 			DEFAULT_PROPERTY( m_nWrapSideType )
 			DEFAULT_PROPERTY( m_nZOrderRelative )
 			DEFAULT_PROPERTY( m_bLockAnchor )
-			DEFAULT_PROPERTY_DEF( m_eXAnchor, ax_column ) //по умолчанию - привязка к тексту
-			DEFAULT_PROPERTY_DEF( m_eYAnchor, ay_Para )//по умолчанию - привязка к тексту
+			DEFAULT_PROPERTY_DEF( m_eXAnchor, ax_column ) //РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ - РїСЂРёРІСЏР·РєР° Рє С‚РµРєСЃС‚Сѓ
+			DEFAULT_PROPERTY_DEF( m_eYAnchor, ay_Para )//РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ - РїСЂРёРІСЏР·РєР° Рє С‚РµРєСЃС‚Сѓ
 
 			//Position absolute
 			DEFAULT_PROPERTY( m_nPositionH )
@@ -263,16 +263,16 @@ public: CString RenderToOOX(RenderParameter oRenderParameter);
 		CString RenderToOOXEnd(RenderParameter oRenderParameter);
 		void ToRtfRotation( int nAngel , int &nLeft, int &nTop, int& nRight, int& nBottom )
 		{
-			//поворачиваем на 45 градусов
+			//РїРѕРІРѕСЂР°С‡РёРІР°РµРј РЅР° 45 РіСЂР°РґСѓСЃРѕРІ
 			nAngel -= 45;
-			//делаем угол от 0 до 360
+			//РґРµР»Р°РµРј СѓРіРѕР» РѕС‚ 0 РґРѕ 360
 			nAngel = nAngel % 360;
 			if( nAngel < 0 )
 				nAngel += 360;
-			int nQuater = nAngel / 90; // определяем четверть
+			int nQuater = nAngel / 90; // РѕРїСЂРµРґРµР»СЏРµРј С‡РµС‚РІРµСЂС‚СЊ
 			if( 0 == nQuater || 2 == nQuater )
 			{
-				//поворачиваем относительно центра на 90 градусов обратно
+				//РїРѕРІРѕСЂР°С‡РёРІР°РµРј РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ С†РµРЅС‚СЂР° РЅР° 90 РіСЂР°РґСѓСЃРѕРІ РѕР±СЂР°С‚РЅРѕ
 				int nCenterX = ( nLeft + nRight ) / 2;
 				int nCenterY = ( nTop + nBottom ) / 2;
 				int nWidth = nRight - nLeft;

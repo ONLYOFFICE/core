@@ -1,4 +1,4 @@
-#pragma once 
+Ôªø#pragma once 
 #include "Basic.h"
 
 #include "Utils.h"
@@ -11,7 +11,7 @@ public: typedef enum {l_none,
 						l_ptabldot, //\ptabldot 	Absolute position tab with a leading that uses period symbols (.....).
 						l_ptablminus, //\ptablminus 	Absolute position tab with a leading that uses minus symbols (-----).
 						l_ptabluscore, //\ptabluscore 	Absolute position tab with a leading that uses underscore symbols (_____).
-						l_ptablmdot, //\ptablmdot 	Absolute position tab with a leading that uses middle dot symbols (ïïïïï).
+						l_ptablmdot, //\ptablmdot 	Absolute position tab with a leading that uses middle dot symbols (‚Ä¢‚Ä¢‚Ä¢‚Ä¢‚Ä¢).
 						} Leader;
 public: Leader m_eLeader;
 public: typedef enum { a_none,
@@ -108,8 +108,8 @@ public: typedef enum {
 			rsc_softcol,//\softcol	Nonrequired column break. Emitted as it appears in galley view.
 			rsc_softline,//\softline	Nonrequired line break. Emitted as it appears in galley view.
 			rsc_tab,//\tab	Tab character. 
-			rsc_emspace,//\emspace	Non-breaking space equal to width of character ìmî in current font. Some old RTF writers use the construct '{' \emspace '  }' (with two spaces before the closing brace) to trick readers unaware of \emspace into parsing a regular space. A reader should interpret this as an \emspace and a regular space.
-			rsc_enspace,//\enspace	Nonbreaking space equal to width of character ìnî in current font. Some old RTF writers use the construct '{' \enspace '  }' (with two spaces before the closing brace) to trick readers unaware of \enspace into parsing a regular space. A reader should interpret this as an \enspace and a regular space.
+			rsc_emspace,//\emspace	Non-breaking space equal to width of character ‚Äúm‚Äù in current font. Some old RTF writers use the construct '{' \emspace '  }' (with two spaces before the closing brace) to trick readers unaware of \emspace into parsing a regular space. A reader should interpret this as an \emspace and a regular space.
+			rsc_enspace,//\enspace	Nonbreaking space equal to width of character ‚Äún‚Äù in current font. Some old RTF writers use the construct '{' \enspace '  }' (with two spaces before the closing brace) to trick readers unaware of \enspace into parsing a regular space. A reader should interpret this as an \enspace and a regular space.
 			rsc_qmspace,//\qmspace	One-quarter em space.
 			rsc_Formula,//\|	Formula character. (Used by Word 5.1 for the Macintosh as the beginning delimiter for a string of formula typesetting commands.)
 			rsc_OptHyphen,//\-	Optional hyphen.
@@ -168,7 +168,7 @@ public: CString RenderToRtf(RenderParameter oRenderParameter)
 			}
 			if( PROP_DEF != m_nTextWrapBreak )
 				sResult.Append( _T("\\par") );
-			//switch ( m_nTextWrapBreak ) //ÌÂ ‚ÓÒÔËÌËÏ‡ÂÚÒˇ word
+			//switch ( m_nTextWrapBreak ) //–Ω–µ –≤–æ—Å–ø—Ä–∏–Ω–∏–º–∞–µ—Ç—Å—è word
 			//{
 			//	case 0: sResult.Append( _T("\\lbr0") );break;
 			//	case 1: sResult.Append( _T("\\lbr1") );break;

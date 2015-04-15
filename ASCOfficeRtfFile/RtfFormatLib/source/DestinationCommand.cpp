@@ -1,4 +1,4 @@
-
+п»ї
 #include "DestinationCommand.h"
 #include "RtfOle.h"
 
@@ -178,10 +178,10 @@ bool PictureReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CS
 	{
 		if( true == hasParameter )
 		{
-			//читаем картинку как бинарник длиной parameter
+			//С‡РёС‚Р°РµРј РєР°СЂС‚РёРЅРєСѓ РєР°Рє Р±РёРЅР°СЂРЅРёРє РґР»РёРЅРѕР№ parameter
 			m_bBin = true;
 			m_nBinLength = parameter;
-			oReader.m_oLex.ReadBytes( parameter, &m_pbBin );//читаем сразу байты, потому что если между ними и был пробел, то он пропустится в RtfLex::parseKeyword
+			oReader.m_oLex.ReadBytes( parameter, &m_pbBin );//С‡РёС‚Р°РµРј СЃСЂР°Р·Сѓ Р±Р°Р№С‚С‹, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РµСЃР»Рё РјРµР¶РґСѓ РЅРёРјРё Рё Р±С‹Р» РїСЂРѕР±РµР», С‚Рѕ РѕРЅ РїСЂРѕРїСѓСЃС‚РёС‚СЃСЏ РІ RtfLex::parseKeyword
 		}
 	}
 	else
@@ -216,7 +216,7 @@ bool FieldReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CStr
 		ParagraphReader oParagraphReader( _T("fldrslt"), oReader );
 		StartSubReader( oParagraphReader, oDocument, oReader );
 		m_oField.m_oResult = oParagraphReader.m_oParPropDest.m_oTextItems;
-		oReader.m_oLex.putString( "}{" );//чтобы не терять после fldrslt
+		oReader.m_oLex.putString( "}{" );//С‡С‚РѕР±С‹ РЅРµ С‚РµСЂСЏС‚СЊ РїРѕСЃР»Рµ fldrslt
 		//{\field{\*\fldinst...}{\*\fldrslt...} ??? }
 		//{\field{\*\fldinst...}{\*\fldrslt...}}{ ??? }
 	}
@@ -249,9 +249,9 @@ bool OleReader::ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CStrin
 		if( 0 != nSize  && pData)
 		{
 			HRESULT hRes = S_FALSE;
-			//обекь для конвертации Ole1 в Ole2
+			//РѕР±РµРєСЊ РґР»СЏ РєРѕРЅРІРµСЂС‚Р°С†РёРё Ole1 РІ Ole2
 			//RtfOle1ToOle2Stream oStream;
-			//todooo тут был чисто микрософтовский вариант - переделать !!!
+			//todooo С‚СѓС‚ Р±С‹Р» С‡РёСЃС‚Рѕ РјРёРєСЂРѕСЃРѕС„С‚РѕРІСЃРєРёР№ РІР°СЂРёР°РЅС‚ - РїРµСЂРµРґРµР»Р°С‚СЊ !!!
 			//oStream.lpstbl = new OLESTREAMVTBL();
 			//oStream.lpstbl->Get = &OleGet1;
 			//oStream.lpstbl->Put = &OlePut1;
@@ -348,7 +348,7 @@ bool ParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 	}
 	else if( _T("pntext") == sCommand )
 	{
-		//пропускаем списки office 95, если есть списки office 2007
+		//РїСЂРѕРїСѓСЃРєР°РµРј СЃРїРёСЃРєРё office 95, РµСЃР»Рё РµСЃС‚СЊ СЃРїРёСЃРєРё office 2007
 		if( oDocument.m_oListTabel.GetCount() > 0 )
 			oAbstrReader.Skip( oDocument, oReader );
 		else
@@ -889,7 +889,7 @@ bool ParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 	else if( _T("trbrdrh") == sCommand  )
 		m_eInternalState = is_borderRowHor;
 	//table Style
-	else if( _T("tsbrdrh") == sCommand ) //диагональные из свойств cell
+	else if( _T("tsbrdrh") == sCommand ) //РґРёР°РіРѕРЅР°Р»СЊРЅС‹Рµ РёР· СЃРІРѕР№СЃС‚РІ cell
 		m_eInternalState = is_borderRowHor;
 	else if( _T("tsbrdrv") == sCommand )
 		m_eInternalState = is_borderRowVer;
@@ -1180,11 +1180,11 @@ bool ParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 
 void ParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oReader, bool bEndCell, bool bEndRow )
 {
-	 // 1 != oItem->m_oProperty.m_bInTable - параграф не в таблице
-	 // PROP_DEF != nTargetItap && oItem->m_oProperty.m_nItap <= nTargetItap - выставлено свойство,что вложенность - nTargetItap - это не таблица( Нужно для чтения параграфов в таблицах )
+	 // 1 != oItem->m_oProperty.m_bInTable - РїР°СЂР°РіСЂР°С„ РЅРµ РІ С‚Р°Р±Р»РёС†Рµ
+	 // PROP_DEF != nTargetItap && oItem->m_oProperty.m_nItap <= nTargetItap - РІС‹СЃС‚Р°РІР»РµРЅРѕ СЃРІРѕР№СЃС‚РІРѕ,С‡С‚Рѕ РІР»РѕР¶РµРЅРЅРѕСЃС‚СЊ - nTargetItap - СЌС‚Рѕ РЅРµ С‚Р°Р±Р»РёС†Р°( РќСѓР¶РЅРѕ РґР»СЏ С‡С‚РµРЅРёСЏ РїР°СЂР°РіСЂР°С„РѕРІ РІ С‚Р°Р±Р»РёС†Р°С… )
 	if( 1 != oItem->m_oProperty.m_bInTable || ( PROP_DEF != nTargetItap && oItem->m_oProperty.m_nItap <= nTargetItap ) )
 	{
-		if( nCurItap > 0 ) //Если до этого были только параграфы в таблицах - завершаем таблицу
+		if( nCurItap > 0 ) //Р•СЃР»Рё РґРѕ СЌС‚РѕРіРѕ Р±С‹Р»Рё С‚РѕР»СЊРєРѕ РїР°СЂР°РіСЂР°С„С‹ РІ С‚Р°Р±Р»РёС†Р°С… - Р·Р°РІРµСЂС€Р°РµРј С‚Р°Р±Р»РёС†Сѓ
 		{
 			RtfTablePtr oNewTable( new RtfTable() );
 			oNewTable->m_oProperty = oCurRowProperty;
@@ -1201,9 +1201,9 @@ void ParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oReade
 				else
 					break;
 			}
-			//вычисляем свойства для OOX
+			//РІС‹С‡РёСЃР»СЏРµРј СЃРІРѕР№СЃС‚РІР° РґР»СЏ OOX
 			oNewTable->CalculateGridProp();
-			//удаляем временные единицы
+			//СѓРґР°Р»СЏРµРј РІСЂРµРјРµРЅРЅС‹Рµ РµРґРёРЅРёС†С‹
 			aCellRenderables.clear();
 			aItaps.clear();
 			aCells.clear();
@@ -1211,7 +1211,7 @@ void ParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oReade
 			aRows.clear();
 			aRowItaps.clear();
 
-			//добавляем таблицу
+			//РґРѕР±Р°РІР»СЏРµРј С‚Р°Р±Р»РёС†Сѓ
 			m_oTextItems->AddItem( oNewTable );
 
 			if (oReader.m_convertationManager)
@@ -1219,18 +1219,18 @@ void ParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oReade
 				oReader.m_convertationManager->OnCompleteItemRtf();
 			}
 		}
-		//добавляем параграф
+		//РґРѕР±Р°РІР»СЏРµРј РїР°СЂР°РіСЂР°С„
 		m_oTextItems->AddItem(  oItem );
 		if (oReader.m_convertationManager)
 		{
 			oReader.m_convertationManager->OnCompleteItemRtf();
 		}
-		//запоминаем nCurItap
+		//Р·Р°РїРѕРјРёРЅР°РµРј nCurItap
 		nCurItap = oItem->m_oProperty.m_nItap;
 	}
 	else
 	{
-		//если вложенность текущего параграфа меньше - завершаем внутреннюю таблицу
+		//РµСЃР»Рё РІР»РѕР¶РµРЅРЅРѕСЃС‚СЊ С‚РµРєСѓС‰РµРіРѕ РїР°СЂР°РіСЂР°С„Р° РјРµРЅСЊС€Рµ - Р·Р°РІРµСЂС€Р°РµРј РІРЅСѓС‚СЂРµРЅРЅСЋСЋ С‚Р°Р±Р»РёС†Сѓ
 		if( nCurItap > oItem->m_oProperty.m_nItap )
 		{
 			RtfTablePtr oNewTable( new RtfTable() );
@@ -1248,14 +1248,14 @@ void ParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oReade
 				else
 					break;
 			}
-			//вычисляем свойства для OOX
+			//РІС‹С‡РёСЃР»СЏРµРј СЃРІРѕР№СЃС‚РІР° РґР»СЏ OOX
 			oNewTable->CalculateGridProp();
-			//добавляем таблицу
+			//РґРѕР±Р°РІР»СЏРµРј С‚Р°Р±Р»РёС†Сѓ
 			aCellRenderables.push_back( oNewTable );
 			aItaps.push_back( oItem->m_oProperty.m_nItap );
 		}
 		nCurItap = oItem->m_oProperty.m_nItap;
-		//закончилась строка
+		//Р·Р°РєРѕРЅС‡РёР»Р°СЃСЊ СЃС‚СЂРѕРєР°
 		if( true == bEndRow )
 		{
 			RtfTableRowPtr oNewTableRow( new RtfTableRow() );
@@ -1273,18 +1273,18 @@ void ParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oReade
 				else
 					break;
 			}
-			//для каждого cell в row добавляем их свойства
+			//РґР»СЏ РєР°Р¶РґРѕРіРѕ cell РІ row РґРѕР±Р°РІР»СЏРµРј РёС… СЃРІРѕР№СЃС‚РІР°
 			for( int i = 0; i < (int)oNewTableRow->GetCount() && i < oNewTableRow->m_oProperty.GetCount() ; i++ )
 				oNewTableRow->operator [](i)->m_oProperty = oNewTableRow->m_oProperty[i];
-			//Добавляем временный row
+			//Р”РѕР±Р°РІР»СЏРµРј РІСЂРµРјРµРЅРЅС‹Р№ row
 			aRows.push_back( oNewTableRow );
 			aRowItaps.push_back( nCurItap );
 		}
 		else
 		{
-			//добавляем параграф во временные cell
-			aCellRenderables.push_back( oItem ); //содержит все параграфы, не разложенные по cell
-			aItaps.push_back( nCurItap ); //содержит все номера вложенности параграфов
+			//РґРѕР±Р°РІР»СЏРµРј РїР°СЂР°РіСЂР°С„ РІРѕ РІСЂРµРјРµРЅРЅС‹Рµ cell
+			aCellRenderables.push_back( oItem ); //СЃРѕРґРµСЂР¶РёС‚ РІСЃРµ РїР°СЂР°РіСЂР°С„С‹, РЅРµ СЂР°Р·Р»РѕР¶РµРЅРЅС‹Рµ РїРѕ cell
+			aItaps.push_back( nCurItap ); //СЃРѕРґРµСЂР¶РёС‚ РІСЃРµ РЅРѕРјРµСЂР° РІР»РѕР¶РµРЅРЅРѕСЃС‚Рё РїР°СЂР°РіСЂР°С„РѕРІ
 
 			if( true == bEndCell )
 			{

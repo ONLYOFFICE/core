@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "OOXTableCellReader.h"
 #include "OOXtrPrReader.h"
@@ -21,11 +21,11 @@ public:
 		if (m_ooxRowTable == NULL) return false;
 
 		CcnfStyle oConditionStyle;
-		//ñ íà÷àëà ïðèìåíÿåì ñâîéñòâà
+		//Ñ Ð½Ð°Ñ‡Ð°Ð»Ð° Ð¿Ñ€Ð¸Ð¼ÐµÐ½ÑÐµÐ¼ ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð°
 		if( m_ooxRowTable->m_oTableRowProperties )
 		{
 			OOXtrPrReader otrPrReader(m_ooxRowTable->m_oTableRowProperties);
-			otrPrReader.Parse( oParam, oOutputRow.m_oProperty, oConditionStyle);// ìîæåò ïîìåíÿòüñÿ íà ëþáîé condition(first row)
+			otrPrReader.Parse( oParam, oOutputRow.m_oProperty, oConditionStyle);// Ð¼Ð¾Ð¶ÐµÑ‚ Ð¿Ð¾Ð¼ÐµÐ½ÑÑ‚ÑŒÑÑ Ð½Ð° Ð»ÑŽÐ±Ð¾Ð¹ condition(first row)
 		}
 
 		int nCellCount = m_ooxRowTable->m_nCountCell;
@@ -40,9 +40,9 @@ public:
 			{
 				OOXTableCellReader oCellReader(ooxCell);
 				oCellReader.Parse( oParam, *oNewCell, oConditionStyle, nCurCell, nCurRow, nCellCount, nRowCount );
-				//äîáàâëÿåì cell
+				//Ð´Ð¾Ð±Ð°Ð²Ð»ÑÐµÐ¼ cell
 				oOutputRow.AddItem(oNewCell);
-				//ñâîéñòâà cell â row
+				//ÑÐ²Ð¾Ð¹ÑÑ‚Ð²Ð° cell Ð² row
 				oOutputRow.m_oProperty.AddItem( oNewCell->m_oProperty );
 			}
 		}

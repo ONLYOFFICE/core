@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "OOXStyleReader.h"
 #include "OOXDocDefaultsReader.h"
 
@@ -35,7 +35,7 @@ public:
 			if( NULL != oNewStyle )
 				oParam.oRtf->m_oStyleTable.AddItem( oNewStyle );
 		}
-		//только чтобы добавить связи между стилями
+		//С‚РѕР»СЊРєРѕ С‡С‚РѕР±С‹ РґРѕР±Р°РІРёС‚СЊ СЃРІСЏР·Рё РјРµР¶РґСѓ СЃС‚РёР»СЏРјРё
 		
 		for (long i=0; i< m_ooxStyles->m_arrStyle.size(); i++)
 		{

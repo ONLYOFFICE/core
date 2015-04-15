@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "RtfLex.h"
 #include "RtfProperty.h"
 #include "RtfDocument.h"
@@ -16,7 +16,7 @@ public:
 	class ReaderState
 	{
 		public: 
-			int m_nUD; // количество символов игнорируемых за юникодом
+			int m_nUD; // РєРѕР»РёС‡РµСЃС‚РІРѕ СЃРёРјРІРѕР»РѕРІ РёРіРЅРѕСЂРёСЂСѓРµРјС‹С… Р·Р° СЋРЅРёРєРѕРґРѕРј
 			RtfCharProperty m_oCharProp;
 			RtfParagraphProperty m_oParagraphProp;
 			RtfRowProperty m_oRowProperty;
@@ -42,7 +42,7 @@ public:
 	ReaderStatePtr m_oState;
 	RtfSectionProperty m_oCurSectionProp;
 	RtfLex m_oLex;
-	int m_nFootnote; //толко для симовола chftn. основано на том что вложенных footnote быть не может
+	int m_nFootnote; //С‚РѕР»РєРѕ РґР»СЏ СЃРёРјРѕРІРѕР»Р° chftn. РѕСЃРЅРѕРІР°РЅРѕ РЅР° С‚РѕРј С‡С‚Рѕ РІР»РѕР¶РµРЅРЅС‹С… footnote Р±С‹С‚СЊ РЅРµ РјРѕР¶РµС‚
 	int m_nDefFont;
 	CString m_sTempFolder;
 
@@ -243,7 +243,7 @@ public:
 	}
 	static void ExecuteTextInternalSkipChars(CString & sResult, RtfReader& oReader, CStringA& sKey, int& nSkipChars)
 	{
-		//удаляем символы вслед за юникодом
+		//СѓРґР°Р»СЏРµРј СЃРёРјРІРѕР»С‹ РІСЃР»РµРґ Р·Р° СЋРЅРёРєРѕРґРѕРј
 		if( nSkipChars > 0 )
 		{
 			int nLength = sResult.GetLength();
@@ -260,7 +260,7 @@ public:
 		}
 		if( _T("u") == sKey )
 		{
-			//надо правильно установить m_nSkipChars по значению \ucN
+			//РЅР°РґРѕ РїСЂР°РІРёР»СЊРЅРѕ СѓСЃС‚Р°РЅРѕРІРёС‚СЊ m_nSkipChars РїРѕ Р·РЅР°С‡РµРЅРёСЋ \ucN
 			nSkipChars = oReader.m_oState->m_nUD;
 		}
 	}
@@ -270,7 +270,7 @@ public:
 		if( false == sCharString.IsEmpty() )
 		{
 			int nCodepage = -1;
-			//применяем параметры codepage от текущего шрифта todo associated fonts.
+			//РїСЂРёРјРµРЅСЏРµРј РїР°СЂР°РјРµС‚СЂС‹ codepage РѕС‚ С‚РµРєСѓС‰РµРіРѕ С€СЂРёС„С‚Р° todo associated fonts.
 			RtfFont oFont;
 			if( true == oDocument.m_oFontTable.GetFont( oReader.m_oState->m_oCharProp.m_nFont, oFont ) )
 			{
@@ -279,7 +279,7 @@ public:
 				else if( PROP_DEF != oFont.m_nCodePage )
 					nCodepage = oFont.m_nCodePage;
 			}
-			//от настроек документа
+			//РѕС‚ РЅР°СЃС‚СЂРѕРµРє РґРѕРєСѓРјРµРЅС‚Р°
 			if( -1 == nCodepage && RtfDocumentProperty::cp_none != oDocument.m_oProperty.m_eCodePage )
 			{
 				switch ( oDocument.m_oProperty.m_eCodePage )
@@ -297,7 +297,7 @@ public:
 				case RtfDocumentProperty::cp_pca: nCodepage = 850;break;
 				}
 			}
-			//если ничего нет ставим ANSI
+			//РµСЃР»Рё РЅРёС‡РµРіРѕ РЅРµС‚ СЃС‚Р°РІРёРј ANSI
 			if( -1 == nCodepage )
 				nCodepage = CP_ACP;
 

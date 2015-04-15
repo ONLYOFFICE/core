@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "OOXShadingReader.h"
 #include "OOXBorderReader.h"

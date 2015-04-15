@@ -1,4 +1,4 @@
-
+ï»¿
 #pragma once
 #include "RtfDocument.h"
 #include "RtfProperty.h"
@@ -22,7 +22,7 @@ public:
 		//	CString val = oXmlReader.ReadNodeAttribute(sColor, _T("") );
 		//	if( _T("") != sThemeColor )
 		//	{
-		//		//Todo  tx1 - ìîäæåò ïðèõîäèòü text1
+		//		//Todo  tx1 - Ð¼Ð¾Ð´Ð¶ÐµÑ‚ Ð¿Ñ€Ð¸Ñ…Ð¾Ð´Ð¸Ñ‚ÑŒ text1
 		//		RtfColor::ThemeColor oTheme = RtfColor::TC_NONE;
 		//		if( sThemeColor == _T("accent1") )
 		//			oTheme = RtfColor::caccentone;
@@ -61,7 +61,7 @@ public:
 
 		//		if( true == oParam.oRtf->m_oColorTable.GetColor( oTheme , oOutputColor ) )
 		//		{
-		//			//èç themeColor
+		//			//Ð¸Ð· themeColor
 		//			int nShade = Strings::ToInteger( themeShade );
 		//			if( nShade < 0 )
 		//				nShade = 0;

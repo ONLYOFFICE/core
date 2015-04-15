@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "../RtfProperty.h"
 #include "../RtfTableCell.h"
@@ -162,7 +162,7 @@ public:
 		if( PROP_DEF != oInputStyle->m_oTableProp.m_nColBandSize )
 			nColsInBand = oInputStyle->m_oTableProp.m_nColBandSize;
 
-		//îáíóëÿåì
+		//Ð¾Ð±Ð½ÑƒÐ»ÑÐµÐ¼
 		oOutputProperty.m_oBorderDiagonalLR = RtfBorder();
 		oOutputProperty.m_oBorderDiagonalRL = RtfBorder();
 		oOutputProperty.m_oBorderLeft = RtfBorder();
@@ -171,10 +171,10 @@ public:
 		oOutputProperty.m_oBorderBottom = RtfBorder();
 		oOutputProperty.m_oBorderInsideH = RtfBorder();
 		oOutputProperty.m_oBorderInsideV = RtfBorder();
-		//Îò âñåé òàáëèöû
+		//ÐžÑ‚ Ð²ÑÐµÐ¹ Ñ‚Ð°Ð±Ð»Ð¸Ñ†Ñ‹
 		ApplyTableStyleToCellBorder( oInputStyle, oOutputProperty, nCurX, nCurY, 0, nWidth - 1, 0, nHeight - 1 );
 
-		//Îò OddVBand
+		//ÐžÑ‚ OddVBand
 		if( 1 != oInputStyle->m_oTableProp.m_bAutoNoColBand && nColsInBand > 0 )
 		{
 			int nBoundLeft = 0;
@@ -185,9 +185,9 @@ public:
 				nBoundRight --;
 			if( nBoundLeft <= nBoundRight && nBoundLeft <= nCurX && nCurX <= nBoundRight )
 			{
-				int nDelta = nCurX - nBoundLeft;//ïîëó÷àåì êîëè÷åñòâî ñòîëáöîâ ìåæäó
-				int nPlace = nDelta % nColsInBand;//ïîëó÷àåì íîìåð âíóòðè band
-				//áóäåì ñ÷èòàòü ÷òî ôëàãè ðàññòàâëåíû ïðàâèëüíî
+				int nDelta = nCurX - nBoundLeft;//Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÑÑ‚Ð¾Ð»Ð±Ñ†Ð¾Ð² Ð¼ÐµÐ¶Ð´Ñƒ
+				int nPlace = nDelta % nColsInBand;//Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð½Ð¾Ð¼ÐµÑ€ Ð²Ð½ÑƒÑ‚Ñ€Ð¸ band
+				//Ð±ÑƒÐ´ÐµÐ¼ ÑÑ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ Ñ‡Ñ‚Ð¾ Ñ„Ð»Ð°Ð³Ð¸ Ñ€Ð°ÑÑÑ‚Ð°Ð²Ð»ÐµÐ½Ñ‹ Ð¿Ñ€Ð°Ð²Ð¸Ð»ÑŒÐ½Ð¾
 				if( true == bOddVBand && NULL != oInputStyle->m_oBandVerOdd )
 					ApplyOneStyleToCellBorder( oInputStyle->m_oBandVerOdd, oOutputProperty, nCurX, nCurY, nCurX - nPlace, nCurX - nPlace + nColsInBand - 1, 0, nHeight - 1 );
 				if( true == bEvenVBand && NULL != oInputStyle->m_oBandVerEven )
@@ -205,9 +205,9 @@ public:
 				nBoundBottom --;
 			if( nBoundTop <= nBoundBottom && nBoundTop <= nCurY && nCurY <= nBoundBottom )
 			{
-				int nDelta = nCurY - nBoundTop;//ïîëó÷àåì êîëè÷åñòâî ñòîëáöîâ ìåæäó
-				int nPlace = nDelta % nRowsInBand;//ïîëó÷àåì íîìåð âíóòðè band
-				//áóäåì ñ÷èòàòü ÷òî ôëàãè ðàññòàâëåíû ïðàâèëüíî
+				int nDelta = nCurY - nBoundTop;//Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ ÐºÐ¾Ð»Ð¸Ñ‡ÐµÑÑ‚Ð²Ð¾ ÑÑ‚Ð¾Ð»Ð±Ñ†Ð¾Ð² Ð¼ÐµÐ¶Ð´Ñƒ
+				int nPlace = nDelta % nRowsInBand;//Ð¿Ð¾Ð»ÑƒÑ‡Ð°ÐµÐ¼ Ð½Ð¾Ð¼ÐµÑ€ Ð²Ð½ÑƒÑ‚Ñ€Ð¸ band
+				//Ð±ÑƒÐ´ÐµÐ¼ ÑÑ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ Ñ‡Ñ‚Ð¾ Ñ„Ð»Ð°Ð³Ð¸ Ñ€Ð°ÑÑÑ‚Ð°Ð²Ð»ÐµÐ½Ñ‹ Ð¿Ñ€Ð°Ð²Ð¸Ð»ÑŒÐ½Ð¾
 				if( true == bOddHBand && NULL != oInputStyle->m_oBandHorOdd )
 					ApplyOneStyleToCellBorder( oInputStyle->m_oBandHorOdd, oOutputProperty, nCurX, nCurY, 0, nWidth - 1, nCurY - nPlace, nCurY - nPlace + nRowsInBand - 1 );
 				if( true == bEvenHBand && NULL != oInputStyle->m_oBandHorEven )
@@ -286,7 +286,7 @@ private:
 			return;
 		if( !(nBoundLeft <= nCurX && nCurX <= nBoundRight && nBoundTop <= nCurY && nCurY <= nBoundBottom) )
 			return;
-		//íà íèõ íè ÷òî íå âëèÿåò
+		//Ð½Ð° Ð½Ð¸Ñ… Ð½Ð¸ Ñ‡Ñ‚Ð¾ Ð½Ðµ Ð²Ð»Ð¸ÑÐµÑ‚
 		oOutputProperty.m_oBorderDiagonalLR.Merge( oInputStyle->m_oCellProp.m_oBorderDiagonalLR );
 		oOutputProperty.m_oBorderDiagonalRL.Merge( oInputStyle->m_oCellProp.m_oBorderDiagonalRL );
 
@@ -354,7 +354,7 @@ public:
 			oOutput.bEvenVBand	= m_ooxCnfStyle->m_oVal->IsBand2Vertical();
 			oOutput.bOddHBand	= m_ooxCnfStyle->m_oVal->IsBand1Horizontal();
 			oOutput.bEvenHBand	= m_ooxCnfStyle->m_oVal->IsBand2Horizontal();
-			oOutput.bFirstRowLastCol	= m_ooxCnfStyle->m_oVal->IsNeCell(); //ñåâåðî âîñòîê
+			oOutput.bFirstRowLastCol	= m_ooxCnfStyle->m_oVal->IsNeCell(); //ÑÐµÐ²ÐµÑ€Ð¾ Ð²Ð¾ÑÑ‚Ð¾Ðº
 			oOutput.bFirstRowFirstCol	= m_ooxCnfStyle->m_oVal->IsNwCell();
 			oOutput.bLastRowLastCol		= m_ooxCnfStyle->m_oVal->IsSeCell();
 			oOutput.bLastRowFirstCol	= m_ooxCnfStyle->m_oVal->IsSwCell();	

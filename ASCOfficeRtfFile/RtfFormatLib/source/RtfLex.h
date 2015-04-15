@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 //#include <stdio.h>
 //#include <stdlib.h>
@@ -11,8 +11,8 @@
 class StringStream
 {
 private: 
-	LONGLONG m_nSizeAbs;//размер файла
-	LONGLONG m_nPosAbs;//позиция в файле
+	LONGLONG m_nSizeAbs;//СЂР°Р·РјРµСЂ С„Р°Р№Р»Р°
+	LONGLONG m_nPosAbs;//РїРѕР·РёС†РёСЏ РІ С„Р°Р№Р»Рµ
 
 	//CStringA m_sBuffer;
 	unsigned char* m_aBuffer;
@@ -73,20 +73,20 @@ public:
 	}
 	void ungetc()
 	{
-		//в проекте используется ungetcб только после getc
-		//поэтому проблем с выходом в 0 нет
+		//РІ РїСЂРѕРµРєС‚Рµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ ungetcР± С‚РѕР»СЊРєРѕ РїРѕСЃР»Рµ getc
+		//РїРѕСЌС‚РѕРјСѓ РїСЂРѕР±Р»РµРј СЃ РІС‹С…РѕРґРѕРј РІ 0 РЅРµС‚
 		m_nPosAbs--;
 	}
 	void putString( CStringA sText )
 	{
 		int nExtBufSize = sText.GetLength();
-		//копируем буфер в темповый буфер
+		//РєРѕРїРёСЂСѓРµРј Р±СѓС„РµСЂ РІ С‚РµРјРїРѕРІС‹Р№ Р±СѓС„РµСЂ
 		unsigned char* aTempBuf = new unsigned char[ m_nSizeAbs ];
 		memcpy( aTempBuf, m_aBuffer, m_nSizeAbs );
-		//создаем новый буфер большего размера
+		//СЃРѕР·РґР°РµРј РЅРѕРІС‹Р№ Р±СѓС„РµСЂ Р±РѕР»СЊС€РµРіРѕ СЂР°Р·РјРµСЂР°
 		RELEASEARRAYOBJECTS( m_aBuffer );
 		m_aBuffer = new unsigned char[ m_nSizeAbs + nExtBufSize ];
-		//копируем все в новый буфер
+		//РєРѕРїРёСЂСѓРµРј РІСЃРµ РІ РЅРѕРІС‹Р№ Р±СѓС„РµСЂ
 		unsigned long nDelimiter = m_nPosAbs + 1;
 		memcpy( m_aBuffer, aTempBuf, nDelimiter );
 		char* bf = sText.GetBuffer();
@@ -120,7 +120,7 @@ public:
 	RtfLex()
 	{
 		m_oFileWriter = NULL;
-		m_nReadBufSize = 1024 * 1024 * 5; // 5мб
+		m_nReadBufSize = 1024 * 1024 * 5; // 5РјР±
 		m_caReadBuffer = (char*)::HeapAlloc(GetProcessHeap(), 0, m_nReadBufSize);
 	}
 	~RtfLex()
@@ -244,7 +244,7 @@ private:
 					token.HasParameter = true;
 					int nCharCode = RtfUtility::ToByte( m_oStream.getc() ) << 4;
 					nCharCode |= RtfUtility::ToByte( m_oStream.getc() );
-					if( nCharCode >= 0 && nCharCode <=30 )//искуственно сидвигаем на 1 чтобы не потерять \'00 ( символов от 0 до 0x20 служебные)
+					if( nCharCode >= 0 && nCharCode <=30 )//РёСЃРєСѓСЃС‚РІРµРЅРЅРѕ СЃРёРґРІРёРіР°РµРј РЅР° 1 С‡С‚РѕР±С‹ РЅРµ РїРѕС‚РµСЂСЏС‚СЊ \'00 ( СЃРёРјРІРѕР»РѕРІ РѕС‚ 0 РґРѕ 0x20 СЃР»СѓР¶РµР±РЅС‹Рµ)
 						nCharCode++;
 					token.Parameter = nCharCode;
 				}
@@ -273,12 +273,12 @@ private:
 		token.Type = RtfToken::Keyword;
 		token.Key = palabraClave;
 
-		//Se comprueba si la palabra clave tiene parбmetro
+		//Se comprueba si la palabra clave tiene parР±metro
 		if (RtfUtility::IsDigit(c) || c == '-')
 		{
 			token.HasParameter = true;
 
-			//Se comprubea si el parбmetro es negativo
+			//Se comprubea si el parР±metro es negativo
 			if (c == '-')
 			{
 				negativo = true;
@@ -301,7 +301,7 @@ private:
 			if (negativo)
 				parametroInt = -parametroInt;
 
-			//Se asigna el parбmetro de la palabra clave
+			//Se asigna el parР±metro de la palabra clave
 			token.Parameter = parametroInt;
 		}
 
@@ -312,10 +312,10 @@ private:
 	}
 	void parseText(int car, RtfToken& token)
 	{
-		int nTempBufPos = 0; //1 мб
+		int nTempBufPos = 0; //1 РјР±
 
 		int c = car;
-		//while ((isalnum(c) || c == '"'|| c == ':'|| c == '/' || c == '.') &&c != '\\' && c != '}' && c != '{' && c != Eof) // иправиЃEЃEрвьD усЃEвиЃE
+		//while ((isalnum(c) || c == '"'|| c == ':'|| c == '/' || c == '.') &&c != '\\' && c != '}' && c != '{' && c != Eof) // РёРїСЂР°РІРёРѓEРѓEСЂРІСЊD СѓСЃРѓEРІРёРѓE
 		//while (c != '\\' && c != '}' && c != '{' && c != Eof) 
 		//while (c != ';' &&c ! = '\\' && c != '}' && c != '{' && c != EOF) 
 		while (c != '\\' && c != '}' && c != '{' && c != EOF) 

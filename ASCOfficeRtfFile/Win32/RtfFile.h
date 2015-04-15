@@ -54,8 +54,7 @@ public:
 	}
 private:
 	long m_nLastProgress;
-	void RaiseOnProcess( long nValue, short* nCancel );
-	BOOL IsRtfFile(CString sFilename, long& nError );
+	bool IsRtfFile(CString sFilename, long& nError );
 public:
 	STDMETHOD(LoadFromFile)(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions);
 	STDMETHOD(SaveToFile)(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions);

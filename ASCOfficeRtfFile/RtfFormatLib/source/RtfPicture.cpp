@@ -92,12 +92,11 @@ CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 	if( false == IsValid() )
 		return _T("");
 	
-	OOXWriter* poOOXWriter = static_cast<OOXWriter*>(oRenderParameter.poWriter);
-	OOXRelsWriter* poRelsWriter = static_cast<OOXRelsWriter*>(oRenderParameter.poRels);
-	RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
-	CString sFilenameFull;
-	CString sFilenameRels;
-	CString sExtension;
+	OOXWriter* poOOXWriter			= static_cast<OOXWriter*>(oRenderParameter.poWriter);
+	OOXRelsWriter* poRelsWriter		= static_cast<OOXRelsWriter*>(oRenderParameter.poRels);
+	RtfDocument* poRtfDocument		= static_cast<RtfDocument*>(oRenderParameter.poDocument);
+	
+	CString sExtension;	
 	CString sMime;
 	switch( eDataType )
 	{
@@ -106,9 +105,13 @@ CString RtfPicture::RenderToOOX(RenderParameter oRenderParameter)
 		case dt_wmf: sExtension = _T("wmf"); sMime = _T("image/x-wmf");break;
 		case dt_emf: sExtension = _T("emf"); sMime = _T("image/x-emf");break;
 	}
-	sFilenameRels.AppendFormat( _T("media/Image%d.%ls"), poRtfDocument->m_oIdGenerator.Generate_ImageIndex(), sExtension);
-	sFilenameFull = poOOXWriter->m_sTargetFolder + _T("/") + poOOXWriter->m_sDocumentFolder + _T("/") +sFilenameRels;
-	CreateDirectory( poOOXWriter->m_sTargetFolder + _T("/") + poOOXWriter->m_sDocumentFolder + _T("/media"), NULL);
+
+	CString sFilenameRels;
+	sFilenameRels.AppendFormat( _T("Image%d.%ls"), poRtfDocument->m_oIdGenerator.Generate_ImageIndex(), sExtension);
+	CString sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR +_T("media");
+	
+	FileSystem::Directory::CreateDirectory( sFilenameFull );
+	sFilenameFull += FILE_SEPARATOR_STR + sFilenameRels;
 
 	if( m_sPicFilename != sFilenameFull )
 		Utils::CopyDirOrFile( m_sPicFilename, sFilenameFull );

@@ -6,9 +6,6 @@
 #include "Writer/OOXFontTableWriter.h"
 #include "Writer/OOXStylesWriter.h"
 #include "Writer/OOXSettingsWriter.h"
-#include "Writer/OOXThemeWriter.h"
-#include "Writer/OOXDocPropAppWriter.h"
-#include "Writer/OOXDocPropCoreWriter.h"
 #include "Writer/OOXFootnoteWriter.h"
 
 RtfDocument::RtfDocument()

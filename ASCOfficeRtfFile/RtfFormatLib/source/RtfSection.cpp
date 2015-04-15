@@ -745,8 +745,8 @@ CString RtfSectionProperty::RenderToOOX(RenderParameter oRenderParameter)
 }
 CString RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderParameter oRenderParameter, bool bHeader)
 	{
-		OOXWriter* poOOXWriter = static_cast<OOXWriter*>( oRenderParameter.poWriter );
-		RtfDocument* poRtfDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument );
+		OOXWriter* poOOXWriter		= static_cast<OOXWriter*>	( oRenderParameter.poWriter );
+		RtfDocument* poRtfDocument	= static_cast<RtfDocument*> ( oRenderParameter.poDocument );
 
 		CString sFilename;
 		if( true == bHeader )
@@ -773,7 +773,7 @@ CString RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderParame
 		CStringA sContentUTF = Convert::UnicodeToUtf8( sContent );
 
 		
-		CString sFilePath = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + poOOXWriter->m_sDocumentFolder+ FILE_SEPARATOR_STR + sFilename;
+		CString sFilePath = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + sFilename;
 		
 		DWORD dwBytesWritten = 0;
 		CFile file;
@@ -784,7 +784,7 @@ CString RtfSectionProperty::SaveFile( TextItemContainerPtr oTarget, RenderParame
 			file.CloseFile();
 		}
 
-		CString sContentTarget = _T("/") + poOOXWriter->m_sDocumentFolder + _T("/") +  sFilename;
+		CString sContentTarget = _T("/word/")  +  sFilename;
 		CString srID;
 		if( true == bHeader )
 		{

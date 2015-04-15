@@ -35,9 +35,9 @@ CString RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 {
 	CString sResult;
 
-	OOXWriter* poOOXWriter = static_cast<OOXWriter*>(oRenderParameter.poWriter);
-	OOXRelsWriter* poRelsWriter = static_cast<OOXRelsWriter*>(oRenderParameter.poRels);
-	RtfDocument* poDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
+	OOXWriter* poOOXWriter			= static_cast<OOXWriter*>(oRenderParameter.poWriter);
+	OOXRelsWriter* poRelsWriter		= static_cast<OOXRelsWriter*>(oRenderParameter.poRels);
+	RtfDocument* poDocument			= static_cast<RtfDocument*>(oRenderParameter.poDocument);
 
 	sResult.Append( _T("<o:OLEObject") );
 	switch ( m_eOleType )
@@ -52,11 +52,14 @@ CString RtfOle::RenderToOOXOnlyOle(RenderParameter oRenderParameter)
 
 	CString sExtension = _T("bin");
 	CString sMime = _T("application/vnd.openxmlformats-officedocument.oleObject");
-	CString sFilenameFull;
+	
 	CString sFilenameRels;
-	sFilenameRels.AppendFormat( _T("embeddings/oleObject%d.%ls"), poDocument->m_oIdGenerator.Generate_OleIndex(), sExtension);
-	sFilenameFull = poOOXWriter->m_sTargetFolder + _T("/") + poOOXWriter->m_sDocumentFolder + _T("/") +sFilenameRels;
-	CreateDirectory( poOOXWriter->m_sTargetFolder + _T("/") + poOOXWriter->m_sDocumentFolder + _T("/embeddings"), NULL);
+	sFilenameRels.AppendFormat( _T("oleObject%d.%ls"), poDocument->m_oIdGenerator.Generate_OleIndex(), sExtension);
+	
+	CString sFilenameFull = poOOXWriter->m_sTargetFolder + FILE_SEPARATOR_STR + _T("word") + FILE_SEPARATOR_STR + _T("embeddings");
+	
+	FileSystem::Directory::CreateDirectory( sFilenameFull );
+	sFilenameFull += FILE_SEPARATOR_STR + sFilenameRels;
 
 	Utils::CopyDirOrFile( m_sOleFilename, sFilenameFull );
 

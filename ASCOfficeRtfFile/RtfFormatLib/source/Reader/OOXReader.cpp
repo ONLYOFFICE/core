@@ -13,6 +13,8 @@ OOXReader::OOXReader( RtfDocument& oDocument,CString path ): m_oDocument(oDocume
 {
 	m_sPath = path;
 	m_nCurItap = 0;
+
+	m_convertationManager = NULL;
 }
 bool OOXReader::Parse()
 {

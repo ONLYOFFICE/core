@@ -19,7 +19,6 @@ public:
 	bool Save(  CString sFolder )
 	{
 		CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
-		FileSystem::Directory::CreateDirectoryW(pathWord) ;
 
 		if( false == m_sFileXml.IsEmpty() )
 		{

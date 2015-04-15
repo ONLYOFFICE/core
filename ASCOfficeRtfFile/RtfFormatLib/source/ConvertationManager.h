@@ -32,31 +32,30 @@ public:
 
 		RtfReader oReader( oDocument, sSrcFileName );
 		OOXWriter oWriter( oDocument, sDstPath );
-		oReader.m_sTempFolder = sDstPath;
-		oWriter.m_sTempFolder = sDstPath;
+		
+		oReader.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(m_sTempFolder);
+		oWriter.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(m_sTempFolder);
+		
 		m_poRtfReader = &oReader;
 		m_poOOXWriter = &oWriter;
 
+		m_poRtfReader->m_convertationManager = this;
+
 		bool succes = oReader.Load( );
-		//ATLASSERT( true == succes );
-		#ifdef MEMORY_SAFE_CONVERTATION
-		//сохранение будет поэлементое в обработчике OnCompleteItemRtfReader
+
+		//сохранение будет поэлементое в обработчике OnCompleteItemRtf
 		//надо только завершить
-			if( true == m_bParseFirstItem )
-			{
-				m_bParseFirstItem = false;
-				oWriter.SaveByItemStart( );
-			}
-			m_poOOXWriter->SaveByItem();
-			oWriter.SaveByItemEnd( );
-		#else
-			if( true == succes)
-			{
-				succes = oWriter.Save( );
-				//ATLASSERT( true == succes );
-			}
-		#endif
+		if( true == m_bParseFirstItem )
+		{
+			m_bParseFirstItem = false;
+			oWriter.SaveByItemStart( );
+		}
+		m_poOOXWriter->SaveByItem();
+		oWriter.SaveByItemEnd( );
 		
+		FileSystem::Directory::DeleteDirectory(oReader.m_sTempFolder);
+		FileSystem::Directory::DeleteDirectory(oWriter.m_sTempFolder);
+
 		if( true == succes )
 			return S_OK;
 		else 
@@ -72,38 +71,44 @@ public:
 		OOXReader oReader( oDocument, sSrcPath );
 		RtfWriter oWriter( oDocument, sDstFileName, sSrcPath );
 		
-		oReader.m_sTempFolder = m_sTempFolder;
-		oWriter.m_sTempFolder = m_sTempFolder;
+		oReader.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(m_sTempFolder);
+		oWriter.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(m_sTempFolder);
 		
 		m_poOOXReader = &oReader;
 		m_poRtfWriter = &oWriter;
 
+		m_poOOXReader->m_convertationManager = this;
+
 		bool succes = oReader.Parse( );
-		//ATLASSERT( true == succes );
+		if( true == succes)
+		{
+			succes = oWriter.Save( );
+		}
 
-		#ifdef MEMORY_SAFE_CONVERTATION
-			//сохранение будет поэлементое в обработчике OnCompleteItemRtfReader
-			//надо только завершить
-			if( true == m_bParseFirstItem )
-			{
-				m_bParseFirstItem = false;
-				oWriter.SaveByItemStart( );
-			}
-			oWriter.SaveByItemEnd( );
-		#else
-			if( true == succes && true)
-			{
-				succes = oWriter.Save( );
-				//ATLASSERT( true == succes );
-				
-				//succes = oWriter.Save( oDocument, CString("d:\\testOOX") );
-				////ATLASSERT( true == succes );
-			}
-		#endif
+		FileSystem::Directory::DeleteDirectory(oReader.m_sTempFolder);
+		FileSystem::Directory::DeleteDirectory(oWriter.m_sTempFolder);
 
-		return S_OK;
+		if( true == succes) return S_OK;
+		return S_FALSE;
 	}
-
+	void OnCompleteItemRtf()
+	{
+		if( true == m_bParseFirstItem )
+		{
+			m_bParseFirstItem = false;
+			m_poOOXWriter->SaveByItemStart( );
+		}
+		m_poOOXWriter->SaveByItem();
+	}
+	void OnCompleteItemOOX()
+	{
+		if( true == m_bParseFirstItem )
+		{
+			m_bParseFirstItem = false;
+			m_poRtfWriter->SaveByItemStart( );
+		}
+		m_poRtfWriter->SaveByItem( );
+	}
 private:
 	OOXWriter* m_poOOXWriter;
 	OOXReader* m_poOOXReader;
@@ -112,5 +117,6 @@ private:
 	RtfReader* m_poRtfReader;
 	
 	bool m_bParseFirstItem;
+
 
 };

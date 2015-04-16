@@ -311,6 +311,8 @@ public:
             //todooo расширить до других codepages (щас тока анси)
             std::string sAnsi(sCharString.GetBuffer());
             std::wstring s(sAnsi.begin(), sAnsi.end());
+
+            sResult = std_string2string(s);
 #endif
 			//sResult = sKey;
 		}

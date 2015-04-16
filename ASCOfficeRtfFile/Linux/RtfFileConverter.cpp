@@ -1,8 +1,18 @@
-﻿#include "../RtfFormatLib/source/ConvertationManager.h"
-
+﻿
+#include "../RtfFormatLib/source/ConvertationManager.h"
+#include "../../../ServerComponents/ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 
 #include <iostream>
 #include "../version.h"
+
+
+typedef enum tagTConversionDirection
+{
+    TCD_ERROR,
+    TCD_AUTO,
+    TCD_RTF2DOCX,
+    TCD_DOCX2RTF
+} TConversionDirection;
 
 static std::wstring utf8_to_unicode(const char *src)
 {
@@ -38,6 +48,50 @@ static std::wstring utf8_to_unicode(const char *src)
             return wsEntryName;
 }
 
+
+static const TConversionDirection getConversionDirectionFromExt (const CString &sFile1, const CString &sFile2)
+{
+    TConversionDirection res = TCD_ERROR;
+
+    int nExt1Pos = sFile1.ReverseFind(_T('.'));
+    int nExt2Pos = sFile2.ReverseFind(_T('.'));
+
+    // check for directory (zip task)
+    int nSeparator1Pos = sFile1.ReverseFind(_T('/'));
+    if (-1 == nSeparator1Pos)
+    {
+        nSeparator1Pos = sFile1.ReverseFind(_T('\\'));
+    }
+
+    // check for directory (unzip task)
+    int nSeparator2Pos = sFile2.ReverseFind(_T('/'));
+    if (-1 == nSeparator2Pos)
+    {
+        nSeparator2Pos = sFile2.ReverseFind(_T('\\'));
+    }
+
+    // there are no directories in paths, both paths are paths to files
+    if (-1 != nExt1Pos && -1 != nExt2Pos)
+    {
+        CString sExt1 = sFile1.Mid(nExt1Pos);
+        CString sExt2 = sFile2.Mid(nExt2Pos);
+
+        sExt1.ToLower();
+        sExt2.ToLower();
+
+        if ((0 == sExt1.CompareNoCase(_T(".rtf"))) && (0 == sExt2.CompareNoCase(_T(".docx"))))
+        {
+            res = TCD_RTF2DOCX;
+        }
+        else if ((0 == sExt1.CompareNoCase(_T(".docx"))) && (0 == sExt2.CompareNoCase(_T(".rtf"))))
+        {
+            res = TCD_DOCX2RTF;
+        }
+     }
+
+    return res;
+}
+
 int main(int argc, char *argv[])
 {
    // check arguments
@@ -66,13 +120,48 @@ int main(int argc, char *argv[])
 
     CString sXMLOptions = _T("");
 
-    {// rtf->docx
-        ::ConvertationManager  rtfFile;
+    CString sTempDir = FileSystem::Directory::GetFolderPath(sArg2) + FILE_SEPARATOR_STR + "Temp";
+    FileSystem::Directory::CreateDirectory(string2std_string(sTempDir));
 
-        HRESULT hRes = rtfFile.ConvertRtfToOOX(sArg1, sArg2, sXMLOptions);
+    TConversionDirection convDirect = getConversionDirectionFromExt(sArg1, sArg2);
 
-        if (hRes != S_OK)return 2;
+    ConvertationManager  rtfFile;
+    rtfFile.m_sTempFolder = sTempDir;
 
+    HRESULT hRes = S_FALSE;
+    switch ( convDirect )
+    {
+        case TCD_RTF2DOCX:
+        {
+            CString sTempUnpackedDOCX = sTempDir + FILE_SEPARATOR_STR + _T("docx_unpacked");
+            FileSystem::Directory::CreateDirectory(sTempUnpackedDOCX);
+
+            hRes = rtfFile.ConvertRtfToOOX(sArg1, sTempUnpackedDOCX, sXMLOptions);
+
+            if (hRes == S_OK)
+            {
+                COfficeUtils oCOfficeUtils(NULL);
+                hRes = oCOfficeUtils.CompressFileOrDirectory (string2std_string(sTempUnpackedDOCX), string2std_string(sArg2), -1);
+            }
+        }break;
+        case TCD_DOCX2RTF:
+        {
+            CString sTempUnpackedDOCX = sTempDir + FILE_SEPARATOR_STR + _T("docx_unpacked");
+            FileSystem::Directory::CreateDirectory(sTempUnpackedDOCX);
+
+            COfficeUtils oCOfficeUtils(NULL);
+            hRes = oCOfficeUtils.ExtractToDirectory(string2std_string(sArg1), string2std_string(sTempUnpackedDOCX), NULL, 0);
+
+            if (hRes == S_OK)
+            {
+                hRes = rtfFile.ConvertOOXToRtf( sArg2, sTempUnpackedDOCX, sXMLOptions);
+            }
+        }break;
     }
+    // delete temp dir
+    FileSystem::Directory::DeleteDirectory(string2std_string(sTempDir));
+
+    if (hRes != S_OK)return 2;
+
     return 0;
 }

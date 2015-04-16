@@ -20,7 +20,11 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 				oOutput->m_nShapeType = 75;
 
 				CString srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : _T("") ;
-				smart_ptr<OOX::File> oFile = oParam.oDocx->GetDocument()->Find(srId);
+
+                if (srId.length() < 1)
+                    srId = image_data->m_rId.IsInit() ? image_data->m_rId->GetValue() : _T("") ;
+
+                smart_ptr<OOX::File> oFile = oParam.oDocx->GetDocument()->Find(srId);
 				
 				if ( oFile.IsInit() && (OOX::FileTypes::Image == oFile->type()))
 				{

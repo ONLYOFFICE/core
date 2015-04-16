@@ -1165,13 +1165,12 @@ public:
 	 {//заменяем на булеты
 		CString sResult;
 
-		CStringA sBullet;
-		char cBullet = (char)149;
-		sBullet.AppendChar( cBullet );
-		CString swBullet;
-		swBullet = sBullet;
+        char cBullet[1];  cBullet[0] = (char)149;
 
-		sResult.Append( swBullet );
+        std::string sBullet = cBullet;
+        std::wstring swBullet(sBullet.begin(), sBullet.end());
+
+        sResult.Append( swBullet.c_str() );
 		//CString sOOXNumber = GetLevelTextOOX();
 		//for( int i = 0; i < sOOXNumber.GetLength(); i++ )
 		//	if( sOOXNumber[i] == '%' && i != sOOXNumber.GetLength() - 1 )

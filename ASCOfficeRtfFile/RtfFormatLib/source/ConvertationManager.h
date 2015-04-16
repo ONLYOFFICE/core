@@ -32,6 +32,9 @@ public:
 
 		RtfReader oReader( oDocument, sSrcFileName );
 		OOXWriter oWriter( oDocument, sDstPath );
+
+        if (m_sTempFolder.GetLength() < 1)
+            m_sTempFolder = FileSystem::Directory::GetTempPath();
 		
 		oReader.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(m_sTempFolder);
 		oWriter.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(m_sTempFolder);
@@ -71,7 +74,10 @@ public:
 		OOXReader oReader( oDocument, sSrcPath );
 		RtfWriter oWriter( oDocument, sDstFileName, sSrcPath );
 		
-		oReader.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(m_sTempFolder);
+        if (m_sTempFolder.GetLength() < 1)
+            m_sTempFolder = FileSystem::Directory::GetTempPath();
+
+        oReader.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(m_sTempFolder);
 		oWriter.m_sTempFolder = FileSystem::Directory::CreateDirectoryWithUniqueName(m_sTempFolder);
 		
 		m_poOOXReader = &oReader;

@@ -95,7 +95,8 @@ public:
 			OOXpPrReader opPrReader(m_ooxLvlNum->m_oPPr.GetPointer());
 			bool bStartNewSectoion;
 			
-			if( true == opPrReader.Parse( oParam, oNewProperty, CcnfStyle(), bStartNewSectoion ) )
+            CcnfStyle style;
+            if( true == opPrReader.Parse( oParam, oNewProperty, style, bStartNewSectoion ) )
 			{
 				oLevelProperty.m_nFirstIndent	= oNewProperty.m_nIndFirstLine;
 				oLevelProperty.m_nIndent		= oNewProperty.m_nIndLeft;

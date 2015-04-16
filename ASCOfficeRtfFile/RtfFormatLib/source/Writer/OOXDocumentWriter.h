@@ -28,7 +28,7 @@ public:
 	bool SaveByItemStart( CString sFolder )
 	{
 		CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
-		FileSystem::Directory::CreateDirectoryW(pathWord) ;
+        FileSystem::Directory::CreateDirectory(pathWord) ;
 	
 		try
 		{
@@ -43,9 +43,10 @@ public:
 		m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml"), _T("/word/document.xml") );
 
 		CString sXml = CreateXmlStart( );
-		CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
-		m_oFileWriter->Write( (BYTE*)(LPCSTR)sXmlUTF, sXmlUTF.GetLength() );
-		return true;
+        std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+
+        m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+        return true;
 	}
 	bool SaveByItem()
 	{
@@ -81,8 +82,9 @@ public:
 					}
 					//удаляем первый параграф
 					m_oDocument[0]->RemoveItem( 0 );
-					CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
-					m_oFileWriter->Write( (BYTE*)(LPCSTR)sXmlUTF, sXmlUTF.GetLength() );
+                    std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+
+                    m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
 				}
 				//удаляем секцию
 				m_oDocument.RemoveItem( 0 );
@@ -92,9 +94,10 @@ public:
 				CString sXml = m_oDocument[0]->operator[](0)->RenderToOOX(oNewParam);
 				//удаляем первый параграф
 				m_oDocument[0]->RemoveItem( 0 );
-				CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
-				m_oFileWriter->Write( (BYTE*)(LPCSTR)sXmlUTF, sXmlUTF.GetLength() );
-			}
+                std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+
+                m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+            }
 		}
 		return true;
 	}
@@ -111,13 +114,15 @@ public:
 			CString sXml = m_oDocument[0]->operator[](0)->RenderToOOX(oNewParam);
 			//удаляем первый параграф
 			m_oDocument[0]->RemoveItem( 0 );
-			CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
-			m_oFileWriter->Write( (BYTE*)(LPCSTR)sXmlUTF, sXmlUTF.GetLength() );
-		}
+            std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+
+            m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+        }
 		CString sXml = CreateXmlEnd( );
-		CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
-		m_oFileWriter->Write( (BYTE*)(LPCSTR)sXmlUTF, sXmlUTF.GetLength() );
-		RELEASEOBJECT( m_oFileWriter );
+        std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
+
+        m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+        RELEASEOBJECT( m_oFileWriter );
 		return true;
 	}
 	int GetCount()

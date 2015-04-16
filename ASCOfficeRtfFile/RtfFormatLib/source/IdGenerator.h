@@ -6,7 +6,7 @@
 	#include <atlbase.h>
 	#include <atlstr.h>
 #else
-    #include "../../../../Common/DocxFormat/Source/Base/ASCString.h"
+    #include "../../../Common/DocxFormat/Source/Base/ASCString.h"
 #endif
 
 class IdGenerator

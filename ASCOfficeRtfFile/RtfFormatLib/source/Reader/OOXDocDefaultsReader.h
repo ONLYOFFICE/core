@@ -38,8 +38,10 @@ public:
 			opPrReader.m_bDefStyle = false;
 			
 			bool bStartNewSectoion;
+
+            CcnfStyle style;
 			
-			if( true == opPrReader.Parse( oParam, oNewProperty, CcnfStyle(), bStartNewSectoion ) )
+            if( true == opPrReader.Parse( oParam, oNewProperty, style, bStartNewSectoion ) )
 				oParam.oRtf->m_oDefaultParagraphProp = oNewProperty;
 		}
 		return true;

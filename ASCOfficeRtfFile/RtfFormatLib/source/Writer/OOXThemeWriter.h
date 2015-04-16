@@ -14,8 +14,8 @@ public:
 	{
 		CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
 		
-		FileSystem::Directory::CreateDirectoryW(pathWord) ;
-		FileSystem::Directory::CreateDirectoryW(pathWord + FILE_SEPARATOR_STR + _T("theme")) ;
+        FileSystem::Directory::CreateDirectory(pathWord) ;
+        FileSystem::Directory::CreateDirectory(pathWord + FILE_SEPARATOR_STR + _T("theme")) ;
 
 		//todooo default theme !!!!!
 		//

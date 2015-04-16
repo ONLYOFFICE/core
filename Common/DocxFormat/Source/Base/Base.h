@@ -75,42 +75,21 @@ using namespace ATL;
 #endif
 
 
-/*
-typedef int BOOL;
-static const BOOL TRUE = 1;
-static const BOOL FALSE = 0;
-
-
-typedef int HRESULT;
-static const HRESULT S_OK = 0;
-static const HRESULT S_FALSE = -1;
-
-typedef unsigned char BYTE;
-typedef unsigned short USHORT;
-typedef short SHORT;
-typedef long LONG;
-typedef unsigned long ULONG;
-typedef unsigned int DWORD;
-typedef unsigned long long ULONG64;
-typedef long long LONG64;
-
-typedef wchar_t WCHAR;
-*/
-
 #ifndef _wtof
-#include <string>
-#define _wtof std::stod
-#define _wtoi std::stoi
-#define _wtoi64(p) std::wcstoll((p),NULL,10)
-#ifdef UNICODE
-#define _ttoi _wtoi
-#define _tstof _wtof
-#define _stscanf swscanf
-#else
-#define _ttoi atoi
-#define _tstof atof
-#define _stscanf scanf
-#endif // #ifdef UNICODE
+    #include <string>
+    #define _wtof std::stod
+    #define _wtoi std::stoi
+    #define _wtoi64(p) std::wcstoll((p),NULL,10)
+
+    #ifdef UNICODE
+        #define _ttoi _wtoi
+        #define _tstof _wtof
+        #define _stscanf swscanf
+    #else
+        #define _ttoi atoi
+        #define _tstof atof
+        #define _stscanf scanf
+    #endif // #ifdef UNICODE
 #endif // #ifndef _wtof
 
 #endif // #if defined(_WIN32) || defined (_WIN64)

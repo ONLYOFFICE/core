@@ -112,7 +112,7 @@ bool OOXWriter::SaveByItemEnd()
 	} 
 //-----------------------------------------------------------------------------------------------------
 	OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + _T("theme");
-	FileSystem::Directory::CreateDirectoryW(pathTheme.GetPath()) ;	
+    FileSystem::Directory::CreateDirectory(pathTheme.GetPath()) ;
 	Writers::DefaultThemeWriter themeWriter;
 
 	themeWriter.Write(pathTheme.GetPath() + FILE_SEPARATOR_STR + _T("theme1.xml"));

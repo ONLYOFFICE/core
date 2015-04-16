@@ -86,8 +86,9 @@ public:
 			OOXpPrReader opPrReader(m_ooxStyle->m_oParPr.GetPointer());
 			opPrReader.m_bDefStyle = false;
 			
-			bool bStartNewSection;			
-			opPrReader.Parse( oParam, oNewParStyle->m_oParProp, CcnfStyle(), bStartNewSection );
+            bool bStartNewSection;
+            CcnfStyle style;
+            opPrReader.Parse( oParam, oNewParStyle->m_oParProp, style, bStartNewSection );
 			
 			oNewParStyle->m_oParProp.m_nListId = PROP_DEF; //экспериментально вроде нельзя иметь numbering в параграф стиле
 			oNewParStyle->m_oParProp.m_nListLevel = PROP_DEF;
@@ -108,7 +109,8 @@ public:
 			
 			OOXtrPrReader otrPrReader(m_ooxStyle->m_oTrPr.GetPointer());
 			
-			otrPrReader.Parse( oParam, oNewTableStyle->m_oRowProp, CcnfStyle() );
+            CcnfStyle style;
+            otrPrReader.Parse( oParam, oNewTableStyle->m_oRowProp, style );
 		}
 		if (m_ooxStyle->m_oTcPr.IsInit() && RtfStyle::stTable == eStyleType )
 		{
@@ -116,7 +118,8 @@ public:
 			
 			OOXtcPrReader otcPrReader(m_ooxStyle->m_oTcPr.GetPointer());
 			
-			otcPrReader.Parse( oParam, oNewTableStyle->m_oCellProp, CcnfStyle(), -1, -1, -1, -1 );
+            CcnfStyle style;
+            otcPrReader.Parse( oParam, oNewTableStyle->m_oCellProp, style, -1, -1, -1, -1 );
 		}
 		if (m_ooxStyle->m_arrTblStylePr.size() > 0  && RtfStyle::stTable == eStyleType )
 		{
@@ -247,8 +250,10 @@ public:
 			OOXpPrReader opPrReader(oox_tableStyle->m_oParPr.GetPointer());
 			opPrReader.m_bDefStyle = false;
 			
-			bool bStartNewSection;			
-			opPrReader.Parse( oParam, oNewParStyle->m_oParProp, CcnfStyle(), bStartNewSection );
+            bool bStartNewSection;
+            CcnfStyle style;
+
+            opPrReader.Parse( oParam, oNewParStyle->m_oParProp, style, bStartNewSection );
 			
 			oNewParStyle->m_oParProp.m_nListId = PROP_DEF; //экспериментально вроде нельзя иметь numbering в параграф стиле
 			oNewParStyle->m_oParProp.m_nListLevel = PROP_DEF;
@@ -269,7 +274,8 @@ public:
 			
 			OOXtrPrReader otrPrReader(oox_tableStyle->m_oTrPr.GetPointer());
 			
-			otrPrReader.Parse( oParam, oNewTableStyle->m_oRowProp, CcnfStyle() );
+            CcnfStyle style;
+            otrPrReader.Parse( oParam, oNewTableStyle->m_oRowProp, style );
 		}
 		if (oox_tableStyle->m_oTcPr.IsInit() && RtfStyle::stTable == eStyleType )
 		{
@@ -277,7 +283,8 @@ public:
 			
 			OOXtcPrReader otcPrReader(oox_tableStyle->m_oTcPr.GetPointer());
 			
-			otcPrReader.Parse( oParam, oNewTableStyle->m_oCellProp, CcnfStyle(), -1, -1, -1, -1 );
+            CcnfStyle style;
+            otcPrReader.Parse( oParam, oNewTableStyle->m_oCellProp, style, -1, -1, -1, -1 );
 		}
 		return true;
 	}

@@ -22,9 +22,13 @@ const long c_lMetaSVG = 0x04;
 const long c_ag_ImageTypeBitmap			= 0;
 const long c_ag_ImageTypeMetafile		= 1;
 
+namespace MetaFile
+{
+	class CMetaFile;
+};
+
 class CFontManager;
-class CWmfFile;
-struct TWmfRectF;
+
 namespace Aggplus
 {
 	class CImage;
@@ -60,9 +64,7 @@ namespace NSHtmlRenderer
 	{
 	private:
 
-		CWmfFile*			m_pWmfFile;
-
-		TWmfRectF* m_pRect;
+		MetaFile::CMetaFile*			m_pMetafile;
 
 		CString  m_wsTempFilePath;
 

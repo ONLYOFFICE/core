@@ -3,7 +3,7 @@
 
 #include "../Wmf/WmfTypes.h"
 
-namespace Metafile
+namespace MetaFile
 {
 
 	class CEmfOutputDevice

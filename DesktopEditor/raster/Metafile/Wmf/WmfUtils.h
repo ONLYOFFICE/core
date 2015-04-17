@@ -12,8 +12,10 @@
 #include <math.h>
 
 #include "../../../common/File.h"
+
 #define UTF8_TO_U(val) NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)val, strlen(val))
 #define U_TO_UTF8(val) NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(val, wcslen(val))
+
 static std::wstring ascii_to_unicode(const char *src)
 {
 	size_t nSize = mbstowcs(0, src, 0);
@@ -153,8 +155,8 @@ static void PolyPoly_To_PolyLine(TWmfPolyPoly *pPolyPoly, TWmfPolyLine *pPolyLin
 static BOOL WmfOpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder)
 {
 	std::wstring wsTemp, wsFileName;
-	FILE *pTempFile;
-#ifdef _WIN32
+	FILE *pTempFile = NULL;
+#if defined(_WIN32) || defined (_WIN64)
 	wchar_t *wsTempDir;
 	if ((wsTempDir = _wgetenv(L"TEMP")) && (wsFolder == NULL))
 	{
@@ -182,13 +184,15 @@ static BOOL WmfOpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMod
 	for (int nIndex = 0; nIndex < 1000; ++nIndex)
 	{
 		wsFileName = wsTemp;
-		wsFileName.append(std::to_wstring(nTime + nIndex));
+		wchar_t buffer[24];
+		_itow(nTime + nIndex,buffer,10);
+		wsFileName.append(buffer);
 
 		if (wsExt)
 		{
 			wsFileName.append(wsExt);
 		}
-#ifdef _WIN32
+#if defined (_WIN32) || defined (_WIN64)
 		if (!(pTempFile = _wfopen(wsFileName.c_str(), L"r")))
 		{
 			if (!(pTempFile = _wfopen(wsFileName.c_str(), wsMode)))

@@ -6,7 +6,7 @@
 #include "EmfTypes.h"
 #include "EmfObjects.h"
 
-namespace Metafile
+namespace MetaFile
 {
 	class CEmfFile;
 	class CEmfDC;

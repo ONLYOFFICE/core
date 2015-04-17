@@ -15,7 +15,11 @@
 #include "../../../fontengine/FontManager.h"
 #include <iostream>
 
-namespace Metafile
+#if !defined(ETO_PDY)
+	# define ETO_PDY 0x2000
+#endif
+
+namespace MetaFile
 {
 	class CEmfFile
 	{
@@ -556,6 +560,7 @@ namespace Metafile
 
 			m_pDC->SetTextColor(oColor);
 		}
+
 		void Read_EMR_EXTTEXTOUTW()
 		{
 			TEmfExtTextoutW oText;

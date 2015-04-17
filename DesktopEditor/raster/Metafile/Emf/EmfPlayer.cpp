@@ -1,7 +1,7 @@
 #include "EmfPlayer.h"
 #include "EmfFile.h"
 
-namespace Metafile
+namespace MetaFile
 {
 	CEmfPlayer::CEmfPlayer(CEmfFile* pFile)
 	{
@@ -127,6 +127,8 @@ namespace Metafile
 		m_oTransform.Init();
 		m_oTextColor.Init();
 		m_pBrush = NULL;
+		m_pPen = NULL;
+		m_pFont = NULL;
 	}
 	CEmfDC::~CEmfDC()
 	{

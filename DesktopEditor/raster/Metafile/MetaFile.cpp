@@ -5,7 +5,7 @@
 
 #include "Emf/RendererOutput.h"
 
-namespace Metafile
+namespace MetaFile
 {
 	CMetaFile::CMetaFile(CApplicationFonts *pAppFonts)
 	{
@@ -18,11 +18,17 @@ namespace Metafile
 		m_pFontManager->SetOwnerCache(pMeasurerCache);
 		m_oWmfFile.SetFontManager(m_pFontManager);
 		m_oEmfFile.SetFontManager(m_pFontManager);
+
+		m_lType  = 0;
 	}
 	CMetaFile::~CMetaFile()
 	{
 		Close();
 		RELEASEINTERFACE(m_pFontManager);
+	}
+	CFontManager* CMetaFile::get_FontManager()
+	{
+		return m_pFontManager;
 	}
 	bool CMetaFile::LoadFromFile(const wchar_t *wsFilePath)
 	{
@@ -116,7 +122,14 @@ namespace Metafile
 	void CMetaFile::Close()
 	{
 		m_oWmfFile.Close();
+		//m_oEmfFile.Close();
+
+		m_lType  = 0;
 	};
+	long CMetaFile::GetType()
+	{
+		return m_lType;
+	}
 	void CMetaFile::GetBounds(double* pdX, double* pdY, double* pdW, double* pdH)
 	{
 		if (c_lMetaWmf == m_lType)

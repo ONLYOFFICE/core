@@ -1,92 +1,92 @@
 ﻿#include "CASCImage.h"
 
-#include "../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfFile.h"
-#include "../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/RendererOutput.h"
+#include "../DesktopEditor/raster/Metafile/MetaFile.h"
 #include "../DesktopEditor/graphics/Image.h"
 
 #if defined(_WIN32) || defined (_WIN64)
-#include "../Common/GdiPlusEx.h"
-#import "../Redist/ASCMediaCore3.dll"			named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
-#include "../Common/MediaFormatDefine.h"
-namespace NSGdiMeta
-{
-	static BOOL ByteArrayToMediaData(BYTE* pArray, int nWidth, int nHeight, Aggplus::CImage** ppImage, BOOL bFlipVertical = TRUE)
+	
+	#include "../Common/GdiPlusEx.h"
+	#import "../Redist/ASCMediaCore3.dll"			named_guids raw_interfaces_only rename_namespace("MediaCore"), exclude("tagRECT")
+	#include "../Common/MediaFormatDefine.h"
+	
+	namespace NSGdiMeta
 	{
-		if (!ppImage || nWidth < 1 || nHeight < 1)
-			return FALSE;
-
-		*ppImage = new Aggplus::CImage;
-		Aggplus::CImage* pImage = *ppImage;
-
-		// specify settings
-		long nBufferSize = 4 * nWidth * nHeight;
-		long nStride;
-		if(TRUE == bFlipVertical)
-			nStride = -4 * nWidth;
-		else
-			nStride = 4 * nWidth;
-		BYTE* pBuffer = new BYTE[nBufferSize];
-		memcpy(pBuffer, pArray, nBufferSize);
-		pImage->Create(pBuffer, nWidth, nHeight, nStride);
-
-		return TRUE;
-	}
-		
-	static BOOL GdiPlusBitmapToMediaData(Gdiplus::Bitmap* pBitmap, Aggplus::CImage** ppImage, BOOL bFlipVertical = TRUE)
-	{
-		if (!pBitmap)
-			return FALSE;
-
-		int nWidth = pBitmap->GetWidth();
-		int nHeight = pBitmap->GetHeight();
-
-		double dHorDpi = (double)pBitmap->GetHorizontalResolution();
-		double dVerDpi = (double)pBitmap->GetVerticalResolution();
-
-		int nWidthDest	= (int)(96.0 * nWidth / dHorDpi);
-		int nHeightDest = (int)(96.0 * nHeight / dVerDpi);
-
-		if (nWidth == nWidthDest && nHeight == nHeightDest)
+		static BOOL ByteArrayToMediaData(BYTE* pArray, int nWidth, int nHeight, Aggplus::CImage** ppImage, BOOL bFlipVertical = TRUE)
 		{
-			Gdiplus::Rect oRect(0, 0, nWidth, nHeight);
-			Gdiplus::BitmapData oBitmapData;
-
-			if (pBitmap->LockBits(&oRect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &oBitmapData) != Gdiplus::Ok)
+			if (!ppImage || nWidth < 1 || nHeight < 1)
 				return FALSE;
 
-			BOOL bSuccess = ByteArrayToMediaData((BYTE*)oBitmapData.Scan0, nWidth, nHeight, ppImage, bFlipVertical);
+			*ppImage = new Aggplus::CImage;
+			Aggplus::CImage* pImage = *ppImage;
+
+			// specify settings
+			long nBufferSize = 4 * nWidth * nHeight;
+			long nStride;
+			if(TRUE == bFlipVertical)
+				nStride = -4 * nWidth;
+			else
+				nStride = 4 * nWidth;
+			BYTE* pBuffer = new BYTE[nBufferSize];
+			memcpy(pBuffer, pArray, nBufferSize);
+			pImage->Create(pBuffer, nWidth, nHeight, nStride);
+
+			return TRUE;
+		}
 			
-			pBitmap->UnlockBits(&oBitmapData);
+		static BOOL GdiPlusBitmapToMediaData(Gdiplus::Bitmap* pBitmap, Aggplus::CImage** ppImage, BOOL bFlipVertical = TRUE)
+		{
+			if (!pBitmap)
+				return FALSE;
+
+			int nWidth = pBitmap->GetWidth();
+			int nHeight = pBitmap->GetHeight();
+
+			double dHorDpi = (double)pBitmap->GetHorizontalResolution();
+			double dVerDpi = (double)pBitmap->GetVerticalResolution();
+
+			int nWidthDest	= (int)(96.0 * nWidth / dHorDpi);
+			int nHeightDest = (int)(96.0 * nHeight / dVerDpi);
+
+			if (nWidth == nWidthDest && nHeight == nHeightDest)
+			{
+				Gdiplus::Rect oRect(0, 0, nWidth, nHeight);
+				Gdiplus::BitmapData oBitmapData;
+
+				if (pBitmap->LockBits(&oRect, Gdiplus::ImageLockModeRead, PixelFormat32bppARGB, &oBitmapData) != Gdiplus::Ok)
+					return FALSE;
+
+				BOOL bSuccess = ByteArrayToMediaData((BYTE*)oBitmapData.Scan0, nWidth, nHeight, ppImage, bFlipVertical);
+				
+				pBitmap->UnlockBits(&oBitmapData);
+
+				return bSuccess;
+			}
+
+			BYTE* pData = new BYTE[4 * nWidthDest * nHeightDest];
+			Gdiplus::Bitmap oBitmap(nWidthDest, nHeightDest, 4 * nWidthDest, PixelFormat32bppARGB, pData);
+
+			Gdiplus::Graphics* pGraphics = Gdiplus::Graphics::FromImage(&oBitmap);
+
+			pGraphics->SetInterpolationMode(Gdiplus::InterpolationModeBilinear);
+			pGraphics->DrawImage(pBitmap, 0, 0, nWidthDest, nHeightDest);
+
+			RELEASEOBJECT(pGraphics);
+
+			BOOL bSuccess = ByteArrayToMediaData(pData, nWidthDest, nHeightDest, ppImage, bFlipVertical);
+			RELEASEARRAYOBJECTS(pData);
 
 			return bSuccess;
 		}
-
-		BYTE* pData = new BYTE[4 * nWidthDest * nHeightDest];
-		Gdiplus::Bitmap oBitmap(nWidthDest, nHeightDest, 4 * nWidthDest, PixelFormat32bppARGB, pData);
-
-		Gdiplus::Graphics* pGraphics = Gdiplus::Graphics::FromImage(&oBitmap);
-
-		pGraphics->SetInterpolationMode(Gdiplus::InterpolationModeBilinear);
-		pGraphics->DrawImage(pBitmap, 0, 0, nWidthDest, nHeightDest);
-
-		RELEASEOBJECT(pGraphics);
-
-		BOOL bSuccess = ByteArrayToMediaData(pData, nWidthDest, nHeightDest, ppImage, bFlipVertical);
-		RELEASEARRAYOBJECTS(pData);
-
-		return bSuccess;
 	}
-}
 #else
-#include <unistd.h>
+	#include <unistd.h>
 #endif
 
 namespace NSHtmlRenderer
 {
 	CASCImage::CASCImage()
 	{
-		m_pWmfFile = new CWmfFile();
-		m_pRect = new TWmfRectF();
+		m_pMetafile		= new MetaFile::CMetaFile(NULL);
 		m_pMediaData	= NULL;
 
         m_bLoadOnlyMeta = false;
@@ -101,27 +101,32 @@ namespace NSHtmlRenderer
 	CASCImage::~CASCImage()
 	{
 		Close();
-		RELEASEOBJECT(m_pWmfFile);
-		RELEASEOBJECT(m_pRect);
+		RELEASEOBJECT(m_pMetafile);
 	}
 	void CASCImage::Open(const std::wstring& bsFilePath)
 	{
 		// Закроем раннее открытый файл (если он был открыт)
 		Close();
 
-		// Сначала попытаемя открыть файл как WMF
-		m_pWmfFile->OpenFromFile( bsFilePath.c_str() );
-		m_pWmfFile->Scan( m_pRect );
+		if (m_pMetafile == NULL) return;
 
-		// Файл открылся нормально
-		if ( !m_pWmfFile->CheckError() )
+		// Сначала попытаемя открыть файл как WMF/EMF
+
+		if ( m_pMetafile->LoadFromFile( bsFilePath.c_str() ) == true )
 		{
-			m_lImageType = c_lImageTypeMetafile | c_lMetaWmf;
-			return;
+			// Файл открылся нормально
+			long MetaType = m_pMetafile->GetType();
+			
+			m_lImageType =  c_lImageTypeMetafile | MetaType;
+			if (MetaType == c_lMetaWmf) return;
+ 
+//#if !defined(_WIN32) && !defined (_WIN64)			// emf всеже под win лучше читать через gdi+
+			if (MetaType == c_lMetaEmf) return;
+//#endif
 		}
+		// Это не Wmf & Emf
+		m_pMetafile->Close();
 
-		// Это не Wmf, попробуем открыть его как Emf
-		m_pWmfFile->Close();
 #if defined(_WIN32) || defined (_WIN64)
 		CGdiPlusInit oCGdiPlusInit;
 		oCGdiPlusInit.Init();
@@ -142,7 +147,8 @@ namespace NSHtmlRenderer
 					HMETAFILE hWmf = SetMetaFileBitsEx( unSize, pBuffer );
 
 					FILE *pFile = NULL;
-					WmfOpenTempFile( &m_wsTempFilePath, &pFile, _T("wb+"), _T(".wmf"), NULL );
+					std::wstring wstrTempFileName(m_wsTempFilePath.GetBuffer(), m_wsTempFilePath.GetLength());
+					WmfOpenTempFile( &wstrTempFileName, &pFile, _T("wb+"), _T(".wmf"), NULL );
 					if ( !pFile )
 					{
 						DeleteMetaFile( hWmf );
@@ -161,30 +167,30 @@ namespace NSHtmlRenderer
 						DeleteMetaFile( hTempWmf );
 
 						// Открываем Wmf
-						m_pWmfFile->OpenFromFile( m_wsTempFilePath.GetBuffer() );
-						m_pWmfFile->Scan( m_pRect );
-
-						if ( !m_pWmfFile->CheckError() )
+						if ( m_pMetafile->LoadFromFile( m_wsTempFilePath.GetBuffer()) == true)
 						{
 							// Wmf нормально открылся
-							m_lImageType = c_lImageTypeMetafile | c_lMetaWmf;
+							if (m_pMetafile->GetType() == 1)
+							{
+								m_lImageType =  c_lImageTypeMetafile | c_lMetaWmf;
 
-							DeleteMetaFile( hWmf );
-							DeleteEnhMetaFile( hEmf );
-							delete[] pBuffer;
-							delete pMetaFile;
+								DeleteMetaFile( hWmf );
+								DeleteEnhMetaFile( hEmf );
+								delete[] pBuffer;
+								delete pMetaFile;
 
-							return;			
-						}
-						else if ( m_pWmfFile->UnSupportedWmf() )
-						{
-							// Исходный файл Emf, но после конвертации в Wmf он не открылся
-							m_lImageType = c_lImageTypeMetafile | c_lMetaEmf;
+								return;		
+							}
+							else
+							{
+								// Исходный файл Emf, но после конвертации в Wmf он не открылся
+								m_lImageType =  c_lImageTypeMetafile | c_lMetaEmf;
+							}
 						}
 						else
 						{
 							// Сконвертированный файл не прочитался
-							m_pWmfFile->Close();
+							m_pMetafile->Close();
 							m_lImageType = c_lImageTypeUnknown;
 						}
 
@@ -218,6 +224,8 @@ namespace NSHtmlRenderer
 				}
 			}
 		}
+#else
+
 #endif
 		//todo
 		{
@@ -230,12 +238,12 @@ namespace NSHtmlRenderer
 		return;
 	}
 
-
 	void CASCImage::Close()
 	{
 		if ( m_lImageType & c_lImageTypeMetafile )
 		{
-			m_pWmfFile->Close();
+			m_pMetafile->Close();
+			
 			if ( m_lImageType & c_lMetaEmf )
 			{
 				// Удаляем временный файл
@@ -272,9 +280,9 @@ namespace NSHtmlRenderer
 			}
 			else if ( (c_lImageTypeMetafile | c_lMetaWmf) == m_lImageType || (c_lImageTypeMetafile | c_lMetaEmf) == m_lImageType )
 			{
-				float fWidth, fHeight;
-				m_pWmfFile->GetSize( &fWidth, &fHeight );
-				*lWidth = (LONG)fWidth;
+				double x=0, y=0, w=0, h=0;
+				m_pMetafile->GetBounds(&x,&y,&w,&h);
+				*lWidth = (LONG)w;
 			}
 			else
 			{
@@ -298,9 +306,9 @@ namespace NSHtmlRenderer
 			}
 			else if ( (c_lImageTypeMetafile | c_lMetaWmf) == m_lImageType || (c_lImageTypeMetafile | c_lMetaEmf) == m_lImageType )
 			{
-				float fWidth, fHeight;
-				m_pWmfFile->GetSize( &fWidth, &fHeight );
-				*lHeight = (LONG)fHeight;
+				double x=0, y=0, w=0, h=0;
+				m_pMetafile->GetBounds(&x,&y,&w,&h);
+				*lHeight = (LONG)h;
 			}
 			else
 			{
@@ -352,48 +360,10 @@ namespace NSHtmlRenderer
 		{
 			pRenderer->DrawImage(m_pMediaData, dX, dY, dWidth, dHeight);
 		}
-		else if ( (c_lImageTypeMetafile | c_lMetaWmf) == m_lImageType || (c_lImageTypeMetafile | c_lMetaEmf) == m_lImageType )
+		else if ( (c_lImageTypeMetafile | c_lMetaWmf) == m_lImageType || 
+					(c_lImageTypeMetafile | c_lMetaEmf) == m_lImageType )
 		{
-			pRenderer->get_DpiX(&m_dDpiX);
-			pRenderer->get_DpiY(&m_dDpiY);
-
-			CRendererOutput oWmfOut( m_pWmfFile, pRenderer, dX, dY, dWidth, dHeight );
-
-			double fSrcWidth, fSrcHeight;
-
-			float fW, fH;
-			m_pWmfFile->GetSize( &fW, &fH );
-			m_pWmfFile->GetDisplaySize( &fSrcWidth, &fSrcHeight,m_dDpiX, m_dDpiY );
-
-			//m_pWmfFile->GetDisplaySize( &fSrcWidth, &fSrcHeight, 25.4, 25.4 );
-			TWmfRectF oRectB = m_pWmfFile->GetBounds(  );
-
-			//double dW = m_oRect.oBR.fX - m_oRect.oTL.fX;
-			//double dH = m_oRect.oBR.fY - m_oRect.oTL.fY;
-			double dW = oRectB.oBR.fX - oRectB.oTL.fX;
-			double dH = oRectB.oBR.fY - oRectB.oTL.fY;
-
-			double dScaleX = dWidth  / dW;//fSrcWidth;
-			double dScaleY = dHeight / dH;//fSrcHeight;
-			//double dScaleX = dWidth  / fSrcWidth;
-			//double dScaleY = dHeight / fSrcHeight;
-
-			double dSrcDpiX, dSrcDpiY;
-			m_pWmfFile->GetDpi( &dSrcDpiX, &dSrcDpiY );
-
-			double dDpiKoefX = m_dDpiX / dSrcDpiX;
-			double dDpiKoefY = m_dDpiY / dSrcDpiY;
-
-			double dDpi = dSrcDpiY * fSrcHeight / fH;
-			oWmfOut.SetDpi( m_dDpiX, dDpi );
-			oWmfOut.SetWmfRect( oRectB );
-			oWmfOut.SetScales( dScaleX, dScaleY );
-
-			m_pWmfFile->SetOutputDevice( &oWmfOut );
-
-			TWmfRectF oRect;
-			m_pWmfFile->Play( &oRect );
-
+			m_pMetafile->DrawOnRenderer(pRenderer, dX, dY, dWidth, dHeight);
 		}
 
 		pRenderer->EndCommand(c_nImageType);
@@ -428,11 +398,14 @@ namespace NSHtmlRenderer
 	}
 	CFontManager* CASCImage::get_FontManager()
 	{
-		return m_pWmfFile->GetFontManager();
+		return m_pMetafile->get_FontManager();
 	}
 	void CASCImage::put_FontManager(CFontManager* pManager)
 	{
-		m_pWmfFile->SetFontManager(pManager);
+		if (pManager == NULL) return;
+
+		RELEASEOBJECT(m_pMetafile);
+		m_pMetafile = new MetaFile::CMetaFile(pManager->m_pApplication);
 	}
 
 	Aggplus::CImage* CASCImage::get_BitmapImage()

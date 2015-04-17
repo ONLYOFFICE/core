@@ -7,11 +7,12 @@
 #include "Wmf/RendererOutput.h"
 #include "Emf/EmfFile.h"
 
-namespace Metafile
+namespace MetaFile
 {
 	const long c_lMetaWmf = 0x01;
 	const long c_lMetaEmf = 0x02;
-	const long c_lMetaSvg = 0x04;
+	const long c_lMetaSvg = 0x04; 
+	// третий поросенок еще бегает )
 
 	class CMetaFile
 	{
@@ -23,7 +24,9 @@ namespace Metafile
 		bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 		void Close();
 		void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH);
+		long GetType();
 		void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
+		CFontManager* get_FontManager();
 
 	private:
 

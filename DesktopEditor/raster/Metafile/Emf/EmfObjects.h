@@ -4,7 +4,7 @@
 #include "EmfTypes.h"
 #include "../Wmf/WmfTypes.h"
 
-namespace Metafile
+namespace MetaFile
 {
 	typedef enum
 	{

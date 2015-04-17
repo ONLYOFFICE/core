@@ -1,7 +1,7 @@
 #ifndef _EMF_TYPES_H
 #define _EMF_TYPES_H
 
-namespace Metafile
+namespace MetaFile
 {
 	struct TEmfColor
 	{

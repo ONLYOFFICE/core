@@ -1292,7 +1292,7 @@ private:
 				return L"";
 
 			wsText[nLen] = '\0';
-#ifdef _WIN32
+#if defined(_WIN32) || defined (_WIN64)
 			// Пытаемся воспользоваться системной функцией
 			if ( !OemToCharBuffW( sText, wsText, nLen ) )
 			{

@@ -415,64 +415,116 @@
 			</File>
 		</Filter>
 		<Filter
-			Name="WMF"
+			Name="MetaFile"
 			>
 			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\Wmf\RendererOutput.h"
+				RelativePath="..\DesktopEditor\raster\Metafile\Common.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\Wmf\WmfCharsets.h"
+				RelativePath="..\DesktopEditor\raster\Metafile\Common.h"
 				>
 			</File>
 			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\Wmf\WmfCodePage1361.h"
+				RelativePath="..\DesktopEditor\raster\Metafile\MetaFile.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\Wmf\WmfCodePage932.h"
+				RelativePath="..\DesktopEditor\raster\Metafile\MetaFile.h"
 				>
 			</File>
-			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\Wmf\WmfCodePage936.h"
+			<Filter
+				Name="Wmf"
 				>
-			</File>
-			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\Wmf\WmfCodePage949.h"
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\RendererOutput.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfCharsets.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfCodePage1361.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfCodePage932.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfCodePage936.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfCodePage949.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfCodePage950.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfColor.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfFile.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfMemory.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfOutputDevice.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfRegion.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfTypes.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfUtils.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Emf"
 				>
-			</File>
-			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\Wmf\WmfCodePage950.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\Wmf\WmfColor.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\Wmf\WmfFile.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\Wmf\WmfMemory.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\Wmf\WmfOutputDevice.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\Wmf\WmfRegion.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\Wmf\WmfTypes.h"
-				>
-			</File>
-			<File
-				RelativePath="..\ASCImageStudio3\ASCGraphics\Objects\Image\Wmf\WmfUtils.h"
-				>
-			</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Emf\EmfFile.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Emf\EmfObjects.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Emf\EmfOutputDevice.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Emf\EmfPlayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Emf\EmfPlayer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Emf\EmfTypes.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Emf\RendererOutput.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 	</Files>
 	<Globals>

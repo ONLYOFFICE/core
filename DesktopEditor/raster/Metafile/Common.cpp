@@ -1,9 +1,9 @@
 #include "Common.h"
 
-#include "../../../raster/ImageFileFormatChecker.h"
-#include "../../../raster/BgraFrame.h"
+#include "../../raster/ImageFileFormatChecker.h"
+#include "../../raster/BgraFrame.h"
 
-namespace Metafile
+namespace MetaFile
 {	
 	bool ReadImageCoreHeader(BYTE* pHeaderBuffer, unsigned long ulHeaderBufferLen, BYTE* pImageBuffer, unsigned long ulImageBufferLen, BYTE** ppDstBuffer, unsigned long* pulWidth, unsigned long* pulHeight)
 	{

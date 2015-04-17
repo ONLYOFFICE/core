@@ -16,7 +16,7 @@ typedef unsigned char BYTE;
 #include "Wmf/WmfUtils.h"
 #include "Emf/EmfObjects.h"
 
-namespace Metafile
+namespace MetaFile
 {
 
 #define METAFILE_RGBA(r, g, b) ((DWORD)( ( (BYTE)(r) )| ( ( (BYTE)(g) ) << 8 ) | ( ( (BYTE)(b) ) << 16 ) | ( (BYTE)(0) << 24 ) ) )

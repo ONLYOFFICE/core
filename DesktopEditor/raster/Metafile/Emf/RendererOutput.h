@@ -11,7 +11,7 @@
 #include "EmfOutputDevice.h"
 #include "EmfFile.h"
 
-namespace Metafile
+namespace MetaFile
 {
 	class CEmfRendererOutput : public CEmfOutputDevice
 	{

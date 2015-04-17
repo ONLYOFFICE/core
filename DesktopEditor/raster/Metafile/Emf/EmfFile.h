@@ -11,6 +11,7 @@
 #include "EmfTypes.h"
 #include "EmfOutputDevice.h"
 #include "EmfPlayer.h"
+#include "EmfPath.h"
 
 #include "../../../fontengine/FontManager.h"
 #include <iostream>
@@ -30,6 +31,7 @@ namespace MetaFile
 			m_pBufferData = NULL;
 			m_bError      = false;
 			m_pOutput     = NULL;
+			m_pPath       = NULL;
 
 			m_oStream.SetStream(NULL, 0);
 
@@ -38,13 +40,12 @@ namespace MetaFile
 
 		~CEmfFile()
 		{
-
+			Close();
 		};
 
 		bool OpenFromFile(const wchar_t* wsFilePath)
 		{
-			if (m_pBufferData)
-				delete m_pBufferData;
+			Close();
 
 			NSFile::CFileBinary oFile;
 			oFile.OpenFile(wsFilePath);
@@ -63,8 +64,8 @@ namespace MetaFile
 		}
 		void Close()
 		{
-			if (m_pBufferData)
-				delete m_pBufferData;
+			RELEASEOBJECT(m_pBufferData);
+			RELEASEOBJECT(m_pPath);
 
 			m_pOutput = NULL;
 			m_oStream.SetStream(NULL, 0);
@@ -72,9 +73,9 @@ namespace MetaFile
 			m_oPlayer.Clear();
 			m_pDC = m_oPlayer.GetDC();
 		}
-		TEmfRectL GetBounds()
+		TEmfRectL* GetBounds()
 		{
-			return m_oHeader.oFrame;
+			return &m_oHeader.oFrame;
 		}
 		void SetOutputDevice(CEmfOutputDevice* pOutput)
 		{
@@ -82,19 +83,23 @@ namespace MetaFile
 		}
 		void Scan()
 		{
-			Read_EMR_HEADER();
-		}
+			CEmfOutputDevice* pOutput = m_pOutput;
+			m_pOutput = NULL;
+			PlayMetaFile();
+			m_pOutput = pOutput;
 
+			RELEASEOBJECT(m_pPath);
+			m_oPlayer.Clear();
+			m_pDC = m_oPlayer.GetDC();
+		}
 		bool CheckError()
 		{
 			return m_bError;
 		}
-
 		void SetFontManager(CFontManager* pManager)
 		{
 			m_pFontManager = pManager;
 		}
-
 		void PlayMetaFile()
 		{
 			unsigned long ulSize, ulType;
@@ -102,12 +107,23 @@ namespace MetaFile
 
 			bool bEof = false;
 
+			unsigned long ulRecordIndex = 0;
+
+			if (m_pOutput)
+				m_pOutput->Begin();
+
 			do
 			{
 				m_oStream >> ulType;
 				m_oStream >> ulSize;
 
 				m_ulRecordSize = ulSize - 8;
+
+				if (ulType < EMR_MIN || ulType > EMR_MAX)
+					return SetError();
+
+				if (0 == ulRecordIndex && EMR_HEADER != ulType)
+					return SetError();
 
 				switch (ulType)
 				{
@@ -124,9 +140,26 @@ namespace MetaFile
 						Read_EMR_STRETCHDIBITS();
 						break;
 					}
+					case EMR_SETDIBITSTODEVICE:
+					{
+						Read_EMR_SETDIBITSTODEVICE();
+						break;
+					}
+					//-----------------------------------------------------------
+					// 2.3.2 Clipping
+					//-----------------------------------------------------------
+					case EMR_EXTSELECTCLIPRGN: Read_EMR_EXTSELECTCLIPRGN(); break;
+					case EMR_INTERSECTCLIPRECT: Read_EMR_INTERSECTCLIPRECT(); break;
+					case EMR_SELECTCLIPPATH: Read_EMR_SELECTCLIPPATH(); break;
+					case EMR_SETMETARGN: Read_EMR_SETMETARGN(); break;
 					//-----------------------------------------------------------
 					// 2.3.4 Control
 					//-----------------------------------------------------------
+					case EMR_HEADER:
+					{
+						Read_EMR_HEADER();
+						break;
+					}
 					case EMR_EOF:
 					{
 						Read_EMR_EOF();
@@ -176,6 +209,24 @@ namespace MetaFile
 						Read_EMR_STROKEPATH();
 						break;
 					}
+					case EMR_FILLPATH:
+					{
+						Read_EMR_FILLPATH();
+						break;
+					}
+					case EMR_RECTANGLE:
+					{
+						Read_EMR_RECTANGLE();
+						break;
+					}
+					case EMR_POLYLINE16:
+					{
+						Read_EMR_POLYLINE16();
+						break;
+					}
+					case EMR_ELLIPSE: Read_EMR_ELLIPSE(); break;
+					case EMR_POLYBEZIER16: Read_EMR_POLYBEZIER16(); break;
+					case EMR_ROUNDRECT: Read_EMR_ROUNDRECT(); break;
 					//-----------------------------------------------------------
 					// 2.3.7 Object Creation
 					//-----------------------------------------------------------
@@ -199,6 +250,12 @@ namespace MetaFile
 						Read_EMR_EXTCREATEPEN();
 						break;
 					}
+					case EMR_CREATEDIBPATTERNBRUSHPT:
+					{
+						Read_EMR_CREATEDIBPATTERNBRUSHPT();
+						break;
+					}
+					case EMR_CREATEPALETTE: Read_EMR_CREATEPALETTE(); break;
 					//-----------------------------------------------------------
 					// 2.3.8 Object Manipulation
 					//-----------------------------------------------------------
@@ -212,6 +269,7 @@ namespace MetaFile
 						Read_EMR_DELETEOBJECT();
 						break;
 					}
+					case EMR_SELECTPALETTE: Read_EMR_SELECTPALETTE(); break;
 					//-----------------------------------------------------------
 					// 2.3.10 Path Bracket
 					//-----------------------------------------------------------
@@ -288,6 +346,48 @@ namespace MetaFile
 						Read_EMR_SETPOLYFILLMODE();
 						break;
 					}
+					case EMR_SETMAPMODE:
+					{
+						Read_EMR_SETMAPMODE();
+						break;
+					}
+					case EMR_SETWINDOWORGEX:
+					{
+						Read_EMR_SETWINDOWORGEX();
+						break;
+					}
+					case EMR_SETWINDOWEXTEX:
+					{
+						Read_EMR_SETWINDOWEXTEX();
+						break;
+					}
+					case EMR_SETVIEWPORTORGEX:
+					{
+						Read_EMR_SETVIEWPORTORGEX();
+						break;
+					}
+					case EMR_SETVIEWPORTEXTEX:
+					{
+						Read_EMR_SETVIEWPORTEXTEX();
+						break;
+					}
+					case EMR_SETBKCOLOR:
+					{
+						Read_EMR_SETBKCOLOR();
+						break;
+					}
+					case EMR_SETSTRETCHBLTMODE:
+					{
+						Read_EMR_SETSTRETCHBLTMODE();
+						break;
+					}
+					case EMR_SETICMMODE:
+					{
+						Read_EMR_SETICMMODE();
+						break;
+					}
+					case EMR_SETROP2: Read_EMR_SETROP2(); break;
+					case EMR_REALIZEPALETTE: Read_EMR_REALIZEPALETTE(); break;
 					//-----------------------------------------------------------
 					// 2.3.12 Transform
 					//-----------------------------------------------------------
@@ -305,7 +405,6 @@ namespace MetaFile
 					// Неподдерживаемые записи
 					//-----------------------------------------------------------
 					case EMR_GDICOMMENT:
-					case EMR_SETICMMODE:
 					{
 						Read_EMR_UNKNOWN();
 						break;
@@ -327,10 +426,16 @@ namespace MetaFile
 				if (!m_oStream.IsValid())
 					SetError();
 
+				ulRecordIndex++;
+
 			} while (!CheckError());
+
+			if (!CheckError())
+				m_oStream.SeekToStart();
+
+			if (m_pOutput)
+				m_pOutput->End();
 		}
-
-
 
 	private:
 
@@ -342,17 +447,177 @@ namespace MetaFile
 		{
 			return m_pDC;
 		}
+		TEmfRectL* GetDCBounds()
+		{
+			return &m_oHeader.oFrameToBounds;
+		}
+		bool ReadImage(unsigned long offBmi, unsigned long cbBmi, unsigned long offBits, unsigned long cbBits, unsigned long ulSkip, BYTE** ppBgraBuffer, unsigned long* pulWidth, unsigned long* pulHeight)
+		{
+			long lHeaderOffset         = offBmi - ulSkip;
+			unsigned long ulHeaderSize = cbBmi;
+			long lBitsOffset           = offBits - offBmi - cbBmi;
+			unsigned long ulBitsSize   = cbBits;
+			if (ulHeaderSize <= 0 || ulBitsSize <= 0 || lHeaderOffset < 0 || lBitsOffset < 0)
+			{
+				// TODO: Если попали сюда, значит надо смотреть BitBltRasterOperation
+				if (lHeaderOffset > 0)
+					m_oStream.Skip(lHeaderOffset);
+
+				m_oStream.Skip(ulHeaderSize);
+
+				if (lBitsOffset > 0)
+					m_oStream.Skip(lBitsOffset);
+
+				m_oStream.Skip(ulBitsSize);
+
+				return false;
+			}
+
+			m_oStream.Skip(lHeaderOffset);
+
+			BYTE* pHeaderBuffer = new BYTE[ulHeaderSize];
+			if (!pHeaderBuffer)
+			{
+				SetError();
+				return false;
+			}
+
+			m_oStream.ReadBytes(pHeaderBuffer, ulHeaderSize);
+
+			m_oStream.Skip(lBitsOffset);
+			BYTE* pBitsBuffer = new BYTE[ulBitsSize];
+			if (!pBitsBuffer)
+			{
+				delete[] pHeaderBuffer;
+				SetError();
+				return false;
+			}
+			m_oStream.ReadBytes(pBitsBuffer, ulBitsSize);
+
+			MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight);
+
+			delete[] pBitsBuffer;
+			delete[] pHeaderBuffer;
+
+			return true;
+		}
+		long TranslateX(long lSrcX)
+		{
+			long lDstX;
+
+			TEmfWindow* pWindow   = m_pDC->GetWindow();
+			TEmfWindow* pViewport = m_pDC->GetViewport();
+
+			lDstX = pWindow->lX + (unsigned long)((double)(lSrcX - pViewport->lX / m_pDC->GetPixelWidth()) * m_pDC->GetPixelWidth());
+			return lDstX;
+		}
+		long TranslateY(long lSrcY)
+		{
+			long lDstY;
+
+			TEmfWindow* pWindow   = m_pDC->GetWindow();
+			TEmfWindow* pViewport = m_pDC->GetViewport();
+
+			lDstY = pWindow->lY + (unsigned long)((double)(lSrcY - pViewport->lY / m_pDC->GetPixelHeight()) * m_pDC->GetPixelHeight());
+
+			return lDstY;
+		}
+
+		void MoveTo(TEmfPointL& oPoint)
+		{
+			MoveTo(oPoint.x, oPoint.y);
+		}
+		void MoveTo(TEmfPointS& oPoint)
+		{
+			MoveTo(oPoint.x, oPoint.y);
+		}
+		void MoveTo(long lX, long lY)
+		{
+			if (m_pPath)
+			{
+				if (!m_pPath->MoveTo(lX, lY))
+					return SetError();
+			}
+			else if (m_pOutput)
+			{
+				m_pOutput->MoveTo(lX, lY);
+			}
+		}
+		void LineTo(long lX, long lY)
+		{
+			if (m_pPath)
+			{
+				if (!m_pPath->LineTo(lX, lY))
+					return SetError();
+			}
+			else if (m_pOutput)
+			{
+				m_pOutput->LineTo(lX, lY);
+			}
+		}
+		void LineTo(TEmfPointL& oPoint)
+		{
+			LineTo(oPoint.x, oPoint.y);
+		}
+		void LineTo(TEmfPointS& oPoint)
+		{
+			LineTo(oPoint.x, oPoint.y);
+		}
+		void CurveTo(TEmfPointS& oPoint1, TEmfPointS& oPoint2, TEmfPointS& oPointE)
+		{
+			if (m_pPath)
+			{
+				if (!m_pPath->CurveTo(oPoint1, oPoint2, oPointE))
+					return SetError();
+			}
+			else if (m_pOutput)
+			{
+				m_pOutput->CurveTo(oPoint1.x, oPoint1.y, oPoint2.x, oPoint2.y, oPointE.x, oPointE.y);
+			}
+		}
+		void ClosePath()
+		{
+			if (m_pPath)
+			{
+				if (!m_pPath->Close())
+					return SetError();
+			}
+			else if (m_pOutput)
+				m_pOutput->ClosePath();
+		}
+		void ArcTo(long lL, long lT, long lR, long lB, double dStart, double dSweep)
+		{
+			if (m_pPath)
+			{
+				if (!m_pPath->ArcTo(lL, lT, lR, lB, dStart, dSweep))
+					return SetError();
+			}
+			else if (m_pOutput)
+			{
+				m_pOutput->ArcTo(lL, lT, lR, lB, dStart, dSweep);
+			}
+		}
+		void DrawPath(bool bStroke, bool bFill)
+		{
+			if (m_pPath && m_pOutput)
+			{
+				m_pPath->Draw(m_pOutput, bStroke, bFill);
+			}
+			else if (m_pOutput)
+			{
+				long lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
+				m_pOutput->DrawPath(lType);
+				m_pOutput->EndPath();
+			}
+		}
+		void UpdateOutputDC()
+		{
+			if (m_pOutput)
+				m_pOutput->UpdateDC();
+		}
 
 		void Read_EMR_HEADER()
 		{
-			unsigned long ulType, ulSize;
-
-			m_oStream >> ulType;
-			m_oStream >> ulSize;
-
-			if (EMR_HEADER != ulType)
-				return SetError();
-
 			m_oStream >> m_oHeader.oBounds;
 			m_oStream >> m_oHeader.oFrame;
 			m_oStream >> m_oHeader.ulSignature;
@@ -371,120 +636,128 @@ namespace MetaFile
 				return SetError();
 
 			// Пропускаем остальную часть заголовка, т.к. она нас пока не интересует
-			unsigned long ulRemaining = ulSize - 88; // 8 + sizeof(TEmfHeader)
+			unsigned long ulRemaining = m_ulRecordSize - 80; // sizeof(TEmfHeader)
 			m_oStream.Skip(ulRemaining);
+
+			// По логике мы должны получать рект, точно такой же как и oBounds, но есть файлы, где это не так.
+			m_oHeader.oFrameToBounds.lLeft   = (long)(m_oHeader.oFrame.lLeft / 100.0 / m_oHeader.oMillimeters.cx * m_oHeader.oDevice.cx);
+			m_oHeader.oFrameToBounds.lRight  = (long)(m_oHeader.oFrame.lRight / 100.0 / m_oHeader.oMillimeters.cx * m_oHeader.oDevice.cx);
+			m_oHeader.oFrameToBounds.lTop    = (long)(m_oHeader.oFrame.lTop / 100.0 / m_oHeader.oMillimeters.cy * m_oHeader.oDevice.cy);
+			m_oHeader.oFrameToBounds.lBottom = (long)(m_oHeader.oFrame.lBottom/ 100.0 / m_oHeader.oMillimeters.cy * m_oHeader.oDevice.cy);
 		}
 		void Read_EMR_STRETCHDIBITS()
 		{
 			TEmfStretchDIBITS oBitmap;
 			m_oStream >> oBitmap;
 
-			long lHeaderOffset         = oBitmap.offBmiSrc - sizeof(TEmfStretchDIBITS) - 8;
-			unsigned long ulHeaderSize = oBitmap.cbBmiSrc;
-			long lBitsOffset           = oBitmap.offBitsSrc - oBitmap.offBmiSrc - oBitmap.cbBmiSrc;
-			unsigned long ulBitsSize   = oBitmap.cbBitsSrc;
-			if (ulHeaderSize <= 0 || ulBitsSize <= 0 || lHeaderOffset < 0 || lBitsOffset < 0)
-			{
-				// TODO: Если попали сюда, значит надо смотреть oBitmap.BitBltRasterOperation
-
-				if (lHeaderOffset > 0)
-					m_oStream.Skip(lHeaderOffset);
-
-				m_oStream.Skip(ulHeaderSize);
-
-				if (lBitsOffset > 0)
-					m_oStream.Skip(lBitsOffset);
-
-				m_oStream.Skip(ulBitsSize);
-
-				return;
-			}
-
-			m_oStream.Skip(lHeaderOffset);
-
-			BYTE* pHeaderBuffer = new BYTE[ulHeaderSize];
-			if (!pHeaderBuffer)
-				return SetError();
-
-			m_oStream.ReadBytes(pHeaderBuffer, ulHeaderSize);
-
-			m_oStream.Skip(lBitsOffset);
-			BYTE* pBitsBuffer = new BYTE[ulBitsSize];
-			if (!pBitsBuffer)
-			{
-				delete[] pHeaderBuffer;
-				return SetError();
-			}
-			m_oStream.ReadBytes(pBitsBuffer, ulBitsSize);
-
-			BYTE* pBgraBuffer;
+			BYTE* pBgraBuffer = NULL;
 			unsigned long ulWidth, ulHeight;
-			ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, &pBgraBuffer, &ulWidth, &ulHeight);
 
-			if (m_pOutput)
-				m_pOutput->DrawBitmap(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
+			if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, sizeof(TEmfStretchDIBITS) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
+			{
+				if (m_pOutput)
+					m_pOutput->DrawBitmap(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
+			}
 
 			if (pBgraBuffer)
 				delete[] pBgraBuffer;
-
-			delete[] pBitsBuffer;
-			delete[] pHeaderBuffer;
 		}
 		void Read_EMR_BITBLT()
 		{
 			TEmfBitBlt oBitmap;
 			m_oStream >> oBitmap;
 
-			long lHeaderOffset         = oBitmap.offBmiSrc - sizeof(TEmfBitBlt) - 8;
-			unsigned long ulHeaderSize = oBitmap.cbBmiSrc;
-			long lBitsOffset           = oBitmap.offBitsSrc - oBitmap.offBmiSrc - oBitmap.cbBmiSrc;
-			unsigned long ulBitsSize   = oBitmap.cbBitsSrc;
-			if (ulHeaderSize <= 0 || ulBitsSize <= 0 || lHeaderOffset < 0 || lBitsOffset < 0)
-			{
-				// TODO: Если попали сюда, значит надо смотреть oBitmap.BitBltRasterOperation
-
-				if (lHeaderOffset > 0)
-					m_oStream.Skip(lHeaderOffset);
-
-				m_oStream.Skip(ulHeaderSize);
-
-				if (lBitsOffset > 0)
-					m_oStream.Skip(lBitsOffset);
-
-				m_oStream.Skip(ulBitsSize);
-
-				return;
-			}
-
-			m_oStream.Skip(lHeaderOffset);
-
-			BYTE* pHeaderBuffer = new BYTE[ulHeaderSize];
-			if (!pHeaderBuffer)
-				return SetError();
-
-			m_oStream.ReadBytes(pHeaderBuffer, ulHeaderSize);
-
-			m_oStream.Skip(lBitsOffset);
-			BYTE* pBitsBuffer = new BYTE[ulBitsSize];
-			if (!pBitsBuffer)
-			{
-				delete[] pHeaderBuffer;
-				return SetError();
-			}
-			m_oStream.ReadBytes(pBitsBuffer, ulBitsSize);
-
-			BYTE* pBgraBuffer;
+			BYTE* pBgraBuffer = NULL;
 			unsigned long ulWidth, ulHeight;
-			ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, &pBgraBuffer, &ulWidth, &ulHeight);
+
+			if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, sizeof(TEmfBitBlt) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
+			{
+				if (m_pOutput)
+					m_pOutput->DrawBitmap(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
+			}
 
 			if (m_pOutput)
-				m_pOutput->DrawBitmap(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
+			{
+				if (0x00000042 == oBitmap.BitBltRasterOperation) // BLACKNESS
+				{
+					// Делаем все черным цветом
+					pBgraBuffer = new BYTE[4];
+					pBgraBuffer[0] = 0x00;
+					pBgraBuffer[1] = 0x00;
+					pBgraBuffer[2] = 0x00;
+					pBgraBuffer[3] = 0xff;
+
+					ulWidth  = 1;
+					ulHeight = 1;
+				}
+				if (0x00FF0062 == oBitmap.BitBltRasterOperation) // WHITENESS
+				{
+					// Делаем все черным цветом
+					pBgraBuffer = new BYTE[4];
+					pBgraBuffer[0] = 0xff;
+					pBgraBuffer[1] = 0xff;
+					pBgraBuffer[2] = 0xff;
+					pBgraBuffer[3] = 0xff;
+
+					ulWidth  = 1;
+					ulHeight = 1;
+				}
+				else if (0x00f00021 == oBitmap.BitBltRasterOperation) // PATCOPY
+				{
+					CEmfLogBrushEx* pBrush = m_pDC->GetBrush();
+					if (pBrush)
+					{					
+						// Делаем цветом кисти
+						pBgraBuffer = new BYTE[4];
+						pBgraBuffer[0] = pBrush->Color.r;
+						pBgraBuffer[1] = pBrush->Color.g;
+						pBgraBuffer[2] = pBrush->Color.b;
+						pBgraBuffer[3] = 0xff;
+
+						ulWidth  = 1;
+						ulHeight = 1;
+					}
+				}
+				else if (0x005a0049 == oBitmap.BitBltRasterOperation || 0x00A000C9 == oBitmap.BitBltRasterOperation) // PATINVERT
+				{
+					CEmfLogBrushEx* pBrush = m_pDC->GetBrush();
+					if (pBrush)
+					{
+						// Делаем цветом кисти
+						pBgraBuffer = new BYTE[4];
+						pBgraBuffer[0] = pBrush->Color.b;
+						pBgraBuffer[1] = pBrush->Color.g;
+						pBgraBuffer[2] = pBrush->Color.r;
+						pBgraBuffer[3] = 30;
+
+						ulWidth  = 1;
+						ulHeight = 1;
+					}
+				}
+
+				if (pBgraBuffer)
+					m_pOutput->DrawBitmap(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);				
+			}
 
 			if (pBgraBuffer)
 				delete[] pBgraBuffer;
+		}
+		void Read_EMR_SETDIBITSTODEVICE()
+		{
+			TEmfSetDiBitsToDevice oBitmap;
+			m_oStream >> oBitmap;
 
-			delete[] pBitsBuffer;
-			delete[] pHeaderBuffer;
+			BYTE* pBgraBuffer = NULL;
+			unsigned long ulWidth, ulHeight;
+			if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, sizeof(TEmfSetDiBitsToDevice) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
+			{
+				// TODO: Нужно реализовать обрезку картинки по параметрам oBitmap.iStartScan и oBitmap.cScans
+				if (m_pOutput)
+					m_pOutput->DrawBitmap(oBitmap.Bounds.lLeft, oBitmap.Bounds.lTop, oBitmap.Bounds.lRight - oBitmap.Bounds.lLeft, oBitmap.Bounds.lBottom - oBitmap.Bounds.lTop, pBgraBuffer, ulWidth, ulHeight);
+			}
+
+			if (pBgraBuffer)
+				delete[] pBgraBuffer;
 		}
 		void Read_EMR_EOF()
 		{
@@ -522,6 +795,7 @@ namespace MetaFile
 				m_oPlayer.RestoreDC();
 
 			m_pDC = m_oPlayer.GetDC();
+			UpdateOutputDC();
 		}
 		void Read_EMR_MODIFYWORLDTRANSFORM()
 		{
@@ -533,6 +807,7 @@ namespace MetaFile
 
 			TEmfXForm* pCurTransform = m_pDC->GetTransform();
 			pCurTransform->Multiply(oXForm, ulMode);
+			UpdateOutputDC();
 		}
 		void Read_EMR_SETWORLDTRANSFORM()
 		{
@@ -542,11 +817,14 @@ namespace MetaFile
 
 			TEmfXForm* pCurTransform = m_pDC->GetTransform();
 			pCurTransform->Multiply(oXForm, MWT_SET);
+			UpdateOutputDC();
 		}
 		void Read_EMR_CREATEBRUSHINDIRECT()
 		{
 			unsigned long ulBrushIndex;
 			CEmfLogBrushEx* pBrush = new CEmfLogBrushEx();
+			if (!pBrush)
+				return SetError();
 
 			m_oStream >> ulBrushIndex;
 			m_oStream >> *pBrush;
@@ -559,6 +837,7 @@ namespace MetaFile
 			m_oStream >> oColor;
 
 			m_pDC->SetTextColor(oColor);
+			UpdateOutputDC();
 		}
 
 		void Read_EMR_EXTTEXTOUTW()
@@ -597,6 +876,7 @@ namespace MetaFile
 			m_oStream >> ulObjectIndex;
 
 			m_oPlayer.SelectObject(ulObjectIndex);
+			UpdateOutputDC();
 		}
 		void Read_EMR_POLYGON16()
 		{
@@ -608,32 +888,16 @@ namespace MetaFile
 			if (ulCount <= 0)
 				return;
 
-			TEmfPointS* pPoints = new TEmfPointS[ulCount];
-			if (!pPoints)
-				return SetError();
-
-			for (unsigned long ulIndex = 0; ulIndex < ulCount; ulIndex++)
+			TEmfPointS oPoint;
+			m_oStream >> oPoint;
+			MoveTo(oPoint);
+			for (unsigned long ulIndex = 1; ulIndex < ulCount; ulIndex++)
 			{
-				m_oStream >> pPoints[ulIndex];
+				m_oStream >> oPoint;
+				LineTo(oPoint);
 			}
-
-			CEmfOutputDevice* pOut = m_pOutput;
-			if (pOut)
-			{
-				pOut->StartPath();
-				pOut->MoveTo(pPoints[0].x, pPoints[0].y);
-
-				for (unsigned long ulIndex = 1; ulIndex < ulCount; ulIndex++)
-				{
-					pOut->LineTo(pPoints[ulIndex].x, pPoints[ulIndex].y);
-				}
-
-				pOut->ClosePath();
-				pOut->DrawPath();
-				pOut->EndPath();
-			}
-
-			delete[] pPoints;
+			ClosePath();
+			DrawPath(true, true);
 		}
 		void Read_EMR_EXTCREATEFONTINDIRECTW()
 		{
@@ -652,26 +916,28 @@ namespace MetaFile
 			m_oStream >> ulAlign;
 
 			m_pDC->SetTextAlign(ulAlign);
+			UpdateOutputDC();
 		}
 		void Read_EMR_SETBKMODE()
 		{
 			unsigned long ulBgMode;
 			m_oStream >> ulBgMode;
 			m_pDC->SetBgMode(ulBgMode);
+			UpdateOutputDC();
 		}
 		void Read_EMR_DELETEOBJECT()
 		{
 			unsigned long ulIndex;
 			m_oStream >> ulIndex;
-
-			// Не удаляем объекты. Все объекты удаляться в любом случае в конце, а если удалять тут, то придется следить 
-			// за всеми классами, у которых есть ссылки на удаляемые объекты.
+			m_oPlayer.DeleteObject(ulIndex);
+			UpdateOutputDC();
 		}
 		void Read_EMR_SETMITERLIMIT()
 		{
 			unsigned long ulMiterLimit;
 			m_oStream >> ulMiterLimit;
 			m_pDC->SetMiterLimit(ulMiterLimit);
+			UpdateOutputDC();
 		}
 		void Read_EMR_EXTCREATEPEN()
 		{
@@ -742,6 +1008,7 @@ namespace MetaFile
 			unsigned long ulFillMode;
 			m_oStream >> ulFillMode;
 			m_pDC->SetFillMode(ulFillMode);
+			UpdateOutputDC();
 		}
 		void Read_EMR_POLYPOLYGON16()
 		{
@@ -761,50 +1028,43 @@ namespace MetaFile
 				m_oStream >> pPolygonPointCount[ulIndex];
 			}
 
-			TEmfPointS* pPoints = new TEmfPointS[ulTotalPointsCount];
-			if (!pPoints)
+			for (unsigned long ulPolygonIndex = 0, unStartPointIndex = 0; ulPolygonIndex < ulNumberOfPolygons; ulPolygonIndex++)
 			{
-				delete[] pPolygonPointCount;
-				return SetError();
-			}
+				unsigned long ulCurrentPolygonPointsCount = pPolygonPointCount[ulPolygonIndex];
+				if (0 == ulCurrentPolygonPointsCount)
+					continue;
 
-			for (unsigned long ulIndex = 0; ulIndex < ulTotalPointsCount; ulIndex++)
-			{
-				m_oStream >> pPoints[ulIndex];
-			}
+				TEmfPointS oPoint;
+				m_oStream >> oPoint;
+				MoveTo(oPoint);
 
-			if (m_pOutput)
-			{
-				for (unsigned long ulPolygonIndex = 0, unStartPointIndex = 0; ulPolygonIndex < ulNumberOfPolygons; ulPolygonIndex++)
+				for (unsigned long ulPointIndex = 1; ulPointIndex < ulCurrentPolygonPointsCount; ulPointIndex++)
 				{
-					m_pOutput->StartPath();
-					for (unsigned long ulPointIndex = 0; ulPointIndex < pPolygonPointCount[ulPolygonIndex]; ulPointIndex++)
+					unsigned long ulRealPointIndex = ulPointIndex + unStartPointIndex;
+					if (ulRealPointIndex >= ulTotalPointsCount)
 					{
-						unsigned long ulRealPointIndex = ulPointIndex + unStartPointIndex;
-						if (ulRealPointIndex >= ulTotalPointsCount)
-						{
-							delete[] pPolygonPointCount;
-							delete[] pPoints;
-							return SetError();
-						}
-
-						if (0 == ulPointIndex)
-							m_pOutput->MoveTo(pPoints[ulRealPointIndex].x, pPoints[ulRealPointIndex].y);
-						else
-							m_pOutput->LineTo(pPoints[ulRealPointIndex].x, pPoints[ulRealPointIndex].y);
+						delete[] pPolygonPointCount;
+						return SetError();
 					}
-					m_pOutput->ClosePath();
-					m_pOutput->DrawPath();
-					m_pOutput->EndPath();
+
+					m_oStream >> oPoint;
+					LineTo(oPoint);
 				}
+
+				ClosePath();
+				DrawPath(true, true);
 			}
 
 			delete[] pPolygonPointCount;
-			delete[] pPoints;
 		}
 		void Read_EMR_BEGINPATH()
 		{
-			// Ничего не делаем
+			if (m_pPath)
+				delete m_pPath;
+
+			m_pPath = new CEmfPath();
+			if (!m_pPath)
+				SetError();
 		}
 		void Read_EMR_ENDPATH()
 		{
@@ -812,7 +1072,11 @@ namespace MetaFile
 		}
 		void Read_EMR_CLOSEFIGURE()
 		{
-			// Ничего не делаем
+			if (m_pPath)
+			{
+				if (!m_pPath->Close())
+					return SetError();
+			}
 		}
 		void Read_EMR_FLATTENPATH()
 		{
@@ -820,25 +1084,27 @@ namespace MetaFile
 		}
 		void Read_EMR_WIDENPATH()
 		{
-			// Ничего не делаем
+			// TODO: реализовать
 		}
 		void Read_EMR_ABORTPATH()
 		{
-			// Ничего не делаем
+			if (m_pPath)
+			{
+				delete m_pPath;
+				m_pPath = NULL;
+			}
 		}
 		void Read_EMR_MOVETOEX()
 		{
 			TEmfPointL oPoint;
 			m_oStream >> oPoint;
-
-			// TODO: Реализовать
+			MoveTo(oPoint);
 		}
 		void Read_EMR_LINETO()
 		{
 			TEmfPointL oPoint;
 			m_oStream >> oPoint;
-
-			// TODO: реализовать
+			LineTo(oPoint);
 		}
 		void Read_EMR_POLYBEZIERTO16()
 		{
@@ -848,16 +1114,15 @@ namespace MetaFile
 			unsigned long ulCount;
 			m_oStream >> ulCount;
 
-			TEmfPointS* pPoints = new TEmfPointS[ulCount];
-			if (!pPoints)
-				return SetError();
-
-			for (unsigned long ulIndex = 0; ulIndex < ulCount; ulIndex++)
+			for (unsigned long ulIndex = 0; ulIndex < ulCount; ulIndex += 3)
 			{
-				m_oStream >> pPoints[ulIndex];
-			}
+				if (ulCount - ulIndex < 2)
+					return SetError();
 
-			delete[] pPoints;
+				TEmfPointS oPoint1, oPoint2, oPointE;
+				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
+				CurveTo(oPoint1, oPoint2, oPointE);
+			}
 		}
 		void Read_EMR_POLYLINETO16()
 		{
@@ -867,26 +1132,251 @@ namespace MetaFile
 			unsigned long ulCount;
 			m_oStream >> ulCount;
 
-			TEmfPointS* pPoints = new TEmfPointS[ulCount];
-			if (!pPoints)
-				return SetError();
-
 			for (unsigned long ulIndex = 0; ulIndex < ulCount; ulIndex++)
 			{
-				m_oStream >> pPoints[ulIndex];
+				TEmfPointS oPoint;
+				m_oStream >> oPoint;
+				LineTo(oPoint);
 			}
-
-			delete[] pPoints;
 		}
 		void Read_EMR_STROKEANDFILLPATH()
 		{
 			TEmfRectL oBounds;
 			m_oStream >> oBounds;
+			if (m_pOutput && m_pPath)
+			{
+				m_pPath->Draw(m_pOutput, true, true);
+				RELEASEOBJECT(m_pPath);
+			}
 		}
 		void Read_EMR_STROKEPATH()
 		{
 			TEmfRectL oBounds;
 			m_oStream >> oBounds;
+			if (m_pOutput && m_pPath)
+			{
+				m_pPath->Draw(m_pOutput, true, false);
+				RELEASEOBJECT(m_pPath);
+			}
+		}
+		void Read_EMR_FILLPATH()
+		{
+			TEmfRectL oBounds;
+			m_oStream >> oBounds;
+			if (m_pOutput && m_pPath)
+			{
+				m_pPath->Draw(m_pOutput, false, true);
+				RELEASEOBJECT(m_pPath);
+			}
+		}
+		void Read_EMR_SETMAPMODE()
+		{
+			unsigned long ulMapMode;
+			m_oStream >> ulMapMode;
+
+			m_pDC->SetMapMode(ulMapMode);
+		}
+		void Read_EMR_SETWINDOWORGEX()
+		{
+			TEmfPointL oOrigin;
+			m_oStream >> oOrigin;
+			m_pDC->SetWindowOrigin(oOrigin);
+		}
+		void Read_EMR_SETWINDOWEXTEX()
+		{
+			TEmfSizeL oExtent;
+			m_oStream >> oExtent;
+			m_pDC->SetWindowExtents(oExtent);
+		}
+		void Read_EMR_SETVIEWPORTORGEX()
+		{
+			TEmfPointL oOrigin;
+			m_oStream >> oOrigin;
+			m_pDC->SetViewportOrigin(oOrigin);
+		}
+		void Read_EMR_SETVIEWPORTEXTEX()
+		{
+			TEmfSizeL oExtent;
+			m_oStream >> oExtent;
+			m_pDC->SetViewportExtents(oExtent);
+		}
+		void Read_EMR_RECTANGLE()
+		{
+			TEmfRectL oBox;
+			m_oStream >> oBox;
+
+			MoveTo(oBox.lLeft, oBox.lTop);
+			LineTo(oBox.lRight, oBox.lTop);
+			LineTo(oBox.lRight, oBox.lBottom);
+			LineTo(oBox.lLeft, oBox.lBottom);
+			ClosePath();
+			DrawPath(true, true);
+		}
+		void Read_EMR_SELECTCLIPPATH()
+		{
+			unsigned long ulRegionMode;
+			m_oStream >> ulRegionMode;
+			// TODO: реализовать клип
+		}
+		void Read_EMR_SETBKCOLOR()
+		{
+			TEmfColor oColor;
+			m_oStream >> oColor;
+			// TODO: реализовать
+
+			UpdateOutputDC();
+		}
+		void Read_EMR_SETSTRETCHBLTMODE()
+		{
+			unsigned long ulStretchMode;
+			m_oStream >> ulStretchMode;
+			m_pDC->SetStretchMode(ulStretchMode);
+		}
+		void Read_EMR_SETICMMODE()
+		{
+			unsigned long ulICMMode;
+			m_oStream >> ulICMMode;
+		}
+		void Read_EMR_CREATEDIBPATTERNBRUSHPT()
+		{
+			unsigned long ulBrushIndex;
+			TEmfDibPatternBrush oDibBrush;
+			m_oStream >> ulBrushIndex;
+			m_oStream >> oDibBrush;
+
+			BYTE* pBgraBuffer = NULL;
+			unsigned long ulWidth, ulHeight;
+
+			if (ReadImage(oDibBrush.offBmi, oDibBrush.cbBmi, oDibBrush.offBits, oDibBrush.cbBits, sizeof(TEmfDibPatternBrush) + 12, &pBgraBuffer, &ulWidth, &ulHeight))
+			{
+				CEmfLogBrushEx* pBrush = new CEmfLogBrushEx();
+				if (!pBrush)
+					return SetError();
+
+				pBrush->SetDibPattern(pBgraBuffer, ulWidth, ulHeight);
+				m_oPlayer.RegisterObject(ulBrushIndex, (CEmfObjectBase*)pBrush);
+			}
+		}
+		void Read_EMR_POLYLINE16()
+		{
+			TEmfRectL oBounds;
+			m_oStream >> oBounds;
+			unsigned long ulCount;
+			m_oStream >> ulCount;
+
+			if (0 == ulCount)
+				return;
+
+			TEmfPointS oPoint;
+			m_oStream >> oPoint;
+			MoveTo(oPoint);
+
+			for (unsigned long ulIndex = 1; ulIndex < ulCount; ulIndex++)
+			{
+				m_oStream >> oPoint;
+				LineTo(oPoint);
+			}
+
+			DrawPath(true, false);
+		}
+		void Read_EMR_EXTSELECTCLIPRGN()
+		{
+			unsigned long ulRgnDataSize, ulRegionMode;
+			m_oStream >> ulRgnDataSize >> ulRegionMode;
+
+			m_oStream.Skip(m_ulRecordSize - 8);
+			// TODO: Реализовать клип
+		}
+		void Read_EMR_SETMETARGN()
+		{
+			// TODO: Реализовать клип
+		}
+		void Read_EMR_ELLIPSE()
+		{
+			TEmfRectL oBox;
+			m_oStream >> oBox;
+			ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
+			DrawPath(true, true);
+		}
+		void Read_EMR_POLYBEZIER16()
+		{
+			TEmfRectL oBounds;
+			m_oStream >> oBounds;
+
+			unsigned long ulCount;
+			m_oStream >> ulCount;
+
+			if (0 == ulCount)
+				return;
+
+			TEmfPointS oStartPoint;
+			m_oStream >> oStartPoint;
+			MoveTo(oStartPoint);
+
+			TEmfPointS oPoint1, oPoint2, oPointE;
+			for (unsigned long ulIndex = 1; ulIndex < ulCount; ulIndex += 3)
+			{
+				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
+				CurveTo(oPoint1, oPoint2, oPointE);
+			}
+			DrawPath(true, false);
+		}
+		void Read_EMR_SETROP2()
+		{
+			unsigned long ulRop2Mode;
+			m_oStream >> ulRop2Mode;
+
+		}
+		void Read_EMR_CREATEPALETTE()
+		{
+			unsigned long ulPaletteIndex;
+			CEmfLogPalette* pPalette = new CEmfLogPalette();
+			if (!pPalette)
+				return SetError();
+
+			m_oStream >> ulPaletteIndex;
+			m_oStream >> *pPalette;
+			m_oPlayer.RegisterObject(ulPaletteIndex, (CEmfObjectBase*)pPalette);
+		}
+		void Read_EMR_SELECTPALETTE()
+		{
+			unsigned long ulIndex;
+			m_oStream >> ulIndex;
+			m_oPlayer.SelectPalette(ulIndex);
+		}
+		void Read_EMR_REALIZEPALETTE()
+		{
+			// TODO: Реализовать
+		}
+		void Read_EMR_INTERSECTCLIPRECT()
+		{
+			TEmfRectL oClip;
+			m_oStream >> oClip;
+			// TODO: реализовать клип
+		}
+		void Read_EMR_ROUNDRECT()
+		{
+			TEmfRectL oBox;
+			TEmfSizeL oCorner;
+			m_oStream >> oBox >> oCorner;
+
+			long lBoxW = oBox.lRight - oBox.lLeft;
+			long lBoxH = oBox.lBottom - oBox.lTop;
+
+			long lRoundW = (std::min)((long)oCorner.cx, lBoxW / 2);
+			long lRoundH = (std::min)((long)oCorner.cy, lBoxH / 2);
+
+			MoveTo(oBox.lLeft + lRoundW, oBox.lTop);
+			LineTo(oBox.lRight - lRoundW, oBox.lTop);
+			ArcTo(oBox.lRight - lRoundW, oBox.lTop, oBox.lRight, oBox.lTop + lRoundH, -90, 90);
+			LineTo(oBox.lRight, oBox.lBottom - lRoundH);
+			ArcTo(oBox.lRight - lRoundW, oBox.lBottom - lRoundH, oBox.lRight, oBox.lBottom, 0, 90);
+			LineTo(oBox.lLeft + lRoundW, oBox.lBottom);
+			ArcTo(oBox.lLeft, oBox.lBottom - lRoundH, oBox.lLeft + lRoundW, oBox.lBottom, 90, 90);
+			LineTo(oBox.lLeft, oBox.lTop + lRoundH);
+			ArcTo(oBox.lLeft, oBox.lTop, oBox.lLeft + lRoundW, oBox.lTop + lRoundW, 180, 90);
+			ClosePath();
+			DrawPath(true, true);
 		}
 
 	private:
@@ -902,6 +1392,8 @@ namespace MetaFile
 
 		CEmfDC*           m_pDC;
 		CEmfPlayer        m_oPlayer;
+
+		CEmfPath*         m_pPath;
 
 		friend class CEmfRendererOutput;
 		friend class CEmfPlayer;

@@ -2,7 +2,9 @@
 #define _EMF_OBJECTS_H
 
 #include "EmfTypes.h"
+#include "../Wmf/WmfUtils.h"
 #include "../Wmf/WmfTypes.h"
+#include "../../Common/Types.h"
 
 namespace MetaFile
 {
@@ -11,7 +13,8 @@ namespace MetaFile
 		EMF_OBJECT_UNKNOWN = 0x00,
 		EMF_OBJECT_BRUSH   = 0x01,
 		EMF_OBJECT_FONT    = 0x02,
-		EMF_OBJECT_PEN     = 0x03
+		EMF_OBJECT_PEN     = 0x03,
+		EMF_OBJECT_PALETTE = 0x04
 	} EEmfObjectType;
 
 	class CEmfObjectBase
@@ -29,23 +32,23 @@ namespace MetaFile
 	{
 	public:
 
-		CEmfLogBrushEx()
-		{
-			BrushStyle = BS_SOLID;
-			BrushHatch = HS_HORIZONTAL;
-		}
-		virtual ~CEmfLogBrushEx()
-		{
-		}
+		CEmfLogBrushEx();
+		virtual ~CEmfLogBrushEx();
 		virtual EEmfObjectType GetType()
 		{
 			return EMF_OBJECT_BRUSH;
 		}
+		void SetDibPattern(unsigned char* pBuffer, unsigned long ulWidth, unsigned long ulHeight);
 
 	public:
-		unsigned long BrushStyle;
-		TEmfColor     Color;
-		unsigned long BrushHatch;
+		unsigned long  BrushStyle;
+		TEmfColor      Color;
+		unsigned long  BrushHatch;
+		unsigned long  BrushAlpha;
+		std::wstring   DibPatternPath;
+		unsigned char* DibBuffer;
+		unsigned long  DibWidth;
+		unsigned long  DibHeigth;
 	};
 
 	class CEmfLogFont : public CEmfObjectBase
@@ -74,7 +77,7 @@ namespace MetaFile
 	class CEmfLogPen : public CEmfObjectBase
 	{
 	public:
-		CEmfLogPen()
+		CEmfLogPen() : PenStyle(PS_SOLID), Width(1), Color(0, 0, 0)
 		{
 			StyleEntry = NULL;
 		}
@@ -95,6 +98,30 @@ namespace MetaFile
 		TEmfColor      Color;
 		unsigned long  NumStyleEntries;
 		unsigned long* StyleEntry;
+	};
+
+	class CEmfLogPalette : public CEmfObjectBase
+	{
+	public:
+		CEmfLogPalette()
+		{
+			NumberOfEntries = 0;
+			PaletteEntries  = NULL;
+		}
+		virtual ~CEmfLogPalette()
+		{
+			if (PaletteEntries)
+				delete[] PaletteEntries;
+		}
+		virtual EEmfObjectType GetType()
+		{
+			return EMF_OBJECT_PALETTE;
+		}
+
+	public:
+
+		unsigned short       NumberOfEntries;
+		TEmfLogPaletteEntry* PaletteEntries;
 	};
 }
 

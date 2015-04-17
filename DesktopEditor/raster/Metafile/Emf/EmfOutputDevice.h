@@ -25,9 +25,13 @@ namespace MetaFile
 		virtual void StartPath() = 0;
 		virtual void MoveTo(long lX, long lY) = 0;
 		virtual void LineTo(long lX, long lY) = 0;
+		virtual void CurveTo(long lX1, long lY1, long lX2, long lY2, long lXe, long lYe) = 0;
+		virtual void ArcTo(long lLeft, long lTop, long lRight, long lBottom, double dStartAngle, double dSweepAngle) = 0;
 		virtual void ClosePath() = 0;
-		virtual void DrawPath() = 0;
+		virtual void DrawPath(long lType = 0) = 0;
 		virtual void EndPath() = 0;
+
+		virtual void UpdateDC() = 0;
 	};
 
 }

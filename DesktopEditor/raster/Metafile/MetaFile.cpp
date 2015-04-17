@@ -141,11 +141,11 @@ namespace MetaFile
 		}
 		else if (c_lMetaEmf == m_lType)
 		{
-			TEmfRectL oRect = m_oEmfFile.GetBounds();
-			*pdX = oRect.lLeft;
-			*pdY = oRect.lTop;
-			*pdW = oRect.lRight - oRect.lLeft;
-			*pdH = oRect.lBottom - oRect.lTop;
+			TEmfRectL* pRect = m_oEmfFile.GetBounds();
+			*pdX = pRect->lLeft;
+			*pdY = pRect->lTop;
+			*pdW = pRect->lRight - pRect->lLeft;
+			*pdH = pRect->lBottom - pRect->lTop;
 		}
 		else
 		{
@@ -158,6 +158,9 @@ namespace MetaFile
 	void CMetaFile::ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight)
 	{
 		CFontManager *pFontManager = m_pAppFonts->GenerateFontManager();
+		CFontsCache* pFontCache = new CFontsCache();
+		pFontCache->SetStreams(m_pAppFonts->GetStreams());
+		pFontManager->SetOwnerCache(pFontCache);
 		CImageFilesCache oCache;
 
 		CGraphicsRenderer oRenderer;

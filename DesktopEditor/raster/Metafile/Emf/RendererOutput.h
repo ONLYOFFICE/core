@@ -33,13 +33,16 @@ namespace MetaFile
 
 			m_pRenderer = pRenderer;
 
-			long lL = m_pEmfFile->m_oHeader.oBounds.lLeft;
-			long lR = m_pEmfFile->m_oHeader.oBounds.lRight;
-			long lT = m_pEmfFile->m_oHeader.oBounds.lTop;
-			long lB = m_pEmfFile->m_oHeader.oBounds.lBottom;
+			TEmfRectL* pBounds = m_pEmfFile->GetDCBounds();
+			long lL = pBounds->lLeft;
+			long lR = pBounds->lRight;
+			long lT = pBounds->lTop;
+			long lB = pBounds->lBottom;
 
 			m_dScaleX = (lR - lL <= 0) ? 1 : m_dW / (double)(lR - lL);
 			m_dScaleY = (lB - lT <= 0) ? 1 : m_dH / (double)(lB - lT);
+
+			m_bStartedPath = false;
 		}
 		~CEmfRendererOutput()
 		{
@@ -50,10 +53,13 @@ namespace MetaFile
 		}
 		void End()
 		{
+			CheckEndPath();
 		}
 
 		void DrawBitmap(long lX, long lY, long lW, long lH, BYTE* pBuffer, unsigned long ulWidth, unsigned long ulHeight)
 		{
+			CheckEndPath();
+
 			UpdateTransform();
 
 			Aggplus::CImage oImage;
@@ -79,6 +85,8 @@ namespace MetaFile
 		}
 		void DrawText(const wchar_t* wsText, unsigned long ulCharsCount, long lX, long lY)
 		{
+			CheckEndPath();
+
 			UpdateTransform();
 
 			CEmfDC* pDC = m_pEmfFile->GetDC();
@@ -271,45 +279,124 @@ namespace MetaFile
 
 			m_pRenderer->BeginCommand(c_nPathType);
 			m_pRenderer->PathCommandStart();
+
+			m_bStartedPath = true;
 		}
 		void MoveTo(long lX, long lY)
 		{
+			CheckStartPath();
+
 			double dX = TransX(lX);
 			double dY = TransY(lY);
 			m_pRenderer->PathCommandMoveTo(dX, dY);
 		}
 		void LineTo(long lX, long lY)
 		{
+			CheckStartPath();
+
 			double dX = TransX(lX);
 			double dY = TransY(lY);
 			m_pRenderer->PathCommandLineTo(dX, dY);
 		}
+		void CurveTo(long lX1, long lY1, long lX2, long lY2, long lXe, long lYe)
+		{
+			CheckStartPath();
+
+			double dX1 = TransX(lX1), dX2 = TransX(lX2), dXe = TransX(lXe);
+			double dY1 = TransY(lY1), dY2 = TransY(lY2), dYe = TransY(lYe);
+			m_pRenderer->PathCommandCurveTo(dX1, dY1, dX2, dY2, dXe, dYe);
+		}
+		void ArcTo(long lLeft, long lTop, long lRight, long lBottom, double dStart, double dSweep)
+		{
+			CheckStartPath();
+
+			double dL = TransX(lLeft);
+			double dT = TransY(lTop);
+			double dR = TransX(lRight);
+			double dB = TransY(lBottom);
+
+			m_pRenderer->PathCommandArcTo(dL, dT, dR - dL, dB - dT, dStart, dSweep);
+		}
 		void ClosePath()
 		{
+			CheckStartPath();
+
 			m_pRenderer->PathCommandClose();
 		}
-		void DrawPath()
+		void DrawPath(long lType = 0)
 		{
-			if (-1 != m_lDrawPathType)
-				m_pRenderer->DrawPath(m_lDrawPathType);
+			if (lType <= 0)
+			{
+				if (-1 != m_lDrawPathType)
+					m_pRenderer->DrawPath(m_lDrawPathType);
+			}
+			else if (-1 != m_lDrawPathType)
+			{
+				bool bStroke = lType & 1 ? true : false;
+				bool bFill   = lType & 2 ? true : false;
+
+				long m_lEndType = -1;
+
+				if (bStroke && m_lDrawPathType & c_nStroke)
+					m_lEndType = c_nStroke;
+				else
+					m_lEndType = c_nStroke;
+				
+				if (bFill)
+				{
+					if (m_lDrawPathType & c_nWindingFillMode)
+						m_lEndType = (-1 == m_lDrawPathType ? c_nWindingFillMode : m_lDrawPathType | c_nWindingFillMode);
+					else if (m_lDrawPathType & c_nEvenOddFillMode)
+						m_lEndType = (-1 == m_lDrawPathType ? c_nEvenOddFillMode : m_lDrawPathType | c_nEvenOddFillMode);
+				}
+
+				if (-1 != m_lEndType)
+					m_pRenderer->DrawPath(m_lEndType);
+			}
 		}
 		void EndPath()
 		{
 			m_pRenderer->EndCommand(c_nPathType);
 			m_pRenderer->PathCommandEnd();
+
+			m_bStartedPath = false;
+		}
+		void UpdateDC()
+		{
+			CheckEndPath();
 		}
 
 	private:
 
-		double TransX(long lX)
+		void CheckStartPath()
 		{
-			long lL = m_pEmfFile->m_oHeader.oBounds.lLeft;
-			return m_dScaleX * (double)(lX - lL);
+			if (!m_bStartedPath)
+			{
+				StartPath();
+			}
 		}
-		double TransY(long lY)
+		void CheckEndPath()
 		{
-			long lT = m_pEmfFile->m_oHeader.oBounds.lTop;
-			return m_dScaleY * (double)(lY - lT);
+			if (m_bStartedPath)
+			{
+				DrawPath();
+				EndPath();
+			}
+		}
+
+		double TransX(long _lX)
+		{
+			long lX = m_pEmfFile->TranslateY(_lX);
+			TEmfRectL* pBounds = m_pEmfFile->GetDCBounds();
+			long lL = pBounds->lLeft;
+			return m_dScaleX * (double)(lX - lL) + m_dX;
+		}
+		double TransY(long _lY)
+		{
+			long lY = m_pEmfFile->TranslateY(_lY);
+			TEmfRectL* pBounds = m_pEmfFile->GetDCBounds();
+			long lT = pBounds->lTop;
+			return m_dScaleY * (double)(lY - lT) + m_dY;
 		}
 
 		bool UpdateBrush()
@@ -325,11 +412,17 @@ namespace MetaFile
 			long lColor = METAFILE_RGBA(pBrush->Color.r, pBrush->Color.g, pBrush->Color.b);
 
 			if (BS_NULL == pBrush->BrushStyle)
-				return false;
+				return false;			
+			else if (BS_DIBPATTERN == pBrush->BrushStyle)
+			{
+				m_pRenderer->put_BrushType(c_BrushTypeTexture);
+				m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
+				m_pRenderer->put_BrushTexturePath(pBrush->DibPatternPath);
+			}
 			else //if (BS_SOLID == pBrush->BrushStyle)
 			{
 				m_pRenderer->put_BrushColor1(lColor);
-				m_pRenderer->put_BrushAlpha1(255);
+				m_pRenderer->put_BrushAlpha1(pBrush->BrushAlpha);
 				m_pRenderer->put_BrushType(c_BrushTypeSolid);
 			}
 
@@ -345,7 +438,6 @@ namespace MetaFile
 			double dKoefY = m_dScaleY;
 
 			TEmfXForm* pMatrix = pDC->GetTransform();
-
 			m_pRenderer->ResetTransform();
 			m_pRenderer->SetTransform(pMatrix->M11, pMatrix->M12 * dKoefY / dKoefX, pMatrix->M21 * dKoefX / dKoefY, pMatrix->M22, pMatrix->Dx * dKoefX, pMatrix->Dy * dKoefY);
 		}
@@ -362,7 +454,7 @@ namespace MetaFile
 			long lColor = METAFILE_RGBA(pPen->Color.r, pPen->Color.g, pPen->Color.b);
 
 			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
-			double dWidth = pPen->Width * m_dScaleX;
+			double dWidth = pPen->Width * m_dScaleX * pDC->GetPixelWidth();
 			if (dWidth <= 0.01)
 				dWidth = 0;
 
@@ -391,13 +483,13 @@ namespace MetaFile
 
 			// TODO: Некоторые типы пена невозможно реализовать с текущим интерфейсом рендерера, поэтому мы делаем его пока PS_SOLID.
 			// TODO: Реализовать PS_USERSTYLE
-			unsigned long ulDashStyle;
+			BYTE nDashStyle;
 			if (PS_ALTERNATE == ulPenStyle || PS_USERSTYLE == ulPenStyle || PS_INSIDEFRAME == ulPenStyle)
-				ulDashStyle = (BYTE)PS_SOLID;
+				nDashStyle = (BYTE)PS_SOLID;
 			else if (PS_NULL != ulPenStyle)
-				ulDashStyle = (BYTE)ulPenStyle;
+				nDashStyle = (BYTE)ulPenStyle;
 
-			m_pRenderer->put_PenDashStyle(ulDashStyle);
+			m_pRenderer->put_PenDashStyle(nDashStyle);
 			m_pRenderer->put_PenLineJoin(nJoinStyle);
 			m_pRenderer->put_PenLineStartCap(nCapStyle);
 			m_pRenderer->put_PenLineEndCap(nCapStyle);
@@ -426,20 +518,16 @@ namespace MetaFile
 
 	private:
 
-		IRenderer*              m_pRenderer;
-
-		double                  m_dDpiX;
-		double                  m_dDpiY;
-
-		long                    m_lDrawPathType;
-
-		double                  m_dX;        // Координаты левого верхнего угла
-		double                  m_dY;        //
-		double                  m_dW;   // Коэффициенты сжатия/растяжения, чтобы 
-		double                  m_dH;   // результирующая картинка была нужных размеров.
-		double                  m_dScaleX;
-		double                  m_dScaleY;
-		CEmfFile*               m_pEmfFile;
+		IRenderer* m_pRenderer;
+		long       m_lDrawPathType;
+		double     m_dX;      // Координаты левого верхнего угла
+		double     m_dY;      //
+		double     m_dW;      // 
+		double     m_dH;      // 
+		double     m_dScaleX; // Коэффициенты сжатия/растяжения, чтобы 
+		double     m_dScaleY; // результирующая картинка была нужных размеров.
+		CEmfFile*  m_pEmfFile;
+		bool       m_bStartedPath;
 	};
 }
 #endif // _RENDERER_OUPUT_EMF_H

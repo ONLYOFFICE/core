@@ -10,6 +10,27 @@ namespace MetaFile
 		unsigned char b;
 		unsigned char a; //Reserved Must be 0x00
 
+		TEmfColor()
+		{
+			r = 0;
+			g = 0;
+			b = 0;
+		}
+
+		TEmfColor(unsigned char _r, unsigned char _g, unsigned char _b)
+		{
+			r = _r;
+			g = _g;
+			b = _b;
+		}
+
+		void Set(unsigned char _r, unsigned char _g, unsigned char _b)
+		{
+			r = _r;
+			g = _g;
+			b = _b;
+		}
+
 		void Init()
 		{
 			r = 0;
@@ -35,18 +56,36 @@ namespace MetaFile
 		short shBottom;
 	};
 
+	struct TEmfWindow
+	{
+		long lX;
+		long lY;
+		long ulW;
+		long ulH;
+
+		void Init()
+		{
+			lX = 0;
+			lY = 0;
+			ulW = 1024;
+			ulH = 1024;
+		}
+
+		void Copy(TEmfWindow* pOther)
+		{
+			lX  = pOther->lX;
+			lY  = pOther->lY;
+			ulW = pOther->ulW;
+			ulH = pOther->ulH;
+		}
+	};
+
 	struct TEmfRectL
 	{
 		long lLeft;
 		long lTop;
 		long lRight;
 		long lBottom;
-	};
-
-	struct TEmfSizeL
-	{
-		unsigned long ulX;
-		unsigned long ulY;
 	};
 
 	struct TEmfPointL
@@ -59,6 +98,18 @@ namespace MetaFile
 	{
 		short x;
 		short y;
+	};
+
+	struct TEmfPointD
+	{
+		double x;
+		double y;
+	};
+
+	struct TEmfSizeL
+	{
+		unsigned long cx;
+		unsigned long cy;
 	};
 
 	struct TEmfHeader
@@ -76,6 +127,7 @@ namespace MetaFile
 		unsigned long  ulPalEntries;
 		TEmfSizeL      oDevice;
 		TEmfSizeL      oMillimeters;
+		TEmfRectL      oFrameToBounds;
 	};
 
 	struct TEmfStretchDIBITS
@@ -201,19 +253,19 @@ namespace MetaFile
 
 	struct TEmfLogFont
 	{
-		long          Height;
-		long          Width;
-		long          Escapement;
-		long          Orientation;
-		long          Weight;
-		unsigned char Italic;
-		unsigned char Underline;
-		unsigned char StrikOut;
-		unsigned char CharSet;
-		unsigned char OutPrecision;
-		unsigned char ClipPrecision;
-		unsigned char Quality;
-		unsigned char PitchAndFamily;
+		long           Height;
+		long           Width;
+		long           Escapement;
+		long           Orientation;
+		long           Weight;
+		unsigned char  Italic;
+		unsigned char  Underline;
+		unsigned char  StrikOut;
+		unsigned char  CharSet;
+		unsigned char  OutPrecision;
+		unsigned char  ClipPrecision;
+		unsigned char  Quality;
+		unsigned char  PitchAndFamily;
 		unsigned short FaceName[32];
 	};
 
@@ -249,6 +301,41 @@ namespace MetaFile
 		unsigned long cbBmiSrc;
 		unsigned long offBitsSrc;
 		unsigned long cbBitsSrc;
+	};
+
+	struct TEmfSetDiBitsToDevice
+	{
+		TEmfRectL     Bounds;
+		long          xDest;
+		long          yDest;
+		long          xSrc;
+		long          ySrc;
+		long          cxSrc;
+		long          cySrc;
+		unsigned long offBmiSrc;
+		unsigned long cbBmiSrc;
+		unsigned long offBitsSrc;
+		unsigned long cbBitsSrc;
+		unsigned long UsageSrc;
+		unsigned long iStartScan;
+		unsigned long cScans;
+	};
+
+	struct TEmfDibPatternBrush
+	{
+		unsigned long Usage;
+		unsigned long offBmi;
+		unsigned long cbBmi;
+		unsigned long offBits;
+		unsigned long cbBits;
+	};
+
+	struct TEmfLogPaletteEntry
+	{
+		unsigned char Reserved;
+		unsigned char Blue;
+		unsigned char Green;
+		unsigned char Red;
 	};
 };
 #endif //_EMF_TYPES_H

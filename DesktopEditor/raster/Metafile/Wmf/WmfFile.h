@@ -88,7 +88,7 @@ public:
 		}		
 	}
 
-	BOOL OpenFromFile(const wchar_t *wsFilePath)
+	bool OpenFromFile(const wchar_t *wsFilePath)
 	{
 		if (m_pBufferData)
 			delete m_pBufferData;
@@ -141,7 +141,7 @@ public:
 		return m_pFontManager;
 	}
 
-	BOOL OpenFromMemory(unsigned char *pMemory, long lLength)
+	bool OpenFromMemory(unsigned char *pMemory, long lLength)
 	{
 		if (m_pBufferData)
 			delete m_pBufferData;
@@ -3926,7 +3926,7 @@ private:
 			std::wstring bsFontName = ascii_to_unicode(pFont->sFaceName);
 
 			// TODO: Как будет функция реализована в FontManager доделать здесь
-			//BOOL bNeedFindByParams = FALSE;
+			//bool bNeedFindByParams = FALSE;
 			//if (TRUE == m_pFontManager->LoadFontByName(bsFontName, 1, 0, 0, 0))
 			//{
 			//	unsigned long ulBit  = 0;
@@ -3943,7 +3943,7 @@ private:
 			//else
 			//	bNeedFindByParams = TRUE;
 
-			BOOL bNeedFindByParams = TRUE;
+			bool bNeedFindByParams = TRUE;
 
 			if (bNeedFindByParams)
 			{

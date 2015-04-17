@@ -72,6 +72,17 @@ namespace MetaFile
 			if (pCur + 4 >= pEnd)
 				return 0;
 
+			float output;
+
+			*((unsigned char*)(&output) + 0) = pCur[0];
+			*((unsigned char*)(&output) + 1) = pCur[1];
+			*((unsigned char*)(&output) + 2) = pCur[2];
+			*((unsigned char*)(&output) + 3) = pCur[3];
+
+			pCur += 4;
+
+			return output;
+
 			long lIntValue  = (long)((pCur[0] << 16) | ((pCur[1]) << 8) | ((pCur[2]) << 0));
 			long lFracValue = (long)(pCur[3]);
 			pCur += 4;
@@ -184,8 +195,8 @@ namespace MetaFile
 		}
 		CDataStream& operator>>(TEmfSizeL& oSize)
 		{
-			*this >> oSize.ulX;
-			*this >> oSize.ulY;
+			*this >> oSize.cx;
+			*this >> oSize.cy;
 
 			return *this;
 		}
@@ -347,6 +358,70 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(TEmfSetDiBitsToDevice& oBitmap)
+		{
+			*this >> oBitmap.Bounds;
+			*this >> oBitmap.xDest;
+			*this >> oBitmap.yDest;
+			*this >> oBitmap.xSrc;
+			*this >> oBitmap.ySrc;
+			*this >> oBitmap.cxSrc;
+			*this >> oBitmap.cySrc;
+			*this >> oBitmap.offBmiSrc;
+			*this >> oBitmap.cbBmiSrc;
+			*this >> oBitmap.offBitsSrc;
+			*this >> oBitmap.cbBitsSrc;
+			*this >> oBitmap.UsageSrc;
+			*this >> oBitmap.iStartScan;
+			*this >> oBitmap.cScans;
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfDibPatternBrush& oBitmap)
+		{
+			*this >> oBitmap.Usage;
+			*this >> oBitmap.offBmi;
+			*this >> oBitmap.cbBmi;
+			*this >> oBitmap.offBits;
+			*this >> oBitmap.cbBits;
+			
+			return *this;
+		}
+		CDataStream& operator>>(TEmfLogPaletteEntry& oEntry)
+		{
+			*this >> oEntry.Reserved;
+			*this >> oEntry.Blue;
+			*this >> oEntry.Green;
+			*this >> oEntry.Red;
+			return *this;
+		}
+		CDataStream& operator>>(CEmfLogPalette& oPalette)
+		{
+			unsigned short ushVersion;
+
+			*this >> ushVersion;
+			*this >> oPalette.NumberOfEntries;
+
+			if (oPalette.NumberOfEntries > 0)
+			{
+				oPalette.PaletteEntries = new TEmfLogPaletteEntry[oPalette.NumberOfEntries];
+				if (!oPalette.PaletteEntries)
+				{
+					oPalette.NumberOfEntries = 0;
+					oPalette.PaletteEntries  = NULL;
+					return *this;
+				}
+
+				for (unsigned short ushIndex = 0; ushIndex < oPalette.NumberOfEntries; ushIndex++)
+				{
+					*this >> oPalette.PaletteEntries[ushIndex];
+				}
+			}
+			else
+				oPalette.PaletteEntries = NULL;
+
+			return *this;
+		}
 
 		bool IsValid() const
 		{
@@ -377,6 +452,11 @@ namespace MetaFile
 		void SeekBack(unsigned long ulSkipBack)
 		{
 			pCur -= ulSkipBack;
+		}
+
+		void SeekToStart()
+		{
+			pCur = pBuffer;
 		}
 
 	private:

@@ -112,8 +112,8 @@ namespace MetaFile
 
 			// —читываем саму картинку
 			long lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
-			if (lCalcLen != lBufLen)
-				return false;
+			//if (lCalcLen != lBufLen)
+		//		return false;
 
 			pBgraBuffer = new BYTE[nWidth * nHeight * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
@@ -266,6 +266,14 @@ namespace MetaFile
 			if (lCalcLen != lBufLen)
 				return false;
 
+			// 2 байт на все каналы канал
+			// (Ўирина * 3) должна быть кратна 4.
+			int nAdd = 0;
+			while (0 != div_t(div(2 * nWidth + nAdd, 4)).rem)
+			{
+				nAdd++;
+			}
+
 			pBgraBuffer = new BYTE[nWidth * nHeight * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
 				return false;
@@ -291,6 +299,7 @@ namespace MetaFile
 						pBgraBuffer[nIndex + 2] = (unsigned char)(unB / 31.0 * 255);
 						pBgraBuffer[nIndex + 3] = 255;
 					}
+					pBuffer += nAdd; lBufLen -= nAdd;
 				}
 			}
 			else
@@ -311,6 +320,7 @@ namespace MetaFile
 						pBgraBuffer[nIndex + 2] = (unsigned char)(unB / 31.0 * 255);
 						pBgraBuffer[nIndex + 3] = 255;
 					}
+					pBuffer += nAdd; lBufLen -= nAdd;
 				}
 			}
 
@@ -495,6 +505,5 @@ namespace MetaFile
 			ReadImageCoreHeader(pHeaderBuffer + 4, ulHeaderBufferLen - 4, pImageBuffer, ulImageBufferLen, ppDstBuffer, pulWidth, pulHeight);
 		else // BitmapInfoHeader
 			ReadImageInfoHeader(pHeaderBuffer + 4, ulHeaderBufferLen - 4, pImageBuffer, ulImageBufferLen, ppDstBuffer, pulWidth, pulHeight);
-
 	}
 }

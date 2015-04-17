@@ -152,7 +152,7 @@ static void PolyPoly_To_PolyLine(TWmfPolyPoly *pPolyPoly, TWmfPolyLine *pPolyLin
 	pPolyLine->ushCount++;
 }
 
-static BOOL WmfOpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder)
+static bool WmfOpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder)
 {
 	std::wstring wsTemp, wsFileName;
 	FILE *pTempFile = NULL;

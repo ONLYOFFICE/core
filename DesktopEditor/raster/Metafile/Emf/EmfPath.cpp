@@ -166,9 +166,9 @@ namespace MetaFile
 			long lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
 			pOutput->DrawPath(lType);
 			pOutput->EndPath();
-
-			Clear();
 		}
+
+		Clear();
 	}
 	void CEmfPath::Clear()
 	{

@@ -21,6 +21,13 @@ namespace MetaFile
 
 #define METAFILE_RGBA(r, g, b) ((DWORD)( ( (BYTE)(r) )| ( ( (BYTE)(g) ) << 8 ) | ( ( (BYTE)(b) ) << 16 ) | ( (BYTE)(0) << 24 ) ) )
 
+	struct TRgbQuad
+	{
+		unsigned char r;
+		unsigned char g;
+		unsigned char b;
+	};
+
 	class CDataStream
 	{
 	public:
@@ -419,6 +426,15 @@ namespace MetaFile
 			}
 			else
 				oPalette.PaletteEntries = NULL;
+
+			return *this;
+		}
+		CDataStream& operator>>(TRgbQuad& oRGB)
+		{
+			*this >> oRGB.b;
+			*this >> oRGB.g;
+			*this >> oRGB.r;
+			Skip(1); // reserved
 
 			return *this;
 		}

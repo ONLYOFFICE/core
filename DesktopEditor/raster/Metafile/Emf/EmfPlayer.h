@@ -53,6 +53,8 @@ namespace MetaFile
 		void            SetMapMode(unsigned long ulMapMode);
 		unsigned long   GetMapMode();
 		TEmfXForm*      GetTransform();
+		TEmfXForm*      GetInverseTransform();
+		void            MultiplyTransform(TEmfXForm& oForm, unsigned long ulMode);
 		void            SetTextColor(TEmfColor& oColor);
 		TEmfColor&      GetTextColor();
 		void            SetBrush(CEmfLogBrushEx* pBrush);
@@ -89,6 +91,9 @@ namespace MetaFile
 		void            SetPalette(CEmfLogPalette* pPalette);
 		void            RemovePalette(CEmfLogPalette* pPalette);
 		CEmfLogPalette* GetPalette();
+		void            SetCurPos(TEmfPointL& oPoint);
+		void            SetCurPos(long lX, long lY);
+		TEmfPointL&     GetCurPos();
 
 	private:
 
@@ -106,6 +111,7 @@ namespace MetaFile
 		CEmfLogFont*    m_pFont;
 		CEmfLogPalette* m_pPalette;
 		TEmfXForm       m_oTransform;
+		TEmfXForm       m_oInverseTransform;
 		TEmfColor       m_oTextColor;
 		TEmfColor       m_oBgColor;
 		unsigned long   m_ulTextAlign;
@@ -118,6 +124,7 @@ namespace MetaFile
 		double          m_dPixelHeight;
 		TEmfWindow      m_oWindow;
 		TEmfWindow      m_oViewport;
+		TEmfPointL      m_oCurPos;
 	};
 }
 

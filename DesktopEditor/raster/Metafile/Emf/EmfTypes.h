@@ -92,6 +92,14 @@ namespace MetaFile
 	{
 		long x;
 		long y;
+
+		TEmfPointL& operator=(TEmfPointL& oPoint)
+		{
+			x = oPoint.x;
+			y = oPoint.y;
+
+			return *this;
+		}
 	};
 
 	struct TEmfPointS
@@ -227,6 +235,14 @@ namespace MetaFile
 			{
 				Copy(&oOther);
 			}
+		}
+		void Apply(double* pX, double* pY)
+		{
+			double dX = *pX;
+			double dY = *pY;
+
+			*pX = dX * M11 + dY * M21 + Dx;
+			*pY = dX * M12 + dY * M22 + Dy;
 		}
 	};
 

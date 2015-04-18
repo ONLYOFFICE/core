@@ -75,13 +75,9 @@ namespace MetaFile
 				pBufferPtr += 4;
 			}
 
-			double dX = TransX(lX);
-			double dY = TransX(lY);
-
-			double dX1 = TransX(lX + lW);
-			double dY1 = TransY(lY + lH);
-
-			m_pRenderer->DrawImage(&oImage, dX, dY, dX1 - dX, dY1 - dY);
+			TEmfPointD oTL = TranslatePoint(lX, lY);
+			TEmfPointD oBR = TranslatePoint(lX + lW, lY + lH);
+			m_pRenderer->DrawImage(&oImage, oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y);
 		}
 		void DrawText(const wchar_t* wsText, unsigned long ulCharsCount, long lX, long lY)
 		{
@@ -99,10 +95,16 @@ namespace MetaFile
 
 			TEmfLogFont* pLogFont = &pFont->LogFontEx.LogFont;
 
-			TEmfRectL* pBounds = &m_pEmfFile->m_oHeader.oBounds;
-			TEmfRectL* pFrame  = &m_pEmfFile->m_oHeader.oFrame;
+			long lLogicalFontHeight = pLogFont->Height;
+			if (lLogicalFontHeight < 0)
+				lLogicalFontHeight = -lLogicalFontHeight;
+			if (lLogicalFontHeight < 0.01)
+				lLogicalFontHeight = 18;
 
-			double dFontHeight = TransY(std::abs(pLogFont->Height)) / 25.4 * 72;
+			TEmfRectL* pBounds = m_pEmfFile->GetDCBounds();
+			TEmfPointD oHeightPoint = TranslatePoint(0, lLogicalFontHeight + pBounds->lTop);
+
+			double dFontHeight = oHeightPoint.y / 25.4 * 72;
 			std::wstring wsFaceName((const wchar_t*)pLogFont->FaceName);
 			m_pRenderer->put_FontName(wsFaceName);
 			m_pRenderer->put_FontSize(dFontHeight);
@@ -157,8 +159,9 @@ namespace MetaFile
 				fUndSize *= (float)fKoef / 2;
 			}
 
-			double dX = TransX(lX);
-			double dY = TransX(lY);
+			TEmfPointD oTextPoint = TranslatePoint(lX, lY);
+			double dX = oTextPoint.x;
+			double dY = oTextPoint.y;
 
 			// Ќайдем начальную точку текста
 			unsigned long ulTextAlign = pDC->GetTextAlign();
@@ -284,42 +287,36 @@ namespace MetaFile
 		}
 		void MoveTo(long lX, long lY)
 		{
-			CheckStartPath();
-
-			double dX = TransX(lX);
-			double dY = TransY(lY);
-			m_pRenderer->PathCommandMoveTo(dX, dY);
+			CheckStartPath(true);
+			TEmfPointD oPoint = TranslatePoint(lX, lY);
+			m_pRenderer->PathCommandMoveTo(oPoint.x, oPoint.y);
 		}
 		void LineTo(long lX, long lY)
 		{
-			CheckStartPath();
-
-			double dX = TransX(lX);
-			double dY = TransY(lY);
-			m_pRenderer->PathCommandLineTo(dX, dY);
+			CheckStartPath(false);
+			TEmfPointD oPoint = TranslatePoint(lX, lY);
+			m_pRenderer->PathCommandLineTo(oPoint.x, oPoint.y);
 		}
 		void CurveTo(long lX1, long lY1, long lX2, long lY2, long lXe, long lYe)
 		{
-			CheckStartPath();
+			CheckStartPath(false);
 
-			double dX1 = TransX(lX1), dX2 = TransX(lX2), dXe = TransX(lXe);
-			double dY1 = TransY(lY1), dY2 = TransY(lY2), dYe = TransY(lYe);
-			m_pRenderer->PathCommandCurveTo(dX1, dY1, dX2, dY2, dXe, dYe);
+			TEmfPointD oPoint1 = TranslatePoint(lX1, lY1);
+			TEmfPointD oPoint2 = TranslatePoint(lX2, lY2);
+			TEmfPointD oPointE = TranslatePoint(lXe, lYe);
+			m_pRenderer->PathCommandCurveTo(oPoint1.x, oPoint1.y, oPoint2.x, oPoint2.y, oPointE.x, oPointE.y);
 		}
 		void ArcTo(long lLeft, long lTop, long lRight, long lBottom, double dStart, double dSweep)
 		{
-			CheckStartPath();
+			CheckStartPath(false);
 
-			double dL = TransX(lLeft);
-			double dT = TransY(lTop);
-			double dR = TransX(lRight);
-			double dB = TransY(lBottom);
-
-			m_pRenderer->PathCommandArcTo(dL, dT, dR - dL, dB - dT, dStart, dSweep);
+			TEmfPointD oTL = TranslatePoint(lLeft, lTop);
+			TEmfPointD oBR = TranslatePoint(lRight, lBottom);
+			m_pRenderer->PathCommandArcTo(oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y, dStart, dSweep);
 		}
 		void ClosePath()
 		{
-			CheckStartPath();
+			CheckStartPath(false);
 
 			m_pRenderer->PathCommandClose();
 		}
@@ -368,11 +365,20 @@ namespace MetaFile
 
 	private:
 
-		void CheckStartPath()
+		void CheckStartPath(bool bMoveTo)
 		{
 			if (!m_bStartedPath)
 			{
 				StartPath();
+
+				if (!bMoveTo)
+				{
+					CEmfDC* pDC = m_pEmfFile->GetDC();
+					if (!pDC)
+						return;
+
+					MoveTo(pDC->GetCurPos().x, pDC->GetCurPos().y);
+				}
 			}
 		}
 		void CheckEndPath()
@@ -384,19 +390,22 @@ namespace MetaFile
 			}
 		}
 
-		double TransX(long _lX)
+		TEmfPointD TranslatePoint(long lX, long lY)
 		{
-			long lX = m_pEmfFile->TranslateY(_lX);
+			double dX = m_pEmfFile->TranslateX(lX);
+			double dY = m_pEmfFile->TranslateY(lY);
+
+			//  оординаты приход€т уже с примененной матрицей 
 			TEmfRectL* pBounds = m_pEmfFile->GetDCBounds();
-			long lL = pBounds->lLeft;
-			return m_dScaleX * (double)(lX - lL) + m_dX;
-		}
-		double TransY(long _lY)
-		{
-			long lY = m_pEmfFile->TranslateY(_lY);
-			TEmfRectL* pBounds = m_pEmfFile->GetDCBounds();
-			long lT = pBounds->lTop;
-			return m_dScaleY * (double)(lY - lT) + m_dY;
+			double dT = pBounds->lTop;
+			double dL = pBounds->lLeft;
+			TEmfXForm* pInverse = m_pEmfFile->GetDC()->GetInverseTransform();
+			pInverse->Apply(&dL, &dT);
+
+			TEmfPointD oPoint;
+			oPoint.x = m_dScaleX * (double)(dX - dL) + m_dX;
+			oPoint.y = m_dScaleY * (double)(dY - dT) + m_dY;
+			return oPoint;
 		}
 
 		bool UpdateBrush()
@@ -479,7 +488,7 @@ namespace MetaFile
 			else if (2 == ulPenJoin)
 				nJoinStyle = 2;
 
-			double dMiterLimit = pDC->GetMiterLimit() * m_dScaleX;
+			double dMiterLimit = pDC->GetMiterLimit() * m_dScaleX * pDC->GetPixelWidth();
 
 			// TODO: Ќекоторые типы пена невозможно реализовать с текущим интерфейсом рендерера, поэтому мы делаем его пока PS_SOLID.
 			// TODO: –еализовать PS_USERSTYLE
@@ -498,17 +507,17 @@ namespace MetaFile
 			m_pRenderer->put_PenAlpha(255);
 			m_pRenderer->put_PenMiterLimit(dMiterLimit);
 
-			//// TO DO: — текущим интерфейсом AVSRenderer, остальные случаи ushROPMode
-			////        реализовать невозможно. ѕотому что данный параметр нужно протаскивать
-			////        как параметр Pen'a, и тот кто рисует сам должен разруливать все случаи.
+			// TO DO: — текущим интерфейсом AVSRenderer, остальные случаи ushROPMode
+			//        реализовать невозможно. ѕотому что данный параметр нужно протаскивать
+			//        как параметр Pen'a, и тот кто рисует сам должен разруливать все случаи.
 
-			//switch (pDC->ushROPMode)
-			//{
-			//	case R2_BLACK:   m_pRenderer->put_PenColor(0); break;
-			//	case R2_NOP:     m_pRenderer->put_PenAlpha(0); break;
-			//	case R2_COPYPEN: break;
-			//	case R2_WHITE:   m_pRenderer->put_PenColor(METAFILE_RGBA(255, 255, 255)); break;
-			//}
+			switch (pDC->GetRop2Mode())
+			{
+				case R2_BLACK:   m_pRenderer->put_PenColor(METAFILE_RGBA(0, 0, 0)); break;
+				case R2_NOP:     m_pRenderer->put_PenAlpha(0); break;
+				case R2_COPYPEN: break;
+				case R2_WHITE:   m_pRenderer->put_PenColor(METAFILE_RGBA(255, 255, 255)); break;
+			}
 
 			if (PS_NULL == ulPenStyle)
 				return false;

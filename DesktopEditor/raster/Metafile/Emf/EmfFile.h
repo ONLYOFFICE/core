@@ -102,6 +102,7 @@ namespace MetaFile
 		}
 		void PlayMetaFile()
 		{
+			m_lTest = 0;
 			unsigned long ulSize, ulType;
 			unsigned long ulNumber = 0;
 
@@ -130,21 +131,9 @@ namespace MetaFile
 					//-----------------------------------------------------------
 					// 2.3.1 Bitmap
 					//-----------------------------------------------------------
-					case EMR_BITBLT:
-					{
-						Read_EMR_BITBLT();
-						break;
-					}
-					case EMR_STRETCHDIBITS:
-					{
-						Read_EMR_STRETCHDIBITS();
-						break;
-					}
-					case EMR_SETDIBITSTODEVICE:
-					{
-						Read_EMR_SETDIBITSTODEVICE();
-						break;
-					}
+					case EMR_BITBLT:            Read_EMR_BITBLT(); break;
+					case EMR_STRETCHDIBITS:     Read_EMR_STRETCHDIBITS(); break;
+					case EMR_SETDIBITSTODEVICE: Read_EMR_SETDIBITSTODEVICE(); break;
 					//-----------------------------------------------------------
 					// 2.3.2 Clipping
 					//-----------------------------------------------------------
@@ -152,9 +141,9 @@ namespace MetaFile
 					case EMR_INTERSECTCLIPRECT: Read_EMR_INTERSECTCLIPRECT(); break;
 					case EMR_SELECTCLIPPATH: Read_EMR_SELECTCLIPPATH(); break;
 					case EMR_SETMETARGN: Read_EMR_SETMETARGN(); break;
-					//-----------------------------------------------------------
-					// 2.3.4 Control
-					//-----------------------------------------------------------
+						//-----------------------------------------------------------
+						// 2.3.4 Control
+						//-----------------------------------------------------------
 					case EMR_HEADER:
 					{
 						Read_EMR_HEADER();
@@ -169,67 +158,24 @@ namespace MetaFile
 					//-----------------------------------------------------------
 					// 2.3.5 Drawing
 					//-----------------------------------------------------------
-					case EMR_EXTTEXTOUTW:
-					{
-						Read_EMR_EXTTEXTOUTW();
-						break;
-					}
-					case EMR_POLYGON16:
-					{
-						Read_EMR_POLYGON16();
-						break;
-					}
-					case EMR_POLYPOLYGON16:
-					{
-						Read_EMR_POLYPOLYGON16();
-						break;
-					}
-					case EMR_LINETO:
-					{
-						Read_EMR_LINETO();
-						break;
-					}
-					case EMR_POLYBEZIERTO16:
-					{
-						Read_EMR_POLYBEZIERTO16();
-						break;
-					}
-					case EMR_POLYLINETO16:
-					{
-						Read_EMR_POLYLINETO16();
-						break;
-					}
-					case EMR_STROKEANDFILLPATH:
-					{
-						Read_EMR_STROKEANDFILLPATH();
-						break;
-					}
-					case EMR_STROKEPATH:
-					{
-						Read_EMR_STROKEPATH();
-						break;
-					}
-					case EMR_FILLPATH:
-					{
-						Read_EMR_FILLPATH();
-						break;
-					}
-					case EMR_RECTANGLE:
-					{
-						Read_EMR_RECTANGLE();
-						break;
-					}
-					case EMR_POLYLINE16:
-					{
-						Read_EMR_POLYLINE16();
-						break;
-					}
-					case EMR_ELLIPSE: Read_EMR_ELLIPSE(); break;
-					case EMR_POLYBEZIER16: Read_EMR_POLYBEZIER16(); break;
-					case EMR_ROUNDRECT: Read_EMR_ROUNDRECT(); break;
-					//-----------------------------------------------------------
-					// 2.3.7 Object Creation
-					//-----------------------------------------------------------
+					case EMR_EXTTEXTOUTW:       Read_EMR_EXTTEXTOUTW(); break;
+					case EMR_POLYGON16:         Read_EMR_POLYGON16(); break;
+					case EMR_POLYPOLYGON16:     Read_EMR_POLYPOLYGON16(); break;
+					case EMR_LINETO:            Read_EMR_LINETO(); break;
+					case EMR_POLYBEZIERTO16:    Read_EMR_POLYBEZIERTO16(); break;
+					case EMR_POLYLINETO16:      Read_EMR_POLYLINETO16(); break;
+					case EMR_STROKEANDFILLPATH: Read_EMR_STROKEANDFILLPATH(); break;
+					case EMR_STROKEPATH:        Read_EMR_STROKEPATH(); break;
+					case EMR_FILLPATH:          Read_EMR_FILLPATH(); break;
+					case EMR_RECTANGLE:         Read_EMR_RECTANGLE(); break;
+					case EMR_POLYLINE16:        Read_EMR_POLYLINE16(); break;
+					case EMR_ELLIPSE:           Read_EMR_ELLIPSE(); break;
+					case EMR_POLYBEZIER16:      Read_EMR_POLYBEZIER16(); break;
+					case EMR_ROUNDRECT:         Read_EMR_ROUNDRECT(); break;
+					case EMR_POLYPOLYLINE16:    Read_EMR_POLYPOLYLINE16(); break;
+						//-----------------------------------------------------------
+						// 2.3.7 Object Creation
+						//-----------------------------------------------------------
 					case EMR_CREATEBRUSHINDIRECT:
 					{
 						Read_EMR_CREATEBRUSHINDIRECT();
@@ -256,9 +202,9 @@ namespace MetaFile
 						break;
 					}
 					case EMR_CREATEPALETTE: Read_EMR_CREATEPALETTE(); break;
-					//-----------------------------------------------------------
-					// 2.3.8 Object Manipulation
-					//-----------------------------------------------------------
+						//-----------------------------------------------------------
+						// 2.3.8 Object Manipulation
+						//-----------------------------------------------------------
 					case EMR_SELECTOBJECT:
 					{
 						Read_EMR_SELECTOBJECT();
@@ -270,9 +216,9 @@ namespace MetaFile
 						break;
 					}
 					case EMR_SELECTPALETTE: Read_EMR_SELECTPALETTE(); break;
-					//-----------------------------------------------------------
-					// 2.3.10 Path Bracket
-					//-----------------------------------------------------------
+						//-----------------------------------------------------------
+						// 2.3.10 Path Bracket
+						//-----------------------------------------------------------
 					case EMR_BEGINPATH:
 					{
 						Read_EMR_BEGINPATH();
@@ -388,9 +334,9 @@ namespace MetaFile
 					}
 					case EMR_SETROP2: Read_EMR_SETROP2(); break;
 					case EMR_REALIZEPALETTE: Read_EMR_REALIZEPALETTE(); break;
-					//-----------------------------------------------------------
-					// 2.3.12 Transform
-					//-----------------------------------------------------------
+						//-----------------------------------------------------------
+						// 2.3.12 Transform
+						//-----------------------------------------------------------
 					case EMR_SETWORLDTRANSFORM:
 					{
 						Read_EMR_SETWORLDTRANSFORM();
@@ -501,26 +447,26 @@ namespace MetaFile
 
 			return true;
 		}
-		long TranslateX(long lSrcX)
+		double TranslateX(long lSrcX)
 		{
-			long lDstX;
+			double dDstX;
 
 			TEmfWindow* pWindow   = m_pDC->GetWindow();
 			TEmfWindow* pViewport = m_pDC->GetViewport();
 
-			lDstX = pWindow->lX + (unsigned long)((double)(lSrcX - pViewport->lX / m_pDC->GetPixelWidth()) * m_pDC->GetPixelWidth());
-			return lDstX;
+			dDstX = pWindow->lX + (double)((double)(lSrcX - pViewport->lX / m_pDC->GetPixelWidth()) * m_pDC->GetPixelWidth());
+			return dDstX;
 		}
-		long TranslateY(long lSrcY)
+		double TranslateY(long lSrcY)
 		{
-			long lDstY;
+			double dDstY;
 
 			TEmfWindow* pWindow   = m_pDC->GetWindow();
 			TEmfWindow* pViewport = m_pDC->GetViewport();
 
-			lDstY = pWindow->lY + (unsigned long)((double)(lSrcY - pViewport->lY / m_pDC->GetPixelHeight()) * m_pDC->GetPixelHeight());
+			dDstY = pWindow->lY + (double)((double)(lSrcY - pViewport->lY / m_pDC->GetPixelHeight()) * m_pDC->GetPixelHeight());
 
-			return lDstY;
+			return dDstY;
 		}
 
 		void MoveTo(TEmfPointL& oPoint)
@@ -542,6 +488,8 @@ namespace MetaFile
 			{
 				m_pOutput->MoveTo(lX, lY);
 			}
+
+			m_pDC->SetCurPos(lX, lY);
 		}
 		void LineTo(long lX, long lY)
 		{
@@ -554,6 +502,8 @@ namespace MetaFile
 			{
 				m_pOutput->LineTo(lX, lY);
 			}
+
+			m_pDC->SetCurPos(lX, lY);
 		}
 		void LineTo(TEmfPointL& oPoint)
 		{
@@ -574,6 +524,8 @@ namespace MetaFile
 			{
 				m_pOutput->CurveTo(oPoint1.x, oPoint1.y, oPoint2.x, oPoint2.y, oPointE.x, oPointE.y);
 			}
+
+			m_pDC->SetCurPos(oPointE.x, oPointE.y);
 		}
 		void ClosePath()
 		{
@@ -596,12 +548,14 @@ namespace MetaFile
 			{
 				m_pOutput->ArcTo(lL, lT, lR, lB, dStart, dSweep);
 			}
+
+			// TODO: Сделать пересчет текущей позиции
 		}
 		void DrawPath(bool bStroke, bool bFill)
 		{
 			if (m_pPath && m_pOutput)
 			{
-				m_pPath->Draw(m_pOutput, bStroke, bFill);
+				//m_pPath->Draw(m_pOutput, bStroke, bFill);
 			}
 			else if (m_pOutput)
 			{
@@ -805,8 +759,7 @@ namespace MetaFile
 			m_oStream >> oXForm;
 			m_oStream >> ulMode;
 
-			TEmfXForm* pCurTransform = m_pDC->GetTransform();
-			pCurTransform->Multiply(oXForm, ulMode);
+			m_pDC->MultiplyTransform(oXForm, ulMode);
 			UpdateOutputDC();
 		}
 		void Read_EMR_SETWORLDTRANSFORM()
@@ -815,8 +768,7 @@ namespace MetaFile
 
 			m_oStream >> oXForm;
 
-			TEmfXForm* pCurTransform = m_pDC->GetTransform();
-			pCurTransform->Multiply(oXForm, MWT_SET);
+			m_pDC->MultiplyTransform(oXForm, MWT_SET);
 			UpdateOutputDC();
 		}
 		void Read_EMR_CREATEBRUSHINDIRECT()
@@ -839,7 +791,6 @@ namespace MetaFile
 			m_pDC->SetTextColor(oColor);
 			UpdateOutputDC();
 		}
-
 		void Read_EMR_EXTTEXTOUTW()
 		{
 			TEmfExtTextoutW oText;
@@ -864,8 +815,17 @@ namespace MetaFile
 
 			std::wstring wsText((wchar_t*)pUnicode);
 
+			long lX = oText.wEmrText.Reference.x;
+			long lY = oText.wEmrText.Reference.y;
+
+			if (m_pDC->GetTextAlign() & TA_UPDATECP)
+			{ 
+				lX = m_pDC->GetCurPos().x;
+				lY = m_pDC->GetCurPos().y;
+			}
+
 			if (m_pOutput)
-				m_pOutput->DrawText(wsText.c_str(), ulCharsCount, oText.wEmrText.Reference.x, oText.wEmrText.Reference.y);
+				m_pOutput->DrawText(wsText.c_str(), ulCharsCount, lX, lY);
 
 			delete[] pUnicode;
 			delete[] pDx;
@@ -1163,7 +1123,8 @@ namespace MetaFile
 		{
 			TEmfRectL oBounds;
 			m_oStream >> oBounds;
-			if (m_pOutput && m_pPath)
+
+			if (m_pPath)
 			{
 				m_pPath->Draw(m_pOutput, false, true);
 				RELEASEOBJECT(m_pPath);
@@ -1325,7 +1286,8 @@ namespace MetaFile
 		{
 			unsigned long ulRop2Mode;
 			m_oStream >> ulRop2Mode;
-
+			m_pDC->SetRop2Mode(ulRop2Mode);
+			UpdateOutputDC();
 		}
 		void Read_EMR_CREATEPALETTE()
 		{
@@ -1378,6 +1340,56 @@ namespace MetaFile
 			ClosePath();
 			DrawPath(true, true);
 		}
+		void Read_EMR_POLYPOLYLINE16()
+		{
+			TEmfRectL oBounds;
+			m_oStream >> oBounds;
+
+			unsigned long ulNumberOfPolylines;
+			m_oStream >> ulNumberOfPolylines;
+
+			unsigned long ulTotalPointsCount;
+			m_oStream >> ulTotalPointsCount;
+
+			if (0 == ulNumberOfPolylines && 0 == ulTotalPointsCount)
+				return;
+			else if (0 == ulNumberOfPolylines || 0 == ulTotalPointsCount)
+				return SetError();
+
+			unsigned long* pPolylinePointCount = new unsigned long[ulNumberOfPolylines];
+			for (unsigned long ulIndex = 0; ulIndex < ulNumberOfPolylines; ulIndex++)
+			{
+				m_oStream >> pPolylinePointCount[ulIndex];
+			}
+
+			for (unsigned long ulPolyIndex = 0, ulStartPointIndex = 0; ulPolyIndex < ulNumberOfPolylines; ulPolyIndex++)
+			{
+				unsigned long ulCurrentPolylinePointsCount = pPolylinePointCount[ulPolyIndex];
+				if (0 == ulCurrentPolylinePointsCount)
+					continue;
+
+				TEmfPointS oPoint;
+				m_oStream >> oPoint;
+				MoveTo(oPoint);
+
+				for (unsigned long ulPointIndex = 1; ulPointIndex < ulCurrentPolylinePointsCount; ulPointIndex++)
+				{
+					unsigned long ulRealPointIndex = ulPointIndex + ulStartPointIndex;
+					if (ulRealPointIndex >= ulTotalPointsCount)
+					{
+						delete[] pPolylinePointCount;
+						return SetError();
+					}
+
+					m_oStream >> oPoint;
+					LineTo(oPoint);
+				}
+
+				DrawPath(true, false);
+			}
+
+			delete[] pPolylinePointCount;
+		}
 
 	private:
 
@@ -1394,6 +1406,8 @@ namespace MetaFile
 		CEmfPlayer        m_oPlayer;
 
 		CEmfPath*         m_pPath;
+
+		long              m_lTest;
 
 		friend class CEmfRendererOutput;
 		friend class CEmfPlayer;

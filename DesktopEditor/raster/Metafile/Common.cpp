@@ -5,6 +5,7 @@
 
 namespace MetaFile
 {	
+
 	bool ReadImageCoreHeader(BYTE* pHeaderBuffer, unsigned long ulHeaderBufferLen, BYTE* pImageBuffer, unsigned long ulImageBufferLen, BYTE** ppDstBuffer, unsigned long* pulWidth, unsigned long* pulHeight)
 	{
 		CDataStream oHeaderStream;
@@ -98,22 +99,13 @@ namespace MetaFile
 		else if (BI_BITCOUNT_1 == ushBitCount)
 		{
 			// ƒвуцветна€ картинка, значит палитра состоит из 2-х цветов
-			TWmfRGB oColor1, oColor2;
-
-			oColor1.r = *pBuffer; pBuffer++; lBufLen--;
-			oColor1.g = *pBuffer; pBuffer++; lBufLen--;
-			oColor1.b = *pBuffer; pBuffer++; lBufLen--;
-			pBuffer++; lBufLen--;
-
-			oColor2.r = *pBuffer; pBuffer++; lBufLen--;
-			oColor2.g = *pBuffer; pBuffer++; lBufLen--;
-			oColor2.b = *pBuffer; pBuffer++; lBufLen--;
-			pBuffer++; lBufLen--;
+			TRgbQuad oColor1, oColor2;
+			oHeaderStream >> oColor1 >> oColor2;
 
 			// —читываем саму картинку
 			long lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
-			//if (lCalcLen != lBufLen)
-		//		return false;
+			if (lCalcLen != lBufLen)		
+				return false;
 
 			pBgraBuffer = new BYTE[nWidth * nHeight * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
@@ -145,10 +137,10 @@ namespace MetaFile
 					for (int nBitIndex = nBitCount; nBitIndex > 0; nBitIndex /= 2)
 					{
 						int nBit = (nByte & nBitIndex);
-						TWmfRGB oColor = (nBit ? oColor2 : oColor1);
-						pBgraBuffer[nIndex * 4 + 0] = oColor.b;
-						pBgraBuffer[nIndex * 4 + 1] = oColor.g;
-						pBgraBuffer[nIndex * 4 + 2] = oColor.r;
+						TRgbQuad* pColor = (nBit ? &oColor2 : &oColor1);
+						pBgraBuffer[nIndex * 4 + 0] = pColor->b;
+						pBgraBuffer[nIndex * 4 + 1] = pColor->g;
+						pBgraBuffer[nIndex * 4 + 2] = pColor->r;
 						pBgraBuffer[nIndex * 4 + 3] = 255;
 						nIndex++;
 					}
@@ -177,22 +169,17 @@ namespace MetaFile
 			if (0 != unColorUsed)
 				ushColorTableLen = (std::min)((unsigned short)256, (unsigned short)unColorUsed);
 
-			TWmfRGB oColorTable[256];
-
+			TRgbQuad oColorTable[256];
 			if (lBufLen < ushColorTableLen * 4)
 				return false;
 
 			// —читываем палитру
 			for (unsigned short ushIndex = 0; ushIndex < ushColorTableLen; ushIndex++)
 			{
-				oColorTable[ushIndex].r = *pBuffer; pBuffer++; lBufLen--;
-				oColorTable[ushIndex].g = *pBuffer; pBuffer++; lBufLen--;
-				oColorTable[ushIndex].b = *pBuffer; pBuffer++; lBufLen--;
-				pBuffer++; lBufLen--;
+				oHeaderStream >> oColorTable[ushIndex];
 			}
 
 			// 1 байт - 1 пиксел
-
 			// Ўирина должна быть кратна 4.
 			int nAdd = 0;
 			while (0 != div_t(div(nWidth + nAdd, 4)).rem)
@@ -200,7 +187,7 @@ namespace MetaFile
 				nAdd++;
 			}
 
-			if (lBufLen < nWidth * nHeight)
+			if (lBufLen < (nWidth + nAdd) * nHeight)
 				return false;
 
 			pBgraBuffer = new BYTE[nWidth * nHeight * 4 * sizeof(BYTE)];

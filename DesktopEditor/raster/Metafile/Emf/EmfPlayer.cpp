@@ -220,19 +220,22 @@ namespace MetaFile
 		m_pPen      = &m_oDefaultPen;
 		m_pFont     = NULL;
 		m_oTransform.Init();
+		m_oInverseTransform.Init();
 		m_oTextColor.Init();
 		m_oBgColor.Init();
-		m_ulTextAlign   = 0;
-		m_ulBgMode      = 0;
+		m_ulTextAlign   = TA_BASELINE | TA_LEFT | TA_NOUPDATECP;
+		m_ulBgMode      = TRANSPARENT;
 		m_ulMiterLimit  = 0;
-		m_ulFillMode    = 0;
+		m_ulFillMode    = WINDING;
 		m_ulStretchMode = 0;
 		m_oWindow.Init();
 		m_oViewport.Init();
 		m_dPixelHeight = 1;
 		m_dPixelWidth  = 1;
-		m_pPen = NULL;
+		m_pPen  = NULL;
 		m_pFont = NULL;
+		m_oCurPos.x = 0;
+		m_oCurPos.y = 0;
 	}
 	CEmfDC::~CEmfDC()
 	{
@@ -247,7 +250,9 @@ namespace MetaFile
 		pNewDC->m_pBrush        = m_pBrush;
 		pNewDC->m_pPen          = m_pPen;
 		pNewDC->m_pFont         = m_pFont;
+		pNewDC->m_pPalette      = m_pPalette;
 		pNewDC->m_oTransform.Copy(&m_oTransform);
+		pNewDC->m_oInverseTransform.Copy(&m_oInverseTransform);
 		pNewDC->m_oTextColor.Copy(&m_oTextColor);
 		pNewDC->m_oBgColor.Copy(&m_oBgColor);
 		pNewDC->m_ulTextAlign   = m_ulTextAlign;
@@ -255,10 +260,12 @@ namespace MetaFile
 		pNewDC->m_ulMiterLimit  = m_ulMiterLimit;
 		pNewDC->m_ulFillMode    = m_ulFillMode;
 		pNewDC->m_ulStretchMode = m_ulStretchMode;		
-		pNewDC->m_oWindow.Copy(&m_oWindow);
-		pNewDC->m_oViewport.Copy(&m_oViewport);
+		pNewDC->m_ulRop2Mode    = m_ulRop2Mode;
 		pNewDC->m_dPixelHeight  = m_dPixelHeight;
 		pNewDC->m_dPixelWidth   = m_dPixelWidth;
+		pNewDC->m_oWindow.Copy(&m_oWindow);
+		pNewDC->m_oViewport.Copy(&m_oViewport);
+		pNewDC->m_oCurPos       = m_oCurPos;
 
 		return pNewDC;
 	}
@@ -323,6 +330,34 @@ namespace MetaFile
 	TEmfXForm* CEmfDC::GetTransform()
 	{
 		return &m_oTransform;
+	}
+	TEmfXForm* CEmfDC::GetInverseTransform()
+	{
+		return &m_oInverseTransform;
+	}
+	void CEmfDC::MultiplyTransform(TEmfXForm& oForm, unsigned long ulMode)
+	{
+		m_oTransform.Multiply(oForm, ulMode);
+
+		// Обновляем обратную матрицу
+		TEmfXForm* pT = &m_oTransform;
+		double dDet = pT->M11 * pT->M22 - pT->M12 * pT->M21;
+		if (dDet < 0.0001 && dDet > 0.0001)
+		{
+			m_oInverseTransform.M11 = 1;
+			m_oInverseTransform.M12 = 0;
+			m_oInverseTransform.M21 = 0;
+			m_oInverseTransform.M22 = 1;
+			m_oInverseTransform.Dx  = 0;
+			m_oInverseTransform.Dy  = 0;
+		}
+
+		m_oInverseTransform.M11 = pT->M22 / dDet;
+		m_oInverseTransform.M12 = -pT->M12 / dDet;
+		m_oInverseTransform.M21 = -pT->M21 / dDet;
+		m_oInverseTransform.M22 = pT->M22 / dDet;
+		m_oInverseTransform.Dx  = pT->Dy * pT->M21 / dDet - pT->Dx * pT->M22 / dDet;
+		m_oInverseTransform.Dy  = pT->Dx * pT->M12 / dDet - pT->Dy * pT->M11 / dDet;
 	}
 	void CEmfDC::SetTextColor(TEmfColor& oColor)
 	{
@@ -510,5 +545,18 @@ namespace MetaFile
 	CEmfLogPalette* CEmfDC::GetPalette()
 	{
 		return m_pPalette;
+	}
+	void CEmfDC::SetCurPos(TEmfPointL& oPoint)
+	{
+		SetCurPos(oPoint.x, oPoint.y);
+	}
+	void CEmfDC::SetCurPos(long lX, long lY)
+	{
+		m_oCurPos.x = lX;
+		m_oCurPos.y = lY;
+	}
+	TEmfPointL& CEmfDC::GetCurPos()
+	{
+		return m_oCurPos;
 	}
 }

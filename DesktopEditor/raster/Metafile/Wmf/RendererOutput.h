@@ -1612,8 +1612,8 @@ private:
 			CBgraFrame oFrame;
 			oFrame.OpenFile(wsTempFileName);
 
-			// TODO: Как будут файлы сделать чтение.
-			::_wunlink(wsTempFileName.c_str());
+            // TODO: Как будут файлы сделать чтение.
+            NSFile::CFileBinary::Remove(wsTempFileName);
 
 			return false;
 		}

@@ -13,8 +13,7 @@
 
 #include "../../../common/File.h"
 
-#define UTF8_TO_U(val) NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)val, strlen(val))
-#define U_TO_UTF8(val) NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(val, wcslen(val))
+#define U_TO_UTF8(val) NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(val.c_str(), val.length())
 
 static std::wstring ascii_to_unicode(const char *src)
 {
@@ -165,7 +164,7 @@ static bool WmfOpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMod
 	char *wsTempDirA;
 	if ( ( wsTempDirA = getenv( "TEMP" ) ) && ( wsFolder == NULL ) )
 	{
-		std::wstring wsTempDir = UTF8_TO_U( wsTempDirA );
+        std::wstring wsTempDir = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)wsTempDirA, strlen(wsTempDirA));
 		wsTemp = wsTempDir.c_str();
 #endif
 		wsTemp.append(L"/");
@@ -185,8 +184,12 @@ static bool WmfOpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMod
 	{
 		wsFileName = wsTemp;
 		wchar_t buffer[24];
-		_itow(nTime + nIndex,buffer,10);
-		wsFileName.append(buffer);
+#if defined (_WIN32) || defined (_WIN64)
+        itow(nTime + nIndex,buffer,10);
+        wsFileName.append(buffer);
+#else
+        wsFileName.append(std::to_wstring(nTime + nIndex));
+#endif
 
 		if (wsExt)
 		{
@@ -200,7 +203,8 @@ static bool WmfOpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMod
 		std::string sFileName = U_TO_UTF8(wsFileName);
 		if ( !( pTempFile = fopen( sFileName.c_str(), "r" ) ) )
 		{
-			std::string sMode = U_TO_UTF8(wsMode);
+            std::wstring strMode (wsMode);
+            std::string sMode = U_TO_UTF8(strMode);
 			if ( !( pTempFile = fopen( sFileName.c_str(), sMode.c_str() ) ) )
 #endif
 			{

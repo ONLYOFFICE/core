@@ -92,8 +92,8 @@ namespace MetaFile
 			oFrame.OpenFile(wsTempFileName);
 
 			// TODO: Как будут файлы сделать чтение.
-			::_wunlink(wsTempFileName.c_str());
-
+            //::_wunlink(wsTempFileName.c_str());
+            NSFile::CFileBinary::Remove(wsTempFileName);
 			return false;
 		}
 		else if (BI_BITCOUNT_1 == ushBitCount)

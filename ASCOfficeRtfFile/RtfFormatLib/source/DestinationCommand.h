@@ -1180,7 +1180,23 @@ class ShapePropertyReader : public RtfAbstractReader
 				if( _T("") == m_sPropValue ) 
 					return;
 				CString sValue = m_sPropValue;
-				int nValue = Strings::ToInteger( sValue );
+
+                if( _T("wzName") == m_sPropName )
+                {
+                    m_oShape.m_sName = sValue;
+                    return;
+                }
+                else if( _T("pibName") == m_sPropName )
+                {
+                    return;
+                }
+                else if( _T("wzDescription") == m_sPropName )
+                {
+                    m_oShape.m_sDescription = sValue;
+                    return;
+                }
+        //числовые
+                int nValue = Strings::ToInteger( sValue );
 
 				if( _T("shapeType") == m_sPropName )
 					m_oShape.m_nShapeType = nValue;

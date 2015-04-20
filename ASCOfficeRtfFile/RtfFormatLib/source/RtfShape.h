@@ -22,6 +22,9 @@ public:
 
 		ShapeType m_eShapeType;
 
+        CString m_sName;
+        CString m_sDescription;
+
 		int m_nLeft; //\shpleftN	Specifies position of shape from the left of the anchor. The value N is in twips.
 		int m_nTop; //\shptopN	Specifies position of shape from the top of the anchor. The value N is in twips.
 		int m_nBottom; //\shpbottomN	Specifies position of shape from the bottom of the anchor. The value N is in twips.

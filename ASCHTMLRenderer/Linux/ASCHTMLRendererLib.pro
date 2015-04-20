@@ -19,7 +19,12 @@ INCLUDEPATH += \
 SOURCES += ../ASCSVGWriter.cpp \
     ../CASCSVGRenderer.cpp \
     ../CMetafile.cpp \
-    ../CASCImage.cpp
+    ../CASCImage.cpp \
+    ../../DesktopEditor/raster/Metafile/Common.cpp \
+    ../../DesktopEditor/raster/Metafile/MetaFile.cpp \
+    ../../DesktopEditor/raster/Metafile/Emf/EmfObjects.cpp \
+    ../../DesktopEditor/raster/Metafile/Emf/EmfPath.cpp \
+    ../../DesktopEditor/raster/Metafile/Emf/EmfPlayer.cpp
 
 HEADERS += ../ASCSVGWriter.h \
     ../CASCImage.h \
@@ -33,22 +38,30 @@ HEADERS += ../ASCSVGWriter.h \
     ../Writer/SVGWriter.h \
     ../Writer/VectorGraphicsWriter2.h \
     ../Writer/VMLWriter.h \
-    ../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/RendererOutput.h \
-    ../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfCharsets.h \
-    ../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfCodePage932.h \
-    ../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfCodePage936.h \
-    ../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfCodePage949.h \
-    ../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfCodePage950.h \
-    ../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfCodePage1361.h \
-    ../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfColor.h \
-    ../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfFile.h \
-    ../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfMemory.h \
-    ../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfOutputDevice.h \
-    ../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfRegion.h \
-    ../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfTypes.h \
-    ../../ASCImageStudio3/ASCGraphics/Objects/Image/Wmf/WmfUtils.h
-
-unix {
+unix { \
+    ../../DesktopEditor/raster/Metafile/Common.h \
+    ../../DesktopEditor/raster/Metafile/MetaFile.h \
+    ../../DesktopEditor/raster/Metafile/Emf/EmfFile.h \
+    ../../DesktopEditor/raster/Metafile/Emf/EmfObjects.h \
+    ../../DesktopEditor/raster/Metafile/Emf/EmfOutputDevice.h \
+    ../../DesktopEditor/raster/Metafile/Emf/EmfPath.h \
+    ../../DesktopEditor/raster/Metafile/Emf/EmfPlayer.h \
+    ../../DesktopEditor/raster/Metafile/Emf/EmfTypes.h \
+    ../../DesktopEditor/raster/Metafile/Emf/RendererOutput.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/RendererOutput.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfCharsets.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfCodePage932.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfCodePage936.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfCodePage949.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfCodePage950.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfCodePage1361.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfColor.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfFile.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfMemory.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfOutputDevice.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfRegion.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfTypes.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfUtils.h
     target.path = /usr/lib
     INSTALLS += target
 }

@@ -4,7 +4,7 @@
 #include "EmfTypes.h"
 #include "../Wmf/WmfUtils.h"
 #include "../Wmf/WmfTypes.h"
-#include "../../Common/Types.h"
+#include "../../common/Types.h"
 
 namespace MetaFile
 {

@@ -17,7 +17,10 @@ namespace MetaFile
 	CEmfLogBrushEx::~CEmfLogBrushEx()
 	{
 		if (BS_DIBPATTERN == BrushStyle && L"" != DibPatternPath)
-			::_wunlink(DibPatternPath.c_str());
+        {
+        //	::_wunlink(DibPatternPath.c_str());
+            NSFile::CFileBinary::Remove(DibPatternPath);
+        }
 
 		if (DibBuffer)
 			delete[] DibBuffer;

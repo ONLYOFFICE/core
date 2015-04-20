@@ -75,7 +75,10 @@ public:
 	{
 		//в проекте используется ungetcб только после getc
 		//поэтому проблем с выходом в 0 нет
-		m_nPosAbs--;
+        if( m_nPosAbs + 1 < m_nSizeAbs )
+        {
+            m_nPosAbs--;
+        }//взять любой txt переименовать в rtf - зацикливание
 	}
 	void putString( CStringA sText )
 	{

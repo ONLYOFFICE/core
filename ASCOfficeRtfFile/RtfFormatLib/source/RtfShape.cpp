@@ -301,7 +301,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 							if( PROP_DEF != m_oPicture->m_nWidthGoal && PROP_DEF != m_oPicture->m_nHeightGoal )
 								sResult.AppendFormat( _T("<wp:extent cx=\"%d\" cy=\"%d\"/>"), RtfUtility::Twips2Emu( m_oPicture->m_nWidthGoal ), RtfUtility::Twips2Emu(  m_oPicture->m_nHeightGoal ) );
 							int nImageID = poDocument->m_oIdGenerator.Generate_ImagePropId();
-							sResult.AppendFormat( _T("<wp:docPr id=\"%d\" name=\"\" descr=\"\"/>"), nImageID );
+                            sResult.AppendFormat( _T("<wp:docPr id=\"%d\" name=\"%ls\" descr=\"\"/>"), m_sName.GetBuffer(), nImageID );
 
 							int nCropLeft = PROP_DEF;
 							int nCropTop = PROP_DEF;
@@ -328,8 +328,8 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 							sResult.Append( _T("<a:graphic><a:graphicData  uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">"));
 
 							sResult.Append( _T("<pic:nvPicPr>") );
-							sResult.AppendFormat( _T("<pic:cNvPr id=\"%d\" name=\"\" descr=\"\"/>"), nImageID );
-							if( 0 == m_bLockAnchor )
+                            sResult.AppendFormat( _T("<pic:cNvPr id=\"%d\" name=\"%ls\" descr=\"\"/>"), nImageID, m_sName.GetBuffer() );
+                            if( 0 == m_bLockAnchor )
 								sResult.Append( _T("<pic:cNvPicPr><a:picLocks noChangeAspect=\"0\" noChangeArrowheads=\"1\"/></pic:cNvPicPr>") );
 							else
 								sResult.Append( _T("<pic:cNvPicPr><a:picLocks noChangeAspect=\"1\" noChangeArrowheads=\"1\"/></pic:cNvPicPr>") );
@@ -565,7 +565,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 								}
 							}
 							int nImageID = poDocument->m_oIdGenerator.Generate_ImagePropId();
-							sResult.AppendFormat( _T("<wp:docPr id=\"%d\" name=\"\" descr=\"\"/>"), nImageID );
+                            sResult.AppendFormat( _T("<wp:docPr id=\"%d\" name=\"%ls\" descr=\"\"/>"), nImageID, m_sName.GetBuffer() );
 
 							int nCropLeft = PROP_DEF;
 							int nCropTop = PROP_DEF;
@@ -592,7 +592,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 								sResult.Append( _T("<a:graphic><a:graphicData  uri=\"http://schemas.openxmlformats.org/drawingml/2006/picture\"><pic:pic xmlns:pic=\"http://schemas.openxmlformats.org/drawingml/2006/picture\">"));
 
 								sResult.Append( _T("<pic:nvPicPr>") );
-								sResult.AppendFormat( _T("<pic:cNvPr id=\"%d\" name=\"\" descr=\"\"/>"), nImageID );
+                                sResult.AppendFormat( _T("<pic:cNvPr id=\"%d\" name=\"%ls\" descr=\"\"/>"), nImageID, m_sName.GetBuffer() );
 								if( 0 == m_bLockAnchor )
 									sResult.Append( _T("<pic:cNvPicPr><a:picLocks noChangeAspect=\"0\" noChangeArrowheads=\"1\"/></pic:cNvPicPr>") );
 								else

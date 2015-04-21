@@ -90,7 +90,6 @@ SOURCES += pptxformatlib.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
     ../../../../XlsxSerializerCom/Reader/CSVReader.cpp \
-    #../../../../DesktopEditor/raster/BgraFrame.cpp \
     ../../../../XlsxSerializerCom/Writer/CSVWriter.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp \
     ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
@@ -518,7 +517,6 @@ HEADERS += pptxformatlib.h \
     ../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h \
     ../../Settings.h \
     ../../../../ASCPresentationEditor/ASCPresentationEditorDef.h \
-    ../../../../DesktopEditor/raster/BgraFrame.h \
     ../../../../Common/FileDownloader.h \
     ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h \
     ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/File.h \

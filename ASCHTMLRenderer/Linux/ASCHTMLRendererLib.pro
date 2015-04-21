@@ -10,7 +10,12 @@ TARGET = ASCHTMLRendererLib
 TEMPLATE = lib
 CONFIG += staticlib
 QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
-DEFINES += UNICODE _UNICODE _LINUX_QT NODOCX DESKTOP_EDITOR_GRAPHICS
+
+DEFINES +=  UNICODE \
+            _UNICODE \
+            _LINUX_QT \
+            NODOCX \
+            DESKTOP_EDITOR_GRAPHICS
 
 INCLUDEPATH += \
     ../../DesktopEditor/freetype-2.5.2/include \
@@ -24,7 +29,8 @@ SOURCES += ../ASCSVGWriter.cpp \
     ../../DesktopEditor/raster/Metafile/MetaFile.cpp \
     ../../DesktopEditor/raster/Metafile/Emf/EmfObjects.cpp \
     ../../DesktopEditor/raster/Metafile/Emf/EmfPath.cpp \
-    ../../DesktopEditor/raster/Metafile/Emf/EmfPlayer.cpp
+    ../../DesktopEditor/raster/Metafile/Emf/EmfPlayer.cpp \
+    ../../DesktopEditor/raster/Metafile/Emf/EmfClip.cpp
 
 HEADERS += ../ASCSVGWriter.h \
     ../CASCImage.h \
@@ -38,7 +44,6 @@ HEADERS += ../ASCSVGWriter.h \
     ../Writer/SVGWriter.h \
     ../Writer/VectorGraphicsWriter2.h \
     ../Writer/VMLWriter.h \
-unix { \
     ../../DesktopEditor/raster/Metafile/Common.h \
     ../../DesktopEditor/raster/Metafile/MetaFile.h \
     ../../DesktopEditor/raster/Metafile/Emf/EmfFile.h \
@@ -61,7 +66,11 @@ unix { \
     ../../DesktopEditor/raster/Metafile/Wmf/WmfOutputDevice.h \
     ../../DesktopEditor/raster/Metafile/Wmf/WmfRegion.h \
     ../../DesktopEditor/raster/Metafile/Wmf/WmfTypes.h \
-    ../../DesktopEditor/raster/Metafile/Wmf/WmfUtils.h
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfUtils.h \
+    ../../DesktopEditor/raster/Metafile/Emf/EmfClip.h
+
+unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+

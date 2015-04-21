@@ -432,10 +432,8 @@ SOURCES += \
     ../../../cximage/CxImage/ximawmf.cpp \
     ../../../cximage/CxImage/ximawnd.cpp \
     ../../../cximage/CxImage/xmemfile.cpp \
-    \
     ../../../raster/BgraFrame.cpp \
     ../../../raster/ImageFileFormatChecker.cpp
-
 
 HEADERS += \
     ../../../graphics/AggPlusEnums.h \
@@ -626,10 +624,8 @@ HEADERS += \
     ../../../cximage/CxImage/ximawbmp.h \
     ../../../cximage/CxImage/xiofile.h \
     ../../../cximage/CxImage/xmemfile.h \
-    \
-    ../../../raster/bgraframe.h \
+    ../../../raster/BgraFrame.h \
     ../../../raster/ImageFileFormatChecker.h
-
 
 unix {
     target.path = /usr/lib

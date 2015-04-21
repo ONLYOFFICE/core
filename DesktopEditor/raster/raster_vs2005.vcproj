@@ -50,7 +50,7 @@
 				StringPooling="true"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
-				PrecompiledHeaderFile=".\Release/raster.pch"
+				PrecompiledHeaderFile=""
 				AssemblerListingLocation="$(ConfigurationName)\"
 				ObjectFile="$(ConfigurationName)\"
 				ProgramDataBaseFileName="$(ConfigurationName)\"

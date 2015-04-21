@@ -17,6 +17,7 @@ using namespace NSFontCutter;
 #include "WMFToImageConverter.h"
 #include "../../Common/MediaFormatDefine.h"
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+#include "../../DesktopEditor/raster/Metafile/MetaFile.h"
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DesktopEditor/graphics/Image.h"
 
@@ -127,7 +128,7 @@ namespace NSShapeImageGen
 		LONG							m_lDstFormat;
 
 #ifdef BUILD_CONFIG_FULL_VERSION
-		NSWMFToImageConverter::CImageExt	m_oExt;
+		NSWMFToImageConverter::CImageExt	m_oImageExt;
 #endif
 
 		CFontManager* m_pFontManager;
@@ -303,7 +304,7 @@ namespace NSShapeImageGen
 			m_pFontManager = pFontManager;
 
 #ifdef BUILD_CONFIG_FULL_VERSION
-			m_oExt.SetFontManager(pFontManager);
+			m_oImageExt.SetFontManager(pFontManager);
 #endif
 		}
 	protected:
@@ -477,7 +478,7 @@ namespace NSShapeImageGen
 			if (m_mapImagesFile.end() == pPair)
 			{
 #ifdef BUILD_CONFIG_FULL_VERSION
-				LONG lImageType = m_oExt.GetImageType(strFileName);
+				LONG lImageType = m_oImageExt.GetImageType(strFileName);
 
 				if (1 == lImageType || 2 == lImageType)
 				{
@@ -490,14 +491,13 @@ namespace NSShapeImageGen
                     strSaveItem = m_strDstMedia + FILE_SEPARATOR_STR + strSaveItem;
 
                     double dKoef = 100 * 96 / 25.4;
-					bool bIsSuccess = m_oExt.Convert(strFileName, LONG(dWidth * dKoef), LONG(dHeight * dKoef), strSaveItem + _T("svg"));
+					bool bIsSuccess = m_oImageExt.Convert(strFileName, LONG(dWidth * dKoef), LONG(dHeight * dKoef), strSaveItem + _T("svg"));
 					if (bIsSuccess)
-					{
-                        if (itWMF == oInfo.m_eType) strSaveItem += _T("wmf");
-                        else                        strSaveItem += _T("emf");
+					{//svg
+							 if (itWMF == oInfo.m_eType)	strSaveItem += _T("wmf");
+                        else if (itEMF == oInfo.m_eType)	strSaveItem += _T("emf");
 
                         OOX::CPath pathSaveItem = strSaveItem;
-
                         CDirectory::CopyFile(strFileName, pathSaveItem.GetPath(), NULL, NULL);
 
 						m_mapImagesFile.insert(std::pair<CString,CImageInfo>(strFileName, oInfo));
@@ -506,10 +506,35 @@ namespace NSShapeImageGen
 					}
 					else
 					{
-						//случай wmf/emf преобризованного в Bitmap или ошибки
+						::MetaFile::CMetaFile metaFileRaster(m_pFontManager->m_pApplication);
+
+						if (metaFileRaster.LoadFromFile(strFileName))
+						{
+							//случай растрового wmf/emf
+							strSaveItem.Format(_T("image%d.png"), oInfo.m_lID);
+							strSaveItem = m_strDstMedia + FILE_SEPARATOR_STR + strSaveItem;
+							
+							metaFileRaster.ConvertToRaster(strSaveItem, 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);
+							
+							bIsSuccess = NSFile::CFileBinary::Exists(string2std_string(strSaveItem));
+
+							if (bIsSuccess)
+							{					
+								oInfo.m_eType = itPNG;
+
+								m_mapImagesFile.insert(std::pair<CString,CImageInfo>(strSaveItem, oInfo));
+								m_listImages.push_back(oInfo);
+								return oInfo;
+							}
+						}		
+					}
+					if (bIsSuccess == false)
+					{
 						NSHtmlRenderer::CASCImage oImage;
 						oImage.put_FontManager(m_pFontManager);
+
 						oImage.LoadFromFile(std::wstring(strFileName.GetString()));
+
 						Aggplus::CImage* pImage = oImage.get_BitmapImage();
 						if(NULL != pImage)
 						{
@@ -559,7 +584,7 @@ namespace NSShapeImageGen
 			LONG lHeight	= (LONG)(dHeight * 96 / 25.4);
 
 #ifdef BUILD_CONFIG_FULL_VERSION
-			LONG lImageType = m_oExt.GetImageType(strFileName);
+			LONG lImageType = m_oImageExt.GetImageType(strFileName);
 
 			if (1 == lImageType || 2 == lImageType)
 			{
@@ -573,9 +598,9 @@ namespace NSShapeImageGen
                strSaveItem = m_strDstMedia + FILE_SEPARATOR_STR + strSaveItem;
 
 				double dKoef = 100 * 96 / 25.4;
-				bool bIsSuccess = m_oExt.Convert(strFileName, LONG(dWidth * dKoef), LONG(dHeight * dKoef), strSaveItem + _T("svg"));
+				bool bIsSuccess = m_oImageExt.Convert(strFileName, LONG(dWidth * dKoef), LONG(dHeight * dKoef), strSaveItem + _T("svg"));
 				if (bIsSuccess)
-				{
+				{//svg
                     if (itWMF == oInfo.m_eType)	strSaveItem += _T("wmf");
                     else                        strSaveItem += _T("emf");
 

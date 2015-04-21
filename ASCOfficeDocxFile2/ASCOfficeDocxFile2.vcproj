@@ -20,7 +20,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -56,7 +56,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm1000"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)/../Common/DocxFormat/Source/XML/libxml2/XML/include&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/../../AVSImageStudio3/AVSGraphics/Objects&quot;;&quot;$(SolutionDir)/../../AVSImageStudio3/AVSGraphics/Objects/Font/FreeType&quot;;&quot;$(SolutionDir)/../Common/DocxFormat/Source/DocxFormat&quot;;&quot;../DesktopEditor/freetype-2.5.2/include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\..\Common\DocxFormat\Source\XML\libxml2\XML\include&quot;;&quot;$(SolutionDir)\..\DesktopEditor\freetype-2.5.2\include&quot;"
 				PreprocessorDefinitions="WIN32;_WINDOWS;_DEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_XMLLITE_READER_;USE_LITE_READER;USE_AVSOFFICESTUDIO_XMLUTILS;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -120,7 +120,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
 			UseOfMFC="0"
@@ -156,7 +156,7 @@
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm1000"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)/../Common/DocxFormat/Source/XML/libxml2/XML/include&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/../../AVSImageStudio3/AVSGraphics/Objects&quot;;&quot;$(SolutionDir)/../../AVSImageStudio3/AVSGraphics/Objects/Font/FreeType&quot;;&quot;$(SolutionDir)/../Common/DocxFormat/Source/DocxFormat&quot;;&quot;../DesktopEditor/freetype-2.5.2/include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\..\Common\DocxFormat\Source\XML\libxml2\XML\include&quot;;&quot;$(SolutionDir)\..\DesktopEditor\freetype-2.5.2\include&quot;"
 				PreprocessorDefinitions="_DEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_XMLLITE_READER_;USE_LITE_READER;USE_AVSOFFICESTUDIO_XMLUTILS;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -220,10 +220,10 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfATL="1"
+			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
 			>
@@ -255,8 +255,8 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm1000"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)/../Common/DocxFormat/Source/XML/libxml2/XML/include&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/../../AVSImageStudio3/AVSGraphics/Objects&quot;;&quot;$(SolutionDir)/../../AVSImageStudio3/AVSGraphics/Objects/Font/FreeType&quot;;&quot;$(SolutionDir)/../Common/DocxFormat/Source/DocxFormat&quot;;&quot;../DesktopEditor/freetype-2.5.2/include&quot;"
-				PreprocessorDefinitions="WIN32;_WINDOWS;NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_XMLLITE_READER_;USE_LITE_READER;USE_AVSOFFICESTUDIO_XMLUTILS;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\..\Common\DocxFormat\Source\XML\libxml2\XML\include&quot;;&quot;$(SolutionDir)\..\DesktopEditor\freetype-2.5.2\include&quot;"
+				PreprocessorDefinitions="NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -321,10 +321,10 @@
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfATL="1"
+			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
 			>
@@ -356,7 +356,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				AdditionalOptions="/Zm1000"
-				AdditionalIncludeDirectories="&quot;$(SolutionDir)/../Common/DocxFormat/Source/XML/libxml2/XML/include&quot;;&quot;$(SolutionDir)&quot;;&quot;$(SolutionDir)/../../AVSImageStudio3/AVSGraphics/Objects&quot;;&quot;$(SolutionDir)/../../AVSImageStudio3/AVSGraphics/Objects/Font/FreeType&quot;;&quot;$(SolutionDir)/../Common/DocxFormat/Source/DocxFormat&quot;;&quot;../DesktopEditor/freetype-2.5.2/include&quot;"
+				AdditionalIncludeDirectories="&quot;$(SolutionDir)\..\Common\DocxFormat\Source\XML\libxml2\XML\include&quot;;&quot;$(SolutionDir)\..\DesktopEditor\freetype-2.5.2\include&quot;"
 				PreprocessorDefinitions="NDEBUG;_USRDLL;_ATL_ATTRIBUTES;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

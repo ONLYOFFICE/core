@@ -20,7 +20,7 @@
 	<Configurations>
 		<Configuration
 			Name="Debug|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			UseOfATL="0"
@@ -86,7 +86,7 @@
 		</Configuration>
 		<Configuration
 			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			UseOfMFC="0"
@@ -154,7 +154,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			OutputDirectory="$(ConfigurationName)"
 			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
@@ -177,11 +177,11 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
+				Optimization="2"
 				FavorSizeOrSpeed="1"
 				WholeProgramOptimization="false"
 				AdditionalIncludeDirectories="..\..\Common\ASCDocxFormat\Source\Utility;..\..\Common\ASCDocxFormat\Source\XML;..\..\Common\ASCDocxFormat\Source;..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;&quot;..\..\DesktopEditor\freetype-2.5.2\include&quot;"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_USE_MATH_DEFINES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;AVS_USE_CONVERT_PPTX_TOCUSTOM_VML;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS"
+				PreprocessorDefinitions="NDEBUG;_LIB;_USE_MATH_DEFINES;NODOCX;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;_AVS_PPT_SHAPE_INCLUDE_;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
@@ -199,7 +199,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalLibraryDirectories="..\..\Common\ASCDocxFormat\Lib\Release"
+				AdditionalLibraryDirectories=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -219,7 +219,7 @@
 		</Configuration>
 		<Configuration
 			Name="Release|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
@@ -265,7 +265,7 @@
 			/>
 			<Tool
 				Name="VCLibrarianTool"
-				AdditionalLibraryDirectories="..\..\Common\ASCDocxFormat\Lib\Release"
+				AdditionalLibraryDirectories=""
 			/>
 			<Tool
 				Name="VCALinkTool"
@@ -295,6 +295,14 @@
 				RelativePath="..\ASCOfficeDrawingConverter.cpp"
 				>
 				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|x64"
 					>
 					<Tool
@@ -315,6 +323,14 @@
 					/>
 				</FileConfiguration>
 				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|x64"
 					>
 					<Tool
@@ -326,6 +342,14 @@
 			<File
 				RelativePath="..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\Common\DocxFormat\Source\XML\stringcommon.cpp"
@@ -363,6 +387,14 @@
 			<File
 				RelativePath="..\Editor\FontPicker.cpp"
 				>
+				<FileConfiguration
+					Name="Release|Win32"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						Optimization="0"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\ASCPresentationEditor\OfficeDrawing\Layout.cpp"
@@ -467,6 +499,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
+							Optimization="0"
 							PrecompiledHeaderThrough="./StdAfx.h"
 						/>
 					</FileConfiguration>
@@ -1293,6 +1326,14 @@
 					<File
 						RelativePath="..\.\PPTXFormat\Logic\SpTree.cpp"
 						>
+						<FileConfiguration
+							Name="Release|Win32"
+							>
+							<Tool
+								Name="VCCLCompilerTool"
+								Optimization="0"
+							/>
+						</FileConfiguration>
 					</File>
 					<File
 						RelativePath="..\.\PPTXFormat\Logic\SpTree.h"
@@ -2314,6 +2355,7 @@
 								>
 								<Tool
 									Name="VCCLCompilerTool"
+									Optimization="0"
 									PrecompiledHeaderThrough="./StdAfx.h"
 								/>
 							</FileConfiguration>
@@ -2394,6 +2436,7 @@
 								>
 								<Tool
 									Name="VCCLCompilerTool"
+									Optimization="0"
 									PrecompiledHeaderThrough="./StdAfx.h"
 								/>
 							</FileConfiguration>
@@ -2466,6 +2509,7 @@
 								>
 								<Tool
 									Name="VCCLCompilerTool"
+									Optimization="0"
 									PrecompiledHeaderThrough="./StdAfx.h"
 								/>
 							</FileConfiguration>
@@ -2569,6 +2613,14 @@
 						<File
 							RelativePath="..\.\PPTXFormat\Logic\TxBody.cpp"
 							>
+							<FileConfiguration
+								Name="Release|Win32"
+								>
+								<Tool
+									Name="VCCLCompilerTool"
+									Optimization="0"
+								/>
+							</FileConfiguration>
 						</File>
 						<File
 							RelativePath="..\.\PPTXFormat\Logic\TxBody.h"
@@ -2646,6 +2698,7 @@
 								>
 								<Tool
 									Name="VCCLCompilerTool"
+									Optimization="0"
 									PrecompiledHeaderThrough="./StdAfx.h"
 								/>
 							</FileConfiguration>
@@ -2702,6 +2755,7 @@
 								>
 								<Tool
 									Name="VCCLCompilerTool"
+									Optimization="0"
 									PrecompiledHeaderThrough="./StdAfx.h"
 								/>
 							</FileConfiguration>
@@ -2762,6 +2816,7 @@
 								>
 								<Tool
 									Name="VCCLCompilerTool"
+									Optimization="0"
 									PrecompiledHeaderThrough="./StdAfx.h"
 								/>
 							</FileConfiguration>
@@ -2822,6 +2877,7 @@
 								>
 								<Tool
 									Name="VCCLCompilerTool"
+									Optimization="0"
 									PrecompiledHeaderThrough="./StdAfx.h"
 								/>
 							</FileConfiguration>
@@ -2902,6 +2958,7 @@
 								>
 								<Tool
 									Name="VCCLCompilerTool"
+									Optimization="0"
 									PrecompiledHeaderThrough="./StdAfx.h"
 								/>
 							</FileConfiguration>

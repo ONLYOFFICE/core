@@ -183,8 +183,13 @@ static bool WmfOpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMod
 	for (int nIndex = 0; nIndex < 1000; ++nIndex)
 	{
 		wsFileName = wsTemp;
-        wsFileName.append(std::to_wstring(nTime + nIndex));
-
+#if defined(_WIN32) || defined (_WIN64)
+		wchar_t buff[32] ={};
+		_itow(nTime + nIndex, buff, 10);
+		wsFileName.append(buff, wcslen(buff));
+#else
+		wsFileName.append(std::to_wstring(nTime + nIndex));
+#endif
 		if (wsExt)
 		{
 			wsFileName.append(wsExt);

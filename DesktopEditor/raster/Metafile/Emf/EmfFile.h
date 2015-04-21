@@ -466,10 +466,10 @@ namespace MetaFile
 			double dW = dR - dL;
 			double dH = dB - dT;
 
-			int lL = (int)std::floor(dL + 0.5);
-			int lT = (int)std::floor(dT + 0.5);
-			int lR = (int)std::floor(dW + 0.5) + lL;
-			int lB = (int)std::floor(dH + 0.5) + lT;
+			int lL = (int)floor(dL + 0.5);
+			int lT = (int)floor(dT + 0.5);
+			int lR = (int)floor(dW + 0.5) + lL;
+			int lB = (int)floor(dH + 0.5) + lT;
 
 			// ѕо логике мы должны получать рект, точно такой же как и oBounds, но есть файлы, где это не так.
 			m_oHeader.oFrameToBounds.lLeft   = lL;

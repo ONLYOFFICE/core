@@ -5,7 +5,25 @@
 
 namespace MetaFile
 {	
+	unsigned char GetLowestBit(unsigned long ulValue)
+	{
+		if (0 == ulValue)
+			return 0;
 
+		unsigned char unOffset = 0;
+		unsigned long ulBit = 1;
+		while (!(ulValue & ulBit))
+		{
+			ulBit = ulBit << 1;
+			unOffset++;
+
+			// ограничиваемся 32-битами
+			if (ulBit & 0x80000000)
+				return 0;
+		}
+
+		return unOffset;
+	}
 	bool ReadImageCoreHeader(BYTE* pHeaderBuffer, unsigned long ulHeaderBufferLen, BYTE* pImageBuffer, unsigned long ulImageBufferLen, BYTE** ppDstBuffer, unsigned long* pulWidth, unsigned long* pulHeight)
 	{
 		CDataStream oHeaderStream;
@@ -159,8 +177,119 @@ namespace MetaFile
 		}
 		else if (BI_BITCOUNT_2 == ushBitCount)
 		{
-			// TODO: Сделать данный вариант, как только будет файлы с данным типом
-			return false;
+			unsigned char unColorTableLen = 16;
+			if (0 != unColorUsed)
+				unColorTableLen = (std::min)((unsigned char)16, (unsigned char)unColorUsed);
+
+			TRgbQuad oColorTable[16];
+			if (oHeaderStream.CanRead() < unColorTableLen * 4)
+				return false;
+
+			// Считываем палитру
+			for (unsigned short ushIndex = 0; ushIndex < unColorTableLen; ushIndex++)
+			{
+				oHeaderStream >> oColorTable[ushIndex];
+			}
+
+			// 4 бита - 1 пиксел
+
+			// Считываем саму картинку
+			long lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
+			if (lCalcLen != lBufLen)
+				return false;
+
+			// Ширина в байтах должна быть кратна 4, значит сама ширина должна быть кратна 8
+			int nAdd = 0;
+			while (0 != div_t(div(nWidth + nAdd, 8)).rem)
+			{
+				nAdd++;
+			}
+
+			int nScanLineBytes = (nWidth + nAdd) / 2;
+			if (lBufLen < (nScanLineBytes * nHeight))
+				return false;
+
+			pBgraBuffer = new BYTE[nWidth * nHeight * 4 * sizeof(BYTE)];
+			if (NULL == pBgraBuffer)
+				return false;
+
+			ulHeight = (unsigned short)abs(nHeight);
+			ulWidth  = (unsigned short)nWidth;
+
+			if (nHeight < 0)
+			{
+				for (int nY = 0; nY < abs(nHeight); nY++)
+				{
+					for (int nLineIndex = 0; nLineIndex < nScanLineBytes; nLineIndex++)
+					{
+						BYTE nByte = *pBuffer; pBuffer++;
+
+						int nX = nLineIndex * 2;
+						int nIndex = 4 * (nWidth * nY + nX);
+						BYTE nColorIndex = (nByte & 0xf0) >> 4;
+
+						if (nX < nWidth)
+						{
+							pBgraBuffer[nIndex + 0] = oColorTable[nColorIndex].b;
+							pBgraBuffer[nIndex + 1] = oColorTable[nColorIndex].g;
+							pBgraBuffer[nIndex + 2] = oColorTable[nColorIndex].r;
+							pBgraBuffer[nIndex + 3] = 255;
+						}
+
+						nX = nLineIndex * 2 + 1;
+						nIndex = 4 * (nWidth * nY + nX);
+						nColorIndex = nByte & 0x0f;
+
+						if (nX < nWidth)
+						{
+							pBgraBuffer[nIndex + 0] = oColorTable[nColorIndex].b;
+							pBgraBuffer[nIndex + 1] = oColorTable[nColorIndex].g;
+							pBgraBuffer[nIndex + 2] = oColorTable[nColorIndex].r;
+							pBgraBuffer[nIndex + 3] = 255;
+						}
+					}
+				}
+			}
+			else
+			{
+				for (int nY = abs(nHeight) - 1; nY >= 0; nY--)
+				{
+					for (int nLineIndex = 0; nLineIndex < nScanLineBytes; nLineIndex++)
+					{
+						BYTE nByte = *pBuffer; pBuffer++;
+
+						int nX = nLineIndex * 2;
+						int nIndex = 4 * (nWidth * nY + nX);
+						BYTE nColorIndex = (nByte & 0xf0) >> 4;
+
+						if (nX < nWidth)
+						{
+							pBgraBuffer[nIndex + 0] = oColorTable[nColorIndex].b;
+							pBgraBuffer[nIndex + 1] = oColorTable[nColorIndex].g;
+							pBgraBuffer[nIndex + 2] = oColorTable[nColorIndex].r;
+							pBgraBuffer[nIndex + 3] = 255;
+						}
+
+						nX = nLineIndex * 2 + 1;
+						nIndex = 4 * (nWidth * nY + nX);
+						nColorIndex = nByte & 0x0f;
+
+						if (nX < nWidth)
+						{
+							pBgraBuffer[nIndex + 0] = oColorTable[nColorIndex].b;
+							pBgraBuffer[nIndex + 1] = oColorTable[nColorIndex].g;
+							pBgraBuffer[nIndex + 2] = oColorTable[nColorIndex].r;
+							pBgraBuffer[nIndex + 3] = 255;
+						}
+					}
+				}
+			}
+
+			*ppDstBuffer = pBgraBuffer;
+			*pulWidth    = ulWidth;
+			*pulHeight   = ulHeight;
+
+			return true;
 		}
 		else if (BI_BITCOUNT_3 == ushBitCount)
 		{
@@ -170,7 +299,7 @@ namespace MetaFile
 				ushColorTableLen = (std::min)((unsigned short)256, (unsigned short)unColorUsed);
 
 			TRgbQuad oColorTable[256];
-			if (lBufLen < ushColorTableLen * 4)
+			if (oHeaderStream.CanRead() < ushColorTableLen * 4)
 				return false;
 
 			// Считываем палитру
@@ -242,11 +371,33 @@ namespace MetaFile
 		}
 		else if (BI_BITCOUNT_4 == ushBitCount)
 		{
-			// Пропускаем таблицу цветов (она не нужна)
-			pBuffer += unColorUsed * 4; lBufLen -= unColorUsed * 4;
+			unsigned long ulMaskR = 0x1f, ulMaskB = 0x7C00, ulMaskG = 0x3E0;
+			unsigned long ulShiftR = 0, ulShiftB = 10, ulShiftG = 5;
+			double dKoefR = 255 / 31.0, dKoefB = 255 / 31.0, dKoefG = 255 / 31.0;
 
-			if (BI_RGB != unCompression)
-				return false; // TODO: Сделать данный вариант, как только будет файл с данным типом
+			if (BI_RGB == unCompression)
+			{
+				// Маски, сдвиги и коэффициенты уже заполнены стандартными значениями для масок
+				// 000000000011111 - Red
+				// 000001111100000 - Green
+				// 111110000000000 - Blue
+			}
+			else if (BI_BITFIELDS == unCompression)
+			{
+				oHeaderStream >> ulMaskR;
+				oHeaderStream >> ulMaskG;
+				oHeaderStream >> ulMaskB;
+
+				ulShiftR = GetLowestBit(ulMaskR);
+				ulShiftB = GetLowestBit(ulMaskB);
+				ulShiftG = GetLowestBit(ulMaskG);
+
+				dKoefR = 255.0 / (ulMaskR >> ulShiftR);
+				dKoefG = 255.0 / (ulMaskG >> ulShiftG);
+				dKoefB = 255.0 / (ulMaskB >> ulShiftB);
+			}
+			else
+				return false;
 
 			// Считываем саму картинку
 			long lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
@@ -276,14 +427,15 @@ namespace MetaFile
 					{
 						int nIndex = 4 * (nWidth * nY + nX);
 
-						unsigned short ushValue = ((pBuffer[1] << 8) | pBuffer[0]) & 32767; pBuffer += 2; lBufLen -= 2;
-						unsigned char unR = ushValue & 31;            // 000000000011111
-						unsigned char unG = (ushValue & 992) >> 5;  // 000001111100000
-						unsigned char unB = (ushValue & 31744) >> 10; // 111110000000000
+						unsigned short ushValue = ((pBuffer[1] << 8) | pBuffer[0]) & 0xFFFF; pBuffer += 2; lBufLen -= 2;
 
-						pBgraBuffer[nIndex + 0] = (unsigned char)(unR / 31.0 * 255);
-						pBgraBuffer[nIndex + 1] = (unsigned char)(unG / 31.0 * 255);
-						pBgraBuffer[nIndex + 2] = (unsigned char)(unB / 31.0 * 255);
+						unsigned char unR = (ushValue & ulMaskR) >> ulShiftR;
+						unsigned char unG = (ushValue & ulMaskG) >> ulShiftG;
+						unsigned char unB = (ushValue & ulMaskB) >> ulShiftB;
+
+						pBgraBuffer[nIndex + 0] = (unsigned char)(unB * dKoefB);
+						pBgraBuffer[nIndex + 1] = (unsigned char)(unG * dKoefG);
+						pBgraBuffer[nIndex + 2] = (unsigned char)(unR * dKoefR);
 						pBgraBuffer[nIndex + 3] = 255;
 					}
 					pBuffer += nAdd; lBufLen -= nAdd;
@@ -297,14 +449,14 @@ namespace MetaFile
 					{
 						int nIndex = 4 * (nWidth * nY + nX);
 
-						unsigned short ushValue = ((pBuffer[1] << 8) | pBuffer[0]) & 32767; pBuffer += 2; lBufLen -= 2;
-						unsigned char unR = ushValue & 31;            // 000000000011111
-						unsigned char unG = (ushValue & 992)   >> 5;  // 000001111100000
-						unsigned char unB = (ushValue & 31744) >> 10; // 111110000000000
+						unsigned short ushValue = ((pBuffer[1] << 8) | pBuffer[0]) & 0xFFFF; pBuffer += 2; lBufLen -= 2;
+						unsigned char unR = (ushValue & ulMaskR) >> ulShiftR;
+						unsigned char unG = (ushValue & ulMaskG) >> ulShiftG;
+						unsigned char unB = (ushValue & ulMaskB) >> ulShiftB;
 
-						pBgraBuffer[nIndex + 0] = (unsigned char)(unR / 31.0 * 255);
-						pBgraBuffer[nIndex + 1] = (unsigned char)(unG / 31.0 * 255);
-						pBgraBuffer[nIndex + 2] = (unsigned char)(unB / 31.0 * 255);
+						pBgraBuffer[nIndex + 0] = (unsigned char)(unB * dKoefB);
+						pBgraBuffer[nIndex + 1] = (unsigned char)(unG * dKoefG);
+						pBgraBuffer[nIndex + 2] = (unsigned char)(unR * dKoefR);
 						pBgraBuffer[nIndex + 3] = 255;
 					}
 					pBuffer += nAdd; lBufLen -= nAdd;
@@ -473,7 +625,7 @@ namespace MetaFile
 		}
 
 		return false;
-	}
+	}	
 	void ReadImage(BYTE* pHeaderBuffer, unsigned long ulHeaderBufferLen, BYTE* pImageBuffer, unsigned long ulImageBufferLen, BYTE** ppDstBuffer, unsigned long* pulWidth, unsigned long* pulHeight)
 	{
 		if (ulHeaderBufferLen <= 0 || NULL == pHeaderBuffer || NULL == pImageBuffer || ulImageBufferLen < 0)

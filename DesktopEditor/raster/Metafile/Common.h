@@ -475,6 +475,11 @@ namespace MetaFile
 			pCur = pBuffer;
 		}
 
+		unsigned long CanRead()
+		{
+			return (unsigned long)(pEnd - pCur);
+		}
+
 	private:
 
 		BYTE *pBuffer;

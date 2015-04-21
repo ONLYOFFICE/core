@@ -386,13 +386,13 @@ namespace MetaFile
 				Copy(&oOther);
 			}
 		}
-		void Apply(double* pX, double* pY)
+		void Apply(double& dX, double& dY)
 		{
-			double dX = *pX;
-			double dY = *pY;
+			double _dX = dX;
+			double _dY = dY;
 
-			*pX = dX * M11 + dY * M21 + Dx;
-			*pY = dX * M12 + dY * M22 + Dy;
+			dX = _dX * M11 + _dY * M21 + Dx;
+			dY = _dX * M12 + _dY * M22 + Dy;
 		}
 	};
 

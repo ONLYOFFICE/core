@@ -38,17 +38,17 @@ namespace MetaFile
 		{
 			return EMF_OBJECT_BRUSH;
 		}
-		void SetDibPattern(unsigned char* pBuffer, unsigned long ulWidth, unsigned long ulHeight);
+		void SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight);
 
 	public:
-		unsigned long  BrushStyle;
+		unsigned int  BrushStyle;
 		TEmfColor      Color;
-		unsigned long  BrushHatch;
-		unsigned long  BrushAlpha;
+		unsigned int  BrushHatch;
+		unsigned int  BrushAlpha;
 		std::wstring   DibPatternPath;
 		unsigned char* DibBuffer;
-		unsigned long  DibWidth;
-		unsigned long  DibHeigth;
+		unsigned int  DibWidth;
+		unsigned int  DibHeigth;
 	};
 
 	class CEmfLogFont : public CEmfObjectBase
@@ -93,11 +93,11 @@ namespace MetaFile
 
 	public:
 
-		unsigned long  PenStyle;
-		unsigned long  Width;
+		unsigned int  PenStyle;
+		unsigned int  Width;
 		TEmfColor      Color;
-		unsigned long  NumStyleEntries;
-		unsigned long* StyleEntry;
+		unsigned int  NumStyleEntries;
+		unsigned int* StyleEntry;
 	};
 
 	class CEmfLogPalette : public CEmfObjectBase

@@ -40,7 +40,7 @@ namespace MetaFile
 		{
 		}
 
-		void SetStream(BYTE* pBuf, unsigned long unSize)
+		void SetStream(BYTE* pBuf, unsigned int unSize)
 		{
 			pBuffer = pBuf;
 			pCur    = pBuf;
@@ -65,12 +65,12 @@ namespace MetaFile
 			pCur += 2;
 			return ushResult;
 		};
-		unsigned long  ReadULong()
+		unsigned int  ReadULong()
 		{
 			if (pCur + 4 >= pEnd)
 				return 0;
 
-			unsigned long unResult = (unsigned long)((pCur[0] << 0) | ((pCur[1]) << 8) | ((pCur[2]) << 16) | ((pCur[3]) << 24));
+			unsigned int unResult = (unsigned int)((pCur[0] << 0) | ((pCur[1]) << 8) | ((pCur[2]) << 16) | ((pCur[3]) << 24));
 			pCur += 4;
 			return unResult;
 		};
@@ -90,8 +90,8 @@ namespace MetaFile
 
 			return output;
 
-			long lIntValue  = (long)((pCur[0] << 16) | ((pCur[1]) << 8) | ((pCur[2]) << 0));
-			long lFracValue = (long)(pCur[3]);
+			int lIntValue  = (int)((pCur[0] << 16) | ((pCur[1]) << 8) | ((pCur[2]) << 0));
+			int lFracValue = (int)(pCur[3]);
 			pCur += 4;
 			return (double)(lIntValue + (lFracValue / 16.0));
 		};
@@ -103,11 +103,11 @@ namespace MetaFile
 		{
 			return (short)ReadUShort();
 		};
-		long           ReadLong()
+		int           ReadLong()
 		{
-			return (long)ReadULong();
+			return (int)ReadULong();
 		};
-		void           ReadBytes(unsigned char*  pBuffer, unsigned long ulSize)
+		void           ReadBytes(unsigned char*  pBuffer, unsigned int ulSize)
 		{
 			size_t ulRemainSize = (pEnd - pCur);
 			size_t ulFinalSize  = (ulRemainSize > ulSize ? ulSize : ulRemainSize);
@@ -117,7 +117,7 @@ namespace MetaFile
 				pBuffer[ulIndex] = ReadChar();
 			}
 		};
-		void           ReadBytes(unsigned short* pBuffer, unsigned long ulSize)
+		void           ReadBytes(unsigned short* pBuffer, unsigned int ulSize)
 		{
 			size_t ulRemainSize = (pEnd - pCur) / 2;
 			size_t ulFinalSize  = (ulRemainSize > ulSize ? ulSize : ulRemainSize);
@@ -127,7 +127,7 @@ namespace MetaFile
 				pBuffer[ulIndex] = ReadUShort();
 			}
 		}
-		void           ReadBytes(unsigned long*  pBuffer, unsigned long ulSize)
+		void           ReadBytes(unsigned int*  pBuffer, unsigned int ulSize)
 		{
 			size_t ulRemainSize = (pEnd - pCur) / 4;
 			size_t ulFinalSize  = (ulRemainSize > ulSize ? ulSize : ulRemainSize);
@@ -147,12 +147,12 @@ namespace MetaFile
 			nValue = ReadUShort();
 			return *this;
 		}
-		CDataStream& operator>>(unsigned long&  nValue)
+		CDataStream& operator>>(unsigned int&  nValue)
 		{
 			nValue = ReadULong();
 			return *this;
 		}
-		CDataStream& operator>>(unsigned int&   nValue)
+		CDataStream& operator>>(unsigned long&   nValue)
 		{
 			nValue = ReadULong();
 			return *this;
@@ -172,12 +172,12 @@ namespace MetaFile
 			nValue = ReadShort();
 			return *this;
 		}
-		CDataStream& operator>>(long&  nValue)
+		CDataStream& operator>>(int&  nValue)
 		{
 			nValue = ReadLong();
 			return *this;
 		}
-		CDataStream& operator>>(int&   nValue)
+		CDataStream& operator>>(long&   nValue)
 		{
 			nValue = ReadLong();
 			return *this;
@@ -299,11 +299,11 @@ namespace MetaFile
 			if (oVector.NumAxes <= 0)
 				return *this;
 
-			oVector.Values = new long[oVector.NumAxes];
+			oVector.Values = new int[oVector.NumAxes];
 			if (!oVector.Values)
 				return *this;
 
-			for (unsigned long ulIndex = 0; ulIndex < oVector.NumAxes; ulIndex++)
+			for (unsigned int ulIndex = 0; ulIndex < oVector.NumAxes; ulIndex++)
 				*this >> oVector.Values[ulIndex];
 
 			return *this;
@@ -455,17 +455,17 @@ namespace MetaFile
 			return false;
 		}
 
-		unsigned long Tell()
+		unsigned int Tell()
 		{
-			return (unsigned long)(pCur - pBuffer);
+			return (unsigned int)(pCur - pBuffer);
 		}
 
-		void Skip(unsigned long ulSkip)
+		void Skip(unsigned int ulSkip)
 		{
 			pCur += ulSkip;
 		}
 
-		void SeekBack(unsigned long ulSkipBack)
+		void SeekBack(unsigned int ulSkipBack)
 		{
 			pCur -= ulSkipBack;
 		}
@@ -475,9 +475,9 @@ namespace MetaFile
 			pCur = pBuffer;
 		}
 
-		unsigned long CanRead()
+		unsigned int CanRead()
 		{
-			return (unsigned long)(pEnd - pCur);
+			return (unsigned int)(pEnd - pCur);
 		}
 
 	private:
@@ -487,7 +487,7 @@ namespace MetaFile
 		BYTE *pEnd;
 	};
 
-	void ReadImage(BYTE* pHeaderBuffer, unsigned long ulHeaderBufferLen, BYTE* pImageBuffer, unsigned long ulImageBufferLen, BYTE** ppDstBuffer, unsigned long* pulWidth, unsigned long* pulHeight);
+	void ReadImage(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight);
 };
 
 #endif //_METAFILE_WMF_EMF_COMMON_H

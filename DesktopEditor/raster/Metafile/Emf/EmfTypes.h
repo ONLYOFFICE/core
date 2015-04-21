@@ -208,10 +208,10 @@ namespace MetaFile
 
 	struct TEmfWindow
 	{
-		long lX;
-		long lY;
-		long ulW;
-		long ulH;
+		int lX;
+		int lY;
+		int ulW;
+		int ulH;
 
 		void Init()
 		{
@@ -232,16 +232,16 @@ namespace MetaFile
 
 	struct TEmfRectL
 	{
-		long lLeft;
-		long lTop;
-		long lRight;
-		long lBottom;
+		int lLeft;
+		int lTop;
+		int lRight;
+		int lBottom;
 	};
 
 	struct TEmfPointL
 	{
-		long x;
-		long y;
+		int x;
+		int y;
 
 		TEmfPointL& operator=(TEmfPointL& oPoint)
 		{
@@ -266,23 +266,23 @@ namespace MetaFile
 
 	struct TEmfSizeL
 	{
-		unsigned long cx;
-		unsigned long cy;
+		unsigned int cx;
+		unsigned int cy;
 	};
 
 	struct TEmfHeader
 	{
 		TEmfRectL      oBounds;
 		TEmfRectL      oFrame;
-		unsigned long  ulSignature;
-		unsigned long  ulVersion;
-		unsigned long  ulSize;
-		unsigned long  ulRecords;
+		unsigned int  ulSignature;
+		unsigned int  ulVersion;
+		unsigned int  ulSize;
+		unsigned int  ulRecords;
 		unsigned short ushObjects;
 		unsigned short ushReserved;
-		unsigned long  ulSizeDescription;
-		unsigned long  ulOffsetDescription;
-		unsigned long  ulPalEntries;
+		unsigned int  ulSizeDescription;
+		unsigned int  ulOffsetDescription;
+		unsigned int  ulPalEntries;
 		TEmfSizeL      oDevice;
 		TEmfSizeL      oMillimeters;
 		TEmfRectL      oFrameToBounds;
@@ -291,20 +291,20 @@ namespace MetaFile
 	struct TEmfStretchDIBITS
 	{
 		TEmfRectL     Bounds;
-		long          xDest;
-		long          yDest;
-		long          xSrc;
-		long          ySrc;
-		long          cxSrc;
-		long          cySrc;
-		unsigned long offBmiSrc;
-		unsigned long cbBmiSrc;
-		unsigned long offBitsSrc;
-		unsigned long cbBitsSrc;
-		unsigned long UsageSrc;
-		unsigned long BitBltRasterOperation;
-		long          cxDest;
-		long          cyDest;
+		int          xDest;
+		int          yDest;
+		int          xSrc;
+		int          ySrc;
+		int          cxSrc;
+		int          cySrc;
+		unsigned int offBmiSrc;
+		unsigned int cbBmiSrc;
+		unsigned int offBitsSrc;
+		unsigned int cbBitsSrc;
+		unsigned int UsageSrc;
+		unsigned int BitBltRasterOperation;
+		int          cxDest;
+		int          cyDest;
 	};
 
 #define MWT_IDENTITY	  0x01
@@ -341,7 +341,7 @@ namespace MetaFile
 			Dy	= pOther->Dy;
 		}
 
-		void Multiply(TEmfXForm &oOther, unsigned long ulMode)
+		void Multiply(TEmfXForm &oOther, unsigned int ulMode)
 		{
 			if (MWT_IDENTITY == ulMode)
 				Init();
@@ -399,19 +399,19 @@ namespace MetaFile
 	struct TEmfEmrText
 	{
 		TEmfPointL     Reference;
-		unsigned long  Chars;
-		unsigned long  offString;
-		unsigned long  Options;
+		unsigned int  Chars;
+		unsigned int  offString;
+		unsigned int  Options;
 		TEmfRectL      Rectangle;
-		unsigned long  offDx;
+		unsigned int  offDx;
 		void*          OutputString; // unsinged short* либо unsigned char*
-		unsigned long* OutputDx;
+		unsigned int* OutputDx;
 	};
 
 	struct TEmfExtTextoutW
 	{
 		TEmfRectL     Bounds;
-		unsigned long iGraphicsMode;
+		unsigned int iGraphicsMode;
 		double        exScale;
 		double        eyScale;
 		TEmfEmrText   wEmrText;
@@ -419,11 +419,11 @@ namespace MetaFile
 
 	struct TEmfLogFont
 	{
-		long           Height;
-		long           Width;
-		long           Escapement;
-		long           Orientation;
-		long           Weight;
+		int           Height;
+		int           Width;
+		int           Escapement;
+		int           Orientation;
+		int           Weight;
 		unsigned char  Italic;
 		unsigned char  Underline;
 		unsigned char  StrikOut;
@@ -445,55 +445,55 @@ namespace MetaFile
 
 	struct TEmfDesignVector
 	{
-		unsigned long Signature;
-		unsigned long NumAxes;
-		long*         Values;
+		unsigned int Signature;
+		unsigned int NumAxes;
+		int*         Values;
 	};
 
 	struct TEmfBitBlt
 	{
 		TEmfRectL     Bounds;
-		long          xDest;
-		long          yDest;
-		long          cxDest;
-		long          cyDest;
-		unsigned long BitBltRasterOperation;
-		long          xSrc;
-		long          ySrc;
+		int          xDest;
+		int          yDest;
+		int          cxDest;
+		int          cyDest;
+		unsigned int BitBltRasterOperation;
+		int          xSrc;
+		int          ySrc;
 		TEmfXForm     XfromSrc;
 		TEmfColor     BkColorSrc;
-		unsigned long UsageSrc;
-		unsigned long offBmiSrc;
-		unsigned long cbBmiSrc;
-		unsigned long offBitsSrc;
-		unsigned long cbBitsSrc;
+		unsigned int UsageSrc;
+		unsigned int offBmiSrc;
+		unsigned int cbBmiSrc;
+		unsigned int offBitsSrc;
+		unsigned int cbBitsSrc;
 	};
 
 	struct TEmfSetDiBitsToDevice
 	{
 		TEmfRectL     Bounds;
-		long          xDest;
-		long          yDest;
-		long          xSrc;
-		long          ySrc;
-		long          cxSrc;
-		long          cySrc;
-		unsigned long offBmiSrc;
-		unsigned long cbBmiSrc;
-		unsigned long offBitsSrc;
-		unsigned long cbBitsSrc;
-		unsigned long UsageSrc;
-		unsigned long iStartScan;
-		unsigned long cScans;
+		int          xDest;
+		int          yDest;
+		int          xSrc;
+		int          ySrc;
+		int          cxSrc;
+		int          cySrc;
+		unsigned int offBmiSrc;
+		unsigned int cbBmiSrc;
+		unsigned int offBitsSrc;
+		unsigned int cbBitsSrc;
+		unsigned int UsageSrc;
+		unsigned int iStartScan;
+		unsigned int cScans;
 	};
 
 	struct TEmfDibPatternBrush
 	{
-		unsigned long Usage;
-		unsigned long offBmi;
-		unsigned long cbBmi;
-		unsigned long offBits;
-		unsigned long cbBits;
+		unsigned int Usage;
+		unsigned int offBmi;
+		unsigned int cbBmi;
+		unsigned int offBits;
+		unsigned int cbBits;
 	};
 
 	struct TEmfLogPaletteEntry

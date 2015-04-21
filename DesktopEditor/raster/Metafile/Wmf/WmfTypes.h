@@ -73,8 +73,8 @@ struct TMemoryInfo
 	unsigned char *pMemory;     // Указатель на начало данных
 	unsigned char *pPointer;    // Указатель на текущую позицию
 							    
-	long           lPos;        // Текущая позиция
-	long           lLength;     // Размер данных
+	int           lPos;        // Текущая позиция
+	int           lLength;     // Размер данных
 	bool           bNeedDelete; // Нужно ли освобождать память
 };
 
@@ -132,7 +132,7 @@ typedef struct _TWmfMetaHeader
 	TWmfHead                *pHeader;
 
 	FILE                    *pFileIn;
-	long                     lPos;
+	int                     lPos;
 	int                      nPlaceable;
 } TWmfMetaHeader, *TWmfFile;
 
@@ -261,13 +261,13 @@ struct TWmfAttributes
 
 	char         **psAttrs;
 
-	unsigned long  ulCount;
-	unsigned long  ulMax;
+	unsigned int  ulCount;
+	unsigned int  ulMax;
 
 	unsigned char *sBuffer;
 
-	unsigned long  ulLength;
-	unsigned long  ulOffset;
+	unsigned int  ulLength;
+	unsigned int  ulOffset;
 };
 
 // Structure containing list of lists of XML attributes
@@ -275,8 +275,8 @@ struct TWmfAttributeStore
 {	
 	TWmfAttributes *pAttrlist;
 
-	unsigned long   ulCount;
-	unsigned long   ulMax;
+	unsigned int   ulCount;
+	unsigned int   ulMax;
 };
 
 struct TWmfRegion;
@@ -405,8 +405,8 @@ struct TWmfPolyRectangle
 
 struct TWmfBMPRead
 {
-	long           lOffset;
-	long           lLength;
+	int           lOffset;
+	int           lLength;
 	unsigned char *pBuffer;
 
 	unsigned short ushWidth;
@@ -591,7 +591,7 @@ struct TWmfPlayer
 
 	unsigned char *pParameters; /* meta file parameter values */
 
-	unsigned long  ulFlags;
+	unsigned int  ulFlags;
 
 	struct
 	{
@@ -604,10 +604,10 @@ struct TWmfPlayer
 
 struct TWmfRecord
 {	
-	unsigned long  ulSize;
+	unsigned int  ulSize;
 	unsigned int   unFunction;
 	unsigned char *sParameter;
-	long           lPosition;
+	int           lPosition;
 };
 
 //---------------------------------------------------------------------------------------------------

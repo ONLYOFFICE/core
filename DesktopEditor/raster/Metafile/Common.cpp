@@ -5,13 +5,13 @@
 
 namespace MetaFile
 {	
-	unsigned char GetLowestBit(unsigned long ulValue)
+	unsigned char GetLowestBit(unsigned int ulValue)
 	{
 		if (0 == ulValue)
 			return 0;
 
 		unsigned char unOffset = 0;
-		unsigned long ulBit = 1;
+		unsigned int ulBit = 1;
 		while (!(ulValue & ulBit))
 		{
 			ulBit = ulBit << 1;
@@ -24,7 +24,7 @@ namespace MetaFile
 
 		return unOffset;
 	}
-	bool ReadImageCoreHeader(BYTE* pHeaderBuffer, unsigned long ulHeaderBufferLen, BYTE* pImageBuffer, unsigned long ulImageBufferLen, BYTE** ppDstBuffer, unsigned long* pulWidth, unsigned long* pulHeight)
+	bool ReadImageCoreHeader(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight)
 	{
 		CDataStream oHeaderStream;
 		oHeaderStream.SetStream(pHeaderBuffer, ulHeaderBufferLen);
@@ -44,7 +44,7 @@ namespace MetaFile
 
 		return false;
 	}
-	bool ReadImageInfoHeader(BYTE* pHeaderBuffer, unsigned long ulHeaderBufferLen, BYTE* pImageBuffer, unsigned long ulImageBufferLen, BYTE** ppDstBuffer, unsigned long* pulWidth, unsigned long* pulHeight)
+	bool ReadImageInfoHeader(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight)
 	{
 		CDataStream oHeaderStream;
 		oHeaderStream.SetStream(pHeaderBuffer, ulHeaderBufferLen);
@@ -83,11 +83,11 @@ namespace MetaFile
 			return false;
 
 		BYTE* pBgraBuffer = NULL;
-		unsigned long ulWidth  = 0;
-		unsigned long ulHeight = 0;
+		unsigned int ulWidth  = 0;
+		unsigned int ulHeight = 0;
 
 		BYTE* pBuffer = pImageBuffer;
-		long  lBufLen = ulImageBufferLen;
+		int  lBufLen = ulImageBufferLen;
 
 		*ppDstBuffer = NULL;
 		*pulWidth    = 0;
@@ -121,7 +121,7 @@ namespace MetaFile
 			oHeaderStream >> oColor1 >> oColor2;
 
 			// —читываем саму картинку
-			long lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
+			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
 			if (lCalcLen != lBufLen)		
 				return false;
 
@@ -194,7 +194,7 @@ namespace MetaFile
 			// 4 бита - 1 пиксел
 
 			// —читываем саму картинку
-			long lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
+			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
 			if (lCalcLen != lBufLen)
 				return false;
 
@@ -371,8 +371,8 @@ namespace MetaFile
 		}
 		else if (BI_BITCOUNT_4 == ushBitCount)
 		{
-			unsigned long ulMaskR = 0x1f, ulMaskB = 0x7C00, ulMaskG = 0x3E0;
-			unsigned long ulShiftR = 0, ulShiftB = 10, ulShiftG = 5;
+			unsigned int ulMaskR = 0x1f, ulMaskB = 0x7C00, ulMaskG = 0x3E0;
+			unsigned int ulShiftR = 0, ulShiftB = 10, ulShiftG = 5;
 			double dKoefR = 255 / 31.0, dKoefB = 255 / 31.0, dKoefG = 255 / 31.0;
 
 			if (BI_RGB == unCompression)
@@ -384,9 +384,9 @@ namespace MetaFile
 			}
 			else if (BI_BITFIELDS == unCompression)
 			{
-				oHeaderStream >> ulMaskR;
-				oHeaderStream >> ulMaskG;
 				oHeaderStream >> ulMaskB;
+				oHeaderStream >> ulMaskG;
+				oHeaderStream >> ulMaskR;
 
 				ulShiftR = GetLowestBit(ulMaskR);
 				ulShiftB = GetLowestBit(ulMaskB);
@@ -400,7 +400,7 @@ namespace MetaFile
 				return false;
 
 			// —читываем саму картинку
-			long lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
+			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
 			if (lCalcLen != lBufLen)
 				return false;
 
@@ -433,9 +433,9 @@ namespace MetaFile
 						unsigned char unG = (ushValue & ulMaskG) >> ulShiftG;
 						unsigned char unB = (ushValue & ulMaskB) >> ulShiftB;
 
-						pBgraBuffer[nIndex + 0] = (unsigned char)(unB * dKoefB);
+						pBgraBuffer[nIndex + 0] = (unsigned char)(unR * dKoefR);
 						pBgraBuffer[nIndex + 1] = (unsigned char)(unG * dKoefG);
-						pBgraBuffer[nIndex + 2] = (unsigned char)(unR * dKoefR);
+						pBgraBuffer[nIndex + 2] = (unsigned char)(unB * dKoefB);
 						pBgraBuffer[nIndex + 3] = 255;
 					}
 					pBuffer += nAdd; lBufLen -= nAdd;
@@ -454,9 +454,9 @@ namespace MetaFile
 						unsigned char unG = (ushValue & ulMaskG) >> ulShiftG;
 						unsigned char unB = (ushValue & ulMaskB) >> ulShiftB;
 
-						pBgraBuffer[nIndex + 0] = (unsigned char)(unB * dKoefB);
+						pBgraBuffer[nIndex + 0] = (unsigned char)(unR * dKoefR);
 						pBgraBuffer[nIndex + 1] = (unsigned char)(unG * dKoefG);
-						pBgraBuffer[nIndex + 2] = (unsigned char)(unR * dKoefR);
+						pBgraBuffer[nIndex + 2] = (unsigned char)(unB * dKoefB);
 						pBgraBuffer[nIndex + 3] = 255;
 					}
 					pBuffer += nAdd; lBufLen -= nAdd;
@@ -478,7 +478,7 @@ namespace MetaFile
 				return false; // TODO: —делать данный вариант, как только будет файлы с данным типом
 
 			// —читываем саму картинку
-			long lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
+			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
 			if (lCalcLen != lBufLen)
 				return false;
 
@@ -546,7 +546,7 @@ namespace MetaFile
 				return false; // TO DO: —делать данный вариант, как только будет файлы с данным типом
 
 			// —читываем саму картинку
-			long lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
+			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
 			if (lCalcLen != lBufLen)
 				return false;
 
@@ -626,7 +626,7 @@ namespace MetaFile
 
 		return false;
 	}	
-	void ReadImage(BYTE* pHeaderBuffer, unsigned long ulHeaderBufferLen, BYTE* pImageBuffer, unsigned long ulImageBufferLen, BYTE** ppDstBuffer, unsigned long* pulWidth, unsigned long* pulHeight)
+	void ReadImage(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight)
 	{
 		if (ulHeaderBufferLen <= 0 || NULL == pHeaderBuffer || NULL == pImageBuffer || ulImageBufferLen < 0)
 			return;
@@ -635,7 +635,7 @@ namespace MetaFile
 		oHeaderStream.SetStream(pHeaderBuffer, ulHeaderBufferLen);
 
 		// —читываем заголовок
-		unsigned long ulHeaderSize;
+		unsigned int ulHeaderSize;
 		oHeaderStream >> ulHeaderSize;
 
 		if (ulHeaderSize < 0x0000000C)

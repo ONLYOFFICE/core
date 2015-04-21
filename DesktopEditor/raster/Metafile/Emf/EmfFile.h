@@ -49,7 +49,7 @@ namespace MetaFile
 
 			NSFile::CFileBinary oFile;
 			oFile.OpenFile(wsFilePath);
-			long lFileSize = oFile.GetFileSize();
+			int lFileSize = oFile.GetFileSize();
 
 			m_pBufferData = new BYTE[lFileSize];
 			if (!m_pBufferData)
@@ -103,12 +103,12 @@ namespace MetaFile
 		void PlayMetaFile()
 		{
 			m_lTest = 0;
-			unsigned long ulSize, ulType;
-			unsigned long ulNumber = 0;
+			unsigned int ulSize, ulType;
+			unsigned int ulNumber = 0;
 
 			bool bEof = false;
 
-			unsigned long ulRecordIndex = 0;
+			unsigned int ulRecordIndex = 0;
 
 			if (m_pOutput)
 				m_pOutput->Begin();
@@ -262,12 +262,12 @@ namespace MetaFile
 		{
 			return &m_oHeader.oFrameToBounds;
 		}
-		bool ReadImage(unsigned long offBmi, unsigned long cbBmi, unsigned long offBits, unsigned long cbBits, unsigned long ulSkip, BYTE** ppBgraBuffer, unsigned long* pulWidth, unsigned long* pulHeight)
+		bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE** ppBgraBuffer, unsigned int* pulWidth, unsigned int* pulHeight)
 		{
-			long lHeaderOffset         = offBmi - ulSkip;
-			unsigned long ulHeaderSize = cbBmi;
-			long lBitsOffset           = offBits - offBmi - cbBmi;
-			unsigned long ulBitsSize   = cbBits;
+			int lHeaderOffset         = offBmi - ulSkip;
+			unsigned int ulHeaderSize = cbBmi;
+			int lBitsOffset           = offBits - offBmi - cbBmi;
+			unsigned int ulBitsSize   = cbBits;
 			if (ulHeaderSize <= 0 || ulBitsSize <= 0 || lHeaderOffset < 0 || lBitsOffset < 0)
 			{
 				// TODO: Если попали сюда, значит надо смотреть BitBltRasterOperation
@@ -312,7 +312,7 @@ namespace MetaFile
 
 			return true;
 		}
-		double TranslateX(long lSrcX)
+		double TranslateX(int lSrcX)
 		{
 			double dDstX;
 
@@ -322,7 +322,7 @@ namespace MetaFile
 			dDstX =  (double)((double)(lSrcX - pWindow->lX) * m_pDC->GetPixelWidth()) + pViewport->lX;
 			return dDstX;
 		}
-		double TranslateY(long lSrcY)
+		double TranslateY(int lSrcY)
 		{
 			double dDstY;
 
@@ -342,7 +342,7 @@ namespace MetaFile
 		{
 			MoveTo(oPoint.x, oPoint.y);
 		}
-		void MoveTo(long lX, long lY)
+		void MoveTo(int lX, int lY)
 		{
 			if (m_pPath)
 			{
@@ -356,7 +356,7 @@ namespace MetaFile
 
 			m_pDC->SetCurPos(lX, lY);
 		}
-		void LineTo(long lX, long lY)
+		void LineTo(int lX, int lY)
 		{
 			if (m_pPath)
 			{
@@ -402,7 +402,7 @@ namespace MetaFile
 			else if (m_pOutput)
 				m_pOutput->ClosePath();
 		}
-		void ArcTo(long lL, long lT, long lR, long lB, double dStart, double dSweep)
+		void ArcTo(int lL, int lT, int lR, int lB, double dStart, double dSweep)
 		{
 			if (m_pPath)
 			{
@@ -424,7 +424,7 @@ namespace MetaFile
 			}
 			else if (m_pOutput)
 			{
-				long lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
+				int lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
 				m_pOutput->DrawPath(lType);
 				m_pOutput->EndPath();
 			}
@@ -455,7 +455,7 @@ namespace MetaFile
 				return SetError();
 
 			// Пропускаем остальную часть заголовка, т.к. она нас пока не интересует
-			unsigned long ulRemaining = m_ulRecordSize - 80; // sizeof(TEmfHeader)
+			unsigned int ulRemaining = m_ulRecordSize - 80; // sizeof(TEmfHeader)
 			m_oStream.Skip(ulRemaining);
 
 			double dL = m_oHeader.oFrame.lLeft / 100.0 / m_oHeader.oMillimeters.cx * m_oHeader.oDevice.cx;
@@ -466,10 +466,10 @@ namespace MetaFile
 			double dW = dR - dL;
 			double dH = dB - dT;
 
-			long lL = (long)std::floor(dL + 0.5);
-			long lT = (long)std::floor(dT + 0.5);
-			long lR = (long)std::floor(dW + 0.5) + lL;
-			long lB = (long)std::floor(dH + 0.5) + lT;
+			int lL = (int)std::floor(dL + 0.5);
+			int lT = (int)std::floor(dT + 0.5);
+			int lR = (int)std::floor(dW + 0.5) + lL;
+			int lB = (int)std::floor(dH + 0.5) + lT;
 
 			// По логике мы должны получать рект, точно такой же как и oBounds, но есть файлы, где это не так.
 			m_oHeader.oFrameToBounds.lLeft   = lL;
@@ -483,7 +483,7 @@ namespace MetaFile
 			m_oStream >> oBitmap;
 
 			BYTE* pBgraBuffer = NULL;
-			unsigned long ulWidth, ulHeight;
+			unsigned int ulWidth, ulHeight;
 
 			if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, sizeof(TEmfStretchDIBITS) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
 			{
@@ -500,7 +500,7 @@ namespace MetaFile
 			m_oStream >> oBitmap;
 
 			BYTE* pBgraBuffer = NULL;
-			unsigned long ulWidth, ulHeight;
+			unsigned int ulWidth, ulHeight;
 
 			if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, sizeof(TEmfBitBlt) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
 			{
@@ -550,7 +550,23 @@ namespace MetaFile
 						ulHeight = 1;
 					}
 				}
-				else if (0x005a0049 == oBitmap.BitBltRasterOperation || 0x00A000C9 == oBitmap.BitBltRasterOperation) // PATINVERT
+				else if (0x005a0049 == oBitmap.BitBltRasterOperation) // PATINVERT
+				{
+					CEmfLogBrushEx* pBrush = m_pDC->GetBrush();
+					if (pBrush)
+					{
+						// Делаем цветом кисти
+						pBgraBuffer = new BYTE[4];
+						pBgraBuffer[0] = pBrush->Color.b;
+						pBgraBuffer[1] = pBrush->Color.g;
+						pBgraBuffer[2] = pBrush->Color.r;
+						pBgraBuffer[3] = 30;
+
+						ulWidth  = 1;
+						ulHeight = 1;
+					}
+				}
+				else if (0x00A000C9 == oBitmap.BitBltRasterOperation) // PATINVERT
 				{
 					CEmfLogBrushEx* pBrush = m_pDC->GetBrush();
 					if (pBrush)
@@ -580,7 +596,7 @@ namespace MetaFile
 			m_oStream >> oBitmap;
 
 			BYTE* pBgraBuffer = NULL;
-			unsigned long ulWidth, ulHeight;
+			unsigned int ulWidth, ulHeight;
 			if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, sizeof(TEmfSetDiBitsToDevice) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
 			{
 				// TODO: Нужно реализовать обрезку картинки по параметрам oBitmap.iStartScan и oBitmap.cScans
@@ -593,7 +609,7 @@ namespace MetaFile
 		}
 		void Read_EMR_EOF()
 		{
-			unsigned long ulCount, ulOffset, ulSizeLast;
+			unsigned int ulCount, ulOffset, ulSizeLast;
 
 			m_oStream >> ulCount;
 			m_oStream >> ulOffset;
@@ -613,7 +629,7 @@ namespace MetaFile
 		}
 		void Read_EMR_RESTOREDC()
 		{
-			long lSavedDC;
+			int lSavedDC;
 			m_oStream >> lSavedDC;
 
 			if (lSavedDC >= 0)
@@ -622,8 +638,8 @@ namespace MetaFile
 				return;
 			}
 
-			long lCount = -lSavedDC;
-			for (long lIndex = 0; lIndex < lCount; lIndex++)
+			int lCount = -lSavedDC;
+			for (int lIndex = 0; lIndex < lCount; lIndex++)
 				m_oPlayer.RestoreDC();
 
 			m_pDC = m_oPlayer.GetDC();
@@ -632,7 +648,7 @@ namespace MetaFile
 		void Read_EMR_MODIFYWORLDTRANSFORM()
 		{
 			TEmfXForm oXForm;
-			unsigned long ulMode;
+			unsigned int ulMode;
 
 			m_oStream >> oXForm;
 			m_oStream >> ulMode;
@@ -651,7 +667,7 @@ namespace MetaFile
 		}
 		void Read_EMR_CREATEBRUSHINDIRECT()
 		{
-			unsigned long ulBrushIndex;
+			unsigned int ulBrushIndex;
 			CEmfLogBrushEx* pBrush = new CEmfLogBrushEx();
 			if (!pBrush)
 				return SetError();
@@ -676,8 +692,8 @@ namespace MetaFile
 			m_oStream >> oText;
 
 			// Читаем OutputString
-			const unsigned long ulCharsCount = oText.wEmrText.Chars;
-			long lSkip = oText.wEmrText.offString - 76; // 8 + 28 + 40
+			const unsigned int ulCharsCount = oText.wEmrText.Chars;
+			int lSkip = oText.wEmrText.offString - 76; // 8 + 28 + 40
 			m_oStream.Skip(lSkip);
 			unsigned short* pUnicode = new unsigned short[ulCharsCount + 1];
 			pUnicode[ulCharsCount] = 0x0000;
@@ -687,14 +703,14 @@ namespace MetaFile
 			// Читаем OutputDx
 			lSkip = oText.wEmrText.offDx - oText.wEmrText.offString - 2 * ulCharsCount;
 			m_oStream.Skip(lSkip);
-			const unsigned long ulDxCount = oText.wEmrText.Options & ETO_PDY ? 2 * ulCharsCount : ulCharsCount;
-			unsigned long* pDx = new unsigned long[ulDxCount];
+			const unsigned int ulDxCount = oText.wEmrText.Options & ETO_PDY ? 2 * ulCharsCount : ulCharsCount;
+			unsigned int* pDx = new unsigned int[ulDxCount];
 			m_oStream.ReadBytes(pDx, ulDxCount);
 
 			std::wstring wsText((wchar_t*)pUnicode);
 
-			long lX = oText.wEmrText.Reference.x;
-			long lY = oText.wEmrText.Reference.y;
+			int lX = oText.wEmrText.Reference.x;
+			int lY = oText.wEmrText.Reference.y;
 
 			if (m_pDC->GetTextAlign() & TA_UPDATECP)
 			{ 
@@ -710,7 +726,7 @@ namespace MetaFile
 		}
 		void Read_EMR_SELECTOBJECT()
 		{
-			unsigned long ulObjectIndex;
+			unsigned int ulObjectIndex;
 			m_oStream >> ulObjectIndex;
 
 			m_oPlayer.SelectObject(ulObjectIndex);
@@ -718,18 +734,33 @@ namespace MetaFile
 		}
 		void Read_EMR_POLYGON16()
 		{
+			m_lTest++;
+
 			TEmfRectL oBounds;
 			m_oStream >> oBounds;
-			unsigned long ulCount;
+			unsigned int ulCount;
 			m_oStream >> ulCount;
 
 			if (ulCount <= 0)
 				return;
 
+			//if (m_lTest > 1)
+			//{
+
+			//	TEmfPointS oPoint;
+			//	m_oStream >> oPoint;
+			//	for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
+			//	{
+			//		m_oStream >> oPoint;
+			//	}
+			//	return;
+			//}
+
+
 			TEmfPointS oPoint;
 			m_oStream >> oPoint;
 			MoveTo(oPoint);
-			for (unsigned long ulIndex = 1; ulIndex < ulCount; ulIndex++)
+			for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
 			{
 				m_oStream >> oPoint;
 				LineTo(oPoint);
@@ -739,7 +770,7 @@ namespace MetaFile
 		}
 		void Read_EMR_EXTCREATEFONTINDIRECTW()
 		{
-			unsigned long ulIndex;
+			unsigned int ulIndex;
 			CEmfLogFont* pFont = new CEmfLogFont();
 			if (!pFont)
 				return SetError();
@@ -750,7 +781,7 @@ namespace MetaFile
 		}
 		void Read_EMR_SETTEXTALIGN()
 		{
-			unsigned long ulAlign;
+			unsigned int ulAlign;
 			m_oStream >> ulAlign;
 
 			m_pDC->SetTextAlign(ulAlign);
@@ -758,28 +789,28 @@ namespace MetaFile
 		}
 		void Read_EMR_SETBKMODE()
 		{
-			unsigned long ulBgMode;
+			unsigned int ulBgMode;
 			m_oStream >> ulBgMode;
 			m_pDC->SetBgMode(ulBgMode);
 			UpdateOutputDC();
 		}
 		void Read_EMR_DELETEOBJECT()
 		{
-			unsigned long ulIndex;
+			unsigned int ulIndex;
 			m_oStream >> ulIndex;
 			m_oPlayer.DeleteObject(ulIndex);
 			UpdateOutputDC();
 		}
 		void Read_EMR_SETMITERLIMIT()
 		{
-			unsigned long ulMiterLimit;
+			unsigned int ulMiterLimit;
 			m_oStream >> ulMiterLimit;
 			m_pDC->SetMiterLimit(ulMiterLimit);
 			UpdateOutputDC();
 		}
 		void Read_EMR_EXTCREATEPEN()
 		{
-			unsigned long ulPenIndex;
+			unsigned int ulPenIndex;
 			m_oStream >> ulPenIndex;
 
 			m_oStream.Skip(4); // offBmi
@@ -805,14 +836,14 @@ namespace MetaFile
 			if (pPen->NumStyleEntries > 0)
 			{
 				m_ulRecordSize -= pPen->NumStyleEntries * 4;
-				pPen->StyleEntry = new unsigned long[pPen->NumStyleEntries];
+				pPen->StyleEntry = new unsigned int[pPen->NumStyleEntries];
 				if (!pPen->StyleEntry)
 				{
 					delete pPen;
 					return SetError();
 				}
 
-				for (unsigned long ulIndex = 0; ulIndex < pPen->NumStyleEntries; ulIndex++)
+				for (unsigned int ulIndex = 0; ulIndex < pPen->NumStyleEntries; ulIndex++)
 				{
 					m_oStream >> pPen->StyleEntry[ulIndex];
 				}
@@ -829,7 +860,7 @@ namespace MetaFile
 		}
 		void Read_EMR_CREATEPEN()
 		{
-			unsigned long ulPenIndex;
+			unsigned int ulPenIndex;
 			m_oStream >> ulPenIndex;
 			CEmfLogPen* pPen = new CEmfLogPen();
 			if (!pPen)
@@ -843,7 +874,7 @@ namespace MetaFile
 		}
 		void Read_EMR_SETPOLYFILLMODE()
 		{
-			unsigned long ulFillMode;
+			unsigned int ulFillMode;
 			m_oStream >> ulFillMode;
 			m_pDC->SetFillMode(ulFillMode);
 			UpdateOutputDC();
@@ -852,23 +883,23 @@ namespace MetaFile
 		{
 			TEmfRectL oBounds;
 			m_oStream >> oBounds;
-			unsigned long ulNumberOfPolygons;
+			unsigned int ulNumberOfPolygons;
 			m_oStream >> ulNumberOfPolygons;
-			unsigned long ulTotalPointsCount;
+			unsigned int ulTotalPointsCount;
 			m_oStream >> ulTotalPointsCount;
 
-			unsigned long* pPolygonPointCount = new unsigned long[ulNumberOfPolygons];
+			unsigned int* pPolygonPointCount = new unsigned int[ulNumberOfPolygons];
 			if (!pPolygonPointCount)
 				return SetError();
 
-			for (unsigned long ulIndex = 0; ulIndex < ulNumberOfPolygons; ulIndex++)
+			for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolygons; ulIndex++)
 			{
 				m_oStream >> pPolygonPointCount[ulIndex];
 			}
 
-			for (unsigned long ulPolygonIndex = 0, unStartPointIndex = 0; ulPolygonIndex < ulNumberOfPolygons; ulPolygonIndex++)
+			for (unsigned int ulPolygonIndex = 0, unStartPointIndex = 0; ulPolygonIndex < ulNumberOfPolygons; ulPolygonIndex++)
 			{
-				unsigned long ulCurrentPolygonPointsCount = pPolygonPointCount[ulPolygonIndex];
+				unsigned int ulCurrentPolygonPointsCount = pPolygonPointCount[ulPolygonIndex];
 				if (0 == ulCurrentPolygonPointsCount)
 					continue;
 
@@ -876,9 +907,9 @@ namespace MetaFile
 				m_oStream >> oPoint;
 				MoveTo(oPoint);
 
-				for (unsigned long ulPointIndex = 1; ulPointIndex < ulCurrentPolygonPointsCount; ulPointIndex++)
+				for (unsigned int ulPointIndex = 1; ulPointIndex < ulCurrentPolygonPointsCount; ulPointIndex++)
 				{
-					unsigned long ulRealPointIndex = ulPointIndex + unStartPointIndex;
+					unsigned int ulRealPointIndex = ulPointIndex + unStartPointIndex;
 					if (ulRealPointIndex >= ulTotalPointsCount)
 					{
 						delete[] pPolygonPointCount;
@@ -889,9 +920,9 @@ namespace MetaFile
 					LineTo(oPoint);
 				}
 
-				ClosePath();
-				DrawPath(true, true);
+				ClosePath();				
 			}
+			DrawPath(true, true);
 
 			delete[] pPolygonPointCount;
 		}
@@ -952,10 +983,10 @@ namespace MetaFile
 			TEmfRectL oBounds;
 			m_oStream >> oBounds;
 
-			unsigned long ulCount;
+			unsigned int ulCount;
 			m_oStream >> ulCount;
 
-			for (unsigned long ulIndex = 0; ulIndex < ulCount; ulIndex += 3)
+			for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex += 3)
 			{
 				if (ulCount - ulIndex < 2)
 					return SetError();
@@ -970,10 +1001,10 @@ namespace MetaFile
 			TEmfRectL oBounds;
 			m_oStream >> oBounds;
 
-			unsigned long ulCount;
+			unsigned int ulCount;
 			m_oStream >> ulCount;
 
-			for (unsigned long ulIndex = 0; ulIndex < ulCount; ulIndex++)
+			for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex++)
 			{
 				TEmfPointS oPoint;
 				m_oStream >> oPoint;
@@ -1013,7 +1044,7 @@ namespace MetaFile
 		}
 		void Read_EMR_SETMAPMODE()
 		{
-			unsigned long ulMapMode;
+			unsigned int ulMapMode;
 			m_oStream >> ulMapMode;
 
 			m_pDC->SetMapMode(ulMapMode);
@@ -1056,24 +1087,24 @@ namespace MetaFile
 		}
 		void Read_EMR_SETSTRETCHBLTMODE()
 		{
-			unsigned long ulStretchMode;
+			unsigned int ulStretchMode;
 			m_oStream >> ulStretchMode;
 			m_pDC->SetStretchMode(ulStretchMode);
 		}
 		void Read_EMR_SETICMMODE()
 		{
-			unsigned long ulICMMode;
+			unsigned int ulICMMode;
 			m_oStream >> ulICMMode;
 		}
 		void Read_EMR_CREATEDIBPATTERNBRUSHPT()
 		{
-			unsigned long ulBrushIndex;
+			unsigned int ulBrushIndex;
 			TEmfDibPatternBrush oDibBrush;
 			m_oStream >> ulBrushIndex;
 			m_oStream >> oDibBrush;
 
 			BYTE* pBgraBuffer = NULL;
-			unsigned long ulWidth, ulHeight;
+			unsigned int ulWidth, ulHeight;
 
 			if (ReadImage(oDibBrush.offBmi, oDibBrush.cbBmi, oDibBrush.offBits, oDibBrush.cbBits, sizeof(TEmfDibPatternBrush) + 12, &pBgraBuffer, &ulWidth, &ulHeight))
 			{
@@ -1089,7 +1120,7 @@ namespace MetaFile
 		{
 			TEmfRectL oBounds;
 			m_oStream >> oBounds;
-			unsigned long ulCount;
+			unsigned int ulCount;
 			m_oStream >> ulCount;
 
 			if (0 == ulCount)
@@ -1099,7 +1130,7 @@ namespace MetaFile
 			m_oStream >> oPoint;
 			MoveTo(oPoint);
 
-			for (unsigned long ulIndex = 1; ulIndex < ulCount; ulIndex++)
+			for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
 			{
 				m_oStream >> oPoint;
 				LineTo(oPoint);
@@ -1109,9 +1140,10 @@ namespace MetaFile
 		}
 		void Read_EMR_SELECTCLIPPATH()
 		{
-			unsigned long ulRegionMode;
+			unsigned int ulRegionMode;
 			m_oStream >> ulRegionMode;
-			// TODO: реализовать клип
+
+			m_pDC->ClipToPath();
 		}
 		void Read_EMR_SETBKCOLOR()
 		{
@@ -1123,7 +1155,7 @@ namespace MetaFile
 		}
 		void Read_EMR_EXTSELECTCLIPRGN()
 		{
-			unsigned long ulRgnDataSize, ulRegionMode;
+			unsigned int ulRgnDataSize, ulRegionMode;
 			m_oStream >> ulRgnDataSize >> ulRegionMode;
 
 			m_oStream.Skip(m_ulRecordSize - 8);
@@ -1131,10 +1163,7 @@ namespace MetaFile
 		}
 		void Read_EMR_SETMETARGN()
 		{
-			// Здесь мы просто сбрасываем текущйи клип
-			
-
-			// TODO: Реализовать клип
+			// TODO: Непонятно что здесь должно происходить
 		}
 		void Read_EMR_ELLIPSE()
 		{
@@ -1148,7 +1177,7 @@ namespace MetaFile
 			TEmfRectL oBounds;
 			m_oStream >> oBounds;
 
-			unsigned long ulCount;
+			unsigned int ulCount;
 			m_oStream >> ulCount;
 
 			if (0 == ulCount)
@@ -1159,7 +1188,7 @@ namespace MetaFile
 			MoveTo(oStartPoint);
 
 			TEmfPointS oPoint1, oPoint2, oPointE;
-			for (unsigned long ulIndex = 1; ulIndex < ulCount; ulIndex += 3)
+			for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex += 3)
 			{
 				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
 				CurveTo(oPoint1, oPoint2, oPointE);
@@ -1168,14 +1197,14 @@ namespace MetaFile
 		}
 		void Read_EMR_SETROP2()
 		{
-			unsigned long ulRop2Mode;
+			unsigned int ulRop2Mode;
 			m_oStream >> ulRop2Mode;
 			m_pDC->SetRop2Mode(ulRop2Mode);
 			UpdateOutputDC();
 		}
 		void Read_EMR_CREATEPALETTE()
 		{
-			unsigned long ulPaletteIndex;
+			unsigned int ulPaletteIndex;
 			CEmfLogPalette* pPalette = new CEmfLogPalette();
 			if (!pPalette)
 				return SetError();
@@ -1186,7 +1215,7 @@ namespace MetaFile
 		}
 		void Read_EMR_SELECTPALETTE()
 		{
-			unsigned long ulIndex;
+			unsigned int ulIndex;
 			m_oStream >> ulIndex;
 			m_oPlayer.SelectPalette(ulIndex);
 		}
@@ -1198,7 +1227,7 @@ namespace MetaFile
 		{
 			TEmfRectL oClip;
 			m_oStream >> oClip;
-			// TODO: реализовать клип
+			m_pDC->GetClip()->Intersect(oClip);
 		}
 		void Read_EMR_ROUNDRECT()
 		{
@@ -1206,11 +1235,11 @@ namespace MetaFile
 			TEmfSizeL oCorner;
 			m_oStream >> oBox >> oCorner;
 
-			long lBoxW = oBox.lRight - oBox.lLeft;
-			long lBoxH = oBox.lBottom - oBox.lTop;
+			int lBoxW = oBox.lRight - oBox.lLeft;
+			int lBoxH = oBox.lBottom - oBox.lTop;
 
-			long lRoundW = (std::min)((long)oCorner.cx, lBoxW / 2);
-			long lRoundH = (std::min)((long)oCorner.cy, lBoxH / 2);
+			int lRoundW = (std::min)((int)oCorner.cx, lBoxW / 2);
+			int lRoundH = (std::min)((int)oCorner.cy, lBoxH / 2);
 
 			MoveTo(oBox.lLeft + lRoundW, oBox.lTop);
 			LineTo(oBox.lRight - lRoundW, oBox.lTop);
@@ -1229,10 +1258,10 @@ namespace MetaFile
 			TEmfRectL oBounds;
 			m_oStream >> oBounds;
 
-			unsigned long ulNumberOfPolylines;
+			unsigned int ulNumberOfPolylines;
 			m_oStream >> ulNumberOfPolylines;
 
-			unsigned long ulTotalPointsCount;
+			unsigned int ulTotalPointsCount;
 			m_oStream >> ulTotalPointsCount;
 
 			if (0 == ulNumberOfPolylines && 0 == ulTotalPointsCount)
@@ -1240,15 +1269,15 @@ namespace MetaFile
 			else if (0 == ulNumberOfPolylines || 0 == ulTotalPointsCount)
 				return SetError();
 
-			unsigned long* pPolylinePointCount = new unsigned long[ulNumberOfPolylines];
-			for (unsigned long ulIndex = 0; ulIndex < ulNumberOfPolylines; ulIndex++)
+			unsigned int* pPolylinePointCount = new unsigned int[ulNumberOfPolylines];
+			for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolylines; ulIndex++)
 			{
 				m_oStream >> pPolylinePointCount[ulIndex];
 			}
 
-			for (unsigned long ulPolyIndex = 0, ulStartPointIndex = 0; ulPolyIndex < ulNumberOfPolylines; ulPolyIndex++)
+			for (unsigned int ulPolyIndex = 0, ulStartPointIndex = 0; ulPolyIndex < ulNumberOfPolylines; ulPolyIndex++)
 			{
-				unsigned long ulCurrentPolylinePointsCount = pPolylinePointCount[ulPolyIndex];
+				unsigned int ulCurrentPolylinePointsCount = pPolylinePointCount[ulPolyIndex];
 				if (0 == ulCurrentPolylinePointsCount)
 					continue;
 
@@ -1256,9 +1285,9 @@ namespace MetaFile
 				m_oStream >> oPoint;
 				MoveTo(oPoint);
 
-				for (unsigned long ulPointIndex = 1; ulPointIndex < ulCurrentPolylinePointsCount; ulPointIndex++)
+				for (unsigned int ulPointIndex = 1; ulPointIndex < ulCurrentPolylinePointsCount; ulPointIndex++)
 				{
-					unsigned long ulRealPointIndex = ulPointIndex + ulStartPointIndex;
+					unsigned int ulRealPointIndex = ulPointIndex + ulStartPointIndex;
 					if (ulRealPointIndex >= ulTotalPointsCount)
 					{
 						delete[] pPolylinePointCount;
@@ -1276,7 +1305,7 @@ namespace MetaFile
 		}
 		void Read_EMR_SETLAYOUT()
 		{
-			unsigned long ulLayoutMode;
+			unsigned int ulLayoutMode;
 			m_oStream >> ulLayoutMode;
 
 			// TODO: реализовать
@@ -1297,7 +1326,7 @@ namespace MetaFile
 		CFontManager*     m_pFontManager;
 		TEmfHeader        m_oHeader;
 
-		unsigned long     m_ulRecordSize;
+		unsigned int     m_ulRecordSize;
 		CEmfOutputDevice* m_pOutput;
 
 		CEmfDC*           m_pDC;
@@ -1305,7 +1334,7 @@ namespace MetaFile
 
 		CEmfPath*         m_pPath;
 
-		long              m_lTest;
+		int              m_lTest;
 
 		friend class CEmfRendererOutput;
 		friend class CEmfPlayer;

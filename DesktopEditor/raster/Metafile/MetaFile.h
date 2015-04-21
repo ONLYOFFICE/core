@@ -9,9 +9,9 @@
 
 namespace MetaFile
 {
-	const long c_lMetaWmf = 0x01;
-	const long c_lMetaEmf = 0x02;
-	const long c_lMetaSvg = 0x04; 
+	const int c_lMetaWmf = 0x01;
+	const int c_lMetaEmf = 0x02;
+	const int c_lMetaSvg = 0x04; 
 	// третий поросенок еще бегает )
 
 	class CMetaFile
@@ -24,7 +24,7 @@ namespace MetaFile
 		bool DrawOnRenderer(IRenderer* pRenderer, double dX, double dY, double dWidth, double dHeight);
 		void Close();
 		void GetBounds(double* pdX, double* pdY, double* pdW, double* pdH);
-		long GetType();
+		int GetType();
 		void ConvertToRaster(const wchar_t* wsOutFilePath, unsigned int unFileType, int nWidth, int nHeight = -1);
 		CFontManager* get_FontManager();
 
@@ -35,7 +35,7 @@ namespace MetaFile
 		CWmfFile           m_oWmfFile;
 		TWmfRectF          m_oWmfRect;
 		CEmfFile           m_oEmfFile;
-		long               m_lType;
+		int               m_lType;
 	};
 }
 

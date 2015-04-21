@@ -35,10 +35,10 @@ namespace MetaFile
 			m_pRenderer = pRenderer;
 
 			TEmfRectL* pBounds = m_pEmfFile->GetDCBounds();
-			long lL = pBounds->lLeft;
-			long lR = pBounds->lRight;
-			long lT = pBounds->lTop;
-			long lB = pBounds->lBottom;
+			int lL = pBounds->lLeft;
+			int lR = pBounds->lRight;
+			int lT = pBounds->lTop;
+			int lB = pBounds->lBottom;
 
 			m_dScaleX = (lR - lL <= 0) ? 1 : m_dW / (double)(lR - lL);
 			m_dScaleY = (lB - lT <= 0) ? 1 : m_dH / (double)(lB - lT);
@@ -57,11 +57,12 @@ namespace MetaFile
 			CheckEndPath();
 		}
 
-		void DrawBitmap(long lX, long lY, long lW, long lH, BYTE* pBuffer, unsigned long ulWidth, unsigned long ulHeight)
+		void DrawBitmap(int lX, int lY, int lW, int lH, BYTE* pBuffer, unsigned int ulWidth, unsigned int ulHeight)
 		{
 			CheckEndPath();
 
 			UpdateTransform();
+			UpdateClip();
 
 			Aggplus::CImage oImage;
 			BYTE* pBufferPtr = new BYTE[4 * ulWidth * ulHeight];
@@ -80,11 +81,12 @@ namespace MetaFile
 			TEmfPointD oBR = TranslatePoint(lX + lW, lY + lH);
 			m_pRenderer->DrawImage(&oImage, oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y);
 		}
-		void DrawText(const wchar_t* wsText, unsigned long ulCharsCount, long lX, long lY)
+		void DrawText(const wchar_t* wsText, unsigned int ulCharsCount, int lX, int lY)
 		{
 			CheckEndPath();
 
 			UpdateTransform();
+			UpdateClip();
 
 			CEmfDC* pDC = m_pEmfFile->GetDC();
 			if (!pDC)
@@ -96,7 +98,7 @@ namespace MetaFile
 
 			TEmfLogFont* pLogFont = &pFont->LogFontEx.LogFont;
 
-			long lLogicalFontHeight = pLogFont->Height;
+			int lLogicalFontHeight = pLogFont->Height;
 			if (lLogicalFontHeight < 0)
 				lLogicalFontHeight = -lLogicalFontHeight;
 			if (lLogicalFontHeight < 0.01)
@@ -108,7 +110,7 @@ namespace MetaFile
 			m_pRenderer->put_FontName(wsFaceName);
 			m_pRenderer->put_FontSize(dFontHeight);
 
-			long lStyle = 0;
+			int lStyle = 0;
 			if (pLogFont->Weight > 550)
 				lStyle |= 0x01;
 			if (pLogFont->Italic)
@@ -163,7 +165,7 @@ namespace MetaFile
 			double dY = oTextPoint.y;
 
 			// Найдем начальную точку текста
-			unsigned long ulTextAlign = pDC->GetTextAlign();
+			unsigned int ulTextAlign = pDC->GetTextAlign();
 			if (ulTextAlign & TA_BASELINE)
 			{
 				// Ничего не делаем
@@ -256,12 +258,12 @@ namespace MetaFile
 			if (bChangeCTM)
 				m_pRenderer->ResetTransform();
 		}
-
 		void StartPath()
 		{
 			CheckEndPath();
 
 			UpdateTransform();
+			UpdateClip();
 
 			m_lDrawPathType = -1;
 			if (true == UpdateBrush())
@@ -286,19 +288,19 @@ namespace MetaFile
 
 			m_bStartedPath = true;
 		}
-		void MoveTo(long lX, long lY)
+		void MoveTo(int lX, int lY)
 		{
 			CheckStartPath(true);
 			TEmfPointD oPoint = TranslatePoint(lX, lY);
 			m_pRenderer->PathCommandMoveTo(oPoint.x, oPoint.y);
 		}
-		void LineTo(long lX, long lY)
+		void LineTo(int lX, int lY)
 		{
 			CheckStartPath(false);
 			TEmfPointD oPoint = TranslatePoint(lX, lY);
 			m_pRenderer->PathCommandLineTo(oPoint.x, oPoint.y);
 		}
-		void CurveTo(long lX1, long lY1, long lX2, long lY2, long lXe, long lYe)
+		void CurveTo(int lX1, int lY1, int lX2, int lY2, int lXe, int lYe)
 		{
 			CheckStartPath(false);
 
@@ -307,7 +309,7 @@ namespace MetaFile
 			TEmfPointD oPointE = TranslatePoint(lXe, lYe);
 			m_pRenderer->PathCommandCurveTo(oPoint1.x, oPoint1.y, oPoint2.x, oPoint2.y, oPointE.x, oPointE.y);
 		}
-		void ArcTo(long lLeft, long lTop, long lRight, long lBottom, double dStart, double dSweep)
+		void ArcTo(int lLeft, int lTop, int lRight, int lBottom, double dStart, double dSweep)
 		{
 			CheckStartPath(false);
 
@@ -321,7 +323,7 @@ namespace MetaFile
 
 			m_pRenderer->PathCommandClose();
 		}
-		void DrawPath(long lType = 0)
+		void DrawPath(int lType = 0)
 		{
 			if (lType <= 0)
 			{
@@ -333,11 +335,9 @@ namespace MetaFile
 				bool bStroke = lType & 1 ? true : false;
 				bool bFill   = lType & 2 ? true : false;
 
-				long m_lEndType = -1;
+				int m_lEndType = -1;
 
-				if (bStroke && m_lDrawPathType & c_nStroke)
-					m_lEndType = c_nStroke;
-				else
+				if (bStroke && (m_lDrawPathType & c_nStroke))
 					m_lEndType = c_nStroke;
 				
 				if (bFill)
@@ -362,6 +362,30 @@ namespace MetaFile
 		void UpdateDC()
 		{
 			CheckEndPath();
+		}
+		void ResetClip()
+		{
+			m_pRenderer->BeginCommand(c_nResetClipType);
+			m_pRenderer->EndCommand(c_nResetClipType);
+		}
+		void IntersectClip(int lLeft, int lTop, int lRight, int lBottom)
+		{
+			m_pRenderer->BeginCommand(c_nClipType);
+			m_pRenderer->BeginCommand(c_nPathType);
+			m_pRenderer->PathCommandStart();
+
+			TEmfPointD oTL = TranslatePoint(lLeft, lTop);
+			TEmfPointD oBR = TranslatePoint(lRight, lBottom);
+
+			m_pRenderer->PathCommandMoveTo(oTL.x, oTL.y);
+			m_pRenderer->PathCommandLineTo(oTL.x, oBR.y);
+			m_pRenderer->PathCommandLineTo(oBR.x, oBR.y);
+			m_pRenderer->PathCommandLineTo(oBR.x, oTL.y);
+			m_pRenderer->PathCommandLineTo(oTL.x, oTL.y);
+
+			m_pRenderer->EndCommand(c_nPathType);
+			m_pRenderer->EndCommand(c_nClipType);
+			m_pRenderer->PathCommandEnd();
 		}
 
 	private:
@@ -391,7 +415,7 @@ namespace MetaFile
 			}
 		}
 
-		TEmfPointD TranslatePoint(long lX, long lY)
+		TEmfPointD TranslatePoint(int lX, int lY)
 		{
 			double dX = m_pEmfFile->TranslateX(lX);
 			double dY = m_pEmfFile->TranslateY(lY);
@@ -425,7 +449,7 @@ namespace MetaFile
 			if (!pBrush)
 				return false;
 
-			long lColor = METAFILE_RGBA(pBrush->Color.r, pBrush->Color.g, pBrush->Color.b);
+			int lColor = METAFILE_RGBA(pBrush->Color.r, pBrush->Color.g, pBrush->Color.b);
 
 			if (BS_NULL == pBrush->BrushStyle)
 				return false;			
@@ -467,17 +491,17 @@ namespace MetaFile
 			if (!pPen)
 				return false;
 
-			long lColor = METAFILE_RGBA(pPen->Color.r, pPen->Color.g, pPen->Color.b);
+			int lColor = METAFILE_RGBA(pPen->Color.r, pPen->Color.g, pPen->Color.b);
 
 			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
 			double dWidth = pPen->Width * m_dScaleX * pDC->GetPixelWidth();
 			if (dWidth <= 0.01)
 				dWidth = 0;
 
-			unsigned long ulPenType   = pPen->PenStyle & PS_TYPE_MASK;
-			unsigned long ulPenEndCap = pPen->PenStyle & PS_ENDCAP_MASK;
-			unsigned long ulPenJoin   = pPen->PenStyle & PS_JOIN_MASK;
-			unsigned long ulPenStyle  = pPen->PenStyle & PS_STYLE_MASK;
+			unsigned int ulPenType   = pPen->PenStyle & PS_TYPE_MASK;
+			unsigned int ulPenEndCap = pPen->PenStyle & PS_ENDCAP_MASK;
+			unsigned int ulPenJoin   = pPen->PenStyle & PS_JOIN_MASK;
+			unsigned int ulPenStyle  = pPen->PenStyle & PS_STYLE_MASK;
 
 			BYTE nCapStyle = 0;
 			if (PS_ENDCAP_ROUND == ulPenEndCap)
@@ -531,11 +555,25 @@ namespace MetaFile
 
 			return true;
 		}
+		bool UpdateClip()
+		{
+			CEmfDC* pDC = m_pEmfFile->GetDC();
+			if (!pDC)
+				return false;
+
+			CEmfClip* pClip = pDC->GetClip();
+			if (!pClip)
+				return false;
+
+			pClip->ClipOnRenderer(this);
+
+			return true;
+		}
 
 	private:
 
 		IRenderer* m_pRenderer;
-		long       m_lDrawPathType;
+		int       m_lDrawPathType;
 		double     m_dX;      // Координаты левого верхнего угла
 		double     m_dY;      //
 		double     m_dW;      // 

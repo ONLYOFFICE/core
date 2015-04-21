@@ -30,7 +30,7 @@ namespace MetaFile
 
 		return true;
 	}
-	bool CEmfPath::MoveTo(long lX, long lY)
+	bool CEmfPath::MoveTo(int lX, int lY)
 	{
 		CEmfPathCommandBase* pCommand = new CEmfPathMoveTo(lX, lY);
 		if (!pCommand)
@@ -60,7 +60,7 @@ namespace MetaFile
 
 		return true;
 	}
-	bool CEmfPath::LineTo(long lX, long lY)
+	bool CEmfPath::LineTo(int lX, int lY)
 	{
 		CEmfPathCommandBase* pCommand = new CEmfPathLineTo(lX, lY);
 		if (!pCommand)
@@ -90,7 +90,7 @@ namespace MetaFile
 
 		return true;
 	}
-	bool CEmfPath::CurveTo(long lX1, long lY1, long lX2, long lY2, long lXE, long lYE)
+	bool CEmfPath::CurveTo(int lX1, int lY1, int lX2, int lY2, int lXE, int lYE)
 	{
 		CEmfPathCommandBase* pCommand = new CEmfPathCurveTo(lX1, lY1, lX2, lY2, lXE, lYE);
 		if (!pCommand)
@@ -100,7 +100,7 @@ namespace MetaFile
 
 		return true;
 	}
-	bool CEmfPath::ArcTo(long lL, long lT, long lR, long lB, double dStart, double dSweep)
+	bool CEmfPath::ArcTo(int lL, int lT, int lR, int lB, double dStart, double dSweep)
 	{
 		CEmfPathCommandBase* pCommand = new CEmfPathArcTo(lL, lT, lR, lB, dStart, dSweep);
 		if (!pCommand)
@@ -126,7 +126,7 @@ namespace MetaFile
 		{			
 			pOutput->StartPath();
 
-			for (unsigned long ulIndex = 0; ulIndex < m_pCommands.size(); ulIndex++)
+			for (unsigned int ulIndex = 0; ulIndex < m_pCommands.size(); ulIndex++)
 			{
 				CEmfPathCommandBase* pCommand = m_pCommands.at(ulIndex);
 				switch (pCommand->GetType())
@@ -163,7 +163,7 @@ namespace MetaFile
 				}
 			}
 
-			long lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
+			int lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
 			pOutput->DrawPath(lType);
 			pOutput->EndPath();
 		}
@@ -172,7 +172,7 @@ namespace MetaFile
 	}
 	void CEmfPath::Clear()
 	{
-		for (unsigned long ulIndex = 0; ulIndex < m_pCommands.size(); ulIndex++)
+		for (unsigned int ulIndex = 0; ulIndex < m_pCommands.size(); ulIndex++)
 		{
 			CEmfPathCommandBase* pCommand = m_pCommands.at(ulIndex);
 			delete pCommand;

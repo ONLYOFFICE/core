@@ -6,6 +6,13 @@ namespace MetaFile
 	CEmfPath::CEmfPath()
 	{
 	}
+	CEmfPath::CEmfPath(CEmfPath* pPath)
+	{
+		if (pPath)
+		{
+
+		}
+	}
 	CEmfPath::~CEmfPath()
 	{
 		Clear();

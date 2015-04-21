@@ -38,8 +38,9 @@ public:
 		if (m_ooxTableRowProps->m_oTblHeader.IsInit() )
 			oOutputProperty.m_bIsHeader = m_ooxTableRowProps->m_oTblHeader->m_oVal.ToBool();
 		
-		if (m_ooxTableRowProps->m_oCantSplit.IsInit() )
-			 oOutputProperty.m_bIsHeader= m_ooxTableRowProps->m_oTblHeader->m_oVal.ToBool();
+//todooo непонятнка
+//		if (m_ooxTableRowProps->m_oCantSplit.IsInit() )
+//             oOutputProperty.m_bIsHeader= m_ooxTableRowProps->m_oCantSplit->m_oVal.ToBool();
 		
 		if (m_ooxTableRowProps->m_oJc.IsInit() && m_ooxTableRowProps->m_oJc->m_oVal.IsInit())
 		{

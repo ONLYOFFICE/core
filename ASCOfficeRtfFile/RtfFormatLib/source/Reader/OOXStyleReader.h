@@ -34,6 +34,8 @@ public:
 			case SimpleTypes::styletypeTable     : oNewStyle = RtfStylePtr( new RtfTableStyle() );		break;
 		}
 
+        if (oNewStyle == NULL) return true;
+
 		RtfStyle::StyleType eStyleType = oNewStyle->m_eType;
 
 		oNewStyle->m_nID = oParam.oRtf->m_oStyleTable.GetCount() + 1;
@@ -127,7 +129,7 @@ public:
 			{
 				RtfTableStylePtr oTableStyle =boost::shared_static_cast<RtfTableStyle, RtfStyle>(oNewStyle);
 
-				RtfStylePtr oNewSubStyle;
+                RtfStylePtr oNewSubStyle ;
 				OOXStyleReader oStyleReader(m_ooxStyle);
 				
 				oStyleReader.ParseTableStyle(m_ooxStyle->m_arrTblStylePr[i], oParam, oNewSubStyle);
@@ -231,6 +233,8 @@ public:
 	{
 		if (oox_tableStyle == NULL) return false;
 
+        if (oOutputStyle == NULL)
+            oOutputStyle = RtfStylePtr( new RtfTableStyle() );
 		RtfStyle::StyleType eStyleType = oOutputStyle->m_eType;//todooo проверить
 
 		if (oox_tableStyle->m_oRunPr.IsInit() && 

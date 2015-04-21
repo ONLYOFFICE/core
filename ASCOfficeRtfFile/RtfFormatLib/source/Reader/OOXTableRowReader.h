@@ -34,7 +34,10 @@ public:
 		{
 			RtfTableCellPtr oNewCell( new RtfTableCell() );
 
-			OOX::Logic::CTc *ooxCell = dynamic_cast<OOX::Logic::CTc *>(m_ooxRowTable->m_arrItems[nCurCell]);
+            OOX::Logic::CTc *ooxCell = NULL;
+
+            if (nCurCell < m_ooxRowTable->m_arrItems.size())
+                ooxCell = dynamic_cast<OOX::Logic::CTc *>(m_ooxRowTable->m_arrItems[nCurCell]);
 
 			if (ooxCell)
 			{

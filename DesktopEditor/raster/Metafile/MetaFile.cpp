@@ -174,12 +174,12 @@ namespace MetaFile
 			nHeight = (int)((double)nWidth * dH / dW);
 		}
 
-		double dDpiX, dDpiY;
-		oRenderer.get_DpiX(&dDpiX);
-		oRenderer.get_DpiX(&dDpiY);
+		//double dDpiX, dDpiY;
+		//oRenderer.get_DpiX(&dDpiX);
+		//oRenderer.get_DpiX(&dDpiY);
 
-		double dWidth  = nWidth * 72 / 25.4 / dDpiX;
-		double dHeight = nHeight * 72 / 25.4 / dDpiY;
+		double dWidth  = nWidth ;//* 72 / 25.4 / dDpiX;
+		double dHeight = nHeight ;//* 72 / 25.4 / dDpiY;
 
 		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
 		CBgraFrame oFrame;

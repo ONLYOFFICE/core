@@ -109,7 +109,7 @@ public:
 #ifdef NO_PIE
 		return;
 #endif
-		long lDrawPathType = -1;
+		int lDrawPathType = -1;
 		
 		if ( SetBrush( pArc->pDC ) )
 			lDrawPathType = c_nWindingFillMode;
@@ -253,7 +253,7 @@ public:
 #ifdef NO_ELLIPSE
 		return;
 #endif
-		long lDrawPathType = -1;
+		int lDrawPathType = -1;
 		
 		if ( SetBrush( pArc->pDC ) )
 			lDrawPathType = c_nWindingFillMode;
@@ -344,7 +344,7 @@ public:
 #endif
 		TWmfDC *pDC = pPolyPoly->pDC;
 
-		long lDrawPathType = -1;
+		int lDrawPathType = -1;
 		
 		if ( SetBrush( pDC ) )
 		{
@@ -401,7 +401,7 @@ public:
 #endif
 		TWmfDC *pDC = pPolyLine->pDC;
 
-		long lDrawPathType = -1;
+		int lDrawPathType = -1;
 
 		if (SetBrush(pDC))
 		{
@@ -451,7 +451,7 @@ public:
 #ifdef NO_RECT
 		return;
 #endif
-		long lDrawPathType = -1;
+		int lDrawPathType = -1;
 
 		if (SetBrush(pRect->pDC))
 			lDrawPathType = c_nWindingFillMode;
@@ -610,7 +610,7 @@ public:
 		
 
 		BYTE *pBuffer = pReadBitmap->pBuffer;
-		long lBufLen  = pReadBitmap->lLength;
+		int lBufLen  = pReadBitmap->lLength;
 
 		// Считываем заголовок
 		unsigned int   unHeaderSize = ReadUInt  ( pBuffer ); pBuffer += 4; lBufLen -=4;
@@ -649,7 +649,7 @@ public:
 		if (m_pWmfFile->m_pFontManager)
 		{
 			TWmfFont *pFont = pText->pDC->pFont;
-			long lStyle = (pFont->ushWeight > 550 ? 1 : 0) + (pFont->unItalic ? 2 : 0);
+			int lStyle = (pFont->ushWeight > 550 ? 1 : 0) + (pFont->unItalic ? 2 : 0);
 
 			m_pWmfFile->m_pFontManager->LoadFontByName(ascii_to_unicode(pText->pDC->pFont->sFaceName), dSize, lStyle, 72, 72);
 			m_pWmfFile->m_pFontManager->LoadString1(ascii_to_unicode(pText->sText), 0, 0);
@@ -743,9 +743,9 @@ public:
 
 		if (OPAQUE == pText->pDC->ushBGMode)
 		{
-			long lOldColor = m_oBrush.Color1;
-			long lOldAlpha = m_oBrush.Alpha1;
-			long lOldType  = m_oBrush.Type;
+			int lOldColor = m_oBrush.Color1;
+			int lOldAlpha = m_oBrush.Alpha1;
+			int lOldType  = m_oBrush.Type;
 
 			m_oBrush.Color1 = (RGB(pText->pDC->oBGColor.r, pText->pDC->oBGColor.g, pText->pDC->oBGColor.b));
 			m_oBrush.Alpha1 = 255;
@@ -1328,7 +1328,7 @@ private:
 	{
 		TWmfPen *pPen = pDC->pPen;
 
-		long lColor = METAFILE_RGBA(pPen->oColor.r, pPen->oColor.g, pPen->oColor.b);
+		int lColor = METAFILE_RGBA(pPen->oColor.r, pPen->oColor.g, pPen->oColor.b);
 		double dWidth = pPen->dWidth * m_dScaleX ;
 
 		if ( dWidth <= 0.01 )
@@ -1398,7 +1398,7 @@ private:
 	bool SetBrush(TWmfDC *pDC)
 	{
 		TWmfBrush *pBrush = pDC->pBrush;
-		long lColor = METAFILE_RGBA(pBrush->oColor.r, pBrush->oColor.g, pBrush->oColor.b);
+		int lColor = METAFILE_RGBA(pBrush->oColor.r, pBrush->oColor.g, pBrush->oColor.b);
 		
 		if ( BS_NULL == pBrush->ushStyle )
 			return false;
@@ -1558,7 +1558,7 @@ private:
 		return (BYTE)(pBuffer[0]);
 	}
 
-	bool           ReadImage_CoreHeader(TWmfBMPRead *pReadBitmap, BYTE *pBuffer, long lBufLen)
+	bool           ReadImage_CoreHeader(TWmfBMPRead *pReadBitmap, BYTE *pBuffer, int lBufLen)
 	{
 		unsigned short ushWidth    = ReadUShort( pBuffer ); pBuffer += 2; lBufLen -= 2;
 		unsigned short ushHeight   = ReadUShort( pBuffer ); pBuffer += 2; lBufLen -= 2;
@@ -1571,7 +1571,7 @@ private:
 
 		return false;
 	}
-	bool           ReadImage_InfoHeader(TWmfBMPRead *pReadBitmap, BYTE *pBuffer, long lBufLen)
+	bool           ReadImage_InfoHeader(TWmfBMPRead *pReadBitmap, BYTE *pBuffer, int lBufLen)
 	{
 		int nWidth  = ReadInt(pBuffer); pBuffer += 4; lBufLen -= 4;
 		int nHeight = ReadInt(pBuffer); pBuffer += 4; lBufLen -= 4;
@@ -1633,7 +1633,7 @@ private:
 			pBuffer++; lBufLen--;
 
 			// Считываем саму картинку
-			long lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
+			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
 			if (lCalcLen != lBufLen)
 				return false;
 
@@ -1788,7 +1788,7 @@ private:
 				return false; // TO DO: Сделать данный вариант, как только будет файлы с данным типом
 
 			// Считываем саму картинку
-			long lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
+			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
 			if (lCalcLen != lBufLen)
 				return false;
 

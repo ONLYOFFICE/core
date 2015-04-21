@@ -43,7 +43,7 @@ namespace MetaFile
 			x = oPoint.x;
 			y = oPoint.y;
 		}
-		CEmfPathMoveTo(long lX, long lY)
+		CEmfPathMoveTo(int lX, int lY)
 		{
 			x = lX;
 			y = lY;
@@ -58,8 +58,8 @@ namespace MetaFile
 
 	public:
 		
-		long x;
-		long y;
+		int x;
+		int y;
 	};
 	class CEmfPathLineTo : public CEmfPathCommandBase
 	{
@@ -74,7 +74,7 @@ namespace MetaFile
 			x = oPoint.x;
 			y = oPoint.y;
 		}
-		CEmfPathLineTo(long lX, long lY)
+		CEmfPathLineTo(int lX, int lY)
 		{
 			x = lX;
 			y = lY;
@@ -89,8 +89,8 @@ namespace MetaFile
 
 	public:
 
-		long x;
-		long y;
+		int x;
+		int y;
 	};
 	class CEmfPathCurveTo : public CEmfPathCommandBase
 	{
@@ -113,7 +113,7 @@ namespace MetaFile
 			xE = oPointE.x;
 			yE = oPointE.y;
 		}
-		CEmfPathCurveTo(long lX1, long lY1, long lX2, long lY2, long lXE, long lYE)
+		CEmfPathCurveTo(int lX1, int lY1, int lX2, int lY2, int lXE, int lYE)
 		{
 			x1 = lX1;
 			y1 = lY1;
@@ -132,17 +132,17 @@ namespace MetaFile
 
 	public:
 
-		long x1;
-		long y1;
-		long x2;
-		long y2;
-		long xE;
-		long yE;
+		int x1;
+		int y1;
+		int x2;
+		int y2;
+		int xE;
+		int yE;
 	};
 	class CEmfPathArcTo : public CEmfPathCommandBase
 	{
 	public:
-		CEmfPathArcTo(long lL, long lT, long lR, long lB, double dStart, double dSweep)
+		CEmfPathArcTo(int lL, int lT, int lR, int lB, double dStart, double dSweep)
 		{
 			left   = lL;
 			top    = lT;
@@ -161,10 +161,10 @@ namespace MetaFile
 
 	public:
 
-		long   left;
-		long   top;
-		long   right;
-		long   bottom;
+		int   left;
+		int   top;
+		int   right;
+		int   bottom;
 		double start;
 		double sweep;
 	};
@@ -194,14 +194,14 @@ namespace MetaFile
 
 		bool MoveTo(TEmfPointS& oPoint);
 		bool MoveTo(TEmfPointL& oPoint);
-		bool MoveTo(long lX, long lY);
+		bool MoveTo(int lX, int lY);
 		bool LineTo(TEmfPointS& oPoint);
 		bool LineTo(TEmfPointL& oPoint);
-		bool LineTo(long lX, long lY);
+		bool LineTo(int lX, int lY);
 		bool CurveTo(TEmfPointS& oPoint1, TEmfPointS& oPoint2, TEmfPointS& oPointE);
 		bool CurveTo(TEmfPointL& oPoint1, TEmfPointL& oPoint2, TEmfPointL& oPointE);
-		bool CurveTo(long lX1, long lY1, long lX2, long lY2, long lXE, long lYE);
-		bool ArcTo(long lL, long lT, long lR, long lB, double dStart, double dSweep);
+		bool CurveTo(int lX1, int lY1, int lX2, int lY2, int lXE, int lYE);
+		bool ArcTo(int lL, int lT, int lR, int lB, double dStart, double dSweep);
 		bool Close();
 		void Draw(CEmfOutputDevice* pOutput, bool bStroke, bool bFill);
 

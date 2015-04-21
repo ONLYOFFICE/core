@@ -192,7 +192,7 @@ public:
 
 		bool bNewColor = true;
 
-		for (unsigned long ulIndex = 0; ulIndex < m_ulCount; ulIndex++)
+		for (unsigned int ulIndex = 0; ulIndex < m_ulCount; ulIndex++)
 		{	
 			if ( ( pRGB->r == m_pRGB[ulIndex].r ) && ( pRGB->g == m_pRGB[ulIndex].g ) && ( pRGB->b == m_pRGB[ulIndex].b ) )
 			{	
@@ -223,9 +223,9 @@ public:
 
 
 
-	unsigned long GetColorIndex(TWmfRGB *pRGB)
+	unsigned int GetColorIndex(TWmfRGB *pRGB)
 	{
-		unsigned long ulBest = 0;
+		unsigned int ulBest = 0;
 
 		unsigned int unDistBest = 766;
 
@@ -235,7 +235,7 @@ public:
 		}
 
 		// —начала ищем точное совпадение
-		for (unsigned long ulIndex = 0; ulIndex < m_ulCount; ulIndex++)
+		for (unsigned int ulIndex = 0; ulIndex < m_ulCount; ulIndex++)
 		{	
 			if ( ( pRGB->r == m_pRGB[ulIndex].r ) && ( pRGB->g == m_pRGB[ulIndex].g ) && ( pRGB->b == m_pRGB[ulIndex].b ) )
 			{
@@ -249,7 +249,7 @@ public:
 			return ulBest;
 
 		// »щем наиболее близкий цвет
-		for (unsigned long ulIndex = 0; ulIndex < m_ulCount; ulIndex++)
+		for (unsigned int ulIndex = 0; ulIndex < m_ulCount; ulIndex++)
 		{	
 			unsigned int unDistR = (unsigned int) abs(((int) (pRGB->r)) - ((int) (m_pRGB[ulIndex].r)));
 			unsigned int unDistG = (unsigned int) abs(((int) (pRGB->g)) - ((int) (m_pRGB[ulIndex].g)));
@@ -267,12 +267,12 @@ public:
 		return ulBest;
 	}
 
-	unsigned long GetCount()
+	unsigned int GetCount()
 	{	
 		return m_ulCount;
 	}
 
-	TWmfRGB* GetColor(unsigned long ulIndex)
+	TWmfRGB* GetColor(unsigned int ulIndex)
 	{
 		if ( CheckError() || ulIndex >= m_ulCount )
 			return ((TWmfRGB *)&c_oColorRed);
@@ -344,8 +344,8 @@ private:
 
 private:
 
-    unsigned long m_ulmax;
-	unsigned long m_ulCount;
+    unsigned int m_ulmax;
+	unsigned int m_ulCount;
 
 	TWmfRGB      *m_pRGB;
 

@@ -126,7 +126,7 @@ namespace MetaFile
 
 		m_lType  = 0;
 	};
-	long CMetaFile::GetType()
+	int CMetaFile::GetType()
 	{
 		return m_lType;
 	}

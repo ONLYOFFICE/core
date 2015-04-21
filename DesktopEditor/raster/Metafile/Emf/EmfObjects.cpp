@@ -25,7 +25,7 @@ namespace MetaFile
 		if (DibBuffer)
 			delete[] DibBuffer;
 	}
-	void CEmfLogBrushEx::SetDibPattern(unsigned char* pBuffer, unsigned long ulWidth, unsigned long ulHeight)
+	void CEmfLogBrushEx::SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight)
 	{
 		DibBuffer = pBuffer;
 		DibWidth  = ulWidth;
@@ -34,13 +34,13 @@ namespace MetaFile
 		if (ulWidth <= 0 || ulHeight <= 0)
 			return;
 
-		unsigned long ulBufferSize = 4 * ulWidth * ulHeight;
+		unsigned int ulBufferSize = 4 * ulWidth * ulHeight;
 		Aggplus::CImage oImage;
 		BYTE* pBufferPtr = new BYTE[ulBufferSize];
 		oImage.Create(pBufferPtr, ulWidth, ulHeight, 4 * ulWidth);
 
 		// ѕишем данные в pBufferPtr
-		for (unsigned long ulIndex = 0; ulIndex < ulBufferSize; ulIndex += 4)
+		for (unsigned int ulIndex = 0; ulIndex < ulBufferSize; ulIndex += 4)
 		{
 			pBufferPtr[0] = (unsigned char)pBuffer[ulIndex + 0];
 			pBufferPtr[1] = (unsigned char)pBuffer[ulIndex + 1];

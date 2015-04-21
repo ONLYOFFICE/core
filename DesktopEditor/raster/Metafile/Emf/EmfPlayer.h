@@ -5,6 +5,7 @@
 #include <map>
 #include "EmfTypes.h"
 #include "EmfObjects.h"
+#include "EmfClip.h"
 
 namespace MetaFile
 {
@@ -21,20 +22,20 @@ namespace MetaFile
 		CEmfDC* SaveDC();
 		CEmfDC* RestoreDC();
 		CEmfDC* GetDC();
-		void RegisterObject(unsigned long ulIndex, CEmfObjectBase* pObject);
-		void SelectObject(unsigned long ulIndex);
-		void DeleteObject(unsigned long ulIndex);
-		void SelectPalette(unsigned long ulIndex);
+		void RegisterObject(unsigned int ulIndex, CEmfObjectBase* pObject);
+		void SelectObject(unsigned int ulIndex);
+		void DeleteObject(unsigned int ulIndex);
+		void SelectPalette(unsigned int ulIndex);
 
 	private:
 
 		void InitStockObjects();
-		void InitStockBrush(bool bNull, unsigned char r, unsigned char g, unsigned char b, unsigned long ulIndex);
-		void InitStockPen(bool bNull, unsigned char r, unsigned char g, unsigned char b, unsigned long ulIndex);
+		void InitStockBrush(bool bNull, unsigned char r, unsigned char g, unsigned char b, unsigned int ulIndex);
+		void InitStockPen(bool bNull, unsigned char r, unsigned char g, unsigned char b, unsigned int ulIndex);
 
 	private:
 
-		typedef std::map < unsigned long, CEmfObjectBase* > CEmfObjectMap;
+		typedef std::map < unsigned int, CEmfObjectBase* > CEmfObjectMap;
 
 		CEmfDC*              m_pDC;
 		std::vector<CEmfDC*> m_vDCStack;
@@ -50,11 +51,11 @@ namespace MetaFile
 		~CEmfDC();
 		CEmfDC* Copy();
 
-		void            SetMapMode(unsigned long ulMapMode);
-		unsigned long   GetMapMode();
+		void            SetMapMode(unsigned int ulMapMode);
+		unsigned int   GetMapMode();
 		TEmfXForm*      GetTransform();
 		TEmfXForm*      GetInverseTransform();
-		void            MultiplyTransform(TEmfXForm& oForm, unsigned long ulMode);
+		void            MultiplyTransform(TEmfXForm& oForm, unsigned int ulMode);
 		void            SetTextColor(TEmfColor& oColor);
 		TEmfColor&      GetTextColor();
 		void            SetBrush(CEmfLogBrushEx* pBrush);
@@ -63,21 +64,21 @@ namespace MetaFile
 		void            SetFont(CEmfLogFont* pFont);
 		void            RemoveFont(CEmfLogFont* pFont);
 		CEmfLogFont*    GetFont();
-		void            SetTextAlign(unsigned long ulAlign);
-		unsigned long   GetTextAlign();
-		void            SetBgMode(unsigned long ulBgMode);
-		unsigned long   GetBgMode();
+		void            SetTextAlign(unsigned int ulAlign);
+		unsigned int   GetTextAlign();
+		void            SetBgMode(unsigned int ulBgMode);
+		unsigned int   GetBgMode();
 		void            SetBgColor(TEmfColor& oColor);
 		TEmfColor&      GetBgColor();
-		void            SetMiterLimit(unsigned long ulMiter);
-		unsigned long   GetMiterLimit();
-		void            SetFillMode(unsigned long ulFillMode);
-		unsigned long   GetFillMode();
+		void            SetMiterLimit(unsigned int ulMiter);
+		unsigned int   GetMiterLimit();
+		void            SetFillMode(unsigned int ulFillMode);
+		unsigned int   GetFillMode();
 		void            SetPen(CEmfLogPen* pPen);
 		void            RemovePen(CEmfLogPen* pPen);
 		CEmfLogPen*     GetPen();
-		void            SetStretchMode(unsigned long& oMode);
-		unsigned long   GetStretchMode();
+		void            SetStretchMode(unsigned int& oMode);
+		unsigned int   GetStretchMode();
 		double          GetPixelWidth();
 		double          GetPixelHeight();
 		void            SetWindowOrigin(TEmfPointL& oPoint);
@@ -86,14 +87,16 @@ namespace MetaFile
 		void            SetViewportOrigin(TEmfPointL& oPoint);
 		void            SetViewportExtents(TEmfSizeL& oPoint);
 		TEmfWindow*     GetViewport();
-		void            SetRop2Mode(unsigned long& nMode);
-		unsigned long   GetRop2Mode();
+		void            SetRop2Mode(unsigned int& nMode);
+		unsigned int   GetRop2Mode();
 		void            SetPalette(CEmfLogPalette* pPalette);
 		void            RemovePalette(CEmfLogPalette* pPalette);
 		CEmfLogPalette* GetPalette();
 		void            SetCurPos(TEmfPointL& oPoint);
-		void            SetCurPos(long lX, long lY);
+		void            SetCurPos(int lX, int lY);
 		TEmfPointL&     GetCurPos();
+		CEmfClip*       GetClip();
+		void            ClipToPath();
 
 	private:
 
@@ -105,7 +108,7 @@ namespace MetaFile
 
 		CEmfLogPen      m_oDefaultPen;
 		CEmfLogBrushEx  m_oDefaultBrush;
-		unsigned long   m_ulMapMode;
+		unsigned int   m_ulMapMode;
 		CEmfLogBrushEx* m_pBrush;
 		CEmfLogPen*     m_pPen;
 		CEmfLogFont*    m_pFont;
@@ -114,17 +117,18 @@ namespace MetaFile
 		TEmfXForm       m_oInverseTransform;
 		TEmfColor       m_oTextColor;
 		TEmfColor       m_oBgColor;
-		unsigned long   m_ulTextAlign;
-		unsigned long   m_ulBgMode;
-		unsigned long   m_ulMiterLimit;
-		unsigned long   m_ulFillMode;
-		unsigned long   m_ulStretchMode;
-		unsigned long   m_ulRop2Mode;
+		unsigned int   m_ulTextAlign;
+		unsigned int   m_ulBgMode;
+		unsigned int   m_ulMiterLimit;
+		unsigned int   m_ulFillMode;
+		unsigned int   m_ulStretchMode;
+		unsigned int   m_ulRop2Mode;
 		double          m_dPixelWidth;
 		double          m_dPixelHeight;
 		TEmfWindow      m_oWindow;
 		TEmfWindow      m_oViewport;
 		TEmfPointL      m_oCurPos;
+		CEmfClip        m_oClip;
 	};
 }
 

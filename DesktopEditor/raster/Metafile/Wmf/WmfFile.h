@@ -95,7 +95,7 @@ public:
 
 		NSFile::CFileBinary oFile;
 		oFile.OpenFile(wsFilePath);
-		long lFileSize = oFile.GetFileSize();
+		int lFileSize = oFile.GetFileSize();
 		BYTE* pBuffer = new BYTE[lFileSize];
 		DWORD lReadedSize;
 		oFile.ReadFile(pBuffer, lFileSize, lReadedSize);
@@ -141,7 +141,7 @@ public:
 		return m_pFontManager;
 	}
 
-	bool OpenFromMemory(unsigned char *pMemory, long lLength)
+	bool OpenFromMemory(unsigned char *pMemory, int lLength)
 	{
 		if (m_pBufferData)
 			delete m_pBufferData;
@@ -487,7 +487,7 @@ private:
 		return EOF;
 	}
 
-	int  Seek(long lPos)
+	int  Seek(int lPos)
 	{
 		if ( WMF_NOT_OPEN == m_nBufferType )
 		{
@@ -509,7 +509,7 @@ private:
 		return -1;
 	}
 
-	long Tell()
+	int Tell()
 	{
 		if ( WMF_NOT_OPEN == m_nBufferType )
 		{
@@ -525,12 +525,12 @@ private:
 		return -1;
 	}
 //------------------------------------------------------------------------------------------------------------------------
-	AVSINLINE void WriteHeader(long lHeaderStart, long lHeaderEnd)
+	AVSINLINE void WriteHeader(int lHeaderStart, int lHeaderEnd)
 	{
 #ifndef DebugWriteXml
 		return;
 #endif
-		long lHeaderSize = lHeaderEnd - lHeaderStart;
+		int lHeaderSize = lHeaderEnd - lHeaderStart;
 
 		TWmfAttributes pAttrlist;
 
@@ -556,7 +556,7 @@ private:
 
 		Seek(lHeaderStart);
 
-		for (long lIndex = 0; lIndex < lHeaderSize; lIndex++)
+		for (int lIndex = 0; lIndex < lHeaderSize; lIndex++)
 		{
 			int nByte = Read();
 			if (EOF == nByte)
@@ -574,7 +574,7 @@ private:
 		AttrFree(&pAttrlist);
 		m_oMemoryManager.Free(sHeader);
 	}
-	AVSINLINE void Write(unsigned long ulSize, unsigned int unFunction, const char *sName, char **psAttrs, const unsigned char *sBuffer, unsigned long ulLength)
+	AVSINLINE void Write(unsigned int ulSize, unsigned int unFunction, const char *sName, char **psAttrs, const unsigned char *sBuffer, unsigned int ulLength)
 	{
 #ifndef DebugWriteXml
 		return;
@@ -732,16 +732,16 @@ private:
 
 		fputs(sString, pInfo->pFile);
 	}
-	AVSINLINE void WriteB64(const unsigned char *sBuffer, unsigned long ulLength)
+	AVSINLINE void WriteB64(const unsigned char *sBuffer, unsigned int ulLength)
 	{
 #ifndef DebugWriteXml
 		return;
 #endif
 		static char c_sB64[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/";
 
-		unsigned long i;
-		unsigned long b32;
-		unsigned long remaining = ulLength;
+		unsigned int i;
+		unsigned int b32;
+		unsigned int remaining = ulLength;
 
 		const unsigned char * bufptr = sBuffer;
 
@@ -768,9 +768,9 @@ private:
 			ptr = buf;
 			for (i = 0; i < 18; i++)
 			{
-				b32 = (unsigned long)*bufptr++;
-				b32 = (b32 << 8) | (unsigned long)*bufptr++;
-				b32 = (b32 << 8) | (unsigned long)*bufptr++;
+				b32 = (unsigned int)*bufptr++;
+				b32 = (b32 << 8) | (unsigned int)*bufptr++;
+				b32 = (b32 << 8) | (unsigned int)*bufptr++;
 				*ptr++ = c_sB64[(b32 >> 18)];
 				*ptr++ = c_sB64[(b32 >> 12) & 0x3f];
 				*ptr++ = c_sB64[(b32 >> 6) & 0x3f];
@@ -783,9 +783,9 @@ private:
 		ptr = buf;
 		while (remaining >= 3)
 		{
-			b32 = (unsigned long)*bufptr++;
-			b32 = (b32 << 8) | (unsigned long)*bufptr++;
-			b32 = (b32 << 8) | (unsigned long)*bufptr++;
+			b32 = (unsigned int)*bufptr++;
+			b32 = (b32 << 8) | (unsigned int)*bufptr++;
+			b32 = (b32 << 8) | (unsigned int)*bufptr++;
 			*ptr++ = c_sB64[(b32 >> 18)];
 			*ptr++ = c_sB64[(b32 >> 12) & 0x3f];
 			*ptr++ = c_sB64[(b32 >> 6) & 0x3f];
@@ -794,8 +794,8 @@ private:
 		}
 		if (remaining == 2)
 		{
-			b32 = (unsigned long)*bufptr++;
-			b32 = (b32 << 8) | (unsigned long)*bufptr++;
+			b32 = (unsigned int)*bufptr++;
+			b32 = (b32 << 8) | (unsigned int)*bufptr++;
 			b32 = (b32 << 8);
 			*ptr++ = c_sB64[(b32 >> 18)];
 			*ptr++ = c_sB64[(b32 >> 12) & 0x3f];
@@ -804,7 +804,7 @@ private:
 		}
 		if (remaining == 1)
 		{
-			b32 = (unsigned long)*bufptr++;
+			b32 = (unsigned int)*bufptr++;
 			b32 = (b32 << 16);
 			*ptr++ = c_sB64[(b32 >> 18)];
 			*ptr++ = c_sB64[(b32 >> 12) & 0x3f];
@@ -845,7 +845,7 @@ private:
 		if (NULL == pList)
 			return;
 
-		for (unsigned long ulIndex = 0; ulIndex < (2 * pList->ulCount); ulIndex++)
+		for (unsigned int ulIndex = 0; ulIndex < (2 * pList->ulCount); ulIndex++)
 			m_oMemoryManager.Free(pList->psAttrs[ulIndex]);
 
 		pList->ulCount = 0;
@@ -890,7 +890,7 @@ private:
 		}
 
 		char *sCopyName = NULL;
-		for (unsigned long ulIndex = 0; ulIndex < (2 * pList->ulCount); ulIndex += 2)
+		for (unsigned int ulIndex = 0; ulIndex < (2 * pList->ulCount); ulIndex += 2)
 		{
 			if (strcmp(pList->psAttrs[ulIndex], sName) == 0)
 			{
@@ -940,7 +940,7 @@ private:
 		if (NULL == pList->psAttrs)
 			return NULL;
 
-		for (unsigned long ulIndex = 0; ulIndex < (2 * pList->ulCount); ulIndex += 2)
+		for (unsigned int ulIndex = 0; ulIndex < (2 * pList->ulCount); ulIndex += 2)
 		{
 			if (strcmp(pList->psAttrs[ulIndex], sName) == 0)
 			{
@@ -1139,7 +1139,7 @@ private:
 	}
 
 //------------------------------------------------------------------------------------------------------------------------
-	unsigned  short Record_GetUShortPar(TWmfRecord *pRecord, unsigned long ulIndex)
+	unsigned  short Record_GetUShortPar(TWmfRecord *pRecord, unsigned int ulIndex)
 	{
 		if ( ulIndex >= pRecord->ulSize )
 		{	
@@ -1154,7 +1154,7 @@ private:
 
 		return ( ( ushPar2 << 8 ) | ushPar1 );
 	}
-	int             Record_SetUShortPar(TWmfRecord *pRecord, unsigned long ulIndex, unsigned short ushPar)
+	int             Record_SetUShortPar(TWmfRecord *pRecord, unsigned int ulIndex, unsigned short ushPar)
 	{	
 		int nChanged = 0;
 
@@ -1183,26 +1183,26 @@ private:
 
 		return nChanged;
 	}
-	short           Record_GetShortPar (TWmfRecord *pRecord, unsigned long ulIndex)
+	short           Record_GetShortPar (TWmfRecord *pRecord, unsigned int ulIndex)
 	{	
 		unsigned short ushPar = Record_GetUShortPar( pRecord, ulIndex );
 
 		return UShort_2_Short( ushPar );
 	}
-	int             Record_GetIntPar   (TWmfRecord *pRecord, unsigned long ulIndex)
+	int             Record_GetIntPar   (TWmfRecord *pRecord, unsigned int ulIndex)
 	{	
 		unsigned short ushPar = Record_GetUShortPar( pRecord, ulIndex );
 
 		return UShort_2_Long( ushPar );
 	}
-	long            Record_GetLongPar  (TWmfRecord *pRecord, unsigned long ulIndex1, unsigned long ulIndex2)
+	int            Record_GetLongPar  (TWmfRecord *pRecord, unsigned int ulIndex1, unsigned int ulIndex2)
 	{
 		unsigned short ushPar1 = Record_GetUShortPar( pRecord, ulIndex1 );
 		unsigned short ushPar2 = Record_GetUShortPar( pRecord, ulIndex2 );
 
-		return (long)( ((long)(ushPar1 << 16)) | ((long)(ushPar2)) );
+		return (int)( ((int)(ushPar1 << 16)) | ((int)(ushPar2)) );
 	}
-	TWmfRecord      Record_OffsetRecord(TWmfRecord *pRecord, unsigned long ulIndex)
+	TWmfRecord      Record_OffsetRecord(TWmfRecord *pRecord, unsigned int ulIndex)
 	{
 		TWmfRecord oNewRecord;
 
@@ -1783,7 +1783,7 @@ private:
 	{
 		TWmfPlayer *pPlayer = (TWmfPlayer*)m_pPlayerData;
 
-		unsigned long ulParamIndex;
+		unsigned int ulParamIndex;
 
 		TWmfPolyLine oPolyLine;
 		oPolyLine.ushCount = Record_GetUShortPar( pRecord, 0 );
@@ -1844,7 +1844,7 @@ private:
 	{	
 		TWmfPlayer *pPlayer = (TWmfPlayer*)m_pPlayerData;
 
-		unsigned long ulParamIndex;
+		unsigned int ulParamIndex;
 
 		TWmfPolyLine oPolyLine;
 		oPolyLine.ushCount = Record_GetUShortPar( pRecord, 0 );
@@ -1932,7 +1932,7 @@ private:
 		int nSkipRecord = 0;
 		for ( unsigned short ushPolyIndex = 0; ushPolyIndex < oPolyPoly.ushPolyCount; ushPolyIndex++ )
 		{	
-			oPolyPoly.pCount[ushPolyIndex] = Record_GetUShortPar( pRecord, (unsigned long) (1 + ushPolyIndex) );
+			oPolyPoly.pCount[ushPolyIndex] = Record_GetUShortPar( pRecord, (unsigned int) (1 + ushPolyIndex) );
 			ushCount   += oPolyPoly.pCount[ushPolyIndex] + 2; // Для преобразования: PolyPoly -> PolyLine
 			ushNumPars += oPolyPoly.pCount[ushPolyIndex];
 
@@ -1972,7 +1972,7 @@ private:
 		if ( CheckError() )
 			return 0;
 
-		unsigned long ulParamIndex;
+		unsigned int ulParamIndex;
 
 		if ( 0 == ( pPlayer->ulFlags & PLAYER_PLAY ) )
 		{	
@@ -1997,7 +1997,7 @@ private:
 
 		oPolyPoly.pDC = pPlayer->pDC;
 
-		TWmfRecord oPolygon = Record_OffsetRecord( pRecord, (unsigned long)(1 + oPolyPoly.ushPolyCount) );
+		TWmfRecord oPolygon = Record_OffsetRecord( pRecord, (unsigned int)(1 + oPolyPoly.ushPolyCount) );
 		TWmfPolyLine oPolyLine;
 
 		for ( unsigned short ushPolyCount = 0; ushPolyCount < oPolyPoly.ushPolyCount; ushPolyCount++ )
@@ -2489,7 +2489,7 @@ private:
 
 		TWmfRecord oEnd = Record_OffsetRecord(pRecord, 10);
 
-		unsigned long ulmaxIndex = 10;
+		unsigned int ulmaxIndex = 10;
 		for (unsigned short ushScanIndex = 0; ushScanIndex < ushScanCount; ushScanIndex++)
 		{
 			ulmaxIndex++;
@@ -2509,7 +2509,7 @@ private:
 			unsigned ushPairCount = ushCount >> 1;
 			ulmaxIndex += ushCount + 3;
 
-			oEnd = Record_OffsetRecord(&oStart, (unsigned long)(ushCount + 3));
+			oEnd = Record_OffsetRecord(&oStart, (unsigned int)(ushCount + 3));
 
 			// В соответствии со спецификацией проверяем совпадение параметров count и count2
 			if (Record_GetUShortPar(&oEnd, 0) != ushCount)
@@ -2525,8 +2525,8 @@ private:
 
 			for (unsigned short ushIndex = 0; ushIndex < ushPairCount; ushIndex++)
 			{
-				unsigned short ushLeft  = Record_GetUShortPar(&oStart, (unsigned long)(3 + 2 * ushIndex));
-				unsigned short ushRight = Record_GetUShortPar(&oStart, (unsigned long)(4 + 2 * ushIndex));
+				unsigned short ushLeft  = Record_GetUShortPar(&oStart, (unsigned int)(3 + 2 * ushIndex));
+				unsigned short ushRight = Record_GetUShortPar(&oStart, (unsigned int)(4 + 2 * ushIndex));
 
 				TWmfRectF oRect;
 				GetRectF(&oRect, ushLeft, ushTop, ushRight, ushBottom);
@@ -2853,7 +2853,7 @@ private:
 			return 0;
 		}
 
-		long lCurPos = Tell();
+		int lCurPos = Tell();
  
 		if ( lCurPos < 0 )
 		{	
@@ -2863,7 +2863,7 @@ private:
 
 		oBmpRead.lOffset = oBmpRecord.lPosition;
 		oBmpRead.pBuffer = oBmpRecord.sParameter;
-		oBmpRead.lLength = (long)(oBmpRecord.ulSize) * 2;
+		oBmpRead.lLength = (int)(oBmpRecord.ulSize) * 2;
 
 		oBmpRead.oBitmap.pData = NULL;
 
@@ -2938,7 +2938,7 @@ private:
 
 		TWmfRecord oBmpRecord = Record_OffsetRecord( pRecord, 2 );
 
-		long lCurPos = Tell();
+		int lCurPos = Tell();
 		if ( lCurPos < 0 )
 		{	
 			m_eError = wmf_error_BadFormat;
@@ -2948,7 +2948,7 @@ private:
 		TWmfBMPRead oBmpRead;
 		oBmpRead.lOffset   = oBmpRecord.lPosition;
 		oBmpRead.pBuffer   = oBmpRecord.sParameter;
-		oBmpRead.lLength   = (long)(oBmpRecord.ulSize) * 2;
+		oBmpRead.lLength   = (int)(oBmpRecord.ulSize) * 2;
 		oBmpRead.ushWidth  = 0;
 		oBmpRead.ushHeight = 0;
 
@@ -3272,7 +3272,7 @@ private:
 
 			if ( pPlayer->pDC->ushTextAlign & TA_UPDATECP )
 			{	
-				if ( ( pRecord->ulSize ) < (unsigned long)( 1 + (ushLength + 1) / 2 ) )
+				if ( ( pRecord->ulSize ) < (unsigned int)( 1 + (ushLength + 1) / 2 ) )
 				{	
 					m_eError = wmf_error_BadFormat;
 					break;
@@ -3282,7 +3282,7 @@ private:
 			}
 			else
 			{	
-				if ( ( pRecord->ulSize ) < (unsigned long)( 3 + (ushLength + 1) / 2 ) )
+				if ( ( pRecord->ulSize ) < (unsigned int)( 3 + (ushLength + 1) / 2 ) )
 				{	
 					m_eError = wmf_error_BadFormat;
 					break;
@@ -3414,7 +3414,7 @@ private:
 		float fWidth = 0;
 		if ( m_pFontManager )
 		{
-			long lStyle = ( pFont->ushWeight > 550 ? 1 : 0 ) + ( pFont->unItalic ? 2 : 0 );
+			int lStyle = ( pFont->ushWeight > 550 ? 1 : 0 ) + ( pFont->unItalic ? 2 : 0 );
 			//m_pFontManager->LoadFontByName( A2W(pPlayer->pDC->pFont->sFaceName), (float)oDrawText.dFontHeight, lStyle, 72.0f, 72.0f );
 			//m_pFontManager->LoadStringW( A2W(oDrawText.sText), 0, 0 );
 
@@ -3893,7 +3893,7 @@ private:
 		}
 
 		TWmfRecord oNameRecord = Record_OffsetRecord( pRecord, 9 );
-		unsigned long lLength = (oNameRecord.ulSize) * 2;
+		unsigned int lLength = (oNameRecord.ulSize) * 2;
 
 		char *sFontName = (char*)m_oMemoryManager.Malloc( lLength + 1, L"Meta_FontCreate function");
 
@@ -3904,7 +3904,7 @@ private:
 		}
 
 		unsigned short ushChar = 0;
-		for ( unsigned long ulIndex = 0; ulIndex < lLength; ulIndex++ )
+		for ( unsigned int ulIndex = 0; ulIndex < lLength; ulIndex++ )
 		{	
 			if ( ulIndex & 1 )
 			{	
@@ -3929,7 +3929,7 @@ private:
 			//bool bNeedFindByParams = FALSE;
 			//if (TRUE == m_pFontManager->LoadFontByName(bsFontName, 1, 0, 0, 0))
 			//{
-			//	unsigned long ulBit  = 0;
+			//	unsigned int ulBit  = 0;
 			//	unsigned int unIndex = 0;
 
 			//	// TODO: Как будет функция реализована в FontManager доделать здесь
@@ -3957,7 +3957,7 @@ private:
 				CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelectFormat);
 				if (NULL != pFontInfo)
 				{
-					long lStyle = (pFontInfo->m_bBold ? 1 : 0) + (pFontInfo->m_bItalic ? 2 : 0);
+					int lStyle = (pFontInfo->m_bBold ? 1 : 0) + (pFontInfo->m_bItalic ? 2 : 0);
 					if (TRUE == m_pFontManager->LoadFontByName(pFontInfo->m_wsFontName, 11, lStyle, 96, 96))
 					{
 						free(pFont->sFaceName);
@@ -4117,11 +4117,11 @@ private:
 		if ( 0x0014 != ushByteCount )
 			return -1; // Неправильная запись 
 
-		long lX = Record_GetLongPar( pRecord, 1, 2 );
-		long lY = Record_GetLongPar( pRecord, 3, 4 );
+		int lX = Record_GetLongPar( pRecord, 1, 2 );
+		int lY = Record_GetLongPar( pRecord, 3, 4 );
 
-		long lW = Record_GetLongPar( pRecord, 5, 6 );
-		long lH = Record_GetLongPar( pRecord, 7, 8 );
+		int lW = Record_GetLongPar( pRecord, 5, 6 );
+		int lH = Record_GetLongPar( pRecord, 7, 8 );
 
 		unsigned short ushStyle   = Record_GetUShortPar( pRecord, 9 );
 		unsigned short ushPattern = Record_GetUShortPar( pRecord, 10 );
@@ -4480,8 +4480,8 @@ private:
 		unsigned short uShort1;
 		unsigned short uShort2;
 
-		long lHeaderStart = Tell();
-		long lHeaderEnd   = 0;
+		int lHeaderStart = Tell();
+		int lHeaderEnd   = 0;
 
 		if ( 0x9ac6cdd7 == ( m_pFile->pPlaceableMetaHeader->unKey = ReadLong( &uShort1, &uShort2 ) ) )
 		{	
@@ -4583,10 +4583,10 @@ private:
 		if ( CheckError() )
 			return;
 
-		unsigned long ulSize;
+		unsigned int ulSize;
 		unsigned int  unFunction;
 
-		unsigned long ulNumber = 0;
+		unsigned int ulNumber = 0;
 
 		do
 		{	
@@ -4617,7 +4617,7 @@ private:
 				break;
 			}
 
-			long lPosParams = Tell();
+			int lPosParams = Tell();
 
 			if ( lPosParams < 0 )
 			{

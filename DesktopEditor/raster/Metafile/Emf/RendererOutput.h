@@ -7,6 +7,7 @@
 #include "../../../graphics/Image.h"
 #include "../../../raster/ImageFileFormatChecker.h"
 #include "../../../raster/BgraFrame.h"
+#include "../../../graphics/AggPlusEnums.h"
 
 #include "EmfOutputDevice.h"
 #include "EmfFile.h"
@@ -101,10 +102,8 @@ namespace MetaFile
 			if (lLogicalFontHeight < 0.01)
 				lLogicalFontHeight = 18;
 
-			TEmfRectL* pBounds = m_pEmfFile->GetDCBounds();
-			TEmfPointD oHeightPoint = TranslatePoint(0, lLogicalFontHeight + pBounds->lTop);
+			double dFontHeight = lLogicalFontHeight * m_dScaleY * pDC->GetPixelHeight() / 25.4 * 72;
 
-			double dFontHeight = oHeightPoint.y / 25.4 * 72;
 			std::wstring wsFaceName((const wchar_t*)pLogFont->FaceName);
 			m_pRenderer->put_FontName(wsFaceName);
 			m_pRenderer->put_FontSize(dFontHeight);
@@ -260,6 +259,8 @@ namespace MetaFile
 
 		void StartPath()
 		{
+			CheckEndPath();
+
 			UpdateTransform();
 
 			m_lDrawPathType = -1;
@@ -395,16 +396,22 @@ namespace MetaFile
 			double dX = m_pEmfFile->TranslateX(lX);
 			double dY = m_pEmfFile->TranslateY(lY);
 
-			// Координаты приходят уже с примененной матрицей 
+			// Координаты приходят уже с примененной матрицей. Поэтому сначала мы умножаем на матрицу преобразования, 
+			// вычитаем начальные координаты и умножаем на обратную матрицу преобразования.
 			TEmfRectL* pBounds = m_pEmfFile->GetDCBounds();
 			double dT = pBounds->lTop;
 			double dL = pBounds->lLeft;
+
 			TEmfXForm* pInverse = m_pEmfFile->GetDC()->GetInverseTransform();
-			pInverse->Apply(&dL, &dT);
+			TEmfXForm* pTransform = m_pEmfFile->GetDC()->GetTransform();
+			pTransform->Apply(dX, dY);
+			dX -= dL;
+			dY -= dT;
+			pInverse->Apply(dX, dY);
 
 			TEmfPointD oPoint;
-			oPoint.x = m_dScaleX * (double)(dX - dL) + m_dX;
-			oPoint.y = m_dScaleY * (double)(dY - dT) + m_dY;
+			oPoint.x = m_dScaleX * dX + m_dX;
+			oPoint.y = m_dScaleY * dY + m_dY;
 			return oPoint;
 		}
 
@@ -473,20 +480,20 @@ namespace MetaFile
 			unsigned long ulPenStyle  = pPen->PenStyle & PS_STYLE_MASK;
 
 			BYTE nCapStyle = 0;
-			if (0 == ulPenEndCap)
-				nCapStyle = 2;
-			else if (1 == ulPenEndCap)
-				nCapStyle = 1;
-			else if (2 == ulPenEndCap)
-				nCapStyle = 0;
+			if (PS_ENDCAP_ROUND == ulPenEndCap)
+				nCapStyle = Aggplus::LineCapRound;
+			else if (PS_ENDCAP_SQUARE == ulPenEndCap)
+				nCapStyle = Aggplus::LineCapSquare;
+			else if (PS_ENDCAP_FLAT == ulPenEndCap)
+				nCapStyle = Aggplus::LineCapFlat;
 
 			BYTE nJoinStyle = 0;
-			if (0 == ulPenJoin)
-				nJoinStyle = 2;
-			else if (1 == ulPenJoin)
-				nJoinStyle = 1;
-			else if (2 == ulPenJoin)
-				nJoinStyle = 2;
+			if (PS_JOIN_ROUND == ulPenJoin)
+				nJoinStyle = Aggplus::LineJoinRound;
+			else if (PS_JOIN_BEVEL == ulPenJoin)
+				nJoinStyle = Aggplus::LineJoinBevel;
+			else if (PS_JOIN_MITER == ulPenJoin)
+				nJoinStyle = Aggplus::LineJoinMiter;
 
 			double dMiterLimit = pDC->GetMiterLimit() * m_dScaleX * pDC->GetPixelWidth();
 

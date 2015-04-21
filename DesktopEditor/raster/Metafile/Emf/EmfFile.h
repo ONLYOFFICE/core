@@ -134,30 +134,21 @@ namespace MetaFile
 					case EMR_BITBLT:            Read_EMR_BITBLT(); break;
 					case EMR_STRETCHDIBITS:     Read_EMR_STRETCHDIBITS(); break;
 					case EMR_SETDIBITSTODEVICE: Read_EMR_SETDIBITSTODEVICE(); break;
-					//-----------------------------------------------------------
-					// 2.3.2 Clipping
-					//-----------------------------------------------------------
-					case EMR_EXTSELECTCLIPRGN: Read_EMR_EXTSELECTCLIPRGN(); break;
+						//-----------------------------------------------------------
+						// 2.3.2 Clipping
+						//-----------------------------------------------------------
+					case EMR_EXTSELECTCLIPRGN:  Read_EMR_EXTSELECTCLIPRGN(); break;
 					case EMR_INTERSECTCLIPRECT: Read_EMR_INTERSECTCLIPRECT(); break;
-					case EMR_SELECTCLIPPATH: Read_EMR_SELECTCLIPPATH(); break;
-					case EMR_SETMETARGN: Read_EMR_SETMETARGN(); break;
+					case EMR_SELECTCLIPPATH:    Read_EMR_SELECTCLIPPATH(); break;
+					case EMR_SETMETARGN:        Read_EMR_SETMETARGN(); break;
 						//-----------------------------------------------------------
 						// 2.3.4 Control
 						//-----------------------------------------------------------
-					case EMR_HEADER:
-					{
-						Read_EMR_HEADER();
-						break;
-					}
-					case EMR_EOF:
-					{
-						Read_EMR_EOF();
-						bEof = true;
-						break;
-					}
-					//-----------------------------------------------------------
-					// 2.3.5 Drawing
-					//-----------------------------------------------------------
+					case EMR_HEADER: Read_EMR_HEADER(); break;
+					case EMR_EOF:    Read_EMR_EOF(); bEof = true; break;
+						//-----------------------------------------------------------
+						// 2.3.5 Drawing
+						//-----------------------------------------------------------
 					case EMR_EXTTEXTOUTW:       Read_EMR_EXTTEXTOUTW(); break;
 					case EMR_POLYGON16:         Read_EMR_POLYGON16(); break;
 					case EMR_POLYPOLYGON16:     Read_EMR_POLYPOLYGON16(); break;
@@ -176,188 +167,62 @@ namespace MetaFile
 						//-----------------------------------------------------------
 						// 2.3.7 Object Creation
 						//-----------------------------------------------------------
-					case EMR_CREATEBRUSHINDIRECT:
-					{
-						Read_EMR_CREATEBRUSHINDIRECT();
-						break;
-					}
-					case EMR_CREATEPEN:
-					{
-						Read_EMR_CREATEPEN();
-						break;
-					}
-					case EMR_EXTCREATEFONTINDIRECTW:
-					{
-						Read_EMR_EXTCREATEFONTINDIRECTW();
-						break;
-					}
-					case EMR_EXTCREATEPEN:
-					{
-						Read_EMR_EXTCREATEPEN();
-						break;
-					}
-					case EMR_CREATEDIBPATTERNBRUSHPT:
-					{
-						Read_EMR_CREATEDIBPATTERNBRUSHPT();
-						break;
-					}
-					case EMR_CREATEPALETTE: Read_EMR_CREATEPALETTE(); break;
+					case EMR_CREATEBRUSHINDIRECT:     Read_EMR_CREATEBRUSHINDIRECT(); break;
+					case EMR_CREATEPEN:               Read_EMR_CREATEPEN(); break;
+					case EMR_EXTCREATEFONTINDIRECTW:  Read_EMR_EXTCREATEFONTINDIRECTW(); break;
+					case EMR_EXTCREATEPEN:            Read_EMR_EXTCREATEPEN(); break;
+					case EMR_CREATEDIBPATTERNBRUSHPT: Read_EMR_CREATEDIBPATTERNBRUSHPT(); break;
+					case EMR_CREATEPALETTE:           Read_EMR_CREATEPALETTE(); break;
 						//-----------------------------------------------------------
 						// 2.3.8 Object Manipulation
 						//-----------------------------------------------------------
-					case EMR_SELECTOBJECT:
-					{
-						Read_EMR_SELECTOBJECT();
-						break;
-					}
-					case EMR_DELETEOBJECT:
-					{
-						Read_EMR_DELETEOBJECT();
-						break;
-					}
+					case EMR_SELECTOBJECT:  Read_EMR_SELECTOBJECT(); break;
+					case EMR_DELETEOBJECT:  Read_EMR_DELETEOBJECT(); break;
 					case EMR_SELECTPALETTE: Read_EMR_SELECTPALETTE(); break;
 						//-----------------------------------------------------------
 						// 2.3.10 Path Bracket
 						//-----------------------------------------------------------
-					case EMR_BEGINPATH:
-					{
-						Read_EMR_BEGINPATH();
-						break;
-					}
-					case EMR_ENDPATH:
-					{
-						Read_EMR_ENDPATH();
-						break;
-					}
-					case EMR_CLOSEFIGURE:
-					{
-						Read_EMR_CLOSEFIGURE();
-						break;
-					}
-					case EMR_FLATTENPATH:
-					{
-						Read_EMR_FLATTENPATH();
-						break;
-					}
-					case EMR_WIDENPATH:
-					{
-						Read_EMR_WIDENPATH();
-						break;
-					}
-					case EMR_ABORTPATH:
-					{
-						Read_EMR_ABORTPATH();
-						break;
-					}
-					//-----------------------------------------------------------
-					// 2.3.11 State
-					//-----------------------------------------------------------
-					case EMR_MOVETOEX:
-					{
-						Read_EMR_MOVETOEX();
-						break;
-					}
-					case EMR_SAVEDC:
-					{
-						Read_EMR_SAVEDC();
-						break;
-					}
-					case EMR_RESTOREDC:
-					{
-						Read_EMR_RESTOREDC();
-						break;
-					}
-					case EMR_SETTEXTCOLOR:
-					{
-						Read_EMR_SETTEXTCOLOR();
-						break;
-					}
-					case EMR_SETTEXTALIGN:
-					{
-						Read_EMR_SETTEXTALIGN();
-						break;
-					}
-					case EMR_SETBKMODE:
-					{
-						Read_EMR_SETBKMODE();
-						break;
-					}
-					case EMR_SETMITERLIMIT:
-					{
-						Read_EMR_SETMITERLIMIT();
-						break;
-					}
-					case EMR_SETPOLYFILLMODE:
-					{
-						Read_EMR_SETPOLYFILLMODE();
-						break;
-					}
-					case EMR_SETMAPMODE:
-					{
-						Read_EMR_SETMAPMODE();
-						break;
-					}
-					case EMR_SETWINDOWORGEX:
-					{
-						Read_EMR_SETWINDOWORGEX();
-						break;
-					}
-					case EMR_SETWINDOWEXTEX:
-					{
-						Read_EMR_SETWINDOWEXTEX();
-						break;
-					}
-					case EMR_SETVIEWPORTORGEX:
-					{
-						Read_EMR_SETVIEWPORTORGEX();
-						break;
-					}
-					case EMR_SETVIEWPORTEXTEX:
-					{
-						Read_EMR_SETVIEWPORTEXTEX();
-						break;
-					}
-					case EMR_SETBKCOLOR:
-					{
-						Read_EMR_SETBKCOLOR();
-						break;
-					}
-					case EMR_SETSTRETCHBLTMODE:
-					{
-						Read_EMR_SETSTRETCHBLTMODE();
-						break;
-					}
-					case EMR_SETICMMODE:
-					{
-						Read_EMR_SETICMMODE();
-						break;
-					}
-					case EMR_SETROP2: Read_EMR_SETROP2(); break;
-					case EMR_REALIZEPALETTE: Read_EMR_REALIZEPALETTE(); break;
+					case EMR_BEGINPATH:   Read_EMR_BEGINPATH(); break;
+					case EMR_ENDPATH:     Read_EMR_ENDPATH(); break;
+					case EMR_CLOSEFIGURE: Read_EMR_CLOSEFIGURE(); break;
+					case EMR_FLATTENPATH: Read_EMR_FLATTENPATH(); break;
+					case EMR_WIDENPATH:   Read_EMR_WIDENPATH(); break;
+					case EMR_ABORTPATH:   Read_EMR_ABORTPATH(); break;
+						//-----------------------------------------------------------
+						// 2.3.11 State
+						//-----------------------------------------------------------
+					case EMR_MOVETOEX:          Read_EMR_MOVETOEX(); break;
+					case EMR_SAVEDC:            Read_EMR_SAVEDC(); break;
+					case EMR_RESTOREDC:         Read_EMR_RESTOREDC(); break;
+					case EMR_SETTEXTCOLOR:      Read_EMR_SETTEXTCOLOR(); break;
+					case EMR_SETTEXTALIGN:      Read_EMR_SETTEXTALIGN(); break;
+					case EMR_SETBKMODE:         Read_EMR_SETBKMODE(); break;
+					case EMR_SETMITERLIMIT:     Read_EMR_SETMITERLIMIT(); break;
+					case EMR_SETPOLYFILLMODE:   Read_EMR_SETPOLYFILLMODE(); break;
+					case EMR_SETMAPMODE:        Read_EMR_SETMAPMODE(); break;
+					case EMR_SETWINDOWORGEX:    Read_EMR_SETWINDOWORGEX(); break;
+					case EMR_SETWINDOWEXTEX:    Read_EMR_SETWINDOWEXTEX(); break;
+					case EMR_SETVIEWPORTORGEX:  Read_EMR_SETVIEWPORTORGEX(); break;
+					case EMR_SETVIEWPORTEXTEX:  Read_EMR_SETVIEWPORTEXTEX(); break;
+					case EMR_SETBKCOLOR:        Read_EMR_SETBKCOLOR(); break;
+					case EMR_SETSTRETCHBLTMODE: Read_EMR_SETSTRETCHBLTMODE(); break;
+					case EMR_SETICMMODE:        Read_EMR_SETICMMODE(); break;
+					case EMR_SETROP2:           Read_EMR_SETROP2(); break;
+					case EMR_REALIZEPALETTE:    Read_EMR_REALIZEPALETTE(); break;
+					case EMR_SETLAYOUT:         Read_EMR_SETLAYOUT(); break;
+					case EMR_SETBRUSHORGEX:     Read_EMR_SETBRUSHORGEX(); break;
 						//-----------------------------------------------------------
 						// 2.3.12 Transform
 						//-----------------------------------------------------------
-					case EMR_SETWORLDTRANSFORM:
-					{
-						Read_EMR_SETWORLDTRANSFORM();
-						break;
-					}
-					case EMR_MODIFYWORLDTRANSFORM:
-					{
-						Read_EMR_MODIFYWORLDTRANSFORM();
-						break;
-					}
-					//-----------------------------------------------------------
-					// Неподдерживаемые записи
-					//-----------------------------------------------------------
-					case EMR_GDICOMMENT:
-					{
-						Read_EMR_UNKNOWN();
-						break;
-					}
-					//-----------------------------------------------------------
-					// Неизвестные записи
-					//-----------------------------------------------------------
+					case EMR_SETWORLDTRANSFORM: Read_EMR_SETWORLDTRANSFORM(); break;
+					case EMR_MODIFYWORLDTRANSFORM: Read_EMR_MODIFYWORLDTRANSFORM(); break;
+						//-----------------------------------------------------------
+						// Неподдерживаемые записи
+						//-----------------------------------------------------------
+					case EMR_GDICOMMENT: Read_EMR_UNKNOWN(); break;
+						//-----------------------------------------------------------
+						// Неизвестные записи
+						//-----------------------------------------------------------
 					default:
 					{
 						std::cout << ulType << " ";
@@ -454,7 +319,7 @@ namespace MetaFile
 			TEmfWindow* pWindow   = m_pDC->GetWindow();
 			TEmfWindow* pViewport = m_pDC->GetViewport();
 
-			dDstX = pWindow->lX + (double)((double)(lSrcX - pViewport->lX / m_pDC->GetPixelWidth()) * m_pDC->GetPixelWidth());
+			dDstX =  (double)((double)(lSrcX - pWindow->lX) * m_pDC->GetPixelWidth()) + pViewport->lX;
 			return dDstX;
 		}
 		double TranslateY(long lSrcY)
@@ -464,7 +329,7 @@ namespace MetaFile
 			TEmfWindow* pWindow   = m_pDC->GetWindow();
 			TEmfWindow* pViewport = m_pDC->GetViewport();
 
-			dDstY = pWindow->lY + (double)((double)(lSrcY - pViewport->lY / m_pDC->GetPixelHeight()) * m_pDC->GetPixelHeight());
+			dDstY = (double)((double)(lSrcY - pWindow->lY) * m_pDC->GetPixelHeight()) + pViewport->lY;
 
 			return dDstY;
 		}
@@ -593,11 +458,24 @@ namespace MetaFile
 			unsigned long ulRemaining = m_ulRecordSize - 80; // sizeof(TEmfHeader)
 			m_oStream.Skip(ulRemaining);
 
+			double dL = m_oHeader.oFrame.lLeft / 100.0 / m_oHeader.oMillimeters.cx * m_oHeader.oDevice.cx;
+			double dR = m_oHeader.oFrame.lRight / 100.0 / m_oHeader.oMillimeters.cx * m_oHeader.oDevice.cx;
+			double dT = m_oHeader.oFrame.lTop / 100.0 / m_oHeader.oMillimeters.cy * m_oHeader.oDevice.cy;
+			double dB = m_oHeader.oFrame.lBottom / 100.0 / m_oHeader.oMillimeters.cy * m_oHeader.oDevice.cy;
+
+			double dW = dR - dL;
+			double dH = dB - dT;
+
+			long lL = (long)std::floor(dL + 0.5);
+			long lT = (long)std::floor(dT + 0.5);
+			long lR = (long)std::floor(dW + 0.5) + lL;
+			long lB = (long)std::floor(dH + 0.5) + lT;
+
 			// По логике мы должны получать рект, точно такой же как и oBounds, но есть файлы, где это не так.
-			m_oHeader.oFrameToBounds.lLeft   = (long)(m_oHeader.oFrame.lLeft / 100.0 / m_oHeader.oMillimeters.cx * m_oHeader.oDevice.cx);
-			m_oHeader.oFrameToBounds.lRight  = (long)(m_oHeader.oFrame.lRight / 100.0 / m_oHeader.oMillimeters.cx * m_oHeader.oDevice.cx);
-			m_oHeader.oFrameToBounds.lTop    = (long)(m_oHeader.oFrame.lTop / 100.0 / m_oHeader.oMillimeters.cy * m_oHeader.oDevice.cy);
-			m_oHeader.oFrameToBounds.lBottom = (long)(m_oHeader.oFrame.lBottom/ 100.0 / m_oHeader.oMillimeters.cy * m_oHeader.oDevice.cy);
+			m_oHeader.oFrameToBounds.lLeft   = lL;
+			m_oHeader.oFrameToBounds.lRight  = lR;
+			m_oHeader.oFrameToBounds.lTop    = lT;
+			m_oHeader.oFrameToBounds.lBottom = lB;
 		}
 		void Read_EMR_STRETCHDIBITS()
 		{
@@ -663,9 +541,9 @@ namespace MetaFile
 					{					
 						// Делаем цветом кисти
 						pBgraBuffer = new BYTE[4];
-						pBgraBuffer[0] = pBrush->Color.r;
+						pBgraBuffer[0] = pBrush->Color.b;
 						pBgraBuffer[1] = pBrush->Color.g;
-						pBgraBuffer[2] = pBrush->Color.b;
+						pBgraBuffer[2] = pBrush->Color.r;
 						pBgraBuffer[3] = 0xff;
 
 						ulWidth  = 1;
@@ -1025,6 +903,9 @@ namespace MetaFile
 			m_pPath = new CEmfPath();
 			if (!m_pPath)
 				SetError();
+
+			// Иногда MoveTo идет до BeginPath
+			m_pPath->MoveTo(m_pDC->GetCurPos());
 		}
 		void Read_EMR_ENDPATH()
 		{
@@ -1173,20 +1054,6 @@ namespace MetaFile
 			ClosePath();
 			DrawPath(true, true);
 		}
-		void Read_EMR_SELECTCLIPPATH()
-		{
-			unsigned long ulRegionMode;
-			m_oStream >> ulRegionMode;
-			// TODO: реализовать клип
-		}
-		void Read_EMR_SETBKCOLOR()
-		{
-			TEmfColor oColor;
-			m_oStream >> oColor;
-			// TODO: реализовать
-
-			UpdateOutputDC();
-		}
 		void Read_EMR_SETSTRETCHBLTMODE()
 		{
 			unsigned long ulStretchMode;
@@ -1240,6 +1107,20 @@ namespace MetaFile
 
 			DrawPath(true, false);
 		}
+		void Read_EMR_SELECTCLIPPATH()
+		{
+			unsigned long ulRegionMode;
+			m_oStream >> ulRegionMode;
+			// TODO: реализовать клип
+		}
+		void Read_EMR_SETBKCOLOR()
+		{
+			TEmfColor oColor;
+			m_oStream >> oColor;
+			// TODO: реализовать
+
+			UpdateOutputDC();
+		}
 		void Read_EMR_EXTSELECTCLIPRGN()
 		{
 			unsigned long ulRgnDataSize, ulRegionMode;
@@ -1250,6 +1131,9 @@ namespace MetaFile
 		}
 		void Read_EMR_SETMETARGN()
 		{
+			// Здесь мы просто сбрасываем текущйи клип
+			
+
 			// TODO: Реализовать клип
 		}
 		void Read_EMR_ELLIPSE()
@@ -1389,6 +1273,20 @@ namespace MetaFile
 			}
 
 			delete[] pPolylinePointCount;
+		}
+		void Read_EMR_SETLAYOUT()
+		{
+			unsigned long ulLayoutMode;
+			m_oStream >> ulLayoutMode;
+
+			// TODO: реализовать
+		}
+		void Read_EMR_SETBRUSHORGEX()
+		{
+			TEmfPointL oOrigin;
+			m_oStream >> oOrigin;
+
+			// TODO: реализовать
 		}
 
 	private:

@@ -190,6 +190,7 @@ namespace MetaFile
 	public:
 
 		CEmfPath();
+		CEmfPath(CEmfPath* pPath);
 		~CEmfPath();
 
 		bool MoveTo(TEmfPointS& oPoint);

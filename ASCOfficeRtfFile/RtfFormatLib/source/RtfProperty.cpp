@@ -66,6 +66,11 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		RtfDocument* poRtfDocument = static_cast<RtfDocument*>(oRenderParameter.poDocument);
 		CString sFontName = m_sName;
+
+		if ((sFontName.GetLength() > 0 ) && (sFontName[0] == 0x00b9 && m_sAltName.GetLength() > 0) )
+		{
+			sFontName = m_sAltName;
+		}
 		if( _T("") == sFontName )
 		{
 			if( PROP_DEF != poRtfDocument->m_oProperty.m_nDeffFont )
@@ -148,8 +153,31 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 			RtfFont oCurFont;
 			if( true == poRtfDocument->m_oFontTable.GetFont(m_nID,oCurFont) )
 			{
-                sResult.AppendFormat(_T("<w:rFonts w:ascii=\"%ls\" w:eastAsia=\"%ls\" w:hAnsi=\"%ls\" w:cs=\"%ls\"/>"),
-                                     sFontName.GetBuffer(), sFontName.GetBuffer(), sFontName.GetBuffer(), sFontName.GetBuffer());
+				CString sHint;
+				switch(m_nCharset)
+				{
+					case 128://Japanese
+					case 129://Korean
+					case 130://Korean
+					case 134://China
+					case 136://China
+					case 163://Vietnamese
+					case 222://Thai
+					{
+						sHint = _T(" w:hint=\"eastAsia\"/>");
+					}break;
+					case 177://Hebrew
+					case 178://Arabic
+					case 179://Arabic
+					case 180://Arabic
+					case 181://Hebrew
+					{
+						sHint = _T(" w:hint=\"cs\"/>");
+					}break;
+					//?? нужно ли описывать default??? todooo
+				}
+				sResult.AppendFormat(_T("<w:rFonts w:ascii=\"%ls\" w:eastAsia=\"%ls\" w:hAnsi=\"%ls\" w:cs=\"%ls\"%ls/>"),
+								 sFontName.GetBuffer(), sFontName.GetBuffer(), sFontName.GetBuffer(), sFontName.GetBuffer(), sHint);
 			}
 		}
 	}

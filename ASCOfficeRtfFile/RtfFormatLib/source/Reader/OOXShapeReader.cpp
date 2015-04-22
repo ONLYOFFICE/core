@@ -21,7 +21,7 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 
 				CString srId = image_data->m_oId.IsInit() ? image_data->m_oId.get2() : _T("") ;
 
-                if (srId.length() < 1)
+				if (srId.GetLength() < 1)
                     srId = image_data->m_rId.IsInit() ? image_data->m_rId->GetValue() : _T("") ;
 
                 smart_ptr<OOX::File> oFile = oParam.oDocx->GetDocument()->Find(srId);
@@ -99,7 +99,6 @@ bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 			{
 				OOX::VmlWord::CWrap *wrap = dynamic_cast<OOX::VmlWord::CWrap*>(m_arrElement->m_arrItems[i]);
 
-				wrap->m_oSide->GetValue();
 				if (wrap->m_oType.IsInit())
 				{
 					switch(wrap->m_oType->GetValue())

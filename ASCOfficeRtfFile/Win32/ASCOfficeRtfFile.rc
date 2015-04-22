@@ -91,17 +91,6 @@ BEGIN
 END
 
 IDR_ASCOFFICERTFFILE REGISTRY "ASCOfficeRtfFile.rgs"
-////////////////////////////////////////////////////////////////////////////
-
-//
-// DOCX xml
-//
-IDR_APP					XML                     "..\\Resource\\app.xml"
-IDR_CORE                XML                     "..\\Resource\\core.xml"
-IDR_FONT_TABLE          XML                     "..\\Resource\\fontTable.xml"
-IDR_STYLES				XML                     "..\\Resource\\styles.xml"
-IDR_THEME				XML                     "..\\Resource\\theme1.xml"
-IDR_SETTINGS			XML                     "..\\Resource\\settings.xml"
 
 #endif
 

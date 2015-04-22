@@ -123,14 +123,15 @@ public:
 			m_nHyphenationRight = PROP_DEF;
 			m_nZoom = 100;
 
-			//вычисляем стандартный default ansi codepage для системы
-#if defined (_WIN32) || defined(_WIN64)
-            TCHAR codepage[7];
-            if( GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_IDEFAULTANSICODEPAGE, codepage, 6 ) != 0)
-				m_nAnsiCodePage = _ttoi(codepage);
-			else
- #endif
-                m_nAnsiCodePage = CP_ACP;
+//			//вычисляем стандартный default ansi codepage для системы
+//#if defined (_WIN32) || defined(_WIN64)
+//            TCHAR codepage[7];
+//            if( GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_IDEFAULTANSICODEPAGE, codepage, 6 ) != 0)
+//				m_nAnsiCodePage = _ttoi(codepage);
+//			else
+// #endif
+//        ???? тут локаль где стоит конвертилка будет и тока под виндой         
+			m_nAnsiCodePage = CP_ACP;
 
 			m_bDorderSurroundHeader = PROP_DEF;
 			m_bDorderSurroundFotter = PROP_DEF;

@@ -24,7 +24,7 @@ public:
 		{
 			case OOX::et_w_p:
 			{
-				OOX::Logic::CParagraph * pParagraph = static_cast<OOX::Logic::CParagraph*>(ooxElement);
+				OOX::Logic::CParagraph * pParagraph = dynamic_cast<OOX::Logic::CParagraph*>(ooxElement);
 				bool bStartNewSection = false;
 				OOXParagraphReader	m_oParagraphReader(pParagraph);
 				RtfParagraphPtr oNewParagraph( new RtfParagraph() );
@@ -49,7 +49,7 @@ public:
 			}break;
 			case OOX::et_w_tbl:
 			{
-				OOX::Logic::CTbl * pTbl = static_cast<OOX::Logic::CTbl*>(ooxElement);
+				OOX::Logic::CTbl * pTbl = dynamic_cast<OOX::Logic::CTbl*>(ooxElement);
 				RtfTablePtr oNewTable( new RtfTable() );
 				
 				OOXTableReader		oTableReader(pTbl);
@@ -62,7 +62,7 @@ public:
 			}break;
 			case OOX::et_w_sdt:
 			{
-				OOX::Logic::CSdt * pSdt = static_cast<OOX::Logic::CSdt*>(ooxElement);
+				OOX::Logic::CSdt * pSdt = dynamic_cast<OOX::Logic::CSdt*>(ooxElement);
 				if( pSdt->m_oSdtEndPr.IsInit())
 				{
 					//todo

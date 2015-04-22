@@ -73,7 +73,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			{
 				oParam.oReader->m_nCurItap ++ ;
 				RtfTablePtr oNewTabel( new RtfTable() );					
-				OOX::Logic::CTbl * pTbl = static_cast<OOX::Logic::CTbl*>(m_ooxElement->m_arrItems[i]);
+				OOX::Logic::CTbl * pTbl = dynamic_cast<OOX::Logic::CTbl*>(m_ooxElement->m_arrItems[i]);
 
 				OOXTableReader oTableReader(pTbl);
 				oTableReader.Parse( oParam, *oNewTabel);
@@ -82,13 +82,13 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			}break;
 			case OOX::et_w_r:
 			{
-				OOX::Logic::CRun * pRun = static_cast<OOX::Logic::CRun*>(m_ooxElement->m_arrItems[i]);
+				OOX::Logic::CRun * pRun = dynamic_cast<OOX::Logic::CRun*>(m_ooxElement->m_arrItems[i]);
 				OOXRunReader m_oRunReader(pRun);
 				m_oRunReader.Parse ( oParam, oOutputParagraph, poExternalStyle );
 			}break;
 			case OOX::et_w_fldSimple:
 			{
-				OOX::Logic::CFldSimple * pFldSimple = static_cast<OOX::Logic::CFldSimple*>(m_ooxElement->m_arrItems[i]);
+				OOX::Logic::CFldSimple * pFldSimple = dynamic_cast<OOX::Logic::CFldSimple*>(m_ooxElement->m_arrItems[i]);
 			
 				RtfFieldPtr oCurField( new RtfField() );
 				oCurField->m_oInsert = TextItemContainerPtr( new TextItemContainer() );
@@ -129,7 +129,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			}break;
 			case OOX::et_w_hyperlink:
 			{
-				OOX::Logic::CHyperlink * pHyperlink = static_cast<OOX::Logic::CHyperlink*>(m_ooxElement->m_arrItems[i]);
+				OOX::Logic::CHyperlink * pHyperlink = dynamic_cast<OOX::Logic::CHyperlink*>(m_ooxElement->m_arrItems[i]);
 
 				if( pHyperlink->m_oId.IsInit() )
 				{
@@ -235,7 +235,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			}break;
 			case OOX::et_w_bookmarkStart:
 			{
-				OOX::Logic::CBookmarkStart * pBookmarkStart = static_cast<OOX::Logic::CBookmarkStart*>(m_ooxElement->m_arrItems[i]);
+				OOX::Logic::CBookmarkStart * pBookmarkStart = dynamic_cast<OOX::Logic::CBookmarkStart*>(m_ooxElement->m_arrItems[i]);
 				RtfBookmarkStartPtr oNewBookmark( new RtfBookmarkStart() );
 				
 				oNewBookmark->m_sName = pBookmarkStart->m_sName.IsInit() ? pBookmarkStart->m_sName.get2() : _T("");
@@ -254,7 +254,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			}break;
 			case OOX::et_w_bookmarkEnd:
 			{
-				OOX::Logic::CBookmarkEnd * pBookmarkEnd = static_cast<OOX::Logic::CBookmarkEnd*>(m_ooxElement->m_arrItems[i]);
+				OOX::Logic::CBookmarkEnd * pBookmarkEnd = dynamic_cast<OOX::Logic::CBookmarkEnd*>(m_ooxElement->m_arrItems[i]);
 
 				RtfBookmarkEndPtr oNewBookmark( new RtfBookmarkEnd() );
 				//oNewBookmark->m_sName = pBookmarkEnd->;
@@ -269,11 +269,11 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			}break;
 			case OOX::et_w_smartTag:
 			{
-				OOX::Logic::CSmartTag * pSmartTag = static_cast<OOX::Logic::CSmartTag*>(m_ooxElement->m_arrItems[i]);
+				OOX::Logic::CSmartTag * pSmartTag = dynamic_cast<OOX::Logic::CSmartTag*>(m_ooxElement->m_arrItems[i]);
 
 				for (long i = 0 ; i < pSmartTag->m_arrItems.size(); i++)
 				{
-					OOX::Logic::CRun * pRun = static_cast<OOX::Logic::CRun*>(pSmartTag->m_arrItems[i]);
+					OOX::Logic::CRun * pRun = dynamic_cast<OOX::Logic::CRun*>(pSmartTag->m_arrItems[i]);
 					if (pRun == NULL) continue;
 
 					OOXRunReader m_oRunReader(pRun);
@@ -282,7 +282,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			}break;
 			case OOX::et_m_oMathPara:
 			{
-				OOX::Logic::COMathPara * pMathPara = static_cast<OOX::Logic::COMathPara*>(m_ooxElement->m_arrItems[i]);
+				OOX::Logic::COMathPara * pMathPara = dynamic_cast<OOX::Logic::COMathPara*>(m_ooxElement->m_arrItems[i]);
 				
 				RtfMathPtr oNewMath( new RtfMath() );
 				oNewMath->SetOOXName(_T("m:oMathPara") );
@@ -293,7 +293,7 @@ bool OOXParagraphReader::Parse2( ReaderParameter oParam , RtfParagraph& oOutputP
 			}break;
 			case OOX::et_w_sdt:
 			{
-				OOX::Logic::CSdt * pSdt = static_cast<OOX::Logic::CSdt*>(m_ooxElement->m_arrItems[i]);
+				OOX::Logic::CSdt * pSdt = dynamic_cast<OOX::Logic::CSdt*>(m_ooxElement->m_arrItems[i]);
 				if( pSdt->m_oSdtEndPr.IsInit() )
 				{
 					//todo

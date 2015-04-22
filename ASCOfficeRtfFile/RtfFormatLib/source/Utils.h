@@ -364,7 +364,6 @@ public:
 		CFile file;
         if (file.CreateFile(sFilename) != S_OK) return;
 
-		DWORD dwBytesWritten;
 		file.WriteFile(pbData ,nLength);	
 		file.CloseFile();
 	}
@@ -459,7 +458,7 @@ public:
         if( TRUE == TranslateCharsetInfo(dwAcp, &Info, TCI_SRCCHARSET) )
             return Info.ciACP;
 
-      int CodePagesLength =  sizeof( aCodePages ) / ( sizeof( int ) );
+      int nCodePagesLength =  sizeof( aCodePages ) / ( sizeof( int ) );
         for( int i = 0; i < nCodePagesLength; i++ )
             if( aCodePages[i][0] == nCharset )
                 return aCodePages[i][1];

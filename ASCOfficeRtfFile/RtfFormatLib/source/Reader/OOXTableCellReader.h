@@ -39,7 +39,7 @@ public:
 			{
 				case OOX::et_w_p:
 				{
-					OOX::Logic::CParagraph * pParagraph = static_cast<OOX::Logic::CParagraph*>(m_ooxTableCell->m_arrItems[i]);
+					OOX::Logic::CParagraph * pParagraph = dynamic_cast<OOX::Logic::CParagraph*>(m_ooxTableCell->m_arrItems[i]);
 			
 					RtfParagraphPtr oNewParagraph( new RtfParagraph() );
 					//применяем к новому параграфу default property
@@ -60,7 +60,7 @@ public:
 				}break;
 				case OOX::et_w_tbl:
 				{
-					OOX::Logic::CTbl * pTbl = static_cast<OOX::Logic::CTbl*>(m_ooxTableCell->m_arrItems[i]);
+					OOX::Logic::CTbl * pTbl = dynamic_cast<OOX::Logic::CTbl*>(m_ooxTableCell->m_arrItems[i]);
 					
 					oParam.oReader->m_nCurItap ++ ;
 					RtfTablePtr oNewTabel( new RtfTable() );

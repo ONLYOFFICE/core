@@ -95,8 +95,8 @@ CString RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharString
 
 #if defined (_WIN32) || defined (_WIN64)
         int nLengthW ;
-        nLengthW = MultiByteToWideChar(nCodepage, 0, sCharString, -1, NULL, NULL);
-        MultiByteToWideChar(nCodepage, 0, sCharString, -1, sResult.GetBuffer( nLengthW ), nLengthW);
+		nLengthW = MultiByteToWideChar(nCodepage, 0, sCharString.c_str(), -1, NULL, NULL);
+		MultiByteToWideChar(nCodepage, 0, sCharString.c_str(), -1, sResult.GetBuffer( nLengthW ), nLengthW);
         sResult.ReleaseBuffer();
 #else
         if (nCodepage > 0)

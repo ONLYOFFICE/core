@@ -113,12 +113,12 @@ public:
 						{
 							if( true == m_bSkip )
 							{
-								if( false ==  ExecuteCommand( oDocument, oReader, (CStringW)m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter ) )
+								if( false ==  ExecuteCommand( oDocument, oReader, CString(m_oTok.Key.c_str()), m_oTok.HasParameter, m_oTok.Parameter ) )
 									Skip( oDocument, oReader );
 								m_bSkip = false;
 							}
 							else
-								ExecuteCommand( oDocument, oReader, (CStringW)m_oTok.Key, m_oTok.HasParameter, m_oTok.Parameter );
+								ExecuteCommand( oDocument, oReader, CString(m_oTok.Key.c_str()), m_oTok.HasParameter, m_oTok.Parameter );
 						}
 						if( true == m_bCanStartNewReader )
 							m_bCanStartNewReader = false;
@@ -217,7 +217,7 @@ public:
             if( "39" == sKey )
 			{
 				if( true == bHasPar )
-                    sCharString += nPar ;
+                    sCharString += (char)nPar ;
 			}
 			else
 				sCharString = sKey;

@@ -178,7 +178,7 @@ CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 	CString sEndnoteProp;
     //todooo проверить id
     for( int i = 0; i < (int)m_aSpecialEndnotes.size(); i++ )
-        sEndnoteProp.AppendFormat( _T("<w:endnote w:id=\"%l\" />"), m_aSpecialEndnotes[i] );
+        sEndnoteProp.AppendFormat( _T("<w:endnote w:id=\"%i\" />"), m_aSpecialEndnotes[i] );
 	if( PROP_DEF != m_nFootnoteNumberingFormat )
         sFootnoteProp.AppendFormat( _T("<w:numRestart w:val=\"%ls\" />"), RtfListLevelProperty::GetFormat( m_nFootnoteNumberingFormat ).GetBuffer() );
 	RENDER_OOX_INT( m_nEndnoteStart, sEndnoteProp, _T("w:numStart") );

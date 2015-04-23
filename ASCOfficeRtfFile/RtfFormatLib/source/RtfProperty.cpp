@@ -177,7 +177,7 @@ CString RtfFont::RenderToOOX(RenderParameter oRenderParameter)
 					//?? нужно ли описывать default??? todooo
 				}
 				sResult.AppendFormat(_T("<w:rFonts w:ascii=\"%ls\" w:eastAsia=\"%ls\" w:hAnsi=\"%ls\" w:cs=\"%ls\"%ls/>"),
-								 sFontName.GetBuffer(), sFontName.GetBuffer(), sFontName.GetBuffer(), sFontName.GetBuffer(), sHint);
+                                 sFontName.GetBuffer(), sFontName.GetBuffer(), sFontName.GetBuffer(), sFontName.GetBuffer(), sHint.GetBuffer());
 			}
 		}
 	}

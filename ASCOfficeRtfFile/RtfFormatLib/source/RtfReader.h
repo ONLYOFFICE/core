@@ -24,7 +24,7 @@ public:
 			RtfOldList m_oCurOldList;
 		//		RtfSectionProperty m_oSectionProp;
 			ReaderStatePtr psave;
-			CStringA m_sCurText;
+            std::string m_sCurText;
 			
 			ReaderState()
 			{
@@ -127,10 +127,10 @@ public:
                         if( m_oTok.Key == "42" )
 							m_bSkip = true;
                         if( m_oTok.Key == "39" && true == m_oTok.HasParameter )
-							oReader.m_oState->m_sCurText.AppendChar( m_oTok.Parameter );
+                            oReader.m_oState->m_sCurText += m_oTok.Parameter ;
 						break;
 				case RtfToken::Text:
-						oReader.m_oState->m_sCurText.Append( m_oTok.Key );
+                        oReader.m_oState->m_sCurText += m_oTok.Key;
 						break;
 			}
 			if( false == m_bStopReader)
@@ -202,7 +202,7 @@ public:
 	virtual void ExitReader2( RtfDocument& oDocument, RtfReader& oReader )
 	{
 	}
-	static CString ExecuteTextInternal( RtfDocument& oDocument, RtfReader& oReader, CStringA& sKey, bool bHasPar, int nPar, int& nSkipChars)
+    static CString ExecuteTextInternal( RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, bool bHasPar, int nPar, int& nSkipChars)
 	{
 		CString sResult;
 
@@ -213,11 +213,11 @@ public:
 		}
 		else
 		{
-			CStringA sCharString;
+            std::string sCharString;
             if( "39" == sKey )
 			{
 				if( true == bHasPar )
-					sCharString.AppendChar( nPar );
+                    sCharString += nPar ;
 			}
 			else
 				sCharString = sKey;
@@ -228,21 +228,21 @@ public:
 		return sResult;
 	}
 
-	void ExecuteTextInternal2( RtfDocument& oDocument, RtfReader& oReader, CStringA& sKey, int& nSkipChars)
+    void ExecuteTextInternal2( RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, int& nSkipChars)
 	{
-		if(oReader.m_oState->m_sCurText.GetLength() > 0)
+        if(oReader.m_oState->m_sCurText.length() > 0)
 		{
 			CString sResult = ExecuteTextInternalCodePage(oReader.m_oState->m_sCurText, oDocument, oReader);
-			oReader.m_oState->m_sCurText.Empty();
+            oReader.m_oState->m_sCurText.erase();
 			if(sResult.GetLength() > 0)
 			{
-                CStringA str;
+                std::string str;
                 ExecuteTextInternalSkipChars(sResult, oReader, str, nSkipChars);
 				ExecuteText( oDocument, oReader, sResult);
 			}
 		}
 	}
-	static void ExecuteTextInternalSkipChars(CString & sResult, RtfReader& oReader, CStringA& sKey, int& nSkipChars)
+    static void ExecuteTextInternalSkipChars(CString & sResult, RtfReader& oReader, std::string & sKey, int& nSkipChars)
 	{
 		//удаляем символы вслед за юникодом
 		if( nSkipChars > 0 )
@@ -251,7 +251,7 @@ public:
 			if( nSkipChars >= nLength )
 			{
 				nSkipChars -= nLength;
-				sResult.Empty();
+                sResult.Empty();
 			}
 			else
 			{
@@ -265,60 +265,9 @@ public:
 			nSkipChars = oReader.m_oState->m_nUD;
 		}
 	}
-	static CString ExecuteTextInternalCodePage( CStringA& sCharString, RtfDocument& oDocument, RtfReader& oReader)
-	{
-		CString sResult;
-		if( false == sCharString.IsEmpty() )
-		{
-			int nCodepage = -1;
-			//применяем параметры codepage от текущего шрифта todo associated fonts.
-			RtfFont oFont;
-			if( true == oDocument.m_oFontTable.GetFont( oReader.m_oState->m_oCharProp.m_nFont, oFont ) )
-			{
-				if( PROP_DEF != oFont.m_nCharset )
-					nCodepage = RtfUtility::CharsetToCodepage( oFont.m_nCharset );
-				else if( PROP_DEF != oFont.m_nCodePage )
-					nCodepage = oFont.m_nCodePage;
-			}
-			//от настроек документа
-			if( -1 == nCodepage && RtfDocumentProperty::cp_none != oDocument.m_oProperty.m_eCodePage )
-			{
-				switch ( oDocument.m_oProperty.m_eCodePage )
-				{
-				case RtfDocumentProperty::cp_ansi:
-					{
-						if( PROP_DEF != oDocument.m_oProperty.m_nAnsiCodePage )
-							nCodepage = oDocument.m_oProperty.m_nAnsiCodePage;
-						else
-							nCodepage = CP_ACP;
-						break;
-					}
-                case RtfDocumentProperty::cp_mac:   nCodepage = CP_MACCP;   break;
-                case RtfDocumentProperty::cp_pc:    nCodepage = 437;        break; //ms dos latin us
-                case RtfDocumentProperty::cp_pca:   nCodepage = 850;        break; //ms dos latin eu
-				}
-			}
-			//если ничего нет ставим ANSI
-			if( -1 == nCodepage )
-				nCodepage = CP_ACP;
+    static CString ExecuteTextInternalCodePage( std::string & sCharString, RtfDocument & oDocument, RtfReader & oReader);
 
-#if defined (_WIN32) || defined (_WIN64)
-            int nLengthW ;
-            nLengthW = MultiByteToWideChar(nCodepage, 0, sCharString, -1, NULL, NULL);
-            MultiByteToWideChar(nCodepage, 0, sCharString, -1, sResult.GetBuffer( nLengthW ), nLengthW);
-            sResult.ReleaseBuffer();
-#else
-            //todooo расширить до других codepages (щас тока анси)
-            std::string sAnsi(sCharString.GetBuffer());
-            std::wstring s(sAnsi.begin(), sAnsi.end());
-
-            sResult = std_string2string(s);
-#endif
-			//sResult = sKey;
-		}
-		return sResult;
-	}
-private: 
+private:
 	RtfToken	m_oTok;
 	bool		m_bCanStartNewReader;
 

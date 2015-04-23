@@ -14,7 +14,9 @@ public:
 		}CodePage;
 	
 	CodePage m_eCodePage;
-	int m_nAnsiCodePage;
+
+    std::string m_sAnsiCodePage;
+    int m_nAnsiCodePage;
 	int m_nDeffFont;
 	int m_bHypCaps;//(doNotHyphenateCaps)\hyphcaps*	Switches hyphenation of capitalized words (default is on). Append 1 or leave control word by itself to toggle property on; append 0 to turn it off.
 	int m_bAutoHyp;//(autoHyphenation)\hyphauto*	Switches automatic hyphenation (default is off). Append 1 or leave control word by itself to toggle property on; append 0 to turn it off.

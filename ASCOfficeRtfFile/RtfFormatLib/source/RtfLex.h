@@ -124,7 +124,7 @@ public:
 	{
 		m_oFileWriter = NULL;
 		m_nReadBufSize = 1024 * 1024 * 5; // 5мб
-        m_caReadBuffer = (char*)new char[m_nReadBufSize];
+        m_caReadBuffer = new char[m_nReadBufSize];
 	}
 	~RtfLex()
 	{
@@ -200,9 +200,10 @@ public:
 private: 
 	void parseKeyword(RtfToken& token)
 	{
-		CStringA palabraClave;
-		palabraClave.GetBuffer( 20 );
-		palabraClave.ReleaseBuffer();
+        std::string palabraClave;
+
+//        palabraClave.GetBuffer( 20 );
+//		palabraClave.ReleaseBuffer();
 
 		CString parametroStr ;
 		int parametroInt = 0;
@@ -225,23 +226,23 @@ private:
 				if( c == '\t' )
 				{
 					token.Type = RtfToken::Keyword;
-					token.Key = CStringA("tab");
+                    token.Key = std::string("tab");
 				}
 				else if( c == '\n' )
 				{
 					token.Type = RtfToken::Keyword;
-					token.Key = CStringA("par");
+                    token.Key = std::string("par");
 				}
 				else
 				{
 					token.Type = RtfToken::Text;
-					token.Key = "";
+                    token.Key = std::string("");
 				}
 			}
 			else   
 			{
 				token.Type = RtfToken::Control;
-				token.Key = Convert::ToString(c);
+                token.Key = (char)c/* std::to_string(c)*/;
 
 				if (c == '\'')
 				{
@@ -255,8 +256,8 @@ private:
 				else if( c == '|' || c == '~' || c == '-' || c == '_' || c == ':' )
 				{
 					token.Type = RtfToken::Keyword;
-					token.Key.Empty();
-					token.Key.AppendChar( c );
+                    token.Key.erase();
+                    token.Key += (char)c ;
 				}
 			}
 			return;
@@ -267,7 +268,7 @@ private:
 		while (RtfUtility::IsAlpha(c))
 		{
 			m_oStream.getc();
-			palabraClave.AppendChar(c);
+            palabraClave += (char)c;
 
 			c = m_oStream.getc();
 			m_oStream.ungetc();
@@ -278,7 +279,7 @@ private:
 		token.Key = palabraClave;
 
 		//Se comprueba si la palabra clave tiene parбmetro
-		if (RtfUtility::IsDigit(c) || c == '-')
+        if (RtfUtility::IsDigit((char)c) || c == '-')
 		{
 			token.HasParameter = true;
 
@@ -322,15 +323,17 @@ private:
 		//while ((isalnum(c) || c == '"'|| c == ':'|| c == '/' || c == '.') &&c != '\\' && c != '}' && c != '{' && c != Eof) // иправиЃEЃEрвьD усЃEвиЃE
 		//while (c != '\\' && c != '}' && c != '{' && c != Eof) 
 		//while (c != ';' &&c ! = '\\' && c != '}' && c != '{' && c != EOF) 
+
+        token.Key.empty();
 		while (c != '\\' && c != '}' && c != '{' && c != EOF) 
 		{
 			if( nTempBufPos >= m_nReadBufSize )
 			{
 				m_caReadBuffer[nTempBufPos++] = '\0';
-				token.Key.Append( m_caReadBuffer );
+                token.Key += m_caReadBuffer ;
 				nTempBufPos = 0;
 			}
-			m_caReadBuffer[nTempBufPos++] = c;
+            m_caReadBuffer[nTempBufPos++] = (char)c;
 
 			c = m_oStream.getc();
 			//Se ignoran los retornos de carro, tabuladores y caracteres nulos
@@ -341,8 +344,9 @@ private:
 		if( nTempBufPos > 0 )
 		{
 			m_caReadBuffer[nTempBufPos++] = '\0';
-			token.Key.Append( m_caReadBuffer );
-		}
+            token.Key += m_caReadBuffer ;
+            nTempBufPos = 0;
+        }
 	}
 	bool GetNextChar( int& nChar )
 	{
@@ -395,6 +399,5 @@ private:
 			{
 			}
 		}
-}
-
+    }
 };

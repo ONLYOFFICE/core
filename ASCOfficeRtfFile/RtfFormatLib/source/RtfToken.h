@@ -1,11 +1,6 @@
 ﻿#pragma once
 
-#ifdef _WIN32
-	#include <atlbase.h>
-	#include <atlstr.h>
-#else
-    #include "../../../Common/DocxFormat/Source/Base/ASCString.h"
-#endif
+#include <string>
 
 class RtfToken
 {
@@ -13,7 +8,7 @@ public:
 	typedef enum {None ,Keyword,Control ,Text ,Eof,GroupStart ,GroupEnd} RtfTokenType;
 	
 	RtfTokenType Type;
-	CStringA Key;
+    std::string Key;
 	bool HasParameter;
 	int Parameter;
 

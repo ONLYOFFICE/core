@@ -120,4 +120,10 @@ else{
 
 unix:!macx: LIBS += -lxml2
 
+unix:!macx: LIBS += -L$$PWD/../../../../../../../usr/local/lib/ -lboost_locale
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../../../../../usr/local/lib/libboost_locale.a
+
+unix:!macx: LIBS += -L$$PWD/../../../../../../../usr/local/lib/ -lboost_system
+unix:!macx: PRE_TARGETDEPS += $$PWD/../../../../../../../usr/local/lib/libboost_system.a
+
 ########################################################

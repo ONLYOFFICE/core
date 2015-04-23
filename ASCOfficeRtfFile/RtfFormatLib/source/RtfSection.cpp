@@ -176,8 +176,9 @@ CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
         sResult.AppendFormat( _T("<w:footnotePr>%ls</w:footnotePr>"), sFootnoteProp.GetBuffer() );
 
 	CString sEndnoteProp;
-	for( int i = 0; i < (int)m_aSpecialEndnotes.size(); i++ )
-		sEndnoteProp.AppendFormat( _T("<w:endnote w:id=\"%d\" />"), m_aSpecialEndnotes[i] );
+    //todooo проверить id
+    for( int i = 0; i < (int)m_aSpecialEndnotes.size(); i++ )
+        sEndnoteProp.AppendFormat( _T("<w:endnote w:id=\"%l\" />"), m_aSpecialEndnotes[i] );
 	if( PROP_DEF != m_nFootnoteNumberingFormat )
         sFootnoteProp.AppendFormat( _T("<w:numRestart w:val=\"%ls\" />"), RtfListLevelProperty::GetFormat( m_nFootnoteNumberingFormat ).GetBuffer() );
 	RENDER_OOX_INT( m_nEndnoteStart, sEndnoteProp, _T("w:numStart") );

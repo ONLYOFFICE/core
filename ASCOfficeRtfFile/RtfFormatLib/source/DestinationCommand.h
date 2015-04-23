@@ -2865,8 +2865,12 @@ public:
 		else if( _T("ansicpg") == sCommand )
 		{
 			oDocument.m_oProperty.m_eCodePage = RtfDocumentProperty::cp_ansi;
-			if( true == hasParameter )
+
+            if( true == hasParameter )
+            {
 				oDocument.m_oProperty.m_nAnsiCodePage = parameter;
+                oDocument.m_oProperty.m_sAnsiCodePage = RtfUtility::GetCodepageName(oDocument.m_oProperty.m_nAnsiCodePage);
+            }
 		}
 		else if( _T("deff") == sCommand )
 		{

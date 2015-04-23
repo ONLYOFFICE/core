@@ -242,7 +242,10 @@ private:
 			else   
 			{
 				token.Type = RtfToken::Control;
-                token.Key = (char)c/* std::to_string(c)*/;
+
+				CStringA s; s.Format("%i", c);
+
+				token.Key = s.GetBuffer();
 
 				if (c == '\'')
 				{
@@ -279,7 +282,7 @@ private:
 		token.Key = palabraClave;
 
 		//Se comprueba si la palabra clave tiene parбmetro
-        if (RtfUtility::IsDigit((char)c) || c == '-')
+		if (RtfUtility::IsDigit(c) || c == '-')
 		{
 			token.HasParameter = true;
 
@@ -323,8 +326,6 @@ private:
 		//while ((isalnum(c) || c == '"'|| c == ':'|| c == '/' || c == '.') &&c != '\\' && c != '}' && c != '{' && c != Eof) // иправиЃEЃEрвьD усЃEвиЃE
 		//while (c != '\\' && c != '}' && c != '{' && c != Eof) 
 		//while (c != ';' &&c ! = '\\' && c != '}' && c != '{' && c != EOF) 
-
-        token.Key.empty();
 		while (c != '\\' && c != '}' && c != '{' && c != EOF) 
 		{
 			if( nTempBufPos >= m_nReadBufSize )
@@ -345,8 +346,7 @@ private:
 		{
 			m_caReadBuffer[nTempBufPos++] = '\0';
             token.Key += m_caReadBuffer ;
-            nTempBufPos = 0;
-        }
+		}
 	}
 	bool GetNextChar( int& nChar )
 	{

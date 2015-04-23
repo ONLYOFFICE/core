@@ -1858,7 +1858,7 @@ private: void TryToPepairResult( RtfDocument& oDocument, RtfReader& oReader )
 				return;
 			
 			int nCharCode = Strings::ToInteger( sCharCode );
-			CStringA sCharA; sCharA.AppendChar( nCharCode );
+			std::string sCharA; sCharA += char(nCharCode );
 
 			RtfFont oSymbolFont;
 			if( true == oDocument.m_oFontTable.GetFont( sCharFont, oSymbolFont ) )
@@ -2005,11 +2005,11 @@ public:
 				 if( true == RtfUtility::IsMacCodepage(oFont.m_nCodePage) )
 					 bIsMac = true;
 			 }
-			 CStringA sBullet;
+			 std::string sBullet;
 			 if( true == bIsMac )
-				 sBullet.AppendChar( nMacChar );
+				 sBullet += (char) nMacChar;
 			 else
-				 sBullet.AppendChar( nWinChar );
+				 sBullet += (char)  nWinChar;
 			 int nSkip = 0;
 			 CString sText = RtfAbstractReader::ExecuteTextInternal( oDocument, oReader, sBullet, false, 0, nSkip );
 			 ExecuteText( oDocument, oReader, sText );

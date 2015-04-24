@@ -258,7 +258,17 @@ namespace MetaFile
 			*this >> oText.iGraphicsMode;
 			*this >> oText.exScale;
 			*this >> oText.eyScale;
-			*this >> oText.wEmrText;
+			ReadEmrTextW(oText.wEmrText, 36); // 8 + 28 (8 - тип и размер, 28 - размер данной структуры)
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfExtTextoutA& oText)
+		{
+			*this >> oText.Bounds;
+			*this >> oText.iGraphicsMode;
+			*this >> oText.exScale;
+			*this >> oText.eyScale;
+			ReadEmrTextA(oText.aEmrText, 36); // 8 + 28 (8 - тип и размер, 28 - размер данной структуры)
 
 			return *this;
 		}
@@ -438,6 +448,117 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(TEmfPolyTextoutA& oText)
+		{
+			*this >> oText.Bounds;
+			*this >> oText.iGraphicsMode;
+			*this >> oText.exScale;
+			*this >> oText.eyScale;
+			*this >> oText.cStrings;
+
+			if (0 != oText.cStrings)
+			{
+				oText.aEmrText = new TEmfEmrText[oText.cStrings];
+				if (!oText.aEmrText)
+					return *this;
+
+				unsigned int nStartPos = Tell();
+				for (unsigned int unIndex = 0; unIndex < oText.cStrings; unIndex++)
+				{
+					unsigned int nCurPos = Tell();
+					ReadEmrTextA(oText.aEmrText[unIndex], nCurPos - nStartPos + 36); // 8 + 28 (8 - тип и размер, 28 - размер данной структуры)
+				}
+			}
+			else
+			{
+				oText.aEmrText = NULL;
+			}
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfPolyTextoutW& oText)
+		{
+			*this >> oText.Bounds;
+			*this >> oText.iGraphicsMode;
+			*this >> oText.exScale;
+			*this >> oText.eyScale;
+			*this >> oText.cStrings;
+
+			if (0 != oText.cStrings)
+			{
+				oText.wEmrText = new TEmfEmrText[oText.cStrings];
+				if (!oText.wEmrText)
+					return *this;
+
+				unsigned int nStartPos = Tell();
+				for (unsigned int unIndex = 0; unIndex < oText.cStrings; unIndex++)
+				{
+					unsigned int nCurPos = Tell();
+					ReadEmrTextW(oText.wEmrText[unIndex], nCurPos - nStartPos + 36); // 8 + 28 (8 - тип и размер, 28 - размер данной структуры)
+				}
+			}
+			else
+			{
+				oText.wEmrText = NULL;
+			}
+
+			return *this;
+		}
+		CDataStream& operator>>(TEmfSmallTextout& oText)
+		{
+			*this >> oText.x;
+			*this >> oText.y;
+			*this >> oText.cChars;
+			*this >> oText.fuOptions;
+			*this >> oText.iGraphicsMode;
+			*this >> oText.exScale;
+			*this >> oText.eyScale;
+
+			if (!(oText.fuOptions & ETO_NO_RECT))
+				*this >> oText.Bounds;
+
+			oText.TextString = NULL;
+			if (oText.cChars)
+			{
+				unsigned short* pUnicode = NULL;
+				if (oText.fuOptions & ETO_SMALL_CHARS)
+				{
+					unsigned char* pString = new unsigned char[oText.cChars + 1];
+					if (!pString)
+						return *this;
+
+					pString[oText.cChars] = 0x00;
+					ReadBytes(pString, oText.cChars);
+					oText.cChars++;
+
+					pUnicode = new unsigned short[oText.cChars];
+					if (!pUnicode)
+					{
+						delete[] pString;
+						return *this;
+					}
+
+					for (unsigned int unIndex = 0; unIndex < oText.cChars; unIndex++)
+					{
+						pUnicode[unIndex] = pString[unIndex];
+					}
+					delete[] pString;
+				}
+				else
+				{
+					pUnicode = new unsigned short[oText.cChars + 1];
+					if (!pUnicode)
+						return *this;
+
+					pUnicode[oText.cChars] = 0x0000;
+					ReadBytes(pUnicode, oText.cChars);
+					oText.cChars++;
+				}
+				oText.TextString = pUnicode;
+			}
+				
+			return *this;
+		}
 
 		bool IsValid() const
 		{
@@ -478,6 +599,45 @@ namespace MetaFile
 		unsigned int CanRead()
 		{
 			return (unsigned int)(pEnd - pCur);
+		}
+
+	private:
+
+		template<typename T>void ReadEmrTextBase(TEmfEmrText& oText, unsigned int unOffset)
+		{
+			*this >> oText;
+
+			// Читаем OutputString
+			const unsigned int unCharsCount = oText.Chars;
+			int nSkip = oText.offString - (unOffset + 40); // 40 - размер структуры TEmfEmrText 
+			Skip(nSkip);
+			T* pString = new T[unCharsCount + 1];
+			if (pString)
+			{
+				pString[unCharsCount] = 0x00;
+				ReadBytes(pString, unCharsCount);
+				oText.OutputString = (void*)pString;
+			}
+
+			// Читаем OutputDx
+			nSkip = oText.offDx - oText.offString - 2 * unCharsCount;
+			Skip(nSkip);
+			const unsigned int unDxCount = oText.Options & ETO_PDY ? 2 * unCharsCount : unCharsCount;
+			unsigned int* pDx = new unsigned int[unDxCount];
+			if (pDx)
+			{
+				ReadBytes(pDx, unDxCount);
+				oText.OutputDx = pDx;
+			}
+		}
+		void ReadEmrTextA(TEmfEmrText& oText, unsigned int unOffset)
+		{
+			ReadEmrTextBase<unsigned char>(oText, unOffset);
+			// TODO: Возможно здесь нужно декодировать строку в зависимости от Charset
+		}
+		void ReadEmrTextW(TEmfEmrText& oText, unsigned int unOffset)
+		{
+			ReadEmrTextBase<unsigned short>(oText, unOffset);
 		}
 
 	private:

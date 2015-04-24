@@ -1,8 +1,6 @@
 #ifndef _EMF_FILE_H
 #define _EMF_FILE_H
 
-
-
 #include "../Wmf/WmfUtils.h"
 #include "../Wmf/WmfTypes.h"
 
@@ -15,10 +13,6 @@
 
 #include "../../../fontengine/FontManager.h"
 #include <iostream>
-
-#if !defined(ETO_PDY)
-	# define ETO_PDY 0x2000
-#endif
 
 namespace MetaFile
 {
@@ -102,6 +96,9 @@ namespace MetaFile
 		}
 		void PlayMetaFile()
 		{
+			if (!m_oStream.IsValid())
+				SetError();
+
 			m_lTest = 0;
 			unsigned int ulSize, ulType;
 			unsigned int ulNumber = 0;
@@ -115,6 +112,9 @@ namespace MetaFile
 
 			do
 			{
+				if (m_oStream.CanRead() < 8)
+					return SetError();
+
 				m_oStream >> ulType;
 				m_oStream >> ulSize;
 
@@ -149,30 +149,49 @@ namespace MetaFile
 						//-----------------------------------------------------------
 						// 2.3.5 Drawing
 						//-----------------------------------------------------------
+					case EMR_ANGLEARC:          Read_EMR_ANGLEARC(); break;
+					case EMR_ARC:               Read_EMR_ARC(); break;
+					case EMR_ARCTO:             Read_EMR_ARCTO(); break;
+					case EMR_CHORD:             Read_EMR_CHORD(); break;
+					case EMR_ELLIPSE:           Read_EMR_ELLIPSE(); break;
+					case EMR_EXTTEXTOUTA:       Read_EMR_EXTTEXTOUTA(); break;
 					case EMR_EXTTEXTOUTW:       Read_EMR_EXTTEXTOUTW(); break;
-					case EMR_POLYGON16:         Read_EMR_POLYGON16(); break;
-					case EMR_POLYPOLYGON16:     Read_EMR_POLYPOLYGON16(); break;
+					case EMR_FILLPATH:          Read_EMR_FILLPATH(); break;
 					case EMR_LINETO:            Read_EMR_LINETO(); break;
+					case EMR_PIE:               Read_EMR_PIE(); break;
+					case EMR_POLYBEZIER:        Read_EMR_POLYBEZIER(); break;
+					case EMR_POLYBEZIER16:      Read_EMR_POLYBEZIER16(); break;
+					case EMR_POLYBEZIERTO:      Read_EMR_POLYBEZIERTO(); break;
 					case EMR_POLYBEZIERTO16:    Read_EMR_POLYBEZIERTO16(); break;
+					case EMR_POLYDRAW:          Read_EMR_POLYDRAW(); break;
+					case EMR_POLYDRAW16:        Read_EMR_POLYDRAW16(); break;
+					case EMR_POLYGON:           Read_EMR_POLYGON(); break;
+					case EMR_POLYGON16:         Read_EMR_POLYGON16(); break;
+					case EMR_POLYLINE:          Read_EMR_POLYLINE(); break;
+					case EMR_POLYLINE16:        Read_EMR_POLYLINE16(); break;
+					case EMR_POLYLINETO:        Read_EMR_POLYLINETO(); break;
 					case EMR_POLYLINETO16:      Read_EMR_POLYLINETO16(); break;
+					case EMR_POLYPOLYGON:       Read_EMR_POLYPOLYGON(); break;
+					case EMR_POLYPOLYGON16:     Read_EMR_POLYPOLYGON16(); break;
+					case EMR_POLYPOLYLINE:      Read_EMR_POLYPOLYLINE(); break;
+					case EMR_POLYPOLYLINE16:    Read_EMR_POLYPOLYLINE16(); break;
+					case EMR_POLYTEXTOUTA:      Read_EMR_POLYTEXTOUTA(); break;
+					case EMR_POLYTEXTOUTW:      Read_EMR_POLYTEXTOUTW(); break;
+					case EMR_RECTANGLE:         Read_EMR_RECTANGLE(); break;
+					case EMR_ROUNDRECT:         Read_EMR_ROUNDRECT(); break;
+					case EMR_SETPIXELV:         Read_EMR_SETPIXELV(); break;
+					case EMR_SMALLTEXTOUT:      Read_EMR_SMALLTEXTOUT(); break;
 					case EMR_STROKEANDFILLPATH: Read_EMR_STROKEANDFILLPATH(); break;
 					case EMR_STROKEPATH:        Read_EMR_STROKEPATH(); break;
-					case EMR_FILLPATH:          Read_EMR_FILLPATH(); break;
-					case EMR_RECTANGLE:         Read_EMR_RECTANGLE(); break;
-					case EMR_POLYLINE16:        Read_EMR_POLYLINE16(); break;
-					case EMR_ELLIPSE:           Read_EMR_ELLIPSE(); break;
-					case EMR_POLYBEZIER16:      Read_EMR_POLYBEZIER16(); break;
-					case EMR_ROUNDRECT:         Read_EMR_ROUNDRECT(); break;
-					case EMR_POLYPOLYLINE16:    Read_EMR_POLYPOLYLINE16(); break;
 						//-----------------------------------------------------------
 						// 2.3.7 Object Creation
 						//-----------------------------------------------------------
 					case EMR_CREATEBRUSHINDIRECT:     Read_EMR_CREATEBRUSHINDIRECT(); break;
+					case EMR_CREATEDIBPATTERNBRUSHPT: Read_EMR_CREATEDIBPATTERNBRUSHPT(); break;
+					case EMR_CREATEPALETTE:           Read_EMR_CREATEPALETTE(); break;
 					case EMR_CREATEPEN:               Read_EMR_CREATEPEN(); break;
 					case EMR_EXTCREATEFONTINDIRECTW:  Read_EMR_EXTCREATEFONTINDIRECTW(); break;
 					case EMR_EXTCREATEPEN:            Read_EMR_EXTCREATEPEN(); break;
-					case EMR_CREATEDIBPATTERNBRUSHPT: Read_EMR_CREATEDIBPATTERNBRUSHPT(); break;
-					case EMR_CREATEPALETTE:           Read_EMR_CREATEPALETTE(); break;
 						//-----------------------------------------------------------
 						// 2.3.8 Object Manipulation
 						//-----------------------------------------------------------
@@ -233,9 +252,6 @@ namespace MetaFile
 
 				if (bEof)
 					break;
-
-				if (!m_oStream.IsValid())
-					SetError();
 
 				ulRecordIndex++;
 
@@ -333,6 +349,41 @@ namespace MetaFile
 
 			return dDstY;
 		}
+		double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY)
+		{
+			int nX0 = (nL + nR) / 2;
+			int nY0 = (nT + nB) / 2;
+
+			// Определим квадрант
+			int nQuarter = -1;
+			if (nX >= nX0)
+			{
+				if (nY <= nY0)
+					nQuarter = 0;
+				else
+					nQuarter = 3;
+			}
+			else
+			{
+				if (nY <= nY0)
+					nQuarter = 1;
+				else
+					nQuarter = 2;
+			}
+
+			double dDist = std::sqrt((nX - nX0) * (nX - nX0) + (nY - nY0) * (nY - nY0));
+			double dRadAngle = std::asin(std::abs(nY - nY0) / dDist);
+			
+			double dAngle = dRadAngle * 180 / 3.1415926;
+			switch (nQuarter)
+			{
+				case 1: dAngle = 180 - dAngle; break;
+				case 2: dAngle = 180 + dAngle; break;
+				case 3: dAngle = 360 - dAngle; break;
+			}
+
+			return dAngle;
+		}
 
 		void MoveTo(TEmfPointL& oPoint)
 		{
@@ -378,19 +429,27 @@ namespace MetaFile
 		{
 			LineTo(oPoint.x, oPoint.y);
 		}
-		void CurveTo(TEmfPointS& oPoint1, TEmfPointS& oPoint2, TEmfPointS& oPointE)
+		void CurveTo(int nX1, int nY1, int nX2, int nY2, int nXe, int nYe)
 		{
 			if (m_pPath)
 			{
-				if (!m_pPath->CurveTo(oPoint1, oPoint2, oPointE))
+				if (!m_pPath->CurveTo(nX1, nY1, nX2, nY2, nXe, nYe))
 					return SetError();
 			}
 			else if (m_pOutput)
 			{
-				m_pOutput->CurveTo(oPoint1.x, oPoint1.y, oPoint2.x, oPoint2.y, oPointE.x, oPointE.y);
+				m_pOutput->CurveTo(nX1, nY1, nX2, nY2, nXe, nYe);
 			}
 
-			m_pDC->SetCurPos(oPointE.x, oPointE.y);
+			m_pDC->SetCurPos(nXe, nYe);
+		}
+		void CurveTo(TEmfPointS& oPoint1, TEmfPointS& oPoint2, TEmfPointS& oPointE)
+		{
+			CurveTo(oPoint1.x, oPoint1.y, oPoint2.x, oPoint2.y, oPointE.x, oPointE.y);
+		}
+		void CurveTo(TEmfPointL& oPoint1, TEmfPointL& oPoint2, TEmfPointL& oPointE)
+		{
+			CurveTo(oPoint1.x, oPoint1.y, oPoint2.x, oPoint2.y, oPointE.x, oPointE.y);
 		}
 		void ClosePath()
 		{
@@ -433,6 +492,53 @@ namespace MetaFile
 		{
 			if (m_pOutput)
 				m_pOutput->UpdateDC();
+		}
+		void DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY)
+		{
+			int nX = _nX;
+			int nY = _nY;
+
+			if (m_pDC->GetTextAlign() & TA_UPDATECP)
+			{
+				nX = m_pDC->GetCurPos().x;
+				nY = m_pDC->GetCurPos().y;
+			}
+			else
+			{
+				CEmfLogFont* pFont = m_pDC->GetFont();
+				if (pFont && pFont->LogFontEx.LogFont.Height < 0)
+				{
+					// Возможно нужно делать такое же смещение и с флагом TA_UPDATECP.
+					//nY -= pFont->LogFontEx.LogFont.Height;
+				}
+			}
+
+			if (m_pOutput)
+				m_pOutput->DrawText(wsString.c_str(), unCharsCount, nX, nY);
+		}
+		void DrawTextA(TEmfEmrText& oText)
+		{
+			if (!oText.OutputString)
+				return SetError();
+
+			// TODO: Здесь нужно сделать перевод данных символов в Unicode.
+			std::wstring wsText;
+			for (unsigned int unIndex = 0; unIndex < oText.Chars; unIndex++)
+			{
+				wchar_t wUnicode = ((unsigned char*)oText.OutputString)[unIndex];
+				wsText += wUnicode;
+			}
+
+			DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y);
+		}
+		void DrawTextW(TEmfEmrText& oText)
+		{
+			if (!oText.OutputString)
+				return SetError();
+
+			std::wstring wsText((wchar_t*)oText.OutputString);
+
+			DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y);
 		}
 
 		void Read_EMR_HEADER()
@@ -487,6 +593,36 @@ namespace MetaFile
 
 			if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, sizeof(TEmfStretchDIBITS) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
 			{
+				// Для битовых операций SRCPAINT и SRCAND сделаем, как будто фон чисто белый.
+				if (0x008800C6 == oBitmap.BitBltRasterOperation) // SRCPAINT
+				{
+					BYTE* pCur = pBgraBuffer;
+					for (unsigned int unY = 0; unY < ulHeight; unY++)
+					{
+						for (unsigned int unX = 0; unX < ulWidth; unX++)
+						{
+							unsigned int unIndex = (unY * ulWidth + unX) * 4;
+
+							if (0xff == pCur[unIndex + 0] && 0xff == pCur[unIndex + 1] && 0xff == pCur[unIndex + 2])
+								pCur[unIndex + 3] = 0;
+						}
+					}
+				}
+				else if (0x00EE0086 == oBitmap.BitBltRasterOperation) // SRCAND
+				{
+					BYTE* pCur = pBgraBuffer;
+					for (unsigned int unY = 0; unY < ulHeight; unY++)
+					{
+						for (unsigned int unX = 0; unX < ulWidth; unX++)
+						{
+							unsigned int unIndex = (unY * ulWidth + unX) * 4;
+
+							if (0 == pCur[unIndex + 0] && 0 == pCur[unIndex + 1] && 0 == pCur[unIndex + 2])
+								pCur[unIndex + 3] = 0;
+						}
+					}
+				}
+
 				if (m_pOutput)
 					m_pOutput->DrawBitmap(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
 			}
@@ -684,46 +820,7 @@ namespace MetaFile
 
 			m_pDC->SetTextColor(oColor);
 			UpdateOutputDC();
-		}
-		void Read_EMR_EXTTEXTOUTW()
-		{
-			TEmfExtTextoutW oText;
-
-			m_oStream >> oText;
-
-			// Читаем OutputString
-			const unsigned int ulCharsCount = oText.wEmrText.Chars;
-			int lSkip = oText.wEmrText.offString - 76; // 8 + 28 + 40
-			m_oStream.Skip(lSkip);
-			unsigned short* pUnicode = new unsigned short[ulCharsCount + 1];
-			pUnicode[ulCharsCount] = 0x0000;
-			m_oStream.ReadBytes(pUnicode, ulCharsCount);
-			oText.wEmrText.OutputString = (void*)pUnicode;
-
-			// Читаем OutputDx
-			lSkip = oText.wEmrText.offDx - oText.wEmrText.offString - 2 * ulCharsCount;
-			m_oStream.Skip(lSkip);
-			const unsigned int ulDxCount = oText.wEmrText.Options & ETO_PDY ? 2 * ulCharsCount : ulCharsCount;
-			unsigned int* pDx = new unsigned int[ulDxCount];
-			m_oStream.ReadBytes(pDx, ulDxCount);
-
-			std::wstring wsText((wchar_t*)pUnicode);
-
-			int lX = oText.wEmrText.Reference.x;
-			int lY = oText.wEmrText.Reference.y;
-
-			if (m_pDC->GetTextAlign() & TA_UPDATECP)
-			{ 
-				lX = m_pDC->GetCurPos().x;
-				lY = m_pDC->GetCurPos().y;
-			}
-
-			if (m_pOutput)
-				m_pOutput->DrawText(wsText.c_str(), ulCharsCount, lX, lY);
-
-			delete[] pUnicode;
-			delete[] pDx;
-		}
+		}		
 		void Read_EMR_SELECTOBJECT()
 		{
 			unsigned int ulObjectIndex;
@@ -731,42 +828,6 @@ namespace MetaFile
 
 			m_oPlayer.SelectObject(ulObjectIndex);
 			UpdateOutputDC();
-		}
-		void Read_EMR_POLYGON16()
-		{
-			m_lTest++;
-
-			TEmfRectL oBounds;
-			m_oStream >> oBounds;
-			unsigned int ulCount;
-			m_oStream >> ulCount;
-
-			if (ulCount <= 0)
-				return;
-
-			//if (m_lTest > 1)
-			//{
-
-			//	TEmfPointS oPoint;
-			//	m_oStream >> oPoint;
-			//	for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
-			//	{
-			//		m_oStream >> oPoint;
-			//	}
-			//	return;
-			//}
-
-
-			TEmfPointS oPoint;
-			m_oStream >> oPoint;
-			MoveTo(oPoint);
-			for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
-			{
-				m_oStream >> oPoint;
-				LineTo(oPoint);
-			}
-			ClosePath();
-			DrawPath(true, true);
 		}
 		void Read_EMR_EXTCREATEFONTINDIRECTW()
 		{
@@ -879,53 +940,6 @@ namespace MetaFile
 			m_pDC->SetFillMode(ulFillMode);
 			UpdateOutputDC();
 		}
-		void Read_EMR_POLYPOLYGON16()
-		{
-			TEmfRectL oBounds;
-			m_oStream >> oBounds;
-			unsigned int ulNumberOfPolygons;
-			m_oStream >> ulNumberOfPolygons;
-			unsigned int ulTotalPointsCount;
-			m_oStream >> ulTotalPointsCount;
-
-			unsigned int* pPolygonPointCount = new unsigned int[ulNumberOfPolygons];
-			if (!pPolygonPointCount)
-				return SetError();
-
-			for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolygons; ulIndex++)
-			{
-				m_oStream >> pPolygonPointCount[ulIndex];
-			}
-
-			for (unsigned int ulPolygonIndex = 0, unStartPointIndex = 0; ulPolygonIndex < ulNumberOfPolygons; ulPolygonIndex++)
-			{
-				unsigned int ulCurrentPolygonPointsCount = pPolygonPointCount[ulPolygonIndex];
-				if (0 == ulCurrentPolygonPointsCount)
-					continue;
-
-				TEmfPointS oPoint;
-				m_oStream >> oPoint;
-				MoveTo(oPoint);
-
-				for (unsigned int ulPointIndex = 1; ulPointIndex < ulCurrentPolygonPointsCount; ulPointIndex++)
-				{
-					unsigned int ulRealPointIndex = ulPointIndex + unStartPointIndex;
-					if (ulRealPointIndex >= ulTotalPointsCount)
-					{
-						delete[] pPolygonPointCount;
-						return SetError();
-					}
-
-					m_oStream >> oPoint;
-					LineTo(oPoint);
-				}
-
-				ClosePath();				
-			}
-			DrawPath(true, true);
-
-			delete[] pPolygonPointCount;
-		}
 		void Read_EMR_BEGINPATH()
 		{
 			if (m_pPath)
@@ -971,66 +985,7 @@ namespace MetaFile
 			TEmfPointL oPoint;
 			m_oStream >> oPoint;
 			MoveTo(oPoint);
-		}
-		void Read_EMR_LINETO()
-		{
-			TEmfPointL oPoint;
-			m_oStream >> oPoint;
-			LineTo(oPoint);
-		}
-		void Read_EMR_POLYBEZIERTO16()
-		{
-			TEmfRectL oBounds;
-			m_oStream >> oBounds;
-
-			unsigned int ulCount;
-			m_oStream >> ulCount;
-
-			for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex += 3)
-			{
-				if (ulCount - ulIndex < 2)
-					return SetError();
-
-				TEmfPointS oPoint1, oPoint2, oPointE;
-				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
-				CurveTo(oPoint1, oPoint2, oPointE);
-			}
-		}
-		void Read_EMR_POLYLINETO16()
-		{
-			TEmfRectL oBounds;
-			m_oStream >> oBounds;
-
-			unsigned int ulCount;
-			m_oStream >> ulCount;
-
-			for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex++)
-			{
-				TEmfPointS oPoint;
-				m_oStream >> oPoint;
-				LineTo(oPoint);
-			}
-		}
-		void Read_EMR_STROKEANDFILLPATH()
-		{
-			TEmfRectL oBounds;
-			m_oStream >> oBounds;
-			if (m_pOutput && m_pPath)
-			{
-				m_pPath->Draw(m_pOutput, true, true);
-				RELEASEOBJECT(m_pPath);
-			}
-		}
-		void Read_EMR_STROKEPATH()
-		{
-			TEmfRectL oBounds;
-			m_oStream >> oBounds;
-			if (m_pOutput && m_pPath)
-			{
-				m_pPath->Draw(m_pOutput, true, false);
-				RELEASEOBJECT(m_pPath);
-			}
-		}
+		}		
 		void Read_EMR_FILLPATH()
 		{
 			TEmfRectL oBounds;
@@ -1073,18 +1028,6 @@ namespace MetaFile
 			m_oStream >> oExtent;
 			m_pDC->SetViewportExtents(oExtent);
 		}
-		void Read_EMR_RECTANGLE()
-		{
-			TEmfRectL oBox;
-			m_oStream >> oBox;
-
-			MoveTo(oBox.lLeft, oBox.lTop);
-			LineTo(oBox.lRight, oBox.lTop);
-			LineTo(oBox.lRight, oBox.lBottom);
-			LineTo(oBox.lLeft, oBox.lBottom);
-			ClosePath();
-			DrawPath(true, true);
-		}
 		void Read_EMR_SETSTRETCHBLTMODE()
 		{
 			unsigned int ulStretchMode;
@@ -1116,34 +1059,18 @@ namespace MetaFile
 				m_oPlayer.RegisterObject(ulBrushIndex, (CEmfObjectBase*)pBrush);
 			}
 		}
-		void Read_EMR_POLYLINE16()
-		{
-			TEmfRectL oBounds;
-			m_oStream >> oBounds;
-			unsigned int ulCount;
-			m_oStream >> ulCount;
-
-			if (0 == ulCount)
-				return;
-
-			TEmfPointS oPoint;
-			m_oStream >> oPoint;
-			MoveTo(oPoint);
-
-			for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
-			{
-				m_oStream >> oPoint;
-				LineTo(oPoint);
-			}
-
-			DrawPath(true, false);
-		}
 		void Read_EMR_SELECTCLIPPATH()
 		{
-			unsigned int ulRegionMode;
-			m_oStream >> ulRegionMode;
+			unsigned int unRegionMode;
+			m_oStream >> unRegionMode;
 
-			m_pDC->ClipToPath();
+			if (m_pPath)
+			{
+				m_pDC->ClipToPath(m_pPath, unRegionMode);
+				RELEASEOBJECT(m_pPath);
+
+				UpdateOutputDC();
+			}
 		}
 		void Read_EMR_SETBKCOLOR()
 		{
@@ -1163,38 +1090,9 @@ namespace MetaFile
 		}
 		void Read_EMR_SETMETARGN()
 		{
-			// TODO: Непонятно что здесь должно происходить
-		}
-		void Read_EMR_ELLIPSE()
-		{
-			TEmfRectL oBox;
-			m_oStream >> oBox;
-			ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
-			DrawPath(true, true);
-		}
-		void Read_EMR_POLYBEZIER16()
-		{
-			TEmfRectL oBounds;
-			m_oStream >> oBounds;
-
-			unsigned int ulCount;
-			m_oStream >> ulCount;
-
-			if (0 == ulCount)
-				return;
-
-			TEmfPointS oStartPoint;
-			m_oStream >> oStartPoint;
-			MoveTo(oStartPoint);
-
-			TEmfPointS oPoint1, oPoint2, oPointE;
-			for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex += 3)
-			{
-				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
-				CurveTo(oPoint1, oPoint2, oPointE);
-			}
-			DrawPath(true, false);
-		}
+			m_pDC->GetClip()->Reset();
+			UpdateOutputDC();
+		}		
 		void Read_EMR_SETROP2()
 		{
 			unsigned int ulRop2Mode;
@@ -1229,31 +1127,415 @@ namespace MetaFile
 			m_oStream >> oClip;
 			m_pDC->GetClip()->Intersect(oClip);
 		}
-		void Read_EMR_ROUNDRECT()
+		void Read_EMR_SETLAYOUT()
+		{
+			unsigned int ulLayoutMode;
+			m_oStream >> ulLayoutMode;
+
+			// TODO: реализовать
+		}
+		void Read_EMR_SETBRUSHORGEX()
+		{
+			TEmfPointL oOrigin;
+			m_oStream >> oOrigin;
+
+			// TODO: реализовать
+		}		
+		void Read_EMR_ANGLEARC()
+		{
+			// TODO: Как найдутся файлы проверить данную запись.
+			TEmfPointL oCenter;
+			unsigned int unRadius;
+			double dStartAngle, dSweepAngle;
+			m_oStream >> oCenter >> unRadius >> dStartAngle >> dSweepAngle;
+
+			ArcTo(oCenter.x - unRadius, oCenter.y - unRadius, oCenter.x + unRadius, oCenter.y + unRadius, dStartAngle, dSweepAngle);
+			DrawPath(true, false);
+		}
+		void Read_EMR_ARC_BASE(TEmfRectL& oBox, TEmfPointL& oStart, TEmfPointL& oEnd, double& dStartAngle, double& dSweep)
+		{
+			m_oStream >> oBox >> oStart >> oEnd;
+
+			int nX0 = (oBox.lRight + oBox.lLeft) / 2;
+			int nY0 = (oBox.lBottom + oBox.lTop) / 2;
+
+			dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
+			double dEndAngle   = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y);
+
+			dSweep = dEndAngle - dStartAngle;
+
+			// TODO: Проверить здесь
+			if (dSweep < 0)
+				dSweep += 360;
+		}
+		void Read_EMR_ARC()
+		{
+			// TODO: Как найдутся файлы проверить данную запись.
+			TEmfRectL oBox;
+			TEmfPointL oStart, oEnd;
+			double dStartAngle, dSweep;
+			Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
+
+			ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweep);
+			DrawPath(true, false);
+		}
+		void Read_EMR_ARCTO()
+		{
+			// TODO: Как найдутся файлы проверить данную запись.
+			TEmfRectL oBox;
+			TEmfPointL oStart, oEnd;
+			double dStartAngle, dSweep;
+			Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
+
+			ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweep);
+		}
+		void Read_EMR_CHORD()
+		{
+			// TODO: Как найдутся файлы проверить данную запись.
+			TEmfRectL oBox;
+			TEmfPointL oStart, oEnd;
+			double dStartAngle, dSweep;
+			Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
+
+			MoveTo(oStart);
+			ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweep);
+			LineTo(oStart);
+			DrawPath(true, true);
+		}
+		void Read_EMR_ELLIPSE()
 		{
 			TEmfRectL oBox;
-			TEmfSizeL oCorner;
-			m_oStream >> oBox >> oCorner;
+			m_oStream >> oBox;
+			ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, 0, 360);
+			DrawPath(true, true);
+		}
+		void Read_EMR_EXTTEXTOUTA()
+		{
+			// TODO: Как найдутся файлы проверить данную запись.
+			TEmfExtTextoutA oText;
+			m_oStream >> oText;	
 
-			int lBoxW = oBox.lRight - oBox.lLeft;
-			int lBoxH = oBox.lBottom - oBox.lTop;
+			DrawTextA(oText.aEmrText);
+		}
+		void Read_EMR_EXTTEXTOUTW()
+		{
+			TEmfExtTextoutW oText;
+			m_oStream >> oText;
 
-			int lRoundW = (std::min)((int)oCorner.cx, lBoxW / 2);
-			int lRoundH = (std::min)((int)oCorner.cy, lBoxH / 2);
+			DrawTextW(oText.wEmrText);
+		}
+		void Read_EMR_LINETO()
+		{
+			TEmfPointL oPoint;
+			m_oStream >> oPoint;
+			LineTo(oPoint);
+		}
+		void Read_EMR_PIE()
+		{
+			// TODO: Как найдутся файлы проверить данную запись.
+			TEmfRectL oBox;
+			TEmfPointL oStart, oEnd;
+			double dStartAngle, dSweep;
+			Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
 
-			MoveTo(oBox.lLeft + lRoundW, oBox.lTop);
-			LineTo(oBox.lRight - lRoundW, oBox.lTop);
-			ArcTo(oBox.lRight - lRoundW, oBox.lTop, oBox.lRight, oBox.lTop + lRoundH, -90, 90);
-			LineTo(oBox.lRight, oBox.lBottom - lRoundH);
-			ArcTo(oBox.lRight - lRoundW, oBox.lBottom - lRoundH, oBox.lRight, oBox.lBottom, 0, 90);
-			LineTo(oBox.lLeft + lRoundW, oBox.lBottom);
-			ArcTo(oBox.lLeft, oBox.lBottom - lRoundH, oBox.lLeft + lRoundW, oBox.lBottom, 90, 90);
-			LineTo(oBox.lLeft, oBox.lTop + lRoundH);
-			ArcTo(oBox.lLeft, oBox.lTop, oBox.lLeft + lRoundW, oBox.lTop + lRoundW, 180, 90);
+			ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweep);
+			LineTo((oBox.lLeft + oBox.lRight) / 2, (oBox.lTop + oBox.lBottom) / 2);
 			ClosePath();
 			DrawPath(true, true);
 		}
+		void Read_EMR_POLYBEZIER()
+		{
+			Read_EMR_POLYBEZIER_BASE<TEmfPointL>();
+		}
+		void Read_EMR_POLYBEZIER16()
+		{
+			Read_EMR_POLYBEZIER_BASE<TEmfPointS>();
+		}
+		template<typename T>void Read_EMR_POLYBEZIER_BASE()
+		{
+			TEmfRectL oBounds;
+			m_oStream >> oBounds;
+
+			unsigned int ulCount;
+			m_oStream >> ulCount;
+
+			if (0 == ulCount)
+				return;
+
+			T oStartPoint;
+			m_oStream >> oStartPoint;
+			MoveTo(oStartPoint);
+
+			T oPoint1, oPoint2, oPointE;
+			for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex += 3)
+			{
+				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
+				CurveTo(oPoint1, oPoint2, oPointE);
+			}
+			DrawPath(true, false);
+		}
+		void Read_EMR_POLYBEZIERTO()
+		{
+			Read_EMR_POLYBEZIERTO_BASE<TEmfPointL>();
+		}
+		void Read_EMR_POLYBEZIERTO16()
+		{
+			Read_EMR_POLYBEZIERTO_BASE<TEmfPointS>();
+		}
+		template<typename T>void Read_EMR_POLYBEZIERTO_BASE()
+		{
+			TEmfRectL oBounds;
+			m_oStream >> oBounds;
+
+			unsigned int ulCount;
+			m_oStream >> ulCount;
+
+			for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex += 3)
+			{
+				if (ulCount - ulIndex < 2)
+					return SetError();
+
+				T oPoint1, oPoint2, oPointE;
+				m_oStream >> oPoint1 >> oPoint2 >> oPointE;
+				CurveTo(oPoint1, oPoint2, oPointE);
+			}
+		}
+		void Read_EMR_POLYDRAW()
+		{
+			Read_EMR_POLYDRAW_BASE<TEmfPointL>();
+		}
+		void Read_EMR_POLYDRAW16()
+		{
+			Read_EMR_POLYDRAW_BASE<TEmfPointS>();
+		}
+		template<typename T>void Read_EMR_POLYDRAW_BASE()
+		{
+			// TODO: Как найдутся файлы проверить данную запись.
+			TEmfRectL oBounds;
+			m_oStream >> oBounds;
+
+			unsigned int unCount;
+			m_oStream >> unCount;
+
+			if (0 == unCount)
+				return;
+
+			T* pPoints = new T[unCount];
+			if (!pPoints)
+				return SetError();
+
+			for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
+			{
+				m_oStream >> pPoints[unIndex];
+			}
+
+			unsigned char* pAbTypes = new unsigned char[unCount];
+			if (!pAbTypes)
+			{
+				delete[] pPoints;
+				return SetError();
+			}
+
+			for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
+			{
+				m_oStream >> pAbTypes[unIndex];
+			}
+
+			T* pPoint1 = NULL, *pPoint2 = NULL;
+			for (unsigned int unIndex = 0, unPointIndex = 0; unIndex < unCount; unIndex++)
+			{
+				unsigned char unType = pAbTypes[unIndex];
+				T* pPoint = pPoints + unIndex;
+				if (PT_MOVETO == unType)
+				{
+					MoveTo(*pPoint);
+					unPointIndex = 0;
+				}
+				else if (PT_LINETO & unType)
+				{
+					LineTo(*pPoint);
+					if (PT_CLOSEFIGURE & unType)
+						ClosePath();
+					unPointIndex = 0;
+				}
+				else if (PT_BEZIERTO & unType)
+				{
+					if (0 == unPointIndex)
+					{
+						pPoint1 = pPoint;
+						unPointIndex = 1;
+					}
+					else if (1 == unPointIndex)
+					{
+						pPoint2 = pPoint;
+						unPointIndex = 2;
+					}
+					else if (2 == unPointIndex)
+					{
+						CurveTo(*pPoint1, *pPoint2, *pPoint);
+						unPointIndex = 0;
+
+						if (PT_CLOSEFIGURE & unType)
+							ClosePath();
+					}
+					else
+					{
+						SetError();
+						break;
+					}
+				}
+
+			}
+
+			delete[] pPoints;
+			delete[] pAbTypes;
+		}
+		void Read_EMR_POLYGON()
+		{
+			Read_EMR_POLYGON_BASE<TEmfPointL>();
+		}
+		void Read_EMR_POLYGON16()
+		{
+			Read_EMR_POLYGON_BASE<TEmfPointS>();
+		}
+		template<typename T>void Read_EMR_POLYGON_BASE()
+		{
+			TEmfRectL oBounds;
+			m_oStream >> oBounds;
+			unsigned int ulCount;
+			m_oStream >> ulCount;
+
+			if (ulCount <= 0)
+				return;
+
+			T oPoint;
+			m_oStream >> oPoint;
+			MoveTo(oPoint);
+			for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
+			{
+				m_oStream >> oPoint;
+				LineTo(oPoint);
+			}
+			ClosePath();
+			DrawPath(true, true);
+		}
+		void Read_EMR_POLYLINE()
+		{
+			Read_EMR_POLYLINE_BASE<TEmfPointL>();
+		}
+		void Read_EMR_POLYLINE16()
+		{
+			Read_EMR_POLYLINE_BASE<TEmfPointS>();
+		}
+		template<typename T>void Read_EMR_POLYLINE_BASE()
+		{
+			TEmfRectL oBounds;
+			m_oStream >> oBounds;
+			unsigned int ulCount;
+			m_oStream >> ulCount;
+
+			if (0 == ulCount)
+				return;
+
+			T oPoint;
+			m_oStream >> oPoint;
+			MoveTo(oPoint);
+
+			for (unsigned int ulIndex = 1; ulIndex < ulCount; ulIndex++)
+			{
+				m_oStream >> oPoint;
+				LineTo(oPoint);
+			}
+
+			DrawPath(true, false);
+		}
+		void Read_EMR_POLYLINETO()
+		{
+			Read_EMR_POLYLINETO_BASE<TEmfPointL>();
+		}
+		void Read_EMR_POLYLINETO16()
+		{
+			Read_EMR_POLYLINETO_BASE<TEmfPointS>();
+		}
+		template<typename T>void Read_EMR_POLYLINETO_BASE()
+		{
+			TEmfRectL oBounds;
+			m_oStream >> oBounds;
+
+			unsigned int ulCount;
+			m_oStream >> ulCount;
+
+			for (unsigned int ulIndex = 0; ulIndex < ulCount; ulIndex++)
+			{
+				T oPoint;
+				m_oStream >> oPoint;
+				LineTo(oPoint);
+			}
+		}
+		void Read_EMR_POLYPOLYGON()
+		{
+			Read_EMR_POLYPOLYGON_BASE<TEmfPointL>();
+		}
+		void Read_EMR_POLYPOLYGON16()
+		{
+			Read_EMR_POLYPOLYGON_BASE<TEmfPointS>();			
+		}
+		template<typename T>void Read_EMR_POLYPOLYGON_BASE()
+		{
+			TEmfRectL oBounds;
+			m_oStream >> oBounds;
+			unsigned int ulNumberOfPolygons;
+			m_oStream >> ulNumberOfPolygons;
+			unsigned int ulTotalPointsCount;
+			m_oStream >> ulTotalPointsCount;
+
+			unsigned int* pPolygonPointCount = new unsigned int[ulNumberOfPolygons];
+			if (!pPolygonPointCount)
+				return SetError();
+
+			for (unsigned int ulIndex = 0; ulIndex < ulNumberOfPolygons; ulIndex++)
+			{
+				m_oStream >> pPolygonPointCount[ulIndex];
+			}
+
+			for (unsigned int ulPolygonIndex = 0, unStartPointIndex = 0; ulPolygonIndex < ulNumberOfPolygons; ulPolygonIndex++)
+			{
+				unsigned int ulCurrentPolygonPointsCount = pPolygonPointCount[ulPolygonIndex];
+				if (0 == ulCurrentPolygonPointsCount)
+					continue;
+
+				T oPoint;
+				m_oStream >> oPoint;
+				MoveTo(oPoint);
+
+				for (unsigned int ulPointIndex = 1; ulPointIndex < ulCurrentPolygonPointsCount; ulPointIndex++)
+				{
+					unsigned int ulRealPointIndex = ulPointIndex + unStartPointIndex;
+					if (ulRealPointIndex >= ulTotalPointsCount)
+					{
+						delete[] pPolygonPointCount;
+						return SetError();
+					}
+
+					m_oStream >> oPoint;
+					LineTo(oPoint);
+				}
+
+				ClosePath();
+			}
+			DrawPath(true, true);
+
+			delete[] pPolygonPointCount;
+		}
+		void Read_EMR_POLYPOLYLINE()
+		{
+			Read_EMR_POLYPOLYLINE_BASE<TEmfPointL>();
+		}
 		void Read_EMR_POLYPOLYLINE16()
+		{
+			Read_EMR_POLYPOLYLINE_BASE<TEmfPointS>();
+		}
+		template<typename T>void Read_EMR_POLYPOLYLINE_BASE()
 		{
 			TEmfRectL oBounds;
 			m_oStream >> oBounds;
@@ -1281,7 +1563,7 @@ namespace MetaFile
 				if (0 == ulCurrentPolylinePointsCount)
 					continue;
 
-				TEmfPointS oPoint;
+				T oPoint;
 				m_oStream >> oPoint;
 				MoveTo(oPoint);
 
@@ -1296,27 +1578,150 @@ namespace MetaFile
 
 					m_oStream >> oPoint;
 					LineTo(oPoint);
-				}
-
-				DrawPath(true, false);
+				}				
 			}
+			DrawPath(true, false);
 
 			delete[] pPolylinePointCount;
 		}
-		void Read_EMR_SETLAYOUT()
+		void Read_EMR_POLYTEXTOUTA()
 		{
-			unsigned int ulLayoutMode;
-			m_oStream >> ulLayoutMode;
+			// TODO: Как найдутся файлы проверить данную запись.
+			TEmfPolyTextoutA oText;
+			m_oStream >> oText;
+			
+			if (0 == oText.cStrings)
+				return;
 
-			// TODO: реализовать
+			if (!oText.aEmrText)
+				return SetError();
+
+			for (unsigned int unIndex = 0; unIndex < oText.cStrings; unIndex++)
+			{
+				DrawTextA(oText.aEmrText[unIndex]);
+			}
 		}
-		void Read_EMR_SETBRUSHORGEX()
+		void Read_EMR_POLYTEXTOUTW()
 		{
-			TEmfPointL oOrigin;
-			m_oStream >> oOrigin;
+			// TODO: Как найдутся файлы проверить данную запись.
+			TEmfPolyTextoutW oText;
+			m_oStream >> oText;
 
-			// TODO: реализовать
+			if (0 == oText.cStrings)
+				return;
+
+			if (!oText.wEmrText)
+				return SetError();
+
+			for (unsigned int unIndex = 0; unIndex < oText.cStrings; unIndex++)
+			{
+				DrawTextA(oText.wEmrText[unIndex]);
+			}
 		}
+		void Read_EMR_RECTANGLE()
+		{
+			TEmfRectL oBox;
+			m_oStream >> oBox;
+
+			MoveTo(oBox.lLeft, oBox.lTop);
+			LineTo(oBox.lRight, oBox.lTop);
+			LineTo(oBox.lRight, oBox.lBottom);
+			LineTo(oBox.lLeft, oBox.lBottom);
+			ClosePath();
+			DrawPath(true, true);
+		}
+		void Read_EMR_ROUNDRECT()
+		{
+			TEmfRectL oBox;
+			TEmfSizeL oCorner;
+			m_oStream >> oBox >> oCorner;
+
+			int lBoxW = oBox.lRight - oBox.lLeft;
+			int lBoxH = oBox.lBottom - oBox.lTop;
+
+			int lRoundW = (std::min)((int)oCorner.cx, lBoxW / 2);
+			int lRoundH = (std::min)((int)oCorner.cy, lBoxH / 2);
+
+			MoveTo(oBox.lLeft + lRoundW, oBox.lTop);
+			LineTo(oBox.lRight - lRoundW, oBox.lTop);
+			ArcTo(oBox.lRight - lRoundW, oBox.lTop, oBox.lRight, oBox.lTop + lRoundH, -90, 90);
+			LineTo(oBox.lRight, oBox.lBottom - lRoundH);
+			ArcTo(oBox.lRight - lRoundW, oBox.lBottom - lRoundH, oBox.lRight, oBox.lBottom, 0, 90);
+			LineTo(oBox.lLeft + lRoundW, oBox.lBottom);
+			ArcTo(oBox.lLeft, oBox.lBottom - lRoundH, oBox.lLeft + lRoundW, oBox.lBottom, 90, 90);
+			LineTo(oBox.lLeft, oBox.lTop + lRoundH);
+			ArcTo(oBox.lLeft, oBox.lTop, oBox.lLeft + lRoundW, oBox.lTop + lRoundW, 180, 90);
+			ClosePath();
+			DrawPath(true, true);
+		}
+		void Read_EMR_SETPIXELV()
+		{
+			// TODO: Как найдутся файлы проверить данную запись.
+			TEmfPointL oPoint;
+			TEmfColor oColor;
+
+			m_oStream >> oPoint;
+			m_oStream >> oColor;
+
+			// Делаем цветом кисти
+			BYTE pBgraBuffer[4];
+			pBgraBuffer[0] = oColor.b;
+			pBgraBuffer[1] = oColor.g;
+			pBgraBuffer[2] = oColor.r;
+			pBgraBuffer[3] = 0xff;
+
+			m_pOutput->DrawBitmap(oPoint.x, oPoint.y, oPoint.x + 1, oPoint.y + 1, pBgraBuffer, 1, 1);
+		}
+		void Read_EMR_SMALLTEXTOUT()
+		{
+			TEmfSmallTextout oText;
+			m_oStream >> oText;
+
+			// Переводим oText в TEmfEmrText
+			TEmfEmrText oEmrText;
+			oEmrText.Chars        = oText.cChars;
+			oEmrText.offDx        = 0;
+			oEmrText.offString    = 0;
+			oEmrText.Options      = oText.fuOptions;
+			oEmrText.OutputString = oText.TextString;
+			oEmrText.Reference.x  = oText.x;
+			oEmrText.Reference.y  = oText.y;
+			oEmrText.OutputDx     = NULL;
+
+			// Запись не документированна нормально, остается несколько байт в конце, непонятно почему.
+			unsigned int unSize = oText.GetSize();
+			if (m_ulRecordSize - unSize > 0)
+				m_oStream.Skip(m_ulRecordSize - unSize);
+			else if (m_ulRecordSize - unSize < 0)
+				m_oStream.SeekBack(unSize - m_ulRecordSize);
+
+			DrawTextW(oEmrText);
+
+			// Поскольку мы просто скопировали ссылку на строку, а не скопировали сами строку обнуляем здесь, потому 
+			// что на деструкторе структуры освобождается память.
+			oEmrText.OutputString = NULL;
+		}
+		void Read_EMR_STROKEANDFILLPATH()
+		{
+			TEmfRectL oBounds;
+			m_oStream >> oBounds;
+			if (m_pOutput && m_pPath)
+			{
+				m_pPath->Draw(m_pOutput, true, true);
+				RELEASEOBJECT(m_pPath);
+			}
+		}
+		void Read_EMR_STROKEPATH()
+		{
+			TEmfRectL oBounds;
+			m_oStream >> oBounds;
+			if (m_pOutput && m_pPath)
+			{
+				m_pPath->Draw(m_pOutput, true, false);
+				RELEASEOBJECT(m_pPath);
+			}
+		}
+
 
 	private:
 

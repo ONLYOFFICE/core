@@ -564,8 +564,8 @@ namespace MetaFile
 	{
 		return &m_oClip;
 	}
-	void CEmfDC::ClipToPath()
+	void CEmfDC::ClipToPath(CEmfPath* pPath, unsigned int unMode)
 	{
-
+		m_oClip.SetPath(pPath, unMode);
 	}
 }

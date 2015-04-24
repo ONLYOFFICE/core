@@ -143,29 +143,62 @@ namespace MetaFile
 
 			nLastBitCount = (int)pow((double)2, (double)nLastBitCount);
 
-			for (int nY = 0, nIndex = 0; nY < abs(nHeight); nY++)
+			if (nHeight < 0)
 			{
-				for (int nX = 0; nX < nWidthBytes; nX++)
+				for (int nY = 0; nY < abs(nHeight); nY++)
 				{
-					int nByte = *pBuffer; pBuffer++; lBufLen--;
-					int nBitCount = 128;
-					if (nX == nWidthBytes - 1)
-						nBitCount = nLastBitCount;
-
-					for (int nBitIndex = nBitCount; nBitIndex > 0; nBitIndex /= 2)
+					int nIndex = 4 * nWidth * nY;
+					for (int nX = 0; nX < nWidthBytes; nX++)
 					{
-						int nBit = (nByte & nBitIndex);
-						TRgbQuad* pColor = (nBit ? &oColor2 : &oColor1);
-						pBgraBuffer[nIndex * 4 + 0] = pColor->b;
-						pBgraBuffer[nIndex * 4 + 1] = pColor->g;
-						pBgraBuffer[nIndex * 4 + 2] = pColor->r;
-						pBgraBuffer[nIndex * 4 + 3] = 255;
-						nIndex++;
+						int nByte = *pBuffer; pBuffer++; lBufLen--;
+						int nBitCount = 128;
+						if (nX == nWidthBytes - 1)
+							nBitCount = nLastBitCount;
+
+						for (int nBitIndex = nBitCount; nBitIndex > 0; nBitIndex /= 2)
+						{
+							int nBit = (nByte & nBitIndex);
+							TRgbQuad* pColor = (nBit ? &oColor2 : &oColor1);
+							pBgraBuffer[nIndex + 0] = pColor->b;
+							pBgraBuffer[nIndex + 1] = pColor->g;
+							pBgraBuffer[nIndex + 2] = pColor->r;
+							pBgraBuffer[nIndex + 3] = 255;
+							nIndex += 4;
+						}
+					}
+					for (int nAddIndex = 0; nAddIndex < nAdditBytes; nAddIndex++)
+					{
+						int nByte = *pBuffer; pBuffer++; lBufLen--;
 					}
 				}
-				for (int nAddIndex = 0; nAddIndex < nAdditBytes; nAddIndex++)
+			}
+			else
+			{
+				for (int nY = abs(nHeight) - 1; nY >= 0; nY--)
 				{
-					int nByte = *pBuffer; pBuffer++; lBufLen--;
+					int nIndex = 4 * nWidth * nY;
+					for (int nX = 0; nX < nWidthBytes; nX++)
+					{
+						int nByte = *pBuffer; pBuffer++; lBufLen--;
+						int nBitCount = 128;
+						if (nX == nWidthBytes - 1)
+							nBitCount = nLastBitCount;
+
+						for (int nBitIndex = nBitCount; nBitIndex > 0; nBitIndex /= 2)
+						{
+							int nBit = (nByte & nBitIndex);
+							TRgbQuad* pColor = (nBit ? &oColor2 : &oColor1);
+							pBgraBuffer[nIndex + 0] = pColor->b;
+							pBgraBuffer[nIndex + 1] = pColor->g;
+							pBgraBuffer[nIndex + 2] = pColor->r;
+							pBgraBuffer[nIndex + 3] = 255;
+							nIndex += 4;
+						}
+					}
+					for (int nAddIndex = 0; nAddIndex < nAdditBytes; nAddIndex++)
+					{
+						int nByte = *pBuffer; pBuffer++; lBufLen--;
+					}
 				}
 			}
 

@@ -11,6 +11,7 @@ namespace MetaFile
 {
 	class CEmfFile;
 	class CEmfDC;
+	class CEmfPath;
 
 	class CEmfPlayer
 	{
@@ -96,7 +97,7 @@ namespace MetaFile
 		void            SetCurPos(int lX, int lY);
 		TEmfPointL&     GetCurPos();
 		CEmfClip*       GetClip();
-		void            ClipToPath();
+		void            ClipToPath(CEmfPath* pPath, unsigned int unMode);
 
 	private:
 
@@ -108,7 +109,7 @@ namespace MetaFile
 
 		CEmfLogPen      m_oDefaultPen;
 		CEmfLogBrushEx  m_oDefaultBrush;
-		unsigned int   m_ulMapMode;
+		unsigned int    m_ulMapMode;
 		CEmfLogBrushEx* m_pBrush;
 		CEmfLogPen*     m_pPen;
 		CEmfLogFont*    m_pFont;
@@ -117,12 +118,12 @@ namespace MetaFile
 		TEmfXForm       m_oInverseTransform;
 		TEmfColor       m_oTextColor;
 		TEmfColor       m_oBgColor;
-		unsigned int   m_ulTextAlign;
-		unsigned int   m_ulBgMode;
-		unsigned int   m_ulMiterLimit;
-		unsigned int   m_ulFillMode;
-		unsigned int   m_ulStretchMode;
-		unsigned int   m_ulRop2Mode;
+		unsigned int    m_ulTextAlign;
+		unsigned int    m_ulBgMode;
+		unsigned int    m_ulMiterLimit;
+		unsigned int    m_ulFillMode;
+		unsigned int    m_ulStretchMode;
+		unsigned int    m_ulRop2Mode;
 		double          m_dPixelWidth;
 		double          m_dPixelHeight;
 		TEmfWindow      m_oWindow;

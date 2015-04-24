@@ -33,6 +33,9 @@ namespace MetaFile
 
 		virtual void ResetClip() = 0;
 		virtual void IntersectClip(int lLeft, int lTop, int lRight, int lBottom) = 0;
+		virtual void StartClipPath(unsigned int unMode) = 0;
+		virtual void EndClipPath(unsigned int unMode) = 0;
+
 
 		virtual void UpdateDC() = 0;
 	};

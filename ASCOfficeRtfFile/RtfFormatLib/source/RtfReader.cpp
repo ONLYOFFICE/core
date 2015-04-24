@@ -2,11 +2,6 @@
 #include "Writer/OOXWriter.h"
 #include "DestinationCommand.h"
 
-#if !defined (_WIN32) && !defined(_WIN64)
-    #include <boost/locale.hpp>
-    #include <locale>
-    typedef std::codecvt<wchar_t, char, mbstate_t> codecvt_type;
-#endif
 
 RtfReader::RtfReader(RtfDocument& oDocument, CString sFilename ):m_oDocument(oDocument),m_sFilename(sFilename)
 {
@@ -46,6 +41,7 @@ void RtfReader::PopState()
 	//delete psaveOld;
 }
 
+
 CString RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharString, RtfDocument& oDocument, RtfReader& oReader)
 {
     CString sResult;
@@ -53,7 +49,6 @@ CString RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharString
     if( false == sCharString.empty())
     {
         int         nCodepage = -1;
-        std::string sCodepage;
 
         //применяем параметры codepage от текущего шрифта todo associated fonts.
         RtfFont oFont;
@@ -78,59 +73,21 @@ CString RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharString
                     if( PROP_DEF != oDocument.m_oProperty.m_nAnsiCodePage )
                     {
                         nCodepage = oDocument.m_oProperty.m_nAnsiCodePage;
-                        sCodepage = oDocument.m_oProperty.m_sAnsiCodePage;
                     }
                     else
                         nCodepage = CP_ACP;
                     break;
                 }
-            case RtfDocumentProperty::cp_mac:   nCodepage = CP_MACCP;   sCodepage = "macintosh";    break; //?? todooo
-            case RtfDocumentProperty::cp_pc:    nCodepage = 437;        sCodepage = "IBM437";       break; //ms dos latin us
-            case RtfDocumentProperty::cp_pca:   nCodepage = 850;        sCodepage = "ibm850";       break; //ms dos latin eu
+            case RtfDocumentProperty::cp_mac:   nCodepage = CP_MACCP;   break; //?? todooo
+            case RtfDocumentProperty::cp_pc:    nCodepage = 437;        break; //ms dos latin us
+            case RtfDocumentProperty::cp_pca:   nCodepage = 850;        break; //ms dos latin eu
             }
         }
         //если ничего нет ставим ANSI
         if( -1 == nCodepage )
             nCodepage = CP_ACP;
 
-#if defined (_WIN32) || defined (_WIN64)
-        int nLengthW ;
-		nLengthW = MultiByteToWideChar(nCodepage, 0, sCharString.c_str(), -1, NULL, NULL);
-		MultiByteToWideChar(nCodepage, 0, sCharString.c_str(), -1, sResult.GetBuffer( nLengthW ), nLengthW);
-        sResult.ReleaseBuffer();
-#else
-        if (nCodepage > 0)
-        {
-            std::mbstate_t state;
-
-            boost::locale::generator gen;
-            std::locale loc(gen(sCodepage.c_str()));
-
-            const codecvt_type& cdcvt = std::use_facet<codecvt_type>(loc);
-
-            wchar_t * wchars = new wchar_t [sCharString.size()+ 1];
-
-            const char *in_next = 0;
-            wchar_t *out_next = 0;
-
-            std::codecvt_base::result r;
-            r = cdcvt.in (state, sCharString.c_str(), sCharString.c_str() + sCharString.length(), in_next,
-                          wchars, wchars + sCharString.size() + 1, out_next);
-            *out_next = '\0';
-
-            sResult = CString(wchars);
-
-            delete [] wchars;
-        }
-        else
-        {
-            //ansi
-            std::wstring s(sCharString.begin(), sCharString.end());
-
-            sResult = std_string2string(s);
-        }
-
-#endif
+        sResult = RtfUtility::convert_string(sCharString.begin(), sCharString.end(), nCodepage);
     }
     return sResult;
 }

@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Wmf">
+      <UniqueIdentifier>{d2706d5c-ed10-4c43-bbb2-211400bb40ac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Emf">
+      <UniqueIdentifier>{4c9bc033-8ce8-4711-9c98-6a7605147e5f}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Wmf\RendererOutput.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Wmf\WmfCharsets.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Wmf\WmfCodePage932.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Wmf\WmfCodePage936.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Wmf\WmfCodePage949.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Wmf\WmfCodePage950.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Wmf\WmfCodePage1361.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Wmf\WmfColor.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Wmf\WmfFile.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Wmf\WmfMemory.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Wmf\WmfOutputDevice.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Wmf\WmfRegion.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Wmf\WmfTypes.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Wmf\WmfUtils.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="MetaFile.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Emf\EmfFile.h">
+      <Filter>Emf</Filter>
+    </ClInclude>
+    <ClInclude Include="Emf\EmfTypes.h">
+      <Filter>Emf</Filter>
+    </ClInclude>
+    <ClInclude Include="Emf\EmfOutputDevice.h">
+      <Filter>Emf</Filter>
+    </ClInclude>
+    <ClInclude Include="Common.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Emf\RendererOutput.h">
+      <Filter>Emf</Filter>
+    </ClInclude>
+    <ClInclude Include="Emf\EmfPlayer.h">
+      <Filter>Emf</Filter>
+    </ClInclude>
+    <ClInclude Include="Emf\EmfObjects.h">
+      <Filter>Emf</Filter>
+    </ClInclude>
+    <ClInclude Include="stdafx.h">
+      <Filter>Resource Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Emf\EmfPath.h">
+      <Filter>Emf</Filter>
+    </ClInclude>
+    <ClInclude Include="Emf\EmfClip.h">
+      <Filter>Emf</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="TestMain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="MetaFile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Common.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Emf\EmfPlayer.cpp">
+      <Filter>Emf</Filter>
+    </ClCompile>
+    <ClCompile Include="Emf\EmfPath.cpp">
+      <Filter>Emf</Filter>
+    </ClCompile>
+    <ClCompile Include="Emf\EmfObjects.cpp">
+      <Filter>Emf</Filter>
+    </ClCompile>
+    <ClCompile Include="Emf\EmfClip.cpp">
+      <Filter>Emf</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

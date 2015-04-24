@@ -116,6 +116,8 @@ const long c_nClipRegionTypeEvenOdd		= 0x0001;
 // тип объединения клипов
 const long c_nClipRegionIntersect		= 0x0000;
 const long c_nClipRegionUnion			= 0x0100;
+const long c_nClipRegionXor             = 0x0200;
+const long c_nClipRegionDiff            = 0x0400;
 
 // флаги в CommandDrawTextEx
 const long c_nFlagNone			= 0x0000;

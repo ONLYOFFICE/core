@@ -559,6 +559,31 @@ namespace MetaFile
 				
 			return *this;
 		}
+		CDataStream& operator>>(TEmfAlphaBlend& oBitmap)
+		{
+			*this >> oBitmap.Bounds;
+			*this >> oBitmap.xDest;
+			*this >> oBitmap.yDest;
+			*this >> oBitmap.cxDest;
+			*this >> oBitmap.cyDest;
+			*this >> oBitmap.BlendOperation;
+			*this >> oBitmap.BlendFlags;
+			*this >> oBitmap.SrcConstantAlpha;
+			*this >> oBitmap.AlphaFormat;
+			*this >> oBitmap.xSrc;
+			*this >> oBitmap.ySrc;
+			*this >> oBitmap.XformSrc;
+			*this >> oBitmap.BkColor;
+			*this >> oBitmap.UsageSrc;
+			*this >> oBitmap.offBmiSrc;
+			*this >> oBitmap.cbBmiSrc;
+			*this >> oBitmap.offBitsSrc;
+			*this >> oBitmap.cbBitsSrc;
+			*this >> oBitmap.cxSrc;
+			*this >> oBitmap.cySrc;
+
+			return *this;
+		}
 
 		bool IsValid() const
 		{

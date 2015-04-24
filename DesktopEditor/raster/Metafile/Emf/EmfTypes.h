@@ -683,5 +683,30 @@ namespace MetaFile
 		}
 	};
 
+	struct TEmfAlphaBlend
+	{
+		TEmfRectL     Bounds;
+		int           xDest;
+		int           yDest;
+		int           cxDest;
+		int           cyDest;
+		unsigned char BlendOperation;
+		unsigned char BlendFlags;
+		unsigned char SrcConstantAlpha;
+		unsigned char AlphaFormat;
+		int           xSrc;
+		int           ySrc;
+		TEmfXForm     XformSrc;
+		TEmfColor     BkColor;
+		unsigned int  UsageSrc;
+		unsigned int  offBmiSrc;
+		unsigned int  cbBmiSrc;
+		unsigned int  offBitsSrc;
+		unsigned int  cbBitsSrc;
+		int           cxSrc;
+		int           cySrc;
+	};
+
+	const unsigned int c_nTEmfAlphaBlendSize = 100;
 };
 #endif //_EMF_TYPES_H

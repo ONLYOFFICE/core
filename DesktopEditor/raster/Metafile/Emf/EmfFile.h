@@ -99,7 +99,6 @@ namespace MetaFile
 			if (!m_oStream.IsValid())
 				SetError();
 
-			m_lTest = 0;
 			unsigned int ulSize, ulType;
 			unsigned int ulNumber = 0;
 
@@ -131,6 +130,7 @@ namespace MetaFile
 					//-----------------------------------------------------------
 					// 2.3.1 Bitmap
 					//-----------------------------------------------------------
+					case EMR_ALPHABLEND:        Read_EMR_ALPHABLEND(); break;
 					case EMR_BITBLT:            Read_EMR_BITBLT(); break;
 					case EMR_STRETCHDIBITS:     Read_EMR_STRETCHDIBITS(); break;
 					case EMR_SETDIBITSTODEVICE: Read_EMR_SETDIBITSTODEVICE(); break;
@@ -351,28 +351,28 @@ namespace MetaFile
 		}
 		double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY)
 		{
-			int nX0 = (nL + nR) / 2;
-			int nY0 = (nT + nB) / 2;
+			double dX0 = (nL + nR) / 2.0;
+			double dY0 = (nT + nB) / 2.0;
 
 			// Определим квадрант
 			int nQuarter = -1;
-			if (nX >= nX0)
+			if (nX >= dX0)
 			{
-				if (nY <= nY0)
+				if (nY <= dY0)
 					nQuarter = 0;
 				else
 					nQuarter = 3;
 			}
 			else
 			{
-				if (nY <= nY0)
+				if (nY <= dY0)
 					nQuarter = 1;
 				else
 					nQuarter = 2;
 			}
 
-			double dDist = std::sqrt((nX - nX0) * (nX - nX0) + (nY - nY0) * (nY - nY0));
-			double dRadAngle = std::asin(std::abs(nY - nY0) / dDist);
+			double dDist = std::sqrt((nX - dX0) * (nX - dX0) + (nY - dY0) * (nY - dY0));
+			double dRadAngle = std::asin(std::abs(nY - dY0) / dDist);
 			
 			double dAngle = dRadAngle * 180 / 3.1415926;
 			switch (nQuarter)
@@ -493,7 +493,7 @@ namespace MetaFile
 			if (m_pOutput)
 				m_pOutput->UpdateDC();
 		}
-		void DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY)
+		void DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY, int nTextW, bool bWithOutLast)
 		{
 			int nX = _nX;
 			int nY = _nY;
@@ -503,18 +503,11 @@ namespace MetaFile
 				nX = m_pDC->GetCurPos().x;
 				nY = m_pDC->GetCurPos().y;
 			}
-			else
-			{
-				CEmfLogFont* pFont = m_pDC->GetFont();
-				if (pFont && pFont->LogFontEx.LogFont.Height < 0)
-				{
-					// Возможно нужно делать такое же смещение и с флагом TA_UPDATECP.
-					//nY -= pFont->LogFontEx.LogFont.Height;
-				}
-			}
 
 			if (m_pOutput)
-				m_pOutput->DrawText(wsString.c_str(), unCharsCount, nX, nY);
+			{
+				m_pOutput->DrawText(wsString.c_str(), unCharsCount, nX, nY, nTextW, bWithOutLast);
+			}
 		}
 		void DrawTextA(TEmfEmrText& oText)
 		{
@@ -529,7 +522,24 @@ namespace MetaFile
 				wsText += wUnicode;
 			}
 
-			DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y);
+			int nTextW = 0;
+			bool bWithOutLast = false;
+			if (oText.OutputDx)
+			{
+				for (unsigned int unIndex = 0; unIndex < oText.Chars; unIndex++)
+				{
+					nTextW += oText.OutputDx[unIndex];
+
+					if ((oText.Chars - 1 == unIndex || (oText.Options & ETO_PDY && oText.Chars - 2 == unIndex)) && 0 == oText.OutputDx[unIndex])
+						bWithOutLast = true;
+
+					// Пропускаем сдвиги по Y если они есть
+					if (oText.Options & ETO_PDY)
+						unIndex++;
+				}
+			}
+
+			DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, nTextW, bWithOutLast);
 		}
 		void DrawTextW(TEmfEmrText& oText)
 		{
@@ -538,7 +548,24 @@ namespace MetaFile
 
 			std::wstring wsText((wchar_t*)oText.OutputString);
 
-			DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y);
+			int nTextW = 0;
+			bool bWithOutLast = false;
+			if (oText.OutputDx)
+			{
+				for (unsigned int unIndex = 0; unIndex < oText.Chars; unIndex++)
+				{
+					nTextW += oText.OutputDx[unIndex];
+
+					if ((oText.Chars - 1 == unIndex || (oText.Options & ETO_PDY && oText.Chars - 2 == unIndex)) && 0 == oText.OutputDx[unIndex])
+						bWithOutLast = true;
+
+					// Пропускаем сдвиги по Y если они есть
+					if (oText.Options & ETO_PDY)
+						unIndex++;
+				}
+			}
+
+			DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, nTextW, bWithOutLast);
 		}
 
 		void Read_EMR_HEADER()
@@ -582,6 +609,50 @@ namespace MetaFile
 			m_oHeader.oFrameToBounds.lRight  = lR;
 			m_oHeader.oFrameToBounds.lTop    = lT;
 			m_oHeader.oFrameToBounds.lBottom = lB;
+		}
+		void Read_EMR_ALPHABLEND()
+		{
+			TEmfAlphaBlend oBitmap;
+			m_oStream >> oBitmap;
+
+			BYTE* pBgraBuffer = NULL;
+			unsigned int unWidth, unHeight;
+
+			if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, c_nTEmfAlphaBlendSize + 8, &pBgraBuffer, &unWidth, &unHeight))
+			{
+				if (m_pOutput)
+				{
+					if (0x00 == oBitmap.AlphaFormat)
+					{
+						for (unsigned int unY = 0; unY < unHeight; unY++)
+						{
+							for (unsigned int unX = 0; unX < unWidth; unX++)
+							{
+								unsigned int unIndex = (unX + unY * unWidth) * 4;
+								pBgraBuffer[unIndex + 3] = oBitmap.SrcConstantAlpha;
+							}
+						}
+					}
+					else
+					{
+						double dAlphaKoef = oBitmap.SrcConstantAlpha / 255.0;
+						for (unsigned int unY = 0; unY < unHeight; unY++)
+						{
+							for (unsigned int unX = 0; unX < unWidth; unX++)
+							{
+								unsigned int unIndex = (unX + unY * unWidth) * 4;
+								pBgraBuffer[unIndex + 3] = (unsigned char)(dAlphaKoef * pBgraBuffer[unIndex + 3]);
+							}
+						}
+
+					}
+
+					m_pOutput->DrawBitmap(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, unWidth, unHeight);
+				}
+			}
+
+			if (pBgraBuffer)
+				delete[] pBgraBuffer;
 		}
 		void Read_EMR_STRETCHDIBITS()
 		{
@@ -1152,30 +1223,25 @@ namespace MetaFile
 			ArcTo(oCenter.x - unRadius, oCenter.y - unRadius, oCenter.x + unRadius, oCenter.y + unRadius, dStartAngle, dSweepAngle);
 			DrawPath(true, false);
 		}
-		void Read_EMR_ARC_BASE(TEmfRectL& oBox, TEmfPointL& oStart, TEmfPointL& oEnd, double& dStartAngle, double& dSweep)
+		void Read_EMR_ARC_BASE(TEmfRectL& oBox, TEmfPointL& oStart, TEmfPointL& oEnd, double& dStartAngle, double& dSweepAngle)
 		{
 			m_oStream >> oBox >> oStart >> oEnd;
 
-			int nX0 = (oBox.lRight + oBox.lLeft) / 2;
-			int nY0 = (oBox.lBottom + oBox.lTop) / 2;
-
 			dStartAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oStart.x, oStart.y);
-			double dEndAngle   = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y);
-
-			dSweep = dEndAngle - dStartAngle;
+			dSweepAngle = GetEllipseAngle(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, oEnd.x, oEnd.y) - dStartAngle;
 
 			// TODO: Проверить здесь
-			if (dSweep < 0)
-				dSweep += 360;
+			if (dSweepAngle < 0.001)
+				dSweepAngle += 360;
 		}
 		void Read_EMR_ARC()
 		{
-			// TODO: Как найдутся файлы проверить данную запись.
 			TEmfRectL oBox;
 			TEmfPointL oStart, oEnd;
 			double dStartAngle, dSweep;
 			Read_EMR_ARC_BASE(oBox, oStart, oEnd, dStartAngle, dSweep);
 
+			MoveTo(oStart);
 			ArcTo(oBox.lLeft, oBox.lTop, oBox.lRight, oBox.lBottom, dStartAngle, dSweep);
 			DrawPath(true, false);
 		}
@@ -1656,7 +1722,6 @@ namespace MetaFile
 		}
 		void Read_EMR_SETPIXELV()
 		{
-			// TODO: Как найдутся файлы проверить данную запись.
 			TEmfPointL oPoint;
 			TEmfColor oColor;
 
@@ -1670,7 +1735,8 @@ namespace MetaFile
 			pBgraBuffer[2] = oColor.r;
 			pBgraBuffer[3] = 0xff;
 
-			m_pOutput->DrawBitmap(oPoint.x, oPoint.y, oPoint.x + 1, oPoint.y + 1, pBgraBuffer, 1, 1);
+			if (m_pOutput)
+				m_pOutput->DrawBitmap(oPoint.x, oPoint.y, 1, 1, pBgraBuffer, 1, 1);
 		}
 		void Read_EMR_SMALLTEXTOUT()
 		{
@@ -1722,7 +1788,6 @@ namespace MetaFile
 			}
 		}
 
-
 	private:
 
 		CDataStream       m_oStream;
@@ -1731,15 +1796,13 @@ namespace MetaFile
 		CFontManager*     m_pFontManager;
 		TEmfHeader        m_oHeader;
 
-		unsigned int     m_ulRecordSize;
+		unsigned int      m_ulRecordSize;
 		CEmfOutputDevice* m_pOutput;
 
 		CEmfDC*           m_pDC;
 		CEmfPlayer        m_oPlayer;
 
 		CEmfPath*         m_pPath;
-
-		int              m_lTest;
 
 		friend class CEmfRendererOutput;
 		friend class CEmfPlayer;

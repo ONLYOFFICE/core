@@ -587,6 +587,8 @@ private:
 public: 
 	RtfFontTableReader()
 	{
+		m_bUseGlobalCodepage = true;
+
 		m_eInternalState = is_normal;
 		m_oFont.SetDefaultOOX();
 	}
@@ -667,7 +669,7 @@ public:
 				m_oFont.m_sPanose += sText;
 			else if( is_altname == m_eInternalState )
 				m_oFont.m_sAltName += sText;
-			else if( is_normal == m_eInternalState )
+			else if( is_normal == m_eInternalState && sText.GetLength() > 0)
 			{
 				if( sText.Find(';') != -1 )
 				{
@@ -1873,7 +1875,8 @@ private: void TryToPepairResult( RtfDocument& oDocument, RtfReader& oReader )
 			}
 
 			int nSkipChar = 0;
-			CString sResultSymbol = RtfAbstractReader::ExecuteTextInternal( oDocument, oReader, sCharA, false, 0, nSkipChar );
+			RtfAbstractReader reader;
+			CString sResultSymbol = reader.ExecuteTextInternal( oDocument, oReader, sCharA, false, 0, nSkipChar );
 			m_oField.m_oResult = TextItemContainerPtr( new TextItemContainer() );
 			RtfParagraphPtr oNewPar	= RtfParagraphPtr( new RtfParagraph() );
 			RtfCharPtr oNewChar = RtfCharPtr( new RtfChar() );
@@ -2011,8 +2014,10 @@ public:
 			 else
 				 sBullet += (char)  nWinChar;
 			 int nSkip = 0;
-			 CString sText = RtfAbstractReader::ExecuteTextInternal( oDocument, oReader, sBullet, false, 0, nSkip );
-			 ExecuteText( oDocument, oReader, sText );
+
+			RtfAbstractReader reader;
+			CString sText = reader.ExecuteTextInternal( oDocument, oReader, sBullet, false, 0, nSkip );
+			ExecuteText( oDocument, oReader, sText );
 		 }
 	 }
 	//void ParseToRenderable( std::vector< boost::shared_ptr<ITextItem> >& aOutArray )

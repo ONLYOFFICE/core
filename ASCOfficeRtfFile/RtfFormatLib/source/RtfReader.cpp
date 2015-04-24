@@ -41,7 +41,6 @@ void RtfReader::PopState()
 	//delete psaveOld;
 }
 
-
 CString RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharString, RtfDocument& oDocument, RtfReader& oReader)
 {
     CString sResult;
@@ -52,7 +51,7 @@ CString RtfAbstractReader::ExecuteTextInternalCodePage( std::string& sCharString
 
         //применяем параметры codepage от текущего шрифта todo associated fonts.
         RtfFont oFont;
-        if( true == oDocument.m_oFontTable.GetFont( oReader.m_oState->m_oCharProp.m_nFont, oFont ) )
+        if( true == oDocument.m_oFontTable.GetFont( oReader.m_oState->m_oCharProp.m_nFont, oFont ) && !m_bUseGlobalCodepage)
         {
             if( PROP_DEF != oFont.m_nCharset )
             {

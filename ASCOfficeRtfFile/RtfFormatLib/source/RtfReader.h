@@ -79,6 +79,8 @@ public:
 		m_nCurGroups = 1;
 		m_oFileWriter = NULL;
 		m_bStopReader = false;
+
+		m_bUseGlobalCodepage = false;
 	}
 	bool Parse(RtfDocument& oDocument, RtfReader& oReader )
 	{
@@ -202,7 +204,7 @@ public:
 	virtual void ExitReader2( RtfDocument& oDocument, RtfReader& oReader )
 	{
 	}
-    static CString ExecuteTextInternal( RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, bool bHasPar, int nPar, int& nSkipChars)
+    /*static */CString ExecuteTextInternal( RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, bool bHasPar, int nPar, int& nSkipChars)
 	{
 		CString sResult;
 
@@ -242,7 +244,7 @@ public:
 			}
 		}
 	}
-    static void ExecuteTextInternalSkipChars(CString & sResult, RtfReader& oReader, std::string & sKey, int& nSkipChars)
+    /*static */void ExecuteTextInternalSkipChars(CString & sResult, RtfReader& oReader, std::string & sKey, int& nSkipChars)
 	{
 		//удаляем символы вслед за юникодом
 		if( nSkipChars > 0 )
@@ -265,7 +267,7 @@ public:
 			nSkipChars = oReader.m_oState->m_nUD;
 		}
 	}
-    static CString ExecuteTextInternalCodePage( std::string & sCharString, RtfDocument & oDocument, RtfReader & oReader);
+    /*static */CString ExecuteTextInternalCodePage( std::string & sCharString, RtfDocument & oDocument, RtfReader & oReader);
 
 private:
 	RtfToken	m_oTok;
@@ -274,7 +276,10 @@ private:
 	int			m_nSkipChars;
 	bool		m_bSkip;
 	bool		m_bStopReader;
+
 protected: 
-	int m_nCurGroups;
+	int			m_nCurGroups;
+
+	bool	m_bUseGlobalCodepage;
 };
 

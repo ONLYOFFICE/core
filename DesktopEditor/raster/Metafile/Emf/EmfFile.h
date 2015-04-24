@@ -371,8 +371,8 @@ namespace MetaFile
 					nQuarter = 2;
 			}
 
-			double dDist = std::sqrt((nX - dX0) * (nX - dX0) + (nY - dY0) * (nY - dY0));
-			double dRadAngle = std::asin(std::abs(nY - dY0) / dDist);
+			double dDist = /*std::*/sqrt((double)(nX - dX0) * (nX - dX0) + (nY - dY0) * (nY - dY0));
+			double dRadAngle = /*std::*/asin(/*std::*/abs(nY - dY0) / dDist);
 			
 			double dAngle = dRadAngle * 180 / 3.1415926;
 			switch (nQuarter)

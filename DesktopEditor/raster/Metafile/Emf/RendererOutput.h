@@ -141,6 +141,9 @@ namespace MetaFile
 			{
 				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
 				pFontManager->LoadString1(wsText, 0, 0);
+				double dFHeight  = dFontHeight * pFontManager->m_pFont->GetHeight() / pFontManager->m_pFont->m_lUnits_Per_Em * 25.4 / 72;
+				double dFDescent = dFontHeight * pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em * 25.4 / 72;
+				double dFAscent  = dFHeight - std::abs(dFDescent);
 				TBBox oBox = pFontManager->MeasureString2();
 				fL = oBox.fMinX;
 				fT = oBox.fMinY;
@@ -154,6 +157,17 @@ namespace MetaFile
 				fT *= (float)fKoef;
 				fW *= (float)fKoef;
 				fH *= (float)fKoef;
+
+				if (std::abs(fT) < dFAscent)
+				{
+					if (fT < 0)
+						fT = -dFAscent;
+					else
+						fT = dFAscent;
+				}
+
+				if (fH < dFHeight)
+					fH = dFHeight;
 
 				fUndX1 *= (float)fKoef; fUndY1 *= (float)fKoef;
 				fUndX2 *= (float)fKoef; fUndY2 *= (float)fKoef;

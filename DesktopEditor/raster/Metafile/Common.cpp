@@ -504,9 +504,6 @@ namespace MetaFile
 		}
 		else if (BI_BITCOUNT_5 == ushBitCount)
 		{
-			// Пропускаем таблицу цветов (она не нужна)
-			pBuffer += unColorUsed * 4; lBufLen -= unColorUsed * 4;
-
 			if (BI_RGB != unCompression)
 				return false; // TODO: Сделать данный вариант, как только будет файлы с данным типом
 
@@ -572,11 +569,36 @@ namespace MetaFile
 		}
 		else if (BI_BITCOUNT_6 == ushBitCount)
 		{
-			// Пропускаем таблицу цветов (она не нужна)
-			pBuffer += unColorUsed * 4; lBufLen -= unColorUsed * 4;
+			unsigned int ulMaskR  = 0xff000000, ulMaskB = 0x00ff0000, ulMaskG = 0x0000ff00;
+			unsigned int ulShiftR = 24, ulShiftB = 16, ulShiftG = 8;
+			double dKoefR = 1.0, dKoefB = 1.0, dKoefG = 1.0;
+			bool bMask = false;
 
-			if (BI_RGB != unCompression)
-				return false; // TO DO: Сделать данный вариант, как только будет файлы с данным типом
+			if (BI_RGB == unCompression)
+			{
+				// Маски, сдвиги и коэффициенты уже заполнены стандартными значениями для масок
+			}
+			else if (BI_BITFIELDS == unCompression)
+			{				
+				if (oHeaderStream.CanRead() < 12)
+					return false;
+
+				oHeaderStream >> ulMaskB;
+				oHeaderStream >> ulMaskG;
+				oHeaderStream >> ulMaskR;
+
+				ulShiftR = GetLowestBit(ulMaskR);
+				ulShiftB = GetLowestBit(ulMaskB);
+				ulShiftG = GetLowestBit(ulMaskG);
+
+				dKoefR = 255.0 / (ulMaskR >> ulShiftR);
+				dKoefG = 255.0 / (ulMaskG >> ulShiftG);
+				dKoefB = 255.0 / (ulMaskB >> ulShiftB);
+
+				bMask = true;
+			}
+			else
+				return false;
 
 			// Считываем саму картинку
 			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
@@ -608,10 +630,26 @@ namespace MetaFile
 					{
 						int nIndex = 4 * ((nWidth + nAdd) * nY + nX);
 
-						pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
-						pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
-						pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
-						pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
+						if (bMask)
+						{
+							unsigned int unValue = ((pBuffer[3] << 24) | (pBuffer[2] << 16) | (pBuffer[1] << 8) | pBuffer[0]) & 0xFFFFFFFF; pBuffer += 4; lBufLen -= 4;
+
+							unsigned char unR = (unValue & ulMaskR) >> ulShiftR;
+							unsigned char unG = (unValue & ulMaskG) >> ulShiftG;
+							unsigned char unB = (unValue & ulMaskB) >> ulShiftB;
+
+							pBgraBuffer[nIndex + 0] = (unsigned char)(unR * dKoefR);
+							pBgraBuffer[nIndex + 1] = (unsigned char)(unG * dKoefG);
+							pBgraBuffer[nIndex + 2] = (unsigned char)(unB * dKoefB);
+							pBgraBuffer[nIndex + 3] = pBuffer[3];
+						}
+						else
+						{
+							pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
+							pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
+							pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
+							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
+						}
 					}
 					for (int nX = nWidth; nX < nWidth + nAdd; nX++)
 					{
@@ -631,10 +669,26 @@ namespace MetaFile
 					for (int nX = 0; nX < nWidth; nX++)
 					{
 						int nIndex = 4 * ((nWidth + nAdd) * nY + nX);
-						pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
-						pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
-						pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
-						pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
+						if (bMask)
+						{
+							unsigned int unValue = ((pBuffer[3] << 24) | (pBuffer[2] << 16) | (pBuffer[1] << 8) | pBuffer[0]) & 0xFFFFFFFF; pBuffer += 4; lBufLen -= 4;
+
+							unsigned char unR = (unValue & ulMaskR) >> ulShiftR;
+							unsigned char unG = (unValue & ulMaskG) >> ulShiftG;
+							unsigned char unB = (unValue & ulMaskB) >> ulShiftB;
+
+							pBgraBuffer[nIndex + 0] = (unsigned char)(unR * dKoefR);
+							pBgraBuffer[nIndex + 1] = (unsigned char)(unG * dKoefG);
+							pBgraBuffer[nIndex + 2] = (unsigned char)(unB * dKoefB);
+							pBgraBuffer[nIndex + 3] = pBuffer[3];
+						}
+						else
+						{
+							pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
+							pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
+							pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
+							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
+						}
 					}
 
 					for (int nX = nWidth; nX < nWidth + nAdd; nX++)

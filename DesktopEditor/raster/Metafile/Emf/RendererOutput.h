@@ -81,7 +81,7 @@ namespace MetaFile
 			TEmfPointD oBR = TranslatePoint(lX + lW, lY + lH);
 			m_pRenderer->DrawImage(&oImage, oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y);
 		}
-		void DrawText(const wchar_t* wsText, unsigned int ulCharsCount, int lX, int lY)
+		void DrawText(const wchar_t* wsText, unsigned int ulCharsCount, int lX, int lY, int nTextW, bool bWithOutLast)
 		{
 			CheckEndPath();
 
@@ -136,42 +136,87 @@ namespace MetaFile
 
 			float fL = 0, fT = 0, fW = 0, fH = 0;
 			float fUndX1 = 0, fUndY1 = 0, fUndX2 = 0, fUndY2 = 0, fUndSize = 1;
+			m_pRenderer->put_FontCharSpace(0);
 			CFontManager* pFontManager = m_pEmfFile->m_pFontManager;
 			if (pFontManager)
 			{
+				pFontManager->SetCharSpacing(0);
 				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
-				pFontManager->LoadString1(wsText, 0, 0);
-				double dFHeight  = dFontHeight * pFontManager->m_pFont->GetHeight() / pFontManager->m_pFont->m_lUnits_Per_Em * 25.4 / 72;
-				double dFDescent = dFontHeight * pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em * 25.4 / 72;
+				double dMmToPt = 25.4 / 72;
+				double dFHeight  = dFontHeight * pFontManager->m_pFont->GetHeight() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
+				double dFDescent = dFontHeight * pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
 				double dFAscent  = dFHeight - std::abs(dFDescent);
-				TBBox oBox = pFontManager->MeasureString2();
-				fL = oBox.fMinX;
-				fT = oBox.fMinY;
-				fW = oBox.fMaxX - oBox.fMinX;
-				fH = oBox.fMaxY - oBox.fMinY;
+
+				// Просчитаем положение подчеркивания
 				pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
+				fUndX1 *= (float)dMmToPt; fUndY1 *= (float)dMmToPt;
+				fUndX2 *= (float)dMmToPt; fUndY2 *= (float)dMmToPt;
+				fUndSize *= (float)dMmToPt / 2;
 
-				double fKoef = 25.4 / 72;
+				if (0 != nTextW && ulCharsCount > 1)
+				{
+					wchar_t* wsTempText = new wchar_t[ulCharsCount + 1];
+					if (!wsTempText)
+						return;
 
-				fL *= (float)fKoef;
-				fT *= (float)fKoef;
-				fW *= (float)fKoef;
-				fH *= (float)fKoef;
+					wsTempText[ulCharsCount] = 0x0000;
+					for (unsigned int unIndex = 0; unIndex < ulCharsCount; unIndex++)
+					{
+						wsTempText[unIndex] = wsText[unIndex];
+					}
+
+					if (bWithOutLast)
+						wsTempText[ulCharsCount - 1] = 0x0000;
+
+					pFontManager->LoadString1(wsTempText, 0, 0);
+
+					TBBox oBox = pFontManager->MeasureString2();
+					fL = (float)dMmToPt * (oBox.fMinX);
+					fT = (float)dMmToPt * (oBox.fMinY);
+					fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
+					fH = (float)dMmToPt * (oBox.fMaxY - oBox.fMinY);
+
+					double dTextW = nTextW * m_dScaleX * pDC->GetPixelWidth();
+					double dCharSpace = (dTextW - fW) / (ulCharsCount - 1) * 72 / 25.4;
+
+					if (dCharSpace > 0.001 || dCharSpace < -0.001)
+					{
+						pFontManager->SetCharSpacing(dCharSpace);
+						double dRendDpiX;
+						m_pRenderer->get_DpiX(&dRendDpiX);
+						m_pRenderer->put_FontCharSpace(dCharSpace * 25.4 / 72);
+					}
+
+					delete[] wsTempText;
+
+					pFontManager->LoadString1(wsText, 0, 0);
+					oBox = pFontManager->MeasureString2();
+					fL = (float)dMmToPt * (oBox.fMinX);
+					fT = (float)dMmToPt * (oBox.fMinY);
+					fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
+					fH = (float)dMmToPt * (oBox.fMaxY - oBox.fMinY);
+				}
+				else
+				{
+					pFontManager->LoadString1(wsText, 0, 0);
+
+					TBBox oBox = pFontManager->MeasureString2();
+					fL = (float)dMmToPt * (oBox.fMinX);
+					fT = (float)dMmToPt * (oBox.fMinY);
+					fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
+					fH = (float)dMmToPt * (oBox.fMaxY - oBox.fMinY);
+				}
 
 				if (std::abs(fT) < dFAscent)
 				{
 					if (fT < 0)
-						fT = -dFAscent;
+						fT = (float)-dFAscent;
 					else
-						fT = dFAscent;
+						fT = (float)dFAscent;
 				}
 
 				if (fH < dFHeight)
-					fH = dFHeight;
-
-				fUndX1 *= (float)fKoef; fUndY1 *= (float)fKoef;
-				fUndX2 *= (float)fKoef; fUndY2 *= (float)fKoef;
-				fUndSize *= (float)fKoef / 2;
+					fH = (float)dFHeight;
 			}
 
 			TEmfPointD oTextPoint = TranslatePoint(lX, lY);

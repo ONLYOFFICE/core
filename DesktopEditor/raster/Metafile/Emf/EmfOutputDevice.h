@@ -20,7 +20,7 @@ namespace MetaFile
 		// pBuffer - BGRA картинка размерами ulWidth, ulHeight, которую надо нарисовать в заданном ректе
 		virtual void DrawBitmap(int lX, int lY, int lW, int lH, BYTE* pBuffer, unsigned int ulWidth, unsigned int ulHeight) = 0;
 
-		virtual void DrawText(const wchar_t* wsText, unsigned int ulCharsCount, int lX, int lY) = 0;
+		virtual void DrawText(const wchar_t* wsText, unsigned int ulCharsCount, int lX, int lY, int nTextW, bool bWithOutLast) = 0;
 
 		virtual void StartPath() = 0;
 		virtual void MoveTo(int lX, int lY) = 0;

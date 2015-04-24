@@ -76,6 +76,7 @@ namespace MetaFile
 		void operator=(CEmfClip& oClip);
 		void Reset();
 		bool Intersect(TEmfRectL& oRect);
+		bool SetPath(CEmfPath* pPath, unsigned int umMode);
 		void ClipOnRenderer(CEmfOutputDevice* pOutput);
 
 	private:

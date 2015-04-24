@@ -25,6 +25,12 @@ namespace MetaFile
 					pNewCommand = new CEmfClipCommandIntersect(((CEmfClipCommandIntersect*)pCommand)->m_oRect);
 					break;
 				}
+				case EMF_CLIPCOMMAND_SETPATH:
+				{
+					CEmfClipCommandPath* pPathCommand = (CEmfClipCommandPath*)pCommand;
+					pNewCommand = new CEmfClipCommandPath(&pPathCommand->m_oPath, pPathCommand->m_unMode);
+					break;
+				}
 			}
 
 			if (pNewCommand)
@@ -44,9 +50,18 @@ namespace MetaFile
 		m_vCommands.push_back(pCommand);
 		return true;
 	}
+	bool CEmfClip::SetPath(CEmfPath* pPath, unsigned int unMode)
+	{
+		CEmfClipCommandBase* pCommand = new CEmfClipCommandPath(pPath, unMode);
+		if (!pCommand)
+			return false;
+
+		m_vCommands.push_back(pCommand);
+		return true;
+	}
 	void CEmfClip::ClipOnRenderer(CEmfOutputDevice* pOutput)
 	{
-		if (pOutput)
+		if (!pOutput)
 			return;
 
 		pOutput->ResetClip();
@@ -59,6 +74,12 @@ namespace MetaFile
 				{
 					CEmfClipCommandIntersect* pIntersect = (CEmfClipCommandIntersect*)pCommand;
 					pOutput->IntersectClip(pIntersect->m_oRect.lLeft, pIntersect->m_oRect.lTop, pIntersect->m_oRect.lRight, pIntersect->m_oRect.lBottom);
+					break;
+				}
+				case EMF_CLIPCOMMAND_SETPATH:
+				{
+					CEmfClipCommandPath* pClipPath = (CEmfClipCommandPath*)pCommand;
+					pClipPath->m_oPath.Draw(pOutput, false, false, pClipPath->m_unMode);
 					break;
 				}
 			}

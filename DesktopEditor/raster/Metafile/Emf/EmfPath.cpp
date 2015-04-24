@@ -10,7 +10,42 @@ namespace MetaFile
 	{
 		if (pPath)
 		{
-
+			for (unsigned int unIndex = 0; unIndex < pPath->m_pCommands.size(); unIndex++)
+			{
+				CEmfPathCommandBase* pCommand = pPath->m_pCommands.at(unIndex);
+				switch (pCommand->GetType())
+				{
+					case EMF_PATHCOMMAND_MOVETO:
+					{
+						CEmfPathMoveTo* pMoveTo = (CEmfPathMoveTo*)pCommand;
+						MoveTo(pMoveTo->x, pMoveTo->y);
+						break;
+					}
+					case EMF_PATHCOMMAND_LINETO:
+					{
+						CEmfPathLineTo* pLineTo = (CEmfPathLineTo*)pCommand;
+						LineTo(pLineTo->x, pLineTo->y);
+						break;
+					}
+					case EMF_PATHCOMMAND_CURVETO:
+					{
+						CEmfPathCurveTo* pCurveTo = (CEmfPathCurveTo*)pCommand;
+						CurveTo(pCurveTo->x1, pCurveTo->y1, pCurveTo->x2, pCurveTo->y2, pCurveTo->xE, pCurveTo->yE);
+						break;
+					}
+					case EMF_PATHCOMMAND_ARCTO:
+					{
+						CEmfPathArcTo* pArcTo = (CEmfPathArcTo*)pCommand;
+						ArcTo(pArcTo->left, pArcTo->top, pArcTo->right, pArcTo->bottom, pArcTo->start, pArcTo->sweep);
+						break;
+					}
+					case EMF_PATHCOMMAND_CLOSE:
+					{
+						Close();
+						break;
+					}
+				}
+			}
 		}
 	}
 	CEmfPath::~CEmfPath()
@@ -127,11 +162,14 @@ namespace MetaFile
 
 		return true;
 	}
-	void CEmfPath::Draw(CEmfOutputDevice* pOutput, bool bStroke, bool bFill)
+	void CEmfPath::Draw(CEmfOutputDevice* pOutput, bool bStroke, bool bFill, unsigned int unClipMode)
 	{
 		if (pOutput)
-		{			
-			pOutput->StartPath();
+		{	
+			if (-1 != unClipMode)
+				pOutput->StartClipPath(unClipMode);
+			else
+				pOutput->StartPath();
 
 			for (unsigned int ulIndex = 0; ulIndex < m_pCommands.size(); ulIndex++)
 			{
@@ -170,12 +208,19 @@ namespace MetaFile
 				}
 			}
 
-			int lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
-			pOutput->DrawPath(lType);
-			pOutput->EndPath();
+			if (-1 == unClipMode)
+			{
+				int lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
+				pOutput->DrawPath(lType);
+				pOutput->EndPath();
+			}
+			else
+				pOutput->EndClipPath(unClipMode);
 		}
 
-		Clear();
+		// При клипе пат не очищаем
+		if (-1 == unClipMode)
+			Clear();
 	}
 	void CEmfPath::Clear()
 	{

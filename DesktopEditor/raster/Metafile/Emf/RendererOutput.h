@@ -370,6 +370,8 @@ namespace MetaFile
 		}
 		void IntersectClip(int lLeft, int lTop, int lRight, int lBottom)
 		{
+			m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
+			
 			m_pRenderer->BeginCommand(c_nClipType);
 			m_pRenderer->BeginCommand(c_nPathType);
 			m_pRenderer->PathCommandStart();
@@ -386,6 +388,45 @@ namespace MetaFile
 			m_pRenderer->EndCommand(c_nPathType);
 			m_pRenderer->EndCommand(c_nClipType);
 			m_pRenderer->PathCommandEnd();
+		}
+		void StartClipPath(unsigned int unMode)
+		{
+			CheckEndPath();
+
+			m_bStartedPath = true;
+
+			unsigned int unClipMode = -1;
+			switch (unMode)
+			{
+				case RGN_AND: unClipMode = c_nClipRegionIntersect; break;
+				case RGN_OR: unClipMode = c_nClipRegionUnion; break;
+				case RGN_XOR: unClipMode = c_nClipRegionXor; break;
+				case RGN_DIFF: unClipMode = c_nClipRegionDiff; break;
+				default: unClipMode = c_nClipRegionIntersect; break;
+			}
+
+			CEmfDC* pDC = m_pEmfFile->GetDC();
+			if (!pDC)
+				return;
+
+			unsigned int unFillMode = pDC->GetFillMode();
+			if (ALTERNATE == unFillMode)
+				unClipMode |= c_nClipRegionTypeEvenOdd;
+			else //if (WINDING == unFillMode)
+				unClipMode |= c_nClipRegionTypeWinding;
+
+			m_pRenderer->put_ClipMode(unClipMode);
+			m_pRenderer->BeginCommand(c_nClipType);
+			m_pRenderer->BeginCommand(c_nPathType);
+			m_pRenderer->PathCommandStart();
+		}
+		void EndClipPath(unsigned int unMode)
+		{
+			m_pRenderer->EndCommand(c_nPathType);
+			m_pRenderer->EndCommand(c_nClipType);
+			m_pRenderer->PathCommandEnd();
+
+			m_bStartedPath = false;
 		}
 
 	private:
@@ -573,7 +614,7 @@ namespace MetaFile
 	private:
 
 		IRenderer* m_pRenderer;
-		int       m_lDrawPathType;
+		int        m_lDrawPathType;
 		double     m_dX;      // Координаты левого верхнего угла
 		double     m_dY;      //
 		double     m_dW;      // 

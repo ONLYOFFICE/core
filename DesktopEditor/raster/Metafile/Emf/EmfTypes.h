@@ -1,6 +1,8 @@
 #ifndef _EMF_TYPES_H
 #define _EMF_TYPES_H
 
+#include "../../../common/Types.h"
+
 #if !defined(_WIN32) && !defined(_WIN64)
 //from wingdi.h
 
@@ -151,6 +153,23 @@
 
 #endif
 
+#ifndef EMR_SMALLTEXTOUT
+#define EMR_SMALLTEXTOUT EMR_RESERVED_108
+#endif
+
+#define ETO_OPAQUE             0x00000002
+#define ETO_CLIPPED            0x00000004
+#define ETO_GLYPH_INDEX        0x00000010
+#define ETO_RTLREADING         0x00000080
+#define ETO_NO_RECT            0x00000100
+#define ETO_SMALL_CHARS        0x00000200
+#define ETO_NUMERICSLOCAL      0x00000400
+#define ETO_NUMERICSLATIN      0x00000800
+#define ETO_IGNORELANGUAGE     0x00001000
+#define ETO_PDY                0x00002000
+#define ETO_REVERSE_INDEX_MAP  0x00010000
+
+
 namespace MetaFile
 {
 	struct TEmfColor
@@ -274,15 +293,15 @@ namespace MetaFile
 	{
 		TEmfRectL      oBounds;
 		TEmfRectL      oFrame;
-		unsigned int  ulSignature;
-		unsigned int  ulVersion;
-		unsigned int  ulSize;
-		unsigned int  ulRecords;
+		unsigned int   ulSignature;
+		unsigned int   ulVersion;
+		unsigned int   ulSize;
+		unsigned int   ulRecords;
 		unsigned short ushObjects;
 		unsigned short ushReserved;
-		unsigned int  ulSizeDescription;
-		unsigned int  ulOffsetDescription;
-		unsigned int  ulPalEntries;
+		unsigned int   ulSizeDescription;
+		unsigned int   ulOffsetDescription;
+		unsigned int   ulPalEntries;
 		TEmfSizeL      oDevice;
 		TEmfSizeL      oMillimeters;
 		TEmfRectL      oFrameToBounds;
@@ -290,7 +309,7 @@ namespace MetaFile
 
 	struct TEmfStretchDIBITS
 	{
-		TEmfRectL     Bounds;
+		TEmfRectL    Bounds;
 		int          xDest;
 		int          yDest;
 		int          xSrc;
@@ -398,32 +417,153 @@ namespace MetaFile
 
 	struct TEmfEmrText
 	{
-		TEmfPointL     Reference;
+		TEmfPointL    Reference;
 		unsigned int  Chars;
 		unsigned int  offString;
 		unsigned int  Options;
-		TEmfRectL      Rectangle;
+		TEmfRectL     Rectangle;
 		unsigned int  offDx;
-		void*          OutputString; // unsinged short* либо unsigned char*
-		unsigned int* OutputDx;
+		void*         OutputString; // unsinged short* либо unsigned char*
+		unsigned int* OutputDx;		
+
+		TEmfEmrText()
+		{
+			OutputString = NULL;
+			OutputDx     = NULL;
+		}
+
+		void FreeA()
+		{
+			if (OutputString)
+			{
+				unsigned char* pString = (unsigned char*)OutputString;
+				delete[] pString;
+				OutputString = NULL;
+			}
+
+			if (OutputDx)
+			{
+				delete[] OutputDx;
+				OutputDx = NULL;
+			}
+		}
+
+		void FreeW()
+		{
+			if (OutputString)
+			{
+				unsigned short* pString = (unsigned short*)OutputString;
+				delete[] pString;
+				OutputString = NULL;
+			}
+
+			if (OutputDx)
+			{
+				delete[] OutputDx;
+				OutputDx = NULL;
+			}
+		}
 	};
 
 	struct TEmfExtTextoutW
 	{
 		TEmfRectL     Bounds;
-		unsigned int iGraphicsMode;
+		unsigned int  iGraphicsMode;
 		double        exScale;
 		double        eyScale;
 		TEmfEmrText   wEmrText;
+
+		~TEmfExtTextoutW()
+		{
+			Free();
+		}
+
+		void Free()
+		{
+			wEmrText.FreeW();
+		}
+	};
+
+	struct TEmfExtTextoutA
+	{
+		TEmfRectL     Bounds;
+		unsigned int  iGraphicsMode;
+		double        exScale;
+		double        eyScale;
+		TEmfEmrText   aEmrText;
+
+		~TEmfExtTextoutA()
+		{
+			Free();
+		}
+
+		void Free()
+		{
+			aEmrText.FreeA();
+		}
+	};
+
+	struct TEmfPolyTextoutA
+	{
+		TEmfRectL    Bounds;
+		unsigned int iGraphicsMode;
+		double       exScale;
+		double       eyScale;
+		unsigned int cStrings;
+		TEmfEmrText* aEmrText;
+
+		TEmfPolyTextoutA()
+		{
+			aEmrText = NULL;
+		}
+		~TEmfPolyTextoutA()
+		{
+			if (aEmrText)
+			{
+				for (unsigned int unIndex = 0; unIndex < cStrings; unIndex++)
+				{
+					aEmrText[unIndex].FreeA();
+				}
+				delete[] aEmrText;
+				aEmrText = NULL;
+			}
+		}
+	};
+
+	struct TEmfPolyTextoutW
+	{
+		TEmfRectL    Bounds;
+		unsigned int iGraphicsMode;
+		double       exScale;
+		double       eyScale;
+		unsigned int cStrings;
+		TEmfEmrText* wEmrText;
+
+		TEmfPolyTextoutW()
+		{
+			wEmrText = NULL;
+		}
+		~TEmfPolyTextoutW()
+		{
+			if (wEmrText)
+			{
+				for (unsigned int unIndex = 0; unIndex < cStrings; unIndex++)
+				{
+					wEmrText[unIndex].FreeW();
+				}
+				delete[] wEmrText;
+				wEmrText = NULL;
+			}
+		}
 	};
 
 	struct TEmfLogFont
-	{
-		int           Height;
-		int           Width;
-		int           Escapement;
-		int           Orientation;
-		int           Weight;
+	{				   
+		int            Height;
+		int            Width;
+		int            Escapement;
+		int            Orientation;
+		int            Weight;
 		unsigned char  Italic;
 		unsigned char  Underline;
 		unsigned char  StrikOut;
@@ -437,7 +577,7 @@ namespace MetaFile
 
 	struct TEmfLogFontEx
 	{
-		TEmfLogFont   LogFont;
+		TEmfLogFont    LogFont;
 		unsigned short FullName[64];
 		unsigned short Style[32];
 		unsigned short Script[32];
@@ -452,7 +592,7 @@ namespace MetaFile
 
 	struct TEmfBitBlt
 	{
-		TEmfRectL     Bounds;
+		TEmfRectL    Bounds;
 		int          xDest;
 		int          yDest;
 		int          cxDest;
@@ -460,8 +600,8 @@ namespace MetaFile
 		unsigned int BitBltRasterOperation;
 		int          xSrc;
 		int          ySrc;
-		TEmfXForm     XfromSrc;
-		TEmfColor     BkColorSrc;
+		TEmfXForm    XfromSrc;
+		TEmfColor    BkColorSrc;
 		unsigned int UsageSrc;
 		unsigned int offBmiSrc;
 		unsigned int cbBmiSrc;
@@ -471,7 +611,7 @@ namespace MetaFile
 
 	struct TEmfSetDiBitsToDevice
 	{
-		TEmfRectL     Bounds;
+		TEmfRectL    Bounds;
 		int          xDest;
 		int          yDest;
 		int          xSrc;
@@ -503,5 +643,45 @@ namespace MetaFile
 		unsigned char Green;
 		unsigned char Red;
 	};
+
+	struct TEmfSmallTextout
+	{
+		int             x;
+		int             y;
+		unsigned int    cChars;
+		unsigned int    fuOptions;
+		unsigned int    iGraphicsMode;
+		double          exScale;
+		double          eyScale;
+		TEmfRectL       Bounds;
+		unsigned short* TextString;
+
+		TEmfSmallTextout()
+		{
+			TextString = NULL;
+		}
+		~TEmfSmallTextout()
+		{
+			if (TextString)
+				delete[] TextString;
+		}
+
+		unsigned int GetSize()
+		{
+			unsigned int unSize = 28;
+
+			if (!(fuOptions & ETO_NO_RECT))
+				unSize += 16;
+
+			// Мы при чтении насильно добавляем нулевой символ в конце.
+			if (fuOptions & ETO_SMALL_CHARS)
+				unSize += (cChars - 1);
+			else
+				unSize += 2 * (cChars - 1);
+
+			return unSize;
+		}
+	};
+
 };
 #endif //_EMF_TYPES_H

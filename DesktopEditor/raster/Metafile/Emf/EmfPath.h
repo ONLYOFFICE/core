@@ -204,7 +204,7 @@ namespace MetaFile
 		bool CurveTo(int lX1, int lY1, int lX2, int lY2, int lXE, int lYE);
 		bool ArcTo(int lL, int lT, int lR, int lB, double dStart, double dSweep);
 		bool Close();
-		void Draw(CEmfOutputDevice* pOutput, bool bStroke, bool bFill);
+		void Draw(CEmfOutputDevice* pOutput, bool bStroke, bool bFill, unsigned int unClipMode = -1);
 
 	private:
 

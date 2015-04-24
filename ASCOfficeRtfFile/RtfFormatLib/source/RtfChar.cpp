@@ -31,36 +31,32 @@ CString RtfChar::renderRtfText( CString& sText, void* poDocument, RtfCharPropert
                 nCodePage = CP_ACP;
             break;
         }
-        case RtfDocumentProperty::cp_mac: nCodePage = CP_MACCP;break;
-        case RtfDocumentProperty::cp_pc: nCodePage = 437;break;
-        case RtfDocumentProperty::cp_pca: nCodePage = 850;break;
+        case RtfDocumentProperty::cp_mac: nCodePage = CP_MACCP; break;
+        case RtfDocumentProperty::cp_pc:  nCodePage = 437;      break;
+        case RtfDocumentProperty::cp_pca: nCodePage = 850;      break;
         }
     }
     //если ничего нет ставим ANSI
     if( -1 == nCodePage )
         nCodePage = CP_ACP;
 
-    //todooo проверить !!!!!
-    //делаем Ansi строку
-    std::wstring unicodeStr(sText.GetBuffer());
+    std::wstring    unicodeStr (sText.GetBuffer(), sText.GetLength());
+    std::string     ansiStr    = RtfUtility::convert_string(unicodeStr.begin(), unicodeStr.end(), nCodePage);
 
-    std::string ansiStr(unicodeStr.begin(), unicodeStr.end());
+    CString sTextBack  = RtfUtility::convert_string(ansiStr.begin(), ansiStr.end(), nCodePage);
+    //обратное преобразование чтобы понять какие символы свонвертировались неправильно
 
-    //делаем обратное преобразование чтобы понять какие символы свонвертировались неправильно
-
-    std::wstring unicodeStrBack(ansiStr.begin(), ansiStr.end());
-
-    for( int i = 0; i < unicodeStr.length() && i < unicodeStrBack.length() ; i++ )
+    for( int i = 0; i < sText.GetLength() && i < sTextBack.GetLength() ; i++ )
     {
         bool bWriteUnicode = true;
 
-        if( unicodeStrBack[i] == unicodeStr[i] )
+        if(sTextBack[i] == sText[i] )
         {
             CString sUniChar; sUniChar.AppendChar( unicodeStr[i] );
 
             //делаем Ansi строку sUniChar
             // -> sTempAnsiChars
-            std::string sTempAnsiChars(unicodeStr.begin()+i, unicodeStr.begin() + i + 1);
+            std::string sTempAnsiChars = RtfUtility::convert_string(unicodeStr.begin()+i, unicodeStr.begin() + i + 1, nCodePage);
 
             for( int k = 0; k < sTempAnsiChars.length(); k++ )
             {

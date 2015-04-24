@@ -223,7 +223,7 @@ namespace MetaFile
 		m_oInverseTransform.Init();
 		m_oTextColor.Init();
 		m_oBgColor.Init();
-		m_ulTextAlign   = TA_BASELINE | TA_LEFT | TA_NOUPDATECP;
+		m_ulTextAlign   = TA_TOP | TA_LEFT | TA_NOUPDATECP;
 		m_ulBgMode      = TRANSPARENT;
 		m_ulMiterLimit  = 0;
 		m_ulFillMode    = WINDING;

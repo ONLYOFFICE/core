@@ -480,11 +480,14 @@ public:
 
         w_out.GetBuffer(insize);
 
-        if (nCodepage > 0)
+		char *inptr = (char*)start.operator ->();
+        char* outptr = (char*)w_out.GetBuffer();
+		
+		if (nCodepage > 0)
         {
 #if defined (_WIN32) || defined (_WIN64)
-            int insize = MultiByteToWideChar(nCodepage, 0, start, -1, NULL, NULL);
-            if (MultiByteToWideChar(nCodepage, 0, start, -1, w_out.GetBuffer(), insize) > 0)
+			int insize = MultiByteToWideChar(nCodepage, 0, inptr, -1, NULL, NULL);
+			if (MultiByteToWideChar(nCodepage, 0, inptr, -1, (LPWSTR)outptr, insize) > 0)
             {
                 w_out.ReleaseBuffer();
                 ansi = false;
@@ -496,9 +499,6 @@ public:
             if (ic != (iconv_t) -1)
             {
                 size_t nconv = 0, avail = (insize) * sizeof(wchar_t);
-                char *inptr = (char*)start.operator ->();
-
-                char* outptr = (char*)w_out.GetBuffer();
 
                 nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
                 if (nconv == 0)
@@ -520,15 +520,21 @@ public:
         std::string out;
         bool ansi = true;
 
-        size_t insize = end- start;
+        size_t insize = end - start;
         out.reserve(insize);
 
-        if (nCodepage > 0)
+        char *inptr = (char*)start.operator ->();
+        char* outptr = (char*)out.c_str();
+
+		if (nCodepage > 0)
         {
 #if defined (_WIN32) || defined (_WIN64)
-            insize = WideCharToMultiByte(nCodepage, 0, start, -1, NULL, NULL);
+            insize = WideCharToMultiByte(nCodepage, 0, (LPCWSTR)inptr, -1, NULL, 0, NULL, NULL);
 
-            WideCharToMultiByte(nCodepage, 0, start, -1, out.c_str() , insize);
+			if (WideCharToMultiByte(nCodepage, 0, (LPCWSTR)inptr, -1, outptr, insize, NULL, NULL) > 0)
+			{
+				ansi = false;
+			}
 #else
             std::string sCodepage =  "CP" + std::to_string(nCodepage);
 
@@ -536,11 +542,8 @@ public:
             if (ic != (iconv_t) -1)
             {
                 size_t nconv = 0, avail = insize * sizeof(wchar_t);
-                char *inptr = (char*)start.operator ->();
 
-                char* outptr = (char*)out.c_str();
-
-                nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
+				nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
                 if (nconv == 0) ansi = false;
                 iconv_close(ic);
             }

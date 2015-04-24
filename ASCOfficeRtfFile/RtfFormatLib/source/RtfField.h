@@ -205,9 +205,16 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 			int nIndex = sInsertText.Find( _T("HYPERLINK") );
 			if( -1 != nIndex )
 			{
-				//оставляем только одну ссылку
 				CString sHyperlink = sInsertText;
                 sHyperlink.Delete( nIndex, 9/*(int)_tcslen( _T("HYPERLINK") )*/ );
+
+				int nSplash = sHyperlink.Find( _T("\\") );
+				if (nSplash > 0)
+				{
+					sHyperlink = sHyperlink.Left(nSplash);
+				}
+		
+				//оставляем только одну ссылку
 				sHyperlink.Remove( '\"' );
 				sHyperlink.Trim();
 				//заменяем пробелы на %20

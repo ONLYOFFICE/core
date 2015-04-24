@@ -7,14 +7,14 @@ private:
 	CString m_sFileXml; 
 	OOXWriter& m_oWriter;
 
-	CString CreateXml()
+	std::wstring CreateXml()
 	{
-		CString sResult;
-		sResult.Append( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>") );
-		sResult.Append( _T("\n") );
-		sResult.Append( _T("<w:settings xmlns:w = \"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:m = \"http://schemas.openxmlformats.org/officeDocument/2006/math\">") );
-		sResult.Append( m_sFileXml );
-		sResult.Append( _T("</w:settings>") );
+		std::wstring sResult;
+		sResult.append( _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>") );
+		sResult.append( _T("\n") );
+		sResult.append( _T("<w:settings xmlns:w = \"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" xmlns:m = \"http://schemas.openxmlformats.org/officeDocument/2006/math\">") );
+		sResult.append( m_sFileXml );
+		sResult.append( _T("</w:settings>") );
 		return sResult;
 	}
 public: 
@@ -36,7 +36,7 @@ public:
 		if( false == m_sFileXml.IsEmpty() )
 		{
 			//генерируем свою xml
-			CString sXml = CreateXml();
+			 std::wstring sXml = CreateXml();
 
 			//todoooo ПЕРЕПИСАТЬ
 
@@ -55,15 +55,18 @@ public:
 			//	}
 			//}
 
-			//HANDLE hFile = ::CreateFile( sFilename, GENERIC_WRITE, 0, 0, CREATE_ALWAYS,FILE_ATTRIBUTE_NORMAL, 0 );
+			CFile file;
+            if (file.CreateFile(pathWord + FILE_SEPARATOR_STR + _T("settings.xml"))) return false;
 
-			//m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings"), _T("settings.xml") );
-			//m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"), _T("/word/settings.xml") );
+			m_oWriter.m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings"), _T("settings.xml") );
+			m_oWriter.m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.wordprocessingml.settings+xml"), _T("/word/settings.xml") );
 
-			//DWORD dwBytesWritten;
-			//CStringA sXmlUTF = Convert::UnicodeToUtf8( sXml );
-			//::WriteFile(hFile, sXmlUTF, sXmlUTF.GetLength(), &dwBytesWritten, NULL);
-			//CloseHandle( hFile );
+            std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml);
+
+            file.WriteFile((void*)sXmlUTF.c_str(), sXmlUTF.length());
+
+			file.CloseFile();
+;
 			return true;
 		}
 		else

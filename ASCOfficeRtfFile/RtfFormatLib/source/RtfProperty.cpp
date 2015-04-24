@@ -2571,11 +2571,11 @@ CString RtfInformation::RenderToOOX(RenderParameter oRenderParameter)
 		if( m_sKeywords.GetLength() > 0 )	pCore->m_sKeywords		= m_sKeywords;
 		if(  m_sComment.GetLength() > 0 )	pCore->m_sDescription	= m_sComment;
 
-		CString sCreateTime = m_oCreateTime.RenderToOOX( oRenderParameter );
-		if( false == sCreateTime.IsEmpty() ) pCore->m_sCreated		= sCreateTime;
-		
-		CString sRevTime = m_oRevTime.RenderToOOX( oRenderParameter );
-		if( false == sRevTime.IsEmpty() )	pCore->m_sModified		= sRevTime;
+		//CString sCreateTime = m_oCreateTime.RenderToOOX( oRenderParameter );
+		//if( false == sCreateTime.IsEmpty() ) pCore->m_sCreated		= sCreateTime;
+		//
+		//CString sRevTime = m_oRevTime.RenderToOOX( oRenderParameter );
+		//if( false == sRevTime.IsEmpty() )	pCore->m_sModified		= sRevTime;
 
 		//CString sPrintTime = m_oPrintTime.RenderToOOX( oRenderParameter );
 		//if( _T("") != sPrintTime )

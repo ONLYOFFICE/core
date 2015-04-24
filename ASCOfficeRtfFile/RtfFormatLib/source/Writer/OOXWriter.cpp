@@ -89,6 +89,24 @@ bool OOXWriter::SaveByItemEnd()
 	OOX::CPath pathWord = m_sTargetFolder + FILE_SEPARATOR_STR + _T("word");
     FileSystem::Directory::CreateDirectory(pathWord.GetPath());
 	
+	OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + _T("theme");
+    FileSystem::Directory::CreateDirectory(pathTheme.GetPath()) ;
+	Writers::DefaultThemeWriter themeWriter;
+
+	themeWriter.Write(pathTheme.GetPath() + FILE_SEPARATOR_STR + _T("theme1.xml"));
+	m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme"), _T("theme/theme1.xml") );
+	m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.theme+xml"), _T("/word/theme/theme1.xml") );
+//-----------------------------------------------------------------------------------------------------
+	((OOXDocumentWriter*)m_poDocumentWriter)->SaveByItemEnd();
+
+	((OOXFootnoteWriter*)m_poFootnoteWriter)->Save(pathWord.GetPath());
+	((OOXEndnoteWriter*)m_poEndnoteWriter)->Save(pathWord.GetPath());
+	((OOXNumberingWriter*)m_poNumberingWriter)->Save(m_sTargetFolder);
+	((OOXStylesWriter*)m_poStylesWriter)->Save(m_sTargetFolder);
+	((OOXFontTableWriter*)m_poFontTableWriter)->Save(m_sTargetFolder);
+	
+	((OOXSettingsWriter*)m_poSettingsWriter)->Save(m_sTargetFolder); //setting в последнюю очередь
+
 //-------------------------------------------------------------------------------------
 	OOX::CPath pathDocProps = m_sTargetFolder + FILE_SEPARATOR_STR + _T("docProps");
     FileSystem::Directory::CreateDirectory(pathDocProps.GetPath());
@@ -111,23 +129,6 @@ bool OOXWriter::SaveByItemEnd()
 		m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-package.core-properties+xml"), _T("/docProps/core.xml") );
 	} 
 //-----------------------------------------------------------------------------------------------------
-	OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + _T("theme");
-    FileSystem::Directory::CreateDirectory(pathTheme.GetPath()) ;
-	Writers::DefaultThemeWriter themeWriter;
-
-	themeWriter.Write(pathTheme.GetPath() + FILE_SEPARATOR_STR + _T("theme1.xml"));
-	m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme"), _T("theme/theme1.xml") );
-	m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.theme+xml"), _T("/word/theme/theme1.xml") );
-//-----------------------------------------------------------------------------------------------------
-	((OOXDocumentWriter*)m_poDocumentWriter)->SaveByItemEnd();
-
-	((OOXFootnoteWriter*)m_poFootnoteWriter)->Save(pathWord.GetPath());
-	((OOXEndnoteWriter*)m_poEndnoteWriter)->Save(pathWord.GetPath());
-	((OOXNumberingWriter*)m_poNumberingWriter)->Save(m_sTargetFolder);
-	((OOXStylesWriter*)m_poStylesWriter)->Save(m_sTargetFolder);
-	((OOXFontTableWriter*)m_poFontTableWriter)->Save(m_sTargetFolder);
-	
-	((OOXSettingsWriter*)m_poSettingsWriter)->Save(m_sTargetFolder); //setting в последнюю очередь
 
 	bool nResult = true;
 	nResult &= m_oContentTypes.Save(m_sTargetFolder);

@@ -764,9 +764,9 @@ namespace MetaFile
 					{
 						// Делаем цветом кисти
 						pBgraBuffer = new BYTE[4];
-						pBgraBuffer[0] = pBrush->Color.b;
+                        pBgraBuffer[0] = pBrush->Color.b;
 						pBgraBuffer[1] = pBrush->Color.g;
-						pBgraBuffer[2] = pBrush->Color.r;
+                        pBgraBuffer[2] = pBrush->Color.r;
 						pBgraBuffer[3] = 30;
 
 						ulWidth  = 1;
@@ -1730,9 +1730,9 @@ namespace MetaFile
 
 			// Делаем цветом кисти
 			BYTE pBgraBuffer[4];
-			pBgraBuffer[0] = oColor.b;
+            pBgraBuffer[0] = oColor.b;
 			pBgraBuffer[1] = oColor.g;
-			pBgraBuffer[2] = oColor.r;
+            pBgraBuffer[2] = oColor.r;
 			pBgraBuffer[3] = 0xff;
 
 			if (m_pOutput)

@@ -567,7 +567,12 @@ int CFontFile::SetCMapForCharCode2(long lUnicode)
 
 	FT_Int unGID;
 	int nCMapIndex = 0;
-	int nCacheIndex = m_arrCacheSizesIndexs[lUnicode];
+
+    int nCacheIndex = 0xFFFF;
+    if (lUnicode < FONT_CACHE_SIZES_INDEXES_SIZE) //linux !!!
+    {
+        nCacheIndex = m_arrCacheSizesIndexs[lUnicode];
+    }
 	if ( 0xFFFF == nCacheIndex )
 	{
 		return unGID = SetCMapForCharCode( lUnicode, &nCMapIndex );
@@ -591,9 +596,12 @@ int CFontFile::SetCMapForCharCode2(long lUnicode)
 	return unGID;
 }
 
-void CFontFile::AddToSizesCache(const TFontCacheSizes& oSizes)
+bool CFontFile::AddToSizesCache(const TFontCacheSizes& oSizes)
 {
+    if (oSizes.ushUnicode >= FONT_CACHE_SIZES_INDEXES_SIZE) return false;  //oSizes.ushUnicode = 4784212 !!! linux
 	m_arrCacheSizesIndexs[oSizes.ushUnicode] = m_oCacheSizes.Add( oSizes );
+
+    return true;
 }
 
 TFontCacheSizes CFontFile::GetChar(LONG lUnicode)
@@ -613,7 +621,13 @@ TFontCacheSizes CFontFile::GetChar(LONG lUnicode)
     }
 
     LONG unGID = 0;
-    USHORT charSymbolObj = m_arrCacheSizesIndexs[ushUnicode];
+
+    USHORT charSymbolObj = 0xFFFF;
+
+    if (ushUnicode < FONT_CACHE_SIZES_INDEXES_SIZE)     //вылетает под Linux
+    {
+        charSymbolObj = m_arrCacheSizesIndexs[ushUnicode];
+    }
     if (0xFFFF == charSymbolObj)
     {
         int nCMapIndex = 0;
@@ -743,7 +757,12 @@ INT CFontFile::GetString(CGlyphString& oString)
 		int ushUnicode = pCurGlyph->lUnicode;
 		
 		int unGID = 0;
-        USHORT charSymbolObj = m_arrCacheSizesIndexs[ushUnicode];
+        USHORT charSymbolObj = 0xFFFF;
+
+        if (ushUnicode >= 0 && ushUnicode >= 0 && ushUnicode < FONT_CACHE_SIZES_INDEXES_SIZE)     //вылетает под Linux
+        {
+            charSymbolObj = m_arrCacheSizesIndexs[ushUnicode];
+        }
 		if (0xFFFF == charSymbolObj)
 		{
             int nCMapIndex = 0;
@@ -839,8 +858,10 @@ INT CFontFile::GetString(CGlyphString& oString)
 			if (m_bNeedDoBold)
 				oSizes.fAdvanceX += 1;
 
-			AddToSizesCache( oSizes );
-			charSymbolObj = m_arrCacheSizesIndexs[oSizes.ushUnicode];
+            if ( AddToSizesCache( oSizes ) == true)
+            {
+                charSymbolObj = m_arrCacheSizesIndexs[oSizes.ushUnicode];
+            }
 		}
 		if (0xFFFF != charSymbolObj)
 		{
@@ -949,7 +970,13 @@ INT CFontFile::GetString2(CGlyphString& oString)
 		int ushUnicode = pCurGlyph->lUnicode;
 		
 		int unGID = 0;
-        USHORT charSymbolObj = m_arrCacheSizesIndexs[ushUnicode];
+
+        USHORT charSymbolObj = 0xFFFF;
+
+        if ( ushUnicode >= 0 && ushUnicode < FONT_CACHE_SIZES_INDEXES_SIZE) //linux !!!!
+        {
+            charSymbolObj = m_arrCacheSizesIndexs[ushUnicode];
+        }
 		if (0xFFFF == charSymbolObj || m_oCacheSizes[charSymbolObj].bBitmap == false)
 		{
             int nCMapIndex = 0;
@@ -1117,8 +1144,10 @@ INT CFontFile::GetString2(CGlyphString& oString)
 			oSizes.oBitmap.nHeight   = pBitmap->nHeight;
 			oSizes.oBitmap.pData     = pBitmap->pData;
 
-			AddToSizesCache( oSizes );
-			charSymbolObj = m_arrCacheSizesIndexs[oSizes.ushUnicode];
+            if ( AddToSizesCache( oSizes ) == true)
+            {
+                charSymbolObj = m_arrCacheSizesIndexs[oSizes.ushUnicode];
+            }
 		}
 		if (0xFFFF != charSymbolObj)
 		{
@@ -1217,7 +1246,13 @@ INT CFontFile::GetString2C(CGlyphString& oString)
     int ushUnicode = pCurGlyph->lUnicode;
 
     int unGID = 0;
-    USHORT charSymbolObj = m_arrCacheSizesIndexs[ushUnicode];
+
+    USHORT charSymbolObj = 0xFFFF;
+
+    if (ushUnicode >= 0 && ushUnicode < FONT_CACHE_SIZES_INDEXES_SIZE)     //вылетает под Linux
+    {
+        charSymbolObj = m_arrCacheSizesIndexs[ushUnicode];
+    }
     if (0xFFFF == charSymbolObj || m_oCacheSizes[charSymbolObj].bBitmap == false)
     {
         int nCMapIndex = 0;
@@ -1385,8 +1420,10 @@ INT CFontFile::GetString2C(CGlyphString& oString)
 		oSizes.oBitmap.nHeight   = pBitmap->nHeight;
 		oSizes.oBitmap.pData     = pBitmap->pData;
 
-		AddToSizesCache( oSizes );
-		charSymbolObj = m_arrCacheSizesIndexs[oSizes.ushUnicode];
+        if (AddToSizesCache( oSizes ) == true)
+        {
+            charSymbolObj = m_arrCacheSizesIndexs[oSizes.ushUnicode];
+        }
     }
     if (0xFFFF != charSymbolObj)
     {

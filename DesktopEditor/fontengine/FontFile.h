@@ -203,7 +203,7 @@ public:
     INT GetString2C(CGlyphString& oString);
 	TFontCacheSizes GetChar(LONG lUnicode);
 
-	void AddToSizesCache(const TFontCacheSizes& oSizes);
+    bool AddToSizesCache(const TFontCacheSizes& oSizes);
 	
 	int SetCMapForCharCode(long lUnicode, int *pnCMapIndex);
 	int SetCMapForCharCode2(long lUnicode);

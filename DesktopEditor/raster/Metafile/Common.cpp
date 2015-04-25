@@ -188,9 +188,9 @@ namespace MetaFile
 						{
 							int nBit = (nByte & nBitIndex);
 							TRgbQuad* pColor = (nBit ? &oColor2 : &oColor1);
-							pBgraBuffer[nIndex + 0] = pColor->b;
-							pBgraBuffer[nIndex + 1] = pColor->g;
-							pBgraBuffer[nIndex + 2] = pColor->r;
+                            pBgraBuffer[nIndex + 0] = pColor->b;
+                            pBgraBuffer[nIndex + 1] = pColor->g;
+                            pBgraBuffer[nIndex + 2] = pColor->r;
 							pBgraBuffer[nIndex + 3] = 255;
 							nIndex += 4;
 						}
@@ -387,10 +387,10 @@ namespace MetaFile
 
 						BYTE nByte = *pBuffer; pBuffer++; lBufLen--;
 
-						pBgraBuffer[nIndex + 0] = oColorTable[nByte].b;
+                        pBgraBuffer[nIndex + 0] = oColorTable[nByte].b;
 						pBgraBuffer[nIndex + 1] = oColorTable[nByte].g;
-						pBgraBuffer[nIndex + 2] = oColorTable[nByte].r;
-						pBgraBuffer[nIndex + 3] = 255;
+                        pBgraBuffer[nIndex + 2] = oColorTable[nByte].r;
+                        pBgraBuffer[nIndex + 3] = 255;
 					}
 					pBuffer += nAdd; lBufLen -= nAdd;
 				}
@@ -645,9 +645,15 @@ namespace MetaFile
 						}
 						else
 						{
-							pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
+#ifdef __linux__
+                            pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
 							pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
+                            pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
+#else
+                            pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
+                            pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
+                            pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
+#endif
 							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
 						}
 					}
@@ -684,9 +690,15 @@ namespace MetaFile
 						}
 						else
 						{
-							pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
+#ifdef __linux__
+                            pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
 							pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
+                            pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
+#else
+                            pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
+                            pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
+                            pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
+#endif
 							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
 						}
 					}

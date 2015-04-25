@@ -19,9 +19,9 @@ typedef unsigned char BYTE;
 namespace MetaFile
 {
 
-#define METAFILE_RGBA(r, g, b) ((DWORD)( ( (BYTE)(r) )| ( ( (BYTE)(g) ) << 8 ) | ( ( (BYTE)(b) ) << 16 ) | ( (BYTE)(0) << 24 ) ) )
+    #define METAFILE_RGBA(r, g, b) ((DWORD)( ( (BYTE)(r) )| ( ( (BYTE)(g) ) << 8 ) | ( ( (BYTE)(b) ) << 16 ) | ( (BYTE)(0) << 24 ) ) )
 
-	struct TRgbQuad
+    struct TRgbQuad
 	{
 		unsigned char r;
 		unsigned char g;
@@ -209,10 +209,18 @@ namespace MetaFile
 		}
 		CDataStream& operator>>(TEmfColor& oColor)
 		{
-			*this >> oColor.r;
-			*this >> oColor.g;
-			*this >> oColor.b;
-			*this >> oColor.a;
+#if __linux__
+            *this >> oColor.b;
+            *this >> oColor.g;
+            *this >> oColor.r;
+            *this >> oColor.a;
+#else
+            *this >> oColor.r;
+            *this >> oColor.g;
+            *this >> oColor.b;
+            *this >> oColor.a;
+#endif
+
 
 			return *this;
 		}
@@ -441,10 +449,16 @@ namespace MetaFile
 		}
 		CDataStream& operator>>(TRgbQuad& oRGB)
 		{
-			*this >> oRGB.b;
+#ifdef __linux__
+            *this >> oRGB.r;
 			*this >> oRGB.g;
-			*this >> oRGB.r;
-			Skip(1); // reserved
+            *this >> oRGB.b;
+#else
+            *this >> oRGB.b;
+            *this >> oRGB.g;
+            *this >> oRGB.r;
+#endif
+            Skip(1); // reserved
 
 			return *this;
 		}

@@ -6,6 +6,11 @@
 #if !defined(_WIN32) && !defined(_WIN64)
 //from wingdi.h
 
+#define PT_CLOSEFIGURE      0x01
+#define PT_LINETO           0x02
+#define PT_BEZIERTO         0x04
+#define PT_MOVETO           0x06
+
 #ifndef _MAC
     #define ENHMETA_SIGNATURE       0x464D4520
 #else

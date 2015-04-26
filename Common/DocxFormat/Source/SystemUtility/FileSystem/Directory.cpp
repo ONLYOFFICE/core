@@ -229,5 +229,20 @@ namespace FileSystem
 		}
         return strFolderPath.Mid(0,n1);
 	}
-
+#if defined (_WIN32) || defined(_WIN64)
+	std::wstring Directory::GetFolderPath(const std::wstring & strFolderPath)
+	{
+        int n1 = strFolderPath.rfind('\\');
+        if (n1 < 0 )
+		{
+			n1 = strFolderPath.rfind('/');
+			if (n1 < 0 )
+			{           
+				return _T("");
+			}
+			return strFolderPath.substr(0,n1);
+		}
+        return strFolderPath.substr(0,n1);
+	}
+#endif
 }

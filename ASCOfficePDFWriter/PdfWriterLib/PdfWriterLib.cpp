@@ -87,17 +87,17 @@ CPdfWriterLib::~CPdfWriterLib()
 	RELEASEOBJECT(m_pFontManager);
 }
 
-void CPdfWriterLib::SetFontDir(CString& sFontDir)
+void CPdfWriterLib::SetFontDir(std::wstring& sFontDir)
 {
 	m_pFontManager = NULL;//освободится ниже
 
-    m_oFontsApplication.InitializeFromFolder(std::wstring(sFontDir.GetString()));
+    m_oFontsApplication.InitializeFromFolder(sFontDir);
     m_pFontManager = m_oFontsApplication.GenerateFontManager();
 
     m_bIsFontsInitialize = true;
 }
 
-void CPdfWriterLib::SetThemesPlace(const CString& sThemesPlace)
+void CPdfWriterLib::SetThemesPlace(const std::wstring & sThemesPlace)
 {
 	m_sThemesPlace = sThemesPlace;
 }
@@ -130,7 +130,7 @@ HRESULT CPdfWriterLib::SetAdditionalParam (CString ParamName, VARIANT	ParamValue
 	if ( _T("TempDirectory") == sParamName && VT_BSTR == ParamValue.vt )
 	{
 		m_wsTempDir = CString( ParamValue.bstrVal );
-		DocSetTempDir( m_pDocument, m_wsTempDir.GetBuffer() );
+		DocSetTempDir( m_pDocument, (wchar_t*)m_wsTempDir.c_str() );
 	}
 	else if ( _T("WhiteBackImage") == sParamName && VT_BOOL == ParamValue.vt )
 	{
@@ -3084,8 +3084,8 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                         {
                             if (0 == wsTempString.find(_T("theme")))
                             {
-                                if (m_sThemesPlace.GetLength())
-                                    wsTempString = string2std_string(m_sThemesPlace) + _T("/") + wsTempString;
+                                if (m_sThemesPlace.length() > 0)
+                                    wsTempString = m_sThemesPlace + _T("/") + wsTempString;
                             }
                             else
                             {
@@ -3353,8 +3353,8 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                         {
                             if (0 == wsTempString.find(_T("theme")))
                             {
-                                if (m_sThemesPlace.GetLength())
-                                    wsTempString = string2std_string(m_sThemesPlace) + _T("/") + wsTempString;
+								if (m_sThemesPlace.length() > 0)
+                                    wsTempString = m_sThemesPlace + _T("/") + wsTempString;
                             }
                             else
                             {
@@ -3636,14 +3636,14 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
     }
 }
 
-HRESULT CPdfWriterLib::OnlineWordToPdf (CString sPathXml, CString sDstFile, LONG nReg)
+HRESULT CPdfWriterLib::OnlineWordToPdf (std::wstring sPathXml, std::wstring sDstFile, LONG nReg)
 {
 	using namespace NOnlineOfficeBinToPdf;
 	HRESULT hRes = S_OK;
 
     CString sTempLogo;
 
-    std::wstring sHtmlPlace = string2std_string(FileSystem::Directory::GetFolderPath(sPathXml));
+	std::wstring sHtmlPlace = FileSystem::Directory::GetFolderPath(std_string2string(sPathXml));
 
 	try
 	{
@@ -3660,7 +3660,7 @@ HRESULT CPdfWriterLib::OnlineWordToPdf (CString sPathXml, CString sDstFile, LONG
         std::wstring sHypers =_T("<linker>");
 
 		// read file
-        CString sOpenPathName = FileSystem::Directory::GetLongPathName_(sPathXml);
+		CString sOpenPathName = FileSystem::Directory::GetLongPathName_(std_string2string(sPathXml));
 
 		CFile oFile;
 
@@ -3732,7 +3732,7 @@ HRESULT CPdfWriterLib::OnlineWordToPdf (CString sPathXml, CString sDstFile, LONG
             ::CDirectory::DeleteFile(sTempLogo);
 		}
 
-		SaveToFile(sDstFile);
+		SaveToFile(std_string2string(sDstFile));
 	}
 	catch (char *pcError)
 	{

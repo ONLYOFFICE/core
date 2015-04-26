@@ -42,8 +42,8 @@ public:
 	CPdfWriterLib();
 	virtual ~CPdfWriterLib();
 
-	void SetFontDir(CString& sFontDir);
-	void SetThemesPlace(const CString& sThemesPlace);
+	void SetFontDir(std::wstring & sFontDir);
+	void SetThemesPlace(const std::wstring & sThemesPlace);
     void InitializeFonts(bool bIsUseSystem, std::vector<std::wstring> arAdditionalFolders);
 //-----------------------------------------------------------------------------------------------------
 //
@@ -377,7 +377,7 @@ public:
 	//
 	//-----------------------------------------------------------------------------------------------------
 
-	HRESULT OnlineWordToPdf (CString sPathXml, CString sDstFile, LONG nReg);
+	HRESULT OnlineWordToPdf (std::wstring sPathXml, std::wstring sDstFile, LONG nReg);
     void OnlineWordToPdfInternal (BYTE* dstArray, LONG len, const std::wstring& sHtmlPlace, std::wstring& sHypers, int& nCountPages, CString sTempLogo, LONG nReg);
 
 //IRenderer
@@ -592,8 +592,8 @@ private:
 
 	CFontLoader						m_oFontLoader;
 
-	CString							m_wsTempDir;
-	CString							m_sThemesPlace;
+	std::wstring					m_wsTempDir;
+	std::wstring					m_sThemesPlace;
 
 	CFontManager*					m_pFontManager;
 	CApplicationFonts				m_oFontsApplication;

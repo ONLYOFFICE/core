@@ -55,7 +55,7 @@ namespace CSVWriter
 			nCurrentIndex += nCountChars;
 		}
 	}
-    void WriteFromXlsxToCsv(CString &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter, bool bJSON)
+    void WriteFromXlsxToCsv(const CString &sFileDst, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter, bool bJSON)
 	{
 		NSFile::CFileBinary oFile;
 		oFile.CreateFileW(string2std_string(sFileDst));

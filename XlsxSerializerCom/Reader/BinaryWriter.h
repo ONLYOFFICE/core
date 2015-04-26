@@ -3299,7 +3299,7 @@ namespace BinXlsxRW {
 		{
 			RELEASEOBJECT(m_oBcw);
 		}
-		void Open(CString& sInputDir, CString& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
+        void Open(const CString& sInputDir, const CString& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
 			NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, CString& sXMLOptions)
 		{
 			OOX::CPath path(sFileDst);

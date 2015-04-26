@@ -49,7 +49,7 @@ namespace CSVReader
 		pCell->m_oRef = OOX::Spreadsheet::CWorksheet::combineRef(nRow, nCol);
 		oRow.m_arrItems.push_back(pCell);
 	}
-    void ReadFromCsvToXlsx(CString &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter)
+    void ReadFromCsvToXlsx(const CString &sFileName, OOX::Spreadsheet::CXlsx &oXlsx, UINT nCodePage, const WCHAR wcDelimiter)
 	{
 		// Создадим Workbook
 		oXlsx.CreateWorkbook();

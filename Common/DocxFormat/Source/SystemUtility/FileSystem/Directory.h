@@ -10,6 +10,7 @@
 
 	#include <tchar.h>
 	#include <strsafe.h>
+	#include <string>
 #else
 	#include "../../Base/ASCString.h"
 #endif
@@ -38,5 +39,8 @@ namespace FileSystem {
         static CString GetTempPath();
         static CString CreateTempFileWithUniqueName (const CString & strFolderPathRoot,CString Prefix);
         static bool PathIsDirectory(const CString& pathName);
-    };
+#if defined (_WIN32) || defined(_WIN64)
+		static std::wstring GetFolderPath(const std::wstring & strFolderPath);
+#endif
+	};
 }

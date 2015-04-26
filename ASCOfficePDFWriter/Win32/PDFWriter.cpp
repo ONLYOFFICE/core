@@ -17,7 +17,7 @@ void CPDFWriter::FinalRelease()
 }
 HRESULT CPDFWriter::OnlineWordToPdf (BSTR sPathXml, BSTR sDstFile, BSTR sHtmlPlace, LONG nReg)
 {
-	return m_oPdfWriter->OnlineWordToPdf( CString(sPathXml), CString(sDstFile), nReg);
+	return m_oPdfWriter->OnlineWordToPdf( std::wstring(sPathXml), std::wstring(sDstFile), nReg);
 }
 
 
@@ -1167,7 +1167,9 @@ HRESULT CPDFWriter::put_ShadowAlpha (LONG lAlpha)
 }
 HRESULT CPDFWriter::get_ShadowVisible (BOOL *pbVisible)
 {
-	return m_oPdfWriter->get_ShadowVisible (pbVisible) ;
+	bool res;
+	return m_oPdfWriter->get_ShadowVisible (&res) ;
+	*pbVisible = (BOOL)res;
 }
 HRESULT CPDFWriter::put_ShadowVisible (BOOL bVisible)
 {

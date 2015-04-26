@@ -55,7 +55,7 @@ namespace BinXlsxRW{
 
 		sMediaPath = pathMediaDir.GetPath();
 	}
-	bool CXlsxSerializer::loadFromFile(CString& sSrcFileName, CString& sDstPath, CString& sXMLOptions, CString& sMediaDir)
+    bool CXlsxSerializer::loadFromFile(const CString& sSrcFileName, const CString& sDstPath, CString& sXMLOptions, CString& sMediaDir)
 	{
 		NSBinPptxRW::CDrawingConverter oOfficeDrawingConverter;
 		oOfficeDrawingConverter.SetMediaDstPath(sMediaDir);
@@ -79,7 +79,7 @@ namespace BinXlsxRW{
 		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oOfficeDrawingConverter, sXMLOptions);
 		return true;
 	}
-	bool CXlsxSerializer::saveToFile(CString& sDstFileName, CString& sSrcPath, CString& sXMLOptions)
+    bool CXlsxSerializer::saveToFile(const CString& sDstFileName, const CString& sSrcPath, CString& sXMLOptions)
 	{
 		COfficeFontPicker* pFontPicker = new COfficeFontPicker();
 		pFontPicker->Init(m_sFontDir);

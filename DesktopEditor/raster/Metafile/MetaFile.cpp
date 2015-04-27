@@ -175,6 +175,7 @@ namespace MetaFile
 		CImageFilesCache oCache;
 
 		CGraphicsRenderer oRenderer;
+		//oRenderer.
 		oRenderer.SetFontManager(pFontManager);
 		oRenderer.SetImageCache(&oCache);
 

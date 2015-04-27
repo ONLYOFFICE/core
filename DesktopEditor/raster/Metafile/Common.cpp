@@ -645,15 +645,9 @@ namespace MetaFile
 						}
 						else
 						{
-#ifdef __linux__
-                            pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
-                            pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
-#else
                             pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
                             pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
                             pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
-#endif
 							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
 						}
 					}
@@ -690,15 +684,9 @@ namespace MetaFile
 						}
 						else
 						{
-#ifdef __linux__
-                            pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
-                            pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
-#else
                             pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
                             pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
                             pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
-#endif
 							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
 						}
 					}

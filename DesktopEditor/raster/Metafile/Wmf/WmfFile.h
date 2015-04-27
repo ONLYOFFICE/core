@@ -1,7 +1,7 @@
 ﻿#ifndef _WMF_FILE_H
 #define _WMF_FILE_H
 
-#define NEW_WMF 2
+//#define NEW_WMF 2
 #ifdef NEW_WMF
 
 #include "../Wmf/WmfUtils.h"

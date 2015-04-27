@@ -11,7 +11,7 @@
 
 #include "WmfPlayer.h"
 #include "../Common.h"
-#include "../Emf/EmfOutputDevice.h"
+#include "../Common/IOutputDevice.h"
 #include <iostream>
 
 namespace MetaFile
@@ -94,12 +94,12 @@ namespace MetaFile
 				if (m_oStream.CanRead() < 6)
 					return SetError();
 
-				unsigned int unRecordPos = m_oStream.Tell();
+				m_unRecordPos = m_oStream.Tell();
 
 				m_oStream >> unSize;
 				m_oStream >> ushType;
 
-				unsigned int unRecordSize = unSize * 2; // Размер указан в WORD
+				m_unRecordSize = unSize * 2; // Размер указан в WORD
 				switch (ushType)
 				{
 					//-----------------------------------------------------------
@@ -113,7 +113,26 @@ namespace MetaFile
 					//-----------------------------------------------------------
 					// 2.3.3 Drawing records
 					//-----------------------------------------------------------
-
+				case META_ARC: Read_META_ARC(); break;
+				case META_CHORD: Read_META_CHORD(); break;
+				case META_ELLIPSE: Read_META_ELLIPSE(); break;
+				case META_EXTFLOODFILL: Read_META_UNSUPPORTED(); break;
+				case META_EXTTEXTOUT: Read_META_EXTTEXTOUT(); break;
+				case META_FILLREGION: Read_META_FILLREGION(); break;
+				case META_FLOODFILL: Read_META_UNSUPPORTED(); break;
+				case META_FRAMEREGION: Read_META_FRAMEREGION(); break;
+				case META_INVERTREGION: Read_META_INVERTREGION(); break;
+				case META_LINETO: Read_META_LINETO(); break;
+				case META_PAINTREGION: Read_META_PAINTREGION(); break;
+				case META_PATBLT: Read_META_PATBLT(); break;
+				case META_PIE: Read_META_PIE(); break;
+				case META_POLYLINE: Read_META_POLYLINE(); break;
+				case META_POLYGON: Read_META_POLYGON(); break;
+				case META_POLYPOLYGON: Read_META_POLYPOLYGON(); break;
+				case META_RECTANGLE: Read_META_RECTANGLE(); break;
+				case META_ROUNDRECT: Read_META_ROUNDRECT(); break;
+				case META_SETPIXEL: Read_META_SETPIXEL(); break;
+				case META_TEXTOUT: Read_META_TEXTOUT(); break;
 					//-----------------------------------------------------------
 					// 2.3.4 Object records
 					//-----------------------------------------------------------
@@ -183,8 +202,8 @@ namespace MetaFile
 				unRecordIndex++;
 
 				// Пропускаем лишние байты, которые могли быть в записи
-				unsigned int unReadedSize = m_oStream.Tell() - unRecordPos;
-				m_oStream.Skip(unRecordSize - unReadedSize);
+				unsigned int unReadedSize = m_oStream.Tell() - m_unRecordPos;
+				m_oStream.Skip(m_unRecordSize - unReadedSize);
 			} while (!CheckError());
 
 			if (!CheckError())
@@ -193,13 +212,13 @@ namespace MetaFile
 			if (m_pOutput)
 				m_pOutput->End();
 		}
-		void SetOutputDevice(CEmfOutputDevice* pOutput)
+		void SetOutputDevice(IOutputDevice* pOutput)
 		{
 			m_pOutput = pOutput;
 		}
 		void Scan()
 		{
-			CEmfOutputDevice* pOutput = m_pOutput;
+			IOutputDevice* pOutput = m_pOutput;
 			m_pOutput = NULL;
 			PlayMetaFile();
 			m_pOutput = pOutput;
@@ -213,10 +232,50 @@ namespace MetaFile
 		}
 	private:
 
+		int GetRecordRemainingBytesCount()
+		{
+			unsigned int unReadedSize = m_oStream.Tell() - m_unRecordPos;
+			return (m_unRecordSize - unReadedSize);
+		}
 		void MoveTo(short shX, short shY)
 		{
 			// TODO: Реализовать
 			m_pDC->SetCurPos(shX, shY);
+		}
+		void LineTo(short shX, short shY)
+		{
+			// TODO: Реализовать
+			m_pDC->SetCurPos(shX, shY);
+		}
+		void ArcTo(short shL, short shT, short shR, short shB, double dStart, double dSweep)
+		{
+			// TODO: Реализовать
+			// TODO: Сделать пересчет текущей позиции
+		}
+		void ClosePath()
+		{
+			// TODO: Реализовать
+		}
+		void DrawPath(bool bStroke, bool bFill)
+		{
+			// TODO: Реализовать
+		}
+		void DrawText(const unsigned char* pString, unsigned int unCharsCount, short _shX, short _shY, int nTextW, bool bWithOutLast)
+		{
+			int nX = _shX;
+			int nY = _shY;
+
+			if (m_pDC->GetTextAlign() & TA_UPDATECP)
+			{
+				nX = m_pDC->GetCurPos().x;
+				nY = m_pDC->GetCurPos().y;
+			}
+
+			// TODO: Реализовать
+			//if (m_pOutput)
+			//{
+			//	m_pOutput->DrawText(wsString.c_str(), unCharsCount, nX, nY, nTextW, bWithOutLast);
+			//}
 		}
 
 		void Read_META_UNKNOWN()
@@ -224,6 +283,9 @@ namespace MetaFile
 		}
 		void Read_META_UNSUPPORTED()
 		{
+			// META_EXTFLOODFILL
+			// META_FLOODFILL
+
 			// META_ANIMATEPALETTE
 			// META_REALIZEPALETTE
 			// META_RESIZEPALETTE
@@ -263,6 +325,283 @@ namespace MetaFile
 			m_oStream >> m_oHeader.MaxRecord;
 			m_oStream >> m_oHeader.NumberOfMembers;
 
+		}
+		void Read_META_ARC()
+		{
+			short shYEndArc, shXEndArc, shYStartArc, shXStartArc, shBottom, shRight, shTop, shLeft;
+			m_oStream >> shYEndArc >> shXEndArc >> shYStartArc >> shXStartArc >> shBottom >> shRight >> shTop >> shLeft;
+			double dStartAngle = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXStartArc, (int)shYStartArc);
+			double dSweepAngle = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXEndArc, (int)shYEndArc) - dStartAngle;
+			ArcTo(shLeft, shTop, shRight, shBottom, dStartAngle, dSweepAngle);
+			DrawPath(true, false);
+		}
+		void Read_META_CHORD()
+		{
+			short shYEndArc, shXEndArc, shYStartArc, shXStartArc, shBottom, shRight, shTop, shLeft;
+			m_oStream >> shYEndArc >> shXEndArc >> shYStartArc >> shXStartArc >> shBottom >> shRight >> shTop >> shLeft;
+			double dStartAngle = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXStartArc, (int)shYStartArc);
+			double dSweepAngle = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXEndArc, (int)shYEndArc) - dStartAngle;
+			MoveTo(shXStartArc, shYStartArc);
+			ArcTo(shLeft, shTop, shRight, shBottom, dStartAngle, dSweepAngle);
+			LineTo(shXStartArc, shYStartArc);
+			DrawPath(true, true);
+		}
+		void Read_META_ELLIPSE()
+		{
+			short shBottom, shRight, shTop, shLeft;
+			m_oStream >> shBottom >> shRight >> shTop >> shLeft;
+			ArcTo(shLeft, shTop, shRight, shBottom, 0, 360);
+			DrawPath(true, true);
+		}
+		void Read_META_EXTTEXTOUT()
+		{
+			short shY, shX, shStringLength;
+			unsigned short ushFwOptions;
+			TWmfRect oRectangle;
+			m_oStream >> shY >> shX >> shStringLength >> ushFwOptions;
+
+			if (shStringLength <= 0)
+				return;
+
+			if (ushFwOptions & ETO_CLIPPED || ushFwOptions & ETO_OPAQUE)
+				m_oStream >> oRectangle;
+
+			unsigned char* pString = new unsigned char[shStringLength + 1];
+			if (!pString)
+				return SetError();
+
+			pString[shStringLength] = 0x00;
+			m_oStream.ReadBytes(pString, shStringLength);
+
+			short* pDx = NULL;
+			if (GetRecordRemainingBytesCount() > shStringLength * 2)
+			{
+				if (shStringLength & 1) // Если длина нечетная, тогда пропускаем 1 байт, т.к. тут прилегание по 2 байта
+					m_oStream.Skip(1);
+
+				// TODO: Тут еще надо смотреть на ETO_PDY
+				pDx = new short[shStringLength + 1];
+				if (!pDx)
+				{
+					delete[] pString;
+					return SetError();
+				}
+				m_oStream.ReadBytes(pDx, shStringLength);
+			}
+
+			DrawText(pString, shStringLength, shX, shY, -1, false);
+
+			if (pString)
+				delete[] pString;
+
+			if (pDx)
+				delete[] pDx;
+		}
+		void Read_META_FILLREGION()
+		{
+			unsigned short ushRegionIndex, ushBrushIndex;
+			m_oStream >> ushRegionIndex >> ushBrushIndex;
+			// TODO: Реализовать регионы
+		}
+		void Read_META_FRAMEREGION()
+		{
+			unsigned short ushRegionIndex, ushBrushIndex;
+			short shHeight, shWidth;
+			m_oStream >> ushRegionIndex >> ushBrushIndex >> shHeight >> shWidth;
+			// TODO: Реализовать регионы
+		}
+		void Read_META_INVERTREGION()
+		{
+			unsigned short ushRegionIndex;
+			m_oStream >> ushRegionIndex;
+			// TODO: Реализовать регионы
+		}
+		void Read_META_LINETO()
+		{
+			short shY, shX;
+			m_oStream >> shY >> shX;
+			LineTo(shX, shY);
+			DrawPath(true, false);
+		}
+		void Read_META_PAINTREGION()
+		{
+			unsigned short ushRegionIndex;
+			m_oStream >> ushRegionIndex;
+			// TODO: Реализовать регионы
+		}
+		void Read_META_PATBLT()
+		{
+			unsigned int unRasterOperation;
+			short shX, shY, shW, shH;
+			m_oStream >> unRasterOperation >> shH >> shW >> shY >> shX;
+
+			// TODO: Нужно использовать растровую операцию unRasterOperation
+
+			MoveTo(shX, shY);
+			LineTo(shX + shW, shY);
+			LineTo(shX + shW, shY + shH);
+			LineTo(shX, shY + shH);
+			ClosePath();
+			DrawPath(false, true);
+		}
+		void Read_META_PIE()
+		{
+			short shXRadial1, shYRadial1, shXRadial2, shYRadial2;
+			short shL, shT, shR, shB;
+			m_oStream >> shYRadial2 >> shXRadial2 >> shYRadial1 >> shXRadial1;
+			m_oStream >> shB >> shR >> shT >> shL;
+
+			double dStartAngle = GetEllipseAngle(shL, shT, shR, shB, shXRadial1, shYRadial1);
+			double dSweepAngle = GetEllipseAngle(shL, shT, shR, shB, shXRadial2, shYRadial2) - dStartAngle;
+
+			short shCenterX = (shL + shR) / 2;
+			short shCenterY = (shT + shB) / 2;
+			MoveTo(shCenterX, shCenterY);
+			LineTo(shXRadial1, shYRadial1);
+			ArcTo(shL, shT, shR, shB, dStartAngle, dSweepAngle);
+			LineTo(shCenterX, shCenterY);
+			DrawPath(true, true);
+		}
+		void Read_META_POLYLINE()
+		{
+			short shNumberOfPoints;
+			m_oStream >> shNumberOfPoints;
+			if (shNumberOfPoints < 1)
+				return;
+
+			TWmfPointS oPoint;
+			m_oStream >> oPoint;
+			MoveTo(oPoint.x, oPoint.y);
+
+			for (short shIndex = 1; shIndex < shNumberOfPoints; shIndex++)
+			{
+				m_oStream >> oPoint;
+				LineTo(oPoint.x, oPoint.y);
+			}
+			DrawPath(true, false);
+		}
+		void Read_META_POLYGON()
+		{
+			short shNumberOfPoints;
+			m_oStream >> shNumberOfPoints;
+			if (shNumberOfPoints < 1)
+				return;
+
+			TWmfPointS oPoint;
+			m_oStream >> oPoint;
+			MoveTo(oPoint.x, oPoint.y);
+
+			for (short shIndex = 1; shIndex < shNumberOfPoints; shIndex++)
+			{
+				m_oStream >> oPoint;
+				LineTo(oPoint.x, oPoint.y);
+			}
+			ClosePath();
+			DrawPath(true, true);
+		}
+		void Read_META_POLYPOLYGON()
+		{
+			unsigned short ushNumberOfPolygons;
+			m_oStream >> ushNumberOfPolygons;
+			if (ushNumberOfPolygons <= 0)
+				return;
+
+			unsigned short* pushPointsPerPolygon = new unsigned short[ushNumberOfPolygons];
+			if (!pushPointsPerPolygon)
+				return SetError();
+
+			for (unsigned short ushIndex = 0; ushIndex < ushNumberOfPolygons; ushIndex++)
+			{
+				m_oStream >> pushPointsPerPolygon[ushIndex];
+			}
+
+			for (unsigned short ushPolygonIndex = 0; ushPolygonIndex < ushNumberOfPolygons; ushPolygonIndex++)
+			{
+				unsigned short ushPointsCount = pushPointsPerPolygon[ushPolygonIndex];
+
+				if (ushPointsCount <= 0)
+					continue;
+
+				TWmfPointS oPoint;
+				m_oStream >> oPoint;
+				MoveTo(oPoint.x, oPoint.y);
+				for (unsigned short ushPointIndex = 1; ushPointIndex < ushPointsCount; ushPointIndex++)
+				{
+					m_oStream >> oPoint;
+					LineTo(oPoint.x, oPoint.y);
+				}
+				ClosePath();
+			}
+			DrawPath(true, true);
+
+			delete[] pushPointsPerPolygon;
+		}
+		void Read_META_RECTANGLE()
+		{
+			short shL, shT, shR, shB;
+			m_oStream >> shB >> shR >> shT >> shL;
+
+			MoveTo(shL, shT);
+			LineTo(shR, shT);
+			LineTo(shR, shB);
+			LineTo(shL, shB);
+			ClosePath();
+			DrawPath(true, true);
+		}
+		void Read_META_ROUNDRECT()
+		{
+			short shL, shT, shR, shB, shW, shH;
+			m_oStream >> shH >> shW >> shB >> shR >> shT >> shL;
+
+			MoveTo(shL + shW, shT);
+			LineTo(shR - shW, shT);
+			ArcTo(shR - shW, shT, shR, shT + shH, -90, 90);
+			LineTo(shR, shB - shH);
+			ArcTo(shR - shW, shB - shH, shR, shB, 0, 90);
+			LineTo(shL + shW, shB);
+			ArcTo(shL, shB - shH, shL + shW, shB, 90, 90);
+			LineTo(shL, shT + shH);
+			ArcTo(shL, shT, shL + shW, shT + shH, 180, 90);
+			ClosePath();
+			DrawPath(true, true);
+		}
+		void Read_META_SETPIXEL()
+		{
+			TWmfColor oColor;
+			short shX, shY;
+			m_oStream >> oColor >> shY >> shX;
+
+			BYTE pBgraBuffer[4];
+			pBgraBuffer[0] = oColor.b;
+			pBgraBuffer[1] = oColor.g;
+			pBgraBuffer[2] = oColor.r;
+			pBgraBuffer[3] = 0xff;
+
+			if (m_pOutput)
+				m_pOutput->DrawBitmap(shX, shY, 1, 1, pBgraBuffer, 1, 1);
+		}
+		void Read_META_TEXTOUT()
+		{
+			short shStringLength;
+			m_oStream >> shStringLength;
+
+			if (shStringLength <= 0)
+				return;
+
+			unsigned char* pString = new unsigned char[shStringLength + 1];
+			if (!pString)
+				return SetError();
+
+			pString[shStringLength + 1] = 0x00;
+			m_oStream.ReadBytes(pString, shStringLength);
+
+			if (shStringLength & 1)
+				m_oStream.Skip(1);
+
+			short shX, shY;
+			m_oStream >> shY >> shX;
+			DrawText(pString, shStringLength, shX, shY, -1, false);
+			delete[] pString;
 		}
 		void Read_META_CREATEBRUSHINDIRECT()
 		{
@@ -514,19 +853,21 @@ namespace MetaFile
 
 	private:
 
-		CDataStream       m_oStream;
-		BYTE*             m_pBufferData;
-		bool              m_bError;
-		CFontManager*     m_pFontManager;
+		CDataStream    m_oStream;
+		BYTE*          m_pBufferData;
+		bool           m_bError;
+		CFontManager*  m_pFontManager;
 
-		TWmfPlaceable     m_oPlaceable;
-		TWmfHeader        m_oHeader;
+		unsigned int   m_unRecordSize;
+		unsigned int   m_unRecordPos;
 
-		CEmfOutputDevice* m_pOutput;
+		TWmfPlaceable  m_oPlaceable;
+		TWmfHeader     m_oHeader;
 
-		CWmfPlayer        m_oPlayer;
-		CWmfDC*           m_pDC;
+		IOutputDevice* m_pOutput;
 
+		CWmfPlayer     m_oPlayer;
+		CWmfDC*        m_pDC;
 	};
 }
 

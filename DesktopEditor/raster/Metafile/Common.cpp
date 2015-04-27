@@ -732,4 +732,39 @@ namespace MetaFile
 		else // BitmapInfoHeader
 			ReadImageInfoHeader(pHeaderBuffer + 4, ulHeaderBufferLen - 4, pImageBuffer, ulImageBufferLen, ppDstBuffer, pulWidth, pulHeight);
 	}
+	double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY)
+	{
+		double dX0 = (nL + nR) / 2.0;
+		double dY0 = (nT + nB) / 2.0;
+
+		// Определим квадрант
+		int nQuarter = -1;
+		if (nX >= dX0)
+		{
+			if (nY <= dY0)
+				nQuarter = 0;
+			else
+				nQuarter = 3;
+		}
+		else
+		{
+			if (nY <= dY0)
+				nQuarter = 1;
+			else
+				nQuarter = 2;
+		}
+
+		double dDist = sqrt((double)(nX - dX0) * (nX - dX0) + (nY - dY0) * (nY - dY0));
+		double dRadAngle = asin(abs(nY - dY0) / dDist);
+
+		double dAngle = dRadAngle * 180 / 3.1415926;
+		switch (nQuarter)
+		{
+			case 1: dAngle = 180 - dAngle; break;
+			case 2: dAngle = 180 + dAngle; break;
+			case 3: dAngle = 360 - dAngle; break;
+		}
+
+		return dAngle;
+	}
 }

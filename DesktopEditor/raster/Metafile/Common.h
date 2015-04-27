@@ -128,6 +128,16 @@ namespace MetaFile
 				pBuffer[ulIndex] = ReadUShort();
 			}
 		}
+		void           ReadBytes(short* pBuffer, unsigned int ulSize)
+		{
+			size_t ulRemainSize = (pEnd - pCur) / 2;
+			size_t ulFinalSize  = (ulRemainSize > ulSize ? ulSize : ulRemainSize);
+
+			for (size_t ulIndex = 0; ulIndex < ulFinalSize; ulIndex++)
+			{
+				pBuffer[ulIndex] = ReadShort();
+			}
+		}
 		void           ReadBytes(unsigned int*  pBuffer, unsigned int ulSize)
 		{
 			size_t ulRemainSize = (pEnd - pCur) / 4;
@@ -849,6 +859,7 @@ namespace MetaFile
 	};
 
 	void ReadImage(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight);
+	double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY);
 };
 
 #endif //_METAFILE_WMF_EMF_COMMON_H

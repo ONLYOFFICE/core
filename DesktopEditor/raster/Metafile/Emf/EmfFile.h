@@ -17,7 +17,7 @@
 
 namespace MetaFile
 {
-	class CEmfFile : public CMetaFileBase
+	class CEmfFile
 	{
 	public:
 
@@ -349,42 +349,7 @@ namespace MetaFile
 			dDstY = (double)((double)(lSrcY - pWindow->lY) * m_pDC->GetPixelHeight()) + pViewport->lY;
 
 			return dDstY;
-		}
-		double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY)
-		{
-			double dX0 = (nL + nR) / 2.0;
-			double dY0 = (nT + nB) / 2.0;
-
-			// Определим квадрант
-			int nQuarter = -1;
-			if (nX >= dX0)
-			{
-				if (nY <= dY0)
-					nQuarter = 0;
-				else
-					nQuarter = 3;
-			}
-			else
-			{
-				if (nY <= dY0)
-					nQuarter = 1;
-				else
-					nQuarter = 2;
-			}
-
-			double dDist = /*std::*/sqrt((double)(nX - dX0) * (nX - dX0) + (nY - dY0) * (nY - dY0));
-			double dRadAngle = /*std::*/asin(/*std::*/abs(nY - dY0) / dDist);
-			
-			double dAngle = dRadAngle * 180 / 3.1415926;
-			switch (nQuarter)
-			{
-				case 1: dAngle = 180 - dAngle; break;
-				case 2: dAngle = 180 + dAngle; break;
-				case 3: dAngle = 360 - dAngle; break;
-			}
-
-			return dAngle;
-		}
+		}		
 
 		void MoveTo(TEmfPointL& oPoint)
 		{
@@ -1717,7 +1682,7 @@ namespace MetaFile
 			LineTo(oBox.lLeft + lRoundW, oBox.lBottom);
 			ArcTo(oBox.lLeft, oBox.lBottom - lRoundH, oBox.lLeft + lRoundW, oBox.lBottom, 90, 90);
 			LineTo(oBox.lLeft, oBox.lTop + lRoundH);
-			ArcTo(oBox.lLeft, oBox.lTop, oBox.lLeft + lRoundW, oBox.lTop + lRoundW, 180, 90);
+			ArcTo(oBox.lLeft, oBox.lTop, oBox.lLeft + lRoundW, oBox.lTop + lRoundH, 180, 90);
 			ClosePath();
 			DrawPath(true, true);
 		}

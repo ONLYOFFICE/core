@@ -13,10 +13,11 @@
 
 #include "../../../fontengine/FontManager.h"
 #include <iostream>
+#include "../Common/MetaFile.h"
 
 namespace MetaFile
 {
-	class CEmfFile
+	class CEmfFile : public CMetaFileBase
 	{
 	public:
 

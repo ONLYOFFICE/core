@@ -4,6 +4,9 @@
 #include "../../raster/BgraFrame.h"
 
 #include "Emf/RendererOutput.h"
+#ifndef NEW_WMF
+#include "Wmf/RendererOutput.h"
+#endif
 
 namespace MetaFile
 {
@@ -34,7 +37,12 @@ namespace MetaFile
 	{
 		// Сначала пытаемся открыть файл как Wmf
 		m_oWmfFile.OpenFromFile(wsFilePath);
+
+#ifdef NEW_WMF
+		m_oWmfFile.Scan();
+#else
 		m_oWmfFile.Scan(&m_oWmfRect);
+#endif
 
 		if (!m_oWmfFile.CheckError())
 		{
@@ -68,6 +76,8 @@ namespace MetaFile
 
 		if (c_lMetaWmf == m_lType)
 		{
+#ifdef NEW_WMF
+#else
 			double dRendererDpix, dRendererDpiY;
 			pRenderer->get_DpiX(&dRendererDpix);
 			pRenderer->get_DpiY(&dRendererDpiY);
@@ -108,6 +118,7 @@ namespace MetaFile
 
 			TWmfRectF oRect;
 			m_oWmfFile.Play(&oRect);
+#endif
 		}
 		else if (c_lMetaEmf == m_lType)
 		{

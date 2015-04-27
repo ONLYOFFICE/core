@@ -851,4 +851,142 @@ enum EWmfBitCount
 #define META_CREATEBRUSHINDIRECT     0x02FC
 #define META_CREATEREGION            0x06FF
 
+namespace MetaFile
+{
+#define META_EOF 0x0000
+	struct TWmfColor
+	{
+		unsigned char r;
+		unsigned char g;
+		unsigned char b;
+		unsigned char a; //Reserved Must be 0x00
+
+		TWmfColor()
+		{
+			r = 0;
+			g = 0;
+			b = 0;
+		}
+
+		TWmfColor(unsigned char _r, unsigned char _g, unsigned char _b)
+		{
+			r = _r;
+			g = _g;
+			b = _b;
+		}
+
+		void Set(unsigned char _r, unsigned char _g, unsigned char _b)
+		{
+			r = _r;
+			g = _g;
+			b = _b;
+		}
+
+		void Init()
+		{
+			r = 0;
+			g = 0;
+			b = 0;
+			a = 0;
+		}
+
+		void Copy(TWmfColor* pOther)
+		{
+			r = pOther->r;
+			g = pOther->g;
+			b = pOther->b;
+			a = pOther->a;
+		}
+
+		TWmfColor& operator=(TWmfColor& oColor)
+		{
+			r = oColor.r;
+			g = oColor.g;
+			b = oColor.b;
+			a = oColor.a;
+			return *this;
+		}
+	};
+	struct TWmfPaletteEntry
+	{
+		unsigned char Values;
+		unsigned char Blue;
+		unsigned char Green;
+		unsigned char Red;
+	};
+	struct TWmfPointS
+	{
+		short x;
+		short y;
+	};
+	struct TWmfRect
+	{
+		short Left;
+		short Top;
+		short Right;
+		short Bottom;
+	};
+	struct TWmfPlaceable
+	{
+		unsigned int   Key;
+		unsigned short HWmf;
+		TWmfRect       BoundingBox;
+		unsigned short Inch;
+		unsigned int   Reserved;
+		unsigned short Checksum;
+	};
+	struct TWmfHeader
+	{
+		unsigned short Type;
+		unsigned short HeaderSize;
+		unsigned short Version;
+		unsigned int   Size;
+		unsigned short NumberOfObjects;
+		unsigned int   MaxRecord;
+		unsigned short NumberOfMembers;
+	};
+	struct TWmfScanLine
+	{
+		unsigned short Left;
+		unsigned short Right;
+	};
+	struct TWmfScanObject
+	{
+		unsigned short  Count;
+		unsigned short  Top;
+		unsigned short  Bottom;
+		TWmfScanLine*   ScanLines;
+		unsigned short  Count2;
+	};
+	struct TWmfWindow
+	{
+		short x;
+		short y;
+		short w;
+		short h;
+
+		void Init()
+		{
+			x = 0;
+			y = 0;
+			w = 1024;
+			h = 1024;
+		}
+
+		void Copy(TWmfWindow& oOther)
+		{
+			x = oOther.x;
+			y = oOther.y;
+			w = oOther.w;
+			h = oOther.h;
+		}
+	};
+	struct TWmfLogBrush
+	{
+		unsigned short BrushStyle;
+		TWmfColor      Color;
+		unsigned short BurshHatch;
+	};
+}
+
 #endif /* _WMF_TYPES_H_ */

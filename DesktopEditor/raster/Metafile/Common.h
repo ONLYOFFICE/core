@@ -15,6 +15,7 @@ typedef unsigned char BYTE;
 #include "Wmf/WmfTypes.h"
 #include "Wmf/WmfUtils.h"
 #include "Emf/EmfObjects.h"
+#include "Wmf/WmfObjects.h"
 
 namespace MetaFile
 {
@@ -595,6 +596,181 @@ namespace MetaFile
 			*this >> oBitmap.cbBitsSrc;
 			*this >> oBitmap.cxSrc;
 			*this >> oBitmap.cySrc;
+
+			return *this;
+		}
+		CDataStream& operator>>(TWmfRect& oRect)
+		{
+			*this >> oRect.Left;
+			*this >> oRect.Top;
+			*this >> oRect.Right;
+			*this >> oRect.Bottom;
+
+			return *this;
+		}
+		CDataStream& operator>>(TWmfColor& oColor)
+		{
+			*this >> oColor.r;
+			*this >> oColor.g;
+			*this >> oColor.b;
+			*this >> oColor.a;
+
+			return *this;
+		}
+		CDataStream& operator>>(TWmfPointS& oPoint)
+		{
+			*this >> oPoint.x;
+			*this >> oPoint.y;
+
+			return *this;
+		}
+		CDataStream& operator>>(TWmfLogBrush& oBrush)
+		{
+			*this >> oBrush.BrushStyle;
+			*this >> oBrush.Color;
+			*this >> oBrush.BurshHatch;
+
+			return *this;
+		}
+		CDataStream& operator>>(CWmfFont* pFont)
+		{
+			*this >> pFont->Height;
+			*this >> pFont->Width;
+			*this >> pFont->Escapement;
+			*this >> pFont->Orientation;
+			*this >> pFont->Weight;
+			*this >> pFont->Italic;
+			*this >> pFont->Underline;
+			*this >> pFont->StrikeOut;
+			*this >> pFont->CharSet;
+			*this >> pFont->OutPrecision;
+			*this >> pFont->ClipPrecision;
+			*this >> pFont->Quality;
+			*this >> pFont->PitchAndFamily;
+
+			// Читаем до тех пор пока не встретим нулевой символ
+			unsigned char unIndex = 0;
+			*this >> pFont->Facename[unIndex];
+			while (0x00 != pFont->Facename[unIndex])
+			{
+				unIndex++;
+				if (32 == unIndex)
+					break;
+
+				*this >> pFont->Facename[unIndex];
+			}
+
+			return *this;
+		}
+		CDataStream& operator>>(TWmfPaletteEntry& oEntry)
+		{
+			*this >> oEntry.Values;
+			*this >> oEntry.Blue;
+			*this >> oEntry.Green;
+			*this >> oEntry.Red;
+			return *this;
+		}
+		CDataStream& operator>>(CWmfPalette* pPalette)
+		{
+			*this >> pPalette->Start;
+			*this >> pPalette->NumberOfEntries;
+
+			if (pPalette->NumberOfEntries > 0)
+			{
+				pPalette->aPaletteEntries = new TWmfPaletteEntry[pPalette->NumberOfEntries];
+				if (!pPalette->aPaletteEntries)
+				{
+					pPalette->aPaletteEntries = NULL;
+					pPalette->NumberOfEntries = 0;
+					return *this;
+				}
+
+				for (unsigned short ushIndex = 0; ushIndex < pPalette->NumberOfEntries; ushIndex++)
+				{
+					*this >> pPalette->aPaletteEntries[ushIndex];
+				}
+			}
+			else
+			{
+				pPalette->aPaletteEntries = NULL;
+			}
+
+			return *this;
+		}
+		CDataStream& operator>>(CWmfPen* pPen)
+		{
+			*this >> pPen->PenStyle;
+			*this >> pPen->Width;
+			*this >> pPen->Color;
+
+			return *this;
+		}
+		CDataStream& operator>>(TWmfScanLine& oLine)
+		{
+			*this >> oLine.Left;
+			*this >> oLine.Right;
+
+			return *this;
+		}
+		CDataStream& operator>>(TWmfScanObject& oScan)
+		{
+			*this >> oScan.Count;
+			*this >> oScan.Top;
+			*this >> oScan.Bottom;
+
+			if (oScan.Count > 0 && oScan.Count & 1) // Должно делиться на 2
+			{
+				unsigned short ushCount = oScan.Count >> 1;
+				oScan.ScanLines = new TWmfScanLine[ushCount];
+				if (oScan.ScanLines)
+				{
+					for (unsigned short ushIndex = 0; ushIndex < ushCount; ushIndex++)
+					{
+						*this >> oScan.ScanLines[ushIndex];
+					}
+				}
+				else
+				{
+					oScan.ScanLines = NULL;
+					oScan.Count = 0;
+				}
+			}
+			else
+			{
+				oScan.ScanLines = NULL;
+			}			
+			*this >> oScan.Count2;
+
+			return *this;
+		}
+		CDataStream& operator>>(CWmfRegion* pRegion)
+		{
+			*this >> pRegion->nextInChain;
+			*this >> pRegion->ObjectType;
+			*this >> pRegion->RegionSize;
+			*this >> pRegion->ScanCount;
+			*this >> pRegion->MaxScan;
+			*this >> pRegion->BoundingRectangle;
+
+			if (pRegion->ScanCount > 0)
+			{
+				pRegion->aScans = new TWmfScanObject[pRegion->ScanCount];
+				if (!pRegion->aScans)
+				{
+					pRegion->aScans = NULL;
+					pRegion->ScanCount = 0;
+					return *this;
+				}
+				for (unsigned short ushIndex = 0; ushIndex < pRegion->ScanCount; ushIndex++)
+				{
+					*this >> pRegion->aScans[ushIndex];
+				}
+			}
+			else
+			{
+				pRegion->aScans = NULL;
+			}
+
 
 			return *this;
 		}

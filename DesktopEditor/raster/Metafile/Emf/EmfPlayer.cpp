@@ -118,16 +118,11 @@ namespace MetaFile
 		{
 			CEmfObjectBase* pObject = oPos->second;
 
-			for (int nIndex = 0; nIndex < m_vDCStack.size(); nIndex++)
+			switch (pObject->GetType())
 			{
-				CEmfDC* pDC = m_vDCStack.at(nIndex);
-
-				switch (pObject->GetType())
-				{
-					case EMF_OBJECT_BRUSH: m_pDC->SetBrush((CEmfLogBrushEx*)pObject); break;
-					case EMF_OBJECT_FONT: m_pDC->SetFont((CEmfLogFont*)pObject); break;
-					case EMF_OBJECT_PEN: m_pDC->SetPen((CEmfLogPen*)pObject); break;
-				}
+			case EMF_OBJECT_BRUSH: m_pDC->SetBrush((CEmfLogBrushEx*)pObject); break;
+			case EMF_OBJECT_FONT: m_pDC->SetFont((CEmfLogFont*)pObject); break;
+			case EMF_OBJECT_PEN: m_pDC->SetPen((CEmfLogPen*)pObject); break;
 			}
 		}
 	}
@@ -153,12 +148,17 @@ namespace MetaFile
 		if (m_mObjects.end() != oPos)
 		{
 			CEmfObjectBase* pObject = oPos->second;
-			
-			switch (pObject->GetType())
+
+			for (int nIndex = 0; nIndex < m_vDCStack.size(); nIndex++)
 			{
-				case EMF_OBJECT_BRUSH: m_pDC->RemoveBrush((CEmfLogBrushEx*)pObject); break;
-				case EMF_OBJECT_FONT: m_pDC->RemoveFont((CEmfLogFont*)pObject); break;
-				case EMF_OBJECT_PEN: m_pDC->RemovePen((CEmfLogPen*)pObject); break;
+				CEmfDC* pDC = m_vDCStack.at(nIndex);
+
+				switch (pObject->GetType())
+				{
+				case EMF_OBJECT_BRUSH: pDC->RemoveBrush((CEmfLogBrushEx*)pObject); break;
+				case EMF_OBJECT_FONT: pDC->RemoveFont((CEmfLogFont*)pObject); break;
+				case EMF_OBJECT_PEN: pDC->RemovePen((CEmfLogPen*)pObject); break;
+				}
 			}
 
 			delete pObject;

@@ -87,6 +87,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <AdditionalIncludeDirectories>..\..\agg-2.4\include;..\..\freetype-2.5.2\include;..\..\cximage\jasper\include;..\..\cximage\jpeg;..\..\cximage\png;..\..\cximage\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4005;4018</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -148,6 +149,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
+    <ClInclude Include="Common\MetaFile.h" />
+    <ClInclude Include="Common\MetaFileObjects.h" />
+    <ClInclude Include="Common\MetaFilePlayer.h" />
     <ClInclude Include="Emf\EmfClip.h" />
     <ClInclude Include="Emf\EmfFile.h" />
     <ClInclude Include="Emf\EmfObjects.h" />
@@ -168,13 +172,16 @@
     <ClInclude Include="Wmf\WmfColor.h" />
     <ClInclude Include="Wmf\WmfFile.h" />
     <ClInclude Include="Wmf\WmfMemory.h" />
+    <ClInclude Include="Wmf\WmfObjects.h" />
     <ClInclude Include="Wmf\WmfOutputDevice.h" />
+    <ClInclude Include="Wmf\WmfPlayer.h" />
     <ClInclude Include="Wmf\WmfRegion.h" />
     <ClInclude Include="Wmf\WmfTypes.h" />
     <ClInclude Include="Wmf\WmfUtils.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp" />
+    <ClCompile Include="Common\MetaFilePlayer.cpp" />
     <ClCompile Include="Emf\EmfClip.cpp" />
     <ClCompile Include="Emf\EmfObjects.cpp" />
     <ClCompile Include="Emf\EmfPath.cpp" />
@@ -182,6 +189,8 @@
     <ClCompile Include="MetaFile.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="TestMain.cpp" />
+    <ClCompile Include="Wmf\WmfObjects.cpp" />
+    <ClCompile Include="Wmf\WmfPlayer.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

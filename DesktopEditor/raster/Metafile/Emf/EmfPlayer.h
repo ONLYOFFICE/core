@@ -7,6 +7,8 @@
 #include "EmfObjects.h"
 #include "EmfClip.h"
 
+#include "../Common/MetaFilePlayer.h"
+
 namespace MetaFile
 {
 	class CEmfFile;

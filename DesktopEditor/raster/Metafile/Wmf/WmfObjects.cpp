@@ -1,34 +1,43 @@
-#include "EmfObjects.h"
+#include "WmfObjects.h"
 #include "../../../raster/ImageFileFormatChecker.h"
 #include "../../../graphics/Image.h"
 
 namespace MetaFile
 {
-	CEmfLogBrushEx::CEmfLogBrushEx() : Color(255, 255, 255)
+	CWmfBrush::CWmfBrush() : Color(255, 255, 255)
 	{
 		BrushStyle     = BS_SOLID;
 		BrushHatch     = HS_HORIZONTAL;
 		DibPatternPath = L"";
-		BrushAlpha     = 255;
 		DibBuffer      = NULL;
 		DibWidth       = 0;
 		DibHeigth      = 0;
 	}
-	CEmfLogBrushEx::~CEmfLogBrushEx()
+	CWmfBrush::CWmfBrush(TWmfLogBrush& oBrush)
+	{
+		BrushStyle     = oBrush.BrushStyle;
+		Color          = oBrush.Color;
+		BrushHatch     = oBrush.BurshHatch;
+		DibPatternPath = L"";
+		DibBuffer      = NULL;
+		DibWidth       = 0;
+		DibHeigth      = 0;
+	}
+	CWmfBrush::~CWmfBrush()
 	{
 		if (BS_DIBPATTERN == BrushStyle && L"" != DibPatternPath)
-        {
-            NSFile::CFileBinary::Remove(DibPatternPath);
-        }
+		{
+			NSFile::CFileBinary::Remove(DibPatternPath);
+		}
 
 		if (DibBuffer)
 			delete[] DibBuffer;
 	}
-	void CEmfLogBrushEx::SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight)
+	void CWmfBrush::SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight)
 	{
 		DibBuffer = pBuffer;
 		DibWidth  = ulWidth;
-		DibHeigth = ulHeight;		
+		DibHeigth = ulHeight;
 
 		if (ulWidth <= 0 || ulHeight <= 0)
 			return;

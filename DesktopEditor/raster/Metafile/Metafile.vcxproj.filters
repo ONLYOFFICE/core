@@ -19,6 +19,9 @@
     <Filter Include="Emf">
       <UniqueIdentifier>{4c9bc033-8ce8-4711-9c98-6a7605147e5f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{3f315308-1def-4dee-98fd-79d007d99cf3}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Wmf\RendererOutput.h">
@@ -96,6 +99,21 @@
     <ClInclude Include="Emf\EmfClip.h">
       <Filter>Emf</Filter>
     </ClInclude>
+    <ClInclude Include="Wmf\WmfPlayer.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Wmf\WmfObjects.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MetaFilePlayer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MetaFileObjects.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MetaFile.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestMain.cpp">
@@ -121,6 +139,15 @@
     </ClCompile>
     <ClCompile Include="Emf\EmfClip.cpp">
       <Filter>Emf</Filter>
+    </ClCompile>
+    <ClCompile Include="Wmf\WmfPlayer.cpp">
+      <Filter>Wmf</Filter>
+    </ClCompile>
+    <ClCompile Include="Wmf\WmfObjects.cpp">
+      <Filter>Wmf</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\MetaFilePlayer.cpp">
+      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

@@ -1,6 +1,537 @@
 ﻿#ifndef _WMF_FILE_H
 #define _WMF_FILE_H
 
+#define NEW_WMF 2
+#ifdef NEW_WMF
+
+#include "../Wmf/WmfUtils.h"
+#include "../Wmf/WmfTypes.h"
+
+#include "../../../fontengine/FontManager.h"
+
+#include "WmfPlayer.h"
+#include "../Common.h"
+#include "../Emf/EmfOutputDevice.h"
+#include <iostream>
+
+namespace MetaFile
+{
+	class CWmfFile
+	{
+	public:
+		CWmfFile() : m_oPlayer(this)
+		{
+			m_pBufferData = NULL;
+			m_bError      = false;
+			m_pOutput     = NULL;
+
+			m_oStream.SetStream(NULL, 0);
+
+			m_pDC = m_oPlayer.GetDC();
+		}
+		~CWmfFile()
+		{
+			Close();
+		}
+
+		bool OpenFromFile(const wchar_t* wsFilePath)
+		{
+			Close();
+
+			NSFile::CFileBinary oFile;
+			oFile.OpenFile(wsFilePath);
+			int lFileSize = oFile.GetFileSize();
+
+			m_pBufferData = new BYTE[lFileSize];
+			if (!m_pBufferData)
+				return false;
+
+			DWORD lReadedSize;
+			oFile.ReadFile(m_pBufferData, lFileSize, lReadedSize);
+
+			m_oStream.SetStream(m_pBufferData, lFileSize);
+
+			return true;
+		}
+		void Close()
+		{
+			RELEASEOBJECT(m_pBufferData);
+
+			m_pOutput = NULL;
+			m_oStream.SetStream(NULL, 0);
+			m_bError = false;
+			m_oPlayer.Clear();
+			m_pDC = m_oPlayer.GetDC();
+		}
+		void SetError()
+		{
+			m_bError = true;
+		}
+		bool CheckError()
+		{
+			return m_bError;
+		}
+		void PlayMetaFile()
+		{
+			if (!m_oStream.IsValid())
+				SetError();
+
+			unsigned int unSize;
+			unsigned short ushType;
+			unsigned int ulNumber = 0;
+
+			bool bEof = false;
+
+			Read_META_HEADER();
+
+			unsigned int unRecordIndex = 1;
+
+			if (m_pOutput)
+				m_pOutput->Begin();
+
+			do
+			{
+				if (m_oStream.CanRead() < 6)
+					return SetError();
+
+				unsigned int unRecordPos = m_oStream.Tell();
+
+				m_oStream >> unSize;
+				m_oStream >> ushType;
+
+				unsigned int unRecordSize = unSize * 2; // Размер указан в WORD
+				switch (ushType)
+				{
+					//-----------------------------------------------------------
+					// 2.3.1 Bitmap records
+					//-----------------------------------------------------------
+
+					//-----------------------------------------------------------
+					// 2.3.2 Control records
+					//-----------------------------------------------------------
+				case META_EOF: bEof = true; break;
+					//-----------------------------------------------------------
+					// 2.3.3 Drawing records
+					//-----------------------------------------------------------
+
+					//-----------------------------------------------------------
+					// 2.3.4 Object records
+					//-----------------------------------------------------------
+				case META_CREATEBRUSHINDIRECT: Read_META_CREATEBRUSHINDIRECT(); break;
+				case META_CREATEFONTINDIRECT: Read_META_CREATEFONTINDIRECT(); break;
+				case META_CREATEPALETTE: Read_META_CREATEPALETTE(); break;
+				case META_CREATEPATTERNBRUSH: Read_META_CREATEPATTERNBRUSH(); break;
+				case META_CREATEPENINDIRECT: Read_META_CREATEPENINDIRECT(); break;
+				case META_CREATEREGION: Read_META_CREATEREGION(); break;
+				case META_DELETEOBJECT: Read_META_DELETEOBJECT(); break;
+				case META_DIBCREATEPATTERNBRUSH: Read_META_DIBCREATEPATTERNBRUSH(); break;
+				case META_SELECTCLIPREGION: Read_META_SELECTCLIPREGION(); break;
+				case META_SELECTOBJECT: Read_META_SELECTOBJECT(); break;
+				case META_SELECTPALETTE: Read_META_SELECTPALETTE(); break;
+					//-----------------------------------------------------------
+					// 2.3.5 State records
+					//-----------------------------------------------------------
+				case META_ANIMATEPALETTE: Read_META_UNSUPPORTED(); break;
+				case META_EXCLUDECLIPRECT: Read_META_EXCLUDECLIPRECT(); break;
+				case META_INTERSECTCLIPRECT: Read_META_INTERSECTCLIPRECT(); break;
+				case META_MOVETO: Read_META_MOVETO(); break;
+				case META_OFFSETCLIPRGN: Read_META_OFFSETCLIPRGN(); break;
+				case META_OFFSETVIEWPORTORG: Read_META_OFFSETVIEWPORTORG(); break;
+				case META_OFFSETWINDOWORG: Read_META_OFFSETWINDOWORG(); break;
+				case META_REALIZEPALETTE: Read_META_UNSUPPORTED(); break;
+				case META_RESIZEPALETTE: Read_META_UNSUPPORTED(); break;
+				case META_RESTOREDC: Read_META_RESTOREDC(); break;
+				case META_SAVEDC: Read_META_SAVEDC(); break;
+				case META_SCALEVIEWPORTEXT: Read_META_SCALEVIEWPORTEXT(); break;
+				case META_SCALEWINDOWEXT: Read_META_SCALEWINDOWEXT(); break;
+				case META_SETBKCOLOR: Read_META_SETBKCOLOR(); break;
+				case META_SETBKMODE: Read_META_SETBKMODE(); break;
+				case META_SETLAYOUT: Read_META_SETLAYOUT(); break;
+				case META_SETMAPMODE: Read_META_SETMAPMODE(); break;
+				case META_SETMAPPERFLAGS: Read_META_UNSUPPORTED(); break;
+				case META_SETPALENTRIES: Read_META_UNSUPPORTED(); break;
+				case META_SETPOLYFILLMODE: Read_META_SETPOLYFILLMODE(); break;
+				case META_SETRELABS: Read_META_UNSUPPORTED(); break;
+				case META_SETROP2: Read_META_SETROP2(); break;
+				case META_SETSTRETCHBLTMODE: Read_META_SETSTRETCHBLTMODE(); break;
+				case META_SETTEXTALIGN: Read_META_SETTEXTALIGN(); break;
+				case META_SETTEXTCHAREXTRA: Read_META_SETTEXTCHAREXTRA(); break;
+				case META_SETTEXTCOLOR: Read_META_SETTEXTCOLOR(); break;
+				case META_SETTEXTJUSTIFICATION: Read_META_SETTEXTJUSTIFICATION(); break;
+				case META_SETVIEWPORTEXT: Read_META_SETVIEWPORTEXT(); break;
+				case META_SETVIEWPORTORG: Read_META_SETVIEWPORTORG(); break;
+				case META_SETWINDOWEXT: Read_META_SETWINDOWEXT(); break;
+				case META_SETWINDOWORG: Read_META_SETWINDOWORG(); break;
+					//-----------------------------------------------------------
+					// 2.3.6 State records
+					//-----------------------------------------------------------
+				case META_ESCAPE: Read_META_ESCAPE(); break;
+					//-----------------------------------------------------------
+					// Неизвестные записи
+					//-----------------------------------------------------------
+				default:
+				{
+					std::cout << ushType << " ";
+					Read_META_UNKNOWN();
+					break;
+				}
+				}
+
+				if (bEof)
+					break;
+
+				unRecordIndex++;
+
+				// Пропускаем лишние байты, которые могли быть в записи
+				unsigned int unReadedSize = m_oStream.Tell() - unRecordPos;
+				m_oStream.Skip(unRecordSize - unReadedSize);
+			} while (!CheckError());
+
+			if (!CheckError())
+				m_oStream.SeekToStart();
+
+			if (m_pOutput)
+				m_pOutput->End();
+		}
+		void SetOutputDevice(CEmfOutputDevice* pOutput)
+		{
+			m_pOutput = pOutput;
+		}
+		void Scan()
+		{
+			CEmfOutputDevice* pOutput = m_pOutput;
+			m_pOutput = NULL;
+			PlayMetaFile();
+			m_pOutput = pOutput;
+
+			m_oPlayer.Clear();
+			m_pDC = m_oPlayer.GetDC();
+		}
+		void SetFontManager(CFontManager* pManager)
+		{
+			m_pFontManager = pManager;
+		}
+	private:
+
+		void MoveTo(short shX, short shY)
+		{
+			// TODO: Реализовать
+			m_pDC->SetCurPos(shX, shY);
+		}
+
+		void Read_META_UNKNOWN()
+		{
+		}
+		void Read_META_UNSUPPORTED()
+		{
+			// META_ANIMATEPALETTE
+			// META_REALIZEPALETTE
+			// META_RESIZEPALETTE
+			// META_SETMAPPERFLAGS
+			// META_SETPALENTRIES
+		}
+		void Read_META_HEADER()
+		{
+			m_oStream >> m_oPlaceable.Key;
+			if (0x9AC6CDD7 == m_oPlaceable.Key)
+			{
+				m_oStream >> m_oPlaceable.HWmf;
+				m_oStream >> m_oPlaceable.BoundingBox;
+				m_oStream >> m_oPlaceable.Inch;
+				m_oStream >> m_oPlaceable.Reserved;
+				m_oStream >> m_oPlaceable.Checksum;
+			}
+			else
+			{
+				m_oStream.SeekBack(m_oStream.Tell());
+				m_oPlaceable.Key                = 0;
+				m_oPlaceable.HWmf               = 0;
+				m_oPlaceable.BoundingBox.Left   = 0;
+				m_oPlaceable.BoundingBox.Top    = 0;
+				m_oPlaceable.BoundingBox.Right  = 0;
+				m_oPlaceable.BoundingBox.Bottom = 0;
+				m_oPlaceable.Inch               = 0;
+				m_oPlaceable.Reserved           = 0;
+				m_oPlaceable.Checksum           = 0;
+			}
+
+			m_oStream >> m_oHeader.Type;
+			m_oStream >> m_oHeader.HeaderSize;
+			m_oStream >> m_oHeader.Version;
+			m_oStream >> m_oHeader.Size;
+			m_oStream >> m_oHeader.NumberOfObjects;
+			m_oStream >> m_oHeader.MaxRecord;
+			m_oStream >> m_oHeader.NumberOfMembers;
+
+		}
+		void Read_META_CREATEBRUSHINDIRECT()
+		{
+			TWmfLogBrush oLogBrush;
+			m_oStream >> oLogBrush;
+			CWmfBrush* pBrush = new CWmfBrush(oLogBrush);
+			if (!pBrush)
+				return SetError();
+
+			m_oPlayer.RegisterObject((CWmfObjectBase*)pBrush);
+		}
+		void Read_META_CREATEFONTINDIRECT()
+		{
+			CWmfFont* pFont = new CWmfFont();
+			if (!pFont)
+				return SetError();
+
+			m_oStream >> pFont;
+			m_oPlayer.RegisterObject((CWmfObjectBase*)pFont);
+		}
+		void Read_META_CREATEPALETTE()
+		{
+			CWmfPalette* pPalette = new CWmfPalette();
+			if (!pPalette)
+				return SetError();
+
+			m_oStream >> pPalette;
+			m_oPlayer.RegisterObject((CWmfObjectBase*)pPalette);
+		}
+		void Read_META_CREATEPATTERNBRUSH()
+		{
+			// TODO: Реализовать чтение Bitmap16
+			CWmfBrush* pBrush = new CWmfBrush();
+			if (!pBrush)
+				return SetError();
+
+			m_oPlayer.RegisterObject((CWmfObjectBase*)pBrush);
+		}
+		void Read_META_CREATEPENINDIRECT()
+		{
+			CWmfPen* pPen = new CWmfPen();
+			if (!pPen)
+				return SetError();
+
+			m_oStream >> pPen;
+			m_oPlayer.RegisterObject((CWmfObjectBase*)pPen);
+		}
+		void Read_META_CREATEREGION()
+		{
+			CWmfRegion* pRegion = new CWmfRegion();
+			if (!pRegion)
+				return SetError();
+			m_oStream >> pRegion;
+			m_oPlayer.RegisterObject((CWmfObjectBase*)pRegion);
+		}
+		void Read_META_DELETEOBJECT()
+		{
+			unsigned short ushIndex;
+			m_oStream >> ushIndex;
+			m_oPlayer.DeleteObject(ushIndex);
+		}
+		void Read_META_DIBCREATEPATTERNBRUSH()
+		{
+			unsigned short ushStyle, ushColorUsage;
+			m_oStream >> ushStyle >> ushColorUsage;
+
+			//TODO: Организовать чтение картинки
+			CWmfBrush* pBrush = new CWmfBrush();
+			if (!pBrush)
+				return SetError();
+
+			m_oPlayer.RegisterObject((CWmfObjectBase*)pBrush);
+		}
+		void Read_META_SELECTCLIPREGION()
+		{
+			unsigned short ushIndex;
+			m_oStream >> ushIndex;
+
+			// TODO: Реализовать
+		}
+		void Read_META_SELECTOBJECT()
+		{
+			unsigned short ushIndex;
+			m_oStream >> ushIndex;
+			m_oPlayer.SelectObject(ushIndex);
+		}
+		void Read_META_SELECTPALETTE()
+		{
+			unsigned short ushIndex;
+			m_oStream >> ushIndex;
+			m_oPlayer.SelectPalette(ushIndex);
+		}
+		void Read_META_EXCLUDECLIPRECT()
+		{
+			short shLeft, shTop, shRight, shBottom;
+			m_oStream >> shBottom >> shRight >> shTop >> shLeft;
+			// TODO: Реализовать клип
+		}
+		void Read_META_INTERSECTCLIPRECT()
+		{
+			short shLeft, shTop, shRight, shBottom;
+			m_oStream >> shBottom >> shRight >> shTop >> shLeft;
+			// TODO: Реализовать клип
+		}
+		void Read_META_MOVETO()
+		{
+			short shX, shY;
+			m_oStream >> shY >> shX;
+			MoveTo(shX, shY);
+		}
+		void Read_META_OFFSETCLIPRGN()
+		{
+			short shOffsetX, shOffsetY;
+			m_oStream >> shOffsetY >> shOffsetX;
+			// TODO: Реализовать
+		}
+		void Read_META_OFFSETVIEWPORTORG()
+		{
+			short shXOffset, shYOffset;
+			m_oStream >> shYOffset >> shXOffset;
+			m_pDC->SetViewportOff(shXOffset, shYOffset);
+		}
+		void Read_META_OFFSETWINDOWORG()
+		{
+			short shXOffset, shYOffset;
+			m_oStream >> shYOffset >> shXOffset;
+			m_pDC->SetWindowOff(shXOffset, shYOffset);
+		}
+		void Read_META_RESTOREDC()
+		{
+			m_pDC = m_oPlayer.RestoreDC();
+		}
+		void Read_META_SAVEDC()
+		{
+			m_pDC = m_oPlayer.SaveDC();
+		}
+		void Read_META_SCALEVIEWPORTEXT()
+		{
+			short yDenom, yNum, xDenom, xNum;
+			m_oStream >> yDenom >> yNum >> xDenom >> xNum;
+			m_pDC->SetViewportScale((double)xNum / (double)xDenom, (double)yNum / (double)xDenom);
+		}
+		void Read_META_SCALEWINDOWEXT()
+		{
+			short yDenom, yNum, xDenom, xNum;
+			m_oStream >> yDenom >> yNum >> xDenom >> xNum;
+			m_pDC->SetWindowScale((double)xNum / (double)xDenom, (double)yNum / (double)xDenom);
+		}
+		void Read_META_SETBKCOLOR()
+		{
+			TWmfColor oColor;
+			m_oStream >> oColor;
+			m_pDC->SetTextBgColor(oColor);
+		}
+		void Read_META_SETBKMODE()
+		{
+			unsigned short ushMode;
+			m_oStream >> ushMode;
+			m_pDC->SetTextBgMode(ushMode);
+		}
+		void Read_META_SETLAYOUT()
+		{
+			unsigned short ushLayout, ushReserved;
+			m_oStream >> ushLayout >> ushReserved;
+			m_pDC->SetLayout(ushLayout);
+		}
+		void Read_META_SETMAPMODE()
+		{
+			unsigned short ushMapMode; 
+			m_oStream >> ushMapMode;
+			m_pDC->SetMapMode(ushMapMode);
+		}
+		void Read_META_SETPOLYFILLMODE()
+		{
+			unsigned short ushMode;
+			m_oStream >> ushMode;
+			m_pDC->SetPolyFillMode(ushMode);
+		}
+		void Read_META_SETROP2()
+		{
+			unsigned short ushMode;
+			m_oStream >> ushMode;
+			m_pDC->SetRop2Mode(ushMode);
+		}
+		void Read_META_SETSTRETCHBLTMODE()
+		{
+			unsigned short ushMode;
+			m_oStream >> ushMode;
+			m_pDC->SetStretchBltMode(ushMode);
+		}
+		void Read_META_SETTEXTALIGN()
+		{
+			unsigned short ushTextAlign;
+			m_oStream >> ushTextAlign;
+			m_pDC->SetTextAlign(ushTextAlign);
+		}
+		void Read_META_SETTEXTCHAREXTRA()
+		{
+			unsigned short ushCharSpacing;
+			m_oStream >> ushCharSpacing;
+			m_pDC->SetCharSpacing(ushCharSpacing);
+		}
+		void Read_META_SETTEXTCOLOR()
+		{
+			TWmfColor oColor;
+			m_oStream >> oColor;
+			m_pDC->SetTextColor(oColor);
+		}
+		void Read_META_SETTEXTJUSTIFICATION()
+		{
+			unsigned short ushBreakCount, ushBreakExtra;
+			m_oStream >> ushBreakCount >> ushBreakExtra;
+			// TODO: Реализовать
+		}
+		void Read_META_SETVIEWPORTEXT()
+		{
+			short shX, shY;
+			m_oStream >> shY >> shX;
+			m_pDC->SetViewportExt(shX, shY);
+		}
+		void Read_META_SETVIEWPORTORG()
+		{
+			short shX, shY;
+			m_oStream >> shY >> shX;
+			m_pDC->SetViewportOrg(shX, shY);
+		}
+		void Read_META_SETWINDOWEXT()
+		{
+			short shX, shY;
+			m_oStream >> shY >> shX;
+			m_pDC->SetWindowExt(shX, shY);
+		}
+		void Read_META_SETWINDOWORG()
+		{
+			short shX, shY;
+			m_oStream >> shY >> shX;
+			m_pDC->SetWindowOrg(shX, shY);
+		}
+		void Read_META_ESCAPE()
+		{
+			unsigned short ushEscapeFunction;
+			unsigned short ushByteCount;
+			m_oStream >> ushEscapeFunction;
+			m_oStream >> ushByteCount;
+
+			// TODO: Реализовать
+		}
+s
+
+	private:
+
+		CDataStream       m_oStream;
+		BYTE*             m_pBufferData;
+		bool              m_bError;
+		CFontManager*     m_pFontManager;
+
+		TWmfPlaceable     m_oPlaceable;
+		TWmfHeader        m_oHeader;
+
+		CEmfOutputDevice* m_pOutput;
+
+		CWmfPlayer        m_oPlayer;
+		CWmfDC*           m_pDC;
+
+	};
+}
+
+#else
+
 #include <stdio.h>
 #include <algorithm>
 
@@ -5346,5 +5877,7 @@ private:
 	CWmfMemoryManager       m_oMemoryManager;
 	friend class CRendererOutput;
 };
+
+#endif
 
 #endif /* _WMF_FILE_H */

@@ -5,6 +5,7 @@
 #include "../Wmf/WmfUtils.h"
 #include "../Wmf/WmfTypes.h"
 #include "../../common/Types.h"
+#include "../Common/MetaFileObjects.h"
 
 namespace MetaFile
 {
@@ -28,6 +29,7 @@ namespace MetaFile
 		}
 	};
 
+
 	class CEmfLogBrushEx : public CEmfObjectBase
 	{
 	public:
@@ -41,14 +43,14 @@ namespace MetaFile
 		void SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight);
 
 	public:
-		unsigned int  BrushStyle;
+		unsigned int   BrushStyle;
 		TEmfColor      Color;
-		unsigned int  BrushHatch;
-		unsigned int  BrushAlpha;
+		unsigned int   BrushHatch;
+		unsigned int   BrushAlpha;
 		std::wstring   DibPatternPath;
 		unsigned char* DibBuffer;
-		unsigned int  DibWidth;
-		unsigned int  DibHeigth;
+		unsigned int   DibWidth;
+		unsigned int   DibHeigth;
 	};
 
 	class CEmfLogFont : public CEmfObjectBase

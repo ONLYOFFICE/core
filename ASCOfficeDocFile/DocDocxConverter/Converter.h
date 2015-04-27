@@ -15,8 +15,6 @@
 #include "WordprocessingDocument.h"
 #include "ConversionContext.h"
 
-extern ASCOfficeCriticalSection g_oCriticalSection;
-
 namespace DocFileFormat
 {
 	class Converter

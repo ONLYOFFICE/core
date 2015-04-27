@@ -438,12 +438,17 @@ namespace ZLibZipUtils
 	  {
 		  if (current_file_is_find(unzip_file_handle, filePathInZip) == true)
 		  {
-			  unz_file_info file_info;
-			  unzGetCurrentFileInfo(unzip_file_handle, &file_info, NULL, 0, NULL, 0, NULL, 0);
-			  nFileSize = file_info.uncompressed_size;
-			  (*fileInBytes) = new BYTE[nFileSize];
-			  get_file(unzip_file_handle, (*fileInBytes), nFileSize);
-			  return true;
+			unz_file_info file_info;
+			unzGetCurrentFileInfo(unzip_file_handle, &file_info, NULL, 0, NULL, 0, NULL, 0);
+							
+			if (nFileSize > 0)
+				nFileSize = (std::min)(nFileSize, file_info.uncompressed_size);
+			else
+				nFileSize = file_info.uncompressed_size;
+		  
+			(*fileInBytes) = new BYTE[nFileSize];
+			get_file(unzip_file_handle, (*fileInBytes), nFileSize);
+			return true;
 		  }
 		  // else just skip the erroneous file
 	  } while (UNZ_OK == unzGoToNextFile(unzip_file_handle));

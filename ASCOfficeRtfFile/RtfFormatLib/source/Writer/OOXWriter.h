@@ -31,11 +31,11 @@ public:
 
 //TempFolder
 	CString m_sTempFolder;
-
 	CString m_sTargetFolder;
+
 	std::map<CString, int> m_aBookmarksId;
 	
-	OOXWriter( RtfDocument& oDocument, CString sPath );
+	OOXWriter( RtfDocument& oDocument, std::wstring sPath );
 	~OOXWriter();
 	
 	bool Save();

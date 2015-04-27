@@ -800,18 +800,6 @@
 			RelativePath="..\source\ConvertationManager.h"
 			>
 		</File>
-		<File
-			RelativePath="..\..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\ASCOfficeDocFile\pole\pole.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\Common\DocxFormat\Source\XML\stringcommon.cpp"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

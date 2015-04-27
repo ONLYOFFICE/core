@@ -23,7 +23,7 @@ public:
 	{
 	}
 
-	HRESULT ConvertRtfToOOX( CString sSrcFileName, CString sDstPath, CString sXMLOptions )
+	HRESULT ConvertRtfToOOX( std::wstring sSrcFileName, std::wstring sDstPath, CString sXMLOptions )
 	{
 		m_bParseFirstItem = true;
 
@@ -64,7 +64,7 @@ public:
 		else 
 			return S_FALSE;
 	}
-	HRESULT ConvertOOXToRtf( CString sDstFileName, CString sSrcPath, CString sXMLOptions )
+	HRESULT ConvertOOXToRtf( std::wstring sDstFileName, std::wstring sSrcPath, CString sXMLOptions )
 	{
 		m_bParseFirstItem = true;
 

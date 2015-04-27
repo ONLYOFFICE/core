@@ -41,7 +41,7 @@ public:
 //TempFolder
 	CString m_sTempFolder;
 
-	OOXReader( RtfDocument& oDocument, CString path );
+	OOXReader( RtfDocument& oDocument, std::wstring  path );
 	bool Parse();
 private: 
 	void ParseColorTable( RtfDocument& oDocument );

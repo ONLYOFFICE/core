@@ -511,7 +511,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\Docx\Logic\"
+							ObjectFile="$(IntDir)\"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -520,7 +520,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalOptions="/bigobj"
-							ObjectFile="$(IntDir)\Docx\Logic\"
+							ObjectFile="$(IntDir)\"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -528,7 +528,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\Docx\Logic\"
+							ObjectFile="$(IntDir)\"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -537,7 +537,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalOptions="/bigobj"
-							ObjectFile="$(IntDir)\Docx\Logic\"
+							ObjectFile="$(IntDir)\"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -569,7 +569,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\Docx\Logic\"
+							ObjectFile="$(IntDir)\"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -578,7 +578,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalOptions="/bigobj"
-							ObjectFile="$(IntDir)\Docx\Logic\"
+							ObjectFile="$(IntDir)\"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -586,7 +586,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\Docx\Logic\"
+							ObjectFile="$(IntDir)\"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -595,7 +595,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalOptions="/bigobj"
-							ObjectFile="$(IntDir)\Docx\Logic\"
+							ObjectFile="$(IntDir)\"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -651,7 +651,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							AssemblerListingLocation="$(IntDir)\Docx\Logic\"
+							AssemblerListingLocation=""
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -692,7 +692,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\Docx\Logic\"
+							ObjectFile="$(IntDir)\"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -700,7 +700,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\Docx\Logic\"
+							ObjectFile="$(IntDir)\"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -708,7 +708,7 @@
 						>
 						<Tool
 							Name="VCCLCompilerTool"
-							ObjectFile="$(IntDir)\Docx\Logic\"
+							ObjectFile="$(IntDir)\"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -717,7 +717,7 @@
 						<Tool
 							Name="VCCLCompilerTool"
 							AdditionalOptions="/bigobj"
-							ObjectFile="$(IntDir)\Docx\Logic\"
+							ObjectFile="$(IntDir)\"
 						/>
 					</FileConfiguration>
 					<FileConfiguration
@@ -788,7 +788,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\Docx\Logic\"
+								ObjectFile="$(IntDir)\"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -796,7 +796,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\Docx\Logic\"
+								ObjectFile="$(IntDir)\"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -804,7 +804,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\Docx\Logic\"
+								ObjectFile="$(IntDir)\"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -853,7 +853,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\Docx\Logic\"
+								ObjectFile="$(IntDir)\"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -862,7 +862,7 @@
 							<Tool
 								Name="VCCLCompilerTool"
 								AdditionalOptions="/bigobj"
-								ObjectFile="$(IntDir)\Docx\Logic\"
+								ObjectFile="$(IntDir)\"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -870,7 +870,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\Docx\Logic\"
+								ObjectFile="$(IntDir)\"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -879,7 +879,7 @@
 							<Tool
 								Name="VCCLCompilerTool"
 								AdditionalOptions="/bigobj"
-								ObjectFile="$(IntDir)\Docx\Logic\"
+								ObjectFile="$(IntDir)\"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -911,7 +911,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\Docx\Logic\"
+								ObjectFile="$(IntDir)\"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -920,7 +920,7 @@
 							<Tool
 								Name="VCCLCompilerTool"
 								AdditionalOptions="/bigobj"
-								ObjectFile="$(IntDir)\Docx\Logic\"
+								ObjectFile="$(IntDir)\"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -928,7 +928,7 @@
 							>
 							<Tool
 								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\Docx\Logic\"
+								ObjectFile="$(IntDir)\"
 							/>
 						</FileConfiguration>
 						<FileConfiguration
@@ -937,7 +937,7 @@
 							<Tool
 								Name="VCCLCompilerTool"
 								AdditionalOptions="/bigobj"
-								ObjectFile="$(IntDir)\Docx\Logic\"
+								ObjectFile="$(IntDir)\"
 							/>
 						</FileConfiguration>
 						<FileConfiguration

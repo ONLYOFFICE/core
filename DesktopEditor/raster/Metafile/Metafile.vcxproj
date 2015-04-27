@@ -149,9 +149,12 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClInclude Include="Common.h" />
+    <ClInclude Include="Common\MetaFileClip.h" />
+    <ClInclude Include="Common\MetaFileRenderer.h" />
+    <ClInclude Include="Common\IOutputDevice.h" />
     <ClInclude Include="Common\MetaFile.h" />
     <ClInclude Include="Common\MetaFileObjects.h" />
-    <ClInclude Include="Common\MetaFilePlayer.h" />
+    <ClInclude Include="Common\MetaFileTypes.h" />
     <ClInclude Include="Emf\EmfClip.h" />
     <ClInclude Include="Emf\EmfFile.h" />
     <ClInclude Include="Emf\EmfObjects.h" />
@@ -181,7 +184,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp" />
-    <ClCompile Include="Common\MetaFilePlayer.cpp" />
     <ClCompile Include="Emf\EmfClip.cpp" />
     <ClCompile Include="Emf\EmfObjects.cpp" />
     <ClCompile Include="Emf\EmfPath.cpp" />

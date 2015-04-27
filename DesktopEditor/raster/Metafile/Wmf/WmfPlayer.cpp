@@ -121,7 +121,7 @@ namespace MetaFile
 				if (ushIndex > m_vAvailableIndexes[nIterator])
 				{
 					ushIndex = m_vAvailableIndexes[nIterator];
-					nAvailableIndex = nIterator;
+					nAvailableIndex = (int)nIterator;
 				}
 			}
 		}

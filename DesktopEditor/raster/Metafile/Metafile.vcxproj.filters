@@ -105,13 +105,22 @@
     <ClInclude Include="Wmf\WmfObjects.h">
       <Filter>Wmf</Filter>
     </ClInclude>
-    <ClInclude Include="Common\MetaFilePlayer.h">
-      <Filter>Common</Filter>
-    </ClInclude>
     <ClInclude Include="Common\MetaFileObjects.h">
       <Filter>Common</Filter>
     </ClInclude>
     <ClInclude Include="Common\MetaFile.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\IOutputDevice.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MetaFileRenderer.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MetaFileTypes.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MetaFileClip.h">
       <Filter>Common</Filter>
     </ClInclude>
   </ItemGroup>
@@ -145,9 +154,6 @@
     </ClCompile>
     <ClCompile Include="Wmf\WmfObjects.cpp">
       <Filter>Wmf</Filter>
-    </ClCompile>
-    <ClCompile Include="Common\MetaFilePlayer.cpp">
-      <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

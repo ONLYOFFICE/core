@@ -510,7 +510,7 @@ namespace MetaFile
 
 			// TODO: Реализовать
 		}
-s
+
 
 	private:
 

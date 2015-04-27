@@ -210,18 +210,10 @@ namespace MetaFile
 		}
 		CDataStream& operator>>(TEmfColor& oColor)
 		{
-#if __linux__
-            *this >> oColor.b;
-            *this >> oColor.g;
-            *this >> oColor.r;
-            *this >> oColor.a;
-#else
             *this >> oColor.r;
             *this >> oColor.g;
             *this >> oColor.b;
             *this >> oColor.a;
-#endif
-
 
 			return *this;
 		}
@@ -450,15 +442,9 @@ namespace MetaFile
 		}
 		CDataStream& operator>>(TRgbQuad& oRGB)
 		{
-#ifdef __linux__
-            *this >> oRGB.r;
-			*this >> oRGB.g;
-            *this >> oRGB.b;
-#else
             *this >> oRGB.b;
             *this >> oRGB.g;
             *this >> oRGB.r;
-#endif
             Skip(1); // reserved
 
 			return *this;

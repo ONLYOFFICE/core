@@ -475,6 +475,44 @@ namespace NSFile
 		{
 			GetUtf16StringFromUnicode_4bytes(pUnicodes, lCount, data.Data, data.Length);
 		}
+
+		static std::wstring GetWStringFromUTF16(const CStringUtf16& data)
+		{
+			if (0 == data.Length)
+				return L"";
+
+			if (sizeof(wchar_t) == 2)
+				return std::wstring((wchar_t*)data.Data, data.Length / 2);
+
+			int nCount = data.Length / 2;
+			USHORT* pShort = (USHORT*)data.Data;
+
+			wchar_t* pWChar = new wchar_t[nCount + 1];
+			wchar_t* pWCurrent = pWChar;
+			
+			int nCurrent = 0;
+			while (nCurrent < nCount)
+			{
+				if (*pShort < 0xD800 || *pShort > 0xDFFF)
+				{
+					*pWCurrent = (wchar_t)(*pShort);
+					++pShort;
+					++nCurrent;
+				}
+				else
+				{
+                                        *pWCurrent = (wchar_t)((((pShort[0]) & 0x03FF) << 10) | ((pShort[1]) & 0x03FF));
+				}
+
+				pShort += 2;
+				nCurrent += 2;
+			}
+
+			std::wstring sRet(pWChar, pWCurrent - pWChar);
+
+			RELEASEARRAYOBJECTS(pWChar);
+			return sRet;
+		}
 	};
 
 	class CFileBinary

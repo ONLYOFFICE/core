@@ -3,7 +3,7 @@
 #include "DestinationCommand.h"
 
 
-RtfReader::RtfReader(RtfDocument& oDocument, CString sFilename ):m_oDocument(oDocument),m_sFilename(sFilename)
+RtfReader::RtfReader(RtfDocument& oDocument, std::wstring sFilename ):m_oDocument(oDocument),m_sFilename(sFilename)
 {
 	m_oState = ReaderStatePtr(new ReaderState());
 	m_nFootnote = PROP_DEF;

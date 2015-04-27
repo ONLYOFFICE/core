@@ -33,13 +33,13 @@ public:
 		m_nSizeAbs = 0;
 		m_nPosAbs = -1;			
 	} 
-	void SetSource( CString sPath  )
+	void SetSource( std::wstring sPath  )
 	{
 		Clear();
 
 		CFile srcFile;
 		
-		if (srcFile.OpenFile(sPath) != S_OK) return;
+		if (srcFile.OpenFile(sPath.c_str()) != S_OK) return;
 
 		__int64 totalFileSize = srcFile.GetFileSize();
 
@@ -136,7 +136,7 @@ public:
 	{
 		return 1.0 * m_oStream.getCurPosition() / m_oStream.getSize();
 	}
-	void SetSource( CString sPath )
+	void SetSource( std::wstring sPath )
 	{
 		m_oStream.SetSource( sPath);
 	}

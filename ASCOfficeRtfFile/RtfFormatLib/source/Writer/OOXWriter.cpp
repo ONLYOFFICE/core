@@ -15,9 +15,9 @@
 
 #include "../../../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h"
 
-OOXWriter::OOXWriter( RtfDocument& oDocument, CString sPath ) : 
+OOXWriter::OOXWriter( RtfDocument& oDocument, std::wstring sPath ) : 
 		m_oDocument(oDocument),
-		m_sTargetFolder(sPath),
+		m_sTargetFolder(sPath.c_str()),
 		m_oRels( _T(""), oDocument ),
 		m_oDocRels( _T("document.xml"), oDocument )
 {

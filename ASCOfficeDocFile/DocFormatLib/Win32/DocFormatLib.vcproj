@@ -1228,14 +1228,6 @@
 			RelativePath="..\DocFormatLib.h"
 			>
 		</File>
-		<File
-			RelativePath="..\..\..\Common\DocxFormat\Source\XML\libxml2\libxml2.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\..\..\Common\DocxFormat\Source\XML\stringcommon.cpp"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

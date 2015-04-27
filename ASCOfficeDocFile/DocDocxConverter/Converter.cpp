@@ -160,7 +160,6 @@ namespace DocFileFormat
 
 	long Converter::LoadAndConvert(const CString& strSrcFile, const CString& strDstDirectory, const ProgressCallback* progress)
 	{
-		g_oCriticalSection.Enter();
 
         long result = S_FALSE;
 
@@ -189,8 +188,6 @@ namespace DocFileFormat
 				}
 			}
 		}
-
-		g_oCriticalSection.Leave();
 
 		return result;
 	}

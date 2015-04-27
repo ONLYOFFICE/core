@@ -166,7 +166,7 @@ bool RtfWriter::SaveByItemEnd()
 	//формируем выходной файл
 	try
 	{
-		NFileWriter::CBufferedFileWriter oTargetFileWriter( m_sFilename );
+		NFileWriter::CBufferedFileWriter oTargetFileWriter(m_sFilename );
 
 		//пишем заголовок потом все содежимое
 		sRtf = CreateRtfStart();

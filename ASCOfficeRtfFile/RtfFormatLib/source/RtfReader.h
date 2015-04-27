@@ -46,7 +46,7 @@ public:
 	int m_nDefFont;
 	CString m_sTempFolder;
 
-	RtfReader(RtfDocument& oDocument, CString sFilename );
+	RtfReader(RtfDocument& oDocument, std::wstring sFilename );
 	~RtfReader()
 	{
 	}
@@ -63,7 +63,7 @@ public:
 	}
 private:
 	RtfDocument& m_oDocument;
-	CString m_sFilename;
+	std::wstring m_sFilename;
 };
 
 class RtfAbstractReader

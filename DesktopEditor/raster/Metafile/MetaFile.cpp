@@ -174,8 +174,7 @@ namespace MetaFile
 		pFontManager->SetOwnerCache(pFontCache);
 		CImageFilesCache oCache;
 
-		CGraphicsRenderer oRenderer;
-		oRenderer.SetSwapRGB(false);
+		CGraphicsRenderer oRenderer;		
 		oRenderer.SetFontManager(pFontManager);
 		oRenderer.SetImageCache(&oCache);
 
@@ -201,6 +200,7 @@ namespace MetaFile
 		oFrame.put_Stride(-4 * nWidth);
 
 		oRenderer.CreateFromBgraFrame(&oFrame);
+		oRenderer.SetSwapRGB(false);
 		oRenderer.put_Width(dWidth);
 		oRenderer.put_Height(dHeight);
 

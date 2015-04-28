@@ -154,6 +154,39 @@ void CFontSelectFormat::Destroy()
 	RELEASEOBJECT(shCapHeight);
 }
 
+void CFontSelectFormat::Destroy2()
+{
+    RELEASEOBJECT(wsName);
+    RELEASEOBJECT(wsAltName);
+
+    RELEASEOBJECT(wsFamilyClass);
+    RELEASEOBJECT(sFamilyClass);
+
+    RELEASEOBJECT(bFixedWidth);
+
+    RELEASEARRAYOBJECTS(pPanose);
+
+    RELEASEOBJECT(ulRange1);
+    RELEASEOBJECT(ulRange2);
+    RELEASEOBJECT(ulRange3);
+    RELEASEOBJECT(ulRange4);
+    RELEASEOBJECT(ulCodeRange1);
+    RELEASEOBJECT(ulCodeRange2);
+
+    RELEASEOBJECT(usWeight);
+    RELEASEOBJECT(usWidth);
+
+    RELEASEOBJECT(nFontFormat);
+    RELEASEOBJECT(unCharset);
+
+    RELEASEOBJECT(shAvgCharWidth);
+    RELEASEOBJECT(shAscent);
+    RELEASEOBJECT(shDescent);
+    RELEASEOBJECT(shLineGap);
+    RELEASEOBJECT(shXHeight);
+    RELEASEOBJECT(shCapHeight);
+}
+
 ///////////////////////////////////////////////////////////////////////////////////
 CFontInfo::CFontInfo(const std::wstring& wsFontName, 
 	const std::wstring& wsStyle, 

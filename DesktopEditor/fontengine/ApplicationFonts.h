@@ -47,6 +47,7 @@ public:
 	~CFontSelectFormat();
 	void CreateDuplicate(CFontSelectFormat& oFormat);
 	void Destroy();
+    void Destroy2();
 };
 
 //-------------------------------------------------------------------------------------------------------------------------------

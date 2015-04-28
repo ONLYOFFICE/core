@@ -2,6 +2,7 @@
 #define _METAFILE_COMMON_IOUTPUTDEVICE_H
 
 #include "../Wmf/WmfTypes.h"
+#include <string>
 
 namespace MetaFile
 {

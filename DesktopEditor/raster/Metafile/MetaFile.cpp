@@ -149,7 +149,7 @@ namespace MetaFile
 		if (c_lMetaWmf == m_lType)
 		{
 #ifdef NEW_WMF
-			TRectD& oRect = m_oWmfFile.GetBounds();
+            const TRectD& oRect = m_oWmfFile.GetBounds();
 			*pdX = oRect.dLeft;
 			*pdY = oRect.dTop;
 			*pdW = oRect.dRight - oRect.dLeft;

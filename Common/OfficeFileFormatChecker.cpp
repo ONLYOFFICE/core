@@ -105,7 +105,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
 
 	POLE::Storage storage(fileName.c_str());
 
-	if (OfficeUtils.IsArchive(fileName))
+    if (OfficeUtils.IsArchive(fileName) == S_OK)
 	{
 		if ( isOOXFormatFile(fileName) )
 		{
@@ -124,13 +124,16 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
 	{
 		if ( isDocFormatFile(&storage) )
 		{
-		}
+            nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
+        }
 		else if ( isXlsFormatFile(&storage) )
 		{
-		}
+            nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
+        }
 		else if ( isPptFormatFile(&storage) )
 		{
-		}
+            nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
+        }
 	}
 	else 
 	{

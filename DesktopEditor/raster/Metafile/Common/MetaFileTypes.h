@@ -1,6 +1,21 @@
 #ifndef _METAFILE_COMMON_METAFILETYPES_H
 #define _METAFILE_COMMON_METAFILETYPES_H
 
+
+#if !defined (_WIN32) && !defined(_WIN64)
+    #define BLACKONWHITE                 1
+    #define WHITEONBLACK                 2
+    #define COLORONCOLOR                 3
+    #define HALFTONE                     4
+    #define MAXSTRETCHBLTMODE            4
+#endif
+
+#define MWT_IDENTITY	  0x01
+#define MWT_LEFTMULTIPLY  0x02
+#define MWT_RIGHTMULTIPLY 0x03
+#define MWT_SET           0x04
+
+
 namespace MetaFile
 {
 	struct TEmfPointL;
@@ -81,11 +96,6 @@ namespace MetaFile
 		unsigned char g;
 		unsigned char b;
 	};
-
-#define MWT_IDENTITY	  0x01
-#define MWT_LEFTMULTIPLY  0x02
-#define MWT_RIGHTMULTIPLY 0x03
-#define MWT_SET           0x04
 
 	struct TXForm
 	{

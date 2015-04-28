@@ -184,6 +184,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Common.cpp" />
+    <ClCompile Include="Common\MetaFileTypes.cpp" />
     <ClCompile Include="Emf\EmfClip.cpp" />
     <ClCompile Include="Emf\EmfObjects.cpp" />
     <ClCompile Include="Emf\EmfPath.cpp" />

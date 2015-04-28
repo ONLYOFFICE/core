@@ -3,6 +3,7 @@
 
 #include "WmfTypes.h"
 #include "WmfUtils.h"
+#include "../Common/MetaFileObjects.h"
 
 namespace MetaFile
 {
@@ -25,7 +26,7 @@ namespace MetaFile
 			return WMF_OBJECT_UNKNOWN;
 		}
 	};
-	class CWmfBrush : public CWmfObjectBase
+	class CWmfBrush : public CWmfObjectBase, public IBrush
 	{
 	public:
 		CWmfBrush();
@@ -37,6 +38,13 @@ namespace MetaFile
 		}
 		void SetDibPattern(unsigned char* pBuffer, unsigned int unWidth, unsigned int unHeight);
 
+		// IBrush
+		int          GetColor();
+		unsigned int GetStyle();
+		unsigned int GetHatch();
+		unsigned int GetAlpha();
+		std::wstring GetDibPatterPath();
+
 	public:
 
 		unsigned short BrushStyle;
@@ -47,7 +55,7 @@ namespace MetaFile
 		unsigned int   DibWidth;
 		unsigned int   DibHeigth;
 	};
-	class CWmfFont : public CWmfObjectBase
+	class CWmfFont : public CWmfObjectBase, public IFont
 	{
 	public:
 
@@ -63,6 +71,36 @@ namespace MetaFile
 		virtual EWmfObjectType GetType()
 		{
 			return WMF_OBJECT_FONT;
+		}
+
+		// IFont
+		int          GetHeight()
+		{
+			return (int)Height;
+		}
+		std::wstring GetFaceName()
+		{
+			return NSFile::CUtf8Converter::GetUnicodeFromCharPtr((const char*)Facename, 32, FALSE);
+		}
+		int          GetWeight()
+		{
+			return (int)Weight;
+		}
+		bool         IsItalic()
+		{
+			return (0x01 == Italic ? true : false);
+		}
+		bool         IsStrikeOut()
+		{
+			return (0x01 == StrikeOut ? true : false);
+		}
+		bool         IsUnderline()
+		{
+			return (0x01 == Underline ? true : false);
+		}
+		int          GetEscapement()
+		{
+			return (int)Escapement;
 		}
 
 	public:
@@ -104,7 +142,7 @@ namespace MetaFile
 		unsigned short    NumberOfEntries;
 		TWmfPaletteEntry* aPaletteEntries;
 	};
-	class CWmfPen : public CWmfObjectBase
+	class CWmfPen : public CWmfObjectBase, public IPen
 	{
 	public:
 		CWmfPen()
@@ -119,6 +157,18 @@ namespace MetaFile
 		{
 			return WMF_OBJECT_PEN;
 		}
+
+		// IPen
+		int          GetColor();
+		unsigned int GetStyle()
+		{
+			return (unsigned int)PenStyle;
+		}
+		unsigned int GetWidth()
+		{
+			return (unsigned int)Width.x;
+		}
+
 	public:
 		unsigned short PenStyle;
 		TWmfPointS     Width;

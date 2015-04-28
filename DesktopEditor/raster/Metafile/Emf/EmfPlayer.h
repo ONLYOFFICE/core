@@ -1,5 +1,5 @@
-#ifndef _EMF_PLAYER_H
-#define _EMF_PLAYER_H
+#ifndef _METAFILE_EMF_EMFPLAYER_H
+#define _METAFILE_EMF_EMFPLAYER_H
 
 #include <vector>
 #include <map>
@@ -133,4 +133,4 @@ namespace MetaFile
 	};
 }
 
-#endif //_EMF_PLAYER_H
+#endif //_METAFILE_EMF_EMFPLAYER_H

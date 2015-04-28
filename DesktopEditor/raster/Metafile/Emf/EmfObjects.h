@@ -1,11 +1,12 @@
-#ifndef _EMF_OBJECTS_H
-#define _EMF_OBJECTS_H
+#ifndef _METAFILE_EMF_EMFOBJECTS_H
+#define _METAFILE_EMF_EMFOBJECTS_H
 
 #include "EmfTypes.h"
 #include "../Wmf/WmfUtils.h"
 #include "../Wmf/WmfTypes.h"
 #include "../../common/Types.h"
 #include "../Common/MetaFileObjects.h"
+#include "../../../common/File.h"
 
 namespace MetaFile
 {
@@ -29,8 +30,7 @@ namespace MetaFile
 		}
 	};
 
-
-	class CEmfLogBrushEx : public CEmfObjectBase
+	class CEmfLogBrushEx : public CEmfObjectBase, public IBrush
 	{
 	public:
 
@@ -41,6 +41,25 @@ namespace MetaFile
 			return EMF_OBJECT_BRUSH;
 		}
 		void SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight);
+
+		// IBrush
+		int          GetColor();
+		unsigned int GetStyle()
+		{
+			return BrushStyle;
+		}
+		unsigned int GetHatch()
+		{
+			return BrushHatch;
+		}
+		unsigned int GetAlpha()
+		{
+			return BrushAlpha;
+		}
+		std::wstring GetDibPatterPath()
+		{
+			return DibPatternPath;
+		}
 
 	public:
 		unsigned int   BrushStyle;
@@ -53,7 +72,7 @@ namespace MetaFile
 		unsigned int   DibHeigth;
 	};
 
-	class CEmfLogFont : public CEmfObjectBase
+	class CEmfLogFont : public CEmfObjectBase, public IFont
 	{
 	public:
 		CEmfLogFont()
@@ -70,13 +89,43 @@ namespace MetaFile
 			return EMF_OBJECT_FONT;
 		}
 
+		// IFont
+		int          GetHeight()
+		{
+			return LogFontEx.LogFont.Height;
+		}
+		std::wstring GetFaceName()
+		{
+			return NSFile::CUtf8Converter::GetWStringFromUTF16(LogFontEx.LogFont.FaceName, 32);
+		}
+		int          GetWeight()
+		{
+			return LogFontEx.LogFont.Weight;
+		}
+		bool         IsItalic()
+		{
+			return (0x01 == LogFontEx.LogFont.Italic ? true : false);
+		}
+		bool         IsStrikeOut()
+		{
+			return (0x01 == LogFontEx.LogFont.StrikeOut ? true : false);
+		}
+		bool         IsUnderline()
+		{
+			return (0x01 == LogFontEx.LogFont.Underline ? true : false);
+		}
+		int          GetEscapement()
+		{
+			return LogFontEx.LogFont.Escapement;
+		}
+
 	public:
 
 		TEmfLogFontEx    LogFontEx;
 		TEmfDesignVector DesignVector;
 	};
 
-	class CEmfLogPen : public CEmfObjectBase
+	class CEmfLogPen : public CEmfObjectBase, public IPen
 	{
 	public:
 		CEmfLogPen() : PenStyle(PS_SOLID), Width(1), Color(0, 0, 0)
@@ -93,11 +142,22 @@ namespace MetaFile
 			return EMF_OBJECT_PEN;
 		}
 
+		// IPen
+		int          GetColor();
+		unsigned int GetStyle()
+		{
+			return PenStyle;
+		}
+		unsigned int GetWidth()
+		{
+			return Width;
+		}
+
 	public:
 
 		unsigned int  PenStyle;
 		unsigned int  Width;
-		TEmfColor      Color;
+		TEmfColor     Color;
 		unsigned int  NumStyleEntries;
 		unsigned int* StyleEntry;
 	};
@@ -127,4 +187,4 @@ namespace MetaFile
 	};
 }
 
-#endif // _EMF_OBJECTS_H
+#endif // _METAFILE_EMF_EMFOBJECTS_H

@@ -1,13 +1,13 @@
-#ifndef _METAFILE_OBJECTS_H
-#define _METAFILE_OBJECTS_H
+#ifndef _METAFILE_COMMON_METAFILEOBJECTS_H
+#define _METAFILE_COMMON_METAFILEOBJECTS_H
 
 namespace MetaFile
 {
-	class CFont
+	class IFont
 	{
 	public:
-		CFont(){}
-		virtual ~CFont(){}
+		IFont(){}
+		virtual ~IFont(){}
 
 		virtual int          GetHeight() = 0;
 		virtual std::wstring GetFaceName() = 0;
@@ -18,11 +18,11 @@ namespace MetaFile
 		virtual int          GetEscapement() = 0;
 	};
 
-	class CBrush
+	class IBrush
 	{
 	public:
-		CBrush(){}
-		virtual ~CBrush(){}
+		IBrush(){}
+		virtual ~IBrush(){}
 
 		virtual int          GetColor() = 0;
 		virtual unsigned int GetStyle() = 0;
@@ -31,11 +31,11 @@ namespace MetaFile
 		virtual std::wstring GetDibPatterPath() = 0;
 	};
 
-	class CPen
+	class IPen
 	{
 	public:
-		CPen(){}
-		virtual ~CPen(){}
+		IPen(){}
+		virtual ~IPen(){}
 
 		virtual int          GetColor() = 0;
 		virtual unsigned int GetStyle() = 0;
@@ -43,4 +43,4 @@ namespace MetaFile
 	};
 }
 
-#endif //_METAFILE_OBJECTS_H
+#endif //_METAFILE_COMMON_METAFILEOBJECTS_H

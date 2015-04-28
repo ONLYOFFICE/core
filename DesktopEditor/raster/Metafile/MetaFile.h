@@ -1,7 +1,7 @@
 #ifndef _METAFILE_H
 #define _METAFILE_H
 
-//#define NEW_WMF 1
+#define NEW_WMF 1
 #include "../../fontengine/ApplicationFonts.h"
 #include "../../graphics/IRenderer.h"
 
@@ -36,7 +36,7 @@ namespace MetaFile
 		CWmfFile           m_oWmfFile;
 		TWmfRectF          m_oWmfRect;
 		CEmfFile           m_oEmfFile;
-		int               m_lType;
+		int                m_lType;
 	};
 }
 

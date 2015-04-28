@@ -1,6 +1,7 @@
 #include "WmfObjects.h"
 #include "../../../raster/ImageFileFormatChecker.h"
 #include "../../../graphics/Image.h"
+#include "../Common.h"
 
 namespace MetaFile
 {
@@ -33,7 +34,7 @@ namespace MetaFile
 		if (DibBuffer)
 			delete[] DibBuffer;
 	}
-	void CWmfBrush::SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight)
+	void         CWmfBrush::SetDibPattern(unsigned char* pBuffer, unsigned int ulWidth, unsigned int ulHeight)
 	{
 		DibBuffer = pBuffer;
 		DibWidth  = ulWidth;
@@ -68,5 +69,30 @@ namespace MetaFile
 
 		BrushStyle     = BS_DIBPATTERN;
 		DibPatternPath = wsTempFileName;
+	}
+	int          CWmfBrush::GetColor()
+	{
+		return METAFILE_RGBA(Color.r, Color.g, Color.b);
+	}
+	unsigned int CWmfBrush::GetStyle()
+	{
+		return BrushStyle;
+	}
+	unsigned int CWmfBrush::GetHatch()
+	{
+		return BrushHatch;
+	}
+	unsigned int CWmfBrush::GetAlpha()
+	{
+		return 255;
+	}
+	std::wstring CWmfBrush::GetDibPatterPath()
+	{
+		return DibPatternPath;
+	}
+
+	int CWmfPen::GetColor()
+	{
+		return METAFILE_RGBA(Color.r, Color.g, Color.b);
 	}
 }

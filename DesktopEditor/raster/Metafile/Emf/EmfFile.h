@@ -1,5 +1,5 @@
-#ifndef _EMF_FILE_H
-#define _EMF_FILE_H
+#ifndef _METAFILE_EMF_EMFFILE_H
+#define _METAFILE_EMF_EMFFILE_H
 
 #include "../Wmf/WmfUtils.h"
 #include "../Wmf/WmfTypes.h"
@@ -7,7 +7,6 @@
 #include "../Common.h"
 
 #include "EmfTypes.h"
-#include "EmfOutputDevice.h"
 #include "EmfPlayer.h"
 #include "EmfPath.h"
 
@@ -17,85 +16,27 @@
 
 namespace MetaFile
 {
-	class CEmfFile
+	class CEmfFile : virtual public IMetaFileBase
 	{
 	public:
 
 		CEmfFile() : m_oPlayer(this)
 		{
-			m_pBufferData = NULL;
-			m_bError      = false;
-			m_pOutput     = NULL;
-			m_pPath       = NULL;
-
-			m_oStream.SetStream(NULL, 0);
-
-			m_pDC = m_oPlayer.GetDC();
+			m_pPath = NULL;
+			m_pDC   = m_oPlayer.GetDC();
 		};
 
 		~CEmfFile()
 		{
-			Close();
+			ClearFile();
 		};
 
-		bool OpenFromFile(const wchar_t* wsFilePath)
-		{
-			Close();
-
-			NSFile::CFileBinary oFile;
-			oFile.OpenFile(wsFilePath);
-			int lFileSize = oFile.GetFileSize();
-
-			m_pBufferData = new BYTE[lFileSize];
-			if (!m_pBufferData)
-				return false;
-
-			DWORD lReadedSize;
-			oFile.ReadFile(m_pBufferData, lFileSize, lReadedSize);
-
-			m_oStream.SetStream(m_pBufferData, lFileSize);
-
-			return true;
-		}
-		void Close()
-		{
-			RELEASEOBJECT(m_pBufferData);
-			RELEASEOBJECT(m_pPath);
-
-			m_pOutput = NULL;
-			m_oStream.SetStream(NULL, 0);
-			m_bError = false;
-			m_oPlayer.Clear();
-			m_pDC = m_oPlayer.GetDC();
-		}
 		TEmfRectL* GetBounds()
 		{
 			return &m_oHeader.oFrame;
 		}
-		void SetOutputDevice(CEmfOutputDevice* pOutput)
-		{
-			m_pOutput = pOutput;
-		}
-		void Scan()
-		{
-			CEmfOutputDevice* pOutput = m_pOutput;
-			m_pOutput = NULL;
-			PlayMetaFile();
-			m_pOutput = pOutput;
-
-			RELEASEOBJECT(m_pPath);
-			m_oPlayer.Clear();
-			m_pDC = m_oPlayer.GetDC();
-		}
-		bool CheckError()
-		{
-			return m_bError;
-		}
-		void SetFontManager(CFontManager* pManager)
-		{
-			m_pFontManager = pManager;
-		}
-		void PlayMetaFile()
+		
+		void         PlayMetaFile()
 		{
 			if (!m_oStream.IsValid())
 				SetError();
@@ -264,20 +205,126 @@ namespace MetaFile
 			if (m_pOutput)
 				m_pOutput->End();
 		}
+		void         ClearFile()
+		{
+			RELEASEOBJECT(m_pPath);
+			m_oPlayer.Clear();
+			m_pDC = m_oPlayer.GetDC();
+		}
+		double       TranslateX(int nSrcX)
+		{
+			double dDstX;
+
+			TEmfWindow* pWindow   = m_pDC->GetWindow();
+			TEmfWindow* pViewport = m_pDC->GetViewport();
+
+			dDstX =  (double)((double)(nSrcX - pWindow->lX) * m_pDC->GetPixelWidth()) + pViewport->lX;
+			return dDstX;
+		}
+		double       TranslateY(int nSrcY)
+		{
+			double dDstY;
+
+			TEmfWindow* pWindow   = m_pDC->GetWindow();
+			TEmfWindow* pViewport = m_pDC->GetViewport();
+
+			dDstY = (double)((double)(nSrcY - pWindow->lY) * m_pDC->GetPixelHeight()) + pViewport->lY;
+
+			return dDstY;
+		}
+		TRect*       GetDCBounds()
+		{
+			return &m_oHeader.oFrameToBounds;
+		}
+		double       GetPixelHeight()
+		{
+			return m_pDC->GetPixelHeight();
+		}
+		double       GetPixelWidth()
+		{
+			return m_pDC->GetPixelWidth();
+		}
+		int          GetTextColor()
+		{
+			TEmfColor& oColor = m_pDC->GetTextColor();
+			return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+		}
+		IFont*       GetFont()
+		{
+			CEmfLogFont* pFont = m_pDC->GetFont();
+			if (!pFont)
+				return NULL;
+
+			return (IFont*)pFont;
+		}
+		IBrush*      GetBrush()
+		{
+			CEmfLogBrushEx* pBrush = m_pDC->GetBrush();
+			if (!pBrush)
+				return NULL;
+
+			return (IBrush*)pBrush;
+		}
+		IPen*        GetPen()
+		{
+			CEmfLogPen* pPen = m_pDC->GetPen();
+			if (!pPen)
+				return NULL;
+
+			return (IPen*)pPen;
+		}
+		unsigned int GetTextAlign()
+		{
+			return m_pDC->GetTextAlign();
+		}
+		unsigned int GetTextBgMode()
+		{
+			return m_pDC->GetBgMode();
+		}
+		int          GetTextBgColor()
+		{
+			TEmfColor& oColor = m_pDC->GetBgColor();
+			return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+		}
+		unsigned int GetFillMode()
+		{
+			return m_pDC->GetFillMode();
+		}
+		TPointL      GetCurPos()
+		{
+			TPointL oPoint = m_pDC->GetCurPos();
+			return oPoint;
+		}
+		TXForm*      GetInverseTransform()
+		{
+			return m_pDC->GetInverseTransform();
+		}
+		TXForm*      GetTransform()
+		{
+			return m_pDC->GetTransform();
+		}
+		unsigned int GetMiterLimit()
+		{
+			return m_pDC->GetMiterLimit();
+		}
+		unsigned int GetRop2Mode()
+		{
+			return m_pDC->GetRop2Mode();
+		}
+		IClip*       GetClip()
+		{
+			CEmfClip* pClip = m_pDC->GetClip();
+			if (!pClip)
+				return NULL;
+
+			return (IClip*)pClip;
+		}
 
 	private:
 
-		void SetError()
-		{
-			m_bError = true;
-		}
 		CEmfDC* GetDC()
 		{
 			return m_pDC;
-		}
-		TEmfRectL* GetDCBounds()
-		{
-			return &m_oHeader.oFrameToBounds;
 		}
 		bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE** ppBgraBuffer, unsigned int* pulWidth, unsigned int* pulHeight)
 		{
@@ -329,27 +376,6 @@ namespace MetaFile
 
 			return true;
 		}
-		double TranslateX(int lSrcX)
-		{
-			double dDstX;
-
-			TEmfWindow* pWindow   = m_pDC->GetWindow();
-			TEmfWindow* pViewport = m_pDC->GetViewport();
-
-			dDstX =  (double)((double)(lSrcX - pWindow->lX) * m_pDC->GetPixelWidth()) + pViewport->lX;
-			return dDstX;
-		}
-		double TranslateY(int lSrcY)
-		{
-			double dDstY;
-
-			TEmfWindow* pWindow   = m_pDC->GetWindow();
-			TEmfWindow* pViewport = m_pDC->GetViewport();
-
-			dDstY = (double)((double)(lSrcY - pWindow->lY) * m_pDC->GetPixelHeight()) + pViewport->lY;
-
-			return dDstY;
-		}		
 
 		void MoveTo(TEmfPointL& oPoint)
 		{
@@ -472,7 +498,7 @@ namespace MetaFile
 
 			if (m_pOutput)
 			{
-				m_pOutput->DrawText(wsString.c_str(), unCharsCount, nX, nY, nTextW, bWithOutLast);
+				m_pOutput->DrawText(wsString, unCharsCount, nX, nY, nTextW, bWithOutLast);
 			}
 		}
 		void DrawTextA(TEmfEmrText& oText)
@@ -565,16 +591,16 @@ namespace MetaFile
 			double dW = dR - dL;
 			double dH = dB - dT;
 
-			int lL = (int)floor(dL + 0.5);
-			int lT = (int)floor(dT + 0.5);
-			int lR = (int)floor(dW + 0.5) + lL;
-			int lB = (int)floor(dH + 0.5) + lT;
+			int nL = (int)floor(dL + 0.5);
+			int nT = (int)floor(dT + 0.5);
+			int nR = (int)floor(dW + 0.5) + nL;
+			int nB = (int)floor(dH + 0.5) + nT;
 
 			// ѕо логике мы должны получать рект, точно такой же как и oBounds, но есть файлы, где это не так.
-			m_oHeader.oFrameToBounds.lLeft   = lL;
-			m_oHeader.oFrameToBounds.lRight  = lR;
-			m_oHeader.oFrameToBounds.lTop    = lT;
-			m_oHeader.oFrameToBounds.lBottom = lB;
+			m_oHeader.oFrameToBounds.nLeft   = nL;
+			m_oHeader.oFrameToBounds.nRight  = nR;
+			m_oHeader.oFrameToBounds.nTop    = nT;
+			m_oHeader.oFrameToBounds.nBottom = nB;
 		}
 		void Read_EMR_ALPHABLEND()
 		{
@@ -1756,23 +1782,14 @@ namespace MetaFile
 
 	private:
 
-		CDataStream       m_oStream;
-		BYTE*             m_pBufferData;
-		bool              m_bError;
-		CFontManager*     m_pFontManager;
 		TEmfHeader        m_oHeader;
-
 		unsigned int      m_ulRecordSize;
-		CEmfOutputDevice* m_pOutput;
-
 		CEmfDC*           m_pDC;
 		CEmfPlayer        m_oPlayer;
-
 		CEmfPath*         m_pPath;
 
-		friend class CEmfRendererOutput;
 		friend class CEmfPlayer;
 	};
 }
 
-#endif // _EMF_FILE_H
+#endif // _METAFILE_EMF_EMFFILE_H

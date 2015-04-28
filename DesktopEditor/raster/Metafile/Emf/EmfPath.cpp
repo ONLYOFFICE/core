@@ -1,5 +1,4 @@
 #include "EmfPath.h"
-#include "EmfOutputDevice.h"
 
 namespace MetaFile
 {
@@ -162,7 +161,7 @@ namespace MetaFile
 
 		return true;
 	}
-	void CEmfPath::Draw(CEmfOutputDevice* pOutput, bool bStroke, bool bFill, unsigned int unClipMode)
+	void CEmfPath::Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, unsigned int unClipMode)
 	{
 		if (pOutput)
 		{	

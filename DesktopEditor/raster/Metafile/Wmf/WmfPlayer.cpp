@@ -193,6 +193,18 @@ namespace MetaFile
 			delete pObject;
 			m_mObjects.erase(ushIndex);
 		}
+
+		if (ushIndex < m_ushIndex)
+		{
+			if (std::find(m_vAvailableIndexes.begin(), m_vAvailableIndexes.end(), ushIndex) != m_vAvailableIndexes.end())
+			{
+				// ƒанный индекс уже есть в списке доступных
+			}
+			else
+			{
+				m_vAvailableIndexes.push_back(ushIndex);
+			}
+		}
 	}
 
 	CWmfDC::CWmfDC()
@@ -207,6 +219,17 @@ namespace MetaFile
 		m_dPixelHeight = 1;
 		m_oWindow.Init();
 		m_oViewport.Init();
+		m_oTextColor.Set(0, 0, 0);
+		m_oTextBgColor.Set(255, 255, 255);
+		m_oCurPos.Set(0, 0);
+		m_ushTextBgMode     = TRANSPARENT;
+		m_ushLayout         = LAYOUT_LTR;
+		m_ushPolyFillMode   = WINDING;
+		m_ushRop2Mode       = R2_COPYPEN;
+		m_ushStretchBltMode = COLORONCOLOR;
+		m_ushTextAlign      = TA_TOP | TA_LEFT | TA_NOUPDATECP;
+		m_ushCharSpacing    = 0;
+		m_oTransform.Init();
 	}
 	CWmfDC::~CWmfDC()
 	{
@@ -218,16 +241,27 @@ namespace MetaFile
 		if (!pNewDC)
 			return NULL;
 
-		pNewDC->m_pBrush       = (m_pBrush == &m_oDefaultBrush ? &pNewDC->m_oDefaultBrush : m_pBrush);
-		pNewDC->m_pPen         = (m_pPen == &m_oDefaultPen ? &pNewDC->m_oDefaultPen : m_pPen);
-		pNewDC->m_pPalette     = m_pPalette;
-		pNewDC->m_pFont        = m_pFont;
-		pNewDC->m_pRegion      = m_pRegion;
-		pNewDC->m_ushMapMode   = m_ushMapMode;
-		pNewDC->m_dPixelWidth  = m_dPixelWidth;
-		pNewDC->m_dPixelHeight = m_dPixelHeight;
+		pNewDC->m_pBrush            = (m_pBrush == &m_oDefaultBrush ? &pNewDC->m_oDefaultBrush : m_pBrush);
+		pNewDC->m_pPen              = (m_pPen == &m_oDefaultPen ? &pNewDC->m_oDefaultPen : m_pPen);
+		pNewDC->m_pPalette          = m_pPalette;
+		pNewDC->m_pFont             = m_pFont;
+		pNewDC->m_pRegion           = m_pRegion;
+		pNewDC->m_ushMapMode        = m_ushMapMode;
+		pNewDC->m_dPixelWidth       = m_dPixelWidth;
+		pNewDC->m_dPixelHeight      = m_dPixelHeight;
 		pNewDC->m_oWindow.Copy(m_oWindow);
 		pNewDC->m_oViewport.Copy(m_oViewport);
+		pNewDC->m_oTextColor        = m_oTextColor;
+		pNewDC->m_oTextBgColor      = m_oTextBgColor;
+		pNewDC->m_oCurPos           = m_oCurPos;
+		pNewDC->m_ushTextBgMode     = m_ushTextBgMode;
+		pNewDC->m_ushLayout         = m_ushLayout;
+		pNewDC->m_ushPolyFillMode   = m_ushPolyFillMode;
+		pNewDC->m_ushRop2Mode       = m_ushRop2Mode;
+		pNewDC->m_ushStretchBltMode = m_ushStretchBltMode;
+		pNewDC->m_ushTextAlign      = m_ushTextAlign;
+		pNewDC->m_ushCharSpacing    = m_ushCharSpacing;
+		pNewDC->m_oTransform.Init();
 
 		return pNewDC;
 	}
@@ -299,6 +333,9 @@ namespace MetaFile
 	void           CWmfDC::SetMapMode(unsigned short ushMapMode)
 	{
 		m_ushMapMode = ushMapMode;
+
+		UpdatePixelMetrics();
+		return;
 
 		switch (m_ushMapMode)
 		{
@@ -438,7 +475,7 @@ namespace MetaFile
 			SetPixelHeight(dPixel);
 			SetPixelWidth(dPixel);
 		}
-		else if (MM_ANISOTROPIC == ushMapMode)
+		else// if (MM_ANISOTROPIC == ushMapMode)
 		{
 			double dPixelX = (double)m_oViewport.w / (double)m_oWindow.w;
 			double dPixelY = (double)m_oViewport.h / (double)m_oWindow.h;
@@ -533,5 +570,17 @@ namespace MetaFile
 	unsigned short CWmfDC::GetCharSpacing()
 	{
 		return m_ushCharSpacing;
+	}
+	TXForm*        CWmfDC::GetTransform()
+	{
+		return &m_oTransform;
+	}
+	TXForm*        CWmfDC::GetInverseTransform()
+	{
+		return &m_oTransform;
+	}
+	unsigned int   CWmfDC::GetMiterLimit()
+	{
+		return 0;
 	}
 }

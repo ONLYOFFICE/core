@@ -1,6 +1,7 @@
 #include "EmfObjects.h"
 #include "../../../raster/ImageFileFormatChecker.h"
 #include "../../../graphics/Image.h"
+#include "../Common.h"
 
 namespace MetaFile
 {
@@ -59,5 +60,13 @@ namespace MetaFile
 
 		BrushStyle     = BS_DIBPATTERN;
 		DibPatternPath = wsTempFileName;
+	}
+	int  CEmfLogBrushEx::GetColor()
+	{
+		return METAFILE_RGBA(Color.r, Color.g, Color.b);
+	}
+	int  CEmfLogPen::GetColor()
+	{
+		return METAFILE_RGBA(Color.r, Color.g, Color.b);
 	}
 }

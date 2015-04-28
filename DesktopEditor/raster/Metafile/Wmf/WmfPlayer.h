@@ -4,6 +4,7 @@
 #include <map>
 #include <vector>
 #include "WmfObjects.h"
+#include "../Common/MetaFileTypes.h"
 
 namespace MetaFile
 {
@@ -93,6 +94,9 @@ namespace MetaFile
 		unsigned short GetTextAlign();
 		void           SetCharSpacing(unsigned short ushCharSpacing);
 		unsigned short GetCharSpacing();
+		TXForm*        GetTransform();
+		TXForm*        GetInverseTransform();
+		unsigned int   GetMiterLimit();
 
 	private:
 
@@ -124,6 +128,7 @@ namespace MetaFile
 		unsigned short m_ushStretchBltMode;
 		unsigned short m_ushTextAlign;
 		unsigned short m_ushCharSpacing;
+		TXForm         m_oTransform;
 	};
 
 	//class CEmfDC

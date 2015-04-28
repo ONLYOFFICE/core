@@ -1,5 +1,5 @@
-#ifndef _INTERFACE_OUTPUT_DEVICE_H
-#define _INTERFACE_OUTPUT_DEVICE_H
+#ifndef _METAFILE_COMMON_IOUTPUTDEVICE_H
+#define _METAFILE_COMMON_IOUTPUTDEVICE_H
 
 #include "../Wmf/WmfTypes.h"
 
@@ -19,7 +19,7 @@ namespace MetaFile
 		// pBuffer - BGRA картинка размерами ulWidth, ulHeight, которую надо нарисовать в заданном ректе
 		virtual void DrawBitmap(int nX, int nY, int nW, int nH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) = 0;
 
-		virtual void DrawText(const wchar_t* wsText, unsigned int unCharsCount, int nX, int nY, int nTextW, bool bWithOutLast) = 0;
+		virtual void DrawText(std::wstring& wsText, unsigned int unCharsCount, int nX, int nY, int nTextW, bool bWithOutLast) = 0;
 
 		virtual void StartPath() = 0;
 		virtual void MoveTo(int nX, int nY) = 0;
@@ -40,4 +40,4 @@ namespace MetaFile
 
 }
 
-#endif //_INTERFACE_OUTPUT_DEVICE_H
+#endif //_METAFILE_COMMON_IOUTPUTDEVICE_H

@@ -292,7 +292,7 @@ namespace MetaFile
 			*this >> oFont.Weight;
 			*this >> oFont.Italic;
 			*this >> oFont.Underline;
-			*this >> oFont.StrikOut;
+			*this >> oFont.StrikeOut;
 			*this >> oFont.CharSet;
 			*this >> oFont.OutPrecision;
 			*this >> oFont.ClipPrecision;

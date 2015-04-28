@@ -1,5 +1,5 @@
-#ifndef _METAFILE_RENDERER_OUPUT_EMF_H
-#define _METAFILE_RENDERER_OUPUT_EMF_H
+#ifndef _METAFILE_COMMON_METAFILERENDERER_H
+#define _METAFILE_COMMON_METAFILERENDERER_H
 
 
 #include "../../../graphics/IRenderer.h"
@@ -21,7 +21,7 @@ namespace MetaFile
 	{
 
 	public:
-		CMetaFileRenderer(CMetaFileBase *pFile, IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
+		CMetaFileRenderer(IMetaFileBase *pFile, IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
 		{
 			m_pFile = pFile;
 
@@ -38,13 +38,13 @@ namespace MetaFile
 			m_pRenderer = pRenderer;
 
 			TRect* pBounds = m_pFile->GetDCBounds();
-			int lL = pBounds->lLeft;
-			int lR = pBounds->lRight;
-			int lT = pBounds->lTop;
-			int lB = pBounds->lBottom;
+			int nL = pBounds->nLeft;
+			int nR = pBounds->nRight;
+			int nT = pBounds->nTop;
+			int nB = pBounds->nBottom;
 
-			m_dScaleX = (lR - lL <= 0) ? 1 : m_dW / (double)(lR - lL);
-			m_dScaleY = (lB - lT <= 0) ? 1 : m_dH / (double)(lB - lT);
+			m_dScaleX = (nR - nL <= 0) ? 1 : m_dW / (double)(nR - nL);
+			m_dScaleY = (nB - nT <= 0) ? 1 : m_dH / (double)(nB - nT);
 
 			m_bStartedPath = false;
 		}
@@ -84,14 +84,14 @@ namespace MetaFile
 			TPointD oBR = TranslatePoint(lX + lW, lY + lH);
 			m_pRenderer->DrawImage(&oImage, oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y);
 		}
-		void DrawText(const wchar_t* wsText, unsigned int ulCharsCount, int lX, int lY, int nTextW, bool bWithOutLast)
+		void DrawText(std::wstring& wsText, unsigned int ulCharsCount, int lX, int lY, int nTextW, bool bWithOutLast)
 		{
 			CheckEndPath();
 
 			UpdateTransform();
 			UpdateClip();
 
-			CFont* pFont = m_pFile->GetFont();
+			IFont* pFont = m_pFile->GetFont();
 			if (!pFont)
 				return;
 
@@ -150,18 +150,22 @@ namespace MetaFile
 
 				if (0 != nTextW && ulCharsCount > 1)
 				{
-					wchar_t* wsTempText = new wchar_t[ulCharsCount + 1];
-					if (!wsTempText)
-						return;
-
-					wsTempText[ulCharsCount] = 0x0000;
-					for (unsigned int unIndex = 0; unIndex < ulCharsCount; unIndex++)
-					{
-						wsTempText[unIndex] = wsText[unIndex];
-					}
-
+					std::wstring wsTempText = wsText;
 					if (bWithOutLast)
-						wsTempText[ulCharsCount - 1] = 0x0000;
+						wsTempText.erase(ulCharsCount - 1);
+
+					//wchar_t* wsTempText = new wchar_t[ulCharsCount + 1];
+					//if (!wsTempText)
+					//	return;
+
+					//wsTempText[ulCharsCount] = 0x0000;
+					//for (unsigned int unIndex = 0; unIndex < ulCharsCount; unIndex++)
+					//{
+					//	wsTempText[unIndex] = wsText[unIndex];
+					//}
+
+					//if (bWithOutLast)
+					//	wsTempText[ulCharsCount - 1] = 0x0000;
 
 					pFontManager->LoadString1(wsTempText, 0, 0);
 
@@ -182,7 +186,7 @@ namespace MetaFile
 						m_pRenderer->put_FontCharSpace(dCharSpace * 25.4 / 72);
 					}
 
-					delete[] wsTempText;
+					/*delete[] wsTempText;*/
 
 					pFontManager->LoadString1(wsText, 0, 0);
 					oBox = pFontManager->MeasureString2();
@@ -510,8 +514,8 @@ namespace MetaFile
 			// Координаты приходят уже с примененной матрицей. Поэтому сначала мы умножаем на матрицу преобразования, 
 			// вычитаем начальные координаты и умножаем на обратную матрицу преобразования.
 			TRect* pBounds = m_pFile->GetDCBounds();
-			double dT = pBounds->lTop;
-			double dL = pBounds->lLeft;
+			double dT = pBounds->nTop;
+			double dL = pBounds->nLeft;
 
 			TEmfXForm* pInverse   = m_pFile->GetInverseTransform();
 			TEmfXForm* pTransform = m_pFile->GetTransform();
@@ -528,7 +532,7 @@ namespace MetaFile
 
 		bool UpdateBrush()
 		{
-			CBrush* pBrush = m_pFile->GetBrush();
+			IBrush* pBrush = m_pFile->GetBrush();
 			if (!pBrush)
 				return false;
 
@@ -561,7 +565,7 @@ namespace MetaFile
 		}
 		bool UpdatePen()
 		{
-			CPen* pPen = m_pFile->GetPen();
+			IPen* pPen = m_pFile->GetPen();
 			if (!pPen)
 				return false;
 
@@ -633,7 +637,7 @@ namespace MetaFile
 		}
 		bool UpdateClip()
 		{
-			CClip* pClip = m_pFile->GetClip();
+			IClip* pClip = m_pFile->GetClip();
 			if (!pClip)
 				return false;
 
@@ -645,6 +649,7 @@ namespace MetaFile
 	private:
 
 		IRenderer*     m_pRenderer;
+		IMetaFileBase* m_pFile;
 		int            m_lDrawPathType;
 		double         m_dX;      // Координаты левого верхнего угла
 		double         m_dY;      //
@@ -652,8 +657,7 @@ namespace MetaFile
 		double         m_dH;      // 
 		double         m_dScaleX; // Коэффициенты сжатия/растяжения, чтобы 
 		double         m_dScaleY; // результирующая картинка была нужных размеров.
-		CMetaFileBase* m_pFile;
 		bool           m_bStartedPath;
 	};
 }
-#endif // _METAFILE_RENDERER_OUPUT_EMF_H
+#endif // _METAFILE_COMMON_METAFILERENDERER_H

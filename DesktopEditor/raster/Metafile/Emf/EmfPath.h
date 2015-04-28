@@ -1,14 +1,13 @@
-#ifndef _EMF_PATH_H
-#define _EMF_PATH_H
+#ifndef _METAFILE_EMF_EMFPATH_H
+#define _METAFILE_EMF_EMFPATH_H
 
 #include "EmfTypes.h"
 #include "../Wmf/WmfTypes.h"
 #include <vector>
+#include "../Common/IOutputDevice.h"
 
 namespace MetaFile
 {
-	class CEmfOutputDevice;
-
 	typedef enum
 	{
 		EMF_PATHCOMMAND_UNKNOWN = 0x00,
@@ -204,7 +203,7 @@ namespace MetaFile
 		bool CurveTo(int lX1, int lY1, int lX2, int lY2, int lXE, int lYE);
 		bool ArcTo(int lL, int lT, int lR, int lB, double dStart, double dSweep);
 		bool Close();
-		void Draw(CEmfOutputDevice* pOutput, bool bStroke, bool bFill, unsigned int unClipMode = -1);
+		void Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, unsigned int unClipMode = -1);
 
 	private:
 
@@ -216,4 +215,4 @@ namespace MetaFile
 	};
 }
 
-#endif //_EMF_PATH_H
+#endif //_METAFILE_EMF_EMFPATH_H

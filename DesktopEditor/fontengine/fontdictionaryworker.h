@@ -236,7 +236,7 @@ namespace NSFontDictionary
 			return false;
 
 		// name - делаем ascii, чтобы сработал подбор
-		oFormat.Destroy();
+		oFormat.Destroy2();
 
 		LONG nLen = (LONG)strlen(pFont->m_name);
 

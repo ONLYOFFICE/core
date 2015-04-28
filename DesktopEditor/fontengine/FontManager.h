@@ -41,6 +41,7 @@ public:
 public:
 	CFontStream* GetStream(const std::wstring& strFile);
 	void CheckStreams(std::map<std::wstring, bool>& mapFiles);
+	void Clear();
 };
 
 class CFontsCache

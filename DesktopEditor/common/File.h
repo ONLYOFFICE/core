@@ -793,7 +793,7 @@ namespace NSFile
 			}
 			return true;
 		}
-		static bool Decode(char* pDataSrc, int nLenSrc, BYTE*& pDataDst, int& nLenDst)
+                static bool Decode(const char* pDataSrc, int nLenSrc, BYTE*& pDataDst, int& nLenDst)
 		{
 			if (!pDataSrc || nLenSrc < 1)
 				return false;

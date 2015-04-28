@@ -1,7 +1,8 @@
-#ifndef _EMF_TYPES_H
-#define _EMF_TYPES_H
+#ifndef _METAFILE_EMF_EMFTYPES_H
+#define _METAFILE_EMF_EMFTYPES_H
 
 #include "../../../common/Types.h"
+#include "../Common/MetaFileTypes.h"
 
 #if !defined(_WIN32) && !defined(_WIN64)
 //from wingdi.h
@@ -309,7 +310,7 @@ namespace MetaFile
 		unsigned int   ulPalEntries;
 		TEmfSizeL      oDevice;
 		TEmfSizeL      oMillimeters;
-		TEmfRectL      oFrameToBounds;
+		TRect          oFrameToBounds;
 	};
 
 	struct TEmfStretchDIBITS
@@ -331,94 +332,90 @@ namespace MetaFile
 		int          cyDest;
 	};
 
-#define MWT_IDENTITY	  0x01
-#define MWT_LEFTMULTIPLY  0x02
-#define MWT_RIGHTMULTIPLY 0x03
-#define MWT_SET           0x04
+#define TEmfXForm TXForm
+	//struct TEmfXForm
+	//{
+	//	double M11;
+	//	double M12;
+	//	double M21;
+	//	double M22;
+	//	double Dx;
+	//	double Dy;
 
-	struct TEmfXForm
-	{
-		double M11;
-		double M12;
-		double M21;
-		double M22;
-		double Dx;
-		double Dy;
+	//	void Init()
+	//	{
+	//		M11 = 1;
+	//		M12 = 0;
+	//		M21 = 0;
+	//		M22 = 1;
+	//		Dx  = 0;
+	//		Dy  = 0;
+	//	}
 
-		void Init()
-		{
-			M11 = 1;
-			M12 = 0;
-			M21 = 0;
-			M22 = 1;
-			Dx  = 0;
-			Dy  = 0;
-		}
+	//	void Copy(TEmfXForm* pOther)
+	//	{
+	//		M11 = pOther->M11;
+	//		M12	= pOther->M12;
+	//		M21	= pOther->M21;
+	//		M22	= pOther->M22;
+	//		Dx	= pOther->Dx;
+	//		Dy	= pOther->Dy;
+	//	}
 
-		void Copy(TEmfXForm* pOther)
-		{
-			M11 = pOther->M11;
-			M12	= pOther->M12;
-			M21	= pOther->M21;
-			M22	= pOther->M22;
-			Dx	= pOther->Dx;
-			Dy	= pOther->Dy;
-		}
+	//	void Multiply(TEmfXForm &oOther, unsigned int ulMode)
+	//	{
+	//		if (MWT_IDENTITY == ulMode)
+	//			Init();
+	//		else if (MWT_LEFTMULTIPLY == ulMode)
+	//		{
+	//			// oOther слева, текущая матрица справа
+	//			double dM11 = oOther.M11 * M11 + oOther.M12 * M21;
+	//			double dM12 = oOther.M11 * M21 + oOther.M12 * M22;
+	//			double dM21 = oOther.M21 * M11 + oOther.M22 * M21;
+	//			double dM22 = oOther.M21 * M21 + oOther.M22 * M22;
 
-		void Multiply(TEmfXForm &oOther, unsigned int ulMode)
-		{
-			if (MWT_IDENTITY == ulMode)
-				Init();
-			else if (MWT_LEFTMULTIPLY == ulMode)
-			{
-				// oOther слева, текущая матрица справа
-				double dM11 = oOther.M11 * M11 + oOther.M12 * M21;
-				double dM12 = oOther.M11 * M21 + oOther.M12 * M22;
-				double dM21 = oOther.M21 * M11 + oOther.M22 * M21;
-				double dM22 = oOther.M21 * M21 + oOther.M22 * M22;
+	//			double dDx = oOther.Dx * M11 + oOther.Dy * M21 + Dx;
+	//			double dDy = oOther.Dx * M21 + oOther.Dy * M22 + Dy;
 
-				double dDx = oOther.Dx * M11 + oOther.Dy * M21 + Dx;
-				double dDy = oOther.Dx * M21 + oOther.Dy * M22 + Dy;
+	//			M11 = dM11;
+	//			M12	= dM12;
+	//			M21	= dM21;
+	//			M22	= dM22;
+	//			Dx	= dDx;
+	//			Dy	= dDy;
+	//		}
+	//		else if (MWT_RIGHTMULTIPLY == ulMode)
+	//		{
+	//			// oOther справа, текущая матрица слева
+	//			double dM11 = M11 * oOther.M11 + M12 * oOther.M21;
+	//			double dM12 = M11 * oOther.M21 + M12 * oOther.M22;
+	//			double dM21 = M21 * oOther.M11 + M22 * oOther.M21;
+	//			double dM22 = M21 * oOther.M21 + M22 * oOther.M22;
 
-				M11 = dM11;
-				M12	= dM12;
-				M21	= dM21;
-				M22	= dM22;
-				Dx	= dDx;
-				Dy	= dDy;
-			}
-			else if (MWT_RIGHTMULTIPLY == ulMode)
-			{
-				// oOther справа, текущая матрица слева
-				double dM11 = M11 * oOther.M11 + M12 * oOther.M21;
-				double dM12 = M11 * oOther.M21 + M12 * oOther.M22;
-				double dM21 = M21 * oOther.M11 + M22 * oOther.M21;
-				double dM22 = M21 * oOther.M21 + M22 * oOther.M22;
+	//			double dDx = Dx * oOther.M11 + Dy * oOther.M21 + oOther.Dx;
+	//			double dDy = Dx * oOther.M21 + Dy * oOther.M22 + oOther.Dy;
 
-				double dDx = Dx * oOther.M11 + Dy * oOther.M21 + oOther.Dx;
-				double dDy = Dx * oOther.M21 + Dy * oOther.M22 + oOther.Dy;
+	//			M11 = dM11;
+	//			M12	= dM12;
+	//			M21	= dM21;
+	//			M22	= dM22;
+	//			Dx	= dDx;
+	//			Dy	= dDy;
+	//		}
+	//		else //if (MWT_SET == ulMode)
+	//		{
+	//			Copy(&oOther);
+	//		}
+	//	}
+	//	void Apply(double& dX, double& dY)
+	//	{
+	//		double _dX = dX;
+	//		double _dY = dY;
 
-				M11 = dM11;
-				M12	= dM12;
-				M21	= dM21;
-				M22	= dM22;
-				Dx	= dDx;
-				Dy	= dDy;
-			}
-			else //if (MWT_SET == ulMode)
-			{
-				Copy(&oOther);
-			}
-		}
-		void Apply(double& dX, double& dY)
-		{
-			double _dX = dX;
-			double _dY = dY;
-
-			dX = _dX * M11 + _dY * M21 + Dx;
-			dY = _dX * M12 + _dY * M22 + Dy;
-		}
-	};
+	//		dX = _dX * M11 + _dY * M21 + Dx;
+	//		dY = _dX * M12 + _dY * M22 + Dy;
+	//	}
+	//};
 
 	struct TEmfEmrText
 	{
@@ -571,7 +568,7 @@ namespace MetaFile
 		int            Weight;
 		unsigned char  Italic;
 		unsigned char  Underline;
-		unsigned char  StrikOut;
+		unsigned char  StrikeOut;
 		unsigned char  CharSet;
 		unsigned char  OutPrecision;
 		unsigned char  ClipPrecision;
@@ -714,4 +711,4 @@ namespace MetaFile
 
 	const unsigned int c_nTEmfAlphaBlendSize = 100;
 };
-#endif //_EMF_TYPES_H
+#endif //_METAFILE_EMF_EMFTYPES_H

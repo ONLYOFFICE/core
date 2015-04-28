@@ -155,5 +155,8 @@
     <ClCompile Include="Wmf\WmfObjects.cpp">
       <Filter>Wmf</Filter>
     </ClCompile>
+    <ClCompile Include="Common\MetaFileTypes.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

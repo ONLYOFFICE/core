@@ -5,11 +5,11 @@
 
 namespace MetaFile
 {
-	class CClip
+	class IClip
 	{
 	public:
-		CClip(){}
-		virtual ~CClip(){}
+		IClip(){}
+		virtual ~IClip(){}
 		virtual void ClipOnRenderer(IOutputDevice* pOutput) = 0;
 	};
 }

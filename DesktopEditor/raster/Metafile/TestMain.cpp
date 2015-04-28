@@ -47,7 +47,7 @@ void ConvertFolder(CMetaFile &oMetaFile, std::wstring wsFolderPath)
 {
 	oMetaFile.Close();
 
-	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"emf");
+	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"wmf");
 	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
 	{
 		std::wstring wsFilePath = wsFolderPath;

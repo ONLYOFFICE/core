@@ -1,14 +1,13 @@
-#ifndef _EMF_CLIP_H
-#define _EMF_CLIP_H
+#ifndef _METAFILE_EMF_EMFCLIP_H
+#define _METAFILE_EMF_EMFCLIP_H
 
 #include <vector>
 #include "EmfTypes.h"
 #include "EmfPath.h"
+#include "../Common/MetaFileClip.h"
 
 namespace MetaFile
 {
-	class CEmfOutputDevice;
-
 	typedef enum
 	{
 		EMF_CLIPCOMMAND_UNKNOWN   = 0x00,
@@ -67,7 +66,7 @@ namespace MetaFile
 		unsigned int m_unMode;
 	};
 
-	class CEmfClip
+	class CEmfClip : public IClip
 	{
 	public:
 		CEmfClip();
@@ -77,7 +76,7 @@ namespace MetaFile
 		void Reset();
 		bool Intersect(TEmfRectL& oRect);
 		bool SetPath(CEmfPath* pPath, unsigned int umMode);
-		void ClipOnRenderer(CEmfOutputDevice* pOutput);
+		void ClipOnRenderer(IOutputDevice* pOutput);
 
 	private:
 
@@ -89,4 +88,4 @@ namespace MetaFile
 	};
 }
 
-#endif // _EMF_CLIP_H
+#endif // _METAFILE_EMF_EMFCLIP_H

@@ -59,7 +59,7 @@ namespace NSFile
 
 			wchar_t* pUnicode = new wchar_t[lCount + 1];
 			for (LONG i = 0; i < lCount; ++i)
-				pUnicode[i] = (wchar_t)pData[i];
+				pUnicode[i] = (wchar_t)(BYTE)pData[i];
 
 			pUnicode[lCount] = 0;
 
@@ -475,7 +475,7 @@ namespace NSFile
 		{
 			GetUtf16StringFromUnicode_4bytes(pUnicodes, lCount, data.Data, data.Length);
 		}
-
+	
 		static std::wstring GetWStringFromUTF16(const CStringUtf16& data)
 		{
 			if (0 == data.Length)
@@ -512,6 +512,15 @@ namespace NSFile
 
 			RELEASEARRAYOBJECTS(pWChar);
 			return sRet;
+		}
+		static std::wstring GetWStringFromUTF16(const unsigned short* pUtf16, LONG lCount)
+		{
+			CStringUtf16 oString;
+			oString.Data   = (BYTE*)pUtf16;
+			oString.Length = lCount * 2;
+			std::wstring wsResult = GetWStringFromUTF16(oString);
+			oString.Data = NULL;
+			return wsResult;
 		}
 	};
 

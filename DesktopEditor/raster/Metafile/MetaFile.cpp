@@ -3,7 +3,7 @@
 #include "../../graphics/GraphicsRenderer.h"
 #include "../../raster/BgraFrame.h"
 
-#include "Emf/RendererOutput.h"
+#include "Common/MetaFileRenderer.h"
 #ifndef NEW_WMF
 #include "Wmf/RendererOutput.h"
 #endif
@@ -77,6 +77,9 @@ namespace MetaFile
 		if (c_lMetaWmf == m_lType)
 		{
 #ifdef NEW_WMF
+			CMetaFileRenderer oWmfOut(&m_oWmfFile, pRenderer, dX, dY, dWidth, dHeight);
+			m_oWmfFile.SetOutputDevice((IOutputDevice*)&oWmfOut);
+			m_oWmfFile.PlayMetaFile();
 #else
 			double dRendererDpix, dRendererDpiY;
 			pRenderer->get_DpiX(&dRendererDpix);
@@ -122,8 +125,8 @@ namespace MetaFile
 		}
 		else if (c_lMetaEmf == m_lType)
 		{
-			CEmfRendererOutput oEmfOut(&m_oEmfFile, pRenderer, dX, dY, dWidth, dHeight);
-			m_oEmfFile.SetOutputDevice(&oEmfOut);
+			CMetaFileRenderer oEmfOut(&m_oEmfFile, pRenderer, dX, dY, dWidth, dHeight);
+			m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut);
 			m_oEmfFile.PlayMetaFile();
 		}
 
@@ -145,10 +148,19 @@ namespace MetaFile
 	{
 		if (c_lMetaWmf == m_lType)
 		{
+#ifdef NEW_WMF
+			TRectD& oRect = m_oWmfFile.GetBounds();
+			*pdX = oRect.dLeft;
+			*pdY = oRect.dTop;
+			*pdW = oRect.dRight - oRect.dLeft;
+			*pdH = oRect.dBottom - oRect.dTop;
+
+#else
 			*pdX = m_oWmfRect.oTL.fX;
 			*pdY = m_oWmfRect.oTL.fY;
 			*pdW = m_oWmfRect.oBR.fX - m_oWmfRect.oTL.fX;
 			*pdH = m_oWmfRect.oBR.fY - m_oWmfRect.oTL.fY;
+#endif
 		}
 		else if (c_lMetaEmf == m_lType)
 		{

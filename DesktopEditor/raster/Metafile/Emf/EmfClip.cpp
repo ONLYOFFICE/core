@@ -1,5 +1,4 @@
 #include "EmfClip.h"
-#include "EmfOutputDevice.h"
 
 namespace MetaFile
 {
@@ -59,7 +58,7 @@ namespace MetaFile
 		m_vCommands.push_back(pCommand);
 		return true;
 	}
-	void CEmfClip::ClipOnRenderer(CEmfOutputDevice* pOutput)
+	void CEmfClip::ClipOnRenderer(IOutputDevice* pOutput)
 	{
 		if (!pOutput)
 			return;

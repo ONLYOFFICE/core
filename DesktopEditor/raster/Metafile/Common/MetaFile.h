@@ -8,53 +8,111 @@
 
 namespace MetaFile
 {
-	class CMetaFileBase
+	class IMetaFileBase
 	{
 	public:
-		CMetaFileBase(){}
-		virtual ~CMetaFileBase(){}
-
+		IMetaFileBase()
+		{
+			m_pBufferData = NULL;
+			m_bError      = false;
+			m_pOutput     = NULL;
+			m_oStream.SetStream(NULL, 0);
+		}
+		virtual ~IMetaFileBase()
+		{
+			this->Close();
+		}
+		
+		virtual void         PlayMetaFile() = 0;
+		virtual void         ClearFile() {/*Нельзя делать чисто виртуальной, потому что вызывается в деструкторе*/}
 		virtual double       TranslateX(int nX) = 0;
 		virtual double       TranslateY(int nY) = 0;
 		virtual TRect*       GetDCBounds() = 0;
 		virtual double       GetPixelHeight() = 0;
 		virtual double       GetPixelWidth() = 0;
 		virtual int          GetTextColor() = 0;
- 		virtual CFont*       GetFont() = 0;
-		virtual CBrush*      GetBrush() = 0;
-		virtual CPen*        GetPen() = 0;
+ 		virtual IFont*       GetFont() = 0;
+		virtual IBrush*      GetBrush() = 0;
+		virtual IPen*        GetPen() = 0;
 		virtual unsigned int GetTextAlign() = 0;
 		virtual unsigned int GetTextBgMode() = 0;
 		virtual int          GetTextBgColor() = 0;
 		virtual unsigned int GetFillMode() = 0;
 		virtual TPointL      GetCurPos() = 0;
-		virtual TEmfXForm*   GetInverseTransform() = 0;
-		virtual TEmfXForm*   GetTransform() = 0;
+		virtual TXForm*      GetInverseTransform() = 0;
+		virtual TXForm*      GetTransform() = 0;
 		virtual unsigned int GetMiterLimit() = 0;
 		virtual unsigned int GetRop2Mode() = 0;
-		virtual CClip*       GetClip() = 0;
+		virtual IClip*       GetClip() = 0;
 
+		bool          OpenFromFile(const wchar_t* wsFilePath)
+		{
+			this->Close();
+
+			NSFile::CFileBinary oFile;
+			oFile.OpenFile(wsFilePath);
+			int lFileSize = oFile.GetFileSize();
+
+			m_pBufferData = new BYTE[lFileSize];
+			if (!m_pBufferData)
+				return false;
+
+			DWORD lReadedSize;
+			oFile.ReadFile(m_pBufferData, lFileSize, lReadedSize);
+
+			m_oStream.SetStream(m_pBufferData, lFileSize);
+
+			return true;
+		}
+		void          Close()
+		{
+			RELEASEARRAYOBJECTS(m_pBufferData);
+			m_pOutput = NULL;
+			m_oStream.SetStream(NULL, 0);
+			m_bError = false;
+
+			this->ClearFile();
+		}
+		void          Scan()
+		{
+			IOutputDevice* pOutput = m_pOutput;
+			m_pOutput = NULL;
+			PlayMetaFile();
+			m_pOutput = pOutput;
+
+			ClearFile();
+		}
 		CFontManager* GetFontManager()
 		{
 			return m_pFontManager;
 		}
-		void SetFontManager(CFontManager* pFontManager)
+		void          SetFontManager(CFontManager* pFontManager)
 		{
 			m_pFontManager = pFontManager;
 		}
-		void SetError()
+		void          SetOutputDevice(IOutputDevice* pOutput)
+		{
+			m_pOutput = pOutput;
+		}
+		void          SetError()
 		{
 			m_bError = true;
 		}
-		bool CheckError()
+		bool          CheckError()
 		{
 			return m_bError;
 		}
 
+	protected:
+
+		CDataStream    m_oStream;
+		IOutputDevice* m_pOutput;
+
 	private:
 
-		CFontManager* m_pFontManager;
-		bool          m_bError;
+		BYTE*          m_pBufferData;		
+		CFontManager*  m_pFontManager;
+		bool           m_bError;
 	};
 }
 

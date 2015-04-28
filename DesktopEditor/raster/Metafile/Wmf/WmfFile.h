@@ -1,7 +1,7 @@
 ﻿#ifndef _WMF_FILE_H
 #define _WMF_FILE_H
 
-//#define NEW_WMF 2
+#define NEW_WMF 2
 #ifdef NEW_WMF
 
 #include "../Wmf/WmfUtils.h"
@@ -13,65 +13,45 @@
 #include "../Common.h"
 #include "../Common/IOutputDevice.h"
 #include <iostream>
+#include "../Common/MetaFile.h"
 
 namespace MetaFile
 {
-	class CWmfFile
+	class CWmfFile : public IMetaFileBase
 	{
 	public:
 		CWmfFile() : m_oPlayer(this)
 		{
-			m_pBufferData = NULL;
-			m_bError      = false;
-			m_pOutput     = NULL;
-
-			m_oStream.SetStream(NULL, 0);
-
-			m_pDC = m_oPlayer.GetDC();
 		}
 		~CWmfFile()
 		{
-			Close();
+			ClearFile();
 		}
 
-		bool OpenFromFile(const wchar_t* wsFilePath)
+		TRectD       GetBounds()
 		{
-			Close();
+			TRect oBB;
+			if (IsPlaceable())
+				oBB = m_oPlaceable.BoundingBox;
+			else
+				oBB = m_oBoundingBox;
 
-			NSFile::CFileBinary oFile;
-			oFile.OpenFile(wsFilePath);
-			int lFileSize = oFile.GetFileSize();
+			TRectD oBounds = oBB;
+			if (IsPlaceable())
+			{				
+				double dLogicalToMM = 25.4 / 72;
+				if (m_oPlaceable.Inch > 0)
+					dLogicalToMM /= m_oPlaceable.Inch;
 
-			m_pBufferData = new BYTE[lFileSize];
-			if (!m_pBufferData)
-				return false;
-
-			DWORD lReadedSize;
-			oFile.ReadFile(m_pBufferData, lFileSize, lReadedSize);
-
-			m_oStream.SetStream(m_pBufferData, lFileSize);
-
-			return true;
+				oBounds *= dLogicalToMM;
+			}
+			else
+			{
+				// TODO:
+			}
+			return oBounds;
 		}
-		void Close()
-		{
-			RELEASEOBJECT(m_pBufferData);
-
-			m_pOutput = NULL;
-			m_oStream.SetStream(NULL, 0);
-			m_bError = false;
-			m_oPlayer.Clear();
-			m_pDC = m_oPlayer.GetDC();
-		}
-		void SetError()
-		{
-			m_bError = true;
-		}
-		bool CheckError()
-		{
-			return m_bError;
-		}
-		void PlayMetaFile()
+		void         PlayMetaFile()
 		{
 			if (!m_oStream.IsValid())
 				SetError();
@@ -212,26 +192,144 @@ namespace MetaFile
 			if (m_pOutput)
 				m_pOutput->End();
 		}
-		void SetOutputDevice(IOutputDevice* pOutput)
+		void         ClearFile()
 		{
-			m_pOutput = pOutput;
-		}
-		void Scan()
-		{
-			IOutputDevice* pOutput = m_pOutput;
-			m_pOutput = NULL;
-			PlayMetaFile();
-			m_pOutput = pOutput;
-
 			m_oPlayer.Clear();
 			m_pDC = m_oPlayer.GetDC();
 		}
-		void SetFontManager(CFontManager* pManager)
+		double       TranslateX(int nSrcX)
 		{
-			m_pFontManager = pManager;
+			double dDstX;
+
+			TWmfWindow* pWindow   = m_pDC->GetWindow();
+			TWmfWindow* pViewport = m_pDC->GetViewport();
+
+			dDstX =  (double)((double)(nSrcX - pWindow->x) * m_pDC->GetPixelWidth()) + pViewport->x;
+			return dDstX;
 		}
+		double       TranslateY(int nSrcY)
+		{
+			double dDstY;
+
+			TWmfWindow* pWindow   = m_pDC->GetWindow();
+			TWmfWindow* pViewport = m_pDC->GetViewport();
+
+			dDstY = (double)((double)(nSrcY - pWindow->y) * m_pDC->GetPixelHeight()) + pViewport->y;
+
+			return dDstY;
+		}
+		TRect*       GetDCBounds()
+		{
+			TWmfWindow* pViewport = m_pDC->GetViewport();
+
+			m_oDCRect.nLeft   = pViewport->x;
+			m_oDCRect.nTop    = pViewport->y;
+			m_oDCRect.nRight  = pViewport->w + pViewport->x;
+			m_oDCRect.nBottom = pViewport->h + pViewport->y;
+			return &m_oDCRect;
+
+			unsigned short ushMapMode = m_pDC->GetMapMode();
+			if (MM_ANISOTROPIC == ushMapMode || MM_ISOTROPIC == ushMapMode)
+			{
+				TWmfWindow* pViewport = m_pDC->GetViewport();
+
+				m_oDCRect.nLeft   = pViewport->x;
+				m_oDCRect.nTop    = pViewport->y;
+				m_oDCRect.nRight  = pViewport->w + pViewport->x;
+				m_oDCRect.nBottom = pViewport->h + pViewport->y;
+				return &m_oDCRect;
+			}
+			else
+			{
+				return &m_oRect;
+			}
+		}
+		double       GetPixelHeight()
+		{
+			return m_pDC->GetPixelHeight();
+		}
+		double       GetPixelWidth()
+		{
+			return m_pDC->GetPixelWidth();
+		}
+		int          GetTextColor()
+		{
+			TWmfColor& oColor = m_pDC->GetTextColor();
+			return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+		}
+		IFont*       GetFont()
+		{
+			CWmfFont* pFont = m_pDC->GetFont();
+			if (!pFont)
+				return NULL;
+
+			return (IFont*)pFont;
+		}
+		IBrush*      GetBrush()
+		{
+			CWmfBrush* pBrush = m_pDC->GetBrush();
+			if (!pBrush)
+				return NULL;
+
+			return (IBrush*)pBrush;
+		}
+		IPen*        GetPen()
+		{
+			CWmfPen* pPen = m_pDC->GetPen();
+			if (!pPen)
+				return NULL;
+
+			return (IPen*)pPen;
+		}
+		unsigned int GetTextAlign()
+		{
+			return (unsigned int)m_pDC->GetTextAlign();
+		}
+		unsigned int GetTextBgMode()
+		{
+			return (unsigned int)m_pDC->GetTextBgMode();
+		}
+		int          GetTextBgColor()
+		{
+			TWmfColor& oColor = m_pDC->GetTextBgColor();
+			return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+		}
+		unsigned int GetFillMode()
+		{
+			return (unsigned int)m_pDC->GetPolyFillMode();
+		}
+		TPointL      GetCurPos()
+		{
+			TPointL oPoint = m_pDC->GetCurPos();
+			return oPoint;
+		}
+		TXForm*      GetInverseTransform()
+		{
+			return m_pDC->GetInverseTransform();
+		}
+		TXForm*      GetTransform()
+		{
+			return m_pDC->GetTransform();
+		}
+		unsigned int GetMiterLimit()
+		{
+			return m_pDC->GetMiterLimit();
+		}
+		unsigned int GetRop2Mode()
+		{
+			return (unsigned int)m_pDC->GetRop2Mode();
+		}
+		IClip*       GetClip()
+		{
+			return NULL;
+		}
+
 	private:
 
+		bool IsPlaceable()
+		{
+			return (0x9AC6CDD7 == m_oPlaceable.Key);
+		}
 		int GetRecordRemainingBytesCount()
 		{
 			unsigned int unReadedSize = m_oStream.Tell() - m_unRecordPos;
@@ -239,26 +337,58 @@ namespace MetaFile
 		}
 		void MoveTo(short shX, short shY)
 		{
-			// TODO: Реализовать
+			if (m_pOutput)
+			{
+				m_pOutput->MoveTo(shX, shY);
+			}
+			else
+			{
+				RegisterPoint(shX, shY);
+			}
 			m_pDC->SetCurPos(shX, shY);
 		}
 		void LineTo(short shX, short shY)
 		{
-			// TODO: Реализовать
+			if (m_pOutput)
+			{
+				m_pOutput->LineTo(shX, shY);
+			}
+			else
+			{
+				RegisterPoint(shX, shY);
+			}
 			m_pDC->SetCurPos(shX, shY);
 		}
 		void ArcTo(short shL, short shT, short shR, short shB, double dStart, double dSweep)
 		{
-			// TODO: Реализовать
-			// TODO: Сделать пересчет текущей позиции
+			// Тут не делаем пересчет текущей точки, т.к. при вызове данной функции не всегда он нужен (например эллипс).
+			// Текущая точка обновляется на том уровне, на котором вызывалась данная функция.
+			if (m_pOutput)
+			{
+				m_pOutput->ArcTo(shL, shT, shR, shB, dStart, dSweep);
+			}
+			else
+			{
+				// TODO: Возможно нужно регистрировать более точно
+				RegisterPoint(shL, shT);
+				RegisterPoint(shR, shB);
+			}
 		}
 		void ClosePath()
 		{
-			// TODO: Реализовать
+			if (m_pOutput)
+			{
+				m_pOutput->ClosePath();
+			}
 		}
 		void DrawPath(bool bStroke, bool bFill)
 		{
-			// TODO: Реализовать
+			if (m_pOutput)
+			{
+				int lType = (bStroke ? 1 : 0) + (bFill ? 2 : 0);
+				m_pOutput->DrawPath(lType);
+				m_pOutput->EndPath();
+			}
 		}
 		void DrawText(const unsigned char* pString, unsigned int unCharsCount, short _shX, short _shY, int nTextW, bool bWithOutLast)
 		{
@@ -271,11 +401,40 @@ namespace MetaFile
 				nY = m_pDC->GetCurPos().y;
 			}
 
-			// TODO: Реализовать
-			//if (m_pOutput)
-			//{
-			//	m_pOutput->DrawText(wsString.c_str(), unCharsCount, nX, nY, nTextW, bWithOutLast);
-			//}
+			if (m_pOutput)
+			{
+				// TODO: В зависимости от CharSet нужно переводить строку в юникод. Пока переводим как Ascii -> Unicode
+				std::wstring wsText = NSFile::CUtf8Converter::GetUnicodeFromCharPtr((const char*)pString, unCharsCount, 0);
+				m_pOutput->DrawText(wsText, unCharsCount, nX, nY, nTextW, bWithOutLast);
+			}
+			else
+			{
+				// TODO: Возможно нужно регистрировать более точно, с учетом размеров текста
+				RegisterPoint(nX, nY);
+			}
+		}
+		void RegisterPoint(short shX, short shY)
+		{
+			if (m_bFirstPoint)
+			{
+				m_oBoundingBox.nLeft   = shX;
+				m_oBoundingBox.nRight  = shX;
+				m_oBoundingBox.nTop    = shY;
+				m_oBoundingBox.nBottom = shY;
+				m_bFirstPoint = false;
+			}
+			else
+			{
+				if (shX < m_oBoundingBox.nLeft)
+					m_oBoundingBox.nLeft = shX;
+				else if (shX > m_oBoundingBox.nRight)
+					m_oBoundingBox.nRight = shX;
+
+				if (shY < m_oBoundingBox.nTop)
+					m_oBoundingBox.nTop = shY;
+				else if (shY > m_oBoundingBox.nBottom)
+					m_oBoundingBox.nBottom = shY;
+			}
 		}
 
 		void Read_META_UNKNOWN()
@@ -325,6 +484,28 @@ namespace MetaFile
 			m_oStream >> m_oHeader.MaxRecord;
 			m_oStream >> m_oHeader.NumberOfMembers;
 
+			if (0x0001 != m_oHeader.Type && 0x0002 != m_oHeader.Type)
+				return SetError();
+
+			if (0x0009 != m_oHeader.HeaderSize)
+				return SetError();
+
+			if (0x0100 != m_oHeader.Version && 0x0300 != m_oHeader.Version)
+				return SetError();
+
+			// Если у нас не задан Output, значит мы считаем, что идет сканирование метафайла. 
+			// Во время сканирования мы регистрируем все точки и вычисляем BoundingBox
+			if (m_pOutput)
+			{
+				if (IsPlaceable())
+					m_oRect = m_oPlaceable.BoundingBox;
+				else
+					m_oRect = m_oBoundingBox;
+			}
+			else
+			{
+				m_bFirstPoint = true;
+			}
 		}
 		void Read_META_ARC()
 		{
@@ -334,6 +515,7 @@ namespace MetaFile
 			double dSweepAngle = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXEndArc, (int)shYEndArc) - dStartAngle;
 			ArcTo(shLeft, shTop, shRight, shBottom, dStartAngle, dSweepAngle);
 			DrawPath(true, false);
+			m_pDC->SetCurPos(shXEndArc, shYEndArc);
 		}
 		void Read_META_CHORD()
 		{
@@ -345,6 +527,7 @@ namespace MetaFile
 			ArcTo(shLeft, shTop, shRight, shBottom, dStartAngle, dSweepAngle);
 			LineTo(shXStartArc, shYStartArc);
 			DrawPath(true, true);
+			m_pDC->SetCurPos(shXEndArc, shYEndArc);
 		}
 		void Read_META_ELLIPSE()
 		{
@@ -389,7 +572,7 @@ namespace MetaFile
 				m_oStream.ReadBytes(pDx, shStringLength);
 			}
 
-			DrawText(pString, shStringLength, shX, shY, -1, false);
+			DrawText(pString, shStringLength, shX, shY, 0, false);
 
 			if (pString)
 				delete[] pString;
@@ -600,7 +783,7 @@ namespace MetaFile
 
 			short shX, shY;
 			m_oStream >> shY >> shX;
-			DrawText(pString, shStringLength, shX, shY, -1, false);
+			DrawText(pString, shStringLength, shX, shY, 0, false);
 			delete[] pString;
 		}
 		void Read_META_CREATEBRUSHINDIRECT()
@@ -850,24 +1033,21 @@ namespace MetaFile
 			// TODO: Реализовать
 		}
 
-
 	private:
-
-		CDataStream    m_oStream;
-		BYTE*          m_pBufferData;
-		bool           m_bError;
-		CFontManager*  m_pFontManager;
 
 		unsigned int   m_unRecordSize;
 		unsigned int   m_unRecordPos;
 
 		TWmfPlaceable  m_oPlaceable;
 		TWmfHeader     m_oHeader;
-
-		IOutputDevice* m_pOutput;
+		TRect          m_oRect;
+		TRect          m_oDCRect;
 
 		CWmfPlayer     m_oPlayer;
 		CWmfDC*        m_pDC;
+
+		TRect          m_oBoundingBox;
+		bool           m_bFirstPoint;
 	};
 }
 

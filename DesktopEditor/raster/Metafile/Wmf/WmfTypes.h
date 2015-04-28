@@ -780,6 +780,10 @@ enum EWmfBitCount
 #define BI_JPEG       4L
 #define BI_PNG        5L
 
+#define LAYOUT_LTR                        0x0000
+#define LAYOUT_RTL                        0x0001
+#define LAYOUT_BITMAPORIENTATIONPRESERVED 0x0008
+
 /* Metafile Functions */
 #define META_SETBKCOLOR              0x0201
 #define META_SETBKMODE               0x0102
@@ -890,12 +894,12 @@ namespace MetaFile
 			a = 0;
 		}
 
-		void Copy(TWmfColor* pOther)
+		void Copy(TWmfColor& oOther)
 		{
-			r = pOther->r;
-			g = pOther->g;
-			b = pOther->b;
-			a = pOther->a;
+			r = oOther.r;
+			g = oOther.g;
+			b = oOther.b;
+			a = oOther.a;
 		}
 
 		TWmfColor& operator=(TWmfColor& oColor)
@@ -918,6 +922,12 @@ namespace MetaFile
 	{
 		short x;
 		short y;
+
+		void Set(short _x, short _y)
+		{
+			x = _x;
+			y = _y;
+		}
 	};
 	struct TWmfRect
 	{
@@ -969,8 +979,8 @@ namespace MetaFile
 		{
 			x = 0;
 			y = 0;
-			w = 1024;
-			h = 1024;
+			w = 1;
+			h = 1;
 		}
 
 		void Copy(TWmfWindow& oOther)

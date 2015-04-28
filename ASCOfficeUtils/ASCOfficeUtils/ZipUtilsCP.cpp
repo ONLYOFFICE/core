@@ -396,9 +396,11 @@ namespace ZLibZipUtils
 
 	  std::wstring filenameW = codepage_issue_fixFromOEM(filename_inzip);
 
-	  if (wcscmp(filename, filenameW.c_str()))
+      //todooo есть ли необходимость свести все к нижнему ???
+      if (wcscmp(filename, filenameW.c_str()) == 0)
 		  return true;
-	  return false;
+
+      return false;
   }
 
   /*========================================================================================================*/

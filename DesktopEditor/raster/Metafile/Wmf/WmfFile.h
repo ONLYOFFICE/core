@@ -28,7 +28,7 @@ namespace MetaFile
 			ClearFile();
 		}
 
-		TRectD       GetBounds()
+        TRectD       GetBounds()
 		{
 			TRect oBB;
 			if (IsPlaceable())

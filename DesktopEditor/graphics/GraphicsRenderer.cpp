@@ -958,10 +958,14 @@ HRESULT CGraphicsRenderer::DrawImage(IGrObject* pImage, const double& x, const d
 HRESULT CGraphicsRenderer::DrawImageFromFile(const std::wstring& bstrVal, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha)
 {
 	CCacheImage* pCacheImage = NULL;
-	if (NULL != m_pCache)
+    if (NULL != m_pCache)
 	{
 		pCacheImage = m_pCache->Lock(bstrVal);
 	}
+    else
+    {
+        pCacheImage = new CCacheImage(bstrVal);
+    }
 
 	if (NULL != pCacheImage)
 	{

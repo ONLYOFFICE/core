@@ -587,7 +587,21 @@ INT CFontManager::LoadFontByName(const std::wstring& sName, const double& dSize,
 	if (NULL == pInfo)
 		return FALSE;
 
-	return LoadFontFromFile(pInfo->m_wsFontPath, pInfo->m_lIndex, dSize, dDpiX, dDpiY);
+    INT bLoad = LoadFontFromFile(pInfo->m_wsFontPath, pInfo->m_lIndex, dSize, dDpiX, dDpiY);
+
+    if (bLoad == TRUE)
+    {
+        bool bIsNeedBold = false;
+        if (NULL != oFormat.bBold && (*oFormat.bBold) == TRUE && pInfo->m_bBold == FALSE)
+            bIsNeedBold = true;
+        bool bIsNeedItalic = false;
+        if (NULL != oFormat.bItalic && (*oFormat.bItalic) == TRUE && pInfo->m_bItalic == FALSE)
+            bIsNeedItalic = true;
+
+        m_pFont->SetNeedBold(bIsNeedBold);
+        m_pFont->SetItalic(bIsNeedItalic);
+    }
+    return bLoad;
 }
 
 INT CFontManager::LoadFontFromFile(const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY)

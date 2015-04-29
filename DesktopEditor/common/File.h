@@ -19,6 +19,7 @@
 
 //#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 //перенесено выше
+
 namespace NSFile
 {
 	#define WriteUtf16_WCHAR(code, p)				\
@@ -47,11 +48,12 @@ namespace NSFile
 		{
 			RELEASEARRAYOBJECTS(Data);
 		}
-	};        
+	};   
 
 	class CUtf8Converter
 	{
 	public:
+
 		static std::wstring GetUnicodeFromCharPtr(const char* pData, LONG lCount, INT bIsUtf8 = FALSE)
 		{
 			if (bIsUtf8)

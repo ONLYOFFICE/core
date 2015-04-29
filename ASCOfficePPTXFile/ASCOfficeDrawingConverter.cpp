@@ -1692,9 +1692,10 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 			}
 			else	
 			{
+				//oProps.X выставлять не надо, они учтены в pMainProps
 				pShape->spPr.xfrm = new PPTX::Logic::Xfrm();
-				pShape->spPr.xfrm->offX = oProps.X;
-				pShape->spPr.xfrm->offY = oProps.Y;
+				pShape->spPr.xfrm->offX = 0;
+				pShape->spPr.xfrm->offY = 0;
 				pShape->spPr.xfrm->extX = oProps.Width;
 				pShape->spPr.xfrm->extY = oProps.Height;
 			}

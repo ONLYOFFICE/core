@@ -2,7 +2,6 @@
 #ifndef DOCX_2_TXT_CONVERTER_INCLUDE_H_
 #define DOCX_2_TXT_CONVERTER_INCLUDE_H_
 
-#include <boost/filesystem.hpp>
 #include <vector>
 #include <string>
 
@@ -22,13 +21,13 @@ namespace Docx2Txt
 
 		void convert(TxtXml::ITxtXmlEvent& Event);
     	
-		void read	(const boost::filesystem::wpath& path);
-	    void write	(const boost::filesystem::wpath& path);
+        void read	(const std::wstring& path);
+        void write	(const std::wstring& path);
 
-		void writeUtf8		(const boost::filesystem::wpath& path) const;
-		void writeUnicode	(const boost::filesystem::wpath& path) const;
-		void writeBigEndian	(const boost::filesystem::wpath& path) const;
-		void writeAnsi		(const boost::filesystem::wpath& path) const;
+        void writeUtf8		(const std::wstring& path) const;
+        void writeUnicode	(const std::wstring& path) const;
+        void writeBigEndian	(const std::wstring& path) const;
+        void writeAnsi		(const std::wstring& path) const;
 
     private:
         Converter_Impl * converter_;

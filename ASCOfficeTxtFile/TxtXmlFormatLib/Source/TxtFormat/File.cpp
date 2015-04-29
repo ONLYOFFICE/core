@@ -2,6 +2,9 @@
 #include "../Common/Utility.h"
 #include "TxtFile.h"
 
+#include "../../../DesktopEditor/common/File.h"
+
+
 namespace Txt
 {
 
@@ -12,14 +15,14 @@ namespace Txt
 	{
 			m_listContent.clear();
 	}
-	void File::read(const boost::filesystem::wpath& filename, int code_page) // насильственное чтение в кодировке
+    void File::read(const std::wstring& filename, int code_page) // насильственное чтение в кодировке
 	{
 		m_listContent.clear();
 
 		if (filename.empty())
 			return;
 
-		TxtFile file(std_string2string(filename.string()));
+        TxtFile file(std_string2string(filename));
 
 		std::list<std::string> codePageContent	= file.readAnsiOrCodePage();	
 		m_listContentSize						= file.getLinesCount();
@@ -30,14 +33,14 @@ namespace Txt
 		}
 		codePageContent.clear();
 	}
-	void File::read(const boost::filesystem::wpath& filename)
+    void File::read(const std::wstring& filename)
 	{
 		m_listContent.clear();
 
 		if (filename.empty())
 			return;
 
-		TxtFile file(std_string2string(filename.string()));
+        TxtFile file(std_string2string(filename));
 		
 		//читаем юникод чтобы можно было выкинуть невалидные символы
 
@@ -69,15 +72,15 @@ namespace Txt
 	}
 
 
-	void File::write(const boost::filesystem::wpath& filename) const
+    void File::write(const std::wstring& filename) const
 	{
-		TxtFile file(std_string2string(filename.string()));
+        TxtFile file(std_string2string(filename));
 		file.writeUtf8(_transform(m_listContent, Encoding::unicode2utf8));
 	}
 
-	void File::writeCodePage(const boost::filesystem::wpath& filename, int code_page) const
+    void File::writeCodePage(const std::wstring& filename, int code_page) const
 	{
-		TxtFile file(std_string2string(filename.string()));
+        TxtFile file(std_string2string(filename));
 		
 		std::list<std::string> result;
 		for (std::list<std::wstring>::const_iterator iter = m_listContent.begin(); iter != m_listContent.end(); ++iter)
@@ -88,39 +91,40 @@ namespace Txt
 		file.writeAnsiOrCodePage(result);
 	} 
 
-	void File::writeUtf8(const boost::filesystem::wpath& filename) const
+    void File::writeUtf8(const std::wstring& filename) const
 	{
-		TxtFile file(std_string2string(filename.string()));
+        TxtFile file(std_string2string(filename));
 		file.writeUtf8(_transform(m_listContent, Encoding::unicode2utf8));
 	}
 
 
-	void File::writeUnicode(const boost::filesystem::wpath& filename) const
+    void File::writeUnicode(const std::wstring& filename) const
 	{
-		TxtFile file(std_string2string(filename.string()));
+        TxtFile file(std_string2string(filename));
 		file.writeUnicode(m_listContent);
 	}
 
 
-	void File::writeBigEndian(const boost::filesystem::wpath& filename) const
+    void File::writeBigEndian(const std::wstring& filename) const
 	{
-		TxtFile file(std_string2string(filename.string()));
+        OOX::CPath path (filename);
+        TxtFile file(path);
 		file.writeBigEndian(m_listContent);
 	}
 
 
-	void File::writeAnsi(const boost::filesystem::wpath& filename) const
+    void File::writeAnsi(const std::wstring& filename) const
 	{
-		TxtFile file(std_string2string(filename.string()));
+        TxtFile file(std_string2string(filename));
 		file.writeAnsiOrCodePage(_transform(m_listContent, Encoding::unicode2ansi));
 	}
 		
 
-	const bool File::isValid(const boost::filesystem::wpath& filename) const
+    const bool File::isValid(const std::wstring& filename) const
 	{
 		if (filename.empty())
 			return true;
-		return boost::filesystem::exists(filename);
+        return NSFile::CFileBinary::Exists(filename);
 	}
 	void File::correctUnicode(std::list<std::wstring>& input)
 	{

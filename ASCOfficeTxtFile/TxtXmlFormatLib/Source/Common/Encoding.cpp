@@ -4,11 +4,13 @@
 #include "Encoding.h"
 #include "Utility.h"
 
-#ifdef _WIN32
-	#include <windows.h>	
+#if defined (_WIN32) || defined (_WIN64)
+    #include <windows.h>
+#else
+    #include <iconv.h>
 #endif
 
-#include "../../../../Base/unicode_util.h"
+#include "../../../Common/DocxFormat/Source/Base/unicode_util.h"
 
 
 const std::wstring Encoding::ansi2unicode(const std::string& line)
@@ -16,25 +18,53 @@ const std::wstring Encoding::ansi2unicode(const std::string& line)
 	return std::wstring(line.begin(), line.end());//cp2unicode(line, CP_ACP);
 }
 
-const std::wstring Encoding::cp2unicode(const std::string& sline, const unsigned int codePage)
+const std::wstring Encoding::cp2unicode(const std::string& sline, const unsigned int nCodepage)
 {
-#ifdef _WIN32
+#if defined (_WIN32) || defined (_WIN64)
 	const int nSize = MultiByteToWideChar(codePage, 0, sline.c_str(), sline.size(), NULL, 0);
 
 	wchar_t *sTemp = new wchar_t[nSize];
 	if (!sTemp)
 		return std::wstring();
 
-	int size = MultiByteToWideChar(codePage, 0, sline.c_str(), sline.size(), sTemp, nSize);
+    int size = MultiByteToWideChar(nCodepage, 0, sline.c_str(), sline.size(), sTemp, nSize);
 
 	std::wstring sResult(sTemp, size);
 	delete []sTemp;
 
 	return sResult;
-#elif __linux__
-	return std::wstring();
 #else
-	return std::wstring();
+    bool ansi = true;
+
+    size_t insize = sline.length();
+    std::wstring w_out;
+
+    w_out.reserve(insize);
+
+    char *inptr = (char*)sline.c_str();
+    char* outptr = (char*)w_out.c_str();
+
+    if (nCodepage > 0)
+    {
+        std::string sCodepage =  "CP" + std::to_string(nCodepage);
+
+        iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());
+        if (ic != (iconv_t) -1)
+        {
+            size_t nconv = 0, avail = (insize) * sizeof(wchar_t);
+
+            nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
+            if (nconv == 0)
+            {
+                ansi = false;
+            }
+            iconv_close(ic);
+        }
+    }
+    if (ansi)
+        w_out = std::wstring(sline.begin(), sline.end());
+
+    return w_out;
 #endif
 }
 
@@ -43,7 +73,7 @@ const std::wstring Encoding::utf82unicode(const std::string& line)
 {
 	if (sizeof(wchar_t) == 2)//utf8 -> utf16
 	{
-		unsigned __int32 nLength = line.length();
+        unsigned int nLength = line.length();
 
 		UTF16 *pStrUtf16 = new UTF16 [nLength+1];
 		memset ((void *) pStrUtf16, 0, sizeof (UTF16) * (nLength+1));
@@ -70,7 +100,7 @@ const std::wstring Encoding::utf82unicode(const std::string& line)
 	}
 	else //utf8 -> utf32
 	{
-		unsigned __int32 nLength = line.length();
+        unsigned int nLength = line.length();
 
 		UTF32 *pStrUtf32 = new UTF32 [nLength+1];
 		memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength+1));
@@ -100,7 +130,7 @@ const std::wstring Encoding::utf82unicode(const std::string& line)
 
 const std::string Encoding::unicode2ansi(const std::wstring& line)
 {
-	return unicode2cp(line, CP_ACP);
+    return std::string(line.begin(), line.end());
 }
 
 const std::string Encoding::unicode2utf8(const std::wstring& line)
@@ -109,8 +139,8 @@ const std::string Encoding::unicode2utf8(const std::wstring& line)
 	{
 		UTF16 *pStrUtf16	= (UTF16 *) &line[0];
 
-		unsigned __int32 nLength	= line.length();
-		unsigned __int32 nDstLength = 4*nLength + 1;
+        unsigned int nLength	= line.length();
+        unsigned int nDstLength = 4*nLength + 1;
 	    
 		UTF8 *pStrUtf8		= new UTF8 [nDstLength];
 		memset ((void *) pStrUtf8, 0, sizeof (UTF8) * (nDstLength));
@@ -138,8 +168,8 @@ const std::string Encoding::unicode2utf8(const std::wstring& line)
 	{
 		UTF32 *pStrUtf32	= (UTF32 *) &line[0];
 
-		unsigned __int32 nLength	= line.length();
-		unsigned __int32 nDstLength = 4*nLength + 1;
+        unsigned int nLength	= line.length();
+        unsigned int nDstLength = 4*nLength + 1;
 	    
 		UTF8 *pStrUtf8		= new UTF8 [nDstLength];
 		memset ((void *) pStrUtf8, 0, sizeof (UTF8) * (nDstLength));
@@ -165,23 +195,49 @@ const std::string Encoding::unicode2utf8(const std::wstring& line)
 	}
 }
 
-const std::string Encoding::unicode2cp(const std::wstring& sLine, const unsigned int codePage)
+const std::string Encoding::unicode2cp(const std::wstring& sLine, const unsigned int nCodepage)
 {
-#ifdef _WIN32
+#if defined (_WIN32) || defined (_WIN64)
 	const int nSize = WideCharToMultiByte(codePage, 0, sLine.c_str(), sLine.length(), NULL, 0, NULL, NULL);
 	char *sTemp = new char[nSize];
 	if (!sTemp)
 		return std::string();
 
-	int size = WideCharToMultiByte(codePage, 0, sLine.c_str(), sLine.length(), sTemp, nSize, NULL, NULL);
+    int size = WideCharToMultiByte(nCodepage, 0, sLine.c_str(), sLine.length(), sTemp, nSize, NULL, NULL);
 
 	std::string sResult(sTemp, size);
 	delete []sTemp;
 
 	return sResult;
-#elif __linux__
-	return std::string();
 #else
-	return std::string();
+    std::string out;
+    bool ansi = true;
+
+    size_t insize = sLine.length();
+    out.reserve(insize);
+
+    char *inptr = (char*)sLine.c_str();
+    char* outptr = (char*)out.c_str();
+
+    if (nCodepage > 0)
+    {
+        std::string sCodepage =  "CP" + std::to_string(nCodepage);
+
+        iconv_t ic= iconv_open(sCodepage.c_str(), "WCHAR_T");
+        if (ic != (iconv_t) -1)
+        {
+            size_t nconv = 0, avail = insize * sizeof(wchar_t);
+
+            nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
+            if (nconv == 0) ansi = false;
+            iconv_close(ic);
+        }
+    }
+
+    if (ansi)
+        out = std::string(sLine.begin(), sLine.end());
+
+    return out;
+
 #endif
 }

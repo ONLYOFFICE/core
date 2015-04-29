@@ -32,10 +32,10 @@ namespace Docx2Txt
 
 		void convert(TxtXml::ITxtXmlEvent& Event);
 
-        void writeUtf8		(const boost::filesystem::wpath& path) const;
-        void writeUnicode	(const boost::filesystem::wpath& path) const;
-        void writeBigEndian	(const boost::filesystem::wpath& path) const;
-        void writeAnsi		(const boost::filesystem::wpath& path) const;
+        void writeUtf8		(const std::wstring& path) const;
+        void writeUnicode	(const std::wstring& path) const;
+        void writeBigEndian	(const std::wstring& path) const;
+        void writeAnsi		(const std::wstring& path) const;
 
 		Txt::File		m_outputFile;
 		OOX::CDocx		m_inputFile;
@@ -77,33 +77,33 @@ namespace Docx2Txt
         return converter_->convert(Event);
     }
 
-    void Converter::read(const boost::filesystem::wpath& path)
+    void Converter::read(const std::wstring& path)
     {
-		BOOL res =  converter_->m_inputFile.Read(std_string2string(path.string()));
+        BOOL res =  converter_->m_inputFile.Read(std_string2string(path));
 		return;
     }
 
-    void Converter::write(const boost::filesystem::wpath& path)
+    void Converter::write(const std::wstring& path)
     {
         return converter_->m_outputFile.write(path);
     }
 
-    void Converter::writeUtf8(const boost::filesystem::wpath& path) const
+    void Converter::writeUtf8(const std::wstring& path) const
     {
         return converter_->writeUtf8(path);
     }
 
-    void Converter::writeUnicode(const boost::filesystem::wpath& path) const
+    void Converter::writeUnicode(const std::wstring& path) const
     {
         return converter_->writeUnicode(path);
     }
 
-    void Converter::writeBigEndian(const boost::filesystem::wpath& path) const
+    void Converter::writeBigEndian(const std::wstring path) const
     {
         return converter_->writeBigEndian(path);
     }
 
-    void Converter::writeAnsi(const boost::filesystem::wpath& path) const
+    void Converter::writeAnsi(const std::wstring path) const
     {
         return converter_->writeAnsi(path);
     }
@@ -183,25 +183,25 @@ namespace Docx2Txt
 	}
 
 
-	void Converter_Impl::writeUtf8(const boost::filesystem::wpath& path) const
+    void Converter_Impl::writeUtf8(const std::wstring& path) const
 	{
 		m_outputFile.writeUtf8(path);
 	}
 
 
-	void Converter_Impl::writeUnicode(const boost::filesystem::wpath& path) const
+    void Converter_Impl::writeUnicode(const std::wstring& path) const
 	{
 		m_outputFile.writeUnicode(path);
 	}
 
 
-	void Converter_Impl::writeBigEndian(const boost::filesystem::wpath& path) const
+    void Converter_Impl::writeBigEndian(const std::wstring& path) const
 	{
 		m_outputFile.writeBigEndian(path);
 	}
 
 
-	void Converter_Impl::writeAnsi(const boost::filesystem::wpath& path) const
+    void Converter_Impl::writeAnsi(const std::wstring& path) const
 	{
 		m_outputFile.writeAnsi(path);
 	}

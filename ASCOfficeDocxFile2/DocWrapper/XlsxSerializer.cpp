@@ -55,7 +55,7 @@ namespace BinXlsxRW{
 
 		sMediaPath = pathMediaDir.GetPath();
 	}
-    bool CXlsxSerializer::loadFromFile(const CString& sSrcFileName, const CString& sDstPath, CString& sXMLOptions, CString& sMediaDir)
+    bool CXlsxSerializer::loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, CString& sMediaDir)
 	{
 		NSBinPptxRW::CDrawingConverter oOfficeDrawingConverter;
 		oOfficeDrawingConverter.SetMediaDstPath(sMediaDir);

@@ -3023,7 +3023,7 @@ namespace BinXlsxRW {
 	public: BinaryFileReader()
 			{
 			}
-			int ReadFile(CString sSrcFileName, CString sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, CString& sXMLOptions)
+            int ReadFile(const CString& sSrcFileName, CString sDstPath, NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const CString& sXMLOptions)
 			{
 				bool bResultOk = false;
 				NSFile::CFileBinary oFile;

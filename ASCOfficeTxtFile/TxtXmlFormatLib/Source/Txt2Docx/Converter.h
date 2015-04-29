@@ -2,7 +2,6 @@
 #ifndef TXT_2_DOCX_CONVERTER_INCLUDE_H_
 #define TXT_2_DOCX_CONVERTER_INCLUDE_H_
 
-#include <boost/filesystem.hpp>
 #include "../../../../Common/DocxFormat/Source/XML/Utils.h"
 
 namespace TxtXml
@@ -21,8 +20,8 @@ namespace Txt2Docx
         ~Converter	();
 		
 		void convert(TxtXml::ITxtXmlEvent& Event);
-    	void read	(const boost::filesystem::wpath& path);
-	    void write	(XmlUtils::CStringWriter & stringWriter/*const boost::filesystem::wpath& path*/);
+        void read	(const std::wstring& path);
+        void write	(XmlUtils::CStringWriter & stringWriter/*const std::wstring& path*/);
 
     private:
         Converter_Impl * converter_;

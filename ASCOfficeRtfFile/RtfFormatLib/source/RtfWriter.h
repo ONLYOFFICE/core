@@ -6,7 +6,6 @@
 
 class RtfDocument;
 
-//[ event_source(native)]
 class RtfWriter
 {
 public:

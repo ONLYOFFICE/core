@@ -15,8 +15,7 @@ DEFINES += _LINUX LINUX UNICODE _UNICODE _USE_LIBXML2_READER_ _LINUX_QT _USE_XML
 
 LIBS += -lxml2
 
-INCLUDEPATH += \
-    /usr/include/libxml2
+INCLUDEPATH += /usr/include/libxml2
 
 SOURCES += docxformatlib.cpp \
     ../Source/Common/Align.cpp \

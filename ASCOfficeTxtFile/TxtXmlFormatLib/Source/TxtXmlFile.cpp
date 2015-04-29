@@ -1,5 +1,4 @@
 #include <string>
-#include <boost/filesystem.hpp>
 
 #include "TxtXmlFile.h"
 
@@ -23,7 +22,7 @@ namespace BinDocxRW
 #include "../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 #include "../../../Common/OfficeDefines.h"
 
-#include "../../../common/docxformat/source/systemutility/file.h"
+#include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
 
 #include "../../../DesktopEditor/common/Path.h"
 #include "../../../ASCOfficeDocxFile2/DocWrapper/FontProcessor.h"
@@ -38,13 +37,13 @@ CTxtXmlFile::CTxtXmlFile()
 
 bool CTxtXmlFile::Progress(long ID, long Percent)
 {
-	SHORT res = 0;
-	m_lPercent = Percent;
-	//OnProgressEx(ID, Percent, &res); todooo out event
-	return (res != 0);
+    SHORT res = 0;
+    m_lPercent = Percent;
+    //OnProgressEx(ID, Percent, &res); todooo out event
+    return (res != 0);
 }
 
-static int ParseTxtOptions(static CString & sXmlOptions)
+static int ParseTxtOptions(const std::wstring & sXmlOptions)
 {
 	int encoding = -1;
 	
@@ -78,7 +77,7 @@ static int ParseTxtOptions(static CString & sXmlOptions)
 }
 
 
-HRESULT CTxtXmlFile::txt_LoadFromFile(CString sSrcFileName, CString sDstPath, CString sXMLOptions)
+HRESULT CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const std::wstring & sDstPath, const std::wstring & sXMLOptions)
 {
 	//проверка на структуру xml - если что не так выкинет быстро
 	//HRESULT hr = xml_LoadFromFile(sSrcFileName, sDstPath, sXMLOptions);
@@ -87,14 +86,10 @@ HRESULT CTxtXmlFile::txt_LoadFromFile(CString sSrcFileName, CString sDstPath, CS
 
 	//As Text
 
-	const boost::filesystem::wpath txtFile	= string2std_string(sSrcFileName);
-	const boost::filesystem::wpath docxPath	= string2std_string(sDstPath);
-	const boost::filesystem::wpath origin	= docxPath/L"Origin";
-
-	Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(sDstPath, _T(""), 1, false, NULL, _T(""));
+    Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(sDstPath, _T(""), 1, false, NULL, _T(""));
 	if (pDocxWriter == NULL) return S_FALSE;
 
-	CreateDocxEmpty(sDstPath, pDocxWriter);
+    CreateDocxEmpty(std_string2string(sDstPath), pDocxWriter);
 
 	try
 	{
@@ -102,7 +97,7 @@ HRESULT CTxtXmlFile::txt_LoadFromFile(CString sSrcFileName, CString sDstPath, CS
 
 		Progress(0, 0);
 		Txt2Docx::Converter converter( encoding);
-		converter.read(txtFile);
+        converter.read(sSrcFileName);
 		Progress(0, 100000);
 		converter.convert(*this);
 		converter.write(pDocxWriter->m_oDocumentWriter.m_oContent);
@@ -122,35 +117,32 @@ HRESULT CTxtXmlFile::txt_LoadFromFile(CString sSrcFileName, CString sDstPath, CS
 }
 
 
-HRESULT CTxtXmlFile::txt_SaveToFile(CString sDstFileName, CString sSrcPath, CString sXMLOptions)
+HRESULT CTxtXmlFile::txt_SaveToFile(const std::wstring & sDstFileName, const std::wstring & sSrcPath, const std::wstring & sXMLOptions)
 {
-	const boost::filesystem::wpath txtFile	= string2std_string(sDstFileName);
-	const boost::filesystem::wpath docxPath	= string2std_string(sSrcPath);
-
 	try
 	{
 		Progress(0, 0);
 		Docx2Txt::Converter converter;
-		converter.read(docxPath);
+        converter.read(sSrcPath);
 		Progress(0, 100000);
 		converter.convert(*this);
 
 		int encoding  = ParseTxtOptions(sXMLOptions);
 		
 		if (encoding == EncodingType::Utf8)
-			converter.writeUtf8(txtFile);
+            converter.writeUtf8(sDstFileName);
 		else if (encoding == EncodingType::Unicode)
-			converter.writeUnicode(txtFile);
+            converter.writeUnicode(sDstFileName);
 		else if (encoding == EncodingType::Ansi)
-			converter.writeAnsi(txtFile);		
+            converter.writeAnsi(sDstFileName);
 		else if (encoding == EncodingType::BigEndian)
-			converter.writeBigEndian(txtFile);
+            converter.writeBigEndian(sDstFileName);
 		else if (encoding > 0) //code page
 		{
-			converter.write(txtFile);
+            converter.write(sDstFileName);
 		}
 		else //auto define
-			converter.write(txtFile);
+            converter.write(sDstFileName);
 
 		Progress(0, 1000000);
 	}

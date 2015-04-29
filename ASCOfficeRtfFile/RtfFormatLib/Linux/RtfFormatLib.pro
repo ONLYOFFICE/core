@@ -18,7 +18,7 @@ LIBS += -lxml2
 INCLUDEPATH += \
     /usr/include/libxml2
 
-SOURCES += RtfFormatLib.cpp \
+SOURCES += \
     ../source/DestinationCommand.cpp \
     ../source/RtfBookmark.cpp \
     ../source/RtfChar.cpp \
@@ -38,9 +38,10 @@ SOURCES += RtfFormatLib.cpp \
     ../source/Reader/OOXShapeReader.cpp \
     ../source/Reader/OOXTableReader.cpp \
     ../source/Writer/OOXDocumentWriter.cpp \
-    ../source/Writer/OOXWriter.cpp
+    ../source/Writer/OOXWriter.cpp \
+    ../source/ConvertationManager.cpp
 
-HEADERS += RtfFormatLib.h \
+HEADERS += \
     ../source/Basic.h \
     ../source/ConvertationManager.h \
     ../source/DestinationCommand.h \

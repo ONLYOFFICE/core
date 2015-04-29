@@ -1216,7 +1216,7 @@ void ParagraphPropDestination::AddItem( RtfParagraphPtr oItem, RtfReader& oReade
 
 			if (oReader.m_convertationManager)
 			{
-				oReader.m_convertationManager->OnCompleteItemRtf();
+                oReader.m_convertationManager->OnCompleteItemRtf();
 			}
 		}
 		//добавляем параграф

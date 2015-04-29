@@ -5,8 +5,7 @@
 #include "../../Common/DocxFormat/Source/Base/ASCString.h"  // TODO: move ASCString to DecktopEditor/commmon directory
 
 // VARIANT
-#ifndef _WIN32
-
+#if !defined(_WIN32) && !defined(_WIN64)
 
 // 0 == FALSE, -1 == TRUE
 typedef short VARIANT_BOOL;

@@ -231,7 +231,7 @@ const std::list<std::string> TxtFile::readUtf8()
 void TxtFile::writeAnsiOrCodePage(const std::list<std::string>& content) // === writeUtf8withoutPref также
 {
 	CFile file;
-	if (file.CreateFileW(m_path.GetPath()) == S_OK)
+    if (file.CreateFile(m_path.GetPath()) == S_OK)
 	{
 		BYTE endLine[2] = {0x0d, 0x0a};
 		for (std::list<std::string>::const_iterator iter = content.begin(); iter != content.end(); ++iter)	
@@ -247,7 +247,7 @@ void TxtFile::writeAnsiOrCodePage(const std::list<std::string>& content) // === 
 void TxtFile::writeUnicode(const std::list<std::wstring>& content)
 {
 	CFile file;
-	if (file.CreateFileW(m_path.GetPath()) == S_OK)
+    if (file.CreateFile(m_path.GetPath()) == S_OK)
 	{
 		BYTE Header[2]	= {0xff, 0xfe};
 		BYTE EndLine[4] = {0x0d, 0x00, 0x0a, 0x00};
@@ -277,7 +277,7 @@ void TxtFile::writeUnicode(const std::list<std::wstring>& content)
 void TxtFile::writeBigEndian(const std::list<std::wstring>& content)
 {
 	CFile file;
-	if (file.CreateFileW(m_path.GetPath()) == S_OK)
+    if (file.CreateFile(m_path.GetPath()) == S_OK)
 	{
 		BYTE Header[2]	= {0xfe,	0xff};
 		BYTE EndLine[4] = {0x00, 0x0d, 0x00, 0x0a};
@@ -313,7 +313,7 @@ void TxtFile::writeBigEndian(const std::list<std::wstring>& content)
 void TxtFile::writeUtf8(const std::list<std::string>& content)
 {
 	CFile file;
-	if (file.CreateFileW(m_path.GetPath()) == S_OK)
+    if (file.CreateFile(m_path.GetPath()) == S_OK)
 	{
 		BYTE Header[3]	= {0xef ,0xbb , 0xbf};
 		BYTE EndLine[2]	= {0x0d ,0x0a};

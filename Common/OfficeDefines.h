@@ -1,5 +1,3 @@
-#include <windows.h>
-
 #ifndef _OFFICEDEFINES_H_
 #define _OFFICEDEFINES_H_
 
@@ -50,4 +48,5 @@ const int c_nSaveModeNone = 0;
 const int c_nSaveModeStart = 1;
 const int c_nSaveModeContinue = 2;
 const int c_nSaveModeCommit = 4;
+
 #endif //_OFFICEDEFINES_H_

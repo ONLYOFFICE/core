@@ -73,7 +73,7 @@ namespace SerializeCommon
 			return sSourcePath.Left(nIndex + 1) + sTargetExt;
 		return sSourcePath;
 	}
-	void ReadFileType(CString& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter, BYTE& cSaveFileType)
+    void ReadFileType(const CString& sXMLOptions, BYTE& result, UINT& nCodePage, WCHAR& wcDelimiter, BYTE& cSaveFileType)
 	{
 		result = BinXlsxRW::c_oFileTypes::XLSX;
 		nCodePage = CP_UTF8;

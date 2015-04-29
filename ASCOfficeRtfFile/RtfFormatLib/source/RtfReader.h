@@ -3,7 +3,7 @@
 #include "RtfProperty.h"
 #include "RtfDocument.h"
 
-class ConvertationManager;
+class RtfConvertationManager;
 
 class RtfReader
 {
@@ -11,7 +11,7 @@ public:
 	class ReaderState;
 	typedef boost::shared_ptr<ReaderState> ReaderStatePtr;
 
-	ConvertationManager *m_convertationManager;
+    RtfConvertationManager *m_convertationManager;
 	
 	class ReaderState
 	{

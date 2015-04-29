@@ -3,13 +3,13 @@
 #include "../RtfField.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 
-class ConvertationManager;
+class RtfConvertationManager;
 
 class OOXReader
 {
 public: 
 
-	ConvertationManager *	m_convertationManager;
+    RtfConvertationManager *m_convertationManager;
 	CString					m_sPath;
 
 	int						m_nCurItap; //для определение вложенности таблицы

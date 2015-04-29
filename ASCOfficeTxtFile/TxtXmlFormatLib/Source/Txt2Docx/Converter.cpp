@@ -1,7 +1,5 @@
 #include "Converter.h"
 
-//#include <boost/foreach.hpp>
-//#include "../Common/AbstractConverter.h"
 #include "../../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 #include "../TxtFormat/TxtFormat.h"
 #include "../TxtXmlEvent.h"
@@ -34,12 +32,12 @@ namespace Txt2Docx
         return converter_->convert(Event);    
     }
 
-    void Converter::read(const boost::filesystem::wpath& path)
+    void Converter::read(const std::wstring& path)
     {
         return converter_->m_inputFile.read(path);
     }
 
-    void Converter::write(/*const boost::filesystem::wpath& path*/XmlUtils::CStringWriter & stringWriter)
+    void Converter::write(/*const std::wstring& path*/XmlUtils::CStringWriter & stringWriter)
     {
 		for (long i=0;i < converter_->m_outputFile.m_arrItems.size(); i++)
 		{
@@ -123,7 +121,10 @@ namespace Txt2Docx
 				}
 
 				if(line->length() > 0)
-					temp->AddText(std_string2string(*line));//, rPr);
+                {
+                    CString s = std_string2string(*line);
+                    temp->AddText(s);//, rPr);
+                }
 				
 				pDocument->m_arrItems.push_back(temp);
 

@@ -3,7 +3,9 @@
 
 #include <string>
 
-#if !defined(_WIN32) && !defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64)
+	#include <windows.h>
+#else
     #include "../../DesktopEditor/common/ASCVariant.h"
 #endif
 
@@ -39,8 +41,8 @@ public:
 		return m_strTempDirectory;
 	}
 
-    HRESULT LoadFromFile(std::wstring sSrcFileName, std::wstring sDstFileName, ProgressCallback *ffCallBack);
-    HRESULT SaveToFile(std::wstring sDstFileName, std::wstring sSrcFileName, ProgressCallback *ffCallBack);
+    HRESULT LoadFromFile(std::wstring sSrcFileName, std::wstring sDstFileName, ProgressCallback *ffCallBack = NULL);
+    HRESULT SaveToFile(std::wstring sDstFileName, std::wstring sSrcFileName, ProgressCallback *ffCallBack = NULL);
 
 };
 

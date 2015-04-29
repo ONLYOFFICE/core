@@ -426,11 +426,39 @@
 				>
 			</File>
 			<File
+				RelativePath="..\DesktopEditor\raster\Metafile\Common\IOutputDevice.h"
+				>
+			</File>
+			<File
 				RelativePath="..\DesktopEditor\raster\Metafile\MetaFile.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\DesktopEditor\raster\Metafile\MetaFile.h"
+				>
+			</File>
+			<File
+				RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFile.h"
+				>
+			</File>
+			<File
+				RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileClip.h"
+				>
+			</File>
+			<File
+				RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileObjects.h"
+				>
+			</File>
+			<File
+				RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileRenderer.h"
+				>
+			</File>
+			<File
+				RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileTypes.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileTypes.h"
 				>
 			</File>
 			<Filter
@@ -477,7 +505,23 @@
 					>
 				</File>
 				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfObjects.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfObjects.h"
+					>
+				</File>
+				<File
 					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfOutputDevice.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfPlayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfPlayer.h"
 					>
 				</File>
 				<File
@@ -501,6 +545,10 @@
 					>
 				</File>
 				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Emf\EmfClip.h"
+					>
+				</File>
+				<File
 					RelativePath="..\DesktopEditor\raster\Metafile\Emf\EmfFile.h"
 					>
 				</File>
@@ -518,6 +566,10 @@
 				</File>
 				<File
 					RelativePath="..\DesktopEditor\raster\Metafile\Emf\EmfPath.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Emf\EmfPath.h"
 					>
 				</File>
 				<File

@@ -2,8 +2,6 @@
 #define _METAFILE_EMF_EMFOBJECTS_H
 
 #include "EmfTypes.h"
-#include "../Wmf/WmfUtils.h"
-#include "../Wmf/WmfTypes.h"
 #include "../../common/Types.h"
 #include "../Common/MetaFileObjects.h"
 #include "../../../common/File.h"

@@ -1,11 +1,12 @@
 #ifndef _METAFILE_EMF_EMFPLAYER_H
 #define _METAFILE_EMF_EMFPLAYER_H
 
-#include <vector>
-#include <map>
 #include "EmfTypes.h"
 #include "EmfObjects.h"
 #include "EmfClip.h"
+
+#include <vector>
+#include <map>
 
 namespace MetaFile
 {

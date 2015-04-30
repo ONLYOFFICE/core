@@ -148,13 +148,13 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="Common.h" />
     <ClInclude Include="Common\MetaFileClip.h" />
     <ClInclude Include="Common\MetaFileRenderer.h" />
     <ClInclude Include="Common\IOutputDevice.h" />
     <ClInclude Include="Common\MetaFile.h" />
     <ClInclude Include="Common\MetaFileObjects.h" />
     <ClInclude Include="Common\MetaFileTypes.h" />
+    <ClInclude Include="Common\MetaFileUtils.h" />
     <ClInclude Include="Emf\EmfClip.h" />
     <ClInclude Include="Emf\EmfFile.h" />
     <ClInclude Include="Emf\EmfObjects.h" />
@@ -163,26 +163,15 @@
     <ClInclude Include="Emf\EmfTypes.h" />
     <ClInclude Include="MetaFile.h" />
     <ClInclude Include="stdafx.h" />
-    <ClInclude Include="Wmf\RendererOutput.h" />
-    <ClInclude Include="Wmf\WmfCharsets.h" />
-    <ClInclude Include="Wmf\WmfCodePage1361.h" />
-    <ClInclude Include="Wmf\WmfCodePage932.h" />
-    <ClInclude Include="Wmf\WmfCodePage936.h" />
-    <ClInclude Include="Wmf\WmfCodePage949.h" />
-    <ClInclude Include="Wmf\WmfCodePage950.h" />
-    <ClInclude Include="Wmf\WmfColor.h" />
+    <ClInclude Include="Wmf\WmfClip.h" />
     <ClInclude Include="Wmf\WmfFile.h" />
-    <ClInclude Include="Wmf\WmfMemory.h" />
     <ClInclude Include="Wmf\WmfObjects.h" />
-    <ClInclude Include="Wmf\WmfOutputDevice.h" />
     <ClInclude Include="Wmf\WmfPlayer.h" />
-    <ClInclude Include="Wmf\WmfRegion.h" />
     <ClInclude Include="Wmf\WmfTypes.h" />
-    <ClInclude Include="Wmf\WmfUtils.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="Common.cpp" />
     <ClCompile Include="Common\MetaFileTypes.cpp" />
+    <ClCompile Include="Common\MetaFileUtils.cpp" />
     <ClCompile Include="Emf\EmfClip.cpp" />
     <ClCompile Include="Emf\EmfObjects.cpp" />
     <ClCompile Include="Emf\EmfPath.cpp" />
@@ -190,6 +179,7 @@
     <ClCompile Include="MetaFile.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="TestMain.cpp" />
+    <ClCompile Include="Wmf\WmfClip.cpp" />
     <ClCompile Include="Wmf\WmfObjects.cpp" />
     <ClCompile Include="Wmf\WmfPlayer.cpp" />
   </ItemGroup>

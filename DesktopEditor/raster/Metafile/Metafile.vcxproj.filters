@@ -24,46 +24,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Wmf\RendererOutput.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="Wmf\WmfCharsets.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="Wmf\WmfCodePage932.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="Wmf\WmfCodePage936.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="Wmf\WmfCodePage949.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="Wmf\WmfCodePage950.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="Wmf\WmfCodePage1361.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="Wmf\WmfColor.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
     <ClInclude Include="Wmf\WmfFile.h">
       <Filter>Wmf</Filter>
     </ClInclude>
-    <ClInclude Include="Wmf\WmfMemory.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="Wmf\WmfOutputDevice.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="Wmf\WmfRegion.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
     <ClInclude Include="Wmf\WmfTypes.h">
-      <Filter>Wmf</Filter>
-    </ClInclude>
-    <ClInclude Include="Wmf\WmfUtils.h">
       <Filter>Wmf</Filter>
     </ClInclude>
     <ClInclude Include="MetaFile.h">
@@ -74,9 +38,6 @@
     </ClInclude>
     <ClInclude Include="Emf\EmfTypes.h">
       <Filter>Emf</Filter>
-    </ClInclude>
-    <ClInclude Include="Common.h">
-      <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Emf\EmfPlayer.h">
       <Filter>Emf</Filter>
@@ -117,6 +78,12 @@
     <ClInclude Include="Common\MetaFileClip.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="Wmf\WmfClip.h">
+      <Filter>Wmf</Filter>
+    </ClInclude>
+    <ClInclude Include="Common\MetaFileUtils.h">
+      <Filter>Common</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestMain.cpp">
@@ -126,9 +93,6 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="MetaFile.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Common.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="Emf\EmfPlayer.cpp">
@@ -150,6 +114,12 @@
       <Filter>Wmf</Filter>
     </ClCompile>
     <ClCompile Include="Common\MetaFileTypes.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="Wmf\WmfClip.cpp">
+      <Filter>Wmf</Filter>
+    </ClCompile>
+    <ClCompile Include="Common\MetaFileUtils.cpp">
       <Filter>Common</Filter>
     </ClCompile>
   </ItemGroup>

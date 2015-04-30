@@ -1,12 +1,11 @@
-//#define _CRTDBG_LEAK_CHECK_DF
+﻿//#define _CRTDBG_LEAK_CHECK_DF
 
 #include "stdafx.h"
 
+#include <vector>
+
 #include "../../fontengine/ApplicationFonts.h"
 #include "MetaFile.h"
-
-#include <Windows.h>
-#include <vector>
 
 using namespace MetaFile;
 
@@ -63,6 +62,7 @@ void ConvertFolder(CMetaFile &oMetaFile, std::wstring wsFolderPath)
 	}
 }
 
+#include "../../common/String.h"
 void Test()
 {
 	CApplicationFonts oFonts;
@@ -70,7 +70,7 @@ void Test()
 
 	CMetaFile oMetaFile(&oFonts);
 	//ConvertFile(oMetaFile, L"D://Test Files//fulltest.wmf");
-	ConvertFolder(oMetaFile, L"D://Test Files//Bugs//");
+	ConvertFolder(oMetaFile, L"D://Test Files//Bugs//Bugs//");
 }
 
 void main()

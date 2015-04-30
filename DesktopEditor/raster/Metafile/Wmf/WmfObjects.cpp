@@ -1,7 +1,9 @@
-#include "WmfObjects.h"
 #include "../../../raster/ImageFileFormatChecker.h"
 #include "../../../graphics/Image.h"
-#include "../Common.h"
+
+#include "../Common/MetaFileUtils.h"
+
+#include "WmfObjects.h"
 
 namespace MetaFile
 {
@@ -60,7 +62,7 @@ namespace MetaFile
 
 		FILE *pTempFile = NULL;
 		std::wstring wsTempFileName;
-		if (!WmfOpenTempFile(&wsTempFileName, &pTempFile, L"wb", L".emf0", NULL))
+		if (!OpenTempFile(&wsTempFileName, &pTempFile, L"wb", L".emf0", NULL))
 			return;
 
 		::fclose(pTempFile);

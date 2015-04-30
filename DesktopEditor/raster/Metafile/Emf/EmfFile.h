@@ -1,20 +1,14 @@
 #ifndef _METAFILE_EMF_EMFFILE_H
 #define _METAFILE_EMF_EMFFILE_H
 
-#include "../Wmf/WmfUtils.h"
-#include "../Wmf/WmfTypes.h"
+#include "../../../common/String.h"
+#include "../../../fontengine/FontManager.h"
 
-#include "../Common.h"
+#include "../Common/MetaFile.h"
 
 #include "EmfTypes.h"
 #include "EmfPlayer.h"
 #include "EmfPath.h"
-
-#include "../../../fontengine/FontManager.h"
-#include <iostream>
-#include "../Common/MetaFile.h"
-#include "../../../common/String.h"
-#include "../../../common/File.h"
 
 namespace MetaFile
 {
@@ -33,11 +27,10 @@ namespace MetaFile
 			ClearFile();
 		};
 
-		TEmfRectL* GetBounds()
+		TEmfRectL*   GetBounds()
 		{
 			return &m_oHeader.oFrame;
-		}
-		
+		}		
 		void         PlayMetaFile()
 		{
 			if (!m_oStream.IsValid())
@@ -188,7 +181,6 @@ namespace MetaFile
 						//-----------------------------------------------------------
 					default:
 					{
-						std::cout << ulType << " ";
 						Read_EMR_UNKNOWN();
 						break;
 					}
@@ -499,7 +491,7 @@ namespace MetaFile
 
 			if (m_pOutput)
 			{
-				m_pOutput->DrawText(wsString, unCharsCount, nX, nY, nTextW, bWithOutLast);
+				m_pOutput->DrawString(wsString, unCharsCount, nX, nY, nTextW, bWithOutLast);
 			}
 		}
 		void DrawTextA(TEmfEmrText& oText)

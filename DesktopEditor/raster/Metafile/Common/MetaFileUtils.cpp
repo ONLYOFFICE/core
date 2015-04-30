@@ -1,10 +1,14 @@
-#include "Common.h"
+#include "MetaFileUtils.h"
 
 #include "../../raster/ImageFileFormatChecker.h"
 #include "../../raster/BgraFrame.h"
 
+#include <time.h>
+
+#define U_TO_UTF8(val) NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(val.c_str(), val.length())
+
 namespace MetaFile
-{	
+{
 	unsigned char GetLowestBit(unsigned int ulValue)
 	{
 		if (0 == ulValue)
@@ -100,7 +104,7 @@ namespace MetaFile
 
 			std::wstring wsTempFileName;
 			FILE* pTempFile = NULL;
-			if (!WmfOpenTempFile(&wsTempFileName, &pTempFile, L"wb", L".wmf0", NULL))
+			if (!OpenTempFile(&wsTempFileName, &pTempFile, L"wb", L".wmf0", NULL))
 				return false;
 
 			::fwrite(pBuffer, 1, unImageSize, pTempFile);
@@ -110,18 +114,20 @@ namespace MetaFile
 			oFrame.OpenFile(wsTempFileName);
 
 			// TODO: Как будут файлы сделать чтение.
-            NSFile::CFileBinary::Remove(wsTempFileName);
+			NSFile::CFileBinary::Remove(wsTempFileName);
 			return false;
 		}
 		else if (BI_BITCOUNT_1 == ushBitCount)
 		{
 			// Двуцветная картинка, значит палитра состоит из 2-х цветов
 			TRgbQuad oColor1, oColor2;
-			oHeaderStream >> oColor1 >> oColor2;
+
+			if (oHeaderStream.CanRead() >= 8)
+				oHeaderStream >> oColor1 >> oColor2;
 
 			// Считываем саму картинку
 			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
-			if (lCalcLen > lBufLen)		
+			if (lCalcLen > lBufLen)
 				return false;
 
 			pBgraBuffer = new BYTE[nWidth * abs(nHeight) * 4 * sizeof(BYTE)];
@@ -151,8 +157,13 @@ namespace MetaFile
 					{
 						int nByte = *pBuffer; pBuffer++; lBufLen--;
 						int nBitCount = 128;
+						int nAlpha = 255;
 						if (nX == nWidthBytes - 1)
+						{
+							// Не до конца заполненный байт иногда заполняется странным цветом, поэтому мы делаем его прозрачным
 							nBitCount = nLastBitCount;
+							nAlpha = 0;
+						}
 
 						for (int nBitIndex = nBitCount; nBitIndex > 0; nBitIndex /= 2)
 						{
@@ -161,7 +172,7 @@ namespace MetaFile
 							pBgraBuffer[nIndex + 0] = pColor->b;
 							pBgraBuffer[nIndex + 1] = pColor->g;
 							pBgraBuffer[nIndex + 2] = pColor->r;
-							pBgraBuffer[nIndex + 3] = 255;
+							pBgraBuffer[nIndex + 3] = nAlpha;
 							nIndex += 4;
 						}
 					}
@@ -180,17 +191,22 @@ namespace MetaFile
 					{
 						int nByte = *pBuffer; pBuffer++; lBufLen--;
 						int nBitCount = 128;
+						int nAlpha = 255;
 						if (nX == nWidthBytes - 1)
+						{
+							// Не до конца заполненный байт иногда заполняется странным цветом, поэтому мы делаем его прозрачным
 							nBitCount = nLastBitCount;
+							nAlpha = 0;
+						}
 
 						for (int nBitIndex = nBitCount; nBitIndex > 0; nBitIndex /= 2)
 						{
 							int nBit = (nByte & nBitIndex);
 							TRgbQuad* pColor = (nBit ? &oColor2 : &oColor1);
-                            pBgraBuffer[nIndex + 0] = pColor->b;
-                            pBgraBuffer[nIndex + 1] = pColor->g;
-                            pBgraBuffer[nIndex + 2] = pColor->r;
-							pBgraBuffer[nIndex + 3] = 255;
+							pBgraBuffer[nIndex + 0] = pColor->b;
+							pBgraBuffer[nIndex + 1] = pColor->g;
+							pBgraBuffer[nIndex + 2] = pColor->r;
+							pBgraBuffer[nIndex + 3] = nAlpha;
 							nIndex += 4;
 						}
 					}
@@ -386,10 +402,10 @@ namespace MetaFile
 
 						BYTE nByte = *pBuffer; pBuffer++; lBufLen--;
 
-                        pBgraBuffer[nIndex + 0] = oColorTable[nByte].b;
+						pBgraBuffer[nIndex + 0] = oColorTable[nByte].b;
 						pBgraBuffer[nIndex + 1] = oColorTable[nByte].g;
-                        pBgraBuffer[nIndex + 2] = oColorTable[nByte].r;
-                        pBgraBuffer[nIndex + 3] = 255;
+						pBgraBuffer[nIndex + 2] = oColorTable[nByte].r;
+						pBgraBuffer[nIndex + 3] = 255;
 					}
 					pBuffer += nAdd; lBufLen -= nAdd;
 				}
@@ -578,7 +594,7 @@ namespace MetaFile
 				// Маски, сдвиги и коэффициенты уже заполнены стандартными значениями для масок
 			}
 			else if (BI_BITFIELDS == unCompression)
-			{				
+			{
 				if (oHeaderStream.CanRead() < 12)
 					return false;
 
@@ -644,9 +660,9 @@ namespace MetaFile
 						}
 						else
 						{
-                            pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
-                            pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
-                            pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
+							pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
+							pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
+							pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
 							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
 						}
 					}
@@ -683,9 +699,9 @@ namespace MetaFile
 						}
 						else
 						{
-                            pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
-                            pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
-                            pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
+							pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
+							pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
+							pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
 							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
 						}
 					}
@@ -711,7 +727,7 @@ namespace MetaFile
 		}
 
 		return false;
-	}	
+	}
 	void ReadImage(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight)
 	{
 		if (ulHeaderBufferLen <= 0 || NULL == pHeaderBuffer || NULL == pImageBuffer || ulImageBufferLen < 0)
@@ -751,18 +767,40 @@ namespace MetaFile
 			ReadImageCoreHeader(pImageBuffer + 4, unHeaderSize - 4, pImageBuffer + unHeaderSize, unBufferLen - unHeaderSize, ppDstBuffer, punWidth, punHeight);
 		else // BitmapInfoHeader
 		{
+			int nWidth;
+			int nHeight;
+
+			unsigned short ushPlanes;
 			unsigned short ushBitCount;
+
+			unsigned int unCompression;
+			unsigned int unImageSize;
+			unsigned int unXPelsPerMeter;
+			unsigned int unYPelsPerMeter;
 			unsigned int unColorUsed;
-			oHeaderStream.Skip(10);
+			unsigned int unColorImportant;
+
+			oHeaderStream >> nWidth;
+			oHeaderStream >> nHeight;
+			oHeaderStream >> ushPlanes;
 			oHeaderStream >> ushBitCount;
-			oHeaderStream.Skip(16);
+			oHeaderStream >> unCompression;
+			oHeaderStream >> unImageSize;
+			oHeaderStream >> unXPelsPerMeter;
+			oHeaderStream >> unYPelsPerMeter;
 			oHeaderStream >> unColorUsed;
+			oHeaderStream >> unColorImportant;
 
 			if (DIB_RGB_COLORS == unColorUsage)
 			{
-				if (0 == unColorUsed && BI_BITCOUNT_1 == ushBitCount)
+				int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
+				int nAvailableLen = (unBufferLen - unHeaderSize) - lCalcLen - unColorUsed * 4;
+				if (nAvailableLen < 0)
+					return;
+
+				if (0 == unColorUsed && BI_BITCOUNT_1 == ushBitCount && nAvailableLen >= 8)
 					unColorUsed = 2;
-				else if (0 == unColorUsed && BI_BITCOUNT_3 == ushBitCount)
+				else if (0 == unColorUsed && BI_BITCOUNT_3 == ushBitCount && nAvailableLen >= 1024)
 					unColorUsed = 256;
 
 				unHeaderSize += 4 * unColorUsed; // RGBQuad
@@ -799,7 +837,7 @@ namespace MetaFile
 		double dDist = sqrt((double)(nX - dX0) * (nX - dX0) + (nY - dY0) * (nY - dY0));
 		double dRadAngle = asin(abs(nY - dY0) / dDist);
 
-		double dAngle = dRadAngle * 180 / 3.1415926;
+		double dAngle = dRadAngle * 180 / 3.14159265358979323846;
 		switch (nQuarter)
 		{
 			case 1: dAngle = 180 - dAngle; break;
@@ -842,4 +880,96 @@ namespace MetaFile
 			}
 		}
 	}
-}
+
+	std::wstring ascii_to_unicode(const char *src)
+	{
+		size_t nSize = mbstowcs(0, src, 0);
+		wchar_t* pBuffer = new wchar_t[nSize];
+		nSize = mbstowcs(pBuffer, src, nSize);
+		std::wstring sRes;
+		if (nSize != (size_t)-1)
+			sRes = std::wstring(pBuffer, nSize);
+		delete[] pBuffer;
+		return sRes;
+	}
+	std::string unicode_to_ascii(const wchar_t *src)
+	{
+		size_t nSize = wcstombs(0, src, 0);
+		char* pBuffer = new char[nSize];
+		nSize = wcstombs(pBuffer, src, nSize);
+		std::string sRes;
+		if (nSize != (size_t)-1)
+			sRes = std::string(pBuffer, nSize);
+		delete[] pBuffer;
+		return sRes;
+	}
+
+	bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder)
+	{
+		std::wstring wsTemp, wsFileName;
+		FILE *pTempFile = NULL;
+#if defined(_WIN32) || defined (_WIN64)
+		wchar_t *wsTempDir;
+		if ((wsTempDir = _wgetenv(L"TEMP")) && (wsFolder == NULL))
+		{
+			wsTemp = std::wstring(wsTempDir);
+#else
+		char *wsTempDirA;
+		if ((wsTempDirA = getenv("TEMP")) && (wsFolder == NULL))
+		{
+			std::wstring wsTempDir = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)wsTempDirA, strlen(wsTempDirA));
+			wsTemp = wsTempDir.c_str();
+#endif
+			wsTemp.append(L"/");
+		}
+		else if (wsFolder != NULL)
+		{
+			wsTemp = std::wstring(wsFolder);
+			wsTemp.append(L"/");
+		}
+		else
+		{
+			wsTemp = L"";
+		}
+		wsTemp.append(L"x");
+		int nTime = (int)time(NULL);
+		for (int nIndex = 0; nIndex < 1000; ++nIndex)
+		{
+			wsFileName = wsTemp;
+#if defined(_WIN32) || defined (_WIN64)
+			wchar_t buff[32] ={};
+			_itow(nTime + nIndex, buff, 10);
+			wsFileName.append(buff, wcslen(buff));
+#else
+			wsFileName.append(std::to_wstring(nTime + nIndex));
+#endif
+			if (wsExt)
+			{
+				wsFileName.append(wsExt);
+			}
+#if defined (_WIN32) || defined (_WIN64)
+			if (!(pTempFile = _wfopen(wsFileName.c_str(), L"r")))
+			{
+				if (!(pTempFile = _wfopen(wsFileName.c_str(), wsMode)))
+#else
+			std::string sFileName = U_TO_UTF8(wsFileName);
+			if (!(pTempFile = fopen(sFileName.c_str(), "r")))
+			{
+				std::wstring strMode(wsMode);
+				std::string sMode = U_TO_UTF8(strMode);
+				if (!(pTempFile = fopen(sFileName.c_str(), sMode.c_str())))
+#endif
+				{
+					return FALSE;
+				}
+				*pwsName = wsFileName;
+				*ppFile = pTempFile;
+				return TRUE;
+			}
+
+			fclose(pTempFile);
+			}
+
+		return FALSE;
+		}
+		}

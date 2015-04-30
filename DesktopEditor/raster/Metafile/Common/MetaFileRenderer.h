@@ -1,7 +1,6 @@
 #ifndef _METAFILE_COMMON_METAFILERENDERER_H
 #define _METAFILE_COMMON_METAFILERENDERER_H
 
-
 #include "../../../graphics/IRenderer.h"
 #include "../../../graphics/structures.h"
 #include "../../../graphics/Image.h"
@@ -13,13 +12,11 @@
 #include "MetaFile.h"
 #include "MetaFileTypes.h"
 #include "MetaFileObjects.h"
-#include "../Common.h"
 
 namespace MetaFile
 {
 	class CMetaFileRenderer : public IOutputDevice
 	{
-
 	public:
 		CMetaFileRenderer(IMetaFileBase *pFile, IRenderer *pRenderer, double dX, double dY, double dWidth, double dHeight)
 		{
@@ -60,18 +57,21 @@ namespace MetaFile
 			CheckEndPath();
 		}
 
-		void DrawBitmap(int lX, int lY, int lW, int lH, BYTE* pBuffer, unsigned int ulWidth, unsigned int ulHeight)
+		void DrawBitmap(int lX, int lY, int lW, int lH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)
 		{
+			if (!pBuffer || 0 == unWidth || 0 == unHeight)
+				return;
+
 			CheckEndPath();
 
 			UpdateTransform();
 			UpdateClip();
 
 			Aggplus::CImage oImage;
-			BYTE* pBufferPtr = new BYTE[4 * ulWidth * ulHeight];
-			oImage.Create(pBufferPtr, ulWidth, ulHeight, 4 * ulWidth);
+			BYTE* pBufferPtr = new BYTE[4 * unWidth * unHeight];
+			oImage.Create(pBufferPtr, unWidth, unHeight, 4 * unWidth);
 
-			for (int nIndex = 0, nSize = 4 * ulWidth * ulHeight; nIndex < nSize; nIndex += 4)
+			for (int nIndex = 0, nSize = 4 * unWidth * unHeight; nIndex < nSize; nIndex += 4)
 			{
 				pBufferPtr[0] = (unsigned char)pBuffer[nIndex + 0];
 				pBufferPtr[1] = (unsigned char)pBuffer[nIndex + 1];
@@ -84,7 +84,7 @@ namespace MetaFile
 			TPointD oBR = TranslatePoint(lX + lW, lY + lH);
 			m_pRenderer->DrawImage(&oImage, oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y);
 		}
-		void DrawText(std::wstring& wsText, unsigned int ulCharsCount, int lX, int lY, int nTextW, bool bWithOutLast)
+		void DrawString(std::wstring& wsText, unsigned int ulCharsCount, int lX, int lY, int nTextW, bool bWithOutLast)
 		{
 			CheckEndPath();
 

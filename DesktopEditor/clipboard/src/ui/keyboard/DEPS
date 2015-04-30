@@ -1,4 +1,0 @@
-include_rules = [
-  "+content/public",
-  "+grit/keyboard_resources.h",
-]

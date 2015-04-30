@@ -1,4 +1,0 @@
-include_rules = [
-  "+third_party/angle/include",
-  "+third_party/mesa/MesaLib/include",
-]

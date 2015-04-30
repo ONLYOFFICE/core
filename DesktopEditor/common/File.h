@@ -784,6 +784,62 @@ namespace NSFile
 					return true;
 			return false;
 		}
+
+		static std::wstring GetTempPath()
+		{			
+#if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
+			wchar_t pBuffer [MAX_PATH + 1];
+			memset(pBuffer, 0, sizeof(wchar_t) * (MAX_PATH + 1));
+			::GetTempPathW(MAX_PATH, pBuffer);
+
+			std::wstring sRet(pBuffer);
+
+			int nSeparatorPos = sRet.find_last_of(wchar_t('/'));
+			if (std::wstring::npos == nSeparatorPos)
+			{
+				nSeparatorPos = sRet.find_last_of(wchar_t('\\'));
+			}
+
+			if (std::wstring::npos == nSeparatorPos)
+				return L"";
+
+			return sRet.substr(0, nSeparatorPos);
+#else
+			char *folder = getenv("TEMP");
+
+			if (NULL == folder)
+				folder = getenv("TMP");
+			if (NULL == folder)
+				folder = getenv("TMPDIR");
+
+			if (NULL == folder)
+				folder = "/tmp";
+
+			return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(folder, strlen(folder));
+#endif			
+		}
+		static std::wstring CreateTempFileWithUniqueName(const std::wstring& strFolderPathRoot, const std::wstring& Prefix)
+		{
+#if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
+			wchar_t pBuffer[MAX_PATH + 1];
+			::GetTempFileNameW(strFolderPathRoot.c_str(), Prefix.c_str(), 0, pBuffer);
+			std::wstring sRet(pBuffer);
+			return sRet;
+#else
+			char pcRes[MAX_PATH];
+			BYTE* pData = (BYTE*)pcRes;
+
+			std::wstring sPrefix = strFolderPathRoot + L"/" + Prefix + L"_XXXXXX";
+			LONG lLen = 0;
+			NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sPrefix.c_str(), (LONG)sPrefix.length(), pData, lLen);
+			pcRes[lLen] = '\0';
+
+			int res = mkstemp(pcRes);
+
+			std::string sRes = pcRes;
+			return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sRes.c_str(), sRes.length());
+#endif	
+		}
 	};
 
 	class CBase64Converter

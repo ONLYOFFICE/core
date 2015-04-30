@@ -31,13 +31,7 @@ namespace MetaFile
 
         TRectD       GetBounds()
 		{
-			TRect oBB;
-			if (IsPlaceable())
-				oBB = m_oPlaceable.BoundingBox;
-			else
-				oBB = m_oBoundingBox;
-
-			TRectD oBounds = oBB;
+			TRectD oBounds = GetBoundingBox();
 			if (IsPlaceable())
 			{				
 				double dLogicalToMM = 25.4 / 72;
@@ -332,6 +326,36 @@ namespace MetaFile
 
 	private:
 
+		TRect GetBoundingBox()
+		{
+			TRect oBB;
+			if (IsPlaceable())
+			{
+				oBB = m_oPlaceable.BoundingBox;
+
+				// Иногда m_oPlaceable.BoundingBox задается нулевой ширины и высоты
+				if (abs(oBB.nRight - oBB.nLeft) <= 1)
+				{
+					oBB.nRight = m_oBoundingBox.nRight;
+					oBB.nLeft  = m_oBoundingBox.nLeft;
+				}
+				if (abs(oBB.nBottom - oBB.nTop) <= 1)
+				{
+					oBB.nTop    = m_oBoundingBox.nTop;
+					oBB.nBottom = m_oBoundingBox.nBottom;
+				}
+			}
+			else
+				oBB = m_oBoundingBox;
+
+			if (abs(oBB.nRight - oBB.nLeft) <= 1)
+				oBB.nRight = oBB.nLeft + 1024;
+
+			if (abs(oBB.nBottom - oBB.nTop) <= 1)
+				oBB.nBottom = m_oBoundingBox.nTop + 1024;
+
+			return oBB;
+		}
 		bool IsPlaceable()
 		{
 			return (0x9AC6CDD7 == m_oPlaceable.Key);
@@ -568,11 +592,7 @@ namespace MetaFile
 			// Во время сканирования мы регистрируем все точки и вычисляем BoundingBox
 			if (m_pOutput)
 			{
-				if (IsPlaceable())
-					m_oRect = m_oPlaceable.BoundingBox;
-				else
-					m_oRect = m_oBoundingBox;
-
+				m_oRect = GetBoundingBox();
 				m_pDC->SetWindowOff(m_oRect.nLeft, m_oRect.nTop);
 				m_pDC->SetWindowExt(m_oRect.nRight - m_oRect.nLeft, m_oRect.nBottom - m_oRect.nTop);
 			}
@@ -834,29 +854,41 @@ namespace MetaFile
 			pString[shStringLength] = 0x00;
 			m_oStream.ReadBytes(pString, shStringLength);
 
-			short* pDx = NULL;
-			if (GetRecordRemainingBytesCount() > shStringLength * 2)
+			int nTextW = 0;
+			bool bWithOutLast = false;
+			if (shStringLength > 1 && ((GetRecordRemainingBytesCount() >= shStringLength * 2 && !(ushFwOptions & ETO_PDY)) || (GetRecordRemainingBytesCount() >= shStringLength * 4 && ushFwOptions & ETO_PDY)))
 			{
 				if (shStringLength & 1) // Если длина нечетная, тогда пропускаем 1 байт, т.к. тут прилегание по 2 байта
 					m_oStream.Skip(1);
 
-				// TODO: Тут еще надо смотреть на ETO_PDY
-				pDx = new short[shStringLength + 1];
-				if (!pDx)
+				short shLetterW = 0;
+				if (ushFwOptions & ETO_PDY)
 				{
-					delete[] pString;
-					return SetError();
+					for (short shIndex = 0; shIndex < shStringLength; shIndex++)
+					{
+						m_oStream >> shLetterW;
+						m_oStream.Skip(2);
+						nTextW += shLetterW;
+					}
 				}
-				m_oStream.ReadBytes(pDx, shStringLength);
+				else
+				{
+					for (short shIndex = 0; shIndex < shStringLength; shIndex++)
+					{
+						m_oStream >> shLetterW;
+						nTextW += shLetterW;
+					}
+				}
+
+				// Иногда у последнего символа не указывается ширина или она указывается неверное, поэтому не учитываем её.
+				nTextW -= shLetterW;
+				bWithOutLast = true;
 			}
 
-			DrawText(pString, shStringLength, shX, shY, 0, false);
+			DrawText(pString, shStringLength, shX, shY, nTextW, bWithOutLast);
 
 			if (pString)
 				delete[] pString;
-
-			if (pDx)
-				delete[] pDx;
 		}
 		void Read_META_FILLREGION()
 		{

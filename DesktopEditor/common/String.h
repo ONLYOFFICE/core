@@ -129,6 +129,49 @@ namespace NSString
 
 			return s;
 		}
+		static std::wstring GetUnicodeFromUTF16(const unsigned short* pData, LONG lCount)
+		{
+			if (0 == lCount)
+				return L"";
+
+			if (2 == sizeof(wchar_t))
+				return std::wstring((wchar_t*)pData, lCount);
+
+			wchar_t* pUnicode = new wchar_t[lCount + 1];
+			if (!pUnicode)
+				return L"";
+
+			wchar_t* pCur = pUnicode;
+			int nCurPos = 0;
+			while (nCurPos < lCount)
+			{
+				int nLeading = pData[nCurPos]; nCurPos++;
+				if (nLeading < 0xD800 || nLeading > 0xDFFF)
+				{
+					*pCur = (wchar_t)nLeading;
+					pCur++;
+				}
+				else
+				{
+					if (nCurPos >= lCount)
+						break;
+					
+					int nTrailing = pData[nCurPos]; nCurPos++;
+					if (nTrailing >= 0xDC00 && nTrailing <= 0xDFFF)
+					{
+						*pCur = (wchar_t)(((nLeading & 0x03FF) << 10) | (nTrailing & 0x03FF));
+						pCur++;
+					}
+				}
+			}
+
+			if (0 == pCur - pUnicode)
+				return L"";
+
+			std::wstring sRet(pUnicode, pCur - pUnicode);
+			RELEASEARRAYOBJECTS(pUnicode);
+			return sRet;
+		}
 	};
 };
 

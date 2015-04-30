@@ -102,6 +102,10 @@ namespace MetaFile
 		{
 			return (int)Escapement;
 		}
+		int          GetCharSet()
+		{
+			return (int)CharSet;
+		}
 
 	public:
 

@@ -997,6 +997,63 @@ namespace MetaFile
 		TWmfColor      Color;
 		unsigned short BurshHatch;
 	};
+	struct TWmfBitmap16
+	{
+		short          Type;
+		short          Width;
+		short          Height;
+		short          WidthBytes;
+		unsigned char  Planes;
+		unsigned char  BitsPixel;
+		unsigned char* Bits;
+	};
+	struct TWmfBitBlt
+	{
+		unsigned int RasterOperation;
+		short        YSrc;
+		short        XSrc;
+		short        Height;
+		short        Width;
+		short        YDest;
+		short        XDest;
+	};
+	struct TWmfSetDibToDev
+	{
+		unsigned short ColorUsage;
+		unsigned short ScanCount;
+		unsigned short StartScan;
+		unsigned short yDib;
+		unsigned short xDib;
+		unsigned short Height;
+		unsigned short Width;
+		unsigned short yDest;
+		unsigned short xDest;
+	};
+	struct TWmfStretchBlt
+	{
+		unsigned int RasterOperation;
+		short        SrcHeight;
+		short        SrcWidth;
+		short        YSrc;
+		short        XSrc;
+		short        DestHeight;
+		short        DestWidth;
+		short        YDest;
+		short        XDest;
+	};
+	struct TWmfStretchDib
+	{
+		unsigned int   RasterOperation;
+		unsigned short ColorUsage;
+		short          SrcHeight;
+		short          SrcWidth;
+		short          YSrc;
+		short          XSrc;
+		short          DestHeight;
+		short          DestWidth;
+		short          yDst;
+		short          xDst;
+	};
 }
 
 #endif /* _WMF_TYPES_H_ */

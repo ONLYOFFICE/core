@@ -110,7 +110,6 @@ namespace MetaFile
 			oFrame.OpenFile(wsTempFileName);
 
 			// TODO: Как будут файлы сделать чтение.
-            //::_wunlink(wsTempFileName.c_str());
             NSFile::CFileBinary::Remove(wsTempFileName);
 			return false;
 		}
@@ -122,10 +121,10 @@ namespace MetaFile
 
 			// Считываем саму картинку
 			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
-			if (lCalcLen != lBufLen)		
+			if (lCalcLen > lBufLen)		
 				return false;
 
-			pBgraBuffer = new BYTE[nWidth * nHeight * 4 * sizeof(BYTE)];
+			pBgraBuffer = new BYTE[nWidth * abs(nHeight) * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
 				return false;
 
@@ -239,10 +238,10 @@ namespace MetaFile
 			}
 
 			int nScanLineBytes = (nWidth + nAdd) / 2;
-			if (lBufLen < (nScanLineBytes * nHeight))
+			if (lBufLen < (nScanLineBytes * abs(nHeight)))
 				return false;
 
-			pBgraBuffer = new BYTE[nWidth * nHeight * 4 * sizeof(BYTE)];
+			pBgraBuffer = new BYTE[nWidth * abs(nHeight) * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
 				return false;
 
@@ -349,10 +348,10 @@ namespace MetaFile
 				nAdd++;
 			}
 
-			if (lBufLen < (nWidth + nAdd) * nHeight)
+			if (lBufLen < (nWidth + nAdd) * abs(nHeight))
 				return false;
 
-			pBgraBuffer = new BYTE[nWidth * nHeight * 4 * sizeof(BYTE)];
+			pBgraBuffer = new BYTE[nWidth * abs(nHeight) * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
 				return false;
 
@@ -445,7 +444,7 @@ namespace MetaFile
 				nAdd++;
 			}
 
-			pBgraBuffer = new BYTE[nWidth * nHeight * 4 * sizeof(BYTE)];
+			pBgraBuffer = new BYTE[nWidth * abs(nHeight) * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
 				return false;
 
@@ -522,7 +521,7 @@ namespace MetaFile
 
 			int nSize = nWidth * nHeight * 4;
 
-			pBgraBuffer = new BYTE[nWidth * nHeight * 4 * sizeof(BYTE)];
+			pBgraBuffer = new BYTE[nWidth * abs(nHeight) * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
 				return false;
 
@@ -615,7 +614,7 @@ namespace MetaFile
 
 			int nSize = nWidth * nHeight * 4;
 
-			pBgraBuffer = new BYTE[(nWidth + nAdd) * nHeight * 4 * sizeof(BYTE)];
+			pBgraBuffer = new BYTE[(nWidth + nAdd) * abs(nHeight) * 4 * sizeof(BYTE)];
 			if (NULL == pBgraBuffer)
 				return false;
 
@@ -732,6 +731,49 @@ namespace MetaFile
 		else // BitmapInfoHeader
 			ReadImageInfoHeader(pHeaderBuffer + 4, ulHeaderBufferLen - 4, pImageBuffer, ulImageBufferLen, ppDstBuffer, pulWidth, pulHeight);
 	}
+	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight)
+	{
+		if (unBufferLen <= 0 || NULL == pImageBuffer)
+			return;
+
+		CDataStream oHeaderStream;
+		oHeaderStream.SetStream(pImageBuffer, unBufferLen);
+
+		// Считываем заголовок
+		unsigned int unHeaderSize;
+		oHeaderStream >> unHeaderSize;
+
+		if (unHeaderSize > unBufferLen)
+			return;
+		else if (unHeaderSize < 0x0000000C)
+			return;
+		else if (0x0000000C == unHeaderSize) // BitmapCoreHeader
+			ReadImageCoreHeader(pImageBuffer + 4, unHeaderSize - 4, pImageBuffer + unHeaderSize, unBufferLen - unHeaderSize, ppDstBuffer, punWidth, punHeight);
+		else // BitmapInfoHeader
+		{
+			unsigned short ushBitCount;
+			unsigned int unColorUsed;
+			oHeaderStream.Skip(10);
+			oHeaderStream >> ushBitCount;
+			oHeaderStream.Skip(16);
+			oHeaderStream >> unColorUsed;
+
+			if (DIB_RGB_COLORS == unColorUsage)
+			{
+				if (0 == unColorUsed && BI_BITCOUNT_1 == ushBitCount)
+					unColorUsed = 2;
+				else if (0 == unColorUsed && BI_BITCOUNT_3 == ushBitCount)
+					unColorUsed = 256;
+
+				unHeaderSize += 4 * unColorUsed; // RGBQuad
+				ReadImageInfoHeader(pImageBuffer + 4, unHeaderSize - 4, pImageBuffer + unHeaderSize, unBufferLen - unHeaderSize, ppDstBuffer, punWidth, punHeight);
+			}
+			else
+			{
+				// TODO: реализовать другие типы цветов
+			}
+		}
+	}
 	double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY)
 	{
 		double dX0 = (nL + nR) / 2.0;
@@ -742,16 +784,16 @@ namespace MetaFile
 		if (nX >= dX0)
 		{
 			if (nY <= dY0)
-				nQuarter = 0;
-			else
 				nQuarter = 3;
+			else
+				nQuarter = 0;
 		}
 		else
 		{
 			if (nY <= dY0)
-				nQuarter = 1;
-			else
 				nQuarter = 2;
+			else
+				nQuarter = 1;
 		}
 
 		double dDist = sqrt((double)(nX - dX0) * (nX - dX0) + (nY - dY0) * (nY - dY0));
@@ -766,5 +808,38 @@ namespace MetaFile
 		}
 
 		return dAngle;
+	}
+	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight)
+	{
+		BYTE* pBgra = *ppBgra;
+		// Для битовых операций SRCPAINT и SRCAND сделаем, как будто фон чисто белый.
+		if (0x008800C6 == unRasterOperation) // SRCPAINT
+		{
+			BYTE* pCur = pBgra;
+			for (unsigned int unY = 0; unY < unHeight; unY++)
+			{
+				for (unsigned int unX = 0; unX < unWidth; unX++)
+				{
+					unsigned int unIndex = (unY * unWidth + unX) * 4;
+
+					if (0xff == pCur[unIndex + 0] && 0xff == pCur[unIndex + 1] && 0xff == pCur[unIndex + 2])
+						pCur[unIndex + 3] = 0;
+				}
+			}
+		}
+		else if (0x00EE0086 == unRasterOperation) // SRCAND
+		{
+			BYTE* pCur = pBgra;
+			for (unsigned int unY = 0; unY < unHeight; unY++)
+			{
+				for (unsigned int unX = 0; unX < unWidth; unX++)
+				{
+					unsigned int unIndex = (unY * unWidth + unX) * 4;
+
+					if (0 == pCur[unIndex + 0] && 0 == pCur[unIndex + 1] && 0 == pCur[unIndex + 2])
+						pCur[unIndex + 3] = 0;
+				}
+			}
+		}
 	}
 }

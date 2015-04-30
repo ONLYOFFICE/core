@@ -149,6 +149,7 @@ namespace MetaFile
 		{
 			CWmfObjectBase* pObject = oPos->second;
 
+
 			switch (pObject->GetType())
 			{
 			case WMF_OBJECT_BRUSH: m_pDC->SetBrush((CWmfBrush*)pObject); break;

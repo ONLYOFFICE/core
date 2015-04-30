@@ -61,6 +61,7 @@ namespace MetaFile
 			oFile.ReadFile(m_pBufferData, lFileSize, lReadedSize);
 
 			m_oStream.SetStream(m_pBufferData, lFileSize);
+			oFile.CloseFile();
 
 			return true;
 		}
@@ -80,7 +81,7 @@ namespace MetaFile
 			PlayMetaFile();
 			m_pOutput = pOutput;
 
-			ClearFile();
+			this->ClearFile();
 		}
 		CFontManager* GetFontManager()
 		{

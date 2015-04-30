@@ -119,11 +119,6 @@ namespace MetaFile
 
 			m_pRenderer->put_FontStyle(lStyle);
 
-			// Установим цвет текста
-			m_pRenderer->put_BrushType(c_BrushTypeSolid);
-			m_pRenderer->put_BrushColor1(m_pFile->GetTextColor());
-			m_pRenderer->put_BrushAlpha1(255);
-
 			double dTheta = -((((double)pFont->GetEscapement()) / 10) * M_PI / 180);
 
 			double dCosTheta = (float)cos(dTheta);
@@ -154,19 +149,6 @@ namespace MetaFile
 					if (bWithOutLast)
 						wsTempText.erase(ulCharsCount - 1);
 
-					//wchar_t* wsTempText = new wchar_t[ulCharsCount + 1];
-					//if (!wsTempText)
-					//	return;
-
-					//wsTempText[ulCharsCount] = 0x0000;
-					//for (unsigned int unIndex = 0; unIndex < ulCharsCount; unIndex++)
-					//{
-					//	wsTempText[unIndex] = wsText[unIndex];
-					//}
-
-					//if (bWithOutLast)
-					//	wsTempText[ulCharsCount - 1] = 0x0000;
-
 					pFontManager->LoadString1(wsTempText, 0, 0);
 
 					TBBox oBox = pFontManager->MeasureString2();
@@ -185,8 +167,6 @@ namespace MetaFile
 						m_pRenderer->get_DpiX(&dRendDpiX);
 						m_pRenderer->put_FontCharSpace(dCharSpace * 25.4 / 72);
 					}
-
-					/*delete[] wsTempText;*/
 
 					pFontManager->LoadString1(wsText, 0, 0);
 					oBox = pFontManager->MeasureString2();
@@ -278,8 +258,8 @@ namespace MetaFile
 			if (OPAQUE == m_pFile->GetTextBgMode())
 			{
 				m_pRenderer->put_BrushType(c_BrushTypeSolid);
-				m_pRenderer->put_BrushColor1(255);
-				m_pRenderer->put_BrushAlpha1(m_pFile->GetTextBgColor());
+				m_pRenderer->put_BrushAlpha1(255);
+				m_pRenderer->put_BrushColor1(m_pFile->GetTextBgColor());
 
 				m_pRenderer->BeginCommand(c_nPathType);
 				m_pRenderer->PathCommandStart();
@@ -290,7 +270,7 @@ namespace MetaFile
 				m_pRenderer->PathCommandClose();
 				m_pRenderer->DrawPath(c_nWindingFillMode);
 				m_pRenderer->EndCommand(c_nPathType);
-				m_pRenderer->PathCommandStart();
+				m_pRenderer->PathCommandEnd();
 			}
 
 			// Нарисуем подчеркивание 
@@ -308,6 +288,11 @@ namespace MetaFile
 				m_pRenderer->EndCommand(c_nPathType);
 				m_pRenderer->PathCommandEnd();
 			}
+
+			// Установим цвет текста
+			m_pRenderer->put_BrushType(c_BrushTypeSolid);
+			m_pRenderer->put_BrushColor1(m_pFile->GetTextColor());
+			m_pRenderer->put_BrushAlpha1(255);
 
 			// Рисуем сам текст
 			m_pRenderer->CommandDrawText(wsText, dX, dY, 0, 0, 0);

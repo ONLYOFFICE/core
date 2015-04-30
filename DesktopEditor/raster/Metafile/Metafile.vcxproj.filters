@@ -75,14 +75,8 @@
     <ClInclude Include="Emf\EmfTypes.h">
       <Filter>Emf</Filter>
     </ClInclude>
-    <ClInclude Include="Emf\EmfOutputDevice.h">
-      <Filter>Emf</Filter>
-    </ClInclude>
     <ClInclude Include="Common.h">
       <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Emf\RendererOutput.h">
-      <Filter>Emf</Filter>
     </ClInclude>
     <ClInclude Include="Emf\EmfPlayer.h">
       <Filter>Emf</Filter>

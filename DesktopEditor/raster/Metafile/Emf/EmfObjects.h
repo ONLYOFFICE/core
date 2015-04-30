@@ -118,6 +118,10 @@ namespace MetaFile
 		{
 			return LogFontEx.LogFont.Escapement;
 		}
+		int          GetCharSet()
+		{
+			return LogFontEx.LogFont.CharSet;
+		}
 
 	public:
 

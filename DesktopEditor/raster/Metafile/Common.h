@@ -47,6 +47,10 @@ namespace MetaFile
 			pCur    = pBuf;
 			pEnd    = pBuf + unSize + 1;
 		};
+		BYTE* GetCurPtr()
+		{
+			return pCur;
+		}
 
 		unsigned char  ReadUChar()
 		{
@@ -66,7 +70,7 @@ namespace MetaFile
 			pCur += 2;
 			return ushResult;
 		};
-		unsigned int  ReadULong()
+		unsigned int   ReadULong()
 		{
 			if (pCur + 4 >= pEnd)
 				return 0;
@@ -104,7 +108,7 @@ namespace MetaFile
 		{
 			return (short)ReadUShort();
 		};
-		int           ReadLong()
+		int            ReadLong()
 		{
 			return (int)ReadULong();
 		};
@@ -770,6 +774,81 @@ namespace MetaFile
 
 			return *this;
 		}
+		CDataStream& operator>>(TWmfStretchBlt& oBitmap)
+		{
+			*this >> oBitmap.RasterOperation;
+			*this >> oBitmap.SrcHeight;
+			*this >> oBitmap.SrcWidth;
+			*this >> oBitmap.YSrc;
+			*this >> oBitmap.XSrc;
+			*this >> oBitmap.DestHeight;
+			*this >> oBitmap.DestWidth;
+			*this >> oBitmap.YDest;
+			*this >> oBitmap.XDest;
+			return *this;
+		}
+		CDataStream& operator>>(TWmfBitmap16& oBitmap)
+		{
+			*this >> oBitmap.Type;
+			*this >> oBitmap.Width;
+			*this >> oBitmap.Height;
+			*this >> oBitmap.WidthBytes;
+			*this >> oBitmap.Planes;
+			*this >> oBitmap.BitsPixel;
+
+			unsigned int unBitsCount = (((oBitmap.Width * oBitmap.BitsPixel + 15) >> 4) << 1) * oBitmap.Height;
+			if (CanRead() >= unBitsCount)
+			{
+				//oBitmap.Bits = new unsigned char[unBitsCount];
+			}
+			else
+			{
+				oBitmap.Bits   = NULL;
+				oBitmap.Width  = 0;
+				oBitmap.Height = 0;
+			}
+
+			return *this;
+		}
+		CDataStream& operator>>(TWmfBitBlt& oBitmap)
+		{
+			*this >> oBitmap.RasterOperation;
+			*this >> oBitmap.YSrc;
+			*this >> oBitmap.XSrc;
+			*this >> oBitmap.Height;
+			*this >> oBitmap.Width;
+			*this >> oBitmap.YDest;
+			*this >> oBitmap.XDest;
+			return *this;
+		}
+		CDataStream& operator>>(TWmfSetDibToDev& oBitmap)
+		{
+			*this >> oBitmap.ColorUsage;
+			*this >> oBitmap.ScanCount;
+			*this >> oBitmap.StartScan;
+			*this >> oBitmap.yDib;
+			*this >> oBitmap.xDib;
+			*this >> oBitmap.Height;
+			*this >> oBitmap.Width;
+			*this >> oBitmap.yDest;
+			*this >> oBitmap.xDest;
+			return *this;
+		}
+		CDataStream& operator>>(TWmfStretchDib& oBitmap)
+		{
+			*this >> oBitmap.RasterOperation;
+			*this >> oBitmap.ColorUsage;
+			*this >> oBitmap.SrcHeight;
+			*this >> oBitmap.SrcWidth;
+			*this >> oBitmap.YSrc;
+			*this >> oBitmap.XSrc;
+			*this >> oBitmap.DestHeight;
+			*this >> oBitmap.DestWidth;
+			*this >> oBitmap.yDst;
+			*this >> oBitmap.xDst;
+			return *this;
+		}
+
 
 		bool IsValid() const
 		{
@@ -859,7 +938,9 @@ namespace MetaFile
 	};
 
 	void ReadImage(BYTE* pHeaderBuffer, unsigned int ulHeaderBufferLen, BYTE* pImageBuffer, unsigned int ulImageBufferLen, BYTE** ppDstBuffer, unsigned int* pulWidth, unsigned int* pulHeight);
+	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight);
 	double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY);
+	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight);
 };
 
 #endif //_METAFILE_WMF_EMF_COMMON_H

@@ -14,6 +14,7 @@
 #include "../Common/IOutputDevice.h"
 #include <iostream>
 #include "../Common/MetaFile.h"
+#include "../../../common/String.h"
 
 namespace MetaFile
 {
@@ -85,7 +86,12 @@ namespace MetaFile
 					//-----------------------------------------------------------
 					// 2.3.1 Bitmap records
 					//-----------------------------------------------------------
-
+				case META_BITBLT: Read_META_BITBLT(); break;
+				case META_DIBBITBLT: Read_META_DIBBITBLT(); break;
+				case META_DIBSTRETCHBLT: Read_META_DIBSTRETCHBLT(); break;
+				case META_SETDIBTODEV: Read_META_SETDIBTODEV(); break;
+				case META_STRETCHBLT: Read_META_STRETCHBLT(); break;
+				case META_STRETCHDIB: Read_META_STRETCHDIB(); break;
 					//-----------------------------------------------------------
 					// 2.3.2 Control records
 					//-----------------------------------------------------------
@@ -170,7 +176,7 @@ namespace MetaFile
 					//-----------------------------------------------------------
 				default:
 				{
-					std::cout << ushType << " ";
+					//std::cout << ushType << " ";
 					Read_META_UNKNOWN();
 					break;
 				}
@@ -403,8 +409,58 @@ namespace MetaFile
 
 			if (m_pOutput)
 			{
-				// TODO: В зависимости от CharSet нужно переводить строку в юникод. Пока переводим как Ascii -> Unicode
-				std::wstring wsText = NSFile::CUtf8Converter::GetUnicodeFromCharPtr((const char*)pString, unCharsCount, 0);
+				IFont* pFont = GetFont();
+				NSString::CConverter::ESingleByteEncoding eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT;;
+				if (pFont)
+				{
+					// Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
+					// http://msdn.microsoft.com/en-us/library/cc194829.aspx
+					//  Charset Name       Charset Value(hex)  Codepage number
+					//  ------------------------------------------------------
+					//
+					//  DEFAULT_CHARSET           1 (x01)
+					//  SYMBOL_CHARSET            2 (x02)
+					//  OEM_CHARSET             255 (xFF)
+					//  ANSI_CHARSET              0 (x00)            1252
+					//  RUSSIAN_CHARSET         204 (xCC)            1251
+					//  EASTEUROPE_CHARSET      238 (xEE)            1250
+					//  GREEK_CHARSET           161 (xA1)            1253
+					//  TURKISH_CHARSET         162 (xA2)            1254
+					//  BALTIC_CHARSET          186 (xBA)            1257
+					//  HEBREW_CHARSET          177 (xB1)            1255
+					//  ARABIC _CHARSET         178 (xB2)            1256
+					//  SHIFTJIS_CHARSET        128 (x80)             932
+					//  HANGEUL_CHARSET         129 (x81)             949
+					//  GB2313_CHARSET          134 (x86)             936
+					//  CHINESEBIG5_CHARSET     136 (x88)             950
+					//  THAI_CHARSET            222 (xDE)             874	
+					//  JOHAB_CHARSET	        130 (x82)            1361
+					//  VIETNAMESE_CHARSET      163 (xA3)            1258
+
+					switch (pFont->GetCharSet())
+					{
+						default:
+						case DEFAULT_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
+						case SYMBOL_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
+						case ANSI_CHARSET:          eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1252; break;
+						case RUSSIAN_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1251; break;
+						case EASTEUROPE_CHARSET:    eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1250; break;
+						case GREEK_CHARSET:         eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1253; break;
+						case TURKISH_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1254; break;
+						case BALTIC_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1257; break;
+						case HEBREW_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1255; break;
+						case ARABIC_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1256; break;
+						case SHIFTJIS_CHARSET:      eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP932; break;
+						case HANGEUL_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP949; break;
+						case 134/*GB2313_CHARSET*/: eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP936; break;
+						case CHINESEBIG5_CHARSET:   eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP950; break;
+						case THAI_CHARSET:          eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP874; break;
+						case JOHAB_CHARSET:         eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1361; break;
+						case VIETNAMESE_CHARSET:    eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1258; break;
+					}
+				}
+
+				std::wstring wsText = NSString::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)pString, (long)unCharsCount, eCharSet);
 				m_pOutput->DrawText(wsText, unCharsCount, nX, nY, nTextW, bWithOutLast);
 			}
 			else
@@ -435,6 +491,21 @@ namespace MetaFile
 				else if (shY > m_oBoundingBox.nBottom)
 					m_oBoundingBox.nBottom = shY;
 			}
+		}
+		bool ReadImage(unsigned short ushColorUsage, BYTE** ppBgraBuffer, unsigned int* pulWidth, unsigned int* pulHeight)
+		{
+			unsigned int unRemainBytes = GetRecordRemainingBytesCount();
+			if (unRemainBytes <= 0)
+				return false;
+
+			BYTE* pBuffer = m_oStream.GetCurPtr();
+			MetaFile::ReadImage(pBuffer, unRemainBytes, ushColorUsage, ppBgraBuffer, pulWidth, pulHeight);
+			return true;
+		}
+		void UpdateOutputDC()
+		{
+			if (m_pOutput)
+				m_pOutput->UpdateDC();
 		}
 
 		void Read_META_UNKNOWN()
@@ -501,11 +572,208 @@ namespace MetaFile
 					m_oRect = m_oPlaceable.BoundingBox;
 				else
 					m_oRect = m_oBoundingBox;
+
+				m_pDC->SetWindowOff(m_oRect.nLeft, m_oRect.nTop);
+				m_pDC->SetWindowExt(m_oRect.nRight - m_oRect.nLeft, m_oRect.nBottom - m_oRect.nTop);
 			}
 			else
 			{
 				m_bFirstPoint = true;
 			}
+		}
+		void Read_META_BITBLT()
+		{
+			TWmfBitBlt oBitmap;
+			m_oStream >> oBitmap;
+
+			unsigned int unRecordSizeDword = m_unRecordSize >> 1;
+			unsigned int unValue = (META_BITBLT >> 8) + 3;
+			if (unRecordSizeDword == unValue)
+			{
+				m_oStream.Skip(2); // Reserved
+			}
+			else
+			{
+				if (m_pOutput)
+				{
+					TWmfBitmap16 oBitmap16;
+					m_oStream >> oBitmap16;
+
+					// TODO: Сделать чтение Bitmap16
+				}
+				else
+				{
+					RegisterPoint(oBitmap.XDest, oBitmap.YDest);
+					RegisterPoint(oBitmap.XDest + oBitmap.Width, oBitmap.YDest + oBitmap.Height);
+				}
+
+
+				int nRemainingBytes = GetRecordRemainingBytesCount();
+				if (nRemainingBytes < 0)
+					return SetError();
+			}
+		}
+		void Read_META_DIBBITBLT()
+		{
+			TWmfBitBlt oBitmap;
+			m_oStream >> oBitmap;
+
+			unsigned int unRecordSizeDword = m_unRecordSize >> 1;
+			unsigned int unValue = (META_DIBBITBLT >> 8) + 3;
+			if (unRecordSizeDword == unValue)
+			{
+				m_oStream.Skip(2); // Reserved
+			}
+			else
+			{
+				if (m_pOutput)
+				{
+					BYTE* pBgra;
+					unsigned int unWidth, unHeight;
+					if (ReadImage(0, &pBgra, &unWidth, &unHeight))
+					{
+						m_pOutput->DrawBitmap(oBitmap.XDest, oBitmap.YDest, oBitmap.Width, oBitmap.Height, pBgra, unWidth, unHeight);
+					}
+
+					if (pBgra)
+						delete[] pBgra;
+				}
+				else
+				{
+					RegisterPoint(oBitmap.XDest, oBitmap.YDest);
+					RegisterPoint(oBitmap.XDest + oBitmap.Width, oBitmap.YDest + oBitmap.Height);
+				}
+
+				int nRemainingBytes = GetRecordRemainingBytesCount();
+				if (nRemainingBytes < 0)
+					return SetError();
+			}
+		}
+		void Read_META_DIBSTRETCHBLT()
+		{
+			TWmfStretchBlt oBitmap;
+			m_oStream >> oBitmap;
+
+			unsigned int unRecordSizeDWORD = m_unRecordSize >> 1;
+			unsigned int unValue = (META_DIBSTRETCHBLT >> 8) + 3;
+
+			if (unRecordSizeDWORD == unValue)
+			{
+				m_oStream.Skip(2); // Reserved
+			}
+			else
+			{
+				if (m_pOutput)
+				{
+					BYTE* pBgra;
+					unsigned int unWidth, unHeight;
+					if (ReadImage(0, &pBgra, &unWidth, &unHeight))
+					{
+						ProcessRasterOperation(oBitmap.RasterOperation, &pBgra, unWidth, unHeight);
+						m_pOutput->DrawBitmap(oBitmap.XDest, oBitmap.YDest, oBitmap.DestWidth, oBitmap.DestHeight, pBgra, unWidth, unHeight);
+					}
+
+					if (pBgra)
+						delete[] pBgra;
+				}
+				else
+				{
+					RegisterPoint(oBitmap.XDest, oBitmap.YDest);
+					RegisterPoint(oBitmap.XDest + oBitmap.DestWidth, oBitmap.YDest + oBitmap.DestHeight);
+				}
+
+
+				int nRemainingBytes = GetRecordRemainingBytesCount();
+				if (nRemainingBytes < 0)
+					return SetError();
+			}
+		}
+		void Read_META_SETDIBTODEV()
+		{
+			TWmfSetDibToDev oBitmap;
+			m_oStream >> oBitmap;
+
+			if (m_pOutput)
+			{
+				// TODO: Тут надо делать обрезку в зависимости от ScanCount и StartScan. Как встретится файл сделать.
+				BYTE* pBgra;
+				unsigned int unWidth, unHeight;
+				if (ReadImage(oBitmap.ColorUsage, &pBgra, &unWidth, &unHeight))
+				{
+					m_pOutput->DrawBitmap(oBitmap.xDest, oBitmap.yDest, oBitmap.Width, oBitmap.Height, pBgra, unWidth, unHeight);
+				}
+
+				if (pBgra)
+					delete[] pBgra;
+			}
+			else
+			{
+				RegisterPoint(oBitmap.xDest, oBitmap.yDest);
+				RegisterPoint(oBitmap.xDest + oBitmap.Width, oBitmap.yDest + oBitmap.Height);
+			}
+
+			int nRemainingBytes = GetRecordRemainingBytesCount();
+			if (nRemainingBytes < 0)
+				return SetError();
+		}
+		void Read_META_STRETCHBLT()
+		{
+			TWmfStretchBlt oBitmap;
+			m_oStream >> oBitmap;
+
+			unsigned int unRecordSizeDWORD = m_unRecordSize >> 1;
+			unsigned int unValue = (META_STRETCHBLT >> 8) + 3;
+
+			if (unRecordSizeDWORD == ((META_STRETCHBLT >> 8) + 3))
+			{
+				m_oStream.Skip(2); // Reserved
+			}
+			else
+			{
+				if (m_pOutput)
+				{
+					TWmfBitmap16 oBitmap16;
+					m_oStream >> oBitmap16;
+
+					// TODO: Сделать чтение Bitmap16
+				}
+				else
+				{
+					RegisterPoint(oBitmap.XDest, oBitmap.YDest);
+					RegisterPoint(oBitmap.XDest + oBitmap.DestWidth, oBitmap.YDest + oBitmap.DestHeight);
+				}
+
+				int nRemainingBytes = GetRecordRemainingBytesCount();
+				if (nRemainingBytes < 0)
+					return SetError();
+			}
+		}
+		void Read_META_STRETCHDIB()
+		{
+			TWmfStretchDib oBitmap;
+			m_oStream >> oBitmap;
+
+			if (m_pOutput)
+			{
+				BYTE* pBgra;
+				unsigned int unWidth, unHeight;
+				if (ReadImage(oBitmap.ColorUsage, &pBgra, &unWidth, &unHeight))
+				{
+					m_pOutput->DrawBitmap(oBitmap.xDst, oBitmap.yDst, oBitmap.DestWidth, oBitmap.DestHeight, pBgra, unWidth, unHeight);
+				}
+
+				if (pBgra)
+					delete[] pBgra;
+			}
+			else
+			{
+				RegisterPoint(oBitmap.xDst, oBitmap.yDst);
+				RegisterPoint(oBitmap.xDst + oBitmap.DestWidth, oBitmap.yDst + oBitmap.DestHeight);
+			}
+
+			int nRemainingBytes = GetRecordRemainingBytesCount();
+			if (nRemainingBytes < 0)
+				return SetError();
 		}
 		void Read_META_ARC()
 		{
@@ -513,6 +781,11 @@ namespace MetaFile
 			m_oStream >> shYEndArc >> shXEndArc >> shYStartArc >> shXStartArc >> shBottom >> shRight >> shTop >> shLeft;
 			double dStartAngle = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXStartArc, (int)shYStartArc);
 			double dSweepAngle = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXEndArc, (int)shYEndArc) - dStartAngle;
+
+			if (dSweepAngle <= 0)
+				dSweepAngle += 360;
+
+			m_pDC->SetCurPos(shXStartArc, shYStartArc);
 			ArcTo(shLeft, shTop, shRight, shBottom, dStartAngle, dSweepAngle);
 			DrawPath(true, false);
 			m_pDC->SetCurPos(shXEndArc, shYEndArc);
@@ -523,6 +796,10 @@ namespace MetaFile
 			m_oStream >> shYEndArc >> shXEndArc >> shYStartArc >> shXStartArc >> shBottom >> shRight >> shTop >> shLeft;
 			double dStartAngle = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXStartArc, (int)shYStartArc);
 			double dSweepAngle = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXEndArc, (int)shYEndArc) - dStartAngle;
+
+			if (dSweepAngle <= 0)
+				dSweepAngle += 360;
+
 			MoveTo(shXStartArc, shYStartArc);
 			ArcTo(shLeft, shTop, shRight, shBottom, dStartAngle, dSweepAngle);
 			LineTo(shXStartArc, shYStartArc);
@@ -535,6 +812,7 @@ namespace MetaFile
 			m_oStream >> shBottom >> shRight >> shTop >> shLeft;
 			ArcTo(shLeft, shTop, shRight, shBottom, 0, 360);
 			DrawPath(true, true);
+			m_pDC->SetCurPos((shLeft + shRight) / 2, (shTop + shBottom) / 2);
 		}
 		void Read_META_EXTTEXTOUT()
 		{
@@ -730,6 +1008,8 @@ namespace MetaFile
 			LineTo(shL, shB);
 			ClosePath();
 			DrawPath(true, true);
+
+			m_pDC->SetCurPos((shL + shR) / 2, (shT + shB) / 2);
 		}
 		void Read_META_ROUNDRECT()
 		{
@@ -775,7 +1055,7 @@ namespace MetaFile
 			if (!pString)
 				return SetError();
 
-			pString[shStringLength + 1] = 0x00;
+			pString[shStringLength] = 0x00;
 			m_oStream.ReadBytes(pString, shStringLength);
 
 			if (shStringLength & 1)
@@ -816,12 +1096,19 @@ namespace MetaFile
 		}
 		void Read_META_CREATEPATTERNBRUSH()
 		{
-			// TODO: Реализовать чтение Bitmap16
 			CWmfBrush* pBrush = new CWmfBrush();
 			if (!pBrush)
 				return SetError();
 
 			m_oPlayer.RegisterObject((CWmfObjectBase*)pBrush);
+
+			if (m_pOutput)
+			{
+				TWmfBitmap16 oBitmap16;
+				m_oStream >> oBitmap16;
+
+				// TODO: Сделать чтение Bitmap16
+			}
 		}
 		void Read_META_CREATEPENINDIRECT()
 		{
@@ -845,16 +1132,27 @@ namespace MetaFile
 			unsigned short ushIndex;
 			m_oStream >> ushIndex;
 			m_oPlayer.DeleteObject(ushIndex);
+
+			UpdateOutputDC();
 		}
 		void Read_META_DIBCREATEPATTERNBRUSH()
 		{
 			unsigned short ushStyle, ushColorUsage;
 			m_oStream >> ushStyle >> ushColorUsage;
 
-			//TODO: Организовать чтение картинки
 			CWmfBrush* pBrush = new CWmfBrush();
 			if (!pBrush)
 				return SetError();
+			
+			if (m_pOutput)
+			{
+				BYTE* pBgra = NULL;
+				unsigned int unWidth, unHeight;
+				if (ReadImage(ushColorUsage, &pBgra, &unWidth, &unHeight))
+				{
+					pBrush->SetDibPattern(pBgra, unWidth, unHeight);
+				}
+			}
 
 			m_oPlayer.RegisterObject((CWmfObjectBase*)pBrush);
 		}
@@ -864,30 +1162,36 @@ namespace MetaFile
 			m_oStream >> ushIndex;
 
 			// TODO: Реализовать
+			UpdateOutputDC();
 		}
 		void Read_META_SELECTOBJECT()
 		{
 			unsigned short ushIndex;
 			m_oStream >> ushIndex;
 			m_oPlayer.SelectObject(ushIndex);
+
+			UpdateOutputDC();
 		}
 		void Read_META_SELECTPALETTE()
 		{
 			unsigned short ushIndex;
 			m_oStream >> ushIndex;
 			m_oPlayer.SelectPalette(ushIndex);
+			UpdateOutputDC();
 		}
 		void Read_META_EXCLUDECLIPRECT()
 		{
 			short shLeft, shTop, shRight, shBottom;
 			m_oStream >> shBottom >> shRight >> shTop >> shLeft;
 			// TODO: Реализовать клип
+			UpdateOutputDC();
 		}
 		void Read_META_INTERSECTCLIPRECT()
 		{
 			short shLeft, shTop, shRight, shBottom;
 			m_oStream >> shBottom >> shRight >> shTop >> shLeft;
 			// TODO: Реализовать клип
+			UpdateOutputDC();
 		}
 		void Read_META_MOVETO()
 		{
@@ -900,128 +1204,150 @@ namespace MetaFile
 			short shOffsetX, shOffsetY;
 			m_oStream >> shOffsetY >> shOffsetX;
 			// TODO: Реализовать
+			UpdateOutputDC();
 		}
 		void Read_META_OFFSETVIEWPORTORG()
 		{
 			short shXOffset, shYOffset;
 			m_oStream >> shYOffset >> shXOffset;
 			m_pDC->SetViewportOff(shXOffset, shYOffset);
+			UpdateOutputDC();
 		}
 		void Read_META_OFFSETWINDOWORG()
 		{
 			short shXOffset, shYOffset;
 			m_oStream >> shYOffset >> shXOffset;
 			m_pDC->SetWindowOff(shXOffset, shYOffset);
+			UpdateOutputDC();
 		}
 		void Read_META_RESTOREDC()
 		{
 			m_pDC = m_oPlayer.RestoreDC();
+			UpdateOutputDC();
 		}
 		void Read_META_SAVEDC()
 		{
 			m_pDC = m_oPlayer.SaveDC();
+			UpdateOutputDC();
 		}
 		void Read_META_SCALEVIEWPORTEXT()
 		{
 			short yDenom, yNum, xDenom, xNum;
 			m_oStream >> yDenom >> yNum >> xDenom >> xNum;
 			m_pDC->SetViewportScale((double)xNum / (double)xDenom, (double)yNum / (double)xDenom);
+			UpdateOutputDC();
 		}
 		void Read_META_SCALEWINDOWEXT()
 		{
 			short yDenom, yNum, xDenom, xNum;
 			m_oStream >> yDenom >> yNum >> xDenom >> xNum;
 			m_pDC->SetWindowScale((double)xNum / (double)xDenom, (double)yNum / (double)xDenom);
+			UpdateOutputDC();
 		}
 		void Read_META_SETBKCOLOR()
 		{
 			TWmfColor oColor;
 			m_oStream >> oColor;
 			m_pDC->SetTextBgColor(oColor);
+			UpdateOutputDC();
 		}
 		void Read_META_SETBKMODE()
 		{
 			unsigned short ushMode;
 			m_oStream >> ushMode;
 			m_pDC->SetTextBgMode(ushMode);
+			UpdateOutputDC();
 		}
 		void Read_META_SETLAYOUT()
 		{
 			unsigned short ushLayout, ushReserved;
 			m_oStream >> ushLayout >> ushReserved;
 			m_pDC->SetLayout(ushLayout);
+			UpdateOutputDC();
 		}
 		void Read_META_SETMAPMODE()
 		{
 			unsigned short ushMapMode; 
 			m_oStream >> ushMapMode;
 			m_pDC->SetMapMode(ushMapMode);
+			UpdateOutputDC();
 		}
 		void Read_META_SETPOLYFILLMODE()
 		{
 			unsigned short ushMode;
 			m_oStream >> ushMode;
 			m_pDC->SetPolyFillMode(ushMode);
+			UpdateOutputDC();
 		}
 		void Read_META_SETROP2()
 		{
 			unsigned short ushMode;
 			m_oStream >> ushMode;
 			m_pDC->SetRop2Mode(ushMode);
+			UpdateOutputDC();
 		}
 		void Read_META_SETSTRETCHBLTMODE()
 		{
 			unsigned short ushMode;
 			m_oStream >> ushMode;
 			m_pDC->SetStretchBltMode(ushMode);
+			UpdateOutputDC();
 		}
 		void Read_META_SETTEXTALIGN()
 		{
 			unsigned short ushTextAlign;
 			m_oStream >> ushTextAlign;
 			m_pDC->SetTextAlign(ushTextAlign);
+			UpdateOutputDC();
 		}
 		void Read_META_SETTEXTCHAREXTRA()
 		{
 			unsigned short ushCharSpacing;
 			m_oStream >> ushCharSpacing;
 			m_pDC->SetCharSpacing(ushCharSpacing);
+			UpdateOutputDC();
 		}
 		void Read_META_SETTEXTCOLOR()
 		{
 			TWmfColor oColor;
 			m_oStream >> oColor;
 			m_pDC->SetTextColor(oColor);
+			UpdateOutputDC();
 		}
 		void Read_META_SETTEXTJUSTIFICATION()
 		{
 			unsigned short ushBreakCount, ushBreakExtra;
 			m_oStream >> ushBreakCount >> ushBreakExtra;
 			// TODO: Реализовать
+			UpdateOutputDC();
 		}
 		void Read_META_SETVIEWPORTEXT()
 		{
 			short shX, shY;
 			m_oStream >> shY >> shX;
 			m_pDC->SetViewportExt(shX, shY);
+			UpdateOutputDC();
 		}
 		void Read_META_SETVIEWPORTORG()
 		{
 			short shX, shY;
 			m_oStream >> shY >> shX;
 			m_pDC->SetViewportOrg(shX, shY);
+			UpdateOutputDC();
 		}
 		void Read_META_SETWINDOWEXT()
 		{
 			short shX, shY;
 			m_oStream >> shY >> shX;
 			m_pDC->SetWindowExt(shX, shY);
+			UpdateOutputDC();
 		}
 		void Read_META_SETWINDOWORG()
 		{
 			short shX, shY;
 			m_oStream >> shY >> shX;
 			m_pDC->SetWindowOrg(shX, shY);
+			UpdateOutputDC();
 		}
 		void Read_META_ESCAPE()
 		{

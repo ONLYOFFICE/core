@@ -656,38 +656,11 @@ namespace MetaFile
 
 			if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, sizeof(TEmfStretchDIBITS) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
 			{
-				// Для битовых операций SRCPAINT и SRCAND сделаем, как будто фон чисто белый.
-				if (0x008800C6 == oBitmap.BitBltRasterOperation) // SRCPAINT
-				{
-					BYTE* pCur = pBgraBuffer;
-					for (unsigned int unY = 0; unY < ulHeight; unY++)
-					{
-						for (unsigned int unX = 0; unX < ulWidth; unX++)
-						{
-							unsigned int unIndex = (unY * ulWidth + unX) * 4;
-
-							if (0xff == pCur[unIndex + 0] && 0xff == pCur[unIndex + 1] && 0xff == pCur[unIndex + 2])
-								pCur[unIndex + 3] = 0;
-						}
-					}
-				}
-				else if (0x00EE0086 == oBitmap.BitBltRasterOperation) // SRCAND
-				{
-					BYTE* pCur = pBgraBuffer;
-					for (unsigned int unY = 0; unY < ulHeight; unY++)
-					{
-						for (unsigned int unX = 0; unX < ulWidth; unX++)
-						{
-							unsigned int unIndex = (unY * ulWidth + unX) * 4;
-
-							if (0 == pCur[unIndex + 0] && 0 == pCur[unIndex + 1] && 0 == pCur[unIndex + 2])
-								pCur[unIndex + 3] = 0;
-						}
-					}
-				}
-
 				if (m_pOutput)
+				{
+					ProcessRasterOperation(oBitmap.BitBltRasterOperation, &pBgraBuffer, ulWidth, ulHeight);
 					m_pOutput->DrawBitmap(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
+				}
 			}
 
 			if (pBgraBuffer)

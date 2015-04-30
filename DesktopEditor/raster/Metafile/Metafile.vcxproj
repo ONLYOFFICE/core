@@ -158,11 +158,9 @@
     <ClInclude Include="Emf\EmfClip.h" />
     <ClInclude Include="Emf\EmfFile.h" />
     <ClInclude Include="Emf\EmfObjects.h" />
-    <ClInclude Include="Emf\EmfOutputDevice.h" />
     <ClInclude Include="Emf\EmfPath.h" />
     <ClInclude Include="Emf\EmfPlayer.h" />
     <ClInclude Include="Emf\EmfTypes.h" />
-    <ClInclude Include="Emf\RendererOutput.h" />
     <ClInclude Include="MetaFile.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Wmf\RendererOutput.h" />

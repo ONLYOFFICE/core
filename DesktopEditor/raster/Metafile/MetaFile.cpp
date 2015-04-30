@@ -35,6 +35,19 @@ namespace MetaFile
 	}
 	bool CMetaFile::LoadFromFile(const wchar_t *wsFilePath)
 	{
+		// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем 
+		//       FontManager, потому что сейчас в нем кэш без ограничения.
+		//------------------------------------------------------
+		RELEASEINTERFACE(m_pFontManager);
+		m_pFontManager = m_pAppFonts->GenerateFontManager();
+		CFontsCache* pMeasurerCache = new CFontsCache();
+		pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
+		m_pFontManager->SetOwnerCache(pMeasurerCache);
+		m_oWmfFile.SetFontManager(m_pFontManager);
+		m_oEmfFile.SetFontManager(m_pFontManager);
+		//------------------------------------------------------
+
+
 		// Сначала пытаемся открыть файл как Wmf
 		m_oWmfFile.OpenFromFile(wsFilePath);
 
@@ -184,11 +197,9 @@ namespace MetaFile
 		CFontsCache* pFontCache = new CFontsCache();
 		pFontCache->SetStreams(m_pAppFonts->GetStreams());
 		pFontManager->SetOwnerCache(pFontCache);
-		CImageFilesCache oCache;
 
 		CGraphicsRenderer oRenderer;		
 		oRenderer.SetFontManager(pFontManager);
-		oRenderer.SetImageCache(&oCache);
 
 		if (-1 == nHeight)
 		{

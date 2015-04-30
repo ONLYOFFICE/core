@@ -13,6 +13,8 @@
 #include "../../../fontengine/FontManager.h"
 #include <iostream>
 #include "../Common/MetaFile.h"
+#include "../../../common/String.h"
+#include "../../../common/File.h"
 
 namespace MetaFile
 {
@@ -376,7 +378,6 @@ namespace MetaFile
 
 			return true;
 		}
-
 		void MoveTo(TEmfPointL& oPoint)
 		{
 			MoveTo(oPoint.x, oPoint.y);
@@ -506,13 +507,58 @@ namespace MetaFile
 			if (!oText.OutputString)
 				return SetError();
 
-			// TODO: Здесь нужно сделать перевод данных символов в Unicode.
-			std::wstring wsText;
-			for (unsigned int unIndex = 0; unIndex < oText.Chars; unIndex++)
+			IFont* pFont = GetFont();
+			NSString::CConverter::ESingleByteEncoding eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT;
+			if (pFont)
 			{
-				wchar_t wUnicode = ((unsigned char*)oText.OutputString)[unIndex];
-				wsText += wUnicode;
+				// Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
+				// http://msdn.microsoft.com/en-us/library/cc194829.aspx
+				//  Charset Name       Charset Value(hex)  Codepage number
+				//  ------------------------------------------------------
+				//
+				//  DEFAULT_CHARSET           1 (x01)
+				//  SYMBOL_CHARSET            2 (x02)
+				//  OEM_CHARSET             255 (xFF)
+				//  ANSI_CHARSET              0 (x00)            1252
+				//  RUSSIAN_CHARSET         204 (xCC)            1251
+				//  EASTEUROPE_CHARSET      238 (xEE)            1250
+				//  GREEK_CHARSET           161 (xA1)            1253
+				//  TURKISH_CHARSET         162 (xA2)            1254
+				//  BALTIC_CHARSET          186 (xBA)            1257
+				//  HEBREW_CHARSET          177 (xB1)            1255
+				//  ARABIC _CHARSET         178 (xB2)            1256
+				//  SHIFTJIS_CHARSET        128 (x80)             932
+				//  HANGEUL_CHARSET         129 (x81)             949
+				//  GB2313_CHARSET          134 (x86)             936
+				//  CHINESEBIG5_CHARSET     136 (x88)             950
+				//  THAI_CHARSET            222 (xDE)             874	
+				//  JOHAB_CHARSET	        130 (x82)            1361
+				//  VIETNAMESE_CHARSET      163 (xA3)            1258
+
+				switch (pFont->GetCharSet())
+				{
+					default:
+					case DEFAULT_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
+					case SYMBOL_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
+					case ANSI_CHARSET:          eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1252; break;
+					case RUSSIAN_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1251; break;
+					case EASTEUROPE_CHARSET:    eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1250; break;
+					case GREEK_CHARSET:         eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1253; break;
+					case TURKISH_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1254; break;
+					case BALTIC_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1257; break;
+					case HEBREW_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1255; break;
+					case ARABIC_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1256; break;
+					case SHIFTJIS_CHARSET:      eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP932; break;
+					case HANGEUL_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP949; break;
+					case 134/*GB2313_CHARSET*/: eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP936; break;
+					case CHINESEBIG5_CHARSET:   eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP950; break;
+					case THAI_CHARSET:          eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP874; break;
+					case JOHAB_CHARSET:         eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1361; break;
+					case VIETNAMESE_CHARSET:    eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1258; break;
+				}
 			}
+
+			std::wstring wsText = NSString::CConverter::GetUnicodeFromSingleByteString((unsigned char*)oText.OutputString, oText.Chars, eCharSet);
 
 			int nTextW = 0;
 			bool bWithOutLast = false;
@@ -538,7 +584,7 @@ namespace MetaFile
 			if (!oText.OutputString)
 				return SetError();
 
-			std::wstring wsText((wchar_t*)oText.OutputString);
+			std::wstring wsText = NSString::CConverter::GetUnicodeFromUTF16((unsigned short*)oText.OutputString, oText.Chars);
 
 			int nTextW = 0;
 			bool bWithOutLast = false;
@@ -1252,7 +1298,6 @@ namespace MetaFile
 		{
 			TEmfExtTextoutW oText;
 			m_oStream >> oText;
-
 			DrawTextW(oText.wEmrText);
 		}
 		void Read_EMR_LINETO()

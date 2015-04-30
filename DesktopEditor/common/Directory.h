@@ -19,6 +19,11 @@
     #include <sys/stat.h>
     #include <unistd.h>
     #include <dirent.h>
+#elif _IOS
+    #include <sys/types.h>
+    #include <sys/stat.h>
+    #include <unistd.h>
+    #include <dirent.h>
 #endif
 
 namespace NSDirectory
@@ -115,12 +120,41 @@ namespace NSDirectory
         return;
 #endif
 
-#if 0
-        // нормально работает и линукс версия
+//#if 0
+//        // нормально работает и линукс версия
 #ifdef _IOS
-        return GetFiles2_ios(strDirectory, oArray, bIsRecursion);
+        BYTE* pUtf8 = NULL;
+        LONG lLen = 0;
+        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strDirectory.c_str(), strDirectory.length(), pUtf8, lLen, false);
+        DIR *dp;
+        struct dirent *dirp;
+        if((dp  = opendir((char*)pUtf8)) != NULL)
+        {
+            while ((dirp = readdir(dp)) != NULL)
+            {
+                if(DT_REG == dirp->d_type)
+                {
+                    std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
+                    oArray.Add(strDirectory + L"/" + sName);
+                }
+                
+                if (bIsRecursion && DT_DIR == dirp->d_type)
+                {
+                    if(dirp->d_name[0] != '.')
+                    {
+                        std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
+                        GetFiles2(strDirectory + L"/" + sName, oArray, bIsRecursion);
+                    }
+                }
+            }
+            closedir(dp);
+        }
+        delete [] pUtf8;
+        return;
+        
+        //return GetFiles2_ios(strDirectory, oArray, bIsRecursion);
 #endif
-#endif
+//#endif
     }
 
     static CArray<std::wstring> GetFiles(std::wstring strDirectory, bool bIsRecursion = false)

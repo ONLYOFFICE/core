@@ -1,4 +1,0 @@
-# This code should not depend on Views.
-
-"-ui/views",
-"+ui/views/views_export.h"

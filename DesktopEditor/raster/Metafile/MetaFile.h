@@ -34,7 +34,6 @@ namespace MetaFile
 		CApplicationFonts* m_pAppFonts;
 		CFontManager*      m_pFontManager;
 		CWmfFile           m_oWmfFile;
-		TWmfRectF          m_oWmfRect;
 		CEmfFile           m_oEmfFile;
 		int                m_lType;
 	};

@@ -1,13 +1,38 @@
 #ifndef _METAFILE_COMMON_METAFILETYPES_H
 #define _METAFILE_COMMON_METAFILETYPES_H
 
+#include <string>
+#include "../../../common/String.h"
+
+#ifndef BYTE
+typedef unsigned char BYTE;
+#endif
+
+#ifndef _USE_MATH_DEFINES
+#define _USE_MATH_DEFINES
+#endif
+
+#ifndef NULL
+#define NULL 0
+#endif
 
 #if !defined (_WIN32) && !defined(_WIN64)
-    #define BLACKONWHITE                 1
-    #define WHITEONBLACK                 2
-    #define COLORONCOLOR                 3
-    #define HALFTONE                     4
-    #define MAXSTRETCHBLTMODE            4
+	#define BLACKONWHITE                 1
+	#define WHITEONBLACK                 2
+	#define COLORONCOLOR                 3
+	#define HALFTONE                     4
+	#define MAXSTRETCHBLTMODE            4
+
+	#define PT_CLOSEFIGURE      0x01
+	#define PT_LINETO           0x02
+	#define PT_BEZIERTO         0x04
+	#define PT_MOVETO           0x06
+
+	#ifndef _MAC
+		#define ENHMETA_SIGNATURE       0x464D4520
+	#else
+		#define ENHMETA_SIGNATURE       0x20454D46
+	#endif
 #endif
 
 #define MWT_IDENTITY	  0x01
@@ -15,9 +40,197 @@
 #define MWT_RIGHTMULTIPLY 0x03
 #define MWT_SET           0x04
 
+//---------------------------------------------------------------------------------------------------
+// Modes for CWmfFile.SetMapMode
+//---------------------------------------------------------------------------------------------------
+#define MM_TEXT        1
+#define MM_LOMETRIC    2
+#define MM_HIMETRIC    3
+#define MM_LOENGLISH   4
+#define MM_HIENGLISH   5
+#define MM_TWIPS       6
+#define MM_ISOTROPIC   7
+#define MM_ANISOTROPIC 8
+#define MM_DPI         9
+
+#define RGN_AND  1
+#define RGN_OR   2
+#define RGN_XOR  3
+#define RGN_DIFF 4
+#define RGN_COPY 5
+
+//--------------------------------------------------------------------------------------------------
+// From wingdi.h
+//--------------------------------------------------------------------------------------------------
+/* PolyFill() Modes */
+#define ALTERNATE                    1
+#define WINDING                      2
+#define POLYFILL_LAST                2
+
+/* Background Modes */
+#define TRANSPARENT         1
+#define OPAQUE              2
+#define BKMODE_LAST         2
+
+/* Brush Styles */
+#define BS_SOLID            0
+#define BS_NULL             1
+#define BS_HOLLOW           BS_NULL
+#define BS_HATCHED          2
+#define BS_PATTERN          3
+#define BS_INDEXED          4
+#define BS_DIBPATTERN       5
+#define BS_DIBPATTERNPT     6
+#define BS_PATTERN8X8       7
+#define BS_DIBPATTERN8X8    8
+#define BS_MONOPATTERN      9
+
+/* Hatch Styles */
+#define HS_HORIZONTAL       0       /* ----- */
+#define HS_VERTICAL         1       /* ||||| */
+#define HS_FDIAGONAL        2       /* \\\\\ */
+#define HS_BDIAGONAL        3       /* ///// */
+#define HS_CROSS            4       /* +++++ */
+#define HS_DIAGCROSS        5       /* xxxxx */
+
+/* Pen Styles */
+#define PS_SOLID            0
+#define PS_DASH             1       /* -------  */
+#define PS_DOT              2       /* .......  */
+#define PS_DASHDOT          3       /* _._._._  */
+#define PS_DASHDOTDOT       4       /* _.._.._  */
+#define PS_NULL             5
+#define PS_INSIDEFRAME      6
+#define PS_USERSTYLE        7
+#define PS_ALTERNATE        8
+#define PS_STYLE_MASK       0x0000000F
+
+#define PS_ENDCAP_ROUND     0x00000000
+#define PS_ENDCAP_SQUARE    0x00000100
+#define PS_ENDCAP_FLAT      0x00000200
+#define PS_ENDCAP_MASK      0x00000F00
+
+#define PS_JOIN_ROUND       0x00000000
+#define PS_JOIN_BEVEL       0x00001000
+#define PS_JOIN_MITER       0x00002000
+#define PS_JOIN_MASK        0x0000F000
+
+#define PS_COSMETIC         0x00000000
+#define PS_GEOMETRIC        0x00010000
+#define PS_TYPE_MASK        0x000F0000
+
+/* Text Alignment Options */
+#define TA_NOUPDATECP                0
+#define TA_UPDATECP                  1
+
+#define TA_LEFT                      0
+#define TA_RIGHT                     2
+#define TA_CENTER                    6
+
+#define TA_TOP                       0
+#define TA_BOTTOM                    8
+#define TA_BASELINE                  24
+
+/* Binary raster ops */
+#define R2_BLACK            1   /*  0       */
+#define R2_NOTMERGEPEN      2   /* DPon     */
+#define R2_MASKNOTPEN       3   /* DPna     */
+#define R2_NOTCOPYPEN       4   /* PN       */
+#define R2_MASKPENNOT       5   /* PDna     */
+#define R2_NOT              6   /* Dn       */
+#define R2_XORPEN           7   /* DPx      */
+#define R2_NOTMASKPEN       8   /* DPan     */
+#define R2_MASKPEN          9   /* DPa      */
+#define R2_NOTXORPEN        10  /* DPxn     */
+#define R2_NOP              11  /* D        */
+#define R2_MERGENOTPEN      12  /* DPno     */
+#define R2_COPYPEN          13  /* P        */
+#define R2_MERGEPENNOT      14  /* PDno     */
+#define R2_MERGEPEN         15  /* DPo      */
+#define R2_WHITE            16  /*  1       */
+#define R2_LAST             16
+
+/* Ternary raster operations */
+#define SRCCOPY             (DWORD)0x00CC0020 /* dest = source                   */
+#define SRCPAINT            (DWORD)0x00EE0086 /* dest = source OR dest           */
+#define SRCAND              (DWORD)0x008800C6 /* dest = source AND dest          */
+#define SRCINVERT           (DWORD)0x00660046 /* dest = source XOR dest          */
+#define SRCERASE            (DWORD)0x00440328 /* dest = source AND (NOT dest )   */
+#define NOTSRCCOPY          (DWORD)0x00330008 /* dest = (NOT source)             */
+#define NOTSRCERASE         (DWORD)0x001100A6 /* dest = (NOT src) AND (NOT dest) */
+#define MERGECOPY           (DWORD)0x00C000CA /* dest = (source AND pattern)     */
+#define MERGEPAINT          (DWORD)0x00BB0226 /* dest = (NOT source) OR dest     */
+#define PATCOPY             (DWORD)0x00F00021 /* dest = pattern                  */
+#define PATPAINT            (DWORD)0x00FB0A09 /* dest = DPSnoo                   */
+#define PATINVERT           (DWORD)0x005A0049 /* dest = pattern XOR dest         */
+#define DSTINVERT           (DWORD)0x00550009 /* dest = (NOT dest)               */
+#define BLACKNESS           (DWORD)0x00000042 /* dest = BLACK                    */
+#define WHITENESS           (DWORD)0x00FF0062 /* dest = WHITE                    */
+
+/* Object Definitions for EnumObjects() */
+#define OBJ_PEN             1
+#define OBJ_BRUSH           2
+#define OBJ_DC              3
+#define OBJ_METADC          4
+#define OBJ_PAL             5
+#define OBJ_FONT            6
+#define OBJ_BITMAP          7
+#define OBJ_REGION          8
+#define OBJ_METAFILE        9
+#define OBJ_MEMDC           10
+#define OBJ_EXTPEN          11
+#define OBJ_ENHMETADC       12
+#define OBJ_ENHMETAFILE     13
+#define OBJ_COLORSPACE      14
+
+#define ANSI_CHARSET            0
+#define DEFAULT_CHARSET         1
+#define SYMBOL_CHARSET          2
+#define SHIFTJIS_CHARSET        128
+#define HANGEUL_CHARSET         129
+#define HANGUL_CHARSET          129
+#define GB2312_CHARSET          134
+#define CHINESEBIG5_CHARSET     136
+#define OEM_CHARSET             255
+
+#define JOHAB_CHARSET           130
+#define HEBREW_CHARSET          177
+#define ARABIC_CHARSET          178
+#define GREEK_CHARSET           161
+#define TURKISH_CHARSET         162
+#define VIETNAMESE_CHARSET      163
+#define THAI_CHARSET            222
+#define EASTEUROPE_CHARSET      238
+#define RUSSIAN_CHARSET         204
+
+#define MAC_CHARSET             77
+#define BALTIC_CHARSET          186
+
+/* constants for the biCompression field */
+#define BI_RGB        0L
+#define BI_RLE8       1L
+#define BI_RLE4       2L
+#define BI_BITFIELDS  3L
+#define BI_JPEG       4L
+#define BI_PNG        5L
+
+#define LAYOUT_LTR                        0x0000
+#define LAYOUT_RTL                        0x0001
+#define LAYOUT_BITMAPORIENTATIONPRESERVED 0x0008
 
 namespace MetaFile
 {
+	enum EMetaFileBitCount
+	{
+		BI_BITCOUNT_0 = 0x0000,
+		BI_BITCOUNT_1 = 0x0001,
+		BI_BITCOUNT_2 = 0x0004,
+		BI_BITCOUNT_3 = 0x0008,
+		BI_BITCOUNT_4 = 0x0010,
+		BI_BITCOUNT_5 = 0x0018,
+		BI_BITCOUNT_6 = 0x0020
+	};
+
 	struct TEmfPointL;
 	struct TWmfPointS;
 	struct TWmfRect;

@@ -2,6 +2,7 @@
 #define _METAFILE_COMMON_METAFILE_H
 
 #include "MetaFileTypes.h"
+#include "MetaFileUtils.h"
 #include "MetaFileObjects.h"
 #include "MetaFileClip.h"
 #include "../../fontengine/FontManager.h"

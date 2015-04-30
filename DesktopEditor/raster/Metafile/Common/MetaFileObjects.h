@@ -1,6 +1,8 @@
 #ifndef _METAFILE_COMMON_METAFILEOBJECTS_H
 #define _METAFILE_COMMON_METAFILEOBJECTS_H
 
+#include <string>
+
 namespace MetaFile
 {
 	class IFont

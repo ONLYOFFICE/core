@@ -1,10 +1,11 @@
-#ifndef _WMF_PLAYER_H
-#define _WMF_PLAYER_H
+#ifndef _METAFILE_WMF_WMFPLAYER_H
+#define _METAFILE_WMF_WMFPLAYER_H
+
+#include "WmfObjects.h"
+#include "WmfClip.h"
 
 #include <map>
 #include <vector>
-#include "WmfObjects.h"
-#include "../Common/MetaFileTypes.h"
 
 namespace MetaFile
 {
@@ -97,6 +98,7 @@ namespace MetaFile
 		TXForm*        GetTransform();
 		TXForm*        GetInverseTransform();
 		unsigned int   GetMiterLimit();
+		CWmfClip*      GetClip();
 
 	private:
 
@@ -129,31 +131,8 @@ namespace MetaFile
 		unsigned short m_ushTextAlign;
 		unsigned short m_ushCharSpacing;
 		TXForm         m_oTransform;
+		CWmfClip       m_oClip;
 	};
-
-	//class CEmfDC
-	//{
-	//public:
-
-	//	CEmfDC();
-	//	~CEmfDC();
-	//	CEmfDC* Copy();
-
-	//	TEmfXForm*      GetTransform();
-	//	TEmfXForm*      GetInverseTransform();
-	//	void            MultiplyTransform(TEmfXForm& oForm, unsigned int ulMode);
-	//	void            SetMiterLimit(unsigned int ulMiter);
-	//	unsigned int    GetMiterLimit();
-	//	CEmfClip*       GetClip();
-	//	void            ClipToPath(CEmfPath* pPath, unsigned int unMode);
-
-	//private:
-
-	//	TEmfXForm       m_oTransform;
-	//	TEmfXForm       m_oInverseTransform;
-	//	unsigned int    m_ulMiterLimit;
-	//	CEmfClip        m_oClip;
-	//};
 }
 
-#endif //_WMF_PLAYER_H
+#endif //_METAFILE_WMF_WMFPLAYER_H

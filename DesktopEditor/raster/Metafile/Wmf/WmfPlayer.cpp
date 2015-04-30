@@ -263,6 +263,7 @@ namespace MetaFile
 		pNewDC->m_ushTextAlign      = m_ushTextAlign;
 		pNewDC->m_ushCharSpacing    = m_ushCharSpacing;
 		pNewDC->m_oTransform.Init();
+		pNewDC->m_oClip             = m_oClip;
 
 		return pNewDC;
 	}
@@ -583,5 +584,9 @@ namespace MetaFile
 	unsigned int   CWmfDC::GetMiterLimit()
 	{
 		return 0;
+	}
+	CWmfClip*      CWmfDC::GetClip()
+	{
+		return &m_oClip;
 	}
 }

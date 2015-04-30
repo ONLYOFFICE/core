@@ -4,9 +4,6 @@
 #include "../../raster/BgraFrame.h"
 
 #include "Common/MetaFileRenderer.h"
-#ifndef NEW_WMF
-#include "Wmf/RendererOutput.h"
-#endif
 
 namespace MetaFile
 {
@@ -50,12 +47,7 @@ namespace MetaFile
 
 		// Сначала пытаемся открыть файл как Wmf
 		m_oWmfFile.OpenFromFile(wsFilePath);
-
-#ifdef NEW_WMF
 		m_oWmfFile.Scan();
-#else
-		m_oWmfFile.Scan(&m_oWmfRect);
-#endif
 
 		if (!m_oWmfFile.CheckError())
 		{
@@ -89,52 +81,9 @@ namespace MetaFile
 
 		if (c_lMetaWmf == m_lType)
 		{
-#ifdef NEW_WMF
 			CMetaFileRenderer oWmfOut(&m_oWmfFile, pRenderer, dX, dY, dWidth, dHeight);
 			m_oWmfFile.SetOutputDevice((IOutputDevice*)&oWmfOut);
 			m_oWmfFile.PlayMetaFile();
-#else
-			double dRendererDpix, dRendererDpiY;
-			pRenderer->get_DpiX(&dRendererDpix);
-			pRenderer->get_DpiY(&dRendererDpiY);
-
-			CRendererOutput oWmfOut(&m_oWmfFile, pRenderer, dX, dY, dWidth, dHeight);
-
-			double fSrcWidth, fSrcHeight;
-
-			float fW, fH;
-			m_oWmfFile.GetSize(&fW, &fH);
-			m_oWmfFile.GetDisplaySize(&fSrcWidth, &fSrcHeight, dRendererDpix, dRendererDpiY);
-
-			//m_oWmfFile.GetDisplaySize( &fSrcWidth, &fSrcHeight, 25.4, 25.4 );
-			TWmfRectF oRectB = m_oWmfFile.GetBounds();
-
-			//double dW = m_oRect.oBR.fX - m_oRect.oTL.fX;
-			//double dH = m_oRect.oBR.fY - m_oRect.oTL.fY;
-			double dW = oRectB.oBR.fX - oRectB.oTL.fX;
-			double dH = oRectB.oBR.fY - oRectB.oTL.fY;
-
-			double dScaleX = dWidth / dW;//fSrcWidth;
-			double dScaleY = dHeight / dH;//fSrcHeight;
-			//double dScaleX = dWidth  / fSrcWidth;
-			//double dScaleY = dHeight / fSrcHeight;
-
-			double dSrcDpiX, dSrcDpiY;
-			m_oWmfFile.GetDpi(&dSrcDpiX, &dSrcDpiY);
-
-			double dDpiKoefX = dRendererDpix / dSrcDpiX;
-			double dDpiKoefY = dRendererDpiY / dSrcDpiY;
-
-			double dDpi = dSrcDpiY * fSrcHeight / fH;
-			oWmfOut.SetDpi(dRendererDpix, dDpi);
-			oWmfOut.SetWmfRect(oRectB);
-			oWmfOut.SetScales(dScaleX, dScaleY);
-
-			m_oWmfFile.SetOutputDevice(&oWmfOut);
-
-			TWmfRectF oRect;
-			m_oWmfFile.Play(&oRect);
-#endif
 		}
 		else if (c_lMetaEmf == m_lType)
 		{
@@ -149,11 +98,11 @@ namespace MetaFile
 	void CMetaFile::Close()
 	{
 		m_oWmfFile.Close();
-		//m_oEmfFile.Close();
+		m_oEmfFile.Close();
 
 		m_lType  = 0;
 	};
-	int CMetaFile::GetType()
+	int  CMetaFile::GetType()
 	{
 		return m_lType;
 	}
@@ -161,19 +110,11 @@ namespace MetaFile
 	{
 		if (c_lMetaWmf == m_lType)
 		{
-#ifdef NEW_WMF
             const TRectD& oRect = m_oWmfFile.GetBounds();
 			*pdX = oRect.dLeft;
 			*pdY = oRect.dTop;
 			*pdW = oRect.dRight - oRect.dLeft;
 			*pdH = oRect.dBottom - oRect.dTop;
-
-#else
-			*pdX = m_oWmfRect.oTL.fX;
-			*pdY = m_oWmfRect.oTL.fY;
-			*pdW = m_oWmfRect.oBR.fX - m_oWmfRect.oTL.fX;
-			*pdH = m_oWmfRect.oBR.fY - m_oWmfRect.oTL.fY;
-#endif
 		}
 		else if (c_lMetaEmf == m_lType)
 		{

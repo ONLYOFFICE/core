@@ -1,9 +1,10 @@
-#ifndef _WMF_OBJECTS_H
-#define _WMF_OBJECTS_H
+#ifndef _METAFILE_WMF_WMFOBJECTS_H
+#define _METAFILE_WMF_WMFOBJECTS_H
+
+#include "../Common/MetaFileTypes.h"
+#include "../Common/MetaFileObjects.h"
 
 #include "WmfTypes.h"
-#include "WmfUtils.h"
-#include "../Common/MetaFileObjects.h"
 
 namespace MetaFile
 {
@@ -80,7 +81,7 @@ namespace MetaFile
 		}
 		std::wstring GetFaceName()
 		{
-			return NSFile::CUtf8Converter::GetUnicodeFromCharPtr((const char*)Facename, 32, FALSE);
+			return NSString::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)Facename, 32);
 		}
 		int          GetWeight()
 		{
@@ -204,4 +205,4 @@ namespace MetaFile
 	};
 }
 
-#endif //_WMF_OBJECTS_H
+#endif //_METAFILE_WMF_WMFOBJECTS_H

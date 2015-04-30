@@ -1,32 +1,31 @@
-#ifndef _METAFILE_WMF_EMF_COMMON_H
-#define _METAFILE_WMF_EMF_COMMON_H
+#ifndef _METAFILE_COMMON_METAFILEUTILS_H
+#define _METAFILE_COMMON_METAFILEUTILS_H
 
-#ifndef BYTE
-typedef unsigned char BYTE;
-#endif
+#include "MetaFileTypes.h"
 
-#ifndef NULL
-#define NULL 0
-#endif
+#include "../Emf/EmfTypes.h"
+#include "../Wmf/WmfTypes.h"
+#include "../Emf/EmfObjects.h"
+#include "../Wmf/WmfObjects.h"
 
 #include <algorithm>
 
-#include "Emf/EmfTypes.h"
-#include "Wmf/WmfTypes.h"
-#include "Wmf/WmfUtils.h"
-#include "Emf/EmfObjects.h"
-#include "Wmf/WmfObjects.h"
-
 namespace MetaFile
 {
+#define METAFILE_RGBA(r, g, b) ((DWORD)( ( (BYTE)(r) )| ( ( (BYTE)(g) ) << 8 ) | ( ( (BYTE)(b) ) << 16 ) | ( (BYTE)(0) << 24 ) ) )
 
-    #define METAFILE_RGBA(r, g, b) ((DWORD)( ( (BYTE)(r) )| ( ( (BYTE)(g) ) << 8 ) | ( ( (BYTE)(b) ) << 16 ) | ( (BYTE)(0) << 24 ) ) )
-
-    struct TRgbQuad
+	struct TRgbQuad
 	{
 		unsigned char r;
 		unsigned char g;
 		unsigned char b;
+
+		TRgbQuad()
+		{
+			r = 0;
+			g = 0;
+			b = 0;
+		}
 	};
 
 	class CDataStream
@@ -224,10 +223,10 @@ namespace MetaFile
 		}
 		CDataStream& operator>>(TEmfColor& oColor)
 		{
-            *this >> oColor.r;
-            *this >> oColor.g;
-            *this >> oColor.b;
-            *this >> oColor.a;
+			*this >> oColor.r;
+			*this >> oColor.g;
+			*this >> oColor.b;
+			*this >> oColor.a;
 
 			return *this;
 		}
@@ -416,7 +415,7 @@ namespace MetaFile
 			*this >> oBitmap.cbBmi;
 			*this >> oBitmap.offBits;
 			*this >> oBitmap.cbBits;
-			
+
 			return *this;
 		}
 		CDataStream& operator>>(TEmfLogPaletteEntry& oEntry)
@@ -456,10 +455,10 @@ namespace MetaFile
 		}
 		CDataStream& operator>>(TRgbQuad& oRGB)
 		{
-            *this >> oRGB.b;
-            *this >> oRGB.g;
-            *this >> oRGB.r;
-            Skip(1); // reserved
+			*this >> oRGB.b;
+			*this >> oRGB.g;
+			*this >> oRGB.r;
+			Skip(1); // reserved
 
 			return *this;
 		}
@@ -571,7 +570,7 @@ namespace MetaFile
 				}
 				oText.TextString = pUnicode;
 			}
-				
+
 			return *this;
 		}
 		CDataStream& operator>>(TEmfAlphaBlend& oBitmap)
@@ -738,7 +737,7 @@ namespace MetaFile
 			else
 			{
 				oScan.ScanLines = NULL;
-			}			
+			}
 			*this >> oScan.Count2;
 
 			return *this;
@@ -941,6 +940,6 @@ namespace MetaFile
 	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight);
 	double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY);
 	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight);
+	bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder);
 };
-
-#endif //_METAFILE_WMF_EMF_COMMON_H
+#endif // _METAFILE_COMMON_METAFILEUTILS_H

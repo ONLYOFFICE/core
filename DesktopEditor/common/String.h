@@ -6,7 +6,7 @@
 namespace NSString
 {
 #define NSSTRING_COMMON_CP(UnicodeMapCP, lCount, pData) \
-	for (LONG i = 0; i < lCount; ++i)\
+	for (long i = 0; i < lCount; ++i)\
 	{\
 		unsigned char unChar = (unsigned char)pData[i];\
 		if (unChar < MSCP_FIRST_CHAR || unChar > MSCP_LAST_CHAR)\
@@ -19,7 +19,7 @@ namespace NSString
 #define NSSTRING_WITHLEADBYTE_CP(LEAD_CHAR, UnicodeMapCP, UnicodeMapWithLeadByte, lCount, pData) \
 	{\
 		int nLeadByte = -1;\
-		for (LONG i = 0; i < lCount; i++)\
+		for (long i = 0; i < lCount; i++)\
 		{\
 			unsigned char  unCode = (unsigned char)pData[i];\
 			unsigned short ushUnicode = UnicodeMapCP[unCode];\
@@ -79,7 +79,7 @@ namespace NSString
 			SINGLE_BYTE_ENCODING_CP866   = 0xFF  // OEM_CHARSET             255 (xFF) // Проверить, что OEM соответствует CP866
 		} ESingleByteEncoding;
 
-		static std::wstring GetUnicodeFromSingleByteString(const unsigned char* pData, LONG lCount, ESingleByteEncoding eType = SINGLE_BYTE_ENCODING_DEFAULT)
+		static std::wstring GetUnicodeFromSingleByteString(const unsigned char* pData, long lCount, ESingleByteEncoding eType = SINGLE_BYTE_ENCODING_DEFAULT)
 		{
 			wchar_t* pUnicode = new wchar_t[lCount + 1];
 			if (!pUnicode)
@@ -90,17 +90,17 @@ namespace NSString
 				default:
 				case SINGLE_BYTE_ENCODING_DEFAULT:
 				{
-					for (LONG i = 0; i < lCount; ++i)
-						pUnicode[i] = (wchar_t)(BYTE)pData[i];
+					for (long i = 0; i < lCount; ++i)
+						pUnicode[i] = (wchar_t)(unsigned char)pData[i];
 
 					break;
 				}
 				case SINGLE_BYTE_ENCODING_SYMBOL:
 				{
 					// Добавляем 0xF000 к кодам всех символов
-					for (LONG i = 0; i < lCount; ++i)
+					for (long i = 0; i < lCount; ++i)
 					{
-						pUnicode[i] = (wchar_t)(0xF000 | (BYTE)pData[i]);
+						pUnicode[i] = (wchar_t)(0xF000 | (unsigned char)pData[i]);
 					}
 
 					break;
@@ -125,11 +125,13 @@ namespace NSString
 
 			pUnicode[lCount] = 0;
 			std::wstring s(pUnicode, lCount);
-			RELEASEARRAYOBJECTS(pUnicode);
+
+			if (pUnicode)
+				delete[] pUnicode;
 
 			return s;
 		}
-		static std::wstring GetUnicodeFromUTF16(const unsigned short* pData, LONG lCount)
+		static std::wstring GetUnicodeFromUTF16(const unsigned short* pData, long lCount)
 		{
 			if (0 == lCount)
 				return L"";
@@ -169,7 +171,10 @@ namespace NSString
 				return L"";
 
 			std::wstring sRet(pUnicode, pCur - pUnicode);
-			RELEASEARRAYOBJECTS(pUnicode);
+
+			if (pUnicode)
+				delete[] pUnicode;
+
 			return sRet;
 		}
 	};

@@ -30,6 +30,12 @@ namespace MetaFile
 					pNewCommand = new CEmfClipCommandPath(&pPathCommand->m_oPath, pPathCommand->m_unMode);
 					break;
 				}
+				case EMF_CLIPCOMMAND_EXCLUDE:
+				{
+					CEmfClipCommandExclude* pExclude = (CEmfClipCommandExclude*)pCommand;
+					pNewCommand = new CEmfClipCommandExclude(pExclude->m_oClip, pExclude->m_oBB);
+					break;
+				}
 			}
 
 			if (pNewCommand)
@@ -40,9 +46,18 @@ namespace MetaFile
 	{
 		Clear();
 	}
-	bool CEmfClip::Intersect(TEmfRectL& oRect)
+	bool CEmfClip::Intersect(TRectD& oRect)
 	{
 		CEmfClipCommandBase* pCommand = new CEmfClipCommandIntersect(oRect);
+		if (!pCommand)
+			return false;
+
+		m_vCommands.push_back(pCommand);
+		return true;
+	}
+	bool CEmfClip::Exclude(TRectD& oClip, TRectD& oBB)
+	{
+		CEmfClipCommandBase* pCommand = new CEmfClipCommandExclude(oClip, oBB);
 		if (!pCommand)
 			return false;
 
@@ -72,13 +87,37 @@ namespace MetaFile
 				case EMF_CLIPCOMMAND_INTERSECT:
 				{
 					CEmfClipCommandIntersect* pIntersect = (CEmfClipCommandIntersect*)pCommand;
-					pOutput->IntersectClip(pIntersect->m_oRect.lLeft, pIntersect->m_oRect.lTop, pIntersect->m_oRect.lRight, pIntersect->m_oRect.lBottom);
+					pOutput->IntersectClip(pIntersect->m_oRect.dLeft, pIntersect->m_oRect.dTop, pIntersect->m_oRect.dRight, pIntersect->m_oRect.dBottom);
 					break;
 				}
 				case EMF_CLIPCOMMAND_SETPATH:
 				{
 					CEmfClipCommandPath* pClipPath = (CEmfClipCommandPath*)pCommand;
 					pClipPath->m_oPath.Draw(pOutput, false, false, pClipPath->m_unMode);
+					break;
+				}
+				case EMF_CLIPCOMMAND_EXCLUDE:
+				{
+					CEmfClipCommandExclude* pExclude = (CEmfClipCommandExclude*)pCommand;
+
+					pOutput->StartClipPath(RGN_AND, ALTERNATE);
+
+					TRectD& oClip = pExclude->m_oClip;
+					TRectD& oBB = pExclude->m_oBB;
+
+					pOutput->MoveTo(oClip.dLeft,  oClip.dTop);
+					pOutput->LineTo(oClip.dRight, oClip.dTop);
+					pOutput->LineTo(oClip.dRight, oClip.dBottom);
+					pOutput->LineTo(oClip.dLeft,  oClip.dBottom);
+					pOutput->ClosePath();
+
+					pOutput->MoveTo(oBB.dLeft,  oBB.dTop);
+					pOutput->LineTo(oBB.dRight, oBB.dTop);
+					pOutput->LineTo(oBB.dRight, oBB.dBottom);
+					pOutput->LineTo(oBB.dLeft,  oBB.dBottom);
+					pOutput->ClosePath();
+
+					pOutput->EndClipPath(RGN_AND);
 					break;
 				}
 			}

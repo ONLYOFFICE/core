@@ -54,7 +54,7 @@ namespace MetaFile
 		CEmfDC* Copy();
 
 		void            SetMapMode(unsigned int ulMapMode);
-		unsigned int   GetMapMode();
+		unsigned int    GetMapMode();
 		TEmfXForm*      GetTransform();
 		TEmfXForm*      GetInverseTransform();
 		void            MultiplyTransform(TEmfXForm& oForm, unsigned int ulMode);
@@ -67,20 +67,20 @@ namespace MetaFile
 		void            RemoveFont(CEmfLogFont* pFont);
 		CEmfLogFont*    GetFont();
 		void            SetTextAlign(unsigned int ulAlign);
-		unsigned int   GetTextAlign();
+		unsigned int    GetTextAlign();
 		void            SetBgMode(unsigned int ulBgMode);
-		unsigned int   GetBgMode();
+		unsigned int    GetBgMode();
 		void            SetBgColor(TEmfColor& oColor);
 		TEmfColor&      GetBgColor();
 		void            SetMiterLimit(unsigned int ulMiter);
-		unsigned int   GetMiterLimit();
+		unsigned int    GetMiterLimit();
 		void            SetFillMode(unsigned int ulFillMode);
-		unsigned int   GetFillMode();
+		unsigned int    GetFillMode();
 		void            SetPen(CEmfLogPen* pPen);
 		void            RemovePen(CEmfLogPen* pPen);
 		CEmfLogPen*     GetPen();
 		void            SetStretchMode(unsigned int& oMode);
-		unsigned int   GetStretchMode();
+		unsigned int    GetStretchMode();
 		double          GetPixelWidth();
 		double          GetPixelHeight();
 		void            SetWindowOrigin(TEmfPointL& oPoint);
@@ -90,7 +90,7 @@ namespace MetaFile
 		void            SetViewportExtents(TEmfSizeL& oPoint);
 		TEmfWindow*     GetViewport();
 		void            SetRop2Mode(unsigned int& nMode);
-		unsigned int   GetRop2Mode();
+		unsigned int    GetRop2Mode();
 		void            SetPalette(CEmfLogPalette* pPalette);
 		void            RemovePalette(CEmfLogPalette* pPalette);
 		CEmfLogPalette* GetPalette();
@@ -99,6 +99,8 @@ namespace MetaFile
 		TEmfPointL&     GetCurPos();
 		CEmfClip*       GetClip();
 		void            ClipToPath(CEmfPath* pPath, unsigned int unMode);
+		void            SetArcDirection(unsigned int unDirection);
+		unsigned int    GetArcDirection();
 
 	private:
 
@@ -108,8 +110,6 @@ namespace MetaFile
 
 	private:
 
-		CEmfLogPen      m_oDefaultPen;
-		CEmfLogBrushEx  m_oDefaultBrush;
 		unsigned int    m_ulMapMode;
 		CEmfLogBrushEx* m_pBrush;
 		CEmfLogPen*     m_pPen;
@@ -131,6 +131,7 @@ namespace MetaFile
 		TEmfWindow      m_oViewport;
 		TEmfPointL      m_oCurPos;
 		CEmfClip        m_oClip;
+		unsigned int    m_unArcDirection;
 	};
 }
 

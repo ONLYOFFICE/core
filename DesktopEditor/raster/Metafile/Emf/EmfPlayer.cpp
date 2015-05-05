@@ -33,7 +33,7 @@ namespace MetaFile
 		}
 		m_mObjects.clear();
 	}
-	void CEmfPlayer::Clear()
+	void    CEmfPlayer::Clear()
 	{
 		for (int nIndex = 0; nIndex < m_vDCStack.size(); nIndex++)
 		{
@@ -59,6 +59,9 @@ namespace MetaFile
 		m_pDC = pDC;
 		m_vDCStack.push_back(pDC);
 		InitStockObjects();
+
+		SelectObject(0x80000007); // BLACK_PEN
+		SelectObject(0x80000000); // WHITE_BRUSH
 	}
 	CEmfDC* CEmfPlayer::SaveDC()
 	{
@@ -99,7 +102,7 @@ namespace MetaFile
 	{
 		return m_pDC;
 	}
-	void CEmfPlayer::RegisterObject(unsigned int ulIndex, CEmfObjectBase* pObject)
+	void    CEmfPlayer::RegisterObject(unsigned int ulIndex, CEmfObjectBase* pObject)
 	{
 		CEmfObjectMap::const_iterator oPos = m_mObjects.find(ulIndex);
 		if (m_mObjects.end() != oPos)
@@ -111,7 +114,7 @@ namespace MetaFile
 
 		m_mObjects.insert(std::pair<unsigned int, CEmfObjectBase*>(ulIndex, pObject));
 	}
-	void CEmfPlayer::SelectObject(unsigned int ulIndex)
+	void    CEmfPlayer::SelectObject(unsigned int ulIndex)
 	{
 		CEmfObjectMap::const_iterator oPos = m_mObjects.find(ulIndex);
 		if (m_mObjects.end() != oPos)
@@ -126,7 +129,7 @@ namespace MetaFile
 			}
 		}
 	}
-	void CEmfPlayer::SelectPalette(unsigned int ulIndex)
+	void    CEmfPlayer::SelectPalette(unsigned int ulIndex)
 	{
 		// DEFAULT_PALETTE
 		if (ulIndex == 0x8000000F)
@@ -140,7 +143,7 @@ namespace MetaFile
 				m_pDC->SetPalette((CEmfLogPalette*)pObject);
 		}
 	}
-	void CEmfPlayer::DeleteObject(unsigned int ulIndex)
+	void    CEmfPlayer::DeleteObject(unsigned int ulIndex)
 	{
 		// TODO: Сделать поиск по DC_BRUSH и DC_PEN
 
@@ -165,7 +168,7 @@ namespace MetaFile
 			m_mObjects.erase(ulIndex);
 		}
 	}
-	void CEmfPlayer::InitStockObjects()
+	void    CEmfPlayer::InitStockObjects()
 	{
 		InitStockBrush(false, 0xff, 0xff, 0xff, 0x80000000);
 		InitStockBrush(false, 0xc0, 0xc0, 0xc0, 0x80000001);
@@ -180,7 +183,7 @@ namespace MetaFile
 
 		// DC_BRUSH и DC_PEN не надо выставлять
 	}
-	void CEmfPlayer::InitStockBrush(bool bNull, unsigned char r, unsigned char g, unsigned char b, unsigned int ulIndex)
+	void    CEmfPlayer::InitStockBrush(bool bNull, unsigned char r, unsigned char g, unsigned char b, unsigned int ulIndex)
 	{
 		CEmfLogBrushEx* pBrush = new CEmfLogBrushEx();
 		if (!pBrush)
@@ -196,7 +199,7 @@ namespace MetaFile
 
 		RegisterObject(ulIndex, (CEmfObjectBase*)pBrush);
 	}
-	void CEmfPlayer::InitStockPen(bool bNull, unsigned char r, unsigned char g, unsigned char b, unsigned int ulIndex)
+	void    CEmfPlayer::InitStockPen(bool bNull, unsigned char r, unsigned char g, unsigned char b, unsigned int ulIndex)
 	{
 		CEmfLogPen* pPen = new CEmfLogPen();
 		if (!pPen)
@@ -216,8 +219,8 @@ namespace MetaFile
 	CEmfDC::CEmfDC()
 	{
 		m_ulMapMode = MM_TEXT;
-		m_pBrush    = &m_oDefaultBrush;
-		m_pPen      = &m_oDefaultPen;
+		m_pBrush    = NULL;
+		m_pPen      = NULL;
 		m_pFont     = NULL;
 		m_oTransform.Init();
 		m_oInverseTransform.Init();
@@ -232,45 +235,45 @@ namespace MetaFile
 		m_oViewport.Init();
 		m_dPixelHeight = 1;
 		m_dPixelWidth  = 1;
-		m_pPen  = NULL;
-		m_pFont = NULL;
 		m_oCurPos.x = 0;
 		m_oCurPos.y = 0;
+		m_unArcDirection = AD_COUNTERCLOCKWISE;
 	}
 	CEmfDC::~CEmfDC()
 	{
 	}
-	CEmfDC* CEmfDC::Copy()
+	CEmfDC*         CEmfDC::Copy()
 	{
 		CEmfDC* pNewDC = new CEmfDC();
 		if (!pNewDC)
 			return NULL;
 
-		pNewDC->m_ulMapMode     = m_ulMapMode;
-		pNewDC->m_pBrush        = m_pBrush;
-		pNewDC->m_pPen          = m_pPen;
-		pNewDC->m_pFont         = m_pFont;
-		pNewDC->m_pPalette      = m_pPalette;
+		pNewDC->m_ulMapMode      = m_ulMapMode;
+		pNewDC->m_pBrush         = m_pBrush;
+		pNewDC->m_pPen           = m_pPen;
+		pNewDC->m_pFont          = m_pFont;
+		pNewDC->m_pPalette       = m_pPalette;
 		pNewDC->m_oTransform.Copy(&m_oTransform);
 		pNewDC->m_oInverseTransform.Copy(&m_oInverseTransform);
 		pNewDC->m_oTextColor.Copy(&m_oTextColor);
 		pNewDC->m_oBgColor.Copy(&m_oBgColor);
-		pNewDC->m_ulTextAlign   = m_ulTextAlign;
-		pNewDC->m_ulBgMode      = m_ulBgMode;
-		pNewDC->m_ulMiterLimit  = m_ulMiterLimit;
-		pNewDC->m_ulFillMode    = m_ulFillMode;
-		pNewDC->m_ulStretchMode = m_ulStretchMode;		
-		pNewDC->m_ulRop2Mode    = m_ulRop2Mode;
-		pNewDC->m_dPixelHeight  = m_dPixelHeight;
-		pNewDC->m_dPixelWidth   = m_dPixelWidth;
+		pNewDC->m_ulTextAlign    = m_ulTextAlign;
+		pNewDC->m_ulBgMode       = m_ulBgMode;
+		pNewDC->m_ulMiterLimit   = m_ulMiterLimit;
+		pNewDC->m_ulFillMode     = m_ulFillMode;
+		pNewDC->m_ulStretchMode  = m_ulStretchMode;		
+		pNewDC->m_ulRop2Mode     = m_ulRop2Mode;
+		pNewDC->m_dPixelHeight   = m_dPixelHeight;
+		pNewDC->m_dPixelWidth    = m_dPixelWidth;
 		pNewDC->m_oWindow.Copy(&m_oWindow);
 		pNewDC->m_oViewport.Copy(&m_oViewport);
-		pNewDC->m_oCurPos       = m_oCurPos;
-		pNewDC->m_oClip         = m_oClip;
+		pNewDC->m_oCurPos        = m_oCurPos;
+		pNewDC->m_oClip          = m_oClip;
+		pNewDC->m_unArcDirection = m_unArcDirection;
 
 		return pNewDC;
 	}
-	void CEmfDC::SetMapMode(unsigned int ulMapMode)
+	void            CEmfDC::SetMapMode(unsigned int ulMapMode)
 	{
 		m_ulMapMode = ulMapMode;
 
@@ -324,19 +327,19 @@ namespace MetaFile
 			}
 		}
 	}
-	unsigned int CEmfDC::GetMapMode()
+	unsigned int    CEmfDC::GetMapMode()
 	{
 		return m_ulMapMode;
 	}
-	TEmfXForm* CEmfDC::GetTransform()
+	TEmfXForm*      CEmfDC::GetTransform()
 	{
 		return &m_oTransform;
 	}
-	TEmfXForm* CEmfDC::GetInverseTransform()
+	TEmfXForm*      CEmfDC::GetInverseTransform()
 	{
 		return &m_oInverseTransform;
 	}
-	void CEmfDC::MultiplyTransform(TEmfXForm& oForm, unsigned int ulMode)
+	void            CEmfDC::MultiplyTransform(TEmfXForm& oForm, unsigned int ulMode)
 	{
 		m_oTransform.Multiply(oForm, ulMode);
 
@@ -360,19 +363,19 @@ namespace MetaFile
 		m_oInverseTransform.Dx  = pT->Dy * pT->M21 / dDet - pT->Dx * pT->M22 / dDet;
 		m_oInverseTransform.Dy  = pT->Dx * pT->M12 / dDet - pT->Dy * pT->M11 / dDet;
 	}
-	void CEmfDC::SetTextColor(TEmfColor& oColor)
+	void            CEmfDC::SetTextColor(TEmfColor& oColor)
 	{
 		m_oTextColor.Copy(&oColor);
 	}
-	TEmfColor& CEmfDC::GetTextColor()
+	TEmfColor&      CEmfDC::GetTextColor()
 	{
 		return m_oTextColor;
 	}
-	void CEmfDC::SetBrush(CEmfLogBrushEx* pBrush)
+	void            CEmfDC::SetBrush(CEmfLogBrushEx* pBrush)
 	{
 		m_pBrush = pBrush;
 	}
-	void CEmfDC::RemoveBrush(CEmfLogBrushEx* pBrush)
+	void            CEmfDC::RemoveBrush(CEmfLogBrushEx* pBrush)
 	{
 		if (pBrush == m_pBrush)
 			m_pBrush = NULL;
@@ -381,129 +384,129 @@ namespace MetaFile
 	{
 		return m_pBrush;
 	}
-	void CEmfDC::SetFont(CEmfLogFont* pFont)
+	void            CEmfDC::SetFont(CEmfLogFont* pFont)
 	{
 		m_pFont = pFont;
 	}
-	void CEmfDC::RemoveFont(CEmfLogFont* pFont)
+	void            CEmfDC::RemoveFont(CEmfLogFont* pFont)
 	{
 		if (pFont == m_pFont)
 			m_pFont = NULL;
 	}
-	CEmfLogFont* CEmfDC::GetFont()
+	CEmfLogFont*    CEmfDC::GetFont()
 	{
 		return m_pFont;
 	}
-	void CEmfDC::SetTextAlign(unsigned int ulAlign)
+	void            CEmfDC::SetTextAlign(unsigned int ulAlign)
 	{
 		m_ulTextAlign = ulAlign;
 	}
-	unsigned int CEmfDC::GetTextAlign()
+	unsigned int    CEmfDC::GetTextAlign()
 	{
 		return m_ulTextAlign;
 	}
-	void CEmfDC::SetBgMode(unsigned int ulBgMode)
+	void            CEmfDC::SetBgMode(unsigned int ulBgMode)
 	{
 		m_ulBgMode = ulBgMode;
 	}
-	unsigned int CEmfDC::GetBgMode()
+	unsigned int    CEmfDC::GetBgMode()
 	{
 		return m_ulBgMode;
 	}
-	void CEmfDC::SetBgColor(TEmfColor& oColor)
+	void            CEmfDC::SetBgColor(TEmfColor& oColor)
 	{
 		m_oBgColor.Copy(&oColor);
 	}
-	TEmfColor& CEmfDC::GetBgColor()
+	TEmfColor&      CEmfDC::GetBgColor()
 	{
 		return m_oBgColor;
 	}
-	void CEmfDC::SetMiterLimit(unsigned int ulMiter)
+	void            CEmfDC::SetMiterLimit(unsigned int ulMiter)
 	{
 		m_ulMiterLimit = ulMiter;
 	}
-	unsigned int CEmfDC::GetMiterLimit()
+	unsigned int    CEmfDC::GetMiterLimit()
 	{
 		return m_ulMiterLimit;
 	}
-	void CEmfDC::SetFillMode(unsigned int ulFillMode)
+	void            CEmfDC::SetFillMode(unsigned int ulFillMode)
 	{
 		m_ulFillMode = ulFillMode;
 	}
-	unsigned int CEmfDC::GetFillMode()
+	unsigned int    CEmfDC::GetFillMode()
 	{
 		return m_ulFillMode;
 	}
-	void CEmfDC::SetPen(CEmfLogPen* pPen)
+	void            CEmfDC::SetPen(CEmfLogPen* pPen)
 	{
 		m_pPen = pPen;
 	}
-	void CEmfDC::RemovePen(CEmfLogPen* pPen)
+	void            CEmfDC::RemovePen(CEmfLogPen* pPen)
 	{
 		if (pPen == m_pPen)
 			m_pPen = NULL;
 	}
-	CEmfLogPen* CEmfDC::GetPen()
+	CEmfLogPen*     CEmfDC::GetPen()
 	{
 		return m_pPen;
 	}
-	void CEmfDC::SetStretchMode(unsigned int& oMode)
+	void            CEmfDC::SetStretchMode(unsigned int& oMode)
 	{
 		m_ulStretchMode = oMode;
 	}
-	unsigned int CEmfDC::GetStretchMode()
+	unsigned int    CEmfDC::GetStretchMode()
 	{
 		return m_ulStretchMode;
 	}
-	double CEmfDC::GetPixelWidth()
+	double          CEmfDC::GetPixelWidth()
 	{
 		return m_dPixelWidth;
 	}
-	double CEmfDC::GetPixelHeight()
+	double          CEmfDC::GetPixelHeight()
 	{
 		return m_dPixelHeight;
 	}
-	void CEmfDC::SetPixelWidth(double dPixelW)
+	void            CEmfDC::SetPixelWidth(double dPixelW)
 	{
 		m_dPixelWidth = dPixelW;
 	}
-	void CEmfDC::SetPixelHeight(double dPixelH)
+	void            CEmfDC::SetPixelHeight(double dPixelH)
 	{
 		m_dPixelHeight = dPixelH;
 	}
-	void CEmfDC::SetWindowOrigin(TEmfPointL& oPoint)
+	void            CEmfDC::SetWindowOrigin(TEmfPointL& oPoint)
 	{
 		m_oWindow.lX = oPoint.x;
 		m_oWindow.lY = oPoint.y;
 		UpdatePixelMetrics();
 	}
-	void CEmfDC::SetWindowExtents(TEmfSizeL& oPoint)
+	void            CEmfDC::SetWindowExtents(TEmfSizeL& oPoint)
 	{
 		m_oWindow.ulW = oPoint.cx;
 		m_oWindow.ulH = oPoint.cy;
 		UpdatePixelMetrics();
 	}
-	TEmfWindow* CEmfDC::GetWindow()
+	TEmfWindow*     CEmfDC::GetWindow()
 	{
 		return &m_oWindow;
 	}
-	void CEmfDC::SetViewportOrigin(TEmfPointL& oPoint)
+	void            CEmfDC::SetViewportOrigin(TEmfPointL& oPoint)
 	{
 		m_oViewport.lX = oPoint.x;
 		m_oViewport.lY = oPoint.y;
 		UpdatePixelMetrics();
 	}
-	void CEmfDC::SetViewportExtents(TEmfSizeL& oPoint)
+	void            CEmfDC::SetViewportExtents(TEmfSizeL& oPoint)
 	{
 		m_oViewport.ulW = oPoint.cx;
 		m_oViewport.ulH = oPoint.cy;
 		UpdatePixelMetrics();
 	}
-	TEmfWindow* CEmfDC::GetViewport()
+	TEmfWindow*     CEmfDC::GetViewport()
 	{
 		return &m_oViewport;
 	}
-	bool CEmfDC::UpdatePixelMetrics()
+	bool            CEmfDC::UpdatePixelMetrics()
 	{
 		unsigned int ulMapMode = m_ulMapMode;
 		if (MM_ISOTROPIC == ulMapMode)
@@ -526,19 +529,19 @@ namespace MetaFile
 
 		return true;
 	}
-	void CEmfDC::SetRop2Mode(unsigned int& nMode)
+	void            CEmfDC::SetRop2Mode(unsigned int& nMode)
 	{
 		m_ulRop2Mode = nMode;
 	}
-	unsigned int CEmfDC::GetRop2Mode()
+	unsigned int    CEmfDC::GetRop2Mode()
 	{
 		return m_ulRop2Mode;
 	}
-	void CEmfDC::SetPalette(CEmfLogPalette* pPalette)
+	void            CEmfDC::SetPalette(CEmfLogPalette* pPalette)
 	{
 		m_pPalette = pPalette;
 	}
-	void CEmfDC::RemovePalette(CEmfLogPalette* pPalette)
+	void            CEmfDC::RemovePalette(CEmfLogPalette* pPalette)
 	{
 		if (m_pPalette == pPalette)
 			m_pPalette = NULL;
@@ -547,25 +550,33 @@ namespace MetaFile
 	{
 		return m_pPalette;
 	}
-	void CEmfDC::SetCurPos(TEmfPointL& oPoint)
+	void            CEmfDC::SetCurPos(TEmfPointL& oPoint)
 	{
 		SetCurPos(oPoint.x, oPoint.y);
 	}
-	void CEmfDC::SetCurPos(int lX, int lY)
+	void            CEmfDC::SetCurPos(int lX, int lY)
 	{
 		m_oCurPos.x = lX;
 		m_oCurPos.y = lY;
 	}
-	TEmfPointL& CEmfDC::GetCurPos()
+	TEmfPointL&     CEmfDC::GetCurPos()
 	{
 		return m_oCurPos;
 	}
-	CEmfClip* CEmfDC::GetClip()
+	CEmfClip*       CEmfDC::GetClip()
 	{
 		return &m_oClip;
 	}
-	void CEmfDC::ClipToPath(CEmfPath* pPath, unsigned int unMode)
+	void            CEmfDC::ClipToPath(CEmfPath* pPath, unsigned int unMode)
 	{
 		m_oClip.SetPath(pPath, unMode);
+	}
+	void            CEmfDC::SetArcDirection(unsigned int unDirection)
+	{
+		m_unArcDirection = unDirection;
+	}
+	unsigned int    CEmfDC::GetArcDirection()
+	{
+		return m_unArcDirection;
 	}
 }

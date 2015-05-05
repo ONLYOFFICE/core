@@ -12,7 +12,8 @@ namespace MetaFile
 	{
 		EMF_CLIPCOMMAND_UNKNOWN   = 0x00,
 		EMF_CLIPCOMMAND_INTERSECT = 0x01,
-		EMF_CLIPCOMMAND_SETPATH   = 0x02
+		EMF_CLIPCOMMAND_SETPATH   = 0x02,
+		EMF_CLIPCOMMAND_EXCLUDE   = 0x03
 	} EEmfClipCommandType;
 
 	class CEmfClipCommandBase
@@ -32,7 +33,7 @@ namespace MetaFile
 	class CEmfClipCommandIntersect : public CEmfClipCommandBase
 	{
 	public:
-		CEmfClipCommandIntersect(TEmfRectL& oRect) : m_oRect(oRect)
+		CEmfClipCommandIntersect(TRectD& oRect) : m_oRect(oRect)
 		{
 		}
 		~CEmfClipCommandIntersect()
@@ -44,7 +45,7 @@ namespace MetaFile
 		}
 
 	public:
-		TEmfRectL m_oRect;
+		TRectD m_oRect;
 	};
 	class CEmfClipCommandPath : public CEmfClipCommandBase
 	{
@@ -65,6 +66,24 @@ namespace MetaFile
 		CEmfPath     m_oPath;
 		unsigned int m_unMode;
 	};
+	class CEmfClipCommandExclude : public CEmfClipCommandBase
+	{
+	public:
+		CEmfClipCommandExclude(TRectD& oClip, TRectD& oBB) : m_oClip(oClip), m_oBB(oBB)
+		{
+		}
+		~CEmfClipCommandExclude()
+		{
+		}
+		EEmfClipCommandType GetType()
+		{
+			return EMF_CLIPCOMMAND_INTERSECT;
+		}
+
+	public:
+		TRectD m_oClip;
+		TRectD m_oBB;
+	};
 
 	class CEmfClip : public IClip
 	{
@@ -74,7 +93,8 @@ namespace MetaFile
 
 		void operator=(CEmfClip& oClip);
 		void Reset();
-		bool Intersect(TEmfRectL& oRect);
+		bool Intersect(TRectD& oRect);
+		bool Exclude(TRectD& oClip, TRectD& oBB);
 		bool SetPath(CEmfPath* pPath, unsigned int umMode);
 		void ClipOnRenderer(IOutputDevice* pOutput);
 

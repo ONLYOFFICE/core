@@ -160,7 +160,7 @@ namespace MetaFile
 		if (!pBgraData)
 			return;
 
-		memset(pBgraData, 0x00, nWidth * nHeight * 4);
+		memset(pBgraData, 0xff, nWidth * nHeight * 4);
 		CBgraFrame oFrame;
 		oFrame.put_Data(pBgraData);
 		oFrame.put_Width(nWidth);

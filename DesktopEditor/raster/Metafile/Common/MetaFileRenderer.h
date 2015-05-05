@@ -608,7 +608,7 @@ namespace MetaFile
 			BYTE nDashStyle = Aggplus::DashStyleSolid;;
 
 			// В WinGDI все карандаши толщиной больше 1px рисуются в стиле PS_SOLID
-			if (1 == pPen->GetWidth() && PS_SOLID != ulPenStyle)
+			if (1 >= pPen->GetWidth() && PS_SOLID != ulPenStyle)
 			{
 				dWidth = 0; // Специальное значение для 1pх карандаша
 

@@ -50,10 +50,30 @@ namespace MetaFile
 	CEmfPath::~CEmfPath()
 	{
 		Clear();
-	}
-	bool CEmfPath::MoveTo(TEmfPointS& oPoint)
+	}	
+	bool CEmfPath::MoveTo(double dX, double dY)
 	{
-		CEmfPathCommandBase* pCommand = new CEmfPathMoveTo(oPoint);
+		CEmfPathCommandBase* pCommand = new CEmfPathMoveTo(dX, dY);
+		if (!pCommand)
+			return false;
+
+		m_pCommands.push_back(pCommand);
+
+		return true;
+	}	
+	bool CEmfPath::LineTo(double dX, double dY)
+	{
+		CEmfPathCommandBase* pCommand = new CEmfPathLineTo(dX, dY);
+		if (!pCommand)
+			return false;
+
+		m_pCommands.push_back(pCommand);
+
+		return true;
+	}	
+	bool CEmfPath::CurveTo(double dX1, double dY1, double dX2, double dY2, double dXE, double dYE)
+	{
+		CEmfPathCommandBase* pCommand = new CEmfPathCurveTo(dX1, dY1, dX2, dY2, dXE, dYE);
 		if (!pCommand)
 			return false;
 
@@ -61,89 +81,9 @@ namespace MetaFile
 
 		return true;
 	}
-	bool CEmfPath::MoveTo(TEmfPointL& oPoint)
+	bool CEmfPath::ArcTo(double dL, double dT, double dR, double dB, double dStart, double dSweep)
 	{
-		CEmfPathCommandBase* pCommand = new CEmfPathMoveTo(oPoint);
-		if (!pCommand)
-			return false;
-
-		m_pCommands.push_back(pCommand);
-
-		return true;
-	}
-	bool CEmfPath::MoveTo(int lX, int lY)
-	{
-		CEmfPathCommandBase* pCommand = new CEmfPathMoveTo(lX, lY);
-		if (!pCommand)
-			return false;
-
-		m_pCommands.push_back(pCommand);
-
-		return true;
-	}
-	bool CEmfPath::LineTo(TEmfPointS& oPoint)
-	{
-		CEmfPathCommandBase* pCommand = new CEmfPathLineTo(oPoint);
-		if (!pCommand)
-			return false;
-
-		m_pCommands.push_back(pCommand);
-
-		return true;
-	}
-	bool CEmfPath::LineTo(TEmfPointL& oPoint)
-	{
-		CEmfPathCommandBase* pCommand = new CEmfPathLineTo(oPoint);
-		if (!pCommand)
-			return false;
-
-		m_pCommands.push_back(pCommand);
-
-		return true;
-	}
-	bool CEmfPath::LineTo(int lX, int lY)
-	{
-		CEmfPathCommandBase* pCommand = new CEmfPathLineTo(lX, lY);
-		if (!pCommand)
-			return false;
-
-		m_pCommands.push_back(pCommand);
-
-		return true;
-	}
-	bool CEmfPath::CurveTo(TEmfPointS& oPoint1, TEmfPointS& oPoint2, TEmfPointS& oPointE)
-	{
-		CEmfPathCommandBase* pCommand = new CEmfPathCurveTo(oPoint1, oPoint2, oPointE);
-		if (!pCommand)
-			return false;
-
-		m_pCommands.push_back(pCommand);
-
-		return true;
-	}
-	bool CEmfPath::CurveTo(TEmfPointL& oPoint1, TEmfPointL& oPoint2, TEmfPointL& oPointE)
-	{
-		CEmfPathCommandBase* pCommand = new CEmfPathCurveTo(oPoint1, oPoint2, oPointE);
-		if (!pCommand)
-			return false;
-
-		m_pCommands.push_back(pCommand);
-
-		return true;
-	}
-	bool CEmfPath::CurveTo(int lX1, int lY1, int lX2, int lY2, int lXE, int lYE)
-	{
-		CEmfPathCommandBase* pCommand = new CEmfPathCurveTo(lX1, lY1, lX2, lY2, lXE, lYE);
-		if (!pCommand)
-			return false;
-
-		m_pCommands.push_back(pCommand);
-
-		return true;
-	}
-	bool CEmfPath::ArcTo(int lL, int lT, int lR, int lB, double dStart, double dSweep)
-	{
-		CEmfPathCommandBase* pCommand = new CEmfPathArcTo(lL, lT, lR, lB, dStart, dSweep);
+		CEmfPathCommandBase* pCommand = new CEmfPathArcTo(dL, dT, dR, dB, dStart, dSweep);
 		if (!pCommand)
 			return false;
 

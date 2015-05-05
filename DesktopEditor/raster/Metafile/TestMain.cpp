@@ -42,11 +42,11 @@ void ConvertFile(CMetaFile &oMetaFile, std::wstring wsFilePath)
 		oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 4, 1000);
 	}
 }
-void ConvertFolder(CMetaFile &oMetaFile, std::wstring wsFolderPath)
+void ConvertFolder(CMetaFile &oMetaFile, std::wstring wsFolderPath, const int nType)
 {
 	oMetaFile.Close();
 
-	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"wmf");
+	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, nType == c_lMetaEmf ? L"emf" : L"wmf");
 	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
 	{
 		std::wstring wsFilePath = wsFolderPath;
@@ -62,20 +62,14 @@ void ConvertFolder(CMetaFile &oMetaFile, std::wstring wsFolderPath)
 	}
 }
 
-#include "../../common/String.h"
-void Test()
+void main()
 {
 	CApplicationFonts oFonts;
 	oFonts.Initialize();
 
 	CMetaFile oMetaFile(&oFonts);
-	//ConvertFile(oMetaFile, L"D://Test Files//fulltest.wmf");
-	ConvertFolder(oMetaFile, L"D://Test Files//Bugs//ALL//");
-}
+	ConvertFolder(oMetaFile, L"D://Test Files//", c_lMetaEmf);
 
-void main()
-{
-	Test();
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_CrtDumpMemoryLeaks();
 }

@@ -2,7 +2,7 @@
 #define _METAFILE_EMF_EMFOBJECTS_H
 
 #include "EmfTypes.h"
-#include "../../common/Types.h"
+//#include "../../common/Types.h"
 #include "../Common/MetaFileObjects.h"
 #include "../../../common/File.h"
 

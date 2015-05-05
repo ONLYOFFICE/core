@@ -16,6 +16,8 @@ typedef unsigned char BYTE;
 #define NULL 0
 #endif
 
+#define METAFILE_RGBA(r, g, b) ((unsigned int)( ( (unsigned char)(r) )| ( ( (unsigned char)(g) ) << 8 ) | ( ( (unsigned char)(b) ) << 16 ) | ( (unsigned char)(0) << 24 ) ) )
+
 #if !defined (_WIN32) && !defined(_WIN64)
 	#define BLACKONWHITE                 1
 	#define WHITEONBLACK                 2
@@ -301,6 +303,17 @@ namespace MetaFile
 	{
 		double x;
 		double y;
+
+		TPointD()
+		{
+			x = 0;
+			y = 0;
+		}
+		TPointD(double _x, double _y)
+		{
+			x = _x;
+			y = _y;
+		}
 	};
 
 	struct TColor
@@ -308,6 +321,29 @@ namespace MetaFile
 		unsigned char r;
 		unsigned char g;
 		unsigned char b;
+
+		TColor()
+		{
+			r = 0;
+			g = 0;
+			b = 0;
+		}
+		TColor(int nValue)
+		{
+			r = (nValue & 0xFF);
+			g = (nValue >> 8) & 0xFF;
+			b = (nValue >> 16) & 0xFF;
+		}
+		int ToInt()
+		{
+			return METAFILE_RGBA(r, g, b);
+		}
+		void SwapRGBtoBGR()
+		{
+			unsigned char t = r;
+			r = b;
+			b = t;
+		}
 	};
 
 	struct TXForm
@@ -318,6 +354,26 @@ namespace MetaFile
 		double M22;
 		double Dx;
 		double Dy;
+
+		TXForm()
+		{
+			M11 = 1;
+			M12 = 0;
+			M21 = 0;
+			M22 = 1;
+			Dx  = 0;
+			Dy  = 0;
+		}
+
+		TXForm(double m11, double m12, double m21, double m22, double dx, double dy)
+		{
+			M11 = m11;
+			M12 = m12;
+			M21 = m21;
+			M22 = m22;
+			Dx  = dx;
+			Dy  = dy;
+		}
 
 		void Init()
 		{

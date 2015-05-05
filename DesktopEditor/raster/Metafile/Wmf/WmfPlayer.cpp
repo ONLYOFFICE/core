@@ -8,9 +8,7 @@ namespace MetaFile
 		CWmfDC* pDC = new CWmfDC();
 		if (!pDC)
 		{
-#ifdef NEW_WMF
 			pFile->SetError();
-#endif
 			return;
 		}
 
@@ -53,9 +51,7 @@ namespace MetaFile
 		CWmfDC* pDC = new CWmfDC();
 		if (!pDC)
 		{
-#ifdef NEW_WMF
 			m_pFile->SetError();
-#endif
 			return;
 		}
 
@@ -68,18 +64,14 @@ namespace MetaFile
 	{
 		if (!m_pDC)
 		{
-#ifdef NEW_WMF
 			m_pFile->SetError();
-#endif
 			return NULL;
 		}
 
 		CWmfDC* pNewDC = m_pDC->Copy();
 		if (!pNewDC)
 		{
-#ifdef NEW_WMF
 			m_pFile->SetError();
-#endif
 			return NULL;
 		}
 
@@ -91,9 +83,7 @@ namespace MetaFile
 	{
 		if (m_vDCStack.size() <= 1)
 		{
-#ifdef NEW_WMF
 			m_pFile->SetError();
-#endif
 			return m_pDC;
 		}
 
@@ -223,9 +213,9 @@ namespace MetaFile
 		m_oTextColor.Set(0, 0, 0);
 		m_oTextBgColor.Set(255, 255, 255);
 		m_oCurPos.Set(0, 0);
-		m_ushTextBgMode     = TRANSPARENT;
+		m_ushTextBgMode     = OPAQUE;
 		m_ushLayout         = LAYOUT_LTR;
-		m_ushPolyFillMode   = WINDING;
+		m_ushPolyFillMode   = ALTERNATE;
 		m_ushRop2Mode       = R2_COPYPEN;
 		m_ushStretchBltMode = COLORONCOLOR;
 		m_ushTextAlign      = TA_TOP | TA_LEFT | TA_NOUPDATECP;

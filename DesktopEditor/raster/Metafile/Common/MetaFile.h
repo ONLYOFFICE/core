@@ -26,8 +26,8 @@ namespace MetaFile
 		
 		virtual void         PlayMetaFile() = 0;
 		virtual void         ClearFile() {/*Нельзя делать чисто виртуальной, потому что вызывается в деструкторе*/}
-		virtual double       TranslateX(int nX) = 0;
-		virtual double       TranslateY(int nY) = 0;
+		//virtual double       TranslateX(int nX) = 0;
+		//virtual double       TranslateY(int nY) = 0;
 		virtual TRect*       GetDCBounds() = 0;
 		virtual double       GetPixelHeight() = 0;
 		virtual double       GetPixelWidth() = 0;
@@ -39,12 +39,13 @@ namespace MetaFile
 		virtual unsigned int GetTextBgMode() = 0;
 		virtual int          GetTextBgColor() = 0;
 		virtual unsigned int GetFillMode() = 0;
-		virtual TPointL      GetCurPos() = 0;
+		virtual TPointD      GetCurPos() = 0;
 		virtual TXForm*      GetInverseTransform() = 0;
 		virtual TXForm*      GetTransform() = 0;
 		virtual unsigned int GetMiterLimit() = 0;
 		virtual unsigned int GetRop2Mode() = 0;
 		virtual IClip*       GetClip() = 0;
+		virtual int          GetCharSpace() = 0;
 
 		bool          OpenFromFile(const wchar_t* wsFilePath)
 		{

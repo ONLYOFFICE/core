@@ -555,9 +555,11 @@ namespace Aggplus
 		}
 
 		double dWidth		 = pPen->Size;
-		if (0 == dWidth && !m_bIntegerGrid)
+		double dWidthMinSize = 1.0 / sqrt(m_oCoordTransform.m_agg_mtx.determinant());
+
+		if ((0 == dWidth && !m_bIntegerGrid) || dWidth < dWidthMinSize)
 		{
-			dWidth = 1.0 / sqrt(m_oCoordTransform.m_agg_mtx.determinant());
+			dWidth = dWidthMinSize;
 		}
 		
 		double dblMiterLimit = pPen->MiterLimit;

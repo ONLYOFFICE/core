@@ -831,17 +831,29 @@ HRESULT CGraphicsRenderer::DrawPath(const LONG& nType)
 			
 			if (m_oBrush.Type == c_BrushTypeTexture || m_oBrush.Type == c_BrushTypePattern)
 			{
+				Aggplus::WrapMode oMode = Aggplus::WrapModeClamp;
+				switch (m_oBrush.TextureMode)
+				{
+				case c_BrushTextureModeTile:
+					oMode = Aggplus::WrapModeTile;
+					break;
+				case c_BrushTextureModeTileCenter:
+					oMode = Aggplus::WrapModeTile;
+					break;
+				default:
+					break;
+				}
 				Aggplus::CBrushTexture* pTextureBrush = NULL;
 				
 				if (NULL != m_pCache)
 				{
 					pCacheImage = m_pCache->Lock(m_oBrush.TexturePath);
 
-					pTextureBrush = new Aggplus::CBrushTexture(pCacheImage->GetImage(), /*(Aggplus::WrapMode)TextureMode*/Aggplus::WrapModeClamp);
+					pTextureBrush = new Aggplus::CBrushTexture(pCacheImage->GetImage(), oMode);
 				}
 				else
 				{
-					pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.TexturePath, /*(Aggplus::WrapMode)TextureMode*/Aggplus::WrapModeClamp);
+					pTextureBrush = new Aggplus::CBrushTexture(m_oBrush.TexturePath, oMode);
 				}
 
 				if( pTextureBrush )

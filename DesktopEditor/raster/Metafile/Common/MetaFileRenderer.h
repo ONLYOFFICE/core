@@ -57,7 +57,7 @@ namespace MetaFile
 			CheckEndPath();
 		}
 
-		void DrawBitmap(int lX, int lY, int lW, int lH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)
+		void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight)
 		{
 			if (!pBuffer || 0 == unWidth || 0 == unHeight)
 				return;
@@ -80,11 +80,11 @@ namespace MetaFile
 				pBufferPtr += 4;
 			}
 
-			TPointD oTL = TranslatePoint(lX, lY);
-			TPointD oBR = TranslatePoint(lX + lW, lY + lH);
+			TPointD oTL = TranslatePoint(dX, dY);
+			TPointD oBR = TranslatePoint(dX + dW, dY + dH);
 			m_pRenderer->DrawImage(&oImage, oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y);
 		}
-		void DrawString(std::wstring& wsText, unsigned int ulCharsCount, int lX, int lY, int nTextW, bool bWithOutLast)
+		void DrawString(std::wstring& wsText, unsigned int ulCharsCount, double _dX, double _dY, int nTextW, bool bWithOutLast)
 		{
 			CheckEndPath();
 
@@ -101,7 +101,7 @@ namespace MetaFile
 			if (lLogicalFontHeight < 0.01)
 				lLogicalFontHeight = 18;
 
-			double dFontHeight = lLogicalFontHeight * m_dScaleY * m_pFile->GetPixelHeight() / 25.4 * 72;
+			double dFontHeight = abs(lLogicalFontHeight * m_dScaleY * m_pFile->GetPixelHeight() / 25.4 * 72);
 
 			std::wstring wsFaceName = pFont->GetFaceName();
 			m_pRenderer->put_FontName(wsFaceName);
@@ -126,22 +126,18 @@ namespace MetaFile
 
 			float fL = 0, fT = 0, fW = 0, fH = 0;
 			float fUndX1 = 0, fUndY1 = 0, fUndX2 = 0, fUndY2 = 0, fUndSize = 1;
-			m_pRenderer->put_FontCharSpace(0);
+
+			double dFontCharSpace = m_pFile->GetCharSpace() * m_dScaleX * m_pFile->GetPixelWidth();
+			m_pRenderer->put_FontCharSpace(dFontCharSpace);
 			CFontManager* pFontManager = m_pFile->GetFontManager();
 			if (pFontManager)
 			{
-				pFontManager->SetCharSpacing(0);
 				pFontManager->LoadFontByName(wsFaceName, dFontHeight, lStyle, 72, 72);
+				pFontManager->SetCharSpacing(dFontCharSpace * 72 / 25.4);
 				double dMmToPt = 25.4 / 72;
 				double dFHeight  = dFontHeight * pFontManager->m_pFont->GetHeight() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
 				double dFDescent = dFontHeight * pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
 				double dFAscent  = dFHeight - std::abs(dFDescent);
-
-				// Просчитаем положение подчеркивания
-				pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
-				fUndX1 *= (float)dMmToPt; fUndY1 *= (float)dMmToPt;
-				fUndX2 *= (float)dMmToPt; fUndY2 *= (float)dMmToPt;
-				fUndSize *= (float)dMmToPt / 2;
 
 				if (0 != nTextW && ulCharsCount > 1)
 				{
@@ -162,10 +158,8 @@ namespace MetaFile
 
 					if (dCharSpace > 0.001 || dCharSpace < -0.001)
 					{
-						pFontManager->SetCharSpacing(dCharSpace);
-						double dRendDpiX;
-						m_pRenderer->get_DpiX(&dRendDpiX);
-						m_pRenderer->put_FontCharSpace(dCharSpace * 25.4 / 72);
+						pFontManager->SetCharSpacing(dFontCharSpace + dCharSpace);
+						m_pRenderer->put_FontCharSpace((dFontCharSpace + dCharSpace) * 25.4 / 72);
 					}
 
 					pFontManager->LoadString1(wsText, 0, 0);
@@ -184,7 +178,14 @@ namespace MetaFile
 					fT = (float)dMmToPt * (oBox.fMinY);
 					fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
 					fH = (float)dMmToPt * (oBox.fMaxY - oBox.fMinY);
+
 				}
+
+				// Просчитаем положение подчеркивания
+				pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
+				fUndX1 *= (float)dMmToPt; fUndY1 *= (float)dMmToPt;
+				fUndX2 *= (float)dMmToPt; fUndY2 *= (float)dMmToPt;
+				fUndSize *= (float)dMmToPt / 2;
 
 				if (std::abs(fT) < dFAscent)
 				{
@@ -198,7 +199,7 @@ namespace MetaFile
 					fH = (float)dFHeight;
 			}
 
-			TPointD oTextPoint = TranslatePoint(lX, lY);
+			TPointD oTextPoint = TranslatePoint(_dX, _dY);
 			double dX = oTextPoint.x;
 			double dY = oTextPoint.y;
 
@@ -330,33 +331,33 @@ namespace MetaFile
 
 			m_bStartedPath = true;
 		}
-		void MoveTo(int lX, int lY)
+		void MoveTo(double dX, double dY)
 		{
 			CheckStartPath(true);
-			TPointD oPoint = TranslatePoint(lX, lY);
+			TPointD oPoint = TranslatePoint(dX, dY);
 			m_pRenderer->PathCommandMoveTo(oPoint.x, oPoint.y);
 		}
-		void LineTo(int lX, int lY)
+		void LineTo(double dX, double dY)
 		{
 			CheckStartPath(false);
-			TPointD oPoint = TranslatePoint(lX, lY);
+			TPointD oPoint = TranslatePoint(dX, dY);
 			m_pRenderer->PathCommandLineTo(oPoint.x, oPoint.y);
 		}
-		void CurveTo(int lX1, int lY1, int lX2, int lY2, int lXe, int lYe)
+		void CurveTo(double dX1, double dY1, double dX2, double dY2, double dXe, double dYe)
 		{
 			CheckStartPath(false);
 
-			TPointD oPoint1 = TranslatePoint(lX1, lY1);
-			TPointD oPoint2 = TranslatePoint(lX2, lY2);
-			TPointD oPointE = TranslatePoint(lXe, lYe);
+			TPointD oPoint1 = TranslatePoint(dX1, dY1);
+			TPointD oPoint2 = TranslatePoint(dX2, dY2);
+			TPointD oPointE = TranslatePoint(dXe, dYe);
 			m_pRenderer->PathCommandCurveTo(oPoint1.x, oPoint1.y, oPoint2.x, oPoint2.y, oPointE.x, oPointE.y);
 		}
-		void ArcTo(int lLeft, int lTop, int lRight, int lBottom, double dStart, double dSweep)
+		void ArcTo(double dLeft, double dTop, double dRight, double dBottom, double dStart, double dSweep)
 		{
 			CheckStartPath(false);
 
-			TPointD oTL = TranslatePoint(lLeft, lTop);
-			TPointD oBR = TranslatePoint(lRight, lBottom);
+			TPointD oTL = TranslatePoint(dLeft, dTop);
+			TPointD oBR = TranslatePoint(dRight, dBottom);
 			m_pRenderer->PathCommandArcTo(oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y, dStart, dSweep);
 		}
 		void ClosePath()
@@ -377,21 +378,21 @@ namespace MetaFile
 				bool bStroke = lType & 1 ? true : false;
 				bool bFill   = lType & 2 ? true : false;
 
-				int m_lEndType = -1;
+				int nEndType = -1;
 
 				if (bStroke && (m_lDrawPathType & c_nStroke))
-					m_lEndType = c_nStroke;
+					nEndType = c_nStroke;
 
 				if (bFill)
 				{
 					if (m_lDrawPathType & c_nWindingFillMode)
-						m_lEndType = (-1 == m_lDrawPathType ? c_nWindingFillMode : m_lDrawPathType | c_nWindingFillMode);
+						nEndType = (-1 == nEndType ? c_nWindingFillMode : nEndType | c_nWindingFillMode);
 					else if (m_lDrawPathType & c_nEvenOddFillMode)
-						m_lEndType = (-1 == m_lDrawPathType ? c_nEvenOddFillMode : m_lDrawPathType | c_nEvenOddFillMode);
+						nEndType = (-1 == nEndType ? c_nEvenOddFillMode : nEndType | c_nEvenOddFillMode);
 				}
 
-				if (-1 != m_lEndType)
-					m_pRenderer->DrawPath(m_lEndType);
+				if (-1 != nEndType)
+					m_pRenderer->DrawPath(nEndType);
 			}
 		}
 		void EndPath()
@@ -410,7 +411,7 @@ namespace MetaFile
 			m_pRenderer->BeginCommand(c_nResetClipType);
 			m_pRenderer->EndCommand(c_nResetClipType);
 		}
-		void IntersectClip(int lLeft, int lTop, int lRight, int lBottom)
+		void IntersectClip(double dLeft, double dTop, double dRight, double dBottom)
 		{
 			m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionIntersect);
 
@@ -418,8 +419,8 @@ namespace MetaFile
 			m_pRenderer->BeginCommand(c_nPathType);
 			m_pRenderer->PathCommandStart();
 
-			TPointD oTL = TranslatePoint(lLeft, lTop);
-			TPointD oBR = TranslatePoint(lRight, lBottom);
+			TPointD oTL = TranslatePoint(dLeft, dTop);
+			TPointD oBR = TranslatePoint(dRight, dBottom);
 
 			m_pRenderer->PathCommandMoveTo(oTL.x, oTL.y);
 			m_pRenderer->PathCommandLineTo(oTL.x, oBR.y);
@@ -431,7 +432,7 @@ namespace MetaFile
 			m_pRenderer->EndCommand(c_nClipType);
 			m_pRenderer->PathCommandEnd();
 		}
-		void StartClipPath(unsigned int unMode)
+		void StartClipPath(unsigned int unMode, int nFillMode = -1)
 		{
 			CheckEndPath();
 
@@ -447,7 +448,8 @@ namespace MetaFile
 				default: unClipMode = c_nClipRegionIntersect; break;
 			}
 
-			unsigned int unFillMode = m_pFile->GetFillMode();
+			unsigned int unFillMode = -1 == nFillMode ? m_pFile->GetFillMode() : nFillMode;
+
 			if (ALTERNATE == unFillMode)
 				unClipMode |= c_nClipRegionTypeEvenOdd;
 			else //if (WINDING == unFillMode)
@@ -477,7 +479,7 @@ namespace MetaFile
 
 				if (!bMoveTo)
 				{
-					TPointL oCurPos = m_pFile->GetCurPos();
+					TPointD oCurPos = m_pFile->GetCurPos();
 					MoveTo(oCurPos.x, oCurPos.y);
 				}
 			}
@@ -491,24 +493,8 @@ namespace MetaFile
 			}
 		}
 
-		TPointD TranslatePoint(int nX, int nY)
+		TPointD TranslatePoint(double dX, double dY)
 		{
-			double dX = m_pFile->TranslateX(nX);
-			double dY = m_pFile->TranslateY(nY);
-
-			// Координаты приходят уже с примененной матрицей. Поэтому сначала мы умножаем на матрицу преобразования, 
-			// вычитаем начальные координаты и умножаем на обратную матрицу преобразования.
-			TRect* pBounds = m_pFile->GetDCBounds();
-			double dT = pBounds->nTop;
-			double dL = pBounds->nLeft;
-
-			TEmfXForm* pInverse   = m_pFile->GetInverseTransform();
-			TEmfXForm* pTransform = m_pFile->GetTransform();
-			pTransform->Apply(dX, dY);
-			dX -= dL;
-			dY -= dT;
-			pInverse->Apply(dX, dY);
-
 			TPointD oPoint;
 			oPoint.x = m_dScaleX * dX + m_dX;
 			oPoint.y = m_dScaleY * dY + m_dY;
@@ -530,11 +516,44 @@ namespace MetaFile
 				m_pRenderer->put_BrushTextureMode(c_BrushTextureModeTile);
 				m_pRenderer->put_BrushTexturePath(pBrush->GetDibPatterPath());
 			}
+			else if (BS_HATCHED == unBrushStyle)
+			{
+				m_pRenderer->put_BrushType(c_BrushTypeHatch1);
+				std::wstring wsBrushType = L"horz";
+
+				switch (pBrush->GetHatch())
+				{
+				case HS_HORIZONTAL: wsBrushType = L"horz"; break;
+				case HS_VERTICAL:   wsBrushType = L"vert"; break;
+				case HS_FDIAGONAL:  wsBrushType = L"dnDiag"; break;
+				case HS_BDIAGONAL:  wsBrushType = L"upDiag"; break;
+				case HS_CROSS:      wsBrushType = L"cross"; break;
+				case HS_DIAGCROSS:  wsBrushType = L"diagCross"; break;
+				}
+
+				// TODO: Непонятно почему, но в Hatch все цвета идут не как RGB, а как BGR
+				if (TRANSPARENT == m_pFile->GetTextBgMode())
+					m_pRenderer->put_BrushAlpha2(0);
+				else
+				{
+					m_pRenderer->put_BrushAlpha2(255);
+
+					TColor oBgColor(m_pFile->GetTextBgColor());
+					oBgColor.SwapRGBtoBGR();
+					m_pRenderer->put_BrushColor2(oBgColor.ToInt());
+				}
+
+				TColor oFgColor(pBrush->GetColor());
+				oFgColor.SwapRGBtoBGR();
+				m_pRenderer->put_BrushTexturePath(wsBrushType);
+				m_pRenderer->put_BrushAlpha1(255);
+				m_pRenderer->put_BrushColor1(oFgColor.ToInt());
+			}
 			else //if (BS_SOLID == unBrushStyle)
 			{
+				m_pRenderer->put_BrushType(c_BrushTypeSolid);
 				m_pRenderer->put_BrushColor1(pBrush->GetColor());
 				m_pRenderer->put_BrushAlpha1(pBrush->GetAlpha());
-				m_pRenderer->put_BrushType(c_BrushTypeSolid);
 			}
 
 			return true;
@@ -586,13 +605,88 @@ namespace MetaFile
 
 			double dMiterLimit = m_pFile->GetMiterLimit() * m_dScaleX * dPixelWidth;
 
-			// TODO: Некоторые типы пена невозможно реализовать с текущим интерфейсом рендерера, поэтому мы делаем его пока PS_SOLID.
 			// TODO: Реализовать PS_USERSTYLE
-			BYTE nDashStyle;
-			if (PS_ALTERNATE == ulPenStyle || PS_USERSTYLE == ulPenStyle || PS_INSIDEFRAME == ulPenStyle)
-				nDashStyle = (BYTE)PS_SOLID;
-			else if (PS_NULL != ulPenStyle)
-				nDashStyle = (BYTE)ulPenStyle;
+			BYTE nDashStyle = Aggplus::DashStyleSolid;;
+
+			// В WinGDI все карандаши толщиной больше 1px рисуются в стиле PS_SOLID
+			if (1 == pPen->GetWidth() && PS_SOLID != ulPenStyle)
+			{
+				dWidth = 0; // Специальное значение для 1pх карандаша
+
+				double dDpiX;
+				m_pRenderer->get_DpiX(&dDpiX);
+				double dPixelW = dDpiX > 1 ? 25.4 / dDpiX : 25.4 / 72;
+
+				double dDashOff = 0;
+				double* pDashPattern = NULL;
+				int nDashLen = 0;
+
+				switch (ulPenStyle)
+				{
+				case PS_DASH:
+				{
+					dDashOff = 0 * dPixelW;
+					nDashLen = 2;
+					pDashPattern = new double[2];
+					if (pDashPattern)
+					{
+						pDashPattern[0] = 18 * dPixelW;
+						pDashPattern[1] = 3 * dPixelW;
+					}
+					break;
+				}
+				case PS_DOT:
+				{
+					dDashOff = 4 * dPixelW;
+					nDashLen = 2;
+					pDashPattern = new double[2];
+					if (pDashPattern)
+					{
+						pDashPattern[0] = 3 * dPixelW;
+						pDashPattern[1] = 3 * dPixelW;
+					}
+					break;
+				}
+				case PS_DASHDOT:
+				{
+					dDashOff = 22 * dPixelW;
+					nDashLen = 4;
+					pDashPattern = new double[4];
+					if (pDashPattern)
+					{
+						pDashPattern[0] = 9 * dPixelW;
+						pDashPattern[1] = 6 * dPixelW;
+						pDashPattern[2] = 3 * dPixelW;
+						pDashPattern[3] = 6 * dPixelW;
+					}
+					break;
+				}
+				case PS_DASHDOTDOT:
+				{
+					dDashOff = 22 * dPixelW;
+					nDashLen = 6;
+					pDashPattern = new double[6];
+					if (pDashPattern)
+					{
+						pDashPattern[0] = 9 * dPixelW;
+						pDashPattern[1] = 3 * dPixelW;
+						pDashPattern[2] = 3 * dPixelW;
+						pDashPattern[3] = 3 * dPixelW;
+						pDashPattern[4] = 3 * dPixelW;
+						pDashPattern[5] = 3 * dPixelW;
+					}
+					break;
+				}
+				}
+
+				if (NULL != pDashPattern)
+				{
+					m_pRenderer->put_PenDashOffset(dDashOff);
+					m_pRenderer->PenDashPattern(pDashPattern, nDashLen);
+					nDashStyle = Aggplus::DashStyleCustom;
+					delete[] pDashPattern;
+				}
+			}
 
 			m_pRenderer->put_PenDashStyle(nDashStyle);
 			m_pRenderer->put_PenLineJoin(nJoinStyle);

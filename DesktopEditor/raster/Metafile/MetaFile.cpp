@@ -157,6 +157,10 @@ namespace MetaFile
 		double dHeight = nHeight ;//* 72 / 25.4 / dDpiY;
 
 		BYTE* pBgraData = new BYTE[nWidth * nHeight * 4];
+		if (!pBgraData)
+			return;
+
+		memset(pBgraData, 0x00, nWidth * nHeight * 4);
 		CBgraFrame oFrame;
 		oFrame.put_Data(pBgraData);
 		oFrame.put_Width(nWidth);

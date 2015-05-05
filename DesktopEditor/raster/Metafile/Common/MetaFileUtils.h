@@ -12,8 +12,6 @@
 
 namespace MetaFile
 {
-#define METAFILE_RGBA(r, g, b) ((DWORD)( ( (BYTE)(r) )| ( ( (BYTE)(g) ) << 8 ) | ( ( (BYTE)(b) ) << 16 ) | ( (BYTE)(0) << 24 ) ) )
-
 	struct TRgbQuad
 	{
 		unsigned char r;

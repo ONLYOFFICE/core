@@ -794,7 +794,7 @@ namespace NSFile
 
 			std::wstring sRet(pBuffer);
 
-			int nSeparatorPos = sRet.find_last_of(wchar_t('/'));
+			size_t nSeparatorPos = sRet.find_last_of(wchar_t('/'));
 			if (std::wstring::npos == nSeparatorPos)
 			{
 				nSeparatorPos = sRet.find_last_of(wchar_t('\\'));

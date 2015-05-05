@@ -35,20 +35,20 @@ HEADERS += \
     ../Source/Common/StlUtils.h \
     ../Source/Common/ToString.h \
     ../Source/Common/Utility.h \
-    ../Source/Docx2Txt/Converter.h \
-    ../Source/Txt2Docx/Converter.h \
     ../Source/TxtFormat/File.h \
     ../Source/TxtFormat/TxtFile.h \
-    ../Source/TxtFormat/TxtFormat.h
+    ../Source/TxtFormat/TxtFormat.h \
+    ../Source/ConvertDocx2Txt.h \
+    ../Source/ConvertTxt2Docx.h
 
 SOURCES += \
     ../Source/TxtXmlFile.cpp \
     ../Source/Common/Encoding.cpp \
     ../Source/Common/ToString.cpp \
-    ../Source/Docx2Txt/Converter.cpp \
-    ../Source/Txt2Docx/Converter.cpp \
     ../Source/TxtFormat/File.cpp \
-    ../Source/TxtFormat/TxtFile.cpp
+    ../Source/TxtFormat/TxtFile.cpp \
+    ../Source/ConvertDocx2Txt.cpp \
+    ../Source/ConvertTxt2Docx.cpp
 
 unix {
     target.path = /usr/lib

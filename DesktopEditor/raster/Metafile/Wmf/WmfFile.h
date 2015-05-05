@@ -27,7 +27,8 @@ namespace MetaFile
 
         TRectD       GetBounds()
 		{
-			TRectD oBounds = GetBoundingBox();
+            TRect  oBoundsBox = GetBoundingBox();
+            TRectD oBounds = oBoundsBox;
 			if (IsPlaceable())
 			{				
 				double dLogicalToMM = 25.4 / 72;
@@ -334,7 +335,7 @@ namespace MetaFile
 			dY -= dT;
 			pInverse->Apply(dX, dY);
 		}
-		TRect GetBoundingBox()
+        TRect GetBoundingBox()
 		{
 			TRect oBB;
 			if (IsPlaceable())

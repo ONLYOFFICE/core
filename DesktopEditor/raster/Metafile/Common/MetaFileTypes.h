@@ -235,7 +235,7 @@ namespace MetaFile
 
 	struct TEmfPointL;
 	struct TWmfPointS;
-	struct TWmfRect;
+    struct TWmfRect;
 
 	struct TRect
 	{
@@ -246,7 +246,7 @@ namespace MetaFile
 
 		TRect();
 		TRect& operator=(TWmfRect& oRect);
-	};
+    };
 
 	struct TRectD
 	{
@@ -269,15 +269,15 @@ namespace MetaFile
 			dRight  = (double)oRect.nRight;
 			dBottom = (double)oRect.nBottom;
 		}
-		TRectD& operator=(TRect& oRect)
-		{
-			dLeft   = (double)oRect.nLeft;
-			dTop    = (double)oRect.nTop;
-			dRight  = (double)oRect.nRight;
-			dBottom = (double)oRect.nBottom;
-			return *this;
-		}
-		TRectD& operator*=(double& dValue)
+        TRectD& operator=(TRect& oRect)
+        {
+            dLeft   = (double)oRect.nLeft;
+            dTop    = (double)oRect.nTop;
+            dRight  = (double)oRect.nRight;
+            dBottom = (double)oRect.nBottom;
+            return *this;
+        }
+        TRectD& operator*=(double& dValue)
 		{
 			dLeft   *= dValue;
 			dTop    *= dValue;
@@ -285,7 +285,7 @@ namespace MetaFile
 			dBottom *= dValue;
 			return *this;
 		}
-	};
+    };
 
 	struct TPointL
 	{

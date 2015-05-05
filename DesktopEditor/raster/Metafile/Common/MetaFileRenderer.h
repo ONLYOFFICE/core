@@ -84,7 +84,7 @@ namespace MetaFile
 			TPointD oBR = TranslatePoint(dX + dW, dY + dH);
 			m_pRenderer->DrawImage(&oImage, oTL.x, oTL.y, oBR.x - oTL.x, oBR.y - oTL.y);
 		}
-		void DrawString(std::wstring& wsText, unsigned int ulCharsCount, double _dX, double _dY, int nTextW, bool bWithOutLast)
+		void DrawString(std::wstring& wsText, unsigned int unCharsCount, double _dX, double _dY, double* pDx)
 		{
 			CheckEndPath();
 
@@ -139,64 +139,46 @@ namespace MetaFile
 				double dFDescent = dFontHeight * pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em * dMmToPt;
 				double dFAscent  = dFHeight - std::abs(dFDescent);
 
-				if (0 != nTextW && ulCharsCount > 1)
+				if (NULL != pDx && unCharsCount > 1)
 				{
-					std::wstring wsTempText = wsText;
-					if (bWithOutLast)
-						wsTempText.erase(ulCharsCount - 1);
+					// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
+					double dTempTextW = 0;
+					for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
+					{
+						dTempTextW += pDx[unCharIndex];
+					}
+					dTempTextW *= m_dScaleX;
+
+					std::wstring wsTempText;
+					wsTempText += wsText.at(unCharsCount - 1);
 
 					pFontManager->LoadString1(wsTempText, 0, 0);
-
 					TBBox oBox = pFontManager->MeasureString2();
-					fL = (float)dMmToPt * (oBox.fMinX);
-					fT = (float)dMmToPt * (oBox.fMinY);
-					fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
-					fH = (float)dMmToPt * (oBox.fMaxY - oBox.fMinY);
+					dTempTextW += dMmToPt * (oBox.fMaxX - oBox.fMinX);
 
-					double dTextW = nTextW * m_dScaleX * m_pFile->GetPixelWidth();
-					double dCharSpace = (dTextW - fW) / (ulCharsCount - 1) * 72 / 25.4;
-
-					if (dCharSpace > 0.001 || dCharSpace < -0.001)
-					{
-						pFontManager->SetCharSpacing(dFontCharSpace + dCharSpace);
-						m_pRenderer->put_FontCharSpace((dFontCharSpace + dCharSpace) * 25.4 / 72);
-					}
-
-					pFontManager->LoadString1(wsText, 0, 0);
-					oBox = pFontManager->MeasureString2();
-					fL = (float)dMmToPt * (oBox.fMinX);
-					fT = (float)dMmToPt * (oBox.fMinY);
-					fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
-					fH = (float)dMmToPt * (oBox.fMaxY - oBox.fMinY);
+					fL = 0;
+					fW = (float)dTempTextW;
 				}
 				else
 				{
 					pFontManager->LoadString1(wsText, 0, 0);
-
 					TBBox oBox = pFontManager->MeasureString2();
 					fL = (float)dMmToPt * (oBox.fMinX);
-					fT = (float)dMmToPt * (oBox.fMinY);
 					fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
-					fH = (float)dMmToPt * (oBox.fMaxY - oBox.fMinY);
-
 				}
 
 				// Просчитаем положение подчеркивания
 				pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
-				fUndX1 *= (float)dMmToPt; fUndY1 *= (float)dMmToPt;
-				fUndX2 *= (float)dMmToPt; fUndY2 *= (float)dMmToPt;
+				fUndY1   *= (float)dMmToPt;
+				fUndY2   *= (float)dMmToPt;
 				fUndSize *= (float)dMmToPt / 2;
 
-				if (std::abs(fT) < dFAscent)
-				{
-					if (fT < 0)
-						fT = (float)-dFAscent;
-					else
-						fT = (float)dFAscent;
-				}
+				fUndX1 = fL;
+				fUndX2 = fL + fW;
 
-				if (fH < dFHeight)
-					fH = (float)dFHeight;
+
+				fT = (float)-dFAscent;
+				fH = (float)dFHeight;
 			}
 
 			TPointD oTextPoint = TranslatePoint(_dX, _dY);
@@ -296,7 +278,24 @@ namespace MetaFile
 			m_pRenderer->put_BrushAlpha1(255);
 
 			// Рисуем сам текст
-			m_pRenderer->CommandDrawText(wsText, dX, dY, 0, 0, 0);
+
+			if (NULL == pDx)
+			{
+				m_pRenderer->CommandDrawText(wsText, dX, dY, 0, 0, 0);
+			}
+			else
+			{
+				double dOffset = 0;
+				double dKoefX = m_dScaleX;
+				for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount; unCharIndex++)
+				{
+					std::wstring wsChar;
+					wsChar += wsText.at(unCharIndex);
+					m_pRenderer->CommandDrawText(wsChar, dX + dOffset, dY, 0, 0, 0);
+					dOffset += (pDx[unCharIndex] * dKoefX);
+				}
+			}
+			
 
 			if (bChangeCTM)
 				m_pRenderer->ResetTransform();

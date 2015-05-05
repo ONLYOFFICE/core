@@ -6,6 +6,9 @@
 
 #include "WmfTypes.h"
 
+#ifdef __linux__
+    #include <string.h> //memset oO
+#endif
 namespace MetaFile
 {
 	typedef enum
@@ -62,7 +65,7 @@ namespace MetaFile
 
 		CWmfFont()
 		{
-			::memset(Facename, 0x00, 32);
+            memset(Facename, 0x00, 32);
 		}
 		~CWmfFont()
 		{

@@ -2,8 +2,8 @@
 
 #include "TxtXmlFile.h"
 
-#include "Docx2Txt/Converter.h"
-#include "Txt2Docx/Converter.h"
+#include "ConvertDocx2Txt.h"
+#include "ConvertTxt2Docx.h"
 
 #include "Common/StlUtils.h"
 
@@ -13,11 +13,13 @@ namespace NSBinPptxRW
 {
 	class  CDrawingConverter;
 }
-namespace BinDocxRW
-{
-	int g_nCurFormatVersion = 0;
-}
 
+#if defined (_WIN32) || defined (_WIN64)
+    namespace BinDocxRW
+    {
+        int g_nCurFormatVersion = 0; //extern from XlsxSerializer
+    }
+#endif
 
 #include "../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 #include "../../../Common/OfficeDefines.h"

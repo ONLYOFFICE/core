@@ -1,7 +1,7 @@
 #ifndef _BUILD_STRING_CROSSPLATFORM_H_
 #define _BUILD_STRING_CROSSPLATFORM_H_
 
-#include "CPEncodings\CodePage.h"
+#include "CPEncodings/CodePage.h"
 
 namespace NSString
 {

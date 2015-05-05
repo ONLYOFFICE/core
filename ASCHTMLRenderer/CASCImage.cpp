@@ -77,7 +77,7 @@ namespace NSHtmlRenderer
 #if defined(_WIN32) || defined (_WIN64)
                 ::_wunlink( m_wsTempFilePath.GetBuffer() );
 #else
-                std::string sTempFilePath = U_TO_UTF8(m_wsTempFilePath);
+                std::string sTempFilePath = NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(m_wsTempFilePath.c_str(), m_wsTempFilePath.length());
                 ::unlink( sTempFilePath.c_str() );
 #endif
 

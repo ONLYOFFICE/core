@@ -25,15 +25,16 @@ SOURCES += ../ASCSVGWriter.cpp \
     ../CASCSVGRenderer.cpp \
     ../CMetafile.cpp \
     ../CASCImage.cpp \
-    ../../DesktopEditor/raster/Metafile/Common.cpp \
-    ../../DesktopEditor/raster/Metafile/MetaFile.cpp \
+     ../../DesktopEditor/raster/Metafile/MetaFile.cpp \
     ../../DesktopEditor/raster/Metafile/Emf/EmfObjects.cpp \
     ../../DesktopEditor/raster/Metafile/Emf/EmfPath.cpp \
     ../../DesktopEditor/raster/Metafile/Emf/EmfPlayer.cpp \
     ../../DesktopEditor/raster/Metafile/Emf/EmfClip.cpp \
     ../../DesktopEditor/raster/Metafile/Common/MetaFileTypes.cpp \
     ../../DesktopEditor/raster/Metafile/Wmf/WmfObjects.cpp \
-    ../../DesktopEditor/raster/Metafile/Wmf/WmfPlayer.cpp
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfPlayer.cpp \
+    ../../DesktopEditor/raster/Metafile/Common/MetaFileUtils.cpp \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfClip.cpp
 
 HEADERS += ../ASCSVGWriter.h \
     ../CASCImage.h \
@@ -78,7 +79,9 @@ HEADERS += ../ASCSVGWriter.h \
     ../../DesktopEditor/raster/Metafile/Common/MetaFileRenderer.h \
     ../../DesktopEditor/raster/Metafile/Common/MetaFileTypes.h \
     ../../DesktopEditor/raster/Metafile/Wmf/WmfObjects.h \
-    ../../DesktopEditor/raster/Metafile/Wmf/WmfPlayer.h
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfPlayer.h \
+    ../../DesktopEditor/raster/Metafile/Common/MetaFileUtils.h \
+    ../../DesktopEditor/raster/Metafile/Wmf/WmfClip.h
 
 unix {
     target.path = /usr/lib

@@ -17,6 +17,10 @@
 #include <unistd.h>
 #endif
 
+#ifndef MAX_PATH
+    #define MAX_PATH 1024
+#endif
+
 //#include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 //перенесено выше
 
@@ -815,7 +819,7 @@ namespace NSFile
 			if (NULL == folder)
 				folder = "/tmp";
 
-			return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(folder, strlen(folder));
+                        return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)folder, strlen(folder));
 #endif			
 		}
 		static std::wstring CreateTempFileWithUniqueName(const std::wstring& strFolderPathRoot, const std::wstring& Prefix)

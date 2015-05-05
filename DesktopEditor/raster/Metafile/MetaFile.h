@@ -1,7 +1,6 @@
 #ifndef _METAFILE_H
 #define _METAFILE_H
 
-#define NEW_WMF 1
 #include "../../fontengine/ApplicationFonts.h"
 #include "../../graphics/IRenderer.h"
 

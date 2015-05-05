@@ -196,7 +196,7 @@ namespace MetaFile
 						{
 							// Не до конца заполненный байт иногда заполняется странным цветом, поэтому мы делаем его прозрачным
 							nBitCount = nLastBitCount;
-							nAlpha = 0;
+							//nAlpha = 0;
 						}
 
 						for (int nBitIndex = nBitCount; nBitIndex > 0; nBitIndex /= 2)
@@ -860,7 +860,8 @@ namespace MetaFile
 				{
 					unsigned int unIndex = (unY * unWidth + unX) * 4;
 
-					if (0xff == pCur[unIndex + 0] && 0xff == pCur[unIndex + 1] && 0xff == pCur[unIndex + 2])
+					if ((0xff == pCur[unIndex + 0] && 0xff == pCur[unIndex + 1] && 0xff == pCur[unIndex + 2]) || 
+						(0x00 == pCur[unIndex + 0] && 0x00 == pCur[unIndex + 1] && 0x00 == pCur[unIndex + 2]))
 						pCur[unIndex + 3] = 0;
 				}
 			}
@@ -874,7 +875,8 @@ namespace MetaFile
 				{
 					unsigned int unIndex = (unY * unWidth + unX) * 4;
 
-					if (0 == pCur[unIndex + 0] && 0 == pCur[unIndex + 1] && 0 == pCur[unIndex + 2])
+					if ((0xff == pCur[unIndex + 0] && 0xff == pCur[unIndex + 1] && 0xff == pCur[unIndex + 2]) ||
+						(0x00 == pCur[unIndex + 0] && 0x00 == pCur[unIndex + 1] && 0x00 == pCur[unIndex + 2]))
 						pCur[unIndex + 3] = 0;
 				}
 			}

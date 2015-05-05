@@ -33,12 +33,12 @@ namespace MetaFile
 	class CWmfClipCommandIntersect : public CWmfClipCommandBase
 	{
 	public:
-		CWmfClipCommandIntersect(short shL, short shT, short shR, short shB)
+		CWmfClipCommandIntersect(double dL, double dT, double dR, double dB)
 		{
-			m_shL = shL;
-			m_shT =	shT;
-			m_shR =	shR;
-			m_shB =	shB;
+			m_dL = dL;
+			m_dT = dT;
+			m_dR = dR;
+			m_dB = dB;
 		}
 		~CWmfClipCommandIntersect()
 		{
@@ -50,21 +50,24 @@ namespace MetaFile
 
 	public:
 
-		short m_shL;
-		short m_shT;
-		short m_shR;
-		short m_shB;
+		double m_dL;
+		double m_dT;
+		double m_dR;
+		double m_dB;
 	};
 	class CWmfClipCommandExclude : public CWmfClipCommandBase
 	{
 	public:
-		CWmfClipCommandExclude(short shL, short shT, short shR, short shB, TRect oBB)
+		CWmfClipCommandExclude(double dL, double dT, double dR, double dB, double dWindowL, double dWindowT, double dWindowR, double dWindowB)
 		{
-			m_shL = shL;
-			m_shT =	shT;
-			m_shR =	shR;
-			m_shB =	shB;
-			m_oBB = oBB;
+			m_dL = dL;
+			m_dT = dT;
+			m_dR = dR;
+			m_dB = dB;
+			m_dWindowL = dWindowL;
+			m_dWindowT = dWindowT;
+			m_dWindowR = dWindowR;
+			m_dWindowB = dWindowB;
 		}
 		~CWmfClipCommandExclude()
 		{
@@ -76,11 +79,14 @@ namespace MetaFile
 
 	public:
 
-		TRect m_oBB;
-		short m_shL;
-		short m_shT;
-		short m_shR;
-		short m_shB;
+		double m_dL;
+		double m_dT;
+		double m_dR;
+		double m_dB;
+		double m_dWindowL;
+		double m_dWindowT;
+		double m_dWindowR;
+		double m_dWindowB;
 	};
 
 	class CWmfClip : public IClip
@@ -91,8 +97,8 @@ namespace MetaFile
 
 		void operator=(CWmfClip& oClip);
 		void Reset();
-		bool Intersect(short shL, short shT, short shR, short shB);
-		bool Exclude(short shL, short shT, short shR, short shB, TRect oBB);
+		bool Intersect(double dL, double dT, double dR, double dB);
+		bool Exclude(double dL, double dT, double dR, double dB, double dLbb, double dTbb, double dRbb, double dBbb);
 
 		// IClip
 		void ClipOnRenderer(IOutputDevice* pOutput);

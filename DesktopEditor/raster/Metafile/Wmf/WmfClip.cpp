@@ -21,13 +21,13 @@ namespace MetaFile
 				case WMF_CLIPCOMMAND_INTERSECT:
 				{
 					CWmfClipCommandIntersect* pI = (CWmfClipCommandIntersect*)pCommand;
-					pNewCommand = new CWmfClipCommandIntersect(pI->m_shL, pI->m_shT, pI->m_shR, pI->m_shB);
+					pNewCommand = new CWmfClipCommandIntersect(pI->m_dL, pI->m_dT, pI->m_dR, pI->m_dB);
 					break;
 				}
 				case WMF_CLIPCOMMAND_EXCLUDE:
 				{
 					CWmfClipCommandExclude* pE = (CWmfClipCommandExclude*)pCommand;
-					pNewCommand = new CWmfClipCommandExclude(pE->m_shL, pE->m_shT, pE->m_shR, pE->m_shB, pE->m_oBB);
+					pNewCommand = new CWmfClipCommandExclude(pE->m_dL, pE->m_dT, pE->m_dR, pE->m_dB, pE->m_dWindowL, pE->m_dWindowT, pE->m_dWindowR, pE->m_dWindowB);
 					break;
 				}
 			}
@@ -40,18 +40,18 @@ namespace MetaFile
 	{
 		Clear();
 	}
-	bool CWmfClip::Intersect(short shL, short shT, short shR, short shB)
+	bool CWmfClip::Intersect(double dL, double dT, double dR, double dB)
 	{
-		CWmfClipCommandBase* pCommand = new CWmfClipCommandIntersect(shL, shT, shR, shB);
+		CWmfClipCommandBase* pCommand = new CWmfClipCommandIntersect(dL, dT, dR, dB);
 		if (!pCommand)
 			return false;
 
 		m_vCommands.push_back(pCommand);
 		return true;
 	}
-	bool CWmfClip::Exclude(short shL, short shT, short shR, short shB, TRect oBB)
+	bool CWmfClip::Exclude(double dL, double dT, double dR, double dB, double dWindowL, double dWindowT, double dWindowR, double dWindowB)
 	{
-		CWmfClipCommandBase* pCommand = new CWmfClipCommandExclude(shL, shT, shR, shB, oBB);
+		CWmfClipCommandBase* pCommand = new CWmfClipCommandExclude(dL, dT, dR, dB, dWindowL, dWindowT, dWindowR, dWindowB);
 		if (!pCommand)
 			return false;
 
@@ -82,11 +82,11 @@ namespace MetaFile
 					{
 						CWmfClipCommandIntersect* pIntersect = (CWmfClipCommandIntersect*)pCommand;
 
-						pOutput->StartClipPath(RGN_AND);
-						pOutput->MoveTo(pIntersect->m_shL, pIntersect->m_shT);
-						pOutput->LineTo(pIntersect->m_shR, pIntersect->m_shT);
-						pOutput->LineTo(pIntersect->m_shR, pIntersect->m_shB);
-						pOutput->LineTo(pIntersect->m_shL, pIntersect->m_shB);
+						pOutput->StartClipPath(RGN_AND, ALTERNATE);
+						pOutput->MoveTo(pIntersect->m_dL, pIntersect->m_dT);
+						pOutput->LineTo(pIntersect->m_dR, pIntersect->m_dT);
+						pOutput->LineTo(pIntersect->m_dR, pIntersect->m_dB);
+						pOutput->LineTo(pIntersect->m_dL, pIntersect->m_dB);
 						pOutput->ClosePath();
 						pOutput->EndClipPath(RGN_AND);
 
@@ -96,19 +96,20 @@ namespace MetaFile
 					{
 						CWmfClipCommandExclude* pExclude = (CWmfClipCommandExclude*)pCommand;
 
-						pOutput->StartClipPath(RGN_AND);
+						pOutput->StartClipPath(RGN_AND, ALTERNATE);
 
-						pOutput->MoveTo(pExclude->m_oBB.nLeft, pExclude->m_oBB.nTop);
-						pOutput->LineTo(pExclude->m_oBB.nRight, pExclude->m_oBB.nTop);
-						pOutput->LineTo(pExclude->m_oBB.nRight, pExclude->m_oBB.nBottom);
-						pOutput->LineTo(pExclude->m_oBB.nLeft, pExclude->m_oBB.nBottom);
+						pOutput->MoveTo(pExclude->m_dL, pExclude->m_dT);
+						pOutput->LineTo(pExclude->m_dR, pExclude->m_dT);
+						pOutput->LineTo(pExclude->m_dR, pExclude->m_dB);
+						pOutput->LineTo(pExclude->m_dL, pExclude->m_dB);
 						pOutput->ClosePath();
 
-						pOutput->MoveTo(pExclude->m_shL, pExclude->m_shT);
-						pOutput->LineTo(pExclude->m_shR, pExclude->m_shT);
-						pOutput->LineTo(pExclude->m_shR, pExclude->m_shB);
-						pOutput->LineTo(pExclude->m_shL, pExclude->m_shB);
+						pOutput->MoveTo(pExclude->m_dWindowL, pExclude->m_dWindowT);
+						pOutput->LineTo(pExclude->m_dWindowR, pExclude->m_dWindowT);
+						pOutput->LineTo(pExclude->m_dWindowR, pExclude->m_dWindowB);
+						pOutput->LineTo(pExclude->m_dWindowL, pExclude->m_dWindowB);
 						pOutput->ClosePath();
+
 
 						pOutput->EndClipPath(RGN_AND);
 

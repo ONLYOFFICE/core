@@ -284,10 +284,15 @@ namespace MetaFile
 		{
 			return m_pDC->GetFillMode();
 		}
-		TPointL      GetCurPos()
+		TPointD      GetCurPos()
 		{
 			TPointL oPoint = m_pDC->GetCurPos();
-			return oPoint;
+
+			// TODO: Переделать
+			TPointD oRes;
+			oRes.x = oPoint.x;
+			oRes.y = oPoint.y;
+			return oRes;
 		}
 		TXForm*      GetInverseTransform()
 		{
@@ -312,6 +317,10 @@ namespace MetaFile
 				return NULL;
 
 			return (IClip*)pClip;
+		}
+		int          GetCharSpace()
+		{
+			return 0;
 		}
 
 	private:

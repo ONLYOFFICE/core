@@ -273,75 +273,6 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Docx2Txt"
-			>
-			<File
-				RelativePath="..\Source\Docx2Txt\Converter.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalOptions="/bigobj"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\Source\Docx2Txt\Converter.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Txt2Docx"
-			>
-			<File
-				RelativePath="..\Source\Txt2Docx\Converter.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						AdditionalOptions="/bigobj"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						ObjectFile="$(IntDir)\$(InputName)1.obj"
-						XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\Source\Txt2Docx\Converter.h"
-				>
-			</File>
-		</Filter>
-		<Filter
 			Name="TxtFormat"
 			>
 			<File
@@ -481,6 +412,22 @@
 				</File>
 			</Filter>
 		</Filter>
+		<File
+			RelativePath="..\Source\ConvertDocx2Txt.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\Source\ConvertDocx2Txt.h"
+			>
+		</File>
+		<File
+			RelativePath="..\Source\ConvertTxt2Docx.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\Source\ConvertTxt2Docx.h"
+			>
+		</File>
 		<File
 			RelativePath="..\Source\TxtXmlFile.cpp"
 			>

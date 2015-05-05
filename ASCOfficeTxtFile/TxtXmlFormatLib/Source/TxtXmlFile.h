@@ -6,6 +6,7 @@
 
 #if defined(_WIN32) || defined(_WIN64)
     #include <windows.h>
+	#include <atlstr.h>
 #else
     #include "../../../DesktopEditor/common/ASCVariant.h"
 #endif

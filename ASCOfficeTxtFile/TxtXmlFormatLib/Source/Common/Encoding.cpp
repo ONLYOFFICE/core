@@ -21,7 +21,7 @@ const std::wstring Encoding::ansi2unicode(const std::string& line)
 const std::wstring Encoding::cp2unicode(const std::string& sline, const unsigned int nCodepage)
 {
 #if defined (_WIN32) || defined (_WIN64)
-	const int nSize = MultiByteToWideChar(codePage, 0, sline.c_str(), sline.size(), NULL, 0);
+	const int nSize = MultiByteToWideChar(nCodepage, 0, sline.c_str(), sline.size(), NULL, 0);
 
 	wchar_t *sTemp = new wchar_t[nSize];
 	if (!sTemp)
@@ -198,7 +198,7 @@ const std::string Encoding::unicode2utf8(const std::wstring& line)
 const std::string Encoding::unicode2cp(const std::wstring& sLine, const unsigned int nCodepage)
 {
 #if defined (_WIN32) || defined (_WIN64)
-	const int nSize = WideCharToMultiByte(codePage, 0, sLine.c_str(), sLine.length(), NULL, 0, NULL, NULL);
+	const int nSize = WideCharToMultiByte(nCodepage, 0, sLine.c_str(), sLine.length(), NULL, 0, NULL, NULL);
 	char *sTemp = new char[nSize];
 	if (!sTemp)
 		return std::string();

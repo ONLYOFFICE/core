@@ -2,7 +2,8 @@
 #ifndef TXT_2_DOCX_CONVERTER_INCLUDE_H_
 #define TXT_2_DOCX_CONVERTER_INCLUDE_H_
 
-#include "../../../../Common/DocxFormat/Source/XML/Utils.h"
+#include "../../../Common/DocxFormat/Source/XML/Utils.h"
+#include <string>
 
 namespace TxtXml
 {

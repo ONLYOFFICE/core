@@ -88,7 +88,7 @@ HRESULT CTxtXmlFile::txt_LoadFromFile(const std::wstring & sSrcFileName, const s
 
 	//As Text
 
-    Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(sDstPath, _T(""), 1, false, NULL, _T(""));
+    Writers::FileWriter *pDocxWriter =  new Writers::FileWriter(std_string2string(sDstPath), _T(""), 1, false, NULL, _T(""));
 	if (pDocxWriter == NULL) return S_FALSE;
 
     CreateDocxEmpty(std_string2string(sDstPath), pDocxWriter);

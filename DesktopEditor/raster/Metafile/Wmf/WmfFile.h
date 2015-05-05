@@ -435,7 +435,7 @@ namespace MetaFile
 				m_pOutput->EndPath();
 			}
 		}
-		void DrawText(const unsigned char* pString, unsigned int unCharsCount, short _shX, short _shY, int nTextW, bool bWithOutLast)
+		void DrawText(const unsigned char* pString, unsigned int unCharsCount, short _shX, short _shY, short* pDx)
 		{
 			int nX = _shX;
 			int nY = _shY;
@@ -476,24 +476,24 @@ namespace MetaFile
 
 				switch (pFont->GetCharSet())
 				{
-				default:
-				case DEFAULT_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
-				case SYMBOL_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
-				case ANSI_CHARSET:          eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1252; break;
-				case RUSSIAN_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1251; break;
-				case EASTEUROPE_CHARSET:    eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1250; break;
-				case GREEK_CHARSET:         eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1253; break;
-				case TURKISH_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1254; break;
-				case BALTIC_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1257; break;
-				case HEBREW_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1255; break;
-				case ARABIC_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1256; break;
-				case SHIFTJIS_CHARSET:      eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP932; break;
-				case HANGEUL_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP949; break;
-				case 134/*GB2313_CHARSET*/: eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP936; break;
-				case CHINESEBIG5_CHARSET:   eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP950; break;
-				case THAI_CHARSET:          eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP874; break;
-				case JOHAB_CHARSET:         eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1361; break;
-				case VIETNAMESE_CHARSET:    eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1258; break;
+					default:
+					case DEFAULT_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
+					case SYMBOL_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
+					case ANSI_CHARSET:          eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1252; break;
+					case RUSSIAN_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1251; break;
+					case EASTEUROPE_CHARSET:    eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1250; break;
+					case GREEK_CHARSET:         eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1253; break;
+					case TURKISH_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1254; break;
+					case BALTIC_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1257; break;
+					case HEBREW_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1255; break;
+					case ARABIC_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1256; break;
+					case SHIFTJIS_CHARSET:      eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP932; break;
+					case HANGEUL_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP949; break;
+					case 134/*GB2313_CHARSET*/: eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP936; break;
+					case CHINESEBIG5_CHARSET:   eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP950; break;
+					case THAI_CHARSET:          eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP874; break;
+					case JOHAB_CHARSET:         eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1361; break;
+					case VIETNAMESE_CHARSET:    eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1258; break;
 				}
 			}
 
@@ -503,7 +503,33 @@ namespace MetaFile
 			{
 				double dX, dY;
 				TranslatePoint(nX, nY, dX, dY);
-				m_pOutput->DrawString(wsText, unCharsCount, dX, dY, nTextW, bWithOutLast);
+
+				double* pdDx = NULL;
+				if (NULL != pDx)
+				{
+					pdDx = new double[unCharsCount];
+					if (pdDx)
+					{
+						int nCurX = nX;
+						double dCurX = dX;
+						for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount; unCharIndex++)
+						{
+							int nX1 = nCurX + pDx[unCharIndex];
+							double dX1, dY1;
+							TranslatePoint(nX1, nY, dX1, dY1);
+
+							pdDx[unCharIndex] = dX1 - dCurX;
+
+							nCurX = nX1;
+							dCurX = dX1;
+						}
+					}
+				}
+
+				m_pOutput->DrawString(wsText, unCharsCount, dX, dY, pdDx);
+
+				if (pdDx)
+					delete[] pdDx;
 			}
 			else
 			{
@@ -536,32 +562,49 @@ namespace MetaFile
 					double dFDescent = dFontHeight * pFontManager->m_pFont->GetDescender() / pFontManager->m_pFont->m_lUnits_Per_Em;
 					double dFAscent  = dFHeight - std::abs(dFDescent);
 
+					if (NULL != pDx && unCharsCount > 1)
+					{
+						// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
+						double dTempTextW = 0;
+						for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
+						{
+							dTempTextW += pDx[unCharIndex];
+						}
+
+						std::wstring wsTempText;
+						wsTempText += wsText.at(unCharsCount - 1);
+
+						pFontManager->LoadString1(wsTempText, 0, 0);
+						TBBox oBox = pFontManager->MeasureString2();
+						dTempTextW += (oBox.fMaxX - oBox.fMinX);
+
+						fL = 0;
+						fW = (float)dTempTextW;
+					}
+					else
+					{
+						pFontManager->LoadString1(wsText, 0, 0);
+						TBBox oBox = pFontManager->MeasureString2();
+						fL = (float)(oBox.fMinX);
+						fW = (float)(oBox.fMaxX - oBox.fMinX);
+					}
+
 					pFontManager->LoadString1(wsText, 0, 0);
 					TBBox oBox = pFontManager->MeasureString2();
 					fL = (float)(oBox.fMinX);
-					fT = (float)(oBox.fMinY);
 					fW = (float)(oBox.fMaxX - oBox.fMinX);
-					fH = (float)(oBox.fMaxY - oBox.fMinY);
 
-					if (std::abs(fT) < dFAscent)
-					{
-						if (fT < 0)
-							fT = (float)-dFAscent;
-						else
-							fT = (float)dFAscent;
-					}
+					fT = (float)-dFAscent;
+					fH = (float)dFHeight;
 
-					if (fH < dFHeight)
-						fH = (float)dFHeight;
-
-
+					
 					double dTheta = -((((double)pFont->GetEscapement()) / 10) * 3.14159265358979323846 / 180);
 					double dCosTheta = (float)cos(dTheta);
 					double dSinTheta = (float)sin(dTheta);
 
 					double dX = (double)nX;
 					double dY = (double)nY;
-				
+
 					// Найдем начальную точку текста
 					unsigned int ulTextAlign = GetTextAlign();
 					if (ulTextAlign & TA_BASELINE)
@@ -598,10 +641,10 @@ namespace MetaFile
 						// Ничего не делаем
 					}
 
-					double dX0 = dX + fL,      dY0 = dY + fT;
+					double dX0 = dX + fL, dY0 = dY + fT;
 					double dX1 = dX + fL + fW, dY1 = dY + fT;
 					double dX2 = dX + fL + fW, dY2 = dY + fT + fH;
-					double dX3 = dX + fL,      dY3 = dY + fT + fH;
+					double dX3 = dX + fL, dY3 = dY + fT + fH;
 					if (0 != pFont->GetEscapement())
 					{
 						TXForm oForm(dCosTheta, dSinTheta, -dSinTheta, dCosTheta, dX - dX * dCosTheta + dY * dSinTheta, dY - dX * dSinTheta - dY * dCosTheta);
@@ -623,7 +666,17 @@ namespace MetaFile
 				}
 			}
 
-			m_pDC->SetCurPos(nX + nTextW, nY);
+			if (NULL != pDx)
+			{
+				int nTextW = 0;
+				for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount; unCharIndex++)
+				{
+					nTextW += pDx[unCharIndex];
+				}
+				m_pDC->SetCurPos(nX + nTextW, nY);
+			}
+			else
+				m_pDC->SetCurPos(nX, nY);
 		}
 		void RegisterPoint(short shX, short shY)
 		{
@@ -934,41 +987,40 @@ namespace MetaFile
 			pString[shStringLength] = 0x00;
 			m_oStream.ReadBytes(pString, shStringLength);
 
-			int nTextW = 0;
-			bool bWithOutLast = false;
+			short* pDx = NULL;
 			if (shStringLength > 1 && ((GetRecordRemainingBytesCount() >= shStringLength * 2 && !(ushFwOptions & ETO_PDY)) || (GetRecordRemainingBytesCount() >= shStringLength * 4 && ushFwOptions & ETO_PDY)))
 			{
 				if (shStringLength & 1) // Если длина нечетная, тогда пропускаем 1 байт, т.к. тут прилегание по 2 байта
 					m_oStream.Skip(1);
 
-				short shLetterW = 0;
-				if (ushFwOptions & ETO_PDY)
+				pDx = new short[shStringLength];
+				if (pDx)
 				{
-					for (short shIndex = 0; shIndex < shStringLength; shIndex++)
+					if (ushFwOptions & ETO_PDY)
 					{
-						m_oStream >> shLetterW;
-						m_oStream.Skip(2);
-						nTextW += shLetterW;
+						for (short shIndex = 0; shIndex < shStringLength; shIndex++)
+						{
+							m_oStream >> pDx[shIndex];
+							m_oStream.Skip(2);
+						}
+					}
+					else
+					{
+						for (short shIndex = 0; shIndex < shStringLength; shIndex++)
+						{
+							m_oStream >> pDx[shIndex];
+						}
 					}
 				}
-				else
-				{
-					for (short shIndex = 0; shIndex < shStringLength; shIndex++)
-					{
-						m_oStream >> shLetterW;
-						nTextW += shLetterW;
-					}
-				}
-
-				// Иногда у последнего символа не указывается ширина или она указывается неверное, поэтому не учитываем её.
-				nTextW -= shLetterW;
-				bWithOutLast = true;
 			}
 
-			DrawText(pString, shStringLength, shX, shY, nTextW, bWithOutLast);
+			DrawText(pString, shStringLength, shX, shY, pDx);
 
 			if (pString)
 				delete[] pString;
+
+			if (pDx)
+				delete[] pDx;
 		}
 		void Read_META_FILLREGION()
 		{
@@ -1175,7 +1227,7 @@ namespace MetaFile
 
 			short shX, shY;
 			m_oStream >> shY >> shX;
-			DrawText(pString, shStringLength, shX, shY, 0, false);
+			DrawText(pString, shStringLength, shX, shY, NULL);
 			delete[] pString;
 		}
 		void Read_META_CREATEBRUSHINDIRECT()

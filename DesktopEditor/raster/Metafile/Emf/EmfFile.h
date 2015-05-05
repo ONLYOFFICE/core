@@ -500,7 +500,7 @@ namespace MetaFile
 
 			if (m_pOutput)
 			{
-				m_pOutput->DrawString(wsString, unCharsCount, nX, nY, nTextW, bWithOutLast);
+				m_pOutput->DrawString(wsString, unCharsCount, nX, nY, NULL);
 			}
 		}
 		void DrawTextA(TEmfEmrText& oText)

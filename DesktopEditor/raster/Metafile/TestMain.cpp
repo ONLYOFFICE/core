@@ -36,7 +36,7 @@ void ConvertFile(CMetaFile &oMetaFile, std::wstring wsFilePath)
 {
 	oMetaFile.Close();
 
-	std::wstring wsDstFilePath = (wsFilePath.substr(0, wsFilePath.size() - 3)).append(L"jpg");
+	std::wstring wsDstFilePath = (wsFilePath.substr(0, wsFilePath.size() - 3)).append(L"png");
 	if (oMetaFile.LoadFromFile(wsFilePath.c_str()))
 	{
 		oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 4, 1000);
@@ -53,7 +53,7 @@ void ConvertFolder(CMetaFile &oMetaFile, std::wstring wsFolderPath)
 		wsFilePath.append(vFiles.at(nIndex));
 		if (oMetaFile.LoadFromFile(wsFilePath.c_str()))
 		{
-			std::wstring wsDstFilePath = (wsFilePath.substr(0, wsFilePath.size() - 3)).append(L"jpg");
+			std::wstring wsDstFilePath = (wsFilePath.substr(0, wsFilePath.size() - 3)).append(L"png");
 			oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 4, 1000);
 			oMetaFile.Close();
 		}
@@ -70,7 +70,7 @@ void Test()
 
 	CMetaFile oMetaFile(&oFonts);
 	//ConvertFile(oMetaFile, L"D://Test Files//fulltest.wmf");
-	ConvertFolder(oMetaFile, L"D://Test Files//Bugs//Bugs//");
+	ConvertFolder(oMetaFile, L"D://Test Files//Bugs//ALL//");
 }
 
 void main()

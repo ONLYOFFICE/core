@@ -32,20 +32,10 @@ namespace MetaFile
 	class CEmfPathMoveTo : public CEmfPathCommandBase
 	{
 	public:
-		CEmfPathMoveTo(TEmfPointL& oPoint)
+		CEmfPathMoveTo(double dX, double dY)
 		{
-			x = oPoint.x;
-			y = oPoint.y;
-		}
-		CEmfPathMoveTo(TEmfPointS& oPoint)
-		{
-			x = oPoint.x;
-			y = oPoint.y;
-		}
-		CEmfPathMoveTo(int lX, int lY)
-		{
-			x = lX;
-			y = lY;
+			x = dX;
+			y = dY;
 		}
 		virtual ~CEmfPathMoveTo()
 		{
@@ -57,26 +47,16 @@ namespace MetaFile
 
 	public:
 		
-		int x;
-		int y;
+		double x;
+		double y;
 	};
 	class CEmfPathLineTo : public CEmfPathCommandBase
 	{
 	public:
-		CEmfPathLineTo(TEmfPointL& oPoint)
+		CEmfPathLineTo(double dX, double dY)
 		{
-			x = oPoint.x;
-			y = oPoint.y;
-		}
-		CEmfPathLineTo(TEmfPointS& oPoint)
-		{
-			x = oPoint.x;
-			y = oPoint.y;
-		}
-		CEmfPathLineTo(int lX, int lY)
-		{
-			x = lX;
-			y = lY;
+			x = dX;
+			y = dY;
 		}
 		virtual ~CEmfPathLineTo()
 		{
@@ -88,38 +68,20 @@ namespace MetaFile
 
 	public:
 
-		int x;
-		int y;
+		double x;
+		double y;
 	};
 	class CEmfPathCurveTo : public CEmfPathCommandBase
 	{
 	public:
-		CEmfPathCurveTo(TEmfPointL& oPoint1, TEmfPointL& oPoint2, TEmfPointL& oPointE)
+		CEmfPathCurveTo(double dX1, double dY1, double dX2, double dY2, double dXE, double dYE)
 		{
-			x1 = oPoint1.x;
-			y1 = oPoint1.y;
-			x2 = oPoint2.x;
-			y2 = oPoint2.y;
-			xE = oPointE.x;
-			yE = oPointE.y;
-		}
-		CEmfPathCurveTo(TEmfPointS& oPoint1, TEmfPointS& oPoint2, TEmfPointS& oPointE)
-		{
-			x1 = oPoint1.x;
-			y1 = oPoint1.y;
-			x2 = oPoint2.x;
-			y2 = oPoint2.y;
-			xE = oPointE.x;
-			yE = oPointE.y;
-		}
-		CEmfPathCurveTo(int lX1, int lY1, int lX2, int lY2, int lXE, int lYE)
-		{
-			x1 = lX1;
-			y1 = lY1;
-			x2 = lX2;
-			y2 = lY2;
-			xE = lXE;
-			yE = lYE;
+			x1 = dX1;
+			y1 = dY1;
+			x2 = dX2;
+			y2 = dY2;
+			xE = dXE;
+			yE = dYE;
 		}
 		virtual ~CEmfPathCurveTo()
 		{
@@ -131,22 +93,22 @@ namespace MetaFile
 
 	public:
 
-		int x1;
-		int y1;
-		int x2;
-		int y2;
-		int xE;
-		int yE;
+		double x1;
+		double y1;
+		double x2;
+		double y2;
+		double xE;
+		double yE;
 	};
 	class CEmfPathArcTo : public CEmfPathCommandBase
 	{
 	public:
-		CEmfPathArcTo(int lL, int lT, int lR, int lB, double dStart, double dSweep)
+		CEmfPathArcTo(double dL, double dT, double dR, double dB, double dStart, double dSweep)
 		{
-			left   = lL;
-			top    = lT;
-			right  = lR;
-			bottom = lB;
+			left   = dL;
+			top    = dT;
+			right  = dR;
+			bottom = dB;
 			start  = dStart;
 			sweep  = dSweep;
 		}
@@ -160,10 +122,10 @@ namespace MetaFile
 
 	public:
 
-		int   left;
-		int   top;
-		int   right;
-		int   bottom;
+		double left;
+		double top;
+		double right;
+		double bottom;
 		double start;
 		double sweep;
 	};
@@ -192,16 +154,10 @@ namespace MetaFile
 		CEmfPath(CEmfPath* pPath);
 		~CEmfPath();
 
-		bool MoveTo(TEmfPointS& oPoint);
-		bool MoveTo(TEmfPointL& oPoint);
-		bool MoveTo(int lX, int lY);
-		bool LineTo(TEmfPointS& oPoint);
-		bool LineTo(TEmfPointL& oPoint);
-		bool LineTo(int lX, int lY);
-		bool CurveTo(TEmfPointS& oPoint1, TEmfPointS& oPoint2, TEmfPointS& oPointE);
-		bool CurveTo(TEmfPointL& oPoint1, TEmfPointL& oPoint2, TEmfPointL& oPointE);
-		bool CurveTo(int lX1, int lY1, int lX2, int lY2, int lXE, int lYE);
-		bool ArcTo(int lL, int lT, int lR, int lB, double dStart, double dSweep);
+		bool MoveTo(double dX, double dY);
+		bool LineTo(double dX, double dY);
+		bool CurveTo(double dX1, double dY1, double dX2, double dY2, double dXE, double dYE);
+		bool ArcTo(double dL, double dT, double dR, double dB, double dStart, double dSweep);
 		bool Close();
 		void Draw(IOutputDevice* pOutput, bool bStroke, bool bFill, unsigned int unClipMode = -1);
 

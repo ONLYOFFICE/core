@@ -74,6 +74,7 @@ namespace MetaFile
 						//-----------------------------------------------------------
 						// 2.3.2 Clipping
 						//-----------------------------------------------------------
+					case EMR_EXCLUDECLIPRECT: Read_EMR_EXCLUDECLIPRECT(); break;
 					case EMR_EXTSELECTCLIPRGN:  Read_EMR_EXTSELECTCLIPRGN(); break;
 					case EMR_INTERSECTCLIPRECT: Read_EMR_INTERSECTCLIPRECT(); break;
 					case EMR_SELECTCLIPPATH:    Read_EMR_SELECTCLIPPATH(); break;
@@ -148,6 +149,7 @@ namespace MetaFile
 						// 2.3.11 State
 						//-----------------------------------------------------------
 					case EMR_MOVETOEX:          Read_EMR_MOVETOEX(); break;
+					case EMR_SETARCDIRECTION:   Read_EMR_SETARCDIRECTION(); break;
 					case EMR_SAVEDC:            Read_EMR_SAVEDC(); break;
 					case EMR_RESTOREDC:         Read_EMR_RESTOREDC(); break;
 					case EMR_SETTEXTCOLOR:      Read_EMR_SETTEXTCOLOR(); break;
@@ -204,27 +206,6 @@ namespace MetaFile
 			RELEASEOBJECT(m_pPath);
 			m_oPlayer.Clear();
 			m_pDC = m_oPlayer.GetDC();
-		}
-		double       TranslateX(int nSrcX)
-		{
-			double dDstX;
-
-			TEmfWindow* pWindow   = m_pDC->GetWindow();
-			TEmfWindow* pViewport = m_pDC->GetViewport();
-
-			dDstX =  (double)((double)(nSrcX - pWindow->lX) * m_pDC->GetPixelWidth()) + pViewport->lX;
-			return dDstX;
-		}
-		double       TranslateY(int nSrcY)
-		{
-			double dDstY;
-
-			TEmfWindow* pWindow   = m_pDC->GetWindow();
-			TEmfWindow* pViewport = m_pDC->GetViewport();
-
-			dDstY = (double)((double)(nSrcY - pWindow->lY) * m_pDC->GetPixelHeight()) + pViewport->lY;
-
-			return dDstY;
 		}
 		TRect*       GetDCBounds()
 		{
@@ -287,11 +268,8 @@ namespace MetaFile
 		TPointD      GetCurPos()
 		{
 			TPointL oPoint = m_pDC->GetCurPos();
-
-			// TODO: Переделать
 			TPointD oRes;
-			oRes.x = oPoint.x;
-			oRes.y = oPoint.y;
+			TranslatePoint(oPoint.x, oPoint.y, oRes.x, oRes.y);
 			return oRes;
 		}
 		TXForm*      GetInverseTransform()
@@ -325,6 +303,31 @@ namespace MetaFile
 
 	private:
 
+		void TranslatePoint(TEmfPointL& oPoint, double& dX, double& dY)
+		{
+			TranslatePoint(oPoint.x, oPoint.y, dX, dY);
+		}
+		void TranslatePoint(int nX, int nY, double& dX, double &dY)
+		{
+			TEmfWindow* pWindow   = m_pDC->GetWindow();
+			TEmfWindow* pViewport = m_pDC->GetViewport();
+
+			dX = (double)((double)(nX - pWindow->lX) * m_pDC->GetPixelWidth()) + pViewport->lX;
+			dY = (double)((double)(nY - pWindow->lY) * m_pDC->GetPixelHeight()) + pViewport->lY;
+
+			// Координаты приходят уже с примененной матрицей. Поэтому сначала мы умножаем на матрицу преобразования, 
+			// вычитаем начальные координаты и умножаем на обратную матрицу преобразования.
+			TRect* pBounds = GetDCBounds();
+			double dT = pBounds->nTop;
+			double dL = pBounds->nLeft;
+
+			TEmfXForm* pInverse   = GetInverseTransform();
+			TEmfXForm* pTransform = GetTransform();
+			pTransform->Apply(dX, dY);
+			dX -= dL;
+			dY -= dT;
+			pInverse->Apply(dX, dY);
+		}
 		CEmfDC* GetDC()
 		{
 			return m_pDC;
@@ -353,31 +356,24 @@ namespace MetaFile
 
 			m_oStream.Skip(lHeaderOffset);
 
-			BYTE* pHeaderBuffer = new BYTE[ulHeaderSize];
-			if (!pHeaderBuffer)
-			{
-				SetError();
-				return false;
-			}
-
-			m_oStream.ReadBytes(pHeaderBuffer, ulHeaderSize);
-
-			m_oStream.Skip(lBitsOffset);
-			BYTE* pBitsBuffer = new BYTE[ulBitsSize];
-			if (!pBitsBuffer)
-			{
-				delete[] pHeaderBuffer;
-				SetError();
-				return false;
-			}
-			m_oStream.ReadBytes(pBitsBuffer, ulBitsSize);
+			BYTE* pHeaderBuffer = m_oStream.GetCurPtr();
+			m_oStream.Skip(ulHeaderSize + lBitsOffset);
+			BYTE* pBitsBuffer = m_oStream.GetCurPtr();
+			m_oStream.Skip(ulBitsSize);
 
 			MetaFile::ReadImage(pHeaderBuffer, ulHeaderSize, pBitsBuffer, ulBitsSize, ppBgraBuffer, pulWidth, pulHeight);
 
-			delete[] pBitsBuffer;
-			delete[] pHeaderBuffer;
-
 			return true;
+		}
+		void DrawImage(int nX, int nY, int nW, int nH, BYTE* pImageBuffer, unsigned int unImageW, unsigned int unImageH)
+		{
+			if (m_pOutput)
+			{
+				double dX, dY, dR, dB;
+				TranslatePoint(nX, nY, dX, dY);
+				TranslatePoint(nX + nW, nY + nH, dR, dB);
+				m_pOutput->DrawBitmap(dX, dY, dR - dX, dB - dY, pImageBuffer, unImageW, unImageH);
+			}
 		}
 		void MoveTo(TEmfPointL& oPoint)
 		{
@@ -387,33 +383,39 @@ namespace MetaFile
 		{
 			MoveTo(oPoint.x, oPoint.y);
 		}
-		void MoveTo(int lX, int lY)
+		void MoveTo(int nX, int nY)
 		{
+			double dX, dY;
+			TranslatePoint(nX, nY, dX, dY);
+
 			if (m_pPath)
 			{
-				if (!m_pPath->MoveTo(lX, lY))
+				if (!m_pPath->MoveTo(dX, dY))
 					return SetError();
 			}
 			else if (m_pOutput)
 			{
-				m_pOutput->MoveTo(lX, lY);
+				m_pOutput->MoveTo(dX, dY);
 			}
 
-			m_pDC->SetCurPos(lX, lY);
+			m_pDC->SetCurPos(nX, nY);
 		}
-		void LineTo(int lX, int lY)
+		void LineTo(int nX, int nY)
 		{
+			double dX, dY;
+			TranslatePoint(nX, nY, dX, dY);
+
 			if (m_pPath)
 			{
-				if (!m_pPath->LineTo(lX, lY))
+				if (!m_pPath->LineTo(dX, dY))
 					return SetError();
 			}
 			else if (m_pOutput)
 			{
-				m_pOutput->LineTo(lX, lY);
+				m_pOutput->LineTo(dX, dY);
 			}
 
-			m_pDC->SetCurPos(lX, lY);
+			m_pDC->SetCurPos(nX, nY);
 		}
 		void LineTo(TEmfPointL& oPoint)
 		{
@@ -425,14 +427,19 @@ namespace MetaFile
 		}
 		void CurveTo(int nX1, int nY1, int nX2, int nY2, int nXe, int nYe)
 		{
+			double dX1, dY1, dX2, dY2, dXe, dYe;
+			TranslatePoint(nX1, nY1, dX1, dY1);
+			TranslatePoint(nX2, nY2, dX2, dY2);
+			TranslatePoint(nXe, nYe, dXe, dYe);
+
 			if (m_pPath)
 			{
-				if (!m_pPath->CurveTo(nX1, nY1, nX2, nY2, nXe, nYe))
+				if (!m_pPath->CurveTo(dX1, dY1, dX2, dY2, dXe, dYe))
 					return SetError();
 			}
 			else if (m_pOutput)
 			{
-				m_pOutput->CurveTo(nX1, nY1, nX2, nY2, nXe, nYe);
+				m_pOutput->CurveTo(dX1, dY1, dX2, dY2, dXe, dYe);
 			}
 
 			m_pDC->SetCurPos(nXe, nYe);
@@ -455,25 +462,28 @@ namespace MetaFile
 			else if (m_pOutput)
 				m_pOutput->ClosePath();
 		}
-		void ArcTo(int lL, int lT, int lR, int lB, double dStart, double dSweep)
+		void ArcTo(int nL, int nT, int nR, int nB, double dStart, double dSweep)
 		{
+			double dL, dT, dR, dB;
+			TranslatePoint(nL, nT, dL, dT);
+			TranslatePoint(nR, nB, dR, dB);
+
 			if (m_pPath)
 			{
-				if (!m_pPath->ArcTo(lL, lT, lR, lB, dStart, dSweep))
+				if (!m_pPath->ArcTo(dL, dT, dR, dB, dStart, dSweep))
 					return SetError();
 			}
 			else if (m_pOutput)
 			{
-				m_pOutput->ArcTo(lL, lT, lR, lB, dStart, dSweep);
+				m_pOutput->ArcTo(dL, dT, dR, dB, dStart, dSweep);
 			}
 
-			// TODO: Сделать пересчет текущей позиции
+			// Пересчет текущей позиции делается в каждой функции отдельно после вызова данной
 		}
 		void DrawPath(bool bStroke, bool bFill)
 		{
 			if (m_pPath && m_pOutput)
-			{
-				//m_pPath->Draw(m_pOutput, bStroke, bFill);
+			{				
 			}
 			else if (m_pOutput)
 			{
@@ -487,7 +497,7 @@ namespace MetaFile
 			if (m_pOutput)
 				m_pOutput->UpdateDC();
 		}
-		void DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY, int nTextW, bool bWithOutLast)
+		void DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY, int* pnDx = NULL)
 		{
 			int nX = _nX;
 			int nY = _nY;
@@ -500,7 +510,34 @@ namespace MetaFile
 
 			if (m_pOutput)
 			{
-				m_pOutput->DrawString(wsString, unCharsCount, nX, nY, NULL);
+				double dX, dY;
+				TranslatePoint(nX, nY, dX, dY);
+
+				double* pdDx = NULL;
+				if (pnDx)
+				{
+					pdDx = new double[unCharsCount];
+					if (pdDx)
+					{
+						int nCurX = nX;
+						double dCurX = dX;
+
+						for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount; unCharIndex++)
+						{
+							int nX1 = nCurX + pnDx[unCharIndex];
+							double dX1, dY1;
+							TranslatePoint(nX1, nY, dX1, dY1);
+							pdDx[unCharIndex] = dX1 - dCurX;
+							nCurX = nX1;
+							dCurX = dX1;
+						}
+					}
+				}
+
+				m_pOutput->DrawString(wsString, unCharsCount, dX, dY, pdDx);
+
+				if (pdDx)
+					delete[] pdDx;
 			}
 		}
 		void DrawTextA(TEmfEmrText& oText)
@@ -561,24 +598,27 @@ namespace MetaFile
 
 			std::wstring wsText = NSString::CConverter::GetUnicodeFromSingleByteString((unsigned char*)oText.OutputString, oText.Chars, eCharSet);
 
-			int nTextW = 0;
-			bool bWithOutLast = false;
+			int* pDx = NULL;
 			if (oText.OutputDx)
 			{
-				for (unsigned int unIndex = 0; unIndex < oText.Chars; unIndex++)
+				pDx = new int[oText.Chars];
+				if (pDx)
 				{
-					nTextW += oText.OutputDx[unIndex];
+					for (unsigned int unIndex = 0; unIndex < oText.Chars; unIndex++)
+					{
+						pDx[unIndex] = oText.OutputDx[unIndex];
 
-					if ((oText.Chars - 1 == unIndex || (oText.Options & ETO_PDY && oText.Chars - 2 == unIndex)) && 0 == oText.OutputDx[unIndex])
-						bWithOutLast = true;
-
-					// Пропускаем сдвиги по Y если они есть
-					if (oText.Options & ETO_PDY)
-						unIndex++;
+						// Пропускаем сдвиги по Y если они есть
+						if (oText.Options & ETO_PDY)
+							unIndex++;
+					}
 				}
 			}
 
-			DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, nTextW, bWithOutLast);
+			DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, pDx);
+
+			if (pDx)
+				delete[] pDx;
 		}
 		void DrawTextW(TEmfEmrText& oText)
 		{
@@ -587,24 +627,27 @@ namespace MetaFile
 
 			std::wstring wsText = NSString::CConverter::GetUnicodeFromUTF16((unsigned short*)oText.OutputString, oText.Chars);
 
-			int nTextW = 0;
-			bool bWithOutLast = false;
+			int* pDx = NULL;
 			if (oText.OutputDx)
 			{
-				for (unsigned int unIndex = 0; unIndex < oText.Chars; unIndex++)
+				pDx = new int[oText.Chars];
+				if (pDx)
 				{
-					nTextW += oText.OutputDx[unIndex];
+					for (unsigned int unIndex = 0; unIndex < oText.Chars; unIndex++)
+					{
+						pDx[unIndex] = oText.OutputDx[unIndex];
 
-					if ((oText.Chars - 1 == unIndex || (oText.Options & ETO_PDY && oText.Chars - 2 == unIndex)) && 0 == oText.OutputDx[unIndex])
-						bWithOutLast = true;
-
-					// Пропускаем сдвиги по Y если они есть
-					if (oText.Options & ETO_PDY)
-						unIndex++;
+						// Пропускаем сдвиги по Y если они есть
+						if (oText.Options & ETO_PDY)
+							unIndex++;
+					}
 				}
 			}
 
-			DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, nTextW, bWithOutLast);
+			DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, pDx);
+
+			if (pDx)
+				delete[] pDx;
 		}
 
 		void Read_EMR_HEADER()
@@ -686,7 +729,7 @@ namespace MetaFile
 
 					}
 
-					m_pOutput->DrawBitmap(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, unWidth, unHeight);
+					DrawImage(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, unWidth, unHeight);
 				}
 			}
 
@@ -706,7 +749,7 @@ namespace MetaFile
 				if (m_pOutput)
 				{
 					ProcessRasterOperation(oBitmap.BitBltRasterOperation, &pBgraBuffer, ulWidth, ulHeight);
-					m_pOutput->DrawBitmap(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
+					DrawImage(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
 				}
 			}
 
@@ -723,8 +766,7 @@ namespace MetaFile
 
 			if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, sizeof(TEmfBitBlt) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
 			{
-				if (m_pOutput)
-					m_pOutput->DrawBitmap(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
+				DrawImage(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);
 			}
 
 			if (m_pOutput)
@@ -803,7 +845,7 @@ namespace MetaFile
 				}
 
 				if (pBgraBuffer)
-					m_pOutput->DrawBitmap(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);				
+					DrawImage(oBitmap.xDest, oBitmap.yDest, oBitmap.cxDest, oBitmap.cyDest, pBgraBuffer, ulWidth, ulHeight);				
 			}
 
 			if (pBgraBuffer)
@@ -819,8 +861,7 @@ namespace MetaFile
 			if (ReadImage(oBitmap.offBmiSrc, oBitmap.cbBmiSrc, oBitmap.offBitsSrc, oBitmap.cbBitsSrc, sizeof(TEmfSetDiBitsToDevice) + 8, &pBgraBuffer, &ulWidth, &ulHeight))
 			{
 				// TODO: Нужно реализовать обрезку картинки по параметрам oBitmap.iStartScan и oBitmap.cScans
-				if (m_pOutput)
-					m_pOutput->DrawBitmap(oBitmap.Bounds.lLeft, oBitmap.Bounds.lTop, oBitmap.Bounds.lRight - oBitmap.Bounds.lLeft, oBitmap.Bounds.lBottom - oBitmap.Bounds.lTop, pBgraBuffer, ulWidth, ulHeight);
+				DrawImage(oBitmap.Bounds.lLeft, oBitmap.Bounds.lTop, oBitmap.Bounds.lRight - oBitmap.Bounds.lLeft, oBitmap.Bounds.lBottom - oBitmap.Bounds.lTop, pBgraBuffer, ulWidth, ulHeight);
 			}
 
 			if (pBgraBuffer)
@@ -1033,7 +1074,10 @@ namespace MetaFile
 				SetError();
 
 			// Иногда MoveTo идет до BeginPath
-			m_pPath->MoveTo(m_pDC->GetCurPos());
+			TEmfPointL oPoint = m_pDC->GetCurPos();
+			double dX, dY;
+			TranslatePoint(oPoint, dX, dY);
+			m_pPath->MoveTo(dX, dY);
 		}
 		void Read_EMR_ENDPATH()
 		{
@@ -1068,7 +1112,14 @@ namespace MetaFile
 			TEmfPointL oPoint;
 			m_oStream >> oPoint;
 			MoveTo(oPoint);
-		}		
+		}	
+		void Read_EMR_SETARCDIRECTION()
+		{
+			unsigned int unDirection;
+			m_oStream >> unDirection;
+			m_pDC->SetArcDirection(unDirection);
+			// Здесь не обновляем DC у Output, т.к. этот параметр разруливается внутри данного класса.
+		}
 		void Read_EMR_FILLPATH()
 		{
 			TEmfRectL oBounds;
@@ -1159,8 +1210,49 @@ namespace MetaFile
 		{
 			TEmfColor oColor;
 			m_oStream >> oColor;
-			// TODO: реализовать
+			m_pDC->SetBgColor(oColor);
+			UpdateOutputDC();
+		}
+		void Read_EMR_EXCLUDECLIPRECT()
+		{
+			// TODO: Проверить как найдется файл
+			TEmfRectL oClip;
+			m_oStream >> oClip;
 
+			TRectD oClipRect, oBB;
+
+			// Поскольку мы реализовываем данный тип клипа с помощью разницы внешнего ректа и заданного, и
+			// пересечением с полученной областью, то нам надо вычесть границу заданного ректа.
+			if (oClip.lLeft < oClip.lRight)
+			{
+				oClip.lLeft--;
+				oClip.lRight++;
+			}
+			else
+			{
+				oClip.lLeft++;
+				oClip.lRight--;
+			}
+
+			if (oClip.lTop < oClip.lBottom)
+			{
+				oClip.lTop--;
+				oClip.lBottom++;
+			}
+			else
+			{
+				oClip.lTop++;
+				oClip.lBottom--;
+			}
+
+			TranslatePoint(oClip.lLeft, oClip.lTop, oClipRect.dLeft, oClipRect.dTop);
+			TranslatePoint(oClip.lRight, oClip.lBottom, oClipRect.dRight, oClipRect.dBottom);
+
+			TRect* pRect = GetDCBounds();
+			TranslatePoint(pRect->nLeft, pRect->nTop, oBB.dLeft, oBB.dTop);
+			TranslatePoint(pRect->nRight, pRect->nBottom, oBB.dRight, oBB.dBottom);
+
+			m_pDC->GetClip()->Exclude(oClipRect, oBB);
 			UpdateOutputDC();
 		}
 		void Read_EMR_EXTSELECTCLIPRGN()
@@ -1169,7 +1261,10 @@ namespace MetaFile
 			m_oStream >> ulRgnDataSize >> ulRegionMode;
 
 			m_oStream.Skip(m_ulRecordSize - 8);
-			// TODO: Реализовать клип
+
+			// Тут просто сбрасываем текущий клип. Ничего не добавляем в клип, т.е. реализовать регионы с
+		    // текущим интерфейсом рендерера невозможно.
+			m_pDC->GetClip()->Reset();
 		}
 		void Read_EMR_SETMETARGN()
 		{
@@ -1208,7 +1303,11 @@ namespace MetaFile
 		{
 			TEmfRectL oClip;
 			m_oStream >> oClip;
-			m_pDC->GetClip()->Intersect(oClip);
+
+			TRectD oClipRect;
+			TranslatePoint(oClip.lLeft, oClip.lTop, oClipRect.dLeft, oClipRect.dTop);
+			TranslatePoint(oClip.lRight, oClip.lBottom, oClipRect.dRight, oClipRect.dBottom);
+			m_pDC->GetClip()->Intersect(oClipRect);
 		}
 		void Read_EMR_SETLAYOUT()
 		{
@@ -1245,6 +1344,12 @@ namespace MetaFile
 			// TODO: Проверить здесь
 			if (dSweepAngle < 0.001)
 				dSweepAngle += 360;
+
+			// TODO: Проверить здесь
+			if (AD_COUNTERCLOCKWISE != m_pDC->GetArcDirection())
+			{
+				dSweepAngle = dSweepAngle - 360;
+			}
 		}
 		void Read_EMR_ARC()
 		{
@@ -1700,10 +1805,20 @@ namespace MetaFile
 			TEmfRectL oBox;
 			m_oStream >> oBox;
 
-			MoveTo(oBox.lLeft, oBox.lTop);
-			LineTo(oBox.lRight, oBox.lTop);
-			LineTo(oBox.lRight, oBox.lBottom);
-			LineTo(oBox.lLeft, oBox.lBottom);
+			if (AD_COUNTERCLOCKWISE == m_pDC->GetArcDirection())
+			{
+				MoveTo(oBox.lLeft, oBox.lTop);
+				LineTo(oBox.lLeft, oBox.lBottom);
+				LineTo(oBox.lRight, oBox.lBottom);
+				LineTo(oBox.lRight, oBox.lTop);
+			}
+			else
+			{
+				MoveTo(oBox.lLeft, oBox.lTop);
+				LineTo(oBox.lRight, oBox.lTop);
+				LineTo(oBox.lRight, oBox.lBottom);
+				LineTo(oBox.lLeft, oBox.lBottom);
+			}
 			ClosePath();
 			DrawPath(true, true);
 		}
@@ -1719,15 +1834,31 @@ namespace MetaFile
 			int lRoundW = (std::min)((int)oCorner.cx, lBoxW / 2);
 			int lRoundH = (std::min)((int)oCorner.cy, lBoxH / 2);
 
-			MoveTo(oBox.lLeft + lRoundW, oBox.lTop);
-			LineTo(oBox.lRight - lRoundW, oBox.lTop);
-			ArcTo(oBox.lRight - lRoundW, oBox.lTop, oBox.lRight, oBox.lTop + lRoundH, -90, 90);
-			LineTo(oBox.lRight, oBox.lBottom - lRoundH);
-			ArcTo(oBox.lRight - lRoundW, oBox.lBottom - lRoundH, oBox.lRight, oBox.lBottom, 0, 90);
-			LineTo(oBox.lLeft + lRoundW, oBox.lBottom);
-			ArcTo(oBox.lLeft, oBox.lBottom - lRoundH, oBox.lLeft + lRoundW, oBox.lBottom, 90, 90);
-			LineTo(oBox.lLeft, oBox.lTop + lRoundH);
-			ArcTo(oBox.lLeft, oBox.lTop, oBox.lLeft + lRoundW, oBox.lTop + lRoundH, 180, 90);
+			if (AD_COUNTERCLOCKWISE == m_pDC->GetArcDirection())
+			{
+				MoveTo(oBox.lLeft + lRoundW, oBox.lTop);
+				ArcTo(oBox.lLeft, oBox.lTop, oBox.lLeft + lRoundW, oBox.lTop + lRoundH, 270, -90);
+				LineTo(oBox.lLeft, oBox.lBottom - lRoundH);
+				ArcTo(oBox.lLeft, oBox.lBottom - lRoundH, oBox.lLeft + lRoundW, oBox.lBottom, 180, -90);
+				LineTo(oBox.lRight - lRoundW, oBox.lBottom);
+				ArcTo(oBox.lRight - lRoundW, oBox.lBottom - lRoundH, oBox.lRight, oBox.lBottom, 90, -90);
+				LineTo(oBox.lRight, oBox.lTop + lRoundH);
+				ArcTo(oBox.lRight - lRoundW, oBox.lTop, oBox.lRight, oBox.lTop + lRoundH, 0, -90);
+				LineTo(oBox.lLeft + lRoundW, oBox.lTop);
+			}
+			else
+			{
+				MoveTo(oBox.lLeft + lRoundW, oBox.lTop);
+				LineTo(oBox.lRight - lRoundW, oBox.lTop);
+				ArcTo(oBox.lRight - lRoundW, oBox.lTop, oBox.lRight, oBox.lTop + lRoundH, -90, 90);
+				LineTo(oBox.lRight, oBox.lBottom - lRoundH);
+				ArcTo(oBox.lRight - lRoundW, oBox.lBottom - lRoundH, oBox.lRight, oBox.lBottom, 0, 90);
+				LineTo(oBox.lLeft + lRoundW, oBox.lBottom);
+				ArcTo(oBox.lLeft, oBox.lBottom - lRoundH, oBox.lLeft + lRoundW, oBox.lBottom, 90, 90);
+				LineTo(oBox.lLeft, oBox.lTop + lRoundH);
+				ArcTo(oBox.lLeft, oBox.lTop, oBox.lLeft + lRoundW, oBox.lTop + lRoundH, 180, 90);
+			}
+
 			ClosePath();
 			DrawPath(true, true);
 		}
@@ -1746,8 +1877,7 @@ namespace MetaFile
             pBgraBuffer[2] = oColor.r;
 			pBgraBuffer[3] = 0xff;
 
-			if (m_pOutput)
-				m_pOutput->DrawBitmap(oPoint.x, oPoint.y, 1, 1, pBgraBuffer, 1, 1);
+			DrawImage(oPoint.x, oPoint.y, 1, 1, pBgraBuffer, 1, 1);
 		}
 		void Read_EMR_SMALLTEXTOUT()
 		{

@@ -121,6 +121,9 @@ typedef unsigned char BYTE;
 #define PS_GEOMETRIC        0x00010000
 #define PS_TYPE_MASK        0x000F0000
 
+#define AD_COUNTERCLOCKWISE 1
+#define AD_CLOCKWISE        2
+
 /* Text Alignment Options */
 #define TA_NOUPDATECP                0
 #define TA_UPDATECP                  1

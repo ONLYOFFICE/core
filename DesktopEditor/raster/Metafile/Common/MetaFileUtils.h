@@ -535,13 +535,11 @@ namespace MetaFile
 				unsigned short* pUnicode = NULL;
 				if (oText.fuOptions & ETO_SMALL_CHARS)
 				{
-					unsigned char* pString = new unsigned char[oText.cChars + 1];
+					unsigned char* pString = new unsigned char[oText.cChars];
 					if (!pString)
 						return *this;
 
-					pString[oText.cChars] = 0x00;
 					ReadBytes(pString, oText.cChars);
-					oText.cChars++;
 
 					pUnicode = new unsigned short[oText.cChars];
 					if (!pUnicode)
@@ -558,13 +556,11 @@ namespace MetaFile
 				}
 				else
 				{
-					pUnicode = new unsigned short[oText.cChars + 1];
+					pUnicode = new unsigned short[oText.cChars];
 					if (!pUnicode)
 						return *this;
 
-					pUnicode[oText.cChars] = 0x0000;
 					ReadBytes(pUnicode, oText.cChars);
-					oText.cChars++;
 				}
 				oText.TextString = pUnicode;
 			}
@@ -920,7 +916,6 @@ namespace MetaFile
 		void ReadEmrTextA(TEmfEmrText& oText, unsigned int unOffset)
 		{
 			ReadEmrTextBase<unsigned char>(oText, unOffset);
-			// TODO: Возможно здесь нужно декодировать строку в зависимости от Charset
 		}
 		void ReadEmrTextW(TEmfEmrText& oText, unsigned int unOffset)
 		{

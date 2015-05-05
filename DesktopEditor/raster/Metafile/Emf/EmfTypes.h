@@ -675,11 +675,10 @@ namespace MetaFile
 			if (!(fuOptions & ETO_NO_RECT))
 				unSize += 16;
 
-			// Мы при чтении насильно добавляем нулевой символ в конце.
 			if (fuOptions & ETO_SMALL_CHARS)
-				unSize += (cChars - 1);
+				unSize += cChars;
 			else
-				unSize += 2 * (cChars - 1);
+				unSize += 2 * cChars;
 
 			return unSize;
 		}

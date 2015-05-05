@@ -10,7 +10,7 @@
 class TxtFile
 {
 public:
-	TxtFile(const OOX::CPath& path);
+	TxtFile(const std::wstring & path);
 
 	const std::list<std::string>	readAnsiOrCodePage();
 	const std::list<std::wstring>	readUnicode();
@@ -30,8 +30,8 @@ public:
 	const int	getLinesCount();
 
 private:
-	OOX::CPath	m_path;
-	int			m_linesCount;
+	std::wstring	m_path;
+	int				m_linesCount;
 };
 
 #endif // UTILITY_TXT_FILE_INCLUDE_H_

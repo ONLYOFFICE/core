@@ -11,7 +11,7 @@ namespace StlUtils
 	{
 #if defined(_WIN32) || defined(_WIN64)
         wchar_t strValue[256];
-		_itow_s(value, strValue, 256, radix);
+		_itow_s(value, strValue, 256, 10);
 		return std::wstring(strValue);
 #else
         return std::to_wstring(value);
@@ -33,7 +33,7 @@ namespace StlUtils
 	{
 #if defined(_WIN32) || defined(_WIN64)
         char strValue[256];
-		_itoa_s(value, strValue, 256, radix);
+		_itoa_s(value, strValue, 256, 10);
         return std::string(strValue);
 #else
         return std::to_string(value);

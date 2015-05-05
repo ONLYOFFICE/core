@@ -22,7 +22,7 @@ namespace Txt
 		if (filename.empty())
 			return;
 
-        TxtFile file(std_string2string(filename));
+        TxtFile file(filename);
 
 		std::list<std::string> codePageContent	= file.readAnsiOrCodePage();	
 		m_listContentSize						= file.getLinesCount();
@@ -40,7 +40,7 @@ namespace Txt
 		if (filename.empty())
 			return;
 
-        TxtFile file(std_string2string(filename));
+        TxtFile file(filename);
 		
 		//читаем юникод чтобы можно было выкинуть невалидные символы
 
@@ -74,13 +74,13 @@ namespace Txt
 
     void File::write(const std::wstring& filename) const
 	{
-        TxtFile file(std_string2string(filename));
+        TxtFile file(filename);
 		file.writeUtf8(_transform(m_listContent, Encoding::unicode2utf8));
 	}
 
     void File::writeCodePage(const std::wstring& filename, int code_page) const
 	{
-        TxtFile file(std_string2string(filename));
+        TxtFile file(filename);
 		
 		std::list<std::string> result;
 		for (std::list<std::wstring>::const_iterator iter = m_listContent.begin(); iter != m_listContent.end(); ++iter)
@@ -93,29 +93,28 @@ namespace Txt
 
     void File::writeUtf8(const std::wstring& filename) const
 	{
-        TxtFile file(std_string2string(filename));
+        TxtFile file(filename);
 		file.writeUtf8(_transform(m_listContent, Encoding::unicode2utf8));
 	}
 
 
     void File::writeUnicode(const std::wstring& filename) const
 	{
-        TxtFile file(std_string2string(filename));
+        TxtFile file(filename);
 		file.writeUnicode(m_listContent);
 	}
 
 
     void File::writeBigEndian(const std::wstring& filename) const
 	{
-        OOX::CPath path (filename);
-        TxtFile file(path);
+        TxtFile file(filename);
 		file.writeBigEndian(m_listContent);
 	}
 
 
     void File::writeAnsi(const std::wstring& filename) const
 	{
-        TxtFile file(std_string2string(filename));
+        TxtFile file(filename);
 		file.writeAnsiOrCodePage(_transform(m_listContent, Encoding::unicode2ansi));
 	}
 		

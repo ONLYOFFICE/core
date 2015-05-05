@@ -1,8 +1,8 @@
 #pragma once
 
 #include "../../../../Common/DocxFormat/Source/XML/stringcommon.h"
-
 #include "../Common/Encoding.h"
+#include <vector>
 
 template<typename Out, typename In>
 static const std::vector<Out> _transform(const std::vector<In>& lines, const Out(*func)(const In&))

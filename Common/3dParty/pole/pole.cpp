@@ -54,7 +54,7 @@
 #include <cstring>
 
 #include "pole.h"
-#include "../../Common/DocxFormat/Source/Base/unicode_util.h"
+#include "../../DocxFormat/Source/Base/unicode_util.h"
 
 
 // enable to activate debugging output

@@ -64,7 +64,7 @@ SOURCES += \
     ../OnlineOfficeBinToPdf.cpp \
     ../../../Common/DocxFormat/Source/XML/stringcommon.cpp \
     ../../../Common/DocxFormat/Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
-    ../../../ASCOfficeDocFile/pole/pole.cpp \
+    ../../../Common/3dParty/pole/pole.cpp \
     ../../../Common/DocxFormat/Source/XML/libxml2/libxml2.cpp \
     ../../../Common/DocxFormat/Source/Base/unicode_util.cpp \
     ../../../ASCOfficePPTXFile/Editor/FontPicker.cpp \

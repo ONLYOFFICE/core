@@ -1,7 +1,6 @@
 ﻿#pragma once
 
-#include "../pole/pole.h"
-//#include "../../Common/DocxFormat/Source/CompoundDocument/pole.h"
+#include "../../Common/3dParty/pole/pole.h"
 #include "../../DesktopEditor/common/Types.h"
 
 namespace DocFileFormat

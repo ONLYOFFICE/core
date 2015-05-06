@@ -406,11 +406,11 @@
 				Name="pole"
 				>
 				<File
-					RelativePath="..\..\..\ASCOfficeDocFile\pole\pole.cpp"
+					RelativePath="..\..\..\Common\3dParty\pole\pole.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\..\ASCOfficeDocFile\pole\pole.h"
+					RelativePath="..\..\..\Common\3dParty\pole\pole.h"
 					>
 				</File>
 			</Filter>

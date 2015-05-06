@@ -347,11 +347,11 @@
 				Name="pole"
 				>
 				<File
-					RelativePath="..\..\pole\pole.cpp"
+					RelativePath="..\..\..\Common\3dParty\pole\pole.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\..\pole\pole.h"
+					RelativePath="..\..\..\Common\3dParty\pole\pole.h"
 					>
 				</File>
 			</Filter>

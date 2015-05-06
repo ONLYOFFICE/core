@@ -3,8 +3,8 @@
 #include "IBinaryReader.h"
 #include "../Common/FormatUtils.h"
 
-#include "../pole/pole.h"
-//#include "../../Common/DocxFormat/Source/CompoundDocument/pole.h"
+#include "../../Common/3dParty/pole/pole.h"
+
 class VirtualStreamReader : public IBinaryReader
 {
 public:

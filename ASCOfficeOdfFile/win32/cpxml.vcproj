@@ -290,7 +290,7 @@
 			Name="xmllite"
 			>
 			<File
-				RelativePath="..\src\xml\sax_win32_xmllite.cpp"
+				RelativePath="..\src\xml\sax_xmllite.cpp"
 				>
 				<FileConfiguration
 					Name="Debug|Win32"
@@ -302,7 +302,7 @@
 				</FileConfiguration>
 			</File>
 			<File
-				RelativePath="..\src\xml\sax_win32_xmllite.h"
+				RelativePath="..\src\xml\sax_xmllite.h"
 				>
 			</File>
 		</Filter>
@@ -347,59 +347,7 @@
 			>
 		</File>
 		<File
-			RelativePath="..\src\xml\precompiled_cpxml.cpp"
-			>
-			<FileConfiguration
-				Name="Debug|Win32"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-					UsePrecompiledHeader="0"
-				/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Debug|x64"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-					UsePrecompiledHeader="1"
-				/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|Win32"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-					UsePrecompiledHeader="1"
-				/>
-			</FileConfiguration>
-			<FileConfiguration
-				Name="Release|x64"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-					UsePrecompiledHeader="1"
-				/>
-			</FileConfiguration>
-		</File>
-		<File
-			RelativePath="..\src\xml\precompiled_cpxml.h"
-			>
-		</File>
-		<File
 			RelativePath="..\src\xml\sax.cpp"
-			>
-			<FileConfiguration
-				Name="Debug|Win32"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-					UsePrecompiledHeader="0"
-				/>
-			</FileConfiguration>
-		</File>
-		<File
-			RelativePath="..\src\xml\serialize_attributes.cpp"
 			>
 			<FileConfiguration
 				Name="Debug|Win32"
@@ -429,26 +377,6 @@
 		<File
 			RelativePath="..\src\xml\xmlchar.cpp"
 			>
-			<FileConfiguration
-				Name="Debug|Win32"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-					UsePrecompiledHeader="0"
-				/>
-			</FileConfiguration>
-		</File>
-		<File
-			RelativePath="..\src\xml\xmlelement.cpp"
-			>
-			<FileConfiguration
-				Name="Debug|Win32"
-				>
-				<Tool
-					Name="VCCLCompilerTool"
-					UsePrecompiledHeader="0"
-				/>
-			</FileConfiguration>
 		</File>
 	</Files>
 	<Globals>

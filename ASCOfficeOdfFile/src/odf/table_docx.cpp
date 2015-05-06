@@ -14,7 +14,7 @@
 namespace cpdoccore { 
 namespace odf {
 
-using xml::xml_char_wc;
+
 
 bool table_table_cell_content::docx_convert(oox::docx_conversion_context & Context)
 {

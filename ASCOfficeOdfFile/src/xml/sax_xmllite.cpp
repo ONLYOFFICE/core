@@ -1,4 +1,4 @@
-/// \file   sax_win32_xmllite.cpp
+/// \file   sax_xmllite.cpp
 /// \brief  –еализаци€ интерфейса SAX через библиотеку XmlLite
 
 #include "precompiled_cpxml.h"
@@ -6,42 +6,25 @@
 #include <string>
 
 
-#define _ATL_APARTMENT_THREADED
-#define _ATL_NO_AUTOMATIC_NAMESPACE
-
-#define _ATL_CSTRING_EXPLICIT_CONSTRUCTORS	// some CString constructors will be explicit
-
-// turns off ATL's hiding of some common and often safely ignored warning messages
-#define _ATL_ALL_WARNINGS
-
-//#include <atlbase.h>
-//#include <atlcom.h>
-//#include <atlwin.h>
-//#include <atltypes.h>
-//#include <atlctl.h>
-//#include <atlhost.h>
-
-//using namespace ATL;
-
 #include "../../../Common/DocxFormat/Source/Base/Nullable.h"
 #include "../../../common/docxformat/source/xml/libxml2/libxml2.h"
 
 
 #include "../../include/cpdoccore/xml/sax.h"
 
-#include "sax_win32_xmllite.h"
+#include "sax_xmllite.h"
 //#include "istream2Win32Stream.h"
 
 namespace cpdoccore {
 namespace xml {
 
-class SaxWin32XmlLite : public sax
+class saxXmlLiteReader : public sax
 {
 public:
-    SaxWin32XmlLite(const wchar_t * FileName);
-    //SaxWin32XmlLite(shared_ptr< std::istream >::Type istreamPtr); 
-    //SaxWin32XmlLite(std::istream & istreamVal); 
-    SaxWin32XmlLite();
+    saxXmlLiteReader(const wchar_t * FileName);
+    //saxXmlLiteReader(shared_ptr< std::istream >::Type istreamPtr); 
+    //saxXmlLiteReader(std::istream & istreamVal); 
+    saxXmlLiteReader();
     
 public:
     virtual unsigned int attrCount();
@@ -118,72 +101,27 @@ namespace
     }
 }
 
-SaxWin32XmlLite::SaxWin32XmlLite(const wchar_t * FileName)
+saxXmlLiteReader::saxXmlLiteReader(const wchar_t * FileName)
 {
 	xml_ = new XmlUtils::CXmlLiteReader();
 	
 	xml_->FromFile(FileName);
+
+	if (xml_->ReadNextNode() == false)
+	{
+		xml_ = NULL;
+	}
 }
 
-//SaxWin32XmlLite::SaxWin32XmlLite(shared_ptr< std::istream >::Type istreamPtr)
-//{
-//    HRESULT hr;
-//    ::ATL::CComPtr< IStream > stream = istreamToWin32IStream(istreamPtr);
-//
-//    if (FAILED(hr = ::CreateXmlReader(__uuidof(IXmlReader), (void**)&xml_, NULL)))
-//    {
-//        //wprintf(L"Error creating xml reader, error is %08.8lx", hr);
-//        throw error( error::createReader );
-//    }
-//
-//    if FAILED(xml_->SetInput(stream))
-//    {
-//        throw error( error::createReader );
-//    };
-//    
-//}
-//
-//SaxWin32XmlLite::SaxWin32XmlLite(std::istream & istreamVal)
-//{
-//   HRESULT hr;
-//    ::ATL::CComPtr< IStream > stream = istreamToWin32IStream(istreamVal);
-//
-//    if (FAILED(hr = ::CreateXmlReader(__uuidof(IXmlReader), (void**)&xml_, NULL)))
-//    {
-//        //wprintf(L"Error creating xml reader, error is %08.8lx", hr);
-//        throw error( error::createReader );
-//    }
-//
-//    if FAILED(xml_->SetInput(stream))
-//    {
-//        throw error( error::createReader );
-//    };    
-//}
-//
-unsigned int SaxWin32XmlLite::attrCount()
+unsigned int saxXmlLiteReader::attrCount()
 {
 	if (xml_.IsInit() == false) return 0;
 
     return xml_->GetAttributesCount();
 }
 
-//std::wstring SaxWin32XmlLite::baseURI()
-//{
-//    HRESULT hr;
-//    UINT size = 0;
-//    const wchar_t * val;
-//    if FAILED(hr = xml_->GetBaseUri(&val, &size))
-//    {
-//        throw error(error::internalErr);    
-//    }
-//    if (size)
-//        return std::wstring(&val[0], &val[size]);
-//    else
-//        return L"";
-//
-//}
 
-unsigned int SaxWin32XmlLite::depth()
+unsigned int saxXmlLiteReader::depth()
 {
  	if (xml_.IsInit() == false) return 0;
 
@@ -191,7 +129,7 @@ unsigned int SaxWin32XmlLite::depth()
 }
 
 // <p:abc/>, returns "abc".
-std::wstring SaxWin32XmlLite::nodeLocalName()
+std::wstring saxXmlLiteReader::nodeLocalName()
 {
 	if (xml_.IsInit() == false) return _T("");
 
@@ -199,14 +137,14 @@ std::wstring SaxWin32XmlLite::nodeLocalName()
 }
 
 // <p:abc />, returns "p:abc".
-std::wstring SaxWin32XmlLite::nodeQualifiedName()
+std::wstring saxXmlLiteReader::nodeQualifiedName()
 {
 	if (xml_.IsInit() == false) return _T("");
 	return xml_->GetName();
 }
 
 // <xyz:abc xmlns:xyz="u://1" />, it returns "xyz".
-std::wstring SaxWin32XmlLite::namespacePrefix()
+std::wstring saxXmlLiteReader::namespacePrefix()
 {
 	if (xml_.IsInit() == false) return _T("");
 
@@ -220,7 +158,7 @@ std::wstring SaxWin32XmlLite::namespacePrefix()
 }
 //
 //// Returns "u://1" for the element <xyz:abc xmlns:xyz="u://1" />.
-//std::wstring SaxWin32XmlLite::namespaceUri()
+//std::wstring saxXmlLiteReader::namespaceUri()
 //{
 //    HRESULT hr;
 //    UINT size = 0;
@@ -236,7 +174,7 @@ std::wstring SaxWin32XmlLite::namespacePrefix()
 //
 //}
 
-NodeType SaxWin32XmlLite::nodeType()
+NodeType saxXmlLiteReader::nodeType()
 {
 	if (xml_.IsInit() == false) return typeNone;	
 
@@ -244,7 +182,7 @@ NodeType SaxWin32XmlLite::nodeType()
 	return NodeTypeConvert(nTempType); 
 }
 
-std::wstring SaxWin32XmlLite::value()
+std::wstring saxXmlLiteReader::value()
 {
  	if (xml_.IsInit() == false) return _T("");
     
@@ -254,69 +192,65 @@ std::wstring SaxWin32XmlLite::value()
 
 // <element attribute="123"></element> Ч false
 // <element attribute="123"/> - true
-bool SaxWin32XmlLite::isEmptyElement()
+bool saxXmlLiteReader::isEmptyElement()
 {
 	if (xml_.IsInit() == false) return false;
 
-    return (xml_->IsEmptyNode() == TRUE);    
+    return xml_->IsEmptyNode();    
 }
 
-bool SaxWin32XmlLite::isEof()
+bool saxXmlLiteReader::isEof()
 {
  	if (xml_.IsInit() == false) return true;
 	
 	return false;
 }
 
-bool SaxWin32XmlLite::moveToAttrFirst()
+bool saxXmlLiteReader::moveToAttrFirst()
 {
 	if (xml_.IsInit() == false) return false;
 
-	HRESULT hr;
-    if FAILED(hr = xml_->MoveToFirstAttribute())
+    if (S_OK != xml_->MoveToFirstAttribute())
     {
         throw error(error::internalErr);    
     }
 
-    return (S_FALSE != hr);
+    return true;
 }
 
-bool SaxWin32XmlLite::moveToAttrNext()
+bool saxXmlLiteReader::moveToAttrNext()
 {
 	if (xml_.IsInit() == false) return false;
 
-	HRESULT hr;
-    if FAILED(hr = xml_->MoveToNextAttribute())
+    if (S_OK !=xml_->MoveToNextAttribute())
     {
         throw error(error::internalErr);    
     }
 
-    return (S_FALSE != hr);
+    return true;
 }
 
-void SaxWin32XmlLite::moveToAttrOwner()
+void saxXmlLiteReader::moveToAttrOwner()
 {
 	if (xml_.IsInit() == false) return;
-    HRESULT hr;
-    if FAILED(hr = xml_->MoveToElement())
+
+	if (S_OK != xml_->MoveToElement())
     {
         throw error(error::internalErr);    
     }
 }
 
-bool SaxWin32XmlLite::attrDefault()
+bool saxXmlLiteReader::attrDefault()
 {
 	if (xml_.IsInit() == false) return false;
 	
     return (FALSE != xmlTextReaderIsDefault(xml_->getNativeReader()));
 }
 
-NodeType SaxWin32XmlLite::next()
+NodeType saxXmlLiteReader::next()
 {
-    HRESULT hr;
-    NodeType nodeType;
-				
 	int nCurDepth = xml_->GetDepth();
+	
 	if (xml_->ReadNextSiblingNode(nCurDepth))
 	{
 		XmlUtils::XmlNodeType nTempType = (XmlUtils::XmlNodeType)xmlTextReaderNodeType(xml_->getNativeReader());
@@ -327,7 +261,7 @@ NodeType SaxWin32XmlLite::next()
 
 	
 }
-//unsigned int SaxWin32XmlLite::readChunk(wchar_t * const Buffer, unsigned int Size)
+//unsigned int saxXmlLiteReader::readChunk(wchar_t * const Buffer, unsigned int Size)
 //{
 // 	if (xml_.IsInit() == false) return 0;
 //
@@ -344,19 +278,19 @@ NodeType SaxWin32XmlLite::next()
 //
 ////////////////
 
-sax_ptr create_sax_win32_xmllite(const wchar_t * FileName)
+sax_ptr create_sax_xmllite(const wchar_t * FileName)
 {
-    return sax_ptr( new SaxWin32XmlLite(FileName) );
+    return sax_ptr( new saxXmlLiteReader(FileName) );
 }
 
-//sax_ptr create_sax_win32_xmllite( shared_ptr< std::istream >::Type istreamPtr)
+//sax_ptr create_sax_xmllite( shared_ptr< std::istream >::Type istreamPtr)
 //{
-//     return sax_ptr( new SaxWin32XmlLite(istreamPtr) );    
+//     return sax_ptr( new saxXmlLiteReader(istreamPtr) );    
 //}
 //
-//sax_ptr create_sax_win32_xmllite( std::istream & istreamVal )
+//sax_ptr create_sax_xmllite( std::istream & istreamVal )
 //{
-//     return sax_ptr( new SaxWin32XmlLite(istreamVal) );    
+//     return sax_ptr( new saxXmlLiteReader(istreamVal) );    
 //}
 
 }

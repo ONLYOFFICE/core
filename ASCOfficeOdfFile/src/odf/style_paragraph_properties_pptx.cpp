@@ -10,7 +10,7 @@
 namespace cpdoccore { 
 namespace odf {
 
-using xml::xml_char_wc;
+
 
 namespace {
 

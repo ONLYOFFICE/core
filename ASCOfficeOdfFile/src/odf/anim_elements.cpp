@@ -3,7 +3,7 @@
 
 #include <boost/make_shared.hpp>
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
+
 #include <cpdoccore/xml/attributes.h>
 
 #include <boost/lexical_cast.hpp>

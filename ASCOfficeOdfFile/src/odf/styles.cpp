@@ -31,7 +31,7 @@
 namespace cpdoccore { 
 namespace odf {
     
-using xml::xml_char_wc;
+
 
 style_text_properties * style_content::get_style_text_properties() const
 {

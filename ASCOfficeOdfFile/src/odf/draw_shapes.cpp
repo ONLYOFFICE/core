@@ -11,7 +11,7 @@
 #include <regex.h>
 
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
+
 #include <cpdoccore/xml/attributes.h>
 
 #include "serialize_elements.h"
@@ -27,7 +27,7 @@
 namespace cpdoccore { 
 namespace odf {
 
-using xml::xml_char_wc;
+
 
 
 const wchar_t * draw_shape::ns = L"draw";

@@ -2,7 +2,7 @@
 
 #include <iostream>
 #include "style_text_properties.h"
-#include <cpdoccore/xml/serialize.h>
+
 
 #include "fontvariant.h"
 #include "logging.h"

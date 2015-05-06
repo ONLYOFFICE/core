@@ -155,8 +155,9 @@ attributes_wc_ptr read_attributes(sax * SaxReader)
     typedef attributes_impl< ::std::wstring > attributes_impl_wc;
     _CP_PTR(attributes_impl_wc) attributes = boost::make_shared<attributes_impl_wc>();
 
-    if (SaxReader->moveToAttrFirst())
+    if (SaxReader->attrCount() > 0)
     {
+		SaxReader->moveToAttrFirst();
         for(;;)
         {
             if (!SaxReader->attrDefault())
@@ -164,6 +165,9 @@ attributes_wc_ptr read_attributes(sax * SaxReader)
                 const std::wstring prefix = SaxReader->namespacePrefix();
                 const std::wstring name = SaxReader->nodeLocalName();
                 const std::wstring value = SaxReader->value();
+
+				if (prefix.length() < 1 && name.length() < 1 && value.length() < 1)
+					break;
 
                 attributes->add( prefix + (prefix.size() ? L":" : L"") + name, value);
             }

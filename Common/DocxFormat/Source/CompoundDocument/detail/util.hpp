@@ -30,7 +30,7 @@
 // util header
 #pragma once
 
-namespace POLE
+namespace POLE2
 {
 
 typedef unsigned char ULONG8;

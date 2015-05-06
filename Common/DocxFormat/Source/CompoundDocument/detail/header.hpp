@@ -32,7 +32,7 @@
 #include "alloctable.hpp"
 #include <cstring>
 
-namespace POLE
+namespace POLE2
 {
 
 template<typename _>

@@ -360,7 +360,7 @@ namespace OOX
 		{
 			return type().DefaultFileName();
 		}
-		const CPath& GetReadPath()
+		const CPath GetReadPath()
 		{
 			return m_sFilename;
 		}

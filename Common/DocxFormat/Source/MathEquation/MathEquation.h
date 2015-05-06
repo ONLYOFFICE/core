@@ -7,7 +7,7 @@
 #include "String.h"
 #include "OutputDev.h"
 
-using namespace POLE;
+using namespace POLE2;
 
 
 namespace MathEquation

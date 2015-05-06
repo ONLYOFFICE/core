@@ -27,14 +27,14 @@
    THE POSSIBILITY OF SUCH DAMAGE.
 */
 
-#ifndef POLE_H
-#define POLE_H
+#ifndef POLE2_H
+#define POLE2_H
 
 #pragma once
 
 #include "./detail/stream.hpp"
 
-namespace POLE
+namespace POLE2
 {
 
 class Stream;

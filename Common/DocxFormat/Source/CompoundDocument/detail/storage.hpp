@@ -38,7 +38,7 @@
 
 #include "../../../../../DesktopEditor/common/File.h"
 
-namespace POLE
+namespace POLE2
 {
 
 template<typename _>

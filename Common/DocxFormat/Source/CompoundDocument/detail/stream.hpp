@@ -32,7 +32,7 @@
 
 #include "storage.hpp"
 
-namespace POLE
+namespace POLE2
 {
 
 template<typename _>

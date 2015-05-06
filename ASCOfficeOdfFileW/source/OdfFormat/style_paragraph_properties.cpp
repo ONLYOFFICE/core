@@ -3,7 +3,7 @@
 #include "style_paragraph_properties.h"
 
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
+
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/utils.h>
 

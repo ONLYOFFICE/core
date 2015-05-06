@@ -26,12 +26,10 @@ bool read_doc_element::read_sax( xml::sax * Reader )
 
     const unsigned int currentDepth = Reader->depth();
     
-    xml::NodeType nodeType;
+    xml::NodeType nodeType = Reader->nodeType();
 
     while (true)
 	{
-		nodeType = Reader->next();
-       
 		if (nodeType == xml::typeEOF || nodeType == xml::typeNone ) break;
        
 		if (Reader->depth() <= currentDepth + 1 && nodeType == xml::typeEndElement) break;
@@ -53,6 +51,7 @@ bool read_doc_element::read_sax( xml::sax * Reader )
 				}
 				break;
         }
+		nodeType = Reader->next();
                         
     }
     return true;

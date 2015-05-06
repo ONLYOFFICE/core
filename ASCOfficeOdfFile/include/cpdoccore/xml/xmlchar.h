@@ -1,9 +1,5 @@
-#ifndef _CPDOCCORE_XMLCHAR_H_
-#define _CPDOCCORE_XMLCHAR_H_
 
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 namespace cpdoccore {
 namespace xml {
@@ -72,5 +68,3 @@ typedef xml_char<wchar_t> xml_char_wc;
 
 }
 }
-
-#endif // #ifndef _CPDOCCORE_XMLCHAR_H_

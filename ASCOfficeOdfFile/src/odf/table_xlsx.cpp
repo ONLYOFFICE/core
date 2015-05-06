@@ -27,7 +27,7 @@ namespace odf {
 
 static formulasconvert::odf2oox_converter formulas_converter;
 
-using xml::xml_char_wc;
+
 
 int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Context) 
 {

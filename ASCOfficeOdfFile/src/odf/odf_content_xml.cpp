@@ -7,7 +7,10 @@ namespace odf {
 
 void content_xml_t::docx_convert(oox::docx_conversion_context & Context) 
 {
-    return xml_content_->docx_convert(Context);
+	if (xml_content_)
+	{
+	    return xml_content_->docx_convert(Context);
+	}
 }
 
 void content_xml_t::xlsx_convert(oox::xlsx_conversion_context & Context)

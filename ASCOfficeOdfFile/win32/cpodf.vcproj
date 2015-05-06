@@ -2042,14 +2042,6 @@
 			>
 		</File>
 		<File
-			RelativePath="..\src\odf\namespaces.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\src\odf\namespaces.h"
-			>
-		</File>
-		<File
 			RelativePath="..\src\odf\note.cpp"
 			>
 		</File>

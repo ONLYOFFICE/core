@@ -1,7 +1,7 @@
 #include "precompiled_cpodf.h"
 
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
+
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
 #include <iostream>

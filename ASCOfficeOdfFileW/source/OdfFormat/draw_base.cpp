@@ -9,7 +9,7 @@
 #include <boost_string.h>
 
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
+
 #include <cpdoccore/xml/attributes.h>
 
 

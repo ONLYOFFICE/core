@@ -25,7 +25,7 @@ namespace cpdoccore {
 namespace odf {
 
 
-using xml::xml_char_wc;
+
 
 class office_element;
 typedef shared_ptr<const office_element>::Type office_element_ptr_const;
@@ -164,7 +164,6 @@ void chart_build::calc_cash_series(std::wstring adress, std::vector<std::wstring
 
 	std::wstring ref_1,ref_2,table;
 	size_t col_1=0,row_1=0,col_2=0,row_2=0;
-	int res;
    
 	if (!converter.find_first_last_ref(adress,table,ref_1,ref_2))return;
 	//if ((res = table.find(L"local-table"))<0)return;

@@ -6,14 +6,13 @@
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/attributes.h>
-#include "namespaces.h"
 #include "serialize_elements.h"
 #include "../docx/docx_conversion_context.h"
 
 namespace cpdoccore { 
 namespace odf {
 
-using xml::xml_char_wc;
+
 
 std::wostream & office_document_base::text_to_stream(::std::wostream & _Wostream) const
 {

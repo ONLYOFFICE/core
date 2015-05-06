@@ -8,8 +8,8 @@
 #include <boost_string.h>
 #include <regex.h>
 
-#include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
+//#include <cpdoccore/xml/xmlchar.h>
+
 #include <cpdoccore/xml/attributes.h>
 
 #include "serialize_elements.h"
@@ -415,7 +415,7 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, styles_lite_con
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-using xml::xml_char_wc;
+
 
 const wchar_t * draw_a::ns = L"draw";
 const wchar_t * draw_a::name = L"a";

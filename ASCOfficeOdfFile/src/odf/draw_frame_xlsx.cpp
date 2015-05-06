@@ -11,7 +11,7 @@
 #include <regex.h>
 
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
+
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/common/boost_filesystem_version.h>
 
@@ -36,7 +36,7 @@ namespace odf {
 
 namespace fs = ::boost::filesystem;
 
-using xml::xml_char_wc;
+
 
 void draw_g::xlsx_convert(oox::xlsx_conversion_context & Context)
 {

@@ -15,7 +15,7 @@
 namespace cpdoccore { 
 namespace odf {
 
-using xml::xml_char_wc;
+
 
 std::wstring delete_apostroph_in_name(std::wstring value)
 {

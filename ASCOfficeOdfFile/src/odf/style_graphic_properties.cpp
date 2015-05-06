@@ -1,7 +1,7 @@
 #include "precompiled_cpodf.h"
 #include <iostream>
 #include "style_graphic_properties.h"
-#include <cpdoccore/xml/serialize.h>
+
 #include <cpdoccore/xml/attributes.h>
 #include "serialize_elements.h"
 
@@ -10,7 +10,7 @@
 namespace cpdoccore { 
 namespace odf {
 
-using xml::xml_char_wc;
+
 
 void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {

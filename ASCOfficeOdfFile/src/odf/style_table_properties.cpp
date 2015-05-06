@@ -15,7 +15,7 @@
 namespace cpdoccore { 
 namespace odf {
 
-using xml::xml_char_wc;
+
 
 void table_format_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {

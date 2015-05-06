@@ -10,7 +10,7 @@
 #include <regex.h>
 
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
+
 #include <cpdoccore/xml/attributes.h>
 
 #include "style_graphic_properties.h"

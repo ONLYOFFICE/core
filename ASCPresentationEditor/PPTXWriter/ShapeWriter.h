@@ -395,8 +395,8 @@ namespace NSPresentationEditor
 		HRESULT put_ShadowColor (LONG val);
 		HRESULT get_ShadowAlpha (LONG* val);
 		HRESULT put_ShadowAlpha (LONG val);
-		HRESULT get_ShadowVisible (BOOL* val);
-		HRESULT put_ShadowVisible (BOOL val);
+        HRESULT get_ShadowVisible (bool* val);
+        HRESULT put_ShadowVisible (bool val);
 		// edge -------------------------------------------------------------------------------------
 		HRESULT SetEdgeText (BSTR bsXML);
 		HRESULT get_EdgeVisible (LONG* val);

@@ -25,7 +25,7 @@ m_arEmptyPictures()
 	m_nWriteSlideTime			=	0.0;
 
 	m_strFileDirectory = _T("");
-	m_bIsSetupEmpty = FALSE;
+    m_bIsSetupEmpty = false;
 }
 
 CPPTUserInfo::~CPPTUserInfo()
@@ -72,7 +72,7 @@ void CPPTUserInfo::Clear()
 	m_arEmptyPictures.clear();
 }
 
-BOOL CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStream, CStringW strFolderMem)
+bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStream, CStringW strFolderMem)
 {
 	m_oUser.FromAtom(pUser);
 
@@ -85,7 +85,7 @@ BOOL CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 
 	if (RECORD_TYPE_PERSISTPTRINCREMENTALBLOCK != oHeader.RecType)
 	{
-		return FALSE;
+        return false;
 	}
 
 	CRecordPersistDirectoryAtom oPersist;
@@ -95,14 +95,14 @@ BOOL CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 	std::map<DWORD, DWORD>::iterator pPair = m_mapOffsetInPIDs.find(m_oUser.m_nDocumentRef);
 
 	if (pPair == m_mapOffsetInPIDs.end())
-		return FALSE;
+        return false;
 
 	StreamUtils::StreamSeek(pPair->second, pStream);
 	oHeader.ReadFromStream(pStream);
 
 	if (RECORD_TYPE_DOCUMENT != oHeader.RecType)
 	{
-		return FALSE;
+        return false;
 	}
 
 	m_oDocument.ReadFromStream(oHeader, pStream);
@@ -802,9 +802,9 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 	if (0 == oArraySlideAtoms.size())
 		return;
 
-	BOOL bMasterColorScheme = oArraySlideAtoms[0]->m_bMasterScheme;
-	BOOL bMasterBackGround	= oArraySlideAtoms[0]->m_bMasterBackground;
-	BOOL bMasterObjects		= oArraySlideAtoms[0]->m_bMasterObjects;
+    bool bMasterColorScheme = oArraySlideAtoms[0]->m_bMasterScheme;
+    bool bMasterBackGround	= oArraySlideAtoms[0]->m_bMasterBackground;
+    bool bMasterObjects		= oArraySlideAtoms[0]->m_bMasterObjects;
 
 	DWORD dwID = (DWORD)oArraySlideAtoms[0]->m_nMasterIDRef;
 

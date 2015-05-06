@@ -56,7 +56,7 @@ public:
 
 			CPPTUserInfo* pInfo = new CPPTUserInfo();
 			pInfo->m_strFileDirectory = m_strFileDirectory;
-			BOOL bRes = pInfo->ReadFromStream(&oUserAtom, pStream, strFolderMem);
+            bool bRes = pInfo->ReadFromStream(&oUserAtom, pStream, strFolderMem);
 
 			offsetToEdit = pInfo->m_oUser.m_nOffsetLastEdit;
 			

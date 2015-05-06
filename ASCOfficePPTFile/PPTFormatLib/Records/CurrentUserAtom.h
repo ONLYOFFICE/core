@@ -101,7 +101,7 @@ public:
 		return oWriter.GetXmlString();
 	}
 
-	BOOL IsSupported()
+    bool IsSupported()
 	{
 		return (NO_ENCRYPT == m_nToken);
 	}

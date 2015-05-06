@@ -37,7 +37,7 @@ INCLUDEPATH += \
     /usr/include/libxml2 \
 
 INCLUDEPATH += \
-    ../../../../DesktopEditor/freetype-2.5.2/include
+    ../../../DesktopEditor/freetype-2.5.2/include
 
 LIBS += -lxml2
 
@@ -161,38 +161,38 @@ HEADERS += \
     ../Records/Drawing/ShapeContainer.h \
     ../Records/Drawing/ShapeProperties.h \
     ../Records/Drawing/TextBox.h \
-    ../../../../ASCPresentationEditor/PPTXWriter/Converter.h \
-    ../../../../ASCPresentationEditor/PPTXWriter/CSS.h \
-    ../../../../ASCPresentationEditor/PPTXWriter/ImageManager.h \
-    ../../../../ASCPresentationEditor/PPTXWriter/ShapeWriter.h \
-    ../../../../ASCPresentationEditor/PPTXWriter/StylesWriter.h \
-    ../../../../ASCOfficeDocFile/pole/pole.h \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Element.h \
-    ../../../../ASCPresentationEditor/OfficeDrawing/ElementProperties.h \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Elements.h \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Layout.h \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Slide.h \
-    ../../../../ASCPresentationEditor/OfficeDrawing/SVGConverter.h \
-    ../../../../ASCPresentationEditor/OfficeDrawing/SVGFramework.h \
-    ../../../../ASCPresentationEditor/OfficeDrawing/SVGTransformer.h \
-    ../../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.h \
-    ../../../../ASCPresentationEditor/OfficeDrawing/TextStructures.h \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Theme.h \
-    ../PPTFormatLib.h
+    ../../../ASCPresentationEditor/PPTXWriter/Converter.h \
+    ../../../ASCPresentationEditor/PPTXWriter/CSS.h \
+    ../../../ASCPresentationEditor/PPTXWriter/ImageManager.h \
+    ../../../ASCPresentationEditor/PPTXWriter/ShapeWriter.h \
+    ../../../ASCPresentationEditor/PPTXWriter/StylesWriter.h \
+    ../../../ASCPresentationEditor/OfficeDrawing/Element.h \
+    ../../../ASCPresentationEditor/OfficeDrawing/ElementProperties.h \
+    ../../../ASCPresentationEditor/OfficeDrawing/Elements.h \
+    ../../../ASCPresentationEditor/OfficeDrawing/Layout.h \
+    ../../../ASCPresentationEditor/OfficeDrawing/Slide.h \
+    ../../../ASCPresentationEditor/OfficeDrawing/SVGConverter.h \
+    ../../../ASCPresentationEditor/OfficeDrawing/SVGFramework.h \
+    ../../../ASCPresentationEditor/OfficeDrawing/SVGTransformer.h \
+    ../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.h \
+    ../../../ASCPresentationEditor/OfficeDrawing/TextStructures.h \
+    ../../../ASCPresentationEditor/OfficeDrawing/Theme.h \
+    ../PPTFormatLib.h \
+    ../../../Common/3dParty/pole/pole.h
 
 SOURCES += \
     ../Reader/PPTDocumentInfoOneUser.cpp \
     ../Reader/Records.cpp \
     ../Reader/SlidePersist.cpp \
     ../Records/Animations/AnimationTypes.cpp \
-    ../../../../ASCPresentationEditor/PPTXWriter/Converter.cpp \
-    ../../../../ASCPresentationEditor/PPTXWriter/ShapeWriter.cpp \
-    ../../../../ASCOfficeDocFile/pole/pole.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/SVGConverter.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/SVGFramework.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/SVGTransformer.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
-    ../../../../ASCPresentationEditor/OfficeDrawing/Theme.cpp \
-    ../PPTFormatLib.cpp
+    ../../../ASCPresentationEditor/PPTXWriter/Converter.cpp \
+    ../../../ASCPresentationEditor/PPTXWriter/ShapeWriter.cpp \
+    ../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp \
+    ../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
+    ../../../ASCPresentationEditor/OfficeDrawing/SVGConverter.cpp \
+    ../../../ASCPresentationEditor/OfficeDrawing/SVGFramework.cpp \
+    ../../../ASCPresentationEditor/OfficeDrawing/SVGTransformer.cpp \
+    ../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
+    ../../../ASCPresentationEditor/OfficeDrawing/Theme.cpp \
+    ../PPTFormatLib.cpp \
+    ../../../Common/3dParty/pole/pole.cpp

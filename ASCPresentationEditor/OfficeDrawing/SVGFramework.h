@@ -86,18 +86,18 @@ namespace SVG
 
 namespace StringHelpers
 {
-	static inline BOOL RemoveTagHTMLA (CStringA& strXml, const CStringA& strBeginTrag, const CStringA& strEndTrag)
+        static inline bool RemoveTagHTMLA (CStringA& strXml, const CStringA& strBeginTrag, const CStringA& strEndTrag)
 	{
 		int from	=	0;
 		int to		=	0;
 
 		from		=	strXml.Find (strBeginTrag, from);
 		if ( -1 == from )
-			return FALSE;
+                        return false;
 
 		to			=	strXml.Find (strEndTrag, from);
 		if ( -1 == to )
-			return FALSE;
+                        return false;
 
 		if ( (to != from) && to > from )
 		{
@@ -111,20 +111,20 @@ namespace StringHelpers
 			return RemoveTagHTMLA (strXml, strBeginTrag, strEndTrag);
 		}
 
-		return FALSE;	
+                return false;
 	}
-	static inline BOOL RemoveCommentsA (CStringA& strXml)
+        static inline bool RemoveCommentsA (CStringA& strXml)
 	{
 		int from	=	0;
 		int to		=	0;
 
 		from		=	strXml.Find ("<!--", from );
 		if ( -1 == from )
-			return FALSE;
+                        return false;
 
 		to			=	strXml.Find ("-->", from );
 		if ( -1 == to )
-			return FALSE;
+                        return false;
 
 		if ( (to != from) && to > from )
 		{
@@ -139,20 +139,20 @@ namespace StringHelpers
 			return RemoveCommentsA (strXml);
 		}
 
-		return FALSE;
+                return false;
 	}
-	static inline BOOL RemoveTagHTML (CString& strXml, const CString& strBeginTrag, const CString& strEndTrag)
+        static inline bool RemoveTagHTML (CString& strXml, const CString& strBeginTrag, const CString& strEndTrag)
 	{
 		int from	=	0;
 		int to		=	0;
 
 		from		=	strXml.Find (strBeginTrag, from);
 		if ( -1 == from )
-			return FALSE;
+                        return false;
 
 		to			=	strXml.Find (strEndTrag, from);
 		if ( -1 == to )
-			return FALSE;
+                        return false;
 
 		if ( (to != from) && to > from )
 		{
@@ -166,20 +166,20 @@ namespace StringHelpers
 			return RemoveTagHTML (strXml, strBeginTrag, strEndTrag);
 		}
 
-		return FALSE;	
+                return false;
 	}
-	static inline BOOL RemoveComments (CString& strXml)
+        static inline bool RemoveComments (CString& strXml)
 	{
 		int from	=	0;
 		int to		=	0;
 
 		from		=	strXml.Find ( _T("<!--"), from );
 		if ( -1 == from )
-			return FALSE;
+                        return false;
 
 		to			=	strXml.Find ( _T("-->"), from );
 		if ( -1 == to )
-			return FALSE;
+                        return false;
 
 		if ( (to != from) && to > from )
 		{
@@ -194,26 +194,26 @@ namespace StringHelpers
 			return RemoveComments (strXml);
 		}
 
-		return FALSE;
+                return false;
 	}
-	//static inline BOOL LoadXmlFile (const CString& File, CStringA& strXmlA)
+        //static inline bool LoadXmlFile (const CString& File, CStringA& strXmlA)
 	//{
 	//	CAtlFile oFile;
 	//	if (FAILED(oFile.Create(File, GENERIC_READ, FILE_SHARE_READ, OPEN_ALWAYS)))
-	//		return FALSE;
+        //		return false;
 
 	//	ULONGLONG bufSize = 0L;
 	//	if (FAILED(oFile.GetSize(bufSize)))
 	//	{
 	//		oFile.Close ();				
-	//		return FALSE;
+        //		return false;
 	//	}
 
 	//	BYTE* buffer = new BYTE [ bufSize ];
 	//	if ( NULL == buffer )
 	//	{
 	//		oFile.Close ();				
-	//		return FALSE;
+        //		return false;
 	//	}
 
 	//	memset ( buffer, 0, bufSize );
@@ -224,7 +224,7 @@ namespace StringHelpers
 	//		RELEASEARRAYOBJECTS(buffer);
 	//		oFile.Close ();
 
-	//		return FALSE;
+        //		return false;
 	//	}
 
 	//	oFile.Close ();
@@ -245,7 +245,7 @@ namespace StringHelpers
 	//	//strXml = XmlUtils::ConvertToUnicode (strXmlA);
 	//	RELEASEARRAYOBJECTS(buffer);
 
-	//	return TRUE;
+        //	return true;
 	//}
 };
 
@@ -466,15 +466,15 @@ namespace SVG
 			m_fOpacity	=	0.0;
 		}
 
-		inline BOOL FromStyle(const CString& oStyle)
+                inline bool FromStyle(const CString& oStyle)
 		{
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL FromXml(XmlUtils::CXmlNode& oXml)
+                inline bool FromXml(XmlUtils::CXmlNode& oXml)
 		{
 
-			return TRUE;
+                        return true;
 		}
 
 	public:
@@ -525,7 +525,7 @@ namespace SVG
 
 			return _tstof(sVal);
 		}
-		static inline BOOL DoubleValues(const CString& Source, std::vector<double>& Values)
+                static inline bool DoubleValues(const CString& Source, std::vector<double>& Values)
 		{
 			CString number	=	_T("");			
 			int length = Source.GetLength();
@@ -566,7 +566,7 @@ namespace SVG
 
 			return (0 != Values.size());
 		}
-		//static inline BOOL DoubleValues(const CString& Source, std::vector<double>& Values)
+                //static inline bool DoubleValues(const CString& Source, std::vector<double>& Values)
 		//{
 		//	CString number	=	_T("");			
 		//	int length = Source.GetLength();
@@ -689,17 +689,17 @@ namespace SVG
 
 			return _T("");
 		}
-		static inline BOOL UrlRefValue2(CString& sUrlRef)
+                static inline bool UrlRefValue2(CString& sUrlRef)
 		{
 			CString sRet = StrUtils::UrlRefValue(sUrlRef);
 
 			if (sRet.GetLength ())
 			{
 				sUrlRef = sRet;
-				return TRUE;
+                                return true;
 			}
 
-			return FALSE;
+                        return false;
 		}
 		static inline CString UrlDecode(const CString& Source)
 		{
@@ -756,7 +756,7 @@ namespace SVG
 	class CArcToCubicBezier
 	{
 	public:
-		CArcToCubicBezier(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle, BOOL bClockDirection = FALSE)
+                CArcToCubicBezier(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle, bool bClockDirection = false)
 		{
 			AddArc ( fX, fY, fWidth, fHeight, -fStartAngle, -fSweepAngle );
 		}
@@ -767,7 +767,7 @@ namespace SVG
 
 	private:
 
-		inline int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, BOOL bClockDirection)
+                inline int EllipseArc(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, bool bClockDirection)
 		{
 			int nRet = 0;
 
@@ -786,21 +786,21 @@ namespace SVG
 			if ( !bClockDirection )
 			{
 				if ( fAngle1 <= fAngle2 )
-					nRet = EllipseArc2( fX, fY, fXRad, fYRad, fAngle1, fAngle2, FALSE );
+                                        nRet = EllipseArc2( fX, fY, fXRad, fYRad, fAngle1, fAngle2, false );
 				else
 				{
-					nRet += EllipseArc2( fX, fY, fXRad, fYRad, fAngle1, 360, FALSE );
-					nRet += EllipseArc2( fX, fY, fXRad, fYRad, 0, fAngle2, FALSE );
+                                        nRet += EllipseArc2( fX, fY, fXRad, fYRad, fAngle1, 360, false );
+                                        nRet += EllipseArc2( fX, fY, fXRad, fYRad, 0, fAngle2, false );
 				}
 			}
 			else
 			{
 				if ( fAngle1 >= fAngle2 )
-					nRet = EllipseArc2( fX, fY, fXRad, fYRad, fAngle1, fAngle2, TRUE );
+                                        nRet = EllipseArc2( fX, fY, fXRad, fYRad, fAngle1, fAngle2, true );
 				else
 				{
-					nRet += EllipseArc2( fX, fY, fXRad, fYRad, fAngle1, 0, TRUE );
-					nRet += EllipseArc2( fX, fY, fXRad, fYRad, 360, fAngle2, TRUE );
+                                        nRet += EllipseArc2( fX, fY, fXRad, fYRad, fAngle1, 0, true );
+                                        nRet += EllipseArc2( fX, fY, fXRad, fYRad, 360, fAngle2, true );
 				}
 			}
 
@@ -813,7 +813,7 @@ namespace SVG
 			// x = r cos(p), y = r sin(p) => t = atan2( sin(p) / b, cos(p) / a );
 			return atan2( sin( fAngle ) / fYRad,  cos( fAngle ) / fXRad );
 		}
-		inline int EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, BOOL bClockDirection)
+                inline int EllipseArc2(double fX, double fY, double fXRad, double fYRad, double fAngle1, double fAngle2, bool bClockDirection)
 		{
 			// переведем углы в радианы
 			int nRet = 0;
@@ -851,7 +851,7 @@ namespace SVG
 					if ( !( nIndex == nFirstPointQuard ) )
 						dStartAngle = (90 * (nIndex - 1 ) ) * 3.141592f / 180;
 
-					EllipseArc3(fX, fY, fXRad, fYRad, AngToEllPrm( dStartAngle, fXRad, fYRad ), AngToEllPrm( dEndAngle, fXRad, fYRad ), &fEndX, &fEndY, FALSE);
+                                        EllipseArc3(fX, fY, fXRad, fYRad, AngToEllPrm( dStartAngle, fXRad, fYRad ), AngToEllPrm( dEndAngle, fXRad, fYRad ), &fEndX, &fEndY, false);
 				}
 			}
 			else
@@ -867,13 +867,13 @@ namespace SVG
 					else
 						dEndAngle = dAngle2;
 
-					EllipseArc3(fX, fY, fXRad, fYRad, AngToEllPrm( dStartAngle, fXRad, fYRad ), AngToEllPrm( dEndAngle, fXRad, fYRad ), &fEndX, &fEndY, FALSE);
+                                        EllipseArc3(fX, fY, fXRad, fYRad, AngToEllPrm( dStartAngle, fXRad, fYRad ), AngToEllPrm( dEndAngle, fXRad, fYRad ), &fEndX, &fEndY, false);
 				}
 			}
 
 			return nRet;
 		}
-		inline int EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, BOOL bClockDirection = FALSE)
+                inline int EllipseArc3(double fX, double fY, double fXRad, double fYRad, double dAngle1, double dAngle2, double *pfXCur, double *pfYCur, bool bClockDirection = false)
 		{
 			// Рассчитаем начальную, конечную и контрольные точки
 			double fX1  = 0.0, fX2  = 0.0, fY1  = 0.0, fY2  = 0.0;
@@ -919,11 +919,11 @@ namespace SVG
 			if (0.0 >= fWidth || 0.0 >= fHeight)
 				return false;
 
-			BOOL bClockDirection = FALSE;
+                        bool bClockDirection = false;
 			double fEndAngle = 360 - ( fSweepAngle + fStartAngle );
 			double fSrtAngle = 360 - fStartAngle;
 			if( fSweepAngle > 0 )
-				bClockDirection = TRUE;
+                                bClockDirection = true;
 
 			return (0 == EllipseArc(fX + fWidth / 2, fY + fHeight / 2, fWidth / 2, fHeight / 2, fSrtAngle, fEndAngle, bClockDirection)) ? true : false;
 		}
@@ -944,8 +944,8 @@ namespace SVG
 
 		}
 
-		virtual BOOL RefreshXLinkSource(IRefStorage* pStorage) = 0;
-		virtual BOOL Normalize(const double& dAfX, const double& dAfY) = 0;
+                virtual bool RefreshXLinkSource(IRefStorage* pStorage) = 0;
+                virtual bool Normalize(const double& dAfX, const double& dAfY) = 0;
 	};
 	struct ISvgRef: public IRef
 	{
@@ -1000,12 +1000,12 @@ namespace SVG
 
 		}
 
-		virtual BOOL HashRef(ISvgRef* pRef, BOOL bDef)	=	0;
-		virtual BOOL GetRef(const CString& ID, ISvgRef*& pRef)	=	0;
+                virtual bool HashRef(ISvgRef* pRef, bool bDef)	=	0;
+                virtual bool GetRef(const CString& ID, ISvgRef*& pRef)	=	0;
 
 		virtual ISvgRef* Get(long index) = 0;
 		virtual long GetSize()	=	0;
-		virtual BOOL Push(ISvgRef* pRef) = 0;
+                virtual bool Push(ISvgRef* pRef) = 0;
 	};
 }
 
@@ -1032,7 +1032,7 @@ namespace SVG
 		}
 
 	private:
-		BOOL InitClrTable();
+                bool InitClrTable();
 	private:
 
 		std::map <CString, unsigned long>	m_Table;
@@ -1055,7 +1055,7 @@ namespace SVG
 
 		}
 
-		inline BOOL Add(XmlUtils::CXmlNode& oXml)
+                inline bool Add(XmlUtils::CXmlNode& oXml)
 		{
 			StopColor color;
 
@@ -1099,12 +1099,12 @@ namespace SVG
 			}
 
 			m_colors.push_back(color);
-			return TRUE;
+                        return true;
 		}
-		inline BOOL Add(const StopColor& color)
+                inline bool Add(const StopColor& color)
 		{			
 			m_colors.push_back(color);
-			return TRUE;
+                        return true;
 		}
 
 		//
@@ -1135,14 +1135,14 @@ namespace SVG
 			m_nX		=	0;
 			m_nY		=	0;
 
-			m_bInUse	=	FALSE;
+                        m_bInUse	=	false;
 		}
 
-		BOOL FromXml (XmlUtils::CXmlNode& oXmlNode)
+                bool FromXml (XmlUtils::CXmlNode& oXmlNode)
 		{
 			return FromString(oXmlNode.GetAttribute(_T("viewBox")));
 		}
-		BOOL FromString (const CString& Str)
+                bool FromString (const CString& Str)
 		{
 			std::vector<double> Values;
 			if (StrUtils::DoubleValues(Str, Values))
@@ -1154,13 +1154,13 @@ namespace SVG
 					m_nWidth	=	static_cast<int>(Values[2]);
 					m_nHeight	=	static_cast<int>(Values[3]);
 
-					m_bInUse	=	TRUE;
+                                        m_bInUse	=	true;
 
-					return TRUE;
+                                        return true;
 				}
 			}
 
-			return FALSE;
+                        return false;
 		}
 
 		inline int GetX() const
@@ -1188,14 +1188,14 @@ namespace SVG
 		int		m_nX;
 		int		m_nY;
 
-		BOOL	m_bInUse;
+                bool	m_bInUse;
 	};
 	class UnitSystem
 	{
 	public:
 		UnitSystem ()
 		{
-			m_bIsValid	=	FALSE;
+                        m_bIsValid	=	false;
 
 			m_nFontSize	=	0.0;
 			m_dOffSetX	=	0.0;
@@ -1204,7 +1204,7 @@ namespace SVG
 
 		inline void SetViewBox(int SvgWidth, int SvgHeight, const ViewBox& oBox, Metrics oMetrics)
 		{
-			m_bIsValid		=	TRUE;
+                        m_bIsValid		=	true;
 
 			m_nSvgWidth		=	SvgWidth;
 			m_nSvgHeight	=	SvgHeight;
@@ -1343,7 +1343,7 @@ namespace SVG
 
 	private:
 
-		BOOL	m_bIsValid;
+                bool	m_bIsValid;
 
 		int		m_nSvgWidth;
 		int		m_nSvgHeight;
@@ -1400,7 +1400,7 @@ namespace SVG
 		}
 
 		//
-		inline BOOL SetStyle (const CString& Styles, BOOL Clear, UnitSystem& oUnitSystem, IRefStorage* pStorage, const ColorTable& Table = ColorTable()) //	from string
+                inline bool SetStyle (const CString& Styles, bool Clear, UnitSystem& oUnitSystem, IRefStorage* pStorage, const ColorTable& Table = ColorTable()) //	from string
 		{
 			if ( Clear )
 			{
@@ -1515,9 +1515,9 @@ namespace SVG
 				}
 			}
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL SetStyle (XmlUtils::CXmlNode& oXmlNode, BOOL bResetStyle, UnitSystem& oUnitSystem, IRefStorage* pStorage, const ColorTable& Table = ColorTable())
+                inline bool SetStyle (XmlUtils::CXmlNode& oXmlNode, bool bResetStyle, UnitSystem& oUnitSystem, IRefStorage* pStorage, const ColorTable& Table = ColorTable())
 		{
 			if (bResetStyle)
 				SetDefault ();
@@ -1605,9 +1605,9 @@ namespace SVG
 				}
 			}
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL UpdateStyle (XmlUtils::CXmlNode& oXmlNode, UnitSystem& oUnitSystem, IRefStorage* pStorage, const ColorTable& Table = ColorTable())
+                inline bool UpdateStyle (XmlUtils::CXmlNode& oXmlNode, UnitSystem& oUnitSystem, IRefStorage* pStorage, const ColorTable& Table = ColorTable())
 		{
 			// FILL
 
@@ -1712,17 +1712,17 @@ namespace SVG
 				}
 			}
 
-			return TRUE;
+                        return true;
 		}
 
 		// EX 
-		inline Style (const CString& Styles,  BOOL Clear, UnitSystem& oUnitSystem, IRefStorage* pStorage, const ColorTable& Table = ColorTable())
+                inline Style (const CString& Styles,  bool Clear, UnitSystem& oUnitSystem, IRefStorage* pStorage, const ColorTable& Table = ColorTable())
 		{
 			SetStyle (Styles, Clear, oUnitSystem, pStorage, Table);
 		}
-		inline BOOL UpdateStyle (const CString& Styles, UnitSystem& oUnitSystem, IRefStorage* pStorage, const ColorTable& Table = ColorTable())
+                inline bool UpdateStyle (const CString& Styles, UnitSystem& oUnitSystem, IRefStorage* pStorage, const ColorTable& Table = ColorTable())
 		{
-			return SetStyle (Styles, FALSE, oUnitSystem, pStorage, Table);
+                        return SetStyle (Styles, false, oUnitSystem, pStorage, Table);
 		}
 		inline void Combine(const Style& oSrc)
 		{
@@ -1809,11 +1809,11 @@ namespace SVG
 			return m_fillUrlRef;
 		}
 
-		inline void SetCSS(BOOL isCSS)
+                inline void SetCSS(bool isCSS)
 		{
 			m_IsCSS	=	isCSS;
 		}
-		inline BOOL IsCSS() const 
+                inline bool IsCSS() const
 		{
 			return m_IsCSS;
 		}
@@ -1863,7 +1863,7 @@ namespace SVG
 		ISvgRef*	m_pRefStroke;
 		CString		m_fillUrlRef;
 
-		BOOL		m_IsCSS;
+                bool		m_IsCSS;
 	};
 	class StyleStack
 	{
@@ -1873,12 +1873,12 @@ namespace SVG
 
 		}
 
-		inline BOOL Push(const Style& oStyle, BOOL combine = TRUE)
+                inline bool Push(const Style& oStyle, bool combine = true)
 		{
-			if ((0 == m_styles.size()) || (FALSE == combine))
+                        if ((0 == m_styles.size()) || (false == combine))
 			{
 				m_styles.push_back (oStyle);
-				return TRUE;
+                                return true;
 			}
 
 			if (combine)
@@ -1887,23 +1887,23 @@ namespace SVG
 				oStyleTo.Combine(GetTop());
 				m_styles.push_back(oStyleTo);
 
-				return TRUE;
+                                return true;
 			}
 
 			m_styles.push_back (oStyle);
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL Pop()
+                inline bool Pop()
 		{
 			if (m_styles.size())
 			{
 				m_styles.pop_back();
 
-				return TRUE;
+                                return true;
 			}
 
-			return FALSE;
+                        return false;
 		}
 		inline Style GetTop()
 		{
@@ -1927,7 +1927,7 @@ namespace SVG
 			SetDefault ();
 		}
 
-		BOOL SetStyle(const CString& src)
+                bool SetStyle(const CString& src)
 		{
 			/*
 			<text id="svg_7" text-decoration="underline" 
@@ -1943,9 +1943,9 @@ namespace SVG
 			x="100">Simple Text</text>
 			*/
 
-			return TRUE;
+                        return true;
 		}
-		BOOL SetStyle(XmlUtils::CXmlNode& oXml)
+                bool SetStyle(XmlUtils::CXmlNode& oXml)
 		{
 			m_nFontSize			=	StrUtils::DoubleValue(oXml.GetAttribute(_T("font-size")));
 			m_nFontMetrics		=	StrUtils::GetMetrics(oXml.GetAttribute(_T("font-size")));
@@ -1975,9 +1975,9 @@ namespace SVG
 			//if ( CString ( _T("inherit") ) == FontWeight )
 			//	m_nFontStyleAttr	=	FontStyleInherit;
 
-			return TRUE;
+                        return true;
 		}
-		BOOL SetStyle(const CString& Styles, BOOL Clear)
+                bool SetStyle(const CString& Styles, bool Clear)
 		{
 			if ( Clear )
 			{
@@ -2045,9 +2045,9 @@ namespace SVG
 				}
 			}
 
-			return TRUE;
+                        return true;
 		}
-		BOOL UpdateStyle(XmlUtils::CXmlNode& oXmlNode)
+                bool UpdateStyle(XmlUtils::CXmlNode& oXmlNode)
 		{
 			if ( oXmlNode.GetAttribute ( _T("font-size") ).GetLength () )
 				m_nFontSize			=	StrUtils::DoubleValue ( oXmlNode.GetAttribute ( _T("font-size") ) );
@@ -2091,7 +2091,7 @@ namespace SVG
 				//	m_nFontStyleAttr	=	FontStyleInherit;
 			}
 
-			return TRUE;
+                        return true;
 		}
 
 		inline double DoubleAttribute(SVG::Attribute style) const
@@ -2141,12 +2141,12 @@ namespace SVG
 	class CStyleCSS
 	{
 	public:
-		CStyleCSS() : m_IsValid(FALSE)
+                CStyleCSS() : m_IsValid(false)
 		{
 
 		}
 
-		inline BOOL Read (XmlUtils::CXmlNode& oXml, UnitSystem& us, IRefStorage* model, const ColorTable& colors = ColorTable())
+                inline bool Read (XmlUtils::CXmlNode& oXml, UnitSystem& us, IRefStorage* model, const ColorTable& colors = ColorTable())
 		{
 			// TODO: универсальный селектор													* {margin:0; padding:0;}
 			// TODO: селекторами элементов												    p {font-family: Garamond, serif;}
@@ -2166,7 +2166,7 @@ namespace SVG
 			StrUtils::RemoveSymbol(source, _T('\t'));
 
 			if (0 == source.GetLength())
-				return FALSE;
+                                return false;
 
 			int begin	=	0;
 			int right	=	0;
@@ -2187,7 +2187,7 @@ namespace SVG
 				if (selector.GetLength())
 				{
 					Style style;
-					style.SetStyle(CString(src.Mid(left + 1, src.GetLength() - left)), TRUE, us, model, colors);
+                                        style.SetStyle(CString(src.Mid(left + 1, src.GetLength() - left)), true, us, model, colors);
 
 					ReadSelList(selector, _T(','));
 					for (size_t i = 0; i < m_selectors.size(); ++i)
@@ -2203,7 +2203,7 @@ namespace SVG
 							AddTagStyle(m_selectors[i], style);
 						}
 
-						m_IsValid	=	TRUE;
+                                                m_IsValid	=	true;
 					}
 				}
 
@@ -2211,54 +2211,54 @@ namespace SVG
 				begin = right;
 			}
 
-			return TRUE;
+                        return true;
 		}
 
-		inline BOOL GetStyleForType(int tag, Style& style)
+                inline bool GetStyleForType(int tag, Style& style)
 		{
 			if (m_typeStyles[tag].IsCSS())
 			{
 				style = m_typeStyles[tag];
-				return TRUE;
+                                return true;
 			}
 
-			return FALSE;
+                        return false;
 		}
-		inline BOOL GetClassStyle(const CString& name, Style& style)
+                inline bool GetClassStyle(const CString& name, Style& style)
 		{
             std::map<CString, Style>::iterator cp = m_classStyles.find(name);
             if (cp != m_classStyles.end())
 			{
                 style = cp->second;
-				return TRUE;
+                                return true;
 			}
 
-			return FALSE;
+                        return false;
 		}
 
-		inline BOOL IsValid()
+                inline bool IsValid()
 		{
 			return m_IsValid;
 		}
 
 	private:
 
-		inline BOOL AddTagStyle(const CString& selector, Style& style)
+                inline bool AddTagStyle(const CString& selector, Style& style)
 		{
-			if (_T("rect")				== selector)	{ m_typeStyles[ERectangle]	=	style;	m_typeStyles[ERectangle].SetCSS(TRUE);	return TRUE; }
-			else if (_T("ellipse")		== selector)	{ m_typeStyles[EEllipse]	=	style;	m_typeStyles[EEllipse].SetCSS(TRUE);	return TRUE; }
-			else if (_T("circle")		== selector)	{ m_typeStyles[ECircle]		=	style;	m_typeStyles[ECircle].SetCSS(TRUE);		return TRUE; }		
-			else if (_T("path")			== selector)	{ m_typeStyles[EPath]		=	style;	m_typeStyles[EPath].SetCSS(TRUE);		return TRUE; }
-			else if (_T("polygon")		== selector)	{ m_typeStyles[EPolygon]	=	style;	m_typeStyles[EPolygon].SetCSS(TRUE);	return TRUE; }
-			else if (_T("polyline")		== selector)	{ m_typeStyles[EPolyline]	=	style;	m_typeStyles[EPolyline].SetCSS(TRUE);	return TRUE; }
-			else if (_T("text")			== selector)	{ m_typeStyles[EText]		=	style;	m_typeStyles[EText].SetCSS(TRUE);		return TRUE; }
-			else if (_T("image")		== selector)	{ m_typeStyles[EImage]		=	style;	m_typeStyles[EImage].SetCSS(TRUE);		return TRUE; }
-			else if (_T("line")			== selector)	{ m_typeStyles[ELine]		=	style;	m_typeStyles[ELine].SetCSS(TRUE);		return TRUE; }
+                        if (_T("rect")				== selector)	{ m_typeStyles[ERectangle]	=	style;	m_typeStyles[ERectangle].SetCSS(true);	return true; }
+                        else if (_T("ellipse")		== selector)	{ m_typeStyles[EEllipse]	=	style;	m_typeStyles[EEllipse].SetCSS(true);	return true; }
+                        else if (_T("circle")		== selector)	{ m_typeStyles[ECircle]		=	style;	m_typeStyles[ECircle].SetCSS(true);		return true; }
+                        else if (_T("path")			== selector)	{ m_typeStyles[EPath]		=	style;	m_typeStyles[EPath].SetCSS(true);		return true; }
+                        else if (_T("polygon")		== selector)	{ m_typeStyles[EPolygon]	=	style;	m_typeStyles[EPolygon].SetCSS(true);	return true; }
+                        else if (_T("polyline")		== selector)	{ m_typeStyles[EPolyline]	=	style;	m_typeStyles[EPolyline].SetCSS(true);	return true; }
+                        else if (_T("text")			== selector)	{ m_typeStyles[EText]		=	style;	m_typeStyles[EText].SetCSS(true);		return true; }
+                        else if (_T("image")		== selector)	{ m_typeStyles[EImage]		=	style;	m_typeStyles[EImage].SetCSS(true);		return true; }
+                        else if (_T("line")			== selector)	{ m_typeStyles[ELine]		=	style;	m_typeStyles[ELine].SetCSS(true);		return true; }
 
-			//else if (_T("symbol")		== selector)	{ m_typeStyles[ESymbol]				=	style;	m_typeStyles[ESymbol].SetCSS(TRUE);					return TRUE; }
-			//else if (_T("g")			== selector)	{ m_typeStyles[EGraphicsContainer]	=	style;	m_typeStyles[EGraphicsContainer].SetCSS(TRUE);		return TRUE; }
+                        //else if (_T("symbol")		== selector)	{ m_typeStyles[ESymbol]				=	style;	m_typeStyles[ESymbol].SetCSS(true);					return true; }
+                        //else if (_T("g")			== selector)	{ m_typeStyles[EGraphicsContainer]	=	style;	m_typeStyles[EGraphicsContainer].SetCSS(true);		return true; }
 
-			return FALSE;
+                        return false;
 		}
 		inline void ReadSelList(const CString& src, TCHAR splitter)
 		{
@@ -2296,7 +2296,7 @@ namespace SVG
 
 	private:
 
-        BOOL                        m_IsValid;
+        bool                        m_IsValid;
 
         std::map<CString, Style>	m_classStyles;					//	селекторы классов
         Style                       m_typeStyles[ENodesCount];		//	селекторы элементов
@@ -2465,7 +2465,7 @@ namespace SVG
 			m_fMat[7] = 0;
 			m_fMat[8] = 1;
 		}
-		inline BOOL FromString(const CString& sTransforms, UnitSystem& us)
+                inline bool FromString(const CString& sTransforms, UnitSystem& us)
 		{
 			std::vector<CString> arrMatrix;
 			if (GetTranforms(sTransforms, arrMatrix))
@@ -2477,10 +2477,10 @@ namespace SVG
 
 				*this = matrix;
 
-				return TRUE;
+                                return true;
 			}
 
-			return FALSE;
+                        return false;
 		}
 		inline static CString GetTransform(const CString& strMat, int& index)
 		{
@@ -2592,7 +2592,7 @@ namespace SVG
 
 			return Matrix();
 		}
-		inline static BOOL GetTranforms(const CString& strMat, std::vector<CString>& refTransforms)
+                inline static bool GetTranforms(const CString& strMat, std::vector<CString>& refTransforms)
 		{
 			int index = 0;
 			while (-1 != index)
@@ -2615,12 +2615,12 @@ namespace SVG
 
 		}
 
-		inline BOOL Push(const Matrix& transform, BOOL combine = TRUE)	//	каждая последующая трансформация применяется к вершине стэка
+                inline bool Push(const Matrix& transform, bool combine = true)	//	каждая последующая трансформация применяется к вершине стэка
 		{
-			if ((0 == m_transforms.size()) || (FALSE == combine))
+                        if ((0 == m_transforms.size()) || (false == combine))
 			{
 				m_transforms.push_back(transform);
-				return TRUE;
+                                return true;
 			}
 
 			if (combine)
@@ -2629,21 +2629,21 @@ namespace SVG
 				top *= transform;
 
 				m_transforms.push_back(top);
-				return TRUE;
+                                return true;
 			}
 
 			m_transforms.push_back(transform);
-			return TRUE;
+                        return true;
 		}
-		inline BOOL Pop()
+                inline bool Pop()
 		{
 			if (m_transforms.size())
 			{
 				m_transforms.pop_back();
-				return TRUE;
+                                return true;
 			}
 
-			return FALSE;
+                        return false;
 		}
 
 		inline const Matrix GetTop() const 
@@ -2673,19 +2673,19 @@ namespace SVG
 	public:
 		PathParser()
 		{
-			m_bIsClose	=	FALSE;
+                        m_bIsClose	=	false;
 		}
 		PathParser(UnitSystem& oUs, const CString& path)
 		{
 			FromString (oUs, path);
 		}
 
-		inline BOOL FromString(UnitSystem& oUnitSystem, const CString& path)
+                inline bool FromString(UnitSystem& oUnitSystem, const CString& path)
 		{
 			m_Points.clear ();
 
 			int To	=	0;
-			BOOL	EndSegment	=	FALSE;
+                        bool	EndSegment	=	false;
 			CString Tokens = _T("mMLlCcVvHhCcQqTtSsaAhHvV");
 
 			int count = path.GetLength();
@@ -2726,13 +2726,13 @@ namespace SVG
 								oPoint.subCode	=	path[i];
 
 								m_Points.push_back ( oPoint );	
-								EndSegment	=	FALSE;
+                                                                EndSegment	=	false;
 								//	ATLTRACE ( _T("LineTo : %c, -  %f, %f\n"), oPoint.code, oPoint.oPoint.X, oPoint.oPoint.Y );
 							}
 						}
 						else
 						{
-							if (m_Points.size() > 0 && EndSegment == FALSE )
+                                                        if (m_Points.size() > 0 && EndSegment == false )
 							{
 								if ( symbol == _T('M') )
 								{
@@ -2755,7 +2755,7 @@ namespace SVG
 								PointPath oPoint;
 								oPoint.code	=	symbol;
 
-								if ( m_Points.size() > 0 && EndSegment == FALSE )
+                                                                if ( m_Points.size() > 0 && EndSegment == false )
 								{
 									if ( oPoint.code == _T('M') )
 										oPoint.code = _T('L');
@@ -2768,7 +2768,7 @@ namespace SVG
 
 								m_Points.push_back ( oPoint );	
 
-								EndSegment	=	FALSE;
+                                                                EndSegment	=	false;
 
 								//	ATLTRACE ( _T("LineTo : %c, -  %f, %f\n"), oPoint.code, oPoint.oPoint.X, oPoint.oPoint.Y );
 							}
@@ -2778,7 +2778,7 @@ namespace SVG
 					if (To == -1)
 					{
 						m_Points.clear ();
-						return FALSE;
+                                                return false;
 					}
 				}
 				else if ( _T('h') == symbol || _T('H') == symbol ||   _T('v') == symbol || _T('V') == symbol )
@@ -2808,7 +2808,7 @@ namespace SVG
 					if ( To == -1 )
 					{
 						m_Points.clear ();
-						return FALSE;
+                                                return false;
 					}
 				}			
 				else if ( _T('a') == symbol || _T('A') == symbol )	// Elliptical arc curve
@@ -2845,7 +2845,7 @@ namespace SVG
 					if ( To == -1 )
 					{
 						m_Points.clear();
-						return FALSE;
+                                                return false;
 					}
 				}				
 				else if ( _T('q') == symbol || _T('Q') == symbol || _T('s') == symbol || _T('S') == symbol )	// Quadratic Bezier 
@@ -2872,7 +2872,7 @@ namespace SVG
 					if ( To == -1 )
 					{
 						m_Points.clear ();
-						return FALSE;
+                                                return false;
 					}
 				}				
 				else if ( _T('c') == symbol || _T('C') == symbol )	// Cubic  Bezier 
@@ -2908,7 +2908,7 @@ namespace SVG
 					if (To == -1)
 					{
 						m_Points.clear();
-						return FALSE;
+                                                return false;
 					}
 				}				
 				else if (_T('z') == symbol || _T('Z') == symbol)	//	close path
@@ -2918,8 +2918,8 @@ namespace SVG
 
 					m_Points.push_back(point);	
 
-					m_bIsClose		=	TRUE;
-					EndSegment		=	TRUE;
+                                        m_bIsClose		=	true;
+                                        EndSegment		=	true;
 				}				
 			}
 
@@ -2943,13 +2943,13 @@ namespace SVG
 				m_Points [ i ].oPoint.Y		=	oUnitSystem.Convert ( m_Points [ i ].oPoint.Y, UNDEFINED, c_dirVertical );
 			}
 
-			return TRUE;
+                        return true;
 		}
 		inline std::vector <PointPath>& GetPoints ()
 		{
 			return m_Points;
 		}
-		inline BOOL IsClose()
+                inline bool IsClose()
 		{
 			return m_bIsClose;
 		}
@@ -2968,7 +2968,7 @@ namespace SVG
 
 	private:
 
-		BOOL					m_bIsClose;
+                bool					m_bIsClose;
 		std::vector <PointPath>	m_Points;
 	};
 	//class ImageBase64		//	for inner data image's
@@ -2990,7 +2990,7 @@ namespace SVG
 	//		}
 	//	}
 
-	//	inline BOOL FromString (const CString& Src)
+        //	inline bool FromString (const CString& Src)
 	//	{
 	//		if ( m_pBuffer )
 	//		{
@@ -3025,20 +3025,20 @@ namespace SVG
 	//			}
 	//		}
 
-	//		return FALSE;
+        //		return false;
 	//	}
-	//	inline BOOL GetImage (IUnknown*& image)
+        //	inline bool GetImage (IUnknown*& image)
 	//	{
 	//		return ImageBase64::EncodeBufferToImageCOM(m_pBuffer, m_nBufferSize, image);
 	//	}
 
 	//private:
 
-	//	BOOL CreateImage (BYTE* pBuffer, unsigned long Length, int ImageEncoder = INVALID_ENCODER);
+        //	bool CreateImage (BYTE* pBuffer, unsigned long Length, int ImageEncoder = INVALID_ENCODER);
 
-	//	static BOOL EncodeBufferToImageCOM (const BYTE* pBuffer, const unsigned long& ImageSize, IUnknown*& pImage);
-	//	static BOOL GdiImageToImageCOM (Gdiplus::Bitmap* pBitmap, IUnknown*& pImage);
-	//	static BOOL Base64Decode(LPTSTR szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen) throw();
+        //	static bool EncodeBufferToImageCOM (const BYTE* pBuffer, const unsigned long& ImageSize, IUnknown*& pImage);
+        //	static bool GdiImageToImageCOM (Gdiplus::Bitmap* pBitmap, IUnknown*& pImage);
+        //	static bool Base64Decode(LPTSTR szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen) throw();
 
 	//private:
 
@@ -3057,7 +3057,7 @@ namespace SVG
 
 		}
 
-		virtual BOOL FromXml (XmlUtils::CXmlNode& oXml, IRefStorage* model, UnitSystem& oUs)
+                virtual bool FromXml (XmlUtils::CXmlNode& oXml, IRefStorage* model, UnitSystem& oUs)
 		{
 			m_XLinkRef				=	oXml.GetAttribute(_T("xlink:href"));
 			m_nodeId				=	oXml.GetAttribute(_T("id"));
@@ -3075,14 +3075,14 @@ namespace SVG
 				}
 			}
 
-			return FALSE;
+                        return false;
 		}
-		virtual BOOL FromString (CString Str, IRefStorage* pStorage)
+                virtual bool FromString (CString Str, IRefStorage* pStorage)
 		{
-			return FALSE;
+                        return false;
 		}
 
-		virtual BOOL Normalize (const double& dAddFMX, const double& dAddFMY) = 0;
+                virtual bool Normalize (const double& dAddFMX, const double& dAddFMY) = 0;
 	protected:
 		inline static double DoubleValue (XmlUtils::CXmlNode& oXml, CString oAttr, UnitSystem& oUs, long direction)
 		{
@@ -3120,7 +3120,7 @@ namespace SVG
 			m_end		=	Point(1, 0);
 		}
 
-		virtual BOOL FromXml(XmlUtils::CXmlNode& oXml, IRefStorage* model, UnitSystem& oUs)
+                virtual bool FromXml(XmlUtils::CXmlNode& oXml, IRefStorage* model, UnitSystem& oUs)
 		{
 			RefElement::FromXml(oXml, model, oUs);
 
@@ -3156,13 +3156,13 @@ namespace SVG
 				}
 			}
 
-			return FALSE;
+                        return false;
 		}
-		virtual BOOL FromString(const CString& Str, IRefStorage* model, UnitSystem& oUs)
+                virtual bool FromString(const CString& Str, IRefStorage* model, UnitSystem& oUs)
 		{
-			return FALSE;
+                        return false;
 		}
-		virtual BOOL RefreshXLinkSource(IRefStorage* model)
+                virtual bool RefreshXLinkSource(IRefStorage* model)
 		{
 			if (m_XLinkRef.GetLength())
 			{
@@ -3177,17 +3177,17 @@ namespace SVG
 							for (int i = 0; i < gradient->GetColors().Count(); ++i)
 								m_Color.Add(gradient->GetColors().Get(i));
 
-							return TRUE;
+                                                        return true;
 						}
 					}
 				}
 			}
 
-			return FALSE;
+                        return false;
 		}
-		virtual BOOL Normalize(const double& dAfX, const double& dAfY)
+                virtual bool Normalize(const double& dAfX, const double& dAfY)
 		{
-			return FALSE;
+                        return false;
 		}
 
 		//
@@ -3238,7 +3238,7 @@ namespace SVG
 			m_pClip		=	NULL;
 		}
 
-		virtual BOOL FromXml(XmlUtils::CXmlNode& oXml, IRefStorage* pStorage, UnitSystem& oUs)
+                virtual bool FromXml(XmlUtils::CXmlNode& oXml, IRefStorage* pStorage, UnitSystem& oUs)
 		{
 			RefElement::FromXml(oXml, pStorage, oUs);
 
@@ -3272,13 +3272,13 @@ namespace SVG
 				}
 			}
 
-			return FALSE;
+                        return false;
 		}
-		virtual BOOL FromString(const CString& Str, IRefStorage* pStorage, UnitSystem& oUs)
+                virtual bool FromString(const CString& Str, IRefStorage* pStorage, UnitSystem& oUs)
 		{
-			return FALSE;
+                        return false;
 		}
-		virtual BOOL RefreshXLinkSource(IRefStorage* pStorage)
+                virtual bool RefreshXLinkSource(IRefStorage* pStorage)
 		{
 			if (m_XLinkRef.GetLength())
 			{
@@ -3293,17 +3293,17 @@ namespace SVG
 							for (int i = 0; i < gradient->GetColors().Count(); ++i)
 								m_Color.Add(gradient->GetColors().Get(i));
 
-							return TRUE;
+                                                        return true;
 						}
 					}
 				}
 			}
 
-			return FALSE;
+                        return false;
 		}
-		virtual BOOL Normalize(const double& dAddFMX, const double& dAddFMY)
+                virtual bool Normalize(const double& dAddFMX, const double& dAddFMY)
 		{
-			return FALSE;
+                        return false;
 		}
 
 		//
@@ -3358,7 +3358,7 @@ namespace SVG
 
 		}
 
-		virtual BOOL FromXml (XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
+                virtual bool FromXml (XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
 		{
 			m_nodeId		=	oXml.GetAttribute(_T("id"));
 			m_className		=	oXml.GetAttribute(_T("class"));
@@ -3367,11 +3367,11 @@ namespace SVG
 			m_urlClipPath	=	oXml.GetAttribute(_T("clip-path"));
 			StrUtils::UrlRefValue2(m_urlClipPath);
 
-			return TRUE;
+                        return true;
 		}
-		virtual BOOL FromXml (CString sXml, UnitSystem& oUs)
+                virtual bool FromXml (CString sXml, UnitSystem& oUs)
 		{
-			return FALSE;
+                        return false;
 		}
 
 		//
@@ -3397,19 +3397,19 @@ namespace SVG
 		}
 
 		//
-		virtual BOOL Normalize (const double& dAddFMX, const double& dAddFMY) 
+                virtual bool Normalize (const double& dAddFMX, const double& dAddFMY)
 		{
 
-			return FALSE;
+                        return false;
 		}
 
 		// link
-		virtual BOOL RefreshXLinkSource (IRefStorage* pStorage)
+                virtual bool RefreshXLinkSource (IRefStorage* pStorage)
 		{
 #ifdef _DEBUG
 			// ATLTRACE (L"NOT IMPLEMENTED - RefreshXLinkSource: id - %s\n", nodeId());
 #endif
-			return FALSE;
+                        return false;
 		}
 	protected:
 
@@ -3435,7 +3435,7 @@ namespace SVG
 			m_pClip		=	NULL;
 		}
 
-		virtual BOOL FromXml(XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
+                virtual bool FromXml(XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
 		{
 			DrawElement::FromXml (oXml, oUs);
 
@@ -3444,14 +3444,14 @@ namespace SVG
 			m_To.X		=	DoubleValue(oXml, _T("x2"), oUs, c_dirHorizontal);
 			m_To.Y		=	DoubleValue(oXml, _T("y2"), oUs, c_dirVertical);
 
-			return FALSE;
+                        return false;
 		}
-		virtual BOOL Normalize(const double& dAfX, const double& dAfY)
+                virtual bool Normalize(const double& dAfX, const double& dAfY)
 		{
 			m_From	*=	Point(dAfX, dAfY);
 			m_To	*=	Point(dAfX, dAfY);
 
-			return TRUE;
+                        return true;
 		}
 
 		inline const Point& GetFrom() const
@@ -3480,7 +3480,7 @@ namespace SVG
 			m_Arc.Y		=	0.0;
 		}
 
-		virtual BOOL FromXml(XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
+                virtual bool FromXml(XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
 		{
 			DrawElement::FromXml(oXml, oUs);
 
@@ -3492,15 +3492,15 @@ namespace SVG
 			m_Arc.X		=	DoubleValue(oXml, _T("rx"), oUs, c_dirHorizontal);
 			m_Arc.Y		=	DoubleValue(oXml, _T("ry"), oUs, c_dirVertical);
 
-			return TRUE;
+                        return true;
 		}
-		virtual BOOL Normalize(const double& dAfX, const double& dAfY)
+                virtual bool Normalize(const double& dAfX, const double& dAfY)
 		{
 			m_From	*=	Point(dAfX, dAfY);
 			m_To	*=	Point(dAfX, dAfY);
 			m_Arc	*=	Point(dAfX, dAfY);
 
-			return FALSE;
+                        return false;
 		}
 
 		inline const Point& GetFrom() const
@@ -3532,7 +3532,7 @@ namespace SVG
 			m_pClip		=	NULL;
 		}
 
-		virtual BOOL FromXml(XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
+                virtual bool FromXml(XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
 		{
 			DrawElement::FromXml(oXml, oUs);
 
@@ -3541,14 +3541,14 @@ namespace SVG
 			m_R.X	=	DoubleValue(oXml, _T("rx"), oUs, c_dirHorizontal);
 			m_R.Y	=	DoubleValue(oXml, _T("ry"), oUs, c_dirVertical);
 
-			return TRUE;
+                        return true;
 		}
-		virtual BOOL Normalize(const double& dAfX, const double& dAfY)
+                virtual bool Normalize(const double& dAfX, const double& dAfY)
 		{
 			m_C	*=	Point(dAfX, dAfY);
 			m_R	*=	Point(dAfX, dAfY);
 
-			return TRUE;
+                        return true;
 		}
 
 	public:
@@ -3564,7 +3564,7 @@ namespace SVG
 			m_pClip		=	NULL;
 		}
 
-		virtual BOOL FromXml(XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
+                virtual bool FromXml(XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
 		{
 			DrawElement::FromXml (oXml, oUs);
 
@@ -3573,14 +3573,14 @@ namespace SVG
 			m_R.X	=	DoubleValue(oXml, _T("r"),  oUs, c_dirHorizontal);
 			m_R.Y	=	m_R.X;
 
-			return TRUE;
+                        return true;
 		}
-		virtual BOOL Normalize(const double& dAfX, const double& dAfY)
+                virtual bool Normalize(const double& dAfX, const double& dAfY)
 		{
 			m_C	*=	Point(dAfX, dAfY);
 			m_R	*=	Point(dAfX, dAfY);
 
-			return TRUE;
+                        return true;
 		}
 
 	public:
@@ -3597,7 +3597,7 @@ namespace SVG
 			m_pClip		=	NULL;
 		}
 
-		virtual BOOL FromXml (XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
+                virtual bool FromXml (XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
 		{
 			DrawElement::FromXml(oXml, oUs);
 
@@ -3605,9 +3605,9 @@ namespace SVG
 
 			m_oParser.FromString(oUs, oXml.GetAttribute(_T("d")));
 
-			return FALSE;
+                        return false;
 		}
-		virtual BOOL Normalize(const double& dAfX, const double& dAfY)
+                virtual bool Normalize(const double& dAfX, const double& dAfY)
 		{
 			long count = (long)m_oParser.GetPoints().size();
 			for (long i = 0; i < count; ++i)
@@ -3617,7 +3617,7 @@ namespace SVG
 				m_oParser.SetPoint(i, oPoint);
 			}
 
-			return TRUE;
+                        return true;
 		}
 
 		inline PathParser& GetPath ()
@@ -3672,7 +3672,7 @@ namespace SVG
 			m_pClip		=	NULL;
 		}
 
-		virtual BOOL FromXml (XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
+                virtual bool FromXml (XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
 		{
 			DrawElement::FromXml (oXml, oUs);
 			m_points.clear ();
@@ -3686,7 +3686,7 @@ namespace SVG
 
 			return (m_points.size() > 0);
 		}
-		virtual BOOL Normalize(const double& dAfX, const double& dAfY)
+                virtual bool Normalize(const double& dAfX, const double& dAfY)
 		{
 			for (size_t i = 0; i < m_points.size(); i += 2)
 			{
@@ -3694,7 +3694,7 @@ namespace SVG
 				m_points[i + 1]	*=	dAfY;
 			}
 
-			return TRUE;
+                        return true;
 		}
 
 		inline double GetX (long index) const
@@ -3730,7 +3730,7 @@ namespace SVG
 			m_pClip		=	NULL;
 		}
 
-		virtual BOOL Normalize(const double& dAfX, const double& dAfY)
+                virtual bool Normalize(const double& dAfX, const double& dAfY)
 		{
 			for (size_t i = 0; i < m_points.size(); i += 2)
 			{
@@ -3738,7 +3738,7 @@ namespace SVG
 				m_points[i + 1]	*=	dAfY;
 			}
 
-			return TRUE;
+                        return true;
 		}
 	};
 	class Text : public DrawElement
@@ -3750,7 +3750,7 @@ namespace SVG
 			m_pClip		=	NULL;
 		}
 
-		virtual BOOL FromXml ( XmlUtils::CXmlNode& oXmlNode, UnitSystem& oUnitSystem )
+                virtual bool FromXml ( XmlUtils::CXmlNode& oXmlNode, UnitSystem& oUnitSystem )
 		{
 			DrawElement::FromXml ( oXmlNode, oUnitSystem );
 
@@ -3766,14 +3766,14 @@ namespace SVG
 			// стиль может задаваться вообще где то вверху по дереву
 			m_oFontStyle.UpdateStyle ( oXmlNode );
 
-			return TRUE;
+                        return true;
 		}
-		virtual BOOL Normalize ( const double& dAddFMX, const double& dAddFMY )
+                virtual bool Normalize ( const double& dAddFMX, const double& dAddFMY )
 		{
 			m_Pos	*=	Point ( dAddFMX, dAddFMY );
 			m_Shift	*=	Point ( dAddFMX, dAddFMY );
 
-			return TRUE;
+                        return true;
 		}
 
 		inline const FontStyle& GetFontStyle ()
@@ -3801,12 +3801,12 @@ namespace SVG
 	//	class CFileDownloader : public CBaseThread
 	//	{
 	//	public :
-	//		CFileDownloader (CString sFileUrl, BOOL bDelete = TRUE) : CBaseThread(0)
+        //		CFileDownloader (CString sFileUrl, bool bDelete = true) : CBaseThread(0)
 	//		{
 	//			m_pFile     = NULL;
 	//			m_sFilePath = _T("");
 	//			m_sFileUrl  = sFileUrl;
-	//			m_bComplete = FALSE;
+        //			m_bComplete = false;
 	//			m_bDelete   = bDelete;
 	//		}
 	//		~CFileDownloader ()
@@ -3828,7 +3828,7 @@ namespace SVG
 	//		{
 	//			return m_sFilePath;
 	//		}
-	//		BOOL    IsFileDownloaded()
+        //		bool    IsFileDownloaded()
 	//		{
 	//			return m_bComplete;
 	//		}
@@ -3836,33 +3836,33 @@ namespace SVG
 
 	//		unsigned int DownloadFile(CString sFileUrl)
 	//		{
-	//			if ( FALSE == InternetGetConnectedState ( 0, 0 ) )
-	//				return S_FALSE;
+        //			if ( false == InternetGetConnectedState ( 0, 0 ) )
+        //				return S_false;
 
 	//			char sTempPath[MAX_PATH], sTempFile[MAX_PATH];
 	//			if ( 0 == GetTempPathA( MAX_PATH, sTempPath ) )
-	//				return S_FALSE;
+        //				return S_false;
 
 	//			if ( 0 == GetTempFileNameA( sTempPath, "CSS", 0, sTempFile ) )
-	//				return S_FALSE;
+        //				return S_false;
 
 	//			m_pFile = ::fopen( sTempFile, "wb" );
 	//			if ( !m_pFile )
-	//				return S_FALSE;
+        //				return S_false;
 
 	//			m_sFilePath = CString( sTempFile );
 
 	//			HINTERNET hInternetSession = InternetOpen ( _T("Microsoft Internet Explorer"), INTERNET_OPEN_TYPE_PRECONFIG, NULL, NULL, 0 );
 	//			if ( NULL == hInternetSession )
-	//				return S_FALSE;
+        //				return S_false;
 
 	//			CString sHTTPHeader = _T("Range: bytes=0-0");
 	//			HINTERNET hInternetOpenURL = InternetOpenUrl ( hInternetSession, sFileUrl.GetBuffer(), sHTTPHeader, -1, INTERNET_FLAG_RESYNCHRONIZE, 0 );
 	//			if ( NULL != hInternetOpenURL )
 	//			{
-	//				if ( TRUE == QueryStatusCode ( hInternetOpenURL, TRUE ) )
+        //				if ( true == QueryStatusCode ( hInternetOpenURL, true ) )
 	//				{
-	//					LONGLONG nFileSize = GetFileLength( hInternetOpenURL, TRUE );
+        //					LONGLONG nFileSize = GetFileLength( hInternetOpenURL, true );
 	//					InternetCloseHandle ( hInternetOpenURL );
 	//					if ( -1 != nFileSize )
 	//					{
@@ -3881,13 +3881,13 @@ namespace SVG
 	//								nEndByte = nFileSize - 1;
 
 	//							BYTE arrBuffer[ MAX_PATH_DOWNLOAD_FILE_SIZE ] = { 0 };
-	//							DWORD dwBytesDownload = DownloadFilePath ( hInternetSession, arrBuffer, nStartByte, nEndByte, sFileUrl, TRUE, MAX_PATH_DOWNLOAD_FILE_SIZE );
+        //							DWORD dwBytesDownload = DownloadFilePath ( hInternetSession, arrBuffer, nStartByte, nEndByte, sFileUrl, true, MAX_PATH_DOWNLOAD_FILE_SIZE );
 
 	//							nStartByte = nEndByte;
 	//							if ( -1 == dwBytesDownload )
 	//							{
 	//								InternetCloseHandle ( hInternetSession );
-	//								return S_FALSE;
+        //								return S_false;
 	//							}
 
 	//							::fwrite( (BYTE*)arrBuffer, 1, dwBytesDownload, m_pFile );
@@ -3896,20 +3896,20 @@ namespace SVG
 	//						}
 	//					}
 	//				}
-	//				else if ( TRUE == QueryStatusCode( hInternetOpenURL, FALSE ) )
+        //				else if ( true == QueryStatusCode( hInternetOpenURL, false ) )
 	//				{
-	//					LONGLONG nFileSize = GetFileLength( hInternetOpenURL, FALSE );
+        //					LONGLONG nFileSize = GetFileLength( hInternetOpenURL, false );
 	//					InternetCloseHandle ( hInternetOpenURL );
 	//					if ( -1 != nFileSize && nFileSize < MAX_SINGLE_DOWNLOAD_FILE_SIZE )
 	//					{
 	//						while ( m_bRunThread )
 	//						{
 	//							BYTE arrBuffer[ MAX_SINGLE_DOWNLOAD_FILE_SIZE ] = { 0 };
-	//							DWORD dwBytesDownload = DownloadFilePath ( hInternetSession, arrBuffer, 0, nFileSize, sFileUrl, FALSE, MAX_SINGLE_DOWNLOAD_FILE_SIZE );
+        //							DWORD dwBytesDownload = DownloadFilePath ( hInternetSession, arrBuffer, 0, nFileSize, sFileUrl, false, MAX_SINGLE_DOWNLOAD_FILE_SIZE );
 	//							if ( -1 == dwBytesDownload )
 	//							{
 	//								InternetCloseHandle ( hInternetSession );
-	//								return S_FALSE;
+        //								return S_false;
 	//							}
 	//							::fwrite( (BYTE*)arrBuffer, 1, dwBytesDownload, m_pFile );
 	//							::fflush( m_pFile );
@@ -3926,7 +3926,7 @@ namespace SVG
 
 	//			return S_OK;
 	//		}
-	//		DWORD        DownloadFilePath(HINTERNET hInternet, LPBYTE pBuffer, LONGLONG nStartByte, LONGLONG nEndByte, CString sFileURL, BOOL bIsRanges, DWORD dwReadBytes )
+        //		DWORD        DownloadFilePath(HINTERNET hInternet, LPBYTE pBuffer, LONGLONG nStartByte, LONGLONG nEndByte, CString sFileURL, bool bIsRanges, DWORD dwReadBytes )
 	//		{
 	//			if ( NULL == hInternet )
 	//				return -1;
@@ -3941,14 +3941,14 @@ namespace SVG
 	//			if ( NULL == hInternetOpenURL )
 	//				return -1;
 
-	//			if ( FALSE == QueryStatusCode ( hInternetOpenURL, bIsRanges ) )
+        //			if ( false == QueryStatusCode ( hInternetOpenURL, bIsRanges ) )
 	//			{
 	//				InternetCloseHandle ( hInternetOpenURL );
 	//				return -1;
 	//			}
 
 	//			DWORD dwBytesRead = 0;
-	//			if ( FALSE == InternetReadFile ( hInternetOpenURL, pBuffer, dwReadBytes, &dwBytesRead ) )
+        //			if ( false == InternetReadFile ( hInternetOpenURL, pBuffer, dwReadBytes, &dwBytesRead ) )
 	//			{
 	//				InternetCloseHandle ( hInternetOpenURL );
 	//				return -1;
@@ -3959,47 +3959,47 @@ namespace SVG
 	//		}
 	//		virtual      DWORD ThreadProc ()
 	//		{
-	//			m_bComplete = FALSE;
+        //			m_bComplete = false;
 
 	//			CoInitialize ( NULL );
 
 	//			if ( S_OK != DownloadFile ( m_sFileUrl ) )
 	//			{
-	//				m_bRunThread = FALSE;
+        //				m_bRunThread = false;
 	//				CoUninitialize ();
 	//				return 0;
 	//			}
 
-	//			m_bRunThread = FALSE;
+        //			m_bRunThread = false;
 	//			CoUninitialize ();
 
-	//			m_bComplete = TRUE;
+        //			m_bComplete = true;
 	//			return 0;
 	//		}
 
-	//		BOOL         QueryStatusCode (HINTERNET hInternet, BOOL bIsRanges)
+        //		bool         QueryStatusCode (HINTERNET hInternet, bool bIsRanges)
 	//		{
 	//			if ( NULL == hInternet )
-	//				return FALSE;
+        //				return false;
 
 	//			int   nResult = 0;
 	//			DWORD dwLengthDataSize = 4;
 
-	//			if ( FALSE == HttpQueryInfo ( hInternet, HTTP_QUERY_STATUS_CODE | HTTP_QUERY_FLAG_NUMBER, &nResult, &dwLengthDataSize, NULL ) )
-	//				return FALSE;
+        //			if ( false == HttpQueryInfo ( hInternet, HTTP_QUERY_STATUS_CODE | HTTP_QUERY_FLAG_NUMBER, &nResult, &dwLengthDataSize, NULL ) )
+        //				return false;
 
 	//			if ( HTTP_STATUS_NOT_FOUND == nResult )
 	//			{
-	//				return FALSE;
+        //				return false;
 	//			}
-	//			else if ( ( HTTP_STATUS_OK != nResult && FALSE == bIsRanges ) || ( HTTP_STATUS_PARTIAL_CONTENT != nResult && TRUE == bIsRanges ) )
+        //			else if ( ( HTTP_STATUS_OK != nResult && false == bIsRanges ) || ( HTTP_STATUS_PARTIAL_CONTENT != nResult && true == bIsRanges ) )
 	//			{
-	//				return FALSE;
+        //				return false;
 	//			}
 
-	//			return TRUE;
+        //			return true;
 	//		}
-	//		LONGLONG     GetFileLength   (HINTERNET hInternet, BOOL bIsRanges )
+        //		LONGLONG     GetFileLength   (HINTERNET hInternet, bool bIsRanges )
 	//		{
 	//			if ( NULL == hInternet )
 	//				return -1;
@@ -4009,7 +4009,7 @@ namespace SVG
 	//				char arrResult[ MAX_SIZE ] = { 0 };
 	//				DWORD dwLengthDataSize = sizeof ( arrResult );
 
-	//				if ( FALSE == HttpQueryInfoA( hInternet, HTTP_QUERY_CONTENT_RANGE, &arrResult, &dwLengthDataSize, NULL ) )
+        //				if ( false == HttpQueryInfoA( hInternet, HTTP_QUERY_CONTENT_RANGE, &arrResult, &dwLengthDataSize, NULL ) )
 	//				{
 	//					return -1;
 	//				}
@@ -4037,7 +4037,7 @@ namespace SVG
 	//				char arrResult[ MAX_SIZE ] = { 0 };
 	//				DWORD dwLengthDataSize = sizeof ( arrResult );
 
-	//				if ( FALSE == HttpQueryInfoA( hInternet, HTTP_QUERY_CONTENT_LENGTH, &arrResult, &dwLengthDataSize, NULL ) )
+        //				if ( false == HttpQueryInfoA( hInternet, HTTP_QUERY_CONTENT_LENGTH, &arrResult, &dwLengthDataSize, NULL ) )
 	//				{
 	//					return -1;
 	//				}
@@ -4058,8 +4058,8 @@ namespace SVG
 	//		CString  m_sFilePath;       // Путь к сохраненному файлу на диске
 	//		CString  m_sFileUrl;        // Ссылка на скачивание файла
 
-	//		BOOL     m_bComplete;       // Закачался файл или нет
-	//		BOOL     m_bDelete;         // Удалять ли файл в деструкторе
+        //		bool     m_bComplete;       // Закачался файл или нет
+        //		bool     m_bDelete;         // Удалять ли файл в деструкторе
 	//	};
 	//	class CImageManager
 	//	{
@@ -4073,7 +4073,7 @@ namespace SVG
 	//			if (IsNeedDownload(strInput))
 	//				return DownloadImage(strInput);
 
-	//			BOOL doCopyFile	=	FALSE;
+        //			bool doCopyFile	=	false;
 
 	//			CString strExts = _T(".jpg");
 	//			int nIndexExt = strInput.ReverseFind(TCHAR('.'));
@@ -4083,10 +4083,10 @@ namespace SVG
 	//			if (strExts == _T(".tmp"))
 	//			{
 	//				strExts		=	_T(".png");
-	//				doCopyFile	=	TRUE;
+        //				doCopyFile	=	true;
 	//			}
 
-	//			if ( FALSE == doCopyFile )
+        //			if ( false == doCopyFile )
 	//				return strInput;
 
 	//			TCHAR sTempPath[MAX_PATH];
@@ -4116,7 +4116,7 @@ namespace SVG
 	//		}
 	//		inline CString DownloadImage(const CString& strFile)
 	//		{
-	//			CFileDownloader oDownloader(strFile, TRUE);
+        //			CFileDownloader oDownloader(strFile, true);
 	//			oDownloader.StartWork ( 1 );
 	//			while ( oDownloader.IsRunned() )
 	//			{
@@ -4130,10 +4130,10 @@ namespace SVG
 	//			return _T("");
 	//		}
 
-	//		static BOOL CopyFile(CString strExists, CString strNew, LPPROGRESS_ROUTINE lpFunc, LPVOID lpData) 
+        //		static bool CopyFile(CString strExists, CString strNew, LPPROGRESS_ROUTINE lpFunc, LPVOID lpData)
 	//		{
 	//			DeleteFile(strNew);
-	//			return ::CopyFileEx(strExists, strNew, lpFunc, lpData, FALSE, 0); 
+        //			return ::CopyFileEx(strExists, strNew, lpFunc, lpData, false, 0);
 	//		}
 	//	};
 
@@ -4144,7 +4144,7 @@ namespace SVG
 	//		m_pClip		=	NULL;
 	//	}
 
-	//	virtual BOOL FromXml (XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
+        //	virtual bool FromXml (XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
 	//	{
 	//		DrawElement::FromXml (oXml, oUs);
 
@@ -4176,7 +4176,7 @@ namespace SVG
 	//				{					
 	//					m_ImagePath = onlineImage.GenerateImage(m_XLinkRef);
 	//					if ( m_ImagePath.GetLength() > 1 )
-	//						return TRUE;
+        //						return true;
 	//				}
 
 	//				if (_T('d') == m_XLinkRef[0] && _T('a') == m_XLinkRef[1] && _T('t') == m_XLinkRef[2] && _T('a') == m_XLinkRef[3])
@@ -4197,14 +4197,14 @@ namespace SVG
 	//			}
 	//		}
 
-	//		return TRUE;
+        //		return true;
 	//	}
-	//	virtual BOOL Normalize(const double& dAfX, const double& dAfY)
+        //	virtual bool Normalize(const double& dAfX, const double& dAfY)
 	//	{
 	//		m_Or	*=	Point(dAfX, dAfY);
 	//		m_Size	*=	Point(dAfX, dAfY);
 
-	//		return TRUE;
+        //		return true;
 	//	}
 
 	//	inline const Point& GetFrom() const
@@ -4270,15 +4270,15 @@ namespace SVG
 			m_nodeType		=	EUse;
 			m_pClip			=	NULL;
 
-			m_bBrokeRefLink	=	FALSE;
+                        m_bBrokeRefLink	=	false;
 			m_pRefLink		=	NULL;
 		}
 
-		virtual BOOL FromXml(XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
+                virtual bool FromXml(XmlUtils::CXmlNode& oXml, UnitSystem& oUs)
 		{
 			DrawElement::FromXml (oXml, oUs);
 
-			m_bBrokeRefLink	=	FALSE;
+                        m_bBrokeRefLink	=	false;
 
 			m_From.X		=	DoubleValue(oXml, _T("x"), oUs, c_dirHorizontal);
 			m_From.Y		=	DoubleValue(oXml, _T("y"), oUs, c_dirVertical);
@@ -4299,15 +4299,15 @@ namespace SVG
 				}
 			}
 
-			return TRUE;
+                        return true;
 		}
-		virtual BOOL RefreshXLinkSource (IRefStorage* pStorage)
+                virtual bool RefreshXLinkSource (IRefStorage* pStorage)
 		{
 			if (NULL != m_pRefLink)		//	связь уже есть, нет смысла опять искать соотвествие
-				return TRUE;
+                                return true;
 
 			if (m_bBrokeRefLink)		//	нету связи
-				return FALSE;
+                                return false;
 
 			if (m_XLinkRef.GetLength())
 			{
@@ -4318,18 +4318,18 @@ namespace SVG
 
 					// ATLTRACE(_T("RefLink for object : %s - %s\n"), nodeId(), m_pRefLink->nodeId());
 
-					return TRUE;
+                                        return true;
 				}
 			}
 
-			m_bBrokeRefLink	=	TRUE;
+                        m_bBrokeRefLink	=	true;
 
-			return FALSE;
+                        return false;
 		}
-		virtual BOOL Normalize(const double& dAddFMX, const double& dAddFMY)
+                virtual bool Normalize(const double& dAddFMX, const double& dAddFMY)
 		{
 
-			return FALSE;
+                        return false;
 		}
 
 		inline ISvgRef* GetRefLink ()
@@ -4357,7 +4357,7 @@ namespace SVG
 		Point		m_To;
 
 		CString		m_XLinkRef;
-		BOOL		m_bBrokeRefLink;
+                bool		m_bBrokeRefLink;
 		ISvgRef*	m_pRefLink;
 	};
 }
@@ -4401,13 +4401,13 @@ namespace SVG
 			m_arrRefElems.clear();
 		}
 
-		virtual BOOL FromXml(XmlUtils::CXmlNode& oXmlNode, IRefStorage* pStorage, UnitSystem& oUs)
+                virtual bool FromXml(XmlUtils::CXmlNode& oXmlNode, IRefStorage* pStorage, UnitSystem& oUs)
 		{
 			RefElement::FromXml (oXmlNode, pStorage, oUs);
 
 			m_oViewBox.FromXml (oXmlNode);
 
-			return TRUE;
+                        return true;
 		}
 
 		inline void AddContent(DrawElement* pReference)	//	храним данные, поэтому сами и очищаем данные
@@ -4428,11 +4428,11 @@ namespace SVG
 
 		// RefElement
 
-		virtual BOOL RefreshXLinkSource(IRefStorage* pStorage)						//	NOT IMPLEMENTED
+                virtual bool RefreshXLinkSource(IRefStorage* pStorage)						//	NOT IMPLEMENTED
 		{
 			return 0;
 		}
-		virtual BOOL Normalize(const double& dAddFMX, const double& dAddFMY)		//	NOT IMPLEMENTED
+                virtual bool Normalize(const double& dAddFMX, const double& dAddFMY)		//	NOT IMPLEMENTED
 		{
 			return 0;
 		}
@@ -4458,12 +4458,12 @@ namespace SVG
 			m_clips.clear();
 		}
 
-		virtual BOOL FromXml (XmlUtils::CXmlNode& oXml, IRefStorage* pStorage, UnitSystem& oUs)
+                virtual bool FromXml (XmlUtils::CXmlNode& oXml, IRefStorage* pStorage, UnitSystem& oUs)
 		{
 			RefElement::FromXml (oXml, pStorage, oUs);
 			Explore(oXml);
 
-			return TRUE;
+                        return true;
 		}
 		inline long GetCount ()
 		{
@@ -4476,21 +4476,21 @@ namespace SVG
 
 
 		// RefElement
-		virtual BOOL RefreshXLinkSource (IRefStorage* pStorage)						//	NOT IMPLEMENTED
+                virtual bool RefreshXLinkSource (IRefStorage* pStorage)						//	NOT IMPLEMENTED
 		{
 			return 0;
 		}
-		virtual BOOL Normalize(const double& dAfX, const double& dAfY)		
+                virtual bool Normalize(const double& dAfX, const double& dAfY)
 		{
 			for (size_t i = 0; i < m_clips.size(); ++i)
 				m_clips[i]->Normalize(dAfX, dAfY);
 
-			return TRUE;
+                        return true;
 		}
 
 	protected:
 
-		inline BOOL Explore (XmlUtils::CXmlNode& oXml)
+                inline bool Explore (XmlUtils::CXmlNode& oXml)
 		{
 			Load (oXml);
 
@@ -4509,7 +4509,7 @@ namespace SVG
 							{
 								if (!Explore(oChild))
 								{
-									return FALSE;
+                                                                        return false;
 								}
 							}
 						}
@@ -4517,12 +4517,12 @@ namespace SVG
 				}
 			}
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL Load (XmlUtils::CXmlNode& oXml)
+                inline bool Load (XmlUtils::CXmlNode& oXml)
 		{
 			if (L"clipPath" == oXml.GetName ())
-				return FALSE;
+                                return false;
 #ifdef _DEBUG
 			ATLTRACE (L"[svg] ClipPath-NodeName : %s\n", oXml.GetName());
 #endif
@@ -4532,10 +4532,10 @@ namespace SVG
 			{		
 				pClip->FromXml(oXml,m_oUs); 
 				m_clips.push_back (pClip);
-				return TRUE;
+                                return true;
 			}
 
-			return FALSE;
+                        return false;
 		}
 
 	protected:
@@ -4560,7 +4560,7 @@ namespace SVG
 			m_elements.clear();
 		}
 
-		virtual BOOL FromXml(XmlUtils::CXmlNode& oXml, IRefStorage* model, UnitSystem& oUs)
+                virtual bool FromXml(XmlUtils::CXmlNode& oXml, IRefStorage* model, UnitSystem& oUs)
 		{
 			m_rect.X				=	DoubleValue(oXml, _T("x"), oUs, c_dirHorizontal);
 			m_rect.Y				=	DoubleValue(oXml, _T("y"), oUs, c_dirVertical);
@@ -4578,20 +4578,20 @@ namespace SVG
 
 			//Pattern::FromXml (oXml, m_model, oUs);
 
-			return TRUE;
+                        return true;
 		}
 
 		// RefElement
-		virtual BOOL RefreshXLinkSource(IRefStorage* pStorage)						//	NOT IMPLEMENTED
+                virtual bool RefreshXLinkSource(IRefStorage* pStorage)						//	NOT IMPLEMENTED
 		{
 			return 0;
 		}
-		virtual BOOL Normalize(const double& dAfX, const double& dAfY)		
+                virtual bool Normalize(const double& dAfX, const double& dAfY)
 		{
 			//for (size_t i = 0; i < m_elements.size(); ++i)
 			//	m_elements[i]->Normalize(dAfX, dAfY);
 
-			return TRUE;
+                        return true;
 		}
 
 		//
@@ -4605,19 +4605,19 @@ namespace SVG
 			return (long)m_elements.size();
 		}
 		// NOT IMPLEMENTED
-		virtual BOOL HashRef(ISvgRef* pRef, BOOL bDef)	
+                virtual bool HashRef(ISvgRef* pRef, bool bDef)
 		{
-			return FALSE;	
+                        return false;
 		}
 		// NOT IMPLEMENTED
-		virtual BOOL GetRef(const CString& ID, ISvgRef*& pRef)	
+                virtual bool GetRef(const CString& ID, ISvgRef*& pRef)
 		{
-			return FALSE;	
+                        return false;
 		}
 		// NOT IMPLEMENTED
-		virtual BOOL Push(ISvgRef* pRef)
+                virtual bool Push(ISvgRef* pRef)
 		{
-			return FALSE;
+                        return false;
 		}
 
 		//
@@ -4634,17 +4634,17 @@ namespace SVG
 			return m_preserveAspectRatio;
 		}
 
-		inline BOOL NormalizeEx(const double& dAfX, const double& dAfY)
+                inline bool NormalizeEx(const double& dAfX, const double& dAfY)
 		{
 			for (size_t i = 0; i < m_elements.size(); ++i)
 				m_elements[i]->Normalize(dAfX, dAfY);
 
-			return TRUE;
+                        return true;
 		}
 
 	protected:
 
-		inline BOOL Explore(XmlUtils::CXmlNode& oXml)
+                inline bool Explore(XmlUtils::CXmlNode& oXml)
 		{
 			Load (oXml);
 
@@ -4663,7 +4663,7 @@ namespace SVG
 							{
 								if (!Explore(oChild))
 								{
-									return FALSE;
+                                                                        return false;
 								}
 							}
 						}
@@ -4671,9 +4671,9 @@ namespace SVG
 				}
 			}
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL Load(XmlUtils::CXmlNode& oXml)
+                inline bool Load(XmlUtils::CXmlNode& oXml)
 		{
 #ifdef _DEBUG
 			ATLTRACE (L"[svg] Pattern-NodeName : %s\n", oXml.GetName());
@@ -4688,8 +4688,8 @@ namespace SVG
 				CString css = oXml.GetAttribute(_T("style"));
 				if (css.GetLength())
 				{
-					oStyle.SetStyle(css, FALSE, m_oUs, NULL, m_oColTable);
-					oFontStyle.SetStyle(css, FALSE);
+                                        oStyle.SetStyle(css, false, m_oUs, NULL, m_oColTable);
+                                        oFontStyle.SetStyle(css, false);
 				}
 				else
 				{
@@ -4726,10 +4726,10 @@ namespace SVG
 
 				element->FromXml(oXml,m_oUs); 
 				m_elements.push_back (element);
-				return TRUE;
+                                return true;
 			}
 
-			return FALSE;
+                        return false;
 		}
 
 	protected:
@@ -4780,12 +4780,12 @@ namespace SVG
 
 	//private:
 
-	//	BOOL Build();
-	//	BOOL InitFrame();
-	//	BOOL InitPatternFrame();
-	//	BOOL InitRender(void *render, int frameWidth, int frameHeight);
-	//	BOOL Render();
-	//	//BOOL SaveImage(IUnknown* punkFrame, CString file);
+        //	bool Build();
+        //	bool InitFrame();
+        //	bool InitPatternFrame();
+        //	bool InitRender(void *render, int frameWidth, int frameHeight);
+        //	bool Render();
+        //	//bool SaveImage(IUnknown* punkFrame, CString file);
 	//	Point GetNormalizeFactor();
 
 	//private:
@@ -4816,20 +4816,20 @@ namespace SVG
 	class GraphicsContainer : public DrawElement, public IRefStorage
 	{
 	public:
-		GraphicsContainer(BOOL bRefMode = FALSE)		//	подчищает ссылки на объекты
+                GraphicsContainer(bool bRefMode = false)		//	подчищает ссылки на объекты
 		{
 			m_nodeType		=	EGraphicsContainer;
 			m_pClip			=	NULL;
 			m_bRefMode		=	bRefMode;
 
-			m_bAddNormMM	=	FALSE;
+                        m_bAddNormMM	=	false;
 		}
 		virtual ~GraphicsContainer()
 		{
 			GraphicsContainer::Clear ();
 		}
 
-		virtual BOOL FromXml(XmlUtils::CXmlNode& oXmlNode, IRefStorage* model, const ViewBox& oViewBox, const UnitSystem& oUnitSystem, const Matrix& oTransform)
+                virtual bool FromXml(XmlUtils::CXmlNode& oXmlNode, IRefStorage* model, const ViewBox& oViewBox, const UnitSystem& oUnitSystem, const Matrix& oTransform)
 		{
 			m_model			=	model;
 			m_oViewBox		=	oViewBox;
@@ -4848,20 +4848,20 @@ namespace SVG
 
 			Explore(oXmlNode);
 
-			m_model->HashRef(this, FALSE);
+                        m_model->HashRef(this, false);
 
 			m_oTransform = m_transforms.GetFinal();
 
-			return TRUE;
+                        return true;
 		}
 
-		virtual BOOL FromString(CString Str, IRefStorage* model)
+                virtual bool FromString(CString Str, IRefStorage* model)
 		{
-			return FALSE;
+                        return false;
 		}
-		virtual BOOL RefreshXLinkSource(IRefStorage* model)
+                virtual bool RefreshXLinkSource(IRefStorage* model)
 		{
-			return FALSE;
+                        return false;
 		}
 
 		// storage
@@ -4877,9 +4877,9 @@ namespace SVG
 			return (long)(m_arrGroup.size());
 		}
 
-		virtual BOOL Normalize(const double& dAddFMX, const double& dAddFMY)
+                virtual bool Normalize(const double& dAddFMX, const double& dAddFMY)
 		{
-			if ( FALSE == m_bAddNormMM )
+                        if ( false == m_bAddNormMM )
 			{
 				for ( long i = 0; i < (long)m_arrGroup.size(); ++i )
 				{
@@ -4891,9 +4891,9 @@ namespace SVG
 				}
 			}
 
-			m_bAddNormMM	=	TRUE;
+                        m_bAddNormMM	=	true;
 
-			return TRUE;
+                        return true;
 		}
 
 		inline void Add(ISvgRef* element)
@@ -4907,22 +4907,22 @@ namespace SVG
 	private:
 
 		// NOT IMPLEMENTED
-		virtual BOOL Push (ISvgRef* Elem)			
+                virtual bool Push (ISvgRef* Elem)
 		{
-			return FALSE;	
+                        return false;
 		}
-		virtual BOOL HashRef (ISvgRef* pElem, BOOL bDef)	
+                virtual bool HashRef (ISvgRef* pElem, bool bDef)
 		{
-			return FALSE;	
+                        return false;
 		}
-		virtual BOOL GetRef (const CString& ID, ISvgRef*& pElem)
+                virtual bool GetRef (const CString& ID, ISvgRef*& pElem)
 		{
-			return FALSE;	
+                        return false;
 		}
 
 	private:
 
-		inline BOOL Explore (XmlUtils::CXmlNode& oXmlNode)
+                inline bool Explore (XmlUtils::CXmlNode& oXmlNode)
 		{
 			LoadElement ( oXmlNode );
 
@@ -4945,19 +4945,19 @@ namespace SVG
 									if ( pContainer )
 									{
 										pContainer->FromXml(oXmlNode2, m_model, m_oViewBox, m_oUs, m_transforms.GetFinal());
-										m_model->HashRef(pContainer, FALSE);
+                                                                                m_model->HashRef(pContainer, false);
 
 										m_arrGroup.push_back(pContainer);
 
 										continue;
 									}
 
-									// return TRUE;
+                                                                        // return true;
 								}
 
-								if ( FALSE == Explore ( oXmlNode2 ) )
+                                                                if ( false == Explore ( oXmlNode2 ) )
 								{
-									return FALSE;
+                                                                        return false;
 								}
 							}
 						}
@@ -4965,9 +4965,9 @@ namespace SVG
 				}
 			}
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL LoadElement (XmlUtils::CXmlNode& oXml, BOOL Defines = FALSE)
+                inline bool LoadElement (XmlUtils::CXmlNode& oXml, bool Defines = false)
 		{
 			CString strXmlNode = oXml.GetName();
 
@@ -4983,21 +4983,21 @@ namespace SVG
 					pReference->FromXml(oXml, m_model, m_oUs);
 				}
 
-				if (m_model->HashRef(pReference, TRUE))
+                                if (m_model->HashRef(pReference, true))
 					UpdateSymbol(pReference, oXml);
 #ifdef _DEBUG
 				ATLTRACE(L"[svg] ref element (g) - : %s\n", strXmlNode);
 #endif
-				return TRUE;
+                                return true;
 			}
 
 			if (NULL == Create(oXml))
-				return FALSE;
+                                return false;
 
-			return TRUE;
+                        return true;
 		}
 
-		inline DrawElement* Create(XmlUtils::CXmlNode& oXml, BOOL bAddStorage = TRUE)
+                inline DrawElement* Create(XmlUtils::CXmlNode& oXml, bool bAddStorage = true)
 		{
 			CString strXmlNode = oXml.GetName();
 #ifdef _DEBUG
@@ -5012,8 +5012,8 @@ namespace SVG
 				CString css = oXml.GetAttribute(_T("style"));
 				if (css.GetLength())
 				{
-					oStyle.SetStyle(css, FALSE, m_oUs, m_model, m_oColTable);
-					oFontStyle.SetStyle(css, FALSE);
+                                        oStyle.SetStyle(css, false, m_oUs, m_model, m_oColTable);
+                                        oFontStyle.SetStyle(css, false);
 				}
 				else
 				{
@@ -5079,8 +5079,8 @@ namespace SVG
 			CString css = oXml.GetAttribute(_T("style"));
 			if (css.GetLength())
 			{
-				m_oFontStyle.SetStyle(css, TRUE);
-				m_oStyle.SetStyle(css, TRUE, m_oUs, m_model, m_oColTable);
+                                m_oFontStyle.SetStyle(css, true);
+                                m_oStyle.SetStyle(css, true, m_oUs, m_model, m_oColTable);
 			}
 			else
 			{
@@ -5117,7 +5117,7 @@ namespace SVG
 								XmlUtils::CXmlNode oXml2;
 								if (oXmlNodes.GetAt(i,oXml2))
 								{
-									((Symbol*)pReference)->AddContent(Create(oXml2, FALSE));
+                                                                        ((Symbol*)pReference)->AddContent(Create(oXml2, false));
 								}
 							}
 						}
@@ -5128,9 +5128,9 @@ namespace SVG
 
 	private:
 
-		BOOL					m_bRefMode;
+                bool					m_bRefMode;
 
-		BOOL					m_bAddNormMM;
+                bool					m_bAddNormMM;
 
 		std::vector <ISvgRef*>	m_arrGroup;
 
@@ -5155,7 +5155,7 @@ namespace SVG
 	public:
 		Storage()
 		{
-			m_bAddNormMM	=	FALSE;
+                        m_bAddNormMM	=	false;
 		}
 		virtual ~Storage ()
 		{
@@ -5179,7 +5179,7 @@ namespace SVG
 
 			m_arFlush.clear();
 		}
-		inline BOOL JoinXLinkReference()
+                inline bool JoinXLinkReference()
 		{
 			for (std::map<CString, ISvgRef*>::iterator pPair = m_arrRef.begin(); pPair != m_arrRef.end(); pPair++)
 			{
@@ -5190,9 +5190,9 @@ namespace SVG
 				}
 			}
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL JoinClipPathLinks()
+                inline bool JoinClipPathLinks()
 		{
 			for (size_t i = 0; i < m_arrGroup.size(); ++i)
 			{
@@ -5211,9 +5211,9 @@ namespace SVG
 				}
 			}
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL JoinStyleLinks()
+                inline bool JoinStyleLinks()
 		{
 			for (size_t i = 0; i < m_arrGroup.size(); ++i)
 			{
@@ -5230,7 +5230,7 @@ namespace SVG
 				}
 			}
 
-			return TRUE;
+                        return true;
 		}
 
 		//	IRefStorage
@@ -5247,16 +5247,16 @@ namespace SVG
 		{
 			return (long)m_arrGroup.size();
 		}
-		virtual BOOL Push (ISvgRef* Elem)
+                virtual bool Push (ISvgRef* Elem)
 		{
 			// ATLTRACE ( _T("push : %s\n"), Elem->nodeId () );
-			if (!Elem) return FALSE;
+                        if (!Elem) return false;
 			m_arrGroup.push_back(Elem);
 
-			return TRUE;
+                        return true;
 		}
 
-		virtual BOOL HashRef (ISvgRef* element, BOOL bDef)
+                virtual bool HashRef (ISvgRef* element, bool bDef)
 		{
 			if (element)
 			{
@@ -5278,27 +5278,27 @@ namespace SVG
 						// объекты с id могут быть использованы вне описания другими элементами, поэтому их надо учитывать
 						InternalHashElements(element);
 
-						return TRUE;
+                                                return true;
 					}
 				}
 			}
 
-			return FALSE;
+                        return false;
 		}
-		virtual BOOL GetRef (const CString& sId, ISvgRef*& pRef)
+                virtual bool GetRef (const CString& sId, ISvgRef*& pRef)
 		{
 			std::map<CString, ISvgRef*>::iterator pPair = m_arrRef.find (sId);
 			if (m_arrRef.end() != pPair)
 			{
 				pRef = pPair->second;
-				return TRUE;
+                                return true;
 			}
 
-			return FALSE;
+                        return false;
 		}
-		virtual BOOL Normalize(const double& dAfX, const double& dAfY)
+                virtual bool Normalize(const double& dAfX, const double& dAfY)
 		{
-			if ( FALSE == m_bAddNormMM )
+                        if ( false == m_bAddNormMM )
 			{
 				for ( long i = 0; i < (long)m_arrGroup.size(); ++i )
 				{
@@ -5319,14 +5319,14 @@ namespace SVG
 				}
 			}
 
-			m_bAddNormMM	=	TRUE;
+                        m_bAddNormMM	=	true;
 
-			return TRUE;
+                        return true;
 		}
-		virtual BOOL RefreshXLinkSource(IRefStorage* pStorage)
+                virtual bool RefreshXLinkSource(IRefStorage* pStorage)
 		{
 
-			return FALSE;
+                        return false;
 		}
 
 		// 
@@ -5337,9 +5337,9 @@ namespace SVG
 
 	private:
 
-		inline BOOL InternalHashElements (ISvgRef* element)
+                inline bool InternalHashElements (ISvgRef* element)
 		{
-			BOOL ret = FALSE;
+                        bool ret = false;
 
 			if (EClipPath == element->nodeType())
 			{
@@ -5356,7 +5356,7 @@ namespace SVG
 								if (ref->nodeId().GetLength())
 								{
 									m_arrRef.insert(std::pair<CString, ISvgRef*>(ref->nodeId(), ref));
-									ret = TRUE;
+                                                                        ret = true;
 								}
 							}
 						}
@@ -5369,7 +5369,7 @@ namespace SVG
 
 	private:
 
-		BOOL								m_bAddNormMM;
+                bool								m_bAddNormMM;
 
 		std::vector <ISvgRef*>				m_arrGroup;
 		std::map <CString, ISvgRef*>		m_arrRef;					// индексация (только хранения ссылок)
@@ -5391,7 +5391,7 @@ namespace SVG
 			m_widthMM		=	0.0;
 			m_heightMM		=	0.0;
 
-			m_bEnableFonts	=	TRUE;
+                        m_bEnableFonts	=	true;
 			m_CSS			=	NULL;
 		}
 		~Painter()
@@ -5423,39 +5423,39 @@ namespace SVG
 			m_CSS	=	css;
 		}
 
-		BOOL Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs);
+                bool Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs);
 
 	private:
 
-		BOOL DrawLine (Line* element, const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawRectangle (Rectangle* element, const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawCircle (Circle* element,const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawEllipse (Ellipse* element, const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawPolyline (Polyline* element, const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawPolygon (Polygon* element, const Style& oStyle, const CString& strClassName = _T(""));		
-		BOOL DrawPath (Path* element, const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawText (Text* element, const Style& oStyle, const CString& strClassName = _T(""));
-		//BOOL DrawImage (Image* element, const Style& oStyle, const CString& strClassName = _T(""));
-		BOOL DrawUse (Use* element, const Style& oStyle, const CString& strClassName = _T(""));
+                bool DrawLine (Line* element, const Style& oStyle, const CString& strClassName = _T(""));
+                bool DrawRectangle (Rectangle* element, const Style& oStyle, const CString& strClassName = _T(""));
+                bool DrawCircle (Circle* element,const Style& oStyle, const CString& strClassName = _T(""));
+                bool DrawEllipse (Ellipse* element, const Style& oStyle, const CString& strClassName = _T(""));
+                bool DrawPolyline (Polyline* element, const Style& oStyle, const CString& strClassName = _T(""));
+                bool DrawPolygon (Polygon* element, const Style& oStyle, const CString& strClassName = _T(""));
+                bool DrawPath (Path* element, const Style& oStyle, const CString& strClassName = _T(""));
+                bool DrawText (Text* element, const Style& oStyle, const CString& strClassName = _T(""));
+                //bool DrawImage (Image* element, const Style& oStyle, const CString& strClassName = _T(""));
+                bool DrawUse (Use* element, const Style& oStyle, const CString& strClassName = _T(""));
 
-		BOOL DrawStorage (IRefStorage* pStorage, const Matrix& parentTransform = Matrix(), const Point& off = Point());
-		BOOL DrawGraphicsContainer (GraphicsContainer* element, const Matrix& parentTransform = Matrix(), const Point& off = Point());
-		BOOL DrawInternal (DrawElement* pE, const Matrix& parentTransform, const Point& off, const Style& oMainStyle);
+                bool DrawStorage (IRefStorage* pStorage, const Matrix& parentTransform = Matrix(), const Point& off = Point());
+                bool DrawGraphicsContainer (GraphicsContainer* element, const Matrix& parentTransform = Matrix(), const Point& off = Point());
+                bool DrawInternal (DrawElement* pE, const Matrix& parentTransform, const Point& off, const Style& oMainStyle);
 
-		BOOL SetBrushStyle (const Style& style, const CString& strClassName = _T(""));
-		BOOL SetStrokeStyle (const Style& style, const CString& strClassName = _T(""));
+                bool SetBrushStyle (const Style& style, const CString& strClassName = _T(""));
+                bool SetStrokeStyle (const Style& style, const CString& strClassName = _T(""));
 
 		// commands only
 
-		void DoRectangle(Rectangle* element, long type, BOOL clipMode = FALSE);
-		void DoCircle(Circle* element, long type, BOOL clipMode = FALSE);
-		void DoEllipse(Ellipse* element, long type, BOOL clipMode = FALSE);
-		void DoPolyline(Polyline* element, long type, BOOL clipMode = FALSE);
-		void DoPolygon(Polygon* element, long type, BOOL clipMode = FALSE);
-		void DoPath(Path* element, long type, BOOL clipMode = FALSE);
+                void DoRectangle(Rectangle* element, long type, bool clipMode = false);
+                void DoCircle(Circle* element, long type, bool clipMode = false);
+                void DoEllipse(Ellipse* element, long type, bool clipMode = false);
+                void DoPolyline(Polyline* element, long type, bool clipMode = false);
+                void DoPolygon(Polygon* element, long type, bool clipMode = false);
+                void DoPath(Path* element, long type, bool clipMode = false);
 
 		// clip 
-		BOOL DoClip(ISvgRef* pRef, BOOL enable);
+                bool DoClip(ISvgRef* pRef, bool enable);
 
 		inline ISvgRef* FindEntry(Use* element)
 		{
@@ -5478,15 +5478,15 @@ namespace SVG
 		}
 
 		// image
-		//BOOL DrawImageFromFile(Image* element, CString texturePath = L"");
-		//BOOL DoPattern(Pattern* element);
+                //bool DrawImageFromFile(Image* element, CString texturePath = L"");
+                //bool DoPattern(Pattern* element);
 
 		// path
-		BOOL PushPathCommands(Path* element, long PathType);
-		BOOL ClipPathCommands(Path* element, long PathType);
+                bool PushPathCommands(Path* element, long PathType);
+                bool ClipPathCommands(Path* element, long PathType);
 	private:	
 		// for arc render
-		inline BOOL RenderArcAppx(const double& dRotAngle, const Point& Center, Point Radi, const double& dStartAngle, const double& dSweep)
+                inline bool RenderArcAppx(const double& dRotAngle, const Point& Center, Point Radi, const double& dStartAngle, const double& dSweep)
 		{
 			if (0.0 != dRotAngle)	
 			{
@@ -5509,9 +5509,9 @@ namespace SVG
 				m_render->PathCommandArcTo(Center.X - Radi.X, Center.Y - Radi.Y, Radi.X * 2.0, Radi.Y * 2.0, dStartAngle, dSweep);
 			}
 
-			return TRUE;
+                        return true;
 		}
-		inline BOOL ClipArcAppx(Aggplus::CGraphicsPathSimpleConverter& simplifier, const double& dRotAngle, const Point& Center, Point Radi, const double& dStartAngle, const double& dSweep)
+                inline bool ClipArcAppx(Aggplus::CGraphicsPathSimpleConverter& simplifier, const double& dRotAngle, const Point& Center, Point Radi, const double& dStartAngle, const double& dSweep)
 		{
 			if (0.0 != dRotAngle)
 			{
@@ -5534,12 +5534,12 @@ namespace SVG
 				simplifier.PathCommandArcTo(Center.X - Radi.X, Center.Y - Radi.Y, Radi.X * 2.0, Radi.Y * 2.0, dStartAngle, dSweep);
 			}
 
-			return TRUE;
+                        return true;
 		}
 
 		static double GetAngle(const double& CX, const double& CY, const double& X, const double& Y);
 		static Point GetCenter(int LargeFlag, int SweepFlag, Point Radi, Point P1, Point P2);
-		static BOOL GetArcAngles(int LargeFlag, int SweepFlag, const double& dStartAngle, const double& dEndAngle, double& dSweep);
+                static bool GetArcAngles(int LargeFlag, int SweepFlag, const double& dStartAngle, const double& dEndAngle, double& dSweep);
 
 		inline CFontManager* GetFontManager()
 		{
@@ -5597,7 +5597,7 @@ namespace SVG
 		double							m_heightMM;
 
 		MatrixStack							m_transforms;
-		BOOL								m_bEnableFonts;
+                bool								m_bEnableFonts;
 		CString								m_sWorkingDirectory;
 		//std::map<CString, PatternImage*>	m_patterns;
 		CStyleCSS*							m_CSS;
@@ -5613,7 +5613,7 @@ namespace SVG
 		{
 		}
 
-		inline BOOL Read (const CString& sTag)
+                inline bool Read (const CString& sTag)
 		{
 			int at = sTag.Find(_T("\""));
 			int to = sTag.Find(_T("\""), at + 1);
@@ -5626,10 +5626,10 @@ namespace SVG
                 strTemp     = sTag.Mid(0, at - 1);
                 m_sName		= StrUtils::RemoveSpaces(strTemp);
 
-				return TRUE;
+                                return true;
 			}
 
-			return FALSE;
+                        return false;
 		}
 		inline const CString& GetName() const
 		{
@@ -5653,16 +5653,16 @@ namespace SVG
 
 		}
 
-		inline BOOL Read (const CString& sTag)
+                inline bool Read (const CString& sTag)
 		{
 			if (sTag.GetLength())
 			{
 				// READ TAG - <!ENTITY
 
 				int at = sTag.Find(_T("<!ENTITY"));
-				if (-1 == at)	return FALSE;
+                                if (-1 == at)	return false;
 				int to = sTag.Find(_T(">"), at);
-				if (-1 == to)	return FALSE;
+                                if (-1 == to)	return false;
 
 				int length = CString("<!ENTITY").GetLength();
 
@@ -5687,14 +5687,14 @@ namespace SVG
 				}
 
 				if (m_ENTITY.size())
-					return TRUE;
+                                        return true;
 			}
 
-			return FALSE;
+                        return false;
 		}
 
         template <typename T>
-        BOOL ConnectEntities(T & sXml)
+        bool ConnectEntities(T & sXml)
 		{
 			if (m_ENTITY.size())
 			{
@@ -5704,9 +5704,9 @@ namespace SVG
 				T sem	=	T(CString(L";"));
 
                 int at = sXml.Find(and1);
-				if (-1 == at)	return FALSE;
+                                if (-1 == at)	return false;
 				int to = sXml.Find(sem, at);
-				if (-1 == to)	return FALSE;
+                                if (-1 == to)	return false;
 
 				while (-1 != at && -1 != to) 
 				{
@@ -5727,11 +5727,11 @@ namespace SVG
 						sXml.Replace(str, GetVal(CString(subStrings[i])));
 					}
 
-					return TRUE;
+                                        return true;
 				}
 			}
 
-			return FALSE;
+                        return false;
 		}
 
 		inline CString GetVal(const CString& sName) const
@@ -5777,7 +5777,7 @@ namespace SVG
 
 			m_nLayerLevel	=	0;
 
-			m_bDefinesLayer	=	FALSE;
+                        m_bDefinesLayer	=	false;
 			m_nDefsLayer	=	0;
 
 			m_nDefWidth		=	800;
@@ -5788,7 +5788,7 @@ namespace SVG
 
 		}
 
-		//inline BOOL	LoadFromFile (const CString& strFile, Storage* model)
+                //inline bool	LoadFromFile (const CString& strFile, Storage* model)
 		//{
 		//	if (model)
 		//	{
@@ -5815,9 +5815,9 @@ namespace SVG
 		//		}
 		//	}
 
-		//	return FALSE;
+                //	return false;
 		//}
-		inline BOOL	LoadFromString (const CString& strXml, SVG::Storage* model)
+                inline bool	LoadFromString (const CString& strXml, SVG::Storage* model)
 		{
 			if (model)
 			{
@@ -5848,19 +5848,19 @@ namespace SVG
 						m_model->JoinClipPathLinks();
 						m_model->JoinStyleLinks();
 
-						return TRUE;
+                                                return true;
 					}
 				}
 			}
 
-			return FALSE;
+                        return false;
 		}
-		inline BOOL Explore (XmlUtils::CXmlNode& oXml)
+                inline bool Explore (XmlUtils::CXmlNode& oXml)
 		{
 			CString strXmlNode = oXml.GetName();			// ATLTRACE ( L"%s\n", strXmlNode);
 
-			BOOL ExploreLayer = FALSE;
-			BOOL readInnerNodes = TRUE;
+                        bool ExploreLayer = false;
+                        bool readInnerNodes = true;
 
 			if (m_bDefinesLayer)
 				++m_nDefsLayer;
@@ -5875,7 +5875,7 @@ namespace SVG
 				{
 					if (0 == (int)m_oViewBox.m_nWidth && 0 == (int)m_oViewBox.m_nHeight)
 					{
-						return FALSE;
+                                                return false;
 					}
 
 					m_nWidth		=	m_oViewBox.m_nWidth;
@@ -5904,20 +5904,20 @@ namespace SVG
 					if (pContainer)
 					{
 						pContainer->FromXml(oXml, m_model, m_oViewBox, m_oUs, Matrix());
-						m_model->HashRef(pContainer, FALSE);
+                                                m_model->HashRef(pContainer, false);
 					}
 
 					--m_nDefsLayer;
 					if (0 == m_nDefsLayer)
-						m_bDefinesLayer	= FALSE;
+                                                m_bDefinesLayer	= false;
 
-					return TRUE;
+                                        return true;
 				}
 
 
 				// ATLTRACE ( L"Node : %s\n", oXml.GetName() );
 
-				ExploreLayer	=	TRUE;
+                                ExploreLayer	=	true;
 
 				++m_nLayerLevel;
 
@@ -5942,8 +5942,8 @@ namespace SVG
 				CString css = oXml.GetAttribute(_T("style"));
 				if (css.GetLength())
 				{
-					m_oFontStyle.SetStyle (css, TRUE);
-					m_oStyle.SetStyle (css, TRUE, m_oUs, m_model, m_oColTable);
+                                        m_oFontStyle.SetStyle (css, true);
+                                        m_oStyle.SetStyle (css, true, m_oUs, m_model, m_oColTable);
 				}
 				else
 				{
@@ -5961,7 +5961,7 @@ namespace SVG
 					pContainer->FromXml (oXml, m_model, m_oViewBox, m_oUs, m_transforms.GetFinal());
 					m_model->Push(pContainer);
 
-					return TRUE;
+                                        return true;
 				}
 			}
 			else if (_T("xml") == strXmlNode)
@@ -5969,13 +5969,13 @@ namespace SVG
 				XmlUtils::CXmlNode oXmlSub;
 				if (oXml.GetNode(_T("*"), oXmlSub))
 				{
-					if (FALSE == Explore(oXmlSub))
-						return FALSE;
+                                        if (false == Explore(oXmlSub))
+                                                return false;
 				}
 			}
 			else if ( _T("defs") == strXmlNode)
 			{
-				m_bDefinesLayer	=	TRUE;
+                                m_bDefinesLayer	=	true;
 				m_nDefsLayer++;
 			}
 			else if ( _T("style") == strXmlNode)
@@ -5990,13 +5990,13 @@ namespace SVG
 				LoadElement(oXml);
 
 				if (_T("clipPath") == strXmlNode && !m_bDefinesLayer)
-					return TRUE;
+                                        return true;
 
 				if (_T("pattern") == strXmlNode && m_bDefinesLayer)
-					readInnerNodes = FALSE;
+                                        readInnerNodes = false;
 
 				if ( _T("symbol") == strXmlNode)	//	контент хранится в соответствующем классе
-					return TRUE;
+                                        return true;
 			}
 
 			if (readInnerNodes/* && oXml.HasChildNodes()*/)
@@ -6012,16 +6012,16 @@ namespace SVG
 							XmlUtils::CXmlNode oXmlNode2;
 							if (oXmlNodes.GetAt(i, oXmlNode2))
 							{
-								if (FALSE == Explore(oXmlNode2))
+                                                                if (false == Explore(oXmlNode2))
 								{
 									if (m_bDefinesLayer)
 									{
 										--m_nDefsLayer;
 										if (0 == m_nDefsLayer)
-											m_bDefinesLayer	= FALSE;
+                                                                                        m_bDefinesLayer	= false;
 									}
 
-									return FALSE;
+                                                                        return false;
 								}
 							}
 						}
@@ -6041,10 +6041,10 @@ namespace SVG
 			{
 				--m_nDefsLayer;
 				if ( 0 == m_nDefsLayer )
-					m_bDefinesLayer	=	FALSE;
+                                        m_bDefinesLayer	=	false;
 			}
 
-			return TRUE;
+                        return true;
 		}
 
 	public:
@@ -6089,13 +6089,13 @@ namespace SVG
 
 	private:
 
-		inline BOOL LoadElement(XmlUtils::CXmlNode& oXml, BOOL Defines = FALSE)
+                inline bool LoadElement(XmlUtils::CXmlNode& oXml, bool Defines = false)
 		{
 			CString strXmlNode = oXml.GetName();
 			if (strXmlNode.GetLength())
 			{
 				if (L'#' == strXmlNode[0]) 
-					return FALSE;
+                                        return false;
 			}
 
 			// ATLTRACE ( L"LoadElement : %s\n", strXmlNode );
@@ -6114,38 +6114,38 @@ namespace SVG
 						pReference->FromXml (oXml, m_model, m_oUs);
 					}
 
-					if (m_model->HashRef (pReference, TRUE))
+                                        if (m_model->HashRef (pReference, true))
 						UpdateSymbol (pReference, oXml);
 
-					return TRUE;
+                                        return true;
 				}
 
 				if (m_bDefinesLayer)
 				{
-					DrawElement* paintElem = Create (oXml, FALSE);
+                                        DrawElement* paintElem = Create (oXml, false);
 					if (paintElem)
 					{
-						if (m_model->HashRef (paintElem, FALSE))
+                                                if (m_model->HashRef (paintElem, false))
 						{
 
 						}
 					}
 
-					return TRUE;
+                                        return true;
 				}
 
 				Create (oXml);				
 			}
 
-			return FALSE;
+                        return false;
 		}
-		inline DrawElement* Create(XmlUtils::CXmlNode& oXmlNode, BOOL bAddStorage = TRUE)
+                inline DrawElement* Create(XmlUtils::CXmlNode& oXmlNode, bool bAddStorage = true)
 		{
 			CString strXmlNode = oXmlNode.GetName();
 			if (strXmlNode.GetLength())
 			{
 				if (L'#' == strXmlNode[0]) 
-					return FALSE;
+                                        return false;
 			}
 
 #ifdef _DEBUG
@@ -6165,8 +6165,8 @@ namespace SVG
 				if (css.GetLength())
 				{
 					oStyle.UpdateStyle(oXmlNode, m_oUs, m_model, m_oColTable);
-					oStyle.SetStyle(css, FALSE, m_oUs, m_model, m_oColTable);
-					oFontStyle.SetStyle(css, FALSE);
+                                        oStyle.SetStyle(css, false, m_oUs, m_model, m_oColTable);
+                                        oFontStyle.SetStyle(css, false);
 				}
 				else
 				{
@@ -6226,7 +6226,7 @@ namespace SVG
 								XmlUtils::CXmlNode oXml2;
 								if (oXmlNodes.GetAt(i,oXml2))
 								{
-									((Symbol*)pReference)->AddContent(Create(oXml2, FALSE));
+                                                                        ((Symbol*)pReference)->AddContent(Create(oXml2, false));
 								}
 							}
 						}
@@ -6234,7 +6234,7 @@ namespace SVG
 				}
 			}
 		}
-		inline BOOL SetDefaultSizes()
+                inline bool SetDefaultSizes()
 		{
 			if ((0 == m_nWidth)||(0 == m_nHeight))
 			{
@@ -6256,10 +6256,10 @@ namespace SVG
 
 				m_oUs.SetViewBox (m_nWidth, m_nHeight, m_oViewBox, m_Metrics);
 
-				return TRUE;
+                                return true;
 			}
 
-			return FALSE;
+                        return false;
 		}
 
 	private:
@@ -6272,7 +6272,7 @@ namespace SVG
 		LONG			m_nHeight;
 
 		LONG			m_nDefsLayer;
-		BOOL			m_bDefinesLayer;
+                bool			m_bDefinesLayer;
 
 		Storage*		m_model;
 		DrawBuilder		m_oDrawBuilder;

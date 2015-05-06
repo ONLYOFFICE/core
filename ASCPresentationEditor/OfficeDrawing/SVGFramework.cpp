@@ -10,10 +10,10 @@
 namespace SVG
 {
 	ColorTable ColorParser::m_oTable;
-	BOOL ColorTable::InitClrTable()
+    bool ColorTable::InitClrTable()
 	{
 		if (m_Table.size())
-			return TRUE;
+            return true;
 
 		ADD_COLOR("aliceblue", 240, 248, 255);
 		ADD_COLOR("antiquewhite", 250, 235, 215); 
@@ -163,7 +163,7 @@ namespace SVG
 		ADD_COLOR("yellow", 255, 255, 0); 
 		ADD_COLOR("yellowgreen", 154, 205, 50); 
 
-		return TRUE;
+        return true;
 	}
 
 	long ColorParser::ColorFromString(const CString& sColor)
@@ -197,10 +197,10 @@ namespace SVG
 	}
 	long ColorParser::ColorFromRgbString(const CString& Rgb)
 	{
-		BOOL PCT	=	FALSE;
+        bool PCT	=	false;
 		double Color [ 4 ]	=	{ 0.0, 0.0, 0.0, 255 };
 
-		BOOL Begin	=	FALSE;	
+        bool Begin	=	false;
 		int	IndS	=	0;
 		int IndCol	=	0;
 
@@ -208,9 +208,9 @@ namespace SVG
 		{
 			if ( isdigit ( Rgb [ i ] ) )
 			{
-				if ( FALSE == Begin )
+                if ( false == Begin )
 				{
-					Begin	=	TRUE;
+                    Begin	=	true;
 					IndS	=	i;
 				}
 			}
@@ -224,12 +224,12 @@ namespace SVG
 					}
 				}
 
-				Begin	=	FALSE;
+                Begin	=	false;
 			}
 
 			if ( _T('%') == Rgb [ i ] )
 			{
-				PCT	=	TRUE;
+                PCT	=	true;
 			}
 		}
 
@@ -271,10 +271,10 @@ namespace SVG
 
 namespace SVG
 {
-	//BOOL ImageBase64::CreateImage (BYTE* pBuffer, unsigned long Length, int ImageEncoder)
+    //bool ImageBase64::CreateImage (BYTE* pBuffer, unsigned long Length, int ImageEncoder)
 	//{
 	//	if (NULL == pBuffer || Length < 1)
-	//		return FALSE;
+    //		return false;
 
 	//	m_nBufferSize	=	Base64::Base64DecodeGetRequiredLength (Length);
 	//	m_pBuffer		=	new BYTE [m_nBufferSize];
@@ -299,18 +299,18 @@ namespace SVG
 
 	//			*/
 
-	//			return TRUE;
+    //			return true;
 	//		}
 
 	//		delete [] m_pBuffer;
 	//	}
 
-	//	return FALSE;
+    //	return false;
 	//}
-	//BOOL ImageBase64::EncodeBufferToImageCOM (const BYTE* pBuffer, const unsigned long& ImageSize, IUnknown*& pImage)
+    //bool ImageBase64::EncodeBufferToImageCOM (const BYTE* pBuffer, const unsigned long& ImageSize, IUnknown*& pImage)
 	//{
 	//	if ( NULL == pBuffer || ImageSize < 41 )
-	//		return FALSE;
+    //		return false;
 
 	//	HGLOBAL	hMem	=	::GlobalAlloc ( GMEM_FIXED, ImageSize );
 	//	LPVOID	pSImage	=	::GlobalLock ( hMem );
@@ -318,12 +318,12 @@ namespace SVG
 	//	CopyMemory ( pSImage, pBuffer, ImageSize );
 
 	//	IStream* pStream = NULL;
-	//	if ( SUCCEEDED ( CreateStreamOnHGlobal ( hMem, FALSE, &pStream ) ) )
+    //	if ( SUCCEEDED ( CreateStreamOnHGlobal ( hMem, false, &pStream ) ) )
 	//	{
 	//		Gdiplus::Bitmap* pBitmap	= Gdiplus::Bitmap::FromStream ( pStream );
 	//		if ( Gdiplus::Ok == pBitmap->GetLastStatus () )
 	//		{
-	//			BOOL Status	=	ImageBase64::GdiImageToImageCOM ( pBitmap, pImage );
+    //			bool Status	=	ImageBase64::GdiImageToImageCOM ( pBitmap, pImage );
 
 	//			delete pBitmap;
 
@@ -343,9 +343,9 @@ namespace SVG
 	//	GlobalUnlock ( hMem );
 	//	GlobalFree ( hMem );
 
-	//	return FALSE;
+    //	return false;
 	//}
-//	BOOL ImageBase64::GdiImageToImageCOM (Gdiplus::Bitmap* pBitmap, IUnknown*& pImage)
+//	bool ImageBase64::GdiImageToImageCOM (Gdiplus::Bitmap* pBitmap, IUnknown*& pImage)
 //	{
 //		MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
 //		if ( SUCCEEDED ( CoCreateInstance ( MediaCore::CLSID_CAVSUncompressedVideoFrame, NULL, CLSCTX_ALL, MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame ) ) )
@@ -381,15 +381,15 @@ namespace SVG
 //				pFrame->QueryInterface ( __uuidof(IUnknown), (void**)&pImage );
 //				pFrame->Release ();
 //
-//				return TRUE;
+//				return true;
 //			}
 //
 //			pFrame->Release ();
 //		}
 //
-//		return FALSE;
+//		return false;
 //	}
-	//BOOL ImageBase64::Base64Decode(LPTSTR szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen) throw()
+    //bool ImageBase64::Base64Decode(LPTSTR szSrc, int nSrcLen, BYTE *pbDest, int *pnDestLen) throw()
 	//{
 	//	// walk the source buffer
 	//	// each four character sequence is converted to 3 bytes
@@ -397,12 +397,12 @@ namespace SVG
 	//	// are skiped
 
 	//	if (szSrc == NULL || pnDestLen == NULL)
-	//		return FALSE;
+    //		return false;
 
 	//	LPTSTR szSrcEnd = szSrc + nSrcLen;
 	//	int nWritten = 0;
 
-	//	BOOL bOverflow = (pbDest == NULL) ? TRUE : FALSE;
+    //	bool bOverflow = (pbDest == NULL) ? true : false;
 
 	//	while (szSrc < szSrcEnd &&(*szSrc) != 0)
 	//	{
@@ -427,7 +427,7 @@ namespace SVG
 	//		}
 
 	//		if(!bOverflow && nWritten + (nBits/8) > (*pnDestLen))
-	//			bOverflow = TRUE;
+    //			bOverflow = true;
 
 	//		// dwCurr has the 3 bytes to write to the output buffer
 	//		// left to right
@@ -449,21 +449,21 @@ namespace SVG
 
 	//	if(bOverflow)
 	//	{
-	//		// if (pbDest != NULL) ATLASSERT(FALSE);
+    //		// if (pbDest != NULL) ATLASSERT(false);
 
-	//		return FALSE;
+    //		return false;
 	//	}
 
-	//	return TRUE;
+    //	return true;
 	//}
 }
 
 namespace SVG
 {
-	BOOL Painter::Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs)
+    bool Painter::Draw(IRefStorage* model, IRenderer* render, const UnitSystem& oUs)
 	{
 		if (NULL == model || NULL == render)
-			return FALSE;
+            return false;
 
 		m_model		=	model;
 		m_render	=	render;
@@ -490,7 +490,7 @@ namespace SVG
 //		{
 //			if (var.vt == VT_UNKNOWN && NULL == var.punkVal)
 //			{
-//				m_bEnableFonts = FALSE;					
+//				m_bEnableFonts = false;
 //#ifndef _DEBUG
 //				var.punkVal = GetFontManager();
 //				m_render->SetAdditionalParam(L"FontManager", var);
@@ -500,7 +500,7 @@ namespace SVG
 
 		return DrawStorage(m_model);
 	}
-	BOOL Painter::DrawLine (Line* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawLine (Line* element, const Style& oStyle, const CString& strClassName)
 	{
 		LONG type = 0;
 		if (SetStrokeStyle(oStyle, strClassName))
@@ -521,11 +521,11 @@ namespace SVG
 			m_render->PathCommandEnd ();
 		}	
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::DrawRectangle (Rectangle* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawRectangle (Rectangle* element, const Style& oStyle, const CString& strClassName)
 	{
-		DoClip (element->GetClip(), TRUE);	
+        DoClip (element->GetClip(), true);
 
 		LONG type = 0;
 		if (SetBrushStyle(oStyle, strClassName))
@@ -536,13 +536,13 @@ namespace SVG
 		if (0 != type)
 			DoRectangle (element, type);
 
-		DoClip (element, FALSE);
+        DoClip (element, false);
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::DrawCircle (Circle* element,const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawCircle (Circle* element,const Style& oStyle, const CString& strClassName)
 	{
-		DoClip (element->GetClip(), TRUE);			
+        DoClip (element->GetClip(), true);
 
 		LONG type = 0;
 		if (SetBrushStyle(oStyle, strClassName))
@@ -553,13 +553,13 @@ namespace SVG
 		if (0 != type)	
 			DoCircle (element, type);
 
-		DoClip (element->GetClip(), FALSE);
+        DoClip (element->GetClip(), false);
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::DrawEllipse (Ellipse* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawEllipse (Ellipse* element, const Style& oStyle, const CString& strClassName)
 	{
-		DoClip (element->GetClip(), TRUE);			
+        DoClip (element->GetClip(), true);
 
 		LONG type = 0;
 		if (SetBrushStyle(oStyle, strClassName))
@@ -570,13 +570,13 @@ namespace SVG
 		if (0 != type)	
 			DoEllipse (element, type);
 
-		DoClip (element->GetClip(), FALSE);
+        DoClip (element->GetClip(), false);
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::DrawPolyline (Polyline* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawPolyline (Polyline* element, const Style& oStyle, const CString& strClassName)
 	{
-		DoClip (element->GetClip(), TRUE);			
+        DoClip (element->GetClip(), true);
 
 		LONG type = 0;
 		if (SetBrushStyle(oStyle, strClassName))
@@ -589,13 +589,13 @@ namespace SVG
 			DoPolyline (element, type);
 		}
 
-		DoClip (element->GetClip(), FALSE);
+        DoClip (element->GetClip(), false);
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::DrawPolygon (Polygon* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawPolygon (Polygon* element, const Style& oStyle, const CString& strClassName)
 	{
-		DoClip (element->GetClip(), TRUE);			
+        DoClip (element->GetClip(), true);
 
 		LONG type = 0;
 		if (SetBrushStyle(oStyle, strClassName))
@@ -608,13 +608,13 @@ namespace SVG
 			DoPolygon (element, type);
 		}
 
-		DoClip (element->GetClip(), FALSE);
+        DoClip (element->GetClip(), false);
 
-		return TRUE;
+        return true;
 	}		
-	BOOL Painter::DrawPath (Path* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawPath (Path* element, const Style& oStyle, const CString& strClassName)
 	{
-		DoClip (element->GetClip(), TRUE);			
+        DoClip (element->GetClip(), true);
 
 		LONG lType = 0;
 		if (SetBrushStyle(oStyle, strClassName))
@@ -625,20 +625,20 @@ namespace SVG
 		if (0 != lType)
 			PushPathCommands (element, lType);
 
-		DoClip (element->GetClip(), FALSE);
+        DoClip (element->GetClip(), false);
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::DrawText (Text* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawText (Text* element, const Style& oStyle, const CString& strClassName)
 	{
 		if (!m_bEnableFonts)
-			return FALSE;
+            return false;
 
 		//IAVSFontManager* fontManager = GetFontManager();
 		//if (NULL == fontManager)
-		//	return FALSE;
+        //	return false;
 
-		BOOL clipOn = DoClip (element->GetClip(), TRUE);			
+        bool clipOn = DoClip (element->GetClip(), true);
 
 		SetBrushStyle (oStyle, strClassName);
 
@@ -661,9 +661,9 @@ namespace SVG
 		if (dFontSize <= 0.0)	//	for geicha_6000px.svg 
 		{
 			if (clipOn)
-				DoClip (element->GetClip(), FALSE);
+                DoClip (element->GetClip(), false);
 
-			return FALSE;
+            return false;
 		}
 
         std::wstring bsFontFamily	=	string2std_string( element->GetFontStyle ().GetAttribute ( FontFamily ) );
@@ -730,11 +730,11 @@ namespace SVG
 			m_render->CommandDrawText ( bsText, element->m_Pos.X - BoundX, element->m_Pos.Y, BoundX, 0.0, OffSetY ); 
 		}
 
-		DoClip (element->GetClip(), FALSE);
+        DoClip (element->GetClip(), false);
 
-		return TRUE;
+        return true;
 	}
-	//BOOL Painter::DrawImage (Image* element, const Style& oStyle, const CString& strClassName)
+    //bool Painter::DrawImage (Image* element, const Style& oStyle, const CString& strClassName)
 	//{
 	//	if (element->GetXLink().GetLength())
 	//	{	
@@ -756,11 +756,11 @@ namespace SVG
 	//		}
 	//	}
 
-	//	return TRUE;
+    //	return true;
 	//}
-	BOOL Painter::DrawUse (Use* element, const Style& oStyle, const CString& strClassName)
+    bool Painter::DrawUse (Use* element, const Style& oStyle, const CString& strClassName)
 	{
-		BOOL retVal = FALSE;
+        bool retVal = false;
 
 		element->RefreshXLinkSource (m_model);
 
@@ -782,7 +782,7 @@ namespace SVG
 				Symbol* pSymbol = dynamic_cast<Symbol*>(refLink);
 				if (pSymbol)
 				{
-					BOOL bStatus = FALSE;
+                    bool bStatus = false;
 					for (long i = 0; i < pSymbol->GetCount(); ++i)
 					{
 						DrawElement* pContent = pSymbol->GetAt(i);
@@ -798,7 +798,7 @@ namespace SVG
 				DrawElement* drawElement = dynamic_cast<DrawElement*>(refLink);
 				if (drawElement)
 				{					
-					m_transforms.Push(element->GetTransform(), FALSE);
+                    m_transforms.Push(element->GetTransform(), false);
 
 					Matrix local = m_transforms.GetFinal();
 					retVal = DrawInternal (drawElement, local, element->GetFrom(), element->GetStyle());
@@ -812,15 +812,15 @@ namespace SVG
 	}
 
 	//
-	BOOL Painter::DrawStorage (IRefStorage* pStorage, const Matrix& parentTransform, const Point& off)
+    bool Painter::DrawStorage (IRefStorage* pStorage, const Matrix& parentTransform, const Point& off)
 	{
 		if (pStorage)
 		{
 			int count = pStorage->GetSize();
 			if (0 == count)
-				return FALSE;
+                return false;
 
-			m_transforms.Push(parentTransform.Copy().Move(off.X, off.Y), FALSE);
+            m_transforms.Push(parentTransform.Copy().Move(off.X, off.Y), false);
 			for (int i = 0; i < count; ++i)
 			{
 				DrawElement* pE = static_cast<DrawElement*>(pStorage->Get(i));
@@ -862,19 +862,19 @@ namespace SVG
 			m_transforms.Pop();
 		}
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::DrawGraphicsContainer (GraphicsContainer* element, const Matrix& parentTransform, const Point& off)
+    bool Painter::DrawGraphicsContainer (GraphicsContainer* element, const Matrix& parentTransform, const Point& off)
 	{
-		DoClip (element->GetClip(), TRUE);			
+        DoClip (element->GetClip(), true);
 
-		BOOL ret = DrawStorage (element, parentTransform, off);
+        bool ret = DrawStorage (element, parentTransform, off);
 
-		DoClip (element->GetClip(), FALSE);
+        DoClip (element->GetClip(), false);
 
 		return ret;
 	}
-	BOOL Painter::DrawInternal (DrawElement* pE, const Matrix& parentTransform, const Point& off, const Style& oMainStyle)
+    bool Painter::DrawInternal (DrawElement* pE, const Matrix& parentTransform, const Point& off, const Style& oMainStyle)
 	{
 		Matrix mat = parentTransform;						
 		mat *=	Matrix::TranslateTransform(off.X, off.Y);
@@ -893,54 +893,54 @@ namespace SVG
 
 		if (ERectangle == code)
 		{
-			DrawRectangle(static_cast<Rectangle*>(pE),oStyle,strClass);			return TRUE;
+            DrawRectangle(static_cast<Rectangle*>(pE),oStyle,strClass);			return true;
 		}
 		else if (ELine == code)
 		{
-			DrawLine(static_cast<Line*>(pE),oStyle,strClass);					return TRUE;
+            DrawLine(static_cast<Line*>(pE),oStyle,strClass);					return true;
 		}
 		else if (EEllipse == code)
 		{
-			DrawEllipse(static_cast<Ellipse*>(pE),oStyle,strClass);				return TRUE;
+            DrawEllipse(static_cast<Ellipse*>(pE),oStyle,strClass);				return true;
 		}
 		else if (ECircle == code)
 		{
-			DrawCircle(static_cast<Circle*>(pE),oStyle,strClass);				return TRUE;
+            DrawCircle(static_cast<Circle*>(pE),oStyle,strClass);				return true;
 		}
 		else if (EPath == code)
 		{
-			DrawPath(static_cast<Path*>(pE),oStyle,strClass);					return TRUE;
+            DrawPath(static_cast<Path*>(pE),oStyle,strClass);					return true;
 		}
 		else if (EPolyline == code)
 		{
-			DrawPolyline(static_cast<Polyline*>(pE),oStyle,strClass);			return TRUE;
+            DrawPolyline(static_cast<Polyline*>(pE),oStyle,strClass);			return true;
 		}
 		else if (EPolygon == code)
 		{
-			DrawPolygon(static_cast<Polygon*>(pE),oStyle,strClass);				return TRUE;
+            DrawPolygon(static_cast<Polygon*>(pE),oStyle,strClass);				return true;
 		}
 		else if (EText == code)
 		{
-			DrawText(static_cast<Text*>(pE),oStyle,strClass);					return TRUE;
+            DrawText(static_cast<Text*>(pE),oStyle,strClass);					return true;
 		}
 		else if (EImage == code)
 		{
-			DrawUse(static_cast<Use*>(pE),oStyle,strClass);						return TRUE;
+            DrawUse(static_cast<Use*>(pE),oStyle,strClass);						return true;
 		}
 		else if (EUse == code)
 		{
-			DrawUse(static_cast<Use*>(pE),oStyle,strClass);						return TRUE;
+            DrawUse(static_cast<Use*>(pE),oStyle,strClass);						return true;
 		}
 
-		return FALSE;
+        return false;
 	}
 
-	BOOL Painter::PushPathCommands (Path* element, long PathType)
+    bool Painter::PushPathCommands (Path* element, long PathType)
 	{
 		m_render->PathCommandStart();
 		m_render->BeginCommand ( c_nPathType );
 
-		BOOL SegmentEnd	=	TRUE;
+        bool SegmentEnd	=	true;
 		Point lastMove;
 
 		Point LastPoint;
@@ -954,7 +954,7 @@ namespace SVG
 			{
 				m_render->PathCommandClose();
 
-				SegmentEnd	=	TRUE;
+                SegmentEnd	=	true;
 			}
 			else if (_T('m') == element->GetCode(i))
 			{
@@ -1286,14 +1286,14 @@ namespace SVG
 		m_render->EndCommand(c_nPathType);
 		m_render->PathCommandEnd();
 
-		return TRUE;
+        return true;
 	}
-	BOOL Painter::ClipPathCommands (Path* element, long PathType)
+    bool Painter::ClipPathCommands (Path* element, long PathType)
 	{
 		Aggplus::CGraphicsPathSimpleConverter simplifier;
 		simplifier.SetRenderer(m_render);
 
-		BOOL SegmentEnd	=	TRUE;
+        bool SegmentEnd	=	true;
 		Point lastMove;
 
 		Point LastPoint;
@@ -1308,7 +1308,7 @@ namespace SVG
 			{
 				simplifier.PathCommandClose ();
 
-				SegmentEnd	=	TRUE;
+                SegmentEnd	=	true;
 			}
 			else if ( _T('m') == element->GetCode (i) )
 			{
@@ -1645,10 +1645,10 @@ namespace SVG
 			}
 		}
 
-		return TRUE;
+        return true;
 	}
 
-	BOOL Painter::SetBrushStyle (const Style& style, const CString& strClassName)
+    bool Painter::SetBrushStyle (const Style& style, const CString& strClassName)
 	{
 		double alpha	=	style.DoubleAttribute(Opacity);
 
@@ -1696,7 +1696,7 @@ namespace SVG
 			//	DoPattern (static_cast<Pattern*>(pFill));
 			//}
 
-			return TRUE;
+            return true;
 		}
 
 		long lLongAttribute =	style.LongAttribute(FillColor);
@@ -1713,11 +1713,11 @@ namespace SVG
 				m_render->put_BrushColor1 ( 0 );
 			}
 			m_render->put_BrushAlpha1 ( (LONG)( dAlplaFill * 255.0 * alpha) );
-			return TRUE;
+            return true;
 		}
 
 		if (-2 == lLongAttribute)
-			return FALSE;
+            return false;
 
 		if (dAlplaFill > 0.0 && (-1 != lLongAttribute) && (alpha > 0.0))
 		{
@@ -1733,14 +1733,14 @@ namespace SVG
 						m_render->put_BrushColor1 ( 0 );					
 
 					m_render->put_BrushAlpha1 ( (LONG)( dAlplaFill * 255.0 * alpha) );
-					return TRUE;
+                    return true;
 				}
 			}
 
 			m_render->put_BrushColor1 ( lLongAttribute );
 			m_render->put_BrushAlpha1 ( (LONG)( dAlplaFill * 255.0 * alpha) );
 
-			return TRUE;
+            return true;
 		}
 
 		if ((strClassName.GetLength () > 1) && (-1 == lLongAttribute ) && (alpha > 0.0))
@@ -1748,12 +1748,12 @@ namespace SVG
 			m_render->put_BrushColor1 (0);
 			m_render->put_BrushAlpha1 ((LONG)( dAlplaFill * 255.0 * alpha));
 
-			return TRUE;
+            return true;
 		}
 
-		return FALSE;
+        return false;
 	}
-	BOOL Painter::SetStrokeStyle (const Style& style, const CString& strClassName)
+    bool Painter::SetStrokeStyle (const Style& style, const CString& strClassName)
 	{
 		double alpha			=	style.DoubleAttribute(Opacity);
 		double dAlplaStroke		=	style.DoubleAttribute (StrokeOpacity);
@@ -1821,7 +1821,7 @@ namespace SVG
 				}
 			}
 
-			return TRUE;
+            return true;
 		}
 
 		if (dAlplaStroke > 0.0 && dWidth > 0.0 && ( 0 <= lColor ) && alpha > 0.0)
@@ -1851,12 +1851,12 @@ namespace SVG
 				m_render->put_PenLineStartCap((unsigned char)nStrokeLineCap);
 			}
 
-			return TRUE;
+            return true;
 		}
 
 		long lLongAttribute = lColor;
 		if (-2 == lLongAttribute)
-			return FALSE;
+            return false;
 
 		if (strClassName.GetLength () > 1 && (-1 == lLongAttribute))
 		{
@@ -1864,13 +1864,13 @@ namespace SVG
 			m_render->put_PenSize	(dWidth);
 			m_render->put_PenAlpha	((LONG)(dAlplaStroke * 255.0 * alpha));
 
-			return TRUE;
+            return true;
 		}
 
-		return FALSE;
+        return false;
 	}
 
-	void Painter::DoRectangle(Rectangle* element, long type, BOOL clipMode)
+    void Painter::DoRectangle(Rectangle* element, long type, bool clipMode)
 	{
 		if (!clipMode)
 		{
@@ -1948,7 +1948,7 @@ namespace SVG
 			}
 		}
 	}
-	void Painter::DoCircle(Circle* element, long type, BOOL clipMode)
+    void Painter::DoCircle(Circle* element, long type, bool clipMode)
 	{
 		if (!clipMode)
 		{
@@ -1974,7 +1974,7 @@ namespace SVG
 			simplifier.PathCommandArcTo(element->m_C.X - element->m_R.X, element->m_C.Y - element->m_R.Y, element->m_R.X * 2.0, element->m_R.Y * 2.0, 0, 359.9999);
 		}
 	}
-	void Painter::DoEllipse(Ellipse* element, long type, BOOL clipMode)
+    void Painter::DoEllipse(Ellipse* element, long type, bool clipMode)
 	{
 		if (!clipMode)
 		{
@@ -1999,7 +1999,7 @@ namespace SVG
 			simplifier.PathCommandArcTo(element->m_C.X - element->m_R.X, element->m_C.Y - element->m_R.Y, element->m_R.X * 2.0, element->m_R.Y * 2.0, 0, 359.9999);
 		}
 	}
-	void Painter::DoPolyline(Polyline* element, long type, BOOL clipMode)
+    void Painter::DoPolyline(Polyline* element, long type, bool clipMode)
 	{
 		if (!clipMode)
 		{
@@ -2032,7 +2032,7 @@ namespace SVG
 			m_render->PathCommandLineTo (element->GetX(0), element->GetY(0));
 		}
 	}
-	void Painter::DoPolygon(Polygon* element, long type, BOOL clipMode)
+    void Painter::DoPolygon(Polygon* element, long type, bool clipMode)
 	{
 		if (!clipMode)
 		{
@@ -2065,7 +2065,7 @@ namespace SVG
 			m_render->PathCommandLineTo (element->GetX(0), element->GetY(0));
 		}
 	}
-	void Painter::DoPath(Path* element, long type, BOOL clipMode)
+    void Painter::DoPath(Path* element, long type, bool clipMode)
 	{
 		if (!clipMode)
 		{
@@ -2079,10 +2079,10 @@ namespace SVG
 
 	// clip 
 
-	BOOL Painter::DoClip(ISvgRef* pRef, BOOL enable)
+    bool Painter::DoClip(ISvgRef* pRef, bool enable)
 	{
 		if (NULL == pRef)
-			return FALSE;
+            return false;
 
 		if (EClipPath == pRef->nodeType())
 		{
@@ -2111,12 +2111,12 @@ namespace SVG
 
 							switch (code)
 							{
-							case ECircle:		DoCircle(static_cast<Circle*>(drawElement), 0, TRUE);		break;
-							case ERectangle:	DoRectangle(static_cast<Rectangle*>(drawElement), 0, TRUE);	break;
-							case EEllipse:		DoEllipse(static_cast<Ellipse*>(drawElement), 0, TRUE);		break;
-							case EPolyline:		DoPolyline(static_cast<Polyline*>(drawElement), 0, TRUE);	break;
-							case EPolygon:		DoPolygon(static_cast<Polygon*>(drawElement), 0, TRUE);		break;
-							case EPath:			DoPath(static_cast<Path*>(drawElement), 0, TRUE);			break;
+                            case ECircle:		DoCircle(static_cast<Circle*>(drawElement), 0, true);		break;
+                            case ERectangle:	DoRectangle(static_cast<Rectangle*>(drawElement), 0, true);	break;
+                            case EEllipse:		DoEllipse(static_cast<Ellipse*>(drawElement), 0, true);		break;
+                            case EPolyline:		DoPolyline(static_cast<Polyline*>(drawElement), 0, true);	break;
+                            case EPolygon:		DoPolygon(static_cast<Polygon*>(drawElement), 0, true);		break;
+                            case EPath:			DoPath(static_cast<Path*>(drawElement), 0, true);			break;
 							}
 
 							m_render->PathCommandClose ();
@@ -2126,10 +2126,10 @@ namespace SVG
 						m_render->EndCommand(c_nClipType);
 						m_render->PathCommandEnd();
 
-						return TRUE;
+                        return true;
 					}
 
-					return FALSE;
+                    return false;
 				}				
 				else 
 				{
@@ -2139,20 +2139,20 @@ namespace SVG
 			}
 		}
 
-		return FALSE;
+        return false;
 	}
 
 	// image
 
-	//BOOL Painter::DrawImageFromFile(Image* element, CString texturePath)
+    //bool Painter::DrawImageFromFile(Image* element, CString texturePath)
 	//{
 	//	if (0 == texturePath.GetLength())
 	//		texturePath = element->m_ImagePath;
 
 	//	if (0 == texturePath.GetLength())
-	//		return FALSE;
+    //		return false;
 
-	//	DoClip (element->GetClip(), TRUE);
+    //	DoClip (element->GetClip(), true);
 
 	//	BSTR filePath = texturePath.AllocSysString();
 
@@ -2180,17 +2180,17 @@ namespace SVG
 
 	//	SysFreeString (filePath);
 
-	//	DoClip (element->GetClip(), FALSE);
+    //	DoClip (element->GetClip(), false);
 
-	//	return TRUE;
+    //	return true;
 	//}
-	//BOOL Painter::DoPattern(Pattern* element)
+    //bool Painter::DoPattern(Pattern* element)
 	//{
 	//	if (NULL == element)
-	//		return FALSE;
+    //		return false;
 
 	//	if (0 == element->GetSize() || 0 == element->nodeId().GetLength())
-	//		return FALSE;
+    //		return false;
 
 	//	PatternImage* patternImage = NULL;
 	//	CAtlMap<CString, PatternImage*>::CPair* cp = m_patterns.Lookup(element->nodeId());
@@ -2208,13 +2208,13 @@ namespace SVG
 	//	}
 
 	//	if (NULL == patternImage)
-	//		return FALSE;
+    //		return false;
 
 	//	m_render->put_BrushType(c_BrushTypeTexture);
 	//	m_render->put_BrushTexturePath(CComBSTR(patternImage->LivePath()));
 	//	m_render->put_BrushTextureMode(c_BrushTextureModeTile);
 
-	//	return TRUE;
+    //	return true;
 
 	//	for (long i = 0; i < element->GetSize(); ++i)
 	//	{
@@ -2237,7 +2237,7 @@ namespace SVG
 	//		}	
 	//	}
 
-	//	return TRUE;
+    //	return true;
 	//}
 
 	// arc
@@ -2308,7 +2308,7 @@ namespace SVG
 
 		return Point ( ( Mid.X + Ch * Rot.X ) / RadF, Mid.Y + Ch * Rot.Y );
 	}
-	BOOL Painter::GetArcAngles(int LargeFlag, int SweepFlag, const double& dStartAngle, const double& dEndAngle, double& dSweep)	
+    bool Painter::GetArcAngles(int LargeFlag, int SweepFlag, const double& dStartAngle, const double& dEndAngle, double& dSweep)
 	{
 		dSweep		=	0.0;
 
@@ -2361,16 +2361,16 @@ namespace SVG
 				dSweep	=	-abs ( dSweep );
 		}
 
-		return TRUE;
+        return true;
 	}
 }
 
 namespace SVG
 {
-	//BOOL PatternImage::Build()
+    //bool PatternImage::Build()
 	//{
 	//	if (NULL == m_pattern)
-	//		return FALSE;
+    //		return false;
 
 	//	if (NULL == m_pFrame && NULL == m_render)
 	//	{
@@ -2383,12 +2383,12 @@ namespace SVG
 	//		}
 	//	}
 
-	//	return FALSE;
+    //	return false;
 	//}
-	//BOOL PatternImage::InitFrame()
+    //bool PatternImage::InitFrame()
 	//{
 	//	if (m_pFrame)
-	//		return TRUE;
+    //		return true;
 
 	//	if (SUCCEEDED(CoCreateInstance(MediaCore::CLSID_CAVSUncompressedVideoFrame, NULL, CLSCTX_ALL, MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&m_pFrame)))
 	//	{
@@ -2416,10 +2416,10 @@ namespace SVG
 
 	//	return (NULL != m_pFrame);
 	//}
-	//BOOL PatternImage::InitPatternFrame()
+    //bool PatternImage::InitPatternFrame()
 	//{
 	//	if (m_pPatternFrame)
-	//		return TRUE;
+    //		return true;
 
 	//	if (SUCCEEDED(CoCreateInstance(MediaCore::CLSID_CAVSUncompressedVideoFrame, NULL, CLSCTX_ALL, MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&m_pPatternFrame)))
 	//	{
@@ -2444,10 +2444,10 @@ namespace SVG
 
 	//	return (NULL != m_pFrame);
 	//}
-	//BOOL PatternImage::InitRender(IUnknown* frame, int frameWidth, int frameHeight)
+    //bool PatternImage::InitRender(IUnknown* frame, int frameWidth, int frameHeight)
 	//{
 	//	if (m_render)
-	//		return TRUE;
+    //		return true;
 
 	//	//if (SUCCEEDED(CoCreateInstance(__uuidof(CAVSGraphicsRenderer), NULL, CLSCTX_ALL, __uuidof(IAVSGraphicsRenderer), (void**)&m_render)))
 	//	{
@@ -2468,7 +2468,7 @@ namespace SVG
 
 	//	return (NULL != m_render);
 	//}
-	//BOOL PatternImage::Render()
+    //bool PatternImage::Render()
 	//{
 	//	Point factor = GetNormalizeFactor();
 	//	m_pattern->NormalizeEx(factor.X, factor.Y);
@@ -2497,7 +2497,7 @@ namespace SVG
 
 	//			if ((fabs(dpi.X) < 0.000001) || (fabs(dpi.Y) < 0.000001))
 	//			{
-	//				return FALSE;
+    //				return false;
 	//			}
 	//		}
 
@@ -2559,9 +2559,9 @@ namespace SVG
 	//	RELEASEINTERFACE(m_pFrame);
 	//	RELEASEINTERFACE(m_pPatternFrame);
 
-	//	return TRUE;
+    //	return true;
 	//}
-	//BOOL PatternImage::SaveImage(IUnknown* punkFrame, CString file)
+    //bool PatternImage::SaveImage(IUnknown* punkFrame, CString file)
 	//{
 	//	ImageStudio::IImageTransforms* pTransform = NULL;
 	//	CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL ,CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
@@ -2573,7 +2573,7 @@ namespace SVG
 
 	//	CString strXml = _T("<transforms><ImageFile-SaveAsPng destinationpath=\"") + file + _T("\" format=\"888\"/></transforms>");
 
-	//	VARIANT_BOOL vbSuccess = VARIANT_FALSE;
+    //	VARIANT_bool vbSuccess = VARIANT_false;
 	//	BSTR bsXml = strXml.AllocSysString();
 	//	pTransform->SetXml(bsXml, &vbSuccess);
 	//	SysFreeString(bsXml);
@@ -2582,7 +2582,7 @@ namespace SVG
 
 	//	RELEASEINTERFACE(pTransform);
 
-	//	return TRUE;
+    //	return true;
 	//}
 	//Point PatternImage::GetNormalizeFactor()
 	//{

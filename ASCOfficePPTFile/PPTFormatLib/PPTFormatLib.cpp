@@ -20,7 +20,7 @@ COfficePPTFile::~COfficePPTFile()
     CloseFile();
 }
 
-BOOL COfficePPTFile::OpenFile(CString sFileName)
+bool COfficePPTFile::OpenFile(CString sFileName)
 {
 	CloseFile();
 	
@@ -46,7 +46,7 @@ BOOL COfficePPTFile::OpenFile(CString sFileName)
 
 	return TRUE;
 }
-BOOL COfficePPTFile::CloseFile()
+bool COfficePPTFile::CloseFile()
 {
 	m_Status = NULLMODE;
 
@@ -61,7 +61,7 @@ HRESULT COfficePPTFile::LoadFromFile(CString sSrcFileName, CString sDstPath, CSt
         m_strTempDirectory = FileSystem::Directory::GetTempPath();
     }
 
-	BOOL bRes = OpenFile(sSrcFileName);
+    bool bRes = OpenFile(sSrcFileName);
 	if (!bRes)
     {
 		CloseFile();

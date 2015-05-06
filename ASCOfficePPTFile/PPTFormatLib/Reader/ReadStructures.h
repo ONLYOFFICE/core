@@ -11,20 +11,20 @@ using namespace NSPresentationEditor;
 
 namespace NSZLib
 {
-	static BOOL Decompress(const BYTE* pSrcBuffer, const ULONG& lSrcBufferLen,
+    static bool Decompress(const BYTE* pSrcBuffer, const ULONG& lSrcBufferLen,
 								BYTE* pDstBuffer, ULONG& lDstBufferLen)
 	{
 		try
 		{
 			if (Z_OK == uncompress(pDstBuffer, &lDstBufferLen, pSrcBuffer, lSrcBufferLen))
 			{
-				return TRUE;
+                return true;
 			}
 		}
 		catch(...)
 		{
 		}
-		return FALSE;
+        return false;
 	}
 }
 /**************************************************************
@@ -295,7 +295,7 @@ public:
 class CMetaFileBuffer
 {
 public:
-	BOOL m_bIsValid;
+    bool m_bIsValid;
 
 private:
 	BYTE* m_pMetaHeader;
@@ -307,7 +307,7 @@ private:
 public:
 	CMetaFileBuffer()
 	{
-		m_bIsValid			= FALSE;
+        m_bIsValid			= false;
 
 		m_pMetaHeader		= NULL;
 		m_pMetaFile			= NULL;
@@ -327,7 +327,7 @@ public:
 		m_lMetaHeaderSize	= lSize;
 	}
 
-	void SetData(BYTE* pCompress, LONG lCompressSize, LONG lUncompressSize, BOOL bIsCompressed)
+    void SetData(BYTE* pCompress, LONG lCompressSize, LONG lUncompressSize, bool bIsCompressed)
 	{
 		if (!bIsCompressed)
 		{
@@ -338,7 +338,7 @@ public:
 		{
 			ULONG lSize = lUncompressSize;
 			m_pMetaFile = new BYTE[lUncompressSize];
-			BOOL bRes	= NSZLib::Decompress(pCompress, (ULONG)lCompressSize, m_pMetaFile, lSize);
+            bool bRes	= NSZLib::Decompress(pCompress, (ULONG)lCompressSize, m_pMetaFile, lSize);
 			if (bRes)
 			{
 				m_lMetaFileSize = (LONG)lSize;
@@ -593,9 +593,9 @@ public:
 		{
 			WORD bulletFlag		= StreamUtils::ReadWORD(pStream);
 			if (bulletFlag & 0x0F)
-				m_oRun.hasBullet	= (BOOL)(0x01 == (bulletFlag & 0x01));
+                m_oRun.hasBullet	= (bool)(0x01 == (bulletFlag & 0x01));
 			else
-				m_oRun.hasBullet	= (BOOL)FALSE;
+                m_oRun.hasBullet	= false;
 		}
 
 		if (bulletChar_)
@@ -626,7 +626,7 @@ public:
 			m_oRun.bulletColor = oColor;
 		}
 
-		if (TRUE) // заглушка, чтобы буллеты были в цвет текста
+        if (true) // заглушка, чтобы буллеты были в цвет текста
 			m_oRun.bulletColor.reset();
 
 		if (textAlignment_)
@@ -751,13 +751,13 @@ public:
 			WORD fontStyle = StreamUtils::ReadWORD(pStream);
 
 			if (0x01 == (0x01 & fontStyle))
-				m_oRun.FontBold = (BOOL)TRUE;
+                m_oRun.FontBold = true;
 			if (0x02 == (0x02 & fontStyle))
-				m_oRun.FontItalic = (BOOL)TRUE;
+                m_oRun.FontItalic = true;
 			if (0x04 == (0x04 & fontStyle))
-				m_oRun.FontUnderline = (BOOL)TRUE;
+                m_oRun.FontUnderline = true;
 			if (0x10 == (0x10 & fontStyle))
-				m_oRun.FontShadow = (BOOL)TRUE;
+                m_oRun.FontShadow = true;
 		}
 
 		if (typeface_)

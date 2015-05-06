@@ -28,7 +28,7 @@ NSPresentationEditor::CShapeWriter::CShapeWriter()
 HRESULT NSPresentationEditor::CShapeWriter::get_Type(LONG* lType)
 {
 	if (NULL == lType)
-		return S_FALSE;
+        return S_FALSE;
 
 	*lType = c_nSVGConverter;
 	return S_OK;
@@ -462,12 +462,12 @@ HRESULT NSPresentationEditor::CShapeWriter::put_ShadowAlpha(LONG val)
 	m_oShadow.Alpha = val;
 	return S_OK;
 }
-HRESULT NSPresentationEditor::CShapeWriter::get_ShadowVisible(BOOL* val)
+HRESULT NSPresentationEditor::CShapeWriter::get_ShadowVisible(bool* val)
 {
 	*val = m_oShadow.Visible;
 	return S_OK;
 }
-HRESULT NSPresentationEditor::CShapeWriter::put_ShadowVisible(BOOL val)
+HRESULT NSPresentationEditor::CShapeWriter::put_ShadowVisible(bool val)
 {
 	m_oShadow.Visible = val;
 	return S_OK;
@@ -524,7 +524,7 @@ HRESULT NSPresentationEditor::CShapeWriter::CommandDrawText(const std::wstring& 
 	if (c_nHyperlinkType == m_lCurrentCommandType)
 		return S_OK;
 
-	if (TRUE)
+    if (true)
 	{
 		PathCommandEnd();
 		BeginCommand(c_nPathType);
@@ -575,7 +575,7 @@ HRESULT NSPresentationEditor::CShapeWriter::CommandString(const LONG& lType, con
 
 HRESULT NSPresentationEditor::CShapeWriter::CommandDrawTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags)
 {
-	if (TRUE)
+    if (true)
 	{
 		PathCommandEnd();
 		BeginCommand(c_nPathType);
@@ -744,14 +744,14 @@ HRESULT NSPresentationEditor::CShapeWriter::PathCommandText(const std::wstring& 
 }
 HRESULT NSPresentationEditor::CShapeWriter::PathCommandTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags)
 {
-	BOOL bGid = m_oFont.StringGID;
+    bool bGid = m_oFont.StringGID;
 	if (NULL != bsGidText)
 	{
-		m_oFont.StringGID = TRUE;
+        m_oFont.StringGID = true;
 		PathCommandText(bsUnicodeText, x, y, w, h, baselineOffset);
 	}
 	
-	m_oFont.StringGID = FALSE;
+    m_oFont.StringGID = false;
 	PathCommandText(bsUnicodeText, x, y, w, h, baselineOffset);
 
 	m_oFont.StringGID = bGid;
@@ -776,8 +776,8 @@ HRESULT NSPresentationEditor::CShapeWriter::SetCommandParams(double dAngle, doub
 	if ((dWidth <= 1) || (dHeight <= 1))
 		lFlags = 0;
 
-	BOOL bFlipX = (0 != (c_nParamFlipX & lFlags));
-	BOOL bFlipY = (0 != (c_nParamFlipY & lFlags));
+    bool bFlipX = (0 != (c_nParamFlipX & lFlags));
+    bool bFlipY = (0 != (c_nParamFlipY & lFlags));
 	
 	double m11 = bFlipX ? -1.0 : 1.0;
 	double m22 = bFlipY ? -1.0 : 1.0;

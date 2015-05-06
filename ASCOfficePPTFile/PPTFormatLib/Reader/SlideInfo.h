@@ -51,7 +51,7 @@ public:
 	std::vector<CTextFullSettings>			m_arTextPlaceHolders;
 	std::map<LONG, CElementInfo>		m_mapElements;
 	//std::unordered_map<LONG, CElementInfo>	m_mapElements;
-	std::vector<BOOL>*						m_parEmptyPictures;
+    std::vector<bool>*						m_parEmptyPictures;
 
 	nullable_base<NSPresentationEditor::CTextStyles> m_pStyles[9];
 

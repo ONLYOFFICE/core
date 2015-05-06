@@ -4588,8 +4588,7 @@ namespace BinDocxRW
 					}
 				case OOX::et_w_object:
 					{
-						int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::object);
-
+						int nCurPos = m_oBcw.WriteItemStart(c_oSerRunType::object);						
 						//write Picture
 
 						CString* pXml = NULL;
@@ -4597,12 +4596,8 @@ namespace BinDocxRW
 						OOX::Logic::CObject* pObject = static_cast<OOX::Logic::CObject*>(item);
 						pXml = pObject->m_sXml.GetPointer();
 
-						int nCurPos1 = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
-						WriteDrawing(pXml, NULL, NULL);
-						m_oBcw.WriteItemEnd(nCurPos1);
-
 						//write equation
-						/*if (pObject->m_oOleObject.IsInit())
+						if (pObject->m_oOleObject.IsInit())
 						{
 							CString sProgID = pObject->m_oOleObject->m_sProgId.get().GetString();
 							if ( _T("Equation.3") == sProgID)
@@ -4622,7 +4617,12 @@ namespace BinDocxRW
 								oReader.SetOutputDev(&oBinEqWriter);
 								oReader.Parse();								
 							}
-						}*/
+						}
+
+						int nCurPos1 = m_oBcw.WriteItemStart(c_oSerRunType::pptxDrawing);
+						WriteDrawing(pXml, NULL, NULL);
+						m_oBcw.WriteItemEnd(nCurPos1);
+						
 						m_oBcw.WriteItemEnd(nCurPos);
 						break;
 					}

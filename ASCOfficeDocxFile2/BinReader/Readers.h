@@ -4045,17 +4045,17 @@ public:
 		int res = c_oSerConstants::ReadOk;
 		if ( c_oSer_OMathBottomNodesValType::Val == type )
 		{
-			BYTE MJc;
-			CString sMJc (_T("centerGroup"));
-			MJc = m_oBufferedStream.GetUChar();			
-			switch(MJc)
+			BYTE Jc;
+			CString sJc (_T("centerGroup"));
+			Jc = m_oBufferedStream.GetUChar();			
+			switch(Jc)
 			{
-				case 0: sMJc = _T("center");break;
-				case 1: sMJc = _T("centerGroup");break;
-				case 2: sMJc = _T("left");break;
-				case 3: sMJc = _T("right");break;
+				case 0:	sJc = _T("center");break;
+				case 1:	sJc = _T("centerGroup");break;
+				case 2:	sJc = _T("left");break;
+				case 3:	sJc = _T("right");break;
 			}			
-            CString sVal; sVal.Format(_T("<m:mJc m:val=\"%ls\" />"), sMJc);
+            CString sVal; sVal.Format(_T("<m:jc m:val=\"%ls\" />"), sJc);
 			GetRunStringWriter().WriteString(sVal);
 		}
 		else

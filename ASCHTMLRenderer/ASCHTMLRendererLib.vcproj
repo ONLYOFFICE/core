@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="windows-1251"?>
 <VisualStudioProject
 	ProjectType="Visual C++"
-	Version="8,00"
+	Version="8.00"
 	Name="ASCHTMLRenderer"
 	ProjectGUID="{DC24710E-8DF2-4A7A-B7C3-2313E294143C}"
 	RootNamespace="ASCHTMLRenderer"
@@ -418,18 +418,6 @@
 			Name="MetaFile"
 			>
 			<File
-				RelativePath="..\DesktopEditor\raster\Metafile\Common.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\DesktopEditor\raster\Metafile\Common.h"
-				>
-			</File>
-			<File
-				RelativePath="..\DesktopEditor\raster\Metafile\Common\IOutputDevice.h"
-				>
-			</File>
-			<File
 				RelativePath="..\DesktopEditor\raster\Metafile\MetaFile.cpp"
 				>
 			</File>
@@ -437,71 +425,19 @@
 				RelativePath="..\DesktopEditor\raster\Metafile\MetaFile.h"
 				>
 			</File>
-			<File
-				RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFile.h"
-				>
-			</File>
-			<File
-				RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileClip.h"
-				>
-			</File>
-			<File
-				RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileObjects.h"
-				>
-			</File>
-			<File
-				RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileRenderer.h"
-				>
-			</File>
-			<File
-				RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileTypes.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileTypes.h"
-				>
-			</File>
 			<Filter
 				Name="Wmf"
 				>
 				<File
-					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\RendererOutput.h"
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfClip.cpp"
 					>
 				</File>
 				<File
-					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfCharsets.h"
-					>
-				</File>
-				<File
-					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfCodePage1361.h"
-					>
-				</File>
-				<File
-					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfCodePage932.h"
-					>
-				</File>
-				<File
-					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfCodePage936.h"
-					>
-				</File>
-				<File
-					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfCodePage949.h"
-					>
-				</File>
-				<File
-					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfCodePage950.h"
-					>
-				</File>
-				<File
-					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfColor.h"
+					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfClip.h"
 					>
 				</File>
 				<File
 					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfFile.h"
-					>
-				</File>
-				<File
-					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfMemory.h"
 					>
 				</File>
 				<File
@@ -513,10 +449,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfOutputDevice.h"
-					>
-				</File>
-				<File
 					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfPlayer.cpp"
 					>
 				</File>
@@ -525,15 +457,7 @@
 					>
 				</File>
 				<File
-					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfRegion.h"
-					>
-				</File>
-				<File
 					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfTypes.h"
-					>
-				</File>
-				<File
-					RelativePath="..\DesktopEditor\raster\Metafile\Wmf\WmfUtils.h"
 					>
 				</File>
 			</Filter>
@@ -561,10 +485,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\DesktopEditor\raster\Metafile\Emf\EmfOutputDevice.h"
-					>
-				</File>
-				<File
 					RelativePath="..\DesktopEditor\raster\Metafile\Emf\EmfPath.cpp"
 					>
 				</File>
@@ -584,8 +504,44 @@
 					RelativePath="..\DesktopEditor\raster\Metafile\Emf\EmfTypes.h"
 					>
 				</File>
+			</Filter>
+			<Filter
+				Name="Common"
+				>
 				<File
-					RelativePath="..\DesktopEditor\raster\Metafile\Emf\RendererOutput.h"
+					RelativePath="..\DesktopEditor\raster\Metafile\Common\IOutputDevice.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFile.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileClip.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileObjects.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileRenderer.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileTypes.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileTypes.h"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileUtils.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\DesktopEditor\raster\Metafile\Common\MetaFileUtils.h"
 					>
 				</File>
 			</Filter>

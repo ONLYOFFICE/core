@@ -4,6 +4,7 @@
 #include "../../raster/BgraFrame.h"
 
 #include <time.h>
+#include <math.h>
 
 #define U_TO_UTF8(val) NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(val.c_str(), val.length())
 

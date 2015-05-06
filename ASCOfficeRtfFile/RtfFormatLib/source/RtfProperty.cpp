@@ -808,7 +808,7 @@ CString RtfListLevelProperty::RenderToRtf(RenderParameter oRenderParameter)
 }
 CString RtfListLevelProperty::RenderToOOX(RenderParameter oRenderParameter)
 {
-return RenderToOOX2(oRenderParameter);
+	return RenderToOOX2(oRenderParameter);
 }
 CString RtfListLevelProperty::RenderToOOX2(RenderParameter oRenderParameter, int nLvl)
 {

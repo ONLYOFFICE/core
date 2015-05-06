@@ -2620,6 +2620,7 @@ public:
 			else if( _T("leveltext") == sCommand  )
 			{
 				TextReader oLevelTextReader( m_oListLevelProp.m_sText );
+				oLevelTextReader.m_bUseGlobalCodepage = true;
 				return StartSubReader( oLevelTextReader, oDocument, oReader );
 			}
 			else if( _T("levelnumbers") == sCommand  )

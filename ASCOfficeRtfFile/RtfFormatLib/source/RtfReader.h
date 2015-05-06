@@ -268,6 +268,8 @@ public:
 		}
 	}
     /*static */CString ExecuteTextInternalCodePage( std::string & sCharString, RtfDocument & oDocument, RtfReader & oReader);
+	
+	bool		m_bUseGlobalCodepage;
 
 private:
 	RtfToken	m_oTok;
@@ -280,6 +282,5 @@ private:
 protected: 
 	int			m_nCurGroups;
 
-	bool	m_bUseGlobalCodepage;
 };
 

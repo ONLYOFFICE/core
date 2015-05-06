@@ -785,7 +785,7 @@ CString RtfShape::RenderToOOXBegin(RenderParameter oRenderParameter)
 				if( PROP_DEF != m_oPicture->m_nCropB )
 					nHeight -= m_oPicture->m_nCropB;
 
-				sStyle.AppendFormat(_T("width:%dpt;height:%dpt;"), (int)RtfUtility::Twip2pt(nWidth), (int)RtfUtility::Twip2pt(nHeight));
+				sStyle.AppendFormat(_T("width:%.2fpt;height:%.2fpt;"), RtfUtility::Twip2pt(nWidth), RtfUtility::Twip2pt(nHeight));
 			}
 
 			switch( m_nPositionH )

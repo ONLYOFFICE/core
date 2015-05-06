@@ -57,7 +57,7 @@ NSPresentationEditor::CSVGConverter::~CSVGConverter()
 HRESULT NSPresentationEditor::CSVGConverter::get_Type(LONG* lType)
 {
 	if (NULL == lType)
-		return S_FALSE;
+        return S_FALSE;
 
 	*lType = c_nSVGConverter;
 	return S_OK;
@@ -291,7 +291,7 @@ HRESULT NSPresentationEditor::CSVGConverter::put_BrushAlpha2(const LONG& lAlpha)
 }
 HRESULT NSPresentationEditor::CSVGConverter::get_BrushTexturePath(std::wstring* bsPath)
 {
-	if (bsPath == NULL) return S_FALSE;
+    if (bsPath == NULL) return S_FALSE;
 	*bsPath = string2std_string(m_oBrush.TexturePath);
 	return S_OK;
 }
@@ -699,14 +699,14 @@ HRESULT NSPresentationEditor::CSVGConverter::PathCommandText(const std::wstring&
 }
 HRESULT NSPresentationEditor::CSVGConverter::PathCommandTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags)
 {
-	BOOL bGid = m_oFont.StringGID;
+    bool bGid = m_oFont.StringGID;
 	if (NULL != bsGidText)
 	{
-		m_oFont.StringGID = TRUE;
+        m_oFont.StringGID = true;
 		PathCommandText(bsGidText, x, y, w, h, baselineOffset);
 	}
 	
-	m_oFont.StringGID = FALSE;
+    m_oFont.StringGID = false;
 	PathCommandText(bsUnicodeText, x, y, w, h, baselineOffset);
 
 	m_oFont.StringGID = bGid;
@@ -734,8 +734,8 @@ HRESULT NSPresentationEditor::CSVGConverter::SetCommandParams(double dAngle, dou
 	if ((dWidth <= 1) || (dHeight <= 1))
 		lFlags = 0;
 
-	BOOL bFlipX = (0 != (c_nParamFlipX & lFlags));
-	BOOL bFlipY = (0 != (c_nParamFlipY & lFlags));
+    bool bFlipX = (0 != (c_nParamFlipX & lFlags));
+    bool bFlipY = (0 != (c_nParamFlipY & lFlags));
 	
 	double m11 = bFlipX ? -1.0 : 1.0;
 	double m22 = bFlipY ? -1.0 : 1.0;

@@ -81,7 +81,7 @@ public:
 		LONG lW2 = m_rcGroupClientAnchor.right - m_rcGroupClientAnchor.left;
 		LONG lH2 = m_rcGroupClientAnchor.bottom - m_rcGroupClientAnchor.top;
 
-		BOOL bIsRecalc = ((lW1 > 0) && (lH1 > 0) && (lW2 > 0) && (lH2 > 0));
+        bool bIsRecalc = ((lW1 > 0) && (lH1 > 0) && (lW2 > 0) && (lH2 > 0));
 		if (bIsRecalc)
 		{
 			for (int nIndex = 0; nIndex < oArrayShapes.size(); ++nIndex)
@@ -108,7 +108,7 @@ public:
 			LONG lWidthClient	= m_rcGroupClientAnchor.right	- m_rcGroupClientAnchor.left;
 			LONG lHeightClient	= m_rcGroupClientAnchor.bottom	- m_rcGroupClientAnchor.top;
 
-			BOOL bIsRecalc = ((lWidthClient > 0) && (lHeightClient > 0) && (lWidthClient > 0) && (lHeightGroup > 0));
+            bool bIsRecalc = ((lWidthClient > 0) && (lHeightClient > 0) && (lWidthClient > 0) && (lHeightGroup > 0));
 
 			if (bIsRecalc)
 			{

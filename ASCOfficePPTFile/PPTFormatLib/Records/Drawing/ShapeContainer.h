@@ -779,18 +779,18 @@ public:
 				}
 				if (bUseItalic)
 				{
-					pParentShape->m_oText.m_oAttributes.m_oFont.Italic = (BOOL)bItalic;
+                    pParentShape->m_oText.m_oAttributes.m_oFont.Italic = bItalic;
 					//pElemProps->SetAt(CElementProperty::epFontItalic, bItalic);
 				}
 				if (bUseBold)
 				{
-					pParentShape->m_oText.m_oAttributes.m_oFont.Bold = (BOOL)bBold;
+                    pParentShape->m_oText.m_oAttributes.m_oFont.Bold = bBold;
 					//pElemProps->SetAt(CElementProperty::epFontBold, bBold);
 				}
 
 				if (bUseVertical)
 				{
-					pParentShape->m_oText.m_bVertical = (true == bVertical) ? TRUE : FALSE;
+                    pParentShape->m_oText.m_bVertical = (true == bVertical) ? true : false;
 				}
 				break;
 			}
@@ -1065,7 +1065,7 @@ public:
 				{
 					// shape
 					CShapeElement* pShape = new CShapeElement(NSBaseShape::ppt, eType);
-					if (TRUE)//if (/*отключим пока кастом*/OOXMLShapes::sptCustom != pShape->m_oShape.m_eType)
+                    if (true)//if (/*отключим пока кастом*/OOXMLShapes::sptCustom != pShape->m_oShape.m_eType)
 					{
 						CExFilesInfo::ExFilesType exType = CExFilesInfo::eftNone;
 						CExFilesInfo* pTextureInfo = pMapIDs->Lock(0xFFFFFFFF, exType);
@@ -1415,8 +1415,8 @@ protected:
 		// как узнать - просто есть ли массивы (т.к. они могли появиться пока только оттуда)
 		// - теперь этого делать не нужно - т.к. в мастере тоже вызывается эта функция - 
 		// и там все это должно уже примениться
-		BOOL bIsPersistPresentSettings	= FALSE;
-		BOOL bIsOwnPresentSettings		= FALSE;
+        bool bIsPersistPresentSettings	= false;
+        bool bIsOwnPresentSettings		= false;
 
 		NSOfficePPT::TextType eTypeMaster	= NSOfficePPT::NoPresent;
 		NSOfficePPT::TextType eTypePersist	= NSOfficePPT::NoPresent;
@@ -1862,7 +1862,7 @@ protected:
 						++nIndexSpan;
 					}
 					pParagraph->m_arSpans[nIndexSpan].m_oRun.Color = oColor;
-					pParagraph->m_arSpans[nIndexSpan].m_oRun.FontUnderline = (BOOL)TRUE;
+                    pParagraph->m_arSpans[nIndexSpan].m_oRun.FontUnderline = (bool)true;
 					pParagraph->m_arSpans[nIndexSpan].m_strText = strText.Mid(lStart_ - lCurrentStart, lEnd_ - lStart_ + 1);
 					if (lEnd_ < lCurrentEnd)
 					{

@@ -55,8 +55,8 @@ public:
 	std::map<DWORD, CSlideShowSlideInfoAtom> m_mapTransitions;
 
 	// номера "пустых" картинок - в эти пути не будем сохранять
-	std::vector<BOOL>						m_arEmptyPictures;
-	BOOL								m_bIsSetupEmpty;
+    std::vector<bool>					m_arEmptyPictures;
+    bool								m_bIsSetupEmpty;
 
 	CString								m_strFileDirectory;
 
@@ -75,7 +75,7 @@ public:
 
 	void Clear();
 
-	BOOL ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStream, CStringW strFolderMem);
+    bool ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStream, CStringW strFolderMem);
 	void FromDocument();
 
 	void NormalizeCoords(long lWidth, long lHeight);
@@ -119,10 +119,10 @@ public:
 			pPF->spaceBefore	= (LONG)0;
 			pPF->spaceAfter		= (LONG)0;
 			
-			pCF->FontBold		= FALSE;
-			pCF->FontItalic		= FALSE;
-			pCF->FontUnderline	= FALSE;
-			pCF->FontStrikeout	= FALSE;
+            pCF->FontBold		= false;
+            pCF->FontItalic		= false;
+            pCF->FontUnderline	= false;
+            pCF->FontStrikeout	= false;
 
 			pCF->Size			= 18;
 			pCF->BaseLineOffset = (double)0;

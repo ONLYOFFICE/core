@@ -18,7 +18,7 @@ struct SRecordHeader
 		RecVersion = RecInstance = RecType = RecLen = 0;
 	}
 
-	BOOL ReadFromStream(POLE::Stream * pStream)
+    bool ReadFromStream(POLE::Stream * pStream)
 	{
 		RecVersion = RecInstance = RecType = RecLen = 0;
 
@@ -44,23 +44,23 @@ struct SRecordHeader
 			RecLen = sz;
 		}
 
-		return TRUE;
+        return true;
 	}
 
-	BOOL IsContainer()
+    bool IsContainer()
 	{
 		/*if ((RecVersion == PSFLAG_CONTAINER) || ((RecVersion & 0x0F) == 0x0F))
 		{
 			return TRUE;
 		}*/
 		if (1064 == RecType)
-			return FALSE;
+            return false;
 		
 		if (RecVersion == 0x0F)
 		{
-			return TRUE;
+            return true;
 		}
-		return FALSE;
+        return false;
 	}
 
 	SRecordHeader& operator =(const SRecordHeader& oSrc)

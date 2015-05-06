@@ -352,9 +352,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("BuildAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("BuildAtom"), true );
 
-			oWriter.WriteNodeEnd ( _T("BuildAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("BuildAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("buildType"),		(DWORD)buildType, &oWriter );
 			CDirectory::WriteValueToNode ( _T("buildId"),		(DWORD)buildId, &oWriter );
@@ -374,8 +374,8 @@ namespace Animations
 		DWORD	buildId;
 		DWORD	shapeIdRef;
 
-		BOOL	fExpanded;
-		BOOL	fUIExpanded;
+        bool	fExpanded;
+        bool	fUIExpanded;
 	};
 	struct ParaBuildAtom : public IRecord
 	{
@@ -407,9 +407,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("ParaBuildAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("ParaBuildAtom"), true );
 
-			oWriter.WriteNodeEnd ( _T("ParaBuildAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("ParaBuildAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("paraBuild"),					(DWORD)paraBuild, &oWriter );
 			CDirectory::WriteValueToNode ( _T("buildLevel"),				(DWORD)buildLevel, &oWriter );
@@ -437,10 +437,10 @@ namespace Animations
 		//			graphical object. 
 		DWORD	buildLevel;
 
-		BOOL	fAnimBackground;
-		BOOL	fReverse;
-		BOOL	fUserSetAnimBackground;
-		BOOL	fAutomatic;
+        bool	fAnimBackground;
+        bool	fReverse;
+        bool	fUserSetAnimBackground;
+        bool	fAutomatic;
 
 		DWORD	delayTime;
 	};	
@@ -464,8 +464,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("LevelInfoAtom"), TRUE );
-			oWriter.WriteNodeEnd ( _T("LevelInfoAtom"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("LevelInfoAtom"), true );
+            oWriter.WriteNodeEnd ( _T("LevelInfoAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("level"),		(DWORD)level, &oWriter );
 
@@ -531,7 +531,7 @@ namespace Animations
 			while ( lCurLen < m_oHeader.RecLen )
 			{
 				SRecordHeader ReadHeader;
-				if (ReadHeader.ReadFromStream(pStream) == FALSE)
+                if (ReadHeader.ReadFromStream(pStream) == false)
 					break;
 
 				lCurLen			+=	8 + ReadHeader.RecLen;
@@ -565,8 +565,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("ParaBuildContainer"), TRUE );
-			oWriter.WriteNodeEnd ( _T("ParaBuildContainer"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("ParaBuildContainer"), true );
+            oWriter.WriteNodeEnd ( _T("ParaBuildContainer"), true, false );
 
 			oWriter.WriteString ( buildAtom.ToString() );
 			oWriter.WriteString ( paraBuildAtom.ToString() );
@@ -632,7 +632,7 @@ namespace Animations
 
 			while ( lCurLen < m_oHeader.RecLen )
 			{
-				if (header.ReadFromStream(pStream) == FALSE)
+                if (header.ReadFromStream(pStream) == false)
 					break;
 
 				lCurLen			+=	8 + header.RecLen;
@@ -663,8 +663,8 @@ namespace Animations
 			{
 				XmlUtils::CXmlWriter oWriter;
 
-				oWriter.WriteNodeBegin ( _T("BuildListContainer"), TRUE );
-				oWriter.WriteNodeEnd ( _T("BuildListContainer"), TRUE, FALSE );
+                oWriter.WriteNodeBegin ( _T("BuildListContainer"), true );
+                oWriter.WriteNodeEnd ( _T("BuildListContainer"), true, false );
 
 				for ( long i = 0; i < (long)rgChildRec.size(); ++i )
 					oWriter.WriteString ( rgChildRec[i]->ToString() );
@@ -714,9 +714,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeVariant"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeVariant"), true );
 
-			oWriter.WriteNodeEnd ( _T("TimeVariant"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeVariant"), true, false );
 
 			oWriter.WriteNodeEnd ( _T("TimeVariantBool") );
 
@@ -752,9 +752,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeVariantBool"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeVariantBool"), true );
 
-			oWriter.WriteNodeEnd ( _T("TimeVariantBool"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeVariantBool"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),		Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("Value"),		Helpers::IntToHexString ( m_Value ), &oWriter );
@@ -794,9 +794,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T(" TimeVariantInt "), TRUE );
+            oWriter.WriteNodeBegin ( _T(" TimeVariantInt "), true );
 
-			oWriter.WriteNodeEnd ( _T(" TimeVariantInt "), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T(" TimeVariantInt "), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),		Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("Value"),	(DWORD)m_Value, &oWriter );
@@ -836,9 +836,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeVariantFloat"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeVariantFloat"), true );
 
-			oWriter.WriteNodeEnd ( _T("TimeVariantFloat"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeVariantFloat"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),		Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("Value"),	(DWORD)m_Value, &oWriter );
@@ -897,8 +897,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeVariantString"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeVariantString"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeVariantString"), true );
+            oWriter.WriteNodeEnd ( _T("TimeVariantString"), true, false );
 
             CDirectory::WriteValueToNode ( _T("Type"),          Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
             CDirectory::WriteValueToNode ( _T("StringValue"),	stringValue, &oWriter ); //todooo проверить - нужен ли ansi
@@ -925,7 +925,7 @@ namespace Animations
 
 			while ( lCurLen < m_oHeader.RecLen )
 			{
-				if (ReadHeader.ReadFromStream(pStream) == FALSE)
+                if (ReadHeader.ReadFromStream(pStream) == false)
 					break;
 
 				TimeVariantString Element;	
@@ -951,8 +951,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeVariantString"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeVariantString"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeVariantString"), true );
+            oWriter.WriteNodeEnd ( _T("TimeVariantString"), true, false );
 
 			for ( int i = 0; i < m_Values.size(); ++i )
 			{
@@ -1025,8 +1025,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeNodeAtom"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeNodeAtom"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeNodeAtom"), true );
+            oWriter.WriteNodeEnd ( _T("TimeNodeAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Restart"),				(DWORD)m_dwRestart, &oWriter );
 			CDirectory::WriteValueToNode ( _T("Type"),					Helpers::GetTimeNodeTypeEnum ( m_dwType ), &oWriter );
@@ -1097,9 +1097,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeSequenceDataAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeSequenceDataAtom"), true );
 
-			oWriter.WriteNodeEnd (_T("TimeSequenceDataAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd (_T("TimeSequenceDataAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Concurrency"),			(DWORD)m_nConcurrency, &oWriter );
 			CDirectory::WriteValueToNode ( _T("NextAction"),			(DWORD)m_nNextAction, &oWriter );
@@ -1134,8 +1134,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeDisplayType"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeDisplayType"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeDisplayType"), true );
+            oWriter.WriteNodeEnd ( _T("TimeDisplayType"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("DisplayType"),	(DWORD)m_Value, &oWriter );
@@ -1154,9 +1154,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeMasterRelType"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeMasterRelType"), true );
 
-			oWriter.WriteNodeEnd ( _T("TimeMasterRelType"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeMasterRelType"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("MasterRel"),	(DWORD)m_Value, &oWriter );
@@ -1173,8 +1173,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeSlaveType"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeSlaveType"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeSlaveType"), true );
+            oWriter.WriteNodeEnd ( _T("TimeSlaveType"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),		Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("SlaveType"),	(DWORD)m_Value, &oWriter );
@@ -1191,8 +1191,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeEffectID"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeEffectID"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeEffectID"), true );
+            oWriter.WriteNodeEnd ( _T("TimeEffectID"), true, false );
 
 			// CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("EffectID"),		Helpers::IntToHexString ( m_Value ), &oWriter );
@@ -1209,8 +1209,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeEffectDir"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeEffectDir"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeEffectDir"), true );
+            oWriter.WriteNodeEnd ( _T("TimeEffectDir"), true, false );
 
 			//CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("EffectDir"),	(DWORD)m_Value, &oWriter );
@@ -1227,8 +1227,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeEffectType"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeEffectType"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeEffectType"), true );
+            oWriter.WriteNodeEnd ( _T("TimeEffectType"), true, false );
 
 			//CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("EffectType"),	Helpers::GetEffectTypeOfGroup ( m_Value ), &oWriter );
@@ -1245,8 +1245,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeAfterEffect"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeAfterEffect"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeAfterEffect"), true );
+            oWriter.WriteNodeEnd ( _T("TimeAfterEffect"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("AfterEffect"),		m_Value, &oWriter );
@@ -1262,8 +1262,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeSlideCount"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeSlideCount"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeSlideCount"), true );
+            oWriter.WriteNodeEnd ( _T("TimeSlideCount"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("SlideCount"),	(DWORD)m_Value, &oWriter );
@@ -1280,8 +1280,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeNodeTimeFilter"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeNodeTimeFilter"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeNodeTimeFilter"), true );
+            oWriter.WriteNodeEnd ( _T("TimeNodeTimeFilter"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),		Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
             CDirectory::WriteValueToNode ( _T("StringValue"),	stringValue , &oWriter );       // ansi ????
@@ -1297,9 +1297,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeEventFilter"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeEventFilter"), true );
 
-			oWriter.WriteNodeEnd ( _T("TimeEventFilter"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeEventFilter"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),		Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
             CDirectory::WriteValueToNode ( _T("StringValue"),	 stringValue , &oWriter ); //ansi ????
@@ -1315,8 +1315,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeHideWhenStopped"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeHideWhenStopped"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeHideWhenStopped"), true );
+            oWriter.WriteNodeEnd ( _T("TimeHideWhenStopped"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("HideWhenStopped"),	m_Value, &oWriter );
@@ -1333,8 +1333,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeGroupID"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeGroupID"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeGroupID"), true );
+            oWriter.WriteNodeEnd ( _T("TimeGroupID"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("GroupID"),	(DWORD)m_Value, &oWriter );
@@ -1351,8 +1351,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeEffectNodeType"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeEffectNodeType"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeEffectNodeType"), true );
+            oWriter.WriteNodeEnd ( _T("TimeEffectNodeType"), true, false );
 
 			//CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("EffectNodeType"),	(DWORD)m_Value, &oWriter );
@@ -1369,8 +1369,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimePlaceholderNode"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimePlaceholderNode"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimePlaceholderNode"), true );
+            oWriter.WriteNodeEnd ( _T("TimePlaceholderNode"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("PlaceholderNode"),	m_Value, &oWriter );
@@ -1387,8 +1387,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeMediaVolume"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeMediaVolume"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeMediaVolume"), true );
+            oWriter.WriteNodeEnd ( _T("TimeMediaVolume"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
             CDirectory::WriteValueToNode ( _T("MediaVolume"),	Helpers::DoubleToString ( (double)m_Value ), &oWriter );
@@ -1405,8 +1405,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeMediaMute"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeMediaMute"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeMediaMute"), true );
+            oWriter.WriteNodeEnd ( _T("TimeMediaMute"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("MediaMute"),		m_Value, &oWriter );
@@ -1422,9 +1422,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeZoomToFullScreen"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeZoomToFullScreen"), true );
 
-			oWriter.WriteNodeEnd ( _T("TimeZoomToFullScreen"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeZoomToFullScreen"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),			Helpers::GetTimeVariantTypeEnum ( m_Type ), &oWriter );
 			CDirectory::WriteValueToNode ( _T("ZoomToFullScreen"),	m_Value, &oWriter );
@@ -1471,7 +1471,7 @@ namespace Animations
 
 			while ( lCurLen < m_oHeader.RecLen )
 			{
-				if (ReadHeader.ReadFromStream(pStream) == FALSE)
+                if (ReadHeader.ReadFromStream(pStream) == false)
 					break;
 
 				TimeVariant* pRecord = NULL;
@@ -1597,10 +1597,10 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimePropertyList4TimeNodeContainer"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimePropertyList4TimeNodeContainer"), true );
 
 
-			oWriter.WriteNodeEnd ( _T("TimePropertyList4TimeNodeContainer"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimePropertyList4TimeNodeContainer"), true, false );
 
 			if ( false == m_nEmtyNode )
 			{
@@ -1680,10 +1680,10 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimePropertyList4TimeBehavior"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimePropertyList4TimeBehavior"), true );
 
 
-			oWriter.WriteNodeEnd ( _T("TimePropertyList4TimeBehavior"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimePropertyList4TimeBehavior"), true, false );
 
 			oWriter.WriteNodeEnd ( _T("TimePropertyList4TimeBehavior") );
 
@@ -1729,10 +1729,10 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("VisualShapeAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("VisualShapeAtom"), true );
 
 
-			oWriter.WriteNodeEnd ( _T("VisualShapeAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("VisualShapeAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),	Helpers::GetTimeVisualElementEnum (m_Type), &oWriter );
 			CDirectory::WriteValueToNode ( _T("ReferenceType"),	Helpers::GetElementTypeEnum (m_RefType), &oWriter );
@@ -1790,9 +1790,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("VisualPageAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("VisualPageAtom"), true );
 
-			oWriter.WriteNodeEnd ( _T("VisualPageAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("VisualPageAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Type"),	Helpers::GetTimeVisualElementEnum (m_Type), &oWriter );
 
@@ -1857,9 +1857,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("ClientVisualElementContainer"), TRUE );
+            oWriter.WriteNodeBegin ( _T("ClientVisualElementContainer"), true );
 
-			oWriter.WriteNodeEnd ( _T("ClientVisualElementContainer"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("ClientVisualElementContainer"), true, false );
 
 			if ( m_bVisualPageAtom )
 				oWriter.WriteString ( m_oVisualPageAtom.ToString () );
@@ -1919,10 +1919,10 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeBehaviorAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeBehaviorAtom"), true );
 
 
-			oWriter.WriteNodeEnd ( _T("TimeBehaviorAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeBehaviorAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("AdditivePropertyUsed"),			m_bAdditivePropertyUsed, &oWriter );
 			CDirectory::WriteValueToNode ( _T("AttributeNamesPropertyUsed"),	m_bAttributeNamesPropertyUsed, &oWriter );
@@ -1950,10 +1950,10 @@ namespace Animations
 	{
 		TimeBehaviorContainer ()
 		{
-			havePropertyList	=	FALSE;
+            havePropertyList	=	false;
 			propertyList		=	NULL;
 
-			haveStringList		=	FALSE;
+            haveStringList		=	false;
 			stringList			=	NULL;
 		}
 
@@ -1967,8 +1967,8 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-			havePropertyList	=	FALSE;
-			haveStringList		=	FALSE;
+            havePropertyList	=	false;
+            haveStringList		=	false;
 
 #ifdef _DEBUG
 			assert ( IsCorrect () );
@@ -1986,7 +1986,7 @@ namespace Animations
 
 			while ( lCurLen < m_oHeader.RecLen )
 			{
-				if (header.ReadFromStream(pStream) == FALSE)			
+                if (header.ReadFromStream(pStream) == false)
 					break;
 
 				lCurLen			+=	8 + header.RecLen;
@@ -1999,7 +1999,7 @@ namespace Animations
 					if (propertyList)
 					{
 						propertyList->ReadFromStream (header, pStream);
-						havePropertyList	=	TRUE;
+                        havePropertyList	=	true;
 
 						continue;
 					}
@@ -2011,7 +2011,7 @@ namespace Animations
 					if (stringList)
 					{
 						stringList->ReadFromStream (header, pStream);
-						haveStringList	=	TRUE;
+                        haveStringList	=	true;
 
 						continue;
 					}
@@ -2050,13 +2050,13 @@ namespace Animations
 
 			if ( RT_TimePropertyList == ReadHeader.RecType )
 			{
-			havePropertyList	=	TRUE;
+            havePropertyList	=	true;
 			propertyList.ReadFromStream ( ReadHeader, pStream );
 			}
 
 			if ( RT_TimeVariantList == ReadHeader.RecType )
 			{
-			haveStringList		=	TRUE;
+            haveStringList		=	true;
 			stringList.ReadFromStream ( ReadHeader, pStream );
 			}
 			}
@@ -2075,10 +2075,10 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeBehaviorContainer"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeBehaviorContainer"), true );
 
 
-			oWriter.WriteNodeEnd ( _T("TimeBehaviorContainer"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeBehaviorContainer"), true, false );
 
 			oWriter.WriteString (behaviorAtom.ToString());
 
@@ -2106,10 +2106,10 @@ namespace Animations
 		TimeBehaviorAtom				behaviorAtom;
 
 		TimePropertyList4TimeBehavior*	propertyList;
-		BOOL							havePropertyList;
+        bool							havePropertyList;
 
 		TimeStringListContainer* 		stringList;
-		BOOL							haveStringList;
+        bool							haveStringList;
 
 		ClientVisualElementContainer	clientVisualElement;
 	};
@@ -2152,10 +2152,10 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeEffectBehaviorAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeEffectBehaviorAtom"), true );
 
 
-			oWriter.WriteNodeEnd ( _T("TimeEffectBehaviorAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeEffectBehaviorAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("TransitionPropertyUsed"),	m_bTransitionPropertyUsed, &oWriter );
 			CDirectory::WriteValueToNode ( _T("TypePropertyUsed"),			m_bTypePropertyUsed, &oWriter );
@@ -2244,9 +2244,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeEffectBehaviorContainer"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeEffectBehaviorContainer"), true );
 
-			oWriter.WriteNodeEnd ( _T("TimeEffectBehaviorContainer"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeEffectBehaviorContainer"), true, false );
 
 			oWriter.WriteString ( effectBehaviorAtom.ToString () );
 
@@ -2305,9 +2305,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeConditionAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeConditionAtom"), true );
 
-			oWriter.WriteNodeEnd ( _T("TimeConditionAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeConditionAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("TriggerObject"),	Helpers::GetTriggerObjectEnum (m_TriggerObject), &oWriter );
 			CDirectory::WriteValueToNode ( _T("TriggerEvent"),	(DWORD)m_nTriggerEvent, &oWriter );
@@ -2369,10 +2369,10 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeConditionContainer"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeConditionContainer"), true );
 
 
-			oWriter.WriteNodeEnd ( _T("TimeConditionContainer"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeConditionContainer"), true, false );
 
 			oWriter.WriteString ( m_oTimeConditionAtom.ToString () );
 
@@ -2422,9 +2422,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeIterateDataAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeIterateDataAtom"), true );
 
-			oWriter.WriteNodeEnd ( _T("TimeIterateDataAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeIterateDataAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("iterateInterval"),		(DWORD)iterateInterval, &oWriter );
 			CDirectory::WriteValueToNode ( _T("iterateType"),			(DWORD)iterateType, &oWriter );
@@ -2448,10 +2448,10 @@ namespace Animations
 		unsigned long iterateDirection;
 		unsigned long iterateIntervalType;
 
-		BOOL fIterateDirectionPropertyUsed;		
-		BOOL fIterateTypePropertyUsed;		
-		BOOL fIterateIntervalPropertyUsed;	
-		BOOL fIterateIntervalTypePropertyUsed;
+        bool fIterateDirectionPropertyUsed;
+        bool fIterateTypePropertyUsed;
+        bool fIterateIntervalPropertyUsed;
+        bool fIterateIntervalTypePropertyUsed;
 	};
 }
 
@@ -2501,10 +2501,10 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeMotionBehaviorAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeMotionBehaviorAtom"), true );
 
 
-			oWriter.WriteNodeEnd ( _T("TimeMotionBehaviorAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeMotionBehaviorAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("ByPropertyUsed"),			(DWORD)m_bByPropertyUsed				, &oWriter );
 			CDirectory::WriteValueToNode ( _T("FromPropertyUsed"),			(DWORD)m_bFromPropertyUsed				, &oWriter );
@@ -2597,9 +2597,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeMotionBehaviorContainer"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeMotionBehaviorContainer"), true );
 
-			oWriter.WriteNodeEnd ( _T("TimeMotionBehaviorContainer"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeMotionBehaviorContainer"), true, false );
 
 			oWriter.WriteString ( m_oMotionBehaviorAtom.ToString () );
 
@@ -2657,8 +2657,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeSetBehaviorAtom"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeSetBehaviorAtom"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeSetBehaviorAtom"), true );
+            oWriter.WriteNodeEnd ( _T("TimeSetBehaviorAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("ToPropertyUsed"),			(DWORD)m_bToPropertyUsed				, &oWriter );
 			CDirectory::WriteValueToNode ( _T("ValueTypePropertyUsed"),		(DWORD)m_bValueTypePropertyUsed			, &oWriter );
@@ -2713,9 +2713,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeSetBehaviorContainer"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeSetBehaviorContainer"), true );
 
-			oWriter.WriteNodeEnd ( _T("TimeSetBehaviorContainer"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeSetBehaviorContainer"), true, false );
 
 			oWriter.WriteString ( setBehaviorAtom.ToString () );
 
@@ -2778,10 +2778,10 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeAnimateBehaviorAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeAnimateBehaviorAtom"), true );
 
 
-			oWriter.WriteNodeEnd ( _T("TimeSetBehaviorAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeSetBehaviorAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("ByPropertyUsed"),				(DWORD)m_bByPropertyUsed				, &oWriter );
 			CDirectory::WriteValueToNode ( _T("FromPropertyUsed"),				(DWORD)m_bFromPropertyUsed				, &oWriter );
@@ -2837,10 +2837,10 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeAnimationValueAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeAnimationValueAtom"), true );
 
 
-			oWriter.WriteNodeEnd ( _T("TimeAnimationValueAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeAnimationValueAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("Time"), (DWORD)m_nTime, &oWriter );
 
@@ -2915,7 +2915,7 @@ namespace Animations
 			SRecordHeader ReadHeader;
 			while ( lCurLen < m_oHeader.RecLen )
 			{
-				if ( ReadHeader.ReadFromStream(pStream) == FALSE )	
+                if ( ReadHeader.ReadFromStream(pStream) == false )
 				{
 					break;
 				}
@@ -2945,7 +2945,7 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeAnimationValueListContainer"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeAnimationValueListContainer"), true );
 			oWriter.WriteString (_T(">") );
 
 			for ( int i = 0; i < m_arrEntry.size(); ++i )
@@ -3019,9 +3019,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeAnimateBehaviorContainer"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeAnimateBehaviorContainer"), true );
 
-			oWriter.WriteNodeEnd ( _T("TimeAnimateBehaviorContainer"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeAnimateBehaviorContainer"), true, false );
 
 			oWriter.WriteString ( m_oAnimateBehaviorAtom.ToString () );
 
@@ -3096,10 +3096,10 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeRotationBehaviorAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeRotationBehaviorAtom"), true );
 
 
-			oWriter.WriteNodeEnd ( _T("TimeRotationBehaviorAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeRotationBehaviorAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("fByPropertyUsed"),		(DWORD)fByPropertyUsed, &oWriter );
 			CDirectory::WriteValueToNode ( _T("fFromPropertyUsed"),		(DWORD)fFromPropertyUsed, &oWriter );
@@ -3118,10 +3118,10 @@ namespace Animations
 
 	public:
 
-		BOOL	fByPropertyUsed;
-		BOOL	fFromPropertyUsed;
-		BOOL	fToPropertyUsed;
-		BOOL	fDirectionPropertyUsed;
+        bool	fByPropertyUsed;
+        bool	fFromPropertyUsed;
+        bool	fToPropertyUsed;
+        bool	fDirectionPropertyUsed;
 		float	fBy;
 		float	fFrom;
 		float	fTo;
@@ -3152,8 +3152,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeRotationBehaviorContainer"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeRotationBehaviorContainer"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeRotationBehaviorContainer"), true );
+            oWriter.WriteNodeEnd ( _T("TimeRotationBehaviorContainer"), true, false );
 
 			oWriter.WriteString ( rotationBehaviorAtom.ToString () );
 			oWriter.WriteString ( behavior.ToString () );
@@ -3206,10 +3206,10 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeScaleBehaviorAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeScaleBehaviorAtom"), true );
 
 
-			oWriter.WriteNodeEnd ( _T("TimeScaleBehaviorAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeScaleBehaviorAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("fByPropertyUsed"),		(DWORD)fByPropertyUsed, &oWriter );
 			CDirectory::WriteValueToNode ( _T("fFromPropertyUsed"),		(DWORD)fFromPropertyUsed, &oWriter );
@@ -3231,17 +3231,17 @@ namespace Animations
 
 	public:
 
-		BOOL	fByPropertyUsed;
-		BOOL	fFromPropertyUsed;
-		BOOL	fToPropertyUsed;
-		BOOL	fZoomContentsUsed;
+        bool	fByPropertyUsed;
+        bool	fFromPropertyUsed;
+        bool	fToPropertyUsed;
+        bool	fZoomContentsUsed;
 		float	fXBy;
 		float	fYBy;
 		float	fXFrom;
 		float	fYFrom;
 		float	fXTo;
 		float	fYTo;
-		BOOL	fZoomContents;
+        bool	fZoomContents;
 	};
 
 	struct TimeScaleBehaviorContainer  : public IRecord
@@ -3269,8 +3269,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeScaleBehaviorContainer"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeScaleBehaviorContainer"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeScaleBehaviorContainer"), true );
+            oWriter.WriteNodeEnd ( _T("TimeScaleBehaviorContainer"), true, false );
 
 			oWriter.WriteString ( scaleBehaviorAtom.ToString () );
 			oWriter.WriteString ( behavior.ToString () );
@@ -3345,8 +3345,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeColorBehaviorAtom"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeColorBehaviorAtom"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeColorBehaviorAtom"), true );
+            oWriter.WriteNodeEnd ( _T("TimeColorBehaviorAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("fByPropertyUsed"),		 (DWORD)fByPropertyUsed, &oWriter );
 			CDirectory::WriteValueToNode ( _T("fFromPropertyUsed"),		 (DWORD)fFromPropertyUsed, &oWriter );
@@ -3363,11 +3363,11 @@ namespace Animations
 
 		DWORD	flag;
 
-		BOOL	fByPropertyUsed;
-		BOOL	fFromPropertyUsed;
-		BOOL	fToPropertyUsed;
-		BOOL	fColorSpacePropertyUsed;
-		BOOL	fDirectionPropertyUsed;
+        bool	fByPropertyUsed;
+        bool	fFromPropertyUsed;
+        bool	fToPropertyUsed;
+        bool	fColorSpacePropertyUsed;
+        bool	fDirectionPropertyUsed;
 
 		TimeAnimateColorBy	colorBy;
 		TimeAnimateColor	colorFrom;
@@ -3399,8 +3399,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeColorBehaviorContainer"), TRUE );
-			oWriter.WriteNodeEnd ( _T("TimeColorBehaviorContainer"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("TimeColorBehaviorContainer"), true );
+            oWriter.WriteNodeEnd ( _T("TimeColorBehaviorContainer"), true, false );
 
 			oWriter.WriteString ( colorBehaviorAtom.ToString () );
 			oWriter.WriteString ( behavior.ToString () );
@@ -3440,10 +3440,10 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("TimeModifierAtom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("TimeModifierAtom"), true );
 
 
-			oWriter.WriteNodeEnd ( _T("TimeModifierAtom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("TimeModifierAtom"), true, false );
 
 			CDirectory::WriteValueToNode ( _T("type"),	type, &oWriter );
             CDirectory::WriteValueToNode ( _T("value"),	Helpers::DoubleToString ( (double)value ), &oWriter );
@@ -3477,12 +3477,12 @@ namespace Animations
 			rgBeginTimeCondition	=	NULL;
 			extTimeContainer		=	NULL;
 
-			haveTimePropertyList	=	FALSE;
-			haveColorBehavior		=	FALSE;
-			haveSetBehavior			=	FALSE;
-			haveTimeContainer		=	FALSE;
-			haveClientVisualElement	=	FALSE;
-			haveExtTimeContainer	=	FALSE;
+            haveTimePropertyList	=	false;
+            haveColorBehavior		=	false;
+            haveSetBehavior			=	false;
+            haveTimeContainer		=	false;
+            haveClientVisualElement	=	false;
+            haveExtTimeContainer	=	false;
 		}
 
 		virtual ~SlaveContainer ()
@@ -3513,7 +3513,7 @@ namespace Animations
 
 			while ( lCurLen < m_oHeader.RecLen )
 			{
-				if ( ReadHeader.ReadFromStream(pStream) == FALSE)	
+                if ( ReadHeader.ReadFromStream(pStream) == false)
 					break;
 
 				lCurLen			+=	8 + ReadHeader.RecLen;
@@ -3522,7 +3522,7 @@ namespace Animations
 
 				if ( RT_TimePropertyList	== nRecord )
 				{
-					haveTimePropertyList			=	TRUE;
+                    haveTimePropertyList			=	true;
 					timePropertyList				=	new TimePropertyList4TimeNodeContainer ();
 					timePropertyList->ReadFromStream  ( ReadHeader, pStream );
 
@@ -3531,7 +3531,7 @@ namespace Animations
 
 				if ( RT_TimeSetBehaviorContainer == nRecord )
 				{
-					haveSetBehavior					=	TRUE;
+                    haveSetBehavior					=	true;
 					timeSetBehavior					=	new TimeSetBehaviorContainer();
 					timeSetBehavior->ReadFromStream  ( ReadHeader, pStream );
 
@@ -3540,7 +3540,7 @@ namespace Animations
 
 				if ( RT_TimeColorBehaviorContainer == nRecord )
 				{
-					haveColorBehavior				=	TRUE;
+                    haveColorBehavior				=	true;
 					timeColorBehavior				=	new TimeColorBehaviorContainer();
 					timeColorBehavior->ReadFromStream  ( ReadHeader, pStream );
 
@@ -3549,7 +3549,7 @@ namespace Animations
 
 				if ( RT_TimeClientVisualElement == nRecord )
 				{
-					haveClientVisualElement			=	TRUE;
+                    haveClientVisualElement			=	true;
 					clientVisualElement				=	new ClientVisualElementContainer ();
 					clientVisualElement->ReadFromStream  ( ReadHeader, pStream );
 
@@ -3561,7 +3561,7 @@ namespace Animations
 					extTimeContainer				=	CAnimationFactory::BuildAnimationObject (nRecord); // ExtTimeNodeContainer
 					if (extTimeContainer)
 					{
-						haveExtTimeContainer		=	TRUE;
+                        haveExtTimeContainer		=	true;
 						extTimeContainer->ReadFromStream  ( ReadHeader, pStream );
 						continue;
 					}
@@ -3581,8 +3581,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("SlaveContainer"), TRUE );
-			oWriter.WriteNodeEnd ( _T("SlaveContainer"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("SlaveContainer"), true );
+            oWriter.WriteNodeEnd ( _T("SlaveContainer"), true, false );
 
 			oWriter.WriteString (timeNodeAtom.ToString());
 
@@ -3612,12 +3612,12 @@ namespace Animations
 
 		IRecord*								extTimeContainer;	//	в спецификации такого элемента не должно быть
 
-		BOOL									haveTimePropertyList;
-		BOOL									haveColorBehavior;
-		BOOL									haveSetBehavior;
-		BOOL									haveTimeContainer;
-		BOOL									haveClientVisualElement;
-		BOOL									haveExtTimeContainer;
+        bool									haveTimePropertyList;
+        bool									haveColorBehavior;
+        bool									haveSetBehavior;
+        bool									haveTimeContainer;
+        bool									haveClientVisualElement;
+        bool									haveExtTimeContainer;
 	};
 
 	struct ExtTimeNodeContainer	: public IRecord
@@ -3626,19 +3626,19 @@ namespace Animations
 
 		ExtTimeNodeContainer()
 		{
-			haveTimePropertyList	=	FALSE;
-			haveAnimateBehavior		=	FALSE;			
-			haveSetBehavior			=	FALSE;
-			haveEffectBehavior		=	FALSE;
-			haveColorBehavior		=	FALSE;
-			haveMotionBehavior		=	FALSE;
-			haveRotationBehavior	=	FALSE;
-			haveScaleBehavior		=	FALSE;
-			haveSlaveContainer		=	FALSE;
-			haveClientVisualElement	=	FALSE;
-			haveSequenceAtom		=	FALSE;
-			haveIterateDataAtom		=	FALSE;
-			haveBuildList			=	FALSE;
+            haveTimePropertyList	=	false;
+            haveAnimateBehavior		=	false;
+            haveSetBehavior			=	false;
+            haveEffectBehavior		=	false;
+            haveColorBehavior		=	false;
+            haveMotionBehavior		=	false;
+            haveRotationBehavior	=	false;
+            haveScaleBehavior		=	false;
+            haveSlaveContainer		=	false;
+            haveClientVisualElement	=	false;
+            haveSequenceAtom		=	false;
+            haveIterateDataAtom		=	false;
+            haveBuildList			=	false;
 
 			timePropertyList		=	NULL;
 			timeAnimateBehavior		=	NULL;
@@ -3703,7 +3703,7 @@ namespace Animations
 
 			while ( lCurLen < m_oHeader.RecLen )
 			{
-				if ( ReadHeader.ReadFromStream(pStream) == FALSE)	
+                if ( ReadHeader.ReadFromStream(pStream) == false)
 					break;
 
 				lCurLen			+=	8 + ReadHeader.RecLen;
@@ -3729,7 +3729,7 @@ namespace Animations
 					if (buildList)
 					{
 						buildList->ReadFromStream  ( ReadHeader, pStream );
-						haveBuildList				=	TRUE;
+                        haveBuildList				=	true;
 
 						continue;
 					}
@@ -3753,7 +3753,7 @@ namespace Animations
 					if (timeSequenceDataAtom)
 					{
 						timeSequenceDataAtom->ReadFromStream  ( ReadHeader, pStream );
-						haveSequenceAtom		=	TRUE;
+                        haveSequenceAtom		=	true;
 
 						continue;
 					}
@@ -3765,7 +3765,7 @@ namespace Animations
 					if (timeIterateDataAtom)
 					{
 						timeIterateDataAtom->ReadFromStream  ( ReadHeader, pStream );
-						haveIterateDataAtom		=	TRUE;
+                        haveIterateDataAtom		=	true;
 
 						continue;
 					}
@@ -3777,7 +3777,7 @@ namespace Animations
 					if (timePropertyList)
 					{
 						timePropertyList->ReadFromStream  ( ReadHeader, pStream );
-						haveTimePropertyList	=	TRUE;
+                        haveTimePropertyList	=	true;
 
 						continue;
 					}
@@ -3789,7 +3789,7 @@ namespace Animations
 					if (timeEffectBehavior)
 					{
 						timeEffectBehavior->ReadFromStream  ( ReadHeader, pStream );
-						haveEffectBehavior		=	TRUE;
+                        haveEffectBehavior		=	true;
 						continue;
 					}
 				}
@@ -3800,7 +3800,7 @@ namespace Animations
 					if (timeColorBehavior)
 					{
 						timeColorBehavior->ReadFromStream  ( ReadHeader, pStream );
-						haveColorBehavior		=	TRUE;
+                        haveColorBehavior		=	true;
 
 						continue;
 					}
@@ -3812,7 +3812,7 @@ namespace Animations
 					if (timeMotionBehavior)
 					{
 						timeMotionBehavior->ReadFromStream  ( ReadHeader, pStream );
-						haveMotionBehavior		=	TRUE;
+                        haveMotionBehavior		=	true;
 
 						continue;
 					}
@@ -3824,7 +3824,7 @@ namespace Animations
 					if (timeSetBehavior)
 					{
 						timeSetBehavior->ReadFromStream  ( ReadHeader, pStream );
-						haveSetBehavior			=	TRUE;
+                        haveSetBehavior			=	true;
 
 						continue;
 					}
@@ -3836,7 +3836,7 @@ namespace Animations
 					if (timeAnimateBehavior)
 					{
 						timeAnimateBehavior->ReadFromStream  ( ReadHeader, pStream );
-						haveAnimateBehavior		=	TRUE;
+                        haveAnimateBehavior		=	true;
 
 						continue;
 					}
@@ -3848,7 +3848,7 @@ namespace Animations
 					if (timeRotationBehavior)
 					{
 						timeRotationBehavior->ReadFromStream  ( ReadHeader, pStream );
-						haveRotationBehavior	=	TRUE;
+                        haveRotationBehavior	=	true;
 
 						continue;
 					}
@@ -3860,7 +3860,7 @@ namespace Animations
 					if (timeScaleBehavior)
 					{
 						timeScaleBehavior->ReadFromStream  ( ReadHeader, pStream );
-						haveScaleBehavior		=	TRUE;
+                        haveScaleBehavior		=	true;
 
 						continue;
 					}
@@ -3868,7 +3868,7 @@ namespace Animations
 
 				if (RT_TimeClientVisualElement == nRecord)
 				{
-					haveClientVisualElement			=	TRUE;
+                    haveClientVisualElement			=	true;
 					clientVisualElement				=	new ClientVisualElementContainer ();
 					clientVisualElement->ReadFromStream  ( ReadHeader, pStream );
 
@@ -3881,7 +3881,7 @@ namespace Animations
 					if (rgSlave)
 					{
 						rgSlave->ReadFromStream  ( ReadHeader, pStream );
-						haveSlaveContainer		=	TRUE;
+                        haveSlaveContainer		=	true;
 
 						continue;
 					}
@@ -3913,8 +3913,8 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("ExtTimeNodeContainer"), TRUE );
-			oWriter.WriteNodeEnd ( _T("ExtTimeNodeContainer"), TRUE, FALSE );
+            oWriter.WriteNodeBegin ( _T("ExtTimeNodeContainer"), true );
+            oWriter.WriteNodeEnd ( _T("ExtTimeNodeContainer"), true, false );
 
 			oWriter.WriteString ( timeNodeAtom.ToString() );
 
@@ -4018,21 +4018,21 @@ namespace Animations
 
 		/*-------------------------------------- record --------------------------------- */
 
-		BOOL									haveTimePropertyList;
-		BOOL									haveSequenceAtom;
-		BOOL									haveIterateDataAtom;
+        bool									haveTimePropertyList;
+        bool									haveSequenceAtom;
+        bool									haveIterateDataAtom;
 
-		BOOL									haveEffectBehavior;
-		BOOL									haveMotionBehavior;
-		BOOL									haveAnimateBehavior;
-		BOOL									haveColorBehavior;
-		BOOL									haveRotationBehavior;
-		BOOL									haveScaleBehavior;
-		BOOL									haveSetBehavior;
-		BOOL									haveClientVisualElement;
-		BOOL									haveSlaveContainer;
+        bool									haveEffectBehavior;
+        bool									haveMotionBehavior;
+        bool									haveAnimateBehavior;
+        bool									haveColorBehavior;
+        bool									haveRotationBehavior;
+        bool									haveScaleBehavior;
+        bool									haveSetBehavior;
+        bool									haveClientVisualElement;
+        bool									haveSlaveContainer;
 
-		BOOL									haveBuildList;
+        bool									haveBuildList;
 	};
 
 	struct SlideTime10Atom : public IRecord
@@ -4070,9 +4070,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("SlideTime10Atom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("SlideTime10Atom"), true );
 
-			oWriter.WriteNodeEnd ( _T("SlideTime10Atom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("SlideTime10Atom"), true, false );
 
 			oWriter.WriteNodeEnd ( _T("SlideTime10Atom") );
 
@@ -4119,10 +4119,10 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("SlideFlags10Atom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("SlideFlags10Atom"), true );
 
 
-			oWriter.WriteNodeEnd ( _T("SlideFlags10Atom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("SlideFlags10Atom"), true, false );
 
 
 			oWriter.WriteNodeEnd ( _T("SlideFlags10Atom") );
@@ -4166,9 +4166,9 @@ namespace Animations
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
-			oWriter.WriteNodeBegin ( _T("HashCode10Atom"), TRUE );
+            oWriter.WriteNodeBegin ( _T("HashCode10Atom"), true );
 
-			oWriter.WriteNodeEnd ( _T("HashCode10Atom"), TRUE, FALSE );
+            oWriter.WriteNodeEnd ( _T("HashCode10Atom"), true, false );
 
 			oWriter.WriteNodeEnd ( _T("HashCode10Atom") );
 
@@ -4309,7 +4309,7 @@ namespace Animations
 
 		}
 
-		BOOL Create (ExtTimeNodeContainer* pTimeNode)
+        bool Create (ExtTimeNodeContainer* pTimeNode)
 		{
 			return FindBuildList (pTimeNode);
 		}
@@ -4327,23 +4327,23 @@ namespace Animations
 
 	private:
 
-		inline BOOL FindBuildList ( ExtTimeNodeContainer* pContainer )
+        inline bool FindBuildList ( ExtTimeNodeContainer* pContainer )
 		{
 			if ( pContainer->buildList )
 			{
 				for ( long i = 0; i < (long)pContainer->buildList->rgChildRec.size(); ++i )
 					m_arrBuilds.push_back(EffectBuild(pContainer->buildList->rgChildRec[i]->buildAtom.shapeIdRef,	pContainer->buildList->rgChildRec[i]->paraBuildAtom.buildLevel) );
 
-				return TRUE;
+                return true;
 			}
 
 			for ( int i = 0; i < (int)pContainer->rgExtTimeNodeChildren.size(); ++i )
 			{
 				if (FindBuildList ( pContainer->rgExtTimeNodeChildren [i]) )
-					return TRUE;
+                    return true;
 			}
 
-			return TRUE;
+            return true;
 		}
 
 
@@ -4370,7 +4370,7 @@ namespace Animations
 			Clear ();
 		}
 
-		inline BOOL				Build (ExtTimeNodeContainer* pContainer)
+        inline bool				Build (ExtTimeNodeContainer* pContainer)
 		{
 			if (pContainer)
 			{	
@@ -4379,8 +4379,8 @@ namespace Animations
 #ifdef _DEBUG_LOG
 				ATLTRACE(_T("======================================== Slide ========================================\n"));
 #endif
-				m_bSaveEffect		=	FALSE;
-				m_HaveAfterEffect	=	FALSE;
+                m_bSaveEffect		=	false;
+                m_HaveAfterEffect	=	false;
 
 				m_oParagraphBuilds.Create(pContainer);
 
@@ -4395,7 +4395,7 @@ namespace Animations
 				return (0 != m_oAnimation.size());
 			}
 
-			return FALSE;
+            return false;
 		}
 
 		inline EffectsMap&		GetAnimation ()
@@ -4439,7 +4439,7 @@ namespace Animations
 
 						//m_oTopEffect.m_nBeginTime	=	static_cast<TimeConditionContainer*> ( pContainer->timeCondition[0] )->m_oTimeConditionAtom.m_nTimeDelay;
 
-						m_bSaveEffect	=	FALSE;
+                        m_bSaveEffect	=	false;
 					}
 
 					// setup accelerate - decelerate
@@ -4458,7 +4458,7 @@ namespace Animations
 						SlaveContainer* pSlave	= pContainer->rgSlave;
 						if(pSlave->haveSetBehavior)				// после анимации к объекту может быть применена дополнительная анимация 
 						{
-							m_HaveAfterEffect					=	TRUE;
+                            m_HaveAfterEffect					=	true;
 
 							// эффект исчезновения элемента (Appear) 
 							m_oAfterEffect.m_nDuration			=	1.0;
@@ -4490,11 +4490,11 @@ namespace Animations
 				//	нужно из всех объектов (*Behavior) для конкретного эффекта,
 				//	который заранее прочитан в m_oTopEffect дополнять параметры из потомков
 
-				if ( FALSE == m_bSaveEffect )
+                if ( false == m_bSaveEffect )
 				{
 					AddAnimation ( pContainer, nID );
 
-					m_bSaveEffect	=	TRUE;
+                    m_bSaveEffect	=	true;
 				}
 
 #ifdef _DEBUG_LOG
@@ -4590,7 +4590,7 @@ namespace Animations
 
 			m_oTopEffect.m_dTimeAccel		=	0.0;
 			m_oTopEffect.m_dTimeDecel		=	0.0;
-			m_oTopEffect.m_bIgnoreShape		=	FALSE;
+            m_oTopEffect.m_bIgnoreShape		=	false;
 		}
 
 		inline void	AddAfterEffect (long nID)
@@ -4608,12 +4608,12 @@ namespace Animations
 				AddEffectTopMap (m_oAfterEffect,nID);
 
 				m_oAfterEffect.m_nRefID		=	-1;
-				m_HaveAfterEffect			=	FALSE;
+                m_HaveAfterEffect			=	false;
 			}
 		}
 		inline void	AddEffectTopMap (Effect& oEffect, long nID)
 		{
-			oEffect.m_bRemoveEmptyBlocks	=	TRUE;	//	ALWAYS
+            oEffect.m_bRemoveEmptyBlocks	=	true;	//	ALWAYS
 
 			EffectToMap (oEffect);
 #ifdef _DEBUG
@@ -4827,7 +4827,7 @@ namespace Animations
 			m_oNodeTiming.Push ( m_dEffectDuration, m_oTopEffect.m_nEffectNodeType );
 		}
 
-		inline BOOL MediumEffectDuration (ExtTimeNodeContainer* pContainer)
+        inline bool MediumEffectDuration (ExtTimeNodeContainer* pContainer)
 		{
 			if ( pContainer->timeNodeAtom.m_bDurationProperty )
 			{
@@ -4840,10 +4840,10 @@ namespace Animations
 				}
 			}
 
-			return TRUE;
+            return true;
 		}
 
-		inline BOOL MediumEffectTimeDelay (ExtTimeNodeContainer* pContainer)
+        inline bool MediumEffectTimeDelay (ExtTimeNodeContainer* pContainer)
 		{
 			if ( pContainer->timeNodeAtom.m_bDurationProperty )
 			{
@@ -4859,9 +4859,9 @@ namespace Animations
 				}
 			}
 
-			return TRUE;
+            return true;
 		}
-		inline BOOL FindEffectMothionPath (ExtTimeNodeContainer* pContainer)
+        inline bool FindEffectMothionPath (ExtTimeNodeContainer* pContainer)
 		{
 			// сложные эффект может содержать в себе перемещение по траектории
 			if (52 == m_oTopEffect.m_nEffectID)			//	ArcUp
@@ -4870,25 +4870,25 @@ namespace Animations
 				{
 					m_ComposeEffectMothionPath	=	pContainer->timeMotionBehavior->m_VarPath.stringValue;
 					// debug::trace (m_ComposeEffectMothionPath);
-					return TRUE;
+                    return true;
 				}
 
 				for ( int i = 0; i < (int)pContainer->rgExtTimeNodeChildren.size(); ++i )
 					FindEffectMothionPath ( pContainer->rgExtTimeNodeChildren [i] );
 
-				return TRUE;
+                return true;
 			}
 
-			return FALSE;
+            return false;
 		}
 
 		inline void ReadPropertyIgnoreShape (const TimeBehaviorContainer& container)
 		{
 			if (2 == container.clientVisualElement.m_oVisualShapeAtom.m_Type)										//	указывает на то что анимация применяется к тексту
 			{
-				m_oTopEffect.m_bIgnoreShape			=	TRUE;
+                m_oTopEffect.m_bIgnoreShape			=	true;
 				m_oTopEffect.m_nTextSequence		=	container.clientVisualElement.m_oVisualShapeAtom.m_nData1;	//	номер параграфа - не нормальзован
-				m_oTopEffect.m_bRemoveEmptyBlocks	=	TRUE;
+                m_oTopEffect.m_bRemoveEmptyBlocks	=	true;
 
 				for (long i = 0; i < (long)m_arParIndexer.size(); ++i)
 				{
@@ -4900,7 +4900,7 @@ namespace Animations
 			}
 		}
 
-		inline BOOL UpdateParagraph ()
+        inline bool UpdateParagraph ()
 		{
 			if ((long)m_arParIndexer.size())
 			{
@@ -4936,10 +4936,10 @@ namespace Animations
 					}
 				}
 
-				return TRUE;
+                return true;
 			}
 
-			return FALSE;
+            return false;
 		}
 
 		//
@@ -4952,7 +4952,7 @@ namespace Animations
 				if (GetMediaID (pContainer))
 				{
 					AddAnimation (pContainer, m_nMediaID);
-					m_bSaveEffect	=	TRUE;
+                    m_bSaveEffect	=	true;
 				}
 
 				m_arrMedia.clear ();
@@ -4970,7 +4970,7 @@ namespace Animations
 					m_nMediaID	=	pContainer->clientVisualElement->m_oVisualShapeAtom.m_nObjectIdRef;	
 
 					if (0 == m_nMediaPush)
-						return TRUE;
+                        return true;
 
 					--m_nMediaPush;
 				}
@@ -4979,13 +4979,13 @@ namespace Animations
 			for (long i = 0; i < (long)pContainer->rgExtTimeNodeChildren.size(); ++i )
 			{
 				if (GetMediaID(pContainer->rgExtTimeNodeChildren [i]))
-					return TRUE;
+                    return true;
 			}
 
-			return FALSE;
+            return false;
 		}
 
-		inline BOOL GetAttachedShapeToVideo (ExtTimeNodeContainer* pContainer)
+        inline bool GetAttachedShapeToVideo (ExtTimeNodeContainer* pContainer)
 		{
 			if (TL_TNT_Media == pContainer->GetNodeType ())																//	нод типа Media
 			{
@@ -4994,20 +4994,20 @@ namespace Animations
 					m_arrMedia.push_back (pContainer->clientVisualElement->m_oVisualShapeAtom.m_nObjectIdRef);
 
 					if (2 == (int)m_arrMedia.size())																//	у видео есть статическое изображение
-						return TRUE;
+                        return true;
 				}
 			}
 
 			for (long i = 0; i < (long)pContainer->rgExtTimeNodeChildren.size(); ++i )
 			{
 				if (CNodeTiming::AfterPreviousNode == pContainer->rgExtTimeNodeChildren [i]->GetEffectNodeType ())		//	нод с описанием эффекта
-					return FALSE;
+                    return false;
 
 				if (GetAttachedShapeToVideo(pContainer->rgExtTimeNodeChildren [i]))
-					return TRUE;
+                    return true;
 			}
 
-			return FALSE;
+            return false;
 		}
 
 		//
@@ -5026,7 +5026,7 @@ namespace Animations
 
 		Effect				m_oAfterEffect;
 
-		BOOL				m_bSaveEffect;
+        bool				m_bSaveEffect;
 		Effect				m_oTopEffect;
 		CNodeTiming			m_oNodeTiming;
 
@@ -5035,7 +5035,7 @@ namespace Animations
 		TimeArray			m_arBeginTimes;
 
 		CString				m_ComposeEffectMothionPath;
-		BOOL				m_HaveAfterEffect;
+        bool				m_HaveAfterEffect;
 
 		EffectsMap			m_oAnimation;
 		CParagraphBuilds	m_oParagraphBuilds;
@@ -5080,7 +5080,7 @@ public:
 
 		while ( lCurLen < m_oHeader.RecLen )
 		{
-			if ( ReadHeader.ReadFromStream(pStream) == FALSE)	
+            if ( ReadHeader.ReadFromStream(pStream) == false)
 				break;
 
 			lCurLen += 8 + ReadHeader.RecLen;
@@ -5115,10 +5115,10 @@ public:
 	{	
 		XmlUtils::CXmlWriter oWriter;
 
-		oWriter.WriteNodeBegin ( _T("PP10SlideBinaryTagExtension"), TRUE );
+        oWriter.WriteNodeBegin ( _T("PP10SlideBinaryTagExtension"), true );
 
 
-		oWriter.WriteNodeEnd ( _T("PP10SlideBinaryTagExtension"), TRUE, FALSE );
+        oWriter.WriteNodeEnd ( _T("PP10SlideBinaryTagExtension"), true, false );
 
 		// oWriter.WriteString ( m_oSlideTime10Atom.ToString () );
 		// oWriter.WriteString ( m_oHashCode10Atom.ToString () );

@@ -16,7 +16,7 @@ class CPPTFileReader
 public: 
 	CPPTFileReader(POLE::Storage *pStg, CStringW strTemp): 
 		   m_pPowerPointStg(pStg),  
-		   m_bIsPPTFile(FALSE), 
+           m_bIsPPTFile(false),
 		   m_pDocStream(NULL), 
 		   m_pPictureStream(NULL),
 		   m_lImagesCount(0),
@@ -63,7 +63,7 @@ public:
 		FileSystem::Directory::DeleteDirectory(m_strMemoryForder);
 	}
 
-	BOOL IsPowerPoint() 
+    bool IsPowerPoint()
 	{ 
 		return m_bIsPPTFile;
 	} 
@@ -82,7 +82,7 @@ public:
 		//m_oDocumentInfo.m_arUsers[0]->m_oDocument.GetRecordsByType(&oArrayBSE, true, false);
 
 		// читаем картинки...
-		BOOL bRes = SavePictures();
+        bool bRes = SavePictures();
 		
 
 		if (m_oDocumentInfo.m_arUsers.size() > 0)
@@ -105,10 +105,10 @@ public:
 
 protected: 
 
-	BOOL ReadCurrentUser(POLE::Stream *pStm)
+    bool ReadCurrentUser(POLE::Stream *pStm)
 	{
 		SRecordHeader oHeader; 
-		BOOL isPP = FALSE; 
+        bool isPP = false;
 		
 		if( oHeader.ReadFromStream(pStm))
 		{ 
@@ -169,7 +169,7 @@ protected:
 			
 			// здесь создаем xml
 
-			if ( oHeader.ReadFromStream(pStm) == FALSE )
+            if ( oHeader.ReadFromStream(pStm) == false )
 				break;
 
 			oHeader.ToXmlWriter(&oWriter, pStm);
@@ -182,13 +182,13 @@ protected:
 		return 0;
 	}
 	
-	BOOL SavePictures()
+    bool SavePictures()
 	{
 		POLE::Stream* pStream = GetPictureStream();
 
         if (NULL == pStream)
 		{
-			return FALSE;
+            return false;
 		}
 		
 		SRecordHeader oHeader;
@@ -210,7 +210,7 @@ protected:
 			
 			CMetaFileBuffer oMetaFile;
 			
-			if (oHeader.ReadFromStream(pStream) == FALSE )
+            if (oHeader.ReadFromStream(pStream) == false )
 			{
 				break;
 			}
@@ -457,13 +457,13 @@ private:
 	POLE::Stream *				m_pDocStream; 
 	POLE::Stream *				m_pPictureStream; 
 	POLE::Storage*				m_pPowerPointStg; 
-	BOOL						m_bIsPPTFile; 
+    bool						m_bIsPPTFile;
 
 public:	
 	// для картинок
 	CStringW					m_strMemoryForder;
 
-	std::vector<BOOL>			m_arLoadImageFlags;
+    std::vector<bool>			m_arLoadImageFlags;
 	DWORD						m_lImagesCount;
 
 public:

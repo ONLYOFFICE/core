@@ -126,7 +126,7 @@ public:
 		return oWriter.GetXmlString();
 	}
 
-	BOOL IsSlide()
+    bool IsSlide()
 	{
 		for (int nIndex = 0; nIndex < m_arRecords.size(); ++nIndex)
 		{

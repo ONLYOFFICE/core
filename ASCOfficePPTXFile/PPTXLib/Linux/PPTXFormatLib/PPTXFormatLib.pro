@@ -95,8 +95,6 @@ SOURCES += pptxformatlib.cpp \
     ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
     ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/FilePosix.cpp \
     ../../../PPTXFormat/Logic/Controls.cpp
-#../../../Directory.cpp \
-#../../File.cpp
 
 HEADERS += pptxformatlib.h \
 ../../../ASCOfficeDrawingConverter.h \

@@ -52,9 +52,9 @@ public:
 
 	HRESULT GetAdditionalParam (CString sParamName, VARIANT* ParamValue);
 private:
-	BOOL OpenFile(CString sFileName);
+    bool OpenFile(CString sFileName);
 
-	BOOL CloseFile();
+    bool CloseFile();
 
 	CString GetDirectory(CString strFileName);
 };

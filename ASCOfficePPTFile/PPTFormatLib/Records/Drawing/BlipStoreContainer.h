@@ -14,7 +14,7 @@ public:
 	{
 	}
 
-	void SetUpEmptyInfos(std::vector<BOOL>* pArray)
+    void SetUpEmptyInfos(std::vector<bool>* pArray)
 	{
 		if (NULL == pArray)
 			return;

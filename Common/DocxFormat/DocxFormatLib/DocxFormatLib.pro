@@ -64,7 +64,7 @@ SOURCES += docxformatlib.cpp \
     ../Source/XML/stringcommon.cpp \
     ../Source/MathEquation/MathEquation.cpp \
     ../Source/Base/unicode_util.cpp \
-    ../../../ASCOfficeDocFile/pole/pole.cpp
+    ../Common/3dParty/pole/pole.cpp
 
 HEADERS += docxformatlib.h \
     ../Source/Base/Base.h \

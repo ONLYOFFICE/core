@@ -79,7 +79,7 @@ SOURCES +=  \
     ../../DocDocxConverter/OfficeDrawing/Record.cpp \
     ../../DocDocxConverter/OfficeDrawing/RecordFactory.cpp \
     ../../DocDocxConverter/OfficeDrawing/ShapeTypeFactory.cpp \
-    ../../pole/pole.cpp
+    ../../../Common/3dParty/pole/pole.cpp
 
 
 
@@ -265,7 +265,7 @@ HEADERS +=  \
     ../../DocDocxConverter/OfficeDrawing/Shapetypes/SunType.h \
     ../../DocDocxConverter/OfficeDrawing/Shapetypes/TextboxType.h \
     ../../DocDocxConverter/OfficeDrawing/Shapetypes/TrapezoidType.h \
-    ../../pole/pole.h
+    ../../../Common/3dParty/pole/pole.h
 
 
 

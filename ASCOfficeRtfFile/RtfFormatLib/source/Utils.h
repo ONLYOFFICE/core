@@ -198,9 +198,16 @@ public:
         }
         static void Decode( CString& sText, NFileWriter::CBufferedFileWriter& oFileWriter ) //сразу записывает в файл
         {
+#if defined(_WIN32) || defined(_WIN64)
             CStringA sAnsiText; sAnsiText = sText;
-            int nStart = 0;
             int nLenth = sAnsiText.GetLength();
+            BYTE* BufferString = (BYTE*)sAnsiText.GetBuffer() ;
+#else
+            std::string sAnsiText(sText.begin(),sText.end());
+            int nLenth = sAnsiText.length();
+            BYTE* BufferString = (BYTE*)sAnsiText.c_str() ;
+#endif
+            int nStart = 0;
             int nFindRes = -1;
             CString sFindString = _T("{\\*filename ");
             int nFindStringLen = sFindString.GetLength();
@@ -208,7 +215,7 @@ public:
             int nFindEndLen = sFindEnd.GetLength();
             while( -1 != (nFindRes = sText.Find( sFindString, nStart )) )
             {
-                oFileWriter.Write( (BYTE*)sAnsiText.GetBuffer() + nStart, nFindRes - nStart );
+                oFileWriter.Write( BufferString + nStart, nFindRes - nStart );
                 sText.ReleaseBuffer();
 
                 int nRightBound = 0;
@@ -220,7 +227,7 @@ public:
 
                 nStart = nRightBound + nFindEndLen;
             }
-            oFileWriter.Write( (BYTE*)sAnsiText.GetBuffer() + nStart, nLenth - nStart );
+            oFileWriter.Write( BufferString + nStart, nLenth - nStart );
             sText.ReleaseBuffer();
         }
     private:

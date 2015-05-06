@@ -797,6 +797,10 @@
 			</File>
 		</Filter>
 		<File
+			RelativePath="..\source\ConvertationManager.cpp"
+			>
+		</File>
+		<File
 			RelativePath="..\source\ConvertationManager.h"
 			>
 		</File>

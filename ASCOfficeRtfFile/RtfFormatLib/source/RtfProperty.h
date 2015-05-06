@@ -1427,6 +1427,12 @@ public:
 				if( nReplaceNumber >= 0 && nReplaceNumber < sResult.GetLength() )
 				{
 					int nLevel = sResult[ nReplaceNumber ];
+
+					if (nLevel > 11)
+					{//001.rtf 
+						nReplaceNumber++;
+						nLevel = sResult[ nReplaceNumber];
+					}
 					CString sExt;
 					sExt.AppendFormat( _T("%%%d"), nLevel );
 					sResult.Delete( nReplaceNumber );

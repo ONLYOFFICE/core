@@ -1,7 +1,7 @@
 #pragma once
 
-#include "../pole/pole.h"
-//#include "../../Common/DocxFormat/Source/CompoundDocument/pole.h"
+#include "../../Common/3dParty/pole/pole.h"
+
 namespace DocFileFormat
 {
 	class StructuredStorageReader

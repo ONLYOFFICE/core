@@ -3,7 +3,7 @@
 #include "../XML/xmlutils.h"
 #include "../../../../DesktopEditor/common/File.h"
 
-#include "../../../../ASCOfficeDocFile/pole/pole.h"
+#include "../../../3dParty/pole/pole.h"
 #include "../Base/unicode_util.h"
 
 //по аналогии с /DesktopEditor/common/File.h только для CString

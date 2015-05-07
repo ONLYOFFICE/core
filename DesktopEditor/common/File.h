@@ -532,9 +532,9 @@ namespace NSFile
 
 	class CFileBinary
 	{
-    protected:
+	protected:
 		FILE* m_pFile;
-		
+
 		long m_lFilePosition;
 		long m_lFileSize;
 
@@ -558,7 +558,7 @@ namespace NSFile
 			if (m_pFile != NULL)
 			{
 				fclose(m_pFile);
-				m_pFile = NULL;		
+				m_pFile = NULL;
 			}
 		}
 
@@ -579,33 +579,33 @@ namespace NSFile
 #else
 			BYTE* pUtf8 = NULL;
 			LONG lLen = 0;
-            CUtf8Converter::GetUtf8StringFromUnicode(sFileName.c_str(), sFileName.length(), pUtf8, lLen, false);
-            m_pFile = fopen((char*)pUtf8, "rb");
+			CUtf8Converter::GetUtf8StringFromUnicode(sFileName.c_str(), sFileName.length(), pUtf8, lLen, false);
+			m_pFile = fopen((char*)pUtf8, "rb");
 
-            delete [] pUtf8;
+			delete [] pUtf8;
 #endif		
-            if (NULL == m_pFile)
+			if (NULL == m_pFile)
 				return false;
-			
+
 			fseek(m_pFile, 0, SEEK_END);
 			m_lFileSize = ftell(m_pFile);
 			fseek(m_pFile, 0, SEEK_SET);
 
 			m_lFilePosition = 0;
 
-            if (0 < sFileName.length())
-            {
-                if (((wchar_t)'/') == sFileName.c_str()[sFileName.length() - 1])
-                    m_lFileSize = 0x7FFFFFFF;
-            }
+			if (0 < sFileName.length())
+			{
+				if (((wchar_t)'/') == sFileName.c_str()[sFileName.length() - 1])
+					m_lFileSize = 0x7FFFFFFF;
+			}
 
-            unsigned int err = 0x7FFFFFFF;
-            unsigned int cur = (unsigned int)m_lFileSize;
-            if (err == cur)
-            {
-                CloseFile();
-                return false;
-            }
+			unsigned int err = 0x7FFFFFFF;
+			unsigned int cur = (unsigned int)m_lFileSize;
+			if (err == cur)
+			{
+				CloseFile();
+				return false;
+			}
 
 			return true;
 		}
@@ -617,22 +617,22 @@ namespace NSFile
 #else
 			BYTE* pUtf8 = NULL;
 			LONG lLen = 0;
-            CUtf8Converter::GetUtf8StringFromUnicode(sFileName.c_str(), sFileName.length(), pUtf8, lLen, false);
+			CUtf8Converter::GetUtf8StringFromUnicode(sFileName.c_str(), sFileName.length(), pUtf8, lLen, false);
 			m_pFile = fopen((char*)pUtf8, "wb");
 			delete [] pUtf8;
 #endif		
 			if (NULL == m_pFile)
 				return false;
-			
+
 			m_lFilePosition = 0;
 			return true;
 		}
 		bool CreateTempFile()
 		{
-			m_pFile = tmpfile ();
+			m_pFile = tmpfile();
 			if (NULL == m_pFile)
 				return false;
-			
+
 			m_lFilePosition = 0;
 			return true;
 		}
@@ -658,7 +658,7 @@ namespace NSFile
 			BYTE* pData = NULL;
 			LONG lLen = 0;
 
-                        CUtf8Converter::GetUtf8StringFromUnicode(strXml.c_str(), (LONG)strXml.length(), pData, lLen, bIsBOM);
+			CUtf8Converter::GetUtf8StringFromUnicode(strXml.c_str(), (LONG)strXml.length(), pData, lLen, bIsBOM);
 
 			WriteFile(pData, lLen);
 
@@ -670,12 +670,12 @@ namespace NSFile
 			nBytesCount = 0;
 			bool bRes = false;
 			CFileBinary oFileBinary;
-			if(oFileBinary.OpenFile(strFileName))
+			if (oFileBinary.OpenFile(strFileName))
 			{
 				long nFileSize = oFileBinary.GetFileSize();
 				BYTE* pData = new BYTE[nFileSize];
 				DWORD dwSizeRead;
-				if(oFileBinary.ReadFile(pData, nFileSize, dwSizeRead))
+				if (oFileBinary.ReadFile(pData, nFileSize, dwSizeRead))
 				{
 					oFileBinary.CloseFile();
 					*ppData = pData;
@@ -692,12 +692,12 @@ namespace NSFile
 			bool bRes = false;
 			BYTE* pData = NULL;
 			DWORD nDataSize;
-			if(CFileBinary::ReadAllBytes(strFileName, &pData, nDataSize))
+			if (CFileBinary::ReadAllBytes(strFileName, &pData, nDataSize))
 			{
 				//remove BOM if exist
 				BYTE* pDataStart = pData;
 				int nBOMSize = 3;
-				if(nDataSize > nBOMSize && 0xef == pDataStart[0] && 0xbb == pDataStart[1] && 0xbf == pDataStart[2])
+				if (nDataSize > nBOMSize && 0xef == pDataStart[0] && 0xbb == pDataStart[1] && 0xbf == pDataStart[2])
 				{
 					pDataStart += nBOMSize;
 					nDataSize -= nBOMSize;
@@ -723,11 +723,11 @@ namespace NSFile
 #else
 			BYTE* pUtf8 = NULL;
 			LONG lLen = 0;
-            CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
+			CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
 			FILE* pFile = fopen((char*)pUtf8, "rb");
 			delete [] pUtf8;
 #endif
-			if(NULL != pFile)
+			if (NULL != pFile)
 			{
 				fclose(pFile);
 				return true;
@@ -737,7 +737,7 @@ namespace NSFile
 		}
 		static bool Copy(const std::wstring&  strSrc, const std::wstring&  strDst)
 		{
-			if(strSrc == strDst)
+			if (strSrc == strDst)
 				return true;
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
 			std::wifstream  src(strSrc.c_str(), std::ios::binary);
@@ -745,7 +745,7 @@ namespace NSFile
 #else
 			BYTE* pUtf8Src = NULL;
 			LONG lLenSrc = 0;
-            CUtf8Converter::GetUtf8StringFromUnicode(strSrc.c_str(), strSrc.length(), pUtf8Src, lLenSrc, false);
+			CUtf8Converter::GetUtf8StringFromUnicode(strSrc.c_str(), strSrc.length(), pUtf8Src, lLenSrc, false);
 			BYTE* pUtf8Dst = NULL;
 			LONG lLenDst = 0;
 			CUtf8Converter::GetUtf8StringFromUnicode(strDst.c_str(), strDst.length(), pUtf8Dst, lLenDst, false);
@@ -756,7 +756,7 @@ namespace NSFile
 			delete [] pUtf8Src;
 			delete [] pUtf8Dst;
 #endif
-			if(src.is_open() && dst.is_open())
+			if (src.is_open() && dst.is_open())
 			{
 				dst << src.rdbuf();
 				src.close();
@@ -773,7 +773,7 @@ namespace NSFile
 #else
 			BYTE* pUtf8 = NULL;
 			LONG lLen = 0;
-            CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
+			CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
 			int nRes = std::remove((char*)pUtf8);
 			delete [] pUtf8;
 #endif
@@ -781,18 +781,18 @@ namespace NSFile
 		}
 		static bool Move(const std::wstring&  strSrc, const std::wstring&  strDst)
 		{
-			if(strSrc == strDst)
+			if (strSrc == strDst)
 				return true;
-			if(Copy(strSrc, strDst))
-				if(Remove(strSrc))
+			if (Copy(strSrc, strDst))
+				if (Remove(strSrc))
 					return true;
 			return false;
 		}
 
 		static std::wstring GetTempPath()
-		{			
+		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-			wchar_t pBuffer [MAX_PATH + 1];
+			wchar_t pBuffer[MAX_PATH + 1];
 			memset(pBuffer, 0, sizeof(wchar_t) * (MAX_PATH + 1));
 			::GetTempPathW(MAX_PATH, pBuffer);
 
@@ -819,7 +819,7 @@ namespace NSFile
 			if (NULL == folder)
 				folder = "/tmp";
 
-                        return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)folder, strlen(folder));
+			return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)folder, strlen(folder));
 #endif			
 		}
 		static std::wstring CreateTempFileWithUniqueName(const std::wstring& strFolderPathRoot, const std::wstring& Prefix)
@@ -843,6 +843,76 @@ namespace NSFile
 			std::string sRes = pcRes;
 			return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sRes.c_str(), sRes.length());
 #endif	
+		}
+		static bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder, wchar_t* wsName = NULL)
+		{
+			// TODO: Реализовать когда wsName != NULL
+
+			std::wstring wsTemp, wsFileName;
+			FILE *pTempFile = NULL;
+#if defined(_WIN32) || defined (_WIN64)
+			wchar_t *wsTempDir;
+			if ((wsTempDir = _wgetenv(L"TEMP")) && (wsFolder == NULL))
+			{
+				wsTemp = std::wstring(wsTempDir);
+#else
+			char *wsTempDirA;
+			if ((wsTempDirA = getenv("TEMP")) && (wsFolder == NULL))
+			{
+				std::wstring wsTempDir = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)wsTempDirA, strlen(wsTempDirA));
+				wsTemp = wsTempDir.c_str();
+#endif
+				wsTemp.append(L"/");
+			}
+			else if (wsFolder != NULL)
+			{
+				wsTemp = std::wstring(wsFolder);
+				wsTemp.append(L"/");
+			}
+			else
+			{
+				wsTemp = L"";
+			}
+			wsTemp.append(L"x");
+			int nTime = (int)time(NULL);
+			for (int nIndex = 0; nIndex < 1000; ++nIndex)
+			{
+				wsFileName = wsTemp;
+#if defined(_WIN32) || defined (_WIN64)
+				wchar_t buff[32] ={};
+				_itow(nTime + nIndex, buff, 10);
+				wsFileName.append(buff, wcslen(buff));
+#else
+				wsFileName.append(std::to_wstring(nTime + nIndex));
+#endif
+				if (wsExt)
+				{
+					wsFileName.append(wsExt);
+				}
+#if defined (_WIN32) || defined (_WIN64)
+				if (!(pTempFile = _wfopen(wsFileName.c_str(), L"r")))
+				{
+					if (!(pTempFile = _wfopen(wsFileName.c_str(), wsMode)))
+#else
+				std::string sFileName = U_TO_UTF8(wsFileName);
+				if (!(pTempFile = fopen(sFileName.c_str(), "r")))
+				{
+					std::wstring strMode(wsMode);
+					std::string sMode = U_TO_UTF8(strMode);
+					if (!(pTempFile = fopen(sFileName.c_str(), sMode.c_str())))
+#endif
+					{
+						return FALSE;
+					}
+					*pwsName = wsFileName;
+					*ppFile = pTempFile;
+					return TRUE;
+				}
+
+				fclose(pTempFile);
+			}
+
+			return FALSE;
 		}
 	};
 

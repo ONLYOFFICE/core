@@ -63,7 +63,7 @@ bool BinDocxRW::CDocxSerializer::ConvertDoctToDocx(const CString& sSrcFileName, 
 				return true;
         }
     }
-	return false;
+    return false;
 }
 bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions)
 {

@@ -101,44 +101,41 @@ bool COfficeFileFormatChecker::isPptFormatFile	(POLE::Storage * storage)
 }
 bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
 {
-	COfficeUtils OfficeUtils(NULL);
-
+    //приоритет как оказывается важен
+    //Metamorphic Manual for windows 28415.doc
 	POLE::Storage storage(fileName.c_str());
+    if (storage.open())
+    {
+        if ( isDocFormatFile(&storage) )
+        {
+            nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
+            return true;
+        }
+        else if ( isXlsFormatFile(&storage) )
+        {
+            nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
+            return true;
+        }
+        else if ( isPptFormatFile(&storage) )
+        {
+            nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
+            return true;
+        }
+    }
 
+    COfficeUtils OfficeUtils(NULL);
     if (OfficeUtils.IsArchive(fileName) == S_OK)
 	{
-		if ( isOOXFormatFile(fileName) )
-		{
-			//inside
-		}
-		else if ( isOpenOfficeFormatFile(fileName) )
-		{
-			//inside
-		}
-		else if ( isOnlyOfficeFormatFile(fileName) )
-		{
-			//inside
-		}
+             if ( isOOXFormatFile(fileName) )           return true;
+        else if ( isOpenOfficeFormatFile(fileName) )    return true;
+        else if ( isOnlyOfficeFormatFile(fileName) )    return true;
 	}
-	else if (storage.open())
-	{
-		if ( isDocFormatFile(&storage) )
-		{
-            nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC;
-        }
-		else if ( isXlsFormatFile(&storage) )
-		{
-            nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS;
-        }
-		else if ( isPptFormatFile(&storage) )
-		{
-            nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
-        }
-	}
-	else 
-	{
+
+
+    // others
+    {
 		CFile file;
-		if (file.OpenFile(std_string2string(fileName)) == false) return _T("");
+        if (file.OpenFile(std_string2string(fileName)) != S_OK ) return _T("");
 		
 		unsigned char* buffer = new unsigned char[4096]; //enaf !!
 		if (!buffer){file.CloseFile();return _T("");}

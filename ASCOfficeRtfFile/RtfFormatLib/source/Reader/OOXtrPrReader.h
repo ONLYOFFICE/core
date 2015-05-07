@@ -36,11 +36,11 @@ public:
 			oOutputProperty.Merge( oResultStyle->m_oRowProp );
 
 		if (m_ooxTableRowProps->m_oTblHeader.IsInit() )
-			oOutputProperty.m_bIsHeader = m_ooxTableRowProps->m_oTblHeader->m_oVal.ToBool();
+			oOutputProperty.m_bIsHeader = m_ooxTableRowProps->m_oTblHeader->m_oVal.ToBool() ? 1 : 0;
 		
 //todooo непонятнка
 //		if (m_ooxTableRowProps->m_oCantSplit.IsInit() )
-//             oOutputProperty.m_bIsHeader= m_ooxTableRowProps->m_oCantSplit->m_oVal.ToBool();
+//             oOutputProperty.m_bIsHeader= m_ooxTableRowProps->m_oCantSplit->m_oVal.ToBool() ? 1 : 0;
 		
 		if (m_ooxTableRowProps->m_oJc.IsInit() && m_ooxTableRowProps->m_oJc->m_oVal.IsInit())
 		{

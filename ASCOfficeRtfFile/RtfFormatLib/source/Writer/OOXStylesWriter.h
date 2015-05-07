@@ -23,7 +23,7 @@ public:
 	{
 		CString pathWord = sFolder + FILE_SEPARATOR_STR + _T("word");
 		
-		if( false == m_sFileXml.IsEmpty() ) 
+		//if( false == m_sFileXml.IsEmpty() ) 
 		{		
 			CFile file;
             if (file.CreateFile(pathWord + FILE_SEPARATOR_STR + _T("styles.xml"))) return false;
@@ -39,10 +39,10 @@ public:
 			file.CloseFile();
 			return true;
 		}
-		else
-		{
-			//todooo default style !!
-		}
+		//else
+		//{
+		//	//todooo default style !!
+		//}
 		return false;
 	}
 private: 

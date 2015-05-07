@@ -17,6 +17,14 @@ public:
 
     int m_nAnsiCodePage;
 	int m_nDeffFont;
+	
+	int m_bRtlGutter; 
+	int m_bRtl;
+	
+	int m_nThemelang;
+	int m_nThemelangfe;
+	int m_nThemelangcs;
+
 	int m_bHypCaps;//(doNotHyphenateCaps)\hyphcaps*	Switches hyphenation of capitalized words (default is on). Append 1 or leave control word by itself to toggle property on; append 0 to turn it off.
 	int m_bAutoHyp;//(autoHyphenation)\hyphauto*	Switches automatic hyphenation (default is off). Append 1 or leave control word by itself to toggle property on; append 0 to turn it off.
 	int m_nMaxHypen;//(consecutiveHyphenLimit)\hyphconsecN	N is maximum number of consecutive lines that are allowed to end in a hyphen. 0 means no limit.
@@ -48,31 +56,41 @@ public:
 	int m_nBeginningPageNumber; //\pgnstartN	Beginning page number (default is 1).
 
 //Compatibility Options
-		int m_nDisplayBackground;//(displayBackgroundShape)\viewbkspN	Boolean:0	Background shapes will not show in Page Layout View (default if omitted).1	Background shapes will show in Page Layout View.
-		int m_bUseTabAlignment;//\useltbaln	Do not forget last tab alignment.
+	int m_nDisplayBackground;//(displayBackgroundShape)\viewbkspN	Boolean:0	Background shapes will not show in Page Layout View (default if omitted).1	Background shapes will show in Page Layout View.
+	int m_bUseTabAlignment;//\useltbaln	Do not forget last tab alignment.
 
 //footnote, endnote property
-		std::vector<int> m_aSpecialFootnotes;
-		int m_nFootnoteNumberingFormat;
-		int m_nFootnoteStart; //\ftnstartN	Beginning footnote number (default is 1).
-		typedef enum{ fr_None,
-						fr_EachPage, //\ftnrstpg	Restart footnote numbering each page.
-						fr_EachSection, //\ftnrestart	Footnote numbers restart at each section. Microsoft Word for the Macintosh uses this control to restart footnote numbering at each page.
-						fr_Continuous //\ftnrstcont	Continuous footnote numbering (the default).
-					}FootnoteRestart;
-		FootnoteRestart m_eFootnoteRestart;
-		typedef enum{ fp_None,
-						fp_EndSection, //\endnotes	Footnotes at the end of the section (the default).
-						fp_EndDocument, //\enddoc	Footnotes at the end of the document.
-						fp_BeneathText,  //\ftntj	Footnotes beneath text (top justified).
-						fp_BottomPage  //\ftnbj	Footnotes at the bottom of the page (bottom justified).
-					}FootnotePlacement;
-		FootnotePlacement m_eFootnotePlacement;
+	std::vector<int> m_aSpecialFootnotes;
+	int m_nFootnoteNumberingFormat;
+	int m_nFootnoteStart; //\ftnstartN	Beginning footnote number (default is 1).
+		
+	typedef enum
+	{ 
+		fr_None,
+		fr_EachPage, //\ftnrstpg	Restart footnote numbering each page.
+		fr_EachSection, //\ftnrestart	Footnote numbers restart at each section. Microsoft Word for the Macintosh uses this control to restart footnote numbering at each page.
+		fr_Continuous //\ftnrstcont	Continuous footnote numbering (the default).
+	}FootnoteRestart;
 
-		std::vector<int> m_aSpecialEndnotes;
-		int m_nEndnoteNumberingFormat;
-		int m_nEndnoteStart; //\aftnstartN	Beginning endnote number (default is 1).
-		typedef enum{ er_None,
+	FootnoteRestart m_eFootnoteRestart;
+
+	typedef enum
+	{ 
+		fp_None,
+		fp_EndSection, //\endnotes	Footnotes at the end of the section (the default).
+		fp_EndDocument, //\enddoc	Footnotes at the end of the document.
+		fp_BeneathText,  //\ftntj	Footnotes beneath text (top justified).
+		fp_BottomPage  //\ftnbj	Footnotes at the bottom of the page (bottom justified).
+	}FootnotePlacement;
+		
+	FootnotePlacement m_eFootnotePlacement;
+
+	std::vector<int> m_aSpecialEndnotes;
+	int m_nEndnoteNumberingFormat;
+	int m_nEndnoteStart; //\aftnstartN	Beginning endnote number (default is 1).
+		
+	typedef enum
+	{ er_None,
 						er_EachSection, //\aftnrestart	Restart endnote numbering each section.
 						er_Continuous //\aftnrstcont	Continuous endnote numbering (the default).
 					}EndnoteRestart;
@@ -124,121 +142,117 @@ public:
 			m_nHyphenationRight = PROP_DEF;
 			m_nZoom = 100;
 
-//			//вычисляем стандартный default ansi codepage для системы
-//#if defined (_WIN32) || defined(_WIN64)
-//            TCHAR codepage[7];
-//            if( GetLocaleInfo( LOCALE_SYSTEM_DEFAULT, LOCALE_IDEFAULTANSICODEPAGE, codepage, 6 ) != 0)
-//				m_nAnsiCodePage = _ttoi(codepage);
-//			else
-// #endif
-//        ???? тут локаль где стоит конвертилка будет и тока под виндой         
-			m_nAnsiCodePage = CP_ACP;
+			m_nAnsiCodePage			= CP_ACP;
 
 			m_bDorderSurroundHeader = PROP_DEF;
 			m_bDorderSurroundFotter = PROP_DEF;
 			m_bAlignBordersAndEdges = PROP_DEF;
 
-			m_nPaperWidth = 12240;
-			m_nPaperHeight = 15840;
-			m_nMarginLeft = 1701;
-			m_nMarginRight = 850;
-			m_nMarginTop = 1134;
+			m_bRtlGutter	= PROP_DEF;
+			m_bRtl			= PROP_DEF;
+			
+			m_nThemelang	= PROP_DEF;
+			m_nThemelangfe	= PROP_DEF;
+			m_nThemelangcs	= PROP_DEF;
+
+			m_nPaperWidth	= 12240;
+			m_nPaperHeight	= 15840;
+			m_nMarginLeft	= 1701;
+			m_nMarginRight	= 850;
+			m_nMarginTop	= 1134;
 			m_nMarginBottom = 1134;
-			m_bFacingPage = PROP_DEF;
-			m_nGutterWidth = 0;
-			m_nGutterWidthOutside = PROP_DEF;
-			m_bGutterAtTop = PROP_DEF;
-			m_bSwitchMargins = PROP_DEF;
-			m_bLandScape = PROP_DEF;
-			m_nBeginningPageNumber = PROP_DEF;
-			m_nDisplayBackground = PROP_DEF;
-			m_bUseTabAlignment = PROP_DEF;
+			m_bFacingPage	= PROP_DEF;
+			m_nGutterWidth	= 0;
+			m_nGutterWidthOutside	= PROP_DEF;
+			m_bGutterAtTop			= PROP_DEF;
+			m_bSwitchMargins		= PROP_DEF;
+			m_bLandScape			= PROP_DEF;
+			m_nBeginningPageNumber	= PROP_DEF;
+			m_nDisplayBackground	= PROP_DEF;
+			m_bUseTabAlignment		= PROP_DEF;
 
 			m_aSpecialFootnotes.clear();
-			m_nFootnoteNumberingFormat = PROP_DEF;
-			m_nFootnoteStart = PROP_DEF;
-			m_eFootnoteRestart = fr_None;
-			m_eFootnotePlacement = fp_None;
+			m_nFootnoteNumberingFormat	= PROP_DEF;
+			m_nFootnoteStart			= PROP_DEF;
+			m_eFootnoteRestart			= fr_None;
+			m_eFootnotePlacement		= fp_None;
 
 			m_aSpecialEndnotes.clear();
-			m_nEndnoteNumberingFormat = PROP_DEF;
-			m_nEndnoteStart = PROP_DEF;
-			m_eEndnoteRestart = er_None;
-			m_eEndnotePlacement = ep_None;
+			m_nEndnoteNumberingFormat	= PROP_DEF;
+			m_nEndnoteStart				= PROP_DEF;
+			m_eEndnoteRestart			= er_None;
+			m_eEndnotePlacement			= ep_None;
 
-			m_bSplitPageBrake = 1;
-			m_bHtmlAutoSpace = PROP_DEF;
+			m_bSplitPageBrake			= 1;
+			m_bHtmlAutoSpace			= PROP_DEF;
 		}
 		CString RenderToRtf(RenderParameter oRenderParameter);
 		CString RenderToOOX(RenderParameter oRenderParameter);
-private: CString GetRtfFormat( int nFormat, bool bFootnote )
-		 {
-			 if( PROP_DEF == nFormat )
+private: 
+	CString GetRtfFormat( int nFormat, bool bFootnote )
+	{
+		if( PROP_DEF == nFormat )
+		{
+			if( true == bFootnote )	return _T("ftnnar");
+			else					return _T("aftnnar");
+		}
+		if( true == bFootnote )
+		{
+			 switch( nFormat )
 			 {
-				 if( true == bFootnote )
-					return _T("ftnnar");
-				 else
-					return _T("aftnnar");
+			 case 0: return _T("ftnnar"); 
+			 case 4: return _T("ftnnalc");
+			 case 3: return _T("ftnnauc");
+			 case 2: return _T("ftnnrlc");
+			 case 1: return _T("ftnnruc");
+			 case 70: return _T("ftnnchi");
+			 case 25: return _T("ftnnchi");
+			 case 18: return _T("ftnncnum");
+			 case 10: return _T("ftnndbnum");
+			 case 11: return _T("ftnndbnumd");
+			 case 16: return _T("ftnndbnumt");
+			 case 17: return _T("ftnndbnumk");
+			 case 20: return _T("ftnndbar");
+			 case 24: return _T("ftnnganada");
+			 case 26: return _T("ftnngbnum");
+			 case 27: return _T("ftnngbnumd");
+			 case 28: return _T("ftnngbnuml");
+			 case 29: return _T("ftnngbnumk");
+			 case 30: return _T("ftnnzodiac");
+			 case 31: return _T("ftnnzodiacd");
+			 case 32: return _T("ftnnzodiacl");
 			 }
-			 if( true == bFootnote )
-			 {
-				 switch( nFormat )
-				 {
-				 case 0: return _T("ftnnar"); 
-				 case 4: return _T("ftnnalc");
-				 case 3: return _T("ftnnauc");
-				 case 2: return _T("ftnnrlc");
-				 case 1: return _T("ftnnruc");
-				 case 70: return _T("ftnnchi");
-				 case 25: return _T("ftnnchi");
-				 case 18: return _T("ftnncnum");
-				 case 10: return _T("ftnndbnum");
-				 case 11: return _T("ftnndbnumd");
-				 case 16: return _T("ftnndbnumt");
-				 case 17: return _T("ftnndbnumk");
-				 case 20: return _T("ftnndbar");
-				 case 24: return _T("ftnnganada");
-				 case 26: return _T("ftnngbnum");
-				 case 27: return _T("ftnngbnumd");
-				 case 28: return _T("ftnngbnuml");
-				 case 29: return _T("ftnngbnumk");
-				 case 30: return _T("ftnnzodiac");
-				 case 31: return _T("ftnnzodiacd");
-				 case 32: return _T("ftnnzodiacl");
-				 }
-			 }
-			 else
-			 {
-				 switch( nFormat )
-				 {
-				 case 0: return _T("aftnnar"); 
-				 case 4: return _T("aftnnalc");
-				 case 3: return _T("aftnnauc");
-				 case 2: return _T("aftnnrlc");
-				 case 1: return _T("aftnnruc");
-				 case 70: return _T("aftnnchi");
-				 case 25: return _T("aftnnchi");
-				 case 18: return _T("aftnncnum");
-				 case 10: return _T("aftnndbnum");
-				 case 11: return _T("aftnndbnumd");
-				 case 16: return _T("aftnndbnumt");
-				 case 17: return _T("aftnndbnumk");
-				 case 20: return _T("aftnndbar");
-				 case 24: return _T("aftnnganada");
-				 case 26: return _T("aftnngbnum");
-				 case 27: return _T("aftnngbnumd");
-				 case 28: return _T("aftnngbnuml");
-				 case 29: return _T("aftnngbnumk");
-				 case 30: return _T("aftnnzodiac");
-				 case 31: return _T("aftnnzodiacd");
-				 case 32: return _T("aftnnzodiacl");
-				 }
-			 }
-			 if( true == bFootnote )
-				 return _T("ftnnar");
-			 else
-				 return _T("aftnnar");
-		 }
+		}
+		else
+		{
+			switch( nFormat )
+			{
+				case 0: return _T("aftnnar"); 
+				case 4: return _T("aftnnalc");
+				case 3: return _T("aftnnauc");
+				case 2: return _T("aftnnrlc");
+				case 1: return _T("aftnnruc");
+				case 70: return _T("aftnnchi");
+				case 25: return _T("aftnnchi");
+				case 18: return _T("aftnncnum");
+				case 10: return _T("aftnndbnum");
+				case 11: return _T("aftnndbnumd");
+				case 16: return _T("aftnndbnumt");
+				case 17: return _T("aftnndbnumk");
+				case 20: return _T("aftnndbar");
+				case 24: return _T("aftnnganada");
+				case 26: return _T("aftnngbnum");
+				case 27: return _T("aftnngbnumd");
+				case 28: return _T("aftnngbnuml");
+				case 29: return _T("aftnngbnumk");
+				case 30: return _T("aftnnzodiac");
+				case 31: return _T("aftnnzodiacd");
+				case 32: return _T("aftnnzodiacl");
+			}
+		}
+		if( true == bFootnote )	return _T("ftnnar");
+		else					return _T("aftnnar");
+	}
 };
 
 class RtfSectionProperty: public IRenderableProperty
@@ -246,32 +260,35 @@ class RtfSectionProperty: public IRenderableProperty
 //Bidirectional Controls
 public: 
 	int m_bBidi; //\rtlsect	This section will snake (newspaper style) columns from right to left.
-		int m_nPaperSourceFirst; //\binfsxnN	N is the printer bin used for the first page of the section. If this control is not defined, then the first page uses the same printer bin as defined by the \binsxnN control.
-		int m_nPaperSourceOther; //\binsxnN	N is the printer bin used for the pages of the section.
-		int m_bRtlGutter; //\rtlgutter	Gutter is positioned on the right.
+	int m_nPaperSourceFirst; //\binfsxnN	N is the printer bin used for the first page of the section. If this control is not defined, then the first page uses the same printer bin as defined by the \binsxnN control.
+	int m_nPaperSourceOther; //\binsxnN	N is the printer bin used for the pages of the section.
+	int m_bRtlGutter; //\rtlgutter	Gutter is positioned on the right.
 
 
-		int m_bEndnotes; // \endnhere	Endnotes included in the section.
-		int m_nStyle; // \dsN	Designates section style. If a section style is specified, style properties must be specified with the section.
+	int m_bEndnotes; // \endnhere	Endnotes included in the section.
+	int m_nStyle; // \dsN	Designates section style. If a section style is specified, style properties must be specified with the section.
 
-//Section Break
-		typedef enum {
-	sb_none,
-	sb_sbknone, //\sbknone	No section break.
-	sb_sbkcol, //\sbkcol	Section break starts a new column.
-	sb_sbkpage,  //\sbkpage	Section break starts a new page (the default).
-	sb_sbkeven,  //\sbkeven	Section break starts at an even page.
-	sb_sbkodd,  //\sbkodd	Section break starts at an odd page.
-}SectionBreak;
-		SectionBreak m_eSectionBreak;
+	//Section Break
+	typedef enum {
+		sb_none,
+		sb_sbknone, //\sbknone	No section break.
+		sb_sbkcol, //\sbkcol	Section break starts a new column.
+		sb_sbkpage,  //\sbkpage	Section break starts a new page (the default).
+		sb_sbkeven,  //\sbkeven	Section break starts at an even page.
+		sb_sbkodd,  //\sbkodd	Section break starts at an odd page.
+	}SectionBreak;
+		
+	SectionBreak m_eSectionBreak;
 
 //Columns
-		int m_nColumnNumber; //\colsN	Number of columns for "snaking" (default is 1).
-		int m_nColumnSpace;  //\colsxN	Space between columns in twips (default is 720).
-		int m_bColumnLineBetween; //\linebetcol	Line between columns.
-		class ColumnProperty
-		{
-		public: class CollumnVar
+	int m_nColumnNumber; //\colsN	Number of columns for "snaking" (default is 1).
+	int m_nColumnSpace;  //\colsxN	Space between columns in twips (default is 720).
+	int m_bColumnLineBetween; //\linebetcol	Line between columns.
+	
+	class ColumnProperty
+	{
+		public: 
+			class CollumnVar
 				{
 					public: int m_nColumnSpaceToRightOfCol;  //\colsrN 	Space to right of column in twips; used to specify formatting for variable-width columns.
 							int m_nColumnWidth;  //\colwN 	Width of column in twips; used to override the default constant width setting for variable-width columns.

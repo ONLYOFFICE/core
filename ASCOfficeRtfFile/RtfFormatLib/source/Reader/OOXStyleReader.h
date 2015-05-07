@@ -46,28 +46,28 @@ public:
 			oNewStyle->m_sName = m_ooxStyle->m_oName->m_sVal.get2();
 
 		if (m_ooxStyle->m_oHidden.IsInit())
-			oNewStyle->m_bHidden = m_ooxStyle->m_oHidden->m_oVal.ToBool();
+			oNewStyle->m_bHidden = m_ooxStyle->m_oHidden->m_oVal.ToBool() ? 1 : 0;
 
 		if (m_ooxStyle->m_oLocked.IsInit())
-			oNewStyle->m_bLocked = m_ooxStyle->m_oLocked->m_oVal.ToBool();
+			oNewStyle->m_bLocked = m_ooxStyle->m_oLocked->m_oVal.ToBool() ? 1 : 0;
 
 		if (m_ooxStyle->m_oSemiHidden.IsInit())
 			oNewStyle->m_nSemiHidden = m_ooxStyle->m_oSemiHidden->m_oVal.ToBool();
 
 		if (m_ooxStyle->m_oQFormat.IsInit())
-			oNewStyle->m_bQFormat = m_ooxStyle->m_oQFormat->m_oVal.ToBool();
+			oNewStyle->m_bQFormat = m_ooxStyle->m_oQFormat->m_oVal.ToBool() ? 1 : 0;
 
 		if (m_ooxStyle->m_oUnhideWhenUsed.IsInit())
-			oNewStyle->m_bUnhiddenWhenUse = m_ooxStyle->m_oUnhideWhenUsed->m_oVal.ToBool();
+			oNewStyle->m_bUnhiddenWhenUse = m_ooxStyle->m_oUnhideWhenUsed->m_oVal.ToBool() ? 1 : 0;
 
 		if (m_ooxStyle->m_oPersonal.IsInit())
-			oNewStyle->m_bPersonal = m_ooxStyle->m_oPersonal->m_oVal.ToBool();
+			oNewStyle->m_bPersonal = m_ooxStyle->m_oPersonal->m_oVal.ToBool() ? 1 : 0;
 
 		if (m_ooxStyle->m_oPersonalReply.IsInit())
-			oNewStyle->m_bReply = m_ooxStyle->m_oPersonalReply->m_oVal.ToBool();
+			oNewStyle->m_bReply = m_ooxStyle->m_oPersonalReply->m_oVal.ToBool() ? 1 : 0;
 	
 		if (m_ooxStyle->m_oPersonalCompose.IsInit())
-			oNewStyle->m_bCompose = m_ooxStyle->m_oPersonalCompose->m_oVal.ToBool();
+			oNewStyle->m_bCompose = m_ooxStyle->m_oPersonalCompose->m_oVal.ToBool() ? 1 : 0;
 
 		if (m_ooxStyle->m_oUiPriority.IsInit())
 			oNewStyle->m_bCompose = m_ooxStyle->m_oUiPriority->m_oVal->GetValue();

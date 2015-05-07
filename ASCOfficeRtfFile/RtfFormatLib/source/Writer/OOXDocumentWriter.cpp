@@ -8,6 +8,7 @@
 #include "OOXSettingsWriter.h"
 #include "OOXThemeWriter.h"
 #include "OOXFootnoteWriter.h"
+#include "OOXStylesWriter.h"
 
 //#include "../../../../ASCOfficeDocxFile2/BinReader/ContentTypesWriter.h"
 
@@ -96,6 +97,11 @@ CString OOXDocumentWriter::CreateXmlEnd( )
 	oNewParam.nType		= RENDER_TO_OOX_PARAM_NUMBERING;
 	poNumberingWriter->AddNumbering( m_oDocument.m_oListTabel.RenderToOOX(oNewParam) );
 	poNumberingWriter->AddNumbering( m_oDocument.m_oListOverrideTabel.RenderToOOX(oNewParam) );
+
+	//style.xml
+	OOXStylesWriter* poStylesWriter = static_cast<OOXStylesWriter*>( m_oWriter.m_poStylesWriter );
+	oNewParam.poRels	= poNumberingWriter->m_oRelsWriter.get();
+	oNewParam.nType		= RENDER_TO_OOX_PARAM_NUMBERING;
 
 	//core.xml
 	oNewParam.poRels	= NULL;

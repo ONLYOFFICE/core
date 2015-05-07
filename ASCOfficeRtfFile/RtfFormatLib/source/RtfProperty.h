@@ -994,6 +994,7 @@ public:
 	int m_bImprint; //\impr*	Engrave (imprint).
 	int m_nKerning; //\kerningN	Point size (in half-points) above which to kern character pairs. \kerning0 turns off kerning.
 	int m_bRightToLeft; //\rtlch	Character data following this control word is treated as a right-to-left run.
+	int m_nLanguage;
 	int m_nComplexScript;
 	int m_bOutline; //\outl*	Outline.
 	int m_bScaps; //\scaps*	Small capitals.
@@ -1085,6 +1086,7 @@ public:
 		m_poShading.SetDefault();
 		m_poBorder.SetDefault();
 		DEFAULT_PROPERTY( m_nComplexScript )
+		DEFAULT_PROPERTY( m_nLanguage )
 	}
 	void Merge( RtfCharProperty& oCharPr )
 	{
@@ -1105,6 +1107,7 @@ public:
 		MERGE_PROPERTY( m_bImprint, oCharPr )
 		MERGE_PROPERTY( m_nKerning, oCharPr )
 		MERGE_PROPERTY( m_bRightToLeft, oCharPr )
+		MERGE_PROPERTY( m_nLanguage, oCharPr )
 		MERGE_PROPERTY( m_bOutline, oCharPr )
 		MERGE_PROPERTY( m_bScaps, oCharPr )
 		MERGE_PROPERTY( m_bShadow, oCharPr )

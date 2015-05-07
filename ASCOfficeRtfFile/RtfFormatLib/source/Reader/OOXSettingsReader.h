@@ -27,12 +27,12 @@ public:
 		}
 
 		if (m_ooxSettings->m_oDoNotHyphenateCaps.IsInit())
-		{//todooo проверить чтоб 1 и 0 было
-			oParam.oRtf->m_oProperty.m_bHypCaps = !m_ooxSettings->m_oDoNotHyphenateCaps->m_oVal.ToBool();
+		{
+			oParam.oRtf->m_oProperty.m_bHypCaps = !m_ooxSettings->m_oDoNotHyphenateCaps->m_oVal.ToBool() ? 1 : 0;
 		}
 		if (m_ooxSettings->m_oAutoHyphenation.IsInit() )
 		{
-			oParam.oRtf->m_oProperty.m_bAutoHyp = m_ooxSettings->m_oAutoHyphenation->m_oVal.ToBool();
+			oParam.oRtf->m_oProperty.m_bAutoHyp = m_ooxSettings->m_oAutoHyphenation->m_oVal.ToBool() ? 1 : 0;
 		}
 		if (m_ooxSettings->m_oConsecutiveHyphenLimit.IsInit() && m_ooxSettings->m_oConsecutiveHyphenLimit->m_oVal.IsInit())
 		{
@@ -47,32 +47,32 @@ public:
 			oParam.oRtf->m_oProperty.m_nTabWidth = m_ooxSettings->m_oDefaultTabStop->m_oVal->ToTwips();//todooo
 		}
 		if (m_ooxSettings->m_oBordersDoNotSurroundHeader.IsInit())
-		{//todooo проверить чтоб 1 и 0 было
-			oParam.oRtf->m_oProperty.m_bDorderSurroundHeader = !m_ooxSettings->m_oBordersDoNotSurroundHeader->m_oVal.ToBool();
+		{
+			oParam.oRtf->m_oProperty.m_bDorderSurroundHeader = !m_ooxSettings->m_oBordersDoNotSurroundHeader->m_oVal.ToBool() ? 1 : 0;
 		}
 		if (m_ooxSettings->m_oBordersDoNotSurroundFooter.IsInit())
-		{//todooo проверить чтоб 1 и 0 было
-			oParam.oRtf->m_oProperty.m_bDorderSurroundFotter = !m_ooxSettings->m_oBordersDoNotSurroundFooter->m_oVal.ToBool();
+		{
+			oParam.oRtf->m_oProperty.m_bDorderSurroundFotter = !m_ooxSettings->m_oBordersDoNotSurroundFooter->m_oVal.ToBool() ? 1 : 0;
 		}
 		if (m_ooxSettings->m_oAlignBordersAndEdges.IsInit())
 		{
-			oParam.oRtf->m_oProperty.m_bAlignBordersAndEdges = m_ooxSettings->m_oAlignBordersAndEdges->m_oVal.ToBool();
+			oParam.oRtf->m_oProperty.m_bAlignBordersAndEdges = m_ooxSettings->m_oAlignBordersAndEdges->m_oVal.ToBool() ? 1 : 0;
 		}
 		if (m_ooxSettings->m_oGutterAtTop.IsInit())
 		{
-			oParam.oRtf->m_oProperty.m_bGutterAtTop = m_ooxSettings->m_oGutterAtTop->m_oVal.ToBool();
+			oParam.oRtf->m_oProperty.m_bGutterAtTop = m_ooxSettings->m_oGutterAtTop->m_oVal.ToBool() ? 1 : 0;
 		}
 		if (m_ooxSettings->m_oMirrorMargins.IsInit())
 		{
-			oParam.oRtf->m_oProperty.m_bSwitchMargins = m_ooxSettings->m_oMirrorMargins->m_oVal.ToBool();
+			oParam.oRtf->m_oProperty.m_bSwitchMargins = m_ooxSettings->m_oMirrorMargins->m_oVal.ToBool() ? 1 : 0;
 		}
 		if (m_ooxSettings->m_oEvenAndOddHeaders.IsInit())
 		{
-			oParam.oRtf->m_oProperty.m_bFacingPage = m_ooxSettings->m_oEvenAndOddHeaders->m_oVal.ToBool();
+			oParam.oRtf->m_oProperty.m_bFacingPage = m_ooxSettings->m_oEvenAndOddHeaders->m_oVal.ToBool() ? 1 : 0;
 		}
 		if (m_ooxSettings->m_oDisplayBackgroundShape.IsInit())
 		{
-			oParam.oRtf->m_oProperty.m_nDisplayBackground = m_ooxSettings->m_oDisplayBackgroundShape->m_oVal.ToBool();
+			oParam.oRtf->m_oProperty.m_nDisplayBackground = m_ooxSettings->m_oDisplayBackgroundShape->m_oVal.ToBool() ? 1 : 0;
 		}
 		if (m_ooxSettings->m_oCompat.IsInit())
 		{

@@ -591,10 +591,15 @@ CString RtfCharProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_BOOL( m_bItalic, sResult, _T("i") )
 	RENDER_RTF_BOOL( m_bImprint, sResult, _T("impr") )
 	RENDER_RTF_INT( m_nKerning, sResult, _T("kerning") )
-	if( 1 == m_bRightToLeft )
-		sResult.Append(_T("\\rtlch"));
-	else
-		sResult.Append(_T("\\ltrch"));
+	
+	if (m_bRightToLeft != PROP_DEF )
+	{
+		if( m_bRightToLeft !=0)
+			sResult.Append(_T("\\rtlch"));
+		else
+			sResult.Append(_T("\\ltrch"));
+	}
+
 	if( PROP_DEF != m_nComplexScript )
 		sResult.AppendFormat(_T("\\fcs%d"), m_nComplexScript);
 	RENDER_RTF_BOOL( m_bOutline, sResult, _T("outl") )
@@ -696,7 +701,7 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	RENDER_OOX_BOOL( m_bItalic, sResult, _T("w:i") )
 	RENDER_OOX_BOOL( m_bImprint, sResult, _T("w:imprint") )
 	RENDER_OOX_INT( m_nKerning, sResult, _T("w:kern") )
-	if( 1 == m_bRightToLeft )
+	if(m_bRightToLeft !=0 && m_bRightToLeft != PROP_DEF)
 		sResult.Append(_T("<w:rtl />"));
 	RENDER_OOX_BOOL( m_nComplexScript, sResult, _T("w:cs") )
 	RENDER_OOX_BOOL( m_bOutline, sResult, _T("w:outline") )
@@ -704,6 +709,7 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	RENDER_OOX_BOOL( m_bShadow, sResult, _T("w:shadow") )
 	RENDER_OOX_BOOL( m_bStrike, sResult, _T("w:strike") )
 	RENDER_OOX_BOOL( m_nStriked, sResult, _T("w:dstrike") )
+
 	if( 1 == m_bSub )
 		sResult.Append(_T("<w:vertAlign w:val=\"subscript\" />"));
 	if( 1 == m_bSuper )
@@ -766,6 +772,28 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	}
 
 	RENDER_OOX_INT( m_nUp, sResult, _T("w:position") )
+	
+	if (m_nLanguage != PROP_DEF)
+	{
+		CString str_lang;
+#if defined(_WIN32) || defined(_WIN64)
+		wchar_t buf[29] = {};
+
+		int ccBuf = GetLocaleInfo(m_nLanguage, LOCALE_SISO639LANGNAME, buf, 29);
+		
+		if (ccBuf > 0)
+		{
+			str_lang.Append(buf);		
+			str_lang.Append(_T("-"));
+		}
+		
+		ccBuf = GetLocaleInfo(m_nLanguage, LOCALE_SISO3166CTRYNAME, buf, 29);
+		
+		if (ccBuf > 0) str_lang.Append(buf);		
+#else
+#endif
+		RENDER_OOX_STRING(str_lang, sResult, _T("w:lang") )
+	}
 
 	sResult.Append( m_poBorder.RenderToOOX( oRenderParameter ));
 	sResult.Append( m_poShading.RenderToOOX( oRenderParameter ));

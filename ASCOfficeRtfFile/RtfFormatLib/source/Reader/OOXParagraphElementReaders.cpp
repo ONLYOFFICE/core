@@ -785,16 +785,16 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 			oOutputProperty.m_bAutoHyphenation = 1;
 	}
 	if( m_ooxParaProps->m_oKeepLines.IsInit())
-		oOutputProperty.m_bKeep = m_ooxParaProps->m_oKeepLines->m_oVal.ToBool();
+		oOutputProperty.m_bKeep = m_ooxParaProps->m_oKeepLines->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxParaProps->m_oKeepNext.IsInit())
-		oOutputProperty.m_bKeepNext = m_ooxParaProps->m_oKeepNext->m_oVal.ToBool();
+		oOutputProperty.m_bKeepNext = m_ooxParaProps->m_oKeepNext->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxParaProps->m_oOutlineLvl.IsInit() && m_ooxParaProps->m_oOutlineLvl->m_oVal.IsInit())
 		oOutputProperty.m_nOutlinelevel = m_ooxParaProps->m_oOutlineLvl->m_oVal->GetValue();
 
 	if (m_ooxParaProps->m_oPageBreakBefore.IsInit())
-		oOutputProperty.m_bPageBB = m_ooxParaProps->m_oPageBreakBefore->m_oVal.ToBool();
+		oOutputProperty.m_bPageBB = m_ooxParaProps->m_oPageBreakBefore->m_oVal.ToBool() ? 1 : 0;
 
 	if( m_ooxParaProps->m_oJc.IsInit() && m_ooxParaProps->m_oJc->m_oVal.IsInit())
 	{
@@ -844,10 +844,10 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 			oOutputProperty.m_nIndEnd = m_ooxParaProps->m_oInd->m_oEnd->ToTwips();
 	}
 	if (m_ooxParaProps->m_oAdjustRightInd.IsInit())
-		oOutputProperty.m_bIndRightAuto = m_ooxParaProps->m_oAdjustRightInd->m_oVal.ToBool();
+		oOutputProperty.m_bIndRightAuto = m_ooxParaProps->m_oAdjustRightInd->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxParaProps->m_oMirrorIndents.IsInit())
-		oOutputProperty.m_bIndMirror = m_ooxParaProps->m_oMirrorIndents->m_oVal.ToBool();
+		oOutputProperty.m_bIndMirror = m_ooxParaProps->m_oMirrorIndents->m_oVal.ToBool() ? 1 : 0;
 
 	if( m_ooxParaProps->m_oSpacing.IsInit())
 	{
@@ -891,10 +891,10 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 		oOutputProperty.m_bSnapToGrid = m_ooxParaProps->m_oSnapToGrid->m_oVal.ToBool();
 	
 	if (m_ooxParaProps->m_oContextualSpacing.IsInit())
-		oOutputProperty.m_bContextualSpacing = m_ooxParaProps->m_oContextualSpacing->m_oVal.ToBool();
+		oOutputProperty.m_bContextualSpacing = m_ooxParaProps->m_oContextualSpacing->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxParaProps->m_oBidi.IsInit())
-		oOutputProperty.m_bRtl = m_ooxParaProps->m_oBidi->m_oVal.ToBool();
+		oOutputProperty.m_bRtl = m_ooxParaProps->m_oBidi->m_oVal.ToBool() ? 1 : 0;
 
 	if( m_ooxParaProps->m_oWordWrap.IsInit() )
 	{
@@ -1009,7 +1009,7 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 	}
 	
 	if( m_ooxParaProps->m_oSuppressOverlap.IsInit())
-		oOutputProperty.m_bOverlap = m_ooxParaProps->m_oSuppressOverlap->m_oVal.ToBool();
+		oOutputProperty.m_bOverlap = m_ooxParaProps->m_oSuppressOverlap->m_oVal.ToBool() ? 1 : 0;
 
 	if( m_ooxParaProps->m_oTextDirection.IsInit() && m_ooxParaProps->m_oTextDirection->m_oVal.IsInit())
 	{
@@ -1084,10 +1084,10 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 	}
 
 	if (m_ooxRunProps->m_oBold.IsInit())
-		oOutputProperty.m_bBold = m_ooxRunProps->m_oBold->m_oVal.ToBool();
+		oOutputProperty.m_bBold = m_ooxRunProps->m_oBold->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxRunProps->m_oCaps.IsInit())
-		oOutputProperty.m_bCaps = m_ooxRunProps->m_oCaps->m_oVal.ToBool();
+		oOutputProperty.m_bCaps = m_ooxRunProps->m_oCaps->m_oVal.ToBool() ? 1 : 0;
 	
 	if (m_ooxRunProps->m_oW.IsInit() && m_ooxRunProps->m_oW->m_oVal.IsInit())
 		oOutputProperty.m_nScalex = m_ooxRunProps->m_oW->m_oVal->GetValue();
@@ -1102,7 +1102,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 	}
 
 	if (m_ooxRunProps->m_oEmboss.IsInit())
-		oOutputProperty.m_bEmbo = m_ooxRunProps->m_oEmboss->m_oVal.ToBool();
+		oOutputProperty.m_bEmbo = m_ooxRunProps->m_oEmboss->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxRunProps->m_oSpacing.IsInit() && m_ooxRunProps->m_oSpacing->m_oVal.IsInit())
 		oOutputProperty.m_nCharacterSpacing = m_ooxRunProps->m_oSpacing->m_oVal->ToTwips();
@@ -1137,34 +1137,34 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 		oOutputProperty.m_nFontSize = 2 * m_ooxRunProps->m_oSz->m_oVal->ToPoints();
 
 	if (m_ooxRunProps->m_oItalic.IsInit())
-		oOutputProperty.m_bItalic = m_ooxRunProps->m_oItalic->m_oVal.ToBool();
+		oOutputProperty.m_bItalic = m_ooxRunProps->m_oItalic->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxRunProps->m_oImprint.IsInit())
-		oOutputProperty.m_bImprint = m_ooxRunProps->m_oImprint->m_oVal.ToBool();
+		oOutputProperty.m_bImprint = m_ooxRunProps->m_oImprint->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxRunProps->m_oKern.IsInit() && m_ooxRunProps->m_oKern->m_oVal.IsInit())
 		oOutputProperty.m_nKerning = m_ooxRunProps->m_oKern->m_oVal->ToTwips();
 
 	if (m_ooxRunProps->m_oRtL.IsInit())
-		oOutputProperty.m_bRightToLeft = m_ooxRunProps->m_oRtL->m_oVal.ToBool();
+		oOutputProperty.m_bRightToLeft = m_ooxRunProps->m_oRtL->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxRunProps->m_oCs.IsInit())
-		oOutputProperty.m_nComplexScript = m_ooxRunProps->m_oCs->m_oVal.ToBool();
+		oOutputProperty.m_nComplexScript = m_ooxRunProps->m_oCs->m_oVal.ToBool() ? 1 : 0;;
 
 	if (m_ooxRunProps->m_oOutline.IsInit())
-		oOutputProperty.m_bOutline = m_ooxRunProps->m_oOutline->m_oVal.ToBool();
+		oOutputProperty.m_bOutline = m_ooxRunProps->m_oOutline->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxRunProps->m_oSmallCaps.IsInit())
-		oOutputProperty.m_bScaps = m_ooxRunProps->m_oSmallCaps->m_oVal.ToBool();
+		oOutputProperty.m_bScaps = m_ooxRunProps->m_oSmallCaps->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxRunProps->m_oShadow.IsInit())
-		oOutputProperty.m_bShadow = m_ooxRunProps->m_oShadow->m_oVal.ToBool();
+		oOutputProperty.m_bShadow = m_ooxRunProps->m_oShadow->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxRunProps->m_oStrike.IsInit())
-		oOutputProperty.m_bStrike = m_ooxRunProps->m_oStrike->m_oVal.ToBool();
+		oOutputProperty.m_bStrike = m_ooxRunProps->m_oStrike->m_oVal.ToBool() ? 1 : 0;
 
 	if (m_ooxRunProps->m_oDStrike.IsInit())
-		oOutputProperty.m_nStriked = m_ooxRunProps->m_oDStrike->m_oVal.ToBool();
+		oOutputProperty.m_nStriked = m_ooxRunProps->m_oDStrike->m_oVal.ToBool() ? 1 : 0;
 	
 	if( m_ooxRunProps->m_oVertAlign.IsInit() && m_ooxRunProps->m_oVertAlign->m_oVal.IsInit())
 	{
@@ -1228,7 +1228,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 	}
 	if(m_ooxRunProps->m_oShadow.IsInit())
 	{
-		oOutputProperty.m_poShading.m_nValue = m_ooxRunProps->m_oShadow->m_oVal.ToBool();
+		oOutputProperty.m_poShading.m_nValue = m_ooxRunProps->m_oShadow->m_oVal.ToBool() ? 1 : 0;
 		//OOXShadingReader oShadingReader(m_ooxRunProps->m_oShadow.GetPointer());
 		//oShadingReader.Parse( oParam, oOutputProperty.m_poShading );
 	}
@@ -1336,7 +1336,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 	oOutput.SetDefaultOOX();
 
 	if (m_ooxSectionProperty->m_oBidi.IsInit())
-		oOutput.m_bBidi = m_ooxSectionProperty->m_oBidi->m_oVal.ToBool();
+		oOutput.m_bBidi = m_ooxSectionProperty->m_oBidi->m_oVal.ToBool() ? 1 : 0;
 
 	if(m_ooxSectionProperty->m_oPaperSrc.IsInit())
 	{
@@ -1504,7 +1504,7 @@ bool OOXSectionPropertyReader::Parse( ReaderParameter oParam , RtfSectionPropert
 			oOutput.m_nFooterBottom = m_ooxSectionProperty->m_oPgMar->m_oFooter->ToTwips();
 	}
 	if (m_ooxSectionProperty->m_oTitlePg.IsInit())
-		oOutput.m_bTitlePage = m_ooxSectionProperty->m_oTitlePg->m_oVal.ToBool();
+		oOutput.m_bTitlePage = m_ooxSectionProperty->m_oTitlePg->m_oVal.ToBool() ? 1 : 0;
 		
 	if (m_ooxSectionProperty->m_oPgNumType.IsInit())
 	{

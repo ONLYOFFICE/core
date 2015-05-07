@@ -23,7 +23,7 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 	RENDER_RTF_INT( m_nMaxHypen, sResult, _T("hyphconsec") )
 	RENDER_RTF_INT( m_nHyphenationRight, sResult, _T("hyphhotz") )
 	RENDER_RTF_INT( m_nTabWidth, sResult, _T("deftab") )
-	RENDER_RTF_INT( m_nZoom, sResult, _T("viewscale") )
+	RENDER_RTF_INT( m_nZoom,	sResult, _T("viewscale") )
 
 //Page Borders
 	RENDER_RTF_BOOL( m_bDorderSurroundHeader, sResult, _T("pgbrdrhead") )
@@ -44,13 +44,13 @@ CString RtfDocumentProperty::RenderToRtf(RenderParameter oRenderParameter)
 //public: int m_nGutterWidthOutside; //\ogutterN	Outside gutter width (default is 0; not used by Word, but in 1987 RTF Spec)
 //	RENDER_RTF_BOOL( m_bLandScape, sResult, _T("landscape") )
 
-	RENDER_RTF_BOOL( m_bGutterAtTop, sResult, _T("gutterprl") )
-	RENDER_RTF_BOOL( m_bSwitchMargins, sResult, _T("margmirror") )
-	RENDER_RTF_BOOL( m_bFacingPage, sResult, _T("facingp") )
+	RENDER_RTF_BOOL( m_bGutterAtTop,	sResult, _T("gutterprl") )
+	RENDER_RTF_BOOL( m_bSwitchMargins,	sResult, _T("margmirror") )
+	RENDER_RTF_BOOL( m_bFacingPage,		sResult, _T("facingp") )
 
 //Compatibility Options
-	RENDER_RTF_INT( m_nDisplayBackground, sResult, _T("viewbksp") )
-	RENDER_RTF_BOOL( m_bUseTabAlignment, sResult, _T("useltbaln") )
+	RENDER_RTF_INT( m_nDisplayBackground,	sResult, _T("viewbksp") )
+	RENDER_RTF_BOOL( m_bUseTabAlignment,	sResult, _T("useltbaln") )
 
 	//footnote, endnote property
 	if( PROP_DEF != m_nFootnoteNumberingFormat )
@@ -119,6 +119,7 @@ CString RtfDocumentProperty::RenderToOOX(RenderParameter oRenderParameter)
 	RENDER_OOX_INT( m_nMaxHypen, sResult, _T("w:consecutiveHyphenLimit") )
 	RENDER_OOX_INT( m_nHyphenationRight, sResult, _T("w:hyphenationZone") )
 	RENDER_OOX_INT( m_nTabWidth, sResult, _T("w:defaultTabStop") )
+	
 	if( PROP_DEF != m_nZoom )
 		sResult.AppendFormat( _T("<w:zoom w:percent=\"%d\" />"), m_nZoom );
 //Page Borders

@@ -359,6 +359,7 @@ public:
 	{
 		if( _T("plain") == sCommand )
 			oReader.m_oState->m_oCharProp.SetDefaultRtf();
+		
 		COMMAND_RTF_INT( _T("animtext"), oReader.m_oState->m_oCharProp.m_nAnimated, sCommand, hasParameter, parameter)
 		COMMAND_RTF_INT( _T("uc"), oReader.m_oState->m_nUD, sCommand, hasParameter, parameter)
 		COMMAND_RTF_BOOL( _T("b"), oReader.m_oState->m_oCharProp.m_bBold, sCommand, hasParameter, parameter)
@@ -379,6 +380,7 @@ public:
 		COMMAND_RTF_BOOL( _T("i"), oReader.m_oState->m_oCharProp.m_bItalic, sCommand, hasParameter, parameter)
 		COMMAND_RTF_BOOL( _T("impr"), oReader.m_oState->m_oCharProp.m_bImprint, sCommand, hasParameter, parameter)
 		COMMAND_RTF_INT( _T("kerning"), oReader.m_oState->m_oCharProp.m_nKerning, sCommand, hasParameter, parameter)
+		
 		else if( _T("ltrch") == sCommand )
 		{
 			if( false == hasParameter || 0 != parameter ) 
@@ -386,15 +388,18 @@ public:
 			else
 				oReader.m_oState->m_oCharProp.m_bRightToLeft  = 1;
 		}
-		COMMAND_RTF_BOOL( _T("cs"), oReader.m_oState->m_oCharProp.m_nComplexScript, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("outl"), oReader.m_oState->m_oCharProp.m_bOutline, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("scaps"), oReader.m_oState->m_oCharProp.m_bScaps, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("shad"), oReader.m_oState->m_oCharProp.m_bShadow, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("strike"), oReader.m_oState->m_oCharProp.m_bStrike, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("striked"), oReader.m_oState->m_oCharProp.m_nStriked, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("sub"), oReader.m_oState->m_oCharProp.m_bSub, sCommand, hasParameter, parameter)
-		COMMAND_RTF_BOOL( _T("super"), oReader.m_oState->m_oCharProp.m_bSuper, sCommand, hasParameter, parameter)
-		COMMAND_RTF_INT( _T("highlight"), oReader.m_oState->m_oCharProp.m_nHightlited, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("rtlch"),		oReader.m_oState->m_oCharProp.m_bRightToLeft, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("lang"),		oReader.m_oState->m_oCharProp.m_nLanguage, sCommand, hasParameter, parameter)
+		
+		COMMAND_RTF_BOOL( _T("cs"),			oReader.m_oState->m_oCharProp.m_nComplexScript, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("outl"),		oReader.m_oState->m_oCharProp.m_bOutline, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("scaps"),		oReader.m_oState->m_oCharProp.m_bScaps, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("shad"),		oReader.m_oState->m_oCharProp.m_bShadow, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("strike"),		oReader.m_oState->m_oCharProp.m_bStrike, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("striked"),	oReader.m_oState->m_oCharProp.m_nStriked, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("sub"),		oReader.m_oState->m_oCharProp.m_bSub, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("super"),		oReader.m_oState->m_oCharProp.m_bSuper, sCommand, hasParameter, parameter)
+		COMMAND_RTF_INT( _T("highlight"),	oReader.m_oState->m_oCharProp.m_nHightlited, sCommand, hasParameter, parameter)
 		else if( _T("cf") == sCommand )
 		{
 			if( true == hasParameter )
@@ -413,16 +418,16 @@ public:
 		COMMAND_RTF_INT( _T("ulc"), oReader.m_oState->m_oCharProp.m_nUnderlineColor, sCommand, hasParameter, parameter)
 
 
-		COMMAND_RTF_INT( _T("uld"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Dotted)
-		COMMAND_RTF_INT( _T("uldash"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Dashed)
+		COMMAND_RTF_INT( _T("uld"),		oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Dotted)
+		COMMAND_RTF_INT( _T("uldash"),	oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Dashed)
 		COMMAND_RTF_INT( _T("uldashd"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Dash_dotted)
 		COMMAND_RTF_INT( _T("uldashdd"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Dash_dot_dotted)
-		COMMAND_RTF_INT( _T("uldb"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Double)
+		COMMAND_RTF_INT( _T("uldb"),	oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Double)
 		COMMAND_RTF_INT( _T("ulhwave"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Heavy_wave)
 		COMMAND_RTF_INT( _T("ulldash"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Long_dashe)
 		COMMAND_RTF_INT( _T("ulnone"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_none)
-		COMMAND_RTF_INT( _T("ulth"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick)
-		COMMAND_RTF_INT( _T("ulthd"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_dotted)
+		COMMAND_RTF_INT( _T("ulth"),	oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick)
+		COMMAND_RTF_INT( _T("ulthd"),	oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_dotted)
 		COMMAND_RTF_INT( _T("ulthdash"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_dashed)
 		COMMAND_RTF_INT( _T("ulthdashd"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_dash_dotted)
 		COMMAND_RTF_INT( _T("ulthdashdd"), oReader.m_oState->m_oCharProp.m_eUnderStyle, sCommand, true, RtfCharProperty::uls_Thick_dash_dot_dotted)
@@ -2859,7 +2864,6 @@ class RtfDocumentCommand
 public: 
 	static bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader, CString sCommand, bool hasParameter, int parameter)
 	{
-
 		if( _T("ansi") == sCommand )
 			oDocument.m_oProperty.m_eCodePage = RtfDocumentProperty::cp_ansi;
 		else if( _T("mac") == sCommand )
@@ -2885,12 +2889,18 @@ public:
 				oReader.m_nDefFont = parameter;
 			}
 		}
+		COMMAND_RTF_INT( _T("themelang"),	oDocument.m_oProperty.m_nThemelang, sCommand, hasParameter, parameter )
+		COMMAND_RTF_INT( _T("themelangfe"),	oDocument.m_oProperty.m_nThemelangfe, sCommand, hasParameter, parameter )
+		COMMAND_RTF_INT( _T("themelangcs"),	oDocument.m_oProperty.m_nThemelangcs, sCommand, hasParameter, parameter )
+		
+		COMMAND_RTF_BOOL( _T("rtlgutter"),  oDocument.m_oProperty.m_bRtlGutter, sCommand, hasParameter, parameter)
+		COMMAND_RTF_BOOL( _T("rtldoc"),		oDocument.m_oProperty.m_bRtl, sCommand, hasParameter, parameter)
 
-		COMMAND_RTF_BOOL( _T("hyphcaps"), oDocument.m_oProperty.m_bHypCaps, sCommand, hasParameter, parameter )
-		COMMAND_RTF_BOOL( _T("hyphauto"), oDocument.m_oProperty.m_bAutoHyp, sCommand, hasParameter, parameter )
-		COMMAND_RTF_INT( _T("hyphconsec"), oDocument.m_oProperty.m_nMaxHypen, sCommand, hasParameter, parameter )
-		COMMAND_RTF_INT( _T("hyphhotz"), oDocument.m_oProperty.m_nHyphenationRight, sCommand, hasParameter, parameter )
-		COMMAND_RTF_INT( _T("deftab"), oDocument.m_oProperty.m_nTabWidth, sCommand, hasParameter, parameter )
+		COMMAND_RTF_BOOL( _T("hyphcaps"),	oDocument.m_oProperty.m_bHypCaps, sCommand, hasParameter, parameter )
+		COMMAND_RTF_BOOL( _T("hyphauto"),	oDocument.m_oProperty.m_bAutoHyp, sCommand, hasParameter, parameter )
+		COMMAND_RTF_INT( _T("hyphconsec"),	oDocument.m_oProperty.m_nMaxHypen, sCommand, hasParameter, parameter )
+		COMMAND_RTF_INT( _T("hyphhotz"),	oDocument.m_oProperty.m_nHyphenationRight, sCommand, hasParameter, parameter )
+		COMMAND_RTF_INT( _T("deftab"),		oDocument.m_oProperty.m_nTabWidth, sCommand, hasParameter, parameter )
 
 //Page Borders
 		COMMAND_RTF_BOOL( _T("pgbrdrhead"), oDocument.m_oProperty.m_bDorderSurroundHeader, sCommand, hasParameter, parameter )

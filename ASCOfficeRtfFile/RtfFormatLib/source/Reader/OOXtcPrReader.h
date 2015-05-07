@@ -49,10 +49,10 @@ public:
 				oOutputProperty.m_bMergeVertical = 1;
 		}
 		if( m_ooxTableCellProps->m_oTcFitText.IsInit())
-			oOutputProperty.m_bFitText = m_ooxTableCellProps->m_oTcFitText->m_oVal.ToBool();
+			oOutputProperty.m_bFitText = m_ooxTableCellProps->m_oTcFitText->m_oVal.ToBool() ? 1 : 0;
 	
 		if( m_ooxTableCellProps->m_oNoWrap.IsInit())
-			oOutputProperty.m_bNoWrap= m_ooxTableCellProps->m_oNoWrap->m_oVal.ToBool();
+			oOutputProperty.m_bNoWrap= m_ooxTableCellProps->m_oNoWrap->m_oVal.ToBool() ? 1 : 0;
 
 		if( m_ooxTableCellProps->m_oTcMar.IsInit() )
 		{
@@ -85,7 +85,7 @@ public:
 			oOutputProperty.m_eWidthUnits	= m_ooxTableCellProps->m_oTcW->m_oW->IsPercent() ? mu_Percent : mu_Twips;
 		}
 		if( m_ooxTableCellProps->m_oHideMark.IsInit())
-			oOutputProperty.m_bHideMark = m_ooxTableCellProps->m_oHideMark->m_oVal.ToBool();
+			oOutputProperty.m_bHideMark = m_ooxTableCellProps->m_oHideMark->m_oVal.ToBool() ? 1 : 0;
 		
 		if( m_ooxTableCellProps->m_oTcBorders.IsInit() )
 		{

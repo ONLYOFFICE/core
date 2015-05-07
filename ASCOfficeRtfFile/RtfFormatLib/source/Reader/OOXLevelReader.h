@@ -41,7 +41,7 @@ public:
 			//todooo непонятка что будет если рестарт списка с не "0"
 		}
 		if (m_ooxLvlNum->m_oIsLgl.IsInit() )
-			oLevelProperty.m_nLegal = m_ooxLvlNum->m_oIsLgl->m_oVal.ToBool();
+			oLevelProperty.m_nLegal = m_ooxLvlNum->m_oIsLgl->m_oVal.ToBool() ? 1 : 0;
 
 		if (m_ooxLvlNum->m_oLvlText.IsInit() && m_ooxLvlNum->m_oLvlText->m_sVal.IsInit())
 		{

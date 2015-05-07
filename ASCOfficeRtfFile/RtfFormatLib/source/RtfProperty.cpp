@@ -773,9 +773,9 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 
 	RENDER_OOX_INT( m_nUp, sResult, _T("w:position") )
 	
-	if (m_nLanguage != PROP_DEF)
+    if (m_nLanguage != PROP_DEF) //todooo сделаь map для используемых в доке
 	{
-		CString str_lang;
+        std::wstring str_lang;
 #if defined(_WIN32) || defined(_WIN64)
 		wchar_t buf[29] = {};
 
@@ -783,22 +783,32 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 		
 		if (ccBuf > 0)
 		{
-			str_lang.Append(buf);		
-			str_lang.Append(_T("-"));
+            str_lang.append(buf);
+            str_lang.append(_T("-"));
 		}
 		
 		ccBuf = GetLocaleInfo(m_nLanguage, LOCALE_SISO3166CTRYNAME, buf, 29);
 		
-		if (ccBuf > 0) str_lang.Append(buf);		
+        if (ccBuf > 0) str_lang.append(buf);
 #else
+        for (int i = 0; i < 136; i++)
+        {
+            if (LCID_ms_convert[i].LCID_int == m_nLanguage)
+            {
+                str_lang = LCID_ms_convert[i].LCID_string;
+                break;
+            }
+        }
 #endif
-		RENDER_OOX_STRING(str_lang, sResult, _T("w:lang") )
-	}
+        if (str_lang.length() > 0)
+            sResult += CString(_T("<w:lang=\"")) + str_lang.c_str() + _T("\">");
+    }
 
 	sResult.Append( m_poBorder.RenderToOOX( oRenderParameter ));
 	sResult.Append( m_poShading.RenderToOOX( oRenderParameter ));
 	return sResult;
 }
+#include <langinfo.h>
 CString RtfListLevelProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
 	RtfDocument* poRtfDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument);

@@ -46,10 +46,6 @@
 		if( PROP_DEF != prop )\
 		sResult.AppendFormat( _T(" %ls=\"%d\""), sName, prop );
 
-#define RENDER_OOX_STRING( prop, sResult, sName)\
-		if( false == prop.IsEmpty() )\
-			sResult.AppendFormat( _T("<%ls w:val=\"%ls\"/>"), sName, prop );
-
 
 #define RENDER_RTF_BOOL( prop, sResult, sName)\
 		if( 0 == prop )\

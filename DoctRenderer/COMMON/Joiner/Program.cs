@@ -106,6 +106,7 @@ namespace Joiner
                 "Word/Editor/ParagraphContentBase.js",
                 "Word/Editor/ParagraphContent.js",
                 "Word/Editor/Hyperlink.js",
+                "Word/Editor/Field.js",
                 "Word/Editor/Run.js",
                 "Word/Editor/Math.js",
                 "Word/Editor/Paragraph.js",

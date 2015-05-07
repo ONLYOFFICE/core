@@ -27,7 +27,7 @@ namespace Joiner
                 "Common/FontsFreeType/font_engine.js",
                 "Common/FontsFreeType/FontFile.js",
                 "Common/FontsFreeType/FontManager.js",
-                "Common/AllFonts.js",
+                "Common/FontsFreeType/font_map.js",
                 "Word/Drawing/Externals.js",
                 "Word/Drawing/GlobalLoaders.js",
                 "Common/commonDefines.js",
@@ -46,13 +46,14 @@ namespace Joiner
                 "Common/Charts/ChartsDrawer.js",
                 "Common/Charts/DrawingArea.js",
                 "Common/NumFormat.js",
-                "Word/Editor/Search.js",
                 "Word/Editor/Serialize2.js",
                 "Common/trackFile.js",
+
                 "Word/Editor/Styles.js",
                 "Word/Editor/Numbering.js",
                 "Word/Drawing/Metafile.js",
                 "PowerPoint/Editor/CollaborativeEditing.js",
+
                 "Word/Drawing/GraphicsEvents.js",
                 "Word/Drawing/WorkEvents.js",
                 "Word/Drawing/Controls.js",
@@ -61,6 +62,7 @@ namespace Joiner
                 "Word/Editor/Common.js",
                 "Word/Editor/Sections.js",
                 "Common/scroll.js",
+
                 "Word/Editor/History.js",
                 "Common/Drawings/Hit.js",
                 "Common/Drawings/States.js",
@@ -72,25 +74,32 @@ namespace Joiner
                 "Common/Drawings/TrackObjects/PolyLine.js",
                 "Common/Drawings/TrackObjects/Spline.js",
                 "Common/Drawings/TrackObjects/MoveTracks.js",
+
                 "Word/Drawing/HatchPattern.js",
                 "Word/Drawing/Graphics.js",
+				"Word/Drawing/Private/Graphics.js",
                 "Word/Drawing/Overlay.js",
                 "Word/Drawing/ShapeDrawer.js",
                 "PowerPoint/Drawing/Transitions.js",
                 "PowerPoint/Drawing/DrawingDocument.js",
                 "PowerPoint/Drawing/HtmlPage.js",
+                "PowerPoint/apiDefines.js",
+
                 "Common/Drawings/Format/Constants.js",
+
                 "Common/Shapes/Serialize.js",
                 "Common/Shapes/SerializeWriter.js",
                 "Word/Editor/SerializeCommon.js",
+
                 "Common/Drawings/Math.js",
                 "Common/Drawings/ArcTo.js",
                 "Word/Drawing/ColorArray.js",
+
                 "PowerPoint/Editor/Format/Presentation.js",
                 "Common/Drawings/CommonController.js",
                 "Excel/view/DrawingObjectsController.js",
                 "PowerPoint/Editor/DrawingObjectsController.js",
-                "Common/Drawings/Format/Constants.js",
+
                 "Common/Drawings/Format/Format.js",
                 "Common/Drawings/Format/CreateGeometry.js",
                 "Common/Drawings/Format/Geometry.js",
@@ -105,6 +114,15 @@ namespace Joiner
                 "PowerPoint/Editor/Format/SlideMaster.js",
                 "PowerPoint/Editor/Format/Layout.js",
                 "PowerPoint/Editor/Format/Comments.js",
+
+                "Word/Editor/Styles.js",
+                "Word/Editor/Numbering.js",
+                "Word/Editor/ParagraphContent.js",
+                "Word/Editor/ParagraphContentBase.js",
+                "Word/Editor/Hyperlink.js",
+                "Word/Editor/Field.js",
+                "Word/Editor/Run.js",
+
                 "Word/Math/mathTypes.js",
                 "Word/Math/mathText.js",
                 "Word/Math/mathContent.js",
@@ -118,12 +136,7 @@ namespace Joiner
                 "Word/Math/operators.js",
                 "Word/Math/accent.js",
                 "Word/Math/borderBox.js",
-                "Word/Editor/Styles.js",
-                "Word/Editor/Numbering.js",
-                "Word/Editor/ParagraphContent.js",
-                "Word/Editor/ParagraphContentBase.js",
-                "Word/Editor/Run.js",
-                "Word/Editor/Hyperlink.js",
+
                 "Word/Editor/FlowObjects.js",
                 "Word/Editor/Paragraph.js",
                 "Word/Editor/Paragraph_Recalculate.js",
@@ -133,19 +146,31 @@ namespace Joiner
                 "Word/Editor/Table.js",
                 "Word/Editor/Math.js",
                 "Word/Editor/Spelling.js",
+                "Word/Editor/Search.js",
                 "Word/Editor/FontClassification.js",
+
                 "PowerPoint/Editor/Format/ShapePrototype.js",
                 "PowerPoint/Editor/Format/ImagePrototype.js",
                 "PowerPoint/Editor/Format/GroupPrototype.js",
                 "PowerPoint/Editor/Format/ChartSpacePrototype.js",
                 "PowerPoint/Editor/Format/GraphicFrame.js",
+                
+				"Excel/utils/utils.js",
+				"Excel/model/Serialize.js",
+				"Excel/model/WorkbookElems.js",
+				"Excel/model/Workbook.js",
+				"Excel/model/CellInfo.js",
+                "Excel/model/AdvancedOptions.js",
 
-                "PowerPoint/apiDefines.js",
-                "PowerPoint/api.js",
-                "PowerPoint/apiCommon.js",
+                "Common/Private/Locks.js",
 
                 "Common/Shapes/EditorSettings.js",
-                "PowerPoint/themes/Themes.js"
+                "PowerPoint/themes/Themes.js",
+                "PowerPoint/apiDefines.js",
+                "Common/commonDefines.js",
+
+                "PowerPoint/api.js",
+                "PowerPoint/apiCommon.js"
             };
 
             if (true)

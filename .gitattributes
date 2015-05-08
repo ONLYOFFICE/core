@@ -1140,6 +1140,7 @@ DesktopEditor/ChromiumBasedEditors/lib/build svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors/lib/build/Debug svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors/lib/build/Release svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors/lib/include svnc_tsvn_003alogminsize=5
+DesktopEditor/ChromiumBasedEditors/lib/qcefview svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors/lib/src svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors/lib/src/cef svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors/lib/src/cef/cefclient svnc_tsvn_003alogminsize=5

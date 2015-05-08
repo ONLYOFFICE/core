@@ -7,6 +7,7 @@
 #include "Array.h"
 #include "errno.h"
 #include "Base64.h"
+#include <time.h>
 
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
 	#include <wchar.h>

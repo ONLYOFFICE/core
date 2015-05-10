@@ -1165,6 +1165,7 @@ DesktopEditor/ChromiumBasedEditors/lib/src/cef/libcef_dll/base svnc_tsvn_003alog
 DesktopEditor/ChromiumBasedEditors/lib/src/cef/libcef_dll/cpptoc svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors/lib/src/cef/libcef_dll/ctocpp svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors/lib/src/cef/libcef_dll/wrapper svnc_tsvn_003alogminsize=5
+DesktopEditor/ChromiumBasedEditors/lib/src/cefwrapper svnc_tsvn_003alogminsize=5
 DesktopEditor/Qt_build svnc_tsvn_003alogminsize=5
 DesktopEditor/Qt_build/editor svnc_tsvn_003alogminsize=5
 DesktopEditor/Qt_build/editor/Debug svnc_tsvn_003alogminsize=5

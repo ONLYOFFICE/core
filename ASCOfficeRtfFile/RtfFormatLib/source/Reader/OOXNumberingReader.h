@@ -16,7 +16,7 @@ public:
 	{
 		if (m_ooxNumbering == NULL) return false;
 
-		for (long i=0; m_ooxNumbering->m_arrNumPicBullet.size(); i++)
+        for (long i=0; i < m_ooxNumbering->m_arrNumPicBullet.size(); i++)
 		{
 			if (m_ooxNumbering->m_arrNumPicBullet[i] == NULL) continue;
 			

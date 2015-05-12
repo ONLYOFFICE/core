@@ -15,10 +15,8 @@ public:
 		m_vmlElement = vmlElem;
 		m_arrElement = vmlElem;
 	}
-	OOXShapeReader(OOX::WritingElementWithChilds<OOX::WritingElement> * elem)
-	{
-		m_arrElement = elem;
-	}	
+    OOXShapeReader(OOX::WritingElementWithChilds<OOX::WritingElement> * elem);
+
 	bool Parse( ReaderParameter oParam , RtfShapePtr& oOutput);
 	bool Parse2( ReaderParameter oParam , RtfShapePtr& oOutput);
 	

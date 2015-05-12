@@ -304,7 +304,18 @@ private:
 				c = m_oStream.getc();
 				m_oStream.ungetc();
 			}
-            parametroInt = _wtoi(parametroStr.GetBuffer());
+            try
+            {
+                parametroInt = _wtoi(parametroStr.GetBuffer());
+            }catch(...)
+            {
+                try
+                {
+                    parametroInt = _wtoi64(parametroStr.GetBuffer());
+                }catch(...)
+                {
+                }
+            }
 
 			if (negativo)
 				parametroInt = -parametroInt;

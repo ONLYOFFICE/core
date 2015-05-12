@@ -1,6 +1,32 @@
 ﻿#include "OOXShapeReader.h"
 #include "OOXTextItemReader.h"
 
+ OOXShapeReader::OOXShapeReader(OOX::WritingElementWithChilds<OOX::WritingElement> * elem)
+{
+    m_arrElement = elem;
+
+    m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(elem);
+
+    if (m_vmlElement==NULL)
+    {
+        OOX::Logic::CPicture* pict = dynamic_cast<OOX::Logic::CPicture*>(elem);
+
+        if (pict)
+        {
+                 if (pict->m_oShape.IsInit())           m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShape.GetPointer());
+            else if (pict->m_oShapeArc.IsInit())        m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeArc.GetPointer());
+            else if (pict->m_oShapeCurve.IsInit())      m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeCurve.GetPointer());
+            else if (pict->m_oShapeLine.IsInit())       m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeLine.GetPointer());
+            else if (pict->m_oShapeOval.IsInit())       m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeOval.GetPointer());
+            else if (pict->m_oShapePolyLine.IsInit())   m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapePolyLine.GetPointer());
+            else if (pict->m_oShapeRect.IsInit())       m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeRect.GetPointer());
+            else if (pict->m_oShapeRoundRect.IsInit())  m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeRoundRect.GetPointer());
+            else if (pict->m_oShapeType.IsInit())       m_vmlElement = dynamic_cast<OOX::Vml::CVmlCommonElements*>(pict->m_oShapeType.GetPointer());
+        }
+
+    }
+}
+
 bool OOXShapeReader::Parse2( ReaderParameter oParam , RtfShapePtr& oOutput)
 {
 	if (m_arrElement == NULL) return false;

@@ -1203,7 +1203,14 @@ class ShapePropertyReader : public RtfAbstractReader
                     return;
                 }
         //числовые
-                int nValue = Strings::ToInteger( sValue );
+                int nValue = 0;
+
+                try
+                {
+                    nValue = Strings::ToInteger( sValue );
+                }catch(...)
+                {
+                }
 
 				if( _T("shapeType") == m_sPropName )
 					m_oShape.m_nShapeType = nValue;

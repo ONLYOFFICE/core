@@ -6,8 +6,6 @@
 #include <time.h>
 #include <math.h>
 
-#define U_TO_UTF8(val) NSFile::CUtf8Converter::GetUtf8StringFromUnicode2(val.c_str(), val.length())
-
 #ifndef DIB_RGB_COLORS
     #define DIB_RGB_COLORS  0x00
 #endif

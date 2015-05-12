@@ -801,7 +801,7 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
         }
 #endif
         if (str_lang.length() > 0)
-            sResult += CString(_T("<w:lang=\"")) + str_lang.c_str() + _T("\">");
+            sResult += CString(_T("<w:lang w:val=\"")) + str_lang.c_str() + _T("\"/>");
     }
 
 	sResult.Append( m_poBorder.RenderToOOX( oRenderParameter ));

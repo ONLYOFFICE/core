@@ -1064,7 +1064,6 @@ void CGraphicsRenderer::_SetFont()
 		return;
 	}
 
-	m_pFontManager->SetStringGID(m_oFont.StringGID);
 	if (1 < m_dWidth)
 	{
 		double dPix = m_oFont.CharSpace * m_dPixelsWidth / m_dWidth;
@@ -1080,6 +1079,7 @@ void CGraphicsRenderer::_SetFont()
 		m_pFontManager->LoadFontFromFile(m_oFont.Path, m_oFont.FaceIndex, m_oFont.Size, m_pRenderer->GetDpiX(), m_pRenderer->GetDpiY());
 	}
 	m_pFontManager->m_oString.ResetCTM();
+	m_pFontManager->SetStringGID(m_oFont.StringGID);
 	m_pFontManager->SetCharSpacing(m_pFontManager->m_fCharSpacing);
 
 	m_oInstalledFont = m_oFont;

@@ -68,7 +68,7 @@ public:
 
 		m_nRelVersion = StreamUtils::ReadDWORD(pStream);
 
-		m_strUNICODEUserName = StreamUtils::ReadCStringW(pStream, m_nLenUserName);
+        m_strUNICODEUserName = StreamUtils::ReadCStringW(pStream, m_nLenUserName );
 
 	}
 	virtual CString ToString()

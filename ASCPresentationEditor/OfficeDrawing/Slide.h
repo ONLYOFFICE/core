@@ -426,7 +426,7 @@ namespace NSPresentationEditor
 						if (pTextElement->m_oShape.m_oText.m_bIsSlideFontRef && (0 <= lFontRef) && (lFontRef < (LONG)pTheme->m_arFonts.size()))
 						{
 							CString strRef = _T("");
-							strRef.Format(_T("s_font%d { font-index:%d;font-family:%s; }\n"), 
+                            strRef.Format(_T("s_font%d { font-index:%d;font-family:%ls; }\n"),
 								pTextElement->m_lID, lFontRef, pTheme->m_arFonts[lFontRef].Name);
 							strFontRefs += strRef;
 						}

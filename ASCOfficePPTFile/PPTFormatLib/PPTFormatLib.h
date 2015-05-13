@@ -32,27 +32,27 @@ private:
 	std::vector<CString> m_arUserSources;
 	CString	m_strEditorXml;
 
-	CString m_strTempDirectory;
+    std::wstring m_strTempDirectory;
 	
 public:
 
-	HRESULT put_TempDirectory(CString sDir)
+    HRESULT put_TempDirectory(std::wstring sDir)
 	{
 		m_strTempDirectory = sDir;
 		return S_OK;
 	}
 	
-	CString get_TempDirectory()
+    std::wstring get_TempDirectory()
 	{
 		return m_strTempDirectory;
 	}
 
-	HRESULT LoadFromFile(CString sSrcFileName, CString sDstPath, CString sXMLOptions);
+    HRESULT LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath);
 
 
 	HRESULT GetAdditionalParam (CString sParamName, VARIANT* ParamValue);
 private:
-    bool OpenFile(CString sFileName);
+    bool OpenFile(std::wstring sFileName);
 
     bool CloseFile();
 

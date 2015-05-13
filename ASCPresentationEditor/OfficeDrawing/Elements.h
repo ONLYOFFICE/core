@@ -366,7 +366,7 @@ namespace NSPresentationEditor
 			CString element;
 			element.Format ( _T("<VideoStream left='%d' top='%d' right='%d' bottom='%d' angle='%f' loop='%d' ")
 				_T(" widthmetric='%d' heightmetric='%d' ")
-				_T(" file='%s' begin='%f' end='%f' >"),
+                _T(" file='%ls' begin='%f' end='%f' >"),
 				(LONG)m_rcBounds.left, (LONG)m_rcBounds.top, (LONG)m_rcBounds.right, (LONG)m_rcBounds.bottom, m_dRotate, m_bLoop,
 				m_oMetric.m_lMillimetresHor, m_oMetric.m_lMillimetresVer,
 				strFileName, m_dClipStartTime, m_dClipEndTime );
@@ -407,7 +407,7 @@ namespace NSPresentationEditor
 			CorrectXmlString(strFileName);
 
 			CString source;
-			source.Format(_T("<Source StartTime='%lf' EndTime='%lf' FilePath='%s'/>"), m_dClipStartTime, m_dClipEndTime, strFileName);
+            source.Format(_T("<Source StartTime='%lf' EndTime='%lf' FilePath='%ls'/>"), m_dClipStartTime, m_dClipEndTime, strFileName);
 			element	+=	source;		
 
 			CString animations;
@@ -480,7 +480,7 @@ namespace NSPresentationEditor
 				lFlags |= 0x0002;
 
 			CString strEffect = _T("");
-			strEffect.Format(_T("<ImagePaint-DrawImageFromFile left='%d' top='%d' right='%d' bottom='%d' angle='%lf' flags='%d' filepath='%s' metric='0' backcolor='-1' scaletype='-1' scalecolor='255' widthmetric='%d' heightmetric='%d'>\
+            strEffect.Format(_T("<ImagePaint-DrawImageFromFile left='%d' top='%d' right='%d' bottom='%d' angle='%lf' flags='%d' filepath='%ls' metric='0' backcolor='-1' scaletype='-1' scalecolor='255' widthmetric='%d' heightmetric='%d'>\
 					<timeline type='1' begin='%lf' end='%lf' fadein='0' fadeout='0' completeness='1.0' /></ImagePaint-DrawImageFromFile>"), 
 					(LONG)m_rcBounds.left, (LONG)m_rcBounds.top, (LONG)m_rcBounds.right, (LONG)m_rcBounds.bottom,
 					m_dRotate, lFlags, m_strFileName, 
@@ -499,7 +499,7 @@ namespace NSPresentationEditor
 				lFlags |= 0x0002;
 
 			CString strEffect = _T("");
-			strEffect.Format(_T("<ImagePaint-DrawImageFromFile left='%d' top='%d' right='%d' bottom='%d' angle='%lf' flags='%d' filepath='%s' metric='0' backcolor='-1' scaletype='-1' scalecolor='255' widthmetric='%d' heightmetric='%d'>\
+            strEffect.Format(_T("<ImagePaint-DrawImageFromFile left='%d' top='%d' right='%d' bottom='%d' angle='%lf' flags='%d' filepath='%ls' metric='0' backcolor='-1' scaletype='-1' scalecolor='255' widthmetric='%d' heightmetric='%d'>\
 					<timeline type='1' begin='%lf' end='%lf' fadein='0' fadeout='0' completeness='1.0' /></ImagePaint-DrawImageFromFile>"), 
 					(LONG)m_rcBounds.left, (LONG)m_rcBounds.top, (LONG)m_rcBounds.right, (LONG)m_rcBounds.bottom,
 					m_dRotate, lFlags, m_strFileName, 
@@ -1603,7 +1603,7 @@ namespace NSPresentationEditor
 			CorrectXmlString(strFileName);
 
 			CString source;
-			source.Format(_T("<Source StartTime='%lf' EndTime='%lf' FilePath='%s' loop='%d' />"), m_dClipStartTime, m_dClipEndTime, strFileName, m_bLoop);
+            source.Format(_T("<Source StartTime='%lf' EndTime='%lf' FilePath='%ls' loop='%d' />"), m_dClipStartTime, m_dClipEndTime, strFileName, m_bLoop);
 			element	+=	source;		
 
 			CString animations;

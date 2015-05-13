@@ -49,7 +49,7 @@
 
 #define RENDER_RTF_BOOL( prop, sResult, sName)\
 		if( 0 == prop )\
-			sResult.AppendFormat( _T("\\%s0"), sName );\
+            sResult.AppendFormat( _T("\\%ls0"), sName );\
 		else if(  PROP_DEF != prop  )\
 			sResult.AppendFormat( _T("\\%ls"), sName );
 
@@ -638,7 +638,7 @@ private:
              CString sTheme;
              if( true == GetStringByTheme( sTheme, m_eTheme ) )
              {
-                 sResult.AppendFormat(_T("theme%sColor = \"%ls\" theme%sShade = \"%d\" theme%sTint = \"%d\""),
+                 sResult.AppendFormat(_T("theme%lsColor = \"%ls\" theme%lsShade = \"%d\" theme%lsTint = \"%d\""),
                                       sParam.GetBuffer(), sTheme.GetBuffer(), sParam.GetBuffer(), m_byteShade ,sParam.GetBuffer(), m_byteTint);
              }
          }

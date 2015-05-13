@@ -6,10 +6,6 @@
 #include "../../Reader/Records.h"
 #include "../../../../ASCPresentationEditor/OfficeDrawing/Document.h"
 
-#ifdef _DEBUG
-#define	_DEBUG_LOG		//	_DEBUG_LOG
-#endif
-
 #define __USE_ANIMATION__
 
 #define CHECK_RECORD_3X(VER,INSTANCE,TYPE) ATLASSERT(m_oHeader.RecVersion==##VER&&m_oHeader.RecInstance==##INSTANCE&&m_oHeader.RecType==##TYPE);
@@ -30,7 +26,7 @@ namespace debug
 	inline static void trace (CString& str)
 	{
 #if defined(_WIN32) || defined (_WIN64)
-        ATLTRACE (_T("%s\n"), str);
+        ATLTRACE (_T("%ls\n"), str);
 #endif
 	}
 };
@@ -332,7 +328,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			buildType		=	StreamUtils::ReadDWORD ( pStream );
@@ -345,10 +341,9 @@ namespace Animations
 			fUIExpanded		=	( 0x02 == ( 0x02 & ((BYTE)Value) ) );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_BuildAtom && m_oHeader.RecLen == 0x00000010; }
-#endif
-		virtual CString ToString()
+
+        virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
@@ -384,7 +379,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			paraBuild					=	StreamUtils::ReadDWORD ( pStream );
@@ -400,10 +395,9 @@ namespace Animations
 			delayTime					=	StreamUtils::ReadDWORD ( pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x1 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_ParaBuildAtom && m_oHeader.RecLen == 0x00000010; }
-#endif
-		virtual CString ToString()
+
+        virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
@@ -451,16 +445,15 @@ namespace Animations
 		{
 			m_oHeader	=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			level		=	StreamUtils::ReadDWORD ( pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_LevelInfoAtom && m_oHeader.RecLen == 0x00000004; }
-#endif
-		virtual CString ToString()
+
+        virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
@@ -514,7 +507,7 @@ namespace Animations
 		{
 			m_oHeader			=	thisHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			CHECK_RECORD_3X(0xF,0x0,RT_ParaBuild);
 #endif
 			SRecordHeader oHeader;
@@ -604,7 +597,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			CHECK_RECORD_3X(0xF,0x0,RT_BuildList);
 #endif
 			LONG lPos		=	0;
@@ -700,7 +693,6 @@ namespace Animations
 			StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -708,7 +700,6 @@ namespace Animations
 				m_oHeader.RecLen			==	0x00000002;
 		}
 
-#endif
 
 		virtual CString ToString()
 		{	
@@ -738,15 +729,12 @@ namespace Animations
 			m_Value				=	( 0x1 == StreamUtils::ReadBYTE ( pStream ) );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
 				m_oHeader.RecType			==	0xF142 &&
 				m_oHeader.RecLen			==	0x00000002;
 		}
-
-#endif
 
 		virtual CString ToString()
 		{	
@@ -780,15 +768,12 @@ namespace Animations
 			m_Value				=	StreamUtils::ReadDWORD ( pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
 				m_oHeader.RecType			==	0xF142 &&
 				m_oHeader.RecLen			==	0x00000005;
 		}
-
-#endif
 
 		virtual CString ToString()
 		{	
@@ -822,15 +807,12 @@ namespace Animations
 			m_Value				=	StreamUtils::ReadFLOAT ( pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
 				m_oHeader.RecType			==	0xF142 &&
 				m_oHeader.RecLen			==	0x00000005;
 		}
-
-#endif
 
 		virtual CString ToString()
 		{	
@@ -860,7 +842,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 
@@ -884,7 +866,6 @@ namespace Animations
 			}
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -892,7 +873,6 @@ namespace Animations
 			//	&&	m_oHeader.RecLen % 2		==	0x00000001;
 		}
 
-#endif
 		virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
@@ -937,15 +917,12 @@ namespace Animations
 			}
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0xF	&&
 				m_oHeader.RecType			==	0xF13E &&
 				m_oHeader.RecInstance		==	0x001;
 		}
-
-#endif
 
 		virtual CString ToString()
 		{	
@@ -977,7 +954,7 @@ namespace Animations
 		{
 			m_oHeader = oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			//	LONG lPos = 0;	StreamUtils::StreamPosition(lPos, pStream);
@@ -1018,10 +995,9 @@ namespace Animations
 			// StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
 
-#ifdef _DEBUG
-		virtual bool IsCorrect () { return m_oHeader.RecVersion ==	0x0	&& m_oHeader.RecInstance ==	0x0	&& m_oHeader.RecType == 0xF127 && m_oHeader.RecLen == 0x00000020; }
-#endif
-		virtual CString ToString()
+        virtual bool IsCorrect () { return m_oHeader.RecVersion ==	0x0	&& m_oHeader.RecInstance ==	0x0	&& m_oHeader.RecType == 0xF127 && m_oHeader.RecLen == 0x00000020; }
+
+        virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
@@ -1062,7 +1038,7 @@ namespace Animations
 		{
 			m_oHeader = oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			// LONG lPos = 0;		StreamUtils::StreamPosition ( lPos, pStream );
@@ -1082,7 +1058,6 @@ namespace Animations
 			// StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -1090,8 +1065,6 @@ namespace Animations
 				m_oHeader.RecType			==	0xF141 &&
 				m_oHeader.RecLen			==	0x00000014;
 		}
-
-#endif
 
 		virtual CString ToString()
 		{	
@@ -1456,7 +1429,7 @@ namespace Animations
 		{
 			m_oHeader = oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			LONG lPos = 0;
@@ -1531,7 +1504,8 @@ namespace Animations
 				case TL_TPID_ZoomToFullScreen	:
 					pRecord		=	new TimeZoomToFullScreen ();
 					break;
-#ifdef _DEBUG
+
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 				default :	assert (0);
 					break;
 #endif
@@ -1572,15 +1546,14 @@ namespace Animations
 			StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0xF	&&
 				m_oHeader.RecInstance		==	0x0 &&
 				m_oHeader.RecType			==	0xF13D;
 		}
-#endif
-		inline bool IsEmpty ()
+
+        inline bool IsEmpty ()
 		{
 			return m_nEmtyNode;
 		}
@@ -1656,7 +1629,7 @@ namespace Animations
 		{
 			m_oHeader = oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
@@ -1664,14 +1637,12 @@ namespace Animations
 			StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0xF	&&
 				m_oHeader.RecInstance		==	0x0 &&
 				m_oHeader.RecType			==	0xF13D;
 		}
-#endif
 		void ClearNodes ()
 		{
 		}
@@ -1704,7 +1675,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			m_Type				=	(TimeVisualElementEnum) StreamUtils::ReadDWORD ( pStream );
@@ -1714,7 +1685,6 @@ namespace Animations
 			m_nData2			=	StreamUtils::ReadDWORD ( pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -1723,7 +1693,6 @@ namespace Animations
 				m_oHeader.RecLen			==	0x00000014;
 		}
 
-#endif
 
 		virtual CString ToString()
 		{	
@@ -1769,13 +1738,12 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			m_Type				=	(TimeVisualElementEnum) StreamUtils::ReadDWORD ( pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -1784,7 +1752,6 @@ namespace Animations
 				m_oHeader.RecLen			==	0x00000004;
 		}
 
-#endif
 
 		virtual CString ToString()
 		{	
@@ -1819,7 +1786,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			//	LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
@@ -1843,15 +1810,12 @@ namespace Animations
 			//	StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0xF	&&
 				m_oHeader.RecInstance		==	0x0 &&
 				m_oHeader.RecType			==	0xF13C;
 		}
-
-#endif
 
 		virtual CString ToString()
 		{	
@@ -1887,7 +1851,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			// LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
@@ -1904,7 +1868,6 @@ namespace Animations
 			// StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -1912,8 +1875,6 @@ namespace Animations
 				m_oHeader.RecType			==	0xF133 &&
 				m_oHeader.RecLen			==	0x00000010;
 		}
-
-#endif
 
 		virtual CString ToString()
 		{	
@@ -1970,7 +1931,7 @@ namespace Animations
             havePropertyList	=	false;
             haveStringList		=	false;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
@@ -2068,10 +2029,9 @@ namespace Animations
 			//StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0xF && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == 0xF12A; }
-#endif
-		virtual CString ToString()
+
+        virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
@@ -2120,7 +2080,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			// LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
@@ -2137,7 +2097,6 @@ namespace Animations
 			// StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -2145,8 +2104,6 @@ namespace Animations
 				m_oHeader.RecType			==	0xF136 &&
 				m_oHeader.RecLen			==	0x00000008;
 		}
-
-#endif
 
 		virtual CString ToString()
 		{	
@@ -2184,7 +2141,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			//	LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
@@ -2230,7 +2187,6 @@ namespace Animations
 			//	StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0xF	&&
@@ -2238,7 +2194,6 @@ namespace Animations
 				m_oHeader.RecType			==	0xF12D;
 		}
 
-#endif
 
 		virtual CString ToString()
 		{	
@@ -2280,7 +2235,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			m_TriggerObject		=	( TriggerObjectEnum )StreamUtils::ReadDWORD ( pStream );
@@ -2290,7 +2245,6 @@ namespace Animations
 			m_nTimeDelay		=	StreamUtils::ReadLONG ( pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -2298,8 +2252,6 @@ namespace Animations
 				m_oHeader.RecType			==	0xF128 &&
 				m_oHeader.RecLen			==	0x00000010;
 		}
-
-#endif
 
 		virtual CString ToString()
 		{	
@@ -2333,8 +2285,8 @@ namespace Animations
 		{
 			m_oHeader = oHeader;
 
-#ifdef _DEBUG
-			assert ( IsCorrect () );
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
+            assert ( IsCorrect () );
 #endif
 			//	LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
 
@@ -2356,7 +2308,6 @@ namespace Animations
 			//	StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0xF	&&
@@ -2364,7 +2315,6 @@ namespace Animations
 				m_oHeader.RecType			==	0xF125;
 		}
 
-#endif
 		virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
@@ -2399,7 +2349,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			iterateInterval						=	StreamUtils::ReadDWORD ( pStream );
@@ -2415,10 +2365,9 @@ namespace Animations
 			fIterateIntervalTypePropertyUsed	=	( 0x08 == ( 0x08 & ((BYTE)Value) ) );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_TimeIterateData && m_oHeader.RecLen == 0x00000014; }
-#endif
-		virtual CString ToString()
+
+        virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
@@ -2461,9 +2410,7 @@ namespace Animations
 	{
 		virtual void ReadFromStream ( SRecordHeader & oHeader, POLE::Stream* pStream )
 		{
-			m_oHeader			=	oHeader;
-
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			DWORD Value						=	StreamUtils::ReadDWORD ( pStream );
@@ -2486,7 +2433,6 @@ namespace Animations
 			m_nBehaviorOrigin				=	StreamUtils::ReadDWORD ( pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -2495,7 +2441,6 @@ namespace Animations
 				m_oHeader.RecLen			==	0x00000020;
 		}
 
-#endif
 
 		virtual CString ToString()
 		{	
@@ -2552,7 +2497,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
@@ -2583,15 +2528,12 @@ namespace Animations
 			//StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0xF	&&
 				m_oHeader.RecInstance		==	0x0 &&
 				m_oHeader.RecType			==	0xF12E;
 		}
-
-#endif
 
 		virtual CString ToString()
 		{	
@@ -2632,7 +2574,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			DWORD Value						=	StreamUtils::ReadDWORD ( pStream );
@@ -2643,7 +2585,6 @@ namespace Animations
 			m_ValueType						=	(TimeAnimateBehaviorValueTypeEnum)StreamUtils::ReadDWORD ( pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -2651,7 +2592,6 @@ namespace Animations
 				m_oHeader.RecType			==	0xF13A &&
 				m_oHeader.RecLen			==	0x00000008;
 		}
-#endif
 
 		virtual CString ToString()
 		{	
@@ -2684,7 +2624,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			LONG lPos = 0;	StreamUtils::StreamPosition ( lPos, pStream );
@@ -2706,10 +2646,10 @@ namespace Animations
 			StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
 
-#ifdef _DEBUG
+
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0xF	&& m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_TimeSetBehaviorContainer; }
-#endif
-		virtual CString ToString()
+
+        virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
@@ -2747,7 +2687,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			m_nCalcMode						=	StreamUtils::ReadDWORD ( pStream );
@@ -2764,7 +2704,6 @@ namespace Animations
 			m_ValueType						=	(TimeAnimateBehaviorValueTypeEnum)StreamUtils::ReadDWORD ( pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -2772,7 +2711,6 @@ namespace Animations
 				m_oHeader.RecType			==	0xF134 &&
 				m_oHeader.RecLen			==	0x0000000C;
 		}
-#endif
 
 		virtual CString ToString()
 		{	
@@ -2817,13 +2755,12 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			m_nTime				=	StreamUtils::ReadDWORD ( pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -2831,7 +2768,6 @@ namespace Animations
 				m_oHeader.RecType			==	0xF143 &&
 				m_oHeader.RecLen			==	0x00000004;
 		}
-#endif
 
 		virtual CString ToString()
 		{	
@@ -2904,7 +2840,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif		
 			LONG lPos		=	0;
@@ -2932,14 +2868,12 @@ namespace Animations
 			StreamUtils::StreamSeek ( lPos + m_oHeader.RecLen, pStream );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0xF	&&
 				m_oHeader.RecInstance		==	0x0 &&
 				m_oHeader.RecType			==	0xF13F;
 		}
-#endif
 
 		virtual CString ToString()
 		{	
@@ -2970,7 +2904,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif		
 			SRecordHeader ReadHeader;
@@ -3006,14 +2940,13 @@ namespace Animations
 				m_oBehavior.ReadFromStream ( ReadHeader, pStream );
 		}
 
-#ifdef _DEBUG
+
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0xF	&&
 				m_oHeader.RecInstance		==	0x0 &&
 				m_oHeader.RecType			==	0xF12B;
 		}
-#endif
 
 		virtual CString ToString()
 		{	
@@ -3072,7 +3005,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			DWORD src						=	StreamUtils::ReadDWORD ( pStream );
@@ -3089,9 +3022,9 @@ namespace Animations
 			rotationDirection				=	StreamUtils::ReadDWORD ( pStream );
 		}
 
-#ifdef _DEBUG
+
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == 0xF138 && m_oHeader.RecLen == 0x00000014; }
-#endif
+
 		virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
@@ -3133,7 +3066,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			SRecordHeader ReadHeader;
@@ -3145,9 +3078,8 @@ namespace Animations
 				behavior.ReadFromStream ( ReadHeader, pStream );
 		}
 
-#ifdef _DEBUG
-		virtual bool IsCorrect () {	return	m_oHeader.RecVersion == 0xF && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == 0xF12F;	}
-#endif
+        virtual bool IsCorrect () {	return	m_oHeader.RecVersion == 0xF && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == 0xF12F;	}
+
 		virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
@@ -3178,7 +3110,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			DWORD src						=	StreamUtils::ReadDWORD ( pStream );
@@ -3199,9 +3131,9 @@ namespace Animations
 			fZoomContents					=	( 0x01 == ( 0x01 & ((BYTE)src) ) ); 
 		}
 
-#ifdef _DEBUG
+
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == 0xF139 && m_oHeader.RecLen == 0x00000020; }
-#endif
+
 		virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
@@ -3250,7 +3182,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			SRecordHeader ReadHeader;
@@ -3262,9 +3194,9 @@ namespace Animations
 				behavior.ReadFromStream ( ReadHeader, pStream );
 		}
 
-#ifdef _DEBUG
+
 		virtual bool IsCorrect () {	return	m_oHeader.RecVersion == 0xF && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == 0xF130;	}
-#endif
+
 		virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
@@ -3322,7 +3254,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			flag					=	StreamUtils::ReadDWORD ( pStream );
@@ -3338,9 +3270,9 @@ namespace Animations
 			pStream->read ((unsigned char*) &colorTo	, sizeof ( TimeAnimateColor ) );
 		}
 
-#ifdef _DEBUG
+
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_TimeColorBehavior && m_oHeader.RecLen == 0x00000034; }
-#endif
+
 		virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
@@ -3381,7 +3313,7 @@ namespace Animations
 		{
 			m_oHeader			=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			SRecordHeader ReadHeader;
@@ -3392,9 +3324,9 @@ namespace Animations
 				behavior.ReadFromStream (ReadHeader, pStream );
 		}
 
-#ifdef _DEBUG
+
 		virtual bool IsCorrect () {	return	m_oHeader.RecVersion == 0xF && m_oHeader.RecInstance == 0x0 && m_oHeader.RecType == RT_TimeColorBehaviorContainer;	}
-#endif
+
 		virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
@@ -3426,17 +3358,17 @@ namespace Animations
 		{
 			m_oHeader	=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			type		=	StreamUtils::ReadDWORD(pStream);
 			value		=	StreamUtils::ReadFLOAT(pStream);
 		}
 
-#ifdef _DEBUG
+
 		virtual bool IsCorrect () { return m_oHeader.RecVersion == 0x0 && m_oHeader.RecType == RT_TimeModifierAtom && m_oHeader.RecLen == 0x00000008; }
-#endif
-		virtual CString ToString()
+
+        virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
@@ -3500,7 +3432,7 @@ namespace Animations
 		{
 			m_oHeader = oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			SRecordHeader	rHeader;
@@ -3567,17 +3499,16 @@ namespace Animations
 					}
 				}
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 				ATLTRACE ( _T("SlaveContainer : UNKNOW RECORD : 0x%x\n"), nRecord );
 #endif
 				StreamUtils::StreamSkip ( ReadHeader.RecLen, pStream );
 			}
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect() { return m_oHeader.RecVersion == 0xF && m_oHeader.RecInstance == 0x01 && m_oHeader.RecType == 0xF145; }
-#endif
-		virtual CString ToString()
+
+        virtual CString ToString()
 		{	
 			XmlUtils::CXmlWriter oWriter;
 
@@ -3686,7 +3617,7 @@ namespace Animations
 		{
 			m_oHeader = oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			CHECK_RECORD_3X (0xF,0x01,RT_TimeExtTimeNodeContainer);
 #endif
 			LONG lPos = 0;
@@ -3897,7 +3828,7 @@ namespace Animations
 						continue;
 					}
 				}
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 				ATLTRACE ( _T("ExtTimeNodeContainer : UNKNOW RECORD : 0x%x\n"), nRecord );
 #endif
 				StreamUtils::StreamSkip ( ReadHeader.RecLen, pStream );
@@ -4043,7 +3974,7 @@ namespace Animations
 		{
 			m_oHeader = oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			pStream->read ((unsigned char*) &m_FileTime, sizeof ( FILETIME ) );
@@ -4055,7 +3986,6 @@ namespace Animations
 #endif
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -4064,7 +3994,6 @@ namespace Animations
 				m_oHeader.RecLen			==	0x00000008;
 		}
 
-#endif
 
 		virtual CString ToString()
 		{	
@@ -4094,7 +4023,7 @@ namespace Animations
 		{
 			m_oHeader = oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			DWORD Value = 0L;
@@ -4104,7 +4033,6 @@ namespace Animations
 			m_bOverrideMasterAnimation	=	( 0x02 == ( 0x02 & ((BYTE)Value) ) );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -4112,8 +4040,6 @@ namespace Animations
 				m_oHeader.RecType			==	0x2EEA &&
 				m_oHeader.RecLen			==	0x00000004;
 		}
-
-#endif
 
 		virtual CString ToString()
 		{	
@@ -4144,14 +4070,13 @@ namespace Animations
 		{
 			m_oHeader	=	oHeader;
 
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			assert ( IsCorrect () );
 #endif
 			DWORD Value; 
 			pStream->read ( (unsigned char*) &Value, sizeof ( DWORD ) );
 		}
 
-#ifdef _DEBUG
 		virtual bool IsCorrect ( )
 		{
 			return	m_oHeader.RecVersion	==	0x0	&&
@@ -4160,7 +4085,6 @@ namespace Animations
 				m_oHeader.RecLen			==	0x00000004;
 		}
 
-#endif
 
 		virtual CString ToString()
 		{	
@@ -4234,14 +4158,14 @@ namespace Animations
 
             m_nDuration			=	(std::max) ( m_nDuration, m_oTop.dTime + m_oTop.dDuration );
 
-#ifdef _DEBUG_LOG_
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			ATLTRACE ( _T("Push : %d, begin : %d, duration : %d\n"), nType, (int)m_oTop.dTime, (int)m_oTop.dDuration );
 #endif
 		}
 
 		inline void Pop ()
 		{
-#ifdef _DEBUG_LOG_
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			ATLTRACE ( _T("Pop \n") );	
 #endif
 			if ( (int)m_arrEffects.size() )
@@ -4376,7 +4300,7 @@ namespace Animations
 			{	
 				Clear ();
 
-#ifdef _DEBUG_LOG
+#if defined(_DEBUG_LOG) && (defined(_WIN32) || defined(_WIN64))
 				ATLTRACE(_T("======================================== Slide ========================================\n"));
 #endif
                 m_bSaveEffect		=	false;
@@ -4388,7 +4312,7 @@ namespace Animations
 
 				UpdateParagraph ();
 
-#ifdef _DEBUG_LOG
+#if defined(_DEBUG_LOG) && (defined(_WIN32) || defined(_WIN64))
 				ATLTRACE(_T("duration : %f,\n"), GetTime () );
 				ATLTRACE(_T("=======================================================================================\n"));
 #endif
@@ -4497,8 +4421,8 @@ namespace Animations
                     m_bSaveEffect	=	true;
 				}
 
-#ifdef _DEBUG_LOG
-				// ATLTRACE ( _T("idObj : %d, effect : %s\t\t"), nID, Helpers::GetEffectNameByID ( m_oTopEffect.m_nEffectType, m_oTopEffect.m_nEffectID ) );				
+#if defined(_DEBUG_LOG) && (defined(_WIN32) || defined(_WIN64))
+                // ATLTRACE ( _T("idObj : %d, effect : %ls\t\t"), nID, Helpers::GetEffectNameByID ( m_oTopEffect.m_nEffectType, m_oTopEffect.m_nEffectID ) );
 				// ATLTRACE ( _T("dbg - NodeType : %d, count : %d\n"), nNodeType, (int)pNode->rgExtTimeNodeChildren.size() );
 #endif
 			}				
@@ -4616,7 +4540,8 @@ namespace Animations
             oEffect.m_bRemoveEmptyBlocks	=	true;	//	ALWAYS
 
 			EffectToMap (oEffect);
-#ifdef _DEBUG
+
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			//ATLTRACE ( _T("REF : %d, EffectType : %d, EffectID : %d, EffectDir : %d, Group : %d, Begin : %f, Dur : %f, ShapeIgnore : %d, TextBlock : %d\n"), 
 			//	oEffect.m_nRefID, oEffect.m_nEffectType, oEffect.m_nEffectID, oEffect.m_nEffectDir, oEffect.m_nEffectNodeType, oEffect.m_nBeginTime, oEffect.m_nDuration, oEffect.m_bIgnoreShape, oEffect.m_nTextSequence);
 			ATLTRACE (_T("REF : %d, [ %f, %f ]\n"), oEffect.m_nRefID, oEffect.m_nBeginTime, oEffect.m_nDuration);
@@ -4924,7 +4849,8 @@ namespace Animations
 									if (oEffect.m_nTextSequence == m_arParIndexer.at(ind))
 									{
 										oEffect.m_nTextSequence = ind;
-#ifdef _DEBUG
+
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 										//ATLTRACE ( _T("REF : %d, EffectType : %d, EffectID : %d, EffectDir : %d, Group : %d, Begin : %f, Dur : %f, ShapeIgnore : %d, TextBlock : %d\n"), 
 										//	oEffect.m_nRefID, oEffect.m_nEffectType, oEffect.m_nEffectID, oEffect.m_nEffectDir, oEffect.m_nEffectNodeType, oEffect.m_nBeginTime, oEffect.m_nDuration, oEffect.m_bIgnoreShape, oEffect.m_nTextSequence);
 #endif

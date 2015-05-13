@@ -947,7 +947,7 @@ namespace SVG
 		PathParser& oPath	=	element->GetPath ();
 		for (long i = 0; i < (long)element->GetSize (); ++i)
 		{
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			WCHAR Code = element->GetCode(i);
 #endif
 			if (_T('Z') == element->GetCode(i) || _T('z') == element->GetCode(i))
@@ -1301,7 +1301,7 @@ namespace SVG
 
 		for (long i = 0; i < (long)element->GetSize (); ++i)
 		{
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			WCHAR Code = element->GetCode (i);
 #endif
 			if ( _T('Z') == element->GetCode (i) || _T('z') == element->GetCode (i) )
@@ -2549,7 +2549,7 @@ namespace SVG
 	//			m_render->DrawImage(m_pFrame, t.X - Width * mul.X,	t.Y,					Width * mul.X, Height * mul.Y);
 	//		}
 
-	//		m_sLivePath.Format (_T("%s\\%s.png"), FileUtils::GetTempFolder(), m_pattern->nodeId());
+    //		m_sLivePath.Format (_T("%ls\\%ls.png"), FileUtils::GetTempFolder(), m_pattern->nodeId());
 	//		SaveImage(m_pPatternFrame, m_sLivePath);
 	//	}
 

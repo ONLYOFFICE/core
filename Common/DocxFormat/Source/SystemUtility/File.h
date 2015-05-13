@@ -324,7 +324,7 @@ namespace StreamUtils
 		{
 			lDWord = ((pMem[3] << 24) | (pMem[2] << 16) | (pMem[1] << 8) | pMem[0]);
 		}
-		return lDWord;
+        return 0xFFFFFFFF & lDWord;
 	}
 	static SHORT ReadSHORT(POLE::Stream* pStream)
 	{

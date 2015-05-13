@@ -2700,7 +2700,7 @@ namespace SVG
 
 					CString Source	 =	path.Tokenize ( Tokens, To );
 
-					// ATLTRACE ( _T("%c : - %s\n"), symbol, Source );
+                    // ATLTRACE ( _T("%c : - %ls\n"), symbol, Source );
 
 					std::vector<double> Values;
 					if (StrUtils::DoubleValues(Source, Values))
@@ -2881,7 +2881,7 @@ namespace SVG
 
 					CString Source	=	path.Tokenize ( Tokens, To );
 
-					// ATLTRACE ( _T("%c : - %s\n"), symbol, Source );
+                    // ATLTRACE ( _T("%c : - %ls\n"), symbol, Source );
 
 					std::vector<double> Values;
 					if (StrUtils::DoubleValues(Source, Values))
@@ -3200,7 +3200,7 @@ namespace SVG
 		{
 			if (0 == m_sXml.GetLength())
 			{
-				m_sXml.Format(_T("<linearGradient x1='%f' y1='%f' x2='%f' y2='%f' gradientUnits ='%s' gradientTransform='matrix(%f, %f, %f, %f, %f, %f)' sourceType='svg' >"),
+                m_sXml.Format(_T("<linearGradient x1='%f' y1='%f' x2='%f' y2='%f' gradientUnits ='%ls' gradientTransform='matrix(%f, %f, %f, %f, %f, %f)' sourceType='svg' >"),
 					m_begin.X, m_begin.Y, m_end.X, m_end.Y, m_gradientUnits,
 					m_gradientTransform[0], m_gradientTransform[1],
 					m_gradientTransform[3], m_gradientTransform[4],
@@ -3316,7 +3316,7 @@ namespace SVG
 		{
 			if (0 == m_sXml.GetLength())
 			{
-				m_sXml.Format(_T("<radialGradient cx='%f' cy='%f' fx='%f' fy='%f' r='%f' gradientUnits='%s' gradientTransform='matrix(%f, %f, %f, %f, %f, %f)' sourceType='svg' >"),
+                m_sXml.Format(_T("<radialGradient cx='%f' cy='%f' fx='%f' fy='%f' r='%f' gradientUnits='%ls' gradientTransform='matrix(%f, %f, %f, %f, %f, %f)' sourceType='svg' >"),
 					m_c.X, m_c.Y, m_f.X, m_f.Y, m_R,
 					m_gradientUnits,
 					m_gradientTransform[0], m_gradientTransform[1],
@@ -3406,8 +3406,8 @@ namespace SVG
 		// link
                 virtual bool RefreshXLinkSource (IRefStorage* pStorage)
 		{
-#ifdef _DEBUG
-			// ATLTRACE (L"NOT IMPLEMENTED - RefreshXLinkSource: id - %s\n", nodeId());
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
+            // ATLTRACE (L"NOT IMPLEMENTED - RefreshXLinkSource: id - %ls\n", nodeId());
 #endif
                         return false;
 		}
@@ -4097,7 +4097,7 @@ namespace SVG
 	//			GetSystemTime ( &oTime );
 
 	//			CString fileName;
-	//			fileName.Format (_T("%s\\%d%d%d%d%d%d%s"), sTempPath, oTime.wYear, oTime.wDay, oTime.wHour, oTime.wMinute, oTime.wSecond, oTime.wMilliseconds, strExts );
+    //			fileName.Format (_T("%ls\\%d%d%d%d%d%d%ls"), sTempPath, oTime.wYear, oTime.wDay, oTime.wHour, oTime.wMinute, oTime.wSecond, oTime.wMilliseconds, strExts );
 
 	//			CImageManager::CopyFile(strInput, fileName, NULL, NULL);
 
@@ -4316,7 +4316,7 @@ namespace SVG
 				{
 					m_pRefLink = pRefLink;
 
-					// ATLTRACE(_T("RefLink for object : %s - %s\n"), nodeId(), m_pRefLink->nodeId());
+                    // ATLTRACE(_T("RefLink for object : %ls - %ls\n"), nodeId(), m_pRefLink->nodeId());
 
                                         return true;
 				}
@@ -4523,8 +4523,9 @@ namespace SVG
 		{
 			if (L"clipPath" == oXml.GetName ())
                                 return false;
-#ifdef _DEBUG
-			ATLTRACE (L"[svg] ClipPath-NodeName : %s\n", oXml.GetName());
+
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
+            ATLTRACE (L"[svg] ClipPath-NodeName : %ls\n", oXml.GetName());
 #endif
 
 			DrawElement* pClip = m_oBuilder.Build (oXml.GetName());
@@ -4675,8 +4676,8 @@ namespace SVG
 		}
                 inline bool Load(XmlUtils::CXmlNode& oXml)
 		{
-#ifdef _DEBUG
-			ATLTRACE (L"[svg] Pattern-NodeName : %s\n", oXml.GetName());
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
+            ATLTRACE (L"[svg] Pattern-NodeName : %ls\n", oXml.GetName());
 #endif
 
 			DrawElement* element = m_oBuilder.Build (oXml.GetName());
@@ -4985,8 +4986,9 @@ namespace SVG
 
                                 if (m_model->HashRef(pReference, true))
 					UpdateSymbol(pReference, oXml);
-#ifdef _DEBUG
-				ATLTRACE(L"[svg] ref element (g) - : %s\n", strXmlNode);
+
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
+                ATLTRACE(L"[svg] ref element (g) - : %ls\n", strXmlNode);
 #endif
                                 return true;
 			}
@@ -5000,8 +5002,9 @@ namespace SVG
                 inline DrawElement* Create(XmlUtils::CXmlNode& oXml, bool bAddStorage = true)
 		{
 			CString strXmlNode = oXml.GetName();
-#ifdef _DEBUG
-			ATLTRACE(L"[svg] render element (g) - : %s\n", strXmlNode);
+
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
+            ATLTRACE(L"[svg] render element (g) - : %ls\n", strXmlNode);
 #endif
 			DrawElement* element		=	m_oDrawBuilder.Build(strXmlNode);
 			if (element)
@@ -5050,7 +5053,7 @@ namespace SVG
 
 				element->FromXml(oXml, m_oUs);
 
-				// ATLTRACE(L"GraphicsContainer : %s - push : %s\n", m_nodeId, oXmlNode.GetName());
+                // ATLTRACE(L"GraphicsContainer : %ls - push : %ls\n", m_nodeId, oXmlNode.GetName());
 
 				if (bAddStorage)
 					m_arrGroup.push_back(element);
@@ -5223,8 +5226,8 @@ namespace SVG
 					const Style& style = pRef->GetStyle();
 					if (style.GetFillUrlRef().GetLength() && (NULL == style.GetFill()))
 					{
-#ifdef _DEBUG
-						ATLTRACE (_T("[svg] NEED JOIN FILL STYLE : id - %s"), pRef->nodeId());
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
+                        ATLTRACE (_T("[svg] NEED JOIN FILL STYLE : id - %ls"), pRef->nodeId());
 #endif
 					}
 				}
@@ -5239,7 +5242,7 @@ namespace SVG
 			if (index > (long)m_arrGroup.size())
 				return NULL;
 
-			// ATLTRACE ( _T("get : %s\n"), m_arrGroup [nIndex]->nodeId () );
+            // ATLTRACE ( _T("get : %ls\n"), m_arrGroup [nIndex]->nodeId () );
 
 			return m_arrGroup [index];
 		}
@@ -5249,7 +5252,7 @@ namespace SVG
 		}
                 virtual bool Push (ISvgRef* Elem)
 		{
-			// ATLTRACE ( _T("push : %s\n"), Elem->nodeId () );
+            // ATLTRACE ( _T("push : %ls\n"), Elem->nodeId () );
                         if (!Elem) return false;
 			m_arrGroup.push_back(Elem);
 
@@ -5266,7 +5269,7 @@ namespace SVG
 					if (m_arrRef.end() == pPair)
 					{
 						ISvgRef* search = pPair->second;
-						//ATLTRACE(_T("IRefStorage - Hash : %s, %d\n"), element->nodeId(), element->nodeType());
+                        //ATLTRACE(_T("IRefStorage - Hash : %ls, %d\n"), element->nodeId(), element->nodeType());
 
 						m_arrRef.insert(std::pair<CString, ISvgRef*>(element->nodeId(), element));
 
@@ -5817,7 +5820,7 @@ namespace SVG
 
                 //	return false;
 		//}
-                inline bool	LoadFromString (const CString& strXml, SVG::Storage* model)
+        inline bool	LoadFromString (const CString& strXml, SVG::Storage* model)
 		{
 			if (model)
 			{
@@ -5855,12 +5858,14 @@ namespace SVG
 
                         return false;
 		}
-                inline bool Explore (XmlUtils::CXmlNode& oXml)
+        inline bool Explore (XmlUtils::CXmlNode& oXml)
 		{
-			CString strXmlNode = oXml.GetName();			// ATLTRACE ( L"%s\n", strXmlNode);
+            CString strXmlNode = oXml.GetName();
 
-                        bool ExploreLayer = false;
-                        bool readInnerNodes = true;
+            // ATLTRACE ( L"%ls\n", strXmlNode);
+
+            bool ExploreLayer = false;
+            bool readInnerNodes = true;
 
 			if (m_bDefinesLayer)
 				++m_nDefsLayer;
@@ -5909,15 +5914,15 @@ namespace SVG
 
 					--m_nDefsLayer;
 					if (0 == m_nDefsLayer)
-                                                m_bDefinesLayer	= false;
+                        m_bDefinesLayer	= false;
 
-                                        return true;
+                    return true;
 				}
 
 
-				// ATLTRACE ( L"Node : %s\n", oXml.GetName() );
+                // ATLTRACE ( L"Node : %ls\n", oXml.GetName() );
 
-                                ExploreLayer	=	true;
+                ExploreLayer	=	true;
 
 				++m_nLayerLevel;
 
@@ -5969,8 +5974,8 @@ namespace SVG
 				XmlUtils::CXmlNode oXmlSub;
 				if (oXml.GetNode(_T("*"), oXmlSub))
 				{
-                                        if (false == Explore(oXmlSub))
-                                                return false;
+                    if (false == Explore(oXmlSub))
+                        return false;
 				}
 			}
 			else if ( _T("defs") == strXmlNode)
@@ -6098,7 +6103,7 @@ namespace SVG
                                         return false;
 			}
 
-			// ATLTRACE ( L"LoadElement : %s\n", strXmlNode );
+            // ATLTRACE ( L"LoadElement : %ls\n", strXmlNode );
 
 			if (m_model)
 			{
@@ -6148,8 +6153,8 @@ namespace SVG
                                         return false;
 			}
 
-#ifdef _DEBUG
-			ATLTRACE (L"[svg] render element : %s\n", strXmlNode);
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
+            ATLTRACE (L"[svg] render element : %ls\n", strXmlNode);
 #endif
 
 			DrawElement* element		=	m_oDrawBuilder.Build (strXmlNode);

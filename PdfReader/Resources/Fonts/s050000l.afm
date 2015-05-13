@@ -1,7 +1,6 @@
 StartFontMetrics 3.0
 Comment Copyright URW Software, Copyright 1997 by URW
-Comment Creation Date: 10/21/1999
-Comment See the file COPYING (GNU General Public License) for license conditions.
+Comment Creation Date: 9/8/2005
 FontName StandardSymL
 FullName Standard Symbols L
 FamilyName Standard Symbols L
@@ -18,7 +17,7 @@ CapHeight 673
 XHeight 500
 Descender -222
 Ascender 673
-StartCharMetrics 190
+StartCharMetrics 191
 C 32 ; WX 250 ; N space ; B 0 0 0 0 ;
 C 33 ; WX 333 ; N exclam ; B 128 -13 240 686 ;
 C 34 ; WX 713 ; N universal ; B 31 0 681 673 ;
@@ -41,7 +40,7 @@ C 50 ; WX 500 ; N two ; B 25 0 475 686 ;
 C 51 ; WX 500 ; N three ; B 39 -13 435 686 ;
 C 52 ; WX 500 ; N four ; B 16 0 469 680 ;
 C 53 ; WX 500 ; N five ; B 29 -13 443 699 ;
-C 54 ; WX 500 ; N six ; B 36 -13 468 685 ;
+C 54 ; WX 500 ; N six ; B 36 -13 467 685 ;
 C 55 ; WX 500 ; N seven ; B 24 -7 448 673 ;
 C 56 ; WX 500 ; N eight ; B 54 -13 440 686 ;
 C 57 ; WX 500 ; N nine ; B 31 -13 460 686 ;
@@ -114,6 +113,7 @@ C 123 ; WX 480 ; N braceleft ; B 58 -165 397 673 ;
 C 124 ; WX 200 ; N bar ; B 65 -177 135 673 ;
 C 125 ; WX 480 ; N braceright ; B 79 -165 418 673 ;
 C 126 ; WX 549 ; N similar ; B 17 196 529 325 ;
+C 128 ; WX 790 ; N apple ; B 56 -4 733 808 ;
 C 160 ; WX 762 ; N Euro ; B 53 -4 722 671 ;
 C 161 ; WX 620 ; N Upsilon1 ; B -2 0 610 687 ;
 C 162 ; WX 247 ; N minute ; B 27 476 228 735 ;
@@ -146,7 +146,7 @@ C 188 ; WX 1000 ; N ellipsis ; B 111 -13 889 100 ;
 C 189 ; WX 603 ; N arrowvertex ; B 280 -120 336 1010 ;
 C 190 ; WX 1000 ; N arrowhorizex ; B -60 220 1050 276 ;
 C 191 ; WX 658 ; N carriagereturn ; B 15 -16 602 629 ;
-C 192 ; WX 823 ; N aleph ; B 175 0 662 689 ;
+C 192 ; WX 823 ; N aleph ; B 175 0 661 689 ;
 C 193 ; WX 686 ; N Ifraktur ; B 10 -54 578 736 ;
 C 194 ; WX 795 ; N Rfraktur ; B 26 -16 759 730 ;
 C 195 ; WX 987 ; N weierstrass ; B 159 -211 870 574 ;

@@ -51,6 +51,7 @@ namespace PdfReader
 		void               SetCMapFolder(const wchar_t* wsDir);
 		void               SetFontManager(CFontManager* pFontManager);
 		CFontManager*      GetFontManager() const;
+		std::wstring       GetBuiltinFontPath(StringExt* seFontName) const;
 
 	private:
 
@@ -65,6 +66,7 @@ namespace PdfReader
 		std::wstring            m_wsTempDirectory;
 
 		CFontManager*           m_pFontManager;
+		std::wstring            m_arrBuiltinFontsPath[14]; // Пути к стандартным 14 шрифтам
 	};
 }
 

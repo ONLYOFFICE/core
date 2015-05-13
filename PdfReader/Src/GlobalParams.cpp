@@ -44,27 +44,27 @@ namespace PdfReader
 {
 	static struct
 	{
-		wchar_t*             wsName;
+		char*                sName;
 		wchar_t*             wsT1FileName;
 		wchar_t*             wsTTFileName;
 		const unsigned char* pT1Buffer;
 		const unsigned int   unSize;
 	} c_arrBase14FontTable[] =
 	{
-		{ L"Courier",               L"n022003l.pfb", L"cour.ttf",    c_arrn022003l, c_nSizen022003l},
-		{ L"Courier-Bold",          L"n022004l.pfb", L"courbd.ttf",  c_arrn022004l, c_nSizen022004l},
-		{ L"Courier-BoldOblique",   L"n022024l.pfb", L"courbi.ttf",  c_arrn022024l, c_nSizen022024l},
-		{ L"Courier-Oblique",       L"n022023l.pfb", L"couri.ttf",   c_arrn022023l, c_nSizen022023l},
-		{ L"Helvetica",             L"n019003l.pfb", L"arial.ttf",   c_arrn019003l, c_nSizen019003l},
-		{ L"Helvetica-Bold",        L"n019004l.pfb", L"arialbd.ttf", c_arrn019004l, c_nSizen019004l},
-		{ L"Helvetica-BoldOblique", L"n019024l.pfb", L"arialbi.ttf", c_arrn019024l, c_nSizen019024l},
-		{ L"Helvetica-Oblique",     L"n019023l.pfb", L"ariali.ttf",  c_arrn019023l, c_nSizen019023l},
-		{ L"Symbol",                L"s050000l.pfb", NULL,           c_arrs050000l, c_nSizes050000l},
-		{ L"Times-Bold",            L"n021004l.pfb", L"timesbd.ttf", c_arrn021004l, c_nSizen021004l},
-		{ L"Times-BoldItalic",      L"n021024l.pfb", L"timesbi.ttf", c_arrn021024l, c_nSizen021024l},
-		{ L"Times-Italic",          L"n021023l.pfb", L"timesi.ttf",  c_arrn021023l, c_nSizen021023l},
-		{ L"Times-Roman",           L"n021003l.pfb", L"times.ttf",   c_arrn021003l, c_nSizen021003l},
-		{ L"ZapfDingbats",          L"d050000l.pfb", NULL,           c_arrd050000l, c_nSized050000l},
+		{ "Courier",               L"n022003l.pfb", L"cour.ttf",    c_arrn022003l, c_nSizen022003l},
+		{ "Courier-Bold",          L"n022004l.pfb", L"courbd.ttf",  c_arrn022004l, c_nSizen022004l},
+		{ "Courier-BoldOblique",   L"n022024l.pfb", L"courbi.ttf",  c_arrn022024l, c_nSizen022024l},
+		{ "Courier-Oblique",       L"n022023l.pfb", L"couri.ttf",   c_arrn022023l, c_nSizen022023l},
+		{ "Helvetica",             L"n019003l.pfb", L"arial.ttf",   c_arrn019003l, c_nSizen019003l},
+		{ "Helvetica-Bold",        L"n019004l.pfb", L"arialbd.ttf", c_arrn019004l, c_nSizen019004l},
+		{ "Helvetica-BoldOblique", L"n019024l.pfb", L"arialbi.ttf", c_arrn019024l, c_nSizen019024l},
+		{ "Helvetica-Oblique",     L"n019023l.pfb", L"ariali.ttf",  c_arrn019023l, c_nSizen019023l},
+		{ "Symbol",                L"s050000l.pfb", NULL,           c_arrs050000l, c_nSizes050000l},
+		{ "Times-Bold",            L"n021004l.pfb", L"timesbd.ttf", c_arrn021004l, c_nSizen021004l},
+		{ "Times-BoldItalic",      L"n021024l.pfb", L"timesbi.ttf", c_arrn021024l, c_nSizen021024l},
+		{ "Times-Italic",          L"n021023l.pfb", L"timesi.ttf",  c_arrn021023l, c_nSizen021023l},
+		{ "Times-Roman",           L"n021003l.pfb", L"times.ttf",   c_arrn021003l, c_nSizen021003l},
+		{ "ZapfDingbats",          L"d050000l.pfb", NULL,           c_arrd050000l, c_nSized050000l},
 		{ NULL, NULL, NULL, NULL, 0 }
 	};
 	//-------------------------------------------------------------------------------------------------------------------------------
@@ -173,7 +173,25 @@ namespace PdfReader
 	void               GlobalParams::SetTempFolder(const wchar_t* wsTempFolder)
 	{
 		if (wsTempFolder)
+		{
 			m_wsTempDirectory = wsTempFolder;
+
+			// В темповую директорию скидываем 14 стандартных шрифтов
+			for (int nIndex = 0; nIndex < 14; nIndex++)
+			{
+				std::wstring wsFontPath;
+				FILE* pFile = NULL;
+				if (!NSFile::CFileBinary::OpenTempFile(&wsFontPath, &pFile, L"wb", L".base", (wchar_t*)wsTempFolder, NULL))
+					continue;
+				fclose(pFile);
+
+				NSFile::CFileBinary oFile;
+				oFile.CreateFileW(wsFontPath);
+				oFile.WriteFile((BYTE*)c_arrBase14FontTable[nIndex].pT1Buffer, c_arrBase14FontTable[nIndex].unSize);
+				oFile.CloseFile();
+				m_arrBuiltinFontsPath[nIndex] = wsFontPath;
+			}
+		}
 		else
 			m_wsTempDirectory = L"";
 	}
@@ -196,5 +214,19 @@ namespace PdfReader
 	CFontManager*      GlobalParams::GetFontManager() const
 	{
 		return m_pFontManager;
+	}
+	std::wstring       GlobalParams::GetBuiltinFontPath(StringExt* seFontName) const
+	{
+		int nIndex = 0;
+		for (nIndex = 0; nIndex < 14; nIndex++)
+		{
+			if (0 == seFontName->Compare(c_arrBase14FontTable[nIndex].sName))
+				break;
+		}
+
+		if (nIndex < 14)
+			return m_arrBuiltinFontsPath[nIndex];
+
+		return L"";
 	}
 }

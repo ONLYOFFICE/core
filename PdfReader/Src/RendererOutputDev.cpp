@@ -14,16 +14,13 @@
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/common/Array.h"
+#include "../../DesktopEditor/graphics/BaseThread.h"
 
-// TODO: 1. Перезапись в PDF не будет работать из-за того, что в рендерере убраны нужные функции
-//       2. Градиентные заливки
-//       3. FontManager->GetFontType
-//       4. FontManager->GetNameIndex
-//       5. m_pRenderer->SetAdditionalParam(L"TilingHtmlPattern", oWriter.GetXmlString());
-//       6. Подбор шрифтов необходимо перенести в GlobalParams->FindFontFile
-//       7. Добавить обработку стандартных 14 шрифтов
-//       8. В идентефикацию шрифта к путю добавить номер шрифта в файле
-//       9. Реализовать линейный и радиальный градиенты
+// TODO: 1. Реализовать по-нормальному градиентные заливки (Axial и Radial) 
+//       2. m_pRenderer->SetAdditionalParam(L"TilingHtmlPattern", oWriter.GetXmlString());
+//       3. Подбор шрифтов необходимо перенести в GlobalParams->FindFontFile
+//       4. В идентефикацию шрифта к путю добавить номер шрифта в файле
+//       5. Jpeg2000
 
 namespace PdfReader
 {
@@ -198,7 +195,7 @@ namespace PdfReader
 		{
 			// Шрифт нашелся, но пока им пользоваться нельзя, потому что он загружается в параллельном потоке
 			while (!pEntry->bAvailable)
-				Sleep(10);
+				NSThreads::Sleep(10);
 		}
 
 		RELEASEOBJECT(pCS);
@@ -215,7 +212,7 @@ namespace PdfReader
 		{
 			// Шрифт нашелся, но пока им пользоваться нельзя, потому что он загружается в параллельном потоке
 			while (!(*ppEntry)->bAvailable)
-				Sleep(10);
+				NSThreads::Sleep(10);
 		}
 
 		if (!bResult)
@@ -835,10 +832,7 @@ namespace PdfReader
 					return;
 				}
 
-				// TODO: Реализовать m_pFontManager->GetFontType
-				std::wstring wsFontType = L"";
-				//m_pFontManager->GetFontType(&wsFontType);
-
+				std::wstring wsFontType = m_pFontManager->GetFontType();
 				if (L"TrueType" == wsFontType)
 				{
 					if (eFontType != fontType1COT   && eFontType != fontTrueType
@@ -1180,9 +1174,7 @@ namespace PdfReader
 							char* sName = NULL;
 							if ((sName = ppEncoding[nIndex]))
 							{
-								unsigned short ushGID = 0;
-								// TODO: pFontManager->GetNameIndex
-								//m_pFontManager->GetNameIndex(AStringToWString(sName), &ushGID);
+								unsigned short ushGID = m_pFontManager->GetNameIndex(AStringToWString(sName));
 								pCodeToGID[nIndex] = ushGID;
 							}
 						}
@@ -3025,16 +3017,14 @@ namespace PdfReader
 				wsSrcCodeText = oWriter.GetXmlString();
 			}
 		}
-		else
-		{
-			wsSrcCodeText = L"";
-		}
 
-		// TODO: В текщем варианте рендерера убран wsSrcCodeText, он нужен для перезаписи PDF, как будет добавлена функция изменить здесь.
 		float fAscent = pGState->GetFontSize();
 		if (nRenderMode == 0 || nRenderMode == 2 || nRenderMode == 4 || nRenderMode == 6)
 		{
-			m_pRenderer->CommandDrawTextEx(wsUnicodeText, wsGidText, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy), PDFCoordsToMM(0), 0);
+			if (c_nPDFWriter == m_lRendererType)
+				m_pRenderer->CommandDrawTextPdf(wsUnicodeText, wsGidText, wsSrcCodeText, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy), PDFCoordsToMM(0), 0);
+			else
+				m_pRenderer->CommandDrawTextEx(wsUnicodeText, wsGidText, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy), PDFCoordsToMM(0), 0);
 		}
 
 		if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)

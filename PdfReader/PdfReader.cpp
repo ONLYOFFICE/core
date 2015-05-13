@@ -99,13 +99,6 @@ namespace PdfReader
 
 		m_pFontList->Clear();
 
-		if (L"CheckPassword" != wsOptions)
-		{
-			m_pGlobalParams->SetTempFolder(m_wsTempFolder);
-			m_pGlobalParams->SetCMapFolder(m_wsCMapFolder);
-			m_pGlobalParams->SetFontManager(m_pFontManager);
-		}
-
 		return (errorNone == m_pPDFDocument->GetErrorCode());
 	}
 	void         CPdfReader::Close()

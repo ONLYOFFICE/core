@@ -382,20 +382,27 @@ namespace PdfReader
 		return pCharToUnicode;
 	}
 
-	void GrFont::FindExternalFontFile()
+	void GrFont::FindExternalFontFile(bool bBuiltin)
 	{
 		static wchar_t *c_wsType1Ext[] ={ L".pfa", L".pfb", L".ps", L"", NULL };
 		static wchar_t *c_wsTTFExts[]  ={ L".ttf", NULL };
 
 		if (m_pGlobalParams && m_seName)
 		{
-			if (m_eType == fontType1)
+			if (bBuiltin)
 			{
-				m_wsExternalFontFilePath = m_pGlobalParams->FindFontFile(m_seName, c_wsType1Ext);
+				m_wsExternalFontFilePath = m_pGlobalParams->GetBuiltinFontPath(m_seName);
 			}
-			else if (m_eType == fontTrueType)
+			else
 			{
-				m_wsExternalFontFilePath = m_pGlobalParams->FindFontFile(m_seName, c_wsTTFExts);
+				if (m_eType == fontType1)
+				{
+					m_wsExternalFontFilePath = m_pGlobalParams->FindFontFile(m_seName, c_wsType1Ext);
+				}
+				else if (m_eType == fontTrueType)
+				{
+					m_wsExternalFontFilePath = m_pGlobalParams->FindFontFile(m_seName, c_wsTTFExts);
+				}
 			}
 		}
 	}
@@ -555,7 +562,7 @@ namespace PdfReader
 		}
 
 		// Ищем внешний FontFile
-		FindExternalFontFile();
+		FindExternalFontFile(pBuiltinFont ? true : false);
 
 		// FontMatrix
 		m_arrFontMatrix[0] = m_arrFontMatrix[3] = 1;
@@ -1341,7 +1348,7 @@ namespace PdfReader
 		ReadFontDescriptor(pXref, pDescendantDict);
 
 		// Ищем внешний FontFile
-		FindExternalFontFile();
+		FindExternalFontFile(false);
 
 		// Кодировка
 

@@ -208,7 +208,7 @@ namespace PdfReader
 
 		void ReadFontDescriptor(XRef *pXref, Dict *pFontDict);
 		CharCodeToUnicode *ReadToUnicodeCMap(Dict *pFontDict, int nBitsCount, CharCodeToUnicode *pCharToUnicode);
-		void FindExternalFontFile();
+		void FindExternalFontFile(bool bBuiltin = false);
 
 	protected:
 

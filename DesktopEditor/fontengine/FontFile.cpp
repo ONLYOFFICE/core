@@ -2,6 +2,7 @@
 #include "internal/internal.h"
 #include "internal/ftobjs.h"
 #include "../common/Types.h"
+#include "../common/String.h"
 
 #ifndef max
 #define max(a,b)            (((a) > (b)) ? (a) : (b))
@@ -1476,6 +1477,35 @@ INT CFontFile::GetString2C(CGlyphString& oString)
     }
 
 	return TRUE;
+}
+
+std::wstring CFontFile::GetFontFormat() const
+{
+	if (!m_pFace)
+		return L"";
+
+	const char* sFormat = FT_Get_X11_Font_Format(m_pFace);
+	return NSString::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)sFormat, strlen(sFormat));
+}
+unsigned int CFontFile::GetNameIndex(const std::wstring& wsName) const
+{
+	if (!m_pFace)
+		return 0;
+
+	int nLen = wsName.length();
+	char* sName = new char[nLen + 1];
+	if (!sName)
+		return 0;
+
+	sName[nLen] = 0x00;
+	for (int nIndex = 0; nIndex < nLen; nIndex++)
+	{
+		sName[nIndex] = (char)(wsName[nIndex]);
+	}
+	unsigned int unGID = FT_Get_Name_Index(m_pFace, sName);
+	delete[] sName;
+
+	return unGID;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

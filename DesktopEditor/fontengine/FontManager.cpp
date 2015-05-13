@@ -629,3 +629,17 @@ INT CFontManager::LoadFontFromFile2(CFontsCache* pCache, const std::wstring& sPa
 
 	return TRUE;
 }
+std::wstring CFontManager::GetFontType() const
+{
+	if (!m_pFont)
+		return L"";
+
+	return m_pFont->GetFontFormat();
+}
+unsigned int CFontManager::GetNameIndex(const std::wstring& wsName) const
+{
+	if (!m_pFont)
+		return 0;
+
+	return m_pFont->GetNameIndex(wsName);
+}

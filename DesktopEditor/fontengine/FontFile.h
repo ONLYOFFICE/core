@@ -229,6 +229,9 @@ public:
 
     void CheckHintsSupport();
 
+	std::wstring GetFontFormat() const;
+	unsigned int GetNameIndex(const std::wstring& wsName) const;
+
 	// path
 	CFontPath* GetGlyphPath(int nCode);
 };

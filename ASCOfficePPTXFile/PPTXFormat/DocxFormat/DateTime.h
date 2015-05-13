@@ -45,7 +45,7 @@ namespace PPTX
 		::DateTime m_datetime;
 	};
 
-	const CString DateTime::s_pattern = _T("%YYYY-%MM-%DDT%hh:%mm:%ssZ");
+    const CString DateTime::s_pattern = _T("%YYYY-%MM-%DDT%hh:%mm:%ssZ");
 } // namespace PPTX
 
 #endif // OOX_DATE_TIME_INCLUDE_H_

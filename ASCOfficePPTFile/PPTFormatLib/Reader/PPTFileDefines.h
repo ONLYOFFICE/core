@@ -12,10 +12,10 @@
 typedef BYTE BOOL1;
 #define		PSFLAG_CONTAINER		0xFF
 
-#ifdef _DEBUG
-#define		PPT_DUMP_LOG		FALSE		// TRUE - чтоб в дебаге скидывались xml с инфой
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
+    #define		PPT_DUMP_LOG		FALSE		// TRUE - чтоб в дебаге скидывались xml с инфой
 #else
-#define     PPT_DUMP_LOG		FALSE		// вот это не меняем никогда
+    #define     PPT_DUMP_LOG		FALSE		// вот это не меняем никогда
 #endif
 
 #define		PPT_DEFAULT_SLIDE_DURATION						5000

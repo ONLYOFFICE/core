@@ -20,17 +20,17 @@ COfficePPTFile::~COfficePPTFile()
     CloseFile();
 }
 
-bool COfficePPTFile::OpenFile(CString sFileName)
+bool COfficePPTFile::OpenFile(std::wstring sFileName)
 {
 	CloseFile();
 	
-	POLE::Storage *pStgFrom = new POLE::Storage(sFileName);
+    POLE::Storage *pStgFrom = new POLE::Storage(sFileName.c_str());
 	if (pStgFrom == NULL) return FALSE;
 	
 	pStgFrom->open(false,false);
 
 	m_pReader = new CPPTFileReader(pStgFrom, m_strTempDirectory);
-	((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_strFileDirectory = GetDirectory(sFileName);
+    ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_strFileDirectory = GetDirectory(sFileName.c_str());
 	
 	if	(!((CPPTFileReader*)m_pReader)->IsPowerPoint()) 
 	{ 
@@ -54,11 +54,11 @@ bool COfficePPTFile::CloseFile()
 	m_pReader = NULL;
 	return S_OK;
 }
-HRESULT COfficePPTFile::LoadFromFile(CString sSrcFileName, CString sDstPath, CString sXMLOptions)
+HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDstPath)
 {
-    if (m_strTempDirectory.GetLength() < 1)
+    if (m_strTempDirectory.length() < 1)
     {
-        m_strTempDirectory = FileSystem::Directory::GetTempPath();
+        m_strTempDirectory = FileSystem::Directory::GetTempPath().GetBuffer();
     }
 
     bool bRes = OpenFile(sSrcFileName);
@@ -78,40 +78,20 @@ HRESULT COfficePPTFile::LoadFromFile(CString sSrcFileName, CString sDstPath, CSt
 
 	if (m_strEditorXml.GetLength() <1) return S_FALSE;
 
-	if (sDstPath.GetLength() > 0)
+    if (sDstPath.length() > 0)
 	{	
-		bool bNeedPPTXFile = false;
-
-#if !(defined(_WIN32) || defined (_WIN64)) || defined(_DEBUG)
-	bNeedPPTXFile = true;
-#endif
 
 		NSPresentationEditor::CDocument		oPresentationEditor;
 		NSPresentationEditor::CPPTXWriter	oPPTXWriter;
 		
 		oPresentationEditor.LoadFromXML(m_strEditorXml);
 		
-		oPPTXWriter.m_strTempDirectory = sDstPath;
+        oPPTXWriter.m_strTempDirectory = std_string2string(sDstPath);
 		
-		if (bNeedPPTXFile)
-		{
-			oPPTXWriter.m_strTempDirectory = FileSystem::Directory::CreateDirectoryWithUniqueName(m_strTempDirectory);
-		}
 		
 		oPPTXWriter.CreateFile(&oPresentationEditor);	
 		oPPTXWriter.CloseFile();
 		
-		if (bNeedPPTXFile)
-		{
-			COfficeUtils oOfficeUtils(NULL);
-
-			std::wstring bstrSrcPath = string2std_string(oPPTXWriter.m_strTempDirectory);
-			std::wstring bstrDstPath = string2std_string(sDstPath);
-			
-			oOfficeUtils.CompressFileOrDirectory( bstrSrcPath, bstrDstPath, -1 );
-
-            FileSystem::Directory::DeleteDirectory(oPPTXWriter.m_strTempDirectory);
-		}
 	}
 
 	//CloseFile();	нельзя тута- поскольку в Win32 используется PresentationEditor для конвертации xml -> pptx

@@ -179,14 +179,14 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
 
 	if (0 == sExt.compare(_T(".mht")))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT;
-	else if (0 == sExt.compare(_T(".txt")) || 0 == sExt.compare(_T(".xml")))
-		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
 	else if (0 == sExt.compare(_T(".csv")))
 		nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV;
 	else if (0 == sExt.compare(_T(".html")) || 0 == sExt.compare(_T(".htm")))
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
 	else if (0 == sExt.compare(_T(".bin"))) //base64 string 
 		nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_PDF;
+    else //if (0 == sExt.compare(_T(".txt")) || 0 == sExt.compare(_T(".xml"))) //volsciv.rtf -или любой другой
+        nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
 
 	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
 

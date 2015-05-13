@@ -30,8 +30,38 @@ public:
 	{
 		m_oHeader = oHeader;
 
-		m_strFaceName = StreamUtils::ReadCStringW(pStream, 32);
-		m_lfCharSet = StreamUtils::ReadBYTE(pStream);
+        //face name - utf16 string with 0, 64 bytes always allocated
+        unsigned char utf16FaceName[64+2] = {};
+
+        ULONG lReadByte = pStream->read(utf16FaceName, 64);
+
+        if (sizeof(wchar_t) == 4)
+        {
+            int lLen  = 0;
+            for (lLen = 0; lLen < lReadByte; lLen +=2)
+                if (utf16FaceName[lLen] == 0)break;
+
+            lLen/=2;
+
+            UTF32 *pStrUtf32 = new UTF32 [lLen + 1];
+            pStrUtf32[lLen] = 0 ;
+
+            const	UTF16 *pStrUtf16_Conv = (const UTF16 *) utf16FaceName;
+                    UTF32 *pStrUtf32_Conv =                 pStrUtf32;
+
+             if (conversionOK == ConvertUTF16toUTF32 ( &pStrUtf16_Conv, &pStrUtf16_Conv[lLen]
+                                               , &pStrUtf32_Conv, &pStrUtf32 [lLen]
+                                               , strictConversion))
+            {
+                m_strFaceName = CString((wchar_t*)pStrUtf32, lLen);
+            }
+            delete [] pStrUtf32;
+         }
+        else
+        {
+            m_strFaceName = CString((wchar_t*)utf16FaceName, lReadByte/2);
+        }
+        m_lfCharSet = StreamUtils::ReadBYTE(pStream);
 		
 		BYTE Mem = 0;
 		Mem = StreamUtils::ReadBYTE(pStream);

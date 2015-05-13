@@ -34,7 +34,7 @@ namespace NSPresentationEditor
 		{
 			CString strFormat = _T("");
 
-			strFormat.Format(_T(".font%u { font-family:%s;tmdocs_charset:%d;tmdocs_monospace:%d;tmdocs_panose:%s; }\n"),
+            strFormat.Format(_T(".font%u { font-family:%ls;tmdocs_charset:%d;tmdocs_monospace:%d;tmdocs_panose:%ls; }\n"),
 				i + 1, m_arFonts[i].Name, m_arFonts[i].Charset, m_arFonts[i].Monospace, m_arFonts[i].Panose);
 
 			oWriter.WriteString(strFormat);
@@ -50,7 +50,7 @@ namespace NSPresentationEditor
 		{
 			CString strFormat = _T("");
 
-			strFormat.Format(_T(".font_d%u { font-family:%s; }\n"), i + 1, m_arFonts[i].Name);
+            strFormat.Format(_T(".font_d%u { font-family:%ls; }\n"), i + 1, m_arFonts[i].Name);
 
 			oWriter.WriteString(strFormat);
 		}

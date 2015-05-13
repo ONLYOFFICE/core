@@ -88,9 +88,9 @@ public:
 			m_arUsers[i]->FromDocument();
 		}
 
-		#ifdef _DEBUG
+    #if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 			SaveXmlInfo();
-		#endif
+    #endif
 	}
 
 	void SaveXmlInfo()

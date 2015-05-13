@@ -214,6 +214,15 @@ public:
 		_SetFont();
 	}
 
+public:
+    void CloseFont()
+    {
+        if (NULL != m_pFontManager)
+            m_pFontManager->CloseFont();
+        m_oInstalledFont.SetDefaultParams();
+        m_oInstalledFont.Name = L"";        
+    }
+
 protected:
 	void _SetFont();
 	void ApplyTransform(const double& d1, const double& d2, const double& d3, const double& d4, const double& d5, const double& d6);

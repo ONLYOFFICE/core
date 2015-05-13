@@ -59,11 +59,16 @@ public:
     }
     ~CFontsCache()
     {
+        Clear();
+    }
+    void Clear()
+    {
         for (std::map<std::string, CFontFile*>::iterator iter = m_mapFiles.begin(); iter != m_mapFiles.end(); ++iter)
         {
             CFontFile* pFile = iter->second;
             RELEASEOBJECT(pFile);
         }
+        m_mapFiles.clear();
     }
 
 public:
@@ -142,6 +147,7 @@ public:
 	INT LoadFontByName(const std::wstring& sName, const double& dSize, const LONG& lStyle, const double& dDpiX, const double& dDpiY);
 	INT LoadFontFromFile(const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
 	INT LoadFontFromFile2(CFontsCache* pCache, const std::wstring& sPath, const int& lFaceIndex, const double& dSize, const double& dDpiX, const double& dDpiY);
+    void CloseFont();
 
 	std::wstring GetFontType() const;
 	unsigned int GetNameIndex(const std::wstring& wsName) const;

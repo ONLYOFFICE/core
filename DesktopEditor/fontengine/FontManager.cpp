@@ -629,6 +629,13 @@ INT CFontManager::LoadFontFromFile2(CFontsCache* pCache, const std::wstring& sPa
 
 	return TRUE;
 }
+
+void CFontManager::CloseFont()
+{
+    this->m_pFont->ClearCache();
+    this->m_pFont = NULL;
+}
+
 std::wstring CFontManager::GetFontType() const
 {
 	if (!m_pFont)

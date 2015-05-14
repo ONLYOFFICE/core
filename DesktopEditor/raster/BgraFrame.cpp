@@ -2,6 +2,7 @@
 #include "../common/File.h"
 #include "../cximage/CxImage/ximage.h"
 #include "Jp2/J2kFile.h"
+#include "JBig2/JBig2File.h"
 
 bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileType)
 {

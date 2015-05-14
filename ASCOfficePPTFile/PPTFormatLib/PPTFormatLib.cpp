@@ -29,7 +29,7 @@ bool COfficePPTFile::OpenFile(std::wstring sFileName)
 	
 	pStgFrom->open(false,false);
 
-	m_pReader = new CPPTFileReader(pStgFrom, m_strTempDirectory);
+	m_pReader = new CPPTFileReader(pStgFrom, std_string2string(m_strTempDirectory));
     ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_strFileDirectory = GetDirectory(sFileName.c_str());
 	
 	if	(!((CPPTFileReader*)m_pReader)->IsPowerPoint()) 

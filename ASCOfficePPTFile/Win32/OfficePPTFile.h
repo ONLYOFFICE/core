@@ -85,12 +85,12 @@ public:
 		if (NULL == pbstrDir)
 			return S_FALSE;
 
-		*pbstrDir = PPTFile.get_TempDirectory().AllocSysString();
+		*pbstrDir = SysAllocString(PPTFile.get_TempDirectory().c_str());
 		return S_OK;
 	}
 	STDMETHOD(put_TempDirectory)(BSTR bstrDir)
 	{
-		PPTFile.put_TempDirectory((CStringW)bstrDir);
+		PPTFile.put_TempDirectory((std::wstring)bstrDir);
 		return S_OK;
 	}
 	STDMETHOD(Is_PPTFile)(BSTR fileName, VARIANT_BOOL* Result)
@@ -103,7 +103,7 @@ public:
 	{
 		CSynchAccess oSynchAccess(m_hSynchMutex);
 
-		return PPTFile.LoadFromFile(CString(sSrcFileName), CString(sDstPath), CString(sXMLOptions));
+		return PPTFile.LoadFromFile(std::wstring(sSrcFileName), std::wstring(sDstPath));
 	}
 	STDMETHOD(SaveToFile)(BSTR sDstFileName, BSTR sSrcPath, BSTR sXMLOptions)
 	{

@@ -16,15 +16,15 @@ public:
 	class ReaderState
 	{
 		public: 
-			int m_nUD; // количество символов игнорируемых за юникодом
-			RtfCharProperty m_oCharProp;
-			RtfParagraphProperty m_oParagraphProp;
-			RtfRowProperty m_oRowProperty;
-			RtfCellProperty m_oCellProperty;
-			RtfOldList m_oCurOldList;
+            int                     m_nUD; // количество символов игнорируемых за юникодом
+            RtfCharProperty         m_oCharProp;
+            RtfParagraphProperty    m_oParagraphProp;
+            RtfRowProperty          m_oRowProperty;
+            RtfCellProperty         m_oCellProperty;
+            RtfOldList              m_oCurOldList;
 		//		RtfSectionProperty m_oSectionProp;
 			ReaderStatePtr psave;
-            std::string m_sCurText;
+            std::string             m_sCurText;
 			
 			ReaderState()
 			{
@@ -39,12 +39,12 @@ public:
 	};
 
 //---------------------------------TextParser----------------------------------
-	ReaderStatePtr m_oState;
-	RtfSectionProperty m_oCurSectionProp;
-	RtfLex m_oLex;
-	int m_nFootnote; //толко для симовола chftn. основано на том что вложенных footnote быть не может
-	int m_nDefFont;
-	CString m_sTempFolder;
+    ReaderStatePtr      m_oState;
+    RtfSectionProperty  m_oCurSectionProp;
+    RtfLex              m_oLex;
+    int                 m_nFootnote; //толко для симовола chftn. основано на том что вложенных footnote быть не может
+    int                 m_nDefFont;
+    CString             m_sTempFolder;
 
 	RtfReader(RtfDocument& oDocument, std::wstring sFilename );
 	~RtfReader()

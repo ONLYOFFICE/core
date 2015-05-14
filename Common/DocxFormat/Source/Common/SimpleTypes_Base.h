@@ -267,7 +267,13 @@ namespace SimpleTypes
 			else
 			{
 				m_bUnit = false;
-                m_dValue = XmlUtils::IsDigit(sValue.GetAt(0)) == false ? 0 : _wtof( sValue ) / dKoef;
+				try
+				{
+					m_dValue = _wtof( sValue ) / dKoef;
+				}
+				catch(...)
+				{
+				}
 				return;
 			}
 		}

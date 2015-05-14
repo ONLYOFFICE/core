@@ -7381,6 +7381,7 @@ Redist/x64/ASCOfficeDocFile.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/x64/ASCOfficeDocxFile2.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/x64/ASCOfficeOdfFile.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/x64/ASCOfficeOdfFileW.dll svn_mime_002dtype=application%2Foctet-stream
+Redist/x64/ASCOfficePDFWriter.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/x64/ASCOfficePPTFile.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/x64/ASCOfficeRtfFile.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/x64/ASCOfficeTxtFile.dll svn_mime_002dtype=application%2Foctet-stream

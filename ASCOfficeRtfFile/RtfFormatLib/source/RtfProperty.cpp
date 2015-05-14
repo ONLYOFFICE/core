@@ -808,7 +808,7 @@ CString RtfCharProperty::RenderToOOX(RenderParameter oRenderParameter)
 	sResult.Append( m_poShading.RenderToOOX( oRenderParameter ));
 	return sResult;
 }
-#include <langinfo.h>
+
 CString RtfListLevelProperty::RenderToRtf(RenderParameter oRenderParameter)
 {
 	RtfDocument* poRtfDocument = static_cast<RtfDocument*>( oRenderParameter.poDocument);

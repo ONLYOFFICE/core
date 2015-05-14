@@ -130,13 +130,13 @@ bool CJBig2File::MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int n
 		uint8_t *pBuffer = jbig2_encode_generic( pPixT, !m_bPDFMode, 0, 0, m_bDuplicateLineRemoval, &nLength );
 
 		bool bRes = true;
-		FILE *pFile = _wfopen( sDstFileName.c_str(), _T("wb") );
-		if ( pFile && pBuffer )
-		{
-			::fwrite( pBuffer, nLength, 1, pFile );
-			::fclose( pFile );
+        CFile file;
+        if (file.CreateFile(sDstFileName.c_str() ) == S_OK )
+        {
+            file.WriteFile(pBuffer, nLength);
+            file.CloseFile();
 			bRes = true;
-		}
+        }
 		else
 			bRes = false;
 
@@ -162,16 +162,16 @@ bool CJBig2File::MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int n
 	if ( m_bPDFMode ) 
 	{
 		std::wstring sFileName = sDstFileName;//m_sBaseName + _T(".sym");
-		const int nFileD = _wopen( sFileName.c_str(), O_WRONLY | O_TRUNC | O_CREAT /*| WINBINARY*/, 0600 );
-		
-		if ( nFileD < 0 )
+
+        CFile file;
+        if ( file.CreateFile(sFileName.c_str()) != S_OK)
 		{
 			free( pBuffer );
 			jbig2_destroy( pContext );
 			return false;
 		}
-		write( nFileD, pBuffer, nLength );
-		close( nFileD );
+        file.WriteFile( pBuffer, nLength );
+        file.CloseFile();
 	}
 	free( pBuffer );
 
@@ -181,16 +181,16 @@ bool CJBig2File::MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int n
 		if ( m_bPDFMode ) 
 		{
 			std::wstring sFileName = m_sBaseName + _T(".0000");
-			const int nFileD = _wopen( sFileName.c_str(), O_WRONLY | O_TRUNC | O_CREAT /*| WINBINARY*/, 0600 );
+             CFile file;
 
-			if ( nFileD < 0 )
-			{
+            if ( file.CreateFile(sFileName.c_str()) != S_OK)
+            {
 				free( pBuffer );
 				jbig2_destroy( pContext );
 				return false;
 			}
-			write( nFileD, pBuffer, nLength );
-			close( nFileD );
+            file.WriteFile( pBuffer, nLength );
+            file.CloseFile();
 		} 
 		free( pBuffer );
 	}

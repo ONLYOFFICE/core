@@ -221,7 +221,13 @@ namespace SimpleTypes
 
             if ( sValue.GetLength() <= 2 )
 			{
-                m_dValue = XmlUtils::IsDigit(sValue.GetAt(0)) == false ? 0 : _wtof( sValue ) / dKoef;
+				try
+				{
+					m_dValue = _wtof( sValue ) / dKoef;
+				}
+				catch(...)
+				{
+				}
 				return;
 			}
 

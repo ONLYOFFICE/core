@@ -463,6 +463,11 @@ namespace PdfReader
 						nLen = 0;
 						nWidth = uArg.iValue;
 						break;
+						default:
+						sTemp = sBuffer;
+						nLen = 0;
+						nWidth = uArg.iValue;
+						break;
 					}
 					// Добавляем аргумент в нужном формате, с нужным прилеганием
 					if (!bReverseAlign && nLen < nWidth)

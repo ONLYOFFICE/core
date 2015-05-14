@@ -1,20 +1,29 @@
 #include "BgraFrame.h"
 #include "../common/File.h"
 #include "../cximage/CxImage/ximage.h"
+#include "Jp2/J2kFile.h"
 
 bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileType)
 {
-	NSFile::CFileBinary oFile;
-	if (!oFile.OpenFile(strFileName))
-		return false;
+	if (CXIMAGE_FORMAT_JP2 == nFileType)
+	{
+		Jpeg2000::CJ2kFile oJ2;
+		return oJ2.Open(this, strFileName, std::wstring(L""));
+	}
+	else
+	{
+		NSFile::CFileBinary oFile;
+		if (!oFile.OpenFile(strFileName))
+			return false;
 
-	CxImage img;
-			
-	if( !img.Decode( oFile.GetFileNative(), nFileType ) )
-		return false;
+		CxImage img;
 
-	CxImageToMediaFrame( img );
-	return true;
+		if (!img.Decode(oFile.GetFileNative(), nFileType))
+			return false;
+
+		CxImageToMediaFrame(img);
+		return true;
+	}
 }
 
 bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileType)
@@ -22,20 +31,20 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 	NSFile::CFileBinary oFile;
 	if (!oFile.CreateFileW(strFileName))
 		return false;
-    
-    uint32_t lStride = 4 * m_lWidth;
-    uint32_t lBitsPerPixel = 4;
-    if (0 != m_lStride)
-    {
-        lStride = (m_lStride > 0) ? (uint32_t)m_lStride : (uint32_t)(-m_lStride);
-        lBitsPerPixel = lStride / m_lWidth;
-    }
+
+	uint32_t lStride = 4 * m_lWidth;
+	uint32_t lBitsPerPixel = 4;
+	if (0 != m_lStride)
+	{
+		lStride = (m_lStride > 0) ? (uint32_t)m_lStride : (uint32_t)(-m_lStride);
+		lBitsPerPixel = lStride / m_lWidth;
+	}
 
 	CxImage img;
 	if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false))
 		return false;
 
-	if (!img.Encode( oFile.GetFileNative(), nFileType ))
+	if (!img.Encode(oFile.GetFileNative(), nFileType))
 		return false;
 
 	oFile.CloseFile();

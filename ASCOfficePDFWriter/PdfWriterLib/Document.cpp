@@ -947,7 +947,7 @@ const char* LoadTTFontFromFile2   (Doc pPDF, std::wstring & wsFileName, unsigned
 //
 //    return pImage;
 //}
-ImageDict LoadJbig2ImageFromMem(Doc pPDF, BYTE *pBuffer, unsigned int nWidth, unsigned int nHeight , int unImageCheckSum)
+ImageDict LoadJbig2ImageFromMem(Doc pPDF,  BYTE *pBuffer,   unsigned int nWidth, unsigned int nHeight, unsigned int unImageCheckSum)
 {
 	ImageDict pImage = NULL;
 
@@ -965,12 +965,28 @@ ImageDict LoadJbig2ImageFromMem(Doc pPDF, BYTE *pBuffer, unsigned int nWidth, un
 	// Записываем во временный файл картинку в формате JBig2
 	Aggplus::CImage image;
 
-	image.Create(pBuffer,nWidth, nHeight, 4*nWidth);
+	int BitsPerSample = 3;//alfa отдельно oO ???
+
+	image.Create(pBuffer,nWidth, nHeight, - BitsPerSample * nWidth);//+ flip
 	image.m_bExternalBuffer = true;
 
-	image.SaveFile(string2std_string(wsTempFile), 16);
+	image.SaveFile(string2std_string(wsTempFile), 21/*JBig2*/);
 
 	image.Destroy();
+
+	//монохромные с альфой ??? 
+	//if ( bAlpha )
+	//{
+	//	// Создаем темповый файл для записи туда альфа-канала
+	//	if ( 0 == DocGetTempFile( pPDF, &wsTempAlpha ) )
+	//	{
+	//		SetError( pPDF->oMMgr->oError, AVS_OFFICEPDFWRITER_ERROR_FILE_WRITE_ERROR, errno );
+	//		return NULL;
+	//	}
+
+	//	CEncoderLZW oLZW( pAlphaBuffer, nWidth * nHeight, false );
+	//	oLZW.Encode( wsTempAlpha.GetBuffer() );
+	//}
 
 	pImage = ImageLoadJBig2Image( pPDF->oMMgr, wsTempFile, pPDF->pXref, nWidth, nHeight, unImageCheckSum );
 
@@ -1186,7 +1202,6 @@ ImageDict LoadJpegImageFromMem (Doc pPDF,  BYTE *pBuffer,   unsigned int nWidth,
     if ( !HasDoc( pPDF ))
         return NULL;
 
-
 	// Создаем темповый файл для записи туда Jpeg
 	CString wsTempFile, wsTempAlpha;
 	if ( 0 == DocGetTempFile( pPDF, &wsTempFile ) )
@@ -1206,7 +1221,6 @@ ImageDict LoadJpegImageFromMem (Doc pPDF,  BYTE *pBuffer,   unsigned int nWidth,
 	image.SaveFile(string2std_string(wsTempFile), 3/*Jpeg*/);
 
 	image.Destroy();
-
 
 	if ( bAlpha )
 	{

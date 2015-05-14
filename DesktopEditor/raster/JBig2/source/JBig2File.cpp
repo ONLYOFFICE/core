@@ -38,7 +38,7 @@ bool CJBig2File::MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int n
 
 	for ( int nY = 0; nY < nHeight; nY++ )
 	{
-		for ( int nX = 0; nX < nWidth; nX++, pSourceBuffer += 4 )
+		for ( int nX = 0; nX < nWidth; nX++, pSourceBuffer += 3 )//todooo сделать 3 ? 4
 		{
 			pixSetRGBPixel( pSource, nX, nY, pSourceBuffer[ 2 ], pSourceBuffer[ 1 ], pSourceBuffer[ 0 ] );
 		}

@@ -28,7 +28,7 @@ STDMETHODIMP CASCOfficeDocFile::LoadFromFile(BSTR bsDocFile, BSTR bsDocxFilePath
 	ffCallBack.OnProgressEx	= OnProgressExFunc;
 	ffCallBack.caller		= this;
 
-	HRESULT hr	=	file.LoadFromFile(bsDocFile, bsDocxFilePath, bsXMLOptions,&ffCallBack);
+	HRESULT hr	=	file.LoadFromFile(bsDocFile, bsDocxFilePath,&ffCallBack);
 
 #ifdef _DEBUG
 	//_CrtDumpMemoryLeaks();
@@ -52,7 +52,7 @@ STDMETHODIMP CASCOfficeDocFile::SaveToFile (BSTR sDstFileName, BSTR sSrcPath, BS
 	ffCallBack.OnProgressEx	=	OnProgressExFunc;
 	ffCallBack.caller		=	this;
 
-	HRESULT hr = file.SaveToFile(sSrcPath,  sDstFileName, sXMLOptions, &ffCallBack);
+	HRESULT hr = file.SaveToFile(sSrcPath,  sDstFileName, &ffCallBack);
 
 #ifdef _DEBUG
 	//_CrtDumpMemoryLeaks();

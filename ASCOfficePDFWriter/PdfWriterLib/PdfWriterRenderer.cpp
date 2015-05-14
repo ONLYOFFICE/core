@@ -2692,6 +2692,8 @@ HRESULT CPdfWriterLib::LoadImageFromInterface (IGrObject *pInterface , bool bAlp
 		}
 	}
 
+	//bBnW = true; для теста записи монохрома
+
 	// Проверим нужен ли нам альфа-канал
 	if ( bAlpha )
 	{
@@ -2769,8 +2771,8 @@ HRESULT CPdfWriterLib::LoadImageFromInterface (IGrObject *pInterface , bool bAlp
 
 	if ( pOldImage )
 		m_pCurrentXObject = pOldImage;
-	//else if ( bBnW )
-	//	m_pCurrentXObject = LoadJbig2ImageFromInt( m_pDocument, pImage, lWidth, lHeight, unImageCheckSum);// GPL patent
+	else if ( bBnW )
+		m_pCurrentXObject = LoadJbig2ImageFromMem( m_pDocument, pImage, lWidth, lHeight, unImageCheckSum);
 	else
 	{
 		//m_pCurrentXObject = LoadRawImageFromMem ( m_pDocument, pImage, lWidth, lHeight, CSDeviceRGB, 8, bAlpha, pAlpha );

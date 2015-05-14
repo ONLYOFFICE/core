@@ -44,7 +44,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;..\..\..\DesktopEditor\freetype-2.5.2\include&quot;"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_USE_MATH_DEFINES;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;FILTER_FLATE_DECODE_ENABLED;_USE_MATH_DEFINES;_USE_XMLLITE_READER_;USE_LITE_READER;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;BUILD_CONFIG_FULL_VERSION;DONT_WRITE_EMBEDDED_FONTS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"

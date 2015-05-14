@@ -2,16 +2,16 @@
 #include "../common/File.h"
 #include "../cximage/CxImage/ximage.h"
 #include "Jp2/J2kFile.h"
-#include "JBig2/JBig2File.h"
+#include "JBig2/source/JBig2File.h"
 
 bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileType)
 {
-	if (CXIMAGE_FORMAT_JP2 == nFileType)
-	{
-		Jpeg2000::CJ2kFile oJ2;
-		return oJ2.Open(this, strFileName, std::wstring(L""));
-	}
-	else
+	//if (CXIMAGE_FORMAT_JP2 == nFileType)
+	//{
+	//	Jpeg2000::CJ2kFile oJ2;
+	//	return oJ2.Open(this, strFileName, std::wstring(L""));
+	//}
+	//else
 	{
 		NSFile::CFileBinary oFile;
 		if (!oFile.OpenFile(strFileName))
@@ -29,10 +29,6 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
 
 bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileType)
 {
-	NSFile::CFileBinary oFile;
-	if (!oFile.CreateFileW(strFileName))
-		return false;
-
 	uint32_t lStride = 4 * m_lWidth;
 	uint32_t lBitsPerPixel = 4;
 	if (0 != m_lStride)
@@ -41,14 +37,28 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 		lBitsPerPixel = lStride / m_lWidth;
 	}
 
-	CxImage img;
-	if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false))
-		return false;
+	if (21/*CXIMAGE_FORMAT_JBIG2*/ == nFileType)
+	{
+		CJBig2File jBig2File;
+		bool res = jBig2File.MemoryToJBig2(m_pData, m_lWidth * m_lHeight * 24, m_lWidth, m_lHeight, strFileName);
 
-	if (!img.Encode(oFile.GetFileNative(), nFileType))
-		return false;
+		return res;		
+	}
+	else
+	{
+		NSFile::CFileBinary oFile;
+		if (!oFile.CreateFileW(strFileName))
+			return false;
+		
+		CxImage img;
+		if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, lBitsPerPixel * 8, lStride, (m_lStride >= 0) ? true : false))
+			return false;
 
-	oFile.CloseFile();
+		if (!img.Encode(oFile.GetFileNative(), nFileType))
+			return false;
+
+		oFile.CloseFile();
+	}
 	return true;
 }
 bool CBgraFrame::Resize(const long& nNewWidth, const long& nNewHeight)

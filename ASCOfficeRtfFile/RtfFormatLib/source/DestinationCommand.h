@@ -586,117 +586,130 @@ public:
 class RtfFontTableReader: public RtfAbstractReader
 {
 private: 
-	RtfFont m_oFont;
-	typedef enum { is_normal, is_panose, is_altname } InternalState;
-	InternalState m_eInternalState;
+    typedef enum { is_normal, is_panose, is_altname } InternalState;
+
+    int             m_nKeepGlobalCodepage;
+    RtfFont         m_oFont;
+    InternalState   m_eInternalState;
 public: 
 	RtfFontTableReader()
 	{
-		m_bUseGlobalCodepage = true;
+        m_bUseGlobalCodepage    = true;
+        m_nKeepGlobalCodepage   = -1;
 
 		m_eInternalState = is_normal;
 		m_oFont.SetDefaultOOX();
 	}
-		bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
-		{
-			if( _T("fonttbl") == sCommand )
-				;
-			else if( _T("flomajor") == sCommand )
-				m_oFont.m_eFontTheme = RtfFont::ft_flomajor;
-			else if( _T("fhimajor") == sCommand )
-				m_oFont.m_eFontTheme = RtfFont::ft_fhimajor;
-			else if( _T("fdbmajor") == sCommand )
-				m_oFont.m_eFontTheme = RtfFont::ft_fdbmajor;
-			else if( _T("fbimajor") == sCommand )
-				m_oFont.m_eFontTheme = RtfFont::ft_fbimajor;
-			else if( _T("flominor") == sCommand )
-				m_oFont.m_eFontTheme = RtfFont::ft_flominor;
-			else if( _T("fhiminor") == sCommand )
-				m_oFont.m_eFontTheme = RtfFont::ft_fhiminor;
-			else if( _T("fdbminor") == sCommand )
-				m_oFont.m_eFontTheme = RtfFont::ft_fdbminor;
-			else if( _T("fbiminor") == sCommand )
-				m_oFont.m_eFontTheme = RtfFont::ft_fbiminor;
 
-			else if( _T("fnil") == sCommand )
-				m_oFont.m_eFontFamily = RtfFont::ff_fnil;
-			else if( _T("froman") == sCommand )
-				m_oFont.m_eFontFamily = RtfFont::ff_froman;
-			else if( _T("fswiss") == sCommand )
-				m_oFont.m_eFontFamily = RtfFont::ff_fswiss;
-			else if( _T("fmodern") == sCommand )
-				m_oFont.m_eFontFamily = RtfFont::ff_fmodern;
-			else if( _T("fscript") == sCommand )
-				m_oFont.m_eFontFamily = RtfFont::ff_fscript;
-			else if( _T("fdecor") == sCommand )
-				m_oFont.m_eFontFamily = RtfFont::ff_fdecor;
-			else if( _T("ftech") == sCommand )
-				m_oFont.m_eFontFamily = RtfFont::ff_ftech;
-			else if( _T("fbidi") == sCommand )
-				m_oFont.m_eFontFamily = RtfFont::ff_fbidi;
+    bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
+    {
+        if (m_nKeepGlobalCodepage < 0)//для корректного отображения названий шрифта нужно использовать данные самого шрифта
+            m_nKeepGlobalCodepage = oDocument.m_oProperty.m_nAnsiCodePage;
 
-			else if( _T("panose") == sCommand )
-				m_eInternalState = is_panose;
-			else if( _T("falt") == sCommand )
-				m_eInternalState = is_altname;
+        if( _T("fonttbl") == sCommand )
+            ;
+        else if( _T("flomajor") == sCommand )
+            m_oFont.m_eFontTheme = RtfFont::ft_flomajor;
+        else if( _T("fhimajor") == sCommand )
+            m_oFont.m_eFontTheme = RtfFont::ft_fhimajor;
+        else if( _T("fdbmajor") == sCommand )
+            m_oFont.m_eFontTheme = RtfFont::ft_fdbmajor;
+        else if( _T("fbimajor") == sCommand )
+            m_oFont.m_eFontTheme = RtfFont::ft_fbimajor;
+        else if( _T("flominor") == sCommand )
+            m_oFont.m_eFontTheme = RtfFont::ft_flominor;
+        else if( _T("fhiminor") == sCommand )
+            m_oFont.m_eFontTheme = RtfFont::ft_fhiminor;
+        else if( _T("fdbminor") == sCommand )
+            m_oFont.m_eFontTheme = RtfFont::ft_fdbminor;
+        else if( _T("fbiminor") == sCommand )
+            m_oFont.m_eFontTheme = RtfFont::ft_fbiminor;
 
-			else if( _T("f") == sCommand )
-			{
-				if( true == hasParameter )
-					m_oFont.m_nID = parameter;
-			}
-			else if( _T("fcharset") == sCommand )
-			{
-				if( true == hasParameter )
-					m_oFont.m_nCharset = parameter;
-			}
-			else if( _T("cpg") == sCommand )
-			{
-				if( true == hasParameter )
-					m_oFont.m_nCodePage = parameter;
-			}
-			else if( _T("fprq") == sCommand )
-			{
-				if( true == hasParameter )
-					m_oFont.m_nPitch = parameter;
-			}
-			else
-			{
-				return false;
-				//ATLASSERT( false );
-			}
-			return true;
+        else if( _T("fnil") == sCommand )
+            m_oFont.m_eFontFamily = RtfFont::ff_fnil;
+        else if( _T("froman") == sCommand )
+            m_oFont.m_eFontFamily = RtfFont::ff_froman;
+        else if( _T("fswiss") == sCommand )
+            m_oFont.m_eFontFamily = RtfFont::ff_fswiss;
+        else if( _T("fmodern") == sCommand )
+            m_oFont.m_eFontFamily = RtfFont::ff_fmodern;
+        else if( _T("fscript") == sCommand )
+            m_oFont.m_eFontFamily = RtfFont::ff_fscript;
+        else if( _T("fdecor") == sCommand )
+            m_oFont.m_eFontFamily = RtfFont::ff_fdecor;
+        else if( _T("ftech") == sCommand )
+            m_oFont.m_eFontFamily = RtfFont::ff_ftech;
+        else if( _T("fbidi") == sCommand )
+            m_oFont.m_eFontFamily = RtfFont::ff_fbidi;
 
-		}
-		void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
-		{
-			if( is_panose == m_eInternalState )
-				m_oFont.m_sPanose += sText;
-			else if( is_altname == m_eInternalState )
-				m_oFont.m_sAltName += sText;
-			else if( is_normal == m_eInternalState && sText.GetLength() > 0)
-			{
-				if( sText.Find(';') != -1 )
-				{
-					sText.Remove(';');
-					m_oFont.m_sName += sText;
-					oDocument.m_oFontTable.DirectAddItem( m_oFont );
-					m_oFont.SetDefaultRtf();
-				}
-				else
-				{
-					m_oFont.m_sName += sText;
-				}
-			}
-		}
-		void PopState(RtfDocument& oDocument, RtfReader& oReader)
-		{
-			RtfAbstractReader::PopState( oDocument, oReader );
-			if( is_panose == m_eInternalState )
-				m_eInternalState = is_normal;
-			if( is_altname == m_eInternalState )
-				m_eInternalState = is_normal;
-		}
+        else if( _T("panose") == sCommand )
+            m_eInternalState = is_panose;
+        else if( _T("falt") == sCommand )
+            m_eInternalState = is_altname;
+
+        else if( _T("f") == sCommand )
+        {
+            if( true == hasParameter )
+                m_oFont.m_nID = parameter;
+        }
+        else if( _T("fcharset") == sCommand )
+        {
+            if( true == hasParameter )
+            {
+                m_oFont.m_nCharset = parameter;
+            }
+        }
+        else if( _T("cpg") == sCommand )
+        {
+            if( true == hasParameter )
+            {
+                oDocument.m_oProperty.m_nAnsiCodePage = m_oFont.m_nCodePage = parameter;
+            }
+        }
+        else if( _T("fprq") == sCommand )
+        {
+            if( true == hasParameter )
+                m_oFont.m_nPitch = parameter;
+        }
+        else
+        {
+            return false;
+            //ATLASSERT( false );
+        }
+        return true;
+
+    }
+    void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
+    {
+        if( is_panose == m_eInternalState )
+            m_oFont.m_sPanose += sText;
+        else if( is_altname == m_eInternalState )
+            m_oFont.m_sAltName += sText;
+        else if( is_normal == m_eInternalState && sText.GetLength() > 0)
+        {
+            if( sText.Find(';') != -1 )
+            {
+                sText.Remove(';');
+                m_oFont.m_sName += sText;
+                oDocument.m_oFontTable.DirectAddItem( m_oFont );
+                m_oFont.SetDefaultRtf();
+            }
+            else
+            {
+                m_oFont.m_sName += sText;
+            }
+        }
+        oDocument.m_oProperty.m_nAnsiCodePage = m_nKeepGlobalCodepage;
+    }
+    void PopState(RtfDocument& oDocument, RtfReader& oReader)
+    {
+        RtfAbstractReader::PopState( oDocument, oReader );
+
+        if( is_panose == m_eInternalState )
+            m_eInternalState = is_normal;
+        if( is_altname == m_eInternalState )
+            m_eInternalState = is_normal;
+    }
 };
 
 

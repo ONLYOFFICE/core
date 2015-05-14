@@ -6813,6 +6813,8 @@ bool CPdfWriterLib::ApplyTileFill()
 
     m_bUseImageTextureAlpha	=	false;
 
+	//m_bIsWhiteBackImage = true; для теста записи монохрома
+
     if (LoadImageFromInterface(&image, true) == S_OK)
 	{
 		if (m_pCurrentXObject)

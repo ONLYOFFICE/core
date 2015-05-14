@@ -134,7 +134,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;../../../../DesktopEditor/freetype-2.5.2/include&quot;"
+				AdditionalIncludeDirectories="&quot;../../../DesktopEditor/freetype-2.5.2/include&quot;"
 				PreprocessorDefinitions="_DEBUG;_LIB;_USE_MATH_DEFINES;PPTX_DEF;PPT_DEF;ENABLE_PPT_TO_PPTX_CONVERT;PPT_FORMAT;_USE_LIBXML2_READER_;LIBXML_READER_ENABLED;USE_LITE_READER;_USE_XMLLITE_READER_;_PRESENTATION_WRITER_;_SVG_CONVERT_TO_IMAGE_"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -366,6 +366,14 @@
 				RelativePath="..\..\..\ASCOfficeDocxFile2\DocWrapper\DocxSerializer.cpp"
 				>
 				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
 					Name="Release|x64"
 					>
 					<Tool
@@ -393,6 +401,14 @@
 			<File
 				RelativePath="..\..\..\ASCOfficeDocxFile2\DocWrapper\XlsxSerializer.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 				<FileConfiguration
 					Name="Release|x64"
 					>
@@ -981,6 +997,22 @@
 			<File
 				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\SVGTransformer.cpp"
 				>
+				<FileConfiguration
+					Name="Debug|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
+				<FileConfiguration
+					Name="Release|x64"
+					>
+					<Tool
+						Name="VCCLCompilerTool"
+						AdditionalOptions="/bigobj"
+					/>
+				</FileConfiguration>
 			</File>
 			<File
 				RelativePath="..\..\..\ASCPresentationEditor\OfficeDrawing\SVGTransformer.h"

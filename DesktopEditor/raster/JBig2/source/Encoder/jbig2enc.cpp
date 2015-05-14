@@ -286,7 +286,8 @@ jbig2_pages_complete(struct jbig2ctx *ctx, int *const length) {
   jbig2enc_init(&ectx);
 
   struct jbig2_file_header header;
-  if (ctx->full_headers) {
+  if (ctx->full_headers)
+  {
     memset(&header, 0, sizeof(header));
     header.n_pages = htonl(ctx->classer->npages);
     header.organisation_type = 1;

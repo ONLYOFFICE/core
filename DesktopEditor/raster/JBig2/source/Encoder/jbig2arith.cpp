@@ -114,7 +114,7 @@ jbig2enc_init(struct jbig2enc_ctx *ctx) {
   ctx->bp = -1;
   ctx->b = 0;
   ctx->outbuf_used = 0;
-  ctx->outbuf = (u8 *) malloc(JBIG2_OUTPUTBUFFER_SIZE);
+  ctx->outbuf = (u8 *) new u8 [JBIG2_OUTPUTBUFFER_SIZE];
   ctx->output_chunks = new std::vector<uint8_t *>;
   ctx->iaidctx = NULL;
 }
@@ -127,7 +127,7 @@ jbig2enc_reset(struct jbig2enc_ctx *ctx) {
   ctx->ct = 12;
   ctx->bp = -1;
   ctx->b = 0;
-  free(ctx->iaidctx);
+  delete []ctx->iaidctx;
   ctx->iaidctx = NULL;
   memset(ctx->context, 0, JBIG2_MAX_CTX);
   memset(ctx->intctx, 0, 13 * 512);
@@ -139,8 +139,9 @@ jbig2enc_flush(struct jbig2enc_ctx *ctx) {
   ctx->outbuf_used = 0;
 
   for (std::vector<uint8_t *>::iterator i = ctx->output_chunks->begin();
-       i != ctx->output_chunks->end(); ++i) {
-    free(*i);
+       i != ctx->output_chunks->end(); ++i)
+  {
+    delete [](*i);
   }
   ctx->output_chunks->clear();
   ctx->bp = -1;
@@ -150,12 +151,14 @@ jbig2enc_flush(struct jbig2enc_ctx *ctx) {
 void
 jbig2enc_dealloc(struct jbig2enc_ctx *ctx) {
   for (std::vector<uint8_t *>::iterator i = ctx->output_chunks->begin();
-       i != ctx->output_chunks->end(); ++i) {
-    free(*i);
+       i != ctx->output_chunks->end(); ++i)
+  {
+    delete [](*i);
   }
   delete ctx->output_chunks;
-  free(ctx->outbuf);
-  free(ctx->iaidctx);
+
+  delete []ctx->outbuf;
+  delete []ctx->iaidctx;
 }
 
 // -----------------------------------------------------------------------------
@@ -166,7 +169,7 @@ static void inline
 emit(struct jbig2enc_ctx *restrict ctx) {
   if (unlikely(ctx->outbuf_used == JBIG2_OUTPUTBUFFER_SIZE)) {
     ctx->output_chunks->push_back(ctx->outbuf);
-    ctx->outbuf = (u8 *) malloc(JBIG2_OUTPUTBUFFER_SIZE);
+    ctx->outbuf = new u8[JBIG2_OUTPUTBUFFER_SIZE];
     ctx->outbuf_used = 0;
   }
 
@@ -359,11 +362,12 @@ jbig2enc_oob(struct jbig2enc_ctx *restrict ctx, int proc) {
 
 // see comments in .h file
 void
-jbig2enc_int(struct jbig2enc_ctx *restrict ctx, int proc, int value) {
+jbig2enc_int(struct jbig2enc_ctx *restrict ctx, int proc, int value)
+{
   u8 *const context = ctx->intctx[proc];
   int i;
 
-  if (value > 2000000000 || value < -2000000000) abort();
+ // if (value > 2000000000 || value < -2000000000) assert();
 
   u32 prev = 1;
 
@@ -404,10 +408,12 @@ jbig2enc_int(struct jbig2enc_ctx *restrict ctx, int proc, int value) {
 
 // see comments in .h file
 void
-jbig2enc_iaid(struct jbig2enc_ctx *restrict ctx, int symcodelen, int value) {
-  if (!ctx->iaidctx) {
+jbig2enc_iaid(struct jbig2enc_ctx *restrict ctx, int symcodelen, int value)
+{
+  if (!ctx->iaidctx)
+  {
     // we've not yet allocated the context index buffer for this
-    ctx->iaidctx = (u8 *) malloc(1 << symcodelen);
+    ctx->iaidctx = (u8 *) new u8[1 << symcodelen];
     memset(ctx->iaidctx, 0, 1 << symcodelen);
   }
   const u32 mask = (1 << (symcodelen + 1)) - 1;

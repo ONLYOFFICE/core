@@ -432,8 +432,7 @@ SOURCES += \
     ../../../cximage/CxImage/ximawmf.cpp \
     ../../../cximage/CxImage/ximawnd.cpp \
     ../../../cximage/CxImage/xmemfile.cpp \
-    ../../../raster/BgraFrame.cpp \
-    ../../../raster/ImageFileFormatChecker.cpp
+    ../../../raster/BgraFrame.cpp
 
 HEADERS += \
     ../../../graphics/AggPlusEnums.h \

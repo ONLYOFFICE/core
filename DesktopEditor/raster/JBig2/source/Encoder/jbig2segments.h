@@ -11,6 +11,8 @@
 #include <netinet/in.h>
 #endif
 
+#include <string.h>
+
 // -----------------------------------------------------------------------------
 // See comments in jbig2structs.h about the bit packing in this structure.
 // -----------------------------------------------------------------------------

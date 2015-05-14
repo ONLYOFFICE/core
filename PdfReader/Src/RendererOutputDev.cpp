@@ -20,7 +20,6 @@
 //       2. m_pRenderer->SetAdditionalParam(L"TilingHtmlPattern", oWriter.GetXmlString());
 //       3. Подбор шрифтов необходимо перенести в GlobalParams->FindFontFile
 //       4. В идентефикацию шрифта к путю добавить номер шрифта в файле
-//       5. Jpeg2000
 
 namespace PdfReader
 {
@@ -3095,7 +3094,7 @@ namespace PdfReader
 			return;
 
 		Aggplus::CImage oImage;
-		oImage.Create(pBufferPtr, nWidth, nHeight, 4 * nWidth);
+		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
 		// Пишем данные в pBufferPtr
 		ImageStream *pImageStream = new ImageStream(pStream, nWidth, 1, 1);
@@ -3154,7 +3153,7 @@ namespace PdfReader
 			return;
 
 		Aggplus::CImage oImage;
-		oImage.Create(pBufferPtr, nWidth, nHeight, 4 * nWidth);
+		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
 		// Пишем данные в pBufferPtr
 		ImageStream *pImageStream = new ImageStream(pStream, nWidth, pColorMap->GetComponentsCount(), pColorMap->GetBitsPerComponent());
@@ -3216,7 +3215,7 @@ namespace PdfReader
 			return;
 
 		Aggplus::CImage oImage;
-		oImage.Create(pBufferPtr, nWidth, nHeight, 4 * nWidth);
+		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
 		// Пишем данные в pBufferPtr
 		ImageStream *pImageStream = new ImageStream(pStream, nWidth, pColorMap->GetComponentsCount(), pColorMap->GetBitsPerComponent());
@@ -3280,7 +3279,7 @@ namespace PdfReader
 			return;
 
 		Aggplus::CImage oImage;
-		oImage.Create(pBufferPtr, nWidth, nHeight, 4 * nWidth);
+		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
 		// Пишем данные в pBufferPtr
 		ImageStream *pImageStream = new ImageStream(pStream, nWidth, pColorMap->GetComponentsCount(), pColorMap->GetBitsPerComponent());

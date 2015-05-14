@@ -1,7 +1,12 @@
 #include "MemoryUtils.h"
 #include "JPXStream.h"
 #include "File.h"
+
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
+
+#pragma comment(lib, "graphics.lib")
 
 namespace PdfReader
 {
@@ -67,79 +72,48 @@ namespace PdfReader
 			fclose(pTempFile);
 		}
 
-		// TODO: Jpeg2000 реализовать в DesktopEditor
+		CBgraFrame oFrame;
+		if (!oFrame.OpenFile(wsTempFile, _CXIMAGE_FORMAT_JP2))
+		{
+			NSFile::CFileBinary::Remove(wsTempFile);
+			return;
+		}
+
+
+		oFrame.SaveFile(L"D://Test Files//test.jp2", _CXIMAGE_FORMAT_JP2);
+
+		int nHeight          = oFrame.get_Height();
+		int nWidth           = oFrame.get_Width();
+		int nStride          = oFrame.get_Stride();
+		BYTE* pBufferPointer = oFrame.get_Data();
+
+		m_lBufferSize = 3 * nWidth * nHeight;
+
+		m_pSourceBuffer = (unsigned char*)MemUtilsMalloc(m_lBufferSize);
+		if (!m_pSourceBuffer)
+		{
+			NSFile::CFileBinary::Remove(wsTempFile);
+			m_lBufferSize = 0;
+			return;
+		}
+
+		unsigned char* pDst = m_pSourceBuffer;
+		for (int nY = 0; nY < nHeight; nY++)
+		{
+			unsigned char* pSrc = pBufferPointer + nWidth * 4 * (nHeight - nY - 1);
+
+			for (int nX = 0; nX < nWidth; nX++)
+			{
+				pDst[0] = pSrc[2];
+				pDst[1] = pSrc[1];
+				pDst[2] = pSrc[0];
+
+				pDst += 3;
+				pSrc += 4;
+			}
+		}
+
 		NSFile::CFileBinary::Remove(wsTempFile);
-
-		//// Создаем интерфейс для сохранения картинки
-		//MediaCore::IAVSUncompressedVideoFrame *pImageMediaData = NULL;
-		//CoCreateInstance(MediaCore::CLSID_CAVSMediaData, NULL, CLSCTX_ALL, MediaCore::IID_IAVSMediaData, (void**)(&pImageMediaData));
-		//if (!pImageMediaData)
-		//{
-		//	_wunlink(wsTempFile.GetBuffer());
-		//	return;
-		//}
-
-		//// Конвертируем картинку в интерфейс
-		//AVSImageJpeg2000::IJ2kFile *pJpeg = NULL;
-		//CoCreateInstance(__uuidof(AVSImageJpeg2000::CJ2kFile), NULL, CLSCTX_INPROC_SERVER, __uuidof(AVSImageJpeg2000::IJ2kFile), (void **)(&pJpeg));
-		//if (!pJpeg)
-		//{
-		//	_wunlink(wsTempFile.GetBuffer());
-		//	RELEASEINTERFACE(pImageMediaData);
-		//	return;
-		//}
-
-		//IUnknown **ppImage = (IUnknown**)&pImageMediaData;
-		//pJpeg->J2kToInterface(wsTempFile.GetBuffer(), ppImage, L"<Jpeg2000-Options><OpenOptions><ConvertToRGBA value=\"0\"/></OpenOptions></Jpeg2000-Options>");
-		//// Удаляем временный файл
-		//_wunlink(wsTempFile.GetBuffer());
-
-		//if (NULL == ppImage || NULL == (*ppImage))
-		//{
-		//	RELEASEINTERFACE(pImageMediaData);
-		//	RELEASEINTERFACE(pJpeg);
-		//	return;
-		//}
-
-		//MediaCore::IAVSUncompressedVideoFrame* pMediaDataIn = NULL;
-		//(*ppImage)->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)(&pMediaDataIn));
-		//if (NULL == pMediaDataIn)
-		//{
-		//	RELEASEINTERFACE(pImageMediaData);
-		//	RELEASEINTERFACE(pJpeg);
-		//	return;
-		//}
-
-		//LONG lWidth          =    0; pMediaDataIn->get_Width(&lWidth);
-		//LONG lHeight         =    0; pMediaDataIn->get_Height(&lHeight);
-		//LONG lAspectX        =    0; pMediaDataIn->get_AspectRatioX(&lAspectX);
-		//LONG lAspectY        =    0; pMediaDataIn->get_AspectRatioY(&lAspectY);
-		//LONG lStride         =    0; pMediaDataIn->get_Stride(0, &lStride);
-		//unsigned char *pBufferPointer = NULL; pMediaDataIn->get_BufferSize(&m_lBufferSize);
-
-		//pMediaDataIn->get_Buffer(&pBufferPointer);
-
-		//// Копируем данные в буфер
-		//m_pSourceBuffer = (unsigned char*)MemUtilsMalloc(m_lBufferSize);
-		//if (!m_pSourceBuffer)
-		//{
-		//	m_lBufferSize = 0;
-		//	RELEASEINTERFACE(pMediaDataIn);
-		//	RELEASEINTERFACE(pImageMediaData);
-		//	RELEASEINTERFACE(pJpeg);
-		//	return;
-		//}
-
-		//// Переворачиваем картинку
-		//for (int nY = 0; nY < lHeight; nY++)
-		//{
-		//	::memcpy(m_pSourceBuffer + lStride * nY, pBufferPointer + lStride * (lHeight - nY - 1), lStride);
-		//}
-
-		//// Освобождаем все интерфейсы
-		//RELEASEINTERFACE(pMediaDataIn);
-		//RELEASEINTERFACE(pJpeg);
-		//RELEASEINTERFACE(pImageMediaData);
 	}
 
 	void JPXStream::Close()

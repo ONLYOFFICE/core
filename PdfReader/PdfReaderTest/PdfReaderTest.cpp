@@ -44,10 +44,12 @@ void ConvertFolder(PdfReader::CPdfReader& oReader, std::wstring wsFolderPath)
 		if (oReader.LoadFromFile(wsFilePath.c_str(), NULL, NULL, NULL))
 		{
 			int nPagesCount = oReader.GetPagesCount();
+
 			for (int nPageIndex = 0; nPageIndex < nPagesCount; nPageIndex++)
 			{
 				std::wstring wsDstFilePath = wsFilePathName + L"_" + std::to_wstring(nPageIndex) + L".png";
 				oReader.ConvertToRaster(nPageIndex, wsDstFilePath.c_str(), 4);
+				printf("%d of %d %S page %d / %d\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str(), nPageIndex, nPagesCount);
 			}
 			oReader.Close();
 		}

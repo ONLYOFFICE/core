@@ -391,7 +391,11 @@ namespace PdfReader
 		{
 			if (bBuiltin)
 			{
-				m_wsExternalFontFilePath = m_pGlobalParams->GetBuiltinFontPath(m_seName);
+				if (!GetEmbeddedFontFileRef(&m_oEmbFontFileRef))
+				{
+					m_wsExternalFontFilePath = m_pGlobalParams->GetBuiltinFontPath(m_seName);
+					m_eType = fontType1;
+				}
 			}
 			else
 			{

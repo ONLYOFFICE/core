@@ -588,14 +588,12 @@ class RtfFontTableReader: public RtfAbstractReader
 private: 
     typedef enum { is_normal, is_panose, is_altname } InternalState;
 
-    int             m_nKeepGlobalCodepage;
     RtfFont         m_oFont;
     InternalState   m_eInternalState;
 public: 
 	RtfFontTableReader()
 	{
         m_bUseGlobalCodepage    = true;
-        m_nKeepGlobalCodepage   = -1;
 
 		m_eInternalState = is_normal;
 		m_oFont.SetDefaultOOX();
@@ -603,9 +601,6 @@ public:
 
     bool ExecuteCommand(RtfDocument& oDocument, RtfReader& oReader,CString sCommand, bool hasParameter, int parameter)
     {
-        if (m_nKeepGlobalCodepage < 0)//для корректного отображения названий шрифта нужно использовать данные самого шрифта
-            m_nKeepGlobalCodepage = oDocument.m_oProperty.m_nAnsiCodePage;
-
         if( _T("fonttbl") == sCommand )
             ;
         else if( _T("flomajor") == sCommand )
@@ -663,7 +658,7 @@ public:
         {
             if( true == hasParameter )
             {
-                oDocument.m_oProperty.m_nAnsiCodePage = m_oFont.m_nCodePage = parameter;
+                m_oFont.m_nCodePage = parameter;
             }
         }
         else if( _T("fprq") == sCommand )
@@ -677,8 +672,29 @@ public:
             //ATLASSERT( false );
         }
         return true;
-
     }
+    void ExecuteTextInternal2( RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, int& nSkipChars)
+	{
+		if(oReader.m_oState->m_sCurText.length() < 1 )return;
+
+		//для корректного отображения названий шрифта нужно использовать данные самого шрифта
+
+		int nKeepGlobalCodepage = oDocument.m_oProperty.m_nAnsiCodePage;
+
+		if (m_oFont.m_nCodePage > 0) 
+		{
+			oDocument.m_oProperty.m_nAnsiCodePage = m_oFont.m_nCodePage;
+		}
+
+		if (m_oFont.m_nCharset > 2 && oDocument.m_oProperty.m_nAnsiCodePage == 0)
+		{
+			oDocument.m_oProperty.m_nAnsiCodePage = RtfUtility::CharsetToCodepage(m_oFont.m_nCharset);
+		}
+
+		RtfAbstractReader::ExecuteTextInternal2(oDocument, oReader, sKey, nSkipChars);
+		
+		oDocument.m_oProperty.m_nAnsiCodePage = nKeepGlobalCodepage;
+	}
     void ExecuteText(RtfDocument& oDocument, RtfReader& oReader, CString sText)
     {
         if( is_panose == m_eInternalState )
@@ -691,6 +707,7 @@ public:
             {
                 sText.Remove(';');
                 m_oFont.m_sName += sText;
+				//todooo при добавлении могут быть повторы - убрать нннадо - goldwingSetting.rtf
                 oDocument.m_oFontTable.DirectAddItem( m_oFont );
                 m_oFont.SetDefaultRtf();
             }
@@ -699,7 +716,6 @@ public:
                 m_oFont.m_sName += sText;
             }
         }
-        oDocument.m_oProperty.m_nAnsiCodePage = m_nKeepGlobalCodepage;
     }
     void PopState(RtfDocument& oDocument, RtfReader& oReader)
     {

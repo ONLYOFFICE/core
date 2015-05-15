@@ -230,7 +230,7 @@ public:
 		return sResult;
 	}
 
-    void ExecuteTextInternal2( RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, int& nSkipChars)
+    virtual void ExecuteTextInternal2( RtfDocument& oDocument, RtfReader& oReader, std::string & sKey, int& nSkipChars)
 	{
         if(oReader.m_oState->m_sCurText.length() > 0)
 		{

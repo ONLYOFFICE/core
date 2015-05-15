@@ -53,7 +53,7 @@ public:
 	{
 		return FileSystem::Directory::CreateDirectoryWithUniqueName(FileSystem::Directory::GetTempPath());
 	}
-	static  CString PrepareToXML( CString sInput)
+	static  CString PrepareToXML( const CString & sInput)
 	{
 		 CString sResult = sInput;
 		 //&amp; («&»), &lt; («<»), &gt; («>»), &apos; («'»), и &quot; («"») 

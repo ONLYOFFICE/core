@@ -16,6 +16,17 @@ namespace Txt2Docx
 		Txt::File		m_inputFile;
 		OOX::CDocument	m_outputFile;
 
+		static  CString PrepareToXML( const std::wstring & sInput)
+		{
+			 CString sResult = std_string2string(sInput);
+			 //&amp; («&»), &lt; («<»), &gt; («>»), &apos; («'»), è &quot; («"») 
+			 sResult.Replace(_T("&"), _T("&amp;"));
+			 sResult.Replace(_T("<"), _T("&lt;"));
+			 sResult.Replace(_T(">"), _T("&gt;"));
+			 sResult.Replace(_T("\""), _T("&quot;"));
+			 sResult.Replace(_T("'"), _T("&apos;"));
+			 return sResult;
+		}
 	};
 
     Converter::Converter(int encoding) : converter_( new Converter_Impl(encoding) )
@@ -122,7 +133,7 @@ namespace Txt2Docx
 
 				if(line->length() > 0)
                 {
-                    CString s = std_string2string(*line);
+                    CString s = PrepareToXML(*line);
                     temp->AddText(s);//, rPr);
                 }
 				

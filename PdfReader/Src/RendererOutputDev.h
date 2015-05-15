@@ -226,7 +226,7 @@ namespace PdfReader
 
 		void Transform(double *pMatrix, double dUserX, double dUserY, double *pdDeviceX, double *pdDeviceY);
 		void DoPath(GrState *pGState, GrPath *pPath, double dPageHeight, double *pCTM);
-		void ClipToText(std::wstring& wsFontName, std::wstring& wsFontPath, double dFontSize, int nFontStyle, double* pMatrix, std::wstring& wsText, double dX, double dY, double dWidth = 0, double dHeight = 0, double dBaseLineOffset = 0);
+		void ClipToText(const std::wstring& wsFontName, const std::wstring& wsFontPath, double dFontSize, int nFontStyle, double* pMatrix, const std::wstring& wsText, double dX, double dY, double dWidth = 0, double dHeight = 0, double dBaseLineOffset = 0);
 		void UpdateClip(GrState *pGState);
 		void UpdateClipAttack(GrState *pGState);
 		void DoTransform(double *pMatrix, double *pdShiftX, double *pdShiftY, bool bText = false);

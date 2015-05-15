@@ -269,7 +269,7 @@ namespace PdfReader
 				nCounter++;
 				wsFolder = wsFolderName + L"_" + std::to_wstring(nCounter);
 			}
-			NSDirectory::CreateDirectoryW(wsFolder);
+			NSDirectory::CreateDirectory(wsFolder);
 			m_wsTempFolder = AllocWString(wsFolder);
 		}
 		else

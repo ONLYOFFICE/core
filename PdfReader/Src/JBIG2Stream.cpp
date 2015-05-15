@@ -1140,7 +1140,7 @@ namespace PdfReader
 	{
 	public:
 
-		JBIG2SymbolDict::JBIG2SymbolDict(unsigned int unSegNum, unsigned int unSize) : JBIG2Segment(unSegNum)
+		JBIG2SymbolDict(unsigned int unSegNum, unsigned int unSize) : JBIG2Segment(unSegNum)
 		{
 			m_unSize    = unSize;
 			m_ppBitmaps = (JBIG2Bitmap **)MemUtilsMallocArray(m_unSize, sizeof(JBIG2Bitmap *));

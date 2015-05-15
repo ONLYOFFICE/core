@@ -444,7 +444,159 @@ SOURCES += \
     ../../../raster/Metafile/Wmf/WmfClip.cpp \
     ../../../raster/Metafile/Wmf/WmfObjects.cpp \
     ../../../raster/Metafile/Wmf/WmfPlayer.cpp \
-    ../../../raster/Metafile/MetaFile.cpp
+    ../../../raster/Metafile/MetaFile.cpp \
+    ../../../raster/JBig2/source/JBig2File.cpp \
+    ../../../raster/JBig2/source/Encoder/jbig2arith.cpp \
+    ../../../raster/JBig2/source/Encoder/jbig2enc.cpp \
+    ../../../raster/JBig2/source/Encoder/jbig2sym.cpp \
+    ../../../raster/JBig2/source/LeptonLib/adaptmap.cpp \
+    ../../../raster/JBig2/source/LeptonLib/affine.cpp \
+    ../../../raster/JBig2/source/LeptonLib/affinecompose.cpp \
+    ../../../raster/JBig2/source/LeptonLib/arithlow.cpp \
+    ../../../raster/JBig2/source/LeptonLib/arrayaccess.cpp \
+    ../../../raster/JBig2/source/LeptonLib/bardecode.cpp \
+    ../../../raster/JBig2/source/LeptonLib/baseline.cpp \
+    ../../../raster/JBig2/source/LeptonLib/bbuffer.cpp \
+    ../../../raster/JBig2/source/LeptonLib/bilinear.cpp \
+    ../../../raster/JBig2/source/LeptonLib/binarize.cpp \
+    ../../../raster/JBig2/source/LeptonLib/binexpand.cpp \
+    ../../../raster/JBig2/source/LeptonLib/binexpandlow.cpp \
+    ../../../raster/JBig2/source/LeptonLib/binreduce.cpp \
+    ../../../raster/JBig2/source/LeptonLib/binreducelow.cpp \
+    ../../../raster/JBig2/source/LeptonLib/bmf.cpp \
+    ../../../raster/JBig2/source/LeptonLib/bmpio.cpp \
+    ../../../raster/JBig2/source/LeptonLib/bmpiostub.cpp \
+    ../../../raster/JBig2/source/LeptonLib/boxbasic.cpp \
+    ../../../raster/JBig2/source/LeptonLib/boxfunc1.cpp \
+    ../../../raster/JBig2/source/LeptonLib/boxfunc2.cpp \
+    ../../../raster/JBig2/source/LeptonLib/boxfunc3.cpp \
+    ../../../raster/JBig2/source/LeptonLib/ccbord.cpp \
+    ../../../raster/JBig2/source/LeptonLib/ccthin.cpp \
+    ../../../raster/JBig2/source/LeptonLib/classapp.cpp \
+    ../../../raster/JBig2/source/LeptonLib/colorcontent.cpp \
+    ../../../raster/JBig2/source/LeptonLib/colormap.cpp \
+    ../../../raster/JBig2/source/LeptonLib/colormorph.cpp \
+    ../../../raster/JBig2/source/LeptonLib/colorquant1.cpp \
+    ../../../raster/JBig2/source/LeptonLib/colorquant2.cpp \
+    ../../../raster/JBig2/source/LeptonLib/colorseg.cpp \
+    ../../../raster/JBig2/source/LeptonLib/compare.cpp \
+    ../../../raster/JBig2/source/LeptonLib/conncomp.cpp \
+    ../../../raster/JBig2/source/LeptonLib/convertfiles.cpp \
+    ../../../raster/JBig2/source/LeptonLib/convolve.cpp \
+    ../../../raster/JBig2/source/LeptonLib/convolvelow.cpp \
+    ../../../raster/JBig2/source/LeptonLib/correlscore.cpp \
+    ../../../raster/JBig2/source/LeptonLib/dewarp.cpp \
+    ../../../raster/JBig2/source/LeptonLib/dwacomb.2.cpp \
+    ../../../raster/JBig2/source/LeptonLib/dwacomblow.2.cpp \
+    ../../../raster/JBig2/source/LeptonLib/edge.cpp \
+    ../../../raster/JBig2/source/LeptonLib/enhance.cpp \
+    ../../../raster/JBig2/source/LeptonLib/fhmtauto.cpp \
+    ../../../raster/JBig2/source/LeptonLib/fhmtgen.1.cpp \
+    ../../../raster/JBig2/source/LeptonLib/fhmtgenlow.1.cpp \
+    ../../../raster/JBig2/source/LeptonLib/finditalic.cpp \
+    ../../../raster/JBig2/source/LeptonLib/flipdetect.cpp \
+    ../../../raster/JBig2/source/LeptonLib/fliphmtgen.cpp \
+    ../../../raster/JBig2/source/LeptonLib/fmorphauto.cpp \
+    ../../../raster/JBig2/source/LeptonLib/fmorphgen.1.cpp \
+    ../../../raster/JBig2/source/LeptonLib/fmorphgenlow.1.cpp \
+    ../../../raster/JBig2/source/LeptonLib/fpix1.cpp \
+    ../../../raster/JBig2/source/LeptonLib/fpix2.cpp \
+    ../../../raster/JBig2/source/LeptonLib/freetype.cpp \
+    ../../../raster/JBig2/source/LeptonLib/gifio.cpp \
+    ../../../raster/JBig2/source/LeptonLib/gifiostub.cpp \
+    ../../../raster/JBig2/source/LeptonLib/gplot.cpp \
+    ../../../raster/JBig2/source/LeptonLib/graphics.cpp \
+    ../../../raster/JBig2/source/LeptonLib/graymorph.cpp \
+    ../../../raster/JBig2/source/LeptonLib/graymorphlow.cpp \
+    ../../../raster/JBig2/source/LeptonLib/grayquant.cpp \
+    ../../../raster/JBig2/source/LeptonLib/grayquantlow.cpp \
+    ../../../raster/JBig2/source/LeptonLib/heap.cpp \
+    ../../../raster/JBig2/source/LeptonLib/jbclass.cpp \
+    ../../../raster/JBig2/source/LeptonLib/jpegio.cpp \
+    ../../../raster/JBig2/source/LeptonLib/jpegiostub.cpp \
+    ../../../raster/JBig2/source/LeptonLib/kernel.cpp \
+    ../../../raster/JBig2/source/LeptonLib/list.cpp \
+    ../../../raster/JBig2/source/LeptonLib/maze.cpp \
+    ../../../raster/JBig2/source/LeptonLib/morph.cpp \
+    ../../../raster/JBig2/source/LeptonLib/morphapp.cpp \
+    ../../../raster/JBig2/source/LeptonLib/morphdwa.cpp \
+    ../../../raster/JBig2/source/LeptonLib/morphseq.cpp \
+    ../../../raster/JBig2/source/LeptonLib/numabasic.cpp \
+    ../../../raster/JBig2/source/LeptonLib/numafunc1.cpp \
+    ../../../raster/JBig2/source/LeptonLib/numafunc2.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pageseg.cpp \
+    ../../../raster/JBig2/source/LeptonLib/paintcmap.cpp \
+    ../../../raster/JBig2/source/LeptonLib/parseprotos.cpp \
+    ../../../raster/JBig2/source/LeptonLib/partition.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pix1.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pix2.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pix3.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pix4.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pix5.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pixabasic.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pixacc.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pixafunc1.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pixafunc2.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pixalloc.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pixarith.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pixcomp.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pixconv.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pixtiling.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pngio.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pngiostub.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pnmio.cpp \
+    ../../../raster/JBig2/source/LeptonLib/pnmiostub.cpp \
+    ../../../raster/JBig2/source/LeptonLib/projective.cpp \
+    ../../../raster/JBig2/source/LeptonLib/psio1.cpp \
+    ../../../raster/JBig2/source/LeptonLib/psio1stub.cpp \
+    ../../../raster/JBig2/source/LeptonLib/psio2.cpp \
+    ../../../raster/JBig2/source/LeptonLib/psio2stub.cpp \
+    ../../../raster/JBig2/source/LeptonLib/ptabasic.cpp \
+    ../../../raster/JBig2/source/LeptonLib/ptafunc1.cpp \
+    ../../../raster/JBig2/source/LeptonLib/ptra.cpp \
+    ../../../raster/JBig2/source/LeptonLib/queue.cpp \
+    ../../../raster/JBig2/source/LeptonLib/rank.cpp \
+    ../../../raster/JBig2/source/LeptonLib/readbarcode.cpp \
+    ../../../raster/JBig2/source/LeptonLib/readfile.cpp \
+    ../../../raster/JBig2/source/LeptonLib/regutils.cpp \
+    ../../../raster/JBig2/source/LeptonLib/rop.cpp \
+    ../../../raster/JBig2/source/LeptonLib/ropiplow.cpp \
+    ../../../raster/JBig2/source/LeptonLib/roplow.cpp \
+    ../../../raster/JBig2/source/LeptonLib/rotate.cpp \
+    ../../../raster/JBig2/source/LeptonLib/rotateam.cpp \
+    ../../../raster/JBig2/source/LeptonLib/rotateamlow.cpp \
+    ../../../raster/JBig2/source/LeptonLib/rotateorth.cpp \
+    ../../../raster/JBig2/source/LeptonLib/rotateorthlow.cpp \
+    ../../../raster/JBig2/source/LeptonLib/rotateshear.cpp \
+    ../../../raster/JBig2/source/LeptonLib/runlength.cpp \
+    ../../../raster/JBig2/source/LeptonLib/sarray.cpp \
+    ../../../raster/JBig2/source/LeptonLib/scale.cpp \
+    ../../../raster/JBig2/source/LeptonLib/scalelow.cpp \
+    ../../../raster/JBig2/source/LeptonLib/seedfill.cpp \
+    ../../../raster/JBig2/source/LeptonLib/seedfilllow.cpp \
+    ../../../raster/JBig2/source/LeptonLib/sel1.cpp \
+    ../../../raster/JBig2/source/LeptonLib/sel2.cpp \
+    ../../../raster/JBig2/source/LeptonLib/selgen.cpp \
+    ../../../raster/JBig2/source/LeptonLib/shear.cpp \
+    ../../../raster/JBig2/source/LeptonLib/skew.cpp \
+    ../../../raster/JBig2/source/LeptonLib/spixio.cpp \
+    ../../../raster/JBig2/source/LeptonLib/stack.cpp \
+    ../../../raster/JBig2/source/LeptonLib/sudoku.cpp \
+    ../../../raster/JBig2/source/LeptonLib/textops.cpp \
+    ../../../raster/JBig2/source/LeptonLib/tiffio.cpp \
+    ../../../raster/JBig2/source/LeptonLib/tiffiostub.cpp \
+    ../../../raster/JBig2/source/LeptonLib/utils.cpp \
+    ../../../raster/JBig2/source/LeptonLib/viewfiles.cpp \
+    ../../../raster/JBig2/source/LeptonLib/warper.cpp \
+    ../../../raster/JBig2/source/LeptonLib/watershed.cpp \
+    ../../../raster/JBig2/source/LeptonLib/webpio.cpp \
+    ../../../raster/JBig2/source/LeptonLib/webpiostub.cpp \
+    ../../../raster/JBig2/source/LeptonLib/writefile.cpp \
+    ../../../raster/JBig2/source/LeptonLib/zlibmem.cpp \
+    ../../../raster/JBig2/source/LeptonLib/zlibmemstub.cpp \
+    ../../../raster/ImageFileFormatChecker.cpp \
+    ../../../cximage/libpsd/test.c \
+    ../../../raster/JBig2/source/LeptonLib/blend1.cpp
 
 HEADERS += \
     ../../../graphics/AggPlusEnums.h \
@@ -637,6 +789,61 @@ HEADERS += \
     ../../../cximage/CxImage/xmemfile.h \
     ../../../raster/BgraFrame.h \
     ../../../raster/ImageFileFormatChecker.h \
+    ../../../raster/Metafile/Common/IOutputDevice.h \
+    ../../../raster/Metafile/Common/MetaFile.h \
+    ../../../raster/Metafile/Common/MetaFileClip.h \
+    ../../../raster/Metafile/Common/MetaFileObjects.h \
+    ../../../raster/Metafile/Common/MetaFileRenderer.h \
+    ../../../raster/Metafile/Common/MetaFileTypes.h \
+    ../../../raster/Metafile/Common/MetaFileUtils.h \
+    ../../../raster/Metafile/Emf/EmfClip.h \
+    ../../../raster/Metafile/Emf/EmfFile.h \
+    ../../../raster/Metafile/Emf/EmfObjects.h \
+    ../../../raster/Metafile/Emf/EmfPath.h \
+    ../../../raster/Metafile/Emf/EmfPlayer.h \
+    ../../../raster/Metafile/Emf/EmfTypes.h \
+    ../../../raster/Metafile/Wmf/WmfClip.h \
+    ../../../raster/Metafile/Wmf/WmfFile.h \
+    ../../../raster/Metafile/Wmf/WmfObjects.h \
+    ../../../raster/Metafile/Wmf/WmfPlayer.h \
+    ../../../raster/Metafile/Wmf/WmfTypes.h \
+    ../../../raster/Metafile/MetaFile.h \
+    ../../../raster/JBig2/source/JBig2File.h \
+    ../../../raster/JBig2/source/Utils.h \
+    ../../../raster/JBig2/source/Encoder/jbig2arith.h \
+    ../../../raster/JBig2/source/Encoder/jbig2enc.h \
+    ../../../raster/JBig2/source/Encoder/jbig2encoder.h \
+    ../../../raster/JBig2/source/Encoder/jbig2segments.h \
+    ../../../raster/JBig2/source/Encoder/jbig2structs.h \
+    ../../../raster/JBig2/source/Encoder/jbig2sym.h \
+    ../../../raster/JBig2/source/LeptonLib/additionaltypes.h \
+    ../../../raster/JBig2/source/LeptonLib/allheaders.h \
+    ../../../raster/JBig2/source/LeptonLib/alltypes.h \
+    ../../../raster/JBig2/source/LeptonLib/array.h \
+    ../../../raster/JBig2/source/LeptonLib/arrayaccess.h \
+    ../../../raster/JBig2/source/LeptonLib/bbuffer.h \
+    ../../../raster/JBig2/source/LeptonLib/bmf.h \
+    ../../../raster/JBig2/source/LeptonLib/bmp.h \
+    ../../../raster/JBig2/source/LeptonLib/ccbord.h \
+    ../../../raster/JBig2/source/LeptonLib/dewarp.h \
+    ../../../raster/JBig2/source/LeptonLib/endianness.h \
+    ../../../raster/JBig2/source/LeptonLib/environ.h \
+    ../../../raster/JBig2/source/LeptonLib/freetype.h \
+    ../../../raster/JBig2/source/LeptonLib/funcprotos.h \
+    ../../../raster/JBig2/source/LeptonLib/gplot.h \
+    ../../../raster/JBig2/source/LeptonLib/heap.h \
+    ../../../raster/JBig2/source/LeptonLib/imageio.h \
+    ../../../raster/JBig2/source/LeptonLib/jbclass.h \
+    ../../../raster/JBig2/source/LeptonLib/list.h \
+    ../../../raster/JBig2/source/LeptonLib/morph.h \
+    ../../../raster/JBig2/source/LeptonLib/pix.h \
+    ../../../raster/JBig2/source/LeptonLib/ptra.h \
+    ../../../raster/JBig2/source/LeptonLib/queue.h \
+    ../../../raster/JBig2/source/LeptonLib/readbarcode.h \
+    ../../../raster/JBig2/source/LeptonLib/regutils.h \
+    ../../../raster/JBig2/source/LeptonLib/stack.h \
+    ../../../raster/JBig2/source/LeptonLib/sudoku.h \
+    ../../../raster/JBig2/source/LeptonLib/watershed.h \
     ../../../raster/Jp2/ArithmeticCoder.h \
     ../../../raster/Jp2/DWT.h \
     ../../../raster/Jp2/Image.h \
@@ -656,28 +863,14 @@ HEADERS += \
     ../../../raster/Jp2/Tier2.h \
     ../../../raster/Jp2/Tile.h \
     ../../../raster/Jp2/Types.h \
-    ../../../raster/Jp2/Utils.h \
-    ../../../raster/Metafile/Common/IOutputDevice.h \
-    ../../../raster/Metafile/Common/MetaFile.h \
-    ../../../raster/Metafile/Common/MetaFileClip.h \
-    ../../../raster/Metafile/Common/MetaFileObjects.h \
-    ../../../raster/Metafile/Common/MetaFileRenderer.h \
-    ../../../raster/Metafile/Common/MetaFileTypes.h \
-    ../../../raster/Metafile/Common/MetaFileUtils.h \
-    ../../../raster/Metafile/Emf/EmfClip.h \
-    ../../../raster/Metafile/Emf/EmfFile.h \
-    ../../../raster/Metafile/Emf/EmfObjects.h \
-    ../../../raster/Metafile/Emf/EmfPath.h \
-    ../../../raster/Metafile/Emf/EmfPlayer.h \
-    ../../../raster/Metafile/Emf/EmfTypes.h \
-    ../../../raster/Metafile/Wmf/WmfClip.h \
-    ../../../raster/Metafile/Wmf/WmfFile.h \
-    ../../../raster/Metafile/Wmf/WmfObjects.h \
-    ../../../raster/Metafile/Wmf/WmfPlayer.h \
-    ../../../raster/Metafile/Wmf/WmfTypes.h \
-    ../../../raster/Metafile/MetaFile.h
+    ../../../raster/Jp2/Utils.h
 
 unix {
     target.path = /usr/lib
     INSTALLS += target
 }
+
+DISTFILES += \
+    ../../../cximage/libpsd/ChangeLog \
+    ../../../cximage/libpsd/COPYING \
+    ../../../cximage/libpsd/CUSTOMIZE

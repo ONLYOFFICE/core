@@ -123,8 +123,8 @@ namespace Jpeg2000
 					pResolution = &pComponent->pResolutions[nResolutionIndex];
 					int nDx = pComponent->nDx * (1 << (pResolution->nDx + pComponent->nResolutionsCount - 1 - nResolutionIndex));
 					int nDy = pComponent->nDy * (1 << (pResolution->nDy + pComponent->nResolutionsCount - 1 - nResolutionIndex));
-					pPI->nDx = !pPI->nDx ? nDx : min(pPI->nDx, nDx);
-					pPI->nDy = !pPI->nDy ? nDy : min(pPI->nDy, nDy);
+                    pPI->nDx = !pPI->nDx ? nDx : (std::min)(pPI->nDx, nDx);
+                    pPI->nDy = !pPI->nDy ? nDy : (std::min)(pPI->nDy, nDy);
 				}
 			}
 		}
@@ -217,8 +217,8 @@ namespace Jpeg2000
 					pResolution = &pComponent->pResolutions[nResolutionIndex];
 					int nDx = pComponent->nDx * (1 << (pResolution->nDx + pComponent->nResolutionsCount - 1 - nResolutionIndex));
 					int nDy = pComponent->nDy * (1 << (pResolution->nDy + pComponent->nResolutionsCount - 1 - nResolutionIndex));
-					pPI->nDx = !pPI->nDx ? nDx : min(pPI->nDx, nDx);
-					pPI->nDy = !pPI->nDy ? nDy : min(pPI->nDy, nDy);
+                    pPI->nDx = !pPI->nDx ? nDx : (std::min)(pPI->nDx, nDx);
+                    pPI->nDy = !pPI->nDy ? nDy : (std::min)(pPI->nDy, nDy);
 				}
 			}
 		}
@@ -230,7 +230,7 @@ namespace Jpeg2000
 				for (pPI->nIndexComponent = pPI->oPOC.nCSpoc; pPI->nIndexComponent < pPI->oPOC.nCEpoc; pPI->nIndexComponent++)
 				{
 					pComponent = &pPI->pComponents[pPI->nIndexComponent];
-					for (pPI->nIndexResolution = pPI->oPOC.nRSpoc; pPI->nIndexResolution < min(pPI->oPOC.nREpoc, pComponent->nResolutionsCount); pPI->nIndexResolution++)
+                    for (pPI->nIndexResolution = pPI->oPOC.nRSpoc; pPI->nIndexResolution < (std::min)(pPI->oPOC.nREpoc, pComponent->nResolutionsCount); pPI->nIndexResolution++)
 					{
 						pResolution = &pComponent->pResolutions[pPI->nIndexResolution];
 						nLevel = pComponent->nResolutionsCount - 1 - pPI->nIndexResolution;
@@ -309,14 +309,14 @@ namespace Jpeg2000
 				pResolution = &pComponent->pResolutions[nResolutionIndex];
 				int nDx = pComponent->nDx * (1 << (pResolution->nDx + pComponent->nResolutionsCount - 1 - nResolutionIndex));
 				int nDy = pComponent->nDy * (1 << (pResolution->nDy + pComponent->nResolutionsCount - 1 - nResolutionIndex));
-				pPI->nDx = !pPI->nDx ? nDx : min(pPI->nDx, nDx);
-				pPI->nDy = !pPI->nDy ? nDy : min(pPI->nDy, nDy);
+                pPI->nDx = !pPI->nDx ? nDx : (std::min)(pPI->nDx, nDx);
+                pPI->nDy = !pPI->nDy ? nDy : (std::min)(pPI->nDy, nDy);
 			}
 			for (pPI->nY = pPI->nTileY0; pPI->nY < pPI->nTileY1; pPI->nY += pPI->nDy - (pPI->nY % pPI->nDy))
 			{
 				for (pPI->nX = pPI->nTileX0; pPI->nX < pPI->nTileX1; pPI->nX += pPI->nDx - (pPI->nX % pPI->nDx))
 				{
-					for (pPI->nIndexResolution = pPI->oPOC.nRSpoc; pPI->nIndexResolution < min(pPI->oPOC.nREpoc, pComponent->nResolutionsCount); pPI->nIndexResolution++)
+                    for (pPI->nIndexResolution = pPI->oPOC.nRSpoc; pPI->nIndexResolution < (std::min)(pPI->oPOC.nREpoc, pComponent->nResolutionsCount); pPI->nIndexResolution++)
 					{
 						pResolution = &pComponent->pResolutions[pPI->nIndexResolution];
 						nLevel = pComponent->nResolutionsCount - 1 - pPI->nIndexResolution;
@@ -409,10 +409,10 @@ namespace Jpeg2000
 			int nP = nTileIndex % pCodingParams->nXTilesCount;
 			int nQ = nTileIndex / pCodingParams->nXTilesCount;
 
-			pPI[nIndexPI].nTileX0 = max(pCodingParams->nXTOsiz + nP * pCodingParams->nXTsiz, pImage->nXOsiz);
-			pPI[nIndexPI].nTileY0 = max(pCodingParams->nYTOsiz + nQ * pCodingParams->nYTsiz, pImage->nYOsiz);
-			pPI[nIndexPI].nTileX1 = min(pCodingParams->nXTOsiz + (nP + 1) * pCodingParams->nXTsiz, pImage->nXsiz);
-			pPI[nIndexPI].nTileY1 = min(pCodingParams->nYTOsiz + (nQ + 1) * pCodingParams->nYTsiz, pImage->nYsiz);
+            pPI[nIndexPI].nTileX0 = (std::max)(pCodingParams->nXTOsiz + nP * pCodingParams->nXTsiz, pImage->nXOsiz);
+            pPI[nIndexPI].nTileY0 = (std::max)(pCodingParams->nYTOsiz + nQ * pCodingParams->nYTsiz, pImage->nYOsiz);
+            pPI[nIndexPI].nTileX1 = (std::min)(pCodingParams->nXTOsiz + (nP + 1) * pCodingParams->nXTsiz, pImage->nXsiz);
+            pPI[nIndexPI].nTileY1 = (std::min)(pCodingParams->nYTOsiz + (nQ + 1) * pCodingParams->nYTsiz, pImage->nYsiz);
 			pPI[nIndexPI].nComponentsCount = pImage->nCsiz;
 
 			nArraySize = pImage->nCsiz * sizeof(PacketComponent);

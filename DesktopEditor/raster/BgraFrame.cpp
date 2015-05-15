@@ -1,17 +1,18 @@
 #include "BgraFrame.h"
 #include "../common/File.h"
 #include "../cximage/CxImage/ximage.h"
+
 #include "Jp2/J2kFile.h"
 #include "JBig2/source/JBig2File.h"
 
 bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileType)
 {
-	//if (CXIMAGE_FORMAT_JP2 == nFileType)
-	//{
-	//	Jpeg2000::CJ2kFile oJ2;
-	//	return oJ2.Open(this, strFileName, std::wstring(L""));
-	//}
-	//else
+    if (CXIMAGE_FORMAT_JP2 == nFileType)
+    {
+        Jpeg2000::CJ2kFile oJ2;
+        return oJ2.Open(this, strFileName, std::wstring(L""));
+    }
+    else
 	{
 		NSFile::CFileBinary oFile;
 		if (!oFile.OpenFile(strFileName))

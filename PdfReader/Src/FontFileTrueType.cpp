@@ -1,4 +1,4 @@
-#include <stdlib.h>
+п»ї#include <stdlib.h>
 #include <string.h>
 #include "MemoryUtils.h"
 #include "StringExt.h"
@@ -9,16 +9,16 @@
 namespace PdfReader
 {
 	//
-	// Терминология
+	// РўРµСЂРјРёРЅРѕР»РѕРіРёСЏ
 	// -----------
 	//
-	// character code = номер, используемый как элемент текстовой строки
+	// character code = РЅРѕРјРµСЂ, РёСЃРїРѕР»СЊР·СѓРµРјС‹Р№ РєР°Рє СЌР»РµРјРµРЅС‚ С‚РµРєСЃС‚РѕРІРѕР№ СЃС‚СЂРѕРєРё
 	//
-	// character name = glyph name = имя определенного символа фонта
+	// character name = glyph name = РёРјСЏ РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ СЃРёРјРІРѕР»Р° С„РѕРЅС‚Р°
 	//
-	// glyph index = GID = позиция (в предела некоторой внутренней таблицы 
-	//               в фонте), где приведены инструкции как рисовать
-	//               данный символ
+	// glyph index = GID = РїРѕР·РёС†РёСЏ (РІ РїСЂРµРґРµР»Р° РЅРµРєРѕС‚РѕСЂРѕР№ РІРЅСѓС‚СЂРµРЅРЅРµР№ С‚Р°Р±Р»РёС†С‹ 
+	//               РІ С„РѕРЅС‚Рµ), РіРґРµ РїСЂРёРІРµРґРµРЅС‹ РёРЅСЃС‚СЂСѓРєС†РёРё РєР°Рє СЂРёСЃРѕРІР°С‚СЊ
+	//               РґР°РЅРЅС‹Р№ СЃРёРјРІРѕР»
 	//
 	// Type 1 fonts
 	// ------------
@@ -135,8 +135,8 @@ namespace PdfReader
 
 	struct T42Table
 	{
-		char *sTag;		 // 4-байтовое название
-		bool  bRequired; // Требуется ли по спецификации TrueType?
+		char *sTag;		 // 4-Р±Р°Р№С‚РѕРІРѕРµ РЅР°Р·РІР°РЅРёРµ
+		bool  bRequired; // РўСЂРµР±СѓРµС‚СЃСЏ Р»Рё РїРѕ СЃРїРµС†РёС„РёРєР°С†РёРё TrueType?
 	};
 
 	// TrueType tables to be embedded in Type 42 fonts.
@@ -164,8 +164,8 @@ namespace PdfReader
 
 	//------------------------------------------------------------------------
 
-	// Названия символов в стандартном порядке, который использует Apple для 
-	// своих TrueType фонтов.
+	// РќР°Р·РІР°РЅРёСЏ СЃРёРјРІРѕР»РѕРІ РІ СЃС‚Р°РЅРґР°СЂС‚РЅРѕРј РїРѕСЂСЏРґРєРµ, РєРѕС‚РѕСЂС‹Р№ РёСЃРїРѕР»СЊР·СѓРµС‚ Apple РґР»СЏ 
+	// СЃРІРѕРёС… TrueType С„РѕРЅС‚РѕРІ.
 	static char *c_arrAppleGlyphNames[258] =
 	{
 		".notdef", "null", "CR", "space",
@@ -446,7 +446,7 @@ namespace PdfReader
 		if (m_bOpenTypeCFF)
 			return;
 
-		// пишем заголовок
+		// РїРёС€РµРј Р·Р°РіРѕР»РѕРІРѕРє
 		bool bSuccess = true;
 		seBuffer = StringExt::Format("%!PS-TrueTypeFont-{0:2g}\n", (double)GetS32BE(0, &bSuccess) / 65536.0);
 		(*pOutputFunc)(pOutputStream, seBuffer->GetBuffer(), seBuffer->GetLength());
@@ -463,12 +463,12 @@ namespace PdfReader
 		delete seBuffer;
 		(*pOutputFunc)(pOutputStream, "/PaintType 0 def\n", 17);
 
-		// записываем содержимое библиотеки шрифта
+		// Р·Р°РїРёСЃС‹РІР°РµРј СЃРѕРґРµСЂР¶РёРјРѕРµ Р±РёР±Р»РёРѕС‚РµРєРё С€СЂРёС„С‚Р°
 		ConvertEncoding(ppEncoding, pOutputFunc, pOutputStream);
 		ConvertCharStrings(ppEncoding, pCodeToGID, pOutputFunc, pOutputStream);
 		ConvertSfnts(pOutputFunc, pOutputStream, NULL, false);
 
-		// закончили запись библиотеки
+		// Р·Р°РєРѕРЅС‡РёР»Рё Р·Р°РїРёСЃСЊ Р±РёР±Р»РёРѕС‚РµРєРё
 		(*pOutputFunc)(pOutputStream, "FontName currentdict end definefont pop\n", 40);
 	}
 
@@ -1423,7 +1423,7 @@ namespace PdfReader
 
 	void CFontFileTrueType::ConvertEncoding(char **ppEncoding, FontFileOutputFunc pOutputFunc, void *pOutputStream)
 	{
-		// конвертация кодировки в тип Type42
+		// РєРѕРЅРІРµСЂС‚Р°С†РёСЏ РєРѕРґРёСЂРѕРІРєРё РІ С‚РёРї Type42
 		char *sName;
 		StringExt *seBuffer;
 
@@ -1470,9 +1470,9 @@ namespace PdfReader
 			return;
 		}
 
-		// Ставим в соответствие названию символа glyph индекс:
-		// 1. Используем ppEncoding для отображения имени символа в его номер
-		// 2. Используем pnCodeToGID для отображения номера символа в glyph индекс
+		// РЎС‚Р°РІРёРј РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ РЅР°Р·РІР°РЅРёСЋ СЃРёРјРІРѕР»Р° glyph РёРЅРґРµРєСЃ:
+		// 1. РСЃРїРѕР»СЊР·СѓРµРј ppEncoding РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РёРјРµРЅРё СЃРёРјРІРѕР»Р° РІ РµРіРѕ РЅРѕРјРµСЂ
+		// 2. РСЃРїРѕР»СЊР·СѓРµРј pnCodeToGID РґР»СЏ РѕС‚РѕР±СЂР°Р¶РµРЅРёСЏ РЅРѕРјРµСЂР° СЃРёРјРІРѕР»Р° РІ glyph РёРЅРґРµРєСЃ
 		int nGlyphIndex = 0;
 		for (int nIndex = 255; nIndex >= 0; --nIndex)
 		{
@@ -1576,7 +1576,7 @@ namespace PdfReader
 			}
 		}
 
-		// Создаем новую таблицу 'loca'
+		// РЎРѕР·РґР°РµРј РЅРѕРІСѓСЋ С‚Р°Р±Р»РёС†Сѓ 'loca'
 		pLocaData = (unsigned char *)MemUtilsMallocArray(m_nGlyphs + 1, (m_nLocaFormat ? 4 : 2));
 		for (int nIndex = 0; nIndex <= m_nGlyphs; ++nIndex)
 		{
@@ -1595,7 +1595,7 @@ namespace PdfReader
 			}
 		}
 
-		// считаем число таблиц
+		// СЃС‡РёС‚Р°РµРј С‡РёСЃР»Рѕ С‚Р°Р±Р»РёС†
 		nNewTables = 0;
 		for (int nIndex = 0; nIndex < nT42Tables; ++nIndex)
 		{
@@ -1746,19 +1746,19 @@ namespace PdfReader
 			nPos += 16;
 		}
 
-		// вычисляем checksum и сохраняем ее в заголовке таблицы
+		// РІС‹С‡РёСЃР»СЏРµРј checksum Рё СЃРѕС…СЂР°РЅСЏРµРј РµРµ РІ Р·Р°РіРѕР»РѕРІРєРµ С‚Р°Р±Р»РёС†С‹
 		nChecksum = ComputeTableChecksum(arrTableDir, 12 + nNewTables * 16);
 		for (int nIndex = 0; nIndex < nNewTables; ++nIndex)
 		{
 			nChecksum += arrNewTables[nIndex].unChecksum;
 		}
-		nChecksum = 0xb1b0afba - nChecksum; // по спецификации TrueType
+		nChecksum = 0xb1b0afba - nChecksum; // РїРѕ СЃРїРµС†РёС„РёРєР°С†РёРё TrueType
 		pHeadData[8] = (unsigned char)(nChecksum >> 24);
 		pHeadData[9] = (unsigned char)(nChecksum >> 16);
 		pHeadData[10] = (unsigned char)(nChecksum >> 8);
 		pHeadData[11] = (unsigned char)nChecksum;
 
-		// начинаем писать массив sfnts
+		// РЅР°С‡РёРЅР°РµРј РїРёСЃР°С‚СЊ РјР°СЃСЃРёРІ sfnts
 		if (seName)
 		{
 			(*pOutputFunc)(pOutputStream, "/", 1);
@@ -1772,7 +1772,7 @@ namespace PdfReader
 
 		DumpString(arrTableDir, 12 + nNewTables * 16, pOutputFunc, pOutputStream);
 
-		// пишем таблицы
+		// РїРёС€РµРј С‚Р°Р±Р»РёС†С‹
 		for (int nIndex = 0; nIndex < nNewTables; ++nIndex)
 		{
 			if (t42HeadTable == nIndex)
@@ -1797,8 +1797,8 @@ namespace PdfReader
 			}
 			else
 			{
-				// nLength == 0 означает, что таблица не найдена, а ошибка уже была выдана 
-				// во время конструирования таблицы
+				// nLength == 0 РѕР·РЅР°С‡Р°РµС‚, С‡С‚Рѕ С‚Р°Р±Р»РёС†Р° РЅРµ РЅР°Р№РґРµРЅР°, Р° РѕС€РёР±РєР° СѓР¶Рµ Р±С‹Р»Р° РІС‹РґР°РЅР° 
+				// РІРѕ РІСЂРµРјСЏ РєРѕРЅСЃС‚СЂСѓРёСЂРѕРІР°РЅРёСЏ С‚Р°Р±Р»РёС†С‹
 				if ((nLength = arrNewTables[nIndex].nLen) > 0)
 				{
 					if ((nJ = SeekTable(t42Tables[nIndex].sTag)) >= 0 && CheckRegion(m_pTables[nJ].nOffset, m_pTables[nJ].nLen))
@@ -1818,7 +1818,7 @@ namespace PdfReader
 			}
 		}
 
-		// закончили писать массив sfnts
+		// Р·Р°РєРѕРЅС‡РёР»Рё РїРёСЃР°С‚СЊ РјР°СЃСЃРёРІ sfnts
 		(*pOutputFunc)(pOutputStream, "] def\n", 6);
 
 		MemUtilsFree(pLocaData);
@@ -1856,7 +1856,7 @@ namespace PdfReader
 				(*pOutputFunc)(pOutputStream, "00", 2);
 			}
 		}
-		// Добавляем дополнительный нулевой байт, по спецификации Adobe Type 42
+		// Р”РѕР±Р°РІР»СЏРµРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Р№ РЅСѓР»РµРІРѕР№ Р±Р°Р№С‚, РїРѕ СЃРїРµС†РёС„РёРєР°С†РёРё Adobe Type 42
 		(*pOutputFunc)(pOutputStream, "00>\n", 4);
 	}
 
@@ -1895,7 +1895,7 @@ namespace PdfReader
 
 		m_bSuccess = true;
 
-		// Проверяем является ли данный файл (TTC)
+		// РџСЂРѕРІРµСЂСЏРµРј СЏРІР»СЏРµС‚СЃСЏ Р»Рё РґР°РЅРЅС‹Р№ С„Р°Р№Р» (TTC)
 		unsigned int usTopTag = GetU32BE(0, &m_bSuccess);
 		if (!m_bSuccess)
 			return;
@@ -1909,12 +1909,12 @@ namespace PdfReader
 		else
 			nPos = 0;
 
-		// Проверяем sfnt версию
+		// РџСЂРѕРІРµСЂСЏРµРј sfnt РІРµСЂСЃРёСЋ
 		int nSfntVersion = GetU32BE(nPos, &m_bSuccess);
 		if (!m_bSuccess)
 			return;
 
-		// Проверяем на формат данных. CCF или нет?
+		// РџСЂРѕРІРµСЂСЏРµРј РЅР° С„РѕСЂРјР°С‚ РґР°РЅРЅС‹С…. CCF РёР»Рё РЅРµС‚?
 		m_bOpenTypeCFF = (nSfntVersion == 0x4f54544f); // 'OTTO'
 
 		m_nTablesCount = GetU16BE(nPos + 4, &m_bSuccess);
@@ -1939,14 +1939,14 @@ namespace PdfReader
 		if (!m_bSuccess)
 			return;
 
-		// ищем таблицы необходимые как и для TrueType так и для Type 42 
+		// РёС‰РµРј С‚Р°Р±Р»РёС†С‹ РЅРµРѕР±С…РѕРґРёРјС‹Рµ РєР°Рє Рё РґР»СЏ TrueType С‚Р°Рє Рё РґР»СЏ Type 42 
 		if (SeekTable("head") < 0 || SeekTable("hhea") < 0 || SeekTable("maxp") < 0 || SeekTable("hmtx") < 0 || (!m_bOpenTypeCFF && SeekTable("loca") < 0) || (!m_bOpenTypeCFF && SeekTable("glyf") < 0) || (m_bOpenTypeCFF && SeekTable("CFF ") < 0))
 		{
 			m_bSuccess = false;
 			return;
 		}
 
-		// читаем таблицы CMaps
+		// С‡РёС‚Р°РµРј С‚Р°Р±Р»РёС†С‹ CMaps
 		if ((nIndex = SeekTable("cmap")) >= 0)
 		{
 			nPos = m_pTables[nIndex].nOffset + 2;
@@ -1987,7 +1987,7 @@ namespace PdfReader
 		if (!m_bSuccess)
 			return;
 
-		// Проверяем корректность таблицы loca
+		// РџСЂРѕРІРµСЂСЏРµРј РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ С‚Р°Р±Р»РёС†С‹ loca
 		if (!m_bOpenTypeCFF)
 		{
 			nIndex = SeekTable("loca");
@@ -2014,7 +2014,7 @@ namespace PdfReader
 				return;
 		}
 
-		// Читаем таблицу post
+		// Р§РёС‚Р°РµРј С‚Р°Р±Р»РёС†Сѓ post
 		ReadPostTable();
 	}
 

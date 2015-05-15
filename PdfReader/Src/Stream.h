@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_STREAM_H
+п»ї#ifndef _PDF_READER_STREAM_H
 #define _PDF_READER_STREAM_H
 
 #include <stdio.h>
@@ -46,7 +46,7 @@ namespace PdfReader
 	};
 
 	//------------------------------------------------------------------------
-	// Stream (основной класс)
+	// Stream (РѕСЃРЅРѕРІРЅРѕР№ РєР»Р°СЃСЃ)
 	//------------------------------------------------------------------------
 
 	class Stream
@@ -57,7 +57,7 @@ namespace PdfReader
 
 		virtual ~Stream();
 
-		// Счетчик ссылок.
+		// РЎС‡РµС‚С‡РёРє СЃСЃС‹Р»РѕРє.
 		int AddRef()
 		{
 			return ++m_nRef;
@@ -67,49 +67,49 @@ namespace PdfReader
 			return --m_nRef;
 		}
 
-		// Тип потока.
+		// РўРёРї РїРѕС‚РѕРєР°.
 		virtual StreamType GetType() = 0;
 
-		// Сбрасываем все параметры(к начальным).
+		// РЎР±СЂР°СЃС‹РІР°РµРј РІСЃРµ РїР°СЂР°РјРµС‚СЂС‹(Рє РЅР°С‡Р°Р»СЊРЅС‹Рј).
 		virtual void Reset() = 0;
 
-		// Закрываем поток.
+		// Р—Р°РєСЂС‹РІР°РµРј РїРѕС‚РѕРє.
 		virtual void Close();
 
-		// Передвигаемся к следующему символу в потоке.
+		// РџРµСЂРµРґРІРёРіР°РµРјСЃСЏ Рє СЃР»РµРґСѓСЋС‰РµРјСѓ СЃРёРјРІРѕР»Сѓ РІ РїРѕС‚РѕРєРµ.
 		virtual int GetChar() = 0;
 
-		// Смотрим на следующий символ в потоке.
+		// РЎРјРѕС‚СЂРёРј РЅР° СЃР»РµРґСѓСЋС‰РёР№ СЃРёРјРІРѕР» РІ РїРѕС‚РѕРєРµ.
 		virtual int LookChar() = 0;
 
-		// GetChar буз использования Predictor.
-		// Используется только в StreamPredictor.
+		// GetChar Р±СѓР· РёСЃРїРѕР»СЊР·РѕРІР°РЅРёСЏ Predictor.
+		// РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С‚РѕР»СЊРєРѕ РІ StreamPredictor.
 		virtual int GetRawChar();
 
-		// Следующая строка в потоке.
+		// РЎР»РµРґСѓСЋС‰Р°СЏ СЃС‚СЂРѕРєР° РІ РїРѕС‚РѕРєРµ.
 		virtual char *GetLine(char *sBuffer, int nSize);
 
-		// Текущая позиция в потоке.
+		// РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ РІ РїРѕС‚РѕРєРµ.
 		virtual int GetPos() = 0;
 
-		// Устанавливаем текущую позицию в потоке. Если nDirection - 
-		// отрицательно, тогда позицию отсчитваем от конца потока, а 
-		// если положительно, тогда от начала.
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ РІ РїРѕС‚РѕРєРµ. Р•СЃР»Рё nDirection - 
+		// РѕС‚СЂРёС†Р°С‚РµР»СЊРЅРѕ, С‚РѕРіРґР° РїРѕР·РёС†РёСЋ РѕС‚СЃС‡РёС‚РІР°РµРј РѕС‚ РєРѕРЅС†Р° РїРѕС‚РѕРєР°, Р° 
+		// РµСЃР»Рё РїРѕР»РѕР¶РёС‚РµР»СЊРЅРѕ, С‚РѕРіРґР° РѕС‚ РЅР°С‡Р°Р»Р°.
 		virtual void SetPos(unsigned int unPos, int nDirection = 0) = 0;
 
-		// PostScript'ое название фильтра.
+		// PostScript'РѕРµ РЅР°Р·РІР°РЅРёРµ С„РёР»СЊС‚СЂР°.
 		virtual StringExt *GetPSFilter(int nPSLevel, char *sIndent);
 
-		// Может ли поток содержать непечатыемые символы?
+		// РњРѕР¶РµС‚ Р»Рё РїРѕС‚РѕРє СЃРѕРґРµСЂР¶Р°С‚СЊ РЅРµРїРµС‡Р°С‚С‹РµРјС‹Рµ СЃРёРјРІРѕР»С‹?
 		virtual bool IsBinary(bool bLast = true) = 0;
 
 		virtual BaseStream *GetBaseStream() = 0;
 
-		// Поток после последнего декодирования (это может быть BaseStream 
-		// или DecryptStream).
+		// РџРѕС‚РѕРє РїРѕСЃР»Рµ РїРѕСЃР»РµРґРЅРµРіРѕ РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ (СЌС‚Рѕ РјРѕР¶РµС‚ Р±С‹С‚СЊ BaseStream 
+		// РёР»Рё DecryptStream).
 		virtual Stream *GetUndecodedStream() = 0;
 
-		// Словарь связанный с данным потоком.
+		// РЎР»РѕРІР°СЂСЊ СЃРІСЏР·Р°РЅРЅС‹Р№ СЃ РґР°РЅРЅС‹Рј РїРѕС‚РѕРєРѕРј.
 		virtual Dict *GetDict() = 0;
 
 		// Encoding filter?
@@ -118,19 +118,19 @@ namespace PdfReader
 			return false;
 		}
 
-		// Получить параметры изображения, определенного содержимым данного потока.
+		// РџРѕР»СѓС‡РёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ, РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ СЃРѕРґРµСЂР¶РёРјС‹Рј РґР°РЅРЅРѕРіРѕ РїРѕС‚РѕРєР°.
 		virtual void GetImageParams(int *pnBitsPerComponent, StreamColorSpaceMode *peCSMode)
 		{
 		}
 
-		// Возвращется следующий поток из стека.
+		// Р’РѕР·РІСЂР°С‰РµС‚СЃСЏ СЃР»РµРґСѓСЋС‰РёР№ РїРѕС‚РѕРє РёР· СЃС‚РµРєР°.
 		virtual Stream *GetNextStream()
 		{
 			return NULL;
 		}
 
-		// Применяем фильтры к данному потоку, описанные в параметрах словаря.
-		// Возвращается новый поток.
+		// РџСЂРёРјРµРЅСЏРµРј С„РёР»СЊС‚СЂС‹ Рє РґР°РЅРЅРѕРјСѓ РїРѕС‚РѕРєСѓ, РѕРїРёСЃР°РЅРЅС‹Рµ РІ РїР°СЂР°РјРµС‚СЂР°С… СЃР»РѕРІР°СЂСЏ.
+		// Р’РѕР·РІСЂР°С‰Р°РµС‚СЃСЏ РЅРѕРІС‹Р№ РїРѕС‚РѕРє.
 		Stream *AddFilters(Object *pDict);
 
 	private:
@@ -139,14 +139,14 @@ namespace PdfReader
 
 	private:
 
-		int m_nRef; // счетчик ссылок
+		int m_nRef; // СЃС‡РµС‚С‡РёРє СЃСЃС‹Р»РѕРє
 
 	};
 
 	//------------------------------------------------------------------------
 	// BaseStream
 	//
-	// Это основной класс для всех потоков и чтения из файла.
+	// Р­С‚Рѕ РѕСЃРЅРѕРІРЅРѕР№ РєР»Р°СЃСЃ РґР»СЏ РІСЃРµС… РїРѕС‚РѕРєРѕРІ Рё С‡С‚РµРЅРёСЏ РёР· С„Р°Р№Р»Р°.
 	//------------------------------------------------------------------------
 
 	class BaseStream : public Stream
@@ -178,7 +178,7 @@ namespace PdfReader
 			return NULL;
 		}
 
-		// Запрашиваем/устанавливаем позицию первого байта в потоке файла.
+		// Р—Р°РїСЂР°С€РёРІР°РµРј/СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїРѕР·РёС†РёСЋ РїРµСЂРІРѕРіРѕ Р±Р°Р№С‚Р° РІ РїРѕС‚РѕРєРµ С„Р°Р№Р»Р°.
 		virtual unsigned int GetStartPos() = 0;
 		virtual void         SetStartPos(int nDelta) = 0;
 
@@ -190,7 +190,7 @@ namespace PdfReader
 	//------------------------------------------------------------------------
 	// FilterStream
 	//
-	// Это основной класс для всех потоков, к которым примене фильтр.
+	// Р­С‚Рѕ РѕСЃРЅРѕРІРЅРѕР№ РєР»Р°СЃСЃ РґР»СЏ РІСЃРµС… РїРѕС‚РѕРєРѕРІ, Рє РєРѕС‚РѕСЂС‹Рј РїСЂРёРјРµРЅРµ С„РёР»СЊС‚СЂ.
 	//------------------------------------------------------------------------
 
 	class FilterStream : public Stream
@@ -235,16 +235,16 @@ namespace PdfReader
 	{
 	public:
 
-		// Создаем Image object по картинке с заданными параметрами( тут имеются ввиду 
-		// реальные параметры картинки, а не те что могут прийти в Predictor).
+		// РЎРѕР·РґР°РµРј Image object РїРѕ РєР°СЂС‚РёРЅРєРµ СЃ Р·Р°РґР°РЅРЅС‹РјРё РїР°СЂР°РјРµС‚СЂР°РјРё( С‚СѓС‚ РёРјРµСЋС‚СЃСЏ РІРІРёРґСѓ 
+		// СЂРµР°Р»СЊРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ РєР°СЂС‚РёРЅРєРё, Р° РЅРµ С‚Рµ С‡С‚Рѕ РјРѕРіСѓС‚ РїСЂРёР№С‚Рё РІ Predictor).
 		ImageStream(Stream *pStream, int nWidth, int nComponents, int nBitsPerComponent);
 
 		~ImageStream();
 
 		void Reset();
 
-		// Считываем следующий пиксел из потока. pPixel должно указывать на место достаточное,
-		// для хранения как минимум m_nComponentsPerPixel элементов.
+		// РЎС‡РёС‚С‹РІР°РµРј СЃР»РµРґСѓСЋС‰РёР№ РїРёРєСЃРµР» РёР· РїРѕС‚РѕРєР°. pPixel РґРѕР»Р¶РЅРѕ СѓРєР°Р·С‹РІР°С‚СЊ РЅР° РјРµСЃС‚Рѕ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕРµ,
+		// РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РєР°Рє РјРёРЅРёРјСѓРј m_nComponentsPerPixel СЌР»РµРјРµРЅС‚РѕРІ.
 		bool GetPixel(unsigned char *pPixel);
 
 		unsigned char *GetNextLine();
@@ -253,25 +253,25 @@ namespace PdfReader
 
 	private:
 
-		Stream        *m_pStream;             // Основной поток
-		int            m_nWidth;              // Количество пикселей в строке
-		int            m_nComponentsPerPixel; // Количество компонент на один пиксел
-		int            m_nBitsPerComponent;   // Количество бит в компоненте
-		int            m_nComponentsPerLine;  // Количество компонент в одной строке
-		unsigned char *m_pLineBuffer;         // Буффер для одной строки изображения
-		int            m_nLinePos;            // Текущая позиция в m_pLineBuffer
+		Stream        *m_pStream;             // РћСЃРЅРѕРІРЅРѕР№ РїРѕС‚РѕРє
+		int            m_nWidth;              // РљРѕР»РёС‡РµСЃС‚РІРѕ РїРёРєСЃРµР»РµР№ РІ СЃС‚СЂРѕРєРµ
+		int            m_nComponentsPerPixel; // РљРѕР»РёС‡РµСЃС‚РІРѕ РєРѕРјРїРѕРЅРµРЅС‚ РЅР° РѕРґРёРЅ РїРёРєСЃРµР»
+		int            m_nBitsPerComponent;   // РљРѕР»РёС‡РµСЃС‚РІРѕ Р±РёС‚ РІ РєРѕРјРїРѕРЅРµРЅС‚Рµ
+		int            m_nComponentsPerLine;  // РљРѕР»РёС‡РµСЃС‚РІРѕ РєРѕРјРїРѕРЅРµРЅС‚ РІ РѕРґРЅРѕР№ СЃС‚СЂРѕРєРµ
+		unsigned char *m_pLineBuffer;         // Р‘СѓС„С„РµСЂ РґР»СЏ РѕРґРЅРѕР№ СЃС‚СЂРѕРєРё РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
+		int            m_nLinePos;            // РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ РІ m_pLineBuffer
 	};
 
 	//------------------------------------------------------------------------
-	// StreamPredictor (Predictor - дополнительный фильтр для картинок)
+	// StreamPredictor (Predictor - РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Р№ С„РёР»СЊС‚СЂ РґР»СЏ РєР°СЂС‚РёРЅРѕРє)
 	//------------------------------------------------------------------------
 
 	class StreamPredictor
 	{
 	public:
 
-		// Создаем Predictor object. Параметры, которые задаются здесь, могут  
-		// не совпадать с реальными параметрами картинки.
+		// РЎРѕР·РґР°РµРј Predictor object. РџР°СЂР°РјРµС‚СЂС‹, РєРѕС‚РѕСЂС‹Рµ Р·Р°РґР°СЋС‚СЃСЏ Р·РґРµСЃСЊ, РјРѕРіСѓС‚  
+		// РЅРµ СЃРѕРІРїР°РґР°С‚СЊ СЃ СЂРµР°Р»СЊРЅС‹РјРё РїР°СЂР°РјРµС‚СЂР°РјРё РєР°СЂС‚РёРЅРєРё.
 		StreamPredictor(Stream *pStream, int nPredictor, int nWidth, int nComponents, int nBitsPerComponent);
 
 		~StreamPredictor();
@@ -291,16 +291,16 @@ namespace PdfReader
 
 	private:
 
-		Stream *m_pStream;             // Основной поток
+		Stream *m_pStream;             // РћСЃРЅРѕРІРЅРѕР№ РїРѕС‚РѕРє
 		int     m_nPredictor;          // Predictor
-		int     m_nWidth;              // Количество пикселей в строке
-		int     m_nComponentsPerPixel; // Количество компонент на один пиксел
-		int     m_nBitsPerComponent;   // Количество бит в компоненте
-		int     m_nComponentsPerLine;  // Количество компонент в одной строке
-		int     m_nBytesPerPixel;      // Количество байт в одном пикселе
-		int     m_nBytesPerLine;       // Количество байт в строке
-		unsigned char *m_pLineBuffer;  // Буффер для одной строки изображения
-		int     m_nLinePos;            // Текущая позиция в m_pLineBuffer
+		int     m_nWidth;              // РљРѕР»РёС‡РµСЃС‚РІРѕ РїРёРєСЃРµР»РµР№ РІ СЃС‚СЂРѕРєРµ
+		int     m_nComponentsPerPixel; // РљРѕР»РёС‡РµСЃС‚РІРѕ РєРѕРјРїРѕРЅРµРЅС‚ РЅР° РѕРґРёРЅ РїРёРєСЃРµР»
+		int     m_nBitsPerComponent;   // РљРѕР»РёС‡РµСЃС‚РІРѕ Р±РёС‚ РІ РєРѕРјРїРѕРЅРµРЅС‚Рµ
+		int     m_nComponentsPerLine;  // РљРѕР»РёС‡РµСЃС‚РІРѕ РєРѕРјРїРѕРЅРµРЅС‚ РІ РѕРґРЅРѕР№ СЃС‚СЂРѕРєРµ
+		int     m_nBytesPerPixel;      // РљРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РІ РѕРґРЅРѕРј РїРёРєСЃРµР»Рµ
+		int     m_nBytesPerLine;       // РљРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РІ СЃС‚СЂРѕРєРµ
+		unsigned char *m_pLineBuffer;  // Р‘СѓС„С„РµСЂ РґР»СЏ РѕРґРЅРѕР№ СЃС‚СЂРѕРєРё РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
+		int     m_nLinePos;            // РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ РІ m_pLineBuffer
 
 		bool    m_bSuccess;
 	};
@@ -410,11 +410,11 @@ namespace PdfReader
 	//------------------------------------------------------------------------
 	// EmbedStream
 	//
-	// Специальный тип потока, используемый для внутренныих(внедренных) потоков
-	// (Inline images). Читаем напрямую из Base stream -- после удаления 
-	// EmbedStream, чтение из Base stream будет совершаться для  оставшейся части
-	// потока. Это соверешнно подругому, чем просто создать новый поток
-	// FileStream (используя MakeSubStream).
+	// РЎРїРµС†РёР°Р»СЊРЅС‹Р№ С‚РёРї РїРѕС‚РѕРєР°, РёСЃРїРѕР»СЊР·СѓРµРјС‹Р№ РґР»СЏ РІРЅСѓС‚СЂРµРЅРЅС‹РёС…(РІРЅРµРґСЂРµРЅРЅС‹С…) РїРѕС‚РѕРєРѕРІ
+	// (Inline images). Р§РёС‚Р°РµРј РЅР°РїСЂСЏРјСѓСЋ РёР· Base stream -- РїРѕСЃР»Рµ СѓРґР°Р»РµРЅРёСЏ 
+	// EmbedStream, С‡С‚РµРЅРёРµ РёР· Base stream Р±СѓРґРµС‚ СЃРѕРІРµСЂС€Р°С‚СЊСЃСЏ РґР»СЏ  РѕСЃС‚Р°РІС€РµР№СЃСЏ С‡Р°СЃС‚Рё
+	// РїРѕС‚РѕРєР°. Р­С‚Рѕ СЃРѕРІРµСЂРµС€РЅРЅРѕ РїРѕРґСЂСѓРіРѕРјСѓ, С‡РµРј РїСЂРѕСЃС‚Рѕ СЃРѕР·РґР°С‚СЊ РЅРѕРІС‹Р№ РїРѕС‚РѕРє
+	// FileStream (РёСЃРїРѕР»СЊР·СѓСЏ MakeSubStream).
 	//------------------------------------------------------------------------
 
 	class EmbedStream : public BaseStream
@@ -507,7 +507,7 @@ namespace PdfReader
 
 	private:
 
-		int  m_arrC[5]; // Имена массивов C и B взяты из спецификации
+		int  m_arrC[5]; // РРјРµРЅР° РјР°СЃСЃРёРІРѕРІ C Рё B РІР·СЏС‚С‹ РёР· СЃРїРµС†РёС„РёРєР°С†РёРё
 		int  m_arrB[4];
 		int  m_nIndex;
 		int  m_nCount;
@@ -543,25 +543,25 @@ namespace PdfReader
 
 	private:
 
-		StreamPredictor *m_pPredictor;         // Predictor (еще один дополнительный фильтр)
-		int              m_nEarlyChange;       // Параметр и словаря для LZW фильтра
-		bool             m_bEOF;               // Конец потока?
+		StreamPredictor *m_pPredictor;         // Predictor (РµС‰Рµ РѕРґРёРЅ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Р№ С„РёР»СЊС‚СЂ)
+		int              m_nEarlyChange;       // РџР°СЂР°РјРµС‚СЂ Рё СЃР»РѕРІР°СЂСЏ РґР»СЏ LZW С„РёР»СЊС‚СЂР°
+		bool             m_bEOF;               // РљРѕРЅРµС† РїРѕС‚РѕРєР°?
 		int              m_nInputBuffer;       // Input buffer
-		int              m_nInputBits;         // Количество бит в буффере
+		int              m_nInputBits;         // РљРѕР»РёС‡РµСЃС‚РІРѕ Р±РёС‚ РІ Р±СѓС„С„РµСЂРµ
 		struct
 		{
 			int           nLength;
 			int           nHead;
 			unsigned char unTail;
-		}  m_pTable[4097];       // Таблица для декодирования
-		int              m_nNextCode;          // Следующий код
-		int              m_nNextBits;          // Число бит в следующем коде
-		int              m_nPrevCode;          // Предыдущий код в потоке
-		int              m_nNewChar;           // Новый символ, который мы добавим в таблицу
-		unsigned char    m_arrCurBuffer[4097]; // Буффер для текущей последовательности
-		int              m_nCurLength;         // Длина текущей последовательности
-		int              m_nCurPos;            // Позиция в текущей последовательности
-		bool             m_bFirst;             // Является ли данный код первым после очищения таблицы
+		}  m_pTable[4097];       // РўР°Р±Р»РёС†Р° РґР»СЏ РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ
+		int              m_nNextCode;          // РЎР»РµРґСѓСЋС‰РёР№ РєРѕРґ
+		int              m_nNextBits;          // Р§РёСЃР»Рѕ Р±РёС‚ РІ СЃР»РµРґСѓСЋС‰РµРј РєРѕРґРµ
+		int              m_nPrevCode;          // РџСЂРµРґС‹РґСѓС‰РёР№ РєРѕРґ РІ РїРѕС‚РѕРєРµ
+		int              m_nNewChar;           // РќРѕРІС‹Р№ СЃРёРјРІРѕР», РєРѕС‚РѕСЂС‹Р№ РјС‹ РґРѕР±Р°РІРёРј РІ С‚Р°Р±Р»РёС†Сѓ
+		unsigned char    m_arrCurBuffer[4097]; // Р‘СѓС„С„РµСЂ РґР»СЏ С‚РµРєСѓС‰РµР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
+		int              m_nCurLength;         // Р”Р»РёРЅР° С‚РµРєСѓС‰РµР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
+		int              m_nCurPos;            // РџРѕР·РёС†РёСЏ РІ С‚РµРєСѓС‰РµР№ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕСЃС‚Рё
+		bool             m_bFirst;             // РЇРІР»СЏРµС‚СЃСЏ Р»Рё РґР°РЅРЅС‹Р№ РєРѕРґ РїРµСЂРІС‹Рј РїРѕСЃР»Рµ РѕС‡РёС‰РµРЅРёСЏ С‚Р°Р±Р»РёС†С‹
 	};
 
 	//------------------------------------------------------------------------
@@ -596,9 +596,9 @@ namespace PdfReader
 
 	private:
 
-		char  m_sBuffer[128];   // Буфер
-		char *m_pBufferPointer; // Указатель на следующий символ в буфере
-		char *m_pEndOfBuffer;   // Указатель на конец буфера
+		char  m_sBuffer[128];   // Р‘СѓС„РµСЂ
+		char *m_pBufferPointer; // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃР»РµРґСѓСЋС‰РёР№ СЃРёРјРІРѕР» РІ Р±СѓС„РµСЂРµ
+		char *m_pEndOfBuffer;   // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РєРѕРЅРµС† Р±СѓС„РµСЂР°
 		bool  m_bEOF;
 	};
 
@@ -643,23 +643,23 @@ namespace PdfReader
 
 	private:
 
-		int    m_nK;           // Параметр 'K', определяющий тип кодировки
-		bool   m_bEndOfLine;   // Параметр 'EndOfLine'
-		bool   m_bByteAlign;   // Параметр 'EncodedByteAlign'
-		int    m_nColumns;     // Параметр 'Columns'
-		int    m_nRows;        // Параметр 'Rows'
-		bool   m_bEndOfBlock;  // Параметр 'EndOfBlock'
-		bool   m_bBlackIs1;    // Параметр 'BlackIs1'
+		int    m_nK;           // РџР°СЂР°РјРµС‚СЂ 'K', РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ С‚РёРї РєРѕРґРёСЂРѕРІРєРё
+		bool   m_bEndOfLine;   // РџР°СЂР°РјРµС‚СЂ 'EndOfLine'
+		bool   m_bByteAlign;   // РџР°СЂР°РјРµС‚СЂ 'EncodedByteAlign'
+		int    m_nColumns;     // РџР°СЂР°РјРµС‚СЂ 'Columns'
+		int    m_nRows;        // РџР°СЂР°РјРµС‚СЂ 'Rows'
+		bool   m_bEndOfBlock;  // РџР°СЂР°РјРµС‚СЂ 'EndOfBlock'
+		bool   m_bBlackIs1;    // РџР°СЂР°РјРµС‚СЂ 'BlackIs1'
 
 		bool   m_bEOF;         // 
-		bool   m_bNextLine2D;  // True, если следующая строка использует кодировку 2D
-		int    m_mCurRow;      // Текущая строка
+		bool   m_bNextLine2D;  // True, РµСЃР»Рё СЃР»РµРґСѓСЋС‰Р°СЏ СЃС‚СЂРѕРєР° РёСЃРїРѕР»СЊР·СѓРµС‚ РєРѕРґРёСЂРѕРІРєСѓ 2D
+		int    m_mCurRow;      // РўРµРєСѓС‰Р°СЏ СЃС‚СЂРѕРєР°
 		int    m_nInputBuffer; // Input buffer
-		int    m_nInputBits;   // Количество бит в Input buffer
-		short *m_pRefLine;     // Ссылочная строка, меняющую элементы
-		int    m_nCurPosRL;    // Текущая позиция в m_pRefLine
-		short *m_pCodingLine;  // Кодирующая строка, меняющая элементы
-		int    m_nCurPosCL;    // Текущая позиция в m_pCodingLine 
+		int    m_nInputBits;   // РљРѕР»РёС‡РµСЃС‚РІРѕ Р±РёС‚ РІ Input buffer
+		short *m_pRefLine;     // РЎСЃС‹Р»РѕС‡РЅР°СЏ СЃС‚СЂРѕРєР°, РјРµРЅСЏСЋС‰СѓСЋ СЌР»РµРјРµРЅС‚С‹
+		int    m_nCurPosRL;    // РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ РІ m_pRefLine
+		short *m_pCodingLine;  // РљРѕРґРёСЂСѓСЋС‰Р°СЏ СЃС‚СЂРѕРєР°, РјРµРЅСЏСЋС‰Р°СЏ СЌР»РµРјРµРЅС‚С‹
+		int    m_nCurPosCL;    // РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ РІ m_pCodingLine 
 		int    m_nOutputBits;  //
 		int    m_nCharBuffer;  // 
 	};
@@ -670,31 +670,31 @@ namespace PdfReader
 
 	struct DCTCompInfo
 	{
-		int nID;            // ID данного элемента
-		int nXResolution;   // Разрешение по горизонтали
-		int nYResolution;   // Разрешение по вертикали
-		int nQuantTableNum; // Номер таблицы квантования
+		int nID;            // ID РґР°РЅРЅРѕРіРѕ СЌР»РµРјРµРЅС‚Р°
+		int nXResolution;   // Р Р°Р·СЂРµС€РµРЅРёРµ РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё
+		int nYResolution;   // Р Р°Р·СЂРµС€РµРЅРёРµ РїРѕ РІРµСЂС‚РёРєР°Р»Рё
+		int nQuantTableNum; // РќРѕРјРµСЂ С‚Р°Р±Р»РёС†С‹ РєРІР°РЅС‚РѕРІР°РЅРёСЏ
 		int nPrevDC;        // 
 	};
 
 	struct DCTScanInfo
 	{
-		bool arrbComponent[4];  // arrbComponent[i] = true, если i-ая компонента включена в даннуб структуру
-		int  nComponentsCount;  // количество компонент в данной структуре
-		int  arrDCHuffTable[4];	// номера таблиц DC Huffman
-		int  arrACHuffTable[4]; // номера таблиц AC Huffman
-		int  nFirstKoef;        // первый DCT коэффициент
-		int  nLastKoef;         // последний DCT коэффициент
+		bool arrbComponent[4];  // arrbComponent[i] = true, РµСЃР»Рё i-Р°СЏ РєРѕРјРїРѕРЅРµРЅС‚Р° РІРєР»СЋС‡РµРЅР° РІ РґР°РЅРЅСѓР± СЃС‚СЂСѓРєС‚СѓСЂСѓ
+		int  nComponentsCount;  // РєРѕР»РёС‡РµСЃС‚РІРѕ РєРѕРјРїРѕРЅРµРЅС‚ РІ РґР°РЅРЅРѕР№ СЃС‚СЂСѓРєС‚СѓСЂРµ
+		int  arrDCHuffTable[4];	// РЅРѕРјРµСЂР° С‚Р°Р±Р»РёС† DC Huffman
+		int  arrACHuffTable[4]; // РЅРѕРјРµСЂР° С‚Р°Р±Р»РёС† AC Huffman
+		int  nFirstKoef;        // РїРµСЂРІС‹Р№ DCT РєРѕСЌС„С„РёС†РёРµРЅС‚
+		int  nLastKoef;         // РїРѕСЃР»РµРґРЅРёР№ DCT РєРѕСЌС„С„РёС†РёРµРЅС‚
 		int  nApproxH;
 		int  nApproxL;
 	};
 
 	struct DCTHuffTable
 	{
-		unsigned char  arrunFirstSymbol[17]; // Первый символ в данной группе
-		unsigned short arrunFirstCode[17];   // Первый код в данной группе
-		unsigned short arrunCodesCount[17];  // Количество кодов в данной группе
-		unsigned char  arrunSymbols[256];    // Сами символы
+		unsigned char  arrunFirstSymbol[17]; // РџРµСЂРІС‹Р№ СЃРёРјРІРѕР» РІ РґР°РЅРЅРѕР№ РіСЂСѓРїРїРµ
+		unsigned short arrunFirstCode[17];   // РџРµСЂРІС‹Р№ РєРѕРґ РІ РґР°РЅРЅРѕР№ РіСЂСѓРїРїРµ
+		unsigned short arrunCodesCount[17];  // РљРѕР»РёС‡РµСЃС‚РІРѕ РєРѕРґРѕРІ РІ РґР°РЅРЅРѕР№ РіСЂСѓРїРїРµ
+		unsigned char  arrunSymbols[256];    // РЎР°РјРё СЃРёРјРІРѕР»С‹
 	};
 
 	class DCTStream : public FilterStream
@@ -745,44 +745,44 @@ namespace PdfReader
 
 	private:
 
-		bool           m_bProgressive;          // True, если мод progressive
-		bool           m_bInterleaved;          // True, если мод interleaved
-		int            m_nWidth;                // ширина изображения
-		int            m_nHeight;               // высота изображения
-		int            m_nMCUWidth;             // ширина min coding unit(MCU)
-		int            m_nMCUHeight;            // высота min coding unit(MCU)
-		int            m_nBufferWidth;          // ширина FrameBuffer
-		int            m_nBufferHeight;         // высота FrameBuffer
-		DCTCompInfo    m_arrCompInfo[4];	      // Структура Info для каждой компоненты
-		DCTScanInfo    m_oCurScanInfo;          // Структура Info для текущего Scan
-		int            m_nComponentsCount;      // Количество компонент изображения
-		int            m_nColorTransform;       // Преобразования пространства цветов:
-		// -1 = непоределено
-		//  0 = нет преобразования
+		bool           m_bProgressive;          // True, РµСЃР»Рё РјРѕРґ progressive
+		bool           m_bInterleaved;          // True, РµСЃР»Рё РјРѕРґ interleaved
+		int            m_nWidth;                // С€РёСЂРёРЅР° РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
+		int            m_nHeight;               // РІС‹СЃРѕС‚Р° РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
+		int            m_nMCUWidth;             // С€РёСЂРёРЅР° min coding unit(MCU)
+		int            m_nMCUHeight;            // РІС‹СЃРѕС‚Р° min coding unit(MCU)
+		int            m_nBufferWidth;          // С€РёСЂРёРЅР° FrameBuffer
+		int            m_nBufferHeight;         // РІС‹СЃРѕС‚Р° FrameBuffer
+		DCTCompInfo    m_arrCompInfo[4];	      // РЎС‚СЂСѓРєС‚СѓСЂР° Info РґР»СЏ РєР°Р¶РґРѕР№ РєРѕРјРїРѕРЅРµРЅС‚С‹
+		DCTScanInfo    m_oCurScanInfo;          // РЎС‚СЂСѓРєС‚СѓСЂР° Info РґР»СЏ С‚РµРєСѓС‰РµРіРѕ Scan
+		int            m_nComponentsCount;      // РљРѕР»РёС‡РµСЃС‚РІРѕ РєРѕРјРїРѕРЅРµРЅС‚ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
+		int            m_nColorTransform;       // РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІР° С†РІРµС‚РѕРІ:
+		// -1 = РЅРµРїРѕСЂРµРґРµР»РµРЅРѕ
+		//  0 = РЅРµС‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ
 		//  1 = YUV/YUVK -> RGB/CMYK
-		bool           m_bJFIFMarker;           // True, если есть маркер APP0 JFIF 
-		bool           m_bAdobeMarker;          // True, если есть маркер APP14 Adobe 
-		int            m_nRestartInterval;      // в MCU
-		unsigned short m_arrQuantTables[4][64]; // Таблицы квантования
-		int            m_nQuantTablesCount;     // количество таблицы квантования
-		DCTHuffTable   m_arrDCHuffTables[4];    // Таблицы DC Huffman
-		DCTHuffTable   m_arrACHuffTables[4];    // Таблицы AC Huffman
-		int            m_nDCHuffTablesCount;    // Количество таблиц DC Huffman
-		int            m_nACHuffTablesCount;    // Количество таблиц AC Huffman
-		unsigned char *m_pppRowBuffer[4][32];   // Буфер для MCU (non-progressive mode)
-		int           *m_ppFrameBuffer[4];      // Буфер для фрэйма (progressive mode)
+		bool           m_bJFIFMarker;           // True, РµСЃР»Рё РµСЃС‚СЊ РјР°СЂРєРµСЂ APP0 JFIF 
+		bool           m_bAdobeMarker;          // True, РµСЃР»Рё РµСЃС‚СЊ РјР°СЂРєРµСЂ APP14 Adobe 
+		int            m_nRestartInterval;      // РІ MCU
+		unsigned short m_arrQuantTables[4][64]; // РўР°Р±Р»РёС†С‹ РєРІР°РЅС‚РѕРІР°РЅРёСЏ
+		int            m_nQuantTablesCount;     // РєРѕР»РёС‡РµСЃС‚РІРѕ С‚Р°Р±Р»РёС†С‹ РєРІР°РЅС‚РѕРІР°РЅРёСЏ
+		DCTHuffTable   m_arrDCHuffTables[4];    // РўР°Р±Р»РёС†С‹ DC Huffman
+		DCTHuffTable   m_arrACHuffTables[4];    // РўР°Р±Р»РёС†С‹ AC Huffman
+		int            m_nDCHuffTablesCount;    // РљРѕР»РёС‡РµСЃС‚РІРѕ С‚Р°Р±Р»РёС† DC Huffman
+		int            m_nACHuffTablesCount;    // РљРѕР»РёС‡РµСЃС‚РІРѕ С‚Р°Р±Р»РёС† AC Huffman
+		unsigned char *m_pppRowBuffer[4][32];   // Р‘СѓС„РµСЂ РґР»СЏ MCU (non-progressive mode)
+		int           *m_ppFrameBuffer[4];      // Р‘СѓС„РµСЂ РґР»СЏ С„СЂСЌР№РјР° (progressive mode)
 
-		int            m_nCurComponent;         // Текущие параметры для кртинки/MCU
+		int            m_nCurComponent;         // РўРµРєСѓС‰РёРµ РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ РєСЂС‚РёРЅРєРё/MCU
 		int            m_nX;                    //
 		int            m_nY;                    //
 		int            m_nDY;                   //
 
-		int            m_nRestartCtr;           // количество оставишхся MCU до рестарта
+		int            m_nRestartCtr;           // РєРѕР»РёС‡РµСЃС‚РІРѕ РѕСЃС‚Р°РІРёС€С…СЃСЏ MCU РґРѕ СЂРµСЃС‚Р°СЂС‚Р°
 		int            m_nRestartMarker;        //
-		int            m_nEOBRun;               // количество оставшихся EOB(end-of-block) в текущей группе
+		int            m_nEOBRun;               // РєРѕР»РёС‡РµСЃС‚РІРѕ РѕСЃС‚Р°РІС€РёС…СЃСЏ EOB(end-of-block) РІ С‚РµРєСѓС‰РµР№ РіСЂСѓРїРїРµ
 
-		int            m_nInputBuffer;          // Буфер для кодов разной длины
-		int            m_nInputBits;            // Число корректных бит в Input buffer
+		int            m_nInputBuffer;          // Р‘СѓС„РµСЂ РґР»СЏ РєРѕРґРѕРІ СЂР°Р·РЅРѕР№ РґР»РёРЅС‹
+		int            m_nInputBits;            // Р§РёСЃР»Рѕ РєРѕСЂСЂРµРєС‚РЅС‹С… Р±РёС‚ РІ Input buffer
 
 	};
 
@@ -790,7 +790,7 @@ namespace PdfReader
 	// FlateZlibStream
 	//------------------------------------------------------------------------
 
-#define flateZlibWindow             32768   // Размер буфера
+#define flateZlibWindow             32768   // Р Р°Р·РјРµСЂ Р±СѓС„РµСЂР°
 #define flateZlibMask               32767   // (flateZlibWindow - 1)
 
 	class FlateZlibStream : public FilterStream
@@ -816,15 +816,15 @@ namespace PdfReader
 
 	private:
 
-		z_stream          m_oZStream;                     // Zlib поток 
+		z_stream          m_oZStream;                     // Zlib РїРѕС‚РѕРє 
 		StreamPredictor  *m_pPredictor;                   // Predictor
-		unsigned int      m_nInSize;                      // Размер входного буффера
-		unsigned char     m_arrInBuffer[flateZlibWindow]; // Входной буффер
-		unsigned char     m_arrBuffer[flateZlibWindow];   // Буфер для результата декодирования
-		int               m_nBufferCurPos;                // Текущая позиция в буфере
-		int               m_nRemain;                      // Число корректных байт в буфере
-		bool              m_bEndOfBlock;                  // True, когда достигли конца блока
-		bool              m_bEOF;                         // True, когда достигли конца потока
+		unsigned int      m_nInSize;                      // Р Р°Р·РјРµСЂ РІС…РѕРґРЅРѕРіРѕ Р±СѓС„С„РµСЂР°
+		unsigned char     m_arrInBuffer[flateZlibWindow]; // Р’С…РѕРґРЅРѕР№ Р±СѓС„С„РµСЂ
+		unsigned char     m_arrBuffer[flateZlibWindow];   // Р‘СѓС„РµСЂ РґР»СЏ СЂРµР·СѓР»СЊС‚Р°С‚Р° РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ
+		int               m_nBufferCurPos;                // РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ РІ Р±СѓС„РµСЂРµ
+		int               m_nRemain;                      // Р§РёСЃР»Рѕ РєРѕСЂСЂРµРєС‚РЅС‹С… Р±Р°Р№С‚ РІ Р±СѓС„РµСЂРµ
+		bool              m_bEndOfBlock;                  // True, РєРѕРіРґР° РґРѕСЃС‚РёРіР»Рё РєРѕРЅС†Р° Р±Р»РѕРєР°
+		bool              m_bEOF;                         // True, РєРѕРіРґР° РґРѕСЃС‚РёРіР»Рё РєРѕРЅС†Р° РїРѕС‚РѕРєР°
 	};
 
 
@@ -832,29 +832,29 @@ namespace PdfReader
 	// FlateStream
 	//------------------------------------------------------------------------
 
-#define flateWindow             32768   // Размер буфера
+#define flateWindow             32768   // Р Р°Р·РјРµСЂ Р±СѓС„РµСЂР°
 #define flateMask               (flateWindow-1)
-#define flateMaxHuffman         15      // макимальная длина кода Huffman
+#define flateMaxHuffman         15      // РјР°РєРёРјР°Р»СЊРЅР°СЏ РґР»РёРЅР° РєРѕРґР° Huffman
 #define flateMaxCodeLenCodes    19      // max # code length codes
 #define flateMaxLitCodes        288     // max # literal codes
 #define flateMaxDistCodes       30      // max # distance codes
 
 	struct FlateHuffmanCode
 	{
-		unsigned short nLength;   // длина кода в битах
-		unsigned short nValue;    // значение данного коду
+		unsigned short nLength;   // РґР»РёРЅР° РєРѕРґР° РІ Р±РёС‚Р°С…
+		unsigned short nValue;    // Р·РЅР°С‡РµРЅРёРµ РґР°РЅРЅРѕРіРѕ РєРѕРґСѓ
 	};
 
 	struct FlateHuffmanTable
 	{
-		FlateHuffmanCode *pCodes;  // таблица кодов
-		int               nMaxLen; // макимальная длина кода
+		FlateHuffmanCode *pCodes;  // С‚Р°Р±Р»РёС†Р° РєРѕРґРѕРІ
+		int               nMaxLen; // РјР°РєРёРјР°Р»СЊРЅР°СЏ РґР»РёРЅР° РєРѕРґР°
 	};
 
 	struct FlateDecode
 	{
-		int nExtraBitsCount; // количество дополнительных бит
-		int nFirst;          // первая длина
+		int nExtraBitsCount; // РєРѕР»РёС‡РµСЃС‚РІРѕ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹С… Р±РёС‚
+		int nFirst;          // РїРµСЂРІР°СЏ РґР»РёРЅР°
 	};
 
 	class FlateStream : public FilterStream
@@ -887,18 +887,18 @@ namespace PdfReader
 	private:
 
 		StreamPredictor  *m_pPredictor;              // Predictor
-		unsigned char     m_arrBuffer[flateWindow];  // Буфер для результата декодирования
-		int               m_nBufferCurPos;           // Текущая позиция в буфере
-		int               m_nRemain;                 // Число корректных байт в буфере
-		int               m_nCodeBuffer;             // Бефер исходных кодов
-		int               m_nCodeSize;               // Число бит в m_nCodeBuffer
-		int				  m_arrCodeLengths[flateMaxLitCodes + flateMaxDistCodes]; // Длины кодов(и для самих слов и для расстояний)
-		FlateHuffmanTable m_oLiteratCodeTable;       // Таблица буквенных кодов
-		FlateHuffmanTable m_oDistanceCodeTable;      // Таблица кодов-расстояний
-		bool              m_bCompressedBlock;        // True, если читаем сжатый блок
-		int               m_nUncompBlockLen;         // Оставшаяся длина несжатого блока
-		bool              m_bEndOfBlock;             // True, когда достигли конца блока
-		bool              m_bEOF;                    // True, когда достигли конца потока
+		unsigned char     m_arrBuffer[flateWindow];  // Р‘СѓС„РµСЂ РґР»СЏ СЂРµР·СѓР»СЊС‚Р°С‚Р° РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ
+		int               m_nBufferCurPos;           // РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ РІ Р±СѓС„РµСЂРµ
+		int               m_nRemain;                 // Р§РёСЃР»Рѕ РєРѕСЂСЂРµРєС‚РЅС‹С… Р±Р°Р№С‚ РІ Р±СѓС„РµСЂРµ
+		int               m_nCodeBuffer;             // Р‘РµС„РµСЂ РёСЃС…РѕРґРЅС‹С… РєРѕРґРѕРІ
+		int               m_nCodeSize;               // Р§РёСЃР»Рѕ Р±РёС‚ РІ m_nCodeBuffer
+		int				  m_arrCodeLengths[flateMaxLitCodes + flateMaxDistCodes]; // Р”Р»РёРЅС‹ РєРѕРґРѕРІ(Рё РґР»СЏ СЃР°РјРёС… СЃР»РѕРІ Рё РґР»СЏ СЂР°СЃСЃС‚РѕСЏРЅРёР№)
+		FlateHuffmanTable m_oLiteratCodeTable;       // РўР°Р±Р»РёС†Р° Р±СѓРєРІРµРЅРЅС‹С… РєРѕРґРѕРІ
+		FlateHuffmanTable m_oDistanceCodeTable;      // РўР°Р±Р»РёС†Р° РєРѕРґРѕРІ-СЂР°СЃСЃС‚РѕСЏРЅРёР№
+		bool              m_bCompressedBlock;        // True, РµСЃР»Рё С‡РёС‚Р°РµРј СЃР¶Р°С‚С‹Р№ Р±Р»РѕРє
+		int               m_nUncompBlockLen;         // РћСЃС‚Р°РІС€Р°СЏСЃСЏ РґР»РёРЅР° РЅРµСЃР¶Р°С‚РѕРіРѕ Р±Р»РѕРєР°
+		bool              m_bEndOfBlock;             // True, РєРѕРіРґР° РґРѕСЃС‚РёРіР»Рё РєРѕРЅС†Р° Р±Р»РѕРєР°
+		bool              m_bEOF;                    // True, РєРѕРіРґР° РґРѕСЃС‚РёРіР»Рё РєРѕРЅС†Р° РїРѕС‚РѕРєР°
 
 		static int               m_arrCodeLenCodeMap[flateMaxCodeLenCodes]; // 
 		static FlateDecode       m_arrLengthDecode[flateMaxLitCodes - 257];   // 

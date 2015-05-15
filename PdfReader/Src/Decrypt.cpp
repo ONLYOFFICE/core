@@ -1,4 +1,4 @@
-#include <string.h>
+п»ї#include <string.h>
 #include "MemoryUtils.h"
 #include "Decrypt.h"
 
@@ -25,7 +25,7 @@ namespace PdfReader
 
 	bool Decrypt::MakeFileKey(int nEncVersion, int nEncRevision, int nKeyLength, StringExt *seOwnerKey, StringExt *seUserKey, int nPermissions, StringExt *seFileID, StringExt *seOwnerPassword, StringExt *seUserPassword, unsigned char *sFileKey, bool bEncryptMetadata, bool *pbOwnerPasswordValid)
 	{
-		// Попытаемся, используя пароль владельца, сгенерировать пользовательский пароль
+		// РџРѕРїС‹С‚Р°РµРјСЃСЏ, РёСЃРїРѕР»СЊР·СѓСЏ РїР°СЂРѕР»СЊ РІР»Р°РґРµР»СЊС†Р°, СЃРіРµРЅРµСЂРёСЂРѕРІР°С‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёР№ РїР°СЂРѕР»СЊ
 		*pbOwnerPasswordValid = false;
 		if (seOwnerPassword)
 		{
@@ -89,7 +89,7 @@ namespace PdfReader
 			delete seUserPassword2;
 		}
 
-		// Попытаемся использовать пользовательский пароль
+		// РџРѕРїС‹С‚Р°РµРјСЃСЏ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёР№ РїР°СЂРѕР»СЊ
 		return MakeFileKey2(nEncVersion, nEncRevision, nKeyLength, seOwnerKey, seUserKey, nPermissions, seFileID, seUserPassword, sFileKey, bEncryptMetadata);
 	}
 
@@ -430,7 +430,7 @@ namespace PdfReader
 
 	static unsigned int c_arrRCon[11] =
 	{
-		0x00000000, // не используется
+		0x00000000, // РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 		0x01000000,
 		0x02000000,
 		0x04000000,
@@ -567,7 +567,7 @@ namespace PdfReader
 
 	static void AESKeyExpansion(DecryptAESState *pState, unsigned char *sObjectKey, int nObjectKeyLen)
 	{
-		//Предполагается, что nObjectKeyLen == 16
+		//РџСЂРµРґРїРѕР»Р°РіР°РµС‚СЃСЏ, С‡С‚Рѕ nObjectKeyLen == 16
 
 		for (int nIndex = 0; nIndex < 4; ++nIndex)
 		{
@@ -590,7 +590,7 @@ namespace PdfReader
 
 	static void AESDecryptBlock(DecryptAESState *pState, unsigned char *sIn, bool bLast)
 	{
-		// Начальное состояние
+		// РќР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ
 		for (int nChar = 0; nChar < 4; ++nChar)
 		{
 			pState->sState[nChar + 0] = sIn[4 * nChar + 0];
@@ -625,7 +625,7 @@ namespace PdfReader
 			pState->sBuffer[4 * nChar + 3] = pState->sState[nChar + 12] ^ pState->sCBC[4 * nChar + 3];
 		}
 
-		// сохраняем блок с следующий CBC
+		// СЃРѕС…СЂР°РЅСЏРµРј Р±Р»РѕРє СЃ СЃР»РµРґСѓСЋС‰РёР№ CBC
 		for (int nIndex = 0; nIndex < 16; ++nIndex)
 		{
 			pState->sCBC[nIndex] = sIn[nIndex];
@@ -680,11 +680,11 @@ namespace PdfReader
 		unsigned long a, b, c, d, aa, bb, cc, dd;
 		int i, j, k;
 
-		// Вычислим количество блоков 64x64
+		// Р’С‹С‡РёСЃР»РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р»РѕРєРѕРІ 64x64
 		// ( nMessageLen + pad byte (0x80) + 8 bytes for length )
 		int nBlocksCount = (nMessageLen + 1 + 8 + 63) / 64;
 
-		// Инициализируем a, b, c, d
+		// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј a, b, c, d
 		a = 0x67452301;
 		b = 0xefcdab89;
 		c = 0x98badcfe;
@@ -693,7 +693,7 @@ namespace PdfReader
 		k = 0;
 		for (i = 0; i < nBlocksCount; ++i)
 		{
-			// Считываем один блок
+			// РЎС‡РёС‚С‹РІР°РµРј РѕРґРёРЅ Р±Р»РѕРє
 			for (j = 0; j < 16 && k < nMessageLen - 3; ++j, k += 4)
 				x[j] = (((((sMessage[k + 3] << 8) + sMessage[k + 2]) << 8) + sMessage[k + 1]) << 8) + sMessage[k];
 			if (i == nBlocksCount - 1)
@@ -712,7 +712,7 @@ namespace PdfReader
 				x[14] = nMessageLen << 3;
 			}
 
-			// Сохраняем a, b, c, d
+			// РЎРѕС…СЂР°РЅСЏРµРј a, b, c, d
 			aa = a;
 			bb = b;
 			cc = c;
@@ -790,14 +790,14 @@ namespace PdfReader
 			c = MD5Round4(c, d, a, b, x[2], 15, 0x2ad7d2bb);
 			b = MD5Round4(b, c, d, a, x[9], 21, 0xeb86d391);
 
-			// Увеличиваем a, b, c, d
+			// РЈРІРµР»РёС‡РёРІР°РµРј a, b, c, d
 			a += aa;
 			b += bb;
 			c += cc;
 			d += dd;
 		}
 
-		// Разбиваем sDigest на байты
+		// Р Р°Р·Р±РёРІР°РµРј sDigest РЅР° Р±Р°Р№С‚С‹
 		sDigest[0]  = (unsigned char)(a & 0xff);
 		sDigest[1]  = (unsigned char)((a >>= 8) & 0xff);
 		sDigest[2]  = (unsigned char)((a >>= 8) & 0xff);

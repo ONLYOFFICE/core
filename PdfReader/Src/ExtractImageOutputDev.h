@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_EXTRACT_IMAGE_OUTPUTDEV_H
+п»ї#ifndef _PDF_READER_EXTRACT_IMAGE_OUTPUTDEV_H
 #define _PDF_READER_EXTRACT_IMAGE_OUTPUTDEV_H
 
 #include <stdio.h>
@@ -36,7 +36,7 @@ namespace PdfReader
 		}
 
 
-		// Информация об устройстве.
+		// РРЅС„РѕСЂРјР°С†РёСЏ РѕР± СѓСЃС‚СЂРѕР№СЃС‚РІРµ.
 		virtual bool UpSideDown()
 		{
 			return false;
@@ -52,7 +52,7 @@ namespace PdfReader
 
 		// 
 
-		int ExtractImageOutputDev::GetImagesCount()
+		int GetImagesCount()
 		{
 			return m_nImageCount;
 		}
@@ -62,8 +62,8 @@ namespace PdfReader
 		char *m_sFilePrefix;  // 
 		char *m_sFileName;    // 
 		bool  m_bDumpJPEG;    // 
-		int   m_nImageCount;  // Текущее количество изображений
-		bool  m_bCountImages; // Считаем картинки
+		int   m_nImageCount;  // РўРµРєСѓС‰РµРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РёР·РѕР±СЂР°Р¶РµРЅРёР№
+		bool  m_bCountImages; // РЎС‡РёС‚Р°РµРј РєР°СЂС‚РёРЅРєРё
 
 		bool  m_bValid;
 	};

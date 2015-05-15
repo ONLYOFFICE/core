@@ -1,4 +1,4 @@
-#include <stdio.h>
+п»ї#include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <ctype.h>
@@ -113,7 +113,7 @@ namespace PdfReader
 			pStream = ((DCTStream *)pStream)->GetRawStream();
 			pStream->Reset();
 
-			// Копируем поток в файл
+			// РљРѕРїРёСЂСѓРµРј РїРѕС‚РѕРє РІ С„Р°Р№Р»
 			int nChar = 0;
 			while ((nChar = pStream->GetChar()) != EOF)
 				fputc(nChar, pFile);
@@ -190,7 +190,7 @@ namespace PdfReader
 
 			pStream->Reset();
 
-			// Копируем поток в файл
+			// РљРѕРїРёСЂСѓРµРј РїРѕС‚РѕРє РІ С„Р°Р№Р»
 			int nSize = nHeight * ((nWidth + 7) / 8);
 
 			unsigned char *pBuffer = new unsigned char[nSize];
@@ -248,7 +248,7 @@ namespace PdfReader
 			pStream = ((DCTStream *)pStream)->GetRawStream();
 			pStream->Reset();
 
-			// Копируем поток в файл
+			// РљРѕРїРёСЂСѓРµРј РїРѕС‚РѕРє РІ С„Р°Р№Р»
 			int nChar = 0;
 			while ((nChar = pStream->GetChar()) != EOF)
 				fputc(nChar, pFile);
@@ -323,7 +323,7 @@ namespace PdfReader
 
 			pStream->Reset();
 
-			// Копируем поток в файл
+			// РљРѕРїРёСЂСѓРµРј РїРѕС‚РѕРє РІ С„Р°Р№Р»
 			int nSize = nHeight * ((nWidth + 7) / 8);
 
 			unsigned char *pBuffer = new unsigned char[nSize];

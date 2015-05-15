@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_LEXER_H
+п»ї#ifndef _PDF_READER_LEXER_H
 #define _PDF_READER_LEXER_H
 
 #include "Object.h"
@@ -18,21 +18,21 @@ namespace PdfReader
 	{
 	public:
 
-		// Конструктор для одного потока. Удаляем этот поток в деструкторе.
+		// РљРѕРЅСЃС‚СЂСѓРєС‚РѕСЂ РґР»СЏ РѕРґРЅРѕРіРѕ РїРѕС‚РѕРєР°. РЈРґР°Р»СЏРµРј СЌС‚РѕС‚ РїРѕС‚РѕРє РІ РґРµСЃС‚СЂСѓРєС‚РѕСЂРµ.
 		Lexer(XRef *pXref, Stream *pStream);
 
-		// Конструкор для одного потока или массива потоков.
+		// РљРѕРЅСЃС‚СЂСѓРєРѕСЂ РґР»СЏ РѕРґРЅРѕРіРѕ РїРѕС‚РѕРєР° РёР»Рё РјР°СЃСЃРёРІР° РїРѕС‚РѕРєРѕРІ.
 		Lexer(XRef *pXref, Object *pObject);
 
 		~Lexer();
 
-		// Считваем следующий объект из потока.
+		// РЎС‡РёС‚РІР°РµРј СЃР»РµРґСѓСЋС‰РёР№ РѕР±СЉРµРєС‚ РёР· РїРѕС‚РѕРєР°.
 		Object *GetObject(Object *obj);
 
-		// Переходим к началу новой строки.
+		// РџРµСЂРµС…РѕРґРёРј Рє РЅР°С‡Р°Р»Сѓ РЅРѕРІРѕР№ СЃС‚СЂРѕРєРё.
 		void SkipToNextLine();
 
-		// Переходим к следующему символу.
+		// РџРµСЂРµС…РѕРґРёРј Рє СЃР»РµРґСѓСЋС‰РµРјСѓ СЃРёРјРІРѕР»Сѓ.
 		void SkipChar()
 		{
 			GetChar();
@@ -44,8 +44,8 @@ namespace PdfReader
 			return m_oCurStream.IsNone() ? (Stream *)NULL : m_oCurStream.GetStream();
 		}
 
-		// Текущая позиция. Используется только для сообщений об ошибке, поэтому
-		// возвращаемое значение типа int, а не unsigned int.
+		// РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ. РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С‚РѕР»СЊРєРѕ РґР»СЏ СЃРѕРѕР±С‰РµРЅРёР№ РѕР± РѕС€РёР±РєРµ, РїРѕСЌС‚РѕРјСѓ
+		// РІРѕР·РІСЂР°С‰Р°РµРјРѕРµ Р·РЅР°С‡РµРЅРёРµ С‚РёРїР° int, Р° РЅРµ unsigned int.
 		int GetPos()
 		{
 			return m_oCurStream.IsNone() ? -1 : (int)m_oCurStream.StreamGetPos();
@@ -58,7 +58,7 @@ namespace PdfReader
 				m_oCurStream.StreamSetPos(unPos, nDir);
 		}
 
-		// Проверяем является ли nChar пробелом.
+		// РџСЂРѕРІРµСЂСЏРµРј СЏРІР»СЏРµС‚СЃСЏ Р»Рё nChar РїСЂРѕР±РµР»РѕРј.
 		static bool IsSpace(int nChar);
 
 	private:
@@ -68,10 +68,10 @@ namespace PdfReader
 
 	private:
 
-		Array *m_pStreams;        // Массив потоков
-		int    m_nCurStreamIndex; // Номер текущего потока
-		Object m_oCurStream;      // Текущий поток
-		bool   m_bFreeArray;      // Должны ли мы в данном классе осовбождать массив потоков?
+		Array *m_pStreams;        // РњР°СЃСЃРёРІ РїРѕС‚РѕРєРѕРІ
+		int    m_nCurStreamIndex; // РќРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ РїРѕС‚РѕРєР°
+		Object m_oCurStream;      // РўРµРєСѓС‰РёР№ РїРѕС‚РѕРє
+		bool   m_bFreeArray;      // Р”РѕР»Р¶РЅС‹ Р»Рё РјС‹ РІ РґР°РЅРЅРѕРј РєР»Р°СЃСЃРµ РѕСЃРѕРІР±РѕР¶РґР°С‚СЊ РјР°СЃСЃРёРІ РїРѕС‚РѕРєРѕРІ?
 		char   m_sTempBuffer[TokenBufferSize];	// Buffer
 	};
 }

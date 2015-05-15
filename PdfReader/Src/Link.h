@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_LINK_H
+п»ї#ifndef _PDF_READER_LINK_H
 #define _PDF_READER_LINK_H
 
 #include "Object.h"
@@ -16,8 +16,8 @@ namespace PdfReader
 	enum LinkActionType
 	{
 		actionGoTo,        // Go to destination
-		actionGoToR,       // Go to destination в новом файле
-		actionLaunch,      // Запускаем приложение (или открываем документ)
+		actionGoToR,       // Go to destination РІ РЅРѕРІРѕРј С„Р°Р№Р»Рµ
+		actionLaunch,      // Р—Р°РїСѓСЃРєР°РµРј РїСЂРёР»РѕР¶РµРЅРёРµ (РёР»Рё РѕС‚РєСЂС‹РІР°РµРј РґРѕРєСѓРјРµРЅС‚)
 		actionURI,         // URI
 		actionNamed,       // Named
 		actionMovie,       // Movie
@@ -30,19 +30,19 @@ namespace PdfReader
 
 		virtual ~LinkAction() {}
 
-		// Нормально ли создался объект LinkAction?
+		// РќРѕСЂРјР°Р»СЊРЅРѕ Р»Рё СЃРѕР·РґР°Р»СЃСЏ РѕР±СЉРµРєС‚ LinkAction?
 		virtual bool CheckValidate() = 0;
 
-		// Тип LinkAction.
+		// РўРёРї LinkAction.
 		virtual LinkActionType GetType() = 0;
 
-		// Парсим Destination (старый вариант Аction) Name, String или Array.
+		// РџР°СЂСЃРёРј Destination (СЃС‚Р°СЂС‹Р№ РІР°СЂРёР°РЅС‚ Рђction) Name, String РёР»Рё Array.
 		static LinkAction *ParseDestination(Object *pObject);
 
-		// Парсим Action dictionary.
+		// РџР°СЂСЃРёРј Action dictionary.
 		static LinkAction *ParseAction(Object *pObject, StringExt *seBaseURI = NULL);
 
-		// Достаем название файла для File specification.
+		// Р”РѕСЃС‚Р°РµРј РЅР°Р·РІР°РЅРёРµ С„Р°Р№Р»Р° РґР»СЏ File specification.
 		static StringExt *GetFileSpecName(Object *pFileSpecObject);
 	};
 
@@ -134,23 +134,23 @@ namespace PdfReader
 
 	private:
 
-		LinkDestinationType m_eType;      // Тип
-		bool                m_bPageIsRef; // Страница задана ссылкой или номером?
+		LinkDestinationType m_eType;      // РўРёРї
+		bool                m_bPageIsRef; // РЎС‚СЂР°РЅРёС†Р° Р·Р°РґР°РЅР° СЃСЃС‹Р»РєРѕР№ РёР»Рё РЅРѕРјРµСЂРѕРј?
 		union
 		{
-			Ref m_oPageRef;   // Ссылка на страницу
-			int m_nPageNum;   // Относительный номер страницы
+			Ref m_oPageRef;   // РЎСЃС‹Р»РєР° РЅР° СЃС‚СЂР°РЅРёС†Сѓ
+			int m_nPageNum;   // РћС‚РЅРѕСЃРёС‚РµР»СЊРЅС‹Р№ РЅРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
 		};
 
 		double m_dLeft;       //
-		double m_dBottom;     // Позиция
+		double m_dBottom;     // РџРѕР·РёС†РёСЏ
 		double m_dRight;      //
 		double m_dTop;        //
 
 		double m_dZoom;       // Zoom
 
-		bool   m_bChangeLeft; // Для destXYZ. В данном случае может измениться
-		bool   m_bChangeTop;  // как позиция, так и зуммирование
+		bool   m_bChangeLeft; // Р”Р»СЏ destXYZ. Р’ РґР°РЅРЅРѕРј СЃР»СѓС‡Р°Рµ РјРѕР¶РµС‚ РёР·РјРµРЅРёС‚СЊСЃСЏ
+		bool   m_bChangeTop;  // РєР°Рє РїРѕР·РёС†РёСЏ, С‚Р°Рє Рё Р·СѓРјРјРёСЂРѕРІР°РЅРёРµ
 		bool   m_bChangeZoom; // 
 
 		bool   m_bValidate;   // 
@@ -425,7 +425,7 @@ namespace PdfReader
 			return m_bValid;
 		}
 
-		// Попала ли точка в рект
+		// РџРѕРїР°Р»Р° Р»Рё С‚РѕС‡РєР° РІ СЂРµРєС‚
 		bool InRect(double dX, double dY)
 		{
 			return m_dLeft <= dX && dX <= m_dRight && m_dBottom <= dY && dY <= m_dTop;
@@ -477,10 +477,10 @@ namespace PdfReader
 		}
 
 
-		// Если точка (dX, dY) попадает в Link, тогда возвращаем соответствующий Action.
+		// Р•СЃР»Рё С‚РѕС‡РєР° (dX, dY) РїРѕРїР°РґР°РµС‚ РІ Link, С‚РѕРіРґР° РІРѕР·РІСЂР°С‰Р°РµРј СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ Action.
 		LinkAction *Find(double dX, double dY);
 
-		// Проверяем попадает ли точка в Link.
+		// РџСЂРѕРІРµСЂСЏРµРј РїРѕРїР°РґР°РµС‚ Р»Рё С‚РѕС‡РєР° РІ Link.
 		bool OnLink(double dX, double dY);
 
 	private:

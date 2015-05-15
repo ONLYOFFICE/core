@@ -1,4 +1,4 @@
-#include <stdio.h>
+ï»¿#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -45,7 +45,7 @@ namespace PdfReader
 		{
 			if (pGlobalParams && !(pFile = pGlobalParams->FindCMapFile(seCollection, seCMapName)))
 			{
-				// Ïðîâåðÿåì íà Identity CMap.
+				// ÐŸÑ€Ð¾Ð²ÐµÑ€ÑÐµÐ¼ Ð½Ð° Identity CMap.
 				if (!seCMapName->Compare("Identity") || !seCMapName->Compare("Identity-H"))
 				{
 					return new CMap(pGlobalParams, seCollection->Copy(), seCMapName->Copy(), 0);

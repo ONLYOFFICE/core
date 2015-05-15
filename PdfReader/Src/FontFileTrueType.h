@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_FONT_FILE_TRUETYPE_H
+п»ї#ifndef _PDF_READER_FONT_FILE_TRUETYPE_H
 #define _PDF_READER_FONT_FILE_TRUETYPE_H
 
 #include "FontFileBase.h"
@@ -18,16 +18,16 @@ namespace PdfReader
 	{
 	public:
 
-		// Создаем объект TTF из буфера.
+		// РЎРѕР·РґР°РµРј РѕР±СЉРµРєС‚ TTF РёР· Р±СѓС„РµСЂР°.
 		static CFontFileTrueType *LoadFromBuffer(char *sBuffer, int lenA);
 
-		// Создаем объект TTF из файла.
+		// РЎРѕР·РґР°РµРј РѕР±СЉРµРєС‚ TTF РёР· С„Р°Р№Р»Р°.
 		static CFontFileTrueType *LoadFromFile(wchar_t *wsFileName);
 
 		virtual ~CFontFileTrueType();
 
-		// true, если данный OpenType фонт содержите данные формата CFF.
-		// false,если это TrueType фонт ( или OpenType фонт с данными в формате TrueType).
+		// true, РµСЃР»Рё РґР°РЅРЅС‹Р№ OpenType С„РѕРЅС‚ СЃРѕРґРµСЂР¶РёС‚Рµ РґР°РЅРЅС‹Рµ С„РѕСЂРјР°С‚Р° CFF.
+		// false,РµСЃР»Рё СЌС‚Рѕ TrueType С„РѕРЅС‚ ( РёР»Рё OpenType С„РѕРЅС‚ СЃ РґР°РЅРЅС‹РјРё РІ С„РѕСЂРјР°С‚Рµ TrueType).
 		bool IsOpenTypeCFF()
 		{
 			return m_bOpenTypeCFF;
@@ -41,25 +41,25 @@ namespace PdfReader
 
 		int  FindCmap(int nPlatform, int nEncoding);
 
-		// Возвращает GID, соответствующий символу <nChar> в <nIndex>ной CMap.
+		// Р’РѕР·РІСЂР°С‰Р°РµС‚ GID, СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ СЃРёРјРІРѕР»Сѓ <nChar> РІ <nIndex>РЅРѕР№ CMap.
 		unsigned short MapCodeToGID(int nCMapIndex, int nChar);
 
-		// Возвращает GID, соответствующий <sName> в таблице post. Возвращает 0,
-		// если символа с таким именем не нашли, или таблицы post нет.
+		// Р’РѕР·РІСЂР°С‰Р°РµС‚ GID, СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ <sName> РІ С‚Р°Р±Р»РёС†Рµ post. Р’РѕР·РІСЂР°С‰Р°РµС‚ 0,
+		// РµСЃР»Рё СЃРёРјРІРѕР»Р° СЃ С‚Р°РєРёРј РёРјРµРЅРµРј РЅРµ РЅР°С€Р»Рё, РёР»Рё С‚Р°Р±Р»РёС†С‹ post РЅРµС‚.
 		int MapNameToGID(char *sName);
 
-		// Возвращает карту CIDs в GIDs, и возваращет количество элементов
-		// CIDs в *<pnCIDs>.  Только для CID фонтов( OpenType CFF )
+		// Р’РѕР·РІСЂР°С‰Р°РµС‚ РєР°СЂС‚Сѓ CIDs РІ GIDs, Рё РІРѕР·РІР°СЂР°С‰РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ
+		// CIDs РІ *<pnCIDs>.  РўРѕР»СЊРєРѕ РґР»СЏ CID С„РѕРЅС‚РѕРІ( OpenType CFF )
 		unsigned short *GetCIDToGIDMap(int *pnCIDs);
 
-		// Лицензионные ограничения на включение фонта( в соответствие со
-		// спецификацией True Type):
+		// Р›РёС†РµРЅР·РёРѕРЅРЅС‹Рµ РѕРіСЂР°РЅРёС‡РµРЅРёСЏ РЅР° РІРєР»СЋС‡РµРЅРёРµ С„РѕРЅС‚Р°( РІ СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ СЃРѕ
+		// СЃРїРµС†РёС„РёРєР°С†РёРµР№ True Type):
 
-		// * 4: таблицы OS/2 не найдена или некорректна
-		// * 3: разрешено устанавливать
-		// * 2: разрешено редактировать
-		// * 1: разрешено просматривать и печатать
-		// * 0: ограничено лицензией
+		// * 4: С‚Р°Р±Р»РёС†С‹ OS/2 РЅРµ РЅР°Р№РґРµРЅР° РёР»Рё РЅРµРєРѕСЂСЂРµРєС‚РЅР°
+		// * 3: СЂР°Р·СЂРµС€РµРЅРѕ СѓСЃС‚Р°РЅР°РІР»РёРІР°С‚СЊ
+		// * 2: СЂР°Р·СЂРµС€РµРЅРѕ СЂРµРґР°РєС‚РёСЂРѕРІР°С‚СЊ
+		// * 1: СЂР°Р·СЂРµС€РµРЅРѕ РїСЂРѕСЃРјР°С‚СЂРёРІР°С‚СЊ Рё РїРµС‡Р°С‚Р°С‚СЊ
+		// * 0: РѕРіСЂР°РЅРёС‡РµРЅРѕ Р»РёС†РµРЅР·РёРµР№
 		int GetEmbeddingRestrictions();
 
 		// Convert to a Type 42 font, suitable for embedding in a PostScript

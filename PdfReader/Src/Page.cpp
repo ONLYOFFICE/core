@@ -1,4 +1,4 @@
-#include <stddef.h>
+ï»¿#include <stddef.h>
 #include "GlobalParams.h"
 #include "Object.h"
 #include "Array.h"
@@ -63,7 +63,7 @@ namespace PdfReader
 	{
 		Object obj1;
 
-		if (pAttrs) // Ïðåäûäóùèå íàñòðîéêè
+		if (pAttrs) // ÐŸÑ€ÐµÐ´Ñ‹Ð´ÑƒÑ‰Ð¸Ðµ Ð½Ð°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸
 		{
 			m_oMediaBox    = pAttrs->m_oMediaBox;
 			m_pCropBox     = pAttrs->m_pCropBox;
@@ -71,7 +71,7 @@ namespace PdfReader
 			m_nRotate      = pAttrs->m_nRotate;
 			pAttrs->m_oResources.Copy(&m_oResources);
 		}
-		else // Íàñòðîéêè ïî óìîë÷àíèþ
+		else // ÐÐ°ÑÑ‚Ñ€Ð¾Ð¹ÐºÐ¸ Ð¿Ð¾ ÑƒÐ¼Ð¾Ð»Ñ‡Ð°Ð½Ð¸ÑŽ
 		{
 			m_oMediaBox.m_dLeft    = 0;
 			m_oMediaBox.m_dBottom  = 0;
@@ -97,7 +97,7 @@ namespace PdfReader
 			m_pCropBox = m_oMediaBox;
 		}
 
-		// Îñòàëüíûå
+		// ÐžÑÑ‚Ð°Ð»ÑŒÐ½Ñ‹Ðµ
 		m_oBleedBox = m_pCropBox;
 		ReadBox(pDict, "BleedBox", &m_oBleedBox);
 
@@ -107,13 +107,13 @@ namespace PdfReader
 		m_oArtBox = m_pCropBox;
 		ReadBox(pDict, "ArtBox", &m_oArtBox);
 
-		// Ïîäãîíÿåì ðàçìåðû ïîä m_oMediaBox 
+		// ÐŸÐ¾Ð´Ð³Ð¾Ð½ÑÐµÐ¼ Ñ€Ð°Ð·Ð¼ÐµÑ€Ñ‹ Ð¿Ð¾Ð´ m_oMediaBox 
 		m_pCropBox.ClipTo(&m_oMediaBox);
 		m_oBleedBox.ClipTo(&m_oMediaBox);
 		m_oTrimBox.ClipTo(&m_oMediaBox);
 		m_oArtBox.ClipTo(&m_oMediaBox);
 
-		// Ïîâîðîò
+		// ÐŸÐ¾Ð²Ð¾Ñ€Ð¾Ñ‚
 		Object oTemp;
 		pDict->Search("Rotate", &oTemp);
 		if (oTemp.IsInt())

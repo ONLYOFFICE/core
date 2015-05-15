@@ -1,4 +1,4 @@
-#include <stdlib.h>
+п»ї#include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
 #include <ctype.h>
@@ -6,8 +6,8 @@
 
 namespace PdfReader
 {
-	// '1' - означает пробел. '1' или '2' означает, что данным символом заканчивается
-	// имя или команда.
+	// '1' - РѕР·РЅР°С‡Р°РµС‚ РїСЂРѕР±РµР». '1' РёР»Рё '2' РѕР·РЅР°С‡Р°РµС‚, С‡С‚Рѕ РґР°РЅРЅС‹Рј СЃРёРјРІРѕР»РѕРј Р·Р°РєР°РЅС‡РёРІР°РµС‚СЃСЏ
+	// РёРјСЏ РёР»Рё РєРѕРјР°РЅРґР°.
 
 	static char c_sSpecialChars[256] =
 	{
@@ -49,7 +49,7 @@ namespace PdfReader
 
 	Lexer::Lexer(XRef *pXref, Object *pObject)
 	{
-		// Предполагаем, что в pObject либо поток, либо массив потоков
+		// РџСЂРµРґРїРѕР»Р°РіР°РµРј, С‡С‚Рѕ РІ pObject Р»РёР±Рѕ РїРѕС‚РѕРє, Р»РёР±Рѕ РјР°СЃСЃРёРІ РїРѕС‚РѕРєРѕРІ
 		Object oTemp;
 
 		if (pObject->IsStream())
@@ -123,7 +123,7 @@ namespace PdfReader
 		StringExt *seString;
 		int nCount = 0, nHexCharLen = 0;
 
-		// Пропускаем комментарии и пробелы
+		// РџСЂРѕРїСѓСЃРєР°РµРј РєРѕРјРјРµРЅС‚Р°СЂРёРё Рё РїСЂРѕР±РµР»С‹
 		bool bComment = false;
 		while (1)
 		{
@@ -146,11 +146,11 @@ namespace PdfReader
 			}
 		}
 
-		// начинаем чтение объекта
+		// РЅР°С‡РёРЅР°РµРј С‡С‚РµРЅРёРµ РѕР±СЉРµРєС‚Р°
 		switch (nChar)
 		{
 
-			// Число
+			// Р§РёСЃР»Рѕ
 			case '0': case '1': case '2': case '3': case '4':
 			case '5': case '6': case '7': case '8': case '9':
 			case '-': case '.':
@@ -198,8 +198,8 @@ namespace PdfReader
 				nChar = LookChar();
 				if (nChar == '-')
 				{
-					// игнорируем знаки минус, появляющиеся по середине числа
-					// (Adobe игнорирует такие ситуации)
+					// РёРіРЅРѕСЂРёСЂСѓРµРј Р·РЅР°РєРё РјРёРЅСѓСЃ, РїРѕСЏРІР»СЏСЋС‰РёРµСЃСЏ РїРѕ СЃРµСЂРµРґРёРЅРµ С‡РёСЃР»Р°
+					// (Adobe РёРіРЅРѕСЂРёСЂСѓРµС‚ С‚Р°РєРёРµ СЃРёС‚СѓР°С†РёРё)
 
 					// TO DO: Error "Badly formatted number"
 					GetChar();
@@ -218,11 +218,11 @@ namespace PdfReader
 			pObject->InitReal(dFloat);
 			break;
 
-			// Строка
+			// РЎС‚СЂРѕРєР°
 			case '(':
 			pCurPointer = m_sTempBuffer;
 			nCount = 0;
-			nBracketCount = 1; // счетчик собок
+			nBracketCount = 1; // СЃС‡РµС‚С‡РёРє СЃРѕР±РѕРє
 			bDone = false;
 			seString = NULL;
 			do {
@@ -328,7 +328,7 @@ namespace PdfReader
 				seString->Append(m_sTempBuffer, nCount);
 			pObject->InitString(seString);
 			break;
-			// Имя
+			// РРјСЏ
 			case '/':
 			pCurPointer = m_sTempBuffer;
 			nCount = 0;
@@ -386,7 +386,7 @@ namespace PdfReader
 			pObject->InitName(m_sTempBuffer);
 			break;
 
-			// Массив
+			// РњР°СЃСЃРёРІ
 			case '[':
 			case ']':
 			m_sTempBuffer[0] = nChar;
@@ -394,7 +394,7 @@ namespace PdfReader
 			pObject->InitCommand(m_sTempBuffer);
 			break;
 
-			// Hex или Dictionary
+			// Hex РёР»Рё Dictionary
 			case '<':
 			nChar = LookChar();
 
@@ -490,7 +490,7 @@ namespace PdfReader
 			pObject->InitError();
 			break;
 
-			// Command (это просто какое нибудь зарезервированное слово, например 'obj' или 'stream')
+			// Command (СЌС‚Рѕ РїСЂРѕСЃС‚Рѕ РєР°РєРѕРµ РЅРёР±СѓРґСЊ Р·Р°СЂРµР·РµСЂРІРёСЂРѕРІР°РЅРЅРѕРµ СЃР»РѕРІРѕ, РЅР°РїСЂРёРјРµСЂ 'obj' РёР»Рё 'stream')
 			default:
 			pCurPointer = m_sTempBuffer;
 			*pCurPointer++ = nChar;

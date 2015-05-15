@@ -1,9 +1,7 @@
-#include <string.h>
+п»ї#include <string.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <shlobj.h>
-
-#include "Resource.h"
 
 #include "MemoryUtils.h"
 #include "StringExt.h"
@@ -72,8 +70,8 @@ namespace PdfReader
 	//-------------------------------------------------------------------------------------------------------------------------------
 	GlobalParams::GlobalParams() : m_pFontManager(NULL)
 	{
-		// Просматриваем кодировку в обратном порядке, чтобы присвоить символу наименьше возможный номер
-		// (если у символа их несколько, например, как у 'space')
+		// РџСЂРѕСЃРјР°С‚СЂРёРІР°РµРј РєРѕРґРёСЂРѕРІРєСѓ РІ РѕР±СЂР°С‚РЅРѕРј РїРѕСЂСЏРґРєРµ, С‡С‚РѕР±С‹ РїСЂРёСЃРІРѕРёС‚СЊ СЃРёРјРІРѕР»Сѓ РЅР°РёРјРµРЅСЊС€Рµ РІРѕР·РјРѕР¶РЅС‹Р№ РЅРѕРјРµСЂ
+		// (РµСЃР»Рё Сѓ СЃРёРјРІРѕР»Р° РёС… РЅРµСЃРєРѕР»СЊРєРѕ, РЅР°РїСЂРёРјРµСЂ, РєР°Рє Сѓ 'space')
 		m_pMacRomanReverseMap = new NameToCharCode();
 		for (int nIndex = 255; nIndex >= 0; --nIndex)
 		{
@@ -83,7 +81,7 @@ namespace PdfReader
 			}
 		}
 
-		// Инициализируем талицу m_pNameToUnicode
+		// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј С‚Р°Р»РёС†Сѓ m_pNameToUnicode
 		m_pNameToUnicode = new NameToCharCode();
 		for (int nIndex = 0; c_arrNameToUnicodeTable[nIndex].sName; ++nIndex)
 		{
@@ -128,12 +126,12 @@ namespace PdfReader
 	}
 	CharCodeToUnicode* GlobalParams::GetUnicodeToUnicode(StringExt* seFontName)
 	{
-		// TODO: Как только будем хранить отдельную папку с файлами Unicode to Unicode реализовать тут
+		// TODO: РљР°Рє С‚РѕР»СЊРєРѕ Р±СѓРґРµРј С…СЂР°РЅРёС‚СЊ РѕС‚РґРµР»СЊРЅСѓСЋ РїР°РїРєСѓ СЃ С„Р°Р№Р»Р°РјРё Unicode to Unicode СЂРµР°Р»РёР·РѕРІР°С‚СЊ С‚СѓС‚
 		return NULL;
 	}
 	CharCodeToUnicode* GlobalParams::GetCIDToUnicode(StringExt* seCollection)
 	{
-		// TODO: Как только будем хранить отдельную папку с файлами Cid to Unicode реализовать тут
+		// TODO: РљР°Рє С‚РѕР»СЊРєРѕ Р±СѓРґРµРј С…СЂР°РЅРёС‚СЊ РѕС‚РґРµР»СЊРЅСѓСЋ РїР°РїРєСѓ СЃ С„Р°Р№Р»Р°РјРё Cid to Unicode СЂРµР°Р»РёР·РѕРІР°С‚СЊ С‚СѓС‚
 		return NULL;
 	}
 	Unicode            GlobalParams::MapNameToUnicode(char* sCharName)
@@ -146,7 +144,7 @@ namespace PdfReader
 	}
 	FILE*              GlobalParams::FindToUnicodeFile(StringExt* seName)
 	{
-		// TODO: Как только будем хранить отдельную папку с файлами ToUnicode реализовать тут
+		// TODO: РљР°Рє С‚РѕР»СЊРєРѕ Р±СѓРґРµРј С…СЂР°РЅРёС‚СЊ РѕС‚РґРµР»СЊРЅСѓСЋ РїР°РїРєСѓ СЃ С„Р°Р№Р»Р°РјРё ToUnicode СЂРµР°Р»РёР·РѕРІР°С‚СЊ С‚СѓС‚
 		return NULL;
 	}
 	FILE*              GlobalParams::FindCMapFile(StringExt* seCollection, StringExt* seCMapName)
@@ -163,7 +161,7 @@ namespace PdfReader
 	}
 	FILE*              GlobalParams::GetUnicodeMapFile(StringExt* seEncodingName)
 	{
-		// Как только будем работать с папкой UnicodeMap реализовать тут
+		// РљР°Рє С‚РѕР»СЊРєРѕ Р±СѓРґРµРј СЂР°Р±РѕС‚Р°С‚СЊ СЃ РїР°РїРєРѕР№ UnicodeMap СЂРµР°Р»РёР·РѕРІР°С‚СЊ С‚СѓС‚
 		return NULL;
 	}
 	std::wstring&      GlobalParams::GetTempFolder()
@@ -176,7 +174,7 @@ namespace PdfReader
 		{
 			m_wsTempDirectory = wsTempFolder;
 
-			// В темповую директорию скидываем 14 стандартных шрифтов
+			// Р’ С‚РµРјРїРѕРІСѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ СЃРєРёРґС‹РІР°РµРј 14 СЃС‚Р°РЅРґР°СЂС‚РЅС‹С… С€СЂРёС„С‚РѕРІ
 			for (int nIndex = 0; nIndex < 14; nIndex++)
 			{
 				std::wstring wsFontPath;
@@ -197,7 +195,7 @@ namespace PdfReader
 	}
 	std::wstring       GlobalParams::FindFontFile(StringExt* seFontName, wchar_t** pwsExts)
 	{
-		// TODO: Возможно стоит перенести сюда подбор шрифтов
+		// TODO: Р’РѕР·РјРѕР¶РЅРѕ СЃС‚РѕРёС‚ РїРµСЂРµРЅРµСЃС‚Рё СЃСЋРґР° РїРѕРґР±РѕСЂ С€СЂРёС„С‚РѕРІ
 		return L"";
 	}
 	void               GlobalParams::SetCMapFolder(const wchar_t* wsCMapDir)

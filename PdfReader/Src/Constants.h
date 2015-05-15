@@ -1,11 +1,11 @@
-#ifndef _PDF_READER_CONSTANTS_H
+п»ї#ifndef _PDF_READER_CONSTANTS_H
 #define _PDF_READER_CONSTANTS_H
 
 namespace PdfReader
 {
 	//-------------------------------------------------------------------------------------------------------------------------------
 
-	// Поддерживаемая версия PDF файла
+	// РџРѕРґРґРµСЂР¶РёРІР°РµРјР°СЏ РІРµСЂСЃРёСЏ PDF С„Р°Р№Р»Р°
 #define SupportedPDFVersionStr "1.7"
 #define SupportedPDFVersionNum  1.7
 
@@ -13,7 +13,7 @@ namespace PdfReader
 	// Paper size
 	//-------------------------------------------------------------------------------------------------------------------------------
 
-	// Стандартные размеры страницы (в пикселях (72dpi))
+	// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ СЂР°Р·РјРµСЂС‹ СЃС‚СЂР°РЅРёС†С‹ (РІ РїРёРєСЃРµР»СЏС… (72dpi))
 #ifndef A4_PAPER
 #define DefaultPaperWidth  595    // ISO A4 (210x297 mm)
 #define DefaultPaperHeight 842

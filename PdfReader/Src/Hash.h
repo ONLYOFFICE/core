@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_HASH_H
+п»ї#ifndef _PDF_READER_HASH_H
 #define _PDF_READER_HASH_H
 
 namespace PdfReader
@@ -58,9 +58,9 @@ namespace PdfReader
 
 	private:
 
-		bool          m_bDeleteKeys;   // Будем ли удалять имена? set if key strings should be deleted
-		int           m_nBucketsCount; // Количество наборов
-		int           m_nLength;       // Количество вхождений
+		bool          m_bDeleteKeys;   // Р‘СѓРґРµРј Р»Рё СѓРґР°Р»СЏС‚СЊ РёРјРµРЅР°? set if key strings should be deleted
+		int           m_nBucketsCount; // РљРѕР»РёС‡РµСЃС‚РІРѕ РЅР°Р±РѕСЂРѕРІ
+		int           m_nLength;       // РљРѕР»РёС‡РµСЃС‚РІРѕ РІС…РѕР¶РґРµРЅРёР№
 		THashBucket **m_ppTable;
 	};
 

@@ -1,4 +1,4 @@
-#include <stddef.h>
+﻿#include <stddef.h>
 #include <string.h>
 #include "MemoryUtils.h"
 #include "Object.h"

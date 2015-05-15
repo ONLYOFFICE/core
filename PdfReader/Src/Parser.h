@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_PARSER_H
+п»ї#ifndef _PDF_READER_PARSER_H
 #define _PDF_READER_PARSER_H
 
 #include "Lexer.h"
@@ -17,7 +17,7 @@ namespace PdfReader
 
 		~Parser();
 
-		// Считываем следующий объект из потока.
+		// РЎС‡РёС‚С‹РІР°РµРј СЃР»РµРґСѓСЋС‰РёР№ РѕР±СЉРµРєС‚ РёР· РїРѕС‚РѕРєР°.
 		Object *GetObject(Object *pObject, unsigned char *sDecryptKey = NULL, CryptAlgorithm eEncryptAlgorithm = cryptRC4, int nKeyLength = 0, int nObjectNum = 0, int nObjectGen = 0);
 
 		Stream *GetStream()
@@ -37,12 +37,12 @@ namespace PdfReader
 
 	private:
 
-		XRef  *m_pXref;         // Таблица Xref для даннthe xref table for this PDF file
-		Lexer *m_pLexer;        // Входящий поток
-		bool   m_bAllowStreams; // Будем ли парсить Stream Objects?
-		Object m_oBuffer1;      // Два следующих объекта
+		XRef  *m_pXref;         // РўР°Р±Р»РёС†Р° Xref РґР»СЏ РґР°РЅРЅthe xref table for this PDF file
+		Lexer *m_pLexer;        // Р’С…РѕРґСЏС‰РёР№ РїРѕС‚РѕРє
+		bool   m_bAllowStreams; // Р‘СѓРґРµРј Р»Рё РїР°СЂСЃРёС‚СЊ Stream Objects?
+		Object m_oBuffer1;      // Р”РІР° СЃР»РµРґСѓСЋС‰РёС… РѕР±СЉРµРєС‚Р°
 		Object m_oBuffer2;      // 
-		int    m_nInlineImage;  // Устанавливаем, когда сталкиваемся с Inline Image
+		int    m_nInlineImage;  // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј, РєРѕРіРґР° СЃС‚Р°Р»РєРёРІР°РµРјСЃСЏ СЃ Inline Image
 	};
 }
 

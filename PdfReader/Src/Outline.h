@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_OUTLINE_H
+п»ї#ifndef _PDF_READER_OUTLINE_H
 #define _PDF_READER_OUTLINE_H
 
 #include "Object.h"
@@ -29,7 +29,7 @@ namespace PdfReader
 
 	private:
 
-		CList *m_pItems; // NULL, если у документа нет Outline
+		CList *m_pItems; // NULL, РµСЃР»Рё Сѓ РґРѕРєСѓРјРµРЅС‚Р° РЅРµС‚ Outline
 		// [OutlineItem]
 	};
 
@@ -76,17 +76,17 @@ namespace PdfReader
 
 	private:
 
-		XRef       *m_pXref;          // Таблица Xref данного PDF-документа
-		Unicode    *m_pTitle;         // Название данной закладки
-		int         m_nTitleLen;      // Длина названия
+		XRef       *m_pXref;          // РўР°Р±Р»РёС†Р° Xref РґР°РЅРЅРѕРіРѕ PDF-РґРѕРєСѓРјРµРЅС‚Р°
+		Unicode    *m_pTitle;         // РќР°Р·РІР°РЅРёРµ РґР°РЅРЅРѕР№ Р·Р°РєР»Р°РґРєРё
+		int         m_nTitleLen;      // Р”Р»РёРЅР° РЅР°Р·РІР°РЅРёСЏ
 		LinkAction *m_pAction;        // LinkAction
 
-		Object      m_oFirstRef;      // Ссылка(Ref) на First
-		Object      m_oLastRef;       // Ссылка(Ref) на Last
-		Object      m_oNextRef;       // Ссылка(Ref) на Next
+		Object      m_oFirstRef;      // РЎСЃС‹Р»РєР°(Ref) РЅР° First
+		Object      m_oLastRef;       // РЎСЃС‹Р»РєР°(Ref) РЅР° Last
+		Object      m_oNextRef;       // РЎСЃС‹Р»РєР°(Ref) РЅР° Next
 
-		bool        m_bOpen;          // Будет ли вкладка открытой при открытии документа
-		CList      *m_pKids;          // NULL, если данный пункт не открыт [OutlineItem]
+		bool        m_bOpen;          // Р‘СѓРґРµС‚ Р»Рё РІРєР»Р°РґРєР° РѕС‚РєСЂС‹С‚РѕР№ РїСЂРё РѕС‚РєСЂС‹С‚РёРё РґРѕРєСѓРјРµРЅС‚Р°
+		CList      *m_pKids;          // NULL, РµСЃР»Рё РґР°РЅРЅС‹Р№ РїСѓРЅРєС‚ РЅРµ РѕС‚РєСЂС‹С‚ [OutlineItem]
 	};
 }
 

@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_ARRAY_H
+п»ї#ifndef _PDF_READER_ARRAY_H
 #define _PDF_READER_ARRAY_H
 
 #include "Object.h"
@@ -43,12 +43,12 @@ namespace PdfReader
 
 	private:
 
-		XRef   *m_pXRef;     // Таблица Xref для данного PDF документа
-		Object *m_arrItems;  // Массив элементов
-		int     m_nItemSize; // Размер элемента
-		int     m_nCount;    // Чилсо элементов в массиве
+		XRef   *m_pXRef;     // РўР°Р±Р»РёС†Р° Xref РґР»СЏ РґР°РЅРЅРѕРіРѕ PDF РґРѕРєСѓРјРµРЅС‚Р°
+		Object *m_arrItems;  // РњР°СЃСЃРёРІ СЌР»РµРјРµРЅС‚РѕРІ
+		int     m_nItemSize; // Р Р°Р·РјРµСЂ СЌР»РµРјРµРЅС‚Р°
+		int     m_nCount;    // Р§РёР»СЃРѕ СЌР»РµРјРµРЅС‚РѕРІ РІ РјР°СЃСЃРёРІРµ
 
-		int     m_nRef;      // Счетчик ссылок
+		int     m_nRef;      // РЎС‡РµС‚С‡РёРє СЃСЃС‹Р»РѕРє
 	};
 }
 

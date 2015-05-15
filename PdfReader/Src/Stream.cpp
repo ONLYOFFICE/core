@@ -1,4 +1,4 @@
-#include <stdio.h>
+п»ї#include <stdio.h>
 #include <stdlib.h>
 #include <stddef.h>
 #include <limits.h>
@@ -15,12 +15,12 @@
 #include "JPXStream.h"
 #include "JBIG2Stream.h"
 
-//#define USE_ZLIB // Для декодирования потоков в Flate используем Zlib или внутренний декодер
+//#define USE_ZLIB // Р”Р»СЏ РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ РїРѕС‚РѕРєРѕРІ РІ Flate РёСЃРїРѕР»СЊР·СѓРµРј Zlib РёР»Рё РІРЅСѓС‚СЂРµРЅРЅРёР№ РґРµРєРѕРґРµСЂ
 
 namespace PdfReader
 {
 	//---------------------------------------------------------------------------------------------------------------
-	// Stream (основной класс)
+	// Stream (РѕСЃРЅРѕРІРЅРѕР№ РєР»Р°СЃСЃ)
 	//---------------------------------------------------------------------------------------------------------------
 
 	Stream::Stream()
@@ -228,7 +228,7 @@ namespace PdfReader
 					bBlackIs1 = oTemp.GetBool();
 				oTemp.Free();
 
-				// TO DO: Добавить чтение поля "DamagedRowsBeforeError"
+				// TO DO: Р”РѕР±Р°РІРёС‚СЊ С‡С‚РµРЅРёРµ РїРѕР»СЏ "DamagedRowsBeforeError"
 			}
 			pStream = new CCITTFaxStream(pStream, nK, bEndOfLine, bByteAlign, nColumns, nRows, bEndOfBlock, bBlackIs1);
 		}
@@ -289,7 +289,7 @@ namespace PdfReader
 			{
 				pParams->DictLookup("JBIG2Globals", &oJBIG2Globals);
 			}
-			// TO DO: Сделать данный фильтр
+			// TO DO: РЎРґРµР»Р°С‚СЊ РґР°РЅРЅС‹Р№ С„РёР»СЊС‚СЂ
 			pStream = new JBIG2Stream(pStream, &oJBIG2Globals);
 			oJBIG2Globals.Free();
 		}
@@ -530,7 +530,7 @@ namespace PdfReader
 			nCurPredictor = m_nPredictor;
 		}
 
-		// Читаем по строке, применяя PNG (byte) фильтрацию(prediction)
+		// Р§РёС‚Р°РµРј РїРѕ СЃС‚СЂРѕРєРµ, РїСЂРёРјРµРЅСЏСЏ PNG (byte) С„РёР»СЊС‚СЂР°С†РёСЋ(prediction)
 		unsigned char arrTopLeftBuf[GrColorMaxComps * 2 + 1];
 		memset(arrTopLeftBuf, 0, m_nBytesPerPixel + 1);
 
@@ -582,13 +582,13 @@ namespace PdfReader
 					m_pLineBuffer[nIndex] = nTopLeft + (unsigned char)nChar;
 				break;
 				case 10:			// PNG none
-				default:			// No predictor или TIFF predictor
+				default:			// No predictor РёР»Рё TIFF predictor
 				m_pLineBuffer[nIndex] = (unsigned char)nChar;
 				break;
 			}
 		}
 
-		// Применяем TIFF фильтрацию (predictor)
+		// РџСЂРёРјРµРЅСЏРµРј TIFF С„РёР»СЊС‚СЂР°С†РёСЋ (predictor)
 		unsigned long nInTemp, nOutTemp;
 		if (m_nPredictor == 2)
 		{
@@ -1178,7 +1178,7 @@ namespace PdfReader
 
 	int LZWStream::GetRawChar()
 	{
-		// Отличие от GetChar в том, что тут мы неиспользуем фильтр, указанный в m_pPredictor
+		// РћС‚Р»РёС‡РёРµ РѕС‚ GetChar РІ С‚РѕРј, С‡С‚Рѕ С‚СѓС‚ РјС‹ РЅРµРёСЃРїРѕР»СЊР·СѓРµРј С„РёР»СЊС‚СЂ, СѓРєР°Р·Р°РЅРЅС‹Р№ РІ m_pPredictor
 		if (m_bEOF)
 		{
 			return EOF;
@@ -1208,7 +1208,7 @@ namespace PdfReader
 			return false;
 		}
 
-		// Проверяем конец кода(eod) и очищаем таблицу кодов
+		// РџСЂРѕРІРµСЂСЏРµРј РєРѕРЅРµС† РєРѕРґР°(eod) Рё РѕС‡РёС‰Р°РµРј С‚Р°Р±Р»РёС†Сѓ РєРѕРґРѕРІ
 	start:
 		int nCode = GetCode();
 
@@ -1465,7 +1465,7 @@ namespace PdfReader
 		m_nCurPosCL = 1;
 		m_nCharBuffer = EOF;
 
-		// Пропускам начальные нулевые биты и символы окончания строки, и считываем тэг 2D кодировки
+		// РџСЂРѕРїСѓСЃРєР°Рј РЅР°С‡Р°Р»СЊРЅС‹Рµ РЅСѓР»РµРІС‹Рµ Р±РёС‚С‹ Рё СЃРёРјРІРѕР»С‹ РѕРєРѕРЅС‡Р°РЅРёСЏ СЃС‚СЂРѕРєРё, Рё СЃС‡РёС‚С‹РІР°РµРј С‚СЌРі 2D РєРѕРґРёСЂРѕРІРєРё
 		while ((nCode1 = LookBits(12)) == 0)
 		{
 			SkipBits(1);
@@ -1491,29 +1491,29 @@ namespace PdfReader
 			return EOF;
 		}
 
-		// Считываем строку
+		// РЎС‡РёС‚С‹РІР°РµРј СЃС‚СЂРѕРєСѓ
 		bool bError = false;
 		if (m_pCodingLine[m_nCurPosCL] >= m_nColumns)
 		{
 
-			// 2D кодировка
+			// 2D РєРѕРґРёСЂРѕРІРєР°
 			if (m_bNextLine2D)
 			{
-				// Начальное состояние:
-				//   nNewCLPos = Текущая позиция в кодированной строке (0 <= nNewCLPos <= m_nColumns)
-				//   m_pCodingLine[m_nCurPosCL] = Последнее изменение в кодированной строке
-				//                    (black-to-white, если m_nCurPosCL четно,
-				//                     white-to-black, если m_nCurPosCL нечетно)
-				//   m_pRefLine[m_nCurPosRL] = Следующее изменение в ссылочной строке, противоположного
-				//                    цвета, цвету m_nCurPosCL
-				// В любой момент должно быть верно:
+				// РќР°С‡Р°Р»СЊРЅРѕРµ СЃРѕСЃС‚РѕСЏРЅРёРµ:
+				//   nNewCLPos = РўРµРєСѓС‰Р°СЏ РїРѕР·РёС†РёСЏ РІ РєРѕРґРёСЂРѕРІР°РЅРЅРѕР№ СЃС‚СЂРѕРєРµ (0 <= nNewCLPos <= m_nColumns)
+				//   m_pCodingLine[m_nCurPosCL] = РџРѕСЃР»РµРґРЅРµРµ РёР·РјРµРЅРµРЅРёРµ РІ РєРѕРґРёСЂРѕРІР°РЅРЅРѕР№ СЃС‚СЂРѕРєРµ
+				//                    (black-to-white, РµСЃР»Рё m_nCurPosCL С‡РµС‚РЅРѕ,
+				//                     white-to-black, РµСЃР»Рё m_nCurPosCL РЅРµС‡РµС‚РЅРѕ)
+				//   m_pRefLine[m_nCurPosRL] = РЎР»РµРґСѓСЋС‰РµРµ РёР·РјРµРЅРµРЅРёРµ РІ СЃСЃС‹Р»РѕС‡РЅРѕР№ СЃС‚СЂРѕРєРµ, РїСЂРѕС‚РёРІРѕРїРѕР»РѕР¶РЅРѕРіРѕ
+				//                    С†РІРµС‚Р°, С†РІРµС‚Сѓ m_nCurPosCL
+				// Р’ Р»СЋР±РѕР№ РјРѕРјРµРЅС‚ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РІРµСЂРЅРѕ:
 				//   0 <= m_pCodingLine[m_nCurPosCL] <= nNewCLPos <= m_pRefLine[m_nCurPosRL] <= m_pRefLine[m_nCurPosRL + 1] <= m_nColumns
 				//   0 <= m_nCurPosCL <= m_nColumns + 1
 				//   m_pRefLine[0] = 0
-				//   m_pRefLine[n] = m_pRefLine[n + 1] = columns -- для некоторого 1 <= n <= m_nColumns + 1
-				// Условие окончания алгоритма:
+				//   m_pRefLine[n] = m_pRefLine[n + 1] = columns -- РґР»СЏ РЅРµРєРѕС‚РѕСЂРѕРіРѕ 1 <= n <= m_nColumns + 1
+				// РЈСЃР»РѕРІРёРµ РѕРєРѕРЅС‡Р°РЅРёСЏ Р°Р»РіРѕСЂРёС‚РјР°:
 				//   0 = m_pCodingLine[0] <= m_pCodingLine[1] < m_pCodingLine[2] < ... < m_pCodingLine[n-1] < m_pCodingLine[n] = m_nColumns,
-				//   где <= n <= m_nColumns + 1
+				//   РіРґРµ <= n <= m_nColumns + 1
 
 				int nNewCLPos = 0;
 				for (nIndex = 0; m_pCodingLine[nIndex] < m_nColumns; ++nIndex)
@@ -1718,7 +1718,7 @@ namespace PdfReader
 			{
 				// TO DO: Error "CCITTFax row is wrong length "
 
-				// Выставляем корректную длину
+				// Р’С‹СЃС‚Р°РІР»СЏРµРј РєРѕСЂСЂРµРєС‚РЅСѓСЋ РґР»РёРЅСѓ
 				while (m_pCodingLine[m_nCurPosCL] > m_nColumns)
 				{
 					--m_nCurPosCL;
@@ -1732,7 +1732,7 @@ namespace PdfReader
 				m_nInputBits &= ~7;
 			}
 
-			// Проверяем символ конца строки, пропуска нулевые биты
+			// РџСЂРѕРІРµСЂСЏРµРј СЃРёРјРІРѕР» РєРѕРЅС†Р° СЃС‚СЂРѕРєРё, РїСЂРѕРїСѓСЃРєР° РЅСѓР»РµРІС‹Рµ Р±РёС‚С‹
 			bool bEOL = false;
 			if (!m_bEndOfBlock && m_mCurRow == m_nRows - 1)
 			{
@@ -1757,14 +1757,14 @@ namespace PdfReader
 				}
 			}
 
-			// Считываем тэг 2D кодировки
+			// РЎС‡РёС‚С‹РІР°РµРј С‚СЌРі 2D РєРѕРґРёСЂРѕРІРєРё
 			if (!m_bEOF && m_nK > 0)
 			{
 				m_bNextLine2D = !LookBits(1);
 				SkipBits(1);
 			}
 
-			// Проверяем символ конца блока(end-of-block marker)
+			// РџСЂРѕРІРµСЂСЏРµРј СЃРёРјРІРѕР» РєРѕРЅС†Р° Р±Р»РѕРєР°(end-of-block marker)
 			if (m_bEndOfBlock && bEOL)
 			{
 				nCode1 = LookBits(12);
@@ -1825,7 +1825,7 @@ namespace PdfReader
 			++m_mCurRow;
 		}
 
-		// Считываем один байт
+		// РЎС‡РёС‚С‹РІР°РµРј РѕРґРёРЅ Р±Р°Р№С‚
 		int nRet = 0;
 		if (m_nOutputBits >= 8)
 		{
@@ -2061,8 +2061,8 @@ namespace PdfReader
 				{
 					return EOF;
 				}
-				// Вблизи конца потока может оказаться, что запрашивается больше бит, чем 
-				// их осталось в потоке. Нужно возратить корректное значение в данном случае.
+				// Р’Р±Р»РёР·Рё РєРѕРЅС†Р° РїРѕС‚РѕРєР° РјРѕР¶РµС‚ РѕРєР°Р·Р°С‚СЊСЃСЏ, С‡С‚Рѕ Р·Р°РїСЂР°С€РёРІР°РµС‚СЃСЏ Р±РѕР»СЊС€Рµ Р±РёС‚, С‡РµРј 
+				// РёС… РѕСЃС‚Р°Р»РѕСЃСЊ РІ РїРѕС‚РѕРєРµ. РќСѓР¶РЅРѕ РІРѕР·СЂР°С‚РёС‚СЊ РєРѕСЂСЂРµРєС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РІ РґР°РЅРЅРѕРј СЃР»СѓС‡Р°Рµ.
 				return (m_nInputBuffer << (nCount - m_nInputBits)) & (0xffff >> (16 - nCount));
 			}
 			m_nInputBuffer = (m_nInputBuffer << 8) + nChar;
@@ -2127,7 +2127,7 @@ namespace PdfReader
 	// DCTStream
 	//---------------------------------------------------------------------------------------------------------------
 
-	// Константы для косинусного преобразования (20.12 fixed point format)
+	// РљРѕРЅСЃС‚Р°РЅС‚С‹ РґР»СЏ РєРѕСЃРёРЅСѓСЃРЅРѕРіРѕ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ (20.12 fixed point format)
 #define DCT_Cos_1_16    4017 // cos(pi/16)
 #define DCT_Sin_1_16     799 // sin(pi/16)
 #define DCT_Cos_3_16    3406 // cos(3*pi/16)
@@ -2138,7 +2138,7 @@ namespace PdfReader
 #define DCT_Sqrt_2      5793 // sqrt(2)
 #define DCT_Sqrt_2__2   2896 // sqrt(2) / 2
 
-	// Константы для преобразования цветов (16.16 fixed point format)
+	// РљРѕРЅСЃС‚Р°РЅС‚С‹ РґР»СЏ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ С†РІРµС‚РѕРІ (16.16 fixed point format)
 #define DCT_CrToR   91881	//  1.4020
 #define DCT_CbToG  -22553	// -0.3441363
 #define DCT_CrToG  -46802	// -0.71413636
@@ -2227,7 +2227,7 @@ namespace PdfReader
 			return;
 		}
 
-		// Вычислим размеры MCU
+		// Р’С‹С‡РёСЃР»РёРј СЂР°Р·РјРµСЂС‹ MCU
 		if (m_nComponentsCount == 1)
 		{
 			m_arrCompInfo[0].nXResolution = m_arrCompInfo[0].nYResolution = 1;
@@ -2276,7 +2276,7 @@ namespace PdfReader
 		if (m_bProgressive || !m_bInterleaved)
 		{
 
-			// Выделяем память для всей картинки
+			// Р’С‹РґРµР»СЏРµРј РїР°РјСЏС‚СЊ РґР»СЏ РІСЃРµР№ РєР°СЂС‚РёРЅРєРё
 			m_nBufferWidth = ((m_nWidth + m_nMCUWidth - 1) / m_nMCUWidth) * m_nMCUWidth;
 			m_nBufferHeight = ((m_nHeight + m_nMCUHeight - 1) / m_nMCUHeight) * m_nMCUHeight;
 
@@ -2286,17 +2286,17 @@ namespace PdfReader
 				memset(m_ppFrameBuffer[nIndex], 0, m_nBufferWidth * m_nBufferHeight * sizeof(int));
 			}
 
-			// Считываем данные картинки
+			// РЎС‡РёС‚С‹РІР°РµРј РґР°РЅРЅС‹Рµ РєР°СЂС‚РёРЅРєРё
 			do {
 				m_nRestartMarker = 0xd0;
 				Restart();
 				ReadScan();
 			} while (ReadHeader());
 
-			// Декодируем
+			// Р”РµРєРѕРґРёСЂСѓРµРј
 			DecodeImage();
 
-			// Обнуляем счетчики
+			// РћР±РЅСѓР»СЏРµРј СЃС‡РµС‚С‡РёРєРё
 			m_nCurComponent = 0;
 			m_nX = 0;
 			m_nY = 0;
@@ -2304,7 +2304,7 @@ namespace PdfReader
 		}
 		else
 		{
-			// Выделяем память под одну строку для MCU
+			// Р’С‹РґРµР»СЏРµРј РїР°РјСЏС‚СЊ РїРѕРґ РѕРґРЅСѓ СЃС‚СЂРѕРєСѓ РґР»СЏ MCU
 			m_nBufferWidth = ((m_nWidth + m_nMCUWidth - 1) / m_nMCUWidth) * m_nMCUWidth;
 			for (int nComp = 0; nComp < m_nComponentsCount; ++nComp)
 			{
@@ -2314,7 +2314,7 @@ namespace PdfReader
 				}
 			}
 
-			// Обнуляем счетчики
+			// РћР±РЅСѓР»СЏРµРј СЃС‡РµС‚С‡РёРєРё
 			m_nCurComponent = 0;
 			m_nX = 0;
 			m_nY = 0;
@@ -2430,7 +2430,7 @@ namespace PdfReader
 		m_nEOBRun = 0;
 	}
 
-	// Считываем одну строку из MCUs из соответствующего потока JPEG.
+	// РЎС‡РёС‚С‹РІР°РµРј РѕРґРЅСѓ СЃС‚СЂРѕРєСѓ РёР· MCUs РёР· СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ РїРѕС‚РѕРєР° JPEG.
 	bool DCTStream::ReadMCURow()
 	{
 		int arrRawData[64];
@@ -2440,7 +2440,7 @@ namespace PdfReader
 
 		for (x1 = 0; x1 < m_nWidth; x1 += m_nMCUWidth)
 		{
-			// Обрабатываем restart marker
+			// РћР±СЂР°Р±Р°С‚С‹РІР°РµРј restart marker
 			if (m_nRestartInterval > 0 && m_nRestartCtr == 0)
 			{
 				int nChar = ReadMarker();
@@ -2454,7 +2454,7 @@ namespace PdfReader
 				Restart();
 			}
 
-			// Считываем один MCU
+			// РЎС‡РёС‚С‹РІР°РµРј РѕРґРёРЅ MCU
 			for (int nComp = 0; nComp < m_nComponentsCount; ++nComp)
 			{
 				int nXRes = m_arrCompInfo[nComp].nXResolution;
@@ -2521,7 +2521,7 @@ namespace PdfReader
 			}
 			--m_nRestartCtr;
 
-			// Преобазуем пространство цветов 
+			// РџСЂРµРѕР±Р°Р·СѓРµРј РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ С†РІРµС‚РѕРІ 
 			if (m_nColorTransform)
 			{
 				// YCbCr -> RGB
@@ -2543,7 +2543,7 @@ namespace PdfReader
 						}
 					}
 				}
-				else if (m_nComponentsCount == 4) // YCbCrK -> CMYK (K оставляем неизменненным)
+				else if (m_nComponentsCount == 4) // YCbCrK -> CMYK (K РѕСЃС‚Р°РІР»СЏРµРј РЅРµРёР·РјРµРЅРЅРµРЅРЅС‹Рј)
 				{
 					for (y2 = 0; y2 < m_nMCUHeight; ++y2)
 					{
@@ -2566,7 +2566,7 @@ namespace PdfReader
 		return true;
 	}
 
-	// Только для progressive или не interleaved JPEG.
+	// РўРѕР»СЊРєРѕ РґР»СЏ progressive РёР»Рё РЅРµ interleaved JPEG.
 	void DCTStream::ReadScan()
 	{
 		int arrData[64];
@@ -2596,7 +2596,7 @@ namespace PdfReader
 			for (x1 = 0; x1 < m_nWidth; x1 += dx1)
 			{
 
-				// Обрабатываем restart marker
+				// РћР±СЂР°Р±Р°С‚С‹РІР°РµРј restart marker
 				if (m_nRestartInterval > 0 && m_nRestartCtr == 0)
 				{
 					int nChar = ReadMarker();
@@ -2612,7 +2612,7 @@ namespace PdfReader
 					Restart();
 				}
 
-				// Считываем один MCU
+				// РЎС‡РёС‚С‹РІР°РµРј РѕРґРёРЅ MCU
 				for (nComponent = 0; nComponent < m_nComponentsCount; ++nComponent)
 				{
 					if (!m_oCurScanInfo.arrbComponent[nComponent])
@@ -2744,7 +2744,7 @@ namespace PdfReader
 	{
 		int nRun = 0, nSize = 0, nAmp = 0, nBit = 0;
 
-		// DC кoэффициенты
+		// DC РєoСЌС„С„РёС†РёРµРЅС‚С‹
 		int nKoef = m_oCurScanInfo.nFirstKoef;
 		if (nKoef == 0)
 		{
@@ -2782,7 +2782,7 @@ namespace PdfReader
 			return true;
 		}
 
-		// Проверяем группу EOB
+		// РџСЂРѕРІРµСЂСЏРµРј РіСЂСѓРїРїСѓ EOB
 		if (m_nEOBRun > 0)
 		{
 			while (nKoef <= m_oCurScanInfo.nLastKoef)
@@ -2805,7 +2805,7 @@ namespace PdfReader
 		}
 
 		int nK = 0;
-		// считываем коэффициенты AC
+		// СЃС‡РёС‚С‹РІР°РµРј РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ AC
 		while (nKoef <= m_oCurScanInfo.nLastKoef)
 		{
 			int nSymbol = 0;
@@ -3002,7 +3002,7 @@ namespace PdfReader
 					}
 				}
 
-				// Преобразование пространства цветов
+				// РџСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІР° С†РІРµС‚РѕРІ
 				if (m_nColorTransform)
 				{
 					// YCbCr -> RGB
@@ -3027,7 +3027,7 @@ namespace PdfReader
 							}
 						}
 					}
-					else if (m_nComponentsCount == 4) // YCbCrK -> CMYK (K оставляем неизмененным)
+					else if (m_nComponentsCount == 4) // YCbCrK -> CMYK (K РѕСЃС‚Р°РІР»СЏРµРј РЅРµРёР·РјРµРЅРµРЅРЅС‹Рј)
 					{
 						for (y2 = 0; y2 < m_nMCUHeight; ++y2)
 						{
@@ -3059,18 +3059,18 @@ namespace PdfReader
 		int nTemp = 0;
 		int *pCurLine = NULL;
 
-		// Деквантизация
+		// Р”РµРєРІР°РЅС‚РёР·Р°С†РёСЏ
 		for (int nIndex = 0; nIndex < 64; ++nIndex)
 		{
 			arrDataIn[nIndex] *= pQuantTable[nIndex];
 		}
 
-		// Обратное синусно-косинусное преобразования (по строкам)
+		// РћР±СЂР°С‚РЅРѕРµ СЃРёРЅСѓСЃРЅРѕ-РєРѕСЃРёРЅСѓСЃРЅРѕРµ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ (РїРѕ СЃС‚СЂРѕРєР°Рј)
 		for (int nIndex = 0; nIndex < 64; nIndex += 8)
 		{
 			pCurLine = arrDataIn + nIndex;
 
-			// Проверяем случай, когда все коэффициенты равны 0
+			// РџСЂРѕРІРµСЂСЏРµРј СЃР»СѓС‡Р°Р№, РєРѕРіРґР° РІСЃРµ РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ СЂР°РІРЅС‹ 0
 			if (pCurLine[1] == 0 && pCurLine[2] == 0 && pCurLine[3] == 0 && pCurLine[4] == 0 && pCurLine[5] == 0 && pCurLine[6] == 0 && pCurLine[7] == 0)
 			{
 				nTemp = (DCT_Sqrt_2 * pCurLine[0] + 512) >> 10;
@@ -3085,7 +3085,7 @@ namespace PdfReader
 				continue;
 			}
 
-			// Шаг 4 (Сдвиг на 128)
+			// РЁР°Рі 4 (РЎРґРІРёРі РЅР° 128)
 			arrBuffer[0] = (DCT_Sqrt_2 * pCurLine[0] + 128) >> 8;
 			arrBuffer[1] = (DCT_Sqrt_2 * pCurLine[4] + 128) >> 8;
 			arrBuffer[2] = pCurLine[2];
@@ -3095,7 +3095,7 @@ namespace PdfReader
 			arrBuffer[5] = pCurLine[3] << 4;
 			arrBuffer[6] = pCurLine[5] << 4;
 
-			// Шаг 3
+			// РЁР°Рі 3
 			nTemp = (arrBuffer[0] - arrBuffer[1] + 1) >> 1;
 			arrBuffer[0] = (arrBuffer[0] + arrBuffer[1] + 1) >> 1;
 			arrBuffer[1] = nTemp;
@@ -3109,7 +3109,7 @@ namespace PdfReader
 			arrBuffer[5] = (arrBuffer[7] - arrBuffer[5] + 1) >> 1;
 			arrBuffer[7] = nTemp;
 
-			// Шаг 2
+			// РЁР°Рі 2
 			nTemp = (arrBuffer[0] - arrBuffer[3] + 1) >> 1;
 			arrBuffer[0] = (arrBuffer[0] + arrBuffer[3] + 1) >> 1;
 			arrBuffer[3] = nTemp;
@@ -3123,7 +3123,7 @@ namespace PdfReader
 			arrBuffer[5] = (arrBuffer[5] * DCT_Cos_1_16 - arrBuffer[6] * DCT_Sin_1_16 + 2048) >> 12;
 			arrBuffer[6] = nTemp;
 
-			// Шаг 1
+			// РЁР°Рі 1
 			pCurLine[0] = arrBuffer[0] + arrBuffer[7];
 			pCurLine[7] = arrBuffer[0] - arrBuffer[7];
 			pCurLine[1] = arrBuffer[1] + arrBuffer[6];
@@ -3134,12 +3134,12 @@ namespace PdfReader
 			pCurLine[4] = arrBuffer[3] - arrBuffer[4];
 		}
 
-		// Обратное синусно-косинусное преобразования (по столбцам)
+		// РћР±СЂР°С‚РЅРѕРµ СЃРёРЅСѓСЃРЅРѕ-РєРѕСЃРёРЅСѓСЃРЅРѕРµ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ (РїРѕ СЃС‚РѕР»Р±С†Р°Рј)
 		for (int nIndex = 0; nIndex < 8; ++nIndex)
 		{
 			pCurLine = arrDataIn + nIndex;
 
-			// проверяем все ли коэффициенты нулевые
+			// РїСЂРѕРІРµСЂСЏРµРј РІСЃРµ Р»Рё РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ РЅСѓР»РµРІС‹Рµ
 			if (pCurLine[1 * 8] == 0 && pCurLine[2 * 8] == 0 && pCurLine[3 * 8] == 0 && pCurLine[4 * 8] == 0 && pCurLine[5 * 8] == 0 && pCurLine[6 * 8] == 0 && pCurLine[7 * 8] == 0)
 			{
 				nTemp = (DCT_Sqrt_2 * arrDataIn[nIndex + 0] + 8192) >> 14;
@@ -3154,7 +3154,7 @@ namespace PdfReader
 				continue;
 			}
 
-			// Шаг 4
+			// РЁР°Рі 4
 			arrBuffer[0] = (DCT_Sqrt_2 * pCurLine[0 * 8] + 2048) >> 12;
 			arrBuffer[1] = (DCT_Sqrt_2 * pCurLine[4 * 8] + 2048) >> 12;
 			arrBuffer[2] = pCurLine[2 * 8];
@@ -3164,7 +3164,7 @@ namespace PdfReader
 			arrBuffer[5] = pCurLine[3 * 8];
 			arrBuffer[6] = pCurLine[5 * 8];
 
-			// Шаг 3
+			// РЁР°Рі 3
 			nTemp = (arrBuffer[0] - arrBuffer[1] + 1) >> 1;
 			arrBuffer[0] = (arrBuffer[0] + arrBuffer[1] + 1) >> 1;
 			arrBuffer[1] = nTemp;
@@ -3178,7 +3178,7 @@ namespace PdfReader
 			arrBuffer[5] = (arrBuffer[7] - arrBuffer[5] + 1) >> 1;
 			arrBuffer[7] = nTemp;
 
-			// Шаг 2
+			// РЁР°Рі 2
 			nTemp = (arrBuffer[0] - arrBuffer[3] + 1) >> 1;
 			arrBuffer[0] = (arrBuffer[0] + arrBuffer[3] + 1) >> 1;
 			arrBuffer[3] = nTemp;
@@ -3192,7 +3192,7 @@ namespace PdfReader
 			arrBuffer[5] = (arrBuffer[5] * DCT_Cos_1_16 - arrBuffer[6] * DCT_Sin_1_16 + 2048) >> 12;
 			arrBuffer[6] = nTemp;
 
-			// Шаг 1
+			// РЁР°Рі 1
 			pCurLine[0 * 8] = arrBuffer[0] + arrBuffer[7];
 			pCurLine[7 * 8] = arrBuffer[0] - arrBuffer[7];
 			pCurLine[1 * 8] = arrBuffer[1] + arrBuffer[6];
@@ -3276,7 +3276,7 @@ namespace PdfReader
 
 	bool DCTStream::ReadHeader()
 	{
-		// Читаем заголовок
+		// Р§РёС‚Р°РµРј Р·Р°РіРѕР»РѕРІРѕРє
 		bool bDoScan = false;
 		while (!bDoScan)
 		{
@@ -3341,7 +3341,7 @@ namespace PdfReader
 				// TO DO : Error "Bad DCT header"
 				return false;
 				default:
-				// Пропускам маркеры типа: APPn, COM и т.д.
+				// РџСЂРѕРїСѓСЃРєР°Рј РјР°СЂРєРµСЂС‹ С‚РёРїР°: APPn, COM Рё С‚.Рґ.
 				if (nChar >= 0xe0)
 				{
 					int nCount = Read16() - 2;
@@ -3450,9 +3450,9 @@ namespace PdfReader
 		for (int nIndex = 0; nIndex < m_oCurScanInfo.nComponentsCount; ++nIndex)
 		{
 			int nID = m_pStream->GetChar();
-			// некоторые(некорректные) DCT потоки используют свои ID числа много раз, но как минимум 
-			// в потоке компоненты идут по порядку, поэтому мы сначала проверяем m_arrCompInfo[i], чтобы
-			// решить данную пробему
+			// РЅРµРєРѕС‚РѕСЂС‹Рµ(РЅРµРєРѕСЂСЂРµРєС‚РЅС‹Рµ) DCT РїРѕС‚РѕРєРё РёСЃРїРѕР»СЊР·СѓСЋС‚ СЃРІРѕРё ID С‡РёСЃР»Р° РјРЅРѕРіРѕ СЂР°Р·, РЅРѕ РєР°Рє РјРёРЅРёРјСѓРј 
+			// РІ РїРѕС‚РѕРєРµ РєРѕРјРїРѕРЅРµРЅС‚С‹ РёРґСѓС‚ РїРѕ РїРѕСЂСЏРґРєСѓ, РїРѕСЌС‚РѕРјСѓ РјС‹ СЃРЅР°С‡Р°Р»Р° РїСЂРѕРІРµСЂСЏРµРј m_arrCompInfo[i], С‡С‚РѕР±С‹
+			// СЂРµС€РёС‚СЊ РґР°РЅРЅСѓСЋ РїСЂРѕР±РµРјСѓ
 			if (nID == m_arrCompInfo[nIndex].nID)
 			{
 				nComp = nIndex;
@@ -4598,7 +4598,7 @@ namespace PdfReader
 
 		m_bEndOfBlock = m_bEOF = true;
 
-		//читаем заголовок
+		//С‡РёС‚Р°РµРј Р·Р°РіРѕР»РѕРІРѕРє
 		int nCmf = m_pStream->GetChar();
 		int nFlag = m_pStream->GetChar();
 		if (nCmf == EOF || nFlag == EOF)
@@ -4781,7 +4781,7 @@ namespace PdfReader
 
 	bool FlateStream::StartBlock()
 	{
-		// Освобождаем таблицы кодов из предыдущего блока
+		// РћСЃРІРѕР±РѕР¶РґР°РµРј С‚Р°Р±Р»РёС†С‹ РєРѕРґРѕРІ РёР· РїСЂРµРґС‹РґСѓС‰РµРіРѕ Р±Р»РѕРєР°
 		if (m_oLiteratCodeTable.pCodes != m_oFixedLiteralCodeTable.pCodes)
 		{
 			MemUtilsFree(m_oLiteratCodeTable.pCodes);
@@ -4793,7 +4793,7 @@ namespace PdfReader
 		}
 		m_oDistanceCodeTable.pCodes = NULL;
 
-		// Считываем заголовок блока
+		// РЎС‡РёС‚С‹РІР°РµРј Р·Р°РіРѕР»РѕРІРѕРє Р±Р»РѕРєР°
 		int nBlockHeader = GetCodeWord(3);
 		if (nBlockHeader & 1)
 			m_bEOF = true;
@@ -5018,10 +5018,10 @@ namespace PdfReader
 		return true;
 	}
 
-	// Конвертируем массив <pLengths>, в таблицу Хаффмана(сортируя по значениям)
+	// РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј РјР°СЃСЃРёРІ <pLengths>, РІ С‚Р°Р±Р»РёС†Сѓ РҐР°С„С„РјР°РЅР°(СЃРѕСЂС‚РёСЂСѓСЏ РїРѕ Р·РЅР°С‡РµРЅРёСЏРј)
 	void FlateStream::ConvertHuffmanCodes(int *pLengths, int nCount, FlateHuffmanTable *pTable)
 	{
-		// Ищем макимальный элемент
+		// РС‰РµРј РјР°РєРёРјР°Р»СЊРЅС‹Р№ СЌР»РµРјРµРЅС‚
 		pTable->nMaxLen = 0;
 		for (int nValue = 0; nValue < nCount; ++nValue)
 		{
@@ -5031,18 +5031,18 @@ namespace PdfReader
 			}
 		}
 
-		// Выделяем место для таблицы
+		// Р’С‹РґРµР»СЏРµРј РјРµСЃС‚Рѕ РґР»СЏ С‚Р°Р±Р»РёС†С‹
 		int nTableSize = 1 << pTable->nMaxLen;
 		pTable->pCodes = (FlateHuffmanCode *)MemUtilsMallocArray(nTableSize, sizeof(FlateHuffmanCode));
 
-		// Очищаем таблицу
+		// РћС‡РёС‰Р°РµРј С‚Р°Р±Р»РёС†Сѓ
 		for (int nIndex = 0; nIndex < nTableSize; ++nIndex)
 		{
 			pTable->pCodes[nIndex].nLength = 0;
 			pTable->pCodes[nIndex].nValue = 0;
 		}
 
-		// Заполняем таблицу
+		// Р—Р°РїРѕР»РЅСЏРµРј С‚Р°Р±Р»РёС†Сѓ
 		int nLen = 0, nSkip = 0, nCode = 0;
 		for (nLen = 1, nCode = 0, nSkip = 2; nLen <= pTable->nMaxLen; ++nLen, nCode <<= 1, nSkip <<= 1)
 		{
@@ -5364,7 +5364,7 @@ namespace PdfReader
 	}
 
 	//
-	// После выполнения функции FillBuffer, m_sBuffer[] выглядит следующим образом:
+	// РџРѕСЃР»Рµ РІС‹РїРѕР»РЅРµРЅРёСЏ С„СѓРЅРєС†РёРё FillBuffer, m_sBuffer[] РІС‹РіР»СЏРґРёС‚ СЃР»РµРґСѓСЋС‰РёРј РѕР±СЂР°Р·РѕРј:
 	//   +-----+--------------+-----------------+--
 	//   + tag | ... data ... | next 0, 1, or 2 |
 	//   +-----+--------------+-----------------+--
@@ -5376,7 +5376,7 @@ namespace PdfReader
 		if (m_bEOF)
 			return false;
 
-		// считываем два байта
+		// СЃС‡РёС‚С‹РІР°РµРј РґРІР° Р±Р°Р№С‚Р°
 		int nChar1 = 0, nChar2 = 0;
 		if (m_pNextEnd < m_pBufferEnd + 1)
 		{

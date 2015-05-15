@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_UTF8_H
+﻿#ifndef _PDF_READER_UTF8_H
 #define _PDF_READER_UTF8_H
 
 namespace PdfReader

@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_RENDERER_OUTPUTDEV_H
+п»ї#ifndef _PDF_READER_RENDERER_OUTPUTDEV_H
 #define _PDF_READER_RENDERER_OUTPUTDEV_H
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
@@ -21,14 +21,14 @@ namespace PdfReader
 	//-------------------------------------------------------------------------------------------------------------------------------
 	struct TFontEntry
 	{
-		Ref             oRef;             // Ссылка на объект-шрифт
-		std::wstring    wsFilePath;       // Путь к шрифту на диске
-		std::wstring    wsFontName;       // Имя шрифта, которое записано в PDF(ветка для случаев, когда имя шрифта в самом шрифте не указано)
-		unsigned short *pCodeToGID;       // Таблица код - номер глифа в шрифте
-		unsigned short *pCodeToUnicode;   // Таблица код - юникодное значение
-		unsigned int    unLenGID;         // Количество элементов в таблицах
+		Ref             oRef;             // РЎСЃС‹Р»РєР° РЅР° РѕР±СЉРµРєС‚-С€СЂРёС„С‚
+		std::wstring    wsFilePath;       // РџСѓС‚СЊ Рє С€СЂРёС„С‚Сѓ РЅР° РґРёСЃРєРµ
+		std::wstring    wsFontName;       // РРјСЏ С€СЂРёС„С‚Р°, РєРѕС‚РѕСЂРѕРµ Р·Р°РїРёСЃР°РЅРѕ РІ PDF(РІРµС‚РєР° РґР»СЏ СЃР»СѓС‡Р°РµРІ, РєРѕРіРґР° РёРјСЏ С€СЂРёС„С‚Р° РІ СЃР°РјРѕРј С€СЂРёС„С‚Рµ РЅРµ СѓРєР°Р·Р°РЅРѕ)
+		unsigned short *pCodeToGID;       // РўР°Р±Р»РёС†Р° РєРѕРґ - РЅРѕРјРµСЂ РіР»РёС„Р° РІ С€СЂРёС„С‚Рµ
+		unsigned short *pCodeToUnicode;   // РўР°Р±Р»РёС†Р° РєРѕРґ - СЋРЅРёРєРѕРґРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ
+		unsigned int    unLenGID;         // РљРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ РІ С‚Р°Р±Р»РёС†Р°С…
 		unsigned int    unLenUnicode;     //
-		bool            bAvailable;       // Доступен ли шрифт. Сделано для многопотоковости
+		bool            bAvailable;       // Р”РѕСЃС‚СѓРїРµРЅ Р»Рё С€СЂРёС„С‚. РЎРґРµР»Р°РЅРѕ РґР»СЏ РјРЅРѕРіРѕРїРѕС‚РѕРєРѕРІРѕСЃС‚Рё
 		
 	};
 
@@ -57,7 +57,7 @@ namespace PdfReader
 		}
 		void        Add(Ref& oRef, TFontEntry* pFontEntry)
 		{
-			// До вызова данной функции надо проверять есть ли элемент с данным ключом
+			// Р”Рѕ РІС‹Р·РѕРІР° РґР°РЅРЅРѕР№ С„СѓРЅРєС†РёРё РЅР°РґРѕ РїСЂРѕРІРµСЂСЏС‚СЊ РµСЃС‚СЊ Р»Рё СЌР»РµРјРµРЅС‚ СЃ РґР°РЅРЅС‹Рј РєР»СЋС‡РѕРј
 			m_oFontMap.insert(std::pair<Ref, TFontEntry*>(oRef, pFontEntry));
 		}
 
@@ -65,7 +65,7 @@ namespace PdfReader
 
 		typedef std::map<Ref, TFontEntry*>  CRefFontMap;
 		CRefFontMap                         m_oFontMap;
-		NSCriticalSection::CRITICAL_SECTION m_oCS;       // Критическая секция
+		NSCriticalSection::CRITICAL_SECTION m_oCS;       // РљСЂРёС‚РёС‡РµСЃРєР°СЏ СЃРµРєС†РёСЏ
 	};
 	//-------------------------------------------------------------------------------------------------------------------------------
 	template <typename T>
@@ -151,7 +151,7 @@ namespace PdfReader
 		//----- Save/Restore GState
 		virtual void SaveGState(GrState *pGState);
 		virtual void RestoreGState(GrState *pGState);
-		//----- Изменение параметров в GState
+		//----- РР·РјРµРЅРµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ РІ GState
 		virtual void UpdateCTM(GrState *pGState, double dMatrix11, double dMatrix12, double dMatrix21, double dMatrix22, double dMatrix31, double dMatrix32);
 		virtual void UpdateLineDash(GrState *pGState);
 		virtual void UpdateFlatness(GrState *pGState);
@@ -167,9 +167,9 @@ namespace PdfReader
 		virtual void UpdateStrokeOpacity(GrState *pGState);
 		virtual void UpdateAll(GrState *pGState);
 		virtual void UpdateRender(GrState *pGState);
-		//----- Изменение текстовых параметров
+		//----- РР·РјРµРЅРµРЅРёРµ С‚РµРєСЃС‚РѕРІС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ
 		virtual void UpdateFont(GrState *pGState);
-		//----- Рисование Path
+		//----- Р РёСЃРѕРІР°РЅРёРµ Path
 		virtual void Stroke(GrState *pGState);
 		virtual void Fill(GrState *pGState);
 		virtual void EoFill(GrState *pGState);
@@ -196,7 +196,7 @@ namespace PdfReader
 		virtual void EoClip(GrState *pGState);
 		virtual void ClipToStrokePath(GrState *pGState);
 		virtual void ClipToPath(GrState *pGState, GrPath *pPath, double *pMatrix, bool bEO);
-		//----- Вывод текста
+		//----- Р’С‹РІРѕРґ С‚РµРєСЃС‚Р°
 		virtual void BeginStringOperator(GrState *pGState);
 		virtual void EndStringOperator(GrState *pGState);
 		virtual void DrawString(GrState *pGState, StringExt *seString);
@@ -205,18 +205,18 @@ namespace PdfReader
 		void EndType3Char(GrState *pGState);
 		void Type3D0(GrState *pGState, double dWx, double dWy);
 		void Type3D1(GrState *pGState, double dWx, double dWy, double dBLx, double dBLy, double dTRx, double dTRy);
-		//----- Вывод картинок
+		//----- Р’С‹РІРѕРґ РєР°СЂС‚РёРЅРѕРє
 		virtual void DrawImageMask(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, bool bInvert, bool bInlineImage);
 		virtual void DrawImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, int *pMaskColors, bool bInlineImg);
 		virtual void DrawMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, bool bMaskInvert);
 		virtual void DrawSoftMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, GrImageColorMap *pMaskColorMap);
-		//----- Transparency groups и SMasks
+		//----- Transparency groups Рё SMasks
 		virtual void BeginTransparencyGroup(GrState *pGState, double *pBBox, GrColorSpace *pBlendingColorSpace, bool bIsolated, bool bKnockout, bool bForSoftMask);
 		virtual void EndTransparencyGroup(GrState *pGState);
 		virtual void PaintTransparencyGroup(GrState *pGState, double *pBBox);
 		virtual void SetSoftMask(GrState *pGState, double *pBBox, bool bAlpha, Function *pTransferFunc, GrColor *pBackdropColor);
 		virtual void ClearSoftMask(GrState *pGState);
-		//----- Дополнительные функции для данного устройства
+		//----- Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё РґР»СЏ РґР°РЅРЅРѕРіРѕ СѓСЃС‚СЂРѕР№СЃС‚РІР°
 		void NewPDF(XRef *pXref);
 		void SetBreak(bool* pbBreak)
 		{
@@ -239,10 +239,10 @@ namespace PdfReader
 
 		GrTextClip                   *m_pBufferTextClip;
 
-		XRef                         *m_pXref;           // Таблица Xref для данного PDF-документа
+		XRef                         *m_pXref;           // РўР°Р±Р»РёС†Р° Xref РґР»СЏ РґР°РЅРЅРѕРіРѕ PDF-РґРѕРєСѓРјРµРЅС‚Р°
 		CFontList                    *m_pFontList;
 
-		bool                         *m_pbBreak;         // Внешняя остановка рендерера
+		bool                         *m_pbBreak;         // Р’РЅРµС€РЅСЏСЏ РѕСЃС‚Р°РЅРѕРІРєР° СЂРµРЅРґРµСЂРµСЂР°
 
 		bool                          m_bUseAxialShaded;
 		bool                          m_bUseRadialShaded;

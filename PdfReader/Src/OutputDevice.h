@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_OUTPUT_DEVICE_H
+п»ї#ifndef _PDF_READER_OUTPUT_DEVICE_H
 #define _PDF_READER_OUTPUT_DEVICE_H
 
 #include "CharTypes.h"
@@ -34,113 +34,113 @@ namespace PdfReader
 
 		virtual ~OutputDev() {}
 
-		//------ Информация о выходном устройстве
+		//------ РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РІС‹С…РѕРґРЅРѕРј СѓСЃС‚СЂРѕР№СЃС‚РІРµ
 
-		// True, если точка с координатой (0,0) находится в левом верхнем углу.
+		// True, РµСЃР»Рё С‚РѕС‡РєР° СЃ РєРѕРѕСЂРґРёРЅР°С‚РѕР№ (0,0) РЅР°С…РѕРґРёС‚СЃСЏ РІ Р»РµРІРѕРј РІРµСЂС…РЅРµРј СѓРіР»Сѓ.
 		virtual bool UpSideDown() = 0;
 
-		// Вывод текста с помощью функции DrawChar() или DrawString()?
+		// Р’С‹РІРѕРґ С‚РµРєСЃС‚Р° СЃ РїРѕРјРѕС‰СЊСЋ С„СѓРЅРєС†РёРё DrawChar() РёР»Рё DrawString()?
 		virtual bool UseDrawChar() = 0;
 
-		// Поддерживает ли данное устройство TilingPatternFill?  Если нет, тогда
-		// TilingPatternFill будет рисоваться с помощью комбинации более простых
-		// графических примитивов.
+		// РџРѕРґРґРµСЂР¶РёРІР°РµС‚ Р»Рё РґР°РЅРЅРѕРµ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ TilingPatternFill?  Р•СЃР»Рё РЅРµС‚, С‚РѕРіРґР°
+		// TilingPatternFill Р±СѓРґРµС‚ СЂРёСЃРѕРІР°С‚СЊСЃСЏ СЃ РїРѕРјРѕС‰СЊСЋ РєРѕРјР±РёРЅР°С†РёРё Р±РѕР»РµРµ РїСЂРѕСЃС‚С‹С…
+		// РіСЂР°С„РёС‡РµСЃРєРёС… РїСЂРёРјРёС‚РёРІРѕРІ.
 		virtual bool UseTilingPatternFill()
 		{
 			return false;
 		}
 
-		// Поддерживает ли данное устройство SimpleTilingPatternFill?  Если нет, тогда
-		// TilingPatternFill будет рисоваться с помощью комбинации более простых
-		// графических примитивов.
+		// РџРѕРґРґРµСЂР¶РёРІР°РµС‚ Р»Рё РґР°РЅРЅРѕРµ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ SimpleTilingPatternFill?  Р•СЃР»Рё РЅРµС‚, С‚РѕРіРґР°
+		// TilingPatternFill Р±СѓРґРµС‚ СЂРёСЃРѕРІР°С‚СЊСЃСЏ СЃ РїРѕРјРѕС‰СЊСЋ РєРѕРјР±РёРЅР°С†РёРё Р±РѕР»РµРµ РїСЂРѕСЃС‚С‹С…
+		// РіСЂР°С„РёС‡РµСЃРєРёС… РїСЂРёРјРёС‚РёРІРѕРІ.
 		virtual bool UseSimpleTilingPatternFill()
 		{
 			return false;
 		}
 
-		// Поддерживает ли данное устройство FunctionShadedFill? Если нет, тогда данные
-		// Shaded fills будут заменены комбинацией более простых графических примитивов.
+		// РџРѕРґРґРµСЂР¶РёРІР°РµС‚ Р»Рё РґР°РЅРЅРѕРµ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ FunctionShadedFill? Р•СЃР»Рё РЅРµС‚, С‚РѕРіРґР° РґР°РЅРЅС‹Рµ
+		// Shaded fills Р±СѓРґСѓС‚ Р·Р°РјРµРЅРµРЅС‹ РєРѕРјР±РёРЅР°С†РёРµР№ Р±РѕР»РµРµ РїСЂРѕСЃС‚С‹С… РіСЂР°С„РёС‡РµСЃРєРёС… РїСЂРёРјРёС‚РёРІРѕРІ.
 		virtual bool UseFunctionalShadedFills()
 		{
 			return false;
 		}
-		// Поддерживает ли данное устройство AxialShadedFill? Если нет, тогда данные
-		// Shaded fills будут заменены комбинацией более простых графических примитивов.
+		// РџРѕРґРґРµСЂР¶РёРІР°РµС‚ Р»Рё РґР°РЅРЅРѕРµ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ AxialShadedFill? Р•СЃР»Рё РЅРµС‚, С‚РѕРіРґР° РґР°РЅРЅС‹Рµ
+		// Shaded fills Р±СѓРґСѓС‚ Р·Р°РјРµРЅРµРЅС‹ РєРѕРјР±РёРЅР°С†РёРµР№ Р±РѕР»РµРµ РїСЂРѕСЃС‚С‹С… РіСЂР°С„РёС‡РµСЃРєРёС… РїСЂРёРјРёС‚РёРІРѕРІ.
 		virtual bool UseAxialShadedFills()
 		{
 			return false;
 		}
-		// Поддерживает ли данное устройство RadialShadedFill? Если нет, тогда данные
-		// Shaded fills будут заменены комбинацией более простых графических примитивов.
+		// РџРѕРґРґРµСЂР¶РёРІР°РµС‚ Р»Рё РґР°РЅРЅРѕРµ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ RadialShadedFill? Р•СЃР»Рё РЅРµС‚, С‚РѕРіРґР° РґР°РЅРЅС‹Рµ
+		// Shaded fills Р±СѓРґСѓС‚ Р·Р°РјРµРЅРµРЅС‹ РєРѕРјР±РёРЅР°С†РёРµР№ Р±РѕР»РµРµ РїСЂРѕСЃС‚С‹С… РіСЂР°С„РёС‡РµСЃРєРёС… РїСЂРёРјРёС‚РёРІРѕРІ.
 		virtual bool UseRadialShadedFills()
 		{
 			return false;
 		}
 
-		// Поддерживается ли DrawForm()?
+		// РџРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ Р»Рё DrawForm()?
 		virtual bool UseDrawForm()
 		{
 			return false;
 		}
 
-		// Используем команду ClipToPath для клипа или команды Clip, EoClip, ClipToPathStroke
+		// РСЃРїРѕР»СЊР·СѓРµРј РєРѕРјР°РЅРґСѓ ClipToPath РґР»СЏ РєР»РёРїР° РёР»Рё РєРѕРјР°РЅРґС‹ Clip, EoClip, ClipToPathStroke
 		virtual bool UseClipTo()
 		{
 			return false;
 		}
 
 
-		// Использует ли данное устройство методы BeginType3Char/EndType3Char?
-		// В противном случае тект в шрифте Type3 будет выводится с помощью
-		// функций DrawChar/DrawString.
+		// РСЃРїРѕР»СЊР·СѓРµС‚ Р»Рё РґР°РЅРЅРѕРµ СѓСЃС‚СЂРѕР№СЃС‚РІРѕ РјРµС‚РѕРґС‹ BeginType3Char/EndType3Char?
+		// Р’ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ С‚РµРєС‚ РІ С€СЂРёС„С‚Рµ Type3 Р±СѓРґРµС‚ РІС‹РІРѕРґРёС‚СЃСЏ СЃ РїРѕРјРѕС‰СЊСЋ
+		// С„СѓРЅРєС†РёР№ DrawChar/DrawString.
 		virtual bool InterpretType3Chars() = 0;
 
-		// Поддерживается ли данным устройством что-нибудь кроме текста?
+		// РџРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ Р»Рё РґР°РЅРЅС‹Рј СѓСЃС‚СЂРѕР№СЃС‚РІРѕРј С‡С‚Рѕ-РЅРёР±СѓРґСЊ РєСЂРѕРјРµ С‚РµРєСЃС‚Р°?
 		virtual bool NeedNonText()
 		{
 			return true;
 		}
 
-		// Поддерживается ли данным устройствой одновременные обводка и заливка Path
+		// РџРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ Р»Рё РґР°РЅРЅС‹Рј СѓСЃС‚СЂРѕР№СЃС‚РІРѕР№ РѕРґРЅРѕРІСЂРµРјРµРЅРЅС‹Рµ РѕР±РІРѕРґРєР° Рё Р·Р°Р»РёРІРєР° Path
 		virtual bool UseFillAndStroke()
 		{
 			return false;
 		}
 
-		// В каком виде мы используем группу прозрачных объектов
+		// Р’ РєР°РєРѕРј РІРёРґРµ РјС‹ РёСЃРїРѕР»СЊР·СѓРµРј РіСЂСѓРїРїСѓ РїСЂРѕР·СЂР°С‡РЅС‹С… РѕР±СЉРµРєС‚РѕРІ
 		virtual bool UseSimpleTransparentGroup()
 		{
 			return false;
 		}
 
-		//------ Информация о выходном устройстве
+		//------ РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РІС‹С…РѕРґРЅРѕРј СѓСЃС‚СЂРѕР№СЃС‚РІРµ
 
-		// Устанавливаем стандартную матрицу преобразований.
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃС‚Р°РЅРґР°СЂС‚РЅСѓСЋ РјР°С‚СЂРёС†Сѓ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёР№.
 		virtual void SetDefaultCTM(double *pCTM);
 
-		// Проверяем, должна ли мы показывать данную часть страницы. Если возращаемое
-		// значение False, показ страницы прерывается. Как правило, OutputDev будет 
-		// использовать дополнительные средства, чтобы показать страницу, прежде чем
-		// вернет значение False.
+		// РџСЂРѕРІРµСЂСЏРµРј, РґРѕР»Р¶РЅР° Р»Рё РјС‹ РїРѕРєР°Р·С‹РІР°С‚СЊ РґР°РЅРЅСѓСЋ С‡Р°СЃС‚СЊ СЃС‚СЂР°РЅРёС†С‹. Р•СЃР»Рё РІРѕР·СЂР°С‰Р°РµРјРѕРµ
+		// Р·РЅР°С‡РµРЅРёРµ False, РїРѕРєР°Р· СЃС‚СЂР°РЅРёС†С‹ РїСЂРµСЂС‹РІР°РµС‚СЃСЏ. РљР°Рє РїСЂР°РІРёР»Рѕ, OutputDev Р±СѓРґРµС‚ 
+		// РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ СЃСЂРµРґСЃС‚РІР°, С‡С‚РѕР±С‹ РїРѕРєР°Р·Р°С‚СЊ СЃС‚СЂР°РЅРёС†Сѓ, РїСЂРµР¶РґРµ С‡РµРј
+		// РІРµСЂРЅРµС‚ Р·РЅР°С‡РµРЅРёРµ False.
 		virtual bool CheckPageSlice(Page *pPage, double dHorDPI, double dVerDPI, int nRotate, bool bUseMediaBox, bool bCrop, int nSliceX, int nSliceY, int nSliceW, int nSliceH, bool bPrinting, Catalog *pCatalog, bool(*pAbortCheckCallBack)(void *pData) = NULL, void *pAbortCheckData = NULL)
 		{
 			return true;
 		}
 
-		// Новая страница.
+		// РќРѕРІР°СЏ СЃС‚СЂР°РЅРёС†Р°.
 		virtual void StartPage(int nPageNum, GrState *pGState) {}
-		// Конец страницы.
+		// РљРѕРЅРµС† СЃС‚СЂР°РЅРёС†С‹.
 		virtual void EndPage() {}
 
-		// Вывод содержимого страницы.
+		// Р’С‹РІРѕРґ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ СЃС‚СЂР°РЅРёС†С‹.
 		virtual void Dump() {}
 
-		// Остановка вывода
+		// РћСЃС‚Р°РЅРѕРІРєР° РІС‹РІРѕРґР°
 		virtual bool IsStopped() { return false; }
 
-		//----- Системы координат (пользовательские и устройства)
+		//----- РЎРёСЃС‚РµРјС‹ РєРѕРѕСЂРґРёРЅР°С‚ (РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёРµ Рё СѓСЃС‚СЂРѕР№СЃС‚РІР°)
 
-		// Конвертации
+		// РљРѕРЅРІРµСЂС‚Р°С†РёРё
 		virtual void ConvertDeviceToUser(double dDevX, double dDevY, double *pdUserX, double *pdUserY);
 		virtual void ConvertUserToDevice(double dUserX, double dUserY, int *pnDevX, int *pnDevY);
 
@@ -157,7 +157,7 @@ namespace PdfReader
 		virtual void SaveGState(GrState *pGState) {}
 		virtual void RestoreGState(GrState *pGState) {}
 
-		//----- Изменение параметров в GState
+		//----- РР·РјРµРЅРµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ РІ GState
 		virtual void UpdateAll(GrState *pGState);
 		virtual void UpdateCTM(GrState *pGState, double dM11, double dM12, double dM21, double dM22, double dM31, double dM32) {}
 		virtual void UpdateLineDash(GrState *pGState) {}
@@ -178,7 +178,7 @@ namespace PdfReader
 		virtual void UpdateStrokeOverprint(GrState *pGState) {}
 		virtual void UpdateTransfer(GrState *pGState) {}
 
-		//----- Изменение текстовых параметров
+		//----- РР·РјРµРЅРµРЅРёРµ С‚РµРєСЃС‚РѕРІС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ
 		virtual void UpdateFont(GrState *pGState) {}
 		virtual void UpdateTextMatrix(GrState *pGState) {}
 		virtual void UpdateCharSpace(GrState *pGState) {}
@@ -189,7 +189,7 @@ namespace PdfReader
 		virtual void UpdateTextPos(GrState *pGState) {}
 		virtual void UpdateTextShift(GrState *pGState, double dShift) {}
 
-		//----- Рисование Path
+		//----- Р РёСЃРѕРІР°РЅРёРµ Path
 		virtual void Stroke(GrState *pGState) {}
 		virtual void Fill(GrState *pGState) {}
 		virtual void EoFill(GrState *pGState) {}
@@ -226,7 +226,7 @@ namespace PdfReader
 		virtual void ClipToStrokePath(GrState *pGState) {}
 		virtual void ClipToPath(GrState *pGState, GrPath *pPath, double *pMatrix, bool bEO) {}
 
-		//----- Вывод текста
+		//----- Р’С‹РІРѕРґ С‚РµРєСЃС‚Р°
 		virtual void BeginStringOperator(GrState *pGState) {}
 		virtual void EndStringOperator(GrState *pGState) {}
 		virtual void BeginString(GrState *pGState, StringExt *seString) {}
@@ -238,7 +238,7 @@ namespace PdfReader
 		virtual void BegintTextObject(GrState *pGState){}
 		virtual void EndTextObject(GrState *pGState) {}
 
-		//----- Вывод картинок
+		//----- Р’С‹РІРѕРґ РєР°СЂС‚РёРЅРѕРє
 		virtual void DrawImageMask(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, bool bInvert, bool bInlineImage);
 		virtual void DrawImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, int *pnMaskColors, bool bInlineImage);
 		virtual void DrawMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, bool bMaskInvert);
@@ -250,7 +250,7 @@ namespace PdfReader
 		virtual void OpiEnd  (GrState *pGState, Dict *pOpiDict);
 #endif
 
-		//----- Операторы Type 3 - шрифтов
+		//----- РћРїРµСЂР°С‚РѕСЂС‹ Type 3 - С€СЂРёС„С‚РѕРІ
 		virtual void Type3D0(GrState *pGState, double dWx, double dWy) {}
 		virtual void Type3D1(GrState *pGState, double dWx, double dWy, double dLLx, double dLLy, double dURx, double dURy) {}
 
@@ -260,7 +260,7 @@ namespace PdfReader
 		//----- PostScript XObjects
 		virtual void PSXObject(Stream *pPSStream, Stream *pLevel1Stream) {}
 
-		//----- Transparency groups и SMasks
+		//----- Transparency groups Рё SMasks
 		virtual void BeginTransparencyGroup(GrState *pGState, double *pBBox, GrColorSpace *pBlendingColorSpace, bool bIsolated, bool bKnockout, bool bForSoftMask) {}
 		virtual void EndTransparencyGroup(GrState *pGState) {}
 		virtual void PaintTransparencyGroup(GrState *pGState, double *pBBox) {}
@@ -278,8 +278,8 @@ namespace PdfReader
 
 	private:
 
-		double        m_arrDefaultCTM[6];    // Матрица преобразования по умолчанию
-		double        m_arrDefaultInvCTM[6]; // Обратная матрица
+		double        m_arrDefaultCTM[6];    // РњР°С‚СЂРёС†Р° РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ
+		double        m_arrDefaultInvCTM[6]; // РћР±СЂР°С‚РЅР°СЏ РјР°С‚СЂРёС†Р°
 
 	protected:
 

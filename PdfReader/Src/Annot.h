@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_ANNOT_H
+п»ї#ifndef _PDF_READER_ANNOT_H
 #define _PDF_READER_ANNOT_H
 
 namespace PdfReader
@@ -50,12 +50,12 @@ namespace PdfReader
 
 	private:
 
-		AnnotBorderType m_eType;       // Тип 
-		double          m_dWidth;      // Ширина рамки
-		double         *m_pDash;       // Если линия пунктирная, тогда определяем длину штриха
-		int             m_nDashLength; // Количество элементов в массиве m_pDash
+		AnnotBorderType m_eType;       // РўРёРї 
+		double          m_dWidth;      // РЁРёСЂРёРЅР° СЂР°РјРєРё
+		double         *m_pDash;       // Р•СЃР»Рё Р»РёРЅРёСЏ РїСѓРЅРєС‚РёСЂРЅР°СЏ, С‚РѕРіРґР° РѕРїСЂРµРґРµР»СЏРµРј РґР»РёРЅСѓ С€С‚СЂРёС…Р°
+		int             m_nDashLength; // РљРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ РІ РјР°СЃСЃРёРІРµ m_pDash
 		double          m_dR;          //
-		double          m_dG;          // Цвет
+		double          m_dG;          // Р¦РІРµС‚
 		double          m_dB;          //
 	};
 
@@ -105,14 +105,14 @@ namespace PdfReader
 
 	private:
 
-		XRef        *m_pXref;       // Таблица XRef для данного PDF-документа
-		Ref          m_oRef;        // Ссылка на объект, определяющий данной Annotation
-		StringExt   *m_seType;      // Тип Annotation
-		Object       m_oAppearance; // Ссылка на Form XObject-поток
+		XRef        *m_pXref;       // РўР°Р±Р»РёС†Р° XRef РґР»СЏ РґР°РЅРЅРѕРіРѕ PDF-РґРѕРєСѓРјРµРЅС‚Р°
+		Ref          m_oRef;        // РЎСЃС‹Р»РєР° РЅР° РѕР±СЉРµРєС‚, РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ РґР°РЅРЅРѕР№ Annotation
+		StringExt   *m_seType;      // РўРёРї Annotation
+		Object       m_oAppearance; // РЎСЃС‹Р»РєР° РЅР° Form XObject-РїРѕС‚РѕРє
 		StringExt   *m_seAppBuffer;
 
 		double       m_dMinX;       // 
-		double       m_dMinY;       // Прямоугольник, ограничивающий данную Annotation
+		double       m_dMinY;       // РџСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє, РѕРіСЂР°РЅРёС‡РёРІР°СЋС‰РёР№ РґР°РЅРЅСѓСЋ Annotation
 		double       m_dMaxX;       //
 		double       m_dMaxY;       //
 
@@ -154,8 +154,8 @@ namespace PdfReader
 		Annot *FindAnnot(Ref *pRef);
 
 	private:
-		Annot **m_ppAnnots;     // Список Annotations
-		int     m_nAnnotsCount; // Количество элементов
+		Annot **m_ppAnnots;     // РЎРїРёСЃРѕРє Annotations
+		int     m_nAnnotsCount; // РљРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ
 
 		GlobalParams *m_pGlobalParams;
 	};

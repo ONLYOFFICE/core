@@ -1,4 +1,4 @@
-#include <stddef.h>
+п»ї#include <stddef.h>
 #include "Object.h"
 #include "Array.h"
 #include "Dict.h"
@@ -31,7 +31,7 @@ namespace PdfReader
 		Object oTemp;
 		int nNum = 0;
 
-		// Обновляем буффер после Inline image data
+		// РћР±РЅРѕРІР»СЏРµРј Р±СѓС„С„РµСЂ РїРѕСЃР»Рµ Inline image data
 		if (m_nInlineImage == 2)
 		{
 			m_oBuffer1.Free();
@@ -41,7 +41,7 @@ namespace PdfReader
 			m_nInlineImage = 0;
 		}
 
-		// Массив
+		// РњР°СЃСЃРёРІ
 		if (m_oBuffer1.IsCommand("["))
 		{
 			Shift();
@@ -54,7 +54,7 @@ namespace PdfReader
 			}
 			Shift();
 		}
-		else if (m_oBuffer1.IsCommand("<<")) 	// Dictionary или Stream
+		else if (m_oBuffer1.IsCommand("<<")) 	// Dictionary РёР»Рё Stream
 		{
 			Shift();
 			pObject->InitDict(m_pXref);
@@ -81,7 +81,7 @@ namespace PdfReader
 			{
 				// TO DO: Error "End of file inside dictionary"
 			}
-			// Объекты Stream Objects не допустимы внутри потока или объекта типа Stream Objects
+			// РћР±СЉРµРєС‚С‹ Stream Objects РЅРµ РґРѕРїСѓСЃС‚РёРјС‹ РІРЅСѓС‚СЂРё РїРѕС‚РѕРєР° РёР»Рё РѕР±СЉРµРєС‚Р° С‚РёРїР° Stream Objects
 			if (m_bAllowStreams && m_oBuffer2.IsCommand("stream"))
 			{
 				if ((pStream = CreateStream(pObject, sDecryptKey, eEncryptAlgorithm, nKeyLength, nObjectNum, nObjectGen)))
@@ -99,7 +99,7 @@ namespace PdfReader
 				Shift();
 			}
 		}
-		else if (m_oBuffer1.IsInt()) 	// Либо ссылка, либо число
+		else if (m_oBuffer1.IsInt()) 	// Р›РёР±Рѕ СЃСЃС‹Р»РєР°, Р»РёР±Рѕ С‡РёСЃР»Рѕ
 		{
 			nNum = m_oBuffer1.GetInt();
 			Shift();
@@ -114,7 +114,7 @@ namespace PdfReader
 				pObject->InitInt(nNum);
 			}
 		}
-		else if (m_oBuffer1.IsString() && sDecryptKey) // строка
+		else if (m_oBuffer1.IsString() && sDecryptKey) // СЃС‚СЂРѕРєР°
 		{
 			StringExt *seTemp = m_oBuffer1.GetString();
 			StringExt *seRes = new StringExt();
@@ -130,7 +130,7 @@ namespace PdfReader
 			pObject->InitString(seRes);
 			Shift();
 		}
-		else // простой объект
+		else // РїСЂРѕСЃС‚РѕР№ РѕР±СЉРµРєС‚
 		{
 			m_oBuffer1.Copy(pObject);
 			Shift();
@@ -147,7 +147,7 @@ namespace PdfReader
 		m_pLexer->SkipToNextLine();
 		unsigned int unPos = m_pLexer->GetPos();
 
-		// Считываем длину
+		// РЎС‡РёС‚С‹РІР°РµРј РґР»РёРЅСѓ
 		pDict->DictLookup("Length", &oTemp);
 		if (oTemp.IsInt())
 		{
@@ -168,19 +168,19 @@ namespace PdfReader
 			nLength = unEndPos - unPos;
 			m_pLexer->SetPos(unPos);
 
-			// Оставим на всякий случай заглушку
+			// РћСЃС‚Р°РІРёРј РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ Р·Р°РіР»СѓС€РєСѓ
 			if (nLength <= 0)
 				nLength = 5000;
 		}
 
-		// Меняем длину, если файл поврежден
+		// РњРµРЅСЏРµРј РґР»РёРЅСѓ, РµСЃР»Рё С„Р°Р№Р» РїРѕРІСЂРµР¶РґРµРЅ
 		if (m_pXref && m_pXref->GetStreamEnd(unPos, &unEndPos))
 		{
 			nLength = unEndPos - unPos;
 		}
 
-		// В сильно повержденных файлах PDF, выставляем конец потока сразу
-		// после его начала
+		// Р’ СЃРёР»СЊРЅРѕ РїРѕРІРµСЂР¶РґРµРЅРЅС‹С… С„Р°Р№Р»Р°С… PDF, РІС‹СЃС‚Р°РІР»СЏРµРј РєРѕРЅРµС† РїРѕС‚РѕРєР° СЃСЂР°Р·Сѓ
+		// РїРѕСЃР»Рµ РµРіРѕ РЅР°С‡Р°Р»Р°
 		if (!m_pLexer->GetStream())
 		{
 			return NULL;
@@ -188,10 +188,10 @@ namespace PdfReader
 
 		BaseStream *pBaseStream = m_pLexer->GetStream()->GetBaseStream();
 
-		// Пропускаем данный потока
+		// РџСЂРѕРїСѓСЃРєР°РµРј РґР°РЅРЅС‹Р№ РїРѕС‚РѕРєР°
 		m_pLexer->SetPos(unPos + nLength);
 
-		// Проверяем 'endstream'
+		// РџСЂРѕРІРµСЂСЏРµРј 'endstream'
 		Shift();  // '>>'
 		Shift();  // 'endstream'
 		if (m_oBuffer1.IsCommand("endstream"))
@@ -202,7 +202,7 @@ namespace PdfReader
 		{
 			// TO DO : Error "Missing 'endstream'"
 
-			// Заплатка для поврежденных файлов: 
+			// Р—Р°РїР»Р°С‚РєР° РґР»СЏ РїРѕРІСЂРµР¶РґРµРЅРЅС‹С… С„Р°Р№Р»РѕРІ: 
 			nLength += 5000;
 		}
 
@@ -230,19 +230,19 @@ namespace PdfReader
 			}
 			else
 			{
-				// В поврежденном потоке, если 'ID' появляется в середине потока,
-				// нужно сбросить параметры
+				// Р’ РїРѕРІСЂРµР¶РґРµРЅРЅРѕРј РїРѕС‚РѕРєРµ, РµСЃР»Рё 'ID' РїРѕСЏРІР»СЏРµС‚СЃСЏ РІ СЃРµСЂРµРґРёРЅРµ РїРѕС‚РѕРєР°,
+				// РЅСѓР¶РЅРѕ СЃР±СЂРѕСЃРёС‚СЊ РїР°СЂР°РјРµС‚СЂС‹
 				m_nInlineImage = 0;
 			}
 		}
 		else if (m_oBuffer2.IsCommand("ID"))
 		{
-			m_pLexer->SkipChar(); // пропускаем символ после команды 'ID'
+			m_pLexer->SkipChar(); // РїСЂРѕРїСѓСЃРєР°РµРј СЃРёРјРІРѕР» РїРѕСЃР»Рµ РєРѕРјР°РЅРґС‹ 'ID'
 			m_nInlineImage = 1;
 		}
 		m_oBuffer1.Free();
 		m_oBuffer1 = m_oBuffer2;
-		if (m_nInlineImage > 0) // не буфферизируем данные Inline Image
+		if (m_nInlineImage > 0) // РЅРµ Р±СѓС„С„РµСЂРёР·РёСЂСѓРµРј РґР°РЅРЅС‹Рµ Inline Image
 			m_oBuffer2.InitNull();
 		else
 			m_pLexer->GetObject(&m_oBuffer2);

@@ -1,4 +1,4 @@
-#include "../../DesktopEditor/common/File.h"
+п»ї#include "../../DesktopEditor/common/File.h"
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -21,7 +21,7 @@
 #include "Outline.h"
 #include "PDFDoc.h"
 
-#define HeaderSearchSize 1024 // Максимальное количество байт для считывания с начала файла, в которых мы ищем запись '%PDF'
+#define HeaderSearchSize 1024 // РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РґР»СЏ СЃС‡РёС‚С‹РІР°РЅРёСЏ СЃ РЅР°С‡Р°Р»Р° С„Р°Р№Р»Р°, РІ РєРѕС‚РѕСЂС‹С… РјС‹ РёС‰РµРј Р·Р°РїРёСЃСЊ '%PDF'
 
 namespace PdfReader
 {
@@ -53,11 +53,11 @@ namespace PdfReader
 
 		if (!m_pFileBuffer)
 		{
-			// Не смогли выделить память под весь файл, тогда работаем непосредственно с самим файлом
+			// РќРµ СЃРјРѕРіР»Рё РІС‹РґРµР»РёС‚СЊ РїР°РјСЏС‚СЊ РїРѕРґ РІРµСЃСЊ С„Р°Р№Р», С‚РѕРіРґР° СЂР°Р±РѕС‚Р°РµРј РЅРµРїРѕСЃСЂРµРґСЃС‚РІРµРЅРЅРѕ СЃ СЃР°РјРёРј С„Р°Р№Р»РѕРј
 			m_pFileBuffer = NULL;
 			m_pFile = oFile.GetFileNative();
 
-			// Создаем поток
+			// РЎРѕР·РґР°РµРј РїРѕС‚РѕРє
 			Object oTemp;
 			oTemp.InitNull();
 			m_pStream = new FileStream(m_pFile, 0, false, 0, &oTemp);
@@ -88,7 +88,7 @@ namespace PdfReader
 				return;
 			}
 
-			// Создаем поток
+			// РЎРѕР·РґР°РµРј РїРѕС‚РѕРє
 			Object oTemp;
 			oTemp.InitNull();
 			m_pStream = new MemoryStream((char*)m_pFileBuffer, 0, lFileSize, &oTemp);
@@ -103,10 +103,10 @@ namespace PdfReader
 	{
 		m_pStream->Reset();
 
-		// Проверяем заголовок PDF файла
+		// РџСЂРѕРІРµСЂСЏРµРј Р·Р°РіРѕР»РѕРІРѕРє PDF С„Р°Р№Р»Р°
 		CheckHeader();
 
-		// Считываем таблицу Xref
+		// РЎС‡РёС‚С‹РІР°РµРј С‚Р°Р±Р»РёС†Сѓ Xref
 		m_pXref = new XRef(m_pStream);
 		if (!m_pXref->CheckValidate())
 		{
@@ -115,14 +115,14 @@ namespace PdfReader
 			return false;
 		}
 
-		// Проверяем зашифрован ли документ
+		// РџСЂРѕРІРµСЂСЏРµРј Р·Р°С€РёС„СЂРѕРІР°РЅ Р»Рё РґРѕРєСѓРјРµРЅС‚
 		if (!CheckEncryption(seOwnerPassword, seUserPassword))
 		{
 			m_eErrorCode = errorEncrypted;
 			return false;
 		}
 
-		// Считываем объект Catalog
+		// РЎС‡РёС‚С‹РІР°РµРј РѕР±СЉРµРєС‚ Catalog
 		m_pCatalog = new Catalog(m_pGlobalParams, m_pXref);
 		if (!m_pCatalog->CheckValidation())
 		{
@@ -131,7 +131,7 @@ namespace PdfReader
 			return false;
 		}
 
-		// Считываем объект Outline
+		// РЎС‡РёС‚С‹РІР°РµРј РѕР±СЉРµРєС‚ Outline
 		m_pOutline = new Outline(m_pCatalog->GetOutline(), m_pXref);
 
 		return true;
@@ -221,13 +221,13 @@ namespace PdfReader
 			{
 				if (pSecurityHandler->CheckEncryption(ownerPassword, userPassword))
 				{
-					// Авторизация пройдена
+					// РђРІС‚РѕСЂРёР·Р°С†РёСЏ РїСЂРѕР№РґРµРЅР°
 					m_pXref->SetEncryption(pSecurityHandler->GetPermissionFlags(), pSecurityHandler->GetOwnerPasswordValid(), pSecurityHandler->GetFileKey(), pSecurityHandler->GetFileKeyLength(), pSecurityHandler->GetEncodingVersion(), pSecurityHandler->GetEncodingAlgorithm());
 					bResult = true;
 				}
 				else
 				{
-					// Авторизация не пройдена
+					// РђРІС‚РѕСЂРёР·Р°С†РёСЏ РЅРµ РїСЂРѕР№РґРµРЅР°
 					bResult = false;
 				}
 				delete pSecurityHandler;
@@ -239,7 +239,7 @@ namespace PdfReader
 		}
 		else
 		{
-			// Данный PDF файл не зашифрован
+			// Р”Р°РЅРЅС‹Р№ PDF С„Р°Р№Р» РЅРµ Р·Р°С€РёС„СЂРѕРІР°РЅ
 			bResult = true;
 		}
 		oEncypt.Free();

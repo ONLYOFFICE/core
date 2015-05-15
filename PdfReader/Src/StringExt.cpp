@@ -1,4 +1,4 @@
-#include <stdlib.h>
+ï»¿#include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
 #include <ctype.h>
@@ -276,7 +276,7 @@ namespace PdfReader
 				}
 				else
 				{
-					// Ðàçáèðàåì ôîðìàòèðîâàííóþ ñòðîêó
+					// â€“Ð°Ð·Ð±Ð¸Ñ€Ð°ÐµÐ¼ Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð½ÑƒÑŽ ÑÑ‚Ñ€Ð¾ÐºÑƒ
 					if (!(*pCur >= '0' && *pCur <= '9'))
 						break;
 					nIndex = *pCur - '0';
@@ -469,7 +469,7 @@ namespace PdfReader
 						nWidth = uArg.iValue;
 						break;
 					}
-					// Äîáàâëÿåì àðãóìåíò â íóæíîì ôîðìàòå, ñ íóæíûì ïðèëåãàíèåì
+					// Æ’Ð¾Ð±Ð°Ð²Ð»Â¤ÐµÐ¼ Ð°Ñ€Ð³ÑƒÐ¼ÐµÐ½Ñ‚ Ð² Ð½ÑƒÐ¶Ð½Ð¾Ð¼ Ñ„Ð¾Ñ€Ð¼Ð°Ñ‚Ðµ, Ñ Ð½ÑƒÐ¶Ð½Ñ‹Ð¼ Ð¿Ñ€Ð¸Ð»ÐµÐ³Ð°Ð½Ð¸ÐµÐ¼
 					if (!bReverseAlign && nLen < nWidth)
 					{
 						for (int nCounter = nLen; nCounter < nWidth; ++nCounter)

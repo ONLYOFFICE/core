@@ -1,4 +1,4 @@
-#include <stddef.h>
+п»ї#include <stddef.h>
 #include <string.h>
 #include "MemoryUtils.h"
 #include "Object.h"
@@ -668,7 +668,7 @@ namespace PdfReader
 	// GrLabColorSpace
 	//-------------------------------------------------------------------------------------------------------------------------------
 
-	// Это обратная матрица к матрице LMN, данной в примере 4.10 в спецификации
+	// Р­С‚Рѕ РѕР±СЂР°С‚РЅР°СЏ РјР°С‚СЂРёС†Р° Рє РјР°С‚СЂРёС†Рµ LMN, РґР°РЅРЅРѕР№ РІ РїСЂРёРјРµСЂРµ 4.10 РІ СЃРїРµС†РёС„РёРєР°С†РёРё
 	// PostScript Language Reference, Third Edition.
 	static double c_arrLMNReverse[3][3] =
 	{
@@ -831,7 +831,7 @@ namespace PdfReader
 		}
 		dZ *= m_dWhiteZ;
 
-		// XYZ -> RGB ( учитывая гамма коррекцию )
+		// XYZ -> RGB ( СѓС‡РёС‚С‹РІР°СЏ РіР°РјРјР° РєРѕСЂСЂРµРєС†РёСЋ )
 		double dR = c_arrLMNReverse[0][0] * dX + c_arrLMNReverse[0][1] * dY + c_arrLMNReverse[0][2] * dZ;
 		double dG = c_arrLMNReverse[1][0] * dX + c_arrLMNReverse[1][1] * dY + c_arrLMNReverse[1][2] * dZ;
 		double dB = c_arrLMNReverse[2][0] * dX + c_arrLMNReverse[2][1] * dY + c_arrLMNReverse[2][2] * dZ;
@@ -1056,8 +1056,8 @@ namespace PdfReader
 		m_pAlternate->GetDefaultRanges(pDecodeLow, pDecodeRange, nMaxImagePixelValue);
 
 #if 0
-		// Так должно работать, но некоторые PDF фалй не содержат корректных данных в полях Range
-		// в словаре ICCBased.
+		// РўР°Рє РґРѕР»Р¶РЅРѕ СЂР°Р±РѕС‚Р°С‚СЊ, РЅРѕ РЅРµРєРѕС‚РѕСЂС‹Рµ PDF С„Р°Р»Р№ РЅРµ СЃРѕРґРµСЂР¶Р°С‚ РєРѕСЂСЂРµРєС‚РЅС‹С… РґР°РЅРЅС‹С… РІ РїРѕР»СЏС… Range
+		// РІ СЃР»РѕРІР°СЂРµ ICCBased.
 
 		for ( int nIndex = 0; nIndex < m_nComponentsCount; ++nIndex ) 
 		{
@@ -1095,7 +1095,7 @@ namespace PdfReader
 
 	GrColorSpace *GrIndexedColorSpace::Parse(Array *pArray)
 	{
-		// [ /Indexed base hival lookup ] - массив из 4 элементов должен быть
+		// [ /Indexed base hival lookup ] - РјР°СЃСЃРёРІ РёР· 4 СЌР»РµРјРµРЅС‚РѕРІ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ
 		if (pArray->GetCount() != 4)
 		{
 			// TO DO: Error "Bad Indexed color space"
@@ -1123,7 +1123,7 @@ namespace PdfReader
 		}
 		int nHival = oArrayItem.GetInt();
 
-		if (nHival < 0 || nHival > 255) // По спецификации PDF значение hival должно лежать в отрезке [0,255]
+		if (nHival < 0 || nHival > 255) // РџРѕ СЃРїРµС†РёС„РёРєР°С†РёРё PDF Р·РЅР°С‡РµРЅРёРµ hival РґРѕР»Р¶РЅРѕ Р»РµР¶Р°С‚СЊ РІ РѕС‚СЂРµР·РєРµ [0,255]
 		{
 			// TO DO: Error "Bad Indexed color space (invalid hival value)"
 			if (pBase)
@@ -1264,7 +1264,7 @@ namespace PdfReader
 
 	GrColorSpace *GrSeparationColorSpace::Parse(Array *pArray)
 	{
-		// [ /Separation name alternateSpace tintTransform ] - должен быть массив из 4 элементов
+		// [ /Separation name alternateSpace tintTransform ] - РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РјР°СЃСЃРёРІ РёР· 4 СЌР»РµРјРµРЅС‚РѕРІ
 		if (pArray->GetCount() != 4)
 		{
 			// TO DO: Error "Bad Separation color space"
@@ -1398,7 +1398,7 @@ namespace PdfReader
 	{
 		StringExt *arrseNames[GrColorMaxComps];
 
-		// Запись о данном цветом пространстве должны быть одной из следующих двух:
+		// Р—Р°РїРёСЃСЊ Рѕ РґР°РЅРЅРѕРј С†РІРµС‚РѕРј РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ РѕРґРЅРѕР№ РёР· СЃР»РµРґСѓСЋС‰РёС… РґРІСѓС…:
 		// [ /DeviceN names alternateSpace tintTransform ]
 		// [ /DeviceN names alternateSpace tintTransform attributes ]
 
@@ -1605,7 +1605,7 @@ namespace PdfReader
 
 	void GrPatternColorSpace::GetDefaultColor(GrColor *pColor)
 	{
-		// не используется
+		// РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 	}
 
 	//==============================================================================================================================
@@ -1830,7 +1830,7 @@ namespace PdfReader
 		}
 		oDictItem.Free();
 
-		// TO DO: Надо сделать чтение поля ExtGState
+		// TO DO: РќР°РґРѕ СЃРґРµР»Р°С‚СЊ С‡С‚РµРЅРёРµ РїРѕР»СЏ ExtGState
 
 		return new GrShadingPattern(pShading, arrMatrix);
 	}
@@ -1978,7 +1978,7 @@ namespace PdfReader
 			return NULL;
 		}
 
-		// TO DO: Добавить чтение поля AntiAlias
+		// TO DO: Р”РѕР±Р°РІРёС‚СЊ С‡С‚РµРЅРёРµ РїРѕР»СЏ AntiAlias
 
 		return pShading;
 	}
@@ -2047,7 +2047,7 @@ namespace PdfReader
 		}
 		oDictItem.Free();
 
-		// TO DO: Добавить чтение поля AntiAlias
+		// TO DO: Р”РѕР±Р°РІРёС‚СЊ С‡С‚РµРЅРёРµ РїРѕР»СЏ AntiAlias
 
 		return true;
 	}
@@ -2116,7 +2116,7 @@ namespace PdfReader
 			Object oTemp;
 			dMinX = oDictItem.ArrayGet(0, &oTemp)->GetNum();
 			oTemp.Free();
-			// TO DO: Проверить здесь чтение(было не по спецификации)
+			// TO DO: РџСЂРѕРІРµСЂРёС‚СЊ Р·РґРµСЃСЊ С‡С‚РµРЅРёРµ(Р±С‹Р»Рѕ РЅРµ РїРѕ СЃРїРµС†РёС„РёРєР°С†РёРё)
 			dMaxX = oDictItem.ArrayGet(1, &oTemp)->GetNum();
 			oTemp.Free();
 			dMinY = oDictItem.ArrayGet(2, &oTemp)->GetNum();
@@ -2733,7 +2733,7 @@ namespace PdfReader
 			oDictItem.Free();
 		}
 
-		// [ Xmin Xmax Ymin Ymax C1,min C1,max ... Cn,min Cn,max ], поэтому как минимум массив должен быть из 6 элементов
+		// [ XminВ Xmax YminВ Ymax C1,minВ C1,max ... Cn,minВ Cn,max ], РїРѕСЌС‚РѕРјСѓ РєР°Рє РјРёРЅРёРјСѓРј РјР°СЃСЃРёРІ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РёР· 6 СЌР»РµРјРµРЅС‚РѕРІ
 		double dXMin, dXMax, dYMin, dYMax;
 		double arrCMin[GrColorMaxComps], arrCMax[GrColorMaxComps];
 		double dXMul, dYMul;
@@ -2813,7 +2813,7 @@ namespace PdfReader
 		}
 		oDictItem.Free();
 
-		// Дальше читаем данные из потока(набор вершин)
+		// Р”Р°Р»СЊС€Рµ С‡РёС‚Р°РµРј РґР°РЅРЅС‹Рµ РёР· РїРѕС‚РѕРєР°(РЅР°Р±РѕСЂ РІРµСЂС€РёРЅ)
 		int nVerticesCount = 0, nTrianglesCount = 0;
 		GrGouraudVertex *pVertices = NULL;
 		int(*pTriangles)[3] = NULL;
@@ -2827,7 +2827,7 @@ namespace PdfReader
 
 		while (1)
 		{
-			if (nType == 4) // В типе 5 нет флага вначале
+			if (nType == 4) // Р’ С‚РёРїРµ 5 РЅРµС‚ С„Р»Р°РіР° РІРЅР°С‡Р°Р»Рµ
 			{
 				if (!pBitBuffer->GetBits(nBitsPerFlag, &unFlag))
 				{
@@ -3098,7 +3098,7 @@ namespace PdfReader
 		double arrCMul[GrColorMaxComps];
 		int nComponentsCount = 0;
 
-		// [ Xmin Xmax Ymin Ymax C1,min C1,max ... Cn,min Cn,max ], поэтому как минимум массив должен быть из 6 элементов
+		// [ XminВ Xmax YminВ Ymax C1,minВ C1,max ... Cn,minВ Cn,max ], РїРѕСЌС‚РѕРјСѓ РєР°Рє РјРёРЅРёРјСѓРј РјР°СЃСЃРёРІ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ РёР· 6 СЌР»РµРјРµРЅС‚РѕРІ
 		if (pDict->Search("Decode", &oDictItem)->IsArray() && oDictItem.ArrayGetLength() >= 6)
 		{
 			Object oTemp;
@@ -3546,16 +3546,16 @@ namespace PdfReader
 			return;
 		}
 
-		// Строим таблицу поиска, в которой будут храниться, предварительно вычисленные(декодированные),
-		// значения какждой компоненты. 
-		// Оптимизация для цветовых пространств Indexed and Separation(имеющих одну компоненту): 
-		// в таблице будет хранится значения цвета, а не значения компонент.
+		// РЎС‚СЂРѕРёРј С‚Р°Р±Р»РёС†Сѓ РїРѕРёСЃРєР°, РІ РєРѕС‚РѕСЂРѕР№ Р±СѓРґСѓС‚ С…СЂР°РЅРёС‚СЊСЃСЏ, РїСЂРµРґРІР°СЂРёС‚РµР»СЊРЅРѕ РІС‹С‡РёСЃР»РµРЅРЅС‹Рµ(РґРµРєРѕРґРёСЂРѕРІР°РЅРЅС‹Рµ),
+		// Р·РЅР°С‡РµРЅРёСЏ РєР°РєР¶РґРѕР№ РєРѕРјРїРѕРЅРµРЅС‚С‹. 
+		// РћРїС‚РёРјРёР·Р°С†РёСЏ РґР»СЏ С†РІРµС‚РѕРІС‹С… РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІ Indexed and Separation(РёРјРµСЋС‰РёС… РѕРґРЅСѓ РєРѕРјРїРѕРЅРµРЅС‚Сѓ): 
+		// РІ С‚Р°Р±Р»РёС†Рµ Р±СѓРґРµС‚ С…СЂР°РЅРёС‚СЃСЏ Р·РЅР°С‡РµРЅРёСЏ С†РІРµС‚Р°, Р° РЅРµ Р·РЅР°С‡РµРЅРёСЏ РєРѕРјРїРѕРЅРµРЅС‚.
 		m_pColorSpace2 = NULL;
 		m_nComponentsCount2 = 0;
 		double arrX[GrColorMaxComps], arrY[GrColorMaxComps];
 		if (m_pColorSpace->GetMode() == csIndexed)
 		{
-			// Возможно, что nHival != nMaxPixelIndex 
+			// Р’РѕР·РјРѕР¶РЅРѕ, С‡С‚Рѕ nHival != nMaxPixelIndex 
 			GrIndexedColorSpace *pIndexedCS = (GrIndexedColorSpace *)m_pColorSpace;
 			m_pColorSpace2 = pIndexedCS->GetBase();
 			int nHival = pIndexedCS->GetHival();
@@ -4389,7 +4389,7 @@ namespace PdfReader
 		double arrInvCTM[6];
 		double dXMin, dYMin, dXMax, dYMax;
 
-		// Обратная матрица для матрицы CTM
+		// РћР±СЂР°С‚РЅР°СЏ РјР°С‚СЂРёС†Р° РґР»СЏ РјР°С‚СЂРёС†С‹ CTM
 		double dDet = 1 / (m_arrCTM[0] * m_arrCTM[3] - m_arrCTM[1] * m_arrCTM[2]);
 		arrInvCTM[0] =  m_arrCTM[3] * dDet;
 		arrInvCTM[1] = -m_arrCTM[1] * dDet;
@@ -4698,7 +4698,7 @@ namespace PdfReader
 			}
 		}
 
-		// Учитываем толщину линии
+		// РЈС‡РёС‚С‹РІР°РµРј С‚РѕР»С‰РёРЅСѓ Р»РёРЅРёРё
 		double dT0 = fabs(m_arrCTM[0]);
 		double dT1 = fabs(m_arrCTM[2]);
 		if (dT0 > dT1)
@@ -4711,7 +4711,7 @@ namespace PdfReader
 			dXMin -= 0.5 * m_dLineWidth * dT1;
 			dXMax += 0.5 * m_dLineWidth * dT1;
 		}
-		// TO DO: Проверит здесь!!!! Сдается, что нужно m_arrCTM[1] поставить
+		// TO DO: РџСЂРѕРІРµСЂРёС‚ Р·РґРµСЃСЊ!!!! РЎРґР°РµС‚СЃСЏ, С‡С‚Рѕ РЅСѓР¶РЅРѕ m_arrCTM[1] РїРѕСЃС‚Р°РІРёС‚СЊ
 		dT0 = fabs(m_arrCTM[0]);
 		dT1 = fabs(m_arrCTM[3]);
 		if (dT0 > dT1)
@@ -4773,7 +4773,7 @@ namespace PdfReader
 		{
 			pOldState = m_pNext;
 
-			// Следующие значения не сохраняются/восстанавливаются с помощью операций q/Q
+			// РЎР»РµРґСѓСЋС‰РёРµ Р·РЅР°С‡РµРЅРёСЏ РЅРµ СЃРѕС…СЂР°РЅСЏСЋС‚СЃСЏ/РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°СЋС‚СЃСЏ СЃ РїРѕРјРѕС‰СЊСЋ РѕРїРµСЂР°С†РёР№ q/Q
 			pOldState->m_pPath = m_pPath;
 			pOldState->m_dCurX = m_dCurX;
 			pOldState->m_dCurY = m_dCurY;

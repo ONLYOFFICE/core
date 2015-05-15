@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_CATALOG_H
+п»ї#ifndef _PDF_READER_CATALOG_H
 #define _PDF_READER_CATALOG_H
 
 #include "GlobalParams.h"
@@ -56,10 +56,10 @@ namespace PdfReader
 			return &m_oStructTreeRoot;
 		}
 
-		// Ищем номер страницы в списке, по ее объектным номерам.
+		// РС‰РµРј РЅРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹ РІ СЃРїРёСЃРєРµ, РїРѕ РµРµ РѕР±СЉРµРєС‚РЅС‹Рј РЅРѕРјРµСЂР°Рј.
 		int FindPage(int nNum, int nGen);
 
-		// Ищем Named destination.
+		// РС‰РµРј Named destination.
 		LinkDestination *FindDest(StringExt *seName);
 
 		Object *GetDests()
@@ -89,20 +89,20 @@ namespace PdfReader
 
 	private:
 
-		XRef      *m_pXref;           // Таблица xref для данного PDF файла
-		Page     **m_ppPages;         // Массив страниц
-		Ref       *m_pPageRefs;       // Объектные номера всех страниц
-		int        m_nPagesCount;     // Число страниц
-		int        m_nPagesSize;      // Размер массива страниц(в байтах)
+		XRef      *m_pXref;           // РўР°Р±Р»РёС†Р° xref РґР»СЏ РґР°РЅРЅРѕРіРѕ PDF С„Р°Р№Р»Р°
+		Page     **m_ppPages;         // РњР°СЃСЃРёРІ СЃС‚СЂР°РЅРёС†
+		Ref       *m_pPageRefs;       // РћР±СЉРµРєС‚РЅС‹Рµ РЅРѕРјРµСЂР° РІСЃРµС… СЃС‚СЂР°РЅРёС†
+		int        m_nPagesCount;     // Р§РёСЃР»Рѕ СЃС‚СЂР°РЅРёС†
+		int        m_nPagesSize;      // Р Р°Р·РјРµСЂ РјР°СЃСЃРёРІР° СЃС‚СЂР°РЅРёС†(РІ Р±Р°Р№С‚Р°С…)
 		Object     m_oDests;          // Destination dictionary
 		Object     m_oNameTree;       // Name tree
-		StringExt *m_seBaseURI;       // Для ссылок URI
+		StringExt *m_seBaseURI;       // Р”Р»СЏ СЃСЃС‹Р»РѕРє URI
 		Object     m_oMetadata;       // Metadata
-		Object     m_oStructTreeRoot; // Структура страниц
+		Object     m_oStructTreeRoot; // РЎС‚СЂСѓРєС‚СѓСЂР° СЃС‚СЂР°РЅРёС†
 		Object     m_oOutline;        // Outline
 		Object     m_oAcroForm;       // AcroForm
 
-		bool       m_bValid;          // True, если Сatalog - корретный
+		bool       m_bValid;          // True, РµСЃР»Рё РЎatalog - РєРѕСЂСЂРµС‚РЅС‹Р№
 
 		GlobalParams *m_pGlobalParams;
 	};

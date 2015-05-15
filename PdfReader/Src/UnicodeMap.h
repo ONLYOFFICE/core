@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_UNICODE_MAP_H
+п»ї#ifndef _PDF_READER_UNICODE_MAP_H
 #define _PDF_READER_UNICODE_MAP_H
 
 #include "CharTypes.h"
@@ -12,18 +12,18 @@ namespace PdfReader
 
 	enum UnicodeMapType
 	{
-		unicodeMapUser,      // Чтение из файла
-		unicodeMapResident,  // Статический список
-		unicodeMapFunc       // Указатель на функцию
+		unicodeMapUser,      // Р§С‚РµРЅРёРµ РёР· С„Р°Р№Р»Р°
+		unicodeMapResident,  // РЎС‚Р°С‚РёС‡РµСЃРєРёР№ СЃРїРёСЃРѕРє
+		unicodeMapFunc       // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° С„СѓРЅРєС†РёСЋ
 	};
 
 	typedef int(*UnicodeMapFunc)(Unicode nUnicode, char *sBuffer, int nBufferSize);
 
 	struct UnicodeMapRange
 	{
-		Unicode      nStart;      // Диапазон юникодных символов
+		Unicode      nStart;      // Р”РёР°РїР°Р·РѕРЅ СЋРЅРёРєРѕРґРЅС‹С… СЃРёРјРІРѕР»РѕРІ
 		Unicode      nEnd;        // 
-		unsigned int unCode;      // Первый код
+		unsigned int unCode;      // РџРµСЂРІС‹Р№ РєРѕРґ
 		unsigned int nBytesCount; //
 	};
 
@@ -37,18 +37,18 @@ namespace PdfReader
 	{
 	public:
 
-		// Создаем UnicodeMap по имени <seEncodingName>. Устанавливаем счетчик ссылок равный 1.
+		// РЎРѕР·РґР°РµРј UnicodeMap РїРѕ РёРјРµРЅРё <seEncodingName>. РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃС‡РµС‚С‡РёРє СЃСЃС‹Р»РѕРє СЂР°РІРЅС‹Р№ 1.
 		static UnicodeMap *Parse(StringExt *seEncodingName, GlobalParams *pGlobalParams);
 
-		// Создаем Resident UnicodeMap.
+		// РЎРѕР·РґР°РµРј Resident UnicodeMap.
 		UnicodeMap(char *sEncodingName, bool bUnicodeOut, UnicodeMapRange *pRanges, int nLen);
 
-		// Создаем Resident UnicodeMap, который использует функцию вместо диапазона значений.
+		// РЎРѕР·РґР°РµРј Resident UnicodeMap, РєРѕС‚РѕСЂС‹Р№ РёСЃРїРѕР»СЊР·СѓРµС‚ С„СѓРЅРєС†РёСЋ РІРјРµСЃС‚Рѕ РґРёР°РїР°Р·РѕРЅР° Р·РЅР°С‡РµРЅРёР№.
 		UnicodeMap(char *sEncodingName, bool bUnicodeOut, UnicodeMapFunc pFunction);
 
 		~UnicodeMap();
 
-		// Счетчик ссылок
+		// РЎС‡РµС‚С‡РёРє СЃСЃС‹Р»РѕРє
 		void AddRef();
 		void Release();
 
@@ -63,11 +63,11 @@ namespace PdfReader
 		}
 
 
-		// Совпадают ли названия кодировок?
+		// РЎРѕРІРїР°РґР°СЋС‚ Р»Рё РЅР°Р·РІР°РЅРёСЏ РєРѕРґРёСЂРѕРІРѕРє?
 		bool Match(StringExt *seEncodingName);
 
-		// Находим образ текущего юникодного значения в кодировке. Заполняем <sBuffer> результатом и возвращаем
-		// количество используемых байт. Никаких строковых разделителей (типа \0) не пишем. 
+		// РќР°С…РѕРґРёРј РѕР±СЂР°Р· С‚РµРєСѓС‰РµРіРѕ СЋРЅРёРєРѕРґРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РІ РєРѕРґРёСЂРѕРІРєРµ. Р—Р°РїРѕР»РЅСЏРµРј <sBuffer> СЂРµР·СѓР»СЊС‚Р°С‚РѕРј Рё РІРѕР·РІСЂР°С‰Р°РµРј
+		// РєРѕР»РёС‡РµСЃС‚РІРѕ РёСЃРїРѕР»СЊР·СѓРµРјС‹С… Р±Р°Р№С‚. РќРёРєР°РєРёС… СЃС‚СЂРѕРєРѕРІС‹С… СЂР°Р·РґРµР»РёС‚РµР»РµР№ (С‚РёРїР° \0) РЅРµ РїРёС€РµРј. 
 		int MapUnicode(Unicode nUnicode, char *sBuffer, int nBufferSize);
 
 	private:
@@ -81,8 +81,8 @@ namespace PdfReader
 		bool           m_bUnicodeOut;
 		union
 		{
-			UnicodeMapRange *m_pRanges;	  // Для типов: User, Resident
-			UnicodeMapFunc   m_pFunction; // Для типа Func
+			UnicodeMapRange *m_pRanges;	  // Р”Р»СЏ С‚РёРїРѕРІ: User, Resident
+			UnicodeMapFunc   m_pFunction; // Р”Р»СЏ С‚РёРїР° Func
 		};
 		int            m_nLen;      // User, Resident
 		UnicodeMapExt *m_pEMaps;    // User

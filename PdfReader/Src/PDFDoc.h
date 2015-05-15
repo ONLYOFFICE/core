@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_PDF_DOC_H
+п»ї#ifndef _PDF_READER_PDF_DOC_H
 #define _PDF_READER_PDF_DOC_H
 
 #include <stdio.h>
@@ -27,49 +27,49 @@ namespace PdfReader
 		PDFDoc(GlobalParams *pGlobalParams, const wchar_t* wsFileName, StringExt *seOwnerPassword = NULL, StringExt *seUserPassword = NULL);
 		~PDFDoc();
 
-		// Нормально ли открылся PDF файл?
+		// РќРѕСЂРјР°Р»СЊРЅРѕ Р»Рё РѕС‚РєСЂС‹Р»СЃСЏ PDF С„Р°Р№Р»?
 		bool CheckValidation()
 		{
 			return m_bValid;
 		}
 
 
-		// Получаем код ошибки, если PDF файл не открылся.
+		// РџРѕР»СѓС‡Р°РµРј РєРѕРґ РѕС€РёР±РєРё, РµСЃР»Рё PDF С„Р°Р№Р» РЅРµ РѕС‚РєСЂС‹Р»СЃСЏ.
 		EError GetErrorCode()
 		{
 			return m_eErrorCode;
 		}
 
 
-		// Считываем имя файла.
+		// РЎС‡РёС‚С‹РІР°РµРј РёРјСЏ С„Р°Р№Р»Р°.
 		std::wstring GetFileName()
 		{
 			return m_wsFileName;
 		}
 
 
-		// Считываем таблицу Xref.
+		// РЎС‡РёС‚С‹РІР°РµРј С‚Р°Р±Р»РёС†Сѓ Xref.
 		XRef *GetXRef()
 		{
 			return m_pXref;
 		}
 
 
-		// Считываем объект Сatalog.
+		// РЎС‡РёС‚С‹РІР°РµРј РѕР±СЉРµРєС‚ РЎatalog.
 		Catalog *GetCatalog()
 		{
 			return m_pCatalog;
 		}
 
 
-		// Считываем поток.
+		// РЎС‡РёС‚С‹РІР°РµРј РїРѕС‚РѕРє.
 		BaseStream *GetBaseStream()
 		{
 			return m_pStream;
 		}
 
 
-		// Cчитываем параметры страницы.
+		// CС‡РёС‚С‹РІР°РµРј РїР°СЂР°РјРµС‚СЂС‹ СЃС‚СЂР°РЅРёС†С‹.
 		double GetPageMediaWidth(int nPageIndex)
 		{
 			return m_pCatalog->GetPage(nPageIndex)->GetMediaWidth();
@@ -92,63 +92,63 @@ namespace PdfReader
 		}
 
 
-		// Считываем количество страниц.
+		// РЎС‡РёС‚С‹РІР°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂР°РЅРёС†.
 		int GetPagesCount()
 		{
 			return m_pCatalog->GetPagesCount();
 		}
 
 
-		// Возвращаем содержимое потока метаданных объекта Catalog.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј СЃРѕРґРµСЂР¶РёРјРѕРµ РїРѕС‚РѕРєР° РјРµС‚Р°РґР°РЅРЅС‹С… РѕР±СЉРµРєС‚Р° Catalog.
 		StringExt *ReadMetadata()
 		{
 			return m_pCatalog->ReadMetadata();
 		}
 
 
-		// Возвращаем объект StructureTreeRoot.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј РѕР±СЉРµРєС‚ StructureTreeRoot.
 		Object *GetStructTreeRoot()
 		{
 			return m_pCatalog->GetStructTreeRoot();
 		}
 
 
-		// Выводим данную страницу на устройство pOut.
+		// Р’С‹РІРѕРґРёРј РґР°РЅРЅСѓСЋ СЃС‚СЂР°РЅРёС†Сѓ РЅР° СѓСЃС‚СЂРѕР№СЃС‚РІРѕ pOut.
 		void DisplayPage(OutputDev *pOut, int nPageIndex, double dHorDPI, double dVerDPI, int nRotate, bool bUseMediaBox, bool bCrop, bool bPrinting, bool(*pAbortCheckCbk)(void *pData) = NULL, void *pAbortCheckCbkData = NULL);
-		// Выводим сразу несколько страниц.
+		// Р’С‹РІРѕРґРёРј СЃСЂР°Р·Сѓ РЅРµСЃРєРѕР»СЊРєРѕ СЃС‚СЂР°РЅРёС†.
 		void DisplayPages(OutputDev *pOut, int nFirstPageIndex, int nLastPageIndex, double dHorDPI, double dVerDPI, int nRotate, bool bUseMediaBox, bool bCrop, bool bPrinting, bool(*pAbortCheckCbk)(void *pData) = NULL, void *pAbortCheckCbkData = NULL);
-		// Выводим часть страницы.
+		// Р’С‹РІРѕРґРёРј С‡Р°СЃС‚СЊ СЃС‚СЂР°РЅРёС†С‹.
 		void DisplayPageSlice(OutputDev *pOut, int nPageIndex, double dHorDPI, double dVerDPI, int nRotate, bool bUseMediaBox, bool bCrop, bool bPrinting, int nSliceX, int nSliceY, int nSliceW, int nSliceH, bool(*pAbortCheckCbk)(void *pData) = NULL, void *pAbortCheckCbkData = NULL);
-		// Ищем страницу по ее объектным номерам. Возвращаем 0, если страница не найдена.
+		// РС‰РµРј СЃС‚СЂР°РЅРёС†Сѓ РїРѕ РµРµ РѕР±СЉРµРєС‚РЅС‹Рј РЅРѕРјРµСЂР°Рј. Р’РѕР·РІСЂР°С‰Р°РµРј 0, РµСЃР»Рё СЃС‚СЂР°РЅРёС†Р° РЅРµ РЅР°Р№РґРµРЅР°.
 		int FindPage(int nNum, int nGen)
 		{
 			return m_pCatalog->FindPage(nNum, nGen);
 		}
 
 
-		// Возвращаем Links для текущей страницы.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј Links РґР»СЏ С‚РµРєСѓС‰РµР№ СЃС‚СЂР°РЅРёС†С‹.
 		Links *GetLinks(int nPageIndex);
-		// Ищем Destination по имени. Возвращаем Link destination или NULL, если <seName> не объект Destination.
+		// РС‰РµРј Destination РїРѕ РёРјРµРЅРё. Р’РѕР·РІСЂР°С‰Р°РµРј Link destination РёР»Рё NULL, РµСЃР»Рё <seName> РЅРµ РѕР±СЉРµРєС‚ Destination.
 		LinkDestination *FindDest(StringExt *seName)
 		{
 			return m_pCatalog->FindDest(seName);
 		}
 
 
-		// Обрабатываем Links для данной страницы.
+		// РћР±СЂР°Р±Р°С‚С‹РІР°РµРј Links РґР»СЏ РґР°РЅРЅРѕР№ СЃС‚СЂР°РЅРёС†С‹.
 		void ProcessLinks(OutputDev *pOut, int nPageIndex);
-		// Возвращаем объект Оutline.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј РѕР±СЉРµРєС‚ Рћutline.
 		Outline *GetOutline()
 		{
 			return m_pOutline;
 		}
-		// Зашифрован ли файл?
+		// Р—Р°С€РёС„СЂРѕРІР°РЅ Р»Рё С„Р°Р№Р»?
 		bool IsEncrypted()
 		{
 			return m_pXref->CheckEncrypted();
 		}
 
-		// Проверяем различные ограничения.
+		// РџСЂРѕРІРµСЂСЏРµРј СЂР°Р·Р»РёС‡РЅС‹Рµ РѕРіСЂР°РЅРёС‡РµРЅРёСЏ.
 		bool CheckPrint(bool bIgnoreOwnerPassword = false)
 		{
 			return m_pXref->CheckPrint(bIgnoreOwnerPassword);
@@ -166,9 +166,9 @@ namespace PdfReader
 			return m_pXref->CheckAddNotes(bIgnoreOwnerPassword);
 		}
 
-		// Данный PDF файл является линеаризированным (см. Linearized PDF)
+		// Р”Р°РЅРЅС‹Р№ PDF С„Р°Р№Р» СЏРІР»СЏРµС‚СЃСЏ Р»РёРЅРµР°СЂРёР·РёСЂРѕРІР°РЅРЅС‹Рј (СЃРј. Linearized PDF)
 		bool IsLinearized();
-		// Воозвращаем объек Info.
+		// Р’РѕРѕР·РІСЂР°С‰Р°РµРј РѕР±СЉРµРє Info.
 		Object *GetDocInfo(Object *pObject)
 		{
 			return m_pXref->GetDocInfo(pObject);
@@ -178,7 +178,7 @@ namespace PdfReader
 			return m_pXref->GetDocInfoCopy(pObject);
 		}
 
-		// Возвращаем версию PDF файла.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј РІРµСЂСЃРёСЋ PDF С„Р°Р№Р»Р°.
 		double GetPDFVersion()
 		{
 			return m_dPDFVersion;
@@ -192,18 +192,18 @@ namespace PdfReader
 
 	private:
 
-		std::wstring   m_wsFileName;  // Имя исходного файла.
-		FILE*          m_pFile;       // Указатель на файловый поток
-		unsigned char* m_pFileBuffer; // Буфер для файла
+		std::wstring   m_wsFileName;  // РРјСЏ РёСЃС…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°.
+		FILE*          m_pFile;       // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° С„Р°Р№Р»РѕРІС‹Р№ РїРѕС‚РѕРє
+		unsigned char* m_pFileBuffer; // Р‘СѓС„РµСЂ РґР»СЏ С„Р°Р№Р»Р°
 
-		BaseStream*    m_pStream;     // Поток, в который считан весь файл
-		double         m_dPDFVersion; // Верисия PDF файла (1.1 - 1.7)
-		XRef*          m_pXref;       // Таблица Xref 
-		Catalog*       m_pCatalog;    // Указатель на объект Catalog
-		Outline*       m_pOutline;    // Указатель на Outline (меню)
+		BaseStream*    m_pStream;     // РџРѕС‚РѕРє, РІ РєРѕС‚РѕСЂС‹Р№ СЃС‡РёС‚Р°РЅ РІРµСЃСЊ С„Р°Р№Р»
+		double         m_dPDFVersion; // Р’РµСЂРёСЃРёСЏ PDF С„Р°Р№Р»Р° (1.1 - 1.7)
+		XRef*          m_pXref;       // РўР°Р±Р»РёС†Р° Xref 
+		Catalog*       m_pCatalog;    // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РѕР±СЉРµРєС‚ Catalog
+		Outline*       m_pOutline;    // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° Outline (РјРµРЅСЋ)
 					   
-		bool           m_bValid;      // Нормально ли открылся PDF файл
-		EError         m_eErrorCode;  // Код ошибки
+		bool           m_bValid;      // РќРѕСЂРјР°Р»СЊРЅРѕ Р»Рё РѕС‚РєСЂС‹Р»СЃСЏ PDF С„Р°Р№Р»
+		EError         m_eErrorCode;  // РљРѕРґ РѕС€РёР±РєРё
 					   
 		GlobalParams*  m_pGlobalParams;
 	};

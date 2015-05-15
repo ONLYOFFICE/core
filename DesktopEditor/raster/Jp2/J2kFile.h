@@ -1,4 +1,4 @@
-// J2kFile.h : Declaration of the CJ2kFile
+п»ї// J2kFile.h : Declaration of the CJ2kFile
 
 #pragma once
 
@@ -23,7 +23,7 @@ namespace Jpeg2000
 			pParameters->nReduce        = 0;
 			pParameters->nLayer         = 0;
 
-			// TODO: Сделать чтение параметров декодирования
+			// TODO: РЎРґРµР»Р°С‚СЊ С‡С‚РµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ
 			//if (sXml.GetLength() > 0)
 			//{
 			//	XmlUtils::CXmlNode oMainNode;
@@ -64,20 +64,20 @@ namespace Jpeg2000
 		long ApplyEncoderOptions(EncoderParams *pParameters, const std::wstring& sXml)
 		{
 			int nFormat = 0; // J2k
-			// Сначала выставляем стандартные значения параметров
+			// РЎРЅР°С‡Р°Р»Р° РІС‹СЃС‚Р°РІР»СЏРµРј СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ
 			memset(pParameters, 0, sizeof(EncoderParams));
 			pParameters->nComponentsCount     = 3;
 			pParameters->nResolutionsCount    = 6;
 			pParameters->nCodeBlockHeightInit = 64;
 			pParameters->nCodeBlockWidthInit  = 64;
 			pParameters->eProgOrder           = poLRCP;
-			pParameters->nROIComponentIndex   = -1;     // Нет ROI
+			pParameters->nROIComponentIndex   = -1;     // РќРµС‚ ROI
 			pParameters->nSubSamplingDx       = 1;
 			pParameters->nSubSamplingDy       = 1;
 			pParameters->bTileSizeOn          = false;
 			pParameters->sComment             = "Manufactured by Online Media Technologies Ltd.";
 
-			// TODO: Сделать чтение параметров кодирования
+			// TODO: РЎРґРµР»Р°С‚СЊ С‡С‚РµРЅРёРµ РїР°СЂР°РјРµС‚СЂРѕРІ РєРѕРґРёСЂРѕРІР°РЅРёСЏ
 			//if (sXml.GetLength() > 0)
 			//{
 			//	XmlUtils::CXmlNode oMainNode;
@@ -187,7 +187,7 @@ namespace Jpeg2000
 			//			// SOPmarker
 			//			if (oSaveNode.GetNode(_T("SOPmarker"), oCurNode))
 			//			{
-			//				// Пока отключим, потом надо будет добавить - для этого нужно выделять память для стрктуры ImageInfo
+			//				// РџРѕРєР° РѕС‚РєР»СЋС‡РёРј, РїРѕС‚РѕРј РЅР°РґРѕ Р±СѓРґРµС‚ РґРѕР±Р°РІРёС‚СЊ - РґР»СЏ СЌС‚РѕРіРѕ РЅСѓР¶РЅРѕ РІС‹РґРµР»СЏС‚СЊ РїР°РјСЏС‚СЊ РґР»СЏ СЃС‚СЂРєС‚СѓСЂС‹ ImageInfo
 			//				//pParameters->nCodingStyle |= 0x02;
 			//			}
 
@@ -211,7 +211,7 @@ namespace Jpeg2000
 			//			if (oSaveNode.GetNode(_T("Comment"), oCurNode))
 			//			{
 			//				sValue = oCurNode.GetAttribute(_T("value"));
-			//				// TO DO: Неправильное копирование строки
+			//				// TO DO: РќРµРїСЂР°РІРёР»СЊРЅРѕРµ РєРѕРїРёСЂРѕРІР°РЅРёРµ СЃС‚СЂРѕРєРё
 			//				USES_CONVERSION;
 			//				pParameters->sComment = W2A(sValue.GetBuffer());
 			//			}
@@ -320,13 +320,13 @@ namespace Jpeg2000
 			//}
 
 
-			// Проверим кооректность введенных параметров
+			// РџСЂРѕРІРµСЂРёРј РєРѕРѕСЂРµРєС‚РЅРѕСЃС‚СЊ РІРІРµРґРµРЅРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ
 
-			// Параметры nDistoAlloc, nFixedQuality, nFixedAlloc нельзя использовать вместе
+			// РџР°СЂР°РјРµС‚СЂС‹ nDistoAlloc, nFixedQuality, nFixedAlloc РЅРµР»СЊР·СЏ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊ РІРјРµСЃС‚Рµ
 			if ((pParameters->nDistoAlloc || pParameters->nFixedAlloc || pParameters->nFixedQuality) && (!(pParameters->nDistoAlloc ^ pParameters->nFixedAlloc ^ pParameters->nFixedQuality)))
 				return -1;
 
-			// Если параметры не заданы, тогда по умолчанию ставим компрессию без потерь
+			// Р•СЃР»Рё РїР°СЂР°РјРµС‚СЂС‹ РЅРµ Р·Р°РґР°РЅС‹, С‚РѕРіРґР° РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ СЃС‚Р°РІРёРј РєРѕРјРїСЂРµСЃСЃРёСЋ Р±РµР· РїРѕС‚РµСЂСЊ
 			if (0 == pParameters->nLayersCount)
 			{
 				pParameters->afRates[0]   = 0;
@@ -340,7 +340,7 @@ namespace Jpeg2000
 			{
 				if (-1 == pParameters->aoPOC[nIndex].ePpoc)
 				{
-					// TO DO: Выдать ошибку, что порядок не задан
+					// TO DO: Р’С‹РґР°С‚СЊ РѕС€РёР±РєСѓ, С‡С‚Рѕ РїРѕСЂСЏРґРѕРє РЅРµ Р·Р°РґР°РЅ
 				}
 			}
 

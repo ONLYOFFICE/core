@@ -1,5 +1,5 @@
-#pragma once
-// Функции в данном файле предназначены для чтения/записи различных частей JPEG2000-codestream: маркеры и данные
+п»ї#pragma once
+// Р¤СѓРЅРєС†РёРё РІ РґР°РЅРЅРѕРј С„Р°Р№Р»Рµ РїСЂРµРґРЅР°Р·РЅР°С‡РµРЅС‹ РґР»СЏ С‡С‚РµРЅРёСЏ/Р·Р°РїРёСЃРё СЂР°Р·Р»РёС‡РЅС‹С… С‡Р°СЃС‚РµР№ JPEG2000-codestream: РјР°СЂРєРµСЂС‹ Рё РґР°РЅРЅС‹Рµ
 //-------------------------------------------------------------------------------------------------------------------------------
 
 #include "math.h"
@@ -98,7 +98,7 @@ namespace Jpeg2000
 	}
 
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Вспомогательные функции
+	// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё
 	//-------------------------------------------------------------------------------------------------------------------------------
 	static void J2k_WriteSOC(J2kCodestream *pJ2k)
 	{
@@ -188,7 +188,7 @@ namespace Jpeg2000
 			pImage->pComponents[nIndex].nFactorDiv2      = 0;
 		}
 
-		// Считаем количество тайлов по Х и Y
+		// РЎС‡РёС‚Р°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ С‚Р°Р№Р»РѕРІ РїРѕ РҐ Рё Y
 		pCodingParams->nXTilesCount = CeilDiv(pImage->nXsiz - pCodingParams->nXTOsiz, pCodingParams->nXTsiz);
 		pCodingParams->nYTilesCount = CeilDiv(pImage->nYsiz - pCodingParams->nYTOsiz, pCodingParams->nYTsiz);
 
@@ -218,7 +218,7 @@ namespace Jpeg2000
 			pCodingParams->pTCP[nIndex].nFirst     = 1;
 		}
 
-		// Обнуляем данные для PPM маркера
+		// РћР±РЅСѓР»СЏРµРј РґР°РЅРЅС‹Рµ РґР»СЏ PPM РјР°СЂРєРµСЂР°
 		pCodingParams->nPPM          = 0;
 		pCodingParams->pPPMData      = NULL;
 		pCodingParams->pPPMDataFirst = NULL;
@@ -315,7 +315,7 @@ namespace Jpeg2000
 
 		int nLen = pStream->Read(2);
 
-		// TO DO: Сделать нормальное чтение
+		// TO DO: РЎРґРµР»Р°С‚СЊ РЅРѕСЂРјР°Р»СЊРЅРѕРµ С‡С‚РµРЅРёРµ
 		pStream->Skip(nLen - 2);
 	}
 
@@ -665,7 +665,7 @@ namespace Jpeg2000
 			pTCCP->aoStepSizes[nCurBand].nMantissa = nMantissa;
 		}
 
-		// Add : Если тип квантования ScalarImplicit, тогда вычислим коэффициенты квантования для остальных Subbands
+		// Add : Р•СЃР»Рё С‚РёРї РєРІР°РЅС‚РѕРІР°РЅРёСЏ ScalarImplicit, С‚РѕРіРґР° РІС‹С‡РёСЃР»РёРј РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ РєРІР°РЅС‚РѕРІР°РЅРёСЏ РґР»СЏ РѕСЃС‚Р°Р»СЊРЅС‹С… Subbands
 		if (pTCCP->nQuantStyle == J2K_CCP_QNTSTY_SIQNT)
 		{
 			for (int nCurBand = 1; nCurBand < J2K_MAXBANDS; nCurBand++)
@@ -853,7 +853,7 @@ namespace Jpeg2000
 				nPacketLen = (nPacketLen << 7) + nAdd; // Iplm_ij
 				if ((nAdd & 0x80) == 0)
 				{
-					// новый packet
+					// РЅРѕРІС‹Р№ packet
 					nPacketLen = 0;
 				}
 				if (nLen <= 0)
@@ -877,7 +877,7 @@ namespace Jpeg2000
 			nPacketLen = (nPacketLen << 7) + nAdd; // Iplt_i
 			if ((nAdd & 0x80) == 0)
 			{
-				// новый packet
+				// РЅРѕРІС‹Р№ packet
 				nPacketLen = 0;
 			}
 		}
@@ -909,7 +909,7 @@ namespace Jpeg2000
 			}
 
 			int nStore = pCodingParams->nPPMStore;
-			if (nZppm == 0) // Первый PPM маркер
+			if (nZppm == 0) // РџРµСЂРІС‹Р№ PPM РјР°СЂРєРµСЂ
 			{
 				pCodingParams->pPPMData      = (unsigned char *)Malloc(nNppm * sizeof(unsigned char));
 				if (!pCodingParams->pPPMData)
@@ -920,7 +920,7 @@ namespace Jpeg2000
 				pCodingParams->pPPMDataFirst = pCodingParams->pPPMData;
 				pCodingParams->nPPMLength    = nNppm;
 			}
-			else // Не первый PPM маркер
+			else // РќРµ РїРµСЂРІС‹Р№ PPM РјР°СЂРєРµСЂ
 			{
 				BYTE *pPPMData_new = (BYTE *)Malloc((nNppm + pCodingParams->nPPMStore) * sizeof(unsigned char));
 				if (!pPPMData_new)
@@ -936,14 +936,14 @@ namespace Jpeg2000
 				pCodingParams->nPPMLength    = nNppm + pCodingParams->nPPMStore;
 			}
 
-			// Считываем остальные данные
+			// РЎС‡РёС‚С‹РІР°РµРј РѕСЃС‚Р°Р»СЊРЅС‹Рµ РґР°РЅРЅС‹Рµ
 			int nIndex;
 			for (nIndex = nNppm; nIndex > 0; nIndex--)
 			{
 				pCodingParams->pPPMData[nStore] = pStream->Read(1);
 				nStore++;
 				nLen--;
-				if (nLen == 0) // Случай, когда packet header не закончился в текущем маркере, но закончится в следующем
+				if (nLen == 0) // РЎР»СѓС‡Р°Р№, РєРѕРіРґР° packet header РЅРµ Р·Р°РєРѕРЅС‡РёР»СЃСЏ РІ С‚РµРєСѓС‰РµРј РјР°СЂРєРµСЂРµ, РЅРѕ Р·Р°РєРѕРЅС‡РёС‚СЃСЏ РІ СЃР»РµРґСѓСЋС‰РµРј
 					break;
 			}
 			pCodingParams->nPPMPrevious = nIndex - 1;
@@ -961,7 +961,7 @@ namespace Jpeg2000
 		int nZppt = pStream->Read(1); // Zppt
 		pTCP->nPPT = 1;
 
-		if (nZppt == 0) // Первый PPT маркер 
+		if (nZppt == 0) // РџРµСЂРІС‹Р№ PPT РјР°СЂРєРµСЂ 
 		{
 			pTCP->pPPTData      = (unsigned char *)Malloc((nLen - 3) * sizeof(unsigned char));
 			if (!pTCP->pPPTData)
@@ -973,7 +973,7 @@ namespace Jpeg2000
 			pTCP->nPPTStore     = 0;
 			pTCP->nPPTLength    = nLen - 3;
 		}
-		else // Не первый PPT маркер
+		else // РќРµ РїРµСЂРІС‹Р№ PPT РјР°СЂРєРµСЂ
 		{
 			BYTE *pPPTData_new =  (unsigned char *)Malloc((nLen - 3 + pTCP->nPPTStore) * sizeof(unsigned char));
 			if (!pPPTData_new)
@@ -1010,7 +1010,7 @@ namespace Jpeg2000
 		pStream->Skip(2);
 
 		pStream->Write(pJ2k->nCurTileIndex, 2); // Isot
-		pStream->Skip(4);                       // Psot (пока оставляем место, сюда пишем в функции J2k_WriteSOD)
+		pStream->Skip(4);                       // Psot (РїРѕРєР° РѕСЃС‚Р°РІР»СЏРµРј РјРµСЃС‚Рѕ, СЃСЋРґР° РїРёС€РµРј РІ С„СѓРЅРєС†РёРё J2k_WriteSOD)
 		pStream->Write(0, 1);                   // TPsot
 		pStream->Write(1, 1);                   // TNsot
 
@@ -1066,7 +1066,7 @@ namespace Jpeg2000
 
 		TileCodingParams *pTCP = &pCodingParams->pTCP[pJ2k->nCurTileIndex];
 
-		if (pTCP->nFirst == 1) // Инициализируем PPT
+		if (pTCP->nFirst == 1) // РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј PPT
 		{
 			TileCompCodingParams *pTemp = pTCP->pTCCP;
 			memcpy(pTCP, pJ2k->pDefaultTCP, sizeof(TileCodingParams));
@@ -1116,7 +1116,7 @@ namespace Jpeg2000
 
 		int nTileDataLen = TCD_EncodeTile(pTCD, pJ2k->nCurTileIndex, (BYTE*)pStream->GetOwner() + pStream->Tell(), pStream->GetLeftSize() - 2, pImageInfo);
 
-		// Записываем поле Psot в маркере SOT
+		// Р—Р°РїРёСЃС‹РІР°РµРј РїРѕР»Рµ Psot РІ РјР°СЂРєРµСЂРµ SOT
 		int nTotalLen =  pStream->Tell() + nTileDataLen - pJ2k->nSOTStartPos;
 		pStream->Seek(pJ2k->nSOTStartPos + 6);
 		pStream->Write(nTotalLen, 4); // Psot
@@ -1134,7 +1134,7 @@ namespace Jpeg2000
 
 		if (nLen == pStream->GetLeftSize() + 1)
 		{
-			nTruncate = 1; // Обрезанный codestream
+			nTruncate = 1; // РћР±СЂРµР·Р°РЅРЅС‹Р№ codestream
 		}
 
 		unsigned char *pData = (unsigned char *)Malloc((pJ2k->pTileLen[nCurTileIndex] + nLen) * sizeof(unsigned char));
@@ -1152,7 +1152,7 @@ namespace Jpeg2000
 		unsigned char *pDataPointer = pData + pJ2k->pTileLen[nCurTileIndex];
 		//for ( int nIndex = 0; nIndex < nLen; nIndex++ ) 
 		//{
-		//	pDataPointer[nIndex] = pStream->Read( 1 ); // Считываем закодированные данные текущего тайла
+		//	pDataPointer[nIndex] = pStream->Read( 1 ); // РЎС‡РёС‚С‹РІР°РµРј Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹Рµ РґР°РЅРЅС‹Рµ С‚РµРєСѓС‰РµРіРѕ С‚Р°Р№Р»Р°
 		//}
 
 		pStream->Read(pDataPointer, nLen);
@@ -1197,7 +1197,7 @@ namespace Jpeg2000
 		int nLen          = pStream->Read(2); // Lrgn
 		int nCurComponent = pStream->Read(nComponentsCount <= 256 ? 1 : 2); // Crgn
 		int nROIStyle     = pStream->Read(1); // Srgn
-		// TO DO: Вставить проверку nROIStyle == 0
+		// TO DO: Р’СЃС‚Р°РІРёС‚СЊ РїСЂРѕРІРµСЂРєСѓ nROIStyle == 0
 		pTCP->pTCCP[nCurComponent].nROIShift = pStream->Read(1); // SPrgn 
 	}
 
@@ -1247,8 +1247,8 @@ namespace Jpeg2000
 	}
 	static void J2k_ReadUNK(J2kCodestream *pJ2k)
 	{
-		// Предполагаем, что неизвестный маркер не пустой, а, значит,
-		// у него следующие два байта - длина маркера.
+		// РџСЂРµРґРїРѕР»Р°РіР°РµРј, С‡С‚Рѕ РЅРµРёР·РІРµСЃС‚РЅС‹Р№ РјР°СЂРєРµСЂ РЅРµ РїСѓСЃС‚РѕР№, Р°, Р·РЅР°С‡РёС‚,
+		// Сѓ РЅРµРіРѕ СЃР»РµРґСѓСЋС‰РёРµ РґРІР° Р±Р°Р№С‚Р° - РґР»РёРЅР° РјР°СЂРєРµСЂР°.
 		CReader *pStream = pJ2k->pStreamIO;
 		int nLen = pStream->Read(2);
 
@@ -1262,12 +1262,12 @@ namespace Jpeg2000
 
 
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Таблица связывающая прочтенный маркер - состояние декодера - действие(функция) декодера при прочтении данного маркера
+	// РўР°Р±Р»РёС†Р° СЃРІСЏР·С‹РІР°СЋС‰Р°СЏ РїСЂРѕС‡С‚РµРЅРЅС‹Р№ РјР°СЂРєРµСЂ - СЃРѕСЃС‚РѕСЏРЅРёРµ РґРµРєРѕРґРµСЂР° - РґРµР№СЃС‚РІРёРµ(С„СѓРЅРєС†РёСЏ) РґРµРєРѕРґРµСЂР° РїСЂРё РїСЂРѕС‡С‚РµРЅРёРё РґР°РЅРЅРѕРіРѕ РјР°СЂРєРµСЂР°
 	typedef struct TDecoderMSTableEntry
 	{
-		int    nID;     // Значение маркера
-		int    nStates; // Состояние декодера, когда появляется данный маркер
-		void(*pHandler) (J2kCodestream *pJ2k); // Действие связанное с данным маркером
+		int    nID;     // Р—РЅР°С‡РµРЅРёРµ РјР°СЂРєРµСЂР°
+		int    nStates; // РЎРѕСЃС‚РѕСЏРЅРёРµ РґРµРєРѕРґРµСЂР°, РєРѕРіРґР° РїРѕСЏРІР»СЏРµС‚СЃСЏ РґР°РЅРЅС‹Р№ РјР°СЂРєРµСЂ
+		void(*pHandler) (J2kCodestream *pJ2k); // Р”РµР№СЃС‚РІРёРµ СЃРІСЏР·Р°РЅРЅРѕРµ СЃ РґР°РЅРЅС‹Рј РјР°СЂРєРµСЂРѕРј
 	} DecoderMSTableEntry;
 
 	DecoderMSTableEntry c_aoJ2k_DecoderMSTable[] =
@@ -1317,7 +1317,7 @@ namespace Jpeg2000
 	}
 
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Декодирование потоков J2K / JPT
+	// Р”РµРєРѕРґРёСЂРѕРІР°РЅРёРµ РїРѕС‚РѕРєРѕРІ J2K / JPT
 	//-------------------------------------------------------------------------------------------------------------------------------
 
 	J2kCodestream* J2k_CreateDecompress(PCommon pCodecInfo)
@@ -1381,7 +1381,7 @@ namespace Jpeg2000
 	{
 		if (pJ2k && pParameters)
 		{
-			// Создаем и инициализируем структуру CodingParams
+			// РЎРѕР·РґР°РµРј Рё РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј СЃС‚СЂСѓРєС‚СѓСЂСѓ CodingParams
 			CodingParams *pCodingParams = (CodingParams*)Malloc(sizeof(CodingParams));
 			if (!pCodingParams)
 			{
@@ -1401,7 +1401,7 @@ namespace Jpeg2000
 
 		pJ2k->pStreamIO = pStream;
 
-		// Создаем пустую картинку
+		// РЎРѕР·РґР°РµРј РїСѓСЃС‚СѓСЋ РєР°СЂС‚РёРЅРєСѓ
 		Image *pImage = Image_CreateEmpty();
 		if (!pImage)
 		{
@@ -1433,7 +1433,7 @@ namespace Jpeg2000
 				return 0;
 			}
 
-			// Проверяем ограничение на декодирование
+			// РџСЂРѕРІРµСЂСЏРµРј РѕРіСЂР°РЅРёС‡РµРЅРёРµ РЅР° РґРµРєРѕРґРёСЂРѕРІР°РЅРёРµ
 			if (pEntry->nID == J2K_MS_SOT && pJ2k->pCodingParams->eLimitDecoding == declimLimitToMainHeader)
 			{
 				Event_Message(EVT_INFO, "Main Header decoded.\n");
@@ -1461,7 +1461,7 @@ namespace Jpeg2000
 				pCodecInfo->nErrorCode = JP2_ERROR_NO_ERROR;
 				break;
 			}
-			// Проверяем не появилась ли ошибка
+			// РџСЂРѕРІРµСЂСЏРµРј РЅРµ РїРѕСЏРІРёР»Р°СЃСЊ Р»Рё РѕС€РёР±РєР°
 			if (JP2_ERROR_NO_ERROR != pCodecInfo->nErrorCode)
 			{
 				Image_Destroy(pImage);
@@ -1489,7 +1489,7 @@ namespace Jpeg2000
 
 		pJ2k->pStreamIO = pStream;
 
-		// Создем пустую картинку
+		// РЎРѕР·РґРµРј РїСѓСЃС‚СѓСЋ РєР°СЂС‚РёРЅРєСѓ
 		Image *pImage = Image_CreateEmpty();
 		if (!pImage)
 		{
@@ -1499,10 +1499,10 @@ namespace Jpeg2000
 
 		pJ2k->nState = j2kstateMHSOC;
 
-		// Инициализируем заголовок
+		// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј Р·Р°РіРѕР»РѕРІРѕРє
 		JPTMessageHeader oHeader;
 		JPT_InitMessageHeader(&oHeader);
-		// Читаем первый заголовок сообщения
+		// Р§РёС‚Р°РµРј РїРµСЂРІС‹Р№ Р·Р°РіРѕР»РѕРІРѕРє СЃРѕРѕР±С‰РµРЅРёСЏ
 		JPT_ReadMessageHeader(pCodecInfo, pStream, &oHeader);
 
 		int nPosition =  pStream->Tell();
@@ -1574,7 +1574,7 @@ namespace Jpeg2000
 	}
 
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Кодирование в поток J2K
+	// РљРѕРґРёСЂРѕРІР°РЅРёРµ РІ РїРѕС‚РѕРє J2K
 	//-------------------------------------------------------------------------------------------------------------------------------
 
 	J2kCodestream* J2k_CreateCompress(PCommon pCodecInfo)
@@ -1637,7 +1637,7 @@ namespace Jpeg2000
 			return;
 		}
 
-		// Создаем и инициализируем структуру Coding parameters
+		// РЎРѕР·РґР°РµРј Рё РёРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј СЃС‚СЂСѓРєС‚СѓСЂСѓ Coding parameters
 		CodingParams *pCodingParams = (CodingParams*)Malloc(sizeof(CodingParams));
 		if (!pCodingParams)
 		{
@@ -1649,7 +1649,7 @@ namespace Jpeg2000
 		pCodingParams->nXTilesCount = 1;
 		pCodingParams->nYTilesCount = 1;
 
-		// Копируем заданные параметры 
+		// РљРѕРїРёСЂСѓРµРј Р·Р°РґР°РЅРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ 
 
 		pCodingParams->nDistoAlloc   = pParameters->nDistoAlloc;
 		pCodingParams->nFixedAlloc   = pParameters->nFixedAlloc;
@@ -1669,7 +1669,7 @@ namespace Jpeg2000
 			memcpy(pCodingParams->pMatrix, pParameters->pMatrix, array_size);
 		}
 
-		// Создаем ли файл индексации?
+		// РЎРѕР·РґР°РµРј Р»Рё С„Р°Р№Р» РёРЅРґРµРєСЃР°С†РёРё?
 		pCodingParams->nIndexOn = pParameters->nIndexOn;
 		if (pCodingParams->nIndexOn)
 		{
@@ -1702,7 +1702,7 @@ namespace Jpeg2000
 			}
 		}
 
-		// Вычисляем другие параметры кодирования
+		// Р’С‹С‡РёСЃР»СЏРµРј РґСЂСѓРіРёРµ РїР°СЂР°РјРµС‚СЂС‹ РєРѕРґРёСЂРѕРІР°РЅРёСЏ
 
 		if (pParameters->bTileSizeOn)
 		{
@@ -1790,7 +1790,7 @@ namespace Jpeg2000
 			for (int nComponentIndex = 0; nComponentIndex < pImage->nCsiz; nComponentIndex++)
 			{
 				TileCompCodingParams *pTCCP = &pTCP->pTCCP[nComponentIndex];
-				pTCCP->nCodingStyle      = pParameters->nCodingStyle & 0x01;	// 0 => одна область || 1 => призвольное количество областей
+				pTCCP->nCodingStyle      = pParameters->nCodingStyle & 0x01;	// 0 => РѕРґРЅР° РѕР±Р»Р°СЃС‚СЊ || 1 => РїСЂРёР·РІРѕР»СЊРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ РѕР±Р»Р°СЃС‚РµР№
 				pTCCP->nResolutionsCount = pParameters->nResolutionsCount;
 				pTCCP->nCodeBlockWidth   = FloorLog2(pParameters->nCodeBlockWidthInit);
 				pTCCP->nCodeBlockHeight  = FloorLog2(pParameters->nCodeBlockHeightInit);
@@ -1959,7 +1959,7 @@ namespace Jpeg2000
 			{
 				for (int nResolutionIndex = 0; nResolutionIndex < pImageInfo->nDecompCount + 1; nResolutionIndex++)
 				{
-					// Предполагаем, что значения XRsiz, YRsiz одинаковые для всех компонент
+					// РџСЂРµРґРїРѕР»Р°РіР°РµРј, С‡С‚Рѕ Р·РЅР°С‡РµРЅРёСЏ XRsiz, YRsiz РѕРґРёРЅР°РєРѕРІС‹Рµ РґР»СЏ РІСЃРµС… РєРѕРјРїРѕРЅРµРЅС‚
 					int nX0 = pImageInfo->nXTOsiz + nTileIndex - (int)floor((float)nTileIndex / (float)pImageInfo->nXTilesCount) * pImageInfo->nXTilesCount * pImageInfo->nXTsiz;
 					int nY0 = pImageInfo->nXTOsiz + (int)floor((float)nTileIndex / (float)pImageInfo->nXTilesCount) * pImageInfo->nYTsiz;
 					int nX1 = nX0 + pImageInfo->nXTsiz;
@@ -2001,7 +2001,7 @@ namespace Jpeg2000
 			}
 			else if (pImageInfo->eProgOrder == poPCRL)
 			{
-				// Предполагаем, что значения XRsiz, YRsiz одинаковые для всех компонент
+				// РџСЂРµРґРїРѕР»Р°РіР°РµРј, С‡С‚Рѕ Р·РЅР°С‡РµРЅРёСЏ XRsiz, YRsiz РѕРґРёРЅР°РєРѕРІС‹Рµ РґР»СЏ РІСЃРµС… РєРѕРјРїРѕРЅРµРЅС‚
 				int nX0 = pImageInfo->nXTOsiz + nTileIndex - (int)floor((float)nTileIndex / (float)pImageInfo->nXTilesCount) * pImageInfo->nXTilesCount * pImageInfo->nXTsiz;
 				int nY0 = pImageInfo->nXTOsiz + (int)floor((float)nTileIndex / (float)pImageInfo->nXTilesCount) * pImageInfo->nYTsiz;
 				int nX1 = nX0 + pImageInfo->nXTsiz;
@@ -2047,7 +2047,7 @@ namespace Jpeg2000
 			{
 				for (int nComponentIndex = 0; nComponentIndex < pImageInfo->nCompCount; nComponentIndex++)
 				{
-					// Предполагаем, что значения XRsiz, YRsiz одинаковые для всех компонент
+					// РџСЂРµРґРїРѕР»Р°РіР°РµРј, С‡С‚Рѕ Р·РЅР°С‡РµРЅРёСЏ XRsiz, YRsiz РѕРґРёРЅР°РєРѕРІС‹Рµ РґР»СЏ РІСЃРµС… РєРѕРјРїРѕРЅРµРЅС‚
 					int nX0 = pImageInfo->nXTOsiz + nTileIndex - (int)floor((float)nTileIndex / (float)pImageInfo->nXTilesCount) * pImageInfo->nXTilesCount * pImageInfo->nXTsiz;
 					int nY0 = pImageInfo->nXTOsiz + (int)floor((float)nTileIndex / (float)pImageInfo->nXTilesCount) * pImageInfo->nYTsiz;
 					int nX1 = nX0 + pImageInfo->nXTsiz;
@@ -2113,7 +2113,7 @@ namespace Jpeg2000
 		}
 #endif
 
-		// Индексация
+		// РРЅРґРµРєСЃР°С†РёСЏ
 		ImageInfo *pImageInfo = pJ2k->pImageInfo;
 		if (pImageInfo && pCodingParams->nIndexOn)
 		{
@@ -2151,24 +2151,24 @@ namespace Jpeg2000
 			J2k_WriteCOM(pJ2k);
 		}
 
-		// Индексация
+		// РРЅРґРµРєСЃР°С†РёСЏ
 		if (pImageInfo && pImageInfo->nIndexOn)
 		{
 			pImageInfo->nMainHeadEnd =  pStream->Tell() - 1;
 		}
 		//-------------
 
-		// Создаем струкртуру для кодирования тайлов
+		// РЎРѕР·РґР°РµРј СЃС‚СЂСѓРєСЂС‚СѓСЂСѓ РґР»СЏ РєРѕРґРёСЂРѕРІР°РЅРёСЏ С‚Р°Р№Р»РѕРІ
 		TCD *pTCD = TCD_Create(pJ2k->pCodecInfo);
 
-		// Кодируем каждый тайл
+		// РљРѕРґРёСЂСѓРµРј РєР°Р¶РґС‹Р№ С‚Р°Р№Р»
 		for (int nTileIndex = 0; nTileIndex < pCodingParams->nXTilesCount * pCodingParams->nYTilesCount; nTileIndex++)
 		{
 			Event_Message(EVT_INFO, "tile number %d / %d\n", nTileIndex + 1, pCodingParams->nXTilesCount * pCodingParams->nYTilesCount);
 
 			pJ2k->nCurTileIndex = nTileIndex;
 
-			// Инициализируем перед кодированием
+			// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РїРµСЂРµРґ РєРѕРґРёСЂРѕРІР°РЅРёРµРј
 			if (0 == nTileIndex)
 			{
 				TCD_MallocEncode(pTCD, pImage, pCodingParams, pJ2k->nCurTileIndex);
@@ -2177,14 +2177,14 @@ namespace Jpeg2000
 			{
 				TCD_InitEncode(pTCD, pImage, pCodingParams, pJ2k->nCurTileIndex);
 			}
-			// Проверяем ошибку
+			// РџСЂРѕРІРµСЂСЏРµРј РѕС€РёР±РєСѓ
 			if (JP2_ERROR_NO_ERROR != pTCD->pCodecInfo->nErrorCode)
 			{
 				TCD_Destroy(pTCD);
 				return false;
 			}
 
-			// Индексация
+			// РРЅРґРµРєСЃР°С†РёСЏ
 			if (pImageInfo && pImageInfo->nIndexOn)
 			{
 				pImageInfo->pTile[pJ2k->nCurTileIndex].nTileCount = pJ2k->nCurTileIndex;
@@ -2206,7 +2206,7 @@ namespace Jpeg2000
 
 			J2k_WriteSOD(pJ2k, pTCD);
 
-			// Индексация
+			// РРЅРґРµРєСЃР°С†РёСЏ
 			if (pImageInfo && pImageInfo->nIndexOn)
 			{
 				pImageInfo->pTile[pJ2k->nCurTileIndex].nEndPos =  pStream->Tell() + pJ2k->nPosCorrection - 1;
@@ -2215,13 +2215,13 @@ namespace Jpeg2000
 
 		}
 
-		// Удаляем структуру кодирующую тайлы
+		// РЈРґР°Р»СЏРµРј СЃС‚СЂСѓРєС‚СѓСЂСѓ РєРѕРґРёСЂСѓСЋС‰СѓСЋ С‚Р°Р№Р»С‹
 		TCD_FreeEncode(pTCD);
 		TCD_Destroy(pTCD);
 
 		J2k_WriteEOC(pJ2k);
 
-		// Создаем файл с индексацией
+		// РЎРѕР·РґР°РµРј С„Р°Р№Р» СЃ РёРЅРґРµРєСЃР°С†РёРµР№
 		if (pImageInfo && pImageInfo->nIndexOn)
 		{
 			if (!J2k_CreateIndex(pJ2k, pStream, pImageInfo, sIndex))

@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "DWT.h"
 #include "ArithmeticCoder.h"
@@ -7,7 +7,7 @@
 namespace Jpeg2000
 {
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Вспомогательные функции
+	// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё
 	//-------------------------------------------------------------------------------------------------------------------------------
 
 	static int    Tier1_GetContextIndexZC(Tier1 *pTier1, int nF, int nOrient)
@@ -273,6 +273,7 @@ namespace Jpeg2000
 	{
 		MQCoder *pMQCoder = pTier1->pMQCoder;
 		int nFlag = nVSC ? ((*pFlags) & (~(T1_SIG_S | T1_SIG_SE | T1_SIG_SW | T1_SGN_S))) : (*pFlags);
+		int nValue = 0;
 		if (nPartial)
 		{
 			goto LABEL_PARTIAL;
@@ -280,7 +281,7 @@ namespace Jpeg2000
 		if (!(*pFlags & (T1_SIG | T1_VISIT)))
 		{
 			MQC_SetCurContext(pMQCoder, Tier1_GetContextIndexZC(pTier1, nFlag, nOrient));
-			int nValue = abs(*pData) & nOne ? 1 : 0;
+			nValue = abs(*pData) & nOne ? 1 : 0;
 			MQC_Encode(pMQCoder, nValue);
 			if (nValue)
 			{
@@ -295,11 +296,11 @@ namespace Jpeg2000
 		}
 		*pFlags &= ~T1_VISIT;
 	}
-
 	static void   Tier1_DecoderClnPassStep(Tier1 *pTier1, int *pFlags, int *pData, int nOrient, int nOnePlusHalf, int nPartial, int nVSC)
 	{
 		MQCoder *pMQCoder = pTier1->pMQCoder;
 		int nFlag = nVSC ? ((*pFlags) & (~(T1_SIG_S | T1_SIG_SE | T1_SIG_SW | T1_SGN_S))) : (*pFlags);
+		int nValue = 0;
 		if (nPartial)
 		{
 			goto LABEL_PARTIAL;
@@ -311,7 +312,7 @@ namespace Jpeg2000
 			{
 			LABEL_PARTIAL:
 				MQC_SetCurContext(pMQCoder, Tier1_GetContextIndexSC(pTier1, nFlag));
-				int nValue = MQC_Decode(pMQCoder) ^ Tier1_GetSPB(pTier1, nFlag);
+				nValue = MQC_Decode(pMQCoder) ^ Tier1_GetSPB(pTier1, nFlag);
 				*pData = nValue ? -nOnePlusHalf : nOnePlusHalf;
 				Tier1_UpdateFlags(pFlags, nValue);
 				*pFlags |= T1_SIG;
@@ -903,7 +904,7 @@ namespace Jpeg2000
 
 
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Основные функции
+	// РћСЃРЅРѕРІРЅС‹Рµ С„СѓРЅРєС†РёРё
 	//-------------------------------------------------------------------------------------------------------------------------------
 	Tier1* Tier1_Create(PCommon pCodecInfo)
 	{
@@ -932,7 +933,7 @@ namespace Jpeg2000
 				return NULL;
 			}
 
-			// Инициализируем таблицы 
+			// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј С‚Р°Р±Р»РёС†С‹ 
 			Tier1_InitLuts(pTier1);
 		}
 		return pTier1;

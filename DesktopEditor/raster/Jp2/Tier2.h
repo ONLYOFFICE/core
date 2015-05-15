@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Reader.h"
 #include "PacketIterator.h"
@@ -8,7 +8,7 @@
 namespace Jpeg2000
 {
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Âñïîìîãàòåëüíûå ôóíêöèè
+	// Ð’ÑÐ¿Ð¾Ð¼Ð¾Ð³Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸
 	//-------------------------------------------------------------------------------------------------------------------------------
 	static void Tier2_PutCommaCode(BitIO *pBIO, int nLen)
 	{
@@ -83,7 +83,7 @@ namespace Jpeg2000
 			unsigned char *pSOP = (unsigned char *)Malloc(6 * sizeof(unsigned char));
 			pSOP[0] = 255; // ff
 			pSOP[1] = 145; // 91
-			pSOP[2] = 0;   // Äëèíà âñåãäà 4 áàéòà
+			pSOP[2] = 0;   // Ð”Ð»Ð¸Ð½Ð° Ð²ÑÐµÐ³Ð´Ð° 4 Ð±Ð°Ð¹Ñ‚Ð°
 			pSOP[3] = 4;   // 
 			pSOP[4] = (pImageInfo->nPacketCount % 65536) / 256;
 			pSOP[5] = (pImageInfo->nPacketCount % 65536) % 256;
@@ -148,13 +148,13 @@ namespace Jpeg2000
 					BitIO_Write(pBitStream, pLayer->nPassesCount != 0, 1);
 				}
 
-				// Åñëè CodeBlock íå âêëþ÷åí, òîãäà ïåðåõîäìè ê ñëåäóþùåìó CodeBlock
+				// Ð•ÑÐ»Ð¸ CodeBlock Ð½Ðµ Ð²ÐºÐ»ÑŽÑ‡ÐµÐ½, Ñ‚Ð¾Ð³Ð´Ð° Ð¿ÐµÑ€ÐµÑ…Ð¾Ð´Ð¼Ð¸ Ðº ÑÐ»ÐµÐ´ÑƒÑŽÑ‰ÐµÐ¼Ñƒ CodeBlock
 				if (!pLayer->nPassesCount)
 				{
 					continue;
 				}
 
-				// Åñëè ýòî ïåðâîå ïîÿâëåíèå CodeBlock --> òîãäà îáðàáûòûâàåì èíôîðìàöèþ î Zero bit-planes
+				// Ð•ÑÐ»Ð¸ ÑÑ‚Ð¾ Ð¿ÐµÑ€Ð²Ð¾Ðµ Ð¿Ð¾ÑÐ²Ð»ÐµÐ½Ð¸Ðµ CodeBlock --> Ñ‚Ð¾Ð³Ð´Ð° Ð¾Ð±Ñ€Ð°Ð±Ñ‹Ñ‚Ñ‹Ð²Ð°ÐµÐ¼ Ð¸Ð½Ñ„Ð¾Ñ€Ð¼Ð°Ñ†Ð¸ÑŽ Ð¾ Zero bit-planes
 				if (!pCodeBlock->nPassesCount)
 				{
 					pCodeBlock->nLenBitsCount = 3;
@@ -319,7 +319,7 @@ namespace Jpeg2000
 			}
 		}
 
-		// SOP ìàðêåð
+		// SOP Ð¼Ð°Ñ€ÐºÐµÑ€
 		if (pTCP->nCodingStyle & J2K_CP_CSTY_SOP)
 		{
 			if ((*pSrcPointer) != 0xff || (*(pSrcPointer + 1) != 0x91))
@@ -331,10 +331,10 @@ namespace Jpeg2000
 				pSrcPointer += 6;
 			}
 
-			// TO DO : Äîáàâèòü ïðîâåðêó çíà÷åíèÿ Nsop
+			// TO DO : Ð”Ð¾Ð±Ð°Ð²Ð¸Ñ‚ÑŒ Ð¿Ñ€Ð¾Ð²ÐµÑ€ÐºÑƒ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ñ Nsop
 		}
 
-		// Êîãäà èñïîëüçóþòñÿ ïàêåòû PPT/PPM, Packet header õðàíèòñÿ â ìàðêåðàõ PPT/PPM.
+		// ÐšÐ¾Ð³Ð´Ð° Ð¸ÑÐ¿Ð¾Ð»ÑŒÐ·ÑƒÑŽÑ‚ÑÑ Ð¿Ð°ÐºÐµÑ‚Ñ‹ PPT/PPM, Packet header Ñ…Ñ€Ð°Ð½Ð¸Ñ‚ÑÑ Ð² Ð¼Ð°Ñ€ÐºÐµÑ€Ð°Ñ… PPT/PPM.
 
 		BitIO *pBitStream = BitIO_Create();
 		if (!pBitStream)
@@ -350,7 +350,7 @@ namespace Jpeg2000
 			pBuffer = pTCP->pPPTData;
 			BitIO_InitDecoder(pBitStream, pBuffer, pTCP->nPPTLength);
 		}
-		else // Îáû÷íûé ñëó÷àé
+		else // ÐžÐ±Ñ‹Ñ‡Ð½Ñ‹Ð¹ ÑÐ»ÑƒÑ‡Ð°Ð¹
 		{
 			pBuffer = pSrcPointer;
 			BitIO_InitDecoder(pBitStream, pBuffer, pSrc + nLen - pBuffer);
@@ -364,7 +364,7 @@ namespace Jpeg2000
 			pBuffer += BitIO_WrittenBytesCount(pBitStream);
 			BitIO_Destroy(pBitStream);
 
-			// EPH ìàðêåð
+			// EPH Ð¼Ð°Ñ€ÐºÐµÑ€
 			if (pTCP->nCodingStyle & J2K_CP_CSTY_EPH)
 			{
 				if ((*pBuffer) != 0xff || (*(pBuffer + 1) != 0x92))
@@ -407,7 +407,7 @@ namespace Jpeg2000
 				CodeBlock *pCodeBlock = &pPrecinct->pCodeBlocks[nCodeBlockIndex];
 				TCDSegment *pSegment = NULL;
 
-				// Åñëè CodeBlock íå áûë âêëþ÷åí ðàíåå --> TagTree
+				// Ð•ÑÐ»Ð¸ CodeBlock Ð½Ðµ Ð±Ñ‹Ð» Ð²ÐºÐ»ÑŽÑ‡ÐµÐ½ Ñ€Ð°Ð½ÐµÐµ --> TagTree
 				if (!pCodeBlock->nSegmentsCount)
 				{
 					nIncluded = TGT_Decode(pBitStream, pPrecinct->pInclTree, nCodeBlockIndex, nLayerIndex + 1);
@@ -423,7 +423,7 @@ namespace Jpeg2000
 					continue;
 				}
 
-				// Åñëè CodeBlock íå áûë âêëþ÷åí ðàíåå --> zero-bitplane tagtree
+				// Ð•ÑÐ»Ð¸ CodeBlock Ð½Ðµ Ð±Ñ‹Ð» Ð²ÐºÐ»ÑŽÑ‡ÐµÐ½ Ñ€Ð°Ð½ÐµÐµ --> zero-bitplane tagtree
 				if (!pCodeBlock->nSegmentsCount)
 				{
 					int nIndex;
@@ -475,7 +475,7 @@ namespace Jpeg2000
 		pBuffer += BitIO_WrittenBytesCount(pBitStream);
 		BitIO_Destroy(pBitStream);
 
-		// EPH ìàðêåð
+		// EPH Ð¼Ð°Ñ€ÐºÐµÑ€
 		if (pTCP->nCodingStyle & J2K_CP_CSTY_EPH)
 		{
 			if ((*pBuffer) != 0xff || (*(pBuffer + 1) != 0x92))
@@ -568,7 +568,7 @@ namespace Jpeg2000
 
 
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Îñíîâíûå ôóíêöèè
+	// ÐžÑÐ½Ð¾Ð²Ð½Ñ‹Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸
 	//-------------------------------------------------------------------------------------------------------------------------------
 	int    Tier2_EncodePackets(Tier2 *pTier2, int nTileIndex, Tile *pTile, int nMaxLayers, unsigned char *pDst, int nLen, ImageInfo *pImageInfo)
 	{
@@ -605,7 +605,7 @@ namespace Jpeg2000
 						pDstPointer += nShift;
 					}
 
-					// Èíäåêñàöèÿ
+					// Ð˜Ð½Ð´ÐµÐºÑÐ°Ñ†Ð¸Ñ
 					if (pImageInfo && pImageInfo->nIndexOn)
 					{
 						if (pImageInfo->nIndexWrite)

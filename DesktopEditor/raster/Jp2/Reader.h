@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "../../common/File.h"
 
@@ -8,18 +8,18 @@ namespace Jpeg2000
 	// Byte input-output (Stream IO)
 	//-------------------------------------------------------------------------------------------------------------------------------
 
-#define STREAM_READ	 0x0001 // Поток открыт для чтения
-#define STREAM_WRITE 0x0002 // Поток открыт для записи
+#define STREAM_READ	 0x0001 // РџРѕС‚РѕРє РѕС‚РєСЂС‹С‚ РґР»СЏ С‡С‚РµРЅРёСЏ
+#define STREAM_WRITE 0x0002 // РџРѕС‚РѕРє РѕС‚РєСЂС‹С‚ РґР»СЏ Р·Р°РїРёСЃРё
 
 	typedef struct TByteIO
 	{
-		int            nMode;   // Чтение или запись ( STREAM_READ или OPJ_STREAM_WRITE )
-		unsigned char *pBuffer; // Указатель на начало буфера
-		int            nLength; // Размер буфера в байтах
+		int            nMode;   // Р§С‚РµРЅРёРµ РёР»Рё Р·Р°РїРёСЃСЊ ( STREAM_READ РёР»Рё OPJ_STREAM_WRITE )
+		unsigned char *pBuffer; // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РЅР°С‡Р°Р»Рѕ Р±СѓС„РµСЂР°
+		int            nLength; // Р Р°Р·РјРµСЂ Р±СѓС„РµСЂР° РІ Р±Р°Р№С‚Р°С…
 
-		unsigned char *pStart;  // Указатель на начало потока
-		unsigned char *pEnd;    // Указатель на конец потока
-		unsigned char *pCurPos; // Указатель не текущую позицию в потоке
+		unsigned char *pStart;  // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РЅР°С‡Р°Р»Рѕ РїРѕС‚РѕРєР°
+		unsigned char *pEnd;    // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РєРѕРЅРµС† РїРѕС‚РѕРєР°
+		unsigned char *pCurPos; // РЈРєР°Р·Р°С‚РµР»СЊ РЅРµ С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ РІ РїРѕС‚РѕРєРµ
 	} ByteIO;
 
 

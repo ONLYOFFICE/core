@@ -1,4 +1,4 @@
-#include "Types.h"
+ï»¿#include "Types.h"
 #include "Reader.h"
 
 namespace Jpeg2000
@@ -42,7 +42,7 @@ namespace Jpeg2000
 		return *pStream->pCurPos++;
 	}
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Îñíîâíûå ôóíêöèè
+	// ÐžÑÐ½Ð¾Ð²Ð½Ñ‹Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸
 	//-------------------------------------------------------------------------------------------------------------------------------
 	ByteIO*        ByteIO_Open(PCommon pInfo, unsigned char *pBuffer, int nLength)
 	{
@@ -62,7 +62,7 @@ namespace Jpeg2000
 		}
 		else if (!pBuffer && !nLength && pInfo)
 		{
-			// Âûäåëÿåì ïàìÿòü äëÿ çàêîäèðîâííîãî èçîáðàæåíèÿ
+			// Ð’Ñ‹Ð´ÐµÐ»ÑÐµÐ¼ Ð¿Ð°Ð¼ÑÑ‚ÑŒ Ð´Ð»Ñ Ð·Ð°ÐºÐ¾Ð´Ð¸Ñ€Ð¾Ð²Ð½Ð½Ð¾Ð³Ð¾ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ñ
 			pStream->nMode = STREAM_WRITE;
 			switch (pInfo->eCodecFormat)
 			{
@@ -90,7 +90,7 @@ namespace Jpeg2000
 			return NULL;
 		}
 
-		// Èíèöèàëèçèðóåì ïîòîê
+		// Ð˜Ð½Ð¸Ñ†Ð¸Ð°Ð»Ð¸Ð·Ð¸Ñ€ÑƒÐµÐ¼ Ð¿Ð¾Ñ‚Ð¾Ðº
 		pStream->pStart  = pStream->pBuffer;
 		pStream->pEnd    = pStream->pBuffer + pStream->nLength;
 		pStream->pCurPos = pStream->pBuffer;

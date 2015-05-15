@@ -1,18 +1,18 @@
-#include "J2kFile.h"
+п»ї#include "J2kFile.h"
 #include "J2kIncludes.h"
 #include "Utils.h"
 
 namespace Jpeg2000
 {
-	extern Image* Jp2ToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams);
-	extern Image* J2kToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams);
-	extern Image* JptToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams);
-	extern Image* Mj2ToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams);
-	extern bool   ImageToJ2k(Image *pImage, const std::wstring& wsFilePath, EncoderParams* pEncoderParams);
-	extern bool   ImageToJ2p(Image *pImage, const std::wstring& wsFilePath, EncoderParams* pEncoderParams);
+	//extern Image* Jp2ToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams);
+	//extern Image* J2kToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams);
+	//extern Image* JptToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams);
+	//extern Image* Mj2ToImage(const std::wstring& wsFileName, DecoderParams* pDecoderParams);
+	//extern bool   ImageToJ2k(Image *pImage, const std::wstring& wsFilePath, EncoderParams* pEncoderParams);
+	//extern bool   ImageToJ2p(Image *pImage, const std::wstring& wsFilePath, EncoderParams* pEncoderParams);
 
-	extern void   Image_Destroy(Image *pImage);
-	extern Image* Image_Create(int nComponentsCount, ImageComponentParams *pCompParams, ColorSpace eColorSpace);
+	//extern void   Image_Destroy(Image *pImage);
+	//extern Image* Image_Create(int nComponentsCount, ImageComponentParams *pCompParams, ColorSpace eColorSpace);
 
 	void* Malloc(size_t nSize)
 	{
@@ -90,7 +90,7 @@ namespace Jpeg2000
 
 		DecoderParams oParameters;
 
-		// Установим стандартные значения параметров
+		// РЈСЃС‚Р°РЅРѕРІРёРј СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ
 		ApplyDecoderOptions(&oParameters, wsXmlOptions);
 
 		///////////////////////////////////////////////////////////////////////////////////
@@ -149,7 +149,7 @@ namespace Jpeg2000
 		unsigned char* pBufferPtr = (unsigned char*)pData;
 		long nCreatedBufferSize = nBufferSize;
 
-		// Пишем данные в pBufferPtr
+		// РџРёС€РµРј РґР°РЅРЅС‹Рµ РІ pBufferPtr
 		if (pImage->nCsiz == 3 && pImage->pComponents[0].nXRsiz == pImage->pComponents[1].nXRsiz && pImage->pComponents[1].nXRsiz == pImage->pComponents[2].nXRsiz
 			&& pImage->pComponents[0].nYRsiz == pImage->pComponents[1].nYRsiz && pImage->pComponents[1].nYRsiz == pImage->pComponents[2].nYRsiz
 			&& pImage->pComponents[0].nPrecision == pImage->pComponents[1].nPrecision && pImage->pComponents[1].nPrecision == pImage->pComponents[2].nPrecision)
@@ -216,7 +216,7 @@ namespace Jpeg2000
 	}
 	bool CJ2kFile::Save(CBgraFrame* pFrame, const std::wstring& wsDstPath, const std::wstring& wsXmlOptions)
 	{
-		// TODO: Запись не реализована, надо доделать.
+		// TODO: Р—Р°РїРёСЃСЊ РЅРµ СЂРµР°Р»РёР·РѕРІР°РЅР°, РЅР°РґРѕ РґРѕРґРµР»Р°С‚СЊ.
 		return false;
 
 		if (!pFrame)
@@ -227,12 +227,12 @@ namespace Jpeg2000
 		BYTE* pSourceBuffer = pFrame->get_Data();
 		LONG lBufferSize    = 4 * lWidth * lHeight;
 
-		// Далее обрабатываем Xml с параметрами компрессии
+		// Р”Р°Р»РµРµ РѕР±СЂР°Р±Р°С‚С‹РІР°РµРј Xml СЃ РїР°СЂР°РјРµС‚СЂР°РјРё РєРѕРјРїСЂРµСЃСЃРёРё
 		EncoderParams oParameters;
 		int nFormat = ApplyEncoderOptions(&oParameters, wsXmlOptions);
 
-		// TODO: Добавить возможность записи альфа-канала
-		ImageComponentParams aComponentParams[3]; // Пока пусть будет максимально три компоненты (RGB)
+		// TODO: Р”РѕР±Р°РІРёС‚СЊ РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ Р·Р°РїРёСЃРё Р°Р»СЊС„Р°-РєР°РЅР°Р»Р°
+		ImageComponentParams aComponentParams[3]; // РџРѕРєР° РїСѓСЃС‚СЊ Р±СѓРґРµС‚ РјР°РєСЃРёРјР°Р»СЊРЅРѕ С‚СЂРё РєРѕРјРїРѕРЅРµРЅС‚С‹ (RGB)
 		Image *pImage = NULL;
 		int nComponentsCount = oParameters.nComponentsCount;
 
@@ -248,7 +248,7 @@ namespace Jpeg2000
 			aComponentParams[nIndex].nHeight    = (int)lHeight;
 		}
 
-		// Создаем структуру Image
+		// РЎРѕР·РґР°РµРј СЃС‚СЂСѓРєС‚СѓСЂСѓ Image
 		pImage = Image_Create(nComponentsCount, &aComponentParams[0], csRGB);
 		if (!pImage)
 			return false;

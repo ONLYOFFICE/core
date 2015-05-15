@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 //-------------------------------------------------------------------------------------------------------------------------------
 
 #include "Types.h"
@@ -8,7 +8,7 @@
 namespace Jpeg2000
 {
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Âñïîìîãàòåëüíûå ôóíêöèè
+	// Ð’ÑÐ¿Ð¾Ð¼Ð¾Ð³Ð°Ñ‚ÐµÐ»ÑŒÐ½Ñ‹Ðµ Ñ„ÑƒÐ½ÐºÑ†Ð¸Ð¸
 	//-------------------------------------------------------------------------------------------------------------------------------
 	static bool Jp2_ReadBoxHeader(PCommon pCodecInfo, CReader *pStream, Jp2Box *pBox)
 	{
@@ -111,7 +111,7 @@ namespace Jpeg2000
 		pStream->Write(pJp2->nWidth, 4); // WIDTH
 		pStream->Write(pJp2->nComponentsCount, 2); // NC
 		pStream->Write(pJp2->nBPC, 1); // BPC
-		pStream->Write(pJp2->nCompressionType, 1); // C ( ýòî çíà÷åíèå âñåãäà ðàâíî 7 )
+		pStream->Write(pJp2->nCompressionType, 1); // C ( ÑÑ‚Ð¾ Ð·Ð½Ð°Ñ‡ÐµÐ½Ð¸Ðµ Ð²ÑÐµÐ³Ð´Ð° Ñ€Ð°Ð²Ð½Ð¾ 7 )
 		pStream->Write(pJp2->nColorSpaceUnk, 1); // UnkC, colorspace unknown
 		pStream->Write(pJp2->nIPR, 1); // IPR
 
@@ -228,12 +228,13 @@ namespace Jpeg2000
 		{
 			pJp2->nEnumCS = pStream->Read(4); // EnumCS
 
-			pJp2->oColor.has_colr = TRUE;
+			pJp2->oColor.has_colr = true;
 		}
-		else if (pJp2->nMethod == 2) {
+		else if (pJp2->nMethod == 2) 
+		{
 			/* ICC profile */
-			__int32 it_icc_value = 0;
-			__int32 icc_len = oBox.nLength - 3;
+			int it_icc_value = 0;
+			int icc_len = oBox.nLength - 3;
 
 			pJp2->oColor.icc_profile_len = icc_len;
 			pJp2->oColor.icc_profile_buf = (BYTE*)Malloc(icc_len);
@@ -249,14 +250,14 @@ namespace Jpeg2000
 				pJp2->oColor.icc_profile_buf[it_icc_value] = (BYTE)pStream->Read(1);		/* icc values */
 			}
 
-			pJp2->oColor.has_colr = TRUE;
+			pJp2->oColor.has_colr = true;
 		}
 		else// if (jp2->meth > 2)
 		{
-			/*	ISO/IEC 15444-1:2004 (E), Table I.9 ­ Legal METH values:
+			/*	ISO/IEC 15444-1:2004 (E), Table I.9 Â­ Legal METH values:
 			conforming JP2 reader shall ignore the entire Colour Specification box.*/
 			//"COLR BOX meth value is not a regular value (%d), so we will ignore the entire Colour Specification box. \n", jp2->meth);
-			// Ïðîïóñêàåì PROFILE
+			// ÐŸÑ€Ð¾Ð¿ÑƒÑÐºÐ°ÐµÐ¼ PROFILE
 			int nSkipLen = oBox.nInitPos + oBox.nLength - pStream->Tell();
 			if (nSkipLen < 0)
 			{
@@ -363,8 +364,8 @@ namespace Jpeg2000
 		{
 			// return false;
 
-			// Ïî ñïåöèôèêàöèè äàííûé Box ÿâëÿåòñÿ íåîáõîäèìûì, íî ìû âñå-òàêè
-			// ïîïðîáóåì ïðî÷èòàòü èçîáðàæåíèå ñî ñòàíäàðòíûìè ïàðàìåòðàìè.
+			// ÐŸÐ¾ ÑÐ¿ÐµÑ†Ð¸Ñ„Ð¸ÐºÐ°Ñ†Ð¸Ð¸ Ð´Ð°Ð½Ð½Ñ‹Ð¹ Box ÑÐ²Ð»ÑÐµÑ‚ÑÑ Ð½ÐµÐ¾Ð±Ñ…Ð¾Ð´Ð¸Ð¼Ñ‹Ð¼, Ð½Ð¾ Ð¼Ñ‹ Ð²ÑÐµ-Ñ‚Ð°ÐºÐ¸
+			// Ð¿Ð¾Ð¿Ñ€Ð¾Ð±ÑƒÐµÐ¼ Ð¿Ñ€Ð¾Ñ‡Ð¸Ñ‚Ð°Ñ‚ÑŒ Ð¸Ð·Ð¾Ð±Ñ€Ð°Ð¶ÐµÐ½Ð¸Ðµ ÑÐ¾ ÑÑ‚Ð°Ð½Ð´Ð°Ñ€Ñ‚Ð½Ñ‹Ð¼Ð¸ Ð¿Ð°Ñ€Ð°Ð¼ÐµÑ‚Ñ€Ð°Ð¼Ð¸.
 
 			pStream->Seek(nCurPos);
 			pJp2->nApprox = 0;
@@ -546,7 +547,7 @@ namespace Jpeg2000
 
 
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Äåêîäèðîâàíèå ïîòîêà Jp2
+	// Ð”ÐµÐºÐ¾Ð´Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð¿Ð¾Ñ‚Ð¾ÐºÐ° Jp2
 	//-------------------------------------------------------------------------------------------------------------------------------
 	void       Jp2_DestroyDecompress(Jp2Stream *pJp2)
 	{
@@ -596,27 +597,27 @@ namespace Jpeg2000
 
 		PCommon pCodecInfo = pJp2->pCodecInfo;
 
-		// Äåêîäèðóåì JP2
+		// Ð”ÐµÐºÐ¾Ð´Ð¸Ñ€ÑƒÐµÐ¼ JP2
 		if (!Jp2_ReadStruct(pJp2, pStream))
 		{
 			Event_Message(EVT_ERROR, "Failed to decode jp2 structure\n");
 			return NULL;
 		}
 
-		// Äåêîäèðóåì J2K
+		// Ð”ÐµÐºÐ¾Ð´Ð¸Ñ€ÑƒÐµÐ¼ J2K
 		Image *pImage = J2k_Decode(pJp2->pJ2k, pStream);
 		if (!pImage)
 		{
 			Event_Message(EVT_ERROR, "Failed to decode J2K image\n");
 		}
 
-		////ïðèâåäåíèå öâåòîâîé ñõåìû..????
+		////Ð¿Ñ€Ð¸Ð²ÐµÐ´ÐµÐ½Ð¸Ðµ Ñ†Ð²ÐµÑ‚Ð¾Ð²Ð¾Ð¹ ÑÑ…ÐµÐ¼Ñ‹..????
 
 		return pImage;
 	}
 
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Êîäèðîâàíèå â ïîòîê Jp2
+	// ÐšÐ¾Ð´Ð¸Ñ€Ð¾Ð²Ð°Ð½Ð¸Ðµ Ð² Ð¿Ð¾Ñ‚Ð¾Ðº Jp2
 	//-------------------------------------------------------------------------------------------------------------------------------
 	void       Jp2_DestroyCompress(Jp2Stream *pJp2)
 	{
@@ -700,7 +701,7 @@ namespace Jpeg2000
 			if (nDepth0 != depth)
 				pJp2->nBPC = 255;
 		}
-		pJp2->nCompressionType = 7; // C (âñåãäà 7)
+		pJp2->nCompressionType = 7; // C (Ð²ÑÐµÐ³Ð´Ð° 7)
 		pJp2->nColorSpaceUnk   = 0; // UnkC
 		pJp2->nIPR             = 0; // IRP
 
@@ -722,7 +723,7 @@ namespace Jpeg2000
 		if (pJp2->nMethod == 1)
 		{
 			if (pImage->eColorSpace == 1)
-				pJp2->nEnumCS = 16; // sRGB ( 61966–2–1 )
+				pJp2->nEnumCS = 16; // sRGB ( 61966â€“2â€“1 )
 			else if (pImage->eColorSpace == 2)
 				pJp2->nEnumCS = 17; // Greyscale
 			else if (pImage->eColorSpace == 3)

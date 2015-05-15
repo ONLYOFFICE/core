@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "Stream.h"
 
@@ -39,7 +39,7 @@ namespace Jpeg2000
 			anVer[nLevelsCount + 1] = (anVer[nLevelsCount] + 1) / 2;
 			pTree->nNodesCount += nCurLevelCount;
 			++nLevelsCount;
-			// TO DO: Поставить дополнительную проверку  ( nLevelsCount + 1 < 32 )
+			// TO DO: С•РѕСЃС‚Р°РІРёС‚СЊ РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ РїСЂРѕРІРµСЂРєСѓ  ( nLevelsCount + 1 < 32 )
 		} while (nCurLevelCount > 1);
 
 		// ADD

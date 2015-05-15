@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "DWT.h"
 #include "Tier1.h"
@@ -8,7 +8,7 @@
 namespace Jpeg2000
 {
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Основные функции
+	// РћСЃРЅРѕРІРЅС‹Рµ С„СѓРЅРєС†РёРё
 	//-------------------------------------------------------------------------------------------------------------------------------
 
 	void TCD_Dump(FILE *pFile, TCD *pTCD, TCDImage *pTCDImage)
@@ -157,13 +157,13 @@ namespace Jpeg2000
 		{
 			TileCodingParams *pTCP = &pCodingParams->pTCP[nCurTileIndex];
 
-			// См. стр 59 ISO/IEC FDIS15444-1
+			// РЎРј. СЃС‚СЂ 59 ISO/IEC FDIS15444-1
 			int nP = nCurTileIndex % pCodingParams->nXTilesCount;
 			int nQ = nCurTileIndex / pCodingParams->nXTilesCount;
 
 			Tile *pTile = pTCD->pTCDImage->pTiles;
 
-			// Границы тайла (маштабированные относительно размеров изображения, если необходимо)
+			// Р“СЂР°РЅРёС†С‹ С‚Р°Р№Р»Р° (РјР°С€С‚Р°Р±РёСЂРѕРІР°РЅРЅС‹Рµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЂР°Р·РјРµСЂРѕРІ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ, РµСЃР»Рё РЅРµРѕР±С…РѕРґРёРјРѕ)
 			pTile->nX0 = max(pCodingParams->nXTOsiz + nP * pCodingParams->nXTsiz, pImage->nXOsiz);
 			pTile->nY0 = max(pCodingParams->nYTOsiz + nQ * pCodingParams->nYTsiz, pImage->nYOsiz);
 			pTile->nX1 = min(pCodingParams->nXTOsiz + (nP + 1) * pCodingParams->nXTsiz, pImage->nXsiz);
@@ -203,7 +203,7 @@ namespace Jpeg2000
 				TileCompCodingParams *pTCCP = &pTCP->pTCCP[nComponentIndex];
 				TileComp *pTileComp = &pTile->pComponents[nComponentIndex];
 
-				// Границы каждой тайл-компоненты (глобальные)
+				// Р“СЂР°РЅРёС†С‹ РєР°Р¶РґРѕР№ С‚Р°Р№Р»-РєРѕРјРїРѕРЅРµРЅС‚С‹ (РіР»РѕР±Р°Р»СЊРЅС‹Рµ)
 				pTileComp->nX0 = CeilDiv(pTile->nX0, pImage->pComponents[nComponentIndex].nXRsiz);
 				pTileComp->nY0 = CeilDiv(pTile->nY0, pImage->pComponents[nComponentIndex].nYRsiz);
 				pTileComp->nX1 = CeilDiv(pTile->nX1, pImage->pComponents[nComponentIndex].nXRsiz);
@@ -232,7 +232,7 @@ namespace Jpeg2000
 
 					Resolution *pResolution = &pTileComp->pResolutions[nResolutionIndex];
 
-					// Границы для каждого уровня (глобальные)
+					// Р“СЂР°РЅРёС†С‹ РґР»СЏ РєР°Р¶РґРѕРіРѕ СѓСЂРѕРІРЅСЏ (РіР»РѕР±Р°Р»СЊРЅС‹Рµ)
 					pResolution->nX0 = CeilDivPow2(pTileComp->nX0, nLevel);
 					pResolution->nY0 = CeilDivPow2(pTileComp->nY0, nLevel);
 					pResolution->nX1 = CeilDivPow2(pTileComp->nX1, nLevel);
@@ -240,7 +240,7 @@ namespace Jpeg2000
 
 					pResolution->nBandsCount = (nResolutionIndex == 0 ? 1 : 3);
 
-					// См. стр. 35, таблица A-23 ISO/IEC FDIS154444-1
+					// РЎРј. СЃС‚СЂ. 35, С‚Р°Р±Р»РёС†Р° A-23 ISO/IEC FDIS154444-1
 					int nPPx, nPPy;
 					if (pTCCP->nCodingStyle & J2K_CCP_CSTY_PRT)
 					{
@@ -253,7 +253,7 @@ namespace Jpeg2000
 						nPPy = 15;
 					}
 
-					// См. стр. 64, Annex-B.6, ISO/IEC FDIS15444-1
+					// РЎРј. СЃС‚СЂ. 64, Annex-B.6, ISO/IEC FDIS15444-1
 					int nFloorTRX0 = FloorDivPow2(pResolution->nX0, nPPx) << nPPx;
 					int nFloorTRY0 = FloorDivPow2(pResolution->nY0, nPPy) << nPPy;
 					int nCeilTRX1 = CeilDivPow2(pResolution->nX1, nPPx) << nPPx;
@@ -340,7 +340,7 @@ namespace Jpeg2000
 
 							Precinct *pPrecinct = &pBand->pPrecincts[nPrecinctIndex];
 
-							// Размеры области (Precinct)
+							// Р Р°Р·РјРµСЂС‹ РѕР±Р»Р°СЃС‚Рё (Precinct)
 							pPrecinct->nX0 = max(nGlobalCodeBlockStartX, pBand->nX0);
 							pPrecinct->nY0 = max(nGlobalCodeBlockStartY, pBand->nY0);
 							pPrecinct->nX1 = min(nGlobalCodeBlockEndX, pBand->nX1);
@@ -373,7 +373,7 @@ namespace Jpeg2000
 
 								CodeBlock *pCodeBlock = &pPrecinct->pCodeBlocks[nCodeBlockIndex];
 
-								// Границы CodeBlock (глобальные)
+								// Р“СЂР°РЅРёС†С‹ CodeBlock (РіР»РѕР±Р°Р»СЊРЅС‹Рµ)
 								pCodeBlock->nX0 = max(nCodeBlockStartX, pPrecinct->nX0);
 								pCodeBlock->nY0 = max(nCodeBlockStartY, pPrecinct->nY0);
 								pCodeBlock->nX1 = min(nCodeBlockEndX, pPrecinct->nX1);
@@ -401,13 +401,13 @@ namespace Jpeg2000
 		{
 			TileCodingParams *pTCP = &pCodingParams->pTCP[nCurTileIndex];
 
-			// См. стр 59 ISO/IEC FDIS15444-1
+			// РЎРј. СЃС‚СЂ 59 ISO/IEC FDIS15444-1
 			int nP = nCurTileIndex % pCodingParams->nXTilesCount;
 			int nQ = nCurTileIndex / pCodingParams->nXTilesCount;
 
 			Tile *pTile = pTCD->pTCDImage->pTiles;
 
-			// Границы тайла (маштабированные относительно размеров изображения, если необходимо)
+			// Р“СЂР°РЅРёС†С‹ С‚Р°Р№Р»Р° (РјР°С€С‚Р°Р±РёСЂРѕРІР°РЅРЅС‹Рµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЂР°Р·РјРµСЂРѕРІ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ, РµСЃР»Рё РЅРµРѕР±С…РѕРґРёРјРѕ)
 			pTile->nX0 = max(pCodingParams->nXTOsiz + nP * pCodingParams->nXTsiz, pImage->nXOsiz);
 			pTile->nY0 = max(pCodingParams->nYTOsiz + nQ * pCodingParams->nYTsiz, pImage->nYOsiz);
 			pTile->nX1 = min(pCodingParams->nXTOsiz + (nP + 1) * pCodingParams->nXTsiz, pImage->nXsiz);
@@ -440,7 +440,7 @@ namespace Jpeg2000
 				TileCompCodingParams *pTCCP = &pTCP->pTCCP[nComponentIndex];
 				TileComp *pTileComp = &pTile->pComponents[nComponentIndex];
 
-				// Границы каждой тайл-компоненты (глобальные)
+				// Р“СЂР°РЅРёС†С‹ РєР°Р¶РґРѕР№ С‚Р°Р№Р»-РєРѕРјРїРѕРЅРµРЅС‚С‹ (РіР»РѕР±Р°Р»СЊРЅС‹Рµ)
 				pTileComp->nX0 = CeilDiv(pTile->nX0, pImage->pComponents[nComponentIndex].nXRsiz);
 				pTileComp->nY0 = CeilDiv(pTile->nY0, pImage->pComponents[nComponentIndex].nYRsiz);
 				pTileComp->nX1 = CeilDiv(pTile->nX1, pImage->pComponents[nComponentIndex].nXRsiz);
@@ -462,14 +462,14 @@ namespace Jpeg2000
 
 					Resolution *pResolution = &pTileComp->pResolutions[nResolutionIndex];
 
-					// Границы для каждого уровня (глобальные)
+					// Р“СЂР°РЅРёС†С‹ РґР»СЏ РєР°Р¶РґРѕРіРѕ СѓСЂРѕРІРЅСЏ (РіР»РѕР±Р°Р»СЊРЅС‹Рµ)
 					pResolution->nX0 = CeilDivPow2(pTileComp->nX0, nLevel);
 					pResolution->nY0 = CeilDivPow2(pTileComp->nY0, nLevel);
 					pResolution->nX1 = CeilDivPow2(pTileComp->nX1, nLevel);
 					pResolution->nY1 = CeilDivPow2(pTileComp->nY1, nLevel);
 					pResolution->nBandsCount = (nResolutionIndex == 0 ? 1 : 3);
 
-					// См. стр. 35, таблица A-23 ISO/IEC FDIS154444-1
+					// РЎРј. СЃС‚СЂ. 35, С‚Р°Р±Р»РёС†Р° A-23 ISO/IEC FDIS154444-1
 					int nPPx, nPPy;
 					if (pTCCP->nCodingStyle & J2K_CCP_CSTY_PRT)
 					{
@@ -482,7 +482,7 @@ namespace Jpeg2000
 						nPPy = 15;
 					}
 
-					// См. стр. 64, Annex-B.6, ISO/IEC FDIS15444-1
+					// РЎРј. СЃС‚СЂ. 64, Annex-B.6, ISO/IEC FDIS15444-1
 					int nFloorTRX0 = FloorDivPow2(pResolution->nX0, nPPx) << nPPx;
 					int nFloorTRY0 = FloorDivPow2(pResolution->nY0, nPPy) << nPPy;
 					int nCeilTRX1 = CeilDivPow2(pResolution->nX1, nPPx) << nPPx;
@@ -556,7 +556,7 @@ namespace Jpeg2000
 
 							Precinct *pPrecinct = &pBand->pPrecincts[nPrecinctIndex];
 
-							// Размеры области (Precinct)
+							// Р Р°Р·РјРµСЂС‹ РѕР±Р»Р°СЃС‚Рё (Precinct)
 							pPrecinct->nX0 = max(nGlobalCodeBlockStartX, pBand->nX0);
 							pPrecinct->nY0 = max(nGlobalCodeBlockStartY, pBand->nY0);
 							pPrecinct->nX1 = min(nGlobalCodeBlockEndX, pBand->nX1);
@@ -599,7 +599,7 @@ namespace Jpeg2000
 
 								CodeBlock *pCodeBlock = &pPrecinct->pCodeBlocks[nCodeBlockIndex];
 
-								// Границы CodeBlock (глобальные)
+								// Р“СЂР°РЅРёС†С‹ CodeBlock (РіР»РѕР±Р°Р»СЊРЅС‹Рµ)
 								pCodeBlock->nX0 = max(nCodeBlockStartX, pPrecinct->nX0);
 								pCodeBlock->nY0 = max(nCodeBlockStartY, pPrecinct->nY0);
 								pCodeBlock->nX1 = min(nCodeBlockEndX, pPrecinct->nX1);
@@ -699,12 +699,12 @@ namespace Jpeg2000
 			TileCodingParams *pTCP = &(pCodingParams->pTCP[pCodingParams->pTileIndex[nIndex]]);
 			Tile *pTile = &(pTCD->pTCDImage->pTiles[pCodingParams->pTileIndex[nIndex]]);
 
-			// См. стр 59 ISO/IEC FDIS15444-1
+			// РЎРј. СЃС‚СЂ 59 ISO/IEC FDIS15444-1
 			int nTileIndex = pCodingParams->pTileIndex[nIndex];
 			int nP = nTileIndex % pCodingParams->nXTilesCount;
 			int nQ = nTileIndex / pCodingParams->nXTilesCount;
 
-			// Границы тайла (маштабированные относительно размеров изображения, если необходимо)
+			// Р“СЂР°РЅРёС†С‹ С‚Р°Р№Р»Р° (РјР°С€С‚Р°Р±РёСЂРѕРІР°РЅРЅС‹Рµ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ СЂР°Р·РјРµСЂРѕРІ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ, РµСЃР»Рё РЅРµРѕР±С…РѕРґРёРјРѕ)
 			pTile->nX0 = max(pCodingParams->nXTOsiz + nP * pCodingParams->nXTsiz, pImage->nXOsiz);
 			pTile->nY0 = max(pCodingParams->nYTOsiz + nQ * pCodingParams->nYTsiz, pImage->nYOsiz);
 			pTile->nX1 = min(pCodingParams->nXTOsiz + (nP + 1) * pCodingParams->nXTsiz, pImage->nXsiz);
@@ -724,7 +724,7 @@ namespace Jpeg2000
 				TileCompCodingParams *pTCCP = &pTCP->pTCCP[nComponentIndex];
 				TileComp *pTileComp = &pTile->pComponents[nComponentIndex];
 
-				// Границы каждой тайл-компоненты (глобальные)
+				// Р“СЂР°РЅРёС†С‹ РєР°Р¶РґРѕР№ С‚Р°Р№Р»-РєРѕРјРїРѕРЅРµРЅС‚С‹ (РіР»РѕР±Р°Р»СЊРЅС‹Рµ)
 				pTileComp->nX0 = CeilDiv(pTile->nX0, pImage->pComponents[nComponentIndex].nXRsiz);
 				pTileComp->nY0 = CeilDiv(pTile->nY0, pImage->pComponents[nComponentIndex].nYRsiz);
 				pTileComp->nX1 = CeilDiv(pTile->nX1, pImage->pComponents[nComponentIndex].nXRsiz);
@@ -753,14 +753,14 @@ namespace Jpeg2000
 
 					Resolution *pResolution = &pTileComp->pResolutions[nResolutionIndex];
 
-					// Границы для каждого уровня (глобальные)
+					// Р“СЂР°РЅРёС†С‹ РґР»СЏ РєР°Р¶РґРѕРіРѕ СѓСЂРѕРІРЅСЏ (РіР»РѕР±Р°Р»СЊРЅС‹Рµ)
 					pResolution->nX0 = CeilDivPow2(pTileComp->nX0, nLevel);
 					pResolution->nY0 = CeilDivPow2(pTileComp->nY0, nLevel);
 					pResolution->nX1 = CeilDivPow2(pTileComp->nX1, nLevel);
 					pResolution->nY1 = CeilDivPow2(pTileComp->nY1, nLevel);
 					pResolution->nBandsCount = (nResolutionIndex == 0 ? 1 : 3);
 
-					// См. стр. 35, таблица A-23 ISO/IEC FDIS154444-1
+					// РЎРј. СЃС‚СЂ. 35, С‚Р°Р±Р»РёС†Р° A-23 ISO/IEC FDIS154444-1
 					int nPPx, nPPy;
 					if (pTCCP->nCodingStyle & J2K_CCP_CSTY_PRT)
 					{
@@ -773,7 +773,7 @@ namespace Jpeg2000
 						nPPy = 15;
 					}
 
-					// См. стр. 64, Annex-B.6, ISO/IEC FDIS15444-1
+					// РЎРј. СЃС‚СЂ. 64, Annex-B.6, ISO/IEC FDIS15444-1
 					int nFlootTRX0 = FloorDivPow2(pResolution->nX0, nPPx) << nPPx;
 					int nFloorTRY0 = FloorDivPow2(pResolution->nY0, nPPy) << nPPy;
 					int nCeilTRX1 = CeilDivPow2(pResolution->nX1, nPPx) << nPPx;
@@ -853,7 +853,7 @@ namespace Jpeg2000
 							int nGlobalCodeBlockEndY = nGlobalCodeBlockStartY + (1 << nCBHeightExpn);
 
 							Precinct *pPrecinct = &pBand->pPrecincts[nPrecinctIndex];
-							// Размеры области (Precinct)
+							// Р Р°Р·РјРµСЂС‹ РѕР±Р»Р°СЃС‚Рё (Precinct)
 							pPrecinct->nX0 = max(nGlobalCodeBlockStartX, pBand->nX0);
 							pPrecinct->nY0 = max(nGlobalCodeBlockStartY, pBand->nY0);
 							pPrecinct->nX1 = min(nGlobalCodeBlockEndX, pBand->nX1);
@@ -884,7 +884,7 @@ namespace Jpeg2000
 								int nCodeBlockEndX = nCodeBlockStartX + (1 << nXCBa);
 								int nCodeBlockEndY = nCodeBlockStartY + (1 << nYCBa);
 
-								// Границы CodeBlock (глобальные)
+								// Р“СЂР°РЅРёС†С‹ CodeBlock (РіР»РѕР±Р°Р»СЊРЅС‹Рµ)
 								CodeBlock *pCodeBlock = &pPrecinct->pCodeBlocks[nCodeBlockIndex];
 								pCodeBlock->nX0 = max(nCodeBlockStartX, pPrecinct->nX0);
 								pCodeBlock->nY0 = max(nCodeBlockStartY, pPrecinct->nY0);
@@ -907,7 +907,7 @@ namespace Jpeg2000
 		//	}
 		//#endif
 
-		// Выделяем место для хранения закодированных данных ( = окончательное изображение ).
+		// Р’С‹РґРµР»СЏРµРј РјРµСЃС‚Рѕ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… РґР°РЅРЅС‹С… ( = РѕРєРѕРЅС‡Р°С‚РµР»СЊРЅРѕРµ РёР·РѕР±СЂР°Р¶РµРЅРёРµ ).
 
 		unsigned int nX0 = 0, nY0 = 0, nX1 = 0, nY1 = 0, nWidth, nHeight;
 
@@ -981,7 +981,7 @@ namespace Jpeg2000
 							CodeBlock *pCodeBlock = &pPrecinct->pCodeBlocks[nCodeBlockIndex];
 							Layer *pLayer = &pCodeBlock->aLayers[nLayerIndex];
 
-							int nIMSB = pTCD->pImage->pComponents[nComponentIndex].nPrecision - pCodeBlock->nBPSCount; // Количество bit-plan равных 0
+							int nIMSB = pTCD->pImage->pComponents[nComponentIndex].nPrecision - pCodeBlock->nBPSCount; // РљРѕР»РёС‡РµСЃС‚РІРѕ bit-plan СЂР°РІРЅС‹С… 0
 
 							if (0 == nLayerIndex)
 							{
@@ -1245,7 +1245,7 @@ namespace Jpeg2000
 
 			int nSuccess = 0;
 
-			// TO DO: Убрать nMaxLen
+			// TO DO: РЈР±СЂР°С‚СЊ nMaxLen
 			int nMaxLen = pTCP->afRates[nLayerIndex] ? min(((int)ceil(pTCP->afRates[nLayerIndex])), nLen) : nLen;
 			double dGoodThreshold = 0;
 			double dDistoTarget = pTile->dDistoTile - ((c_dK * dMaxSE) / pow((float)10, pTCP->afDistoRatio[nLayerIndex] / 10));
@@ -1347,7 +1347,7 @@ namespace Jpeg2000
 		// << INDEX
 
 		//---------------TILE-DATA--------------
-		double dEncodingTime = Clock(); // Засекаем сколько потребовалось времени для кодирования тайла
+		double dEncodingTime = Clock(); // Р—Р°СЃРµРєР°РµРј СЃРєРѕР»СЊРєРѕ РїРѕС‚СЂРµР±РѕРІР°Р»РѕСЃСЊ РІСЂРµРјРµРЅРё РґР»СЏ РєРѕРґРёСЂРѕРІР°РЅРёСЏ С‚Р°Р№Р»Р°
 
 		for (int nComponentIndex = 0; nComponentIndex < pTile->nComponentsCount; nComponentIndex++)
 		{
@@ -1359,15 +1359,15 @@ namespace Jpeg2000
 			int nTileWidth = pTileComp->nX1 - pTileComp->nX0;
 			int nWidth = CeilDiv(pImage->nXsiz - pImage->nXOsiz, pImage->pComponents[nComponentIndex].nXRsiz);
 
-			// Извлекаем данные тайла
+			// РР·РІР»РµРєР°РµРј РґР°РЅРЅС‹Рµ С‚Р°Р№Р»Р°
 
 			if (pTCD_TCP->pTCCP[nComponentIndex].nTransformID == 1)
 			{
 				for (int nY = pTileComp->nY0; nY < pTileComp->nY1; nY++)
 				{
-					// Иходные данные
+					// РС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
 					int *pData = &pImage->pComponents[nComponentIndex].pData[(pTileComp->nX0 - nOffsetX) + (nY - nOffsety) * nWidth];
-					// Результат
+					// Р РµР·СѓР»СЊС‚Р°С‚
 					int *pTileData = &pTileComp->pData[(nY - pTileComp->nY0) * nTileWidth];
 					for (int nX = pTileComp->nX0; nX < pTileComp->nX1; nX++)
 					{
@@ -1379,9 +1379,9 @@ namespace Jpeg2000
 			{
 				for (int nY = pTileComp->nY0; nY < pTileComp->nY1; nY++)
 				{
-					// Иходные данные
+					// РС…РѕРґРЅС‹Рµ РґР°РЅРЅС‹Рµ
 					int *pData = &pImage->pComponents[nComponentIndex].pData[(pTileComp->nX0 - nOffsetX) + (nY - nOffsety) * nWidth];
-					// Результат
+					// Р РµР·СѓР»СЊС‚Р°С‚
 					int *pTileData = &pTileComp->pData[(nY - pTileComp->nY0) * nTileWidth];
 					for (int nX = pTileComp->nX0; nX < pTileComp->nX1; nX++)
 					{
@@ -1460,7 +1460,7 @@ namespace Jpeg2000
 
 		Event_Message(EVT_INFO, "- tile encoded in %f s\n", dEncodingTime);
 
-		// Освобождаем память
+		// РћСЃРІРѕР±РѕР¶РґР°РµРј РїР°РјСЏС‚СЊ
 		for (int nComponentIndex = 0; nComponentIndex < pTile->nComponentsCount; nComponentIndex++)
 		{
 			TileComp *pTileComp = &pTile->pComponents[nComponentIndex];
@@ -1479,7 +1479,7 @@ namespace Jpeg2000
 		pTCD->pTCP          = &(pTCD->pCodingParams->pTCP[nTileIndex]);
 		Tile *pTile = pTCD->pTCDTile;
 
-		double dDecodeTime = Clock(); // Время, затраченное на декодирование тайла
+		double dDecodeTime = Clock(); // Р’СЂРµРјСЏ, Р·Р°С‚СЂР°С‡РµРЅРЅРѕРµ РЅР° РґРµРєРѕРґРёСЂРѕРІР°РЅРёРµ С‚Р°Р№Р»Р°
 		Event_Message(EVT_INFO, "tile %d of %d\n", nTileIndex + 1, pTCD->pCodingParams->nXTilesCount * pTCD->pCodingParams->nYTilesCount);
 
 		//--------------TIER2---------------------

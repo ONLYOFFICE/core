@@ -9,6 +9,8 @@
 	#include <tchar.h>
 #endif
 
+#include "../../common/File.h"
+
 CJBig2File::CJBig2File()
 {
 	m_bDuplicateLineRemoval = false;
@@ -130,8 +132,8 @@ bool CJBig2File::MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int n
 		uint8_t *pBuffer = jbig2_encode_generic( pPixT, !m_bPDFMode, 0, 0, m_bDuplicateLineRemoval, &nLength );
 
 		bool bRes = true;
-        CFile file;
-        if (file.CreateFile(sDstFileName.c_str() ) == S_OK )
+        NSFile::CFileBinary file;
+        if (file.CreateFileW(sDstFileName ) == true )
         {
             file.WriteFile(pBuffer, nLength);
             file.CloseFile();
@@ -163,8 +165,8 @@ bool CJBig2File::MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int n
 	{
 		std::wstring sFileName = sDstFileName;//m_sBaseName + _T(".sym");
 
-        CFile file;
-        if ( file.CreateFile(sFileName.c_str()) != S_OK)
+        NSFile::CFileBinary file;
+        if ( file.CreateFileW(sFileName) == false)
 		{
 			free( pBuffer );
 			jbig2_destroy( pContext );
@@ -180,10 +182,10 @@ bool CJBig2File::MemoryToJBig2(unsigned char* pBufferBGRA ,int BufferSize, int n
 		pBuffer = jbig2_produce_page( pContext, nIndex, -1, -1, &nLength );
 		if ( m_bPDFMode ) 
 		{
-			std::wstring sFileName = m_sBaseName + _T(".0000");
-             CFile file;
+            std::wstring sFileName = m_sBaseName + L".0000";
 
-            if ( file.CreateFile(sFileName.c_str()) != S_OK)
+            NSFile::CFileBinary file;
+            if ( file.CreateFileW(sFileName) ==false)
             {
 				free( pBuffer );
 				jbig2_destroy( pContext );

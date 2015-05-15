@@ -319,7 +319,7 @@ namespace Jpeg2000
 		}
 
 		unsigned int unRes = 0;
-		fread(&unRes, 1, min(nSize, 4), m_pFile);
+        fread(&unRes, 1, (std::min)(nSize, 4), m_pFile);
 
 		if (2 == nSize)
 		{
@@ -348,7 +348,7 @@ namespace Jpeg2000
 		if (!m_pFile)
 			return 0;
 
-		fwrite(&nValue, 1, min(4, nLen), m_pFile);
+        fwrite(&nValue, 1, (std::min)(4, nLen), m_pFile);
 		m_nPosition += nLen;
 		return 0;
 	}

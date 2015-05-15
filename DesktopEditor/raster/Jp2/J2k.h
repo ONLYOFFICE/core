@@ -351,7 +351,7 @@ namespace Jpeg2000
 		pTCCP->nResolutionsCount = pStream->Read(1) + 1; // SPcox (D)
 
 		/* check the reduce value */
-		pCodingParams->nReduceFactor = min((pTCCP->nResolutionsCount) - 1, pCodingParams->nReduceFactor);
+        pCodingParams->nReduceFactor = (std::min)((pTCCP->nResolutionsCount) - 1, pCodingParams->nReduceFactor);
 
 		pTCCP->nCodeBlockWidth  = pStream->Read(1) + 2; // SPcox (E)
 		pTCCP->nCodeBlockHeight = pStream->Read(1) + 2; // SPcox (F)
@@ -757,13 +757,13 @@ namespace Jpeg2000
 			pStream->Write(pPOC->nCSpoc, (nComponentsCount <= 256 ? 1 : 2)); // CSpoc_i
 
 			pStream->Write(pPOC->nLYEpoc, 2); // LYEpoc_i
-			pPOC->nLYEpoc = min(pPOC->nLYEpoc, pTCP->nLayersCount);
+            pPOC->nLYEpoc = (std::min)(pPOC->nLYEpoc, pTCP->nLayersCount);
 
 			pStream->Write(pPOC->nREpoc, 1); // REpoc_i
-			pPOC->nREpoc = min(pPOC->nREpoc, pTCCP->nResolutionsCount);
+            pPOC->nREpoc = (std::min)(pPOC->nREpoc, pTCCP->nResolutionsCount);
 
 			pStream->Write(pPOC->nCEpoc, (nComponentsCount <= 256 ? 1 : 2)); // CEpoc_i
-			pPOC->nCEpoc = min(pPOC->nCEpoc, nComponentsCount);
+            pPOC->nCEpoc = (std::min)(pPOC->nCEpoc, nComponentsCount);
 
 			pStream->Write(pPOC->ePpoc, 1); // Ppoc_i
 		}
@@ -789,9 +789,9 @@ namespace Jpeg2000
 			POC *pPOC = &pTCP->aoPOC[nIndex];
 			pPOC->nRSpoc  = pStream->Read(1); // RSpoc_i
 			pPOC->nCSpoc  = pStream->Read(nComponentsCount <= 256 ? 1 : 2); // CSpoc_i
-			pPOC->nLYEpoc = min(pStream->Read(2), (unsigned int)pTCP->nLayersCount); // LYEpoc_i
-			pPOC->nREpoc  = min(pStream->Read(1), (unsigned int)pTCCP->nResolutionsCount); // REpoc_i
-			pPOC->nCEpoc  = min(pStream->Read(nComponentsCount <= 256 ? 1 : 2), (unsigned int)nComponentsCount); // CEpoc_i
+            pPOC->nLYEpoc = (std::min)(pStream->Read(2), (unsigned int)pTCP->nLayersCount); // LYEpoc_i
+            pPOC->nREpoc  = (std::min)(pStream->Read(1), (unsigned int)pTCCP->nResolutionsCount); // REpoc_i
+            pPOC->nCEpoc  = (std::min)(pStream->Read(nComponentsCount <= 256 ? 1 : 2), (unsigned int)nComponentsCount); // CEpoc_i
 			pPOC->ePpoc   = (ProgressionOrder)pStream->Read(1); // Ppoc_i
 		}
 
@@ -1130,7 +1130,7 @@ namespace Jpeg2000
 		CReader *pStream = pJ2k->pStreamIO;
 		int nCurTileIndex = pJ2k->nCurTileIndex;
 
-		int nLen = min(pJ2k->nSizeOfTile - pStream->Tell(), pStream->GetLeftSize() + 1);
+        int nLen = (std::min)(pJ2k->nSizeOfTile - pStream->Tell(), pStream->GetLeftSize() + 1);
 
 		if (nLen == pStream->GetLeftSize() + 1)
 		{

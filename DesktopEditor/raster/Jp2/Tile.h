@@ -164,10 +164,10 @@ namespace Jpeg2000
 			Tile *pTile = pTCD->pTCDImage->pTiles;
 
 			// Границы тайла (маштабированные относительно размеров изображения, если необходимо)
-			pTile->nX0 = max(pCodingParams->nXTOsiz + nP * pCodingParams->nXTsiz, pImage->nXOsiz);
-			pTile->nY0 = max(pCodingParams->nYTOsiz + nQ * pCodingParams->nYTsiz, pImage->nYOsiz);
-			pTile->nX1 = min(pCodingParams->nXTOsiz + (nP + 1) * pCodingParams->nXTsiz, pImage->nXsiz);
-			pTile->nY1 = min(pCodingParams->nYTOsiz + (nQ + 1) * pCodingParams->nYTsiz, pImage->nYsiz);
+            pTile->nX0 = (std::max)(pCodingParams->nXTOsiz + nP * pCodingParams->nXTsiz, pImage->nXOsiz);
+            pTile->nY0 = (std::max)(pCodingParams->nYTOsiz + nQ * pCodingParams->nYTsiz, pImage->nYOsiz);
+            pTile->nX1 = (std::min)(pCodingParams->nXTOsiz + (nP + 1) * pCodingParams->nXTsiz, pImage->nXsiz);
+            pTile->nY1 = (std::min)(pCodingParams->nYTOsiz + (nQ + 1) * pCodingParams->nYTsiz, pImage->nYsiz);
 			pTile->nComponentsCount = pImage->nCsiz;
 
 			// RATE >>
@@ -285,8 +285,8 @@ namespace Jpeg2000
 						nCBHeightExpn = nPPy - 1;
 					}
 
-					int nXCBa = min(pTCCP->nCodeBlockWidth, nCBWidthExpn);
-					int nYCBa = min(pTCCP->nCodeBlockHeight, nCBHeightExpn);
+                    int nXCBa = (std::min)(pTCCP->nCodeBlockWidth, nCBWidthExpn);
+                    int nYCBa = (std::min)(pTCCP->nCodeBlockHeight, nCBHeightExpn);
 
 					for (int nBandIndex = 0; nBandIndex < pResolution->nBandsCount; nBandIndex++)
 					{
@@ -341,10 +341,10 @@ namespace Jpeg2000
 							Precinct *pPrecinct = &pBand->pPrecincts[nPrecinctIndex];
 
 							// Размеры области (Precinct)
-							pPrecinct->nX0 = max(nGlobalCodeBlockStartX, pBand->nX0);
-							pPrecinct->nY0 = max(nGlobalCodeBlockStartY, pBand->nY0);
-							pPrecinct->nX1 = min(nGlobalCodeBlockEndX, pBand->nX1);
-							pPrecinct->nY1 = min(nGlobalCodeBlockEndY, pBand->nY1);
+                            pPrecinct->nX0 = (std::max)(nGlobalCodeBlockStartX, pBand->nX0);
+                            pPrecinct->nY0 = (std::max)(nGlobalCodeBlockStartY, pBand->nY0);
+                            pPrecinct->nX1 = (std::min)(nGlobalCodeBlockEndX, pBand->nX1);
+                            pPrecinct->nY1 = (std::min)(nGlobalCodeBlockEndY, pBand->nY1);
 
 							int nTLCodeBlockStartX = FloorDivPow2(pPrecinct->nX0, nXCBa) << nXCBa;
 							int nTLCodeBlockStartY = FloorDivPow2(pPrecinct->nY0, nYCBa) << nYCBa;
@@ -374,10 +374,10 @@ namespace Jpeg2000
 								CodeBlock *pCodeBlock = &pPrecinct->pCodeBlocks[nCodeBlockIndex];
 
 								// Границы CodeBlock (глобальные)
-								pCodeBlock->nX0 = max(nCodeBlockStartX, pPrecinct->nX0);
-								pCodeBlock->nY0 = max(nCodeBlockStartY, pPrecinct->nY0);
-								pCodeBlock->nX1 = min(nCodeBlockEndX, pPrecinct->nX1);
-								pCodeBlock->nY1 = min(nCodeBlockEndY, pPrecinct->nY1);
+                                pCodeBlock->nX0 = (std::min)(nCodeBlockStartX, pPrecinct->nX0);
+                                pCodeBlock->nY0 = (std::min)(nCodeBlockStartY, pPrecinct->nY0);
+                                pCodeBlock->nX1 = (std::min)(nCodeBlockEndX, pPrecinct->nX1);
+                                pCodeBlock->nY1 = (std::min)(nCodeBlockEndY, pPrecinct->nY1);
 							}
 						}
 					}
@@ -408,10 +408,10 @@ namespace Jpeg2000
 			Tile *pTile = pTCD->pTCDImage->pTiles;
 
 			// Границы тайла (маштабированные относительно размеров изображения, если необходимо)
-			pTile->nX0 = max(pCodingParams->nXTOsiz + nP * pCodingParams->nXTsiz, pImage->nXOsiz);
-			pTile->nY0 = max(pCodingParams->nYTOsiz + nQ * pCodingParams->nYTsiz, pImage->nYOsiz);
-			pTile->nX1 = min(pCodingParams->nXTOsiz + (nP + 1) * pCodingParams->nXTsiz, pImage->nXsiz);
-			pTile->nY1 = min(pCodingParams->nYTOsiz + (nQ + 1) * pCodingParams->nYTsiz, pImage->nYsiz);
+            pTile->nX0 = (std::max)(pCodingParams->nXTOsiz + nP * pCodingParams->nXTsiz, pImage->nXOsiz);
+            pTile->nY0 = (std::max)(pCodingParams->nYTOsiz + nQ * pCodingParams->nYTsiz, pImage->nYOsiz);
+            pTile->nX1 = (std::min)(pCodingParams->nXTOsiz + (nP + 1) * pCodingParams->nXTsiz, pImage->nXsiz);
+            pTile->nY1 = (std::min)(pCodingParams->nYTOsiz + (nQ + 1) * pCodingParams->nYTsiz, pImage->nYsiz);
 
 			pTile->nComponentsCount = pImage->nCsiz;
 
@@ -514,8 +514,8 @@ namespace Jpeg2000
 						nCBHeightExpn = nPPy - 1;
 					}
 
-					int nXCBa = min(pTCCP->nCodeBlockWidth, nCBWidthExpn);
-					int nYCBa = min(pTCCP->nCodeBlockHeight, nCBHeightExpn);
+                    int nXCBa = (std::min)(pTCCP->nCodeBlockWidth, nCBWidthExpn);
+                    int nYCBa = (std::min)(pTCCP->nCodeBlockHeight, nCBHeightExpn);
 
 					for (int nBandIndex = 0; nBandIndex < pResolution->nBandsCount; nBandIndex++)
 					{
@@ -557,10 +557,10 @@ namespace Jpeg2000
 							Precinct *pPrecinct = &pBand->pPrecincts[nPrecinctIndex];
 
 							// Размеры области (Precinct)
-							pPrecinct->nX0 = max(nGlobalCodeBlockStartX, pBand->nX0);
-							pPrecinct->nY0 = max(nGlobalCodeBlockStartY, pBand->nY0);
-							pPrecinct->nX1 = min(nGlobalCodeBlockEndX, pBand->nX1);
-							pPrecinct->nY1 = min(nGlobalCodeBlockEndY, pBand->nY1);
+                            pPrecinct->nX0 = (std::max)(nGlobalCodeBlockStartX, pBand->nX0);
+                            pPrecinct->nY0 = (std::max)(nGlobalCodeBlockStartY, pBand->nY0);
+                            pPrecinct->nX1 = (std::min)(nGlobalCodeBlockEndX, pBand->nX1);
+                            pPrecinct->nY1 = (std::min)(nGlobalCodeBlockEndY, pBand->nY1);
 
 							int nTLCodeBlockStartX = FloorDivPow2(pPrecinct->nX0, nXCBa) << nXCBa;
 							int nTLCodeBlockStartY = FloorDivPow2(pPrecinct->nY0, nYCBa) << nYCBa;
@@ -600,10 +600,10 @@ namespace Jpeg2000
 								CodeBlock *pCodeBlock = &pPrecinct->pCodeBlocks[nCodeBlockIndex];
 
 								// Границы CodeBlock (глобальные)
-								pCodeBlock->nX0 = max(nCodeBlockStartX, pPrecinct->nX0);
-								pCodeBlock->nY0 = max(nCodeBlockStartY, pPrecinct->nY0);
-								pCodeBlock->nX1 = min(nCodeBlockEndX, pPrecinct->nX1);
-								pCodeBlock->nY1 = min(nCodeBlockEndY, pPrecinct->nY1);
+                                pCodeBlock->nX0 = (std::max)(nCodeBlockStartX, pPrecinct->nX0);
+                                pCodeBlock->nY0 = (std::max)(nCodeBlockStartY, pPrecinct->nY0);
+                                pCodeBlock->nX1 = (std::min)(nCodeBlockEndX, pPrecinct->nX1);
+                                pCodeBlock->nY1 = (std::min)(nCodeBlockEndY, pPrecinct->nY1);
 							}
 						}
 					}
@@ -705,10 +705,10 @@ namespace Jpeg2000
 			int nQ = nTileIndex / pCodingParams->nXTilesCount;
 
 			// Границы тайла (маштабированные относительно размеров изображения, если необходимо)
-			pTile->nX0 = max(pCodingParams->nXTOsiz + nP * pCodingParams->nXTsiz, pImage->nXOsiz);
-			pTile->nY0 = max(pCodingParams->nYTOsiz + nQ * pCodingParams->nYTsiz, pImage->nYOsiz);
-			pTile->nX1 = min(pCodingParams->nXTOsiz + (nP + 1) * pCodingParams->nXTsiz, pImage->nXsiz);
-			pTile->nY1 = min(pCodingParams->nYTOsiz + (nQ + 1) * pCodingParams->nYTsiz, pImage->nYsiz);
+            pTile->nX0 = (std::max)(pCodingParams->nXTOsiz + nP * pCodingParams->nXTsiz, pImage->nXOsiz);
+            pTile->nY0 = (std::max)(pCodingParams->nYTOsiz + nQ * pCodingParams->nYTsiz, pImage->nYOsiz);
+            pTile->nX1 = (std::min)(pCodingParams->nXTOsiz + (nP + 1) * pCodingParams->nXTsiz, pImage->nXsiz);
+            pTile->nY1 = (std::min)(pCodingParams->nYTOsiz + (nQ + 1) * pCodingParams->nYTsiz, pImage->nYsiz);
 
 			pTile->nComponentsCount = pImage->nCsiz;
 			pTile->pComponents = (TileComp *)Malloc(pImage->nCsiz * sizeof(TileComp));
@@ -805,8 +805,8 @@ namespace Jpeg2000
 						nCBHeightExpn = nPPy - 1;
 					}
 
-					int nXCBa = min(pTCCP->nCodeBlockWidth, nCBWidthExpn);
-					int nYCBa = min(pTCCP->nCodeBlockHeight, nCBHeightExpn);
+                    int nXCBa = (std::min)(pTCCP->nCodeBlockWidth, nCBWidthExpn);
+                    int nYCBa = (std::min)(pTCCP->nCodeBlockHeight, nCBHeightExpn);
 
 					for (int nBandIndex = 0; nBandIndex < pResolution->nBandsCount; nBandIndex++)
 					{
@@ -854,10 +854,10 @@ namespace Jpeg2000
 
 							Precinct *pPrecinct = &pBand->pPrecincts[nPrecinctIndex];
 							// Размеры области (Precinct)
-							pPrecinct->nX0 = max(nGlobalCodeBlockStartX, pBand->nX0);
-							pPrecinct->nY0 = max(nGlobalCodeBlockStartY, pBand->nY0);
-							pPrecinct->nX1 = min(nGlobalCodeBlockEndX, pBand->nX1);
-							pPrecinct->nY1 = min(nGlobalCodeBlockEndY, pBand->nY1);
+                            pPrecinct->nX0 = (std::max)(nGlobalCodeBlockStartX, pBand->nX0);
+                            pPrecinct->nY0 = (std::max)(nGlobalCodeBlockStartY, pBand->nY0);
+                            pPrecinct->nX1 = (std::min)(nGlobalCodeBlockEndX, pBand->nX1);
+                            pPrecinct->nY1 = (std::min)(nGlobalCodeBlockEndY, pBand->nY1);
 
 							int nTLCodeBlockStartX = FloorDivPow2(pPrecinct->nX0, nXCBa) << nXCBa;
 							int nTLCodeBlockStartY = FloorDivPow2(pPrecinct->nY0, nYCBa) << nYCBa;
@@ -886,10 +886,10 @@ namespace Jpeg2000
 
 								// Границы CodeBlock (глобальные)
 								CodeBlock *pCodeBlock = &pPrecinct->pCodeBlocks[nCodeBlockIndex];
-								pCodeBlock->nX0 = max(nCodeBlockStartX, pPrecinct->nX0);
-								pCodeBlock->nY0 = max(nCodeBlockStartY, pPrecinct->nY0);
-								pCodeBlock->nX1 = min(nCodeBlockEndX, pPrecinct->nX1);
-								pCodeBlock->nY1 = min(nCodeBlockEndY, pPrecinct->nY1);
+                                pCodeBlock->nX0 = (std::min)(nCodeBlockStartX, pPrecinct->nX0);
+                                pCodeBlock->nY0 = (std::min)(nCodeBlockStartY, pPrecinct->nY0);
+                                pCodeBlock->nX1 = (std::min)(nCodeBlockEndX, pPrecinct->nX1);
+                                pCodeBlock->nY1 = (std::min)(nCodeBlockEndY, pPrecinct->nY1);
 							}
 						}
 					}
@@ -916,10 +916,10 @@ namespace Jpeg2000
 			for (int nIndex = 0; nIndex < pCodingParams->nTileIndexSize; nIndex++)
 			{
 				int nTileIndex = pCodingParams->pTileIndex[nIndex];
-				nX0 = (nIndex == 0 ? pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nX0 : min(nX0, (unsigned int)pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nX0));
-				nY0 = (nIndex == 0 ? pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nY0 : min(nY0, (unsigned int)pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nY0));
-				nX1 = (nIndex == 0 ? pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nX1 : max(nX1, (unsigned int)pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nX1));
-				nY1 = (nIndex == 0 ? pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nY1 : max(nY1, (unsigned int)pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nY1));
+                nX0 = (nIndex == 0 ? pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nX0 : (std::min)(nX0, (unsigned int)pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nX0));
+                nY0 = (nIndex == 0 ? pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nY0 : (std::min)(nY0, (unsigned int)pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nY0));
+                nX1 = (nIndex == 0 ? pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nX1 : (std::max)(nX1, (unsigned int)pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nX1));
+                nY1 = (nIndex == 0 ? pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nY1 : (std::max)(nY1, (unsigned int)pTCD->pTCDImage->pTiles[nTileIndex].pComponents[nComponentIndex].nY1));
 			}
 
 			nWidth  = nX1 - nX0;
@@ -1246,7 +1246,7 @@ namespace Jpeg2000
 			int nSuccess = 0;
 
 			// TO DO: Убрать nMaxLen
-			int nMaxLen = pTCP->afRates[nLayerIndex] ? min(((int)ceil(pTCP->afRates[nLayerIndex])), nLen) : nLen;
+            int nMaxLen = pTCP->afRates[nLayerIndex] ? (std::min)(((int)ceil(pTCP->afRates[nLayerIndex])), nLen) : nLen;
 			double dGoodThreshold = 0;
 			double dDistoTarget = pTile->dDistoTile - ((c_dK * dMaxSE) / pow((float)10, pTCP->afDistoRatio[nLayerIndex] / 10));
 

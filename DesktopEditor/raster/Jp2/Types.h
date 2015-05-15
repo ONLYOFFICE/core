@@ -2,14 +2,6 @@
 #include "Reader.h"
 #include "../../graphics/Defines.h"
 
-#ifndef max
-	#define max(a,b)            (((a) > (b)) ? (a) : (b))
-#endif
-
-#ifndef min
-	#define min(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
-
 namespace Jpeg2000
 {
 	//-------------------------------------------------------------------------------------------------------------------------------

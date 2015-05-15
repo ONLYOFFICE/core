@@ -170,7 +170,7 @@ namespace Jpeg2000
 					nLen += pPass->nLen;
 					if (pPass->nTerm || nPassIndex == (pCodeBlock->nPassesCount + pLayer->nPassesCount) - 1)
 					{
-						nIncrement = max(nIncrement, FloorLog2(nLen) + 1 - (pCodeBlock->nLenBitsCount + FloorLog2(nPassesCount)));
+                        nIncrement = (std::max)(nIncrement, FloorLog2(nLen) + 1 - (pCodeBlock->nLenBitsCount + FloorLog2(nPassesCount)));
 						nLen = 0;
 						nPassesCount = 0;
 					}
@@ -455,7 +455,7 @@ namespace Jpeg2000
 
 				do
 				{
-					pSegment->nNewPassesCount = min(pSegment->nMaxPasses - pSegment->nPassesCount, nCount);
+                    pSegment->nNewPassesCount = (std::min)(pSegment->nMaxPasses - pSegment->nPassesCount, nCount);
 					pSegment->nNewLength   = BitIO_Read(pBitStream, pCodeBlock->nLenBitsCount + FloorLog2(pSegment->nNewPassesCount));
 					nCount -= pSegment->nNewPassesCount;
 					if (nCount > 0)
@@ -669,7 +669,7 @@ namespace Jpeg2000
 					nShift = 0;
 				}
 
-				pImage->pComponents[pPI[nIndexPI].nIndexComponent].nDecodedResCount = (nShift > 0) ? max(pPI[nIndexPI].nIndexResolution, pImage->pComponents[pPI[nIndexPI].nIndexComponent].nDecodedResCount) : pImage->pComponents[pPI[nIndexPI].nIndexComponent].nDecodedResCount;
+                pImage->pComponents[pPI[nIndexPI].nIndexComponent].nDecodedResCount = (nShift > 0) ? (std::max)(pPI[nIndexPI].nIndexResolution, pImage->pComponents[pPI[nIndexPI].nIndexComponent].nDecodedResCount) : pImage->pComponents[pPI[nIndexPI].nIndexComponent].nDecodedResCount;
 				nCount++;
 
 				if (nShift == -999)

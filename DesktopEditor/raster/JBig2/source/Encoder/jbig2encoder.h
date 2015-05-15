@@ -12,7 +12,6 @@
 #include "../LeptonLib/pix.h"
 #include "jbig2enc.h"
 
-#include "../../../Common/DocxFormat/Source/SystemUtility/File.h"
 
 #if defined(_WIN32) || defined (_WIN64)
 // -----------------------------------------------------------------------------

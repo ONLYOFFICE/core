@@ -484,7 +484,7 @@ namespace Jpeg2000
 		{
 			for (int nX = 0; nX < nWidth; nX++)
 			{
-				nMax = max(nMax, abs(pTier1->aData[nY][nX]));
+                nMax = (std::max)(nMax, abs(pTier1->aData[nY][nX]));
 			}
 		}
 
@@ -799,8 +799,8 @@ namespace Jpeg2000
 	{
 		int nLen = 0;
 
-		int nHorC = min(((nF & (T1_SIG_E | T1_SGN_E)) == T1_SIG_E) + ((nF & (T1_SIG_W | T1_SGN_W)) == T1_SIG_W), 1) - min(((nF & (T1_SIG_E | T1_SGN_E)) == (T1_SIG_E | T1_SGN_E)) + ((nF & (T1_SIG_W | T1_SGN_W)) == (T1_SIG_W | T1_SGN_W)), 1);
-		int nVerC = min(((nF & (T1_SIG_N | T1_SGN_N)) == T1_SIG_N) + ((nF & (T1_SIG_S | T1_SGN_S)) == T1_SIG_S), 1) - min(((nF & (T1_SIG_N | T1_SGN_N)) == (T1_SIG_N | T1_SGN_N)) + ((nF & (T1_SIG_S | T1_SGN_S)) == (T1_SIG_S | T1_SGN_S)), 1);
+        int nHorC = (std::min)(((nF & (T1_SIG_E | T1_SGN_E)) == T1_SIG_E) + ((nF & (T1_SIG_W | T1_SGN_W)) == T1_SIG_W), 1) - (std::min)(((nF & (T1_SIG_E | T1_SGN_E)) == (T1_SIG_E | T1_SGN_E)) + ((nF & (T1_SIG_W | T1_SGN_W)) == (T1_SIG_W | T1_SGN_W)), 1);
+        int nVerC = (std::min)(((nF & (T1_SIG_N | T1_SGN_N)) == T1_SIG_N) + ((nF & (T1_SIG_S | T1_SGN_S)) == T1_SIG_S), 1) - (std::min)(((nF & (T1_SIG_N | T1_SGN_N)) == (T1_SIG_N | T1_SGN_N)) + ((nF & (T1_SIG_S | T1_SGN_S)) == (T1_SIG_S | T1_SGN_S)), 1);
 
 		if (nHorC < 0)
 		{
@@ -845,8 +845,8 @@ namespace Jpeg2000
 	{
 		int nLen = 0;
 
-		int nHorC = min(((nF & (T1_SIG_E | T1_SGN_E)) == T1_SIG_E) + ((nF & (T1_SIG_W | T1_SGN_W)) == T1_SIG_W), 1) - min(((nF & (T1_SIG_E | T1_SGN_E)) == (T1_SIG_E | T1_SGN_E)) + ((nF & (T1_SIG_W | T1_SGN_W)) == (T1_SIG_W | T1_SGN_W)), 1);
-		int nVerC = min(((nF & (T1_SIG_N | T1_SGN_N)) == T1_SIG_N) + ((nF & (T1_SIG_S | T1_SGN_S)) == T1_SIG_S), 1) - min(((nF & (T1_SIG_N | T1_SGN_N)) == (T1_SIG_N | T1_SGN_N)) + ((nF & (T1_SIG_S | T1_SGN_S)) == (T1_SIG_S | T1_SGN_S)), 1);
+        int nHorC = (std::min)(((nF & (T1_SIG_E | T1_SGN_E)) == T1_SIG_E) + ((nF & (T1_SIG_W | T1_SGN_W)) == T1_SIG_W), 1) - (std::min)(((nF & (T1_SIG_E | T1_SGN_E)) == (T1_SIG_E | T1_SGN_E)) + ((nF & (T1_SIG_W | T1_SGN_W)) == (T1_SIG_W | T1_SGN_W)), 1);
+        int nVerC = (std::min)(((nF & (T1_SIG_N | T1_SGN_N)) == T1_SIG_N) + ((nF & (T1_SIG_S | T1_SGN_S)) == T1_SIG_S), 1) - (std::min)(((nF & (T1_SIG_N | T1_SGN_N)) == (T1_SIG_N | T1_SGN_N)) + ((nF & (T1_SIG_S | T1_SGN_S)) == (T1_SIG_S | T1_SGN_S)), 1);
 
 		if (!nHorC && !nVerC)
 			nLen = 0;
@@ -886,8 +886,8 @@ namespace Jpeg2000
 			double dT = nI / pow(double(2), T1_NMSEDEC_FRACBITS);
 			double dU = dT;
 			double dV = dT - 1.5;
-			pTier1->lut_nmsedec_sig[nI]  = max(0, (int)(floor((dU * dU - dV * dV) * pow(double(2), T1_NMSEDEC_FRACBITS) + 0.5) / pow(double(2), T1_NMSEDEC_FRACBITS) * 8192.0));
-			pTier1->lut_nmsedec_sig0[nI] = max(0, (int)(floor((dU * dU)           * pow(double(2), T1_NMSEDEC_FRACBITS) + 0.5) / pow(double(2), T1_NMSEDEC_FRACBITS) * 8192.0));
+            pTier1->lut_nmsedec_sig[nI]  = (std::max)(0, (int)(floor((dU * dU - dV * dV) * pow(double(2), T1_NMSEDEC_FRACBITS) + 0.5) / pow(double(2), T1_NMSEDEC_FRACBITS) * 8192.0));
+            pTier1->lut_nmsedec_sig0[nI] = (std::max)(0, (int)(floor((dU * dU)           * pow(double(2), T1_NMSEDEC_FRACBITS) + 0.5) / pow(double(2), T1_NMSEDEC_FRACBITS) * 8192.0));
 			dU = dT - 1.0;
 			if (nI & (1 << (T1_NMSEDEC_BITS - 1)))
 			{
@@ -897,8 +897,8 @@ namespace Jpeg2000
 			{
 				dV = dT - 0.5;
 			}
-			pTier1->lut_nmsedec_ref[nI]  = max(0, (int)(floor((dU * dU - dV * dV) * pow(double(2), T1_NMSEDEC_FRACBITS) + 0.5) / pow(double(2), T1_NMSEDEC_FRACBITS) * 8192.0));
-			pTier1->lut_nmsedec_ref0[nI] = max(0, (int)(floor((dU * dU)           * pow(double(2), T1_NMSEDEC_FRACBITS) + 0.5) / pow(double(2), T1_NMSEDEC_FRACBITS) * 8192.0));
+            pTier1->lut_nmsedec_ref[nI]  = (std::max)(0, (int)(floor((dU * dU - dV * dV) * pow(double(2), T1_NMSEDEC_FRACBITS) + 0.5) / pow(double(2), T1_NMSEDEC_FRACBITS) * 8192.0));
+            pTier1->lut_nmsedec_ref0[nI] = (std::max)(0, (int)(floor((dU * dU)           * pow(double(2), T1_NMSEDEC_FRACBITS) + 0.5) / pow(double(2), T1_NMSEDEC_FRACBITS) * 8192.0));
 		}
 	}
 

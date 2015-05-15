@@ -231,7 +231,8 @@ public: CString RenderToOOX(RenderParameter oRenderParameter)
 			}
 			else
 			{
-				if( m_oResult->GetCount() <= 1 )
+				nIndex = sInsertText.Find( _T("PRIVATE") );
+				if( m_oResult->GetCount() <= 1 && nIndex < 0)
 				{
 					RenderParameter oNewParametr = oRenderParameter;
 					oNewParametr.nType = RENDER_TO_OOX_PARAM_PLAIN;

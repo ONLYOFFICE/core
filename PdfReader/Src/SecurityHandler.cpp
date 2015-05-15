@@ -1,4 +1,4 @@
-#include "StringExt.h"
+п»ї#include "StringExt.h"
 #include "PDFDoc.h"
 #include "Decrypt.h"
 #include "GlobalParams.h"
@@ -136,10 +136,10 @@ namespace PdfReader
 			m_nEncryptRevision = oRevision.GetInt();
 			m_eCryptType       = cryptRC4;
 
-			// В случае Revision = 2, ключ должен быть 40-бит - некоторые PDF-генераторы неправильно пишут значение Length
+			// Р’ СЃР»СѓС‡Р°Рµ Revision = 2, РєР»СЋС‡ РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ 40-Р±РёС‚ - РЅРµРєРѕС‚РѕСЂС‹Рµ PDF-РіРµРЅРµСЂР°С‚РѕСЂС‹ РЅРµРїСЂР°РІРёР»СЊРЅРѕ РїРёС€СѓС‚ Р·РЅР°С‡РµРЅРёРµ Length
 			if (m_nEncryptRevision == 2 || !oLength.IsInt())
 			{
-				m_nFileKeyLength = 5; // 5 байт = 40-бит
+				m_nFileKeyLength = 5; // 5 Р±Р°Р№С‚ = 40-Р±РёС‚
 			}
 			else
 			{
@@ -168,7 +168,7 @@ namespace PdfReader
 							Object oCFLength;
 							if (oCryptCurFilter.DictLookup("Length", &oCFLength)->IsInt())
 							{
-								// Согласно спецификации, должно быть oCFLength / 8
+								// РЎРѕРіР»Р°СЃРЅРѕ СЃРїРµС†РёС„РёРєР°С†РёРё, РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ oCFLength / 8
 								m_nFileKeyLength = oCFLength.GetInt();
 							}
 							oCFLength.Free();
@@ -181,7 +181,7 @@ namespace PdfReader
 							Object oCFLength;
 							if (oCryptCurFilter.DictLookup("Length", &oCFLength)->IsInt())
 							{
-								// Согласно спецификации, должно быть oCFLength / 8
+								// РЎРѕРіР»Р°СЃРЅРѕ СЃРїРµС†РёС„РёРєР°С†РёРё, РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ oCFLength / 8
 								m_nFileKeyLength = oCFLength.GetInt();
 							}
 							oCFLength.Free();

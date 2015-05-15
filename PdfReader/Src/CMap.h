@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_CMAP_H
+п»ї#ifndef _PDF_READER_CMAP_H
 #define _PDF_READER_CMAP_H
 
 #include "CharTypes.h"
@@ -19,27 +19,27 @@ namespace PdfReader
 	{
 	public:
 
-		// Создаем карту CMap определенную по <seCollection> и <seCMapName>. 
-		// Устанавливаем счетчик ссылок на 1. 
+		// РЎРѕР·РґР°РµРј РєР°СЂС‚Сѓ CMap РѕРїСЂРµРґРµР»РµРЅРЅСѓСЋ РїРѕ <seCollection> Рё <seCMapName>. 
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЃС‡РµС‚С‡РёРє СЃСЃС‹Р»РѕРє РЅР° 1. 
 		static CMap *Parse(CMapCache *pCache, StringExt *seCollection, StringExt *seCMapName, GlobalParams *pGlobalParams, wchar_t *wsFilePath = NULL);
 
 		~CMap();
 
-		// Считаем ссылки
+		// РЎС‡РёС‚Р°РµРј СЃСЃС‹Р»РєРё
 		void AddRef();
 		void Release();
 
-		// Название коллекции возвращаем в следующем формате: registry-ordering.
+		// РќР°Р·РІР°РЅРёРµ РєРѕР»Р»РµРєС†РёРё РІРѕР·РІСЂР°С‰Р°РµРј РІ СЃР»РµРґСѓСЋС‰РµРј С„РѕСЂРјР°С‚Рµ: registry-ordering.
 		StringExt *GetCollection()
 		{
 			return m_seCollection;
 		}
 
-		// Возвращаем true, если параметры CMap совпадают с заданными <seCollection> и <seCMapName>.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј true, РµСЃР»Рё РїР°СЂР°РјРµС‚СЂС‹ CMap СЃРѕРІРїР°РґР°СЋС‚ СЃ Р·Р°РґР°РЅРЅС‹РјРё <seCollection> Рё <seCMapName>.
 		bool Match(StringExt *seCollection, StringExt *seCMapName);
 
-		// Возвращаем CID соответствующий коду символа, который начинается в <sChar>, 
-		// и содержит <nLen> байт. 
+		// Р’РѕР·РІСЂР°С‰Р°РµРј CID СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ РєРѕРґСѓ СЃРёРјРІРѕР»Р°, РєРѕС‚РѕСЂС‹Р№ РЅР°С‡РёРЅР°РµС‚СЃСЏ РІ <sChar>, 
+		// Рё СЃРѕРґРµСЂР¶РёС‚ <nLen> Р±Р°Р№С‚. 
 		CID GetCID(char *sChar, int nLen, int *pnUsed);
 
 		// Writing mode (0 = horizontal, 1 = vertical).
@@ -66,7 +66,7 @@ namespace PdfReader
 		StringExt       *m_seCMapName;    // 
 		int              m_nWMode;        // writing mode (0=horizontal, 1=vertical)
 		CMapVectorEntry *m_pVector;       // vector for first byte (NULL for identity CMap)
-		int              m_nRef;          // Счетчик ссылок
+		int              m_nRef;          // РЎС‡РµС‚С‡РёРє СЃСЃС‹Р»РѕРє
 						
 		GlobalParams    *m_pGlobalParams;
 

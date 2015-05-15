@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_GRAPHICS_H
+п»ї#ifndef _PDF_READER_GRAPHICS_H
 #define _PDF_READER_GRAPHICS_H
 
 #include "GlobalParams.h"
@@ -49,9 +49,9 @@ namespace PdfReader
 		argString,         // String
 		argName,           // Name
 		argArray,          // Array
-		argProps,          // Properties (Dictionary или Name)
+		argProps,          // Properties (Dictionary РёР»Рё Name)
 		argSCN,            // scn/SCN
-		argNone            // используется, чтобы избежать пустых полей при инициализации
+		argNone            // РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ, С‡С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ РїСѓСЃС‚С‹С… РїРѕР»РµР№ РїСЂРё РёРЅРёС†РёР°Р»РёР·Р°С†РёРё
 	};
 
 #define maxArgs 33
@@ -115,19 +115,19 @@ namespace PdfReader
 
 		~Graphics();
 
-		// Инициализируем Парсер по pObject, предварительно проводим проверку: Является ли pObject потоком или массивом потоков.
+		// РРЅРёС†РёР°Р»РёР·РёСЂСѓРµРј РџР°СЂСЃРµСЂ РїРѕ pObject, РїСЂРµРґРІР°СЂРёС‚РµР»СЊРЅРѕ РїСЂРѕРІРѕРґРёРј РїСЂРѕРІРµСЂРєСѓ: РЇРІР»СЏРµС‚СЃСЏ Р»Рё pObject РїРѕС‚РѕРєРѕРј РёР»Рё РјР°СЃСЃРёРІРѕРј РїРѕС‚РѕРєРѕРІ.
 		void Display(Object *pObject, bool bTopLevel = true);
 
-		// Рисуем annotation
+		// Р РёСЃСѓРµРј annotation
 		void DrawAnnotation(Object *pStream, AnnotBorderStyle *pBorderStyle, double dMinX, double dMinY, double dMaxX, double dMaxY);
 
-		// Сохраняем GState.
+		// РЎРѕС…СЂР°РЅСЏРµРј GState.
 		void SaveGState();
 
-		// Восстанавливаем предыдущий GState.
+		// Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїСЂРµРґС‹РґСѓС‰РёР№ GState.
 		void RestoreGState();
 
-		// Считываем текущий GState.
+		// РЎС‡РёС‚С‹РІР°РµРј С‚РµРєСѓС‰РёР№ GState.
 		GrState *GetGState()
 		{
 			return m_pGState;
@@ -263,28 +263,28 @@ namespace PdfReader
 
 	private:
 
-		XRef        *m_pXref;            // Таблица Xref для данного PDF - документа
+		XRef        *m_pXref;            // РўР°Р±Р»РёС†Р° Xref РґР»СЏ РґР°РЅРЅРѕРіРѕ PDF - РґРѕРєСѓРјРµРЅС‚Р°
 		OutputDev   *m_pOut;             // Output device
 		bool         m_bSubPage;         // Sub-page object?
 		GrResources *m_pResources;       // Resources
 		int          m_nUpdateLevel;
 
-		GrState     *m_pGState;          // Текущий GState
-		bool         m_bFontChanged;     // True, если шрифт или текстовая матрица изменились
+		GrState     *m_pGState;          // РўРµРєСѓС‰РёР№ GState
+		bool         m_bFontChanged;     // True, РµСЃР»Рё С€СЂРёС„С‚ РёР»Рё С‚РµРєСЃС‚РѕРІР°СЏ РјР°С‚СЂРёС†Р° РёР·РјРµРЅРёР»РёСЃСЊ
 		GrClipType   m_eClip;            // Clip type
-		int          m_nIgnoreUndef;     // Текущий уровень вложенности для BX/EX
-		double       m_arrBaseMatrix[6]; // Стандартная матрица для последних объектов Page/Form/Pattern
+		int          m_nIgnoreUndef;     // РўРµРєСѓС‰РёР№ СѓСЂРѕРІРµРЅСЊ РІР»РѕР¶РµРЅРЅРѕСЃС‚Рё РґР»СЏ BX/EX
+		double       m_arrBaseMatrix[6]; // РЎС‚Р°РЅРґР°СЂС‚РЅР°СЏ РјР°С‚СЂРёС†Р° РґР»СЏ РїРѕСЃР»РµРґРЅРёС… РѕР±СЉРµРєС‚РѕРІ Page/Form/Pattern
 		int          m_nFormDepth;
 
-		Parser      *m_pParser;          // Парсер для содержимого страницы
+		Parser      *m_pParser;          // РџР°СЂСЃРµСЂ РґР»СЏ СЃРѕРґРµСЂР¶РёРјРѕРіРѕ СЃС‚СЂР°РЅРёС†С‹
 
-		bool(*m_pAbortCheckCallBack)(void *pData); // Проверка на отмену
+		bool(*m_pAbortCheckCallBack)(void *pData); // РџСЂРѕРІРµСЂРєР° РЅР° РѕС‚РјРµРЅСѓ
 		void        *m_pAbortCheckData;
 
-		static Operator OperatorsTable[]; // Таблица графических операторов
+		static Operator OperatorsTable[]; // РўР°Р±Р»РёС†Р° РіСЂР°С„РёС‡РµСЃРєРёС… РѕРїРµСЂР°С‚РѕСЂРѕРІ
 
 #ifdef _DEBUG
-		FILE        *m_pDumpFile;          // Файл для распечатки команд, записанных в PDF
+		FILE        *m_pDumpFile;          // Р¤Р°Р№Р» РґР»СЏ СЂР°СЃРїРµС‡Р°С‚РєРё РєРѕРјР°РЅРґ, Р·Р°РїРёСЃР°РЅРЅС‹С… РІ PDF
 #endif
 
 		GlobalParams *m_pGlobalParams;

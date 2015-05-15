@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_PAGE_H
+п»ї#ifndef _PDF_READER_PAGE_H
 #define _PDF_READER_PAGE_H
 
 #include "Object.h"
@@ -51,8 +51,8 @@ namespace PdfReader
 	{
 	public:
 
-		// Строим новый объект PageAttrs либо с начальными настройками из
-		// pAttrs, либо со стандартными начальными настройками(если pAttrs =
+		// РЎС‚СЂРѕРёРј РЅРѕРІС‹Р№ РѕР±СЉРµРєС‚ PageAttrs Р»РёР±Рѕ СЃ РЅР°С‡Р°Р»СЊРЅС‹РјРё РЅР°СЃС‚СЂРѕР№РєР°РјРё РёР·
+		// pAttrs, Р»РёР±Рѕ СЃРѕ СЃС‚Р°РЅРґР°СЂС‚РЅС‹РјРё РЅР°С‡Р°Р»СЊРЅС‹РјРё РЅР°СЃС‚СЂРѕР№РєР°РјРё(РµСЃР»Рё pAttrs =
 		// NULL).
 		PageAttrs(PageAttrs *pAttrs, Dict *pDict);
 
@@ -263,11 +263,11 @@ namespace PdfReader
 
 	private:
 
-		XRef      *m_pXref;     // Таблица xref для данного PDF документа
-		int        m_nNumber;   // Номер страницы
+		XRef      *m_pXref;     // РўР°Р±Р»РёС†Р° xref РґР»СЏ РґР°РЅРЅРѕРіРѕ PDF РґРѕРєСѓРјРµРЅС‚Р°
+		int        m_nNumber;   // РќРѕРјРµСЂ СЃС‚СЂР°РЅРёС†С‹
 		PageAttrs *m_pAttrs;    // Page attributes
 		Object     m_oAnnots;   // Annotations
-		Object     m_oContents; // Содержимое страницы
+		Object     m_oContents; // РЎРѕРґРµСЂР¶РёРјРѕРµ СЃС‚СЂР°РЅРёС†С‹
 		Object     m_oContents2;
 		bool       m_bValid;    // 
 

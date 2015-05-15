@@ -1,4 +1,4 @@
-#include <stdlib.h>
+п»ї#include <stdlib.h>
 #include <stdio.h>
 #include <stddef.h>
 #include <string.h>
@@ -20,7 +20,7 @@
 #include "Annot.h"
 #include "Graphics.h"
 
-// Под виндой переопределяется
+// РџРѕРґ РІРёРЅРґРѕР№ РїРµСЂРµРѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ
 #ifdef GetObject
 #undef GetObject
 #endif
@@ -30,7 +30,7 @@
 #endif
 
 //-------------------------------------------------------------------------------------------------------------------------------
-// Константы
+// РљРѕРЅСЃС‚Р°РЅС‚С‹
 //-------------------------------------------------------------------------------------------------------------------------------
 
 #define functionMaxDepth 6
@@ -54,7 +54,7 @@
 #define patchColorDelta (DoubleToColor(1 / 256.0))
 
 //-------------------------------------------------------------------------------------------------------------------------------
-// Таблица графических операторов
+// РўР°Р±Р»РёС†Р° РіСЂР°С„РёС‡РµСЃРєРёС… РѕРїРµСЂР°С‚РѕСЂРѕРІ
 //-------------------------------------------------------------------------------------------------------------------------------
 
 #ifdef WIN32 // this works around a bug in the VC7 compiler
@@ -543,9 +543,9 @@ namespace PdfReader
 			if (m_pOut && m_pOut->IsStopped())
 				break;
 
-			if (oTemp.IsCommand()) // Если получили команду, тогда выполняем ее
+			if (oTemp.IsCommand()) // Р•СЃР»Рё РїРѕР»СѓС‡РёР»Рё РєРѕРјР°РЅРґСѓ, С‚РѕРіРґР° РІС‹РїРѕР»РЅСЏРµРј РµРµ
 			{
-				// Тут распечатываются посланные команды 
+				// РўСѓС‚ СЂР°СЃРїРµС‡Р°С‚С‹РІР°СЋС‚СЃСЏ РїРѕСЃР»Р°РЅРЅС‹Рµ РєРѕРјР°РЅРґС‹ 
 
 #ifdef _DEBUG
 				if (m_pDumpFile)
@@ -568,14 +568,14 @@ namespace PdfReader
 					arrArguments[nIndex].Free();
 				nArgumentsCount = 0;
 
-				// Производим переодические обновления того что выводим
+				// РџСЂРѕРёР·РІРѕРґРёРј РїРµСЂРµРѕРґРёС‡РµСЃРєРёРµ РѕР±РЅРѕРІР»РµРЅРёСЏ С‚РѕРіРѕ С‡С‚Рѕ РІС‹РІРѕРґРёРј
 				if (++m_nUpdateLevel >= 20000)
 				{
 					m_pOut->Dump();
 					m_nUpdateLevel = 0;
 				}
 
-				// Проверяем отмену
+				// РџСЂРѕРІРµСЂСЏРµРј РѕС‚РјРµРЅСѓ
 				if (m_pAbortCheckCallBack)
 				{
 					if (m_nUpdateLevel - nLastAbortCheck > 10)
@@ -588,11 +588,11 @@ namespace PdfReader
 					}
 				}
 			}
-			else if (nArgumentsCount < maxArgs) // Считываем аргумент
+			else if (nArgumentsCount < maxArgs) // РЎС‡РёС‚С‹РІР°РµРј Р°СЂРіСѓРјРµРЅС‚
 			{
 				arrArguments[nArgumentsCount++] = oTemp;
 			}
-			else // Аргументов слишком много, значит что-то неправильно
+			else // РђСЂРіСѓРјРµРЅС‚РѕРІ СЃР»РёС€РєРѕРј РјРЅРѕРіРѕ, Р·РЅР°С‡РёС‚ С‡С‚Рѕ-С‚Рѕ РЅРµРїСЂР°РІРёР»СЊРЅРѕ
 			{
 				// TO DO: Error "Too many args in content stream"
 #ifdef _DEBUG	
@@ -607,7 +607,7 @@ namespace PdfReader
 				oTemp.Free();
 			}
 
-			// Считываем следующий объект
+			// РЎС‡РёС‚С‹РІР°РµРј СЃР»РµРґСѓСЋС‰РёР№ РѕР±СЉРµРєС‚
 			m_pParser->GetObject(&oTemp);
 		}
 		oTemp.Free();
@@ -643,19 +643,19 @@ namespace PdfReader
 	void Graphics::ExecuteOperator(Object *pCommand, Object arrArguments[], int nArgumentsCount)
 	{
 		Operator *pOperator = NULL;
-		// Ищем оператор
+		// РС‰РµРј РѕРїРµСЂР°С‚РѕСЂ
 		char* sName = pCommand->GetCommand();
 
 		if (!(pOperator = FindOperator(sName)))
 		{
-			if (m_nIgnoreUndef == 0) // Проверяем наличие незакрытого оператора BX
+			if (m_nIgnoreUndef == 0) // РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РЅРµР·Р°РєСЂС‹С‚РѕРіРѕ РѕРїРµСЂР°С‚РѕСЂР° BX
 			{
 				// TO DO: Error "Unknown operator"
 			}
 			return;
 		}
 
-		// Проверяем количество аргументов
+		// РџСЂРѕРІРµСЂСЏРµРј РєРѕР»РёС‡РµСЃС‚РІРѕ Р°СЂРіСѓРјРµРЅС‚РѕРІ
 		Object *pArguments = arrArguments;
 		if (pOperator->nArgumentsCount >= 0)
 		{
@@ -668,7 +668,7 @@ namespace PdfReader
 			{
 				// TO DO: Error "Too many args in operator"
 
-				// Используем последние значения в качесте аргументов
+				// РСЃРїРѕР»СЊР·СѓРµРј РїРѕСЃР»РµРґРЅРёРµ Р·РЅР°С‡РµРЅРёСЏ РІ РєР°С‡РµСЃС‚Рµ Р°СЂРіСѓРјРµРЅС‚РѕРІ
 				pArguments += nArgumentsCount - pOperator->nArgumentsCount;
 				nArgumentsCount = pOperator->nArgumentsCount;
 			}
@@ -682,7 +682,7 @@ namespace PdfReader
 			}
 		}
 
-		// Проверяем типы аргументов
+		// РџСЂРѕРІРµСЂСЏРµРј С‚РёРїС‹ Р°СЂРіСѓРјРµРЅС‚РѕРІ
 		for (int nIndex = 0; nIndex < nArgumentsCount; ++nIndex)
 		{
 			if (!CheckArgumentType(&pArguments[nIndex], pOperator->arrArguments[nIndex]))
@@ -692,7 +692,7 @@ namespace PdfReader
 			}
 		}
 
-		// Выполняем сам оператор
+		// Р’С‹РїРѕР»РЅСЏРµРј СЃР°Рј РѕРїРµСЂР°С‚РѕСЂ
 		(this->*pOperator->pFunction)(pArguments, nArgumentsCount);
 	}
 	Operator *Graphics::FindOperator(char *sName)
@@ -834,7 +834,7 @@ namespace PdfReader
 			return;
 		}
 
-		// Прозрачность
+		// РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ
 		Object oDictItem;
 		// BM (blend mode)
 		if (!oDict.DictLookup("BM", &oDictItem)->IsNull())
@@ -899,7 +899,7 @@ namespace PdfReader
 		oDictItem.Free();
 
 		// TR2/TR (transfer function)
-		// приоритетной является TR2
+		// РїСЂРёРѕСЂРёС‚РµС‚РЅРѕР№ СЏРІР»СЏРµС‚СЃСЏ TR2
 		Function *ppFunctions[4];
 		if (oDict.DictLookup("TR2", &oDictItem)->IsNull())
 		{
@@ -926,7 +926,7 @@ namespace PdfReader
 					break;
 				}
 			}
-			if (4 == nIndex) // нормально ли все функции прочитались
+			if (4 == nIndex) // РЅРѕСЂРјР°Р»СЊРЅРѕ Р»Рё РІСЃРµ С„СѓРЅРєС†РёРё РїСЂРѕС‡РёС‚Р°Р»РёСЃСЊ
 			{
 				m_pGState->SetTransfer(ppFunctions);
 				m_pOut->UpdateTransfer(m_pGState);
@@ -1070,7 +1070,7 @@ namespace PdfReader
 	//-------------------------------------------------------------------------------------------------------------------------------
 	void Graphics::MakeSoftMask(Object *pStream, bool bAlpha, GrColorSpace *pBlendingColorSpace, bool bIsolated, bool bKnockout, Function *pTransferFunction, GrColor *pBackDropColor)
 	{
-		// Проверяем на чрезмерную рекурсию
+		// РџСЂРѕРІРµСЂСЏРµРј РЅР° С‡СЂРµР·РјРµСЂРЅСѓСЋ СЂРµРєСѓСЂСЃРёСЋ
 		if (m_nFormDepth > 20)
 		{
 			return;
@@ -1130,7 +1130,7 @@ namespace PdfReader
 		pDict->Search("Resources", &oDictItem);
 		Dict *pResourcesDict = (oDictItem.IsDict() ? oDictItem.GetDict() : (Dict *)NULL);
 
-		// Рисуем
+		// Р РёСЃСѓРµРј
 		++m_nFormDepth;
 		DoForm(pStream, pResourcesDict, arrMatrix, arrBBox, true, true, pBlendingColorSpace, bIsolated, bKnockout, bAlpha, pTransferFunction, pBackDropColor);
 		--m_nFormDepth;
@@ -1774,7 +1774,7 @@ namespace PdfReader
 			return;
 		}
 
-		// Сохраняем текущий GState
+		// РЎРѕС…СЂР°РЅСЏРµРј С‚РµРєСѓС‰РёР№ GState
 		GrPath *pSavedPath = m_pGState->GetPath()->Copy();
 		SaveGState();
 
@@ -1798,7 +1798,7 @@ namespace PdfReader
 			m_pGState->ClearPath();
 		}
 
-		// Устанавливаем цветовое пространство	 
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С†РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ	 
 		m_pGState->SetFillColorSpace(pShading->GetColorSpace()->Copy());
 		m_pOut->UpdateFillColorSpace(m_pGState);
 
@@ -1810,7 +1810,7 @@ namespace PdfReader
 
 		m_pOut->StartShadedFill(m_pGState);
 
-		// Выполняем закраску, в зависимости от типа Shading
+		// Р’С‹РїРѕР»РЅСЏРµРј Р·Р°РєСЂР°СЃРєСѓ, РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‚РёРїР° Shading
 		switch (pShading->GetType())
 		{
 			case 1:
@@ -1839,7 +1839,7 @@ namespace PdfReader
 			m_pOut->SetVectorAntialias(true);
 		}
 
-		// Восстанавливаем GState
+		// Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј GState
 		RestoreGState();
 		m_pGState->SetPath(pSavedPath);
 
@@ -1849,7 +1849,7 @@ namespace PdfReader
 	//-------------------------------------------------------------------------------------------------------------------------------
 	void Graphics::DoPatternFill(bool bEOFill)
 	{
-		// Пропускаем объект Patterns, если мы выводим только текст из PDF
+		// РџСЂРѕРїСѓСЃРєР°РµРј РѕР±СЉРµРєС‚ Patterns, РµСЃР»Рё РјС‹ РІС‹РІРѕРґРёРј С‚РѕР»СЊРєРѕ С‚РµРєСЃС‚ РёР· PDF
 		if (!m_pOut->NeedNonText())
 		{
 			return;
@@ -1876,7 +1876,7 @@ namespace PdfReader
 
 	void Graphics::DoPatternStroke()
 	{
-		// Пропускаем объект Patterns, если мы выводим только текст из PDF
+		// РџСЂРѕРїСѓСЃРєР°РµРј РѕР±СЉРµРєС‚ Patterns, РµСЃР»Рё РјС‹ РІС‹РІРѕРґРёРј С‚РѕР»СЊРєРѕ С‚РµРєСЃС‚ РёР· PDF
 		if (!m_pOut->NeedNonText())
 		{
 			return;
@@ -1906,7 +1906,7 @@ namespace PdfReader
 		// Color space
 		GrPatternColorSpace *pPatternCS = (GrPatternColorSpace *)(bStroke ? m_pGState->GetStrokeColorSpace() : m_pGState->GetFillColorSpace());
 
-		// Строим матрицу преобразования (Pattern space) -> (Current space)
+		// РЎС‚СЂРѕРёРј РјР°С‚СЂРёС†Сѓ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ (Pattern space) -> (Current space)
 		double *pCTM          = m_pGState->GetCTM();
 		double *pBaseMatrix   = m_arrBaseMatrix;
 		double *pTilingMatrix = pPattern->GetMatrix();
@@ -1936,7 +1936,7 @@ namespace PdfReader
 		pMatrix[4] = pTempMatrix[4] * pInvCTM[0] + pTempMatrix[5] * pInvCTM[2] + pInvCTM[4];
 		pMatrix[5] = pTempMatrix[4] * pInvCTM[1] + pTempMatrix[5] * pInvCTM[3] + pInvCTM[5];
 
-		// Строим матрицу преобразования (Device space) -> (Pattern space)
+		// РЎС‚СЂРѕРёРј РјР°С‚СЂРёС†Сѓ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ (Device space) -> (Pattern space)
 		double pInvTemp[6];
 		dDet = 1 / (pTempMatrix[0] * pTempMatrix[3] - pTempMatrix[1] * pTempMatrix[2]);
 		pInvTemp[0] =  pTempMatrix[3] * dDet;
@@ -1946,12 +1946,12 @@ namespace PdfReader
 		pInvTemp[4] = (pTempMatrix[2] * pTempMatrix[5] - pTempMatrix[3] * pTempMatrix[4]) * dDet;
 		pInvTemp[5] = (pTempMatrix[1] * pTempMatrix[4] - pTempMatrix[0] * pTempMatrix[5]) * dDet;
 
-		// Сохраняем текущий GState
+		// РЎРѕС…СЂР°РЅСЏРµРј С‚РµРєСѓС‰РёР№ GState
 		GrPath *pSavedPath = m_pGState->GetPath()->Copy();
 		SaveGState();
 
-		// Устанавливаем цветовое пространство для подкладки (для не цветовых Tiling patterns);
-		// Устанавливаем разлиные параметры (цвет обводки, толщина линии)
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С†РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РґР»СЏ РїРѕРґРєР»Р°РґРєРё (РґР»СЏ РЅРµ С†РІРµС‚РѕРІС‹С… Tiling patterns);
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј СЂР°Р·Р»РёРЅС‹Рµ РїР°СЂР°РјРµС‚СЂС‹ (С†РІРµС‚ РѕР±РІРѕРґРєРё, С‚РѕР»С‰РёРЅР° Р»РёРЅРёРё)
 		GrColorSpace *pColorSpace = NULL;
 		if (pPattern->GetPaintType() == 2 && (pColorSpace = pPatternCS->GetUnder()))
 		{
@@ -2125,7 +2125,7 @@ namespace PdfReader
 					{
 						if (m_pOut->IsStopped())
 						{
-							// Восстанавливаем GState
+							// Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј GState
 							RestoreGState();
 							m_pGState->SetPath(pSavedPath);
 							return;
@@ -2147,7 +2147,7 @@ namespace PdfReader
 
 		m_pOut->EndTilingFill();
 
-		// Восстанавливаем GState
+		// Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј GState
 		RestoreGState();
 		m_pGState->SetPath(pSavedPath);
 	}
@@ -2156,7 +2156,7 @@ namespace PdfReader
 	{
 		GrShading *pShading = pPattern->GetShading();
 
-		// Сохраняем текущий GState
+		// РЎРѕС…СЂР°РЅСЏРµРј С‚РµРєСѓС‰РёР№ GState
 		GrPath *pSavedPath = m_pGState->GetPath()->Copy();
 		SaveGState();
 
@@ -2213,11 +2213,11 @@ namespace PdfReader
 			}
 		}
 
-		// Устанавливаем цветовое пространство
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С†РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ
 		m_pGState->SetFillColorSpace(pShading->GetColorSpace()->Copy());
 		m_pOut->UpdateFillColorSpace(m_pGState);
 
-		// Задний фон
+		// Р—Р°РґРЅРёР№ С„РѕРЅ
 		if (pShading->GetHasBackground())
 		{
 			m_pGState->SetFillColor(pShading->GetBackground());
@@ -2226,7 +2226,7 @@ namespace PdfReader
 		}
 		m_pGState->ClearPath();
 
-		// Строим матрицу преобразования (Pattern space) -> (Current space)
+		// РЎС‚СЂРѕРёРј РјР°С‚СЂРёС†Сѓ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ (Pattern space) -> (Current space)
 		double *pCTM = m_pGState->GetCTM();
 		double *pBaseMatrix = m_arrBaseMatrix;
 		double *pPatternMatrix = pPattern->GetMatrix();
@@ -2257,7 +2257,7 @@ namespace PdfReader
 		pMatrix[4] = pTempMatrix[4] * pInvCTM[0] + pTempMatrix[5] * pInvCTM[2] + pInvCTM[4];
 		pMatrix[5] = pTempMatrix[4] * pInvCTM[1] + pTempMatrix[5] * pInvCTM[3] + pInvCTM[5];
 
-		// Устанавливаем новую матрицу
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РЅРѕРІСѓСЋ РјР°С‚СЂРёС†Сѓ
 		m_pGState->ConcatCTM(pMatrix[0], pMatrix[1], pMatrix[2], pMatrix[3], pMatrix[4], pMatrix[5]);
 		m_pOut->UpdateCTM(m_pGState, pMatrix[0], pMatrix[1], pMatrix[2], pMatrix[3], pMatrix[4], pMatrix[5]);
 
@@ -2269,7 +2269,7 @@ namespace PdfReader
 
 		m_pOut->StartShadedFill(m_pGState);
 
-		// Выполняем закраску, в зависимости от типа Shading
+		// Р’С‹РїРѕР»РЅСЏРµРј Р·Р°РєСЂР°СЃРєСѓ, РІ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ С‚РёРїР° Shading
 		switch (pShading->GetType())
 		{
 			case 1:
@@ -2298,21 +2298,21 @@ namespace PdfReader
 			m_pOut->SetVectorAntialias(true);
 		}
 
-		// Восстанавливаем GState
+		// Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј GState
 		RestoreGState();
 		m_pGState->SetPath(pSavedPath);
 	}
 
 	void Graphics::DoFunctionShadingFill(GrFunctionShading *pShading)
 	{
-		// Сначала предоставляем возможность OuputDevice самому сделать Shading
+		// РЎРЅР°С‡Р°Р»Р° РїСЂРµРґРѕСЃС‚Р°РІР»СЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ OuputDevice СЃР°РјРѕРјСѓ СЃРґРµР»Р°С‚СЊ Shading
 		if (m_pOut->UseFunctionalShadedFills() && m_pOut->FunctionShadedFill(m_pGState, pShading))
 		{
 			return;
 		}
 
-		// Если Output Device не поддерживает данный ShadingType, тогда делаем его сами
-		// с помощью GrPath.
+		// Р•СЃР»Рё Output Device РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚ РґР°РЅРЅС‹Р№ ShadingType, С‚РѕРіРґР° РґРµР»Р°РµРј РµРіРѕ СЃР°РјРё
+		// СЃ РїРѕРјРѕС‰СЊСЋ GrPath.
 		double dMinX, dMinY, dMaxX, dMaxY;
 		GrColor arrColors[4];
 
@@ -2331,7 +2331,7 @@ namespace PdfReader
 
 		int nComponentsCount = pShading->GetColorSpace()->GetComponentsCount();
 
-		// Сравниваем цвета в углах
+		// РЎСЂР°РІРЅРёРІР°РµРј С†РІРµС‚Р° РІ СѓРіР»Р°С…
 		int nColorIndex = 0;
 		for (nColorIndex = 0; nColorIndex < 4; ++nColorIndex)
 		{
@@ -2352,19 +2352,19 @@ namespace PdfReader
 		double dCenterX = 0.5 * (dMinX + dMaxX);
 		double dCenterY = 0.5 * (dMinY + dMaxY);
 
-		// Угловые вершины прямоугольников  достаточно близки (или мы достигли предела количетсву иттераций)
-		// Заливаем прямоугольник. Даже если изначально вершины близки проводим одну иттерацию деления, чтобы
-		// случая, когда все 4 вершины имеют одинаковый цвет.
+		// РЈРіР»РѕРІС‹Рµ РІРµСЂС€РёРЅС‹ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРІ  РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ Р±Р»РёР·РєРё (РёР»Рё РјС‹ РґРѕСЃС‚РёРіР»Рё РїСЂРµРґРµР»Р° РєРѕР»РёС‡РµС‚СЃРІСѓ РёС‚С‚РµСЂР°С†РёР№)
+		// Р—Р°Р»РёРІР°РµРј РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє. Р”Р°Р¶Рµ РµСЃР»Рё РёР·РЅР°С‡Р°Р»СЊРЅРѕ РІРµСЂС€РёРЅС‹ Р±Р»РёР·РєРё РїСЂРѕРІРѕРґРёРј РѕРґРЅСѓ РёС‚С‚РµСЂР°С†РёСЋ РґРµР»РµРЅРёСЏ, С‡С‚РѕР±С‹
+		// СЃР»СѓС‡Р°СЏ, РєРѕРіРґР° РІСЃРµ 4 РІРµСЂС€РёРЅС‹ РёРјРµСЋС‚ РѕРґРёРЅР°РєРѕРІС‹Р№ С†РІРµС‚.
 		if ((nColorIndex == 4 && nDepth > 0) || nDepth == functionMaxDepth)
 		{
-			// Используем цвет центра прямоугольника
+			// РСЃРїРѕР»СЊР·СѓРµРј С†РІРµС‚ С†РµРЅС‚СЂР° РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°
 			GrColor oFillColor;
 			pShading->GetColor(dCenterX, dCenterY, &oFillColor);
 			m_pGState->SetFillColor(&oFillColor);
 			m_pOut->UpdateFillColor(m_pGState);
 
 			double *pMatrix = pShading->GetMatrix();
-			// Заливка прямоугольника
+			// Р—Р°Р»РёРІРєР° РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєР°
 			m_pGState->MoveTo(dMinX * pMatrix[0] + dMinY * pMatrix[2] + pMatrix[4], dMinX * pMatrix[1] + dMinY * pMatrix[3] + pMatrix[5]);
 			m_pGState->LineTo(dMaxX * pMatrix[0] + dMinY * pMatrix[2] + pMatrix[4], dMaxX * pMatrix[1] + dMinY * pMatrix[3] + pMatrix[5]);
 			m_pGState->LineTo(dMaxX * pMatrix[0] + dMaxY * pMatrix[2] + pMatrix[4], dMaxX * pMatrix[1] + dMaxY * pMatrix[3] + pMatrix[5]);
@@ -2373,7 +2373,7 @@ namespace PdfReader
 			m_pOut->Fill(m_pGState);
 			m_pGState->ClearPath();
 		}
-		else // 4 угловые вершины не достаточно близки, делим дальше на прямоугольники
+		else // 4 СѓРіР»РѕРІС‹Рµ РІРµСЂС€РёРЅС‹ РЅРµ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ Р±Р»РёР·РєРё, РґРµР»РёРј РґР°Р»СЊС€Рµ РЅР° РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРё
 		{
 
 			// pColors[0]               oColorCT                    pColors[2]
@@ -2397,28 +2397,28 @@ namespace PdfReader
 			pShading->GetColor(dCenterX, dMaxY, &oColorCB);
 			pShading->GetColor(dCenterX, dCenterY, &oColorCC);
 
-			// Верхний левый прямоугольник
+			// Р’РµСЂС…РЅРёР№ Р»РµРІС‹Р№ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє
 			arrSubColors[0] = pColors[0];
 			arrSubColors[1] = oColorLC;
 			arrSubColors[2] = oColorCT;
 			arrSubColors[3] = oColorCC;
 			DoFunctionShadingFill(pShading, dMinX, dMinY, dCenterX, dCenterY, arrSubColors, nDepth + 1);
 
-			// Левый нижний прямоугольник
+			// Р›РµРІС‹Р№ РЅРёР¶РЅРёР№ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє
 			arrSubColors[0] = oColorLC;
 			arrSubColors[1] = pColors[1];
 			arrSubColors[2] = oColorCC;
 			arrSubColors[3] = oColorCB;
 			DoFunctionShadingFill(pShading, dMinX, dCenterY, dCenterX, dMaxY, arrSubColors, nDepth + 1);
 
-			// Правый верхний прямоугольник
+			// РџСЂР°РІС‹Р№ РІРµСЂС…РЅРёР№ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє
 			arrSubColors[0] = oColorCT;
 			arrSubColors[1] = oColorCC;
 			arrSubColors[2] = pColors[2];
 			arrSubColors[3] = oColorRC;
 			DoFunctionShadingFill(pShading, dCenterX, dMinY, dMaxX, dCenterY, arrSubColors, nDepth + 1);
 
-			// Правый нижний прямоугольник
+			// РџСЂР°РІС‹Р№ РЅРёР¶РЅРёР№ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє
 			arrSubColors[0] = oColorCC;
 			arrSubColors[1] = oColorCB;
 			arrSubColors[2] = oColorRC;
@@ -2431,7 +2431,7 @@ namespace PdfReader
 	{
 		int nJ, nK, nKK;
 
-		// Сначала предоставляем возможность OuputDevice самому сделать Shading
+		// РЎРЅР°С‡Р°Р»Р° РїСЂРµРґРѕСЃС‚Р°РІР»СЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ OuputDevice СЃР°РјРѕРјСѓ СЃРґРµР»Р°С‚СЊ Shading
 		if (m_pOut->UseAxialShadedFills() && m_pOut->AxialShadedFill(m_pGState, pShading))
 		{
 			return;
@@ -2441,7 +2441,7 @@ namespace PdfReader
 		double dMinX, dMinY, dMaxX, dMaxY;
 		m_pGState->GetUserClipBBox(&dMinX, &dMinY, &dMaxX, &dMaxY);
 
-		// Вычисляем макимальное и минимальное значения параметра T
+		// Р’С‹С‡РёСЃР»СЏРµРј РјР°РєРёРјР°Р»СЊРЅРѕРµ Рё РјРёРЅРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёСЏ РїР°СЂР°РјРµС‚СЂР° T
 		double dTmin, dTmax;
 		double dX0, dY0, dX1, dY1;
 		pShading->GetCoords(&dX0, &dY0, &dX1, &dY1);
@@ -2494,34 +2494,34 @@ namespace PdfReader
 			}
 		}
 
-		// Считываем пределы параметра T
+		// РЎС‡РёС‚С‹РІР°РµРј РїСЂРµРґРµР»С‹ РїР°СЂР°РјРµС‚СЂР° T
 		double dT0 = pShading->GetDomain0();
 		double dT1 = pShading->GetDomain1();
 
-		// Для каждой точки (Tx, Ty) оси, рассмотрим линию ,проходяющую через данную точку перпендикулярно оси:
+		// Р”Р»СЏ РєР°Р¶РґРѕР№ С‚РѕС‡РєРё (Tx, Ty) РѕСЃРё, СЂР°СЃСЃРјРѕС‚СЂРёРј Р»РёРЅРёСЋ ,РїСЂРѕС…РѕРґСЏСЋС‰СѓСЋ С‡РµСЂРµР· РґР°РЅРЅСѓСЋ С‚РѕС‡РєСѓ РїРµСЂРїРµРЅРґРёРєСѓР»СЏСЂРЅРѕ РѕСЃРё:
 		//
 		//     x(s) = Tx + s * -dDy   -->   s = (x - Tx) / -dDy
 		//     y(s) = Ty + s *  dDx    -->  s = (y - Ty) /  dDx
 		//
-		// Рассмотрим точки пересечения данной линии с внешним ректом(в котором все рисуем Bbox). В общем случае
-		// мы имеем 4 точки пересечения:
+		// Р Р°СЃСЃРјРѕС‚СЂРёРј С‚РѕС‡РєРё РїРµСЂРµСЃРµС‡РµРЅРёСЏ РґР°РЅРЅРѕР№ Р»РёРЅРёРё СЃ РІРЅРµС€РЅРёРј СЂРµРєС‚РѕРј(РІ РєРѕС‚РѕСЂРѕРј РІСЃРµ СЂРёСЃСѓРµРј Bbox). Р’ РѕР±С‰РµРј СЃР»СѓС‡Р°Рµ
+		// РјС‹ РёРјРµРµРј 4 С‚РѕС‡РєРё РїРµСЂРµСЃРµС‡РµРЅРёСЏ:
 		//
 		//     s0 = (dMinX - Tx) / -dDy
 		//     s1 = (dMaxX - Tx) / -dDy
 		//     s2 = (dMinY - Ty) /  dDx
 		//     s3 = (dMaxY - Ty) /  dDx
 		//
-		// нас интересуют два средних значения s.
+		// РЅР°СЃ РёРЅС‚РµСЂРµСЃСѓСЋС‚ РґРІР° СЃСЂРµРґРЅРёС… Р·РЅР°С‡РµРЅРёСЏ s.
 		//
-		// В случае, когда dDx = 0, возьмем s0 и s1; в случае, когда dDy = 0, возьмем s2 и s3.
+		// Р’ СЃР»СѓС‡Р°Рµ, РєРѕРіРґР° dDx = 0, РІРѕР·СЊРјРµРј s0 Рё s1; РІ СЃР»СѓС‡Р°Рµ, РєРѕРіРґР° dDy = 0, РІРѕР·СЊРјРµРј s2 Рё s3.
 		//
-		// Далее каждый полигон, который мы будем заполнять будет ограничен двумя такими линиями, перпендикулярными оси.
+		// Р”Р°Р»РµРµ РєР°Р¶РґС‹Р№ РїРѕР»РёРіРѕРЅ, РєРѕС‚РѕСЂС‹Р№ РјС‹ Р±СѓРґРµРј Р·Р°РїРѕР»РЅСЏС‚СЊ Р±СѓРґРµС‚ РѕРіСЂР°РЅРёС‡РµРЅ РґРІСѓРјСЏ С‚Р°РєРёРјРё Р»РёРЅРёСЏРјРё, РїРµСЂРїРµРЅРґРёРєСѓР»СЏСЂРЅС‹РјРё РѕСЃРё.
 		//
-		// Делим ось таким образом до тех пор, пока разница цветов между двумя соседними линиями не станет достаточно
-		// малой. Далее кажды отдельный полигон закрашиваем одним цветом.
+		// Р”РµР»РёРј РѕСЃСЊ С‚Р°РєРёРј РѕР±СЂР°Р·РѕРј РґРѕ С‚РµС… РїРѕСЂ, РїРѕРєР° СЂР°Р·РЅРёС†Р° С†РІРµС‚РѕРІ РјРµР¶РґСѓ РґРІСѓРјСЏ СЃРѕСЃРµРґРЅРёРјРё Р»РёРЅРёСЏРјРё РЅРµ СЃС‚Р°РЅРµС‚ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕ
+		// РјР°Р»РѕР№. Р”Р°Р»РµРµ РєР°Р¶РґС‹ РѕС‚РґРµР»СЊРЅС‹Р№ РїРѕР»РёРіРѕРЅ Р·Р°РєСЂР°С€РёРІР°РµРј РѕРґРЅРёРј С†РІРµС‚РѕРј.
 
-		// Делаем как минимум одну такую иттерацию, чтобы избежать проблем в случае, когда оба конца оси имеют
-		// одинаковый цвет.
+		// Р”РµР»Р°РµРј РєР°Рє РјРёРЅРёРјСѓРј РѕРґРЅСѓ С‚Р°РєСѓСЋ РёС‚С‚РµСЂР°С†РёСЋ, С‡С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ РїСЂРѕР±Р»РµРј РІ СЃР»СѓС‡Р°Рµ, РєРѕРіРґР° РѕР±Р° РєРѕРЅС†Р° РѕСЃРё РёРјРµСЋС‚
+		// РѕРґРёРЅР°РєРѕРІС‹Р№ С†РІРµС‚.
 
 		int nComponentsCount = pShading->GetColorSpace()->GetComponentsCount();
 		double arrTa[axialMaxSplits + 1];
@@ -2532,7 +2532,7 @@ namespace PdfReader
 		arrNext[axialMaxSplits / 2] = axialMaxSplits;
 		arrTa[axialMaxSplits] = dTmax;
 
-		// Вычисляем значение цвета при t = dTmin
+		// Р’С‹С‡РёСЃР»СЏРµРј Р·РЅР°С‡РµРЅРёРµ С†РІРµС‚Р° РїСЂРё t = dTmin
 		double dTt = 0;
 		if (dTmin < 0)
 		{
@@ -2549,8 +2549,8 @@ namespace PdfReader
 		GrColor oColor0, oColor1;
 		pShading->GetColor(dTt, &oColor0);
 
-		// Вычисляем координаты точки, лежаще на оси, при значении параметра t = dTmin;
-		// после этого вычисляем координаты точек пересечения для линии при t = dTmin.
+		// Р’С‹С‡РёСЃР»СЏРµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РѕС‡РєРё, Р»РµР¶Р°С‰Рµ РЅР° РѕСЃРё, РїСЂРё Р·РЅР°С‡РµРЅРёРё РїР°СЂР°РјРµС‚СЂР° t = dTmin;
+		// РїРѕСЃР»Рµ СЌС‚РѕРіРѕ РІС‹С‡РёСЃР»СЏРµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РѕС‡РµРє РїРµСЂРµСЃРµС‡РµРЅРёСЏ РґР»СЏ Р»РёРЅРёРё РїСЂРё t = dTmin.
 		double dTx = dX0 + dTmin * dDx;
 		double dTy = dY0 + dTmin * dDy;
 		double arrS[4];
@@ -2617,7 +2617,7 @@ namespace PdfReader
 			if (m_pOut->IsStopped())
 				return;
 
-			// Делим пока разница цветов не станет достаточной маленькой или пока мы не достигнем предела количеству иттераций
+			// Р”РµР»РёРј РїРѕРєР° СЂР°Р·РЅРёС†Р° С†РІРµС‚РѕРІ РЅРµ СЃС‚Р°РЅРµС‚ РґРѕСЃС‚Р°С‚РѕС‡РЅРѕР№ РјР°Р»РµРЅСЊРєРѕР№ РёР»Рё РїРѕРєР° РјС‹ РЅРµ РґРѕСЃС‚РёРіРЅРµРј РїСЂРµРґРµР»Р° РєРѕР»РёС‡РµСЃС‚РІСѓ РёС‚С‚РµСЂР°С†РёР№
 			nJ = arrNext[nSplitsCount];
 			while (nJ > nSplitsCount + 1)
 			{
@@ -2655,14 +2655,14 @@ namespace PdfReader
 				nJ = nK;
 			}
 
-			// Используем среднее значение цвета
+			// РСЃРїРѕР»СЊР·СѓРµРј СЃСЂРµРґРЅРµРµ Р·РЅР°С‡РµРЅРёРµ С†РІРµС‚Р°
 			for (nK = 0; nK < nComponentsCount; ++nK)
 			{
 				oColor0.arrComp[nK] = (oColor0.arrComp[nK] + oColor1.arrComp[nK]) / 2;
 			}
 
-			// Вычисляем координаты точки, лежаще на оси, при данном значении параметра t;
-			// после этого вычисляем координаты точек пересечения для линии данном t.
+			// Р’С‹С‡РёСЃР»СЏРµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РѕС‡РєРё, Р»РµР¶Р°С‰Рµ РЅР° РѕСЃРё, РїСЂРё РґР°РЅРЅРѕРј Р·РЅР°С‡РµРЅРёРё РїР°СЂР°РјРµС‚СЂР° t;
+			// РїРѕСЃР»Рµ СЌС‚РѕРіРѕ РІС‹С‡РёСЃР»СЏРµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РѕС‡РµРє РїРµСЂРµСЃРµС‡РµРЅРёСЏ РґР»СЏ Р»РёРЅРёРё РґР°РЅРЅРѕРј t.
 			dTx = dX0 + arrTa[nJ] * dDx;
 			dTy = dY0 + arrTa[nJ] * dDy;
 			if (bDxZero && bDyZero)
@@ -2719,11 +2719,11 @@ namespace PdfReader
 			double dEndX1 = dTx - dSmax * dDy;
 			double dEndY1 = dTy + dSmax * dDx;
 
-			// Устанавливаем цвет
+			// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С†РІРµС‚
 			m_pGState->SetFillColor(&oColor0);
 			m_pOut->UpdateFillColor(m_pGState);
 
-			// Закрашиваем
+			// Р—Р°РєСЂР°С€РёРІР°РµРј
 			m_pGState->MoveTo(dStartX0, dStartY0);
 			m_pGState->LineTo(dEndX0, dEndY0);
 			m_pGState->LineTo(dEndX1, dEndY1);
@@ -2732,7 +2732,7 @@ namespace PdfReader
 			m_pOut->Fill(m_pGState);
 			m_pGState->ClearPath();
 
-			// Начальные значения для следующего полигона
+			// РќР°С‡Р°Р»СЊРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ СЃР»РµРґСѓСЋС‰РµРіРѕ РїРѕР»РёРіРѕРЅР°
 			dStartX0 = dStartX1;
 			dStartY0 = dStartY1;
 			dEndX0 = dEndX1;
@@ -2744,13 +2744,13 @@ namespace PdfReader
 
 	void Graphics::DoRadialShadingFill(GrRadialShading *pShading)
 	{
-		// Сначала предоставляем возможность OuputDevice самому сделать Shading
+		// РЎРЅР°С‡Р°Р»Р° РїСЂРµРґРѕСЃС‚Р°РІР»СЏРµРј РІРѕР·РјРѕР¶РЅРѕСЃС‚СЊ OuputDevice СЃР°РјРѕРјСѓ СЃРґРµР»Р°С‚СЊ Shading
 		if (m_pOut->UseRadialShadedFills() && m_pOut->RadialShadedFill(m_pGState, pShading))
 		{
 			return;
 		}
-		// Если Output Device не поддерживает данный ShadingType, тогда делаем его сами
-		// с помощью GrPath.
+		// Р•СЃР»Рё Output Device РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚ РґР°РЅРЅС‹Р№ ShadingType, С‚РѕРіРґР° РґРµР»Р°РµРј РµРіРѕ СЃР°РјРё
+		// СЃ РїРѕРјРѕС‰СЊСЋ GrPath.
 
 		double dFirstX, dFirstY, dFirstRad, dSecondX, dSecondY, dSecondRad;
 		pShading->GetCoords(&dFirstX, &dFirstY, &dFirstRad, &dSecondX, &dSecondY, &dSecondRad);
@@ -2758,8 +2758,8 @@ namespace PdfReader
 		double dT1 = pShading->GetDomain1();
 		int nComponentsCount = pShading->GetColorSpace()->GetComponentsCount();
 
-		// Вычисляем точку, в которой r(s) = 0; проверяме вложенность окружностей; и 
-		// вычисляем углы тангенциальных линий
+		// Р’С‹С‡РёСЃР»СЏРµРј С‚РѕС‡РєСѓ, РІ РєРѕС‚РѕСЂРѕР№ r(s) = 0; РїСЂРѕРІРµСЂСЏРјРµ РІР»РѕР¶РµРЅРЅРѕСЃС‚СЊ РѕРєСЂСѓР¶РЅРѕСЃС‚РµР№; Рё 
+		// РІС‹С‡РёСЃР»СЏРµРј СѓРіР»С‹ С‚Р°РЅРіРµРЅС†РёР°Р»СЊРЅС‹С… Р»РёРЅРёР№
 		bool bEnclosed = false;
 		double dTheta = 0, dAlpha = 0;;
 		double dZeroS = 0;
@@ -2862,7 +2862,7 @@ namespace PdfReader
 				}
 			}
 
-			// Проверяем относительно dZeroS
+			// РџСЂРѕРІРµСЂСЏРµРј РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ dZeroS
 			if (dFirstRad < dSecondRad)
 			{
 				if (dSmin < dZeroS)
@@ -2928,7 +2928,7 @@ namespace PdfReader
 			}
 		}
 
-		// Везде далее A - первая окружность, B - вторая
+		// Р’РµР·РґРµ РґР°Р»РµРµ A - РїРµСЂРІР°СЏ РѕРєСЂСѓР¶РЅРѕСЃС‚СЊ, B - РІС‚РѕСЂР°СЏ
 		int    nIndexA = 0;
 		double dSA = dSmin;
 		double dTA = dT0 + dSA * (dT1 - dT0);
@@ -3006,12 +3006,12 @@ namespace PdfReader
 				}
 			}
 
-			// Вычислим центр и радиус окружности
+			// Р’С‹С‡РёСЃР»РёРј С†РµРЅС‚СЂ Рё СЂР°РґРёСѓСЃ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё
 			double dXB = dFirstX + dSB * (dSecondX - dFirstX);
 			double dYB = dFirstY + dSB * (dSecondY - dFirstY);
 			double dRadB = dFirstRad + dSB * (dSecondRad - dFirstRad);
 
-			// Используем среднее значение цвета двух окружностей
+			// РСЃРїРѕР»СЊР·СѓРµРј СЃСЂРµРґРЅРµРµ Р·РЅР°С‡РµРЅРёРµ С†РІРµС‚Р° РґРІСѓС… РѕРєСЂСѓР¶РЅРѕСЃС‚РµР№
 			for (nCounter = 0; nCounter < nComponentsCount; ++nCounter)
 			{
 				oColorA.arrComp[nCounter] = (oColorA.arrComp[nCounter] + oColorB.arrComp[nCounter]) / 2;
@@ -3022,7 +3022,7 @@ namespace PdfReader
 			if (bEnclosed)
 			{
 
-				// Строим Path для первой окружности (против часовой)
+				// РЎС‚СЂРѕРёРј Path РґР»СЏ РїРµСЂРІРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё (РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№)
 				m_pGState->MoveTo(dXA + dRadA, dYA);
 				for (nCounter = 1; nCounter < nStepsCount; ++nCounter)
 				{
@@ -3031,7 +3031,7 @@ namespace PdfReader
 				}
 				m_pGState->ClosePath();
 
-				// Строим Path для второй окружности (по часовой)
+				// РЎС‚СЂРѕРёРј Path РґР»СЏ РІС‚РѕСЂРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё (РїРѕ С‡Р°СЃРѕРІРѕР№)
 				m_pGState->MoveTo(dXB + dRadB, dYB);
 				for (nCounter = 1; nCounter < nStepsCount; ++nCounter)
 				{
@@ -3044,7 +3044,7 @@ namespace PdfReader
 			else
 			{
 
-				// Строим первый subpath (по часовой)
+				// РЎС‚СЂРѕРёРј РїРµСЂРІС‹Р№ subpath (РїРѕ С‡Р°СЃРѕРІРѕР№)
 				m_pGState->MoveTo(dXA + dRadA * cos(dAlpha + dTheta + 0.5 * M_PI), dYA + dRadA * sin(dAlpha + dTheta + 0.5 * M_PI));
 				for (nCounter = 0; nCounter < nStepsCount; ++nCounter)
 				{
@@ -3058,7 +3058,7 @@ namespace PdfReader
 				}
 				m_pGState->ClosePath();
 
-				// Строим второй subpath (против часовой)
+				// РЎС‚СЂРѕРёРј РІС‚РѕСЂРѕР№ subpath (РїСЂРѕС‚РёРІ С‡Р°СЃРѕРІРѕР№)
 				m_pGState->MoveTo(dXA + dRadA * cos(dAlpha + dTheta + 0.5 * M_PI), dYA + dRadA * sin(dAlpha + dTheta + 0.5 * M_PI));
 				for (nCounter = 0; nCounter < nStepsCount; ++nCounter)
 				{
@@ -3073,11 +3073,11 @@ namespace PdfReader
 				m_pGState->ClosePath();
 			}
 
-			// Закрашиваем
+			// Р—Р°РєСЂР°С€РёРІР°РµРј
 			m_pOut->Fill(m_pGState);
 			m_pGState->ClearPath();
 
-			// Начальные данные для следующего шага
+			// РќР°С‡Р°Р»СЊРЅС‹Рµ РґР°РЅРЅС‹Рµ РґР»СЏ СЃР»РµРґСѓСЋС‰РµРіРѕ С€Р°РіР°
 			nIndexA = nIndexB;
 			dSA = dSB;
 			dTA = dTB;
@@ -3087,10 +3087,10 @@ namespace PdfReader
 			oColorA = oColorB;
 		}
 
-		// Если выставлены флаги продолжать рисовать за пределами двух окружностей
+		// Р•СЃР»Рё РІС‹СЃС‚Р°РІР»РµРЅС‹ С„Р»Р°РіРё РїСЂРѕРґРѕР»Р¶Р°С‚СЊ СЂРёСЃРѕРІР°С‚СЊ Р·Р° РїСЂРµРґРµР»Р°РјРё РґРІСѓС… РѕРєСЂСѓР¶РЅРѕСЃС‚РµР№
 		if (bEnclosed)
 		{
-			// Продолжаем за меньшую окружность
+			// РџСЂРѕРґРѕР»Р¶Р°РµРј Р·Р° РјРµРЅСЊС€СѓСЋ РѕРєСЂСѓР¶РЅРѕСЃС‚СЊ
 			if ((pShading->GetExtendFirst() && dFirstRad <= dSecondRad) || (pShading->GetExtendSecond() && dSecondRad < dFirstRad))
 			{
 				if (dFirstRad <= dSecondRad)
@@ -3121,7 +3121,7 @@ namespace PdfReader
 				m_pGState->ClearPath();
 			}
 
-			// Продолжаем за большую окружность
+			// РџСЂРѕРґРѕР»Р¶Р°РµРј Р·Р° Р±РѕР»СЊС€СѓСЋ РѕРєСЂСѓР¶РЅРѕСЃС‚СЊ
 			if ((pShading->GetExtendFirst() && dFirstRad > dSecondRad) || (pShading->GetExtendSecond() && dSecondRad >= dFirstRad))
 			{
 				if (dFirstRad > dSecondRad)
@@ -3220,7 +3220,7 @@ namespace PdfReader
 
 	void Graphics::DoPatchMeshShadingFill(GrPatchMeshShading *pShading)
 	{
-		// Устанавливаем цветовое пространство	 
+		// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С†РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ	 
 		m_pGState->SetStrokeColorSpace(pShading->GetColorSpace()->Copy());
 		m_pOut->UpdateStrokeColorSpace(m_pGState);
 
@@ -3687,7 +3687,7 @@ namespace PdfReader
 			m_pOut->BeginString(m_pGState, seString);
 		}
 
-		// Обработка шрифта Type 3
+		// РћР±СЂР°Р±РѕС‚РєР° С€СЂРёС„С‚Р° Type 3
 		if (pFont->GetType() == fontType3 && m_pOut->InterpretType3Chars())
 		{
 			double *pMatrix = m_pGState->GetCTM();
@@ -3738,7 +3738,7 @@ namespace PdfReader
 				m_pGState->Transform(dCurX + dRiseX, dCurY + dRiseY, &x, &y);
 				SaveGState();
 				m_pGState->SetCTM(pNewCTM[0], pNewCTM[1], pNewCTM[2], pNewCTM[3], x, y);
-				//Значения CTM concat здесь неправильные (но они никогда не используются)
+				//Р—РЅР°С‡РµРЅРёСЏ CTM concat Р·РґРµСЃСЊ РЅРµРїСЂР°РІРёР»СЊРЅС‹Рµ (РЅРѕ РѕРЅРё РЅРёРєРѕРіРґР° РЅРµ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ)
 				m_pOut->UpdateCTM(m_pGState, 1, 0, 0, 1, 0, 0);
 				if (!m_pOut->BeginType3Char(m_pGState, dCurX + dRiseX, dCurY + dRiseY, tdx, tdy, nCode, arrUnicode, uLen))
 				{
@@ -3765,8 +3765,8 @@ namespace PdfReader
 					oCharProc.Free();
 				}
 				RestoreGState();
-				// Поскольку функция RestoreGState() не восстанавливает текущей позиции, 
-				// поэтому нам нужно сохранять и восстанавливать ее самим
+				// РџРѕСЃРєРѕР»СЊРєСѓ С„СѓРЅРєС†РёСЏ RestoreGState() РЅРµ РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµС‚ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё, 
+				// РїРѕСЌС‚РѕРјСѓ РЅР°Рј РЅСѓР¶РЅРѕ СЃРѕС…СЂР°РЅСЏС‚СЊ Рё РІРѕСЃСЃС‚Р°РЅР°РІР»РёРІР°С‚СЊ РµРµ СЃР°РјРёРј
 				dCurX += tdx;
 				dCurY += tdy;
 				m_pGState->MoveTo(dCurX, dCurY);
@@ -3915,7 +3915,7 @@ namespace PdfReader
 			Object oLevel;
 			oXObject.StreamGetDict()->Search("Level1", &oLevel);
 			m_pOut->PSXObject(oXObject.GetStream(), oLevel.IsStream() ? oLevel.GetStream() : (Stream *)NULL);
-			// Добавленно
+			// Р”РѕР±Р°РІР»РµРЅРЅРѕ
 			oLevel.Free();
 		}
 		else if (oSub.IsName())
@@ -3939,7 +3939,7 @@ namespace PdfReader
 
 	void Graphics::DoImage(Object *pRef, Stream *pStream, bool bInlineImage)
 	{
-		// Считываем информацию из потока
+		// РЎС‡РёС‚С‹РІР°РµРј РёРЅС„РѕСЂРјР°С†РёСЋ РёР· РїРѕС‚РѕРєР°
 		int nBitsPerComponent = 0;
 		StreamColorSpaceMode eCSMode = streamCSNone;
 		pStream->GetImageParams(&nBitsPerComponent, &eCSMode);
@@ -3979,7 +3979,7 @@ namespace PdfReader
 		int nHeight = oDictItem.GetInt();
 		oDictItem.Free();
 
-		// Проверяем: может быть это маска?
+		// РџСЂРѕРІРµСЂСЏРµРј: РјРѕР¶РµС‚ Р±С‹С‚СЊ СЌС‚Рѕ РјР°СЃРєР°?
 		pDict->Search("ImageMask", &oDictItem);
 		if (oDictItem.IsNull())
 		{
@@ -4027,7 +4027,7 @@ namespace PdfReader
 
 		if (bMask)
 		{
-			// У маски это значение nBitsPerComponent должно быть 1
+			// РЈ РјР°СЃРєРё СЌС‚Рѕ Р·РЅР°С‡РµРЅРёРµ nBitsPerComponent РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ 1
 			if (nBitsPerComponent != 1)
 			{
 				// TO DO: Error "Bad image parameters"
@@ -4056,7 +4056,7 @@ namespace PdfReader
 			}
 			oDictItem.Free();
 
-			// Рисуем маску
+			// Р РёСЃСѓРµРј РјР°СЃРєСѓ
 			m_pOut->DrawImageMask(m_pGState, pRef, pStream, nWidth, nHeight, bInvert, bInlineImage);
 		}
 		else
@@ -4144,7 +4144,7 @@ namespace PdfReader
 			{
 				if (bInlineImage)
 				{
-					// Тут наверное нужно освободить память oMask, oSMask
+					// РўСѓС‚ РЅР°РІРµСЂРЅРѕРµ РЅСѓР¶РЅРѕ РѕСЃРІРѕР±РѕРґРёС‚СЊ РїР°РјСЏС‚СЊ oMask, oSMask
 					// TO DO: Error "Bad image parameters"
 					return;
 				}
@@ -4342,7 +4342,7 @@ namespace PdfReader
 				bHaveExplicitMask = true;
 			}
 
-			// Рисуем
+			// Р РёСЃСѓРµРј
 			if (bHaveSoftMask)
 			{
 				m_pOut->DrawSoftMaskedImage(m_pGState, pRef, pStream, nWidth, nHeight, pColorMap, pMaskStream, nMaskWidth, nMaskHeight, pMaskColorMap);
@@ -4377,7 +4377,7 @@ namespace PdfReader
 	{
 		double arrMatrix[6], arrBBox[4];
 
-		// Проверяем глубину рекурсии
+		// РџСЂРѕРІРµСЂСЏРµРј РіР»СѓР±РёРЅСѓ СЂРµРєСѓСЂСЃРёРё
 		if (m_nFormDepth > 20)
 		{
 			return;
@@ -4469,7 +4469,7 @@ namespace PdfReader
 		}
 		oDictItem.Free();
 
-		// Рисуем
+		// Р РёСЃСѓРµРј
 		++m_nFormDepth;
 		DoForm(pStream, pResourcesDict, arrMatrix, arrBBox, bTranspGroup, false, pBlendingColorSpace, bIsolated, bKnockout);
 		--m_nFormDepth;
@@ -4483,16 +4483,16 @@ namespace PdfReader
 
 	void Graphics::DoForm(Object *pStream, Dict *pResourcesDict, double *pMatrix, double *pBBox, bool bTranspGroup, bool bSMask, GrColorSpace *pBlendingColorSpace, bool bIsolated, bool bKnockout, bool bAlpha, Function *pTransferFunctions, GrColor *pBackdropColor)
 	{
-		// Записываем текущую директорию ресурсов в стек
+		// Р—Р°РїРёСЃС‹РІР°РµРј С‚РµРєСѓС‰СѓСЋ РґРёСЂРµРєС‚РѕСЂРёСЋ СЂРµСЃСѓСЂСЃРѕРІ РІ СЃС‚РµРє
 		PushResources(pResourcesDict);
 
-		// Сохраняем текущий GState
+		// РЎРѕС…СЂР°РЅСЏРµРј С‚РµРєСѓС‰РёР№ GState
 		SaveGState();
 
-		// Очищаем Path(если там что-то было)
+		// РћС‡РёС‰Р°РµРј Path(РµСЃР»Рё С‚Р°Рј С‡С‚Рѕ-С‚Рѕ Р±С‹Р»Рѕ)
 		m_pGState->ClearPath();
 
-		// Сохраняем текущий парсер
+		// РЎРѕС…СЂР°РЅСЏРµРј С‚РµРєСѓС‰РёР№ РїР°СЂСЃРµСЂ
 		Parser *pOldParser = m_pParser;
 
 		// CTM
@@ -4546,7 +4546,7 @@ namespace PdfReader
 			m_arrBaseMatrix[nIndex] = m_pGState->GetCTM()[nIndex];
 		}
 
-		// Рисуем саму форму
+		// Р РёСЃСѓРµРј СЃР°РјСѓ С„РѕСЂРјСѓ
 		Display(pStream, false);
 
 		if (bSMask || bTranspGroup)
@@ -4560,7 +4560,7 @@ namespace PdfReader
 		}
 
 
-		// Восстанавливаем начальные данные
+		// Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј РЅР°С‡Р°Р»СЊРЅС‹Рµ РґР°РЅРЅС‹Рµ
 		m_pParser = pOldParser;
 		RestoreGState();
 		PopResources();
@@ -4590,7 +4590,7 @@ namespace PdfReader
 		{
 			DoImage(NULL, pStream, true);
 
-			// Ищем оператор EI
+			// РС‰РµРј РѕРїРµСЂР°С‚РѕСЂ EI
 			int nChar1 = pStream->GetUndecodedStream()->GetChar();
 			int nChar2 = pStream->GetUndecodedStream()->GetChar();
 
@@ -4713,15 +4713,15 @@ namespace PdfReader
 	}
 
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Дополнительные функции
+	// Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё
 	//-------------------------------------------------------------------------------------------------------------------------------
 
 	void Graphics::DrawAnnotation(Object *pStream, AnnotBorderStyle *pBorderStyle, double dMinX, double dMinY, double dMaxX, double dMaxY)
 	{
 		double dX, dY;
 
-		// Преобразовываем Annotation BBox из стандартного пользовательского пространства в
-		// текущее пользовательское пространство: (BBox * BaseMatrix) * InvCTM
+		// РџСЂРµРѕР±СЂР°Р·РѕРІС‹РІР°РµРј Annotation BBox РёР· СЃС‚Р°РЅРґР°СЂС‚РЅРѕРіРѕ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕРіРѕ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІР° РІ
+		// С‚РµРєСѓС‰РµРµ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ: (BBox * BaseMatrix) * InvCTM
 		double *pCTM = m_pGState->GetCTM();
 		double dDet = 1 / (pCTM[0] * pCTM[3] - pCTM[1] * pCTM[2]);
 		double arrInvCTM[6];
@@ -4818,11 +4818,11 @@ namespace PdfReader
 				dFormY1 = dY;
 			}
 
-			// Растягиваем до размеров Annotation BBox
+			// Р Р°СЃС‚СЏРіРёРІР°РµРј РґРѕ СЂР°Р·РјРµСЂРѕРІ Annotation BBox
 			double dScaleX, dScaleY;
 			if (dFormX1 == dFormX0)
 			{
-				// Такого не должно быть
+				// РўР°РєРѕРіРѕ РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ
 				dScaleX = 1;
 			}
 			else
@@ -4831,7 +4831,7 @@ namespace PdfReader
 			}
 			if (dFormY1 == dFormY0)
 			{
-				// Такого не должно быть
+				// РўР°РєРѕРіРѕ РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ
 				dScaleY = 1;
 			}
 			else
@@ -4851,13 +4851,13 @@ namespace PdfReader
 			pDict->Search("Resources", &oResources);
 			Dict *pResourcesDict = oResources.IsDict() ? oResources.GetDict() : (Dict *)NULL;
 
-			// Рисуем
+			// Р РёСЃСѓРµРј
 			DoForm(pStream, pResourcesDict, arrMatrix, arrBBox);
 
 			oResources.Free();
 		}
 
-		// Рисуем рамку
+		// Р РёСЃСѓРµРј СЂР°РјРєСѓ
 		if (pBorderStyle && pBorderStyle->GetWidth() > 0)
 		{
 			if (m_pGState->GetStrokeColorSpace()->GetMode() != csDeviceRGB)
@@ -4910,7 +4910,7 @@ namespace PdfReader
 		}
 	}
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Работаем со стеками GState и ResourcesDict
+	// Р Р°Р±РѕС‚Р°РµРј СЃРѕ СЃС‚РµРєР°РјРё GState Рё ResourcesDict
 	//-------------------------------------------------------------------------------------------------------------------------------
 	void Graphics::SaveGState()
 	{

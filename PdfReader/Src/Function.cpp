@@ -1,4 +1,4 @@
-#include <stdlib.h>
+п»ї#include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
 #include <math.h>
@@ -26,7 +26,7 @@ namespace PdfReader
 	{
 		Dict *pDict;
 
-		// Функция задается либо как словарь, либо поток, либо как тождественная функция
+		// Р¤СѓРЅРєС†РёСЏ Р·Р°РґР°РµС‚СЃСЏ Р»РёР±Рѕ РєР°Рє СЃР»РѕРІР°СЂСЊ, Р»РёР±Рѕ РїРѕС‚РѕРє, Р»РёР±Рѕ РєР°Рє С‚РѕР¶РґРµСЃС‚РІРµРЅРЅР°СЏ С„СѓРЅРєС†РёСЏ
 		if (pFuncObject->IsStream())
 		{
 			pDict = pFuncObject->StreamGetDict();
@@ -89,7 +89,7 @@ namespace PdfReader
 	bool Function::Initialize(Dict *pDict)
 	{
 		Object oArray;
-		// Domain (Всегда должен присутствовать)
+		// Domain (Р’СЃРµРіРґР° РґРѕР»Р¶РµРЅ РїСЂРёСЃСѓС‚СЃС‚РІРѕРІР°С‚СЊ)
 		if (!pDict->Search("Domain", &oArray)->IsArray())
 		{
 			// TO DO: Error "Function is missing domain"
@@ -130,7 +130,7 @@ namespace PdfReader
 		}
 		oArray.Free();
 
-		// Range (Этого поля может и не быть)
+		// Range (Р­С‚РѕРіРѕ РїРѕР»СЏ РјРѕР¶РµС‚ Рё РЅРµ Р±С‹С‚СЊ)
 		m_bHasRange = false;
 		m_nOutputDim = 0;
 		if (pDict->Search("Range", &oArray)->IsArray())
@@ -179,7 +179,7 @@ namespace PdfReader
 
 	IdentityFunction::IdentityFunction()
 	{
-		// Заполняем произвольными значениями
+		// Р—Р°РїРѕР»РЅСЏРµРј РїСЂРѕРёР·РІРѕР»СЊРЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё
 		m_nInputDim = funcMaxInputs;
 		m_nOutputDim = funcMaxOutputs;
 
@@ -199,7 +199,7 @@ namespace PdfReader
 	{
 		for (int nIndex = 0; nIndex < funcMaxOutputs; ++nIndex)
 		{
-			pOutput[nIndex] = pInput[nIndex]; // тождественная же функция :)
+			pOutput[nIndex] = pInput[nIndex]; // С‚РѕР¶РґРµСЃС‚РІРµРЅРЅР°СЏ Р¶Рµ С„СѓРЅРєС†РёСЏ :)
 		}
 	}
 
@@ -278,7 +278,7 @@ namespace PdfReader
 		double dSampleMult = 1.0 / (pow(2.0, (double)nSampleBits) - 1);
 		oArray.Free();
 
-		// TO DO: Сделать чтение поля Order, и реализовать функцию Transform
+		// TO DO: РЎРґРµР»Р°С‚СЊ С‡С‚РµРЅРёРµ РїРѕР»СЏ Order, Рё СЂРµР°Р»РёР·РѕРІР°С‚СЊ С„СѓРЅРєС†РёСЋ Transform
 
 		// Encode
 		if (pDict->Search("Encode", &oArray)->IsArray() && oArray.ArrayGetLength() == 2 * m_nInputDim)
@@ -748,7 +748,7 @@ namespace PdfReader
 		{
 			if (m_arrBounds[nIndex] == m_arrBounds[nIndex + 1])
 			{
-				// Чтобы избежать деление на 0, в данном случае функция с номером nIndex не будет использоваться
+				// Р§С‚РѕР±С‹ РёР·Р±РµР¶Р°С‚СЊ РґРµР»РµРЅРёРµ РЅР° 0, РІ РґР°РЅРЅРѕРј СЃР»СѓС‡Р°Рµ С„СѓРЅРєС†РёСЏ СЃ РЅРѕРјРµСЂРѕРј nIndex РЅРµ Р±СѓРґРµС‚ РёСЃРїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ
 				m_arrScale[nIndex] = 0;
 			}
 			else
@@ -878,8 +878,8 @@ namespace PdfReader
 		psOperationReturn
 	};
 
-	// Список идет в алфавитном порядке. Номер элемента здесь, соответствует
-	// операции в перечисляемом типе PSOperations
+	// РЎРїРёСЃРѕРє РёРґРµС‚ РІ Р°Р»С„Р°РІРёС‚РЅРѕРј РїРѕСЂСЏРґРєРµ. РќРѕРјРµСЂ СЌР»РµРјРµРЅС‚Р° Р·РґРµСЃСЊ, СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚
+	// РѕРїРµСЂР°С†РёРё РІ РїРµСЂРµС‡РёСЃР»СЏРµРјРѕРј С‚РёРїРµ PSOperations
 	char *c_sPSOperationNames[] =
 	{
 		"abs",
@@ -935,14 +935,14 @@ namespace PdfReader
 		psBlock
 	};
 
-	// В потоке, операторы 'if'/'ifelse' занимают три слота.
+	// Р’ РїРѕС‚РѕРєРµ, РѕРїРµСЂР°С‚РѕСЂС‹ 'if'/'ifelse' Р·Р°РЅРёРјР°СЋС‚ С‚СЂРё СЃР»РѕС‚Р°.
 	//
 	//         +---------------------------------+
 	//         | psOperator: If / Ifelse         |
 	//         +---------------------------------+
-	//         | psBlock: указатель = <A>        |
+	//         | psBlock: СѓРєР°Р·Р°С‚РµР»СЊ = <A>        |
 	//         +---------------------------------+
-	//         | psBlock: указатель = <B>        |
+	//         | psBlock: СѓРєР°Р·Р°С‚РµР»СЊ = <B>        |
 	//         +---------------------------------+
 	//         | if                              |
 	//         | ...                             |
@@ -954,7 +954,7 @@ namespace PdfReader
 	//         +---------------------------------+
 	//     <B> | ...                             |
 	//
-	// Если оператор = 'if', указатель <A> все задан, но не используется
+	// Р•СЃР»Рё РѕРїРµСЂР°С‚РѕСЂ = 'if', СѓРєР°Р·Р°С‚РµР»СЊ <A> РІСЃРµ Р·Р°РґР°РЅ, РЅРѕ РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 
 	struct PSObject
 	{

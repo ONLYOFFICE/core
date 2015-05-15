@@ -1,4 +1,4 @@
-#include "PdfReader.h"
+п»ї#include "PdfReader.h"
 #include "../Common/OfficeDefines.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/GraphicsRenderer.h"
@@ -31,7 +31,7 @@ namespace PdfReader
 
 		m_pAppFonts = pAppFonts;
 
-		// Создаем менеджер шрифтов с собственным кэшем
+		// РЎРѕР·РґР°РµРј РјРµРЅРµРґР¶РµСЂ С€СЂРёС„С‚РѕРІ СЃ СЃРѕР±СЃС‚РІРµРЅРЅС‹Рј РєСЌС€РµРј
 		m_pFontManager = pAppFonts->GenerateFontManager();
 		CFontsCache* pMeasurerCache = new CFontsCache();
 		pMeasurerCache->SetStreams(pAppFonts->GetStreams());
@@ -61,8 +61,8 @@ namespace PdfReader
 	}
 	bool         CPdfReader::LoadFromFile(const wchar_t* wsSrcPath, const wchar_t* wsOwnerPassword, const wchar_t* wsUserPassword, const wchar_t* wsOptions)
 	{
-		// TODO: Сейчас при загрузке каждой новой картинки мы пересоздаем 
-		//       FontManager, потому что сейчас в нем кэш без ограничения.
+		// TODO: РЎРµР№С‡Р°СЃ РїСЂРё Р·Р°РіСЂСѓР·РєРµ РєР°Р¶РґРѕР№ РЅРѕРІРѕР№ РєР°СЂС‚РёРЅРєРё РјС‹ РїРµСЂРµСЃРѕР·РґР°РµРј 
+		//       FontManager, РїРѕС‚РѕРјСѓ С‡С‚Рѕ СЃРµР№С‡Р°СЃ РІ РЅРµРј РєСЌС€ Р±РµР· РѕРіСЂР°РЅРёС‡РµРЅРёСЏ.
 		//------------------------------------------------------
 		RELEASEINTERFACE(m_pFontManager);
 		m_pFontManager = m_pAppFonts->GenerateFontManager();
@@ -162,7 +162,7 @@ namespace PdfReader
 		if (!m_pPDFDocument)
 			return;
 
-		const double c_dInch = 25.399; // Миллиметров в дюйме
+		const double c_dInch = 25.399; // РњРёР»Р»РёРјРµС‚СЂРѕРІ РІ РґСЋР№РјРµ
 		const double c_dXResolution = 154.0;
 		const double c_dYResolution = 154.0;
 

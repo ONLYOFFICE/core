@@ -1,4 +1,4 @@
-#include <stdlib.h>
+п»ї#include <stdlib.h>
 #include <limits.h>
 #include "List.h"
 #include "JArithmeticDecoder.h"
@@ -3617,7 +3617,7 @@ namespace PdfReader
 		}
 		m_pPageBitmap = new JBIG2Bitmap(0, m_unPageW, m_unPageH);
 
-		// Очищаем картинку
+		// РћС‡РёС‰Р°РµРј РєР°СЂС‚РёРЅРєСѓ
 		if (m_unPageDefPixel)
 		{
 			m_pPageBitmap->ClearToOne();
@@ -3632,7 +3632,7 @@ namespace PdfReader
 
 	void JBIG2Stream::ReadEndOfStripeSegment(unsigned int unLength)
 	{
-		// Пропускаем данный сегмент
+		// РџСЂРѕРїСѓСЃРєР°РµРј РґР°РЅРЅС‹Р№ СЃРµРіРјРµРЅС‚
 		for (unsigned int unIndex = 0; unIndex < unLength; ++unIndex)
 		{
 			m_pCurStream->GetChar();
@@ -3641,7 +3641,7 @@ namespace PdfReader
 
 	void JBIG2Stream::ReadProfilesSegment(unsigned int unLength)
 	{
-		// Пропускаем данный сегмент
+		// РџСЂРѕРїСѓСЃРєР°РµРј РґР°РЅРЅС‹Р№ СЃРµРіРјРµРЅС‚
 		for (unsigned int unIndex = 0; unIndex < unLength; ++unIndex)
 		{
 			m_pCurStream->GetChar();
@@ -3707,7 +3707,7 @@ namespace PdfReader
 		pHuffTable[unIndex].unRangeLen  = jbig2HuffmanEOT;
 		m_pHuffDecoder->BuildTable(pHuffTable, unIndex);
 
-		// Создаем и сохраняем новый сегмент таблицы
+		// РЎРѕР·РґР°РµРј Рё СЃРѕС…СЂР°РЅСЏРµРј РЅРѕРІС‹Р№ СЃРµРіРјРµРЅС‚ С‚Р°Р±Р»РёС†С‹
 		m_pSegments->Append(new JBIG2CodeTable(unSegNum, pHuffTable));
 
 		return;
@@ -3715,7 +3715,7 @@ namespace PdfReader
 
 	void JBIG2Stream::ReadExtensionSegment(unsigned int unLength)
 	{
-		// Пропускаем данный сегмент
+		// РџСЂРѕРїСѓСЃРєР°РµРј РґР°РЅРЅС‹Р№ СЃРµРіРјРµРЅС‚
 		for (unsigned int unIndex = 0; unIndex < unLength; ++unIndex)
 		{
 			m_pCurStream->GetChar();

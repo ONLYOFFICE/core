@@ -1,4 +1,4 @@
-#include <stddef.h>
+п»ї#include <stddef.h>
 #include <string.h>
 #include "MemoryUtils.h"
 #include "StringExt.h"
@@ -35,7 +35,7 @@ namespace PdfReader
 			return NULL;
 		}
 
-		// S (тип Action)
+		// S (С‚РёРї Action)
 		Object oType;
 		pObject->DictLookup("S", &oType);
 
@@ -136,7 +136,7 @@ namespace PdfReader
 
 		if (seName)
 		{
-			// Производим преобразования, связанные с формой записи путей
+			// РџСЂРѕРёР·РІРѕРґРёРј РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ, СЃРІСЏР·Р°РЅРЅС‹Рµ СЃ С„РѕСЂРјРѕР№ Р·Р°РїРёСЃРё РїСѓС‚РµР№
 
 			// "//...."             --> "\...."
 			// "/x/...."            --> "x:\...."

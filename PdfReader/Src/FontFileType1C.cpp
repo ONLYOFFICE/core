@@ -1,4 +1,4 @@
-#include <stdlib.h>
+п»ї#include <stdlib.h>
 #include <string.h>
 #include <math.h>
 #include "MemoryUtils.h"
@@ -146,8 +146,8 @@ namespace PdfReader
 			(*pOutputFunc)(pOutputStream, sBuf, strlen(sBuf));
 		}
 		(*pOutputFunc)(pOutputStream, "\n", 1);
-		// Для словаря нужно место для 12 полей: следующие 9 + 
-		// Private и CharStrings (в eexec секции) и FID.
+		// Р”Р»СЏ СЃР»РѕРІР°СЂСЏ РЅСѓР¶РЅРѕ РјРµСЃС‚Рѕ РґР»СЏ 12 РїРѕР»РµР№: СЃР»РµРґСѓСЋС‰РёРµ 9 + 
+		// Private Рё CharStrings (РІ eexec СЃРµРєС†РёРё) Рё FID.
 		(*pOutputFunc)(pOutputStream, "12 dict begin\n", 14);
 		(*pOutputFunc)(pOutputStream, "/FontInfo 10 dict dup begin\n", 28);
 		if (m_oTopDict.nVersionSID != 0)
@@ -241,7 +241,7 @@ namespace PdfReader
 			delete seBuffer;
 		}
 
-		// Запись кодировки
+		// Р—Р°РїРёСЃСЊ РєРѕРґРёСЂРѕРІРєРё
 		(*pOutputFunc)(pOutputStream, "/Encoding ", 10);
 		if (!ppNewEncoding && m_arrEncoding == c_arrsFontFileType1ExpertEncoding)
 		{
@@ -265,7 +265,7 @@ namespace PdfReader
 		}
 		(*pOutputFunc)(pOutputStream, "currentdict end\n", 16);
 
-		// Бинарная секция (eexec)
+		// Р‘РёРЅР°СЂРЅР°СЏ СЃРµРєС†РёСЏ (eexec)
 		Type1CEexecBuf oEexecBuffer;
 		(*pOutputFunc)(pOutputStream, "currentfile eexec\n", 18);
 		oEexecBuffer.pOutputFunc   = pOutputFunc;
@@ -460,7 +460,7 @@ namespace PdfReader
 		bool bSuccess = true;
 		int nGID = 0, i, j, k;
 
-		// Вычислим количество CID и построим отображение CID->GID
+		// Р’С‹С‡РёСЃР»РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ CID Рё РїРѕСЃС‚СЂРѕРёРј РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ CID->GID
 		int nCIDsCount = 0;
 		for (i = 0; i < m_nGlyphsCount; ++i)
 		{
@@ -504,7 +504,7 @@ namespace PdfReader
 		}
 		charStringOffsets[nCIDsCount] = charStrings->GetLength();
 
-		// Вычислим nNeedBytes = количество байт, необходимых для charstring offsets
+		// Р’С‹С‡РёСЃР»РёРј nNeedBytes = РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚, РЅРµРѕР±С…РѕРґРёРјС‹С… РґР»СЏ charstring offsets
 		int nNeedBytes = 0;
 		i = (nCIDsCount + 1) * 5 + charStrings->GetLength();
 		if (i < 0x100)
@@ -524,7 +524,7 @@ namespace PdfReader
 			nNeedBytes = 4;
 		}
 
-		// Начинаем запись Font Dictionary
+		// РќР°С‡РёРЅР°РµРј Р·Р°РїРёСЃСЊ Font Dictionary
 		(*pOutputFunc)(pOutputStream, "/CIDInit /ProcSet findresource begin\n", 37);
 		(*pOutputFunc)(pOutputStream, "20 dict begin\n", 14);
 		(*pOutputFunc)(pOutputStream, "/CIDFontName /", 14);
@@ -828,7 +828,7 @@ namespace PdfReader
 
 		int nCurFD = 0;
 
-		// Вычислим количество CID и построим отображение CID->GID
+		// Р’С‹С‡РёСЃР»РёРј РєРѕР»РёС‡РµСЃС‚РІРѕ CID Рё РїРѕСЃС‚СЂРѕРёРј РѕС‚РѕР±СЂР°Р¶РµРЅРёРµ CID->GID
 		int nCIDsCount = 0;
 		for (int nIndex = 0; nIndex < m_nGlyphsCount; ++nIndex)
 		{
@@ -847,10 +847,10 @@ namespace PdfReader
 			arrCIDMap[m_pnCharset[nIndex]] = nIndex;
 		}
 
-		// Запись Type 1 фонта
+		// Р—Р°РїРёСЃСЊ Type 1 С„РѕРЅС‚Р°
 		for (i = 0; i < nCIDsCount; i += 256)
 		{
-			// Игнорируем CID = 0, т.е. ".notdef"
+			// РРіРЅРѕСЂРёСЂСѓРµРј CID = 0, С‚.Рµ. ".notdef"
 			nCurFD = 0;
 			for (j = ((i == 0) ? 1 : 0); j < 256 && i + j < nCIDsCount; ++j)
 			{
@@ -861,7 +861,7 @@ namespace PdfReader
 				}
 			}
 
-			// Font Dictionary (незашифрованная часть)
+			// Font Dictionary (РЅРµР·Р°С€РёС„СЂРѕРІР°РЅРЅР°СЏ С‡Р°СЃС‚СЊ)
 			(*pOutputFunc)(pOutputStream, "16 dict begin\n", 14);
 			(*pOutputFunc)(pOutputStream, "/FontName /", 11);
 			(*pOutputFunc)(pOutputStream, sPSName, strlen(sPSName));
@@ -1366,10 +1366,10 @@ namespace PdfReader
 					{
 						// TO DO: error "Too few args to Type 2 callsubr"
 					}
-					// не очищаем стек
+					// РЅРµ РѕС‡РёС‰Р°РµРј СЃС‚РµРє
 					break;
 					case 0x000b:		// return
-					// не очищаем стек
+					// РЅРµ РѕС‡РёС‰Р°РµРј СЃС‚РµРє
 					break;
 					case 0x000e:		// endchar / seac
 					if (m_bFirstOperator)
@@ -1403,7 +1403,7 @@ namespace PdfReader
 					m_nOperatorsCount = 0;
 					break;
 					case 0x000f:		// (obsolete)
-					// Данная операция игнорируется, но нам нужна ширина символа
+					// Р”Р°РЅРЅР°СЏ РѕРїРµСЂР°С†РёСЏ РёРіРЅРѕСЂРёСЂСѓРµС‚СЃСЏ, РЅРѕ РЅР°Рј РЅСѓР¶РЅР° С€РёСЂРёРЅР° СЃРёРјРІРѕР»Р°
 					if (m_bFirstOperator)
 					{
 						ConvertGlyphWidth(m_nOperatorsCount > 0, seCharBuffer, pDict);
@@ -1416,7 +1416,7 @@ namespace PdfReader
 					m_nOperatorsCount = 0;
 					break;
 					case 0x0012:		// hstemhm
-					// Данная операция игнорируется
+					// Р”Р°РЅРЅР°СЏ РѕРїРµСЂР°С†РёСЏ РёРіРЅРѕСЂРёСЂСѓРµС‚СЃСЏ
 					if (m_bFirstOperator)
 					{
 						ConvertGlyphWidth(m_nOperatorsCount & 1, seCharBuffer, pDict);
@@ -1430,7 +1430,7 @@ namespace PdfReader
 					m_nOperatorsCount = 0;
 					break;
 					case 0x0013:		// hintmask
-					// Данная операция игнорируется
+					// Р”Р°РЅРЅР°СЏ РѕРїРµСЂР°С†РёСЏ РёРіРЅРѕСЂРёСЂСѓРµС‚СЃСЏ
 					if (m_bFirstOperator)
 					{
 						ConvertGlyphWidth(m_nOperatorsCount & 1, seCharBuffer, pDict);
@@ -1448,7 +1448,7 @@ namespace PdfReader
 					m_nOperatorsCount = 0;
 					break;
 					case 0x0014:		// cntrmask
-					// Данная операция игнорируется
+					// Р”Р°РЅРЅР°СЏ РѕРїРµСЂР°С†РёСЏ РёРіРЅРѕСЂРёСЂСѓРµС‚СЃСЏ
 					if (m_bFirstOperator)
 					{
 						ConvertGlyphWidth(m_nOperatorsCount & 1, seCharBuffer, pDict);
@@ -1505,7 +1505,7 @@ namespace PdfReader
 					m_nOperatorsCount = 0;
 					break;
 					case 0x0017:		// vstemhm
-					// Данная операция игнорируется
+					// Р”Р°РЅРЅР°СЏ РѕРїРµСЂР°С†РёСЏ РёРіРЅРѕСЂРёСЂСѓРµС‚СЃСЏ
 					if (m_bFirstOperator)
 					{
 						ConvertGlyphWidth(m_nOperatorsCount & 1, seCharBuffer, pDict);
@@ -1642,7 +1642,7 @@ namespace PdfReader
 					{
 						// TO DO: error "Too few args to Type 2 callgsubr"
 					}
-					// не очищаем стек
+					// РЅРµ РѕС‡РёС‰Р°РµРј СЃС‚РµРє
 					break;
 					case 0x001e:		// vhcurveto
 					if (m_nOperatorsCount < 4 || !(m_nOperatorsCount % 4 == 0 || (m_nOperatorsCount - 1) % 4 == 0))
@@ -1743,7 +1743,7 @@ namespace PdfReader
 					m_bOpenPath = true;
 					break;
 					case 0x0c00:		// dotsection (should be Type 1 only?)
-					// игнорируем
+					// РёРіРЅРѕСЂРёСЂСѓРµРј
 					m_nOperatorsCount = 0;
 					break;
 					case 0x0c03:		// and
@@ -2009,7 +2009,7 @@ namespace PdfReader
 
 	void CFontFileType1C::EexecWriteCharString(Type1CEexecBuf *pEexecBuffer, unsigned char *sBuffer, int nLen)
 	{
-		// Eexec шифрование
+		// Eexec С€РёС„СЂРѕРІР°РЅРёРµ
 		for (int nIndex = 0; nIndex < nLen; ++nIndex)
 		{
 			unsigned nCurChar = sBuffer[nIndex] ^ (pEexecBuffer->unEncryptionKey >> 8);
@@ -2039,7 +2039,7 @@ namespace PdfReader
 
 		m_bSuccessParsed = true;
 
-		// некоторые программы включают фонты Type 1C в пробелами в начале
+		// РЅРµРєРѕС‚РѕСЂС‹Рµ РїСЂРѕРіСЂР°РјРјС‹ РІРєР»СЋС‡Р°СЋС‚ С„РѕРЅС‚С‹ Type 1C РІ РїСЂРѕР±РµР»Р°РјРё РІ РЅР°С‡Р°Р»Рµ
 		if (m_nLen > 0 && m_sFile[0] != '\x01')
 		{
 			++m_sFile;
@@ -2056,7 +2056,7 @@ namespace PdfReader
 
 		m_nGsubrBias = (m_oGsubrIndex.nCount < 1240) ? 107 : (m_oGsubrIndex.nCount < 33900) ? 1131 : 32768;
 
-		// считываем первое имя фонта
+		// СЃС‡РёС‚С‹РІР°РµРј РїРµСЂРІРѕРµ РёРјСЏ С„РѕРЅС‚Р°
 		GetIndexVal(&m_oNameIndex, 0, &oIndexVal, &m_bSuccessParsed);
 
 		if (!m_bSuccessParsed)
@@ -2064,7 +2064,7 @@ namespace PdfReader
 
 		m_seName = new StringExt((char *)&m_sFile[oIndexVal.nPos], oIndexVal.nLen);
 
-		// Считываем самый верхний словарь для первого фонта
+		// РЎС‡РёС‚С‹РІР°РµРј СЃР°РјС‹Р№ РІРµСЂС…РЅРёР№ СЃР»РѕРІР°СЂСЊ РґР»СЏ РїРµСЂРІРѕРіРѕ С„РѕРЅС‚Р°
 		ReadTopDict();
 
 		if (m_oTopDict.nFirstOperator == 0x0c1e)
@@ -2237,8 +2237,8 @@ namespace PdfReader
 		}
 	}
 
-	// Читаем словарь шрифта (CID Font Dict (FD)). Отсюда вытаскиваем указатель на private dict,
-	// и читаем private dict. Также вытаксиваем FontMatrix.
+	// Р§РёС‚Р°РµРј СЃР»РѕРІР°СЂСЊ С€СЂРёС„С‚Р° (CID Font Dict (FD)). РћС‚СЃСЋРґР° РІС‹С‚Р°СЃРєРёРІР°РµРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° private dict,
+	// Рё С‡РёС‚Р°РµРј private dict. РўР°РєР¶Рµ РІС‹С‚Р°РєСЃРёРІР°РµРј FontMatrix.
 	void CFontFileType1C::ReadFD(int nOffset, int nLength, Type1CPrivateDict *pDict)
 	{
 		double arrdFontMatrix[6];
@@ -2780,7 +2780,7 @@ namespace PdfReader
 		return nPos;
 	}
 
-	// Конвертируем delta-encoded массив операторов в массив ints
+	// РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј delta-encoded РјР°СЃСЃРёРІ РѕРїРµСЂР°С‚РѕСЂРѕРІ РІ РјР°СЃСЃРёРІ ints
 	int CFontFileType1C::GetDeltaIntArray(int *pArray, int nMaxLen)
 	{
 		int nCount = 0;
@@ -2798,7 +2798,7 @@ namespace PdfReader
 		return nCount;
 	}
 
-	// Конвертируем delta-encoded массив операторов в массив doubles
+	// РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј delta-encoded РјР°СЃСЃРёРІ РѕРїРµСЂР°С‚РѕСЂРѕРІ РІ РјР°СЃСЃРёРІ doubles
 	int CFontFileType1C::GetDeltaDoubleArray(double *pArray, int nMaxLen)
 	{
 		int nCount = 0;
@@ -2822,7 +2822,7 @@ namespace PdfReader
 		pIndex->nCount = GetU16BE(nPos, bSuccess);
 		if (0 == pIndex->nCount)
 		{
-			// возможны пустые индексы, они содержат только поле length
+			// РІРѕР·РјРѕР¶РЅС‹ РїСѓСЃС‚С‹Рµ РёРЅРґРµРєСЃС‹, РѕРЅРё СЃРѕРґРµСЂР¶Р°С‚ С‚РѕР»СЊРєРѕ РїРѕР»Рµ length
 			pIndex->nOffsetSize = 0;
 			pIndex->nStartPos = pIndex->nEndPos = nPos + 2;
 		}

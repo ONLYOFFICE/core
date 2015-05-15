@@ -1,4 +1,4 @@
-#include <string.h>
+п»ї#include <string.h>
 #include "MemoryUtils.h"
 #include "NameToCharCode.h"
 
@@ -38,7 +38,7 @@ namespace PdfReader
 
 	void NameToCharCode::Add(char *sName, CharCode nCode)
 	{
-		// Увеличиваем таблицу, в случае необходимости
+		// РЈРІРµР»РёС‡РёРІР°РµРј С‚Р°Р±Р»РёС†Сѓ, РІ СЃР»СѓС‡Р°Рµ РЅРµРѕР±С…РѕРґРёРјРѕСЃС‚Рё
 		if (m_nLen >= m_nSize / 2)
 		{
 			int nOldSize = m_nSize;
@@ -67,7 +67,7 @@ namespace PdfReader
 			MemUtilsFree(pOldTable);
 		}
 
-		// Добавляем новое имя
+		// Р”РѕР±Р°РІР»СЏРµРј РЅРѕРІРѕРµ РёРјСЏ
 		int nHash = Hash(sName);
 		while (m_pTable[nHash].sName && strcmp(m_pTable[nHash].sName, sName))
 		{

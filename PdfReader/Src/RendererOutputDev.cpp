@@ -1,4 +1,4 @@
-#include "GState.h"
+п»ї#include "GState.h"
 #include "GFont.h"
 #include "File.h"
 #include "CMap.h"
@@ -16,10 +16,10 @@
 #include "../../DesktopEditor/common/Array.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
 
-// TODO: 1. Реализовать по-нормальному градиентные заливки (Axial и Radial) 
+// TODO: 1. Р РµР°Р»РёР·РѕРІР°С‚СЊ РїРѕ-РЅРѕСЂРјР°Р»СЊРЅРѕРјСѓ РіСЂР°РґРёРµРЅС‚РЅС‹Рµ Р·Р°Р»РёРІРєРё (Axial Рё Radial) 
 //       2. m_pRenderer->SetAdditionalParam(L"TilingHtmlPattern", oWriter.GetXmlString());
-//       3. Подбор шрифтов необходимо перенести в GlobalParams->FindFontFile
-//       4. В идентефикацию шрифта к путю добавить номер шрифта в файле
+//       3. РџРѕРґР±РѕСЂ С€СЂРёС„С‚РѕРІ РЅРµРѕР±С…РѕРґРёРјРѕ РїРµСЂРµРЅРµСЃС‚Рё РІ GlobalParams->FindFontFile
+//       4. Р’ РёРґРµРЅС‚РµС„РёРєР°С†РёСЋ С€СЂРёС„С‚Р° Рє РїСѓС‚СЋ РґРѕР±Р°РІРёС‚СЊ РЅРѕРјРµСЂ С€СЂРёС„С‚Р° РІ С„Р°Р№Р»Рµ
 
 namespace PdfReader
 {
@@ -192,7 +192,7 @@ namespace PdfReader
 
 		if (bResult)
 		{
-			// Шрифт нашелся, но пока им пользоваться нельзя, потому что он загружается в параллельном потоке
+			// РЁСЂРёС„С‚ РЅР°С€РµР»СЃСЏ, РЅРѕ РїРѕРєР° РёРј РїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ РЅРµР»СЊР·СЏ, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РѕРЅ Р·Р°РіСЂСѓР¶Р°РµС‚СЃСЏ РІ РїР°СЂР°Р»Р»РµР»СЊРЅРѕРј РїРѕС‚РѕРєРµ
 			while (!pEntry->bAvailable)
 				NSThreads::Sleep(10);
 		}
@@ -209,7 +209,7 @@ namespace PdfReader
 
 		if (bResult)
 		{
-			// Шрифт нашелся, но пока им пользоваться нельзя, потому что он загружается в параллельном потоке
+			// РЁСЂРёС„С‚ РЅР°С€РµР»СЃСЏ, РЅРѕ РїРѕРєР° РёРј РїРѕР»СЊР·РѕРІР°С‚СЊСЃСЏ РЅРµР»СЊР·СЏ, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РѕРЅ Р·Р°РіСЂСѓР¶Р°РµС‚СЃСЏ РІ РїР°СЂР°Р»Р»РµР»СЊРЅРѕРј РїРѕС‚РѕРєРµ
 			while (!(*ppEntry)->bAvailable)
 				NSThreads::Sleep(10);
 		}
@@ -226,7 +226,7 @@ namespace PdfReader
 	}
 	TFontEntry* CFontList::Add(Ref oRef, std::wstring wsFileName, unsigned short *pCodeToGID, unsigned short *pCodeToUnicode, unsigned int unLenGID, unsigned int unLenUnicode)
 	{
-		// Данная функция приходит только из Find2, поэтому проверять есть ли данный шрифт уже не надо
+		// Р”Р°РЅРЅР°СЏ С„СѓРЅРєС†РёСЏ РїСЂРёС…РѕРґРёС‚ С‚РѕР»СЊРєРѕ РёР· Find2, РїРѕСЌС‚РѕРјСѓ РїСЂРѕРІРµСЂСЏС‚СЊ РµСЃС‚СЊ Р»Рё РґР°РЅРЅС‹Р№ С€СЂРёС„С‚ СѓР¶Рµ РЅРµ РЅР°РґРѕ
 		CTemporaryCS* pCS = new CTemporaryCS(&m_oCS);
 
 		TFontEntry *pNewEntry = new TFontEntry;
@@ -311,7 +311,7 @@ namespace PdfReader
 		m_pTransparentGroupSoftMask = NULL;
 
 		//m_oFontList.LoadFromFile( m_pGlobalParams->GetTempFolder() );
-		//// Тестовый пример
+		//// РўРµСЃС‚РѕРІС‹Р№ РїСЂРёРјРµСЂ
 		//m_pRenderer->NewPage();
 		//m_pRenderer->BeginCommand( c_nPageType );
 
@@ -410,7 +410,7 @@ namespace PdfReader
 		m_pRenderer->NewPage();
 		m_pRenderer->BeginCommand(c_nPageType);
 
-		// Переводим пункты в миллиметры
+		// РџРµСЂРµРІРѕРґРёРј РїСѓРЅРєС‚С‹ РІ РјРёР»Р»РёРјРµС‚СЂС‹
 		double dPageHeight = PDFCoordsToMM(pGState->GetPageHeight());
 		double dPageWidth  = PDFCoordsToMM(pGState->GetPageWidth());
 
@@ -553,7 +553,7 @@ namespace PdfReader
 	}
 	void RendererOutputDev::UpdateFont(GrState *pGState)
 	{
-		// Проверяем наличие списка со шрифтами
+		// РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СЃРїРёСЃРєР° СЃРѕ С€СЂРёС„С‚Р°РјРё
 		if (NULL == m_pFontList)
 			return;
 
@@ -570,7 +570,7 @@ namespace PdfReader
 		if (!m_pFontList->Find2((*pFont->GetID()), &pEntry))
 		{
 			GrFontType eFontType = pFont->GetType();
-			if (fontType3 == eFontType) // FontType3 обрабатывается отдельной командой
+			if (fontType3 == eFontType) // FontType3 РѕР±СЂР°Р±Р°С‚С‹РІР°РµС‚СЃСЏ РѕС‚РґРµР»СЊРЅРѕР№ РєРѕРјР°РЅРґРѕР№
 			{
 				pEntry->bAvailable = true;
 				return;
@@ -578,9 +578,9 @@ namespace PdfReader
 
 			std::wstring wsTempFileName = L"";
 			Ref oEmbRef;
-			// 1. Если шрифт внедренный, тогда скидываем его в темповый файл.
-			// 2. Если шрифт лежит вне пдф, а в самом пдф есть ссылка на него, тогда используем эту ссылку.
-			// 3. В противном случае подбираем шрифт.			
+			// 1. Р•СЃР»Рё С€СЂРёС„С‚ РІРЅРµРґСЂРµРЅРЅС‹Р№, С‚РѕРіРґР° СЃРєРёРґС‹РІР°РµРј РµРіРѕ РІ С‚РµРјРїРѕРІС‹Р№ С„Р°Р№Р».
+			// 2. Р•СЃР»Рё С€СЂРёС„С‚ Р»РµР¶РёС‚ РІРЅРµ РїРґС„, Р° РІ СЃР°РјРѕРј РїРґС„ РµСЃС‚СЊ СЃСЃС‹Р»РєР° РЅР° РЅРµРіРѕ, С‚РѕРіРґР° РёСЃРїРѕР»СЊР·СѓРµРј СЌС‚Сѓ СЃСЃС‹Р»РєСѓ.
+			// 3. Р’ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ РїРѕРґР±РёСЂР°РµРј С€СЂРёС„С‚.			
 			if (pFont->GetEmbeddedFontFileRef(&oEmbRef))
 			{
 				std::wstring wsExt;
@@ -614,7 +614,7 @@ namespace PdfReader
 				oReferenceObject.Free();
 				if (!oStreamObject.IsStream())
 				{
-					// Внедренный шрифт неправильно записан
+					// Р’РЅРµРґСЂРµРЅРЅС‹Р№ С€СЂРёС„С‚ РЅРµРїСЂР°РІРёР»СЊРЅРѕ Р·Р°РїРёСЃР°РЅ
 					oStreamObject.Free();
 					fclose(pTempFile);
 
@@ -635,7 +635,7 @@ namespace PdfReader
 				fclose(pTempFile);
 				wsFileName = wsTempFileName;
 
-				// Для шрифтов типа Type1 нужно дописать Afm файл с метриками
+				// Р”Р»СЏ С€СЂРёС„С‚РѕРІ С‚РёРїР° Type1 РЅСѓР¶РЅРѕ РґРѕРїРёСЃР°С‚СЊ Afm С„Р°Р№Р» СЃ РјРµС‚СЂРёРєР°РјРё
 				if (fontType1 == pFont->GetType() || fontType1C == pFont->GetType() || fontType1COT == pFont->GetType())
 				{
 					std::wstring wsSplitFileName, wsSplitFileExt;
@@ -824,7 +824,7 @@ namespace PdfReader
 					}
 				}
 
-				// Загрузим сам файл со шрифтом, чтобы точно определить его тип
+				// Р—Р°РіСЂСѓР·РёРј СЃР°Рј С„Р°Р№Р» СЃРѕ С€СЂРёС„С‚РѕРј, С‡С‚РѕР±С‹ С‚РѕС‡РЅРѕ РѕРїСЂРµРґРµР»РёС‚СЊ РµРіРѕ С‚РёРї
 				if (!m_pFontManager->LoadFontFromFile(wsFileName, 0, 10, 72, 72))
 				{
 					pEntry->bAvailable = true;
@@ -874,8 +874,8 @@ namespace PdfReader
 			}
 			else if (L"" == (wsFileName = pFont->GetExternalFontFilePath()))
 			{
-				// TODO: Сначала тут мы должны проверить, если ищется один из 14 стандартных шрифтов,
-				//       тогда мы должны вернуть путь к стандартному шрифту.
+				// TODO: РЎРЅР°С‡Р°Р»Р° С‚СѓС‚ РјС‹ РґРѕР»Р¶РЅС‹ РїСЂРѕРІРµСЂРёС‚СЊ, РµСЃР»Рё РёС‰РµС‚СЃСЏ РѕРґРёРЅ РёР· 14 СЃС‚Р°РЅРґР°СЂС‚РЅС‹С… С€СЂРёС„С‚РѕРІ,
+				//       С‚РѕРіРґР° РјС‹ РґРѕР»Р¶РЅС‹ РІРµСЂРЅСѓС‚СЊ РїСѓС‚СЊ Рє СЃС‚Р°РЅРґР°СЂС‚РЅРѕРјСѓ С€СЂРёС„С‚Сѓ.
 
 				CFontInfo* pFontInfo = NULL;
 				if (m_pFontManager)
@@ -986,13 +986,13 @@ namespace PdfReader
 					wsFileName = pFontInfo->m_wsFontPath;
 					eFontType  = pFont->IsCIDFont() ? fontCIDType2 : fontTrueType;
 				}
-				else // В крайнем случае, в данном шрифте просто не пишем ничего
+				else // Р’ РєСЂР°Р№РЅРµРј СЃР»СѓС‡Р°Рµ, РІ РґР°РЅРЅРѕРј С€СЂРёС„С‚Рµ РїСЂРѕСЃС‚Рѕ РЅРµ РїРёС€РµРј РЅРёС‡РµРіРѕ
 				{
 					pEntry->bAvailable = true;
 					return;
 				}
 
-				// Записываем файл с кодировкой. (Специально для перезаписи в PDF)
+				// Р—Р°РїРёСЃС‹РІР°РµРј С„Р°Р№Р» СЃ РєРѕРґРёСЂРѕРІРєРѕР№. (РЎРїРµС†РёР°Р»СЊРЅРѕ РґР»СЏ РїРµСЂРµР·Р°РїРёСЃРё РІ PDF)
 				if (c_nPDFWriter == m_lRendererType)
 				{
 					std::wstring wsExt;
@@ -1016,7 +1016,7 @@ namespace PdfReader
 					}
 					fclose(pTempFile);
 
-					// Копируем файл, для создания уникального имени, чтобы связать с файлом с кодировкой
+					// РљРѕРїРёСЂСѓРµРј С„Р°Р№Р», РґР»СЏ СЃРѕР·РґР°РЅРёСЏ СѓРЅРёРєР°Р»СЊРЅРѕРіРѕ РёРјРµРЅРё, С‡С‚РѕР±С‹ СЃРІСЏР·Р°С‚СЊ СЃ С„Р°Р№Р»РѕРј СЃ РєРѕРґРёСЂРѕРІРєРѕР№
 					if (NSFile::CFileBinary::Copy(wsFileName, wsTempFileName))
 					{
 						wsFileName = wsTempFileName;
@@ -1045,14 +1045,14 @@ namespace PdfReader
 						{
 							Dict *pFontDict = oFontObject.GetDict();
 
-							int nEncodingType = -1; // Объекта Encoding нет
+							int nEncodingType = -1; // РћР±СЉРµРєС‚Р° Encoding РЅРµС‚
 							int nBaseEncoding = -1;
 
 							Object oDictItem;
 							pFontDict->Search("Encoding", &oDictItem);
 							if (oDictItem.IsDict())
 							{
-								nEncodingType = 1; // Encoding - идет отдельным объектом
+								nEncodingType = 1; // Encoding - РёРґРµС‚ РѕС‚РґРµР»СЊРЅС‹Рј РѕР±СЉРµРєС‚РѕРј
 
 								Object oTemp;
 								oDictItem.DictLookup("BaseEncoding", &oTemp);
@@ -1123,7 +1123,7 @@ namespace PdfReader
 										}
 										else
 										{
-											// TODO: Неправильный тип записи
+											// TODO: РќРµРїСЂР°РІРёР»СЊРЅС‹Р№ С‚РёРї Р·Р°РїРёСЃРё
 										}
 										oTemp.Free();
 									}
@@ -1141,7 +1141,7 @@ namespace PdfReader
 				}
 			}
 
-			// Здесь мы грузим кодировки
+			// Р—РґРµСЃСЊ РјС‹ РіСЂСѓР·РёРј РєРѕРґРёСЂРѕРІРєРё
 			unsigned short *pCodeToGID = NULL, *pCodeToUnicode = NULL;
 			int nLen = 0;
 			CFontFileTrueType *pTTFontFile  = NULL;
@@ -1201,7 +1201,7 @@ namespace PdfReader
 				case fontCIDType0:
 				case fontCIDType0C:
 				{
-					// TODO: Проверить, почему получение данной кодировки было отключено
+					// TODO: РџСЂРѕРІРµСЂРёС‚СЊ, РїРѕС‡РµРјСѓ РїРѕР»СѓС‡РµРЅРёРµ РґР°РЅРЅРѕР№ РєРѕРґРёСЂРѕРІРєРё Р±С‹Р»Рѕ РѕС‚РєР»СЋС‡РµРЅРѕ
 					//if ((pT1CFontFile = CFontFileType1C::LoadFromFile((wchar_t*)wsFileName.c_str())))
 					//{
 					//	pCodeToGID = pT1CFontFile->GetCIDToGIDMap(&nLen);
@@ -1244,13 +1244,13 @@ namespace PdfReader
 					nLen = 0;
 					if (L"" != wsFileName)
 					{
-						// Создаем карту CID-to-GID
+						// РЎРѕР·РґР°РµРј РєР°СЂС‚Сѓ CID-to-GID
 						CharCodeToUnicode *pCodeToUnicode = NULL;
 						if ((pCodeToUnicode = ((GrCIDFont *)pFont)->GetToUnicode()))
 						{
 							if ((pTTFontFile = CFontFileTrueType::LoadFromFile((wchar_t*)wsFileName.c_str())))
 							{
-								// Ищем Unicode Cmap
+								// РС‰РµРј Unicode Cmap
 								CArray<int> arrCMapIndex;
 								for (int nCMapIndex = 0; nCMapIndex < pTTFontFile->GetCmapsCount(); ++nCMapIndex)
 								{
@@ -1319,7 +1319,7 @@ namespace PdfReader
 				}
 				default:
 				{
-					// Такого не должно произойти
+					// РўР°РєРѕРіРѕ РЅРµ РґРѕР»Р¶РЅРѕ РїСЂРѕРёР·РѕР№С‚Рё
 					if (L"" != wsTempFileName)
 						NSFile::CFileBinary::Remove(wsTempFileName);
 
@@ -1327,7 +1327,7 @@ namespace PdfReader
 				}
 			}
 
-			// Составляем таблицу Code -> Unicode 
+			// РЎРѕСЃС‚Р°РІР»СЏРµРј С‚Р°Р±Р»РёС†Сѓ Code -> Unicode 
 			int nToUnicodeLen = 0;
 			if (pFont->IsCIDFont())
 			{
@@ -1376,7 +1376,7 @@ namespace PdfReader
 				}
 			}
 
-			// Записываем файл с настройками шрифта (Специально для перезаписи в PDF)
+			// Р—Р°РїРёСЃС‹РІР°РµРј С„Р°Р№Р» СЃ РЅР°СЃС‚СЂРѕР№РєР°РјРё С€СЂРёС„С‚Р° (РЎРїРµС†РёР°Р»СЊРЅРѕ РґР»СЏ РїРµСЂРµР·Р°РїРёСЃРё РІ PDF)
 			if (L"" != wsFileName && c_nPDFWriter == m_lRendererType)
 			{			
 				std::wstring wsSplitFileName, wsSplitFileExt;
@@ -1386,7 +1386,7 @@ namespace PdfReader
 				GrFontType eFontType = pFont->GetType();
 				if (fontType1 == eFontType || fontType1C == eFontType || fontType1COT == eFontType || fontTrueType == eFontType || fontTrueTypeOT == eFontType)
 				{
-					// Запись информации для простых шрифтов
+					// Р—Р°РїРёСЃСЊ РёРЅС„РѕСЂРјР°С†РёРё РґР»СЏ РїСЂРѕСЃС‚С‹С… С€СЂРёС„С‚РѕРІ
 					CXmlWriter oXmlWriter;
 
 					Ref *pRef = pFont->GetID();
@@ -1399,14 +1399,14 @@ namespace PdfReader
 					{
 						Dict *pFontDict = oFontObject.GetDict();
 
-						int nEncodingType = -1; // Объекта Encoding нет
+						int nEncodingType = -1; // РћР±СЉРµРєС‚Р° Encoding РЅРµС‚
 						int nBaseEncoding = -1;
 
 						Object oDictItem;
 						pFontDict->Search("Encoding", &oDictItem);
 						if (oDictItem.IsDict())
 						{
-							nEncodingType = 1; // Encoding - идет отдельным объектом
+							nEncodingType = 1; // Encoding - РёРґРµС‚ РѕС‚РґРµР»СЊРЅС‹Рј РѕР±СЉРµРєС‚РѕРј
 
 							Object oTemp;
 							oDictItem.DictLookup("BaseEncoding", &oTemp);
@@ -1764,7 +1764,7 @@ namespace PdfReader
 				}
 				else if (fontCIDType0 == eFontType || fontCIDType0C == eFontType || fontCIDType0COT == eFontType || fontCIDType2 == eFontType || fontCIDType2OT == eFontType)
 				{
-					// Пишем файл с кодировкой CMap
+					// РџРёС€РµРј С„Р°Р№Р» СЃ РєРѕРґРёСЂРѕРІРєРѕР№ CMap
 					std::wstring wsCMapPath = wsSplitFileName + L".cmap";					
 					if (pFont->IsCIDFont())
 					{
@@ -2183,7 +2183,7 @@ namespace PdfReader
 												}
 												oItemFD.Free();
 
-												// TODO: Тут надо реализовать чтени полей /Style, /Lang, /FD, /CIDSet
+												// TODO: РўСѓС‚ РЅР°РґРѕ СЂРµР°Р»РёР·РѕРІР°С‚СЊ С‡С‚РµРЅРё РїРѕР»РµР№ /Style, /Lang, /FD, /CIDSet
 
 												oXmlWriter.WriteNodeEnd(L"FontDescriptor");
 											}
@@ -2367,7 +2367,7 @@ namespace PdfReader
 				}
 			}
 
-			// Обрежем индекс у FontName, если он есть
+			// РћР±СЂРµР¶РµРј РёРЅРґРµРєСЃ Сѓ FontName, РµСЃР»Рё РѕРЅ РµСЃС‚СЊ
 			if (wsFontName.length() > 7)
 			{
 				bool bIsIndex = true;
@@ -2483,7 +2483,7 @@ namespace PdfReader
 	}
 	bool RendererOutputDev::AxialShadedFill(GrState *pGState, GrAxialShading    *pShading)
 	{
-		// TODO: Реализовать линейный градиент
+		// TODO: Р РµР°Р»РёР·РѕРІР°С‚СЊ Р»РёРЅРµР№РЅС‹Р№ РіСЂР°РґРёРµРЅС‚
 		return false;
 		//m_pRenderer->BeginCommand(c_nPDFGradientType);
 
@@ -2538,7 +2538,7 @@ namespace PdfReader
 		//m_pRenderer->SetBrush(bsXml);
 		//::SysFreeString(bsXml);
 
-		//// Присылаем 16 цветов
+		//// РџСЂРёСЃС‹Р»Р°РµРј 16 С†РІРµС‚РѕРІ
 		//double dT0 = pShading->GetDomain0();
 		//double dT1 = pShading->GetDomain1();
 		//GrColor oColor;
@@ -2567,7 +2567,7 @@ namespace PdfReader
 	}
 	bool RendererOutputDev::RadialShadedFill(GrState *pGState, GrRadialShading   *pShading)
 	{
-		// TODO: Реализовать радиальный градиент
+		// TODO: Р РµР°Р»РёР·РѕРІР°С‚СЊ СЂР°РґРёР°Р»СЊРЅС‹Р№ РіСЂР°РґРёРµРЅС‚
 		return false;
 
 		//m_pRenderer->BeginCommand(c_nPDFGradientType);
@@ -2630,7 +2630,7 @@ namespace PdfReader
 		//m_pRenderer->SetBrush(bsXml);
 		//::SysFreeString(bsXml);
 
-		//// Присылаем 15 цветов
+		//// РџСЂРёСЃС‹Р»Р°РµРј 15 С†РІРµС‚РѕРІ
 		//double dT0 = pShading->GetDomain0();
 		//double dT1 = pShading->GetDomain1();
 		//GrColor oColor;
@@ -2768,7 +2768,7 @@ namespace PdfReader
 
 		int nRenderMode = pGState->GetRenderMode();
 
-		// Обработка Clip
+		// РћР±СЂР°Р±РѕС‚РєР° Clip
 		if (nRenderMode >= 4)
 		{
 			if (m_pBufferTextClip)
@@ -2777,7 +2777,7 @@ namespace PdfReader
 			m_pBufferTextClip = new GrTextClip();
 		}
 
-		// Обработка Stroke
+		// РћР±СЂР°Р±РѕС‚РєР° Stroke
 		if (1 == nRenderMode || 2 == nRenderMode || 5 == nRenderMode || 6 == nRenderMode)
 		{
 			//Painter::CPen oPen;
@@ -2798,7 +2798,7 @@ namespace PdfReader
 
 		int nRenderMode = pGState->GetRenderMode();
 
-		// Добавляем в Clipping Path текст
+		// Р”РѕР±Р°РІР»СЏРµРј РІ Clipping Path С‚РµРєСЃС‚
 		if (nRenderMode >= 4)
 		{
 			if (m_pBufferTextClip)
@@ -2818,7 +2818,7 @@ namespace PdfReader
 			UpdateFont(pGState);
 		}
 
-		// Возвращаем параметры для Stroke
+		// Р’РѕР·РІСЂР°С‰Р°РµРј РїР°СЂР°РјРµС‚СЂС‹ РґР»СЏ Stroke
 		if (1 == nRenderMode || 2 == nRenderMode || 5 == nRenderMode || 6 == nRenderMode)
 		{
 			//BSTR bsPen = m_oPen.ToXmlString().AllocSysString();
@@ -2833,18 +2833,18 @@ namespace PdfReader
 		if (m_bTransparentGroup)
 			return;
 
-		// Проверяем наличие списка со шрифтами
+		// РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СЃРїРёСЃРєР° СЃРѕ С€СЂРёС„С‚Р°РјРё
 		if (NULL == m_pFontList)
 			return;
 
-		// Проверяем наличие текущего шрифта 
+		// РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ С‚РµРєСѓС‰РµРіРѕ С€СЂРёС„С‚Р° 
 		TFontEntry oEntry;
 		if (!m_pFontList->GetFont(pGState->GetFont()->GetID(), &oEntry))
 			return;
 
 		int nRendererMode = pGState->GetRenderMode();
 
-		if (3 == nRendererMode) // Невидимый текс
+		if (3 == nRendererMode) // РќРµРІРёРґРёРјС‹Р№ С‚РµРєСЃ
 			return;
 
 		double *pCTM  = pGState->GetCTM();
@@ -2883,18 +2883,18 @@ namespace PdfReader
 		if (m_bTransparentGroup)
 			return;
 
-		// Проверяем наличие списка со шрифтами
+		// РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ СЃРїРёСЃРєР° СЃРѕ С€СЂРёС„С‚Р°РјРё
 		if (NULL == m_pFontList)
 			return;
 
-		// Проверяем наличие текущего шрифта 
+		// РџСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ С‚РµРєСѓС‰РµРіРѕ С€СЂРёС„С‚Р° 
 		TFontEntry oEntry;
 		if (!m_pFontList->GetFont(pGState->GetFont()->GetID(), &oEntry))
 			return;
 
 		int   nRenderMode = pGState->GetRenderMode();
 
-		if (3 == nRenderMode) // Невидимый текст
+		if (3 == nRenderMode) // РќРµРІРёРґРёРјС‹Р№ С‚РµРєСЃС‚
 		{
 			return;
 		}
@@ -2952,7 +2952,7 @@ namespace PdfReader
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 
-		// Здесь мы посылаем координаты текста в пунктах
+		// Р—РґРµСЃСЊ РјС‹ РїРѕСЃС‹Р»Р°РµРј РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РµРєСЃС‚Р° РІ РїСѓРЅРєС‚Р°С…
 
 		double dPageHeight = pGState->GetPageHeight();
 
@@ -2966,12 +2966,12 @@ namespace PdfReader
 		{
 			if (pGState->GetFont()->IsCIDFont())
 			{
-				// Значит кодировка была Identity-H или Identity-V, что означает, что иходные коды и есть юникодные значения
+				// Р—РЅР°С‡РёС‚ РєРѕРґРёСЂРѕРІРєР° Р±С‹Р»Р° Identity-H РёР»Рё Identity-V, С‡С‚Рѕ РѕР·РЅР°С‡Р°РµС‚, С‡С‚Рѕ РёС…РѕРґРЅС‹Рµ РєРѕРґС‹ Рё РµСЃС‚СЊ СЋРЅРёРєРѕРґРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ
 				wsUnicodeText = (wchar_t(nCode));
 			}
 			else
 			{
-				// Договорились, что если нельзя точно составить юникодные значения, тогда отдаем NULL
+				// Р”РѕРіРѕРІРѕСЂРёР»РёСЃСЊ, С‡С‚Рѕ РµСЃР»Рё РЅРµР»СЊР·СЏ С‚РѕС‡РЅРѕ СЃРѕСЃС‚Р°РІРёС‚СЊ СЋРЅРёРєРѕРґРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ, С‚РѕРіРґР° РѕС‚РґР°РµРј NULL
 				wsUnicodeText = L"";
 			}
 		}
@@ -2997,7 +2997,7 @@ namespace PdfReader
 			int nCurCode = (0 == nCode ? 65534 : nCode);
 			if (pGState->GetFont()->IsCIDFont())
 			{
-				// Мы посылаем и сам CID и внутренний Code с его длинной
+				// РњС‹ РїРѕСЃС‹Р»Р°РµРј Рё СЃР°Рј CID Рё РІРЅСѓС‚СЂРµРЅРЅРёР№ Code СЃ РµРіРѕ РґР»РёРЅРЅРѕР№
 				CXmlWriter oWriter;
 				oWriter.WriteNodeBegin(L"PDF-Text", true);
 				oWriter.WriteAttribute(L"cid", nCurCode);
@@ -3008,7 +3008,7 @@ namespace PdfReader
 			}
 			else
 			{
-				// Мы посылаем и сам CID и внутренний Code с его длинной
+				// РњС‹ РїРѕСЃС‹Р»Р°РµРј Рё СЃР°Рј CID Рё РІРЅСѓС‚СЂРµРЅРЅРёР№ Code СЃ РµРіРѕ РґР»РёРЅРЅРѕР№
 				CXmlWriter oWriter;
 				oWriter.WriteNodeBegin(L"PDF-Text", true);
 				oWriter.WriteAttribute(L"code", nCurCode);
@@ -3034,7 +3034,7 @@ namespace PdfReader
 			//m_pRenderer->PathCommandText( bsText, PDFCoordsToMM( 0 + dShiftX ), PDFCoordsToMM( /*-fabs(pFont->GetFontBBox()[3]) * dTfs*/ + dShiftY ), PDFCoordsToMM( 0 ), PDFCoordsToMM( 0 ), PDFCoordsToMM( 0 ) );
 
 
-			// Временно
+			// Р’СЂРµРјРµРЅРЅРѕ
 			//m_pRenderer->PathCommandTextEx( bsText, PDFCoordsToMM( 0 + dShiftX ), PDFCoordsToMM( /*-fabs(pFont->GetFontBBox()[3]) * dTfs*/ + dShiftY ), PDFCoordsToMM( 0 ), PDFCoordsToMM( 0 ), PDFCoordsToMM( 0 ), 0, bsStringGID );
 			//m_pRenderer->PathCommandTextEx( bsUnicodeText, bsGIDText, bsSrcCodeText, PDFCoordsToMM( 0 + dShiftX ), PDFCoordsToMM( /*-fabs(pFont->GetFontBBox()[3]) * dTfs*/0 + dShiftY ), PDFCoordsToMM( dDx ), PDFCoordsToMM( dDy ), PDFCoordsToMM( 0 ), 0 );
 			//-----------
@@ -3096,7 +3096,7 @@ namespace PdfReader
 		Aggplus::CImage oImage;
 		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
-		// Пишем данные в pBufferPtr
+		// РџРёС€РµРј РґР°РЅРЅС‹Рµ РІ pBufferPtr
 		ImageStream *pImageStream = new ImageStream(pStream, nWidth, 1, 1);
 
 		pImageStream->Reset();
@@ -3124,7 +3124,7 @@ namespace PdfReader
 		double arrMatrix[6];
 		double *pCTM = pGState->GetCTM();
 
-		//  Исходное предобразование
+		//  РСЃС…РѕРґРЅРѕРµ РїСЂРµРґРѕР±СЂР°Р·РѕРІР°РЅРёРµ
 		//              |1  0  0|   |pCTM[0] pCTM[1] 0| 
 		// arrMattrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//              |0  1  1|   |pCTM[4] pCTM[5] 1|
@@ -3155,7 +3155,7 @@ namespace PdfReader
 		Aggplus::CImage oImage;
 		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
-		// Пишем данные в pBufferPtr
+		// РџРёС€РµРј РґР°РЅРЅС‹Рµ РІ pBufferPtr
 		ImageStream *pImageStream = new ImageStream(pStream, nWidth, pColorMap->GetComponentsCount(), pColorMap->GetBitsPerComponent());
 
 		pImageStream->Reset();
@@ -3182,7 +3182,7 @@ namespace PdfReader
 
 		double arrMatrix[6];
 		double *pCTM = pGState->GetCTM();
-		//  Исходное предобразование
+		//  РСЃС…РѕРґРЅРѕРµ РїСЂРµРґРѕР±СЂР°Р·РѕРІР°РЅРёРµ
 		//             |1  0  0|   |pCTM[0] pCTM[1] 0| 
 		// arrMatrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//             |0  1  1|   |pCTM[4] pCTM[5] 1|
@@ -3199,8 +3199,8 @@ namespace PdfReader
 	}
 	void RendererOutputDev::DrawMaskedImage(GrState *pGState, Object *pRef, Stream *pStream, int nWidth, int nHeight, GrImageColorMap *pColorMap, Stream *pMaskStream, int nMaskWidth, int nMaskHeight, bool bMaskInvert)
 	{
-		// Вообще, размеры маски и самой картинки могут не совпадать (в этом случае мы должны срезайзить до размеров картинки)
-		// TO DO: Сделать, когда появится файл
+		// Р’РѕРѕР±С‰Рµ, СЂР°Р·РјРµСЂС‹ РјР°СЃРєРё Рё СЃР°РјРѕР№ РєР°СЂС‚РёРЅРєРё РјРѕРіСѓС‚ РЅРµ СЃРѕРІРїР°РґР°С‚СЊ (РІ СЌС‚РѕРј СЃР»СѓС‡Р°Рµ РјС‹ РґРѕР»Р¶РЅС‹ СЃСЂРµР·Р°Р№Р·РёС‚СЊ РґРѕ СЂР°Р·РјРµСЂРѕРІ РєР°СЂС‚РёРЅРєРё)
+		// TO DO: РЎРґРµР»Р°С‚СЊ, РєРѕРіРґР° РїРѕСЏРІРёС‚СЃСЏ С„Р°Р№Р»
 		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
 			DrawImage(pGState, pRef, pStream, nWidth, nHeight, pColorMap, NULL, false);
 
@@ -3217,7 +3217,7 @@ namespace PdfReader
 		Aggplus::CImage oImage;
 		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
-		// Пишем данные в pBufferPtr
+		// РџРёС€РµРј РґР°РЅРЅС‹Рµ РІ pBufferPtr
 		ImageStream *pImageStream = new ImageStream(pStream, nWidth, pColorMap->GetComponentsCount(), pColorMap->GetBitsPerComponent());
 		ImageStream *pMask = new ImageStream(pMaskStream, nMaskWidth, 1, 1);
 
@@ -3251,7 +3251,7 @@ namespace PdfReader
 
 		double arrMatrix[6];
 		double *pCTM = pGState->GetCTM();
-		//  Исходное предобразование
+		//  РСЃС…РѕРґРЅРѕРµ РїСЂРµРґРѕР±СЂР°Р·РѕРІР°РЅРёРµ
 		//             |1  0  0|   |pCTM[0] pCTM[1] 0| 
 		// arrMatrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//             |0  1  1|   |pCTM[4] pCTM[5] 1|
@@ -3281,7 +3281,7 @@ namespace PdfReader
 		Aggplus::CImage oImage;
 		oImage.Create(pBufferPtr, nWidth, nHeight, -4 * nWidth);
 
-		// Пишем данные в pBufferPtr
+		// РџРёС€РµРј РґР°РЅРЅС‹Рµ РІ pBufferPtr
 		ImageStream *pImageStream = new ImageStream(pStream, nWidth, pColorMap->GetComponentsCount(), pColorMap->GetBitsPerComponent());
 		pImageStream->Reset();
 
@@ -3305,8 +3305,8 @@ namespace PdfReader
 
 		if (nWidth != nMaskWidth || nHeight != nMaskHeight)
 		{
-			// TO DO: Здесь сделан элементарный вариант масштабирования маски.
-			//        Надо улучшить алгоритм.
+			// TO DO: Р—РґРµСЃСЊ СЃРґРµР»Р°РЅ СЌР»РµРјРµРЅС‚Р°СЂРЅС‹Р№ РІР°СЂРёР°РЅС‚ РјР°СЃС€С‚Р°Р±РёСЂРѕРІР°РЅРёСЏ РјР°СЃРєРё.
+			//        РќР°РґРѕ СѓР»СѓС‡С€РёС‚СЊ Р°Р»РіРѕСЂРёС‚Рј.
 
 			bool bResize = true;
 
@@ -3398,7 +3398,7 @@ namespace PdfReader
 
 		double arrMatrix[6];
 		double *pCTM = pGState->GetCTM();
-		//  Исходное предобразование
+		//  РСЃС…РѕРґРЅРѕРµ РїСЂРµРґРѕР±СЂР°Р·РѕРІР°РЅРёРµ
 		//              |1  0  0|   |pCTM[0] pCTM[1] 0| 
 		// arrMattrix = |0 -1  0| * |pCTM[2] pCTM[3] 0|
 		//              |0  1  1|   |pCTM[4] pCTM[5] 1|

@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_GLOBAL_PARAMS_H
+п»ї#ifndef _PDF_READER_GLOBAL_PARAMS_H
 #define _PDF_READER_GLOBAL_PARAMS_H
 
 #include <stdio.h>
@@ -62,11 +62,11 @@ namespace PdfReader
 		NameToCharCode*         m_pNameToUnicode;        // Char name -> Unicode 
 
 		CMapCache*              m_pCMapCache;
-		std::wstring            m_wsCMapDirectory;       // Путь к папке с CMap файлами
+		std::wstring            m_wsCMapDirectory;       // С•СѓС‚СЊ Рє РїР°РїРєРµ СЃ CMap С„Р°Р№Р»Р°РјРё
 		std::wstring            m_wsTempDirectory;
 
 		CFontManager*           m_pFontManager;
-		std::wstring            m_arrBuiltinFontsPath[14]; // Пути к стандартным 14 шрифтам
+		std::wstring            m_arrBuiltinFontsPath[14]; // С•СѓС‚Рё Рє СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рј 14 С€СЂРёС„С‚Р°Рј
 	};
 }
 

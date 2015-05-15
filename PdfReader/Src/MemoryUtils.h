@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_MEMORY_UTILS_H
+п»ї#ifndef _PDF_READER_MEMORY_UTILS_H
 #define _PDF_READER_MEMORY_UTILS_H
 
 #include <stdio.h>
@@ -8,7 +8,7 @@
 namespace PdfReader
 {
 	//------------------------------------------------------------------------
-	// Аналогично malloc, но с обработкой ошибок.
+	// РђРЅР°Р»РѕРіРёС‡РЅРѕ malloc, РЅРѕ СЃ РѕР±СЂР°Р±РѕС‚РєРѕР№ РѕС€РёР±РѕРє.
 	static void *MemUtilsMalloc(int nSize)
 	{
 		void *pResult;
@@ -18,14 +18,14 @@ namespace PdfReader
 
 		if (!(pResult = malloc(nSize)))
 		{
-			// TO DO: Выдать ошибку выделения памяти
+			// TO DO: Р’С‹РґР°С‚СЊ РѕС€РёР±РєСѓ РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё
 		}
 		return pResult;
 	}
 
 
-	// Тоже что и realloc, но с обработкой ошибок. 
-	// Если <pData> NULL, вызывается функция malloc вместо realloc.
+	// РўРѕР¶Рµ С‡С‚Рѕ Рё realloc, РЅРѕ СЃ РѕР±СЂР°Р±РѕС‚РєРѕР№ РѕС€РёР±РѕРє. 
+	// Р•СЃР»Рё <pData> NULL, РІС‹Р·С‹РІР°РµС‚СЃСЏ С„СѓРЅРєС†РёСЏ malloc РІРјРµСЃС‚Рѕ realloc.
 	static void *MemUtilsRealloc(void *pData, int nSize)
 	{
 		void *pResult;
@@ -42,17 +42,17 @@ namespace PdfReader
 			pResult = malloc(nSize);
 		if (!pResult)
 		{
-			// TO DO: Выдать ошибку выделения памяти
+			// TO DO: Р’С‹РґР°С‚СЊ РѕС€РёР±РєСѓ РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё
 		}
 		return pResult;
 	}
 
 
-	// Тоже самое, что и MemUtilsMalloc and MemUtilsRelloc, толькоt
-	// учитывает количество элементов и размер элемента. В результате
-	// выделяется память размером nObjectsCount * nObjectSize байт. 
-	// Кроме того присутствует обработка ошибок и проверка того, чтобы
-	// суммарный размер не превышал предел для int.
+	// РўРѕР¶Рµ СЃР°РјРѕРµ, С‡С‚Рѕ Рё MemUtilsMalloc and MemUtilsRelloc, С‚РѕР»СЊРєРѕt
+	// СѓС‡РёС‚С‹РІР°РµС‚ РєРѕР»РёС‡РµСЃС‚РІРѕ СЌР»РµРјРµРЅС‚РѕРІ Рё СЂР°Р·РјРµСЂ СЌР»РµРјРµРЅС‚Р°. Р’ СЂРµР·СѓР»СЊС‚Р°С‚Рµ
+	// РІС‹РґРµР»СЏРµС‚СЃСЏ РїР°РјСЏС‚СЊ СЂР°Р·РјРµСЂРѕРј nObjectsCount * nObjectSize Р±Р°Р№С‚. 
+	// РљСЂРѕРјРµ С‚РѕРіРѕ РїСЂРёСЃСѓС‚СЃС‚РІСѓРµС‚ РѕР±СЂР°Р±РѕС‚РєР° РѕС€РёР±РѕРє Рё РїСЂРѕРІРµСЂРєР° С‚РѕРіРѕ, С‡С‚РѕР±С‹
+	// СЃСѓРјРјР°СЂРЅС‹Р№ СЂР°Р·РјРµСЂ РЅРµ РїСЂРµРІС‹С€Р°Р» РїСЂРµРґРµР» РґР»СЏ int.
 	static void *MemUtilsMallocArray(int nObjectsCount, int nObjectSize)
 	{
 		if (0 == nObjectsCount)
@@ -61,12 +61,12 @@ namespace PdfReader
 		int nSize = nObjectsCount * nObjectSize;
 		if (nObjectSize <= 0 || nObjectsCount < 0 || nObjectsCount >= INT_MAX / nObjectSize)
 		{
-			// TO DO: Выдать ошибку выделения памяти
+			// TO DO: Р’С‹РґР°С‚СЊ РѕС€РёР±РєСѓ РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё
 		}
 		return MemUtilsMalloc(nSize);
 	}
 
-	// Тоже что и free, но проверяет и игнорирует NULL-указатели.
+	// РўРѕР¶Рµ С‡С‚Рѕ Рё free, РЅРѕ РїСЂРѕРІРµСЂСЏРµС‚ Рё РёРіРЅРѕСЂРёСЂСѓРµС‚ NULL-СѓРєР°Р·Р°С‚РµР»Рё.
 	static void MemUtilsFree(void *pData)
 	{
 		if (pData)
@@ -85,12 +85,12 @@ namespace PdfReader
 
 		if (nObjectSize <= 0 || nObjectsCount < 0 || nObjectsCount >= INT_MAX / nObjectSize)
 		{
-			// TO DO: Выдать ошибку выделения памяти
+			// TO DO: Р’С‹РґР°С‚СЊ РѕС€РёР±РєСѓ РІС‹РґРµР»РµРЅРёСЏ РїР°РјСЏС‚Рё
 		}
 		return MemUtilsRealloc(pData, nSize);
 	}
 
-	// Выделяем память и копируем туда строку.
+	// Р’С‹РґРµР»СЏРµРј РїР°РјСЏС‚СЊ Рё РєРѕРїРёСЂСѓРµРј С‚СѓРґР° СЃС‚СЂРѕРєСѓ.
 	static char *CopyString(char *sString)
 	{
 		char *sResult = (char *)MemUtilsMalloc(strlen(sString) + 1);

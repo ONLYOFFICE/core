@@ -1,21 +1,21 @@
-#ifndef _PDF_READER_ERROR_CONSTANTS_H
+п»ї#ifndef _PDF_READER_ERROR_CONSTANTS_H
 #define _PDF_READER_ERROR_CONSTANTS_H
 
 namespace PdfReader
 {
 	typedef enum
 	{
-		errorNone          =  0, // Нет ошибок
-		errorOpenFile      =  1, // Ошибка при открытии PDF файла
+		errorNone          =  0, // РќРµС‚ РѕС€РёР±РѕРє
+		errorOpenFile      =  1, // РћС€РёР±РєР° РїСЂРё РѕС‚РєСЂС‹С‚РёРё PDF С„Р°Р№Р»Р°
 		errorBadCatalog    =  2, // couldn't read the page catalog
-		errorDamaged       =  3, // PDF файл был поврежден и его невозможно восстановить
-		errorEncrypted     =  4, // Файл зашифрован, авторизация не пройдена
+		errorDamaged       =  3, // PDF С„Р°Р№Р» Р±С‹Р» РїРѕРІСЂРµР¶РґРµРЅ Рё РµРіРѕ РЅРµРІРѕР·РјРѕР¶РЅРѕ РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ
+		errorEncrypted     =  4, // Р¤Р°Р№Р» Р·Р°С€РёС„СЂРѕРІР°РЅ, Р°РІС‚РѕСЂРёР·Р°С†РёСЏ РЅРµ РїСЂРѕР№РґРµРЅР°
 		errorHighlightFile =  5, // nonexistent or invalid highlight file
-		errorBadPrinter    =  6, // плохой принтер
-		errorPrinting      =  7, // ошибка во время печати
-		errorPermission    =  8, // Ошибка связанная с ограничениями наложенными на файл
-		errorBadPageNum    =  9, // Неверное количество страниц
-		errorFileIO        = 10  // Ошибка при чтении/записи
+		errorBadPrinter    =  6, // РїР»РѕС…РѕР№ РїСЂРёРЅС‚РµСЂ
+		errorPrinting      =  7, // РѕС€РёР±РєР° РІРѕ РІСЂРµРјСЏ РїРµС‡Р°С‚Рё
+		errorPermission    =  8, // РћС€РёР±РєР° СЃРІСЏР·Р°РЅРЅР°СЏ СЃ РѕРіСЂР°РЅРёС‡РµРЅРёСЏРјРё РЅР°Р»РѕР¶РµРЅРЅС‹РјРё РЅР° С„Р°Р№Р»
+		errorBadPageNum    =  9, // РќРµРІРµСЂРЅРѕРµ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂР°РЅРёС†
+		errorFileIO        = 10  // РћС€РёР±РєР° РїСЂРё С‡С‚РµРЅРёРё/Р·Р°РїРёСЃРё
 	} EError;
 }
 

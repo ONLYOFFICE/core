@@ -1,4 +1,4 @@
-#include <stdio.h>
+п»ї#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 #include <ctype.h>
@@ -25,10 +25,10 @@ namespace PdfReader
 		char *sProperName;
 	};
 
-	// PDF поддерживает 14 стандартных фонтов(Type1) без указаниях ширин и FontDescriptor, 
-	// поэтому мы состовляем карту отображающую стандартные фонты в 14 основных фонтов PDF.
-	// Эта таблица составлена на основе "implementation note 44 in the PDF 1.4 spec", с
-	// небольшими добавками.
+	// PDF РїРѕРґРґРµСЂР¶РёРІР°РµС‚ 14 СЃС‚Р°РЅРґР°СЂС‚РЅС‹С… С„РѕРЅС‚РѕРІ(Type1) Р±РµР· СѓРєР°Р·Р°РЅРёСЏС… С€РёСЂРёРЅ Рё FontDescriptor, 
+	// РїРѕСЌС‚РѕРјСѓ РјС‹ СЃРѕСЃС‚РѕРІР»СЏРµРј РєР°СЂС‚Сѓ РѕС‚РѕР±СЂР°Р¶Р°СЋС‰СѓСЋ СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ С„РѕРЅС‚С‹ РІ 14 РѕСЃРЅРѕРІРЅС‹С… С„РѕРЅС‚РѕРІ PDF.
+	// Р­С‚Р° С‚Р°Р±Р»РёС†Р° СЃРѕСЃС‚Р°РІР»РµРЅР° РЅР° РѕСЃРЅРѕРІРµ "implementation note 44 in the PDF 1.4 spec", СЃ
+	// РЅРµР±РѕР»СЊС€РёРјРё РґРѕР±Р°РІРєР°РјРё.
 	static StandardFontMapEntry c_sStandardFontMap[] =
 	{
 		{ "Arial", "Helvetica" },
@@ -90,7 +90,7 @@ namespace PdfReader
 
 	GrFont *GrFont::MakeFont(XRef *pXref, char *sTag, Ref oID, Dict *pFontDict, GlobalParams *pGlobalParams)
 	{
-		// Считываем название шрифта
+		// РЎС‡РёС‚С‹РІР°РµРј РЅР°Р·РІР°РЅРёРµ С€СЂРёС„С‚Р°
 		StringExt *seName = NULL;
 
 		Object oTemp;
@@ -101,7 +101,7 @@ namespace PdfReader
 		}
 		oTemp.Free();
 
-		// Тип шрифта
+		// РўРёРї С€СЂРёС„С‚Р°
 		GrFont *pFont = NULL;
 		pFontDict->Search("Subtype", &oTemp);
 		if (oTemp.IsName("Type1") || oTemp.IsName("MMType1"))
@@ -194,7 +194,7 @@ namespace PdfReader
 			}
 			oDictItem.Free();
 
-			// Ищем внедренный FontFile
+			// РС‰РµРј РІРЅРµРґСЂРµРЅРЅС‹Р№ FontFile
 			if (oFontDescriptor.DictLookupAndCopy("FontFile", &oDictItem)->IsRef())
 			{
 				m_oEmbFontFileRef = oDictItem.GetRef();
@@ -308,7 +308,7 @@ namespace PdfReader
 			if (oDictItem.IsNum())
 			{
 				dTemp = 0.001 * oDictItem.GetNum();
-				//  Некоторые неправильнае шрифты устанавливают Ascent и Descent равными 0
+				//  РќРµРєРѕС‚РѕСЂС‹Рµ РЅРµРїСЂР°РІРёР»СЊРЅР°Рµ С€СЂРёС„С‚С‹ СѓСЃС‚Р°РЅР°РІР»РёРІР°СЋС‚ Ascent Рё Descent СЂР°РІРЅС‹РјРё 0
 				if (dTemp != 0)
 				{
 					m_dAscent = dTemp;
@@ -321,12 +321,12 @@ namespace PdfReader
 			if (oDictItem.IsNum())
 			{
 				dTemp = 0.001 * oDictItem.GetNum();
-				//  Некоторые неправильнае шрифты устанавливают Ascent и Descent равными 0
+				//  РќРµРєРѕС‚РѕСЂС‹Рµ РЅРµРїСЂР°РІРёР»СЊРЅР°Рµ С€СЂРёС„С‚С‹ СѓСЃС‚Р°РЅР°РІР»РёРІР°СЋС‚ Ascent Рё Descent СЂР°РІРЅС‹РјРё 0
 				if (dTemp != 0)
 				{
 					m_dDescent = dTemp;
 				}
-				// Descent должно быть отрицательным значением
+				// Descent РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ РѕС‚СЂРёС†Р°С‚РµР»СЊРЅС‹Рј Р·РЅР°С‡РµРЅРёРµРј
 				if (m_dDescent > 0)
 				{
 					m_dDescent = -m_dDescent;
@@ -500,7 +500,7 @@ namespace PdfReader
 			int nFirst = 0;
 			int nLast = sizeof(c_sStandardFontMap) / sizeof(StandardFontMapEntry);
 
-			// Поиск методом деления отрезка пополам
+			// РџРѕРёСЃРє РјРµС‚РѕРґРѕРј РґРµР»РµРЅРёСЏ РѕС‚СЂРµР·РєР° РїРѕРїРѕР»Р°Рј
 			while (nLast - nFirst > 1)
 			{
 				int nMiddle = (nFirst + nLast) / 2;
@@ -520,7 +520,7 @@ namespace PdfReader
 			delete seName2;
 		}
 
-		// Смотрим является ли наш фонт одним из 14 стандартных
+		// РЎРјРѕС‚СЂРёРј СЏРІР»СЏРµС‚СЃСЏ Р»Рё РЅР°С€ С„РѕРЅС‚ РѕРґРЅРёРј РёР· 14 СЃС‚Р°РЅРґР°СЂС‚РЅС‹С…
 		BuiltinFont *pBuiltinFont = NULL;
 		if (m_seName)
 		{
@@ -534,7 +534,7 @@ namespace PdfReader
 			}
 		}
 
-		// Выставляем стандартные значения для Ascent/Descent/BBox
+		// Р’С‹СЃС‚Р°РІР»СЏРµРј СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ Ascent/Descent/BBox
 		if (pBuiltinFont)
 		{
 			m_dAscent  = 0.001 * pBuiltinFont->nAscent;
@@ -551,10 +551,10 @@ namespace PdfReader
 			m_arrFontBBox[0] = m_arrFontBBox[1] = m_arrFontBBox[2] = m_arrFontBBox[3] = 0;
 		}
 
-		// Считываем данные из FontDescriptor
+		// РЎС‡РёС‚С‹РІР°РµРј РґР°РЅРЅС‹Рµ РёР· FontDescriptor
 		ReadFontDescriptor(pXref, pFontDict);
 
-		// Для стандартных фонтов выставляем стандартные значения Ascent/Descent/BBox
+		// Р”Р»СЏ СЃС‚Р°РЅРґР°СЂС‚РЅС‹С… С„РѕРЅС‚РѕРІ РІС‹СЃС‚Р°РІР»СЏРµРј СЃС‚Р°РЅРґР°СЂС‚РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ Ascent/Descent/BBox
 		if (pBuiltinFont && m_oEmbFontFileRef.nNum < 0)
 		{
 			m_dAscent  = 0.001 * pBuiltinFont->nAscent;
@@ -565,7 +565,7 @@ namespace PdfReader
 			m_arrFontBBox[3] = 0.001 * pBuiltinFont->arrBBox[3];
 		}
 
-		// Ищем внешний FontFile
+		// РС‰РµРј РІРЅРµС€РЅРёР№ FontFile
 		FindExternalFontFile(pBuiltinFont ? true : false);
 
 		// FontMatrix
@@ -587,7 +587,7 @@ namespace PdfReader
 		}
 		oDictItem.Free();
 
-		// Считываем данные, характерные для шрифта Type 3
+		// РЎС‡РёС‚С‹РІР°РµРј РґР°РЅРЅС‹Рµ, С…Р°СЂР°РєС‚РµСЂРЅС‹Рµ РґР»СЏ С€СЂРёС„С‚Р° Type 3
 		if (m_eType == fontType3)
 		{
 			if (pFontDict->Search("FontBBox", &oDictItem)->IsArray())
@@ -616,19 +616,19 @@ namespace PdfReader
 			}
 		}
 
-		//----- Строим Encoding -----
+		//----- РЎС‚СЂРѕРёРј Encoding -----
 
-		// Encodings начинается с BaseEncoding, которую мы можем найти в
-		// (в порядке приоритета):
+		// Encodings РЅР°С‡РёРЅР°РµС‚СЃСЏ СЃ BaseEncoding, РєРѕС‚РѕСЂСѓСЋ РјС‹ РјРѕР¶РµРј РЅР°Р№С‚Рё РІ
+		// (РІ РїРѕСЂСЏРґРєРµ РїСЂРёРѕСЂРёС‚РµС‚Р°):
 		//   1. pFontDict.Encoding or pFontDict.Encoding.BaseEncoding
 		//        - MacRoman / MacExpert / WinAnsi / Standard
-		//   2. Во внедренном или внешнем FontFile
-		//   3. Стандартные значения(если до этого не нашли):
+		//   2. Р’Рѕ РІРЅРµРґСЂРµРЅРЅРѕРј РёР»Рё РІРЅРµС€РЅРµРј FontFile
+		//   3. РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ(РµСЃР»Рё РґРѕ СЌС‚РѕРіРѕ РЅРµ РЅР°С€Р»Рё):
 		//        - Builtin   --> Builtin encoding
 		//        - TrueType  --> WinAnsiEncoding
-		//        - Остальные --> StandardEncoding
+		//        - РћСЃС‚Р°Р»СЊРЅС‹Рµ --> StandardEncoding
 
-		// Ищем BaseEncoding в pFontDict
+		// РС‰РµРј BaseEncoding РІ pFontDict
 		m_bHasEncoding = false;
 		m_bUsesMacRomanEncoding = false;
 		char **ppBaseEncoding = NULL;
@@ -674,7 +674,7 @@ namespace PdfReader
 			ppBaseEncoding = c_arrWinAnsiEncoding;
 		}
 
-		// Ищем BaseEncoding в FontFile(только для Type1)
+		// РС‰РµРј BaseEncoding РІ FontFile(С‚РѕР»СЊРєРѕ РґР»СЏ Type1)
 		CFontFileType1  *pFFT1  = NULL;
 		CFontFileType1C *pFFT1C = NULL;
 		char *sBuffer = NULL;
@@ -741,7 +741,7 @@ namespace PdfReader
 			MemUtilsFree(sBuffer);
 		}
 
-		// Стандартные значения BaseEncoding
+		// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ BaseEncoding
 		if (!ppBaseEncoding)
 		{
 			if (pBuiltinFont && m_oEmbFontFileRef.nNum < 0)
@@ -769,8 +769,8 @@ namespace PdfReader
 			}
 		}
 
-		// Некоторые Type 1C Font Files имею пустые кодировки, что может навредить конвертации T1C->T1,
-		// поэтому мы заполняем все пустые места из StandardEncoding
+		// РќРµРєРѕС‚РѕСЂС‹Рµ Type 1C Font Files РёРјРµСЋ РїСѓСЃС‚С‹Рµ РєРѕРґРёСЂРѕРІРєРё, С‡С‚Рѕ РјРѕР¶РµС‚ РЅР°РІСЂРµРґРёС‚СЊ РєРѕРЅРІРµСЂС‚Р°С†РёРё T1C->T1,
+		// РїРѕСЌС‚РѕРјСѓ РјС‹ Р·Р°РїРѕР»РЅСЏРµРј РІСЃРµ РїСѓСЃС‚С‹Рµ РјРµСЃС‚Р° РёР· StandardEncoding
 		if (m_eType == fontType1C && (L"" != m_wsExternalFontFilePath || m_oEmbFontFileRef.nNum >= 0) && bBaseEncodingFromFontFile)
 		{
 			for (int nIndex = 0; nIndex < 256; ++nIndex)
@@ -835,7 +835,7 @@ namespace PdfReader
 
 		//----- build the mapping to Unicode -----
 
-		// Шаг 1: Используем соответствие Name-to-Unicode
+		// РЁР°Рі 1: РСЃРїРѕР»СЊР·СѓРµРј СЃРѕРѕС‚РІРµС‚СЃС‚РІРёРµ Name-to-Unicode
 		bool bMissing = false, bHex = false;
 		char *sCharName;
 		Unicode arrToUnicode[256];
@@ -845,9 +845,9 @@ namespace PdfReader
 			{
 				if (m_pGlobalParams && !(arrToUnicode[nCode] = m_pGlobalParams->MapNameToUnicode(sCharName)) && strcmp(sCharName, ".notdef"))
 				{
-					// Если данного символа не было в таблице Name-to-Unicode table, проверяем 
-					// как выглядит Name. ( либо 'Axx', либо 'xx', где  'A' - произвольная буква
-					// и 'xx' - два шестнадцатиричных числа
+					// Р•СЃР»Рё РґР°РЅРЅРѕРіРѕ СЃРёРјРІРѕР»Р° РЅРµ Р±С‹Р»Рѕ РІ С‚Р°Р±Р»РёС†Рµ Name-to-Unicode table, РїСЂРѕРІРµСЂСЏРµРј 
+					// РєР°Рє РІС‹РіР»СЏРґРёС‚ Name. ( Р»РёР±Рѕ 'Axx', Р»РёР±Рѕ 'xx', РіРґРµ  'A' - РїСЂРѕРёР·РІРѕР»СЊРЅР°СЏ Р±СѓРєРІР°
+					// Рё 'xx' - РґРІР° С€РµСЃС‚РЅР°РґС†Р°С‚РёСЂРёС‡РЅС‹С… С‡РёСЃР»Р°
 					if ((strlen(sCharName) == 3 && isalpha(sCharName[0]) &&
 						isxdigit(sCharName[1]) && isxdigit(sCharName[2]) &&
 						((sCharName[1] >= 'a' && sCharName[1] <= 'f') ||
@@ -874,9 +874,9 @@ namespace PdfReader
 			}
 		}
 
-		// Шаг 2: Заполняем пропущенные символы, ищем имена одного из видов
-		// 'Axx', 'xx', 'Ann', 'ABnn' или 'nn', где 'A'  и 'B' - любые буквы,
-		// 'xx' -  два шестнадцатиричных числа, и 'nn' - 2-4 десятичных числа
+		// РЁР°Рі 2: Р—Р°РїРѕР»РЅСЏРµРј РїСЂРѕРїСѓС‰РµРЅРЅС‹Рµ СЃРёРјРІРѕР»С‹, РёС‰РµРј РёРјРµРЅР° РѕРґРЅРѕРіРѕ РёР· РІРёРґРѕРІ
+		// 'Axx', 'xx', 'Ann', 'ABnn' РёР»Рё 'nn', РіРґРµ 'A'  Рё 'B' - Р»СЋР±С‹Рµ Р±СѓРєРІС‹,
+		// 'xx' -  РґРІР° С€РµСЃС‚РЅР°РґС†Р°С‚РёСЂРёС‡РЅС‹С… С‡РёСЃР»Р°, Рё 'nn' - 2-4 РґРµСЃСЏС‚РёС‡РЅС‹С… С‡РёСЃР»Р°
 		if (bMissing && m_pGlobalParams && m_pGlobalParams->GetMapNumericCharNames())
 		{
 			for (int nCode = 0; nCode < 256; ++nCode)
@@ -912,7 +912,7 @@ namespace PdfReader
 				}
 			}
 		}
-		else if (bMissing && m_pGlobalParams && m_pGlobalParams->GetMapUnknownCharNames()) 	// Если установлен флаг 'mapUnknownCharNames'
+		else if (bMissing && m_pGlobalParams && m_pGlobalParams->GetMapUnknownCharNames()) 	// Р•СЃР»Рё СѓСЃС‚Р°РЅРѕРІР»РµРЅ С„Р»Р°Рі 'mapUnknownCharNames'
 		{
 			for (int nCode = 0; nCode < 256; ++nCode)
 			{
@@ -928,7 +928,7 @@ namespace PdfReader
 		// ToUnicode CMap
 		ReadToUnicodeCMap(pFontDict, 8, m_pCharToUnicode);
 
-		// Ищем Unicode-to-Unicode
+		// РС‰РµРј Unicode-to-Unicode
 		CharCodeToUnicode *pUnicodeToUnicode, *pCharToUnicode;
 		if (m_seName && m_pGlobalParams && (pUnicodeToUnicode = m_pGlobalParams->GetUnicodeToUnicode(m_seName)))
 		{
@@ -963,7 +963,7 @@ namespace PdfReader
 			m_arrWidths[nCode] = m_dMissingWidth * 0.001;
 		}
 
-		// Используем шириные из pFontDict, если они там заданы
+		// РСЃРїРѕР»СЊР·СѓРµРј С€РёСЂРёРЅС‹Рµ РёР· pFontDict, РµСЃР»Рё РѕРЅРё С‚Р°Рј Р·Р°РґР°РЅС‹
 		pFontDict->Search("FirstChar", &oDictItem);
 		int nFirstChar = oDictItem.IsInt() ? oDictItem.GetInt() : 0;
 		oDictItem.Free();
@@ -1005,9 +1005,9 @@ namespace PdfReader
 				oTemp.Free();
 			}
 		}
-		else if (pBuiltinFont)  // Используем ширины из Built-in шрифта
+		else if (pBuiltinFont)  // РСЃРїРѕР»СЊР·СѓРµРј С€РёСЂРёРЅС‹ РёР· Built-in С€СЂРёС„С‚Р°
 		{
-			// Некорректные PDF-файлы кодируют символ с номером 32 как .notdef(хотя это пробел)
+			// РќРµРєРѕСЂСЂРµРєС‚РЅС‹Рµ PDF-С„Р°Р№Р»С‹ РєРѕРґРёСЂСѓСЋС‚ СЃРёРјРІРѕР» СЃ РЅРѕРјРµСЂРѕРј 32 РєР°Рє .notdef(С…РѕС‚СЏ СЌС‚Рѕ РїСЂРѕР±РµР»)
 			unsigned short unWidth = 0;
 			if (BuiltinFontGetWidth(pBuiltinFont, "space", &unWidth))
 			{
@@ -1021,7 +1021,7 @@ namespace PdfReader
 				}
 			}
 		}
-		else // Ширины не заданы - заполняем стандартными значениями
+		else // РЁРёСЂРёРЅС‹ РЅРµ Р·Р°РґР°РЅС‹ - Р·Р°РїРѕР»РЅСЏРµРј СЃС‚Р°РЅРґР°СЂС‚РЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё
 		{
 			int nIndex = 0;
 			if (IsFixedWidth())
@@ -1046,7 +1046,7 @@ namespace PdfReader
 			}
 			pBuiltinFont = c_arrBuiltinFontSubset[nIndex];
 
-			// Некорректные PDF-файлы кодируют символ с номером 32 как .notdef(хотя это пробел)
+			// РќРµРєРѕСЂСЂРµРєС‚РЅС‹Рµ PDF-С„Р°Р№Р»С‹ РєРѕРґРёСЂСѓСЋС‚ СЃРёРјРІРѕР» СЃ РЅРѕРјРµСЂРѕРј 32 РєР°Рє .notdef(С…РѕС‚СЏ СЌС‚Рѕ РїСЂРѕР±РµР»)
 			unsigned short unWidth = 0;
 			if (BuiltinFontGetWidth(pBuiltinFont, "space", &unWidth))
 			{
@@ -1110,32 +1110,32 @@ namespace PdfReader
 			pMap[nIndex] = 0;
 		}
 
-		// 1. Если в PDF задана кодировка:
-		//    1a. Если в PDF шрифте определна кодировка MacRomanEncoding и
-		//        TrueType-шрифт имеет Macintosh Roman CMap, используем его, 
-		//        и получем обатно по именам коды символов.
-		//    1b. Если TrueType-шрифт имеет Microsoft Unicode CMap или 
-		//        non-Microsoft Unicode CMap, используем его, и используем 
-		//        юникодные номера, а не коды символов.
-		//    1c. Если PDF-шрифт - Symbolic и TrueType-шрифт имеет 
-		//        Microsoft Symbol CMap, используем его, и используем сами
-		//        коды символов (возможно со сдвигом 0xf000).
-		//    1d. Если TrueType-шрифт имеет Macintosh Roman CMap, используем 
-		//        его как и в случае 1a.
-		// 2. Если PDF-шрифт не имеет кодировки или PDF-шрифт - Symbolic:
-		//    2a. Если TrueType-шрифт имеет Macintosh Roman CMap, используем 
-		//        его, и используем сами коды символов (возможно со сдвигом
+		// 1. Р•СЃР»Рё РІ PDF Р·Р°РґР°РЅР° РєРѕРґРёСЂРѕРІРєР°:
+		//    1a. Р•СЃР»Рё РІ PDF С€СЂРёС„С‚Рµ РѕРїСЂРµРґРµР»РЅР° РєРѕРґРёСЂРѕРІРєР° MacRomanEncoding Рё
+		//        TrueType-С€СЂРёС„С‚ РёРјРµРµС‚ Macintosh Roman CMap, РёСЃРїРѕР»СЊР·СѓРµРј РµРіРѕ, 
+		//        Рё РїРѕР»СѓС‡РµРј РѕР±Р°С‚РЅРѕ РїРѕ РёРјРµРЅР°Рј РєРѕРґС‹ СЃРёРјРІРѕР»РѕРІ.
+		//    1b. Р•СЃР»Рё TrueType-С€СЂРёС„С‚ РёРјРµРµС‚ Microsoft Unicode CMap РёР»Рё 
+		//        non-Microsoft Unicode CMap, РёСЃРїРѕР»СЊР·СѓРµРј РµРіРѕ, Рё РёСЃРїРѕР»СЊР·СѓРµРј 
+		//        СЋРЅРёРєРѕРґРЅС‹Рµ РЅРѕРјРµСЂР°, Р° РЅРµ РєРѕРґС‹ СЃРёРјРІРѕР»РѕРІ.
+		//    1c. Р•СЃР»Рё PDF-С€СЂРёС„С‚ - Symbolic Рё TrueType-С€СЂРёС„С‚ РёРјРµРµС‚ 
+		//        Microsoft Symbol CMap, РёСЃРїРѕР»СЊР·СѓРµРј РµРіРѕ, Рё РёСЃРїРѕР»СЊР·СѓРµРј СЃР°РјРё
+		//        РєРѕРґС‹ СЃРёРјРІРѕР»РѕРІ (РІРѕР·РјРѕР¶РЅРѕ СЃРѕ СЃРґРІРёРіРѕРј 0xf000).
+		//    1d. Р•СЃР»Рё TrueType-С€СЂРёС„С‚ РёРјРµРµС‚ Macintosh Roman CMap, РёСЃРїРѕР»СЊР·СѓРµРј 
+		//        РµРіРѕ РєР°Рє Рё РІ СЃР»СѓС‡Р°Рµ 1a.
+		// 2. Р•СЃР»Рё PDF-С€СЂРёС„С‚ РЅРµ РёРјРµРµС‚ РєРѕРґРёСЂРѕРІРєРё РёР»Рё PDF-С€СЂРёС„С‚ - Symbolic:
+		//    2a. Р•СЃР»Рё TrueType-С€СЂРёС„С‚ РёРјРµРµС‚ Macintosh Roman CMap, РёСЃРїРѕР»СЊР·СѓРµРј 
+		//        РµРіРѕ, Рё РёСЃРїРѕР»СЊР·СѓРµРј СЃР°РјРё РєРѕРґС‹ СЃРёРјРІРѕР»РѕРІ (РІРѕР·РјРѕР¶РЅРѕ СЃРѕ СЃРґРІРёРіРѕРј
 		//        0xf000).
-		//    2b. Если TrueType-шрифт имеет Microsoft Symbol CMap, используем
-		//        его, и используем сами коды символов (возможно со сдвигом
+		//    2b. Р•СЃР»Рё TrueType-С€СЂРёС„С‚ РёРјРµРµС‚ Microsoft Symbol CMap, РёСЃРїРѕР»СЊР·СѓРµРј
+		//        РµРіРѕ, Рё РёСЃРїРѕР»СЊР·СѓРµРј СЃР°РјРё РєРѕРґС‹ СЃРёРјРІРѕР»РѕРІ (РІРѕР·РјРѕР¶РЅРѕ СЃРѕ СЃРґРІРёРіРѕРј
 		//        0xf000).
-		// 3. Если не один из этих случаев не применим, тогда используем первый
-		//    CMap. (но такого не должно происходить)
+		// 3. Р•СЃР»Рё РЅРµ РѕРґРёРЅ РёР· СЌС‚РёС… СЃР»СѓС‡Р°РµРІ РЅРµ РїСЂРёРјРµРЅРёРј, С‚РѕРіРґР° РёСЃРїРѕР»СЊР·СѓРµРј РїРµСЂРІС‹Р№
+		//    CMap. (РЅРѕ С‚Р°РєРѕРіРѕ РЅРµ РґРѕР»Р¶РЅРѕ РїСЂРѕРёСЃС…РѕРґРёС‚СЊ)
 
 
-		// TO DO: Возможна ситуация, когда одинаковых кодировок несколько, и в они содерржат
-		//        разные символы. В таких случаях надо бы делать общую кодировку, а не считывать
-		//        одну конкретную.
+		// TO DO: Р’РѕР·РјРѕР¶РЅР° СЃРёС‚СѓР°С†РёСЏ, РєРѕРіРґР° РѕРґРёРЅР°РєРѕРІС‹С… РєРѕРґРёСЂРѕРІРѕРє РЅРµСЃРєРѕР»СЊРєРѕ, Рё РІ РѕРЅРё СЃРѕРґРµСЂСЂР¶Р°С‚
+		//        СЂР°Р·РЅС‹Рµ СЃРёРјРІРѕР»С‹. Р’ С‚Р°РєРёС… СЃР»СѓС‡Р°СЏС… РЅР°РґРѕ Р±С‹ РґРµР»Р°С‚СЊ РѕР±С‰СѓСЋ РєРѕРґРёСЂРѕРІРєСѓ, Р° РЅРµ СЃС‡РёС‚С‹РІР°С‚СЊ
+		//        РѕРґРЅСѓ РєРѕРЅРєСЂРµС‚РЅСѓСЋ.
 
 		int nUnicodeCmap = -1, nMacRomanCmap = -1, nMSSymbolCmap = -1;
 		int nCmapPlatform = 0, nCmapEncoding = 0;
@@ -1351,10 +1351,10 @@ namespace PdfReader
 
 		ReadFontDescriptor(pXref, pDescendantDict);
 
-		// Ищем внешний FontFile
+		// РС‰РµРј РІРЅРµС€РЅРёР№ FontFile
 		FindExternalFontFile(false);
 
-		// Кодировка
+		// РљРѕРґРёСЂРѕРІРєР°
 
 		// Char collection
 		if (!pDescendantDict->Search("CIDSystemInfo", &oDictItem)->IsDict())
@@ -1388,10 +1388,10 @@ namespace PdfReader
 		if (!(m_pCharToUnicode = ReadToUnicodeCMap(pFontDict, 16, NULL)))
 		{
 
-			// "Adobe-Identity" и "Adobe-UCS" collections не имеют файлов СidToUnicode
+			// "Adobe-Identity" Рё "Adobe-UCS" collections РЅРµ РёРјРµСЋС‚ С„Р°Р№Р»РѕРІ РЎidToUnicode
 			if (seCollection->Compare("Adobe-Identity") && seCollection->Compare("Adobe-UCS"))
 			{
-				// Ищем файлы cidToUnicode, данные извне
+				// РС‰РµРј С„Р°Р№Р»С‹ cidToUnicode, РґР°РЅРЅС‹Рµ РёР·РІРЅРµ
 				if (m_pGlobalParams && !(m_pCharToUnicode = m_pGlobalParams->GetCIDToUnicode(seCollection)))
 				{
 					// TO DO: Error "Unknown character collection" 
@@ -1399,7 +1399,7 @@ namespace PdfReader
 			}
 		}
 
-		// Ищем Unicode-to-Unicode
+		// РС‰РµРј Unicode-to-Unicode
 		CharCodeToUnicode *pUnicodeToUnicode = NULL;
 		if (m_seName && m_pGlobalParams && (pUnicodeToUnicode = m_pGlobalParams->GetUnicodeToUnicode(m_seName)))
 		{
@@ -1426,7 +1426,7 @@ namespace PdfReader
 			}
 		}
 
-		// Кодировка (т.е. CMap)
+		// РљРѕРґРёСЂРѕРІРєР° (С‚.Рµ. CMap)
 		pFontDict->Search("Encoding", &oDictItem);
 
 		if (oDictItem.IsName())
@@ -1527,7 +1527,7 @@ namespace PdfReader
 		if (seCollection)
 			delete seCollection;
 
-		// CIDToGIDMap (для внедренных шрифтов-TrueType)
+		// CIDToGIDMap (РґР»СЏ РІРЅРµРґСЂРµРЅРЅС‹С… С€СЂРёС„С‚РѕРІ-TrueType)
 		if (m_eType == fontCIDType2)
 		{
 			pDescendantDict->Search("CIDToGIDMap", &oDictItem);
@@ -1555,16 +1555,16 @@ namespace PdfReader
 			oDictItem.Free();
 		}
 
-		// Метрики
+		// РњРµС‚СЂРёРєРё
 
-		// Стандартное значение ширин
+		// РЎС‚Р°РЅРґР°СЂС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ С€РёСЂРёРЅ
 		if (pDescendantDict->Search("DW", &oDictItem)->IsInt())
 		{
 			m_oWidths.dDefaultWidth = oDictItem.GetInt() * 0.001;
 		}
 		oDictItem.Free();
 
-		// Исключения
+		// РСЃРєР»СЋС‡РµРЅРёСЏ
 		if (pDescendantDict->Search("W", &oDictItem)->IsArray())
 		{
 			int nExceptionsSize = 0;
@@ -1576,7 +1576,7 @@ namespace PdfReader
 				oDictItem.ArrayGet(nCounter + 1, &oSecond);
 				if (oFirst.IsInt() && oSecond.IsInt() && nCounter + 2 < oDictItem.ArrayGetLength())
 				{
-					// формат: C_first C_last W 
+					// С„РѕСЂРјР°С‚: C_first C_last W 
 					Object oWidth;
 					if (oDictItem.ArrayGet(nCounter + 2, &oWidth)->IsNum())
 					{
@@ -1599,7 +1599,7 @@ namespace PdfReader
 				}
 				else if (oFirst.IsInt() && oSecond.IsArray())
 				{
-					// Формат: c [ w1 w2 … wn ]
+					// Р¤РѕСЂРјР°С‚: c [ w1 w2 вЂ¦ wn ]
 					if (m_oWidths.nExceptionsCount + oSecond.ArrayGetLength() > nExceptionsSize)
 					{
 						nExceptionsSize = (m_oWidths.nExceptionsCount + oSecond.ArrayGetLength() + 15) & ~15;
@@ -1637,7 +1637,7 @@ namespace PdfReader
 		}
 		oDictItem.Free();
 
-		// Стандартные метрики по вертикали
+		// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РјРµС‚СЂРёРєРё РїРѕ РІРµСЂС‚РёРєР°Р»Рё
 		if (pDescendantDict->Search("DW2", &oDictItem)->IsArray() && oDictItem.ArrayGetLength() == 2)
 		{
 			Object oTemp;
@@ -1655,7 +1655,7 @@ namespace PdfReader
 		}
 		oDictItem.Free();
 
-		// Исключения
+		// РСЃРєР»СЋС‡РµРЅРёСЏ
 		if (pDescendantDict->Search("W2", &oDictItem)->IsArray())
 		{
 			int nExceptionsSize = 0;
@@ -1667,7 +1667,7 @@ namespace PdfReader
 				oDictItem.ArrayGet(nCounter + 1, &oSecond);
 				if (oFirst.IsInt() && oSecond.IsInt() && nCounter + 4 < oDictItem.ArrayGetLength())
 				{
-					// Формат: С_first С_last W11y V1x V1y
+					// Р¤РѕСЂРјР°С‚: РЎ_first РЎ_last W11y V1x V1y
 					Object oHeight, oVx, oVy;
 					if (oDictItem.ArrayGet(nCounter + 2, &oHeight)->IsNum() && oDictItem.ArrayGet(nCounter + 3, &oVx)->IsNum() && oDictItem.ArrayGet(nCounter + 4, &oVy)->IsNum())
 					{
@@ -1705,7 +1705,7 @@ namespace PdfReader
 						Object oHeight, oVx, oVy;
 						if (oSecond.ArrayGet(nArrayIndex, &oHeight)->IsNum() && oSecond.ArrayGet(nArrayIndex + 1, &oVx)->IsNum() && oSecond.ArrayGet(nArrayIndex + 2, &oVy)->IsNum())
 						{
-							// TO DO: Здесь было исправлено!!! неправильные индексы передавались -> вместо nExceptionsVCount передавались nExceptionsCount
+							// TO DO: Р—РґРµСЃСЊ Р±С‹Р»Рѕ РёСЃРїСЂР°РІР»РµРЅРѕ!!! РЅРµРїСЂР°РІРёР»СЊРЅС‹Рµ РёРЅРґРµРєСЃС‹ РїРµСЂРµРґР°РІР°Р»РёСЃСЊ -> РІРјРµСЃС‚Рѕ nExceptionsVCount РїРµСЂРµРґР°РІР°Р»РёСЃСЊ nExceptionsCount
 							m_oWidths.pExceptionsV[m_oWidths.nExceptionsVCount].nFirst  = nCurFirst;
 							m_oWidths.pExceptionsV[m_oWidths.nExceptionsVCount].nLast   = nCurFirst;
 							m_oWidths.pExceptionsV[m_oWidths.nExceptionsVCount].dHeight = oHeight.GetNum() * 0.001;
@@ -1775,7 +1775,7 @@ namespace PdfReader
 		}
 
 		*punCode = (CharCode)(nCID = m_pCMap->GetCID(sText, nLen, &nCount));
-		// Временно
+		// Р’СЂРµРјРµРЅРЅРѕ
 
 		*uLen = nCount;
 		if (1 == nCount)
@@ -1915,8 +1915,8 @@ namespace PdfReader
 				}
 				else
 				{
-					// Нет ссылки на данный шрифт, но ссылка нам нужна как идентефикатор, поэтому выбираем некотый уникальный номер
-					// (поскольку корректное версионное число состоит из 5 цифр, поэтому любое 6-циферное число будет безопасным решением)
+					// РќРµС‚ СЃСЃС‹Р»РєРё РЅР° РґР°РЅРЅС‹Р№ С€СЂРёС„С‚, РЅРѕ СЃСЃС‹Р»РєР° РЅР°Рј РЅСѓР¶РЅР° РєР°Рє РёРґРµРЅС‚РµС„РёРєР°С‚РѕСЂ, РїРѕСЌС‚РѕРјСѓ РІС‹Р±РёСЂР°РµРј РЅРµРєРѕС‚С‹Р№ СѓРЅРёРєР°Р»СЊРЅС‹Р№ РЅРѕРјРµСЂ
+					// (РїРѕСЃРєРѕР»СЊРєСѓ РєРѕСЂСЂРµРєС‚РЅРѕРµ РІРµСЂСЃРёРѕРЅРЅРѕРµ С‡РёСЃР»Рѕ СЃРѕСЃС‚РѕРёС‚ РёР· 5 С†РёС„СЂ, РїРѕСЌС‚РѕРјСѓ Р»СЋР±РѕРµ 6-С†РёС„РµСЂРЅРѕРµ С‡РёСЃР»Рѕ Р±СѓРґРµС‚ Р±РµР·РѕРїР°СЃРЅС‹Рј СЂРµС€РµРЅРёРµРј)
 					oRef.nNum = nIndex;
 					if (pFontDictRef)
 					{

@@ -1,4 +1,4 @@
-#include <stddef.h>
+п»ї#include <stddef.h>
 #include "MemoryUtils.h"
 #include "Object.h"
 #include "XRef.h"
@@ -39,7 +39,7 @@ namespace PdfReader
 			return;
 		}
 
-		// Считываем Pages
+		// РЎС‡РёС‚С‹РІР°РµРј Pages
 		Object oPagesDict;
 		oCatalogDict.DictLookup("Pages", &oPagesDict);
 
@@ -55,10 +55,10 @@ namespace PdfReader
 			return;
 		}
 
-		// Считываем количество страниц
+		// РЎС‡РёС‚С‹РІР°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂР°РЅРёС†
 		Object oTemp;
 		oPagesDict.DictLookup("Count", &oTemp);
-		if (!oTemp.IsNum()) // почему-то иногда количество страниц пишется как вещественное число(поэтому IsNum, а не IsInt)
+		if (!oTemp.IsNum()) // РїРѕС‡РµРјСѓ-С‚Рѕ РёРЅРѕРіРґР° РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂР°РЅРёС† РїРёС€РµС‚СЃСЏ РєР°Рє РІРµС‰РµСЃС‚РІРµРЅРЅРѕРµ С‡РёСЃР»Рѕ(РїРѕСЌС‚РѕРјСѓ IsNum, Р° РЅРµ IsInt)
 		{
 			// TO DO: Error "Page count in top-level pages object is wrong type"
 			oTemp.Free();
@@ -75,7 +75,7 @@ namespace PdfReader
 		m_nPagesSize = nPagesCount = (int)oTemp.GetNum();
 		oTemp.Free();
 
-		// выделяем место под соответствующее количество страниц
+		// РІС‹РґРµР»СЏРµРј РјРµСЃС‚Рѕ РїРѕРґ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРµ РєРѕР»РёС‡РµСЃС‚РІРѕ СЃС‚СЂР°РЅРёС†
 		m_ppPages   = (Page**)MemUtilsMallocArray(m_nPagesSize, sizeof(Page*));
 		m_pPageRefs =   (Ref*)MemUtilsMallocArray(m_nPagesSize, sizeof(Ref));
 
@@ -105,7 +105,7 @@ namespace PdfReader
 		}
 		oPagesDict.Free();
 
-		// Считываем Named destination
+		// РЎС‡РёС‚С‹РІР°РµРј Named destination
 		oCatalogDict.DictLookup("Dests", &m_oDests);
 
 		if (oCatalogDict.DictLookup("Names", &oTemp)->IsDict())
@@ -187,7 +187,7 @@ namespace PdfReader
 
 		m_oMetadata.StreamReset();
 		int nChar = 0;
-		// TO DO: Вообще здесь выводится вся xml как она есть, надо бы ее более детально разобрать
+		// TO DO: Р’РѕРѕР±С‰Рµ Р·РґРµСЃСЊ РІС‹РІРѕРґРёС‚СЃСЏ РІСЃСЏ xml РєР°Рє РѕРЅР° РµСЃС‚СЊ, РЅР°РґРѕ Р±С‹ РµРµ Р±РѕР»РµРµ РґРµС‚Р°Р»СЊРЅРѕ СЂР°Р·РѕР±СЂР°С‚СЊ
 		while ((nChar = m_oMetadata.StreamGetChar()) != EOF)
 		{
 			seResult->Append(nChar);
@@ -244,7 +244,7 @@ namespace PdfReader
 				if (nStart >= m_nPagesSize)
 				{
 					m_nPagesSize += 32;
-					// выделяем дополнительную память
+					// РІС‹РґРµР»СЏРµРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅСѓСЋ РїР°РјСЏС‚СЊ
 					m_ppPages   = (Page**)MemUtilsReallocArray(m_ppPages, m_nPagesSize, sizeof(Page *));
 					m_pPageRefs =   (Ref*)MemUtilsReallocArray(m_pPageRefs, m_nPagesSize, sizeof(Ref));
 
@@ -263,7 +263,7 @@ namespace PdfReader
 				}
 				++nStart;
 			}
-			else if (oKid.IsDict()) // иногда почему-то пропускают ключ /Type
+			else if (oKid.IsDict()) // РёРЅРѕРіРґР° РїРѕС‡РµРјСѓ-С‚Рѕ РїСЂРѕРїСѓСЃРєР°СЋС‚ РєР»СЋС‡ /Type
 			{
 				if ((nStart = ReadPageTree(oKid.GetDict(), pPageAttrs, nStart, sAlreadyRead)) < 0)
 				{

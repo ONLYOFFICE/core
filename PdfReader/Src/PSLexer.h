@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_PS_LEXER_H
+п»ї#ifndef _PDF_READER_PS_LEXER_H
 #define _PDF_READER_PS_LEXER_H
 
 namespace PdfReader
@@ -10,9 +10,9 @@ namespace PdfReader
 		PSLexer(int(*GetCharFunc)(void *), void *pData);
 		~PSLexer();
 
-		// Некоторый аналог функции Lexer::GetObject. Но для чтения PS вставок в PDF файле.
-		// Здесь читаются данные заключенные между скобок "<>", "()" или какая-нибудь команда.
-		// Данные в квадратных скобках "[]" не читаются.
+		// РќРµРєРѕС‚РѕСЂС‹Р№ Р°РЅР°Р»РѕРі С„СѓРЅРєС†РёРё Lexer::GetObject. РќРѕ РґР»СЏ С‡С‚РµРЅРёСЏ PS РІСЃС‚Р°РІРѕРє РІ PDF С„Р°Р№Р»Рµ.
+		// Р—РґРµСЃСЊ С‡РёС‚Р°СЋС‚СЃСЏ РґР°РЅРЅС‹Рµ Р·Р°РєР»СЋС‡РµРЅРЅС‹Рµ РјРµР¶РґСѓ СЃРєРѕР±РѕРє "<>", "()" РёР»Рё РєР°РєР°СЏ-РЅРёР±СѓРґСЊ РєРѕРјР°РЅРґР°.
+		// Р”Р°РЅРЅС‹Рµ РІ РєРІР°РґСЂР°С‚РЅС‹С… СЃРєРѕР±РєР°С… "[]" РЅРµ С‡РёС‚Р°СЋС‚СЃСЏ.
 		bool GetToken(char *sBuffer, int nSize, int *pnLength);
 
 	private:
@@ -22,7 +22,7 @@ namespace PdfReader
 
 	private:
 
-		int(*GetCharFunction)(void *); // Указатель на функцию для считывания символа
+		int(*GetCharFunction)(void *); // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° С„СѓРЅРєС†РёСЋ РґР»СЏ СЃС‡РёС‚С‹РІР°РЅРёСЏ СЃРёРјРІРѕР»Р°
 		void *m_pData;
 		int   m_nCharBuffer;
 	};

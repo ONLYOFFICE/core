@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_JBIG2STREAM_H
+﻿#ifndef _PDF_READER_JBIG2STREAM_H
 #define _PDF_READER_JBIG2STREAM_H
 
 #include "Object.h"

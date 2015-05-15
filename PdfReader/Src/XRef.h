@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_XREF_H
+п»ї#ifndef _PDF_READER_XREF_H
 #define _PDF_READER_XREF_H
 
 #include "Object.h"
@@ -44,7 +44,7 @@ namespace PdfReader
 			return m_bValidXref;
 		}
 
-		// Если CheckValidate вернул false
+		// Р•СЃР»Рё CheckValidate РІРµСЂРЅСѓР» false
 		EError GetErrorCode()
 		{
 			return m_eErrorCode;
@@ -57,7 +57,7 @@ namespace PdfReader
 			return m_bEncrypted;
 		}
 
-		// Проверяем ограничения.
+		// РџСЂРѕРІРµСЂСЏРµРј РѕРіСЂР°РЅРёС‡РµРЅРёСЏ.
 		bool CheckPrint(bool bIgnoreOwnerPassword = false);
 		bool CheckChange(bool bIgnoreOwnerPassword = false);
 		bool CheckCopy(bool bIgnoreOwnerPassword = false);
@@ -68,7 +68,7 @@ namespace PdfReader
 			return Fetch(m_nRootNum, m_nRootGen, pObject);
 		}
 
-		// Вытаскиваем косвенный объект.
+		// Р’С‹С‚Р°СЃРєРёРІР°РµРј РєРѕСЃРІРµРЅРЅС‹Р№ РѕР±СЉРµРєС‚.
 		Object *Fetch(int nNum, int nGen, Object *pObject);
 
 		Object *GetDocInfo(Object *pObject);
@@ -85,7 +85,7 @@ namespace PdfReader
 		}
 
 
-		// объект Root (Catalog)
+		// РѕР±СЉРµРєС‚ Root (Catalog)
 		int GetRootNum()
 		{
 			return m_nRootNum;
@@ -95,8 +95,8 @@ namespace PdfReader
 			return m_nRootGen;
 		}
 
-		// Получаем конечную позицию в поврежденном файле.
-		// Возвращаем false, если позиция неизвестна или файл не поврежден.
+		// РџРѕР»СѓС‡Р°РµРј РєРѕРЅРµС‡РЅСѓСЋ РїРѕР·РёС†РёСЋ РІ РїРѕРІСЂРµР¶РґРµРЅРЅРѕРј С„Р°Р№Р»Рµ.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј false, РµСЃР»Рё РїРѕР·РёС†РёСЏ РЅРµРёР·РІРµСЃС‚РЅР° РёР»Рё С„Р°Р№Р» РЅРµ РїРѕРІСЂРµР¶РґРµРЅ.
 		bool GetStreamEnd(unsigned int nStreamStart, unsigned int *pnStreamEnd);
 
 		int GetSize()
@@ -124,31 +124,31 @@ namespace PdfReader
 
 	private:
 
-		BaseStream    *m_pStream;           // Основной поток
-		unsigned int   m_nStart;            // Сдвиг в потоке 
+		BaseStream    *m_pStream;           // РћСЃРЅРѕРІРЅРѕР№ РїРѕС‚РѕРє
+		unsigned int   m_nStart;            // РЎРґРІРёРі РІ РїРѕС‚РѕРєРµ 
 
-		XRefEntry     *m_arrEntries;        // Элементы таблицы Xref
-		int            m_nEntrySize;        // Размер элемента в списке m_arrEntries
-		int            m_nRootNum;          // Номер объекта Root (Catalog)
-		int            m_nRootGen;          // Номер версии объекта Root (Catalog)
+		XRefEntry     *m_arrEntries;        // Р­Р»РµРјРµРЅС‚С‹ С‚Р°Р±Р»РёС†С‹ Xref
+		int            m_nEntrySize;        // Р Р°Р·РјРµСЂ СЌР»РµРјРµРЅС‚Р° РІ СЃРїРёСЃРєРµ m_arrEntries
+		int            m_nRootNum;          // РќРѕРјРµСЂ РѕР±СЉРµРєС‚Р° Root (Catalog)
+		int            m_nRootGen;          // РќРѕРјРµСЂ РІРµСЂСЃРёРё РѕР±СЉРµРєС‚Р° Root (Catalog)
 
-		bool           m_bValidXref;        // Проверяем корректность таблицы Xref
-		EError         m_eErrorCode;        // Номер ошибки, если m_bValidXref = false
+		bool           m_bValidXref;        // РџСЂРѕРІРµСЂСЏРµРј РєРѕСЂСЂРµРєС‚РЅРѕСЃС‚СЊ С‚Р°Р±Р»РёС†С‹ Xref
+		EError         m_eErrorCode;        // РќРѕРјРµСЂ РѕС€РёР±РєРё, РµСЃР»Рё m_bValidXref = false
 
-		Object         m_oTrailerDict;      // Словарь Trailer
+		Object         m_oTrailerDict;      // РЎР»РѕРІР°СЂСЊ Trailer
 
-		unsigned int   m_unLastXRefOffset;  // Сдвиг последней таблицы Xref
-		unsigned int  *m_punStreamEnds;     // Позиция конца потока - используется только для поврежденных файлов
+		unsigned int   m_unLastXRefOffset;  // РЎРґРІРёРі РїРѕСЃР»РµРґРЅРµР№ С‚Р°Р±Р»РёС†С‹ Xref
+		unsigned int  *m_punStreamEnds;     // РџРѕР·РёС†РёСЏ РєРѕРЅС†Р° РїРѕС‚РѕРєР° - РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С‚РѕР»СЊРєРѕ РґР»СЏ РїРѕРІСЂРµР¶РґРµРЅРЅС‹С… С„Р°Р№Р»РѕРІ
 
-		int            m_nStreamEndsCount;  // Количество корректных элементов в m_punStreamEnds
+		int            m_nStreamEndsCount;  // РљРѕР»РёС‡РµСЃС‚РІРѕ РєРѕСЂСЂРµРєС‚РЅС‹С… СЌР»РµРјРµРЅС‚РѕРІ РІ m_punStreamEnds
 		ObjectStream  *m_pObjectStream;     // Object Stream
-		bool           m_bEncrypted;        // Поток зашифрован или нет?
-		int            m_nPermissionFlags;  // Различные ограничения
-		bool           m_bOwnerPassword;    // Проверяем правильный ли был введен пароль владельца файла
-		unsigned char  m_arrDecryptKey[16]; // Ключ для расшифровки
-		int            m_nKeyLength;        // Размер ключа в байтах
-		int            m_nEncryptVersion;   // Версия шифровки
-		CryptAlgorithm m_eEncryptAlgorithm;	// Алгоритм шифрования
+		bool           m_bEncrypted;        // РџРѕС‚РѕРє Р·Р°С€РёС„СЂРѕРІР°РЅ РёР»Рё РЅРµС‚?
+		int            m_nPermissionFlags;  // Р Р°Р·Р»РёС‡РЅС‹Рµ РѕРіСЂР°РЅРёС‡РµРЅРёСЏ
+		bool           m_bOwnerPassword;    // РџСЂРѕРІРµСЂСЏРµРј РїСЂР°РІРёР»СЊРЅС‹Р№ Р»Рё Р±С‹Р» РІРІРµРґРµРЅ РїР°СЂРѕР»СЊ РІР»Р°РґРµР»СЊС†Р° С„Р°Р№Р»Р°
+		unsigned char  m_arrDecryptKey[16]; // РљР»СЋС‡ РґР»СЏ СЂР°СЃС€РёС„СЂРѕРІРєРё
+		int            m_nKeyLength;        // Р Р°Р·РјРµСЂ РєР»СЋС‡Р° РІ Р±Р°Р№С‚Р°С…
+		int            m_nEncryptVersion;   // Р’РµСЂСЃРёСЏ С€РёС„СЂРѕРІРєРё
+		CryptAlgorithm m_eEncryptAlgorithm;	// РђР»РіРѕСЂРёС‚Рј С€РёС„СЂРѕРІР°РЅРёСЏ
 
 		NSCriticalSection::CRITICAL_SECTION m_oCS;
 	};

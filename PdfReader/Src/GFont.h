@@ -1,4 +1,4 @@
-#ifndef _PDFREADER_GFONT_H
+п»ї#ifndef _PDFREADER_GFONT_H
 #define _PDFREADER_GFONT_H
 
 #include "StringExt.h"
@@ -42,29 +42,29 @@ namespace PdfReader
 
 	struct GrFontCIDWidthException
 	{
-		CID    nFirst;     // Данная запись применяется к 
+		CID    nFirst;     // Р”Р°РЅРЅР°СЏ Р·Р°РїРёСЃСЊ РїСЂРёРјРµРЅСЏРµС‚СЃСЏ Рє 
 		CID    nLast;      // CID: <nFirst>...<nLast>
-		double dWidth;     // Новая ширина символов
+		double dWidth;     // РќРѕРІР°СЏ С€РёСЂРёРЅР° СЃРёРјРІРѕР»РѕРІ
 	};
 
 	struct GrFontCIDWidthExceptionV
 	{
-		CID    nFirst;    // Данная запись применяется к 
+		CID    nFirst;    // Р”Р°РЅРЅР°СЏ Р·Р°РїРёСЃСЊ РїСЂРёРјРµРЅСЏРµС‚СЃСЏ Рє 
 		CID    nLast;     // CID: <nFirst>...<nLast>
-		double dHeight;   // Новая высота символов
-		double dVx;       // Координаты вектора V: origin0->origin1
-		double dVy;       // См. фигуру 40 в спецификации PDF 1.7
+		double dHeight;   // РќРѕРІР°СЏ РІС‹СЃРѕС‚Р° СЃРёРјРІРѕР»РѕРІ
+		double dVx;       // РљРѕРѕСЂРґРёРЅР°С‚С‹ РІРµРєС‚РѕСЂР° V: origin0->origin1
+		double dVy;       // РЎРј. С„РёРіСѓСЂСѓ 40 РІ СЃРїРµС†РёС„РёРєР°С†РёРё PDF 1.7
 	};
 
 	struct GrFontCIDWidths
 	{
-		double                   dDefaultWidth;     // Стандартное значение ширины символа
-		double                   dDefaultHeight;    // Стандартное значение высоты символа
-		double                   dDefaultV;         // Стандартное значение вектора V
-		GrFontCIDWidthException *pExceptions;       // Исключения для горизонтальных метрик
-		int                      nExceptionsCount;  // Число исключений
-		GrFontCIDWidthExceptionV*pExceptionsV;      // Исключения для вертикальных метрик
-		int                      nExceptionsVCount; // Число исключений
+		double                   dDefaultWidth;     // РЎС‚Р°РЅРґР°СЂС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ С€РёСЂРёРЅС‹ СЃРёРјРІРѕР»Р°
+		double                   dDefaultHeight;    // РЎС‚Р°РЅРґР°СЂС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РІС‹СЃРѕС‚С‹ СЃРёРјРІРѕР»Р°
+		double                   dDefaultV;         // РЎС‚Р°РЅРґР°СЂС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РІРµРєС‚РѕСЂР° V
+		GrFontCIDWidthException *pExceptions;       // РСЃРєР»СЋС‡РµРЅРёСЏ РґР»СЏ РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹С… РјРµС‚СЂРёРє
+		int                      nExceptionsCount;  // Р§РёСЃР»Рѕ РёСЃРєР»СЋС‡РµРЅРёР№
+		GrFontCIDWidthExceptionV*pExceptionsV;      // РСЃРєР»СЋС‡РµРЅРёСЏ РґР»СЏ РІРµСЂС‚РёРєР°Р»СЊРЅС‹С… РјРµС‚СЂРёРє
+		int                      nExceptionsVCount; // Р§РёСЃР»Рѕ РёСЃРєР»СЋС‡РµРЅРёР№
 	};
 
 	//------------------------------------------------------------------------
@@ -126,7 +126,7 @@ namespace PdfReader
 			return false;
 		}
 
-		// Внедренные фонты.
+		// Р’РЅРµРґСЂРµРЅРЅС‹Рµ С„РѕРЅС‚С‹.
 		bool       GetEmbeddedFontFileRef(Ref *pEmbRef)
 		{
 			*pEmbRef = m_oEmbFontFileRef;
@@ -188,20 +188,20 @@ namespace PdfReader
 			return m_dDescent;
 		}
 
-		// 0 = пишем по горизонтали, 1 = по вертикали
+		// 0 = РїРёС€РµРј РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё, 1 = РїРѕ РІРµСЂС‚РёРєР°Р»Рё
 		virtual int GetWMode()
 		{
 			return 0;
 		}
 
-		// Считываем внешний или включенный FontFile в буфер.
+		// РЎС‡РёС‚С‹РІР°РµРј РІРЅРµС€РЅРёР№ РёР»Рё РІРєР»СЋС‡РµРЅРЅС‹Р№ FontFile РІ Р±СѓС„РµСЂ.
 		char *ReadExternalFontFile(int *pnLength);
 		char *ReadEmbeddedFontFile(XRef *pXref, int *pnLegth);
 
-		// Считываем следующий символ из строки <sText> длины <nLen> байт, возвращем
-		// код символа <unCode>, его юникодное значение <unUnicode>, вектор замещения 
-		// (w0 или w1, см. спецификацию PDF 1.7 фигура 40) (<dDx>, <dDy>), и вектор V
-		// (см. фигуру 40) (<Vx>, <Vy>). Возвращаем количество байт необходимых для punCode.
+		// РЎС‡РёС‚С‹РІР°РµРј СЃР»РµРґСѓСЋС‰РёР№ СЃРёРјРІРѕР» РёР· СЃС‚СЂРѕРєРё <sText> РґР»РёРЅС‹ <nLen> Р±Р°Р№С‚, РІРѕР·РІСЂР°С‰РµРј
+		// РєРѕРґ СЃРёРјРІРѕР»Р° <unCode>, РµРіРѕ СЋРЅРёРєРѕРґРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ <unUnicode>, РІРµРєС‚РѕСЂ Р·Р°РјРµС‰РµРЅРёСЏ 
+		// (w0 РёР»Рё w1, СЃРј. СЃРїРµС†РёС„РёРєР°С†РёСЋ PDF 1.7 С„РёРіСѓСЂР° 40) (<dDx>, <dDy>), Рё РІРµРєС‚РѕСЂ V
+		// (СЃРј. С„РёРіСѓСЂСѓ 40) (<Vx>, <Vy>). Р’РѕР·РІСЂР°С‰Р°РµРј РєРѕР»РёС‡РµСЃС‚РІРѕ Р±Р°Р№С‚ РЅРµРѕР±С…РѕРґРёРјС‹С… РґР»СЏ punCode.
 		virtual int GetNextChar(char *sText, int nLen, CharCode *punCode, Unicode *punUnicode, int uSize, int *uLen, double *pdDx, double *pdDy, double *pdVx, double *pdVy) = 0;
 
 	protected:
@@ -212,19 +212,19 @@ namespace PdfReader
 
 	protected:
 
-		StringExt*    m_seTag;                  // Тэг pdf-шрифта
-		Ref           m_oID;                    // Ссылка на объект-шрифт (используем в качестве уникального идентефикатора)
-		StringExt*    m_seName;                 // Название шрифта
-		StringExt*    m_seOriginalName;         // Первоначальное название шрифта
-		GrFontType    m_eType;                  // Тип шрифта
-		int           m_nFlags;                 // Флаги в FontDescriptor
-		StringExt*    m_seEmbeddedFontName;     // Название включенного в PDF шрифта(т.е. шрифт идет вместе с FontFile)
-		Ref           m_oEmbFontFileRef;        // Ссылка(pdf-ссылка) на FontFile для включенного шрифта
-		std::wstring  m_wsExternalFontFilePath; // Путь в FontFile(т.е. font file не в самом PDF)
+		StringExt*    m_seTag;                  // РўСЌРі pdf-С€СЂРёС„С‚Р°
+		Ref           m_oID;                    // РЎСЃС‹Р»РєР° РЅР° РѕР±СЉРµРєС‚-С€СЂРёС„С‚ (РёСЃРїРѕР»СЊР·СѓРµРј РІ РєР°С‡РµСЃС‚РІРµ СѓРЅРёРєР°Р»СЊРЅРѕРіРѕ РёРґРµРЅС‚РµС„РёРєР°С‚РѕСЂР°)
+		StringExt*    m_seName;                 // РќР°Р·РІР°РЅРёРµ С€СЂРёС„С‚Р°
+		StringExt*    m_seOriginalName;         // РџРµСЂРІРѕРЅР°С‡Р°Р»СЊРЅРѕРµ РЅР°Р·РІР°РЅРёРµ С€СЂРёС„С‚Р°
+		GrFontType    m_eType;                  // РўРёРї С€СЂРёС„С‚Р°
+		int           m_nFlags;                 // Р¤Р»Р°РіРё РІ FontDescriptor
+		StringExt*    m_seEmbeddedFontName;     // РќР°Р·РІР°РЅРёРµ РІРєР»СЋС‡РµРЅРЅРѕРіРѕ РІ PDF С€СЂРёС„С‚Р°(С‚.Рµ. С€СЂРёС„С‚ РёРґРµС‚ РІРјРµСЃС‚Рµ СЃ FontFile)
+		Ref           m_oEmbFontFileRef;        // РЎСЃС‹Р»РєР°(pdf-СЃСЃС‹Р»РєР°) РЅР° FontFile РґР»СЏ РІРєР»СЋС‡РµРЅРЅРѕРіРѕ С€СЂРёС„С‚Р°
+		std::wstring  m_wsExternalFontFilePath; // РџСѓС‚СЊ РІ FontFile(С‚.Рµ. font file РЅРµ РІ СЃР°РјРѕРј PDF)
 					 
-		double        m_arrFontMatrix[6];       // Матрица преобразования координат символа в координаты текста (только для Type 3)
-		double        m_arrFontBBox[4];         // Наименьший прямоугольник задающий границы всех символов (только для Type 3)
-		double        m_dMissingWidth;          // Стандартное значение ширины для пропущенных символов
+		double        m_arrFontMatrix[6];       // РњР°С‚СЂРёС†Р° РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РєРѕРѕСЂРґРёРЅР°С‚ СЃРёРјРІРѕР»Р° РІ РєРѕРѕСЂРґРёРЅР°С‚С‹ С‚РµРєСЃС‚Р° (С‚РѕР»СЊРєРѕ РґР»СЏ Type 3)
+		double        m_arrFontBBox[4];         // РќР°РёРјРµРЅСЊС€РёР№ РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРє Р·Р°РґР°СЋС‰РёР№ РіСЂР°РЅРёС†С‹ РІСЃРµС… СЃРёРјРІРѕР»РѕРІ (С‚РѕР»СЊРєРѕ РґР»СЏ Type 3)
+		double        m_dMissingWidth;          // РЎС‚Р°РЅРґР°СЂС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ С€РёСЂРёРЅС‹ РґР»СЏ РїСЂРѕРїСѓС‰РµРЅРЅС‹С… СЃРёРјРІРѕР»РѕРІ
 		double        m_dAscent;                // Ascent
 		double        m_dDescent;               // Descent
 					 
@@ -273,24 +273,24 @@ namespace PdfReader
 		{
 			return m_arrWidths[unChar];
 		}
-		// Только для TrueType
+		// РўРѕР»СЊРєРѕ РґР»СЏ TrueType
 		unsigned short *GetCodeToGIDMap(CFontFileTrueType *pTTF);
 
-		// Следующие три функции используются только для Type 3
+		// РЎР»РµРґСѓСЋС‰РёРµ С‚СЂРё С„СѓРЅРєС†РёРё РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ С‚РѕР»СЊРєРѕ РґР»СЏ Type 3
 		Dict   *GetCharProcs();
 		Object *GetCharProc(int nCode, Object *pProc);
 		Dict   *GetResources();
 
 	private:
 
-		char              *m_ppEncoding[256];       // Кодировка( Сhar code --> Сhar name)
-		bool               m_arrEncFree[256];       // Булевские значения для имени каждого символа: true, если под строку выделяли память
-		CharCodeToUnicode *m_pCharToUnicode;        // Сhar code --> Unicode
-		bool               m_bHasEncoding;          // Имеется ли кодировка вообще?
-		bool               m_bUsesMacRomanEncoding; // Кодировка MacRomanEncoding?
-		double             m_arrWidths[256];        // Ширины символов
-		Object             m_oCharProcs;            // Специфично только для Type 3, словарь CharProcs
-		Object             m_oResources;            // Специфично только для Type 3, словарь Resources 
+		char              *m_ppEncoding[256];       // РљРѕРґРёСЂРѕРІРєР°( РЎhar code --> РЎhar name)
+		bool               m_arrEncFree[256];       // Р‘СѓР»РµРІСЃРєРёРµ Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ РёРјРµРЅРё РєР°Р¶РґРѕРіРѕ СЃРёРјРІРѕР»Р°: true, РµСЃР»Рё РїРѕРґ СЃС‚СЂРѕРєСѓ РІС‹РґРµР»СЏР»Рё РїР°РјСЏС‚СЊ
+		CharCodeToUnicode *m_pCharToUnicode;        // РЎhar code --> Unicode
+		bool               m_bHasEncoding;          // РРјРµРµС‚СЃСЏ Р»Рё РєРѕРґРёСЂРѕРІРєР° РІРѕРѕР±С‰Рµ?
+		bool               m_bUsesMacRomanEncoding; // РљРѕРґРёСЂРѕРІРєР° MacRomanEncoding?
+		double             m_arrWidths[256];        // РЁРёСЂРёРЅС‹ СЃРёРјРІРѕР»РѕРІ
+		Object             m_oCharProcs;            // РЎРїРµС†РёС„РёС‡РЅРѕ С‚РѕР»СЊРєРѕ РґР»СЏ Type 3, СЃР»РѕРІР°СЂСЊ CharProcs
+		Object             m_oResources;            // РЎРїРµС†РёС„РёС‡РЅРѕ С‚РѕР»СЊРєРѕ РґР»СЏ Type 3, СЃР»РѕРІР°СЂСЊ Resources 
 	};
 
 	//------------------------------------------------------------------------
@@ -316,10 +316,10 @@ namespace PdfReader
 
 		CharCodeToUnicode *GetToUnicode();
 
-		// Сollection name (<registry>-<ordering>).
+		// РЎollection name (<registry>-<ordering>).
 		StringExt *GetCollection();
 
-		// CID-to-GID. Используется только если тип = fontCIDType2.
+		// CID-to-GID. РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С‚РѕР»СЊРєРѕ РµСЃР»Рё С‚РёРї = fontCIDType2.
 		unsigned short *GetCIDToGID()
 		{
 			return m_pCidToGID;
@@ -368,8 +368,8 @@ namespace PdfReader
 
 	private:
 
-		GrFont      **m_ppFonts;     // Список шрифтов
-		int           m_nFontsCount; // Количество шрифтов
+		GrFont      **m_ppFonts;     // РЎРїРёСЃРѕРє С€СЂРёС„С‚РѕРІ
+		int           m_nFontsCount; // РљРѕР»РёС‡РµСЃС‚РІРѕ С€СЂРёС„С‚РѕРІ
 		GlobalParams *m_pGlobalParams;
 	};
 }

@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_BUILT_INFONT_H
+﻿#ifndef _PDF_READER_BUILT_INFONT_H
 #define _PDF_READER_BUILT_INFONT_H
 
 namespace PdfReader

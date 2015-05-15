@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_FONT_FILE_TYPE1C_H
+п»ї#ifndef _PDF_READER_FONT_FILE_TYPE1C_H
 #define _PDF_READER_FONT_FILE_TYPE1C_H
 
 #include "FontFileBase.h"
@@ -11,17 +11,17 @@ namespace PdfReader
 
 	struct Type1CIndex
 	{
-		int nPos;         // Позиция в файле от начала файла
-		int nCount;       // Количество вхождений
+		int nPos;         // РџРѕР·РёС†РёСЏ РІ С„Р°Р№Р»Рµ РѕС‚ РЅР°С‡Р°Р»Р° С„Р°Р№Р»Р°
+		int nCount;       // РљРѕР»РёС‡РµСЃС‚РІРѕ РІС…РѕР¶РґРµРЅРёР№
 		int nOffsetSize;  // Offset size
-		int nStartPos;    // Начальная позиция index data - 1
-		int nEndPos;      // Позиция следующего байта после Type1CIndex
+		int nStartPos;    // РќР°С‡Р°Р»СЊРЅР°СЏ РїРѕР·РёС†РёСЏ index data - 1
+		int nEndPos;      // РџРѕР·РёС†РёСЏ СЃР»РµРґСѓСЋС‰РµРіРѕ Р±Р°Р№С‚Р° РїРѕСЃР»Рµ Type1CIndex
 	};
 
 	struct Type1CIndexVal
 	{
-		int nPos;         // Позиция в файле от начала файла
-		int nLen;         // Длина в байтах
+		int nPos;         // РџРѕР·РёС†РёСЏ РІ С„Р°Р№Р»Рµ РѕС‚ РЅР°С‡Р°Р»Р° С„Р°Р№Р»Р°
+		int nLen;         // Р”Р»РёРЅР° РІ Р±Р°Р№С‚Р°С…
 	};
 
 	struct Type1CTopDict
@@ -43,7 +43,7 @@ namespace PdfReader
 		int    nPaintType;
 		int    nCharStringType;
 		double arrdFontMatrix[6];
-		bool   bHasFontMatrix;	// В CID фонтах возможно матрица фонта лежит в FD, а не в верхнем словаре
+		bool   bHasFontMatrix;	// Р’ CID С„РѕРЅС‚Р°С… РІРѕР·РјРѕР¶РЅРѕ РјР°С‚СЂРёС†Р° С„РѕРЅС‚Р° Р»РµР¶РёС‚ РІ FD, Р° РЅРµ РІ РІРµСЂС…РЅРµРј СЃР»РѕРІР°СЂРµ
 		int    nUniqueID;
 		double arrdFontBBox[4];
 		double dStrokeWidth;
@@ -118,9 +118,9 @@ namespace PdfReader
 	{
 		FontFileOutputFunc pOutputFunc;
 		void              *pOutputStream;
-		bool               bASKII;          // ASCII кодировка?
+		bool               bASKII;          // ASCII РєРѕРґРёСЂРѕРІРєР°?
 		unsigned short     unEncryptionKey; // eexec encryption key
-		int                nLine;           // количество eexec-символов, оставшихся на текущей строке
+		int                nLine;           // РєРѕР»РёС‡РµСЃС‚РІРѕ eexec-СЃРёРјРІРѕР»РѕРІ, РѕСЃС‚Р°РІС€РёС…СЃСЏ РЅР° С‚РµРєСѓС‰РµР№ СЃС‚СЂРѕРєРµ
 	};
 
 	//------------------------------------------------------------------------
@@ -140,8 +140,8 @@ namespace PdfReader
 
 		char *GetName();
 
-		// Возвращаем кодировку, как массив 256 имен (некоторые могут быть 
-		// NULL). Используется только для 8-битных фонтов.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј РєРѕРґРёСЂРѕРІРєСѓ, РєР°Рє РјР°СЃСЃРёРІ 256 РёРјРµРЅ (РЅРµРєРѕС‚РѕСЂС‹Рµ РјРѕРіСѓС‚ Р±С‹С‚СЊ 
+		// NULL). РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С‚РѕР»СЊРєРѕ РґР»СЏ 8-Р±РёС‚РЅС‹С… С„РѕРЅС‚РѕРІ.
 		char **GetEncoding();
 
 		unsigned short *GetCIDToGIDMap(int *arrCIDs);
@@ -211,9 +211,9 @@ namespace PdfReader
 
 		Type1COperator     m_arrOperators[49];
 		int                m_nOperatorsCount;
-		int                m_nHints;           // для текущего символа
+		int                m_nHints;           // РґР»СЏ С‚РµРєСѓС‰РµРіРѕ СЃРёРјРІРѕР»Р°
 		bool               m_bFirstOperator;
-		bool               m_bOpenPath;		   // true, если есть незакрытый пат
+		bool               m_bOpenPath;		   // true, РµСЃР»Рё РµСЃС‚СЊ РЅРµР·Р°РєСЂС‹С‚С‹Р№ РїР°С‚
 	};
 }
 

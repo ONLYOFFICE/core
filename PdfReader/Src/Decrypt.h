@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_DECRYPT_H
+п»ї#ifndef _PDF_READER_DECRYPT_H
 #define _PDF_READER_DECRYPT_H
 
 #include "StringExt.h"
@@ -15,9 +15,9 @@ namespace PdfReader
 	{
 	public:
 
-		// Строим FileKey. Параметр <sFileKey> должен иметь место как минимум под 16 байт. Проверяем <seOwnerPassword> и <seUserPassword>
-		// и возвращаем true, если какой-нибудь корректен. Пишем <pbOwnerPasswordValide> = true, если <seOwnerPassword> был правильный.  
-		// Один какой-нибудь или оба пароля могут быть NULL, что мы будем понимать как пустую строку.
+		// РЎС‚СЂРѕРёРј FileKey. РџР°СЂР°РјРµС‚СЂ <sFileKey> РґРѕР»Р¶РµРЅ РёРјРµС‚СЊ РјРµСЃС‚Рѕ РєР°Рє РјРёРЅРёРјСѓРј РїРѕРґ 16 Р±Р°Р№С‚. РџСЂРѕРІРµСЂСЏРµРј <seOwnerPassword> Рё <seUserPassword>
+		// Рё РІРѕР·РІСЂР°С‰Р°РµРј true, РµСЃР»Рё РєР°РєРѕР№-РЅРёР±СѓРґСЊ РєРѕСЂСЂРµРєС‚РµРЅ. РџРёС€РµРј <pbOwnerPasswordValide> = true, РµСЃР»Рё <seOwnerPassword> Р±С‹Р» РїСЂР°РІРёР»СЊРЅС‹Р№.  
+		// РћРґРёРЅ РєР°РєРѕР№-РЅРёР±СѓРґСЊ РёР»Рё РѕР±Р° РїР°СЂРѕР»СЏ РјРѕРіСѓС‚ Р±С‹С‚СЊ NULL, С‡С‚Рѕ РјС‹ Р±СѓРґРµРј РїРѕРЅРёРјР°С‚СЊ РєР°Рє РїСѓСЃС‚СѓСЋ СЃС‚СЂРѕРєСѓ.
 		static bool MakeFileKey(int nEncVersion, int nEncRevision, int nKeyLength, StringExt *seOwnerKey, StringExt *seUserKey, int nPermissions, StringExt *seFileID, StringExt *seOwnerPassword, StringExt *seUserPassword, unsigned char *sFileKey, bool bEncryptMetadata, bool *pbOwnerPasswordValid);
 
 	private:

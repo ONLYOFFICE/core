@@ -1,4 +1,4 @@
-#include <stdlib.h>
+п»ї#include <stdlib.h>
 #include <stddef.h>
 #include <string.h>
 #include <ctype.h>
@@ -14,7 +14,7 @@
 
 namespace PdfReader
 {
-#define XrefSearchSize 1024	// Читаем столько байт, начиная с конца файла, чтобы найти 'startxref'
+#define XrefSearchSize 1024	// Р§РёС‚Р°РµРј СЃС‚РѕР»СЊРєРѕ Р±Р°Р№С‚, РЅР°С‡РёРЅР°СЏ СЃ РєРѕРЅС†Р° С„Р°Р№Р»Р°, С‡С‚РѕР±С‹ РЅР°Р№С‚Рё 'startxref'
 
 	//---------------------------------------------------------------------------------------------------------------------------
 	// Permission bits
@@ -47,10 +47,10 @@ namespace PdfReader
 
 	private:
 
-		int     m_nObjectStreamNum; // Порядковый номер объекта(Stream Objects)
-		int     m_nObjectsCount;    // Количество объектов в потоке
-		Object *m_arrObjects;       // Список объектов в потоке
-		int    *m_arrObjectsNums;   // Порядковые номера объектов в потоке
+		int     m_nObjectStreamNum; // РџРѕСЂСЏРґРєРѕРІС‹Р№ РЅРѕРјРµСЂ РѕР±СЉРµРєС‚Р°(Stream Objects)
+		int     m_nObjectsCount;    // РљРѕР»РёС‡РµСЃС‚РІРѕ РѕР±СЉРµРєС‚РѕРІ РІ РїРѕС‚РѕРєРµ
+		Object *m_arrObjects;       // РЎРїРёСЃРѕРє РѕР±СЉРµРєС‚РѕРІ РІ РїРѕС‚РѕРєРµ
+		int    *m_arrObjectsNums;   // РџРѕСЂСЏРґРєРѕРІС‹Рµ РЅРѕРјРµСЂР° РѕР±СЉРµРєС‚РѕРІ РІ РїРѕС‚РѕРєРµ
 
 	};
 
@@ -139,7 +139,7 @@ namespace PdfReader
 		while (pStream->GetChar() != EOF);
 		delete pParser;
 
-		// Сдвигаемся к началу первого объекта
+		// РЎРґРІРёРіР°РµРјСЃСЏ Рє РЅР°С‡Р°Р»Сѓ РїРµСЂРІРѕРіРѕ РѕР±СЉРµРєС‚Р°
 		for (int nIndex = nFirst; nIndex < arrnOffsets[0]; ++nIndex)
 		{
 			oObjectStream.GetStream()->GetChar();
@@ -210,13 +210,13 @@ namespace PdfReader
 		m_nPermissionFlags = DefaultPermissionFlags;
 		m_bOwnerPassword = false;
 
-		// Читаем Trailer
+		// Р§РёС‚Р°РµРј Trailer
 		m_pStream = pStream;
 		m_nStart  = m_pStream->GetStartPos();
 		unsigned int nPos = GetStartXref();
 
-		// Если возникла проблема при поиске 'startxref', пытаемся восстановить 
-		// таблицу xref
+		// Р•СЃР»Рё РІРѕР·РЅРёРєР»Р° РїСЂРѕР±Р»РµРјР° РїСЂРё РїРѕРёСЃРєРµ 'startxref', РїС‹С‚Р°РµРјСЃСЏ РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ 
+		// С‚Р°Р±Р»РёС†Сѓ xref
 
 		if (0 == nPos)
 		{
@@ -226,12 +226,12 @@ namespace PdfReader
 				return;
 			}
 		}
-		else // читаем таблицу Xref
+		else // С‡РёС‚Р°РµРј С‚Р°Р±Р»РёС†Сѓ Xref
 		{
 			while (ReadXRef(&nPos));
 
-			// Если возникла проблема при поиске 'startxref', пытаемся восстановить 
-			// таблицу xref
+			// Р•СЃР»Рё РІРѕР·РЅРёРєР»Р° РїСЂРѕР±Р»РµРјР° РїСЂРё РїРѕРёСЃРєРµ 'startxref', РїС‹С‚Р°РµРјСЃСЏ РІРѕСЃСЃС‚Р°РЅРѕРІРёС‚СЊ 
+			// С‚Р°Р±Р»РёС†Сѓ xref
 			if (!m_bValidXref)
 			{
 				if (!(m_bValidXref = ConstructXRef()))
@@ -261,8 +261,8 @@ namespace PdfReader
 			}
 		}
 
-		// Теперь устанавливаем в словарь Trailer ссылку на таблиу xref, чтобы мы могли
-		// по данной таблице находить косвенные объекты
+		// РўРµРїРµСЂСЊ СѓСЃС‚Р°РЅР°РІР»РёРІР°РµРј РІ СЃР»РѕРІР°СЂСЊ Trailer СЃСЃС‹Р»РєСѓ РЅР° С‚Р°Р±Р»РёСѓ xref, С‡С‚РѕР±С‹ РјС‹ РјРѕРіР»Рё
+		// РїРѕ РґР°РЅРЅРѕР№ С‚Р°Р±Р»РёС†Рµ РЅР°С…РѕРґРёС‚СЊ РєРѕСЃРІРµРЅРЅС‹Рµ РѕР±СЉРµРєС‚С‹
 		m_oTrailerDict.GetDict()->SetXRef(this);
 	}
 
@@ -288,7 +288,7 @@ namespace PdfReader
 		char *pCurChar;
 		int nChar = 0, nPos = 0, nCur = 0;
 
-		// считываем последние xrefSearchSize байт
+		// СЃС‡РёС‚С‹РІР°РµРј РїРѕСЃР»РµРґРЅРёРµ xrefSearchSize Р±Р°Р№С‚
 		m_pStream->SetPos(XrefSearchSize, -1);
 		for (nPos = 0; nPos < XrefSearchSize; ++nPos)
 		{
@@ -300,7 +300,7 @@ namespace PdfReader
 		}
 		sBuffer[nPos] = '\0';
 
-		// ищем startxref
+		// РёС‰РµРј startxref
 		for (nCur = nPos - 9; nCur >= 0; --nCur)
 		{
 			if (!strncmp(&sBuffer[nCur], "startxref", 9))
@@ -318,8 +318,8 @@ namespace PdfReader
 		return m_unLastXRefOffset;
 	}
 
-	// Считываем одну секцию таблицы Xref. Также считываем соответствующий словарь Trailer
-	// и возвращаем указатель на предыдущий.
+	// РЎС‡РёС‚С‹РІР°РµРј РѕРґРЅСѓ СЃРµРєС†РёСЋ С‚Р°Р±Р»РёС†С‹ Xref. РўР°РєР¶Рµ СЃС‡РёС‚С‹РІР°РµРј СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ СЃР»РѕРІР°СЂСЊ Trailer
+	// Рё РІРѕР·РІСЂР°С‰Р°РµРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РїСЂРµРґС‹РґСѓС‰РёР№.
 	bool XRef::ReadXRef(unsigned int *punPos)
 	{
 		Object oObject;
@@ -329,13 +329,13 @@ namespace PdfReader
 		Parser *pParser = new Parser(NULL, new Lexer(NULL, m_pStream->MakeSubStream(m_nStart + *punPos, false, 0, &oObject)), true);
 		pParser->GetObject(&oObject);
 
-		// Парсим таблицу xref в старой форме
+		// РџР°СЂСЃРёРј С‚Р°Р±Р»РёС†Сѓ xref РІ СЃС‚Р°СЂРѕР№ С„РѕСЂРјРµ
 		if (oObject.IsCommand("xref"))
 		{
 			oObject.Free();
 			bResult = ReadXRefTable(pParser, punPos);
 		}
-		// Парсим таблицу xref, когда она записана в виде потока
+		// РџР°СЂСЃРёРј С‚Р°Р±Р»РёС†Сѓ xref, РєРѕРіРґР° РѕРЅР° Р·Р°РїРёСЃР°РЅР° РІ РІРёРґРµ РїРѕС‚РѕРєР°
 		else if (oObject.IsInt())
 		{
 			oObject.Free();
@@ -384,7 +384,7 @@ namespace PdfReader
 
 		while (1)
 		{
-			// сначала в секции идут номер первого объекта и количество объектов
+			// СЃРЅР°С‡Р°Р»Р° РІ СЃРµРєС†РёРё РёРґСѓС‚ РЅРѕРјРµСЂ РїРµСЂРІРѕРіРѕ РѕР±СЉРµРєС‚Р° Рё РєРѕР»РёС‡РµСЃС‚РІРѕ РѕР±СЉРµРєС‚РѕРІ
 			pParser->GetObject(&oTempObject);
 			if (oTempObject.IsCommand("trailer"))
 			{
@@ -434,11 +434,11 @@ namespace PdfReader
 			}
 			for (int nIndex = nFirst; nIndex < nFirst + nCount; ++nIndex)
 			{
-				// формат: nnnnnnnnnn ggggg n eol
-				// nnnnnnnnnn - байтовый сдвиг
-				// ggggg      - Generation number(номер версии объекта)
-				// n          - Ключ, определяющий используется ли объект
-				// eol        - Конец строки(два символа)
+				// С„РѕСЂРјР°С‚: nnnnnnnnnn ggggg n eol
+				// nnnnnnnnnn - Р±Р°Р№С‚РѕРІС‹Р№ СЃРґРІРёРі
+				// ggggg      - Generation number(РЅРѕРјРµСЂ РІРµСЂСЃРёРё РѕР±СЉРµРєС‚Р°)
+				// n          - РљР»СЋС‡, РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ Р»Рё РѕР±СЉРµРєС‚
+				// eol        - РљРѕРЅРµС† СЃС‚СЂРѕРєРё(РґРІР° СЃРёРјРІРѕР»Р°)
 				if (!pParser->GetObject(&oTempObject)->IsInt())
 				{
 					oTempObject.Free();
@@ -476,9 +476,9 @@ namespace PdfReader
 				if (m_arrEntries[nIndex].unOffset == 0xffffffff)
 				{
 					m_arrEntries[nIndex] = oEntry;
-					// в PDF файлах, созданных с помощью Intellectual Property
-					// Network, имеется баг: таблица Xref начинается с объекта 
-					// под номером 1, вместо 0.
+					// РІ PDF С„Р°Р№Р»Р°С…, СЃРѕР·РґР°РЅРЅС‹С… СЃ РїРѕРјРѕС‰СЊСЋ Intellectual Property
+					// Network, РёРјРµРµС‚СЃСЏ Р±Р°Рі: С‚Р°Р±Р»РёС†Р° Xref РЅР°С‡РёРЅР°РµС‚СЃСЏ СЃ РѕР±СЉРµРєС‚Р° 
+					// РїРѕРґ РЅРѕРјРµСЂРѕРј 1, РІРјРµСЃС‚Рѕ 0.
 					if (nIndex == 1 && nFirst == 1 && m_arrEntries[1].unOffset == 0 && m_arrEntries[1].nGen == 65535 && m_arrEntries[1].eType == xrefEntryFree)
 					{
 						nIndex = nFirst = 0;
@@ -489,7 +489,7 @@ namespace PdfReader
 			}
 		}
 
-		// Читаем словарь Trailer
+		// Р§РёС‚Р°РµРј СЃР»РѕРІР°СЂСЊ Trailer
 		if (!pParser->GetObject(&oTempObject)->IsDict())
 		{
 			oTempObject.Free();
@@ -497,7 +497,7 @@ namespace PdfReader
 			return false;
 		}
 
-		// Считываем указатель 'Prev'
+		// РЎС‡РёС‚С‹РІР°РµРј СѓРєР°Р·Р°С‚РµР»СЊ 'Prev'
 		Object oPrev;
 		bool bPrev = false;
 		oTempObject.GetDict()->SearchAndCopy("Prev", &oPrev);
@@ -508,7 +508,7 @@ namespace PdfReader
 		}
 		else if (oPrev.IsRef())
 		{
-			// Некоторые программы пишут "/Prev NNN 0 R" вместо "/Prev NNN"
+			// РќРµРєРѕС‚РѕСЂС‹Рµ РїСЂРѕРіСЂР°РјРјС‹ РїРёС€СѓС‚ "/Prev NNN 0 R" РІРјРµСЃС‚Рѕ "/Prev NNN"
 			*punPos = (unsigned int)oPrev.GetRefNum();
 			bPrev = true;
 		}
@@ -518,13 +518,13 @@ namespace PdfReader
 		}
 		oPrev.Free();
 
-		// Сохраняем первый словарь Trailer
+		// РЎРѕС…СЂР°РЅСЏРµРј РїРµСЂРІС‹Р№ СЃР»РѕРІР°СЂСЊ Trailer
 		if (m_oTrailerDict.IsNone())
 		{
 			oTempObject.Copy(&m_oTrailerDict);
 		}
 
-		// Проверяем есть ли элемент 'XRefStm'
+		// РџСЂРѕРІРµСЂСЏРµРј РµСЃС‚СЊ Р»Рё СЌР»РµРјРµРЅС‚ 'XRefStm'
 		if (oTempObject.GetDict()->Search("XRefStm", &oPrev)->IsInt())
 		{
 			unsigned int unPos2 = (unsigned int)oPrev.GetInt();
@@ -754,7 +754,7 @@ namespace PdfReader
 		return true;
 	}
 
-	// Пробуем построить таблицу Xref для поврежденного файла.
+	// РџСЂРѕР±СѓРµРј РїРѕСЃС‚СЂРѕРёС‚СЊ С‚Р°Р±Р»РёС†Сѓ Xref РґР»СЏ РїРѕРІСЂРµР¶РґРµРЅРЅРѕРіРѕ С„Р°Р№Р»Р°.
 	bool XRef::ConstructXRef()
 	{
 		bool bGetRoot = false;
@@ -780,10 +780,10 @@ namespace PdfReader
 			}
 			unsigned char *pCur = (unsigned char*)sBuffer;
 
-			// Пропускаем пробелы
+			// РџСЂРѕРїСѓСЃРєР°РµРј РїСЂРѕР±РµР»С‹
 			while (*pCur && Lexer::IsSpace(*pCur & 0xff)) ++pCur;
 
-			// Cчитываем словарь Trailer
+			// CС‡РёС‚С‹РІР°РµРј СЃР»РѕРІР°СЂСЊ Trailer
 			if (!strncmp((char*)pCur, "trailer", 7))
 			{
 				Object oTemp;
@@ -810,7 +810,7 @@ namespace PdfReader
 				oNewTrailerDict.Free();
 				delete pParser;
 			}
-			else if (isdigit(*pCur)) // Ищем объект
+			else if (isdigit(*pCur)) // РС‰РµРј РѕР±СЉРµРєС‚
 			{
 				int nNum = atoi((char*)pCur);
 				if (nNum > 0)

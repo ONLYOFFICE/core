@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_GSTATE_H
+п»ї#ifndef _PDF_READER_GSTATE_H
 #define _PDF_READER_GSTATE_H
 
 #include "../../DesktopEditor/common/Types.h"
@@ -61,7 +61,7 @@ namespace PdfReader
 		// (nByte / 255) << 16  =  (0.0000000100000001... * nByte) << 16
 		//                      =  ((nByte << 8) + (nByte) + (nByte >> 8) + ...) << 16
 		//                      =   (nByte << 8) + (nByte) + (nByte >> 7)
-		//                                      [для округления]
+		//                                      [РґР»СЏ РѕРєСЂСѓРіР»РµРЅРёСЏ]
 		return (GrColorComp)((nByte << 8) + nByte + (nByte >> 7));
 	}
 
@@ -110,8 +110,8 @@ namespace PdfReader
 	// GrColorSpace
 	//-------------------------------------------------------------------------------------------------------------------------------
 
-	// Константы GrColorSpaceModes и массив GrColorSpaceModeNames, определенный
-	// в GState.cpp должны совпадать.
+	// РљРѕРЅСЃС‚Р°РЅС‚С‹ GrColorSpaceModes Рё РјР°СЃСЃРёРІ GrColorSpaceModeNames, РѕРїСЂРµРґРµР»РµРЅРЅС‹Р№
+	// РІ GState.cpp РґРѕР»Р¶РЅС‹ СЃРѕРІРїР°РґР°С‚СЊ.
 	enum GrColorSpaceMode
 	{
 		csDeviceGray,
@@ -138,30 +138,30 @@ namespace PdfReader
 
 		static GrColorSpace *Parse(Object *pColorSpaceObject);
 
-		// Конвертируем в -> Gray, RGB, или CMYK.
+		// РљРѕРЅРІРµСЂС‚РёСЂСѓРµРј РІ -> Gray, RGB, РёР»Рё CMYK.
 		virtual void GetGray(GrColor *pColor, GrGray *pGray) = 0;
 		virtual void GetRGB(GrColor *pColor, GrRGB  *pRGB)  = 0;
 		virtual void GetCMYK(GrColor *pColor, GrCMYK *pCMYK) = 0;
 
-		// Количество компонент.
+		// РљРѕР»РёС‡РµСЃС‚РІРѕ РєРѕРјРїРѕРЅРµРЅС‚.
 		virtual int  GetComponentsCount() = 0;
 
-		// Получаем стандартное значение цвета в данном цветовом пространстве.
+		// РџРѕР»СѓС‡Р°РµРј СЃС‚Р°РЅРґР°СЂС‚РЅРѕРµ Р·РЅР°С‡РµРЅРёРµ С†РІРµС‚Р° РІ РґР°РЅРЅРѕРј С†РІРµС‚РѕРІРѕРј РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ.
 		virtual void GetDefaultColor(GrColor *pColor) = 0;
 
-		// Стандартные границчные значения для каждой компоненты пикселя, где nMaxImagePixelValue - максимальное значение пикселя.
+		// РЎС‚Р°РЅРґР°СЂС‚РЅС‹Рµ РіСЂР°РЅРёС†С‡РЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ РєР°Р¶РґРѕР№ РєРѕРјРїРѕРЅРµРЅС‚С‹ РїРёРєСЃРµР»СЏ, РіРґРµ nMaxImagePixelValue - РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РїРёРєСЃРµР»СЏ.
 		virtual void GetDefaultRanges(double *pDecodeLow, double *pDecodeRange, int nMaxImagePixelValue);
 
-		// True, если в данном цветовом пространстве на странице ничего не нарисовано.
+		// True, РµСЃР»Рё РІ РґР°РЅРЅРѕРј С†РІРµС‚РѕРІРѕРј РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ РЅР° СЃС‚СЂР°РЅРёС†Рµ РЅРёС‡РµРіРѕ РЅРµ РЅР°СЂРёСЃРѕРІР°РЅРѕ.
 		virtual bool IsNonMarking()
 		{
 			return false;
 		}
 
-		// Число различных цветовых пространств.
+		// Р§РёСЃР»Рѕ СЂР°Р·Р»РёС‡РЅС‹С… С†РІРµС‚РѕРІС‹С… РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІ.
 		static int GetColorSpaceModesCount();
 
-		// Имя соответствующего цветового пространства.
+		// РРјСЏ СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РµРіРѕ С†РІРµС‚РѕРІРѕРіРѕ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІР°.
 		static char *GetColorSpaceModeName(int nIndex);
 
 		DWORD GetDwordColor(GrColor *pColor)
@@ -234,7 +234,7 @@ namespace PdfReader
 		}
 		virtual void GetDefaultColor(GrColor *pColor);
 
-		// Возвращаем значения, специфичные пространству CalGray.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј Р·РЅР°С‡РµРЅРёСЏ, СЃРїРµС†РёС„РёС‡РЅС‹Рµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІСѓ CalGray.
 		double GetWhiteX()
 		{
 			return m_dWhiteX;
@@ -335,7 +335,7 @@ namespace PdfReader
 		}
 		virtual void GetDefaultColor(GrColor *pColor);
 
-		// Возвращаем значения, специфичные пространству CalRBG.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј Р·РЅР°С‡РµРЅРёСЏ, СЃРїРµС†РёС„РёС‡РЅС‹Рµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІСѓ CalRBG.
 		double  GetWhiteX()
 		{
 			return m_dWhiteX;
@@ -391,7 +391,7 @@ namespace PdfReader
 		double m_dGammaG;       // Gamma
 		double m_dGammaB;       //
 
-		double m_arrdMatrix[9]; // Матрица преобразования: ABC -> XYZ
+		double m_arrdMatrix[9]; // РњР°С‚СЂРёС†Р° РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ: ABC -> XYZ
 	};
 
 	//-------------------------------------------------------------------------------------------------------------------------------
@@ -453,7 +453,7 @@ namespace PdfReader
 
 		virtual void GetDefaultRanges(double *pDecodeLow, double *pDecodeRange, int nMaxImagePixelValue);
 
-		// Возвращаем значения, специфичные пространству Lab.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј Р·РЅР°С‡РµРЅРёСЏ, СЃРїРµС†РёС„РёС‡РЅС‹Рµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІСѓ Lab.
 		double GetWhiteX()
 		{
 			return m_dWhiteX;
@@ -506,12 +506,12 @@ namespace PdfReader
 		double m_dBlackZ;  // 
 
 		double m_dMinA;    //
-		double m_dMaxA;    // Границы для компонент А и В
+		double m_dMaxA;    // Р“СЂР°РЅРёС†С‹ РґР»СЏ РєРѕРјРїРѕРЅРµРЅС‚ Рђ Рё Р’
 		double m_dMinB;    //
 		double m_dMaxB;    //
 
 		double m_dMultR;   // 
-		double m_dMultG;   // Дополнительные сомножители
+		double m_dMultG;   // Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ СЃРѕРјРЅРѕР¶РёС‚РµР»Рё
 		double m_dMultB;   //
 	};
 
@@ -546,7 +546,7 @@ namespace PdfReader
 
 		virtual void GetDefaultRanges(double *pDecodeLow, double *pDecodeRange, int nMaxImagePixelValue);
 
-		// Возвращаем значения, специфичные пространству Lab.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј Р·РЅР°С‡РµРЅРёСЏ, СЃРїРµС†РёС„РёС‡РЅС‹Рµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІСѓ Lab.
 		GrColorSpace *GetAlternate()
 		{
 			return m_pAlternate;
@@ -554,10 +554,10 @@ namespace PdfReader
 
 	private:
 
-		int           m_nComponentsCount;  // Число компонент цвета (1, 3, or 4)
-		GrColorSpace *m_pAlternate;        // Альтернативное цветовое пространство
-		double        m_arrdRangeMin[4];   // Минимальные значения для каждой компоненты
-		double        m_arrdRangeMax[4];   // Максимальные значения для каждой компоненты
+		int           m_nComponentsCount;  // Р§РёСЃР»Рѕ РєРѕРјРїРѕРЅРµРЅС‚ С†РІРµС‚Р° (1, 3, or 4)
+		GrColorSpace *m_pAlternate;        // РђР»СЊС‚РµСЂРЅР°С‚РёРІРЅРѕРµ С†РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ
+		double        m_arrdRangeMin[4];   // РњРёРЅРёРјР°Р»СЊРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ РєР°Р¶РґРѕР№ РєРѕРјРїРѕРЅРµРЅС‚С‹
+		double        m_arrdRangeMax[4];   // РњР°РєСЃРёРјР°Р»СЊРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ РєР°Р¶РґРѕР№ РєРѕРјРїРѕРЅРµРЅС‚С‹
 		Ref           m_oICCProfileStream; // ICC 
 	};
 
@@ -591,7 +591,7 @@ namespace PdfReader
 
 		virtual void GetDefaultRanges(double *pDecodeLow, double *pDecodeRange, int nMaxImagePixelValue);
 
-		// Возвращаем значения, специфичные пространству Indexed.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј Р·РЅР°С‡РµРЅРёСЏ, СЃРїРµС†РёС„РёС‡РЅС‹Рµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІСѓ Indexed.
 		GrColorSpace  *GetBase()
 		{
 			return m_pBase;
@@ -611,9 +611,9 @@ namespace PdfReader
 
 	private:
 
-		GrColorSpace  *m_pBase;   // Базовое цветовое пространство
+		GrColorSpace  *m_pBase;   // Р‘Р°Р·РѕРІРѕРµ С†РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ
 		int            m_nHival;  // Hival = max valid index value
-		unsigned char *m_pLookup; // Таблица цветов
+		unsigned char *m_pLookup; // РўР°Р±Р»РёС†Р° С†РІРµС‚РѕРІ
 	};
 
 	//-------------------------------------------------------------------------------------------------------------------------------
@@ -649,7 +649,7 @@ namespace PdfReader
 			return m_bNonMarking;
 		}
 
-		// Возвращаем значения, специфичные пространству Separation.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј Р·РЅР°С‡РµРЅРёСЏ, СЃРїРµС†РёС„РёС‡РЅС‹Рµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІСѓ Separation.
 		StringExt    *GetName()
 		{
 			return m_seName;
@@ -666,10 +666,10 @@ namespace PdfReader
 	private:
 
 		StringExt    *m_seName;          // Color space family name
-		GrColorSpace *m_pAlternateSpace; // Альтернативное цветовое пространство
-		Function     *m_pFunction;	     // tintTransform ( функция преобразования в альтернативное пространство)
+		GrColorSpace *m_pAlternateSpace; // РђР»СЊС‚РµСЂРЅР°С‚РёРІРЅРѕРµ С†РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ
+		Function     *m_pFunction;	     // tintTransform ( С„СѓРЅРєС†РёСЏ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІ Р°Р»СЊС‚РµСЂРЅР°С‚РёРІРЅРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ)
 
-		bool          m_bNonMarking;     // Будет ли видимой графика, использующая данное цветовое пространство
+		bool          m_bNonMarking;     // Р‘СѓРґРµС‚ Р»Рё РІРёРґРёРјРѕР№ РіСЂР°С„РёРєР°, РёСЃРїРѕР»СЊР·СѓСЋС‰Р°СЏ РґР°РЅРЅРѕРµ С†РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ
 	};
 
 	//-------------------------------------------------------------------------------------------------------------------------------
@@ -706,7 +706,7 @@ namespace PdfReader
 			return m_bNonMarking;
 		}
 
-		// Возвращаем значения, специфичные пространству DeviceN.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј Р·РЅР°С‡РµРЅРёСЏ, СЃРїРµС†РёС„РёС‡РЅС‹Рµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІСѓ DeviceN.
 		StringExt    *GetColorantName(int nIndex)
 		{
 			return m_arrseNames[nIndex];
@@ -722,12 +722,12 @@ namespace PdfReader
 
 	private:
 
-		int           m_nComponentsCount;            // Число компонент
-		StringExt    *m_arrseNames[GrColorMaxComps]; // Объекты типа "Name" определяющие каждую цветовую компоненту
-		GrColorSpace *m_pAlternateSpace;             // Альтернативное цветовое пространство
-		Function     *m_pFunction;	                 // tintTransform ( функция преобразования в альтернативное пространство)
+		int           m_nComponentsCount;            // Р§РёСЃР»Рѕ РєРѕРјРїРѕРЅРµРЅС‚
+		StringExt    *m_arrseNames[GrColorMaxComps]; // РћР±СЉРµРєС‚С‹ С‚РёРїР° "Name" РѕРїСЂРµРґРµР»СЏСЋС‰РёРµ РєР°Р¶РґСѓСЋ С†РІРµС‚РѕРІСѓСЋ РєРѕРјРїРѕРЅРµРЅС‚Сѓ
+		GrColorSpace *m_pAlternateSpace;             // РђР»СЊС‚РµСЂРЅР°С‚РёРІРЅРѕРµ С†РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ
+		Function     *m_pFunction;	                 // tintTransform ( С„СѓРЅРєС†РёСЏ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РІ Р°Р»СЊС‚РµСЂРЅР°С‚РёРІРЅРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ)
 
-		bool          m_bNonMarking;                 // Будет ли видимой графика, использующая данное цветовое пространство
+		bool          m_bNonMarking;                 // Р‘СѓРґРµС‚ Р»Рё РІРёРґРёРјРѕР№ РіСЂР°С„РёРєР°, РёСЃРїРѕР»СЊР·СѓСЋС‰Р°СЏ РґР°РЅРЅРѕРµ С†РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ
 	};
 
 	//-------------------------------------------------------------------------------------------------------------------------------
@@ -759,7 +759,7 @@ namespace PdfReader
 		}
 		virtual void GetDefaultColor(GrColor *pColor);
 
-		// Возвращаем значения, специфичные пространству Pattern.
+		// Р’РѕР·РІСЂР°С‰Р°РµРј Р·РЅР°С‡РµРЅРёСЏ, СЃРїРµС†РёС„РёС‡РЅС‹Рµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІСѓ Pattern.
 		GrColorSpace *GetUnder()
 		{
 			return m_pUnder;
@@ -767,7 +767,7 @@ namespace PdfReader
 
 	private:
 
-		GrColorSpace *m_pUnder;    // Цветовое пространство подкладки (для не цветовых Patterns)
+		GrColorSpace *m_pUnder;    // Р¦РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РїРѕРґРєР»Р°РґРєРё (РґР»СЏ РЅРµ С†РІРµС‚РѕРІС‹С… Patterns)
 	};
 
 	//-------------------------------------------------------------------------------------------------------------------------------
@@ -886,7 +886,7 @@ namespace PdfReader
 
 	private:
 
-		GrShading *m_pShading;      // Сам объект Shading
+		GrShading *m_pShading;      // РЎР°Рј РѕР±СЉРµРєС‚ Shading
 		double     m_arrMatrix[6];  // Pattern matrix
 	};
 
@@ -940,16 +940,16 @@ namespace PdfReader
 
 	protected:
 
-		int           m_nType;          // Тип
-		GrColorSpace *m_pColorSpace;    // Цветовое пространство, в котором рисуем
-		GrColor       m_oBackground;    // Цвет подкладки, если она есть
-		bool          m_bHasBackground; // Есть ли подкладка?
+		int           m_nType;          // РўРёРї
+		GrColorSpace *m_pColorSpace;    // Р¦РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ, РІ РєРѕС‚РѕСЂРѕРј СЂРёСЃСѓРµРј
+		GrColor       m_oBackground;    // Р¦РІРµС‚ РїРѕРґРєР»Р°РґРєРё, РµСЃР»Рё РѕРЅР° РµСЃС‚СЊ
+		bool          m_bHasBackground; // Р•СЃС‚СЊ Р»Рё РїРѕРґРєР»Р°РґРєР°?
 
 		double        m_dXMin;          //
 		double        m_dYMin;          // BBox
 		double        m_dXMax;          //
 		double        m_dYMax;          //
-		bool          m_bHasBBox;       // Задан ли BBox?
+		bool          m_bHasBBox;       // Р—Р°РґР°РЅ Р»Рё BBox?
 	};
 
 	//-------------------------------------------------------------------------------------------------------------------------------
@@ -996,7 +996,7 @@ namespace PdfReader
 		double    m_dDomainMaxX;   //
 		double    m_dDomainMaxY;   //
 
-		double    m_arrMatrix[6];  // Матрица преобразования и пространства, определенного Domain, в текущее пространство Shading
+		double    m_arrMatrix[6];  // РњР°С‚СЂРёС†Р° РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ Рё РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІР°, РѕРїСЂРµРґРµР»РµРЅРЅРѕРіРѕ Domain, РІ С‚РµРєСѓС‰РµРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ Shading
 		Function *m_arrFunctions[GrColorMaxComps];
 		int       m_nFunctionsCount;
 	};
@@ -1052,19 +1052,19 @@ namespace PdfReader
 
 	private:
 
-		double    m_dAxisX0;              // Начальная точка вектора
+		double    m_dAxisX0;              // РќР°С‡Р°Р»СЊРЅР°СЏ С‚РѕС‡РєР° РІРµРєС‚РѕСЂР°
 		double    m_dAxisY0;              // 
-		double    m_dAxisX1;              // Конечная точка вектора
+		double    m_dAxisX1;              // РљРѕРЅРµС‡РЅР°СЏ С‚РѕС‡РєР° РІРµРєС‚РѕСЂР°
 		double    m_dAxisY1;              //
 
-		double    m_dT0;                  // Пределы параметра t(параметризация оси)
+		double    m_dT0;                  // РџСЂРµРґРµР»С‹ РїР°СЂР°РјРµС‚СЂР° t(РїР°СЂР°РјРµС‚СЂРёР·Р°С†РёСЏ РѕСЃРё)
 		double    m_dT1;
 
 		Function *m_arrFunctions[GrColorMaxComps];
 		int       m_nFunctionsCount;
 
-		bool      m_bExtendStart;         // Продолжать ли за начальную точку оси
-		bool      m_bExtendEnd;           // Продолжать ли за конечную точку оси
+		bool      m_bExtendStart;         // РџСЂРѕРґРѕР»Р¶Р°С‚СЊ Р»Рё Р·Р° РЅР°С‡Р°Р»СЊРЅСѓСЋ С‚РѕС‡РєСѓ РѕСЃРё
+		bool      m_bExtendEnd;           // РџСЂРѕРґРѕР»Р¶Р°С‚СЊ Р»Рё Р·Р° РєРѕРЅРµС‡РЅСѓСЋ С‚РѕС‡РєСѓ РѕСЃРё
 	};
 	//-------------------------------------------------------------------------------------------------------------------------------
 	// GrRadialShading
@@ -1119,20 +1119,20 @@ namespace PdfReader
 
 	private:
 
-		double    m_dFirstX;          // Координаты центра первой окружности
+		double    m_dFirstX;          // РљРѕРѕСЂРґРёРЅР°С‚С‹ С†РµРЅС‚СЂР° РїРµСЂРІРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё
 		double    m_dFirstY;          //
-		double    m_dFirstRad;        // Радиус первой окружности
-		double    m_dSecondX;         // Координаты центра второй окружности
+		double    m_dFirstRad;        // Р Р°РґРёСѓСЃ РїРµСЂРІРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё
+		double    m_dSecondX;         // РљРѕРѕСЂРґРёРЅР°С‚С‹ С†РµРЅС‚СЂР° РІС‚РѕСЂРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё
 		double    m_dSecondY;         // 
-		double    m_dSecondRad;       // Радиус второй окружности
+		double    m_dSecondRad;       // Р Р°РґРёСѓСЃ РІС‚РѕСЂРѕР№ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё
 
-		double    m_dT0;              // Границы параметра t
+		double    m_dT0;              // Р“СЂР°РЅРёС†С‹ РїР°СЂР°РјРµС‚СЂР° t
 		double    m_dT1;              // 
 
 		Function *m_arrFunctions[GrColorMaxComps];
 		int       m_nFunctionsCount;
-		bool      m_bExtendFirst;     // Продолжать ли рисовать за первый круг
-		bool      m_bExtendSecond;    // Продолжать ли рисовать за второй круг
+		bool      m_bExtendFirst;     // РџСЂРѕРґРѕР»Р¶Р°С‚СЊ Р»Рё СЂРёСЃРѕРІР°С‚СЊ Р·Р° РїРµСЂРІС‹Р№ РєСЂСѓРі
+		bool      m_bExtendSecond;    // РџСЂРѕРґРѕР»Р¶Р°С‚СЊ Р»Рё СЂРёСЃРѕРІР°С‚СЊ Р·Р° РІС‚РѕСЂРѕР№ РєСЂСѓРі
 	};
 
 	//-------------------------------------------------------------------------------------------------------------------------------
@@ -1141,9 +1141,9 @@ namespace PdfReader
 
 	struct GrGouraudVertex
 	{
-		double  dX;       // Координаты вершины
+		double  dX;       // РљРѕРѕСЂРґРёРЅР°С‚С‹ РІРµСЂС€РёРЅС‹
 		double  dY;       //
-		GrColor oColor;   // Цвет
+		GrColor oColor;   // Р¦РІРµС‚
 	};
 
 	class GrGouraudTriangleShading : public GrShading
@@ -1166,12 +1166,12 @@ namespace PdfReader
 
 	private:
 
-		GrGouraudVertex *m_arrVertexs;                    // Массив всех вершин
-		int              m_nVertexsCount;                 // Количество вершин
-		int(*m_arrTriangles)[3];              // Массив треугольников(треугольник определяется по номерам вершин)
-		int              m_nTrianglesCount;               // Количество треугольников
-		Function        *m_ppFunctions[GrColorMaxComps];  // Функции
-		int              m_nFunctionsCount;               // Количество функций
+		GrGouraudVertex *m_arrVertexs;                    // РњР°СЃСЃРёРІ РІСЃРµС… РІРµСЂС€РёРЅ
+		int              m_nVertexsCount;                 // РљРѕР»РёС‡РµСЃС‚РІРѕ РІРµСЂС€РёРЅ
+		int(*m_arrTriangles)[3];              // РњР°СЃСЃРёРІ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ(С‚СЂРµСѓРіРѕР»СЊРЅРёРє РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РїРѕ РЅРѕРјРµСЂР°Рј РІРµСЂС€РёРЅ)
+		int              m_nTrianglesCount;               // РљРѕР»РёС‡РµСЃС‚РІРѕ С‚СЂРµСѓРіРѕР»СЊРЅРёРєРѕРІ
+		Function        *m_ppFunctions[GrColorMaxComps];  // Р¤СѓРЅРєС†РёРё
+		int              m_nFunctionsCount;               // РљРѕР»РёС‡РµСЃС‚РІРѕ С„СѓРЅРєС†РёР№
 	};
 
 	//-------------------------------------------------------------------------------------------------------------------------------
@@ -1209,10 +1209,10 @@ namespace PdfReader
 
 	private:
 
-		GrPatch  *m_pPatches;                      // Массив частей
-		int       m_nPatchesCount;                 // Количество частей
-		Function *m_ppFunctions[GrColorMaxComps];  // Массив функций
-		int       m_nFunctionsCount;               // Количество функций
+		GrPatch  *m_pPatches;                      // РњР°СЃСЃРёРІ С‡Р°СЃС‚РµР№
+		int       m_nPatchesCount;                 // РљРѕР»РёС‡РµСЃС‚РІРѕ С‡Р°СЃС‚РµР№
+		Function *m_ppFunctions[GrColorMaxComps];  // РњР°СЃСЃРёРІ С„СѓРЅРєС†РёР№
+		int       m_nFunctionsCount;               // РљРѕР»РёС‡РµСЃС‚РІРѕ С„СѓРЅРєС†РёР№
 	};
 
 	//-------------------------------------------------------------------------------------------------------------------------------
@@ -1271,14 +1271,14 @@ namespace PdfReader
 
 	private:
 
-		GrColorSpace *m_pColorSpace;                     // Цветовое пространство изображения
+		GrColorSpace *m_pColorSpace;                     // Р¦РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
 		int           m_nBitsPerComponent;               // bits per component
-		int           m_nComponentsCount;                // Число цветовых компонент в пикселе
-		GrColorSpace *m_pColorSpace2;                    // Второе цветовое пространство
-		int           m_nComponentsCount2;               // Число цветовых компонент в пикселе(во втором пространстве)
+		int           m_nComponentsCount;                // Р§РёСЃР»Рѕ С†РІРµС‚РѕРІС‹С… РєРѕРјРїРѕРЅРµРЅС‚ РІ РїРёРєСЃРµР»Рµ
+		GrColorSpace *m_pColorSpace2;                    // Р’С‚РѕСЂРѕРµ С†РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ
+		int           m_nComponentsCount2;               // Р§РёСЃР»Рѕ С†РІРµС‚РѕРІС‹С… РєРѕРјРїРѕРЅРµРЅС‚ РІ РїРёРєСЃРµР»Рµ(РІРѕ РІС‚РѕСЂРѕРј РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРµ)
 		GrColorComp  *m_ppLookup[GrColorMaxComps];       // lookup table
-		double        m_arrDecodeLow[GrColorMaxComps];   // Минимальные значения для каждой компоненты
-		double        m_arrDecodeRange[GrColorMaxComps]; // Значения (Max - min) для каждой компоненты
+		double        m_arrDecodeLow[GrColorMaxComps];   // РњРёРЅРёРјР°Р»СЊРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РґР»СЏ РєР°Р¶РґРѕР№ РєРѕРјРїРѕРЅРµРЅС‚С‹
+		double        m_arrDecodeRange[GrColorMaxComps]; // Р—РЅР°С‡РµРЅРёСЏ (Max - min) РґР»СЏ РєР°Р¶РґРѕР№ РєРѕРјРїРѕРЅРµРЅС‚С‹
 
 		bool          m_bSuccess;
 	};
@@ -1339,7 +1339,7 @@ namespace PdfReader
 		}
 
 
-		// Добавляем сдвиг (<dDx>, <dDy>) к каждой точке subpath.
+		// Р”РѕР±Р°РІР»СЏРµРј СЃРґРІРёРі (<dDx>, <dDy>) Рє РєР°Р¶РґРѕР№ С‚РѕС‡РєРµ subpath.
 		void Offset(double dDx, double dDy);
 		void Transform(double *pMatrix);
 
@@ -1364,13 +1364,13 @@ namespace PdfReader
 
 	private:
 
-		double *m_pX;           // Координаты точек в supath
+		double *m_pX;           // РљРѕРѕСЂРґРёРЅР°С‚С‹ С‚РѕС‡РµРє РІ supath
 		double *m_pY;           //
 
-		bool   *m_pbCurve;      // Если m_bCurve[i] = true => точка i - контрольная точка для кривой Безье
-		int     m_nPointsCount; // Количество точек
-		int     m_nSize;        // Размер массивов m_pX/m_pY
-		bool    m_bClosed;      // Закрыт ли path?
+		bool   *m_pbCurve;      // Р•СЃР»Рё m_bCurve[i] = true => С‚РѕС‡РєР° i - РєРѕРЅС‚СЂРѕР»СЊРЅР°СЏ С‚РѕС‡РєР° РґР»СЏ РєСЂРёРІРѕР№ Р‘РµР·СЊРµ
+		int     m_nPointsCount; // РљРѕР»РёС‡РµСЃС‚РІРѕ С‚РѕС‡РµРє
+		int     m_nSize;        // Р Р°Р·РјРµСЂ РјР°СЃСЃРёРІРѕРІ m_pX/m_pY
+		bool    m_bClosed;      // Р—Р°РєСЂС‹С‚ Р»Рё path?
 	};
 
 	class GrPath
@@ -1386,13 +1386,13 @@ namespace PdfReader
 			return new GrPath(m_bJustStarted, m_dFirstX, m_dFirstY, m_ppSubpaths, m_nSubpathsCount, m_nSize);
 		}
 
-		// Есть ли текущая точка?
+		// Р•СЃС‚СЊ Р»Рё С‚РµРєСѓС‰Р°СЏ С‚РѕС‡РєР°?
 		bool IsCurPoint()
 		{
 			return m_nSubpathsCount > 0 || m_bJustStarted;
 		}
 
-		// Пустой ли path, т.е. есть ли в нем хотя бы один subpath?
+		// РџСѓСЃС‚РѕР№ Р»Рё path, С‚.Рµ. РµСЃС‚СЊ Р»Рё РІ РЅРµРј С…РѕС‚СЏ Р±С‹ РѕРґРёРЅ subpath?
 		bool IsPathNonEmpty()
 		{
 			return m_nSubpathsCount > 0;
@@ -1423,7 +1423,7 @@ namespace PdfReader
 		void Close();
 		void Append(GrPath *pPath);
 
-		// Добавляем сдвиг (<dDx>, <dDy>) к каждой точке path.
+		// Р”РѕР±Р°РІР»СЏРµРј СЃРґРІРёРі (<dDx>, <dDy>) Рє РєР°Р¶РґРѕР№ С‚РѕС‡РєРµ path.
 		void Offset(double dDx, double dDy);
 
 		bool IsEqual(GrPath *pPath)
@@ -1445,12 +1445,12 @@ namespace PdfReader
 		GrPath(bool bJustStarted, double dFirstX, double dFirstY, GrSubpath **ppSubpaths, int nSubpathsCount, int nSize);
 
 	private:
-		bool        m_bJustStarted;   // True, если новый subpath был только что начат
-		double      m_dFirstX;        // Координаты первой точки нового subpath
+		bool        m_bJustStarted;   // True, РµСЃР»Рё РЅРѕРІС‹Р№ subpath Р±С‹Р» С‚РѕР»СЊРєРѕ С‡С‚Рѕ РЅР°С‡Р°С‚
+		double      m_dFirstX;        // РљРѕРѕСЂРґРёРЅР°С‚С‹ РїРµСЂРІРѕР№ С‚РѕС‡РєРё РЅРѕРІРѕРіРѕ subpath
 		double      m_dFirstY;        // 
-		GrSubpath **m_ppSubpaths;     // Список subpaths
-		int         m_nSubpathsCount; // Количетсво subpaths
-		int         m_nSize;          // Размер массива m_ppSubpaths
+		GrSubpath **m_ppSubpaths;     // РЎРїРёСЃРѕРє subpaths
+		int         m_nSubpathsCount; // РљРѕР»РёС‡РµС‚СЃРІРѕ subpaths
+		int         m_nSize;          // Р Р°Р·РјРµСЂ РјР°СЃСЃРёРІР° m_ppSubpaths
 	};
 
 
@@ -1686,7 +1686,7 @@ namespace PdfReader
 	// GrClip
 	//-------------------------------------------------------------------------------------------------------------------------------
 
-#define GrClipEOFlag       0x01	// Используем правило Even-odd
+#define GrClipEOFlag       0x01	// РСЃРїРѕР»СЊР·СѓРµРј РїСЂР°РІРёР»Рѕ Even-odd
 
 	class GrClip
 	{
@@ -1703,13 +1703,13 @@ namespace PdfReader
 
 		void ResetToRect(double dX0, double dY0, double dX1, double dY1);
 
-		// Пересекаем Clip с заданным прямоугольником.
+		// РџРµСЂРµСЃРµРєР°РµРј Clip СЃ Р·Р°РґР°РЅРЅС‹Рј РїСЂСЏРјРѕСѓРіРѕР»СЊРЅРёРєРѕРј.
 		void ClipToRect(double dX0, double dY0, double dX1, double dY1);
 
-		// Пересекаем Clip с <pPath>.
+		// РџРµСЂРµСЃРµРєР°РµРј Clip СЃ <pPath>.
 		void ClipToPath(GrPath *pPath, double *pMatrix, bool bEO);
 
-		// Пересекаем с текстом
+		// РџРµСЂРµСЃРµРєР°РµРј СЃ С‚РµРєСЃС‚РѕРј
 		void ClipToText(std::wstring wsFontName, std::wstring wsFontPath, double dFontSize, int nFontStyle, double *pMatrix, std::wstring wsText, double dX, double dY, double dWidth, double dHeight, double dBaseLineOffset)
 		{
 			if (!m_pTextClip)
@@ -2127,18 +2127,18 @@ namespace PdfReader
 		{
 			return m_pClip;
 		}
-		// Есть ли текущая точка?
+		// Р•СЃС‚СЊ Р»Рё С‚РµРєСѓС‰Р°СЏ С‚РѕС‡РєР°?
 		bool IsCurPoint()
 		{
 			return m_pPath->IsCurPoint();
 		}
-		// Есть ли непустой path?
+		// Р•СЃС‚СЊ Р»Рё РЅРµРїСѓСЃС‚РѕР№ path?
 		bool IsPathNonEmpty()
 		{
 			return m_pPath->IsPathNonEmpty();
 		}
 
-		// Различные преобразования координат.
+		// Р Р°Р·Р»РёС‡РЅС‹Рµ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РєРѕРѕСЂРґРёРЅР°С‚.
 		void   Transform(double dSrcX, double dSrcY, double *pdResX, double *pdResY)
 		{
 			*pdResX = m_arrCTM[0] * dSrcX + m_arrCTM[2] * dSrcY + m_arrCTM[4];
@@ -2289,7 +2289,7 @@ namespace PdfReader
 		void Clip();
 		void ClipToStrokePath();
 
-		// Текст.
+		// РўРµРєСЃС‚.
 		void TextSetPos(double dX, double dY)
 		{
 			m_dTextLineX = dX;
@@ -2304,7 +2304,7 @@ namespace PdfReader
 		void TextShift(double dShiftX, double dShiftY);
 		void Shift(double dShidtX, double dShiftY);
 
-		// Работа со стеком.
+		// Р Р°Р±РѕС‚Р° СЃРѕ СЃС‚РµРєРѕРј.
 		GrState *Save();
 		GrState *Restore();
 		bool HasSaves()
@@ -2321,72 +2321,72 @@ namespace PdfReader
 
 	private:
 
-		double m_dHorDPI;      // Разрешение по горизонтали
-		double m_dVerDPI;      // Разрешение по вертикали
-		double m_arrCTM[6];    // Матрица преобразования координат
+		double m_dHorDPI;      // Р Р°Р·СЂРµС€РµРЅРёРµ РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё
+		double m_dVerDPI;      // Р Р°Р·СЂРµС€РµРЅРёРµ РїРѕ РІРµСЂС‚РёРєР°Р»Рё
+		double m_arrCTM[6];    // РњР°С‚СЂРёС†Р° РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ РєРѕРѕСЂРґРёРЅР°С‚
 
-		double m_dPageLeft;    // Координаты левого нижнего угла и
-		double m_dPageBottom;  // правого верхнего в пользовательстких координатах
+		double m_dPageLeft;    // РљРѕРѕСЂРґРёРЅР°С‚С‹ Р»РµРІРѕРіРѕ РЅРёР¶РЅРµРіРѕ СѓРіР»Р° Рё
+		double m_dPageBottom;  // РїСЂР°РІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ РІ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃС‚РєРёС… РєРѕРѕСЂРґРёРЅР°С‚Р°С…
 		double m_dPageRight;   //
 		double m_dPageTop;     // 
 
-		double m_dPageWidth;   // Ширина страницы в пикселях(т.е. с учетом разрешения m_dHorDPI)
-		double m_dPageHeight;  // Высота страницы в пикселях(т.е. с учетом разрешения m_dVerDPI)
+		double m_dPageWidth;   // РЁРёСЂРёРЅР° СЃС‚СЂР°РЅРёС†С‹ РІ РїРёРєСЃРµР»СЏС…(С‚.Рµ. СЃ СѓС‡РµС‚РѕРј СЂР°Р·СЂРµС€РµРЅРёСЏ m_dHorDPI)
+		double m_dPageHeight;  // Р’С‹СЃРѕС‚Р° СЃС‚СЂР°РЅРёС†С‹ РІ РїРёРєСЃРµР»СЏС…(С‚.Рµ. СЃ СѓС‡РµС‚РѕРј СЂР°Р·СЂРµС€РµРЅРёСЏ m_dVerDPI)
 
-		int    m_nRotate;      // Угол поворота страницы
+		int    m_nRotate;      // РЈРіРѕР» РїРѕРІРѕСЂРѕС‚Р° СЃС‚СЂР°РЅРёС†С‹
 
-		GrColorSpace     *m_pFillColorSpace;  // Цветовое пространство для заливки
-		GrColorSpace     *m_pStrokeColorSpace;// Цветовое пространство для обводки
-		GrColor           m_oFillColor;       // Цвет для заливки
-		GrColor           m_oStrokeColor;     // Цвет для обводки
-		GrPattern        *m_pFillPattern;     // Указатель на объект, определяющий заливку
-		GrPattern        *m_pStrokePattern;   // Указатель на объект, определяющий обводку
+		GrColorSpace     *m_pFillColorSpace;  // Р¦РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РґР»СЏ Р·Р°Р»РёРІРєРё
+		GrColorSpace     *m_pStrokeColorSpace;// Р¦РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РґР»СЏ РѕР±РІРѕРґРєРё
+		GrColor           m_oFillColor;       // Р¦РІРµС‚ РґР»СЏ Р·Р°Р»РёРІРєРё
+		GrColor           m_oStrokeColor;     // Р¦РІРµС‚ РґР»СЏ РѕР±РІРѕРґРєРё
+		GrPattern        *m_pFillPattern;     // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РѕР±СЉРµРєС‚, РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ Р·Р°Р»РёРІРєСѓ
+		GrPattern        *m_pStrokePattern;   // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РѕР±СЉРµРєС‚, РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ РѕР±РІРѕРґРєСѓ
 
-		GraphicsBlendMode m_eBlendMode;	      // Blend mode (для прозрачности)
+		GraphicsBlendMode m_eBlendMode;	      // Blend mode (РґР»СЏ РїСЂРѕР·СЂР°С‡РЅРѕСЃС‚Рё)
 
-		double            m_dFillOpacity;     // Прозрачность заливки
-		double            m_dStrokeOpacity;   // Прозрачность обводки
+		double            m_dFillOpacity;     // РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ Р·Р°Р»РёРІРєРё
+		double            m_dStrokeOpacity;   // РџСЂРѕР·СЂР°С‡РЅРѕСЃС‚СЊ РѕР±РІРѕРґРєРё
 
-		bool              m_bFillOverprint;   // Заливаем поверх всего?
-		bool              m_bStrokeOverprint; // Обводим поверх всего?
-		Function         *m_ppTransfer[4];	  // Функция переноса. Варианты входных параметров:
-		// все NULL = тождествнная функция;
-		// последние три NULL = одномерная функция;
-		// все 4 не NULL = R,G,B,gray -функция
+		bool              m_bFillOverprint;   // Р—Р°Р»РёРІР°РµРј РїРѕРІРµСЂС… РІСЃРµРіРѕ?
+		bool              m_bStrokeOverprint; // РћР±РІРѕРґРёРј РїРѕРІРµСЂС… РІСЃРµРіРѕ?
+		Function         *m_ppTransfer[4];	  // Р¤СѓРЅРєС†РёСЏ РїРµСЂРµРЅРѕСЃР°. Р’Р°СЂРёР°РЅС‚С‹ РІС…РѕРґРЅС‹С… РїР°СЂР°РјРµС‚СЂРѕРІ:
+		// РІСЃРµ NULL = С‚РѕР¶РґРµСЃС‚РІРЅРЅР°СЏ С„СѓРЅРєС†РёСЏ;
+		// РїРѕСЃР»РµРґРЅРёРµ С‚СЂРё NULL = РѕРґРЅРѕРјРµСЂРЅР°СЏ С„СѓРЅРєС†РёСЏ;
+		// РІСЃРµ 4 РЅРµ NULL = R,G,B,gray -С„СѓРЅРєС†РёСЏ
 
-		double  m_dLineWidth;    // Толщина линии
-		double *m_pLineDash;     // Параметры, если линия пунктирная
-		int     m_nLineDashSize; // Размер массива m_pLineDash
+		double  m_dLineWidth;    // РўРѕР»С‰РёРЅР° Р»РёРЅРёРё
+		double *m_pLineDash;     // РџР°СЂР°РјРµС‚СЂС‹, РµСЃР»Рё Р»РёРЅРёСЏ РїСѓРЅРєС‚РёСЂРЅР°СЏ
+		int     m_nLineDashSize; // Р Р°Р·РјРµСЂ РјР°СЃСЃРёРІР° m_pLineDash
 		double  m_dLineDashStart;//
 		int     m_nFlatness;     // Flatness Tolerance
-		int     m_nLineJoin;     // Тип соединения линий
-		int     m_nLineCap;      // Тип оконачния линий
+		int     m_nLineJoin;     // РўРёРї СЃРѕРµРґРёРЅРµРЅРёСЏ Р»РёРЅРёР№
+		int     m_nLineCap;      // РўРёРї РѕРєРѕРЅР°С‡РЅРёСЏ Р»РёРЅРёР№
 		double  m_dMiterLimit;   // Miter limit
-		bool    m_bStrokeAdjust; // True, автоматически обводить
+		bool    m_bStrokeAdjust; // True, Р°РІС‚РѕРјР°С‚РёС‡РµСЃРєРё РѕР±РІРѕРґРёС‚СЊ
 
-		GrFont *m_pFont;            // Шрифт
-		double  m_dFontSize;        // Размер шрифта
-		double  m_arrTextMatrix[6]; // Матрица координатных преобразований текста
-		double  m_dCharSpace;       // Расстояние между символами
-		double  m_dWordSpace;       // Расстояние между словами
-		double  m_dHorizScaling;    // Горизонтальное растяжение текста
-		double  m_dLeading;         // Расстояние между строками
-		double  m_nRise;            // Поднятие/опускание текста относительно baseline
-		int     m_nRenderMode;      // Способ рисования букв
+		GrFont *m_pFont;            // РЁСЂРёС„С‚
+		double  m_dFontSize;        // Р Р°Р·РјРµСЂ С€СЂРёС„С‚Р°
+		double  m_arrTextMatrix[6]; // РњР°С‚СЂРёС†Р° РєРѕРѕСЂРґРёРЅР°С‚РЅС‹С… РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёР№ С‚РµРєСЃС‚Р°
+		double  m_dCharSpace;       // Р Р°СЃСЃС‚РѕСЏРЅРёРµ РјРµР¶РґСѓ СЃРёРјРІРѕР»Р°РјРё
+		double  m_dWordSpace;       // Р Р°СЃСЃС‚РѕСЏРЅРёРµ РјРµР¶РґСѓ СЃР»РѕРІР°РјРё
+		double  m_dHorizScaling;    // Р“РѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕРµ СЂР°СЃС‚СЏР¶РµРЅРёРµ С‚РµРєСЃС‚Р°
+		double  m_dLeading;         // Р Р°СЃСЃС‚РѕСЏРЅРёРµ РјРµР¶РґСѓ СЃС‚СЂРѕРєР°РјРё
+		double  m_nRise;            // РџРѕРґРЅСЏС‚РёРµ/РѕРїСѓСЃРєР°РЅРёРµ С‚РµРєСЃС‚Р° РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ baseline
+		int     m_nRenderMode;      // РЎРїРѕСЃРѕР± СЂРёСЃРѕРІР°РЅРёСЏ Р±СѓРєРІ
 
-		GrPath *m_pPath;            // Массив графических Path
-		double  m_dCurX;            // Координаты текущей точки
-		double  m_dCurY;            // (в пользовательских координатах)
-		double  m_dTextLineX;       // Координаты начальной точки, начиная с которой пишется текст
-		double  m_dTextLineY;       // (в текстовых координатах)
+		GrPath *m_pPath;            // РњР°СЃСЃРёРІ РіСЂР°С„РёС‡РµСЃРєРёС… Path
+		double  m_dCurX;            // РљРѕРѕСЂРґРёРЅР°С‚С‹ С‚РµРєСѓС‰РµР№ С‚РѕС‡РєРё
+		double  m_dCurY;            // (РІ РїРѕР»СЊР·РѕРІР°С‚РµР»СЊСЃРєРёС… РєРѕРѕСЂРґРёРЅР°С‚Р°С…)
+		double  m_dTextLineX;       // РљРѕРѕСЂРґРёРЅР°С‚С‹ РЅР°С‡Р°Р»СЊРЅРѕР№ С‚РѕС‡РєРё, РЅР°С‡РёРЅР°СЏ СЃ РєРѕС‚РѕСЂРѕР№ РїРёС€РµС‚СЃСЏ С‚РµРєСЃС‚
+		double  m_dTextLineY;       // (РІ С‚РµРєСЃС‚РѕРІС‹С… РєРѕРѕСЂРґРёРЅР°С‚Р°С…)
 
 		GrClip *m_pClip;
 		double  m_dClipXMin;    //
-		double  m_dClipYMin;    // Границы для clip region
+		double  m_dClipYMin;    // Р“СЂР°РЅРёС†С‹ РґР»СЏ clip region
 		double  m_dClipXMax;    //
 		double  m_dClipYMax;    //
 
-		GrState *m_pNext;       // Следующий GrState в стэке
+		GrState *m_pNext;       // РЎР»РµРґСѓСЋС‰РёР№ GrState РІ СЃС‚СЌРєРµ
 	};
 }
 #endif // _PDF_READER_GSTATE_H

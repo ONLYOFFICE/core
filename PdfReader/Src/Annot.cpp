@@ -1,4 +1,4 @@
-#include <stdlib.h>
+п»ї#include <stdlib.h>
 #include <math.h>
 #include "MemoryUtils.h"
 #include "List.h"
@@ -253,7 +253,7 @@ namespace PdfReader
 		oDictItem.Free();
 
 		// C (border color)
-		// TO DO: надо сделать чтение случаев, когда в массике не только 3 элемента, а 0, 1, 3, 4 
+		// TO DO: РЅР°РґРѕ СЃРґРµР»Р°С‚СЊ С‡С‚РµРЅРёРµ СЃР»СѓС‡Р°РµРІ, РєРѕРіРґР° РІ РјР°СЃСЃРёРєРµ РЅРµ С‚РѕР»СЊРєРѕ 3 СЌР»РµРјРµРЅС‚Р°, Р° 0, 1, 3, 4 
 		if (pDict->Search("C", &oDictItem)->IsArray() && oDictItem.ArrayGetLength() == 3)
 		{
 			Object oTemp;
@@ -339,7 +339,7 @@ namespace PdfReader
 	}
 	void Annot::GenerateFieldAppearance(Dict *pField, Dict *pAnnot, Dict *pAcroForm)
 	{
-		// Тип Annotation должен быть Widget
+		// РўРёРї Annotation РґРѕР»Р¶РµРЅ Р±С‹С‚СЊ Widget
 		if (m_seType->Compare("Widget"))
 		{
 			return;
@@ -359,7 +359,7 @@ namespace PdfReader
 			pMKDict = NULL;
 		}
 
-		// Рисуем фон (BackGround)
+		// Р РёСЃСѓРµРј С„РѕРЅ (BackGround)
 		Object oDictItem;
 		if (pMKDict)
 		{
@@ -371,7 +371,7 @@ namespace PdfReader
 			oDictItem.Free();
 		}
 
-		// Считываем тип поля
+		// РЎС‡РёС‚С‹РІР°РµРј С‚РёРї РїРѕР»СЏ
 		// FT (File Type)
 		Object oFTobject;
 		FieldLookup(pField, "FT", &oFTobject);
@@ -388,13 +388,13 @@ namespace PdfReader
 		}
 		oDictItem.Free();
 
-		// Рисуем рамку
+		// Р РёСЃСѓРµРј СЂР°РјРєСѓ
 		if (pMKDict)
 		{
 			double dWidth = m_pBorderStyle->GetWidth();
 			if (dWidth > 0)
 			{
-				// BC (Border Color), если такого поля нет, тогда используем цвет из BG
+				// BC (Border Color), РµСЃР»Рё С‚Р°РєРѕРіРѕ РїРѕР»СЏ РЅРµС‚, С‚РѕРіРґР° РёСЃРїРѕР»СЊР·СѓРµРј С†РІРµС‚ РёР· BG
 				pMKDict->Search("BC", &oDictItem);
 				if (!(oDictItem.IsArray() && oDictItem.ArrayGetLength() > 0))
 				{
@@ -424,7 +424,7 @@ namespace PdfReader
 								m_seAppBuffer->AppendFormat(" {0:.2f}", pDash[nIndex]);
 							}
 							m_seAppBuffer->Append("] 0 d\n");
-							// Дальше как в случае не пунктирной линии
+							// Р”Р°Р»СЊС€Рµ РєР°Рє РІ СЃР»СѓС‡Р°Рµ РЅРµ РїСѓРЅРєС‚РёСЂРЅРѕР№ Р»РёРЅРёРё
 							case annotBorderSolid:
 							case annotBorderUnderlined:
 							m_seAppBuffer->AppendFormat("{0:.2f} w\n", dWidth);
@@ -458,7 +458,7 @@ namespace PdfReader
 								m_seAppBuffer->AppendFormat(" {0:.2f}", pDash[nIndex]);
 							}
 							m_seAppBuffer->Append("] 0 d\n");
-							// Дальше как в случае не пунктирной линии
+							// Р”Р°Р»СЊС€Рµ РєР°Рє РІ СЃР»СѓС‡Р°Рµ РЅРµ РїСѓРЅРєС‚РёСЂРЅРѕР№ Р»РёРЅРёРё
 							case annotBorderSolid:
 							m_seAppBuffer->AppendFormat("{0:.2f} w\n", dWidth);
 							SetColor(oDictItem.GetArray(), false, 0);
@@ -531,7 +531,7 @@ namespace PdfReader
 		}
 		oDictItem.Free();
 
-		// Рисуем содержимео Filed
+		// Р РёСЃСѓРµРј СЃРѕРґРµСЂР¶РёРјРµРѕ Filed
 		if (oFTobject.IsName("Btn"))
 		{
 			StringExt *seCaption = NULL;
@@ -547,7 +547,7 @@ namespace PdfReader
 			// Radio button
 			if (nFiledFlags & fieldFlagRadio)
 			{
-				// Акробат не рисует Caption, если нет AP
+				// РђРєСЂРѕР±Р°С‚ РЅРµ СЂРёСЃСѓРµС‚ Caption, РµСЃР»Рё РЅРµС‚ AP
 				if (FieldLookup(pField, "V", &oDictItem)->IsName())
 				{
 					Object oAppStream;
@@ -586,7 +586,7 @@ namespace PdfReader
 			}
 			else  // CheckBox
 			{
-				// "Yes" - для включенного состояние, "off" -  для выключенного.
+				// "Yes" - РґР»СЏ РІРєР»СЋС‡РµРЅРЅРѕРіРѕ СЃРѕСЃС‚РѕСЏРЅРёРµ, "off" -  РґР»СЏ РІС‹РєР»СЋС‡РµРЅРЅРѕРіРѕ.
 				if (FieldLookup(pField, "V", &oDictItem)->IsName("Yes"))
 				{
 					if (!seCaption)
@@ -604,7 +604,7 @@ namespace PdfReader
 		}
 		else if (oFTobject.IsName("Tx"))
 		{
-			// Строковые значения могут быть юникодными
+			// РЎС‚СЂРѕРєРѕРІС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РјРѕРіСѓС‚ Р±С‹С‚СЊ СЋРЅРёРєРѕРґРЅС‹РјРё
 			Object oValue;
 			if (FieldLookup(pField, "V", &oValue)->IsString())
 			{
@@ -634,7 +634,7 @@ namespace PdfReader
 		}
 		else if (oFTobject.IsName("Ch"))
 		{
-			// Строковые значения могут быть юникодными
+			// РЎС‚СЂРѕРєРѕРІС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РјРѕРіСѓС‚ Р±С‹С‚СЊ СЋРЅРёРєРѕРґРЅС‹РјРё
 			int nQuadding = 0;
 			Object oTemp;
 			if (FieldLookup(pField, "Q", &oTemp)->IsInt())
@@ -791,9 +791,9 @@ namespace PdfReader
 		oMKObject.Free();
 	}
 
-	// Устанавливаем цвет для заливки или обводки; цвет здается массиом <pArray> (в котором должно быть
-	// 1, 3, или 4 элемента).  Если <nAdjust> равно +1, цвет color is высветляется, если <nAdjust> равно
-	// -1, цвет затемняется, в противном случае, цвет не меняется.
+	// РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј С†РІРµС‚ РґР»СЏ Р·Р°Р»РёРІРєРё РёР»Рё РѕР±РІРѕРґРєРё; С†РІРµС‚ Р·РґР°РµС‚СЃСЏ РјР°СЃСЃРёРѕРј <pArray> (РІ РєРѕС‚РѕСЂРѕРј РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ
+	// 1, 3, РёР»Рё 4 СЌР»РµРјРµРЅС‚Р°).  Р•СЃР»Рё <nAdjust> СЂР°РІРЅРѕ +1, С†РІРµС‚ color is РІС‹СЃРІРµС‚Р»СЏРµС‚СЃСЏ, РµСЃР»Рё <nAdjust> СЂР°РІРЅРѕ
+	// -1, С†РІРµС‚ Р·Р°С‚РµРјРЅСЏРµС‚СЃСЏ, РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ, С†РІРµС‚ РЅРµ РјРµРЅСЏРµС‚СЃСЏ.
 	void Annot::SetColor(Array *pArray, bool bFill, int nAdjust)
 	{
 		double arrColor[4];
@@ -848,7 +848,7 @@ namespace PdfReader
 		}
 	}
 
-	// Рисуем текст или название для Field.
+	// Р РёСЃСѓРµРј С‚РµРєСЃС‚ РёР»Рё РЅР°Р·РІР°РЅРёРµ РґР»СЏ Field.
 	void Annot::DrawText(StringExt *seText, StringExt *seDA, GrFontDict *pFontDict, bool bMultiline, int nComb, int nQuadding, bool bTextField, bool bForceZapfDingbats)
 	{
 		CList *pListDA;
@@ -856,7 +856,7 @@ namespace PdfReader
 		double dX, dY, dWidth;
 		int  i, j, k, nChar;
 
-		// Парсим Default Appearance string
+		// РџР°СЂСЃРёРј Default Appearance string
 
 		int nTfPos = -1, nTmPos = -1;
 		if (seDA)
@@ -907,7 +907,7 @@ namespace PdfReader
 			}
 		}
 
-		// Считываем шрифт и размер шрифта
+		// РЎС‡РёС‚С‹РІР°РµРј С€СЂРёС„С‚ Рё СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р°
 		GrFont *pFont = NULL;
 		double dFontSize = 0;
 		if (nTfPos >= 0)
@@ -942,14 +942,14 @@ namespace PdfReader
 		m_seAppBuffer->Append("q\n");
 		m_seAppBuffer->Append("BT\n");
 
-		// Многострочный текст
+		// РњРЅРѕРіРѕСЃС‚СЂРѕС‡РЅС‹Р№ С‚РµРєСЃС‚
 		if (bMultiline)
 		{
-			// Флаги nComb игнорируются в многострочном тексте
+			// Р¤Р»Р°РіРё nComb РёРіРЅРѕСЂРёСЂСѓСЋС‚СЃСЏ РІ РјРЅРѕРіРѕСЃС‚СЂРѕС‡РЅРѕРј С‚РµРєСЃС‚Рµ
 
 			double dWMax = m_dMaxX - m_dMinX - 2 * dBorderWidth - 4;
 
-			// Вычислим размер шрифта (если он не был установлен)
+			// Р’С‹С‡РёСЃР»РёРј СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р° (РµСЃР»Рё РѕРЅ РЅРµ Р±С‹Р» СѓСЃС‚Р°РЅРѕРІР»РµРЅ)
 			if (0 == dFontSize)
 			{
 				for (dFontSize = 20; dFontSize > 1; --dFontSize)
@@ -981,8 +981,8 @@ namespace PdfReader
 				}
 			}
 
-			// Начальная координата Y
-			// (Каждая новая линий начинается с оператора Td)
+			// РќР°С‡Р°Р»СЊРЅР°СЏ РєРѕРѕСЂРґРёРЅР°С‚Р° Y
+			// (РљР°Р¶РґР°СЏ РЅРѕРІР°СЏ Р»РёРЅРёР№ РЅР°С‡РёРЅР°РµС‚СЃСЏ СЃ РѕРїРµСЂР°С‚РѕСЂР° Td)
 			dY = m_dMaxY - m_dMinY;
 
 			// Font Matrix
@@ -996,7 +996,7 @@ namespace PdfReader
 				seToken->AppendFormat("{0:.2f}", dY);
 			}
 
-			// Пишем DA-string
+			// РџРёС€РµРј DA-string
 			if (pListDA)
 			{
 				for (i = 0; i < pListDA->GetLength(); ++i)
@@ -1005,7 +1005,7 @@ namespace PdfReader
 				}
 			}
 
-			// Пишем Font Matrix (если она не была уже в DA-string)
+			// РџРёС€РµРј Font Matrix (РµСЃР»Рё РѕРЅР° РЅРµ Р±С‹Р»Р° СѓР¶Рµ РІ DA-string)
 			if (nTmPos < 0)
 			{
 				m_seAppBuffer->AppendFormat("1 0 0 1 0 {0:.2f} Tm\n", dY);
@@ -1016,7 +1016,7 @@ namespace PdfReader
 			while (i < seText->GetLength())
 			{
 				GetNextLine(seText, i, pFont, dFontSize, dWMax, &j, &dWidth, &k);
-				// Вычислим начальную позицию текста
+				// Р’С‹С‡РёСЃР»РёРј РЅР°С‡Р°Р»СЊРЅСѓСЋ РїРѕР·РёС†РёСЋ С‚РµРєСЃС‚Р°
 				switch (nQuadding)
 				{
 					case fieldQuadLeft:
@@ -1052,19 +1052,19 @@ namespace PdfReader
 				}
 				m_seAppBuffer->Append(") Tj\n");
 
-				// Следующая строка
+				// РЎР»РµРґСѓСЋС‰Р°СЏ СЃС‚СЂРѕРєР°
 				i = k;
 				dPrevX = dX;
 			}
 
 		}
-		else // Однострочный текст
+		else // РћРґРЅРѕСЃС‚СЂРѕС‡РЅС‹Р№ С‚РµРєСЃС‚
 		{
 			if (nComb > 0)
 			{
 				dWidth = (m_dMaxX - m_dMinX - 2 * dBorderWidth) / nComb;
 
-				// Вычислим размер шрифта (если он не был установлен)
+				// Р’С‹С‡РёСЃР»РёРј СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р° (РµСЃР»Рё РѕРЅ РЅРµ Р±С‹Р» СѓСЃС‚Р°РЅРѕРІР»РµРЅ)
 				if (0 == dFontSize)
 				{
 					dFontSize = m_dMaxY - m_dMinY - 2 * dBorderWidth;
@@ -1081,7 +1081,7 @@ namespace PdfReader
 					}
 				}
 
-				// Вычислим начальную позицию текста
+				// Р’С‹С‡РёСЃР»РёРј РЅР°С‡Р°Р»СЊРЅСѓСЋ РїРѕР·РёС†РёСЋ С‚РµРєСЃС‚Р°
 				switch (nQuadding)
 				{
 					case fieldQuadLeft:
@@ -1117,7 +1117,7 @@ namespace PdfReader
 					}
 				}
 
-				// Пишем Font Matrix (если она не была уже в DA-string)
+				// РџРёС€РµРј Font Matrix (РµСЃР»Рё РѕРЅР° РЅРµ Р±С‹Р»Р° СѓР¶Рµ РІ DA-string)
 				if (nTmPos < 0)
 				{
 					m_seAppBuffer->AppendFormat("1 0 0 1 {0:.2f} {1:.2f} Tm\n", dX, dY);
@@ -1150,9 +1150,9 @@ namespace PdfReader
 					m_seAppBuffer->Append(") Tj\n");
 				}
 			}
-			else // обычное форматирование (non-comb)
+			else // РѕР±С‹С‡РЅРѕРµ С„РѕСЂРјР°С‚РёСЂРѕРІР°РЅРёРµ (non-comb)
 			{
-				// Вычислим ширину строки
+				// Р’С‹С‡РёСЃР»РёРј С€РёСЂРёРЅСѓ СЃС‚СЂРѕРєРё
 				if (pFont && !pFont->IsCIDFont())
 				{
 					dWidth = 0;
@@ -1166,7 +1166,7 @@ namespace PdfReader
 					dWidth = seText->GetLength() * 0.5;
 				}
 
-				// Вычислим размер шрифта (если он не был установлен)
+				// Р’С‹С‡РёСЃР»РёРј СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р° (РµСЃР»Рё РѕРЅ РЅРµ Р±С‹Р» СѓСЃС‚Р°РЅРѕРІР»РµРЅ)
 				if (0 == dFontSize)
 				{
 					dFontSize = m_dMaxY - m_dMinY - 2 * dBorderWidth;
@@ -1184,7 +1184,7 @@ namespace PdfReader
 					}
 				}
 
-				// Вычислим начальную позицию текста
+				// Р’С‹С‡РёСЃР»РёРј РЅР°С‡Р°Р»СЊРЅСѓСЋ РїРѕР·РёС†РёСЋ С‚РµРєСЃС‚Р°
 				dWidth *= dFontSize;
 				switch (nQuadding)
 				{
@@ -1221,13 +1221,13 @@ namespace PdfReader
 					}
 				}
 
-				// Пишем Font Matrix (если она не была уже в DA-string)
+				// РџРёС€РµРј Font Matrix (РµСЃР»Рё РѕРЅР° РЅРµ Р±С‹Р»Р° СѓР¶Рµ РІ DA-string)
 				if (nTmPos < 0)
 				{
 					m_seAppBuffer->AppendFormat("1 0 0 1 {0:.2f} {1:.2f} Tm\n", dX, dY);
 				}
 
-				// Пишем текст
+				// РџРёС€РµРј С‚РµРєСЃС‚
 				m_seAppBuffer->Append('(');
 				for (i = 0; i < seText->GetLength(); ++i)
 				{
@@ -1264,14 +1264,14 @@ namespace PdfReader
 		}
 	}
 
-	// Рисуем текст или название для Field.
+	// Р РёСЃСѓРµРј С‚РµРєСЃС‚ РёР»Рё РЅР°Р·РІР°РЅРёРµ РґР»СЏ Field.
 	void Annot::DrawListBox(StringExt **ppText, bool *pSelection, int nOptionsCount, int nTopIndex, StringExt *seDA, GrFontDict *pFontDict, int nQuadding)
 	{
 		CList *pListDA;
 		StringExt *seToken;
 		int  i, j;
 
-		// Парсим Default appearance string
+		// РџР°СЂСЃРёРј Default appearance string
 		int nTfPos = -1, nTmPos = -1;
 		if (seDA)
 		{
@@ -1307,7 +1307,7 @@ namespace PdfReader
 			pListDA = NULL;
 		}
 
-		// Считываем шрифт и размер шрифта
+		// РЎС‡РёС‚С‹РІР°РµРј С€СЂРёС„С‚ Рё СЂР°Р·РјРµСЂ С€СЂРёС„С‚Р°
 		GrFont *pFont = NULL;
 		double dFontSize = 0;
 		if (nTfPos >= 0)
@@ -1335,7 +1335,7 @@ namespace PdfReader
 		// Border width
 		double dBorder = m_pBorderStyle->GetWidth();
 
-		// Вычислим размер фонта, если он не был задан
+		// Р’С‹С‡РёСЃР»РёРј СЂР°Р·РјРµСЂ С„РѕРЅС‚Р°, РµСЃР»Рё РѕРЅ РЅРµ Р±С‹Р» Р·Р°РґР°РЅ
 		double dWidth = 0;
 		if (0 == dFontSize)
 		{
@@ -1352,7 +1352,7 @@ namespace PdfReader
 				}
 				else
 				{
-					// грубая оценка
+					// РіСЂСѓР±Р°СЏ РѕС†РµРЅРєР°
 					dWidth = ppText[i]->GetLength() * 0.5;
 				}
 				if (dWidth > dMaxW)
@@ -1377,7 +1377,7 @@ namespace PdfReader
 			}
 		}
 
-		// Рисуем текст
+		// Р РёСЃСѓРµРј С‚РµРєСЃС‚
 		double dY = m_dMaxY - m_dMinY - 1.1 * dFontSize;
 
 		for (i = nTopIndex; i < nOptionsCount; ++i)
@@ -1393,7 +1393,7 @@ namespace PdfReader
 
 			m_seAppBuffer->Append("BT\n");
 
-			// Вычислим ширину строки
+			// Р’С‹С‡РёСЃР»РёРј С€РёСЂРёРЅСѓ СЃС‚СЂРѕРєРё
 			if (pFont && !pFont->IsCIDFont())
 			{
 				dWidth = 0;
@@ -1404,11 +1404,11 @@ namespace PdfReader
 			}
 			else
 			{
-				// грубая оценка
+				// РіСЂСѓР±Р°СЏ РѕС†РµРЅРєР°
 				dWidth = ppText[i]->GetLength() * 0.5;
 			}
 
-			// Вычислим начальную позицию текста
+			// Р’С‹С‡РёСЃР»РёРј РЅР°С‡Р°Р»СЊРЅСѓСЋ РїРѕР·РёС†РёСЋ С‚РµРєСЃС‚Р°
 			double dX = 0;
 			dWidth *= dFontSize;
 			switch (nQuadding)
@@ -1445,7 +1445,7 @@ namespace PdfReader
 				}
 			}
 
-			// Пишем Font Matrix (если он не был частью DA-string)
+			// РџРёС€РµРј Font Matrix (РµСЃР»Рё РѕРЅ РЅРµ Р±С‹Р» С‡Р°СЃС‚СЊСЋ DA-string)
 			if (nTmPos < 0)
 			{
 				m_seAppBuffer->AppendFormat("1 0 0 1 {0:.2f} {1:.2f} Tm\n", dX, dY);
@@ -1456,7 +1456,7 @@ namespace PdfReader
 				m_seAppBuffer->Append("1 g\n");
 			}
 
-			// Пишем текст
+			// РџРёС€РµРј С‚РµРєСЃС‚
 			m_seAppBuffer->Append('(');
 			for (j = 0; j < ppText[i]->GetLength(); ++j)
 			{
@@ -1480,7 +1480,7 @@ namespace PdfReader
 			m_seAppBuffer->Append("ET\n");
 			m_seAppBuffer->Append("Q\n");
 
-			// Следующая строка
+			// РЎР»РµРґСѓСЋС‰Р°СЏ СЃС‚СЂРѕРєР°
 			dY -= 1.1 * dFontSize;
 		}
 
@@ -1509,7 +1509,7 @@ namespace PdfReader
 			}
 			else
 			{
-				// грубая оценка
+				// РіСЂСѓР±Р°СЏ РѕС†РµРЅРєР°
 				dTempWidth = 0.5 * dFontSize;
 			}
 			dWidth += dTempWidth;
@@ -1525,13 +1525,13 @@ namespace PdfReader
 
 			if (j == nStart)
 			{
-				// Обрабатываем странный случай, когда первый символ слишком широкий для первой строки
+				// РћР±СЂР°Р±Р°С‚С‹РІР°РµРј СЃС‚СЂР°РЅРЅС‹Р№ СЃР»СѓС‡Р°Р№, РєРѕРіРґР° РїРµСЂРІС‹Р№ СЃРёРјРІРѕР» СЃР»РёС€РєРѕРј С€РёСЂРѕРєРёР№ РґР»СЏ РїРµСЂРІРѕР№ СЃС‚СЂРѕРєРё
 				j = nStart + 1;
 			}
 		}
 		*pEnd = j;
 
-		// Вычисляем ширину
+		// Р’С‹С‡РёСЃР»СЏРµРј С€РёСЂРёРЅСѓ
 		dWidth = 0;
 		for (k = nStart; k < j; ++k)
 		{
@@ -1563,12 +1563,12 @@ namespace PdfReader
 	}
 
 
-	// Расстояние от центра до контрольных точек кривой Безье
+	// Р Р°СЃСЃС‚РѕСЏРЅРёРµ РѕС‚ С†РµРЅС‚СЂР° РґРѕ РєРѕРЅС‚СЂРѕР»СЊРЅС‹С… С‚РѕС‡РµРє РєСЂРёРІРѕР№ Р‘РµР·СЊРµ
 	// = (4 * (sqrt(2) - 1) / 3) * r
 	#define Kappa 0.55228475
 
-	// Рисуем окружность с помощью кривых Безье. (dX, dY) - центр, dRad - радиус.
-	// bFill - будем заливать или обводить?
+	// Р РёСЃСѓРµРј РѕРєСЂСѓР¶РЅРѕСЃС‚СЊ СЃ РїРѕРјРѕС‰СЊСЋ РєСЂРёРІС‹С… Р‘РµР·СЊРµ. (dX, dY) - С†РµРЅС‚СЂ, dRad - СЂР°РґРёСѓСЃ.
+	// bFill - Р±СѓРґРµРј Р·Р°Р»РёРІР°С‚СЊ РёР»Рё РѕР±РІРѕРґРёС‚СЊ?
 	void Annot::DrawCircle(double dX, double dY, double dRad, bool bFill)
 	{
 		m_seAppBuffer->AppendFormat("{0:.2f} {1:.2f} m\n", dX + dRad, dY);
@@ -1579,7 +1579,7 @@ namespace PdfReader
 		m_seAppBuffer->Append(bFill ? "f\n" : "s\n");
 	}
 
-	// Рисуем половину окружности (левую верхнюю) с помощью кривых Безье. (dX, dY) - центр, dRad - радиус.
+	// Р РёСЃСѓРµРј РїРѕР»РѕРІРёРЅСѓ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё (Р»РµРІСѓСЋ РІРµСЂС…РЅСЋСЋ) СЃ РїРѕРјРѕС‰СЊСЋ РєСЂРёРІС‹С… Р‘РµР·СЊРµ. (dX, dY) - С†РµРЅС‚СЂ, dRad - СЂР°РґРёСѓСЃ.
 	void Annot::DrawCircleTopLeft(double dX, double dY, double dRad)
 	{
 		double dRad2 = dRad / sqrt(2.0);
@@ -1589,7 +1589,7 @@ namespace PdfReader
 		m_seAppBuffer->Append("S\n");
 	}
 
-	// Рисуем половину окружности (правую нижнюю) с помощью кривых Безье. (dX, dY) - центр, dRad - радиус.
+	// Р РёСЃСѓРµРј РїРѕР»РѕРІРёРЅСѓ РѕРєСЂСѓР¶РЅРѕСЃС‚Рё (РїСЂР°РІСѓСЋ РЅРёР¶РЅСЋСЋ) СЃ РїРѕРјРѕС‰СЊСЋ РєСЂРёРІС‹С… Р‘РµР·СЊРµ. (dX, dY) - С†РµРЅС‚СЂ, dRad - СЂР°РґРёСѓСЃ.
 	void Annot::DrawCircleBottomRight(double dX, double dY, double dRad)
 	{
 		double dRad2 = dRad / sqrt(2.0);

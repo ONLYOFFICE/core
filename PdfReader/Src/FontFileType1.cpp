@@ -1,4 +1,4 @@
-#include <stdlib.h>
+п»ї#include <stdlib.h>
 #include <string.h>
 #include "MemoryUtils.h"
 #include "FontFileEncodings.h"
@@ -70,17 +70,17 @@ namespace PdfReader
 		char sBuffer[512];
 		char *sLine, *sLine2, *sCurChar;
 
-		// копируем все до строчки /Encoding
+		// РєРѕРїРёСЂСѓРµРј РІСЃРµ РґРѕ СЃС‚СЂРѕС‡РєРё /Encoding
 		for (sLine = (char *)m_sFile; sLine && strncmp(sLine, "/Encoding", 9); sLine = GetNextLine(sLine));
 		if (!sLine)
 		{
-			// не нашли кодировку, тогда копируем целиком фонт файл
+			// РЅРµ РЅР°С€Р»Рё РєРѕРґРёСЂРѕРІРєСѓ, С‚РѕРіРґР° РєРѕРїРёСЂСѓРµРј С†РµР»РёРєРѕРј С„РѕРЅС‚ С„Р°Р№Р»
 			(*pOutputFunc)(pOutputStream, (char *)m_sFile, m_nLen);
 			return;
 		}
 		(*pOutputFunc)(pOutputStream, (char *)m_sFile, sLine - (char *)m_sFile);
 
-		// пишем новую кодировку
+		// РїРёС€РµРј РЅРѕРІСѓСЋ РєРѕРґРёСЂРѕРІРєСѓ
 		(*pOutputFunc)(pOutputStream, "/Encoding 256 array\n", 20);
 		(*pOutputFunc)(pOutputStream, "0 1 255 {1 index exch /.notdef put} for\n", 40);
 		for (int nIndex = 0; nIndex < 256; ++nIndex)
@@ -111,7 +111,7 @@ namespace PdfReader
 			}
 		}
 
-		// У некоторых фонтов две записи /Encoding, поэтому проверяем наличие второй записи
+		// РЈ РЅРµРєРѕС‚РѕСЂС‹С… С„РѕРЅС‚РѕРІ РґРІРµ Р·Р°РїРёСЃРё /Encoding, РїРѕСЌС‚РѕРјСѓ РїСЂРѕРІРµСЂСЏРµРј РЅР°Р»РёС‡РёРµ РІС‚РѕСЂРѕР№ Р·Р°РїРёСЃРё
 		if (sLine)
 		{
 			int nIndex;
@@ -138,7 +138,7 @@ namespace PdfReader
 				}
 			}
 
-			// копируем все после кодировки
+			// РєРѕРїРёСЂСѓРµРј РІСЃРµ РїРѕСЃР»Рµ РєРѕРґРёСЂРѕРІРєРё
 			if (sLine)
 			{
 				(*pOutputFunc)(pOutputStream, sLine, ((char *)m_sFile + m_nLen) - sLine);

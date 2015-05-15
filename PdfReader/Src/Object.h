@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_OBJECT_H
+п»ї#ifndef _PDF_READER_OBJECT_H
 #define _PDF_READER_OBJECT_H
 
 #include <stdio.h>
@@ -24,8 +24,8 @@ namespace PdfReader
 
 	struct Ref
 	{
-		int nNum;    // Номер объекта
-		int nGen;    // Номер версии объекта(generation number)
+		int nNum;    // РќРѕРјРµСЂ РѕР±СЉРµРєС‚Р°
+		int nGen;    // РќРѕРјРµСЂ РІРµСЂСЃРёРё РѕР±СЉРµРєС‚Р°(generation number)
 
 	public:
 
@@ -61,12 +61,12 @@ namespace PdfReader
 	};
 
 	//------------------------------------------------------------------------
-	// Типы объектов
+	// РўРёРїС‹ РѕР±СЉРµРєС‚РѕРІ
 	//------------------------------------------------------------------------
 
 	enum ObjType
 	{
-		// Простые объекты
+		// РџСЂРѕСЃС‚С‹Рµ РѕР±СЉРµРєС‚С‹
 		objBool,         // boolean
 		objInt,          // integer
 		objReal,         // real
@@ -74,13 +74,13 @@ namespace PdfReader
 		objName,         // name
 		objNull,         // null
 
-		// составные объекты
+		// СЃРѕСЃС‚Р°РІРЅС‹Рµ РѕР±СЉРµРєС‚С‹
 		objArray,        // array
 		objDict,         // dictionary
 		objStream,       // stream
 		objRef,          // indirect reference
 
-		// специальные объекты
+		// СЃРїРµС†РёР°Р»СЊРЅС‹Рµ РѕР±СЉРµРєС‚С‹
 		objCommand,      // command name
 		objError,        // error return from Lexer
 		objEOF,          // end of file return from Lexer
@@ -167,16 +167,16 @@ namespace PdfReader
 		}
 
 
-		// Копируем объект.
+		// РљРѕРїРёСЂСѓРµРј РѕР±СЉРµРєС‚.
 		Object *Copy(Object *pObject);
 
-		// Если объект - сслка, тогда получаес объект по ссылку, в противном случае копируем данный объект.
+		// Р•СЃР»Рё РѕР±СЉРµРєС‚ - СЃСЃР»РєР°, С‚РѕРіРґР° РїРѕР»СѓС‡Р°РµСЃ РѕР±СЉРµРєС‚ РїРѕ СЃСЃС‹Р»РєСѓ, РІ РїСЂРѕС‚РёРІРЅРѕРј СЃР»СѓС‡Р°Рµ РєРѕРїРёСЂСѓРµРј РґР°РЅРЅС‹Р№ РѕР±СЉРµРєС‚.
 		Object *Fetch(XRef *pXref, Object *pObject);
 
 		// 
 		void Free();
 
-		// Проверка тип объекта.
+		// РџСЂРѕРІРµСЂРєР° С‚РёРї РѕР±СЉРµРєС‚Р°.
 		ObjType GetType()
 		{
 			return m_eType;
@@ -242,7 +242,7 @@ namespace PdfReader
 			return (m_eType == objNone);
 		}
 
-		// Сепциальные проверки.
+		// РЎРµРїС†РёР°Р»СЊРЅС‹Рµ РїСЂРѕРІРµСЂРєРё.
 		bool IsName(char *sName)
 		{
 			return (m_eType == objName && !strcmp(m_uName, sName));
@@ -253,8 +253,8 @@ namespace PdfReader
 		{
 			return (m_eType == objCommand && !strcmp(m_uCommand, sCommand));
 		}
-		// В следующих функциях предполагается, что тип объекта корректный.
-		// Т.е. соответствует типу запрашиваемого значения.
+		// Р’ СЃР»РµРґСѓСЋС‰РёС… С„СѓРЅРєС†РёСЏС… РїСЂРµРґРїРѕР»Р°РіР°РµС‚СЃСЏ, С‡С‚Рѕ С‚РёРї РѕР±СЉРµРєС‚Р° РєРѕСЂСЂРµРєС‚РЅС‹Р№.
+		// Рў.Рµ. СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ С‚РёРїСѓ Р·Р°РїСЂР°С€РёРІР°РµРјРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ.
 		bool       GetBool()
 		{
 			return m_uBool;
@@ -336,25 +336,25 @@ namespace PdfReader
 		void         StreamSetPos(unsigned int unPos, int nDirection = 0);
 		Dict        *StreamGetDict();
 
-		// Для записи
+		// Р”Р»СЏ Р·Р°РїРёСЃРё
 		char *GetTypeName();
 		void Print(FILE *pFile = stdout);
 
 	private:
 
-		ObjType m_eType;  // тип объекта
+		ObjType m_eType;  // С‚РёРї РѕР±СЉРµРєС‚Р°
 		union
 		{
 			bool       m_uBool;       // boolean
 			int        m_uInt;        // integer
 			double     m_uReal;       // real
 			StringExt *m_uStringExt;  // StringExt
-			char      *m_uName;       // имя
-			Array     *m_uArray;      // массив
-			Dict      *m_uDict;       // словарь
-			Stream    *m_uStream;     // поток
-			Ref        m_uRef;        // ссылка
-			char      *m_uCommand;    // команда
+			char      *m_uName;       // РёРјСЏ
+			Array     *m_uArray;      // РјР°СЃСЃРёРІ
+			Dict      *m_uDict;       // СЃР»РѕРІР°СЂСЊ
+			Stream    *m_uStream;     // РїРѕС‚РѕРє
+			Ref        m_uRef;        // СЃСЃС‹Р»РєР°
+			char      *m_uCommand;    // РєРѕРјР°РЅРґР°
 		};
 	};
 }

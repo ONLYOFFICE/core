@@ -1,4 +1,4 @@
-#include "MemoryUtils.h"
+п»ї#include "MemoryUtils.h"
 #include "JPXStream.h"
 #include "File.h"
 
@@ -28,12 +28,12 @@ namespace PdfReader
 	{
 		m_pStream->Reset();
 
-		// Инициализация
+		// В»РЅРёС†РёР°Р»РёР·Р°С†РёВ¤
 		m_lCurPos       = 0;
 		m_lBufferSize   = 0;
 		m_pSourceBuffer = NULL;
 
-		// Создаем темповый файл, в который сбрасываем картинку
+		// вЂ”РѕР·РґР°РµРј С‚РµРјРїРѕРІС‹Р№ С„Р°Р№Р», РІ РєРѕС‚РѕСЂС‹Р№ СЃР±СЂР°СЃС‹РІР°РµРј РєР°СЂС‚РёРЅРєСѓ
 		FILE *pTempFile = NULL;
 
 		std::wstring wsTempFile = L"";
@@ -78,9 +78,6 @@ namespace PdfReader
 			NSFile::CFileBinary::Remove(wsTempFile);
 			return;
 		}
-
-
-		oFrame.SaveFile(L"D://Test Files//test.jp2", _CXIMAGE_FORMAT_JP2);
 
 		int nHeight          = oFrame.get_Height();
 		int nWidth           = oFrame.get_Width();

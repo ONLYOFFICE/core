@@ -1,4 +1,4 @@
-#ifndef _PDF_READER_JARITHMETICDECODER_H
+п»ї#ifndef _PDF_READER_JARITHMETICDECODER_H
 #define _PDF_READER_JARITHMETICDECODER_H
 
 namespace PdfReader
@@ -56,20 +56,20 @@ namespace PdfReader
 			m_bLimitStream = true;
 		}
 
-		// Начинаем декодировать новый поток. Заполняем буффер и запускаем INITDEC.
+		// РќР°С‡РёРЅР°РµРј РґРµРєРѕРґРёСЂРѕРІР°С‚СЊ РЅРѕРІС‹Р№ РїРѕС‚РѕРє. Р—Р°РїРѕР»РЅСЏРµРј Р±СѓС„С„РµСЂ Рё Р·Р°РїСѓСЃРєР°РµРј INITDEC.
 		void Start();
 
-		// Заново декодируем прервынный поток. Заново заполняем буффер, но не запускаем INITDEC. (Используется в  потоках JPEG 2000, где
-		// данные могут быть разделены на блоки.)
+		// Р—Р°РЅРѕРІРѕ РґРµРєРѕРґРёСЂСѓРµРј РїСЂРµСЂРІС‹РЅРЅС‹Р№ РїРѕС‚РѕРє. Р—Р°РЅРѕРІРѕ Р·Р°РїРѕР»РЅСЏРµРј Р±СѓС„С„РµСЂ, РЅРѕ РЅРµ Р·Р°РїСѓСЃРєР°РµРј INITDEC. (РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ  РїРѕС‚РѕРєР°С… JPEG 2000, РіРґРµ
+		// РґР°РЅРЅС‹Рµ РјРѕРіСѓС‚ Р±С‹С‚СЊ СЂР°Р·РґРµР»РµРЅС‹ РЅР° Р±Р»РѕРєРё.)
 		void Restart(int nDataSize);
 
-		// Читаем оставшиеся данные в потоке.
+		// Р§РёС‚Р°РµРј РѕСЃС‚Р°РІС€РёРµСЃСЏ РґР°РЅРЅС‹Рµ РІ РїРѕС‚РѕРєРµ.
 		void Cleanup();
 
-		// Декодируем один бит.
+		// Р”РµРєРѕРґРёСЂСѓРµРј РѕРґРёРЅ Р±РёС‚.
 		int DecodeBit(unsigned int unContext, JArithmeticDecoderStats *pStats);
 
-		// Декодируем один байт.
+		// Р”РµРєРѕРґРёСЂСѓРµРј РѕРґРёРЅ Р±Р°Р№С‚.
 		int DecodeByte(unsigned int unContext, JArithmeticDecoderStats *pStats);
 
 		bool DecodeInt(int *pnValue, JArithmeticDecoderStats *pStats);

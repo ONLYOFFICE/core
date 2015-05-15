@@ -119,7 +119,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories=""
+				AdditionalIncludeDirectories="&quot;../freetype-2.5.2/include&quot;;&quot;../agg-2.4/include&quot;"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -267,7 +267,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=""
+				AdditionalIncludeDirectories="&quot;../freetype-2.5.2/include&quot;;&quot;../agg-2.4/include&quot;"
 				PreprocessorDefinitions="_LIB;WIN32;_DEBUG;UNICODE;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -417,7 +417,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				InlineFunctionExpansion="1"
-				AdditionalIncludeDirectories=""
+				AdditionalIncludeDirectories="&quot;../freetype-2.5.2/include&quot;;&quot;../agg-2.4/include&quot;"
 				PreprocessorDefinitions="_LIB;WIN32;NDEBUG;UNICODE;_CRT_SECURE_NO_DEPRECATE;_CRT_NON_CONFORMING_SWPRINTFS"
 				StringPooling="true"
 				RuntimeLibrary="2"
@@ -568,7 +568,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories=""
+				AdditionalIncludeDirectories="&quot;../freetype-2.5.2/include&quot;;&quot;../agg-2.4/include&quot;"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB;_CRT_SECURE_NO_DEPRECATE;$(NOINHERIT)"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -651,6 +651,230 @@
 			>
 			<File
 				RelativePath="..\common\File.h"
+				>
+			</File>
+		</Filter>
+		<Filter
+			Name="MetaFile"
+			>
+			<File
+				RelativePath=".\Metafile\MetaFile.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Metafile\MetaFile.h"
+				>
+			</File>
+			<Filter
+				Name="Wmf"
+				>
+				<File
+					RelativePath=".\Metafile\Wmf\WmfClip.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Wmf\WmfClip.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Wmf\WmfFile.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Wmf\WmfObjects.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Wmf\WmfObjects.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Wmf\WmfPlayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Wmf\WmfPlayer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Wmf\WmfTypes.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Emf"
+				>
+				<File
+					RelativePath=".\Metafile\Emf\EmfClip.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Emf\EmfClip.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Emf\EmfFile.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Emf\EmfObjects.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Emf\EmfObjects.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Emf\EmfPath.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Emf\EmfPath.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Emf\EmfPlayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Emf\EmfPlayer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Emf\EmfTypes.h"
+					>
+				</File>
+			</Filter>
+			<Filter
+				Name="Common"
+				>
+				<File
+					RelativePath=".\Metafile\Common\IOutputDevice.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Common\MetaFile.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Common\MetaFileClip.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Common\MetaFileObjects.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Common\MetaFileRenderer.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Common\MetaFileTypes.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Common\MetaFileTypes.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Common\MetaFileUtils.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\Common\MetaFileUtils.h"
+					>
+				</File>
+			</Filter>
+		</Filter>
+		<Filter
+			Name="Jp2"
+			>
+			<File
+				RelativePath=".\Jp2\ArithmeticCoder.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\DWT.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\Image.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\J2k.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\J2kFile.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\J2kFile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\J2kIncludes.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\Jp2.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\JpgEvent.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\Jpt.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\Mj2.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\PacketIterator.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\Raw.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\Reader.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\Reader.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\Stream.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\TagTree.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\Tier1.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\Tier2.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\Tile.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\Types.h"
+				>
+			</File>
+			<File
+				RelativePath=".\Jp2\Utils.h"
 				>
 			</File>
 		</Filter>

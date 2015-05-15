@@ -423,6 +423,14 @@
 		<File
 			RelativePath="..\Source\ConvertTxt2Docx.cpp"
 			>
+			<FileConfiguration
+				Name="Debug|x64"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					AdditionalOptions="/bigobj"
+				/>
+			</FileConfiguration>
 		</File>
 		<File
 			RelativePath="..\Source\ConvertTxt2Docx.h"

@@ -9,7 +9,7 @@
 	#include <tchar.h>
 #endif
 
-#include "../../common/File.h"
+#include "../../../common/File.h"
 
 CJBig2File::CJBig2File()
 {

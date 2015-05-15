@@ -14,12 +14,12 @@ namespace NSBinPptxRW
 	class  CDrawingConverter;
 }
 
-#if defined (_WIN32) || defined (_WIN64)
-    namespace BinDocxRW
-    {
-        int g_nCurFormatVersion = 0; //extern from XlsxSerializer
-    }
-#endif
+//#if defined (_WIN32) || defined (_WIN64)
+//    namespace BinDocxRW
+//    {
+//        int g_nCurFormatVersion = 0; //extern from ...Serializer
+//    }
+//#endif
 
 #include "../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 #include "../../../Common/OfficeDefines.h"

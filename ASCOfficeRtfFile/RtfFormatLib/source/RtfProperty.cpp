@@ -2603,11 +2603,11 @@ CString RtfInformation::RenderToOOX(RenderParameter oRenderParameter)
 	{
 		OOX::CCore *pCore = static_cast<OOX::CCore*>( oRenderParameter.poWriter );
 		
-		if( m_sTitle.GetLength() > 0 )		pCore->m_sTitle			= m_sTitle;
-		if( m_sSubject.GetLength() > 0 )	pCore->m_sSubject		= m_sSubject;
+		if( m_sTitle.GetLength() > 0 )		pCore->m_sTitle			= Utils::PrepareToXML(m_sTitle);
+		if( m_sSubject.GetLength() > 0 )	pCore->m_sSubject		= Utils::PrepareToXML(m_sSubject);
 		if( m_sAuthor.GetLength() > 0 )		pCore->m_sCreator		= m_sAuthor;
 		if( m_sKeywords.GetLength() > 0 )	pCore->m_sKeywords		= m_sKeywords;
-		if(  m_sComment.GetLength() > 0 )	pCore->m_sDescription	= m_sComment;
+		if(  m_sComment.GetLength() > 0 )	pCore->m_sDescription	= Utils::PrepareToXML(m_sComment);
 
 		//CString sCreateTime = m_oCreateTime.RenderToOOX( oRenderParameter );
 		//if( false == sCreateTime.IsEmpty() ) pCore->m_sCreated		= sCreateTime;

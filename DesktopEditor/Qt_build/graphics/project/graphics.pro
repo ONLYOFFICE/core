@@ -505,7 +505,7 @@ SOURCES += \
     ../../../raster/JBig2/source/LeptonLib/gifio.cpp \
     ../../../raster/JBig2/source/LeptonLib/gifiostub.cpp \
     ../../../raster/JBig2/source/LeptonLib/gplot.cpp \
-    ../../../raster/JBig2/source/LeptonLib/graphics.cpp \
+    ../../../raster/JBig2/source/LeptonLib/graphics1.cpp \
     ../../../raster/JBig2/source/LeptonLib/graymorph.cpp \
     ../../../raster/JBig2/source/LeptonLib/graymorphlow.cpp \
     ../../../raster/JBig2/source/LeptonLib/grayquant.cpp \

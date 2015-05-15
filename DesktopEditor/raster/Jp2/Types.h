@@ -1,6 +1,7 @@
 ﻿#pragma once
 #include "Reader.h"
 #include "../../graphics/Defines.h"
+#include <algorithm>
 
 namespace Jpeg2000
 {

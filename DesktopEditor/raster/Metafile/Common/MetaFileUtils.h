@@ -1,4 +1,4 @@
-#ifndef _METAFILE_COMMON_METAFILEUTILS_H
+п»ї#ifndef _METAFILE_COMMON_METAFILEUTILS_H
 #define _METAFILE_COMMON_METAFILEUTILS_H
 
 #include "MetaFileTypes.h"
@@ -270,7 +270,7 @@ namespace MetaFile
 			*this >> oText.iGraphicsMode;
 			*this >> oText.exScale;
 			*this >> oText.eyScale;
-			ReadEmrTextW(oText.wEmrText, 36); // 8 + 28 (8 - тип и размер, 28 - размер данной структуры)
+			ReadEmrTextW(oText.wEmrText, 36); // 8 + 28 (8 - С‚РёРї Рё СЂР°Р·РјРµСЂ, 28 - СЂР°Р·РјРµСЂ РґР°РЅРЅРѕР№ СЃС‚СЂСѓРєС‚СѓСЂС‹)
 
 			return *this;
 		}
@@ -280,7 +280,7 @@ namespace MetaFile
 			*this >> oText.iGraphicsMode;
 			*this >> oText.exScale;
 			*this >> oText.eyScale;
-			ReadEmrTextA(oText.aEmrText, 36); // 8 + 28 (8 - тип и размер, 28 - размер данной структуры)
+			ReadEmrTextA(oText.aEmrText, 36); // 8 + 28 (8 - С‚РёРї Рё СЂР°Р·РјРµСЂ, 28 - СЂР°Р·РјРµСЂ РґР°РЅРЅРѕР№ СЃС‚СЂСѓРєС‚СѓСЂС‹)
 
 			return *this;
 		}
@@ -478,7 +478,7 @@ namespace MetaFile
 				for (unsigned int unIndex = 0; unIndex < oText.cStrings; unIndex++)
 				{
 					unsigned int nCurPos = Tell();
-					ReadEmrTextA(oText.aEmrText[unIndex], nCurPos - nStartPos + 36); // 8 + 28 (8 - тип и размер, 28 - размер данной структуры)
+					ReadEmrTextA(oText.aEmrText[unIndex], nCurPos - nStartPos + 36); // 8 + 28 (8 - С‚РёРї Рё СЂР°Р·РјРµСЂ, 28 - СЂР°Р·РјРµСЂ РґР°РЅРЅРѕР№ СЃС‚СЂСѓРєС‚СѓСЂС‹)
 				}
 			}
 			else
@@ -506,7 +506,7 @@ namespace MetaFile
 				for (unsigned int unIndex = 0; unIndex < oText.cStrings; unIndex++)
 				{
 					unsigned int nCurPos = Tell();
-					ReadEmrTextW(oText.wEmrText[unIndex], nCurPos - nStartPos + 36); // 8 + 28 (8 - тип и размер, 28 - размер данной структуры)
+					ReadEmrTextW(oText.wEmrText[unIndex], nCurPos - nStartPos + 36); // 8 + 28 (8 - С‚РёРї Рё СЂР°Р·РјРµСЂ, 28 - СЂР°Р·РјРµСЂ РґР°РЅРЅРѕР№ СЃС‚СЂСѓРєС‚СѓСЂС‹)
 				}
 			}
 			else
@@ -641,7 +641,7 @@ namespace MetaFile
 			*this >> pFont->Quality;
 			*this >> pFont->PitchAndFamily;
 
-			// Читаем до тех пор пока не встретим нулевой символ
+			// Р§РёС‚Р°РµРј РґРѕ С‚РµС… РїРѕСЂ РїРѕРєР° РЅРµ РІСЃС‚СЂРµС‚РёРј РЅСѓР»РµРІРѕР№ СЃРёРјРІРѕР»
 			unsigned char unIndex = 0;
 			*this >> pFont->Facename[unIndex];
 			while (0x00 != pFont->Facename[unIndex])
@@ -711,7 +711,7 @@ namespace MetaFile
 			*this >> oScan.Top;
 			*this >> oScan.Bottom;
 
-			if (oScan.Count > 0 && oScan.Count & 1) // Должно делиться на 2
+			if (oScan.Count > 0 && oScan.Count & 1) // Р”РѕР»Р¶РЅРѕ РґРµР»РёС‚СЊСЃСЏ РЅР° 2
 			{
 				unsigned short ushCount = oScan.Count >> 1;
 				oScan.ScanLines = new TWmfScanLine[ushCount];
@@ -890,9 +890,9 @@ namespace MetaFile
 		{
 			*this >> oText;
 
-			// Читаем OutputString
+			// Р§РёС‚Р°РµРј OutputString
 			const unsigned int unCharsCount = oText.Chars;
-			int nSkip = oText.offString - (unOffset + 40); // 40 - размер структуры TEmfEmrText 
+			int nSkip = oText.offString - (unOffset + 40); // 40 - СЂР°Р·РјРµСЂ СЃС‚СЂСѓРєС‚СѓСЂС‹ TEmfEmrText 
 			Skip(nSkip);
 			T* pString = new T[unCharsCount + 1];
 			if (pString)
@@ -902,7 +902,7 @@ namespace MetaFile
 				oText.OutputString = (void*)pString;
 			}
 
-			// Читаем OutputDx
+			// Р§РёС‚Р°РµРј OutputDx
 			nSkip = oText.offDx - oText.offString - 2 * unCharsCount;
 			Skip(nSkip);
 			const unsigned int unDxCount = oText.Options & ETO_PDY ? 2 * unCharsCount : unCharsCount;
@@ -933,6 +933,6 @@ namespace MetaFile
 	void ReadImage(BYTE* pImageBuffer, unsigned int unBufferLen, unsigned int unColorUsage, BYTE** ppDstBuffer, unsigned int* punWidth, unsigned int* punHeight);
 	double GetEllipseAngle(int nL, int nT, int nR, int nB, int nX, int nY);
 	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight);
-	bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder);
+    bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, const wchar_t *wsMode, const wchar_t *wsExt, const wchar_t *wsFolder);
 };
 #endif // _METAFILE_COMMON_METAFILEUTILS_H

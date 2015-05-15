@@ -75,7 +75,7 @@ namespace Jpeg2000
 			pParameters->nSubSamplingDx       = 1;
 			pParameters->nSubSamplingDy       = 1;
 			pParameters->bTileSizeOn          = false;
-			pParameters->sComment             = "Manufactured by Online Media Technologies Ltd.";
+            pParameters->sComment             = (char*)"Manufactured by Online Media Technologies Ltd.";
 
 			// TODO: Сделать чтение параметров кодирования
 			//if (sXml.GetLength() > 0)

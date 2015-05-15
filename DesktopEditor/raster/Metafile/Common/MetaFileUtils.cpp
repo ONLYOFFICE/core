@@ -1,4 +1,4 @@
-#include "MetaFileUtils.h"
+п»ї#include "MetaFileUtils.h"
 
 #include "../../raster/ImageFileFormatChecker.h"
 #include "../../raster/BgraFrame.h"
@@ -24,7 +24,7 @@ namespace MetaFile
 			ulBit = ulBit << 1;
 			unOffset++;
 
-			// ограничиваемся 32-битами
+			// РѕРіСЂР°РЅРёС‡РёРІР°РµРјСЃСЏ 32-Р±РёС‚Р°РјРё
 			if (ulBit & 0x80000000)
 				return 0;
 		}
@@ -100,7 +100,7 @@ namespace MetaFile
 		*pulWidth    = 0;
 		*pulHeight   = 0;
 
-		if (BI_BITCOUNT_0 == ushBitCount) // Значит компрессия либо PNG, либо JPEG
+		if (BI_BITCOUNT_0 == ushBitCount) // Р—РЅР°С‡РёС‚ РєРѕРјРїСЂРµСЃСЃРёСЏ Р»РёР±Рѕ PNG, Р»РёР±Рѕ JPEG
 		{
 			if (BI_JPEG != unCompression || BI_PNG != unCompression)
 				return false;
@@ -116,19 +116,19 @@ namespace MetaFile
 			CBgraFrame oFrame;
 			oFrame.OpenFile(wsTempFileName);
 
-			// TODO: Как будут файлы сделать чтение.
+			// TODO: РљР°Рє Р±СѓРґСѓС‚ С„Р°Р№Р»С‹ СЃРґРµР»Р°С‚СЊ С‡С‚РµРЅРёРµ.
 			NSFile::CFileBinary::Remove(wsTempFileName);
 			return false;
 		}
 		else if (BI_BITCOUNT_1 == ushBitCount)
 		{
-			// Двуцветная картинка, значит палитра состоит из 2-х цветов
+			// Р”РІСѓС†РІРµС‚РЅР°СЏ РєР°СЂС‚РёРЅРєР°, Р·РЅР°С‡РёС‚ РїР°Р»РёС‚СЂР° СЃРѕСЃС‚РѕРёС‚ РёР· 2-С… С†РІРµС‚РѕРІ
 			TRgbQuad oColor1, oColor2;
 
 			if (oHeaderStream.CanRead() >= 8)
 				oHeaderStream >> oColor1 >> oColor2;
 
-			// Считываем саму картинку
+			// РЎС‡РёС‚С‹РІР°РµРј СЃР°РјСѓ РєР°СЂС‚РёРЅРєСѓ
 			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
 			if (lCalcLen > lBufLen)
 				return false;
@@ -163,7 +163,7 @@ namespace MetaFile
 						int nAlpha = 255;
 						if (nX == nWidthBytes - 1)
 						{
-							// Не до конца заполненный байт иногда заполняется странным цветом, поэтому мы делаем его прозрачным
+							// РќРµ РґРѕ РєРѕРЅС†Р° Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ Р±Р°Р№С‚ РёРЅРѕРіРґР° Р·Р°РїРѕР»РЅСЏРµС‚СЃСЏ СЃС‚СЂР°РЅРЅС‹Рј С†РІРµС‚РѕРј, РїРѕСЌС‚РѕРјСѓ РјС‹ РґРµР»Р°РµРј РµРіРѕ РїСЂРѕР·СЂР°С‡РЅС‹Рј
 							nBitCount = nLastBitCount;
 							nAlpha = 0;
 						}
@@ -197,7 +197,7 @@ namespace MetaFile
 						int nAlpha = 255;
 						if (nX == nWidthBytes - 1)
 						{
-							// Не до конца заполненный байт иногда заполняется странным цветом, поэтому мы делаем его прозрачным
+							// РќРµ РґРѕ РєРѕРЅС†Р° Р·Р°РїРѕР»РЅРµРЅРЅС‹Р№ Р±Р°Р№С‚ РёРЅРѕРіРґР° Р·Р°РїРѕР»РЅСЏРµС‚СЃСЏ СЃС‚СЂР°РЅРЅС‹Рј С†РІРµС‚РѕРј, РїРѕСЌС‚РѕРјСѓ РјС‹ РґРµР»Р°РµРј РµРіРѕ РїСЂРѕР·СЂР°С‡РЅС‹Рј
 							nBitCount = nLastBitCount;
 							//nAlpha = 0;
 						}
@@ -236,20 +236,20 @@ namespace MetaFile
 			if (oHeaderStream.CanRead() < unColorTableLen * 4)
 				return false;
 
-			// Считываем палитру
+			// РЎС‡РёС‚С‹РІР°РµРј РїР°Р»РёС‚СЂСѓ
 			for (unsigned short ushIndex = 0; ushIndex < unColorTableLen; ushIndex++)
 			{
 				oHeaderStream >> oColorTable[ushIndex];
 			}
 
-			// 4 бита - 1 пиксел
+			// 4 Р±РёС‚Р° - 1 РїРёРєСЃРµР»
 
-			// Считываем саму картинку
+			// РЎС‡РёС‚С‹РІР°РµРј СЃР°РјСѓ РєР°СЂС‚РёРЅРєСѓ
 			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
 			if (lCalcLen != lBufLen)
 				return false;
 
-			// Ширина в байтах должна быть кратна 4, значит сама ширина должна быть кратна 8
+			// РЁРёСЂРёРЅР° РІ Р±Р°Р№С‚Р°С… РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РєСЂР°С‚РЅР° 4, Р·РЅР°С‡РёС‚ СЃР°РјР° С€РёСЂРёРЅР° РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РєСЂР°С‚РЅР° 8
 			int nAdd = 0;
 			while (0 != div_t(div(nWidth + nAdd, 8)).rem)
 			{
@@ -353,14 +353,14 @@ namespace MetaFile
 			if (oHeaderStream.CanRead() < ushColorTableLen * 4)
 				return false;
 
-			// Считываем палитру
+			// РЎС‡РёС‚С‹РІР°РµРј РїР°Р»РёС‚СЂСѓ
 			for (unsigned short ushIndex = 0; ushIndex < ushColorTableLen; ushIndex++)
 			{
 				oHeaderStream >> oColorTable[ushIndex];
 			}
 
-			// 1 байт - 1 пиксел
-			// Ширина должна быть кратна 4.
+			// 1 Р±Р°Р№С‚ - 1 РїРёРєСЃРµР»
+			// РЁРёСЂРёРЅР° РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РєСЂР°С‚РЅР° 4.
 			int nAdd = 0;
 			while (0 != div_t(div(nWidth + nAdd, 4)).rem)
 			{
@@ -428,7 +428,7 @@ namespace MetaFile
 
 			if (BI_RGB == unCompression)
 			{
-				// Маски, сдвиги и коэффициенты уже заполнены стандартными значениями для масок
+				// РњР°СЃРєРё, СЃРґРІРёРіРё Рё РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ СѓР¶Рµ Р·Р°РїРѕР»РЅРµРЅС‹ СЃС‚Р°РЅРґР°СЂС‚РЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РґР»СЏ РјР°СЃРѕРє
 				// 000000000011111 - Red
 				// 000001111100000 - Green
 				// 111110000000000 - Blue
@@ -450,13 +450,13 @@ namespace MetaFile
 			else
 				return false;
 
-			// Считываем саму картинку
+			// РЎС‡РёС‚С‹РІР°РµРј СЃР°РјСѓ РєР°СЂС‚РёРЅРєСѓ
 			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
 			if (lCalcLen != lBufLen)
 				return false;
 
-			// 2 байт на все каналы канал
-			// (Ширина * 3) должна быть кратна 4.
+			// 2 Р±Р°Р№С‚ РЅР° РІСЃРµ РєР°РЅР°Р»С‹ РєР°РЅР°Р»
+			// (РЁРёСЂРёРЅР° * 3) РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РєСЂР°С‚РЅР° 4.
 			int nAdd = 0;
 			while (0 != div_t(div(2 * nWidth + nAdd, 4)).rem)
 			{
@@ -523,15 +523,15 @@ namespace MetaFile
 		else if (BI_BITCOUNT_5 == ushBitCount)
 		{
 			if (BI_RGB != unCompression)
-				return false; // TODO: Сделать данный вариант, как только будет файлы с данным типом
+				return false; // TODO: РЎРґРµР»Р°С‚СЊ РґР°РЅРЅС‹Р№ РІР°СЂРёР°РЅС‚, РєР°Рє С‚РѕР»СЊРєРѕ Р±СѓРґРµС‚ С„Р°Р№Р»С‹ СЃ РґР°РЅРЅС‹Рј С‚РёРїРѕРј
 
-			// Считываем саму картинку
+			// РЎС‡РёС‚С‹РІР°РµРј СЃР°РјСѓ РєР°СЂС‚РёРЅРєСѓ
 			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
 			if (lCalcLen != lBufLen)
 				return false;
 
-			// 1 байт на каждый канал
-			// (Ширина * 3) должна быть кратна 4.
+			// 1 Р±Р°Р№С‚ РЅР° РєР°Р¶РґС‹Р№ РєР°РЅР°Р»
+			// (РЁРёСЂРёРЅР° * 3) РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РєСЂР°С‚РЅР° 4.
 			int nAdd = 0;
 			while (0 != div_t(div(3 * nWidth + nAdd, 4)).rem)
 			{
@@ -594,7 +594,7 @@ namespace MetaFile
 
 			if (BI_RGB == unCompression)
 			{
-				// Маски, сдвиги и коэффициенты уже заполнены стандартными значениями для масок
+				// РњР°СЃРєРё, СЃРґРІРёРіРё Рё РєРѕСЌС„С„РёС†РёРµРЅС‚С‹ СѓР¶Рµ Р·Р°РїРѕР»РЅРµРЅС‹ СЃС‚Р°РЅРґР°СЂС‚РЅС‹РјРё Р·РЅР°С‡РµРЅРёСЏРјРё РґР»СЏ РјР°СЃРѕРє
 			}
 			else if (BI_BITFIELDS == unCompression)
 			{
@@ -618,13 +618,13 @@ namespace MetaFile
 			else
 				return false;
 
-			// Считываем саму картинку
+			// РЎС‡РёС‚С‹РІР°РµРј СЃР°РјСѓ РєР°СЂС‚РёРЅРєСѓ
 			int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
 			if (lCalcLen != lBufLen)
 				return false;
 
-			// 1 байт на каждый канал
-			// Ширина должна быть кратна 4.
+			// 1 Р±Р°Р№С‚ РЅР° РєР°Р¶РґС‹Р№ РєР°РЅР°Р»
+			// РЁРёСЂРёРЅР° РґРѕР»Р¶РЅР° Р±С‹С‚СЊ РєСЂР°С‚РЅР° 4.
 			int nAdd = 0;
 			while (0 != div_t(div(nWidth + nAdd, 4)).rem)
 			{
@@ -666,7 +666,7 @@ namespace MetaFile
 							pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
 							pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
 							pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
+							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Р•СЃР»Рё Р±СЂР°С‚СЊ Р·РЅР°С‡РµРЅРёРµ РёР· РєР°СЂС‚РёРЅРєРё, С‚РѕРіРґР° РѕРЅР° РїРѕР»СѓС‡Р°РµС‚СЃСЏ РІСЃРµРіРґР° РїСЂРѕР·СЂР°С‡РЅРѕР№
 						}
 					}
 					for (int nX = nWidth; nX < nWidth + nAdd; nX++)
@@ -705,7 +705,7 @@ namespace MetaFile
 							pBgraBuffer[nIndex + 0] = pBuffer[0]; pBuffer++; lBufLen--;
 							pBgraBuffer[nIndex + 1] = pBuffer[0]; pBuffer++; lBufLen--;
 							pBgraBuffer[nIndex + 2] = pBuffer[0]; pBuffer++; lBufLen--;
-							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Если брать значение из картинки, тогда она получается всегда прозрачной
+							pBgraBuffer[nIndex + 3] = 255; pBuffer++; lBufLen--; // Р•СЃР»Рё Р±СЂР°С‚СЊ Р·РЅР°С‡РµРЅРёРµ РёР· РєР°СЂС‚РёРЅРєРё, С‚РѕРіРґР° РѕРЅР° РїРѕР»СѓС‡Р°РµС‚СЃСЏ РІСЃРµРіРґР° РїСЂРѕР·СЂР°С‡РЅРѕР№
 						}
 					}
 
@@ -739,7 +739,7 @@ namespace MetaFile
 		CDataStream oHeaderStream;
 		oHeaderStream.SetStream(pHeaderBuffer, ulHeaderBufferLen);
 
-		// Считываем заголовок
+		// РЎС‡РёС‚С‹РІР°РµРј Р·Р°РіРѕР»РѕРІРѕРє
 		unsigned int ulHeaderSize;
 		oHeaderStream >> ulHeaderSize;
 
@@ -758,7 +758,7 @@ namespace MetaFile
 		CDataStream oHeaderStream;
 		oHeaderStream.SetStream(pImageBuffer, unBufferLen);
 
-		// Считываем заголовок
+		// РЎС‡РёС‚С‹РІР°РµРј Р·Р°РіРѕР»РѕРІРѕРє
 		unsigned int unHeaderSize;
 		oHeaderStream >> unHeaderSize;
 
@@ -811,7 +811,7 @@ namespace MetaFile
 			}
 			else
 			{
-				// TODO: реализовать другие типы цветов
+				// TODO: СЂРµР°Р»РёР·РѕРІР°С‚СЊ РґСЂСѓРіРёРµ С‚РёРїС‹ С†РІРµС‚РѕРІ
 			}
 		}
 	}
@@ -820,7 +820,7 @@ namespace MetaFile
 		double dX0 = (nL + nR) / 2.0;
 		double dY0 = (nT + nB) / 2.0;
 
-		// Определим квадрант
+		// РћРїСЂРµРґРµР»РёРј РєРІР°РґСЂР°РЅС‚
 		int nQuarter = -1;
 		if (nX >= dX0)
 		{
@@ -853,7 +853,7 @@ namespace MetaFile
 	void ProcessRasterOperation(unsigned int unRasterOperation, BYTE** ppBgra, unsigned int unWidth, unsigned int unHeight)
 	{
 		BYTE* pBgra = *ppBgra;
-		// Для битовых операций SRCPAINT и SRCAND сделаем, как будто фон чисто белый.
+		// Р”Р»СЏ Р±РёС‚РѕРІС‹С… РѕРїРµСЂР°С†РёР№ SRCPAINT Рё SRCAND СЃРґРµР»Р°РµРј, РєР°Рє Р±СѓРґС‚Рѕ С„РѕРЅ С‡РёСЃС‚Рѕ Р±РµР»С‹Р№.
 		if (0x008800C6 == unRasterOperation) // SRCPAINT
 		{
 			BYTE* pCur = pBgra;
@@ -907,7 +907,7 @@ namespace MetaFile
 		return sRes;
 	}
 
-	bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, wchar_t *wsMode, wchar_t *wsExt, wchar_t *wsFolder)
+    bool OpenTempFile(std::wstring *pwsName, FILE **ppFile, const wchar_t *wsMode, const wchar_t *wsExt, const wchar_t *wsFolder)
 	{
 		std::wstring wsTemp, wsFileName;
 		FILE *pTempFile = NULL;

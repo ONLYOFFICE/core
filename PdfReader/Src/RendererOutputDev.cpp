@@ -2739,7 +2739,7 @@ namespace PdfReader
 		m_pRenderer->EndCommand(c_nPathType);
 		m_pRenderer->EndCommand(c_nClipType);
 	}
-	void RendererOutputDev::ClipToText(std::wstring& wsFontName, std::wstring& wsFontPath, double dFontSize, int nFontStyle, double *pMatrix, std::wstring& wsText, double dX, double dY, double dWidth, double dHeight, double dBaseLineOffset)
+	void RendererOutputDev::ClipToText(const std::wstring& wsFontName, const std::wstring& wsFontPath, double dFontSize, int nFontStyle, double *pMatrix, const std::wstring& wsText, double dX, double dY, double dWidth, double dHeight, double dBaseLineOffset)
 	{
 		if (m_bTransparentGroup)
 			return;

@@ -4,6 +4,7 @@
 #include <stdarg.h>
 #include <string>
 #include "../../DesktopEditor/common/String.h"
+#include <string.h>
 
 namespace PdfReader
 {
@@ -12,7 +13,7 @@ namespace PdfReader
 	//---------------------------------------------------------------------------------------
 	typedef wchar_t* WString;
 
-	static WString AllocWString(std::wstring& wsString)
+	static WString AllocWString(const std::wstring& wsString)
 	{
 		int nLen = wsString.length();
 		WString wsResult = new wchar_t[nLen + 1];

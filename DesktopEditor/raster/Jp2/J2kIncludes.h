@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include "Types.h"
 #include "ArithmeticCoder.h"
@@ -59,7 +59,7 @@ namespace Jpeg2000
 			return NULL;
 		}
 
-		Image *pImage = Jp2_Decode((Jp2Stream*)pDInfo->pJp2, pStream); // â ñëó÷àå îøèáêè pImage = NULL
+		Image *pImage = Jp2_Decode((Jp2Stream*)pDInfo->pJp2, pStream); // Ð² ÑÐ»ÑƒÑ‡Ð°Ðµ Ð¾ÑˆÐ¸Ð±ÐºÐ¸ pImage = NULL
 		delete (pStream);
 		Jp2_DestroyDecompress((Jp2Stream*)pDInfo->pJp2);
 
@@ -100,7 +100,7 @@ namespace Jpeg2000
 			return NULL;
 		}
 
-		Image *pImage = J2k_Decode((J2kCodestream*)pDInfo->pJ2k, pStream); // â ñëó÷àå îøèáêè pImage = NULL
+		Image *pImage = J2k_Decode((J2kCodestream*)pDInfo->pJ2k, pStream); // Ð² ÑÐ»ÑƒÑ‡Ð°Ðµ Ð¾ÑˆÐ¸Ð±ÐºÐ¸ pImage = NULL
 		delete (pStream);
 		J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
 
@@ -141,7 +141,7 @@ namespace Jpeg2000
 			return NULL;
 		}
 
-		Image *pImage = J2k_DecodeJptStream((J2kCodestream*)pDInfo->pJ2k, pStream); // â ñëó÷àå îøèáêè pImage = NULL
+		Image *pImage = J2k_DecodeJptStream((J2kCodestream*)pDInfo->pJ2k, pStream); // Ð² ÑÐ»ÑƒÑ‡Ð°Ðµ Ð¾ÑˆÐ¸Ð±ÐºÐ¸ pImage = NULL
 		delete (pStream);
 		J2k_DestroyDecompress((J2kCodestream*)pDInfo->pJ2k);
 
@@ -181,7 +181,7 @@ namespace Jpeg2000
 			return NULL;
 		}
 
-		Image *pImage = Mj2_Decode((Mj2_Movie*)pDInfo->pMj2, pStream); // â ñëó÷àå îøèáêè pImage = NULL
+		Image *pImage = Mj2_Decode((Mj2_Movie*)pDInfo->pMj2, pStream); // Ð² ÑÐ»ÑƒÑ‡Ð°Ðµ Ð¾ÑˆÐ¸Ð±ÐºÐ¸ pImage = NULL
 		delete (pStream);
 		Mj2_DestroyDecompress((Mj2_Movie*)pDInfo->pMj2);
 

@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "Types.h"
 #include "Utils.h"
@@ -6,7 +6,7 @@
 namespace Jpeg2000
 {
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Вспомогательные функции
+	// Р’СЃРїРѕРјРѕРіР°С‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё
 	//-------------------------------------------------------------------------------------------------------------------------------
 	static bool PI_NextLRCP(PacketIterator *pPI)
 	{
@@ -53,7 +53,6 @@ namespace Jpeg2000
 
 		return false;
 	}
-
 	static bool PI_NextRLCP(PacketIterator *pPI)
 	{
 		PacketComponent  *pComponent  = NULL;
@@ -99,12 +98,12 @@ namespace Jpeg2000
 
 		return false;
 	}
-
 	static bool PI_NextRPCL(PacketIterator *pPI)
 	{
 		PacketComponent  *pComponent  = NULL;
 		PacketResolution *pResolution = NULL;
 		long nIndex = 0;
+		int nLevel, nTileResX0, nTileResY0, nTileResX1, nTileResY1, nResPX, nResPY, nPCR_i, nPCR_j;
 
 		if (!pPI->nFirst)
 		{
@@ -144,21 +143,21 @@ namespace Jpeg2000
 							continue;
 						}
 						pResolution = &pComponent->pResolutions[pPI->nIndexResolution];
-						int nLevel = pComponent->nResolutionsCount - 1 - pPI->nIndexResolution;
+						nLevel = pComponent->nResolutionsCount - 1 - pPI->nIndexResolution;
 
-						int nTileResX0 = CeilDiv(pPI->nTileX0, pComponent->nDx << nLevel);
-						int nTileResY0 = CeilDiv(pPI->nTileY0, pComponent->nDy << nLevel);
-						int nTileResX1 = CeilDiv(pPI->nTileX1, pComponent->nDx << nLevel);
-						int nTileResY1 = CeilDiv(pPI->nTileY1, pComponent->nDy << nLevel);
+						nTileResX0 = CeilDiv(pPI->nTileX0, pComponent->nDx << nLevel);
+						nTileResY0 = CeilDiv(pPI->nTileY0, pComponent->nDy << nLevel);
+						nTileResX1 = CeilDiv(pPI->nTileX1, pComponent->nDx << nLevel);
+						nTileResY1 = CeilDiv(pPI->nTileY1, pComponent->nDy << nLevel);
 
-						int nResPX = pResolution->nDx + nLevel;
-						int nResPY = pResolution->nDy + nLevel;
+						nResPX = pResolution->nDx + nLevel;
+						nResPY = pResolution->nDy + nLevel;
 
 						if ((!(pPI->nX % (pComponent->nDx << nResPX) == 0) || (pPI->nX == pPI->nTileX0 && (nTileResX0 << nLevel) % (1 << nResPX))))
 						{
 							continue;
 						}
-						// TO DO: Проверить здесь последнее деление на (1 << nResPX)
+						// TO DO: РџСЂРѕРІРµСЂРёС‚СЊ Р·РґРµСЃСЊ РїРѕСЃР»РµРґРЅРµРµ РґРµР»РµРЅРёРµ РЅР° (1 << nResPX)
 						if ((!(pPI->nY % (pComponent->nDy << nResPY) == 0) || (pPI->nY == pPI->nTileY0 && (nTileResY0 << nLevel) % (1 << nResPX))))
 						{
 							continue;
@@ -171,8 +170,8 @@ namespace Jpeg2000
 						if ((nTileResX0 == nTileResX1) || (nTileResY0 == nTileResY1))
 							continue;
 
-						int nPCR_i = FloorDivPow2(CeilDiv(pPI->nX, pComponent->nDx << nLevel), pResolution->nDx) - FloorDivPow2(nTileResX0, pResolution->nDx);
-						int nPCR_j = FloorDivPow2(CeilDiv(pPI->nY, pComponent->nDy << nLevel), pResolution->nDy) - FloorDivPow2(nTileResY0, pResolution->nDy);
+						nPCR_i = FloorDivPow2(CeilDiv(pPI->nX, pComponent->nDx << nLevel), pResolution->nDx) - FloorDivPow2(nTileResX0, pResolution->nDx);
+						nPCR_j = FloorDivPow2(CeilDiv(pPI->nY, pComponent->nDy << nLevel), pResolution->nDy) - FloorDivPow2(nTileResY0, pResolution->nDy);
 						pPI->nIndexPrecinct = nPCR_i + nPCR_j * pResolution->nWidth;
 
 						for (pPI->nIndexLayer = 0; pPI->nIndexLayer < pPI->oPOC.nLYEpoc; pPI->nIndexLayer++)
@@ -192,12 +191,12 @@ namespace Jpeg2000
 
 		return false;
 	}
-
 	static bool PI_NextPCRL(PacketIterator *pPI)
 	{
 		PacketComponent  *pComponent  = NULL;
 		PacketResolution *pResolution = NULL;
 		long nIndex = 0;
+		int nLevel, nTileResX0, nTileResY0, nTileResX1, nTileResY1, nResPX, nResPY, nPRC_i, nPRC_j;
 
 		if (!pPI->nFirst)
 		{
@@ -234,21 +233,21 @@ namespace Jpeg2000
 					for (pPI->nIndexResolution = pPI->oPOC.nRSpoc; pPI->nIndexResolution < min(pPI->oPOC.nREpoc, pComponent->nResolutionsCount); pPI->nIndexResolution++)
 					{
 						pResolution = &pComponent->pResolutions[pPI->nIndexResolution];
-						int nLevel = pComponent->nResolutionsCount - 1 - pPI->nIndexResolution;
+						nLevel = pComponent->nResolutionsCount - 1 - pPI->nIndexResolution;
 
-						int nTileResX0 = CeilDiv(pPI->nTileX0, pComponent->nDx << nLevel);
-						int nTileResY0 = CeilDiv(pPI->nTileY0, pComponent->nDy << nLevel);
-						int nTileResX1 = CeilDiv(pPI->nTileX1, pComponent->nDx << nLevel);
-						int nTileResY1 = CeilDiv(pPI->nTileY1, pComponent->nDy << nLevel);
+						nTileResX0 = CeilDiv(pPI->nTileX0, pComponent->nDx << nLevel);
+						nTileResY0 = CeilDiv(pPI->nTileY0, pComponent->nDy << nLevel);
+						nTileResX1 = CeilDiv(pPI->nTileX1, pComponent->nDx << nLevel);
+						nTileResY1 = CeilDiv(pPI->nTileY1, pComponent->nDy << nLevel);
 
-						int nResPX = pResolution->nDx + nLevel;
-						int nResPY = pResolution->nDy + nLevel;
+						nResPX = pResolution->nDx + nLevel;
+						nResPY = pResolution->nDy + nLevel;
 
 						if ((!(pPI->nX % (pComponent->nDx << nResPX) == 0) || (pPI->nX == pPI->nTileX0 && (nTileResX0 << nLevel) % (1 << nResPX))))
 						{
 							continue;
 						}
-						// TO DO: Проверить здесь последнее деление на (1 << nResPX)
+						// TO DO: РџСЂРѕРІРµСЂРёС‚СЊ Р·РґРµСЃСЊ РїРѕСЃР»РµРґРЅРµРµ РґРµР»РµРЅРёРµ РЅР° (1 << nResPX)
 						if ((!(pPI->nY % (pComponent->nDy << nResPY) == 0) || (pPI->nY == pPI->nTileY0 && (nTileResY0 << nLevel) % (1 << nResPX))))
 						{
 							continue;
@@ -261,8 +260,8 @@ namespace Jpeg2000
 						if ((nTileResX0 == nTileResX1) || (nTileResY0 == nTileResY1))
 							continue;
 
-						int nPRC_i = FloorDivPow2(CeilDiv(pPI->nX, pComponent->nDx << nLevel), pResolution->nDx) - FloorDivPow2(nTileResX0, pResolution->nDx);
-						int nPRC_j = FloorDivPow2(CeilDiv(pPI->nY, pComponent->nDy << nLevel), pResolution->nDy) - FloorDivPow2(nTileResY0, pResolution->nDy);
+						nPRC_i = FloorDivPow2(CeilDiv(pPI->nX, pComponent->nDx << nLevel), pResolution->nDx) - FloorDivPow2(nTileResX0, pResolution->nDx);
+						nPRC_j = FloorDivPow2(CeilDiv(pPI->nY, pComponent->nDy << nLevel), pResolution->nDy) - FloorDivPow2(nTileResY0, pResolution->nDy);
 						pPI->nIndexPrecinct = nPRC_i + nPRC_j * pResolution->nWidth;
 
 						for (pPI->nIndexLayer = 0; pPI->nIndexLayer < pPI->oPOC.nLYEpoc; pPI->nIndexLayer++)
@@ -282,12 +281,12 @@ namespace Jpeg2000
 
 		return false;
 	}
-
 	static bool PI_NextCPRL(PacketIterator *pPI)
 	{
 		PacketComponent  *pComponent  = NULL;
 		PacketResolution *pResolution = NULL;
 		long nIndex = 0;
+		int nLevel, nTileResX0, nTileResY0, nTileResX1, nTileResY1, nResPX, nResPY, nPRC_i, nPRC_j;
 
 		if (!pPI->nFirst)
 		{
@@ -320,20 +319,20 @@ namespace Jpeg2000
 					for (pPI->nIndexResolution = pPI->oPOC.nRSpoc; pPI->nIndexResolution < min(pPI->oPOC.nREpoc, pComponent->nResolutionsCount); pPI->nIndexResolution++)
 					{
 						pResolution = &pComponent->pResolutions[pPI->nIndexResolution];
-						int nLevel = pComponent->nResolutionsCount - 1 - pPI->nIndexResolution;
+						nLevel = pComponent->nResolutionsCount - 1 - pPI->nIndexResolution;
 
-						int nTileResX0 = CeilDiv(pPI->nTileX0, pComponent->nDx << nLevel);
-						int nTileResY0 = CeilDiv(pPI->nTileY0, pComponent->nDy << nLevel);
-						int nTileResX1 = CeilDiv(pPI->nTileX1, pComponent->nDx << nLevel);
-						int nTileResY1 = CeilDiv(pPI->nTileY1, pComponent->nDy << nLevel);
-						int nResPX = pResolution->nDx + nLevel;
-						int nResPY = pResolution->nDy + nLevel;
+						nTileResX0 = CeilDiv(pPI->nTileX0, pComponent->nDx << nLevel);
+						nTileResY0 = CeilDiv(pPI->nTileY0, pComponent->nDy << nLevel);
+						nTileResX1 = CeilDiv(pPI->nTileX1, pComponent->nDx << nLevel);
+						nTileResY1 = CeilDiv(pPI->nTileY1, pComponent->nDy << nLevel);
+						nResPX = pResolution->nDx + nLevel;
+						nResPY = pResolution->nDy + nLevel;
 
 						if ((!(pPI->nX % (pComponent->nDx << nResPX) == 0) || (pPI->nX == pPI->nTileX0 && (nTileResX0 << nLevel) % (1 << nResPX))))
 						{
 							continue;
 						}
-						// TO DO: Проверить здесь последнее деление на (1 << nResPX)
+						// TO DO: РџСЂРѕРІРµСЂРёС‚СЊ Р·РґРµСЃСЊ РїРѕСЃР»РµРґРЅРµРµ РґРµР»РµРЅРёРµ РЅР° (1 << nResPX)
 						if ((!(pPI->nY % (pComponent->nDy << nResPY) == 0) || (pPI->nY == pPI->nTileY0 && (nTileResY0 << nLevel) % (1 << nResPX))))
 						{
 							continue;
@@ -346,8 +345,8 @@ namespace Jpeg2000
 						if ((nTileResX0 == nTileResX1) || (nTileResY0 == nTileResY1))
 							continue;
 
-						int nPRC_i = FloorDivPow2(CeilDiv(pPI->nX, pComponent->nDx << nLevel), pResolution->nDx) - FloorDivPow2(nTileResX0, pResolution->nDx);
-						int nPRC_j = FloorDivPow2(CeilDiv(pPI->nY, pComponent->nDy << nLevel), pResolution->nDy) - FloorDivPow2(nTileResY0, pResolution->nDy);
+						nPRC_i = FloorDivPow2(CeilDiv(pPI->nX, pComponent->nDx << nLevel), pResolution->nDx) - FloorDivPow2(nTileResX0, pResolution->nDx);
+						nPRC_j = FloorDivPow2(CeilDiv(pPI->nY, pComponent->nDy << nLevel), pResolution->nDy) - FloorDivPow2(nTileResY0, pResolution->nDy);
 						pPI->nIndexPrecinct = nPRC_i + nPRC_j * pResolution->nWidth;
 
 						for (pPI->nIndexLayer = 0; pPI->nIndexLayer < pPI->oPOC.nLYEpoc; pPI->nIndexLayer++)
@@ -367,9 +366,8 @@ namespace Jpeg2000
 
 		return false;
 	}
-
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Основные функции
+	// РћСЃРЅРѕРІРЅС‹Рµ С„СѓРЅРєС†РёРё
 	//-------------------------------------------------------------------------------------------------------------------------------
 	void	PI_Destroy(PacketIterator *pPI, CodingParams *pCodingParams, int nTileIndex)
 	{

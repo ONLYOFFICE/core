@@ -1,6 +1,14 @@
-#pragma once
+п»ї#pragma once
 #include "Reader.h"
 #include "../../graphics/Defines.h"
+
+#ifndef max
+	#define max(a,b)            (((a) > (b)) ? (a) : (b))
+#endif
+
+#ifndef min
+	#define min(a,b)            (((a) < (b)) ? (a) : (b))
+#endif
 
 namespace Jpeg2000
 {
@@ -8,12 +16,12 @@ namespace Jpeg2000
 	// Constant definitions
 	//-------------------------------------------------------------------------------------------------------------------------------
 
-#define MAX_PATH_LEN 4096 // Максимальная длина для имен файлов 
+#define MAX_PATH_LEN 4096 // РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґР»РёРЅР° РґР»СЏ РёРјРµРЅ С„Р°Р№Р»РѕРІ 
 
-#define J2K_MAXRLVLS 33					    // Максимальное число уровней разложения
-#define J2K_MAXBANDS (3 * J2K_MAXRLVLS - 2)	// Максимальное число обастей, связанных с уровнями разложения
+#define J2K_MAXRLVLS 33					    // РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ С‡РёСЃР»Рѕ СѓСЂРѕРІРЅРµР№ СЂР°Р·Р»РѕР¶РµРЅРёСЏ
+#define J2K_MAXBANDS (3 * J2K_MAXRLVLS - 2)	// РњР°РєСЃРёРјР°Р»СЊРЅРѕРµ С‡РёСЃР»Рѕ РѕР±Р°СЃС‚РµР№, СЃРІСЏР·Р°РЅРЅС‹С… СЃ СѓСЂРѕРІРЅСЏРјРё СЂР°Р·Р»РѕР¶РµРЅРёСЏ
 
-#define J2K_MAXSSFTR 2    // Max SubSampling Factor (Значения больше 2 могут привести к ошибке)
+#define J2K_MAXSSFTR 2    // Max SubSampling Factor (Р—РЅР°С‡РµРЅРёСЏ Р±РѕР»СЊС€Рµ 2 РјРѕРіСѓС‚ РїСЂРёРІРµСЃС‚Рё Рє РѕС€РёР±РєРµ)
 
 	void* Malloc(size_t nSize);
 	void  Free(void* pMem);
@@ -24,7 +32,7 @@ namespace Jpeg2000
 	// Progression order
 	typedef enum EProgressionOrder
 	{
-		poUnknown = -1, // Неизвестный порядок
+		poUnknown = -1, // РќРµРёР·РІРµСЃС‚РЅС‹Р№ РїРѕСЂСЏРґРѕРє
 		poLRCP    =  0, // layer-resolution-component-precinct
 		poRLCP    =  1, // resolution-layer-component-precinct
 		poRPCL    =  2, // resolution-precinct-component-layer
@@ -32,48 +40,48 @@ namespace Jpeg2000
 		poCPRL    =  4  // component-precinct-resolution-layer
 	} ProgressionOrder;
 
-	// Поддерживаемые цветовые пространства
+	// РџРѕРґРґРµСЂР¶РёРІР°РµРјС‹Рµ С†РІРµС‚РѕРІС‹Рµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІР°
 	typedef enum EColorSpace
 	{
-		csUnknown = -1, // цветовое пространство неопределенно
+		csUnknown = -1, // С†РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ РЅРµРѕРїСЂРµРґРµР»РµРЅРЅРѕ
 		csRGB     =  1, // sRGB
 		csGray    =  2, // Grayscale
 		csYUV     =  3  // YUV
 	} ColorSpace;
 
-	// Поддерживаемые форматы
+	// РџРѕРґРґРµСЂР¶РёРІР°РµРјС‹Рµ С„РѕСЂРјР°С‚С‹
 	typedef enum ECodecFormat
 	{
-		codecUnknown = -1, // неизвестный кодек
-		codecJ2K     =  0, // JPEG-2000 codestream : чтение/запись
-		codecJPT     =  1, // JPT-stream (JPEG 2000, JPIP) : только чтение
-		codecJP2     =  2, // JPEG-2000 file format (Jp2-wrapper) : чтение/запись
+		codecUnknown = -1, // РЅРµРёР·РІРµСЃС‚РЅС‹Р№ РєРѕРґРµРє
+		codecJ2K     =  0, // JPEG-2000 codestream : С‡С‚РµРЅРёРµ/Р·Р°РїРёСЃСЊ
+		codecJPT     =  1, // JPT-stream (JPEG 2000, JPIP) : С‚РѕР»СЊРєРѕ С‡С‚РµРЅРёРµ
+		codecJP2     =  2, // JPEG-2000 file format (Jp2-wrapper) : С‡С‚РµРЅРёРµ/Р·Р°РїРёСЃСЊ
 		codecMj2     =  3, // Motion JPEG-2000
 	} CodecFormat;
 
-	// Ограничения по декодированию Jpeg2000-Codestream
+	// РћРіСЂР°РЅРёС‡РµРЅРёСЏ РїРѕ РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЋ Jpeg2000-Codestream
 	typedef enum ELimitDecoding
 	{
-		declimNoLimitation      = 0, // Нет ограничений при декодировании. Декодируем Jpeg2000-codestream полностью
-		declimLimitToMainHeader = 1	 // Декодируем только Main Header
+		declimNoLimitation      = 0, // РќРµС‚ РѕРіСЂР°РЅРёС‡РµРЅРёР№ РїСЂРё РґРµРєРѕРґРёСЂРѕРІР°РЅРёРё. Р”РµРєРѕРґРёСЂСѓРµРј Jpeg2000-codestream РїРѕР»РЅРѕСЃС‚СЊСЋ
+		declimLimitToMainHeader = 1	 // Р”РµРєРѕРґРёСЂСѓРµРј С‚РѕР»СЊРєРѕ Main Header
 	} LimitDecoding;
 
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Event (Обработка сообщений)
+	// Event (РћР±СЂР°Р±РѕС‚РєР° СЃРѕРѕР±С‰РµРЅРёР№)
 	//-------------------------------------------------------------------------------------------------------------------------------
 
 #define EVT_ERROR	1 // Error
 #define EVT_WARNING	2 // Warning
 #define EVT_INFO	4 // Debug event
 
-#define MSG_SIZE  512 // Максимальный размер сообщения
+#define MSG_SIZE  512 // РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ СЃРѕРѕР±С‰РµРЅРёСЏ
 
 #define JP2_ERROR_NO_ERROR           0x0000
 #define JP2_ERROR_NOT_ENOUGH_MEMORY  0x0001
 
 
 	//-------------------------------------------------------------------------------------------------------------------------------
-	// Параметры кодека (компрессии/декомпрессии)
+	// РџР°СЂР°РјРµС‚СЂС‹ РєРѕРґРµРєР° (РєРѕРјРїСЂРµСЃСЃРёРё/РґРµРєРѕРјРїСЂРµСЃСЃРёРё)
 	//-------------------------------------------------------------------------------------------------------------------------------
 
 	// Progression order changes (POC) (Annex A.6.6 Table A-32)
@@ -89,10 +97,10 @@ namespace Jpeg2000
 		char             sProgOrder[4];
 	} POC;
 
-	// Параметры компрессии
+	// РџР°СЂР°РјРµС‚СЂС‹ РєРѕРјРїСЂРµСЃСЃРёРё
 	typedef struct TEncoderParams
 	{
-		bool             bTileSizeOn;          // False: размеры тайлов не указаны, true: размеры тайлов указаны
+		bool             bTileSizeOn;          // False: СЂР°Р·РјРµСЂС‹ С‚Р°Р№Р»РѕРІ РЅРµ СѓРєР°Р·Р°РЅС‹, true: СЂР°Р·РјРµСЂС‹ С‚Р°Р№Р»РѕРІ СѓРєР°Р·Р°РЅС‹
 		int              nXTOsiz;              // XTOsiz
 		int              nYTOsiz;              // YTOsiz
 		int              nXTsiz;               // XTsiz
@@ -101,64 +109,64 @@ namespace Jpeg2000
 		int              nFixedAlloc;          // allocation by fixed layer
 		int              nFixedQuality;        // fixed_quality
 		int             *pMatrix;              // fixed layer
-		char            *sComment;             // Комментарий
+		char            *sComment;             // РљРѕРјРјРµРЅС‚Р°СЂРёР№
 		int              nCodingStyle;         // CodingStyle
 		ProgressionOrder eProgOrder;           // Progression order (default LRCP)
 		POC              aoPOC[32];            // Progression order changes
-		int              nPOCsCount;           // Количество progression order changes (POC), default to 0
-		int              nLayersCount;         // Количество лэйеров
-		float            afRates[100];         // Массив норм
-		float            afDistoratio[100];    // Массив искажений
-		int              nResolutionsCount;    // Число разрешений(уровней разложения)
-		int              nCodeBlockWidthInit;  // Исходная ширина блока (по стандарту 64)
-		int              nCodeBlockHeightInit; // Исходная высота блока (по стандарту 64)
+		int              nPOCsCount;           // РљРѕР»РёС‡РµСЃС‚РІРѕ progression order changes (POC), default to 0
+		int              nLayersCount;         // РљРѕР»РёС‡РµСЃС‚РІРѕ Р»СЌР№РµСЂРѕРІ
+		float            afRates[100];         // РњР°СЃСЃРёРІ РЅРѕСЂРј
+		float            afDistoratio[100];    // РњР°СЃСЃРёРІ РёСЃРєР°Р¶РµРЅРёР№
+		int              nResolutionsCount;    // Р§РёСЃР»Рѕ СЂР°Р·СЂРµС€РµРЅРёР№(СѓСЂРѕРІРЅРµР№ СЂР°Р·Р»РѕР¶РµРЅРёСЏ)
+		int              nCodeBlockWidthInit;  // РСЃС…РѕРґРЅР°СЏ С€РёСЂРёРЅР° Р±Р»РѕРєР° (РїРѕ СЃС‚Р°РЅРґР°СЂС‚Сѓ 64)
+		int              nCodeBlockHeightInit; // РСЃС…РѕРґРЅР°СЏ РІС‹СЃРѕС‚Р° Р±Р»РѕРєР° (РїРѕ СЃС‚Р°РЅРґР°СЂС‚Сѓ 64)
 		int              nCodeBlockStyle;      // CodeBlockStyle
-		int              nTransformId;         // 1: необратимое вэйвлет преобразование ( Irreversible DTW ), 0: компрессия без потерь (по стандарту)
-		int              nROIComponentIndex;   // Region of interest: затрагиваемые компоненты [0..3], -1 означает, что ROI отсутствует
+		int              nTransformId;         // 1: РЅРµРѕР±СЂР°С‚РёРјРѕРµ РІСЌР№РІР»РµС‚ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ ( Irreversible DTW ), 0: РєРѕРјРїСЂРµСЃСЃРёСЏ Р±РµР· РїРѕС‚РµСЂСЊ (РїРѕ СЃС‚Р°РЅРґР°СЂС‚Сѓ)
+		int              nROIComponentIndex;   // Region of interest: Р·Р°С‚СЂР°РіРёРІР°РµРјС‹Рµ РєРѕРјРїРѕРЅРµРЅС‚С‹ [0..3], -1 РѕР·РЅР°С‡Р°РµС‚, С‡С‚Рѕ ROI РѕС‚СЃСѓС‚СЃС‚РІСѓРµС‚
 		int              nROIShift;            // Region of interest: shift
-		int              nPrecinctCount;                     // Количество областей
-		int              anPrecinctWidthInit[J2K_MAXRLVLS];  // Исходные ширины областей
-		int              anPrecinctHeightInit[J2K_MAXRLVLS]; // Исходные высоты областей
+		int              nPrecinctCount;                     // РљРѕР»РёС‡РµСЃС‚РІРѕ РѕР±Р»Р°СЃС‚РµР№
+		int              anPrecinctWidthInit[J2K_MAXRLVLS];  // РСЃС…РѕРґРЅС‹Рµ С€РёСЂРёРЅС‹ РѕР±Р»Р°СЃС‚РµР№
+		int              anPrecinctHeightInit[J2K_MAXRLVLS]; // РСЃС…РѕРґРЅС‹Рµ РІС‹СЃРѕС‚С‹ РѕР±Р»Р°СЃС‚РµР№
 
-		int              nComponentsCount;       // Количество компонент в исходном файле
-		char             sInFile[MAX_PATH_LEN];  // Имя исходного файла
-		char             sOutfile[MAX_PATH_LEN]; // Имя результируещего файла
-		int              nIndexOn;               // Создаем ли файл с индексайией (по стандарту 0)
-		char             sIndex[MAX_PATH_LEN];   // Файл индексации
-		int              nImageOffsetX0;         // Сдиг исходной картинки по Х
-		int              nImageOffsetY0;         // Сдиг исходной картинки по Y
+		int              nComponentsCount;       // РљРѕР»РёС‡РµСЃС‚РІРѕ РєРѕРјРїРѕРЅРµРЅС‚ РІ РёСЃС…РѕРґРЅРѕРј С„Р°Р№Р»Рµ
+		char             sInFile[MAX_PATH_LEN];  // РРјСЏ РёСЃС…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°
+		char             sOutfile[MAX_PATH_LEN]; // РРјСЏ СЂРµР·СѓР»СЊС‚РёСЂСѓРµС‰РµРіРѕ С„Р°Р№Р»Р°
+		int              nIndexOn;               // РЎРѕР·РґР°РµРј Р»Рё С„Р°Р№Р» СЃ РёРЅРґРµРєСЃР°Р№РёРµР№ (РїРѕ СЃС‚Р°РЅРґР°СЂС‚Сѓ 0)
+		char             sIndex[MAX_PATH_LEN];   // Р¤Р°Р№Р» РёРЅРґРµРєСЃР°С†РёРё
+		int              nImageOffsetX0;         // РЎРґРёРі РёСЃС…РѕРґРЅРѕР№ РєР°СЂС‚РёРЅРєРё РїРѕ РҐ
+		int              nImageOffsetY0;         // РЎРґРёРі РёСЃС…РѕРґРЅРѕР№ РєР°СЂС‚РёРЅРєРё РїРѕ Y
 		int              nSubSamplingDx;         // SubSampling X         
 		int              nSubSamplingDy;         // SubSampling Y
-		int              nDecoderFormat;         // Формат исходного файла. 0: PGX, 1: PxM, 2: BMP
-		int              nEncoderFormat;         // Формат выходного файла. 0: J2K, 1: JP2, 2: JPT
+		int              nDecoderFormat;         // Р¤РѕСЂРјР°С‚ РёСЃС…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°. 0: PGX, 1: PxM, 2: BMP
+		int              nEncoderFormat;         // Р¤РѕСЂРјР°С‚ РІС‹С…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°. 0: J2K, 1: JP2, 2: JPT
 	} EncoderParams;
 
-	// Параметры декомпрессии
+	// РџР°СЂР°РјРµС‚СЂС‹ РґРµРєРѕРјРїСЂРµСЃСЃРёРё
 	typedef struct TDecoderParams
 	{
-		int           nReduce;                // Если != 0, тогда разрешение исходного изображения делится на 2^(nReduce). Если == 0, или не используется, тогда изображение декодируется с полным разрешением.
-		int           nLayer;                 // Устанавливаем максимальное число лэеров, которые мы будем декодировать.
-		LimitDecoding eLimitDecoding;         // Будем декодировать полностью файл, или только заголовок.
+		int           nReduce;                // Р•СЃР»Рё != 0, С‚РѕРіРґР° СЂР°Р·СЂРµС€РµРЅРёРµ РёСЃС…РѕРґРЅРѕРіРѕ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РґРµР»РёС‚СЃСЏ РЅР° 2^(nReduce). Р•СЃР»Рё == 0, РёР»Рё РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ, С‚РѕРіРґР° РёР·РѕР±СЂР°Р¶РµРЅРёРµ РґРµРєРѕРґРёСЂСѓРµС‚СЃСЏ СЃ РїРѕР»РЅС‹Рј СЂР°Р·СЂРµС€РµРЅРёРµРј.
+		int           nLayer;                 // РЈСЃС‚Р°РЅР°РІР»РёРІР°РµРј РјР°РєСЃРёРјР°Р»СЊРЅРѕРµ С‡РёСЃР»Рѕ Р»СЌРµСЂРѕРІ, РєРѕС‚РѕСЂС‹Рµ РјС‹ Р±СѓРґРµРј РґРµРєРѕРґРёСЂРѕРІР°С‚СЊ.
+		LimitDecoding eLimitDecoding;         // Р‘СѓРґРµРј РґРµРєРѕРґРёСЂРѕРІР°С‚СЊ РїРѕР»РЅРѕСЃС‚СЊСЋ С„Р°Р№Р», РёР»Рё С‚РѕР»СЊРєРѕ Р·Р°РіРѕР»РѕРІРѕРє.
 
-		char          sInFile[MAX_PATH_LEN];  // Имя исходного файла
-		char          sOutfile[MAX_PATH_LEN]; // Имя результируещего файла
-		int           nDecoderFormat;         // Формат исходного файла. 0: J2k, 1: Jp2, 2: Jpt
-		int           nEncoderFormat;         // Формат выходного файла. 0: PGX, 1: PxM, 2: BMP
+		char          sInFile[MAX_PATH_LEN];  // РРјСЏ РёСЃС…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°
+		char          sOutfile[MAX_PATH_LEN]; // РРјСЏ СЂРµР·СѓР»СЊС‚РёСЂСѓРµС‰РµРіРѕ С„Р°Р№Р»Р°
+		int           nDecoderFormat;         // Р¤РѕСЂРјР°С‚ РёСЃС…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°. 0: J2k, 1: Jp2, 2: Jpt
+		int           nEncoderFormat;         // Р¤РѕСЂРјР°С‚ РІС‹С…РѕРґРЅРѕРіРѕ С„Р°Р№Р»Р°. 0: PGX, 1: PxM, 2: BMP
 	} DecoderParams;
 
-	// Общие поля для JPEG-2000 компрессии и декомпресии
-	//EventManager *pEventManager;   /* Указатель на обработчик сообщений (events) */\
+	// РћР±С‰РёРµ РїРѕР»СЏ РґР»СЏ JPEG-2000 РєРѕРјРїСЂРµСЃСЃРёРё Рё РґРµРєРѕРјРїСЂРµСЃРёРё
+	//EventManager *pEventManager;   /* РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РѕР±СЂР°Р±РѕС‚С‡РёРє СЃРѕРѕР±С‰РµРЅРёР№ (events) */\
 		//void         *pClientData;     /* */\
 
 #define CommonFields \
-	bool          bIsDecompressor; /* Чтобы узнать компрессия или декомпрессия */\
-	ECodecFormat  eCodecFormat;	   /* Выбранный кодек */\
-	void         *pJ2k;            /* Указатель на J2K кодек */\
-	void         *pJp2;            /* Указатель на JP2 кодек */\
-	void         *pMj2;            /* Указатель на JP2 кодек */\
-	int           nErrorCode       /* Номер ошибки */
+	bool          bIsDecompressor; /* Р§С‚РѕР±С‹ СѓР·РЅР°С‚СЊ РєРѕРјРїСЂРµСЃСЃРёСЏ РёР»Рё РґРµРєРѕРјРїСЂРµСЃСЃРёСЏ */\
+	ECodecFormat  eCodecFormat;	   /* Р’С‹Р±СЂР°РЅРЅС‹Р№ РєРѕРґРµРє */\
+	void         *pJ2k;            /* РЈРєР°Р·Р°С‚РµР»СЊ РЅР° J2K РєРѕРґРµРє */\
+	void         *pJp2;            /* РЈРєР°Р·Р°С‚РµР»СЊ РЅР° JP2 РєРѕРґРµРє */\
+	void         *pMj2;            /* РЈРєР°Р·Р°С‚РµР»СЊ РЅР° JP2 РєРѕРґРµРє */\
+	int           nErrorCode       /* РќРѕРјРµСЂ РѕС€РёР±РєРё */
 
-	// Поля, которые исользуются как для чтения, так и для записи
+	// РџРѕР»СЏ, РєРѕС‚РѕСЂС‹Рµ РёСЃРѕР»СЊР·СѓСЋС‚СЃСЏ РєР°Рє РґР»СЏ С‡С‚РµРЅРёСЏ, С‚Р°Рє Рё РґР»СЏ Р·Р°РїРёСЃРё
 	typedef struct TCommonStruct
 	{
 		CommonFields;
@@ -166,18 +174,18 @@ namespace Jpeg2000
 
 	typedef CommonStruct* PCommon;
 
-	// Параметры компрессии
+	// РџР°СЂР°РјРµС‚СЂС‹ РєРѕРјРїСЂРµСЃСЃРёРё
 	typedef struct TCInfo
 	{
-		CommonFields; // Общие поля
-		// Поля характерные только для компрессии
+		CommonFields; // РћР±С‰РёРµ РїРѕР»СЏ
+		// РџРѕР»СЏ С…Р°СЂР°РєС‚РµСЂРЅС‹Рµ С‚РѕР»СЊРєРѕ РґР»СЏ РєРѕРјРїСЂРµСЃСЃРёРё
 	} CInfo;
 
-	// Параметры декомпрессии
+	// РџР°СЂР°РјРµС‚СЂС‹ РґРµРєРѕРјРїСЂРµСЃСЃРёРё
 	typedef struct TDInfo
 	{
-		CommonFields; // Общие поля
-		// Поля характерные только для декомпрессии
+		CommonFields; // РћР±С‰РёРµ РїРѕР»СЏ
+		// РџРѕР»СЏ С…Р°СЂР°РєС‚РµСЂРЅС‹Рµ С‚РѕР»СЊРєРѕ РґР»СЏ РґРµРєРѕРјРїСЂРµСЃСЃРёРё
 	} DInfo;
 
 
@@ -187,39 +195,39 @@ namespace Jpeg2000
 
 	typedef struct TImageComponent
 	{
-		int  nXRsiz;           // XRsiz: горизонтальное разделение i-ой компоненты
-		int  nYRsiz;           // YRsiz: вертикальное разделение i-ой компоненты
-		int  nWidth;           // Ширина картинки
-		int  nHeight;          // Высота картинки
-		int  nXOsiz;           // Сдвиг компоненты по Х по отношению ко всему изображению
-		int  nYOsiz;           // Сдвиг компоненты по У по отношению ко всему изображению
+		int  nXRsiz;           // XRsiz: РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕРµ СЂР°Р·РґРµР»РµРЅРёРµ i-РѕР№ РєРѕРјРїРѕРЅРµРЅС‚С‹
+		int  nYRsiz;           // YRsiz: РІРµСЂС‚РёРєР°Р»СЊРЅРѕРµ СЂР°Р·РґРµР»РµРЅРёРµ i-РѕР№ РєРѕРјРїРѕРЅРµРЅС‚С‹
+		int  nWidth;           // РЁРёСЂРёРЅР° РєР°СЂС‚РёРЅРєРё
+		int  nHeight;          // Р’С‹СЃРѕС‚Р° РєР°СЂС‚РёРЅРєРё
+		int  nXOsiz;           // РЎРґРІРёРі РєРѕРјРїРѕРЅРµРЅС‚С‹ РїРѕ РҐ РїРѕ РѕС‚РЅРѕС€РµРЅРёСЋ РєРѕ РІСЃРµРјСѓ РёР·РѕР±СЂР°Р¶РµРЅРёСЋ
+		int  nYOsiz;           // РЎРґРІРёРі РєРѕРјРїРѕРЅРµРЅС‚С‹ РїРѕ РЈ РїРѕ РѕС‚РЅРѕС€РµРЅРёСЋ РєРѕ РІСЃРµРјСѓ РёР·РѕР±СЂР°Р¶РµРЅРёСЋ
 		int  nPrecision;       // Precision
 		int  nBPP;             // Bits Per Pixel
 		int  nSigned;          // Signed - 1, unsigned - 0
-		int  nDecodedResCount; // Количество Resolutions в кодированном изображении
-		int  nFactorDiv2;      // Количество делений на 2 результирующей картинки, по сравнению с размером исходной
-		int *pData;            // Данные изображения для i-ой компоненты
+		int  nDecodedResCount; // РљРѕР»РёС‡РµСЃС‚РІРѕ Resolutions РІ РєРѕРґРёСЂРѕРІР°РЅРЅРѕРј РёР·РѕР±СЂР°Р¶РµРЅРёРё
+		int  nFactorDiv2;      // РљРѕР»РёС‡РµСЃС‚РІРѕ РґРµР»РµРЅРёР№ РЅР° 2 СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰РµР№ РєР°СЂС‚РёРЅРєРё, РїРѕ СЃСЂР°РІРЅРµРЅРёСЋ СЃ СЂР°Р·РјРµСЂРѕРј РёСЃС…РѕРґРЅРѕР№
+		int *pData;            // Р”Р°РЅРЅС‹Рµ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ РґР»СЏ i-РѕР№ РєРѕРјРїРѕРЅРµРЅС‚С‹
 	} ImageComponent;
 
 	typedef struct TImage
 	{
-		int             nXOsiz;      // XOsiz: горизонтальный cдвиг от начальной точки всей сетки к области с реальным изображением
-		int             nYOsiz;      // YOsiz: вертикальный сдвиг от начальной точки всей сетки к области с реальным изображением
-		int             nXsiz;       // Xsiz: ширина сетки
-		int             nYsiz;       // Ysiz: высота сетки
-		int             nCsiz;       // Csiz: количество компонент в изображении
-		ColorSpace      eColorSpace; // Цветовое пространство: sRGB, Greyscale или YUV
-		ImageComponent *pComponents; // Компоненты изображения
+		int             nXOsiz;      // XOsiz: РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅС‹Р№ cРґРІРёРі РѕС‚ РЅР°С‡Р°Р»СЊРЅРѕР№ С‚РѕС‡РєРё РІСЃРµР№ СЃРµС‚РєРё Рє РѕР±Р»Р°СЃС‚Рё СЃ СЂРµР°Р»СЊРЅС‹Рј РёР·РѕР±СЂР°Р¶РµРЅРёРµРј
+		int             nYOsiz;      // YOsiz: РІРµСЂС‚РёРєР°Р»СЊРЅС‹Р№ СЃРґРІРёРі РѕС‚ РЅР°С‡Р°Р»СЊРЅРѕР№ С‚РѕС‡РєРё РІСЃРµР№ СЃРµС‚РєРё Рє РѕР±Р»Р°СЃС‚Рё СЃ СЂРµР°Р»СЊРЅС‹Рј РёР·РѕР±СЂР°Р¶РµРЅРёРµРј
+		int             nXsiz;       // Xsiz: С€РёСЂРёРЅР° СЃРµС‚РєРё
+		int             nYsiz;       // Ysiz: РІС‹СЃРѕС‚Р° СЃРµС‚РєРё
+		int             nCsiz;       // Csiz: РєРѕР»РёС‡РµСЃС‚РІРѕ РєРѕРјРїРѕРЅРµРЅС‚ РІ РёР·РѕР±СЂР°Р¶РµРЅРёРё
+		ColorSpace      eColorSpace; // Р¦РІРµС‚РѕРІРѕРµ РїСЂРѕСЃС‚СЂР°РЅСЃС‚РІРѕ: sRGB, Greyscale РёР»Рё YUV
+		ImageComponent *pComponents; // РљРѕРјРїРѕРЅРµРЅС‚С‹ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
 	} Image;
 
 	typedef struct TImageComponentParams
 	{
-		int nXRsiz;     // XRsiz: горизонтальное разделение i-ой компоненты
-		int nYRsiz;     // YRsiz: вертикальное разделение i-ой компоненты
-		int nWidth;     // Ширина
-		int nHeight;    // Высота картинки
-		int nXoffset;   // Сдвиг компоненты по Х по отношению ко всему изображению
-		int nYoffset;   // Сдвиг компоненты по У по отношению ко всему изображению
+		int nXRsiz;     // XRsiz: РіРѕСЂРёР·РѕРЅС‚Р°Р»СЊРЅРѕРµ СЂР°Р·РґРµР»РµРЅРёРµ i-РѕР№ РєРѕРјРїРѕРЅРµРЅС‚С‹
+		int nYRsiz;     // YRsiz: РІРµСЂС‚РёРєР°Р»СЊРЅРѕРµ СЂР°Р·РґРµР»РµРЅРёРµ i-РѕР№ РєРѕРјРїРѕРЅРµРЅС‚С‹
+		int nWidth;     // РЁРёСЂРёРЅР°
+		int nHeight;    // Р’С‹СЃРѕС‚Р° РєР°СЂС‚РёРЅРєРё
+		int nXoffset;   // РЎРґРІРёРі РєРѕРјРїРѕРЅРµРЅС‚С‹ РїРѕ РҐ РїРѕ РѕС‚РЅРѕС€РµРЅРёСЋ РєРѕ РІСЃРµРјСѓ РёР·РѕР±СЂР°Р¶РµРЅРёСЋ
+		int nYoffset;   // РЎРґРІРёРі РєРѕРјРїРѕРЅРµРЅС‚С‹ РїРѕ РЈ РїРѕ РѕС‚РЅРѕС€РµРЅРёСЋ РєРѕ РІСЃРµРјСѓ РёР·РѕР±СЂР°Р¶РµРЅРёСЋ
 		int nPrecision; // Precision
 		int nBPP;       // Bits Per Pixel
 		int nSigned;    // Signed - 1, unsigned - 0
@@ -301,21 +309,21 @@ namespace Jpeg2000
 
 	//-------------------------------------------------------------------------------------------------------------------------------
 
-	// Значения определяющие статус декодирования(когда декодируется Main Header)
+	// Р—РЅР°С‡РµРЅРёСЏ РѕРїСЂРµРґРµР»СЏСЋС‰РёРµ СЃС‚Р°С‚СѓСЃ РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ(РєРѕРіРґР° РґРµРєРѕРґРёСЂСѓРµС‚СЃСЏ Main Header)
 	typedef enum EJ2kStatus
 	{
-		j2kstateMHSOC  = 0x0001, // SOC маркер
-		j2kstateMHSIZ  = 0x0002, // SIZ маркер
-		j2kstateMH     = 0x0004, // Процесс декодирования находится в Main Header
-		j2kstateTPHSOT = 0x0008, // Процесс декодирования находится в Tile Part Header, и сейчас читается маркер SOT
-		j2kstateTPH    = 0x0010, // Процесс декодирования находится в Tile Part Header
-		j2kstateMT     = 0x0020, // Только что был прочитан маркер EOC
-		j2kstateNEOC   = 0x0040  // При декодировании не воспринимаем маркер EOC, потому что Сodestream сокращенный
+		j2kstateMHSOC  = 0x0001, // SOC РјР°СЂРєРµСЂ
+		j2kstateMHSIZ  = 0x0002, // SIZ РјР°СЂРєРµСЂ
+		j2kstateMH     = 0x0004, // РџСЂРѕС†РµСЃСЃ РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ РЅР°С…РѕРґРёС‚СЃСЏ РІ Main Header
+		j2kstateTPHSOT = 0x0008, // РџСЂРѕС†РµСЃСЃ РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ РЅР°С…РѕРґРёС‚СЃСЏ РІ Tile Part Header, Рё СЃРµР№С‡Р°СЃ С‡РёС‚Р°РµС‚СЃСЏ РјР°СЂРєРµСЂ SOT
+		j2kstateTPH    = 0x0010, // РџСЂРѕС†РµСЃСЃ РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ РЅР°С…РѕРґРёС‚СЃСЏ РІ Tile Part Header
+		j2kstateMT     = 0x0020, // РўРѕР»СЊРєРѕ С‡С‚Рѕ Р±С‹Р» РїСЂРѕС‡РёС‚Р°РЅ РјР°СЂРєРµСЂ EOC
+		j2kstateNEOC   = 0x0040  // РџСЂРё РґРµРєРѕРґРёСЂРѕРІР°РЅРёРё РЅРµ РІРѕСЃРїСЂРёРЅРёРјР°РµРј РјР°СЂРєРµСЂ EOC, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РЎodestream СЃРѕРєСЂР°С‰РµРЅРЅС‹Р№
 	} J2kStatus;
 
 	//-------------------------------------------------------------------------------------------------------------------------------
 
-	// Размер шага квантования 
+	// Р Р°Р·РјРµСЂ С€Р°РіР° РєРІР°РЅС‚РѕРІР°РЅРёСЏ 
 	typedef struct TQuantStepSize
 	{
 		int nExponent;
@@ -330,34 +338,34 @@ namespace Jpeg2000
 		int           nCodeBlockWidth;                // Code-block size width
 		int           nCodeBlockHeight;               // Code-block size height
 		int           nCodeBlockStyle;                // Code-block context
-		int           nTransformID;                   // Wavelet-преобразвание
-		int           nQuantStyle;                    // Тип квантования
-		QuantStepSize aoStepSizes[J2K_MAXBANDS];      // Размер шага, используемый для квантования
+		int           nTransformID;                   // Wavelet-РїСЂРµРѕР±СЂР°Р·РІР°РЅРёРµ
+		int           nQuantStyle;                    // РўРёРї РєРІР°РЅС‚РѕРІР°РЅРёСЏ
+		QuantStepSize aoStepSizes[J2K_MAXBANDS];      // Р Р°Р·РјРµСЂ С€Р°РіР°, РёСЃРїРѕР»СЊР·СѓРµРјС‹Р№ РґР»СЏ РєРІР°РЅС‚РѕРІР°РЅРёСЏ
 		int           nGuardBitsCount;                // Number of guard bits
 		int           nROIShift;                      // SPrgn: Region Of Interest shift (Table A-25)
 		int           anPrecinctWidth[J2K_MAXRLVLS];  // Precinct width
 		int           anPrecinctHeight[J2K_MAXRLVLS]; // Precinct height	
 	} TileCompCodingParams;
 
-	// Tile coding parameters : данная структура используется для хранения параметров кодирования/декодирования одинаковых для всех 
-	// ячеек(tiles) ( подобно информации COD, COC в Main Header )
+	// Tile coding parameters : РґР°РЅРЅР°СЏ СЃС‚СЂСѓРєС‚СѓСЂР° РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ С…СЂР°РЅРµРЅРёСЏ РїР°СЂР°РјРµС‚СЂРѕРІ РєРѕРґРёСЂРѕРІР°РЅРёСЏ/РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ РѕРґРёРЅР°РєРѕРІС‹С… РґР»СЏ РІСЃРµС… 
+	// СЏС‡РµРµРє(tiles) ( РїРѕРґРѕР±РЅРѕ РёРЅС„РѕСЂРјР°С†РёРё COD, COC РІ Main Header )
 	typedef struct TTileCodingParams
 	{
-		int                   nFirst;            // Флаг. 1 : первый part-tile данного tile
+		int                   nFirst;            // Р¤Р»Р°Рі. 1 : РїРµСЂРІС‹Р№ part-tile РґР°РЅРЅРѕРіРѕ tile
 		int                   nCodingStyle;      // Scod: Coding style (Table A-12)
 		ProgressionOrder      eProgOrder;        // SPcod, Ppod: Progression order
 		int                   nLayersCount;      // SPcod: Number of layers
 		int                   nMCT;              // SPcod: Multiple component transform
-		float                 afRates[100];      // Размеры layers
-		int                   nPOCsCount;        // Количество POC ( progression order changes )
-		int                   nUsePOC;           // Флаг; используем ли маркер POC. 0 - нет, 1 - да.
+		float                 afRates[100];      // Р Р°Р·РјРµСЂС‹ layers
+		int                   nPOCsCount;        // РљРѕР»РёС‡РµСЃС‚РІРѕ POC ( progression order changes )
+		int                   nUsePOC;           // Р¤Р»Р°Рі; РёСЃРїРѕР»СЊР·СѓРµРј Р»Рё РјР°СЂРєРµСЂ POC. 0 - РЅРµС‚, 1 - РґР°.
 		POC                   aoPOC[32];         // Progression order changes
-		unsigned char        *pPPTData;          // Храним указатель на Packet header, чтобы испольщовать его в Tire2 декодировании
-		unsigned char        *pPPTDataFirst;     // Указатель на начало первого пакета в PacketHeader, если PPT используется
-		int                   nPPT;              // Флаг. Если для текущего Tile нашли маркер PPT, тогда флаг равен 1.
-		int                   nPPTStore;         // Используем, если нашли несколько маркеров PPT (храним их общую длину в байтах здесь)
+		unsigned char        *pPPTData;          // РҐСЂР°РЅРёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° Packet header, С‡С‚РѕР±С‹ РёСЃРїРѕР»СЊС‰РѕРІР°С‚СЊ РµРіРѕ РІ Tire2 РґРµРєРѕРґРёСЂРѕРІР°РЅРёРё
+		unsigned char        *pPPTDataFirst;     // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РЅР°С‡Р°Р»Рѕ РїРµСЂРІРѕРіРѕ РїР°РєРµС‚Р° РІ PacketHeader, РµСЃР»Рё PPT РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
+		int                   nPPT;              // Р¤Р»Р°Рі. Р•СЃР»Рё РґР»СЏ С‚РµРєСѓС‰РµРіРѕ Tile РЅР°С€Р»Рё РјР°СЂРєРµСЂ PPT, С‚РѕРіРґР° С„Р»Р°Рі СЂР°РІРµРЅ 1.
+		int                   nPPTStore;         // РСЃРїРѕР»СЊР·СѓРµРј, РµСЃР»Рё РЅР°С€Р»Рё РЅРµСЃРєРѕР»СЊРєРѕ РјР°СЂРєРµСЂРѕРІ PPT (С…СЂР°РЅРёРј РёС… РѕР±С‰СѓСЋ РґР»РёРЅСѓ РІ Р±Р°Р№С‚Р°С… Р·РґРµСЃСЊ)
 		int                   nPPTLength;        // PPM bug 1
-		float                 afDistoRatio[100]; // Добавляем Fixed quality
+		float                 afDistoRatio[100]; // Р”РѕР±Р°РІР»СЏРµРј Fixed quality
 		TileCompCodingParams *pTCCP;             // Tile-component coding parameters
 	} TileCodingParams;
 
@@ -366,94 +374,94 @@ namespace Jpeg2000
 	{
 		int               nDistoAlloc;    // allocation by rate/distortion
 		int               nFixedAlloc;    // allocation by fixed layer
-		int               nFixedQuality;  // Добавляем Fixed quality
-		int               nReduceFactor;  // Если данное значение отлично от 0, тогда исходное разрешение делим на 2^(nReduceFactor); если равно 0, или не используется, декодируем изображение с полным разрешением
-		int               nLayerFactor;   // Если данное значение отлично от 0, тогда декодируем только первый "layer"; если равно 0, или не используется, декодируем все "layers"
-		LimitDecoding     eLimitDecoding; // Ограничения на декодирование.
-		int               nIndexOn;       // 0 - нет нумерации, 1 - есть.
-		int               nXTOsiz;        // XTOsiz: свдиг по горизонтали первого Tile
-		int               nYTOsiz;        // YTOsiz: сдвиг по вертикали первого Tile
-		int               nXTsiz;         // XTsiz: ширина одного Tile по отношению к общей сетке
-		int               nYTsiz;         // YTsiz: высота одного Tile по отношению к общей сетке
-		char             *sComment;       // Комментарий
-		int               nXTilesCount;   // Количество Tiles по горизонтали
-		int               nYTilesCount;   // Количество Tiles по вертикали
-		int              *pTileIndex;     // Порядковые номера Tiles в codestream
-		int               nTileIndexSize; // Размер массива pTileIndex
-		unsigned char    *pPPMData;       // Храним указатель на Packet header, чтобы испольщовать его в Tire2 декодировании
-		unsigned char    *pPPMDataFirst;  // Указатель на начало первого пакета в PacketHeader, если PPM используется
-		int               nPPM;           // Флаг. Если для текущего Tile нашли маркер PPM, тогда флаг равен 1.
-		int               nPPMStore;      // Используем, если нашли несколько маркеров PPM (храним их общую длину в байтах здесь)
-		int               nPPMPrevious;   // Используем, если нашли несколько маркеров PPM (случай, если предыдущий маркер PPM был еще не закончен)
+		int               nFixedQuality;  // Р”РѕР±Р°РІР»СЏРµРј Fixed quality
+		int               nReduceFactor;  // Р•СЃР»Рё РґР°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РѕС‚Р»РёС‡РЅРѕ РѕС‚ 0, С‚РѕРіРґР° РёСЃС…РѕРґРЅРѕРµ СЂР°Р·СЂРµС€РµРЅРёРµ РґРµР»РёРј РЅР° 2^(nReduceFactor); РµСЃР»Рё СЂР°РІРЅРѕ 0, РёР»Рё РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ, РґРµРєРѕРґРёСЂСѓРµРј РёР·РѕР±СЂР°Р¶РµРЅРёРµ СЃ РїРѕР»РЅС‹Рј СЂР°Р·СЂРµС€РµРЅРёРµРј
+		int               nLayerFactor;   // Р•СЃР»Рё РґР°РЅРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РѕС‚Р»РёС‡РЅРѕ РѕС‚ 0, С‚РѕРіРґР° РґРµРєРѕРґРёСЂСѓРµРј С‚РѕР»СЊРєРѕ РїРµСЂРІС‹Р№ "layer"; РµСЃР»Рё СЂР°РІРЅРѕ 0, РёР»Рё РЅРµ РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ, РґРµРєРѕРґРёСЂСѓРµРј РІСЃРµ "layers"
+		LimitDecoding     eLimitDecoding; // РћРіСЂР°РЅРёС‡РµРЅРёСЏ РЅР° РґРµРєРѕРґРёСЂРѕРІР°РЅРёРµ.
+		int               nIndexOn;       // 0 - РЅРµС‚ РЅСѓРјРµСЂР°С†РёРё, 1 - РµСЃС‚СЊ.
+		int               nXTOsiz;        // XTOsiz: СЃРІРґРёРі РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё РїРµСЂРІРѕРіРѕ Tile
+		int               nYTOsiz;        // YTOsiz: СЃРґРІРёРі РїРѕ РІРµСЂС‚РёРєР°Р»Рё РїРµСЂРІРѕРіРѕ Tile
+		int               nXTsiz;         // XTsiz: С€РёСЂРёРЅР° РѕРґРЅРѕРіРѕ Tile РїРѕ РѕС‚РЅРѕС€РµРЅРёСЋ Рє РѕР±С‰РµР№ СЃРµС‚РєРµ
+		int               nYTsiz;         // YTsiz: РІС‹СЃРѕС‚Р° РѕРґРЅРѕРіРѕ Tile РїРѕ РѕС‚РЅРѕС€РµРЅРёСЋ Рє РѕР±С‰РµР№ СЃРµС‚РєРµ
+		char             *sComment;       // РљРѕРјРјРµРЅС‚Р°СЂРёР№
+		int               nXTilesCount;   // РљРѕР»РёС‡РµСЃС‚РІРѕ Tiles РїРѕ РіРѕСЂРёР·РѕРЅС‚Р°Р»Рё
+		int               nYTilesCount;   // РљРѕР»РёС‡РµСЃС‚РІРѕ Tiles РїРѕ РІРµСЂС‚РёРєР°Р»Рё
+		int              *pTileIndex;     // РџРѕСЂСЏРґРєРѕРІС‹Рµ РЅРѕРјРµСЂР° Tiles РІ codestream
+		int               nTileIndexSize; // Р Р°Р·РјРµСЂ РјР°СЃСЃРёРІР° pTileIndex
+		unsigned char    *pPPMData;       // РҐСЂР°РЅРёРј СѓРєР°Р·Р°С‚РµР»СЊ РЅР° Packet header, С‡С‚РѕР±С‹ РёСЃРїРѕР»СЊС‰РѕРІР°С‚СЊ РµРіРѕ РІ Tire2 РґРµРєРѕРґРёСЂРѕРІР°РЅРёРё
+		unsigned char    *pPPMDataFirst;  // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РЅР°С‡Р°Р»Рѕ РїРµСЂРІРѕРіРѕ РїР°РєРµС‚Р° РІ PacketHeader, РµСЃР»Рё PPM РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
+		int               nPPM;           // Р¤Р»Р°Рі. Р•СЃР»Рё РґР»СЏ С‚РµРєСѓС‰РµРіРѕ Tile РЅР°С€Р»Рё РјР°СЂРєРµСЂ PPM, С‚РѕРіРґР° С„Р»Р°Рі СЂР°РІРµРЅ 1.
+		int               nPPMStore;      // РСЃРїРѕР»СЊР·СѓРµРј, РµСЃР»Рё РЅР°С€Р»Рё РЅРµСЃРєРѕР»СЊРєРѕ РјР°СЂРєРµСЂРѕРІ PPM (С…СЂР°РЅРёРј РёС… РѕР±С‰СѓСЋ РґР»РёРЅСѓ РІ Р±Р°Р№С‚Р°С… Р·РґРµСЃСЊ)
+		int               nPPMPrevious;   // РСЃРїРѕР»СЊР·СѓРµРј, РµСЃР»Рё РЅР°С€Р»Рё РЅРµСЃРєРѕР»СЊРєРѕ РјР°СЂРєРµСЂРѕРІ PPM (СЃР»СѓС‡Р°Р№, РµСЃР»Рё РїСЂРµРґС‹РґСѓС‰РёР№ РјР°СЂРєРµСЂ PPM Р±С‹Р» РµС‰Рµ РЅРµ Р·Р°РєРѕРЅС‡РµРЅ)
 		int               nPPMLength;     // PPM bug 1
 		TileCodingParams *pTCP;           // Tile coding parameters
 		int              *pMatrix;        // Fixed layer
 	} CodingParams;
 
-	// Информация относительно пакета в Tile
+	// РРЅС„РѕСЂРјР°С†РёСЏ РѕС‚РЅРѕСЃРёС‚РµР»СЊРЅРѕ РїР°РєРµС‚Р° РІ Tile
 	typedef struct TPacketInfo
 	{
-		int    nStartPos; // Начальная позиция
-		int    nEndPos;   // Конечная позиция
+		int    nStartPos; // РќР°С‡Р°Р»СЊРЅР°СЏ РїРѕР·РёС†РёСЏ
+		int    nEndPos;   // РљРѕРЅРµС‡РЅР°СЏ РїРѕР·РёС†РёСЏ
 		double dDisto;
 	} PacketInfo;
 
-	// Информация, относящаяся к Tiles внутри изображения
+	// РРЅС„РѕСЂРјР°С†РёСЏ, РѕС‚РЅРѕСЃСЏС‰Р°СЏСЃСЏ Рє Tiles РІРЅСѓС‚СЂРё РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
 	typedef struct TTileInfo
 	{
-		double     *pdThreshold;          // Значение порога для каждого layer
-		int         nTileCount;           // Общее количество Tiles
-		int         nStartPos;            // Начальная позиция
-		int         nEndHeader;           // Конечная позиция для заголовка
-		int         nEndPos;              // Конечная позиция
-		int         anXPrecinctCount[33]; // Количество областей (precinct) по Х для каждого уровня разрешения (resolution level)
-		int         anYPrecinctCount[33]; // Количество областей (precinct) по Y для каждого уровня разрешения (resolution level)
-		int         anPrecinctWidth[33];  // Ширина области (в степени 2), для какждого уровня разрешения
-		int         anPrecinctHeight[33]; // Высота области (в степени 2), для какждого уровня разрешения
+		double     *pdThreshold;          // Р—РЅР°С‡РµРЅРёРµ РїРѕСЂРѕРіР° РґР»СЏ РєР°Р¶РґРѕРіРѕ layer
+		int         nTileCount;           // РћР±С‰РµРµ РєРѕР»РёС‡РµСЃС‚РІРѕ Tiles
+		int         nStartPos;            // РќР°С‡Р°Р»СЊРЅР°СЏ РїРѕР·РёС†РёСЏ
+		int         nEndHeader;           // РљРѕРЅРµС‡РЅР°СЏ РїРѕР·РёС†РёСЏ РґР»СЏ Р·Р°РіРѕР»РѕРІРєР°
+		int         nEndPos;              // РљРѕРЅРµС‡РЅР°СЏ РїРѕР·РёС†РёСЏ
+		int         anXPrecinctCount[33]; // РљРѕР»РёС‡РµСЃС‚РІРѕ РѕР±Р»Р°СЃС‚РµР№ (precinct) РїРѕ РҐ РґР»СЏ РєР°Р¶РґРѕРіРѕ СѓСЂРѕРІРЅСЏ СЂР°Р·СЂРµС€РµРЅРёСЏ (resolution level)
+		int         anYPrecinctCount[33]; // РљРѕР»РёС‡РµСЃС‚РІРѕ РѕР±Р»Р°СЃС‚РµР№ (precinct) РїРѕ Y РґР»СЏ РєР°Р¶РґРѕРіРѕ СѓСЂРѕРІРЅСЏ СЂР°Р·СЂРµС€РµРЅРёСЏ (resolution level)
+		int         anPrecinctWidth[33];  // РЁРёСЂРёРЅР° РѕР±Р»Р°СЃС‚Рё (РІ СЃС‚РµРїРµРЅРё 2), РґР»СЏ РєР°РєР¶РґРѕРіРѕ СѓСЂРѕРІРЅСЏ СЂР°Р·СЂРµС€РµРЅРёСЏ
+		int         anPrecinctHeight[33]; // Р’С‹СЃРѕС‚Р° РѕР±Р»Р°СЃС‚Рё (РІ СЃС‚РµРїРµРЅРё 2), РґР»СЏ РєР°РєР¶РґРѕРіРѕ СѓСЂРѕРІРЅСЏ СЂР°Р·СЂРµС€РµРЅРёСЏ
 		PacketInfo *pPacket;              // PacketInfo
-		int         nNBPix;               // Добавляем Fixed Quality
-		double      dDistoTile;           // Добавляем Fixed Quality
+		int         nNBPix;               // Р”РѕР±Р°РІР»СЏРµРј Fixed Quality
+		double      dDistoTile;           // Р”РѕР±Р°РІР»СЏРµРј Fixed Quality
 	} TileInfo;
 
 	typedef struct TImageInfo
 	{
-		int              nIndexOn;        // 0 - нет нумерации, 1 - есть.
-		double           dDistoMax;       // Максимальный уровень сокращения искажений для всего изображения
-		int              nPacketCount;    // Количество пакетов
+		int              nIndexOn;        // 0 - РЅРµС‚ РЅСѓРјРµСЂР°С†РёРё, 1 - РµСЃС‚СЊ.
+		double           dDistoMax;       // РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СѓСЂРѕРІРµРЅСЊ СЃРѕРєСЂР°С‰РµРЅРёСЏ РёСЃРєР°Р¶РµРЅРёР№ РґР»СЏ РІСЃРµРіРѕ РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
+		int              nPacketCount;    // РљРѕР»РёС‡РµСЃС‚РІРѕ РїР°РєРµС‚РѕРІ
 		int              nIndexWrite;     //
-		int              nImageWidth;     // Ширина картинки
-		int              nImageHeight;    // Высота картинки
+		int              nImageWidth;     // РЁРёСЂРёРЅР° РєР°СЂС‚РёРЅРєРё
+		int              nImageHeight;    // Р’С‹СЃРѕС‚Р° РєР°СЂС‚РёРЅРєРё
 		ProgressionOrder eProgOrder;      // Progression Order
-		int              nXTsiz;          // Размер tile по Х
-		int              nYTsiz;          // Размер tile по Y
-		int              nXTOsiz;         // Сдвиг первого тайла по Х
-		int              nYTOsiz;         // Сдвиг первого тайла по Y
-		int              nXTilesCount;    // Количество тайлов по Х
-		int              nYTilesCount;    // Количество тайлов по Y
-		int              nCompCount;      // Количество компонент
-		int              nLayersCount;    // Количество layers
-		int              nDecompCount;    // Количество уровней разложения
-		int              nMainHeadEnd;    // Позиция окончания Main Header
-		int              nCodestreamSize; // Размер codestream
+		int              nXTsiz;          // Р Р°Р·РјРµСЂ tile РїРѕ РҐ
+		int              nYTsiz;          // Р Р°Р·РјРµСЂ tile РїРѕ Y
+		int              nXTOsiz;         // РЎРґРІРёРі РїРµСЂРІРѕРіРѕ С‚Р°Р№Р»Р° РїРѕ РҐ
+		int              nYTOsiz;         // РЎРґРІРёРі РїРµСЂРІРѕРіРѕ С‚Р°Р№Р»Р° РїРѕ Y
+		int              nXTilesCount;    // РљРѕР»РёС‡РµСЃС‚РІРѕ С‚Р°Р№Р»РѕРІ РїРѕ РҐ
+		int              nYTilesCount;    // РљРѕР»РёС‡РµСЃС‚РІРѕ С‚Р°Р№Р»РѕРІ РїРѕ Y
+		int              nCompCount;      // РљРѕР»РёС‡РµСЃС‚РІРѕ РєРѕРјРїРѕРЅРµРЅС‚
+		int              nLayersCount;    // РљРѕР»РёС‡РµСЃС‚РІРѕ layers
+		int              nDecompCount;    // РљРѕР»РёС‡РµСЃС‚РІРѕ СѓСЂРѕРІРЅРµР№ СЂР°Р·Р»РѕР¶РµРЅРёСЏ
+		int              nMainHeadEnd;    // РџРѕР·РёС†РёСЏ РѕРєРѕРЅС‡Р°РЅРёСЏ Main Header
+		int              nCodestreamSize; // Р Р°Р·РјРµСЂ codestream
 		TileInfo        *pTile;           // TileInfo
 	} ImageInfo;
 
 	// JPEG-2000 codestream reader/writer
 	typedef struct TJ2kCodestream
 	{
-		PCommon           pCodecInfo;     // Общая информация для кодирования и декодирования
-		int               nState;         // Здесь хранам текущую позицию декодера Codestream'a ( Main header, Tile header, конец декодирования )
-		int               nCurTileIndex;  // Номер текущего тайла (т.е. который в данный момент кодируется/декодируется)
-		//unsigned char    *pEndOfTile;     // Используется для определения позиции конца тайла в codestream (чтобы определить нормальный ли codestream)
+		PCommon           pCodecInfo;     // РћР±С‰Р°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ РґР»СЏ РєРѕРґРёСЂРѕРІР°РЅРёСЏ Рё РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ
+		int               nState;         // Р—РґРµСЃСЊ С…СЂР°РЅР°Рј С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ РґРµРєРѕРґРµСЂР° Codestream'a ( Main header, Tile header, РєРѕРЅРµС† РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ )
+		int               nCurTileIndex;  // РќРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ С‚Р°Р№Р»Р° (С‚.Рµ. РєРѕС‚РѕСЂС‹Р№ РІ РґР°РЅРЅС‹Р№ РјРѕРјРµРЅС‚ РєРѕРґРёСЂСѓРµС‚СЃСЏ/РґРµРєРѕРґРёСЂСѓРµС‚СЃСЏ)
+		//unsigned char    *pEndOfTile;     // РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ РїРѕР·РёС†РёРё РєРѕРЅС†Р° С‚Р°Р№Р»Р° РІ codestream (С‡С‚РѕР±С‹ РѕРїСЂРµРґРµР»РёС‚СЊ РЅРѕСЂРјР°Р»СЊРЅС‹Р№ Р»Рё codestream)
 		int				  nSizeOfTile;
-		int               nSOTStartPos;   // Сохраняем начальную позицию маркера SOT, чтобы после кодирования текущего тайла мы могли вернуться и записать длину данного маркера
-		int               nSODStartPos;   // Аналогично, для маркера SOD
-		int               nPosCorrection; // Необходимо для корректировки позиции, поскольку J2k-файл пишется в несколько частей, во время кодирования
-		unsigned char   **ppTileData;     // Массив с данными всех тайлов
-		int              *pTileLen;       // Массив, хранящий размер данных для каждого тайла
-		TileCodingParams *pDefaultTCP;    // Используется только при декомпрессии: храним общую информацию для всех тайлов ( COD, COC )
-		Image            *pImage;         // Указатель на изображения, которое мы либо кодируем, либо декодируем
-		CodingParams     *pCodingParams;  // Указатель на структуру, хранящую информацию о кодировании
+		int               nSOTStartPos;   // РЎРѕС…СЂР°РЅСЏРµРј РЅР°С‡Р°Р»СЊРЅСѓСЋ РїРѕР·РёС†РёСЋ РјР°СЂРєРµСЂР° SOT, С‡С‚РѕР±С‹ РїРѕСЃР»Рµ РєРѕРґРёСЂРѕРІР°РЅРёСЏ С‚РµРєСѓС‰РµРіРѕ С‚Р°Р№Р»Р° РјС‹ РјРѕРіР»Рё РІРµСЂРЅСѓС‚СЊСЃСЏ Рё Р·Р°РїРёСЃР°С‚СЊ РґР»РёРЅСѓ РґР°РЅРЅРѕРіРѕ РјР°СЂРєРµСЂР°
+		int               nSODStartPos;   // РђРЅР°Р»РѕРіРёС‡РЅРѕ, РґР»СЏ РјР°СЂРєРµСЂР° SOD
+		int               nPosCorrection; // РќРµРѕР±С…РѕРґРёРјРѕ РґР»СЏ РєРѕСЂСЂРµРєС‚РёСЂРѕРІРєРё РїРѕР·РёС†РёРё, РїРѕСЃРєРѕР»СЊРєСѓ J2k-С„Р°Р№Р» РїРёС€РµС‚СЃСЏ РІ РЅРµСЃРєРѕР»СЊРєРѕ С‡Р°СЃС‚РµР№, РІРѕ РІСЂРµРјСЏ РєРѕРґРёСЂРѕРІР°РЅРёСЏ
+		unsigned char   **ppTileData;     // РњР°СЃСЃРёРІ СЃ РґР°РЅРЅС‹РјРё РІСЃРµС… С‚Р°Р№Р»РѕРІ
+		int              *pTileLen;       // РњР°СЃСЃРёРІ, С…СЂР°РЅСЏС‰РёР№ СЂР°Р·РјРµСЂ РґР°РЅРЅС‹С… РґР»СЏ РєР°Р¶РґРѕРіРѕ С‚Р°Р№Р»Р°
+		TileCodingParams *pDefaultTCP;    // РСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ С‚РѕР»СЊРєРѕ РїСЂРё РґРµРєРѕРјРїСЂРµСЃСЃРёРё: С…СЂР°РЅРёРј РѕР±С‰СѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ РґР»СЏ РІСЃРµС… С‚Р°Р№Р»РѕРІ ( COD, COC )
+		Image            *pImage;         // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РёР·РѕР±СЂР°Р¶РµРЅРёСЏ, РєРѕС‚РѕСЂРѕРµ РјС‹ Р»РёР±Рѕ РєРѕРґРёСЂСѓРµРј, Р»РёР±Рѕ РґРµРєРѕРґРёСЂСѓРµРј
+		CodingParams     *pCodingParams;  // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ, С…СЂР°РЅСЏС‰СѓСЋ РёРЅС„РѕСЂРјР°С†РёСЋ Рѕ РєРѕРґРёСЂРѕРІР°РЅРёРё
 		ImageInfo        *pImageInfo;     // 
 		CReader           *pStreamIO;      // Input / Output stream
 	} J2kCodestream;
@@ -482,89 +490,89 @@ namespace Jpeg2000
 
 	typedef struct TLayer
 	{
-		int            nPassesCount; // Количество проходов
-		int            nLen;         // Длина информации
-		double         dDisto;       // Отклонение
-		unsigned char *pData;        // Данные
+		int            nPassesCount; // РљРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРѕС…РѕРґРѕРІ
+		int            nLen;         // Р”Р»РёРЅР° РёРЅС„РѕСЂРјР°С†РёРё
+		double         dDisto;       // РћС‚РєР»РѕРЅРµРЅРёРµ
+		unsigned char *pData;        // Р”Р°РЅРЅС‹Рµ
 	} Layer;
 
 	typedef struct TCodeBlock
 	{
-		int           nX0;                  // Размеры CodeBlock
-		int           nY0;                  // (x0, y0) - левый верхний угол
-		int           nX1;                  // (х1, у1) - правый нижний угол
+		int           nX0;                  // Р Р°Р·РјРµСЂС‹ CodeBlock
+		int           nY0;                  // (x0, y0) - Р»РµРІС‹Р№ РІРµСЂС…РЅРёР№ СѓРіРѕР»
+		int           nX1;                  // (С…1, Сѓ1) - РїСЂР°РІС‹Р№ РЅРёР¶РЅРёР№ СѓРіРѕР»
 		int           nY1;                  // 
 		int           nBPSCount;            //
 		int           nLenBitsCount;        //
-		int           nLen;                 // Длина
-		int           nPassesCount;         // Количество уже завершенных проходов для данного CodeBlock
-		int           nNewPassesCount;      // Количество проходов добавленных к данному CodeBlock
-		int           nSegmentsCount;       // Количество сегментов
-		TCDSegment    aSegments[100];		// Сами сегменты
-		unsigned char  aData[8192];			 // Данные
-		int           nPassesCountInLayers; // Количество проходов в лэйре
-		Layer         aLayers[100];				// Информация о лэйерах	
-		int           nTotalPassesCount;    // Общее число проходов
-		TCDPass       aPasses[100];         // Информация о проходах
+		int           nLen;                 // Р”Р»РёРЅР°
+		int           nPassesCount;         // РљРѕР»РёС‡РµСЃС‚РІРѕ СѓР¶Рµ Р·Р°РІРµСЂС€РµРЅРЅС‹С… РїСЂРѕС…РѕРґРѕРІ РґР»СЏ РґР°РЅРЅРѕРіРѕ CodeBlock
+		int           nNewPassesCount;      // РљРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРѕС…РѕРґРѕРІ РґРѕР±Р°РІР»РµРЅРЅС‹С… Рє РґР°РЅРЅРѕРјСѓ CodeBlock
+		int           nSegmentsCount;       // РљРѕР»РёС‡РµСЃС‚РІРѕ СЃРµРіРјРµРЅС‚РѕРІ
+		TCDSegment    aSegments[100];		// РЎР°РјРё СЃРµРіРјРµРЅС‚С‹
+		unsigned char  aData[8192];			 // Р”Р°РЅРЅС‹Рµ
+		int           nPassesCountInLayers; // РљРѕР»РёС‡РµСЃС‚РІРѕ РїСЂРѕС…РѕРґРѕРІ РІ Р»СЌР№СЂРµ
+		Layer         aLayers[100];				// РРЅС„РѕСЂРјР°С†РёСЏ Рѕ Р»СЌР№РµСЂР°С…	
+		int           nTotalPassesCount;    // РћР±С‰РµРµ С‡РёСЃР»Рѕ РїСЂРѕС…РѕРґРѕРІ
+		TCDPass       aPasses[100];         // РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РїСЂРѕС…РѕРґР°С…
 	} CodeBlock;
 
 	typedef struct TPrecinct
 	{
-		int        nX0;            // Размеры Precinct
-		int        nY0;            // (x0, y0) - левый верхний угол
-		int        nX1;            // (х1, у1) - правый нижний угол
+		int        nX0;            // Р Р°Р·РјРµСЂС‹ Precinct
+		int        nY0;            // (x0, y0) - Р»РµРІС‹Р№ РІРµСЂС…РЅРёР№ СѓРіРѕР»
+		int        nX1;            // (С…1, Сѓ1) - РїСЂР°РІС‹Р№ РЅРёР¶РЅРёР№ СѓРіРѕР»
 		int        nY1;            // 
-		int        nCountInWidth;  // Количество блоков в ширину
-		int        nCountInHeight; // Количество блоков в высоту
+		int        nCountInWidth;  // РљРѕР»РёС‡РµСЃС‚РІРѕ Р±Р»РѕРєРѕРІ РІ С€РёСЂРёРЅСѓ
+		int        nCountInHeight; // РљРѕР»РёС‡РµСЃС‚РІРѕ Р±Р»РѕРєРѕРІ РІ РІС‹СЃРѕС‚Сѓ
 		CodeBlock *pCodeBlocks;    // CodeBlocks
-		TagTree   *pInclTree;      // Дерево включения
-		TagTree   *pIMSBTree;      // Дерево IMSB
+		TagTree   *pInclTree;      // Р”РµСЂРµРІРѕ РІРєР»СЋС‡РµРЅРёСЏ
+		TagTree   *pIMSBTree;      // Р”РµСЂРµРІРѕ IMSB
 	} Precinct;
 
 	typedef struct TBand
 	{
-		int       nX0;        // Размеры Band
-		int       nY0;        // (x0, y0) - левый верхний угол
-		int       nX1;        // (х1, у1) - правый нижний угол
+		int       nX0;        // Р Р°Р·РјРµСЂС‹ Band
+		int       nY0;        // (x0, y0) - Р»РµРІС‹Р№ РІРµСЂС…РЅРёР№ СѓРіРѕР»
+		int       nX1;        // (С…1, Сѓ1) - РїСЂР°РІС‹Р№ РЅРёР¶РЅРёР№ СѓРіРѕР»
 		int       nY1;        // 
-		int       nBandIndex; // Номер текущего Band
-		Precinct *pPrecincts; // Информация о областях(Precinct), входящий в данный Band
+		int       nBandIndex; // РќРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ Band
+		Precinct *pPrecincts; // РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РѕР±Р»Р°СЃС‚СЏС…(Precinct), РІС…РѕРґСЏС‰РёР№ РІ РґР°РЅРЅС‹Р№ Band
 		int       nBPSCount;  //
 		float     fStepSize;  //
 	} Band;
 
 	typedef struct TResolution
 	{
-		int  nX0;         // Размеры Resolution
-		int  nY0;         // (x0, y0) - левый верхний угол
-		int  nX1;         // (х1, у1) - правый нижний угол
+		int  nX0;         // Р Р°Р·РјРµСЂС‹ Resolution
+		int  nY0;         // (x0, y0) - Р»РµРІС‹Р№ РІРµСЂС…РЅРёР№ СѓРіРѕР»
+		int  nX1;         // (С…1, Сѓ1) - РїСЂР°РІС‹Р№ РЅРёР¶РЅРёР№ СѓРіРѕР»
 		int  nY1;         // 
-		int  nPrecCountW; // Количество областей (Precinct) по ширине
-		int  nPrecCountH; // Количество областей (Precinct) по высоте
-		int  nBandsCount; // Количество Sub-band
+		int  nPrecCountW; // РљРѕР»РёС‡РµСЃС‚РІРѕ РѕР±Р»Р°СЃС‚РµР№ (Precinct) РїРѕ С€РёСЂРёРЅРµ
+		int  nPrecCountH; // РљРѕР»РёС‡РµСЃС‚РІРѕ РѕР±Р»Р°СЃС‚РµР№ (Precinct) РїРѕ РІС‹СЃРѕС‚Рµ
+		int  nBandsCount; // РљРѕР»РёС‡РµСЃС‚РІРѕ Sub-band
 		Band aBands[3];   // Sub-bands
 	} Resolution;
 
 	typedef struct TTileComp
 	{
-		int         nX0;               // Размеры TileComp 
-		int         nY0;               // (x0, y0) - левый верхний угол
-		int         nX1;               // (х1, у1) - правый нижний угол
+		int         nX0;               // Р Р°Р·РјРµСЂС‹ TileComp 
+		int         nY0;               // (x0, y0) - Р»РµРІС‹Р№ РІРµСЂС…РЅРёР№ СѓРіРѕР»
+		int         nX1;               // (С…1, Сѓ1) - РїСЂР°РІС‹Р№ РЅРёР¶РЅРёР№ СѓРіРѕР»
 		int         nY1;               // 
-		int         nResolutionsCount; // Число разрешений
-		Resolution *pResolutions;      // Разрешения (Resolutions)
-		int        *pData;             // Данные компоненты
+		int         nResolutionsCount; // Р§РёСЃР»Рѕ СЂР°Р·СЂРµС€РµРЅРёР№
+		Resolution *pResolutions;      // Р Р°Р·СЂРµС€РµРЅРёСЏ (Resolutions)
+		int        *pData;             // Р”Р°РЅРЅС‹Рµ РєРѕРјРїРѕРЅРµРЅС‚С‹
 		int         nNBPix;            // Fixed_quality
 	} TileComp;
 
 	typedef struct TTile
 	{
-		int       nX0;               // Размеры Tile
-		int       nY0;               // (x0, y0) - левый верхний угол
-		int       nX1;               // (х1, у1) - правый нижний угол
+		int       nX0;               // Р Р°Р·РјРµСЂС‹ Tile
+		int       nY0;               // (x0, y0) - Р»РµРІС‹Р№ РІРµСЂС…РЅРёР№ СѓРіРѕР»
+		int       nX1;               // (С…1, Сѓ1) - РїСЂР°РІС‹Р№ РЅРёР¶РЅРёР№ СѓРіРѕР»
 		int       nY1;               // 
-		int       nComponentsCount;  // Количество компонент
-		TileComp *pComponents;       // Компоненты
+		int       nComponentsCount;  // РљРѕР»РёС‡РµСЃС‚РІРѕ РєРѕРјРїРѕРЅРµРЅС‚
+		TileComp *pComponents;       // РљРѕРјРїРѕРЅРµРЅС‚С‹
 		int       nNBPix;            // Fixed_quality
 		double    dDistoTile;        // Fixed_quality
 		double    adDistoLayer[100]; // Fixed_quality
@@ -572,20 +580,20 @@ namespace Jpeg2000
 
 	typedef struct TTCDImage
 	{
-		int   nTilesCountW; // Количество тайлов по ширине
-		int   nTilesCountH; // Количество тайлов по высоте
-		Tile *pTiles;       // Тайлы
+		int   nTilesCountW; // РљРѕР»РёС‡РµСЃС‚РІРѕ С‚Р°Р№Р»РѕРІ РїРѕ С€РёСЂРёРЅРµ
+		int   nTilesCountH; // РљРѕР»РёС‡РµСЃС‚РІРѕ С‚Р°Р№Р»РѕРІ РїРѕ РІС‹СЃРѕС‚Рµ
+		Tile *pTiles;       // РўР°Р№Р»С‹
 	} TCDImage;
 
 	typedef struct TTCD
 	{
-		PCommon           pCodecInfo;    // Информация о кодеке
-		TCDImage         *pTCDImage;     // Кодированное Изображение
-		Image            *pImage;        // Изображение
-		CodingParams     *pCodingParams; // Параметры
-		Tile             *pTCDTile;      // Указатель на текущий кодируемый/декодируемый тайл
-		TileCodingParams *pTCP;          // Параметры кодирования/декодирования для всех тайлов
-		int               nTCDTileIndex; // Номер текущего кодируемого/декодируемого тайла
+		PCommon           pCodecInfo;    // РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РєРѕРґРµРєРµ
+		TCDImage         *pTCDImage;     // РљРѕРґРёСЂРѕРІР°РЅРЅРѕРµ РР·РѕР±СЂР°Р¶РµРЅРёРµ
+		Image            *pImage;        // РР·РѕР±СЂР°Р¶РµРЅРёРµ
+		CodingParams     *pCodingParams; // РџР°СЂР°РјРµС‚СЂС‹
+		Tile             *pTCDTile;      // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° С‚РµРєСѓС‰РёР№ РєРѕРґРёСЂСѓРµРјС‹Р№/РґРµРєРѕРґРёСЂСѓРµРјС‹Р№ С‚Р°Р№Р»
+		TileCodingParams *pTCP;          // РџР°СЂР°РјРµС‚СЂС‹ РєРѕРґРёСЂРѕРІР°РЅРёСЏ/РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ РґР»СЏ РІСЃРµС… С‚Р°Р№Р»РѕРІ
+		int               nTCDTileIndex; // РќРѕРјРµСЂ С‚РµРєСѓС‰РµРіРѕ РєРѕРґРёСЂСѓРµРјРѕРіРѕ/РґРµРєРѕРґРёСЂСѓРµРјРѕРіРѕ С‚Р°Р№Р»Р°
 	} TCD;
 
 	//-------------------------------------------------------------------------------------------------------------------------------
@@ -626,18 +634,18 @@ namespace Jpeg2000
 		//opj_jp2_cdef_t *jp2_cdef;
 		//opj_jp2_pclr_t *jp2_pclr;
 
-		BOOL has_colr;
+		bool has_colr;
 	} Jp2Color;
 
 	// Jp2 file format reader/writer
 	typedef struct TJp2Stream
 	{
-		PCommon        pCodecInfo;       // Общая информация для кодирования и декодирования
-		J2kCodestream *pJ2k;             // Указатель на структуру для чтения/записи JPEG2000 Codestream
+		PCommon        pCodecInfo;       // РћР±С‰Р°СЏ РёРЅС„РѕСЂРјР°С†РёСЏ РґР»СЏ РєРѕРґРёСЂРѕРІР°РЅРёСЏ Рё РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ
+		J2kCodestream *pJ2k;             // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґР»СЏ С‡С‚РµРЅРёСЏ/Р·Р°РїРёСЃРё JPEG2000 Codestream
 
-		unsigned int   nWidth;           // Ширина изображения
-		unsigned int   nHeight;          // Высота изображения
-		unsigned int   nComponentsCount; // Число компонент
+		unsigned int   nWidth;           // РЁРёСЂРёРЅР° РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
+		unsigned int   nHeight;          // Р’С‹СЃРѕС‚Р° РёР·РѕР±СЂР°Р¶РµРЅРёСЏ
+		unsigned int   nComponentsCount; // Р§РёСЃР»Рѕ РєРѕРјРїРѕРЅРµРЅС‚
 		unsigned int   nBPC;             // Bits per component
 		unsigned int   nCompressionType; // CompressionType
 		unsigned int   nColorSpaceUnk;   // Colourspace Unknown
@@ -650,7 +658,7 @@ namespace Jpeg2000
 
 		unsigned int   nBrand;           // Brand
 		unsigned int   nMinVersion;      // MinVersion
-		unsigned int   nCompListLength;  // Длина списка Compatibility list
+		unsigned int   nCompListLength;  // Р”Р»РёРЅР° СЃРїРёСЃРєР° Compatibility list
 		unsigned int  *pCompList;        // Compatibility list
 
 		Jp2Component  *pComponents;
@@ -672,16 +680,16 @@ namespace Jpeg2000
 	// MQ-coder (ArithmeticCoder.h)
 	//-------------------------------------------------------------------------------------------------------------------------------
 
-	// См. Annex C. fcd15444-1.pdf ( MQ-coder Encoder/Decoder )
+	// РЎРј. Annex C. fcd15444-1.pdf ( MQ-coder Encoder/Decoder )
 
 #define MQC_NUMCTXS 32
 
 	typedef struct TMQCoderState
 	{
-		unsigned int          nLPSValue; // вероятность для наименьшего вероятностного символа (Least Probable Symbol) (0.75->0x8000, 1.5->0xffff)
-		int                   nMPS;      // наибольший вероятностный символ ( 0 или 1 ) (Most Probable Symbol)
-		struct TMQCoderState *pNextMPS;  // Указатель на следующее состояние, если следующий закодированный символ MPS
-		struct TMQCoderState *pNextLPS;  // Указатель на следующее состояние, если следующий закодированный символ LPS
+		unsigned int          nLPSValue; // РІРµСЂРѕСЏС‚РЅРѕСЃС‚СЊ РґР»СЏ РЅР°РёРјРµРЅСЊС€РµРіРѕ РІРµСЂРѕСЏС‚РЅРѕСЃС‚РЅРѕРіРѕ СЃРёРјРІРѕР»Р° (Least Probable Symbol) (0.75->0x8000, 1.5->0xffff)
+		int                   nMPS;      // РЅР°РёР±РѕР»СЊС€РёР№ РІРµСЂРѕСЏС‚РЅРѕСЃС‚РЅС‹Р№ СЃРёРјРІРѕР» ( 0 РёР»Рё 1 ) (Most Probable Symbol)
+		struct TMQCoderState *pNextMPS;  // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃР»РµРґСѓСЋС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ, РµСЃР»Рё СЃР»РµРґСѓСЋС‰РёР№ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹Р№ СЃРёРјРІРѕР» MPS
+		struct TMQCoderState *pNextLPS;  // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃР»РµРґСѓСЋС‰РµРµ СЃРѕСЃС‚РѕСЏРЅРёРµ, РµСЃР»Рё СЃР»РµРґСѓСЋС‰РёР№ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹Р№ СЃРёРјРІРѕР» LPS
 	} MQCoderState;
 
 	// MQ-coder
@@ -704,13 +712,13 @@ namespace Jpeg2000
 
 	typedef struct TRaw
 	{
-		unsigned char  nBuffer;        // Временный буфер, в котором происходит побитовое кодирование/декодирование
-		unsigned int   nFreeBitsCount; // Количество бит, свободных для чтения или записи
-		unsigned int   nMaxLen;        // Максимальная длина для декодирования
-		unsigned int   nLen;           // Длина декодированной информации
-		unsigned char *pBufferPointer; // Указатель на текущую позицию в буфере
-		unsigned char *pBufferStart;   // Указатель на начало буфера
-		unsigned char *pBufferEnd;     // Указатель на конец буфера
+		unsigned char  nBuffer;        // Р’СЂРµРјРµРЅРЅС‹Р№ Р±СѓС„РµСЂ, РІ РєРѕС‚РѕСЂРѕРј РїСЂРѕРёСЃС…РѕРґРёС‚ РїРѕР±РёС‚РѕРІРѕРµ РєРѕРґРёСЂРѕРІР°РЅРёРµ/РґРµРєРѕРґРёСЂРѕРІР°РЅРёРµ
+		unsigned int   nFreeBitsCount; // РљРѕР»РёС‡РµСЃС‚РІРѕ Р±РёС‚, СЃРІРѕР±РѕРґРЅС‹С… РґР»СЏ С‡С‚РµРЅРёСЏ РёР»Рё Р·Р°РїРёСЃРё
+		unsigned int   nMaxLen;        // РњР°РєСЃРёРјР°Р»СЊРЅР°СЏ РґР»РёРЅР° РґР»СЏ РґРµРєРѕРґРёСЂРѕРІР°РЅРёСЏ
+		unsigned int   nLen;           // Р”Р»РёРЅР° РґРµРєРѕРґРёСЂРѕРІР°РЅРЅРѕР№ РёРЅС„РѕСЂРјР°С†РёРё
+		unsigned char *pBufferPointer; // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ РІ Р±СѓС„РµСЂРµ
+		unsigned char *pBufferStart;   // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РЅР°С‡Р°Р»Рѕ Р±СѓС„РµСЂР°
+		unsigned char *pBufferEnd;     // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РєРѕРЅРµС† Р±СѓС„РµСЂР°
 	} Raw;
 
 	//-------------------------------------------------------------------------------------------------------------------------------
@@ -751,24 +759,24 @@ namespace Jpeg2000
 
 	typedef struct TPacketIterator
 	{
-		short int       *pInclude;         // Флаг, сигнализирующий использовался ли данный пакет (используется в POC)
-		int              nStepLayer;       // LayerStep используется для локализации пакета в pInclude
-		int              nStepResolution;  // ResoultionStep используется для локализации пакета в pInclude
-		int              nStepComponent;   // ComponentStep используется для локализации пакета в pInclude
-		int              nStepPrecinct;    // PrecinctStep используется для локализации пакета в pInclude
+		short int       *pInclude;         // Р¤Р»Р°Рі, СЃРёРіРЅР°Р»РёР·РёСЂСѓСЋС‰РёР№ РёСЃРїРѕР»СЊР·РѕРІР°Р»СЃСЏ Р»Рё РґР°РЅРЅС‹Р№ РїР°РєРµС‚ (РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РІ POC)
+		int              nStepLayer;       // LayerStep РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ Р»РѕРєР°Р»РёР·Р°С†РёРё РїР°РєРµС‚Р° РІ pInclude
+		int              nStepResolution;  // ResoultionStep РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ Р»РѕРєР°Р»РёР·Р°С†РёРё РїР°РєРµС‚Р° РІ pInclude
+		int              nStepComponent;   // ComponentStep РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ Р»РѕРєР°Р»РёР·Р°С†РёРё РїР°РєРµС‚Р° РІ pInclude
+		int              nStepPrecinct;    // PrecinctStep РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ РґР»СЏ Р»РѕРєР°Р»РёР·Р°С†РёРё РїР°РєРµС‚Р° РІ pInclude
 
-		int              nIndexComponent;  // Номер компоненты для определения пакета
-		int              nIndexResolution; // Номер уровня детализации для определения пакета
-		int              nIndexPrecinct;   // Номер области для определения пакета
-		int              nIndexLayer;      // Номер лэйера для определения пакета  
+		int              nIndexComponent;  // РќРѕРјРµСЂ РєРѕРјРїРѕРЅРµРЅС‚С‹ РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ РїР°РєРµС‚Р°
+		int              nIndexResolution; // РќРѕРјРµСЂ СѓСЂРѕРІРЅСЏ РґРµС‚Р°Р»РёР·Р°С†РёРё РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ РїР°РєРµС‚Р°
+		int              nIndexPrecinct;   // РќРѕРјРµСЂ РѕР±Р»Р°СЃС‚Рё РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ РїР°РєРµС‚Р°
+		int              nIndexLayer;      // РќРѕРјРµСЂ Р»СЌР№РµСЂР° РґР»СЏ РѕРїСЂРµРґРµР»РµРЅРёСЏ РїР°РєРµС‚Р°  
 
-		int              nFirst;           // Флаг, определяющий первый ли это пакет
+		int              nFirst;           // Р¤Р»Р°Рі, РѕРїСЂРµРґРµР»СЏСЋС‰РёР№ РїРµСЂРІС‹Р№ Р»Рё СЌС‚Рѕ РїР°РєРµС‚
 		POC              oPOC;             // Progression Order Change
-		int              nComponentsCount; // Число компонент
+		int              nComponentsCount; // Р§РёСЃР»Рѕ РєРѕРјРїРѕРЅРµРЅС‚
 
 		PacketComponent *pComponents;
 		int              nTileX0;          //
-		int              nTileY0;          // Границы текущего тайла
+		int              nTileY0;          // Р“СЂР°РЅРёС†С‹ С‚РµРєСѓС‰РµРіРѕ С‚Р°Р№Р»Р°
 		int              nTileX1;          //
 		int              nTileY1;          //
 		int              nX;
@@ -778,22 +786,22 @@ namespace Jpeg2000
 	} PacketIterator;
 
 	//-------------------------------------------------------------------------------------------------------------------------------
-	//  Tier-1 coding (кодирование коэффициентов)
+	//  Tier-1 coding (РєРѕРґРёСЂРѕРІР°РЅРёРµ РєРѕСЌС„С„РёС†РёРµРЅС‚РѕРІ)
 	//-------------------------------------------------------------------------------------------------------------------------------
 
 #define T1_NMSEDEC_BITS 7
 
-#define T1_MAXCBLKW 1024	// Максимальный размер CodeBlock (по ширине)
-#define T1_MAXCBLKH 1024	// Максимальный размер CodeBlock (по высоте)
+#define T1_MAXCBLKW 1024	// РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ CodeBlock (РїРѕ С€РёСЂРёРЅРµ)
+#define T1_MAXCBLKH 1024	// РњР°РєСЃРёРјР°Р»СЊРЅС‹Р№ СЂР°Р·РјРµСЂ CodeBlock (РїРѕ РІС‹СЃРѕС‚Рµ)
 
-#define T1_SIG_NE 0x0001	// Ориентация контекста : Северо-восточное направление
-#define T1_SIG_SE 0x0002	// Ориентация контекста : юго-восточное направление
-#define T1_SIG_SW 0x0004	// Ориентация контекста : юго-западное направление
-#define T1_SIG_NW 0x0008	// Ориентация контекста : северо-западное направление
-#define T1_SIG_N  0x0010	// Ориентация контекста : северное направление
-#define T1_SIG_E  0x0020	// Ориентация контекста : восточное направление
-#define T1_SIG_S  0x0040	// Ориентация контекста : южное направление
-#define T1_SIG_W  0x0080	// Ориентация контекста : западное направление
+#define T1_SIG_NE 0x0001	// РћСЂРёРµРЅС‚Р°С†РёСЏ РєРѕРЅС‚РµРєСЃС‚Р° : РЎРµРІРµСЂРѕ-РІРѕСЃС‚РѕС‡РЅРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ
+#define T1_SIG_SE 0x0002	// РћСЂРёРµРЅС‚Р°С†РёСЏ РєРѕРЅС‚РµРєСЃС‚Р° : СЋРіРѕ-РІРѕСЃС‚РѕС‡РЅРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ
+#define T1_SIG_SW 0x0004	// РћСЂРёРµРЅС‚Р°С†РёСЏ РєРѕРЅС‚РµРєСЃС‚Р° : СЋРіРѕ-Р·Р°РїР°РґРЅРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ
+#define T1_SIG_NW 0x0008	// РћСЂРёРµРЅС‚Р°С†РёСЏ РєРѕРЅС‚РµРєСЃС‚Р° : СЃРµРІРµСЂРѕ-Р·Р°РїР°РґРЅРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ
+#define T1_SIG_N  0x0010	// РћСЂРёРµРЅС‚Р°С†РёСЏ РєРѕРЅС‚РµРєСЃС‚Р° : СЃРµРІРµСЂРЅРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ
+#define T1_SIG_E  0x0020	// РћСЂРёРµРЅС‚Р°С†РёСЏ РєРѕРЅС‚РµРєСЃС‚Р° : РІРѕСЃС‚РѕС‡РЅРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ
+#define T1_SIG_S  0x0040	// РћСЂРёРµРЅС‚Р°С†РёСЏ РєРѕРЅС‚РµРєСЃС‚Р° : СЋР¶РЅРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ
+#define T1_SIG_W  0x0080	// РћСЂРёРµРЅС‚Р°С†РёСЏ РєРѕРЅС‚РµРєСЃС‚Р° : Р·Р°РїР°РґРЅРѕРµ РЅР°РїСЂР°РІР»РµРЅРёРµ
 #define T1_SIG_OTH  (T1_SIG_N|T1_SIG_NE|T1_SIG_E|T1_SIG_SE|T1_SIG_S|T1_SIG_SW|T1_SIG_W|T1_SIG_NW)
 #define T1_SIG_PRIM (T1_SIG_N|T1_SIG_E|T1_SIG_S|T1_SIG_W)
 
@@ -822,16 +830,16 @@ namespace Jpeg2000
 
 #define T1_NMSEDEC_FRACBITS (T1_NMSEDEC_BITS - 1)
 
-#define T1_TYPE_MQ  0  // Нормальное кодирование, с использованием Arithmetic entropy coding (Annex C)
-#define T1_TYPE_RAW 1  // Нет никакого кодирования, информация в Codestream содержится в сыром виде
+#define T1_TYPE_MQ  0  // РќРѕСЂРјР°Р»СЊРЅРѕРµ РєРѕРґРёСЂРѕРІР°РЅРёРµ, СЃ РёСЃРїРѕР»СЊР·РѕРІР°РЅРёРµРј Arithmetic entropy coding (Annex C)
+#define T1_TYPE_RAW 1  // РќРµС‚ РЅРёРєР°РєРѕРіРѕ РєРѕРґРёСЂРѕРІР°РЅРёСЏ, РёРЅС„РѕСЂРјР°С†РёСЏ РІ Codestream СЃРѕРґРµСЂР¶РёС‚СЃСЏ РІ СЃС‹СЂРѕРј РІРёРґРµ
 
 	//-------------------------------------------------------------------------------------------------------------------------------
 
 	typedef struct TTier1
 	{
-		PCommon  pCodecInfo;  // Информация о кодеке
-		MQCoder *pMQCoder;    // Указатель на структуру для чтения/записи MQ-кодированных данных
-		Raw     *pRaw;        // Указатель на структуру для чтения/записи некодированных данных
+		PCommon  pCodecInfo;  // РРЅС„РѕСЂРјР°С†РёСЏ Рѕ РєРѕРґРµРєРµ
+		MQCoder *pMQCoder;    // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґР»СЏ С‡С‚РµРЅРёСЏ/Р·Р°РїРёСЃРё MQ-РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… РґР°РЅРЅС‹С…
+		Raw     *pRaw;        // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° СЃС‚СЂСѓРєС‚СѓСЂСѓ РґР»СЏ С‡С‚РµРЅРёСЏ/Р·Р°РїРёСЃРё РЅРµРєРѕРґРёСЂРѕРІР°РЅРЅС‹С… РґР°РЅРЅС‹С…
 
 		int      lut_ctxno_zc[1024];
 		int      lut_ctxno_sc[256];
@@ -842,8 +850,8 @@ namespace Jpeg2000
 		int      lut_nmsedec_ref[1 << T1_NMSEDEC_BITS];
 		int      lut_nmsedec_ref0[1 << T1_NMSEDEC_BITS];
 
-		int      aData[T1_MAXCBLKH][T1_MAXCBLKW];          // Данные codeblock
-		int      aFlags[T1_MAXCBLKH + 2][T1_MAXCBLKH + 2]; // Флаги
+		int      aData[T1_MAXCBLKH][T1_MAXCBLKW];          // Р”Р°РЅРЅС‹Рµ codeblock
+		int      aFlags[T1_MAXCBLKH + 2][T1_MAXCBLKH + 2]; // Р¤Р»Р°РіРё
 
 	} Tier1;
 
@@ -854,7 +862,7 @@ namespace Jpeg2000
 	typedef struct TTier2
 	{
 		PCommon       pCodecInfo;
-		Image        *pImage;        // Encoding: указатель на исходную картинку. Decoding: указатель на результирующую картинку.
+		Image        *pImage;        // Encoding: СѓРєР°Р·Р°С‚РµР»СЊ РЅР° РёСЃС…РѕРґРЅСѓСЋ РєР°СЂС‚РёРЅРєСѓ. Decoding: СѓРєР°Р·Р°С‚РµР»СЊ РЅР° СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰СѓСЋ РєР°СЂС‚РёРЅРєСѓ.
 		CodingParams *pCodingParams;
 	} Tier2;
 
@@ -1075,11 +1083,11 @@ namespace Jpeg2000
 
 	typedef struct TBitIO
 	{
-		unsigned char *pStart;          // Указатель на начало буфера
-		unsigned char *pEnd;            // Указатель на конец буфера
-		unsigned char *pCurPos;         // Указатель на текущую позицию в буфере
-		unsigned int   nBuffer;         // Буфер
-		int            nValidBitsCount; // Coder   : число свободных бит для записи
-		// Decoder : число доступных бит для чтения
+		unsigned char *pStart;          // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РЅР°С‡Р°Р»Рѕ Р±СѓС„РµСЂР°
+		unsigned char *pEnd;            // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° РєРѕРЅРµС† Р±СѓС„РµСЂР°
+		unsigned char *pCurPos;         // РЈРєР°Р·Р°С‚РµР»СЊ РЅР° С‚РµРєСѓС‰СѓСЋ РїРѕР·РёС†РёСЋ РІ Р±СѓС„РµСЂРµ
+		unsigned int   nBuffer;         // Р‘СѓС„РµСЂ
+		int            nValidBitsCount; // Coder   : С‡РёСЃР»Рѕ СЃРІРѕР±РѕРґРЅС‹С… Р±РёС‚ РґР»СЏ Р·Р°РїРёСЃРё
+		// Decoder : С‡РёСЃР»Рѕ РґРѕСЃС‚СѓРїРЅС‹С… Р±РёС‚ РґР»СЏ С‡С‚РµРЅРёСЏ
 	} BitIO;
 }

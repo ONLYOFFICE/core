@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 namespace Jpeg2000
 {
@@ -7,9 +7,9 @@ namespace Jpeg2000
 		return 0;
 		//   LARGE_INTEGER oFreq, oTime;
 
-		//// oFreq - скорость часов у CPU
+		//// oFreq - СЃРєРѕСЂРѕСЃС‚СЊ С‡Р°СЃРѕРІ Сѓ CPU
 		//   QueryPerformanceFrequency( &oFreq );
-		//   // oTime - текущее время(в смысле oFreq)
+		//   // oTime - С‚РµРєСѓС‰РµРµ РІСЂРµРјСЏ(РІ СЃРјС‹СЃР»Рµ oFreq)
 		//   QueryPerformanceCounter ( &oTime ) ;
 		//   return ( oTime.QuadPart /(double) oFreq.QuadPart ) ;
 	}
@@ -30,25 +30,25 @@ namespace Jpeg2000
 		return nValue;
 	}
 
-	// Делим nA на nB и округляем в большую сторону
+	// Р”РµР»РёРј nA РЅР° nB Рё РѕРєСЂСѓРіР»СЏРµРј РІ Р±РѕР»СЊС€СѓСЋ СЃС‚РѕСЂРѕРЅСѓ
 	static __inline int CeilDiv(int nA, int nB)
 	{
 		return (nA + nB - 1) / nB;
 	}
 
-	// Делим nA на 2^nB и округляем в большую сторону
+	// Р”РµР»РёРј nA РЅР° 2^nB Рё РѕРєСЂСѓРіР»СЏРµРј РІ Р±РѕР»СЊС€СѓСЋ СЃС‚РѕСЂРѕРЅСѓ
 	static __inline int CeilDivPow2(int nA, int nB)
 	{
 		return (nA + (1 << nB) - 1) >> nB;
 	}
 
-	// Делим nA на 2^nB и округляем в меньшую сторону
+	// Р”РµР»РёРј nA РЅР° 2^nB Рё РѕРєСЂСѓРіР»СЏРµРј РІ РјРµРЅСЊС€СѓСЋ СЃС‚РѕСЂРѕРЅСѓ
 	static __inline int FloorDivPow2(int nA, int nB)
 	{
 		return nA >> nB;
 	}
 
-	// Берем логарифм по основанию 2 от числа nA и округляем в меньшую сторону
+	// Р‘РµСЂРµРј Р»РѕРіР°СЂРёС„Рј РїРѕ РѕСЃРЅРѕРІР°РЅРёСЋ 2 РѕС‚ С‡РёСЃР»Р° nA Рё РѕРєСЂСѓРіР»СЏРµРј РІ РјРµРЅСЊС€СѓСЋ СЃС‚РѕСЂРѕРЅСѓ
 	static __inline int FloorLog2(int nA)
 	{
 		int nL;
@@ -67,7 +67,7 @@ namespace Jpeg2000
 	static const double c_adNormRCT[3] ={ 1.732, .8292, .8292 };
 	static const double c_adNormICT[3] ={ 1.732, 1.805, 1.573 };
 
-	// Применяем обратимое много-компонентное преобразование к изображению (Annex G.2.1)
+	// РџСЂРёРјРµРЅСЏРµРј РѕР±СЂР°С‚РёРјРѕРµ РјРЅРѕРіРѕ-РєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ Рє РёР·РѕР±СЂР°Р¶РµРЅРёСЋ (Annex G.2.1)
 	static void   ForwardRCT(int *pRed, int *pGreen, int *pBlue, int nSamplesCount)
 	{
 		for (int nIndex = 0; nIndex < nSamplesCount; nIndex++)
@@ -85,7 +85,7 @@ namespace Jpeg2000
 		}
 	}
 
-	// Применяем обратимое много-компонентное обратное преобазование к изображению (Annex G.2.2)
+	// РџСЂРёРјРµРЅСЏРµРј РѕР±СЂР°С‚РёРјРѕРµ РјРЅРѕРіРѕ-РєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РѕР±СЂР°С‚РЅРѕРµ РїСЂРµРѕР±Р°Р·РѕРІР°РЅРёРµ Рє РёР·РѕР±СЂР°Р¶РµРЅРёСЋ (Annex G.2.2)
 	static void   InverseRCT(int *pRed, int *pGreen, int *pBlue, int nSamplesCount)
 	{
 		for (int nIndex = 0; nIndex < nSamplesCount; nIndex++)
@@ -109,7 +109,7 @@ namespace Jpeg2000
 		return c_adNormRCT[nComponentIndex];
 	}
 
-	// Применяем необратимое много-компонентное преобразование к изображению (Annex G.3.1)
+	// РџСЂРёРјРµРЅСЏРµРј РЅРµРѕР±СЂР°С‚РёРјРѕРµ РјРЅРѕРіРѕ-РєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёРµ Рє РёР·РѕР±СЂР°Р¶РµРЅРёСЋ (Annex G.3.1)
 	static void   ForwardICT(int *pRed, int *pGreen, int *pBlue, int nSamplesCount)
 	{
 		for (int nIndex = 0; nIndex < nSamplesCount; nIndex++)
@@ -127,7 +127,7 @@ namespace Jpeg2000
 		}
 	}
 
-	// Применяем необратимое много-компонентное обратное преобазование к изображению (Annex G.3.2)
+	// РџСЂРёРјРµРЅСЏРµРј РЅРµРѕР±СЂР°С‚РёРјРѕРµ РјРЅРѕРіРѕ-РєРѕРјРїРѕРЅРµРЅС‚РЅРѕРµ РѕР±СЂР°С‚РЅРѕРµ РїСЂРµРѕР±Р°Р·РѕРІР°РЅРёРµ Рє РёР·РѕР±СЂР°Р¶РµРЅРёСЋ (Annex G.3.2)
 	static void   InverseICT(int *pRed, int *pGreen, int *pBlue, int nSamplesCount)
 	{
 		for (int nIndex = 0; nIndex < nSamplesCount; nIndex++)

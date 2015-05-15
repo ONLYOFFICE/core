@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "Types.h"
 #include "Utils.h"
@@ -42,7 +42,7 @@ namespace Jpeg2000
 			pImage->eColorSpace = eColorSpace;
 			pImage->nCsiz       = nComponentsCount;
 
-			// Выделяем память под компоненты
+			// Р’С‹РґРµР»СЏРµРј РїР°РјСЏС‚СЊ РїРѕРґ РєРѕРјРїРѕРЅРµРЅС‚С‹
 			pImage->pComponents = (ImageComponent*)Malloc(pImage->nCsiz * sizeof(ImageComponent));
 
 			if (!pImage->pComponents)
@@ -75,7 +75,7 @@ namespace Jpeg2000
 		}
 		else
 		{
-			// TO DO: Выдать сообщение об ошибке
+			// TO DO: Р’С‹РґР°С‚СЊ СЃРѕРѕР±С‰РµРЅРёРµ РѕР± РѕС€РёР±РєРµ
 		}
 
 		return pImage;

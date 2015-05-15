@@ -432,7 +432,19 @@ SOURCES += \
     ../../../cximage/CxImage/ximawmf.cpp \
     ../../../cximage/CxImage/ximawnd.cpp \
     ../../../cximage/CxImage/xmemfile.cpp \
-    ../../../raster/BgraFrame.cpp
+    ../../../raster/BgraFrame.cpp \
+    ../../../raster/Jp2/J2kFile.cpp \
+    ../../../raster/Jp2/Reader.cpp \
+    ../../../raster/Metafile/Common/MetaFileTypes.cpp \
+    ../../../raster/Metafile/Common/MetaFileUtils.cpp \
+    ../../../raster/Metafile/Emf/EmfClip.cpp \
+    ../../../raster/Metafile/Emf/EmfObjects.cpp \
+    ../../../raster/Metafile/Emf/EmfPath.cpp \
+    ../../../raster/Metafile/Emf/EmfPlayer.cpp \
+    ../../../raster/Metafile/Wmf/WmfClip.cpp \
+    ../../../raster/Metafile/Wmf/WmfObjects.cpp \
+    ../../../raster/Metafile/Wmf/WmfPlayer.cpp \
+    ../../../raster/Metafile/MetaFile.cpp
 
 HEADERS += \
     ../../../graphics/AggPlusEnums.h \
@@ -624,7 +636,46 @@ HEADERS += \
     ../../../cximage/CxImage/xiofile.h \
     ../../../cximage/CxImage/xmemfile.h \
     ../../../raster/BgraFrame.h \
-    ../../../raster/ImageFileFormatChecker.h
+    ../../../raster/ImageFileFormatChecker.h \
+    ../../../raster/Jp2/ArithmeticCoder.h \
+    ../../../raster/Jp2/DWT.h \
+    ../../../raster/Jp2/Image.h \
+    ../../../raster/Jp2/J2k.h \
+    ../../../raster/Jp2/J2kFile.h \
+    ../../../raster/Jp2/J2kIncludes.h \
+    ../../../raster/Jp2/Jp2.h \
+    ../../../raster/Jp2/JpgEvent.h \
+    ../../../raster/Jp2/Jpt.h \
+    ../../../raster/Jp2/Mj2.h \
+    ../../../raster/Jp2/PacketIterator.h \
+    ../../../raster/Jp2/Raw.h \
+    ../../../raster/Jp2/Reader.h \
+    ../../../raster/Jp2/Stream.h \
+    ../../../raster/Jp2/TagTree.h \
+    ../../../raster/Jp2/Tier1.h \
+    ../../../raster/Jp2/Tier2.h \
+    ../../../raster/Jp2/Tile.h \
+    ../../../raster/Jp2/Types.h \
+    ../../../raster/Jp2/Utils.h \
+    ../../../raster/Metafile/Common/IOutputDevice.h \
+    ../../../raster/Metafile/Common/MetaFile.h \
+    ../../../raster/Metafile/Common/MetaFileClip.h \
+    ../../../raster/Metafile/Common/MetaFileObjects.h \
+    ../../../raster/Metafile/Common/MetaFileRenderer.h \
+    ../../../raster/Metafile/Common/MetaFileTypes.h \
+    ../../../raster/Metafile/Common/MetaFileUtils.h \
+    ../../../raster/Metafile/Emf/EmfClip.h \
+    ../../../raster/Metafile/Emf/EmfFile.h \
+    ../../../raster/Metafile/Emf/EmfObjects.h \
+    ../../../raster/Metafile/Emf/EmfPath.h \
+    ../../../raster/Metafile/Emf/EmfPlayer.h \
+    ../../../raster/Metafile/Emf/EmfTypes.h \
+    ../../../raster/Metafile/Wmf/WmfClip.h \
+    ../../../raster/Metafile/Wmf/WmfFile.h \
+    ../../../raster/Metafile/Wmf/WmfObjects.h \
+    ../../../raster/Metafile/Wmf/WmfPlayer.h \
+    ../../../raster/Metafile/Wmf/WmfTypes.h \
+    ../../../raster/Metafile/MetaFile.h
 
 unix {
     target.path = /usr/lib

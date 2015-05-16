@@ -422,7 +422,39 @@ namespace XmlUtils
 
             return false;
 		}
-        inline bool ReadTillEnd(int nDepth = -2)
+         inline bool ReadNextSiblingNode2(int nDepth)
+		{
+			if ( !IsValid() )
+                return false;
+
+			XmlNodeType eNodeType = XmlNodeType_None;
+			int nCurDepth = -1;
+			
+			while ( 1 == xmlTextReaderRead(reader) )
+			{
+				int nTempType = xmlTextReaderNodeType(reader);
+				int nTempDepth = xmlTextReaderDepth(reader);
+				
+				if(-1 == nTempType || -1 == nTempDepth)
+                    return false;
+				
+				eNodeType = (XmlNodeType)nTempType;
+				nCurDepth = nTempDepth;
+
+				if (nCurDepth < nDepth)
+					break;
+
+				if ((	XmlNodeType_Element		== eNodeType  && nCurDepth == nDepth + 1 )	
+					|| ((XmlNodeType_Text		== eNodeType  || 
+						 XmlNodeType_Whitespace	== eNodeType) && nCurDepth == nDepth + 1) )
+                    return true;
+				else if ( XmlNodeType_EndElement == eNodeType && nCurDepth == nDepth )
+                    return false;
+			}
+
+            return false;
+		}
+		inline bool ReadTillEnd(int nDepth = -2)
 		{
 			if ( !IsValid() )
                 return false;
@@ -548,6 +580,26 @@ namespace XmlUtils
 
 			return sResult;
 		}
+		//inline std::wstring GetText3()
+		//{
+		//	if ( !IsValid() )
+		//		return _T("");
+
+		//	std::wstring sResult;
+
+		//	if ( 0 != xmlTextReaderIsEmptyElement(reader) )
+		//		return sResult;
+
+		//	int nDepth = GetDepth();
+		//	XmlNodeType eNodeType = XmlNodeType_EndElement;
+		//	while ( Read( eNodeType ) && GetDepth() >= nDepth && XmlNodeType_EndElement != eNodeType )
+		//	{
+		//		if ( eNodeType == XmlNodeType_Text || eNodeType == XmlNodeType_Whitespace || eNodeType == XmlNodeType_SIGNIFICANT_WHITESPACE )
+		//			sResult += GetText();
+		//	}
+
+		//	return sResult;
+		//}
 		inline CString GetOuterXml()
 		{
 			return GetXml(false);

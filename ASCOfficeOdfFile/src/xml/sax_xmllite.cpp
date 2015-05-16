@@ -27,7 +27,6 @@ public:
     saxXmlLiteReader();
     
 public:
-    virtual unsigned int attrCount();
     //virtual std::wstring baseURI();
     virtual unsigned int depth();
 
@@ -43,22 +42,23 @@ public:
     //// Returns "u://1" for the element <xyz:abc xmlns:xyz="u://1" />.
     //virtual std::wstring namespaceUri();
 
-    virtual NodeType nodeType();
-    virtual std::wstring value();
+    virtual NodeType		nodeType();
+    virtual std::wstring	value();
+   
+	//virtual std::wstring	attValue();
+    virtual unsigned int	attrCount();
+	virtual bool			attrDefault();
 
     // <element attribute="123"></element> — false
     // <element attribute="123"/> - true
     virtual bool isEmptyElement();
     
-    virtual bool isEof();
-
     //virtual bool moveToAttrByName(const wchar_t * Name, const wchar_t * nsURI);
     virtual bool moveToAttrFirst();
     virtual bool moveToAttrNext();
-    virtual void moveToAttrOwner();
-    virtual bool attrDefault();
+    virtual bool moveToAttrOwner();
 
-    virtual NodeType next();
+    virtual NodeType next(int Depth);
     
     //virtual unsigned int readChunk(wchar_t * Buffer, unsigned int Size);
 
@@ -107,10 +107,9 @@ saxXmlLiteReader::saxXmlLiteReader(const wchar_t * FileName)
 	
 	xml_->FromFile(FileName);
 
-	if (xml_->ReadNextNode() == false)
-	{
-		xml_ = NULL;
-	}
+	bool res;
+
+	res = xml_->ReadNextNode();
 }
 
 unsigned int saxXmlLiteReader::attrCount()
@@ -181,12 +180,17 @@ NodeType saxXmlLiteReader::nodeType()
 	XmlUtils::XmlNodeType nTempType = (XmlUtils::XmlNodeType)xmlTextReaderNodeType(xml_->getNativeReader());
 	return NodeTypeConvert(nTempType); 
 }
-
+//std::wstring saxXmlLiteReader::nodeValue()
+//{
+// 	if (xml_.IsInit() == false) return _T("");
+//    
+//	return xml_->GetText3();
+//}
 std::wstring saxXmlLiteReader::value()
 {
  	if (xml_.IsInit() == false) return _T("");
     
-	return xml_->GetText3();
+	return xml_->GetText();
 
 }
 
@@ -199,45 +203,25 @@ bool saxXmlLiteReader::isEmptyElement()
     return xml_->IsEmptyNode();    
 }
 
-bool saxXmlLiteReader::isEof()
-{
- 	if (xml_.IsInit() == false) return true;
-	
-	return false;
-}
-
 bool saxXmlLiteReader::moveToAttrFirst()
 {
 	if (xml_.IsInit() == false) return false;
 
-    if (S_OK != xml_->MoveToFirstAttribute())
-    {
-        throw error(error::internalErr);    
-    }
-
-    return true;
+    return xml_->MoveToFirstAttribute();
 }
 
 bool saxXmlLiteReader::moveToAttrNext()
 {
 	if (xml_.IsInit() == false) return false;
 
-    if (S_OK !=xml_->MoveToNextAttribute())
-    {
-        throw error(error::internalErr);    
-    }
-
-    return true;
+    return xml_->MoveToNextAttribute();
 }
 
-void saxXmlLiteReader::moveToAttrOwner()
+bool saxXmlLiteReader::moveToAttrOwner()
 {
-	if (xml_.IsInit() == false) return;
+	if (xml_.IsInit() == false) return false;
 
-	if (S_OK != xml_->MoveToElement())
-    {
-        throw error(error::internalErr);    
-    }
+	return xml_->MoveToElement();
 }
 
 bool saxXmlLiteReader::attrDefault()
@@ -247,11 +231,9 @@ bool saxXmlLiteReader::attrDefault()
     return (FALSE != xmlTextReaderIsDefault(xml_->getNativeReader()));
 }
 
-NodeType saxXmlLiteReader::next()
+NodeType saxXmlLiteReader::next(int Depth)
 {
-	int nCurDepth = xml_->GetDepth();
-	
-	if (xml_->ReadNextSiblingNode(nCurDepth))
+	if (xml_->ReadNextSiblingNode2(Depth))
 	{
 		XmlUtils::XmlNodeType nTempType = (XmlUtils::XmlNodeType)xmlTextReaderNodeType(xml_->getNativeReader());
 		return NodeTypeConvert(nTempType);
@@ -282,16 +264,6 @@ sax_ptr create_sax_xmllite(const wchar_t * FileName)
 {
     return sax_ptr( new saxXmlLiteReader(FileName) );
 }
-
-//sax_ptr create_sax_xmllite( shared_ptr< std::istream >::Type istreamPtr)
-//{
-//     return sax_ptr( new saxXmlLiteReader(istreamPtr) );    
-//}
-//
-//sax_ptr create_sax_xmllite( std::istream & istreamVal )
-//{
-//     return sax_ptr( new saxXmlLiteReader(istreamVal) );    
-//}
 
 }
 }

@@ -63,10 +63,17 @@ content_xml_t_ptr read_file_content(const fs::wpath & Path)
     //content_file.open(Path);
    // if (content_file)
     {
-        xml::sax_ptr sax = xml::create_sax( /*content_file*/ Path.string().c_str());
+        xml::sax_ptr Reader = xml::create_sax( /*content_file*/ Path.string().c_str());
         content_xml_t_ptr result( new content_xml_t() );
-        result->read_sax(sax.get());
+        
+		const std::wstring namespacePrefix	= Reader->namespacePrefix();
+		const std::wstring localName		= Reader->nodeLocalName();
+		
+		result->add_child_element(Reader.get(), namespacePrefix, localName);		
+	
+		//result->read_sax(sax.get());
         return result;
+
     }
     //else
     //{

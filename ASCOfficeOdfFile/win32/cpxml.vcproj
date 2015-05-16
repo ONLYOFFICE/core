@@ -322,14 +322,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\include\cpdoccore\xml\serialize.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\cpdoccore\xml\serialize_attributes.h"
-				>
-			</File>
-			<File
 				RelativePath="..\include\cpdoccore\xml\simple_xml_writer.h"
 				>
 			</File>

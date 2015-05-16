@@ -99,8 +99,8 @@ void not_applicable_element(const std::wstring & Current, xml::sax * Reader, con
     _CP_LOG(error) << ss.str();
 #endif
     
-    if (Reader)
-        _skip_element::skip_element_.read_sax(Reader);
+    //if (Reader)
+    //    _skip_element::skip_element_.read_sax(Reader);
 }
 
 void not_applicable_element(const office_element * CurrentElm, xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)

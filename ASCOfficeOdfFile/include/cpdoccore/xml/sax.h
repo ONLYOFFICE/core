@@ -1,4 +1,4 @@
-/// \brief  јбстрактный интерфейс Simple API XML
+//јбстрактный интерфейс Simple XML
 
 #pragma once
 
@@ -39,7 +39,6 @@ public:
     };
 
 public:
-    virtual unsigned int attrCount() = 0;
     //virtual std::wstring baseURI() = 0;
     virtual unsigned int depth() = 0;
 
@@ -55,24 +54,23 @@ public:
     //// Returns "u://1" for the element <xyz:abc xmlns:xyz="u://1" />.
     //virtual std::wstring namespaceUri() = 0;
 
-    virtual NodeType nodeType() = 0;
-    virtual std::wstring value() = 0;
+    virtual NodeType		nodeType() = 0;
+	virtual std::wstring	value() = 0;
+	
+    virtual unsigned int	attrCount() = 0;
+	//virtual std::wstring	value() = 0;
+	virtual bool			attrDefault() = 0;
 
     // <element attribute="123"></element> Ч false
     // <element attribute="123"/> - true
     virtual bool isEmptyElement() = 0;
     
-    virtual bool isEof() = 0;
-
     virtual bool moveToAttrFirst() = 0;
     virtual bool moveToAttrNext() = 0;
-    virtual void moveToAttrOwner() = 0;
-    virtual bool attrDefault() = 0;
+    virtual bool moveToAttrOwner() = 0;
 
-    virtual NodeType next() = 0;
-    
-    //virtual unsigned int readChunk(wchar_t * Buffer, unsigned int Size) = 0;
-
+    virtual NodeType next(int Depth) = 0;
+   
     virtual ~sax() = 0;
 
 };
@@ -81,10 +79,6 @@ public:
 inline sax::~sax() {};
 
 sax_ptr create_sax(const wchar_t * FileName);
-//sax_ptr create_sax(shared_ptr< std::istream >::Type istreamPtr);
-//sax_ptr create_sax(std::istream & istreamVal);
-
-//sax_ptr create_sax(const std::string & String);
 
 } // namespace xml
 } // namespace cpdoccore

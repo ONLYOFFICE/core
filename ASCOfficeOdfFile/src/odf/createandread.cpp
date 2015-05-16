@@ -19,7 +19,7 @@ bool create_element_and_read(xml::sax * Reader,
 {
     if (office_element_ptr elm = office_element_creator::get()->create(Ns, Name, Context, isRoot))
     {
-        elm->read_sax( Reader );
+		elm->read_sax( Reader );
         elm->afterReadContent();
         
         if (_Element) // элемент читается повторно

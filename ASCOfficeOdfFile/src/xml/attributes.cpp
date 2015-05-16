@@ -162,9 +162,9 @@ attributes_wc_ptr read_attributes(sax * SaxReader)
         {
             if (!SaxReader->attrDefault())
             {
-                const std::wstring prefix = SaxReader->namespacePrefix();
-                const std::wstring name = SaxReader->nodeLocalName();
-                const std::wstring value = SaxReader->value();
+                const std::wstring prefix	= SaxReader->namespacePrefix();
+                const std::wstring name		= SaxReader->nodeLocalName();
+                const std::wstring value	= SaxReader->value();
 
 				if (prefix.length() < 1 && name.length() < 1 && value.length() < 1)
 					break;

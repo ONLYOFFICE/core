@@ -26,14 +26,15 @@ namespace common {
 // Для каждого элемента будут вызваны методы
 // add_attributes, add_child_element, add_text как колбеки для чтения соответствующих данных
 
-class read_doc_element {
+class read_doc_element 
+{
 public:
     bool read_sax( xml::sax * Reader);
     virtual ~read_doc_element() = 0; 
 
+    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name) = 0;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes ) = 0;
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name) = 0;
     virtual void add_text(const std::wstring & Text) = 0;
 
 };

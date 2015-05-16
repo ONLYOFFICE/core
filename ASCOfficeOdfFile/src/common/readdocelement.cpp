@@ -11,7 +11,9 @@ namespace common {
 
 bool read_doc_element::read_sax( xml::sax * Reader )
 {
-    xml::attributes_wc_ptr attrb = xml::read_attributes( Reader );
+	const unsigned int currentDepth = Reader->depth();
+   
+	xml::attributes_wc_ptr attrb = xml::read_attributes( Reader );
     add_attributes( attrb );
     
 #ifdef _DEBUG
@@ -21,15 +23,24 @@ bool read_doc_element::read_sax( xml::sax * Reader )
     }
 #endif
 
-    if (Reader->isEmptyElement())
-        return false;
+	//const std::wstring value = Reader->value();
 
-    const unsigned int currentDepth = Reader->depth();
-    
+	//if (value.length() > 0)
+	//{
+	//	add_text(value);
+	//}
+
     xml::NodeType nodeType = Reader->nodeType();
+	
+	if (Reader->isEmptyElement())
+	{
+		return false;
+	}
+
 
     while (true)
 	{
+		nodeType = Reader->next(currentDepth);
 		if (nodeType == xml::typeEOF || nodeType == xml::typeNone ) break;
        
 		if (Reader->depth() <= currentDepth + 1 && nodeType == xml::typeEndElement) break;
@@ -38,8 +49,9 @@ bool read_doc_element::read_sax( xml::sax * Reader )
         {
 			case xml::typeElement:
 				{
-					const std::wstring namespacePrefix = Reader->namespacePrefix();
-					const std::wstring localName = Reader->nodeLocalName();
+					const std::wstring namespacePrefix	= Reader->namespacePrefix();
+					const std::wstring localName		= Reader->nodeLocalName();
+					
 					add_child_element(Reader, namespacePrefix, localName);
 				}
 				break;
@@ -51,8 +63,6 @@ bool read_doc_element::read_sax( xml::sax * Reader )
 				}
 				break;
         }
-		nodeType = Reader->next();
-                        
     }
     return true;
 }

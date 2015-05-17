@@ -3,7 +3,6 @@
 #include <boost/lexical_cast.hpp>
 #include <cpdoccore/CPOptional.h>
 
-#include "../../../Common/boost_filesystem_version.h"
 #include "../progressCallback.h"
 
 #if defined(_WIN32) || defined (_WIN64)

@@ -5,7 +5,6 @@
 #include <sstream>
 #include <string>
 
-#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost_string.h>
 #include <regex.h>
@@ -13,7 +12,6 @@
 #include <cpdoccore/xml/xmlchar.h>
 
 #include <cpdoccore/xml/attributes.h>
-#include <cpdoccore/common/boost_filesystem_version.h>
 
 #include "serialize_elements.h"
 #include <cpdoccore/odf/odf_document.h>
@@ -33,9 +31,6 @@
 
 namespace cpdoccore { 
 namespace odf {
-
-namespace fs = ::boost::filesystem;
-
 
 
 void draw_g::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -217,18 +212,13 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
         const std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
 
         odf::odf_document::Impl * odfImpl = Context.root()->get_impl();
-        const std::wstring folder = odfImpl->get_folder();
+       
+		std::wstring folderPath = odfImpl->get_folder();
+        std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
-        fs::wpath folderPath(folder);
-        fs::wpath objectPath = folderPath / href;
+		// normalize path ???? todooo
 
-#ifdef BOOST_FILESYSTEM_LEGACY
-       const std::wstring dbgObjectPathStr = objectPath.normalize().string();
-#else
-       const std::wstring dbgObjectPathStr = objectPath.normalize().wstring();
-#endif
-
-        cpdoccore::odf::odf_document objectSubDoc(dbgObjectPathStr,NULL);    
+        cpdoccore::odf::odf_document objectSubDoc(objectPath,NULL);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //в отдельных embd объектах чаще всего диаграммы... но МОГУТ быть и обычные объекты подтипа frame!!! пример RemanejamentoOrcamentario.ods
 ///////////////////////////////////////////////////////////////////////////

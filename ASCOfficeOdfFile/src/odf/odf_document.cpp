@@ -7,9 +7,6 @@
 namespace cpdoccore { 
 namespace odf {
 
-
-namespace fs = ::boost::filesystem;
-
 odf_document::odf_document(const std::wstring & Folder, const ProgressCallback* CallBack) : impl_(new Impl(Folder,CallBack))
 {}
 

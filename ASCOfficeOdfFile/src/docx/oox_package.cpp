@@ -2,23 +2,17 @@
 #include "oox_package.h"
 
 #include <boost/foreach.hpp>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include <cpdoccore/utf8cpp/utf8.h>
-#include <cpdoccore/common/boost_filesystem_version.h>
 
 #include "mediaitems.h"
 
-#include "..\..\..\ASCImageStudio3\ASCGraphics\OfficeSvmFile\SvmConverter.h"
+#include "../../../ASCImageStudio3/ASCGraphics/OfficeSvmFile/SvmConverter.h"
 
-#import "../../../Redist/ASCImageFile3.dll"		named_guids rename_namespace("ImageFile") raw_interfaces_only
-
+#include "../../DesktopEditor/common/File.h"
 
 namespace cpdoccore { 
 namespace oox {
 namespace package {
-
-namespace fs = boost::filesystem;
 
 content_types_file::content_types_file() : filename_(L"[Content_Types].xml") 
 {}
@@ -42,9 +36,16 @@ simple_element::simple_element(const std::wstring & FileName, const std::wstring
 
 void simple_element::write(const std::wstring & RootPath)
 {
-    fs::ofstream file( fs::wpath(RootPath) / file_name_, std::ios_base::out | std::ios_base::binary );
-    file << "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
-    file << content_utf8_;
+	std::wstring name_ = RootPath + FILE_SEPARATOR_STR +  file_name_;
+
+	NSFile::CFileBinary file;
+	if ( file.CreateFileW(name_) == true)
+	{
+		std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
+		file.WriteFile((BYTE*)root.c_str(), root.length());
+		file.WriteFile((BYTE*)content_utf8_.c_str(), content_utf8_.length());
+		file.CloseFile();
+	}
 }
 
 rels_file::rels_file(std::wstring const & FileName) : filename_(FileName) 
@@ -66,10 +67,12 @@ void rels_file::write(const std::wstring & RootPath)
 
 void rels_files::write(const std::wstring & RootPath)
 {
-    fs::wpath path = fs::wpath(RootPath) / L"_rels";
-    fs::create_directory(path);
-    if (rels_file_)
-        rels_file_->write(BOOST_STRING_PATH(path));
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"_rels";
+
+	FileSystem::Directory::CreateDirectory(path.c_str());
+   
+	if (rels_file_)
+        rels_file_->write(path);
 }
 
 void rels_files::add(relationship const & r)
@@ -152,11 +155,11 @@ docProps_files::docProps_files()
 
 void docProps_files::write(const std::wstring & RootPath)
 {
-    fs::wpath path = fs::wpath(RootPath) / L"docProps";
-    fs::create_directory(path);
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"docProps";
+	FileSystem::Directory::CreateDirectory(path.c_str());
 
-    core_.write(BOOST_STRING_PATH(path));
-    app_.write(BOOST_STRING_PATH(path));
+    core_.write(path);
+    app_.write(path);
 }
 
 ////////////
@@ -168,55 +171,56 @@ media::media(mediaitems & _Mediaitems) : mediaitems_(_Mediaitems)
 
 void media::write(const std::wstring & RootPath)
 {
-    fs::wpath path = fs::wpath(RootPath) / L"media";
-    fs::create_directory(path);
+    std::wstring path = RootPath + FILE_SEPARATOR_STR + L"media";
+	FileSystem::Directory::CreateDirectory(path.c_str());
 
     BOOST_FOREACH( mediaitems::item & item, mediaitems_.items() )
     {
         if (item.mediaInternal && item.valid && item.type == mediaitems::typeImage )
         {
-			fs::wpath file_name  = fs::wpath(item.href);
-			fs::wpath file_name_out = fs::wpath(RootPath) / item.outputName;
-			if (file_name.extension() == L".svm")
+			std::wstring & file_name  = item.href;
+			std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.outputName;
+			
+			if (file_name.rfind(L".svm") >= 0)
 			{
 				ConvertSvmToImage(file_name, file_name_out);
 			}
-			else if(file_name.extension().empty())
-			{
-				//непонятный тип .. может быть svm, emf, wmf, vclmtf (это копия уравнений)
-				//отдетектить???
-				ImageFile::IImageFile3Ptr piImageFile = NULL;
-				piImageFile.CreateInstance( __uuidof(ImageFile::ImageFile3) );
-				if( NULL != piImageFile )
-				{
-					VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-					IUnknown* pImage = NULL;
-				
-					BSTR bstrFilename = SysAllocString(item.href.data());
-					try
-					{
-						piImageFile->LoadImage2(bstrFilename, &pImage, &vbSuccess);
-					}
-					catch(...)
-					{
-					}
-					SysFreeString( bstrFilename );
-					if (vbSuccess && pImage)
-					{
-						bstrFilename = SysAllocString(file_name_out.string().data());
-						piImageFile->SaveImage2( &pImage, 4, bstrFilename, &vbSuccess );//to png
-						SysFreeString( bstrFilename );
-						pImage->Release();
-					}
-					if (vbSuccess == FALSE)
-					{
-						boost::filesystem::copy_file(item.href, file_name_out);//ну не png это будет ... и чё? :-)
-					}
-				}
+			//else if(file_name.extension().empty())
+			//{
+			//	//непонятный тип .. может быть svm, emf, wmf, vclmtf (это копия уравнений)
+			//	//отдетектить???
+			//	ImageFile::IImageFile3Ptr piImageFile = NULL;
+			//	piImageFile.CreateInstance( __uuidof(ImageFile::ImageFile3) );
+			//	if( NULL != piImageFile )
+			//	{
+			//		VARIANT_BOOL vbSuccess = VARIANT_FALSE;
+			//		IUnknown* pImage = NULL;
+			//	
+			//		BSTR bstrFilename = SysAllocString(item.href.data());
+			//		try
+			//		{
+			//			piImageFile->LoadImage2(bstrFilename, &pImage, &vbSuccess);
+			//		}
+			//		catch(...)
+			//		{
+			//		}
+			//		SysFreeString( bstrFilename );
+			//		if (vbSuccess && pImage)
+			//		{
+			//			bstrFilename = SysAllocString(file_name_out.string().data());
+			//			piImageFile->SaveImage2( &pImage, 4, bstrFilename, &vbSuccess );//to png
+			//			SysFreeString( bstrFilename );
+			//			pImage->Release();
+			//		}
+			//		if (vbSuccess == FALSE)
+			//		{
+			//			FileSystem::Directory::CopyFile(item.href, file_name_out);//ну не png это будет ... и чё? :-)
+			//		}
+			//	}
 
-			}
+			//}
 			else
-				boost::filesystem::copy_file(item.href, file_name_out);
+				NSFile::CFileBinary::Copy(item.href, file_name_out);
         }
     }
 

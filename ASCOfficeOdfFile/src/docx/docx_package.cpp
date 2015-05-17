@@ -1,16 +1,12 @@
 #include "../odf/precompiled_cpodf.h"
+
 #include "docx_package.h"
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include "docx_conversion_context.h"
 #include "headers_footers.h"
-#include <cpdoccore/common/boost_filesystem_version.h>
 
 namespace cpdoccore { 
 namespace oox {
 namespace package {
-
-namespace fs = boost::filesystem;
 
 docx_content_types_file::docx_content_types_file()
 {
@@ -45,61 +41,61 @@ word_files::word_files()
 
 void word_files::write(const std::wstring & RootPath)
 {
-    fs::wpath path = fs::wpath(RootPath) / L"word";
-    fs::create_directory(path);
+    std::wstring path = RootPath + FILE_SEPARATOR_STR + L"word";
+	FileSystem::Directory::CreateDirectory(path.c_str());
 
     if (document_)
-        document_->write( BOOST_STRING_PATH(path) );
+        document_->write( path );
 
     if (styles_)
     {
         rels_files_.add( relationship(L"rId1", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles", L"styles.xml" ) );
-        styles_->write( BOOST_STRING_PATH(path) );
+        styles_->write( path );
     }
 
     if (fontTable_)
     {
         rels_files_.add( relationship(L"rId2", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/fontTable", L"fontTable.xml" ) );
-        fontTable_->write( BOOST_STRING_PATH(path) );
+        fontTable_->write( path );
     }
 
     if (numbering_)
     {
         rels_files_.add( relationship(L"rId3", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/numbering", L"numbering.xml" ) );
-        numbering_->write( BOOST_STRING_PATH(path) );
+        numbering_->write( path );
     }
 
     if (media_)
     {
-        media_->write( BOOST_STRING_PATH(path) );
+        media_->write( path );
     }
 
     if (headers_footers_)
     {
-        headers_footers_->write( BOOST_STRING_PATH(path) );
+        headers_footers_->write( path );
     }
 
     if (notes_)
     {
-        notes_->write( BOOST_STRING_PATH(path) );
+        notes_->write( path );
     }
     if (settings_)
     {
        rels_files_.add( relationship(L"rId4", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings", L"settings.xml" ) );
-       settings_->write( BOOST_STRING_PATH(path) );
+       settings_->write( path );
     }
 
 	if (comments_)
 	{
        rels_files_.add( relationship(L"rId5", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/comments", L"comments.xml" ) );
-       comments_->write( BOOST_STRING_PATH(path) );
+       comments_->write( path );
 	}
 
     {
         charts_files_.set_main_document(get_main_document());
-        charts_files_.write(BOOST_STRING_PATH(path));
+        charts_files_.write(path);
     }
-    rels_files_.write(BOOST_STRING_PATH(path));
+    rels_files_.write(path);
 }
 
 void word_files::update_rels(docx_conversion_context & Context)
@@ -175,8 +171,8 @@ void docx_charts_files::add_chart(chart_content_ptr chart)
 }
 void docx_charts_files::write(const std::wstring & RootPath)
 {
-    fs::wpath path = fs::wpath(RootPath) / L"charts";
-    fs::create_directory(path);
+	std::wstring path = RootPath + FILE_SEPARATOR_STR +  L"charts";
+	FileSystem::Directory::CreateDirectory(path.c_str());
 
     size_t count = 0;
 
@@ -191,7 +187,7 @@ void docx_charts_files::write(const std::wstring & RootPath)
 			static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
             contentTypes.add_override(std::wstring(L"/word/charts/") + fileName, kWSConType);
 
-            package::simple_element(fileName, item->str()).write(BOOST_STRING_PATH(path));
+            package::simple_element(fileName, item->str()).write(path);
         }
     }
 }

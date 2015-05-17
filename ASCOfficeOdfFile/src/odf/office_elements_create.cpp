@@ -3,21 +3,16 @@
 #include "office_elements_create.h"
 
 #include <iostream>
-#include <boost/thread/mutex.hpp>
-#include <boost/thread/shared_mutex.hpp>
 #include <logging.h>
 #include "skipelement.h"
 
 namespace cpdoccore { 
 namespace odf {
 
-namespace {
-    static boost::mutex create_lock_;
-}
     
 office_element_creator * office_element_creator::instance_ = NULL;
 
-office_element_creator::office_element_creator() : rw_lock_( new boost::shared_mutex() )
+office_element_creator::office_element_creator()
 {
 }
 
@@ -25,9 +20,7 @@ office_element_ptr office_element_creator::create(const ::std::wstring & ns, con
 {
     const std::wstring fullName = ns + (ns.size() > 0 ? L":" : L"") + name;
 
-    boost::shared_lock< boost::shared_mutex > lock( *rw_lock_ );
-
-    MapType::const_iterator i = map_.find( fullName );
+	MapType::const_iterator i = map_.find( fullName );
     if (i != map_.end() )
     {
         office_element_ptr element = (i->second)();
@@ -57,12 +50,8 @@ office_element_creator * office_element_creator::get()
 {
     if (!instance_)
     {
-        boost::mutex::scoped_lock lock(create_lock_);
-        if (!instance_)
-        {
-            office_element_creator * temp = new office_element_creator();
-            instance_ = temp;                
-        }
+        office_element_creator * temp = new office_element_creator();
+        instance_ = temp;                
     }
 
     return instance_;
@@ -71,8 +60,6 @@ office_element_creator * office_element_creator::get()
 bool office_element_creator::register_element(const std::wstring &ns, const std::wstring & name, CreateFuncImpl f)
 {
     const std::wstring fullName = ns + (ns.size() > 0 ? L":" : L"") + name;
-
-    boost::unique_lock< boost::shared_mutex > lock( *rw_lock_ );
 
     MapType::iterator i = map_.find( fullName );
     if ( i == map_.end() )

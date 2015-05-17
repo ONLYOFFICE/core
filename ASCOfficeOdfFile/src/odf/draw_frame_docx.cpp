@@ -14,7 +14,6 @@
 
 #include "odfcontext.h"
 #include "odf_document_impl.h"
-#include <cpdoccore/common/boost_filesystem_version.h>
 
 #include <cpdoccore/odf/odf_document.h>
 
@@ -29,7 +28,6 @@
 namespace cpdoccore { 
 namespace odf {
 
-namespace fs = ::boost::filesystem;
 
 namespace {
 bool IsExistProperty(std::vector<_property> Heap,const std::wstring Name)
@@ -1016,13 +1014,12 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 ////////////////
 	if (properties)
 	{
-		using boost::filesystem::wpath;
 		if (properties->content().fo_clip_ && drawing.fill.bitmap)
 		{
 			std::wstring strRectClip = properties->content().fo_clip_.get();
 			strRectClip = strRectClip.substr(5,strRectClip.length()-6);
 			
-			std::wstring fileName = BOOST_STRING_PATH(wpath(Context.root()->get_folder()) / href);
+			std::wstring fileName = Context.root()->get_folder() + FILE_SEPARATOR_STR+ href;
 			
 			drawing.fill.bitmap->bCrop = parse_clipping(strRectClip,fileName,drawing.fill.bitmap->cropRect);
 		}        
@@ -1164,18 +1161,14 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
         std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
 
         odf::odf_document * odf = Context.root();
-        const std::wstring folder = odf->get_folder();
+        
+		std::wstring folderPath = odf->get_folder();
 
-        fs::wpath folderPath(folder);
-        fs::wpath objectPath = folderPath / href;
+        std::wstring objectPath = folderPath +FILE_SEPARATOR_STR + href;
 
-#ifdef BOOST_FILESYSTEM_LEGACY
-       const std::wstring dbgObjectPathStr = objectPath.normalize().string();
-#else
-       const std::wstring dbgObjectPathStr = objectPath.normalize().wstring();
-#endif
+		//normalize path ??? todooo
 
-        cpdoccore::odf::odf_document objectSubDoc(dbgObjectPathStr,NULL);    
+        cpdoccore::odf::odf_document objectSubDoc(objectPath,NULL);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //функциональная часть
 		const office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();

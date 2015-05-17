@@ -1,7 +1,6 @@
 #include "../odf/precompiled_cpodf.h"
 #include <boost/foreach.hpp>
 #include <iostream>
-#include <cpdoccore/common/boost_filesystem_version.h>
 #include "../formulasconvert/include/cpdoccore/formulasconvert.h"
 
 #include "mediaitems_utils.h"
@@ -296,7 +295,6 @@ bool xlsx_drawing_context::empty() const
 
 void xlsx_drawing_context::process_images(xlsx_table_metrics & table_metrics)
 {
-	using boost::filesystem::wpath;
 	int pos_replaicement=0;
 	
     BOOST_FOREACH(drawing_object_description & pic, impl_->images_)
@@ -331,7 +329,7 @@ void xlsx_drawing_context::process_images(xlsx_table_metrics & table_metrics)
 			bool isMediaInternal = false;
 			
 
-			std::wstring fileName = BOOST_STRING_PATH(wpath(odf_packet_path_) / pic.xlink_href_);			
+			std::wstring fileName = odf_packet_path_ + FILE_SEPARATOR_STR +  pic.xlink_href_;			
 			drawing.fill.bitmap->bCrop  = odf::parse_clipping(pic.clipping_string_,fileName,drawing.fill.bitmap->cropRect);
 			drawing.fill.bitmap->bStretch = true;
 
@@ -355,8 +353,6 @@ void xlsx_drawing_context::process_images(xlsx_table_metrics & table_metrics)
 
 void xlsx_drawing_context::process_charts(xlsx_table_metrics & table_metrics)
 {
-    using boost::filesystem::wpath;
-
     BOOST_FOREACH(drawing_object_description & pic, impl_->charts_)
     {	
 		_xlsx_drawing drawing=_xlsx_drawing();

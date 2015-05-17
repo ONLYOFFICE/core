@@ -1,11 +1,14 @@
 #include "../odf/precompiled_cpodf.h"
+
 #include "xlsx_utils.h"
+
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 #include <boost/regex.hpp>
-#include <boost/date_time/gregorian/gregorian.hpp>
-#include <boost/date_time/posix_time/posix_time.hpp>
+
+//#include <boost/date_time/gregorian/gregorian.hpp>
+//#include <boost/date_time/posix_time/posix_time.hpp>
 
 namespace cpdoccore {
 
@@ -162,30 +165,34 @@ std::wstring cellType2Str(XlsxCellType::type type)
 
 boost::int64_t convertDate(int Year, int Month, int Day)
 {
-    using namespace boost::gregorian;
+	return 0;
+	//todooo !!!!
+    //using namespace boost::gregorian;
 
-    boost::int64_t daysFrom1900  = date_duration(date(Year, Month, Day) - date(1900, 1, 1)).days() + 1;
+    //boost::int64_t daysFrom1900  =  date_duration(date(Year, Month, Day) - date(1900, 1, 1)).days() + 1;
 
-    if (Year <= 1900 && 
-        Month <= 2 &&
-        Day <= 29)
-    {
-        return daysFrom1900;
-    }
-    else
-    {
-        return daysFrom1900 + 1;
-    }
+    //if (Year <= 1900 && 
+    //    Month <= 2 &&
+    //    Day <= 29)
+    //{
+    //    return daysFrom1900;
+    //}
+    //else
+    //{
+    //    return daysFrom1900 + 1;
+    //}
 }
 
 double convertTime(int hours, int minutes, double sec)
-{    
-    boost::posix_time::time_duration t(hours, minutes, 0);
-    t += boost::posix_time::millisec(static_cast<boost::uint32_t>(sec * 1000));
-    boost::posix_time::time_duration day(24, 0, 0);
+{  
+	//todooo !!!!!
 
-    const boost::uint64_t m1 = t.total_milliseconds() ;
-    const boost::uint64_t m2 = day.total_milliseconds() ;
+    //boost::posix_time::time_duration t(hours, minutes, 0);
+    //t += boost::posix_time::millisec(static_cast<boost::uint32_t>(sec * 1000));
+    //boost::posix_time::time_duration day(24, 0, 0);
+
+    const boost::uint64_t m1 = 0;//t.total_milliseconds() ;
+    const boost::uint64_t m2 = 1;//day.total_milliseconds() ;
     const double v = 1.0 * m1 / m2;
     return v;
 }

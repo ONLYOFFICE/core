@@ -1,7 +1,3 @@
-#pragma once
-
-#include "stdAfx.h"
-
 #include "DocxConverter.h"
 #include "../utils.h"
 

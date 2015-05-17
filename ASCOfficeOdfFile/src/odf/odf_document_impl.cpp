@@ -1,14 +1,16 @@
 #include "precompiled_cpodf.h"
-#include <cpdoccore/odf/odf_document.h>
+
+#include <iostream>
+
 #include "odf_document_impl.h"
 
+#include <cpdoccore/odf/odf_document.h>
 #include <cpdoccore/CPString.h>
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
+#include <cpdoccore/xml/sax.h>
+#include <cpdoccore/common/readdocelement.h>
+
 #include <boost/foreach.hpp>
 #include <boost_string.h>
-#include <cpdoccore/xml/sax.h>
-#include <cpdoccore/common/boost_filesystem_version.h>
 
 #include "abstract_xml.h"
 #include "odfcontext.h"
@@ -43,9 +45,6 @@
 
 #include "draw_page.h"
 
-#include <cpdoccore/common/readdocelement.h>
-#include <iostream>
-
 #include "documentcontext.h"
 
 #include "..\progressCallback.h"
@@ -54,47 +53,32 @@
 namespace cpdoccore { 
 namespace odf {
 
-namespace fs = ::boost::filesystem;
-
 namespace {
-content_xml_t_ptr read_file_content(const fs::wpath & Path)
+content_xml_t_ptr read_file_content(const std::wstring & Path)
 {
-    //fs::ifstream content_file;
-    //content_file.open(Path);
-   // if (content_file)
-    {
-        xml::sax_ptr Reader = xml::create_sax( /*content_file*/ Path.string().c_str());
-        content_xml_t_ptr result( new content_xml_t() );
-        
-		const std::wstring namespacePrefix	= Reader->namespacePrefix();
-		const std::wstring localName		= Reader->nodeLocalName();
-		
-		result->add_child_element(Reader.get(), namespacePrefix, localName);		
+    xml::sax_ptr Reader = xml::create_sax( Path.c_str());
+    content_xml_t_ptr result( new content_xml_t() );
+    
+	const std::wstring namespacePrefix	= Reader->namespacePrefix();
+	const std::wstring localName		= Reader->nodeLocalName();
 	
-		//result->read_sax(sax.get());
-        return result;
+	result->add_child_element(Reader.get(), namespacePrefix, localName);		
 
-    }
-    //else
-    //{
-    //    _CP_LOG(info) << L"[warning] open file error (" <<  BOOST_STRING_PATH(Path) << L")\n";
-    //}
     return content_xml_t_ptr();
 }
 }
 
-odf_document::Impl::Impl(const std::wstring & Folder, const ProgressCallback* CallBack) : context_(new odf_read_context()), base_folder_(Folder), pCallBack(CallBack), bUserStopConvert (0)
+odf_document::Impl::Impl(const std::wstring & folderPath, const ProgressCallback* CallBack) : 
+			context_(new odf_read_context()), base_folder_(folderPath), pCallBack(CallBack), bUserStopConvert (0)
 {
 	office_mime_type_ = 0;
 	encrypted = false;
 
-    fs::wpath folderPath(Folder);
-
-    fs::wpath content_xml	= folderPath / L"content.xml";
-    fs::wpath styles_xml	= folderPath / L"styles.xml";
-    fs::wpath meta_xml		= folderPath / L"meta.xml";
-    fs::wpath settings_xml	= folderPath / L"settings.xml";
-	fs::wpath manifest_xml	= folderPath / L"META-INF" / L"manifest.xml";
+    std::wstring content_xml	= folderPath + FILE_SEPARATOR_STR + L"content.xml";
+    std::wstring styles_xml		= folderPath + FILE_SEPARATOR_STR + L"styles.xml";
+    std::wstring meta_xml		= folderPath + FILE_SEPARATOR_STR + L"meta.xml";
+    std::wstring settings_xml	= folderPath + FILE_SEPARATOR_STR + L"settings.xml";
+	std::wstring manifest_xml	= folderPath + FILE_SEPARATOR_STR + L"META-INF" + FILE_SEPARATOR_STR + L"manifest.xml";
 
     _CP_LOG(info) << L"[info] read manifest.xml" << std::endl;
     manifest_xml_ = read_file_content(manifest_xml);
@@ -618,13 +602,13 @@ bool odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context)
     catch(boost::exception & ex)
     {
         _CP_LOG(info) << L"\n[error]:\n";
-        _CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(boost::diagnostic_information(ex))) << std::endl;
+        //_CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(boost::diagnostic_information(ex))) << std::endl;
         throw;
     }
     catch(std::exception & ex)
     {
         _CP_LOG(info) << L"\n[error]:\n";
-        _CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(ex.what())) << L"\n";
+        //_CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(ex.what())) << L"\n";
         throw;
     }
     catch(...)
@@ -663,13 +647,13 @@ bool odf_document::Impl::pptx_convert(oox::pptx_conversion_context & Context)
     catch(boost::exception & ex)
     {
         _CP_LOG(info) << L"\n[error]:\n";
-        _CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(boost::diagnostic_information(ex))) << std::endl;
+        //_CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(boost::diagnostic_information(ex))) << std::endl;
         throw;
     }
     catch(std::exception & ex)
     {
         _CP_LOG(info) << L"\n[error]:\n";
-        _CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(ex.what())) << std::endl;
+        //_CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(ex.what())) << std::endl;
         throw;
     }
     catch(...)

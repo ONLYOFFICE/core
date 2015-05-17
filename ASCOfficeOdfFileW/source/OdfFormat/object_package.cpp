@@ -1,13 +1,13 @@
 #include "precompiled_cpodf.h"
 
 #include <boost/foreach.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include <cpdoccore/utf8cpp/utf8.h>
-#include <cpdoccore/common/boost_filesystem_version.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "object_package.h"
 #include "mediaitems.h"
+
+#include "../../../DesktopEditor/common/File.h"
 
 namespace cpdoccore 
 {
@@ -15,8 +15,6 @@ namespace odf
 {
 	namespace package 
 	{
-
-		namespace fs = boost::filesystem;
 		simple_element::simple_element(const std::wstring & FileName, const std::wstring & Content, bool utf8) : file_name_(FileName), utf8_(utf8)
 		{
 			if (utf8_)
@@ -28,11 +26,19 @@ namespace odf
 
 		void simple_element::write(const std::wstring & RootPath)
 		{
-			fs::ofstream file( fs::wpath(RootPath) / file_name_, std::ios_base::out | std::ios_base::binary );
+			NSFile::CBinaryFile file;
 			
-			if (utf8_) 
-				file << "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
-			file << content_utf8_;
+			if (file.CreateFileW( RootPath + FILE_SEPARATOR_STR + file_name_ ) == true)
+			{
+				if (utf8_) 
+				{
+					std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>";
+					file.WriteFile((BYTE*)root.c_str(), root.length());
+				}
+				file.WriteFile((BYTE*)content_utf8_.c_str(), content_utf8_.length());
+
+				file.CloseFile();
+			}
 		}
 
 		element_ptr simple_element::create(const std::wstring & FileName, const std::wstring & Content, bool utf8)
@@ -145,17 +151,16 @@ namespace odf
 		{
 			if (mediaitems_.count_media < 1)return;
 
-			fs::wpath path = fs::wpath(RootPath) / L"media";
-			fs::create_directory(path);
+			std::wstring path = RootPath + FILE_SEPARATOR_STR + L"media";
+			FileSystem::Directory::CreateDirectory(path);
 
 			BOOST_FOREACH( _mediaitems::item & item, mediaitems_.items() )
 			{
 				if (item.type == _mediaitems::typeAudio || item.type == _mediaitems::typeVideo)
 				{
-					fs::wpath file_name  = fs::wpath(item.oox_ref);
-					fs::wpath file_name_out = fs::wpath(RootPath) / item.odf_ref;
+					std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.odf_ref;
 
-					boost::filesystem::copy_file(file_name, file_name_out);
+					NSFile::CFileBinary::Copy(item.oox_ref, file_name_out);
 				}
 			}
 
@@ -170,19 +175,18 @@ namespace odf
 		{
 			if (mediaitems_.count_image < 1 )return;
 
-			fs::wpath path = fs::wpath(RootPath) / L"Pictures";
-			fs::create_directory(path);
+			std::wstring path = RootPath + FILE_SEPARATOR_STR + L"Pictures";
+			FileSystem::Directory::CreateDirectory(path);
 
 			BOOST_FOREACH( _mediaitems::item & item, mediaitems_.items() )
 			{
 				if (item.type == _mediaitems::typeImage && item.oox_ref.length()>0)
 				{
-					fs::wpath file_name  = fs::wpath(item.oox_ref);
-					fs::wpath file_name_out = fs::wpath(RootPath) / item.odf_ref;
+					std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.odf_ref;
 
 					try
 					{
-						boost::filesystem::copy_file(file_name, file_name_out);
+						boost::filesystem::copy_file(item.oox_ref, file_name_out);
 					}catch (...)
 					{
 					}

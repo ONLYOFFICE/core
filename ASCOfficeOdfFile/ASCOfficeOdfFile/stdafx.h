@@ -36,13 +36,13 @@
 
 #include <atlbase.h>
 #include <atlcom.h>
-#include <atlwin.h>
-#include <atltypes.h>
-#include <atlctl.h>
-#include <atlhost.h>
+//#include <atlwin.h>
+//#include <atltypes.h>
+//#include <atlctl.h>
+//#include <atlhost.h>
 
-#include <windef.h>
-#include <wingdi.h>
+//#include <windef.h>
+//#include <wingdi.h>
 using namespace ATL;
 
 typedef void (*OdfOnProgressCallback)( LPVOID lpParam, long nID, long nPercent );

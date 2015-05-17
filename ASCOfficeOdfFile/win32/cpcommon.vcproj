@@ -290,10 +290,6 @@
 			Name="include"
 			>
 			<File
-				RelativePath="..\include\cpdoccore\common\boost_filesystem_version.h"
-				>
-			</File>
-			<File
 				RelativePath="..\include\cpdoccore\common\readdocelement.h"
 				>
 			</File>

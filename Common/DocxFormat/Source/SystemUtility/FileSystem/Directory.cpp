@@ -109,7 +109,7 @@ namespace FileSystem
 		NSDirectory::DeleteDirectory(strDirectory.GetString(), deleteRoot);
 	}
 
-    CString Directory::CreateDirectoryWithUniqueName (CString strFolderPathRoot)
+    CString Directory::CreateDirectoryWithUniqueName (CString & strFolderPathRoot)
     {
         UUID uuid;
         RPC_WSTR str_uuid;
@@ -244,5 +244,36 @@ namespace FileSystem
 		}
         return strFolderPath.substr(0,n1);
 	}
+	void Directory::DeleteDirectory(std::wstring & strDirectory, bool deleteRoot)
+	{
+		NSDirectory::DeleteDirectory(strDirectory, deleteRoot);
+	}
+	std::wstring Directory::CreateDirectoryWithUniqueName (std::wstring & strFolderPathRoot)
+    {
+        UUID uuid;
+        RPC_WSTR str_uuid;
+        UuidCreate (&uuid);
+        UuidToString (&uuid, &str_uuid);
+		std::wstring pcTemplate = strFolderPathRoot + FILE_SEPARATOR_STR;
+        pcTemplate += (TCHAR *) str_uuid;
+        RpcStringFree (&str_uuid);
+
+        int attemps = 10;
+        while (!CreateDirectory(pcTemplate.c_str()))
+        {
+            UuidCreate (&uuid);
+            UuidToString (&uuid, &str_uuid);
+            pcTemplate = strFolderPathRoot + FILE_SEPARATOR_STR;
+            pcTemplate += (TCHAR *) str_uuid;
+            RpcStringFree (&str_uuid);
+            attemps--;
+
+            if (0 == attemps)
+            {
+                pcTemplate = _T("");
+            }
+        }
+        return pcTemplate;
+    }
 #endif
 }

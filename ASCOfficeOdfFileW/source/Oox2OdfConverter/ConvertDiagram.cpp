@@ -1,5 +1,3 @@
-#include "stdAfx.h"
-
 #include "Converter.h"
 #include "../utils.h"
 

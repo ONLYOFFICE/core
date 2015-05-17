@@ -1,6 +1,3 @@
-#pragma once
-
-#include "stdAfx.h"
 
 #include "XlsxConverter.h"
 #include "../utils.h"

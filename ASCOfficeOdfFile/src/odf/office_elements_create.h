@@ -3,14 +3,10 @@
 
 #include <string>
 #include <map>
-#include <boost/function.hpp>
+//#include <boost/function.hpp>
 #include <cpdoccore/CPAssert.h>
 #include <cpdoccore/CPSharedPtr.h>
 #include "office_elements.h"
-
-namespace boost {
-    class shared_mutex;
-}
 
 namespace xml
 {
@@ -53,7 +49,6 @@ public:
 private:
     office_element_creator();
     static office_element_creator * instance_;
-    shared_ptr<boost::shared_mutex>::Type rw_lock_;
 };
 
 /// Класс, обеспечивающий регистрацию элементов

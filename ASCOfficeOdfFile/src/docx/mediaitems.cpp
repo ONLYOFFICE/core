@@ -2,7 +2,6 @@
 #include "mediaitems.h"
 
 #include <regex.h>
-#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 
@@ -10,13 +9,12 @@
 
 #include "docx_rels.h"
 #include "mediaitems_utils.h"
-#include <cpdoccore/common/boost_filesystem_version.h>
+
+#include "../../Common/DocxFormat/Source/Base/Base.h"
 
 namespace cpdoccore { 
 namespace oox {
 
-
-using boost::filesystem::wpath;
 
 mediaitems::item::item(	std::wstring const & _href,
                        Type _type,
@@ -40,8 +38,6 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool 
     std::wstring ref;
     return add_or_find(href, type, isInternal, ref);
 }
-
-namespace fs = boost::filesystem;
 
 std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool & isInternal, std::wstring & ref)
 {
@@ -67,7 +63,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool 
 	
 	inputFileName = utils::media::create_file_name(href, type, number);
 	
-    std::wstring inputPath = isMediaInternal ? BOOST_STRING_PATH(wpath(odf_packet_) / href) : href;
+    std::wstring inputPath = isMediaInternal ? odf_packet_ + FILE_SEPARATOR_STR + href : href;
 	std::wstring outputPath = isMediaInternal ? ( sub_path + inputFileName) : href;
 	if ( type == typeChart)outputPath= outputPath + L".xml";
 
@@ -91,8 +87,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool 
 		}
 		else if ( type == typeImage)
 		{
-			fs::wpath file_name  = fs::wpath(inputPath);
-			if (file_name.extension() == L".svm" || file_name.extension().empty())
+			if (inputPath.rfind (L".svm") >=0 )
 			{
 				outputPath = outputPath + L".png"; 
 			}

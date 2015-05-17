@@ -122,7 +122,7 @@
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfATL="1"
+			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
 			>
@@ -325,7 +325,7 @@
 			OutputDirectory="$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfATL="1"
+			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -421,7 +421,7 @@
 			<Tool
 				Name="VCPostBuildEventTool"
 				Description="Performing registration"
-				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\..\Redist\x64&quot;&#x0D;&#x0A;regsvr32 /s /c &quot;$(TargetPath)&quot;"
+				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\..\Redist\x64&quot;&#x0D;&#x0A;regsvr32 /s /c &quot;$(TargetPath)&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
 		<Configuration
@@ -530,7 +530,7 @@
 			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
 			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="2"
-			UseOfATL="1"
+			UseOfATL="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
 			CharacterSet="1"
 			WholeProgramOptimization="1"
@@ -640,7 +640,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\ConvertOO2OOX.cpp"
+				RelativePath=".\OfficeOdfFile.cpp"
 				>
 			</File>
 		</Filter>
@@ -649,10 +649,6 @@
 			Filter="h;hpp;hxx;hm;inl;inc;xsd"
 			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
 			>
-			<File
-				RelativePath=".\ConvertOO2OOX.h"
-				>
-			</File>
 			<File
 				RelativePath=".\OfficeOdfFile.h"
 				>
@@ -728,10 +724,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath=".\OfficeOdfFile.cpp"
-			>
-		</File>
 		<File
 			RelativePath=".\ReadMe.txt"
 			>

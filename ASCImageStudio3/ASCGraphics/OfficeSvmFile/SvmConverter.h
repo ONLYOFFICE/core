@@ -1,8 +1,4 @@
-#ifndef SVM_COVERTER
-#define SVM_COVERTER
+#pragma once
+#include <string>
 
-#include "../../../Common/boost_filesystem_version.h"
-
-void ConvertSvmToImage( const boost::filesystem::wpath & oSource, const boost::filesystem::wpath & oDestination );
-
-#endif
+void ConvertSvmToImage( const std::wstring & oSource, const std::wstring & oDestination );

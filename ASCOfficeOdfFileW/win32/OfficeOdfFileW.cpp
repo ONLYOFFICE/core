@@ -1,6 +1,5 @@
 // OfficeOdfFileW.cpp : Implementation of COfficeOdfFileW
 
-#include "stdafx.h"
 #include "OfficeOdfFileW.h"
 #include "../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 

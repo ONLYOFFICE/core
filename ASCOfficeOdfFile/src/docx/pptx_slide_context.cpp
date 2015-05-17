@@ -2,7 +2,6 @@
 #include <boost/foreach.hpp>
 #include <iostream>
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include <cpdoccore/common/boost_filesystem_version.h>
 #include <cpdoccore/odf/odf_document.h>
 
 #include "mediaitems_utils.h"
@@ -371,7 +370,6 @@ void pptx_slide_context::process_drawings()
 
 void pptx_slide_context::process_images()
 {
-	using boost::filesystem::wpath;
 	int pos_replaicement=0, pos_preview=0;
 	
     BOOST_FOREACH(drawing_object_description & pic, impl_->images_)
@@ -401,7 +399,7 @@ void pptx_slide_context::process_images()
 			drawing.id = impl_->next_rId();			
 			drawing.name = pic.draw_name_;
 
-			std::wstring fileName = BOOST_STRING_PATH(wpath(impl_->odfPacket_) / pic.xlink_href_);			
+			std::wstring fileName = impl_->odfPacket_ + FILE_SEPARATOR_STR + pic.xlink_href_;			
 			drawing.fill.bitmap->bCrop  = odf::parse_clipping(pic.clipping_string_,fileName,drawing.fill.bitmap->cropRect);
 			drawing.fill.bitmap->bStretch = true;
 
@@ -429,8 +427,6 @@ void pptx_slide_context::process_images()
 }
 void pptx_slide_context::process_charts()
 {
-    using boost::filesystem::wpath;
-
     BOOST_FOREACH(drawing_object_description & pic, impl_->charts_)
     {	
 		_pptx_drawing drawing=_pptx_drawing();
@@ -451,8 +447,6 @@ void pptx_slide_context::process_charts()
 
 void pptx_slide_context::process_tables()
 {
-    using boost::filesystem::wpath;
-
     BOOST_FOREACH(drawing_object_description & pic, impl_->tables_)
     {	
 		_pptx_drawing drawing=_pptx_drawing();

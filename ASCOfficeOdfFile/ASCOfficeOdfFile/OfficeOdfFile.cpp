@@ -1,30 +1,22 @@
 /// \file   OfficeOdfFile.cpp
-
 #include "stdafx.h"
 
 #include "OfficeOdfFile.h"
 #include "../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 
-#include <string>
-#include <boost/uuid/uuid.hpp>
-#include <cpdoccore/common/boost_filesystem_version.h>
-
-#pragma warning(push)
-#pragma warning(disable : 4244)
-#include <boost/uuid/random_generator.hpp>
-#pragma warning(pop)
-
 #include <boost/algorithm/string/case_conv.hpp>
-#include <boost/uuid/uuid_io.hpp>
 #include <lexical_cast.h>
-#include <boost/filesystem.hpp>
-#include <iostream>
+
+#include "../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
 #include "ConvertOO2OOX.h"
 
 #include "../../Common/XmlUtils.h"
 
 #include "../../Common/ASCATLError.h"
+
+#include <string>
 
 // ВНИМАНИЕ:    значение 1 используется для тестирования, на выходе получаем заархивированный файл xlsx или docx
 //              значение 0 используется для релиза, так как на выходе по спецификации нам требуется распакованный package
@@ -40,24 +32,12 @@ COfficeOdfFile::COfficeOdfFile()
 
 namespace {
 
-// имя директории - uuid
-boost::filesystem::wpath MakeTempDirectoryName(const std::wstring & Dst)
-{
-    boost::uuids::random_generator gen;
-    boost::uuids::uuid u = gen();
-    boost::filesystem::wpath path = boost::filesystem::wpath(Dst) / boost::lexical_cast<std::wstring>(u);
-    return path;
-}
 
 std::wstring bstr2wstring(BSTR str)
 {
     return str ? std::wstring(&str[0], &str[::SysStringLen(str)]) : L"";
 }
 
-boost::filesystem::wpath MakeTempDirectoryName(BSTR Dst)
-{
-    return MakeTempDirectoryName(bstr2wstring(Dst));
-}
 
 }
 
@@ -83,44 +63,35 @@ bool COfficeOdfFile::loadOptionFromXML(CString parametr,BSTR sXMLOptions)
 
 HRESULT COfficeOdfFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions)
 {
-    HRESULT hr;
-    if (!sDstPath)
-    {
-        _ASSERTE(!!sDstPath);
-        return E_FAIL;
-    }
-
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
-    boost::filesystem::wpath outputDir = boost::filesystem::wpath(bstr2wstring(sDstPath)).parent_path();
+	std::wstring outputDir = FileSystem::Directory::GetFolderPath(std::wstring(sDstPath));
 #else
-    boost::filesystem::wpath outputDir = boost::filesystem::wpath(bstr2wstring(sDstPath));
+	std::wstring outputDir = sDstPath;
 #endif
 
     // временная директория, в которую распакуем исходный файл,
     // создаем её в директории куда запишем результат
 
-    //boost::filesystem::wpath srcTempPath = MakeTempDirectoryName(outputDir.string<std::wstring>());
-    boost::filesystem::wpath srcTempPath = MakeTempDirectoryName(BOOST_STRING_PATH(outputDir));
+	std::wstring srcTempPath = FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
     
-
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
-    //boost::filesystem::wpath dstTempPath = MakeTempDirectoryName(outputDir.string<std::wstring>());
-    boost::filesystem::wpath dstTempPath = MakeTempDirectoryName(BOOST_STRING_PATH(outputDir));
+	std::wstring dstTempPath = FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
 #else
-    boost::filesystem::wpath dstTempPath = outputDir.string();
+    std::wstring dstTempPath = outputDir;
 #endif
 
 	bOnlyPresentation = loadOptionFromXML(L"onlyPresentation", sXMLOptions);
 
-    try
+    HRESULT hr;
+	try
     {
-        boost::filesystem::create_directory(srcTempPath);
+        FileSystem::Directory::CreateDirectory(srcTempPath);
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
         // создаем временную директорию для результирующих файлов
-        boost::filesystem::create_directory(dstTempPath);
+		FileSystem::Directory::CreateDirectory(dstTempPath);
 #endif
         //hr = LoadFromFileImpl(bstr2wstring(sSrcFileName), srcTempPath.string<std::wstring>(), dstTempPath.string<std::wstring>(), bstr2wstring(sDstPath));
-        hr = LoadFromFileImpl(bstr2wstring(sSrcFileName), BOOST_STRING_PATH(srcTempPath), BOOST_STRING_PATH(dstTempPath), bstr2wstring(sDstPath));
+        hr = LoadFromFileImpl(bstr2wstring(sSrcFileName), srcTempPath, dstTempPath, bstr2wstring(sDstPath));
         
     }
     catch(...)
@@ -131,7 +102,7 @@ HRESULT COfficeOdfFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXML
     // стираем временную директорию с распакованным исходником
     try
     {
-        boost::filesystem::remove_all(srcTempPath);
+		FileSystem::Directory::DeleteDirectory(srcTempPath);
     }
     catch(...) 
     {
@@ -141,7 +112,7 @@ HRESULT COfficeOdfFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXML
     // в случае если на выходе файл — стираем временную директорию (мы сами ее создали)
     try 
     {
-        boost::filesystem::remove_all(dstTempPath);
+		FileSystem::Directory::DeleteDirectory(dstTempPath);
     }
     catch(...)
     {
@@ -158,12 +129,6 @@ HRESULT COfficeOdfFile::LoadFromFileImpl(const std::wstring & srcFileName,
 {
     HRESULT hr = AVS_ERROR_UNEXPECTED;    
         
-#ifdef BOOST_FILESYSTEM_LEGACY
-    const std::wstring ext = boost::algorithm::to_lower_copy(boost::filesystem::wpath(srcFileName).extension());
-#else
-    const std::wstring ext = boost::algorithm::to_lower_copy(boost::filesystem::wpath(srcFileName).extension().string<std::wstring>());
-#endif
-
     // распаковываем исходник во временную директорию
 	COfficeUtils oCOfficeUtils(NULL);
     if (S_OK != oCOfficeUtils.ExtractToDirectory(srcFileName.c_str(), srcTempPath.c_str(), NULL, 0))
@@ -175,7 +140,7 @@ HRESULT COfficeOdfFile::LoadFromFileImpl(const std::wstring & srcFileName,
 	ffCallBack.OnProgressEx	=	OnProgressExFunc;
 	ffCallBack.caller		=	this;
 
-	hr = ConvertOO2OOX(ext,srcTempPath, dstTempPath,bOnlyPresentation, &ffCallBack);
+	hr = ConvertOO2OOX(srcTempPath, dstTempPath,bOnlyPresentation, &ffCallBack);
 
 	if (hr != S_OK)  return hr;
    

@@ -1,19 +1,14 @@
 #include "../odf/precompiled_cpodf.h"
 #include "xlsx_package.h"
 
-#include <boost/filesystem.hpp>
-#include <boost/filesystem/fstream.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include <cpdoccore/common/boost_filesystem_version.h>
 #include <cpdoccore/utf8cpp/utf8.h>
 
 namespace cpdoccore { 
 namespace oox {
 namespace package {
-
-namespace fs = boost::filesystem;
 
 
 xlsx_content_types_file::xlsx_content_types_file()
@@ -42,10 +37,12 @@ xlsx_document::xlsx_document()
 {
     xl_files_.set_main_document(this);
     rels_file_ptr relFile = rels_file::create(L".rels");
-    relFile->get_rels().add(relationship(L"rId1", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", L"xl/workbook.xml"));
+   
+	relFile->get_rels().add(relationship(L"rId1", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", L"xl/workbook.xml"));
     relFile->get_rels().add(relationship(L"rId2", L"http://schemas.openxmlformats.org/officedocument/2006/relationships/metadata/core-properties", L"docProps/core.xml"));
     relFile->get_rels().add(relationship(L"rId3", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/extended-properties", L"docProps/app.xml"));
-    rels_files_.add_rel_file( relFile );
+   
+	rels_files_.add_rel_file( relFile );
 }
 
 void xlsx_document::write(const std::wstring & RootPath)
@@ -92,8 +89,8 @@ void sheets_files::add_sheet(sheet_content_ptr sheet)
 
 void sheets_files::write(const std::wstring & RootPath)
 {
-    fs::wpath path = fs::wpath(RootPath) / L"worksheets";
-    fs::create_directory(path);
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"worksheets";
+	FileSystem::Directory::CreateDirectory(path.c_str());
 
     size_t count = 0;
 
@@ -118,11 +115,11 @@ void sheets_files::write(const std::wstring & RootPath)
             item->get_rel_file()->set_file_name(fileName + L".rels"); 
             rels_files relFiles;
             relFiles.add_rel_file(item->get_rel_file());
-            relFiles.write(BOOST_STRING_PATH(path));
+            relFiles.write(path);
             
             //item->get_rel_file()->write(path.string<std::wstring>());
 
-            package::simple_element(fileName, item->str()).write(BOOST_STRING_PATH(path));
+            package::simple_element(fileName, item->str()).write(path);
         }
     }
 }
@@ -136,62 +133,62 @@ xl_files::xl_files()
 
 void xl_files::write(const std::wstring & RootPath)
 {
-    fs::wpath path = fs::wpath(RootPath) / L"xl";
-    fs::create_directory(path);
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"xl";
+	FileSystem::Directory::CreateDirectory(path.c_str());
 
     sheets_files_.set_rels(&rels_files_);
     sheets_files_.set_main_document( this->get_main_document() );
-    sheets_files_.write(BOOST_STRING_PATH(path));
+    sheets_files_.write(path);
 
 	int index = 1;
     if (true)
     {
-        //workbook_->hyperlinks->write(BOOST_STRING_PATH(path));
+        //workbook_->hyperlinks->write(path);
         rels_files_.add( relationship( L"hId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/officeDocument", L"xl/workbook.xml" ) );
 	}
 	if (sharedStrings_)
     {
-        sharedStrings_->write(BOOST_STRING_PATH(path));
+        sharedStrings_->write(path);
         rels_files_.add( relationship( L"shId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/sharedStrings", L"sharedStrings.xml" ) );
     }
 
     if (styles_)
     {
-       styles_->write(BOOST_STRING_PATH(path));
+       styles_->write(path);
        rels_files_.add( relationship( L"stId1",  L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/styles", L"styles.xml" ) );
     }
 
     if (workbook_)
     {
-        workbook_->write(BOOST_STRING_PATH(path));
+        workbook_->write(path);
     }
 
     if (theme_)
     {
-        theme_->write(BOOST_STRING_PATH(path));
+        theme_->write(path);
     }
 
     if (media_)
     {
         media_->set_main_document(get_main_document());
-        media_->write(BOOST_STRING_PATH(path));
+        media_->write(path);
     }
 
     {
         charts_files_.set_main_document(get_main_document());
-        charts_files_.write(BOOST_STRING_PATH(path));
+        charts_files_.write(path);
     }
 	if (drawings_)
     {
         drawings_->set_main_document(get_main_document());
-        drawings_->write(BOOST_STRING_PATH(path));
+        drawings_->write(path);
     }
 	if (comments_)
     {
         comments_->set_main_document(get_main_document());
-        comments_->write(BOOST_STRING_PATH(path));
+        comments_->write(path);
     }
-    rels_files_.write(BOOST_STRING_PATH(path));
+    rels_files_.write(path);
 }
 
 void xl_files::set_workbook(element_ptr Element)
@@ -241,8 +238,8 @@ void xl_charts_files::add_chart(chart_content_ptr chart)
 }
 void xl_charts_files::write(const std::wstring & RootPath)
 {
-    fs::wpath path = fs::wpath(RootPath) / L"charts";
-    fs::create_directory(path);
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"charts";
+	FileSystem::Directory::CreateDirectory(path.c_str());
 
     size_t count = 0;
 
@@ -257,7 +254,7 @@ void xl_charts_files::write(const std::wstring & RootPath)
 			static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.drawingml.chart+xml";
             contentTypes.add_override(std::wstring(L"/xl/charts/") + fileName, kWSConType);
 
-            package::simple_element(fileName, item->str()).write(BOOST_STRING_PATH(path));
+            package::simple_element(fileName, item->str()).write(path);
         }
     }
 }
@@ -269,12 +266,12 @@ xl_drawings_ptr xl_drawings::create(const std::vector<drawing_elm> & elms)
 
 void xl_drawings::write(const std::wstring & RootPath)
 {
-    fs::wpath path = fs::wpath(RootPath) / L"drawings";
-    fs::create_directory(path);
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"drawings";
+	FileSystem::Directory::CreateDirectory(path.c_str());
 
     BOOST_FOREACH(drawing_elm const & e, drawings_)
     {
-        package::simple_element(e.filename, e.content).write(BOOST_STRING_PATH(path));        
+        package::simple_element(e.filename, e.content).write(path);        
 
         rels_files relFiles;
         rels_file_ptr r = rels_file::create(e.filename + L".rels");
@@ -282,7 +279,7 @@ void xl_drawings::write(const std::wstring & RootPath)
                
                 
         relFiles.add_rel_file(r);
-        relFiles.write(BOOST_STRING_PATH(path));
+        relFiles.write(path);
         
 
         content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
@@ -300,10 +297,8 @@ xl_comments_ptr xl_comments::create(const std::vector<comment_elm> & elms)
 
 void xl_comments::write(const std::wstring & RootPath)
 {
-    fs::wpath path = fs::wpath(RootPath);
-  
-	fs::wpath vml_path = fs::wpath(RootPath) / L"drawings";
-    fs::create_directory(vml_path);
+	std::wstring vml_path = RootPath + FILE_SEPARATOR_STR + L"drawings";
+	FileSystem::Directory::CreateDirectory(vml_path.c_str());
    
 	BOOST_FOREACH(comment_elm const & e, comments_)
     {
@@ -312,8 +307,8 @@ void xl_comments::write(const std::wstring & RootPath)
 		static const std::wstring kWSConType = L"application/vnd.openxmlformats-officedocument.spreadsheetml.comments+xml";
         contentTypes.add_override(std::wstring(L"/xl/") + e.filename, kWSConType);
 			
-		package::simple_element(e.filename, e.content).write(BOOST_STRING_PATH(path));        
-		package::simple_element(e.vml_filename, e.vml_content).write(BOOST_STRING_PATH(vml_path));        
+		package::simple_element(e.filename, e.content).write(RootPath);        
+		package::simple_element(e.vml_filename, e.vml_content).write(vml_path);        
 	}
 }
 

@@ -1,4 +1,5 @@
-#include "../precompiled_cpodf.h"
+#include <boost/algorithm/string.hpp>
+
 #include "calcext_type.h"
 
 #include <ostream>

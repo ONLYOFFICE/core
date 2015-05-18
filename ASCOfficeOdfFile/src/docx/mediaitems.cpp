@@ -88,9 +88,10 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool 
 		}
 		else if ( type == typeImage)
 		{
-			if (inputPath.rfind (L".svm") >=0 )
+			int n_svm = inputPath.rfind (L".svm");
+			if ( n_svm >= 0 )
 			{
-				outputPath = outputPath + L".png"; 
+				outputPath = outputPath.substr(0, n_svm) + L".png"; 
 			}
 			id = std::wstring(L"picId") + boost::lexical_cast<std::wstring>(count_image+1);
 			count_image++;

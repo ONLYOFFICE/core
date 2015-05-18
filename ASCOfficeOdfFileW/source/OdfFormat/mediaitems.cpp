@@ -2,7 +2,7 @@
 #include "mediaitems.h"
 #include "odf_rels.h"
 
-#include <regex.h>
+#include <boost/regex.h>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 

@@ -1,4 +1,4 @@
-
+#include <boost/algorithm/string.hpp>
 
 #include "logging.h"
 

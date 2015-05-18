@@ -4,7 +4,6 @@
 #include <iostream>
 #include <sstream>
 #include <cpdoccore/CPScopedPtr.h>
-#include <cpdoccore/CPAssert.h>
 
 namespace cpdoccore { 
 namespace odf { 

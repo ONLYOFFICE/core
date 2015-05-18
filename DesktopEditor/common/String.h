@@ -2,6 +2,8 @@
 #define _BUILD_STRING_CROSSPLATFORM_H_
 
 #include "CPEncodings/CodePage.h"
+#include <vector>
+#include <sstream>
 
 namespace NSString
 {
@@ -178,6 +180,23 @@ namespace NSString
 			return sRet;
 		}
 	};
+
+	static std::vector<std::wstring>& Split(const std::wstring& wsString, wchar_t nDelim, std::vector<std::wstring> &arrElements)
+	{
+		std::wstringstream wStringStream(wsString);
+		std::wstring wsItem;
+		while (std::getline(wStringStream, wsItem, nDelim))
+		{
+			arrElements.push_back(wsItem);
+		}
+		return arrElements;
+	}
+	static std::vector<std::wstring>  Split(const std::wstring& wsString, wchar_t nDelim)
+	{
+		std::vector<std::wstring> wsElements;
+		Split(wsString, nDelim, wsElements);
+		return wsElements;
+	}
 };
 
 #endif // _BUILD_STRING_CROSSPLATFORM_H_

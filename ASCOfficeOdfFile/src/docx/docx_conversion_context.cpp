@@ -1,10 +1,14 @@
-#include "../odf/precompiled_cpodf.h"
-#include "docx_conversion_context.h"
+
+
 #include <boost/foreach.hpp>
+
 #include <iostream>
+
 #include <cpdoccore/xml/utils.h>
 #include <cpdoccore/odf/odf_document.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
+
+#include "docx_conversion_context.h"
 
 #include "../odf/odfcontext.h"
 #include "../odf/style_text_properties.h"
@@ -132,7 +136,6 @@ oox_chart_context & docx_conversion_context::current_chart()
     }
     else
     {
-        CP_ASSERT(false);
         throw std::runtime_error("internal error");
     }
 }

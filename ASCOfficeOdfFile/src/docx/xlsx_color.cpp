@@ -1,9 +1,12 @@
-#include "../odf/precompiled_cpodf.h"
-#include "xlsx_font.h"
+
+#include <sstream>
+
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/functional.hpp>
-#include <sstream>
+#include <boost/functional/hash/hash.hpp>
+
+#include "xlsx_font.h"
+
 
 namespace cpdoccore {
 namespace oox {

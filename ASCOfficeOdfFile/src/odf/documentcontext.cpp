@@ -1,4 +1,5 @@
-#include "precompiled_cpodf.h"
+#include <stdio.h>
+
 #include "documentcontext.h"
 
 namespace cpdoccore { 

@@ -6,9 +6,9 @@
 #include <vector>
 
 #include <boost/foreach.hpp>
-#include <regex.h>
+#include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
 
-#include <boost_string.h>
 #include <cpdoccore/CPOptional.h>
 
 namespace cpdoccore 

@@ -1,4 +1,4 @@
-#include "precompiled_cpodf.h"
+
 #include "draw_frame.h"
 
 #include <ostream>
@@ -6,16 +6,15 @@
 #include <string>
 
 #include <boost/foreach.hpp>
-#include <boost_string.h>
-#include <regex.h>
+#include <boost/algorithm/string.hpp>
+#include <boost/regex.hpp>
+
+#include <cpdoccore/odf/odf_document.h>
 
 #include "serialize_elements.h"
 
-
 #include "odfcontext.h"
 #include "odf_document_impl.h"
-
-#include <cpdoccore/odf/odf_document.h>
 
 #include "draw_common.h"
 #include "../docx/docx_drawing.h"
@@ -25,6 +24,7 @@
 
 #include "datatypes/length.h"
 #include "datatypes/borderstyle.h"
+
 namespace cpdoccore { 
 namespace odf {
 

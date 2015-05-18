@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_XLSX_ROW_SPANNED_H_INCLUDED_4e93cd8f
-#define _CPDOCCORE_XLSX_ROW_SPANNED_H_INCLUDED_4e93cd8f
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 namespace cpdoccore {
 namespace oox {
@@ -40,5 +35,3 @@ private:
 
 }
 }
-
-#endif

@@ -1,5 +1,4 @@
-#ifndef CPDOCCORE_XLSX_TABLE_POSITION_
-#define CPDOCCORE_XLSX_TABLE_POSITION_
+#pragma once
 
 namespace cpdoccore {
 namespace oox {
@@ -15,5 +14,3 @@ struct xlsx_table_position
 
 }
 }
-
-#endif

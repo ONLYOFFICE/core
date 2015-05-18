@@ -1,8 +1,9 @@
-#include "../odf/precompiled_cpodf.h"
+
 #include "xlsx_package.h"
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/ref.hpp>
 
 #include <cpdoccore/utf8cpp/utf8.h>
 

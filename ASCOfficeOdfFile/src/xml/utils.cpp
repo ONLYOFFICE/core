@@ -1,8 +1,7 @@
-#include "precompiled_cpxml.h"
-
 #include "../../include/cpdoccore/xml/utils.h"
-#include "../../include/regex.h"
-#include "../../include/boost_string.h"
+
+#include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace cpdoccore {
 namespace xml {
@@ -11,37 +10,36 @@ namespace utils {
 
 namespace {
 
-#define XML_REPLACE_REGEX_EXPR     "(&)|(')|(<)|(>)|(\")"
-#define XML_REPLACE_FORMAT_EXPR    "(?1&amp;)(?2&apos;)(?3&lt;)(?4&gt;)(?5&quot;)"
+	#define XML_REPLACE_REGEX_EXPR     "(&)|(')|(<)|(>)|(\")"
+	#define XML_REPLACE_FORMAT_EXPR    "(?1&amp;)(?2&apos;)(?3&lt;)(?4&gt;)(?5&quot;)"
 
-#define XML_REPLACE_REGEX_EXPRW   L"(&)|(')|(<)|(>)|(\")"
-#define XML_REPLACE_FORMAT_EXPRW  L"(?1&amp;)(?2&apos;)(?3&lt;)(?4&gt;)(?5&quot;)"
+	#define XML_REPLACE_REGEX_EXPRW   L"(&)|(')|(<)|(>)|(\")"
+	#define XML_REPLACE_FORMAT_EXPRW  L"(?1&amp;)(?2&apos;)(?3&lt;)(?4&gt;)(?5&quot;)"
 
-#define XML_INV_REPLACE_REGEX_EXPR    "(&amp;)|(&apos;)|(&lt;)|(&gt;)|(&quot;)"
-#define XML_INV_REPLACE_FORMAT_EXPR   "(?1&)(?2')(?3<)(?4>)(?5\")"
+	#define XML_INV_REPLACE_REGEX_EXPR    "(&amp;)|(&apos;)|(&lt;)|(&gt;)|(&quot;)"
+	#define XML_INV_REPLACE_FORMAT_EXPR   "(?1&)(?2')(?3<)(?4>)(?5\")"
 
-#define XML_INV_REPLACE_REGEX_EXPRW  L"(&amp;)|(&apos;)|(&lt;)|(&gt;)|(&quot;)"
-#define XML_INV_REPLACE_FORMAT_EXPRW L"(?1&)(?2')(?3<)(?4>)(?5\")"
+	#define XML_INV_REPLACE_REGEX_EXPRW  L"(&amp;)|(&apos;)|(&lt;)|(&gt;)|(&quot;)"
+	#define XML_INV_REPLACE_FORMAT_EXPRW L"(?1&)(?2')(?3<)(?4>)(?5\")"
+
+	const boost::wregex replace_text_to_xml_expr_w(XML_REPLACE_REGEX_EXPRW);
+	const std::wstring replace_text_to_xml_fmt_w(XML_REPLACE_FORMAT_EXPRW);
+
+	const boost::regex replace_text_to_xml_expr(XML_REPLACE_REGEX_EXPR);
+	const std::string replace_text_to_xml_fmt(XML_REPLACE_FORMAT_EXPR);
+
+	const boost::wregex replace_xml_to_text_expr_w(XML_INV_REPLACE_REGEX_EXPRW);
+	const std::wstring replace_xml_to_text_fmt_w(XML_INV_REPLACE_FORMAT_EXPRW);
+
+	const boost::regex replace_xml_to_text_expr(XML_INV_REPLACE_REGEX_EXPR);
+	const std::string replace_xml_to_text_fmt(XML_INV_REPLACE_FORMAT_EXPR);
 
 
-const boost::wregex replace_text_to_xml_expr_w(XML_REPLACE_REGEX_EXPRW);
-const std::wstring replace_text_to_xml_fmt_w(XML_REPLACE_FORMAT_EXPRW);
+	#undef XML_REPLACE_REGEX_EXPR
+	#undef XML_REPLACE_FORMAT_EXPR
 
-const boost::regex replace_text_to_xml_expr(XML_REPLACE_REGEX_EXPR);
-const std::string replace_text_to_xml_fmt(XML_REPLACE_FORMAT_EXPR);
-
-const boost::wregex replace_xml_to_text_expr_w(XML_INV_REPLACE_REGEX_EXPRW);
-const std::wstring replace_xml_to_text_fmt_w(XML_INV_REPLACE_FORMAT_EXPRW);
-
-const boost::regex replace_xml_to_text_expr(XML_INV_REPLACE_REGEX_EXPR);
-const std::string replace_xml_to_text_fmt(XML_INV_REPLACE_FORMAT_EXPR);
-
-
-#undef XML_REPLACE_REGEX_EXPR
-#undef XML_REPLACE_FORMAT_EXPR
-
-#undef XML_REPLACE_REGEX_EXPRW
-#undef XML_REPLACE_FORMAT_EXPRW
+	#undef XML_REPLACE_REGEX_EXPRW
+	#undef XML_REPLACE_FORMAT_EXPRW
 
 }
 

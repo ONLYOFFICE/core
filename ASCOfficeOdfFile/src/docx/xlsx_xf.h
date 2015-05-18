@@ -1,11 +1,11 @@
-#ifndef _CPDOCCORE_XLSX_XF_H_INCLUDED_
-#define _CPDOCCORE_XLSX_XF_H_INCLUDED_
+#pragma once
 
 #include <iosfwd>
 #include <string>
 
 #include <cpdoccore/CPSharedPtr.h>
 #include <cpdoccore/CPOptional.h>
+
 #include "xlsx_alignment.h"
 #include "xlsx_protection.h"
 
@@ -46,5 +46,3 @@ struct xlsx_xf
 
 }
 }
-
-#endif

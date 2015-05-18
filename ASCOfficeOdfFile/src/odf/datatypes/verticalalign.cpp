@@ -1,5 +1,6 @@
-#include "../precompiled_cpodf.h"
+
 #include "verticalalign.h"
+#include <boost/algorithm/string.hpp>
 
 #include <ostream>
 

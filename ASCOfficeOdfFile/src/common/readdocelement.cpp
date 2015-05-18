@@ -1,10 +1,7 @@
-#include "precompiled_cpcommon.h"
 
 #include "../../include/cpdoccore/common/readdocelement.h"
 #include "../../include/cpdoccore/xml/attributes.h"
 #include "../../include/cpdoccore/xml/sax.h"
-
-#include <iostream>
 
 namespace cpdoccore { 
 namespace common {

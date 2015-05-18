@@ -1,27 +1,27 @@
-#include "precompiled_cpodf.h"
+
 #include "paragraph_elements.h"
 
 #include <ostream>
 #include <string>
 
 #include <boost/foreach.hpp>
-#include <boost_string.h>
+#include <boost/algorithm/string.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/utils.h>
 #include <cpdoccore/common/readstring.h>
-
+#include <cpdoccore/odf/odf_document.h>
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/CPWeakPtr.h>
+
 #include "styles.h"
 #include "note.h"
 #include "ruby.h"
 #include "office_elements_create.h"
 
 #include "serialize_elements.h"
-#include <cpdoccore/odf/odf_document.h>
 #include "odfcontext.h"
 
 #include "style_text_properties.h"

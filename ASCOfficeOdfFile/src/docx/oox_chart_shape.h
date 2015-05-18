@@ -4,7 +4,7 @@
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/CPScopedPtr.h>
 
-#include "..\odf\chart_objects.h"
+#include "../odf/chart_objects.h"
 #include "oox_drawing_fills.h"
             
 namespace cpdoccore {

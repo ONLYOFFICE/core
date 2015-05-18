@@ -1,6 +1,6 @@
 #pragma once
 
-#include <iosfwd>
+//#include <iosfwd>
 #include <cpdoccore/CPScopedPtr.h>
 #include <cpdoccore/CPSharedPtr.h>
 #include <cpdoccore/xml/attributes.h>

@@ -1,4 +1,4 @@
-#include "precompiled_cpodf.h"
+
 #include <iostream>
 #include <cpdoccore/odf/odf_document.h>
 #include <cpdoccore/xml/simple_xml_writer.h>

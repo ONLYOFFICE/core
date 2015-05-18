@@ -6,9 +6,10 @@
 #include <cpdoccore/CPWeakPtr.h>
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/common/readdocelement.h>
-#include <cpdoccore/CPAssert.h>
 
 #include "office_elements_type.h"
+
+#include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/replace.hpp>
 
 #include "../docx/docx_conversion_context.h"

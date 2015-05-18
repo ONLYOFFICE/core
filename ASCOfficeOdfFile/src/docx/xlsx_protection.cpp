@@ -1,7 +1,8 @@
-#include "../odf/precompiled_cpodf.h"
-#include "xlsx_protection.h"
+
 #include <ostream>
-#include <boost/functional.hpp>
+#include <boost/functional/hash/hash.hpp>
+
+#include "xlsx_protection.h"
 
 #pragma once
 

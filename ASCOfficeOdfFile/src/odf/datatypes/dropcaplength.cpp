@@ -1,8 +1,8 @@
-#include "../precompiled_cpodf.h"
-#include "dropcaplength.h"
 
-#include <boost_string.h>
 #include <ostream>
+#include <boost/algorithm/string.hpp>
+
+#include "dropcaplength.h"
 
 namespace cpdoccore { namespace odf { 
 

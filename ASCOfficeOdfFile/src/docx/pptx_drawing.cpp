@@ -1,4 +1,4 @@
-#include "../odf/precompiled_cpodf.h"
+
 #include "pptx_drawing.h"
 #include <cpdoccore/xml/simple_xml_writer.h>
 #include "../odf/datatypes/custom_shape_types_convert.h"

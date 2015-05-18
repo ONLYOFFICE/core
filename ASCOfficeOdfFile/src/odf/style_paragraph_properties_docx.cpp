@@ -1,7 +1,10 @@
-#include "precompiled_cpodf.h"
+
 #include <iostream>
+
 #include "style_paragraph_properties.h"
+
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include "../docx/docx_conversion_context.h"

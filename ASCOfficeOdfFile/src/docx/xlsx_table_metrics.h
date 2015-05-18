@@ -1,5 +1,4 @@
-#ifndef CPDOCCORE_XLSX_TABLE_METRICS_H_
-#define CPDOCCORE_XLSX_TABLE_METRICS_H_
+#pragma once
 
 #include <boost/noncopyable.hpp>
 #include <cpdoccore/CPSharedPtr.h>
@@ -35,5 +34,3 @@ private:
 
 }
 }
-
-#endif

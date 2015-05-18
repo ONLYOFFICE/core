@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_XLSX_FONTS_H_30b72711
-#define _CPDOCCORE_XLSX_FONTS_H_30b72711
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <cpdoccore/CPScopedPtr.h>
@@ -50,5 +45,3 @@ private:
 
 }
 }
-
-#endif

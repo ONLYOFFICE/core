@@ -1,11 +1,7 @@
-#ifndef _CPDOCCORE_ODF_BACKGROUNDCOLOR_H_
-#define _CPDOCCORE_ODF_BACKGROUNDCOLOR_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
-#include <iosfwd>
+
+//#include <iosfwd>
 #include <string>
 #include "odfattributes.h"
 
@@ -55,6 +51,3 @@ std::wostream & operator << (std::wostream & _Wostream, const background_color &
 APPLY_PARSE_XML_ATTRIBUTES(odf::background_color);
 
 }
-
-
-#endif

@@ -1,8 +1,8 @@
-#include "precompiled_cpodf.h"
+
 #include <cpdoccore/odf/odf_document.h>
 
 #include "odf_document_impl.h"
-#include "..\progressCallback.h"
+#include "../progressCallback.h"
 
 namespace cpdoccore { 
 namespace odf {

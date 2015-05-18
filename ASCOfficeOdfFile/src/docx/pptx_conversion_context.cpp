@@ -1,11 +1,10 @@
-#include "../odf/precompiled_cpodf.h"
+
 #include "pptx_conversion_context.h"
 
 #include "pptx_package.h"
 
 #include <cpdoccore/odf/odf_document.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include <cpdoccore/CPAssert.h>
 
 #include <iostream>
 
@@ -285,7 +284,6 @@ pptx_xml_slide & pptx_conversion_context::current_slide()
     }
     else
     {
-        CP_ASSERT(false);
         throw std::runtime_error("internal error");
     }
 }
@@ -297,7 +295,6 @@ pptx_xml_slideLayout & pptx_conversion_context::current_layout()
     }
     else
     {
-        CP_ASSERT(false);
         throw std::runtime_error("internal error");
     }
 }
@@ -309,7 +306,6 @@ pptx_xml_theme & pptx_conversion_context::current_theme()
     }
     else
     {
-        CP_ASSERT(false);
         throw std::runtime_error("internal error");
     }
 }
@@ -326,7 +322,6 @@ oox_chart_context & pptx_conversion_context::current_chart()
     }
     else
     {
-        CP_ASSERT(false);
         throw std::runtime_error("internal error");
     }
 }
@@ -338,7 +333,6 @@ pptx_xml_slideMaster & pptx_conversion_context::current_master()
     }
     else
     {
-        CP_ASSERT(false);
         throw std::runtime_error("internal error");
     }
 }

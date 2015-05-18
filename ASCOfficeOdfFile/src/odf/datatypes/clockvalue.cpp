@@ -1,10 +1,10 @@
-#include "../precompiled_cpodf.h"
+
 #include "clockvalue.h"
 
 #include <iostream>
 #include <sstream>
-#include <lexical_cast.h>
-#include <cpdoccore/CPAssert.h>
+#include <boost/lexical_cast.hpp>
+#include <boost/regex.hpp>
 
 namespace cpdoccore { namespace odf { 
 

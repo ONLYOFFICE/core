@@ -1,4 +1,3 @@
-#include "precompiled_cpxml.h"
 
 #include "../../include/cpdoccore/xml/xmlchar.h"
 

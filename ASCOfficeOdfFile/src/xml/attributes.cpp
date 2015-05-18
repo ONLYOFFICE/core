@@ -1,16 +1,15 @@
 /// \file   attributes.cpp
 /// \author nikolay.pogorskiy@gmail.com 
 
-#include "precompiled_cpxml.h"
-
-#include "../../include/cpdoccore/xml/attributes.h"
-#include "../../include/cpdoccore/xml/sax.h"
-
-#include <boost/foreach.hpp>
 #include <map>
 #include <vector>
 #include <string>
 #include <iostream>
+
+#include <boost/foreach.hpp>
+
+#include "../../include/cpdoccore/xml/attributes.h"
+#include "../../include/cpdoccore/xml/sax.h"
 
 namespace cpdoccore {
 namespace xml {

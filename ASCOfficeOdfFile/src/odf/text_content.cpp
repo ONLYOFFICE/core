@@ -1,11 +1,10 @@
-#include "precompiled_cpodf.h"
+
 #include "text_content.h"
 
 #include <string>
-#include <boost_string.h>
+#include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
 
-#include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/attributes.h>
 
 namespace cpdoccore { 

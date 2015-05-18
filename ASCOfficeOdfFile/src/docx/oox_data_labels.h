@@ -1,6 +1,8 @@
 #pragma once 
 
 #include <iosfwd>
+#include <boost/noncopyable.hpp>
+
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/CPScopedPtr.h>
 

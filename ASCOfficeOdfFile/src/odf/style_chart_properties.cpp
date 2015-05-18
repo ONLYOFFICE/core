@@ -1,4 +1,4 @@
-#include "precompiled_cpodf.h"
+
 #include "style_chart_properties.h"
 
 #include <iostream>

@@ -1,6 +1,9 @@
 #pragma once
 
+#include <sstream>
 #include <iosfwd>
+
+#include <boost/noncopyable.hpp>
 #include <boost/shared_ptr.hpp>
 #include <boost/make_shared.hpp>
 
@@ -34,15 +37,15 @@ public:
     void end_process_style();
 
 private:
-	const odf::style_instance *current_processed_style_;
-	std::wstring extern_node_;
-	std::wstring hlinkClick_;
+	const odf::style_instance *	current_processed_style_;
+	std::wstring				extern_node_;
+	std::wstring				hlinkClick_;
 
-    std::wstringstream list_style_;
-    std::wstringstream text_style_;
-    std::wstringstream paragraph_nodes_;
-    std::wstringstream paragraph_attr_;
-    std::wstringstream table_style_;
+    std::wstringstream			list_style_;
+    std::wstringstream			text_style_;
+    std::wstringstream			paragraph_nodes_;
+    std::wstringstream			paragraph_attr_;
+    std::wstringstream			table_style_;
 };
 
 

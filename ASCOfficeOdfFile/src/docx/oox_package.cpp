@@ -1,7 +1,9 @@
-#include "../odf/precompiled_cpodf.h"
+
 #include "oox_package.h"
 
 #include <boost/foreach.hpp>
+#include <boost/ref.hpp>
+
 #include <cpdoccore/utf8cpp/utf8.h>
 
 #include "mediaitems.h"

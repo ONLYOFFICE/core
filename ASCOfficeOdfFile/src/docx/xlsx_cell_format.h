@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_XLSX_CELL_FORMAT_H_INCLUDED_
-#define _CPDOCCORE_XLSX_CELL_FORMAT_H_INCLUDED_
+#pragma once
 
 namespace cpdoccore {
 namespace oox {
@@ -31,4 +30,3 @@ private:
 }
 }
 
-#endif

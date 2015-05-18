@@ -1,10 +1,11 @@
-#include ".././precompiled_cpodf.h"
+
 #include "color.h"
 #include <logging.h>
 
 #include <ostream>
 #include <sstream>
-#include <boost_string.h>
+
+#include <boost/algorithm/string.hpp>
 
 namespace cpdoccore { namespace odf { 
 

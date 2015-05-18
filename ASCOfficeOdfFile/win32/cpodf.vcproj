@@ -300,19 +300,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\include\boost_string.h"
-				>
-			</File>
-			<File
 				RelativePath="..\src\odf\createandread.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\src\odf\errors.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\lexical_cast.h"
 				>
 			</File>
 			<File
@@ -333,50 +325,6 @@
 			</File>
 			<File
 				RelativePath="..\src\odf\office_elements_create.h"
-				>
-			</File>
-			<File
-				RelativePath="..\src\odf\precompiled_cpodf.cpp"
-				>
-				<FileConfiguration
-					Name="Debug|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Debug|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|Win32"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-				<FileConfiguration
-					Name="Release|x64"
-					>
-					<Tool
-						Name="VCCLCompilerTool"
-						UsePrecompiledHeader="1"
-					/>
-				</FileConfiguration>
-			</File>
-			<File
-				RelativePath="..\src\odf\precompiled_cpodf.h"
-				>
-			</File>
-			<File
-				RelativePath="..\include\regex.h"
 				>
 			</File>
 			<File

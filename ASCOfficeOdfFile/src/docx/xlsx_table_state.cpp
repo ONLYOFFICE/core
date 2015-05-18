@@ -1,5 +1,5 @@
-#include "../odf/precompiled_cpodf.h"
 #include "xlsx_table_state.h"
+
 #include "logging.h"
 #include "xlsxconversioncontext.h"
 
@@ -8,10 +8,8 @@
 namespace cpdoccore {
 namespace oox {
 
-xlsx_table_state::xlsx_table_state(xlsx_conversion_context & Context,
-    const std::wstring & StyleName,
-    const std::wstring & tableName)
-     : context_(Context),
+xlsx_table_state::xlsx_table_state(xlsx_conversion_context & Context, const std::wstring & StyleName, const std::wstring & tableName)
+  : context_(Context),
     table_style_(StyleName),
     tableName_(tableName),
     current_table_column_(-1),
@@ -145,7 +143,9 @@ void xlsx_table_state::start_cell(size_t columnsSpanned, size_t rowsSpanned)
 }
 
 void xlsx_table_state::end_cell()
-{}
+{
+}
+
 
 void xlsx_table_state::set_current_cell_style_id(unsigned int xfId)
 {
@@ -240,8 +240,7 @@ void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 		} 
 		CP_XML_NODE(L"sheetFormatPr")
 		{
-			double default_height=int (context_.getMaxDigitSize().second * 72. / getDefaultDpi() * 100.) /100.;//in point size.
-
+			double default_height = (context_.getMaxDigitSize().second * 72. / 96. * 100.) /100.;//in point size.
 			
 			//odf::style_instance * rowStyle = odfContext.styleContainer().style_by_name(styleName, odf::style_family::TableRow,false/*false*/);
 			//if (!rowStyle)
@@ -263,6 +262,7 @@ void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 			//}
 
 			//CP_XML_ATTR(L"defaultColWidth", merges_.size());
+			
 			CP_XML_ATTR(L"defaultRowHeight",default_height);
 		}  
 	}

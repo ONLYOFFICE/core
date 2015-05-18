@@ -1,8 +1,10 @@
-#include "../odf/precompiled_cpodf.h"
-#include "xlsx_sharedstrings.h"
+#include <vector>
+
 #include <boost/foreach.hpp>
+
 #include <cpdoccore/xml/utils.h>
 
+#include "xlsx_sharedstrings.h"
 
 namespace cpdoccore {
 namespace oox {

@@ -1,6 +1,8 @@
 #pragma once
 
 #include <string>
+#include <list>
+
 #include "ooxtablerowspanned.h"
 #include "xlsx_table_state.h"
 

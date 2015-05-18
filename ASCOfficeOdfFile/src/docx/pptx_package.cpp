@@ -1,9 +1,10 @@
-#include "../odf/precompiled_cpodf.h"
+
 #include "pptx_package.h"
 #include "pptx_output_xml.h"
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/ref.hpp>
 
 #include <cpdoccore/utf8cpp/utf8.h>
 

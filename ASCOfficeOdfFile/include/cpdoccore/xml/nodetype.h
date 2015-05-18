@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_XML_NODETYPE_H_
-#define _CPDOCCORE_XML_NODETYPE_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 namespace cpdoccore {
 namespace xml {
@@ -27,4 +22,3 @@ enum NodeType
 }
 }
 
-#endif // #ifndef _CPDOCCORE_XML_NODETYPE_H_

@@ -1,6 +1,6 @@
-#include "../precompiled_cpodf.h"
+#include <boost/algorithm/string.hpp>
+
 #include "borderstyle.h"
-#include <boost_string.h>
 
 namespace cpdoccore { namespace odf { 
 

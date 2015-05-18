@@ -1,4 +1,4 @@
-#include "../precompiled_cpodf.h"
+
 #include <iostream>
 #include "common_attlists.h"
 #include <cpdoccore/xml/attributes.h>

@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_XLSX_SHARED_STRINGS_H_INCLUDED_
-#define _CPDOCCORE_XLSX_SHARED_STRINGS_H_INCLUDED_
+#pragma once
 
 #include <string>
 #include <iosfwd>
@@ -25,5 +24,3 @@ private:
 
 }
 }
-
-#endif

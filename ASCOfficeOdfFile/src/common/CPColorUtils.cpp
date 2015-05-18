@@ -1,8 +1,10 @@
-#include "precompiled_cpcommon.h"
-#include <cmath>
+
 #include <string>
 #include <boost/foreach.hpp>
+#include <cmath>
 
+#include <boost/optional.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace cpdoccore { 
 

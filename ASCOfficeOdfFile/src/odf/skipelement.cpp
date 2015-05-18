@@ -1,4 +1,4 @@
-#include "precompiled_cpodf.h"
+
 #include "skipelement.h"
 #include "logging.h"
 #include <cpdoccore/xml/attributes.h>

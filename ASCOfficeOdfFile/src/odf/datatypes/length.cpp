@@ -1,11 +1,10 @@
-#include "../precompiled_cpodf.h"
+
 #include "length.h"
 
 #include <iostream>
 #include <sstream>
 
-#include <lexical_cast.h>
-#include <cpdoccore/CPAssert.h>
+#include <boost/lexical_cast.hpp>
 
 namespace cpdoccore { namespace odf { 
 
@@ -190,7 +189,6 @@ double length::get_value_unit(unit Unit) const
     }
     else
     {
-        CP_ASSERT(false);
         return 0.0;
     }
 }

@@ -17,6 +17,7 @@ namespace NSDoctRenderer
             XLST	= 1,
             PPTT	= 2,
             PDF		= 3,
+            HTML    = 4,
 
             INVALID = 255
         };
@@ -37,6 +38,10 @@ namespace NSDoctRenderer
 
         CArray<std::wstring> m_arChanges;
         int m_nCountChangesItems;
+
+        std::wstring m_strMailMergeDatabasePath;
+        int m_nMailMergeIndexStart;
+        int m_nMailMergeIndexEnd;
 
     public:
         CExecuteParams();

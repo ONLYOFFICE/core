@@ -3,6 +3,8 @@
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
+
 #include <iostream>
 
 #include "odf_drawing_context.h"

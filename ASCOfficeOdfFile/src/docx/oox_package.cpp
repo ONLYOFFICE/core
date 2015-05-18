@@ -183,7 +183,8 @@ void media::write(const std::wstring & RootPath)
 			std::wstring & file_name  = item.href;
 			std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.outputName;
 			
-			if (file_name.rfind(L".svm") >= 0)
+			int pos_svm = file_name.rfind(L".svm");
+			if ( pos_svm >= 0)
 			{
 				ConvertSvmToImage(file_name, file_name_out);
 			}

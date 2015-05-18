@@ -2,7 +2,9 @@
 
 #include <string>
 #include <map>
-#include <cpdoccore/CPAssert.h>
+
+#include <boost/function.hpp>
+
 #include <cpdoccore/CPSharedPtr.h>
 
 #include "office_elements.h"

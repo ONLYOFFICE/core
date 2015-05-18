@@ -8,8 +8,6 @@
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/xml/attributes.h>
 
-#include <cpdoccore/CPAssert.h>
-
 #include "office_elements_type.h"
 
 #include "visitor.h"

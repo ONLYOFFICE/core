@@ -67,7 +67,6 @@ bool office_element_creator::register_element(const std::wstring &ns, const std:
     else
     {
         // TODO: элемент уже есть, непонятно что делать
-        CP_ASSERT(false);
         i->second = f;
     }
     return true;

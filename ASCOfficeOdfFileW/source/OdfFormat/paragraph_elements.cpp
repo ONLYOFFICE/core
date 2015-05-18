@@ -5,7 +5,7 @@
 #include <string>
 
 #include <boost/foreach.hpp>
-#include <boost_string.h>
+#include <boost/algorithm/string.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>
 

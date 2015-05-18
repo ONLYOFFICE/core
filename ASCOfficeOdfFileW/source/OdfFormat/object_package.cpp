@@ -97,7 +97,7 @@ namespace odf
 					rels_.serialize(CP_XML_STREAM());
 				}
 			}
-			std::wstring path = RootPath + FILE_SEPARATOR + L"META-INF";
+			std::wstring path = RootPath + FILE_SEPARATOR_STR + L"META-INF";
 			FileSystem::Directory::CreateDirectory(path);
 			simple_element elm(L"manifest.xml", resStream.str());
 			elm.write(path);

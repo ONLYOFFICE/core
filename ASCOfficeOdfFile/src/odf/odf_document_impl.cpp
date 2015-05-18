@@ -63,7 +63,7 @@ content_xml_t_ptr read_file_content(const std::wstring & Path)
 	
 	result->add_child_element(Reader.get(), namespacePrefix, localName);		
 
-    return content_xml_t_ptr();
+    return result;
 }
 }
 

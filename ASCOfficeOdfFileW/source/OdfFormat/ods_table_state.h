@@ -5,6 +5,7 @@
 
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
 
 #include "odf_drawing_context.h"
 

@@ -1,8 +1,8 @@
-#include "precompiled_cpodf.h"
+
 #include "logging.h"
 
 #include <boost/foreach.hpp>
-
+#include <boost/lexical_cast.hpp>
 #include <iostream>
 
 #include "odf_drawing_context.h"

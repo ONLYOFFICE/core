@@ -4,6 +4,7 @@
 #include <vector>
 
 #include <boost/regex.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "odf_drawing_context.h"
 

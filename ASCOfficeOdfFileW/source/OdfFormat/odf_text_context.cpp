@@ -1,7 +1,9 @@
-#include "precompiled_cpodf.h"
+
 #include "logging.h"
 
 #include <boost/foreach.hpp>
+#include <boost/regex.hpp>
+
 #include <iostream>
 
 #include "odf_text_context.h"

@@ -1,4 +1,5 @@
 // OfficeOdfFileW.cpp : Implementation of COfficeOdfFileW
+#include "stdafx.h"
 
 #include "OfficeOdfFileW.h"
 #include "../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
@@ -6,11 +7,12 @@
 #include <string>
 
 #include <boost/lexical_cast.hpp>
-#include <boost/uuid/uuid_io.hpp>
-#include <boost/uuid/random_generator.hpp>
 #include <boost/algorithm/string.hpp> 
 
-#include "../source/Oox2OdfConverter/Converter.h"
+#include "../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+
+#include "../source/Oox2OdfConverter/Oox2OdfConverter.h"
 
 
 #ifndef STANDALONE_USE
@@ -19,13 +21,7 @@
 
 
 // имя директории - uuid
-boost::filesystem::wpath MakeTempDirectoryName(const std::wstring& Dst)
-{
-	boost::uuids::random_generator gen;
-	boost::uuids::uuid u = gen();
-	boost::filesystem::wpath path = boost::filesystem::wpath(Dst) / boost::lexical_cast<std::wstring>(u);
-	return path;
-}
+
 std::wstring bstr2wstring(BSTR str)
 {
     return str ? std::wstring(&str[0], &str[::SysStringLen(str)]) : L"";
@@ -45,32 +41,33 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
     }
 
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
-    boost::filesystem::wpath inputDir = boost::filesystem::wpath(CString(sSrcPath)).parent_path();
+	std::wstring inputDir = FileSystem::Directory::GetFolderPath(std::wstring(sSrcPath));
 #else
-    boost::filesystem::wpath inputDir = boost::filesystem::wpath(CString(sSrcPath));
+	std::wstring inputDir = sSrcPath;
 #endif
 
-    boost::filesystem::wpath outputDir = boost::filesystem::wpath(CString(sDstFileName)).parent_path();
+	std::wstring outputDir = FileSystem::Directory::GetFolderPath(std::wstring(sDstFileName));
 
     // создаем её в директории куда запишем результат
 
-    boost::filesystem::wpath dstTempPath = MakeTempDirectoryName(outputDir.string());
+	std::wstring dstTempPath = FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
     
 
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
-    boost::filesystem::wpath srcTempPath = MakeTempDirectoryName(BOOST_STRING_PATH(outputDir));
+    std::wstring srcTempPath = FileSystem::Directory::CreateDirectoryWithUniqueName(outputDir);
 #else
-    boost::filesystem::wpath srcTempPath = inputDir.string();
+    std::wstring srcTempPath = inputDir;
 #endif
 
     try
     {
-        boost::filesystem::create_directory(dstTempPath);
+		FileSystem::Directory::CreateDirectory(dstTempPath);
+
 #if defined(STANDALONE_USE) && (STANDALONE_USE == 1)
         
-        boost::filesystem::create_directory(srcTempPath); // создаем временную директорию для результирующих файлов
+        FileSystem::Directory::CreateDirectory(srcTempPath); // создаем временную директорию для результирующих файлов
 #endif
-        hr = SaveToFileImpl(bstr2wstring(sSrcPath),srcTempPath.string(), dstTempPath.string(), bstr2wstring(sDstFileName));
+        hr = SaveToFileImpl(bstr2wstring(sSrcPath),srcTempPath, dstTempPath, bstr2wstring(sDstFileName));
         
     }
     catch(...)
@@ -81,7 +78,7 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
     // стираем временную директорию с распакованным исходником
     try
     {
-        boost::filesystem::remove_all(dstTempPath);
+		FileSystem::Directory::DeleteDirectory(dstTempPath);
     }
     catch(...)
     {
@@ -91,7 +88,7 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
     // в случае если на выходе файл — стираем временную директорию (мы сами ее создали)
     try 
     {
-        boost::filesystem::remove_all(srcTempPath);
+		FileSystem::Directory::DeleteDirectory(srcTempPath);
     }
     catch(...) 
     {
@@ -141,53 +138,12 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
 
     return S_OK;
 }
-namespace fs = boost::filesystem;
 
+//FileChecker в другом месте !!
 std::wstring COfficeOdfFileW::DetectTypeDocument(const std::wstring & Path)
 {
-	fs::wpath full_path(/* fs::initial_path<fs::wpath>()*/ Path);
-
-	//full_path = fs::system_complete( fs::wpath( Path ) );
-
-	unsigned long file_count = 0;
-	unsigned long dir_count = 0;
-	unsigned long other_count = 0;
-	unsigned long err_count = 0;
-
-	if (!fs::exists( full_path ) )return L"";
-
-	if (!fs::is_directory( full_path ) )return L"";
-
-	fs::wdirectory_iterator end_iter;
-	
-	for ( fs::wdirectory_iterator dir_itr( full_path );	  dir_itr != end_iter;  ++dir_itr )
-	{
-		try
-		{
-			if ( fs::is_directory( dir_itr->status() ) )
-			{
-			  ++dir_count;
-			  std::wstring tmp = dir_itr->path().filename();
-			  boost::algorithm::to_lower(tmp);
-			 
-			  if (tmp == L"word") return  L"text";
-			  if (tmp == L"xl") return  L"spreadsheet";
-			}
-			else if ( fs::is_regular_file( dir_itr->status() ) )
-			{
-			  ++file_count;
-			}
-			else
-			{
-			  ++other_count;
-			}
-		}
-		catch ( const std::exception & ex )
-		{
-			++err_count;
-		}
-	}
-	return L"";
+	return  L"text";
+	//return  L"spreadsheet";
 }
 
 void COfficeOdfFileW::OnProgressFunc (LPVOID lpParam, long nID, long nPercent)

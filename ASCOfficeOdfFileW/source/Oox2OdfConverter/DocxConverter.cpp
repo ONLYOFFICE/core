@@ -9,6 +9,7 @@
 #include "VmlShapeTypes2Oox.h"
 
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include "../OdfFormat/odt_conversion_context.h"
 

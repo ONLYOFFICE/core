@@ -1,5 +1,11 @@
+
+#include "Oox2OdfConverter.h"
+
 #include "Converter.h"
+
 #include "../utils.h"
+
+#include <boost/lexical_cast.hpp>
 
 #include "XlsxConverter.h"
 #include "DocxConverter.h"
@@ -53,7 +59,7 @@ namespace Oox2Odf
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
-BOOL  OoxConverter::UpdateProgress(long nComplete)
+bool  OoxConverter::UpdateProgress(long nComplete)
 {
 	if (pCallBack)
 	{

@@ -360,6 +360,10 @@
 				>
 			</File>
 		</Filter>
+		<File
+			RelativePath="..\Oox2OdfConverter\Oox2OdfConverter.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

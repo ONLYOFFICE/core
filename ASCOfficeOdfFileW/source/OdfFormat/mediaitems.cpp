@@ -1,22 +1,18 @@
-#include "precompiled_cpodf.h"
+
 #include "mediaitems.h"
 #include "odf_rels.h"
 
 #include <regex.h>
-#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
 
 #include <cpdoccore/xml/utils.h>
 
 #include "mediaitems_utils.h"
-#include <cpdoccore/common/boost_filesystem_version.h>
 
 namespace cpdoccore { 
 namespace odf {
 
-
-using boost::filesystem::wpath;
 
 _mediaitems::item::item(	std::wstring const & _oox_ref,
                        Type _type,
@@ -29,8 +25,6 @@ _mediaitems::item::item(	std::wstring const & _oox_ref,
 
 }
 
-
-namespace fs = boost::filesystem;
 
 void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wstring & odf_ref)
 {

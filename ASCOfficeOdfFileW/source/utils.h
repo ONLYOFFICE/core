@@ -1,15 +1,24 @@
 #pragma once
 
-#include <atlbase.h>
-#include <gdiplus.h>
-#pragma comment(lib, "gdiplus.lib")
+#include <string>
+#include <vector>
 
-#import "../../../Redist/ASCGraphics.dll" rename_namespace("ASCGraphics")
+#if defined(_WIN32) || defined(_WIN64)
+	#include <atlbase.h>
+	#include <gdiplus.h>
+	#pragma comment(lib, "gdiplus.lib")
 
+	#import "../../../Redist/ASCGraphics.dll" rename_namespace("ASCGraphics")
+#endif
 namespace _gdi_graphics_
 {
+	//todoooo переписать  !!!
+
 	std::pair<double,double> static GetMaxDigitSizePixelsImpl(const wchar_t * fontName, float fontSize, float dpi, long fontStyle)
 	{
+		float width = 70, height = 80;
+
+#if defined(_WIN32) || defined(_WIN64)
 		CComPtr<ASCGraphics::IASCFontManager> fontMan;
 		HRESULT hr;
 		
@@ -33,14 +42,14 @@ namespace _gdi_graphics_
 				return std::pair<double,double>(7,8);
 			}
 		}
-		double maxWidth=0;
+		double maxWidth=0 ;
+		float x, y;
 		std::wstring TestString = L"0123456789";
 
 
 		if (S_OK != (hr = fontMan->LoadString2( TestString.c_str(), 0, 0)))
 			return std::pair<double,double>(7,8);
 
-		float x, y, width, height;
 		try
 		{
 			hr = fontMan->MeasureString(&x, &y, &width, &height);
@@ -48,7 +57,7 @@ namespace _gdi_graphics_
 		{
 			return std::pair<double,double>(7,8);
 		}
-	          
+#endif	          
 		return std::pair<double,double>(width/10.,height/10.);
 	}
 
@@ -56,6 +65,7 @@ namespace _gdi_graphics_
 	bool static GetResolution(const WCHAR* fileName, double & Width, double &Height) //pt
 	{
 		bool result =false;
+#if defined(_WIN32) || defined(_WIN64)
 		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 		ULONG_PTR gdiplusToken=0;
 		Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
@@ -79,11 +89,13 @@ namespace _gdi_graphics_
 			delete file;
 		}
 		Gdiplus::GdiplusShutdown(gdiplusToken);
+#endif
 		return result;
 	}
 	double	static calculate_size_symbol(std::wstring name, double size, bool italic, bool bold, std::wstring test_str = L"")
 	{
 		double result =0;
+#if defined(_WIN32) || defined(_WIN64)
 		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
 		ULONG_PTR gdiplusToken=0;
 		Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
@@ -125,6 +137,7 @@ namespace _gdi_graphics_
 			delete gr;
 		}
 		Gdiplus::GdiplusShutdown(gdiplusToken);
+#endif
 		return result;
 	}
 	double	static calculate_size_symbol_asc(std::wstring name, double size, bool italic, bool bold)

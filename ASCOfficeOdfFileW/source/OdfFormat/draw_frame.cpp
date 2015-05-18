@@ -1,4 +1,4 @@
-#include "precompiled_cpodf.h"
+
 #include "draw_frame.h"
 
 #include <ostream>

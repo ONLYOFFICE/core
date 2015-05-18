@@ -1,6 +1,5 @@
 #pragma once
 
-#include <boost/lexical_cast.hpp>
 #include <cpdoccore/CPOptional.h>
 
 #include "../progressCallback.h"
@@ -11,6 +10,8 @@
 #else
 	#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
 #endif
+
+#include <vector>
 
 namespace cpdoccore
 {
@@ -298,9 +299,9 @@ public:
 																pCallBack = CallBack;
 																bUserStopConvert = 0;}
 		
-		const ProgressCallback* pCallBack;
-		short bUserStopConvert;
-		BOOL UpdateProgress(long nComplete);
+		const	ProgressCallback* pCallBack;
+		short	bUserStopConvert;
+		bool	UpdateProgress(long nComplete);
 	
 //.......................................................................................................................
 		virtual cpdoccore::odf::odf_conversion_context		*odf_context() = 0;
@@ -436,22 +437,4 @@ public:
 		void convert(OOX::Vml::CVmlCommonElements		*vml_attr);
 	};
 
-	class Converter
-	{
-
-	public:
-		Converter(const std::wstring & path, std::wstring  type, const ProgressCallback* ffCallBack);
-        virtual ~Converter();
-
-	public:
-		void convert();
-     
-        void write(const std::wstring & path) const;
-
-		OoxConverter * get_ooxConverter() { return impl_; }
-
-	private:
-		OoxConverter* impl_;
-	
-	};
-} // namespace Oox2Odf:Convert
+} // namespace Oox2Odf

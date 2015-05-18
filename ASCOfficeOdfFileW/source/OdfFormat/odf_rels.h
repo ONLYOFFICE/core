@@ -1,7 +1,9 @@
 #pragma once
 
+#include <vector>
 #include <string>
-#include <iosfwd>
+
+//#include <iosfwd>
 #include <cpdoccore/xml/xmlelement.h>
 #include <cpdoccore/CPSharedPtr.h>
 

@@ -2,15 +2,10 @@
 
 #include <string>
 #include <map>
-#include <boost/function.hpp>
 #include <cpdoccore/CPAssert.h>
 #include <cpdoccore/CPSharedPtr.h>
 
 #include "office_elements.h"
-
-namespace boost {
-    class shared_mutex;
-}
 
 
 namespace cpdoccore { 
@@ -49,7 +44,6 @@ public:
 private:
     office_element_creator();
     static office_element_creator * instance_;
-    shared_ptr<boost::shared_mutex>::Type rw_lock_;
 };
 
 /// Класс, обеспечивающий регистрацию элементов
@@ -73,7 +67,6 @@ public:
     {
         if (class_registered_++ == 0)
         {
-            // Jerry Schwarz counter
             office_element_creator::get()->register_element(T::ns, T::name, &CreateImpl_<T>::create);            
         }
     };

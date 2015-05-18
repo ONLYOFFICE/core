@@ -1,4 +1,4 @@
-#include "precompiled_cpodf.h"
+
 
 #include <boost/foreach.hpp>
 #include <cpdoccore/utf8cpp/utf8.h>
@@ -8,6 +8,9 @@
 #include "mediaitems.h"
 
 #include "../../../DesktopEditor/common/File.h"
+
+#include "../../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
 namespace cpdoccore 
 {
@@ -26,7 +29,7 @@ namespace odf
 
 		void simple_element::write(const std::wstring & RootPath)
 		{
-			NSFile::CBinaryFile file;
+			NSFile::CFileBinary file;
 			
 			if (file.CreateFileW( RootPath + FILE_SEPARATOR_STR + file_name_ ) == true)
 			{
@@ -94,10 +97,10 @@ namespace odf
 					rels_.serialize(CP_XML_STREAM());
 				}
 			}
-			fs::wpath path = fs::wpath(RootPath) / L"META-INF";
-			fs::create_directory(path);
+			std::wstring path = RootPath + FILE_SEPARATOR + L"META-INF";
+			FileSystem::Directory::CreateDirectory(path);
 			simple_element elm(L"manifest.xml", resStream.str());
-			elm.write(path.string());
+			elm.write(path);
 		}
 
 		void meta_file::write(const std::wstring & RootPath)
@@ -186,7 +189,7 @@ namespace odf
 
 					try
 					{
-						boost::filesystem::copy_file(item.oox_ref, file_name_out);
+						NSFile::CFileBinary::Copy(item.oox_ref, file_name_out);
 					}catch (...)
 					{
 					}
@@ -255,10 +258,10 @@ namespace odf
 			long count = 0;
 			BOOST_FOREACH(const element_ptr & item, objects_)
 			{				
-				fs::wpath path = fs::wpath(RootPath) / item->local_path;
-				fs::create_directory(path);
+				std::wstring path = RootPath + FILE_SEPARATOR_STR + item->local_path;
+				FileSystem::Directory::CreateDirectory(path);
 				
-				item->write(path.string());
+				item->write(path);
 			}
 			if (manifest_)	manifest_->write(RootPath);
 			if (mimetype_)  mimetype_->write(RootPath);

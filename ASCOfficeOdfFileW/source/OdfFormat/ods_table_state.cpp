@@ -1,4 +1,4 @@
-#include "precompiled_cpodf.h"
+
 #include "logging.h"
 
 #include "../../../ASCOfficeOdfFile/formulasconvert/include/cpdoccore/formulasconvert.h"
@@ -40,15 +40,16 @@ std::wstring convert_date(std::wstring & oox_date)
 	{
 		return oox_date;
 	}
+	//todoooo  吓信先牙臆 !!!!
 
-	boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate-2);
+	//boost::gregorian::date date_ = boost::gregorian::date(1900, 1, 1) + boost::gregorian::date_duration(iDate-2);
 
-	//to for example, "1899-12-31T05:37:46.66569
-	std::wstring date_str = boost::lexical_cast<std::wstring>(date_.year())
-							+ L"-" +
-							(date_.month() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.month()) 
-							+ L"-" +
-							(date_.day() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.day());
+	////to for example, "1899-12-31T05:37:46.66569
+	std::wstring date_str = L"";//boost::lexical_cast<std::wstring>(date_.year())
+	//						+ L"-" +
+	//						(date_.month() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.month()) 
+	//						+ L"-" +
+	//						(date_.day() < 10 ? L"0": L"") + boost::lexical_cast<std::wstring>(date_.day());
 	return date_str;
 }
 
@@ -68,14 +69,16 @@ std::wstring convert_time(std::wstring & oox_time)
 	int hours=0, minutes=0;
 	double sec=0;
 	
-	boost::posix_time::time_duration day(24, 0, 0);
-	
-	double millisec = day.total_milliseconds() * dTime;
+	//todooo 吓信先牙臆 !!!
+	//boost::posix_time::time_duration day(24, 0, 0);
+	//
+	//double millisec = day.total_milliseconds() * dTime;
 
-	sec = millisec /1000.;
-	hours = sec/60./60.;
-	minutes = (sec - (hours * 60 * 60))/60.;
-	sec = sec - (hours *60 + minutes) * 60.;
+
+	//sec		= millisec /1000.;
+	//hours	= sec/60./60.;
+	//minutes = (sec - (hours * 60 * 60))/60.;
+	//sec		= sec - (hours *60 + minutes) * 60.;
 
 	int sec1 = sec;
 

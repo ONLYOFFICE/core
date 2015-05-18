@@ -1,19 +1,15 @@
-#include "precompiled_cpodf.h"
+
 
 #include "mediaitems_utils.h"
 
-#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
-#include <cpdoccore/common/boost_filesystem_version.h>
 
 namespace cpdoccore { 
 namespace odf{
 namespace utils {
 
 namespace media {
-
-using boost::filesystem::wpath;
 
 std::wstring get_rel_type(_mediaitems::Type type)
 {
@@ -39,11 +35,12 @@ std::wstring get_default_file_name(_mediaitems::Type type)
 
 std::wstring create_file_name(const std::wstring & uri, _mediaitems::Type type, size_t Num)
 {
-#ifdef BOOST_FILESYSTEM_LEGACY
-    return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + wpath(uri).extension();
-#else
-    return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + wpath(uri).extension().string<std::wstring>();
-#endif
+ 	std::wstring sExt;
+	int n = uri.rfind(L".");
+	if (n>=0) sExt = uri.substr(n);
+	//todooo проверить
+	
+	return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + sExt;
 }
 
 

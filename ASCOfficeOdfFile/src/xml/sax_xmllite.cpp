@@ -1,10 +1,7 @@
 /// \file   sax_xmllite.cpp
 /// \brief  Реализация интерфейса SAX через библиотеку XmlLite
 
-#include "precompiled_cpxml.h"
-
 #include <string>
-
 
 #include "../../../Common/DocxFormat/Source/Base/Nullable.h"
 #include "../../../common/docxformat/source/xml/libxml2/libxml2.h"

@@ -1,11 +1,5 @@
-#ifndef _CPDOCCORE_XLSX_MERGE_CELLS_H_b330fc6e
-#define _CPDOCCORE_XLSX_MERGE_CELLS_H_b330fc6e
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
-#include <iosfwd>
 #include <boost/noncopyable.hpp>
 #include <cpdoccore/CPScopedPtr.h>
 
@@ -29,5 +23,3 @@ private:
 
 }
 }
-
-#endif

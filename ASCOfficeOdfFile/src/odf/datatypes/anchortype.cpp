@@ -1,6 +1,6 @@
-#include "../precompiled_cpodf.h"
-#include "anchortype.h"
 
+#include "anchortype.h"
+#include <boost/algorithm/string.hpp>
 #include <ostream>
 
 namespace cpdoccore { namespace odf { 

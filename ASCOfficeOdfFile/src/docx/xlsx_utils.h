@@ -1,12 +1,9 @@
-#ifndef _CPDOCCORE_XLSX_UTILS_H_7a32e7fe
-#define _CPDOCCORE_XLSX_UTILS_H_7a32e7fe
-#ifdef _MSC_VER
 #pragma once
-#endif
-
-#include "xlsx_cell_format.h"
 
 #include <string>
+#include <boost/cstdint.hpp>
+
+#include "xlsx_cell_format.h"
 
 namespace cpdoccore {
 
@@ -37,4 +34,3 @@ double convertTime(int hours, int minutes, double sec);
 }
 }
 
-#endif

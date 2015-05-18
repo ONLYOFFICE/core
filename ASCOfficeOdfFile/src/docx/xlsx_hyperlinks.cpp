@@ -1,10 +1,12 @@
-#include "../odf/precompiled_cpodf.h"
-#include "xlsx_hyperlinks.h"
-#include <cpdoccore/xml/simple_xml_writer.h>
+
+#include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/foreach.hpp>
-#include "docx_rels.h"
 
+#include <cpdoccore/xml/simple_xml_writer.h>
+
+#include "xlsx_hyperlinks.h"
+#include "docx_rels.h"
 #include "../formulasconvert/include/cpdoccore/formulasconvert.h"
 
 namespace cpdoccore {

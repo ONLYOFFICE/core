@@ -1,6 +1,4 @@
 
-#include "precompiled_cpxml.h"
-
 #include "../../include/cpdoccore/CPSharedPtr.h"
 #include "../../include/cpdoccore/xml/sax.h"
 #include "sax_xmllite.h"

@@ -1,9 +1,10 @@
-#include "../odf/precompiled_cpodf.h"
+
 #include "mediaitems.h"
 
-#include <regex.h>
+#include <boost/regex.hpp>
 #include <boost/foreach.hpp>
 #include <boost/algorithm/string/case_conv.hpp>
+#include <boost/lexical_cast.hpp>
 
 #include <cpdoccore/xml/utils.h>
 

@@ -1,11 +1,11 @@
-#include "../odf/precompiled_cpodf.h"
+
 #include "xlsx_font.h"
 #include "xlsx_fonts.h"
 #include <boost/foreach.hpp>
 #include <boost/functional.hpp>
 #include <boost/unordered_set.hpp>
 
-#include "..\odf\style_text_properties.h"
+#include "../odf/style_text_properties.h"
 
 namespace cpdoccore {
 namespace oox {

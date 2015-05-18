@@ -3,10 +3,10 @@
 
 #include <string>
 #include <map>
-//#include <boost/function.hpp>
-#include <cpdoccore/CPAssert.h>
+
 #include <cpdoccore/CPSharedPtr.h>
 #include "office_elements.h"
+#include <boost/function.hpp>
 
 namespace xml
 {

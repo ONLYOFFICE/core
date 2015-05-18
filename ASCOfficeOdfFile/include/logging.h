@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_LOGGING_H_INCLUDED_
-#define _CPDOCCORE_LOGGING_H_INCLUDED_
+#pragma once
 
 #include <iosfwd>
 
@@ -49,10 +48,8 @@ extern logging< std::wostream > logging_cout;
 
 }
 
-#define _CP_LOG_error ::cpdoccore::logging_err
-#define _CP_LOG_info ::cpdoccore::logging_err
+#define _CP_LOG_error	::cpdoccore::logging_err
+#define _CP_LOG_info	::cpdoccore::logging_err
 #define _CP_LOG_warning ::cpdoccore::logging_err
 
 #define _CP_LOG(A) _CP_LOG_##A
-
-#endif

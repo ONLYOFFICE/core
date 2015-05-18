@@ -1,4 +1,3 @@
-#include "precompiled_cpodf.h"
 
 #include <iostream>
 
@@ -10,7 +9,7 @@
 #include <cpdoccore/common/readdocelement.h>
 
 #include <boost/foreach.hpp>
-#include <boost_string.h>
+#include <boost/algorithm/string.hpp>
 
 #include "abstract_xml.h"
 #include "odfcontext.h"
@@ -47,7 +46,7 @@
 
 #include "documentcontext.h"
 
-#include "..\progressCallback.h"
+#include "../progressCallback.h"
 #define PROGRESSEVENT_ID 0
 
 namespace cpdoccore { 
@@ -602,13 +601,13 @@ bool odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context)
     catch(boost::exception & ex)
     {
         _CP_LOG(info) << L"\n[error]:\n";
-        //_CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(boost::diagnostic_information(ex))) << std::endl;
+        _CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(boost::diagnostic_information(ex))) << std::endl;
         throw;
     }
     catch(std::exception & ex)
     {
         _CP_LOG(info) << L"\n[error]:\n";
-        //_CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(ex.what())) << L"\n";
+		_CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(ex.what())) << L"\n";
         throw;
     }
     catch(...)
@@ -647,13 +646,13 @@ bool odf_document::Impl::pptx_convert(oox::pptx_conversion_context & Context)
     catch(boost::exception & ex)
     {
         _CP_LOG(info) << L"\n[error]:\n";
-        //_CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(boost::diagnostic_information(ex))) << std::endl;
+        _CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(boost::diagnostic_information(ex))) << std::endl;
         throw;
     }
     catch(std::exception & ex)
     {
         _CP_LOG(info) << L"\n[error]:\n";
-        //_CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(ex.what())) << std::endl;
+        _CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(ex.what())) << std::endl;
         throw;
     }
     catch(...)

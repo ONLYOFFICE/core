@@ -1,8 +1,9 @@
-#include "../odf/precompiled_cpodf.h"
+
 #include "mediaitems_utils.h"
 
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/regex.hpp>
 
 #include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"

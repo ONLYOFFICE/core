@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include <boost/noncopyable.hpp>
+//#include <boost/noncopyable.hpp>
 #include <cpdoccore/CPScopedPtr.h>
 #include <cpdoccore/CPSharedPtr.h>
 

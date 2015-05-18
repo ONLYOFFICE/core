@@ -1,7 +1,7 @@
-#include "../precompiled_cpodf.h"
+#include <boost/algorithm/string.hpp>
+
 #include "linewidth.h"
 #include "errors.h"
-#include <boost_string.h>
 
 namespace cpdoccore { namespace odf { 
 

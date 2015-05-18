@@ -1,4 +1,4 @@
-#include "../odf/precompiled_cpodf.h"
+
 #include "xlsx_cell_style.h"
 
 #include <cpdoccore/xml/simple_xml_writer.h>

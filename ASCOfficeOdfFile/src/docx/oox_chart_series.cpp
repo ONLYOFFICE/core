@@ -1,4 +1,4 @@
-#include "../odf/precompiled_cpodf.h"
+
 
 #include <boost/foreach.hpp>
 #include <cpdoccore/xml/simple_xml_writer.h>

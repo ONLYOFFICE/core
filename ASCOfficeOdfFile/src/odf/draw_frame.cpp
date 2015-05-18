@@ -1,4 +1,4 @@
-#include "precompiled_cpodf.h"
+
 #include "draw_frame.h"
 
 #include <ostream>
@@ -6,15 +6,14 @@
 #include <string>
 
 #include <boost/foreach.hpp>
-#include <boost_string.h>
-#include <regex.h>
+#include <boost/algorithm/string.hpp>
+#include <boost/regex.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>
-
 #include <cpdoccore/xml/attributes.h>
+#include <cpdoccore/odf/odf_document.h>
 
 #include "serialize_elements.h"
-#include <cpdoccore/odf/odf_document.h>
 #include "style_graphic_properties.h"
 #include "odfcontext.h"
 

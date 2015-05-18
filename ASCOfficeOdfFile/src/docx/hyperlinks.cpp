@@ -1,8 +1,10 @@
-#include "../odf/precompiled_cpodf.h"
+
 #include "hyperlinks.h"
 #include "docx_rels.h"
 
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
+
 #include <cpdoccore/xml/utils.h>
 
 namespace cpdoccore { 

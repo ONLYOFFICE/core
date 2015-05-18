@@ -1,4 +1,4 @@
-#include "precompiled_cpodf.h"
+
 #include "draw_common.h"
 
 #include <ostream>
@@ -6,8 +6,8 @@
 #include <string>
 
 #include <boost/foreach.hpp>
-#include <boost_string.h>
-#include <regex.h>
+#include <boost/regex.h>
+#include <boost/algorithm/string.hpp>
 
 #include <cpdoccore/xml/xmlchar.h>
 

@@ -1,4 +1,4 @@
-#include "precompiled_cpodf.h"
+
 #include "table.h"
 
 #include <cpdoccore/xml/xmlchar.h>
@@ -413,7 +413,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
                                     in_width = 0.0;
                                 }
 								
-                                const double pixDpi = in_width * getDefaultDpi();                
+                                const double pixDpi = in_width * 96./*getDefaultDpi()*/;                
                                 width = pixToSize(pixDpi, Context.getMaxDigitSize().first); 
 
 								//const double width = cmToChars(prop->style_table_column_properties_attlist_.style_column_width_->get_value_unit(length::cm));

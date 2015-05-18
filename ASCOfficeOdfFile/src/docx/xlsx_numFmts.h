@@ -1,7 +1,8 @@
-#ifndef _CPDOCCORE_XLSX_NUM_FMTS_H_INCLUDED_
-#define _CPDOCCORE_XLSX_NUM_FMTS_H_INCLUDED_
+#pragma once
 
+#include <string>
 #include <iosfwd>
+
 #include <boost/noncopyable.hpp>
 #include <cpdoccore/CPScopedPtr.h>
 
@@ -26,4 +27,3 @@ private:
 }
 }
 
-#endif

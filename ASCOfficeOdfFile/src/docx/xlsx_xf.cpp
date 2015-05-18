@@ -1,7 +1,7 @@
-#include "../odf/precompiled_cpodf.h"
+
 #include "xlsx_xf.h"
 #include <ostream>
-#include <boost/functional.hpp>
+#include <boost/functional/hash/hash.hpp>
 
 namespace cpdoccore {
 namespace oox {

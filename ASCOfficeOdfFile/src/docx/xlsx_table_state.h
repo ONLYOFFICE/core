@@ -1,12 +1,7 @@
-#ifndef _CPDOCCORE_XLSX_TABLE_STATE_d25a2929
-#define _CPDOCCORE_XLSX_TABLE_STATE_d25a2929
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
-#include <string>
 #include <vector>
+
 #include "xlsx_row_spanned.h"
 #include "xlsx_merge_cells.h"
 #include "xlsx_table_metrics.h"
@@ -105,4 +100,3 @@ private:
 }
 }
 
-#endif

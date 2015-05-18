@@ -1,9 +1,4 @@
-#ifndef _CPDOCCORE_ODF_CHARTDATALABELNUMBER_H_
-#define _CPDOCCORE_ODF_CHARTDATALABELNUMBER_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
 
 #include <iosfwd>
 #include <string>
@@ -37,5 +32,3 @@ private:
 APPLY_PARSE_XML_ATTRIBUTES(odf::chart_data_label_number);
 
 }
-
-#endif

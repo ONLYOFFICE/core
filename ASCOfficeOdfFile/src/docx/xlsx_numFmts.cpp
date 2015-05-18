@@ -1,4 +1,5 @@
-#include "../odf/precompiled_cpodf.h"
+#include <vector>
+
 #include "xlsx_numFmts.h"
 
 namespace cpdoccore {

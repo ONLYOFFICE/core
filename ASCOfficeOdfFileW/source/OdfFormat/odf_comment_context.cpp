@@ -9,17 +9,9 @@
 #include "odf_conversion_context.h"
 #include "odf_comment_context.h"
 
-
 #include "styles.h"
 
 #include "office_annotation.h"
-
-//#include "style_table_properties.h"
-//#include "style_text_properties.h"
-//#include "style_paragraph_properties.h"
-//#include "style_graphic_properties.h"
-
-
 
 namespace cpdoccore 
 {

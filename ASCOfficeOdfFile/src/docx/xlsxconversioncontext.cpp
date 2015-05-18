@@ -1,18 +1,17 @@
-#include "../odf/precompiled_cpodf.h"
 
 #include "xlsxconversioncontext.h"
 
-#include "measuredigits.h"
-#include "xlsx_package.h"
+#include <iostream>
 
-#include "xlsx_cell_format.h"
-#include "../odf/calcs_styles.h"
 #include <cpdoccore/odf/odf_document.h>
 #include <cpdoccore/xml/simple_xml_writer.h>
-#include <cpdoccore/CPAssert.h>
-#include "xlsx_utils.h"
 
-#include <iostream>
+#include "measuredigits.h"
+#include "xlsx_package.h"
+#include "xlsx_utils.h"
+#include "xlsx_cell_format.h"
+#include "../odf/calcs_styles.h"
+
 
 namespace cpdoccore { 
 
@@ -209,7 +208,6 @@ oox_chart_context & xlsx_conversion_context::current_chart()
     }
     else
     {
-        CP_ASSERT(false);
         throw std::runtime_error("internal error");
     }
 }
@@ -221,7 +219,6 @@ xlsx_xml_worksheet & xlsx_conversion_context::current_sheet()
     }
     else
     {
-        CP_ASSERT(false);
         throw std::runtime_error("internal error");
     }
 }
@@ -469,7 +466,7 @@ std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
 		else
 			font_size =10;
 		
-        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, getDefaultDpi());        
+        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, /*getDefaultDpi()*/96.);        
     }    
     return maxDigitSize_;
 }

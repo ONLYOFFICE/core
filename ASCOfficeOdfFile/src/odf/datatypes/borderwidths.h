@@ -1,9 +1,5 @@
-#ifndef _CPDOCCORE_ODF_BORDERWIDTHS_H_
-#define _CPDOCCORE_ODF_BORDERWIDTHS_H_
-
-#ifdef _MSC_VER
 #pragma once
-#endif
+
 
 #include <iosfwd>
 #include <string>
@@ -57,5 +53,3 @@ std::wostream & operator << (std::wostream & _Wostream, const border_widths & _V
 APPLY_PARSE_XML_ATTRIBUTES(odf::border_widths);
 
 }
-
-#endif

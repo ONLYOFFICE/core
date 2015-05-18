@@ -1,6 +1,7 @@
-#include "../precompiled_cpodf.h"
+
 #include "runthrough.h"
 
+#include <boost/algorithm/string.hpp>
 #include <ostream>
 
 namespace cpdoccore { namespace odf { 

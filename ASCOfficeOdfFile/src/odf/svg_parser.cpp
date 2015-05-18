@@ -1,7 +1,7 @@
 #pragma once   
-#include "precompiled_cpodf.h"
-#include "svg_parser.h"
 
+#include "svg_parser.h"
+#include <boost/lexical_cast.hpp>
 
 namespace cpdoccore 
 { 

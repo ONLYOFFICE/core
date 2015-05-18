@@ -1,4 +1,4 @@
-#include "../odf/precompiled_cpodf.h"
+
 
 #include <cpdoccore/CPHash.h>
 #include <cpdoccore/xml/simple_xml_writer.h>

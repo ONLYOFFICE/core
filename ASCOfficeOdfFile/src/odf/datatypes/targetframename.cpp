@@ -1,6 +1,7 @@
-#include "../precompiled_cpodf.h"
+
 #include "targetframename.h"
 
+#include <boost/algorithm/string.hpp>
 #include <iostream>
 #include <sstream>
 

@@ -1,7 +1,7 @@
-#include "../odf/precompiled_cpodf.h"
+
 #include <boost/foreach.hpp>
-#include "..\odf\style_text_properties.h"
-#include "..\odf\style_paragraph_properties.h"
+#include "../odf/style_text_properties.h"
+#include "../odf/style_paragraph_properties.h"
 
 #include "xlsx_styles.h"
 #include "xlsx_fonts.h"

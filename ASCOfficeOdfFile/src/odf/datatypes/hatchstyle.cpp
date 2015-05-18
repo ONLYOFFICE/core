@@ -1,6 +1,6 @@
-#include "../precompiled_cpodf.h"
-#include "hatchstyle.h"
 
+#include "hatchstyle.h"
+#include <boost/algorithm/string.hpp>
 #include <ostream>
 
 namespace cpdoccore { 

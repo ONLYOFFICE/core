@@ -1,8 +1,8 @@
-#include "../precompiled_cpodf.h"
+
 #include "textposition.h"
 #include "errors.h"
 
-#include <boost_string.h>
+#include <boost/algorithm/string.hpp>
 
 namespace cpdoccore { namespace odf { 
 

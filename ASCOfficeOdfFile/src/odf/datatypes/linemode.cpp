@@ -1,4 +1,5 @@
-#include "../precompiled_cpodf.h"
+#include <boost/algorithm/string.hpp>
+
 #include "linemode.h"
 #include "errors.h"
 

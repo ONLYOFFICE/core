@@ -1,10 +1,10 @@
-#include "../odf/precompiled_cpodf.h"
+
 #include "xlsx_fill.h"
 
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 #include <boost/foreach.hpp>
-#include <boost/functional.hpp>
+#include <boost/functional/hash/hash.hpp>
 
 namespace cpdoccore {
 namespace oox {

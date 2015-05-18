@@ -1,7 +1,5 @@
-#ifndef CPDOCCORE_XLSX_HYPERLINKS_H_
-#define CPDOCCORE_XLSX_HYPERLINKS_H_
+#pragma once
 
-#include <iosfwd>
 #include <cpdoccore/CPOptional.h>
 #include <cpdoccore/CPSharedPtr.h>
 #include <cpdoccore/CPNoncopyable.h>
@@ -31,5 +29,3 @@ private:
 
 }
 }
-
-#endif

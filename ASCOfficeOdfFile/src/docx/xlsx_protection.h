@@ -1,5 +1,3 @@
-#ifndef _CPDOCCORE_XLSX_PROTECTION_H_INCLUDED_
-#define _CPDOCCORE_XLSX_PROTECTION_H_INCLUDED_
 #pragma once
 
 #include <cpdoccore/CPOptional.h>
@@ -27,4 +25,3 @@ struct xlsx_protection
 }
 }
 
-#endif

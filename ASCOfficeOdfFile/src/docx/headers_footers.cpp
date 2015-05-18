@@ -1,6 +1,7 @@
-#include "../odf/precompiled_cpodf.h"
+
 #include "headers_footers.h"
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace cpdoccore { 
 namespace oox {

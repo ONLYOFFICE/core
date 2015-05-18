@@ -1,8 +1,7 @@
-#include "../precompiled_cpodf.h"
-#include "letterspacing.h"
-
-#include <boost_string.h>
 #include <ostream>
+#include <boost/algorithm/string.hpp>
+
+#include "letterspacing.h"
 
 namespace cpdoccore { namespace odf { 
 

@@ -8,10 +8,10 @@
 #include "../../cpdoccore/xml/xmlchar.h"
 
 #include "../../logging.h"
-#include "../../boost_string.h"
 
 #include <boost/variant.hpp>
 #include <boost/foreach.hpp>
+#include <boost/lexical_cast.hpp>
 
 namespace cpdoccore 
 {

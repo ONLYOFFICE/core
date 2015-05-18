@@ -1,19 +1,17 @@
-#include "precompiled_cpodf.h"
+
 
 #include <ostream>
 #include <sstream>
 #include <string>
 
 #include <boost/foreach.hpp>
-#include <boost_string.h>
-#include <regex.h>
-
-//#include <cpdoccore/xml/xmlchar.h>
+#include <boost/algorithm/string.hpp>
+#include <boost/regex.hpp>
 
 #include <cpdoccore/xml/attributes.h>
+#include <cpdoccore/odf/odf_document.h>
 
 #include "serialize_elements.h"
-#include <cpdoccore/odf/odf_document.h>
 
 #include "draw_common.h"
 
@@ -90,7 +88,7 @@ bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & c
 	}
 	if (Points_pt.size()>3)//если другое количество точек .. попозже
 	{
-		float dpi_ = getDefaultDpi();
+		float dpi_ = 96.;//getDefaultDpi();
 		clip_rect[0] = dpi_ * Points_pt[3].get_value_unit(length::inch);
 		clip_rect[1] = dpi_ * Points_pt[0].get_value_unit(length::inch);
 		clip_rect[2] = dpi_ * Points_pt[1].get_value_unit(length::inch);

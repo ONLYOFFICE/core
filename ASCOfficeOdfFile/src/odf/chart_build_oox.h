@@ -5,8 +5,8 @@
 #include <string>
 #include <vector>
 
-#include <boost_string.h>
-#include <regex.h>
+#include <boost/regex.hpp>
+#include <boost/algorithm/string.hpp>
 //
 #include <cpdoccore/CPString.h>
 #include <cpdoccore/xml/xmlchar.h>

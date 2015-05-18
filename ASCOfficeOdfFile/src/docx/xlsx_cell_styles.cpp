@@ -1,8 +1,11 @@
-#include "../odf/precompiled_cpodf.h"
+#include <vector>
+
+#include <boost/foreach.hpp>
+
+#include <cpdoccore/xml/simple_xml_writer.h>
+
 #include "xlsx_cell_styles.h"
 #include "xlsx_cell_style.h"
-#include <cpdoccore/xml/simple_xml_writer.h>
-#include <boost/foreach.hpp>
 
 namespace cpdoccore {
 namespace oox {

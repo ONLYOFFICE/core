@@ -1,5 +1,6 @@
-#include "../precompiled_cpodf.h"
+
 #include "underlinecolor.h"
+#include <boost/algorithm/string.hpp>
 
 #include <ostream>
 

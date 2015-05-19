@@ -21,65 +21,15 @@ namespace NSDjvu
 {
 	static GUTF8String MakeUTF8String(const std::wstring& wsText)
 	{
-		int nSize;
-
-#ifdef _UNICODE
-		LPCWSTR pszUnicodeText = wsText.c_str();
-#else
-		nSize = ::MultiByteToWideChar(CP_ACP, 0, (LPCSTR)strText, -1, NULL, 0);
-		if (nSize == 0)
-			return "";
-
-		LPWSTR pszUnicodeText = new WCHAR[nSize];
-		::MultiByteToWideChar(CP_ACP, 0, (LPCSTR)strText, -1, pszUnicodeText, nSize);
-#endif
-
-		nSize = ::WideCharToMultiByte(CP_UTF8, 0, pszUnicodeText, -1, NULL, 0, NULL, NULL);
-		if (nSize == 0)
-		{
-#ifndef _UNICODE
-			delete[] pszUnicodeText;
-#endif
-			return "";
-		}
-
-		LPSTR pszTextUTF8 = new CHAR[nSize];
-		::WideCharToMultiByte(CP_UTF8, 0, pszUnicodeText, -1, pszTextUTF8, nSize, NULL, NULL);
-
-		GUTF8String utf8String(pszTextUTF8);
-		delete[] pszTextUTF8;
-
-#ifndef _UNICODE
-		delete[] pszUnicodeText;
-#endif
-
-		return utf8String;
-
-		//std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsText);
-		//GUTF8String utf8String(sText.c_str());
-		//return utf8String;
+        std::string sText = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(wsText);
+        GUTF8String utf8String(sText.c_str());
+        return utf8String;
 	}
 	static CString MakeCString(GUTF8String& strText)
 	{
-		int nSize;
-
-		LPSTR pszUtf8Text = strText.getbuf();
-
-		//nSize = ::WideCharToMultiByte(CP_UTF8, 0, pszUtf8Text, -1, NULL, 0, NULL, NULL);
-		nSize = ::MultiByteToWideChar(CP_UTF8, 0, pszUtf8Text, -1, NULL, 0);
-
-		if (nSize == 0)
-		{
-			return _T("");
-		}
-
-		LPWSTR pszUnicodeText = new WCHAR[nSize];
-		::MultiByteToWideChar(CP_UTF8, 0, pszUtf8Text, -1, pszUnicodeText, nSize);
-
-		CString String(pszUnicodeText);
-		delete[] pszUnicodeText;
-
-		return String;
+		std::string sString(strText.getbuf());
+		std::wstring wsString = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sString.c_str(), sString.length());
+		return CString(wsString.c_str());
 	}
 	static int     GetInteger(const std::wstring& wsString)
 	{

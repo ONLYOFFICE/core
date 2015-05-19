@@ -15,7 +15,8 @@ DEFINES += _UNICODE
 DEFINES += _USE_LIBXML2_READER_
 DEFINES += LIBXML_READER_ENABLED
 
-SOURCES += djvufile.cpp \
+SOURCES += DjVu.cpp \
+    DjVuFileImplementation.cpp \
     libdjvu/Arrays.cpp \
     libdjvu/atomic.cpp \
     libdjvu/BSByteStream.cpp \
@@ -70,11 +71,10 @@ SOURCES += djvufile.cpp \
     libdjvu/UnicodeByteStream.cpp \
     libdjvu/XMLParser.cpp \
     libdjvu/XMLTags.cpp \
-    libdjvu/ZPCodec.cpp \
-    DjVu.cpp \
-    DjVuFileImplementation.cpp
+    libdjvu/ZPCodec.cpp
 
-HEADERS += djvufile.h \
+HEADERS +=     DjVu.h \
+    DjVuFileImplementation.h \
     libdjvu/Arrays.h \
     libdjvu/atomic.h \
     libdjvu/BSByteStream.h \
@@ -124,9 +124,8 @@ HEADERS += djvufile.h \
     libdjvu/UnicodeByteStream.h \
     libdjvu/XMLParser.h \
     libdjvu/XMLTags.h \
-    libdjvu/ZPCodec.h \
-    DjVu.h \
-    DjVuFileImplementation.h
+    libdjvu/ZPCodec.h
+
 unix {
     target.path = /usr/lib
     INSTALLS += target

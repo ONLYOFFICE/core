@@ -40,6 +40,7 @@ namespace NSDoctRenderer
         int m_nCountChangesItems;
 
         std::wstring m_strMailMergeDatabasePath;
+        std::wstring m_strMailMergeField;
         int m_nMailMergeIndexStart;
         int m_nMailMergeIndexEnd;
 
@@ -80,7 +81,7 @@ namespace NSDoctRenderer
         bool Execute(const std::wstring& strXml, std::wstring& strError);
 
     private:
-        bool ExecuteScript(const std::string& strScript, std::wstring& strError);
+        bool ExecuteScript(const std::string& strScript, std::wstring& strError, std::wstring& sReturnParams);
         std::string ReadScriptFile(const std::wstring& strFile);
     };
 }

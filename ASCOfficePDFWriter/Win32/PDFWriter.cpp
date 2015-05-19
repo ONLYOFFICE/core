@@ -2,12 +2,19 @@
 #include "PDFWriter.h"
 
 #include "../PdfWriterLib/PdfWriterLib.h"
+#include <Shlobj.h>
 
 HRESULT CPDFWriter::FinalConstruct()
 {
 	m_oPdfWriter = new CPdfWriterLib();
 	
 	if (m_oPdfWriter == NULL) return S_FALSE;
+
+	//set default font directory
+
+	std::wstring defWinFontDirectory = GetDefWinFontDirectory();
+	m_oPdfWriter->SetFontDir(defWinFontDirectory);
+
 	return S_OK ;
 }
 
@@ -18,6 +25,21 @@ void CPDFWriter::FinalRelease()
 HRESULT CPDFWriter::OnlineWordToPdf (BSTR sPathXml, BSTR sDstFile, BSTR sHtmlPlace, LONG nReg)
 {
 	return m_oPdfWriter->OnlineWordToPdf( std::wstring(sPathXml), std::wstring(sDstFile), nReg);
+}
+
+/////////////////////////////
+
+std::wstring CPDFWriter::GetDefWinFontDirectory()
+{
+	std::wstring strPath;
+
+	wchar_t wsWinFontDir[1024] ={};
+	if ( !SHGetSpecialFolderPathW( NULL, wsWinFontDir, CSIDL_FONTS, FALSE ) )
+		wsWinFontDir[0] = '\0';
+
+
+	strPath = std::wstring(wsWinFontDir);
+	return strPath;
 }
 
 

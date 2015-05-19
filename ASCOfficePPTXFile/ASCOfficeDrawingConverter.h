@@ -184,6 +184,7 @@ namespace NSBinPptxRW
         HRESULT SetRelsPath (const CString& bsRelsPath);
 		CString GetRelsPath();
         HRESULT SetMediaDstPath (const CString& bsMediaPath);
+        HRESULT SetEmbedDstPath (const CString& bsEmbedPath);
 
         HRESULT AddShapeType(const CString& bsXml);
         HRESULT AddObject(const CString& bsXml, CString** pMainProps);

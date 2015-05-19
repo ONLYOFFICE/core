@@ -90,5 +90,24 @@ namespace PPTX
 			}
 			return _T("");
 		}
+		CString Blip::GetFullOleName(const PPTX::RId& oRId, FileContainer* pRels)const
+		{
+			if (pRels != NULL)
+			{
+				smart_ptr<PPTX::OleObject> p = pRels->oleObject(oRId);
+				if (p.is_init())
+					return p->filename().m_strFilename;
+			}
+
+			if(parentFileIs<Slide>())
+				return parentFileAs<Slide>().GetOleFromRId(oRId);
+			else if(parentFileIs<SlideLayout>())
+				return parentFileAs<SlideLayout>().GetOleFromRId(oRId);
+			else if(parentFileIs<SlideMaster>())
+				return parentFileAs<SlideMaster>().GetOleFromRId(oRId);
+			else if(parentFileIs<Theme>())
+				return parentFileAs<Theme>().GetOleFromRId(oRId);
+			return _T("");
+		}
 	} // namespace Logic
 } // namespace PPTX

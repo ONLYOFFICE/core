@@ -99,7 +99,14 @@ namespace PPTX
 				if (pWriter->m_pCommonRels->is_init())
 					pRels = pWriter->m_pCommonRels->operator ->();
 
-				NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(this->GetFullPicName(pRels), dX, dY, dW, dH);
+				NSShapeImageGen::COleInfo* pOleInfo = NULL;
+				if(oleInfo.IsInit())
+				{
+					pOleInfo = oleInfo.GetPointer();
+					pOleInfo->m_sFilename = this->GetFullOleName(PPTX::RId(oleInfo->m_sRid), pRels);
+				}
+
+				NSShapeImageGen::CImageInfo oId = pWriter->m_pCommon->m_pImageManager->WriteImage(this->GetFullPicName(pRels), pOleInfo, dX, dY, dW, dH);
 				CString s = oId.GetPath2();
 
 				pWriter->StartRecord(3);
@@ -112,6 +119,7 @@ namespace PPTX
 			}
 		public:
 			virtual CString GetFullPicName(FileContainer* pRels = NULL)const;
+			virtual CString GetFullOleName(const PPTX::RId& pRId, FileContainer* pRels = NULL)const;
 		public:
 			std::vector<UniEffect> Effects;
 
@@ -121,6 +129,7 @@ namespace PPTX
 		//private:
 		public:
 			CString m_namespace;
+			nullable<NSShapeImageGen::COleInfo> oleInfo;
 		protected:
 			virtual void FillParentPointersForChilds();
 		};

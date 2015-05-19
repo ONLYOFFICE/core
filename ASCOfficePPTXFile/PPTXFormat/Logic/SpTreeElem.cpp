@@ -23,7 +23,7 @@ namespace PPTX
 			return sC;
 		}
 
-		void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, CString& strAttr, CString& strNode)
+		void CalculateFill(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, CString& strAttr, CString& strNode, bool bOle)
 		{
 			smart_ptr<PPTX::Theme> oTheme = _oTheme.smart_dynamic_cast<PPTX::Theme>();
 			smart_ptr<PPTX::Logic::ClrMap> oClrMap = _oClrMap.smart_dynamic_cast<PPTX::Logic::ClrMap>();
@@ -80,16 +80,12 @@ namespace PPTX
 
 					CString strId = oBlip.blip->embed->ToString();
 
-					if (!oBlip.srcRect.is_init())
+					if(bOle)
 					{
-						if (oBlip.tile.is_init())
-							strNode = _T("<v:fill r:id=\"") + strId + _T("\" o:title=\"\" type=\"tile\"") + fopacity + _T(" />");
-						else
-							strNode = _T("<v:fill r:id=\"") + strId + _T("\" o:title=\"\" type=\"frame\"") + fopacity + _T(" />");
+						strNode = _T("<v:imagedata r:id=\"") + strId + _T("\" o:title=\"\" />");
 					}
 					else
 					{
-						// crop
 						if (oBlip.tile.is_init())
 							strNode = _T("<v:fill r:id=\"") + strId + _T("\" o:title=\"\" type=\"tile\"") + fopacity + _T(" />");
 						else

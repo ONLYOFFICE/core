@@ -50,7 +50,25 @@ namespace NSBinPptxRW
 	class CStringWriter;
 	class CCommonWriter;
 	class CSeekTableEntry;
-
+	class CImageManager2Info
+	{
+	public:
+		CString m_sImagePath;
+		CString m_sOlePath;
+		CString m_sOleProperty;
+	};
+	class CRelsGeneratorInfo
+	{
+	public:
+		int m_nImageRId;
+		int m_nOleRId;
+		CString m_sOleProperty;
+		CRelsGeneratorInfo()
+		{
+			m_nImageRId = -1;
+			m_nOleRId = -1;
+		}
+	};
 	class CMasterSlideInfo
 	{
 	public:
@@ -97,10 +115,11 @@ namespace NSBinPptxRW
 	class CImageManager2
 	{
 	private:
-        std::map<CString, CString>	m_mapImages;
+        std::map<CString, CImageManager2Info>	m_mapImages;
 		_INT32						m_lIndexNextImage;
+		_INT32						m_lIndexNextOle;
 		CString						m_strDstMedia;
-
+		CString						m_strDstEmbed;
 	public:
         bool						m_bIsWord;
 
@@ -110,6 +129,9 @@ namespace NSBinPptxRW
 		void Clear();
 		void SetDstMedia(const CString& strDst);
 		CString GetDstMedia();
+		void SetDstEmbed(const CString& strDst);
+		CString GetDstEmbed();
+		int IsDisplayedImage(const CString& strInput);
 
 	public:
 		template <typename T>
@@ -117,16 +139,17 @@ namespace NSBinPptxRW
 		{
 			pWriter->WriteBYTE(m_bIsWord ? 1 : 0);
 			pWriter->WriteINT(m_lIndexNextImage);
+			pWriter->WriteINT(m_lIndexNextOle);
 			pWriter->WriteString(m_strDstMedia);
 			
             int lCount = (int)m_mapImages.size();
 			pWriter->WriteINT(lCount);
 
-            for (std::map<CString, CString>::const_iterator pPair = m_mapImages.begin(); pPair != m_mapImages.end(); ++pPair)
-            {
-                pWriter->WriteString(pPair->first);
-                pWriter->WriteString(pPair->second);
-            }
+            //for (std::map<CString, CString>::const_iterator pPair = m_mapImages.begin(); pPair != m_mapImages.end(); ++pPair)
+            //{
+            //    pWriter->WriteString(pPair->first);
+            //    pWriter->WriteString(pPair->second);
+            //}
 		}
 
 		template <typename T>
@@ -134,29 +157,32 @@ namespace NSBinPptxRW
 		{
             m_bIsWord = ((true == pReader->GetBool()) ? true : false);
 			m_lIndexNextImage = pReader->GetLong();
+			m_lIndexNextOle = pReader->GetLong();
 			m_strDstMedia = pReader->GetString2();
 
 			m_mapImages.clear();
 			_INT32 lCount = pReader->GetLong();
 
-			for (_INT32 i = 0; i < lCount; ++i)
-			{
-				CString s1 = pReader->GetString2();
-				CString s2 = pReader->GetString2();
+			//for (_INT32 i = 0; i < lCount; ++i)
+			//{
+			//	CString s1 = pReader->GetString2();
+			//	CString s2 = pReader->GetString2();
 
-				m_mapImages [s1] = s2;
-			}
+			//	m_mapImages [s1] = s2;
+			//}
 		}
 
 	public:
-		CString GenerateImage(const CString& strInput, CString strBase64Image = _T(""));
+		CImageManager2Info GenerateImage(const CString& strInput, CString strBase64Image = _T(""));
+		CImageManager2Info GenerateImageExec(const CString& strInput, const CString& strExts, const CString& strOleImage, const CString& strOleImageProperty);
 
 		void SaveImageAsPng(const CString& strFileSrc, const CString& strFileDst);
 
 		void SaveImageAsJPG(const CString& strFileSrc, const CString& strFileDst);
 
 		bool IsNeedDownload(const CString& strFile);
-		CString DownloadImage(const CString& strFile);
+		CImageManager2Info DownloadImage(const CString& strFile);
+		CString DownloadImageExec(const CString& strFile);
 	};
 
 	class CBinaryFileWriter
@@ -355,7 +381,7 @@ namespace NSBinPptxRW
 	private:
 		CStringWriter* m_pWriter;
 		int									m_lNextRelsID;
-		std::map<CString, int>				m_mapImages;
+		std::map<CString, CRelsGeneratorInfo>				m_mapImages;
 
 		std::map<CString, int>				m_mapLinks;
 
@@ -385,7 +411,7 @@ namespace NSBinPptxRW
 		void AddRels(const CString& strRels);
 		void SaveRels(const CString& strFile);
 
-		int WriteImage(const CString& strImagePath, CString strBase64Image);
+		CRelsGeneratorInfo WriteImage(const CString& strImagePath, CString strBase64Image);
 		int WriteChart(int nChartNumber, _INT32 lDocType);
 
 		int WriteRels(const CString& bsType, const CString& bsTarget, const CString& bsTargetMode);

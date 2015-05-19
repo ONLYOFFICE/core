@@ -364,7 +364,7 @@ namespace PPTX
 											strUrl = pathUrl.GetPath();
 										}
 
-                                        LONG lId = pReader->m_pRels->WriteImage(strUrl, strOrigBase64);
+										NSBinPptxRW::CRelsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strUrl, strOrigBase64);
 
 										// -------------------
 										if (strTempFile != _T(""))
@@ -376,7 +376,14 @@ namespace PPTX
 										if (!blip.is_init())
 											blip = new PPTX::Logic::Blip();
 
-										blip->embed = new PPTX::RId((size_t)lId);
+										blip->embed = new PPTX::RId((size_t)oRelsGeneratorInfo.m_nImageRId);
+
+										if(oRelsGeneratorInfo.m_nOleRId > 0)
+										{
+											blip->oleInfo.Init();
+											blip->oleInfo->m_sOleProperty = oRelsGeneratorInfo.m_sOleProperty;
+											blip->oleInfo->m_sRid = PPTX::RId((size_t)oRelsGeneratorInfo.m_nOleRId).get();
+										}
 
 										pReader->Skip(1); // end attribute
 										break;

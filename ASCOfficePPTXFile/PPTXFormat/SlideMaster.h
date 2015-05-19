@@ -22,6 +22,7 @@
 #include "TableStyles.h"
 
 #include "DocxFormat/Media/Image.h"
+#include "DocxFormat/Media/OleObject.h"
 #include "DocxFormat/External/HyperLink.h"
 #include "DocxFormat/Drawing/VmlDrawing.h"
 
@@ -298,6 +299,13 @@ namespace PPTX
 			if (!p.is_init())
 				return _T("");
 			return p->Uri().m_strFilename;
+		}
+		virtual CString GetOleFromRId(const PPTX::RId& rid)const
+		{
+			smart_ptr<PPTX::OleObject> p = oleObject(rid);
+			if (!p.is_init())
+				return _T("");
+			return p->filename().m_strFilename;
 		}
 
 

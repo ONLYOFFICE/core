@@ -70,6 +70,11 @@ namespace NSBinPptxRW
 
             m_oImageManager.SetDstMedia(pathMedia.GetPath());
 
+            OOX::CPath pathEmbeddings = pathPPT / _T("embeddings");
+            FileSystem::Directory::CreateDirectory(pathEmbeddings.GetPath());
+
+            m_oImageManager.SetDstEmbed(pathEmbeddings.GetPath());
+
 			m_oReader.m_pRels->m_pManager = &m_oImageManager;
 
             OOX::CPath pathTheme = pathPPT  / _T("theme");
@@ -700,6 +705,7 @@ namespace NSBinPptxRW
 			CStringWriter oContentTypes;
 			oContentTypes.WriteString(_T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\" ?>\
 				<Types xmlns=\"http://schemas.openxmlformats.org/package/2006/content-types\">\
+				<Default Extension=\"bin\" ContentType=\"application/vnd.openxmlformats-officedocument.oleObject\"/>\
 				<Default Extension=\"png\" ContentType=\"image/png\" />\
 				<Default Extension=\"jpeg\" ContentType=\"image/jpeg\" />\
 				<Default Extension=\"wmf\" ContentType=\"image/x-wmf\" />\

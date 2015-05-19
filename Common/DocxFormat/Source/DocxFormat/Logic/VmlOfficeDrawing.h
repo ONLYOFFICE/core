@@ -1621,7 +1621,18 @@ namespace OOX
 
 			virtual void         fromXML(XmlUtils::CXmlNode& oNode)
 			{
-				// TO DO: Реализовать COLEObject::fromXML(XmlUtils::CXmlNode& oNode)
+				if ( _T("o:OLEObject") != oNode.GetName() )
+					return;
+
+				oNode.ReadAttributeBase( _T("DrawAspect"), m_oDrawAspect );
+				oNode.ReadAttributeBase( _T("r:id"), m_oId );
+				oNode.ReadAttributeBase( _T("ObjectID"), m_sObjectId );
+				oNode.ReadAttributeBase( _T("ProgID"), m_sProgId );
+				oNode.ReadAttributeBase( _T("ShapeID"), m_sShapeId );
+				oNode.ReadAttributeBase( _T("Type"), m_oType );
+				oNode.ReadAttributeBase( _T("UpdateMode"), m_oUpdateMode );
+
+				//todo FieldCodes, LinkType, LockedField
 			}
 			virtual void         fromXML(XmlUtils::CXmlLiteReader& oReader)
 			{

@@ -199,6 +199,7 @@ namespace OOX
 	public:
 		CContentTypes()
 		{
+			AddDefault(OOX::CPath(_T(".bin")));
 			AddDefault(OOX::CPath(_T(".rels")));
 			AddDefault(OOX::CPath(_T(".bmp")));
 			AddDefault(OOX::CPath(_T(".jpg")));

@@ -1,0 +1,36 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<!--
+  Описание XML с метаданными типа Exif
+  Описание формата Exif см. doc\exifStandard2.pdf
+  или в web: http://exif.org/specifications.html
+-->
+<xs:schema id="ImageMetaDataExif1"
+    elementFormDefault="qualified"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+>
+
+  <xs:include schemaLocation="ImageMetaDataCommon.xsd"/>
+
+
+  <xs:element name="AVSImageMetaDataExif">
+    <xs:complexType>
+      <xs:sequence>
+
+        <xs:element name="Tag" minOccurs="0" maxOccurs="unbounded">
+          <xs:complexType>
+
+            <xs:all>
+
+              <xs:element name="ExifTag" minOccurs="1" maxOccurs="1" type="ExifTag"/>
+              <xs:element name="CommonTag" minOccurs="0" maxOccurs="1" type="CommonTagType"/>
+
+            </xs:all>
+
+          </xs:complexType>
+        </xs:element>
+
+      </xs:sequence>
+
+    </xs:complexType>
+  </xs:element>
+</xs:schema>

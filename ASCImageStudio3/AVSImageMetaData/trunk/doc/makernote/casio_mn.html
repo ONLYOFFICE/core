@@ -1,0 +1,480 @@
+<html>
+        <head>
+                <META HTTP-EQUIV="Content-Type" CONTENT="text/html; charset=windows-1252">
+                <link rel=StyleSheet href="style.css" type="text/css">
+                <META NAME="keywords" CONTENT="Casio Makernote JPEG Metadata Information EXIF">
+
+                <title>Casio Makernote Format Specification</title>
+        </head>
+
+        <body>
+                <a href="makernotes.html">EXIF Makernotes - Reference Information</a>
+                
+                <H1>Casio Makernote Format Specification</H1>
+
+                <br>
+                <p>There are two types of Casio Makernote:</p>
+                <br>
+
+                <h2>Casio Type 1 Makernote</h2>
+                <table border cellpadding=10 align="center">
+                        <tr>
+                                <th>Field</th>
+                                <th>Size</th>
+                                <th>Description</th>
+                        </tr>
+                        <tr>
+                                <td>IFD Data</td>
+                                <td>Variable</td>
+                                <td>Standard TIFF IFD Data using <a href="casio_mn.html#Casio_Type_1_Tags">Casio Type 1 Tags</a> but always uses Motorola (Big-Endian) Byte Alignment</td>
+                        </tr>
+                </table>
+                <p>This makernote has no header - the IFD starts immediately</p>
+                
+                <br>
+
+                <h2>Casio Type 2 Makernote</h2>
+                <table border cellpadding=10 align="center">
+                        <tr>
+                                <th>Field</th>
+                                <th>Size</th>
+                                <th>Description</th>
+                        </tr>
+                        <tr>
+                                <td>Header</td>
+                                <td>6 Bytes</td>
+                                <td>&quot;QVC\x00\x00\x00&quot;</td>
+                        </tr>
+                        <tr>
+                                <td>IFD Data</td>
+                                <td>Variable</td>
+                                <td>Standard TIFF IFD Data using <a href="casio_mn.html#Casio_Type_2_Tags">Casio Type 2 Tags</a> but always uses Motorola (Big-Endian) Byte Alignment</td>
+                        </tr>
+                </table>
+
+                <br>
+                <br>
+
+                <p>For format specifications of TIFF Image File Directory data, see
+                Section 2 of: <a href="standards.html#TIFF">TIFF, Revision 6.0, June 3, 1992, Adobe Systems Incorporated</a></p>
+
+                <p>All EXIF offsets are relative to the start of the TIFF header at the beginning of the EXIF segment</p>
+
+                <br>
+                <br>
+                <br>
+                <br>
+
+                <h2><a name="Casio_Type_1_Tags">Casio Type 1 Makernote Tags Definition</a></h2>
+                <table border cellpadding=7 align="center">
+                        <tr>
+                                <th>Tag #</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Details</th>
+                        </tr>
+                        <tr>
+                                <td>1</td>
+                                <td>Recording Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        1 = Single Shutter<br>
+                                        2 = Panorama<br>
+                                        3 = Night Scene<br>
+                                        4 = Portrait<br>
+                                        5 = Landscape
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>2</td>
+                                <td>Quality</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        1 = Economy<br>
+                                        2 = Normal<br>
+                                        3 = Fine
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>3</td>
+                                <td>Focusing Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        2 = Macro<br>
+                                        3 = Auto Focus<br>
+                                        4 = Manual Focus<br>
+                                        5 = Infinity
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>4</td>
+                                <td>Flash Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        1 = Auto<br>
+                                        2 = On<br>
+                                        3 = Off<br>
+                                        4 = Off
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>5</td>
+                                <td>Flash Intensity</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        11 = Weak<br>
+                                        13 = Normal<br>
+                                        15 = Strong
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>6</td>
+                                <td>Object Distance</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Units are mm
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>7</td>
+                                <td>White Balance</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        1 = Auto<br>
+                                        2 = Tungsten<br>
+                                        3 = Daylight<br>
+                                        4 = Flourescent<br>
+                                        5 = Shade<br>
+                                        129 = Manual
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>10</td>
+                                <td>Digital Zoom</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0x10000 = Off<br>
+                                        0x10001 = 2x Digital Zoom<br>
+                                        0x20000 = 2x Digital Zoom<br>
+                                        0x40000 = 4x Digital Zoom
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>11</td>
+                                <td>Sharpness</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Normal<br>
+                                        1 = Soft<br>
+                                        2 = Hard
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>12</td>
+                                <td>Contrast</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Normal<br>
+                                        1 = Low<br>
+                                        2 = High
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>13</td>
+                                <td>Saturation</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Normal<br>
+                                        1 = Low<br>
+                                        2 = High
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>20</td>
+                                <td>CCD Sensitivity</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        64 = Normal<br>
+                                        125 = +1.0<br>
+                                        250 = +2.0<br>
+                                        244 = +3.0<br>
+                                        80 = Normal (ISO 80 equivalent)<br>
+                                        100 = High
+                                </td>
+                        </tr>
+                        
+
+                </table>
+
+                <br>
+                <br>
+                <br>
+                <br>
+
+                <h2><a name="Casio_Type_2_Tags">Casio Type 2 Makernote Tags Definition</a></h2>
+                <table border cellpadding=7 align="center">
+                        <tr>
+                                <th>Tag #</th>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Details</th>
+                        </tr>
+                        <tr>
+                                <td>0x0002</td>
+                                <td>Preview Thumbnail Dimensions</td>
+                                <td>Numeric</td>
+                                <td>
+                                        2 values - x,y dimensions in pixels
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x0003</td>
+                                <td>Preview Thumbnail Size</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Size in bytes
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x0004</td>
+                                <td>Preview Thumbnail Offset</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Offset of Preview Thumbnail
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x0008</td>
+                                <td>Quality Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        1 = Fine<br>
+                                        2 = Super Fine
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x0009</td>
+                                <td>Image Size</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = 640 x 480 pixels<br>
+                                        4 = 1600 x 1200 pixels<br>
+                                        5 = 2048 x 1536 pixels<br>
+                                        20 = 2288 x 1712 pixels<br>
+                                        21 = 2592 x 1944 pixels<br>
+                                        22 = 2304 x 1728 pixels<br>
+                                        36 = 3008 x 2008 pixels
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x000D</td>
+                                <td>Focus Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Normal<br>
+                                        1 = Macro
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x0014</td>
+                                <td>Iso Sensitivity</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        3 = 50<br>
+                                        4 = 64<br>
+                                        6 = 100<br>
+                                        9 = 200
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x0019</td>
+                                <td>White Balance</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Auto<br>
+                                        1 = Daylight<br>
+                                        2 = Shade<br>
+                                        3 = Tungsten<br>
+                                        4 = Fluorescent<br>
+                                        5 = Manual
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x001D</td>
+                                <td>Focal Length</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Units are tenths of a millimetre
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x001F</td>
+                                <td>Saturation</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = -1<br>
+                                        1 = Normal<br>
+                                        2 = +1
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x0020</td>
+                                <td>Contrast</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = -1<br>
+                                        1 = Normal<br>
+                                        2 = +1
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x0021</td>
+                                <td>Sharpness</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = -1<br>
+                                        1 = Normal<br>
+                                        2 = +1
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x0E00</td>
+                                <td>Print Image Matching Info</td>
+                                <td>PIM</td>
+                                <td>
+                                        See <a href="pim.html">Print Image Matching</a> for specification
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x2000</td>
+                                <td>Casio Preview Thumbnail</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Alternate thumbnail offset
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x2011</td>
+                                <td>White Balance Bias</td>
+                                <td>Numeric</td>
+                                <td>
+                                        &nbsp;
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x2012</td>
+                                <td>White Balance</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        12 = Flash<br>
+                                        0 = Manual<br>
+                                        1 = Auto?<br>
+                                        4 = Flash?
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x2022</td>
+                                <td>Object Distance</td>
+                                <td>Numeric</td>
+                                <td>
+                                        Units are millimetres
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x2034</td>
+                                <td>Flash Distance</td>
+                                <td>Numeric</td>
+                                <td>
+                                        0 = Off
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x3000</td>
+                                <td>Record Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        2 = Normal Mode
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x3001</td>
+                                <td>Self Timer?</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        1 = Off?
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x3002</td>
+                                <td>Quality</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        3 = Fine
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x3003</td>
+                                <td>Focus Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        1 = Fixation<br>
+                                        6 = Multi-Area Auto Focus
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x3006</td>
+                                <td>Time Zone</td>
+                                <td>String</td>
+                                <td>
+                                        &nbsp;
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x3007</td>
+                                <td>Bestshot Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Off<br>
+                                        1 = On?
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x3014</td>
+                                <td>CCD ISO Sensitivity</td>
+                                <td>Numeric</td>
+                                <td>
+                                        &nbsp;
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x3015</td>
+                                <td>Colour Mode</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Off
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x3016</td>
+                                <td>Enhancement</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Off
+                                </td>
+                        </tr>
+                        <tr>
+                                <td>0x3017</td>
+                                <td>Filter</td>
+                                <td>Numeric Lookup</td>
+                                <td>
+                                        0 = Off
+                                </td>
+                        </tr>
+
+                </table>
+
+                <br>
+                <br>
+                <a href="http://electronics.ozhiker.com">http://electronics.ozhiker.com</a>
+        </BODY>
+</HTML>

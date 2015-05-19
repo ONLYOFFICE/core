@@ -1,0 +1,281 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01 Transitional//EN"
+        "http://www.w3.org/TR/html4/loose.dtd">
+<html>
+<head>
+<title>Ricoh Tags</title>
+<link rel=stylesheet type='text/css' href='style.css' title='Style'>
+</head>
+<body>
+<h2 class=top>Ricoh Tags</h2>
+<p>These tags are used by Ricoh Caplio camera models.</p>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td title='0x0001 = 1'>0x0001</td>
+<td>MakerNoteType</td>
+<td class=c>string</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0002 = 2'>0x0002</td>
+<td>MakerNoteVersion</td>
+<td class=c>string</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td title='0x0e00 = 3584'>0x0e00</td>
+<td>PrintIM</td>
+<td class=c>-</td>
+<td>--&gt; <a href='PrintIM.html'>PrintIM Tags</a></td></tr>
+<tr class=b>
+<td title='0x1001 = 4097'>0x1001</td>
+<td>ImageInfo</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Ricoh.html#ImageInfo'>Ricoh ImageInfo Tags</a></td></tr>
+<tr>
+<td title='0x1003 = 4099'>0x1003</td>
+<td>Sharpness</td>
+<td class=c>int32u</td>
+<td><span class=s>0 = Sharp
+  <br>1 = Normal
+  <br>2 = Soft</span></td></tr>
+<tr class=b>
+<td title='0x2001 = 8193'>0x2001</td>
+<td>RicohSubdir
+  <br>RicohRR1Subdir</td>
+<td class=c>-<br>-</td>
+<td>--&gt; <a href='Ricoh.html#Subdir'>Ricoh Subdir Tags</a>
+  <br>--&gt; <a href='Ricoh.html#Subdir'>Ricoh Subdir Tags</a></td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='ImageInfo'>Ricoh ImageInfo Tags</a></h2>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Index</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td class=r title='0 = 0x0'>0</td>
+<td>RicohImageWidth</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td class=r title='2 = 0x2'>2</td>
+<td>RicohImageHeight</td>
+<td class=c>int16u</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td class=r title='6 = 0x6'>6</td>
+<td>RicohDate</td>
+<td class=c>int8u[7]</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td class=r title='28 = 0x1c'>28</td>
+<td>PreviewImageStart</td>
+<td class=c>int16u*</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td class=r title='30 = 0x1e'>30</td>
+<td>PreviewImageLength</td>
+<td class=c>int16u*</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td class=r title='32 = 0x20'>32</td>
+<td>FlashMode</td>
+<td class=c>int8u</td>
+<td><span class=s>0 = Off
+  <br>1 = Auto
+  <br>2 = On</span></td></tr>
+<tr>
+<td class=r title='33 = 0x21'>33</td>
+<td>Macro</td>
+<td class=c>int8u</td>
+<td><span class=s>0 = Off
+  <br>1 = On</span></td></tr>
+<tr class=b>
+<td class=r title='34 = 0x22'>34</td>
+<td>Sharpness</td>
+<td class=c>int8u</td>
+<td><span class=s>0 = Sharp
+  <br>1 = Normal
+  <br>2 = Soft</span></td></tr>
+<tr>
+<td class=r title='38 = 0x26'>38</td>
+<td>WhiteBalance</td>
+<td class=c>int8u</td>
+<td><span class=s>0 = Auto
+  <br>1 = Daylight
+  <br>2 = Cloudy
+  <br>3 = Tungsten
+  <br>4 = Fluorescent</span></td></tr>
+<tr class=b>
+<td class=r title='39 = 0x27'>39</td>
+<td>ISOSetting</td>
+<td class=c>int8u</td>
+<td><span class=s>0 = Auto
+  <br>1 = 64
+  <br>2 = 100
+  <br>4 = 200
+  <br>6 = 400
+  <br>7 = 800
+  <br>8 = 1600</span></td></tr>
+<tr>
+<td class=r title='40 = 0x28'>40</td>
+<td>Saturation</td>
+<td class=c>int8u</td>
+<td><span class=s>0 = High
+  <br>1 = Normal
+  <br>2 = Low
+  <br>3 = None (B&amp;W)</span></td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='Subdir'>Ricoh Subdir Tags</a></h2>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td title='0x0004 = 4'>0x0004</td>
+<td>RicohDateTime1</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td title='0x0005 = 5'>0x0005</td>
+<td>RicohDateTime2</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='Text'>Ricoh Text Tags</a></h2>
+<p>Ricoh RDC models such as the RDC-i700, RDC-5000, RDC-6000, RDC-7 and
+RDC-4300 use a text-based format for their maker notes instead of the IFD
+format used by the Caplio models.  Below is a list of known tags in this
+information.</p>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td>'Bg'</td>
+<td>BlueGain</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td>'Gg'</td>
+<td>GreenGain</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td>'Rev'</td>
+<td>Revision</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td>'Rg'</td>
+<td>RedGain</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td>'Rv'</td>
+<td>Revision</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='RMETA'>Ricoh RMETA Tags</a></h2>
+<p>The Ricoh Caplio Pro G3 has the ability to add custom fields to the APP5
+&quot;RMETA&quot; segment of JPEG images.  While only a few observed tags have been
+defined below, ExifTool will extract any information found here.</p>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td>'Azimuth'</td>
+<td>Azimuth</td>
+<td class=c>N</td>
+<td><span class=s>1 = N
+  <br>2 = NNE
+  <br>3 = NE
+  <br>4 = ENE
+  <br>5 = E
+  <br>6 = ESE
+  <br>7 = SE
+  <br>8 = SSE
+  <br>9 = S
+  <br>10 = SSW
+  <br>11 = SW
+  <br>12 = WSW
+  <br>13 = W
+  <br>14 = WNW
+  <br>15 = NW
+  <br>16 = NNW</span></td></tr>
+<tr class=b>
+<td>'Condition'</td>
+<td>Condition</td>
+<td class=c>N</td>
+<td><span class=s>1 = Good
+  <br>2 = Fair
+  <br>3 = Poor
+  <br>4 = Damaged</span></td></tr>
+<tr>
+<td>'Lit'</td>
+<td>Lit</td>
+<td class=c>N</td>
+<td><span class=s>1 = Yes
+  <br>2 = No</span></td></tr>
+<tr class=b>
+<td>'Location'</td>
+<td>Location</td>
+<td class=c>N</td>
+<td><span class=s>1 = Verge
+  <br>2 = Gantry
+  <br>3 = Central reservation
+  <br>4 = Roundabout</span></td></tr>
+<tr>
+<td>'Sign type'</td>
+<td>SignType</td>
+<td class=c>N</td>
+<td><span class=s>1 = Directional
+  <br>2 = Warning
+  <br>3 = Information</span></td></tr>
+</table></td></tr></table></blockquote>
+
+<h2><a name='AVI'>Ricoh AVI Tags</a></h2>
+<blockquote>
+<table class=frame><tr><td>
+<table class=inner cellspacing=1>
+<tr class=h><th>Tag&nbsp;ID</th><th>Tag Name</th>
+<th>Writable</th><th>Values / <span class=n>Notes</span></th></tr>
+<tr>
+<td>'mnrt'</td>
+<td>MakerNoteRicoh</td>
+<td class=c>-</td>
+<td>--&gt; <a href='Ricoh.html'>Ricoh Tags</a></td></tr>
+<tr class=b>
+<td>'rdc2'</td>
+<td>RicohRDC2?</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr>
+<td>'thum'</td>
+<td>ThumbnailImage</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+<tr class=b>
+<td>'ucmt'</td>
+<td>Comment</td>
+<td class=c>N</td>
+<td>&nbsp;</td></tr>
+</table></td></tr></table></blockquote>
+
+<hr>
+(This document generated automatically by Image::ExifTool::BuildTagLookup)
+<br><i>Last revised Mar 7, 2008</i>
+<p class=lf><a href='index.html'>&lt;-- ExifTool Tag Names</a></p>
+</body>
+</html>

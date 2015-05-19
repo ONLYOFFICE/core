@@ -1,0 +1,51 @@
+//
+// Файл    : ps_maximal.txt
+//
+
+//
+// глобальные константы
+//
+
+sampler BaseTex; // текстура
+
+uniform int count = 0;
+
+float2 stride = {0, 0};
+
+//
+// стуктуры
+//
+
+struct PS_INPUT
+{
+     float2 base : TEXCOORD0;
+};
+
+struct PS_OUTPUT
+{
+     vector diffuse : COLOR0;
+};
+
+//
+// главная функция
+//
+
+PS_OUTPUT Main(PS_INPUT input)
+{
+	// Обнуляем члены выходной структуры
+	PS_OUTPUT output = (PS_OUTPUT)0;
+
+	vector clr = tex2D(BaseTex, input.base);
+	float alpha = clr.a;
+	
+	for( int i = 0; i < count; i++ )
+	{
+		clr = max(clr, tex2D(BaseTex, input.base - i * stride));
+		clr = max(clr, tex2D(BaseTex, input.base + i * stride));
+	}
+	
+	clr.a = alpha;
+	output.diffuse = clr;
+     
+	return output;
+}

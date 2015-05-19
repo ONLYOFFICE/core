@@ -1,0 +1,168 @@
+// Microsoft Visual C++ generated resource script.
+//
+#include "resource.h"
+#define COMPONENT_NAME "ImageStudio3"
+#include "../../Common/FileInfo.h"
+#include "version.h"
+
+#define APSTUDIO_READONLY_SYMBOLS
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 2 resource.
+//
+#include "winres.h"
+
+/////////////////////////////////////////////////////////////////////////////
+#undef APSTUDIO_READONLY_SYMBOLS
+
+/////////////////////////////////////////////////////////////////////////////
+// Russian resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_RUS)
+#ifdef _WIN32
+LANGUAGE LANG_RUSSIAN, SUBLANG_DEFAULT
+#pragma code_page(1251)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+3 TEXTINCLUDE 
+BEGIN
+    "\r\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// RAWIMAGE
+//
+
+IDR_RAWIMAGE1           RAWIMAGE                "Resources\\Images\\Snows\\snow_01_32x32.dat"
+IDR_RAWIMAGE2           RAWIMAGE                "Resources\\Images\\Snows\\snow_02_32x32.dat"
+IDR_RAWIMAGE3           RAWIMAGE                "Resources\\Images\\Snows\\snow_03_32x32.dat"
+IDR_RAWIMAGE4           RAWIMAGE                "Resources\\Images\\Snows\\snow_04_32x32.dat"
+IDR_RAWIMAGE5           RAWIMAGE                "Resources\\Images\\Snows\\snow_05_32x32.dat"
+IDR_RAWIMAGE6           RAWIMAGE                "Resources\\Images\\FotoCorners\\corner01_lt_128x128.dat"
+IDR_RAWIMAGE7           RAWIMAGE                "Resources\\Images\\FotoCorners\\corner01_rt_128x128.dat"
+IDR_RAWIMAGE8           RAWIMAGE                "Resources\\Images\\FotoCorners\\corner01_rb_128x128.dat"
+IDR_RAWIMAGE9           RAWIMAGE                "Resources\\Images\\FotoCorners\\corner01_lb_128x128.dat"
+IDR_RAWIMAGE10          RAWIMAGE                "Resources\\Images\\FotoCorners\\corner02_lt_128x128.dat"
+IDR_RAWIMAGE11          RAWIMAGE                "Resources\\Images\\FotoCorners\\corner02_rt_128x128.dat"
+IDR_RAWIMAGE12          RAWIMAGE                "Resources\\Images\\FotoCorners\\corner02_rb_128x128.dat"
+IDR_RAWIMAGE13          RAWIMAGE                "Resources\\Images\\FotoCorners\\corner02_lb_128x128.dat"
+IDR_RAWIMAGE14          RAWIMAGE                "Resources\\Images\\FotoCorners\\corner03_lt_128x128.dat"
+IDR_RAWIMAGE15          RAWIMAGE                "Resources\\Images\\FotoCorners\\corner03_rt_128x128.dat"
+IDR_RAWIMAGE16          RAWIMAGE                "Resources\\Images\\FotoCorners\\corner03_rb_128x128.dat"
+IDR_RAWIMAGE17          RAWIMAGE                "Resources\\Images\\FotoCorners\\corner03_lb_128x128.dat"
+IDR_RAWIMAGE18          RAWIMAGE                "Resources\\Images\\FotoCorners\\corner04_lt_128x128.dat"
+IDR_RAWIMAGE19          RAWIMAGE                "Resources\\Images\\FotoCorners\\corner04_rt_128x128.dat"
+IDR_RAWIMAGE20          RAWIMAGE                "Resources\\Images\\FotoCorners\\corner04_rb_128x128.dat"
+IDR_RAWIMAGE21          RAWIMAGE                "Resources\\Images\\FotoCorners\\corner04_lb_128x128.dat"
+#endif    // Russian resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+/////////////////////////////////////////////////////////////////////////////
+// English (U.S.) resources
+
+#if !defined(AFX_RESOURCE_DLL) || defined(AFX_TARG_ENU)
+#ifdef _WIN32
+LANGUAGE LANG_ENGLISH, SUBLANG_ENGLISH_US
+#pragma code_page(1252)
+#endif //_WIN32
+
+#ifdef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// TEXTINCLUDE
+//
+
+1 TEXTINCLUDE 
+BEGIN
+    "resource.h\0"
+END
+
+2 TEXTINCLUDE 
+BEGIN
+    "#include ""winres.h""\r\n"
+    "\0"
+END
+
+#endif    // APSTUDIO_INVOKED
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// Version
+//
+
+VS_VERSION_INFO VERSIONINFO
+ FILEVERSION INTVER
+ PRODUCTVERSION INTVER
+ FILEFLAGSMASK 0x3fL
+#ifdef _DEBUG
+ FILEFLAGS 0x1L
+#else
+ FILEFLAGS 0x0L
+#endif
+ FILEOS 0x4L
+ FILETYPE 0x2L
+ FILESUBTYPE 0x0L
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904b0"
+        BEGIN
+            VALUE "CompanyName", COMPANY_NAME
+            VALUE "FileDescription", FILE_DESCRIPTION_ACTIVEX
+            VALUE "FileVersion", STRVER
+            VALUE "InternalName", COMPONENT_FILE_NAME_DLL
+            VALUE "LegalCopyright", LEGAL_COPYRIGHT
+            VALUE "LegalTrademarks", LEGAL_COPYRIGHT
+            VALUE "OriginalFilename", COMPONENT_FILE_NAME_DLL
+            VALUE "ProductName", FILE_DESCRIPTION_ACTIVEX
+            VALUE "ProductVersion", STRVER
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END
+
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// REGISTRY
+//
+
+IDR_NCTIMAGESTUDIO      REGISTRY                "ASCImageStudio.rgs"
+
+/////////////////////////////////////////////////////////////////////////////
+//
+// String Table
+//
+
+STRINGTABLE 
+BEGIN
+    IDS_PROJNAME            "ASCImageStudio"
+END
+
+#endif    // English (U.S.) resources
+/////////////////////////////////////////////////////////////////////////////
+
+
+
+#ifndef APSTUDIO_INVOKED
+/////////////////////////////////////////////////////////////////////////////
+//
+// Generated from the TEXTINCLUDE 3 resource.
+//
+/////////////////////////////////////////////////////////////////////////////
+#endif    // not APSTUDIO_INVOKED
+

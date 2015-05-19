@@ -2,7 +2,7 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="8,00"
-	Name="OdfFormat"
+	Name="OdfFormatWriter"
 	ProjectGUID="{E5A67556-44DA-4481-8F87-0A3AEDBD20DD}"
 	RootNamespace="OdfFormat"
 	Keyword="Win32Proj"

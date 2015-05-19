@@ -132,6 +132,11 @@ HRESULT CPdfWriterLib::SetAdditionalParam (CString ParamName, VARIANT	ParamValue
 		m_wsTempDir = CString( ParamValue.bstrVal );
 		DocSetTempDir( m_pDocument, (wchar_t*)m_wsTempDir.c_str() );
 	}
+	else if ( _T("FontDirectory") == sParamName && VT_BSTR == ParamValue.vt )
+	{
+		std::wstring strFontDirectory = std::wstring( ParamValue.bstrVal );
+		SetFontDir(strFontDirectory);
+	}
 	else if ( _T("WhiteBackImage") == sParamName && VT_BOOL == ParamValue.vt )
 	{
         m_bIsWhiteBackImage = (ParamValue.boolVal == VARIANT_TRUE) ? true : false;

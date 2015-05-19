@@ -141,10 +141,10 @@ namespace NSDoctRenderer
         XmlUtils::CXmlNode oNodeMailMerge;
         if (oNode.GetNode(L"MailMergeData", oNodeMailMerge))
         {
-            m_strMailMergeDatabasePath = string2std_string( oNodeMailMerge.ReadValueString(L"DatabasePath") );
+            m_strMailMergeDatabasePath = string2std_string( oNodeMailMerge.ReadAttribute(L"DatabasePath") );
             m_nMailMergeIndexStart = oNodeMailMerge.ReadAttributeInt(L"Start", -1);
             m_nMailMergeIndexEnd = oNodeMailMerge.ReadAttributeInt(L"End", -1);
-            m_strMailMergeField = string2std_string( oNodeMailMerge.ReadValueString(L"Field") );
+            m_strMailMergeField = string2std_string( oNodeMailMerge.ReadAttribute(L"Field") );
         }
 
         return true;
@@ -153,6 +153,24 @@ namespace NSDoctRenderer
 
 namespace NSDoctRenderer
 {
+    static void string_replace(std::wstring& text, const std::wstring& replaceFrom, const std::wstring& replaceTo)
+    {
+        size_t posn = 0;
+        while (std::wstring::npos != (posn = text.find(replaceFrom, posn)))
+        {
+            text.replace(posn, replaceFrom.length(), replaceTo);
+            posn += replaceTo.length();
+        }
+    }
+    static void replace_for_xml(std::wstring& text)
+    {
+        string_replace(text, L"&", L"&amp;");
+        string_replace(text, L"'", L"&apos;");
+        string_replace(text, L"<", L"&lt;");
+        string_replace(text, L">", L"&gt;");
+        string_replace(text, L"\"", L"&quot;");
+    }
+
     CDoctrenderer::CDoctrenderer()
     {
         m_bIsInitTypedArrays = false;
@@ -442,6 +460,7 @@ namespace NSDoctRenderer
                 {
                 case DoctRendererFormat::DOCT:
                 case DoctRendererFormat::PDF:
+                case DoctRendererFormat::HTML:
                     {
                         sResourceFile = m_strDoctSDK;
                         m_strEditorType = L"document";
@@ -743,8 +762,8 @@ namespace NSDoctRenderer
                     {
                         DWORD dwSizeBase = (DWORD)oFileDataBase.GetFileSize();
                         DWORD dwSizeRead = 0;
-                        BYTE* pBaseData = new BYTE[dwSizeBase + 3];
-                        oFileDataBase.ReadFile(pBaseData + 1, dwSizeBase, dwSizeRead);
+                        BYTE* pBaseData = new BYTE[dwSizeBase + 1];
+                        oFileDataBase.ReadFile(pBaseData, dwSizeBase, dwSizeRead);
 
                         if (dwSizeBase != dwSizeRead)
                         {
@@ -755,16 +774,38 @@ namespace NSDoctRenderer
                         }
                         else
                         {
-                            pBaseData[0] = (BYTE)'\'';
-                            pBaseData[dwSizeBase + 1] = (BYTE)'\'';
-                            pBaseData[dwSizeBase + 2] = 0;
+                            int nStart = 0;
+                            if (dwSizeBase > 3)
+                            {
+                                if (pBaseData[0] == 0xEF && pBaseData[1] == 0xBB && pBaseData[2] == 0xBF)
+                                {
+                                    nStart = 3;
+                                }
+                            }
+
+                            pBaseData[dwSizeBase] = 0;
                             v8::Handle<v8::Value> js_func_mm_start = global_js->Get(v8::String::NewFromUtf8(isolate, "NativeStartMailMergeByList"));
 
                             if (js_func_mm_start->IsFunction())
                             {
                                 v8::Handle<v8::Function> func_mm_start = v8::Handle<v8::Function>::Cast(js_func_mm_start);
                                 v8::Handle<v8::Value> args_changes[1];
-                                args_changes[0] = v8::String::NewFromUtf8(isolate, (char*)pBaseData);
+
+                                args_changes[0] = v8::JSON::Parse(v8::String::NewFromUtf8(isolate, (char*)(pBaseData + nStart)));
+
+                                if (try_catch.HasCaught())
+                                {
+                                    std::wstring strCode        = to_cstring(try_catch.Message()->GetSourceLine());
+                                    std::wstring strException   = to_cstring(try_catch.Message()->Get());
+
+                                    _LOGGING_ERROR_(L"change_code", strCode)
+                                    _LOGGING_ERROR_(L"change", strException)
+
+                                    strError = L"mailmerge=\"databaseopenjs\"";
+                                    bIsBreak = true;
+                                }
+
+                                //args_changes[0] = v8::String::NewFromUtf8(isolate, (char*)(pBaseData + nStart));
 
                                 func_mm_start->Call(global_js, 1, args_changes);
 
@@ -819,11 +860,13 @@ namespace NSDoctRenderer
                                 }
                             }
 
+                            std::wstring sSaveFile = L"";
                             if (!bIsBreak)
                             {
                                 // SAVE
                                 std::wstring sSaveOld = m_oParams.m_strDstFilePath;
-                                m_oParams.m_strDstFilePath += (L"file" + std::to_wstring(nIndexMM));
+                                m_oParams.m_strDstFilePath += (L"/file" + std::to_wstring(nIndexMM));
+                                sSaveFile = m_oParams.m_strDstFilePath;
 
                                 bIsBreak = NSDoctRenderer::Doct_renderer_SaveFile(&m_oParams, pNative, isolate, global_js,
                                                                        args, try_catch, strError);
@@ -856,7 +899,11 @@ namespace NSDoctRenderer
                                         bIsBreak = true;
                                     }
 
-                                    strReturnParams += L"<field value=\"" + to_cstring(js_result2) + L"\" />";
+                                    std::wstring sField = to_cstring(js_result2);
+                                    NSDoctRenderer::replace_for_xml(sField);
+                                    NSDoctRenderer::replace_for_xml(sSaveFile);
+
+                                    strReturnParams += L"<file path=\"" + sSaveFile + L"\" field=\"" + sField + L"\" />";
                                 }
                             }
                         }

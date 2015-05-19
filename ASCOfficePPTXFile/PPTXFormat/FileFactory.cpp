@@ -23,6 +23,7 @@
 #include "DocxFormat/Media/Image.h"
 #include "DocxFormat/Media/Audio.h"
 #include "DocxFormat/Media/Video.h"
+#include "DocxFormat/Media/OleObject.h"
 #include "DocxFormat/External/HyperLink.h"
 #include "DocxFormat/External/ExternalImage.h"
 #include "DocxFormat/External/ExternalAudio.h"
@@ -95,6 +96,8 @@ namespace PPTX
 			return smart_ptr<PPTX::File>(new PPTX::Authors(filename, map));
 		else if (relation.type() == PPTX::FileTypes::SlideComments)
 			return smart_ptr<PPTX::File>(new PPTX::Comments(filename, map));
+		else if (relation.type() == PPTX::FileTypes::OleObject)
+			return smart_ptr<PPTX::File>(new PPTX::OleObject(filename));
 
 		return smart_ptr<PPTX::File>(new PPTX::UnknowTypeFile());
 	}
@@ -130,6 +133,9 @@ namespace PPTX
 		
 		else if(strT == PPTX::FileTypes::LegacyDiagramText)
 			return smart_ptr<PPTX::File>(new PPTX::LegacyDiagramText(filename));
+
+		else if(strT == PPTX::FileTypes::OleObject)
+			return smart_ptr<PPTX::File>(new PPTX::OleObject(filename));
 		
 		return smart_ptr<PPTX::File>(new PPTX::UnknowTypeFile());
 	}

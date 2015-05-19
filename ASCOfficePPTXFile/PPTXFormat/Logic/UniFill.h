@@ -341,7 +341,7 @@ namespace PPTX
 													}
 													// -------------------													
 													
-													LONG lId = pReader->m_pRels->WriteImage(strUrl, strOrigBase64);
+													NSBinPptxRW::CRelsGeneratorInfo oRelsGeneratorInfo = pReader->m_pRels->WriteImage(strUrl, strOrigBase64);
 
 													// -------------------
 													if (strTempFile != _T(""))
@@ -353,9 +353,16 @@ namespace PPTX
 													if (!pFill->blip.is_init())
 														pFill->blip = new PPTX::Logic::Blip();
 
-													pFill->blip->embed = new PPTX::RId((size_t)lId);
+													pFill->blip->embed = new PPTX::RId((size_t)oRelsGeneratorInfo.m_nImageRId);
 													if (pFill->blip.is_init())
 														pFill->blip->m_namespace = _T("a");
+
+													if(oRelsGeneratorInfo.m_nOleRId > 0)
+													{
+														pFill->blip->oleInfo.Init();
+														pFill->blip->oleInfo->m_sOleProperty = oRelsGeneratorInfo.m_sOleProperty;
+														pFill->blip->oleInfo->m_sRid = PPTX::RId((size_t)oRelsGeneratorInfo.m_nOleRId).get();
+													}
 
 													pReader->Skip(1); // end attribute
 													break;

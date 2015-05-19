@@ -54,10 +54,11 @@ bool BinDocxRW::CDocxSerializer::ConvertDoctToDocx(const CString& sSrcFileName, 
     {
         CString sMediaPath;
         CString sThemePath;
+		CString sEmbedPath;
 
-        CreateDocxFolders(std_string2string(strDirDst), sThemePath, sMediaPath);
+        CreateDocxFolders(std_string2string(strDirDst), sThemePath, sMediaPath, sEmbedPath);
 
-        if(loadFromFile(sEditorBin, std_string2string(strDirDst), sXMLOptions, sThemePath, sMediaPath))
+        if(loadFromFile(sEditorBin, std_string2string(strDirDst), sXMLOptions, sThemePath, sMediaPath, sEmbedPath))
         {
             if(S_OK == oCOfficeUtils.CompressFileOrDirectory(strDirDst, string2std_string(sDstFileName), -1))
 				return true;
@@ -137,7 +138,7 @@ bool BinDocxRW::CDocxSerializer::saveToFile(const CString& sSrcFileName, const C
 	RELEASEOBJECT(pFontPicker);
 	return true;
 }
-void BinDocxRW::CDocxSerializer::CreateDocxFolders(CString strDirectory, CString& sThemePath, CString& sMediaPath)
+void BinDocxRW::CDocxSerializer::CreateDocxFolders(CString strDirectory, CString& sThemePath, CString& sMediaPath, CString& sEmbedPath)
 {
 	// rels
     OOX::CPath pathRels = strDirectory + FILE_SEPARATOR_STR + _T("_rels");
@@ -153,7 +154,13 @@ void BinDocxRW::CDocxSerializer::CreateDocxFolders(CString strDirectory, CString
 
 	//media
     OOX::CPath pathMedia = pathWord + FILE_SEPARATOR_STR + _T("media");
+    FileSystem::Directory::CreateDirectory(pathMedia.GetPath());
 	sMediaPath = pathMedia.GetPath();
+
+	//embeddings
+    OOX::CPath pathEmbeddings = pathWord + FILE_SEPARATOR_STR + _T("embeddings");
+    FileSystem::Directory::CreateDirectory(pathEmbeddings.GetPath());
+	sEmbedPath = pathEmbeddings.GetPath();
 
 	// theme
     OOX::CPath pathTheme = pathWord + FILE_SEPARATOR_STR + _T("theme");
@@ -165,7 +172,7 @@ void BinDocxRW::CDocxSerializer::CreateDocxFolders(CString strDirectory, CString
     pathTheme = pathTheme + FILE_SEPARATOR_STR + _T("theme1.xml");
 	sThemePath = pathTheme.GetPath();
 }
-bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sThemePath, const CString& sMediaPath)
+bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sThemePath, const CString& sMediaPath, const CString& sEmbedPath)
 {
 	bool bResultOk = false;
 	
@@ -240,6 +247,7 @@ bool BinDocxRW::CDocxSerializer::loadFromFile(const CString& sSrcFileName, const
 				}
 				oDrawingConverter.SetMainDocument(this);
 				oDrawingConverter.SetMediaDstPath(sMediaPath);
+				oDrawingConverter.SetEmbedDstPath(sEmbedPath);
 				m_pCurFileWriter = new Writers::FileWriter(sDstPath, m_sFontDir, nVersion, m_bSaveChartAsImg, &oDrawingConverter, sThemePath);
 
 				//папка с картинками

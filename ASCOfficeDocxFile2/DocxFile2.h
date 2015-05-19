@@ -134,9 +134,10 @@ public:
 		CString sDirectoryOut = bstrDirectoryOut;
 		CString sThemePath;
 		CString sMediaPath;
+		CString sEmbedPath;
 		
-		m_oCDocxSerializer.CreateDocxFolders(sDirectoryOut, sThemePath, sMediaPath);
-		bool bRes = m_oCDocxSerializer.loadFromFile(CString(bstrFileIn), CString(bstrDirectoryOut), CString(_T("")), CString(sThemePath.GetString()), CString(sMediaPath.GetString()));
+		m_oCDocxSerializer.CreateDocxFolders(sDirectoryOut, sThemePath, sMediaPath, sEmbedPath);
+		bool bRes = m_oCDocxSerializer.loadFromFile(CString(bstrFileIn), CString(bstrDirectoryOut), CString(_T("")), CString(sThemePath.GetString()), CString(sMediaPath.GetString()), sEmbedPath);
 		
 		return bRes ? S_OK : S_FALSE;
 	}

@@ -26,9 +26,9 @@ namespace BinXlsxRW {
 		CXlsxSerializer();
 		~CXlsxSerializer();
 		
-		void CreateXlsxFolders(CString& sXmlOptions, CString sDstPath,  CString& sMediaPath);
+		void CreateXlsxFolders(CString& sXmlOptions, CString sDstPath,  CString& sMediaPath, CString& sEmbedPath);
 
-        bool loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, CString& sMediaDir);
+        bool loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sMediaDir, const CString& sEmbedPath);
         bool saveToFile(const CString& sSrcFileName, const CString& sDstPath, CString& sXMLOptions);
 		
 		bool loadChart(CString& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);

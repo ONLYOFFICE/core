@@ -20,6 +20,7 @@
 #include "TableStyles.h"
 
 #include "DocxFormat/Media/Image.h"
+#include "DocxFormat/Media/OleObject.h"
 #include "DocxFormat/External/External.h"
 #include "DocxFormat/External/HyperLink.h"
 #include "DocxFormat/Drawing/VmlDrawing.h"
@@ -193,6 +194,13 @@ namespace PPTX
 				return pMedia->filename().m_strFilename;
 
 			return _T("");
+		}
+		virtual CString GetOleFromRId(const PPTX::RId& rid)const
+		{
+			smart_ptr<PPTX::OleObject> p = oleObject(rid);
+			if (!p.is_init())
+				return _T("");
+			return p->filename().m_strFilename;
 		}
 
 		virtual DWORD GetRGBAFromMap(const CString& str)const

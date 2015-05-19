@@ -374,7 +374,51 @@ namespace PPTX
 				lW = spPr.xfrm->extX.get_value_or(43200);
 				lH = spPr.xfrm->extY.get_value_or(43200);
 			}
-
+			NSShapeImageGen::COleInfo oOleInfo;
+			bool bOle = false;
+			CString sOleProgID;
+			CString sOleNodeName;
+			if(this->spPr.Fill.Fill.is<PPTX::Logic::BlipFill>())
+			{
+				PPTX::Logic::BlipFill& oBlipFill = this->spPr.Fill.Fill.as<PPTX::Logic::BlipFill>();
+				if(oBlipFill.blip.IsInit() && oBlipFill.blip->oleInfo.IsInit())
+					oOleInfo = oBlipFill.blip->oleInfo.get();
+			}
+			if(!oOleInfo.m_sRid.IsEmpty() && !oOleInfo.m_sOleProperty.IsEmpty())
+			{
+				std::vector<CString> aOleProp;
+				int nTokenPos = 0;
+				CString strToken = oOleInfo.m_sOleProperty.Tokenize(_T("|"), nTokenPos);
+				while (!strToken.IsEmpty())
+				{
+					aOleProp.push_back(strToken);
+					strToken = oOleInfo.m_sOleProperty.Tokenize(_T("|"), nTokenPos);
+				}
+				if(3 == aOleProp.size())
+				{
+					bOle = true;
+					CString dxaOrig = aOleProp[0];
+					CString dyaOrig = aOleProp[1];
+					sOleProgID = aOleProp[2];
+					if(_T("0") != dxaOrig && _T("0") != dyaOrig)
+					{
+						sOleNodeName = _T("w:object");
+						pWriter->StartNode(sOleNodeName);
+						pWriter->StartAttributes();
+						pWriter->WriteAttribute(_T("w:dxaOrig"), dxaOrig);
+						pWriter->WriteAttribute(_T("w:dyaOrig"), dyaOrig);
+						pWriter->EndAttributes();
+					}
+					else
+					{
+						sOleNodeName = _T("w:pict");
+						pWriter->StartNode(sOleNodeName);
+						pWriter->StartAttributes();
+						pWriter->EndAttributes();
+					}
+				}
+			}
+			
 #ifdef AVS_USE_CONVERT_PPTX_TOCUSTOM_VML
 			spPr.Geometry.ConvertToCustomVML(pWriter->m_pOOXToVMLRenderer, strPath, strTextRect, lW, lH);
 #endif
@@ -389,7 +433,7 @@ namespace PPTX
 			CString strStrokeAttr = _T("");
 			CString strFillNode = _T("");
 			CString strStrokeNode = _T("");
-			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode);
+			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, bOle);
 			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode);
 
 			if (pWriter->m_strStyleMain != _T(""))
@@ -460,9 +504,11 @@ namespace PPTX
 				{
 					pWriter->WriteAttribute(_T("style"), pWriter->m_strStyleMain + oStylesWriter.GetXmlString());
 				}
-
-				pWriter->WriteAttribute(_T("coordsize"), (CString)_T("100000,100000"));
-				pWriter->WriteAttribute(_T("path"), strPath);
+				if(!bOle)
+				{
+					pWriter->WriteAttribute(_T("coordsize"), (CString)_T("100000,100000"));
+					pWriter->WriteAttribute(_T("path"), strPath);
+				}
 
 				if (pWriter->m_strAttributesMain)
 				{
@@ -581,8 +627,12 @@ namespace PPTX
 				pWriter->WriteAttribute(_T("o:spid"), strSpid);
 
 				pWriter->WriteAttribute(_T("style"), oStylesWriter.GetXmlString());
-				pWriter->WriteAttribute(_T("coordsize"), (CString)_T("100000,100000"));
-				pWriter->WriteAttribute(_T("path"), strPath);
+
+				if(!bOle)
+				{
+					pWriter->WriteAttribute(_T("coordsize"), (CString)_T("100000,100000"));
+					pWriter->WriteAttribute(_T("path"), strPath);
+				}
 
 				if (pWriter->m_strAttributesMain)
 				{
@@ -613,6 +663,23 @@ namespace PPTX
 				}
 
 				pWriter->EndNode(_T("v:shape"));
+			}
+			if(!sOleProgID.IsEmpty())
+			{
+				pWriter->StartNode(_T("o:OLEObject"));
+				pWriter->StartAttributes();
+				pWriter->WriteAttribute(_T("Type"), CString(_T("Embed")));
+				pWriter->WriteAttribute(_T("ProgID"), sOleProgID);
+				pWriter->WriteAttribute(_T("ShapeID"), strId);
+				pWriter->WriteAttribute(_T("DrawAspect"), CString(_T("Content")));
+				CString sObjectID;
+				sObjectID.Format(_T("_%010d"), pWriter->m_lObjectIdOle++);
+				pWriter->WriteAttribute(_T("ObjectID"), sObjectID);
+				pWriter->WriteAttribute(_T("r:id"), oOleInfo.m_sRid);
+				pWriter->EndAttributes();
+				pWriter->EndNode(_T("o:OLEObject"));
+
+				pWriter->EndNode(sOleNodeName);
 			}
 		}
 	} // namespace Logic

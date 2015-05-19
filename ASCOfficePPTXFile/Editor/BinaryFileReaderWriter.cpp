@@ -91,7 +91,7 @@ namespace NSBinPptxRW
 			CreateFontPicker(NULL);
 	}
 
-	CImageManager2::CImageManager2() : m_mapImages(), m_lIndexNextImage(0)
+	CImageManager2::CImageManager2() : m_mapImages(), m_lIndexNextImage(0), m_lIndexNextOle(0)
 	{
         m_bIsWord = false;
 	}
@@ -101,7 +101,8 @@ namespace NSBinPptxRW
 	void CImageManager2::Clear()
 	{
 		m_mapImages.clear();
-		m_lIndexNextImage = 0;
+		m_lIndexNextImage = 1;
+		m_lIndexNextOle = 1;
 	}
 	void CImageManager2::SetDstMedia(const CString& strDst)
 	{
@@ -111,10 +112,42 @@ namespace NSBinPptxRW
 	{
 		return m_strDstMedia;
 	}
-
-	CString CImageManager2::GenerateImage(const CString& strInput, CString strBase64Image)
+	void CImageManager2::SetDstEmbed(const CString& strDst)
 	{
-		std::map<CString, CString>::const_iterator pPair = m_mapImages.find ((_T("") == strBase64Image) ? strInput : strBase64Image);
+		m_strDstEmbed = strDst;
+	}
+	CString CImageManager2::GetDstEmbed()
+	{
+		return m_strDstEmbed;
+	}
+	int CImageManager2::IsDisplayedImage(const CString& strInput)
+	{
+		int nRes = 0;
+		//шаблон display[N]image.ext
+		CString sFind1 = _T("display");
+		int nIndex1 = strInput.Find(sFind1);
+		if(-1 != nIndex1)
+		{
+			if(nIndex1 + sFind1.GetLength() < strInput.GetLength())
+			{
+				TCHAR cRes = strInput[nIndex1 + sFind1.GetLength()];
+				if('1' <= cRes && cRes <= '6')
+				{
+					int nImageIndex = nIndex1 + sFind1.GetLength() + 1;
+					if(nImageIndex == strInput.Find(_T("image"), nImageIndex))
+						nRes = cRes - '0';
+				}
+
+			}
+		}
+		return nRes;
+	}
+	CImageManager2Info CImageManager2::GenerateImage(const CString& strInput, CString strBase64Image)
+	{
+		if (IsNeedDownload(strInput))
+			return DownloadImage(strInput);
+
+		std::map<CString, CImageManager2Info>::const_iterator pPair = m_mapImages.find ((_T("") == strBase64Image) ? strInput : strBase64Image);
 
 		if (pPair != m_mapImages.end())
 			return pPair->second;
@@ -124,38 +157,11 @@ namespace NSBinPptxRW
 		if (-1 != nIndexExt)
 			strExts = strInput.Mid(nIndexExt);
 
-		if (IsNeedDownload(strInput))
-		{
-			//todo поправить в js
-			//заглушка, приходят полные ссылки вместо относительных после copy/paste
-			if(strExts == _T(".svg"))
-			{
-				CString strInputMetafile = strInput.Left(strInput.GetLength() - strExts.GetLength());
-				CString sDownloadRes = DownloadImage(strInputMetafile + _T(".wmf"));
-				if(sDownloadRes.IsEmpty())
-					sDownloadRes = DownloadImage(strInputMetafile + _T(".emf"));
-				return sDownloadRes;
-			}
-			else
-				return DownloadImage(strInput);
-		}
-
-		if (strExts == _T(".tmp"))
-		{
-			//todo убрать вместе с заглушкой вверху
-			//сюда приходим после DownloadImage
-			strExts = _T(".png");
-			int nIndexExt = strBase64Image.ReverseFind(TCHAR('.'));
-			if (-1 != nIndexExt)
-			{
-				CString strExtsTemp = strBase64Image.Mid(nIndexExt);
-				//if(_T(".wmf") == strExtsTemp || _T(".emf") == strExtsTemp)// bug 28760
-					strExts = strExtsTemp;
-			}
-		}
-
-		CString strMetafileImage = _T("");
-		if (strExts == _T(".svg"))
+		CString strOleImage = _T("");
+		CString strOleImageProperty = _T("");
+		CString strImage = strInput;
+		int nDisplayType = IsDisplayedImage(strInput);
+		if (0 != nDisplayType)
 		{
 			OOX::CPath oPath = strInput;
 			CString strFolder = oPath.GetDirectory();
@@ -163,67 +169,92 @@ namespace NSBinPptxRW
 
 			strFileName.Delete(strFileName.GetLength() - 4, 4);
 
-			CString str1 = strFolder + strFileName + _T(".emf");
-			CString str2 = strFolder + strFileName + _T(".wmf");
-
-			if (OOX::CSystemUtility::IsFileExist(str1))
+			if(0 != (nDisplayType & 1))
 			{
-				strMetafileImage = str1;
-				strExts = _T(".emf");
+				CString strVector = strFolder + strFileName + _T(".wmf");
+				if (OOX::CSystemUtility::IsFileExist(strVector))
+				{
+					strImage = strVector;
+					strExts = _T(".wmf");
+				}
 			}
-			else if (OOX::CSystemUtility::IsFileExist(str2))
+			if(0 != (nDisplayType & 2))
 			{
-				strMetafileImage = str2;
-				strExts = _T(".wmf");
+				CString strVector = strFolder + strFileName + _T(".emf");
+				if (OOX::CSystemUtility::IsFileExist(strVector))
+				{
+					strImage = strVector;
+					strExts = _T(".emf");
+				}
+			}
+			if(0 != (nDisplayType & 4))
+			{
+				CString strOle = strFolder + strFileName + _T(".bin");
+				if (OOX::CSystemUtility::IsFileExist(strOle))
+					strOleImage = strOle;
+				CString strOleProperty = strFolder + strFileName + _T(".txt");
+				if (OOX::CSystemUtility::IsFileExist(strOleProperty))
+					strOleImageProperty = strOleProperty;
 			}
 		}
+		CImageManager2Info oImageManagerInfo = GenerateImageExec(strImage, strExts, strOleImage, strOleImageProperty);
 
-		CString strImage = _T("");
+		if (_T("") == strBase64Image)
+			m_mapImages[strInput] = oImageManagerInfo;
+		else
+			m_mapImages [strBase64Image] = oImageManagerInfo;
+		return oImageManagerInfo;
+	}
+	CImageManager2Info CImageManager2::GenerateImageExec(const CString& strInput, const CString& sExts, const CString& strOleImage, const CString& strOleImageProperty)
+	{
+		CImageManager2Info oImageManagerInfo;
+		CString strExts = sExts;
+		CString strImage;
+		strImage.Format(_T("image%d"), m_lIndexNextImage++);
 		if ((_T(".jpg") == strExts) || (_T(".jpeg") == strExts) || (_T(".png") == strExts) || (_T(".emf") == strExts) || (_T(".wmf") == strExts))
 		{
-			strImage.Format(_T("image%d"), m_lIndexNextImage++);
-
             OOX::CPath pathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
-
-			if (!m_bIsWord)
-				strImage  = _T("../media/") + strImage + strExts;
-			else
-				strImage  = _T("media/") + strImage + strExts;
-
-			if (_T("") == strBase64Image)
-				m_mapImages[strInput] = strImage;
-			else
-				m_mapImages [strBase64Image] = strImage;
-
 			// теперь нужно скопировать картинку
-			if (_T("") != strMetafileImage)
-                CDirectory::CopyFile(strMetafileImage, pathOutput.GetPath(), NULL, NULL);
-            else if (pathOutput.GetPath() != strInput)
+            if (pathOutput.GetPath() != strInput)
                 CDirectory::CopyFile(strInput, pathOutput.GetPath(), NULL, NULL);
 		}
 		else
 		{
 			// content types!!!
 			strExts = _T(".png");
-			strImage.Format(_T("image%d"), m_lIndexNextImage++);
-
             OOX::CPath pathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
-
-			if (!m_bIsWord)
-				strImage  = _T("../media/") + strImage + strExts;
-			else
-				strImage  = _T("media/") + strImage + strExts;
-
-			if (_T("") == strBase64Image)
-				m_mapImages [strInput] = strImage;
-			else
-				m_mapImages [strBase64Image] = strImage;
-
             SaveImageAsPng(strInput, pathOutput.GetPath());
 		}
-		return strImage;
-	}
+		if (!m_bIsWord)
+			strImage  = _T("../media/") + strImage + strExts;
+		else
+			strImage  = _T("media/") + strImage + strExts;
 
+		if (_T("") != strOleImage)
+		{
+			CString strImageOle;
+			strImageOle.Format(_T("oleObject%d.bin"), m_lIndexNextOle++);
+			OOX::CPath pathOutputOle = m_strDstEmbed + FILE_SEPARATOR_STR + strImageOle;
+			CString strOleImageOut = pathOutputOle.GetPath();
+			CDirectory::CopyFile(strOleImage, strOleImageOut, NULL, NULL);
+
+			if (!m_bIsWord)
+				strImageOle = _T("../embeddings/") + strImageOle;
+			else
+				strImageOle = _T("embeddings/") + strImageOle;
+			oImageManagerInfo.m_sOlePath = strImageOle;
+
+			if(!strOleImageProperty.IsEmpty())
+			{
+				std::wstring sOleProperty;
+				NSFile::CFileBinary::ReadAllTextUtf8(string2std_string(strOleImageProperty), sOleProperty);
+				oImageManagerInfo.m_sOleProperty = std_string2string(sOleProperty);
+			}
+		}
+
+		oImageManagerInfo.m_sImagePath = strImage;
+		return oImageManagerInfo;
+	}
 	void CImageManager2::SaveImageAsPng(const CString& strFileSrc, const CString& strFileDst)
 	{
 		CBgraFrame oBgraFrame;
@@ -249,7 +280,56 @@ namespace NSBinPptxRW
 			return true;
 		return false;
 	}
-	CString CImageManager2::DownloadImage(const CString& strFile)
+	CImageManager2Info CImageManager2::DownloadImage(const CString& strUrl)
+	{
+		std::map<CString, CImageManager2Info>::const_iterator pPair = m_mapImages.find (strUrl);
+
+		if (pPair != m_mapImages.end())
+			return pPair->second;
+
+		CString strExts = _T(".jpg");
+		int nIndexExt = strUrl.ReverseFind(TCHAR('.'));
+		if (-1 != nIndexExt)
+			strExts = strUrl.Mid(nIndexExt);
+
+		CString strImage;
+		CString strOleImage;
+		CString strOleImageProperty;
+		int nDisplayType = IsDisplayedImage(strUrl);
+		if(0 != nDisplayType)
+		{
+			CString strInputMetafile = strUrl.Left(strUrl.GetLength() - strExts.GetLength());
+			CString sDownloadRes;
+			//todo
+			if(0 != (nDisplayType & 4))
+			{
+				strOleImage = DownloadImageExec(strInputMetafile + _T(".bin"));
+				strOleImageProperty = DownloadImageExec(strInputMetafile + _T(".txt"));
+			}
+
+			if(0 != (nDisplayType & 1))
+			{
+				strImage = DownloadImageExec(strInputMetafile + _T(".wmf"));
+				strExts = _T(".wmf");
+			}
+			else if(0 != (nDisplayType & 2))
+			{
+				strImage = DownloadImageExec(strInputMetafile + _T(".emf"));
+				strExts = _T(".emf");
+			}
+			else
+				strImage = DownloadImageExec(strUrl);
+		}
+		else
+			strImage = DownloadImageExec(strUrl);
+		CImageManager2Info oImageManagerInfo;
+		if(!strImage.IsEmpty())
+			oImageManagerInfo = GenerateImageExec(strImage, strExts, strOleImage, strOleImageProperty);
+
+		m_mapImages[strUrl] = oImageManagerInfo;
+		return oImageManagerInfo;
+	}
+	CString CImageManager2::DownloadImageExec(const CString& strFile)
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
         CFileDownloader oDownloader(strFile, true);
@@ -261,7 +341,7 @@ namespace NSBinPptxRW
 
 		if ( oDownloader.IsFileDownloaded() )
 		{
-			return GenerateImage( oDownloader.GetFilePath(), strFile );
+			return oDownloader.GetFilePath();
 		}
 #endif
 		return _T("");
@@ -1185,26 +1265,42 @@ namespace NSBinPptxRW
 		oFile.CloseFile();
 	}
 
-	int CRelsGenerator::WriteImage(const CString& strImagePath, CString strBase64Image = _T(""))
+	CRelsGeneratorInfo CRelsGenerator::WriteImage(const CString& strImagePath, CString strBase64Image = _T(""))
 	{
-		CString strImage = m_pManager->GenerateImage(strImagePath, strBase64Image);
-		std::map<CString, int>::iterator pPair = m_mapImages.find(strImage);
+		CImageManager2Info oImageManagerInfo = m_pManager->GenerateImage(strImagePath, strBase64Image);
+		CString strImage = oImageManagerInfo.m_sImagePath;
+		std::map<CString, CRelsGeneratorInfo>::iterator pPair = m_mapImages.find(strImage);
 
 		if (m_mapImages.end() != pPair)
 		{
 			return pPair->second;				
 		}
-
-		m_mapImages.insert(std::pair<CString, int>(strImage, m_lNextRelsID));
+		CRelsGeneratorInfo oRelsGeneratorInfo;
+		oRelsGeneratorInfo.m_nImageRId = m_lNextRelsID++;
 		CString strRid = _T("");
-		strRid.Format(_T("rId%d"), m_lNextRelsID++);
+		strRid.Format(_T("rId%d"), oRelsGeneratorInfo.m_nImageRId);
 
 		CString strRels = _T("");
 		strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"%ls\"/>"),
 			strRid, strImage);
 		m_pWriter->WriteString(strRels);
 
-		return m_lNextRelsID - 1;
+		if(!oImageManagerInfo.m_sOlePath.IsEmpty())
+		{
+			oRelsGeneratorInfo.m_nOleRId = m_lNextRelsID++;
+			oRelsGeneratorInfo.m_sOleProperty = oImageManagerInfo.m_sOleProperty;
+
+			CString strRid = _T("");
+			strRid.Format(_T("rId%d"), oRelsGeneratorInfo.m_nOleRId);
+
+			CString strRels = _T("");
+			strRels.Format(_T("<Relationship Id=\"%ls\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/oleObject\" Target=\"%ls\"/>"),
+				strRid, oImageManagerInfo.m_sOlePath);
+			m_pWriter->WriteString(strRels);
+		}
+
+		m_mapImages.insert(std::pair<CString, CRelsGeneratorInfo>(strImage, oRelsGeneratorInfo));
+		return oRelsGeneratorInfo;
 	}
 	int CRelsGenerator::WriteChart(int nChartNumber, _INT32 lDocType = XMLWRITER_DOC_TYPE_PPTX)
 	{

@@ -20,9 +20,10 @@ namespace BinXlsxRW{
 	{
 	}
 
-	void CXlsxSerializer::CreateXlsxFolders(CString& sXmlOptions, CString sDstPath,  CString& sMediaPath)
+	void CXlsxSerializer::CreateXlsxFolders(CString& sXmlOptions, CString sDstPath,  CString& sMediaPath, CString& sEmbedPath)
 	{
         OOX::CPath pathMediaDir = sDstPath + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + _T("media");
+		OOX::CPath pathEmbedDir = sDstPath + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + _T("embeddings");
 		
 		// File Type (Можно парсить не два раза, а один, если передавать в ReadFile не опции, а параметры)
 		BYTE fileType;
@@ -45,6 +46,7 @@ namespace BinXlsxRW{
 			NSDirectory::CreateDirectory(string2std_string(pathThemeDir.GetPath()));
 			NSDirectory::CreateDirectory(string2std_string(pathThemeThemeRelsDir.GetPath()));
 			NSDirectory::CreateDirectory(string2std_string(pathMediaDir.GetPath()));
+			NSDirectory::CreateDirectory(string2std_string(pathEmbedDir.GetPath()));
 
 			//Create Default Theme
 			{
@@ -54,11 +56,13 @@ namespace BinXlsxRW{
 		}
 
 		sMediaPath = pathMediaDir.GetPath();
+		sEmbedPath = pathEmbedDir.GetPath();
 	}
-    bool CXlsxSerializer::loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, CString& sMediaDir)
+    bool CXlsxSerializer::loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sMediaDir, const CString& sEmbedDir)
 	{
 		NSBinPptxRW::CDrawingConverter oOfficeDrawingConverter;
 		oOfficeDrawingConverter.SetMediaDstPath(sMediaDir);
+		oOfficeDrawingConverter.SetEmbedDstPath(sEmbedDir);
 
 		//папка с бинарников
 		std::wstring strFileInDir = NSSystemPath::GetDirectoryName(string2std_string(sSrcFileName));

@@ -34,10 +34,10 @@ namespace BinDocxRW
 		bool ConvertDocxToDoct(const CString& sSrcFileName, const CString& sDstFileName, const CString& sTmpDir, const CString& sXMLOptions);
         bool ConvertDoctToDocx(const CString& sSrcFileName, const CString& sDstFileName, const CString& sTmpDir, const CString& sXMLOptions);
 		
-		bool loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sThemePath, const CString& sMediaPath);
+		bool loadFromFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions, const CString& sThemePath, const CString& sMediaPath, const CString& sEmbedPath);
 		bool saveToFile(const CString& sSrcFileName, const CString& sDstPath, const CString& sXMLOptions);
 
-		void CreateDocxFolders(CString strDirectory, CString& sThemePath, CString& sMediaPath);
+		void CreateDocxFolders(CString strDirectory, CString& sThemePath, CString& sMediaPath, CString& sEmbedPath);
 		
 		bool getXmlContent(NSBinPptxRW::CBinaryFileReader& oBufferedStream, long lLength, CString& sOutputXml);
 		bool getBinaryContent(const CString& bsTxContent, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize);

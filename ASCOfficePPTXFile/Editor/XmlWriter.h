@@ -249,7 +249,7 @@ namespace NSBinPptxRW
 		LONG m_lGroupIndex;
 		LONG m_lObjectId;
 		LONG m_lObjectIdVML;
-
+		LONG m_lObjectIdOle;
 	public:
         bool m_bIsUseOffice2007;
 		CString m_strStyleMain;
@@ -268,6 +268,7 @@ namespace NSBinPptxRW
 			m_lGroupIndex = 0;
 			m_lObjectId = 0;
 			m_lObjectIdVML		= 0;
+			m_lObjectIdOle = 0;
 
             m_bIsUseOffice2007	= false;
 			m_strStyleMain		= _T("");

@@ -574,7 +574,10 @@ namespace NSFile
 		{
 			return m_lFileSize;
 		}
-
+		inline long GetFilePosition()
+		{
+			return m_lFilePosition;
+		}
 		bool OpenFile(const std::wstring& sFileName)
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
@@ -639,7 +642,14 @@ namespace NSFile
 			m_lFilePosition = 0;
 			return true;
 		}
+		bool SeekFile(int lFilePosition)
+		{
+			if (!m_pFile)
+				return false;
 
+			m_lFilePosition = fseek(m_pFile, lFilePosition, 0);
+			return true;
+		}
 		bool ReadFile(BYTE* pData, DWORD nBytesToRead, DWORD& dwSizeRead)
 		{
 			if (!m_pFile)

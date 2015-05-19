@@ -1,0 +1,22 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# Visual Studio 2005
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCImageJBig2", "ASCImageJBig2_vs2005.vcproj", "{CA273012-D186-450B-ACEA-2619B30F927E}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Win32 = Debug|Win32
+		Release|Win32 = Release|Win32
+		ReleaseASC|Win32 = ReleaseASC|Win32
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{CA273012-D186-450B-ACEA-2619B30F927E}.Debug|Win32.ActiveCfg = Debug|Win32
+		{CA273012-D186-450B-ACEA-2619B30F927E}.Debug|Win32.Build.0 = Debug|Win32
+		{CA273012-D186-450B-ACEA-2619B30F927E}.Release|Win32.ActiveCfg = Release|Win32
+		{CA273012-D186-450B-ACEA-2619B30F927E}.Release|Win32.Build.0 = Release|Win32
+		{CA273012-D186-450B-ACEA-2619B30F927E}.ReleaseASC|Win32.ActiveCfg = ReleaseASC|Win32
+		{CA273012-D186-450B-ACEA-2619B30F927E}.ReleaseASC|Win32.Build.0 = ReleaseASC|Win32
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal

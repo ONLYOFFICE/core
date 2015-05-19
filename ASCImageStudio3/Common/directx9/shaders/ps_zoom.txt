@@ -1,0 +1,41 @@
+//
+// Файл : ps_zoom.txt
+//
+
+//
+// глобальные константы
+//
+
+sampler BaseTex; // текстура
+
+float4 zoom = 0;
+
+//
+// стуктуры
+//
+
+struct PS_INPUT
+{
+     float2 base : TEXCOORD0;
+};
+
+struct PS_OUTPUT
+{
+     vector diffuse : COLOR0;
+};
+
+//
+// главная функция
+//
+
+PS_OUTPUT Main(PS_INPUT input)
+{
+     // Обнуляем члены выходной структуры
+     PS_OUTPUT output = (PS_OUTPUT)0;
+
+     float2 pos = input.base * zoom.xy + zoom.zw;
+     
+     output.diffuse = tex2D(BaseTex, pos);
+     
+     return output;
+}

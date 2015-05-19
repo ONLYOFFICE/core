@@ -1,0 +1,30 @@
+Microsoft Visual Studio Solution File, Format Version 8.00
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libiptcdata", "libiptcdata.vcproj", "{A73ED0B6-3BC1-4029-A220-450FC5411440}"
+	ProjectSection(ProjectDependencies) = postProject
+	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "iptctool", "iptctool\iptctool.vcproj", "{52DB90E9-1909-4BFA-839C-3CC88B60BE6D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{A73ED0B6-3BC1-4029-A220-450FC5411440} = {A73ED0B6-3BC1-4029-A220-450FC5411440}
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfiguration) = preSolution
+		Debug = Debug
+		Release = Release
+	EndGlobalSection
+	GlobalSection(ProjectConfiguration) = postSolution
+		{A73ED0B6-3BC1-4029-A220-450FC5411440}.Debug.ActiveCfg = Debug|Win32
+		{A73ED0B6-3BC1-4029-A220-450FC5411440}.Debug.Build.0 = Debug|Win32
+		{A73ED0B6-3BC1-4029-A220-450FC5411440}.Release.ActiveCfg = Release|Win32
+		{A73ED0B6-3BC1-4029-A220-450FC5411440}.Release.Build.0 = Release|Win32
+		{52DB90E9-1909-4BFA-839C-3CC88B60BE6D}.Debug.ActiveCfg = Debug|Win32
+		{52DB90E9-1909-4BFA-839C-3CC88B60BE6D}.Debug.Build.0 = Debug|Win32
+		{52DB90E9-1909-4BFA-839C-3CC88B60BE6D}.Release.ActiveCfg = Release|Win32
+		{52DB90E9-1909-4BFA-839C-3CC88B60BE6D}.Release.Build.0 = Release|Win32
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+	EndGlobalSection
+	GlobalSection(ExtensibilityAddIns) = postSolution
+	EndGlobalSection
+EndGlobal

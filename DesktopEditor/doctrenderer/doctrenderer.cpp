@@ -539,6 +539,10 @@ namespace NSDoctRenderer
         {
             strError = L"<result><error " + strError + L" />" + sReturnParams + L"</result>";
         }
+        else if (sReturnParams.length() != 0)
+        {
+            strError = L"<result>" + sReturnParams + L"</result>";
+        }
 
         return bResult ? true : false;
     }

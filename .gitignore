@@ -155,6 +155,13 @@ _tags/rev_61879/ASCOfficeDocxFile2/debug
 _tags/rev_61879/ASCOfficeDocxFile2/msxml3.tlh
 _tags/rev_61879/ASCOfficeDocxFile2/msxml3.tli
 _tags/rev_61879/ASCOfficeDocxFile2/release
+_tags/rev_61879/ASCOfficeOdpFile/*
+_tags/rev_61879/ASCOfficeOdpFile/ODPFormat/Debug
+_tags/rev_61879/ASCOfficeOdpFile/ODPFormat/ODPFormat.vcproj.AVSMEDIA.Viktor.Logunov.user
+_tags/rev_61879/ASCOfficeOdpFile/ODPFormat/ReadMe.txt
+_tags/rev_61879/ASCOfficeOdpFile/ODPFormat/Release
+_tags/rev_61879/ASCOfficeOdpFile/Odp2DrawingXML/Debug
+_tags/rev_61879/ASCOfficeOdpFile/Odp2DrawingXML/Release
 _tags/rev_61879/ASCOfficePPTXFile/*.suo
 _tags/rev_61879/ASCOfficePPTXFile/Debug
 _tags/rev_61879/ASCOfficePPTXFile/PPTXFormat/!_

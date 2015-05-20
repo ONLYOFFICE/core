@@ -197,6 +197,43 @@ namespace NSString
 		Split(wsString, nDelim, wsElements);
 		return wsElements;
 	}
+	static std::vector<std::wstring>& Split(const std::wstring& wsString, const std::wstring wsDelim, std::vector<std::wstring> &arrElements)
+	{
+		int nDelimLen = wsDelim.length();
+		int nPrevPos = 0;
+
+		if (nDelimLen > 0)
+		{
+			int nPos = wsString.find(wsDelim);
+			while (std::wstring::npos != nPos)
+			{
+				if (nPrevPos != nPos)
+					arrElements.push_back(wsString.substr(nPrevPos, nPos - nPrevPos));
+
+				nPrevPos = nPos + nDelimLen;
+				nPos = wsString.find(wsDelim, nPrevPos);
+			}
+		}
+
+		if (nPrevPos < wsString.length())
+			arrElements.push_back(wsString.substr(nPrevPos));
+
+		return arrElements;
+	}
+	static std::vector<std::wstring>  Split(const std::wstring& wsString, const std::wstring& wsDelim)
+	{
+		std::vector<std::wstring> arrElements;
+
+		int nDelimLen = wsDelim.length();
+		if (0 == nDelimLen)
+			arrElements.push_back(wsString);
+		else if (1 == nDelimLen)
+			Split(wsString, wchar_t(wsDelim[0]), arrElements);
+		else
+			Split(wsString, wsDelim, arrElements);
+
+		return arrElements;
+	}
 };
 
 #endif // _BUILD_STRING_CROSSPLATFORM_H_

@@ -578,15 +578,15 @@ namespace NSFile
 		{
 			return m_lFilePosition;
 		}
-		bool OpenFile(const std::wstring& sFileName)
+		bool OpenFile(const std::wstring& sFileName, bool bRewrite = false)
 		{
 #if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-			m_pFile = _wfopen(sFileName.c_str(), L"rb");
+			m_pFile = _wfopen(sFileName.c_str(), bRewrite ? L"rb+" : L"rb");
 #else
 			BYTE* pUtf8 = NULL;
 			LONG lLen = 0;
 			CUtf8Converter::GetUtf8StringFromUnicode(sFileName.c_str(), sFileName.length(), pUtf8, lLen, false);
-			m_pFile = fopen((char*)pUtf8, "rb");
+			m_pFile = fopen((char*)pUtf8, bRewrite ? "rb+" : "rb");
 
 			delete [] pUtf8;
 #endif		

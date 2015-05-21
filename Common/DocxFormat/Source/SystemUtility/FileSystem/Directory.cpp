@@ -276,4 +276,16 @@ namespace FileSystem
         return pcTemplate;
     }
 #endif
+        bool Directory::IsExist(const std::wstring&  strFileName)
+        {
+            FILE* pFile = _wfopen(strFileName.c_str(), L"rb");
+
+            if (NULL != pFile)
+            {
+                fclose(pFile);
+                return true;
+            }
+            else
+                return false;
+        }
 }

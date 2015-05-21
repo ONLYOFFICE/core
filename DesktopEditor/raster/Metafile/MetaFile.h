@@ -6,13 +6,14 @@
 
 #include "Wmf/WmfFile.h"
 #include "Emf/EmfFile.h"
+#include "StarView/SvmFile.h"
 
 namespace MetaFile
 {
 	const int c_lMetaWmf = 0x01;
 	const int c_lMetaEmf = 0x02;
 	const int c_lMetaSvg = 0x04; 
-	// третий поросенок еще бегает )
+	const int c_lMetaSvm = 0x05;
 
 	class CMetaFile
 	{
@@ -34,6 +35,7 @@ namespace MetaFile
 		CFontManager*      m_pFontManager;
 		CWmfFile           m_oWmfFile;
 		CEmfFile           m_oEmfFile;
+		CSvmFile           m_oSvmFile;
 		int                m_lType;
 	};
 }

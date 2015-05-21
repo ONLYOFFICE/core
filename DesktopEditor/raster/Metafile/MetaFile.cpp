@@ -16,8 +16,10 @@ namespace MetaFile
 		CFontsCache* pMeasurerCache = new CFontsCache();
 		pMeasurerCache->SetStreams(pAppFonts->GetStreams());
 		m_pFontManager->SetOwnerCache(pMeasurerCache);
+		
 		m_oWmfFile.SetFontManager(m_pFontManager);
 		m_oEmfFile.SetFontManager(m_pFontManager);
+		m_oSvmFile.SetFontManager(m_pFontManager);
 
 		m_lType  = 0;
 	}
@@ -42,33 +44,48 @@ namespace MetaFile
 		m_pFontManager->SetOwnerCache(pMeasurerCache);
 		m_oWmfFile.SetFontManager(m_pFontManager);
 		m_oEmfFile.SetFontManager(m_pFontManager);
+		m_oSvmFile.SetFontManager(m_pFontManager);
 		//------------------------------------------------------
 
 
 		// Сначала пытаемся открыть файл как Wmf
-		m_oWmfFile.OpenFromFile(wsFilePath);
-		m_oWmfFile.Scan();
-
-		if (!m_oWmfFile.CheckError())
+		if (m_oWmfFile.OpenFromFile(wsFilePath) == true)
 		{
-			m_lType = c_lMetaWmf;
-			return true;
+			m_oWmfFile.Scan();
+
+			if (!m_oWmfFile.CheckError())
+			{
+				m_lType = c_lMetaWmf;
+				return true;
+			}
+			m_oWmfFile.Close();
 		}
-
-		// Это не Wmf, попробуем открыть его как Emf
-		m_oWmfFile.Close();
-
-		m_oEmfFile.OpenFromFile(wsFilePath);
-		m_oEmfFile.Scan();
-
-		if (!m_oEmfFile.CheckError())
+		// Это не Wmf
+		if (m_oEmfFile.OpenFromFile(wsFilePath) == true)
 		{
-			m_lType = c_lMetaEmf;
-			return true;
-		}
+			m_oEmfFile.Scan();
 
+			if (!m_oEmfFile.CheckError())
+			{
+				m_lType = c_lMetaEmf;
+				return true;
+			}
+
+			m_oEmfFile.Close();
+		}
 		// Это не Emf
-		m_oEmfFile.Close();
+		if (m_oSvmFile.OpenFromFile(wsFilePath) == true)
+		{
+			m_oSvmFile.Scan();
+
+			if (!m_oSvmFile.CheckError())
+			{
+				m_lType = c_lMetaSvm;
+				return true;
+			}
+
+			m_oSvmFile.Close();
+		}
 
 		return false;
 	};
@@ -91,7 +108,12 @@ namespace MetaFile
 			m_oEmfFile.SetOutputDevice((IOutputDevice*)&oEmfOut);
 			m_oEmfFile.PlayMetaFile();
 		}
-
+		else if (c_lMetaSvm == m_lType)
+		{
+			CMetaFileRenderer oSvmOut(&m_oSvmFile, pRenderer, dX, dY, dWidth, dHeight);
+			m_oSvmFile.SetOutputDevice((IOutputDevice*)&oSvmOut);
+			m_oSvmFile.PlayMetaFile();
+		}
 		pRenderer->EndCommand(c_nImageType);
 		return true;
 	};
@@ -123,6 +145,14 @@ namespace MetaFile
 			*pdY = pRect->lTop;
 			*pdW = pRect->lRight - pRect->lLeft;
 			*pdH = pRect->lBottom - pRect->lTop;
+		}
+		else if (c_lMetaSvm == m_lType)
+		{
+			TRect* pRect = m_oSvmFile.GetBounds();
+			*pdX = pRect->nLeft;
+			*pdY = pRect->nTop;
+			*pdW = pRect->nRight - pRect->nLeft;
+			*pdH = pRect->nBottom - pRect->nTop;
 		}
 		else
 		{

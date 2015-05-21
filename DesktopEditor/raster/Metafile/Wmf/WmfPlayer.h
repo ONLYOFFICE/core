@@ -22,6 +22,7 @@ namespace MetaFile
 		CWmfDC* SaveDC();
 		CWmfDC* RestoreDC();
 		CWmfDC* GetDC();
+		
 		void RegisterObject(CWmfObjectBase* pObject);
 		void SelectObject(unsigned short ushIndex);
 		void SelectPalette(unsigned short ushIndex);

@@ -1,7 +1,7 @@
 ﻿#include "MetaFileUtils.h"
 
-#include "../../raster/ImageFileFormatChecker.h"
-#include "../../raster/BgraFrame.h"
+#include "../../ImageFileFormatChecker.h"
+#include "../../BgraFrame.h"
 
 #include <time.h>
 #include <math.h>

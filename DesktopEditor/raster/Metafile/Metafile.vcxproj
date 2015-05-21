@@ -165,6 +165,11 @@
     <ClInclude Include="Emf\EmfPlayer.h" />
     <ClInclude Include="Emf\EmfTypes.h" />
     <ClInclude Include="MetaFile.h" />
+    <ClInclude Include="StarView\SvmAbstractPlayer.h" />
+    <ClInclude Include="StarView\SvmEnums.h" />
+    <ClInclude Include="StarView\SvmPlayer.h" />
+    <ClInclude Include="StarView\SvmFile.h" />
+    <ClInclude Include="StarView\SvmObjects.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Wmf\WmfClip.h" />
     <ClInclude Include="Wmf\WmfFile.h" />
@@ -180,6 +185,9 @@
     <ClCompile Include="Emf\EmfPath.cpp" />
     <ClCompile Include="Emf\EmfPlayer.cpp" />
     <ClCompile Include="MetaFile.cpp" />
+    <ClCompile Include="StarView\SvmPlayer.cpp" />
+    <ClCompile Include="StarView\SvmFile.cpp" />
+    <ClCompile Include="StarView\SvmObjects.cpp" />
     <ClCompile Include="stdafx.cpp" />
     <ClCompile Include="TestMain.cpp" />
     <ClCompile Include="Wmf\WmfClip.cpp" />

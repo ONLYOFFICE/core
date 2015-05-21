@@ -7279,6 +7279,7 @@ DesktopEditor/raster/Jp2 svnc_tsvn_003alogminsize=5
 DesktopEditor/raster/Metafile svnc_tsvn_003alogminsize=5 svn_global_002dignores
 DesktopEditor/raster/Metafile/Common svnc_tsvn_003alogminsize=5
 DesktopEditor/raster/Metafile/Emf svnc_tsvn_003alogminsize=5
+DesktopEditor/raster/Metafile/StarView svnc_tsvn_003alogminsize=5
 DesktopEditor/raster/Metafile/Wmf svnc_tsvn_003alogminsize=5
 DesktopEditor/raster/SvmFile svnc_tsvn_003alogminsize=5
 DesktopEditor/raster/SvmFile/Source svnc_tsvn_003alogminsize=5

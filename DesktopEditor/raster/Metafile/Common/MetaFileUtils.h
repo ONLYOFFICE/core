@@ -179,6 +179,11 @@ namespace MetaFile
 			nValue = ReadChar();
 			return *this;
 		}
+		CDataStream& operator>>(bool&  nValue)
+		{
+			nValue = !!ReadChar();
+			return *this;
+		}
 		CDataStream& operator>>(short& nValue)
 		{
 			nValue = ReadShort();

@@ -1,0 +1,192 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}</ProjectGuid>
+    <RootNamespace>ASCOfficeUtilsLib</RootNamespace>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <CharacterSet>Unicode</CharacterSet>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>StaticLibrary</ConfigurationType>
+    <PlatformToolset>v120</PlatformToolset>
+    <UseOfMfc>false</UseOfMfc>
+    <UseOfAtl>false</UseOfAtl>
+    <CharacterSet>Unicode</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="PropertySheets">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup>
+    <_ProjectFileVersion>12.0.30501.0</_ProjectFileVersion>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <OutDir>$(Configuration)\</OutDir>
+    <IntDir>$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <OutDir>$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(Platform)\$(Configuration)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\ZLIB\zlib-1.2.3\contrib\minizip;..\..\ZLIB\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>..\..\ZLIB\zlib-1.2.3\contrib\minizip;..\..\ZLIB\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <MinimalRebuild>true</MinimalRebuild>
+      <BasicRuntimeChecks>EnableFastChecks</BasicRuntimeChecks>
+      <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+    <Lib>
+      <IgnoreAllDefaultLibraries>true</IgnoreAllDefaultLibraries>
+    </Lib>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\ZLIB\zlib-1.2.3\contrib\minizip;..\..\ZLIB\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>WIN32;_WINDOWS;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Midl>
+      <TargetEnvironment>X64</TargetEnvironment>
+    </Midl>
+    <ClCompile>
+      <AdditionalIncludeDirectories>..\..\ZLIB\zlib-1.2.3\contrib\minizip;..\..\ZLIB\zlib-1.2.3;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
+      <WarningLevel>Level3</WarningLevel>
+      <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
+    </ClCompile>
+  </ItemDefinitionGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\ASCOfficeUtils\ZipUtilsCP.cpp" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\adler32.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\compress.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\contrib\minizip\ioapi.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\contrib\minizip\iowin32.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\contrib\minizip\miniunz.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\contrib\minizip\minizip.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\contrib\minizip\mztools.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\contrib\minizip\unzip.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\contrib\minizip\zip.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\crc32.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\deflate.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\example.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\gzio.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\infback.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\inffast.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\inflate.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\inftrees.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\minigzip.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\trees.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\uncompr.c" />
+    <ClCompile Include="..\..\ZLIB\zlib-1.2.3\zutil.c" />
+    <ClCompile Include="..\OfficeUtils.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\ASCOfficeUtils\ASCOfficeCriticalSection.h" />
+    <ClInclude Include="..\..\ASCOfficeUtils\CSLocker.h" />
+    <ClInclude Include="..\..\ASCOfficeUtils\ZipUtilsCP.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\contrib\minizip\crypt.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\contrib\minizip\ioapi.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\contrib\minizip\iowin32.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\contrib\minizip\mztools.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\contrib\minizip\unzip.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\contrib\minizip\zip.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\crc32.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\deflate.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\inffast.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\inffixed.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\inflate.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\inftrees.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\trees.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\zconf.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\zconf.in.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\zlib.h" />
+    <ClInclude Include="..\..\ZLIB\zlib-1.2.3\zutil.h" />
+    <ClInclude Include="..\OfficeUtils.h" />
+    <ClInclude Include="..\OfficeUtilsCommon.h" />
+  </ItemGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>

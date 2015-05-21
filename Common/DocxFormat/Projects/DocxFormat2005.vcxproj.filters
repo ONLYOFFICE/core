@@ -1,0 +1,814 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Rels">
+      <UniqueIdentifier>{9f782695-5740-4d0b-b8ed-5e35b72e449e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="App">
+      <UniqueIdentifier>{6def82be-6f0a-4ac2-8875-dfde054c4f9f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Core">
+      <UniqueIdentifier>{0d988f22-5697-495f-a497-ccfcdd8289b4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Settings">
+      <UniqueIdentifier>{23c379ad-a004-45b8-a224-5f4f35a63f34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Settings\WebSettings">
+      <UniqueIdentifier>{198ca2e9-643d-4e9c-ab04-75fcc59d0f0c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Settings\DocumentSettings">
+      <UniqueIdentifier>{d95e558b-01d9-4839-a68b-0960c686ca4e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Theme">
+      <UniqueIdentifier>{e5208831-fdb3-4e85-b52b-3b47d3d63f75}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ContentTypes">
+      <UniqueIdentifier>{1b5869a3-76a2-44cb-8bae-c49e2fb2f6b2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Styles">
+      <UniqueIdentifier>{d2d04f3c-ac94-46c5-aadf-7ab664100229}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Custom XML">
+      <UniqueIdentifier>{6769a9ab-dff0-4c59-99c3-735b0fda1080}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic">
+      <UniqueIdentifier>{342efc94-f57a-4e07-aff3-940f24528f54}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Tables">
+      <UniqueIdentifier>{d08cac75-8666-45a1-9d26-ee03d91f5971}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Fields and Hyperlinks">
+      <UniqueIdentifier>{8b7ea98b-f80d-42d2-8238-a73400132c55}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Custom Markup">
+      <UniqueIdentifier>{75d405f4-a7b0-4809-b7cb-c4fe17dfe936}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Custom Markup\Sdt">
+      <UniqueIdentifier>{73716d98-82c6-48b2-b5d5-49e84fc4e689}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Paragraph and Runs">
+      <UniqueIdentifier>{7b2ca3af-d661-4d23-a876-a2fb17346d23}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Paragraph and Runs\Paragraph">
+      <UniqueIdentifier>{c7cb1e19-d05f-44e9-9bbb-3e4344058778}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Paragraph and Runs\Run">
+      <UniqueIdentifier>{5deb2d67-8936-4e8d-a707-038e4b8de3f8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Paragraph and Runs\Run\Pict">
+      <UniqueIdentifier>{2663cc5b-4d6a-49f1-a2d0-ddecb7b9658a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Annotations">
+      <UniqueIdentifier>{adb03a57-c2a7-4f22-9748-25fb5b68a0ec}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Drawing">
+      <UniqueIdentifier>{7c84540e-57ca-4e30-a159-ac41db9a3435}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Logic\Sections">
+      <UniqueIdentifier>{52f5e22d-0acd-4a5d-a7ee-0536be8578d1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Numbering">
+      <UniqueIdentifier>{38578999-598b-4865-96f7-4ebc2735f5d7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Bibliography">
+      <UniqueIdentifier>{c57cd404-27d7-427c-9012-89837e6a8799}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Footnotes and Endnotes">
+      <UniqueIdentifier>{b348ec7c-3d62-4d87-a797-078bd316173d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Headers and Footers">
+      <UniqueIdentifier>{d1762c5a-135e-4e85-8623-f5414729487b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Fonts">
+      <UniqueIdentifier>{e4dbb546-7041-4d89-879f-c26ddac4f3ff}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Media">
+      <UniqueIdentifier>{d8cf81fb-08b3-4f76-8fce-4252ef52561f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External">
+      <UniqueIdentifier>{f23d32f6-3fdc-47f0-819a-e157e99a006c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DrawingML">
+      <UniqueIdentifier>{2e386f0b-41e6-4bf1-8141-1f8ee78c42a5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{8127c09a-b209-4278-82fd-3892ede18be1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility\FileSys">
+      <UniqueIdentifier>{e4529119-fdce-43e8-ab0d-17b915ac972a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Common">
+      <UniqueIdentifier>{70db2b18-f4d6-4e3d-a700-9d1b067b3b47}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Comments">
+      <UniqueIdentifier>{123d0f57-ae78-4c79-ac95-5bad8a652c05}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat">
+      <UniqueIdentifier>{c59dff16-5b44-41e7-9e9b-03ed45059ec9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat\CalcChain">
+      <UniqueIdentifier>{cde57b60-d9f8-4f10-8a31-8f9fb8440a87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat\Chart">
+      <UniqueIdentifier>{c1cda87b-ffab-4f13-b904-d0994423d20d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat\Comments">
+      <UniqueIdentifier>{bf4bdc5f-bf4b-4be0-8fac-e9a517af7cd5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat\Drawing">
+      <UniqueIdentifier>{3ae69e64-983a-44de-b1b6-7596cba7a751}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat\SharedStrings">
+      <UniqueIdentifier>{74b156a0-0b51-49e0-be9c-72183c399a97}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat\Styles">
+      <UniqueIdentifier>{6cbef400-5de6-44d8-a9a1-0aa5ee63253b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat\Table">
+      <UniqueIdentifier>{b0ec8060-4803-41b4-9619-03b0e18f89f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat\Workbook">
+      <UniqueIdentifier>{250870a1-2de9-4bac-9d91-f8c6c564b8b3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat\Worksheets">
+      <UniqueIdentifier>{3187bb9b-0b31-4a28-9a41-16758007f912}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XlsxFormat\ExternalLinks">
+      <UniqueIdentifier>{6a21f408-4f51-4389-b788-1e08f9f68f85}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Math">
+      <UniqueIdentifier>{33d3e906-0b7e-4c5b-bb32-13711514dfb1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DiagramML">
+      <UniqueIdentifier>{d20bb33a-9694-473c-a1ff-c1252ab1d05e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Base">
+      <UniqueIdentifier>{d1065eab-cc66-41c9-a0de-9f7e41a6947f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XML">
+      <UniqueIdentifier>{9719900a-ae34-4756-aa5f-efdf6e03e8ed}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Equation">
+      <UniqueIdentifier>{fae869e7-f027-4890-b886-6a5ed06239aa}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="VectorML">
+      <UniqueIdentifier>{7b7224bf-c9d9-4de9-bcab-1dfe744d617e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\Source\DocxFormat\Rels.h">
+      <Filter>Rels</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\App.h">
+      <Filter>App</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Core.h">
+      <Filter>Core</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\WebSettings.h">
+      <Filter>Settings\WebSettings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Settings\Settings.h">
+      <Filter>Settings\DocumentSettings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Theme\Theme.h">
+      <Filter>Theme</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Theme\ThemeOverride.h">
+      <Filter>Theme</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\ContentTypes.h">
+      <Filter>ContentTypes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Styles.h">
+      <Filter>Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\CustomXml.h">
+      <Filter>Custom XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Document.h">
+      <Filter>Logic</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\Table.h">
+      <Filter>Logic\Tables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\TableProperty.h">
+      <Filter>Logic\Tables</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\FldChar.h">
+      <Filter>Logic\Fields and Hyperlinks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\FldSimple.h">
+      <Filter>Logic\Fields and Hyperlinks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\Hyperlink.h">
+      <Filter>Logic\Fields and Hyperlinks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\Dir.h">
+      <Filter>Logic\Custom Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\SmartTag.h">
+      <Filter>Logic\Custom Markup</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\Sdt.h">
+      <Filter>Logic\Custom Markup\Sdt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\Paragraph.h">
+      <Filter>Logic\Paragraph and Runs\Paragraph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\ParagraphProperty.h">
+      <Filter>Logic\Paragraph and Runs\Paragraph</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\AlternateContent.h">
+      <Filter>Logic\Paragraph and Runs\Run</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\Bdo.h">
+      <Filter>Logic\Paragraph and Runs\Run</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\Run.h">
+      <Filter>Logic\Paragraph and Runs\Run</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\RunContent.h">
+      <Filter>Logic\Paragraph and Runs\Run</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\RunProperty.h">
+      <Filter>Logic\Paragraph and Runs\Run</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\Annotations.h">
+      <Filter>Logic\Annotations</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\Pict.h">
+      <Filter>Logic\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\Shape.h">
+      <Filter>Logic\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\SectionProperty.h">
+      <Filter>Logic\Sections</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Numbering.h">
+      <Filter>Numbering</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Bibliography.h">
+      <Filter>Bibliography</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Endnote.h">
+      <Filter>Footnotes and Endnotes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Footnote.h">
+      <Filter>Footnotes and Endnotes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\FtnEdn.h">
+      <Filter>Footnotes and Endnotes</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\HeaderFooter.h">
+      <Filter>Headers and Footers</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Font.h">
+      <Filter>Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\FontTable.h">
+      <Filter>Fonts</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Media\Audio.h">
+      <Filter>Media</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Media\Image.h">
+      <Filter>Media</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Media\Media.h">
+      <Filter>Media</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Media\OleObject.h">
+      <Filter>Media</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Media\Video.h">
+      <Filter>Media</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\External\External.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\External\ExternalAudio.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\External\ExternalImage.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\External\ExternalVideo.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\External\HyperLink.h">
+      <Filter>External</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\Drawing.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\Drawing3D.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingBody.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingColors.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingCoreInfo.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingEffects.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingExt.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingGraphic.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingParagraph.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingParagraphElements.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingPicture.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingRun.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingShape.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingShapeElements.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingShared.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingStyles.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingStyles2.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingTables.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingText.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingTextProperties.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Drawing\DrawingTransform.h">
+      <Filter>DrawingML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\SystemUtility\FileSystem\Directory.h">
+      <Filter>Utility\FileSys</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\SystemUtility\FileSystem\File.h">
+      <Filter>Utility\FileSys</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\SystemUtility\SystemUtility.h">
+      <Filter>Utility\FileSys</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\AbstractConverter.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\Align.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\Color.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\Common.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\ComplexTypes.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\Encoding.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\Index.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\NumFormat.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\Point.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\Position.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Base.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Drawing.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Shared.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Vml.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\SimpleTypes_Word.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\Size.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\Unit.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\Utils.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\Wrap.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Common\ZIndex.h">
+      <Filter>Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Comments.h">
+      <Filter>Comments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Common.h">
+      <Filter>XlsxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\CommonInclude.h">
+      <Filter>XlsxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\ComplexTypes_Spreadsheet.h">
+      <Filter>XlsxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\FileFactory_Spreadsheet.h">
+      <Filter>XlsxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\FileTypes_Spreadsheet.h">
+      <Filter>XlsxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\IFileContainer_Spreadsheet.h">
+      <Filter>XlsxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\SimpleTypes_Spreadsheet.h">
+      <Filter>XlsxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Workbook.h">
+      <Filter>XlsxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\WritingElement.h">
+      <Filter>XlsxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Xlsx.h">
+      <Filter>XlsxFormat</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\CalcChain\CalcChain.h">
+      <Filter>XlsxFormat\CalcChain</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Chart\Chart.h">
+      <Filter>XlsxFormat\Chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Chart\ChartSerialize.h">
+      <Filter>XlsxFormat\Chart</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Comments\Comments.h">
+      <Filter>XlsxFormat\Comments</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Drawing\CellAnchor.h">
+      <Filter>XlsxFormat\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Drawing\Drawing.h">
+      <Filter>XlsxFormat\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Drawing\FromTo.h">
+      <Filter>XlsxFormat\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Drawing\GraphicFrame.h">
+      <Filter>XlsxFormat\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Drawing\Image.h">
+      <Filter>XlsxFormat\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Drawing\Pic.h">
+      <Filter>XlsxFormat\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Drawing\Pos.h">
+      <Filter>XlsxFormat\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Drawing\Shape.h">
+      <Filter>XlsxFormat\Drawing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\SharedStrings\PhoneticPr.h">
+      <Filter>XlsxFormat\SharedStrings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\SharedStrings\rPr.h">
+      <Filter>XlsxFormat\SharedStrings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\SharedStrings\Run.h">
+      <Filter>XlsxFormat\SharedStrings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\SharedStrings\SharedStrings.h">
+      <Filter>XlsxFormat\SharedStrings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\SharedStrings\Si.h">
+      <Filter>XlsxFormat\SharedStrings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\SharedStrings\Text.h">
+      <Filter>XlsxFormat\SharedStrings</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Styles\Borders.h">
+      <Filter>XlsxFormat\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Styles\CellStyles.h">
+      <Filter>XlsxFormat\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Styles\Colors.h">
+      <Filter>XlsxFormat\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Styles\dxf.h">
+      <Filter>XlsxFormat\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Styles\Fills.h">
+      <Filter>XlsxFormat\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Styles\Fonts.h">
+      <Filter>XlsxFormat\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Styles\NumFmts.h">
+      <Filter>XlsxFormat\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Styles\rPr.h">
+      <Filter>XlsxFormat\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Styles\Styles.h">
+      <Filter>XlsxFormat\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Styles\TableStyles.h">
+      <Filter>XlsxFormat\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Styles\Xfs.h">
+      <Filter>XlsxFormat\Styles</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Table\Autofilter.h">
+      <Filter>XlsxFormat\Table</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Table\Table.h">
+      <Filter>XlsxFormat\Table</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Workbook\BookViews.h">
+      <Filter>XlsxFormat\Workbook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Workbook\DefinedNames.h">
+      <Filter>XlsxFormat\Workbook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Workbook\ExternalReferences.h">
+      <Filter>XlsxFormat\Workbook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Workbook\Sheets.h">
+      <Filter>XlsxFormat\Workbook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Workbook\Workbook.h">
+      <Filter>XlsxFormat\Workbook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Workbook\WorkbookPr.h">
+      <Filter>XlsxFormat\Workbook</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Worksheets\Cols.h">
+      <Filter>XlsxFormat\Worksheets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Worksheets\ConditionalFormatting.h">
+      <Filter>XlsxFormat\Worksheets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Worksheets\Hyperlinks.h">
+      <Filter>XlsxFormat\Worksheets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Worksheets\MergeCells.h">
+      <Filter>XlsxFormat\Worksheets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Worksheets\SheetData.h">
+      <Filter>XlsxFormat\Worksheets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Worksheets\Worksheet.h">
+      <Filter>XlsxFormat\Worksheets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\Worksheets\WorksheetChildOther.h">
+      <Filter>XlsxFormat\Worksheets</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\ExternalLinks\ExternalLinkPath.h">
+      <Filter>XlsxFormat\ExternalLinks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XlsxFormat\ExternalLinks\ExternalLinks.h">
+      <Filter>XlsxFormat\ExternalLinks</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Math\oMath.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Math\oMathBottomNodes.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Math\oMathContent.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Math\oMathPara.h">
+      <Filter>Math</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Diagram\DiagramDrawing.h">
+      <Filter>DiagramML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Base\ASCString.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Base\Base.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Base\Nullable.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Base\SmartPtr.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\Base\unicode_util.h">
+      <Filter>Base</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XML\stringcommon.h">
+      <Filter>XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XML\StringWriter.h">
+      <Filter>XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XML\Utils.h">
+      <Filter>XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XML\XmlSimple.h">
+      <Filter>XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\XML\xmlutils.h">
+      <Filter>XML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MathEquation\LEStream.h">
+      <Filter>Equation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MathEquation\MathEquation.h">
+      <Filter>Equation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MathEquation\OutputDev.h">
+      <Filter>Equation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MathEquation\String.h">
+      <Filter>Equation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\MathEquation\Types.h">
+      <Filter>Equation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\Vml.h">
+      <Filter>VectorML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\VmlDrawing.h">
+      <Filter>VectorML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\VmlOfficeDrawing.h">
+      <Filter>VectorML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Logic\VmlWord.h">
+      <Filter>VectorML</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Source\DocxFormat\Docx.h" />
+    <ClInclude Include="..\Source\DocxFormat\File.h" />
+    <ClInclude Include="..\Source\DocxFormat\FileFactory.h" />
+    <ClInclude Include="..\Source\DocxFormat\FileType.h" />
+    <ClInclude Include="..\Source\DocxFormat\FileTypes.h" />
+    <ClInclude Include="..\Source\DocxFormat\IFileBuilder.h" />
+    <ClInclude Include="..\Source\DocxFormat\IFileContainer.h" />
+    <ClInclude Include="..\Source\DocxFormat\NamespaceOwn.h" />
+    <ClInclude Include="..\Source\DocxFormat\Namespaces.h" />
+    <ClInclude Include="..\Source\DocxFormat\RId.h" />
+    <ClInclude Include="..\Source\DocxFormat\UnknowTypeFile.h" />
+    <ClInclude Include="..\Source\DocxFormat\WritingElement.h" />
+    <ClInclude Include="..\Source\DocxFormat\WritingVector.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Table.cpp">
+      <Filter>Logic\Tables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\TableProperty.cpp">
+      <Filter>Logic\Tables</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\FldSimple.cpp">
+      <Filter>Logic\Fields and Hyperlinks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Hyperlink.cpp">
+      <Filter>Logic\Fields and Hyperlinks</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Dir.cpp">
+      <Filter>Logic\Custom Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\SmartTag.cpp">
+      <Filter>Logic\Custom Markup</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Sdt.cpp">
+      <Filter>Logic\Custom Markup\Sdt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Paragraph.cpp">
+      <Filter>Logic\Paragraph and Runs\Paragraph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\ParagraphProperty.cpp">
+      <Filter>Logic\Paragraph and Runs\Paragraph</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\AlternateContent.cpp">
+      <Filter>Logic\Paragraph and Runs\Run</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Bdo.cpp">
+      <Filter>Logic\Paragraph and Runs\Run</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\RunProperty.cpp">
+      <Filter>Logic\Paragraph and Runs\Run</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Annotations.cpp">
+      <Filter>Logic\Annotations</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\SectionProperty.cpp">
+      <Filter>Logic\Sections</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Drawing\DrawingCoreInfo.cpp">
+      <Filter>DrawingML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Drawing\DrawingEffects.cpp">
+      <Filter>DrawingML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\SystemUtility\FileSystem\Directory.cpp">
+      <Filter>Utility\FileSys</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\SystemUtility\FileSystem\File.cpp">
+      <Filter>Utility\FileSys</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\SystemUtility\SystemUtility.cpp">
+      <Filter>Utility\FileSys</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\Align.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\Color.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\Index.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\NumFormat.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\Position.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\SimpleTypes_Word.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\Utils.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\Wrap.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Common\ZIndex.cpp">
+      <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsxFormat\Common.cpp">
+      <Filter>XlsxFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsxFormat\FileFactory_Spreadsheet.cpp">
+      <Filter>XlsxFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsxFormat\IFileContainer_Spreadsheet.cpp">
+      <Filter>XlsxFormat</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XlsxFormat\Chart\ChartSerialize.cpp">
+      <Filter>XlsxFormat\Chart</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Math\oMath.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Math\oMathContent.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Math\oMathPara.cpp">
+      <Filter>Math</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\Base\unicode_util.cpp">
+      <Filter>Base</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\XML\stringcommon.cpp">
+      <Filter>XML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\MathEquation\MathEquation.cpp">
+      <Filter>Equation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Logic\Vml.cpp">
+      <Filter>VectorML</Filter>
+    </ClCompile>
+    <ClCompile Include="..\Source\DocxFormat\Docx.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\FileFactory.cpp" />
+    <ClCompile Include="..\Source\DocxFormat\IFileContainer.cpp" />
+  </ItemGroup>
+</Project>

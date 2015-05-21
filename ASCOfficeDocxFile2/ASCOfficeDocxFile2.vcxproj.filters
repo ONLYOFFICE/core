@@ -1,0 +1,186 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="res">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav</Extensions>
+    </Filter>
+    <Filter Include="_">
+      <UniqueIdentifier>{3710d9f5-676c-4632-a22d-632057708e84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DocWrapper">
+      <UniqueIdentifier>{da428055-8b24-49ac-a8fd-fb7567370761}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XLSX">
+      <UniqueIdentifier>{2b0ee265-23a7-4758-b2e7-9f335c2932c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XLSX\Common">
+      <UniqueIdentifier>{d3849c02-1f95-40b4-9885-3850ac887162}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XLSX\Reader">
+      <UniqueIdentifier>{6e356698-1762-48ec-aabe-e67cd986841e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="XLSX\Writer">
+      <UniqueIdentifier>{a6d705d7-de56-4085-ad90-9a64fb2a6377}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DOCX">
+      <UniqueIdentifier>{819e4322-0635-4959-bee0-bd7258b92b82}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DOCX\Reader">
+      <UniqueIdentifier>{710f68a2-18f0-40c6-8e32-5474b8301127}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DOCX\Reader\OOXWriter">
+      <UniqueIdentifier>{fb8f2ef8-d3e2-4bae-a746-4dd375a45521}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DOCX\Common">
+      <UniqueIdentifier>{845568f5-8012-46bf-a6d7-63610040f153}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="DOCX\Writer">
+      <UniqueIdentifier>{276e338e-bf55-47f1-8fd6-d73552eed0d4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="ASCOfficeDocxFile2.rc">
+      <Filter>res</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ASCOfficeDocxFile2.rgs">
+      <Filter>res</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="ASCOfficeDocxFile2.cpp">
+      <Filter>_</Filter>
+    </ClCompile>
+    <ClCompile Include="stdafx.cpp">
+      <Filter>_</Filter>
+    </ClCompile>
+    <ClCompile Include="DocWrapper\FontProcessor.cpp">
+      <Filter>DocWrapper</Filter>
+    </ClCompile>
+    <ClCompile Include="DocWrapper\XlsxSerializer.cpp">
+      <Filter>XLSX</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsxSerializerCom\Common\Common.cpp">
+      <Filter>XLSX\Common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsxSerializerCom\Reader\CSVReader.cpp">
+      <Filter>XLSX\Reader</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsxSerializerCom\Reader\ChartFromToBinary.cpp">
+      <Filter>XLSX\Writer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsxSerializerCom\Reader\CommonWriter.cpp">
+      <Filter>XLSX\Writer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\XlsxSerializerCom\Writer\CSVWriter.cpp">
+      <Filter>XLSX\Writer</Filter>
+    </ClCompile>
+    <ClCompile Include="DocWrapper\DocxSerializer.cpp">
+      <Filter>DOCX</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Resource.h">
+      <Filter>_</Filter>
+    </ClInclude>
+    <ClInclude Include="version.h">
+      <Filter>_</Filter>
+    </ClInclude>
+    <ClInclude Include="DocWrapper\FontProcessor.h">
+      <Filter>DocWrapper</Filter>
+    </ClInclude>
+    <ClInclude Include="DocWrapper\XlsxSerializer.h">
+      <Filter>XLSX</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsxSerializerCom\Common\BinReaderWriterDefines.h">
+      <Filter>XLSX\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsxSerializerCom\Common\Common.h">
+      <Filter>XLSX\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsxSerializerCom\Writer\BinaryCommonReader.h">
+      <Filter>XLSX\Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsxSerializerCom\Writer\BinaryReader.h">
+      <Filter>XLSX\Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsxSerializerCom\Reader\CSVReader.h">
+      <Filter>XLSX\Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsxSerializerCom\Reader\BinaryWriter.h">
+      <Filter>XLSX\Writer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsxSerializerCom\Reader\ChartFromToBinary.h">
+      <Filter>XLSX\Writer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsxSerializerCom\Reader\CommonWriter.h">
+      <Filter>XLSX\Writer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\XlsxSerializerCom\Writer\CSVWriter.h">
+      <Filter>XLSX\Writer</Filter>
+    </ClInclude>
+    <ClInclude Include="DocWrapper\DocxSerializer.h">
+      <Filter>DOCX</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\ReaderClasses.h">
+      <Filter>DOCX\Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\Readers.h">
+      <Filter>DOCX\Reader</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\ChartWriter.h">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\CommentsWriter.h">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\ContentTypesWriter.h">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\DocumentRelsWriter.h">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\DocumentWriter.h">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\FileWriter.h">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\fontTableWriter.h">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\HeaderFooterWriter.h">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\MediaWriter.h">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\NumberingWriter.h">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\SettingWriter.h">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\StylesWriter.h">
+      <Filter>DOCX\Reader\OOXWriter</Filter>
+    </ClInclude>
+    <ClInclude Include="BinReader\FileDownloader.h">
+      <Filter>DOCX\Common</Filter>
+    </ClInclude>
+    <ClInclude Include="BinWriter\BinEquationWriter.h">
+      <Filter>DOCX\Writer</Filter>
+    </ClInclude>
+    <ClInclude Include="BinWriter\BinReaderWriterDefines.h">
+      <Filter>DOCX\Writer</Filter>
+    </ClInclude>
+    <ClInclude Include="BinWriter\BinWriters.h">
+      <Filter>DOCX\Writer</Filter>
+    </ClInclude>
+    <ClInclude Include="DocxFile2.h" />
+    <ClInclude Include="PptxFile.h" />
+    <ClInclude Include="stdafx.h" />
+    <ClInclude Include="XlsxFile2.h" />
+  </ItemGroup>
+</Project>

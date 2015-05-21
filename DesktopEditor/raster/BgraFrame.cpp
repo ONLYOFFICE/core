@@ -4,7 +4,7 @@
 
 #include "Jp2/J2kFile.h"
 #include "JBig2/source/JBig2File.h"
-#include "SvmFile/source/SvmFile.h"
+#include "SvmFile/Source/SvmFile.h"
 
 bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileType)
 {
@@ -13,11 +13,11 @@ bool CBgraFrame::OpenFile(const std::wstring& strFileName, unsigned int nFileTyp
         Jpeg2000::CJ2kFile oJ2;
         return oJ2.Open(this, strFileName, std::wstring(L""));
     }
-    if (22/*CXIMAGE_FORMAT_SVM*/ == nFileType)
-    {
-        SvmFile::CSvmFile oSvm;
-        return oSvm.Open(this, strFileName);
-    }
+//    if (22/*CXIMAGE_FORMAT_SVM*/ == nFileType)
+//    {
+//        SvmFile::CSvmFile oSvm;
+//        return oSvm.Open(this, strFileName);
+//    }
 	else
 	{
 		NSFile::CFileBinary oFile;

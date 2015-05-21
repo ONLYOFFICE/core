@@ -127,7 +127,7 @@ namespace FileSystem {
         strFolder += strFolderName;
         return CreateDirectory(strFolder);
     }
-    CString Directory::CreateDirectoryWithUniqueName (CString strFolderPathRoot)
+    CString Directory::CreateDirectoryWithUniqueName (CString & strFolderPathRoot)
     {
         std::string pcTemplate = stringWstingToUtf8String (strFolderPathRoot) + "/ascXXXXXX";
         char *pcRes = mkdtemp(const_cast <char *> (pcTemplate.c_str()));
@@ -254,5 +254,22 @@ namespace FileSystem {
         }
 
         return false;
+    }
+    bool Directory::IsExist(const std::wstring&  strFileName)
+    {
+
+        BYTE* pUtf8 = NULL;
+        LONG lLen = 0;
+        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
+        FILE* pFile = fopen((char*)pUtf8, "rb");
+        delete [] pUtf8;
+
+        if (NULL != pFile)
+        {
+            fclose(pFile);
+            return true;
+        }
+        else
+            return false;
     }
 }

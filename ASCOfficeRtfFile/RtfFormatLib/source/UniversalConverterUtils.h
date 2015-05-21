@@ -51,7 +51,8 @@ public:
 	}
 	static CString CreateTempDir()
 	{
-		return FileSystem::Directory::CreateDirectoryWithUniqueName(FileSystem::Directory::GetTempPath());
+        CString tmpDirectory = FileSystem::Directory::GetTempPath();
+        return FileSystem::Directory::CreateDirectoryWithUniqueName(tmpDirectory);
 	}
 	static  CString PrepareToXML( const CString & sInput)
 	{

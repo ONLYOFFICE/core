@@ -47,24 +47,6 @@ namespace FileSystem {
 		static void			DeleteDirectory(std::wstring& path, bool deleteRoot = true);
 #endif
 
-		static bool IsExist(const std::wstring&  strFileName)
-		{
-#if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
-			FILE* pFile = _wfopen(strFileName.c_str(), L"rb");
-#else
-			BYTE* pUtf8 = NULL;
-			LONG lLen = 0;
-			CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
-			FILE* pFile = fopen((char*)pUtf8, "rb");
-			delete [] pUtf8;
-#endif
-			if (NULL != pFile)
-			{
-				fclose(pFile);
-				return true;
-			}
-			else
-				return false;
-		}	
+        static bool IsExist(const std::wstring&  strFileName);
 	};
 }

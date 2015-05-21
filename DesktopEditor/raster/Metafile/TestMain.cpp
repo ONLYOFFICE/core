@@ -46,15 +46,23 @@ void ConvertFolder(CMetaFile &oMetaFile, std::wstring wsFolderPath, const int nT
 {
 	oMetaFile.Close();
 
-	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, nType == c_lMetaEmf ? L"emf" : L"wmf");
+	std::wstring sExt;
+
+	switch(nType)
+	{
+	case c_lMetaEmf: sExt = L"emf"; break;
+	case c_lMetaWmf: sExt = L"wmf"; break;
+	case c_lMetaSvm: sExt = L"svm"; break;
+	}
+	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath,  sExt);
 	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
 	{
 		std::wstring wsFilePath = wsFolderPath;
 		wsFilePath.append(vFiles.at(nIndex));
 		if (oMetaFile.LoadFromFile(wsFilePath.c_str()))
 		{
-			std::wstring wsDstFilePath = (wsFilePath.substr(0, wsFilePath.size() - 3)).append(L"png");
-			oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 4, 1000);
+			std::wstring wsDstFilePath = (wsFilePath.substr(0, wsFilePath.size() - 3)).append(L"bmp");
+			oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 1, 1000);
 			oMetaFile.Close();
 		}
 
@@ -68,7 +76,7 @@ void main()
 	oFonts.Initialize();
 
 	CMetaFile oMetaFile(&oFonts);
-	ConvertFolder(oMetaFile, L"D://Test Files//", c_lMetaEmf);
+	ConvertFolder(oMetaFile, L"D://test//_svm//", c_lMetaSvm);
 
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_CrtDumpMemoryLeaks();

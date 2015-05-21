@@ -22,6 +22,9 @@
     <Filter Include="Common">
       <UniqueIdentifier>{3f315308-1def-4dee-98fd-79d007d99cf3}</UniqueIdentifier>
     </Filter>
+    <Filter Include="StarView">
+      <UniqueIdentifier>{1139b56c-7880-45fe-b821-3e054d70deaf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Wmf\WmfFile.h">
@@ -84,6 +87,21 @@
     <ClInclude Include="Common\MetaFileUtils.h">
       <Filter>Common</Filter>
     </ClInclude>
+    <ClInclude Include="StarView\SvmEnums.h">
+      <Filter>StarView</Filter>
+    </ClInclude>
+    <ClInclude Include="StarView\SvmPlayer.h">
+      <Filter>StarView</Filter>
+    </ClInclude>
+    <ClInclude Include="StarView\SvmAbstractPlayer.h">
+      <Filter>StarView</Filter>
+    </ClInclude>
+    <ClInclude Include="StarView\SvmFile.h">
+      <Filter>StarView</Filter>
+    </ClInclude>
+    <ClInclude Include="StarView\SvmObjects.h">
+      <Filter>StarView</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TestMain.cpp">
@@ -121,6 +139,15 @@
     </ClCompile>
     <ClCompile Include="Common\MetaFileUtils.cpp">
       <Filter>Common</Filter>
+    </ClCompile>
+    <ClCompile Include="StarView\SvmPlayer.cpp">
+      <Filter>StarView</Filter>
+    </ClCompile>
+    <ClCompile Include="StarView\SvmFile.cpp">
+      <Filter>StarView</Filter>
+    </ClCompile>
+    <ClCompile Include="StarView\SvmObjects.cpp">
+      <Filter>StarView</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

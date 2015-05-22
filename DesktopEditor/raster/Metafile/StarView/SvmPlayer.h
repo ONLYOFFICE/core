@@ -1,7 +1,4 @@
-
-#ifndef CSvmPlayer_H
-#define CSvmPlayer_H
-
+#pragma once
 
 #include "SvmEnums.h"
 #include "SvmObjects.h"
@@ -111,7 +108,7 @@ private:
 
 private:
 
-	unsigned int    m_ulMapMode;
+	ESvmMapUnit     m_ulMapMode;
 	CSvmBrush*		m_pBrush;
 	CSvmPen*		m_pPen;
 	CSvmFont*		m_pFont;
@@ -136,6 +133,3 @@ private:
 };
 
 }
-
-#endif
-

@@ -203,11 +203,11 @@ CDataStream& operator>>(CDataStream &stream, TSvmPolygon &p)
 }
 CDataStream& operator>>(CDataStream &stream, TSvmColor &c)
 {
-	stream >> c.r;
-	stream >> c.g;
 	stream >> c.b;
-	unsigned char reserv;
-	stream >> reserv;
+	stream >> c.g;
+	stream >> c.r;
+	stream >> c.a;
+
 	return stream;
 
 }

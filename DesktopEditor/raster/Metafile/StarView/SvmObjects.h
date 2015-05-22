@@ -68,6 +68,15 @@ struct TSvmSize
 	unsigned int cx;
 	unsigned int cy;
 };
+
+enum ESvmMapUnit
+{
+MAP_100TH_MM, MAP_10TH_MM, MAP_MM, MAP_CM,
+			   MAP_1000TH_INCH, MAP_100TH_INCH, MAP_10TH_INCH, MAP_INCH,
+			   MAP_POINT, MAP_TWIP, MAP_PIXEL, MAP_SYSFONT, MAP_APPFONT,
+			   MAP_RELATIVE, /*MAP_REALAPPFONT,*/ MAP_LASTENUMDUMMY
+};
+
 struct MapMode 
 {
     MapMode();

@@ -26,6 +26,10 @@ HRESULT CPDFWriter::OnlineWordToPdf (BSTR sPathXml, BSTR sDstFile, BSTR sHtmlPla
 {
 	return m_oPdfWriter->OnlineWordToPdf( std::wstring(sPathXml), std::wstring(sDstFile), nReg);
 }
+HRESULT CPDFWriter::OnlineWordToPdfFromBinary (BSTR sPathXml, BSTR sDstFile, BSTR sHtmlPlace, LONG nReg)
+{
+	return m_oPdfWriter->OnlineWordToPdfFromBinary( std::wstring(sPathXml), std::wstring(sDstFile), nReg);
+}
 
 /////////////////////////////
 

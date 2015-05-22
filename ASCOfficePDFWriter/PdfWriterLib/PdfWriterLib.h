@@ -378,6 +378,8 @@ public:
 	//-----------------------------------------------------------------------------------------------------
 
 	HRESULT OnlineWordToPdf (std::wstring sPathXml, std::wstring sDstFile, LONG nReg);
+	HRESULT OnlineWordToPdfFromBinary (std::wstring sPathXml, std::wstring sDstFile, LONG nReg);
+	HRESULT OnlineWordToPdfExec (std::wstring sPathXml, std::wstring sDstFile, LONG nReg, bool bBinary);
     void OnlineWordToPdfInternal (BYTE* dstArray, LONG len, const std::wstring& sHtmlPlace, std::wstring& sHypers, int& nCountPages, CString sTempLogo, LONG nReg);
 
 //IRenderer

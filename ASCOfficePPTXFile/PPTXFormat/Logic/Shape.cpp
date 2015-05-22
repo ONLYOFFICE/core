@@ -434,7 +434,7 @@ namespace PPTX
 			CString strFillNode = _T("");
 			CString strStrokeNode = _T("");
 			CalculateFill(spPr, style, oTheme, oClrMap, strFillAttr, strFillNode, bOle);
-			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode);
+			CalculateLine(spPr, style, oTheme, oClrMap, strStrokeAttr, strStrokeNode, bOle);
 
 			if (pWriter->m_strStyleMain != _T(""))
 			{

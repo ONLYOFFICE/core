@@ -323,8 +323,15 @@ namespace NSBinPptxRW
 		else
 			strImage = DownloadImageExec(strUrl);
 		CImageManager2Info oImageManagerInfo;
-		if(!strImage.IsEmpty())
+		if (!strImage.IsEmpty())
+		{
 			oImageManagerInfo = GenerateImageExec(strImage, strExts, strOleImage, strOleImageProperty);
+			CDirectory::DeleteFileW(strImage);
+		}
+		if (!strOleImage.IsEmpty())
+			CDirectory::DeleteFileW(strOleImage);
+		if (!strOleImageProperty.IsEmpty())
+			CDirectory::DeleteFileW(strOleImageProperty);
 
 		m_mapImages[strUrl] = oImageManagerInfo;
 		return oImageManagerInfo;
@@ -332,7 +339,7 @@ namespace NSBinPptxRW
 	CString CImageManager2::DownloadImageExec(const CString& strFile)
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
-        CFileDownloader oDownloader(strFile, true);
+        CFileDownloader oDownloader(strFile, false);
 		oDownloader.Start( 1 );
 		while ( oDownloader.IsRunned() )
 		{

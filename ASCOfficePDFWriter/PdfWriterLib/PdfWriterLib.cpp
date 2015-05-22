@@ -138,6 +138,11 @@ HRESULT CPdfWriterLib::SetAdditionalParam (CString ParamName, VARIANT	ParamValue
 		std::wstring strFontDirectory = std::wstring( ParamValue.bstrVal );
 		SetFontDir(strFontDirectory);
 	}
+	else if ( _T("ThemesPlace") == sParamName && VT_BSTR == ParamValue.vt )
+	{
+		std::wstring strFontDirectory = std::wstring( ParamValue.bstrVal );
+		SetThemesPlace(strFontDirectory);
+	}
 	else if ( _T("WhiteBackImage") == sParamName && VT_BOOL == ParamValue.vt )
 	{
         m_bIsWhiteBackImage = (ParamValue.boolVal == VARIANT_TRUE) ? true : false;
@@ -3641,8 +3646,15 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
         } // while (curindex < len)
     }
 }
-
-HRESULT CPdfWriterLib::OnlineWordToPdf (std::wstring sPathXml, std::wstring sDstFile, LONG nReg)
+HRESULT CPdfWriterLib::OnlineWordToPdf(std::wstring sPathXml, std::wstring sDstFile, LONG nReg)
+{
+	return OnlineWordToPdfExec(sPathXml, sDstFile, nReg, false);
+}
+HRESULT CPdfWriterLib::OnlineWordToPdfFromBinary(std::wstring sPathXml, std::wstring sDstFile, LONG nReg)
+{
+	return OnlineWordToPdfExec(sPathXml, sDstFile, nReg, true);
+}
+HRESULT CPdfWriterLib::OnlineWordToPdfExec (std::wstring sPathXml, std::wstring sDstFile, LONG nReg, bool bBinary)
 {
 	using namespace NOnlineOfficeBinToPdf;
 	HRESULT hRes = S_OK;
@@ -3684,46 +3696,21 @@ HRESULT CPdfWriterLib::OnlineWordToPdf (std::wstring sPathXml, std::wstring sDst
 		oFile.ReadFile(fileContent, dwFileSize);
 		oFile.CloseFile();
 
-		// here we can to divide file into some lines of text (divided by '\n' symbol)
-		// -> std::vector<CStringA> asResFile;
-		// -> for (size_t nLine = 0; nLine < asResFile.size(); ++nLine)
-
-		int pos_end = 0; 
-		int pos_start = 0 ;
-		while(pos_end < dwFileSize)
+		if (bBinary)
 		{
-			if (fileContent[pos_end] == '\n')
-			{
-				long	line_length = pos_end - pos_start;
-				LPCSTR	line_str	= (LPCSTR)(fileContent + pos_start);
-
-				int		len			= Base64::Base64DecodeGetRequiredLength(line_length);
-				BYTE *	dstArray	= new BYTE[len + 64];
-				
-				if (Base64::Base64Decode(line_str, line_length, dstArray, &len))
-				{
-					OnlineWordToPdfInternal(dstArray, len, sHtmlPlace, sHypers, nCountPages, sTempLogo, nReg);
-					RELEASEARRAYOBJECTS(dstArray);
-				}
-				pos_start = pos_end+1;
-			}
-			pos_end++;
-			//
+			OnlineWordToPdfInternal(fileContent, dwFileSize, sHtmlPlace, sHypers, nCountPages, sTempLogo, nReg);
 		}
-		if (pos_start < pos_end)
+		else
 		{
-			long	line_length = pos_end - pos_start;
-			LPCSTR	line_str	= (LPCSTR)(fileContent + pos_start);
+			//схема с разбивкой по 50 страниц убрана из js. теперь на входе всегда файл с одним base64
+			int		len = Base64::Base64DecodeGetRequiredLength(dwFileSize);
+			BYTE *	dstArray = new BYTE[len];
 
-			int		len			= Base64::Base64DecodeGetRequiredLength(line_length);
-			BYTE *	dstArray	= new BYTE[len + 64];
-			
-			if (Base64::Base64Decode(line_str, line_length, dstArray, &len))
-			{
-                OnlineWordToPdfInternal(dstArray, len, sHtmlPlace, sHypers, nCountPages, sTempLogo, nReg);
-                RELEASEARRAYOBJECTS(dstArray);
-			}
+			if (Base64::Base64Decode((LPCSTR)fileContent, dwFileSize, dstArray, &len))
+				OnlineWordToPdfInternal(dstArray, len, sHtmlPlace, sHypers, nCountPages, sTempLogo, nReg);
+			RELEASEARRAYOBJECTS(dstArray);
 		}
+		RELEASEARRAYOBJECTS(fileContent);
 		sHypers += _T("</linker>");
 
 		if (!nReg)

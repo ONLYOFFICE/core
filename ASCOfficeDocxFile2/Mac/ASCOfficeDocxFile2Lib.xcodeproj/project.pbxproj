@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		17A765281B0F3DC30046BC0B /* DefaultThemeWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17A765271B0F3DC30046BC0B /* DefaultThemeWriter.h */; };
+		17A765291B0F3DC30046BC0B /* DefaultThemeWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17A765271B0F3DC30046BC0B /* DefaultThemeWriter.h */; };
 		17C1FE961ACC42C4006B99B3 /* Common.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F1E1AC4549B00BEA2EA /* Common.cpp */; };
 		17C1FE971ACC42C4006B99B3 /* ChartFromToBinary.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F221AC4549B00BEA2EA /* ChartFromToBinary.cpp */; };
 		17C1FE981ACC42C4006B99B3 /* CSVReader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E17F261AC4549B00BEA2EA /* CSVReader.cpp */; };
@@ -18,7 +20,6 @@
 		17C1FEA11ACC42C4006B99B3 /* fontTableWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF31AC4544900BEA2EA /* fontTableWriter.h */; };
 		17C1FEA21ACC42C4006B99B3 /* ChartFromToBinary.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F231AC4549B00BEA2EA /* ChartFromToBinary.h */; };
 		17C1FEA31ACC42C4006B99B3 /* MediaWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF51AC4544900BEA2EA /* MediaWriter.h */; };
-		17C1FEA41ACC42C4006B99B3 /* DefaultThemeWriterLinux.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEE1AC4544900BEA2EA /* DefaultThemeWriterLinux.h */; };
 		17C1FEA51ACC42C4006B99B3 /* CommonWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F251AC4549B00BEA2EA /* CommonWriter.h */; };
 		17C1FEA61ACC42C4006B99B3 /* NumberingWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF61AC4544900BEA2EA /* NumberingWriter.h */; };
 		17C1FEA71ACC42C4006B99B3 /* BinReaderWriterDefines.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F1D1AC4549B00BEA2EA /* BinReaderWriterDefines.h */; };
@@ -41,7 +42,6 @@
 		17C1FEB81ACC42C4006B99B3 /* FileDownloader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F4E1AC454EF00BEA2EA /* FileDownloader.h */; };
 		17C1FEB91ACC42C4006B99B3 /* ReaderClasses.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF71AC4544900BEA2EA /* ReaderClasses.h */; };
 		17C1FEBA1ACC42C4006B99B3 /* BinaryReader.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F2E1AC4549B00BEA2EA /* BinaryReader.h */; };
-		17C1FEBB1ACC42C4006B99B3 /* DefaultThemeWriterWin.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEF1AC4544900BEA2EA /* DefaultThemeWriterWin.h */; };
 		17C1FEBC1ACC42C4006B99B3 /* DocxSerializer.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F0F1AC4546100BEA2EA /* DocxSerializer.h */; };
 		17C1FEBD1ACC42C4006B99B3 /* FileWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF21AC4544900BEA2EA /* FileWriter.h */; };
 		17C1FEBE1ACC42C4006B99B3 /* CSVWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17F301AC4549B00BEA2EA /* CSVWriter.h */; };
@@ -50,8 +50,6 @@
 		17E17EFC1AC4544900BEA2EA /* ChartWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEB1AC4544900BEA2EA /* ChartWriter.h */; };
 		17E17EFD1AC4544900BEA2EA /* CommentsWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEC1AC4544900BEA2EA /* CommentsWriter.h */; };
 		17E17EFE1AC4544900BEA2EA /* ContentTypesWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EED1AC4544900BEA2EA /* ContentTypesWriter.h */; };
-		17E17EFF1AC4544900BEA2EA /* DefaultThemeWriterLinux.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEE1AC4544900BEA2EA /* DefaultThemeWriterLinux.h */; };
-		17E17F001AC4544900BEA2EA /* DefaultThemeWriterWin.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EEF1AC4544900BEA2EA /* DefaultThemeWriterWin.h */; };
 		17E17F011AC4544900BEA2EA /* DocumentRelsWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF01AC4544900BEA2EA /* DocumentRelsWriter.h */; };
 		17E17F021AC4544900BEA2EA /* DocumentWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF11AC4544900BEA2EA /* DocumentWriter.h */; };
 		17E17F031AC4544900BEA2EA /* FileWriter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E17EF21AC4544900BEA2EA /* FileWriter.h */; };
@@ -119,14 +117,13 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		17A765271B0F3DC30046BC0B /* DefaultThemeWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultThemeWriter.h; sourceTree = "<group>"; };
 		17C1FEC21ACC42C4006B99B3 /* libASCOfficeDocxFile2Lib_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libASCOfficeDocxFile2Lib_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17D913AB1AC596180096D788 /* DocxFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = DocxFormatLib.xcodeproj; path = ../../Common/DocxFormat/Mac/DocxFormatLib.xcodeproj; sourceTree = "<group>"; };
 		17E17EDC1AC453F800BEA2EA /* libASCOfficeDocxFile2Lib.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libASCOfficeDocxFile2Lib.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17E17EEB1AC4544900BEA2EA /* ChartWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ChartWriter.h; sourceTree = "<group>"; };
 		17E17EEC1AC4544900BEA2EA /* CommentsWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CommentsWriter.h; sourceTree = "<group>"; };
 		17E17EED1AC4544900BEA2EA /* ContentTypesWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ContentTypesWriter.h; sourceTree = "<group>"; };
-		17E17EEE1AC4544900BEA2EA /* DefaultThemeWriterLinux.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultThemeWriterLinux.h; sourceTree = "<group>"; };
-		17E17EEF1AC4544900BEA2EA /* DefaultThemeWriterWin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DefaultThemeWriterWin.h; sourceTree = "<group>"; };
 		17E17EF01AC4544900BEA2EA /* DocumentRelsWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentRelsWriter.h; sourceTree = "<group>"; };
 		17E17EF11AC4544900BEA2EA /* DocumentWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = DocumentWriter.h; sourceTree = "<group>"; };
 		17E17EF21AC4544900BEA2EA /* FileWriter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = FileWriter.h; sourceTree = "<group>"; };
@@ -226,8 +223,7 @@
 				17E17EEB1AC4544900BEA2EA /* ChartWriter.h */,
 				17E17EEC1AC4544900BEA2EA /* CommentsWriter.h */,
 				17E17EED1AC4544900BEA2EA /* ContentTypesWriter.h */,
-				17E17EEE1AC4544900BEA2EA /* DefaultThemeWriterLinux.h */,
-				17E17EEF1AC4544900BEA2EA /* DefaultThemeWriterWin.h */,
+				17A765271B0F3DC30046BC0B /* DefaultThemeWriter.h */,
 				17E17EF01AC4544900BEA2EA /* DocumentRelsWriter.h */,
 				17E17EF11AC4544900BEA2EA /* DocumentWriter.h */,
 				17E17EF21AC4544900BEA2EA /* FileWriter.h */,
@@ -321,9 +317,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				17C1FEA11ACC42C4006B99B3 /* fontTableWriter.h in Headers */,
+				17A765291B0F3DC30046BC0B /* DefaultThemeWriter.h in Headers */,
 				17C1FEA21ACC42C4006B99B3 /* ChartFromToBinary.h in Headers */,
 				17C1FEA31ACC42C4006B99B3 /* MediaWriter.h in Headers */,
-				17C1FEA41ACC42C4006B99B3 /* DefaultThemeWriterLinux.h in Headers */,
 				17C1FEA51ACC42C4006B99B3 /* CommonWriter.h in Headers */,
 				17C1FEA61ACC42C4006B99B3 /* NumberingWriter.h in Headers */,
 				17C1FEA71ACC42C4006B99B3 /* BinReaderWriterDefines.h in Headers */,
@@ -346,7 +342,6 @@
 				17C1FEB81ACC42C4006B99B3 /* FileDownloader.h in Headers */,
 				17C1FEB91ACC42C4006B99B3 /* ReaderClasses.h in Headers */,
 				17C1FEBA1ACC42C4006B99B3 /* BinaryReader.h in Headers */,
-				17C1FEBB1ACC42C4006B99B3 /* DefaultThemeWriterWin.h in Headers */,
 				17C1FEBC1ACC42C4006B99B3 /* DocxSerializer.h in Headers */,
 				17C1FEBD1ACC42C4006B99B3 /* FileWriter.h in Headers */,
 				17C1FEBE1ACC42C4006B99B3 /* CSVWriter.h in Headers */,
@@ -358,9 +353,9 @@
 			buildActionMask = 2147483647;
 			files = (
 				17E17F041AC4544900BEA2EA /* fontTableWriter.h in Headers */,
+				17A765281B0F3DC30046BC0B /* DefaultThemeWriter.h in Headers */,
 				17E17F3F1AC4549B00BEA2EA /* ChartFromToBinary.h in Headers */,
 				17E17F061AC4544900BEA2EA /* MediaWriter.h in Headers */,
-				17E17EFF1AC4544900BEA2EA /* DefaultThemeWriterLinux.h in Headers */,
 				17E17F411AC4549B00BEA2EA /* CommonWriter.h in Headers */,
 				17E17F071AC4544900BEA2EA /* NumberingWriter.h in Headers */,
 				17E17F3A1AC4549B00BEA2EA /* BinReaderWriterDefines.h in Headers */,
@@ -383,7 +378,6 @@
 				17E17F4F1AC454EF00BEA2EA /* FileDownloader.h in Headers */,
 				17E17F081AC4544900BEA2EA /* ReaderClasses.h in Headers */,
 				17E17F491AC4549B00BEA2EA /* BinaryReader.h in Headers */,
-				17E17F001AC4544900BEA2EA /* DefaultThemeWriterWin.h in Headers */,
 				17E17F151AC4546100BEA2EA /* DocxSerializer.h in Headers */,
 				17E17F031AC4544900BEA2EA /* FileWriter.h in Headers */,
 				17E17F4B1AC4549B00BEA2EA /* CSVWriter.h in Headers */,

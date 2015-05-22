@@ -14,7 +14,6 @@
 		17C1FB961ACC4250006B99B3 /* oMathContent.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0801AC4262700F28F8B /* oMathContent.cpp */; };
 		17C1FB971ACC4250006B99B3 /* Table.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0741AC4262700F28F8B /* Table.cpp */; };
 		17C1FB981ACC4250006B99B3 /* TableProperty.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0761AC4262700F28F8B /* TableProperty.cpp */; };
-		17C1FB991ACC4250006B99B3 /* pole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6B3B61AC4289200F28F8B /* pole.cpp */; };
 		17C1FB9A1ACC4250006B99B3 /* Bdo.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A05B1AC4262700F28F8B /* Bdo.cpp */; };
 		17C1FB9B1ACC4250006B99B3 /* Annotations.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0581AC4262700F28F8B /* Annotations.cpp */; };
 		17C1FB9C1ACC4250006B99B3 /* FileFactory.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0491AC4262700F28F8B /* FileFactory.cpp */; };
@@ -124,7 +123,6 @@
 		17C1FC081ACC4250006B99B3 /* XmlSimple.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B1F01AC4263900F28F8B /* XmlSimple.h */; };
 		17C1FC091ACC4250006B99B3 /* Settings.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A12D1AC4262800F28F8B /* Settings.h */; };
 		17C1FC0A1ACC4250006B99B3 /* Sdt.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A06E1AC4262700F28F8B /* Sdt.h */; };
-		17C1FC0B1ACC4250006B99B3 /* pole.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B3B71AC4289200F28F8B /* pole.h */; };
 		17C1FC0C1ACC4250006B99B3 /* Unit.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0961AC4262700F28F8B /* Unit.h */; };
 		17C1FC0D1ACC4250006B99B3 /* Cols.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1881AC4262800F28F8B /* Cols.h */; };
 		17C1FC0E1ACC4250006B99B3 /* BookViews.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1801AC4262800F28F8B /* BookViews.h */; };
@@ -522,8 +520,6 @@
 		17E6B3B01AC4263A00F28F8B /* xmlutils.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B1F11AC4263900F28F8B /* xmlutils.h */; };
 		17E6B3B31AC4279400F28F8B /* docxformatlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6B3B11AC4279400F28F8B /* docxformatlib.cpp */; };
 		17E6B3B41AC4279400F28F8B /* docxformatlib.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B3B21AC4279400F28F8B /* docxformatlib.h */; };
-		17E6B3B81AC4289200F28F8B /* pole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6B3B61AC4289200F28F8B /* pole.cpp */; };
-		17E6B3B91AC4289200F28F8B /* pole.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B3B71AC4289200F28F8B /* pole.h */; };
 		17E6B3C51AC43E6A00F28F8B /* MathString.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B3C41AC43E6A00F28F8B /* MathString.h */; };
 /* End PBXBuildFile section */
 
@@ -845,8 +841,6 @@
 		17E6B1F11AC4263900F28F8B /* xmlutils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = xmlutils.h; sourceTree = "<group>"; };
 		17E6B3B11AC4279400F28F8B /* docxformatlib.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = docxformatlib.cpp; path = ../../DocxFormatLib/docxformatlib.cpp; sourceTree = "<group>"; };
 		17E6B3B21AC4279400F28F8B /* docxformatlib.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = docxformatlib.h; path = ../../DocxFormatLib/docxformatlib.h; sourceTree = "<group>"; };
-		17E6B3B61AC4289200F28F8B /* pole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = pole.cpp; path = ../../../../ASCOfficeDocFile/pole/pole.cpp; sourceTree = "<group>"; };
-		17E6B3B71AC4289200F28F8B /* pole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = pole.h; path = ../../../../ASCOfficeDocFile/pole/pole.h; sourceTree = "<group>"; };
 		17E6B3BB1AC4298500F28F8B /* Array.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Array.h; sourceTree = "<group>"; };
 		17E6B3BC1AC4298500F28F8B /* ASCVariant.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ASCVariant.h; sourceTree = "<group>"; };
 		17E6B3BD1AC4298500F28F8B /* Base64.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Base64.h; sourceTree = "<group>"; };
@@ -920,7 +914,6 @@
 			isa = PBXGroup;
 			children = (
 				17E6B3BA1AC4298500F28F8B /* common */,
-				17E6B3B51AC4288900F28F8B /* pole */,
 				17E69FEB1AC4262700F28F8B /* Source */,
 				17E6B3B21AC4279400F28F8B /* docxformatlib.h */,
 				17E6B3B11AC4279400F28F8B /* docxformatlib.cpp */,
@@ -1429,15 +1422,6 @@
 			path = libxml2;
 			sourceTree = "<group>";
 		};
-		17E6B3B51AC4288900F28F8B /* pole */ = {
-			isa = PBXGroup;
-			children = (
-				17E6B3B61AC4289200F28F8B /* pole.cpp */,
-				17E6B3B71AC4289200F28F8B /* pole.h */,
-			);
-			name = pole;
-			sourceTree = "<group>";
-		};
 		17E6B3BA1AC4298500F28F8B /* common */ = {
 			isa = PBXGroup;
 			children = (
@@ -1527,7 +1511,6 @@
 				17C1FC081ACC4250006B99B3 /* XmlSimple.h in Headers */,
 				17C1FC091ACC4250006B99B3 /* Settings.h in Headers */,
 				17C1FC0A1ACC4250006B99B3 /* Sdt.h in Headers */,
-				17C1FC0B1ACC4250006B99B3 /* pole.h in Headers */,
 				17C1FC0C1ACC4250006B99B3 /* Unit.h in Headers */,
 				17C1FC0D1ACC4250006B99B3 /* Cols.h in Headers */,
 				17C1FC0E1ACC4250006B99B3 /* BookViews.h in Headers */,
@@ -1743,7 +1726,6 @@
 				17E6B3AF1AC4263A00F28F8B /* XmlSimple.h in Headers */,
 				17E6B2A51AC4263900F28F8B /* Settings.h in Headers */,
 				17E6B26B1AC4263900F28F8B /* Sdt.h in Headers */,
-				17E6B3B91AC4289200F28F8B /* pole.h in Headers */,
 				17E6B28F1AC4263900F28F8B /* Unit.h in Headers */,
 				17E6B2EA1AC4263900F28F8B /* Cols.h in Headers */,
 				17E6B2E31AC4263900F28F8B /* BookViews.h in Headers */,
@@ -2012,7 +1994,6 @@
 				17C1FB961ACC4250006B99B3 /* oMathContent.cpp in Sources */,
 				17C1FB971ACC4250006B99B3 /* Table.cpp in Sources */,
 				17C1FB981ACC4250006B99B3 /* TableProperty.cpp in Sources */,
-				17C1FB991ACC4250006B99B3 /* pole.cpp in Sources */,
 				17C1FB9A1ACC4250006B99B3 /* Bdo.cpp in Sources */,
 				17C1FB9B1ACC4250006B99B3 /* Annotations.cpp in Sources */,
 				17C1FB9C1ACC4250006B99B3 /* FileFactory.cpp in Sources */,
@@ -2067,7 +2048,6 @@
 				17E6B27C1AC4263900F28F8B /* oMathContent.cpp in Sources */,
 				17E6B2711AC4263900F28F8B /* Table.cpp in Sources */,
 				17E6B2731AC4263900F28F8B /* TableProperty.cpp in Sources */,
-				17E6B3B81AC4289200F28F8B /* pole.cpp in Sources */,
 				17E6B2581AC4263900F28F8B /* Bdo.cpp in Sources */,
 				17E6B2551AC4263900F28F8B /* Annotations.cpp in Sources */,
 				17E6B2471AC4263900F28F8B /* FileFactory.cpp in Sources */,

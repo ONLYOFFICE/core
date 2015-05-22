@@ -533,8 +533,13 @@ namespace NSBinPptxRW
 	void CBinaryFileWriter::WriteDoubleReal(const double& dValue)
 	{
 		CheckBufferSize(DOUBLE_SIZEOF);
-
-		*((double*)m_pStreamCur) = dValue; 
+        
+#ifdef _IOS
+        memcpy(m_pStreamCur, &dValue, sizeof(double));
+#else
+		*((double*)m_pStreamCur) = dValue; // EXC_ARM_DA_ALIGN on ios
+#endif
+        
 		m_lPosition += DOUBLE_SIZEOF;
 		m_pStreamCur += DOUBLE_SIZEOF;
 	}

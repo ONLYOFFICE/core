@@ -3,7 +3,6 @@
 #include "SvmFile.h"
 
 
-
 // MetaFile
 #include "SvmEnums.h"
 #include "SvmObjects.h"
@@ -79,9 +78,6 @@ void    CSvmPlayer::Clear()
 	m_vAvailableIndexes.clear();
 
 	InitStockObjects();
-
-	SelectObject(0x00000000); // BLACK_PEN
-	SelectObject(0x00000001); // WHITE_BRUSH
 }
 void CSvmPlayer::SelectObject(unsigned short ushIndex)
 {
@@ -171,10 +167,12 @@ void CSvmPlayer::RegisterObject(CSvmObjectBase* pObject)
 
 	if (ushIndex == m_ushIndex)
 		m_ushIndex++;
+
+	SelectObject(m_ushIndex-1);
 }
 void CSvmPlayer::InitStockObjects()
 {
-	InitStockBrush(false, 0x40, 0x40, 0x40);
+	InitStockBrush(false, 79, 129, 189); //default OnlyOffice
 	InitStockPen(false, 0x00, 0x00, 0x00);
 }
 void  CSvmPlayer::InitStockBrush(bool bNull, unsigned char r, unsigned char g, unsigned char b)
@@ -213,7 +211,7 @@ void    CSvmPlayer::InitStockPen(bool bNull, unsigned char r, unsigned char g, u
 //----------------------------------------------------------------------------------------
 CSvmDC::CSvmDC()
 {
-	m_ulMapMode = MM_TEXT;
+	m_ulMapMode = MAP_POINT;
 	m_pBrush    = NULL;
 	m_pPen      = NULL;
 	m_pFont     = NULL;
@@ -270,56 +268,60 @@ CSvmDC*         CSvmDC::Copy()
 }
 void CSvmDC::SetMapMode(MapMode & mapMode)
 {
-	m_ulMapMode = mapMode.isSimple ? MM_TWIPS : MM_TWIPS;
+	m_ulMapMode = (ESvmMapUnit)mapMode.unit;
 
 	switch (m_ulMapMode)
 	{
-		case MM_TEXT: // 1 unit = 1pt
-		{
-			SetPixelWidth(1);
-			SetPixelHeight(1);
-			break;
-		}
-		case MM_LOMETRIC: // 1 unit = 0.1mm
-		{
-			double dPixel = 0.1 * 72 / 25.4;
-			SetPixelWidth(dPixel);
-			SetPixelHeight(dPixel);
-			break;
-		}
-		case MM_HIMETRIC: // 1 unit = 0.01mm
-		{
-			double dPixel = 0.01 * 72 / 25.4;
-			SetPixelWidth(dPixel);
-			SetPixelHeight(dPixel);
-			break;
-		}
-		case MM_LOENGLISH: // 1 unit = 0.01 inch
-		{
-			double dPixel = 0.01 * 72;
-			SetPixelWidth(dPixel);
-			SetPixelHeight(dPixel);
-			break;
-		}
-		case MM_HIENGLISH: // 1 unit = 0.001 inch
-		{
-			double dPixel = 0.001 * 72;
-			SetPixelWidth(dPixel);
-			SetPixelHeight(dPixel);
-			break;
-		}
-		case MM_TWIPS: // 1 unit = 1/1440 inch
-		{
-			SetPixelWidth(0.05);
-			SetPixelHeight(0.05);
-			break;
-		}
-		case MM_ISOTROPIC:
-		case MM_ANISOTROPIC:
-		{
-			UpdatePixelMetrics();
-			break;
-		}
+	case MAP_MM:	// 1 unit = 1 mm
+	{
+		double dPixel = 1. * 72 / 25.4;
+		SetPixelWidth(dPixel);
+		SetPixelHeight(dPixel);		
+	}break;
+	case MAP_CM:	// 1 unit = 1 cm = 10 mm
+	{
+		double dPixel = 10. * 72 / 25.4;
+		SetPixelWidth(dPixel);
+		SetPixelHeight(dPixel);		
+	}break;
+	case MAP_100TH_MM:
+	case MAP_10TH_MM:
+	case MAP_1000TH_INCH:
+	case MAP_100TH_INCH:
+	case MAP_10TH_INCH:
+		//õç
+		break;
+	case MAP_INCH:	// 1 unit = 1 inch
+	{
+		double dPixel = 1. * 72;
+		SetPixelWidth(dPixel);
+		SetPixelHeight(dPixel);		
+	}break;
+	case MAP_POINT:
+	{
+		SetPixelWidth(1);
+		SetPixelHeight(1);		
+	}break;
+	case MAP_TWIP: // 1 unit = 1/1440 inch
+	{
+		SetPixelWidth(0.05);
+		SetPixelHeight(0.05);		
+	}break;
+	case MAP_PIXEL:
+	{
+		double dPixel = 1. * 3. /4.;
+		SetPixelWidth(dPixel);
+		SetPixelHeight(dPixel);		
+	}break;
+	case MAP_SYSFONT:
+	case MAP_APPFONT:
+		//õç
+		break;
+	case MAP_RELATIVE:
+		UpdatePixelMetrics();
+		break;
+	case MAP_LASTENUMDUMMY:
+		break;
 	}
 }
 
@@ -452,12 +454,14 @@ void CSvmDC::SetWindowOrigin(TSvmPoint& oPoint)
 {
 	m_oWindow.lX = oPoint.x;
 	m_oWindow.lY = oPoint.y;
+
 	UpdatePixelMetrics();
 }
 void  CSvmDC::SetWindowExtents(TSvmSize& oPoint)
 {
 	m_oWindow.ulW = oPoint.cx;
 	m_oWindow.ulH = oPoint.cy;
+
 	UpdatePixelMetrics();
 }
 TSvmWindow* CSvmDC::GetWindow()
@@ -468,12 +472,14 @@ void CSvmDC::SetViewportOrigin(TSvmPoint& oPoint)
 {
 	m_oViewport.lX = oPoint.x;
 	m_oViewport.lY = oPoint.y;
+
 	UpdatePixelMetrics();
 }
 void CSvmDC::SetViewportExtents(TSvmSize& oPoint)
 {
 	m_oViewport.ulW = oPoint.cx;
 	m_oViewport.ulH = oPoint.cy;
+
 	UpdatePixelMetrics();
 }
 TSvmWindow* CSvmDC::GetViewport()

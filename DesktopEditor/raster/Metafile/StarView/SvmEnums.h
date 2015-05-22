@@ -1,15 +1,7 @@
-#ifndef SVMENUMS_H
-#define SVMENUMS_H
+#pragma once
 
-/**
-   Namespace for StarView Metafile (SVM) classes
-*/
 namespace MetaFile
 {
-    /**
-       Action types
-       See the SPEC Section 2.1.1.1
-    */
     enum ActionType 
 	{
         META_NULL_ACTION                  = 0,
@@ -69,13 +61,8 @@ namespace MetaFile
         META_COMMENT_ACTION               = 512
     };
 
-#define META_LAST_ACTION  153 //META_SVG_SOMETHING_ACTION
+	#define META_LAST_ACTION  153
 
-    /**
-       Mtf (FIXME)
-
-       See the SPEC Section 2.1.1.2
-    */
     enum MtfType 
 	{
         MTF_CONVERSION_NONE           = 0,
@@ -83,18 +70,7 @@ namespace MetaFile
         MTF_CONVERSION_8BIT_GREYS     = 2
     };
 
-
-    // ----------------------------------------------------------------
-    //                             Flags
-    // ----------------------------------------------------------------
-
-
-    /**
-       Mirror flags
-
-       See the SPEC Section 2.1.2.1
-    */
-    enum MtfMirrorType 
+	enum MtfMirrorType 
 	{
         MTF_MIRROR_NONE = 0x00000000,
         MTF_MIRROR_HORZ = 0x00000001,
@@ -102,7 +78,4 @@ namespace MetaFile
     };
 
 }
-
-
-#endif
 

@@ -1,5 +1,4 @@
 
-// Own
 #include "SvmFile.h"
 
 #include <string>
@@ -9,13 +8,10 @@
 #ifdef _DEBUG
 	#include <iostream>
 #endif
-// MetaFile
+
 #include "SvmEnums.h"
 #include "SvmObjects.h"
 
-// 0 - No debug
-// 1 - Print a lot of debug info
-// 2 - Just print all the records instead of parsing them
 #define DEBUG_CSvmParser 0
 
 namespace MetaFile
@@ -360,15 +356,9 @@ void CSvmFile::Read_META_SETMAPMODE()
 {
 	MapMode mapMode;
 	m_oStream >> mapMode;
-	////kDebug(31000) << "mapMode:" << "Origin" << mContext.mapMode.origin
-	//              << "scaleX"
-	//              << mContext.mapMode.scaleX.numerator << mContext.mapMode.scaleX.numerator
-	//              << (qreal(mContext.mapMode.scaleX.numerator) / mContext.mapMode.scaleX.numerator)
-	//              << "scaleY"
-	//              << mContext.mapMode.scaleY.numerator << mContext.mapMode.scaleY.numerator
-	//              << (qreal(mContext.mapMode.scaleX.numerator) / mContext.mapMode.scaleX.numerator);
 	
 	m_pDC->SetMapMode(mapMode);
+
 	UpdateOutputDC();
 }
 void CSvmFile::Read_META_TEXT_A()

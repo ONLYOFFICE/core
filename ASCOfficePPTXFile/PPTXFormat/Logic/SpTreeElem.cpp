@@ -82,6 +82,7 @@ namespace PPTX
 
 					if(bOle)
 					{
+						strAttr = _T(" filled=\"f\"");
 						strNode = _T("<v:imagedata r:id=\"") + strId + _T("\" o:title=\"\" />");
 					}
 					else
@@ -148,7 +149,7 @@ namespace PPTX
 			*/
 		}
 
-		void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, CString& strAttr, CString& strNode)
+		void CalculateLine(PPTX::Logic::SpPr& oSpPr, nullable<ShapeStyle>& pShapeStyle, NSCommon::smart_ptr<PPTX::WrapperFile>& _oTheme, NSCommon::smart_ptr<PPTX::WrapperWritingElement>& _oClrMap, CString& strAttr, CString& strNode, bool bOle)
 		{
 			smart_ptr<PPTX::Theme> oTheme = _oTheme.smart_dynamic_cast<PPTX::Theme>();
 			smart_ptr<PPTX::Logic::ClrMap> oClrMap = _oClrMap.smart_dynamic_cast<PPTX::Logic::ClrMap>();
@@ -169,6 +170,8 @@ namespace PPTX
 				ARGB = line.Fill.as<SolidFill>().Color.GetRGBColor(_oTheme, _oClrMap, ARGB);
 				strAttr = _T(" strokecolor=\"") + GetHexColor(ARGB) + _T("\"");
 			}
+			else if (bOle)
+				strAttr = _T(" stroked=\"f\"");
 
 			if (line.w.is_init())
 			{

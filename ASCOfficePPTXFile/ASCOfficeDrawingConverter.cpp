@@ -3634,7 +3634,6 @@ void CDrawingConverter::ConvertMainPropsToVML(const CString& bsMainProps, NSBinP
 
 	NSBinPptxRW::CXmlWriter oWriter;
 
-	oWriter.WriteAttributeCSS(_T("position"), _T("absolute"));
 	double dKoef = 72.0 / (36000 * 25.4);
 	if (_T("wp:inline") == oNode.GetName())
 	{
@@ -3664,6 +3663,7 @@ void CDrawingConverter::ConvertMainPropsToVML(const CString& bsMainProps, NSBinP
 	}
 	else
 	{
+		oWriter.WriteAttributeCSS(_T("position"), _T("absolute"));
 		nullable_int margT; oNode.ReadAttributeBase(L"distT", margT);
 		nullable_int margB; oNode.ReadAttributeBase(L"distB", margB);
 		nullable_int margL; oNode.ReadAttributeBase(L"distL", margL);

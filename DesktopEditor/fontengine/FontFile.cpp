@@ -1620,4 +1620,4 @@ CFontPath* CFontFile::GetGlyphPath(int nCode)
 
 	FT_Done_Glyph( oGlyph );
 	return oGlyphPath.pPath;
-}
+};

@@ -458,6 +458,8 @@
 		179A46FE1AC57B92005A27F7 /* ASCOfficeDrawingConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A46FC1AC57B92005A27F7 /* ASCOfficeDrawingConverter.cpp */; };
 		179A46FF1AC57B92005A27F7 /* ASCOfficeDrawingConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 179A46FD1AC57B92005A27F7 /* ASCOfficeDrawingConverter.h */; };
 		179A47011AC57B9B005A27F7 /* ASCOfficePPTXFileRealization.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 179A47001AC57B9B005A27F7 /* ASCOfficePPTXFileRealization.cpp */; };
+		17A762E71B0F362A0046BC0B /* libmetafile.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17A762E21B0F35E50046BC0B /* libmetafile.a */; };
+		17A762EA1B0F36330046BC0B /* libmetafile_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17A762E41B0F35E50046BC0B /* libmetafile_ios.a */; };
 		17C1003C1ACC4B96006B99B3 /* libgraphics_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17C1002E1ACC4B7D006B99B3 /* libgraphics_ios.a */; };
 		17C1003D1ACC4B9A006B99B3 /* libraster_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17C100311ACC4B7D006B99B3 /* libraster_ios.a */; };
 		17C1003E1ACC4B9E006B99B3 /* libfontengine_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17C1002B1ACC4B7D006B99B3 /* libfontengine_ios.a */; };
@@ -956,6 +958,34 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
+		17A762E11B0F35E50046BC0B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 17A762DC1B0F35E40046BC0B /* metafile.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17A762BA1B0F35320046BC0B;
+			remoteInfo = metafile;
+		};
+		17A762E31B0F35E50046BC0B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 17A762DC1B0F35E40046BC0B /* metafile.xcodeproj */;
+			proxyType = 2;
+			remoteGlobalIDString = 17A762DB1B0F355E0046BC0B;
+			remoteInfo = metafile_ios;
+		};
+		17A762E51B0F36210046BC0B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 17A762DC1B0F35E40046BC0B /* metafile.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17A762B91B0F35320046BC0B;
+			remoteInfo = metafile;
+		};
+		17A762E81B0F362E0046BC0B /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = 17A762DC1B0F35E40046BC0B /* metafile.xcodeproj */;
+			proxyType = 1;
+			remoteGlobalIDString = 17A762D41B0F355E0046BC0B;
+			remoteInfo = metafile_ios;
+		};
 		17C100241ACC4B7D006B99B3 /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
 			containerPortal = 17D91A0B1AC5A2BA0096D788 /* agg.xcodeproj */;
@@ -1554,6 +1584,7 @@
 		179A46FC1AC57B92005A27F7 /* ASCOfficeDrawingConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ASCOfficeDrawingConverter.cpp; path = ../../../ASCOfficeDrawingConverter.cpp; sourceTree = "<group>"; };
 		179A46FD1AC57B92005A27F7 /* ASCOfficeDrawingConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = ASCOfficeDrawingConverter.h; path = ../../../ASCOfficeDrawingConverter.h; sourceTree = "<group>"; };
 		179A47001AC57B9B005A27F7 /* ASCOfficePPTXFileRealization.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = ASCOfficePPTXFileRealization.cpp; path = ../../../ASCOfficePPTXFileRealization.cpp; sourceTree = "<group>"; };
+		17A762DC1B0F35E40046BC0B /* metafile.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = metafile.xcodeproj; path = ../../../DesktopEditor/mac_build/metafile/metafile.xcodeproj; sourceTree = "<group>"; };
 		17C1E3DE1AD40612001E3D18 /* Controls.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = Controls.cpp; sourceTree = "<group>"; };
 		17C1E3DF1AD40612001E3D18 /* Controls.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Controls.h; sourceTree = "<group>"; };
 		17C1FE8B1ACC429D006B99B3 /* libPPTXFormatLib_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libPPTXFormatLib_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -1584,6 +1615,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				17A762E71B0F362A0046BC0B /* libmetafile.a in Frameworks */,
 				17D918611AC5A1350096D788 /* libfontengine.a in Frameworks */,
 				17D913A71AC595330096D788 /* libgraphics.a in Frameworks */,
 				17D913FB1AC59C4C0096D788 /* libraster.a in Frameworks */,
@@ -1601,6 +1633,7 @@
 				17C1003E1ACC4B9E006B99B3 /* libfontengine_ios.a in Frameworks */,
 				17C1003F1ACC4BA3006B99B3 /* libagg_ios.a in Frameworks */,
 				17C100401ACC4BA9006B99B3 /* libcximage_ios.a in Frameworks */,
+				17A762EA1B0F36330046BC0B /* libmetafile_ios.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -1610,6 +1643,7 @@
 		17063B5A1AC5708E0056A3F1 = {
 			isa = PBXGroup;
 			children = (
+				17A762DC1B0F35E40046BC0B /* metafile.xcodeproj */,
 				17D91B411AC5AA270096D788 /* cximage.xcodeproj */,
 				17D91A0B1AC5A2BA0096D788 /* agg.xcodeproj */,
 				17D918591AC5A12B0096D788 /* fontengine.xcodeproj */,
@@ -2292,6 +2326,15 @@
 				179A45431AC57B83005A27F7 /* SorterViewPr.h */,
 			);
 			path = ViewProps;
+			sourceTree = "<group>";
+		};
+		17A762DD1B0F35E40046BC0B /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				17A762E21B0F35E50046BC0B /* libmetafile.a */,
+				17A762E41B0F35E50046BC0B /* libmetafile_ios.a */,
+			);
+			name = Products;
 			sourceTree = "<group>";
 		};
 		17D913A01AC595220096D788 /* Products */ = {
@@ -3237,6 +3280,7 @@
 			buildRules = (
 			);
 			dependencies = (
+				17A762E61B0F36210046BC0B /* PBXTargetDependency */,
 				17D91B481AC5AA320096D788 /* PBXTargetDependency */,
 				17D91A121AC5A2C80096D788 /* PBXTargetDependency */,
 				17D918601AC5A1310096D788 /* PBXTargetDependency */,
@@ -3264,6 +3308,7 @@
 				17C100371ACC4B88006B99B3 /* PBXTargetDependency */,
 				17C100351ACC4B86006B99B3 /* PBXTargetDependency */,
 				17C100331ACC4B83006B99B3 /* PBXTargetDependency */,
+				17A762E91B0F362E0046BC0B /* PBXTargetDependency */,
 			);
 			name = PPTXFormatLib_ios;
 			productName = PPTXFormatLib;
@@ -3312,6 +3357,10 @@
 					ProjectRef = 17D9139F1AC595220096D788 /* graphics.xcodeproj */;
 				},
 				{
+					ProductGroup = 17A762DD1B0F35E40046BC0B /* Products */;
+					ProjectRef = 17A762DC1B0F35E40046BC0B /* metafile.xcodeproj */;
+				},
+				{
 					ProductGroup = 17D913F41AC59C430096D788 /* Products */;
 					ProjectRef = 17D913F31AC59C430096D788 /* raster.xcodeproj */;
 				},
@@ -3325,6 +3374,20 @@
 /* End PBXProject section */
 
 /* Begin PBXReferenceProxy section */
+		17A762E21B0F35E50046BC0B /* libmetafile.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libmetafile.a;
+			remoteRef = 17A762E11B0F35E50046BC0B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
+		17A762E41B0F35E50046BC0B /* libmetafile_ios.a */ = {
+			isa = PBXReferenceProxy;
+			fileType = archive.ar;
+			path = libmetafile_ios.a;
+			remoteRef = 17A762E31B0F35E50046BC0B /* PBXContainerItemProxy */;
+			sourceTree = BUILT_PRODUCTS_DIR;
+		};
 		17C100251ACC4B7D006B99B3 /* libagg_ios.a */ = {
 			isa = PBXReferenceProxy;
 			fileType = archive.ar;
@@ -3507,6 +3570,16 @@
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
+		17A762E61B0F36210046BC0B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = metafile;
+			targetProxy = 17A762E51B0F36210046BC0B /* PBXContainerItemProxy */;
+		};
+		17A762E91B0F362E0046BC0B /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			name = metafile_ios;
+			targetProxy = 17A762E81B0F362E0046BC0B /* PBXContainerItemProxy */;
+		};
 		17C100331ACC4B83006B99B3 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
 			name = cximage_ios;

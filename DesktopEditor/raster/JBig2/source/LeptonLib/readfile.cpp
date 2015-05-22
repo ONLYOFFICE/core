@@ -65,12 +65,27 @@ static const char *FILE_ZIP  =  "/tmp/junkout_zip.tif";
 static const char *FILE_TIFF =  "/tmp/junkout.tif";
 static const char *FILE_JPG  =  "/tmp/junkout.jpg";
 
-    /* I found these from the source code to the unix file */
-    /* command. man 1 file */
+/* I found these from the source code to the unix file */
+/* command. man 1 file */
+
+#if defined(__APPLE__)  // compile on xcode
+
+static const char JP2K_CODESTREAM[4] = {
+    (char)0xff, (char)0x4f, (char)0xff, (char)0x51
+};
+
+static const char JP2K_IMAGE_DATA[12] = {
+    (char)0x00, (char)0x00, (char)0x00, (char)0x0C,
+    (char)0x6A, (char)0x50, (char)0x20, (char)0x20,
+    (char)0x0D, (char)0x0A, (char)0x87, (char)0x0A
+};
+
+#else
 static const char JP2K_CODESTREAM[4] = { 0xff, 0x4f, 0xff, 0x51 };
 static const char JP2K_IMAGE_DATA[12] = { 0x00, 0x00, 0x00, 0x0C,
-                                          0x6A, 0x50, 0x20, 0x20,
-                                          0x0D, 0x0A, 0x87, 0x0A };
+    0x6A, 0x50, 0x20, 0x20,
+    0x0D, 0x0A, 0x87, 0x0A };
+#endif
 
 /*---------------------------------------------------------------------*
  *          Top-level functions for reading images from file           *

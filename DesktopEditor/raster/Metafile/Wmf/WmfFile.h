@@ -10,6 +10,8 @@
 #include "WmfTypes.h"
 #include "WmfPlayer.h"
 
+#include <cmath>
+
 #undef DrawText
 
 namespace MetaFile

@@ -44,10 +44,19 @@ namespace MetaFile
 
 		// IBrush
 		int          GetColor();
+		int          GetColor2()
+		{
+			return 0;
+		}
 		unsigned int GetStyle();
+		unsigned int GetStyleEx()
+		{
+			return 0;
+		}
 		unsigned int GetHatch();
 		unsigned int GetAlpha();
 		std::wstring GetDibPatterPath();
+		void GetBounds(double& left, double& top, double& width, double& height) {}
 
 	public:
 

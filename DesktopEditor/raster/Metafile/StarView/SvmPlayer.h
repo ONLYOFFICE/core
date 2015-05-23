@@ -2,6 +2,7 @@
 
 #include "SvmEnums.h"
 #include "SvmObjects.h"
+#include "SvmClip.h"
 
 #include <map>
 #include <vector>
@@ -17,30 +18,41 @@ public:
 	CSvmPlayer(CSvmFile *file);
     virtual ~CSvmPlayer();
 	void	Clear();
+	
 	CSvmDC* SaveDC();
 	CSvmDC* RestoreDC();
 	CSvmDC* GetDC();
 
-	void RegisterObject(CSvmObjectBase* pObject);
-	void SelectObject(unsigned short ushIndex);
-	void SelectPalette(unsigned short ushIndex);
-	void DeleteObject(unsigned short ushIndex);
+	void RegisterObject	(CSvmObjectBase* pObject);
+	void SelectObject	(unsigned short ushIndex);
+	void DeleteObject	(unsigned short ushIndex);
+	
+	CSvmObjectBase *GetLastObject (ESvmObjectType type);
+
+	void Pop();
+	void Push(int Flags);
+
+	void SetRasterOp(int op);
+
 private:
 	void InitStockObjects();
-	void InitStockBrush(bool bNull, unsigned char r, unsigned char g, unsigned char b);
-	void InitStockPen(bool bNull, unsigned char r, unsigned char g, unsigned char b);
+	void InitStockBrush	(bool bNull, unsigned char r, unsigned char g, unsigned char b);
+	void InitStockPen	(bool bNull, unsigned char r, unsigned char g, unsigned char b);
 
 	typedef std::map < unsigned int, CSvmObjectBase* > CSvmObjectMap;
 
-	CSvmDC*              m_pDC;
-	std::vector<CSvmDC*> m_vDCStack;
-	CSvmFile*            m_pSvmFile;
-	CSvmObjectMap        m_mObjects;
+	CSvmDC*					m_pDC;
+	std::vector<CSvmDC*>	m_vDCStack;
+	CSvmFile*				m_pFile;
+	CSvmObjectMap			m_mObjects;
+	int						m_nFlags;
+	ESvnRasterOp			m_eRasterOp;
 
 	typedef std::map <unsigned int, CWmfObjectBase*> CWmfObjectMap;
 
 	unsigned short              m_ushIndex;
 	std::vector<unsigned short> m_vAvailableIndexes;
+
 };
 
 class CSvmDC
@@ -95,7 +107,7 @@ public:
 	void            SetCurPos(TSvmPoint& oPoint);
 	void            SetCurPos(int lX, int lY);
 	TSvmPoint&      GetCurPos();
-	//CSvmClip*       GetClip();
+	CSvmClip*       GetClip();
 	//void            ClipToPath(CSvmPath* pPath, unsigned int unMode);
 	void            SetArcDirection(unsigned int unDirection);
 	unsigned int    GetArcDirection();
@@ -127,8 +139,8 @@ private:
 	double          m_dPixelHeight;
 	TSvmWindow      m_oWindow;
 	TSvmWindow      m_oViewport;
-	TSvmPoint      m_oCurPos;
-//	CSvmClip        m_oClip;
+	TSvmPoint		m_oCurPos;
+	CSvmClip        m_oClip;
 	unsigned int    m_unArcDirection;
 };
 

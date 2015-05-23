@@ -785,6 +785,38 @@
 					>
 				</File>
 			</Filter>
+			<Filter
+				Name="StarView"
+				>
+				<File
+					RelativePath=".\Metafile\StarView\SvmEnums.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\StarView\SvmFile.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\StarView\SvmFile.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\StarView\SvmObjects.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\StarView\SvmObjects.h"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\StarView\SvmPlayer.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\Metafile\StarView\SvmPlayer.h"
+					>
+				</File>
+			</Filter>
 		</Filter>
 		<Filter
 			Name="Jp2"

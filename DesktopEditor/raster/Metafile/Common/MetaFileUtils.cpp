@@ -797,14 +797,18 @@ namespace MetaFile
 			if (DIB_RGB_COLORS == unColorUsage)
 			{
 				int lCalcLen = (((nWidth * ushPlanes * ushBitCount + 31) & ~31) / 8) * abs(nHeight);
-				int nAvailableLen = (unBufferLen - unHeaderSize) - lCalcLen - unColorUsed * 4;
-				if (nAvailableLen < 0)
-					return;
 
-				if (0 == unColorUsed && BI_BITCOUNT_1 == ushBitCount && nAvailableLen >= 8)
-					unColorUsed = 2;
-				else if (0 == unColorUsed && BI_BITCOUNT_3 == ushBitCount && nAvailableLen >= 1024)
-					unColorUsed = 256;
+				if (unCompression == 0)
+				{
+					int nAvailableLen = (unBufferLen - unHeaderSize) - lCalcLen - unColorUsed * 4;
+					if (nAvailableLen < 0)
+						return;
+
+					if (0 == unColorUsed && BI_BITCOUNT_1 == ushBitCount && nAvailableLen >= 8)
+						unColorUsed = 2;
+					else if (0 == unColorUsed && BI_BITCOUNT_3 == ushBitCount && nAvailableLen >= 1024)
+						unColorUsed = 256;
+				}
 
 				unHeaderSize += 4 * unColorUsed; // RGBQuad
 				ReadImageInfoHeader(pImageBuffer + 4, unHeaderSize - 4, pImageBuffer + unHeaderSize, unBufferLen - unHeaderSize, ppDstBuffer, punWidth, punHeight);

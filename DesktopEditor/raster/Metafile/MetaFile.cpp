@@ -121,6 +121,7 @@ namespace MetaFile
 	{
 		m_oWmfFile.Close();
 		m_oEmfFile.Close();
+		m_oSvmFile.Close();
 
 		m_lType  = 0;
 	};

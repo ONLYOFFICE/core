@@ -86,6 +86,12 @@ typedef unsigned char BYTE;
 #define BS_PATTERN8X8       7
 #define BS_DIBPATTERN8X8    8
 #define BS_MONOPATTERN      9
+#define BS_LINEARGRADIENT	10
+#define BS_RADIALGRADIENT	11
+#define BS_AXIALGRADIENT	12
+#define BS_RECTGRADIENT		13
+#define BS_PATHGRADIENT		14
+//square? ellips ??
 
 /* Hatch Styles */
 #define HS_HORIZONTAL       0       /* ----- */

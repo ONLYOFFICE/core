@@ -42,9 +42,17 @@ namespace MetaFile
 
 		// IBrush
 		int          GetColor();
+		int          GetColor2()
+		{
+			return 0;
+		}
 		unsigned int GetStyle()
 		{
 			return BrushStyle;
+		}
+		unsigned int GetStyleEx()
+		{
+			return 0;
 		}
 		unsigned int GetHatch()
 		{
@@ -58,6 +66,7 @@ namespace MetaFile
 		{
 			return DibPatternPath;
 		}
+		void GetBounds(double& left, double& top, double& width, double& height) {}
 
 	public:
 		unsigned int   BrushStyle;

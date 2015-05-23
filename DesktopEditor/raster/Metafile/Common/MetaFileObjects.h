@@ -27,13 +27,15 @@ namespace MetaFile
 		IBrush(){}
 		virtual ~IBrush(){}
 
-		virtual int          GetColor() = 0;
-		virtual unsigned int GetStyle() = 0;
-		virtual unsigned int GetHatch() = 0;
-		virtual unsigned int GetAlpha() = 0;
+		virtual int          GetColor()			= 0;
+		virtual int          GetColor2()		= 0;
+		virtual unsigned int GetStyle()			= 0;
+		virtual unsigned int GetStyleEx()		= 0;
+		virtual unsigned int GetHatch()			= 0;
+		virtual unsigned int GetAlpha()			= 0;
 		virtual std::wstring GetDibPatterPath() = 0;
+		virtual void GetBounds(double& left, double& top, double& width, double& height) = 0;
 	};
-
 	class IPen
 	{
 	public:

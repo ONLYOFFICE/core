@@ -2,35 +2,53 @@
 #include "SvmPlayer.h"
 #include "SvmFile.h"
 
-
 // MetaFile
 #include "SvmEnums.h"
 #include "SvmObjects.h"
 
 #define DEBUG_SVMPAINT 0
 
+// Flags for Push
+#define PUSH_LINECOLOR                  ((USHORT)0x0001)
+#define PUSH_FILLCOLOR                  ((USHORT)0x0002)
+#define PUSH_FONT                       ((USHORT)0x0004)
+#define PUSH_TEXTCOLOR                  ((USHORT)0x0008)
+#define PUSH_MAPMODE                    ((USHORT)0x0010)
+#define PUSH_CLIPREGION                 ((USHORT)0x0020)
+#define PUSH_RASTEROP                   ((USHORT)0x0040)
+#define PUSH_TEXTFILLCOLOR              ((USHORT)0x0080)
+#define PUSH_TEXTALIGN                  ((USHORT)0x0100)
+#define PUSH_REFPOINT                   ((USHORT)0x0200)
+#define PUSH_TEXTLINECOLOR              ((USHORT)0x0400)
+#define PUSH_TEXTLAYOUTMODE             ((USHORT)0x0800)
+#define PUSH_TEXTLANGUAGE               ((USHORT)0x1000)
+#define PUSH_OVERLINECOLOR              ((USHORT)0x2000)
+#define PUSH_ALLTEXT                    (PUSH_TEXTCOLOR | PUSH_TEXTFILLCOLOR | PUSH_TEXTLINECOLOR | PUSH_OVERLINECOLOR | PUSH_TEXTALIGN | PUSH_TEXTLAYOUTMODE | PUSH_TEXTLANGUAGE)
+#define PUSH_ALLFONT                    (PUSH_ALLTEXT | PUSH_FONT)
+#define PUSH_ALL                        ((USHORT)0xFFFF)
 
-/**
-   Namespace for StarView Metafile (SVM) classes
-*/
 namespace MetaFile
 {
 
-	CSvmPlayer::CSvmPlayer(CSvmFile* pFile)
+CSvmPlayer::CSvmPlayer(CSvmFile* pFile)
+{
+	CSvmDC* pDC = new CSvmDC();
+	if (!pDC)
 	{
-		CSvmDC* pDC = new CSvmDC();
-		if (!pDC)
-		{
-			pFile->SetError();
-			return;
-		}
-
-		m_pDC = pDC;
-		m_vDCStack.push_back(pDC);
-		m_ushIndex = 0;
-
-		InitStockObjects();
+		pFile->SetError();
+		return;
 	}
+
+	m_pFile = pFile;
+	m_pDC = pDC;
+	m_vDCStack.push_back(pDC);
+
+	m_nFlags = 0;
+	m_eRasterOp = ROP_OVERPAINT;
+	m_ushIndex = 0;
+
+	InitStockObjects();
+}
 
 CSvmPlayer::~CSvmPlayer()
 {
@@ -68,13 +86,15 @@ void    CSvmPlayer::Clear()
 	CSvmDC* pDC = new CSvmDC();
 	if (!pDC)
 	{
-		m_pSvmFile->SetError();
+		m_pFile->SetError();
 		return;
 	}
+	m_nFlags = 0;
+	m_eRasterOp = ROP_OVERPAINT;
+	m_ushIndex = 0;
 
 	m_pDC = pDC;
 	m_vDCStack.push_back(pDC);
-	m_ushIndex = 0;
 	m_vAvailableIndexes.clear();
 
 	InitStockObjects();
@@ -89,24 +109,37 @@ void CSvmPlayer::SelectObject(unsigned short ushIndex)
 
 		switch (pObject->GetType())
 		{
-		case SVM_OBJECT_BRUSH: m_pDC->SetBrush((CSvmBrush*)pObject); break;
-		case SVM_OBJECT_FONT: m_pDC->SetFont((CSvmFont*)pObject); break;
-		case SVM_OBJECT_PEN: m_pDC->SetPen((CSvmPen*)pObject); break;
+		case SVM_OBJECT_BRUSH:	m_pDC->SetBrush((CSvmBrush*)pObject); break;
+		case SVM_OBJECT_FONT:	m_pDC->SetFont((CSvmFont*)pObject); break;
+		case SVM_OBJECT_PEN:	m_pDC->SetPen((CSvmPen*)pObject); break;
 		}
 	}
+}
+CSvmObjectBase *CSvmPlayer::GetLastObject (ESvmObjectType type)
+{
+	CSvmObjectMap::iterator oIterator = m_mObjects.end();
+	oIterator--;
+	for (; oIterator != m_mObjects.begin(); oIterator--)
+	{
+		if (oIterator->second->GetType() == type)
+		{
+			return oIterator->second;
+		}
+	}
+	return NULL;
 }
 CSvmDC* CSvmPlayer::SaveDC()
 {
 	if (!m_pDC)
 	{
-		m_pSvmFile->SetError();
+		m_pFile->SetError();
 		return NULL;
 	}
 
 	CSvmDC* pNewDC = m_pDC->Copy();
 	if (!pNewDC)
 	{
-		m_pSvmFile->SetError();
+		m_pFile->SetError();
 		return NULL;
 	}
 
@@ -118,7 +151,7 @@ CSvmDC* CSvmPlayer::RestoreDC()
 {
 	if (m_vDCStack.size() <= 1)
 	{
-		m_pSvmFile->SetError();
+		m_pFile->SetError();
 		return m_pDC;
 	}
 
@@ -170,10 +203,156 @@ void CSvmPlayer::RegisterObject(CSvmObjectBase* pObject)
 
 	SelectObject(m_ushIndex-1);
 }
+void CSvmPlayer::SetRasterOp(int op)
+{
+	m_eRasterOp = (ESvnRasterOp)op;
+}
 void CSvmPlayer::InitStockObjects()
 {
 	InitStockBrush(false, 79, 129, 189); //default OnlyOffice
 	InitStockPen(false, 0x00, 0x00, 0x00);
+}
+void CSvmPlayer::Pop()
+{
+	//if ( m_nFlags & PUSH_LINECOLOR )
+	//{
+	//	if ( m_nFlags->mpLineColor )
+	//		SetLineColor( *m_nFlags->mpLineColor );
+	//	else
+	//		SetLineColor();
+	//}
+	//if ( m_nFlags & PUSH_FILLCOLOR )
+	//{
+	//	if ( m_nFlags->mpFillColor )
+	//		SetFillColor( *m_nFlags->mpFillColor );
+	//	else
+	//		SetFillColor();
+	//}
+	//if ( m_nFlags & PUSH_FONT )
+	//	SetFont( *pData->mpFont );
+	//if ( m_nFlags & PUSH_TEXTCOLOR )
+	//	SetTextColor( *pData->mpTextColor );
+	//if ( m_nFlags & PUSH_TEXTFILLCOLOR )
+	//{
+	//	if ( pData->mpTextFillColor )
+	//		SetTextFillColor( *pData->mpTextFillColor );
+	//	else
+	//		SetTextFillColor();
+	//}
+	//if ( m_nFlags & PUSH_TEXTLINECOLOR )
+	//{
+	//	if ( pData->mpTextLineColor )
+	//		SetTextLineColor( *pData->mpTextLineColor );
+	//	else
+	//		SetTextLineColor();
+	//}
+	//if ( m_nFlags & PUSH_OVERLINECOLOR )
+	//{
+	//	if ( pData->mpOverlineColor )
+	//		SetOverlineColor( *pData->mpOverlineColor );
+	//	else
+	//		SetOverlineColor();
+	//}
+	//if ( m_nFlags & PUSH_TEXTALIGN )
+	//	SetTextAlign( pData->meTextAlign );
+	//if( m_nFlags & PUSH_TEXTLAYOUTMODE )
+	//	SetLayoutMode( pData->mnTextLayoutMode );
+	//if( m_nFlags & PUSH_TEXTLANGUAGE )
+	//	SetDigitLanguage( pData->meTextLanguage );
+	//if ( m_nFlags & PUSH_RASTEROP )
+	//	SetRasterOp( m_eRasterOp );
+	//if ( m_nFlags & PUSH_MAPMODE )
+	//{
+	//	if ( pData->mpMapMode )
+	//		SetMapMode( *pData->mpMapMode );
+	//	else
+	//		SetMapMode();
+	//}
+	if ( m_nFlags & PUSH_CLIPREGION )
+	{
+		GetDC()->GetClip()->ClipOnRenderer(m_pFile->m_pOutput);
+		GetDC()->GetClip()->Reset();
+	}
+
+	m_nFlags = 0;
+	//if ( m_nFlags & PUSH_REFPOINT )
+	//{
+	//	if ( pData->mpRefPoint )
+	//		SetRefPoint( *pData->mpRefPoint );
+	//	else
+	//		SetRefPoint();
+	//}
+}
+
+void CSvmPlayer::Push(int nFlags) // объекты с множественной настройкой 
+{
+	m_nFlags = nFlags;
+	//if ( nFlags & PUSH_LINECOLOR )
+	//{
+	//	if ( mbLineColor )
+	//		pData->mpLineColor = new Color( maLineColor );
+	//	else
+	//		pData->mpLineColor = NULL;
+	//}
+	//if ( nFlags & PUSH_FILLCOLOR )
+	//{
+	//	if ( mbFillColor )
+	//		pData->mpFillColor = new Color( maFillColor );
+	//	else
+	//		pData->mpFillColor = NULL;
+	//}
+	//if ( nFlags & PUSH_FONT )
+	//	pData->mpFont = new Font( maFont );
+	//if ( nFlags & PUSH_TEXTCOLOR )
+	//	pData->mpTextColor = new Color( GetTextColor() );
+	//if ( nFlags & PUSH_TEXTFILLCOLOR )
+	//{
+	//	if ( IsTextFillColor() )
+	//		pData->mpTextFillColor = new Color( GetTextFillColor() );
+	//	else
+	//		pData->mpTextFillColor = NULL;
+	//}
+	//if ( nFlags & PUSH_TEXTLINECOLOR )
+	//{
+	//	if ( IsTextLineColor() )
+	//		pData->mpTextLineColor = new Color( GetTextLineColor() );
+	//	else
+	//		pData->mpTextLineColor = NULL;
+	//}
+	//if ( nFlags & PUSH_OVERLINECOLOR )
+	//{
+	//	if ( IsOverlineColor() )
+	//		pData->mpOverlineColor = new Color( GetOverlineColor() );
+	//	else
+	//		pData->mpOverlineColor = NULL;
+	//}
+	//if ( nFlags & PUSH_TEXTALIGN )
+	//	pData->meTextAlign = GetTextAlign();
+	//if( nFlags & PUSH_TEXTLAYOUTMODE )
+	//	pData->mnTextLayoutMode = GetLayoutMode();
+	//if( nFlags & PUSH_TEXTLANGUAGE )
+	//	pData->meTextLanguage = GetDigitLanguage();
+	//if ( nFlags & PUSH_RASTEROP )
+	//	pData->meRasterOp = GetRasterOp();
+	//if ( nFlags & PUSH_MAPMODE )
+	//{
+	//	if ( mbMap )
+	//		pData->mpMapMode = new MapMode( maMapMode );
+	//	else
+	//		pData->mpMapMode = NULL;
+	//}
+	if ( nFlags & PUSH_CLIPREGION )
+	{
+		GetDC()->GetClip()->Reset();
+		//new region
+	}
+	//if ( nFlags & PUSH_REFPOINT )
+	//{
+	//	if ( mbRefPoint )
+	//		pData->mpRefPoint = new Point( maRefPoint );
+	//	else
+	//		pData->mpRefPoint = NULL;
+	//}
 }
 void  CSvmPlayer::InitStockBrush(bool bNull, unsigned char r, unsigned char g, unsigned char b)
 {
@@ -261,7 +440,7 @@ CSvmDC*         CSvmDC::Copy()
 	pNewDC->m_oWindow.Copy(&m_oWindow);
 	pNewDC->m_oViewport.Copy(&m_oViewport);
 	pNewDC->m_oCurPos = m_oCurPos;
-	//pNewDC->m_oClip = m_oClip;
+	pNewDC->m_oClip = m_oClip;
 	pNewDC->m_unArcDirection = m_unArcDirection;
 
 	return pNewDC;
@@ -426,6 +605,10 @@ CSvmPen* CSvmDC::GetPen()
 {
 	return m_pPen;
 }
+CSvmClip* CSvmDC::GetClip()
+{
+	return &m_oClip;
+}
 void CSvmDC::SetStretchMode(unsigned int& oMode)
 {
 	m_ulStretchMode = oMode;
@@ -543,10 +726,6 @@ TSvmPoint & CSvmDC::GetCurPos()
 {
 	return m_oCurPos;
 }
-//CSvmClip* CSvmDC::GetClip()
-//{
-//	return &m_oClip;
-//}
 //void CSvmDC::ClipToPath(CSvmPath* pPath, unsigned int unMode)
 //{
 //	m_oClip.SetPath(pPath, unMode);

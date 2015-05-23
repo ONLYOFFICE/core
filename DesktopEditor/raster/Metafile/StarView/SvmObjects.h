@@ -1,6 +1,5 @@
 #pragma once
 
-//#include <qglobal.h>
 #include "../Common/MetaFileTypes.h"
 #include "../Common/MetaFileObjects.h"
 
@@ -12,11 +11,10 @@ namespace MetaFile
 {
 	typedef enum
 	{
-		SVM_OBJECT_UNKNOWN = 0x00,
-		SVM_OBJECT_BRUSH = 0x01,
-		SVM_OBJECT_FONT = 0x02,
-		SVM_OBJECT_PEN = 0x03//,
-		//EMF_OBJECT_PALETTE = 0x04
+		SVM_OBJECT_UNKNOWN			= 0x00,
+		SVM_OBJECT_BRUSH			= 0x01,
+		SVM_OBJECT_FONT				= 0x02,
+		SVM_OBJECT_PEN				= 0x03
 	} ESvmObjectType;
 
 	class CSvmObjectBase
@@ -36,7 +34,7 @@ struct VersionCompat
     VersionCompat(CDataStream &stream);
 
     unsigned short  version;
-    unsigned int  length;//32
+    unsigned int	length;
 };
 
 struct Fraction 
@@ -68,7 +66,16 @@ struct TSvmSize
 	unsigned int cx;
 	unsigned int cy;
 };
-
+struct TSvmBitmapSize
+{
+	unsigned short cx;
+	unsigned short cy;
+};
+struct TSvmBitmapPoint
+{
+	unsigned short x;
+	unsigned short y;
+};
 enum ESvmMapUnit
 {
 MAP_100TH_MM, MAP_10TH_MM, MAP_MM, MAP_CM,
@@ -77,6 +84,25 @@ MAP_100TH_MM, MAP_10TH_MM, MAP_MM, MAP_CM,
 			   MAP_RELATIVE, /*MAP_REALAPPFONT,*/ MAP_LASTENUMDUMMY
 };
 
+enum ESvnRasterOp
+{
+	ROP_OVERPAINT, ROP_XOR, ROP_0, ROP_1, ROP_INVERT 
+};
+enum ESvmGradientStyle
+{
+	GRADIENT_LINEAR		= 0,
+	GRADIENT_AXIAL		= 1,
+	GRADIENT_RADIAL		= 2,
+	GRADIENT_ELLIPTICAL = 3,
+	GRADIENT_SQUARE		= 4,
+	GRADIENT_RECT		= 5
+};
+enum ESvmLineStyle
+{
+	LINE_NONE = 0,
+	LINE_SOLID = 1,
+	LINE_DASH = 2
+};
 struct MapMode 
 {
     MapMode();
@@ -121,12 +147,15 @@ struct TSvmPolygon
 	std::vector<TSvmPoint>	points;
 	unsigned short			count;
 };
+
 struct TSvmColor
 {
 	unsigned char r;
 	unsigned char g;
 	unsigned char b;
-	unsigned char a; //Reserved Must be 0x00
+	unsigned char a; 
+
+	unsigned int color;
 
 	TSvmColor()
 	{
@@ -146,14 +175,21 @@ struct TSvmColor
 	}
 	void Copy(const TSvmColor& oOther)
 	{
-		r = oOther.r;		g = oOther.g;		b = oOther.b;		a = oOther.a;
+		r = oOther.r;		g = oOther.g;		b = oOther.b;		a = oOther.a; color = oOther.color;
 	}
 	TSvmColor& operator=(const TSvmColor& oColor)
 	{
-		r = oColor.r;		g = oColor.g;		b = oColor.b;		a = oColor.a;
+		r = oColor.r;		g = oColor.g;		b = oColor.b;		a = oColor.a; color = oColor.color;
 		return *this;
 	}
 };
+
+struct TSvmLineInfo
+{
+	ESvmLineStyle	style;
+	int				width;
+};
+
 struct TSvmWindow
 {
 	int lX;
@@ -190,18 +226,38 @@ public:
 	}
 	// IBrush
 	int          GetColor();
+	int          GetColor2();
+	unsigned int GetStyleEx();
 	unsigned int GetStyle();
 	unsigned int GetHatch();
 	unsigned int GetAlpha();
 	std::wstring GetDibPatterPath(){ return L""; }
+	void GetBounds(double& left, double& top, double& width, double& height);
 
 public:
+	unsigned short	BrushStyleEx;  //angle, or ....
+	unsigned short	BrushStyle;
+	TSvmColor		Color;
+	TSvmColor		Color2;
+	unsigned short	BrushHatch;
 
-	unsigned short BrushStyle;
-	TSvmColor      Color;
-	unsigned short BrushHatch;
+	TSvmRect		BrushBounds;
 };
 
+struct TSvmBitmap
+{
+	unsigned int	nSize;
+	unsigned int	nWidth;
+	unsigned int	nHeight;
+	unsigned short	nPlanes;
+	unsigned short	nBitCount;
+	unsigned int	nCompression;
+	unsigned int	nSizeImage;
+	int				nXPelsPerMeter;
+	int				nYPelsPerMeter;
+	unsigned int	nColsUsed;
+	unsigned int	nColsImportant;
+};
 class CSvmFont : public CSvmObjectBase, public IFont
 {
 public:
@@ -221,11 +277,11 @@ public:
 	// IFont
 	int          GetHeight()
 	{
-		return (int)Height;
+		return (int)SizeHeight;
 	}
 	std::wstring GetFaceName()
 	{
-		return sFacename;
+		return sFamilyName;
 	}
 	int          GetWeight()
 	{
@@ -245,7 +301,7 @@ public:
 	}
 	int          GetEscapement()
 	{
-		return (int)Escapement;
+		return 0;//(int)Escapement;
 	}
 	int          GetCharSet()
 	{
@@ -254,20 +310,27 @@ public:
 
 public:
 
-	short         Height;
-	short         Width;
-	short         Escapement;
-	short         Orientation;
-	short         Weight;
-	unsigned char Italic;
-	unsigned char Underline;
-	unsigned char StrikeOut;
-	unsigned char CharSet;
-	unsigned char OutPrecision;
-	unsigned char ClipPrecision;
-	unsigned char Quality;
-	unsigned char PitchAndFamily;
-	std::wstring  sFacename; 
+	unsigned int	SizeHeight;
+	unsigned int	SizeWidth;
+	
+	unsigned short	Width;
+	unsigned short	Orientation;
+	unsigned short	Weight;
+	unsigned short	Italic;
+	unsigned short	Underline;
+	unsigned short	StrikeOut;
+	unsigned short	CharSet;
+	unsigned short	Language;
+	unsigned short	Pitch;
+	unsigned short	Family;
+	
+	bool bWordline;
+	bool bOutline;
+	bool bShadow;
+	char Kerning;
+
+	std::wstring  sFamilyName;
+	std::wstring  sStyle;
 	// Согласно спецификации длина имени не должна превышать 32 знака с учетом нулевого символа в конце
 };
 
@@ -276,7 +339,6 @@ class CSvmPen : public CSvmObjectBase, public IPen
 public:
 	CSvmPen()
 	{
-		Width.x = 1;
 	}
 	~CSvmPen()
 	{
@@ -295,28 +357,30 @@ public:
 	}
 	unsigned int GetWidth()
 	{
-		return (unsigned int)Width.x;
+		return (unsigned int)Width;
 	}
 
 public:
-	unsigned short PenStyle;
-	TSvmPoint      Width;
-	TSvmColor      Color;
+	unsigned short	PenStyle;
+	int				Width;
+	TSvmColor		Color;
 };
 
-void soakBytes(CDataStream &stream, int numBytes);
-void parseString(CDataStream &stream, std::wstring &string);
+void parseString(CDataStream &stream, std::wstring &string, unsigned short version = 0, unsigned short charset = 0);
 
 CDataStream& operator>>(CDataStream &stream, VersionCompat &compat);
 CDataStream& operator>>(CDataStream &stream, Fraction &fract);
 CDataStream& operator>>(CDataStream &stream, MapMode &mm);
 CDataStream& operator>>(CDataStream &stream, SvmHeader &header);
+CDataStream& operator>>(CDataStream &stream, TSvmBitmapSize &s);
+CDataStream& operator>>(CDataStream &stream, TSvmBitmapPoint &s);
 CDataStream& operator>>(CDataStream &stream, TSvmPoint &p);
 CDataStream& operator>>(CDataStream &stream, TSvmRect &p);
 CDataStream& operator>>(CDataStream &stream, TSvmPolygon &p);
 CDataStream& operator>>(CDataStream &stream, TSvmColor &c);
-CDataStream& operator>>(CDataStream &stream, CSvmBrush *b);
+CDataStream& operator>>(CDataStream &stream, TSvmBitmap &b);
 CDataStream& operator>>(CDataStream &stream, CSvmFont *f);
+CDataStream& operator>>(CDataStream &stream, TSvmLineInfo &l);
 
 }
 

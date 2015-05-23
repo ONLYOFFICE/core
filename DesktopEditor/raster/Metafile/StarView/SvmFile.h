@@ -13,7 +13,10 @@ class CSvmFile : virtual public IMetaFileBase
  public:
 	 CSvmFile() : m_oPlayer(this)
 	 {
-		 m_pDC = m_oPlayer.GetDC();
+		 m_pDC					= m_oPlayer.GetDC();
+		 m_currentActionVersion = 0;
+		 m_currentCharset		= 0;
+		 m_сurrentActionType	= 0;
 	 };
 
 	 ~CSvmFile()
@@ -27,6 +30,9 @@ class CSvmFile : virtual public IMetaFileBase
 	{
 		m_oPlayer.Clear();
 		m_pDC = m_oPlayer.GetDC();
+
+		m_currentActionVersion	= 0;
+		m_currentCharset		= 0;
 	}
 	TRect*   GetBounds()
 	{
@@ -47,7 +53,7 @@ class CSvmFile : virtual public IMetaFileBase
 	int GetTextColor()
 	{
 		TSvmColor& oColor = m_pDC->GetTextColor();
-		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+		return oColor.color; //METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
 	}
 	IFont*       GetFont()
 	{
@@ -84,7 +90,7 @@ class CSvmFile : virtual public IMetaFileBase
 	int          GetTextBgColor()
 	{
 		TSvmColor& oColor = m_pDC->GetBgColor();
-		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+		return oColor.color; //METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
 	}
 	unsigned int GetFillMode()
 	{
@@ -115,39 +121,77 @@ class CSvmFile : virtual public IMetaFileBase
 	}
 	IClip*       GetClip()
 	{
-		return NULL;
+		CSvmClip* pClip = m_pDC->GetClip();			
+		if (!pClip)
+			return NULL;
+
+		return (IClip*)pClip;
 	}
 	int          GetCharSpace()
 	{
 		return 0;
 	}
- private:
-    void dumpAction(CDataStream &stream, unsigned short version, unsigned int totalSize);
-
 
  private:
 	BYTE*				m_pBufferData;
 	CSvmDC*				m_pDC;
 	CSvmPlayer          m_oPlayer;
 	SvmHeader			m_oHeader;
-	unsigned int		m_ulRecordSize;
+
+	unsigned short		m_currentActionVersion;
+	unsigned short		m_currentCharset;
+	unsigned short		m_сurrentActionType;
+
+	unsigned int		m_unRecordSize;
+	unsigned int		m_unRecordPos;
+	
+	bool				m_bFirstPoint;
+	TRect				m_oBoundingBox;
 
 	friend class CSvmPlayer;
 
 	void Read_META_RECTANGLE();
 	void Read_SVM_HEADER();
-	unsigned int Read_META_POLYGON();
-	void Read_META_POLYPOLYGON(int version);
-	void Read_META_TEXT_A();
+	void Read_META_POLYGON();
+	void Read_META_POLYLINE();
+	void Read_META_POLYPOLYGON();
+	void Read_META_TEXT();
+	void Read_META_ARRAYTEXT();
 	void Read_META_SETMAPMODE();
 	void Read_META_SETTEXTCOLOR();
 	void Read_META_SETFILLCOLOR();
 	void Read_META_SETLINECOLOR();
 	void Read_META_CREATEFONT();
-	void Read_META_UNKNOWN()
+	void Read_META_BMPSCALE();
+	void Read_META_RASTEROP();
+	void Read_META_PUSH();
+	void Read_META_POP();
+	void Read_META_GRADIENT();
+	void Read_META_GRADIENTEX();
+
+	
+	void RegisterPoint(short shX, short shY)
 	{
-		// Неизвестные и нереализованные записи мы пропускаем
-		m_oStream.Skip(m_ulRecordSize);
+		if (m_bFirstPoint)
+		{
+			m_oBoundingBox.nLeft   = shX;
+			m_oBoundingBox.nRight  = shX;
+			m_oBoundingBox.nTop    = shY;
+			m_oBoundingBox.nBottom = shY;
+			m_bFirstPoint = false;
+		}
+		else
+		{
+			if (shX < m_oBoundingBox.nLeft)
+				m_oBoundingBox.nLeft = shX;
+			else if (shX > m_oBoundingBox.nRight)
+				m_oBoundingBox.nRight = shX;
+
+			if (shY < m_oBoundingBox.nTop)
+				m_oBoundingBox.nTop = shY;
+			else if (shY > m_oBoundingBox.nBottom)
+				m_oBoundingBox.nBottom = shY;
+		}
 	}
 	void TranslatePoint(TEmfPointL& oPoint, double& dX, double& dY)
 	{
@@ -155,8 +199,8 @@ class CSvmFile : virtual public IMetaFileBase
 	}
 	void TranslatePoint(int nX, int nY, double& dX, double &dY)
 	{
-		TSvmWindow* pWindow = m_pDC->GetWindow();
-		TSvmWindow* pViewport = m_pDC->GetViewport();
+		TSvmWindow* pWindow		= m_pDC->GetWindow();
+		TSvmWindow* pViewport	= m_pDC->GetViewport();
 
 		dX = (double)((double)(nX - pWindow->lX) * m_pDC->GetPixelWidth()) + pViewport->lX;
 		dY = (double)((double)(nY - pWindow->lY) * m_pDC->GetPixelHeight()) + pViewport->lY;
@@ -175,6 +219,7 @@ class CSvmFile : virtual public IMetaFileBase
 		pInverse->Apply(dX, dY);
 	}
 
+	bool ReadImage(unsigned short ushColorUsage, BYTE** ppBgraBuffer, unsigned int* pulWidth, unsigned int* pulHeight);
 	bool ReadImage(unsigned int offBmi, unsigned int cbBmi, unsigned int offBits, unsigned int cbBits, unsigned int ulSkip, BYTE** ppBgraBuffer, unsigned int* pulWidth, unsigned int* pulHeight)
 	{
 		int lHeaderOffset = offBmi - ulSkip;
@@ -216,6 +261,36 @@ class CSvmFile : virtual public IMetaFileBase
 			TranslatePoint(nX, nY, dX, dY);
 			TranslatePoint(nX + nW, nY + nH, dR, dB);
 			m_pOutput->DrawBitmap(dX, dY, dR - dX, dB - dY, pImageBuffer, unImageW, unImageH);
+		}
+	}
+	void DrawImage(int nX, int nY, int nW, int nH, unsigned int unColorUsage)
+	{
+		if (m_pOutput)
+		{
+			BYTE* pBgra = NULL;
+			unsigned int unWidth, unHeight;
+			if (ReadImage(unColorUsage, &pBgra, &unWidth, &unHeight))
+			{
+				//ProcessRasterOperation(unRasterOperation, &pBgra, unWidth, unHeight);
+
+				double dX, dY, dX1, dY1;
+				TranslatePoint(nX, nY, dX, dY);
+				TranslatePoint(nX + nW, nY + nH, dX1, dY1);
+
+				m_pOutput->DrawBitmap(dX, dY, abs(dX1 - dX), abs(dY1 - dY), pBgra, unWidth, unHeight);
+			}
+
+			if (pBgra)
+				delete[] pBgra;
+
+			//int nRemainingBytes = GetRecordRemainingBytesCount();
+			//if (nRemainingBytes < 0)
+			//	return SetError();
+		}
+		else
+		{
+			RegisterPoint(nX, nY);
+			RegisterPoint(nX + nW, nY + nH);
 		}
 	}
 	void MoveTo(TEmfPointL& oPoint)
@@ -385,115 +460,115 @@ class CSvmFile : virtual public IMetaFileBase
 				delete[] pdDx;
 		}
 	}
-	void DrawTextA(TEmfEmrText& oText)
-	{
-		if (!oText.OutputString)
-			return SetError();
+	//void DrawTextA(TEmfEmrText& oText)
+	//{
+	//	if (!oText.OutputString)
+	//		return SetError();
 
-		IFont* pFont = GetFont();
-		NSString::CConverter::ESingleByteEncoding eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT;
-		if (pFont)
-		{
-			// Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
-			// http://msdn.microsoft.com/en-us/library/cc194829.aspx
-			//  Charset Name       Charset Value(hex)  Codepage number
-			//  ------------------------------------------------------
-			//
-			//  DEFAULT_CHARSET           1 (x01)
-			//  SYMBOL_CHARSET            2 (x02)
-			//  OEM_CHARSET             255 (xFF)
-			//  ANSI_CHARSET              0 (x00)            1252
-			//  RUSSIAN_CHARSET         204 (xCC)            1251
-			//  EASTEUROPE_CHARSET      238 (xEE)            1250
-			//  GREEK_CHARSET           161 (xA1)            1253
-			//  TURKISH_CHARSET         162 (xA2)            1254
-			//  BALTIC_CHARSET          186 (xBA)            1257
-			//  HEBREW_CHARSET          177 (xB1)            1255
-			//  ARABIC _CHARSET         178 (xB2)            1256
-			//  SHIFTJIS_CHARSET        128 (x80)             932
-			//  HANGEUL_CHARSET         129 (x81)             949
-			//  GB2313_CHARSET          134 (x86)             936
-			//  CHINESEBIG5_CHARSET     136 (x88)             950
-			//  THAI_CHARSET            222 (xDE)             874	
-			//  JOHAB_CHARSET	        130 (x82)            1361
-			//  VIETNAMESE_CHARSET      163 (xA3)            1258
+	//	IFont* pFont = GetFont();
+	//	NSString::CConverter::ESingleByteEncoding eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT;
+	//	if (pFont)
+	//	{
+	//		// Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
+	//		// http://msdn.microsoft.com/en-us/library/cc194829.aspx
+	//		//  Charset Name       Charset Value(hex)  Codepage number
+	//		//  ------------------------------------------------------
+	//		//
+	//		//  DEFAULT_CHARSET           1 (x01)
+	//		//  SYMBOL_CHARSET            2 (x02)
+	//		//  OEM_CHARSET             255 (xFF)
+	//		//  ANSI_CHARSET              0 (x00)            1252
+	//		//  RUSSIAN_CHARSET         204 (xCC)            1251
+	//		//  EASTEUROPE_CHARSET      238 (xEE)            1250
+	//		//  GREEK_CHARSET           161 (xA1)            1253
+	//		//  TURKISH_CHARSET         162 (xA2)            1254
+	//		//  BALTIC_CHARSET          186 (xBA)            1257
+	//		//  HEBREW_CHARSET          177 (xB1)            1255
+	//		//  ARABIC _CHARSET         178 (xB2)            1256
+	//		//  SHIFTJIS_CHARSET        128 (x80)             932
+	//		//  HANGEUL_CHARSET         129 (x81)             949
+	//		//  GB2313_CHARSET          134 (x86)             936
+	//		//  CHINESEBIG5_CHARSET     136 (x88)             950
+	//		//  THAI_CHARSET            222 (xDE)             874	
+	//		//  JOHAB_CHARSET	        130 (x82)            1361
+	//		//  VIETNAMESE_CHARSET      163 (xA3)            1258
 
-			switch (pFont->GetCharSet())
-			{
-			default:
-			case DEFAULT_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
-			case SYMBOL_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
-			case ANSI_CHARSET:          eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1252; break;
-			case RUSSIAN_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1251; break;
-			case EASTEUROPE_CHARSET:    eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1250; break;
-			case GREEK_CHARSET:         eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1253; break;
-			case TURKISH_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1254; break;
-			case BALTIC_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1257; break;
-			case HEBREW_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1255; break;
-			case ARABIC_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1256; break;
-			case SHIFTJIS_CHARSET:      eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP932; break;
-			case HANGEUL_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP949; break;
-			case 134/*GB2313_CHARSET*/: eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP936; break;
-			case CHINESEBIG5_CHARSET:   eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP950; break;
-			case THAI_CHARSET:          eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP874; break;
-			case JOHAB_CHARSET:         eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1361; break;
-			case VIETNAMESE_CHARSET:    eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1258; break;
-			}
-		}
+	//		switch (pFont->GetCharSet())
+	//		{
+	//		default:
+	//		case DEFAULT_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
+	//		case SYMBOL_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
+	//		case ANSI_CHARSET:          eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1252; break;
+	//		case RUSSIAN_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1251; break;
+	//		case EASTEUROPE_CHARSET:    eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1250; break;
+	//		case GREEK_CHARSET:         eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1253; break;
+	//		case TURKISH_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1254; break;
+	//		case BALTIC_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1257; break;
+	//		case HEBREW_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1255; break;
+	//		case ARABIC_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1256; break;
+	//		case SHIFTJIS_CHARSET:      eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP932; break;
+	//		case HANGEUL_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP949; break;
+	//		case 134/*GB2313_CHARSET*/: eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP936; break;
+	//		case CHINESEBIG5_CHARSET:   eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP950; break;
+	//		case THAI_CHARSET:          eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP874; break;
+	//		case JOHAB_CHARSET:         eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1361; break;
+	//		case VIETNAMESE_CHARSET:    eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1258; break;
+	//		}
+	//	}
 
-		std::wstring wsText = NSString::CConverter::GetUnicodeFromSingleByteString((unsigned char*)oText.OutputString, oText.Chars, eCharSet);
+	//	std::wstring wsText = NSString::CConverter::GetUnicodeFromSingleByteString((unsigned char*)oText.OutputString, oText.Chars, eCharSet);
 
-		int* pDx = NULL;
-		if (oText.OutputDx)
-		{
-			pDx = new int[oText.Chars];
-			if (pDx)
-			{
-				for (unsigned int unIndex = 0; unIndex < oText.Chars; unIndex++)
-				{
-					pDx[unIndex] = oText.OutputDx[unIndex];
+	//	int* pDx = NULL;
+	//	if (oText.OutputDx)
+	//	{
+	//		pDx = new int[oText.Chars];
+	//		if (pDx)
+	//		{
+	//			for (unsigned int unIndex = 0; unIndex < oText.Chars; unIndex++)
+	//			{
+	//				pDx[unIndex] = oText.OutputDx[unIndex];
 
-					// Пропускаем сдвиги по Y если они есть
-					if (oText.Options & ETO_PDY)
-						unIndex++;
-				}
-			}
-		}
+	//				// Пропускаем сдвиги по Y если они есть
+	//				if (oText.Options & ETO_PDY)
+	//					unIndex++;
+	//			}
+	//		}
+	//	}
 
-		DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, pDx);
+	//	DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, pDx);
 
-		if (pDx)
-			delete[] pDx;
-	}
-	void DrawTextW(TEmfEmrText& oText)
-	{
-		if (!oText.OutputString)
-			return SetError();
+	//	if (pDx)
+	//		delete[] pDx;
+	//}
+	//void DrawTextW(TEmfEmrText& oText)
+	//{
+	//	if (!oText.OutputString)
+	//		return SetError();
 
-		std::wstring wsText = NSString::CConverter::GetUnicodeFromUTF16((unsigned short*)oText.OutputString, oText.Chars);
+	//	std::wstring wsText = NSString::CConverter::GetUnicodeFromUTF16((unsigned short*)oText.OutputString, oText.Chars);
 
-		int* pDx = NULL;
-		if (oText.OutputDx)
-		{
-			pDx = new int[oText.Chars];
-			if (pDx)
-			{
-				for (unsigned int unIndex = 0; unIndex < oText.Chars; unIndex++)
-				{
-					pDx[unIndex] = oText.OutputDx[unIndex];
+	//	int* pDx = NULL;
+	//	if (oText.OutputDx)
+	//	{
+	//		pDx = new int[oText.Chars];
+	//		if (pDx)
+	//		{
+	//			for (unsigned int unIndex = 0; unIndex < oText.Chars; unIndex++)
+	//			{
+	//				pDx[unIndex] = oText.OutputDx[unIndex];
 
-					// Пропускаем сдвиги по Y если они есть
-					if (oText.Options & ETO_PDY)
-						unIndex++;
-				}
-			}
-		}
+	//				// Пропускаем сдвиги по Y если они есть
+	//				if (oText.Options & ETO_PDY)
+	//					unIndex++;
+	//			}
+	//		}
+	//	}
 
-		DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, pDx);
+	//	DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, pDx);
 
-		if (pDx)
-			delete[] pDx;
-	}
+	//	if (pDx)
+	//		delete[] pDx;
+	//}
 };
 
 

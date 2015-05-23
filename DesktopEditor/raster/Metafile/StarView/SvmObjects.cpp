@@ -1,27 +1,35 @@
 
 #include "SvmObjects.h"
+#include "../../../common/String.h"
 
 
 namespace MetaFile
 {
-	void soakBytes(CDataStream &stream, int numBytes)
+	void parseString(CDataStream &stream, std::wstring &string, unsigned short version, unsigned short charset)
 	{
-		unsigned char scratch;
-		for (int i = 0; i < numBytes; ++i) 
-		{
-			stream >> scratch;
-		}
-	}
-	void parseString(CDataStream &stream, std::wstring &string)
-	{
-		unsigned short  length;
 
-		stream >> length;
-		for (unsigned int i = 0; i < length; ++i)
+		if (charset == 0xffff)//RTL_UNICODE
 		{
-			unsigned char  ch;
-			stream >> ch;
-			string += char(ch);
+			unsigned int length;
+			stream >> length;
+			
+			string = NSString::CConverter::GetUnicodeFromUTF16((unsigned short*)stream.GetCurPtr(), length);
+	
+			stream.Skip(length*2);
+		}
+		else
+		{
+			unsigned short  length;
+			stream >> length;
+		
+			if (charset < 1)
+			{
+				std::string ansiString = std::string((char*)stream.GetCurPtr(),length);
+				string = std::wstring(ansiString.begin(), ansiString.end());
+			}else
+				string = NSString::CConverter::GetUnicodeFromSingleByteString((unsigned char*)stream.GetCurPtr(), length,
+																			(NSString::CConverter::ESingleByteEncoding)charset);
+			stream.Skip(length);
 		}
 	}
 
@@ -119,7 +127,7 @@ CDataStream& operator>>(CDataStream &stream, SvmHeader &header)
 	stream >> header.actionCount;
 
 	if (header.versionCompat.version > 1)
-		soakBytes(stream, 1);
+		stream.Skip(1);
 
 	return stream;
 }
@@ -133,7 +141,21 @@ TSvmRect::TSvmRect()
 {
 	l = t = r = b = 0;
 }
+CDataStream& operator>>(CDataStream &stream, TSvmBitmapSize &s)
+{
+	stream >> s.cx;
+	stream >> s.cy;
+
+	return stream;
+}
 CDataStream& operator>>(CDataStream &stream, TSvmPoint &p)
+{
+	stream >> p.x;
+	stream >> p.y;
+
+	return stream;
+}
+CDataStream& operator>>(CDataStream &stream, TSvmBitmapPoint &p)
 {
 	stream >> p.x;
 	stream >> p.y;
@@ -154,7 +176,15 @@ CSvmBrush::CSvmBrush(CSvmBrush& oBrush)
 
 int CSvmBrush::GetColor()
 {
-	return METAFILE_RGBA(Color.r, Color.g, Color.b);
+	return Color.color;//METAFILE_RGBA(Color.r, Color.g, Color.b);
+}
+int CSvmBrush::GetColor2()
+{
+	return Color2.color;//METAFILE_RGBA(Color2.r, Color2.g, Color2.b);
+}
+unsigned int CSvmBrush::GetStyleEx()
+{
+	return BrushStyleEx;
 }
 unsigned int CSvmBrush::GetStyle()
 {
@@ -166,11 +196,18 @@ unsigned int CSvmBrush::GetHatch()
 }
 unsigned int CSvmBrush::GetAlpha()
 {
-	return 255;
+	return 0xff-Color.a;
+}
+void CSvmBrush::GetBounds(double& left, double& top, double& width, double& height)
+{
+	left	= BrushBounds.l;
+	top		= BrushBounds.t;
+	width	= BrushBounds.r - BrushBounds.l;
+	height	= BrushBounds.b - BrushBounds.t;
 }
 int CSvmPen::GetColor()
 {
-	return METAFILE_RGBA(Color.r, Color.g, Color.b);
+	return Color.color;//METAFILE_RGBA(Color.r, Color.g, Color.b);
 }
 TSvmRect::TSvmRect(CDataStream &stream)
 {
@@ -179,8 +216,8 @@ TSvmRect::TSvmRect(CDataStream &stream)
 CDataStream& operator>>(CDataStream &stream, TSvmRect &p)
 {
 	stream >> p.l;
-	stream >> p.r;
 	stream >> p.t;
+	stream >> p.r;
 	stream >> p.b;
 
 	return stream;
@@ -201,76 +238,88 @@ CDataStream& operator>>(CDataStream &stream, TSvmPolygon &p)
 	}
 	return stream;
 }
+#define METAFILE_RGBA(r, g, b, a) ((unsigned int)( ( (unsigned char)(r) )| ( ( (unsigned char)(g) ) << 8 ) | ( ( (unsigned char)(b) ) << 16 ) | ( (unsigned char)(a) << 24 ) ) )
+
+
 CDataStream& operator>>(CDataStream &stream, TSvmColor &c)
 {
-	stream >> c.b;
-	stream >> c.g;
-	stream >> c.r;
-	stream >> c.a;
+	char s;
+    unsigned short  a, r, g, b, p;
+    
+	//stream >> s;
+ //   stream >> a;
+ //   stream >> r;
+ //   stream >> g;
+ //   stream >> b;
+ //   stream >> p;
+
+    stream >> c.b;
+    stream >> c.g;
+    stream >> c.r;
+    stream >> c.a;
+
+	//c.a = a;
+	//c.r = r;
+	//c.b = b;
+	//c.g = g;
+
+	c.color = METAFILE_RGBA(c.r, c.g, c.b, c.a);
 
 	return stream;
-
 }
-CDataStream& operator>>(CDataStream &stream, CSvmBrush *b)
+CDataStream& operator>>(CDataStream &stream, TSvmLineInfo &i)
 {
+	VersionCompat version;
+
+	stream >> version;
+
+	unsigned short style;
+	stream >> style;
+	
+	i.style = (ESvmLineStyle) style;
+	stream >> i.width;
+
+	if (version.version >=2)
+	{
+		//counts  dot & dashes, size, distance
+		stream.Skip(2 + 4 + 2 + 4 + 4);
+	}
+
 	return stream;
 }
 CDataStream& operator>>(CDataStream &stream, CSvmFont *font)
 {
 	unsigned short  version;
-	unsigned int  totalSize;
+	unsigned int	totalSize;
 
-	// the VersionCompat struct
 	stream >> version;
 	stream >> totalSize;
 
-	// Name and style
-	std::wstring  family;
-	std::wstring  style;
+	parseString(stream, font->sFamilyName, version);
+	parseString(stream, font->sStyle, version);
 
-	parseString(stream, family);
-	parseString(stream, style);
-
-	font->sFacename = family;
-
-	// Font size
-	unsigned int  width;
-	unsigned int  height;
-	stream >> width;
-	stream >> height;
+	stream >> font->SizeWidth;
+	stream >> font->SizeHeight;
 	
-	font->Width = width;
-	font->Height = height;
+	stream >> font->CharSet;    
+	stream >> font->Family;
+	stream >> font->Pitch;
+	stream >> font->Weight;    
+	stream >> font->Underline;  
+	stream >> font->StrikeOut; 
+	stream >> font->Italic; 
+	stream >> font->Language;
+	stream >> font->Width;
+
+	stream >> font->Orientation;
+	stream >> font->bWordline;   
+	stream >> font->bOutline;
+	stream >> font->bShadow;
+	stream >> font->Kerning;
 
 	char   temp8;
 	bool    tempbool;
 	unsigned short tempu16;
-	stream >> tempu16;          // charset
-	stream >> tempu16;          // family
-	stream >> tempu16;          // pitch
-	stream >> tempu16;          // weight
-	if (tempu16 > 0)
-		font->Weight = tempu16;
-	stream >> tempu16;          // underline
-	if (tempu16 > 0)
-		font->Underline= 1;
-	stream >> tempu16;          // strikeout
-	if (tempu16 > 0)
-		font->StrikeOut = 1;
-	stream >> tempu16;          // italic
-	if (tempu16 > 0)
-		font->Italic = 1;
-	stream >> tempu16;          // language
-	stream >> tempu16;          // width
-
-	if (tempu16 > 0)
-		font->Width = tempu16; //??? todo
-
-	stream >> tempu16;          // orientation
-	stream >> tempbool;         // wordline
-	stream >> tempbool;         // outline
-	stream >> tempbool;         // shadow
-	stream >> temp8;            // kerning
 
 	if (version > 1) 
 	{
@@ -286,9 +335,106 @@ CDataStream& operator>>(CDataStream &stream, CSvmFont *font)
 	{
 		stream >> tempu16;      // overline
 	}
-	// FIXME: Read away the rest of font here to allow for higher versions than 3.
 	return stream;
 }
+#define DIBCOREHEADERSIZE			12 
 
+CDataStream& operator>>(CDataStream &stream, TSvmBitmap &b)
+{
+	// BITMAPINFOHEADER or BITMAPCOREHEADER
+	stream >> b.nSize;
+
+	// BITMAPCOREHEADER
+	if ( b.nSize == DIBCOREHEADERSIZE )
+	{
+		short nTmp16;
+
+		stream >> nTmp16;	b.nWidth = nTmp16;
+		stream >> nTmp16;	b.nHeight = nTmp16;
+		stream >> b.nPlanes;
+		stream >> b.nBitCount;
+	}
+	else
+	{
+		// unknown Header
+		if( b.nSize < sizeof( TSvmBitmap ) )
+		{
+			unsigned int nUnknownSize = sizeof( b.nSize );
+
+			stream >> b.nWidth;		nUnknownSize += sizeof( b.nWidth );
+			stream >> b.nHeight;	nUnknownSize += sizeof( b.nHeight );
+			stream >> b.nPlanes;	nUnknownSize += sizeof( b.nPlanes );
+			stream >> b.nBitCount;	nUnknownSize += sizeof( b.nBitCount );
+
+			if( nUnknownSize < b.nSize )
+			{
+				stream >> b.nCompression;
+				nUnknownSize += sizeof( b.nCompression );
+
+				if( nUnknownSize < b.nSize )
+				{
+					stream >> b.nSizeImage;
+					nUnknownSize += sizeof( b.nSizeImage );
+
+					if( nUnknownSize < b.nSize )
+					{
+						stream >> b.nXPelsPerMeter;
+						nUnknownSize += sizeof( b.nXPelsPerMeter );
+
+						if( nUnknownSize < b.nSize )
+						{
+							stream >> b.nYPelsPerMeter;
+							nUnknownSize += sizeof( b.nYPelsPerMeter );
+						}
+
+						if( nUnknownSize < b.nSize )
+						{
+							stream >> b.nColsUsed;
+							nUnknownSize += sizeof( b.nColsUsed );
+
+							if( nUnknownSize < b.nSize )
+							{
+								stream >> b.nColsImportant;
+								nUnknownSize += sizeof( b.nColsImportant );
+							}
+						}
+					}
+				}
+			}
+		}
+		else
+		{
+			stream >> b.nWidth;
+			stream >> b.nHeight;
+			stream >> b.nPlanes;
+			stream >> b.nBitCount;
+			stream >> b.nCompression;
+			stream >> b.nSizeImage;
+			stream >> b.nXPelsPerMeter;
+			stream >> b.nYPelsPerMeter;
+			stream >> b.nColsUsed;
+			stream >> b.nColsImportant;
+		}
+
+		// Eventuell bis zur Palette ueberlesen
+		if ( b.nSize > sizeof( TSvmBitmap ) ) // ???
+			stream.Skip( b.nSize - sizeof( TSvmBitmap ) );
+	}
+	bool bTopDown;
+	if ( b.nHeight < 0 )
+	{
+		bTopDown = true;
+		b.nHeight *= -1;
+	}
+	else
+		bTopDown = false;
+
+   
+    // #144105# protect a little against damaged files
+    if( b.nSizeImage > ( 16 * static_cast< unsigned int >( b.nWidth * b.nHeight ) ) )
+        b.nSizeImage = 0;
+	
+	return stream;
+}
 }
 

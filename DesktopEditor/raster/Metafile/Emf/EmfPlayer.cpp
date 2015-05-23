@@ -12,6 +12,7 @@ namespace MetaFile
 			return;
 		}
 
+		m_pEmfFile = pFile;
 		m_pDC = pDC;
 		m_vDCStack.push_back(pDC);
 

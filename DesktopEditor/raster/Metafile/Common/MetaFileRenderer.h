@@ -499,7 +499,6 @@ namespace MetaFile
 			oPoint.y = m_dScaleY * dY + m_dY;
 			return oPoint;
 		}
-
 		bool UpdateBrush()
 		{
 			IBrush* pBrush = m_pFile->GetBrush();
@@ -547,6 +546,25 @@ namespace MetaFile
 				m_pRenderer->put_BrushTexturePath(wsBrushType);
 				m_pRenderer->put_BrushAlpha1(255);
 				m_pRenderer->put_BrushColor1(oFgColor.ToInt());
+			}
+			else if (	BS_LINEARGRADIENT	== unBrushStyle ||
+						BS_RADIALGRADIENT	== unBrushStyle ||
+						BS_AXIALGRADIENT	== unBrushStyle ||
+						BS_RECTGRADIENT		== unBrushStyle ||
+						BS_PATHGRADIENT		== unBrushStyle
+					)
+			{
+				m_pRenderer->put_BrushType(c_BrushTypeCenter);
+
+				m_pRenderer->put_BrushColor1(pBrush->GetColor());
+				m_pRenderer->put_BrushColor2(pBrush->GetColor2());
+				m_pRenderer->put_BrushAlpha1(pBrush->GetAlpha());
+
+				m_pRenderer->put_BrushLinearAngle(pBrush->GetStyleEx());
+				double l=0, t=0, w=0, h=0;
+				pBrush->GetBounds(l,t,w,h);
+				m_pRenderer->BrushBounds(l,t,w,h);
+
 			}
 			else //if (BS_SOLID == unBrushStyle)
 			{

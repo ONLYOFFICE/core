@@ -62,7 +62,7 @@ void ConvertFolder(CMetaFile &oMetaFile, std::wstring wsFolderPath, const int nT
 		if (oMetaFile.LoadFromFile(wsFilePath.c_str()))
 		{
 			std::wstring wsDstFilePath = (wsFilePath.substr(0, wsFilePath.size() - 3)).append(L"bmp");
-			oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 1, 1000);
+			oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 1, 1980);
 			oMetaFile.Close();
 		}
 

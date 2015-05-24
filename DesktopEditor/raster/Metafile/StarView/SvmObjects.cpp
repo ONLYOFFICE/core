@@ -176,11 +176,11 @@ CSvmBrush::CSvmBrush(CSvmBrush& oBrush)
 
 int CSvmBrush::GetColor()
 {
-	return Color.color;//METAFILE_RGBA(Color.r, Color.g, Color.b);
+	return METAFILE_RGBA(Color.r, Color.g, Color.b);
 }
 int CSvmBrush::GetColor2()
 {
-	return Color2.color;//METAFILE_RGBA(Color2.r, Color2.g, Color2.b);
+	return METAFILE_RGBA(Color2.r, Color2.g, Color2.b);
 }
 unsigned int CSvmBrush::GetStyleEx()
 {
@@ -207,7 +207,7 @@ void CSvmBrush::GetBounds(double& left, double& top, double& width, double& heig
 }
 int CSvmPen::GetColor()
 {
-	return Color.color;//METAFILE_RGBA(Color.r, Color.g, Color.b);
+	return METAFILE_RGBA(Color.r, Color.g, Color.b);
 }
 TSvmRect::TSvmRect(CDataStream &stream)
 {
@@ -246,22 +246,10 @@ CDataStream& operator>>(CDataStream &stream, TSvmColor &c)
 	char s;
     unsigned short  a, r, g, b, p;
     
-	//stream >> s;
- //   stream >> a;
- //   stream >> r;
- //   stream >> g;
- //   stream >> b;
- //   stream >> p;
-
     stream >> c.b;
     stream >> c.g;
     stream >> c.r;
     stream >> c.a;
-
-	//c.a = a;
-	//c.r = r;
-	//c.b = b;
-	//c.g = g;
 
 	c.color = METAFILE_RGBA(c.r, c.g, c.b, c.a);
 

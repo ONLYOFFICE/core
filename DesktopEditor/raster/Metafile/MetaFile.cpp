@@ -177,6 +177,8 @@ namespace MetaFile
 		{
 			double dX, dY, dW, dH;
 			GetBounds(&dX, &dY, &dW, &dH);
+
+			if (nWidth  < 0) nWidth = dW;
 			nHeight = (int)((double)nWidth * dH / dW);
 		}
 

@@ -400,29 +400,29 @@ namespace MetaFile
 	{
 		m_dPixelHeight = dH;
 	}
-	TWmfWindow*    CWmfDC::GetWindow()
+	TWmfWindow* CWmfDC::GetWindow()
 	{
 		return &m_oWindow;
 	}
-	void           CWmfDC::SetWindowOrg(short shX, short shY)
+	void CWmfDC::SetWindowOrg(short shX, short shY)
 	{
 		m_oWindow.x = shX;
 		m_oWindow.y = shY;
 		UpdatePixelMetrics();
 	}
-	void           CWmfDC::SetWindowExt(short shW, short shH)
+	void CWmfDC::SetWindowExt(short shW, short shH)
 	{
 		m_oWindow.w = shW;
 		m_oWindow.h = shH;
 		UpdatePixelMetrics();
 	}
-	void           CWmfDC::SetWindowOff(short shX, short shY)
+	void CWmfDC::SetWindowOff(short shX, short shY)
 	{
 		m_oWindow.x += shX;
 		m_oWindow.y += shY;
 		UpdatePixelMetrics();
 	}
-	void           CWmfDC::SetWindowScale(double dX, double dY)
+	void CWmfDC::SetWindowScale(double dX, double dY)
 	{
 		m_oWindow.w = (short)(m_oWindow.w * dX);
 		m_oWindow.h = (short)(m_oWindow.h * dY);
@@ -432,31 +432,31 @@ namespace MetaFile
 	{
 		return &m_oViewport;
 	}
-	void           CWmfDC::SetViewportOrg(short shX, short shY)
+	void CWmfDC::SetViewportOrg(short shX, short shY)
 	{
 		m_oViewport.x = shX;
 		m_oViewport.y = shY;
 		UpdatePixelMetrics();
 	}
-	void           CWmfDC::SetViewportExt(short shW, short shH)
+	void  CWmfDC::SetViewportExt(short shW, short shH)
 	{
 		m_oViewport.w = shW;
 		m_oViewport.h = shH;
 		UpdatePixelMetrics();
 	}
-	void           CWmfDC::SetViewportOff(short shX, short shY)
+	void CWmfDC::SetViewportOff(short shX, short shY)
 	{
 		m_oViewport.x += shX;
 		m_oViewport.y += shY;
 		UpdatePixelMetrics();
 	}
-	void           CWmfDC::SetViewportScale(double dX, double dY)
+	void CWmfDC::SetViewportScale(double dX, double dY)
 	{
 		m_oViewport.w = (short)(m_oViewport.w * dX);
 		m_oViewport.h = (short)(m_oViewport.h * dY);
 		UpdatePixelMetrics();
 	}
-	bool           CWmfDC::UpdatePixelMetrics()
+	bool CWmfDC::UpdatePixelMetrics()
 	{
 		unsigned short ushMapMode = m_ushMapMode;
 		if (MM_ISOTROPIC == ushMapMode)
@@ -479,23 +479,23 @@ namespace MetaFile
 
 		return true;
 	}
-	void           CWmfDC::SetTextColor(TWmfColor& oColor)
+	void CWmfDC::SetTextColor(TWmfColor& oColor)
 	{
 		m_oTextColor = oColor;
 	}
-	TWmfColor&     CWmfDC::GetTextColor()
+	TWmfColor&  CWmfDC::GetTextColor()
 	{
 		return m_oTextColor;
 	}
-	void           CWmfDC::SetTextBgColor(TWmfColor& oColor)
+	void  CWmfDC::SetTextBgColor(TWmfColor& oColor)
 	{
 		m_oTextBgColor = oColor;
 	}
-	TWmfColor&     CWmfDC::GetTextBgColor()
+	TWmfColor& CWmfDC::GetTextBgColor()
 	{
 		return m_oTextBgColor;
 	}
-	TWmfPointS&    CWmfDC::GetCurPos()
+	TWmfPointS& CWmfDC::GetCurPos()
 	{
 		return m_oCurPos;
 	}

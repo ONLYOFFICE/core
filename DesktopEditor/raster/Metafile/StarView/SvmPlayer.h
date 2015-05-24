@@ -112,13 +112,30 @@ public:
 	void            SetArcDirection(unsigned int unDirection);
 	unsigned int    GetArcDirection();
 
+	void SetWindowOff(short shX, short shY)
+	{
+		m_oWindow.lX += shX;
+		m_oWindow.lY += shY;
+		UpdatePixelMetrics();
+	}
+	void SetWindowScale(double dX, double dY)
+	{
+		m_oWindow.ulW = (int)(m_oWindow.ulW * dX);
+		m_oWindow.ulH = (int)(m_oWindow.ulH * dY);
+		UpdatePixelMetrics();
+	}
+	void SetWindowExt(short shW, short shH)
+	{
+		m_oWindow.ulW = shW;
+		m_oWindow.ulH = shH;
+		UpdatePixelMetrics();
+	}
+
 private:
 
-	void            SetPixelWidth(double dPixelW);
-	void            SetPixelHeight(double dPixelH);
-	bool            UpdatePixelMetrics();
-
-private:
+	void	SetPixelWidth(double dPixelW);
+	void	SetPixelHeight(double dPixelH);
+	bool	UpdatePixelMetrics();
 
 	ESvmMapUnit     m_ulMapMode;
 	CSvmBrush*		m_pBrush;

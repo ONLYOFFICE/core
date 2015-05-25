@@ -281,7 +281,6 @@
 #endif
 #endif
 
-#ifndef __APPLE__
 //!!!
 #define MNG_SUPPORT_DISPLAY
 #define MNG_SUPPORT_READ
@@ -289,7 +288,6 @@
 #define MNG_ACCESS_CHUNKS
 #define MNG_STORE_CHUNKS
 #define MNG_ERROR_TELLTALE
-#endif
 
 /* ************************************************************************** */
 /* *                                                                        * */

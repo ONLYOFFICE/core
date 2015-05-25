@@ -331,6 +331,14 @@
 		17A765201B0F3A3E0046BC0B /* J2kFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7650D1B0F3A3E0046BC0B /* J2kFile.cpp */; };
 		17A765211B0F3A3E0046BC0B /* Reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A765161B0F3A3E0046BC0B /* Reader.cpp */; };
 		17A765221B0F3A3E0046BC0B /* Reader.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A765161B0F3A3E0046BC0B /* Reader.cpp */; };
+		17A7F0241B13154500760AFB /* SvmClip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F01B1B13154500760AFB /* SvmClip.cpp */; };
+		17A7F0251B13154500760AFB /* SvmClip.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F01B1B13154500760AFB /* SvmClip.cpp */; };
+		17A7F0261B13154500760AFB /* SvmFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F01E1B13154500760AFB /* SvmFile.cpp */; };
+		17A7F0271B13154500760AFB /* SvmFile.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F01E1B13154500760AFB /* SvmFile.cpp */; };
+		17A7F0281B13154500760AFB /* SvmObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F0201B13154500760AFB /* SvmObjects.cpp */; };
+		17A7F0291B13154500760AFB /* SvmObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F0201B13154500760AFB /* SvmObjects.cpp */; };
+		17A7F02A1B13154500760AFB /* SvmPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F0221B13154500760AFB /* SvmPlayer.cpp */; };
+		17A7F02B1B13154500760AFB /* SvmPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F0221B13154500760AFB /* SvmPlayer.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -594,6 +602,15 @@
 		17A7651C1B0F3A3E0046BC0B /* Tile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Tile.h; sourceTree = "<group>"; };
 		17A7651D1B0F3A3E0046BC0B /* Types.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
 		17A7651E1B0F3A3E0046BC0B /* Utils.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Utils.h; sourceTree = "<group>"; };
+		17A7F01B1B13154500760AFB /* SvmClip.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SvmClip.cpp; sourceTree = "<group>"; };
+		17A7F01C1B13154500760AFB /* SvmClip.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SvmClip.h; sourceTree = "<group>"; };
+		17A7F01D1B13154500760AFB /* SvmEnums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SvmEnums.h; sourceTree = "<group>"; };
+		17A7F01E1B13154500760AFB /* SvmFile.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SvmFile.cpp; sourceTree = "<group>"; };
+		17A7F01F1B13154500760AFB /* SvmFile.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SvmFile.h; sourceTree = "<group>"; };
+		17A7F0201B13154500760AFB /* SvmObjects.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SvmObjects.cpp; sourceTree = "<group>"; };
+		17A7F0211B13154500760AFB /* SvmObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SvmObjects.h; sourceTree = "<group>"; };
+		17A7F0221B13154500760AFB /* SvmPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SvmPlayer.cpp; sourceTree = "<group>"; };
+		17A7F0231B13154500760AFB /* SvmPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SvmPlayer.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -634,6 +651,7 @@
 		17A762BC1B0F35320046BC0B /* metafile */ = {
 			isa = PBXGroup;
 			children = (
+				17A7F0191B13154500760AFB /* StarView */,
 				17A765081B0F3A3E0046BC0B /* Jp2 */,
 				17A7631F1B0F38FE0046BC0B /* JBig2 */,
 				17A763111B0F389C0046BC0B /* Common */,
@@ -937,6 +955,23 @@
 			path = ../../../raster/Jp2;
 			sourceTree = "<group>";
 		};
+		17A7F0191B13154500760AFB /* StarView */ = {
+			isa = PBXGroup;
+			children = (
+				17A7F01B1B13154500760AFB /* SvmClip.cpp */,
+				17A7F01C1B13154500760AFB /* SvmClip.h */,
+				17A7F01D1B13154500760AFB /* SvmEnums.h */,
+				17A7F01E1B13154500760AFB /* SvmFile.cpp */,
+				17A7F01F1B13154500760AFB /* SvmFile.h */,
+				17A7F0201B13154500760AFB /* SvmObjects.cpp */,
+				17A7F0211B13154500760AFB /* SvmObjects.h */,
+				17A7F0221B13154500760AFB /* SvmPlayer.cpp */,
+				17A7F0231B13154500760AFB /* SvmPlayer.h */,
+			);
+			name = StarView;
+			path = ../../../raster/Metafile/StarView;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -1022,6 +1057,7 @@
 				17A764981B0F39370046BC0B /* pixarith.cpp in Sources */,
 				17A764441B0F39370046BC0B /* fmorphauto.cpp in Sources */,
 				17A764BC1B0F39370046BC0B /* readbarcode.cpp in Sources */,
+				17A7F02A1B13154500760AFB /* SvmPlayer.cpp in Sources */,
 				17A764501B0F39370046BC0B /* gifio.cpp in Sources */,
 				17A763F81B0F39370046BC0B /* binexpand.cpp in Sources */,
 				17A764B61B0F39370046BC0B /* ptra.cpp in Sources */,
@@ -1033,6 +1069,7 @@
 				17A764F61B0F39370046BC0B /* utils.cpp in Sources */,
 				17A764E01B0F39370046BC0B /* sel1.cpp in Sources */,
 				17A7641A1B0F39370046BC0B /* colormorph.cpp in Sources */,
+				17A7F0261B13154500760AFB /* SvmFile.cpp in Sources */,
 				17A764941B0F39370046BC0B /* pixafunc2.cpp in Sources */,
 				17A764141B0F39370046BC0B /* classapp.cpp in Sources */,
 				17A764CE1B0F39370046BC0B /* rotateorth.cpp in Sources */,
@@ -1046,6 +1083,7 @@
 				17A764361B0F39370046BC0B /* enhance.cpp in Sources */,
 				17A764BE1B0F39370046BC0B /* readfile.cpp in Sources */,
 				17A763EA1B0F39370046BC0B /* arithlow.cpp in Sources */,
+				17A7F0241B13154500760AFB /* SvmClip.cpp in Sources */,
 				17A764021B0F39370046BC0B /* bmf.cpp in Sources */,
 				17A7642A1B0F39370046BC0B /* convolvelow.cpp in Sources */,
 				17A7632E1B0F391B0046BC0B /* jbig2arith.cpp in Sources */,
@@ -1138,6 +1176,7 @@
 				17A764181B0F39370046BC0B /* colormap.cpp in Sources */,
 				17A764DA1B0F39370046BC0B /* scalelow.cpp in Sources */,
 				17A764241B0F39370046BC0B /* conncomp.cpp in Sources */,
+				17A7F0281B13154500760AFB /* SvmObjects.cpp in Sources */,
 				17A7647E1B0F39370046BC0B /* paintcmap.cpp in Sources */,
 				17A762FA1B0F36790046BC0B /* WmfObjects.cpp in Sources */,
 				17A763E81B0F39370046BC0B /* affinecompose.cpp in Sources */,
@@ -1191,6 +1230,7 @@
 				17A764991B0F39370046BC0B /* pixarith.cpp in Sources */,
 				17A764451B0F39370046BC0B /* fmorphauto.cpp in Sources */,
 				17A764BD1B0F39370046BC0B /* readbarcode.cpp in Sources */,
+				17A7F02B1B13154500760AFB /* SvmPlayer.cpp in Sources */,
 				17A764511B0F39370046BC0B /* gifio.cpp in Sources */,
 				17A763F91B0F39370046BC0B /* binexpand.cpp in Sources */,
 				17A764B71B0F39370046BC0B /* ptra.cpp in Sources */,
@@ -1202,6 +1242,7 @@
 				17A764F71B0F39370046BC0B /* utils.cpp in Sources */,
 				17A764E11B0F39370046BC0B /* sel1.cpp in Sources */,
 				17A7641B1B0F39370046BC0B /* colormorph.cpp in Sources */,
+				17A7F0271B13154500760AFB /* SvmFile.cpp in Sources */,
 				17A764951B0F39370046BC0B /* pixafunc2.cpp in Sources */,
 				17A764151B0F39370046BC0B /* classapp.cpp in Sources */,
 				17A764CF1B0F39370046BC0B /* rotateorth.cpp in Sources */,
@@ -1215,6 +1256,7 @@
 				17A764371B0F39370046BC0B /* enhance.cpp in Sources */,
 				17A764BF1B0F39370046BC0B /* readfile.cpp in Sources */,
 				17A763EB1B0F39370046BC0B /* arithlow.cpp in Sources */,
+				17A7F0251B13154500760AFB /* SvmClip.cpp in Sources */,
 				17A764031B0F39370046BC0B /* bmf.cpp in Sources */,
 				17A7642B1B0F39370046BC0B /* convolvelow.cpp in Sources */,
 				17A7632F1B0F391B0046BC0B /* jbig2arith.cpp in Sources */,
@@ -1307,6 +1349,7 @@
 				17A764191B0F39370046BC0B /* colormap.cpp in Sources */,
 				17A764DB1B0F39370046BC0B /* scalelow.cpp in Sources */,
 				17A764251B0F39370046BC0B /* conncomp.cpp in Sources */,
+				17A7F0291B13154500760AFB /* SvmObjects.cpp in Sources */,
 				17A7647F1B0F39370046BC0B /* paintcmap.cpp in Sources */,
 				17A762FB1B0F36790046BC0B /* WmfObjects.cpp in Sources */,
 				17A763E91B0F39370046BC0B /* affinecompose.cpp in Sources */,

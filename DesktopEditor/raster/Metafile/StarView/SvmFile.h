@@ -16,7 +16,7 @@ class CSvmFile : virtual public IMetaFileBase
 		 m_pDC					= m_oPlayer.GetDC();
 		 m_currentActionVersion = 0;
 		 m_currentCharset		= 0;
-		 m_ñurrentActionType	= 0;
+		 m_OurrentActionType	= 0;
 	 };
 
 	 ~CSvmFile()
@@ -140,7 +140,7 @@ class CSvmFile : virtual public IMetaFileBase
 
 	unsigned short		m_currentActionVersion;
 	unsigned short		m_currentCharset;
-	unsigned short		m_ñurrentActionType;
+	unsigned short		m_OurrentActionType;
 
 	unsigned int		m_unRecordSize;
 	unsigned int		m_unRecordPos;

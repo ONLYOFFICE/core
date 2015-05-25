@@ -1197,7 +1197,13 @@ public:
 				}
 			}
 			sText = XmlUtils::EncodeXmlString(sText);
-            CString sTextXml;sTextXml.Format(_T("<w:lvlText w:val=\"%ls\"/>"), sText);
+            
+            //CString sTextXml;sTextXml.Format(_T("<w:lvlText w:val=\"%ls\"/>"), sText);
+          
+            CString sTextXml(_T("<w:lvlText w:val=\""));
+            sTextXml += sText;
+            sTextXml += _T("\"/>");
+
 			oWriter.WriteString(sTextXml);
 		}
 		if(bJc)

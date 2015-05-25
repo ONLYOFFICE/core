@@ -326,12 +326,12 @@ namespace NSBinPptxRW
 		if (!strImage.IsEmpty())
 		{
 			oImageManagerInfo = GenerateImageExec(strImage, strExts, strOleImage, strOleImageProperty);
-			CDirectory::DeleteFileW(strImage);
+			CDirectory::DeleteFile(strImage);
 		}
 		if (!strOleImage.IsEmpty())
-			CDirectory::DeleteFileW(strOleImage);
+			CDirectory::DeleteFile(strOleImage);
 		if (!strOleImageProperty.IsEmpty())
-			CDirectory::DeleteFileW(strOleImageProperty);
+			CDirectory::DeleteFile(strOleImageProperty);
 
 		m_mapImages[strUrl] = oImageManagerInfo;
 		return oImageManagerInfo;

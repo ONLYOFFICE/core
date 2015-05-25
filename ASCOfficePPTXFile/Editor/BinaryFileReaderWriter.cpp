@@ -476,42 +476,55 @@ namespace NSBinPptxRW
 	void CBinaryFileWriter::WriteUSHORT(const _UINT16& lValue)
 	{
 		CheckBufferSize(UINT16_SIZEOF);
-
-		*((_UINT16*)m_pStreamCur) = lValue; 
+#ifdef _IOS
+        memcpy(m_pStreamCur, &lValue, sizeof(_UINT16));
+#else
+        *((_UINT16*)m_pStreamCur) = lValue; // EXC_ARM_DA_ALIGN on ios
+#endif
 		m_lPosition += UINT16_SIZEOF;
 		m_pStreamCur += UINT16_SIZEOF;
 	}
 	void CBinaryFileWriter::WriteULONG(const _UINT32& lValue)
 	{
 		CheckBufferSize(UINT32_SIZEOF);
-
-		*((_UINT32*)m_pStreamCur) = lValue; 
-		
+#ifdef _IOS
+        memcpy(m_pStreamCur, &lValue, sizeof(_UINT32));
+#else
+        *((_UINT32*)m_pStreamCur) = lValue; // EXC_ARM_DA_ALIGN on ios
+#endif
 		m_lPosition += UINT32_SIZEOF;
 		m_pStreamCur += UINT32_SIZEOF;
 	}
 	void CBinaryFileWriter::WriteLONG(const _INT32& lValue)
 	{
 		CheckBufferSize(INT32_SIZEOF);
-
-		*((_INT32*)m_pStreamCur) = lValue; 
-		
+#ifdef _IOS
+        memcpy(m_pStreamCur, &lValue, sizeof(_INT32));
+#else
+        *((_INT32*)m_pStreamCur) = lValue; // EXC_ARM_DA_ALIGN on ios
+#endif
 		m_lPosition += INT32_SIZEOF;
 		m_pStreamCur += INT32_SIZEOF;
 	}
 	void CBinaryFileWriter::WriteLONG64(const _INT64& lValue)
 	{
 		CheckBufferSize(INT64_SIZEOF);
-
-		*((_INT64*)m_pStreamCur) = lValue; 
+#ifdef _IOS
+        memcpy(m_pStreamCur, &lValue, sizeof(_INT64));
+#else
+        *((_INT64*)m_pStreamCur) = lValue; // EXC_ARM_DA_ALIGN on ios
+#endif
 		m_lPosition += INT64_SIZEOF;
 		m_pStreamCur += INT64_SIZEOF;
 	}
 	void CBinaryFileWriter::WriteINT(const _INT32& lValue)
 	{
 		CheckBufferSize(INT32_SIZEOF);
-
-		*((_INT32*)m_pStreamCur) = lValue; 
+#ifdef _IOS
+        memcpy(m_pStreamCur, &lValue, sizeof(_INT32));
+#else
+        *((_INT32*)m_pStreamCur) = lValue; // EXC_ARM_DA_ALIGN on ios
+#endif
 		m_lPosition += INT32_SIZEOF;
 		m_pStreamCur += INT32_SIZEOF;
 	}
@@ -540,13 +553,11 @@ namespace NSBinPptxRW
 	void CBinaryFileWriter::WriteDoubleReal(const double& dValue)
 	{
 		CheckBufferSize(DOUBLE_SIZEOF);
-        
 #ifdef _IOS
         memcpy(m_pStreamCur, &dValue, sizeof(double));
 #else
 		*((double*)m_pStreamCur) = dValue; // EXC_ARM_DA_ALIGN on ios
 #endif
-        
 		m_lPosition += DOUBLE_SIZEOF;
 		m_pStreamCur += DOUBLE_SIZEOF;
 	}
@@ -561,9 +572,11 @@ namespace NSBinPptxRW
             lSizeMem = lSize * sizeof(UTF16);
 
             CheckBufferSize(UINT32_SIZEOF + lSizeMem);
-
-            *((_UINT32*)m_pStreamCur) = lSizeMem;
-
+#ifdef _IOS
+            memcpy(m_pStreamCur, &lSizeMem, sizeof(_UINT32));
+#else
+            *((_UINT32*)m_pStreamCur) = lSizeMem; // EXC_ARM_DA_ALIGN on ios
+#endif
             m_lPosition += UINT32_SIZEOF;
             m_pStreamCur += UINT32_SIZEOF;
 
@@ -590,9 +603,11 @@ namespace NSBinPptxRW
             lSizeMem = lSize * sizeof(wchar_t);
 
             CheckBufferSize(UINT32_SIZEOF + lSizeMem);
-
-            *((_UINT32*)m_pStreamCur) = lSizeMem;
-
+#ifdef _IOS
+            memcpy(m_pStreamCur, &lSizeMem, sizeof(_UINT32));
+#else
+            *((_UINT32*)m_pStreamCur) = lSizeMem; // EXC_ARM_DA_ALIGN on ios
+#endif
             m_lPosition += UINT32_SIZEOF;
             m_pStreamCur += UINT32_SIZEOF;
 
@@ -615,8 +630,11 @@ namespace NSBinPptxRW
 		_INT32 lSizeMem = lSize * sizeof(char);
 
 		CheckBufferSize(UINT32_SIZEOF + lSizeMem);
-
-		*((_UINT32*)m_pStreamCur) = lSizeMem; 
+#ifdef _IOS
+        memcpy(m_pStreamCur, &lSizeMem, sizeof(_UINT32));
+#else
+        *((_UINT32*)m_pStreamCur) = lSizeMem; // EXC_ARM_DA_ALIGN on ios
+#endif
 		m_lPosition += UINT32_SIZEOF;
 		m_pStreamCur += UINT32_SIZEOF;
 
@@ -650,15 +668,17 @@ namespace NSBinPptxRW
         _INT32 lSizeMem = lSize * sizeof(UTF16);
 
         CheckBufferSize(UINT32_SIZEOF + lSizeMem);
-
-        *((_UINT32*)m_pStreamCur) = lSize;
+#ifdef _IOS
+        memcpy(m_pStreamCur, &lSize, sizeof(_UINT32));
+#else
+        *((_UINT32*)m_pStreamCur) = lSize; // EXC_ARM_DA_ALIGN on ios
+#endif
         m_lPosition += UINT32_SIZEOF;
         m_pStreamCur += UINT32_SIZEOF;
 
         memcpy(m_pStreamCur, sBuffer, lSizeMem);
         m_lPosition += lSizeMem;
         m_pStreamCur += lSizeMem;
-
     }
 
     void CBinaryFileWriter::WriteStringW2_4(const WCHAR* sBuffer)
@@ -667,8 +687,11 @@ namespace NSBinPptxRW
 		_INT32 lSizeMem = lSize * sizeof(wchar_t);
 
 		CheckBufferSize(UINT32_SIZEOF + lSizeMem);
-
-		*((_UINT32*)m_pStreamCur) = lSize; 
+#ifdef _IOS
+        memcpy(m_pStreamCur, &lSize, sizeof(_UINT32));
+#else
+        *((_UINT32*)m_pStreamCur) = lSize; // EXC_ARM_DA_ALIGN on ios
+#endif
 		m_lPosition += UINT32_SIZEOF;
 		m_pStreamCur += UINT32_SIZEOF;
 
@@ -812,7 +835,11 @@ namespace NSBinPptxRW
 		{
 			*pData = (BYTE)m_arMainTables[i].Type;
 			++pData;
-			*((_INT32*)pData) = m_arMainTables[i].SeekPos;
+#ifdef _IOS
+            memcpy(pData, &m_arMainTables[i].SeekPos, sizeof(_INT32));
+#else
+            *((_INT32*)pData) = m_arMainTables[i].SeekPos; // EXC_ARM_DA_ALIGN on ios
+#endif
 			pData += 4;
 		}
 	}
@@ -1496,8 +1523,12 @@ namespace NSBinPptxRW
 	{
 		if (m_lPos + 1 >= m_lSize)
 			return 0;
-
-		_UINT16 res = *((_UINT16*)m_pDataCur);
+#ifdef _IOS
+        _UINT16 res = 0;
+        memcpy(&res, m_pDataCur, sizeof(_UINT16));
+#else
+        _UINT16 res = *((_UINT16*)m_pDataCur);   // EXC_ARM_DA_ALIGN on ios
+#endif
 		m_lPos += 2;
 		m_pDataCur += 2;
 		return res;		
@@ -1508,8 +1539,12 @@ namespace NSBinPptxRW
 	{
 		if (m_lPos + 3 >= m_lSize)
 			return 0;
-
-		_UINT32 res = *((_UINT32*)m_pDataCur);
+#ifdef _IOS
+        _UINT32 res = 0;
+        memcpy(&res, m_pDataCur, sizeof(_UINT32));
+#else
+        _UINT32 res = *((_UINT32*)m_pDataCur);   // EXC_ARM_DA_ALIGN on ios
+#endif
         m_lPos += 4;
 		m_pDataCur += 4;
         return res;
@@ -1518,8 +1553,12 @@ namespace NSBinPptxRW
 	{
 		if (m_lPos + 7 >= m_lSize)
 			return 0;
-
-		_INT64 res = *((_INT64*)m_pDataCur);
+#ifdef _IOS
+        _INT64 res = 0;
+        memcpy(&res, m_pDataCur, sizeof(_INT64));
+#else
+        _INT64 res = *((_INT64*)m_pDataCur);   // EXC_ARM_DA_ALIGN on ios
+#endif
         m_lPos += 8;
 		m_pDataCur += 8;
         return res;			
@@ -1538,13 +1577,17 @@ namespace NSBinPptxRW
 	}	// 8 byte
 	double CBinaryFileReader::GetDoubleReal()
 	{
-		if (m_lPos + DOUBLE_SIZEOF > m_lSize)
-			return 0;
-
-		double res = *((double*)m_pDataCur);
-		m_lPos += DOUBLE_SIZEOF;
-		m_pDataCur += DOUBLE_SIZEOF;
-		return res;
+        if (m_lPos + DOUBLE_SIZEOF > m_lSize)
+            return 0;
+#ifdef _IOS
+        double res = 0.0;
+        memcpy(&res, m_pDataCur, sizeof(double));
+#else
+        double res = *((double*)m_pDataCur);    // EXC_ARM_DA_ALIGN on ios
+#endif        
+        m_lPos += DOUBLE_SIZEOF;
+        m_pDataCur += DOUBLE_SIZEOF;
+        return res;
 	}
 
 	//String

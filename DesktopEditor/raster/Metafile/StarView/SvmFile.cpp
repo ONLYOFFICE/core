@@ -190,7 +190,7 @@ void CSvmFile::PlayMetaFile()
 			break;
         }
 
-		m_ñurrentActionType = actionType;
+		m_OurrentActionType = actionType;
 
 		int need_skip = m_unRecordSize - (m_oStream.Tell() - m_unRecordPos);
 		m_oStream.Skip(need_skip);
@@ -457,8 +457,8 @@ void CSvmFile::Read_META_SETTEXTCOLOR()
 }
 void CSvmFile::Read_META_SETFILLCOLOR()
 {
-	if (m_ñurrentActionType == META_GRADIENT_ACTION ||
-		m_ñurrentActionType == META_GRADIENTEX_ACTION)
+	if (m_OurrentActionType == META_GRADIENT_ACTION ||
+		m_OurrentActionType == META_GRADIENTEX_ACTION)
 	{
 		return;
 	}

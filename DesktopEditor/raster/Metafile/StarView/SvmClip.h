@@ -1,4 +1,4 @@
-#ifndef _METAFILE_SVM_SVMCLIP_H
+﻿#ifndef _METAFILE_SVM_SVMCLIP_H
 #define _METAFILE_SVM_SVMCLIP_H
 
 #include "../Common/MetaFileClip.h"

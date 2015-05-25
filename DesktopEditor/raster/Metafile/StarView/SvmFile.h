@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "SvmPlayer.h"
 
@@ -16,7 +16,7 @@ class CSvmFile : virtual public IMetaFileBase
 		 m_pDC					= m_oPlayer.GetDC();
 		 m_currentActionVersion = 0;
 		 m_currentCharset		= 0;
-		 m_OurrentActionType	= 0;
+		 m_currentActionType	= 0;
 	 };
 
 	 ~CSvmFile()
@@ -186,8 +186,8 @@ class CSvmFile : virtual public IMetaFileBase
 		dX = (double)((double)(nX - pWindow->lX) * m_pDC->GetPixelWidth()) + pViewport->lX;
 		dY = (double)((double)(nY - pWindow->lY) * m_pDC->GetPixelHeight()) + pViewport->lY;
 
-		// Координаты приходят уже с примененной матрицей. Поэтому сначала мы умножаем на матрицу преобразования, 
-		// вычитаем начальные координаты и умножаем на обратную матрицу преобразования.
+		// РљРѕРѕСЂРґРёРЅР°С‚С‹ РїСЂРёС…РѕРґСЏС‚ СѓР¶Рµ СЃ РїСЂРёРјРµРЅРµРЅРЅРѕР№ РјР°С‚СЂРёС†РµР№. РџРѕСЌС‚РѕРјСѓ СЃРЅР°С‡Р°Р»Р° РјС‹ СѓРјРЅРѕР¶Р°РµРј РЅР° РјР°С‚СЂРёС†Сѓ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ, 
+		// РІС‹С‡РёС‚Р°РµРј РЅР°С‡Р°Р»СЊРЅС‹Рµ РєРѕРѕСЂРґРёРЅР°С‚С‹ Рё СѓРјРЅРѕР¶Р°РµРј РЅР° РѕР±СЂР°С‚РЅСѓСЋ РјР°С‚СЂРёС†Сѓ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ.
 		TRect* pBounds = GetDCBounds();
 		double dT = pBounds->nTop;
 		double dL = pBounds->nLeft;
@@ -209,7 +209,7 @@ class CSvmFile : virtual public IMetaFileBase
 		unsigned int ulBitsSize = cbBits;
 		if (ulHeaderSize <= 0 || ulBitsSize <= 0 || lHeaderOffset < 0 || lBitsOffset < 0)
 		{
-			// TODO: Если попали сюда, значит надо смотреть BitBltRasterOperation
+			// TODO: Р•СЃР»Рё РїРѕРїР°Р»Рё СЃСЋРґР°, Р·РЅР°С‡РёС‚ РЅР°РґРѕ СЃРјРѕС‚СЂРµС‚СЊ BitBltRasterOperation
 			if (lHeaderOffset > 0)
 				m_oStream.Skip(lHeaderOffset);
 
@@ -374,7 +374,7 @@ class CSvmFile : virtual public IMetaFileBase
 			m_pOutput->ArcTo(dL, dT, dR, dB, dStart, dSweep);
 		}
 
-		// Пересчет текущей позиции делается в каждой функции отдельно после вызова данной
+		// РџРµСЂРµСЃС‡РµС‚ С‚РµРєСѓС‰РµР№ РїРѕР·РёС†РёРё РґРµР»Р°РµС‚СЃСЏ РІ РєР°Р¶РґРѕР№ С„СѓРЅРєС†РёРё РѕС‚РґРµР»СЊРЅРѕ РїРѕСЃР»Рµ РІС‹Р·РѕРІР° РґР°РЅРЅРѕР№
 	}
 	void DrawPath(bool bStroke, bool bFill)
 	{

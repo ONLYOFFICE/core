@@ -1,4 +1,4 @@
-
+﻿
 #include "SvmFile.h"
 
 #include <string>
@@ -190,7 +190,7 @@ void CSvmFile::PlayMetaFile()
 			break;
         }
 
-		m_OurrentActionType = actionType;
+		m_currentActionType = actionType;
 
 		int need_skip = m_unRecordSize - (m_oStream.Tell() - m_unRecordPos);
 		m_oStream.Skip(need_skip);
@@ -457,8 +457,8 @@ void CSvmFile::Read_META_SETTEXTCOLOR()
 }
 void CSvmFile::Read_META_SETFILLCOLOR()
 {
-	if (m_OurrentActionType == META_GRADIENT_ACTION ||
-		m_OurrentActionType == META_GRADIENTEX_ACTION)
+	if (m_currentActionType == META_GRADIENT_ACTION ||
+		m_currentActionType == META_GRADIENTEX_ACTION)
 	{
 		return;
 	}

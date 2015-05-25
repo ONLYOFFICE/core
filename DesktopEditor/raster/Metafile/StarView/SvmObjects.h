@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #include "../Common/MetaFileTypes.h"
 #include "../Common/MetaFileObjects.h"
@@ -331,7 +331,7 @@ public:
 
 	std::wstring  sFamilyName;
 	std::wstring  sStyle;
-	// Согласно спецификации длина имени не должна превышать 32 знака с учетом нулевого символа в конце
+	// РЎРѕРіР»Р°СЃРЅРѕ СЃРїРµС†РёС„РёРєР°С†РёРё РґР»РёРЅР° РёРјРµРЅРё РЅРµ РґРѕР»Р¶РЅР° РїСЂРµРІС‹С€Р°С‚СЊ 32 Р·РЅР°РєР° СЃ СѓС‡РµС‚РѕРј РЅСѓР»РµРІРѕРіРѕ СЃРёРјРІРѕР»Р° РІ РєРѕРЅС†Рµ
 };
 
 class CSvmPen : public CSvmObjectBase, public IPen

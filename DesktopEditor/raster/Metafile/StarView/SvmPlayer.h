@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "SvmEnums.h"
 #include "SvmObjects.h"

@@ -140,7 +140,7 @@ class CSvmFile : virtual public IMetaFileBase
 
 	unsigned short		m_currentActionVersion;
 	unsigned short		m_currentCharset;
-	unsigned short		m_OurrentActionType;
+        unsigned short		m_currentActionType;
 
 	unsigned int		m_unRecordSize;
 	unsigned int		m_unRecordPos;

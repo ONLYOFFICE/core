@@ -142,10 +142,10 @@ struct TSvmRect
 
 struct TSvmPolygon
 {
-	TSvmPolygon(){ count = 0; }
+	TSvmPolygon(){}
 	TSvmPolygon(CDataStream &stream);
+
 	std::vector<TSvmPoint>	points;
-	unsigned short			count;
 };
 
 struct TSvmColor
@@ -339,6 +339,8 @@ class CSvmPen : public CSvmObjectBase, public IPen
 public:
 	CSvmPen()
 	{
+		Width = 1;
+		PenStyle = PS_NULL;
 	}
 	~CSvmPen()
 	{
@@ -372,8 +374,7 @@ CDataStream& operator>>(CDataStream &stream, VersionCompat &compat);
 CDataStream& operator>>(CDataStream &stream, Fraction &fract);
 CDataStream& operator>>(CDataStream &stream, MapMode &mm);
 CDataStream& operator>>(CDataStream &stream, SvmHeader &header);
-CDataStream& operator>>(CDataStream &stream, TSvmBitmapSize &s);
-CDataStream& operator>>(CDataStream &stream, TSvmBitmapPoint &s);
+CDataStream& operator>>(CDataStream &stream, TSvmSize &s);
 CDataStream& operator>>(CDataStream &stream, TSvmPoint &p);
 CDataStream& operator>>(CDataStream &stream, TSvmRect &p);
 CDataStream& operator>>(CDataStream &stream, TSvmPolygon &p);

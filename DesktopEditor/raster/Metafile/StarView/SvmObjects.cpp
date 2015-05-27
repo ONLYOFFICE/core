@@ -141,7 +141,7 @@ TSvmRect::TSvmRect()
 {
 	l = t = r = b = 0;
 }
-CDataStream& operator>>(CDataStream &stream, TSvmBitmapSize &s)
+CDataStream& operator>>(CDataStream &stream, TSvmSize &s)
 {
 	stream >> s.cx;
 	stream >> s.cy;
@@ -155,13 +155,7 @@ CDataStream& operator>>(CDataStream &stream, TSvmPoint &p)
 
 	return stream;
 }
-CDataStream& operator>>(CDataStream &stream, TSvmBitmapPoint &p)
-{
-	stream >> p.x;
-	stream >> p.y;
 
-	return stream;
-}
 CSvmBrush::CSvmBrush() : Color(255, 255, 255)
 {
 	BrushStyle = BS_SOLID;
@@ -228,9 +222,10 @@ TSvmPolygon::TSvmPolygon(CDataStream &stream)
 }
 CDataStream& operator>>(CDataStream &stream, TSvmPolygon &p)
 {
-	stream >> p.count;
+	unsigned short count;
+	stream >> count;
 
-	for (int i = 0; i < p.count; i++)
+	for (int i = 0; i < count; i++)
 	{
 		TSvmPoint point;
 		stream >> point;		

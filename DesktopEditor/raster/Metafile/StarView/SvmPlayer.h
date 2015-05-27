@@ -63,7 +63,8 @@ public:
 	~CSvmDC();
 	CSvmDC* Copy();
 
-	void            SetMapMode(MapMode &mapMode);
+	ESvmMapUnit		GetMapMode();
+	void            SetMapMode(MapMode &mapMode, bool prefered = false);
 	TXForm*			GetTransform();
 	TXForm*			GetInverseTransform();
 	void            MultiplyTransform(TXForm& oForm, unsigned int ulMode);
@@ -91,8 +92,6 @@ public:
 	CSvmPen*		GetPen();
 	void            SetStretchMode(unsigned int& oMode);
 	unsigned int    GetStretchMode();
-	double          GetPixelWidth();
-	double          GetPixelHeight();
 	void            SetWindowOrigin(TSvmPoint& oPoint);
 	void            SetWindowExtents(TSvmSize& oPoint);
 	TSvmWindow*     GetWindow();
@@ -130,6 +129,12 @@ public:
 		m_oWindow.ulH = shH;
 		UpdatePixelMetrics();
 	}
+	
+	double          m_dPixelWidth;
+	double          m_dPixelHeight;
+	
+	double          m_dPixelWidthPrefered;
+	double          m_dPixelHeightPrefered;
 
 private:
 
@@ -152,12 +157,12 @@ private:
 	unsigned int    m_ulFillMode;
 	unsigned int    m_ulStretchMode;
 	unsigned int    m_ulRop2Mode;
-	double          m_dPixelWidth;
-	double          m_dPixelHeight;
+	
 	TSvmWindow      m_oWindow;
 	TSvmWindow      m_oViewport;
+	
 	TSvmPoint		m_oCurPos;
-	CSvmClip        m_oClip;
+	//CSvmClip        m_oClip;
 	unsigned int    m_unArcDirection;
 };
 

@@ -44,6 +44,23 @@ namespace MetaFile
 			m_dScaleY = (nB - nT <= 0) ? 1 : m_dH / (double)(nB - nT);
 
 			m_bStartedPath = false;
+
+			//int alpha = 0xff;
+			//m_pRenderer->put_BrushAlpha1(alpha);
+			//m_pRenderer->put_BrushType(c_BrushTypeSolid);
+			//m_pRenderer->put_BrushColor1(0xffffff);
+
+			//m_pRenderer->BeginCommand(c_nPathType);
+			//m_pRenderer->PathCommandStart();
+			//m_pRenderer->PathCommandMoveTo(pBounds->nLeft	, pBounds->nTop);
+			//m_pRenderer->PathCommandLineTo(pBounds->nRight	, pBounds->nTop);
+			//m_pRenderer->PathCommandLineTo(pBounds->nRight	, pBounds->nBottom);
+			//m_pRenderer->PathCommandLineTo(pBounds->nLeft	, pBounds->nBottom);
+			//m_pRenderer->PathCommandLineTo(pBounds->nLeft	, pBounds->nTop);
+			//m_pRenderer->PathCommandClose();
+			//m_pRenderer->DrawPath(c_nWindingFillMode);
+			//m_pRenderer->EndCommand(c_nPathType);
+			//m_pRenderer->PathCommandEnd();
 		}
 		~CMetaFileRenderer()
 		{

@@ -93,8 +93,10 @@ void CSvmFile::PlayMetaFile()
 	Read_SVM_HEADER();
 
 	if (m_pOutput)
+	{
 		m_pOutput->Begin();
-
+		// + прозрачную заливку ???
+	}
 	for (unsigned int action = 0; action < m_oHeader.actionCount; ++action)
 	{
         unsigned short  actionType;
@@ -112,26 +114,37 @@ void CSvmFile::PlayMetaFile()
 			case META_POLYLINE_ACTION:		Read_META_POLYLINE();       break;
 			case META_POLYGON_ACTION:		Read_META_POLYGON();        break;
 			case META_POLYPOLYGON_ACTION:	Read_META_POLYPOLYGON();	break;
+			case META_LINE_ACTION:			Read_META_LINE();		    break;
 			
 			case META_TEXT_ACTION:			Read_META_TEXT();			break;
 			case META_TEXTARRAY_ACTION:		Read_META_ARRAYTEXT();		break;
-			case META_MAPMODE_ACTION:		Read_META_SETMAPMODE();		break;
-			case META_FONT_ACTION:			Read_META_FONT();		break;
-			case META_BMPSCALE_ACTION:		Read_META_BMPSCALE();		break;
+			case META_TEXTALIGN_ACTION:		Read_META_TEXTALIGN();		break;
+			case META_TEXTRECT_ACTION:		Read_META_TEXTRECT();		break;
+			case META_TEXTLANGUAGE_ACTION:
+			case META_STRETCHTEXT_ACTION:
+			case META_TEXTLINECOLOR_ACTION:
+			case META_TEXTLINE_ACTION:
+				break;
+			
+			case META_MAPMODE_ACTION:			Read_META_SETMAPMODE();			break;
+			case META_FONT_ACTION:				Read_META_FONT();				break;
+			case META_BMPSCALE_ACTION:			Read_META_BMPSCALE();			break;
+			case META_BMP_ACTION:				Read_META_BMP();				break;
 
-			case META_LINECOLOR_ACTION:		Read_META_SETLINECOLOR();	break;
-			case META_FILLCOLOR_ACTION:		Read_META_SETFILLCOLOR();	break;
+			case META_LINECOLOR_ACTION:			Read_META_SETLINECOLOR();		break;
+			case META_FILLCOLOR_ACTION:			Read_META_SETFILLCOLOR();		break;
 			case META_TEXTFILLCOLOR_ACTION:
-			case META_TEXTCOLOR_ACTION:		Read_META_SETTEXTCOLOR();	break;
-			case META_GRADIENT_ACTION:		Read_META_GRADIENT();		break;
-			case META_GRADIENTEX_ACTION:	Read_META_GRADIENTEX();		break;
+			case META_TEXTCOLOR_ACTION:			Read_META_SETTEXTCOLOR();		break;
+			case META_GRADIENT_ACTION:			Read_META_GRADIENT();			break;
+			case META_GRADIENTEX_ACTION:		Read_META_GRADIENTEX();			break;
 			case META_HATCH_ACTION:
 		
-			case META_RASTEROP_ACTION:		Read_META_RASTEROP();		break;			
-			case META_PUSH_ACTION:			Read_META_PUSH();			break;		
-			case META_POP_ACTION:			Read_META_POP();			break;		
+			case META_RASTEROP_ACTION:			Read_META_RASTEROP();			break;			
+			case META_PUSH_ACTION:				Read_META_PUSH();				break;		
+			case META_POP_ACTION:				Read_META_POP();				break;		
 
-			case META_TRANSPARENT_ACTION:	Read_META_TRANSPARENT();			break;	
+			case META_TRANSPARENT_ACTION:		Read_META_TRANSPARENT();		break;	
+			case META_FLOATTRANSPARENT_ACTION:	Read_META_FLOATTRANSPARENT();	break;
 
 			case META_ROUNDRECT_ACTION:
 			case META_ELLIPSE_ACTION:
@@ -140,11 +153,7 @@ void CSvmFile::PlayMetaFile()
 			case META_CHORD_ACTION:
 			case META_PIXEL_ACTION:
 			case META_POINT_ACTION:
-			case META_LINE_ACTION:
 
-			case META_STRETCHTEXT_ACTION:
-			case META_TEXTRECT_ACTION:
-			case META_BMP_ACTION:
 			case META_BMPSCALEPART_ACTION:
 			case META_BMPEX_ACTION:
 			case META_BMPEXSCALE_ACTION:
@@ -157,14 +166,9 @@ void CSvmFile::PlayMetaFile()
 			case META_ISECTRECTCLIPREGION_ACTION:
 			case META_ISECTREGIONCLIPREGION_ACTION:
 			case META_MOVECLIPREGION_ACTION:
-			case META_TEXTALIGN_ACTION:
 			case META_EPS_ACTION:
 			case META_REFPOINT_ACTION:
-			case META_TEXTLINECOLOR_ACTION:
-			case META_TEXTLINE_ACTION:
-			case META_FLOATTRANSPARENT_ACTION:
 			case META_LAYOUTMODE_ACTION:
-			case META_TEXTLANGUAGE_ACTION:
 			case META_OVERLINECOLOR_ACTION:
 			case META_RENDERGRAPHIC_ACTION:				
 			case META_COMMENT_ACTION:
@@ -172,7 +176,7 @@ void CSvmFile::PlayMetaFile()
 			case META_NULL_ACTION:
 			default:
 #ifdef _DEBUG
-			if (actionType != 512 && m_unRecordSize > 0)
+			if (actionType != 512 && m_unRecordSize > 0 && m_pOutput)
 			{
 				std::wstring name;
 				if (actionType == 0)
@@ -185,11 +189,26 @@ void CSvmFile::PlayMetaFile()
 					name = L"(out of bounds)";
 
 				std::wcout << name << L"\t(" << actionType << L") " << L"\tversion = " << m_currentActionVersion << L"\t; totalSize = " << m_unRecordSize << L"\n";
-			}			
+			}		
 #endif
 			break;
         }
+#ifdef _DEBUG
+/*		if (actionType != 512 && m_unRecordSize > 0 && !m_pOutput)
+		{
+			std::wstring name;
+			if (actionType == 0)
+				name = actionNames[0].actionName;
+			else if (actionType == 512)
+				name = L"META_COMMENT_ACTION";            
+			else if (100 <= actionType && actionType <= META_LAST_ACTION)
+				name = actionNames[actionType - 99].actionName;
+			else
+				name = L"(out of bounds)";
 
+			std::wcout << name << L"\t(" << actionType << L") " << L"\tversion = " << m_currentActionVersion << L"\t; totalSize = " << m_unRecordSize << L"\n";
+		}	*/		
+#endif
 		m_currentActionType = actionType;
 
 		int need_skip = m_unRecordSize - (m_oStream.Tell() - m_unRecordPos);
@@ -199,7 +218,33 @@ void CSvmFile::PlayMetaFile()
 		m_pOutput->End();
 }
 
+void CSvmFile::Read_META_LINE()
+{
+	TSvmPoint start, end;
 
+	m_oStream >> start;
+	m_oStream >> end;
+
+	if (m_currentActionVersion >= 2)
+	{
+		TSvmLineInfo line_info;
+		m_oStream >> line_info;
+
+		CSvmPen *last_pen = dynamic_cast<CSvmPen *>(m_oPlayer.GetLastObject(SVM_OBJECT_PEN));
+		if (last_pen)
+		{
+			last_pen->Width = line_info.width;
+
+			switch(line_info.style)
+			{
+				case LINE_SOLID:	last_pen->PenStyle = PS_SOLID ; break;
+				case LINE_DASH:		last_pen->PenStyle = PS_DASH ; break;
+			}
+		}
+	}
+	MoveTo(start.x, start.y);
+	LineTo(end.x, end.y);
+}
 void CSvmFile::Read_META_RECTANGLE()
 {
 	TSvmRect oBox;
@@ -217,22 +262,20 @@ void CSvmFile::Read_SVM_HEADER()
 {
 	m_oStream >> m_oHeader;
 
-	//m_pDC->SetWindowExt (	m_oHeader.boundRect.nRight	- m_oHeader.boundRect.nLeft,
-	//						m_oHeader.boundRect.nBottom - m_oHeader.boundRect.nTop);
+	m_oBoundingBox = m_oHeader.boundRect;
 
-	//m_pDC->SetWindowScale(	(double)m_oHeader.mapMode.scaleX.numerator/m_oHeader.mapMode.scaleX.denominator, 
-	//						(double)m_oHeader.mapMode.scaleY.numerator/m_oHeader.mapMode.scaleY.denominator);
-	//
-	//if (m_pOutput)
-	//{
-	//	TRect oRect = m_oHeader.boundRect;// GetBoundingBox();
-	//	m_pDC->SetWindowOff(oRect.nLeft, oRect.nTop);
-	//	m_pDC->SetWindowExt(oRect.nRight - oRect.nLeft, oRect.nBottom - oRect.nTop);
-	//}
-	//else
-	{
-		m_bFirstPoint = true;
-	}
+	m_pDC->SetWindowExt (	m_oHeader.boundRect.nRight	- m_oHeader.boundRect.nLeft,
+							m_oHeader.boundRect.nBottom - m_oHeader.boundRect.nTop);
+
+	m_pDC->SetWindowScale(	(double)m_oHeader.mapMode.scaleX.numerator/m_oHeader.mapMode.scaleX.denominator, 
+							(double)m_oHeader.mapMode.scaleY.numerator/m_oHeader.mapMode.scaleY.denominator);
+
+	m_pDC->SetMapMode(m_oHeader.mapMode, true);
+	
+	m_oBoundingBox.nRight  *= m_pDC->m_dPixelWidthPrefered;
+	m_oBoundingBox.nBottom *= m_pDC->m_dPixelHeightPrefered;
+
+	m_bFirstPoint = true;
 }
 void CSvmFile::Read_META_POLYLINE()
 {
@@ -259,18 +302,31 @@ void CSvmFile::Read_META_POLYLINE()
 
 	if (m_currentActionVersion >= 3)
 	{
+		unsigned char bHasPolyFlags = 0;
+		m_oStream >> bHasPolyFlags;
+		if ( bHasPolyFlags )
+		{
+		}
+		//read flags
+//enum PolyFlags
+//{
+//    POLY_NORMAL,
+//    POLY_SMOOTH,
+//    POLY_CONTROL,
+//    POLY_SYMMTR
+//};
 	}
 
-	if (polygon.count < 1) return;
+	if (polygon.points.size() < 1) return;
 
 	MoveTo(polygon.points[0].x, polygon.points[0].y);
 
-	for (int i = 1; i < polygon.count; i++)
+	for (int i = 1; i < polygon.points.size(); i++)
 	{
 		LineTo(polygon.points[i].x, polygon.points[i].y);
 	}
 	ClosePath();
-	DrawPath(true, true);
+	DrawPath(true, true);//false);
 }
 
 void CSvmFile::Read_META_POLYGON()
@@ -279,11 +335,11 @@ void CSvmFile::Read_META_POLYGON()
 
 	m_oStream >> polygon;
 
-	if (polygon.count < 1) return;
+	if (polygon.points.size() < 1) return;
 
 	MoveTo(polygon.points[0].x, polygon.points[0].y);
 
-	for (int i = 1; i < polygon.count; i++)
+	for (int i = 1; i < polygon.points.size(); i++)
 	{
 		LineTo(polygon.points[i].x, polygon.points[i].y);
 	}
@@ -291,7 +347,7 @@ void CSvmFile::Read_META_POLYGON()
 	DrawPath(true, true);
 }
 
-void CSvmFile::Read_META_POLYPOLYGON(std::vector<TSvmPolygon> & polygons)
+void CSvmFile::Read_META_POLYPOLYGON(std::vector<TSvmPolygon> & polygons, std::vector<TSvmPolygon> & complexPolygons)
 {
 	unsigned short ushNumberOfPolygons;
 	m_oStream >> ushNumberOfPolygons;
@@ -306,8 +362,6 @@ void CSvmFile::Read_META_POLYPOLYGON(std::vector<TSvmPolygon> & polygons)
 		polygons.push_back(poligon);
 	}
 
-	std::vector<TSvmPolygon> complexPolygons;
-
 	if (m_currentActionVersion > 1)
 	{
 		unsigned short complexPolygonCount;
@@ -320,6 +374,11 @@ void CSvmFile::Read_META_POLYPOLYGON(std::vector<TSvmPolygon> & polygons)
 			unsigned short complexPolygonIndex;
 			m_oStream >> complexPolygonIndex;
 
+			if (complexPolygonIndex >= complexPolygons.size())
+			{
+				complexPolygons.resize(complexPolygonIndex+1);
+			}
+
 			m_oStream >> complexPolygons[complexPolygonIndex];
 		}
 	}
@@ -327,39 +386,46 @@ void CSvmFile::Read_META_POLYPOLYGON(std::vector<TSvmPolygon> & polygons)
 void CSvmFile::Read_META_POLYPOLYGON()
 {
 	std::vector<TSvmPolygon> polygons;
-	Read_META_POLYPOLYGON(polygons);
+	std::vector<TSvmPolygon> complexPolygons;
 
-/////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	Read_META_POLYPOLYGON(polygons, complexPolygons);
 
-	for (unsigned short ushPolygonIndex = 0; ushPolygonIndex < polygons.size(); ushPolygonIndex++)
+	if (polygons.size() < 1) return;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////
+	if (m_pOutput)
 	{
-		unsigned short ushPointsCount = polygons[ushPolygonIndex].count;
-
-		if (ushPointsCount <= 0)
-			continue;
-
-		MoveTo(polygons[ushPolygonIndex].points[0].x, polygons[ushPolygonIndex].points[0].y);
-		for (int i = 1; i < ushPointsCount; i++)
+		m_pOutput->StartPath();
+		for (unsigned short ushPolygonIndex = 0; ushPolygonIndex < polygons.size(); ushPolygonIndex++)
 		{
-			LineTo(polygons[ushPolygonIndex].points[i].x, polygons[ushPolygonIndex].points[i].y);
+			unsigned short ushPointsCount = polygons[ushPolygonIndex].points.size();
+
+			if (ushPointsCount <= 0)
+				continue;
+
+			MoveTo(polygons[ushPolygonIndex].points[0].x, polygons[ushPolygonIndex].points[0].y);
+			for (int i = 1; i < ushPointsCount; i++)
+			{
+				LineTo(polygons[ushPolygonIndex].points[i].x, polygons[ushPolygonIndex].points[i].y);
+			}
+			ClosePath();
 		}
-		ClosePath();
+		for (unsigned short ushPolygonIndex = 0; ushPolygonIndex < complexPolygons.size(); ushPolygonIndex++)
+		{
+			unsigned short ushPointsCount = complexPolygons[ushPolygonIndex].points.size();
+
+			if (ushPointsCount <= 0)
+				continue;
+
+			MoveTo(complexPolygons[ushPolygonIndex].points[0].x, complexPolygons[ushPolygonIndex].points[0].y);
+			for (int i = 1; i < ushPointsCount; i++)
+			{
+				LineTo(complexPolygons[ushPolygonIndex].points[i].x, complexPolygons[ushPolygonIndex].points[i].y);
+			}
+			ClosePath();
+		}
+		DrawPath(true, true);
 	}
-	//for (unsigned short ushPolygonIndex = 0; ushPolygonIndex < ushNumberOfPolygons; ushPolygonIndex++)
-	//{
-	//	unsigned short ushPointsCount = complexPolygons[ushPolygonIndex].count;
-
-	//	if (ushPointsCount <= 0)
-	//		continue;
-
-	//	MoveTo(complexPolygons[ushPolygonIndex].points[0].x, complexPolygons[ushPolygonIndex].points[0].y);
-	//	for (int i = 1; i < ushPointsCount; i++)
-	//	{
-	//		LineTo(complexPolygons[ushPolygonIndex].points[i].x, complexPolygons[ushPolygonIndex].points[i].y);
-	//	}
-	//	ClosePath();
-	//}
-	DrawPath(true, true);
 }
 
 void CSvmFile::Read_META_SETMAPMODE()
@@ -448,6 +514,39 @@ void CSvmFile::Read_META_ARRAYTEXT()
 	}
 	DrawText(sText, sText.length(), startPoint.x, startPoint.y);
 }
+void CSvmFile::Read_META_TEXTRECT()
+{
+	TSvmRect	rect;
+	unsigned short style;
+	std::wstring sText;
+	
+	m_oStream >> rect;
+	parseString(m_oStream, sText, m_currentActionVersion, m_currentCharset);
+
+	m_oStream >> style;
+
+	if ( m_currentActionVersion >= 2 )
+	{
+
+	}
+	DrawText(sText, sText.length(), rect);
+}
+void CSvmFile::Read_META_TEXTALIGN()
+{
+	unsigned short nTmp16;
+	m_oStream >> nTmp16; 
+
+	unsigned int align = 0;
+	switch(nTmp16)
+	{
+	case 0:	align = TA_TOP;		break;
+	case 1:	align = TA_BASELINE;break;
+	case 2:	align = TA_BOTTOM;	break;
+	}
+
+	m_pDC->SetTextAlign(align);
+}
+
 void CSvmFile::Read_META_SETTEXTCOLOR()
 {
 	TSvmColor oColor; 
@@ -501,12 +600,14 @@ void CSvmFile::Read_META_SETLINECOLOR()
 void CSvmFile::Read_META_GRADIENTEX()
 {
 	std::vector<TSvmPolygon> polygons;
-	Read_META_POLYPOLYGON(polygons);
+	std::vector<TSvmPolygon> complexPolygons;
+
+	Read_META_POLYPOLYGON(polygons, complexPolygons);
 
 	CSvmBrush* pBrush = new CSvmBrush();
 	if (!pBrush)
 		return SetError();
-	pBrush->BrushStyle	= BS_PATHGRADIENT; 
+	pBrush->BrushStyle	= BS_LINEARGRADIENT;//BS_PATHGRADIENT; 
 
 	unsigned short nTmp16;
 
@@ -530,7 +631,9 @@ void CSvmFile::Read_META_GRADIENTEX()
 void CSvmFile::Read_META_TRANSPARENT()
 {
 	std::vector<TSvmPolygon> polygons;
-	Read_META_POLYPOLYGON(polygons);
+	std::vector<TSvmPolygon> complexPolygons;
+
+	Read_META_POLYPOLYGON(polygons, complexPolygons);
 
 	unsigned short nPercent;
 
@@ -545,7 +648,7 @@ void CSvmFile::Read_META_TRANSPARENT()
 		if (!pBrush)
 			return SetError();		
 		
-		if (last_brush)
+		if ((last_brush) /*&& (last_brush->BrushStyle > 0)*/) //skip Nofill
 		{
 			pBrush->BrushStyle = last_brush->BrushStyle; 
 			pBrush->BrushHatch = last_brush->BrushHatch; 
@@ -554,8 +657,8 @@ void CSvmFile::Read_META_TRANSPARENT()
 			pBrush->Color = last_brush->Color; 
 			pBrush->Color2 = last_brush->Color2; 
 
-			pBrush->Color.a = 0xff * nPercent /100;
-			pBrush->Color2.a = 0xff * nPercent /100;
+			pBrush->Color.a		= 0xff * nPercent /100;
+			pBrush->Color2.a	= 0xff * nPercent /100;
 		}
 		m_oPlayer.RegisterObject((CSvmObjectBase*)pBrush);
 	
@@ -563,7 +666,7 @@ void CSvmFile::Read_META_TRANSPARENT()
 		
 		for (unsigned short ushPolygonIndex = 0; ushPolygonIndex < polygons.size(); ushPolygonIndex++)
 		{
-			unsigned short ushPointsCount = polygons[ushPolygonIndex].count;
+			unsigned short ushPointsCount = polygons[ushPolygonIndex].points.size();
 
 			if (ushPointsCount <= 0)
 				continue;
@@ -579,6 +682,49 @@ void CSvmFile::Read_META_TRANSPARENT()
 	 }
 
 	DrawPath(false, true);
+}
+
+void CSvmFile::Read_META_FLOATTRANSPARENT()
+{
+	// тут возможен также вариант svg
+	CSvmFile metaFile(m_oStream.GetCurPtr() , m_unRecordSize);
+	metaFile.SetOutputDevice(m_pOutput);
+	metaFile.PlayMetaFile();
+	
+	int skip_size = metaFile.m_oStream.Tell();
+
+	m_oStream.Skip( skip_size);
+
+	TSvmPoint	point;
+	TSvmSize	size;
+
+	m_oStream >> point;
+	m_oStream >> size;
+
+///////////////////////////////////////////////////
+	CSvmBrush* pBrush = new CSvmBrush();
+	if (!pBrush)
+		return SetError();
+	pBrush->BrushStyle	= BS_LINEARGRADIENT; 
+
+	m_oStream >> pBrush->BrushBounds;
+	
+	unsigned short nTmp16;
+    m_oStream >> nTmp16; 
+	ESvmGradientStyle gradientStyle = (ESvmGradientStyle) nTmp16;
+
+	m_oStream >> pBrush->Color;
+	m_oStream >> pBrush->Color2;
+
+	m_oStream >> pBrush->BrushStyleEx;
+    m_oStream >> nTmp16; //Border 
+    m_oStream >> nTmp16; //OfsX 
+    m_oStream >> nTmp16; //OfsY 
+	m_oStream >> nTmp16; //IntensityStart 
+    m_oStream >> nTmp16; //IntensityEnd 
+    m_oStream >> nTmp16; //StepCount;	
+	
+	m_oPlayer.RegisterObject((CSvmObjectBase*)pBrush);
 }
 
 void CSvmFile::Read_META_GRADIENT()
@@ -664,39 +810,37 @@ void CSvmFile::Read_META_RASTEROP()
 	
 }
 
+void CSvmFile::Read_META_BMP()
+{
+
+}
 void CSvmFile::Read_META_BMPSCALE()
 {
-	TSvmBitmapSize	size; 
-	TSvmBitmapPoint	point; 
-
-	m_oStream >> size;
-	m_oStream >> point;
-
-	unsigned int	rOffset = 0;
+	unsigned int	nHeaderSize = 0;
 	
 	unsigned int	nTmp32;
 	unsigned short	nTmp16 = 0;
 	bool			bRet = false;
 
 	m_oStream >> nTmp16;
-	m_oStream >> rOffset;
+	m_oStream >> nHeaderSize;
 
 	if ( ( 0x4D42 == nTmp16 ) || ( 0x4142 == nTmp16 ) )
 	{
 		if ( 0x4142 == nTmp16 )
 		{
-			m_oStream.Skip( 12 );
+			m_oStream.Skip( 12 );//не то !!!
 			m_oStream >> nTmp16;
 			m_oStream.Skip( 8 );
 			m_oStream >> nTmp32;
-			rOffset = nTmp32 - 28UL;;
+			nHeaderSize = nTmp32 - 28UL;;
 			bRet = ( 0x4D42 == nTmp16 );
 		}
 		else
 		{
-			m_oStream.Skip( 8L );
+			m_oStream.Skip( 4 );
 			m_oStream >> nTmp32;
-			rOffset = nTmp32 - 14UL;
+			nHeaderSize = nTmp32 - 14;
 		}
 	}
 
@@ -719,73 +863,109 @@ void CSvmFile::Read_META_BMPSCALE()
 	else
 		nColors = 0;
 
-	if( ZCOMPRESS == bitmap_info.nCompression && m_pOutput )
+	BYTE *pBgraBuffer = NULL;
+
+	unsigned int ulWidth = 0, ulHeight = 0;
+	
+	if( ZCOMPRESS == bitmap_info.nCompression )
 	{
 		COfficeUtils OfficeUtils(NULL);
 		
 		ULONG destSize, srcSize;
 		m_oStream >> srcSize >> destSize >> bitmap_info.nCompression;
 
-		BYTE*		srcBuf = m_oStream.GetCurPtr();
-		BYTE*		destBuf = new BYTE[destSize];
+		BYTE*	srcBuf	= m_oStream.GetCurPtr();
+		BYTE*	destBuf = new BYTE[destSize];
 
 		if (destSize > 0 && m_pOutput && destBuf )
 		{
-			if (OfficeUtils.Uncompress(destBuf, &destSize, srcBuf, srcSize) == S_OK)
+			if (OfficeUtils.Uncompress(destBuf, &destSize, srcBuf, srcSize) != S_OK)
 			{
-				//memcpy(destBuf,&bitmap_info,40);
-				//unsigned int ulWidth=0, ulHeight=0;
-				//BYTE*		bufBGRA = NULL;
-				//MetaFile::ReadImage(destBuf, destSize, 0, &bufBGRA, &ulWidth, &ulHeight);
-
-				int size_BGRA = bitmap_info.nWidth * bitmap_info.nHeight * 4;
-
-				BYTE*		bufBGRA = new BYTE [size_BGRA];
-				if (bufBGRA)
-				{
-					BYTE* bufBGRA1 = bufBGRA;
-					int  nCount = bitmap_info.nHeight;
-					for( int j = bitmap_info.nHeight-1; j>=0; j--)
-					{
-						for( long i=0; i < bitmap_info.nWidth; i+=3 )
-						{
-							*bufBGRA1 = destBuf[j * bitmap_info.nWidth + i + 0];	bufBGRA1++;
-							*bufBGRA1 = destBuf[j * bitmap_info.nWidth + i + 1];	bufBGRA1++;
-							*bufBGRA1 = destBuf[j * bitmap_info.nWidth + i + 2];	bufBGRA1++;
-							*bufBGRA1 = 0xff;										bufBGRA1++;
-						}
-					}
-					//for ( int i=0, j=0 ; i < destSize, j < size_BGRA; i+=3, j+=4)
-					//{
-					//	bufBGRA[j+0] = destBuf[i+0];
-					//	bufBGRA[j+1] = destBuf[i+1];
-					//	bufBGRA[j+2] = destBuf[i+2];
-					//	bufBGRA[j+3] = 0xff;
-					//}
-					double dX = point.x, dY = point.y, dX1 = point.x + size.cx, dY1 =point.y + size.cy;
-					TranslatePoint(point.x, point.y, dX, dY);
-					TranslatePoint(point.x + size.cx, point.y + size.cy, dX1, dY1);
-
-					dX1 = dX1-dX;
-					dY1 = dY1-dY;
-
-					MapMode aMapMode;
-					aMapMode.unit = MAP_PIXEL;//MAP_MM;
-									  //Fraction( 1000, aHeader.nXPelsPerMeter )
-									  //Fraction( 1000, aHeader.nYPelsPerMeter ) 
-
-					m_pDC->SetMapMode(aMapMode);
-					UpdateOutputDC();
-
-					m_pOutput->DrawBitmap(dX, dY, dX1, dY1, bufBGRA, bitmap_info.nWidth, bitmap_info.nHeight);
-					//m_pOutput->DrawBitmap(dX, dY, dX1, dY1, bufBGRA, ulWidth, ulHeight);
-					delete []bufBGRA;
-				}
+				delete []destBuf;
+				return;
 			}
-			delete []destBuf;
 		}
+		m_oStream.Skip(srcSize);
+	
+		MetaFile::ReadImage((BYTE*)&bitmap_info, bitmap_info.nSize, destBuf, destSize, &pBgraBuffer, &ulWidth, &ulHeight);
+		delete []destBuf;
 	}
-	UpdateOutputDC();
+	else
+	{
+		BYTE *Header = new BYTE [ nHeaderSize];
+		memcpy(Header, &bitmap_info, bitmap_info.nSize);
+
+		m_oStream.ReadBytes(Header + bitmap_info.nSize, nHeaderSize - bitmap_info.nSize);
+
+		MetaFile::ReadImage(Header , nHeaderSize,  m_oStream.GetCurPtr(), bitmap_info.nSizeImage, &pBgraBuffer, &ulWidth, &ulHeight);
+		m_oStream.Skip(bitmap_info.nSizeImage);
+		delete Header;
+	}
+	if (bitmap_info.nHeight > m_oBoundingBox.nRight &&
+			bitmap_info.nWidth > m_oBoundingBox.nBottom)
+	{
+		m_oBoundingBox.nRight = bitmap_info.nWidth;
+		m_oBoundingBox.nBottom = bitmap_info.nHeight;
+	}
+	TSvmSize	size; 
+	TSvmPoint	point; 
+
+	m_oStream >> point;
+	m_oStream >> size.cx;
+	m_oStream >> size.cy;
+
+	MapMode aMapMode_new, aMapMode_old;
+	//
+	aMapMode_old.unit = m_pDC->GetMapMode();	
+	aMapMode_new.unit = MAP_RELATIVE;
+
+	m_pDC->SetMapMode(aMapMode_new);
+
+	if (pBgraBuffer && m_pOutput)
+	{
+		double w = m_oHeader.boundRect.nRight-m_oHeader.boundRect.nLeft;
+		double h = m_oHeader.boundRect.nBottom-m_oHeader.boundRect.nTop;
+
+		w /= size.cx;
+		h /= size.cy;
+
+		double dX = point.x, dY = point.y, dX1 = point.x + size.cx, dY1 = point.y + size.cy;
+		
+		dX *= w;
+		dX1 *= w;
+		
+		dY *= h;
+		dY1 *= h;
+
+		//dX /= w;
+		//dX1 /= w;
+		//
+		//dY /= h;
+		//dY1 /= h;
+
+		//dX *= bitmap_info.nWidth;
+		//dX1 *= bitmap_info.nWidth;
+		//
+		//dY *= bitmap_info.nHeight;
+		//dY1 *= bitmap_info.nHeight;
+
+		TranslatePoint(dX, dY, dX, dY);
+		TranslatePoint(dX + dX1, dY + dY1, dX1, dY1);
+		
+		dX1 = dX1-dX;
+		dY1 = dY1-dY;
+
+		if (m_pOutput)
+		{
+			m_pOutput->DrawBitmap( dX, dY, dX1, dY1, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
+		}
+		delete []pBgraBuffer;
+		
+		UpdateOutputDC();
+	}
+	m_pDC->SetMapMode(aMapMode_old);
+
+
 }
 } // namespace MetaFile
 

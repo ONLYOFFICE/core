@@ -268,11 +268,11 @@ void CSvmPlayer::Pop()
 	//	else
 	//		SetMapMode();
 	//}
-	if ( m_nFlags & PUSH_CLIPREGION )
-	{
-		GetDC()->GetClip()->ClipOnRenderer(m_pFile->m_pOutput);
-		GetDC()->GetClip()->Reset();
-	}
+	//if ( m_nFlags & PUSH_CLIPREGION )
+	//{
+	//	GetDC()->GetClip()->ClipOnRenderer(m_pFile->m_pOutput);
+	//	GetDC()->GetClip()->Reset();
+	//}
 
 	m_nFlags = 0;
 	//if ( m_nFlags & PUSH_REFPOINT )
@@ -341,11 +341,11 @@ void CSvmPlayer::Push(int nFlags) // объекты с множественной настройкой
 	//	else
 	//		pData->mpMapMode = NULL;
 	//}
-	if ( nFlags & PUSH_CLIPREGION )
-	{
-		GetDC()->GetClip()->Reset();
-		//new region
-	}
+	//if ( nFlags & PUSH_CLIPREGION )
+	//{
+	//	GetDC()->GetClip()->Reset();
+	//	//new region
+	//}
 	//if ( nFlags & PUSH_REFPOINT )
 	//{
 	//	if ( mbRefPoint )
@@ -405,8 +405,10 @@ CSvmDC::CSvmDC()
 	m_ulStretchMode = 0;
 	m_oWindow.Init();
 	m_oViewport.Init();
-	m_dPixelHeight = 1;
-	m_dPixelWidth  = 1;
+
+	m_dPixelHeight = m_dPixelHeightPrefered = 1;
+	m_dPixelWidth  = m_dPixelWidthPrefered	= 1;
+
 	m_oCurPos.x = 0;
 	m_oCurPos.y = 0;
 	m_unArcDirection = AD_COUNTERCLOCKWISE;
@@ -435,44 +437,76 @@ CSvmDC*         CSvmDC::Copy()
 	pNewDC->m_ulFillMode = m_ulFillMode;
 	pNewDC->m_ulStretchMode = m_ulStretchMode;
 	pNewDC->m_ulRop2Mode = m_ulRop2Mode;
+	
 	pNewDC->m_dPixelHeight = m_dPixelHeight;
 	pNewDC->m_dPixelWidth = m_dPixelWidth;
+	pNewDC->m_dPixelHeightPrefered = m_dPixelHeightPrefered;
+	pNewDC->m_dPixelWidthPrefered = m_dPixelWidthPrefered;
+
 	pNewDC->m_oWindow.Copy(&m_oWindow);
 	pNewDC->m_oViewport.Copy(&m_oViewport);
 	pNewDC->m_oCurPos = m_oCurPos;
-	pNewDC->m_oClip = m_oClip;
+	//pNewDC->m_oClip = m_oClip;
 	pNewDC->m_unArcDirection = m_unArcDirection;
 
 	return pNewDC;
 }
-void CSvmDC::SetMapMode(MapMode & mapMode)
+ESvmMapUnit CSvmDC::GetMapMode()
+{
+	return m_ulMapMode;
+}
+void CSvmDC::SetMapMode(MapMode & mapMode, bool prefered )
 {
 	m_ulMapMode = (ESvmMapUnit)mapMode.unit;
 
+	double dPixel = 1.;//
 	switch (m_ulMapMode)
 	{
 	case MAP_MM:	// 1 unit = 1 mm
 	{
-		double dPixel = 1. * 72 / 25.4;
+		dPixel = 1. * 72 / 25.4;
 		SetPixelWidth(dPixel);
 		SetPixelHeight(dPixel);		
 	}break;
 	case MAP_CM:	// 1 unit = 1 cm = 10 mm
 	{
-		double dPixel = 10. * 72 / 25.4;
+		dPixel = 10. * 72 / 25.4;
 		SetPixelWidth(dPixel);
 		SetPixelHeight(dPixel);		
 	}break;
 	case MAP_100TH_MM:
+	{
+		dPixel = 1. * 72 / 2540.;
+		SetPixelWidth(dPixel);
+		SetPixelHeight(dPixel);	
+	}break;
 	case MAP_10TH_MM:
+	{
+		dPixel = 1. * 72 / 254.;
+		SetPixelWidth(dPixel);
+		SetPixelHeight(dPixel);	
+	}break;
 	case MAP_1000TH_INCH:
+	{	
+		dPixel = 1. * 72 / 1000.;
+		SetPixelWidth(dPixel);
+		SetPixelHeight(dPixel);	
+	}break;
 	case MAP_100TH_INCH:
+	{
+		dPixel = 1.* 72 / 100.;
+		SetPixelWidth(dPixel);
+		SetPixelHeight(dPixel);	
+	}break;
 	case MAP_10TH_INCH:
-		//хз
-		break;
+	{
+		dPixel = 1. * 72 / 10.;
+		SetPixelWidth(dPixel);
+		SetPixelHeight(dPixel);	
+	}break;
 	case MAP_INCH:	// 1 unit = 1 inch
 	{
-		double dPixel = 1. * 72;
+		dPixel = 1. * 72;
 		SetPixelWidth(dPixel);
 		SetPixelHeight(dPixel);		
 	}break;
@@ -488,7 +522,7 @@ void CSvmDC::SetMapMode(MapMode & mapMode)
 	}break;
 	case MAP_PIXEL:
 	{
-		double dPixel = 1. * 3. /4.;
+		dPixel = 0.5;// /72.; //todooo
 		SetPixelWidth(dPixel);
 		SetPixelHeight(dPixel);		
 	}break;
@@ -502,6 +536,15 @@ void CSvmDC::SetMapMode(MapMode & mapMode)
 	case MAP_LASTENUMDUMMY:
 		break;
 	}
+
+	if (prefered )
+	{
+		m_dPixelHeightPrefered	= m_dPixelHeight;
+		m_dPixelWidthPrefered	= m_dPixelWidth;
+
+	}
+
+	UpdatePixelMetrics();
 }
 
 TXForm* CSvmDC::GetTransform()
@@ -607,7 +650,8 @@ CSvmPen* CSvmDC::GetPen()
 }
 CSvmClip* CSvmDC::GetClip()
 {
-	return &m_oClip;
+	return NULL;;
+	//return &m_oClip;
 }
 void CSvmDC::SetStretchMode(unsigned int& oMode)
 {
@@ -617,19 +661,12 @@ unsigned int CSvmDC::GetStretchMode()
 {
 	return m_ulStretchMode;
 }
-double          CSvmDC::GetPixelWidth()
-{
-	return m_dPixelWidth;
-}
-double          CSvmDC::GetPixelHeight()
-{
-	return m_dPixelHeight;
-}
-void            CSvmDC::SetPixelWidth(double dPixelW)
+
+void CSvmDC::SetPixelWidth(double dPixelW)
 {
 	m_dPixelWidth = dPixelW;
 }
-void            CSvmDC::SetPixelHeight(double dPixelH)
+void CSvmDC::SetPixelHeight(double dPixelH)
 {
 	m_dPixelHeight = dPixelH;
 }
@@ -640,7 +677,7 @@ void CSvmDC::SetWindowOrigin(TSvmPoint& oPoint)
 
 	UpdatePixelMetrics();
 }
-void  CSvmDC::SetWindowExtents(TSvmSize& oPoint)
+void CSvmDC::SetWindowExtents(TSvmSize& oPoint)
 {
 	m_oWindow.ulW = oPoint.cx;
 	m_oWindow.ulH = oPoint.cy;

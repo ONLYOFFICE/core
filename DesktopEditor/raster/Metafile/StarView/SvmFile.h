@@ -18,6 +18,15 @@ class CSvmFile : virtual public IMetaFileBase
 		 m_currentCharset		= 0;
 		 m_currentActionType	= 0;
 	 };
+	 CSvmFile(BYTE *Data, int DataSize): m_oPlayer(this)
+	 {
+		 m_oStream.SetStream(Data, DataSize);
+		 
+		 m_pDC					= m_oPlayer.GetDC();
+		 m_currentActionVersion = 0;
+		 m_currentCharset		= 0;
+		 m_currentActionType	= 0;
+	 }
 
 	 ~CSvmFile()
 	 {
@@ -36,19 +45,34 @@ class CSvmFile : virtual public IMetaFileBase
 	}
 	TRect*   GetBounds()
 	{
-		return &m_oHeader.boundRect;//&m_oBoundingBox;//
+		return &m_oBoundingBox;
 	}	
 	TRect* GetDCBounds()
 	{
-		return  &m_oHeader.boundRect;
+		//if ( MAP_RELATIVE == m_pDC->GetMapMode())
+		//{
+			TSvmWindow* pViewport = m_pDC->GetViewport();
+
+			m_oDCRect.nLeft   = pViewport->lX;
+			m_oDCRect.nTop    = pViewport->lY;
+			m_oDCRect.nRight  = pViewport->ulW + pViewport->lX;
+			m_oDCRect.nBottom = pViewport->ulH + pViewport->lY;
+			return &m_oDCRect;
+
+		//}
+		//else
+		{
+			return &m_oHeader.boundRect;
+		}
+
 	}
 	double GetPixelHeight()
 	{
-		return m_pDC->GetPixelHeight();
+		return m_pDC->m_dPixelHeight;
 	}
 	double GetPixelWidth()
 	{
-		return m_pDC->GetPixelWidth();
+		return m_pDC->m_dPixelWidth;
 	}
 	int GetTextColor()
 	{
@@ -140,16 +164,19 @@ class CSvmFile : virtual public IMetaFileBase
 
 	unsigned short		m_currentActionVersion;
 	unsigned short		m_currentCharset;
-        unsigned short		m_currentActionType;
+	unsigned short		m_currentActionType;
 
 	unsigned int		m_unRecordSize;
 	unsigned int		m_unRecordPos;
 	
 	bool				m_bFirstPoint;
 	TRect				m_oBoundingBox;
+	//TRect				m_oRect;
+	TRect				m_oDCRect;
 
 	friend class CSvmPlayer;
 
+	void Read_META_LINE();
 	void Read_META_RECTANGLE();
 	void Read_SVM_HEADER();
 	void Read_META_POLYGON();
@@ -157,20 +184,24 @@ class CSvmFile : virtual public IMetaFileBase
 	void Read_META_POLYPOLYGON();
 	void Read_META_TEXT();
 	void Read_META_ARRAYTEXT();
+	void Read_META_TEXTALIGN();
+	void Read_META_TEXTRECT();
 	void Read_META_SETMAPMODE();
 	void Read_META_SETTEXTCOLOR();
 	void Read_META_SETFILLCOLOR();
 	void Read_META_SETLINECOLOR();
 	void Read_META_FONT();
 	void Read_META_BMPSCALE();
+	void Read_META_BMP();
 	void Read_META_RASTEROP();
 	void Read_META_PUSH();
 	void Read_META_POP();
 	void Read_META_GRADIENT();
 	void Read_META_GRADIENTEX();
 	void Read_META_TRANSPARENT();
+	void Read_META_FLOATTRANSPARENT();
 
-	void Read_META_POLYPOLYGON(std::vector<TSvmPolygon> & polygons);
+	void Read_META_POLYPOLYGON(std::vector<TSvmPolygon> & polygons, std::vector<TSvmPolygon> & complexPolygons);
 
 	
 //-------------------------------------------------------------------------------------------------------
@@ -183,12 +214,13 @@ class CSvmFile : virtual public IMetaFileBase
 		TSvmWindow* pWindow		= m_pDC->GetWindow();
 		TSvmWindow* pViewport	= m_pDC->GetViewport();
 
-		dX = (double)((double)(nX - pWindow->lX) * m_pDC->GetPixelWidth()) + pViewport->lX;
-		dY = (double)((double)(nY - pWindow->lY) * m_pDC->GetPixelHeight()) + pViewport->lY;
+		dX = (double)((double)(nX - pWindow->lX) * m_pDC->m_dPixelWidth) + pViewport->lX;
+		dY = (double)((double)(nY - pWindow->lY) * m_pDC->m_dPixelHeight) + pViewport->lY;
 
 		// Координаты приходят уже с примененной матрицей. Поэтому сначала мы умножаем на матрицу преобразования, 
 		// вычитаем начальные координаты и умножаем на обратную матрицу преобразования.
 		TRect* pBounds = GetDCBounds();
+		
 		double dT = pBounds->nTop;
 		double dL = pBounds->nLeft;
 
@@ -272,8 +304,6 @@ class CSvmFile : virtual public IMetaFileBase
 		}
 		else
 		{
-			RegisterPoint(nX, nY);
-			RegisterPoint(nX + nW, nY + nH);
 		}
 	}
 	void MoveTo(TSvmPoint& oPoint)
@@ -303,7 +333,6 @@ class CSvmFile : virtual public IMetaFileBase
 	{
 		double dX = nX, dY = nY;
 		TranslatePoint(nX, nY, dX, dY);
-		//RegisterPoint(nX, nY);
 
 		//if (m_pPath)
 		//{
@@ -394,6 +423,42 @@ class CSvmFile : virtual public IMetaFileBase
 		if (m_pOutput)
 			m_pOutput->UpdateDC();
 	}
+	void DrawText(std::wstring& wsString, unsigned int unCharsCount, TSvmRect& rect)
+	{
+		int nX = rect.l;
+		int nY = rect.t;
+
+		int nX1 = rect.r;
+		int nY1 = rect.b;
+	
+		if (m_pDC->GetTextAlign() & TA_UPDATECP)
+		{
+			nX = m_pDC->GetCurPos().x;
+			nY = m_pDC->GetCurPos().y;
+		}
+
+		if (m_pOutput)
+		{
+			double dX = nX, dY = nY, dX1 = nX1, dY1 = nY1;
+			TranslatePoint(nX, nY, dX, dY);
+			TranslatePoint(nX1, nY1, dX1, dY1);
+
+			double* pdDx =  new double[unCharsCount];
+			if (pdDx)
+			{
+				for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount; unCharIndex++)
+				{
+					pdDx[unCharIndex] = (dX1 - dX)/unCharsCount;
+				}
+			}
+
+			m_pOutput->DrawString(wsString, unCharsCount, dX, dY, pdDx);
+
+			if (pdDx)
+				delete[] pdDx;
+		}
+	}
+	
 	void DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY, int* pnDx = NULL)
 	{
 		int nX = _nX;
@@ -439,24 +504,28 @@ class CSvmFile : virtual public IMetaFileBase
 	}
    TRect GetBoundingBox()
 	{
-		TRect oBB = m_oBoundingBox;
+		TRect oBB = m_oHeader.boundRect;
 
 		if (abs(oBB.nRight - oBB.nLeft) <= 1)
 			oBB.nRight = oBB.nLeft + 1024;
 
 		if (abs(oBB.nBottom - oBB.nTop) <= 1)
-			oBB.nBottom = m_oBoundingBox.nTop + 1024;
+			oBB.nBottom = oBB.nTop + 1024;
 
 		return oBB;
 	}
 	void RegisterPoint(short shX, short shY)
 	{
+		shX *= m_pDC->m_dPixelWidth;
+		shY *= m_pDC->m_dPixelHeight;
+
 		if (m_bFirstPoint)
 		{
 			m_oBoundingBox.nLeft   = shX;
 			m_oBoundingBox.nRight  = shX;
 			m_oBoundingBox.nTop    = shY;
 			m_oBoundingBox.nBottom = shY;
+			
 			m_bFirstPoint = false;
 		}
 		else

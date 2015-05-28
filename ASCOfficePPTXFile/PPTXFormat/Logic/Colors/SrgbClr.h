@@ -41,20 +41,30 @@ namespace PPTX
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-                pWriter->StartNode(_T("a:srgbClr"));
+				CString sNodeNamespace;
+				CString sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					sNodeNamespace = _T("w14:");
+					sAttrNamespace = sNodeNamespace;
+				}
+				else
+					sNodeNamespace = _T("a:");
+
+				pWriter->StartNode(sNodeNamespace + _T("srgbClr"));
 				
 				CString str = _T("");
 				str.Format(_T("%.02X%.02X%.02X"), red, green, blue);
 						
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("val"), str);
+				pWriter->WriteAttribute(sAttrNamespace + _T("val"), str);
 				pWriter->EndAttributes();
 
 				size_t nCount = Modifiers.size();
 				for (size_t i = 0; i < nCount; ++i)
 					Modifiers[i].toXmlWriter(pWriter);
 				
-				pWriter->EndNode(_T("a:srgbClr"));
+				pWriter->EndNode(sNodeNamespace + _T("srgbClr"));
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

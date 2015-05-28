@@ -44,7 +44,12 @@ namespace PPTX
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString strName = (_T("") == m_namespace) ? _T("solidFill") : (m_namespace + _T(":solidFill"));
+				CString strName;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+					strName = _T("w14:solidFill");
+				else
+					strName = (_T("") == m_namespace) ? _T("solidFill") : (m_namespace + _T(":solidFill"));
+
 				pWriter->StartNode(strName);
 				pWriter->EndAttributes();
 				

@@ -45,7 +45,9 @@ namespace PPTX
 				node.ReadAttributeBase(L"flip", flip);
 				node.ReadAttributeBase(L"rotWithShape", rotWithShape);
 
-				node.LoadArray(_T("a:gsLst"), _T("a:gs"), GsLst);
+				XmlUtils::CXmlNode oNode = node.ReadNodeNoNS(_T("gsLst"));
+				if (oNode.IsValid())
+					oNode.LoadArray(_T("*"), GsLst);
 
 				XmlUtils::CXmlNodes oNodes;
 				if (node.GetNodes(_T("*"), oNodes))
@@ -97,15 +99,29 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				CString strName = (_T("") == m_namespace) ? _T("gradFill") : (m_namespace + _T(":gradFill"));
+				CString sAttrNamespace;
+				CString strName;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					sAttrNamespace = _T("w14:");
+					strName = _T("w14:gradFill");
+				}
+				else
+				{
+					strName = (_T("") == m_namespace) ? _T("gradFill") : (m_namespace + _T(":gradFill"));
+				}
+
 				pWriter->StartNode(strName);
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("flip"), flip);
-				pWriter->WriteAttribute(_T("rotWithShape"), rotWithShape);
+				pWriter->WriteAttribute(sAttrNamespace + _T("flip"), flip);
+				pWriter->WriteAttribute(sAttrNamespace + _T("rotWithShape"), rotWithShape);
 				pWriter->EndAttributes();
 
-				pWriter->WriteArray(_T("a:gsLst"), GsLst);
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+					pWriter->WriteArray(_T("w14:gsLst"), GsLst);
+				else
+					pWriter->WriteArray(_T("a:gsLst"), GsLst);
 				pWriter->Write(path);
 				pWriter->Write(lin);
 				pWriter->Write(tileRect);

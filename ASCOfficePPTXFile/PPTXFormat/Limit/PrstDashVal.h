@@ -63,6 +63,25 @@ namespace PPTX
 					return 10;
 				return 6;
 			}
+
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 0: m_strValue = _T("dash"); break;
+				case 1: m_strValue = _T("dashDot"); break;
+				case 2: m_strValue = _T("dot"); break;
+				case 3: m_strValue = _T("lgDash"); break;
+				case 4: m_strValue = _T("lgDashDot"); break;
+				case 5: m_strValue = _T("lgDashDotDot"); break;
+				case 6: m_strValue = _T("solid"); break;
+				case 7: m_strValue = _T("sysDash"); break;
+				case 8: m_strValue = _T("sysDashDot"); break;
+				case 9: m_strValue = _T("sysDashDotDot"); break;
+				case 10: m_strValue = _T("sysDot"); break;
+				default: m_strValue = _T("solid"); break;
+				}
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX

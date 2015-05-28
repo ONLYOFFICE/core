@@ -18,7 +18,7 @@ namespace PPTX
 				name	= node.GetName();
 				node.ReadAttributeBase(L"val", val);
 
-				if (name == _T("a:alpha"))
+				if (XmlUtils::GetNameNoNS(name) == _T("alpha"))
 				{
 					nullable_string sTmp;
 					node.ReadAttributeBase(L"val", sTmp);
@@ -54,11 +54,20 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{				
-				pWriter->StartNode(name);
+				CString _name;
+				CString sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					_name = _T("w14:") + XmlUtils::GetNameNoNS(name);
+					sAttrNamespace = _T("w14:");
+				}
+				else
+					_name = name;
+				pWriter->StartNode(_name);
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("val"), val);
+				pWriter->WriteAttribute(sAttrNamespace + _T("val"), val);
 				pWriter->EndAttributes();
-				pWriter->EndNode(name);
+				pWriter->EndNode(_name);
 			}
 
 		public:

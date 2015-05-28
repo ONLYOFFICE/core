@@ -21,16 +21,23 @@ namespace PPTX
 			virtual void GetJoinFrom(XmlUtils::CXmlNode& element)
 			{
 				type = JoinEmpty;
-
-				XmlUtils::CXmlNode oNode;
-				if(element.GetNode(_T("a:round"), oNode))
+				XmlUtils::CXmlNode oNode = element.ReadNodeNoNS(_T("round"));
+				if (oNode.IsValid())
 					type = JoinRound;
-				else if(element.GetNode(_T("a:bevel"), oNode))
-					type = JoinBevel;
-				else if(element.GetNode(_T("a:miter"), oNode))
+				else
 				{
-					type = JoinMiter;
-					oNode.ReadAttributeBase(L"lim", lim);
+					oNode = element.ReadNodeNoNS(_T("bevel"));
+					if (oNode.IsValid())
+						type = JoinBevel;
+					else
+					{
+						oNode = element.ReadNodeNoNS(_T("miter"));
+						if (oNode.IsValid())
+						{
+							type = JoinMiter;
+							oNode.ReadAttributeBase(L"lim", lim);
+						}
+					}
 				}
 
 				Normalize();
@@ -71,21 +78,30 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
+				CString sNodeNamespace;
+				CString sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					sNodeNamespace = _T("w14:");
+					sAttrNamespace = sNodeNamespace;
+				}
+				else
+					sNodeNamespace = _T("a:");
 				if (type == JoinRound)
 				{
-					pWriter->WriteString(_T("<a:round/>"));
+					pWriter->WriteString(_T("<") + sNodeNamespace + _T("round/>"));
 				}
 				else if (type == JoinBevel)
 				{
-					pWriter->WriteString(_T("<a:bevel/>"));
+					pWriter->WriteString(_T("<") + sNodeNamespace + _T("bevel/>"));
 				}
 				else if (type == JoinMiter)
 				{
-					pWriter->StartNode(_T("a:miter"));
+					pWriter->StartNode(sNodeNamespace + _T("miter"));
 					pWriter->StartAttributes();
-					pWriter->WriteAttribute(_T("lim"), lim);
+					pWriter->WriteAttribute(sAttrNamespace + _T("lim"), lim);
 					pWriter->EndAttributes();
-					pWriter->EndNode(_T("a:miter"));
+					pWriter->EndNode(sNodeNamespace + _T("miter"));
 				}
 			}
 

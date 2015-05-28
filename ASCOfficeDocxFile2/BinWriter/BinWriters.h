@@ -442,9 +442,10 @@ namespace BinDocxRW
 		BinaryCommonWriter m_oBcw;
 	public:
 		OOX::CTheme* m_poTheme;
+		NSBinPptxRW::CDrawingConverter* m_pOfficeDrawingConverter;
 	public:
 		DocWrapper::FontProcessor& m_oFontProcessor;
-	public: Binary_rPrWriter(ParamsWriter& oParamsWriter):m_oBcw(oParamsWriter),m_poTheme(oParamsWriter.m_poTheme),m_oFontProcessor(*oParamsWriter.m_pFontProcessor)
+	public: Binary_rPrWriter(ParamsWriter& oParamsWriter) :m_oBcw(oParamsWriter), m_poTheme(oParamsWriter.m_poTheme), m_oFontProcessor(*oParamsWriter.m_pFontProcessor), m_pOfficeDrawingConverter(oParamsWriter.m_pOfficeDrawingConverter)
 			{
 			}
 			void Write_rPr(const OOX::Logic::CRunProperty& rPr)
@@ -740,6 +741,28 @@ namespace BinDocxRW
 					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::Vanish);
 					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Byte);
 					m_oBcw.m_oStream.WriteBOOL(rPr.m_oVanish->m_oVal.ToBool());
+				}
+				if (false != rPr.m_sTextOutline.IsInit())
+				{
+					CString sTextOutline = rPr.m_sTextOutline.get2();
+					//делаем replace потому что читать имена node без namespace можем а атрибуты нет, потому что храним их в map
+					sTextOutline.Replace(_T("w14:"), _T(""));
+					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::TextOutline);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+					int nCurPos = m_oBcw.WriteItemWithLengthStart();
+					m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_TEXT_OUTLINE, sTextOutline);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
+				}
+				if (false != rPr.m_sTextFill.IsInit())
+				{
+					CString sTextFill = rPr.m_sTextFill.get2();
+					//делаем replace потому что читать имена node без namespace можем а атрибуты нет, потому что храним их в map
+					sTextFill.Replace(_T("w14:"), _T(""));
+					m_oBcw.m_oStream.WriteBYTE(c_oSerProp_rPrType::TextFill);
+					m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
+					int nCurPos = m_oBcw.WriteItemWithLengthStart();
+					m_pOfficeDrawingConverter->GetRecordBinary(XMLWRITER_RECORD_TYPE_TEXT_FILL, sTextFill);
+					m_oBcw.WriteItemWithLengthEnd(nCurPos);
 				}
 			};
 	};

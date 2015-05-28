@@ -87,15 +87,24 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("a:path"));
+				CString sNodeNamespace;
+				CString sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					sNodeNamespace = _T("w14:");
+					sAttrNamespace = sNodeNamespace;
+				}
+				else
+					sNodeNamespace = _T("a:");
+				pWriter->StartNode(sNodeNamespace + _T("path"));
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("path"), path);
+				pWriter->WriteAttribute(sAttrNamespace + _T("path"), path);
 				pWriter->EndAttributes();
 
 				pWriter->Write(rect);
 
-				pWriter->EndNode(_T("a:path"));
+				pWriter->EndNode(sNodeNamespace + _T("path"));
 			}
 
 		public:

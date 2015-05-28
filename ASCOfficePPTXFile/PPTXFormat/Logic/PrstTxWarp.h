@@ -66,7 +66,53 @@ namespace PPTX
 
 				pWriter->WriteRecordArray(0, 1, avLst);
 			}
+			virtual void fromPPTY(NSBinPptxRW::CBinaryFileReader* pReader)
+			{
+				LONG _end_rec = pReader->GetPos() + pReader->GetLong() + 4;
+				pReader->Skip(1); // start attributes
 
+				while (true)
+				{
+					BYTE _at = pReader->GetUChar_TypeNode();
+					if (_at == NSBinPptxRW::g_nodeAttributeEnd)
+						break;
+
+					switch (_at)
+					{
+					case 0:
+					{
+						prst.SetBYTECode(pReader->GetUChar());
+						break;
+					}
+					default:
+						break;
+					}
+				}
+
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE _at = pReader->GetUChar();
+					switch (_at)
+					{
+					case 0:
+					{
+						pReader->Skip(4);
+						LONG len = pReader->GetLong();
+						for (LONG i = 0; i < len; ++i)
+						{
+							pReader->Skip(1);
+							avLst.push_back(Gd());
+							avLst[i].fromPPTY(pReader);
+						}
+						break;
+					}
+					default:
+						break;
+					}
+				}
+
+				pReader->Seek(_end_rec);
+			}
 		public:
 			Limit::TextShapeType prst;
 			std::vector<Gd>		 avLst;

@@ -958,6 +958,10 @@ namespace OOX
 						m_oW = oReader;
 					else if ( _T("w:webHidden") == sName )
 						m_oWebHidden = oReader;
+					else if (_T("w14:textOutline") == sName)
+						m_sTextOutline = oReader.GetOuterXml();
+					else if (_T("w14:textFill") == sName)
+						m_sTextFill = oReader.GetOuterXml();
 				}
 			}
 			virtual CString      toXML() const
@@ -1479,6 +1483,8 @@ namespace OOX
 			nullable<ComplexTypes::Word::CVerticalAlignRun               > m_oVertAlign;
 			nullable<ComplexTypes::Word::CTextScale                      > m_oW;
 			nullable<ComplexTypes::Word::COnOff2<SimpleTypes::onoffTrue> > m_oWebHidden;
+			nullable<CString> m_sTextOutline;
+			nullable<CString> m_sTextFill;
 		};
 
 	} // namespace Logic

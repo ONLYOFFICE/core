@@ -203,8 +203,9 @@ class Binary_rPrReader : public Binary_CommonReader<Binary_rPrReader>
 {
 protected:
 	Binary_CommonReader2 oBinary_CommonReader2;
+	Writers::FileWriter& m_oFileWriter;
 public:
-	Binary_rPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream): Binary_CommonReader(poBufferedStream), oBinary_CommonReader2(poBufferedStream)
+	Binary_rPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter) : Binary_CommonReader(poBufferedStream), oBinary_CommonReader2(poBufferedStream), m_oFileWriter(oFileWriter)
 	{
 	}
 	int Read(long stLen, void* poResult)
@@ -438,6 +439,34 @@ public:
 				orPr->Vanish = m_oBufferedStream.GetBool();
 			}
 			break;
+		case c_oSerProp_rPrType::TextOutline:
+			{
+				if (length > 0)
+				{
+					long nCurPos = m_oBufferedStream.GetPos();
+					CString* bstrXml = NULL;
+					HRESULT hRes = m_oFileWriter.m_pDrawingConverter->GetRecordXml(nCurPos, length, XMLWRITER_RECORD_TYPE_TEXT_OUTLINE, XMLWRITER_DOC_TYPE_WORDART, &bstrXml);
+					if (S_OK == hRes && NULL != bstrXml)
+						orPr->Outline = *bstrXml;
+					RELEASEOBJECT(bstrXml);
+					m_oBufferedStream.Seek(nCurPos + length);
+				}
+			}
+			break;
+		case c_oSerProp_rPrType::TextFill:
+			{
+				if (length > 0)
+				{
+					long nCurPos = m_oBufferedStream.GetPos();
+					CString* bstrXml = NULL;
+					HRESULT hRes = m_oFileWriter.m_pDrawingConverter->GetRecordXml(nCurPos, length, XMLWRITER_RECORD_TYPE_TEXT_FILL, XMLWRITER_DOC_TYPE_WORDART, &bstrXml);
+					if (S_OK == hRes && NULL != bstrXml)
+						orPr->Fill = _T("<w14:textFill>") + *bstrXml + _T("</w14:textFill>");
+					RELEASEOBJECT(bstrXml);
+					m_oBufferedStream.Seek(nCurPos + length);
+				}
+			}
+			break;
 		default:
 			res = c_oSerConstants::ReadUnknown;
 			break;
@@ -459,7 +488,7 @@ public:
 	long m_nCurLvl;
 
 	Binary_pPrReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):
-		m_oFontTableWriter(oFileWriter.m_oFontTableWriter),Binary_CommonReader(poBufferedStream),oBinary_CommonReader2(poBufferedStream),oBinary_rPrReader(poBufferedStream),oBinary_HdrFtrTableReader(poBufferedStream,oFileWriter, oFileWriter.m_pComments),m_oFileWriter(oFileWriter)
+		m_oFontTableWriter(oFileWriter.m_oFontTableWriter), Binary_CommonReader(poBufferedStream), oBinary_CommonReader2(poBufferedStream), oBinary_rPrReader(poBufferedStream, oFileWriter), oBinary_HdrFtrTableReader(poBufferedStream, oFileWriter, oFileWriter.m_pComments), m_oFileWriter(oFileWriter)
 	{
 		bDoNotWriteNullProp = false;
 		m_nCurNumId = -1;
@@ -1795,7 +1824,7 @@ class Binary_NumberingTableReader : public Binary_CommonReader<Binary_NumberingT
 	std::vector<docANum*> m_aDocANums;
 	std::map<int, int> m_mapANumToNum;
 public:
-	Binary_NumberingTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),oNumberingWriters(oFileWriter.m_oNumberingWriter),m_oFontTableWriter(oFileWriter.m_oFontTableWriter),oBinary_pPrReader(poBufferedStream, oFileWriter),oBinary_rPrReader(poBufferedStream)
+	Binary_NumberingTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter) :Binary_CommonReader(poBufferedStream), oNumberingWriters(oFileWriter.m_oNumberingWriter), m_oFontTableWriter(oFileWriter.m_oFontTableWriter), oBinary_pPrReader(poBufferedStream, oFileWriter), oBinary_rPrReader(poBufferedStream, oFileWriter)
 	{
 	}
 	int Read()
@@ -2016,7 +2045,7 @@ class BinaryStyleTableReader : public Binary_CommonReader<BinaryStyleTableReader
 	Writers::StylesWriter& m_oStylesWriter;
 	Writers::FontTableWriter& m_oFontTableWriter;
 public:
-	BinaryStyleTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter):Binary_CommonReader(poBufferedStream),m_oStylesWriter(oFileWriter.m_oStylesWriter),m_oFontTableWriter(oFileWriter.m_oFontTableWriter),oBinary_pPrReader(poBufferedStream, oFileWriter),oBinary_rPrReader(poBufferedStream),oBinary_tblPrReader(poBufferedStream, oFileWriter)
+	BinaryStyleTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter) :Binary_CommonReader(poBufferedStream), m_oStylesWriter(oFileWriter.m_oStylesWriter), m_oFontTableWriter(oFileWriter.m_oFontTableWriter), oBinary_pPrReader(poBufferedStream, oFileWriter), oBinary_rPrReader(poBufferedStream, oFileWriter), oBinary_tblPrReader(poBufferedStream, oFileWriter)
 	{
 	}
 	int Read()
@@ -2883,7 +2912,7 @@ public:
 	Writers::ContentWriter& m_oDocumentWriter;
 	Writers::MediaWriter& m_oMediaWriter;
 public:
-	Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, CComments* pComments):Binary_CommonReader(poBufferedStream),m_oDocumentWriter(oDocumentWriter),m_oFileWriter(oFileWriter),m_oMediaWriter(oFileWriter.m_oMediaWriter),m_oFontTableWriter(oFileWriter.m_oFontTableWriter),oBinary_pPrReader(poBufferedStream, oFileWriter),oBinary_rPrReader(poBufferedStream), oBinary_tblPrReader(poBufferedStream, oFileWriter),m_oCur_rPr(m_oFontTableWriter.m_mapFonts),m_oMath_rPr(m_oFontTableWriter.m_mapFonts),m_pComments(pComments)
+	Binary_DocumentTableReader(NSBinPptxRW::CBinaryFileReader& poBufferedStream, Writers::FileWriter& oFileWriter, Writers::ContentWriter& oDocumentWriter, CComments* pComments) :Binary_CommonReader(poBufferedStream), m_oDocumentWriter(oDocumentWriter), m_oFileWriter(oFileWriter), m_oMediaWriter(oFileWriter.m_oMediaWriter), m_oFontTableWriter(oFileWriter.m_oFontTableWriter), oBinary_pPrReader(poBufferedStream, oFileWriter), oBinary_rPrReader(poBufferedStream, oFileWriter), oBinary_tblPrReader(poBufferedStream, oFileWriter), m_oCur_rPr(m_oFontTableWriter.m_mapFonts), m_oMath_rPr(m_oFontTableWriter.m_mapFonts), m_pComments(pComments)
 	{
 		m_byteLastElemType = c_oSerParType::Content;
 		m_pCurWriter = NULL;

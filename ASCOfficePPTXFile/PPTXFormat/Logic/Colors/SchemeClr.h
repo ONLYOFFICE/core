@@ -21,17 +21,26 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(_T("a:schemeClr"));
+				CString sNodeNamespace;
+				CString sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					sNodeNamespace = _T("w14:");
+					sAttrNamespace = sNodeNamespace;
+				}
+				else
+					sNodeNamespace = _T("a:");
+				pWriter->StartNode(sNodeNamespace + _T("schemeClr"));
 						
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("val"), val.get());
+				pWriter->WriteAttribute(sAttrNamespace + _T("val"), val.get());
 				pWriter->EndAttributes();
 
 				size_t nCount = Modifiers.size();
 				for (size_t i = 0; i < nCount; ++i)
 					Modifiers[i].toXmlWriter(pWriter);
 				
-				pWriter->EndNode(_T("a:schemeClr"));
+				pWriter->EndNode(sNodeNamespace + _T("schemeClr"));
 			}
 
 			virtual DWORD GetRGBA(DWORD RGBA) const;

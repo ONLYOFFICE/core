@@ -306,6 +306,8 @@ public:
 	CString LangEA;
 	CThemeColor ThemeColor;
 	bool Vanish;
+	CString Outline;
+	CString Fill;
 
 	bool bBold;
 	bool bItalic;
@@ -387,11 +389,13 @@ public:
 		bThemeColor = false;
 		ThemeColor.Reset();
 		bVanish = false;
+		Outline.Empty();
+		Fill.Empty();
 	}
 	bool IsNoEmpty()
 	{
 		return bBold || bItalic || bUnderline || bStrikeout || bFontAscii || bFontHAnsi || bFontAE || bFontCS || bFontSize || bColor || bVertAlign || bHighLight || bShd ||
-			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish;
+			bRStyle || bSpacing || bDStrikeout || bCaps || bSmallCaps || bPosition || bFontHint || bBoldCs || bItalicCs || bFontSizeCs || bCs || bRtl || bLang || bLangBidi || bLangEA || bThemeColor || bVanish || !Outline.IsEmpty() || !Fill.IsEmpty();
 	}
 	void Write(XmlUtils::CStringWriter*  pCStringWriter)
 	{
@@ -645,6 +649,10 @@ public:
 			}
 			pCStringWriter->WriteString(CString(_T("/>")));
 		}
+		if (!Outline.IsEmpty())
+			pCStringWriter->WriteString(Outline);
+		if (!Fill.IsEmpty())
+			pCStringWriter->WriteString(Fill);
 		pCStringWriter->WriteString(CString(_T("</w:rPr>")));
 	}
 };

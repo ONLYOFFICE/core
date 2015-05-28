@@ -331,7 +331,9 @@ extern int g_nCurFormatVersion;
 		LangEA = 27,
 		ColorTheme = 28,
 		Shd = 29,
-		Vanish = 30
+		Vanish = 30,
+		TextOutline = 31,
+		TextFill = 32
 	};}
 	namespace c_oSerProp_rowPrType{enum c_oSerProp_rowPrType
 	{

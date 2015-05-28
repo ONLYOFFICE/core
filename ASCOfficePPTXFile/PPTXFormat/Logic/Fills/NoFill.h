@@ -36,7 +36,10 @@ namespace PPTX
 			}
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->WriteString(_T("<a:noFill/>"));
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+					pWriter->WriteString(_T("<w14:noFill/>"));
+				else
+					pWriter->WriteString(_T("<a:noFill/>"));
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

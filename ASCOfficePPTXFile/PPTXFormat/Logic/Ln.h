@@ -31,10 +31,10 @@ namespace PPTX
 				node.ReadAttributeBase(L"w", w);
 
 				Fill.GetFillFrom(node);
-				prstDash	= node.ReadNode(_T("a:prstDash"));
+				prstDash = node.ReadNodeNoNS(_T("prstDash"));
 				Join.GetJoinFrom(node);
-				headEnd		= node.ReadNode(_T("a:headEnd"));
-				tailEnd		= node.ReadNode(_T("a:tailEnd"));
+				headEnd = node.ReadNodeNoNS(_T("headEnd"));
+				tailEnd = node.ReadNodeNoNS(_T("tailEnd"));
 
 				Normalize();
 				
@@ -63,14 +63,20 @@ namespace PPTX
 				CString _name = m_name;
 				if (_name == _T(""))
 					_name = _T("a:ln");
+				CString sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					_name = _T("w14:textOutline");
+					sAttrNamespace = _T("w14:");
+				}
 
 				pWriter->StartNode(_name);			
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("w"), w);
-				pWriter->WriteAttribute(_T("cap"), cap);
-				pWriter->WriteAttribute(_T("cmpd"), cmpd);
-				pWriter->WriteAttribute(_T("algn"), algn);
+				pWriter->WriteAttribute(sAttrNamespace + _T("w"), w);
+				pWriter->WriteAttribute(sAttrNamespace + _T("cap"), cap);
+				pWriter->WriteAttribute(sAttrNamespace + _T("cmpd"), cmpd);
+				pWriter->WriteAttribute(sAttrNamespace + _T("algn"), algn);
 				pWriter->EndAttributes();
 
 				Fill.toXmlWriter(pWriter);
@@ -153,8 +159,8 @@ namespace PPTX
 						}
 						case 1:
 						{
-							// TODO:
-							pReader->SkipRecord();
+							prstDash = new Logic::PrstDash();
+							prstDash->fromPPTY(pReader);
 							break;
 						}
 						case 2:

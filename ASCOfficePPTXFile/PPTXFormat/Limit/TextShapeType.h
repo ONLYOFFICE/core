@@ -112,6 +112,55 @@ namespace PPTX
 				if (_T("textWave4") == m_strValue) return 40;
 				return 29;
 			}
+
+			virtual void SetBYTECode(const BYTE& src)
+			{
+				switch (src)
+				{
+				case 0: m_strValue = _T("textArchDown"); break;
+				case 1: m_strValue = _T("textArchDownPour"); break;
+				case 2: m_strValue = _T("textArchUp"); break;
+				case 3: m_strValue = _T("textArchUpPour"); break;
+				case 4: m_strValue = _T("textButton"); break;
+				case 5: m_strValue = _T("textButtonPour"); break;
+				case 6: m_strValue = _T("textCanDown"); break;
+				case 7: m_strValue = _T("textCanUp"); break;
+				case 8: m_strValue = _T("textCascadeDown"); break;
+				case 9: m_strValue = _T("textCascadeUp"); break;
+				case 10: m_strValue = _T("textChevron"); break;
+				case 11: m_strValue = _T("textChevronInverted"); break;
+				case 12: m_strValue = _T("textCircle"); break;
+				case 13: m_strValue = _T("textCirclePour"); break;
+				case 14: m_strValue = _T("textCurveDown"); break;
+				case 15: m_strValue = _T("textCurveUp"); break;
+				case 16: m_strValue = _T("textDeflate"); break;
+				case 17: m_strValue = _T("textDeflateBottom"); break;
+				case 18: m_strValue = _T("textDeflateInflate"); break;
+				case 19: m_strValue = _T("textDeflateInflateDeflate"); break;
+				case 20: m_strValue = _T("textDeflateTop"); break;
+				case 21: m_strValue = _T("textDoubleWave1"); break;
+				case 22: m_strValue = _T("textFadeDown"); break;
+				case 23: m_strValue = _T("textFadeLeft"); break;
+				case 24: m_strValue = _T("textFadeRight"); break;
+				case 25: m_strValue = _T("textFadeUp"); break;
+				case 26: m_strValue = _T("textInflate"); break;
+				case 27: m_strValue = _T("textInflateBottom"); break;
+				case 28: m_strValue = _T("textInflateTop"); break;
+				case 29: m_strValue = _T("textNoShape"); break;
+				case 30: m_strValue = _T("textPlain"); break;
+				case 31: m_strValue = _T("textRingInside"); break;
+				case 32: m_strValue = _T("textRingOutside"); break;
+				case 33: m_strValue = _T("textSlantDown"); break;
+				case 34: m_strValue = _T("textSlantUp"); break;
+				case 35: m_strValue = _T("textStop"); break;
+				case 36: m_strValue = _T("textTriangle"); break;
+				case 37: m_strValue = _T("textTriangleInverted"); break;
+				case 38: m_strValue = _T("textWave1"); break;
+				case 39: m_strValue = _T("textWave2"); break;
+				case 40: m_strValue = _T("textWave4"); break;
+				default:m_strValue = _T("textNoShape"); break;
+				}
+			}
 		};
 	} // namespace Limit
 } // namespace PPTX

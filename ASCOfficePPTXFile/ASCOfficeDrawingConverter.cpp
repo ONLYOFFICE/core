@@ -3976,6 +3976,22 @@ xmlns:c=\"http://schemas.openxmlformats.org/drawingml/2006/chart\"");
 			pWritingElem = (PPTX::WrapperWritingElement*)pClrMap;
 			break;
 		}
+	case XMLWRITER_RECORD_TYPE_TEXT_OUTLINE:
+		{
+			PPTX::Logic::Ln* pLn = new PPTX::Logic::Ln();
+			*pLn = oNode;
+
+			pWritingElem = (PPTX::WrapperWritingElement*)pLn;
+			break;
+		}
+	case XMLWRITER_RECORD_TYPE_TEXT_FILL:
+		{
+			PPTX::Logic::UniFill* pUniFill = new PPTX::Logic::UniFill();
+			pUniFill->GetFillFrom(oNode);
+
+			pWritingElem = (PPTX::WrapperWritingElement*)pUniFill;
+			break;
+		}
 	default:
 		break;
 	}
@@ -4027,6 +4043,20 @@ HRESULT CDrawingConverter::GetRecordXml(LONG lStart, LONG lLength, LONG lRecType
 			PPTX::Logic::ClrMap* pClrMap = new  PPTX::Logic::ClrMap();
 			pClrMap->m_name = _T("a:clrMapOvr");
 			pWritingElem = (PPTX::WrapperWritingElement*)(pClrMap);
+			pWritingElem->fromPPTY(m_pReader);
+			break;
+		}
+	case XMLWRITER_RECORD_TYPE_TEXT_OUTLINE:
+		{
+			PPTX::Logic::Ln* pLn = new  PPTX::Logic::Ln();
+			pWritingElem = (PPTX::WrapperWritingElement*)(pLn);
+			pWritingElem->fromPPTY(m_pReader);
+			break;
+		}
+	case XMLWRITER_RECORD_TYPE_TEXT_FILL:
+		{
+			PPTX::Logic::UniFill* pUniFill = new  PPTX::Logic::UniFill();
+			pWritingElem = (PPTX::WrapperWritingElement*)(pUniFill);
 			pWritingElem->fromPPTY(m_pReader);
 			break;
 		}

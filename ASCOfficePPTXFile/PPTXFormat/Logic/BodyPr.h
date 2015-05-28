@@ -345,6 +345,42 @@ namespace PPTX
 					}
 				}
 
+				while (pReader->GetPos() < _end_rec)
+				{
+					BYTE rec = pReader->GetUChar();
+
+					switch (rec)
+					{
+					case 0:
+					{
+						prstTxWarp = new PPTX::Logic::PrstTxWarp();
+						prstTxWarp->fromPPTY(pReader);
+						break;
+					}
+					case 1:
+					{
+						Fit.fromPPTY(pReader);
+						break;
+					}
+					case 2:
+					{
+						scene3d = new PPTX::Logic::Scene3d();
+						pReader->SkipRecord();
+						break;
+					}
+					case 3:
+					{
+						sp3d = new PPTX::Logic::Sp3d();
+						pReader->SkipRecord();
+						break;
+					}
+					default:
+					{
+						// пока никаких настроек градиента нет
+						pReader->SkipRecord();
+					}
+					}
+				}
 				// TODO: пока записи не поддерживаем
 				pReader->Seek(_end_rec);
 			}

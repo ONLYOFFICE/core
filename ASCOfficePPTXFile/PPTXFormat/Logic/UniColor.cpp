@@ -180,16 +180,29 @@ namespace PPTX
 
 		void UniColor::GetColorFrom(XmlUtils::CXmlNode& element)
 		{
-			XmlUtils::CXmlNode oNode;
-			if (element.GetNode(_T("a:srgbClr"), oNode))
+			XmlUtils::CXmlNode oNode = element.ReadNodeNoNS(_T("srgbClr"));
+			if (oNode.IsValid())
 				Color.reset(new Logic::SrgbClr(oNode));
-			else if (element.GetNode(_T("a:prstClr"), oNode))
-				Color.reset(new Logic::PrstClr(oNode));
-			else if (element.GetNode(_T("a:schemeClr"), oNode))
-				Color.reset(new Logic::SchemeClr(oNode));
-			else if (element.GetNode(_T("a:sysClr"), oNode))
-				Color.reset(new Logic::SysClr(oNode));
-			else Color.reset();
+			else
+			{
+				oNode = element.ReadNodeNoNS(_T("prstClr"));
+				if (oNode.IsValid())
+					Color.reset(new Logic::PrstClr(oNode));
+				else
+				{
+					oNode = element.ReadNodeNoNS(_T("schemeClr"));
+					if (oNode.IsValid())
+						Color.reset(new Logic::SchemeClr(oNode));
+					else
+					{
+						oNode = element.ReadNodeNoNS(_T("sysClr"));
+						if (oNode.IsValid())
+							Color.reset(new Logic::SysClr(oNode));
+						else
+							Color.reset();
+					}
+				}
+			}
 		}
 
 		CString UniColor::toXML() const

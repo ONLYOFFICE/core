@@ -37,16 +37,25 @@ namespace PPTX
 
 			virtual void toXmlWriter(NSBinPptxRW::CXmlWriter* pWriter) const
 			{
-				pWriter->StartNode(m_name);
+				CString _name;
+				CString sAttrNamespace;
+				if (XMLWRITER_DOC_TYPE_WORDART == pWriter->m_lDocType)
+				{
+					_name = _T("w14:") + XmlUtils::GetNameNoNS(m_name);
+					sAttrNamespace = _T("w14:");
+				}
+				else
+					_name = m_name;
+				pWriter->StartNode(_name);
 
 				pWriter->StartAttributes();
-				pWriter->WriteAttribute(_T("l"), l);
-				pWriter->WriteAttribute(_T("t"), t);
-				pWriter->WriteAttribute(_T("r"), r);
-				pWriter->WriteAttribute(_T("b"), b);
+				pWriter->WriteAttribute(sAttrNamespace + _T("l"), l);
+				pWriter->WriteAttribute(sAttrNamespace + _T("t"), t);
+				pWriter->WriteAttribute(sAttrNamespace + _T("r"), r);
+				pWriter->WriteAttribute(sAttrNamespace + _T("b"), b);
 				pWriter->EndAttributes();
 
-				pWriter->EndNode(m_name);
+				pWriter->EndNode(_name);
 			}
 
 			virtual void toPPTY(NSBinPptxRW::CBinaryFileWriter* pWriter) const

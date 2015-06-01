@@ -103,10 +103,11 @@ enum ESvmLineStyle
 	LINE_SOLID = 1,
 	LINE_DASH = 2
 };
-struct MapMode 
+
+struct TSvmMapMode 
 {
-    MapMode();
-    MapMode(CDataStream &stream);
+    TSvmMapMode();
+    TSvmMapMode(CDataStream &stream);
 
     VersionCompat	version;
     unsigned short	unit;
@@ -123,7 +124,7 @@ struct SvmHeader
 
     VersionCompat	versionCompat;
     unsigned int	compressionMode;
-    MapMode			mapMode;
+    TSvmMapMode		mapMode;
 	TRect			boundRect;
     unsigned int	actionCount;
 };
@@ -372,7 +373,7 @@ void parseString(CDataStream &stream, std::wstring &string, unsigned short versi
 
 CDataStream& operator>>(CDataStream &stream, VersionCompat &compat);
 CDataStream& operator>>(CDataStream &stream, Fraction &fract);
-CDataStream& operator>>(CDataStream &stream, MapMode &mm);
+CDataStream& operator>>(CDataStream &stream, TSvmMapMode &mm);
 CDataStream& operator>>(CDataStream &stream, SvmHeader &header);
 CDataStream& operator>>(CDataStream &stream, TSvmSize &s);
 CDataStream& operator>>(CDataStream &stream, TSvmPoint &p);

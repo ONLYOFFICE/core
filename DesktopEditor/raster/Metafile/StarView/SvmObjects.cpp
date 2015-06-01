@@ -57,16 +57,16 @@ Fraction::Fraction(CDataStream &stream)
     stream >> denominator;
 }
 
-MapMode::MapMode()
+TSvmMapMode::TSvmMapMode()
     : version()
     , unit(0)
     , scaleX()
     , scaleY()
-    , isSimple(true)
+    , isSimple(false)
 {
 }
 
-MapMode::MapMode(CDataStream &stream)
+TSvmMapMode::TSvmMapMode(CDataStream &stream)
 {
 	stream >> *this;
 }
@@ -85,7 +85,7 @@ CDataStream& operator>>(CDataStream &stream, Fraction &fract)
 
 	return stream;
 }
-CDataStream& operator>>(CDataStream &stream, MapMode &mm)
+CDataStream& operator>>(CDataStream &stream, TSvmMapMode &mm)
 {
     stream >> mm.version;
     stream >> mm.unit;

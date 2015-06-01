@@ -49,22 +49,16 @@ class CSvmFile : virtual public IMetaFileBase
 	}	
 	TRect* GetDCBounds()
 	{
-		//if ( MAP_RELATIVE == m_pDC->GetMapMode())
-		//{
-			TSvmWindow* pViewport = m_pDC->GetViewport();
-
-			m_oDCRect.nLeft   = pViewport->lX;
-			m_oDCRect.nTop    = pViewport->lY;
-			m_oDCRect.nRight  = pViewport->ulW + pViewport->lX;
-			m_oDCRect.nBottom = pViewport->ulH + pViewport->lY;
+		//if (m_oHeader.mapMode.isSimple)
+		if (m_pDC->m_oMapMode.isSimple)
+		{
+			m_oDCRect  = m_oBoundingBox;
 			return &m_oDCRect;
-
-		//}
-		//else
+		}
+		else
 		{
 			return &m_oHeader.boundRect;
 		}
-
 	}
 	double GetPixelHeight()
 	{
@@ -111,10 +105,10 @@ class CSvmFile : virtual public IMetaFileBase
 	{
 		return m_pDC->GetBgMode();
 	}
-	int          GetTextBgColor()
+	int GetTextBgColor()
 	{
-		TSvmColor& oColor = m_pDC->GetBgColor();
-		return oColor.color; //METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
+		TSvmColor& oColor = m_pDC->GetTextBgColor();
+		return METAFILE_RGBA(oColor.r, oColor.g, oColor.b);
 	}
 	unsigned int GetFillMode()
 	{
@@ -187,6 +181,7 @@ class CSvmFile : virtual public IMetaFileBase
 	void Read_META_TEXTALIGN();
 	void Read_META_TEXTRECT();
 	void Read_META_SETMAPMODE();
+	void Read_META_SETTEXTFILLCOLOR();
 	void Read_META_SETTEXTCOLOR();
 	void Read_META_SETFILLCOLOR();
 	void Read_META_SETLINECOLOR();
@@ -211,14 +206,16 @@ class CSvmFile : virtual public IMetaFileBase
 	}
 	void TranslatePoint(int nX, int nY, double& dX, double &dY)
 	{
-		TSvmWindow* pWindow		= m_pDC->GetWindow();
-		TSvmWindow* pViewport	= m_pDC->GetViewport();
+		if (m_pDC->m_oMapMode.isSimple ) return;
+		//TSvmWindow* pWindow		= m_pDC->GetWindow();
+		//TSvmWindow* pViewport	= m_pDC->GetViewport();
 
-		dX = (double)((double)(nX - pWindow->lX) * m_pDC->m_dPixelWidth) + pViewport->lX;
-		dY = (double)((double)(nY - pWindow->lY) * m_pDC->m_dPixelHeight) + pViewport->lY;
+		dX = (double)(nX) * m_pDC->m_dPixelWidth ;
+		dY = (double)(nY) * m_pDC->m_dPixelHeight ;
 
-		// Координаты приходят уже с примененной матрицей. Поэтому сначала мы умножаем на матрицу преобразования, 
-		// вычитаем начальные координаты и умножаем на обратную матрицу преобразования.
+		//dX = (double)((double)(nX - pWindow->lX) * m_pDC->m_dPixelWidth) + pViewport->lX;
+		//dY = (double)((double)(nY - pWindow->lY) * m_pDC->m_dPixelHeight) + pViewport->lY;
+
 		TRect* pBounds = GetDCBounds();
 		
 		double dT = pBounds->nTop;
@@ -326,7 +323,6 @@ class CSvmFile : virtual public IMetaFileBase
 		{
 			m_pOutput->MoveTo(dX, dY);
 		}
-
 		m_pDC->SetCurPos(nX, nY);
 	}
 	void LineTo(int nX, int nY)
@@ -344,7 +340,6 @@ class CSvmFile : virtual public IMetaFileBase
 		{
 			m_pOutput->LineTo(dX, dY);
 		}
-
 		m_pDC->SetCurPos(nX, nY);
 	}
 	void LineTo(TSvmPoint& oPoint)
@@ -368,7 +363,6 @@ class CSvmFile : virtual public IMetaFileBase
 		{
 			m_pOutput->CurveTo(dX1, dY1, dX2, dY2, dXe, dYe);
 		}
-
 		m_pDC->SetCurPos(nXe, nYe);
 	}
 	void CurveTo(TSvmPoint& oPoint1, TSvmPoint& oPoint2, TSvmPoint& oPointE)
@@ -451,9 +445,16 @@ class CSvmFile : virtual public IMetaFileBase
 					pdDx[unCharIndex] = (dX1 - dX)/unCharsCount;
 				}
 			}
+			TSvmMapMode aMapMode_new, aMapMode_old;
+			//
+			aMapMode_old = m_pDC->m_oMapMode;	
+			aMapMode_new.unit = MAP_RELATIVE;
+
+			m_pDC->SetMapMode(aMapMode_new);
 
 			m_pOutput->DrawString(wsString, unCharsCount, dX, dY, pdDx);
 
+			m_pDC->SetMapMode(aMapMode_old);
 			if (pdDx)
 				delete[] pdDx;
 		}
@@ -472,6 +473,7 @@ class CSvmFile : virtual public IMetaFileBase
 
 		if (m_pOutput)
 		{
+
 			double dX = nX, dY = nY;
 			TranslatePoint(nX, nY, dX, dY);
 
@@ -481,14 +483,19 @@ class CSvmFile : virtual public IMetaFileBase
 				pdDx = new double[unCharsCount];
 				if (pdDx)
 				{
-					int nCurX = nX;
-					double dCurX = dX;
+					int nCurX		= nX;
+					double dCurX	= dX;
+
+					int nCurXFirst		= nX;
+					double dCurXFirst	= dX;
 
 					for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount; unCharIndex++)
 					{
-						int nX1 = nCurX + pnDx[unCharIndex];
+						int nX1 = nCurXFirst + pnDx[unCharIndex];
 						double dX1 = nX1, dY1;
+						
 						TranslatePoint(nX1, nY, dX1, dY1);
+						
 						pdDx[unCharIndex] = dX1 - dCurX;
 						nCurX = nX1;
 						dCurX = dX1;
@@ -496,49 +503,18 @@ class CSvmFile : virtual public IMetaFileBase
 				}
 			}
 
+			TSvmMapMode aMapMode_new, aMapMode_old;
+			//
+			aMapMode_old = m_pDC->m_oMapMode;	
+			aMapMode_new.unit = MAP_RELATIVE;
+
+			m_pDC->SetMapMode(aMapMode_new);
+
 			m_pOutput->DrawString(wsString, unCharsCount, dX, dY, pdDx);
 
+			m_pDC->SetMapMode(aMapMode_old);
 			if (pdDx)
 				delete[] pdDx;
-		}
-	}
-   TRect GetBoundingBox()
-	{
-		TRect oBB = m_oHeader.boundRect;
-
-		if (abs(oBB.nRight - oBB.nLeft) <= 1)
-			oBB.nRight = oBB.nLeft + 1024;
-
-		if (abs(oBB.nBottom - oBB.nTop) <= 1)
-			oBB.nBottom = oBB.nTop + 1024;
-
-		return oBB;
-	}
-	void RegisterPoint(short shX, short shY)
-	{
-		shX *= m_pDC->m_dPixelWidth;
-		shY *= m_pDC->m_dPixelHeight;
-
-		if (m_bFirstPoint)
-		{
-			m_oBoundingBox.nLeft   = shX;
-			m_oBoundingBox.nRight  = shX;
-			m_oBoundingBox.nTop    = shY;
-			m_oBoundingBox.nBottom = shY;
-			
-			m_bFirstPoint = false;
-		}
-		else
-		{
-			if (shX < m_oBoundingBox.nLeft)
-				m_oBoundingBox.nLeft = shX;
-			else if (shX > m_oBoundingBox.nRight)
-				m_oBoundingBox.nRight = shX;
-
-			if (shY < m_oBoundingBox.nTop)
-				m_oBoundingBox.nTop = shY;
-			else if (shY > m_oBoundingBox.nBottom)
-				m_oBoundingBox.nBottom = shY;
 		}
 	}
 };

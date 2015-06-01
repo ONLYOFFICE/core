@@ -390,14 +390,14 @@ void    CSvmPlayer::InitStockPen(bool bNull, unsigned char r, unsigned char g, u
 //----------------------------------------------------------------------------------------
 CSvmDC::CSvmDC()
 {
-	m_ulMapMode = MAP_POINT;
-	m_pBrush    = NULL;
-	m_pPen      = NULL;
-	m_pFont     = NULL;
+	m_oMapMode.unit = MAP_POINT;
+	m_pBrush		= NULL;
+	m_pPen			= NULL;
+	m_pFont			= NULL;
 	m_oTransform.Init();
 	m_oInverseTransform.Init();
 	m_oTextColor.Init();
-	m_oBgColor.Init();
+	m_oTextBgColor.Init();
 	m_ulTextAlign   = TA_TOP | TA_LEFT | TA_NOUPDATECP;
 	m_ulBgMode      = TRANSPARENT;
 	m_ulMiterLimit  = 0;
@@ -422,7 +422,7 @@ CSvmDC*         CSvmDC::Copy()
 	if (!pNewDC)
 		return NULL;
 
-	pNewDC->m_ulMapMode = m_ulMapMode;
+	pNewDC->m_oMapMode = m_oMapMode;
 	pNewDC->m_pBrush = m_pBrush;
 	pNewDC->m_pPen = m_pPen;
 	pNewDC->m_pFont = m_pFont;
@@ -430,7 +430,7 @@ CSvmDC*         CSvmDC::Copy()
 	pNewDC->m_oTransform.Copy(&m_oTransform);
 	pNewDC->m_oInverseTransform.Copy(&m_oInverseTransform);
 	pNewDC->m_oTextColor.Copy(m_oTextColor);
-	pNewDC->m_oBgColor.Copy(m_oBgColor);
+	pNewDC->m_oTextBgColor.Copy(m_oTextBgColor);
 	pNewDC->m_ulTextAlign = m_ulTextAlign;
 	pNewDC->m_ulBgMode = m_ulBgMode;
 	pNewDC->m_ulMiterLimit = m_ulMiterLimit;
@@ -451,16 +451,16 @@ CSvmDC*         CSvmDC::Copy()
 
 	return pNewDC;
 }
-ESvmMapUnit CSvmDC::GetMapMode()
+ESvmMapUnit CSvmDC::GetMapModeUnit()
 {
-	return m_ulMapMode;
+	return (ESvmMapUnit)m_oMapMode.unit;
 }
-void CSvmDC::SetMapMode(MapMode & mapMode, bool prefered )
+void CSvmDC::SetMapMode(TSvmMapMode & mapMode, bool prefered )
 {
-	m_ulMapMode = (ESvmMapUnit)mapMode.unit;
+	m_oMapMode = mapMode;
 
 	double dPixel = 1.;//
-	switch (m_ulMapMode)
+	switch (GetMapModeUnit())
 	{
 	case MAP_MM:	// 1 unit = 1 mm
 	{
@@ -561,6 +561,7 @@ void CSvmDC::SetTextColor(TSvmColor& oColor)
 {
 	m_oTextColor.Copy(oColor);
 }
+
 TSvmColor&  CSvmDC::GetTextColor()
 {
 	return m_oTextColor;
@@ -607,17 +608,17 @@ unsigned int CSvmDC::GetBgMode()
 {
 	return m_ulBgMode;
 }
-void CSvmDC::SetBgColor(TSvmColor& oColor)
+void CSvmDC::SetTextBgColor(TSvmColor& oColor)
 {
-	m_oBgColor.Copy(oColor);
+	m_oTextBgColor.Copy(oColor);
 }
-void CSvmDC::SetBgColor(TSvmColor* oColor)
+void CSvmDC::SetTextBgColor(TSvmColor* oColor)
 {
-	m_oBgColor.Copy(*oColor);
+	m_oTextBgColor.Copy(*oColor);
 }
-TSvmColor& CSvmDC::GetBgColor()
+TSvmColor& CSvmDC::GetTextBgColor()
 {
-	return m_oBgColor;
+	return m_oTextBgColor;
 }
 void CSvmDC::SetMiterLimit(unsigned int ulMiter)
 {
@@ -670,35 +671,22 @@ void CSvmDC::SetPixelHeight(double dPixelH)
 {
 	m_dPixelHeight = dPixelH;
 }
-void CSvmDC::SetWindowOrigin(TSvmPoint& oPoint)
-{
-	m_oWindow.lX = oPoint.x;
-	m_oWindow.lY = oPoint.y;
 
-	UpdatePixelMetrics();
-}
-void CSvmDC::SetWindowExtents(TSvmSize& oPoint)
-{
-	m_oWindow.ulW = oPoint.cx;
-	m_oWindow.ulH = oPoint.cy;
-
-	UpdatePixelMetrics();
-}
 TSvmWindow* CSvmDC::GetWindow()
 {
 	return &m_oWindow;
 }
-void CSvmDC::SetViewportOrigin(TSvmPoint& oPoint)
+void CSvmDC::SetViewportOff(int lX, int lY)
 {
-	m_oViewport.lX = oPoint.x;
-	m_oViewport.lY = oPoint.y;
+	m_oViewport.lX = lX;
+	m_oViewport.lY = lY;
 
 	UpdatePixelMetrics();
 }
-void CSvmDC::SetViewportExtents(TSvmSize& oPoint)
+void CSvmDC::SetViewportExt(int lX, int lY)
 {
-	m_oViewport.ulW = oPoint.cx;
-	m_oViewport.ulH = oPoint.cy;
+	m_oViewport.ulW = lX;
+	m_oViewport.ulH = lY;
 
 	UpdatePixelMetrics();
 }
@@ -708,10 +696,10 @@ TSvmWindow* CSvmDC::GetViewport()
 }
 bool CSvmDC::UpdatePixelMetrics()
 {
-	if 	(m_ulMapMode == MAP_RELATIVE)
+	if 	(GetMapModeUnit() == MAP_RELATIVE)
 	{
-		double dPixelX = (double)m_oViewport.ulW / (double)m_oWindow.ulW;
-		double dPixelY = (double)m_oViewport.ulH / (double)m_oWindow.ulH;
+		double dPixelX = 1;//(double)m_oViewport.ulW / (double)m_oWindow.ulW;
+		double dPixelY = 1;//(double)m_oViewport.ulH / (double)m_oWindow.ulH;
 
 		SetPixelWidth(dPixelX);
 		SetPixelHeight(dPixelY);
@@ -719,11 +707,11 @@ bool CSvmDC::UpdatePixelMetrics()
 
 	return true;
 }
-void            CSvmDC::SetRop2Mode(unsigned int& nMode)
+void CSvmDC::SetRop2Mode(unsigned int& nMode)
 {
 	m_ulRop2Mode = nMode;
 }
-unsigned int    CSvmDC::GetRop2Mode()
+unsigned int CSvmDC::GetRop2Mode()
 {
 	return m_ulRop2Mode;
 }

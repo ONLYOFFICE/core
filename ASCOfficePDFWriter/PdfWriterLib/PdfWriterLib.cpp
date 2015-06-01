@@ -3050,8 +3050,7 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                     
                     current += 1;
                     curindex += 1;
-                }
-                    break;
+                }break;
                 case ctBrushTexturePath:
                 {
                     _sLen = 2 * NSCommonReader::ReadUSHORT(current, curindex);
@@ -3066,8 +3065,9 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                             int nFind = wsTempString.find(_T(","));
                             wsTempString =  wsTempString.substr(nFind + 1);
                             
-                            base64TempFile = FileSystem::Directory::GetTempPath();
-                            
+                            base64TempFile = sHtmlPlace + FILE_SEPARATOR_STR + _T("media");
+                            base64TempFile = FileSystem::Directory::CreateTempFileWithUniqueName(base64TempFile, _T("img"));
+
                             std::string sBase64MultyByte(wsTempString.begin(), wsTempString.end());
                             
                             int nBuffLen	= Base64::Base64DecodeGetRequiredLength(sBase64MultyByte.length());
@@ -3076,7 +3076,7 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                             if (Base64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(),
                                                      byteIm, &nBuffLen))
                             {
-                                WriteFile_ (base64TempFile, byteIm);
+                                WriteFile_ (base64TempFile, byteIm, nBuffLen);
                                 wsTempString = string2std_string(base64TempFile);
                             }
                             else throw;
@@ -3126,13 +3126,8 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
 
                     
                     put_BrushTexturePath(wsTempString);
-                    
-                    if (!base64TempFile.IsEmpty())
-                    {
-                        ::CDirectory::DeleteFile(base64TempFile);
-                    }
-                }
-                    break;
+
+                }break;
                     
                 case ctBrushGradient:
                 {
@@ -3225,9 +3220,7 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                         strXml = L"<radialGradient " + strAttrMain + L">" + strColors + L"</radialGradient>";
                         CreateRadialGradientFromSvgXml(strXml, true);
                     }
-                }
-                    
-                    break;
+                }break;
                     
                 case ctBrushTextureMode:
                 {
@@ -3238,8 +3231,7 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                     
                     current += 1;
                     curindex += 1;
-                }
-                    break;
+                }break;
                 case ctBrushTextureAlpha:
                 {
                     //ATLTRACE2 ("CommandType::ctBrushTextureAlpha:\n");
@@ -3336,7 +3328,8 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                             int nFind = wsTempString.find(_T(","));
                             wsTempString = wsTempString.substr(nFind + 1);
                             
-                            base64TempFile = FileSystem::Directory::GetTempPath();
+                            base64TempFile = sHtmlPlace + FILE_SEPARATOR_STR + _T("media");
+                            base64TempFile = FileSystem::Directory::CreateTempFileWithUniqueName(base64TempFile, _T("img"));
                             
                             std::string sBase64MultyByte(wsTempString.begin(), wsTempString.end());
                             
@@ -3345,7 +3338,7 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                             
                             if (Base64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(), byteIm, &nBuffLen))
                             {
-                                WriteFile_ (base64TempFile, byteIm);
+                                WriteFile_ (base64TempFile, byteIm,nBuffLen);
                                 wsTempString = string2std_string(base64TempFile);
                             }
                             else throw;
@@ -3406,13 +3399,7 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                     {
                         //ATLTRACE2 ("DrawImageFromFile failed!\n");
                     }
-                    
-                    if (!base64TempFile.IsEmpty())
-                    {
-                        ::CDirectory::DeleteFile(base64TempFile);
-                    }
-                }
-                    break;
+                }break;
                 case ctFontName:
                 {
                     //ATLTRACE2 ("CommandType::ctFontName\n");

@@ -4,6 +4,8 @@
 #include <string>
 
 #include "../Common/MetaFileTypes.h"
+#include "../Common/MetaFileRenderer.h"
+
 #include "../../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 #ifdef _DEBUG
 	#include <iostream>
@@ -133,7 +135,7 @@ void CSvmFile::PlayMetaFile()
 
 			case META_LINECOLOR_ACTION:			Read_META_SETLINECOLOR();		break;
 			case META_FILLCOLOR_ACTION:			Read_META_SETFILLCOLOR();		break;
-			case META_TEXTFILLCOLOR_ACTION:
+			case META_TEXTFILLCOLOR_ACTION:		Read_META_SETTEXTFILLCOLOR();	break;
 			case META_TEXTCOLOR_ACTION:			Read_META_SETTEXTCOLOR();		break;
 			case META_GRADIENT_ACTION:			Read_META_GRADIENT();			break;
 			case META_GRADIENTEX_ACTION:		Read_META_GRADIENTEX();			break;
@@ -207,7 +209,7 @@ void CSvmFile::PlayMetaFile()
 				name = L"(out of bounds)";
 
 			std::wcout << name << L"\t(" << actionType << L") " << L"\tversion = " << m_currentActionVersion << L"\t; totalSize = " << m_unRecordSize << L"\n";
-		}	*/		
+		}*/			
 #endif
 		m_currentActionType = actionType;
 
@@ -262,7 +264,6 @@ void CSvmFile::Read_SVM_HEADER()
 {
 	m_oStream >> m_oHeader;
 
-	m_oBoundingBox = m_oHeader.boundRect;
 
 	m_pDC->SetWindowExt (	m_oHeader.boundRect.nRight	- m_oHeader.boundRect.nLeft,
 							m_oHeader.boundRect.nBottom - m_oHeader.boundRect.nTop);
@@ -272,9 +273,10 @@ void CSvmFile::Read_SVM_HEADER()
 
 	m_pDC->SetMapMode(m_oHeader.mapMode, true);
 	
+	m_oBoundingBox			= m_oHeader.boundRect;
 	m_oBoundingBox.nRight  *= m_pDC->m_dPixelWidthPrefered;
 	m_oBoundingBox.nBottom *= m_pDC->m_dPixelHeightPrefered;
-
+		
 	m_bFirstPoint = true;
 }
 void CSvmFile::Read_META_POLYLINE()
@@ -326,7 +328,7 @@ void CSvmFile::Read_META_POLYLINE()
 		LineTo(polygon.points[i].x, polygon.points[i].y);
 	}
 	ClosePath();
-	DrawPath(true, true);//false);
+	DrawPath(true, false);
 }
 
 void CSvmFile::Read_META_POLYGON()
@@ -410,27 +412,27 @@ void CSvmFile::Read_META_POLYPOLYGON()
 			}
 			ClosePath();
 		}
-		for (unsigned short ushPolygonIndex = 0; ushPolygonIndex < complexPolygons.size(); ushPolygonIndex++)
-		{
-			unsigned short ushPointsCount = complexPolygons[ushPolygonIndex].points.size();
+		//for (unsigned short ushPolygonIndex = 0; ushPolygonIndex < complexPolygons.size(); ushPolygonIndex++)
+		//{
+		//	unsigned short ushPointsCount = complexPolygons[ushPolygonIndex].points.size();
 
-			if (ushPointsCount <= 0)
-				continue;
+		//	if (ushPointsCount <= 0)
+		//		continue;
 
-			MoveTo(complexPolygons[ushPolygonIndex].points[0].x, complexPolygons[ushPolygonIndex].points[0].y);
-			for (int i = 1; i < ushPointsCount; i++)
-			{
-				LineTo(complexPolygons[ushPolygonIndex].points[i].x, complexPolygons[ushPolygonIndex].points[i].y);
-			}
-			ClosePath();
-		}
+		//	MoveTo(complexPolygons[ushPolygonIndex].points[0].x, complexPolygons[ushPolygonIndex].points[0].y);
+		//	for (int i = 1; i < ushPointsCount; i++)
+		//	{
+		//		LineTo(complexPolygons[ushPolygonIndex].points[i].x, complexPolygons[ushPolygonIndex].points[i].y);
+		//	}
+		//	ClosePath();
+		//}
 		DrawPath(true, true);
 	}
 }
 
 void CSvmFile::Read_META_SETMAPMODE()
 {
-	MapMode mapMode;
+	TSvmMapMode mapMode;
 	m_oStream >> mapMode;
 	
 	m_pDC->SetMapMode(mapMode);
@@ -484,11 +486,12 @@ void CSvmFile::Read_META_ARRAYTEXT()
 
 	m_oStream >> nArrayLen;
 
+	int *mpDXAry = NULL;
 	if( nArrayLen > 0 )
 	{
         // #i9762#, #106172# Ensure that DX array is at least mnLen entries long
 		const unsigned int nIntAryLen = (std::max)(nArrayLen, (unsigned int)nLen) ;
-		int *mpDXAry = new int[ nIntAryLen ];
+		mpDXAry = new int[ nIntAryLen ];
         
         int i=0;
 		for( i = 0; i < nArrayLen; i++ )
@@ -512,7 +515,10 @@ void CSvmFile::Read_META_ARRAYTEXT()
 			tempBuffer += (wchar_t)nTemp;
 		}
 	}
-	DrawText(sText, sText.length(), startPoint.x, startPoint.y);
+	DrawText(sText, sText.length(), startPoint.x, startPoint.y, mpDXAry);
+
+	if (mpDXAry)
+		delete []mpDXAry;
 }
 void CSvmFile::Read_META_TEXTRECT()
 {
@@ -554,6 +560,15 @@ void CSvmFile::Read_META_SETTEXTCOLOR()
 	m_pDC->SetTextColor(oColor);
 	UpdateOutputDC();
 }
+
+void CSvmFile::Read_META_SETTEXTFILLCOLOR()
+{
+	TSvmColor oColor; 
+	m_oStream >> oColor;
+	m_pDC->SetTextBgColor(oColor);
+	UpdateOutputDC();
+}
+
 void CSvmFile::Read_META_SETFILLCOLOR()
 {
 	if (m_currentActionType == META_GRADIENT_ACTION ||
@@ -901,12 +916,13 @@ void CSvmFile::Read_META_BMPSCALE()
 		m_oStream.Skip(bitmap_info.nSizeImage);
 		delete Header;
 	}
-	if (bitmap_info.nHeight > m_oBoundingBox.nRight &&
-			bitmap_info.nWidth > m_oBoundingBox.nBottom)
+	if (bitmap_info.nHeight >  m_oBoundingBox.nBottom &&
+			bitmap_info.nWidth > m_oBoundingBox.nRight)
 	{
 		m_oBoundingBox.nRight = bitmap_info.nWidth;
 		m_oBoundingBox.nBottom = bitmap_info.nHeight;
 	}
+
 	TSvmSize	size; 
 	TSvmPoint	point; 
 
@@ -914,40 +930,17 @@ void CSvmFile::Read_META_BMPSCALE()
 	m_oStream >> size.cx;
 	m_oStream >> size.cy;
 
-	MapMode aMapMode_new, aMapMode_old;
+	TSvmMapMode aMapMode_new, aMapMode_old;
 	//
-	aMapMode_old.unit = m_pDC->GetMapMode();	
+	aMapMode_old = m_pDC->m_oMapMode;	
 	aMapMode_new.unit = MAP_RELATIVE;
 
 	m_pDC->SetMapMode(aMapMode_new);
 
 	if (pBgraBuffer && m_pOutput)
 	{
-		double w = m_oHeader.boundRect.nRight-m_oHeader.boundRect.nLeft;
-		double h = m_oHeader.boundRect.nBottom-m_oHeader.boundRect.nTop;
-
-		w /= size.cx;
-		h /= size.cy;
-
 		double dX = point.x, dY = point.y, dX1 = point.x + size.cx, dY1 = point.y + size.cy;
 		
-		dX *= w;
-		dX1 *= w;
-		
-		dY *= h;
-		dY1 *= h;
-
-		//dX /= w;
-		//dX1 /= w;
-		//
-		//dY /= h;
-		//dY1 /= h;
-
-		//dX *= bitmap_info.nWidth;
-		//dX1 *= bitmap_info.nWidth;
-		//
-		//dY *= bitmap_info.nHeight;
-		//dY1 *= bitmap_info.nHeight;
 
 		TranslatePoint(dX, dY, dX, dY);
 		TranslatePoint(dX + dX1, dY + dY1, dX1, dY1);

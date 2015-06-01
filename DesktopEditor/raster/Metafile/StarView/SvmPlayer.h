@@ -63,8 +63,8 @@ public:
 	~CSvmDC();
 	CSvmDC* Copy();
 
-	ESvmMapUnit		GetMapMode();
-	void            SetMapMode(MapMode &mapMode, bool prefered = false);
+	ESvmMapUnit		GetMapModeUnit();
+	void            SetMapMode(TSvmMapMode &mapMode, bool prefered = false);
 	TXForm*			GetTransform();
 	TXForm*			GetInverseTransform();
 	void            MultiplyTransform(TXForm& oForm, unsigned int ulMode);
@@ -80,9 +80,11 @@ public:
 	unsigned int    GetTextAlign();
 	void            SetBgMode(unsigned int ulBgMode);
 	unsigned int    GetBgMode();
-	void            SetBgColor(TSvmColor& oColor);
-	void			SetBgColor(TSvmColor* oColor);
-	TSvmColor&      GetBgColor();
+	
+	void            SetTextBgColor(TSvmColor& oColor);
+	void			SetTextBgColor(TSvmColor* oColor);
+	TSvmColor&      GetTextBgColor();
+	
 	void            SetMiterLimit(unsigned int ulMiter);
 	unsigned int    GetMiterLimit();
 	void            SetFillMode(unsigned int ulFillMode);
@@ -92,11 +94,7 @@ public:
 	CSvmPen*		GetPen();
 	void            SetStretchMode(unsigned int& oMode);
 	unsigned int    GetStretchMode();
-	void            SetWindowOrigin(TSvmPoint& oPoint);
-	void            SetWindowExtents(TSvmSize& oPoint);
 	TSvmWindow*     GetWindow();
-	void            SetViewportOrigin(TSvmPoint& oPoint);
-	void            SetViewportExtents(TSvmSize& oPoint);
 	TSvmWindow*     GetViewport();
 	void            SetRop2Mode(unsigned int& nMode);
 	unsigned int    GetRop2Mode();
@@ -111,6 +109,9 @@ public:
 	void            SetArcDirection(unsigned int unDirection);
 	unsigned int    GetArcDirection();
 
+	void SetViewportOff(int lX, int lY);
+	void SetViewportExt(int lX, int lY);
+	
 	void SetWindowOff(short shX, short shY)
 	{
 		m_oWindow.lX += shX;
@@ -136,21 +137,24 @@ public:
 	double          m_dPixelWidthPrefered;
 	double          m_dPixelHeightPrefered;
 
+	TSvmMapMode     m_oMapMode;
+
 private:
 
 	void	SetPixelWidth(double dPixelW);
 	void	SetPixelHeight(double dPixelH);
 	bool	UpdatePixelMetrics();
 
-	ESvmMapUnit     m_ulMapMode;
 	CSvmBrush*		m_pBrush;
 	CSvmPen*		m_pPen;
 	CSvmFont*		m_pFont;
 	//CSvmLogPalette* m_pPalette;
 	TXForm			m_oTransform;
 	TXForm			m_oInverseTransform;
+	
 	TSvmColor       m_oTextColor;
-	TSvmColor       m_oBgColor;
+	TSvmColor       m_oTextBgColor;
+	
 	unsigned int    m_ulTextAlign;
 	unsigned int    m_ulBgMode;
 	unsigned int    m_ulMiterLimit;

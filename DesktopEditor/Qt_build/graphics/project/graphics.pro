@@ -596,7 +596,12 @@ SOURCES += \
     ../../../raster/JBig2/source/LeptonLib/zlibmemstub.cpp \
     ../../../raster/ImageFileFormatChecker.cpp \
     ../../../cximage/libpsd/test.c \
-    ../../../raster/JBig2/source/LeptonLib/blend1.cpp
+    ../../../raster/JBig2/source/LeptonLib/blend1.cpp \
+    ../../../raster/JBig2/source/LeptonLib/blend1.cpp \
+    ../../../raster/Metafile/StarView/SvmClip.cpp \
+    ../../../raster/Metafile/StarView/SvmFile.cpp \
+    ../../../raster/Metafile/StarView/SvmObjects.cpp \
+    ../../../raster/Metafile/StarView/SvmPlayer.cpp
 
 HEADERS += \
     ../../../graphics/AggPlusEnums.h \
@@ -863,7 +868,12 @@ HEADERS += \
     ../../../raster/Jp2/Tier2.h \
     ../../../raster/Jp2/Tile.h \
     ../../../raster/Jp2/Types.h \
-    ../../../raster/Jp2/Utils.h
+    ../../../raster/Jp2/Utils.h \
+    ../../../raster/Metafile/StarView/SvmClip.h \
+    ../../../raster/Metafile/StarView/SvmEnums.h \
+    ../../../raster/Metafile/StarView/SvmFile.h \
+    ../../../raster/Metafile/StarView/SvmObjects.h \
+    ../../../raster/Metafile/StarView/SvmPlayer.h
 
 unix {
     target.path = /usr/lib

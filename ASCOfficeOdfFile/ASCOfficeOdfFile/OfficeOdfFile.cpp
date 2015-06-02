@@ -5,7 +5,7 @@
 #include "../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 
 #include <boost/algorithm/string/case_conv.hpp>
-#include <lexical_cast.h>
+#include <boost/lexical_cast.hpp>
 
 #include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"

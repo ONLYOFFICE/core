@@ -305,6 +305,15 @@
 		<File
 			RelativePath="..\src\common\CPColorUtils.cpp"
 			>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="0"
+					PrecompiledHeaderThrough=""
+				/>
+			</FileConfiguration>
 		</File>
 		<File
 			RelativePath="..\include\cpdoccore\CPColorUtils.h"
@@ -333,6 +342,15 @@
 		<File
 			RelativePath="..\src\common\CPString.cpp"
 			>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="0"
+					PrecompiledHeaderThrough=""
+				/>
+			</FileConfiguration>
 		</File>
 		<File
 			RelativePath="..\include\cpdoccore\CPString.h"
@@ -345,6 +363,15 @@
 		<File
 			RelativePath="..\src\common\readdocelement.cpp"
 			>
+			<FileConfiguration
+				Name="Debug|Win32"
+				>
+				<Tool
+					Name="VCCLCompilerTool"
+					UsePrecompiledHeader="0"
+					PrecompiledHeaderThrough=""
+				/>
+			</FileConfiguration>
 		</File>
 	</Files>
 	<Globals>

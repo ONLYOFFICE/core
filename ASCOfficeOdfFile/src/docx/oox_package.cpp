@@ -7,9 +7,6 @@
 #include <cpdoccore/utf8cpp/utf8.h>
 
 #include "mediaitems.h"
-
-#include "../../../ASCImageStudio3/ASCGraphics/OfficeSvmFile/SvmConverter.h"
-
 #include "../../DesktopEditor/common/File.h"
 
 namespace cpdoccore { 
@@ -183,47 +180,7 @@ void media::write(const std::wstring & RootPath)
 			std::wstring & file_name  = item.href;
 			std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.outputName;
 			
-			int pos_svm = file_name.rfind(L".svm");
-			if ( pos_svm >= 0)
-			{
-				ConvertSvmToImage(file_name, file_name_out);
-			}
-			//else if(file_name.extension().empty())
-			//{
-			//	//непонятный тип .. может быть svm, emf, wmf, vclmtf (это копия уравнений)
-			//	//отдетектить???
-			//	ImageFile::IImageFile3Ptr piImageFile = NULL;
-			//	piImageFile.CreateInstance( __uuidof(ImageFile::ImageFile3) );
-			//	if( NULL != piImageFile )
-			//	{
-			//		VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-			//		IUnknown* pImage = NULL;
-			//	
-			//		BSTR bstrFilename = SysAllocString(item.href.data());
-			//		try
-			//		{
-			//			piImageFile->LoadImage2(bstrFilename, &pImage, &vbSuccess);
-			//		}
-			//		catch(...)
-			//		{
-			//		}
-			//		SysFreeString( bstrFilename );
-			//		if (vbSuccess && pImage)
-			//		{
-			//			bstrFilename = SysAllocString(file_name_out.string().data());
-			//			piImageFile->SaveImage2( &pImage, 4, bstrFilename, &vbSuccess );//to png
-			//			SysFreeString( bstrFilename );
-			//			pImage->Release();
-			//		}
-			//		if (vbSuccess == FALSE)
-			//		{
-			//			FileSystem::Directory::CopyFile(item.href, file_name_out);//ну не png это будет ... и чё? :-)
-			//		}
-			//	}
-
-			//}
-			else
-				NSFile::CFileBinary::Copy(item.href, file_name_out);
+			NSFile::CFileBinary::Copy(item.href, file_name_out);
         }
     }
 

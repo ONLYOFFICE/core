@@ -90,16 +90,16 @@
     <ClInclude Include="StarView\SvmEnums.h">
       <Filter>StarView</Filter>
     </ClInclude>
-    <ClInclude Include="StarView\SvmPlayer.h">
-      <Filter>StarView</Filter>
-    </ClInclude>
-    <ClInclude Include="StarView\SvmAbstractPlayer.h">
-      <Filter>StarView</Filter>
-    </ClInclude>
     <ClInclude Include="StarView\SvmFile.h">
       <Filter>StarView</Filter>
     </ClInclude>
     <ClInclude Include="StarView\SvmObjects.h">
+      <Filter>StarView</Filter>
+    </ClInclude>
+    <ClInclude Include="StarView\SvmPlayer.h">
+      <Filter>StarView</Filter>
+    </ClInclude>
+    <ClInclude Include="StarView\SvmClip.h">
       <Filter>StarView</Filter>
     </ClInclude>
   </ItemGroup>
@@ -140,14 +140,20 @@
     <ClCompile Include="Common\MetaFileUtils.cpp">
       <Filter>Common</Filter>
     </ClCompile>
-    <ClCompile Include="StarView\SvmPlayer.cpp">
-      <Filter>StarView</Filter>
-    </ClCompile>
     <ClCompile Include="StarView\SvmFile.cpp">
       <Filter>StarView</Filter>
     </ClCompile>
     <ClCompile Include="StarView\SvmObjects.cpp">
       <Filter>StarView</Filter>
     </ClCompile>
+    <ClCompile Include="StarView\SvmPlayer.cpp">
+      <Filter>StarView</Filter>
+    </ClCompile>
+    <ClCompile Include="StarView\SvmClip.cpp">
+      <Filter>StarView</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Library Include="..\..\Qt_build\graphics\project\Debug\graphics.lib" />
   </ItemGroup>
 </Project>

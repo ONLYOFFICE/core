@@ -565,24 +565,46 @@ namespace MetaFile
 				m_pRenderer->put_BrushColor1(oFgColor.ToInt());
 			}
 			else if (	BS_LINEARGRADIENT	== unBrushStyle ||
-						BS_RADIALGRADIENT	== unBrushStyle ||
-						BS_AXIALGRADIENT	== unBrushStyle ||
 						BS_RECTGRADIENT		== unBrushStyle ||
 						BS_PATHGRADIENT		== unBrushStyle
 					)
 			{
-				m_pRenderer->put_BrushType(c_BrushTypeCenter);
+				m_pRenderer->put_BrushType(c_BrushTypePathGradient1);
 
 				m_pRenderer->put_BrushColor1(pBrush->GetColor());
 				m_pRenderer->put_BrushColor2(pBrush->GetColor2());
 				m_pRenderer->put_BrushAlpha1(pBrush->GetAlpha());
+				m_pRenderer->put_BrushAlpha2(pBrush->GetAlpha2());
 
 				m_pRenderer->put_BrushLinearAngle(pBrush->GetStyleEx());
-				double l=0, t=0, w=0, h=0;
-				pBrush->GetBounds(l,t,w,h);
-				m_pRenderer->BrushBounds(l,t,w,h);
+
+				long Colors[2];
+				Colors[0] = (pBrush->GetColor()<<8) + pBrush->GetAlpha();
+				Colors[1] = (pBrush->GetColor2()<<8) + pBrush->GetAlpha2();
+				double Position[2] = {0, 1};
+
+				m_pRenderer->put_BrushGradientColors(Colors,Position,2);
 
 			}
+			else if (	BS_RADIALGRADIENT	== unBrushStyle ||
+						BS_AXIALGRADIENT	== unBrushStyle 
+					)
+			{
+				m_pRenderer->put_BrushType(c_BrushTypePathGradient2);
+
+				m_pRenderer->put_BrushColor1(pBrush->GetColor());
+				m_pRenderer->put_BrushColor2(pBrush->GetColor2());
+				m_pRenderer->put_BrushAlpha1(pBrush->GetAlpha());
+				m_pRenderer->put_BrushAlpha2(pBrush->GetAlpha2());
+
+				long Colors[2];
+				Colors[0] = (pBrush->GetColor()<<8) + pBrush->GetAlpha();
+				Colors[1] = (pBrush->GetColor2()<<8) + pBrush->GetAlpha2();
+				double Position[2] = {0, 1};
+				
+				m_pRenderer->put_BrushGradientColors(Colors,Position,2);
+			}
+
 			else //if (BS_SOLID == unBrushStyle)
 			{
 				m_pRenderer->put_BrushType(c_BrushTypeSolid);

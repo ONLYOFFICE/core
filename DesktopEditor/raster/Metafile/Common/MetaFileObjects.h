@@ -33,6 +33,7 @@ namespace MetaFile
 		virtual unsigned int GetStyleEx()		= 0;
 		virtual unsigned int GetHatch()			= 0;
 		virtual unsigned int GetAlpha()			= 0;
+		virtual unsigned int GetAlpha2()		= 0;
 		virtual std::wstring GetDibPatterPath() = 0;
 		virtual void GetBounds(double& left, double& top, double& width, double& height) = 0;
 	};

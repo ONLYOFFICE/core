@@ -459,7 +459,7 @@ class CSvmFile : virtual public IMetaFileBase
 				delete[] pdDx;
 		}
 	}
-	
+
 	void DrawText(std::wstring& wsString, unsigned int unCharsCount, int _nX, int _nY, int* pnDx = NULL)
 	{
 		int nX = _nX;

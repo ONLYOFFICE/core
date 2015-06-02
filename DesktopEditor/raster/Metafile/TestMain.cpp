@@ -61,11 +61,11 @@ void ConvertFolder(CMetaFile &oMetaFile, std::wstring wsFolderPath, const int nT
 		wsFilePath.append(vFiles.at(nIndex));
 		if (oMetaFile.LoadFromFile(wsFilePath.c_str()))
 		{
-			std::wstring wsDstFilePath = (wsFilePath.substr(0, wsFilePath.size() - 3)).append(L"bmp");
+			std::wstring wsDstFilePath = (wsFilePath.substr(0, wsFilePath.size() - 3)).append(L"png");
 
 			double w, h, x, y;
 			oMetaFile.GetBounds(&x, &y, &w, &h);
-			oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 1, w);
+			oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 4, w);
 			oMetaFile.Close();
 		}
 

@@ -170,7 +170,7 @@ namespace MetaFile
 		pFontCache->SetStreams(m_pAppFonts->GetStreams());
 		pFontManager->SetOwnerCache(pFontCache);
 
-		CGraphicsRenderer oRenderer;		
+		CGraphicsRenderer oRenderer;	
 		oRenderer.SetFontManager(pFontManager);
 
 		if (-1 == nHeight)
@@ -193,7 +193,13 @@ namespace MetaFile
 		if (!pBgraData)
 			return;
 
-		memset(pBgraData, 0xff, nWidth * nHeight * 4);
+		DWORD alfa = 0xffffff;
+		//дефолтный тон должен быть прозрачным, а не белым 
+		//memset(pBgraData, 0xff, nWidth * nHeight * 4);
+		for (int i = 0; i < nWidth * nHeight; i++)
+		{
+			((DWORD*)pBgraData)[i] = alfa;
+		}
 		CBgraFrame oFrame;
 		oFrame.put_Data(pBgraData);
 		oFrame.put_Width(nWidth);

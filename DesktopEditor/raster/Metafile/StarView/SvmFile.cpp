@@ -97,8 +97,8 @@ void CSvmFile::PlayMetaFile()
 	if (m_pOutput)
 	{
 		m_pOutput->Begin();
-		// + прозрачную заливку ???
 	}
+
 	for (unsigned int action = 0; action < m_oHeader.actionCount; ++action)
 	{
         unsigned short  actionType;
@@ -112,16 +112,18 @@ void CSvmFile::PlayMetaFile()
 
         switch (actionType) 
 		{
-			case META_RECT_ACTION:			Read_META_RECTANGLE();		break;
-			case META_POLYLINE_ACTION:		Read_META_POLYLINE();       break;
-			case META_POLYGON_ACTION:		Read_META_POLYGON();        break;
-			case META_POLYPOLYGON_ACTION:	Read_META_POLYPOLYGON();	break;
-			case META_LINE_ACTION:			Read_META_LINE();		    break;
+			case META_RECT_ACTION:				Read_META_RECTANGLE();		break;
+			case META_POLYLINE_ACTION:			Read_META_POLYLINE();       break;
+			case META_POLYGON_ACTION:			Read_META_POLYGON();        break;
+			case META_POLYPOLYGON_ACTION:		Read_META_POLYPOLYGON();	break;
+			case META_LINE_ACTION:				Read_META_LINE();		    break;
 			
-			case META_TEXT_ACTION:			Read_META_TEXT();			break;
-			case META_TEXTARRAY_ACTION:		Read_META_ARRAYTEXT();		break;
-			case META_TEXTALIGN_ACTION:		Read_META_TEXTALIGN();		break;
-			case META_TEXTRECT_ACTION:		Read_META_TEXTRECT();		break;
+			case META_TEXT_ACTION:				Read_META_TEXT();			break;
+			case META_TEXTARRAY_ACTION:			Read_META_ARRAYTEXT();		break;
+			case META_TEXTALIGN_ACTION:			Read_META_TEXTALIGN();		break;
+			case META_TEXTRECT_ACTION:			Read_META_TEXTRECT();		break;
+			case META_TEXTFILLCOLOR_ACTION:		Read_META_SETTEXTFILLCOLOR();	break;
+			case META_TEXTCOLOR_ACTION:			Read_META_SETTEXTCOLOR();		break;
 			case META_TEXTLANGUAGE_ACTION:
 			case META_STRETCHTEXT_ACTION:
 			case META_TEXTLINECOLOR_ACTION:
@@ -135,8 +137,6 @@ void CSvmFile::PlayMetaFile()
 
 			case META_LINECOLOR_ACTION:			Read_META_SETLINECOLOR();		break;
 			case META_FILLCOLOR_ACTION:			Read_META_SETFILLCOLOR();		break;
-			case META_TEXTFILLCOLOR_ACTION:		Read_META_SETTEXTFILLCOLOR();	break;
-			case META_TEXTCOLOR_ACTION:			Read_META_SETTEXTCOLOR();		break;
 			case META_GRADIENT_ACTION:			Read_META_GRADIENT();			break;
 			case META_GRADIENTEX_ACTION:		Read_META_GRADIENTEX();			break;
 			case META_HATCH_ACTION:
@@ -177,45 +177,23 @@ void CSvmFile::PlayMetaFile()
 
 			case META_NULL_ACTION:
 			default:
-#ifdef _DEBUG
-			if (actionType != 512 && m_unRecordSize > 0 && m_pOutput)
-			{
-				std::wstring name;
-				if (actionType == 0)
-					name = actionNames[0].actionName;
-				else if (actionType == 512)
-					name = L"META_COMMENT_ACTION";            
-				else if (100 <= actionType && actionType <= META_LAST_ACTION)
-					name = actionNames[actionType - 99].actionName;
-				else
-					name = L"(out of bounds)";
-
-				std::wcout << name << L"\t(" << actionType << L") " << L"\tversion = " << m_currentActionVersion << L"\t; totalSize = " << m_unRecordSize << L"\n";
-			}		
-#endif
 			break;
         }
-#ifdef _DEBUG
-/*		if (actionType != 512 && m_unRecordSize > 0 && !m_pOutput)
-		{
-			std::wstring name;
-			if (actionType == 0)
-				name = actionNames[0].actionName;
-			else if (actionType == 512)
-				name = L"META_COMMENT_ACTION";            
-			else if (100 <= actionType && actionType <= META_LAST_ACTION)
-				name = actionNames[actionType - 99].actionName;
-			else
-				name = L"(out of bounds)";
 
-			std::wcout << name << L"\t(" << actionType << L") " << L"\tversion = " << m_currentActionVersion << L"\t; totalSize = " << m_unRecordSize << L"\n";
-		}*/			
-#endif
 		m_currentActionType = actionType;
 
 		int need_skip = m_unRecordSize - (m_oStream.Tell() - m_unRecordPos);
 		m_oStream.Skip(need_skip);
-    }
+
+#ifdef _DEBUG
+		if (100 <= actionType && actionType <= META_LAST_ACTION && need_skip > 0 && !m_pOutput)
+		{
+			std::wstring name = actionNames[actionType - 99].actionName;
+
+			std::wcout << name << L"\t\t" << actionType << L"\t(version = " << m_currentActionVersion << L")\t; skiped = " << need_skip << L"\n";
+		}			
+#endif   
+ }
 	if (m_pOutput)
 		m_pOutput->End();
 }
@@ -263,13 +241,6 @@ void CSvmFile::Read_META_RECTANGLE()
 void CSvmFile::Read_SVM_HEADER()
 {
 	m_oStream >> m_oHeader;
-
-
-	m_pDC->SetWindowExt (	m_oHeader.boundRect.nRight	- m_oHeader.boundRect.nLeft,
-							m_oHeader.boundRect.nBottom - m_oHeader.boundRect.nTop);
-
-	m_pDC->SetWindowScale(	(double)m_oHeader.mapMode.scaleX.numerator/m_oHeader.mapMode.scaleX.denominator, 
-							(double)m_oHeader.mapMode.scaleY.numerator/m_oHeader.mapMode.scaleY.denominator);
 
 	m_pDC->SetMapMode(m_oHeader.mapMode, true);
 	
@@ -574,6 +545,8 @@ void CSvmFile::Read_META_SETFILLCOLOR()
 	if (m_currentActionType == META_GRADIENT_ACTION ||
 		m_currentActionType == META_GRADIENTEX_ACTION)
 	{
+		//поменять основной цвет??
+		m_oStream.Skip(m_unRecordSize);
 		return;
 	}
 
@@ -622,23 +595,24 @@ void CSvmFile::Read_META_GRADIENTEX()
 	CSvmBrush* pBrush = new CSvmBrush();
 	if (!pBrush)
 		return SetError();
-	pBrush->BrushStyle	= BS_LINEARGRADIENT;//BS_PATHGRADIENT; 
 
-	unsigned short nTmp16;
+	TSvmGradient gradient;
+	m_oStream >> gradient;
 
-    m_oStream >> nTmp16; 
-	ESvmGradientStyle gradientStyle = (ESvmGradientStyle) nTmp16;
+	switch((ESvmGradientStyle)gradient.style)
+	{
+	case GRADIENT_LINEAR:		pBrush->BrushStyle	= BS_LINEARGRADIENT;	break;
+	case GRADIENT_AXIAL:		pBrush->BrushStyle	= BS_AXIALGRADIENT;		break;
+	case GRADIENT_RADIAL:		pBrush->BrushStyle	= BS_RADIALGRADIENT;	break;
+	case GRADIENT_ELLIPTICAL:	pBrush->BrushStyle	= BS_RADIALGRADIENT;	break;
+	case GRADIENT_SQUARE:		pBrush->BrushStyle	= BS_LINEARGRADIENT;	break;
+	case GRADIENT_RECT:			pBrush->BrushStyle	= BS_RECTGRADIENT;		break;
+	}
+	
+	pBrush->Color.Set(gradient.color1.r>>8, gradient.color1.g>>8, gradient.color1.b>>8);
+	pBrush->Color2.Set(gradient.color2.r>>8, gradient.color2.g>>8, gradient.color2.b>>8);
 
-	m_oStream >> pBrush->Color;
-	m_oStream >> pBrush->Color2;
-
-	m_oStream >> pBrush->BrushStyleEx;
-    m_oStream >> nTmp16; //Border 
-    m_oStream >> nTmp16; //OfsX 
-    m_oStream >> nTmp16; //OfsY 
-	m_oStream >> nTmp16; //IntensityStart 
-    m_oStream >> nTmp16; //IntensityEnd 
-    m_oStream >> nTmp16; //StepCount;	
+	pBrush->BrushStyleEx = 90 + gradient.angle % 3600; //проверить на разных
 
 	m_oPlayer.RegisterObject((CSvmObjectBase*)pBrush);
 }
@@ -720,25 +694,27 @@ void CSvmFile::Read_META_FLOATTRANSPARENT()
 	CSvmBrush* pBrush = new CSvmBrush();
 	if (!pBrush)
 		return SetError();
-	pBrush->BrushStyle	= BS_LINEARGRADIENT; 
 
 	m_oStream >> pBrush->BrushBounds;
 	
-	unsigned short nTmp16;
-    m_oStream >> nTmp16; 
-	ESvmGradientStyle gradientStyle = (ESvmGradientStyle) nTmp16;
+	TSvmGradient gradient;
+	m_oStream >> gradient;
 
-	m_oStream >> pBrush->Color;
-	m_oStream >> pBrush->Color2;
-
-	m_oStream >> pBrush->BrushStyleEx;
-    m_oStream >> nTmp16; //Border 
-    m_oStream >> nTmp16; //OfsX 
-    m_oStream >> nTmp16; //OfsY 
-	m_oStream >> nTmp16; //IntensityStart 
-    m_oStream >> nTmp16; //IntensityEnd 
-    m_oStream >> nTmp16; //StepCount;	
+	switch((ESvmGradientStyle)gradient.style)
+	{
+	case GRADIENT_LINEAR:		pBrush->BrushStyle	= BS_LINEARGRADIENT;	break;
+	case GRADIENT_AXIAL:		pBrush->BrushStyle	= BS_AXIALGRADIENT;		break;
+	case GRADIENT_RADIAL:		pBrush->BrushStyle	= BS_RADIALGRADIENT;	break;
+	case GRADIENT_ELLIPTICAL:	pBrush->BrushStyle	= BS_RADIALGRADIENT;	break;
+	case GRADIENT_SQUARE:		pBrush->BrushStyle	= BS_LINEARGRADIENT;	break;
+	case GRADIENT_RECT:			pBrush->BrushStyle	= BS_RECTGRADIENT;		break;
+	}
 	
+	pBrush->Color.Set(gradient.color1.r>>8, gradient.color1.g>>8, gradient.color1.b>>8);
+	pBrush->Color2.Set(gradient.color2.r>>8, gradient.color2.g>>8, gradient.color2.b>>8);
+
+	pBrush->BrushStyleEx = 90 + gradient.angle % 3600; //проверить на разных
+
 	m_oPlayer.RegisterObject((CSvmObjectBase*)pBrush);
 }
 
@@ -746,28 +722,29 @@ void CSvmFile::Read_META_GRADIENT()
 {
 	CSvmBrush* pBrush = new CSvmBrush();
 	if (!pBrush)
-		return SetError();
-	pBrush->BrushStyle	= BS_LINEARGRADIENT; 
+		return SetError(); 
 
 	m_oStream >> pBrush->BrushBounds;
-	
-	unsigned short nTmp16;
-    m_oStream >> nTmp16; 
-	ESvmGradientStyle gradientStyle = (ESvmGradientStyle) nTmp16;
 
-	m_oStream >> pBrush->Color;
-	m_oStream >> pBrush->Color2;
+	TSvmGradient gradient;
+	m_oStream >> gradient;
 
-	m_oStream >> pBrush->BrushStyleEx;
-    m_oStream >> nTmp16; //Border 
-    m_oStream >> nTmp16; //OfsX 
-    m_oStream >> nTmp16; //OfsY 
-	m_oStream >> nTmp16; //IntensityStart 
-    m_oStream >> nTmp16; //IntensityEnd 
-    m_oStream >> nTmp16; //StepCount;	
+	switch((ESvmGradientStyle)gradient.style)
+	{
+	case GRADIENT_LINEAR:		pBrush->BrushStyle	= BS_LINEARGRADIENT;	break;
+	case GRADIENT_AXIAL:		pBrush->BrushStyle	= BS_AXIALGRADIENT;		break;
+	case GRADIENT_RADIAL:		pBrush->BrushStyle	= BS_RADIALGRADIENT;	break;
+	case GRADIENT_ELLIPTICAL:	pBrush->BrushStyle	= BS_RADIALGRADIENT;	break;
+	case GRADIENT_SQUARE:		pBrush->BrushStyle	= BS_LINEARGRADIENT;	break;
+	case GRADIENT_RECT:			pBrush->BrushStyle	= BS_RECTGRADIENT;		break;
+	}
 	
+	pBrush->Color.Set(gradient.color1.r>>8, gradient.color1.g>>8, gradient.color1.b>>8);
+	pBrush->Color2.Set(gradient.color2.r>>8, gradient.color2.g>>8, gradient.color2.b>>8);
+
+	pBrush->BrushStyleEx = 90 + gradient.angle % 3600; //проверить на разных
+
 	m_oPlayer.RegisterObject((CSvmObjectBase*)pBrush);
-
 }
  
 void CSvmFile::Read_META_FONT()
@@ -916,8 +893,10 @@ void CSvmFile::Read_META_BMPSCALE()
 		m_oStream.Skip(bitmap_info.nSizeImage);
 		delete Header;
 	}
+	//иногда наверху неверно вычисляется оригинальный размер - если внутри одиночная картинка
+
 	if (bitmap_info.nHeight >  m_oBoundingBox.nBottom &&
-			bitmap_info.nWidth > m_oBoundingBox.nRight)
+			bitmap_info.nWidth > m_oBoundingBox.nRight && !m_pOutput)
 	{
 		m_oBoundingBox.nRight = bitmap_info.nWidth;
 		m_oBoundingBox.nBottom = bitmap_info.nHeight;
@@ -930,34 +909,17 @@ void CSvmFile::Read_META_BMPSCALE()
 	m_oStream >> size.cx;
 	m_oStream >> size.cy;
 
-	TSvmMapMode aMapMode_new, aMapMode_old;
-	//
-	aMapMode_old = m_pDC->m_oMapMode;	
-	aMapMode_new.unit = MAP_RELATIVE;
-
-	m_pDC->SetMapMode(aMapMode_new);
-
-	if (pBgraBuffer && m_pOutput)
+	if (pBgraBuffer)
 	{
-		double dX = point.x, dY = point.y, dX1 = point.x + size.cx, dY1 = point.y + size.cy;
-		
-
-		TranslatePoint(dX, dY, dX, dY);
-		TranslatePoint(dX + dX1, dY + dY1, dX1, dY1);
-		
-		dX1 = dX1-dX;
-		dY1 = dY1-dY;
-
-		if (m_pOutput)
+		if ( m_pOutput)
 		{
-			m_pOutput->DrawBitmap( dX, dY, dX1, dY1, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
+			m_pOutput->DrawBitmap( point.x, point.y, size.cx, size.cy, pBgraBuffer, bitmap_info.nWidth, bitmap_info.nHeight);
 		}
+
 		delete []pBgraBuffer;
 		
 		UpdateOutputDC();
 	}
-	m_pDC->SetMapMode(aMapMode_old);
-
 
 }
 } // namespace MetaFile

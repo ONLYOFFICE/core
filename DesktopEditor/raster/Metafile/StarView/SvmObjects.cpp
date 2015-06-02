@@ -156,7 +156,7 @@ CDataStream& operator>>(CDataStream &stream, TSvmPoint &p)
 	return stream;
 }
 
-CSvmBrush::CSvmBrush() : Color(255, 255, 255)
+CSvmBrush::CSvmBrush() : Color(255, 255, 255), Color2(255, 255, 255)
 {
 	BrushStyle = BS_SOLID;
 	BrushHatch = HS_HORIZONTAL;
@@ -165,7 +165,10 @@ CSvmBrush::CSvmBrush(CSvmBrush& oBrush)
 {
 	BrushStyle = oBrush.BrushStyle;
 	Color = oBrush.Color;
+	Color2 = oBrush.Color2;
 	BrushHatch = oBrush.BrushHatch;
+	BrushStyleEx = oBrush.BrushStyleEx;
+	BrushBounds = oBrush.BrushBounds;
 }
 
 int CSvmBrush::GetColor()
@@ -191,6 +194,10 @@ unsigned int CSvmBrush::GetHatch()
 unsigned int CSvmBrush::GetAlpha()
 {
 	return 0xff-Color.a;
+}
+unsigned int CSvmBrush::GetAlpha2()
+{
+	return 0xff-Color2.a;
 }
 void CSvmBrush::GetBounds(double& left, double& top, double& width, double& height)
 {
@@ -238,15 +245,29 @@ CDataStream& operator>>(CDataStream &stream, TSvmPolygon &p)
 
 CDataStream& operator>>(CDataStream &stream, TSvmColor &c)
 {
-	char s;
-    unsigned short  a, r, g, b, p;
-    
     stream >> c.b;
     stream >> c.g;
     stream >> c.r;
     stream >> c.a;
 
 	c.color = METAFILE_RGBA(c.r, c.g, c.b, c.a);
+
+	return stream;
+}
+CDataStream& operator>>(CDataStream &stream, TSvmColorEx &c)
+{
+	stream >> c.name;
+	if ( c.name & 0x8000 )
+	{
+		//if(compression_mode) 
+		stream >> c.r;
+		stream >> c.g;
+		stream >> c.b;
+	}
+	else
+	{
+		//из таблички
+	}
 
 	return stream;
 }
@@ -417,6 +438,25 @@ CDataStream& operator>>(CDataStream &stream, TSvmBitmap &b)
     if( b.nSizeImage > ( 16 * static_cast< unsigned int >( b.nWidth * b.nHeight ) ) )
         b.nSizeImage = 0;
 	
+	return stream;
+}
+CDataStream& operator>>(CDataStream &stream, TSvmGradient &g)
+{
+	stream >> g.version;	
+	stream >> g.style;
+
+	stream >> g.color1;
+	stream >> g.color2;
+
+	stream >> g.angle;
+
+    stream >> g.border;
+    stream >> g.offX;
+    stream >> g.offY;
+	stream >> g.intensityStart;
+    stream >> g.intensityEnd;
+    stream >> g.stepCount;	
+
 	return stream;
 }
 }

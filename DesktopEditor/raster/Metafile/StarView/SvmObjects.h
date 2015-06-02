@@ -149,6 +149,33 @@ struct TSvmPolygon
 	std::vector<TSvmPoint>	points;
 };
 
+struct TSvmColorEx
+{
+	unsigned short name;
+
+	unsigned short r;
+	unsigned short g;
+	unsigned short b;
+};
+
+struct TSvmGradient
+{
+	VersionCompat version;
+	
+	unsigned short style;
+	
+	TSvmColorEx color1;
+	TSvmColorEx color2;
+
+	unsigned short angle;
+    unsigned short border;
+    unsigned short offX;
+    unsigned short offY;
+	unsigned short intensityStart;
+    unsigned short intensityEnd;
+    unsigned short stepCount;	
+};
+
 struct TSvmColor
 {
 	unsigned char r;
@@ -160,15 +187,15 @@ struct TSvmColor
 
 	TSvmColor()
 	{
-		r = 0;		g = 0;		b = 0;	
+		r = 0;		g = 0;		b = 0;		a = 0;
 	}
 	TSvmColor(unsigned char _r, unsigned char _g, unsigned char _b)
 	{
 		r = _r;		g = _g;		b = _b;
 	}
-	void Set(unsigned char _r, unsigned char _g, unsigned char _b)
+	void Set(unsigned char _r, unsigned char _g, unsigned char _b, unsigned char _a = 0)
 	{
-		r = _r;		g = _g;		b = _b;
+		r = _r;		g = _g;		b = _b;		a = _a;
 	}
 	void Init()
 	{
@@ -232,6 +259,7 @@ public:
 	unsigned int GetStyle();
 	unsigned int GetHatch();
 	unsigned int GetAlpha();
+	unsigned int GetAlpha2();
 	std::wstring GetDibPatterPath(){ return L""; }
 	void GetBounds(double& left, double& top, double& width, double& height);
 
@@ -380,9 +408,12 @@ CDataStream& operator>>(CDataStream &stream, TSvmPoint &p);
 CDataStream& operator>>(CDataStream &stream, TSvmRect &p);
 CDataStream& operator>>(CDataStream &stream, TSvmPolygon &p);
 CDataStream& operator>>(CDataStream &stream, TSvmColor &c);
+CDataStream& operator>>(CDataStream &stream, TSvmColorEx &c);
 CDataStream& operator>>(CDataStream &stream, TSvmBitmap &b);
 CDataStream& operator>>(CDataStream &stream, CSvmFont *f);
 CDataStream& operator>>(CDataStream &stream, TSvmLineInfo &l);
+CDataStream& operator>>(CDataStream &stream, TSvmGradient &g);
+
 
 }
 

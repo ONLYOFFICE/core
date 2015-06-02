@@ -36,7 +36,7 @@ public:
 
 private:
 	void InitStockObjects();
-	void InitStockBrush	(bool bNull, unsigned char r, unsigned char g, unsigned char b);
+	void InitStockBrush	(bool bNull, unsigned char r, unsigned char g, unsigned char b , unsigned char a);
 	void InitStockPen	(bool bNull, unsigned char r, unsigned char g, unsigned char b);
 
 	typedef std::map < unsigned int, CSvmObjectBase* > CSvmObjectMap;
@@ -94,8 +94,6 @@ public:
 	CSvmPen*		GetPen();
 	void            SetStretchMode(unsigned int& oMode);
 	unsigned int    GetStretchMode();
-	TSvmWindow*     GetWindow();
-	TSvmWindow*     GetViewport();
 	void            SetRop2Mode(unsigned int& nMode);
 	unsigned int    GetRop2Mode();
 	//void            SetPalette(CSvmLogPalette* pPalette);
@@ -109,28 +107,6 @@ public:
 	void            SetArcDirection(unsigned int unDirection);
 	unsigned int    GetArcDirection();
 
-	void SetViewportOff(int lX, int lY);
-	void SetViewportExt(int lX, int lY);
-	
-	void SetWindowOff(short shX, short shY)
-	{
-		m_oWindow.lX += shX;
-		m_oWindow.lY += shY;
-		UpdatePixelMetrics();
-	}
-	void SetWindowScale(double dX, double dY)
-	{
-		m_oWindow.ulW = (int)(m_oWindow.ulW * dX);
-		m_oWindow.ulH = (int)(m_oWindow.ulH * dY);
-		UpdatePixelMetrics();
-	}
-	void SetWindowExt(short shW, short shH)
-	{
-		m_oWindow.ulW = shW;
-		m_oWindow.ulH = shH;
-		UpdatePixelMetrics();
-	}
-	
 	double          m_dPixelWidth;
 	double          m_dPixelHeight;
 	
@@ -143,7 +119,6 @@ private:
 
 	void	SetPixelWidth(double dPixelW);
 	void	SetPixelHeight(double dPixelH);
-	bool	UpdatePixelMetrics();
 
 	CSvmBrush*		m_pBrush;
 	CSvmPen*		m_pPen;
@@ -161,9 +136,6 @@ private:
 	unsigned int    m_ulFillMode;
 	unsigned int    m_ulStretchMode;
 	unsigned int    m_ulRop2Mode;
-	
-	TSvmWindow      m_oWindow;
-	TSvmWindow      m_oViewport;
 	
 	TSvmPoint		m_oCurPos;
 	//CSvmClip        m_oClip;

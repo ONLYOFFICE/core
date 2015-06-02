@@ -209,7 +209,7 @@ void CSvmPlayer::SetRasterOp(int op)
 }
 void CSvmPlayer::InitStockObjects()
 {
-	InitStockBrush(false, 79, 129, 189); //default OnlyOffice
+	InitStockBrush(false, 0x00, 0x00, 0x00, 0xff); //прозрачный
 	InitStockPen(false, 0x00, 0x00, 0x00);
 }
 void CSvmPlayer::Pop()
@@ -354,7 +354,7 @@ void CSvmPlayer::Push(int nFlags) // объекты с множественной настройкой
 	//		pData->mpRefPoint = NULL;
 	//}
 }
-void  CSvmPlayer::InitStockBrush(bool bNull, unsigned char r, unsigned char g, unsigned char b)
+void  CSvmPlayer::InitStockBrush(bool bNull, unsigned char r, unsigned char g, unsigned char b, unsigned char a)
 {
 	CSvmBrush* pBrush = new CSvmBrush();
 	if (!pBrush)
@@ -365,7 +365,7 @@ void  CSvmPlayer::InitStockBrush(bool bNull, unsigned char r, unsigned char g, u
 	else
 	{
 		pBrush->BrushStyle = BS_SOLID;
-		pBrush->Color.Set(r, g, b);
+		pBrush->Color.Set(r, g, b, a);
 	}
 
 	RegisterObject((CSvmObjectBase*)pBrush);
@@ -403,8 +403,8 @@ CSvmDC::CSvmDC()
 	m_ulMiterLimit  = 0;
 	m_ulFillMode    = WINDING;
 	m_ulStretchMode = 0;
-	m_oWindow.Init();
-	m_oViewport.Init();
+	//m_oWindow.Init();
+	//m_oViewport.Init();
 
 	m_dPixelHeight = m_dPixelHeightPrefered = 1;
 	m_dPixelWidth  = m_dPixelWidthPrefered	= 1;
@@ -443,8 +443,8 @@ CSvmDC*         CSvmDC::Copy()
 	pNewDC->m_dPixelHeightPrefered = m_dPixelHeightPrefered;
 	pNewDC->m_dPixelWidthPrefered = m_dPixelWidthPrefered;
 
-	pNewDC->m_oWindow.Copy(&m_oWindow);
-	pNewDC->m_oViewport.Copy(&m_oViewport);
+	//pNewDC->m_oWindow.Copy(&m_oWindow);
+	//pNewDC->m_oViewport.Copy(&m_oViewport);
 	pNewDC->m_oCurPos = m_oCurPos;
 	//pNewDC->m_oClip = m_oClip;
 	pNewDC->m_unArcDirection = m_unArcDirection;
@@ -531,7 +531,8 @@ void CSvmDC::SetMapMode(TSvmMapMode & mapMode, bool prefered )
 		//хз
 		break;
 	case MAP_RELATIVE:
-		UpdatePixelMetrics();
+		SetPixelWidth(dPixel);
+		SetPixelHeight(dPixel);
 		break;
 	case MAP_LASTENUMDUMMY:
 		break;
@@ -544,7 +545,6 @@ void CSvmDC::SetMapMode(TSvmMapMode & mapMode, bool prefered )
 
 	}
 
-	UpdatePixelMetrics();
 }
 
 TXForm* CSvmDC::GetTransform()
@@ -672,41 +672,6 @@ void CSvmDC::SetPixelHeight(double dPixelH)
 	m_dPixelHeight = dPixelH;
 }
 
-TSvmWindow* CSvmDC::GetWindow()
-{
-	return &m_oWindow;
-}
-void CSvmDC::SetViewportOff(int lX, int lY)
-{
-	m_oViewport.lX = lX;
-	m_oViewport.lY = lY;
-
-	UpdatePixelMetrics();
-}
-void CSvmDC::SetViewportExt(int lX, int lY)
-{
-	m_oViewport.ulW = lX;
-	m_oViewport.ulH = lY;
-
-	UpdatePixelMetrics();
-}
-TSvmWindow* CSvmDC::GetViewport()
-{
-	return &m_oViewport;
-}
-bool CSvmDC::UpdatePixelMetrics()
-{
-	if 	(GetMapModeUnit() == MAP_RELATIVE)
-	{
-		double dPixelX = 1;//(double)m_oViewport.ulW / (double)m_oWindow.ulW;
-		double dPixelY = 1;//(double)m_oViewport.ulH / (double)m_oWindow.ulH;
-
-		SetPixelWidth(dPixelX);
-		SetPixelHeight(dPixelY);
-	}
-
-	return true;
-}
 void CSvmDC::SetRop2Mode(unsigned int& nMode)
 {
 	m_ulRop2Mode = nMode;

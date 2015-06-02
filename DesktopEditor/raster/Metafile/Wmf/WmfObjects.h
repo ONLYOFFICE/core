@@ -55,6 +55,10 @@ namespace MetaFile
 		}
 		unsigned int GetHatch();
 		unsigned int GetAlpha();
+		unsigned int GetAlpha2()
+		{
+			return 0xff;
+		}
 		std::wstring GetDibPatterPath();
 		void GetBounds(double& left, double& top, double& width, double& height) {}
 

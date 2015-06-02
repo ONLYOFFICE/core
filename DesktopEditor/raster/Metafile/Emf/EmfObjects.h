@@ -62,6 +62,10 @@ namespace MetaFile
 		{
 			return BrushAlpha;
 		}
+		unsigned int GetAlpha2()
+		{
+			return 0Xff;
+		}
 		std::wstring GetDibPatterPath()
 		{
 			return DibPatternPath;

@@ -195,9 +195,6 @@
     <ClCompile Include="Wmf\WmfObjects.cpp" />
     <ClCompile Include="Wmf\WmfPlayer.cpp" />
   </ItemGroup>
-  <ItemGroup>
-    <Library Include="..\..\Qt_build\graphics\project\Debug\graphics.lib" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

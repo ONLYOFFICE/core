@@ -9,7 +9,7 @@ template <class Ostream>
 class logging
 {
 public:
-    logging(Ostream & Ostream) : ostream_(Ostream)
+    logging(Ostream &stream) : ostream_(stream)
     {}
 
     template <class T>

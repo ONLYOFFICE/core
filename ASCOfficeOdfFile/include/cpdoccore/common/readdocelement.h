@@ -1,5 +1,4 @@
-#ifndef _CPDOCCORE_READDOCELEMENT_H_
-#define _CPDOCCORE_READDOCELEMENT_H_
+#pragma once
 
 #include <string>
 
@@ -11,10 +10,9 @@ namespace xml {
 
 class sax;
 
-template <class StringT>
 class attributes;
 
-typedef attributes< ::std::wstring > attributes_wc;
+typedef attributes attributes_wc;
 
 typedef shared_ptr< attributes_wc >::Type attributes_wc_ptr;
 
@@ -45,5 +43,3 @@ inline read_doc_element::~read_doc_element()
 
 }
 }
-
-#endif // #ifndef _CPDOCCORE_READDOCELEMENT_H_

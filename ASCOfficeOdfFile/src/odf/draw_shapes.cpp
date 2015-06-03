@@ -28,7 +28,6 @@ namespace odf {
 
 
 
-
 const wchar_t * draw_shape::ns = L"draw";
 const wchar_t * draw_shape::name = L"shape";
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -225,7 +224,7 @@ void draw_path::reset_svg_path()
 		{
 			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 			std::wstringstream output_;   
-			svg_path::oox_serialize(output_, o_Polyline_pt);
+            svg_path::oox_serialize(output_, o_Polyline_pt);
 			additional_.push_back(odf::_property(L"custom_path",output_.str()));
 		}
 	}
@@ -277,7 +276,7 @@ void draw_polygon::reset_polygon_path()
 		{
 			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 			std::wstringstream output_;   
-			svg_path::oox_serialize(output_, o_Polyline_pt);
+            svg_path::oox_serialize(output_, o_Polyline_pt);
 			additional_.push_back(odf::_property(L"custom_path",output_.str()));
 		}
 	}
@@ -494,7 +493,7 @@ void draw_connector::reset_svg_path()
 			sub_type_ = 6;
 			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 			std::wstringstream output_;   
-			svg_path::oox_serialize(output_, o_Polyline_pt);
+            svg_path::oox_serialize(output_, o_Polyline_pt);
 			additional_.push_back(odf::_property(L"custom_path",output_.str()));
 		}
 	}

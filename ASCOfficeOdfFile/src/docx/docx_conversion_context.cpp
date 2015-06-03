@@ -264,9 +264,9 @@ std::wstring  docx_conversion_context::dump_settings_document()
 			CP_XML_ATTR(L"xmlns:sl",	L"http://schemas.openxmlformats.org/schemaLibrary/2006/main");
 			CP_XML_ATTR(L"mc:Ignorable", L"w14");
 
-			_CP_OPT(bool) boolVal;
-			_CP_OPT(std::wstring) strVal;
-			_CP_OPT(int) intVal;
+            _CP_OPT(bool)  boolVal;
+            _CP_OPT(std::wstring)  strVal;
+            _CP_OPT(int)   intVal;
 
 			if (odf::GetProperty(settings_properties_,L"evenAndOddHeaders",boolVal))
 			{
@@ -833,7 +833,7 @@ namespace
    }
 
 }
-void docx_conversion_context::set_settings_property(odf::_property & prop)
+void docx_conversion_context::set_settings_property(const odf::_property & prop)
 {
 	settings_properties_.push_back(prop);
 }

@@ -28,7 +28,7 @@
 #endif
 namespace _image_file_
 {
-	bool GetResolution(const WCHAR* fileName, int & Width, int &Height)
+    bool GetResolution(const wchar_t* fileName, int & Width, int &Height)
 	{
 		bool result =false;
 #if defined(_WIN32) || defined(_WIN64)
@@ -68,7 +68,8 @@ int get_value_emu(double pt)
 } 
 bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & clip_rect)
 {
-	ZeroMemory(clip_rect,4*sizeof(double));
+    memset(clip_rect, 0, 4*sizeof(double));
+
 	if (strClipping.length() <1 || fileName.length()<1)return false;
 		
 	int fileWidth=0,fileHeight=0;

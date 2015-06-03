@@ -1,6 +1,3 @@
-/// \file   attributes.cpp
-/// \author nikolay.pogorskiy@gmail.com 
-
 #include <map>
 #include <vector>
 #include <string>
@@ -58,12 +55,11 @@ private:
     internal_vector vector_;
 };
 
-template <class StringT>
-class attributes_impl : public attributes<StringT> 
+class attributes_impl : public attributes
 {
 public:
-    typedef typename attributes<StringT>::value_type value_type;
-    typedef typename attributes<StringT>::key_value key_value;
+    typedef typename attributes::value_type value_type;
+    typedef typename attributes::key_value  key_value;
 
 public:
     attributes_impl() : check_(true){};
@@ -74,10 +70,10 @@ public:
     }
 
 public:
-    void add(const StringT & QualifiedName, const StringT & Value);
+    void add(const std::wstring & QualifiedName, const std::wstring & Value);
     
 public:
-    virtual value_type get(const StringT & QualifiedName) const ;
+    virtual value_type get(const std::wstring & QualifiedName) const ;
     virtual const key_value & at(size_t _Pos) const;
     virtual size_t size() const;
     
@@ -113,45 +109,47 @@ private:
     typedef std::vector< key_value > VectorVal;
 #endif
 
-    typedef std::map<StringT, size_t> AttribMap;
+    typedef std::map<std::wstring, size_t> AttribMap;
     AttribMap attrib_;
     VectorVal values_;
     mutable bool check_;
 
 };
 
-template <class StringT>
-void attributes_impl<StringT>::add(const StringT & QualifiedName, const StringT & Value)
+void attributes_impl::add(const std::wstring & QualifiedName, const std::wstring & Value)
 {
+    typedef typename AttribMap::value_type attr_map_value_type;
+
     values_.push_back( key_value(QualifiedName, Value) );
-    attrib_.insert( AttribMap::value_type(QualifiedName, values_.size() - 1) );
+    attrib_.insert( attr_map_value_type(QualifiedName, values_.size() - 1) );
 }
 
-template <class StringT>
-typename attributes_impl<StringT>::value_type attributes_impl<StringT>::get(const StringT & QualifiedName) const 
+typename attributes_impl::value_type attributes_impl::get(const std::wstring & QualifiedName) const
 {
-    AttribMap::const_iterator i = attrib_.find( QualifiedName );
+    typedef typename AttribMap::const_iterator attr_map_iterator;
+    typedef typename attributes::value_type attr_str_type;
+
+    attr_map_iterator i = attrib_.find( QualifiedName );
+
     if ( i != attrib_.end() )
-        return attributes<StringT>::value_type( values_[i->second].second );
+        return attr_str_type( values_[i->second].second );
     else
-        return attributes<StringT>::value_type();
+        return attr_str_type();
 }
 
-template <class StringT>
-typename const attributes_impl<StringT>::key_value & attributes_impl<StringT>::at(size_t _Pos) const
+const typename attributes_impl::key_value & attributes_impl::at(size_t _Pos) const
 {
     return values_[_Pos];
 }
 
-template <class StringT>
-size_t attributes_impl<StringT>::size() const
+size_t attributes_impl::size() const
 {
     return attrib_.size();
 }
 
 attributes_wc_ptr read_attributes(sax * SaxReader)
 {
-    typedef attributes_impl< ::std::wstring > attributes_impl_wc;
+    typedef attributes_impl attributes_impl_wc;
     _CP_PTR(attributes_impl_wc) attributes = boost::make_shared<attributes_impl_wc>();
 
     if (SaxReader->attrCount() > 0)

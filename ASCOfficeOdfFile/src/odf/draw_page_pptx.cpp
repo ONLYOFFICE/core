@@ -1,11 +1,9 @@
-#include "precompiled_cpodf.h"
 #include "draw_page.h"
 
 #include <cpdoccore/xml/xmlchar.h>
-#include <cpdoccore/xml/serialize.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/utils.h>
-#include <cpdoccore/formulasconvert.h>
+#include "../formulasconvert/formulasconvert.h"
 
 #include <boost/lexical_cast.hpp>
 

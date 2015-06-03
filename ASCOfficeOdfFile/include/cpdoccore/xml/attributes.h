@@ -12,6 +12,7 @@
 #include <boost/variant.hpp>
 #include <boost/foreach.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace cpdoccore 
 {
@@ -29,8 +30,10 @@ namespace cpdoccore
 		};
 
 		template <class T>
-		bool GetProperty(std::vector<_property> Heap,const std::wstring Name, T & Val)
+        bool GetProperty(std::vector<_property> Heap, const std::wstring Name, T & Val)
 		{
+            typedef typename T::value_type T_value_type;
+
 			Val.reset();
 			BOOST_FOREACH(_property const & p, Heap)
 			{
@@ -38,7 +41,7 @@ namespace cpdoccore
 				{
 					try
 					{
-						Val = boost::get<T::value_type>(p.val_);
+                        Val = boost::get<T_value_type>(p.val_);
 					}
 					catch(...)
 					{
@@ -51,26 +54,24 @@ namespace cpdoccore
 			}
 			return false;
 		}
-	};
+    }
 	namespace xml
 	{
 
 	class sax;
 
-	template <class StringT>
-	class attributes;
-
-	template <class StringT>
 	class attributes 
 	{
 	public:
-		typedef typename _CP_OPT(StringT) value_type;
-		typedef typename ::std::pair< StringT, StringT> key_value;
+        typedef typename optional<std::wstring>::Type               value_type;
+        typedef typename ::std::pair< std::wstring, std::wstring>   key_value;
 
 	public:
-		virtual value_type get(const StringT & QualifiedName) const = 0;
-		template <class V> typename _CP_OPT(V) get_val(const StringT & QualifiedName);
-		virtual const key_value & at(size_t _Pos) const = 0;
+        virtual value_type get(const std::wstring & QualifiedName) const = 0;
+
+        template <class V> typename optional<V>::Type get_val(const std::wstring & QualifiedName);
+
+        virtual const key_value & at(size_t _Pos) const = 0;
 		virtual size_t size() const = 0;
 		size_t length() const ;
 		bool empty() const;
@@ -82,18 +83,23 @@ namespace cpdoccore
 
 	};
 
-	template <class StringT, class V>
+
+
+    template <class V>
 	class attributes_get_val_impl
 	{
 	public:
-		static typename _CP_OPT(V) get_val(attributes<StringT> & attr, const StringT & QualifiedName)
+
+        typedef typename optional<V>::Type  optional_V_type;
+
+        static typename optional<V>::Type get_val(attributes & attr, const std::wstring & QualifiedName)
 		{
-			attributes<StringT>::value_type val = attr.get(QualifiedName);     
+            attributes::value_type val = attr.get(QualifiedName);
 			if (val)
 			{
 				try 
 				{
-					return optional<V>::Type ( ::boost::lexical_cast<V>( *val ) );
+                      return optional_V_type (::boost::lexical_cast<V>( *val ) );
 					//return common::read_string<V>( *val );
 				}
 				catch(...)
@@ -104,110 +110,107 @@ namespace cpdoccore
 				}
 			}
 
-			return _CP_OPT(V)();
+            return optional_V_type();
 		}
 	};
 
-	template <class StringT>
-	class attributes_get_val_impl<StringT, bool>
+    template<>
+    class attributes_get_val_impl<bool>
 	{
 	public:
-		static typename _CP_OPT(bool) get_val(attributes<StringT> & attr, const StringT & QualifiedName)
+
+        typedef xml::xml_char<wchar_t> xml_char_value_type;
+
+        static typename optional<bool>::Type get_val(attributes & attr, const std::wstring & QualifiedName)
 		{
-			attributes<StringT>::value_type val = attr.get(QualifiedName);     
+            attributes::value_type val = attr.get(QualifiedName);
 			if (val)
 			{
-				StringT tmp = *val;
-				::boost::algorithm::to_lower(tmp);
-				return  _CP_OPT(bool)((tmp == xml::xml_char< StringT::value_type >::trueVal));
+                std::wstring tmp = *val;
+                ::boost::algorithm::to_lower(tmp);
+                return  optional<bool>::Type((tmp == xml_char_value_type::trueVal));
 			}
 			else
-				return _CP_OPT(bool)();    
+                return optional<bool>::Type();
 		}
 	};
 
-	template <class StringT>
-	class attributes_get_val_impl<StringT, char>
+    template<>
+    class attributes_get_val_impl<char>
 	{
 	public:
-		static typename _CP_OPT(char) get_val(attributes<StringT> & attr, const StringT & QualifiedName)
+        static typename optional<char>::Type get_val(attributes & attr, const std::wstring & QualifiedName)
 		{
-			attributes<StringT>::value_type val = attr.get(QualifiedName);     
+            attributes::value_type val = attr.get(QualifiedName);
 			if (val)
 			{
-				StringT tmp = *val;
-				return  _CP_OPT(char)( (tmp.size() > 0) ? tmp[0] : ' ');
+                std::wstring tmp = *val;
+                return  optional<char>::Type( (tmp.size() > 0) ? tmp[0] : ' ');
 			}
 			else
-				return _CP_OPT(char)();    
+                return optional<char>::Type();
 		}
 	};
 
-	template <class StringT>
-	class attributes_get_val_impl<StringT, wchar_t>
+    template<>
+    class attributes_get_val_impl<wchar_t>
 	{
 	public:
-		static typename _CP_OPT(wchar_t) get_val(attributes<StringT> & attr, const StringT & QualifiedName)
+        static typename optional<wchar_t>::Type get_val(attributes & attr, const std::wstring & QualifiedName)
 		{
-			attributes<StringT>::value_type val = attr.get(QualifiedName);     
+            attributes::value_type val = attr.get(QualifiedName);
 			if (val)
 			{
-				StringT tmp = *val;
-				return  _CP_OPT(wchar_t)( (tmp.size() > 0) ? tmp[0] : L' ');
+                std::wstring tmp = *val;
+                return  optional<wchar_t>::Type( (tmp.size() > 0) ? tmp[0] : L' ');
 			}
 			else
-				return _CP_OPT(wchar_t)();    
+                return optional<wchar_t>::Type();
 		}
 	};
 
-	template <class StringT>
 	template <class V>
-	inline typename _CP_OPT(V) attributes<StringT>::get_val(const StringT & QualifiedName)
+    inline typename optional<V>::Type attributes::get_val(const std::wstring & QualifiedName)
 	{
-		return attributes_get_val_impl<StringT, V>::get_val(*this, QualifiedName);
+        return attributes_get_val_impl<V>::get_val(*this, QualifiedName);
 	}
 
-	template <class StringT>
-	inline attributes<StringT>::~attributes()
+    inline attributes::~attributes()
 	{}
 
-	template <class StringT>
-	inline size_t attributes<StringT>::length() const
+    inline size_t attributes::length() const
 	{
 		return this->size();
 	}
 
-	template <class StringT>
-	inline bool attributes<StringT>::empty() const
+    inline bool attributes::empty() const
 	{
 		return (this->size() == 0);
 	}
 
-	template <class T>
 	struct attributes_ptr
 	{
-		typedef typename shared_ptr< attributes<T> >::Type Type;
+        typedef typename shared_ptr< attributes >::Type Type;
 	};
 
 
 
-	typedef attributes< ::std::string > attributes_c;
-	typedef attributes< ::std::wstring > attributes_wc;
+    typedef attributes attributes_wc;
 
-	typedef shared_ptr< attributes_c >::Type attributes_c_ptr;
-	typedef shared_ptr< attributes_wc >::Type attributes_wc_ptr;
+    typedef shared_ptr< attributes_wc >::Type attributes_wc_ptr;
 
-	template <class StringT, class T>
-	static bool _cp_apply_attribute(xml::attributes_wc_ptr attr, const StringT & QualifiedName, T & Val)
+    template <class T>
+    static bool _cp_apply_attribute(xml::attributes_wc_ptr attr, const std::wstring & QualifiedName, T & Val)
 	{
 		Val = attr->get_val<typename T::value_type>(QualifiedName);
 		return (!!Val);
 	}
 
-	template <class StringT, class T>
-	static bool _cp_apply_attribute(xml::attributes_wc_ptr attr, const StringT & QualifiedName, T & Val, const T & Default)
+    template <class T>
+    static bool _cp_apply_attribute(xml::attributes_wc_ptr attr, const std::wstring & QualifiedName, T & Val, const T & Default)
 	{
-		_CP_OPT(T) tmp;
+        typedef typename optional<T>::Type type_opt_t;
+        type_opt_t tmp;
 		try
 		{
 			tmp = attr->get_val<T>(QualifiedName);
@@ -218,8 +221,11 @@ namespace cpdoccore
 		return (!!tmp);
 	}
 
-	#define CP_APPLY_ATTR(NAME, VAL, ...) _cp_apply_attribute(Attributes, (NAME), (VAL), __VA_ARGS__)
-
+#if defined(_WIN32) || defined(_WIN64)
+    #define CP_APPLY_ATTR(NAME, VAL, ...) _cp_apply_attribute(Attributes, (NAME), (VAL), __VA_ARGS__)
+#else
+    #define CP_APPLY_ATTR(NAME, VAL, ...) _cp_apply_attribute(Attributes, (NAME), (VAL), ##__VA_ARGS__)
+#endif
 	attributes_wc_ptr read_attributes(sax * SaxReader);
 
 	}

@@ -9,37 +9,42 @@
 namespace cpdoccore {
 namespace xml {
 
-template <class StringT, class V>
+template <class V>
 class attributes_get_val_impl_parse
 {
 public:
-    static typename optional<V>::Type get_val(attributes<StringT> & attr, const StringT & QualifiedName)
+    typedef typename optional<V>::Type optional_v_type;
+
+    static optional_v_type get_val(attributes & attr, const std::wstring & QualifiedName)
     {
         try 
         { 
-            if (attributes<StringT>::value_type val = attr.get(QualifiedName)) 
-                return optional<V>::Type( V::parse(*val) );
+            if (attributes::value_type val = attr.get(QualifiedName))
+            {
+                return optional_v_type( V::parse(*val) );
+            }
         }
         catch(odf::errors::invalid_attribute &)
         {         
-            attributes<StringT>::value_type val = attr.get(QualifiedName);
+            attributes::value_type val = attr.get(QualifiedName);
 #ifdef _DEBUG
             _CP_LOG(error) << L"[warning] : invalud attribute value [" << QualifiedName << L":" << ( (val) ? (*val) : (L"?")) << L"]\n";
 #endif
         }
-        return optional<V>::Type();
+        return optional_v_type();
     }
 };
 
 #define APPLY_PARSE_XML_ATTRIBUTES(V) \
 namespace xml { \
-template <class StringT> \
-class attributes_get_val_impl<StringT, V >\
+template<> \
+class attributes_get_val_impl<V >\
 {\
 public:\
-    static typename optional< V >::Type get_val(attributes<StringT> & attr, const StringT & QualifiedName)\
+    typedef typename optional<V>::Type optional_v_type; \
+    static optional_v_type get_val(attributes & attr, const std::wstring & QualifiedName)\
     {\
-        return attributes_get_val_impl_parse<StringT, V>::get_val(attr, QualifiedName);\
+        return attributes_get_val_impl_parse<V>::get_val(attr, QualifiedName);\
     }\
 };\
 }

@@ -2254,11 +2254,11 @@
 			</File>
 		</Filter>
 		<File
-			RelativePath="..\ASCOfficeOdfFile\ConvertOO2OOX.cpp"
+			RelativePath="..\src\ConvertOO2OOX.cpp"
 			>
 		</File>
 		<File
-			RelativePath="..\ASCOfficeOdfFile\ConvertOO2OOX.h"
+			RelativePath="..\src\ConvertOO2OOX.h"
 			>
 		</File>
 		<File

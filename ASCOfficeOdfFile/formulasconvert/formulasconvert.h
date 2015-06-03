@@ -1,7 +1,7 @@
 #pragma once
 
 #include <string>
-#include "../../../include/cpdoccore/CPScopedPtr.h"
+#include "../include/cpdoccore/CPScopedPtr.h"
 
 namespace cpdoccore {
 namespace formulasconvert {

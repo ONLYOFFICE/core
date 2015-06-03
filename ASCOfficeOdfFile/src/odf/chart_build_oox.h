@@ -107,7 +107,7 @@ public:
 
     void add_point(unsigned int rep, std::wstring const & styleName);
 	
-	void chart_build::calc_cash_series(std::wstring adress, std::vector<std::wstring> & cash);
+    void calc_cash_series(std::wstring adress, std::vector<std::wstring> & cash);
 	
 	void xlsx_convert(oox::xlsx_conversion_context & Context);
 	void docx_convert(oox::docx_conversion_context & Context);

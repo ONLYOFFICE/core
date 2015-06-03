@@ -10,7 +10,6 @@
 namespace cpdoccore {
 namespace xml {
 
-template <class StringT>
 class attributes;
 
 template <class CharT>

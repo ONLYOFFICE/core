@@ -5,7 +5,7 @@
 #include <cpdoccore/CPSharedPtr.h>
 
 #include "oox_chart_shape.h"
-            
+
 namespace cpdoccore {
 namespace oox {
 
@@ -19,7 +19,7 @@ public:
 
 	oox_axis_content(int type/*,std::wstring name*/)
 	{
-		id_ = abs((int)(this));
+        id_ = abs(*((int*)(this)));
 		type_=type;		//dimension
 	}
 	~oox_axis_content(){}

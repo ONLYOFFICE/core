@@ -4,7 +4,7 @@
 #include <string>
 
 #include "../../../Common/DocxFormat/Source/Base/Nullable.h"
-#include "../../../common/docxformat/source/xml/libxml2/libxml2.h"
+#include "../../../Common/DocxFormat/Source/XML/libxml2/libxml2.h"
 
 
 #include "../../include/cpdoccore/xml/sax.h"

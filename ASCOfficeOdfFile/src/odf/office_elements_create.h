@@ -39,7 +39,7 @@ public:
     office_element_ptr create(const ::std::wstring & ns, const ::std::wstring & name, document_context * Context = NULL, bool isRoot = false) const;
 
 private:
-    typedef std::map<::std::wstring, CreateFuncImpl> MapType;
+    typedef std::map<std::wstring, CreateFuncImpl> MapType;
     MapType map_; 
             
 public:
@@ -56,17 +56,18 @@ template <class T>
 class RegisterElement
 {
 private:
-    template <class T>
+    template <class V>
     class CreateImpl_
     {
     public:
-        static typename shared_ptr<T>::Type create()
+        static typename shared_ptr<V>::Type create()
         {
             //return shared_ptr<T>::Type( new T() );
-            return boost::make_shared<T>();
+            return boost::make_shared<V>();
         }
     };
 
+    static int class_registered_;
 public:
     RegisterElement()
     {
@@ -75,13 +76,11 @@ public:
             // Jerry Schwarz counter
             office_element_creator::get()->register_element(T::ns, T::name, &CreateImpl_<T>::create);            
         }
-    };
+    }
 
     ~RegisterElement()
     {            
-    };
-private:
-    static int class_registered_;    
+    }
 };
 
 template<class T> int RegisterElement<T>::class_registered_ = 0;

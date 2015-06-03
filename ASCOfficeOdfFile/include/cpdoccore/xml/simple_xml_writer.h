@@ -65,7 +65,7 @@ namespace writer
         static const wchar_t * quote_str() { return L"&quot;"; }
     };
 
-    template <class T>
+    template <class V>
     class element;
 
     //
@@ -111,7 +111,8 @@ namespace writer
             return *this;
         }
 
-        template <class T> friend class element;
+        template <class V>
+        friend class element;
     };
 
     //

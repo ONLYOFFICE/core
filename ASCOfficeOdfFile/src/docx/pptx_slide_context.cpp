@@ -262,7 +262,7 @@ std::vector<odf::_property> & pptx_slide_context::get_properties()
 	return impl_->object_description_.additional_;
 }
 
-void pptx_slide_context::set_clipping(std::wstring & str)
+void pptx_slide_context::set_clipping(const std::wstring & str)
 {
 	impl_->object_description_.clipping_string_= str;
 }

@@ -5,7 +5,7 @@
 #include "serialize_elements.h"
 #include <cpdoccore/odf/odf_document.h>
 
-#include "../formulasconvert/include/cpdoccore/formulasconvert.h"
+#include "../formulasconvert/formulasconvert.h"
 
 #include "style_graphic_properties.h"
 #include "style_chart_properties.h"

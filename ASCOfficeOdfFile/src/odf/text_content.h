@@ -15,10 +15,9 @@
 namespace cpdoccore { 
 namespace xml {
 
-template <class StringT>
 class attributes;
 
-typedef attributes< ::std::wstring > attributes_wc;
+typedef attributes attributes_wc;
 
 typedef shared_ptr< attributes_wc >::Type attributes_wc_ptr;
 

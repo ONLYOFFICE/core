@@ -322,7 +322,7 @@ public:
 		std::wstring author;
 		std::wstring initials;
 	};
-	void start_comment(std::wstring & content,std::wstring const & author, std::wstring const & date)
+    void start_comment(const std::wstring & content, const std::wstring & author, const std::wstring & date)
 	{
 		int id = comments_.size()+1;
 		_comment_desc new_comment={content,id,date,author};
@@ -404,7 +404,7 @@ public:
     void process_headers_footers();
     void process_comments();
 
-	void set_settings_property(odf::_property & prop);
+    void set_settings_property(const odf::_property & prop);
 	std::vector<odf::_property> & get_settings_properties();
 
     void start_process_style_content();

@@ -226,7 +226,7 @@ std::vector<odf::_property> & xlsx_drawing_context::get_properties()
 {
 	return impl_->object_description_.additional_;
 }
-void xlsx_drawing_context::set_clipping(std::wstring & str)
+void xlsx_drawing_context::set_clipping(const std::wstring & str)
 {
 	impl_->object_description_.clipping_string_= str;
 }

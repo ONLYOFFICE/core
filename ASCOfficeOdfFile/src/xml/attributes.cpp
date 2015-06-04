@@ -58,8 +58,8 @@ private:
 class attributes_impl : public attributes
 {
 public:
-    typedef typename attributes::value_type value_type;
-    typedef typename attributes::key_value  key_value;
+    typedef attributes::value_type value_type;
+    typedef attributes::key_value  key_value;
 
 public:
     attributes_impl() : check_(true){};
@@ -118,16 +118,16 @@ private:
 
 void attributes_impl::add(const std::wstring & QualifiedName, const std::wstring & Value)
 {
-    typedef typename AttribMap::value_type attr_map_value_type;
+    typedef AttribMap::value_type attr_map_value_type;
 
     values_.push_back( key_value(QualifiedName, Value) );
     attrib_.insert( attr_map_value_type(QualifiedName, values_.size() - 1) );
 }
 
-typename attributes_impl::value_type attributes_impl::get(const std::wstring & QualifiedName) const
+attributes_impl::value_type attributes_impl::get(const std::wstring & QualifiedName) const
 {
-    typedef typename AttribMap::const_iterator attr_map_iterator;
-    typedef typename attributes::value_type attr_str_type;
+    typedef AttribMap::const_iterator attr_map_iterator;
+    typedef attributes::value_type attr_str_type;
 
     attr_map_iterator i = attrib_.find( QualifiedName );
 
@@ -137,7 +137,7 @@ typename attributes_impl::value_type attributes_impl::get(const std::wstring & Q
         return attr_str_type();
 }
 
-const typename attributes_impl::key_value & attributes_impl::at(size_t _Pos) const
+const attributes_impl::key_value & attributes_impl::at(size_t _Pos) const
 {
     return values_[_Pos];
 }

@@ -41,7 +41,7 @@ template<> \
 class attributes_get_val_impl<V >\
 {\
 public:\
-    typedef typename optional<V>::Type optional_v_type; \
+    typedef optional<V>::Type optional_v_type; \
     static optional_v_type get_val(attributes & attr, const std::wstring & QualifiedName)\
     {\
         return attributes_get_val_impl_parse<V>::get_val(attr, QualifiedName);\

@@ -63,8 +63,8 @@ namespace cpdoccore
 	class attributes 
 	{
 	public:
-        typedef typename optional<std::wstring>::Type               value_type;
-        typedef typename ::std::pair< std::wstring, std::wstring>   key_value;
+        typedef optional<std::wstring>::Type               value_type;
+        typedef std::pair< std::wstring, std::wstring>   key_value;
 
 	public:
         virtual value_type get(const std::wstring & QualifiedName) const = 0;
@@ -121,7 +121,7 @@ namespace cpdoccore
 
         typedef xml::xml_char<wchar_t> xml_char_value_type;
 
-        static typename optional<bool>::Type get_val(attributes & attr, const std::wstring & QualifiedName)
+        static optional<bool>::Type get_val(attributes & attr, const std::wstring & QualifiedName)
 		{
             attributes::value_type val = attr.get(QualifiedName);
 			if (val)
@@ -139,7 +139,7 @@ namespace cpdoccore
     class attributes_get_val_impl<char>
 	{
 	public:
-        static typename optional<char>::Type get_val(attributes & attr, const std::wstring & QualifiedName)
+        static optional<char>::Type get_val(attributes & attr, const std::wstring & QualifiedName)
 		{
             attributes::value_type val = attr.get(QualifiedName);
 			if (val)
@@ -156,7 +156,7 @@ namespace cpdoccore
     class attributes_get_val_impl<wchar_t>
 	{
 	public:
-        static typename optional<wchar_t>::Type get_val(attributes & attr, const std::wstring & QualifiedName)
+        static optional<wchar_t>::Type get_val(attributes & attr, const std::wstring & QualifiedName)
 		{
             attributes::value_type val = attr.get(QualifiedName);
 			if (val)
@@ -190,7 +190,7 @@ namespace cpdoccore
 
 	struct attributes_ptr
 	{
-        typedef typename shared_ptr< attributes >::Type Type;
+        typedef shared_ptr< attributes >::Type Type;
 	};
 
 

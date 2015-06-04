@@ -157,7 +157,7 @@ void xlsx_fills::xlsx_serialize(std::wostream & _Wostream) const
             CP_XML_ATTR(L"count", inst_array.size());
             BOOST_FOREACH(const xlsx_fill & f, inst_array)
             {
-                ::cpdoccore::oox::xlsx_serialize(CP_XML_STREAM(), f);
+                cpdoccore::oox::xlsx_serialize(CP_XML_STREAM(), f);
             }
         }
     }

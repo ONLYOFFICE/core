@@ -12,6 +12,8 @@
 #include "xlsx_cell_format.h"
 #include "../odf/calcs_styles.h"
 
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+
 
 namespace cpdoccore { 
 
@@ -39,7 +41,21 @@ xlsx_conversion_context(::cpdoccore::oox::package::xlsx_document * outputDocumen
 	mediaitems_(odf_document_->get_folder()),
 	xlsx_drawing_context_handle_(mediaitems_)
 {
+    fontsApplication_ = new CApplicationFonts();
 }
+xlsx_conversion_context::~xlsx_conversion_context()
+{
+    if (fontsApplication_)
+        delete fontsApplication_;
+}
+
+void xlsx_conversion_context::set_font_directory(std::wstring pathFonts)
+{
+    if (fontsApplication_ == NULL) return;
+
+    fontsApplication_->InitializeFromFolder(pathFonts);
+}
+
 void xlsx_conversion_context::start_chart(std::wstring const & name)
 {
 	charts_.push_back(oox_chart_context::create(name));
@@ -177,7 +193,7 @@ void xlsx_conversion_context::end_document()
                     CP_XML_STREAM() << workbook_content.str();
                 }
 
-                ::cpdoccore::oox::xlsx_serialize(CP_XML_STREAM(), this->get_xlsx_defined_names());
+                get_xlsx_defined_names().xlsx_serialize(CP_XML_STREAM());
             }
         }
 
@@ -466,7 +482,7 @@ std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
 		else
 			font_size =10;
 		
-        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, /*getDefaultDpi()*/96.);        
+        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, /*getDefaultDpi()*/96., 0, fontsApplication_->GenerateFontManager());
     }    
     return maxDigitSize_;
 }

@@ -216,7 +216,8 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 		if (content_.regression_curve_.line_properties_.size()>0)
 		{
 			std::wstring typeTrendline= L"log"; //"exp" | "linear" | "log" | "movingAvg" | "poly" | "power"
-			shape.set(content_.regression_curve_.line_properties_,_oox_fill());
+            _oox_fill oox_fill;
+            shape.set(content_.regression_curve_.line_properties_, oox_fill);
 			
 			_CP_OPT(int) iType;
 			odf::GetProperty(content_.properties_, L"regression-type",iType);   //     none, linear, logarithmic, exponential, power
@@ -249,7 +250,8 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
 					}
 				}		
 
-				shape.set( content_.regression_curve_.line_properties_,_oox_fill());
+                _oox_fill oox_fill;
+                shape.set( content_.regression_curve_.line_properties_, oox_fill);
 				shape.oox_serialize(CP_XML_STREAM());
 
 

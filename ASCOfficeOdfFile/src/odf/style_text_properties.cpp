@@ -284,7 +284,8 @@ void text_format_properties_content::pptx_convert_as_list(oox::pptx_conversion_c
 		{
 			CP_XML_NODE(L"a:buClr")
 			{
-				oox::oox_serialize_srgb(CP_XML_STREAM(),fo_color_->get_hex_value(),NULL);
+                _CP_OPT(double) opacity;
+                oox::oox_serialize_srgb(CP_XML_STREAM(),fo_color_->get_hex_value(), opacity);
 			}
 		}
 		if (fo_font_size_)

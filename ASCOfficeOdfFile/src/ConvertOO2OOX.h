@@ -1,4 +1,5 @@
-#include <windows.h>
+
+#include "../../DesktopEditor/common/Types.h"
 #include <string>
 
 struct ProgressCallback;

@@ -9,22 +9,23 @@
 namespace cpdoccore {
 namespace oox {
 
-class xlsx_defined_names
-{
-public:
-    xlsx_defined_names();
-    ~xlsx_defined_names();
+    class xlsx_defined_names
+    {
+    public:
+        xlsx_defined_names();
+        ~xlsx_defined_names();
 
-public:
-    void add(std::wstring const & name, std::wstring const & ref);
-    
-private:
-    class Impl;
-    _CP_SCOPED_PTR(Impl) impl_;
+    public:
+        void add(std::wstring const & name, std::wstring const & ref);
+        void xlsx_serialize(std::wostream & _Wostream);
 
-    friend void xlsx_serialize(std::wostream & _Wostream, xlsx_defined_names const & val);
+    private:
+        class Impl;
+        _CP_SCOPED_PTR(Impl) impl_;
 
-};
+
+    };
+
 
 }
 }

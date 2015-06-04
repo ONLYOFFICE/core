@@ -19,7 +19,7 @@ namespace
 
 std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, CFontManager *pFontManager)
 {
-    if (pFontManager == NULL) return std::pair<float, float>(7.f,8.f);
+    if (pFontManager == NULL) return std::pair<float, float>(7,8);
 
     HRESULT hr = S_OK;
 
@@ -35,7 +35,7 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
     float maxHeight = 0;
     for (int i = 0; i <= 9; ++i)
     {
-        if (S_OK != (hr = pFontManager->LoadString2( boost::lexical_cast<std::wstring>(i).c_str(), 0, 0)))
+        if (S_OK != (hr = pFontManager->LoadString2( boost::lexical_cast<std::wstring>(i), 0, 0)))
             return std::pair<float, float>(7,8);
 
        TBBox box;
@@ -46,6 +46,10 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
 		{
             return std::pair<float, float>(7,8);
 		}
+
+		if (box.fMaxX > 0xffff-1 || box.fMaxY > 0xffff-1 ||
+			box.fMinX < 0xffff+1 || box.fMinY > 0xffff+1)		
+				return std::pair<float, float>(7,8);
           
         if (box.fMaxX - box.fMinX > maxWidth)   maxWidth = box.fMaxX - box.fMinX;
         if (box.fMaxY - box.fMinY > maxHeight)  maxHeight = box.fMaxY - box.fMinY;
@@ -59,9 +63,13 @@ std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, dou
 {
     try 
     {
-        _CP_LOG(info) << "[info] : GetMaxDigitSizePixels...";
+#if _DEBUG
+		_CP_LOG(info) << "[info] : GetMaxDigitSizePixels...";
+#endif
         std::pair<float, float> val = GetMaxDigitSizePixelsImpl(fontName, fontSize, dpi, fontStyle, pFontManager);
-        _CP_LOG(info) << "ok" << std::endl;
+#if _DEBUG
+		_CP_LOG(info) << "ok" << std::endl;
+#endif
         return val;
     }
     catch(...)

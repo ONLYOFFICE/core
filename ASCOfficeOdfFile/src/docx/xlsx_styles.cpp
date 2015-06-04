@@ -195,10 +195,10 @@ void xlsx_style_manager::Impl::xlsx_serialize(std::wostream & _Wostream)
 {
     _Wostream << L"<styleSheet xmlns=\"http://schemas.openxmlformats.org/spreadsheetml/2006/main\">";
 
-    ::cpdoccore::oox::xlsx_serialize(_Wostream, numFmts_); 
-    ::cpdoccore::oox::xlsx_serialize(_Wostream, fonts_); 
-    ::cpdoccore::oox::xlsx_serialize(_Wostream, fills_); 
-    ::cpdoccore::oox::xlsx_serialize(_Wostream, borders_);    
+    cpdoccore::oox::xlsx_serialize(_Wostream, numFmts_);
+    cpdoccore::oox::xlsx_serialize(_Wostream, fonts_);
+    cpdoccore::oox::xlsx_serialize(_Wostream, fills_);
+    cpdoccore::oox::xlsx_serialize(_Wostream, borders_);
 
     
     xlsx_serialize_xf(_Wostream, cellStyleXfs_, L"cellStyleXfs");
@@ -211,13 +211,13 @@ void xlsx_style_manager::Impl::xlsx_serialize(std::wostream & _Wostream)
 
 namespace 
 {
-struct compare_xlsx_xf
-{
-    bool operator() (xlsx_xf const & x1, xlsx_xf const & x2)
+    struct compare_xlsx_xf
     {
-        return x1.index < x2.index;            
-    }
-};
+        bool operator() (xlsx_xf const & x1, xlsx_xf const & x2)
+        {
+            return x1.index < x2.index;
+        }
+    };
 }
 
 void xlsx_style_manager::Impl::xlsx_serialize_xf(std::wostream & _Wostream, const xlsx_xf_array & xfArray, const std::wstring & nodeName)
@@ -234,7 +234,7 @@ void xlsx_style_manager::Impl::xlsx_serialize_xf(std::wostream & _Wostream, cons
     _Wostream << L"<" << nodeName << L" count=\"" << xfs_.size() << L"\">";
     BOOST_FOREACH(const xlsx_xf & xfRecord, xfs_)
     {
-        ::cpdoccore::oox::xlsx_serialize(_Wostream, xfRecord);
+        cpdoccore::oox::xlsx_serialize(_Wostream, xfRecord);
     }
     _Wostream << L"</" << nodeName << L">";    
 }

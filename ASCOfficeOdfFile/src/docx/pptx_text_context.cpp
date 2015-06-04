@@ -388,7 +388,7 @@ std::wstring pptx_text_context::Impl::dump_paragraph(/*bool last*/)
 
 	dump_run();//last
 
-	std::wstring & str_run = run_.str();
+    std::wstring str_run = run_.str();
 
 	if (str_run.length() > 0 || paragraph_style_name_.length() > 0)
 	{
@@ -413,7 +413,10 @@ std::wstring pptx_text_context::Impl::dump_paragraph(/*bool last*/)
 	return paragraph_.str();
 }
 
-#include <Objbase.h>
+#if defined (_WIN32) || defined (_WIN64)
+    #include <Objbase.h>
+#endif
+
 void pptx_text_context::Impl::dump_field()
 {
 	if (field_type_ == none) return;
@@ -426,44 +429,57 @@ void pptx_text_context::Impl::dump_field()
 			std::wstring string_id;
 			std::wstring string_type;
 
-			GUID new_id;
+#if defined (_WIN32) || defined (_WIN64)
+            GUID new_id;
 			CoCreateGuid(&new_id);
 			wchar_t str[100]={};
 			StringFromGUID2(new_id,str,100);
 			string_id = str;
-			
+#endif
 			switch (field_type_)
 			{
 			case page_number: 
 				{
 					string_type = L"slidenum";
-				//	string_id =  L"{5CC2A059-B141-45A7-B910-B096D6D06820}";
+
+#if !defined (_WIN32) &&  !defined (_WIN64)
+                    string_id =  L"{5CC2A059-B141-45A7-B910-B096D6D06820}";
+#endif
 				//	content = L"‹#›";
 				}
 				break;
 			case date:
 				{
 					string_type = L"datetime1";
-				//	string_id = L"{1D1B89AE-8D35-4BB5-B492-6D9BE4F23A39}";
-					if (content.length()<1)content = xml::utils::replace_text_to_xml(L"01.01.2000");
+
+#if !defined (_WIN32) &&  !defined (_WIN64)
+                    string_id = L"{1D1B89AE-8D35-4BB5-B492-6D9BE4F23A39}";
+#endif
+                    if (content.length()<1)content = xml::utils::replace_text_to_xml(L"01.01.2000");
 				}							
 				break;
 			case time:	
 				{
 					string_type = L"datetime11";
-				//	string_id = L"{03DA74A9-E3F2-4F30-AAF9-CC1A83980D5E}";
-					if (content.length()<1)content = xml::utils::replace_text_to_xml(L"00:00:00");
+
+#if !defined (_WIN32) &&  !defined (_WIN64)
+                    string_id = L"{03DA74A9-E3F2-4F30-AAF9-CC1A83980D5E}";
+#endif
+                    if (content.length()<1)content = xml::utils::replace_text_to_xml(L"00:00:00");
 				}
 				break;
 			case datetime:
 				{
 					string_type =  L"datetime1";
-				//	string_id = L"{A9EA0FE8-FEF9-4B2F-BC9D-19DDCDB4AB9B}";
-				}
+
+#if !defined (_WIN32) &&  !defined (_WIN64)
+                    string_id = L"{A9EA0FE8-FEF9-4B2F-BC9D-19DDCDB4AB9B}";
+#endif
+                 }break;
 			}  
 			if (string_type.length()>0)
 			{
-				CP_XML_ATTR(L"id", string_id);
+                CP_XML_ATTR(L"id",  string_id);
 				CP_XML_ATTR(L"type", string_type);
 				CP_XML_NODE(L"a:t")
 				{
@@ -538,7 +554,7 @@ std::wstring pptx_text_context::Impl::end_object()
 {
 	dump_paragraph(/*true*/);
 
-	std::wstring & str_paragraph = paragraph_.str();
+    std::wstring str_paragraph = paragraph_.str();
 
 	std::wstringstream str_output;
 

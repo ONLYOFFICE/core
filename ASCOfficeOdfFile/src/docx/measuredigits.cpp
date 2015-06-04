@@ -1,12 +1,11 @@
+#include "measuredigits.h"
 
-
-#ifndef _WIN32_WINNT
-#define _WIN32_WINNT 0x0501
-#endif						
-#include <atlbase.h>
 #include <boost/lexical_cast.hpp>
 #include <logging.h>
-#import "../../../Redist/ASCGraphics.dll" rename_namespace("ASCGraphics")
+
+#include <float.h>
+
+#include "../../DesktopEditor/fontengine/FontManager.h"
 
 namespace cpdoccore {
 namespace utils {
@@ -18,72 +17,57 @@ namespace
     class MeasureError : public Error {};
 }
 
-std::pair<float,float> GetMaxDigitSizePixelsImpl(const wchar_t * fontName, float fontSize, float dpi, long fontStyle)
+std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, CFontManager *pFontManager)
 {
-    ATL::CComPtr<ASCGraphics::IASCFontManager> fontMan;
-    HRESULT hr;
-	
-	try
-	{
-		if (FAILED(hr = fontMan.CoCreateInstance(__uuidof(ASCGraphics::CASCFontManager))))
-			throw;
+    if (pFontManager == NULL) return std::pair<float, float>(7.f,8.f);
 
-		if (S_OK != (hr = fontMan->Initialize(L"")))
-			throw;
-	}
-	catch(...)
-	{
-		return std::pair<float,float>(7,8);
-	}
+    HRESULT hr = S_OK;
 
-	if (S_OK != (hr = fontMan->LoadFontByName(fontName, fontSize, fontStyle, dpi, dpi )))
+    if (S_OK != (hr = pFontManager->LoadFontByName(fontName, fontSize, fontStyle, dpi, dpi )))
 	{
-		if (S_OK != (hr = fontMan->LoadFontByName(L"Arial", fontSize, fontStyle, dpi, dpi )))
+        if (S_OK != (hr = pFontManager->LoadFontByName(L"Arial", fontSize, fontStyle, dpi, dpi )))
 		{
-			return std::pair<float,float>(7,8);
+            return std::pair<float, float>(7,8);
 		}
 	}
 
     float maxWidth = 0;
-	float maxHeight = 0;
+    float maxHeight = 0;
     for (int i = 0; i <= 9; ++i)
     {
-        if (S_OK != (hr = fontMan->LoadString2( boost::lexical_cast<std::wstring>(i).c_str(), 0, 0)))
-            return std::pair<float,float>(7,8);
+        if (S_OK != (hr = pFontManager->LoadString2( boost::lexical_cast<std::wstring>(i).c_str(), 0, 0)))
+            return std::pair<float, float>(7,8);
 
-        float x, y, width, height;
+       TBBox box;
 		try
 		{
-			hr = fontMan->MeasureString(&x, &y, &width, &height);
+           box = pFontManager->MeasureString();
 		}catch(...)
 		{
-			return std::pair<float,float>(7,8);
+            return std::pair<float, float>(7,8);
 		}
           
- 
-        if (width> maxWidth)
-            maxWidth = width;
-		if (height>maxHeight)
-			maxHeight = height;
+        if (box.fMaxX - box.fMinX > maxWidth)   maxWidth = box.fMaxX - box.fMinX;
+        if (box.fMaxY - box.fMinY > maxHeight)  maxHeight = box.fMaxY - box.fMinY;
     }
 
-    return std::pair<float,float>(maxWidth,maxHeight);
+    return std::pair<float, float>(maxWidth,maxHeight);
 }
 
 
-std::pair<float,float> GetMaxDigitSizePixels(const wchar_t * fontName, float fontSize, float dpi, long fontStyle)
+std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, CFontManager *pFontManager)
 {
     try 
     {
         _CP_LOG(info) << "[info] : GetMaxDigitSizePixels...";
-        std::pair<float,float> val = GetMaxDigitSizePixelsImpl(fontName, fontSize, dpi, fontStyle);
+        std::pair<float, float> val = GetMaxDigitSizePixelsImpl(fontName, fontSize, dpi, fontStyle, pFontManager);
         _CP_LOG(info) << "ok" << std::endl;
         return val;
     }
     catch(...)
     {
         // TODO: default value!
-        return std::pair<float,float>(7,8);    
+        return std::pair<float, float>(7,8);
     }    
 }
 

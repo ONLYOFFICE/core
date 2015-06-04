@@ -66,9 +66,9 @@ void xlsx_defined_names::add(std::wstring const & name, std::wstring const & ref
     return impl_->add(name, ref);        
 }
 
-void xlsx_serialize(std::wostream & _Wostream, xlsx_defined_names const & val)
+void xlsx_defined_names::xlsx_serialize(std::wostream & _Wostream)
 {
-    return val.impl_->xlsx_serialize(_Wostream);
+    return impl_->xlsx_serialize(_Wostream);
 }
 
 }

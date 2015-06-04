@@ -21,6 +21,7 @@
 
 #include "mediaitems.h"
 
+class CApplicationFonts;
 
 namespace cpdoccore {
 
@@ -40,8 +41,10 @@ namespace package
 class xlsx_conversion_context : boost::noncopyable
 {
 public:
-    xlsx_conversion_context(::cpdoccore::oox::package::xlsx_document * outputDocument,
-        ::cpdoccore::odf::odf_document * odfDocument);
+    xlsx_conversion_context(cpdoccore::oox::package::xlsx_document * outputDocument, cpdoccore::odf::odf_document * odfDocument);
+    ~xlsx_conversion_context();
+
+    void set_font_directory(std::wstring pathFonts);
 
     void start_document();
     void end_document();
@@ -88,13 +91,11 @@ public:
     void start_table_covered_cell();
     void end_table_covered_cell();
 
-    xlsx_text_context & get_text_context() { return xlsx_text_context_; }
-    
-	xlsx_table_context & get_table_context() { return xlsx_table_context_; }
-    const xlsx_table_context & get_table_context() const { return xlsx_table_context_; }
-    
     int current_table_column() const;
     int current_table_row() const;
+
+    void start_hyperlink(const std::wstring & styleName);
+    void end_hyperlink(std::wstring const & href);
 
     std::wstring current_cell_address() const;
 
@@ -107,60 +108,49 @@ public:
 
     void process_styles();
 
-    xlsx_style_manager & get_style_manager() { return xlsx_style_; }
-    xlsx_xml_worksheet & current_sheet();
+    xlsx_text_context           & get_text_context()    { return xlsx_text_context_; }
+    xlsx_table_context          & get_table_context()   { return xlsx_table_context_; }
+    const xlsx_table_context    & get_table_context() const { return xlsx_table_context_; }
+    xlsx_style_manager          & get_style_manager()   { return xlsx_style_; }
+    xlsx_xml_worksheet          & current_sheet();
    
-	oox_chart_context & current_chart();
-
-    num_format_context & get_num_format_context() { return num_format_context_; }
-
-    size_t get_default_cell_style() const { return default_style_; };
-
-    xlsx_defined_names & get_xlsx_defined_names() { return xlsx_defined_names_; }
-
-    xlsx_table_metrics & get_table_metrics();
-    xlsx_drawing_context & get_drawing_context();
-    xlsx_drawing_context_handle & get_drawing_context_handle();
-	
-    xlsx_comments_context & get_comments_context();
+    oox_chart_context           & current_chart();
+    num_format_context          & get_num_format_context() { return num_format_context_; }
+    size_t                        get_default_cell_style() const { return default_style_; }
+    xlsx_defined_names          & get_xlsx_defined_names() { return xlsx_defined_names_; }
+    xlsx_table_metrics          & get_table_metrics();
+    xlsx_drawing_context        & get_drawing_context();
+    xlsx_drawing_context_handle & get_drawing_context_handle();	
+    xlsx_comments_context       & get_comments_context();
 	xlsx_comments_context_handle & get_comments_context_handle();
 
-
     mediaitems & get_mediaitems() { return mediaitems_; }
-
-    void start_hyperlink(const std::wstring & styleName);
-    void end_hyperlink(std::wstring const & href);
 
 private:
     void create_new_sheet(std::wstring const & name);
     void dump_sheet();   
 
-private:
+    package::xlsx_document      *output_document_;
+    const odf::office_element   *spreadsheet_;
+    odf::odf_document           *odf_document_;
 
-	package::xlsx_document * output_document_;
-    const odf::office_element * spreadsheet_;
-    odf::odf_document * odf_document_;    
-    
-    xlsx_table_context xlsx_table_context_;
-	xlsx_text_context xlsx_text_context_;
-   
-	std::wstringstream defaultOutput_;
+    CApplicationFonts           *fontsApplication_;
+
     std::vector<xlsx_xml_worksheet_ptr> sheets_;
-
-	std::vector<oox_chart_context_ptr> charts_;
+    std::vector<oox_chart_context_ptr>  charts_;
   
-	//xlsx_xml_workbook_ptr workbook_;
-
-	std::pair<float,float> maxDigitSize_;
-    
-	xlsx_style_manager xlsx_style_;
-    num_format_context num_format_context_;
-    size_t default_style_;
-    xlsx_defined_names xlsx_defined_names_;    
-    mediaitems mediaitems_;
+    std::wstringstream                  defaultOutput_;
+    std::pair<float,float>              maxDigitSize_;
+    num_format_context                  num_format_context_;
+    size_t                              default_style_;
+    mediaitems                          mediaitems_;
   
-	xlsx_drawing_context_handle xlsx_drawing_context_handle_;
-    xlsx_comments_context_handle xlsx_comments_context_handle_;
+    xlsx_style_manager              xlsx_style_;
+    xlsx_defined_names              xlsx_defined_names_;
+    xlsx_table_context              xlsx_table_context_;
+    xlsx_text_context               xlsx_text_context_;
+    xlsx_drawing_context_handle     xlsx_drawing_context_handle_;
+    xlsx_comments_context_handle    xlsx_comments_context_handle_;
     
 };
 

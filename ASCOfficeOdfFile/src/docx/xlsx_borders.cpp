@@ -162,7 +162,7 @@ public:
         }
     };
 
-    void xlsx_serialize(std::wostream & _Wostream) const
+    void xlsx_serialize(std::wostream & _Wostream)
     {
         std::vector<xlsx_border> inst_array;
 
@@ -178,9 +178,9 @@ public:
             CP_XML_NODE(L"borders")
             {
                 CP_XML_ATTR(L"count", inst_array.size());
-                BOOST_FOREACH(const xlsx_border & border, inst_array)
+                BOOST_FOREACH( xlsx_border & border, inst_array)
                 {
-                    ::cpdoccore::oox::xlsx_serialize(CP_XML_STREAM(), border);
+                    cpdoccore::oox::xlsx_serialize(CP_XML_STREAM(), border);
                 }
             }
         }
@@ -206,7 +206,7 @@ size_t xlsx_borders::borderId(const odf::style_table_cell_properties_attlist * c
     return impl_->borderId(cellProp, is_default);
 }
 
-void xlsx_borders::xlsx_serialize(std::wostream & _Wostream) const
+void xlsx_borders::xlsx_serialize(std::wostream & _Wostream)
 {
     return impl_->xlsx_serialize(_Wostream);
 }
@@ -219,10 +219,11 @@ xlsx_borders::~xlsx_borders()
 {
 }
 
-void xlsx_serialize(std::wostream & _Wostream, const xlsx_borders & borders)
+void xlsx_serialize(std::wostream & _Wostream, xlsx_borders & borders)
 {    
     return borders.xlsx_serialize(_Wostream);
 }
+
 }
 }
 

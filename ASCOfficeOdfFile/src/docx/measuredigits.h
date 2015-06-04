@@ -1,12 +1,14 @@
-#ifndef _CPDOCCORE_MEASURE_DIGITS_H_
-#define _CPDOCCORE_MEASURE_DIGITS_H_
+#pragma once
+
+#include <utility>
+#include <string>
+
+class CFontManager;
 
 namespace cpdoccore {
 namespace utils {
 
-std::pair<float,float> GetMaxDigitSizePixels(const wchar_t * fontName, float fontSize, float dpi = 96.0, long fontStyle = 0);
+    std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, CFontManager *pFontManager);
 
 }
 }
-
-#endif

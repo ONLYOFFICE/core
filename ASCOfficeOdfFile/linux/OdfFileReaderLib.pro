@@ -22,6 +22,7 @@ DEFINES +=  UNICODE \
 
 INCLUDEPATH += /usr/include/libxml2
 INCLUDEPATH += ../include
+INCLUDEPATH += ../../../ServerComponents/DesktopEditor/freetype-2.5.2/include
 
 SOURCES += \
     ../formulasconvert/formulasconvert_odf.cpp \

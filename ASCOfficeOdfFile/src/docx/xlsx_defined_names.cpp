@@ -7,7 +7,7 @@
 #include <boost/unordered_set.hpp>
 #include <cpdoccore/xml/simple_xml_writer.h>
 
-#include "../formulasconvert/include/cpdoccore/formulasconvert.h"
+#include "../formulasconvert/formulasconvert.h"
 
 namespace cpdoccore {
 namespace oox {

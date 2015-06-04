@@ -5,7 +5,7 @@
 #include "../odf/style_text_properties.h"
 
 #include "oox_chart_series.h"
-#include "../formulasconvert/include/cpdoccore/formulasconvert.h"
+#include "../formulasconvert/formulasconvert.h"
 
 #include "oox_chart_shape.h"
 

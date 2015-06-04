@@ -1,7 +1,7 @@
 
 #include <boost/foreach.hpp>
 #include <iostream>
-#include "../formulasconvert/include/cpdoccore/formulasconvert.h"
+#include "../formulasconvert/formulasconvert.h"
 
 #include "mediaitems_utils.h"
 

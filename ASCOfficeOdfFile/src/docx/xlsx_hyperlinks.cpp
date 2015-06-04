@@ -7,7 +7,7 @@
 
 #include "xlsx_hyperlinks.h"
 #include "docx_rels.h"
-#include "../formulasconvert/include/cpdoccore/formulasconvert.h"
+#include "../formulasconvert/formulasconvert.h"
 
 namespace cpdoccore {
 namespace oox {

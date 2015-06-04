@@ -5,22 +5,20 @@
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/attributes.h>
 #include <cpdoccore/xml/utils.h>
-
-#include "../formulasconvert/include/cpdoccore/formulasconvert.h"
+#include <cpdoccore/odf/odf_document.h>
+#include <cpdoccore/xml/simple_xml_writer.h>
 
 #include <boost/lexical_cast.hpp>
 
 #include "serialize_elements.h"
 #include "odfcontext.h"
-#include <cpdoccore/odf/odf_document.h>
 #include "calcs_styles.h"
-#include "../docx/xlsx_utils.h"
-#include "../docx/xlsx_cell_format.h"
-
-#include "../formulasconvert/include/cpdoccore/formulasconvert.h"
 #include "search_table_cell.h"
 
-#include <cpdoccore/xml/simple_xml_writer.h>
+#include "../docx/xlsx_utils.h"
+#include "../docx/xlsx_cell_format.h"
+#include "../formulasconvert/formulasconvert.h"
+
 
 namespace cpdoccore { 
 namespace odf {

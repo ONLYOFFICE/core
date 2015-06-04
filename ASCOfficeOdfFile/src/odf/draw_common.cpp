@@ -20,35 +20,47 @@
 #include "odfcontext.h"
 
 /////////////////////////////////////////////////////////////////////////////////
+#include "../../../DesktopEditor/raster/BgraFrame.h"
 
 #if defined(_WIN32) || defined(_WIN64)
 	#include <Windows.h>
 	#include <gdiplus.h>
 	#pragma comment(lib, "gdiplus.lib")
 #endif
+
 namespace _image_file_
 {
     bool GetResolution(const wchar_t* fileName, int & Width, int &Height)
 	{
 		bool result =false;
-#if defined(_WIN32) || defined(_WIN64)
-		Gdiplus::GdiplusStartupInput gdiplusStartupInput;
-		ULONG_PTR gdiplusToken=0;
-		Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
 
-		Gdiplus::Bitmap *file = new Gdiplus::Bitmap(fileName,false);
-		if ((file) && (file->GetLastStatus()==Gdiplus::Ok))
+		CBgraFrame image;
+		if (result = image.OpenFile(fileName, 0 ))
 		{
-			Height = file->GetHeight();
-			Width  = file->GetWidth();
-			
+			Width  = image.get_Width();
+			Height = image.get_Height();
+
 			result = true;
-			delete file;
 		}
-		Gdiplus::GdiplusShutdown(gdiplusToken);
-#else
-		//todooo - через CxImage !!!!
+		else
+		{
+#if defined(_WIN32) || defined(_WIN64)
+			Gdiplus::GdiplusStartupInput gdiplusStartupInput;
+			ULONG_PTR gdiplusToken=0;
+			Gdiplus::GdiplusStartup(&gdiplusToken, &gdiplusStartupInput, NULL);
+
+			Gdiplus::Bitmap *file = new Gdiplus::Bitmap(fileName,false);
+			if ((file) && (file->GetLastStatus()==Gdiplus::Ok))
+			{
+				Height = file->GetHeight();
+				Width  = file->GetWidth();
+				
+				result = true;
+				delete file;
+			}
+			Gdiplus::GdiplusShutdown(gdiplusToken);
 #endif
+		}
 		return result;
 	}
 };

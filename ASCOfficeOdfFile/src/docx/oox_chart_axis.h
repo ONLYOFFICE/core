@@ -6,6 +6,8 @@
 
 #include "oox_chart_shape.h"
 
+#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
+
 namespace cpdoccore {
 namespace oox {
 
@@ -19,7 +21,7 @@ public:
 
 	oox_axis_content(int type/*,std::wstring name*/)
 	{
-        id_ = abs(*((int*)(this)));
+        id_ = abs((int)*((_UINT32*)this));
 		type_=type;		//dimension
 	}
 	~oox_axis_content(){}

@@ -10,7 +10,7 @@
 #include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
-#include "ConvertOO2OOX.h"
+#include "../src/ConvertOO2OOX.h"
 
 #include "../../Common/XmlUtils.h"
 

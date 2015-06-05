@@ -81,7 +81,10 @@ private:
 	HRESULT LoadFromFileImpl(const std::wstring & srcFileName,
         const std::wstring & srcTempPath,
         const std::wstring & dstTempPath,
-        const std::wstring & dstPath);
+        const std::wstring & dstPath,
+		const std::wstring & fontsPath);
+
+	std::wstring GetDefWinFontDirectory();
 
 protected:
 

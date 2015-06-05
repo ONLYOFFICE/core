@@ -106,9 +106,9 @@ void word_files::update_rels(docx_conversion_context & Context)
     Context.dump_notes			(rels_files_.get_rel_file()->get_rels());
 }
 
-void word_files::set_media(mediaitems & _Mediaitems)
+void word_files::set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts)
 {
-    media_ = element_ptr( new media(_Mediaitems) );
+    media_ = element_ptr( new media(_Mediaitems, pAppFonts) );
 }
 
 void word_files::set_styles(element_ptr Element) 

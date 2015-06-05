@@ -401,9 +401,9 @@ void ppt_files::add_slideMaster(slide_content_ptr slide)
     slideMasters_files_.add_slide(slide);
 }
 
-void ppt_files::set_media(mediaitems & _Mediaitems)
+void ppt_files::set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts)
 {
-    media_ = element_ptr( new media(_Mediaitems) );
+    media_ = element_ptr( new media(_Mediaitems, pAppFonts) );
 }
 void ppt_files::set_authors_comments(pptx_xml_authors_comments_ptr & authors_comments)
 {

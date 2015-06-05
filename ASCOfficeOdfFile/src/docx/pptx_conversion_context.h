@@ -13,6 +13,7 @@
 
 #include "mediaitems.h"
 
+class CApplicationFonts;
 
 namespace cpdoccore {
 
@@ -32,10 +33,14 @@ namespace package
 class pptx_conversion_context : boost::noncopyable
 {
 public:
-    pptx_conversion_context(::cpdoccore::oox::package::pptx_document * outputDocument,
-        ::cpdoccore::odf::odf_document * odfDocument);
+    pptx_conversion_context(cpdoccore::oox::package::pptx_document * outputDocument,
+								cpdoccore::odf::odf_document * odfDocument);
 
-    void start_document();
+	~pptx_conversion_context();
+
+    void set_font_directory(std::wstring pathFonts);
+
+	void start_document();
     void end_document();
 
     void start_chart(std::wstring const & name);
@@ -102,9 +107,9 @@ private:
 	void create_new_slideLayout(int id);
 	void create_new_slideMaster(int id);
 
-	package::pptx_document * output_document_;
-  
-    odf::odf_document * odf_document_;    
+	package::pptx_document	* output_document_; 
+    odf::odf_document		* odf_document_;    
+	CApplicationFonts           *applicationFonts_;
 
     pptx_slide_context		pptx_slide_context_;
 	pptx_text_context		pptx_text_context_;

@@ -13,39 +13,44 @@
 #include "../include/cpdoccore/odf/odf_document.h"
 
 
-HRESULT ConvertOds2Xlsx(cpdoccore::odf::odf_document & inputOdf, const std::wstring & dstPath)
+HRESULT ConvertOds2Xlsx(cpdoccore::odf::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::xlsx_document outputXlsx;
-    
 	cpdoccore::oox::xlsx_conversion_context conversionContext(&outputXlsx, &inputOdf);
    
+	conversionContext.set_font_directory(fontsPath);
+	
 	if (inputOdf.xlsx_convert(conversionContext) == false) return S_FALSE;
     
 	outputXlsx.write(dstPath);
     return S_OK;
 }
-HRESULT ConvertOdt2Docx(cpdoccore::odf::odf_document & inputOdf, const std::wstring & dstPath)
+HRESULT ConvertOdt2Docx(cpdoccore::odf::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::docx_document	outputDocx;
     cpdoccore::oox::docx_conversion_context conversionContext(&outputDocx, &inputOdf);
    
+	conversionContext.set_font_directory(fontsPath);
+
 	if (inputOdf.docx_convert(conversionContext) == false) return S_FALSE;
 		
     outputDocx.write(dstPath);
 		
     return S_OK;
 }
-HRESULT ConvertOdp2Pptx(cpdoccore::odf::odf_document & inputOdf, const std::wstring & dstPath)
+HRESULT ConvertOdp2Pptx(cpdoccore::odf::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::pptx_document	outputPptx;
     cpdoccore::oox::pptx_conversion_context conversionContext(&outputPptx, &inputOdf);
+	
+	conversionContext.set_font_directory(fontsPath);
     
 	if (inputOdf.pptx_convert(conversionContext) == false) return S_FALSE;
     outputPptx.write(dstPath);
 
     return S_OK;
 }
-HRESULT ConvertOO2OOX(const std::wstring & srcPath, const std::wstring & dstPath, bool bOnlyPresentation, const ProgressCallback* CallBack)
+HRESULT ConvertOO2OOX(const std::wstring & srcPath, const std::wstring & dstPath, const std::wstring & fontsPath, bool bOnlyPresentation, const ProgressCallback* CallBack)
 {
 	HRESULT hr = S_OK;
 
@@ -71,13 +76,13 @@ HRESULT ConvertOO2OOX(const std::wstring & srcPath, const std::wstring & dstPath
 		switch (type)
 		{
 		case 1:
-			hr = ConvertOdt2Docx(inputOdf,dstPath);
+			hr = ConvertOdt2Docx(inputOdf,dstPath, fontsPath);
 			break;
 		case 2:
-			hr = ConvertOds2Xlsx(inputOdf,dstPath);
+			hr = ConvertOds2Xlsx(inputOdf,dstPath, fontsPath);
 			break;
 		case 3:
-			hr = ConvertOdp2Pptx(inputOdf,dstPath);
+			hr = ConvertOdp2Pptx(inputOdf,dstPath, fontsPath);
 			break;
 		}
 		if (hr == S_OK)

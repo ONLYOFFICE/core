@@ -17,6 +17,8 @@
 #include "../../Common/ASCATLError.h"
 
 #include <string>
+#include <Shlobj.h>
+
 
 // ВНИМАНИЕ:    значение 1 используется для тестирования, на выходе получаем заархивированный файл xlsx или docx
 //              значение 0 используется для релиза, так как на выходе по спецификации нам требуется распакованный package
@@ -90,8 +92,11 @@ HRESULT COfficeOdfFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXML
         // создаем временную директорию для результирующих файлов
 		FileSystem::Directory::CreateDirectory(dstTempPath);
 #endif
-        //hr = LoadFromFileImpl(bstr2wstring(sSrcFileName), srcTempPath.string<std::wstring>(), dstTempPath.string<std::wstring>(), bstr2wstring(sDstPath));
-        hr = LoadFromFileImpl(bstr2wstring(sSrcFileName), srcTempPath, dstTempPath, bstr2wstring(sDstPath));
+		std::wstring fontsPath = GetDefWinFontDirectory();
+///
+
+///
+        hr = LoadFromFileImpl(bstr2wstring(sSrcFileName), srcTempPath, dstTempPath, bstr2wstring(sDstPath), fontsPath);
         
     }
     catch(...)
@@ -125,7 +130,8 @@ HRESULT COfficeOdfFile::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXML
 HRESULT COfficeOdfFile::LoadFromFileImpl(const std::wstring & srcFileName,
                                          const std::wstring & srcTempPath,
                                          const std::wstring & dstTempPath,
-                                         const std::wstring & dstPath)
+                                         const std::wstring & dstPath,
+										 const std::wstring & fontsPath)
 {
     HRESULT hr = AVS_ERROR_UNEXPECTED;    
         
@@ -140,7 +146,7 @@ HRESULT COfficeOdfFile::LoadFromFileImpl(const std::wstring & srcFileName,
 	ffCallBack.OnProgressEx	=	OnProgressExFunc;
 	ffCallBack.caller		=	this;
 
-	hr = ConvertOO2OOX(srcTempPath, dstTempPath,bOnlyPresentation, &ffCallBack);
+	hr = ConvertOO2OOX(srcTempPath, dstTempPath, fontsPath, bOnlyPresentation, &ffCallBack);
 
 	if (hr != S_OK)  return hr;
    
@@ -174,4 +180,16 @@ void COfficeOdfFile::OnProgressExFunc (LPVOID lpParam, long nID, long nPercent, 
 	{
 		pOdfFile->OnProgressEx(nID, nPercent, pStop);
 	}
+}
+std::wstring COfficeOdfFile::GetDefWinFontDirectory()
+{
+	std::wstring strPath;
+
+	wchar_t wsWinFontDir[1024] ={};
+	if ( !SHGetSpecialFolderPathW( NULL, wsWinFontDir, CSIDL_FONTS, FALSE ) )
+		wsWinFontDir[0] = '\0';
+
+
+	strPath = std::wstring(wsWinFontDir);
+	return strPath;
 }

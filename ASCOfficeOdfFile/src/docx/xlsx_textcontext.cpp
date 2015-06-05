@@ -1,4 +1,4 @@
-
+п»ї
 #include "xlsx_textcontext.h"
 #include "xlsxconversioncontext.h"
 #include <iostream>
@@ -45,7 +45,7 @@ public:
 	
 	void ApplyTextProperties(std::wstring style,odf::text_format_properties_content & propertiesOut, odf::style_family::type Type);
 
-	void set_local_styles_container(odf::styles_container*  local_styles_);//это если стили объектов содержатся в другом документе
+	void set_local_styles_container(odf::styles_container*  local_styles_);//СЌС‚Рѕ РµСЃР»Рё СЃС‚РёР»Рё РѕР±СЉРµРєС‚РѕРІ СЃРѕРґРµСЂР¶Р°С‚СЃСЏ РІ РґСЂСѓРіРѕРј РґРѕРєСѓРјРµРЅС‚Рµ
 
 	bool is_drawing_context(){return in_draw;}
 
@@ -68,13 +68,13 @@ private:
     std::wstring dump_text();
     void write_rPr(std::wostream & strm);
    
-	size_t paragraphs_cout_; //???? тока из за начала отсчета?
+	size_t paragraphs_cout_; //???? С‚РѕРєР° РёР· Р·Р° РЅР°С‡Р°Р»Р° РѕС‚СЃС‡РµС‚Р°?
    
 	std::wstringstream text_;
     std::wstringstream output_;
     xlsx_shared_strings xlsx_shared_strings_;
    
-	std::wstring paragraph_style_name_;//был вектор ... не нужен, так как в один момент времени может быть тока один стиль параграфа,текста,объекта при приходе нового - дампится
+	std::wstring paragraph_style_name_;//Р±С‹Р» РІРµРєС‚РѕСЂ ... РЅРµ РЅСѓР¶РµРЅ, С‚Р°Рє РєР°Рє РІ РѕРґРёРЅ РјРѕРјРµРЅС‚ РІСЂРµРјРµРЅРё РјРѕР¶РµС‚ Р±С‹С‚СЊ С‚РѕРєР° РѕРґРёРЅ СЃС‚РёР»СЊ РїР°СЂР°РіСЂР°С„Р°,С‚РµРєСЃС‚Р°,РѕР±СЉРµРєС‚Р° РїСЂРё РїСЂРёС…РѕРґРµ РЅРѕРІРѕРіРѕ - РґР°РјРїРёС‚СЃСЏ
     std::wstring span_style_name_;
 
 };
@@ -129,7 +129,7 @@ void xlsx_text_context::Impl::end_paragraph()
 	in_paragraph = false;
 }
 
-void xlsx_text_context::Impl::start_span(const std::wstring & styleName)//кусок текста в абзаце(параграфе) со своими свойствами - этто может быть и 1 буква
+void xlsx_text_context::Impl::start_span(const std::wstring & styleName)//РєСѓСЃРѕРє С‚РµРєСЃС‚Р° РІ Р°Р±Р·Р°С†Рµ(РїР°СЂР°РіСЂР°С„Рµ) СЃРѕ СЃРІРѕРёРјРё СЃРІРѕР№СЃС‚РІР°РјРё - СЌС‚С‚Рѕ РјРѕР¶РµС‚ Р±С‹С‚СЊ Рё 1 Р±СѓРєРІР°
 {
      if (!in_comment && !in_draw)
 	 {
@@ -146,8 +146,8 @@ void xlsx_text_context::Impl::start_span(const std::wstring & styleName)//кусок 
 	 in_span=true;
 }
 
-void xlsx_text_context::Impl::end_span() //odf корявенько написан - возможны повторы стилей в последовательных кусках текста
-//пока с анализом стилей тока комменты - остальные текстовые куски как есть.. с охрененным возможно дубляжом
+void xlsx_text_context::Impl::end_span() //odf РєРѕСЂСЏРІРµРЅСЊРєРѕ РЅР°РїРёСЃР°РЅ - РІРѕР·РјРѕР¶РЅС‹ РїРѕРІС‚РѕСЂС‹ СЃС‚РёР»РµР№ РІ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅС‹С… РєСѓСЃРєР°С… С‚РµРєСЃС‚Р°
+//РїРѕРєР° СЃ Р°РЅР°Р»РёР·РѕРј СЃС‚РёР»РµР№ С‚РѕРєР° РєРѕРјРјРµРЅС‚С‹ - РѕСЃС‚Р°Р»СЊРЅС‹Рµ С‚РµРєСЃС‚РѕРІС‹Рµ РєСѓСЃРєРё РєР°Рє РµСЃС‚СЊ.. СЃ РѕС…СЂРµРЅРµРЅРЅС‹Рј РІРѕР·РјРѕР¶РЅРѕ РґСѓР±Р»СЏР¶РѕРј
 {
      if (!in_comment && !in_draw)
 	 {
@@ -220,7 +220,7 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 	_CP_OPT(std::wstring) sValFontFamily;	
 	if (text_properties_.fo_font_family_)	
 		sValFontFamily=text_properties_.fo_font_family_.get();
-	//else if (text_properties_.style_font_name_) - тут может быть отсылка к font_face)decl !!!!
+	//else if (text_properties_.style_font_name_) - С‚СѓС‚ РјРѕР¶РµС‚ Р±С‹С‚СЊ РѕС‚СЃС‹Р»РєР° Рє font_face)decl !!!!
 	//	sValFontFamily=text_properties_.style_font_name_.get();
 
 	_CP_OPT(std::wstring) sValFontColor;
@@ -243,11 +243,11 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 			//oox_serialize_style_text(strm,odf::text_format_properties_content & properties);
 			CP_XML_NODE(L"a:rPr")
 			{
-				//стр 3197
+				//СЃС‚СЂ 3197
 				if (dValFontSize)									{CP_XML_ATTR(L"sz", (int)(dValFontSize.get()*100));}
-				if ((iValFontStyle) && (iValFontStyle.get() >0))	{CP_XML_ATTR(L"i", "true");}
-				if ((iValFontWeight) && (iValFontWeight.get() >0))	{CP_XML_ATTR(L"b", "true");}				
-				if (sValFontFamily)									{CP_XML_ATTR(L"typeface", sValFontFamily.get());}
+				if ((iValFontStyle) && (iValFontStyle.get() >0))	{CP_XML_ATTR(L"i", "1");} //"true");} ExercГ­cios de Aprendizagem.ods
+				if ((iValFontWeight) && (iValFontWeight.get() >0))	{CP_XML_ATTR(L"b", "1");} //"true");} ExercГ­cios de Aprendizagem.ods				
+				if (sValFontFamily)									{CP_XML_ATTR(L"typeface", sValFontFamily.get());} //'Arial' РіР»СЋС‡РёС‚
 				
 				if (sValFontColor){CP_XML_NODE(L"a:solidFill")	{CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val", sValFontColor.get());}}}
 
@@ -312,9 +312,9 @@ void xlsx_text_context::Impl::start_cell_content()
     paragraphs_cout_ = 0;
  	local_styles_ptr_ =NULL;
    
-	output_.str(std::wstring());//строка дампа
+	output_.str(std::wstring());//СЃС‚СЂРѕРєР° РґР°РјРїР°
     
-	text_.str(std::wstring()); //приходящие куски текста
+	text_.str(std::wstring()); //РїСЂРёС…РѕРґСЏС‰РёРµ РєСѓСЃРєРё С‚РµРєСЃС‚Р°
     
 	paragraph_style_name_ = L"";
     span_style_name_ = L"";
@@ -348,7 +348,7 @@ void xlsx_text_context::Impl::start_drawing_content()
 }
 std::wstring xlsx_text_context::Impl::end_comment_content()
 {
-	dump_text();//если в комменте куча абзацев со одним стилем - сдампится здесь - иначе дампится по мере прихода каждого нового стиля
+	dump_text();//РµСЃР»Рё РІ РєРѕРјРјРµРЅС‚Рµ РєСѓС‡Р° Р°Р±Р·Р°С†РµРІ СЃРѕ РѕРґРЅРёРј СЃС‚РёР»РµРј - СЃРґР°РјРїРёС‚СЃСЏ Р·РґРµСЃСЊ - РёРЅР°С‡Рµ РґР°РјРїРёС‚СЃСЏ РїРѕ РјРµСЂРµ РїСЂРёС…РѕРґР° РєР°Р¶РґРѕРіРѕ РЅРѕРІРѕРіРѕ СЃС‚РёР»СЏ
 
 	std::wstring comment= output_.str();
   
@@ -365,7 +365,7 @@ std::wstring xlsx_text_context::Impl::end_comment_content()
 }
 std::wstring xlsx_text_context::Impl::end_drawing_content()
 {
-	dump_text();//если в draw куча абзацев со одним стилем - сдампится здесь - иначе дампится по мере прихода каждого нового стиля
+	dump_text();//РµСЃР»Рё РІ draw РєСѓС‡Р° Р°Р±Р·Р°С†РµРІ СЃРѕ РѕРґРЅРёРј СЃС‚РёР»РµРј - СЃРґР°РјРїРёС‚СЃСЏ Р·РґРµСЃСЊ - РёРЅР°С‡Рµ РґР°РјРїРёС‚СЃСЏ РїРѕ РјРµСЂРµ РїСЂРёС…РѕРґР° РєР°Р¶РґРѕРіРѕ РЅРѕРІРѕРіРѕ СЃС‚РёР»СЏ
 
 	std::wstring draw= output_.str();
   
@@ -385,7 +385,7 @@ int xlsx_text_context::Impl::end_cell_content()
 	dump_text();
 
 	const int sharedStrId = output_.str().empty() ? (-1) :  static_cast<int>(xlsx_shared_strings_.add(output_.str()));
-	//???? нужно ли здесь очищать все ????? - проверить стили на кучках - и проверить как меняются стили внутри одной ячейки - то есть здешнее переопределение внешнего стиля
+	//???? РЅСѓР¶РЅРѕ Р»Рё Р·РґРµСЃСЊ РѕС‡РёС‰Р°С‚СЊ РІСЃРµ ????? - РїСЂРѕРІРµСЂРёС‚СЊ СЃС‚РёР»Рё РЅР° РєСѓС‡РєР°С… - Рё РїСЂРѕРІРµСЂРёС‚СЊ РєР°Рє РјРµРЅСЏСЋС‚СЃСЏ СЃС‚РёР»Рё РІРЅСѓС‚СЂРё РѕРґРЅРѕР№ СЏС‡РµР№РєРё - С‚Рѕ РµСЃС‚СЊ Р·РґРµС€РЅРµРµ РїРµСЂРµРѕРїСЂРµРґРµР»РµРЅРёРµ РІРЅРµС€РЅРµРіРѕ СЃС‚РёР»СЏ
 	in_cell_content = false;   
 	return sharedStrId;
 }

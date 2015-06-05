@@ -82,8 +82,8 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
 	{
 		CP_XML_NODE(std::wstring(val.bitmap->name_space + L":blipFill"))
 		{
-			if (val.bitmap->rotate)	CP_XML_ATTR(L"a:rotWithShape",*(val.bitmap->rotate));
-			else CP_XML_ATTR(L"a:rotWithShape",1);
+			//if (val.bitmap->rotate)	CP_XML_ATTR(L"a:rotWithShape",*(val.bitmap->rotate));
+			//else CP_XML_ATTR(L"a:rotWithShape",1);
 
 			if (val.bitmap->dpi)	CP_XML_ATTR(L"a:dpi",*val.bitmap->dpi);
 			

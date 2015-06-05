@@ -8,10 +8,24 @@
 
 #include "mediaitems.h"
 #include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/raster/MetaFile/MetaFile.h"
 
 namespace cpdoccore { 
 namespace oox {
 namespace package {
+
+static void ConvertSvmToImage(std::wstring &file_svm, std::wstring &file_png, CApplicationFonts *pAppFonts)
+{
+	MetaFile::CMetaFile oMetaFile(pAppFonts);
+
+	if (oMetaFile.LoadFromFile(file_svm.c_str()))
+	{
+		double w, h, x, y;
+		oMetaFile.GetBounds(&x, &y, &w, &h);
+		oMetaFile.ConvertToRaster(file_png.c_str(), 4, w);
+		oMetaFile.Close();
+	}
+}
 
 content_types_file::content_types_file() : filename_(L"[Content_Types].xml") 
 {}
@@ -164,7 +178,7 @@ void docProps_files::write(const std::wstring & RootPath)
 ////////////
 
 
-media::media(mediaitems & _Mediaitems) : mediaitems_(_Mediaitems)
+media::media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts) : mediaitems_(_Mediaitems), appFonts_(pAppFonts)
 {    
 }
 
@@ -180,7 +194,13 @@ void media::write(const std::wstring & RootPath)
 			std::wstring & file_name  = item.href;
 			std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.outputName;
 			
-			NSFile::CFileBinary::Copy(item.href, file_name_out);
+			int pos_svm = file_name.rfind(L".svm");
+			if ( pos_svm >= 0)
+			{
+				ConvertSvmToImage(file_name, file_name_out, appFonts_);
+			}
+			else
+				NSFile::CFileBinary::Copy(item.href, file_name_out);
         }
     }
 

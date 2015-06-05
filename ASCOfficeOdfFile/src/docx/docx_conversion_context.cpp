@@ -19,6 +19,8 @@
 #include "docx_rels.h"
 #include "logging.h"
 
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+
 namespace cpdoccore { 
 namespace oox {
    
@@ -41,8 +43,20 @@ docx_conversion_context::docx_conversion_context(package::docx_document * Output
 	delayed_converting_(false),
 	process_headers_footers_(false),
 	process_note_(noNote)
-{}
+{
+    applicationFonts_ = new CApplicationFonts();
+}
+docx_conversion_context::~docx_conversion_context()
+{
+    if (applicationFonts_)
+        delete applicationFonts_;
+}
+void docx_conversion_context::set_font_directory(std::wstring pathFonts)
+{
+    if (applicationFonts_ == NULL) return;
 
+    applicationFonts_->InitializeFromFolder(pathFonts);
+}
 std::wstring styles_map::get(const std::wstring & Name, odf::style_family::type Type)
 {
     const std::wstring n = name(Name, Type);
@@ -219,7 +233,7 @@ void docx_conversion_context::end_document()
     output_stream() << L"</w:document>";
     output_document_->get_word_files().set_document( package::simple_element::create(L"document.xml", document_xml_.str()) );
 
-    output_document_->get_word_files().set_media( mediaitems_ );
+    output_document_->get_word_files().set_media( mediaitems_, applicationFonts_);
     output_document_->get_word_files().set_headers_footers(headers_footers_);
     output_document_->get_word_files().set_notes(notes_context_);
 	output_document_->get_word_files().set_comments(comments_context_);

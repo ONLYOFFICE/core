@@ -212,9 +212,9 @@ void xl_files::add_sheet(sheet_content_ptr sheet)
     sheets_files_.add_sheet(sheet);
 }
 
-void xl_files::set_media(mediaitems & _Mediaitems)
+void xl_files::set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts)
 {
-    media_ = element_ptr( new media(_Mediaitems) );
+    media_ = element_ptr( new media(_Mediaitems, pAppFonts) );
 }
 void xl_files::set_comments(element_ptr Element)
 {

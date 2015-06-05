@@ -228,9 +228,7 @@ public:
 	,styles_(styles)
 	,draw_styles_(draw_styles)
     {
-        _CP_LOG(warning) << L"[process_draw_object] \"" << L"\"" << std::endl;
-
-	}
+    }
 
 private:
 	void ApplyChartProperties(std::wstring style,std::vector<_property> & propertiesOut);

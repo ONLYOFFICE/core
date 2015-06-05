@@ -44,7 +44,7 @@ void office_presentation::add_attributes( const xml::attributes_wc_ptr & Attribu
 void office_presentation::docx_convert(oox::docx_conversion_context & Context)
 {
     Context.start_office_text();
-	_CP_LOG(info) << L"[info][docx] process pages (" << pages_.size() << L" elmements)" << std::endl;
+	_CP_LOG << L"[info][docx] process pages (" << pages_.size() << L" elmements)" << std::endl;
 	BOOST_FOREACH(const office_element_ptr & elm, pages_)
     {
         elm->docx_convert(Context);
@@ -55,7 +55,7 @@ void office_presentation::docx_convert(oox::docx_conversion_context & Context)
 void office_presentation::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.start_office_spreadsheet(this);
-    _CP_LOG(info) << L"[info][xlsx] process pages (" << pages_.size() << L" elmements)" << std::endl;
+    _CP_LOG << L"[info][xlsx] process pages (" << pages_.size() << L" elmements)" << std::endl;
     BOOST_FOREACH(const office_element_ptr & elm, pages_)
     {
         elm->xlsx_convert(Context);
@@ -67,7 +67,7 @@ void office_presentation::pptx_convert(oox::pptx_conversion_context & Context)
 {
     Context.start_office_presentation();
 
-    _CP_LOG(info) << L"[info][pptx] process pages(" << pages_.size() << L" elmements)" << std::endl;
+    _CP_LOG << L"[info][pptx] process pages(" << pages_.size() << L" elmements)" << std::endl;
 	
     BOOST_FOREACH(const office_element_ptr & elm, footer_decls_)
     {

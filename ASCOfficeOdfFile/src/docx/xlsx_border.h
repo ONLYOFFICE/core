@@ -34,7 +34,6 @@ namespace oox {
 
         bool operator == (const xlsx_border_edge & rVal) const;
         bool operator != (const xlsx_border_edge & rVal) const;
-        friend std::size_t hash_value(xlsx_border_edge const & val);
     };
 
     struct xlsx_border
@@ -56,12 +55,17 @@ namespace oox {
         bool operator == (const xlsx_border & rVal) const;
         bool operator != (const xlsx_border & rVal) const;
 
-        friend bool is_default(xlsx_border_edge const & borderEdge);
-        friend bool is_default(_CP_OPT(xlsx_border_edge) const & borderEdge);
-        friend bool is_default(xlsx_border const & border);
-
-        friend std::size_t hash_value(xlsx_border const & val);
     };
+
+    std::size_t hash_value(const _CP_OPT(xlsx_border_edge) & val);
+    std::size_t hash_value(xlsx_border_edge const& val);
+    std::size_t hash_value(xlsx_border const& val);
+
+    bool is_default(xlsx_border_edge * borderEdge);
+    bool is_default(xlsx_border_edge const& borderEdge);
+    bool is_default(const _CP_OPT(xlsx_border_edge) & borderEdge);
+
+     bool is_default(xlsx_border const& border);
 
     void xlsx_serialize(std::wostream & _Wostream, xlsx_border const & border);
 

@@ -46,14 +46,23 @@ bool xlsx_border_edge::operator != (const xlsx_border_edge & rVal) const
     return !(this->operator ==(rVal));    
 }
 
-std::size_t hash_value(xlsx_border_edge const & val)
+std::size_t hash_value(xlsx_border_edge const& val)
 {
     std::size_t seed = 0;
     boost::hash_combine(seed, val.style.get_value_or(L""));
     boost::hash_combine(seed, val.color.get_value_or(xlsx_color()));
     return seed;
 }
-
+std::size_t hash_value(const _CP_OPT(xlsx_border_edge) & val)
+{
+    std::size_t seed = 0;
+    if (val)
+    {
+        boost::hash_combine(seed, val->style.get_value_or(L""));
+        boost::hash_combine(seed, val->color.get_value_or(xlsx_color()));
+    }
+    return seed;
+}
 void xlsx_serialize(std::wostream & _Wostream, const _CP_OPT(xlsx_border_edge) & borderEdge, const std::wstring & name)
 {
     if (borderEdge)
@@ -97,7 +106,7 @@ void xlsx_serialize(std::wostream & _Wostream, const xlsx_border & border)
     }
 }
 
-std::size_t hash_value(xlsx_border const & val)
+std::size_t hash_value(xlsx_border const& val)
 {
     std::size_t seed = 0;
     boost::hash_combine(seed, val.diagonalUp.get_value_or(false));
@@ -117,21 +126,28 @@ std::size_t hash_value(xlsx_border const & val)
 
 bool is_default(const _CP_OPT(xlsx_border_edge) & borderEdge)
 {
-    if (!borderEdge || is_default(borderEdge.get()))
-        return true;
-    else
-        return false;
+    if (!borderEdge)                    return true;
+    if (is_default(borderEdge.get()))  return true;
+
+    return false;
 }
 
-bool is_default(const xlsx_border_edge & borderEdge)
+bool is_default(xlsx_border_edge * borderEdge)
 {
-    if (!borderEdge.style || borderEdge.style.get() == L"none")
-        return true;
-    else
-        return false;
-}
+    if (!borderEdge)                         return true;
+    if (!borderEdge->style)                  return true;
+    if (borderEdge->style.get() == L"none")  return true;
 
-bool is_default(const xlsx_border & border)
+    return false;
+}
+bool is_default(xlsx_border_edge const& borderEdge)
+{
+    if (!borderEdge.style)                  return true;
+    if (borderEdge.style.get() == L"none")  return true;
+
+    return false;
+}
+bool is_default(xlsx_border const& border)
 {
     if (border.diagonalUp.get_value_or(false) == false &&
         border.diagonalDown.get_value_or(false) == false &&

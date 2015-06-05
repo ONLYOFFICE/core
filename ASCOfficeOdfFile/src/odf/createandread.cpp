@@ -24,9 +24,7 @@ bool create_element_and_read(xml::sax * Reader,
         
         if (_Element) // элемент читается повторно
         {
-            std::wstringstream ss;
-            ss << L"[warning] : duplicate element (" << Ns << L":" << Name << L")\n";
-            _CP_LOG(error) << ss.str();
+            _CP_LOG << L"[error] : duplicate element (" << Ns << L":" << Name << L")\n";
         }
 
         _Element = elm;
@@ -34,11 +32,8 @@ bool create_element_and_read(xml::sax * Reader,
     }
     else
     {
-#ifdef _DEBUG
-		std::wstringstream ss;
-        ss << L"[warning] : create element failed (" << Ns << L":" << Name << L")\n";
-        _CP_LOG(error) << ss.str();
-#endif
+        _CP_LOG << L"[error] : create element failed (" << Ns << L":" << Name << L")\n";
+
         not_applicable_element(L"[!!!]", Reader, Ns, Name);
     }
     return false;

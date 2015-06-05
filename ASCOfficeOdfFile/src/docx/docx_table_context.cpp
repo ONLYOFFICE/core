@@ -138,9 +138,7 @@ void docx_table_state::set_columns_spanned(unsigned int Val)
 {
     if ( current_columns_spaned() > 0 )
     {
- #ifdef _DEBUG
-		_CP_LOG(info) << L"[warning] set_columns_spanned warning\n";
- #endif
+        _CP_LOG << L"[warning] set_columns_spanned warning\n";
     }
 
     columns_spanned_num_ = Val;
@@ -155,13 +153,13 @@ void docx_table_state::set_rows_spanned(unsigned int Column, unsigned int Val, u
 {
     if (rows_spanned_.size() <= Column)
     {
-        _CP_LOG(info) << L"[warning] set_rows_spanned error\n";
+        _CP_LOG << L"[warning] set_rows_spanned error\n";
     }
     else
     {
         if (rows_spanned_[Column].num() > 0)
         {
-            _CP_LOG(info) << L"[warning] set_rows_spanned warning\n";        
+            _CP_LOG << L"[warning] set_rows_spanned warning\n";
         }
         rows_spanned_[Column].num(Val);
         rows_spanned_[Column].set_style(Style);
@@ -173,7 +171,7 @@ unsigned int docx_table_state::current_rows_spanned(unsigned int Column) const
 {
     if (rows_spanned_.size() <= Column)
     {
-        _CP_LOG(info) << L"[warning] current_rows_spanned error\n";        
+        _CP_LOG << L"[warning] current_rows_spanned error\n";
         return 0;
     }
     else

@@ -264,7 +264,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 	}
     catch(...)
     {
-        _CP_LOG(error) << "convert draw::object error" << std::endl;        
+        _CP_LOG << "[error] : convert draw::object error" << std::endl;
     }
 }
 void draw_object_ole::xlsx_convert(oox::xlsx_conversion_context & Context)

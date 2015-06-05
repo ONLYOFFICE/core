@@ -13,12 +13,10 @@ bool read_doc_element::read_sax( xml::sax * Reader )
 	xml::attributes_wc_ptr attrb = xml::read_attributes( Reader );
     add_attributes( attrb );
     
-#ifdef _DEBUG
     if (!attrb->check())
     {
         std::wcerr << " -- end (" << Reader->nodeQualifiedName() << ")\n";
     }
-#endif
 
 	//const std::wstring value = Reader->value();
 

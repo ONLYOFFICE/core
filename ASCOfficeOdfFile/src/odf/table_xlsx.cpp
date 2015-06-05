@@ -62,9 +62,6 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	bool skip_next_row = false;
 
-#ifdef _DEBUG
-	_CP_LOG(info) << "[info][xlsx] process repeated rows " << table_table_row_attlist_.table_number_rows_repeated_ << std::endl;
-#endif
     std::wstring ht = L"";
     double row_height = 0.0;
 
@@ -240,7 +237,7 @@ void table_table::xlsx_convert(oox::xlsx_conversion_context & Context)
     const std::wstring tableStyleName = table_table_attlist_.table_style_name_ ? table_table_attlist_.table_style_name_->style_name() : L"";
     const std::wstring tableName = table_table_attlist_.table_name_.get_value_or(L"");
 
-    _CP_LOG(info) << L"[info][xlsx] process table \"" <</* tableName*/ L"1111" << L"\"" << std::endl;
+    _CP_LOG << L"[info][xlsx] process table \"" << tableName << L"\"\n" << std::endl;
 
 	if (table_table_source_)
 	{
@@ -556,7 +553,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			}
 			catch(...)
 			{
-				_CP_LOG(info) << L"\n[error]: style wrong\n";
+                _CP_LOG << L"[error]: style wrong\n";
 			}
 
             std::wstring data_style = CalcCellDataStyle(Context,

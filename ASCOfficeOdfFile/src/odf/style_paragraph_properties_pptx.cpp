@@ -391,7 +391,7 @@ void style_tab_stop::pptx_convert(oox::pptx_conversion_context & Context)
     //    {
     //        if (style_leader_style_)
     //        {
-    //            _CP_LOG(info) << L"[pptx_convert] convert warning (a:tab/@a:leader)\n";
+    //            _CP_LOG << L"[pptx_convert] convert warning (a:tab/@a:leader)\n";
     //            switch(style_leader_style_->get_type())
     //            {
     //            case line_style::None:

@@ -79,25 +79,25 @@ odf_document::Impl::Impl(const std::wstring & folderPath, const ProgressCallback
     std::wstring settings_xml	= folderPath + FILE_SEPARATOR_STR + L"settings.xml";
 	std::wstring manifest_xml	= folderPath + FILE_SEPARATOR_STR + L"META-INF" + FILE_SEPARATOR_STR + L"manifest.xml";
 
-    _CP_LOG(info) << L"[info] read manifest.xml" << std::endl;
+    _CP_LOG << L"[info] read manifest.xml" << std::endl;
     manifest_xml_ = read_file_content(manifest_xml);
 
-	  _CP_LOG(info) << L"[info] read settings.xml" << std::endl;
+      _CP_LOG << L"[info] read settings.xml" << std::endl;
     settings_xml_ = read_file_content(settings_xml);
 
-	_CP_LOG(info) << L"[info] read content.xml" << std::endl;
+    _CP_LOG << L"[info] read content.xml" << std::endl;
     content_xml_ = read_file_content(content_xml);
 
-	  _CP_LOG(info) << L"[info] read styles.xml" << std::endl;
+      _CP_LOG << L"[info] read styles.xml" << std::endl;
     styles_xml_ = read_file_content(styles_xml);
 
-    _CP_LOG(info) << L"[info] parse fonts" << std::endl;
+    _CP_LOG << L"[info] parse fonts" << std::endl;
     parse_fonts();
 
-    _CP_LOG(info) << L"[info] parse styles" << std::endl;
+    _CP_LOG << L"[info] parse styles" << std::endl;
     parse_styles();
 
-    _CP_LOG(info) << L"[info] parse manifest" << std::endl;
+    _CP_LOG << L"[info] parse manifest" << std::endl;
     parse_manifests();
 
 	UpdateProgress(400000);
@@ -122,14 +122,14 @@ void odf_document::Impl::parse_fonts()
     {
         if (!content_xml_)
         {
-            _CP_LOG(info) << L"[warning] empty content xml\n";
+            _CP_LOG << L"[warning] empty content xml\n";
             break;
         }
 
         office_document_base * document = dynamic_cast<office_document_base *>( content_xml_->get_content() );
         if (!document)
         {
-            _CP_LOG(info) << L"[warning] empty document\n";
+            _CP_LOG << L"[warning] empty document\n";
             break;
         }
 
@@ -137,7 +137,7 @@ void odf_document::Impl::parse_fonts()
         
         if (!fontFaceDecls)
         {
-            _CP_LOG(info) << L"[warning] empty font face decls\n";
+            _CP_LOG << L"[warning] empty font face decls\n";
             break;
         }
 
@@ -146,7 +146,7 @@ void odf_document::Impl::parse_fonts()
             style_font_face* fontFace = dynamic_cast<style_font_face*>( elm.get() );
             if (!fontFace)
             {
-                _CP_LOG(info) << L"[warning] read font face error\n";
+                _CP_LOG << L"[warning] read font face error\n";
                 continue;
             }
 
@@ -182,7 +182,7 @@ void odf_document::Impl::parse_fonts()
             }
             else
             {
-                _CP_LOG(info) << L"[warning] duplicate font name (" << fontName << L")\n";
+                _CP_LOG << L"[warning] duplicate font name (" << fontName << L")\n";
             }*/
         }
     }
@@ -230,14 +230,14 @@ void odf_document::Impl::parse_styles()
     {
         if (!styles_xml_)
         {
-            _CP_LOG(info) << L"[warning] empty styles xml\n";
+            _CP_LOG << L"[warning] empty styles xml\n";
             break;
         }
 
         office_document_base * document = dynamic_cast<office_document_base *>( styles_xml_->get_content() );
         if (!document)
         {
-            _CP_LOG(info) << L"[warning] empty document\n";
+            _CP_LOG << L"[warning] empty document\n";
             break;
         }
        
@@ -248,7 +248,7 @@ void odf_document::Impl::parse_styles()
             office_automatic_styles * automaticStyles = dynamic_cast<office_automatic_styles *>( document->office_automatic_styles_.get() );
             if (!automaticStyles)
             {
-                _CP_LOG(info) << L"[warning] error reading automatic styles\n";
+                _CP_LOG << L"[warning] error reading automatic styles\n";
                 break;
             }
 
@@ -258,7 +258,7 @@ void odf_document::Impl::parse_styles()
                 style_page_layout * pageLayout = dynamic_cast<style_page_layout *>(elm.get());
                 if (!pageLayout)
                 {
-                    _CP_LOG(info) << L"[warning] error reading page layout\n";
+                    _CP_LOG << L"[warning] error reading page layout\n";
                     continue;
                 }
 
@@ -270,7 +270,7 @@ void odf_document::Impl::parse_styles()
                 style * styleInst = dynamic_cast<style*>(elm.get());
                 if (!styleInst)
                 {
-                    _CP_LOG(info) << L"[warning] error reading style\n";
+                    _CP_LOG << L"[warning] error reading style\n";
                     continue;
                 }
 
@@ -290,7 +290,7 @@ void odf_document::Impl::parse_styles()
                 text_list_style * listStyle = dynamic_cast<text_list_style *>(elm.get());
                 if (!listStyle)
                 {
-                    _CP_LOG(info) << L"[warning] error list style\n";
+                    _CP_LOG << L"[warning] error list style\n";
                     continue;
                 }
 
@@ -305,7 +305,7 @@ void odf_document::Impl::parse_styles()
             office_master_styles * masterStyles = dynamic_cast<office_master_styles *>( document->office_master_styles_.get() );
             if (!masterStyles)
             {
-                _CP_LOG(info) << L"[warning] error reading master styles\n";
+                _CP_LOG << L"[warning] error reading master styles\n";
                 break;
             }
 
@@ -314,7 +314,7 @@ void odf_document::Impl::parse_styles()
                 style_master_page * masterPage = dynamic_cast<style_master_page *>(elm.get());
                 if (!masterPage)
                 {
-                    _CP_LOG(info) << L"[warning] error reading master page\n";
+                    _CP_LOG << L"[warning] error reading master page\n";
                     continue;
                 }
 
@@ -332,7 +332,7 @@ void odf_document::Impl::parse_styles()
             office_styles * docStyles = dynamic_cast<office_styles *>(document->office_styles_.get());
             if (!docStyles)
             {
-                _CP_LOG(info) << L"[warning] error reading styles\n";
+                _CP_LOG << L"[warning] error reading styles\n";
                 break;
             }
 
@@ -342,7 +342,7 @@ void odf_document::Impl::parse_styles()
                 default_style * styleInst = dynamic_cast<default_style *>(elm.get());
                 if (!styleInst)
                 {
-                    _CP_LOG(info) << L"[warning] error reading default style\n";
+                    _CP_LOG << L"[warning] error reading default style\n";
                     continue;
                 }
 
@@ -371,7 +371,7 @@ void odf_document::Impl::parse_styles()
                 style * styleInst = dynamic_cast<style*>(elm.get());
                 if (!styleInst)
                 {
-                    _CP_LOG(info) << L"[warning] error reading style\n";
+                    _CP_LOG << L"[warning] error reading style\n";
                     continue;
                 }
 
@@ -395,7 +395,7 @@ void odf_document::Impl::parse_styles()
                 text_list_style * listStyle = dynamic_cast<text_list_style *>(elm.get());
                 if (!listStyle)
                 {
-                    _CP_LOG(info) << L"[warning] error list style\n";
+                    _CP_LOG << L"[warning] error list style\n";
                     continue;
                 }
 
@@ -476,14 +476,14 @@ void odf_document::Impl::parse_styles()
     {
         if (!content_xml_)
         {
-            _CP_LOG(info) << L"[warning] empty content xml\n";
+            _CP_LOG << L"[warning] empty content xml\n";
             break;
         }
 
         office_document_base * document = dynamic_cast<office_document_base *>( content_xml_->get_content() );
         if (!document)
         {
-            _CP_LOG(info) << L"[warning] empty document\n";
+            _CP_LOG << L"[warning] empty document\n";
             break;
         }
 
@@ -493,7 +493,7 @@ void odf_document::Impl::parse_styles()
             office_automatic_styles * automaticStyles = dynamic_cast<office_automatic_styles *>(document->office_automatic_styles_.get());
             if (!automaticStyles)
             {
-                _CP_LOG(info) << L"[warning] error reading automatic styles\n";
+                _CP_LOG << L"[warning] error reading automatic styles\n";
                 break;
             }
 
@@ -502,7 +502,7 @@ void odf_document::Impl::parse_styles()
                 style * styleInst = dynamic_cast<style*>(elm.get());
                 if (!styleInst)
                 {
-                    _CP_LOG(info) << L"[warning] error reading style\n";
+                    _CP_LOG << L"[warning] error reading style\n";
                     continue;
                 }
 
@@ -525,7 +525,7 @@ void odf_document::Impl::parse_styles()
                 text_list_style * listStyle = dynamic_cast<text_list_style *>(elm.get());
                 if (!listStyle)
                 {
-                    _CP_LOG(info) << L"[warning] error reading list style\n";
+                    _CP_LOG << L"[warning] error reading list style\n";
                     continue;
                 }
 
@@ -581,7 +581,7 @@ bool odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 	try
     {
-        _CP_LOG(info) << L"[info] convert content" << std::endl;
+        _CP_LOG << L"[info] convert content" << std::endl;
        
 		Context.start_document();
  		if (UpdateProgress(450000)) return false;
@@ -593,26 +593,26 @@ bool odf_document::Impl::xlsx_convert(oox::xlsx_conversion_context & Context)
         Context.end_document();
 		if (UpdateProgress(750000)) return false;
 
-        _CP_LOG(info) << L"[info] process styles" << std::endl;
+        _CP_LOG << L"[info] process styles" << std::endl;
         Context.process_styles();
  		if (UpdateProgress(800000)) return false;
       
     }
     catch(boost::exception & ex)
     {
-        _CP_LOG(info) << L"\n[error]:\n";
-        _CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(boost::diagnostic_information(ex))) << std::endl;
+        _CP_LOG << L"\n[error]:\n";
+        _CP_LOG << utf8_to_utf16(ansi_to_utf8(boost::diagnostic_information(ex))) << std::endl;
         throw;
     }
     catch(std::exception & ex)
     {
-        _CP_LOG(info) << L"\n[error]:\n";
-		_CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(ex.what())) << L"\n";
+        _CP_LOG << L"\n[error]:\n";
+        _CP_LOG << utf8_to_utf16(ansi_to_utf8(ex.what())) << L"\n";
         throw;
     }
     catch(...)
     {
-        _CP_LOG(info) << L"\n[error]: undefined\n";
+        _CP_LOG << L"\n[error]: undefined\n";
         throw;
     }
 
@@ -625,7 +625,7 @@ bool odf_document::Impl::pptx_convert(oox::pptx_conversion_context & Context)
 
     try
     {
-        _CP_LOG(info) << L"[info] convert content" << std::endl;
+        _CP_LOG << L"[info] convert content" << std::endl;
 	
 		Context.start_document();
 		if (UpdateProgress(450000)) return false;
@@ -645,19 +645,19 @@ bool odf_document::Impl::pptx_convert(oox::pptx_conversion_context & Context)
 	}
     catch(boost::exception & ex)
     {
-        _CP_LOG(info) << L"\n[error]:\n";
-        _CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(boost::diagnostic_information(ex))) << std::endl;
+        _CP_LOG << L"\n[error]:\n";
+        _CP_LOG << utf8_to_utf16(ansi_to_utf8(boost::diagnostic_information(ex))) << std::endl;
         throw;
     }
     catch(std::exception & ex)
     {
-        _CP_LOG(info) << L"\n[error]:\n";
-        _CP_LOG(info) << utf8_to_utf16(ansi_to_utf8(ex.what())) << std::endl;
+        _CP_LOG << L"\n[error]:\n";
+        _CP_LOG << utf8_to_utf16(ansi_to_utf8(ex.what())) << std::endl;
         throw;
     }
     catch(...)
     {
-        _CP_LOG(info) << L"\n[error]: undefined\n";
+        _CP_LOG << L"\n[error]: undefined\n";
         throw;
     }
 	return true;

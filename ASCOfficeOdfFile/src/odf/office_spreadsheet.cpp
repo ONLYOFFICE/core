@@ -44,7 +44,7 @@ void office_spreadsheet::docx_convert(oox::docx_conversion_context & Context)
 void office_spreadsheet::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
     Context.start_office_spreadsheet(this);
-    _CP_LOG(info) << L"[info][xlsx] process spreadsheet (" << content_.size() << L" elmements)" << std::endl;
+    _CP_LOG << L"[info][xlsx] process spreadsheet (" << content_.size() << L" elmements)" << std::endl;
     BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->xlsx_convert(Context);

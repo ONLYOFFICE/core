@@ -246,7 +246,7 @@ double text_format_properties_content::process_font_size_impl(const _CP_OPT(font
     }
     else
     {
-        _CP_LOG(info) << L"[docx_convert] convert font_size error (" << FontSize << ")\n";
+        _CP_LOG << L"[docx_convert] convert font_size error (" << FontSize << ")\n";
     }
 
     return -1.0;

@@ -104,7 +104,7 @@ void xlsx_table_state::start_cell(size_t columnsSpanned, size_t rowsSpanned)
 
     if ( current_columns_spaned() > 0 )
     {
-        _CP_LOG(info) << L"[warning] current columns spanned > 0\n";
+        _CP_LOG << L"[warning] current columns spanned > 0\n";
     }
 
     columns_spanned_num_ = static_cast<int>(columnsSpanned);
@@ -121,17 +121,13 @@ void xlsx_table_state::start_cell(size_t columnsSpanned, size_t rowsSpanned)
 
     if (rows_spanned_.size() <= current_table_column_)
     {
-#ifdef _DEBUG
-		_CP_LOG(info) << L"[warning] set_rows_spanned error\n";
-#endif
+        _CP_LOG << L"[warning] set_rows_spanned error\n";
     }
     else
     {
         if (rows_spanned_[current_table_column_].num() > 0)
         {
-#ifdef _DEBUG
-			_CP_LOG(info) << L"[warning] current rows spanned > 0\n";       
-#endif
+            _CP_LOG << L"[warning] current rows spanned > 0\n";
         }
         rows_spanned_[current_table_column_].num(static_cast<unsigned int>(rowsSpanned));
         rows_spanned_[current_table_column_].column_spanned(static_cast<unsigned int>(columnsSpanned));
@@ -213,7 +209,7 @@ unsigned int xlsx_table_state::current_rows_spanned(unsigned int Column) const
 {
     if (rows_spanned_.size() <= Column)
     {
-        _CP_LOG(info) << L"[warning] current_rows_spanned error\n";        
+        _CP_LOG << L"[warning] current_rows_spanned error\n";
         return 0;
     }
     else

@@ -94,9 +94,7 @@ std::wstring process_margin(const _CP_OPT(length_or_percent) & margin, double Mu
         }
         else
         {
-#ifdef _DEBUG
-			_CP_LOG(info) << L"[docx_convert] convert margin warning: invalid type (percent)\n";
-#endif
+            _CP_LOG << L"[docx_convert] convert margin warning: invalid type (percent)\n";
         }       
     }
     return L"";
@@ -443,7 +441,6 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context)
         {
             if (style_leader_style_)
             {
-                _CP_LOG(info) << L"[docx_convert] convert warning (w:tab/@w:leader)\n";
                 switch(style_leader_style_->get_type())
                 {
                 case line_style::None:

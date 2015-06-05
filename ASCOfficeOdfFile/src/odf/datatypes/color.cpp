@@ -46,7 +46,7 @@ const std::wstring color::get_hex_value() const
         
     }
 
-    //_CP_LOG(info) << "[warning] convert color error (" << color_ << L")\n";
+    //_CP_LOG << "[warning] convert color error (" << color_ << L")\n";
     return L"000000";
 }
 

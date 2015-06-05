@@ -137,7 +137,16 @@ namespace FileSystem {
         std::string sRes = pcRes;
         return stringUtf8ToWString (sRes);
     }
+    std::wstring Directory::CreateDirectoryWithUniqueName (const std::wstring & strFolderPathRoot)
+    {
+        std::string pcTemplate = stringWstingToUtf8String (strFolderPathRoot) + "/ascXXXXXX";
+        char *pcRes = mkdtemp(const_cast <char *> (pcTemplate.c_str()));
+        if (NULL == pcRes)
+            return _T("");
 
+        std::string sRes = pcRes;
+        return stringUtf8ToWString (sRes);
+    }
     bool Directory::CreateDirectories(LPCTSTR path)
 	{
         std::wstring pathWstring;

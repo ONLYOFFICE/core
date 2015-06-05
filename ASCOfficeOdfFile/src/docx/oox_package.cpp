@@ -8,7 +8,7 @@
 
 #include "mediaitems.h"
 #include "../../DesktopEditor/common/File.h"
-#include "../../DesktopEditor/raster/MetaFile/MetaFile.h"
+#include "../../DesktopEditor/raster/Metafile/MetaFile.h"
 
 namespace cpdoccore { 
 namespace oox {

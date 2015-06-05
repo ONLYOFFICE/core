@@ -25,8 +25,8 @@ namespace FileSystem {
         static bool			CreateDirectory(LPCTSTR path);
         static bool			CreateDirectory(const String& path);
         static bool			CreateDirectory(String strFolderPathRoot, String strFolderName);
-        static CString		CreateDirectoryWithUniqueName (CString & strFolderPathRoot);
-		static bool			CreateDirectories(LPCTSTR path);
+        static CString                  CreateDirectoryWithUniqueName (CString & strFolderPathRoot);
+        static bool			CreateDirectories(LPCTSTR path);
 
         static void DeleteDirectory(const CString& path, bool deleteRoot = true);
 
@@ -43,9 +43,9 @@ namespace FileSystem {
 
 #if defined (_WIN32) || defined(_WIN64)
 		static std::wstring GetFolderPath(const std::wstring & strFolderPath);
-		static std::wstring CreateDirectoryWithUniqueName (std::wstring & strFolderPathRoot);
-		static void			DeleteDirectory(std::wstring& path, bool deleteRoot = true);
+                static void DeleteDirectory(std::wstring& path, bool deleteRoot = true);
 #endif
+        static std::wstring CreateDirectoryWithUniqueName (const std::wstring & strFolderPathRoot);
 
         static bool IsExist(const std::wstring&  strFileName);
 	};

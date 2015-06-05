@@ -4,6 +4,8 @@
 #include <cpdoccore/CPNoncopyable.h>
 #include "pptx_comments.h"
 
+class CApplicationFonts;
+
 namespace cpdoccore { 
 namespace oox {
 
@@ -176,7 +178,7 @@ public:
 	void add_slideLayout(slide_content_ptr sheet);
 	void add_slideMaster(slide_content_ptr sheet);
 	
-	void set_media(mediaitems & _Mediaitems);    
+	void set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts);    
     void add_charts(chart_content_ptr chart);
     void add_theme (pptx_xml_theme_ptr theme);
 

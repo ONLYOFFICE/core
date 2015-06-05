@@ -41,19 +41,19 @@ xlsx_conversion_context(::cpdoccore::oox::package::xlsx_document * outputDocumen
 	mediaitems_(odf_document_->get_folder()),
 	xlsx_drawing_context_handle_(mediaitems_)
 {
-    fontsApplication_ = new CApplicationFonts();
+     applicationFonts_ = new CApplicationFonts();
 }
 xlsx_conversion_context::~xlsx_conversion_context()
 {
-    if (fontsApplication_)
-        delete fontsApplication_;
+    if (applicationFonts_)
+        delete applicationFonts_;
 }
 
 void xlsx_conversion_context::set_font_directory(std::wstring pathFonts)
 {
-    if (fontsApplication_ == NULL) return;
+    if (applicationFonts_ == NULL) return;
 
-    fontsApplication_->InitializeFromFolder(pathFonts);
+    applicationFonts_->InitializeFromFolder(pathFonts);
 }
 
 void xlsx_conversion_context::start_chart(std::wstring const & name)
@@ -198,7 +198,7 @@ void xlsx_conversion_context::end_document()
         }
 
         output_document_->get_xl_files().set_workbook( package::simple_element::create(L"workbook.xml", strm_workbook.str()) );
-        output_document_->get_xl_files().set_media(get_mediaitems());
+        output_document_->get_xl_files().set_media(get_mediaitems(), applicationFonts_);
 
         package::xl_drawings_ptr drawings = package::xl_drawings::create(xlsx_drawing_context_handle_.content());
         output_document_->get_xl_files().set_drawings(drawings);
@@ -482,7 +482,7 @@ std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
 		else
 			font_size =10;
 		
-        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, /*getDefaultDpi()*/96., 0, fontsApplication_->GenerateFontManager());
+        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, /*getDefaultDpi()*/96., 0, applicationFonts_->GenerateFontManager());
     }    
     return maxDigitSize_;
 }

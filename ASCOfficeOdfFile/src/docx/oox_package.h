@@ -11,6 +11,8 @@
 #include "../../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
+class CApplicationFonts;
+
 namespace cpdoccore { 
 namespace oox {
 
@@ -166,21 +168,20 @@ private:
 
 };
 
-/// \class media
 class media : public element
 {
 public:
-    media(mediaitems & _Mediaitems);
+    media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts);
 
 public:
     virtual void write(const std::wstring & RootPath);
 
 private:
-    mediaitems & mediaitems_;
+    mediaitems			& mediaitems_;
+	CApplicationFonts	* appFonts_;
         
 };
 
-/// \class charts
 class charts : public element
 {
 public:

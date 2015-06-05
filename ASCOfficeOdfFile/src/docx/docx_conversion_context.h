@@ -16,6 +16,8 @@
 #include "oox_conversion_context.h"
 #include "oox_chart_context.h"
 
+class CApplicationFonts;
+
 namespace cpdoccore { 
 
 namespace odf 
@@ -351,8 +353,11 @@ class docx_conversion_context : boost::noncopyable
 public:
     docx_conversion_context(package::docx_document * OutputDocument, odf::odf_document * OdfDocument);
 
-public:
-    std::wostream & output_stream()
+	~docx_conversion_context();
+
+    void set_font_directory(std::wstring pathFonts);
+	
+	std::wostream & output_stream()
     {
         if ( streams_man_)
             return streams_man_->get();
@@ -506,8 +511,9 @@ private:
         
     boost::shared_ptr<streams_man> streams_man_;
 
-    package::docx_document * output_document_;
-    odf::odf_document * odf_document_;
+    package::docx_document	* output_document_;
+    odf::odf_document		* odf_document_;
+    CApplicationFonts       * applicationFonts_;
 
 	std::vector<odf::_property> settings_properties_;
 

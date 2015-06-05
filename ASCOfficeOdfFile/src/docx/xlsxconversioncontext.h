@@ -134,7 +134,7 @@ private:
     const odf::office_element   *spreadsheet_;
     odf::odf_document           *odf_document_;
 
-    CApplicationFonts           *fontsApplication_;
+    CApplicationFonts           *applicationFonts_;
 
     std::vector<xlsx_xml_worksheet_ptr> sheets_;
     std::vector<oox_chart_context_ptr>  charts_;

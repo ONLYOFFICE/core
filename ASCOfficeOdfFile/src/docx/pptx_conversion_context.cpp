@@ -14,6 +14,8 @@
 
 #include "pptx_default_serializes.h"
 
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+
 namespace cpdoccore { 
 
 namespace odf 
@@ -28,9 +30,8 @@ namespace package
     class pptx_document;
 }
 
-pptx_conversion_context::
-pptx_conversion_context(::cpdoccore::oox::package::pptx_document * outputDocument,
-                        ::cpdoccore::odf::odf_document * odfDocument): 
+pptx_conversion_context::pptx_conversion_context(cpdoccore::oox::package::pptx_document * outputDocument,
+													cpdoccore::odf::odf_document * odfDocument): 
 	output_document_(outputDocument)
 	,odf_document_(odfDocument)
 	,pptx_text_context_(odf_document_->odf_context(),*this)
@@ -39,6 +40,18 @@ pptx_conversion_context(::cpdoccore::oox::package::pptx_document * outputDocumen
 	,pptx_slide_context_(*this/*, pptx_text_context_*/)
 	,last_idx_placeHolder(1)
 {
+    applicationFonts_ = new CApplicationFonts();
+}
+pptx_conversion_context::~pptx_conversion_context()
+{
+    if (applicationFonts_)
+        delete applicationFonts_;
+}
+void pptx_conversion_context::set_font_directory(std::wstring pathFonts)
+{
+    if (applicationFonts_ == NULL) return;
+
+    applicationFonts_->InitializeFromFolder(pathFonts);
 }
 //
 //void pptx_conversion_context::start_chart(std::wstring const & name)
@@ -265,7 +278,7 @@ void pptx_conversion_context::end_document()
 
 	output_document_->get_ppt_files().set_presentation(presentation_);
        
-	output_document_->get_ppt_files().set_media(get_mediaitems());
+	output_document_->get_ppt_files().set_media(get_mediaitems(), applicationFonts_);
 
 	output_document_->get_ppt_files().set_authors_comments(authors_comments_);
 }

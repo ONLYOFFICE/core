@@ -7,6 +7,8 @@
 #include "xlsx_drawings.h"
 #include "xlsx_comments.h"
 
+class CApplicationFonts;
+
 namespace cpdoccore { 
 namespace oox {
 namespace package {
@@ -147,7 +149,7 @@ public:
     void set_styles(element_ptr Element);
     void set_sharedStrings(element_ptr Element);
     void add_sheet(sheet_content_ptr sheet);
-    void set_media(mediaitems & _Mediaitems);    
+    void set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts);    
     void set_drawings(element_ptr Element);
 	void set_vml_drawings(element_ptr Element);
 	void set_comments(element_ptr Element);

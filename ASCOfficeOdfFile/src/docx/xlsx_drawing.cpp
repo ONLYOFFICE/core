@@ -150,6 +150,7 @@ void xlsx_serialize_shape(std::wostream & strm, _xlsx_drawing const & val)
                 CP_XML_NODE(L"xdr:cNvPr")
                 {
                     CP_XML_ATTR(L"id", val.id);//числовое значение val.rId
+
                     CP_XML_ATTR(L"name", val.name);
 
 					oox_serialize_hlink(CP_XML_STREAM(),val.hlinks);

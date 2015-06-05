@@ -10,6 +10,8 @@
 #include "docx_content_type.h"
 #include "oox_package.h"
 
+class CApplicationFonts;
+
 namespace cpdoccore { 
 namespace oox {
     
@@ -98,7 +100,7 @@ public:
     void set_numbering(element_ptr Element);
     void set_settings(element_ptr Element);
     bool has_numbering();
-    void set_media(mediaitems & _Mediaitems);
+    void set_media(mediaitems & _Mediaitems, CApplicationFonts *pAppFonts);
     void set_headers_footers(headers_footers & HeadersFooters);
     void set_notes(notes_context & notesContext);
     void set_comments(comments_context & commentsContext);

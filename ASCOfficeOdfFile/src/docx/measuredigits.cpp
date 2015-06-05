@@ -63,13 +63,11 @@ std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, dou
 {
     try 
     {
-#if _DEBUG
-		_CP_LOG(info) << "[info] : GetMaxDigitSizePixels...";
-#endif
+        _CP_LOG << "[info] : GetMaxDigitSizePixels...";
+
         std::pair<float, float> val = GetMaxDigitSizePixelsImpl(fontName, fontSize, dpi, fontStyle, pFontManager);
-#if _DEBUG
-		_CP_LOG(info) << "ok" << std::endl;
-#endif
+
+        _CP_LOG << "ok" << std::endl;
         return val;
     }
     catch(...)

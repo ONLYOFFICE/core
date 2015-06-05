@@ -103,7 +103,7 @@ void chart_build::add_grid(std::wstring const & className, std::wstring const & 
     }
     else
     {
-        _CP_LOG(warning) << "unexpected chart:grid" << std::endl;
+        _CP_LOG << "[warning] unexpected chart:grid" << std::endl;
     }
 }
 void chart_build::add_series(std::wstring const & cellRangeAddress,
@@ -126,7 +126,7 @@ void chart_build::add_point(unsigned int rep, std::wstring const & styleName)
     }
     else
     {
-        _CP_LOG(warning) << "unexpected chart:data-point" << std::endl;
+        _CP_LOG << "[warning] unexpected chart:data-point" << std::endl;
     }        
 }
 
@@ -369,7 +369,7 @@ bool process_build_chart::visit_rows(unsigned int repeated)
 //////////////////////////////////////////////////
 void process_build_chart::on_not_impl(std::string const & message)
 {
-    _CP_LOG(warning) << L"[process_draw_chart visitor] : not impliment for \"" << utf8_to_utf16(message) << L"\"" << std::endl;
+    _CP_LOG << L"[process_draw_chart visitor] : not impliment for \"" << utf8_to_utf16(message) << L"\"" << std::endl;
 }
 
 //////////////////////////////////////////////////

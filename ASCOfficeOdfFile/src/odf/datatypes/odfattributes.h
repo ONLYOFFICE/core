@@ -27,9 +27,8 @@ public:
         catch(odf::errors::invalid_attribute &)
         {         
             attributes::value_type val = attr.get(QualifiedName);
-#ifdef _DEBUG
-            _CP_LOG(error) << L"[warning] : invalud attribute value [" << QualifiedName << L":" << ( (val) ? (*val) : (L"?")) << L"]\n";
-#endif
+
+            _CP_LOG << L"[error] : invalud attribute value [" << QualifiedName << L":" << ( (val) ? (*val) : (L"?")) << L"]\n";
         }
         return optional_v_type();
     }

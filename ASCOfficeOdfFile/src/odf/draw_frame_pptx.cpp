@@ -299,7 +299,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 	}
     catch(...)
     {
-        _CP_LOG(error) << "convert draw::object error" << std::endl;        
+        _CP_LOG << "[error] : convert draw::object error" << std::endl;
     }
 }
 

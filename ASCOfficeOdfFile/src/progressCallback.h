@@ -5,7 +5,7 @@ typedef void (*OnProgressExCallback)( void* lpParam, long nID, long nPercent, sh
 
 struct ProgressCallback
 {
-  OnProgressCallback OnProgress;
-  OnProgressExCallback OnProgressEx;
+  OnProgressCallback    OnProgress;
+  OnProgressExCallback  OnProgressEx;
   void* caller;
 };

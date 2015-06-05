@@ -327,7 +327,7 @@ void oox_serialize_xfrm(std::wostream & strm, _oox_drawing const & val, std::wst
 				}
 			}else
 			{
-				_CP_LOG(info) << L"[error!!!] not set size object\n";
+                _CP_LOG << L"[error!!!] not set size object\n";
 			}
 		}
     }

@@ -52,13 +52,13 @@ public:
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const
     {
-        _CP_LOG(info) << L"[warning] use base text_to_stream\n";
+        _CP_LOG << L"[warning] use base text_to_stream\n";
         return _Wostream;
     }
 
     virtual ::std::wostream & xml_to_stream(::std::wostream & _Wostream) const
     {
-        _CP_LOG(info) << L"[warning] use base xml_to_stream\n";
+        _CP_LOG << L"[warning] use base xml_to_stream\n";
         return _Wostream;
     }
     document_context * getContext() { return context_; }

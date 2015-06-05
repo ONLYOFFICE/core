@@ -498,7 +498,7 @@ void oox_convert_transforms(std::wstring transformStr,std::vector<odf::_property
 	
 	BOOST_FOREACH(std::wstring const & t, transforms)
 	{			
-		//_CP_LOG(info) << "[info] : transform = " << t << L"\n";
+        //_CP_LOG << "[info] : transform = " << t << L"\n";
 		std::vector<std::wstring> transform;
 		
 		boost::algorithm::split(transform,t, boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
@@ -555,7 +555,7 @@ void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_con
 	
 	BOOST_FOREACH(std::wstring const & t, transforms)
 	{			
-		//_CP_LOG(info) << "[info] : transform = " << t << L"\n";
+        //_CP_LOG << "[info] : transform = " << t << L"\n";
 		std::vector<std::wstring> transform;
 		boost::algorithm::split(transform,t, boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
 
@@ -615,7 +615,7 @@ void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_con
 	
 	BOOST_FOREACH(std::wstring const & t, transforms)
 	{			
-		//_CP_LOG(info) << "[info] : transform = " << t << L"\n";
+        //_CP_LOG << "[info] : transform = " << t << L"\n";
 		std::vector<std::wstring> transform;
 		boost::algorithm::split(transform,t, boost::algorithm::is_any_of(L"("), boost::algorithm::token_compress_on);
 

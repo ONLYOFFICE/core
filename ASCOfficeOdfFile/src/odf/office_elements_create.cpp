@@ -76,17 +76,13 @@ bool office_element_creator::register_element(const std::wstring &ns, const std:
 
 void not_applicable_element(const std::wstring & Current, xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)
 {
-#ifdef _DEBUG
 	std::wstringstream ss;
-    ss << L"[warning] : element " << Ns << L":" << Name << " not applicable in current place";
+    ss << L"[error] : element " << Ns << L":" << Name << " not applicable in current place";
     if (!Current.empty())
         ss << L" ("<< Current << ")";
     ss << L"\n";
-    _CP_LOG(error) << ss.str();
-#endif
+    _CP_LOG << ss.str();
     
-    //if (Reader)
-    //    _skip_element::skip_element_.read_sax(Reader);
 }
 
 void not_applicable_element(const office_element * CurrentElm, xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name)

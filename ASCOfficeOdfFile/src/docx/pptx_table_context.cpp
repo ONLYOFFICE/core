@@ -163,7 +163,7 @@ void pptx_table_state::set_rows_spanned(unsigned int Column, unsigned int Val, u
 {
     if (rows_spanned_.size() <= Column)
     {
-        _CP_LOG(info) << L"[warning] set_rows_spanned error\n";
+        _CP_LOG << L"[warning] set_rows_spanned error\n";
     }
     else
     {
@@ -177,7 +177,7 @@ unsigned int pptx_table_state::current_rows_spanned(unsigned int Column) const
 {
     if (rows_spanned_.size() <= Column)
     {
-        _CP_LOG(info) << L"[warning] current_rows_spanned error\n";        
+        _CP_LOG << L"[warning] current_rows_spanned error\n";
         return 0;
     }
     else

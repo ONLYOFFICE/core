@@ -1218,7 +1218,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 	}
     catch(...)
     {
-        _CP_LOG(error) << "convert draw::object error" << std::endl;        
+        _CP_LOG << "[error] : convert draw::object error" << std::endl;
     }
 }
 

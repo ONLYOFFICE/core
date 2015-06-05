@@ -100,7 +100,7 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
     const std::wstring layoutName		= draw_page_attr_.page_layout_name_.get_value_or(L"");
     const std::wstring masterName		= draw_page_attr_.master_page_name_.get_value_or(L"");
 
-    _CP_LOG(info) << L"[info][xlsx] process page(slide) \"" << pageName /*L"" */<< L"\"" << std::endl;
+    _CP_LOG << L"[info][xlsx] process page(slide) \"" << pageName /*L"" */<< L"\"" << std::endl;
 
     Context.start_page(pageName, pageStyleName, layoutName,masterName);
 

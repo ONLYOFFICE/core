@@ -19,9 +19,7 @@ void _skip_element::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void _skip_element::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-    std::wstringstream ss;
-    ss << L"[warning] : skip element " << Ns << L":" << Name << "\n";
-    _CP_LOG(error) << ss.str();
+    _CP_LOG << L"[error] : skip element " << Ns << L":" << Name << "\n";
     
     if (Reader)
         skip_element_.read_sax(Reader);        
@@ -29,9 +27,7 @@ void _skip_element::add_child_element( xml::sax * Reader, const ::std::wstring &
 
 void _skip_element::add_text(const std::wstring & Text)
 {
-    std::wstringstream ss;
-    ss << L"[warning] : skip element text\n";
-    _CP_LOG(error) << ss.str();
+     _CP_LOG << L"[error] : skip element text\n";
 }
 
 }

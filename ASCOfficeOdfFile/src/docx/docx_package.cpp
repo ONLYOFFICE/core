@@ -140,7 +140,7 @@ void word_files::add_charts(chart_content_ptr chart)
 }
 bool word_files::has_numbering() 
 { 
-    return numbering_; 
+    return numbering_ ? true : false;
 }
 
 void word_files::set_headers_footers(headers_footers & HeadersFooters)

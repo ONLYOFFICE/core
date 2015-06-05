@@ -45,9 +45,7 @@ namespace cpdoccore
 					}
 					catch(...)
 					{
-#ifdef _DEBUG
-						_CP_LOG(warning) << L"[warning] : incorrect type convert \'" << Name << L"\'\n";
-#endif
+                        _CP_LOG << L"[warning] : incorrect type convert \'" << Name << L"\'\n";
 					}
 					return true;
 				}
@@ -104,9 +102,7 @@ namespace cpdoccore
 				}
 				catch(...)
 				{
-#ifdef _DEBUG
-					_CP_LOG(warning) << L"[warning] : could't read attribute \'" << QualifiedName << L"\'\n";
-#endif
+                    _CP_LOG << L"[warning] : could't read attribute \'" << QualifiedName << L"\'\n";
 				}
 			}
 

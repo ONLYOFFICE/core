@@ -3,6 +3,8 @@
 #include "../../graphics/GraphicsRenderer.h"
 #include "../../raster/BgraFrame.h"
 
+#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
+
 #include "Common/MetaFileRenderer.h"
 
 namespace MetaFile
@@ -193,12 +195,12 @@ namespace MetaFile
 		if (!pBgraData)
 			return;
 
-		DWORD alfa = 0xffffff;
+        _UINT32 alfa = 0xffffff;
 		//дефолтный тон должен быть прозрачным, а не белым 
 		//memset(pBgraData, 0xff, nWidth * nHeight * 4);
 		for (int i = 0; i < nWidth * nHeight; i++)
 		{
-			((DWORD*)pBgraData)[i] = alfa;
+            ((_UINT32*)pBgraData)[i] = alfa;
 		}
 		CBgraFrame oFrame;
 		oFrame.put_Data(pBgraData);

@@ -2544,14 +2544,14 @@ public:
 //			{
 //				case RtfStyle::stCharacter: 
 //					{
-//						RtfCharStylePtr m_oCurCharStyle = boost::shared_static_cast< RtfCharStyle, RtfStyle >( m_oCurStyle );
+//						RtfCharStylePtr m_oCurCharStyle = boost::static_pointer_cast< RtfCharStyle, RtfStyle >( m_oCurStyle );
 //						m_oCurCharStyle->m_oCharProp = oReader.m_oState->m_oCharProp;
 //						oDocument.m_oStyleTable.AddItem( m_oCurStyle );
 //						break;
 //					}
 //				case RtfStyle::stParagraph: 
 //					{
-//						RtfParagraphStylePtr m_oCurParStyle = boost::shared_static_cast< RtfParagraphStyle, RtfStyle >( m_oCurStyle );
+//						RtfParagraphStylePtr m_oCurParStyle = boost::static_pointer_cast< RtfParagraphStyle, RtfStyle >( m_oCurStyle );
 //						m_oCurParStyle->m_oCharProp = oReader.m_oState->m_oCharProp;
 //						m_oCurParStyle->m_oParProp = oReader.m_oState->m_oParagraphProp;
 //						oDocument.m_oStyleTable.AddItem( m_oCurStyle );
@@ -2559,7 +2559,7 @@ public:
 //					}
 //				case RtfStyle::stTable: 
 //					{
-//						RtfTableStylePtr m_oCurTableStyle = boost::shared_static_cast< RtfTableStyle, RtfStyle >( m_oCurStyle );
+//						RtfTableStylePtr m_oCurTableStyle = boost::static_pointer_cast< RtfTableStyle, RtfStyle >( m_oCurStyle );
 //						m_oCurTableStyle->m_oCharProp = oReader.m_oState->m_oCharProp;
 //						m_oCurTableStyle->m_oParProp = oReader.m_oState->m_oParagraphProp;
 //						if( PROP_DEF == m_oCurTableStyle->m_oParProp.m_nSpaceBetween )
@@ -2573,7 +2573,7 @@ public:
 //						{
 //							if( oStyle->m_eType == RtfStyle::stTable )
 //							{//определяем какой это conditionalFormating
-//								RtfTableStylePtr oStyleTable = boost::shared_static_cast<RtfTableStyle, RtfStyle>(oStyle);
+//								RtfTableStylePtr oStyleTable = boost::static_pointer_cast<RtfTableStyle, RtfStyle>(oStyle);
 //								if( 1 == m_oCurTableStyle->m_oParProp.m_bStyleFirstRow )
 //									oStyleTable->m_oFirstRow = m_oCurTableStyle;
 //								else if( 1 == m_oCurTableStyle->m_oParProp.m_bStyleLastRow )

@@ -2865,17 +2865,17 @@ void RtfCharStyle::Merge( RtfStylePtr oStyle )
 	RtfStyle::Merge( oStyle );
 	if( TYPE_RTF_PROPERTY_STYLE_CHAR == oStyle->GetType() )
 	{
-		RtfCharStylePtr oCharStyle = boost::shared_static_cast<RtfCharStyle, RtfStyle>( oStyle );
+        RtfCharStylePtr oCharStyle = boost::static_pointer_cast<RtfCharStyle, RtfStyle>( oStyle );
 		m_oCharProp.Merge( oCharStyle->m_oCharProp );
 	}
 	else if( TYPE_RTF_PROPERTY_STYLE_PARAGRAPH == oStyle->GetType() )
 	{
-		RtfParagraphStylePtr oParagraphStyle = boost::shared_static_cast<RtfParagraphStyle, RtfStyle>( oStyle );
+        RtfParagraphStylePtr oParagraphStyle = boost::static_pointer_cast<RtfParagraphStyle, RtfStyle>( oStyle );
 		m_oCharProp.Merge( oParagraphStyle->m_oCharProp );
 	}
 	else if( TYPE_RTF_PROPERTY_STYLE_TABLE == oStyle->GetType() )
 	{
-		RtfTableStylePtr oTableStyle = boost::shared_static_cast<RtfTableStyle, RtfStyle>( oStyle );
+        RtfTableStylePtr oTableStyle = boost::static_pointer_cast<RtfTableStyle, RtfStyle>( oStyle );
 		m_oCharProp.Merge( oTableStyle->m_oCharProp );
 	}
 }
@@ -2885,18 +2885,18 @@ void RtfParagraphStyle::Merge( RtfStylePtr oStyle )
 RtfStyle::Merge( oStyle );
 if( TYPE_RTF_PROPERTY_STYLE_CHAR == oStyle->GetType() )
 {
-	RtfCharStylePtr oCharStyle = boost::shared_static_cast<RtfCharStyle, RtfStyle>( oStyle );
+    RtfCharStylePtr oCharStyle = boost::static_pointer_cast<RtfCharStyle, RtfStyle>( oStyle );
 	m_oCharProp.Merge( oCharStyle->m_oCharProp );
 }
 else if( TYPE_RTF_PROPERTY_STYLE_PARAGRAPH == oStyle->GetType() )
 {
-	RtfParagraphStylePtr oParagraphStyle = boost::shared_static_cast<RtfParagraphStyle, RtfStyle>( oStyle );
+    RtfParagraphStylePtr oParagraphStyle = boost::static_pointer_cast<RtfParagraphStyle, RtfStyle>( oStyle );
 	m_oParProp.Merge( oParagraphStyle->m_oParProp );
 	m_oCharProp.Merge( oParagraphStyle->m_oCharProp );
 }
 else if( TYPE_RTF_PROPERTY_STYLE_TABLE == oStyle->GetType() )
 {
-	RtfTableStylePtr oTableStyle = boost::shared_static_cast<RtfTableStyle, RtfStyle>( oStyle );
+    RtfTableStylePtr oTableStyle = boost::static_pointer_cast<RtfTableStyle, RtfStyle>( oStyle );
 	m_oParProp.Merge( oTableStyle->m_oParProp );
 	m_oCharProp.Merge( oTableStyle->m_oCharProp );
 }
@@ -2906,18 +2906,18 @@ void RtfTableStyle::Merge( RtfStylePtr oStyle )
 RtfStyle::Merge( oStyle );
 if( TYPE_RTF_PROPERTY_STYLE_CHAR == oStyle->GetType() )
 {
-	RtfCharStylePtr oCharStyle = boost::shared_static_cast<RtfCharStyle, RtfStyle>( oStyle );
+    RtfCharStylePtr oCharStyle = boost::static_pointer_cast<RtfCharStyle, RtfStyle>( oStyle );
 	m_oCharProp.Merge( oCharStyle->m_oCharProp );
 }
 else if( TYPE_RTF_PROPERTY_STYLE_PARAGRAPH == oStyle->GetType() )
 {
-	RtfParagraphStylePtr oParagraphStyle = boost::shared_static_cast<RtfParagraphStyle, RtfStyle>( oStyle );
+    RtfParagraphStylePtr oParagraphStyle = boost::static_pointer_cast<RtfParagraphStyle, RtfStyle>( oStyle );
 	m_oParProp.Merge( oParagraphStyle->m_oParProp );
 	m_oCharProp.Merge( oParagraphStyle->m_oCharProp );
 }
 if( TYPE_RTF_PROPERTY_STYLE_TABLE == oStyle->GetType() )
 {
-	RtfTableStylePtr oTableStyle = boost::shared_static_cast<RtfTableStyle, RtfStyle>( oStyle );
+    RtfTableStylePtr oTableStyle = boost::static_pointer_cast<RtfTableStyle, RtfStyle>( oStyle );
 	m_oTableProp.Merge( oTableStyle->m_oTableProp );
 	m_oRowProp.Merge( oTableStyle->m_oRowProp );
 	m_oCellProp.Merge( oTableStyle->m_oCellProp );

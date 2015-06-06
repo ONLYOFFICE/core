@@ -360,7 +360,7 @@ bool ParagraphPropDestination::ExecuteCommand(RtfDocument& oDocument, RtfReader&
 				ITextItemPtr piCurContainer;
 				oParagraphReader.m_oParPropDest.m_oTextItems->GetItem( piCurContainer, 0 );
 				if( NULL != piCurContainer && TYPE_RTF_PARAGRAPH == piCurContainer->GetType() )
-					oReader.m_oState->m_oCurOldList.m_oText = boost::shared_static_cast<RtfParagraph, ITextItem>( piCurContainer ) ;
+                    oReader.m_oState->m_oCurOldList.m_oText = boost::static_pointer_cast<RtfParagraph, ITextItem>( piCurContainer ) ;
 			}
 		}
 	}

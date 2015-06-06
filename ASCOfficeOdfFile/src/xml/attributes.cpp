@@ -89,7 +89,7 @@ public:
                 if (!values_.access()[i->second])
                 {
                     res = false;
-                    std::wcerr << L"[attributes] : " << i->first << std::endl;            
+                    //std::wcerr << L"[attributes] : " << i->first << std::endl;
                 }
             }
         }

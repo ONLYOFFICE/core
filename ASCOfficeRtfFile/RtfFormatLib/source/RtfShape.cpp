@@ -666,7 +666,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 							aTempTextItems->GetItem( piCurTextItem, i );
 							if( NULL != piCurTextItem && TYPE_RTF_PARAGRAPH == piCurTextItem->GetType() )
 							{
-								RtfParagraphPtr poCurParagraph = boost::shared_static_cast< RtfParagraph, ITextItem >( piCurTextItem );
+								RtfParagraphPtr poCurParagraph = boost::static_pointer_cast< RtfParagraph, ITextItem >( piCurTextItem );
 								if( NULL != poCurParagraph )
 								{
 									bool bBreak = false;
@@ -681,7 +681,7 @@ CString RtfShape::RenderToOOX(RenderParameter oRenderParameter)
 											oNewParam.nType = RENDER_TO_OOX_PARAM_OLE_ONLY;
 											oNewParam.nValue = m_nID;
 
-											RtfOlePtr poCurOle = boost::shared_static_cast< RtfOle, IDocumentElement >( piCurIDocumentElement );
+											RtfOlePtr poCurOle = boost::static_pointer_cast< RtfOle, IDocumentElement >( piCurIDocumentElement );
 											if( NULL != poCurOle )
 											{
 												sOle.Append( poCurOle->RenderToOOX( oNewParam ) );

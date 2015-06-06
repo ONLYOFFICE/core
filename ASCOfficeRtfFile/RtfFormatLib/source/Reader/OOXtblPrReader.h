@@ -41,7 +41,7 @@ public:
 			if( true == oParam.oRtf->m_oStyleTable.GetStyle(sStyle, oStyle) )
 			{
 				RtfStylePtr oResultStyle = oParam.oRtf->m_oStyleTable.GetStyleResulting( oStyle );
-				RtfTableStylePtr oTableStyle = boost::shared_static_cast<RtfTableStyle, RtfStyle>( oResultStyle );
+				RtfTableStylePtr oTableStyle = boost::static_pointer_cast<RtfTableStyle, RtfStyle>( oResultStyle );
 				oOutputProperty = oTableStyle->m_oTableProp;
 				oOutputProperty.m_nStyle = oTableStyle->m_nID;
 			}

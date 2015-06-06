@@ -52,8 +52,8 @@ public:
 		{
 			if( m_aArray.size() > 0 && TYPE_RTF_CHAR == m_aArray[ m_aArray.size() - 1 ]->GetType() )//соединяем два текста с одинаковыми свойствами
 			{
-				RtfCharPtr oCurChar = boost::shared_static_cast<RtfChar,IDocumentElement>( piRend );
-				RtfCharPtr oPrevChar = boost::shared_static_cast<RtfChar,IDocumentElement>( m_aArray[ m_aArray.size() - 1 ] );
+                RtfCharPtr oCurChar = boost::static_pointer_cast<RtfChar,IDocumentElement>( piRend );
+                RtfCharPtr oPrevChar = boost::static_pointer_cast<RtfChar,IDocumentElement>( m_aArray[ m_aArray.size() - 1 ] );
 				if( oCurChar->m_oProperty == oPrevChar->m_oProperty )
 				{
 					oPrevChar->AddText( oCurChar->GetText() );

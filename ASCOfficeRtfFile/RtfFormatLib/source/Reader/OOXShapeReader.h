@@ -96,7 +96,7 @@ public:
 	{
 		if (m_vmlGroup == NULL) return false;
 
-		//RtfShapePtr oBaseShape = boost::shared_static_cast<RtfShape, RtfShapeGroup>( oOutput );
+		//RtfShapePtr oBaseShape = boost::static_pointer_cast<RtfShape, RtfShapeGroup>( oOutput );
 		//
 		//OOXShapeReader oShapeReader(m_vmlGroup);
 		//oShapeReader.Parse( oParam, oBaseShape );

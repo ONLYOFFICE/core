@@ -27,6 +27,7 @@ INCLUDEPATH += ../../../ServerComponents/DesktopEditor/freetype-2.5.2/include
 CONFIG(debug, debug|release){
 DEFINES +=  _DEBUG
 }
+
 SOURCES += \
     ../formulasconvert/formulasconvert_odf.cpp \
     ../formulasconvert/formulasconvert_oox.cpp \

@@ -15,7 +15,7 @@ bool read_doc_element::read_sax( xml::sax * Reader )
     
     if (!attrb->check())
     {
-        std::wcerr << " -- end (" << Reader->nodeQualifiedName() << ")\n";
+        //std::wcerr << " -- attr check error (" << Reader->nodeQualifiedName() << ")\n";
     }
 
 	//const std::wstring value = Reader->value();

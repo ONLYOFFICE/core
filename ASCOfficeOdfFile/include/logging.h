@@ -2,6 +2,7 @@
 
 #include <iosfwd>
 
+
 namespace cpdoccore
 {
     template <class Ostream>
@@ -14,17 +15,20 @@ namespace cpdoccore
         template <class T>
         Ostream & operator << (const T & t)
         {
-    #if _DEBUG
-            return (ostream_ << t );
-    #endif
+            ostream_ << t;
+            return ostream_;
         }
 
     private:
         Ostream & ostream_;
     };
 
-    extern logging< std::wostream > logging_cout;
-
+    extern logging< std::wostream >     logging_cout;
+    extern logging< std::wstringstream >logging_log;
 }
 
-#define _CP_LOG     cpdoccore::logging_cout
+#ifdef _DEBUG
+    #define _CP_LOG     cpdoccore::logging_cout
+#else
+    #define _CP_LOG     cpdoccore::logging_log
+#endif

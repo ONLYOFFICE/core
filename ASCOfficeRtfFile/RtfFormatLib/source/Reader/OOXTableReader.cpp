@@ -25,7 +25,7 @@ bool OOXTableReader::Parse( ReaderParameter oParam, RtfTable& oOutputTable )
 			RtfStylePtr oResultStyle = oParam.oRtf->m_oStyleTable.GetStyleResulting( oTempStyle );
 			if( RtfStyle::stTable == oResultStyle->m_eType )
 			{
-				poTableStyle = boost::shared_static_cast<RtfTableStyle, RtfStyle>( oResultStyle );
+				poTableStyle = boost::static_pointer_cast<RtfTableStyle, RtfStyle>( oResultStyle );
 				poTableStyle->m_oTableProp = oOutputTable.m_oProperty; //TableProperty ставим как уже прочитали чтобы не терять порядок применения свойст
 				//например индент последовательно затирает друг друга в стилях, numbering, просто в свойствах
 			}
@@ -88,7 +88,7 @@ void OOXTableReader::ApplyParagraphProperty( RtfTable& oOutputTable )
 						oCurCell->GetItem(pCurTextItem, k);
 						if( NULL != pCurTextItem && pCurTextItem->GetType() == TYPE_RTF_PARAGRAPH )
 						{
-							boost::shared_ptr<RtfParagraph> oCurParagraph = boost::shared_static_cast<RtfParagraph,ITextItem>( pCurTextItem );
+							boost::shared_ptr<RtfParagraph> oCurParagraph = boost::static_pointer_cast<RtfParagraph,ITextItem>( pCurTextItem );
 							oCurParagraph->m_oProperty.m_oFrame.ApplyParagraphProp( oOutputTable.m_oProperty );
 						}
 					}

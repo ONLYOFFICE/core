@@ -324,7 +324,7 @@ bool OOXRunReader::Parse( ReaderParameter oParam , RtfParagraph& oOutputParagrap
 	//применяем внешний стиль
 	if( NULL != poStyle && TYPE_RTF_PROPERTY_STYLE_CHAR == poStyle->GetType() )
 	{
-		RtfCharStylePtr oCharStyle = boost::shared_static_cast<RtfCharStyle, RtfStyle>( poStyle );
+		RtfCharStylePtr oCharStyle = boost::static_pointer_cast<RtfCharStyle, RtfStyle>( poStyle );
 		oNewProperty.Merge( oCharStyle->m_oCharProp );
 	}
 
@@ -770,7 +770,7 @@ bool OOXpPrReader::Parse( ReaderParameter oParam ,RtfParagraphProperty& oOutputP
 			if( oCurStyle->GetType() == TYPE_RTF_PROPERTY_STYLE_PARAGRAPH )
 			{
 				RtfStylePtr oResultStyle = oParam.oRtf->m_oStyleTable.GetStyleResulting( oCurStyle );
-				RtfParagraphStylePtr oParagraphStyle = boost::shared_static_cast<RtfParagraphStyle, RtfStyle>( oResultStyle );
+				RtfParagraphStylePtr oParagraphStyle = boost::static_pointer_cast<RtfParagraphStyle, RtfStyle>( oResultStyle );
 				oOutputProperty.Merge( oParagraphStyle->m_oParProp );
 				oOutputProperty.m_oCharProperty.Merge( oParagraphStyle->m_oCharProp );
 				oOutputProperty.m_nStyle = oCurStyle->m_nID;
@@ -1076,7 +1076,7 @@ bool OOXrPrReader::Parse( ReaderParameter oParam ,RtfCharProperty& oOutputProper
 			if( oCurStyle->GetType() == TYPE_RTF_PROPERTY_STYLE_CHAR )
 			{
 				oCurStyle = oParam.oRtf->m_oStyleTable.GetStyleResulting( oCurStyle );
-				RtfCharStylePtr oCharStyle = boost::shared_static_cast<RtfCharStyle, RtfStyle>( oCurStyle );
+				RtfCharStylePtr oCharStyle = boost::static_pointer_cast<RtfCharStyle, RtfStyle>( oCurStyle );
 				oOutputProperty.m_nCharStyle = oCharStyle->m_nID;
 				oOutputProperty.Merge( oCharStyle->m_oCharProp );
 			}

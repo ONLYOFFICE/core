@@ -880,7 +880,4 @@ unix {
     INSTALLS += target
 }
 
-DISTFILES += \
-    ../../../cximage/libpsd/ChangeLog \
-    ../../../cximage/libpsd/COPYING \
-    ../../../cximage/libpsd/CUSTOMIZE
+DISTFILES +=

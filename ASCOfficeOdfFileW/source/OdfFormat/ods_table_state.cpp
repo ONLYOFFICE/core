@@ -782,7 +782,7 @@ void ods_table_state::set_cell_array_formula(std::wstring & formula, std::wstrin
 	}
 }
 
-void ods_table_state::add_child_element(office_element_ptr & child_element)
+void ods_table_state::add_child_element( const office_element_ptr & child_element)
 {
 	office_table_->add_child_element(child_element);
 }

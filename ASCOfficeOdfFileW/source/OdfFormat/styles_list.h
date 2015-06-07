@@ -39,7 +39,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(  const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child);
+    virtual void add_child_element( const office_element_ptr & child);
 	virtual void serialize(std::wostream & strm);
 
     text_list_style_attr		text_list_style_attr_;
@@ -91,7 +91,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child);
+    virtual void add_child_element( const office_element_ptr & child);
 	virtual void serialize(std::wostream & strm);
 
     _CP_OPT(length)			text_space_before_;
@@ -125,7 +125,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child);
+    virtual void add_child_element( const office_element_ptr & child);
 	virtual void serialize(std::wostream & strm);
 
 	_CP_OPT(std::wstring) text_label_followed_by_;
@@ -156,7 +156,7 @@ public:
 	office_element_ptr style_list_level_properties_;
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child);
+    virtual void add_child_element( const office_element_ptr & child);
 	virtual void serialize(std::wostream & strm);
 
     text_list_level_style_attr			text_list_level_style_attr_;
@@ -193,7 +193,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);   
-	virtual void add_child_element(office_element_ptr & child);
+	virtual void add_child_element( const office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm);
 
@@ -227,7 +227,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);   
-	virtual void add_child_element(office_element_ptr & child);
+	virtual void add_child_element( const office_element_ptr & child);
 
 	virtual void serialize(std::wostream & strm);
 

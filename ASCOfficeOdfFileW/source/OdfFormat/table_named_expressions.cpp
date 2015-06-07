@@ -32,7 +32,7 @@ void table_named_expressions::create_child_element(const ::std::wstring & Ns, co
     }
 }
 
-void table_named_expressions::add_child_element(office_element_ptr & child_element)
+void table_named_expressions::add_child_element( const office_element_ptr & child_element)
 {
  	ElementType type = child_element->get_type();
 

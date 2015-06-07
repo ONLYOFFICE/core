@@ -30,7 +30,7 @@ void draw_base::create_child_element( const ::std::wstring & Ns, const ::std::ws
 	CP_CREATE_ELEMENT(content_);
 }
 
-void draw_base::add_child_element( office_element_ptr & child_element)
+void draw_base::add_child_element( const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }

@@ -71,7 +71,7 @@ void office_text::create_child_element( const ::std::wstring & Ns, const ::std::
         CP_NOT_APPLICABLE_ELM();
 }
 
-void office_text::add_child_element(office_element_ptr & child_element)
+void office_text::add_child_element( const office_element_ptr & child_element)
 {
     content_.push_back(child_element);
 }

@@ -165,7 +165,7 @@ void draw_custom_shape::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-void draw_custom_shape::add_child_element( office_element_ptr & child_element)
+void draw_custom_shape::add_child_element( const office_element_ptr & child_element)
 {
 	switch(child_element->get_type())
 	{
@@ -425,7 +425,7 @@ void draw_enhanced_geometry::create_child_element( const ::std::wstring & Ns, co
     }
 
 }
-void draw_enhanced_geometry::add_child_element(office_element_ptr & child_element)
+void draw_enhanced_geometry::add_child_element( const office_element_ptr & child_element)
 {
  	ElementType type = child_element->get_type();
 

@@ -23,7 +23,7 @@ void office_spreadsheet::create_child_element(const ::std::wstring & Ns, const :
     CP_CREATE_ELEMENT(content_);
 }
 
-void office_spreadsheet::add_child_element(office_element_ptr & child_element)
+void office_spreadsheet::add_child_element( const office_element_ptr & child_element)
 {
     content_.push_back(child_element);
 }

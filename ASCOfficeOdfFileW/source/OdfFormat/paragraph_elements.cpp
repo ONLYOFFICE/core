@@ -225,7 +225,7 @@ void text_span::create_child_element( const ::std::wstring & Ns, const ::std::ws
 {
     CP_CREATE_ELEMENT(paragraph_content_);
 }
-void text_span::add_child_element( office_element_ptr & child_element)
+void text_span::add_child_element( const office_element_ptr & child_element)
 {
 	paragraph_content_.push_back(child_element);
 }
@@ -266,7 +266,7 @@ void text_a::create_child_element( const ::std::wstring & Ns, const ::std::wstri
     CP_CREATE_ELEMENT(paragraph_content_);
 }
 
-void text_a::add_child_element( office_element_ptr & child_element)
+void text_a::add_child_element( const office_element_ptr & child_element)
 {
 	paragraph_content_.push_back(child_element);
 }
@@ -316,7 +316,7 @@ void text_note::create_child_element(  const ::std::wstring & Ns, const ::std::w
     else
         CP_NOT_APPLICABLE_ELM();
 }
-void text_note::add_child_element( office_element_ptr & child_element)
+void text_note::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -368,7 +368,7 @@ void text_ruby::create_child_element( const ::std::wstring & Ns, const ::std::ws
     else
         CP_NOT_APPLICABLE_ELM();
 }
-void text_ruby::add_child_element( office_element_ptr & child_element)
+void text_ruby::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -404,7 +404,7 @@ void text_title::create_child_element( const ::std::wstring & Ns, const ::std::w
 {
 }
 
-void text_title::add_child_element( office_element_ptr & child_element)
+void text_title::add_child_element( const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
@@ -438,7 +438,7 @@ void text_placeholder::create_child_element( const ::std::wstring & Ns, const ::
 {
 }
 
-void text_placeholder::add_child_element( office_element_ptr & child_element)
+void text_placeholder::add_child_element( const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
@@ -480,7 +480,7 @@ void text_page_number::create_child_element( const ::std::wstring & Ns, const ::
     CP_CREATE_ELEMENT(text_);
 }
 
-void text_page_number::add_child_element( office_element_ptr & child_element)
+void text_page_number::add_child_element( const office_element_ptr & child_element)
 {
 	text_.push_back(child_element);
 }
@@ -516,7 +516,7 @@ void text_page_count::create_child_element(const ::std::wstring & Ns, const ::st
     CP_CREATE_ELEMENT(text_);
 }
 
-void text_page_count::add_child_element( office_element_ptr & child_element)
+void text_page_count::add_child_element( const office_element_ptr & child_element)
 {
 	text_.push_back(child_element);
 }
@@ -552,7 +552,7 @@ void text_date::create_child_element(const ::std::wstring & Ns, const ::std::wst
 {
     CP_CREATE_ELEMENT(text_);
 }
-void text_date::add_child_element( office_element_ptr & child_element)
+void text_date::add_child_element( const office_element_ptr & child_element)
 {
 	text_.push_back(child_element);
 }
@@ -594,7 +594,7 @@ void text_time::create_child_element( const ::std::wstring & Ns, const ::std::ws
     CP_CREATE_ELEMENT(text_);
 }
 
-void text_time::add_child_element( office_element_ptr & child_element)
+void text_time::add_child_element( const office_element_ptr & child_element)
 {
 	text_.push_back(child_element);
 }
@@ -633,7 +633,7 @@ void text_file_name::create_child_element( const ::std::wstring & Ns, const ::st
     CP_CREATE_ELEMENT(text_);
 }
 
-void text_file_name::add_child_element( office_element_ptr & child_element)
+void text_file_name::add_child_element( const office_element_ptr & child_element)
 {
 	text_.push_back(child_element);
 }
@@ -667,7 +667,7 @@ void text_sequence::create_child_element(const ::std::wstring & Ns, const ::std:
 {
     CP_CREATE_ELEMENT(text_);
 }
-void text_sequence::add_child_element( office_element_ptr & child_element)
+void text_sequence::add_child_element( const office_element_ptr & child_element)
 {
 	text_.push_back(child_element);
 }
@@ -687,7 +687,7 @@ void text_sheet_name::create_child_element(const ::std::wstring & Ns, const ::st
 {
     CP_NOT_APPLICABLE_ELM();
 }
-void text_sheet_name::add_child_element( office_element_ptr & child_element)
+void text_sheet_name::add_child_element( const office_element_ptr & child_element)
 {
 	text_.push_back(child_element);
 }

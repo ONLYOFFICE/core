@@ -59,7 +59,7 @@ void style_tab_stops::serialize(std::wostream & strm)
 		}
 	}
 }
-void style_tab_stops::add_child_element( office_element_ptr & child_element)
+void style_tab_stops::add_child_element( const office_element_ptr & child_element)
 {
 	style_tab_stops_.push_back(child_element);
 }
@@ -127,7 +127,7 @@ void paragraph_format_properties::create_child_element(const ::std::wstring & Ns
 		//	CP_NOT_APPLICABLE_ELM();
     }
 }
-void paragraph_format_properties::add_child_element( office_element_ptr & child_element)
+void paragraph_format_properties::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 

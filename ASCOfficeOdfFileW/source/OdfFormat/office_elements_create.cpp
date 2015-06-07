@@ -80,7 +80,7 @@ void not_applicable_element(const std::wstring & Current,const std::wstring & Ns
     if (!Current.empty())
         ss << L" ("<< Current << ")";
     ss << L"\n";
-    _CP_LOG(error) << ss.str();
+    _CP_LOG << ss.str();
 #endif
     
 }

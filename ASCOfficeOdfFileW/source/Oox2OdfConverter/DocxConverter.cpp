@@ -437,7 +437,7 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 	if (oox_run == NULL) return;
 	
 	//test for break - 2 first element ЭТОТ элемент НУЖНО вытащить отдельно !!!
-    for(unsigned int i = 0; i < (std::min) (2,oox_run->m_arrItems.size()); ++i)
+    for(unsigned int i = 0; i < (std::min) ( (size_t)2, oox_run->m_arrItems.size()); ++i)
 	{
 		if (oox_run->m_arrItems[i]->getType() == OOX::et_w_lastRenderedPageBreak)
 		{

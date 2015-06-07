@@ -94,7 +94,7 @@ void table_table_source::create_child_element(const ::std::wstring & Ns, const :
 {
     CP_NOT_APPLICABLE_ELM();
 }
-void table_table_source::add_child_element( office_element_ptr & child_element)
+void table_table_source::add_child_element( const office_element_ptr & child_element)
 {
 }
 void table_table_source::serialize(std::wostream & _Wostream)
@@ -148,7 +148,7 @@ void table_table::create_child_element(const ::std::wstring & Ns, const ::std::w
 }
 
 
-void table_table::add_child_element(office_element_ptr & child_element)
+void table_table::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -213,7 +213,7 @@ void table_table_column::create_child_element( const ::std::wstring & Ns, const 
 {
     CP_NOT_APPLICABLE_ELM();
 }
-void table_table_column::add_child_element(office_element_ptr & child_element)
+void table_table_column::add_child_element( const office_element_ptr & child_element)
 {
 }
 void table_table_column::serialize(std::wostream & _Wostream)
@@ -241,7 +241,7 @@ void table_table_columns::create_child_element(const ::std::wstring & Ns, const 
     else
         CP_NOT_APPLICABLE_ELM();
 }
-void table_table_columns::add_child_element(office_element_ptr & child_element)
+void table_table_columns::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -276,7 +276,7 @@ void table_table_header_columns::create_child_element( const ::std::wstring & Ns
     else
         CP_NOT_APPLICABLE_ELM();
 }
-void table_table_header_columns::add_child_element(office_element_ptr & child_element)
+void table_table_header_columns::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -312,7 +312,7 @@ void table_columns::create_child_element( const ::std::wstring & Ns, const ::std
     else
         not_applicable_element(L"table-columns",  Ns, Name);
 }
-void table_columns::add_child_element(office_element_ptr & child_element)
+void table_columns::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -364,7 +364,7 @@ void table_columns_no_group::create_child_element(  const ::std::wstring & Ns, c
     else
         not_applicable_element(L"table-columns-no-group", Ns, Name);
 }
-void table_columns_no_group::add_child_element(office_element_ptr & child_element)
+void table_columns_no_group::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -410,7 +410,7 @@ void table_table_column_group::create_child_element( const ::std::wstring & Ns, 
 {
     table_columns_and_groups_.create_child_element(Ns, Name, getContext());
 }
-void table_table_column_group::add_child_element(office_element_ptr & child_element)
+void table_table_column_group::add_child_element( const office_element_ptr & child_element)
 {
 	table_columns_and_groups_.add_child_element(child_element,getContext());
 }
@@ -453,7 +453,7 @@ void table_columns_and_groups::create_child_element(const ::std::wstring & Ns, c
         not_applicable_element(L"table-columns-and-groups", Ns, Name);
 
 }
-void table_columns_and_groups::add_child_element(office_element_ptr & child_element, odf_conversion_context * Context)
+void table_columns_and_groups::add_child_element( const office_element_ptr & child_element, odf_conversion_context * Context)
 {
 	ElementType type = child_element->get_type();
 
@@ -489,7 +489,7 @@ void table_table_cell_content::create_child_element(  const ::std::wstring & Ns,
 {
 	CP_CREATE_ELEMENT_SIMPLE(text_content_);
 }
-void table_table_cell_content::add_child_element( office_element_ptr & child_element)
+void table_table_cell_content::add_child_element( const office_element_ptr & child_element)
 {
 	text_content_.push_back(child_element);
 }
@@ -511,7 +511,7 @@ void table_table_cell::create_child_element( const ::std::wstring & Ns, const ::
     table_table_cell_content_.create_child_element(Ns, Name, getContext());
 }
 
-void table_table_cell::add_child_element(office_element_ptr & child_element)
+void table_table_cell::add_child_element( const office_element_ptr & child_element)
 {
 	table_table_cell_content_.add_child_element(child_element);
 }
@@ -539,7 +539,7 @@ void table_covered_table_cell::create_child_element(  const ::std::wstring & Ns,
 	empty_ = false;
     table_table_cell_content_.create_child_element( Ns, Name, getContext());
 }
-void table_covered_table_cell::add_child_element(office_element_ptr & child_element)
+void table_covered_table_cell::add_child_element( const office_element_ptr & child_element)
 {
 	empty_ = false;
 	table_table_cell_content_.add_child_element(child_element);
@@ -572,7 +572,7 @@ void table_table_row::create_child_element( const ::std::wstring & Ns, const ::s
     else
         CP_NOT_APPLICABLE_ELM();    
 }
-void table_table_row::add_child_element(office_element_ptr & child_element)
+void table_table_row::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -604,7 +604,7 @@ void table_table_rows::create_child_element(  const ::std::wstring & Ns, const :
 {
 	CP_CREATE_ELEMENT(table_table_row_);
 }
-void table_table_rows::add_child_element(office_element_ptr & child_element)
+void table_table_rows::add_child_element( const office_element_ptr & child_element)
 {
 	table_table_row_.push_back(child_element);    
 }
@@ -636,7 +636,7 @@ void table_table_header_rows::create_child_element( const ::std::wstring & Ns, c
     else
         CP_NOT_APPLICABLE_ELM();    
 }
-void table_table_header_rows::add_child_element(office_element_ptr & child_element)
+void table_table_header_rows::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -673,7 +673,7 @@ void table_rows::create_child_element(const ::std::wstring & Ns, const ::std::ws
         not_applicable_element(L"table-rows", Ns, Name);        
     }
 }
-void table_rows::add_child_element(office_element_ptr & child_element)
+void table_rows::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -725,7 +725,7 @@ void table_rows_no_group::create_child_element( const ::std::wstring & Ns, const
     else
         not_applicable_element(L"table-rows-no-group",Ns, Name);
 }
-void table_rows_no_group::add_child_element(office_element_ptr & child_element)
+void table_rows_no_group::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -780,7 +780,7 @@ void table_rows_and_groups::create_child_element( const ::std::wstring & Ns, con
     else
         not_applicable_element(L"table-rows-and-groups", Ns, Name);
 }
-void table_rows_and_groups::add_child_element(office_element_ptr & child_element, odf_conversion_context * Context)
+void table_rows_and_groups::add_child_element( const office_element_ptr & child_element, odf_conversion_context * Context)
 {
 	ElementType type = child_element->get_type();
 
@@ -814,7 +814,7 @@ void table_table_row_group::create_child_element(const ::std::wstring & Ns, cons
     table_rows_and_groups_.create_child_element(Ns, Name, getContext());
 }
 
-void table_table_row_group::add_child_element(office_element_ptr & child_element)
+void table_table_row_group::add_child_element( const office_element_ptr & child_element)
 {
     table_rows_and_groups_.add_child_element(child_element, getContext());
 }
@@ -844,7 +844,7 @@ void table_shapes::create_child_element(const ::std::wstring & Ns, const ::std::
 	create_element(Ns,Name,content_,getContext());
 }
 
-void table_shapes::add_child_element(office_element_ptr & child_element)
+void table_shapes::add_child_element( const office_element_ptr & child_element)
 {
     content_.push_back(child_element);
 }

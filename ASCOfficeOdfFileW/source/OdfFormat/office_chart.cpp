@@ -34,7 +34,7 @@ void office_chart::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-void office_chart::add_child_element(office_element_ptr & child_element)
+void office_chart::add_child_element( const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
@@ -74,7 +74,7 @@ void chart_chart::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-void chart_chart::add_child_element(office_element_ptr & child_element)
+void chart_chart::add_child_element( const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
@@ -114,7 +114,7 @@ void chart_title::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-void chart_title::add_child_element(office_element_ptr & child_element)
+void chart_title::add_child_element( const office_element_ptr & child_element)
 {
 	text_p_ = child_element;
 }
@@ -143,7 +143,7 @@ void chart_subtitle::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-void chart_subtitle::add_child_element(office_element_ptr & child_element)
+void chart_subtitle::add_child_element( const office_element_ptr & child_element)
 {
 	text_p_ = child_element;
 }
@@ -172,7 +172,7 @@ void chart_footer::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-void chart_footer::add_child_element(office_element_ptr & child_element)
+void chart_footer::add_child_element( const office_element_ptr & child_element)
 {
 	text_p_ = child_element;
 }
@@ -244,7 +244,7 @@ void chart_plot_area::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-void chart_plot_area::add_child_element(office_element_ptr & child_element)
+void chart_plot_area::add_child_element( const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
@@ -322,7 +322,7 @@ void chart_axis::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-void chart_axis::add_child_element(office_element_ptr & child_element)
+void chart_axis::add_child_element( const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
@@ -400,7 +400,7 @@ void chart_series::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-void chart_series::add_child_element(office_element_ptr & child_element)
+void chart_series::add_child_element( const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
@@ -496,7 +496,7 @@ void chart_regression_curve::serialize(std::wostream & _Wostream)
 		}
 	}
 }
-void chart_regression_curve::add_child_element(office_element_ptr & child_element)
+void chart_regression_curve::add_child_element( const office_element_ptr & child_element)
 {
 	chart_equation_ = child_element;
 }

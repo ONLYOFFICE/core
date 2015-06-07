@@ -66,10 +66,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeCalcextColorScaleEntry;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element){}
 
 	virtual void serialize(std::wostream & _Wostream);
 
@@ -88,10 +88,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeCalcextFormattingEntry;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element){}
 
 	virtual void serialize(std::wostream & _Wostream);
 
@@ -109,10 +109,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeCalcextIconSet;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
-	virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( office_element_ptr & child_element);
 
 	virtual void serialize(std::wostream & _Wostream);
 	
@@ -132,10 +132,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeCalcextDataBar;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
-	virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( office_element_ptr & child_element);
 
 	virtual void serialize(std::wostream & _Wostream);
 	
@@ -144,7 +144,7 @@ public:
 private:
     office_element_ptr_array content_;//entries
 };
-CP_REGISTER_OFFICE_ELEMENT2(calcext_data_bar);
+CP_REGISTER_OFFICE_ELEMENT2(calcext_data_bar)
 
 /// \brief  calcext:color-scale
 class calcext_color_scale: public office_element_impl<calcext_color_scale>
@@ -154,17 +154,17 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeCalcextColorScale;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
-	virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( office_element_ptr & child_element);
 
 	virtual void serialize(std::wostream & _Wostream);
 
 private:
     office_element_ptr_array content_;//color_scale_entries
 };
-CP_REGISTER_OFFICE_ELEMENT2(calcext_color_scale);
+CP_REGISTER_OFFICE_ELEMENT2(calcext_color_scale)
 
 /// \brief  calcext:date-is
 class calcext_date_is: public office_element_impl<calcext_date_is>
@@ -174,16 +174,16 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeCalcextDateIs;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element){}
 
 	virtual void serialize(std::wostream & _Wostream);
 
 	calcext_date_is_attr calcext_date_is_attr_;
 };
-CP_REGISTER_OFFICE_ELEMENT2(calcext_date_is);
+CP_REGISTER_OFFICE_ELEMENT2(calcext_date_is)
 
 /// \brief  calcext:condition
 class calcext_condition: public office_element_impl<calcext_condition>
@@ -193,16 +193,16 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeCalcextCondition;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+    virtual void add_child_element( office_element_ptr & child_element){}
 
 	virtual void serialize(std::wostream & _Wostream);
 
 	calcext_condition_attr calcext_condition_attr_;
 };
-CP_REGISTER_OFFICE_ELEMENT2(calcext_condition);
+CP_REGISTER_OFFICE_ELEMENT2(calcext_condition)
 
 /// \brief  calcext:conditional-format
 class calcext_conditional_format: public office_element_impl<calcext_conditional_format>
@@ -212,10 +212,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeCalcextConditionalFormat;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
-	virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( office_element_ptr & child_element);
 
 	virtual void serialize(std::wostream & _Wostream);
 	
@@ -225,7 +225,7 @@ private:
     office_element_ptr_array content_;
 
 };
-CP_REGISTER_OFFICE_ELEMENT2(calcext_conditional_format);
+CP_REGISTER_OFFICE_ELEMENT2(calcext_conditional_format)
 
 /// \brief  calcext:conditional-formats
 class calcext_conditional_formats: public office_element_impl<calcext_conditional_formats>
@@ -235,10 +235,10 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeCalcextConditionalFormats;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
-	virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( office_element_ptr & child_element);
 
 	virtual void serialize(std::wostream & _Wostream);
 	
@@ -247,6 +247,6 @@ private:
     office_element_ptr_array content_;
 
 };
-CP_REGISTER_OFFICE_ELEMENT2(calcext_conditional_formats);
+CP_REGISTER_OFFICE_ELEMENT2(calcext_conditional_formats)
 }
 }

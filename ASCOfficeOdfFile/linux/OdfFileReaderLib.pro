@@ -6,7 +6,7 @@
 
 QT       -= core gui
 
-TARGET = OdfFileReader
+TARGET = OdfFileReaderLib
 TEMPLATE = lib
 CONFIG += staticlib
 

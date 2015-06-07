@@ -18,7 +18,8 @@
 //	shapetypePlaqueTabs,
 //	shapetypeSquareTabs,
 //	shapetypeTeardrop,
-#include "..\oox_shape_defines.h"
+
+#include "../oox_shape_defines.h"
 
 namespace cpdoccore 
 {

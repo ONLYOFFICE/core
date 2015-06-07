@@ -20,7 +20,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeOfficeSpreadsheet;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	office_element_ptr_array & getContent(){return content_;}
 

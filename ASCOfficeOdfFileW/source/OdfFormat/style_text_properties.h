@@ -181,7 +181,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleTextProperties;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
     
 	void apply_from(const style_text_properties * Other);
 

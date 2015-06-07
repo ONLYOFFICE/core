@@ -59,7 +59,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextH;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
@@ -93,7 +93,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextP;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
@@ -117,7 +117,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextList;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 public:
 
@@ -147,7 +147,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSoftPageBreak;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element( office_element_ptr & child_element){}
@@ -179,7 +179,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSection;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
@@ -219,7 +219,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextSectionSource;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element( office_element_ptr & child_element){}
@@ -243,7 +243,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextTableOfContent;
     
-	CPDOCCORE_DEFINE_VISITABLE();
+	CPDOCCORE_DEFINE_VISITABLE()
     
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
@@ -269,7 +269,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextIndexBody;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
     
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
@@ -292,7 +292,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextIndexTitle;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
   	
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);

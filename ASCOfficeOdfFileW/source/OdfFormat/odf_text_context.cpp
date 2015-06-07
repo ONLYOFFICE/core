@@ -78,7 +78,7 @@ void odf_text_context::set_single_object(bool val, style_paragraph_properties *p
 
 }
 
-void odf_text_context::add_text_content(std::wstring & text)
+void odf_text_context::add_text_content(const std::wstring & text)
 {
 	if (current_level_.size() < 1) return;
 
@@ -145,7 +145,7 @@ void odf_text_context::add_text_space(int count)
 	if (current_level_.size()>0)
 		current_level_.back().elm->add_child_element(s_elm);
 }
-void odf_text_context::set_symbol_font(std::wstring & font)
+void odf_text_context::set_symbol_font(const std::wstring & font)
 {
 	if (text_properties_ == NULL) return;
 

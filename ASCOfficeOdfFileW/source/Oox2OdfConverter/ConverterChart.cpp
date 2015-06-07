@@ -13,7 +13,7 @@
 #include "../OdfFormat/style_text_properties.h"
 #include "../OdfFormat/style_paragraph_properties.h"
 
-#include "../../../Common/DocxFormat/source/XlsxFormat/Xlsx.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 
 
 namespace Oox2Odf

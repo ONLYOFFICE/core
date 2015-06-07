@@ -38,7 +38,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeDrawImage;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
@@ -53,7 +53,7 @@ public:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(draw_image);
+CP_REGISTER_OFFICE_ELEMENT2(draw_image)
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 
  //объект рисования не нужен .. нужно только место для фрэйма - сам чарт в другом месте
@@ -64,7 +64,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeDrawChart;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
@@ -79,7 +79,7 @@ public:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(draw_chart);
+CP_REGISTER_OFFICE_ELEMENT2(draw_chart)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 class draw_frame : public draw_base
@@ -89,7 +89,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeDrawFrame;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
@@ -109,7 +109,7 @@ public:
     office_element_ptr draw_contour_; // draw-contour-polygon or draw-contour-path
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(draw_frame);
+CP_REGISTER_OFFICE_ELEMENT2(draw_frame)
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////
 class draw_g : public office_element_impl<draw_g>
@@ -119,7 +119,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeDrawG;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
@@ -131,7 +131,7 @@ public:
     office_element_ptr_array content_;
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(draw_g);
+CP_REGISTER_OFFICE_ELEMENT2(draw_g)
 // draw-text-box-attlist
 class draw_text_box_attlist
 {
@@ -154,7 +154,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeDrawTextBox;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
@@ -165,7 +165,7 @@ public:
     office_element_ptr_array content_;
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(draw_text_box);
+CP_REGISTER_OFFICE_ELEMENT2(draw_text_box)
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // draw:object
 class draw_object : public office_element_impl<draw_object>
@@ -175,7 +175,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeDrawObject;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
@@ -186,7 +186,7 @@ public:
 	//draw:notify-on-update-of-ranges
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(draw_object);
+CP_REGISTER_OFFICE_ELEMENT2(draw_object)
 
 // draw:object-ole
 class draw_object_ole : public office_element_impl<draw_object>
@@ -196,7 +196,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeDrawObjectOle;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
@@ -207,7 +207,7 @@ public:
 	_CP_OPT(std::wstring)	draw_class_id_;
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(draw_object_ole);
+CP_REGISTER_OFFICE_ELEMENT2(draw_object_ole)
 
 }
 }

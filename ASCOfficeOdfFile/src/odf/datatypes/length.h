@@ -44,14 +44,15 @@ private:
     unit unit_;
 };
 
-std::wostream & operator << (std::wostream & _Wostream, const length::unit _Unit);
-std::wostream & operator << (std::wostream & _Wostream, const length & _Length);
+std::wostream & operator<< (std::wostream & _Wostream, const length::unit _Unit);
+std::wostream & operator<< (std::wostream & _Wostream, const length & _Length);
 
-length operator + (length & _Length1, length & _Length2);
-length operator - (length & _Length1, length & _Length2);
-length operator / (length & _Length1, double val);
-length operator * (length & _Length1, double val);
-bool operator == (length & _Length1, length & _Length2);
+length operator+ (length & _Length1, double val);
+length operator+ (length & _Length1, length & _Length2);
+length operator- (length & _Length1, length & _Length2);
+length operator/ (length & _Length1, double val);
+length operator* (length & _Length1, double val);
+bool operator== (length & _Length1, length & _Length2);
 
 typedef length coordinate;
 

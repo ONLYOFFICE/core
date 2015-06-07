@@ -54,7 +54,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleTabStop;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element(office_element_ptr & child){}
@@ -70,12 +70,12 @@ public:
     _CP_OPT(line_width)			style_leader_width_;
     _CP_OPT(style_leader_color) style_leader_color_;
 
-    _CP_OPT( ::std::wstring )	style_leader_text_;
+    _CP_OPT( std::wstring )	style_leader_text_;
     _CP_OPT( style_ref )		style_leader_text_style_;            
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_tab_stop);
+CP_REGISTER_OFFICE_ELEMENT2(style_tab_stop)
 
 /// \class  style_tab_stops
 class style_tab_stops : public office_element_impl<style_tab_stops>
@@ -86,7 +86,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleTabStops;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
     
     size_t size() const { return style_tab_stops_.size(); }
 
@@ -98,7 +98,7 @@ public:
     office_element_ptr_array style_tab_stops_;
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_tab_stops);
+CP_REGISTER_OFFICE_ELEMENT2(style_tab_stops)
 
 /// \class  style_drop_cap
 class style_drop_cap : public office_element_impl<style_drop_cap>
@@ -109,7 +109,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleDropCap;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element(office_element_ptr & child){}
@@ -124,7 +124,7 @@ public:
         
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_drop_cap);
+CP_REGISTER_OFFICE_ELEMENT2(style_drop_cap)
 
 /// \class  style_background_image
 ///         style:background-image
@@ -136,7 +136,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleBackgroundImage;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element(office_element_ptr & child){}
@@ -153,7 +153,7 @@ public:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_background_image);
+CP_REGISTER_OFFICE_ELEMENT2(style_background_image)
 
 /// \class  paragraph_format_properties
 class paragraph_format_properties 
@@ -341,10 +341,10 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleParagraphProperties;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-	virtual void add_child_element(office_element_ptr & child);
+    virtual void add_child_element( office_element_ptr & child);
 
 	void apply_from(style_paragraph_properties * Other);
 
@@ -357,6 +357,6 @@ private:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_paragraph_properties);
+CP_REGISTER_OFFICE_ELEMENT2(style_paragraph_properties)
 
 } }

@@ -22,7 +22,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTableDatabaseRanges;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
@@ -44,7 +44,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTableDatabaseRange;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element( office_element_ptr & child_element){}
@@ -71,7 +71,7 @@ CP_REGISTER_OFFICE_ELEMENT2(table_database_range);
 //    static const xml::NodeType xml_type = xml::typeElement;
 //    static const ElementType type = typeTableNamedExpression;
 //
-//    CPDOCCORE_DEFINE_VISITABLE();
+//    CPDOCCORE_DEFINE_VISITABLE()
 //
 //	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
 //	virtual void add_child_element( office_element_ptr & child_element){}

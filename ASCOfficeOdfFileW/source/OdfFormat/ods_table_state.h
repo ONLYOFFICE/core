@@ -210,7 +210,7 @@ public:
 
 	void set_cell_format_value(office_value_type::type value_type);
     void set_cell_type(int type);
-	void set_cell_value(std::wstring & value, bool need_cash = false);	
+    void set_cell_value(const std::wstring & value, bool need_cash = false);
 	void set_cell_text(odf_text_context *text_context, bool cash_value = false);
 	void set_cell_formula(std::wstring &formula);
 	void set_cell_array_formula(std::wstring & formula, std::wstring ref);

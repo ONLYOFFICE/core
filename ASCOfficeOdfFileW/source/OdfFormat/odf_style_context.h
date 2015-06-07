@@ -40,7 +40,7 @@ public:
 	void process_office_styles			(office_element_ptr root );
 
 	void reset_defaults();	
-	void add_default(odf_style_state_ptr & state)	{current_default_styles_.push_back(state);}
+    void add_default(const odf_style_state_ptr & state)	{current_default_styles_.push_back(state);}
 	
 	std::wstring			find_odf_style_name_default	(style_family::type family);
 	office_element_ptr		find_odf_style_default		(style_family::type family);

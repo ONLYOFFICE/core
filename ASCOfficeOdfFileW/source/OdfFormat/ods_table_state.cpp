@@ -29,7 +29,7 @@ int ods_table_state::tmp_row_ =0;
 namespace utils//////////////////////////////////////////// ќЅўјя хрень .. вытащить что ли в utils ???
 
 {
-std::wstring convert_date(std::wstring & oox_date)
+std::wstring convert_date(const std::wstring & oox_date)
 {
 	int iDate = 0;
 
@@ -53,7 +53,7 @@ std::wstring convert_date(std::wstring & oox_date)
 	return date_str;
 }
 
-std::wstring convert_time(std::wstring & oox_time)
+std::wstring convert_time(const std::wstring & oox_time)
 {
 	double dTime = 0;
 		
@@ -865,7 +865,7 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 	//	table_cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf::text_align_source(odf::text_align_source::Fix);
 	//}	
 }
-void ods_table_state::set_cell_value(std::wstring & value, bool need_cash)
+void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)
 {
 	if (cells_size_  < 1)return;
 

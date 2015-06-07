@@ -71,11 +71,11 @@ void ods_conversion_context::start_conditional_formats()
 	current_table().start_conditional_formats();
 }
 
-void ods_conversion_context::add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id, bool printable)
+void ods_conversion_context::add_defined_range(const std::wstring & name,const std::wstring & cell_range, int sheet_id, bool printable)
 {
 	table_context_.add_defined_range(name,cell_range, sheet_id, printable);
 }
-void ods_conversion_context::add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id, bool printable)
+void ods_conversion_context::add_defined_expression(const std::wstring & name,const std::wstring & value, int sheet_id, bool printable)
 {
 	table_context_.add_defined_expression(name,value, sheet_id, printable);
 }
@@ -92,7 +92,7 @@ void ods_conversion_context::start_sheet()
 	current_table().set_table_master_page(page_layout_context()->last_master().get_name());
 }
 
-void ods_conversion_context::set_sheet_dimension(std::wstring & ref)
+void ods_conversion_context::set_sheet_dimension(const std::wstring & ref)
 {
  	std::vector<std::wstring> ref_cells;
 	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
@@ -243,7 +243,7 @@ void ods_conversion_context::add_hyperlink(std::wstring & ref, std::wstring & li
 	}
 }
 
-void ods_conversion_context::add_merge_cells(std::wstring & ref)
+void ods_conversion_context::add_merge_cells(const std::wstring & ref)
 {
  	std::vector<std::wstring> ref_cells;
 	boost::algorithm::split(ref_cells,ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
@@ -411,7 +411,7 @@ void ods_conversion_context::end_text_context()
 		delete current_text_context_;
 	current_text_context_ = NULL;
 }
-void ods_conversion_context::add_text_content(std::wstring & text)
+void ods_conversion_context::add_text_content(const std::wstring & text)
 {
 	if (current_text_context_)
 	{
@@ -460,7 +460,7 @@ void ods_conversion_context::end_drawings()
 {
 	current_table().drawing_context()->clear();
 }
-void ods_conversion_context::start_image(std::wstring & image_file_name)
+void ods_conversion_context::start_image(const std::wstring & image_file_name)
 {
 	std::wstring odf_ref_name ;
 	

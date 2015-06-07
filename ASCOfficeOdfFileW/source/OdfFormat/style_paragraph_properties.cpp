@@ -222,7 +222,7 @@ void style_paragraph_properties::create_child_element(const ::std::wstring & Ns,
 {
     style_paragraph_properties_content_.create_child_element(Ns, Name, getContext());    
 }
-void style_paragraph_properties::add_child_element( const office_element_ptr & child_element)
+void style_paragraph_properties::add_child_element(const office_element_ptr & child_element)
 {
 	style_paragraph_properties_content_.add_child_element(child_element);
 }

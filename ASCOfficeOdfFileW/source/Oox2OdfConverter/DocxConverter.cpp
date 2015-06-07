@@ -133,7 +133,7 @@ void DocxConverter::convertDocument()
 {
 	if (!docx_document)return;
 
-	odt_context = new odf::odt_conversion_context(output_document);
+    odt_context = new odf::odt_conversion_context(output_document);
 
 	if (!odt_context)return;
 		

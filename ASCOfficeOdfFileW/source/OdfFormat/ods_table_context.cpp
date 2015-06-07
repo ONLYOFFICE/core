@@ -50,7 +50,7 @@ void ods_table_context::start_defined_expressions(office_element_ptr & root_elm)
 	table_defined_expressions_.root = root_elm;
 }
 
-void ods_table_context::add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id, bool printable)
+void ods_table_context::add_defined_range(const std::wstring & name, const std::wstring & cell_range, int sheet_id, bool printable)
 {
 	office_element_ptr elm;
 	create_element(L"table", L"named-range",elm, &context_);
@@ -96,7 +96,7 @@ void ods_table_context::add_defined_range(std::wstring & name,std::wstring & cel
 	}
 
 }
-void ods_table_context::add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id, bool printable)
+void ods_table_context::add_defined_expression(const std::wstring & name, const std::wstring & value, int sheet_id, bool printable)
 {
 	office_element_ptr elm;
 	create_element(L"table", L"named-expression",elm, &context_);

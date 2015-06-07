@@ -16,7 +16,7 @@
 #include "../OdfFormat/style_paragraph_properties.h"
 #include "../OdfFormat/style_graphic_properties.h"
 
-#include "../../../Common/DocxFormat/source/XlsxFormat/Xlsx.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 
 using namespace cpdoccore;
 

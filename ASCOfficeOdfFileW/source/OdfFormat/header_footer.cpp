@@ -54,7 +54,7 @@ void header_footer_content::create_child_element(const ::std::wstring & Ns, cons
 {
     CP_CREATE_ELEMENT_SIMPLE(content_);
 }
-void header_footer_content::add_child_element(office_element_ptr & child)
+void header_footer_content::add_child_element( const office_element_ptr & child)
 {
     content_.push_back(child);
 }

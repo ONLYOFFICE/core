@@ -219,7 +219,7 @@ public:
 	static std::wstring replace_cell_row(boost::wsmatch const & what);
 	static std::wstring replace_cell_column(boost::wsmatch const & what);
 	
-	void add_child_element(office_element_ptr & child_element);
+	void add_child_element( const office_element_ptr & child_element);
 
 	void start_conditional_formats();
 		void start_conditional_format(std::wstring ref);

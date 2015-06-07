@@ -37,7 +37,7 @@ public:
     odf_conversion_context * getContext() { return context_; }
     const odf_conversion_context * getContext() const { return context_; }
 
-	virtual void add_child_element(office_element_ptr & child) = 0;
+	virtual void add_child_element( const office_element_ptr & child) = 0;
 	virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name)=0;
 
     virtual void add_text(const std::wstring & Text) {}
@@ -94,7 +94,7 @@ public:
     { 
         return Element::xml_type;
     }
-    virtual void add_child_element( office_element_ptr & child)
+    virtual void add_child_element( const office_element_ptr & child)
     {
         _CP_LOG << L"Non add child in " << Element::ns << L":" << Element::name << std::endl;
     }

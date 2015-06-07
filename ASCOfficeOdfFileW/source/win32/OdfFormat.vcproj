@@ -1574,6 +1574,30 @@
 			Name="xml_common"
 			>
 			<File
+				RelativePath="..\OdfFormat\abstract_xml.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\abstract_xml.h"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\logging.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\office_elements.h"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\office_elements_create.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\OdfFormat\office_elements_create.h"
+				>
+			</File>
+			<File
 				RelativePath="..\OdfFormat\svg_creator.cpp"
 				>
 			</File>
@@ -1894,34 +1918,6 @@
 				>
 			</File>
 		</Filter>
-		<File
-			RelativePath="..\OdfFormat\abstract_xml.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\OdfFormat\abstract_xml.h"
-			>
-		</File>
-		<File
-			RelativePath="..\OdfFormat\logging.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\OdfFormat\office_elements.h"
-			>
-		</File>
-		<File
-			RelativePath="..\OdfFormat\office_elements_create.cpp"
-			>
-		</File>
-		<File
-			RelativePath="..\OdfFormat\office_elements_create.h"
-			>
-		</File>
-		<File
-			RelativePath=".\utils.h"
-			>
-		</File>
 	</Files>
 	<Globals>
 	</Globals>

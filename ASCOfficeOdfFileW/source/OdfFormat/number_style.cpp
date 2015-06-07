@@ -90,7 +90,7 @@ void number_style_base::create_child_element( const ::std::wstring & Ns, const :
         CP_CREATE_ELEMENT(content_);
     }
 }
-void number_style_base::add_child_element(office_element_ptr & child_element)
+void number_style_base::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -213,7 +213,7 @@ void number_number::create_child_element( const ::std::wstring & Ns, const ::std
     else
         CP_NOT_APPLICABLE_ELM();
 }
-void number_number::add_child_element(office_element_ptr & child)
+void number_number::add_child_element( const office_element_ptr & child)
 {
  	ElementType type = child->get_type();
 

@@ -518,9 +518,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::WritingElement  *oox_unknown)
 		}break;		
 		default:
 		{
-			std::wstringstream ss;
-			ss << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";
-			_CP_LOG(error) << ss.str();
+			_CP_LOG << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";
 		}
 	}
 }

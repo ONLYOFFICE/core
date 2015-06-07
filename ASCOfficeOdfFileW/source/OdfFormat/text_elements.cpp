@@ -32,7 +32,7 @@ void paragraph::create_child_element( const ::std::wstring & Ns, const ::std::ws
     CP_CREATE_ELEMENT_SIMPLE(paragraph_content_);
 }
 
-void paragraph::add_child_element( office_element_ptr & child_element)
+void paragraph::add_child_element( const office_element_ptr & child_element)
 {
 	paragraph_content_.push_back(child_element);
 }
@@ -101,7 +101,7 @@ void text_h::add_text(const std::wstring & Text)
 {
     paragraph_.add_text(Text);
 }
-void text_h::add_child_element( office_element_ptr & child_element)
+void text_h::add_child_element( const office_element_ptr & child_element)
 {
     paragraph_.add_child_element(child_element);
 }
@@ -114,7 +114,7 @@ void text_p::create_child_element(const ::std::wstring & Ns, const ::std::wstrin
 {
     paragraph_.create_child_element( Ns, Name, getContext());
 }
-void text_p::add_child_element( office_element_ptr & child_element)
+void text_p::add_child_element( const office_element_ptr & child_element)
 {
     paragraph_.add_child_element(child_element);
 }
@@ -171,7 +171,7 @@ void text_list::create_child_element(const ::std::wstring & Ns, const ::std::wst
         CP_CREATE_ELEMENT(text_list_items_);
     }
 }
-void text_list::add_child_element( office_element_ptr & child_element)
+void text_list::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -223,7 +223,7 @@ void text_section::create_child_element( const ::std::wstring & Ns, const ::std:
     }
 }
 
-void text_section::add_child_element( office_element_ptr & child_element)
+void text_section::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -305,7 +305,7 @@ void text_index_body::create_child_element(const ::std::wstring & Ns, const ::st
     CP_CREATE_ELEMENT(index_content_main_);
 }
 
-void text_index_body::add_child_element( office_element_ptr & child_element)
+void text_index_body::add_child_element( const office_element_ptr & child_element)
 {
     index_content_main_.push_back(child_element);
 }
@@ -332,7 +332,7 @@ void text_index_title::create_child_element(const ::std::wstring & Ns, const ::s
 {
      CP_CREATE_ELEMENT(index_content_main_);
 }
-void text_index_title::add_child_element( office_element_ptr & child_element)
+void text_index_title::add_child_element( const office_element_ptr & child_element)
 {
      index_content_main_.push_back(child_element);
 }
@@ -362,7 +362,7 @@ void text_table_of_content::create_child_element( const ::std::wstring & Ns, con
     }
 }
 
-void text_table_of_content::add_child_element( office_element_ptr & child_element)
+void text_table_of_content::add_child_element( const office_element_ptr & child_element)
 {
     //if CP_CHECK_NAME(L"text", L"index-body")
     {

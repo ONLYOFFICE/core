@@ -27,7 +27,7 @@ void office_body::create_child_element( const ::std::wstring & Ns, const ::std::
 }
 
 
-void office_body::add_child_element( office_element_ptr & child_element)
+void office_body::add_child_element( const office_element_ptr & child_element)
 {
 	content_ = child_element;
 }

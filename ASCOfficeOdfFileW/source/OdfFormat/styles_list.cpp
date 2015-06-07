@@ -62,7 +62,7 @@ void text_list_style::create_child_element( const ::std::wstring & Ns, const ::s
          CP_NOT_APPLICABLE_ELM();
     }
 }
-void text_list_style::add_child_element( office_element_ptr & child)
+void text_list_style::add_child_element( const office_element_ptr & child)
 {
  	ElementType type = child->get_type();
 	
@@ -101,7 +101,7 @@ void text_list_level_style_number::create_child_element(const ::std::wstring & N
          CP_NOT_APPLICABLE_ELM();
     }
 }
-void text_list_level_style_number::add_child_element( office_element_ptr & child)
+void text_list_level_style_number::add_child_element( const office_element_ptr & child)
 {
  	ElementType type = child->get_type();
 	
@@ -143,7 +143,7 @@ void style_list_level_properties::create_child_element( const ::std::wstring & N
         CP_NOT_APPLICABLE_ELM();
     }
 }
-void style_list_level_properties::add_child_element( office_element_ptr & child)
+void style_list_level_properties::add_child_element( const office_element_ptr & child)
 {
  	ElementType type = child->get_type();
 	
@@ -187,7 +187,7 @@ void style_list_level_label_alignment::create_child_element(const ::std::wstring
 {
      CP_NOT_APPLICABLE_ELM();
 }
-void style_list_level_label_alignment::add_child_element( office_element_ptr & child)
+void style_list_level_label_alignment::add_child_element( const office_element_ptr & child)
 {
 //   CP_NOT_APPLICABLE_ELM();
 }
@@ -223,7 +223,7 @@ void text_list_level_style_bullet::create_child_element(  const ::std::wstring &
          CP_NOT_APPLICABLE_ELM();
     }
 }
-void text_list_level_style_bullet::add_child_element( office_element_ptr & child)
+void text_list_level_style_bullet::add_child_element( const office_element_ptr & child)
 {
  	ElementType type = child->get_type();
 	
@@ -267,7 +267,7 @@ void text_list_level_style_image::create_child_element(  const ::std::wstring & 
          CP_NOT_APPLICABLE_ELM();
     }
 }
-void text_list_level_style_image::add_child_element( office_element_ptr & child)
+void text_list_level_style_image::add_child_element( const office_element_ptr & child)
 {
  	ElementType type = child->get_type();
 	

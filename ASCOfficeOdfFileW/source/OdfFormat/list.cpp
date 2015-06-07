@@ -69,7 +69,7 @@ void text_list_item::create_child_element(const ::std::wstring & Ns, const ::std
         CP_CREATE_ELEMENT(content_);        
     }
 }
-void text_list_item::add_child_element( office_element_ptr & child_element)
+void text_list_item::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -115,7 +115,7 @@ void text_list_header::create_child_element(const ::std::wstring & Ns, const ::s
         CP_CREATE_ELEMENT(content_);        
     }
 }
-void text_list_header::add_child_element( office_element_ptr & child_element)
+void text_list_header::add_child_element( const office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 

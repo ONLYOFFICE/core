@@ -30,7 +30,7 @@ void style_columns::create_child_element( const ::std::wstring & Ns, const ::std
         CP_NOT_APPLICABLE_ELM();
     }
 }
-void style_columns::add_child_element(office_element_ptr & child)
+void style_columns::add_child_element( const office_element_ptr & child)
 {
 	if (!child)return;
 
@@ -128,7 +128,7 @@ void style_section_properties::create_child_element( const ::std::wstring & Ns, 
         CP_NOT_APPLICABLE_ELM();
     }
 }
-void style_section_properties::add_child_element(office_element_ptr & child)
+void style_section_properties::add_child_element( const office_element_ptr & child)
 {
  	if (!child)return;
 

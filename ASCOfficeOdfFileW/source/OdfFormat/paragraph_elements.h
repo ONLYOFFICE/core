@@ -32,7 +32,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
   
@@ -59,7 +59,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -83,7 +83,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -109,7 +109,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -136,7 +136,7 @@ public:
     text_bookmark(const ::std::wstring & Name) : text_name_(Name){};
 
  	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -161,7 +161,7 @@ public:
     text_bookmark_start(const ::std::wstring & Name) : text_name_(Name){};
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -186,7 +186,7 @@ public:
     text_bookmark_end(const ::std::wstring & Name) : text_name_(Name){};
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -211,7 +211,7 @@ public:
     text_reference_mark(const ::std::wstring & Name) : text_name_(Name){};
     
  	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -236,7 +236,7 @@ public:
     text_reference_mark_start(const ::std::wstring & Name) : text_name_(Name){};
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -261,7 +261,7 @@ public:
     text_reference_mark_end(const ::std::wstring & Name) : text_name_(Name){};
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -283,7 +283,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -313,7 +313,7 @@ public:
 
 public:
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -349,7 +349,7 @@ public:
 
 public:
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -380,7 +380,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -418,7 +418,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -444,7 +444,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
    
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -467,7 +467,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -497,7 +497,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
    
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -523,7 +523,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -552,7 +552,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
    
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -581,7 +581,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
    
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -609,7 +609,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
  
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -634,7 +634,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element( office_element_ptr & child_element);
+    virtual void add_child_element( const office_element_ptr & child_element);
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -659,7 +659,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
     
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 
@@ -679,7 +679,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
     
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name){}
-	virtual void add_child_element( office_element_ptr & child_element){}
+	virtual void add_child_element( const office_element_ptr & child_element){}
 
     virtual void serialize(std::wostream & _Wostream);
 

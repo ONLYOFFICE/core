@@ -42,7 +42,7 @@ void calcext_conditional_formats::create_child_element(const ::std::wstring & Ns
 {
 	CP_CREATE_ELEMENT(content_);
 }
-void calcext_conditional_formats::add_child_element( office_element_ptr & child_element)
+void calcext_conditional_formats::add_child_element( const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
@@ -69,7 +69,7 @@ void calcext_conditional_format::create_child_element(const ::std::wstring & Ns,
 {
 	CP_CREATE_ELEMENT(content_);
 }
-void calcext_conditional_format::add_child_element( office_element_ptr & child_element)
+void calcext_conditional_format::add_child_element( const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
@@ -98,7 +98,7 @@ void calcext_data_bar::create_child_element(const ::std::wstring & Ns, const ::s
 {
 	CP_CREATE_ELEMENT(content_);
 }
-void calcext_data_bar::add_child_element( office_element_ptr & child_element)
+void calcext_data_bar::add_child_element( const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
@@ -126,7 +126,7 @@ void calcext_color_scale::create_child_element(const ::std::wstring & Ns, const 
 {
 	CP_CREATE_ELEMENT(content_);
 }
-void calcext_color_scale::add_child_element( office_element_ptr & child_element)
+void calcext_color_scale::add_child_element( const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
@@ -152,7 +152,7 @@ void calcext_icon_set::create_child_element(const ::std::wstring & Ns, const ::s
 {
 	CP_CREATE_ELEMENT(content_);
 }
-void calcext_icon_set::add_child_element( office_element_ptr & child_element)
+void calcext_icon_set::add_child_element( const office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }

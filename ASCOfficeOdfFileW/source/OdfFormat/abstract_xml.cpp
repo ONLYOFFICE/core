@@ -24,7 +24,7 @@ void abstract_xml::serialize(std::wostream & strm)
 //    CP_CREATE_ELEMENT(xml_content_);
 //}
 //
-//void abstract_xml::add_child_element( office_element_ptr & child_element)
+//void abstract_xml::add_child_element( const office_element_ptr & child_element)
 //{
 //    xml_content_.push_back(child_element);
 //}

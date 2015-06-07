@@ -58,7 +58,7 @@ void style_page_layout_properties::create_child_element( const ::std::wstring & 
     style_page_layout_properties_elements_.create_child_element( Ns, Name, getContext());
 }
 
-void style_page_layout_properties::add_child_element( office_element_ptr & child)
+void style_page_layout_properties::add_child_element( const office_element_ptr & child)
 {
 	style_page_layout_properties_elements_.add_child_element(child);
 }
@@ -95,7 +95,7 @@ void style_page_layout_properties_elements::create_child_element( const ::std::w
         not_applicable_element(L"style-page-layout-properties-elements", Ns, Name);
     }
 }
-void style_page_layout_properties_elements::add_child_element( office_element_ptr & child )
+void style_page_layout_properties_elements::add_child_element( const office_element_ptr & child )
 {
 	if (!child)return;
 

@@ -107,7 +107,7 @@ style_chart_properties * style_content::get_style_chart_properties()
 //   return dynamic_cast<style_drawing_page_properties *>(style_drawing_page_properties_.get());
 //}
 
-void style_content::add_child_element(office_element_ptr & child)
+void style_content::add_child_element( const office_element_ptr & child)
 {
 	if (!child)return;
 
@@ -201,7 +201,7 @@ void default_style::create_child_element( const ::std::wstring & Ns, const ::std
 {
     style_content_.create_child_element(Ns, Name);
 }
-void default_style::add_child_element(office_element_ptr & child)
+void default_style::add_child_element( const office_element_ptr & child)
 {
 	style_content_.add_child_element(child);
 }
@@ -360,7 +360,7 @@ void style::create_child_element(  const ::std::wstring & Ns, const ::std::wstri
         style_content_.create_child_element(Ns, Name);
 }
 
-void style::add_child_element(office_element_ptr & child)
+void style::add_child_element( const office_element_ptr & child)
 {
  	if (!child)return;
 
@@ -424,7 +424,7 @@ void styles::create_child_element(  const ::std::wstring & Ns, const ::std::wstr
         CP_NOT_APPLICABLE_ELM_SIMPLE(L"styles");
     }
 }
-void styles::add_child_element(office_element_ptr & child, odf_conversion_context * Context)
+void styles::add_child_element( const office_element_ptr & child, odf_conversion_context * Context)
 {
 	if (!child)return;
 
@@ -470,7 +470,7 @@ void templates::create_child_element( const ::std::wstring & Ns, const ::std::ws
         CP_CREATE_ELEMENT_SIMPLE(table_templates_);
     } 
 }
-void templates::add_child_element(office_element_ptr & child)
+void templates::add_child_element( const office_element_ptr & child)
 {
  	if (!child)return;
 
@@ -520,7 +520,7 @@ void draw_styles::create_child_element(const ::std::wstring & Ns, const ::std::w
     }
 }
 
-void draw_styles::add_child_element(office_element_ptr & child, odf_conversion_context * Context)
+void draw_styles::add_child_element( const office_element_ptr & child, odf_conversion_context * Context)
 {
 	if (!child)return;
 
@@ -581,7 +581,7 @@ void office_automatic_styles::create_child_element( const ::std::wstring & Ns, c
     }
 }
 
-void office_automatic_styles::add_child_element(office_element_ptr & child)
+void office_automatic_styles::add_child_element( const office_element_ptr & child)
 {
 	if (!child)return;
 
@@ -641,7 +641,7 @@ void office_master_styles::create_child_element( const ::std::wstring & Ns, cons
     }
 }
 
-void office_master_styles::add_child_element(office_element_ptr & child)
+void office_master_styles::add_child_element( const office_element_ptr & child)
 {
 	if (!child)return;
 
@@ -736,7 +736,7 @@ void office_styles::create_child_element( const ::std::wstring & Ns, const ::std
         CP_NOT_APPLICABLE_ELM();
     }
 }
-void office_styles::add_child_element(office_element_ptr & child)
+void office_styles::add_child_element( const office_element_ptr & child)
 {
 	if (!child)return;
 
@@ -803,7 +803,7 @@ void style_header::create_child_element(  const ::std::wstring & Ns, const ::std
 {
     content().header_footer_content_.create_child_element( Ns, Name, getContext());
 }
-void style_header::add_child_element(office_element_ptr & child)
+void style_header::add_child_element( const office_element_ptr & child)
 {
 	content().header_footer_content_.add_child_element( child);
 }
@@ -826,7 +826,7 @@ void style_footer::create_child_element(  const ::std::wstring & Ns, const ::std
 {
     content().header_footer_content_.create_child_element(Ns, Name, getContext());
 }
-void style_footer::add_child_element(office_element_ptr & child)
+void style_footer::add_child_element( const office_element_ptr & child)
 {
     content().header_footer_content_.add_child_element( child);
 }
@@ -848,7 +848,7 @@ void style_header_first::create_child_element(const ::std::wstring & Ns, const :
 {
     content().header_footer_content_.create_child_element(Ns, Name, getContext());
 }
-void style_header_first::add_child_element(office_element_ptr & child)
+void style_header_first::add_child_element( const office_element_ptr & child)
 {
     content().header_footer_content_.add_child_element(child);
 }
@@ -870,7 +870,7 @@ void style_footer_first::create_child_element( const ::std::wstring & Ns, const 
 {
     content().header_footer_content_.create_child_element( Ns, Name, getContext());
 }
-void style_footer_first::add_child_element( office_element_ptr & child)
+void style_footer_first::add_child_element( const office_element_ptr & child)
 {
     content().header_footer_content_.add_child_element( child);
 }
@@ -892,7 +892,7 @@ void style_header_left::create_child_element(const ::std::wstring & Ns, const ::
 {
     content().header_footer_content_.create_child_element( Ns, Name, getContext());
 }
-void style_header_left::add_child_element(office_element_ptr & child)
+void style_header_left::add_child_element( const office_element_ptr & child)
 {
     content().header_footer_content_.add_child_element( child);
 }
@@ -915,7 +915,7 @@ void style_footer_left::create_child_element(  const ::std::wstring & Ns, const 
 {
     content().header_footer_content_.create_child_element( Ns, Name, getContext());
 }
-void style_footer_left::add_child_element(office_element_ptr & child)
+void style_footer_left::add_child_element( const office_element_ptr & child)
 {
     content().header_footer_content_.add_child_element(child);
 }
@@ -946,7 +946,7 @@ void style_header_style::create_child_element(const ::std::wstring & Ns, const :
         CP_NOT_APPLICABLE_ELM();
     }
 }
-void style_header_style::add_child_element(office_element_ptr & child)
+void style_header_style::add_child_element( const office_element_ptr & child)
 {
  	if (!child)return;
 
@@ -982,7 +982,7 @@ void style_footer_style::create_child_element( const ::std::wstring & Ns, const 
         CP_NOT_APPLICABLE_ELM();
     }
 }
-void style_footer_style::add_child_element(office_element_ptr & child)
+void style_footer_style::add_child_element( const office_element_ptr & child)
 {
  	if (!child)return;
 
@@ -1031,7 +1031,7 @@ void style_page_layout::create_child_element(  const ::std::wstring & Ns, const 
         CP_NOT_APPLICABLE_ELM();
     }
 }
-void style_page_layout::add_child_element( office_element_ptr & child)
+void style_page_layout::add_child_element( const office_element_ptr & child)
 {
 	if (!child)return;
 
@@ -1130,7 +1130,7 @@ void style_master_page::create_child_element(const ::std::wstring & Ns, const ::
     }
 }
 
-void style_master_page::add_child_element(office_element_ptr & child)
+void style_master_page::add_child_element( const office_element_ptr & child)
 {
 	if (!child)return;
 

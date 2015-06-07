@@ -68,7 +68,16 @@ namespace FileSystem
 
 		return CString(pBuffer);
 	}
-    CString Directory::GetLongPathName_(const CString& fileName)
+	std::wstring Directory::CreateTempFileWithUniqueName (const std::wstring & strFolderPathRoot, std::wstring Prefix)
+	{
+        TCHAR pBuffer [MAX_PATH+1];
+        memset (pBuffer, 0, sizeof (TCHAR) * (MAX_PATH+1));
+
+		/*unRet = */GetTempFileName( strFolderPathRoot.c_str(), Prefix.c_str(), 0,pBuffer);
+
+		return std::wstring(pBuffer);
+	}
+	CString Directory::GetLongPathName_(const CString& fileName)
 	{
 		long length = GetLongPathNameW(fileName, NULL, 0);
 		if(length < 1 )return _T("");
@@ -136,7 +145,33 @@ namespace FileSystem
         }
         return pcTemplate;
     }
+	std::wstring Directory::CreateDirectoryWithUniqueName (const std::wstring & strFolderPathRoot)
+    {
+        UUID uuid;
+        RPC_WSTR str_uuid;
+        UuidCreate (&uuid);
+        UuidToString (&uuid, &str_uuid);
+		std::wstring pcTemplate = strFolderPathRoot + FILE_SEPARATOR_STR;
+        pcTemplate += (TCHAR *) str_uuid;
+        RpcStringFree (&str_uuid);
 
+        int attemps = 10;
+        while (!CreateDirectory(pcTemplate))
+        {
+            UuidCreate (&uuid);
+            UuidToString (&uuid, &str_uuid);
+            pcTemplate = strFolderPathRoot + FILE_SEPARATOR_STR;
+            pcTemplate += (TCHAR *) str_uuid;
+            RpcStringFree (&str_uuid);
+            attemps--;
+
+            if (0 == attemps)
+            {
+                pcTemplate = _T("");
+            }
+        }
+        return pcTemplate;
+    }
     bool Directory::CreateDirectories(LPCTSTR path) 
 	{
 		DWORD dwAttrib = ::GetFileAttributesW(path);
@@ -248,33 +283,6 @@ namespace FileSystem
 	{
 		NSDirectory::DeleteDirectory(strDirectory, deleteRoot);
 	}
-	std::wstring Directory::CreateDirectoryWithUniqueName (std::wstring & strFolderPathRoot)
-    {
-        UUID uuid;
-        RPC_WSTR str_uuid;
-        UuidCreate (&uuid);
-        UuidToString (&uuid, &str_uuid);
-		std::wstring pcTemplate = strFolderPathRoot + FILE_SEPARATOR_STR;
-        pcTemplate += (TCHAR *) str_uuid;
-        RpcStringFree (&str_uuid);
-
-        int attemps = 10;
-        while (!CreateDirectory(pcTemplate.c_str()))
-        {
-            UuidCreate (&uuid);
-            UuidToString (&uuid, &str_uuid);
-            pcTemplate = strFolderPathRoot + FILE_SEPARATOR_STR;
-            pcTemplate += (TCHAR *) str_uuid;
-            RpcStringFree (&str_uuid);
-            attemps--;
-
-            if (0 == attemps)
-            {
-                pcTemplate = _T("");
-            }
-        }
-        return pcTemplate;
-    }
 #endif
         bool Directory::IsExist(const std::wstring&  strFileName)
         {

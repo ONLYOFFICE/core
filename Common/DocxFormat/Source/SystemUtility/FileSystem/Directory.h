@@ -25,7 +25,8 @@ namespace FileSystem {
         static bool			CreateDirectory(LPCTSTR path);
         static bool			CreateDirectory(const String& path);
         static bool			CreateDirectory(String strFolderPathRoot, String strFolderName);
-        static CString                  CreateDirectoryWithUniqueName (CString & strFolderPathRoot);
+        static CString		CreateDirectoryWithUniqueName (CString & strFolderPathRoot);
+        static std::wstring CreateDirectoryWithUniqueName (const std::wstring & strFolderPathRoot);
         static bool			CreateDirectories(LPCTSTR path);
 
         static void DeleteDirectory(const CString& path, bool deleteRoot = true);
@@ -38,15 +39,14 @@ namespace FileSystem {
 		static CString	GetFolderPath(const CString& path);
         static CString	GetLongPathName_(const CString& fileName);
         static CString	GetTempPath();
-        static CString	CreateTempFileWithUniqueName (const CString & strFolderPathRoot,CString Prefix);
+        static CString	CreateTempFileWithUniqueName (const CString & strFolderPathRoot, CString Prefix);
+		static std::wstring CreateTempFileWithUniqueName (const std::wstring & strFolderPathRoot, std::wstring Prefix);
         static bool		PathIsDirectory(const CString& pathName);
 
 #if defined (_WIN32) || defined(_WIN64)
 		static std::wstring GetFolderPath(const std::wstring & strFolderPath);
-                static void DeleteDirectory(std::wstring& path, bool deleteRoot = true);
+		static void DeleteDirectory(std::wstring& path, bool deleteRoot = true);
 #endif
-        static std::wstring CreateDirectoryWithUniqueName (const std::wstring & strFolderPathRoot);
-
         static bool IsExist(const std::wstring&  strFileName);
 	};
 }

@@ -22,7 +22,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleColumns;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element(office_element_ptr & child);
@@ -47,7 +47,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleColumn;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element(office_element_ptr & child){}
@@ -71,7 +71,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleColumnSep;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element(office_element_ptr & child){}
@@ -95,7 +95,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleSectionProperties;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);

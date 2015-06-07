@@ -222,7 +222,9 @@ void number_number::add_child_element(office_element_ptr & child)
         number_embedded_text_.push_back(child);
     }
     else
-	{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
+    {
+        _CP_LOG << L"Non add child in " << ns << L":" << name << std::endl;
+    }
 }
 
 // number:scientific-number

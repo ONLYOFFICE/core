@@ -1,7 +1,7 @@
 #include "Converter.h"
 #include "../utils.h"
 
-#include "../../../Common/DocxFormat/source/DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
 
 #include "../OdfFormat/odf_conversion_context.h"
 

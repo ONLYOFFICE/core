@@ -53,14 +53,14 @@ template <class T>
 class RegisterElement
 {
 private:
-    template <class T>
+    template <class V>
     class CreateImpl_
     {
     public:
-        static typename shared_ptr<T>::Type create()
+        static typename shared_ptr<V>::Type create()
         {
             //return shared_ptr<T>::Type( new T() );
-            return boost::make_shared<T>();
+            return boost::make_shared<V>();
         }
     };
 

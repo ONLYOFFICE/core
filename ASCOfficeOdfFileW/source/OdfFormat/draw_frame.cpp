@@ -75,7 +75,7 @@ void draw_image::create_child_element(const ::std::wstring & Ns, const ::std::ws
         //CP_NOT_APPLICABLE_ELM();
     }
 }
-void draw_image::add_child_element(office_element_ptr & child_element)
+void draw_image::add_child_element( office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -115,7 +115,7 @@ void draw_chart::create_child_element( const ::std::wstring & Ns, const ::std::w
 	CP_CREATE_ELEMENT(content_);
 }
 
-void draw_chart::add_child_element(office_element_ptr & child_element)
+void draw_chart::add_child_element( office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
@@ -144,7 +144,7 @@ void draw_g::create_child_element( const ::std::wstring & Ns, const ::std::wstri
 {
 	CP_CREATE_ELEMENT(content_);
 }
-void draw_g::add_child_element(office_element_ptr & child_element)
+void draw_g::add_child_element( office_element_ptr & child_element)
 {
 	content_.push_back(child_element);
 }
@@ -206,7 +206,7 @@ void draw_frame::create_child_element(  const ::std::wstring & Ns, const ::std::
         CP_NOT_APPLICABLE_ELM();
     }
 }
-void draw_frame::add_child_element(office_element_ptr & child_element)
+void draw_frame::add_child_element( office_element_ptr & child_element)
 {
 	ElementType type = child_element->get_type();
 
@@ -288,7 +288,7 @@ void draw_object::create_child_element(  const ::std::wstring & Ns, const ::std:
 {
     CP_NOT_APPLICABLE_ELM(); // TODO
 }
-void draw_object::add_child_element(office_element_ptr & child_element)
+void draw_object::add_child_element( office_element_ptr & child_element)
 {
 	//CP_NOT_APPLICABLE_ELM();
 }
@@ -313,7 +313,7 @@ void draw_object_ole::create_child_element( const ::std::wstring & Ns, const ::s
 {
     CP_NOT_APPLICABLE_ELM(); 
 }
-void draw_object_ole::add_child_element(office_element_ptr & child_element)
+void draw_object_ole::add_child_element( office_element_ptr & child_element)
 {
 	//CP_NOT_APPLICABLE_ELM();
 }

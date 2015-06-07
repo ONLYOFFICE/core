@@ -22,7 +22,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeOfficeBody;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     office_element * content() { return content_.get(); }
 

@@ -103,9 +103,7 @@ bool create_element(const ::std::wstring & Ns,
     {
         if (_Element) // элемент создается повторно
         {
-            std::wstringstream ss;
-            ss << L"[warning] : duplicate element (" << Ns << L":" << Name << L")\n";
-            _CP_LOG(error) << ss.str();
+            _CP_LOG << L"[warning] : duplicate element (" << Ns << L":" << Name << L")\n";
         }
 
         _Element = elm;
@@ -113,11 +111,8 @@ bool create_element(const ::std::wstring & Ns,
     }
     else
     {
-#ifdef _DEBUG
-		std::wstringstream ss;
-        ss << L"[warning] : create element failed (" << Ns << L":" << Name << L")\n";
-        _CP_LOG(error) << ss.str();
-#endif
+        _CP_LOG << L"[warning] : create element failed (" << Ns << L":" << Name << L")\n";
+
         not_applicable_element(L"[!!!]", Ns, Name);
     }
     return false;

@@ -18,8 +18,8 @@
 #include "../OdfFormat/style_text_properties.h"
 #include "../OdfFormat/style_paragraph_properties.h"
 
-#include "../../../Common/DocxFormat/source/XlsxFormat/Xlsx.h"
-#include "../../../Common/DocxFormat/source/DocxFormat/Docx.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 
 #define PROGRESSEVENT_ID	0
 
@@ -205,17 +205,12 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 
 			default:
 			{
-				int ttt = (int) oox_unknown->getType();
-				std::wstringstream ss;
-				ss << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";
-				_CP_LOG(error) << ss.str();
+                _CP_LOG << L"[warning] :  no convert element(" << oox_unknown->getType() << L")\n";
 			}
 		}
 	}catch(...)
 	{
-		std::wstringstream ss;
-		ss << L"[error] :  no convert element(" << (oox_unknown ? oox_unknown->getType() : -1 ) << L")\n";
-		_CP_LOG(error) << ss.str();
+        _CP_LOG << L"[error] :  no convert element(" << (oox_unknown ? oox_unknown->getType() : -1 ) << L")\n";
 	}
 }
 

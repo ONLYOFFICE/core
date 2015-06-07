@@ -3,7 +3,7 @@
 
 #include <boost/foreach.hpp>
 
-#include "../../../ASCOfficeOdfFile/formulasconvert/include/cpdoccore/formulasconvert.h"
+#include "../../../ASCOfficeOdfFile/formulasconvert/formulasconvert.h"
 
 #include <iostream>
 
@@ -1422,13 +1422,16 @@ void odf_chart_context::Impl::create_local_table_rows(ods_table_state * table_st
 	int curr_row = 0;
 	int curr_cell = 0;
 
-	for (long i = 0; i< cells.size(); i++)
-	{
+    office_element_ptr style_null;
+
+    for (long i = 0; i< cells.size(); i++)
+    {
 		if (cells[i].row  > curr_row+1)
 		{	
 			office_element_ptr row_elm;
-			create_element(L"table", L"table-row",row_elm, odf_context_);
-			table_state->add_row(row_elm,cells[i].row - curr_row -2,office_element_ptr());
+
+            create_element(L"table", L"table-row",row_elm, odf_context_);
+            table_state->add_row(row_elm,cells[i].row - curr_row -2, style_null);
 			curr_row =  cells[i].row-1;
 		}
 		if (cells[i].row == curr_row+1)
@@ -1438,7 +1441,7 @@ void odf_chart_context::Impl::create_local_table_rows(ods_table_state * table_st
 				office_element_ptr row_elm;
 
 				create_element(L"table", L"table-row",row_elm, odf_context_);
-				table_state->add_row(row_elm,1 ,office_element_ptr());
+                table_state->add_row(row_elm, 1 , style_null);
 			}
 			curr_row++;
 
@@ -1452,7 +1455,7 @@ void odf_chart_context::Impl::create_local_table_rows(ods_table_state * table_st
 		office_element_ptr cell_elm;
 		create_element(L"table", L"table-cell",cell_elm, odf_context_);
 		
-		table_state->start_cell(cell_elm,office_element_ptr());
+        table_state->start_cell(cell_elm, style_null);
 			table_state->set_cell_value(cells[i].val, true);
 			//add type ???
 		table_state->end_cell();
@@ -1490,7 +1493,7 @@ void odf_chart_context::Impl::create_local_table()
 		std::vector<std::wstring> refs;
 		boost::algorithm::split(refs,cash_[i].ref, boost::algorithm::is_any_of(L":"), boost::algorithm::token_compress_on);
 
-		__int32 col1,col2,row1,row2;
+        int col1,col2,row1,row2;
 
 		if (refs.size()<1) continue;
 		int r = refs[0].find(L".");
@@ -1579,6 +1582,7 @@ void odf_chart_context::Impl::create_local_table()
 
 		office_element_ptr row_headers_elm;
 		office_element_ptr row_elm;
+        office_element_ptr style_null;
 
 		if (cells_cash_label.size() > 0 || cells_cash.size() > 0)
 		{
@@ -1594,7 +1598,7 @@ void odf_chart_context::Impl::create_local_table()
 			else 
 			{
 				create_element(L"table", L"table-rows",row_elm, odf_context_);
-				table_state->add_row(row_elm,1,office_element_ptr());
+                table_state->add_row(row_elm,1, style_null);
 			}
 		}
 		else
@@ -1604,19 +1608,19 @@ void odf_chart_context::Impl::create_local_table()
 			table_state->start_headers(row_headers_elm);
 			{
 				create_element(L"table", L"table-row",row_elm, odf_context_);
-				table_state->add_row(row_elm,1,office_element_ptr());
+                table_state->add_row(row_elm, 1, style_null);
 				{
 					office_element_ptr cell_elm;
 					create_element(L"table", L"table-cell",cell_elm, odf_context_);
 					
-					table_state->start_cell(cell_elm,office_element_ptr());
+                    table_state->start_cell(cell_elm, style_null);
 					table_state->end_cell();
 				}
 			}
 			table_state->end_headers();
 
 			create_element(L"table", L"table-rows",row_elm, odf_context_);
-			table_state->add_row(row_elm,1,office_element_ptr());
+            table_state->add_row(row_elm, 1, style_null);
 		}
 	}
 

@@ -6,7 +6,7 @@
 #include <cpdoccore/CPSharedPtr.h>
 #include <cpdoccore/CPOptional.h>
 
-#include "../../../Common/DocxFormat/source/Common/SimpleTypes_Word.h"
+#include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Word.h"
 
 namespace OOX 
 {
@@ -110,7 +110,7 @@ namespace Oox2Odf
 		cpdoccore::odf::package::odf_document	*output_document;
 		
 		odf::odt_conversion_context				*odt_context;
-		OOX::Logic::CSectionProperty			*last_seсtion_properties; // для режима "продолжение" раздела с обновленными свойствами
+        OOX::Logic::CSectionProperty			*last_section_properties;
 
 		void apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other);
 		

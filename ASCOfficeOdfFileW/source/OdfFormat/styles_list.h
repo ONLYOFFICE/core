@@ -36,7 +36,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextListStyle;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(  const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
@@ -88,7 +88,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleListLevelProperties;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
@@ -122,7 +122,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleListLevelLabelAlignment;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element(const std::wstring & Ns, const std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
@@ -150,7 +150,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextListLevelStyleNumber;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
   
 	office_element_ptr style_list_level_properties_;
@@ -190,7 +190,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextListLevelStyleBullet;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);   
 	virtual void add_child_element(office_element_ptr & child);
@@ -224,7 +224,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextListLevelStyleImage;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element( const std::wstring & Ns, const std::wstring & Name);   
 	virtual void add_child_element(office_element_ptr & child);

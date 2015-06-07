@@ -20,7 +20,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeOfficeChart;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element( office_element_ptr & child_element);
@@ -63,7 +63,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartChart;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element( office_element_ptr & child_element);
@@ -95,7 +95,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartTitle;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element( office_element_ptr & child_element);
@@ -116,7 +116,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartSubtitle;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element( office_element_ptr & child_element);
@@ -138,7 +138,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartFooter;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element( office_element_ptr & child_element);
@@ -177,7 +177,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartLegend;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element( office_element_ptr & child_element){}
@@ -216,7 +216,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartPlotArea;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element( office_element_ptr & child_element);
@@ -247,7 +247,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartWall;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element( office_element_ptr & child_element){}
@@ -268,7 +268,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartFloor;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element( office_element_ptr & child_element){}
@@ -299,7 +299,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartAxis;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element( office_element_ptr & child_element);
@@ -331,7 +331,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartGrid;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element( office_element_ptr & child_element){}
@@ -352,7 +352,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartCategories;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element( office_element_ptr & child_element){}
@@ -386,7 +386,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartSeries;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element( office_element_ptr & child_element);
@@ -408,7 +408,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartDomain;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element( office_element_ptr & child_element){}
@@ -438,7 +438,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartDataPoint;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element( office_element_ptr & child_element){}
@@ -459,7 +459,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartMeanValue;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element( office_element_ptr & child_element){}
@@ -480,7 +480,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartErrorIndicator;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element( office_element_ptr & child_element){}
@@ -500,7 +500,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartEquation;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}//???
 	virtual void add_child_element( office_element_ptr & child_element){}//???
@@ -522,7 +522,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartRegressionCurve;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element( office_element_ptr & child_element);
@@ -543,7 +543,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartStockGainMarker;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element( office_element_ptr & child_element){}
@@ -564,7 +564,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartStockLossMarker;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element( office_element_ptr & child_element){}
@@ -585,7 +585,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeChartStockRangeLine;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){}
 	virtual void add_child_element( office_element_ptr & child_element){}

@@ -21,11 +21,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleMap;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
-	virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
 
 	std::wstring style_condition_;
@@ -35,7 +33,7 @@ public:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_map);
+CP_REGISTER_OFFICE_ELEMENT2(style_map)
 
 }
 }

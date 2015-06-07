@@ -46,13 +46,13 @@ public:
 ////////////////////////
     virtual ::std::wostream & serialize(::std::wostream & _Wostream) const
     {
-        _CP_LOG(info) << L"[warning] use base text_to_stream\n";
+        _CP_LOG << L"[warning] use base text_to_stream\n";
         return _Wostream;
     }
 
     virtual ::std::wostream & xml_to_stream(::std::wostream & _Wostream) const
     {
-        _CP_LOG(info) << L"[warning] use base xml_to_stream\n";
+        _CP_LOG << L"[warning] use base xml_to_stream\n";
         return _Wostream;
     }
 private:
@@ -94,7 +94,10 @@ public:
     { 
         return Element::xml_type;
     }
-
+    virtual void add_child_element( office_element_ptr & child)
+    {
+        _CP_LOG << L"Non add child in " << Element::ns << L":" << Element::name << std::endl;
+    }
 private:
 
 // office_element impl

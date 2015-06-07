@@ -125,7 +125,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleGraphicPropertis;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	graphic_format_properties & content(){ return graphic_format_properties_; }
 

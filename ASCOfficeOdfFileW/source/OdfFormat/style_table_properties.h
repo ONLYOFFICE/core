@@ -68,7 +68,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleTableProperties;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element(office_element_ptr & child){}
@@ -80,7 +80,7 @@ public:
     table_format_properties table_format_properties_;
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_table_properties);
+CP_REGISTER_OFFICE_ELEMENT2(style_table_properties)
 
 // style-table-column-properties-attlist
 class style_table_column_properties_attlist
@@ -105,17 +105,15 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleTableColumnProperties;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
   
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
-	virtual void serialize(std::wostream & strm);
+    virtual void serialize(std::wostream & strm);
 
     style_table_column_properties_attlist style_table_column_properties_attlist_;
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_table_column_properties);
+CP_REGISTER_OFFICE_ELEMENT2(style_table_column_properties)
 
 // style-table-row-properties-attlist
 class style_table_row_properties_attlist
@@ -141,12 +139,9 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleTableRowProperties;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
-    virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
-	
+    virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);	
 	virtual void serialize(std::wostream & strm);
 
 public:
@@ -155,7 +150,7 @@ public:
         
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_table_row_properties);
+CP_REGISTER_OFFICE_ELEMENT2(style_table_row_properties)
 
 // style-table-cell-properties-attlist
 class style_table_cell_properties_attlist
@@ -212,12 +207,10 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleTableCellProperties;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
-	
+
     void apply_from(const style_table_cell_properties * Other);
 	virtual void serialize(std::wostream & strm);
 
@@ -226,7 +219,7 @@ public:
         
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_table_cell_properties);
+CP_REGISTER_OFFICE_ELEMENT2(style_table_cell_properties)
 
 }
 }

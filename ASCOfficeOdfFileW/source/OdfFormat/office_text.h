@@ -9,7 +9,7 @@
 
 #include <cpdoccore/xml/simple_xml_writer.h>
 
-#include "Bool.h"
+#include "bool.h"
 
 namespace cpdoccore { 
 namespace odf {
@@ -31,7 +31,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeOfficeText;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element( office_element_ptr & child_element);
@@ -39,7 +39,7 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
 //    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-//    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+//    virtual void add_child_element(const  xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 //    virtual void add_text(const std::wstring & Text);
 
 	office_text_attlist office_text_attlist_;
@@ -59,7 +59,7 @@ private:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(office_text);
+CP_REGISTER_OFFICE_ELEMENT2(office_text)
 
 }
 }

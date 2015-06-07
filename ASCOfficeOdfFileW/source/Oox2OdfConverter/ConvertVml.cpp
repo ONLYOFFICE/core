@@ -12,7 +12,7 @@
 #include "../OdfFormat/style_text_properties.h"
 #include "../OdfFormat/style_paragraph_properties.h"
 
-#include "../../../Common/DocxFormat/source/DocxFormat/Logic/Vml.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Logic/Vml.h"
 
 #include "VmlShapeTypes2Oox.h"
 

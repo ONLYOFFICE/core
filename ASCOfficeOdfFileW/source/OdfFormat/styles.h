@@ -99,7 +99,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleDefaultStyle;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 public:
 	default_style() : style_content_(getContext()) {}
@@ -115,7 +115,7 @@ public:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(default_style);
+CP_REGISTER_OFFICE_ELEMENT2(default_style)
 
 
 /////////////////////////////////////////////////////////////////////////////////////////////////
@@ -128,7 +128,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleDrawGradient;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	std::wstring				get_style_name(){return draw_name_.get_value_or(L"");}
 
@@ -149,12 +149,10 @@ public:
 	_CP_OPT(std::wstring)		draw_display_name_;
 	
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
- 	virtual void serialize(std::wostream & strm);
+    virtual void serialize(std::wostream & strm);
 
 };
-CP_REGISTER_OFFICE_ELEMENT2(draw_gradient);
+CP_REGISTER_OFFICE_ELEMENT2(draw_gradient)
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /// \class  style_draw_hatch
 class draw_hatch : public office_element_impl<draw_hatch>
@@ -165,7 +163,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleDrawHatch;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
 	
@@ -178,12 +176,10 @@ public:
 	_CP_OPT(std::wstring)	draw_display_name_;
 
     virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
-	virtual void serialize(std::wostream & strm);
+    virtual void serialize(std::wostream & strm);
  
 };
-CP_REGISTER_OFFICE_ELEMENT2(draw_hatch);
+CP_REGISTER_OFFICE_ELEMENT2(draw_hatch)
 /////////////////////////////////////////////////////////////////////////////////////////////////
 /// \class  style_draw_gradient
 class draw_opacity : public office_element_impl<draw_opacity>
@@ -194,7 +190,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleDrawOpacity;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
 
@@ -213,12 +209,10 @@ public:
 	_CP_OPT(std::wstring)	draw_display_name_;
 	
     virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-     virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm);
 
 };
-CP_REGISTER_OFFICE_ELEMENT2(draw_opacity);
+CP_REGISTER_OFFICE_ELEMENT2(draw_opacity)
 
 /// \class  style_draw_fill_image
 class draw_fill_image : public office_element_impl<draw_fill_image>
@@ -229,7 +223,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleDrawFillImage;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	std::wstring get_style_name(){return draw_name_.get_value_or(L"");}
 	
@@ -239,11 +233,9 @@ public:
 	_CP_OPT(std::wstring)		draw_display_name_;
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm);
 };
-CP_REGISTER_OFFICE_ELEMENT2(draw_fill_image);
+CP_REGISTER_OFFICE_ELEMENT2(draw_fill_image)
 
 /// \class  style_draw_marker
 class draw_marker : public office_element_impl<draw_marker>
@@ -254,7 +246,7 @@ public:
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleDrawMarker;
 
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	std::wstring get_style_name(){return draw_name_.get_value_or(L"");}
 	
@@ -265,11 +257,9 @@ public:
 	_CP_OPT(std::wstring)		draw_display_name_;
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm);
 };
-CP_REGISTER_OFFICE_ELEMENT2(draw_marker);
+CP_REGISTER_OFFICE_ELEMENT2(draw_marker)
 /////////////////////////////////////////////////////////////////////////////////////////////////
 class style;
 typedef shared_ptr<style>::Type style_ptr;
@@ -285,7 +275,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleStyle;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
  
     style() : style_content_(getContext()) {} 
     
@@ -314,7 +304,7 @@ public:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style);
+CP_REGISTER_OFFICE_ELEMENT2(style)
 
 /// \class  styles
 class styles
@@ -379,7 +369,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeOfficeAutomaticStyles;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
@@ -390,7 +380,7 @@ public:
     office_element_ptr_array style_page_layout_; 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(office_automatic_styles);
+CP_REGISTER_OFFICE_ELEMENT2(office_automatic_styles)
 
 /// \class  office_master_styles
 /// \brief  office:master-styles
@@ -401,7 +391,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeOfficeMasterStyles;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
@@ -416,7 +406,7 @@ public:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(office_master_styles);
+CP_REGISTER_OFFICE_ELEMENT2(office_master_styles)
 
 /// \class class style_master_page_attlist
 /// \brief style-master-page-attlist
@@ -445,7 +435,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleMasterPage;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
@@ -471,7 +461,7 @@ public:
 	office_element_ptr_array content_;        // shapes, frames, text ...
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_master_page);
+CP_REGISTER_OFFICE_ELEMENT2(style_master_page)
 
 /// \class  office_styles
 /// \brief  office:styles
@@ -482,7 +472,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeOfficeStyles;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
@@ -503,7 +493,7 @@ public:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(office_styles);
+CP_REGISTER_OFFICE_ELEMENT2(office_styles)
 
 class header_footer_content_common
 {
@@ -532,7 +522,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleHeader;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
@@ -542,7 +532,7 @@ public:
     header_footer_content_common content_;
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_header);
+CP_REGISTER_OFFICE_ELEMENT2(style_header)
 
 ///         style:footer
 class style_footer : public office_element_impl<style_footer>, public header_footer_common
@@ -552,7 +542,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleFooter;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void serialize(std::wostream & strm);
 
@@ -563,7 +553,7 @@ public:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_footer);
+CP_REGISTER_OFFICE_ELEMENT2(style_footer)
 
 ///         style:header-first
 class style_header_first : public office_element_impl<style_header_first>, public header_footer_common
@@ -573,7 +563,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleHeaderFirst;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void serialize(std::wostream & strm);
 
@@ -583,7 +573,7 @@ public:
     header_footer_content_common content_;
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_header_first);
+CP_REGISTER_OFFICE_ELEMENT2(style_header_first)
 
 ///         style:footer_first
 class style_footer_first : public office_element_impl<style_footer_first>, public header_footer_common
@@ -593,7 +583,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleFooterFirst;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
@@ -603,7 +593,7 @@ public:
     header_footer_content_common content_;
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_footer_first);
+CP_REGISTER_OFFICE_ELEMENT2(style_footer_first)
 
 ///         style:header-left
 class style_header_left : public office_element_impl<style_header_left>, public header_footer_common
@@ -613,7 +603,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleHeaderLeft;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
@@ -623,7 +613,7 @@ public:
 	header_footer_content_common content_;
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_header_left);
+CP_REGISTER_OFFICE_ELEMENT2(style_header_left)
 
 ///         style:footer-left
 class style_footer_left : public office_element_impl<style_footer_left>, public header_footer_common
@@ -633,7 +623,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleFooterLeft;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element(  const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
@@ -643,7 +633,7 @@ public:
 	header_footer_content_common content_;
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_footer_left);
+CP_REGISTER_OFFICE_ELEMENT2(style_footer_left)
 
 ///         style:page-layout-attlist
 class style_page_layout_attlist
@@ -664,7 +654,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleHeaderStyle;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void add_child_element(office_element_ptr & child);
@@ -675,7 +665,7 @@ public:
 
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_header_style);
+CP_REGISTER_OFFICE_ELEMENT2(style_header_style)
 
 
 /// style:footer-style
@@ -686,7 +676,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleFooterStyle;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_child_element(office_element_ptr & child);
@@ -696,7 +686,7 @@ public:
 	office_element_ptr style_header_footer_properties_;
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_footer_style);
+CP_REGISTER_OFFICE_ELEMENT2(style_footer_style)
 
 /// style:page-layout
 class style_page_layout : public office_element_impl<style_page_layout>
@@ -706,7 +696,7 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStylePageLayout;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
    
 	style_page_layout_attlist style_page_layout_attlist_;
    
@@ -720,7 +710,7 @@ public:
 	virtual void serialize(std::wostream & strm);  
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_page_layout);
+CP_REGISTER_OFFICE_ELEMENT2(style_page_layout)
 
 // style:footnote-sep-attlist
 class style_footnote_sep_attlist
@@ -746,18 +736,16 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStyleFootnoteSep;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element(const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm);
 
     style_footnote_sep_attlist style_footnote_sep_attlist_;
     
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_footnote_sep);
+CP_REGISTER_OFFICE_ELEMENT2(style_footnote_sep)
 
 
 //          text:notes-configuration
@@ -768,11 +756,9 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeTextNotesConfiguration;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 	virtual void serialize(std::wostream & strm){}
 
     noteclass noteclass_;
@@ -791,7 +777,7 @@ public:
     
 };
 
-CP_REGISTER_OFFICE_ELEMENT2(text_notes_configuration);
+CP_REGISTER_OFFICE_ELEMENT2(text_notes_configuration)
 
 /// style:presentation-page-layout
 
@@ -805,18 +791,16 @@ public:
     static const wchar_t * name;
     static const xml::NodeType xml_type = xml::typeElement;
     static const ElementType type = typeStylePresentationPageLayout;
-    CPDOCCORE_DEFINE_VISITABLE();
+    CPDOCCORE_DEFINE_VISITABLE()
 
 	virtual void serialize(std::wostream & strm){}
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_child_element(office_element_ptr & child)
-		{std::wstringstream str; str <<L"Non add child in "; str << ns; str << L":"; str <<name; _CP_LOG(error) << str.str();}
 
 	_CP_OPT(std::wstring) style_name_;
 
 	office_element_ptr_array content_;
     };
 
-CP_REGISTER_OFFICE_ELEMENT2(style_presentation_page_layout);
+CP_REGISTER_OFFICE_ELEMENT2(style_presentation_page_layout)
 } // namespace odf
 } // namespace cpdoccore

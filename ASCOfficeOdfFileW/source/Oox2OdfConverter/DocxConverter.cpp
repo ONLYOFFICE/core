@@ -1,10 +1,10 @@
 #include "DocxConverter.h"
 #include "../utils.h"
 
-#include "../../../Common/DocxFormat/source/DocxFormat/Docx.h"
-#include "../../../Common/DocxFormat/source/DocxFormat/External/Hyperlink.h"
-#include "../../../Common/DocxFormat/source/XlsxFormat/Chart/Chart.h"
-#include "../../../Common/DocxFormat/source/DocxFormat/Diagram/DiagramDrawing.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/External/HyperLink.h"
+#include "../../../Common/DocxFormat/Source/XlsxFormat/Chart/Chart.h"
+#include "../../../Common/DocxFormat/Source/DocxFormat/Diagram/DiagramDrawing.h"
 
 #include "VmlShapeTypes2Oox.h"
 
@@ -39,7 +39,7 @@ DocxConverter::DocxConverter(const std::wstring & path, const ProgressCallback* 
 	docx_document = new OOX::CDocx(oox_path);	
 
 //set flags to default
-	last_seсtion_properties = NULL;
+    last_section_properties = NULL;
 	
 	if (UpdateProgress(290000))return;
 }
@@ -437,7 +437,7 @@ void DocxConverter::convert(OOX::Logic::CRun *oox_run)//wordprocessing 22.1.2.87
 	if (oox_run == NULL) return;
 	
 	//test for break - 2 first element ЭТОТ элемент НУЖНО вытащить отдельно !!!
-	for(unsigned int i = 0; i < min (2,oox_run->m_arrItems.size()); ++i)
+    for(unsigned int i = 0; i < (std::min) (2,oox_run->m_arrItems.size()); ++i)
 	{
 		if (oox_run->m_arrItems[i]->getType() == OOX::et_w_lastRenderedPageBreak)
 		{
@@ -927,17 +927,17 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		}
 	}
 
-	if (continuous && last_seсtion_properties)
+    if (continuous && last_section_properties)
 	{	// нужно убрать автоматический разрыв.на следующую страницу
 		// + 
 		//нужно текущие совйства накотить на предыдущие !! .. и так пока continues далее повторяется 
-		apply_from(last_seсtion_properties,oox_section_pr);
+        apply_from(last_section_properties,oox_section_pr);
 	}
 	else
 	{
 	}
 
-	//oox_section_pr = last_seсtion_properties;
+    //oox_section_pr = last_section_properties;
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	odt_context->page_layout_context()->start_master_page(root ? L"Standard" : L"");
 	
@@ -1051,8 +1051,8 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 			//nullable<SimpleTypes::CDecimalNumber<> > m_oChapStyle;
 	}
 	OOX::Logic::CSectionProperty * s = oox_section_pr;
-	if (present_header && s->m_arrHeaderReference.size() <1 && last_seсtion_properties)
-		s = last_seсtion_properties;
+    if (present_header && s->m_arrHeaderReference.size() <1 && last_section_properties)
+        s = last_section_properties;
 
 	for (unsigned int i=0; i< s->m_arrHeaderReference.size(); i++)
 	{
@@ -1071,8 +1071,8 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 		}
 	}
 	s = oox_section_pr;
-	if (present_footer && s->m_arrFooterReference.size() <1 && last_seсtion_properties)
-		s = last_seсtion_properties; // нужно хранить ссылки на ВСЕ !!!
+    if (present_footer && s->m_arrFooterReference.size() <1 && last_section_properties)
+        s = last_section_properties; // нужно хранить ссылки на ВСЕ !!!
 
 	for (unsigned int i=0; i< s->m_arrFooterReference.size(); i++)
 	{
@@ -1148,7 +1148,7 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 	odt_context->page_layout_context()->end_master_page(); // для добавления автогенераций
 	if (root)odt_context->page_layout_context()->set_current_master_page_base();
 
-	last_seсtion_properties = oox_section_pr;
+    last_section_properties = oox_section_pr;
 }
 void DocxConverter::convert(OOX::Logic::CBackground *oox_background, int type)
 {

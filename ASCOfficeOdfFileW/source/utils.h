@@ -62,7 +62,7 @@ namespace _gdi_graphics_
 	}
 
 
-	bool static GetResolution(const WCHAR* fileName, double & Width, double &Height) //pt
+        bool static GetResolution(const wchar_t* fileName, double & Width, double &Height) //pt
 	{
 		bool result =false;
 #if defined(_WIN32) || defined(_WIN64)

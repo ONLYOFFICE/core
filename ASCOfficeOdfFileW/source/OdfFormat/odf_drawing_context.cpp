@@ -16,7 +16,7 @@
 #include "draw_shapes.h"
 
 #include "oox_shape_defines.h"
-#include "Shapes\odf_shape_mapping.h"
+#include "Shapes/odf_shape_mapping.h"
 
 #include "styles.h"
 
@@ -271,7 +271,7 @@ void odf_drawing_context::set_header_state(bool Val)
 
 void odf_drawing_context::start_group()
 {
-	office_element_ptr & group_elm = impl_->create_draw_element(5000);
+    office_element_ptr group_elm = impl_->create_draw_element(5000);
 
 	draw_g* group = dynamic_cast<draw_g*>(group_elm.get());
 
@@ -427,11 +427,14 @@ void odf_drawing_context::end_drawing()
 
 			if (impl_->current_drawing_state_.svg_x_ && impl_->current_drawing_state_.svg_y_)
 			{
-					strTransform += std::wstring(L" translate(") +	boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_x_.get() +
-											(impl_->current_drawing_state_.svg_width_ ? (impl_->current_drawing_state_.svg_width_.get()/2) : 0))
-											+ std::wstring(L",") +  boost::lexical_cast<std::wstring>(impl_->current_drawing_state_.svg_y_.get() +
-											(impl_->current_drawing_state_.svg_height_ ? (impl_->current_drawing_state_.svg_height_.get()/2) : 0))
-											+ std::wstring(L")") ; 
+                odf::length pos_x = (impl_->current_drawing_state_.svg_x_->get_value() +
+                        (impl_->current_drawing_state_.svg_width_ ? (impl_->current_drawing_state_.svg_width_->get_value()/2.) : 0.), impl_->current_drawing_state_.svg_x_->get_unit());
+                odf::length pos_y = (impl_->current_drawing_state_.svg_y_->get_value() +
+                        (impl_->current_drawing_state_.svg_height_ ? (impl_->current_drawing_state_.svg_height_->get_value()/2.) : 0.), impl_->current_drawing_state_.svg_y_->get_unit());
+
+                strTransform +=   std::wstring(L" translate(")  + boost::lexical_cast<std::wstring>(pos_x)
+                                + std::wstring(L",")            + boost::lexical_cast<std::wstring>(pos_y)
+                                + std::wstring(L")") ;
 				impl_->current_drawing_state_.svg_x_ = boost::none;
 				impl_->current_drawing_state_.svg_y_ = boost::none;
 			}
@@ -555,7 +558,7 @@ office_element_ptr odf_drawing_context::Impl::create_draw_element(int type)
 }
 void odf_drawing_context::Impl::create_draw_base(int type)
 {	
-	office_element_ptr & draw_elm = create_draw_element(type);
+    office_element_ptr draw_elm = create_draw_element(type);
 
 	draw_base* draw = dynamic_cast<draw_base*>(draw_elm.get());
 	if (draw == NULL)return;
@@ -568,7 +571,7 @@ void odf_drawing_context::Impl::create_draw_base(int type)
 	style* style_ = dynamic_cast<style*>(style_shape_elm.get());
 	if (style_)
 	{
-		style_name = style_->style_name_;
+        style_name = style_->style_name_;
 		current_graphic_properties = style_->style_content_.get_style_graphic_properties();
 	}
 

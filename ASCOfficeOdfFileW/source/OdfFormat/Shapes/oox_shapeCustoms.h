@@ -1,4 +1,4 @@
-#include "..\oox_shape_defines.h"
+#include "../oox_shape_defines.h"
 		//	shapetypeIrregularSeal1,
 		//	shapetypeIrregularSeal2,
 //	+	//	shapetypeSun,

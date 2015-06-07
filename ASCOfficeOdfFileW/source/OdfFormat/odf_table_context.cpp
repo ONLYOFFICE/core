@@ -45,12 +45,12 @@ namespace odf
 
 		odf_element_state table;
 
-		__int32 current_row;
-		__int32 current_column;
+        int current_row;
+        int current_column;
 
-		__int32 count_rows;
+        int count_rows;
 
-		__int32 count_header_row;
+        int count_header_row;
 
 		bool styled;
 

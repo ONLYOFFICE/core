@@ -1,20 +1,20 @@
 
 
-#include "Shapes\oox_shapeMaths.h"
-#include "Shapes\oox_shapeSnipRoundRects.h"
-#include "Shapes\oox_shapeCustoms.h"
-#include "Shapes\oox_shapeStars.h"
+#include "Shapes/oox_shapeMaths.h"
+#include "Shapes/oox_shapeSnipRoundRects.h"
+#include "Shapes/oox_shapeCustoms.h"
+#include "Shapes/oox_shapeStars.h"
 
-#include "Shapes\oox_shapeAccentCallouts.h"
-#include "Shapes\oox_shapeArrows.h"
-#include "Shapes\oox_shapeCharts.h"
-#include "Shapes\oox_shapePrimitives.h"
-#include "Shapes\oox_shapeRibbons.h"
-#include "Shapes\oox_shapeConnectors.h"
-#include "Shapes\oox_shapeWordArt.h"
-#include "Shapes\oox_shapeCurvedArrows.h"
+#include "Shapes/oox_shapeAccentCallouts.h"
+#include "Shapes/oox_shapeArrows.h"
+#include "Shapes/oox_shapeCharts.h"
+#include "Shapes/oox_shapePrimitives.h"
+#include "Shapes/oox_shapeRibbons.h"
+#include "Shapes/oox_shapeConnectors.h"
+#include "Shapes/oox_shapeWordArt.h"
+#include "Shapes/oox_shapeCurvedArrows.h"
 
-#include "..\..\..\Common\DocxFormat\Source\Common\SimpleTypes_Drawing.h"
+#include "../../../Common/DocxFormat/Source/Common/SimpleTypes_Drawing.h"
 
 namespace cpdoccore 
 {

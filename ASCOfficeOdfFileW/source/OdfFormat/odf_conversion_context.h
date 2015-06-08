@@ -48,7 +48,7 @@ public:
 	virtual void					start_text_context() = 0;
 	virtual void					end_text_context() = 0;
 
-	virtual void start_image(std::wstring & image_file_name) = 0;
+    virtual void start_image(const std::wstring & image_file_name) = 0;
 	
 	virtual odf_style_context		* styles_context();
 

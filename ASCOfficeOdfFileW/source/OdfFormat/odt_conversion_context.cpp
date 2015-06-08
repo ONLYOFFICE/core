@@ -152,7 +152,7 @@ void odt_conversion_context::end_text_context()
 		text_context_.pop_back();
 	}
 }
-void odt_conversion_context::add_text_content(std::wstring & text)
+void odt_conversion_context::add_text_content(const std::wstring & text)
 {
 	if (drop_cap_state_.enabled)
 	{
@@ -658,7 +658,7 @@ void odt_conversion_context::end_comment(int oox_comm_id)
 			text_context()->current_level_.back().elm->add_child_element(comm_elm);
 	}
 }
-void odt_conversion_context::start_image(std::wstring & image_file_name)
+void odt_conversion_context::start_image(const std::wstring & image_file_name)
 {
 	std::wstring odf_ref_name ;
 	

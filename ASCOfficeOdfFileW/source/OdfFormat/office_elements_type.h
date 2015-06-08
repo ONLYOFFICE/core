@@ -2,7 +2,7 @@
 #define _CPDOCCORE_ODF_OFFCIE_ELEMENTS_TYPE_H_
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 enum ElementType
 {

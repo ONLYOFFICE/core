@@ -4,7 +4,7 @@
 #include <cpdoccore/xml/attributes.h>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_types {
 
 void apply_line_width(_CP_OPT(line_width) & A, const _CP_OPT(line_width) & B)
 {

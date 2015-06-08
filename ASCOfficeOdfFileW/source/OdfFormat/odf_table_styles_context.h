@@ -6,7 +6,7 @@
 #include "office_elements_create.h"
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_writer {
 
 class style_table_cell_properties;
 class style_text_properties;

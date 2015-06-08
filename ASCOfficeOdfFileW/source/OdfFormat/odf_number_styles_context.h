@@ -9,7 +9,7 @@
 #include "officevaluetype.h"
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_writer {
 
 class ods_conversion_context;
 
@@ -20,7 +20,7 @@ struct number_format_state
 {
 	int oox_num_fmt;//дефолтные (по документации - номера 0-163, за исключением некоторых)
 
-	office_value_type::type ods_type;
+	odf_types::office_value_type::type ods_type;
 
 	std::vector<std::wstring> format_code;
 

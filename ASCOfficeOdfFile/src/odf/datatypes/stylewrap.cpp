@@ -4,7 +4,7 @@
 #include <boost/algorithm/string.hpp>
 #include <ostream>
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 std::wostream & operator << (std::wostream & _Wostream, const style_wrap & _Val)
 {

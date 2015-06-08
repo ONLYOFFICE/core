@@ -12,7 +12,7 @@
 #include "serialize_elements.h"
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_reader {
 namespace text {
 
 
@@ -56,7 +56,7 @@ const wchar_t * ruby_text::name = L"ruby-text";
 
 void ruby_text::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    text_style_name_ = style_ref( Attributes->get_val< ::std::wstring >(L"text:style-name").get_value_or(L"") );
+	text_style_name_ = odf_types::style_ref( Attributes->get_val< ::std::wstring >(L"text:style-name").get_value_or(L"") );
 }
 
 void ruby_text::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)

@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class page_usage
 {
@@ -44,7 +44,7 @@ std::wostream & operator << (std::wostream & _Wostream, const page_usage & _Val)
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::page_usage);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::page_usage);
 
 }
 

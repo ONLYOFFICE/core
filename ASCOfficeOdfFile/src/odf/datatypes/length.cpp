@@ -6,7 +6,7 @@
 
 #include <boost/lexical_cast.hpp>
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 std::wostream & operator << (std::wostream & _Wostream, const length::unit _Unit)
 {

@@ -9,7 +9,7 @@
 
 
 namespace cpdoccore {
-namespace odf
+namespace odf_reader
 {
 	class styles_container;
 	typedef boost::shared_ptr<styles_container> styles_container_ptr;
@@ -22,10 +22,10 @@ class xlsx_text_context: boost::noncopyable
 {
 public:
     //xlsx_text_context();
-	xlsx_text_context(odf::styles_container & styles_);
+	xlsx_text_context(odf_reader::styles_container & styles_);
     ~xlsx_text_context();
 public:
-	void set_local_styles_container(odf::styles_container*  local_styles_);
+	void set_local_styles_container(odf_reader::styles_container*  local_styles_);
     
 	void add_text(const std::wstring & text);
     

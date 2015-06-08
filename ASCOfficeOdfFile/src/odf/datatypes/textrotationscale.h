@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class text_rotation_scale
 {
@@ -42,7 +42,7 @@ std::wostream & operator << (std::wostream & _Wostream, const text_rotation_scal
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::text_rotation_scale);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::text_rotation_scale);
 
 }
 

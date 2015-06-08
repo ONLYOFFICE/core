@@ -11,7 +11,7 @@
 #include "datatypes/smil_transitiontype.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 
 
@@ -74,10 +74,10 @@ public:
 	
 	_CP_OPT(std::wstring)	smil_direction_;
 	_CP_OPT(std::wstring)	smil_subtype_; 
-	_CP_OPT(smil_transition_type)	smil_type_;
+	_CP_OPT(odf_types::smil_transition_type)	smil_type_;
 	_CP_OPT(std::wstring)	smil_mode_;
-	_CP_OPT(color)			smil_fadeColor_;
-	_CP_OPT(clockvalue)		smil_dur_;
+	_CP_OPT(odf_types::color)			smil_fadeColor_;
+	_CP_OPT(odf_types::clockvalue)		smil_dur_;
 };
 
 //anim:transitionFilter
@@ -92,8 +92,8 @@ public:
 
 	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 ///////////////////////////////////////////////////////////	
-	common_anim_smil_attlist		common_anim_smil_attlist_;
-	anim_transition_filter_attlist	anim_transition_filter_attlist_;
+	odf_types::common_anim_smil_attlist		common_anim_smil_attlist_;
+	anim_transition_filter_attlist			anim_transition_filter_attlist_;
 
 
 private:

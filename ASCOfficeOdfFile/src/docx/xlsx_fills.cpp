@@ -59,24 +59,24 @@ size_t xlsx_fills::size() const
     return impl_->fills_.size();
 }
 
-size_t xlsx_fills::fillId(const odf::text_format_properties_content * textProp,
-    const odf::paragraph_format_properties * parProp,
-    const odf::style_table_cell_properties_attlist * cellProp, bool default_set)
+size_t xlsx_fills::fillId(const odf_reader::text_format_properties_content * textProp,
+    const odf_reader::paragraph_format_properties * parProp,
+    const odf_reader::style_table_cell_properties_attlist * cellProp, bool default_set)
 {
     bool is_default;
     return fillId(textProp, parProp, cellProp,default_set, is_default);
 }
 
-size_t xlsx_fills::fillId(const odf::text_format_properties_content * textProp,
-    const odf::paragraph_format_properties * parProp,
-    const odf::style_table_cell_properties_attlist * cellProp, bool default_set, bool & is_default)
+size_t xlsx_fills::fillId(const odf_reader::text_format_properties_content * textProp,
+    const odf_reader::paragraph_format_properties * parProp,
+    const odf_reader::style_table_cell_properties_attlist * cellProp, bool default_set, bool & is_default)
 {
 	is_default = true;
     if (cellProp)
     {
-        if (_CP_OPT(odf::background_color) bgClr = cellProp->common_background_color_attlist_.fo_background_color_)
+        if (_CP_OPT(odf_types::background_color) bgClr = cellProp->common_background_color_attlist_.fo_background_color_)
         {
-            if (bgClr->get_type() != odf::background_color::Transparent)
+            if (bgClr->get_type() != odf_types::background_color::Transparent)
             {
                 xlsx_color color;
                 // alfa + rgb

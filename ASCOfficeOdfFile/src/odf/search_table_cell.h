@@ -4,7 +4,7 @@
 #include <string>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 class office_element;
 

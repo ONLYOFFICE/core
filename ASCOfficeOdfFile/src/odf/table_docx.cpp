@@ -12,7 +12,10 @@
 #include "style_table_properties.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 
 

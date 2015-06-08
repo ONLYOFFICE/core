@@ -18,7 +18,7 @@
 
 namespace cpdoccore { 
 
-namespace odf 
+namespace odf_reader 
 {
     class odf_document;
 }
@@ -31,7 +31,7 @@ namespace package
 }
 
 pptx_conversion_context::pptx_conversion_context(cpdoccore::oox::package::pptx_document * outputDocument,
-													cpdoccore::odf::odf_document * odfDocument): 
+													cpdoccore::odf_reader::odf_document * odfDocument): 
 	output_document_(outputDocument)
 	,odf_document_(odfDocument)
 	,pptx_text_context_(odf_document_->odf_context(),*this)
@@ -71,7 +71,7 @@ void pptx_conversion_context::set_font_directory(std::wstring pathFonts)
 
 void pptx_conversion_context::process_layouts()
 {
-	odf::presentation_layouts_instance & layouts = root()->odf_context().styleContainer().presentation_layouts();
+	odf_reader::presentation_layouts_instance & layouts = root()->odf_context().styleContainer().presentation_layouts();
 
 	get_text_context().set_process_layouts(true);
 
@@ -80,7 +80,7 @@ void pptx_conversion_context::process_layouts()
 	{
 		start_layout(layout_index);
 
-		odf::style_presentation_page_layout * layout = 
+		odf_reader::style_presentation_page_layout * layout = 
 			root()->odf_context().pageLayoutContainer().presentation_page_layout_by_name(layouts.content[layout_index].layout_name);
 
 		if (layout)
@@ -88,25 +88,25 @@ void pptx_conversion_context::process_layouts()
 			layout->pptx_convert(*this);
 		}
 		//нужно вытащить footers 
-		odf::style_master_page * master = 
+		odf_reader::style_master_page * master = 
 			root()->odf_context().pageLayoutContainer().master_page_by_name(layouts.content[layout_index].master_name);
 
 		if (master)
 		{
-			BOOST_FOREACH(odf::office_element_ptr elm, master->content_)
+			BOOST_FOREACH(odf_reader::office_element_ptr elm, master->content_)
 			{
-				if (elm->get_type() == odf::typeDrawFrame)
+				if (elm->get_type() == odf_reader::typeDrawFrame)
 				{
-					odf::draw_frame* frame = dynamic_cast<odf::draw_frame *>(elm.get());
+					odf_reader::draw_frame* frame = dynamic_cast<odf_reader::draw_frame *>(elm.get());
 
 					if ((frame) && (frame->common_presentation_attlist_.presentation_class_))
 					{
-						odf::presentation_class::type type = frame->common_presentation_attlist_.presentation_class_->get_type();
+						odf_types::presentation_class::type type = frame->common_presentation_attlist_.presentation_class_->get_type();
 
-						if (type==odf::presentation_class::footer ||
-							type==odf::presentation_class::date_time ||
-							type==odf::presentation_class::header ||
-							type==odf::presentation_class::page_number)
+						if (type==odf_types::presentation_class::footer ||
+							type==odf_types::presentation_class::date_time ||
+							type==odf_types::presentation_class::header ||
+							type==odf_types::presentation_class::page_number)
 						{
 							if (frame->idx_in_owner <0)frame->idx_in_owner = last_idx_placeHolder++;
 
@@ -122,7 +122,7 @@ void pptx_conversion_context::process_layouts()
 }
 void pptx_conversion_context::process_master_pages()
 {
-	odf::presentation_masters_instance & masters = root()->odf_context().styleContainer().presentation_masters();
+	odf_reader::presentation_masters_instance & masters = root()->odf_context().styleContainer().presentation_masters();
 
 	process_masters_ = true;
 	get_text_context().set_process_layouts(true);
@@ -132,7 +132,7 @@ void pptx_conversion_context::process_master_pages()
 	{
 		start_master(master_index);
 		
-		odf::style_master_page * master = 
+		odf_reader::style_master_page * master = 
 			root()->odf_context().pageLayoutContainer().master_page_by_name(masters.content[master_index].master_name);
 
 		if (master)
@@ -170,14 +170,14 @@ void pptx_conversion_context::process_theme(std::wstring  name)
 }
 void pptx_conversion_context::start_document()
 {
-    odf::odf_read_context & odfContext = root()->odf_context();
-    std::vector<const odf::style_instance *> instances;
+    odf_reader::odf_read_context & odfContext = root()->odf_context();
+    std::vector<const odf_reader::style_instance *> instances;
     
-	instances.push_back(odfContext.styleContainer().style_default_by_type(odf::style_family::Presentation));
-	instances.push_back(odfContext.styleContainer().style_by_name(L"Default",odf::style_family::Presentation,false));
+	instances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::Presentation));
+	instances.push_back(odfContext.styleContainer().style_by_name(L"Default",odf_types::style_family::Presentation,false));
 
-    odf::text_format_properties_content			textFormatProperties	= calc_text_properties_content(instances);
-    odf::paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content(instances);
+    odf_reader::text_format_properties_content			textFormatProperties	= calc_text_properties_content(instances);
+    odf_reader::paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content(instances);
 
 	process_masters_ = false;
 }
@@ -238,14 +238,14 @@ void pptx_conversion_context::end_document()
 	}
 //////////////////////////////////////////////////////////////////////////////////////////////////
 	//размеры страниц в презентации
-    odf::odf_read_context & context =  root()->odf_context();
-    odf::page_layout_container & pageLayouts = context.pageLayoutContainer();
+    odf_reader::odf_read_context & context =  root()->odf_context();
+    odf_reader::page_layout_container & pageLayouts = context.pageLayoutContainer();
 	if ((pageLayouts.master_pages().size()>0) && (pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_))//default
 	{
 		const std::wstring masterStyleName = pageLayouts.master_pages()[0]->style_master_page_attlist_.style_name_->style_name();
 		const std::wstring pageProperties = root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterStyleName);
 
-		odf::page_layout_instance *pages_layouts = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
+		odf_reader::page_layout_instance *pages_layouts = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
 		
 		if (pages_layouts)pages_layouts->pptx_convert(*this);
 	}
@@ -390,7 +390,7 @@ bool pptx_conversion_context::start_layout(int layout_index)
 {
 	if  (layout_index >=0)
 	{
-		odf::presentation_layouts_instance & layouts = root()->odf_context().styleContainer().presentation_layouts();
+		odf_reader::presentation_layouts_instance & layouts = root()->odf_context().styleContainer().presentation_layouts();
 
 		create_new_slideLayout(layouts.content[layout_index].Id);
 		
@@ -456,7 +456,7 @@ bool pptx_conversion_context::start_layout(int layout_index)
 }
 bool pptx_conversion_context::start_master(int master_index)
 {
-	odf::presentation_masters_instance & masters = root()->odf_context().styleContainer().presentation_masters();
+	odf_reader::presentation_masters_instance & masters = root()->odf_context().styleContainer().presentation_masters();
 
 	create_new_slideMaster(masters.content[master_index].Id);
 	

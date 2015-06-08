@@ -102,9 +102,9 @@ bool pptx_table_state::start_covered_cell(pptx_conversion_context & Context)
             _Wostream << L" gridSpan=\"" << rows_spanned_[current_table_column_].column_spanned() + 1 << "\"";
 
 		_Wostream << L">";
-        odf::style_instance * inst = 
+        odf_reader::style_instance * inst = 
             context_.root()->odf_context().styleContainer().style_by_name( 
-					rows_spanned_[current_table_column_].style() , odf::style_family::TableCell,false);
+					rows_spanned_[current_table_column_].style() , odf_types::style_family::TableCell,false);
 
     }
 
@@ -129,7 +129,7 @@ void pptx_table_state::end_covered_cell()
     {
 		const std::wstring cellStyleName = default_row_cell_style_name_.length()>0 ? default_row_cell_style_name_ : default_cell_style_name_; 
 		
-		const odf::style_instance * style_inst = context_.root()->odf_context().styleContainer().style_by_name(cellStyleName, odf::style_family::TableCell,false);
+		const odf_reader::style_instance * style_inst = context_.root()->odf_context().styleContainer().style_by_name(cellStyleName, odf_types::style_family::TableCell,false);
 
 		oox::oox_serialize_tcPr(_Wostream, style_inst, context_);
 
@@ -197,7 +197,7 @@ struct pptx_border_edge
 
 void convert_border_style(const std::wstring& odfBorderStyle,pptx_border_edge & border)
 {
-    odf::border_style borderStyle(odfBorderStyle);
+    odf_types::border_style borderStyle(odfBorderStyle);
 	
 	border.cmpd = L"sng";
 	border.prstDash = L"solid";
@@ -246,10 +246,10 @@ void process_border(pptx_border_edge & borderEdge, const _CP_OPT(std::wstring) &
     {
  		borderEdge.present = true;
 
-        odf::border_style borderStyle(*odfBorderStyle);
+        odf_types::border_style borderStyle(*odfBorderStyle);
 
         borderEdge.color = borderStyle.get_color().get_hex_value();
-		borderEdge.width = boost::lexical_cast<int>(borderStyle.get_length().get_value_unit(odf::length::emu));
+		borderEdge.width = boost::lexical_cast<int>(borderStyle.get_length().get_value_unit(odf_types::length::emu));
         
 		convert_border_style(*odfBorderStyle,borderEdge);
    }
@@ -281,11 +281,11 @@ void oox_serialize_border(std::wostream & strm, std::wstring Node, pptx_border_e
 	}
 }
 
-void oox_serialize_tcPr(std::wostream & strm, const odf::style_instance* style_inst, oox::pptx_conversion_context & Context)
+void oox_serialize_tcPr(std::wostream & strm, const odf_reader::style_instance* style_inst, oox::pptx_conversion_context & Context)
 {
-	const odf::style_instance * default_style_inst = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::TableCell);
+	const odf_reader::style_instance * default_style_inst = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::TableCell);
 
-	std::vector<const odf::style_instance *> instances;
+	std::vector<const odf_reader::style_instance *> instances;
 
 	if (default_style_inst)	instances.push_back(default_style_inst);
 	if (style_inst)			instances.push_back(style_inst);
@@ -296,18 +296,18 @@ void oox_serialize_tcPr(std::wostream & strm, const odf::style_instance* style_i
 		{				
 			if (style_inst || default_style_inst)
 			{
-				odf::style_table_cell_properties_attlist style_cell_attlist = odf::calc_table_cell_properties(instances);
+				odf_reader::style_table_cell_properties_attlist style_cell_attlist = odf_reader::calc_table_cell_properties(instances);
 
 				if (style_cell_attlist.style_vertical_align_)
 				{
 					std::wstring vAlign;
 					switch(style_cell_attlist.style_vertical_align_->get_type())
 					{
-					case odf::vertical_align::Baseline: 
-					case odf::vertical_align::Top:      vAlign = L"t"; break;
-					case odf::vertical_align::Middle:   vAlign = L"ctr"; break;
-					case odf::vertical_align::Bottom:   vAlign = L"b"; break;
-					case odf::vertical_align::Auto:  break;
+					case odf_types::vertical_align::Baseline: 
+					case odf_types::vertical_align::Top:      vAlign = L"t"; break;
+					case odf_types::vertical_align::Middle:   vAlign = L"ctr"; break;
+					case odf_types::vertical_align::Bottom:   vAlign = L"b"; break;
+					case odf_types::vertical_align::Auto:  break;
 					}
 					if (!vAlign.empty())
 						CP_XML_ATTR(L"anchor",  vAlign );      
@@ -335,7 +335,7 @@ void oox_serialize_tcPr(std::wostream & strm, const odf::style_instance* style_i
 
 
 
-				odf::paragraph_format_properties style_paragraph = odf::calc_paragraph_properties_content(style_inst);//instances);
+				odf_reader::paragraph_format_properties style_paragraph = odf_reader::calc_paragraph_properties_content(style_inst);//instances);
 
 				pptx_border_edge left,top,bottom,right;
 				
@@ -352,9 +352,9 @@ void oox_serialize_tcPr(std::wostream & strm, const odf::style_instance* style_i
 	////////////////////////////////////////////////////////////////////////////////////////////////			
 				oox::_oox_fill fill;
 
-				odf::graphic_format_properties style_graphic = odf::calc_graphic_properties_content(instances);
+				odf_reader::graphic_format_properties style_graphic = odf_reader::calc_graphic_properties_content(instances);
 				
-				odf::Compute_GraphicFill(style_graphic.common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,fill);	
+				odf_reader::Compute_GraphicFill(style_graphic.common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,fill);	
 				
 				if (fill.bitmap)
 				{

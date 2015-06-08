@@ -13,7 +13,7 @@
 #include <iosfwd>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 class styles_container;
 class style_instance;
@@ -25,9 +25,9 @@ class style_instance
 {
 public:
     style_instance(
-        styles_container * Container,
+        styles_container *	Container,
         const std::wstring & Name,
-        style_family::type Type,
+        odf_types::style_family::type Type,
         style_content * Content,
         bool IsAutomatic,
         bool IsDefault,
@@ -38,7 +38,7 @@ public:
 
 
     const std::wstring & name() const;
-    style_family::type type() const;
+    odf_types::style_family::type type() const;
     style_content * content() const;
     style_instance * parent() const;
     const std::wstring & parent_name() const;
@@ -54,7 +54,7 @@ public:
 private:
     styles_container * container_;
     std::wstring name_;
-    style_family::type style_type_;
+    odf_types::style_family::type style_type_;
     style_content * content_;
 
     bool is_automatic_;    
@@ -108,7 +108,7 @@ public:
     typedef std::vector<style_instance_ptr> instances_array;
     
 	void add_style(const std::wstring & Name,
-        style_family::type Type,
+        odf_types::style_family::type Type,
         style_content * Content,
         bool IsAutomatic,
         bool IsDefault,
@@ -119,8 +119,8 @@ public:
     void add_master_page_name(const std::wstring & StyleName, const std::wstring & MasterPageName);
 
     style_instance * hyperlink_style();
-    style_instance * style_by_name(const std::wstring & Name, style_family::type Type,bool object_in_styles) const;
-    style_instance * style_default_by_type(style_family::type Type) const;
+    style_instance * style_by_name(const std::wstring & Name, odf_types::style_family::type Type,bool object_in_styles) const;
+	style_instance * style_default_by_type(odf_types::style_family::type Type) const;
     
 	const std::wstring master_page_name_by_name(const std::wstring & StyleName) const;
 
@@ -143,7 +143,7 @@ private:
     typedef boost::unordered_map<std::wstring, std::wstring> map_wstring_wstring;
     map_wstring_wstring master_page_name_;
 
-    typedef boost::unordered_map<style_family::type, int> map_style_family_int;
+    typedef boost::unordered_map<odf_types::style_family::type, int> map_style_family_int;
     map_style_family_int default_map_;
     int hyperlink_style_pos_;
 };
@@ -308,7 +308,7 @@ private:
 class notes_configuration
 {
 public:
-    const text_notes_configuration * getConfiguration(noteclass::type noteType) const
+    const text_notes_configuration * getConfiguration(odf_types::noteclass::type noteType) const
     { 
         if (type_to_name_.count(noteType)) 
             return type_to_name_.at(noteType);
@@ -316,9 +316,9 @@ public:
             return NULL;
     }
 
-    void add(noteclass::type noteType, const text_notes_configuration * conf) { type_to_name_[noteType] = conf; }
+    void add(odf_types::noteclass::type noteType, const text_notes_configuration * conf) { type_to_name_[noteType] = conf; }
 private:
-    boost::unordered_map<noteclass::type, const text_notes_configuration *> type_to_name_;
+    boost::unordered_map<odf_types::noteclass::type, const text_notes_configuration *> type_to_name_;
         
 };
 

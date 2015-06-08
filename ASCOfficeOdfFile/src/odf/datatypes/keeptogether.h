@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class keep_together
 {
@@ -42,7 +42,7 @@ std::wostream & operator << (std::wostream & _Wostream, const keep_together & _V
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::keep_together);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::keep_together);
 
 }
 

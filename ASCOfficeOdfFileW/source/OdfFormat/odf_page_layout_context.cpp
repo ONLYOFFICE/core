@@ -14,7 +14,10 @@
 
 
 namespace cpdoccore {
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
 
 odf_page_layout_context::odf_page_layout_context(odf_conversion_context * Context)
 {

@@ -24,7 +24,7 @@ public:
                 return optional_v_type( V::parse(*val) );
             }
         }
-        catch(odf::errors::invalid_attribute &)
+        catch(odf_types::errors::invalid_attribute &)
         {         
             attributes::value_type val = attr.get(QualifiedName);
 

@@ -8,7 +8,7 @@
 #include "length.h"
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_writer {
 
 class odf_conversion_context;
 class odf_style_context;
@@ -71,8 +71,8 @@ public:
 
 	void set_pages_mirrored(bool val);
 
-	_CP_OPT(length) header_size_;
-	_CP_OPT(length) footer_size_;
+	_CP_OPT(odf_types::length) header_size_;
+	_CP_OPT(odf_types::length) footer_size_;
 
 	_CP_OPT(std::wstring) page_number_format;
 

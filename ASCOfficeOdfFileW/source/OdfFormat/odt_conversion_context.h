@@ -6,7 +6,7 @@
 #include "odf_table_context.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 class office_text;
 
@@ -49,8 +49,8 @@ public:
 	void start_drawings();
 	void end_drawings();
 
-    virtual void start_image(const std::wstring & image_file_name);
-    void add_text_content	(const std::wstring & text);
+	virtual void start_image(std::wstring & image_file_name);
+	void add_text_content	(std::wstring & text);
 
 	void start_paragraph(bool styled = false);
 	void end_paragraph();

@@ -5,7 +5,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class iconset_type
 {
@@ -52,7 +52,7 @@ std::wostream & operator << (std::wostream & _Wostream, const iconset_type & _Va
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::iconset_type);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::iconset_type);
 
 }
 

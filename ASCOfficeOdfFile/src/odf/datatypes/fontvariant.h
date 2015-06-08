@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class font_variant
 {
@@ -42,7 +42,7 @@ std::wostream & operator << (std::wostream & _Wostream, const font_variant & _Va
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::font_variant);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::font_variant);
 
 }
 

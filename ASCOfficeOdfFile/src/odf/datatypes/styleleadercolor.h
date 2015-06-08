@@ -11,7 +11,7 @@
 
 #include "color.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class style_leader_color
 {
@@ -52,7 +52,7 @@ std::wostream & operator << (std::wostream & _Wostream, const style_leader_color
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::style_leader_color);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::style_leader_color);
 
 }
 

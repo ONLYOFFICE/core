@@ -5,7 +5,10 @@
 #include <algorithm>
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 text_format_properties_content calc_text_properties_content(const std::vector<const style_text_properties*> & textProps)
 {

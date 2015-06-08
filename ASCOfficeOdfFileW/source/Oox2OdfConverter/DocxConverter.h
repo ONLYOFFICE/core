@@ -76,7 +76,7 @@ namespace ComplexTypes
 }
 namespace cpdoccore 
 {
-	namespace odf 
+	namespace odf_writer 
 	{
 		namespace package 
 		{		
@@ -100,16 +100,16 @@ namespace Oox2Odf
 		virtual void convertDocument();
 		virtual void write(const std::wstring & path);
 		
-		virtual odf::odf_conversion_context		*odf_context();
+		virtual odf_writer::odf_conversion_context		*odf_context();
 		virtual OOX::CTheme						*oox_theme();
 		virtual CString							 find_link_by_id (CString sId, int t);
 
 		void convert(OOX::WritingElement		*oox_unknown);
     private:
 		OOX::CDocx								*docx_document;
-		cpdoccore::odf::package::odf_document	*output_document;
+		cpdoccore::odf_writer::package::odf_document	*output_document;
 		
-		odf::odt_conversion_context				*odt_context;
+		odf_writer::odt_conversion_context				*odt_context;
         OOX::Logic::CSectionProperty			*last_section_properties;
 
 		void apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other);
@@ -127,10 +127,10 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CSectionProperty		*oox_section_pr, bool root = false);
 		void convert(OOX::Logic::CParagraph				*oox_paragraph);
 		void convert(OOX::Logic::CRun					*oox_run);
-		void convert(OOX::Logic::CParagraphProperty		*oox_paragraph_prop,	odf::style_paragraph_properties *paragraph_properties);
-		void convert(ComplexTypes::Word::CFramePr		*oox_frame_pr,			odf::style_paragraph_properties *paragraph_properties);
-		void convert(OOX::Logic::CRunProperty			*oox_run_prop,			odf::style_text_properties		*text_properties);
-		void convert(ComplexTypes::Word::CShading		*oox_shading,			odf::style_text_properties		*text_properties );
+		void convert(OOX::Logic::CParagraphProperty		*oox_paragraph_prop,	odf_writer::style_paragraph_properties *paragraph_properties);
+		void convert(ComplexTypes::Word::CFramePr		*oox_frame_pr,			odf_writer::style_paragraph_properties *paragraph_properties);
+		void convert(OOX::Logic::CRunProperty			*oox_run_prop,			odf_writer::style_text_properties		*text_properties);
+		void convert(ComplexTypes::Word::CShading		*oox_shading,			odf_writer::style_text_properties		*text_properties );
 		void convert(OOX::Logic::CFldSimple				*oox_fld);
 		void convert(OOX::Logic::CFldChar				*oox_fld);
 		void convert(OOX::Logic::CInstrText				*oox_instr);
@@ -155,23 +155,23 @@ namespace Oox2Odf
 		void convert(OOX::Drawing::CPicture				*oox_picture);
 		void convert(OOX::Drawing::CDiagrammParts		*oox_diagramm);
 		
-		void convert(SimpleTypes::CTheme<>				*oox_font_theme,_CP_OPT(std::wstring)			& odf_font_name);
-		void convert(ComplexTypes::Word::CColor			*color,			_CP_OPT(odf::color)				& odf_color);
-		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf::length)			& odf_size);
-		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf::length_or_percent) & odf_size);
-		void convert(ComplexTypes::Word::CTblWidth		*oox_size,		_CP_OPT(odf::length)			& odf_size);
-		void convert(ComplexTypes::Word::CJc			*oox_jc,		_CP_OPT(odf::text_align)		& align);
+		void convert(SimpleTypes::CTheme<>				*oox_font_theme,_CP_OPT(std::wstring)				& odf_font_name);
+		void convert(ComplexTypes::Word::CColor			*color,			_CP_OPT(odf_types::color)			& odf_color);
+		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length)			& odf_size);
+		void convert(SimpleTypes::CUniversalMeasure		*oox_size,		_CP_OPT(odf_types::length_or_percent) & odf_size);
+		void convert(ComplexTypes::Word::CTblWidth		*oox_size,		_CP_OPT(odf_types::length)			& odf_size);
+		void convert(ComplexTypes::Word::CJc			*oox_jc,		_CP_OPT(odf_types::text_align)		& align);
 		void convert(ComplexTypes::Word::CBorder		*borderProp,	std::wstring & odf_border_prop);
 		void convert(ComplexTypes::Word::CPageBorder	*borderProp,	std::wstring & odf_border_prop);
 		
-		void convert(OOX::Logic::CPBdr					*oox_border,			odf::style_paragraph_properties		*paragraph_properties);
-		void convert(OOX::Logic::CTcBorders 			*oox_border,			odf::style_table_cell_properties	*table_cell_properties);
-		void convert(OOX::Logic::CTblBorders			*oox_border,			odf::style_table_cell_properties	*table_cell_properties);
-		//void convert(OOX::Logic::CTblBorders			*oox_border,			odf::style_table_properties			*table_properties);
+		void convert(OOX::Logic::CPBdr					*oox_border,			odf_writer::style_paragraph_properties		*paragraph_properties);
+		void convert(OOX::Logic::CTcBorders 			*oox_border,			odf_writer::style_table_cell_properties	*table_cell_properties);
+		void convert(OOX::Logic::CTblBorders			*oox_border,			odf_writer::style_table_cell_properties	*table_cell_properties);
+		//void convert(OOX::Logic::CTblBorders			*oox_border,			odf_writer::style_table_properties			*table_properties);
 
 		void convert(SimpleTypes::CHexColor<>			*color, SimpleTypes::CThemeColor<>	*theme_color, 
 														SimpleTypes::CUcharHexNumber<>* theme_tint,
-														SimpleTypes::CUcharHexNumber<>* theme_shade, _CP_OPT(odf::color) & odf_color);
+														SimpleTypes::CUcharHexNumber<>* theme_shade, _CP_OPT(odf_types::color) & odf_color);
 		void convert(OOX::CDocDefaults					*def_style);
 		void convert(OOX::CStyle						*style);
 		void convert_table_style(OOX::CStyle			*oox_style);
@@ -188,12 +188,12 @@ namespace Oox2Odf
 		void convert(OOX::Logic::CTc					*oox_table_cell);
 		
 		bool convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr, int col = -1);
-		bool convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr,	odf::style_table_cell_properties	*table_cell_properties/*,odf::style_table_cell_properties	* table_cell_properties = NULL*/);
+		bool convert(OOX::Logic::CTableCellProperties	*oox_table_cell_pr,	odf_writer::style_table_cell_properties	*table_cell_properties/*,odf_writer::style_table_cell_properties	* table_cell_properties = NULL*/);
 		bool convert(OOX::Logic::CTableProperty			*oox_table_pr, bool base_styled);
-		bool convert(OOX::Logic::CTableProperty			*oox_table_pr,		odf::style_table_properties		*table_properties);
-		void convert(OOX::Logic::CTableProperty			*oox_table_pr,		odf::style_table_cell_properties	*table_cell_properties);
+		bool convert(OOX::Logic::CTableProperty			*oox_table_pr,		odf_writer::style_table_properties		*table_properties);
+		void convert(OOX::Logic::CTableProperty			*oox_table_pr,		odf_writer::style_table_cell_properties	*table_cell_properties);
 		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr);
-		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr,	odf::style_table_row_properties	*table_row_properties);
+		void convert(OOX::Logic::CTableRowProperties	*oox_table_row_pr,	odf_writer::style_table_row_properties	*table_row_properties);
 //--------------------------------------------------------------------------------
 	};
 }

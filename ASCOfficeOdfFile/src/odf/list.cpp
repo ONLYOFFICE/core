@@ -9,7 +9,7 @@
 #include <cpdoccore/xml/utils.h>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 namespace text {
 
 

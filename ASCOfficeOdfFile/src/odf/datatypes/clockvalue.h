@@ -4,7 +4,7 @@
 #include <string>
 #include "odfattributes.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class clockvalue
 {
@@ -28,7 +28,7 @@ private:
 
 }
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::clockvalue);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::clockvalue);
 
 }
 

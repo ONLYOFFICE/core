@@ -4,7 +4,7 @@
 
 #include "styleposition.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 std::wostream & operator << (std::wostream & _Wostream, const style_position & _Val)
 {

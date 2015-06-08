@@ -4,7 +4,7 @@
 #include "length.h"
 #include "color.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class border_style
 {

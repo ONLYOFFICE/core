@@ -45,10 +45,10 @@ void serialize_wrap_square(std::wostream & strm, _docx_drawing const & val)
     {
         switch(val.styleWrap->get_type())
         {
-		case odf::style_wrap::Parallel:
+		case odf_types::style_wrap::Parallel:
             wrapText = L"bothSides";
             break;
-		case odf::style_wrap::Dynamic:
+		case odf_types::style_wrap::Dynamic:
             wrapText = L"largest";
             break;
         default:
@@ -85,19 +85,19 @@ void serialize_wrap_extent(std::wostream & strm, _docx_drawing const & val)
 	{
 		switch(val.styleWrap->get_type())
 		{
-			case odf::style_wrap::Parallel:
-			case odf::style_wrap::Left:
-			case odf::style_wrap::Right:
-			case odf::style_wrap::Dynamic:
-			case odf::style_wrap::None:
+			case odf_types::style_wrap::Parallel:
+			case odf_types::style_wrap::Left:
+			case odf_types::style_wrap::Right:
+			case odf_types::style_wrap::Dynamic:
+			case odf_types::style_wrap::None:
 			{
 				CP_XML_NODE(L"wp:effectExtent")
 				{
 					_CP_OPT(int) iVal;
-					if (odf::GetProperty(val.additional,L"border_width_left",iVal))		CP_XML_ATTR(L"l",iVal.get());
-					if (odf::GetProperty(val.additional,L"border_width_top",iVal))		CP_XML_ATTR(L"t",iVal.get());
-					if (odf::GetProperty(val.additional,L"border_width_right",iVal))	CP_XML_ATTR(L"r",iVal.get());
-					if (odf::GetProperty(val.additional,L"border_width_bottom",iVal))	CP_XML_ATTR(L"b",iVal.get());   
+					if (odf_reader::GetProperty(val.additional,L"border_width_left",iVal))		CP_XML_ATTR(L"l",iVal.get());
+					if (odf_reader::GetProperty(val.additional,L"border_width_top",iVal))		CP_XML_ATTR(L"t",iVal.get());
+					if (odf_reader::GetProperty(val.additional,L"border_width_right",iVal))	CP_XML_ATTR(L"r",iVal.get());
+					if (odf_reader::GetProperty(val.additional,L"border_width_bottom",iVal))	CP_XML_ATTR(L"b",iVal.get());   
 				}				
 			}break;
 			default:
@@ -109,7 +109,7 @@ void serialize_wrap_extent(std::wostream & strm, _docx_drawing const & val)
 
 void serialize_wrap(std::wostream & strm, _docx_drawing const & val)
 {
-	if (!val.styleWrap || val.styleWrap->get_type() != odf::style_wrap::Parallel)
+	if (!val.styleWrap || val.styleWrap->get_type() != odf_types::style_wrap::Parallel)
 	{
 		serialize_wrap_extent(strm, val);
 	}
@@ -119,7 +119,7 @@ void serialize_wrap(std::wostream & strm, _docx_drawing const & val)
 		{
 			switch(val.styleWrap->get_type())
 			{
-			case odf::style_wrap::Parallel: 
+			case odf_types::style_wrap::Parallel: 
 				{
 					if (val.number_wrapped_paragraphs== 1)
 					{
@@ -133,15 +133,15 @@ void serialize_wrap(std::wostream & strm, _docx_drawing const & val)
 					}
 				}
 				break;
-			case odf::style_wrap::Left:
-			case odf::style_wrap::Right:
-			case odf::style_wrap::Dynamic:
+			case odf_types::style_wrap::Left:
+			case odf_types::style_wrap::Right:
+			case odf_types::style_wrap::Dynamic:
 				serialize_wrap_square(strm, val);
 				break;
-			case odf::style_wrap::RunThrough:
+			case odf_types::style_wrap::RunThrough:
 				CP_XML_NODE(L"wp:wrapNone");
 				break;
-			case odf::style_wrap::None:
+			case odf_types::style_wrap::None:
 				serialize_wrap_top_bottom(strm, val);
 				break;
 			default:
@@ -156,12 +156,12 @@ void serialize_wrap(std::wostream & strm, _docx_drawing const & val)
 	}
 }
 
-void docx_serialize_text(std::wostream & strm, const std::vector<odf::_property> & properties)
+void docx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_property> & properties)
 {
     CP_XML_WRITER(strm)
     {
 		_CP_OPT(std::wstring) strTextContent;
-		odf::GetProperty(properties,L"text-content",strTextContent);
+		odf_reader::GetProperty(properties,L"text-content",strTextContent);
 		if (strTextContent)
 		{
 			CP_XML_NODE(L"wps:txbx")
@@ -276,7 +276,7 @@ void docx_serialize_shape(std::wostream & strm, _docx_drawing const & val)
 	if (val.sub_type == 7)//custom 
 	{
 		_CP_OPT(int) iVal;
-		odf::GetProperty(val.additional,L"draw-type-index",iVal);
+		odf_reader::GetProperty(val.additional,L"draw-type-index",iVal);
 		if (iVal)shapeType = _OO_OOX_custom_shapes[*iVal].oox;	
 	}
 	else if (val.sub_type<9 && val.sub_type>=0)
@@ -397,8 +397,8 @@ void docx_serialize(std::wostream & strm, _docx_drawing const & val)
 						CP_XML_ATTR(L"relativeFrom",relativeFrom);
 
 						if (val.styleHorizontalPos &&
-							val.styleHorizontalPos->get_type() != odf::horizontal_pos::FromLeft &&
-							val.styleHorizontalPos->get_type() != odf::horizontal_pos::Outside)
+							val.styleHorizontalPos->get_type() != odf_types::horizontal_pos::FromLeft &&
+							val.styleHorizontalPos->get_type() != odf_types::horizontal_pos::Outside)
 						{
 							CP_XML_NODE(L"wp:align"){CP_XML_STREAM() << boost::lexical_cast<std::wstring>(*val.styleHorizontalPos);}
 
@@ -418,8 +418,8 @@ void docx_serialize(std::wostream & strm, _docx_drawing const & val)
 						CP_XML_ATTR(L"relativeFrom",relativeFrom);
 
 						if (val.styleVerticalPos && 
-							val.styleVerticalPos->get_type() != odf::vertical_pos::FromTop &&
-							val.styleVerticalPos->get_type() != odf::vertical_pos::Below)
+							val.styleVerticalPos->get_type() != odf_types::vertical_pos::FromTop &&
+							val.styleVerticalPos->get_type() != odf_types::vertical_pos::Below)
 						{
 							CP_XML_NODE(L"wp:align")
 							{

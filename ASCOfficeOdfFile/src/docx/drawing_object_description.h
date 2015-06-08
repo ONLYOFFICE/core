@@ -27,7 +27,7 @@ struct drawing_object_description
 
 	std::vector<_hlink_desc> hlinks_;
 
-	std::vector<odf::_property> additional_;//for shapes
+	std::vector<odf_reader::_property> additional_;//for shapes
 	
 	std::wstring xlink_href_;//ссылка на внешний объект
 	std::wstring clipping_string_;

@@ -6,7 +6,7 @@
 
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_types {
 
 class xlink_type
 {
@@ -80,9 +80,9 @@ std::wostream & operator << (std::wostream & _Wostream, const xlink_show & _Val)
 
 }
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::xlink_type);
-APPLY_PARSE_XML_ATTRIBUTES(odf::xlink_actuate);
-APPLY_PARSE_XML_ATTRIBUTES(odf::xlink_show);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::xlink_type);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::xlink_actuate);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::xlink_show);
 
 } // namespace cpdoccore
 

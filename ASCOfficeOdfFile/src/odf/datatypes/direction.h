@@ -5,7 +5,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class direction
 {
@@ -37,6 +37,6 @@ std::wostream & operator << (std::wostream & _Wostream, const direction & _Val);
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::direction);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::direction);
 
 }

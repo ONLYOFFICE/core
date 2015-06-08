@@ -33,7 +33,7 @@ public:
 	static oox_chart_context_ptr create(std::wstring const & name);
 	static oox_chart_context_ptr create();
 
-	void set_title(odf::chart::title & t)
+	void set_title(odf_reader::chart::title & t)
 	{
 		title_.set_content(t);
 	}
@@ -41,11 +41,11 @@ public:
 	{
 		plot_area_.add_axis(type);
 	}
-	void set_content_axis(odf::chart::axis & content)
+	void set_content_axis(odf_reader::chart::axis & content)
 	{
 		plot_area_.set_content_axis(content);
 	}
-	void set_content_series(odf::chart::series & content)
+	void set_content_series(odf_reader::chart::series & content)
 	{
 		plot_area_.set_content_series(content);
 	}
@@ -58,27 +58,27 @@ public:
 	{
 		return plot_area_.current_chart_;
 	}
-	void set_wall(odf::chart::simple & l)
+	void set_wall(odf_reader::chart::simple & l)
 	{
 		//plot_area_.wall_graphic_properties_	= l.graphic_properties_;
 		plot_area_.graphic_properties_	= l.graphic_properties_;
 		plot_area_.fill_	= l.fill_;
 	}
-	void set_floor(odf::chart::simple & l)
+	void set_floor(odf_reader::chart::simple & l)
 	{
 		//floor_.content_= l;
 	}
-	void set_legend(odf::chart::simple & l)
+	void set_legend(odf_reader::chart::simple & l)
 	{
 		legend_.content_= l;
 	}
 
-	void set_chart_graphic_properties(std::vector<odf::_property> & prop, _oox_fill &fill)
+	void set_chart_graphic_properties(std::vector<odf_reader::_property> & prop, _oox_fill &fill)
 	{
 		graphic_properties_= prop;
 		fill_ = fill;
 	}
-	void set_plot_area_properties(std::vector<odf::_property> & prop, _oox_fill &fill)
+	void set_plot_area_properties(std::vector<odf_reader::_property> & prop, _oox_fill &fill)
 	{
 		plot_area_.properties_		= prop; 
 		plot_area_.fill_			= fill; 
@@ -91,7 +91,7 @@ private:
 	cpdoccore::oox::oox_plot_area		plot_area_;
 	cpdoccore::oox::oox_chart_legend	legend_;
 
-	std::vector<odf::_property>			graphic_properties_;
+	std::vector<odf_reader::_property>			graphic_properties_;
 	_oox_fill							fill_;
               
 };

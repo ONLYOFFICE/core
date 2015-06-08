@@ -27,7 +27,7 @@ void oox_chart_shape::oox_serialize(std::wostream & _Wostream)
 
 }
 
-void oox_chart_shape::set(std::vector<odf::_property> & prop,_oox_fill & fill)
+void oox_chart_shape::set(std::vector<odf_reader::_property> & prop,_oox_fill & fill)
 {
 	content_ = prop;
 	fill_ = fill;

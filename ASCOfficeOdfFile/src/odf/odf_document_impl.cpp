@@ -50,7 +50,10 @@
 #define PROGRESSEVENT_ID 0
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 namespace {
 content_xml_t_ptr read_file_content(const std::wstring & Path)

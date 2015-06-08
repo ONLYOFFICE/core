@@ -67,7 +67,13 @@ namespace cpdoccore
 {
 	struct oox_table_position;
 
-namespace odf 
+	namespace odf_types
+	{
+		class background_color;
+		class font_size;
+	}
+
+	namespace odf_writer 
 	{
 		class office_element;
 		typedef shared_ptr<office_element>::Type office_element_ptr;
@@ -78,8 +84,7 @@ namespace odf
 		}
 		class odf_conversion_context;
 		class ods_conversion_context;
-		class background_color;
-		class font_size;
+
 	}
 }
 
@@ -96,7 +101,7 @@ namespace Oox2Odf
 		virtual void convertDocument();
 		virtual void write(const std::wstring & path);
 		
-		virtual odf::odf_conversion_context		*odf_context();		
+		virtual odf_writer::odf_conversion_context		*odf_context();		
 		virtual OOX::CTheme						*oox_theme();
 		virtual CString							 find_link_by_id (CString sId, int t);
 
@@ -105,9 +110,9 @@ namespace Oox2Odf
 		OOX::Spreadsheet::CXlsx			*xlsx_document;
 		OOX::Spreadsheet::CDrawing		*xlsx_current_drawing; //пока сюда .. потом покрасивше, для внешних ссылок
 		
-		odf::ods_conversion_context		*ods_context;
+		odf_writer::ods_conversion_context		*ods_context;
 
-		odf::package::odf_document		*output_document;
+		odf_writer::package::odf_document		*output_document;
 
 		void convert_sheets();
 		void convert_styles();		
@@ -134,15 +139,15 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CPageSetup			*oox_page);
 		void convert(OOX::Spreadsheet::CPageMargins			*oox_page);
 		
-		void convert(OOX::Spreadsheet::CFont				*font,		odf::style_text_properties		*text_properties);		
-		void convert(OOX::Spreadsheet::CBorder				*border,	odf::style_table_cell_properties *cell_properties);
-		void convert(OOX::Spreadsheet::CFill				*fill,		odf::style_table_cell_properties *cell_properties);
+		void convert(OOX::Spreadsheet::CFont				*font,		odf_writer::style_text_properties		*text_properties);		
+		void convert(OOX::Spreadsheet::CBorder				*border,	odf_writer::style_table_cell_properties *cell_properties);
+		void convert(OOX::Spreadsheet::CFill				*fill,		odf_writer::style_table_cell_properties *cell_properties);
 		
-		void convert(OOX::Spreadsheet::CColor				*color,		_CP_OPT(odf::color) & odf_color);
-		void convert(OOX::Spreadsheet::CColor				*color,		_CP_OPT(odf::background_color) & odf_bckgrd_color);
+		void convert(OOX::Spreadsheet::CColor				*color,		_CP_OPT(odf_types::color) & odf_color);
+		void convert(OOX::Spreadsheet::CColor				*color,		_CP_OPT(odf_types::background_color) & odf_bckgrd_color);
 		void convert(OOX::Spreadsheet::CBorderProp			*borderProp, std::wstring & odf_border_prop);
-		void convert(OOX::Spreadsheet::CAligment			*aligment,	odf::style_paragraph_properties	* paragraph_properties,
-																		odf::style_table_cell_properties * cell_properties);
+		void convert(OOX::Spreadsheet::CAligment			*aligment,	odf_writer::style_paragraph_properties	* paragraph_properties,
+																		odf_writer::style_table_cell_properties * cell_properties);
 		
 		void convert(OOX::Spreadsheet::CXfs					*cell_style, int oox_id, bool automatic=true, bool root = false);
 		void convert(OOX::Spreadsheet::CCellStyle			*cell_style);
@@ -170,7 +175,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CConditionalFormatValueObject*oox_cond_value);
 		void convert(OOX::Spreadsheet::CFormulaCF					*oox_cond_formula);
 
-		void convert(double oox_size,						_CP_OPT(odf::length) & odf_size);
+		void convert(double oox_size,						_CP_OPT(odf_types::length) & odf_size);
 		void convert_sharing_string(int number);
 	};
 

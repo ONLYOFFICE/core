@@ -4,7 +4,7 @@
 #include <ostream>
 
 namespace cpdoccore { 
-namespace odf { 
+namespace odf_types { 
 
 std::wostream & operator << (std::wostream & _Wostream, const fill_image_ref_point & _Val)
 {

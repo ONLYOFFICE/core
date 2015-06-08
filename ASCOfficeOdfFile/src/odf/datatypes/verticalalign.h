@@ -6,7 +6,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class vertical_align
 {
@@ -41,7 +41,7 @@ std::wostream & operator << (std::wostream & _Wostream, const vertical_align & _
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::vertical_align);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::vertical_align);
 
 }
 

@@ -7,7 +7,7 @@
 #include <boost/foreach.hpp>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 
 // abstract-xml

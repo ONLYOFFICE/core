@@ -9,7 +9,7 @@
 #include "datatypes/style_ref.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 
 class office_annotation_attr
@@ -18,18 +18,18 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-	_CP_OPT(length) svg_y_;
-	_CP_OPT(length) svg_x_;
- 	_CP_OPT(length) svg_width_;
-	_CP_OPT(length) svg_height_;
+	_CP_OPT(odf_types::length) svg_y_;
+	_CP_OPT(odf_types::length) svg_x_;
+ 	_CP_OPT(odf_types::length) svg_width_;
+	_CP_OPT(odf_types::length) svg_height_;
 
-	_CP_OPT(length) caption_point_y_;
-	_CP_OPT(length) caption_point_x_;
+	_CP_OPT(odf_types::length) caption_point_y_;
+	_CP_OPT(odf_types::length) caption_point_x_;
 
 	_CP_OPT(bool) display_;
 
-	 _CP_OPT(style_ref) draw_text_style_name_;
-	 _CP_OPT(style_ref) draw_style_name_;
+	 _CP_OPT(odf_types::style_ref) draw_text_style_name_;
+	 _CP_OPT(odf_types::style_ref) draw_style_name_;
 };
 
 /// \brief  dc:date
@@ -122,8 +122,8 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 private:
-    office_element_ptr_array content_;
-	office_annotation_attr office_annotation_attr_;
+    office_element_ptr_array		content_;
+	office_annotation_attr			office_annotation_attr_;
 
     office_element_ptr dc_date_;
     office_element_ptr dc_creator_;

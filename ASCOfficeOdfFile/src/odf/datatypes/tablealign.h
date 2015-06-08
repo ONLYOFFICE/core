@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class table_align
 {
@@ -44,7 +44,7 @@ std::wostream & operator << (std::wostream & _Wostream, const table_align & _Val
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::table_align);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::table_align);
 
 }
 

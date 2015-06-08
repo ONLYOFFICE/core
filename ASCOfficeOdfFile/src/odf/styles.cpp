@@ -26,12 +26,11 @@
 
 #include "draw_common.h"
 
-
-
 namespace cpdoccore { 
-namespace odf {
-    
 
+	using namespace odf_types;
+
+namespace odf_reader {
 
 style_text_properties * style_content::get_style_text_properties() const
 {
@@ -875,7 +874,7 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 			int val =  0.5 + 20.0 * fo_page_width_->get_value_unit(length::pt);
 			if (val > 31680)
 			{
-				//Context.set_settings_property(odf::_property(L"UnormalWidthPage",val));
+				//Context.set_settings_property(odf_reader::_property(L"UnormalWidthPage",val));
 				val =31680;//22"
 			}
 			w_w = boost::lexical_cast<std::wstring>(val);
@@ -1194,7 +1193,7 @@ int style_master_page::find_placeHolderIndex(presentation_class::type placeHolde
 	while(true)
     {
 		if (i>=size)break;
-		if (content_[i]->get_type() == odf::typeDrawFrame)
+		if (content_[i]->get_type() == odf_reader::typeDrawFrame)
 		{
 			draw_frame* frame = dynamic_cast<draw_frame *>(content_[i].get());
 

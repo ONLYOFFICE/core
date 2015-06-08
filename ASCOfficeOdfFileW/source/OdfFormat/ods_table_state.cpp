@@ -18,7 +18,10 @@
 #include "style_graphic_properties.h"
 
 namespace cpdoccore {
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
 
 int ods_table_state::current_table_column_ = 0;
 int ods_table_state::current_table_row_ = 0;
@@ -216,7 +219,7 @@ void ods_table_state::add_column(office_element_ptr & elm, short repeated,office
 
 	std::wstring style_name;
 
-	odf::style* style = dynamic_cast<odf::style*>(style_elm.get());
+	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
 
 	ods_element_state state = {elm, repeated,style_name, style_elm, defaut_column_width_ , current_level_.size()};
@@ -260,7 +263,7 @@ std::wstring ods_table_state::get_column_default_cell_style(int column)
 }
 void ods_table_state::set_column_width(double width)//pt
 {
-	odf::style* style = dynamic_cast<odf::style*>(columns_.back().style_elm.get());
+	odf_writer::style* style = dynamic_cast<odf_writer::style*>(columns_.back().style_elm.get());
 	if (!style)return;		
 
 	style_table_column_properties * column_properties = style->style_content_.get_style_table_column_properties();
@@ -272,7 +275,7 @@ void ods_table_state::set_column_width(double width)//pt
 }
 void ods_table_state::set_column_optimal_width(bool val)
 {
-	odf::style* style = dynamic_cast<odf::style*>(columns_.back().style_elm.get());
+	odf_writer::style* style = dynamic_cast<odf_writer::style*>(columns_.back().style_elm.get());
 	if (!style)return;		
 
 	style_table_column_properties * column_properties = style->style_content_.get_style_table_column_properties();
@@ -305,7 +308,7 @@ void ods_table_state::add_row(office_element_ptr & elm, short repeated, office_e
 
 	std::wstring style_name;
 
-	odf::style* style = dynamic_cast<odf::style*>(style_elm.get());
+	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
 
 	ods_element_state state = {elm, repeated,style_name, style_elm, defaut_row_height_ , current_level_.size()};
@@ -330,7 +333,7 @@ void ods_table_state::set_row_hidden(bool Val)
 }
 void ods_table_state::set_row_optimal_height(bool val)
 {
-	odf::style* style = dynamic_cast<odf::style*>(rows_.back().style_elm.get());
+	odf_writer::style* style = dynamic_cast<odf_writer::style*>(rows_.back().style_elm.get());
 	if (!style)return;		
 
 	style_table_row_properties * row_properties = style->style_content_.get_style_table_row_properties();
@@ -341,7 +344,7 @@ void ods_table_state::set_row_optimal_height(bool val)
 
 void ods_table_state::set_row_height(double height)
 {
-	odf::style* style = dynamic_cast<odf::style*>(rows_.back().style_elm.get());
+	odf_writer::style* style = dynamic_cast<odf_writer::style*>(rows_.back().style_elm.get());
 	if (!style)return;		
 
 	style_table_row_properties * row_properties = style->style_content_.get_style_table_row_properties();
@@ -441,7 +444,7 @@ void ods_table_state::start_cell(office_element_ptr & elm, office_element_ptr & 
 	
 	std::wstring style_name;
 
-	odf::style* style = dynamic_cast<odf::style*>(style_elm.get());
+	odf_writer::style* style = dynamic_cast<odf_writer::style*>(style_elm.get());
 	if (style)style_name = style->style_name_;
 	else style_name = row_default_cell_style_name_;
 
@@ -858,11 +861,11 @@ void ods_table_state::set_cell_text(odf_text_context* text_context, bool cash_va
 	style* style_ = dynamic_cast<style*>(cells_.back().style_elm.get());
 	if (!style_)return;	
 	
-	odf::style_table_cell_properties	* table_cell_properties = style_->style_content_.get_style_table_cell_properties();
+	odf_writer::style_table_cell_properties	* table_cell_properties = style_->style_content_.get_style_table_cell_properties();
 
 	//if (table_cell_properties && cash_value == false)
 	//{
-	//	table_cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf::text_align_source(odf::text_align_source::Fix);
+	//	table_cell_properties->style_table_cell_properties_attlist_.style_text_align_source_ = odf_writer::text_align_source(odf_writer::text_align_source::Fix);
 	//}	
 }
 void ods_table_state::set_cell_value(const std::wstring & value, bool need_cash)

@@ -33,15 +33,15 @@ void oox_chart_legend::oox_serialize_default_text(std::wostream & _Wostream)
 						_CP_OPT(int) iVal;	
 						_CP_OPT(std::wstring) sVal;
 
-						if (odf::GetProperty(content_.text_properties_,L"font-size",dVal))
+						if (odf_reader::GetProperty(content_.text_properties_,L"font-size",dVal))
 							CP_XML_ATTR(L"sz", (int)(dVal.get()*100));
 						
-						if ((odf::GetProperty(content_.text_properties_,L"font-style",iVal)) && (*iVal >0))
+						if ((odf_reader::GetProperty(content_.text_properties_,L"font-style",iVal)) && (*iVal >0))
 							CP_XML_ATTR(L"i", "true");
-						if ((odf::GetProperty(content_.text_properties_,L"font-weight",iVal)) && (*iVal >0))
+						if ((odf_reader::GetProperty(content_.text_properties_,L"font-weight",iVal)) && (*iVal >0))
 							CP_XML_ATTR(L"b", "true");		
 				
-						if (odf::GetProperty(content_.text_properties_,L"font-color",sVal))
+						if (odf_reader::GetProperty(content_.text_properties_,L"font-color",sVal))
 							CP_XML_NODE(L"a:solidFill")	
 							{
 								CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val", sVal.get());}

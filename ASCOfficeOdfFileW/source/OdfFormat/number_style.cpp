@@ -16,8 +16,11 @@
 #include "style_text_properties.h"
 #include "style_map.h"
 
-namespace cpdoccore { 
-namespace odf {
+namespace cpdoccore {
+
+	using namespace odf_types;
+
+namespace odf_writer {
 
 std::wstring number_style_base::get_style_name() const
 {

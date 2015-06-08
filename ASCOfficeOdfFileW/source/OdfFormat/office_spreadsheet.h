@@ -9,7 +9,7 @@
 #include "office_elements_create.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 
 /// \brief  office:spreadsheet

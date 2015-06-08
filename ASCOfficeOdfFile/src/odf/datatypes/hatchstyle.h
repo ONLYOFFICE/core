@@ -6,7 +6,7 @@
 
 
 namespace cpdoccore { 
-namespace odf { 
+namespace odf_types { 
 
 class hatch_style
 {
@@ -38,6 +38,6 @@ std::wostream & operator << (std::wostream & _Wostream, const hatch_style & _Val
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::hatch_style);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::hatch_style);
 
 }

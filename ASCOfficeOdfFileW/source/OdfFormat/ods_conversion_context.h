@@ -4,7 +4,7 @@
 #include "ods_table_context.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 class office_spreadsheet;
 class odf_text_context;
@@ -31,7 +31,7 @@ public:
 	virtual void end_document();
 
 	void start_sheet();
-        void set_sheet_dimension(const std::wstring & ref);
+		void set_sheet_dimension(std::wstring & ref);
 	void end_sheet();
 
 	void start_columns();
@@ -49,10 +49,10 @@ public:
 	void end_rows();
 
 	void start_cell_text();
-    void add_text_content(const std::wstring & text);
+	void add_text_content(std::wstring & text);
 	void end_cell_text();
 
-    void add_merge_cells(const std::wstring & ref);
+	void add_merge_cells(std::wstring & ref);
 	void add_hyperlink(std::wstring & ref, std::wstring & link, std::wstring & display);
 
 	void start_comment		(int col, int row, std::wstring & author);
@@ -70,12 +70,12 @@ public:
 	void start_drawings();
 	void end_drawings();
 
-    virtual void start_image(const std::wstring & image_file_name);
+	virtual void start_image(std::wstring & image_file_name);
 
 	double convert_symbol_width(double val);
 	
-    void add_defined_range(const std::wstring & name, const std::wstring & cell_range, int sheet_id, bool printable = false);
-    void add_defined_expression(const std::wstring & name, const std::wstring & value, int sheet_id, bool printable = false);
+	void add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id, bool printable = false);
+	void add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id, bool printable = false);
 
 	void start_autofilter(std::wstring ref);
 	void end_autofilter(){}

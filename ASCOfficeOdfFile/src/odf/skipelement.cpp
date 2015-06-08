@@ -4,7 +4,7 @@
 #include <cpdoccore/xml/attributes.h>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 _skip_element _skip_element::skip_element_;
 

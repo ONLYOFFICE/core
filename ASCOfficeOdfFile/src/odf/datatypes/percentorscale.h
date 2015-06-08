@@ -12,7 +12,7 @@
 #include "length.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class percent_or_scale
 {
@@ -53,7 +53,7 @@ std::wostream & operator << (std::wostream & _Wostream, const percent_or_scale &
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::percent_or_scale);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::percent_or_scale);
 
 }
 

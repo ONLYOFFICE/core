@@ -24,7 +24,7 @@
 #include "bool.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 class table_format_properties
 {
@@ -33,24 +33,24 @@ public:
 	void apply_from(const table_format_properties & Other);
 	void serialize(std::wostream & strm ,const wchar_t * ns, const wchar_t * name );
 
-    _CP_OPT(length)			style_width_;
-    _CP_OPT(percent)		style_rel_width_;
-    _CP_OPT(Bool)			style_may_break_between_rows_;
-    _CP_OPT(border_model)	table_border_model_;
-    _CP_OPT(Bool)			table_display_;
-    _CP_OPT(table_align)	table_align_;
-	_CP_OPT(color)			tableooo_tab_color_;
+    _CP_OPT(odf_types::length)			style_width_;
+    _CP_OPT(odf_types::percent)		style_rel_width_;
+    _CP_OPT(odf_types::Bool)			style_may_break_between_rows_;
+    _CP_OPT(odf_types::border_model)	table_border_model_;
+    _CP_OPT(odf_types::Bool)			table_display_;
+    _CP_OPT(odf_types::table_align)	table_align_;
+	_CP_OPT(odf_types::color)			tableooo_tab_color_;
 	
-	common_horizontal_margin_attlist	common_horizontal_margin_attlist_;
-    common_vertical_margin_attlist		common_vertical_margin_attlist_;
-    common_margin_attlist				common_margin_attlist_;
-    common_page_number_attlist			common_page_number_attlist_;
-    common_break_attlist				common_break_attlist_;
-    common_background_color_attlist		common_background_color_attlist_;
-    common_shadow_attlist				common_shadow_attlist_;
-    common_keep_with_next_attlist		common_keep_with_next_attlist_;
-    common_writing_mode_attlist			common_writing_mode_attlist_;
-	common_border_attlist				common_border_attlist_;
+	odf_types::common_horizontal_margin_attlist	common_horizontal_margin_attlist_;
+    odf_types::common_vertical_margin_attlist		common_vertical_margin_attlist_;
+    odf_types::common_margin_attlist				common_margin_attlist_;
+    odf_types::common_page_number_attlist			common_page_number_attlist_;
+    odf_types::common_break_attlist				common_break_attlist_;
+    odf_types::common_background_color_attlist		common_background_color_attlist_;
+    odf_types::common_shadow_attlist				common_shadow_attlist_;
+    odf_types::common_keep_with_next_attlist		common_keep_with_next_attlist_;
+    odf_types::common_writing_mode_attlist			common_writing_mode_attlist_;
+	odf_types::common_border_attlist				common_border_attlist_;
 
  
 	office_element_ptr style_background_image_;
@@ -88,11 +88,11 @@ class style_table_column_properties_attlist
 public:
  	void serialize(std::wostream & strm ,const wchar_t * ns, const wchar_t * name );
    
-    _CP_OPT(length) style_column_width_;
-    _CP_OPT(length) style_rel_column_width_;
-    _CP_OPT(Bool)	style_use_optimal_column_width_;
+    _CP_OPT(odf_types::length) style_column_width_;
+    _CP_OPT(odf_types::length) style_rel_column_width_;
+    _CP_OPT(odf_types::Bool)	style_use_optimal_column_width_;
   
-	common_break_attlist common_break_attlist_;
+	odf_types::common_break_attlist common_break_attlist_;
 
 };
 
@@ -121,13 +121,13 @@ class style_table_row_properties_attlist
 public:
  	void serialize(std::wostream & strm ,const wchar_t * ns, const wchar_t * name );
   
-    _CP_OPT(length) style_row_height_;
-    _CP_OPT(length) style_min_row_height_;
-    _CP_OPT(Bool)	style_use_optimal_row_height_;
-    _CP_OPT(keep_together) fo_keep_together_;        
+    _CP_OPT(odf_types::length) style_row_height_;
+    _CP_OPT(odf_types::length) style_min_row_height_;
+    _CP_OPT(odf_types::Bool)	style_use_optimal_row_height_;
+    _CP_OPT(odf_types::keep_together) fo_keep_together_;        
 
-    common_background_color_attlist common_background_color_attlist_;
-    common_break_attlist			common_break_attlist_;
+    odf_types::common_background_color_attlist common_background_color_attlist_;
+    odf_types::common_break_attlist			common_break_attlist_;
 };
 
 ///         style:table-row-properties
@@ -161,31 +161,31 @@ public:
 	void serialize(std::wostream & strm ,const wchar_t * ns, const wchar_t * name );
 
 public:
-    _CP_OPT(vertical_align)		style_vertical_align_;
-    _CP_OPT(text_align_source)	style_text_align_source_;
-    _CP_OPT(direction)			style_direction_;
+    _CP_OPT(odf_types::vertical_align)		style_vertical_align_;
+    _CP_OPT(odf_types::text_align_source)	style_text_align_source_;
+    _CP_OPT(odf_types::direction)			style_direction_;
     _CP_OPT(std::wstring)		style_glyph_orientation_vertical_;
  
-	common_shadow_attlist			common_shadow_attlist_;
-    common_background_color_attlist common_background_color_attlist_;
-    common_border_attlist			common_border_attlist_;
+	odf_types::common_shadow_attlist			common_shadow_attlist_;
+    odf_types::common_background_color_attlist common_background_color_attlist_;
+    odf_types::common_border_attlist			common_border_attlist_;
 
 	_CP_OPT(std::wstring)	style_diagonal_tl_br_;
-    _CP_OPT(border_widths)	style_diagonal_tl_br_widths_;
+    _CP_OPT(odf_types::border_widths)	style_diagonal_tl_br_widths_;
     _CP_OPT(std::wstring)	style_diagonal_bl_tr_;
-    _CP_OPT(border_widths)	style_diagonal_bl_tr_widths_;
+    _CP_OPT(odf_types::border_widths)	style_diagonal_bl_tr_widths_;
 
-    common_border_line_width_attlist	common_border_line_width_attlist_;
-    common_padding_attlist				common_padding_attlist_;
-	common_rotation_angle_attlist		common_rotation_angle_attlist_;
+    odf_types::common_border_line_width_attlist	common_border_line_width_attlist_;
+    odf_types::common_padding_attlist				common_padding_attlist_;
+	odf_types::common_rotation_angle_attlist		common_rotation_angle_attlist_;
 
-	_CP_OPT(wrap_option)	fo_wrap_option_;
-	_CP_OPT(rotation_align) style_rotation_align_;    
+	_CP_OPT(odf_types::wrap_option)	fo_wrap_option_;
+	_CP_OPT(odf_types::rotation_align) style_rotation_align_;    
 	_CP_OPT(std::wstring)	style_cell_protect_;
-	_CP_OPT(Bool)			style_print_content_;
+	_CP_OPT(odf_types::Bool)			style_print_content_;
     _CP_OPT(unsigned int)	style_decimal_places_;
-    _CP_OPT(Bool)			style_repeat_content_;
-    _CP_OPT(Bool)			style_shrink_to_fit_;
+    _CP_OPT(odf_types::Bool)			style_repeat_content_;
+    _CP_OPT(odf_types::Bool)			style_shrink_to_fit_;
 
 };
 

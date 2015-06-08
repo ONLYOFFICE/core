@@ -3,7 +3,7 @@
 #include "lengthorpercent.h"
 #include "errors.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 std::wostream & operator << (std::wostream & _Wostream, const length_or_percent & _Val)
 {

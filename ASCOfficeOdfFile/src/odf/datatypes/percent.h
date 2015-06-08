@@ -8,7 +8,7 @@
 #include <iosfwd>
 #include "odfattributes.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class percent
 {
@@ -27,7 +27,7 @@ std::wostream & operator << (std::wostream & _Wostream, const percent & _Percent
 
 }
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::percent);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::percent);
 
 }
 

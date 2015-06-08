@@ -4,7 +4,7 @@ static const int _OO_OOX_custom_shapes_count = 205;
 
 struct _shape_converter
 {
-	std::wstring odf;
+	std::wstring odf_reader;
 	std::wstring oox;
 	int count_values;
 	int min;

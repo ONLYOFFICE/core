@@ -17,7 +17,7 @@ public:
  
     void oox_serialize(std::wostream & _Wostream);
 
-	odf::chart::simple content_;  
+	odf_reader::chart::simple content_;  
 private:
 	void oox_serialize_default_text(std::wostream & _Wostream);
 	

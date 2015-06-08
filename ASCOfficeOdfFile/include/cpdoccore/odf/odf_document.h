@@ -15,7 +15,7 @@ namespace oox {
 	class pptx_conversion_context;
 }
 
-namespace odf {
+namespace odf_reader {
 
 class odf_read_context;
 

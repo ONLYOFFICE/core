@@ -12,7 +12,7 @@
 #include "percent.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class drop_cap_length
 {
@@ -51,7 +51,7 @@ std::wostream & operator << (std::wostream & _Wostream, const drop_cap_length & 
 
 }
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::drop_cap_length);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::drop_cap_length);
 
 }
 

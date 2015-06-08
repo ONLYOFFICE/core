@@ -13,7 +13,10 @@
 #include <iostream>
 
 namespace cpdoccore {
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
 
 static int style_family_counts_[26]={};//согласно количеству разных стилей
 

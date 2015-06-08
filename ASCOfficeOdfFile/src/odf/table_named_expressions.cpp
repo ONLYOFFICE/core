@@ -12,7 +12,7 @@
 
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 
 

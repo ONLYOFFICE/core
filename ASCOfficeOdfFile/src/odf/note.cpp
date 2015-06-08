@@ -9,7 +9,7 @@
 #include "paragraph_elements.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 namespace text {
 
 

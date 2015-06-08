@@ -4,13 +4,16 @@
 #include <boost/algorithm/string.hpp>
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 style_instance::style_instance(
-    styles_container * Container,
-    const std::wstring & Name,
-    style_family::type Type,
-    style_content * Content,
+    styles_container   *Container,
+    const std::wstring  &Name,
+    style_family::type	Type,
+    style_content      *Content,
     bool IsAutomatic,
     bool IsDefault,
     const std::wstring & ParentStyleName,

@@ -4,7 +4,7 @@
 #include <string>
 #include "odfattributes.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class noteclass
 {
@@ -36,6 +36,6 @@ std::wostream & operator << (std::wostream & _Wostream, const noteclass & _Val);
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::noteclass);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::noteclass);
 
 }

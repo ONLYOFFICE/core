@@ -3,7 +3,7 @@
 #include "office_elements_create.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 void content_xml_t::docx_convert(oox::docx_conversion_context & Context) 
 {

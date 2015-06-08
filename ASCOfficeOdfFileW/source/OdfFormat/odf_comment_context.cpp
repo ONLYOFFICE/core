@@ -15,7 +15,10 @@
 
 namespace cpdoccore 
 {
-namespace odf
+
+	using namespace odf_types;
+
+namespace odf_writer
 {
 	struct odf_comment_state
 	{

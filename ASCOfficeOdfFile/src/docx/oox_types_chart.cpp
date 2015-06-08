@@ -27,15 +27,15 @@ void oox_chart::set_values_series(int ind,std::vector<std::wstring> & val)
 	oox_series_ptr & current_ptr = series_.back();
 	current_ptr->setValues(ind,val);
 }
-void oox_chart::set_properties(std::vector<odf::_property> g)
+void oox_chart::set_properties(std::vector<odf_reader::_property> g)
 {
 	_CP_OPT(int) iVal;
 
 	_CP_OPT(bool) bStacked;
 	_CP_OPT(bool) bPercent;
 
-	odf::GetProperty(g, L"stacked",bStacked);
-	odf::GetProperty(g, L"percentage",bPercent);
+	odf_reader::GetProperty(g, L"stacked",bStacked);
+	odf_reader::GetProperty(g, L"percentage",bPercent);
 
 	if ( (bStacked) && (bStacked.get()))
 	{
@@ -83,21 +83,21 @@ void oox_bar_chart::add_series(int id)
 	series_.push_back(oox_bar_series::create());
 	series_.back()->id_= id;
 }
-void oox_bar_chart::set_properties(std::vector<odf::_property> g)
+void oox_bar_chart::set_properties(std::vector<odf_reader::_property> g)
 {
 	oox_chart::set_properties(g);
 
-	odf::GetProperty(g, L"vertical",bVertical);
-	odf::GetProperty(g, L"connect-bars",bConnectBars);
+	odf_reader::GetProperty(g, L"vertical",bVertical);
+	odf_reader::GetProperty(g, L"connect-bars",bConnectBars);
 	
-	odf::GetProperty(g, L"gap-width",iGapWidth);
-	odf::GetProperty(g, L"overlap",iOverlap);
+	odf_reader::GetProperty(g, L"gap-width",iGapWidth);
+	odf_reader::GetProperty(g, L"overlap",iOverlap);
 }
 
-void oox_bar_chart::set_additional_properties(std::vector<odf::_property> g)
+void oox_bar_chart::set_additional_properties(std::vector<odf_reader::_property> g)
 {
-	odf::GetProperty(g, L"gap-width",iGapWidth);
-	odf::GetProperty(g, L"overlap",iOverlap);
+	odf_reader::GetProperty(g, L"gap-width",iGapWidth);
+	odf_reader::GetProperty(g, L"overlap",iOverlap);
 }
 
 void oox_bar_chart::oox_serialize(std::wostream & _Wostream)
@@ -148,12 +148,12 @@ void oox_line_chart::add_series(int id)
 	series_.push_back(oox_line_series::create());
 	series_.back()->id_= id;
 }
-void oox_line_chart::set_properties(std::vector<odf::_property> g)
+void oox_line_chart::set_properties(std::vector<odf_reader::_property> g)
 {
 	oox_chart::set_properties(g);
 	
-	odf::GetProperty(g, L"interplation",iInterpolation);
-	odf::GetProperty(g, L"lines",bLines);
+	odf_reader::GetProperty(g, L"interplation",iInterpolation);
+	odf_reader::GetProperty(g, L"lines",bLines);
 }
 void oox_line_chart::oox_serialize(std::wostream & _Wostream)
 {
@@ -177,7 +177,7 @@ void oox_area_chart::add_series(int id)
 	series_.back()->id_= id;
 
 }
-void oox_area_chart::set_properties(std::vector<odf::_property> g)
+void oox_area_chart::set_properties(std::vector<odf_reader::_property> g)
 {
 	oox_chart::set_properties(g);
 }
@@ -203,7 +203,7 @@ void oox_bubble_chart::add_series(int id)
 	series_.back()->id_= id;
 
 }
-void oox_bubble_chart::set_properties(std::vector<odf::_property> g)
+void oox_bubble_chart::set_properties(std::vector<odf_reader::_property> g)
 {
 	oox_chart::set_properties(g);
 }
@@ -236,7 +236,7 @@ void oox_doughnut_chart::add_series(int id)
 	series_.back()->id_= id;
 
 }
-void oox_doughnut_chart::set_properties(std::vector<odf::_property> g)
+void oox_doughnut_chart::set_properties(std::vector<odf_reader::_property> g)
 {
 	oox_chart::set_properties(g);
 }
@@ -269,7 +269,7 @@ void oox_pie_chart::add_series(int id)
 	series_.push_back(oox_pie_series::create());
 	series_.back()->id_= id;
 }
-void oox_pie_chart::set_properties(std::vector<odf::_property> g)
+void oox_pie_chart::set_properties(std::vector<odf_reader::_property> g)
 {
 	oox_chart::set_properties(g);
 }
@@ -293,7 +293,7 @@ void oox_radar_chart::add_series(int id)
 	series_.push_back(oox_radar_series::create());
 	series_.back()->id_= id;
 }
-void oox_radar_chart::set_properties(std::vector<odf::_property> g)
+void oox_radar_chart::set_properties(std::vector<odf_reader::_property> g)
 {
 	oox_chart::set_properties(g);
 }
@@ -322,11 +322,11 @@ void oox_scatter_chart::add_series(int id)
 	series_.push_back(xlsx_scatter_series::create());
 	series_.back()->id_= id;
 }
-void oox_scatter_chart::set_properties(std::vector<odf::_property> g)
+void oox_scatter_chart::set_properties(std::vector<odf_reader::_property> g)
 {
 	oox_chart::set_properties(g);
 
-	odf::GetProperty(g, L"regression-type",iRegressionType);// none, linear, logarithmic, exponential, power
+	odf_reader::GetProperty(g, L"regression-type",iRegressionType);// none, linear, logarithmic, exponential, power
 	//в xl похоже этого нет
 
 
@@ -358,13 +358,13 @@ void oox_stock_chart::add_series(int id)
 	series_.push_back(oox_line_series::create());
 	series_.back()->id_= id;
 }
-void oox_stock_chart::set_properties(std::vector<odf::_property> g)
+void oox_stock_chart::set_properties(std::vector<odf_reader::_property> g)
 {
 	properties_ = g;
 	
 	oox_chart::set_properties(g);
 
-	odf::GetProperty(g, L"japanese-candle-stick",bCandleStick);
+	odf_reader::GetProperty(g, L"japanese-candle-stick",bCandleStick);
 }
 void oox_stock_chart::oox_serialize(std::wostream & _Wostream)
 {

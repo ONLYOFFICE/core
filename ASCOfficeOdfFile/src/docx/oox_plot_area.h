@@ -20,11 +20,11 @@ public:
     std::vector<oox_chart_ptr> charts_;
 	oox_chart_ptr current_chart_;   
 	
-	std::vector<odf::_property> graphic_properties_;
-	std::vector<odf::_property> properties_;
+	std::vector<odf_reader::_property> graphic_properties_;
+	std::vector<odf_reader::_property> properties_;
 	_oox_fill					fill_; 
 	
-	//std::vector<odf::_property> wall_graphic_properties_;
+	//std::vector<odf_reader::_property> wall_graphic_properties_;
 	
 	void oox_serialize(std::wostream & _Wostream);
 
@@ -43,11 +43,11 @@ public:
 
 		axis_.push_back(ax);
 	}
-	void set_content_axis(odf::chart::axis & content)
+	void set_content_axis(odf_reader::chart::axis & content)
 	{
 		axis_.back()->content_=content;
 	}
-	void set_content_series(odf::chart::series & content)
+	void set_content_series(odf_reader::chart::series & content)
 	{
 		current_chart_->series_.back()->content_=content;
 	}

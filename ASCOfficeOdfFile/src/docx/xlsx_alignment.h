@@ -7,7 +7,7 @@
 #include <string>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 class text_format_properties_content;
 class paragraph_format_properties;
@@ -40,9 +40,9 @@ struct xlsx_alignment
     friend std::size_t hash_value(xlsx_alignment const & val);
 };
 
-xlsx_alignment OdfProperties2XlsxAlignment(const odf::text_format_properties_content * textProp, 
-                                           const odf::paragraph_format_properties * parProp,
-                                           const odf::style_table_cell_properties_attlist * cellProp);
+xlsx_alignment OdfProperties2XlsxAlignment(const odf_reader::text_format_properties_content * textProp, 
+                                           const odf_reader::paragraph_format_properties * parProp,
+                                           const odf_reader::style_table_cell_properties_attlist * cellProp);
 
 }
 }

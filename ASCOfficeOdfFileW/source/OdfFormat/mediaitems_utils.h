@@ -5,7 +5,7 @@
 #include "mediaitems.h"
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_writer {
 namespace utils {
 namespace media {
 

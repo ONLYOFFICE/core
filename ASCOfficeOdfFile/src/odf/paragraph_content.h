@@ -5,7 +5,7 @@
 #include "office_elements.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 namespace text {
 
 template <class ElementT> 

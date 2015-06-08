@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class horizontal_rel
 {
@@ -69,7 +69,7 @@ std::wostream & operator << (std::wostream & _Wostream, const horizontal_rel & _
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::horizontal_rel);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::horizontal_rel);
 
 }
 

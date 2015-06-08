@@ -238,19 +238,19 @@ void xlsx_table_state::serialize_table_format(std::wostream & _Wostream)
 		{
 			double default_height = (context_.getMaxDigitSize().second * 72. / 96. * 100.) /100.;//in point size.
 			
-			//odf::style_instance * rowStyle = odfContext.styleContainer().style_by_name(styleName, odf::style_family::TableRow,false/*false*/);
+			//odf::style_instance * rowStyle = odfContext.styleContainer().style_by_name(styleName, odf_types::style_family::TableRow,false/*false*/);
 			//if (!rowStyle)
 			//	break;
 
 			//if (!rowStyle->content())
 			//	break;
 
-			//const odf::style_table_row_properties * prop = rowStyle->content()->get_style_table_row_properties();
+			//const odf_reader::style_table_row_properties * prop = rowStyle->content()->get_style_table_row_properties();
 			//if (!prop)
 			//	break;
-			//if (const _CP_OPT(odf::length) & height = prop->style_table_row_properties_attlist_.style_row_height_)
+			//if (const _CP_OPT(odf_types::length) & height = prop->style_table_row_properties_attlist_.style_row_height_)
 			//{
-			//	row_height = height->get_value_unit(odf::length::pt);
+			//	row_height = height->get_value_unit(odf_types::length::pt);
 			//	std::wstringstream ht_s;
 			//	ht_s.precision(3);
 			//	ht_s << std::fixed << row_height;

@@ -7,7 +7,7 @@
 
 namespace cpdoccore 
 { 
-	namespace odf
+	namespace odf_reader
 	{
 		class style_instance;
 	};
@@ -186,7 +186,7 @@ private:
     std::list<pptx_table_state> table_state_stack_;
 };
 
-void oox_serialize_tcPr(std::wostream & strm, const odf::style_instance* style_inst, oox::pptx_conversion_context & Context);
+void oox_serialize_tcPr(std::wostream & strm, const odf_reader::style_instance* style_inst, oox::pptx_conversion_context & Context);
 
 }
 }

@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class style_position
 {
@@ -51,7 +51,7 @@ std::wostream & operator << (std::wostream & _Wostream, const style_position & _
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::style_position);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::style_position);
 
 }
 

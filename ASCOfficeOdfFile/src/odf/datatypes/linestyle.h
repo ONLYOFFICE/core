@@ -12,7 +12,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class line_style
 {
@@ -51,7 +51,7 @@ std::wostream & operator << (std::wostream & _Wostream, const line_style & _Line
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::line_style);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::line_style);
 
 }
 

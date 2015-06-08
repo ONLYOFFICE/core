@@ -39,7 +39,7 @@
 #include "style_map.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_reader { 
 
 class style_text_properties;
 class style_paragraph_properties;
@@ -72,19 +72,19 @@ public:
 	style_drawing_page_properties*	get_style_drawing_page_properties() const;
 
 private:
-    style_family style_family_;
+	odf_types::style_family style_family_;
 
-    office_element_ptr style_text_properties_;
-    office_element_ptr style_paragraph_properties_;
-    office_element_ptr style_section_properties_;
-    office_element_ptr style_ruby_properties_;
-    office_element_ptr style_table_properties_;
-    office_element_ptr style_table_column_properties_;
-    office_element_ptr style_table_row_properties_;
-    office_element_ptr style_chart_properties_;
-    office_element_ptr style_graphic_properties_;
-    office_element_ptr style_table_cell_properties_;
-	office_element_ptr style_drawing_page_properties_;
+    office_element_ptr		style_text_properties_;
+    office_element_ptr		style_paragraph_properties_;
+    office_element_ptr		style_section_properties_;
+    office_element_ptr		style_ruby_properties_;
+    office_element_ptr		style_table_properties_;
+    office_element_ptr		style_table_column_properties_;
+    office_element_ptr		style_table_row_properties_;
+    office_element_ptr		style_chart_properties_;
+    office_element_ptr		style_graphic_properties_;
+    office_element_ptr		style_table_cell_properties_;
+	office_element_ptr		style_drawing_page_properties_;
 
 };
 
@@ -111,7 +111,7 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    style_family style_family_;
+    odf_types::style_family style_family_;
 
     style_content style_content_;
 
@@ -136,18 +136,18 @@ public:
 
 	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
 
-	_CP_OPT(color)		draw_start_color_;
-	_CP_OPT(color)		draw_end_color_;
+	_CP_OPT(odf_types::color)		draw_start_color_;
+	_CP_OPT(odf_types::color)		draw_end_color_;
 
-	_CP_OPT(percent)	draw_end_intensity_; 
-	_CP_OPT(percent)	draw_start_intensity_;
+	_CP_OPT(odf_types::percent)	draw_end_intensity_; 
+	_CP_OPT(odf_types::percent)	draw_start_intensity_;
 
-	_CP_OPT(percent)	draw_cy_;//%
-	_CP_OPT(percent)	draw_cx_;
+	_CP_OPT(odf_types::percent)	draw_cy_;//%
+	_CP_OPT(odf_types::percent)	draw_cx_;
 	
-	_CP_OPT(percent)	draw_border_;
+	_CP_OPT(odf_types::percent)	draw_border_;
 	_CP_OPT(int)		draw_angle_;
-	_CP_OPT(gradient_style)		draw_style_;
+	_CP_OPT(odf_types::gradient_style)		draw_style_;
 
 
 private:
@@ -174,10 +174,10 @@ public:
 
 	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
 	
-	_CP_OPT(hatch_style)	draw_style_;
+	_CP_OPT(odf_types::hatch_style)	draw_style_;
 	_CP_OPT(int)			draw_rotation_;
-	_CP_OPT(length)			draw_distance_;	
-	_CP_OPT(color)			draw_color_;
+	_CP_OPT(odf_types::length)			draw_distance_;	
+	_CP_OPT(odf_types::color)			draw_color_;
 
 private:
  	_CP_OPT(std::wstring)	draw_name_;
@@ -203,13 +203,13 @@ public:
 
 	std::wstring	get_style_name(){return draw_name_.get_value_or(L"");}
 
-	_CP_OPT(gradient_style)	draw_style_;//linear, radial, ..
+	_CP_OPT(odf_types::gradient_style)	draw_style_;//linear, radial, ..
 	_CP_OPT(int)			draw_angle_;
 
-	_CP_OPT(percent)		draw_start_;
-	_CP_OPT(percent)		draw_end_;
+	_CP_OPT(odf_types::percent)		draw_start_;
+	_CP_OPT(odf_types::percent)		draw_end_;
 	
-	_CP_OPT(percent)		draw_border_;
+	_CP_OPT(odf_types::percent)		draw_border_;
 
 private:
  	_CP_OPT(std::wstring)	draw_name_;
@@ -234,7 +234,7 @@ public:
 
 	std::wstring get_style_name(){return draw_name_.get_value_or(L"");}
 	
-	common_xlink_attlist		xlink_attlist_;
+	odf_types::common_xlink_attlist		xlink_attlist_;
 
 private:
  	_CP_OPT(std::wstring)		draw_name_;
@@ -279,7 +279,7 @@ private:
     // attr
     std::wstring style_name_;
     _CP_OPT( std::wstring ) style_display_name_; // optional 
-    style_family style_family_;
+    odf_types::style_family style_family_;
 
     _CP_OPT( std::wstring ) style_parent_style_name_; // optional 
     _CP_OPT( std::wstring ) style_next_style_name_; // optional 
@@ -417,12 +417,12 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     
 public:
-    _CP_OPT(style_ref)		style_name_;
-    _CP_OPT(std::wstring)	style_display_name_;
-    _CP_OPT(style_ref)		style_page_layout_name_;
+    _CP_OPT(odf_types::style_ref)		style_name_;
+    _CP_OPT(std::wstring)				style_display_name_;
+    _CP_OPT(odf_types::style_ref)		style_page_layout_name_;
     
-	_CP_OPT(std::wstring)	draw_style_name_;
-    _CP_OPT(style_ref)		style_next_style_name_;
+	_CP_OPT(std::wstring)				draw_style_name_;
+    _CP_OPT(odf_types::style_ref)		style_next_style_name_;
 };
 
 /// \class  style_master_page
@@ -448,7 +448,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 public:
-	int find_placeHolderIndex(presentation_class::type placeHolder,int & last_idx);
+	int find_placeHolderIndex(odf_types::presentation_class::type placeHolder,int & last_idx);
    
 	style_master_page_attlist style_master_page_attlist_;
 
@@ -689,7 +689,7 @@ private:
 
 public:
     _CP_OPT(unsigned int) fo_column_count_;
-    _CP_OPT(length) fo_column_gap_;
+	_CP_OPT(odf_types::length) fo_column_gap_;
 
     office_element_ptr style_column_sep_;
     office_element_ptr_array style_column_;
@@ -715,11 +715,11 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 private:
-    _CP_OPT(length) style_rel_width_;
-    length fo_start_indent_;
-    length fo_end_indent_;
-    length fo_space_before_;
-    length fo_space_after_;
+    _CP_OPT(odf_types::length) style_rel_width_;
+    odf_types::length fo_start_indent_;
+    odf_types::length fo_end_indent_;
+    odf_types::length fo_space_before_;
+    odf_types::length fo_space_after_;
     
 };
 
@@ -742,11 +742,11 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 private:
-    std::wstring style_style_; // default solid
-    _CP_OPT(length) style_width_;
-    percent style_height_; // default 100
-    vertical_align style_vertical_align_; //default top
-    color style_color_; // default #000000
+    std::wstring				style_style_; // default solid
+    _CP_OPT(odf_types::length)	style_width_;
+    odf_types::percent			style_height_; // default 100
+    odf_types::vertical_align	style_vertical_align_; //default top
+    odf_types::color			style_color_; // default #000000
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_column_sep);
@@ -770,11 +770,11 @@ private:
 public:
 
     // 15.7.1
-    common_background_color_attlist common_background_color_attlist_;
+    odf_types::common_background_color_attlist common_background_color_attlist_;
     office_element_ptr style_background_image_;
 
     // 15.7.2
-    common_horizontal_margin_attlist common_horizontal_margin_attlist_;
+    odf_types::common_horizontal_margin_attlist common_horizontal_margin_attlist_;
 
     // 15.7.3
     office_element_ptr style_columns_;
@@ -786,7 +786,7 @@ public:
     _CP_OPT(bool) text_dont_balance_text_columns_;
 
     // 15.7.8
-    common_writing_mode_attlist common_writing_mode_attlist_;
+    odf_types::common_writing_mode_attlist common_writing_mode_attlist_;
     
     // 15.7.9
     // TODO text-notes-configuration
@@ -805,7 +805,7 @@ public:
 
 private:
     std::wstring style_name_;
-    page_usage style_page_usage_; // default All
+    odf_types::page_usage style_page_usage_; // default All
         
 };
 
@@ -900,65 +900,65 @@ public:
     void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
-    _CP_OPT(length) fo_page_width_;         // +
-    _CP_OPT(length) fo_page_height_;        // +
-    common_num_format_attlist common_num_format_attlist_;
-    common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
+    _CP_OPT(odf_types::length) fo_page_width_;         // +
+    _CP_OPT(odf_types::length) fo_page_height_;        // +
+    odf_types::common_num_format_attlist common_num_format_attlist_;
+    odf_types::common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
     _CP_OPT(std::wstring) style_paper_tray_name_;
     _CP_OPT(std::wstring) style_print_orientation_; // +
     //15.2.5
-    common_horizontal_margin_attlist common_horizontal_margin_attlist_;
-    common_vertical_margin_attlist common_vertical_margin_attlist_;
-    common_margin_attlist common_margin_attlist_;
+    odf_types::common_horizontal_margin_attlist common_horizontal_margin_attlist_;
+    odf_types::common_vertical_margin_attlist common_vertical_margin_attlist_;
+    odf_types::common_margin_attlist common_margin_attlist_;
     
     // 15.2.6
-    common_border_attlist common_border_attlist_;
+    odf_types::common_border_attlist common_border_attlist_;
     // 15.2.7 
-    common_border_line_width_attlist common_border_line_width_attlist_;
+    odf_types::common_border_line_width_attlist common_border_line_width_attlist_;
     // 15.2.8
-    common_padding_attlist common_padding_attlist_;
+    odf_types::common_padding_attlist common_padding_attlist_;
     // 15.2.9
-    common_shadow_attlist common_shadow_attlist_;
+    odf_types::common_shadow_attlist common_shadow_attlist_;
     
     // 15.2.10 
-    common_background_color_attlist common_background_color_attlist_;
+    odf_types::common_background_color_attlist common_background_color_attlist_;
     // 15.2.12
-    _CP_OPT(style_ref) style_register_truth_ref_style_name_;
+    _CP_OPT(odf_types::style_ref) style_register_truth_ref_style_name_;
     // 15.2.13 TODO
     _CP_OPT(std::wstring) style_print_;
         
     // 15.2.14
-    _CP_OPT(direction) style_print_page_order_;
+    _CP_OPT(odf_types::direction) style_print_page_order_;
 
     // 15.2.15 TODO
     _CP_OPT(std::wstring) style_first_page_number_;
 
     // 15.2.16
-    _CP_OPT(percent) style_scale_to_;
+    _CP_OPT(odf_types::percent) style_scale_to_;
     _CP_OPT(unsigned int) style_scale_to_pages_;
 
     // 15.2.17
-    _CP_OPT(table_centering) style_table_centering_;
+    _CP_OPT(odf_types::table_centering) style_table_centering_;
     // 15.2.18
-    _CP_OPT(length) style_footnote_max_height_;
+    _CP_OPT(odf_types::length) style_footnote_max_height_;
 
     // 15.2.19
-    common_writing_mode_attlist common_writing_mode_attlist_;
+    odf_types::common_writing_mode_attlist common_writing_mode_attlist_;
 
     // 15.2.21
-    _CP_OPT(layout_grid_mode) style_layout_grid_mode_;
+    _CP_OPT(odf_types::layout_grid_mode) style_layout_grid_mode_;
 
     // 15.2.22
-    _CP_OPT(length) style_layout_grid_base_height_;
+    _CP_OPT(odf_types::length) style_layout_grid_base_height_;
 
     // 15.2.23
-    _CP_OPT(length) style_layout_grid_ruby_height_;
+    _CP_OPT(odf_types::length) style_layout_grid_ruby_height_;
 
     // 15.2.24
     _CP_OPT(unsigned int) style_layout_grid_lines_;
 
     // 15.2.25
-    _CP_OPT(color) style_layout_grid_color_;
+    _CP_OPT(odf_types::color) style_layout_grid_color_;
 
     // 15.2.26
     _CP_OPT(bool) style_layout_grid_ruby_below_;  
@@ -978,13 +978,13 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 private:
-    _CP_OPT(length) style_width_;
-    _CP_OPT(percent) style_rel_width_;
-    _CP_OPT(color) style_color_;
-    _CP_OPT(line_style) style_line_style_;
-    style_type style_adjustment_; // default Left
-    _CP_OPT(length) style_distance_before_sep_;
-    _CP_OPT(length) style_distance_after_sep_;
+    _CP_OPT(odf_types::length) style_width_;
+    _CP_OPT(odf_types::percent) style_rel_width_;
+    _CP_OPT(odf_types::color) style_color_;
+    _CP_OPT(odf_types::line_style) style_line_style_;
+    odf_types::style_type style_adjustment_; // default Left
+    _CP_OPT(odf_types::length) style_distance_before_sep_;
+    _CP_OPT(odf_types::length) style_distance_after_sep_;
                 
 };
 
@@ -1081,14 +1081,14 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 public:
-    noteclass noteclass_;
+    odf_types::noteclass noteclass_;
     _CP_OPT(std::wstring) text_citation_style_name_;
     _CP_OPT(std::wstring) text_citation_body_style_name_;
     _CP_OPT(std::wstring) text_default_style_name_;
     _CP_OPT(std::wstring) text_master_page_name_;
     _CP_OPT(unsigned int) text_start_value_;
-    common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
-    common_num_format_attlist common_num_format_attlist_;
+    odf_types::common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
+    odf_types::common_num_format_attlist common_num_format_attlist_;
     _CP_OPT(std::wstring) text_start_numbering_at_;   
     _CP_OPT(std::wstring) text_footnotes_position_;
 
@@ -1129,5 +1129,5 @@ private:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_presentation_page_layout);
-} // namespace odf
+} // namespace odf_reader
 } // namespace cpdoccore

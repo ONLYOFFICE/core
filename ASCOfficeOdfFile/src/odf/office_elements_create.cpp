@@ -7,7 +7,7 @@
 #include "skipelement.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
     
 office_element_creator * office_element_creator::instance_ = NULL;

@@ -13,7 +13,7 @@
 #include "textdisplay.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 class odf_text_context;
 
@@ -21,9 +21,9 @@ class paragraph_attrs
 {
 public:
 
-    _CP_OPT(style_ref)		text_style_name_;
-    _CP_OPT(style_ref)		text_cond_style_name_;
-    style_ref_array			text_class_names_;
+    _CP_OPT(odf_types::style_ref)		text_style_name_;
+    _CP_OPT(odf_types::style_ref)		text_cond_style_name_;
+    odf_types::style_ref_array			text_class_names_;
 
 	void serialize(CP_ATTR_NODE);   
 
@@ -128,8 +128,8 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	_CP_OPT(style_ref)			text_style_name_;
-    _CP_OPT(Bool)				text_continue_numbering_;
+	_CP_OPT(odf_types::style_ref)			text_style_name_;
+    _CP_OPT(odf_types::Bool)				text_continue_numbering_;
 
     office_element_ptr          text_list_header_;
     office_element_ptr_array    text_list_items_;
@@ -160,12 +160,12 @@ CP_REGISTER_OFFICE_ELEMENT2(text_soft_page_break);
 class text_section_attr
 {
 public:
-    _CP_OPT(style_ref) text_style_name_;
-    std::wstring text_name_;
-    _CP_OPT(bool) text_protected_;
-    _CP_OPT(std::wstring) text_protection_key_;
-    _CP_OPT(text_display) text_display_;
-    _CP_OPT(std::wstring) text_condition_;
+    _CP_OPT(odf_types::style_ref)	text_style_name_;
+    std::wstring					text_name_;
+    _CP_OPT(bool)					text_protected_;
+    _CP_OPT(std::wstring)			text_protection_key_;
+    _CP_OPT(odf_types::text_display)			text_display_;
+    _CP_OPT(std::wstring)			text_condition_;
 	
 	void serialize(CP_ATTR_NODE);   
 };
@@ -201,7 +201,7 @@ class text_section_source_attr
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-    common_xlink_attlist	common_xlink_attlist_;
+    odf_types::common_xlink_attlist	common_xlink_attlist_;
 
     _CP_OPT(std::wstring)	text_section_name_;
     _CP_OPT(std::wstring)	text_filter_name_;

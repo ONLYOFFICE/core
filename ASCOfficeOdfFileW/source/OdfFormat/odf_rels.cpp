@@ -8,7 +8,7 @@
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 
 void relationship::serialize(std::wostream & _Wostream)

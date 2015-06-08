@@ -14,7 +14,7 @@
 namespace cpdoccore 
 {
 
-namespace odf {
+namespace odf_reader {
 
 class draw_shape_attlist
 {
@@ -46,9 +46,9 @@ public:
 	void common_docx_convert(oox::docx_conversion_context & Context) ;
 	void common_pptx_convert(oox::pptx_conversion_context & Context) ;
 
-	common_xlink_attlist	common_xlink_attlist_;
-	common_presentation_attlist common_presentation_attlist_;
-	union_common_draw_attlists  common_draw_attlists_;
+	odf_types::common_xlink_attlist	common_xlink_attlist_;
+	odf_types::common_presentation_attlist common_presentation_attlist_;
+	odf_types::union_common_draw_attlists  common_draw_attlists_;
 	
 	draw_shape_attlist draw_shape_attlist_;
 
@@ -60,7 +60,7 @@ public:
 	friend class odf_document;
 
 	int sub_type_;
-	std::vector<odf::_property> additional_;
+	std::vector<odf_reader::_property> additional_;
 
 
 };
@@ -161,11 +161,11 @@ class draw_line_attlist
 public:
  	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
  
-	_CP_OPT(length) svg_x1_;
-    _CP_OPT(length) svg_y1_;
+	_CP_OPT(odf_types::length) svg_x1_;
+    _CP_OPT(odf_types::length) svg_y1_;
 
-	_CP_OPT(length) svg_x2_;
-    _CP_OPT(length) svg_y2_;
+	_CP_OPT(odf_types::length) svg_x2_;
+    _CP_OPT(odf_types::length) svg_y2_;
 
 };
 /////////////////////////////////////////////////////////////////////////

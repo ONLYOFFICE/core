@@ -10,7 +10,7 @@
 #include "../docx/docx_conversion_context.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 
 

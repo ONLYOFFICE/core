@@ -21,7 +21,10 @@
 
 namespace cpdoccore 
 {
-namespace odf
+
+	using namespace odf_types;
+
+namespace odf_writer
 {
 	struct odf_column_state : odf_element_state
 	{

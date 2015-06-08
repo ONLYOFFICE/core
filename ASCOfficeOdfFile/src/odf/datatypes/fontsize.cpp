@@ -4,7 +4,7 @@
 
 #include "fontsize.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 std::wostream & operator << (std::wostream & _Wostream, const font_size & _Val)
 {

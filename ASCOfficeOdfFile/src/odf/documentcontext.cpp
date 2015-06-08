@@ -3,7 +3,7 @@
 #include "documentcontext.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 class document_context::Impl
 {

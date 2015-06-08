@@ -12,7 +12,10 @@
 #include "style_section_properties.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
 	
 /// style:columns
 //////////////////////////////////////////////////////////////////////////////////////////////////

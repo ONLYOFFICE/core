@@ -10,7 +10,7 @@
 #include "office_body.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 /// \class  office_document_base
 class office_document_base  : public office_element

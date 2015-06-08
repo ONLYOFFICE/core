@@ -6,10 +6,11 @@
 #include "serialize_elements.h"
 
 
-
 namespace cpdoccore { 
-namespace odf {
 
+	using namespace odf_types;
+
+namespace odf_reader {
 
 
 void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & Attributes )
@@ -71,7 +72,7 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 	if (draw_stroke_)		properties.push_back(_property(L"stroke",		draw_stroke_->get_type() ));
 	if (svg_stroke_color_)	properties.push_back(_property(L"stroke-color",	svg_stroke_color_->get_hex_value() ));
 	if (draw_stroke_dash_)	properties.push_back(_property(L"stroke-dash",	draw_stroke_dash_.get()));
-	if (svg_stroke_width_)	properties.push_back(_property(L"stroke-width",	svg_stroke_width_->get_length().get_value_unit(odf::length::pt) ));
+	if (svg_stroke_width_)	properties.push_back(_property(L"stroke-width",	svg_stroke_width_->get_length().get_value_unit(odf_types::length::pt) ));
 	if (svg_stroke_opacity_)properties.push_back(_property(L"stroke-opacity",svg_stroke_opacity_->get_percent().get_value()));	
 	if (draw_marker_start_)	properties.push_back(_property(L"marker-start",	draw_marker_start_->get() ));
 	if (draw_marker_end_)	properties.push_back(_property(L"marker-end",	draw_marker_end_->get() ));

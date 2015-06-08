@@ -20,7 +20,10 @@
 #include "odf_conversion_context.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
 
 using xml::xml_char_wc;
 

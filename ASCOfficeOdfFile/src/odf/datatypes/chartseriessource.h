@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class chart_series_source
 {
@@ -41,7 +41,7 @@ private:
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::chart_series_source);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::chart_series_source);
 
 }
 

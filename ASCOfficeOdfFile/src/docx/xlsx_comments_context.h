@@ -46,7 +46,7 @@ public:
 	void add_content(std::wstring  content);
 	void add_author(std::wstring  author);
 	
-	std::vector<odf::_property> & get_draw_properties();
+	std::vector<odf_reader::_property> & get_draw_properties();
 
 	void set_visibly(bool Val);
     

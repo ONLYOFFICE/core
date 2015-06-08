@@ -5,7 +5,7 @@
 #include "odfattributes.h"
 //
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class chart_solid_type
 {
@@ -38,6 +38,6 @@ private:
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::chart_solid_type);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::chart_solid_type);
 
 }

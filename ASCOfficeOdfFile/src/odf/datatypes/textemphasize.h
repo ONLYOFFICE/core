@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class text_emphasize
 {
@@ -53,7 +53,7 @@ std::wostream & operator << (std::wostream & _Wostream, const text_emphasize & _
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::text_emphasize);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::text_emphasize);
 
 }
 

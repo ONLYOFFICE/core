@@ -11,7 +11,7 @@
 #include "datatypes/style_ref.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 /// \class  table_named_expressions
 /// \brief  table:named-expressions

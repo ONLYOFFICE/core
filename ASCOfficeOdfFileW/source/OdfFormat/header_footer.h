@@ -11,7 +11,7 @@
 
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 
 ///         style:header-footer-properties-attlist
@@ -20,17 +20,17 @@ class style_header_footer_properties_attlist
 public:
 	void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(length)						svg_height_;
-    _CP_OPT(length)						fo_min_height_;
-    common_horizontal_margin_attlist	common_horizontal_margin_attlist_;
-    common_vertical_margin_attlist		common_vertical_margin_attlist_;
-    common_margin_attlist				common_margin_attlist_;
-    common_border_attlist				common_border_attlist_;
-    common_border_line_width_attlist	common_border_line_width_attlist_;
-    common_padding_attlist				common_padding_attlist_;
-    common_background_color_attlist		common_background_color_attlist_;
-    common_shadow_attlist				common_shadow_attlist_;
-    _CP_OPT(Bool)						style_dynamic_spacing_;
+    _CP_OPT(odf_types::length)						svg_height_;
+    _CP_OPT(odf_types::length)						fo_min_height_;
+    odf_types::common_horizontal_margin_attlist	common_horizontal_margin_attlist_;
+    odf_types::common_vertical_margin_attlist		common_vertical_margin_attlist_;
+    odf_types::common_margin_attlist				common_margin_attlist_;
+    odf_types::common_border_attlist				common_border_attlist_;
+    odf_types::common_border_line_width_attlist	common_border_line_width_attlist_;
+    odf_types::common_padding_attlist				common_padding_attlist_;
+    odf_types::common_background_color_attlist		common_background_color_attlist_;
+    odf_types::common_shadow_attlist				common_shadow_attlist_;
+    _CP_OPT(odf_types::Bool)						style_dynamic_spacing_;
     
 };
 

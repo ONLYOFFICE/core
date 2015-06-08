@@ -29,7 +29,7 @@
 
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 class graphic_format_properties
 {
@@ -42,74 +42,74 @@ public:
 public:
     // 15.27
     // 1
-    common_draw_rel_size_attlist common_draw_rel_size_attlist_;
+    odf_types::common_draw_rel_size_attlist common_draw_rel_size_attlist_;
     
-	_CP_OPT(length_or_percent) fo_min_width_;
-    _CP_OPT(length_or_percent) fo_min_height_;
+	_CP_OPT(odf_types::length_or_percent) fo_min_width_;
+    _CP_OPT(odf_types::length_or_percent) fo_min_height_;
     
-    _CP_OPT(length_or_percent) fo_max_width_;
-    _CP_OPT(length_or_percent) fo_max_height_;
+    _CP_OPT(odf_types::length_or_percent) fo_max_width_;
+    _CP_OPT(odf_types::length_or_percent) fo_max_height_;
 
 ///////////////////////////////
-	_CP_OPT(color)				svg_stroke_color_;
-	_CP_OPT(length_or_percent)	svg_stroke_opacity_;
-	_CP_OPT(line_style)			draw_stroke_;
+	_CP_OPT(odf_types::color)				svg_stroke_color_;
+	_CP_OPT(odf_types::length_or_percent)	svg_stroke_opacity_;
+	_CP_OPT(odf_types::line_style)			draw_stroke_;
 	_CP_OPT(std::wstring)		draw_stroke_dash_;
-	_CP_OPT(length_or_percent)	svg_stroke_width_;
+	_CP_OPT(odf_types::length_or_percent)	svg_stroke_width_;
 
-	_CP_OPT(marker_style)		draw_marker_end_;
-	_CP_OPT(marker_style)		draw_marker_start_;
+	_CP_OPT(odf_types::marker_style)		draw_marker_end_;
+	_CP_OPT(odf_types::marker_style)		draw_marker_start_;
 
-	_CP_OPT(text_align)			draw_textarea_horizontal_align_;
-	_CP_OPT(vertical_align)		draw_textarea_vertical_align_;
+	_CP_OPT(odf_types::text_align)			draw_textarea_horizontal_align_;
+	_CP_OPT(odf_types::vertical_align)		draw_textarea_vertical_align_;
 	
-	common_draw_fill_attlist			common_draw_fill_attlist_;
+	odf_types::common_draw_fill_attlist			common_draw_fill_attlist_;
   
-	common_horizontal_margin_attlist	common_horizontal_margin_attlist_;
+	odf_types::common_horizontal_margin_attlist	common_horizontal_margin_attlist_;
 
-    common_vertical_margin_attlist		common_vertical_margin_attlist_;
+	odf_types::common_vertical_margin_attlist		common_vertical_margin_attlist_;
 
-    common_margin_attlist				common_margin_attlist_;
+    odf_types::common_margin_attlist				common_margin_attlist_;
 
     _CP_OPT(bool) style_print_content_;
 
     _CP_OPT(std::wstring) style_protect_;
 
-    common_horizontal_pos_attlist common_horizontal_pos_attlist_;
+    odf_types::common_horizontal_pos_attlist common_horizontal_pos_attlist_;
 
-    common_horizontal_rel_attlist common_horizontal_rel_attlist_;    
+    odf_types::common_horizontal_rel_attlist common_horizontal_rel_attlist_;    
     
-    common_vertical_pos_attlist common_vertical_pos_attlist_;
+    odf_types::common_vertical_pos_attlist common_vertical_pos_attlist_;
 
-    common_vertical_rel_attlist common_vertical_rel_attlist_;
+    odf_types::common_vertical_rel_attlist common_vertical_rel_attlist_;
 
-    common_text_anchor_attlist common_text_anchor_attlist_;
+    odf_types::common_text_anchor_attlist common_text_anchor_attlist_;
 
-	common_text_animation_attlist common_text_animation_attlist_;
+	odf_types::common_text_animation_attlist common_text_animation_attlist_;
 
-	common_border_attlist common_border_attlist_;
+	odf_types::common_border_attlist common_border_attlist_;
 
-    common_border_line_width_attlist common_border_line_width_attlist_;
+    odf_types::common_border_line_width_attlist common_border_line_width_attlist_;
 
-    common_padding_attlist common_padding_attlist_;
+    odf_types::common_padding_attlist common_padding_attlist_;
     
-    common_shadow_attlist common_shadow_attlist_;
+    odf_types::common_shadow_attlist common_shadow_attlist_;
     
-    common_background_color_attlist common_background_color_attlist_;
+    odf_types::common_background_color_attlist common_background_color_attlist_;
     
     _CP_OPT(bool) style_editable_;
 
-    _CP_OPT(style_wrap) style_wrap_;
+    _CP_OPT(odf_types::style_wrap) style_wrap_;
 
     _CP_OPT(unsigned int) style_wrap_dynamic_treshold_;
 
-    _CP_OPT(integer_or_nolimit) style_number_wrapped_paragraphs_;
+    _CP_OPT(odf_types::integer_or_nolimit) style_number_wrapped_paragraphs_;
 
     _CP_OPT(bool) style_wrap_contour_;
 
-    _CP_OPT(wrap_contour_mode) style_wrap_contour_mode_;
+    _CP_OPT(odf_types::wrap_contour_mode) style_wrap_contour_mode_;
 
-    _CP_OPT(run_through) style_run_through_; 
+    _CP_OPT(odf_types::run_through) style_run_through_; 
 
     _CP_OPT(bool) style_flow_with_text_;
 

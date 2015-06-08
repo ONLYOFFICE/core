@@ -3,7 +3,7 @@
 #include "draw_base.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 /// draw-image-attlist
 class draw_image_attlist
@@ -46,7 +46,7 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
 	draw_image_attlist draw_image_attlist_;
-    common_xlink_attlist common_xlink_attlist_;
+    odf_types::common_xlink_attlist common_xlink_attlist_;
     
 	office_element_ptr office_binary_data_;
     office_element_ptr_array content_;
@@ -72,7 +72,7 @@ public:
     virtual void serialize(std::wostream & _Wostream);
 
 	draw_chart_attlist draw_chart_attlist_;
-    common_xlink_attlist common_xlink_attlist_;
+    odf_types::common_xlink_attlist common_xlink_attlist_;
    
 	//office_element_ptr title_;
     office_element_ptr_array content_;
@@ -98,7 +98,7 @@ public:
 
 	int idx_in_owner ;
 
-  	presentation_shape_attlist presentation_shape_attlist_;
+  	odf_types::presentation_shape_attlist presentation_shape_attlist_;
     draw_frame_attlist draw_frame_attlist_;
 
     office_element_ptr office_event_listeners_; // в content перенести нельзя - иначе событи будет добавляться не к этому объекту а следующему
@@ -126,7 +126,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	union_common_draw_attlists  common_draw_attlists_;  
+	odf_types::union_common_draw_attlists  common_draw_attlists_;  
 
     office_element_ptr_array content_;
 };
@@ -137,11 +137,11 @@ class draw_text_box_attlist
 {
 public:
     _CP_OPT(std::wstring) draw_chain_next_name_;
-    _CP_OPT(length) draw_corner_radius_;
-    _CP_OPT(length_or_percent) fo_min_width_;
-    _CP_OPT(length_or_percent) fo_min_height_;
-    _CP_OPT(length_or_percent) fo_max_width_;
-    _CP_OPT(length_or_percent) fo_max_height_;        
+    _CP_OPT(odf_types::length) draw_corner_radius_;
+    _CP_OPT(odf_types::length_or_percent) fo_min_width_;
+    _CP_OPT(odf_types::length_or_percent) fo_min_height_;
+    _CP_OPT(odf_types::length_or_percent) fo_max_width_;
+    _CP_OPT(odf_types::length_or_percent) fo_max_height_;        
 
 	void serialize(CP_ATTR_NODE);   
 };
@@ -182,7 +182,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-    common_xlink_attlist common_xlink_attlist_;
+    odf_types::common_xlink_attlist common_xlink_attlist_;
 	//draw:notify-on-update-of-ranges
 };
 
@@ -203,7 +203,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	common_xlink_attlist	common_xlink_attlist_;
+	odf_types::common_xlink_attlist	common_xlink_attlist_;
 	_CP_OPT(std::wstring)	draw_class_id_;
 };
 

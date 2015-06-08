@@ -8,7 +8,7 @@
 #include "color.h"
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_writer {
 
 class odf_conversion_context;
 
@@ -46,8 +46,8 @@ public:
 		{return local_style_context_.get();}
 
 	void set_page_margin(_CP_OPT(double) top, _CP_OPT(double) left, _CP_OPT(double) bottom, _CP_OPT(double) right, _CP_OPT(double) header, _CP_OPT(double) footer);
-	void set_page_margin(_CP_OPT(length) top, _CP_OPT(length) left, _CP_OPT(length) bottom, _CP_OPT(length) right);
-	void set_page_gutter(_CP_OPT(length) length_);
+	void set_page_margin(_CP_OPT(odf_types::length) top, _CP_OPT(odf_types::length) left, _CP_OPT(odf_types::length) bottom, _CP_OPT(odf_types::length) right);
+	void set_page_gutter(_CP_OPT(odf_types::length) length_);
 	
 	void set_page_border(std::wstring top, std::wstring left, std::wstring bottom, std::wstring right);
 	void set_page_border_shadow(bool val);
@@ -58,18 +58,18 @@ public:
 	void set_page_border_padding_right(int offset_type, double length_pt);
 
 	void set_page_orientation(int type);
-	void set_page_size(_CP_OPT(length) width, _CP_OPT(length) height);
+	void set_page_size(_CP_OPT(odf_types::length) width, _CP_OPT(odf_types::length) height);
 
 	void set_title_page_enable(bool val);
 	void set_pages_mirrored(bool val);
 	void set_even_and_left_headers(bool val);
 	
 	bool add_footer(int type);
-		void set_footer_size(_CP_OPT(length) length_);
+		void set_footer_size(_CP_OPT(odf_types::length) length_);
 	bool add_header(int type);
-		void set_header_size(_CP_OPT(length) length_);
+		void set_header_size(_CP_OPT(odf_types::length) length_);
 
-	void set_background(_CP_OPT(color) & color, int type);
+	void set_background(_CP_OPT(odf_types::color) & color, int type);
 
 	void set_page_number_format(_CP_OPT(int) & type, _CP_OPT(int) & start);
 

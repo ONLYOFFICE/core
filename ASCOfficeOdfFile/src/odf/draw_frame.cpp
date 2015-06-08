@@ -21,7 +21,7 @@
 #include "datatypes/borderstyle.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 
 

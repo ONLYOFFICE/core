@@ -3,7 +3,7 @@
 #include <string>
 #include "odfattributes.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class smil_transition_type
 {
@@ -73,5 +73,5 @@ private:
 
 
 }
-	APPLY_PARSE_XML_ATTRIBUTES(odf::smil_transition_type);
+	APPLY_PARSE_XML_ATTRIBUTES(odf_types::smil_transition_type);
 }

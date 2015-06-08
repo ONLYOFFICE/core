@@ -5,7 +5,7 @@
 #include <ostream>
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_types {
 
 std::wostream & operator << (std::wostream & _Wostream, const xlink_type & _Type)
 {

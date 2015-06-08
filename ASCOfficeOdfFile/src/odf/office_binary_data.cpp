@@ -8,7 +8,7 @@
 #include <cpdoccore/xml/attributes.h>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 
 

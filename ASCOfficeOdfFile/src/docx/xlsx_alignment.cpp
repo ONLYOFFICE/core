@@ -54,9 +54,9 @@ bool is_default(const xlsx_alignment & rVal)
     return rVal == defaultAlignment;
 }
 
-xlsx_alignment OdfProperties2XlsxAlignment(const odf::text_format_properties_content * textProp, 
-                                           const odf::paragraph_format_properties * parProp,
-                                           const odf::style_table_cell_properties_attlist * cellProp)
+xlsx_alignment OdfProperties2XlsxAlignment(const odf_reader::text_format_properties_content * textProp, 
+                                           const odf_reader::paragraph_format_properties * parProp,
+                                           const odf_reader::style_table_cell_properties_attlist * cellProp)
 {
     xlsx_alignment alignment;
 
@@ -65,18 +65,18 @@ xlsx_alignment OdfProperties2XlsxAlignment(const odf::text_format_properties_con
         switch(parProp->fo_text_align_->get_type())
         {
         default:
-        case odf::text_align::Start:
-        case odf::text_align::Left:
+        case odf_types::text_align::Start:
+        case odf_types::text_align::Left:
             alignment.horizontal = L"left";
             break;
-        case odf::text_align::Right:
-        case odf::text_align::End:
+        case odf_types::text_align::Right:
+        case odf_types::text_align::End:
             alignment.horizontal = L"right";
             break;
-        case odf::text_align::Center:
+        case odf_types::text_align::Center:
             alignment.horizontal = L"center";
             break;
-        case odf::text_align::Justify:
+        case odf_types::text_align::Justify:
             alignment.horizontal = L"justify";
             break;        
         }
@@ -85,7 +85,7 @@ xlsx_alignment OdfProperties2XlsxAlignment(const odf::text_format_properties_con
     // TODO : indent
 
     if (parProp && parProp->fo_text_align_last_ &&
-        parProp->fo_text_align_last_->get_type() == odf::text_align::Justify)
+        parProp->fo_text_align_last_->get_type() == odf_types::text_align::Justify)
     {
         alignment.justifyLastLine = true;            
     }
@@ -101,7 +101,7 @@ xlsx_alignment OdfProperties2XlsxAlignment(const odf::text_format_properties_con
     }
 
 
-    _CP_OPT(odf::vertical_align) v_align;
+    _CP_OPT(odf_types::vertical_align) v_align;
     
     if (parProp && parProp->style_vertical_align_)
         v_align = parProp->style_vertical_align_;
@@ -112,19 +112,19 @@ xlsx_alignment OdfProperties2XlsxAlignment(const odf::text_format_properties_con
     {
         switch(v_align->get_type())
         {        
-        case odf::vertical_align::Top:
+        case odf_types::vertical_align::Top:
             alignment.vertical = L"top";
             break;
         default:
-        case odf::vertical_align::Auto:
-        case odf::vertical_align::Middle:
+        case odf_types::vertical_align::Auto:
+        case odf_types::vertical_align::Middle:
             alignment.vertical = L"center";
             break;
-        case odf::vertical_align::Baseline:
-        case odf::vertical_align::Bottom:
+        case odf_types::vertical_align::Baseline:
+        case odf_types::vertical_align::Bottom:
             alignment.vertical = L"bottom";
             break;
-        case odf::vertical_align::Justify:
+        case odf_types::vertical_align::Justify:
             alignment.vertical = L"justify";
             break;
         }
@@ -133,7 +133,7 @@ xlsx_alignment OdfProperties2XlsxAlignment(const odf::text_format_properties_con
 
     if (cellProp &&
         cellProp->fo_wrap_option_ &&
-        cellProp->fo_wrap_option_->get_type() == odf::wrap_option::Wrap
+        cellProp->fo_wrap_option_->get_type() == odf_types::wrap_option::Wrap
         )
     {
         alignment.wrapText = true;

@@ -17,7 +17,10 @@
 #include "style_map.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 std::wstring number_style_base::get_style_name() const
 {

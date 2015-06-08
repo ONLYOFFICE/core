@@ -11,7 +11,7 @@
 #include "datatypes/common_attlists.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 class number_style_base : public office_element
 {
@@ -31,11 +31,11 @@ public:
     std::wstring get_style_name() const;
 
 private:
-    common_data_style_attlist common_data_style_attlist_;
+    odf_types::common_data_style_attlist common_data_style_attlist_;
    
-	office_element_ptr style_text_properties_;
-    office_element_ptr_array content_;
-    office_element_ptr_array style_map_;
+	office_element_ptr					style_text_properties_;
+    office_element_ptr_array			content_;
+    office_element_ptr_array			style_map_;
 };
 
 /// \class  number_number_style

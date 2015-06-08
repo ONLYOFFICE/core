@@ -7,7 +7,7 @@
 #include <cpdoccore/CPSharedPtr.h>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 class relationship /*: public xml::element_impl<relationship>*/
 {

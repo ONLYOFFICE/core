@@ -16,7 +16,10 @@
 #include "../odf/calcs_styles.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 // dc:date
 /////////////////////////////////////////////
@@ -163,12 +166,12 @@ void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 //////////////////////////////////////////////////////////////////
     /// Обрабатываем стиль draw
-	std::vector<const odf::style_instance *> instances;
+	std::vector<const odf_reader::style_instance *> instances;
 	style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(
-				office_annotation_attr_.draw_style_name_.get_value_or(style_ref(L"")).style_name(), odf::style_family::Graphic,false/*Context.process_headers_footers_*/);
+				office_annotation_attr_.draw_style_name_.get_value_or(style_ref(L"")).style_name(), odf_types::style_family::Graphic,false/*Context.process_headers_footers_*/);
 	if (styleInst)
 	{
-		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
 		if (defaultStyle)instances.push_back(defaultStyle);
 
 		instances.push_back(styleInst);
@@ -240,12 +243,12 @@ void officeooo_annotation::pptx_convert(oox::pptx_conversion_context & Context)
 	
 //////////////////////////////////////////////////////////////////
     /// Обрабатываем стиль draw
-	std::vector<const odf::style_instance *> instances;
+	std::vector<const odf_reader::style_instance *> instances;
 	style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(
-				office_annotation_attr_.draw_style_name_.get_value_or(style_ref(L"")).style_name(), odf::style_family::Graphic,false/*Context.process_headers_footers_*/);
+				office_annotation_attr_.draw_style_name_.get_value_or(style_ref(L"")).style_name(), odf_types::style_family::Graphic,false/*Context.process_headers_footers_*/);
 	if (styleInst)
 	{
-		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
 		if (defaultStyle)instances.push_back(defaultStyle);
 
 		instances.push_back(styleInst);

@@ -25,7 +25,10 @@
 #include "datatypes/borderstyle.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 
 
@@ -76,13 +79,13 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 		Context.get_drawing_context().set_anchor(Anchor,a_x_pt,a_y_pt);
 	}
 /////////////////////////////////////////////////////////////////////////////////
-	std::vector<const odf::style_instance *> instances;
+	std::vector<const odf_reader::style_instance *> instances;
 
-	odf::style_instance* styleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(styleName, odf::style_family::Graphic,false/*Context.process_headers_footers_*/);
+	odf_reader::style_instance* styleInst = 
+		Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,false/*Context.process_headers_footers_*/);
 	if (styleInst)
 	{
-		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
 		if (defaultStyle)instances.push_back(defaultStyle);
 
 		instances.push_back(styleInst);
@@ -92,7 +95,7 @@ void draw_shape::common_xlsx_convert(oox::xlsx_conversion_context & Context)
 ////////////////////////////////////////////////////////////////////////////////////
 	properties.apply_to(Context.get_drawing_context().get_properties());
 	
-	BOOST_FOREACH(odf::_property const & p, additional_)
+	BOOST_FOREACH(odf_reader::_property const & p, additional_)
 	{
 		Context.get_drawing_context().set_property(p);
 	}

@@ -5,7 +5,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class anchor_type
 {
@@ -40,7 +40,7 @@ std::wostream & operator << (std::wostream & _Wostream, const anchor_type & _Val
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::anchor_type);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::anchor_type);
 
 }
 

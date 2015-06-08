@@ -12,7 +12,7 @@
 #include "gradientstyle.h"
 
 namespace cpdoccore {
-namespace odf
+namespace odf_writer
 {
 
 class odf_conversion_context;
@@ -37,8 +37,8 @@ public:
 	void set_margin_top		(double valPt);
 	void set_margin_bottom	(double valPt);
 
-	void				set_anchor(int type);//anchor_type
-	anchor_type::type	get_anchor();
+	void							set_anchor(int type);//anchor_type
+	odf_types::anchor_type::type	get_anchor();
 
 	void set_object_background(bool Val);
 	void set_object_foreground(bool Val);
@@ -51,7 +51,7 @@ public:
 	void set_horizontal_pos(int align);
 	void set_horizontal_pos(double offset_pt);
 
-	void set_wrap_style(style_wrap::type  style);
+	void set_wrap_style(odf_types::style_wrap::type  style);
 	void set_overlap (bool val);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -152,7 +152,7 @@ public:
 	void set_textarea_font(_CP_OPT(std::wstring) & latin, _CP_OPT(std::wstring) & cs, _CP_OPT(std::wstring) & ea);
 //////////////////////////////////////////////////////////////////////////////////////
 	void start_gradient_style();
-		void set_gradient_type(gradient_style::type style);
+		void set_gradient_type(odf_types::gradient_style::type style);
 		void set_gradient_start(std::wstring hexColor, _CP_OPT(double) & intensiv);
 		void set_gradient_end  (std::wstring hexColor, _CP_OPT(double) & intensiv);
 		void set_gradient_rect(double l, double t, double r,double b);
@@ -161,7 +161,7 @@ public:
 	void end_gradient_style();
 ////////////////////////////////////////////////////////////////////////////////////////
 	void start_opacity_style();
-		void set_opacity_type(gradient_style style);
+		void set_opacity_type(odf_types::gradient_style style);
 		void set_opacity_start(double val);
 		void set_opacity_end  (double val);
 		void set_opacity_rect(double l, double t, double r,double b);

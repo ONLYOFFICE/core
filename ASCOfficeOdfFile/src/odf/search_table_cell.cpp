@@ -13,7 +13,10 @@
 #include "table_calculation_settings.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 class office_element;
 typedef shared_ptr<const office_element>::Type office_element_ptr_const;

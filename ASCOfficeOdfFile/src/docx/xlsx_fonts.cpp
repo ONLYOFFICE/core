@@ -19,21 +19,21 @@ namespace
 namespace 
 {
 
-XlsxFontCharset GetXlsxFontCharset(const odf::text_format_properties_content * textProp)
+XlsxFontCharset GetXlsxFontCharset(const odf_reader::text_format_properties_content * textProp)
 {
     // TODO
     return XCHARSET_EMPTY;    
 }
 
-XlsxFontFamily GetXlsxFontFamily(const odf::text_format_properties_content * textProp)
+XlsxFontFamily GetXlsxFontFamily(const odf_reader::text_format_properties_content * textProp)
 {
     // TODO
     return XFAMILY_EMPTY;
 }
 
-xlsx_font OdfFont2XlsxFont(const odf::text_format_properties_content * textProp,
-    const odf::paragraph_format_properties * parProp,
-    const odf::style_table_cell_properties_attlist * cellProp)
+xlsx_font OdfFont2XlsxFont(const odf_reader::text_format_properties_content * textProp,
+    const odf_reader::paragraph_format_properties * parProp,
+    const odf_reader::style_table_cell_properties_attlist * cellProp)
 {
     xlsx_font font;
     if (!textProp)
@@ -41,7 +41,7 @@ xlsx_font OdfFont2XlsxFont(const odf::text_format_properties_content * textProp,
 
     if (textProp->fo_font_weight_)
     {
-        if (textProp->fo_font_weight_.get().get_type() == odf::font_weight::WBold)
+        if (textProp->fo_font_weight_.get().get_type() == odf_types::font_weight::WBold)
             font.bold = true;
         else
             font.bold = false;
@@ -49,7 +49,7 @@ xlsx_font OdfFont2XlsxFont(const odf::text_format_properties_content * textProp,
 
     if (textProp->fo_font_style_)
     {
-        if (textProp->fo_font_style_.get().get_type() == odf::font_style::Italic)
+        if (textProp->fo_font_style_.get().get_type() == odf_types::font_style::Italic)
             font.i = true;
         else
             font.i = false;
@@ -74,7 +74,7 @@ xlsx_font OdfFont2XlsxFont(const odf::text_format_properties_content * textProp,
 
     if (textProp->fo_font_size_)
     {
-        font.sz = textProp->fo_font_size_->get_length().get_value_unit(odf::length::pt);
+        font.sz = textProp->fo_font_size_->get_length().get_value_unit(odf_types::length::pt);
     }
     else
     {
@@ -82,31 +82,31 @@ xlsx_font OdfFont2XlsxFont(const odf::text_format_properties_content * textProp,
     }
 
     if (textProp->style_text_underline_type_ &&
-        textProp->style_text_underline_type_->get_type() != odf::line_type::None ||
+        textProp->style_text_underline_type_->get_type() != odf_types::line_type::None ||
     
         textProp->style_text_underline_style_ &&
-        textProp->style_text_underline_style_->get_type() != odf::line_style::None        
+        textProp->style_text_underline_style_->get_type() != odf_types::line_style::None        
         )
     {
         if (textProp->style_text_underline_type_ &&
-            textProp->style_text_underline_type_->get_type() == odf::line_type::Double)
+            textProp->style_text_underline_type_->get_type() == odf_types::line_type::Double)
             font.u = XUNDERLINE_DOUBLE;
         else
             font.u = XUNDERLINE_SINGLE;
     }
 
     if (textProp->style_text_line_through_type_ &&
-        textProp->style_text_line_through_type_->get_type() != odf::line_type::None ||
+        textProp->style_text_line_through_type_->get_type() != odf_types::line_type::None ||
 
         textProp->style_text_line_through_style_ &&
-        textProp->style_text_line_through_style_->get_type() != odf::line_style::None)
+        textProp->style_text_line_through_style_->get_type() != odf_types::line_style::None)
     {
         font.strike = true;
     }
 
     if (textProp->fo_text_shadow_)
     {
-        if (textProp->fo_text_shadow_->get_type() == odf::shadow_type::Enable)
+        if (textProp->fo_text_shadow_->get_type() == odf_types::shadow_type::Enable)
             font.shadow = true;
         else
             font.shadow = false;
@@ -139,16 +139,16 @@ public:
     }
 
     size_t size() const;
-    size_t fontId(const odf::text_format_properties_content * textProp,
-        const odf::paragraph_format_properties * parProp,
-        const odf::style_table_cell_properties_attlist * cellProp);
+    size_t fontId(const odf_reader::text_format_properties_content * textProp,
+        const odf_reader::paragraph_format_properties * parProp,
+        const odf_reader::style_table_cell_properties_attlist * cellProp);
     //const xlsx_font & getFont(size_t id) const;
     void xlsx_serialize(std::wostream & _Wostream) const;
 
 private:
-    /*int getIndex(const odf::text_format_properties_content * textProp,
-        const odf::paragraph_format_properties * parProp,
-        const odf::style_table_cell_properties_attlist * cellProp) const;*/
+    /*int getIndex(const odf_reader::text_format_properties_content * textProp,
+        const odf_reader::paragraph_format_properties * parProp,
+        const odf_reader::style_table_cell_properties_attlist * cellProp) const;*/
     
 private:
     typedef boost::unordered_set<xlsx_font, boost::hash<xlsx_font> > fonts_array_t;
@@ -188,9 +188,9 @@ void xlsx_fonts::Impl::xlsx_serialize(std::wostream & _Wostream) const
     _Wostream << L"</fonts>";
 }
 
-size_t xlsx_fonts::Impl::fontId(const odf::text_format_properties_content * textProp,
-                          const odf::paragraph_format_properties * parProp,
-                          const odf::style_table_cell_properties_attlist * cellProp)
+size_t xlsx_fonts::Impl::fontId(const odf_reader::text_format_properties_content * textProp,
+                          const odf_reader::paragraph_format_properties * parProp,
+                          const odf_reader::style_table_cell_properties_attlist * cellProp)
 {
     xlsx_font fnt = OdfFont2XlsxFont(textProp, parProp, cellProp);
     fonts_array_t::const_iterator i = fonts_.find(fnt);
@@ -211,9 +211,9 @@ size_t xlsx_fonts::Impl::fontId(const odf::text_format_properties_content * text
 //}
 
 /*
-int xlsx_fonts::Impl::getIndex(const odf::text_format_properties_content * textProp,
-                         const odf::paragraph_format_properties * parProp,
-                         const odf::style_table_cell_properties_attlist * cellProp) const
+int xlsx_fonts::Impl::getIndex(const odf_reader::text_format_properties_content * textProp,
+                         const odf_reader::paragraph_format_properties * parProp,
+                         const odf_reader::style_table_cell_properties_attlist * cellProp) const
 {
     const xlsx_font newFont = OdfFont2XlsxFont(textProp, parProp, cellProp);
     for (size_t i = 0; i < fonts_.size(); ++i)
@@ -254,9 +254,9 @@ void xlsx_fonts::xlsx_serialize(std::wostream & _Wostream) const
     return impl_->xlsx_serialize(_Wostream);
 }
 
-size_t xlsx_fonts::fontId(const odf::text_format_properties_content * textProp,
-    const odf::paragraph_format_properties * parProp,
-    const odf::style_table_cell_properties_attlist * cellProp)
+size_t xlsx_fonts::fontId(const odf_reader::text_format_properties_content * textProp,
+    const odf_reader::paragraph_format_properties * parProp,
+    const odf_reader::style_table_cell_properties_attlist * cellProp)
 {
     return impl_->fontId(textProp, parProp, cellProp);
 }

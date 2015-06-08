@@ -31,7 +31,10 @@
 #include "datatypes/borderstyle.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 void draw_g::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -97,27 +100,27 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 		Context.get_slide_context().set_anchor(Anchor,a_x_pt,a_y_pt);
 	}
 //////////////////////////////////////////////
-	std::vector<const odf::style_instance *> instances;
+	std::vector<const odf_reader::style_instance *> instances;
 
 	const std::wstring grStyleName = common_draw_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(style_ref(L"")).style_name();
 	const std::wstring baseStyleName = common_draw_attlist_.common_draw_style_name_attlist_.presentation_style_name_.get_value_or(style_ref(L"")).style_name();
 
-	odf::style_instance* grStyleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(grStyleName, odf::style_family::Graphic,Context.process_masters_);
+	odf_reader::style_instance* grStyleInst = 
+		Context.root()->odf_context().styleContainer().style_by_name(grStyleName, odf_types::style_family::Graphic,Context.process_masters_);
 	
-	odf::style_instance* baseStyleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf::style_family::Presentation,Context.process_masters_);
+	odf_reader::style_instance* baseStyleInst = 
+		Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf_types::style_family::Presentation,Context.process_masters_);
 
 	if (baseStyleInst)//векторная фигура презентаций
 	{
-		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Presentation);
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Presentation);
 		if (defaultStyle)instances.push_back(defaultStyle);
 
 		instances.push_back(baseStyleInst);
 	}
 	if (grStyleInst)//обычная векторная фигура
 	{		
-		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
 		if (defaultStyle)instances.push_back(defaultStyle);
 
 		instances.push_back(grStyleInst);
@@ -131,10 +134,10 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 	Compute_GraphicFill(properties.common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,fill);	
 	Context.get_slide_context().set_fill(fill);
 
-	Context.get_slide_context().set_property(odf::_property(L"border_width_left",	Compute_BorderWidth(properties, sideLeft)));
-	Context.get_slide_context().set_property(odf::_property(L"border_width_top",	Compute_BorderWidth(properties, sideTop)));
-	Context.get_slide_context().set_property(odf::_property(L"border_width_right",	Compute_BorderWidth(properties, sideRight)));
-	Context.get_slide_context().set_property(odf::_property(L"border_width_bottom", Compute_BorderWidth(properties, sideBottom))); 
+	Context.get_slide_context().set_property(odf_reader::_property(L"border_width_left",	Compute_BorderWidth(properties, sideLeft)));
+	Context.get_slide_context().set_property(odf_reader::_property(L"border_width_top",	Compute_BorderWidth(properties, sideTop)));
+	Context.get_slide_context().set_property(odf_reader::_property(L"border_width_right",	Compute_BorderWidth(properties, sideRight)));
+	Context.get_slide_context().set_property(odf_reader::_property(L"border_width_bottom", Compute_BorderWidth(properties, sideBottom))); 
 	
 	if (properties.fo_clip_)
 	{
@@ -151,7 +154,7 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
 	if (office_event_listeners_)office_event_listeners_->pptx_convert(Context);
 
-	Context.get_text_context().start_base_style(baseStyleName ,odf::style_family::Presentation);
+	Context.get_text_context().start_base_style(baseStyleName ,odf_types::style_family::Presentation);
 ////////////////////////////////////////////////
 	int i=0;
 	int size = content_.size();
@@ -232,14 +235,14 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
     try {
         const std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
 
-        odf::odf_document::Impl * odfImpl = Context.root()->get_impl();
+        odf_reader::odf_document::Impl * odfImpl = Context.root()->get_impl();
 		const std::wstring folderPath = odfImpl->get_folder();
 
         std::wstring objectPath = folderPath + FILE_SEPARATOR_STR +  href;
 
 		//normalize path ??? todooo
 
-        cpdoccore::odf::odf_document objectSubDoc(objectPath, NULL);    
+        cpdoccore::odf_reader::odf_document objectSubDoc(objectPath, NULL);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //в отдельных embd объектах чаще всего диаграммы, уравнения... но МОГУТ быть и обычные объекты подтипа frame!!! 
 		//пример RemanejamentoOrcamentario.ods

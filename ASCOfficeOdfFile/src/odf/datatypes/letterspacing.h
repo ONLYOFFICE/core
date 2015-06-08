@@ -11,7 +11,7 @@
 #include "length.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class letter_spacing
 {
@@ -50,7 +50,7 @@ std::wostream & operator << (std::wostream & _Wostream, const letter_spacing & _
 
 }
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::letter_spacing);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::letter_spacing);
 
 }
 

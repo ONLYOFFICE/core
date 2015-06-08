@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class line_break
 {
@@ -42,7 +42,7 @@ std::wostream & operator << (std::wostream & _Wostream, const line_break & _Val)
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::line_break);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::line_break);
 
 }
 

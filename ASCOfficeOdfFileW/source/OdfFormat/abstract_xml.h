@@ -3,7 +3,7 @@
 #include "office_elements_create.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 class abstract_xml : public office_element_impl<abstract_xml>
 {

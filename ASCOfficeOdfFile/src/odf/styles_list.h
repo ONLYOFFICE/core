@@ -15,7 +15,7 @@
 #include "datatypes/common_attlists.h"
 #include "datatypes/style_ref.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_reader { 
 
 class text_list_style_attr
 {
@@ -25,9 +25,9 @@ public:
     const std::wstring & get_style_name() { return style_name_; }
 
 private:
-    std::wstring style_name_;
-    optional<std::wstring>::Type style_display_name_;
-    optional<bool>::Type text_consecutive_numbering_;
+    std::wstring					style_name_;
+    optional<std::wstring>::Type	style_display_name_;
+    optional<bool>::Type			text_consecutive_numbering_;
 
 };
 
@@ -50,8 +50,8 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 private:
-    text_list_style_attr text_list_style_attr_;
-    office_element_ptr_array text_list_style_content_;
+    text_list_style_attr			text_list_style_attr_;
+    office_element_ptr_array		text_list_style_content_;
     friend class odf_document;
 };
 
@@ -66,10 +66,10 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 private:
-    optional<style_ref>::Type text_style_name_;
+    optional<odf_types::style_ref>::Type				text_style_name_;
     
-	common_num_format_attlist common_num_format_attlist_;
-    common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
+	odf_types::common_num_format_attlist				common_num_format_attlist_;
+    odf_types::common_num_format_prefix_suffix_attlist	common_num_format_prefix_suffix_attlist_;
     
 	unsigned int text_display_levels_;
     unsigned int text_start_value_;
@@ -111,18 +111,18 @@ public:
     friend class text_list_level_style_number;
     friend class text_list_level_style_bullet;
     
-	const common_text_align & get_common_text_align() const { return common_text_align_; }
+	const odf_types::common_text_align & get_common_text_align() const { return common_text_align_; }
 
-    common_text_align common_text_align_;
-    optional<length>::Type text_space_before_;
-    optional<length>::Type text_min_label_width_;
-    optional<length>::Type text_min_label_distance_;
-    optional<std::wstring>::Type style_font_name_;
-    optional<length>::Type fo_width_;
-    optional<length>::Type fo_height_;
+    odf_types::common_text_align			common_text_align_;
+    optional<odf_types::length>::Type		text_space_before_;
+    optional<odf_types::length>::Type		text_min_label_width_;
+    optional<odf_types::length>::Type		text_min_label_distance_;
+    optional<std::wstring>::Type			style_font_name_;
+    optional<odf_types::length>::Type		fo_width_;
+    optional<odf_types::length>::Type		fo_height_;
   
-	common_vertical_rel_attlist common_vertical_rel_attlist_;
-    common_vertical_pos_attlist common_vertical_pos_attlist_;
+	odf_types::common_vertical_rel_attlist	common_vertical_rel_attlist_;
+    odf_types::common_vertical_pos_attlist	common_vertical_pos_attlist_;
 
     office_element_ptr style_list_level_label_alignment_;
 
@@ -147,15 +147,15 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 public:
-    const _CP_OPT(length) & get_fo_text_indent() const { return fo_text_indent_; }
-    const _CP_OPT(length) & get_fo_margin_left() const { return fo_margin_left_; }
-    const _CP_OPT(length) & get_text_list_tab_stop_position() const { return text_list_tab_stop_position_; }
+    const _CP_OPT(odf_types::length) & get_fo_text_indent() const { return fo_text_indent_; }
+    const _CP_OPT(odf_types::length) & get_fo_margin_left() const { return fo_margin_left_; }
+    const _CP_OPT(odf_types::length) & get_text_list_tab_stop_position() const { return text_list_tab_stop_position_; }
 
-    _CP_OPT(std::wstring) text_label_followed_by_;
+    _CP_OPT(std::wstring)		text_label_followed_by_;
 private:
-    _CP_OPT(length) text_list_tab_stop_position_;
-    _CP_OPT(length) fo_text_indent_;
-    _CP_OPT(length) fo_margin_left_;
+    _CP_OPT(odf_types::length) text_list_tab_stop_position_;
+    _CP_OPT(odf_types::length) fo_text_indent_;
+    _CP_OPT(odf_types::length) fo_margin_left_;
 
     friend class text_list_level_style_number;
 };
@@ -183,10 +183,10 @@ private:
     virtual void add_child_element( xml::sax * Reader, const std::wstring & Ns, const std::wstring & Name);
 
 private:
-    text_list_level_style_attr text_list_level_style_attr_;
-    text_list_level_style_number_attr text_list_level_style_number_attr_;
+    text_list_level_style_attr			text_list_level_style_attr_;
+    text_list_level_style_number_attr	text_list_level_style_number_attr_;
 
-	office_element_ptr style_text_properties_;
+	office_element_ptr					style_text_properties_;
 
 };
 
@@ -200,10 +200,10 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 private:
-    _CP_OPT(style_ref) text_style_name_;
+    _CP_OPT(odf_types::style_ref) text_style_name_;
     optional<wchar_t>::Type text_bullet_char_;
-    common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
-    optional<percent>::Type text_bullet_relative_size_;
+    odf_types::common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
+    optional<odf_types::percent>::Type text_bullet_relative_size_;
 
     friend class text_list_level_style_bullet;
 

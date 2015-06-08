@@ -5,7 +5,8 @@
 #include "styles_lite_container.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+namespace odf_reader {
 
 struct style_ref_lite_container
 {

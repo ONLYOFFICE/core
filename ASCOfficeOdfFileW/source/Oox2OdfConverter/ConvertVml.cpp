@@ -328,10 +328,10 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 		case SimpleTypes::filltypeGradientUnscaled:
 		{
 			odf_context()->drawing_context()->start_gradient_style();
-				if (SimpleTypes::filltypeGradient		== vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf::gradient_style::linear);
-				if (SimpleTypes::filltypeGradientRadial == vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf::gradient_style::radial);
-				if (SimpleTypes::filltypeGradientCenter == vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf::gradient_style::axial);
-				if (SimpleTypes::filltypeGradientUnscaled == vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf::gradient_style::square);
+				if (SimpleTypes::filltypeGradient		== vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf_types::gradient_style::linear);
+				if (SimpleTypes::filltypeGradientRadial == vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf_types::gradient_style::radial);
+				if (SimpleTypes::filltypeGradientCenter == vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf_types::gradient_style::axial);
+				if (SimpleTypes::filltypeGradientUnscaled == vml_fill->m_oType.GetValue()) odf_context()->drawing_context()->set_gradient_type(odf_types::gradient_style::square);
 
 				_CP_OPT(double) no_set;
 				if (vml_fill->m_oColor.IsInit())
@@ -547,10 +547,10 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 
 	if (vml_textbox->m_oInsetMode.GetValue() == SimpleTypes::insetmodeCustom)
 	{
-		odf_context()->drawing_context()->set_textarea_padding(odf::length(vml_textbox->m_oInset.GetLeft(0), odf::length::pt).get_value_unit(odf::length::cm),
-													odf::length(vml_textbox->m_oInset.GetTop(0), odf::length::pt).get_value_unit(odf::length::cm), 
-													odf::length(vml_textbox->m_oInset.GetRight(0), odf::length::pt).get_value_unit(odf::length::cm),
-													odf::length(vml_textbox->m_oInset.GetBottom(0), odf::length::pt).get_value_unit(odf::length::cm));	
+		odf_context()->drawing_context()->set_textarea_padding(odf_types::length(vml_textbox->m_oInset.GetLeft(0), odf_types::length::pt).get_value_unit(odf_types::length::cm),
+													odf_types::length(vml_textbox->m_oInset.GetTop(0), odf_types::length::pt).get_value_unit(odf_types::length::cm), 
+													odf_types::length(vml_textbox->m_oInset.GetRight(0), odf_types::length::pt).get_value_unit(odf_types::length::cm),
+													odf_types::length(vml_textbox->m_oInset.GetBottom(0), odf_types::length::pt).get_value_unit(odf_types::length::cm));	
 	}
 
 	odf_context()->drawing_context()->set_textarea_wrap(true);
@@ -600,33 +600,33 @@ void OoxConverter::convert(OOX::VmlWord::CWrap	*vml_wrap)
 		{
 			case SimpleTypes::wraptypeNone  :
 			{
-				odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::None);
+				odf_context()->drawing_context()->set_wrap_style(odf_types::style_wrap::None);
 			}break;
 			case SimpleTypes::wraptypeSquare:
 			{
 				if (vml_wrap->m_oSide.IsInit())
 				{
 					if (vml_wrap->m_oSide->GetValue() == SimpleTypes::wrapsideLargest)
-						odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Dynamic);
+						odf_context()->drawing_context()->set_wrap_style(odf_types::style_wrap::Dynamic);
 					else if (vml_wrap->m_oSide->GetValue() == SimpleTypes::wrapsideLeft)
-						odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Left);
+						odf_context()->drawing_context()->set_wrap_style(odf_types::style_wrap::Left);
 					else if (vml_wrap->m_oSide->GetValue() == SimpleTypes::wrapsideRight)
-						odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Right);
+						odf_context()->drawing_context()->set_wrap_style(odf_types::style_wrap::Right);
 					else
-						odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
+						odf_context()->drawing_context()->set_wrap_style(odf_types::style_wrap::Parallel);
 				}
 			}break;
 			case SimpleTypes::wraptypeThrough:
 			{
-				odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::RunThrough);
+				odf_context()->drawing_context()->set_wrap_style(odf_types::style_wrap::RunThrough);
 			}break;
 			case SimpleTypes::wraptypeTight:
 			{
-				odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
+				odf_context()->drawing_context()->set_wrap_style(odf_types::style_wrap::Parallel);
 			}break;
 			case SimpleTypes::wraptypeTopAndBottom:
 			{
-				odf_context()->drawing_context()->set_wrap_style(odf::style_wrap::Parallel);
+				odf_context()->drawing_context()->set_wrap_style(odf_types::style_wrap::Parallel);
 			}break;
 		}
 	}

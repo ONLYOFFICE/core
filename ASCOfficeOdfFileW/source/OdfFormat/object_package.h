@@ -8,7 +8,7 @@
 namespace cpdoccore 
 {
 
-namespace odf 
+namespace odf_writer 
 {
 	class _mediaitems;//picture & media
 

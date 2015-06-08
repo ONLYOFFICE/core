@@ -7,7 +7,7 @@
 #include "length.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class length_or_percent
 {
@@ -62,6 +62,6 @@ std::wostream & operator << (std::wostream & _Wostream, const length_or_percent 
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::length_or_percent);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::length_or_percent);
 
 }

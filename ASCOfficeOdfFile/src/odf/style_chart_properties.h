@@ -21,7 +21,7 @@
 #include "datatypes/direction.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 /// \class  style_chart_properties
 ///         style:chart-properties
@@ -42,7 +42,7 @@ private:
 public:
 	std::vector<_property> content_;
 
-	common_rotation_angle_attlist       common_rotation_angle_attlist_;
+	odf_types::common_rotation_angle_attlist       common_rotation_angle_attlist_;
 
 };
 

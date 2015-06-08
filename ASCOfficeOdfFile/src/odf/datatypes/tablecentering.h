@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class table_centering
 {
@@ -44,7 +44,7 @@ std::wostream & operator << (std::wostream & _Wostream, const table_centering & 
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::table_centering);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::table_centering);
 
 }
 

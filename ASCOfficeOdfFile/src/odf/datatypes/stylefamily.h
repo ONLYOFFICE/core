@@ -4,7 +4,7 @@
 #include <string>
 #include "odfattributes.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class style_family
 {
@@ -60,6 +60,6 @@ private:
 std::wostream & operator << (std::wostream & _Wostream, const style_family & _Val);
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::style_family);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::style_family);
 
 }

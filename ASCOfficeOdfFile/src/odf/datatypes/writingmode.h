@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class writing_mode
 {
@@ -48,7 +48,7 @@ std::wostream & operator << (std::wostream & _Wostream, const writing_mode & _Va
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::writing_mode);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::writing_mode);
 
 }
 

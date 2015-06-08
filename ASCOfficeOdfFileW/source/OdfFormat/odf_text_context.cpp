@@ -18,7 +18,10 @@
 #include "paragraph_elements.h"
 
 namespace cpdoccore {
-namespace odf
+
+	using namespace odf_types;
+
+namespace odf_writer
 {
 
 odf_text_context::odf_text_context(odf_conversion_context *odf_context)
@@ -510,7 +513,7 @@ void odf_text_context::save_property_break()
 
 			if ((p || h) && !current_level_[i].style_elm)
 			{
-				styles_context_->create_style(L"",odf::style_family::Paragraph, true, false, -1);					
+				styles_context_->create_style(L"",odf_types::style_family::Paragraph, true, false, -1);					
 				odf_style_state_ptr style_ = styles_context_->last_state();
 				if (style_)
 				{

@@ -6,7 +6,10 @@
 #include "chart_objects.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 
 

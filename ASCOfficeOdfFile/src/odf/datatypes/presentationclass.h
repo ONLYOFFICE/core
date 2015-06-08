@@ -3,7 +3,7 @@
 #include <string>
 #include "odfattributes.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class presentation_class
 {
@@ -50,5 +50,5 @@ private:
 
 
 }
-	APPLY_PARSE_XML_ATTRIBUTES(odf::presentation_class);
+	APPLY_PARSE_XML_ATTRIBUTES(odf_types::presentation_class);
 }

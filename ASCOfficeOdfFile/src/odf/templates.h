@@ -16,7 +16,7 @@
 
 
 namespace cpdoccore { 
-namespace odf { 
+namespace odf_reader { 
 	 
 class table_body: public office_element_impl<table_body>
 {

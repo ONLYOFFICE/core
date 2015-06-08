@@ -8,7 +8,7 @@
 #include "office_elements_create.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 /// \brief  office:presentation
 class office_presentation : public office_element_impl<office_presentation>

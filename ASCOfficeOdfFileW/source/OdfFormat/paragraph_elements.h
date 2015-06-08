@@ -15,7 +15,7 @@
 #include "common_attlists.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 // simple text
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -291,8 +291,8 @@ public:
    
 	office_element_ptr_array paragraph_content_;
     
-	_CP_OPT(style_ref)	text_style_name_;//ваще то это такой элемент где стиль должќн быть всегда
-    style_ref_array		text_class_names_;
+	_CP_OPT(odf_types::style_ref)	text_style_name_;//ваще то это такой элемент где стиль должќн быть всегда
+    odf_types::style_ref_array		text_class_names_;
 
     virtual void add_text(const std::wstring & Text);
 };
@@ -321,13 +321,13 @@ public:
 
     virtual void add_text(const std::wstring & Text);
 
-    common_xlink_attlist common_xlink_attlist_;
+    odf_types::common_xlink_attlist common_xlink_attlist_;
 
     _CP_OPT(std::wstring) office_name_;
-    _CP_OPT(target_frame_name) office_target_frame_name_;
+    _CP_OPT(odf_types::target_frame_name) office_target_frame_name_;
 
-    _CP_OPT(style_ref) text_style_name_;
-    _CP_OPT(style_ref) text_visited_style_name_;
+    _CP_OPT(odf_types::style_ref) text_style_name_;
+    _CP_OPT(odf_types::style_ref) text_visited_style_name_;
 
     office_element_ptr_array paragraph_content_;
 };
@@ -357,8 +357,8 @@ public:
 
     virtual void add_text(const std::wstring & Text);
 
-    ::std::wstring text_id_;
-    noteclass text_note_class_;
+    std::wstring text_id_;
+    odf_types::noteclass text_note_class_;
 
     office_element_ptr text_note_citation_;
     office_element_ptr text_note_body_;
@@ -386,7 +386,7 @@ public:
 
     virtual void add_text(const std::wstring & Text);
 
-	style_ref text_style_name_;
+	odf_types::style_ref text_style_name_;
 
     office_element_ptr text_ruby_base_;
     office_element_ptr text_ruby_text_;
@@ -399,7 +399,7 @@ class common_field_fixed_attlist
 {
 public:
 
-    _CP_OPT(Bool) text_fixed_;
+    _CP_OPT(odf_types::Bool) text_fixed_;
 
 	void serialize(CP_ATTR_NODE);   
     
@@ -471,7 +471,7 @@ public:
 
     virtual void serialize(std::wostream & _Wostream);
 
-	common_num_format_attlist		common_num_format_attlist_;
+	odf_types::common_num_format_attlist		common_num_format_attlist_;
 	common_field_fixed_attlist		common_field_fixed_attlist_;
 
 	_CP_OPT(int)			text_page_adjust_;
@@ -686,5 +686,5 @@ public:
     
 };
 CP_REGISTER_OFFICE_ELEMENT2(presentation_date_time);
-} // namespace odf
+} // namespace odf_writer
 } // namespace cpdoccore

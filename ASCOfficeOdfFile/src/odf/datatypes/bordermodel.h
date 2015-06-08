@@ -5,7 +5,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class border_model
 {
@@ -37,6 +37,6 @@ std::wostream & operator << (std::wostream & _Wostream, const border_model & _Va
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::border_model);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::border_model);
 
 }

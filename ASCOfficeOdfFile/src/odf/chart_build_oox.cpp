@@ -22,10 +22,10 @@
 #include "datatypes/borderstyle.h"
 
 namespace cpdoccore { 
-namespace odf {
 
+	using namespace odf_types;
 
-
+namespace odf_reader {
 
 class office_element;
 typedef shared_ptr<const office_element>::Type office_element_ptr_const;
@@ -312,7 +312,7 @@ void chart_build::oox_convert(oox::oox_chart_context & chart)
 }
 void process_build_chart::ApplyChartProperties(std::wstring style,std::vector<_property> & propertiesOut)
 {
-	style_instance* styleInst = styles_.style_by_name(style, odf::style_family::Chart,false);
+	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart,false);
     if(styleInst)
 	{
 		const style_content * Content = styleInst->content();
@@ -328,7 +328,7 @@ void process_build_chart::ApplyChartProperties(std::wstring style,std::vector<_p
 }
 void process_build_chart::ApplyTextProperties(std::wstring style,std::vector<_property> & propertiesOut)
 {
-	style_instance* styleInst = styles_.style_by_name(style, odf::style_family::Chart,false/*Context.process_headers_footers_*/);
+	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart,false/*Context.process_headers_footers_*/);
     if(styleInst)
 	{
 		text_format_properties_content properties = calc_text_properties_content(styleInst);
@@ -337,7 +337,7 @@ void process_build_chart::ApplyTextProperties(std::wstring style,std::vector<_pr
 }
 void process_build_chart::ApplyGraphicProperties(std::wstring style,std::vector<_property> & propertiesOut,oox::_oox_fill & fill)
 {
-	style_instance* styleInst = styles_.style_by_name(style, odf::style_family::Chart,false/*Context.process_headers_footers_*/);
+	style_instance* styleInst = styles_.style_by_name(style, odf_types::style_family::Chart,false/*Context.process_headers_footers_*/);
     if(styleInst)
 	{
 		graphic_format_properties properties = calc_graphic_properties_content(styleInst);

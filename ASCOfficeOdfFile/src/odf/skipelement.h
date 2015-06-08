@@ -8,7 +8,7 @@
 
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 /// \class  _skip_element
 class _skip_element : public office_element_impl<_skip_element>

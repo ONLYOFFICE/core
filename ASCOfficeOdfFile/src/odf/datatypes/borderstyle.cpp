@@ -2,7 +2,7 @@
 
 #include "borderstyle.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 border_style::border_style(const std::wstring & Value) : initialized_(false), none_(false)
 {

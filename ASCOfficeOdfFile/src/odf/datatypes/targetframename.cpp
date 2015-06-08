@@ -6,7 +6,7 @@
 #include <sstream>
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 std::wostream & operator << (std::wostream & _Wostream, const target_frame_name & _Val)
 {

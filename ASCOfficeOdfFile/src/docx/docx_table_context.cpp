@@ -94,9 +94,9 @@ bool docx_table_state::start_covered_cell(docx_conversion_context & Context)
         if (rows_spanned_[current_table_column_].column_spanned() > 0)
             _Wostream << L"<w:gridSpan w:val=\"" << rows_spanned_[current_table_column_].column_spanned() + 1 << "\" />";
 
-        odf::style_instance * inst = 
+        odf_reader::style_instance * inst = 
             context_.root()->odf_context().styleContainer().style_by_name( 
-					rows_spanned_[current_table_column_].style() , odf::style_family::TableCell,Context.process_headers_footers_);
+					rows_spanned_[current_table_column_].style() , odf_types::style_family::TableCell,Context.process_headers_footers_);
 
         if (inst && inst->content())
             inst->content()->docx_convert(context_);

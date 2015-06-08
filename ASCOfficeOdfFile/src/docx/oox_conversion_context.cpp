@@ -11,7 +11,7 @@
 
 namespace cpdoccore { 
 
-void styles_context::start_process_style(const odf::style_instance * Instance)
+void styles_context::start_process_style(const odf_reader::style_instance * Instance)
 {
    current_processed_style_ = Instance;
 }

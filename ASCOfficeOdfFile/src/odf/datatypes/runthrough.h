@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class run_through
 {
@@ -42,7 +42,7 @@ std::wostream & operator << (std::wostream & _Wostream, const run_through & _Val
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::run_through);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::run_through);
 
 }
 

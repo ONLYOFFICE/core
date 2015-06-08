@@ -35,7 +35,7 @@
 #include "textdisplay.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 
 // 15.4
@@ -55,21 +55,21 @@ private:
 public:
 
     _CP_OPT(std::wstring)    r_style_;
-    _CP_OPT(font_variant)    fo_font_variant_;               
-    _CP_OPT(text_transform)  fo_text_transform_;             
-    _CP_OPT(color)           fo_color_;                      
+    _CP_OPT(odf_types::font_variant)    fo_font_variant_;               
+    _CP_OPT(odf_types::text_transform)  fo_text_transform_;             
+    _CP_OPT(odf_types::color)           fo_color_;                      
     
-	_CP_OPT(Bool)            style_use_window_font_color_;
-    _CP_OPT(Bool)            style_text_outline_;            
+	_CP_OPT(odf_types::Bool)            style_use_window_font_color_;
+    _CP_OPT(odf_types::Bool)            style_text_outline_;            
    
-	_CP_OPT(line_type)       style_text_line_through_type_;  
-    _CP_OPT(line_style)      style_text_line_through_style_; 
-    _CP_OPT(line_width)      style_text_line_through_width_;
-    _CP_OPT(color)           style_text_line_through_color_;
+	_CP_OPT(odf_types::line_type)       style_text_line_through_type_;  
+    _CP_OPT(odf_types::line_style)      style_text_line_through_style_; 
+    _CP_OPT(odf_types::line_width)      style_text_line_through_width_;
+    _CP_OPT(odf_types::color)           style_text_line_through_color_;
     _CP_OPT(std::wstring)    style_text_line_through_text_;
-    _CP_OPT(style_ref)       style_text_line_through_text_style_;
+    _CP_OPT(odf_types::style_ref)       style_text_line_through_text_style_;
     
-	_CP_OPT(text_position)   style_text_position_;           
+	_CP_OPT(odf_types::text_position)   style_text_position_;           
 
     _CP_OPT(std::wstring)    style_font_name_;               
     _CP_OPT(std::wstring)    style_font_name_asian_;         
@@ -79,84 +79,84 @@ public:
     _CP_OPT(std::wstring)    style_font_family_asian_;
     _CP_OPT(std::wstring)    style_font_family_complex_;
 
-    _CP_OPT(font_family_generic)    style_font_family_generic_;
-    _CP_OPT(font_family_generic)    style_font_family_generic_asian_;
-    _CP_OPT(font_family_generic)    style_font_family_generic_complex_;
+    _CP_OPT(odf_types::font_family_generic)    style_font_family_generic_;
+    _CP_OPT(odf_types::font_family_generic)    style_font_family_generic_asian_;
+    _CP_OPT(odf_types::font_family_generic)    style_font_family_generic_complex_;
 
     _CP_OPT(std::wstring)    style_font_style_name_;
     _CP_OPT(std::wstring)    style_font_style_name_asian_;
     _CP_OPT(std::wstring)    style_font_style_name_complex_;
 
-    _CP_OPT(font_pitch) style_font_pitch_;
-    _CP_OPT(font_pitch) style_font_pitch_asian_;
-    _CP_OPT(font_pitch) style_font_pitch_complex_;
+    _CP_OPT(odf_types::font_pitch) style_font_pitch_;
+    _CP_OPT(odf_types::font_pitch) style_font_pitch_asian_;
+    _CP_OPT(odf_types::font_pitch) style_font_pitch_complex_;
 
     _CP_OPT(std::wstring)    style_font_charset_;
     _CP_OPT(std::wstring)    style_font_charset_asian_;
     _CP_OPT(std::wstring)    style_font_charset_complex_;
     
-    _CP_OPT(font_size)       fo_font_size_;              
-    _CP_OPT(font_size)       style_font_size_asian_;
-    _CP_OPT(font_size)       style_font_size_complex_;
+    _CP_OPT(odf_types::font_size)       fo_font_size_;              
+    _CP_OPT(odf_types::font_size)       style_font_size_asian_;
+    _CP_OPT(odf_types::font_size)       style_font_size_complex_;
 
-    _CP_OPT(length)      style_font_size_rel_;
-    _CP_OPT(length)      style_font_size_rel_asian_;
-    _CP_OPT(length)      style_font_size_rel_complex_;
+    _CP_OPT(odf_types::length)      style_font_size_rel_;
+    _CP_OPT(odf_types::length)      style_font_size_rel_asian_;
+    _CP_OPT(odf_types::length)      style_font_size_rel_complex_;
 
-    _CP_OPT(script_type) style_script_type_;
+    _CP_OPT(odf_types::script_type) style_script_type_;
 
-    _CP_OPT(letter_spacing)  fo_letter_spacing_;         
+    _CP_OPT(odf_types::letter_spacing)		fo_letter_spacing_;         
 
-    _CP_OPT(std::wstring)  fo_language_;                 
-    _CP_OPT(std::wstring)  style_language_asian_;
-    _CP_OPT(std::wstring)  style_language_complex_;
+    _CP_OPT(std::wstring)					fo_language_;                 
+    _CP_OPT(std::wstring)					style_language_asian_;
+    _CP_OPT(std::wstring)					style_language_complex_;
 
-    _CP_OPT(std::wstring)	fo_country_;                  
-    _CP_OPT(std::wstring)	style_country_asian_;
-    _CP_OPT(std::wstring)	style_country_complex_;
+    _CP_OPT(std::wstring)					fo_country_;                  
+    _CP_OPT(std::wstring)					style_country_asian_;
+    _CP_OPT(std::wstring)					style_country_complex_;
            
-    _CP_OPT(font_style)		fo_font_style_;                 
-    _CP_OPT(font_style)		style_font_style_asian_;
-    _CP_OPT(font_style)		style_font_style_complex_;
+    _CP_OPT(odf_types::font_style)			fo_font_style_;                 
+    _CP_OPT(odf_types::font_style)			style_font_style_asian_;
+    _CP_OPT(odf_types::font_style)			style_font_style_complex_;
 
-    _CP_OPT(font_relief)	style_font_relief_;             
+    _CP_OPT(odf_types::font_relief)			style_font_relief_;             
     
-    _CP_OPT(shadow_type)	fo_text_shadow_;               
+    _CP_OPT(odf_types::shadow_type)			fo_text_shadow_;               
 
-    _CP_OPT(line_type)			style_text_underline_type_;      
-    _CP_OPT(line_style)			style_text_underline_style_;    
-    _CP_OPT(line_width)			style_text_underline_width_;      
-    _CP_OPT(underline_color)	style_text_underline_color_; 
+    _CP_OPT(odf_types::line_type)			style_text_underline_type_;      
+    _CP_OPT(odf_types::line_style)			style_text_underline_style_;    
+    _CP_OPT(odf_types::line_width)			style_text_underline_width_;      
+    _CP_OPT(odf_types::underline_color)		style_text_underline_color_; 
     
-    _CP_OPT(font_weight)  fo_font_weight_;                   
-    _CP_OPT(font_weight)  style_font_weight_asian_;
-    _CP_OPT(font_weight)  style_font_weight_complex_;
+    _CP_OPT(odf_types::font_weight)			fo_font_weight_;                   
+    _CP_OPT(odf_types::font_weight)			style_font_weight_asian_;
+    _CP_OPT(odf_types::font_weight)			style_font_weight_complex_;
     
-    _CP_OPT(line_mode) style_text_underline_mode_;
-    _CP_OPT(line_mode) style_text_line_through_mode_;
+    _CP_OPT(odf_types::line_mode)			style_text_underline_mode_;
+    _CP_OPT(odf_types::line_mode)			style_text_line_through_mode_;
 
-	_CP_OPT(Bool) style_letter_kerning_;
+	_CP_OPT(odf_types::Bool)				style_letter_kerning_;
     
-    _CP_OPT(Bool) style_text_blinking_;
+    _CP_OPT(odf_types::Bool)				style_text_blinking_;
 
-    _CP_OPT(background_color) fo_background_color_;
+    _CP_OPT(odf_types::background_color)	fo_background_color_;
 
-    _CP_OPT(text_combine) style_text_combine_;
+    _CP_OPT(odf_types::text_combine) style_text_combine_;
 
     _CP_OPT(wchar_t)		style_text_combine_start_char_;
     _CP_OPT(wchar_t)		style_text_combine_end_char_;
 
-    _CP_OPT(text_emphasize) style_text_emphasize_;   
-    _CP_OPT(percent)		style_text_scale_;          
+    _CP_OPT(odf_types::text_emphasize) style_text_emphasize_;   
+    _CP_OPT(odf_types::percent)		style_text_scale_;          
     _CP_OPT(int)			style_text_rotation_angle_;
 
-    _CP_OPT(text_rotation_scale) style_text_rotation_scale_;
+    _CP_OPT(odf_types::text_rotation_scale) style_text_rotation_scale_;
 
-    _CP_OPT(Bool)			fo_hyphenate_;
+    _CP_OPT(odf_types::Bool)			fo_hyphenate_;
     _CP_OPT(unsigned int)	fo_hyphenation_remain_char_count_;
     _CP_OPT(unsigned int)	fo_hyphenation_push_char_count_;
 
-    _CP_OPT(text_display) text_display_;                     
+    _CP_OPT(odf_types::text_display) text_display_;                     
 
     _CP_OPT(std::wstring) text_condition_;
 
@@ -164,7 +164,7 @@ public:
     _CP_OPT(std::wstring) style_text_overline_mode_;
     _CP_OPT(std::wstring) style_text_overline_style_;
 
-	common_border_attlist common_border_attlist_;
+	odf_types::common_border_attlist common_border_attlist_;
 
 };
 

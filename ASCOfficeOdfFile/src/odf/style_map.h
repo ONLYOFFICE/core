@@ -11,7 +11,7 @@
 #include "datatypes/style_ref.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 /// \class  style_map
 /// \brief  style:map
@@ -31,9 +31,9 @@ private:
     
 public:
     std::wstring style_condition_;
-    style_ref style_name_;
+    odf_types::style_ref style_name_;
     std::wstring style_base_cell_address_;
-    style_ref style_apply_style_name_;
+    odf_types::style_ref style_apply_style_name_;
 
 };
 

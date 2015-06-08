@@ -2,7 +2,7 @@
 #define _CPDOCCORE_DOCUMENT_CONTEXT_H_
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 class office_element;
 

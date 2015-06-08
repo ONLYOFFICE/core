@@ -10,7 +10,7 @@
 #include "text_elements.h"
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_writer {
 
 /// \brief  office:chart
 class office_chart : public office_element_impl<office_chart>
@@ -48,7 +48,7 @@ class chart_chart_attlist
 public:
     void serialize(CP_ATTR_NODE);
 
-    common_draw_size_attlist	common_draw_size_attlist_;
+    odf_types::common_draw_size_attlist	common_draw_size_attlist_;
     common_chart_attlist		common_attlist_;
     _CP_OPT(std::wstring)		chart_class_;
     _CP_OPT(std::wstring)		chart_column_mapping_;
@@ -83,7 +83,7 @@ public:
     void serialize(CP_ATTR_NODE);
 
     _CP_OPT(std::wstring)			table_cell_range_;
-    common_draw_position_attlist	common_draw_position_attlist_;
+    odf_types::common_draw_position_attlist	common_draw_position_attlist_;
     common_chart_attlist			common_attlist_;
 };
 
@@ -160,13 +160,13 @@ public:
     _CP_OPT(std::wstring)			chart_legend_position_;
     _CP_OPT(std::wstring)			chart_legend_align_;
 
-    common_draw_position_attlist	common_draw_position_attlist_;
+    odf_types::common_draw_position_attlist	common_draw_position_attlist_;
     _CP_OPT(std::wstring)			style_legend_expansion_;
     _CP_OPT(double)					style_legend_expansion_aspect_ratio_;
     common_chart_attlist			common_attlist_;
 
-	_CP_OPT(length)					chartooo_height_;
-	_CP_OPT(length)					chartooo_width_;
+	_CP_OPT(odf_types::length)					chartooo_height_;
+	_CP_OPT(odf_types::length)					chartooo_width_;
 };
 
 /// \brief  chart:legend
@@ -196,8 +196,8 @@ class chart_plot_area_attlist
 public:
     void serialize(CP_ATTR_NODE);
 
-    common_draw_position_attlist	common_draw_position_attlist_;
-    common_draw_size_attlist		common_draw_size_attlist_;
+    odf_types::common_draw_position_attlist	common_draw_position_attlist_;
+    odf_types::common_draw_size_attlist		common_draw_size_attlist_;
     
 	common_chart_attlist			common_attlist_;
     
@@ -235,7 +235,7 @@ class chart_wall_attlist
 public:
      void serialize(CP_ATTR_NODE);
 
-    _CP_OPT(length)				svg_width_;
+    _CP_OPT(odf_types::length)				svg_width_;
     common_chart_attlist		common_attlist_;
 
 };
@@ -288,7 +288,7 @@ public:
 
     _CP_OPT(std::wstring)	chart_dimension_;
     _CP_OPT(std::wstring)	chart_name_;
-    common_chart_attlist	common_attlist_;
+	common_chart_attlist	common_attlist_;
 };
 
 /// \brief  chart:axis
@@ -508,7 +508,7 @@ public:
 	virtual void serialize(std::wostream & _Wostream);
 
     common_chart_attlist		common_attlist_;
-	_CP_OPT(Bool)				display_r_square_;
+	_CP_OPT(odf_types::Bool)				display_r_square_;
 
 };
 

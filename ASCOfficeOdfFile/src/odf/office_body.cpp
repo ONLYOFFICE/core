@@ -13,7 +13,10 @@
 #include "odfcontext.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 
 
@@ -75,7 +78,7 @@ void office_body::docx_convert(oox::docx_conversion_context & Context)
 		{
 			if (prop->docx_back_serialize(Context.output_stream(), Context))
 			{
-				Context.set_settings_property(odf::_property(L"displayBackgroundShape",true));
+				Context.set_settings_property(odf_reader::_property(L"displayBackgroundShape",true));
 			}
 		}
 	}

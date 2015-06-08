@@ -13,7 +13,10 @@
 
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 
 
@@ -195,7 +198,7 @@ void style_table_column_properties::docx_convert(oox::docx_conversion_context & 
 
 
 		//_CP_OPT(int) iUnormalWidth;
-		//if (odf::GetProperty(Context.get_settings_properties(),L"UnormalWidthPage",iUnormalWidth))
+		//if (odf_reader::GetProperty(Context.get_settings_properties(),L"UnormalWidthPage",iUnormalWidth))
 		{
 			//kf_max_width_ms = 31680./iUnormalWidth.get();//эквивалент 22"
 		}

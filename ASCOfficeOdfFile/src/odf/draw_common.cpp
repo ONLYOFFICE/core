@@ -66,7 +66,10 @@ namespace _image_file_
 };
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 
 int get_value_emu(const _CP_OPT(length) & len)
@@ -490,7 +493,7 @@ void parse_string_to_points(std::wstring str, std::vector<length> & Points)
 	}
 }
 
-void oox_convert_transforms(std::wstring transformStr,std::vector<odf::_property> & additional)
+void oox_convert_transforms(std::wstring transformStr,std::vector<odf_reader::_property> & additional)
 {
 	std::vector<std::wstring> transforms;
 	

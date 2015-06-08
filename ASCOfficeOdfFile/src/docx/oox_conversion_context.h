@@ -9,7 +9,7 @@
 
 namespace cpdoccore { 
 
-namespace odf{
+namespace odf_reader{
 	class style_instance;
 };
 
@@ -32,12 +32,12 @@ public:
 	std::wstring & extern_node(){return extern_node_;}
 	std::wstring & hlinkClick(){return hlinkClick_;}
 
-	const odf::style_instance * get_current_processed_style() const { return current_processed_style_; }
-    void start_process_style(const odf::style_instance * Instance);
+	const odf_reader::style_instance * get_current_processed_style() const { return current_processed_style_; }
+    void start_process_style(const odf_reader::style_instance * Instance);
     void end_process_style();
 
 private:
-	const odf::style_instance *	current_processed_style_;
+	const odf_reader::style_instance *	current_processed_style_;
 	std::wstring				extern_node_;
 	std::wstring				hlinkClick_;
 

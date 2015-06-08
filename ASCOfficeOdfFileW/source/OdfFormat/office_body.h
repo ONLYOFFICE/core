@@ -8,7 +8,7 @@
 #include "office_elements_create.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 class office_body;
 typedef shared_ptr<office_body>::Type office_body_ptr;

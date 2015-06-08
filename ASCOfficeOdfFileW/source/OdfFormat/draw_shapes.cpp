@@ -25,7 +25,10 @@
 #include "svg_creator.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
 
 using xml::xml_char_wc;
 
@@ -234,7 +237,7 @@ void draw_path::reset_svg_path()//todooo наоборот
 	//		//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 	//		std::wstringstream output_;   
 	//		//svg_path::oox_serialize(output_, o_Polyline_pt);
-	//		additional_.push_back(odf::_property(L"custom_path",output_.str()));
+	//		additional_.push_back(odf_writer::_property(L"custom_path",output_.str()));
 	//	}
 	//}
 }
@@ -295,7 +298,7 @@ void draw_polygon::reset_polygon_path()
 	//		//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 	//		std::wstringstream output_;   
 	//		svg_path::oox_serialize(output_, o_Polyline_pt);
-	//		additional_.push_back(odf::_property(L"custom_path",output_.str()));
+	//		additional_.push_back(odf_writer::_property(L"custom_path",output_.str()));
 	//	}
 	//}
 }
@@ -528,7 +531,7 @@ void draw_connector::reset_svg_path()
 	//		//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 	//		std::wstringstream output_;   
 	//		svg_path::oox_serialize(output_, o_Polyline_pt);
-	//		additional_.push_back(odf::_property(L"custom_path",output_.str()));
+	//		additional_.push_back(odf_writer::_property(L"custom_path",output_.str()));
 	//	}
 	//}
 }

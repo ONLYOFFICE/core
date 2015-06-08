@@ -55,13 +55,13 @@ namespace oox {
 
         std::vector<_hlink_desc> hlinks;
 
-        std::vector<odf::_property> additional;
+        std::vector<odf_reader::_property> additional;
 
     };
     void oox_serialize_xfrm(	std::wostream & _Wostream, _oox_drawing const & val,std::wstring name_space = L"a");
     void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val);
-    void oox_serialize_ln	(std::wostream & _Wostream, const std::vector<odf::_property> & val);
+    void oox_serialize_ln	(std::wostream & _Wostream, const std::vector<odf_reader::_property> & val);
     void oox_serialize_hlink	(std::wostream & _Wostream, const std::vector<_hlink_desc> & val);
-    void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf::_property> & val);
+    void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf_reader::_property> & val);
 }
 }

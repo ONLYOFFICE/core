@@ -6,7 +6,10 @@
 #include "templates.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 const wchar_t * table_body::ns = L"table";
 const wchar_t * table_body::name = L"body";

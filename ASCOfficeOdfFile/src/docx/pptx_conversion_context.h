@@ -17,7 +17,7 @@ class CApplicationFonts;
 
 namespace cpdoccore {
 
-namespace odf 
+namespace odf_reader 
 {
     class odf_document;
     class office_element;
@@ -34,7 +34,7 @@ class pptx_conversion_context : boost::noncopyable
 {
 public:
     pptx_conversion_context(cpdoccore::oox::package::pptx_document * outputDocument,
-								cpdoccore::odf::odf_document * odfDocument);
+								cpdoccore::odf_reader::odf_document * odfDocument);
 
 	~pptx_conversion_context();
 
@@ -72,7 +72,7 @@ public:
 	pptx_slide_context & get_slide_context() { return pptx_slide_context_; }
 	pptx_comments_context & get_comments_context() { return pptx_comments_context_; }
 
-    odf::odf_document * root()
+    odf_reader::odf_document * root()
     {
         return odf_document_;
     }
@@ -108,7 +108,7 @@ private:
 	void create_new_slideMaster(int id);
 
 	package::pptx_document	* output_document_; 
-    odf::odf_document		* odf_document_;    
+    odf_reader::odf_document		* odf_document_;    
 	CApplicationFonts           *applicationFonts_;
 
     pptx_slide_context		pptx_slide_context_;

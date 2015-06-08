@@ -4,7 +4,7 @@
 #include <vector>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_types {
 
 class style_ref
 {

@@ -23,7 +23,7 @@ typedef shared_ptr< attributes_wc >::Type attributes_wc_ptr;
 
 } // namespace xml
 
-namespace odf {
+namespace odf_reader {
 
 namespace text {
 
@@ -33,9 +33,9 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    style_ref text_style_name_;
-    style_ref_array text_class_names_;
-    style_ref text_cond_style_name_;
+    odf_types::style_ref		text_style_name_;
+    odf_types::style_ref_array	text_class_names_;
+    odf_types::style_ref		text_cond_style_name_;
 
 };
 

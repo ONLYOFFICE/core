@@ -11,7 +11,7 @@
 
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 
 class draw_page_attr
@@ -43,7 +43,7 @@ public:
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
 private:
-	void pptx_convert_placeHolder(oox::pptx_conversion_context & Context, std::wstring styleName, presentation_class::type PresentationClass);
+	void pptx_convert_placeHolder(oox::pptx_conversion_context & Context, std::wstring styleName, odf_types::presentation_class::type PresentationClass);
 
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);

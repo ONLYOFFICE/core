@@ -8,7 +8,7 @@
 #include <cpdoccore/xml/attributes.h>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 using xml::xml_char_wc;
 

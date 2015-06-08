@@ -9,7 +9,7 @@
 #include "office_elements_create.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 /// \class  office_binary_data
 /// \brief  office:binary-data

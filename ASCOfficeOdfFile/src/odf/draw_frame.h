@@ -10,7 +10,7 @@
 #include "../docx/xlsxconversioncontext.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 /// draw-image-attlist
 class draw_image_attlist
@@ -45,7 +45,7 @@ private:
 
 private:
     draw_image_attlist draw_image_attlist_;
-    common_xlink_attlist common_xlink_attlist_;
+	odf_types::common_xlink_attlist common_xlink_attlist_;
     office_element_ptr office_binary_data_;
     office_element_ptr_array content_;
 
@@ -87,7 +87,7 @@ private:
 
 private:
     draw_chart_attlist draw_chart_attlist_;
-    common_xlink_attlist common_xlink_attlist_;
+    odf_types::common_xlink_attlist common_xlink_attlist_;
    
 	//office_element_ptr title_;
     office_element_ptr_array content_;
@@ -132,11 +132,11 @@ private:
 
 public:
 	int idx_in_owner ;
-	common_presentation_attlist common_presentation_attlist_;
-	union_common_draw_attlists  common_draw_attlists_;
+	odf_types::common_presentation_attlist common_presentation_attlist_;
+	odf_types::union_common_draw_attlists  common_draw_attlists_;
 
   
-	presentation_shape_attlist presentation_shape_attlist_;
+	odf_types::presentation_shape_attlist presentation_shape_attlist_;
     draw_frame_attlist draw_frame_attlist_;
 
     // draw-text-box, draw-image, draw-object, draw-object-ole, draw-applet, draw-floating-frame, draw-plugin
@@ -187,7 +187,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 public:
-	union_common_draw_attlists  common_draw_attlists_;  
+	odf_types::union_common_draw_attlists  common_draw_attlists_;  
     draw_g_attlist draw_g_attlist_;
 
     office_element_ptr_array content_;
@@ -201,12 +201,12 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    _CP_OPT(std::wstring) draw_chain_next_name_;
-    _CP_OPT(length) draw_corner_radius_;
-    _CP_OPT(length_or_percent) fo_min_width_;
-    _CP_OPT(length_or_percent) fo_min_height_;
-    _CP_OPT(length_or_percent) fo_max_width_;
-    _CP_OPT(length_or_percent) fo_max_height_;        
+    _CP_OPT(std::wstring)					draw_chain_next_name_;
+	_CP_OPT(odf_types::length)				draw_corner_radius_;
+    _CP_OPT(odf_types::length_or_percent)	fo_min_width_;
+    _CP_OPT(odf_types::length_or_percent)	fo_min_height_;
+    _CP_OPT(odf_types::length_or_percent)	fo_max_width_;
+    _CP_OPT(odf_types::length_or_percent)	fo_max_height_;        
 
 };
 
@@ -270,7 +270,7 @@ private:
 
 public:
     draw_object_attlist draw_object_attlist_;
-    common_xlink_attlist common_xlink_attlist_;
+    odf_types::common_xlink_attlist common_xlink_attlist_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_object);
@@ -294,7 +294,7 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 public:
-    common_xlink_attlist	common_xlink_attlist_;
+    odf_types::common_xlink_attlist	common_xlink_attlist_;
 	_CP_OPT(std::wstring)	draw_class_id_;
 };
 

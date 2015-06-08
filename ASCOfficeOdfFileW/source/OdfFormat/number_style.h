@@ -10,7 +10,7 @@
 #include "common_attlists.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 class number_style_base : public office_element
 {
@@ -27,7 +27,7 @@ public:
     std::wstring	get_style_name() const;
 	void			set_style_name(std::wstring & name);
 
-    common_data_style_attlist common_data_style_attlist_;
+    odf_types::common_data_style_attlist common_data_style_attlist_;
    
 	office_element_ptr style_text_properties_;
     office_element_ptr_array content_;
@@ -189,7 +189,7 @@ public:
 
     // common-number-attlist
     _CP_OPT(int) number_min_integer_digits_;
-    _CP_OPT(Bool) number_grouping_;
+    _CP_OPT(odf_types::Bool) number_grouping_;
     
     office_element_ptr_array number_embedded_text_;
     
@@ -369,7 +369,7 @@ public:
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name){CP_NOT_APPLICABLE_ELM();}
 	virtual void serialize(std::wostream & strm);
 
-    _CP_OPT(Bool) number_textual_;
+    _CP_OPT(odf_types::Bool) number_textual_;
     _CP_OPT(bool) number_possessive_form_;
     _CP_OPT(std::wstring) number_style_;
     _CP_OPT(std::wstring) number_calendar_;

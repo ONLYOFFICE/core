@@ -6,7 +6,7 @@
 
 
 namespace cpdoccore { 
-namespace odf { 
+namespace odf_types { 
 
 class office_value_type
 {
@@ -44,6 +44,6 @@ std::wostream & operator << (std::wostream & _Wostream, const office_value_type 
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::office_value_type);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::office_value_type);
 
 }

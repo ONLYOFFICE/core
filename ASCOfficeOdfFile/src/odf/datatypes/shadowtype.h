@@ -5,7 +5,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class shadow_type
 {
@@ -84,6 +84,6 @@ private:
 std::wostream & operator << (std::wostream & _Wostream, const shadow_type1 & _Val);
 
 } 
-APPLY_PARSE_XML_ATTRIBUTES(odf::shadow_type);
-APPLY_PARSE_XML_ATTRIBUTES(odf::shadow_type1);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::shadow_type);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::shadow_type1);
 }

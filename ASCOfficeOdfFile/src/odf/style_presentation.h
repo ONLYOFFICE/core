@@ -15,7 +15,7 @@
 #include "datatypes/drawfill.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 
 // presentation:placeholder 
@@ -35,12 +35,12 @@ private:
     virtual void pptx_convert(oox::pptx_conversion_context & Context);
  
 public:
-	_CP_OPT(length) svg_x_;
-    _CP_OPT(length) svg_y_;
-    _CP_OPT(length) svg_width_;
-    _CP_OPT(length) svg_height_;
+	_CP_OPT(odf_types::length) svg_x_;
+    _CP_OPT(odf_types::length) svg_y_;
+    _CP_OPT(odf_types::length) svg_width_;
+    _CP_OPT(odf_types::length) svg_height_;
 
-	_CP_OPT(presentation_class) presentation_object_;
+	_CP_OPT(odf_types::presentation_class) presentation_object_;
 
 };
 
@@ -53,11 +53,11 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     void apply_from(const drawing_page_properties & Other);
 
-	common_draw_fill_attlist		common_draw_fill_attlist_;
+	odf_types::common_draw_fill_attlist		common_draw_fill_attlist_;
 	anim_transition_filter_attlist	anim_transition_filter_attlist_;
 
-	_CP_OPT(length)			draw_fill_image_height_;
-	_CP_OPT(length)			draw_fill_image_width_;
+	_CP_OPT(odf_types::length)			draw_fill_image_height_;
+	_CP_OPT(odf_types::length)			draw_fill_image_width_;
 	
 	_CP_OPT(std::wstring)	draw_background_size_;//"border" or "full"
 

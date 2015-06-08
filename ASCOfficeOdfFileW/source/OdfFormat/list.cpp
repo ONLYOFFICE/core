@@ -10,7 +10,7 @@
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 
 using xml::xml_char_wc;

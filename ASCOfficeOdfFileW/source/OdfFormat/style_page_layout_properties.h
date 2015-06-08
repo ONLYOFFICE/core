@@ -20,7 +20,7 @@
 #include "direction.h"
 
 namespace cpdoccore { 
-namespace odf { 
+namespace odf_writer { 
 
 // style:page-layout-properties-attlist
 class style_page_layout_properties_attlist
@@ -28,42 +28,42 @@ class style_page_layout_properties_attlist
 public:
 	void serialize(CP_ATTR_NODE);
    
-	_CP_OPT(length)				fo_page_width_;    
-    _CP_OPT(length)				fo_page_height_;    
+	_CP_OPT(odf_types::length)				fo_page_width_;    
+    _CP_OPT(odf_types::length)				fo_page_height_;    
     
-	common_num_format_attlist				common_num_format_attlist_;
-    common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
+	odf_types::common_num_format_attlist				common_num_format_attlist_;
+    odf_types::common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
 
-	common_horizontal_margin_attlist		common_horizontal_margin_attlist_;
-    common_vertical_margin_attlist			common_vertical_margin_attlist_;
-    common_margin_attlist					common_margin_attlist_;
+	odf_types::common_horizontal_margin_attlist		common_horizontal_margin_attlist_;
+    odf_types::common_vertical_margin_attlist			common_vertical_margin_attlist_;
+    odf_types::common_margin_attlist					common_margin_attlist_;
     
-    common_border_attlist				common_border_attlist_;
-    common_border_line_width_attlist	common_border_line_width_attlist_;
-    common_padding_attlist				common_padding_attlist_;
-    common_shadow_attlist				common_shadow_attlist_;
+    odf_types::common_border_attlist				common_border_attlist_;
+    odf_types::common_border_line_width_attlist	common_border_line_width_attlist_;
+    odf_types::common_padding_attlist				common_padding_attlist_;
+    odf_types::common_shadow_attlist				common_shadow_attlist_;
     
-    common_background_color_attlist		common_background_color_attlist_;
-    common_writing_mode_attlist			common_writing_mode_attlist_;
+    odf_types::common_background_color_attlist		common_background_color_attlist_;
+    odf_types::common_writing_mode_attlist			common_writing_mode_attlist_;
     
-	_CP_OPT(style_ref)					style_register_truth_ref_style_name_;
+	_CP_OPT(odf_types::style_ref)					style_register_truth_ref_style_name_;
     _CP_OPT(std::wstring)				style_print_;
 	_CP_OPT(std::wstring)				style_paper_tray_name_;
     _CP_OPT(std::wstring)				style_print_orientation_; 
-    _CP_OPT(direction)					style_print_page_order_;
+    _CP_OPT(odf_types::direction)					style_print_page_order_;
     _CP_OPT(std::wstring)				style_first_page_number_;
-    _CP_OPT(percent)					style_scale_to_;
+    _CP_OPT(odf_types::percent)					style_scale_to_;
     _CP_OPT(unsigned int)				style_scale_to_pages_;
-    _CP_OPT(table_centering)			style_table_centering_;
-    _CP_OPT(length)						style_footnote_max_height_;
-    _CP_OPT(layout_grid_mode)			style_layout_grid_mode_;
-	_CP_OPT(length)						style_layout_grid_base_height_;
-    _CP_OPT(length)						style_layout_grid_ruby_height_;
+    _CP_OPT(odf_types::table_centering)			style_table_centering_;
+    _CP_OPT(odf_types::length)						style_footnote_max_height_;
+    _CP_OPT(odf_types::layout_grid_mode)			style_layout_grid_mode_;
+	_CP_OPT(odf_types::length)						style_layout_grid_base_height_;
+    _CP_OPT(odf_types::length)						style_layout_grid_ruby_height_;
     _CP_OPT(unsigned int)				style_layout_grid_lines_;
-    _CP_OPT(color)						style_layout_grid_color_;
-    _CP_OPT(Bool)						style_layout_grid_ruby_below_;  
-    _CP_OPT(Bool)						style_layout_grid_print_;
-    _CP_OPT(Bool)						style_layout_grid_display_;
+    _CP_OPT(odf_types::color)						style_layout_grid_color_;
+    _CP_OPT(odf_types::Bool)						style_layout_grid_ruby_below_;  
+    _CP_OPT(odf_types::Bool)						style_layout_grid_print_;
+    _CP_OPT(odf_types::Bool)						style_layout_grid_display_;
 
 };
 

@@ -3,7 +3,7 @@
 #include <exception>
 #include <boost/exception/all.hpp>
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 namespace errors {
 

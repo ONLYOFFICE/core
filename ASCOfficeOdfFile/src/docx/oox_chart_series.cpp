@@ -75,14 +75,14 @@ void oox_chart_series::setFormula(int ind, std::wstring &value)
 void oox_chart_series::parse_properties()
 {
 	_CP_OPT(int)	iSymbolType;
-	odf::GetProperty(content_.properties_, L"symbol-type",iSymbolType);   //    noneSymbol,    autoSymbol,     namedSymbol
+	odf_reader::GetProperty(content_.properties_, L"symbol-type",iSymbolType);   //    noneSymbol,    autoSymbol,     namedSymbol
 
 	if (iSymbolType)
 	{
 		iSymbolMarkerType_ = iSymbolType.get() ;
 		if (iSymbolMarkerType_ == 2)
 		{
-			odf::GetProperty(content_.properties_, L"symbol-name",iSymbolType);   //    квадратики, звездочки ...
+			odf_reader::GetProperty(content_.properties_, L"symbol-name",iSymbolType);   //    квадратики, звездочки ...
 			if (iSymbolType)iSymbolMarkerType_ = iSymbolType.get() ;
 			else iSymbolMarkerType_ = 0;//выключим
 		}
@@ -220,7 +220,7 @@ void oox_chart_series::oox_serialize_common(std::wostream & _Wostream)
             shape.set(content_.regression_curve_.line_properties_, oox_fill);
 			
 			_CP_OPT(int) iType;
-			odf::GetProperty(content_.properties_, L"regression-type",iType);   //     none, linear, logarithmic, exponential, power
+			odf_reader::GetProperty(content_.properties_, L"regression-type",iType);   //     none, linear, logarithmic, exponential, power
 			if (iType)
 			{
 				switch(iType.get()){case 1: typeTrendline= L"linear";break;case 3: typeTrendline= L"exp";break;case 4: typeTrendline= L"power";break;}

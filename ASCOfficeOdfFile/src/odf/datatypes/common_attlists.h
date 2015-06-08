@@ -39,7 +39,7 @@
         A = Other.A;
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_types {
 
 void apply_line_width(_CP_OPT(line_width) & A, const _CP_OPT(line_width) & B);
 void apply_length_or_percent(_CP_OPT(length_or_percent) & Value, const _CP_OPT(length_or_percent) & Other);

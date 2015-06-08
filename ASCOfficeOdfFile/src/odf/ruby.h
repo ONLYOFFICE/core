@@ -7,7 +7,7 @@
 #include "datatypes/style_ref.h"
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_reader {
 namespace text {
 
 // text:ruby-base
@@ -63,7 +63,7 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    style_ref text_style_name_;    
+	odf_types::style_ref text_style_name_;    
     office_element_ptr_array content_;
   
 };

@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class rotation_align
 {
@@ -44,7 +44,7 @@ std::wostream & operator << (std::wostream & _Wostream, const rotation_align & _
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::rotation_align);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::rotation_align);
 
 }
 

@@ -6,7 +6,7 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/regex.hpp>
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 static bool parseTime(const std::wstring & Time, double & Hours, double & Minutes, double & Seconds, int & Ms)
 {

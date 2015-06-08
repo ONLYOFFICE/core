@@ -10,7 +10,7 @@
 #include <vector>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 graphic_format_properties calc_graphic_properties_content(const style_instance * styleInstance);
 graphic_format_properties calc_graphic_properties_content(const std::vector<const style_instance *> & styleInstances);

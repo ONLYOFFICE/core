@@ -9,7 +9,7 @@
 #include "style_ref.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 /// \brief  table:named-expressions
 class table_named_expressions : public office_element_impl<table_named_expressions>

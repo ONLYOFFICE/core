@@ -7,7 +7,7 @@
 #include "../odf/chart_objects.h"
 
 namespace cpdoccore {
-namespace odf 
+namespace odf_reader 
 {
 	//class style_table_cell_properties_attlist;
 }
@@ -23,8 +23,8 @@ public:
 	~oox_layout(){}
 
     //size_t size() const;
-    //size_t borderId(const odf::style_table_cell_properties_attlist * cellProp);
-    //size_t borderId(const odf::style_table_cell_properties_attlist * cellProp, bool & is_default);
+    //size_t borderId(const odf_reader::style_table_cell_properties_attlist * cellProp);
+    //size_t borderId(const odf_reader::style_table_cell_properties_attlist * cellProp, bool & is_default);
 
     void oox_serialize(std::wostream & _Wostream);/* const;*/
     

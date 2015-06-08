@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class font_family_generic
 {
@@ -46,7 +46,7 @@ std::wostream & operator << (std::wostream & _Wostream, const font_family_generi
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::font_family_generic);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::font_family_generic);
 
 }
 

@@ -46,7 +46,7 @@ public:
 	void add_content	(std::wstring  content);
 	void add_date		(std::wstring date);
 	
-	std::vector<odf::_property> & get_draw_properties();
+	std::vector<odf_reader::_property> & get_draw_properties();
     
 	void end_comment();
 

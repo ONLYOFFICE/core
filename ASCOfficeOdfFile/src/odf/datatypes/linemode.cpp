@@ -3,7 +3,7 @@
 #include "linemode.h"
 #include "errors.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 std::wostream & operator << (std::wostream & _Wostream, const line_mode & _Val)
 {

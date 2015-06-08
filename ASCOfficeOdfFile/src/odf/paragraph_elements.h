@@ -18,7 +18,7 @@
 #include "datatypes/common_attlists.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 
 namespace text {
@@ -129,7 +129,7 @@ public:
     virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
     
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -191,7 +191,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 public:
     bookmark() {}
     bookmark(const ::std::wstring & Name) : text_name_(Name){};
@@ -204,7 +204,7 @@ private:
     virtual void add_text(const std::wstring & Text) {}
 
 private:
-    ::std::wstring text_name_;
+    std::wstring text_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(bookmark);
@@ -221,12 +221,12 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 public:
     bookmark_start() {}
     bookmark_start(const ::std::wstring & Name) : text_name_(Name){};
 
-    const ::std::wstring & attr_name() const { return text_name_; }
+    const std::wstring & attr_name() const { return text_name_; }
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -234,7 +234,7 @@ private:
     virtual void add_text(const std::wstring & Text) {}
 
 private:
-    ::std::wstring text_name_;
+    std::wstring text_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(bookmark_start);
@@ -264,7 +264,7 @@ private:
     virtual void add_text(const std::wstring & Text) {}
 
 private:
-    ::std::wstring text_name_;
+    std::wstring text_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(bookmark_end);
@@ -286,7 +286,7 @@ public:
     reference_mark() {};
     reference_mark(const ::std::wstring & Name) : text_name_(Name){};
     
-    const ::std::wstring & attr_name() const { return text_name_; }
+    const std::wstring & attr_name() const { return text_name_; }
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -294,7 +294,7 @@ private:
     virtual void add_text(const std::wstring & Text) {}
 
 private:
-    ::std::wstring text_name_;
+    std::wstring text_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(reference_mark);
@@ -311,7 +311,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 public:
     reference_mark_start() {}
     reference_mark_start(const ::std::wstring & Name) : text_name_(Name){};
@@ -324,7 +324,7 @@ private:
     virtual void add_text(const std::wstring & Text) {}
 
 private:
-    ::std::wstring text_name_;
+    std::wstring text_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(reference_mark_start);
@@ -341,7 +341,7 @@ public:
     CPDOCCORE_DEFINE_VISITABLE();
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 public:
     reference_mark_end() {};
     reference_mark_end(const ::std::wstring & Name) : text_name_(Name){};
@@ -354,7 +354,7 @@ private:
     virtual void add_text(const std::wstring & Text) {}
 
 private:
-    ::std::wstring text_name_;
+    std::wstring text_name_;
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(reference_mark_end);
@@ -383,8 +383,8 @@ public:
    
 	office_element_ptr_array paragraph_content_;
     
-	style_ref text_style_name_;
-    style_ref_array text_class_names_;
+	odf_types::style_ref			text_style_name_;
+    odf_types::style_ref_array		text_class_names_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -422,13 +422,13 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    common_xlink_attlist common_xlink_attlist_;
+	odf_types::common_xlink_attlist common_xlink_attlist_;
 
-    ::std::wstring office_name_;
-    _CP_OPT(target_frame_name) office_target_frame_name_;
+    std::wstring office_name_;
+    _CP_OPT(odf_types::target_frame_name) office_target_frame_name_;
 
-    style_ref text_style_name_;
-    style_ref text_visited_style_name_;
+    odf_types::style_ref text_style_name_;
+    odf_types::style_ref text_visited_style_name_;
 
     office_element_ptr_array paragraph_content_;
 };
@@ -463,8 +463,8 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    ::std::wstring text_id_;
-    noteclass text_note_class_;
+	std::wstring text_id_;
+	odf_types::noteclass text_note_class_;
     office_element_ptr text_note_citation_;
     office_element_ptr text_note_body_;
   
@@ -492,7 +492,7 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    style_ref text_style_name_;
+    odf_types::style_ref text_style_name_;
     office_element_ptr text_ruby_base_;
     office_element_ptr text_ruby_text_;
   
@@ -736,7 +736,7 @@ public:
 	void pptx_convert(oox::pptx_conversion_context & Context) ;
 
 public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -816,5 +816,5 @@ private:
 };
 CP_REGISTER_OFFICE_ELEMENT2(presentation_date_time);
 } // namespace text
-} // namespace odf
+} // namespace odf_reader
 } // namespace cpdoccore

@@ -4,7 +4,7 @@
 #include <cpdoccore/CPScopedPtr.h>
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 class office_element;
 typedef shared_ptr<office_element>::Type office_element_ptr;

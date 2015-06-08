@@ -24,9 +24,10 @@
 #include "../odf/svg_parser.h"
 
 namespace cpdoccore { 
-namespace odf {
 
+	using namespace odf_types;
 
+namespace odf_reader {
 
 const wchar_t * draw_shape::ns = L"draw";
 const wchar_t * draw_shape::name = L"shape";
@@ -225,7 +226,7 @@ void draw_path::reset_svg_path()
 			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 			std::wstringstream output_;   
             svg_path::oox_serialize(output_, o_Polyline_pt);
-			additional_.push_back(odf::_property(L"custom_path",output_.str()));
+			additional_.push_back(odf_reader::_property(L"custom_path",output_.str()));
 		}
 	}
 }
@@ -277,7 +278,7 @@ void draw_polygon::reset_polygon_path()
 			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 			std::wstringstream output_;   
             svg_path::oox_serialize(output_, o_Polyline_pt);
-			additional_.push_back(odf::_property(L"custom_path",output_.str()));
+			additional_.push_back(odf_reader::_property(L"custom_path",output_.str()));
 		}
 	}
 }
@@ -376,7 +377,7 @@ void draw_enhanced_geometry::find_draw_type_oox()
 
 		for (long i=0; i<_OO_OOX_custom_shapes_count;i++)
 		{
-			if (_OO_OOX_custom_shapes[i].odf == odf_type)
+			if (_OO_OOX_custom_shapes[i].odf_reader == odf_type)
 			{
 				draw_type_oox_index_ = i;
 				break;
@@ -494,7 +495,7 @@ void draw_connector::reset_svg_path()
 			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
 			std::wstringstream output_;   
             svg_path::oox_serialize(output_, o_Polyline_pt);
-			additional_.push_back(odf::_property(L"custom_path",output_.str()));
+			additional_.push_back(odf_reader::_property(L"custom_path",output_.str()));
 		}
 	}
 }

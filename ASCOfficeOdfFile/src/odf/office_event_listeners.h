@@ -10,7 +10,7 @@
 #include "datatypes/common_attlists.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 /// \brief  office:event-listeners
 class office_event_listeners : public office_element_impl<office_event_listeners>
@@ -45,7 +45,7 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-	common_xlink_attlist common_xlink_attlist_;
+	odf_types::common_xlink_attlist common_xlink_attlist_;
 
 	_CP_OPT(std::wstring)	script_event_name_;
 	_CP_OPT(std::wstring)	presentation_action_;

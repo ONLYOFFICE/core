@@ -117,7 +117,7 @@ void OoxConverter::convert(OOX::Spreadsheet::CT_Legend* ct_legend)
 		convert(ct_legend->m_oTxPr.GetPointer());
 		if (ct_legend->m_legendEntry.size() > 0)
 		{
-			convert(ct_legend->m_legendEntry[0]); // в odf нет в легенде множественности стилей
+			convert(ct_legend->m_legendEntry[0]); // в odf_writer нет в легенде множественности стилей
 		}
 	//////////////////////
 	odf_context()->chart_context()->end_element();

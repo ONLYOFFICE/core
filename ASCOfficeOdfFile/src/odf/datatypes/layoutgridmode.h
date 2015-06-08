@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class layout_grid_mode
 {
@@ -43,7 +43,7 @@ std::wostream & operator << (std::wostream & _Wostream, const layout_grid_mode &
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::layout_grid_mode);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::layout_grid_mode);
 
 }
 

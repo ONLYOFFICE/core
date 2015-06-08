@@ -25,21 +25,21 @@ namespace _image_file_
 }
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 class styles_lite_container;
 
 
 enum BorderSide { sideTop, sideBottom, sideLeft, sideRight, sideMiddle };
 
-int get_value_emu(const _CP_OPT(length) & len);
+int get_value_emu(const _CP_OPT(odf_types::length) & len);
 int get_value_emu(double pt);
 
 int Compute_BorderWidth(const graphic_format_properties & graphicProperties, BorderSide borderSide);//emu
 
 int GetMargin(const graphic_format_properties & graphicProperties, BorderSide borderSide);//emu
 
-void Compute_GraphicFill(const common_draw_fill_attlist & props, styles_lite_container &styles, oox::_oox_fill & fill);
+void Compute_GraphicFill(const odf_types::common_draw_fill_attlist & props, styles_lite_container &styles, oox::_oox_fill & fill);
 
 typedef double double_4[4];
 bool parse_clipping(std::wstring strClipping,std::wstring fileName,double_4 & clip_rect);
@@ -67,20 +67,20 @@ public:
 	friend class odf_document;
 
 private:
-	common_xlink_attlist common_xlink_attlist_;
+	odf_types::common_xlink_attlist common_xlink_attlist_;
 
-    ::std::wstring office_name_;
-    _CP_OPT(target_frame_name) office_target_frame_name_;
+    std::wstring							office_name_;
+    _CP_OPT(odf_types::target_frame_name)	office_target_frame_name_;
 
-    style_ref text_style_name_;
-    style_ref text_visited_style_name_;
+    odf_types::style_ref					text_style_name_;
+    odf_types::style_ref					text_visited_style_name_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(draw_a);
 
 void xlsx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_context & Context);
 void pptx_convert_transforms(std::wstring transformStr, oox::pptx_conversion_context & Context);
-void oox_convert_transforms(std::wstring transformStr,std::vector<odf::_property> & additional);
+void oox_convert_transforms(std::wstring transformStr,std::vector<odf_reader::_property> & additional);
 //void docx_convert_transforms(std::wstring transformStr, oox::xlsx_conversion_context & Context);
 
 }

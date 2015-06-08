@@ -4,7 +4,7 @@
 
 #include <ostream>
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 std::wostream & operator << (std::wostream & _Wostream, const presentation_class & _Val)
 {
 	std::wstring res = L"";

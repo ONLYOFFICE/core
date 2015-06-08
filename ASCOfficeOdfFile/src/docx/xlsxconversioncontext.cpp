@@ -17,7 +17,7 @@
 
 namespace cpdoccore { 
 
-namespace odf 
+namespace odf_reader 
 {
     class odf_document;
 }
@@ -31,7 +31,7 @@ namespace package
 
 xlsx_conversion_context::
 xlsx_conversion_context(::cpdoccore::oox::package::xlsx_document * outputDocument,
-                        ::cpdoccore::odf::odf_document * odfDocument): output_document_(outputDocument),
+                        ::cpdoccore::odf_reader::odf_document * odfDocument): output_document_(outputDocument),
 	odf_document_(odfDocument),
 	xlsx_text_context_(odf_document_->odf_context().styleContainer()),
 	xlsx_table_context_(*this, xlsx_text_context_),
@@ -73,15 +73,15 @@ void xlsx_conversion_context::end_chart()
 
 void xlsx_conversion_context::start_document()
 {
-    odf::odf_read_context & odfContext = root()->odf_context();
-    std::vector<const odf::style_instance *> instances;
+    odf_reader::odf_read_context & odfContext = root()->odf_context();
+    std::vector<const odf_reader::style_instance *> instances;
     
-	instances.push_back(odfContext.styleContainer().style_default_by_type(odf::style_family::TableCell));
-	instances.push_back(odfContext.styleContainer().style_by_name(L"Default",odf::style_family::TableCell,false));
+	instances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::TableCell));
+	instances.push_back(odfContext.styleContainer().style_by_name(L"Default",odf_types::style_family::TableCell,false));
 
-    odf::text_format_properties_content			textFormatProperties	= calc_text_properties_content(instances);
-    odf::paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content(instances);
-    odf::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(instances);
+    odf_reader::text_format_properties_content			textFormatProperties	= calc_text_properties_content(instances);
+    odf_reader::paragraph_format_properties			parFormatProperties		= calc_paragraph_properties_content(instances);
+    odf_reader::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(instances);
 
     oox::xlsx_cell_format cellFormat;
    
@@ -389,12 +389,12 @@ std::wstring xlsx_conversion_context::current_cell_address() const
     return oox::getCellAddress(current_table_column(), current_table_row());
 }
 
-void xlsx_conversion_context::start_office_spreadsheet(const odf::office_element * elm)
+void xlsx_conversion_context::start_office_spreadsheet(const odf_reader::office_element * elm)
 {
     spreadsheet_ = elm;
 }
 
-const odf::office_element * xlsx_conversion_context::get_spreadsheet()
+const odf_reader::office_element * xlsx_conversion_context::get_spreadsheet()
 {
     return spreadsheet_;
 }
@@ -459,14 +459,14 @@ std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
 		std::wstring font_name;
 		int font_size;
 
-		std::vector<const odf::style_instance *> instances;
+		std::vector<const odf_reader::style_instance *> instances;
 		
-		odf::odf_read_context & odfContext = root()->odf_context();
+		odf_reader::odf_read_context & odfContext = root()->odf_context();
 		
-		instances.push_back(odfContext.styleContainer().style_default_by_type(odf::style_family::TableCell));
-		instances.push_back(odfContext.styleContainer().style_by_name(L"Default",odf::style_family::TableCell,false));
+		instances.push_back(odfContext.styleContainer().style_default_by_type(odf_types::style_family::TableCell));
+		instances.push_back(odfContext.styleContainer().style_by_name(L"Default",odf_types::style_family::TableCell,false));
 
-		odf::text_format_properties_content			textFormatProperties	= calc_text_properties_content(instances);
+		odf_reader::text_format_properties_content			textFormatProperties	= calc_text_properties_content(instances);
 
 		if (textFormatProperties.style_font_name_)
 			font_name = textFormatProperties.style_font_name_.get();
@@ -477,8 +477,8 @@ std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
 		else
 			font_name = L"Arial";
 
-		if ((textFormatProperties.fo_font_size_) && (textFormatProperties.fo_font_size_->get_type() == odf::font_size::Length))
-			font_size = (int)(0.5 + textFormatProperties.fo_font_size_->get_length().get_value_unit(odf::length::pt));
+		if ((textFormatProperties.fo_font_size_) && (textFormatProperties.fo_font_size_->get_type() == odf_types::font_size::Length))
+			font_size = (int)(0.5 + textFormatProperties.fo_font_size_->get_length().get_value_unit(odf_types::length::pt));
 		else
 			font_size =10;
 		

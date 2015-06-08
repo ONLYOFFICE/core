@@ -11,7 +11,7 @@
 #include "mediaitems.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 class office_element;
 typedef shared_ptr<office_element>::Type office_element_ptr;
@@ -48,7 +48,7 @@ public:
 	virtual void					start_text_context() = 0;
 	virtual void					end_text_context() = 0;
 
-    virtual void start_image(const std::wstring & image_file_name) = 0;
+	virtual void start_image(std::wstring & image_file_name) = 0;
 	
 	virtual odf_style_context		* styles_context();
 
@@ -74,7 +74,7 @@ public:
 	office_element_ptr &	get_current_object_element();
 
 	office_element_ptr start_tabs();
-		void add_tab(_CP_OPT(int) type, _CP_OPT(length) length, _CP_OPT(int) leader);
+		void add_tab(_CP_OPT(int) type, _CP_OPT(odf_types::length) length, _CP_OPT(int) leader);
 	void end_tabs();
 
 private:

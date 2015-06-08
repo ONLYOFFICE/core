@@ -25,7 +25,7 @@ class CApplicationFonts;
 
 namespace cpdoccore {
 
-namespace odf 
+namespace odf_reader 
 {
     class odf_document;
     class office_element;
@@ -41,7 +41,7 @@ namespace package
 class xlsx_conversion_context : boost::noncopyable
 {
 public:
-    xlsx_conversion_context(cpdoccore::oox::package::xlsx_document * outputDocument, cpdoccore::odf::odf_document * odfDocument);
+    xlsx_conversion_context(cpdoccore::oox::package::xlsx_document * outputDocument, cpdoccore::odf_reader::odf_document * odfDocument);
     ~xlsx_conversion_context();
 
     void set_font_directory(std::wstring pathFonts);
@@ -55,10 +55,10 @@ public:
 	void start_body();
     void end_body();
 
-    void start_office_spreadsheet(const odf::office_element * elm);
+    void start_office_spreadsheet(const odf_reader::office_element * elm);
     void end_office_spreadsheet();
 
-    const odf::office_element * get_spreadsheet();
+    const odf_reader::office_element * get_spreadsheet();
 
     void start_paragraph(const std::wstring & styleName);
     void end_paragraph();
@@ -99,7 +99,7 @@ public:
 
     std::wstring current_cell_address() const;
 
-    odf::odf_document * root()
+    odf_reader::odf_document * root()
     {
         return odf_document_;
     }
@@ -131,8 +131,8 @@ private:
     void dump_sheet();   
 
     package::xlsx_document      *output_document_;
-    const odf::office_element   *spreadsheet_;
-    odf::odf_document           *odf_document_;
+    const odf_reader::office_element   *spreadsheet_;
+    odf_reader::odf_document           *odf_document_;
 
     CApplicationFonts           *applicationFonts_;
 

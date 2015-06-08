@@ -13,7 +13,10 @@
 #include "../docx/oox_drawing_fills.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 
 

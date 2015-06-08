@@ -9,7 +9,7 @@
 #include "office_elements_create.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 /// \class  table_calculation_settings
 /// \brief  table:calculation-settings

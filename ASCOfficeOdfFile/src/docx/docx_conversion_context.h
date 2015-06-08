@@ -20,7 +20,11 @@ class CApplicationFonts;
 
 namespace cpdoccore { 
 
-namespace odf 
+	namespace odf_types
+	{
+		class style_ref;
+	}
+namespace odf_reader 
 {
     class style_instance;
     class odf_document;
@@ -29,7 +33,7 @@ namespace odf
     class draw_shape;
     typedef boost::shared_ptr<style_text_properties> style_text_properties_ptr;
     class office_element;
-    class style_ref;
+
     
     namespace text{
         class note_citation;
@@ -67,16 +71,16 @@ class styles_map
 {
 public:
     styles_map() : count_(0) {}
-    std::wstring get(const std::wstring & Name, odf::style_family::type Type);
+    std::wstring get(const std::wstring & Name, odf_types::style_family::type Type);
 
-    bool check(const std::wstring & Name, odf::style_family::type Type)
+    bool check(const std::wstring & Name, odf_types::style_family::type Type)
     {
         const std::wstring n = name(Name, Type);
         return map_.count(n) > 0;
     }
 
 private:
-    std::wstring name(const std::wstring & Name, odf::style_family::type Type);
+    std::wstring name(const std::wstring & Name, odf_types::style_family::type Type);
     
     size_t count_;
     boost::unordered_map<std::wstring, std::wstring> map_;
@@ -90,7 +94,7 @@ class drawing_context : boost::noncopyable
 public:
 	struct _frame_
 	{
-		odf::draw_frame *ptr;
+		odf_reader::draw_frame *ptr;
 		std::wstring text_content;
 		size_t id;
 		bool use_image_replace;
@@ -98,7 +102,7 @@ public:
 
     drawing_context() : objects_count_(0),  current_shape_(NULL),shape_text_content_(L""),zero_string_(L""),current_level_(0),current_shape_id_ (0){}
     
-    void start_frame(odf::draw_frame * drawFrame) 
+    void start_frame(odf_reader::draw_frame * drawFrame) 
     { 
         current_object_name_ = L"";
  		current_level_++;
@@ -108,7 +112,7 @@ public:
    
 		frames_.push_back(fr);
 	}
-    void start_shape(odf::draw_shape * drawShape) 
+    void start_shape(odf_reader::draw_shape * drawShape) 
     { 
 		current_level_++;
         objects_count_++; 
@@ -178,12 +182,12 @@ public:
 	
 	const std::wstring & get_current_object_name() const { return current_object_name_; }
    
-	odf::draw_frame * get_current_frame() const 
+	odf_reader::draw_frame * get_current_frame() const 
 	{
 		if (frames_.size()>0) return frames_.back().ptr; 
 		else return NULL;
 	}
-	odf::draw_shape * get_current_shape() const { return current_shape_; }
+	odf_reader::draw_shape * get_current_shape() const { return current_shape_; }
 	
 private:
 	std::wstring shape_text_content_;
@@ -195,7 +199,7 @@ private:
 	
 	std::vector<_frame_> frames_; 
    
-	odf::draw_shape * current_shape_; 
+	odf_reader::draw_shape * current_shape_; 
 	size_t current_shape_id_;
 
 	std::wstring zero_string_;
@@ -227,18 +231,18 @@ class header_footer_context
 public:
     void reset()
     {
-        header_ = _CP_OPT(odf::length)();
-        footer_ = _CP_OPT(odf::length)();
+        header_ = _CP_OPT(odf_types::length)();
+        footer_ = _CP_OPT(odf_types::length)();
     }
 
-    void set_header(const _CP_OPT(odf::length) & Val) { header_ = Val; }
-    void set_footer(const _CP_OPT(odf::length) & Val) { footer_ = Val; }
-    const _CP_OPT(odf::length) & header() const { return header_; }
-    const _CP_OPT(odf::length) & footer() const { return footer_; }
+    void set_header(const _CP_OPT(odf_types::length) & Val) { header_ = Val; }
+    void set_footer(const _CP_OPT(odf_types::length) & Val) { footer_ = Val; }
+    const _CP_OPT(odf_types::length) & header() const { return header_; }
+    const _CP_OPT(odf_types::length) & footer() const { return footer_; }
 
 private:
-    _CP_OPT(odf::length) header_;
-    _CP_OPT(odf::length) footer_;
+    _CP_OPT(odf_types::length) header_;
+    _CP_OPT(odf_types::length) footer_;
 };
 
 class drop_cap_context : boost::noncopyable
@@ -278,14 +282,14 @@ public:
     std::wstring next_id();
     std::wstring add(const std::wstring & Content, const std::wstring & Id);
 
-    void set_current_note(odf::noteclass::type type, const odf::text::note_citation * noteCitation)
+    void set_current_note(odf_types::noteclass::type type, const odf_reader::text::note_citation * noteCitation)
     {
         type_ = type;        
         note_citation_ = noteCitation;
     }
 
-    const odf::text::note_citation * get_note_citation() const { return note_citation_; }
-    const odf::noteclass::type get_type() const {return type_; }
+    const odf_reader::text::note_citation * get_note_citation() const { return note_citation_; }
+    const odf_types::noteclass::type get_type() const {return type_; }
 
     struct instance
     {
@@ -305,9 +309,9 @@ private:
     instances_map instances_footnotes_;
     instances_map instances_endnotes_;
 
-    const odf::text::note_citation * note_citation_;
+    const odf_reader::text::note_citation * note_citation_;
 
-    odf::noteclass::type type_;
+    odf_types::noteclass::type type_;
 
 };
 
@@ -351,7 +355,7 @@ private:
 class docx_conversion_context : boost::noncopyable
 {
 public:
-    docx_conversion_context(package::docx_document * OutputDocument, odf::odf_document * OdfDocument);
+    docx_conversion_context(package::docx_document * OutputDocument, odf_reader::odf_document * OdfDocument);
 
 	~docx_conversion_context();
 
@@ -386,7 +390,7 @@ public:
     void dump_headers_footers(rels & Rels) const;
     void dump_notes(rels & Rels) const;
 
-    odf::odf_document * root()
+    odf_reader::odf_document * root()
     {
         return odf_document_;
     }
@@ -409,8 +413,8 @@ public:
     void process_headers_footers();
     void process_comments();
 
-    void set_settings_property(const odf::_property & prop);
-	std::vector<odf::_property> & get_settings_properties();
+    void set_settings_property(const odf_reader::_property & prop);
+	std::vector<odf_reader::_property> & get_settings_properties();
 
     void start_process_style_content();
     void end_process_style_content();
@@ -422,9 +426,9 @@ public:
     styles_context & get_styles_context() { return styles_context_; }
     styles_map & get_style_map() { return style_map_; }
 
-    void push_text_properties(const odf::style_text_properties * TextProperties);
+    void push_text_properties(const odf_reader::style_text_properties * TextProperties);
     void pop_text_properties();
-    odf::style_text_properties_ptr current_text_properties();
+    odf_reader::style_text_properties_ptr current_text_properties();
 
     void add_page_break_after();
     bool check_page_break_after();
@@ -459,15 +463,15 @@ public:
 	comments_context & get_comments_context() {return comments_context_;}
 
     void docx_convert_delayed();
-    void add_delayed_element(odf::office_element * Elm);
+    void add_delayed_element(odf_reader::office_element * Elm);
 	bool delayed_converting_;
 	bool convert_delayed_enabled_;
 
     docx_table_context & get_table_context() { return table_context_; }
 
 	section_context & get_section_context() { return section_context_; }
-	void section_properties_in_table(odf::office_element * Elm);
-    odf::office_element * get_section_properties_in_table();
+	void section_properties_in_table(odf_reader::office_element * Elm);
+    odf_reader::office_element * get_section_properties_in_table();
 
     typedef boost::shared_ptr<streams_man> StreamsManPtr;
     void set_stream_man(StreamsManPtr Sm) { streams_man_ = Sm; }
@@ -512,10 +516,10 @@ private:
     boost::shared_ptr<streams_man> streams_man_;
 
     package::docx_document	* output_document_;
-    odf::odf_document		* odf_document_;
+    odf_reader::odf_document		* odf_document_;
     CApplicationFonts       * applicationFonts_;
 
-	std::vector<odf::_property> settings_properties_;
+	std::vector<odf_reader::_property> settings_properties_;
 
 	bool current_run_;
   
@@ -527,7 +531,7 @@ private:
 
     std::wstring automatic_parent_style_; 
 
-    std::list< const odf::style_text_properties * > text_properties_stack_;
+    std::list< const odf_reader::style_text_properties * > text_properties_stack_;
     
 	bool page_break_after_;
     bool page_break_before_;
@@ -547,7 +551,7 @@ private:
     bool first_element_list_item_;
     bool in_paragraph_;
 
-    std::list<odf::office_element *> delayed_elements_;
+    std::list<odf_reader::office_element *> delayed_elements_;
 
 	std::vector<oox_chart_context_ptr> charts_;
 
@@ -557,7 +561,7 @@ private:
 
     docx_table_context table_context_;
     
-    odf::office_element * section_properties_in_table_;
+    odf_reader::office_element * section_properties_in_table_;
 
     headers_footers headers_footers_;
     std::wstring current_master_page_name_;

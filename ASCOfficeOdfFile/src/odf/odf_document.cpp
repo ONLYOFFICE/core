@@ -5,7 +5,7 @@
 #include "../progressCallback.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 odf_document::odf_document(const std::wstring & Folder, const ProgressCallback* CallBack) : impl_(new Impl(Folder,CallBack))
 {}

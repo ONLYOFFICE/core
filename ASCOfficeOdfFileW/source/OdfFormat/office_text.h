@@ -12,13 +12,13 @@
 #include "bool.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 //office_text_attlist
 class office_text_attlist
 {
 public:
-    _CP_OPT(Bool)			text_use_soft_page_breaks_;
+    _CP_OPT(odf_types::Bool)			text_use_soft_page_breaks_;
 
 	void serialize(CP_ATTR_NODE);
 };

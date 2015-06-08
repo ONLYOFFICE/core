@@ -17,7 +17,7 @@ typedef _CP_PTR(oox_axis_content) oox_axis_content_ptr;
 class oox_axis_content
 {
 public:
-	odf::chart::oox_typeconvert oox_typeconvert_;
+	odf_reader::chart::oox_typeconvert oox_typeconvert_;
 
 	oox_axis_content(int type/*,std::wstring name*/)
 	{
@@ -36,7 +36,7 @@ public:
 
 	int id_;
 	std::vector<int> cross_id_;
-	odf::chart::axis content_;
+	odf_reader::chart::axis content_;
 
 	int type_;
 };

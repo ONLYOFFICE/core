@@ -19,7 +19,10 @@
 #include "text_elements.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
 
 namespace utils
 {
@@ -149,7 +152,7 @@ void odt_conversion_context::end_text_context()
 		text_context_.pop_back();
 	}
 }
-void odt_conversion_context::add_text_content(const std::wstring & text)
+void odt_conversion_context::add_text_content(std::wstring & text)
 {
 	if (drop_cap_state_.enabled)
 	{
@@ -268,7 +271,7 @@ void odt_conversion_context::add_page_break()
 
 		if (para)
 		{
-			styles_context()->create_style(L"",odf::style_family::Paragraph, true, false, -1);	
+			styles_context()->create_style(L"",odf_types::style_family::Paragraph, true, false, -1);	
 			//styles_context()->last_state().apply_from(style_);
 			if (style_ )
 			{
@@ -393,7 +396,7 @@ void odt_conversion_context::add_section(bool continuous)
 	state.empty = true;
 	state.continuous = continuous;
 //----------------------------------------------------------------
-	styles_context()->create_style(L"",odf::style_family::Section, true, false, -1);		
+	styles_context()->create_style(L"",odf_types::style_family::Section, true, false, -1);		
 
 	create_element(L"text", L"section",state.elm,this);
 	state.style_elm		= styles_context()->last_state()->get_office_element();
@@ -655,7 +658,7 @@ void odt_conversion_context::end_comment(int oox_comm_id)
 			text_context()->current_level_.back().elm->add_child_element(comm_elm);
 	}
 }
-void odt_conversion_context::start_image(const std::wstring & image_file_name)
+void odt_conversion_context::start_image(std::wstring & image_file_name)
 {
 	std::wstring odf_ref_name ;
 	
@@ -763,7 +766,7 @@ void odt_conversion_context::add_table_column(double width)
 
 	//if (parent_name.length() > 0) 
 	//{
-	//	odf::style_table_cell_properties * props = styles_context()->last_state().get_table_cell_properties();
+	//	odf_writer::style_table_cell_properties * props = styles_context()->last_state().get_table_cell_properties();
 	//	style * style_ = NULL;
 	//	
 	//	if (styles_context()->find_odf_style(parent_name,style_family::TableCell,style_))
@@ -801,7 +804,7 @@ void odt_conversion_context::start_table_row(bool styled)
 
 	if (styled)
 	{
-		styles_context()->create_style(L"",odf::style_family::TableRow, true, false, -1);
+		styles_context()->create_style(L"",odf_types::style_family::TableRow, true, false, -1);
 	}
 	text_context()->start_element(elm);
 

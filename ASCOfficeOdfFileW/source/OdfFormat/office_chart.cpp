@@ -9,7 +9,10 @@
 #include <cpdoccore/xml/attributes.h>
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
 
 // office:chart
 //////////////////////////////////////////////////////////////////////////////////////////////////

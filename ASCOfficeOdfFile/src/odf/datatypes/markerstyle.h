@@ -5,7 +5,7 @@
 #include "odfattributes.h"
 
 namespace cpdoccore { 
-namespace odf { 
+namespace odf_types { 
 
 class marker_style
 {
@@ -31,6 +31,6 @@ private:
 } 
 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::marker_style);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::marker_style);
 
 }

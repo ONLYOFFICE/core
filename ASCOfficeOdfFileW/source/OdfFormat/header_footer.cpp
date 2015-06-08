@@ -5,7 +5,10 @@
 
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
 
 void style_header_footer_properties_attlist::serialize(CP_ATTR_NODE)
 {

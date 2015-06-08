@@ -193,11 +193,11 @@ void pptx_slide_context::set_placeHolder_type(std::wstring typeHolder)
 	if (typeHolder == L"dt")	impl_->date_time= true;
 	if (typeHolder == L"sldNum")impl_->slideNum= true;
 
-	impl_->object_description_.additional_.push_back(odf::_property(L"PlaceHolderType",typeHolder));
+	impl_->object_description_.additional_.push_back(odf_reader::_property(L"PlaceHolderType",typeHolder));
 }
 void pptx_slide_context::set_placeHolder_idx(int idx)
 {
-	impl_->object_description_.additional_.push_back(odf::_property(L"PlaceHolderIdx",idx));
+	impl_->object_description_.additional_.push_back(odf_reader::_property(L"PlaceHolderIdx",idx));
 }
 
 void pptx_slide_context::set_rect(double width_pt, double height_pt, double x_pt, double y_pt)
@@ -208,7 +208,7 @@ void pptx_slide_context::set_rect(double width_pt, double height_pt, double x_pt
 
 void pptx_slide_context::set_rotate(double angle)
 {
-	set_property(odf::_property(L"svg:rotate",angle));
+	set_property(odf_reader::_property(L"svg:rotate",angle));
 	
 	if (impl_->object_description_.svg_rect_)
 	{
@@ -252,12 +252,12 @@ void pptx_slide_context::set_anchor(std::wstring anchor, double x_pt, double y_p
     impl_->object_description_.anchor_y_	= y_pt;
 }
 
-void pptx_slide_context::set_property(odf::_property p)
+void pptx_slide_context::set_property(odf_reader::_property p)
 {
 	impl_->object_description_.additional_.push_back(p);
 }
 
-std::vector<odf::_property> & pptx_slide_context::get_properties()
+std::vector<odf_reader::_property> & pptx_slide_context::get_properties()
 {
 	return impl_->object_description_.additional_;
 }
@@ -400,7 +400,7 @@ void pptx_slide_context::process_images()
 			drawing.name = pic.draw_name_;
 
 			std::wstring fileName = impl_->odfPacket_ + FILE_SEPARATOR_STR + pic.xlink_href_;			
-			drawing.fill.bitmap->bCrop  = odf::parse_clipping(pic.clipping_string_,fileName,drawing.fill.bitmap->cropRect);
+			drawing.fill.bitmap->bCrop  = odf_reader::parse_clipping(pic.clipping_string_,fileName,drawing.fill.bitmap->cropRect);
 			drawing.fill.bitmap->bStretch = true;
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////			
@@ -469,10 +469,10 @@ void pptx_slide_context::process_common_properties(drawing_object_description & 
 {
 	if (pic.svg_rect_)
 	{
-		drawing.x = (int)(0.5 + odf::length(pic.svg_rect_.get().x_, odf::length::pt).get_value_unit(odf::length::emu));
-		drawing.y = (int)(0.5 + odf::length(pic.svg_rect_.get().y_, odf::length::pt).get_value_unit(odf::length::emu));
-		drawing.cx = (int)(0.5 + odf::length(pic.svg_rect_.get().width_, odf::length::pt).get_value_unit(odf::length::emu));
-		drawing.cy = (int)(0.5 + odf::length(pic.svg_rect_.get().height_, odf::length::pt).get_value_unit(odf::length::emu));
+		drawing.x = (int)(0.5 + odf_types::length(pic.svg_rect_.get().x_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		drawing.y = (int)(0.5 + odf_types::length(pic.svg_rect_.get().y_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		drawing.cx = (int)(0.5 + odf_types::length(pic.svg_rect_.get().width_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		drawing.cy = (int)(0.5 + odf_types::length(pic.svg_rect_.get().height_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 	}
 	
 	drawing.additional = pic.additional_;

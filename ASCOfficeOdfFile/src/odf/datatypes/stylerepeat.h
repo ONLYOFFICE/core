@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class style_repeat
 {
@@ -43,7 +43,7 @@ std::wostream & operator << (std::wostream & _Wostream, const style_repeat & _Va
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::style_repeat);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::style_repeat);
 
 }
 

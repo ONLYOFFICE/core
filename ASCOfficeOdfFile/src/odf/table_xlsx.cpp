@@ -19,12 +19,13 @@
 #include "../docx/xlsx_cell_format.h"
 #include "../formulasconvert/formulasconvert.h"
 
-
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 static formulasconvert::odf2oox_converter formulas_converter;
-
 
 
 int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Context) 
@@ -56,7 +57,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 	if (prop_CellDefault)
 		//то есть проверим что есть вообще кастом для роу- а потом уже посчитаем стиль
 	{
-		odf::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(instStyle_CellDefault);
+		odf_reader::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(instStyle_CellDefault);
 		Default_Cell_style_in_row_ = Context.get_style_manager().xfId(NULL,NULL, &cellFormatProperties, NULL, L"",true);	
 	}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -69,20 +70,20 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     do 
     {        
-        odf::style_instance * rowStyle = odfContext.styleContainer().style_by_name(styleName, odf::style_family::TableRow,false/*false*/);
+        odf_reader::style_instance * rowStyle = odfContext.styleContainer().style_by_name(styleName, odf_types::style_family::TableRow,false/*false*/);
         if (!rowStyle)
             break;
 
         if (!rowStyle->content())
             break;
 
-        const odf::style_table_row_properties * prop = rowStyle->content()->get_style_table_row_properties();
+        const odf_reader::style_table_row_properties * prop = rowStyle->content()->get_style_table_row_properties();
         if (!prop)
             break;
 
-        if (const _CP_OPT(odf::length) & height = prop->style_table_row_properties_attlist_.style_row_height_)
+        if (const _CP_OPT(odf_types::length) & height = prop->style_table_row_properties_attlist_.style_row_height_)
         {
-            row_height = height->get_value_unit(odf::length::pt);
+            row_height = height->get_value_unit(odf_types::length::pt);
 
 			if ((prop->style_table_row_properties_attlist_.style_use_optimal_row_height_) && 
 						(*prop->style_table_row_properties_attlist_.style_use_optimal_row_height_==true))
@@ -377,7 +378,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
                     {
 						if (const style_table_cell_properties * prop = inst->content()->get_style_table_cell_properties())
 						{//сделать проверку чтоб сюда не попал дефолтный, то  сть пустой стиль
-							odf::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(inst);
+							odf_reader::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(inst);
 							
 							bool set_default = false;
 							if (columnsRepeated > 100) set_default = true;

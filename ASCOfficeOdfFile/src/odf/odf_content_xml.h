@@ -6,7 +6,7 @@
 #include "documentcontext.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 class content_xml_t : public common::read_doc_element
 {

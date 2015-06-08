@@ -13,7 +13,7 @@
 #include "../include/cpdoccore/odf/odf_document.h"
 
 
-HRESULT ConvertOds2Xlsx(cpdoccore::odf::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
+HRESULT ConvertOds2Xlsx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::xlsx_document outputXlsx;
 	cpdoccore::oox::xlsx_conversion_context conversionContext(&outputXlsx, &inputOdf);
@@ -25,7 +25,7 @@ HRESULT ConvertOds2Xlsx(cpdoccore::odf::odf_document & inputOdf, const std::wstr
 	outputXlsx.write(dstPath);
     return S_OK;
 }
-HRESULT ConvertOdt2Docx(cpdoccore::odf::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
+HRESULT ConvertOdt2Docx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::docx_document	outputDocx;
     cpdoccore::oox::docx_conversion_context conversionContext(&outputDocx, &inputOdf);
@@ -38,7 +38,7 @@ HRESULT ConvertOdt2Docx(cpdoccore::odf::odf_document & inputOdf, const std::wstr
 		
     return S_OK;
 }
-HRESULT ConvertOdp2Pptx(cpdoccore::odf::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
+HRESULT ConvertOdp2Pptx(cpdoccore::odf_reader::odf_document & inputOdf, const std::wstring & dstPath, const std::wstring & fontsPath)
 {
     cpdoccore::oox::package::pptx_document	outputPptx;
     cpdoccore::oox::pptx_conversion_context conversionContext(&outputPptx, &inputOdf);
@@ -56,7 +56,7 @@ HRESULT ConvertOO2OOX(const std::wstring & srcPath, const std::wstring & dstPath
 
 	try 
     {
-		cpdoccore::odf::odf_document inputOdf(srcPath, CallBack);
+		cpdoccore::odf_reader::odf_document inputOdf(srcPath, CallBack);
 		
 		int type = inputOdf.get_office_mime_type();
 		bool encrypted = inputOdf.get_encrypted();

@@ -12,7 +12,7 @@
 
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class line_width
 {
@@ -79,7 +79,7 @@ std::wostream & operator << (std::wostream & _Wostream, const line_width & _Val)
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::line_width);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::line_width);
 
 }
 

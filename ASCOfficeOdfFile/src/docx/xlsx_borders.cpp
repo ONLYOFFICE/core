@@ -13,6 +13,9 @@
 
 
 namespace cpdoccore {
+
+	using namespace odf_types;
+
 namespace oox {
 
 namespace  {
@@ -20,7 +23,7 @@ namespace  {
 // TODO надо сделать конвертацию в зависимости от стиля
 std::wstring convert_border_style(const std::wstring& odfBorderStyle)
 {
-    odf::border_style borderStyle(odfBorderStyle);
+    odf_types::border_style borderStyle(odfBorderStyle);
     std::wstring retVal = L"none";
     if (borderStyle.initialized())
     {
@@ -43,14 +46,14 @@ void process_border(xlsx_border_edge & borderEdge, const _CP_OPT(std::wstring) &
 {
     if (odfBorderStyle)
     {
-        odf::border_style borderStyle(*odfBorderStyle);
+        odf_types::border_style borderStyle(*odfBorderStyle);
 
         xlsx_color color;    
         color.rgb = borderStyle.get_color().get_hex_value();
 
         borderEdge.color = color;
         borderEdge.style = convert_border_style(*odfBorderStyle);
-		borderEdge.width = boost::lexical_cast<int>(borderStyle.get_length().get_value_unit(odf::length::emu));
+		borderEdge.width = boost::lexical_cast<int>(borderStyle.get_length().get_value_unit(odf_types::length::emu));
     }
 }
 
@@ -58,7 +61,7 @@ bool check_border(const _CP_OPT(std::wstring) & odfBorderStyle)
 {
     if (odfBorderStyle)
     {
-        odf::border_style borderStyle(*odfBorderStyle);
+        odf_types::border_style borderStyle(*odfBorderStyle);
         if (convert_border_style(*odfBorderStyle) != L"none")
             return true;
     }
@@ -87,13 +90,13 @@ public:
         return borders_.size();
     }
 
-    size_t borderId(const odf::style_table_cell_properties_attlist * cellProp)
+    size_t borderId(const odf_reader::style_table_cell_properties_attlist * cellProp)
     {
         bool is_default;
         return borderId(cellProp, is_default);
     }
 
-    size_t borderId(const odf::style_table_cell_properties_attlist * cellProp, bool & is_default_val)
+    size_t borderId(const odf_reader::style_table_cell_properties_attlist * cellProp, bool & is_default_val)
     {
         xlsx_border border;
         border.left = xlsx_border_edge();
@@ -103,11 +106,11 @@ public:
         
         if (cellProp)
         {
-            const odf::common_border_attlist & odfBordersAttr = cellProp->common_border_attlist_;
-            process_border(*border.left, odfBordersAttr.fo_border_);
-            process_border(*border.right, odfBordersAttr.fo_border_);
-            process_border(*border.top, odfBordersAttr.fo_border_);
-            process_border(*border.bottom, odfBordersAttr.fo_border_);
+            const common_border_attlist & odfBordersAttr = cellProp->common_border_attlist_;
+            process_border(*border.left,	odfBordersAttr.fo_border_);
+            process_border(*border.right,	odfBordersAttr.fo_border_);
+            process_border(*border.top,		odfBordersAttr.fo_border_);
+            process_border(*border.bottom,	odfBordersAttr.fo_border_);
 
             process_border(*border.left, odfBordersAttr.fo_border_left_);
             process_border(*border.right, odfBordersAttr.fo_border_right_);
@@ -196,12 +199,12 @@ size_t xlsx_borders::size() const
     return impl_->size();
 }
 
-size_t xlsx_borders::borderId(const odf::style_table_cell_properties_attlist * cellProp)
+size_t xlsx_borders::borderId(const odf_reader::style_table_cell_properties_attlist * cellProp)
 {
     return impl_->borderId(cellProp);
 }
 
-size_t xlsx_borders::borderId(const odf::style_table_cell_properties_attlist * cellProp, bool & is_default)
+size_t xlsx_borders::borderId(const odf_reader::style_table_cell_properties_attlist * cellProp, bool & is_default)
 {
     return impl_->borderId(cellProp, is_default);
 }

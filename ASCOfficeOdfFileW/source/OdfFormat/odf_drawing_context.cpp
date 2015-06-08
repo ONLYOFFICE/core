@@ -29,7 +29,9 @@
 
 namespace cpdoccore 
 {
-namespace odf
+	using namespace odf_types;
+
+namespace odf_writer
 {
 
 struct 	odf_group_state;
@@ -427,9 +429,9 @@ void odf_drawing_context::end_drawing()
 
 			if (impl_->current_drawing_state_.svg_x_ && impl_->current_drawing_state_.svg_y_)
 			{
-                odf::length pos_x = (impl_->current_drawing_state_.svg_x_->get_value() +
+                odf_types::length pos_x = (impl_->current_drawing_state_.svg_x_->get_value() +
                         (impl_->current_drawing_state_.svg_width_ ? (impl_->current_drawing_state_.svg_width_->get_value()/2.) : 0.), impl_->current_drawing_state_.svg_x_->get_unit());
-                odf::length pos_y = (impl_->current_drawing_state_.svg_y_->get_value() +
+                odf_types::length pos_y = (impl_->current_drawing_state_.svg_y_->get_value() +
                         (impl_->current_drawing_state_.svg_height_ ? (impl_->current_drawing_state_.svg_height_->get_value()/2.) : 0.), impl_->current_drawing_state_.svg_y_->get_unit());
 
                 strTransform +=   std::wstring(L" translate(")  + boost::lexical_cast<std::wstring>(pos_x)
@@ -806,7 +808,7 @@ void odf_drawing_context::start_frame()
 		{
 			impl_->anchor_settings_.style_wrap_ = style_wrap(style_wrap::RunThrough);
 		}
-		impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_ = odf::background_color(odf::background_color::Transparent);
+		impl_->current_graphic_properties->content().common_background_color_attlist_.fo_background_color_ = odf_types::background_color(odf_types::background_color::Transparent);
 	}
 }
 
@@ -1503,9 +1505,9 @@ std::wstring odf_drawing_context::add_marker_style(int type)
 	
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////	
 //	генерация типа маркера
-	odf::office_element_ptr marker_element;
+	odf_writer::office_element_ptr marker_element;
 
-	odf::create_element(L"draw",L"marker", marker_element, impl_->odf_context_);
+	odf_writer::create_element(L"draw",L"marker", marker_element, impl_->odf_context_);
 	impl_->styles_context_->add_style(marker_element,false,true, style_family::Marker);
 	impl_->styles_context_->last_state()->set_name(str_types[type]);
 
@@ -1573,15 +1575,15 @@ void odf_drawing_context::set_textarea_vertical_align(int align)
 	switch(align)
 	{
 	case 0://SimpleTypes::textanchoringtypeB: 
-			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf::vertical_align(odf::vertical_align::Bottom);	break;
+			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Bottom);	break;
 	case 1://SimpleTypes::textanchoringtypeCtr: 
-			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf::vertical_align(odf::vertical_align::Middle);	break;
+			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Middle);	break;
 	case 2://SimpleTypes::textanchoringtypeDist: 
-			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf::vertical_align(odf::vertical_align::Baseline);break;
+			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Baseline);break;
 	case 3://SimpleTypes::textanchoringtypeJust: 
-			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf::vertical_align(odf::vertical_align::Justify);	break;
+			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Justify);	break;
 	case 4://SimpleTypes::textanchoringtypeT: 
-			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf::vertical_align(odf::vertical_align::Top);		break;
+			impl_->current_graphic_properties->content().draw_textarea_vertical_align_ = odf_types::vertical_align(odf_types::vertical_align::Top);		break;
 	}
 }
 void odf_drawing_context::set_textarea_wrap(bool Val)
@@ -1679,17 +1681,17 @@ void odf_drawing_context::set_textarea_writing_mode(int mode)
 		case 4://SimpleTypes::textverticaltypeVert270: //нужно отзеркалить по горизонтали текст
 		case 3://SimpleTypes::textverticaltypeVert: 
 		case 2://SimpleTypes::textverticaltypeMongolianVert:
-			paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::TbRl);	
-			impl_->current_paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::TbRl);	
+			paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+			impl_->current_paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 			break;
 		case 0://SimpleTypes::textverticaltypeEaVert: 
-			paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::TbRl);	
-			impl_->current_paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::TbRl);	
+			paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
+			impl_->current_paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::TbRl);	
 			break;
 		case 1://SimpleTypes::textverticaltypeHorz: 
 		default:
-			paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::LrTb);	
-			impl_->current_paragraph_properties->content().style_writing_mode_ = odf::writing_mode(odf::writing_mode::LrTb);	
+			paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
+			impl_->current_paragraph_properties->content().style_writing_mode_ = odf_types::writing_mode(odf_types::writing_mode::LrTb);	
 			break;
 	}
 
@@ -1959,9 +1961,9 @@ void odf_drawing_context::set_text(odf_text_context* text_context)
 //-------------------------------------------------------------------------------------------------------------------------------------
 void odf_drawing_context::start_gradient_style()
 {
-	odf::office_element_ptr gradient_element;
+	odf_writer::office_element_ptr gradient_element;
 
-	odf::create_element(L"draw",L"gradient", gradient_element, impl_->odf_context_);
+	odf_writer::create_element(L"draw",L"gradient", gradient_element, impl_->odf_context_);
 	impl_->styles_context_->add_style(gradient_element,false,true, style_family::Gradient);
 
 	draw_gradient * gradient = dynamic_cast<draw_gradient *>(gradient_element.get());
@@ -2042,8 +2044,8 @@ void odf_drawing_context::end_gradient_style()
 //-------------------------------------------------------------------------------------------------------------------------------------
 void odf_drawing_context::start_opacity_style()
 {
-	odf::office_element_ptr opacity_element;
-	odf::create_element(L"draw",L"opacity", opacity_element, impl_->odf_context_);
+	odf_writer::office_element_ptr opacity_element;
+	odf_writer::create_element(L"draw",L"opacity", opacity_element, impl_->odf_context_);
 	impl_->styles_context_->add_style(opacity_element,false,true, style_family::Opacity);
 
 	draw_opacity * opacity = dynamic_cast<draw_opacity *>(opacity_element.get());
@@ -2096,9 +2098,9 @@ void odf_drawing_context::end_opacity_style()
 //-------------------------------------------------------------------------------------------------------------------------------------
 void odf_drawing_context::start_hatch_style()
 {
-	odf::office_element_ptr hatch_element;
+	odf_writer::office_element_ptr hatch_element;
 
-	odf::create_element(L"draw",L"hatch", hatch_element, impl_->odf_context_);
+	odf_writer::create_element(L"draw",L"hatch", hatch_element, impl_->odf_context_);
 	impl_->styles_context_->add_style(hatch_element,false,true, style_family::Hatch);
 
 	draw_hatch * hatch = dynamic_cast<draw_hatch *>(hatch_element.get());
@@ -2423,9 +2425,9 @@ void odf_drawing_context::start_bitmap_style()
 {
 	if (impl_->current_drawing_state_.oox_shape_preset == 3000) return;
 
-	odf::office_element_ptr fill_image_element;
+	odf_writer::office_element_ptr fill_image_element;
 
-	odf::create_element(L"draw",L"fill-image", fill_image_element, impl_->odf_context_);
+	odf_writer::create_element(L"draw",L"fill-image", fill_image_element, impl_->odf_context_);
 	impl_->styles_context_->add_style(fill_image_element,false,true, style_family::FillImage);
 
 	draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(fill_image_element.get());

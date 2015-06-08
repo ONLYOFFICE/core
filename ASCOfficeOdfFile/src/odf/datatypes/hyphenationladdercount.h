@@ -11,7 +11,7 @@
 
 #include <limits>
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class integer_or_nolimit
 {
@@ -52,7 +52,7 @@ std::wostream & operator << (std::wostream & _Wostream, const integer_or_nolimit
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::integer_or_nolimit);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::integer_or_nolimit);
 
 }
 

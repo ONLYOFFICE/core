@@ -11,7 +11,7 @@
 #include "mediaitems_utils.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 
 _mediaitems::item::item(	std::wstring const & _oox_ref,

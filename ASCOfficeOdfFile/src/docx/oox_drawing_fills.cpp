@@ -46,7 +46,7 @@ void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(double) 
 		}
 	}
 }
-void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(odf::percent)  opacity)
+void oox_serialize_srgb(std::wostream & strm,std::wstring color,_CP_OPT(odf_types::percent)  opacity)
 {
 	CP_XML_WRITER(strm)
 	{

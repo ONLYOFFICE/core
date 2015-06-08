@@ -14,7 +14,7 @@
 
 namespace cpdoccore 
 {
-namespace odf
+namespace odf_writer
 {
 	namespace package 
 	{
@@ -310,7 +310,7 @@ namespace odf
 					CP_XML_ATTR(L"xmlns:chartooo",		L"http://openoffice.org/2010/chart" );
 					CP_XML_ATTR(L"xmlns:calcext",		L"urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" );
 					CP_XML_ATTR(L"xmlns:field",			L"urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" );
-					CP_XML_ATTR(L"xmlns:formx",			L"urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" );
+					CP_XML_ATTR(L"xmlns:formx",			L"urn:openoffice:names:experimental:ooxml-odf_writer-interop:xmlns:form:1.0" );
 					CP_XML_ATTR(L"xmlns:loext",			L"urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" ); 
 					CP_XML_ATTR(L"xmlns:css3t",			L"http://www.w3.org/TR/css3-text/" );
 					CP_XML_ATTR(L"office:version",		L"1.2");				
@@ -375,7 +375,7 @@ namespace odf
 					CP_XML_ATTR(L"xmlns:chartooo",		L"http://openoffice.org/2010/chart" );
 					CP_XML_ATTR(L"xmlns:calcext",		L"urn:org:documentfoundation:names:experimental:calc:xmlns:calcext:1.0" );
 					CP_XML_ATTR(L"xmlns:field",			L"urn:openoffice:names:experimental:ooo-ms-interop:xmlns:field:1.0" );
-					CP_XML_ATTR(L"xmlns:formx",			L"urn:openoffice:names:experimental:ooxml-odf-interop:xmlns:form:1.0" );
+					CP_XML_ATTR(L"xmlns:formx",			L"urn:openoffice:names:experimental:ooxml-odf_writer-interop:xmlns:form:1.0" );
 					CP_XML_ATTR(L"xmlns:loext",			L"urn:org:documentfoundation:names:experimental:office:xmlns:loext:1.0" ); 
 					CP_XML_ATTR(L"xmlns:css3t",			L"http://www.w3.org/TR/css3-text/" );
 					CP_XML_ATTR(L"office:version",		L"1.2");		

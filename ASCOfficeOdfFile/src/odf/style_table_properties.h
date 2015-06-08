@@ -25,7 +25,7 @@
 #include "datatypes/rotationalign.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 class table_format_properties
 {
@@ -37,49 +37,49 @@ public:
 
 private:
     // 15.8.1 style:width
-    optional<length>::Type style_width_;
+    optional<odf_types::length>::Type style_width_;
     // style:rel-width
-    optional<percent>::Type style_rel_width_;
+    optional<odf_types::percent>::Type style_rel_width_;
 
     // 15.8.2 table:align
-    optional<table_align>::Type table_align_;
+    optional<odf_types::table_align>::Type table_align_;
 
     // 15.8.3 common-horizontal-margin-attlist
     // fo:margin-left
     // fo:margin-right
-    common_horizontal_margin_attlist common_horizontal_margin_attlist_;
+	odf_types::common_horizontal_margin_attlist common_horizontal_margin_attlist_;
 
     // 15.8.4 common-vertical-margin-attlist
     // fo:margin-top
     // fo:margin-bottom
-    common_vertical_margin_attlist common_vertical_margin_attlist_;
+    odf_types::common_vertical_margin_attlist common_vertical_margin_attlist_;
 
     // 15.8.5 common-margin-attlist
     // fo:margin
-    common_margin_attlist common_margin_attlist_;
+    odf_types::common_margin_attlist common_margin_attlist_;
 
     // 15.8.6 common-page-number-attlist
     // style:page-number
-    common_page_number_attlist common_page_number_attlist_;
+    odf_types::common_page_number_attlist common_page_number_attlist_;
     
     // 15.8.7 common-break-attlist
     // fo:break-before
     // fo:break-after
-    common_break_attlist common_break_attlist_;
+    odf_types::common_break_attlist common_break_attlist_;
 
     // 15.8.8
     // common-background-color-attlist
-    common_background_color_attlist common_background_color_attlist_;
+    odf_types::common_background_color_attlist common_background_color_attlist_;
     office_element_ptr style_background_image_;
     
     // 15.8.9
     // common-shadow-attlist
     // style:shadow
-    common_shadow_attlist common_shadow_attlist_;
+    odf_types::common_shadow_attlist common_shadow_attlist_;
 
     // 15.8.10
     // common-keep-with-next-attlist
-    common_keep_with_next_attlist common_keep_with_next_attlist_;
+    odf_types::common_keep_with_next_attlist common_keep_with_next_attlist_;
 
     // 15.8.11
     // style:may-break-between-rows
@@ -87,11 +87,11 @@ private:
 
     // 15.8.12
     // table:border-model
-    optional<border_model>::Type table_border_model_;
+    optional<odf_types::border_model>::Type table_border_model_;
 
     // 15.8.13
     // common-writing-mode-attlist
-    common_writing_mode_attlist common_writing_mode_attlist_;
+    odf_types::common_writing_mode_attlist common_writing_mode_attlist_;
 
     // 15.8.14
     // table:display
@@ -130,10 +130,10 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     
 public:
-    _CP_OPT(length) style_column_width_;
-    _CP_OPT(length) style_rel_column_width_;
+    _CP_OPT(odf_types::length) style_column_width_;
+    _CP_OPT(odf_types::length) style_rel_column_width_;
     _CP_OPT(bool) style_use_optimal_column_width_;
-    common_break_attlist common_break_attlist_;
+    odf_types::common_break_attlist common_break_attlist_;
 
 };
 
@@ -175,12 +175,12 @@ public:
     void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
-    _CP_OPT(length) style_row_height_;
-    _CP_OPT(length) style_min_row_height_;
+    _CP_OPT(odf_types::length) style_row_height_;
+    _CP_OPT(odf_types::length) style_min_row_height_;
     _CP_OPT(bool) style_use_optimal_row_height_;
-    common_background_color_attlist common_background_color_attlist_;
-    common_break_attlist common_break_attlist_;
-    _CP_OPT(keep_together) fo_keep_together_;        
+    odf_types::common_background_color_attlist common_background_color_attlist_;
+    odf_types::common_break_attlist common_break_attlist_;
+    _CP_OPT(odf_types::keep_together) fo_keep_together_;        
 
 };
 
@@ -224,49 +224,49 @@ public:
 
 public:
     // 15.11.1
-    _CP_OPT(vertical_align) style_vertical_align_;
+    _CP_OPT(odf_types::vertical_align) style_vertical_align_;
     
     // 15.11.2 style:text-align-source
-    _CP_OPT(text_align_source) style_text_align_source_;
+    _CP_OPT(odf_types::text_align_source) style_text_align_source_;
     
     // 15.11.3 style:direction
-    _CP_OPT(direction) style_direction_;
+    _CP_OPT(odf_types::direction) style_direction_;
 
     // 15.11.4 style:glyph-orientation-vertical
     _CP_OPT(std::wstring) style_glyph_orientation_vertical_;
     
     // 15.11.5 
-    common_shadow_attlist common_shadow_attlist_;
+    odf_types::common_shadow_attlist common_shadow_attlist_;
 
     // 15.11.6
-    common_background_color_attlist common_background_color_attlist_;
+    odf_types::common_background_color_attlist common_background_color_attlist_;
 
     // 15.11.7
-    common_border_attlist common_border_attlist_;
+    odf_types::common_border_attlist common_border_attlist_;
 
     // 15.11.8
     _CP_OPT(std::wstring) style_diagonal_tl_br_;
-    _CP_OPT(border_widths) style_diagonal_tl_br_widths_;
+    _CP_OPT(odf_types::border_widths) style_diagonal_tl_br_widths_;
     _CP_OPT(std::wstring) style_diagonal_bl_tr_;
-    _CP_OPT(border_widths) style_diagonal_bl_tr_widths_;
+    _CP_OPT(odf_types::border_widths) style_diagonal_bl_tr_widths_;
 
     // 15.11.9
     // common-border-line-width-attlist
-    common_border_line_width_attlist common_border_line_width_attlist_;
+    odf_types::common_border_line_width_attlist common_border_line_width_attlist_;
     
     // 15.11.10
-    common_padding_attlist common_padding_attlist_;
+    odf_types::common_padding_attlist common_padding_attlist_;
     
     // 15.11.11
     // fo:wrap-option
-    _CP_OPT(wrap_option) fo_wrap_option_;
+    _CP_OPT(odf_types::wrap_option) fo_wrap_option_;
 
     // 15.11.12
-    common_rotation_angle_attlist common_rotation_angle_attlist_;
+    odf_types::common_rotation_angle_attlist common_rotation_angle_attlist_;
     
     // 15.11.13
     // style:rotation-align
-    _CP_OPT(rotation_align) style_rotation_align_;    
+    _CP_OPT(odf_types::rotation_align) style_rotation_align_;    
 
     // 15.11.14
     // style:cell-protect

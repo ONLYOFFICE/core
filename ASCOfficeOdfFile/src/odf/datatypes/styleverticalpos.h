@@ -9,7 +9,7 @@
 #include <string>
 #include "odfattributes.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class vertical_pos
 {
@@ -53,7 +53,7 @@ std::wostream & operator << (std::wostream & _Wostream, const vertical_pos & _Va
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::vertical_pos);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::vertical_pos);
 
 }
 

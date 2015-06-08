@@ -7,7 +7,7 @@
 #include "length.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class border_widths
 {
@@ -50,6 +50,6 @@ std::wostream & operator << (std::wostream & _Wostream, const border_widths & _V
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::border_widths);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::border_widths);
 
 }

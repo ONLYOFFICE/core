@@ -6,7 +6,7 @@
 
 
 namespace cpdoccore { 
-namespace odf { 
+namespace odf_types { 
 
 class gradient_style
 {
@@ -41,6 +41,6 @@ std::wostream & operator << (std::wostream & _Wostream, const gradient_style & _
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::gradient_style);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::gradient_style);
 
 }

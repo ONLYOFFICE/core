@@ -6,7 +6,7 @@
 
 
 namespace cpdoccore { 
-namespace odf { 
+namespace odf_types { 
 
 class fill_image_ref_point
 {
@@ -44,6 +44,6 @@ std::wostream & operator << (std::wostream & _Wostream, const fill_image_ref_poi
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::fill_image_ref_point);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::fill_image_ref_point);
 
 }

@@ -11,7 +11,7 @@
 #include "../odf/datatypes/stylefamily.h"
 
 namespace cpdoccore {
-namespace odf
+namespace odf_reader
 {
 	class styles_container;
 	class odf_read_context;
@@ -35,10 +35,10 @@ class pptx_text_context: boost::noncopyable
 
 
 public:
-	pptx_text_context(odf::odf_read_context & odf_context_, pptx_conversion_context & pptx_contxt_);
+	pptx_text_context(odf_reader::odf_read_context & odf_context_, pptx_conversion_context & pptx_contxt_);
     ~pptx_text_context();
 
-	void set_local_styles_container(odf::styles_container*  local_styles_);
+	void set_local_styles_container(odf_reader::styles_container*  local_styles_);
     
 	void add_text(const std::wstring & text);
     
@@ -52,7 +52,7 @@ public:
 	void start_comment_content();
 	std::wstring end_comment_content();
 	
-	void start_base_style(const std::wstring baseStyleName, const odf::style_family::type baseStyleType);
+	void start_base_style(const std::wstring baseStyleName, const odf_types::style_family::type baseStyleType);
 	void end_base_style();
 
 	void start_object();

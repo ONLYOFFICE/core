@@ -11,7 +11,7 @@ class docx_conversion_context;
 class xlsx_conversion_context;
 }
 
-namespace odf {
+namespace odf_reader {
 
 class odf_read_context;
 typedef shared_ptr<odf_read_context>::Type odf_read_context_ptr;

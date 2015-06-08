@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class punctuation_wrap
 {
@@ -42,7 +42,7 @@ std::wostream & operator << (std::wostream & _Wostream, const punctuation_wrap &
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::punctuation_wrap);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::punctuation_wrap);
 
 }
 

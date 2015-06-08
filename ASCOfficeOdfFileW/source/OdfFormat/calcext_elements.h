@@ -15,7 +15,7 @@
 #include "calcext_type.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 
 class calcext_data_bar_attr
@@ -23,9 +23,9 @@ class calcext_data_bar_attr
 public:
    	void serialize(CP_ATTR_NODE);   
 
-	_CP_OPT(color) calcext_axis_color_;
-	_CP_OPT(color) calcext_positive_color_;
-	_CP_OPT(color) calcext_negative_color_;
+	_CP_OPT(odf_types::color) calcext_axis_color_;
+	_CP_OPT(odf_types::color) calcext_positive_color_;
+	_CP_OPT(odf_types::color) calcext_negative_color_;
 };
 
 class calcext_condition_attr
@@ -34,7 +34,7 @@ public:
    	void serialize(CP_ATTR_NODE);   
 
 	_CP_OPT(std::wstring)	calcext_base_cell_address_;
-	_CP_OPT(style_ref)		calcext_apply_style_name_;
+	_CP_OPT(odf_types::style_ref)		calcext_apply_style_name_;
 	_CP_OPT(std::wstring)	calcext_value_;
 
 };
@@ -43,7 +43,7 @@ class calcext_icon_set_attr
 public:
    	void serialize(CP_ATTR_NODE);   
 
-	_CP_OPT(iconset_type) calcext_icon_set_type_;
+	_CP_OPT(odf_types::iconset_type) calcext_icon_set_type_;
 
 };
 
@@ -52,7 +52,7 @@ class calcext_date_is_attr
 public:
    	void serialize(CP_ATTR_NODE);   
 
-	_CP_OPT(style_ref)		calcext_style_;
+	_CP_OPT(odf_types::style_ref)		calcext_style_;
 	_CP_OPT(std::wstring)	calcext_date_;
 
 };
@@ -73,9 +73,9 @@ public:
 
 	virtual void serialize(std::wostream & _Wostream);
 
-	_CP_OPT(color)			calcext_color_;
+	_CP_OPT(odf_types::color)			calcext_color_;
 	_CP_OPT(std::wstring)	calcext_value_;
-	_CP_OPT(calcext_type)	calcext_type_;
+	_CP_OPT(odf_types::calcext_type)	calcext_type_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_color_scale_entry);
@@ -96,7 +96,7 @@ public:
 	virtual void serialize(std::wostream & _Wostream);
 
 	_CP_OPT(std::wstring) calcext_value_;
-	_CP_OPT(calcext_type) calcext_type_;
+	_CP_OPT(odf_types::calcext_type) calcext_type_;
 
 };
 CP_REGISTER_OFFICE_ELEMENT2(calcext_formatting_entry);

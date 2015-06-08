@@ -15,7 +15,7 @@
 #include "datatypes/style_ref.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 namespace text {
 
 class paragraph
@@ -169,8 +169,8 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 private:
-    style_ref text_style_name_;
-    _CP_OPT(bool) text_continue_numbering_;
+    odf_types::style_ref		text_style_name_;
+    _CP_OPT(bool)				text_continue_numbering_;
 
     office_element_ptr          text_list_header_;
     office_element_ptr_array    text_list_items_;
@@ -207,12 +207,12 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    _CP_OPT(style_ref) text_style_name_;
-    std::wstring text_name_;
-    _CP_OPT(bool) text_protected_;
-    _CP_OPT(std::wstring) text_protection_key_;
-    _CP_OPT(text_display) text_display_;
-    _CP_OPT(std::wstring) text_condition_;
+    _CP_OPT(odf_types::style_ref)	text_style_name_;
+    std::wstring					text_name_;
+    _CP_OPT(bool)					text_protected_;
+    _CP_OPT(std::wstring)			text_protection_key_;
+    _CP_OPT(odf_types::text_display) text_display_;
+    _CP_OPT(std::wstring)			text_condition_;
 
 };
 
@@ -240,9 +240,9 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 private:
-    text_section_attr text_section_attr_;
-    office_element_ptr text_section_source_;
-    office_element_ptr_array text_content_;          
+    text_section_attr			text_section_attr_;
+    office_element_ptr			text_section_source_;
+    office_element_ptr_array	text_content_;          
 
 };
 
@@ -255,10 +255,10 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 private:
-    common_xlink_attlist	common_xlink_attlist_;
+    odf_types::common_xlink_attlist	common_xlink_attlist_;
 
-    _CP_OPT(std::wstring)	text_section_name_;
-    _CP_OPT(std::wstring)	text_filter_name_;
+    _CP_OPT(std::wstring)			text_section_name_;
+    _CP_OPT(std::wstring)			text_filter_name_;
     
 };
 

@@ -20,13 +20,13 @@ public:
     void xlsx_serialize(std::wostream & _Wostream);
     void docx_serialize(std::wostream & _Wostream);
 
-	void set_content(odf::chart::title &  t)
+	void set_content(odf_reader::chart::title &  t)
 	{
 		content_ = t;
 	}
 private:
 	cpdoccore::oox::oox_layout layout_;
-	odf::chart::title content_;
+	odf_reader::chart::title content_;
 
 //extLst (Chart Extensibility) §21.2.2.64
 //layout (Layout) §21.2.2.88

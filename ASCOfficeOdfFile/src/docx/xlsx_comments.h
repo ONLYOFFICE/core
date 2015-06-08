@@ -21,7 +21,7 @@ namespace oox {
 
 		bool visibly_;
 
-		std::vector<odf::_property> graphicProperties_;
+		std::vector<odf_reader::_property> graphicProperties_;
 
 		std::wstring  author_;
 		std::wstring  content_;

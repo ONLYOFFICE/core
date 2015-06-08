@@ -25,7 +25,7 @@ namespace cpdoccore {
 namespace oox {
    
 
-docx_conversion_context::docx_conversion_context(package::docx_document * OutputDocument, odf::odf_document * OdfDocument) : 
+docx_conversion_context::docx_conversion_context(package::docx_document * OutputDocument, odf_reader::odf_document * OdfDocument) : 
 	streams_man_( streams_man::create(temp_stream_) ), 
 	output_document_(OutputDocument), 
 	odf_document_(OdfDocument),
@@ -57,7 +57,7 @@ void docx_conversion_context::set_font_directory(std::wstring pathFonts)
 
     applicationFonts_->InitializeFromFolder(pathFonts);
 }
-std::wstring styles_map::get(const std::wstring & Name, odf::style_family::type Type)
+std::wstring styles_map::get(const std::wstring & Name, odf_types::style_family::type Type)
 {
     const std::wstring n = name(Name, Type);
     if (map_.count(n))
@@ -71,9 +71,9 @@ std::wstring styles_map::get(const std::wstring & Name, odf::style_family::type 
         return id;        
     }
 }
-std::wstring styles_map::name(const std::wstring & Name, odf::style_family::type Type)
+std::wstring styles_map::name(const std::wstring & Name, odf_types::style_family::type Type)
 {
-    return Name + L":" + boost::lexical_cast<std::wstring>(odf::style_family(Type));
+    return Name + L":" + boost::lexical_cast<std::wstring>(odf_types::style_family(Type));
 }
 void docx_conversion_context::add_element_to_run()
 {
@@ -84,7 +84,7 @@ void docx_conversion_context::add_element_to_run()
 
     if (!text_properties_stack_.empty())
     {
-        odf::style_text_properties_ptr textProp = this->current_text_properties();
+        odf_reader::style_text_properties_ptr textProp = this->current_text_properties();
         get_styles_context().start();
         textProp->content().docx_convert(*this);
         
@@ -282,15 +282,15 @@ std::wstring  docx_conversion_context::dump_settings_document()
             _CP_OPT(std::wstring)  strVal;
             _CP_OPT(int)   intVal;
 
-			if (odf::GetProperty(settings_properties_,L"evenAndOddHeaders",boolVal))
+			if (odf_reader::GetProperty(settings_properties_,L"evenAndOddHeaders",boolVal))
 			{
 				CP_XML_NODE(L"w:evenAndOddHeaders");
 			}
-			if (odf::GetProperty(settings_properties_,L"displayBackgroundShape",boolVal))
+			if (odf_reader::GetProperty(settings_properties_,L"displayBackgroundShape",boolVal))
 			{
 				CP_XML_NODE(L"w:displayBackgroundShape");
 			}
-			if (odf::GetProperty(settings_properties_,L"zoom",intVal))
+			if (odf_reader::GetProperty(settings_properties_,L"zoom",intVal))
 			{
 				CP_XML_NODE(L"w:zoom")
 				{
@@ -322,13 +322,13 @@ void docx_conversion_context::end_office_text()
 
 namespace 
 {
-    std::wstring StyleTypeOdf2Docx(odf::style_family::type Type)
+    std::wstring StyleTypeOdf2Docx(odf_types::style_family::type Type)
     {
         switch(Type)
         {
-        case odf::style_family::Text:
+        case odf_types::style_family::Text:
             return L"character";
-        case odf::style_family::Paragraph:
+        case odf_types::style_family::Paragraph:
             return L"paragraph";
             // TODO
         default:
@@ -336,7 +336,7 @@ namespace
         }
     }
 
-    std::wstring StyleDisplayName(const std::wstring & Name, odf::style_family::type Type)
+    std::wstring StyleDisplayName(const std::wstring & Name, odf_types::style_family::type Type)
     {
         if (!Name.empty())
             return Name;
@@ -344,11 +344,11 @@ namespace
         {
             switch(Type)
             {
-            case odf::style_family::Paragraph:
+            case odf_types::style_family::Paragraph:
                 return L"Normal";
                 break;
             default:
-                return std::wstring(L"DStyle_") + boost::lexical_cast<std::wstring>(odf::style_family( Type) );
+                return std::wstring(L"DStyle_") + boost::lexical_cast<std::wstring>(odf_types::style_family( Type) );
             }
         }
     }
@@ -359,12 +359,12 @@ void docx_conversion_context::process_list_styles()
     streams_man_ = streams_man::create(numbering_xml_);
     std::wostream & strm = output_stream();
     
-    odf::odf_document * doc = root();
+    odf_reader::odf_document * doc = root();
     if (!doc)
         return;
 
-    odf::odf_read_context & context =  doc->odf_context();
-    odf::list_style_container & list_styles = context.listStyleContainer();
+    odf_reader::odf_read_context & context =  doc->odf_context();
+    odf_reader::list_style_container & list_styles = context.listStyleContainer();
 
     if (list_styles.empty())
         return;
@@ -372,16 +372,16 @@ void docx_conversion_context::process_list_styles()
 	strm << L"<w:numbering xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">";
 
     std::vector<int> numIds;
-	BOOST_FOREACH(odf::list_style_instance_ptr & inst, list_styles.instances())
+	BOOST_FOREACH(odf_reader::list_style_instance_ptr & inst, list_styles.instances())
     {
         //const int abstractNumId = list_context_.add_list_style(inst->get_text_list_style()->get_style_name());
         const int abstractNumId = list_styles.id_by_name(inst->get_style_name());
         strm << L"<w:abstractNum w:abstractNumId=\"" << abstractNumId << "\">";
         numIds.push_back(abstractNumId);
 
-        odf::office_element_ptr_array & content = inst->get_text_list_style()->get_content();
+        odf_reader::office_element_ptr_array & content = inst->get_text_list_style()->get_content();
         
-        BOOST_FOREACH(odf::office_element_ptr & elm, content)
+        BOOST_FOREACH(odf_reader::office_element_ptr & elm, content)
         {
             start_text_list_style(inst->get_text_list_style()->get_style_name());
             elm->docx_convert(*this);
@@ -410,12 +410,12 @@ void docx_conversion_context::process_fonts()
     std::wostream & strm = output_stream();
     strm << L"<w:fonts xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">";
 
-    if (odf::odf_document * doc = root())
+    if (odf_reader::odf_document * doc = root())
     {
-        odf::odf_read_context & context =  doc->odf_context();
-        odf::fonts_container & fonts = context.fontContainer();
+        odf_reader::odf_read_context & context =  doc->odf_context();
+        odf_reader::fonts_container & fonts = context.fontContainer();
 
-        BOOST_FOREACH(odf::font_instance_ptr & inst, fonts.instances())
+        BOOST_FOREACH(odf_reader::font_instance_ptr & inst, fonts.instances())
         {
             strm << L"<w:font w:name=\"" << inst->name() << L"\" >";
 
@@ -454,23 +454,23 @@ void docx_conversion_context::process_styles()
 	_Wostream << L"xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" ";
 	_Wostream << L"mc:Ignorable=\"w14\"> ";
 	
-    if (odf::odf_document * doc = root())
+    if (odf_reader::odf_document * doc = root())
     {
-        odf::odf_read_context & context =  doc->odf_context();
-        odf::styles_container & styles = context.styleContainer();
+        odf_reader::odf_read_context & context =  doc->odf_context();
+        odf_reader::styles_container & styles = context.styleContainer();
 
         // add all styles to the map
-        BOOST_FOREACH(odf::style_instance_ptr & inst, styles.instances())
+        BOOST_FOREACH(odf_reader::style_instance_ptr & inst, styles.instances())
         {
             style_map_.get(inst->name(), inst->type());
         }
 
         _Wostream << L"<w:docDefaults>";
 
-        if (odf::style_instance * defaultParStyle = styles.style_default_by_type(odf::style_family::Paragraph))
+        if (odf_reader::style_instance * defaultParStyle = styles.style_default_by_type(odf_types::style_family::Paragraph))
         {
             _Wostream << L"<w:pPrDefault>";
-            if ( odf::style_content * content = defaultParStyle->content())
+            if ( odf_reader::style_content * content = defaultParStyle->content())
             {
                 get_styles_context().start_process_style(defaultParStyle);
                 content->docx_convert(*this);
@@ -481,12 +481,12 @@ void docx_conversion_context::process_styles()
 
         _Wostream << L"</w:docDefaults>";
 
-        BOOST_FOREACH(odf::style_instance_ptr & inst, styles.instances())
+        BOOST_FOREACH(odf_reader::style_instance_ptr & inst, styles.instances())
         {
             if (!inst->is_automatic() && 
                 (
-                inst->type() == odf::style_family::Paragraph ||
-                inst->type() == odf::style_family::Text
+                inst->type() == odf_types::style_family::Paragraph ||
+                inst->type() == odf_types::style_family::Text
                 )
                 )
             {
@@ -497,7 +497,7 @@ void docx_conversion_context::process_styles()
 
                 _Wostream << L"<w:name w:val=\"" << displayName << L"\" />\n";
 
-                if (odf::style_instance * baseOn = inst->parent())
+                if (odf_reader::style_instance * baseOn = inst->parent())
                 {
                     const std::wstring basedOnId = style_map_.get(baseOn->name(), baseOn->type());
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\" />\n";
@@ -508,7 +508,7 @@ void docx_conversion_context::process_styles()
                     _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\" />\n";
                 }
 
-                if (odf::style_instance * next = inst->next())
+                if (odf_reader::style_instance * next = inst->next())
                 {
                     const std::wstring nextId = style_map_.get(next->name(), next->type());
                     _Wostream << L"<w:next w:val=\"" << nextId << "\" />\n";
@@ -519,7 +519,7 @@ void docx_conversion_context::process_styles()
                     _Wostream << L"<w:next w:val=\"" << id << "\" />\n";
                 }
 
-                if (odf::style_content * content = inst->content())
+                if (odf_reader::style_content * content = inst->content())
                 {
                     get_styles_context().start_process_style(inst.get());
                     content->docx_convert(*this);
@@ -546,7 +546,7 @@ void docx_conversion_context::process_page_properties(std::wostream & strm)
     if (is_next_dump_page_properties())
     {
         const std::wstring pageProperties = get_page_properties();
-		odf::page_layout_instance * page_layout_instance_ = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
+		odf_reader::page_layout_instance * page_layout_instance_ = root()->odf_context().pageLayoutContainer().page_layout_by_name(pageProperties);
 		if (page_layout_instance_) page_layout_instance_->docx_convert_serialize(strm,*this);
     }
 }
@@ -600,7 +600,7 @@ bool docx_conversion_context::in_automatic_style()
     return in_automatic_style_;
 }
 
-void docx_conversion_context::push_text_properties(const odf::style_text_properties * TextProperties)
+void docx_conversion_context::push_text_properties(const odf_reader::style_text_properties * TextProperties)
 {
     text_properties_stack_.push_back(TextProperties);
 }
@@ -610,10 +610,10 @@ void docx_conversion_context::pop_text_properties()
     text_properties_stack_.pop_back();
 }
 
-odf::style_text_properties_ptr docx_conversion_context::current_text_properties()
+odf_reader::style_text_properties_ptr docx_conversion_context::current_text_properties()
 {
-    odf::style_text_properties_ptr cur = boost::make_shared<odf::style_text_properties>();
-    BOOST_FOREACH(const odf::style_text_properties * prop, text_properties_stack_)
+    odf_reader::style_text_properties_ptr cur = boost::make_shared<odf_reader::style_text_properties>();
+    BOOST_FOREACH(const odf_reader::style_text_properties * prop, text_properties_stack_)
     {
         if (prop)
             cur->content().apply_from( prop->content() );
@@ -724,8 +724,8 @@ void docx_conversion_context::start_list_item(bool restart)
         const std::wstring newStyleName = curStyleName + boost::lexical_cast<std::wstring>(new_list_style_number_++);
         list_style_renames_[curStyleName] = newStyleName;
 
-        odf::list_style_container & lists = root()->odf_context().listStyleContainer();
-        odf::text_list_style * curStyle = lists.list_style_by_name(curStyleName);
+        odf_reader::list_style_container & lists = root()->odf_context().listStyleContainer();
+        odf_reader::text_list_style * curStyle = lists.list_style_by_name(curStyleName);
         lists.add_list_style(curStyle, newStyleName);
         end_list();
         start_list(newStyleName);
@@ -772,7 +772,7 @@ void docx_conversion_context::docx_serialize_list_properties(std::wostream & str
     }
 }
 
-void docx_conversion_context::add_delayed_element(odf::office_element * Elm)
+void docx_conversion_context::add_delayed_element(odf_reader::office_element * Elm)
 {
     delayed_elements_.push_back(Elm);    
 }
@@ -784,7 +784,7 @@ void docx_conversion_context::docx_convert_delayed()
 	delayed_converting_ = true;
     while(!delayed_elements_.empty())
     {
-        odf::office_element * elm = delayed_elements_.front();
+        odf_reader::office_element * elm = delayed_elements_.front();
         elm->docx_convert(*this);
 			delayed_elements_.pop_front();
     }
@@ -803,14 +803,14 @@ void section_context::end_section()
     set_after_section(true);
 }
 
-void docx_conversion_context::section_properties_in_table(odf::office_element * Elm)
+void docx_conversion_context::section_properties_in_table(odf_reader::office_element * Elm)
 {
     section_properties_in_table_ = Elm;
 }
 
-odf::office_element * docx_conversion_context::get_section_properties_in_table()
+odf_reader::office_element * docx_conversion_context::get_section_properties_in_table()
 {
-    odf::office_element * elm = section_properties_in_table_;
+    odf_reader::office_element * elm = section_properties_in_table_;
     section_properties_in_table_ = NULL;
     return elm;
 }
@@ -821,7 +821,7 @@ namespace
     // конвертируем содержимое header/footer и сохраняем результат в виде строки
     void process_one_header_footer(docx_conversion_context & Context,
         const std::wstring & styleName,
-        odf::office_element * elm,
+        odf_reader::office_element * elm,
         headers_footers::Type type)
     {
         if (!elm) return;
@@ -842,34 +842,34 @@ namespace
 
 		if (type == headers_footers::headerLeft || type == headers_footers::footerLeft)
 		{
-			Context.set_settings_property(odf::_property(L"evenAndOddHeaders",true));
+			Context.set_settings_property(odf_reader::_property(L"evenAndOddHeaders",true));
 		}
    }
 
 }
-void docx_conversion_context::set_settings_property(const odf::_property & prop)
+void docx_conversion_context::set_settings_property(const odf_reader::_property & prop)
 {
 	settings_properties_.push_back(prop);
 }
-std::vector<odf::_property> & docx_conversion_context::get_settings_properties()
+std::vector<odf_reader::_property> & docx_conversion_context::get_settings_properties()
 {
 	return settings_properties_;
 }
 void docx_conversion_context::process_headers_footers()
 {
-    odf::odf_document * doc = root();
+    odf_reader::odf_document * doc = root();
     if (!doc)
         return;
 
     process_headers_footers_ = true;
 
-    odf::odf_read_context & context =  doc->odf_context();
-    odf::page_layout_container & pageLayouts = context.pageLayoutContainer();
+    odf_reader::odf_read_context & context =  doc->odf_context();
+    odf_reader::page_layout_container & pageLayouts = context.pageLayoutContainer();
 
     // проходим по всем page layout
-    BOOST_FOREACH(const odf::style_master_page* page, pageLayouts.master_pages())
+    BOOST_FOREACH(const odf_reader::style_master_page* page, pageLayouts.master_pages())
     {
-        const std::wstring & styleName = page->style_master_page_attlist_.style_name_.get_value_or( odf::style_ref(L"") ).style_name();
+        const std::wstring & styleName = page->style_master_page_attlist_.style_name_.get_value_or( odf_types::style_ref(L"") ).style_name();
         const std::wstring masterPageNameLayout =context.pageLayoutContainer().page_layout_name_by_style(styleName);
         set_page_properties(masterPageNameLayout);
 		
@@ -895,7 +895,7 @@ const std::wstring & docx_conversion_context::get_master_page_name() const
 
 std::wstring notes_context::add(const std::wstring & Content, const std::wstring & Id)
 {
-    instances_map & map = (type_ == odf::noteclass::Endnote) ? instances_endnotes_ : instances_footnotes_;
+    instances_map & map = (type_ == odf_types::noteclass::Endnote) ? instances_endnotes_ : instances_footnotes_;
     instance_ptr inst = instance_ptr( new instance(Id, Content) );
     map[Id] = inst;
     return Id;
@@ -903,7 +903,7 @@ std::wstring notes_context::add(const std::wstring & Content, const std::wstring
 
 std::wstring notes_context::next_id()
 {
-    instances_map & map = (type_ == odf::noteclass::Endnote) ? instances_endnotes_ : instances_footnotes_;
+    instances_map & map = (type_ == odf_types::noteclass::Endnote) ? instances_endnotes_ : instances_footnotes_;
     const std::wstring s = boost::lexical_cast<std::wstring>(map.size() + 1);
     return s;        
 }

@@ -20,7 +20,7 @@ namespace oox {
 
 		std::wstring  content_;
 
-		std::vector<odf::_property> graphicProperties_;
+		std::vector<odf_reader::_property> graphicProperties_;
 	};
 //class rels;
 

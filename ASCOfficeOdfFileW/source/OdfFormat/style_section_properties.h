@@ -12,7 +12,7 @@
 #include "verticalalign.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 /// style:columns
 class style_columns : public office_element_impl<style_columns>
@@ -30,7 +30,7 @@ public:
 	virtual void serialize(std::wostream & strm);
 
     _CP_OPT(unsigned int) fo_column_count_;
-    _CP_OPT(length) fo_column_gap_;
+    _CP_OPT(odf_types::length) fo_column_gap_;
 
     office_element_ptr style_column_sep_;
     office_element_ptr_array style_column_;
@@ -53,11 +53,11 @@ public:
 	virtual void add_child_element( const office_element_ptr & child){}
 	virtual void serialize(std::wostream & strm);
 
-    _CP_OPT(length) style_rel_width_;
-	_CP_OPT(length) fo_start_indent_;
-    _CP_OPT(length) fo_end_indent_;
-    _CP_OPT(length) fo_space_before_;
-    _CP_OPT(length) fo_space_after_;
+    _CP_OPT(odf_types::length) style_rel_width_;
+	_CP_OPT(odf_types::length) fo_start_indent_;
+    _CP_OPT(odf_types::length) fo_end_indent_;
+    _CP_OPT(odf_types::length) fo_space_before_;
+    _CP_OPT(odf_types::length) fo_space_after_;
     
 };
 
@@ -79,10 +79,10 @@ public:
 	virtual void serialize(std::wostream & strm);
 
     _CP_OPT(std::wstring)	style_style_;			 // default solid
-    _CP_OPT(length)			style_width_;
-	_CP_OPT(percent)		style_height_;			// default 100
-    _CP_OPT(vertical_align) style_vertical_align_;	// default top
-    _CP_OPT(color)			style_color_;			// default #000000
+    _CP_OPT(odf_types::length)			style_width_;
+	_CP_OPT(odf_types::percent)		style_height_;			// default 100
+    _CP_OPT(odf_types::vertical_align) style_vertical_align_;	// default top
+    _CP_OPT(odf_types::color)			style_color_;			// default #000000
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(style_column_sep);
@@ -102,12 +102,12 @@ public:
 
 	virtual void serialize(std::wostream & strm);
 
-    common_background_color_attlist		common_background_color_attlist_;
-    common_horizontal_margin_attlist	common_horizontal_margin_attlist_;
-    common_writing_mode_attlist			common_writing_mode_attlist_;
+    odf_types::common_background_color_attlist		common_background_color_attlist_;
+    odf_types::common_horizontal_margin_attlist	common_horizontal_margin_attlist_;
+    odf_types::common_writing_mode_attlist			common_writing_mode_attlist_;
 
-    _CP_OPT(Bool) style_protect_; // default false
-    _CP_OPT(Bool) text_dont_balance_text_columns_;
+    _CP_OPT(odf_types::Bool) style_protect_; // default false
+    _CP_OPT(odf_types::Bool) text_dont_balance_text_columns_;
  
     office_element_ptr style_columns_;
     office_element_ptr style_background_image_;

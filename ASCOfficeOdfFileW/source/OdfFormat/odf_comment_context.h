@@ -8,7 +8,10 @@
 #include "office_elements_create.h"
 
 namespace cpdoccore {
-namespace odf
+
+	using namespace odf_types;
+
+namespace odf_writer
 {
 
 class odf_conversion_context;

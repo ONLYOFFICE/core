@@ -794,7 +794,7 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill,
 
 	odf_context()->drawing_context()->start_gradient_style();
 	{
-		odf::gradient_style::type grad_style = odf::gradient_style::linear;
+		odf_types::gradient_style::type grad_style = odf_types::gradient_style::linear;
 	
 		if (oox_grad_fill->m_eGradType == OOX::Drawing::gradfilltypeLinear && oox_grad_fill->m_oLin->m_oAng.IsInit())
 		{
@@ -804,9 +804,9 @@ void OoxConverter::convert(OOX::Drawing::CGradientFillProperties *oox_grad_fill,
 		{
 			switch(oox_grad_fill->m_oPath->m_oPath->GetValue())
 			{
-				case SimpleTypes::pathshadetypeCircle:	grad_style = odf::gradient_style::radial;		break;
-				case SimpleTypes::pathshadetypeRect:	grad_style = odf::gradient_style::rectangular;	break;
-				case SimpleTypes::pathshadetypeShape:	grad_style = odf::gradient_style::square;		break;
+				case SimpleTypes::pathshadetypeCircle:	grad_style = odf_types::gradient_style::radial;		break;
+				case SimpleTypes::pathshadetypeRect:	grad_style = odf_types::gradient_style::rectangular;	break;
+				case SimpleTypes::pathshadetypeShape:	grad_style = odf_types::gradient_style::square;		break;
 			}	
 			if (oox_grad_fill->m_oPath->m_oFillToRect.IsInit())
 			{
@@ -1108,7 +1108,7 @@ int OoxConverter::convert(OOX::Drawing::CPresetTextShape *oox_text_preset)
 
 	return 2001 + oox_text_preset->m_oPrst.GetValue();
 }
-void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf::style_text_properties * text_properties)
+void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf_writer::style_text_properties * text_properties)
 {
 	if (!oox_run_pr)		return;
 	if (!text_properties)	return;
@@ -1116,9 +1116,9 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf::style_t
 	if (oox_run_pr->m_oBold.IsInit())
 	{
 		if (oox_run_pr->m_oBold->ToBool() == true) 
-			text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WBold);
+			text_properties->content().fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WBold);
 		else
-			text_properties->content().fo_font_weight_ = odf::font_weight(odf::font_weight::WNormal);
+			text_properties->content().fo_font_weight_ = odf_types::font_weight(odf_types::font_weight::WNormal);
 	}
 
 	if (oox_run_pr->m_oSolidFill.IsInit())
@@ -1127,15 +1127,15 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf::style_t
 		_CP_OPT(double) opacity;
 		convert(oox_run_pr->m_oSolidFill.GetPointer(),hexColor,opacity);
 		
-		text_properties->content().fo_color_ = odf::color(std::wstring(L"#") + hexColor);
+		text_properties->content().fo_color_ = odf_types::color(std::wstring(L"#") + hexColor);
 	}
 
 	if (oox_run_pr->m_oItalic.IsInit())
 	{
 		if (oox_run_pr->m_oItalic->ToBool() ==true)
-			text_properties->content().fo_font_style_ = odf::font_style(odf::font_style::Italic);
+			text_properties->content().fo_font_style_ = odf_types::font_style(odf_types::font_style::Italic);
 		else
-			text_properties->content().fo_font_style_ = odf::font_style(odf::font_style::Normal);
+			text_properties->content().fo_font_style_ = odf_types::font_style(odf_types::font_style::Normal);
 	}
 	if (oox_run_pr->m_oSz.IsInit())
 	{
@@ -1184,42 +1184,42 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf::style_t
 	}
 	if (oox_run_pr->m_oSpace.IsInit())
 	{
-		text_properties->content().fo_letter_spacing_ = odf::letter_spacing(odf::length(oox_run_pr->m_oSpace->GetValue()/100., odf::length::pt));
+		text_properties->content().fo_letter_spacing_ = odf_types::letter_spacing(odf_types::length(oox_run_pr->m_oSpace->GetValue()/100., odf_types::length::pt));
 	}
 	if (oox_run_pr->m_oUnderline.IsInit())
 	{
-		text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::Solid);
-		text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::Single);
+		text_properties->content().style_text_underline_style_ = odf_types::line_style(odf_types::line_style::Solid);
+		text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Single);
 		
 		SimpleTypes::EUnderline 	type = oox_run_pr->m_oUnderline->GetValue();
 		switch(type)
 		{
 		case SimpleTypes::underlineNone	:
-				text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::None);break;
+				text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::None);break;
 		case SimpleTypes::underlineDash :
 		case SimpleTypes::underlineDashedHeavy:
-				text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::Dash);break;
+				text_properties->content().style_text_underline_style_ = odf_types::line_style(odf_types::line_style::Dash);break;
 		case SimpleTypes::underlineDotDash :
 		case SimpleTypes::underlineDashDotHeavy:
-				text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::DotDash);break;
+				text_properties->content().style_text_underline_style_ = odf_types::line_style(odf_types::line_style::DotDash);break;
 		case SimpleTypes::underlineDashLong:
 		case SimpleTypes::underlineDashLongHeavy:
-				text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::LongDash);break;
+				text_properties->content().style_text_underline_style_ = odf_types::line_style(odf_types::line_style::LongDash);break;
 		case SimpleTypes::underlineDotDotDash:
 		case SimpleTypes::underlineDashDotDotHeavy :
-				text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::DotDotDash);break;
+				text_properties->content().style_text_underline_style_ = odf_types::line_style(odf_types::line_style::DotDotDash);break;
 		case SimpleTypes::underlineDotted:
 		case SimpleTypes::underlineDottedHeavy:
-				text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::Dotted);break;
+				text_properties->content().style_text_underline_style_ = odf_types::line_style(odf_types::line_style::Dotted);break;
 		case SimpleTypes::underlineWave :
 		case SimpleTypes::underlineWavyHeavy :
-				text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::Wave);break;
+				text_properties->content().style_text_underline_style_ = odf_types::line_style(odf_types::line_style::Wave);break;
 		case SimpleTypes::underlineDouble :
 		case SimpleTypes::underlineThick :
-				text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::Double);break;
+				text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Double);break;
 		case SimpleTypes::underlineWavyDouble :
-				text_properties->content().style_text_underline_type_= odf::line_type(odf::line_type::Double);
-				text_properties->content().style_text_underline_style_ = odf::line_style(odf::line_style::Wave);break;
+				text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Double);
+				text_properties->content().style_text_underline_style_ = odf_types::line_style(odf_types::line_style::Wave);break;
 		}
 	}
 }
@@ -1231,11 +1231,11 @@ void OoxConverter::convert(OOX::Drawing::CRun		*oox_run)
 
 	if (oox_run->m_oRunProperty.IsInit())
 	{
-		odf::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
+		odf_writer::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
 		
 		if (!text_properties)
 		{
-			odf_context()->styles_context()->create_style(L"",odf::style_family::Text, true, false, -1);	
+			odf_context()->styles_context()->create_style(L"",odf_types::style_family::Text, true, false, -1);	
 			text_properties = odf_context()->styles_context()->last_state()->get_text_properties();
 			styled = true;
 		}
@@ -1250,26 +1250,26 @@ void OoxConverter::convert(OOX::Drawing::CRun		*oox_run)
 	odf_context()->text_context()->end_span();
 }
 
-void OoxConverter::convert(OOX::Drawing::CParagraphProperty * oox_paragraph_pr, cpdoccore::odf::style_paragraph_properties * paragraph_properties)
+void OoxConverter::convert(OOX::Drawing::CParagraphProperty * oox_paragraph_pr, cpdoccore::odf_writer::style_paragraph_properties * paragraph_properties)
 {
 	if (!oox_paragraph_pr)		return;
 	if (!paragraph_properties)	return;
 
 	if (oox_paragraph_pr->m_oLineSpacing.IsInit())
 	{
-		odf::length_or_percent length;
+		odf_types::length_or_percent length;
 		convert(oox_paragraph_pr->m_oLineSpacing.GetPointer(), length);
-		paragraph_properties->content().fo_line_height_ = odf::line_width(length);
+		paragraph_properties->content().fo_line_height_ = odf_types::line_width(length);
 	}
 	if (oox_paragraph_pr->m_oAfterSpacing.IsInit())
 	{
- 		odf::length_or_percent length;
+ 		odf_types::length_or_percent length;
 		convert(oox_paragraph_pr->m_oAfterSpacing.GetPointer(), length);
 		paragraph_properties->content().fo_margin_bottom_ = length;
 	}
 	if (oox_paragraph_pr->m_oBeforeSpacing.IsInit())
 	{
- 		odf::length_or_percent length;
+ 		odf_types::length_or_percent length;
 		convert(oox_paragraph_pr->m_oBeforeSpacing.GetPointer(), length);
 		paragraph_properties->content().fo_margin_top_ = length;
 	}
@@ -1277,24 +1277,24 @@ void OoxConverter::convert(OOX::Drawing::CParagraphProperty * oox_paragraph_pr, 
 	{
 		switch(oox_paragraph_pr->m_oAlgn->GetValue())
 		{
-			case SimpleTypes::textalignmenttypeL    : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Left);		break;
-			case SimpleTypes::textalignmenttypeCtr  : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Center);	break;
-			case SimpleTypes::textalignmenttypeDist : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Justify);	break;
-			case SimpleTypes::textalignmenttypeJust : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Justify);	break;
-			case SimpleTypes::textalignmenttypeR    : paragraph_properties->content().fo_text_align_ = odf::text_align(odf::text_align::Right);		break;
+			case SimpleTypes::textalignmenttypeL    : paragraph_properties->content().fo_text_align_ = odf_types::text_align(odf_types::text_align::Left);		break;
+			case SimpleTypes::textalignmenttypeCtr  : paragraph_properties->content().fo_text_align_ = odf_types::text_align(odf_types::text_align::Center);	break;
+			case SimpleTypes::textalignmenttypeDist : paragraph_properties->content().fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify);	break;
+			case SimpleTypes::textalignmenttypeJust : paragraph_properties->content().fo_text_align_ = odf_types::text_align(odf_types::text_align::Justify);	break;
+			case SimpleTypes::textalignmenttypeR    : paragraph_properties->content().fo_text_align_ = odf_types::text_align(odf_types::text_align::Right);		break;
 		}
 	}
 	if (oox_paragraph_pr->m_oMarL.IsInit())
 	{
-		paragraph_properties->content().fo_margin_left_ = odf::length_or_percent(odf::length(oox_paragraph_pr->m_oMarL->ToCm(),odf::length::cm));
+		paragraph_properties->content().fo_margin_left_ = odf_types::length_or_percent(odf_types::length(oox_paragraph_pr->m_oMarL->ToCm(),odf_types::length::cm));
 	}
 	if (oox_paragraph_pr->m_oMarR.IsInit())
 	{
-		paragraph_properties->content().fo_margin_right_ = odf::length_or_percent(odf::length(oox_paragraph_pr->m_oMarR->ToCm(),odf::length::cm));
+		paragraph_properties->content().fo_margin_right_ = odf_types::length_or_percent(odf_types::length(oox_paragraph_pr->m_oMarR->ToCm(),odf_types::length::cm));
 	}
 	if (oox_paragraph_pr->m_oIndent.IsInit())
 	{
-		paragraph_properties->content().fo_text_indent_ = odf::length_or_percent(odf::length(oox_paragraph_pr->m_oIndent->ToCm(),odf::length::cm));
+		paragraph_properties->content().fo_text_indent_ = odf_types::length_or_percent(odf_types::length(oox_paragraph_pr->m_oIndent->ToCm(),odf_types::length::cm));
 	}
 	if (oox_paragraph_pr->m_oRtl.IsInit())
 	{
@@ -1307,7 +1307,7 @@ void OoxConverter::convert(OOX::Drawing::CParagraphProperty * oox_paragraph_pr, 
 
 	if (oox_paragraph_pr->m_oDefRunProperty.IsInit())//может быть пустым !!!
 	{
-		odf::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
+		odf_writer::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
 		if (text_properties) 
 			convert(oox_paragraph_pr->m_oDefRunProperty.GetPointer(), text_properties);
 
@@ -1317,19 +1317,19 @@ void OoxConverter::convert(OOX::Drawing::CParagraphProperty * oox_paragraph_pr, 
 	}
 
 }
-void OoxConverter::convert(OOX::Drawing::CLineSpacing* oox_spacing,  odf::length_or_percent & length_or_percent)
+void OoxConverter::convert(OOX::Drawing::CLineSpacing* oox_spacing,  odf_types::length_or_percent & length_or_percent)
 {
 	if (!oox_spacing)return;
 
 	if (oox_spacing->m_oLineSpacingPercent.IsInit() && oox_spacing->m_oLineSpacingPercent->m_oVal.IsInit())
 	{
-		odf::percent percent = odf::percent(oox_spacing->m_oLineSpacingPercent->m_oVal->GetValue());
-		length_or_percent = odf::length_or_percent(percent);
+		odf_types::percent percent = odf_types::percent(oox_spacing->m_oLineSpacingPercent->m_oVal->GetValue());
+		length_or_percent = odf_types::length_or_percent(percent);
 	}
 	if (oox_spacing->m_oLineSpacingPoints.IsInit() && oox_spacing->m_oLineSpacingPoints->m_oVal.IsInit())
 	{
-		odf::length length = odf::length(oox_spacing->m_oLineSpacingPoints->m_oVal->ToCm()/100.,odf::length::cm);
-		length_or_percent = odf::length_or_percent(length);
+		odf_types::length length = odf_types::length(oox_spacing->m_oLineSpacingPoints->m_oVal->ToCm()/100.,odf_types::length::cm);
+		length_or_percent = odf_types::length_or_percent(length);
 	}
 }
 
@@ -1340,11 +1340,11 @@ void OoxConverter::convert(OOX::Drawing::CParagraph		*oox_paragraph)
 	bool styled = false;
 	if (oox_paragraph->m_oParagraphProperty.IsInit())
 	{
-		odf::style_paragraph_properties	* paragraph_properties = odf_context()->text_context()->get_paragraph_properties();
+		odf_writer::style_paragraph_properties	* paragraph_properties = odf_context()->text_context()->get_paragraph_properties();
 													//свойства могут быть приписаны не только к параграфу, но и к самому объекту		
 		if (!paragraph_properties)
 		{
-			odf_context()->styles_context()->create_style(L"",odf::style_family::Paragraph, true, false, -1);	
+			odf_context()->styles_context()->create_style(L"",odf_types::style_family::Paragraph, true, false, -1);	
 			paragraph_properties = odf_context()->styles_context()->last_state()->get_paragraph_properties();
 			styled = true;
 		}
@@ -1361,14 +1361,14 @@ void OoxConverter::convert(OOX::Drawing::CParagraph		*oox_paragraph)
 
 }
 
-void OoxConverter::convert(double oox_font_size,  _CP_OPT(odf::font_size) & odf_font_size)
+void OoxConverter::convert(double oox_font_size,  _CP_OPT(odf_types::font_size) & odf_font_size)
 {
-	 _CP_OPT(odf::length) odf_length;
+	 _CP_OPT(odf_types::length) odf_length;
 
-	 odf_length = odf::length(oox_font_size, odf::length::pt);
+	 odf_length = odf_types::length(oox_font_size, odf_types::length::pt);
 	 
 	 if (odf_length)
-		 odf_font_size = odf::font_size(odf_length.get());
+		 odf_font_size = odf_types::font_size(odf_length.get());
 }
 
 }

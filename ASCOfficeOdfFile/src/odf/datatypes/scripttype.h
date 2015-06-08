@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class script_type
 {
@@ -44,7 +44,7 @@ std::wostream & operator << (std::wostream & _Wostream, const script_type & _Val
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::script_type);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::script_type);
 
 }
 

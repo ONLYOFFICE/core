@@ -8,7 +8,10 @@
 #include "style_page_layout_properties.h" 
 
 namespace cpdoccore {
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
 
 odf_master_state::odf_master_state(office_element_ptr & master_elm )
 {        

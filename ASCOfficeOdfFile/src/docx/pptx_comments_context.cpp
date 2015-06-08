@@ -131,7 +131,7 @@ void pptx_comments_context::add_date(std::wstring  Val)
 	impl_->current_.date_ = Val;
 }
 
-std::vector<odf::_property> & pptx_comments_context::get_draw_properties()
+std::vector<odf_reader::_property> & pptx_comments_context::get_draw_properties()
 {
 	return impl_->current_.graphicProperties_;
 

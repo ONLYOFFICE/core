@@ -15,7 +15,16 @@
 
 namespace cpdoccore
 {
-	namespace odf 
+	namespace odf_types
+	{
+
+		class color;
+		class length;
+		class text_align;
+		class font_size;
+		class length_or_percent;
+	}
+	namespace odf_writer 
 	{
 		class odf_conversion_context;
 
@@ -29,13 +38,6 @@ namespace cpdoccore
 		class style_table_column_properties;
 		class style_chart_properties;
 		class style_drawing_page_properties;
-
-		class color;
-		class length;
-		class text_align;
-		class font_size;
-		class length_or_percent;
-
 	}
 }
 namespace OOX
@@ -304,7 +306,7 @@ public:
 		bool	UpdateProgress(long nComplete);
 	
 //.......................................................................................................................
-		virtual cpdoccore::odf::odf_conversion_context		*odf_context() = 0;
+		virtual cpdoccore::odf_writer::odf_conversion_context		*odf_context() = 0;
 		virtual OOX::CTheme									*oox_theme() = 0;
 		virtual CString										 find_link_by_id(CString sId, int t) = 0;
 		
@@ -312,7 +314,7 @@ public:
 		OOX::IFileContainer									*oox_current_child_document;
 //.......................................................................................................................
 		void convert(OOX::WritingElement  *oox_unknown);
-		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf::font_size) & odf_font_size);
+		void convert(double oox_font_size,			cpdoccore::_CP_OPT(cpdoccore::odf_types::font_size) & odf_font_size);
 	
 //.drawing......................................................................................................................
 		void convert(OOX::Drawing::CLockedCanvas				*oox_canvas);
@@ -353,10 +355,10 @@ public:
 		void convert(OOX::Drawing::CSolidColorFillProperties	*oox_solid_fill,std::wstring & hexColor , cpdoccore::_CP_OPT(double) &opacity);
 
 		void convert(OOX::Drawing::CParagraph					*oox_paragraph);
-		void convert(OOX::Drawing::CParagraphProperty			*oox_paragraph_pr, cpdoccore::odf::style_paragraph_properties * paragraph_properties);
+		void convert(OOX::Drawing::CParagraphProperty			*oox_paragraph_pr, cpdoccore::odf_writer::style_paragraph_properties * paragraph_properties);
 		void convert(OOX::Drawing::CRun							*oox_run);
-		void convert(OOX::Drawing::CRunProperty					*oox_run_pr, cpdoccore::odf::style_text_properties	* text_properties);
-		void convert(OOX::Drawing::CLineSpacing					*oox_spacing, cpdoccore::odf::length_or_percent & length_or_percent);
+		void convert(OOX::Drawing::CRunProperty					*oox_run_pr, cpdoccore::odf_writer::style_text_properties	* text_properties);
+		void convert(OOX::Drawing::CLineSpacing					*oox_spacing, cpdoccore::odf_types::length_or_percent & length_or_percent);
 //.diagram................................................................................................................................
 		void convert(OOX::Diagram::CShapeTree					*oox_shape_tree);
 		void convert(OOX::Diagram::CShape						*oox_shape);

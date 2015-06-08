@@ -12,7 +12,7 @@
 #include "datatypes/common_attlists.h"
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_reader {
 
 /// \class  office_chart
 /// \brief  office:chart
@@ -54,11 +54,11 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    common_draw_size_attlist	common_draw_size_attlist_;
-    common_chart_attlist		common_attlist_;
-    std::wstring				chart_class_;
-    _CP_OPT(std::wstring)		chart_column_mapping_;
-    _CP_OPT(std::wstring)		chart_row_mapping_;
+    odf_types::common_draw_size_attlist	common_draw_size_attlist_;
+    common_chart_attlist				common_attlist_;
+    std::wstring						chart_class_;
+    _CP_OPT(std::wstring)				chart_column_mapping_;
+    _CP_OPT(std::wstring)				chart_row_mapping_;
 };
 
 /// \class  chart_chart
@@ -91,9 +91,9 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    _CP_OPT(std::wstring)		table_cell_range_;
-    common_draw_position_attlist common_draw_position_attlist_;
-    common_chart_attlist		common_attlist_;
+    _CP_OPT(std::wstring)					table_cell_range_;
+    odf_types::common_draw_position_attlist common_draw_position_attlist_;
+    common_chart_attlist					common_attlist_;
 
 };
 
@@ -176,7 +176,7 @@ public:
 public:
     _CP_OPT(std::wstring) chart_legend_position_;
     _CP_OPT(std::wstring) chart_legend_align_;
-    common_draw_position_attlist common_draw_position_attlist_;
+    odf_types::common_draw_position_attlist common_draw_position_attlist_;
     _CP_OPT(std::wstring) style_legend_expansion_;
     _CP_OPT(double) style_legend_expansion_aspect_ratio_;
     common_chart_attlist		common_attlist_;
@@ -213,9 +213,9 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    common_draw_position_attlist common_draw_position_attlist_;
-    common_draw_size_attlist	common_draw_size_attlist_;
-    common_chart_attlist		common_attlist_;
+    odf_types::common_draw_position_attlist common_draw_position_attlist_;
+    odf_types::common_draw_size_attlist		common_draw_size_attlist_;
+    common_chart_attlist			common_attlist_;
     
 	_CP_OPT(std::wstring) table_cell_range_address_;
     _CP_OPT(std::wstring) chart_data_source_has_labels_;
@@ -253,7 +253,7 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    _CP_OPT(length)				svg_width_;
+    _CP_OPT(odf_types::length)				svg_width_;
     common_chart_attlist		common_attlist_;
 
 };

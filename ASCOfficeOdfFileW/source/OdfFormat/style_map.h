@@ -10,7 +10,7 @@
 #include "style_ref.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 
 /// \brief  style:map
@@ -26,10 +26,10 @@ public:
     virtual void create_child_element( const ::std::wstring & Ns, const ::std::wstring & Name);
 	virtual void serialize(std::wostream & strm){}
 
-	std::wstring style_condition_;
-    style_ref style_name_;
-    std::wstring style_base_cell_address_;
-    style_ref style_apply_style_name_;
+	std::wstring			style_condition_;
+    odf_types::style_ref	style_name_;
+    std::wstring			style_base_cell_address_;
+    odf_types::style_ref	style_apply_style_name_;
 
 };
 

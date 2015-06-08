@@ -4,7 +4,7 @@
 #include <boost/foreach.hpp>
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_reader {
 
 inline ::std::wostream & serialize_elements(::std::wostream & _Wostream, const office_element_ptr & elm)
 {

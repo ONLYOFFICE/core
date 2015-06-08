@@ -8,7 +8,10 @@
 #include <cpdoccore/xml/utils.h>
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
 
 void calcext_data_bar_attr::serialize(CP_ATTR_NODE)
 {

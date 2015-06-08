@@ -78,7 +78,7 @@ public:
 			BOOST_FOREACH(_xlsx_comment const & c, xlsx_comment_)
 			{
 				std::wstring str_fill_color_ = L"00003f";
-				if (odf::GetProperty(c.graphicProperties_,L"fill-color",strVal))
+				if (odf_reader::GetProperty(c.graphicProperties_,L"fill-color",strVal))
 					str_fill_color_ = strVal.get();
 				
 				CP_XML_NODE(L"v:shapetype")
@@ -118,7 +118,7 @@ public:
 
 					CP_XML_ATTR(L"style",style);
 					CP_XML_ATTR(L"type", L"shapetype_202");
-					//if (odf::GetProperty(c.graphicProperties_,L"opacity",dVal))
+					//if (odf_reader::GetProperty(c.graphicProperties_,L"opacity",dVal))
 					//{
 					//	CP_XML_ATTR(L"opacity",boost::lexical_cast<std::wstring>((int)(100.-dVal.get())) + L"%");
 					//}
@@ -142,7 +142,7 @@ public:
 							CP_XML_ATTR(L"color2", std::wstring(L"#") + str_fill_color_);
 							CP_XML_ATTR(L"type", L"solid");
 						}//иначе это полная прозрачность
-						//if (odf::GetProperty(c.graphicProperties_,L"opacity",dVal))
+						//if (odf_reader::GetProperty(c.graphicProperties_,L"opacity",dVal))
 						//{
 						//	CP_XML_ATTR(L"opacity", (dVal.get())/100.);
 						//	//CP_XML_ATTR(L"opacity2",(dVal.get())/100.);
@@ -151,12 +151,12 @@ public:
 
 					CP_XML_NODE(L"v:stroke")
 					{
-						if (odf::GetProperty(c.graphicProperties_,L"stroke-color",strVal))
+						if (odf_reader::GetProperty(c.graphicProperties_,L"stroke-color",strVal))
 							CP_XML_ATTR(L"color", std::wstring(L"#") + strVal.get());
 						else
 							CP_XML_ATTR(L"color",L"#3465af");	//синенький
 
-						if (odf::GetProperty(c.graphicProperties_,L"stroke-opacity",dVal))
+						if (odf_reader::GetProperty(c.graphicProperties_,L"stroke-opacity",dVal))
 						{
 							CP_XML_ATTR(L"opacity",(100.-dVal.get())/100.);
 						}

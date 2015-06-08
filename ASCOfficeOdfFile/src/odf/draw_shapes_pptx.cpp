@@ -26,8 +26,10 @@
 #include "svg_parser.h"
 
 namespace cpdoccore { 
-namespace odf {
 
+	using namespace odf_types;
+
+namespace odf_reader {
 
 
 void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
@@ -75,27 +77,27 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 		Context.get_slide_context().set_anchor(Anchor,a_x_pt,a_y_pt);
 	}
 /////////////////////////////////////////////////////////////////////////////////
-	std::vector<const odf::style_instance *> instances;
+	std::vector<const odf_reader::style_instance *> instances;
 
 	const std::wstring grStyleName = common_draw_attlist_.common_draw_style_name_attlist_.draw_style_name_.get_value_or(style_ref(L"")).style_name();
 	const std::wstring baseStyleName = common_draw_attlist_.common_draw_style_name_attlist_.presentation_style_name_.get_value_or(style_ref(L"")).style_name();
 
-	odf::style_instance* grStyleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(grStyleName, odf::style_family::Graphic,Context.process_masters_);
+	odf_reader::style_instance* grStyleInst = 
+		Context.root()->odf_context().styleContainer().style_by_name(grStyleName, odf_types::style_family::Graphic,Context.process_masters_);
 	
-	odf::style_instance* baseStyleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf::style_family::Presentation,Context.process_masters_);
+	odf_reader::style_instance* baseStyleInst = 
+		Context.root()->odf_context().styleContainer().style_by_name(baseStyleName, odf_types::style_family::Presentation,Context.process_masters_);
 
 	if (baseStyleInst)//векторная фигура презентаций
 	{
-		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Presentation);
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Presentation);
 		if (defaultStyle)instances.push_back(defaultStyle);
 
 		instances.push_back(baseStyleInst);
 	}
 	else if (grStyleInst)//обычная векторная фигура
 	{		
-		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
 		if (defaultStyle)instances.push_back(defaultStyle);
 
 		instances.push_back(grStyleInst);
@@ -105,7 +107,7 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 ////////////////////////////////////////////////////////////////////////////////////
 	properties.apply_to(Context.get_slide_context().get_properties());
 	
-	BOOST_FOREACH(odf::_property const & p, additional_)
+	BOOST_FOREACH(odf_reader::_property const & p, additional_)
 	{
 		Context.get_slide_context().set_property(p);
 	}

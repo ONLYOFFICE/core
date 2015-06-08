@@ -4,7 +4,7 @@
 #include <string>
 #include "odfattributes.h"
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class length
 {
@@ -58,7 +58,7 @@ typedef length coordinate;
 
 }
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::length);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::length);
 
 }
 

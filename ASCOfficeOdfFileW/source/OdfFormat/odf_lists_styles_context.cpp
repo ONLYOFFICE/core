@@ -10,7 +10,10 @@
 #include <boost/lexical_cast.hpp>
  
 namespace cpdoccore {
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
 
 odf_lists_styles_context::odf_lists_styles_context()
 {

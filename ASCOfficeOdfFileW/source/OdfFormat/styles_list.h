@@ -14,7 +14,7 @@
 
 
 namespace cpdoccore { 
-namespace odf { 
+namespace odf_writer { 
 
 class text_list_style_attr
 {
@@ -22,7 +22,7 @@ public:
 
     _CP_OPT(std::wstring)	style_name_;
     _CP_OPT(std::wstring)	style_display_name_;
-    _CP_OPT(Bool)			text_consecutive_numbering_;
+    _CP_OPT(odf_types::Bool)			text_consecutive_numbering_;
 
 	void serialize(CP_ATTR_NODE);
 };
@@ -55,10 +55,10 @@ class text_list_level_style_number_attr
 public:
     text_list_level_style_number_attr()  {}
 
-	_CP_OPT(style_ref) text_style_name_;
+	_CP_OPT(odf_types::style_ref) text_style_name_;
     
-	common_num_format_attlist				common_num_format_attlist_;
-    common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
+	odf_types::common_num_format_attlist				common_num_format_attlist_;
+    odf_types::common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
     
 	_CP_OPT(unsigned int)	text_display_levels_;
     _CP_OPT(unsigned int)	text_start_value_;
@@ -94,17 +94,17 @@ public:
     virtual void add_child_element( const office_element_ptr & child);
 	virtual void serialize(std::wostream & strm);
 
-    _CP_OPT(length)			text_space_before_;
-    _CP_OPT(length)			text_min_label_width_;
-    _CP_OPT(length)			text_min_label_distance_;
+    _CP_OPT(odf_types::length)			text_space_before_;
+    _CP_OPT(odf_types::length)			text_min_label_width_;
+    _CP_OPT(odf_types::length)			text_min_label_distance_;
 
     _CP_OPT(std::wstring)	style_font_name_;
-    _CP_OPT(length)			fo_width_;
-    _CP_OPT(length)			fo_height_;
+    _CP_OPT(odf_types::length)			fo_width_;
+    _CP_OPT(odf_types::length)			fo_height_;
   
-    common_text_align			common_text_align_;
-	common_vertical_rel_attlist common_vertical_rel_attlist_;
-    common_vertical_pos_attlist common_vertical_pos_attlist_;
+    odf_types::common_text_align			common_text_align_;
+	odf_types::common_vertical_rel_attlist common_vertical_rel_attlist_;
+    odf_types::common_vertical_pos_attlist common_vertical_pos_attlist_;
 
     office_element_ptr			style_list_level_label_alignment_;
 
@@ -130,11 +130,11 @@ public:
 
 	_CP_OPT(std::wstring) text_label_followed_by_;
 	
-	_CP_OPT(length) text_list_tab_stop_position_;
-    _CP_OPT(length) fo_text_indent_;
+	_CP_OPT(odf_types::length) text_list_tab_stop_position_;
+    _CP_OPT(odf_types::length) fo_text_indent_;
    
-	_CP_OPT(length) fo_margin_left_;
-    _CP_OPT(length) fo_margin_right_;
+	_CP_OPT(odf_types::length) fo_margin_left_;
+    _CP_OPT(odf_types::length) fo_margin_right_;
 	
 
 };
@@ -173,11 +173,11 @@ class text_list_level_style_bullet_attr
 {
 public:
 
-    _CP_OPT(style_ref)		text_style_name_;
+    _CP_OPT(odf_types::style_ref)		text_style_name_;
     _CP_OPT(wchar_t)		text_bullet_char_;
-    _CP_OPT(percent)		text_bullet_relative_size_;
+    _CP_OPT(odf_types::percent)		text_bullet_relative_size_;
 
-    common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
+    odf_types::common_num_format_prefix_suffix_attlist common_num_format_prefix_suffix_attlist_;
 
 	void serialize(CP_ATTR_NODE);
 };
@@ -211,8 +211,8 @@ class text_list_level_style_image_attr
 {
 public:
 
-    _CP_OPT(style_ref)		text_style_name_;
-    common_xlink_attlist	common_xlink_attlist_;
+    _CP_OPT(odf_types::style_ref)		text_style_name_;
+	odf_types::common_xlink_attlist	common_xlink_attlist_;
 
  	void serialize(CP_ATTR_NODE);
 };

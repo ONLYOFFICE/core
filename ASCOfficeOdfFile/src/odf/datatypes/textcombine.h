@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class text_combine
 {
@@ -43,7 +43,7 @@ std::wostream & operator << (std::wostream & _Wostream, const text_combine & _Va
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::text_combine);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::text_combine);
 
 }
 

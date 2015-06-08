@@ -4,7 +4,7 @@
 #include <boost/algorithm/string.hpp>
 #include <ostream>
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 smil_transition_type smil_transition_type::parse(const std::wstring & Str)
 {

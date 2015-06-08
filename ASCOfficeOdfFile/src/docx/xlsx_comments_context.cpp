@@ -147,7 +147,7 @@ void xlsx_comments_context::set_visibly(bool Val)
 	impl_->current_.visibly_ = Val;
 }
 
-std::vector<odf::_property> & xlsx_comments_context::get_draw_properties()
+std::vector<odf_reader::_property> & xlsx_comments_context::get_draw_properties()
 {
 	return impl_->current_.graphicProperties_;
 

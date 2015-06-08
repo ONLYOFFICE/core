@@ -12,7 +12,7 @@
 #include "percent.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class font_size
 {
@@ -59,7 +59,7 @@ std::wostream & operator << (std::wostream & _Wostream, const font_size & _Val);
 
 }
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::font_size);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::font_size);
 
 }
 

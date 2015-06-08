@@ -11,7 +11,7 @@
 #include "bool.h"
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_writer {
 
 /// \brief  table:named-expressions
 class table_database_ranges : public office_element_impl<table_database_ranges>
@@ -54,7 +54,7 @@ public:
     _CP_OPT(std::wstring)	table_name_;
     _CP_OPT(std::wstring)	table_target_range_address_;
 
-	_CP_OPT(Bool)			table_display_filter_buttons_;
+	_CP_OPT(odf_types::Bool)			table_display_filter_buttons_;
 
 
 };

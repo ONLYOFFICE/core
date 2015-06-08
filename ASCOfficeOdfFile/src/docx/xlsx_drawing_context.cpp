@@ -191,7 +191,7 @@ void xlsx_drawing_context::set_translate(double x_pt, double y_pt)
 }
 void xlsx_drawing_context::set_rotate(double angle)
 {
-	set_property(odf::_property(L"svg:rotate",angle));
+	set_property(odf_reader::_property(L"svg:rotate",angle));
 	if (impl_->object_description_.svg_rect_)
 	{
 		_rect r = impl_->object_description_.svg_rect_.get();
@@ -218,11 +218,11 @@ void xlsx_drawing_context::set_anchor(std::wstring anchor, double x_pt, double y
 	impl_->object_description_.anchor_x_	= x_pt;
     impl_->object_description_.anchor_y_	= y_pt;
 }
-void xlsx_drawing_context::set_property(odf::_property p)
+void xlsx_drawing_context::set_property(odf_reader::_property p)
 {
 	impl_->object_description_.additional_.push_back(p);
 }
-std::vector<odf::_property> & xlsx_drawing_context::get_properties()
+std::vector<odf_reader::_property> & xlsx_drawing_context::get_properties()
 {
 	return impl_->object_description_.additional_;
 }
@@ -330,7 +330,7 @@ void xlsx_drawing_context::process_images(xlsx_table_metrics & table_metrics)
 			
 
 			std::wstring fileName = odf_packet_path_ + FILE_SEPARATOR_STR +  pic.xlink_href_;			
-			drawing.fill.bitmap->bCrop  = odf::parse_clipping(pic.clipping_string_,fileName,drawing.fill.bitmap->cropRect);
+			drawing.fill.bitmap->bCrop  = odf_reader::parse_clipping(pic.clipping_string_,fileName,drawing.fill.bitmap->cropRect);
 			drawing.fill.bitmap->bStretch = true;
 
 			drawing.fill.bitmap->rId = impl_->get_mediaitems().add_or_find(pic.xlink_href_, mediaitems::typeImage, isMediaInternal, ref);		
@@ -379,22 +379,22 @@ void xlsx_drawing_context::process_common_properties(drawing_object_description 
 
     drawing.from.type = xlsx_drawing_position::from;
     drawing.from.position.col = from.col;
-    drawing.from.position.colOff = static_cast<size_t>(odf::length(from.colOff, odf::length::pt).get_value_unit(odf::length::emu));
+    drawing.from.position.colOff = static_cast<size_t>(odf_types::length(from.colOff, odf_types::length::pt).get_value_unit(odf_types::length::emu));
     drawing.from.position.row = from.row;
-    drawing.from.position.rowOff = static_cast<size_t>(odf::length(from.rowOff, odf::length::pt).get_value_unit(odf::length::emu));
+    drawing.from.position.rowOff = static_cast<size_t>(odf_types::length(from.rowOff, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 
     drawing.to.type = xlsx_drawing_position::to;
     drawing.to.position.col = to.col;
-    drawing.to.position.colOff = static_cast<size_t>(odf::length(to.colOff, odf::length::pt).get_value_unit(odf::length::emu));
+    drawing.to.position.colOff = static_cast<size_t>(odf_types::length(to.colOff, odf_types::length::pt).get_value_unit(odf_types::length::emu));
     drawing.to.position.row = to.row;
-    drawing.to.position.rowOff = static_cast<size_t>(odf::length(to.rowOff, odf::length::pt).get_value_unit(odf::length::emu));
+    drawing.to.position.rowOff = static_cast<size_t>(odf_types::length(to.rowOff, odf_types::length::pt).get_value_unit(odf_types::length::emu));
     
 	if (pic.svg_rect_)
 	{
-		drawing.x = (int)(0.5 + odf::length(pic.svg_rect_.get().x_, odf::length::pt).get_value_unit(odf::length::emu));
-		drawing.y = (int)(0.5 + odf::length(pic.svg_rect_.get().y_, odf::length::pt).get_value_unit(odf::length::emu));
-		drawing.cx = (int)(0.5 + odf::length(pic.svg_rect_.get().width_, odf::length::pt).get_value_unit(odf::length::emu));
-		drawing.cy = (int)(0.5 + odf::length(pic.svg_rect_.get().height_, odf::length::pt).get_value_unit(odf::length::emu));
+		drawing.x = (int)(0.5 + odf_types::length(pic.svg_rect_.get().x_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		drawing.y = (int)(0.5 + odf_types::length(pic.svg_rect_.get().y_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		drawing.cx = (int)(0.5 + odf_types::length(pic.svg_rect_.get().width_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		drawing.cy = (int)(0.5 + odf_types::length(pic.svg_rect_.get().height_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
 	}
 	
 	drawing.additional=pic.additional_;

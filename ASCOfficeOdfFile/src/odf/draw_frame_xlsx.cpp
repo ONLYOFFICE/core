@@ -29,7 +29,10 @@
 #include "datatypes/borderstyle.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 
 void draw_g::xlsx_convert(oox::xlsx_conversion_context & Context)
@@ -91,13 +94,13 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 		Context.get_drawing_context().set_anchor(Anchor,a_x_pt,a_y_pt);
 	}
 //////////////////////////////////////////////
-	std::vector<const odf::style_instance *> instances;
+	std::vector<const odf_reader::style_instance *> instances;
 
-	odf::style_instance* styleInst = 
-		Context.root()->odf_context().styleContainer().style_by_name(styleName, odf::style_family::Graphic,false/*process_headers_footers_*/);
+	odf_reader::style_instance* styleInst = 
+		Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,false/*process_headers_footers_*/);
 	if (styleInst)
 	{
-		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
 		if (defaultStyle)instances.push_back(defaultStyle);
 
 		instances.push_back(styleInst);
@@ -107,10 +110,10 @@ void draw_frame::xlsx_convert(oox::xlsx_conversion_context & Context)
 ////////////////////////////////////////////////////////////////////
 	properties.apply_to(Context.get_drawing_context().get_properties());
 
-	Context.get_drawing_context().set_property(odf::_property(L"border_width_left",	Compute_BorderWidth(properties, sideLeft)));
-	Context.get_drawing_context().set_property(odf::_property(L"border_width_top",	Compute_BorderWidth(properties, sideTop)));
-	Context.get_drawing_context().set_property(odf::_property(L"border_width_right",Compute_BorderWidth(properties, sideRight)));
-	Context.get_drawing_context().set_property(odf::_property(L"border_width_bottom", Compute_BorderWidth(properties, sideBottom))); 
+	Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_left",	Compute_BorderWidth(properties, sideLeft)));
+	Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_top",	Compute_BorderWidth(properties, sideTop)));
+	Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_right",Compute_BorderWidth(properties, sideRight)));
+	Context.get_drawing_context().set_property(odf_reader::_property(L"border_width_bottom", Compute_BorderWidth(properties, sideBottom))); 
 	
 	if (properties.fo_clip_)
 	{
@@ -210,14 +213,14 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
     try {
         const std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
 
-        odf::odf_document::Impl * odfImpl = Context.root()->get_impl();
+        odf_reader::odf_document::Impl * odfImpl = Context.root()->get_impl();
        
 		std::wstring folderPath = odfImpl->get_folder();
         std::wstring objectPath = folderPath + FILE_SEPARATOR_STR + href;
 
 		// normalize path ???? todooo
 
-        cpdoccore::odf::odf_document objectSubDoc(objectPath,NULL);    
+        cpdoccore::odf_reader::odf_document objectSubDoc(objectPath,NULL);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //в отдельных embd объектах чаще всего диаграммы... но МОГУТ быть и обычные объекты подтипа frame!!! пример RemanejamentoOrcamentario.ods
 ///////////////////////////////////////////////////////////////////////////

@@ -28,7 +28,9 @@
 
 namespace cpdoccore 
 {
-namespace odf
+	using namespace odf_types;
+
+namespace odf_writer
 {
 	static const std::wstring default_MS_series_colors[] = 
 	{

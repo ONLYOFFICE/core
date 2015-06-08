@@ -24,14 +24,18 @@ struct oox_table_position
     double row_off;
 };
 
-namespace odf {
+namespace odf_types
+{
+	class color;
+}
+
+namespace odf_writer {
 
 class ods_conversion_context;
 class odf_text_context;
 
 class table_table;
 class style;
-class color;
 
 namespace utils {
 	static std::wstring getColAddress(size_t col)
@@ -178,7 +182,7 @@ public:
 		void set_table_hidden(bool Val);
 		void set_table_master_page(std::wstring name);
 		void set_table_rtl(bool Val);
-		void set_table_tab_color(_CP_OPT(color) & _color);
+		void set_table_tab_color(_CP_OPT(odf_types::color) & _color);
         void set_table_dimension(int col, int row);
 		void set_print_range(std::wstring range);
 
@@ -208,7 +212,7 @@ public:
 	void end_cell();
     void add_default_cell(short repeated);
 
-	void set_cell_format_value(office_value_type::type value_type);
+	void set_cell_format_value(odf_types::office_value_type::type value_type);
     void set_cell_type(int type);
     void set_cell_value(const std::wstring & value, bool need_cash = false);
 	void set_cell_text(odf_text_context *text_context, bool cash_value = false);
@@ -227,8 +231,8 @@ public:
 				void set_conditional_formula(std::wstring formula);
                 void set_conditional_value(int type, std::wstring value );
                 void set_conditional_iconset(int type_iconset);
-				void add_conditional_colorscale(_CP_OPT(color) color);
-				void set_conditional_databar_color(_CP_OPT(color) color);
+				void add_conditional_colorscale(_CP_OPT(odf_types::color) color);
+				void set_conditional_databar_color(_CP_OPT(odf_types::color) color);
 				
 				void set_conditional_style_name(std::wstring style_name);
                 void set_conditional_operator(int _operator);

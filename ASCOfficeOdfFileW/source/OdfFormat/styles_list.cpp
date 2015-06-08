@@ -7,7 +7,10 @@
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
     
 
 ///////////////////////////////////////

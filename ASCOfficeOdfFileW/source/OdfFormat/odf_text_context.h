@@ -13,7 +13,7 @@
 #include "fobreak.h"
 
 namespace cpdoccore {
-namespace odf
+namespace odf_writer
 {
 
 class odf_conversion_context;
@@ -96,7 +96,7 @@ public:
 private:
 	bool	keep_next_paragraph_;
 
-	_CP_OPT(fo_break) need_break_; 
+	_CP_OPT(odf_types::fo_break) need_break_; 
 
 	bool single_paragraph_;
 	style_paragraph_properties	*paragraph_properties_;//хранилка-опознавалка что свойства приписаны другому, не текстовому, объекту

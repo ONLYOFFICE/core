@@ -6,7 +6,7 @@
 
 
 namespace cpdoccore { 
-namespace odf { 
+namespace odf_types { 
 
 class draw_fill
 {
@@ -40,6 +40,6 @@ std::wostream & operator << (std::wostream & _Wostream, const draw_fill & _Val);
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::draw_fill);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::draw_fill);
 
 }

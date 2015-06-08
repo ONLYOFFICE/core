@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class font_stretch
 {
@@ -49,7 +49,7 @@ std::wostream & operator << (std::wostream & _Wostream, const font_stretch & _Va
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::font_stretch);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::font_stretch);
 
 }
 

@@ -10,7 +10,10 @@
 #include "serialize_elements.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 // office:event_listeners
 //////////////////////////////////////////////////////////////////////////////////////////////////

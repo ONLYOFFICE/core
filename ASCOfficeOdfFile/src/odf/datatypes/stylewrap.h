@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class style_wrap
 {
@@ -47,7 +47,7 @@ std::wostream & operator << (std::wostream & _Wostream, const style_wrap & _Val)
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::style_wrap);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::style_wrap);
 
 }
 

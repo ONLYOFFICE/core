@@ -8,7 +8,10 @@
 #include <cpdoccore/xml/simple_xml_writer.h>
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
 
 using xml::xml_char_wc;
 
@@ -66,8 +69,8 @@ void table_database_range::serialize(std::wostream & _Wostream)
 		CP_XML_NODE_SIMPLE()
         {
 			CP_XML_ATTR_OPT(L"table:name", table_name_);
-			CP_XML_ATTR_OPT(L"table:target-range-address", table_target_range_address_);
-			CP_XML_ATTR_OPT(L"table:display-filter-buttons", table_display_filter_buttons_);
+			CP_XML_ATTR_OPT(L"table:target-range-address",		table_target_range_address_);
+			CP_XML_ATTR_OPT(L"table:display-filter-buttons",	table_display_filter_buttons_);
 		}
 	}
 }

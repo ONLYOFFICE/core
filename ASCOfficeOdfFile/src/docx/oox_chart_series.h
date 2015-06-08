@@ -45,7 +45,7 @@ public:
 
 	int	iSymbolMarkerType_;
 
-	odf::chart::series content_;
+	odf_reader::chart::series content_;
 
 	//dLbls (Data Labels) §21.2.2.49
 	//dPt (Data Point) §21.2.2.52

@@ -8,7 +8,7 @@
 
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_writer {
 
 class ods_conversion_context;
 class style_list_level_properties;

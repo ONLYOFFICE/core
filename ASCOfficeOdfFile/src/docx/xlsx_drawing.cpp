@@ -21,10 +21,10 @@ std::wostream & operator << (std::wostream & strm, xlsx_drawing_position::type_t
 }
 
 }
-void xlsx_serialize_text(std::wostream & strm, const std::vector<odf::_property> & properties)
+void xlsx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_property> & properties)
 {
 	_CP_OPT(std::wstring) strTextContent;
-	odf::GetProperty(properties,L"text-content",strTextContent);
+	odf_reader::GetProperty(properties,L"text-content",strTextContent);
 
 	if (!strTextContent)return;
 	if (strTextContent.get().length()<1)return;
@@ -130,7 +130,7 @@ void xlsx_serialize_shape(std::wostream & strm, _xlsx_drawing const & val)
 	if (val.sub_type == 7)//custom 
 	{
 		_CP_OPT(int) iVal;
-		odf::GetProperty(val.additional,L"draw-type-index",iVal);
+		odf_reader::GetProperty(val.additional,L"draw-type-index",iVal);
 		if (iVal)shapeType = _OO_OOX_custom_shapes[*iVal].oox;	
 	}
 	else if (val.sub_type<9 && val.sub_type>=0)

@@ -13,7 +13,7 @@
 #include "visitor.h"
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_writer {
 
 class odf_conversion_context;
 

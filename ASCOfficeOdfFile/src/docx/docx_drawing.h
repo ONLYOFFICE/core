@@ -21,12 +21,12 @@ struct _docx_drawing : _oox_drawing
     unsigned int parallel;
 	
 	//_CP_OPT(run_through)	styleRunThrough	;
-	_CP_OPT(odf::horizontal_rel) styleHorizontalRel;
-    _CP_OPT(odf::horizontal_pos) styleHorizontalPos	;
-    _CP_OPT(odf::vertical_pos)	styleVerticalPos;
-    _CP_OPT(odf::vertical_rel)	styleVerticalRel;
+	_CP_OPT(odf_types::horizontal_rel)	styleHorizontalRel;
+    _CP_OPT(odf_types::horizontal_pos)	styleHorizontalPos;
+    _CP_OPT(odf_types::vertical_pos)	styleVerticalPos;
+    _CP_OPT(odf_types::vertical_rel)	styleVerticalRel;
 
-	_CP_OPT(odf::style_wrap)  styleWrap;
+	_CP_OPT(odf_types::style_wrap)  styleWrap;
 
 	bool isInline;
 	int number_wrapped_paragraphs;

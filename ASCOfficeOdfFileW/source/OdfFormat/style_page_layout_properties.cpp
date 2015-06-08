@@ -12,7 +12,10 @@
 #include "style_page_layout_properties.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
     
 /// style:page-layout-properties
 //////////////////////////////////////////////////////////////////////////////////////////////////

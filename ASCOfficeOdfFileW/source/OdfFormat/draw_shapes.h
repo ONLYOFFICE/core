@@ -8,7 +8,7 @@
 namespace cpdoccore 
 {
 
-namespace odf {
+namespace odf_writer {
 
 
 class draw_shape : public draw_base
@@ -23,7 +23,7 @@ public:
     virtual void serialize(std::wostream & _Wostream);
     virtual void serialize_attlist(CP_ATTR_NODE);
 	
-	common_xlink_attlist		common_xlink_attlist_;
+	odf_types::common_xlink_attlist		common_xlink_attlist_;
 	
 	_CP_OPT(std::wstring)		draw_id_;//используется для анимашек
   
@@ -104,11 +104,11 @@ CP_REGISTER_OFFICE_ELEMENT2(draw_circle);
 class draw_line_attlist
 {
 public:
-	_CP_OPT(length) svg_x1_;
-    _CP_OPT(length) svg_y1_;
+	_CP_OPT(odf_types::length) svg_x1_;
+    _CP_OPT(odf_types::length) svg_y1_;
 
-	_CP_OPT(length) svg_x2_;
-    _CP_OPT(length) svg_y2_;
+	_CP_OPT(odf_types::length) svg_x2_;
+    _CP_OPT(odf_types::length) svg_y2_;
 	
 	void serialize(CP_ATTR_NODE);   
 };
@@ -291,11 +291,11 @@ public:
 	_CP_OPT(std::wstring)	draw_text_areas_;
 	_CP_OPT(std::wstring)	draw_glue_points_;
 	
-	_CP_OPT(Bool)			draw_mirror_vertical_;
-	_CP_OPT(Bool)			draw_mirror_horizontal_;
+	_CP_OPT(odf_types::Bool)			draw_mirror_vertical_;
+	_CP_OPT(odf_types::Bool)			draw_mirror_horizontal_;
 	
-	_CP_OPT(Bool)			draw_text_path_;
-	_CP_OPT(Bool)			draw_text_path_same_letter_heights_;
+	_CP_OPT(odf_types::Bool)			draw_text_path_;
+	_CP_OPT(odf_types::Bool)			draw_text_path_same_letter_heights_;
 	_CP_OPT(std::wstring)	draw_text_path_mode_;
 	_CP_OPT(std::wstring)	draw_text_path_scale_;
 	

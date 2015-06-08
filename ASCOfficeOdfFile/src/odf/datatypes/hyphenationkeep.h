@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class hyphenation_keep
 {
@@ -42,7 +42,7 @@ std::wostream & operator << (std::wostream & _Wostream, const hyphenation_keep &
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::hyphenation_keep);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::hyphenation_keep);
 
 }
 

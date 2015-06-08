@@ -5,7 +5,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class Bool
 {
@@ -37,6 +37,6 @@ std::wostream & operator << (std::wostream & _Wostream, const Bool & _val);
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::Bool);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::Bool);
 
 }

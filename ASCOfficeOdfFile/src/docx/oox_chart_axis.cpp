@@ -102,7 +102,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		{
 			CP_XML_NODE(L"c:orientation")
 			{
-				odf::GetProperty(content_.properties_,L"reverse-direction",boolVal);
+				odf_reader::GetProperty(content_.properties_,L"reverse-direction",boolVal);
 				if ((boolVal == true) && (boolVal.get()==true))
 				{
 					CP_XML_ATTR(L"val", "maxMin");
@@ -112,7 +112,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 					CP_XML_ATTR(L"val", "minMax");//default
 				}
 			}
-			odf::GetProperty(content_.properties_,L"logarithmic",boolVal);
+			odf_reader::GetProperty(content_.properties_,L"logarithmic",boolVal);
 			if ((boolVal == true) && (boolVal.get()==true))
 			{
 				CP_XML_NODE(L"c:logBase")
@@ -126,18 +126,18 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 		oox_chart_shape shape;
 		shape.set(content_.graphic_properties_,content_.fill_) ;
 		shape.oox_serialize(_Wostream);
-		BOOST_FOREACH(odf::chart::axis::grid  & g, content_.grids_)
+		BOOST_FOREACH(odf_reader::chart::axis::grid  & g, content_.grids_)
 		{
 			_oox_fill fill_null;
 			shape.set(g.graphic_properties_, fill_null);
 			
-			if (g.type_ == odf::chart::axis::grid::major)
+			if (g.type_ == odf_reader::chart::axis::grid::major)
 			{
 				CP_XML_NODE(L"c:majorGridlines")
 				{
 					shape.oox_serialize(CP_XML_STREAM());
 				}
-				odf::GetProperty(content_.properties_,L"display_label",boolVal);
+				odf_reader::GetProperty(content_.properties_,L"display_label",boolVal);
 				if ((boolVal == true) && (boolVal.get()==true))
 				{
 					CP_XML_NODE(L"c:majorTickMark")
@@ -146,13 +146,13 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
 					}
 				}
 			}
-			if (g.type_ == odf::chart::axis::grid::minor)
+			if (g.type_ == odf_reader::chart::axis::grid::minor)
 			{
 				CP_XML_NODE(L"c:minorGridlines")
 				{
 					shape.oox_serialize(CP_XML_STREAM());
 				}
-				odf::GetProperty(content_.properties_,L"display_label",boolVal);
+				odf_reader::GetProperty(content_.properties_,L"display_label",boolVal);
 				if ((boolVal == true) && (boolVal.get()==true))
 				{
 					CP_XML_NODE(L"c:minorTickMark")
@@ -182,7 +182,7 @@ void oox_axis_content::oox_serialize_content(std::wostream & _Wostream)
         {
 			CP_XML_ATTR(L"val", L"autoZero"); //""autoZero" | "max" | "min"
 		}		
-		odf::GetProperty(content_.properties_,L"display_label",boolVal);
+		odf_reader::GetProperty(content_.properties_,L"display_label",boolVal);
 		if ((boolVal == true) && (boolVal.get()==true))
 		{
 			CP_XML_NODE(L"c:tickLblPos")

@@ -21,10 +21,10 @@ static const std::wstring _docxShapeType[]=
 	L"custGeom"
 };
 
-void pptx_serialize_text(std::wostream & strm, const std::vector<odf::_property> & properties)
+void pptx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_property> & properties)
 {
 	_CP_OPT(std::wstring) strTextContent;
-	odf::GetProperty(properties,L"text-content",strTextContent);
+	odf_reader::GetProperty(properties,L"text-content",strTextContent);
 
 	CP_XML_WRITER(strm)
     {
@@ -135,7 +135,7 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing const & val)
 			CP_XML_NODE(L"p:spPr")
 			{			
 				_CP_OPT(bool) bNoRect;
-				odf::GetProperty(val.additional,L"no_rect",bNoRect);
+				odf_reader::GetProperty(val.additional,L"no_rect",bNoRect);
 
 				if (!bNoRect)
 				{					
@@ -216,7 +216,7 @@ void pptx_serialize_table(std::wostream & strm, _pptx_drawing const & val)
 					CP_XML_ATTR(L"uri", L"http://schemas.openxmlformats.org/drawingml/2006/table");
 					
 					_CP_OPT(std::wstring) strTableContent;
-					odf::GetProperty(val.additional,L"table-content",strTableContent);
+					odf_reader::GetProperty(val.additional,L"table-content",strTableContent);
 
 					if (strTableContent)
 					{

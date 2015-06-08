@@ -5,7 +5,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class calcext_type
 {
@@ -41,6 +41,6 @@ std::wostream & operator << (std::wostream & _Wostream, const calcext_type & _Va
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::calcext_type);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::calcext_type);
 
 }

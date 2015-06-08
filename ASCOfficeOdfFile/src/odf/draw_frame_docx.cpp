@@ -26,7 +26,10 @@
 #include "datatypes/borderstyle.h"
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_reader {
 
 
 namespace {
@@ -706,11 +709,11 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 
     const std::wstring styleName = styleRef ? styleRef->style_name() : L"";
 
-	std::vector<const odf::style_instance *> instances;
-	odf::style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf::style_family::Graphic,Context.process_headers_footers_);
+	std::vector<const odf_reader::style_instance *> instances;
+	odf_reader::style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,Context.process_headers_footers_);
 	if (styleInst)
 	{
-		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf::style_family::Graphic);
+		style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
 		if (defaultStyle)instances.push_back(defaultStyle);
 		instances.push_back(styleInst);
 	}
@@ -808,10 +811,10 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 	}
 
 ////////////////////////////////////////////////////
-	drawing.additional.push_back(odf::_property(L"border_width_left",	Compute_BorderWidth(graphicProperties, sideLeft)));
-	drawing.additional.push_back(odf::_property(L"border_width_top",	Compute_BorderWidth(graphicProperties, sideTop)));
-	drawing.additional.push_back(odf::_property(L"border_width_right",	Compute_BorderWidth(graphicProperties, sideRight)));
-	drawing.additional.push_back(odf::_property(L"border_width_bottom", Compute_BorderWidth(graphicProperties, sideBottom))); 
+	drawing.additional.push_back(odf_reader::_property(L"border_width_left",	Compute_BorderWidth(graphicProperties, sideLeft)));
+	drawing.additional.push_back(odf_reader::_property(L"border_width_top",	Compute_BorderWidth(graphicProperties, sideTop)));
+	drawing.additional.push_back(odf_reader::_property(L"border_width_right",	Compute_BorderWidth(graphicProperties, sideRight)));
+	drawing.additional.push_back(odf_reader::_property(L"border_width_bottom", Compute_BorderWidth(graphicProperties, sideBottom))); 
 	
 	if (const _CP_OPT(std::wstring) foBorder = graphicProperties.common_border_attlist_.fo_border_)
 	{
@@ -819,7 +822,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 		if (borderStyle.initialized())
 		{
 			drawing.additional.push_back(_property(L"stroke-color",	borderStyle.get_color().get_hex_value() ));
-			drawing.additional.push_back(_property(L"stroke-width",	borderStyle.get_length().get_value_unit(odf::length::pt) ));
+			drawing.additional.push_back(_property(L"stroke-width",	borderStyle.get_length().get_value_unit(odf_types::length::pt) ));
 
 		}
 	}
@@ -1007,9 +1010,9 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 
     const std::wstring styleName = styleRef ? styleRef->style_name() : L"";
 
-	odf::style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf::style_family::Graphic,Context.process_headers_footers_);
+	odf_reader::style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,Context.process_headers_footers_);
 	
-	odf::style_graphic_properties *properties = NULL;
+	odf_reader::style_graphic_properties *properties = NULL;
 	if (styleInst) properties = styleInst->content()->get_style_graphic_properties();
 ////////////////
 	if (properties)
@@ -1160,15 +1163,15 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 	{
         std::wstring href		= common_xlink_attlist_.href_.get_value_or(L"");
 
-        odf::odf_document * odf = Context.root();
+        odf_reader::odf_document * odf_reader = Context.root();
         
-		std::wstring folderPath = odf->get_folder();
+		std::wstring folderPath = odf_reader->get_folder();
 
         std::wstring objectPath = folderPath +FILE_SEPARATOR_STR + href;
 
 		//normalize path ??? todooo
 
-        cpdoccore::odf::odf_document objectSubDoc(objectPath,NULL);    
+        cpdoccore::odf_reader::odf_document objectSubDoc(objectPath,NULL);    
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //функциональная часть
 		const office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();

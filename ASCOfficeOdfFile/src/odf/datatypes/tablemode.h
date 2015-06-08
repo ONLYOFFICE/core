@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class table_mode
 {
@@ -42,7 +42,7 @@ std::wostream & operator << (std::wostream & _Wostream, const table_mode & _Val)
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::table_mode);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::table_mode);
 
 }
 

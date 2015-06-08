@@ -23,7 +23,10 @@
 
 
 namespace cpdoccore { 
-namespace odf {
+
+	using namespace odf_types;
+
+namespace odf_writer {
     
 using xml::xml_char_wc;
 //
@@ -1208,7 +1211,7 @@ int style_master_page::find_placeHolderIndex(presentation_class::type placeHolde
 	//while(true)
  //   {
 	//	if (i>=size)break;
-	//	if (content_[i]->get_type() == odf::typeDrawFrame)
+	//	if (content_[i]->get_type() == odf_writer::typeDrawFrame)
 	//	{
 	//		draw_frame* frame = dynamic_cast<draw_frame *>(content_[i].get());
 

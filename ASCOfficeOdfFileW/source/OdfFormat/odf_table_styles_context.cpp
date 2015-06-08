@@ -10,7 +10,7 @@
 #include "style_paragraph_properties.h"
 
 namespace cpdoccore {
-namespace odf {
+namespace odf_writer {
 
 style_table_cell_properties *odf_table_styles_context::get_table_cell_properties()
 {

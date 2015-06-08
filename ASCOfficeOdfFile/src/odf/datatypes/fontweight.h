@@ -10,7 +10,7 @@
 #include "odfattributes.h"
 
 
-namespace cpdoccore { namespace odf { 
+namespace cpdoccore { namespace odf_types { 
 
 class font_weight
 {
@@ -50,7 +50,7 @@ std::wostream & operator << (std::wostream & _Wostream, const font_weight & _Val
 
 } 
 
-APPLY_PARSE_XML_ATTRIBUTES(odf::font_weight);
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::font_weight);
 
 }
 

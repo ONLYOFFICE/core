@@ -7,7 +7,7 @@
 #include "docx_rels.h"
 namespace cpdoccore { 
 
-namespace odf {
+namespace odf_reader {
 class header_footer_impl;
 }
 

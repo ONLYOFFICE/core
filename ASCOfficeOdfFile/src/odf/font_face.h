@@ -19,7 +19,7 @@
 
 
 namespace cpdoccore { 
-namespace odf {
+namespace odf_reader {
 
 class common_svg_font_face_xlink_attlist
 {
@@ -27,7 +27,7 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
     
 private:
-    common_xlink_attlist common_xlink_attlist_;
+	odf_types::common_xlink_attlist common_xlink_attlist_;
 };
 
 /// \class  svg_font_face_uri
@@ -155,45 +155,45 @@ private:
 
 private:
     
-    optional<std::wstring>::Type style_name_;
-    optional<std::wstring>::Type style_font_adornments_;
-    optional<font_family_generic>::Type style_font_family_generic_;
-    optional<font_pitch>::Type style_font_pitch_;
-    optional<std::wstring>::Type style_font_charset_;
+    optional<std::wstring>::Type			style_name_;
+    optional<std::wstring>::Type			style_font_adornments_;
+    optional<odf_types::font_family_generic>::Type style_font_family_generic_;
+    optional<odf_types::font_pitch>::Type	style_font_pitch_;
+    optional<std::wstring>::Type			style_font_charset_;
     
-    optional<std::wstring>::Type svg_font_family_;
-    optional<font_style>::Type svg_font_style_;
-    optional<font_variant>::Type svg_font_variant_;
-    optional<font_weight>::Type svg_font_weight_;
-    optional<font_stretch>::Type svg_font_stretch_;
-    optional<length>::Type svg_font_size_;
-    optional<std::wstring>::Type svg_unicode_range_;
-    optional<int>::Type svg_units_per_em_;
-    optional<std::wstring>::Type svg_panose_1_;
-    optional<int>::Type svg_stemv_;
-    optional<int>::Type svg_stemh_;
-    optional<int>::Type svg_slope_;
-    optional<int>::Type svg_cap_height_;
-    optional<int>::Type svg_x_height_;
-    optional<int>::Type svg_accent_height_;
-    optional<int>::Type svg_ascent_;
-    optional<int>::Type svg_descent_;
-    optional<std::wstring>::Type svg_widths_;
-    optional<std::wstring>::Type svg_bbox_;
-    optional<int>::Type svg_ideographic_;
-    optional<int>::Type svg_alphabetic_;
-    optional<int>::Type svg_mathematical_;
-    optional<int>::Type svg_hanging_;
-    optional<int>::Type svg_v_ideographic_;
-    optional<int>::Type svg_v_alphabetic_;
-    optional<int>::Type svg_v_mathematical_;
-    optional<int>::Type svg_v_hanging_;
-    optional<int>::Type svg_underline_position_;
-    optional<int>::Type svg_underline_thickness_;
-    optional<int>::Type svg_strikethrough_position_;
-    optional<int>::Type svg_strikethrough_thickness_;
-    optional<int>::Type svg_overline_position_;
-    optional<int>::Type svg_overline_thickness_;
+    optional<std::wstring>::Type			svg_font_family_;
+    optional<odf_types::font_style>::Type	svg_font_style_;
+    optional<odf_types::font_variant>::Type svg_font_variant_;
+    optional<odf_types::font_weight>::Type	svg_font_weight_;
+    optional<odf_types::font_stretch>::Type svg_font_stretch_;
+    optional<odf_types::length>::Type		svg_font_size_;
+    optional<std::wstring>::Type			svg_unicode_range_;
+    optional<int>::Type						svg_units_per_em_;
+    optional<std::wstring>::Type			svg_panose_1_;
+    optional<int>::Type						svg_stemv_;
+    optional<int>::Type						svg_stemh_;
+    optional<int>::Type						svg_slope_;
+    optional<int>::Type						svg_cap_height_;
+    optional<int>::Type						svg_x_height_;
+    optional<int>::Type						svg_accent_height_;
+    optional<int>::Type						svg_ascent_;
+    optional<int>::Type						svg_descent_;
+    optional<std::wstring>::Type			svg_widths_;
+    optional<std::wstring>::Type			svg_bbox_;
+    optional<int>::Type						svg_ideographic_;
+    optional<int>::Type						svg_alphabetic_;
+    optional<int>::Type						svg_mathematical_;
+    optional<int>::Type						svg_hanging_;
+    optional<int>::Type						svg_v_ideographic_;
+    optional<int>::Type						svg_v_alphabetic_;
+    optional<int>::Type						svg_v_mathematical_;
+    optional<int>::Type						svg_v_hanging_;
+    optional<int>::Type						svg_underline_position_;
+    optional<int>::Type						svg_underline_thickness_;
+    optional<int>::Type						svg_strikethrough_position_;
+    optional<int>::Type						svg_strikethrough_thickness_;
+    optional<int>::Type						svg_overline_position_;
+    optional<int>::Type						svg_overline_thickness_;
 
 private:
     // svg-font-face-src

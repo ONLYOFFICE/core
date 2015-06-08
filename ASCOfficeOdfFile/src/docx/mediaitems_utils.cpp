@@ -8,6 +8,7 @@
 #include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
+
 namespace cpdoccore { 
 namespace oox {
 namespace utils {
@@ -39,18 +40,7 @@ std::wstring get_rel_type(mediaitems::Type type)
     }
 }
 
-std::wstring get_default_file_name(mediaitems::Type type)
-{
-    switch (type)
-    {
-    case mediaitems::typeImage:
-        return L"image";
-    case mediaitems::typeChart:
-        return L"chart";
-	default:
-        return L"";
-    }
-}
+
 
 std::wstring replace_extension(const std::wstring & ext)
 {
@@ -60,17 +50,6 @@ std::wstring replace_extension(const std::wstring & ext)
     else
         return ext;
 }
-
-std::wstring create_file_name(const std::wstring & uri, mediaitems::Type type, size_t Num)
-{
-	std::wstring sExt;
-	int n = uri.rfind(L".");
-	if (n>=0) sExt = uri.substr(n);
-	//todooo проверить
-   
-	return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + sExt;
-}
-
 
 }
 

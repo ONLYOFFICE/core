@@ -12,6 +12,8 @@
 #include "mediaitems_utils.h"
 
 #include "../../Common/DocxFormat/Source/Base/Base.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace cpdoccore { 
 namespace oox {
@@ -40,6 +42,55 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool 
     return add_or_find(href, type, isInternal, ref);
 }
 
+std::wstring static get_default_file_name(mediaitems::Type type)
+{
+    switch (type)
+    {
+    case mediaitems::typeImage:
+        return L"image";
+    case mediaitems::typeChart:
+        return L"chart";
+	default:
+        return L"";
+    }
+}
+std::wstring mediaitems::create_file_name(const std::wstring & uri, mediaitems::Type type, size_t Num)
+{
+	std::wstring sExt;
+	int n = uri.rfind(L".");
+	if (n>0) sExt = uri.substr(n);
+	else if (n==0)
+	{
+		//тута скорее всего OleReplacement
+		n = uri.find(L"ObjectReplacements");
+		if (n>=0)
+		{
+			CFile file;
+
+			CString f_name = std_string2string(odf_packet_) + std_string2string(uri.substr(1,uri.length()-1));
+			if (file.OpenFile(f_name) == S_OK)
+			{
+				BYTE buffer[128];
+				int buffer_size = 128;
+				
+				file.ReadFile(buffer, buffer_size);
+				file.CloseFile();
+				
+				CImageFileFormatChecker image_checker;
+				sExt = image_checker.DetectFormatByData(buffer, buffer_size);
+
+				if (sExt.length() > 0) sExt = std::wstring(L".") + sExt;
+			}
+
+		}
+	}
+	//todooo проверить
+   
+	return get_default_file_name(type) + boost::lexical_cast<std::wstring>(Num) + sExt;
+}
+
+
+
 std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool & isInternal, std::wstring & ref)
 {
     const bool isMediaInternal = utils::media::is_internal(href, odf_packet_);
@@ -62,7 +113,7 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool 
 	else
 		number= items_.size()+1;
 	
-	inputFileName = utils::media::create_file_name(href, type, number);
+	inputFileName = create_file_name(href, type, number);
 	
     std::wstring inputPath = isMediaInternal ? odf_packet_ + FILE_SEPARATOR_STR + href : href;
 	std::wstring outputPath = isMediaInternal ? ( sub_path + inputFileName) : href;

@@ -11,7 +11,6 @@ namespace utils {
 namespace media {
 
 	bool is_internal(const std::wstring & uri, const std::wstring & packetRoot);
-	std::wstring create_file_name(const std::wstring & uri, mediaitems::Type type, size_t Num);
 	std::wstring get_rel_type(mediaitems::Type type);
 
 }

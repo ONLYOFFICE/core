@@ -61,7 +61,7 @@ static const _shape_converter _OO_OOX_custom_shapes[]=
 {L"line-callout-2"	,L"callout2"	,6	,0	,0	},
 {L"line-callout-3"	,L"callout3"	,8	,0	,0	},
 {L"rectangular-callout"	,L"wedgeRectCallout"	,2	,0	,842870	},
-{L"round-rectangular-callout"	,L"wedgeRoundRectCallout"	,2	,0	,842870	},
+{L"round-rectangular-callout"	,L"wedgeRoundRectCallout"	,0	,0	,842870	},
 {L"round-callout"	,L"wedgeEllipseCallout"	,2	,0	,842870	},
 {L"cloud-callout"	,L"cloudCallout"	,2	,0	,842870	},
 {L"vertical-scroll"	,L"verticalScroll"	,1	,0	,25000	},
@@ -94,16 +94,16 @@ static const _shape_converter _OO_OOX_custom_shapes[]=
 {L"flowchart-delay"	,L"flowChartDelay"	,0	,0	,0	},
 {L"flowchart-alternate-process"	,L"flowChartAlternateProcess"	,0	,0	,0	},
 {L"flowchart-off-page-connector"	,L"flowChartOffpageConnector"	,0	,0	,0	},
-{L"fontwork-arch-up-pour"	,L"textArchUpPour"	,0	,0	,0	},
-{L"fontwork-arch-down-pour"	,L"textArchDownPour"	,0	,0	,0	},
-{L"fontwork-circle-pour"	,L"textCirclePour"	,0	,0	,0	},
-{L"fontwork-curve-up"	,L"textCurveUp"	,0	,0	,0	},
-{L"fontwork-curve-down"	,L"textCurveDown"	,0	,0	,0	},
-{L"fontwork-wave"	,L"textWave1"	,0	,0	,0	},
-{L"fontwork-fade-right"	,L"textFadeRight"	,0	,0	,0	},
-{L"fontwork-fade-left"	,L"textFadeLeft"	,0	,0	,0	},
-{L"fontwork-fade-up"	,L"textFadeUp"	,0	,0	,0	},
-{L"fontwork-fade-down"	,L"textFadeDown"	,0	,0	,0	},
+{L"fontwork-arch-up-pour"	,L"rect"	,0	,0	,0	},//L"textArchUpPour"
+{L"fontwork-arch-down-pour"	,L"rect"	,0	,0	,0	},//L"textArchDownPour"
+{L"fontwork-circle-pour"	,L"rect"	,0	,0	,0	},//L"textCirclePour"
+{L"fontwork-curve-up"		,L"rect"	,0	,0	,0	},//L"textCurveUp"
+{L"fontwork-curve-down"		,L"rect"	,0	,0	,0	},//L"textCurveDown"
+{L"fontwork-wave"			,L"rect"	,0	,0	,0	},//L"textWave1"
+{L"fontwork-fade-right"		,L"rect"	,0	,0	,0	},//L"textFadeRight"
+{L"fontwork-fade-left"		,L"rect"	,0	,0	,0	},//L"textFadeLeft"
+{L"fontwork-fade-up"		,L"rect"	,0	,0	,0	},//L"textFadeUp"
+{L"fontwork-fade-down"		,L"rect"	,0	,0	,0	},//L"textFadeDown"
 {L"left-brace"	,L"leftBrace" 	,0	,0	,0	},
 {L"right-brace"	,L"rightBrace" 	,0	,0	,0	},
  {L"left-bracket"	,L"leftBracket" 	,0	,0	,0	},
@@ -160,25 +160,25 @@ static const _shape_converter _OO_OOX_custom_shapes[]=
 {L"mso-spt107"	,L"ellipseRibbon"	,0	,0	,0	},
 {L"mso-spt108"	,L"ellipseRibbon2"	,0	,0	,0	},
 {L"mso-spt129"	,L"flowChartMagneticDrum" 	,0	,0	,0	},
-{L"mso-spt142"	,L"textRingInside"	,0	,0	,0	},
-{L"mso-spt143"	,L"textRingOutside"	,0	,0	,0	},
-{L"mso-spt157"	,L"textWave2"	,0	,0	,0	},
-{L"mso-spt158"	,L"textDoubleWave1"	,0	,0	,0	},
-{L"mso-spt159"	,L"textWave4"	,0	,0	,0	},
-{L"mso-spt161"	,L"textDeflate"	,0	,0	,0	},
-{L"mso-spt162"	,L"textInflateBottom"	,0	,0	,0	},
-{L"mso-spt163"	,L"textDeflateBottom"	,0	,0	,0	},
-{L"mso-spt164"	,L"textInflateTop"	,0	,0	,0	},
-{L"mso-spt165"	,L"textDeflateTop"	,0	,0	,0	},
-{L"mso-spt166"	,L"textDeflateInflate"	,0	,0	,0	},
-{L"mso-spt167"	,L"textDeflateInflateDeflate"	,0	,0	,0	},
-{L"mso-spt174"	,L"textCanUp"	,0	,0	,0	},
-{L"mso-spt175"	,L"textCanDown"	,0	,0	,0	},
+{L"mso-spt142"	,L"rect"	,0	,0	,0	},//L"textRingInside"
+{L"mso-spt143"	,L"rect"	,0	,0	,0	},//L"textRingOutside"
+{L"mso-spt157"	,L"rect"	,0	,0	,0	},//L"textWave2"
+{L"mso-spt158"	,L"rect"	,0	,0	,0	},//L"textDoubleWave1"
+{L"mso-spt159"	,L"rect"	,0	,0	,0	},//L"textWave4"
+{L"mso-spt161"	,L"rect"	,0	,0	,0	},//L"textDeflate"
+{L"mso-spt162"	,L"rect"	,0	,0	,0	},//L"textInflateBottom"
+{L"mso-spt163"	,L"rect"	,0	,0	,0	},//L"textDeflateBottom"
+{L"mso-spt164"	,L"rect"	,0	,0	,0	},//L"textInflateTop"
+{L"mso-spt165"	,L"rect"	,0	,0	,0	},//L"textDeflateTop"
+{L"mso-spt166"	,L"rect"	,0	,0	,0	},//L"textDeflateInflateDeflate"
+{L"mso-spt167"	,L"rect"	,0	,0	,0	},
+{L"mso-spt174"	,L"rect"	,0	,0	,0	},//L"textCanUp"
+{L"mso-spt175"	,L"rect"	,0	,0	,0	}, //L"textCanDown"
 {L"mso-spt178"	, L""	,0	,0	,0	},
 {L"mso-spt179"	, L""	,0	,0	,0	},
 {L"mso-spt180"	, L""	,0	,0	,0	},
 {L"mso-spt182"	,L"leftRightUpArrow"	,0	,0	,0	},
-{L"mso-spt188"	,L"textDoubleWave1"	,0	,0	,0	},
+{L"mso-spt188"	,L"rect"	,0	,0	,0	}, //L"textDoubleWave1"
 {L"mso-spt189"	,L"actionButtonBlank"	,0	,0	,0	},
 {L"mso-spt190"	,L"actionButtonHome"	,0	,0	,0	},
 {L"mso-spt191"	,L"actionButtonHelp"	,0	,0	,0	},

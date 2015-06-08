@@ -253,7 +253,7 @@ void OoxConverter::convert(OOX::Vml::CImageData *vml_image_data)
 		
 	//что именно нужно заливка объекта или картинка - разрулится внутри drawing_context
 	if (pathImage.GetLength() < 1)return;
-	_gdi_graphics_::GetResolution(pathImage, Width, Height);
+    _graphics_utils_::GetResolution(pathImage, Width, Height);
 
 	odf_context()->drawing_context()->start_area_properties();
 		odf_context()->drawing_context()->start_bitmap_style();
@@ -312,7 +312,7 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 			if (pathImage.GetLength() > 0)
 			{
 				odf_context()->drawing_context()->set_bitmap_link(string2std_string(pathImage));
-				_gdi_graphics_::GetResolution(pathImage, Width, Height);
+                _graphics_utils_::GetResolution(pathImage, Width, Height);
 			}
 			odf_context()->drawing_context()->set_image_style_repeat(1);
 		}

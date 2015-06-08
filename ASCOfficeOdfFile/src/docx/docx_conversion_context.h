@@ -494,7 +494,7 @@ public:
 	void end_comment();
    
 	void set_process_headers_footers(bool Val) { process_headers_footers_ = Val; }
-	headers_footers & get_headers_footers() { return headers_footers_; };
+    headers_footers & get_headers_footers() { return headers_footers_; }
 	header_footer_context & get_header_footer_context() { return header_footer_context_; }
 	bool process_headers_footers_;
 

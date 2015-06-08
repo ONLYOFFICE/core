@@ -11,7 +11,7 @@ namespace Oox2Odf
 	{
 
 	public:
-		Converter(const std::wstring & path, std::wstring  type, const ProgressCallback* ffCallBack);
+        Converter(const std::wstring & path, std::wstring  type, const std::wstring & fontsPath, const ProgressCallback* ffCallBack);
         virtual ~Converter();
 
 	public:

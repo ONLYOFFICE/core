@@ -10,6 +10,8 @@
 
 #include "mediaitems.h"
 
+class CApplicationFonts;
+
 namespace cpdoccore { 
 namespace odf_writer {
 
@@ -36,10 +38,13 @@ public:
     odf_conversion_context(package::odf_document * outputDocument);
     virtual ~odf_conversion_context();
 
-	virtual void	start_document() = 0 ;
+    void set_fonts_directory(std::wstring pathFonts);
+
+    virtual void	start_document() = 0 ;
 	virtual void	end_document();
 	
-	package::odf_document * output_document_;
+    package::odf_document   *output_document_;
+    CApplicationFonts       *applicationFonts_;
 
 
 	virtual odf_drawing_context		* drawing_context() = 0;

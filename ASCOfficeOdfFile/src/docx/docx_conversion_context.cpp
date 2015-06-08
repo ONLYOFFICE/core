@@ -53,9 +53,8 @@ docx_conversion_context::~docx_conversion_context()
 }
 void docx_conversion_context::set_font_directory(std::wstring pathFonts)
 {
-    if (applicationFonts_ == NULL) return;
-
-    applicationFonts_->InitializeFromFolder(pathFonts);
+    if (applicationFonts_)
+        applicationFonts_->InitializeFromFolder(pathFonts);
 }
 std::wstring styles_map::get(const std::wstring & Name, odf_types::style_family::type Type)
 {

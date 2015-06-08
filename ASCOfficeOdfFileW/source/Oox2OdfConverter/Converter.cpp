@@ -29,12 +29,15 @@ namespace Oox2Odf
 	{
 		return (Val * 360000 * 2.54) / 72;
 	}
-	Converter::Converter(const std::wstring & path, std::wstring  type, const ProgressCallback* CallBack) 
+    Converter::Converter(const std::wstring & path, std::wstring  type, const std::wstring & fontsPath,  const ProgressCallback* CallBack)
     {
 		impl_ = NULL;
 		
 		if (type == L"text")			impl_ = new DocxConverter(path, CallBack);
 		if (type == L"spreadsheet")		impl_ = new XlsxConverter(path, CallBack);
+
+        if (impl_)
+            impl_->set_fonts_directory(fontsPath);
 	}
 
 	Converter::~Converter() 
@@ -73,7 +76,12 @@ bool  OoxConverter::UpdateProgress(long nComplete)
 
 	return FALSE;
 }
- 
+
+void OoxConverter::set_fonts_directory(const std::wstring &fontsPath)
+{
+    odf_context()->set_fonts_directory(fontsPath);
+}
+
 void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 {
 	try
@@ -740,7 +748,7 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	C
 			if (pathImage.GetLength() > 0)
 			{
 				odf_context()->drawing_context()->set_bitmap_link(string2std_string(pathImage));
-				_gdi_graphics_::GetResolution(pathImage, Width, Height);
+                _graphics_utils_::GetResolution(pathImage, Width, Height);
 			}
 			else
 			{

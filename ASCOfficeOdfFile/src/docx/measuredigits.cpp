@@ -6,6 +6,7 @@
 #include <float.h>
 
 #include "../../DesktopEditor/fontengine/FontManager.h"
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
 namespace cpdoccore {
 namespace utils {
@@ -59,16 +60,27 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
 }
 
 
-std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, CFontManager *pFontManager)
+std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, double fontSize, double dpi, long fontStyle, CApplicationFonts *appFonts)
 {
     try 
     {
         _CP_LOG << "[info] : GetMaxDigitSizePixels...";
 
-        std::pair<float, float> val = GetMaxDigitSizePixelsImpl(fontName, fontSize, dpi, fontStyle, pFontManager);
+        if (appFonts)
+        {
+            CFontManager *pFontManager = appFonts->GenerateFontManager();
 
-        _CP_LOG << "ok" << std::endl;
-        return val;
+            std::pair<float, float> val = GetMaxDigitSizePixelsImpl(fontName, fontSize, dpi, fontStyle, pFontManager);
+
+            if (pFontManager)
+            {
+                pFontManager->m_pApplication = NULL;
+                delete pFontManager;
+            }
+
+            _CP_LOG << "ok" << std::endl;
+            return val;
+        }
     }
     catch(...)
     {

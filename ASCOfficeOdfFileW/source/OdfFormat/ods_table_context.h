@@ -38,8 +38,8 @@ public:
 	
 	void start_defined_expressions(office_element_ptr & root_elm);
 
-	void add_defined_range(std::wstring & name,std::wstring & cell_range, int sheet_id, bool printable = false);
- 	void add_defined_expression(std::wstring & name,std::wstring & value, int sheet_id, bool printable = false);
+    void add_defined_range(const std::wstring & name, const  std::wstring & cell_range, int sheet_id, bool printable = false);
+    void add_defined_expression(const std::wstring & name, const  std::wstring & value, int sheet_id, bool printable = false);
 
 
 	void start_autofilter(std::wstring ref);

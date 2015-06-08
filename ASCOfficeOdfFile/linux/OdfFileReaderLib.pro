@@ -49,7 +49,6 @@ SOURCES += \
     ../src/odf/draw_frame_pptx.cpp \
     ../src/odf/draw_frame_xlsx.cpp \
     ../src/odf/draw_page.cpp \
-    ../src/odf/draw_page_pptx.cpp \
     ../src/odf/draw_shapes.cpp \
     ../src/odf/draw_shapes_docx.cpp \
     ../src/odf/draw_shapes_pptx.cpp \

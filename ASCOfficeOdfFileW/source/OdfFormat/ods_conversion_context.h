@@ -89,6 +89,8 @@ private:
 	
 	odf_text_context*			current_text_context_;
 	office_spreadsheet*			root_spreadsheet_;
+
+
 	
 
 };

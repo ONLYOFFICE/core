@@ -13,6 +13,9 @@
 
 #include "style_paragraph_properties.h"
 
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+
+
 namespace cpdoccore { 
 
 	using namespace odf_types;
@@ -26,6 +29,20 @@ odf_conversion_context::odf_conversion_context(package::odf_document * outputDoc
 	output_document_ = outputDocument;
 
 	current_object_ =0;
+
+    applicationFonts_ = new CApplicationFonts();
+
+}
+odf_conversion_context::~odf_conversion_context()
+{
+    if (applicationFonts_)
+        delete applicationFonts_;
+}
+
+void odf_conversion_context::set_fonts_directory(std::wstring pathFonts)
+{
+    if (applicationFonts_)
+        applicationFonts_->InitializeFromFolder(pathFonts);
 }
 
 odf_style_context* odf_conversion_context::styles_context()
@@ -56,13 +73,6 @@ _mediaitems* odf_conversion_context::mediaitems()
 {
 	return &objects_[current_object_].mediaitems;
 }
-
-odf_conversion_context::~odf_conversion_context()
-{
-
-}
-
-
 
 void odf_conversion_context::end_document()
 {

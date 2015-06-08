@@ -27,13 +27,13 @@ namespace odf_writer {
 namespace utils
 {
 
-double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name, double font_size)
+double calculate_size_font_symbols(std::wstring str_test, std::wstring font_name, double font_size, CApplicationFonts *appFonts)
 {
-	double appr_px = 0;//(int)_gdi_graphics_::calculate_size_symbol_asc(metrix.font_name,metrix.font_size,metrix.italic,metrix.bold);
+    double appr_px = _graphics_utils_::calculate_size_symbol_asc(font_name, font_size, false, false, appFonts);
 	
 	if (appr_px <0.01)
 	{
-		appr_px = /*(int)*/_gdi_graphics_::calculate_size_symbol(font_name,font_size,false,false, str_test);
+        appr_px = _graphics_utils_::calculate_size_symbol_win(font_name, font_size, false, false, str_test);
 		//appr_px = ((int)(appr_px+0.5) + 2*(int)appr_px)/3.;
 	}
 
@@ -166,7 +166,7 @@ void odt_conversion_context::add_text_content(const std::wstring & text)
 				std::wstring f_name = props->content().fo_font_family_.get_value_or(L"Arial");
 				double f_size = props->content().fo_font_size_.get_value_or(font_size(length(12,length::pt))).get_length().get_value_unit(length::pt);
 				
-				drop_cap_state_.characters_size_pt += utils::calculate_size_font_symbols(text, f_name, f_size);
+                drop_cap_state_.characters_size_pt += utils::calculate_size_font_symbols(text, f_name, f_size, applicationFonts_);
 			}
 		}
 	}

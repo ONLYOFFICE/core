@@ -12,6 +12,7 @@
 #include "odf_text_context.h"
 #include "paragraph_elements.h"
 
+
 namespace cpdoccore { 
 
 	using namespace odf_types;
@@ -21,13 +22,13 @@ namespace odf_writer {
 namespace utils
 {
 
-void calculate_size_font_symbols(_font_metrix & metrix)
+void calculate_size_font_symbols(_font_metrix & metrix, CApplicationFonts *appFonts)
 {
-	double appr_px = 0;//(int)_gdi_graphics_::calculate_size_symbol_asc(metrix.font_name,metrix.font_size,metrix.italic,metrix.bold);
+    double appr_px = _graphics_utils_::calculate_size_symbol_asc(metrix.font_name,metrix.font_size,metrix.italic,metrix.bold, appFonts);
 	
 	if (appr_px <0.01)
 	{
-		appr_px = /*(int)*/_gdi_graphics_::calculate_size_symbol(metrix.font_name,metrix.font_size,false/*metrix.italic*/,false/*metrix.bold*/);
+        appr_px = _graphics_utils_::calculate_size_symbol_win(metrix.font_name,metrix.font_size,false/*metrix.italic*/,false/*metrix.bold*/);
 		appr_px = ((int)(appr_px+0.5) + 2*(int)appr_px)/3.;
 	}
 
@@ -321,7 +322,7 @@ void ods_conversion_context::calculate_font_metrix(std::wstring name, double siz
 	font_metrix_.font_name = name;
 
 ////////////////////////////////////////////
-	utils::calculate_size_font_symbols(font_metrix_);
+    utils::calculate_size_font_symbols(font_metrix_, applicationFonts_);
 }
 
 void ods_conversion_context::start_columns()

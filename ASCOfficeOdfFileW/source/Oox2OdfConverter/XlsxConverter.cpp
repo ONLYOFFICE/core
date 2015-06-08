@@ -1814,7 +1814,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 			sID = oox_picture->m_oBlipFill->m_oBlip->m_oLink.GetValue();	
 			//???
 		}
-		_gdi_graphics_::GetResolution(pathImage, Width, Height);
+        _graphics_utils_::GetResolution(pathImage, Width, Height);
 	}
 	ods_context->start_image(string2std_string(pathImage));
 	{

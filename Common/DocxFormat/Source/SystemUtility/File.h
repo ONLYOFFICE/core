@@ -316,7 +316,7 @@ namespace StreamUtils
 		ULONG lReadByte = 0;
 		lReadByte = pStream->read(pMem, 4);
 		
-#ifdef _DEBUG
+#if defined(_DEBUG) && (defined(_WIN32) || defined(_WIN64))
 		ATLASSERT(4 == lReadByte);
 #endif
 

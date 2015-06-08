@@ -300,6 +300,8 @@ public:
 																
 																pCallBack = CallBack;
 																bUserStopConvert = 0;}
+
+        void set_fonts_directory (const std::wstring & fontsPath);
 		
 		const	ProgressCallback* pCallBack;
 		short	bUserStopConvert;

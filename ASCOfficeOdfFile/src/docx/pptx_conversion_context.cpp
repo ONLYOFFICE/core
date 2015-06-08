@@ -49,9 +49,8 @@ pptx_conversion_context::~pptx_conversion_context()
 }
 void pptx_conversion_context::set_font_directory(std::wstring pathFonts)
 {
-    if (applicationFonts_ == NULL) return;
-
-    applicationFonts_->InitializeFromFolder(pathFonts);
+    if (applicationFonts_ )
+        applicationFonts_->InitializeFromFolder(pathFonts);
 }
 //
 //void pptx_conversion_context::start_chart(std::wstring const & name)

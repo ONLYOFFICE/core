@@ -482,7 +482,7 @@ std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
 		else
 			font_size =10;
 		
-        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, /*getDefaultDpi()*/96., 0, applicationFonts_->GenerateFontManager());
+        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, /*getDefaultDpi()*/96., 0, applicationFonts_);
     }    
     return maxDigitSize_;
 }

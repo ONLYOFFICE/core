@@ -987,7 +987,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	//дыра осталась если картинка в картинке - линк продублируется с внутренней на внешнюю 
 	if (hyperlink.drawing == true && hyperlink.used_rels == false)
 	{
-		oox::_hlink_desc desc={hyperlink.id,hyperlink.href,true};
+		oox::_hlink_desc desc = {hyperlink.id, hyperlink.href, true};
 		drawing.hlinks.push_back(desc);
 	}
 

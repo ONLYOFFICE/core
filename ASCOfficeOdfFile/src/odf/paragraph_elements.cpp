@@ -59,7 +59,10 @@ void text::docx_convert(oox::docx_conversion_context & Context)
     Context.add_element_to_run();
 	std::wostream & _Wostream = Context.output_stream();
   
-	_Wostream << L"<w:t xml:space=\"preserve\">";
+	if (preserve_)
+		_Wostream << L"<w:t xml:space=\"preserve\">";
+	else
+		_Wostream << L"<w:t>";
 
 	_Wostream << xml::utils::replace_text_to_xml( text_ );
     _Wostream << L"</w:t>";
@@ -761,7 +764,11 @@ void text_page_number::add_child_element( xml::sax * Reader, const ::std::wstrin
 void text_page_number::add_text(const std::wstring & Text)
 {
     office_element_ptr elm = text::create(Text) ;
-    text_.push_back( elm );
+
+	text *t = dynamic_cast<text*>(elm.get());
+	if (t) t->preserve_ = false;
+   
+	text_.push_back( elm );
 }
 
 void text_page_number::docx_convert(oox::docx_conversion_context & Context)

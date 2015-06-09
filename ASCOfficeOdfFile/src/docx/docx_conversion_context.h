@@ -289,7 +289,7 @@ public:
     }
 
     const odf_reader::text::note_citation * get_note_citation() const { return note_citation_; }
-    const odf_types::noteclass::type get_type() const {return type_; }
+    const odf_types::noteclass::type		get_type() const {return type_; }
 
     struct instance
     {
@@ -297,17 +297,23 @@ public:
         std::wstring id;
         std::wstring content;
     };
-    typedef boost::shared_ptr<instance> instance_ptr;
+    typedef boost::shared_ptr<instance>						 instance_ptr;
     typedef boost::unordered_map<std::wstring, instance_ptr> instances_map; 
 
     instances_map & footnotes() { return instances_footnotes_; }
-    instances_map & endnotes() { return instances_endnotes_; }    
+    instances_map & endnotes()	{ return instances_endnotes_; }    
 
-    void dump_rels(rels & Rels) const;
+	rels & endnotesRels()		{ return endnoteRels; }
+	rels & footnotesRels()		{ return footnoteRels; }
+
+	void dump_rels(rels & Rels)				const;
 
 private:
     instances_map instances_footnotes_;
     instances_map instances_endnotes_;
+
+	rels endnoteRels;
+	rels footnoteRels;
 
     const odf_reader::text::note_citation * note_citation_;
 
@@ -380,9 +386,9 @@ public:
     bool get_paragraph_state()  { return in_paragraph_; }
     void set_paragraph_state(bool Val)  {in_paragraph_= Val; }
 
-	 std::wstring add_hyperlink(const std::wstring & href,bool drawing);
-    hyperlinks::_ref  last_hyperlink();
-    void dump_hyperlinks(rels & Rels);
+	 std::wstring		add_hyperlink	(const std::wstring & href, bool drawing);
+    hyperlinks::_ref	last_hyperlink	();
+    void				dump_hyperlinks	(rels & Rels, hyperlinks::_type_place type);
 
     std::wstring add_mediaitem(const std::wstring & uri, mediaitems::Type type, bool & isInternal, std::wstring & ref);
     
@@ -481,7 +487,9 @@ public:
     bool rtl() const {return rtl_;}
 
 	notes_context & get_notes_context() { return notes_context_; }
-    enum NoteType { noNote, footNote, endNote };
+   
+	enum NoteType { noNote, footNote, footNoteRefSet, endNote, endNoteRefSet };
+
 	void set_process_note(NoteType Val) { process_note_ = Val; }
 	NoteType get_process_note() const { return process_note_; }
 	void add_note_reference();

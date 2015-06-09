@@ -165,7 +165,12 @@ void docx_conversion_context::add_new_run()
 
 std::wstring docx_conversion_context::add_hyperlink(const std::wstring & href, bool draw)
 {
-    return hyperlinks_.add(href,draw);
+	hyperlinks::_type_place type = hyperlinks::document_place;
+	
+	if		(process_note_ == footNote	|| process_note_ == footNoteRefSet)	type = hyperlinks::footnote_place;
+	else if	(process_note_ == endNote	|| process_note_ == endNoteRefSet )	type = hyperlinks::endnote_place;
+	
+	return hyperlinks_.add(href, type, draw);
 }
 hyperlinks::_ref  docx_conversion_context::last_hyperlink()
 {
@@ -173,9 +178,9 @@ hyperlinks::_ref  docx_conversion_context::last_hyperlink()
 }
 
 
-void docx_conversion_context::dump_hyperlinks(rels & Rels)
+void docx_conversion_context::dump_hyperlinks(rels & Rels, hyperlinks::_type_place type)
 {
-    hyperlinks_.dump_rels(Rels);
+    hyperlinks_.dump_rels(Rels, type);
 }
 
 void docx_conversion_context::dump_mediaitems(rels & Rels)
@@ -234,10 +239,14 @@ void docx_conversion_context::end_document()
 
     output_document_->get_word_files().set_media( mediaitems_, applicationFonts_);
     output_document_->get_word_files().set_headers_footers(headers_footers_);
-    output_document_->get_word_files().set_notes(notes_context_);
 	output_document_->get_word_files().set_comments(comments_context_);
 	output_document_->get_word_files().set_settings(package::simple_element::create(L"settings.xml",dump_settings_document()));
 
+////////////////////////////////////////////////////////////////////////////
+	dump_hyperlinks (notes_context_.footnotesRels(), hyperlinks::footnote_place);
+	dump_hyperlinks (notes_context_.endnotesRels(), hyperlinks::endnote_place);
+   
+	output_document_->get_word_files().set_notes(notes_context_);
 ////////////////////////	
 	int count = 0;
     BOOST_FOREACH(const oox_chart_context_ptr& chart, charts_)
@@ -836,7 +845,8 @@ namespace
 		rels internal_rels;
 
 		Context.dump_mediaitems(internal_rels);
-		Context.dump_hyperlinks(internal_rels);
+		Context.dump_hyperlinks(internal_rels, hyperlinks::document_place);
+
 		Context.get_headers_footers().add(styleName, dbgStr, type, internal_rels);
 
 		if (type == headers_footers::headerLeft || type == headers_footers::footerLeft)
@@ -922,12 +932,12 @@ void notes_context::dump_rels(rels & Rels) const
 
 void docx_conversion_context::add_note_reference()
 {
-    if (process_note_ != noNote)
+    if (process_note_ == footNote || process_note_ ==  endNote)
     {
         add_element_to_run();
         output_stream() << ((process_note_ == footNote) ? L"<w:footnoteRef />" : L"<w:endnoteRef />");
         finish_run();
-        process_note_ = noNote;
+        process_note_ = (NoteType) (process_note_ + 1); //add ref set
     }
 }
 

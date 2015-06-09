@@ -282,7 +282,11 @@ bool COfficeFileFormatChecker::isOnlyOfficeFormatFile(const std::wstring & fileN
 }
 bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileName)
 {
-	COfficeUtils OfficeUtils(NULL);
+    const char *odtFormatLine = "application/vnd.oasis.opendocument.text";
+    const char *odsFormatLine = "application/vnd.oasis.opendocument.spreadsheet";
+    const char *odpFormatLine = "application/vnd.oasis.opendocument.presentation";
+
+    COfficeUtils OfficeUtils(NULL);
 	
 	ULONG nBufferSize = 0;
 	BYTE *pBuffer = NULL;
@@ -290,9 +294,6 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
 	HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"mimetype", &pBuffer, nBufferSize);
 	if (hresult == S_OK && pBuffer != NULL)
 	{
-		const char *odtFormatLine = "application/vnd.oasis.opendocument.text";	
-		const char *odsFormatLine = "application/vnd.oasis.opendocument.spreadsheet";		
-		const char *odpFormatLine = "application/vnd.oasis.opendocument.presentation";			 
 		
 		if ( strstr((char*)pBuffer, odtFormatLine)==0 )
 		{
@@ -313,7 +314,56 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
 		pBuffer = NULL;
 
 		if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
-	}
+    }else
+    {
+       //если не записан тип смотрим манифест
+        HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"META-INF/manifest.xml", &pBuffer, nBufferSize);
+        if (hresult == S_OK && pBuffer != NULL)
+        {
+            std::string xml_string((char*)pBuffer, nBufferSize);
+            XmlUtils::CXmlNode oRoot;
+            if(TRUE == oRoot.FromXmlStringA(xml_string))
+            {
+                XmlUtils::CXmlNodes oXmlNodes;
+                if(TRUE == oRoot.GetChilds(oXmlNodes))
+                {
+                    for(int i = 0; i < oXmlNodes.GetCount(); ++i)
+                    {
+                        XmlUtils::CXmlNode oXmlNode;
+                        if(oXmlNodes.GetAt(i, oXmlNode))
+                        {
+                            std::wstring sName = oXmlNode.GetName();
+                            if(_T("manifest:file-entry") == sName)
+                            {
+                                CStringA value = oXmlNode.GetAttributeA(CStringA("manifest:media-type"));
+
+                                if (value.GetLength() < 1) continue;
+                                if ( value == odtFormatLine)
+                                {
+                                    nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT;
+                                }
+
+                                else if ( value == odsFormatLine)
+                                {
+                                    nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS;
+                                }
+
+                                else if ( value == odpFormatLine)
+                                {
+                                    nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            delete []pBuffer;
+            pBuffer = NULL;
+
+            if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
+        }
+
+    }
 	return false;
 }
 

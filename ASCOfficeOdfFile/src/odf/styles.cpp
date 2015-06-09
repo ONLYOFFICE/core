@@ -1017,6 +1017,8 @@ bool style_page_layout_properties::docx_back_serialize(std::wostream & strm, oox
 {
 	if (!get_style_page_layout_properties_attlist().common_background_color_attlist_.fo_background_color_)return false;
 
+    if (get_style_page_layout_properties_attlist().common_background_color_attlist_.fo_background_color_->get_type() == background_color::Transparent) return true;
+    //прозрачный фон
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"w:background")

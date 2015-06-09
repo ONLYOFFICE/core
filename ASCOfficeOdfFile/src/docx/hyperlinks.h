@@ -15,7 +15,8 @@ public:
 	{
 		document_place,
 		endnote_place,
-		footnote_place
+		footnote_place,
+		comment_place
 
 	};
 

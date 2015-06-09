@@ -498,8 +498,9 @@ public:
     void start_chart(std::wstring const & name);
     void end_chart();
 
-	void start_comment(std::wstring const & content,std::wstring const & author, std::wstring const & date);
-	void end_comment();
+	void start_comment()	{process_comment_ = true;}
+	void end_comment()		{process_comment_ = false;}
+	bool process_comment_;
    
 	void set_process_headers_footers(bool Val) { process_headers_footers_ = Val; }
     headers_footers & get_headers_footers() { return headers_footers_; }

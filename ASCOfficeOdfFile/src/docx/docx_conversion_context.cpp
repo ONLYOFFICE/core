@@ -42,7 +42,8 @@ docx_conversion_context::docx_conversion_context(package::docx_document * Output
 	rtl_(false),
 	delayed_converting_(false),
 	process_headers_footers_(false),
-	process_note_(noNote)
+	process_note_(noNote),
+	process_comment_(false)
 {
     applicationFonts_ = new CApplicationFonts();
 }
@@ -167,7 +168,8 @@ std::wstring docx_conversion_context::add_hyperlink(const std::wstring & href, b
 {
 	hyperlinks::_type_place type = hyperlinks::document_place;
 	
-	if		(process_note_ == footNote	|| process_note_ == footNoteRefSet)	type = hyperlinks::footnote_place;
+	if (process_comment_ == true)											type = hyperlinks::comment_place;
+	else if	(process_note_ == footNote	|| process_note_ == footNoteRefSet)	type = hyperlinks::footnote_place;
 	else if	(process_note_ == endNote	|| process_note_ == endNoteRefSet )	type = hyperlinks::endnote_place;
 	
 	return hyperlinks_.add(href, type, draw);

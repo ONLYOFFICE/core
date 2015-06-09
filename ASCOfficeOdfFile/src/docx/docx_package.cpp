@@ -75,10 +75,6 @@ void word_files::write(const std::wstring & RootPath)
         headers_footers_->write( path );
     }
 
-    if (notes_)
-    {
-        notes_->write( path );
-    }
     if (settings_)
     {
        rels_files_.add( relationship(L"rId4", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/settings", L"settings.xml" ) );
@@ -95,12 +91,17 @@ void word_files::write(const std::wstring & RootPath)
         charts_files_.set_main_document(get_main_document());
         charts_files_.write(path);
     }
+    
+	if (notes_)
+    {
+		notes_->write( path );
+	}
     rels_files_.write(path);
 }
 
 void word_files::update_rels(docx_conversion_context & Context)
 {
-    Context.dump_hyperlinks		(rels_files_.get_rel_file()->get_rels());
+	Context.dump_hyperlinks		(rels_files_.get_rel_file()->get_rels(), hyperlinks::document_place);
     Context.dump_mediaitems		(rels_files_.get_rel_file()->get_rels());
     Context.dump_headers_footers(rels_files_.get_rel_file()->get_rels());
     Context.dump_notes			(rels_files_.get_rel_file()->get_rels());
@@ -239,38 +240,67 @@ notes_elements::notes_elements(notes_context & notesContext) : notes_context_(no
 
 namespace 
 {
-void process_notes(const notes_context::instances_map & Instances, 
-    const std::wstring & Node,
-    const std::wstring & Name,
-    const std::wstring & ContentType,
-    const std::wstring & RootPath,
-    document * doc
-    )
-{
-    if (Instances.size())
-    {
-        std::wstringstream content; 
-        
-        // внимание! L"s - это не ошибка
-        content << L"<w:" << Node <<    L"s xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" " <<
-                                        L"xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" " <<
-                                        L"xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" " <<
-                                        L">";
+	void process_notes(const notes_context::instances_map & Instances, 
+		const std::wstring & Node,
+		const std::wstring & Name,
+		const std::wstring & ContentType,
+		const std::wstring & RootPath,
+		rels & Rels,
+		document * doc
+		)
+	{
+		if (Instances.size())
+		{
+			std::wstringstream content; 
+	        
+			// внимание! L"s - это не ошибка
+			content << L"<w:" << Node <<    L"s \
+								xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
+								xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+								xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+								xmlns:w10=\"urn:schemas-microsoft-com:office:word\" \
+								xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+								xmlns:wp=\"http://schemas.openxmlformats.org/drawingml/2006/wordprocessingDrawing\" \
+								xmlns:wp14=\"http://schemas.microsoft.com/office/word/2010/wordprocessingDrawing\" \
+								xmlns:wpi=\"http://schemas.microsoft.com/office/word/2010/wordprocessingInk\" \
+								xmlns:wpg=\"http://schemas.microsoft.com/office/word/2010/wordprocessingGroup\" \
+								xmlns:wps=\"http://schemas.microsoft.com/office/word/2010/wordprocessingShape\" \
+								xmlns:wpc=\"http://schemas.microsoft.com/office/word/2010/wordprocessingCanvas\" \
+								xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
+								xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+								xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
+								xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" >";
 
-        BOOST_FOREACH(const notes_context::instances_map::value_type & elm, Instances)
-        {
-            content << L"<w:" << Node << L" w:id=\"" << elm.second->id << L"\">";
-            content << elm.second->content;
-            content << L"</w:" << Node << L">";
-        }
-        content << L"</w:" << Node << L"s>";
+							//mc:Ignorable=\"w14 wp14\" 
+							//xmlns:v=\"urn:schemas-microsoft-com:vml\" 
 
-        simple_element(Name, content.str()).write(RootPath);
-        
-        if (doc)
-            doc->content_type().get_content_type().add_override(std::wstring(L"/word/") + Name, ContentType);
-    }
-}
+			BOOST_FOREACH(const notes_context::instances_map::value_type & elm, Instances)
+			{
+				content << L"<w:" << Node << L" w:id=\"" << elm.second->id << L"\">";
+				content << elm.second->content;
+				content << L"</w:" << Node << L">";
+			}
+			content << L"</w:" << Node << L"s>";
+
+			simple_element(Name, content.str()).write(RootPath);
+	        
+			if (doc)
+				doc->content_type().get_content_type().add_override(std::wstring(L"/word/") + Name, ContentType);
+
+			if (Rels.relationships().size() > 0)
+			{
+				rels_files relFiles;
+				rels_file_ptr rels_elem = rels_file::create( Node + L"s.xml.rels");
+				relFiles.add_rel_file(rels_elem);
+			
+				BOOST_FOREACH(relationship & r, Rels.relationships())
+				{
+					relFiles.add(r);
+				} 
+				relFiles.write(RootPath);
+			}
+		}
+	}
 }
 
 void notes_elements::write(const std::wstring & RootPath)
@@ -280,6 +310,7 @@ void notes_elements::write(const std::wstring & RootPath)
         L"footnotes.xml", 
         L"application/vnd.openxmlformats-officedocument.wordprocessingml.footnotes+xml", 
         RootPath, 
+		notes_context_.footnotesRels(),
         get_main_document());
 
     process_notes(notes_context_.endnotes(),
@@ -287,6 +318,7 @@ void notes_elements::write(const std::wstring & RootPath)
         L"endnotes.xml",
         L"application/vnd.openxmlformats-officedocument.wordprocessingml.endnotes+xml",
         RootPath,
+		notes_context_.endnotesRels(),
         get_main_document());
 }
 

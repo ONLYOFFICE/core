@@ -55,8 +55,9 @@ public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 
 public:
-    text(const ::std::wstring & Text) :  text_(Text) {};
-    text() {};
+	bool preserve_;
+    text(const ::std::wstring & Text) :  text_(Text) {preserve_ = true;};
+    text() {preserve_ = true;};
 
     std::wstring & attr_text() { return text_; };
 

@@ -108,8 +108,8 @@ public:
 	void add_charts(chart_content_ptr chart);
 
 private:
-	docx_charts_files charts_files_;
-    rels_files rels_files_;
+	docx_charts_files	charts_files_;
+    rels_files			rels_files_;
 
     element_ptr theme_;
     element_ptr document_;

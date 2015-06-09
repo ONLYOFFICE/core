@@ -11,19 +11,28 @@ class rels;
 class hyperlinks
 {
 public:
-	struct _ref
+	enum _type_place
 	{
-		std::wstring href;
-		bool drawing;
-		std::wstring id;
-		bool used_rels;
+		document_place,
+		endnote_place,
+		footnote_place
+
 	};
 
-    std::wstring add(const std::wstring & href, bool drawing);
+	struct _ref
+	{
+		std::wstring	href;
+		_type_place		type_place;
+		bool			drawing;
+		std::wstring	id;
+		bool			used_rels;
+	};
+
+    std::wstring add(const std::wstring & href, _type_place type_place, bool drawing);
 
 	_ref  last();
     
-	void dump_rels(rels & Rels);
+	void dump_rels(rels & Rels, _type_place type);
 
 
 private:

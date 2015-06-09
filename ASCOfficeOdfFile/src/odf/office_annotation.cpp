@@ -116,9 +116,9 @@ void office_annotation::docx_convert(oox::docx_conversion_context & Context)
 	Context.set_run_state(runState);
 	Context.set_paragraph_state(pState);
 	
-	Context.get_comments_context().start_comment(temp_stream.str(),author,date);//content, date, author
+	Context.get_comments_context().start_comment(temp_stream.str(), author,date);//content, date, author
 	
-	Context.dump_hyperlinks(Context.get_comments_context().get_rels());
+	Context.dump_hyperlinks(Context.get_comments_context().get_rels(), oox::hyperlinks::document_place);
 		
 	Context.set_stream_man(prev);
 }

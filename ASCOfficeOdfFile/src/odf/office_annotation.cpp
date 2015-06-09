@@ -97,6 +97,8 @@ void office_annotation::docx_convert(oox::docx_conversion_context & Context)
 		author = xml::utils::replace_text_to_xml(dynamic_cast<dc_creator * >(dc_creator_.get())->content_);
 	}
 	////////////////////////////////////////
+	Context.start_comment();
+
  	oox::docx_conversion_context::StreamsManPtr prev = Context.get_stream_man();
 	
 	std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_frame());
@@ -118,9 +120,11 @@ void office_annotation::docx_convert(oox::docx_conversion_context & Context)
 	
 	Context.get_comments_context().start_comment(temp_stream.str(), author,date);//content, date, author
 	
-	Context.dump_hyperlinks(Context.get_comments_context().get_rels(), oox::hyperlinks::document_place);
+	Context.dump_hyperlinks(Context.get_comments_context().get_rels(), oox::hyperlinks::comment_place);
 		
 	Context.set_stream_man(prev);
+	
+	Context.end_comment();
 }
 
 void office_annotation::xlsx_convert(oox::xlsx_conversion_context & Context)

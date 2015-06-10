@@ -508,8 +508,6 @@ public:
 	bool process_headers_footers_;
 
 	drop_cap_context & get_drop_cap_context(){return drop_cap_context_;}
-
-
 private:
     std::wstringstream document_xml_;
     std::wstringstream styles_xml_;

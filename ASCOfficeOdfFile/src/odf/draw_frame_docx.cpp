@@ -889,10 +889,18 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 	if (dVal)drawing.cy = (int)(0.5 + drawing.cy * dVal.get());
 
 	GetProperty(drawing.additional,L"svg:translate_x",dVal);
-	if (dVal)drawing.x+=get_value_emu(dVal.get());
+	if (dVal)
+	{
+		int val = get_value_emu(dVal.get());
+		drawing.x = val >=0 ? val : 0; //??? todooo отрицательные величины ...
+	}
 
 	GetProperty(drawing.additional,L"svg:translate_y",dVal);
-	if (dVal)drawing.y+=get_value_emu(dVal.get());
+	if (dVal)
+	{
+		int val = get_value_emu(dVal.get());
+		drawing.y = val >=0 ? val : 0; //??? todooo отрицательные величины ...
+	}
 
 }
 void draw_shape::docx_convert(oox::docx_conversion_context & Context)
@@ -927,10 +935,18 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 
 	bool pState = Context.get_paragraph_state();
 	Context.set_paragraph_state(false);		
+	
+	bool new_run = true;
+	if (pState == false && Context.get_drawing_context().get_current_level() == 1)
+	{
+		new_run = false;
+	}
+	else
+		Context.add_new_run();
 
-	Context.add_new_run();
-	docx_serialize(strm,drawing);
-    Context.finish_run();
+	docx_serialize(strm, drawing);
+
+	if (new_run) Context.finish_run();
 
 	Context.set_paragraph_state(pState);		
 
@@ -1119,7 +1135,7 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	Context.set_paragraph_state(false);		
    
 	Context.add_new_run();    
-	docx_serialize(strm,drawing);
+	docx_serialize(strm, drawing);
 	Context.finish_run();
 
 	Context.set_paragraph_state(pState);		
@@ -1204,16 +1220,18 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 
 		common_draw_docx_convert(Context, frame->common_draw_attlists_, drawing);
 		
-		bool runState = Context.get_run_state();
-		Context.set_run_state(false);
+		bool runState	= Context.get_run_state();
+		bool pState		= Context.get_paragraph_state();
 		
-		bool pState = Context.get_paragraph_state();
-		Context.set_paragraph_state(false);		
+		Context.set_run_state(false);	
+		Context.set_paragraph_state(false);	
 		
-		std::wostream & strm = Context.output_stream();
+		std::wostream & strm = Context.output_stream();		
 		
 		Context.add_new_run();
-		docx_serialize(strm,drawing);
+		
+		docx_serialize(strm, drawing);
+		
 		Context.finish_run();
 		
 		Context.set_run_state(runState);

@@ -314,16 +314,16 @@ void oox_serialize_xfrm(std::wostream & strm, _oox_drawing const & val, std::wst
 
 			CP_XML_NODE(L"a:off") 
 			{
-				CP_XML_ATTR(L"x", static_cast<size_t>(val.x));
-				CP_XML_ATTR(L"y", static_cast<size_t>(val.y));
+				CP_XML_ATTR(L"x", val.x);
+				CP_XML_ATTR(L"y", val.y);
 			}
 
 			if (val.cx >0 || val.cy >0)
 			{
 				CP_XML_NODE(L"a:ext")
 				{
-					CP_XML_ATTR(L"cx", static_cast<size_t>(val.cx));
-					CP_XML_ATTR(L"cy", static_cast<size_t>(val.cy));
+					CP_XML_ATTR(L"cx", val.cx);
+					CP_XML_ATTR(L"cy", val.cy);
 				}
 			}else
 			{

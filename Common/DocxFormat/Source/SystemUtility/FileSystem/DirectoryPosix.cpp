@@ -266,19 +266,13 @@ namespace FileSystem {
     }
     bool Directory::IsExist(const std::wstring&  strFileName)
     {
+		struct stat sb;
 
-        BYTE* pUtf8 = NULL;
-        LONG lLen = 0;
-        NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strFileName.c_str(), strFileName.length(), pUtf8, lLen, false);
-        FILE* pFile = fopen((char*)pUtf8, "rb");
-        delete [] pUtf8;
-
-        if (NULL != pFile)
-        {
-            fclose(pFile);
-            return true;
-        }
-        else
-            return false;
+		if (stat(strFileName, &sb) == 0)
+		{
+			if (S_ISDIR(sb.st_mode)) return true;
+			if (S_ISREG(sb.st_mode)) return true;
+		}
+		return false;
     }
 }

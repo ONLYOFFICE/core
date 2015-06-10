@@ -206,7 +206,12 @@ void office_font_face_decls::docx_convert(oox::docx_conversion_context & Context
 {
     std::wostream & strm = Context.output_stream();
     
-    strm << L"<w:fonts xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\">";
+    strm << L"<w:fonts \
+xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
+xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
+xmlns:w=\"http://schemas.openxmlformats.org/wordprocessingml/2006/main\" \
+xmlns:w14=\"http://schemas.microsoft.com/office/word/2010/wordml\" \
+mc:Ignorable=\"w14\">";
 
     BOOST_FOREACH(office_element_ptr elm, style_font_face_)
     {

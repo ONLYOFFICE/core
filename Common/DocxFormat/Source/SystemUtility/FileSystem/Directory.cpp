@@ -286,14 +286,12 @@ namespace FileSystem
 #endif
         bool Directory::IsExist(const std::wstring&  strFileName)
         {
-            FILE* pFile = _wfopen(strFileName.c_str(), L"rb");
+			DWORD ftyp = GetFileAttributesW(strFileName.c_str());
+			
+			if (ftyp == INVALID_FILE_ATTRIBUTES)	return false; 
+			if (ftyp & FILE_ATTRIBUTE_DIRECTORY)	return true;  
+			if (ftyp & FILE_ATTRIBUTE_NORMAL)		return true;  
 
-            if (NULL != pFile)
-            {
-                fclose(pFile);
-                return true;
-            }
-            else
-                return false;
+			return false;
         }
 }

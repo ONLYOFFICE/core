@@ -19,11 +19,7 @@ class oox_axis_content
 public:
 	odf_reader::chart::oox_typeconvert oox_typeconvert_;
 
-	oox_axis_content(int type/*,std::wstring name*/)
-	{
-        id_ = abs((int)*((_UINT32*)this));
-		type_=type;		//dimension
-	}
+	oox_axis_content(int type/*,std::wstring name*/);
 	~oox_axis_content(){}
 	
 	static oox_axis_content_ptr create(int type/*,std::wstring name*/);

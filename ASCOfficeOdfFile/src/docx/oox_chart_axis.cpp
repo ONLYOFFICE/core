@@ -11,11 +11,18 @@
 namespace cpdoccore {
 namespace oox {
 
+
 _CP_PTR(oox_axis_content) oox_axis_content::create(int type)
 {
     return boost::make_shared<oox_axis_content>(type);
 }
 
+oox_axis_content::oox_axis_content(int type/*,std::wstring name*/)
+{
+    //id_ = abs((int)*((_UINT32*)this));
+    id_ = abs((int)this);
+	type_=type;		//dimension
+}
 void oox_axis_content::oox_serialize(std::wostream & _Wostream)
 {
 	if (id_ <0 )return;//not activate

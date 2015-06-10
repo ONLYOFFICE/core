@@ -277,10 +277,11 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
         // проверяем не сменит ли следующий параграф свойства страницы. 
         // если да — устанавливаем контексту флаг на то что необходимо в конце текущего параграфа 
         // распечатать свойства секции
+		//проверить ... не она ли основная - может быть прописан дубляж - и тогда разрыв нарисуется ненужный
         const std::wstring & styleName = next_par_->paragraph_attrs_.text_style_name_.style_name();
         const std::wstring masterPageName = Context.root()->odf_context().styleContainer().master_page_name_by_name(styleName);
 
-        if (!masterPageName.empty())
+        if (!masterPageName.empty()  && Context.get_master_page_name() != masterPageName)
         {
             const std::wstring pageLayoutName = Context.root()->odf_context().pageLayoutContainer().page_layout_name_by_style(masterPageName);
             Context.next_dump_page_properties();

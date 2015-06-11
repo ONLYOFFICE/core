@@ -27,16 +27,17 @@ XlsxConverter::XlsxConverter(const std::wstring & path, const ProgressCallback* 
 {
 	const OOX::CPath oox_path(CString(path.c_str()));			
 
-	pCallBack = CallBack;
+    xlsx_document   = new OOX::Spreadsheet::CXlsx(oox_path);
 
-	xlsx_document = new OOX::Spreadsheet::CXlsx(oox_path);	
 	output_document = new odf_writer::package::odf_document(L"spreadsheet");
+    ods_context     = new odf_writer::ods_conversion_context(output_document);
 
-	xlsx_current_drawing = NULL;
+    pCallBack = CallBack;
+
+    xlsx_current_drawing = NULL;
 
 	if (UpdateProgress(400000))return;
 }
-
 void XlsxConverter::write(const std::wstring & path)
 {
 	if (!output_document)return;
@@ -100,12 +101,9 @@ CString	XlsxConverter::find_link_by_id (CString sId, int type)
 
 void XlsxConverter::convertDocument()
 {
-	if (!xlsx_document)return;
-	if (!output_document)return;
-
-	ods_context = new odf_writer::ods_conversion_context(output_document);
-
-	if (!ods_context)return;
+    if (!xlsx_document)     return;
+    if (!output_document)   return;
+    if (!ods_context)       return;
 		
 	ods_context->start_document();
 

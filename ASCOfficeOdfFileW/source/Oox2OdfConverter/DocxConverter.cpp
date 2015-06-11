@@ -31,12 +31,14 @@ namespace Oox2Odf
 {
 DocxConverter::DocxConverter(const std::wstring & path, const ProgressCallback* CallBack)
 {
-	output_document = new  odf_writer::package::odf_document(L"text");
+    const OOX::CPath oox_path(CString(path.c_str()));
+
+    docx_document   = new OOX::CDocx(oox_path);
+
+    output_document = new odf_writer::package::odf_document(L"text");
+    odt_context     = new odf_writer::odt_conversion_context(output_document);
 
 	pCallBack = CallBack;
-
-	const OOX::CPath oox_path(CString(path.c_str()));	
-	docx_document = new OOX::CDocx(oox_path);	
 
 //set flags to default
     last_section_properties = NULL;
@@ -131,11 +133,8 @@ CString	DocxConverter::find_link_by_id (CString sId, int type)
 
 void DocxConverter::convertDocument()
 {
-	if (!docx_document)return;
-
-    odt_context = new odf_writer::odt_conversion_context(output_document);
-
-	if (!odt_context)return;
+    if (!docx_document) return;
+    if (!odt_context)   return;
 		
 	odt_context->start_document();
 
@@ -3520,19 +3519,23 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 		if (oox_table_pr->m_oTblpPr->m_oTblpX.IsInit() && oox_table_pr->m_oTblpPr->m_oTblpY.IsInit()){}//floating position 
 		else
 		{
-			_CP_OPT(odf_types::length) length, length_left, length_right;
+            _CP_OPT(odf_types::length) length_, length_left, length_right;
 			
 			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oLeftFromText.GetPointer()), length_left);
-			table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(length_left->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+            if (length_left)
+                table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(length_left->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 				
 			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oRightFromText.GetPointer()), length_right);
-			table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_right_= odf_types::length(length_right->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+            if (length_right)
+                table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_right_= odf_types::length(length_right->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
-			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oTopFromText.GetPointer()), length);	
-			table_properties->table_format_properties_.common_vertical_margin_attlist_.fo_margin_top_= odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+            convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oTopFromText.GetPointer()), length_);
+            if (length_)
+                table_properties->table_format_properties_.common_vertical_margin_attlist_.fo_margin_top_= odf_types::length(length_->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
-			convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oBottomFromText.GetPointer()),	length);
-			table_properties->table_format_properties_.common_vertical_margin_attlist_.fo_margin_bottom_= odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+            convert(static_cast<SimpleTypes::CUniversalMeasure *>(oox_table_pr->m_oTblpPr->m_oBottomFromText.GetPointer()),	length_);
+            if (length_)
+                table_properties->table_format_properties_.common_vertical_margin_attlist_.fo_margin_bottom_= odf_types::length(length_->get_value_unit(odf_types::length::cm),odf_types::length::cm);
 
 			if ((length_left && length_right ) && (*length_left == *length_right))
 				table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Center);

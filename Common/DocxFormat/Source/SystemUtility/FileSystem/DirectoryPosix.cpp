@@ -268,7 +268,8 @@ namespace FileSystem {
     {
 		struct stat sb;
 
-		if (stat(strFileName, &sb) == 0)
+        std::string sPathNameUtf8 = stringWstingToUtf8String (strFileName);
+        if (stat(sPathNameUtf8.c_str(), &sb) == 0)
 		{
 			if (S_ISDIR(sb.st_mode)) return true;
 			if (S_ISREG(sb.st_mode)) return true;

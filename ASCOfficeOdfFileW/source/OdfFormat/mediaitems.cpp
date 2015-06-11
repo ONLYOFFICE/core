@@ -47,10 +47,13 @@ void _mediaitems::add_or_find(const std::wstring & oox_ref, Type type,  std::wst
 	output_fileName = utils::media::create_file_name(oox_ref, type, number);//guid???
 	
 	std::wstring input_path = oox_ref;
-	boost::to_lower(input_path);
+
+#if defined (_WIN32) || defined(_WIN64) // + mac???
+    boost::to_lower(input_path);
+#endif
+
 	std::wstring output_path ;
 
-	std::wstring id;
     BOOST_FOREACH(item const & elm, items_)
     {
 		if (elm.oox_ref == input_path)

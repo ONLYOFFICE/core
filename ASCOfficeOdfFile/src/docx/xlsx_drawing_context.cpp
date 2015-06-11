@@ -391,10 +391,18 @@ void xlsx_drawing_context::process_common_properties(drawing_object_description 
     
 	if (pic.svg_rect_)
 	{
-		drawing.x = (int)(0.5 + odf_types::length(pic.svg_rect_.get().x_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		drawing.y = (int)(0.5 + odf_types::length(pic.svg_rect_.get().y_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		drawing.cx = (int)(0.5 + odf_types::length(pic.svg_rect_.get().width_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
-		drawing.cy = (int)(0.5 + odf_types::length(pic.svg_rect_.get().height_, odf_types::length::pt).get_value_unit(odf_types::length::emu));
+		//todooo непонятно что делать с отрицательными значениями
+		int val = 0.5 + odf_types::length(pic.svg_rect_.get().x_, odf_types::length::pt).get_value_unit(odf_types::length::emu);
+		if (val >=0)	drawing.x = val;
+		
+		val = 0.5 + odf_types::length(pic.svg_rect_.get().y_, odf_types::length::pt).get_value_unit(odf_types::length::emu);
+		if (val >=0)	drawing.y = val;
+
+		val = 0.5 + odf_types::length(pic.svg_rect_.get().width_, odf_types::length::pt).get_value_unit(odf_types::length::emu);
+		if (val >=0)	drawing.cx = val;
+
+		val = .5 + odf_types::length(pic.svg_rect_.get().height_, odf_types::length::pt).get_value_unit(odf_types::length::emu);
+		if (val >=0)	drawing.cy = val;
 	}
 	
 	drawing.additional=pic.additional_;

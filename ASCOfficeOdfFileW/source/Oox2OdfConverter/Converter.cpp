@@ -29,12 +29,12 @@ namespace Oox2Odf
 	{
 		return (Val * 360000 * 2.54) / 72;
 	}
-    Converter::Converter(const std::wstring & path, std::wstring  type, const std::wstring & fontsPath,  const ProgressCallback* CallBack)
+    Converter::Converter(const std::wstring & path, const std::wstring  & type, const std::wstring & fontsPath,  const ProgressCallback* CallBack)
     {
 		impl_ = NULL;
 		
-		if (type == L"text")			impl_ = new DocxConverter(path, CallBack);
-		if (type == L"spreadsheet")		impl_ = new XlsxConverter(path, CallBack);
+        if (type == _T("text"))			impl_ = new DocxConverter(path, CallBack);
+        if (type == _T("spreadsheet"))		impl_ = new XlsxConverter(path, CallBack);
 
         if (impl_)
             impl_->set_fonts_directory(fontsPath);

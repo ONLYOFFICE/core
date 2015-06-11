@@ -219,26 +219,29 @@ bool COfficeFileFormatChecker::isOOXFormatFile(const std::wstring & fileName)
 		const char *pptmFormatLine = "application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml";
 		const char *ppsmFormatLine = "application/vnd.ms-powerpoint.slideshow.macroEnabled.main+xml";
 		const char *potmFormatLine = "application/vnd.ms-powerpoint.template.macroEnabled.main+xml";
-		
-		if (strstr((char*)pBuffer, docxFormatLine)==0 || strstr((char*)pBuffer, dotxFormatLine) ==0 ||
-			strstr((char*)pBuffer, docmFormatLine)==0 || strstr((char*)pBuffer, dotmFormatLine) ==0)
+
+        std::string strContentTypes((char*)pBuffer, nBufferSize);
+
+        int res = 0;
+        if ( (res = strContentTypes.find(docxFormatLine))>0 || (res = strContentTypes.find(dotxFormatLine))>0 ||
+            (res = strContentTypes.find(docmFormatLine))>0 || (res = strContentTypes.find(dotmFormatLine))>0)
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX;
 		}
 
-		else if (strstr((char*)pBuffer, xlsxFormatLine)==0 || strstr((char*)pBuffer, xltxFormatLine) ==0 ||
-			strstr((char*)pBuffer, xlsmFormatLine)==0 || strstr((char*)pBuffer, xltmFormatLine) ==0)
+        else if ((res = strContentTypes.find(xlsxFormatLine))>0 || (res = strContentTypes.find(xltxFormatLine))>0 ||
+            (res = strContentTypes.find(xlsmFormatLine))>0 || (res = strContentTypes.find(xltmFormatLine))>0)
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX;
 		}
 
-		else if (strstr((char*)pBuffer, pptxFormatLine)==0 || /*strstr((char*)pBuffer, ppsxFormatLine) ==0 ||*/
-			strstr((char*)pBuffer, potxFormatLine)==0 || strstr((char*)pBuffer, pptmFormatLine) ==0 ||
-			strstr((char*)pBuffer, ppsmFormatLine)==0 || strstr((char*)pBuffer, potmFormatLine) ==0 )
+        else if ((res = strContentTypes.find(pptxFormatLine) > 0) || /*(res = strContentTypes.find(ppsxFormatLine))>0 ||*/
+            (res = strContentTypes.find(potxFormatLine))>0 || (res = strContentTypes.find(pptmFormatLine))>0 ||
+            (res = strContentTypes.find(ppsmFormatLine))>0 || (res = strContentTypes.find(potmFormatLine))>0 )
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX;
 		}
-		else if (strstr((char*)pBuffer, ppsxFormatLine) ==0 )
+        else if ((res = strContentTypes.find(ppsxFormatLine)) >0)
 		{
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX;
 		}

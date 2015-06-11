@@ -20,7 +20,7 @@ _CP_PTR(oox_axis_content) oox_axis_content::create(int type)
 oox_axis_content::oox_axis_content(int type/*,std::wstring name*/)
 {
     //id_ = abs((int)*((_UINT32*)this));
-    id_ = abs((int)this);
+    id_ = abs((long)this);
 	type_=type;		//dimension
 }
 void oox_axis_content::oox_serialize(std::wostream & _Wostream)

@@ -170,7 +170,7 @@
 				Name="VCCLCompilerTool"
 				Optimization="2"
 				EnableIntrinsicFunctions="true"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)&quot;;&quot;$(ProjectDir)../XML/include&quot;;&quot;$(ProjectDir)../XML/include/libxml&quot;"
+				AdditionalIncludeDirectories="&quot;$(ProjectDir)&quot;;&quot;$(ProjectDir)../XML/include&quot;;&quot;$(ProjectDir)../XML/include/libxml&quot;;&quot;$(ProjectDir)/support&quot;"
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				WarningLevel="3"

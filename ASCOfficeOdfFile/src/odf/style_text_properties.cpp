@@ -18,7 +18,13 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
-
+void removeCharsFromString( std::wstring &str, std::wstring charsToRemove ) 
+{
+   for ( unsigned int i = 0; i < charsToRemove.length(); ++i ) 
+   {
+	   str.erase( std::remove(str.begin(), str.end(), charsToRemove[i]), str.end() );
+   }
+}
 
 std::wstring delete_apostroph_in_name(std::wstring value)
 {
@@ -342,13 +348,16 @@ void text_format_properties_content::pptx_convert_as_list(oox::pptx_conversion_c
 				if (font == NULL)font = fonts.font_by_style_name(w_eastAsia);
 				if (font == NULL)font = fonts.font_by_style_name(w_cs);
 				if (font)w_font = font->name();
+
+				//'Arial' глючит
+				removeCharsFromString(w_font, _T("'"));
 			}
 
 			if (w_font.length()>0)
 			{				
 				CP_XML_NODE(L"a:buFont")
 				{			
-					CP_XML_ATTR(L"typeface",w_font);
+					CP_XML_ATTR(L"typeface", w_font);
 					if ((style_font_charset_))
 					{		
 						if ((*style_font_charset_!=L"x-symbol"))	CP_XML_ATTR(L"charset",(*style_font_charset_));

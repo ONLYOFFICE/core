@@ -449,13 +449,10 @@ public:
     static const ElementType type = typeTextNote;
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
     void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
-public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
-public:
     note();
 
 private:
@@ -463,7 +460,6 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-private:
 	std::wstring text_id_;
 	odf_types::noteclass text_note_class_;
     office_element_ptr text_note_citation_;
@@ -485,14 +481,12 @@ public:
     static const ElementType type = typeTextRuby;
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-private:
     odf_types::style_ref text_style_name_;
     office_element_ptr text_ruby_base_;
     office_element_ptr text_ruby_text_;
@@ -523,14 +517,17 @@ public:
     static const ElementType type = typeTextTitle;
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
+
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-private:
     common_field_fixed_attlist common_field_fixed_attlist_;
     office_element_ptr_array content_;
 
@@ -538,8 +535,35 @@ private:
 
 CP_REGISTER_OFFICE_ELEMENT2(title);
 
+// text:chapter
+//////////////////////////////////////////////////////////////////////////////////////////////////
+class chapter : public paragraph_content_element<chapter>
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextChapter;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+    virtual std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+    virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context) ;
+
+private:
+    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    virtual void add_text(const std::wstring & Text);
+
+    common_field_fixed_attlist common_field_fixed_attlist_;
+    office_element_ptr_array content_;
+
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(chapter);
+
 // text:placeholder
-// text-placeholder
 //////////////////////////////////////////////////////////////////////////////////////////////////
 class text_placeholder : public paragraph_content_element<text_placeholder>
 {
@@ -553,14 +577,12 @@ public:
 	void docx_convert(oox::docx_conversion_context & Context);
 	void pptx_convert(oox::pptx_conversion_context & Context);
 
-public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
 
-private:
     office_element_ptr_array content_;
 };
 

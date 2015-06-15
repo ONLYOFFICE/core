@@ -18,6 +18,14 @@
 namespace cpdoccore {
 namespace oox {
 
+void removeCharsFromString( std::wstring &str, std::wstring charsToRemove ) 
+{
+   for ( unsigned int i = 0; i < charsToRemove.length(); ++i ) 
+   {
+	   str.erase( std::remove(str.begin(), str.end(), charsToRemove[i]), str.end() );
+   }
+}
+
 class xlsx_text_context::Impl: boost::noncopyable
 {
 public:
@@ -219,7 +227,13 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 	
 	_CP_OPT(std::wstring) sValFontFamily;	
 	if (text_properties_.fo_font_family_)	
+	{
+		std::wstring val =text_properties_.fo_font_family_.get();
+		//'Arial' глючит
+		removeCharsFromString(val, _T("'"));
+
 		sValFontFamily=text_properties_.fo_font_family_.get();
+	}
 	//else if (text_properties_.style_font_name_) - тут может быть отсылка к font_face)decl !!!!
 	//	sValFontFamily=text_properties_.style_font_name_.get();
 
@@ -247,7 +261,7 @@ void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 				if (dValFontSize)									{CP_XML_ATTR(L"sz", (int)(dValFontSize.get()*100));}
 				if ((iValFontStyle) && (iValFontStyle.get() >0))	{CP_XML_ATTR(L"i", "1");} //"true");} Exercícios de Aprendizagem.ods
 				if ((iValFontWeight) && (iValFontWeight.get() >0))	{CP_XML_ATTR(L"b", "1");} //"true");} Exercícios de Aprendizagem.ods				
-				if (sValFontFamily)									{CP_XML_ATTR(L"typeface", sValFontFamily.get());} //'Arial' глючит
+				if (sValFontFamily)									{CP_XML_ATTR(L"typeface", sValFontFamily.get());} 
 				
 				if (sValFontColor){CP_XML_NODE(L"a:solidFill")	{CP_XML_NODE(L"a:srgbClr"){CP_XML_ATTR(L"val", sValFontColor.get());}}}
 

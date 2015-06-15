@@ -25,12 +25,100 @@
 #include "odfcontext.h"
 
 #include "draw_common.h"
+#include "datatypes/borderstyle.h"
 
 namespace cpdoccore { 
 
 	using namespace odf_types;
 
 namespace odf_reader {
+
+	namespace {
+
+std::wstring process_border(const border_style & borderStyle,
+    const _CP_OPT(border_widths) & borderLineWidths,
+    const _CP_OPT(length) & borderPadding, const std::wstring & Shadow = L"")
+{
+    std::wstring w_sz;
+    std::wstring w_color;
+    std::wstring w_val = L"single";
+    std::wstring w_space;
+
+    if (!borderStyle.initialized() || borderStyle.is_none())
+    {
+        w_val = L"none";
+    }
+    else if (borderStyle.initialized())
+    {
+        double width = borderStyle.get_length().get_value_unit(length::pt);
+        //borderLineWidths ? borderLineWidths->get_summ_unit(length::pt) : borderStyle.get_length().get_value_unit(length::pt);
+        int szInt = (int)(0.5 + 8.0 * width);
+        if (szInt <= 0)
+            szInt = 1;
+        w_sz = boost::lexical_cast<std::wstring>( szInt );
+        w_color = boost::lexical_cast<std::wstring>( borderStyle.get_color().get_hex_value() );
+
+        if (borderPadding)
+            w_space = boost::lexical_cast<std::wstring>((int)(borderPadding->get_value_unit(length::pt) + 0.5) );
+
+        const std::wstring borderStyleStr = borderStyle.get_style();
+        if (szInt == 0)
+            w_val = L"none";
+        else if (borderStyleStr == L"solid" 
+            || borderStyleStr == L"single")
+            w_val = L"single";
+        else if (borderStyleStr == L"double")
+            w_val = L"double";
+        else if (borderStyleStr == L"dotted")
+            w_val = borderStyleStr;
+        else if (borderStyleStr == L"dashed")
+            w_val = borderStyleStr;
+        else if (borderStyleStr == L"groove")
+            w_val = L"thinThickMediumGap";
+        else if (borderStyleStr == L"ridge")
+            w_val = L"thickThinMediumGap";
+        else if (borderStyleStr == L"inset")
+            w_val = L"inset";
+        else if (borderStyleStr == L"outset")
+            w_val = L"outset";
+        else if (borderStyleStr == L"hidden")
+            w_val = L"nil";
+
+    }
+    std::wstring res;
+    if (!w_val.empty())
+        res += L" w:val=\"" + w_val + L"\" ";
+    if (!w_sz.empty())
+        res += L"w:sz=\"" + w_sz + L"\" ";
+    if (!w_color.empty())
+        res += L"w:color=\"" + w_color + L"\" ";
+    if (!w_space.empty())
+        res += L"w:space=\"" + w_space + L"\" ";
+    if (!Shadow.empty())
+        res += L"w:shadow=\"" + Shadow + L"\" ";
+
+    return res;
+}
+
+std::wstring process_margin(const _CP_OPT(length_or_percent) & margin, double Mul)
+{
+    if (margin)
+    {
+        if (margin->get_type() == length_or_percent::Length)
+        {
+            int val = (int)(0.5 + Mul * margin->get_length().get_value_unit(length::pt));
+            return boost::lexical_cast<std::wstring>( val );
+        }
+        else
+        {
+            _CP_LOG << L"[docx_convert] convert margin warning: invalid type (percent)\n";
+        }       
+    }
+    return L"";
+}
+
+}
+
 
 style_text_properties * style_content::get_style_text_properties() const
 {
@@ -907,6 +995,24 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 
         strm << L"/>";
     }
+
+	if (common_border_attlist_.fo_border_)
+	{
+		odf_types::border_style style(*common_border_attlist_.fo_border_);
+		
+		std::wstring w_shadow, w_border;
+		_CP_OPT(border_widths)	border_line_width;  
+		_CP_OPT(length)			border_padding;		
+		
+		w_border = process_border(style,	border_line_width , border_padding, w_shadow);
+
+		 strm << L"<w:pgBorders>";
+			strm << L"<w:top " << w_border << L"/>";
+			strm << L"<w:left " << w_border << L"/>";
+			strm << L"<w:bottom " << w_border << L"/>";
+			strm << L"<w:right " << w_border << L"/>";
+		 strm << L"</w:pgBorders>";
+	}
 
     if (common_horizontal_margin_attlist_.fo_margin_left_ ||
         common_horizontal_margin_attlist_.fo_margin_right_ ||

@@ -284,7 +284,6 @@ const wchar_t * span::name = L"span";
 
 ::std::wostream & span::text_to_stream(::std::wostream & _Wostream) const
 {
-    // TODO!!!!
     BOOST_FOREACH(const office_element_ptr & parElement, paragraph_content_)
     {
         parElement->text_to_stream(_Wostream);
@@ -323,7 +322,6 @@ void span::add_text(const std::wstring & Text)
 
 void span::docx_convert(oox::docx_conversion_context & Context)
 {
-	
 	bool addNewRun = false;
     bool pushed = false;
 
@@ -671,8 +669,12 @@ void common_field_fixed_attlist::add_attributes( const xml::attributes_wc_ptr & 
 const wchar_t * title::ns = L"text";
 const wchar_t * title::name = L"title";
 
-::std::wostream & title::text_to_stream(::std::wostream & _Wostream) const
+std::wostream & title::text_to_stream(::std::wostream & _Wostream) const
 {
+    BOOST_FOREACH(const office_element_ptr & parElement, content_)
+    {
+        parElement->text_to_stream(_Wostream);
+    }
     return _Wostream;
 }
 
@@ -683,12 +685,100 @@ void title::add_attributes( const xml::attributes_wc_ptr & Attributes )
 
 void title::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
+    CP_CREATE_ELEMENT(content_);
 }
 
 void title::add_text(const std::wstring & Text)
 {
     office_element_ptr elm = text::create(Text) ;
     content_.push_back( elm );
+}
+void title::docx_convert(oox::docx_conversion_context & Context)
+{
+    std::wostream & strm = Context.output_stream();
+    Context.finish_run();
+    strm << L"<w:r><w:fldChar w:fldCharType=\"begin\" /></w:r>";
+    strm << L"<w:r><w:instrText>TITLE</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"separate\" /></w:r>";
+    Context.add_new_run();
+	
+	std::wostream & _Wostream = Context.output_stream();
+    _Wostream << L"<w:t xml:space=\"preserve\">";
+		this->text_to_stream(_Wostream);
+    _Wostream << L"</w:t>"; 
+    
+	Context.finish_run();
+    strm << L"<w:r><w:fldChar w:fldCharType=\"end\" /></w:r>";
+}
+
+void title::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+    std::wstringstream val;
+    this->text_to_stream(val);
+    Context.get_text_context().add_text(val.str());
+}
+void title::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    std::wstringstream val;
+    this->text_to_stream(val);
+    Context.get_text_context().add_text(val.str());
+}
+// text:chapter
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * chapter::ns = L"text";
+const wchar_t * chapter::name = L"chapter";
+
+std::wostream & chapter::text_to_stream(::std::wostream & _Wostream) const
+{
+    BOOST_FOREACH(const office_element_ptr & parElement, content_)
+    {
+        parElement->text_to_stream(_Wostream);
+    }
+    return _Wostream;
+}
+
+void chapter::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    common_field_fixed_attlist_.add_attributes(Attributes);
+}
+
+void chapter::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+    CP_CREATE_ELEMENT(content_);
+}
+
+void chapter::add_text(const std::wstring & Text)
+{
+    office_element_ptr elm = text::create(Text) ;
+    content_.push_back( elm );
+}
+void chapter::docx_convert(oox::docx_conversion_context & Context)
+{
+    std::wostream & strm = Context.output_stream();
+    Context.finish_run();
+    //strm << L"<w:r><w:fldChar w:fldCharType=\"begin\" /></w:r>";
+    //strm << L"<w:r><w:instrText>BIBLIOGRAPHY</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"separate\" /></w:r>";
+    Context.add_new_run();
+	
+	std::wostream & _Wostream = Context.output_stream();
+    _Wostream << L"<w:t xml:space=\"preserve\">";
+		this->text_to_stream(_Wostream);
+    _Wostream << L"</w:t>"; 
+    
+	Context.finish_run();
+    //strm << L"<w:r><w:fldChar w:fldCharType=\"end\" /></w:r>";
+}
+
+void chapter::xlsx_convert(oox::xlsx_conversion_context & Context)
+{
+    std::wstringstream val;
+    this->text_to_stream(val);
+    Context.get_text_context().add_text(val.str());
+}
+void chapter::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    std::wstringstream val;
+    this->text_to_stream(val);
+    Context.get_text_context().add_text(val.str());
 }
 
 // text:placeholder

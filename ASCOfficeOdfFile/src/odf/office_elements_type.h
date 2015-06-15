@@ -29,6 +29,7 @@ enum ElementType
     typeTextRubyText,
     typeTextOfficeAnnotation,
     typeTextTitle,
+	typeTextChapter,
     typeTextPlaceholder,
     typeTextPageNumber,
     typeTextPageCount,

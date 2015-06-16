@@ -4,6 +4,7 @@
 #include "CPEncodings/CodePage.h"
 #include <vector>
 #include <sstream>
+#include <algorithm>
 
 namespace NSString
 {
@@ -233,6 +234,24 @@ namespace NSString
 			Split(wsString, wsDelim, arrElements);
 
 		return arrElements;
+	}
+	static inline void ToLower(std::wstring& wsString)
+	{
+		std::transform(wsString.begin(), wsString.end(), wsString.begin(), ::towlower);
+	}
+	static inline void ToUpper(std::wstring& wsString)
+	{
+		std::transform(wsString.begin(), wsString.end(), wsString.begin(), ::towupper);
+	}
+	static inline void Replace(std::wstring& wsString, const std::wstring& wsFrom, const std::wstring& wsTo)
+	{
+		int nFromLen = wsFrom.length();
+		int nToLen = wsTo.length();
+		int nPos = -nToLen;
+		while (std::wstring::npos != (nPos = wsString.find(wsFrom, nPos + nToLen)))
+		{
+			wsString.replace(nPos, nFromLen, wsTo);
+		}
 	}
 };
 

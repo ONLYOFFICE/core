@@ -87,6 +87,9 @@
     <ClCompile Include="Src\Pattern.cpp">
       <Filter>Src\Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="PdfRenderer.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Annotation.h">
@@ -154,6 +157,9 @@
     </ClInclude>
     <ClInclude Include="Src\Pattern.h">
       <Filter>Src\Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="PdfRenderer.h">
+      <Filter>Src</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

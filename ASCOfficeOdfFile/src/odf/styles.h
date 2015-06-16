@@ -17,10 +17,9 @@
 #include "datatypes/stylefamily.h"
 #include "datatypes/style_ref.h"
 #include "datatypes/textalign.h"
-#include "datatypes/length.h"
+#include "datatypes/lengthorpercent.h"
 #include "datatypes/styleverticalrel.h"
 #include "datatypes/styleverticalpos.h"
-#include "datatypes/percent.h"
 #include "datatypes/verticalalign.h"
 #include "datatypes/pageusage.h"
 #include "datatypes/tablecentering.h"
@@ -688,11 +687,11 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 public:
-    _CP_OPT(unsigned int) fo_column_count_;
-	_CP_OPT(odf_types::length) fo_column_gap_;
+    _CP_OPT(unsigned int)		fo_column_count_;
+	_CP_OPT(odf_types::length)	fo_column_gap_;
 
-    office_element_ptr style_column_sep_;
-    office_element_ptr_array style_column_;
+    office_element_ptr			style_column_sep_;
+    office_element_ptr_array	style_column_;
 
 };
 
@@ -741,8 +740,8 @@ private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
-private:
-    std::wstring				style_style_; // default solid
+public:
+	std::wstring				style_style_; // default solid
     _CP_OPT(odf_types::length)	style_width_;
     odf_types::percent			style_height_; // default 100
     odf_types::vertical_align	style_vertical_align_; //default top
@@ -768,25 +767,16 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 public:
+	bool style_protect_; // default false
 
-    // 15.7.1
-    odf_types::common_background_color_attlist common_background_color_attlist_;
-    office_element_ptr style_background_image_;
-
-    // 15.7.2
+    odf_types::common_background_color_attlist	common_background_color_attlist_;
     odf_types::common_horizontal_margin_attlist common_horizontal_margin_attlist_;
+    odf_types::common_writing_mode_attlist		common_writing_mode_attlist_;
 
-    // 15.7.3
-    office_element_ptr style_columns_;
+    office_element_ptr							style_background_image_;  
 
-    // 15.7.6
-    bool style_protect_; // default false
-
-    // 15.7.7
-    _CP_OPT(bool) text_dont_balance_text_columns_;
-
-    // 15.7.8
-    odf_types::common_writing_mode_attlist common_writing_mode_attlist_;
+    office_element_ptr							style_columns_;
+    _CP_OPT(bool)								text_dont_balance_text_columns_;
     
     // 15.7.9
     // TODO text-notes-configuration
@@ -876,10 +866,10 @@ public:
 public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
    
-	style_page_layout_attlist style_page_layout_attlist_;
-    office_element_ptr style_page_layout_properties_;
-    office_element_ptr style_header_style_;
-    office_element_ptr style_footer_style_;
+	style_page_layout_attlist	style_page_layout_attlist_;
+    office_element_ptr			style_page_layout_properties_;
+    office_element_ptr			style_header_style_;
+    office_element_ptr			style_footer_style_;
 
 private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
@@ -896,7 +886,8 @@ class style_page_layout_properties_attlist
 public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
-    void docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context);
+	void docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context, _CP_OPT(odf_types::length_or_percent) margin_left, 
+																								_CP_OPT(odf_types::length_or_percent) margin_right);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
 public:
@@ -907,18 +898,14 @@ public:
     _CP_OPT(std::wstring) style_paper_tray_name_;
     _CP_OPT(std::wstring) style_print_orientation_; // +
     //15.2.5
-    odf_types::common_horizontal_margin_attlist common_horizontal_margin_attlist_;
-    odf_types::common_vertical_margin_attlist common_vertical_margin_attlist_;
-    odf_types::common_margin_attlist common_margin_attlist_;
+    odf_types::common_horizontal_margin_attlist	common_horizontal_margin_attlist_;
+    odf_types::common_vertical_margin_attlist	common_vertical_margin_attlist_;
+    odf_types::common_margin_attlist			common_margin_attlist_;
     
-    // 15.2.6
-    odf_types::common_border_attlist common_border_attlist_;
-    // 15.2.7 
+    odf_types::common_border_attlist			common_border_attlist_;
     odf_types::common_border_line_width_attlist common_border_line_width_attlist_;
-    // 15.2.8
-    odf_types::common_padding_attlist common_padding_attlist_;
-    // 15.2.9
-    odf_types::common_shadow_attlist common_shadow_attlist_;
+    odf_types::common_padding_attlist			common_padding_attlist_;
+    odf_types::common_shadow_attlist			common_shadow_attlist_;
     
     // 15.2.10 
     odf_types::common_background_color_attlist common_background_color_attlist_;
@@ -1018,8 +1005,8 @@ public:
     void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
 
 public:
-    office_element_ptr style_background_image_;
-    office_element_ptr style_columns_;
+    office_element_ptr	style_background_image_;
+    office_element_ptr	style_columns_;
     
     // 15.2.20
     office_element_ptr  style_footnote_sep_;
@@ -1056,8 +1043,8 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 public:
-    style_page_layout_properties_attlist style_page_layout_properties_attlist_;
-    style_page_layout_properties_elements style_page_layout_properties_elements_;
+    style_page_layout_properties_attlist	style_page_layout_properties_attlist_;
+    style_page_layout_properties_elements	style_page_layout_properties_elements_;
     
 };
 

@@ -816,13 +816,12 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 	drawing.additional.push_back(odf_reader::_property(L"border_width_right",	Compute_BorderWidth(graphicProperties, sideRight)));
 	drawing.additional.push_back(odf_reader::_property(L"border_width_bottom", Compute_BorderWidth(graphicProperties, sideBottom))); 
 	
-	if (const _CP_OPT(std::wstring) foBorder = graphicProperties.common_border_attlist_.fo_border_)
+	if (graphicProperties.common_border_attlist_.fo_border_)
 	{
-		border_style borderStyle(*foBorder);
-		if (borderStyle.initialized())
+		if (graphicProperties.common_border_attlist_.fo_border_->initialized())
 		{
-			drawing.additional.push_back(_property(L"stroke-color",	borderStyle.get_color().get_hex_value() ));
-			drawing.additional.push_back(_property(L"stroke-width",	borderStyle.get_length().get_value_unit(odf_types::length::pt) ));
+			drawing.additional.push_back(_property(L"stroke-color",	graphicProperties.common_border_attlist_.fo_border_->get_color().get_hex_value() ));
+			drawing.additional.push_back(_property(L"stroke-width",	graphicProperties.common_border_attlist_.fo_border_->get_length().get_value_unit(odf_types::length::pt) ));
 
 		}
 	}

@@ -172,6 +172,49 @@ void docx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_pr
 					CP_XML_STREAM() << test_string;
 				}
 			}
+			CP_XML_NODE(L"wps:bodyPr")
+			{	
+				_CP_OPT(bool)	bWordArt;
+				odf_reader::GetProperty(properties, L"wordArt", bWordArt);
+
+				_CP_OPT(int) iAlign;
+
+				odf_reader::GetProperty(properties, L"textalign-vertical", iAlign);
+				if (iAlign)
+				{
+					switch (iAlign.get())
+					{
+					case 0://Baseline,
+						CP_XML_ATTR(L"anchor", L"dist");break;
+					case 1://Top,
+					case 4://Auto,
+						CP_XML_ATTR(L"anchor", L"t");break;
+					case 2://Middle,
+						CP_XML_ATTR(L"anchor", L"ctr");break;
+					case 3://Bottom,
+						CP_XML_ATTR(L"anchor", L"b");break;
+					case 5://Justify
+						CP_XML_ATTR(L"anchor", L"just");break;
+					}
+				}
+				//else CP_XML_ATTR(L"anchor", L"dist");break;
+				if (bWordArt)
+				{
+					_CP_OPT(int) iVal;
+					odf_reader::GetProperty(properties, L"draw-type-index", iVal);
+					if (iVal)
+					{
+						std::wstring shapeType = _OO_OOX_wordart[*iVal].oox;		
+						CP_XML_ATTR(L"fromWordArt", "1");
+						CP_XML_NODE(L"a:prstTxWarp")
+						{
+							CP_XML_ATTR(L"prst", shapeType);
+						}
+					}
+				}
+			}
+
+
 		}
     }
 }
@@ -336,10 +379,6 @@ void docx_serialize_shape(std::wostream & strm, _docx_drawing const & val)
 						oox_serialize_ln(CP_XML_STREAM(),val.additional);
 					} 
 					docx_serialize_text(CP_XML_STREAM(),val.additional);
-					
-					CP_XML_NODE(L"wps:bodyPr")
-					{
-					}					
 				}
 	        } 
 		}

@@ -29,6 +29,7 @@
 #include "stylerepeat.h"
 #include "officevaluetype.h"
 #include "fillimagerefpoint.h"
+#include "borderstyle.h"
 
 #define _CP_APPLY_PROP(A, B) \
     if (B) \
@@ -165,7 +166,7 @@ public:
 	void serialize(CP_ATTR_NODE);
 
 public:
-	_CP_OPT(std::wstring) style_shadow_;
+	_CP_OPT(shadow_type) style_shadow_;
 
 };
 
@@ -238,20 +239,11 @@ public:
 	void serialize(CP_ATTR_NODE);
 
 public:
-    // fo:border
-    _CP_OPT(std::wstring) fo_border_;
-
-    // fo:border-top
-    _CP_OPT(std::wstring) fo_border_top_;
-
-    // fo:border-bottom
-    _CP_OPT(std::wstring) fo_border_bottom_;
-
-    // fo:border-left
-    _CP_OPT(std::wstring) fo_border_left_;
-
-    // fo:border-right
-    _CP_OPT(std::wstring) fo_border_right_;
+    _CP_OPT(border_style) fo_border_;
+    _CP_OPT(border_style) fo_border_top_;
+    _CP_OPT(border_style) fo_border_bottom_;
+	_CP_OPT(border_style) fo_border_left_;
+	_CP_OPT(border_style) fo_border_right_;
     
 };
 

@@ -195,10 +195,8 @@ struct pptx_border_edge
 	std::wstring prstDash;
 };
 
-void convert_border_style(const std::wstring& odfBorderStyle,pptx_border_edge & border)
+void convert_border_style(const odf_types::border_style& borderStyle, pptx_border_edge & border)
 {
-    odf_types::border_style borderStyle(odfBorderStyle);
-	
 	border.cmpd = L"sng";
 	border.prstDash = L"solid";
     
@@ -239,19 +237,18 @@ void convert_border_style(const std::wstring& odfBorderStyle,pptx_border_edge & 
 //thickThin (Thick Thin Double Lines) Double lines: one thick, one thin
 //thinThick (Thin Thick Double Lines) Double lines: one thin, one thick
 //tri (Thin Thick Thin Triple Lines) Three lines: thin, thick, thin
-void process_border(pptx_border_edge & borderEdge, const _CP_OPT(std::wstring) & odfBorderStyle)
+void process_border(pptx_border_edge & borderEdge, _CP_OPT(odf_types::border_style) & borderStyle)
 {
 	borderEdge.present = false;
-    if (odfBorderStyle)
+    if (borderStyle)
     {
  		borderEdge.present = true;
 
-        odf_types::border_style borderStyle(*odfBorderStyle);
 
-        borderEdge.color = borderStyle.get_color().get_hex_value();
-		borderEdge.width = boost::lexical_cast<int>(borderStyle.get_length().get_value_unit(odf_types::length::emu));
+        borderEdge.color = borderStyle->get_color().get_hex_value();
+		borderEdge.width = boost::lexical_cast<int>(borderStyle->get_length().get_value_unit(odf_types::length::emu));
         
-		convert_border_style(*odfBorderStyle,borderEdge);
+		convert_border_style(*borderStyle, borderEdge);
    }
 }
 void oox_serialize_border(std::wostream & strm, std::wstring Node, pptx_border_edge & content)
@@ -333,16 +330,14 @@ void oox_serialize_tcPr(std::wostream & strm, const odf_reader::style_instance* 
 				//vert //
 				//style_cell_attlist.pptx_serialize(Context, CP_XML_STREAM());    //nodes        
 
-
-
 				odf_reader::paragraph_format_properties style_paragraph = odf_reader::calc_paragraph_properties_content(style_inst);//instances);
 
-				pptx_border_edge left,top,bottom,right;
+				pptx_border_edge left, top, bottom, right;
 				
-				process_border(left,style_paragraph.fo_border_left_);
-				process_border(top,style_paragraph.fo_border_top_);
-				process_border(right,style_paragraph.fo_border_right_);
-				process_border(bottom,style_paragraph.fo_border_bottom_);
+				process_border(left,	style_paragraph.fo_border_left_);
+				process_border(top,		style_paragraph.fo_border_top_);
+				process_border(right,	style_paragraph.fo_border_right_);
+				process_border(bottom,	style_paragraph.fo_border_bottom_);
 
 				oox_serialize_border(CP_XML_STREAM(), L"a:lnL",left);
 				oox_serialize_border(CP_XML_STREAM(), L"a:lnR",right);

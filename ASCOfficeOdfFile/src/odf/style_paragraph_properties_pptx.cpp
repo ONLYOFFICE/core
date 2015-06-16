@@ -17,7 +17,7 @@ namespace odf_reader {
 
 namespace {
 
-std::wstring process_border(const border_style & borderStyle,
+std::wstring process_border(border_style & borderStyle,
     const _CP_OPT(border_widths) & borderLineWidths,
     const _CP_OPT(length) & borderPadding, const std::wstring & Shadow = L"")
 {

@@ -274,20 +274,11 @@ public:
     // 15.5.24 <style:background-image>
     office_element_ptr style_background_image_;
 
-    // 15.5.25 fo:border
-    _CP_OPT(std::wstring) fo_border_;                // +
-
-    // fo:border-top
-    _CP_OPT(std::wstring) fo_border_top_;            // +
-
-    // fo:border-bottom
-    _CP_OPT(std::wstring) fo_border_bottom_;         // +
-
-    // fo:border-left
-    _CP_OPT(std::wstring) fo_border_left_;           // +
-
-    // fo:border-right
-    _CP_OPT(std::wstring) fo_border_right_;          // +
+	_CP_OPT(odf_types::border_style) fo_border_;                // +
+	_CP_OPT(odf_types::border_style) fo_border_top_;            // +
+    _CP_OPT(odf_types::border_style) fo_border_bottom_;         // +
+    _CP_OPT(odf_types::border_style) fo_border_left_;           // +
+    _CP_OPT(odf_types::border_style) fo_border_right_;          // +
 
     // 15.5.26
     _CP_OPT( odf_types::border_widths ) style_border_line_width_;       // +

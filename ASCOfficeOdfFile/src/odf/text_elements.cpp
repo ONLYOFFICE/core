@@ -736,7 +736,6 @@ void text_index_title::add_child_element( xml::sax * Reader, const ::std::wstrin
 }
 
 // text:table-of-content
-// text-table-of-content
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * text_table_of_content::ns = L"text";
 const wchar_t * text_table_of_content::name = L"table-of-content";
@@ -772,6 +771,81 @@ void text_table_of_content::add_child_element( xml::sax * Reader, const ::std::w
         CP_CREATE_ELEMENT(text_index_body_);
     }
     // TODO text-table-of-content-source
+}
+
+// text:table-index
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_table_index::ns = L"text";
+const wchar_t * text_table_index::name = L"table-index";
+
+void text_table_index::docx_convert(oox::docx_conversion_context & Context)
+{
+    if (text_index_body_)
+        text_index_body_->docx_convert(Context);
+}
+
+void text_table_index::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    if (text_index_body_)
+        text_index_body_->pptx_convert(Context);
+}
+
+
+::std::wostream & text_table_index::text_to_stream(::std::wostream & _Wostream) const
+{
+    CP_SERIALIZE_TEXT(text_index_body_);
+    return _Wostream;
+}
+
+void text_table_index::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    text_section_attr_.add_attributes( Attributes );
+}
+
+void text_table_index::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+    if CP_CHECK_NAME(L"text", L"index-body")
+    {
+        CP_CREATE_ELEMENT(text_index_body_);
+    }
+    // TODO text-table-index-source
+}
+// text:illustration-index
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * text_illustration_index::ns = L"text";
+const wchar_t * text_illustration_index::name = L"illustration-index";
+
+void text_illustration_index::docx_convert(oox::docx_conversion_context & Context)
+{
+    if (text_index_body_)
+        text_index_body_->docx_convert(Context);
+}
+
+void text_illustration_index::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    if (text_index_body_)
+        text_index_body_->pptx_convert(Context);
+}
+
+
+::std::wostream & text_illustration_index::text_to_stream(::std::wostream & _Wostream) const
+{
+    CP_SERIALIZE_TEXT(text_index_body_);
+    return _Wostream;
+}
+
+void text_illustration_index::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    text_section_attr_.add_attributes( Attributes );
+}
+
+void text_illustration_index::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+{
+    if CP_CHECK_NAME(L"text", L"index-body")
+    {
+        CP_CREATE_ELEMENT(text_index_body_);
+    }
+    // TODO text-illustration-index-source
 }
 
 }

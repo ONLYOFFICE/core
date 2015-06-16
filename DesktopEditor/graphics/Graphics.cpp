@@ -38,6 +38,8 @@ namespace Aggplus
 #if defined (_LINUX) || defined (_QT)
         m_bSwapRGB = true;
 #endif
+
+        m_dDpiTile = -1;
 	}
 
 	CGraphics::CGraphics(int dwWidth, int dwHeight, int stride, BYTE* pBuffer) : m_dwConfigFlags(0)
@@ -67,6 +69,8 @@ namespace Aggplus
 #if defined (_LINUX) || defined (_QT)
         m_bSwapRGB = true;
 #endif
+
+        m_dDpiTile = -1;
 	}
 
 	CGraphics::CGraphics(CImage* pImage) : m_dwConfigFlags(0)
@@ -101,6 +105,8 @@ namespace Aggplus
 #if defined (_LINUX) || defined (_QT)
         m_bSwapRGB = true;
 #endif
+
+        m_dDpiTile = -1;
 	}
 
 	CGraphics::~CGraphics()
@@ -852,6 +858,15 @@ namespace Aggplus
 
 				brushMatrix.Scale(dScaleX, dScaleY, Aggplus::MatrixOrderAppend);
 			}
+
+            if (ptxBrush->GetWrapMode() != Aggplus::WrapModeClamp && m_dDpiTile > 1)
+            {
+                double dScaleX = m_dDpiX / m_dDpiTile;
+                double dScaleY = m_dDpiY / m_dDpiTile;
+
+                brushMatrix.Scale(dScaleX, dScaleY, Aggplus::MatrixOrderAppend);
+            }
+
 			brushMatrix.Translate(x, y, Aggplus::MatrixOrderAppend);
 			brushMatrix.Multiply(&m_oFullTransform, MatrixOrderAppend);
 			ptxBrush->SetTransform(&brushMatrix);
@@ -1553,7 +1568,7 @@ namespace Aggplus
         
         agg::trans_affine coords = m_oCoordTransform.m_agg_mtx;
         coords.invert();
-        mtx_Work.multiply(coords);
+        mtx_Work.premultiply(coords);
         
         //mtx_Work.multiply(m_oFullTransform.m_agg_mtx);
         mtx_Work.invert();

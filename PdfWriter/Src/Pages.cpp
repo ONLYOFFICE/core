@@ -1,0 +1,1165 @@
+﻿#include "Objects.h"
+#include "Pages.h"
+#include "Utils.h"
+#include "GState.h"
+#include "Streams.h"
+#include "Annotation.h"
+#include "Font.h"
+#include "Image.h"
+#include "Shading.h"
+#include "Pattern.h"
+
+#ifdef DrawText
+#undef DrawText
+#endif
+
+#define MIN_HORIZONTALSCALING  0.01
+#define MAX_HORIZONTALSCALING  1000
+#define MIN_CHARSPACE          -30
+#define MAX_CHARSPACE          300
+#define MAX_FONTSIZE           1000
+
+namespace PdfWriter
+{
+	static const double c_dKappa = 0.552;
+	static void QuarterEllipseA(CStream* pStream, double dX, double dY, double dXRad, double dYRad)
+	{
+		pStream->WriteReal(dX - dXRad);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dY + dYRad * c_dKappa);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dX - dXRad * c_dKappa);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dY + dYRad);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dX);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dY + dYRad);
+		pStream->WriteStr(" c\012");
+	}
+	static void QuarterEllipseB(CStream* pStream, double dX, double dY, double dXRad, double dYRad)
+	{
+		pStream->WriteReal(dX + dXRad * c_dKappa);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dY + dYRad);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dX + dXRad);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dY + dYRad * c_dKappa);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dX + dXRad);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dY);
+		pStream->WriteStr(" c\012");
+	}
+	static void QuarterEllipseC(CStream* pStream, double dX, double dY, double dXRad, double dYRad)
+	{
+		pStream->WriteReal(dX + dXRad);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dY - dYRad * c_dKappa);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dX + dXRad * c_dKappa);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dY - dYRad);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dX);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dY - dYRad);
+		pStream->WriteStr(" c\012");
+	}
+	static void QuarterEllipseD(CStream* pStream, double dX, double dY, double dXRad, double dYRad)
+	{
+		pStream->WriteReal(dX - dXRad * c_dKappa);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dY - dYRad);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dX - dXRad);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dY - dYRad * c_dKappa);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dX - dXRad);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dY);
+		pStream->WriteStr(" c\012");
+	}
+	static double AngToEllPrm(double dAngle, double dXRad, double dYRad)
+	{
+		// Функция для перевода реального угла в параметрическое задание эллписа
+		// т.е. x= a cos(t) y = b sin(t) - параметрическое задание эллписа.
+		// x = r cos(p), y = r sin(p) => t = atan2( sin(p) / b, cos(p) / a );
+		return atan2(sin(dAngle) / dYRad, cos(dAngle) / dXRad);
+	}
+	static void WriteEllipseArc(CStream* pStream, double dX, double dY, double dXRad, double dYRad, double dAngle1, double dAngle2, double& dXCur, double& dYCur, bool bClockDirection = false)
+	{
+		// Рассчитаем начальную, конечную и контрольные точки
+		double dX1  = 0.0, dX2  = 0.0, dY1  = 0.0, dY2  = 0.0;
+		double dCX1 = 0.0, dCX2 = 0.0, dCY1 = 0.0, dCY2 = 0.0;
+	
+		double dAlpha = sin(dAngle2 - dAngle1) * (sqrt(4.0 + 3.0 * tan((dAngle2 - dAngle1) / 2.0) * tan((dAngle2 - dAngle1) / 2.0)) - 1.0) / 3.0;
+	
+		dX1 = dX + dXRad * cos(dAngle1);
+		dY1 = dY + dYRad * sin(dAngle1);
+	
+		dX2 = dX + dXRad * cos(dAngle2);
+		dY2 = dY + dYRad * sin(dAngle2);
+	
+		dCX1 = dX1 - dAlpha * dXRad * sin(dAngle1);
+		dCY1 = dY1 + dAlpha * dYRad * cos(dAngle1);
+	
+		dCX2 = dX2 + dAlpha * dXRad * sin(dAngle2);
+		dCY2 = dY2 - dAlpha * dYRad * cos(dAngle2);
+	
+		if ( !bClockDirection )
+		{
+			pStream->WriteReal(dCX1);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(dCY1);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(dCX2);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(dCY2);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(dX2);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(dY2);
+			dXCur = dX2; 
+			dYCur = dY2;
+		}
+		else
+		{
+			pStream->WriteReal(dCX2);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(dCY2);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(dCX1);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(dCY1);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(dX1);
+			pStream->WriteChar(' ');
+			pStream->WriteReal(dY1);
+			dXCur = dX1; 
+			dYCur = dY1;
+		}
+		pStream->WriteStr(" c\012");
+	}
+	//----------------------------------------------------------------------------------------
+	// CPageTree
+	//----------------------------------------------------------------------------------------
+	CPageTree::CPageTree(CXref* pXref)
+	{
+		pXref->Add(this);
+
+		m_pPages = new CArrayObject();
+		m_pCount = new CNumberObject(0);
+
+		Add("Type", "Pages");
+		Add("Kids", m_pPages);
+		Add("Count", m_pCount);
+	}
+	void CPageTree::AddPage(CDictObject* pPage)
+	{
+		m_pPages->Add(pPage);
+		(*m_pCount)++;
+	}
+	//----------------------------------------------------------------------------------------
+	// CPage
+	//----------------------------------------------------------------------------------------
+	CPage::CPage(CXref* pXref, CPageTree* pParent)
+	{
+		pXref->Add(this);
+
+		m_pXref     = pXref;
+		m_pContents = new CDictObject(pXref);
+		m_pStream   = m_pContents->GetStream();
+		m_eGrMode   = grmode_PAGE;
+		m_pGrState  = new CGrState(NULL);
+
+		m_pExtGStates       = NULL;
+		m_unExtGStatesCount = 0;
+		m_pFonts            = NULL;
+		m_pFont             = NULL;
+		m_unFontsCount      = 0;
+		m_pXObjects         = NULL;
+		m_unXObjectsCount   = 0;
+		m_pShadings         = NULL;
+		m_unShadingsCount   = 0;
+		m_pPatterns         = NULL;
+		m_unPatternsCount   = 0;
+
+		Add("Type", "Page");
+		Add("Parent", pParent);
+		Add("MediaBox", CArrayObject::CreateBox(0, 0, DEF_PAGE_WIDTH, DEF_PAGE_HEIGHT));
+		Add("Contents", m_pContents);		
+		AddResource();
+	}
+	CPage::~CPage()
+	{
+		CGrState* pGrState = m_pGrState, *pPrev = NULL;
+		while (pGrState)		
+		{
+			pPrev = m_pGrState->GetPrev();
+			delete pGrState;
+			pGrState = pPrev;
+		}
+	}
+	void          CPage::SetWidth(double dValue)
+	{
+		dValue = min(max(dValue, 1), 14400);
+		SetMediaBoxValue(2, dValue);
+	}
+	double        CPage::GetWidth()
+	{
+		return GetMediaBox().fRight;
+	}
+	void          CPage::SetHeight(double dValue)
+	{
+		dValue = min(max(dValue, 1), 14400);
+		SetMediaBoxValue(3, dValue);
+	}
+	double        CPage::GetHeight()
+	{
+		return GetMediaBox().fTop;
+	}
+	TBox          CPage::GetMediaBox()
+	{
+		TBox oMediaBox ={ 0, 0, 0, 0 };
+
+		CArrayObject* pArray = GetMediaBoxItem();
+
+		if (pArray)
+		{
+			CRealObject* pReal;
+
+			pReal = (CRealObject*)pArray->Get(0);
+			if (pReal)
+				oMediaBox.fLeft = pReal->Get();
+
+			pReal = (CRealObject*)pArray->Get(1);
+			if (pReal)
+				oMediaBox.fBottom = pReal->Get();
+
+			pReal = (CRealObject*)pArray->Get(2);
+			if (pReal)
+				oMediaBox.fRight = pReal->Get();
+
+			pReal = (CRealObject*)pArray->Get(3);
+			if (pReal)
+				oMediaBox.fTop = pReal->Get();
+		}
+
+		return oMediaBox;
+	}
+	void          CPage::SetMediaBoxValue(unsigned int unIndex, double dValue)
+	{
+		CArrayObject* pArray = GetMediaBoxItem();
+		if (!pArray)
+			return;
+
+		CRealObject* pReal = (CRealObject*)pArray->Get(unIndex);
+		if (!pReal)
+			return;
+
+		pReal->Set(dValue);
+	}
+	CArrayObject* CPage::GetMediaBoxItem()
+	{
+		return (CArrayObject*)Get("MediaBox");
+	}
+	CDictObject*  CPage::GetResourcesItem()
+	{
+		CObjectBase* pObject = Get("Resources");
+
+		// Если объект Resources нулевой, тогда ищем Resources у родительского объекта рекурсивно
+		if (!pObject)
+		{
+			CPageTree* pPageTree = (CPageTree*)Get("Parent");
+			while (pPageTree)
+			{
+				pObject = Get("Resources");
+
+				if (pObject)
+					break;
+
+				pPageTree = (CPageTree*)pPageTree->Get("Parent");
+			}
+		}
+
+		return (CDictObject*)pObject;
+	}
+	CObjectBase*  CPage::GetCropBoxItem()
+	{
+		return Get("CropBox");
+	}
+	CObjectBase*  CPage::GetRotateItem()
+	{
+		return Get("Rotate");
+	}
+	void          CPage::AddResource()
+	{
+		CDictObject* pResource = new CDictObject();
+		if (!pResource)
+			return;
+	
+	    // Не смотря на то, что ProcSet - устаревший объект, добавляем
+	    // его для совместимости	
+	    Add("Resources", pResource);
+	
+		CArrayObject* pProcset = new CArrayObject();
+		if (!pProcset)
+			return;	
+	
+		pResource->Add("ProcSet", pProcset);
+		pProcset->Add(new CNameObject("PDF"));
+		pProcset->Add(new CNameObject("Text"));
+		pProcset->Add(new CNameObject("ImageB"));
+		pProcset->Add(new CNameObject("ImageC"));
+		pProcset->Add(new CNameObject("ImageI"));
+	}
+	void          CPage::BeforeWrite()
+	{
+		if (grmode_PATH == m_eGrMode)
+			EndPath();
+
+		if (grmode_TEXT == m_eGrMode)
+			EndText();
+
+		while (m_pGrState->GetPrev())
+		{
+			GrRestore();
+		}
+	}
+	void          CPage::SetGrMode(EGrMode eMode)
+	{
+		m_eGrMode = eMode;
+		// TODO: Сделать проверку плохих ситуаций
+	}
+	void          CPage::CheckGrMode(EGrMode eMode)
+	{
+		// TODO: Сделать проверку плохих ситуаций
+	}
+	void          CPage::MoveTo (double dX, double dY)
+	{
+		// Operator   : m
+		// Description: Начинаем новый subpath, передвигая текущий указатель в точку (x, y)(она же стартовая). 
+
+		SetGrMode(grmode_PATH);
+		m_pStream->WriteReal(dX);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY);
+		m_pStream->WriteStr(" m\012");
+
+		m_oCurPos.Set(dX, dY);
+		m_oStartPos = m_oCurPos;
+	}
+	void          CPage::LineTo (double dX, double dY)
+	{
+		// Operator   : l
+		// Description: Добавляем линию от текущей точки до точки (x, y). Текущую точку выставляем (х, у).
+		CheckGrMode(grmode_PATH);
+
+		m_pStream->WriteReal(dX);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY);
+		m_pStream->WriteStr(" l\012");
+
+		m_oCurPos.Set(dX, dY);
+	}
+	void          CPage::CurveTo(double dX1, double dY1, double dX2, double dY2, double dX3, double dY3)
+	{
+		// Operator   : c
+		// Description: Добавляем кривую Безье(кубическую). Начинается кривая в текущей позиции, заканчивается
+		//              в точке (x3, y3). (x1, y1) и (x2, y2) - контрольные точки. Текущую точку устанавливаем
+		//              в (х3, у3).
+		CheckGrMode(grmode_PATH);
+
+		m_pStream->WriteReal(dX1);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY1);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dX2);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY2);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dX3);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY3);
+		m_pStream->WriteStr(" c\012");
+
+		m_oCurPos.Set(dX3, dY3);
+	}
+	void          CPage::Ellipse(double dX, double dY, double dXRay, double dYRay)
+	{
+		SetGrMode(grmode_PATH);
+
+		m_pStream->WriteReal(dX - dXRay);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY);
+		m_pStream->WriteStr(" m\012");    
+	
+	    QuarterEllipseA(m_pStream, dX, dY, dXRay, dYRay);
+	    QuarterEllipseB(m_pStream, dX, dY, dXRay, dYRay);
+	    QuarterEllipseC(m_pStream, dX, dY, dXRay, dYRay);
+	    QuarterEllipseD(m_pStream, dX, dY, dXRay, dYRay);
+	
+		m_oCurPos.Set(dX - dXRay, dY);
+		m_oStartPos = m_oCurPos;
+	}
+	void          CPage::EllipseArc(double dX, double dY, double dXRad, double dYRad, double _dAngle1, double _dAngle2, bool bClockDirection)
+	{
+		CheckGrMode(grmode_PATH);
+	
+		// переведем углы в радианы	
+		double dAngle1 = _dAngle1 * 3.141592f / 180;
+		double dAngle2 = _dAngle2 * 3.141592f / 180;
+	
+		// Выясним в каких четвертях находятся начальная и конечная точки
+		int nFirstPointQuard  = int(_dAngle1) / 90 + 1;
+		int nSecondPointQuard = int(_dAngle2) / 90 + 1;
+	
+		nSecondPointQuard = min(4, max(1, nSecondPointQuard));
+		nFirstPointQuard  = min(4, max(1, nFirstPointQuard));
+
+		// Проведем линию в начальную точку дуги
+		double dStartX = 0.0, dStartY = 0.0, dEndX = 0.0, dEndY = 0.0;
+	
+		dStartX = dX + dXRad * cos(AngToEllPrm(dAngle1, dXRad, dYRad));
+		dStartY = dY + dYRad * sin(AngToEllPrm(dAngle1, dXRad, dYRad));
+	
+		m_pStream->WriteReal(dStartX);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dStartY);
+		m_pStream->WriteStr(" l\012");
+
+		// Дальше рисуем по четверям	
+		double dCurX = dStartX, dCurY = dStartY;
+		double dStartAngle = dAngle1;
+		double dEndAngle = 0;
+	
+		if ( !bClockDirection )
+		{
+			for (unsigned int nIndex = nFirstPointQuard; nIndex <= nSecondPointQuard; nIndex++)
+			{
+				if (nIndex == nSecondPointQuard)
+					dEndAngle = dAngle2;
+				else
+					dEndAngle = (90 * (nIndex)) * 3.141592f / 180;
+				if (!(nIndex == nFirstPointQuard))
+					dStartAngle = (90 * (nIndex - 1)) * 3.141592f / 180;
+
+				WriteEllipseArc(m_pStream, dX, dY, dXRad, dYRad, AngToEllPrm(dStartAngle, dXRad, dYRad), AngToEllPrm(dEndAngle, dXRad, dYRad), dEndX, dEndY, false);
+			}
+		}
+		else
+		{
+			for( unsigned int nIndex = nFirstPointQuard; nIndex >= nSecondPointQuard; nIndex-- ) 
+			{
+				if ( nIndex == nFirstPointQuard )
+					dStartAngle = dAngle1;
+				else
+					dStartAngle = (90 * (nIndex ) ) * 3.141592f / 180;
+				if ( !( nIndex == nSecondPointQuard ) )
+					dEndAngle = (90 * (nIndex - 1 ) ) * 3.141592f / 180;
+				else
+					dEndAngle = dAngle2;
+	
+				WriteEllipseArc(m_pStream, dX, dY, dXRad, dYRad, AngToEllPrm(dStartAngle, dXRad, dYRad), AngToEllPrm(dEndAngle, dXRad, dYRad), dEndX, dEndY, false);
+			}
+		}
+	
+		m_oCurPos.Set(dEndX, dEndY);
+		m_oStartPos = m_oCurPos;
+	}
+	void          CPage::EllipseArcTo(double dX, double dY, double dXRad, double dYRad, double _dAngle1, double _dAngle2, bool bClockDirection)
+	{
+		// Проверяем эллипс на невырожденность
+		if (dXRad < 0.001 || dYRad < 0.001)
+		{
+			double dAngle1 = _dAngle1 * 3.141592f / 180;
+			double dAngle2 = _dAngle2 * 3.141592f / 180;
+
+			if (dXRad < 0.001 && dYRad < 0.001)
+				LineTo(dX, dY);
+			else if (dXRad < 0.001)
+			{
+				LineTo(dX, dY + sin(dAngle1) * dYRad);
+				LineTo(dX, dY + sin(dAngle2) * dYRad);
+			}
+			else // if (dYRad < 0.001) 
+			{
+				LineTo(dX + cos(dAngle1) * dXRad, dY);
+				LineTo(dX + cos(dAngle2) * dXRad, dY);
+			}
+			return;
+		}
+
+
+		while (_dAngle1 < 0)
+			_dAngle1 += 360;
+
+		while (_dAngle1 > 360)
+			_dAngle1 -= 360;
+
+		while (_dAngle2 < 0)
+			_dAngle2 += 360;
+
+		while (_dAngle2 >= 360)
+			_dAngle2 -= 360;
+
+		if (!bClockDirection)
+		{
+			if (_dAngle1 <= _dAngle2)
+				EllipseArc(dX, dY, dXRad, dYRad, _dAngle1, _dAngle2, false);
+			else
+			{
+				EllipseArc(dX, dY, dXRad, dYRad, _dAngle1, 360, false);
+				EllipseArc(dX, dY, dXRad, dYRad, 0, _dAngle2, false);
+			}
+		}
+		else
+		{
+			if (_dAngle1 >= _dAngle2)
+				EllipseArc(dX, dY, dXRad, dYRad, _dAngle1, _dAngle2, true);
+			else
+			{
+				EllipseArc(dX, dY, dXRad, dYRad, _dAngle1, 0, true);
+				EllipseArc(dX, dY, dXRad, dYRad, 360, _dAngle2, true);
+			}
+		}
+	}
+	void          CPage::ClosePath()
+	{
+		// Operator   : h
+		// Description: Закрываем subpath, соединяя текущую точку с начальной прямой линией. Если subpath
+		//              уже закрыт, тогда ничего не делаем
+		CheckGrMode(grmode_PATH);
+		m_pStream->WriteStr("h\012");
+		m_oCurPos = m_oStartPos;
+	}
+	void          CPage::Stroke()
+	{
+		// Operator   : S
+		// Description: Обводим path.
+
+		SetGrMode(grmode_PAGE);
+		m_pStream->WriteStr("S\012");
+		m_oCurPos.Reset();
+	}
+	void          CPage::Fill()
+	{
+		// Operator   : f
+		// Description: Заливка path по правилу Nonzero Winding Number Rule(см. спецификацию PDF Part1: PDF 1.7 
+		//              стр. 136, закладка 8.5.3.3.2). 
+		SetGrMode(grmode_PAGE);
+		m_pStream->WriteStr("f\012");
+		m_oCurPos.Reset();
+	}
+	void          CPage::EoFill()
+	{
+		// Operator   : f*
+		// Description: Заливка path по правилу Even-Odd Rule(см. спецификацию PDF Part1: PDF 1.7 стр. 137, 
+		//              закладка 8.5.3.3.3). 
+		SetGrMode(grmode_PAGE);
+		m_pStream->WriteStr("f*\012");
+		m_oCurPos.Reset();
+	}
+	void          CPage::FillStroke()
+	{
+		// Operator   : B
+		// Description: Заливка и обоводка path, используя правило для заливки Nonzero Winding Number Rule(см. 
+		//              спецификацию PDF Part1: PDF 1.7 стр. 136, закладка 8.5.3.3.2). Этот оператор должен 
+		//              привести к тому же самому результату как строительство двух идентичных объектов path, 
+		//              применяя к первому оператор f и ко второму - S.
+		SetGrMode(grmode_PAGE);
+		m_pStream->WriteStr("B\012");
+		m_oCurPos.Reset();
+	}
+	void          CPage::EoFillStroke()
+	{
+		// Operator   : B*
+		// Description: Заливка и обоводка path, используя правило для заливки Even-Odd Rule(см. 
+		//              спецификацию PDF Part1: PDF 1.7 стр. 137, закладка 8.5.3.3.3). Этот оператор должен 
+		//              привести к тому же самому результату как строительство двух идентичных объектов path, 
+		//              применяя к первому оператор f* и ко второму - S.
+		SetGrMode(grmode_PAGE);
+		m_pStream->WriteStr("B*\012");
+		m_oCurPos.Reset();
+	}
+	void          CPage::EndPath()
+	{
+		// Operator   : n
+		// Description: Закрываем path, не заливая и не обводя его. Этот оператор используется прежде всего для 
+		//              изменения текущего path.
+		SetGrMode(grmode_PAGE);
+		m_pStream->WriteStr("n\012");
+		m_oCurPos.Reset();
+	}
+	void          CPage::SetLineWidth(double dLineWidth)
+	{
+		// Operator   : w 
+		// Descriprion: устанавливаем толщину линии
+
+		dLineWidth = max(dLineWidth, 0);
+		m_pStream->WriteReal(dLineWidth);
+		m_pStream->WriteStr(" w\012");
+		m_pGrState->m_dLineWidth = dLineWidth;
+	}
+	void          CPage::SetLineCap(ELineCapStyle eLineCap)
+	{
+		// Operator   : J 
+		// Descriprion: устанавливаем вид окончания линии (LineCapStyle)
+
+		eLineCap = max(linecap_Min, min(linecap_Max, eLineCap));
+		m_pStream->WriteInt((unsigned int)eLineCap);
+		m_pStream->WriteStr(" J\012");
+		m_pGrState->m_eLineCap = eLineCap;
+	}
+	void          CPage::SetLineJoin(ELineJoinStyle eLineJoin)
+	{
+		// Operator   : j
+		// Descriprion: устанавливаем вид соединения линий (LineJoinStyle)
+		eLineJoin = max(linejoin_Min, min(linejoin_Max, eLineJoin));
+		m_pStream->WriteInt((unsigned int)eLineJoin);
+		m_pStream->WriteStr(" j\012");
+		m_pGrState->m_eLineJoin = eLineJoin;
+	}
+	void          CPage::SetMiterLimit(double dMiterLimit)
+	{
+		// Operator   : M
+		// Descriprion: устанавливаем MiterLimit - константа, относящаяся к виду соединения линий
+		dMiterLimit = max(1, dMiterLimit);
+		m_pStream->WriteReal(dMiterLimit);
+		m_pStream->WriteStr(" M\012");
+		m_pGrState->m_dMiterLimit = dMiterLimit;
+	}
+	void          CPage::SetDash(const double* pPattern, unsigned int unCount, double dPhase)
+	{
+		// Operator   : d
+		// Descriprion: устанавливаем вид линий (DashMode)
+
+		if (0 == unCount || !pPattern)
+			return;
+
+		bool bFalseDash = true;
+		for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
+		{
+			if (0 != pPattern[unIndex])
+			{
+				bFalseDash = false;
+				break;
+			}
+		}
+
+		if (bFalseDash)
+			return;
+
+		m_pStream->WriteChar('[');
+		for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
+		{
+			m_pStream->WriteReal(pPattern[unIndex]);
+			m_pStream->WriteChar(' ');
+		}
+		m_pStream->WriteStr("] ");
+		m_pStream->WriteReal(dPhase);
+		m_pStream->WriteStr(" d\012");
+
+		m_pGrState->m_oDashMode.Set(pPattern, unCount, dPhase);
+	}
+	void          CPage::SetFlat(double dFlatness)
+	{
+		// Operator   : i
+		// Descriprion: устанавливаем порог ошибки линии (Flatness tolerance)
+		dFlatness = min(100, max(0, dFlatness));
+		m_pStream->WriteReal(dFlatness);
+		m_pStream->WriteStr(" i\012");
+		m_pGrState->m_dFlatness = dFlatness;
+	}
+	void          CPage::GrSave()
+	{
+		// Operator   : q
+		// Description: сохраняем текущий GState в графическом стеке
+		CheckGrMode(grmode_PAGE);
+		CGrState* pState = new CGrState(m_pGrState);
+		if (!pState)
+			return;
+
+		m_pStream->WriteStr("q\012");
+		m_pGrState = pState;
+	}
+	void          CPage::GrRestore()
+	{
+		// Operator   : Q
+		// Description: Восстанавливаем GState, удаляя самый последний GState, и делаем данный GState текущим
+		CheckGrMode(grmode_PAGE);
+
+		if (!m_pGrState->m_pPrev)
+			return;
+
+		CGrState* pPrev = m_pGrState->m_pPrev;
+		delete m_pGrState;
+		m_pGrState = pPrev;
+
+		m_pStream->WriteStr("Q\012");
+	}
+	void          CPage::SetStrokeColor(unsigned char unR, unsigned char unG, unsigned char unB)
+	{
+		// Operator   : RG
+		// Description: Устанавливаем цветовое пространтсво для обводки в DeviceRGB и устанавливаем цвет для 
+		//              операций связанных с обведением фигур.
+
+		double dR = unR / 255.0;
+		double dG = unG / 255.0;
+		double dB = unB / 255.0;
+
+		m_pStream->WriteReal(dR);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dG);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dB);
+		m_pStream->WriteStr(" RG\012");
+
+		m_pGrState->m_oStrokeColor.r = dR;
+		m_pGrState->m_oStrokeColor.g = dG;
+		m_pGrState->m_oStrokeColor.b = dB;
+	}
+	void          CPage::SetFillColor(unsigned char unR, unsigned char unG, unsigned char unB)
+	{
+		// Operator   : rg
+		// Description: Устанавливаем цветовое пространтсво для заливки в DeviceRGB и устанавливаем цвет для 
+		//              операций связанных с заливкой фигур.
+
+		double dR = unR / 255.0;
+		double dG = unG / 255.0;
+		double dB = unB / 255.0;
+
+		m_pStream->WriteReal(dR);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dG);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dB);
+		m_pStream->WriteStr(" rg\012");
+
+		m_pGrState->m_oFillColor.r = dR;
+		m_pGrState->m_oFillColor.g = dG;
+		m_pGrState->m_oFillColor.b = dB;
+	}
+	void          CPage::Concat(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
+	{
+		// Operator   : cm
+		// Description: меняем матрицу преобразований (CTM - Current Transformation Matrix)
+
+		m_pStream->WriteReal(dM11);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dM12);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dM21);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dM22);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dX);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY);
+		m_pStream->WriteStr(" cm\012");
+	
+		CMatrix oCTM = m_pGrState->m_oMatrix;
+	
+		// перемножаем матрицы oCTM(новая)= oCTM(преобразования(которая параметрами задана)) x oCTM(старая)
+		m_pGrState->m_oMatrix.m11 = oCTM.m11 * dM11 + oCTM.m12 * dM21;
+		m_pGrState->m_oMatrix.m12 = oCTM.m11 * dM12 + oCTM.m12 * dM22;
+		m_pGrState->m_oMatrix.m21 = oCTM.m21 * dM11 + oCTM.m22 * dM21;
+		m_pGrState->m_oMatrix.m22 = oCTM.m21 * dM12 + oCTM.m22 * dM22;
+		m_pGrState->m_oMatrix.x = oCTM.x + dX * oCTM.m11 + dY * oCTM.m21;
+		m_pGrState->m_oMatrix.y = oCTM.y + dX * oCTM.m12 + dY * oCTM.m22;
+	}
+	void          CPage::Clip()
+	{
+		// Operator   : W
+		// Description: Изменяем текущий clipping path, пересакая его с текущим path, ипользуя правило Nonzero 
+		//              Winding Number Rule, для определения какие регионы лежат внутри clipping path.
+		SetGrMode(grmode_CLIP);
+		m_pStream->WriteStr("W\012");
+	}
+	void          CPage::Eoclip()
+	{
+		// Operator   : W*
+		// Description: Изменяем текущий clipping path, пересакая его с текущим path, ипользуя правило Even-Odd 
+		//              Rule, для определения какие регионы лежат внутри clipping path.
+		SetGrMode(grmode_CLIP);
+		m_pStream->WriteStr("W*\012");
+	}
+	void          CPage::SetExtGrState(CExtGrState* pState)
+	{
+		// Operator   : gs
+		// Description: устанавливаем сразу все настройки данного графического состояния(ExtGState)
+
+		const char* sGsName = GetExtGrStateName(pState);
+		if (!sGsName)
+			return;
+
+		m_pStream->WriteEscapeName(sGsName);
+		m_pStream->WriteStr(" gs\012");
+	}
+	const char*   CPage::GetExtGrStateName(CExtGrState* pState)
+	{
+		const char *sKey;
+
+		if (!m_pExtGStates)
+		{
+			CDictObject* pResources = (CDictObject*)GetResourcesItem();
+			if (!pResources)
+				return NULL;
+
+			m_pExtGStates = new CDictObject();
+			if (!m_pExtGStates)
+				return NULL;
+
+			pResources->Add("ExtGState", m_pExtGStates);
+		}
+
+		sKey = m_pExtGStates->GetKey(pState);
+		if (!sKey)
+		{
+			// Если ExtGState не зарегистрирован в Resource, регистрируем.
+			char sExtGrStateName[LIMIT_MAX_NAME_LEN + 1];
+			char *pPointer;
+			char *pEndPointer = sExtGrStateName + LIMIT_MAX_NAME_LEN;
+
+			pPointer = (char*)StrCpy(sExtGrStateName, "E", pEndPointer);
+			ItoA(pPointer, m_unCompressionMode + 1, pEndPointer);
+			m_unCompressionMode++;
+			m_pExtGStates->Add(sExtGrStateName, pState);
+			sKey = m_pExtGStates->GetKey(pState);
+		}
+
+		return sKey;
+	}
+	void          CPage::AddAnnotation(CAnnotation* pAnnot)
+	{
+		CArrayObject* pArray = (CArrayObject*)Get("Annots");
+		if (!pArray)
+		{
+			pArray = new CArrayObject();
+			if (!pArray)
+				return;
+	
+	        Add("Annots", pArray);
+	    }
+	
+	    return pArray->Add(pAnnot);
+	}
+	void          CPage::BeginText()
+	{
+		// Operator   : BT
+		// Description: Начало текста
+		SetGrMode(grmode_TEXT);
+		m_pStream->WriteStr("BT\012");
+
+		m_oTextPos.Reset();
+		m_oTextMatrix.Reset();
+	}
+	void          CPage::EndText()
+	{
+		// Operator   : ET
+		// Description: Окончание текста
+		CheckGrMode(grmode_TEXT);
+		m_pStream->WriteStr("ET\012");	
+		SetGrMode(grmode_PAGE);
+	}
+	void          CPage::MoveTextPos(double dX, double dY)
+	{
+		// Operator   : Td
+		// Description: Переходим к началу следующей линии, сдвигаясь от начала текущей на ( fX, fY ).
+		CheckGrMode(grmode_TEXT);
+
+		m_pStream->WriteReal(dX);
+	    m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY);
+		m_pStream->WriteStr(" Td\012");
+	
+		m_oTextMatrix.x += dX * m_oTextMatrix.m11 + dY * m_oTextMatrix.m21;
+		m_oTextMatrix.y += dX * m_oTextMatrix.m12 + dY * m_oTextMatrix.m22;
+		m_oTextPos.Set(m_oTextMatrix.x, m_oTextMatrix.y);
+	}
+	void          CPage::ShowText(const BYTE* sText, unsigned int unLen)
+	{
+		// Operator   : Tj
+		// Description: Показать текстовую строку.
+		CheckGrMode(grmode_TEXT);
+		WriteText(sText, unLen);
+		m_pStream->WriteStr(" Tj\012");
+	}
+	void          CPage::WriteText(const BYTE* sText, unsigned int unLen)
+	{
+		EFontType eType = m_pFont->GetFontType();
+		if (fontCIDType0 == eType || fontCIDType0C == eType || fontCIDType0COT == eType || fontCIDType2 == eType || fontCIDType2OT == eType)
+		{
+			m_pStream->WriteChar('<');
+			m_pStream->WriteBinary(sText, unLen, NULL);
+			m_pStream->WriteChar('>');
+		}
+		else
+		{
+			m_pStream->WriteEscapeText(sText, unLen);
+		}
+	}
+	void          CPage::DrawText(double dXpos, double dYpos, const BYTE* sText, unsigned int unLen)
+	{
+		CheckGrMode(grmode_TEXT);
+
+		double dX = 0.0;
+		double dY = 0.0;
+
+		if (0 == m_oTextMatrix.m11)
+		{
+			dY = (dXpos - m_oTextMatrix.x) / m_oTextMatrix.m21;
+			dX = (dYpos - m_oTextMatrix.y - (dXpos - m_oTextMatrix.x) * m_oTextMatrix.m22 / m_oTextMatrix.m21) / m_oTextMatrix.m12;
+		}
+		else
+		{
+			dY = (dYpos - m_oTextMatrix.y - (dXpos - m_oTextMatrix.x) * m_oTextMatrix.m12 / m_oTextMatrix.m11) / (m_oTextMatrix.m22 - m_oTextMatrix.m21 * m_oTextMatrix.m12 / m_oTextMatrix.m11);
+			dX = (dXpos - m_oTextMatrix.x - dY * m_oTextMatrix.m21) / m_oTextMatrix.m11;
+		}
+
+		MoveTextPos(dX, dY);
+		ShowText(sText, unLen);
+	}
+	void          CPage::SetCharSpace(double dValue)
+	{
+		// Operator   : Tc
+		// Description: Устанавливаем расстояние между буквами
+		CheckGrMode(grmode_TEXT);
+
+		dValue = min(MAX_CHARSPACE, max(MIN_CHARSPACE, dValue));
+		m_pStream->WriteReal(dValue);
+		m_pStream->WriteStr(" Tc\012");
+	}
+	void          CPage::SetHorizontalScalling(double dValue)
+	{
+		// Operator   : Tz
+		// Description: Устанавливаем горизонтальное растяжение/сжатие
+		CheckGrMode(grmode_TEXT);
+
+		dValue = min(MAX_HORIZONTALSCALING, max(MIN_HORIZONTALSCALING, dValue));
+		m_pStream->WriteReal(dValue);
+		m_pStream->WriteStr(" Tz\012");
+	}
+	void          CPage::SetFontAndSize(CFontDict* pFont, double dSize)
+	{
+		// Operator   : Tf
+		// Description: Устанавливаем фонт и размер фонта
+
+		dSize = min(MAX_FONTSIZE, max(0, dSize));
+		const char* sFontName = GetLocalFontName(pFont);
+		if (!sFontName)
+			return;
+
+		m_pStream->WriteEscapeName(sFontName);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dSize);
+		m_pStream->WriteStr(" Tf\012");
+
+		m_pFont = pFont;
+	}
+	const char*   CPage::GetLocalFontName(CFontDict* pFont)
+	{
+		if (!m_pFonts)
+		{
+			CDictObject* pResources = GetResourcesItem();
+			if (!pResources)
+				return NULL;
+
+			m_pFonts = new CDictObject();
+			if (!m_pFonts)
+				return NULL;
+
+			pResources->Add("Font", m_pFonts);
+		}
+
+		const char *sKey = m_pFonts->GetKey(pFont);
+		if (!sKey)
+		{
+			// если фонт не зарегистрирован в ресурсах, тогда регистрируем его
+			char sFontName[LIMIT_MAX_NAME_LEN + 1];
+			char *pPointer = NULL;
+			char *pEndPointer = sFontName + LIMIT_MAX_NAME_LEN;
+
+			pPointer = (char*)StrCpy(sFontName, "F", pEndPointer);
+			ItoA(pPointer, m_unFontsCount + 1, pEndPointer);
+			m_unFontsCount++;
+			m_pFonts->Add(sFontName, pFont);
+			sKey = m_pFonts->GetKey(pFont);
+		}
+
+		return sKey;
+	}
+	void          CPage::SetTextRenderingMode(ETextRenderingMode eMode)
+	{
+		// Operator   : Tr
+		// Description: Устанавливаем тип закрашивания символов (TextRenderingMode)
+		CheckGrMode(grmode_TEXT);
+		m_pStream->WriteInt((int)eMode);
+		m_pStream->WriteStr(" Tr\012");
+	}
+	void          CPage::SetTextMatrix(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
+	{
+		// Operator   : Tm
+		// Description: Устанавливаем матрицу преобразования для текста.
+		CheckGrMode(grmode_TEXT);
+
+		m_pStream->WriteReal(dM11);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dM12);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dM21);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dM22);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dX);
+		m_pStream->WriteChar(' ');
+		m_pStream->WriteReal(dY);
+		m_pStream->WriteStr(" Tm\012");
+	
+		m_oTextMatrix.m11 = dM11;
+		m_oTextMatrix.m12 = dM12;
+		m_oTextMatrix.m21 = dM21;
+		m_oTextMatrix.m22 = dM22;
+		m_oTextMatrix.x = dX;
+		m_oTextMatrix.y = dY;
+		m_oTextPos.Set(m_oTextMatrix.x, m_oTextMatrix.y);
+	}
+	void          CPage::ExecuteXObject(CXObject* pXObject)
+	{
+		const char* sXObjectName = GetXObjectName(pXObject);
+
+		if (!sXObjectName)
+			return;
+
+		m_pStream->WriteEscapeName(sXObjectName);
+		m_pStream->WriteStr(" Do\012");
+	}
+	void          CPage::DrawImage(CImageDict* pImage, double dX, double dY, double dWidth, double dHeight)
+	{
+		GrSave();
+		Concat(dWidth, 0, 0, dHeight, dX, dY);
+		ExecuteXObject(pImage);
+		GrRestore();
+	}
+	const char*   CPage::GetXObjectName(CXObject* pObject)
+	{
+		if (!m_pXObjects)
+		{
+			CDictObject* pResources = GetResourcesItem();
+			if (!pResources)
+				return NULL;
+
+			m_pXObjects = new CDictObject();
+			if (!m_pXObjects)
+				return NULL;
+
+			pResources->Add("XObject", m_pXObjects);
+		}
+
+		const char* sKey = m_pXObjects->GetKey(pObject);
+		if (!sKey)
+		{
+			char sXObjName[LIMIT_MAX_NAME_LEN + 1];
+			char *pPointer;
+			char *pEndPointer = sXObjName + LIMIT_MAX_NAME_LEN;
+
+			pPointer = (char*)StrCpy(sXObjName, "X", pEndPointer);
+			ItoA(pPointer, m_unXObjectsCount + 1, pEndPointer);
+			m_unXObjectsCount++;
+			m_pXObjects->Add(sXObjName, pObject);
+			sKey = m_pXObjects->GetKey(pObject);
+		}
+
+		return sKey;
+	}
+	void          CPage::DrawShading(CShading* pShading)
+	{
+		// Operator   : sh
+		// Description: отрисовываем градиент
+
+		const char* sShadingName = GetLocalShadingName(pShading);
+		if (!sShadingName)
+			return;
+
+		m_pStream->WriteEscapeName(sShadingName);
+		m_pStream->WriteStr(" sh\012");
+	}
+	const char*   CPage::GetLocalShadingName(CShading* pShading)
+	{
+		if (!m_pShadings)
+		{
+			CDictObject* pResources = GetResourcesItem();
+			if (!pResources)
+				return NULL;
+
+			m_pShadings = new CDictObject();
+			if (!m_pShadings)
+				return NULL;
+
+			pResources->Add("Shading", m_pShadings);
+		}
+
+		const char* sKey = m_pShadings->GetKey(pShading);
+		if (!sKey)
+		{
+			char sShadingName[LIMIT_MAX_NAME_LEN + 1];
+			char *pPointer;
+			char *pEndPointer = sShadingName + LIMIT_MAX_NAME_LEN;
+
+			pPointer = (char*)StrCpy(sShadingName, "S", pEndPointer);
+			ItoA(pPointer, m_unShadingsCount + 1, pEndPointer);
+			m_unShadingsCount++;
+			m_pShadings->Add(sShadingName, pShading);
+			sKey = m_pShadings->GetKey(pShading);
+		}
+
+		return sKey;
+	}
+	const char*   CPage::GetLocalPatternName(CImageTilePattern* pPattern)
+	{
+		if (!m_pPatterns)
+		{
+			CDictObject* pResources = GetResourcesItem();
+			if (!pResources)
+				return NULL;
+
+			m_pPatterns = new CDictObject();
+			if (!m_pPatterns)
+				return NULL;
+
+			pResources->Add("Pattern", m_pPatterns);
+		}
+
+		const char* sKey = m_pPatterns->GetKey(pPattern);
+		if (!sKey)
+		{
+			char sPatternName[LIMIT_MAX_NAME_LEN + 1];
+			char *pPointer;
+			char *pEndPointer = sPatternName + LIMIT_MAX_NAME_LEN;
+
+			pPointer = (char*)StrCpy(sPatternName, "P", pEndPointer);
+			ItoA(pPointer, m_unPatternsCount + 1, pEndPointer);
+			m_unPatternsCount++;
+			m_pPatterns->Add(sPatternName, pPattern);
+			sKey = m_pPatterns->GetKey(pPattern);
+		}
+
+		return sKey;
+	}
+	void          CPage::SetPatternColorSpace(CImageTilePattern* pPattern)
+	{
+		// Operator   : csn
+		// Description: задаем паттерн для рисования
+
+		const char* sPatternName = GetLocalPatternName(pPattern);
+		if (!sPatternName)
+			return;
+
+		m_pStream->WriteStr("/Pattern cs\012");
+		m_pStream->WriteEscapeName(sPatternName);
+		m_pStream->WriteStr(" scn\012");		
+	}
+}

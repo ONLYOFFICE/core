@@ -321,11 +321,11 @@ void common_value_and_type_attlist::serialize(CP_ATTR_NODE)
 
 void common_border_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"fo:border", fo_border_);
-    CP_APPLY_ATTR(L"fo:border-top", fo_border_top_);
-    CP_APPLY_ATTR(L"fo:border-bottom", fo_border_bottom_);
-    CP_APPLY_ATTR(L"fo:border-left", fo_border_left_);
-    CP_APPLY_ATTR(L"fo:border-right", fo_border_right_);    
+    CP_APPLY_ATTR(L"fo:border",			fo_border_);
+    CP_APPLY_ATTR(L"fo:border-top",		fo_border_top_);
+    CP_APPLY_ATTR(L"fo:border-bottom",	fo_border_bottom_);
+    CP_APPLY_ATTR(L"fo:border-left",	fo_border_left_);
+    CP_APPLY_ATTR(L"fo:border-right",	fo_border_right_);    
 }
 void common_border_attlist::apply_from(const common_border_attlist & Other)
 {
@@ -334,29 +334,29 @@ void common_border_attlist::apply_from(const common_border_attlist & Other)
 		fo_border_top_ = fo_border_bottom_ = fo_border_left_ = fo_border_right_ = fo_border_;
 		fo_border_ = Other.fo_border_;
 	}
-	_CP_APPLY_PROP(fo_border_, Other.fo_border_);
-    _CP_APPLY_PROP(fo_border_top_, Other.fo_border_top_);
-    _CP_APPLY_PROP(fo_border_bottom_, Other.fo_border_bottom_);
-    _CP_APPLY_PROP(fo_border_left_, Other.fo_border_left_);
-    _CP_APPLY_PROP(fo_border_right_, Other.fo_border_right_);
+	_CP_APPLY_PROP(fo_border_,			Other.fo_border_);
+    _CP_APPLY_PROP(fo_border_top_,		Other.fo_border_top_);
+    _CP_APPLY_PROP(fo_border_bottom_,	Other.fo_border_bottom_);
+    _CP_APPLY_PROP(fo_border_left_,		Other.fo_border_left_);
+    _CP_APPLY_PROP(fo_border_right_,	Other.fo_border_right_);
 }
 void common_border_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"fo:border", fo_border_);
-    CP_XML_ATTR_OPT(L"fo:border-top", fo_border_top_);
-    CP_XML_ATTR_OPT(L"fo:border-bottom", fo_border_bottom_);
-    CP_XML_ATTR_OPT(L"fo:border-left", fo_border_left_);
-    CP_XML_ATTR_OPT(L"fo:border-right", fo_border_right_);    
+    CP_XML_ATTR_OPT(L"fo:border",			fo_border_);
+    CP_XML_ATTR_OPT(L"fo:border-top",		fo_border_top_);
+    CP_XML_ATTR_OPT(L"fo:border-bottom",	fo_border_bottom_);
+    CP_XML_ATTR_OPT(L"fo:border-left",		fo_border_left_);
+    CP_XML_ATTR_OPT(L"fo:border-right",		fo_border_right_);    
 }
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
 void common_border_line_width_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:border-line-width", style_border_line_width_);
-    CP_APPLY_ATTR(L"style:border-line-width-top", style_border_line_width_top_);
+    CP_APPLY_ATTR(L"style:border-line-width",		style_border_line_width_);
+    CP_APPLY_ATTR(L"style:border-line-width-top",	style_border_line_width_top_);
     CP_APPLY_ATTR(L"style:border-line-width-bottom", style_border_line_width_bottom_);
-    CP_APPLY_ATTR(L"style:border-line-width-left", style_border_line_width_left_);
+    CP_APPLY_ATTR(L"style:border-line-width-left",	style_border_line_width_left_);
     CP_APPLY_ATTR(L"style:border-line-width-right", style_border_line_width_right_);
 
 }
@@ -370,11 +370,11 @@ void common_border_line_width_attlist::apply_from(const common_border_line_width
 }
 void common_border_line_width_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"style:border-line-width", style_border_line_width_);
-    CP_XML_ATTR_OPT(L"style:border-line-width-top", style_border_line_width_top_);
-    CP_XML_ATTR_OPT(L"style:border-line-width-bottom", style_border_line_width_bottom_);
-    CP_XML_ATTR_OPT(L"style:border-line-width-left", style_border_line_width_left_);
-    CP_XML_ATTR_OPT(L"style:border-line-width-right", style_border_line_width_right_);
+    CP_XML_ATTR_OPT(L"style:border-line-width",			style_border_line_width_);
+    CP_XML_ATTR_OPT(L"style:border-line-width-top",		style_border_line_width_top_);
+    CP_XML_ATTR_OPT(L"style:border-line-width-bottom",	style_border_line_width_bottom_);
+    CP_XML_ATTR_OPT(L"style:border-line-width-left",	style_border_line_width_left_);
+    CP_XML_ATTR_OPT(L"style:border-line-width-right",	style_border_line_width_right_);
 
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////

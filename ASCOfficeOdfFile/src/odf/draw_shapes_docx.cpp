@@ -159,7 +159,11 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 	}
 	if (draw_type_oox_index_)
 	{
-		shape->additional_.push_back(_property(L"draw-type-index",draw_type_oox_index_.get()));	
+		shape->additional_.push_back(_property(L"draw-type-index", draw_type_oox_index_.get()));	
+
+		if (wordArt_ == true)
+			shape->additional_.push_back(_property(L"wordArt", true));	
+
 	}
 	if (draw_enhanced_geometry_attlist_.draw_modifiers_)
 	{

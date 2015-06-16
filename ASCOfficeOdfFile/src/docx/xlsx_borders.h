@@ -21,7 +21,7 @@ namespace oox {
         ~xlsx_borders();
 
         size_t size() const;
-        size_t borderId(const odf_reader::style_table_cell_properties_attlist * cellProp);
+        size_t borderId(odf_reader::style_table_cell_properties_attlist * cellProp);
         size_t borderId(const odf_reader::style_table_cell_properties_attlist * cellProp, bool & is_default);
 
         void xlsx_serialize(std::wostream & _Wostream);

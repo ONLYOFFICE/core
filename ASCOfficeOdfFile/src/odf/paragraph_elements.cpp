@@ -966,13 +966,36 @@ void text_date::add_text(const std::wstring & Text)
 
 void text_date::docx_convert(oox::docx_conversion_context & Context)
 {
-    Context.add_new_run();
-    BOOST_FOREACH(const office_element_ptr & elm, text_)
-    {
-        elm->docx_convert(Context);
-    }
-    Context.finish_run();
+	bool asText = text_fixed_.get_value_or(false);
+
+	if (asText)
+	{
+		Context.add_new_run();
+		BOOST_FOREACH(const office_element_ptr & elm, text_)
+		{
+			elm->docx_convert(Context);
+		}
+		Context.finish_run();
+	}
+	else
+	{
+		
+		std::wostream & strm = Context.output_stream();
+		Context.finish_run();
+		strm << L"<w:r><w:fldChar w:fldCharType=\"begin\" /></w:r>";
+		strm << L"<w:r><w:instrText>DATE</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"separate\" /></w:r>";
+		Context.add_new_run();
+		
+		std::wostream & _Wostream = Context.output_stream();
+		_Wostream << L"<w:t xml:space=\"preserve\">";
+			this->text_to_stream(_Wostream);
+		_Wostream << L"</w:t>"; 
+	    
+		Context.finish_run();
+		strm << L"<w:r><w:fldChar w:fldCharType=\"end\" /></w:r>";
+	}
 }
+
 void text_date::pptx_convert(oox::pptx_conversion_context & Context)
 {
     Context.get_text_context().start_field(oox::date,style_data_style_name_.get_value_or(L""));
@@ -982,6 +1005,43 @@ void text_date::pptx_convert(oox::pptx_conversion_context & Context)
     }
     Context.get_text_context().end_field();
 }
+
+const wchar_t * text_modification_date::ns = L"text";
+const wchar_t * text_modification_date::name = L"modification-date";
+
+void text_modification_date::docx_convert(oox::docx_conversion_context & Context)
+{
+	bool asText = true;//text_fixed_.get_value_or(false);
+
+	if (asText)
+	{
+		Context.add_new_run();
+		BOOST_FOREACH(const office_element_ptr & elm, text_)
+		{
+			elm->docx_convert(Context);
+		}
+		Context.finish_run();
+	}
+	else
+	{
+		std::wostream & strm = Context.output_stream();
+		Context.finish_run();
+		strm << L"<w:r><w:fldChar w:fldCharType=\"begin\" /></w:r>";
+		strm << L"<w:r><w:instrText xml:space=\"preserve\">SAVEDATE \\@ \"dd.MM.yy\"</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"separate\" /></w:r>";
+		Context.add_new_run();
+		BOOST_FOREACH(const office_element_ptr & elm, text_)
+		{
+			elm->docx_convert(Context);
+		}
+		Context.finish_run();
+		strm << L"<w:r><w:fldChar w:fldCharType=\"end\" /></w:r>";
+	}
+}
+void text_modification_date::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	text_date::pptx_convert(Context);
+}
+
 // text:time
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * text_time::ns = L"text";
@@ -1014,12 +1074,33 @@ void text_time::add_text(const std::wstring & Text)
 
 void text_time::docx_convert(oox::docx_conversion_context & Context)
 {
-    Context.add_new_run();
-    BOOST_FOREACH(const office_element_ptr & elm, text_)
-    {
-        elm->docx_convert(Context);
-    }
-    Context.finish_run();
+	bool asText = text_fixed_.get_value_or(false);
+
+	if (asText)
+	{
+		Context.add_new_run();
+		BOOST_FOREACH(const office_element_ptr & elm, text_)
+		{
+			elm->docx_convert(Context);
+		}
+		Context.finish_run();
+	}
+	else
+	{
+		std::wostream & strm = Context.output_stream();
+		Context.finish_run();
+		strm << L"<w:r><w:fldChar w:fldCharType=\"begin\" /></w:r>";
+		strm << L"<w:r><w:instrText>TIME</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"separate\" /></w:r>";
+		Context.add_new_run();
+		
+		std::wostream & _Wostream = Context.output_stream();
+		_Wostream << L"<w:t xml:space=\"preserve\">";
+			this->text_to_stream(_Wostream);
+		_Wostream << L"</w:t>"; 
+	    
+		Context.finish_run();
+		strm << L"<w:r><w:fldChar w:fldCharType=\"end\" /></w:r>";
+	}
 }
 void text_time::pptx_convert(oox::pptx_conversion_context & Context)
 {
@@ -1031,7 +1112,43 @@ void text_time::pptx_convert(oox::pptx_conversion_context & Context)
     Context.get_text_context().end_field();
 }
 
-// text:time
+const wchar_t * text_modification_time::ns = L"text";
+const wchar_t * text_modification_time::name = L"modification-time";
+
+void text_modification_time::docx_convert(oox::docx_conversion_context & Context)
+{
+	bool asText = true;//text_fixed_.get_value_or(false);
+
+	if (asText)
+	{
+		Context.add_new_run();
+		BOOST_FOREACH(const office_element_ptr & elm, text_)
+		{
+			elm->docx_convert(Context);
+		}
+		Context.finish_run();
+	}
+	else
+	{
+		std::wostream & strm = Context.output_stream();
+		Context.finish_run();
+		strm << L"<w:r><w:fldChar w:fldCharType=\"begin\" /></w:r>";
+		strm << L"<w:r><w:instrText>SAVEDATE  \\@ \"h:mm:ss am/pm\"</w:instrText></w:r><w:r><w:fldChar w:fldCharType=\"separate\" /></w:r>";
+		Context.add_new_run();
+		BOOST_FOREACH(const office_element_ptr & elm, text_)
+		{
+			elm->docx_convert(Context);
+		}
+		Context.finish_run();
+		strm << L"<w:r><w:fldChar w:fldCharType=\"end\" /></w:r>";
+	}
+}
+void text_modification_time::pptx_convert(oox::pptx_conversion_context & Context)
+{
+    text_time::pptx_convert(Context);
+}
+
+// text:file-name
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * text_file_name::ns = L"text";
 const wchar_t * text_file_name::name = L"file-name";

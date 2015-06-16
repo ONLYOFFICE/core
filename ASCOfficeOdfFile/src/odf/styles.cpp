@@ -25,7 +25,6 @@
 #include "odfcontext.h"
 
 #include "draw_common.h"
-#include "datatypes/borderstyle.h"
 
 namespace cpdoccore { 
 
@@ -51,12 +50,17 @@ std::wstring process_border(const border_style & borderStyle,
     else if (borderStyle.initialized())
     {
         double width = borderStyle.get_length().get_value_unit(length::pt);
-        //borderLineWidths ? borderLineWidths->get_summ_unit(length::pt) : borderStyle.get_length().get_value_unit(length::pt);
-        int szInt = (int)(0.5 + 8.0 * width);
-        if (szInt <= 0)
-            szInt = 1;
-        w_sz = boost::lexical_cast<std::wstring>( szInt );
-        w_color = boost::lexical_cast<std::wstring>( borderStyle.get_color().get_hex_value() );
+	
+		if (borderLineWidths)
+		{
+			width = borderLineWidths->get_len1().get_value_unit(length::pt);
+		}
+
+        int szInt = (int)(0.5 + 8.0 * width); //eighths of a point (ST_EighthPointMeasure)
+        if (szInt <= 0)      szInt = 1;
+
+		w_sz = boost::lexical_cast<std::wstring>( szInt );
+		w_color = boost::lexical_cast<std::wstring>( borderStyle.get_color().get_hex_value() );
 
         if (borderPadding)
             w_space = boost::lexical_cast<std::wstring>((int)(borderPadding->get_value_unit(length::pt) + 0.5) );
@@ -930,7 +934,9 @@ Choice [0..6]
 
 namespace {
 
-std::wstring process_page_margin(const _CP_OPT(length_or_percent) & Val, const _CP_OPT(length_or_percent) & Val2, const _CP_OPT(length) & AddVal = _CP_OPT(length)())
+std::wstring process_page_margin(const _CP_OPT(length_or_percent) & Val, 
+								 const _CP_OPT(length_or_percent) & Val2, 
+								 const _CP_OPT(length) & AddVal = _CP_OPT(length)())
 {
     if (!Val ||
         Val->get_type() == length_or_percent::Percent)
@@ -942,7 +948,7 @@ std::wstring process_page_margin(const _CP_OPT(length_or_percent) & Val, const _
     double v2 = (!Val2 || Val2->get_type() == length_or_percent::Percent) ? 0 :
         (20.0 * Val2->get_length().get_value_unit(length::pt));
     
-    double dAddVal = AddVal.get_value_or(length(0, length::pt)).get_value_unit(length::pt) + 0.5;
+    double dAddVal = 20.0 * AddVal.get_value_or(length(0, length::pt)).get_value_unit(length::pt) + 0.5;
 
 	if (dAddVal < 0 ) dAddVal = 0;
     return boost::lexical_cast<std::wstring>( (int)( (!Val ? v2 : v1) + dAddVal));
@@ -950,7 +956,8 @@ std::wstring process_page_margin(const _CP_OPT(length_or_percent) & Val, const _
 
 }
 
-void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context) 
+void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context, _CP_OPT(length_or_percent) margin_left, 
+																								_CP_OPT(length_or_percent) margin_right) 
 {
     if (fo_page_width_ || fo_page_height_ || style_print_orientation_)
     {
@@ -998,37 +1005,75 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 
 	if (common_border_attlist_.fo_border_)
 	{
-		odf_types::border_style style(*common_border_attlist_.fo_border_);
+		std::wstring w_border, w_shadow;
 		
-		std::wstring w_shadow, w_border;
-		_CP_OPT(border_widths)	border_line_width;  
-		_CP_OPT(length)			border_padding;		
-		
-		w_border = process_border(style,	border_line_width , border_padding, w_shadow);
+		if (common_shadow_attlist_.style_shadow_)
+			w_shadow = common_shadow_attlist_.style_shadow_->get_type() != shadow_type::None ? L"1" : L"0";
+
+		w_border = process_border(*common_border_attlist_.fo_border_,	
+									common_border_line_width_attlist_.style_border_line_width_, 
+									common_padding_attlist_.fo_padding_, 
+									w_shadow);
 
 		 strm << L"<w:pgBorders>";
-			strm << L"<w:top " << w_border << L"/>";
-			strm << L"<w:left " << w_border << L"/>";
-			strm << L"<w:bottom " << w_border << L"/>";
-			strm << L"<w:right " << w_border << L"/>";
+			strm << L"<w:top "		<< w_border << L"/>";
+			strm << L"<w:left "		<< w_border << L"/>";
+			strm << L"<w:bottom "	<< w_border << L"/>";
+			strm << L"<w:right "	<< w_border << L"/>";
 		 strm << L"</w:pgBorders>";
 	}
+	else if (common_border_attlist_.fo_border_top_ || common_border_attlist_.fo_border_bottom_ ||
+			common_border_attlist_.fo_border_left_ || common_border_attlist_.fo_border_right_ )
+	{
+		std::wstring w_top, w_left, w_right, w_bottom, w_shadow;
+	
+		if (common_shadow_attlist_.style_shadow_)
+			w_shadow = common_shadow_attlist_.style_shadow_->get_type() != shadow_type::None ? L"1" : L"0";
 
-    if (common_horizontal_margin_attlist_.fo_margin_left_ ||
+		if (common_border_attlist_.fo_border_top_)
+			w_top = process_border(			*common_border_attlist_.fo_border_top_, 
+											common_border_line_width_attlist_.style_border_line_width_top_, 
+											common_padding_attlist_.fo_padding_top_, w_shadow);
+		if (common_border_attlist_.fo_border_bottom_)
+			w_bottom = process_border(		*common_border_attlist_.fo_border_bottom_, 
+											common_border_line_width_attlist_.style_border_line_width_bottom_, 
+											common_padding_attlist_.fo_padding_bottom_, w_shadow);
+		if (common_border_attlist_.fo_border_left_)
+			w_left = process_border(		*common_border_attlist_.fo_border_left_, 
+											common_border_line_width_attlist_.style_border_line_width_left_, 
+											common_padding_attlist_.fo_padding_left_, w_shadow);
+		if (common_border_attlist_.fo_border_right_)
+			w_right = process_border(		*common_border_attlist_.fo_border_right_, 
+											common_border_line_width_attlist_.style_border_line_width_right_, 
+											common_padding_attlist_.fo_padding_right_, w_shadow);
+		 strm << L"<w:pgBorders>";
+			if (!w_top.empty())			strm << L"<w:top "		<< w_top	<< L" />";
+			if (!w_left.empty())		strm << L"<w:left "		<< w_left	<< L" />";
+			if (!w_right.empty())		strm << L"<w:right "	<< w_right	<< L" />";
+			if (!w_bottom.empty())		strm << L"<w:bottom "	<< w_bottom << L" />";
+		 strm << L"</w:pgBorders>";
+	}
+   
+	if (common_horizontal_margin_attlist_.fo_margin_left_ ||
         common_horizontal_margin_attlist_.fo_margin_right_ ||
         common_vertical_margin_attlist_.fo_margin_top_ ||
         common_vertical_margin_attlist_.fo_margin_bottom_ ||
-        common_margin_attlist_.fo_margin_
+        common_margin_attlist_.fo_margin_ || margin_right || margin_left
         )
     {
-        strm << L"<w:pgMar w:bottom=\"" 
+		_CP_OPT(odf_types::length)  margin_left_length, margin_right_length;
+
+		if (margin_left)	margin_left_length = margin_left->get_length();
+		if (margin_right)	margin_right_length = margin_right->get_length();
+
+		strm << L"<w:pgMar w:bottom=\"" 
             << process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_, common_margin_attlist_.fo_margin_, Context.get_header_footer_context().footer()) <<
             L"\" w:footer=\"" << process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_, common_margin_attlist_.fo_margin_) <<
             L"\" w:gutter=\"" << 0 <<
             L"\" w:header=\"" << process_page_margin(common_vertical_margin_attlist_.fo_margin_top_, common_margin_attlist_.fo_margin_) <<
-            L"\" w:left=\"" << process_page_margin(common_horizontal_margin_attlist_.fo_margin_left_, common_margin_attlist_.fo_margin_) <<
-            L"\" w:right=\"" << process_page_margin(common_horizontal_margin_attlist_.fo_margin_right_, common_margin_attlist_.fo_margin_) <<
-            L"\" w:top=\"" << process_page_margin(common_vertical_margin_attlist_.fo_margin_top_, common_margin_attlist_.fo_margin_, Context.get_header_footer_context().header()) <<
+			L"\" w:left=\"" <<	process_page_margin(common_horizontal_margin_attlist_.fo_margin_left_, common_margin_attlist_.fo_margin_, margin_left_length) <<
+            L"\" w:right=\"" <<	process_page_margin(common_horizontal_margin_attlist_.fo_margin_right_, common_margin_attlist_.fo_margin_, margin_right_length) <<
+            L"\" w:top=\"" <<	process_page_margin(common_vertical_margin_attlist_.fo_margin_top_, common_margin_attlist_.fo_margin_, Context.get_header_footer_context().header()) <<
             L"\" />";
     }
 }
@@ -1146,6 +1191,24 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
         return;
     }
 
+	_CP_OPT(length_or_percent) sect_margin_left_, sect_margin_right_;
+
+	int count_columns = 1;
+	bool sep_columns = false;
+
+	if (style_columns * columns = dynamic_cast<style_columns *>( style_page_layout_properties_elements_.style_columns_.get() ))
+	{
+		if ((columns->fo_column_count_) && (*columns->fo_column_count_ > 1))
+		{
+			count_columns =  *columns->fo_column_count_;
+		}
+		if (style_column_sep * columns_sep = dynamic_cast<style_column_sep *>( columns->style_column_sep_.get() ))
+		{
+			if (columns_sep->style_style_ != _T("none"))
+				sep_columns = true;
+		}
+	}
+
 	CP_XML_WRITER(strm)
 	{
 		CP_XML_NODE(L"w:sectPr")
@@ -1164,19 +1227,21 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
 					{
 						if (style_section_properties * sectPr = content->get_style_section_properties())
 						{
-							if (const style_columns * columns = dynamic_cast<const style_columns *>( sectPr->style_columns_.get() ))
+							if (style_columns * columns = dynamic_cast<style_columns *>( sectPr->style_columns_.get() ))
 							{
-								if (columns->fo_column_count_ && *columns->fo_column_count_ > 1)
+								if (columns->fo_column_count_)
 								{
-									CP_XML_NODE(L"w:cols")
-									{
-										CP_XML_ATTR(L"w:equalWidth", L"true");
-										CP_XML_ATTR(L"w:num", *columns->fo_column_count_);
-										CP_XML_ATTR(L"w:sep",true);
-										CP_XML_ATTR(L"w:space",0);
-									}
+									count_columns =  *columns->fo_column_count_;
+								}
+								if (style_column_sep * columns_sep = dynamic_cast<style_column_sep *>( columns->style_column_sep_.get() ))
+								{
+									if (columns_sep->style_style_ != _T("none"))
+										sep_columns = true;
 								}
 							}
+
+							sect_margin_left_ = sectPr->common_horizontal_margin_attlist_.fo_margin_left_;
+							sect_margin_right_ = sectPr->common_horizontal_margin_attlist_.fo_margin_right_;
 						}
 					}
 				}
@@ -1191,7 +1256,18 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
 						CP_XML_ATTR(L"w:val", L"continuous");
 				}
 			}
-
+			
+			if (count_columns > 1)
+			{
+				CP_XML_NODE(L"w:cols")
+				{
+					CP_XML_ATTR(L"w:equalWidth", L"true");
+					CP_XML_ATTR(L"w:num", count_columns);
+					CP_XML_ATTR(L"w:sep", sep_columns);
+					CP_XML_ATTR(L"w:space",0);
+				}
+			}
+			
 			{
 				std::wstring masterPageName = Context.get_master_page_name();//выдавался последний по document.xml!!!
 				bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
@@ -1204,7 +1280,8 @@ void style_page_layout_properties::docx_convert_serialize(std::wostream & strm, 
 					bool res = Context.get_headers_footers().write_sectPr(masterPageName, strm);
 				}
 			}
-			style_page_layout_properties_attlist_.docx_convert_serialize(strm, Context);        
+			style_page_layout_properties_attlist_.docx_convert_serialize(strm, Context, sect_margin_left_, sect_margin_right_);
+			//todooo при появлении еще накладок - переписать !!
 		}
 	}
 }

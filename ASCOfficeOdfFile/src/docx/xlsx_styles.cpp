@@ -122,8 +122,8 @@ size_t xlsx_style_manager::Impl::size() const
     return cellXfs_.size();
 }
 
-size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_content * textProp,
-                                      const odf_reader::paragraph_format_properties * parProp,
+size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_content		* textProp,
+                                      const odf_reader::paragraph_format_properties			* parProp,
                                       const odf_reader::style_table_cell_properties_attlist * cellProp,
                                       const xlsx_cell_format * xlxsCellFormat,
                                       const std::wstring &num_format, bool  default_set, bool & is_visible )

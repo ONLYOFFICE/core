@@ -144,9 +144,9 @@ _CP_OPT(border_widths) GetBorderLineWidths(const graphic_format_properties & gra
     }
     return widths;
 }
-_CP_OPT(length) GetConsistentBorderValue(const graphic_format_properties & graphicProperties, const std::wstring & border, BorderSide borderSide)
+_CP_OPT(length) GetConsistentBorderValue(const graphic_format_properties & graphicProperties, const border_style & borderStyle, BorderSide borderSide)
 {
-    if (boost::algorithm::contains(border, L"double"))
+    if (boost::algorithm::contains(borderStyle.get_style(), L"double"))
     {
         _CP_OPT(border_widths) borderWidths = GetBorderLineWidths(graphicProperties, borderSide);
         if (borderWidths)
@@ -154,8 +154,6 @@ _CP_OPT(length) GetConsistentBorderValue(const graphic_format_properties & graph
     }
     else
     {
-        border_style borderStyle(border);
-        
         if (borderStyle.initialized())
         {
             if (borderStyle.is_none())
@@ -188,8 +186,8 @@ int GetMargin(const graphic_format_properties & graphicProperties, BorderSide bo
 }
 int Compute_BorderWidth(const graphic_format_properties & graphicProperties, BorderSide borderSide)
 {
-    _CP_OPT(std::wstring) borderValue;
-    _CP_OPT(length) lengthValue;
+    _CP_OPT(border_style)	borderValue;
+    _CP_OPT(length)			lengthValue;
 
     switch(borderSide)
     {

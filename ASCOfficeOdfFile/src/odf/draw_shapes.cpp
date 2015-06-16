@@ -371,11 +371,15 @@ void draw_enhanced_geometry::add_child_element( xml::sax * Reader, const ::std::
 }
 void draw_enhanced_geometry::find_draw_type_oox()
 {
+	wordArt_ = false;
+
 	if (draw_enhanced_geometry_attlist_.draw_type_)
 	{
 		std::wstring odf_type = draw_enhanced_geometry_attlist_.draw_type_.get();
 
-		for (long i=0; i<_OO_OOX_custom_shapes_count;i++)
+		int count = sizeof(_OO_OOX_custom_shapes) / sizeof(_shape_converter);
+
+		for (long i=0; i< count; i++)
 		{
 			if (_OO_OOX_custom_shapes[i].odf_reader == odf_type)
 			{
@@ -387,6 +391,23 @@ void draw_enhanced_geometry::find_draw_type_oox()
 		if ((draw_type_oox_index_) && (*draw_type_oox_index_== 179))//L"textBox"
 		{
 			sub_type_ = 1;//textBox
+		}
+
+		if (!draw_type_oox_index_)
+		{
+			count = sizeof(_OO_OOX_wordart) / sizeof(_shape_converter);
+
+			for (long i=0; i< count; i++)
+			{
+				if (_OO_OOX_wordart[i].odf_reader == odf_type)
+				{
+					draw_type_oox_index_ = i;
+					wordArt_ = true;
+					sub_type_ = 1;
+					break;
+				}
+				
+			}
 		}
 	}
 	std::wstringstream str;

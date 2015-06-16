@@ -360,7 +360,7 @@ void insert_cell_margin(oox::docx_conversion_context & Context,
 }
 void insert_cell_border(oox::docx_conversion_context & Context, 
                         const std::wstring & Side,
-                        const std::wstring & BorderStyle,
+                        const _CP_OPT(border_style) & BorderStyle,
                         const _CP_OPT(border_widths) & BorderWidths
                         )
 {
@@ -372,49 +372,46 @@ void insert_cell_border(oox::docx_conversion_context & Context,
     bool none = false;
     try 
     {
-        do 
+        if (BorderStyle)
         {
-            border_style borderStyle(BorderStyle);
-            if (borderStyle.is_none())
+            if (BorderStyle->is_none())
             {
 				strm << L"<w:" << Side << " ";
 				strm << L"w:val=\"none\" ";
 				strm << L"/>";
                 none = true;
-                break;
-            }
+            }else
+			{
+				w_color = BorderStyle->get_color().get_hex_value();
 
-            w_color = borderStyle.get_color().get_hex_value();
+				if (BorderStyle->get_style() == L"double")
+				{
+					w_val = L"double";
+					if (BorderWidths)
+					{
+						if (BorderWidths->get_len1().get_value_unit(length::pt) > BorderWidths->get_len3().get_value_unit(length::pt))
+							w_val = L"thickThinMediumGap";
+						else if (BorderWidths->get_len1().get_value_unit(length::pt) < BorderWidths->get_len3().get_value_unit(length::pt))
+							w_val = L"thinThickMediumGap";
+					}
+				}
+				else
+					w_val = L"single";
 
-            if (borderStyle.get_style() == L"double")
-            {
-                w_val = L"double";
-                if (BorderWidths)
-                {
-                    if (BorderWidths->get_len1().get_value_unit(length::pt) > BorderWidths->get_len3().get_value_unit(length::pt))
-                        w_val = L"thickThinMediumGap";
-                    else if (BorderWidths->get_len1().get_value_unit(length::pt) < BorderWidths->get_len3().get_value_unit(length::pt))
-                        w_val = L"thinThickMediumGap";
-                }
-            }
-            else
-                w_val = L"single";
+				double w_sz_ = BorderStyle->get_length().get_value_unit(length::pt);
 
-            double w_sz_ = borderStyle.get_length().get_value_unit(length::pt);
+				//if (BorderStyle.get_style() == L"double")
+				//  w_sz_ /= 2;            
 
-            //if (borderStyle.get_style() == L"double")
-            //  w_sz_ /= 2;            
+				w_sz_ = (int)(0.5 + 8.0 * w_sz_);
+				if (w_sz_ < 2.0)
+					w_sz_ = 2.0;
+				else if (w_sz_ > 96.0)
+					w_sz_ = 96.0;
 
-            w_sz_ = (int)(0.5 + 8.0 * w_sz_);
-            if (w_sz_ < 2.0)
-                w_sz_ = 2.0;
-            else if (w_sz_ > 96.0)
-                w_sz_ = 96.0;
-
-            w_sz = boost::lexical_cast<std::wstring>( w_sz_ );
-            
+				w_sz = boost::lexical_cast<std::wstring>( w_sz_ );
+			}
         } 
-        while (0);
     }
     catch(...)
     {
@@ -539,10 +536,10 @@ void style_table_cell_properties_attlist::docx_convert(oox::docx_conversion_cont
 
     if (common_border_attlist_.fo_border_)
     {
-        insert_cell_border(Context, L"top", *common_border_attlist_.fo_border_, common_border_line_width_attlist_.style_border_line_width_);
-        insert_cell_border(Context, L"left", *common_border_attlist_.fo_border_, common_border_line_width_attlist_.style_border_line_width_);
-        insert_cell_border(Context, L"bottom", *common_border_attlist_.fo_border_, common_border_line_width_attlist_.style_border_line_width_);
-        insert_cell_border(Context, L"right", *common_border_attlist_.fo_border_, common_border_line_width_attlist_.style_border_line_width_);
+        insert_cell_border(Context, L"top",		*common_border_attlist_.fo_border_, common_border_line_width_attlist_.style_border_line_width_);
+        insert_cell_border(Context, L"left",	*common_border_attlist_.fo_border_, common_border_line_width_attlist_.style_border_line_width_);
+        insert_cell_border(Context, L"bottom",	*common_border_attlist_.fo_border_, common_border_line_width_attlist_.style_border_line_width_);
+        insert_cell_border(Context, L"right",	*common_border_attlist_.fo_border_, common_border_line_width_attlist_.style_border_line_width_);
     }
     else
     {

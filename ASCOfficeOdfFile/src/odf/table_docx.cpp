@@ -24,9 +24,11 @@ bool table_table_cell_content::docx_convert(oox::docx_conversion_context & Conte
     bool wasPar = false;
     BOOST_FOREACH(const office_element_ptr & elm, text_content_)
     {
-        if (elm->get_type() == typeTextP || 
-            elm->get_type() == typeTextH)
+		ElementType type = elm->get_type();
+        
+		if (type == typeTextP || type== typeTextH)
             wasPar = true;
+
         elm->docx_convert(Context);
     }
     return wasPar;

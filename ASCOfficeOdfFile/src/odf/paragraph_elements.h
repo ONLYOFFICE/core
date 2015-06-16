@@ -659,28 +659,43 @@ public:
     static const ElementType type = typeTextDate;
     CPDOCCORE_DEFINE_VISITABLE();
     
-	void docx_convert(oox::docx_conversion_context & Context);
-	void pptx_convert(oox::pptx_conversion_context & Context);
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
-
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
-
-private:
+    std::wostream & text_to_stream(::std::wostream & _Wostream) const;
+	
 	_CP_OPT(std::wstring)		style_data_style_name_;
 
 	_CP_OPT(bool)				text_fixed_;
 	_CP_OPT(std::wstring)		text_date_value_;//with format
 
     office_element_ptr_array text_;
+
+private:
+    void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    void add_text(const std::wstring & Text);
     
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_date);
+
+// text:modification-date
+//////////////////////////////////////////////////////////////////////////////////////////////////
+class text_modification_date : public text_date
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextModificationDate;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context);
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(text_modification_date);
 
 // text:time 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -693,26 +708,41 @@ public:
     static const ElementType type = typeTextTime;
     CPDOCCORE_DEFINE_VISITABLE();
    
-	void docx_convert(oox::docx_conversion_context & Context);
-	void pptx_convert(oox::pptx_conversion_context & Context);
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+	virtual void pptx_convert(oox::pptx_conversion_context & Context);
 
-public:
-    virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
-private:
-    virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-    virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
-    virtual void add_text(const std::wstring & Text);
+    std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 
-private:
 	_CP_OPT(std::wstring)		style_data_style_name_;
 	_CP_OPT(bool)				text_fixed_;
 	_CP_OPT(std::wstring)		text_time_value_;//with format
 
     office_element_ptr_array	text_;
-    
+
+private:
+    void add_attributes( const xml::attributes_wc_ptr & Attributes );
+    void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
+    void add_text(const std::wstring & Text);
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(text_time);
+
+// text:modification-date
+//////////////////////////////////////////////////////////////////////////////////////////////////
+class text_modification_time : public text_time
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+    static const xml::NodeType xml_type = xml::typeElement;
+    static const ElementType type = typeTextModificationTime;
+    CPDOCCORE_DEFINE_VISITABLE();
+
+	void docx_convert(oox::docx_conversion_context & Context);
+	void pptx_convert(oox::pptx_conversion_context & Context);
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(text_modification_time);
 
 // text:file-name 
 //////////////////////////////////////////////////////////////////////////////////////////////////

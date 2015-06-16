@@ -119,8 +119,8 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 }
 void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
 {
-	_CP_OPT(int) iShapeIndex;
-	odf_reader::GetProperty(prop,L"draw-type-index",iShapeIndex);
+	_CP_OPT(int)	iShapeIndex;
+	odf_reader::GetProperty(prop,L"draw-type-index", iShapeIndex);
 
 	if (!iShapeIndex)return;
 
@@ -177,6 +177,9 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 }
 void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
 {
+	_CP_OPT(bool)	bWordArt;
+	odf_reader::GetProperty(prop,L"wordArt", bWordArt);
+
 	CP_XML_WRITER(strm)
     {
 		CP_XML_NODE(L"a:bodyPr")
@@ -202,16 +205,33 @@ void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf_reader::_p
 				}
 			}
 			//else CP_XML_ATTR(L"anchor", L"dist");break;
-
+			if (bWordArt)
+			{
+				_CP_OPT(int) iVal;
+				odf_reader::GetProperty(prop, L"draw-type-index",iVal);
+				if (iVal)
+				{
+					std::wstring shapeType = _OO_OOX_wordart[*iVal].oox;					
+					CP_XML_NODE(L"a:prstTxWarp")
+					{
+						CP_XML_ATTR(L"prst", shapeType);
+						oox_serialize_aLst(CP_XML_STREAM(), prop);
+					}
+				}
+			}
 		}
 	}
 }
+
 void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 {
 	_CP_OPT(std::wstring) strVal;
-	_CP_OPT(double) dVal;
+	_CP_OPT(double)			dVal;
 
- 	std::wstring shapeType;
+ 	std::wstring	shapeType;
+	_CP_OPT(bool)	bWordArt;
+	
+	odf_reader::GetProperty(val.additional,L"wordArt", bWordArt);
 	
 	if (val.sub_type == 7)//custom 
 	{
@@ -224,7 +244,7 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 		shapeType =	_ooxShapeType[val.sub_type];
 	} 
 	
-	if (shapeType.length()<1)shapeType = L"rect";
+	if (shapeType.length()<1 || bWordArt) shapeType = L"rect";
 
 	CP_XML_WRITER(strm)
     {
@@ -265,7 +285,13 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 				oox_serialize_aLst(CP_XML_STREAM(),val.additional);
 			}					
 		}
-		oox_serialize_fill(strm,val.fill);
+		if (bWordArt)
+		{
+			_oox_fill no_fill;
+			oox_serialize_fill(strm, no_fill);
+		}
+		else
+			oox_serialize_fill(strm, val.fill);
 
 	}
 }

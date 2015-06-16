@@ -21,11 +21,11 @@ namespace oox {
 namespace  {
 
 // TODO надо сделать конвертацию в зависимости от стиля
-std::wstring convert_border_style(const std::wstring& odfBorderStyle)
+std::wstring convert_border_style(const odf_types::border_style& borderStyle)
 {
-    odf_types::border_style borderStyle(odfBorderStyle);
-    std::wstring retVal = L"none";
-    if (borderStyle.initialized())
+	std::wstring retVal = L"none";
+   
+	if (borderStyle.initialized())
     {
         if (borderStyle.get_style() == L"none" || borderStyle.get_style().empty())
            retVal = L"none";
@@ -42,18 +42,16 @@ std::wstring convert_border_style(const std::wstring& odfBorderStyle)
     return retVal;
 }
 
-void process_border(xlsx_border_edge & borderEdge, const _CP_OPT(std::wstring) & odfBorderStyle)
+void process_border(xlsx_border_edge & borderEdge, const _CP_OPT(border_style) & borderStyle)
 {
-    if (odfBorderStyle)
+    if (borderStyle)
     {
-        odf_types::border_style borderStyle(*odfBorderStyle);
-
         xlsx_color color;    
-        color.rgb = borderStyle.get_color().get_hex_value();
+        color.rgb = borderStyle->get_color().get_hex_value();
 
         borderEdge.color = color;
-        borderEdge.style = convert_border_style(*odfBorderStyle);
-		borderEdge.width = boost::lexical_cast<int>(borderStyle.get_length().get_value_unit(odf_types::length::emu));
+        borderEdge.style = convert_border_style(*borderStyle);
+		borderEdge.width = boost::lexical_cast<int>(borderStyle->get_length().get_value_unit(odf_types::length::emu));
     }
 }
 
@@ -62,7 +60,8 @@ bool check_border(const _CP_OPT(std::wstring) & odfBorderStyle)
     if (odfBorderStyle)
     {
         odf_types::border_style borderStyle(*odfBorderStyle);
-        if (convert_border_style(*odfBorderStyle) != L"none")
+       
+		if (convert_border_style(borderStyle) != L"none")
             return true;
     }
     return false;
@@ -90,7 +89,7 @@ public:
         return borders_.size();
     }
 
-    size_t borderId(const odf_reader::style_table_cell_properties_attlist * cellProp)
+    size_t borderId(odf_reader::style_table_cell_properties_attlist * cellProp)
     {
         bool is_default;
         return borderId(cellProp, is_default);
@@ -99,28 +98,31 @@ public:
     size_t borderId(const odf_reader::style_table_cell_properties_attlist * cellProp, bool & is_default_val)
     {
         xlsx_border border;
-        border.left = xlsx_border_edge();
-        border.right = xlsx_border_edge();
-        border.top = xlsx_border_edge();
-        border.bottom = xlsx_border_edge();
+
+        border.left		= xlsx_border_edge();
+        border.right	= xlsx_border_edge();
+        border.top		= xlsx_border_edge();
+        border.bottom	= xlsx_border_edge();
         
         if (cellProp)
         {
             const common_border_attlist & odfBordersAttr = cellProp->common_border_attlist_;
-            process_border(*border.left,	odfBordersAttr.fo_border_);
+            
+			process_border(*border.left,	odfBordersAttr.fo_border_);
             process_border(*border.right,	odfBordersAttr.fo_border_);
             process_border(*border.top,		odfBordersAttr.fo_border_);
             process_border(*border.bottom,	odfBordersAttr.fo_border_);
 
-            process_border(*border.left, odfBordersAttr.fo_border_left_);
-            process_border(*border.right, odfBordersAttr.fo_border_right_);
-            process_border(*border.top, odfBordersAttr.fo_border_top_);
-            process_border(*border.bottom, odfBordersAttr.fo_border_bottom_);
+            process_border(*border.left,	odfBordersAttr.fo_border_left_);
+            process_border(*border.right,	odfBordersAttr.fo_border_right_);
+            process_border(*border.top,		odfBordersAttr.fo_border_top_);
+            process_border(*border.bottom,	odfBordersAttr.fo_border_bottom_);
 
             if (check_border(cellProp->style_diagonal_bl_tr_))
             {
                 border.diagonal = xlsx_border_edge();
-                process_border(*border.diagonal, cellProp->style_diagonal_bl_tr_);
+				_CP_OPT(border_style) borderStyle = *cellProp->style_diagonal_bl_tr_;
+                process_border(*border.diagonal, borderStyle);
                 border.diagonalUp = true;
             }
 
@@ -128,7 +130,8 @@ public:
             {
                 if (!border.diagonal)
                     border.diagonal = xlsx_border_edge();
-                process_border(*border.diagonal, cellProp->style_diagonal_tl_br_);
+ 				_CP_OPT(border_style) borderStyle = *cellProp->style_diagonal_tl_br_;
+               process_border(*border.diagonal, borderStyle);
                 border.diagonalDown = true;
             }
         }
@@ -199,7 +202,7 @@ size_t xlsx_borders::size() const
     return impl_->size();
 }
 
-size_t xlsx_borders::borderId(const odf_reader::style_table_cell_properties_attlist * cellProp)
+size_t xlsx_borders::borderId(odf_reader::style_table_cell_properties_attlist * cellProp)
 {
     return impl_->borderId(cellProp);
 }

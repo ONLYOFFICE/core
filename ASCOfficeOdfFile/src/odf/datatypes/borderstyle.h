@@ -9,7 +9,9 @@ namespace cpdoccore { namespace odf_types {
 class border_style
 {
 public:
-    border_style(const std::wstring & Value);
+	border_style(){}
+	border_style(const std::wstring & Value);
+    static border_style parse(const std::wstring & Str);
 
 public:
     bool initialized() const { return initialized_; }
@@ -26,4 +28,10 @@ private:
     color color_;
 };
 
-} }
+std::wostream & operator << (std::wostream & _Wostream, const border_style & _Val);
+
+
+} 
+APPLY_PARSE_XML_ATTRIBUTES(odf_types::border_style);
+
+}

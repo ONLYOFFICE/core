@@ -202,6 +202,8 @@ public:
     // for RGBA painting
     bool    m_bSwapRGB;
 
+    double m_dDpiTile;
+
 public:
 
 	CGraphics();

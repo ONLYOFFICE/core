@@ -72,6 +72,7 @@ public:
 	void SaveBrush(NSStructures::CBrush& oBrush) { oBrush = m_oBrush; }
 	void RestoreBrush(const NSStructures::CBrush& oBrush) { m_oBrush = oBrush; }
 	void SetSwapRGB(bool bValue){ if (m_pRenderer) m_pRenderer->m_bSwapRGB = bValue; }
+    void SetTileImageDpi(const double& dDpi) { if (m_pRenderer) m_pRenderer->m_dDpiTile = dDpi; }
 
 public:
 // тип рендерера-----------------------------------------------------------------------------

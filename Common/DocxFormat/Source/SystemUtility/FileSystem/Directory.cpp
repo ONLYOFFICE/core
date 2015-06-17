@@ -290,7 +290,8 @@ namespace FileSystem
 			
 			if (ftyp == INVALID_FILE_ATTRIBUTES)	return false; 
 			if (ftyp & FILE_ATTRIBUTE_DIRECTORY)	return true;  
-			if (ftyp & FILE_ATTRIBUTE_NORMAL)		return true;  
+			if (ftyp & FILE_ATTRIBUTE_NORMAL ||
+				ftyp & FILE_ATTRIBUTE_ARCHIVE)		return true;  
 
 			return false;
         }

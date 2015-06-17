@@ -43,7 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes"
+				AdditionalIncludeDirectories="../../../ASCOfficeOdfFile/include;../../../ASCOfficeOdfFile/src/odf/datatypes;&quot;../../../DesktopEditor/freetype-2.5.2/include&quot;"
 				PreprocessorDefinitions="_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -693,6 +693,10 @@
 		<Filter
 			Name="odf common"
 			>
+			<File
+				RelativePath="..\..\..\ASCOfficeOdfFile\src\docx\measuredigits.cpp"
+				>
+			</File>
 			<File
 				RelativePath="..\OdfFormat\odf_chart_context.cpp"
 				>

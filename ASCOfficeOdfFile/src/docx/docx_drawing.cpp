@@ -201,14 +201,16 @@ void docx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_pr
 				if (bWordArt)
 				{
 					_CP_OPT(int) iVal;
-					odf_reader::GetProperty(properties, L"draw-type-index", iVal);
+					odf_reader::GetProperty(properties, L"odf-custom-draw-index", iVal);
 					if (iVal)
 					{
+						int i = *iVal;
 						std::wstring shapeType = _OO_OOX_wordart[*iVal].oox;		
 						CP_XML_ATTR(L"fromWordArt", "1");
 						CP_XML_NODE(L"a:prstTxWarp")
 						{
 							CP_XML_ATTR(L"prst", shapeType);
+							oox_serialize_aLst(CP_XML_STREAM(), properties);
 						}
 					}
 				}
@@ -218,7 +220,7 @@ void docx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_pr
 		}
     }
 }
-void docx_serialize_image(std::wostream & strm, _docx_drawing const & val)
+void docx_serialize_image(std::wostream & strm, _docx_drawing & val)
 {
     CP_XML_WRITER(strm)    
     {
@@ -266,7 +268,7 @@ void docx_serialize_image(std::wostream & strm, _docx_drawing const & val)
  
 					CP_XML_NODE(L"pic:spPr")
 					{
-						oox_serialize_xfrm(CP_XML_STREAM(),val);
+						oox_serialize_xfrm(CP_XML_STREAM(), val);
 
 						CP_XML_NODE(L"a:prstGeom")
 						{
@@ -282,7 +284,7 @@ void docx_serialize_image(std::wostream & strm, _docx_drawing const & val)
 	}
 }
 
-void docx_serialize_chart(std::wostream & strm, _docx_drawing const & val)
+void docx_serialize_chart(std::wostream & strm, _docx_drawing & val)
 {	 
 	CP_XML_WRITER(strm)    
     {
@@ -312,32 +314,14 @@ void docx_serialize_chart(std::wostream & strm, _docx_drawing const & val)
 	}
 }
 
-void docx_serialize_shape(std::wostream & strm, _docx_drawing const & val)
+void docx_serialize_shape(std::wostream & strm, _docx_drawing & val)
 {
-	std::wstring shapeType;
-
-	if (val.sub_type == 7)//custom 
-	{
-		_CP_OPT(int) iVal;
-		odf_reader::GetProperty(val.additional,L"draw-type-index",iVal);
-		if (iVal)shapeType = _OO_OOX_custom_shapes[*iVal].oox;	
-	}
-	else if (val.sub_type<9 && val.sub_type>=0)
-	{
-		shapeType =	_ooxShapeType[val.sub_type];
-	} 
-
-	if (shapeType.length()<1)
-	{
-		shapeType = L"rect";
-	}
-   
 	CP_XML_WRITER(strm)    
     {
 		CP_XML_NODE(L"wp:docPr")
 		{
 			CP_XML_ATTR(L"name",val.name);
-			CP_XML_ATTR(L"id",	val.id+1);
+			CP_XML_ATTR(L"id",	val.id + 1);
 			oox_serialize_hlink(CP_XML_STREAM(),val.hlinks);
 		}
 
@@ -358,17 +342,16 @@ void docx_serialize_shape(std::wostream & strm, _docx_drawing const & val)
 				
 				CP_XML_NODE(L"wps:wsp")
 				{
-					//CP_XML_NODE(L"wps:cNvPr")
-					//{
-					//	CP_XML_ATTR(L"id", val.id);//числовое значение val.rId
-					//	CP_XML_ATTR(L"name", val.name);
-
-					//	oox_serialize_hlink(CP_XML_STREAM(),val.hlink);
-					//}
-					CP_XML_NODE(L"wps:cNvSpPr")//non visual properies (собственно тока 1 там)
+					CP_XML_NODE(L"wps:cNvSpPr")
 					{
-						if (val.sub_type==1 || val.sub_type==0)CP_XML_ATTR(L"txBox", 1);
-						CP_XML_NODE(L"a:spLocks")CP_XML_ATTR(L"noChangeAspect", 1);
+						if (val.sub_type==1 || val.sub_type==0)//frame
+						{
+							CP_XML_ATTR(L"txBox", 1);
+						}
+						CP_XML_NODE(L"a:spLocks")
+						{
+							CP_XML_ATTR(L"noChangeAspect", 1);
+						}
 					}
 					CP_XML_NODE(L"wps:spPr")
 					{
@@ -376,7 +359,7 @@ void docx_serialize_shape(std::wostream & strm, _docx_drawing const & val)
 
 						oox_serialize_shape(CP_XML_STREAM(),val);
 		
-						oox_serialize_ln(CP_XML_STREAM(),val.additional);
+						oox_serialize_ln(CP_XML_STREAM(), val.additional);
 					} 
 					docx_serialize_text(CP_XML_STREAM(),val.additional);
 				}
@@ -385,7 +368,7 @@ void docx_serialize_shape(std::wostream & strm, _docx_drawing const & val)
 	}
 }
 
-void docx_serialize(std::wostream & strm, _docx_drawing const & val)
+void docx_serialize(std::wostream & strm, _docx_drawing & val)
 {
 	CP_XML_WRITER(strm)    
     {

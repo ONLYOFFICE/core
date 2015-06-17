@@ -49,7 +49,7 @@ public:
     void add(_pptx_comment & d);
     bool empty() const;
 
-	friend void pptx_serialize(std::wostream & _Wostream, pptx_comments const & val);    
+	friend void pptx_serialize(std::wostream & _Wostream, pptx_comments & val);    
 
 private:
     class Impl;

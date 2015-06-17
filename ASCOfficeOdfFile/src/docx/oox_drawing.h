@@ -50,7 +50,7 @@ namespace oox {
 
         _oox_fill fill;
 
-        int sub_type;
+        int sub_type; //odf
         std::wstring	chartId;
 
         std::vector<_hlink_desc> hlinks;
@@ -58,10 +58,11 @@ namespace oox {
         std::vector<odf_reader::_property> additional;
 
     };
-    void oox_serialize_xfrm(	std::wostream & _Wostream, _oox_drawing const & val,std::wstring name_space = L"a");
-    void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val);
-    void oox_serialize_ln	(std::wostream & _Wostream, const std::vector<odf_reader::_property> & val);
-    void oox_serialize_hlink	(std::wostream & _Wostream, const std::vector<_hlink_desc> & val);
-    void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf_reader::_property> & val);
+    void oox_serialize_xfrm		(std::wostream & strm, _oox_drawing & val,std::wstring name_space = L"a");
+    void oox_serialize_shape	(std::wostream & strm, _oox_drawing & val);
+    void oox_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val);
+    void oox_serialize_hlink	(std::wostream & strm, const std::vector<_hlink_desc> & val);
+    void oox_serialize_bodyPr	(std::wostream & strm, const std::vector<odf_reader::_property> & val);
+	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val);
 }
 }

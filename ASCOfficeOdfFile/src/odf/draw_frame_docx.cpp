@@ -812,9 +812,9 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 
 ////////////////////////////////////////////////////
 	drawing.additional.push_back(odf_reader::_property(L"border_width_left",	Compute_BorderWidth(graphicProperties, sideLeft)));
-	drawing.additional.push_back(odf_reader::_property(L"border_width_top",	Compute_BorderWidth(graphicProperties, sideTop)));
+	drawing.additional.push_back(odf_reader::_property(L"border_width_top",		Compute_BorderWidth(graphicProperties, sideTop)));
 	drawing.additional.push_back(odf_reader::_property(L"border_width_right",	Compute_BorderWidth(graphicProperties, sideRight)));
-	drawing.additional.push_back(odf_reader::_property(L"border_width_bottom", Compute_BorderWidth(graphicProperties, sideBottom))); 
+	drawing.additional.push_back(odf_reader::_property(L"border_width_bottom",	Compute_BorderWidth(graphicProperties, sideBottom))); 
 	
 	if (graphicProperties.common_border_attlist_.fo_border_)
 	{
@@ -908,13 +908,13 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 
 	oox::_docx_drawing drawing = oox::_docx_drawing();
 
-	drawing.type = oox::mediaitems::typeShape;
+	drawing.type	= oox::mediaitems::typeShape;
 
-	drawing.id = Context.get_drawing_context().get_current_shape_id();
-	drawing.name = Context.get_drawing_context().get_current_object_name();
+	drawing.id		= Context.get_drawing_context().get_current_shape_id();
+	drawing.name	= Context.get_drawing_context().get_current_object_name();
 
-	drawing.sub_type = sub_type_;
-	drawing.additional=additional_;//сюда могут добавиться свойства ...
+	drawing.sub_type	= sub_type_;
+	drawing.additional	= additional_;//сюда могут добавиться свойства ...
 
 	drawing.additional.push_back(_property(L"text-content",Context.get_drawing_context().get_text_stream_shape()));
 

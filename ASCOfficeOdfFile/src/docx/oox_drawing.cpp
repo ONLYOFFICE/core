@@ -57,32 +57,38 @@ static const std::wstring _ooxDashStyle[]=
 
 void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
 {
-	_CP_OPT(std::wstring) strVal; 
-	_CP_OPT(int) iVal;
-	_CP_OPT(double) dVal;
+	_CP_OPT(std::wstring)	strStrokeColor; 
+	_CP_OPT(int)			iStroke;
+	_CP_OPT(double)			dStrokeWidth;
+	_CP_OPT(std::wstring)	strStrokeOpacity; 
+	_CP_OPT(bool)			bWordArt;
 	
-	odf_reader::GetProperty(prop,L"stroke-color",strVal);	
-	odf_reader::GetProperty(prop,L"stroke",iVal);	
-	odf_reader::GetProperty(prop,L"stroke-width",dVal);
+	odf_reader::GetProperty(prop, L"wordArt", bWordArt);
+	
+	odf_reader::GetProperty(prop, L"stroke-color"	, strStrokeColor);	
+	odf_reader::GetProperty(prop, L"stroke"			, iStroke);	
+	odf_reader::GetProperty(prop, L"stroke-width"	, dStrokeWidth);
+	odf_reader::GetProperty(prop, L"stroke-opacity"	, strStrokeOpacity);
 
-	if (!strVal && !iVal && !dVal)return;
+	if (!strStrokeColor && !iStroke && !dStrokeWidth)return;
+
 	CP_XML_WRITER(strm)
     {
         CP_XML_NODE(L"a:ln")
         { 
 			std::wstring color, dash_style, fill = L"a:solidFill" ;
 
-			if (strVal)color = strVal.get();
+			if (strStrokeColor) color = strStrokeColor.get();
 
-			if (iVal)
+			if (iStroke)
 			{
-				if (iVal.get() == 0)fill = L"a:noFill";
-				else dash_style =  _ooxDashStyle[iVal.get()];	
+				if (iStroke.get() == 0 || bWordArt) fill = L"a:noFill";
+				else dash_style =  _ooxDashStyle[iStroke.get()];	
 			}
 			
-			if ((dVal) && (dVal.get()> 0))
+			if ((dStrokeWidth) && (dStrokeWidth.get()> 0))
 			{
-				CP_XML_ATTR(L"w",static_cast<size_t>(dVal.get() * 12700));//in emu (1 pt = 12700)
+				CP_XML_ATTR(L"w",static_cast<size_t>(dStrokeWidth.get() * 12700));//in emu (1 pt = 12700)
 				if (color.length()<1)color = L"729FCF";
 			}
 		
@@ -90,16 +96,17 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 			{ 			
 				if (fill != L"a:noFill")
 				{
-					if (color.length()<1)color = L"ffffff";
+					if (color.length()<1) color = L"ffffff";
 					CP_XML_NODE(L"a:srgbClr")
 					{
 						CP_XML_ATTR(L"val",color);
-						odf_reader::GetProperty(prop,L"stroke-opacity",strVal);
-						if (strVal)CP_XML_NODE(L"a:alpha"){CP_XML_ATTR(L"val",strVal.get());}
+						if (strStrokeOpacity)CP_XML_NODE(L"a:alpha"){CP_XML_ATTR(L"val",strStrokeOpacity.get());}
 
 					}
 				}
 			}
+			_CP_OPT(std::wstring)	strVal;
+
 			if (dash_style.length() >0)
 			{
 				CP_XML_NODE(L"a:prstDash"){CP_XML_ATTR(L"val",dash_style);}	
@@ -120,9 +127,28 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
 {
 	_CP_OPT(int)	iShapeIndex;
-	odf_reader::GetProperty(prop,L"draw-type-index", iShapeIndex);
+	_CP_OPT(bool)	bWordArt;
+	
+	odf_reader::GetProperty(prop, L"wordArt"				, bWordArt);
+	odf_reader::GetProperty(prop, L"odf-custom-draw-index"	, iShapeIndex);
 
 	if (!iShapeIndex)return;
+	int i = *iShapeIndex;
+
+	int count_values = 0, min_value = 0, max_value = 0;
+
+	if (!bWordArt)
+	{
+		count_values	= _OO_OOX_custom_shapes[*iShapeIndex].count_values;
+		min_value		= _OO_OOX_custom_shapes[*iShapeIndex].min;
+		max_value		= _OO_OOX_custom_shapes[*iShapeIndex].max;
+	}
+	else
+	{
+		count_values	= _OO_OOX_wordart[*iShapeIndex].count_values;
+		min_value		= _OO_OOX_wordart[*iShapeIndex].min;
+		max_value		= _OO_OOX_wordart[*iShapeIndex].max;
+	}
 
 	CP_XML_WRITER(strm)
     {
@@ -134,15 +160,14 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 				std::vector< std::wstring > values;
 				boost::algorithm::split(values, strVal.get(), boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);
 
-				if(_OO_OOX_custom_shapes[*iShapeIndex].count_values >0 && values.size()>0 &&
-					_OO_OOX_custom_shapes[*iShapeIndex].count_values <3)//временное ограниечение .. хз как там свойства путаются
+				if( count_values >0 && values.size()>0 && count_values < 3)//временное ограниечение .. хз как там свойства путаются
 				{//если не заданы доп свойства - нефиг мучится
 					int i=1;
 
 					_CP_OPT(int) iMax,iMin;
 					odf_reader::GetProperty(prop,L"draw-modifiers-min",iMin);
 					odf_reader::GetProperty(prop,L"draw-modifiers-max",iMax);
-					values.resize(_OO_OOX_custom_shapes[*iShapeIndex].count_values);
+					values.resize(count_values);
 
 					BOOST_FOREACH(std::wstring  & v, values)
 					{
@@ -157,12 +182,10 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 							
 							if (iMin && iMax && iShapeIndex)
 							{
-								if (_OO_OOX_custom_shapes[*iShapeIndex].min <
-									_OO_OOX_custom_shapes[*iShapeIndex].max)
+								if (min_value < max_value)
 								{
 									double W = *iMax - *iMin;
-									val = (val- (*iMin))/W *
-										(_OO_OOX_custom_shapes[*iShapeIndex].max-_OO_OOX_custom_shapes[*iShapeIndex].min)+_OO_OOX_custom_shapes[*iShapeIndex].min;
+									val = (val- (*iMin))/W * (max_value - min_value) + min_value;
 								}
 							}
 
@@ -208,7 +231,7 @@ void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf_reader::_p
 			if (bWordArt)
 			{
 				_CP_OPT(int) iVal;
-				odf_reader::GetProperty(prop, L"draw-type-index",iVal);
+				odf_reader::GetProperty(prop, L"odf-custom-draw-index",iVal);
 				if (iVal)
 				{
 					std::wstring shapeType = _OO_OOX_wordart[*iVal].oox;					
@@ -223,7 +246,7 @@ void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf_reader::_p
 	}
 }
 
-void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
+void oox_serialize_shape(std::wostream & strm, _oox_drawing & val)
 {
 	_CP_OPT(std::wstring) strVal;
 	_CP_OPT(double)			dVal;
@@ -236,7 +259,7 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 	if (val.sub_type == 7)//custom 
 	{
 		_CP_OPT(int) iVal;
-		odf_reader::GetProperty(val.additional,L"draw-type-index",iVal);
+		odf_reader::GetProperty(val.additional, L"odf-custom-draw-index",iVal);
 		if (iVal)shapeType = _OO_OOX_custom_shapes[*iVal].oox;	
 	}
 	else if (val.sub_type<9 && val.sub_type>=0)
@@ -244,11 +267,16 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 		shapeType =	_ooxShapeType[val.sub_type];
 	} 
 	
-	if (shapeType.length()<1 || bWordArt) shapeType = L"rect";
+	if (shapeType.length()<1)
+	{
+		shapeType	 = L"rect";
+		val.sub_type = 2;
+	}
+	if (bWordArt) val.sub_type = 1;
 
 	CP_XML_WRITER(strm)
     {
-		if (val.sub_type == 6 || val.sub_type == 8)//рисованая по точкам хрень - полигоны и пути
+		if (val.sub_type == 6 || val.sub_type == 8)
 		{
 			CP_XML_NODE(L"a:custGeom")
 			{        
@@ -282,7 +310,7 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 			CP_XML_NODE(L"a:prstGeom")//автофигура
 			{        
 				CP_XML_ATTR(L"prst", shapeType);
-				oox_serialize_aLst(CP_XML_STREAM(),val.additional);
+				if (!bWordArt) oox_serialize_aLst(CP_XML_STREAM(), val.additional);
 			}					
 		}
 		if (bWordArt)
@@ -296,7 +324,7 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing const & val)
 	}
 }
 
-void oox_serialize_xfrm(std::wostream & strm, _oox_drawing const & val, std::wstring name_space)
+void oox_serialize_xfrm(std::wostream & strm, _oox_drawing & val, std::wstring name_space)
 {
 	CP_XML_WRITER(strm)
     {

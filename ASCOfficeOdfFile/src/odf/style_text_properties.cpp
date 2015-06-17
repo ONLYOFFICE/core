@@ -5,10 +5,12 @@
 #include <cpdoccore/xml/attributes.h>
 #include <logging.h>
 
-#include "style_text_properties.h"
+#include "calcs_styles.h"
 
 #include "odfcontext.h"
 #include "datatypes/fontvariant.h"
+
+#include "draw_shapes.h"
 
 #include "../docx/oox_drawing_fills.h"
 
@@ -757,8 +759,8 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
         {
             color = style_text_underline_color_->get_color().get_color();
         }
-
-        if (!underline.empty())
+        
+		if (!underline.empty())
         {
             _rPr << L"<w:u w:val=\"" << underline << "\" ";
             if (!color.empty())
@@ -964,10 +966,43 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
 
         _rPr << L" />";
     }
+	_CP_OPT(color) color_text = fo_color_;
 
-    if (fo_color_)
+	if (Context.get_drawing_context().get_current_shape())
+	{
+		odf_reader::draw_shape *shape = Context.get_drawing_context().get_current_shape();
+
+		if (shape->word_art_)
+		{//взять из графических ствойст цвет текста .. 
+			const _CP_OPT(style_ref) & styleRef = shape->common_draw_attlists_.shape_with_text_and_styles_.
+				common_draw_shape_with_styles_attlist_.common_draw_style_name_attlist_.draw_style_name_;
+
+			const std::wstring styleName = styleRef ? styleRef->style_name() : L"";
+
+			std::vector<const odf_reader::style_instance *> instances;
+			odf_reader::style_instance* styleInst = Context.root()->odf_context().styleContainer().style_by_name(styleName, odf_types::style_family::Graphic,Context.process_headers_footers_);
+			if (styleInst)
+			{
+				style_instance * defaultStyle = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::Graphic);
+				if (defaultStyle)instances.push_back(defaultStyle);
+				instances.push_back(styleInst);
+			}
+			graphic_format_properties graphicProperties = calc_graphic_properties_content(instances);
+
+			draw_fill fill = draw_fill::solid;
+			if (graphicProperties.common_draw_fill_attlist_.draw_fill_)
+				fill = *graphicProperties.common_draw_fill_attlist_.draw_fill_;
+
+			if (graphicProperties.common_draw_fill_attlist_.draw_fill_color_ &&
+				( fill.get_type() != draw_fill::bitmap &&  fill.get_type() != draw_fill::none ))
+			{
+				color_text = graphicProperties.common_draw_fill_attlist_.draw_fill_color_;
+			}
+		}
+	}
+    if (color_text)
     {
-        _rPr << L"<w:color w:val=\"" << fo_color_->get_hex_value() << "\" />";
+        _rPr << L"<w:color w:val=\"" << color_text->get_hex_value() << "\" />";
     }
     else if (style_use_window_font_color_ && *style_use_window_font_color_)
     {

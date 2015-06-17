@@ -617,7 +617,7 @@ public:
 
 public:
     common_draw_shape_with_styles_attlist common_draw_shape_with_styles_attlist_;
-    common_draw_text_style_name_attlist common_draw_text_style_name_attlist_;
+    common_draw_text_style_name_attlist	 common_draw_text_style_name_attlist_;
 };
 
 /// presentation-shape-attlist

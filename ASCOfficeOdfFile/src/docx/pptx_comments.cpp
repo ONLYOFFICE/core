@@ -73,7 +73,7 @@ bool pptx_comments::empty() const
 {
     return impl_->empty();
 }
-void pptx_serialize(std::wostream & _Wostream, pptx_comments const & val)
+void pptx_serialize(std::wostream & _Wostream, pptx_comments & val)
 {
 	val.impl_->serialize(_Wostream);
 }

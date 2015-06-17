@@ -3810,7 +3810,7 @@ bool DocxConverter::convert(OOX::Logic::CTableCellProperties *oox_table_cell_pr,
 	{
 		if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_)//раскидаем по сторонам
 		{
-			if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_.get() != std::wstring(L"none"))
+			if (cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_->is_none() == false)
 			{
 				cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_left_ = 
 				cell_properties->style_table_cell_properties_attlist_.common_border_attlist_.fo_border_right_ =

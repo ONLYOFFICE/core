@@ -45,7 +45,7 @@ void pptx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_pr
 		}
     }
 }
-void pptx_serialize_image(std::wostream & strm, _pptx_drawing const & val)
+void pptx_serialize_image(std::wostream & strm, _pptx_drawing & val)
 {
     CP_XML_WRITER(strm)    
     {
@@ -92,9 +92,8 @@ void pptx_serialize_image(std::wostream & strm, _pptx_drawing const & val)
     }  
 }
 
-void pptx_serialize_shape(std::wostream & strm, _pptx_drawing const & val)
+void pptx_serialize_shape(std::wostream & strm, _pptx_drawing & val)
 {
-
 	CP_XML_WRITER(strm)    
     {
         CP_XML_NODE(L"p:sp")
@@ -150,7 +149,7 @@ void pptx_serialize_shape(std::wostream & strm, _pptx_drawing const & val)
     }  // CP_XML_WRITER  
 }
 
-void pptx_serialize_chart(std::wostream & strm, _pptx_drawing const & val)
+void pptx_serialize_chart(std::wostream & strm, _pptx_drawing & val)
 {
     CP_XML_WRITER(strm)    
     {
@@ -188,7 +187,7 @@ void pptx_serialize_chart(std::wostream & strm, _pptx_drawing const & val)
     }  // CP_XML_WRITER  
 }
 
-void pptx_serialize_table(std::wostream & strm, _pptx_drawing const & val)
+void pptx_serialize_table(std::wostream & strm, _pptx_drawing & val)
 {
     CP_XML_WRITER(strm)    
     {
@@ -228,7 +227,7 @@ void pptx_serialize_table(std::wostream & strm, _pptx_drawing const & val)
     }  // CP_XML_WRITER  
 }
 
-void pptx_serialize(std::wostream & strm, _pptx_drawing const & val)
+void pptx_serialize(std::wostream & strm, _pptx_drawing & val)
 {
 	if (val.type == mediaitems::typeShape)
 	{

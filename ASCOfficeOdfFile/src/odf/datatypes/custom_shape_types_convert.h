@@ -207,32 +207,41 @@ static const _shape_converter _OO_OOX_custom_shapes[]=
 static const _shape_converter _OO_OOX_wordart[]=
 //https://msdn.microsoft.com/ru-ru/library/documentformat.openxml.drawing.textshapevalues.aspx?f=255&MSPPError=-2147217396
 {
-{L"fontwork-arch-up-pour"		,L"textArchUpPour"	,0	,0	,0	},
+{L"fontwork-plain-text"			,L"textPlain"			,1	,30000	,	70000 },
+
+{L"fontwork-curve-up"			,L"textCurveUp"			,0	,0	,0	},
+{L"fontwork-curve-down"			,L"textCurveDown"		,0	,0	,0	},
+{L"fontwork-wave"				,L"textWave1"			,0	,0	,0	},
+
+{L"fontwork-fade-right"			,L"textFadeRight"		,0	,0	,0	},
+{L"fontwork-fade-left"			,L"textFadeLeft"		,0	,0	,0	},
+{L"fontwork-fade-up"			,L"textFadeUp"			,0	,0	,0	},
+{L"fontwork-fade-down"			,L"textFadeDown"		,0	,0	,0	},
+{L"fontwork-fade-up-and-right"	,L"textFadeUp"			,0	,0	,0	},
+{L"fontwork-fade-up-and-left"	,L"textFadeUp"			,0	,0	,0	},
+
+{L"fontwork-arch-left-curve"	,L"textArchLeftCurve"	,0	,0	,0	},
+{L"fontwork-arch-right-curve"	,L"textArchRightCurve"	,0	,0	,0	},
+{L"fontwork-arch-up-curve"		,L"textArchUpPour"		,0	,0	,0	},
+{L"fontwork-arch-down-curve"	,L"textArchDownPour"	,0	,0	,0	},
+
+{L"fontwork-arch-up-pour"		,L"textArchUpPour"		,0	,0	,0	},
 {L"fontwork-arch-down-pour"		,L"textArchDownPour"	,0	,0	,0},
-{L"fontwork-circle-pour"		,L"textCirclePour"	,0	,0	,0	},
-{L"fontwork-curve-up"			,L"textCurveUp"	,0	,0	,0	},
-{L"fontwork-curve-down"			,L"textCurveDown"	,0	,0	,0	},
-{L"fontwork-wave"				,L"textWave1"	,0	,0	,0	},
-{L"fontwork-fade-right"			,L"textFadeRight"	,0	,0	,0	},
-{L"fontwork-fade-left"			,L"textFadeLeft"	,0	,0	,0	},
-{L"fontwork-fade-up"			,L"textFadeUp"	,0	,0	,0	},
-{L"fontwork-fade-down"			,L"textFadeDown"	,0	,0	,0	},
-{L"fontwork-arch-left-curve"	,L"textPlain"	,0	,0	,0	},
-{L"fontwork-arch-right-curve"	,L"textPlain"	,0	,0	,0	},
-{L"fontwork-arch-left-pour"		,L"textPlain"	,0	,0	,0	},
-{L"fontwork-arch-right-pour"	,L"textPlain"	,0	,0	,0	},
-{L"fontwork-chevron-up"			,L"textChevron"	,0	,0	,0	},
+{L"fontwork-arch-left-pour"		,L"textArchLeftPour"	,0	,0	,0	},
+{L"fontwork-arch-right-pour"	,L"textArchRightPour"	,0	,0	,0	},
+
+{L"fontwork-chevron-up"			,L"textChevron"			,0	,0	,0	},
 {L"fontwork-chevron-down"		,L"textChevronInverted"	,0	,0	,0	},
-{L"fontwork-plain-text"			,L"textPlain"	,0	,0	,0	},
-{L"fontwork-triangle-up"		,L"textTriangle"	,0	,0	,0	},
+{L"fontwork-triangle-up"		,L"textTriangle"		,0	,0	,0	},
 {L"fontwork-triangle-down"		,L"textTriangleInverted"	,0	,0	,0	},
-{L"fontwork-open-circle-curve"	,L"textPlain"	,0	,0	,0	},
-{L"fontwork-circle-curve"		,L"textCircle"	,0	,0	,0	},
-{L"fontwork-open-circle-pour"	,L"textPlain"	,0	,0	,0	},
-{L"fontwork-fade-up-and-right"	,L"textFadeUp"	,0	,0	,0	},
-{L"fontwork-fade-up-and-left"	,L"textFadeUp"	,0	,0	,0	},
-{L"fontwork-inflate"			,L"textInflate"	,0	,0	,0	},
-{L"fontwork-deflate"			,L"textDeflate"	,0	,0	,0	},
-{L"fontwork-slant-up"			,L"textSlantUp"	,0	,0	,0	},
-{L"fontwork-slant-down"			,L"textSlantDown"	,0	,0	,0	},
+
+{L"fontwork-circle-pour"		,L"textCirclePour"		,0	,0	,0	},
+{L"fontwork-circle-curve"		,L"textCircle"		,0	,0	,0	},
+{L"fontwork-open-circle-curve"	,L"textPlain"		,1	,30000	,	70000 },
+{L"fontwork-open-circle-pour"	,L"textPlain"		,1	,30000	,	70000 },
+
+{L"fontwork-inflate"			,L"textInflate"		,0	,0	,0	},
+{L"fontwork-deflate"			,L"textDeflate"		,0	,0	,0	},
+{L"fontwork-slant-up"			,L"textSlantUp"		,0	,0	,0	},
+{L"fontwork-slant-down"			,L"textSlantDown"	,0	,0	,0	}
 };

@@ -338,8 +338,9 @@ int draw_enhanced_geometry::parsing(_CP_OPT(std::wstring) val)
 /// draw-enhanced_geometry_attlist
 void draw_enhanced_geometry_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"draw:type", draw_type_);
-    CP_APPLY_ATTR(L"draw:modifiers", draw_modifiers_);
+    CP_APPLY_ATTR(L"draw:type"		, draw_type_);
+    CP_APPLY_ATTR(L"draw:modifiers"	, draw_modifiers_);
+	CP_APPLY_ATTR(L"draw:text-path"	, draw_text_path_);
 }
 // draw:enhanced_geometry
 const wchar_t * draw_enhanced_geometry::ns = L"draw";
@@ -371,47 +372,57 @@ void draw_enhanced_geometry::add_child_element( xml::sax * Reader, const ::std::
 }
 void draw_enhanced_geometry::find_draw_type_oox()
 {
-	wordArt_ = false;
+	word_art_ = false;
+
+	if (draw_enhanced_geometry_attlist_.draw_text_path_ &&
+			*draw_enhanced_geometry_attlist_.draw_text_path_ == true)
+	{
+		draw_type_oox_index_ = 0;
+		word_art_ = true;
+		sub_type_ = 1;
+	}
 
 	if (draw_enhanced_geometry_attlist_.draw_type_)
 	{
 		std::wstring odf_type = draw_enhanced_geometry_attlist_.draw_type_.get();
 
-		int count = sizeof(_OO_OOX_custom_shapes) / sizeof(_shape_converter);
-
-		for (long i=0; i< count; i++)
+		if (word_art_)
 		{
-			if (_OO_OOX_custom_shapes[i].odf_reader == odf_type)
-			{
-				draw_type_oox_index_ = i;
-				break;
-			}
-			
-		}
-		if ((draw_type_oox_index_) && (*draw_type_oox_index_== 179))//L"textBox"
-		{
-			sub_type_ = 1;//textBox
-		}
-
-		if (!draw_type_oox_index_)
-		{
-			count = sizeof(_OO_OOX_wordart) / sizeof(_shape_converter);
+			int count = sizeof(_OO_OOX_wordart) / sizeof(_shape_converter);
 
 			for (long i=0; i< count; i++)
 			{
 				if (_OO_OOX_wordart[i].odf_reader == odf_type)
 				{
 					draw_type_oox_index_ = i;
-					wordArt_ = true;
-					sub_type_ = 1;
 					break;
 				}
 				
 			}
 		}
-	}
-	std::wstringstream str;
+		else
+		{
+			int count = sizeof(_OO_OOX_custom_shapes) / sizeof(_shape_converter);
 
+			for (long i=0; i< count; i++)
+			{
+				if (_OO_OOX_custom_shapes[i].odf_reader == odf_type)
+				{
+					draw_type_oox_index_ = i;
+					break;
+				}
+				
+			}
+			if ((draw_type_oox_index_) && (*draw_type_oox_index_== 179))//L"textBox"
+			{
+				sub_type_ = 1;//textBox
+			}
+		}
+
+	}
+
+
+	std::wstringstream str;
 
     BOOST_FOREACH(const office_element_ptr & parElement, draw_handle_)
     {

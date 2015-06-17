@@ -15,9 +15,13 @@ public:
 	CPdfRenderer();
 	~CPdfRenderer();
 
-	// тип рендерера-----------------------------------------------------------------------------
+	//----------------------------------------------------------------------------------------
+	// Тип рендерера
+	//----------------------------------------------------------------------------------------
 	virtual HRESULT get_Type(LONG* lType);
-	//-------- Функции для работы со страницей --------------------------------------------------
+	//----------------------------------------------------------------------------------------
+	// Функции для работы со страницей
+	//----------------------------------------------------------------------------------------
 	virtual HRESULT NewPage();
 	virtual HRESULT get_Height(double* dHeight);
 	virtual HRESULT put_Height(const double& dHeight);
@@ -25,8 +29,9 @@ public:
 	virtual HRESULT put_Width(const double& dWidth);
 	virtual HRESULT get_DpiX(double* dDpiX);
 	virtual HRESULT get_DpiY(double* dDpiY);
-
-	// pen --------------------------------------------------------------------------------------
+	//----------------------------------------------------------------------------------------
+	// Функции для работы с Pen
+	//----------------------------------------------------------------------------------------
 	virtual HRESULT get_PenColor(LONG* lColor)					= 0;
 	virtual HRESULT put_PenColor(const LONG& lColor)			= 0;
 	virtual HRESULT get_PenAlpha(LONG* lAlpha)					= 0;
@@ -48,8 +53,9 @@ public:
 	virtual HRESULT get_PenMiterLimit(double* dOffset)			= 0;
 	virtual HRESULT put_PenMiterLimit(const double& dOffset)	= 0;
 	virtual HRESULT PenDashPattern(double* pPattern, LONG lCount)= 0;
-
-	// brush ------------------------------------------------------------------------------------
+	//----------------------------------------------------------------------------------------
+	// Функции для работы с Brush
+	//----------------------------------------------------------------------------------------
 	virtual HRESULT get_BrushType(LONG* lType)							= 0;
 	virtual HRESULT put_BrushType(const LONG& lType)					= 0;
 	virtual HRESULT get_BrushColor1(LONG* lColor)						= 0;
@@ -70,7 +76,6 @@ public:
 	virtual HRESULT put_BrushLinearAngle(const double& dAngle)			= 0;
 	virtual HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height) = 0;
 	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height) = 0;
-
 	virtual HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount) = 0;
 
 	// font -------------------------------------------------------------------------------------
@@ -186,8 +191,178 @@ private:
 
 private:
 
+	class CPenState
+	{
+	public:
+
+		CPenState()
+		{
+			m_pDashPattern = NULL;
+			Reset();
+		}
+		~CPenState()
+		{
+			if (m_pDashPattern)
+				delete[] m_pDashPattern;
+		}
+		inline LONG   GetColor()
+		{
+			return m_lColor;
+		}
+		inline void   SetColor(const LONG& lColor)
+		{
+			m_lColor = lColor;
+			UpdateColor();
+		}
+		inline LONG   GetAlpha()
+		{
+			return m_nA;
+		}
+		inline void   SetAlpha(const LONG& lAlpha)
+		{
+			m_nA = (BYTE)max(0, min(255, lAlpha));
+		}
+		inline double GetSize()
+		{
+			return m_dSize;
+		}
+		inline void   SetSize(const double& dSize)
+		{
+			m_dSize = dSize;
+		}
+		inline BYTE   GetDashStyle()
+		{
+			return m_nDashStyle;
+		}
+		inline void   SetDashStyle(const BYTE& nDashStyle)
+		{
+			m_nDashStyle = nDashStyle;
+		}
+		inline BYTE   GetStartCapStyle()
+		{
+			return m_nStartCapStyle;
+		}
+		inline void   SetStartCapStyle(const BYTE& nCapStyle)
+		{
+			m_nStartCapStyle = nCapStyle;
+		}
+		inline BYTE   GetEndCapStyle()
+		{
+			return m_nEndCapStyle;
+		}
+		inline void   SetEndCapStyle(const BYTE& nCapStyle)
+		{
+			m_nEndCapStyle = nCapStyle;
+		}
+		inline BYTE   GetJoinStyle()
+		{
+			return m_nJoinStyle;
+		}
+		inline void   SetJoinStyle(const BYTE& nJoinStyle)
+		{
+			m_nJoinStyle = nJoinStyle;
+		}
+		inline double GetDashOffset()
+		{
+			return m_dDashOffset;
+		}
+		inline void   SetDashOffset(const double& dOffset)
+		{
+			m_dDashOffset = dOffset;
+		}
+		inline LONG   GetAlign()
+		{
+			return m_lAlign;
+		}
+		inline void   SetAlign(const LONG& lAlign)
+		{
+			m_lAlign = lAlign;
+		}
+		inline double GetMiter()
+		{
+			return m_dMiter;
+		}
+		inline void   SetMiter(const double& dMiter)
+		{
+			m_dMiter = dMiter;
+		}
+		inline void   SetDashPattern(const double* pPattern, const LONG& lSize)
+		{
+			if (m_pDashPattern)
+			{
+				delete[] m_pDashPattern;
+				m_pDashPattern = NULL;
+			}
+
+			m_lDashPatternSize = 0;
+
+			if (!pPattern || !lSize)
+			{
+				m_lDashPatternSize = 0;
+				m_pDashPattern     = NULL;
+			}
+			else
+			{
+				m_pDashPattern = new double[lSize];
+				if (m_pDashPattern)
+				{
+					memcpy((void*)m_pDashPattern, (const void*)pPattern, lSize * sizeof(double));
+					m_lDashPatternSize = lSize;
+				}
+			}
+		}
+
+		void Reset()
+		{
+			if (m_pDashPattern)
+				delete[] m_pDashPattern;
+
+			m_lColor     = 0;
+			m_dSize      = 0;
+			m_nA         = 255;
+			m_nDashStyle = 0;
+			m_lDashPatternSize = 0;
+			m_pDashPattern     = NULL;
+			UpdateColor();
+		}
+
+	private:
+
+		void UpdateColor()
+		{
+			m_nR = (unsigned char)(m_lColor & 0xFF);
+			m_nG = (unsigned char)((m_lColor >> 8) & 0xFF);
+			m_nB = (unsigned char)((m_lColor >> 16) & 0xFF);
+		}
+
+	private:
+
+		double m_dSize;
+		LONG   m_lColor;
+		BYTE   m_nA;
+		BYTE   m_nR;
+		BYTE   m_nG;
+		BYTE   m_nB;
+
+		BYTE   m_nStartCapStyle;
+		BYTE   m_nEndCapStyle;
+		BYTE   m_nJoinStyle;
+
+		LONG   m_lAlign;
+		double m_dMiter;
+
+		BYTE   m_nDashStyle;
+		double m_dDashOffset;
+		double*m_pDashPattern;
+		LONG   m_lDashPatternSize;
+
+	};
+
+
 	PdfWriter::CDocument* m_pDocument;
 	PdfWriter::CPage*     m_pPage;
+
+	CPenState             m_oPen;
 
 	bool                  m_bValid;
 	double                m_dPageHeight;

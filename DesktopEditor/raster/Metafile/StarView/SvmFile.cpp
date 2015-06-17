@@ -84,12 +84,17 @@ static const struct ActionNames
 
 void CSvmFile::PlayMetaFile()
 {
+	m_bError = false;
 	m_oStream.SeekToStart();
 
     // Check the signature "VCLMTF"
 	std::string start = std::string((char*)m_oStream.GetCurPtr(), 6);
 
-    if (start != "VCLMTF")    return;
+    if (start != "VCLMTF")    
+	{
+		m_bError = true;
+		return;
+	}
 	m_oStream.Skip(6);
 	
 	Read_SVM_HEADER();

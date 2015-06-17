@@ -84,7 +84,6 @@ static const struct ActionNames
 
 void CSvmFile::PlayMetaFile()
 {
-	m_bError = false;
 	m_oStream.SeekToStart();
 
     // Check the signature "VCLMTF"
@@ -92,7 +91,7 @@ void CSvmFile::PlayMetaFile()
 
     if (start != "VCLMTF")    
 	{
-		m_bError = true;
+		SetError();
 		return;
 	}
 	m_oStream.Skip(6);

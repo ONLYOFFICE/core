@@ -74,7 +74,7 @@ public:
     }
 	void serialize(std::wostream & strm)
 	{
-		BOOST_FOREACH(_pptx_drawing const & d, pptx_drawings_)
+		BOOST_FOREACH(_pptx_drawing & d, pptx_drawings_)
 		{
 			pptx_serialize(strm,d);
 		}

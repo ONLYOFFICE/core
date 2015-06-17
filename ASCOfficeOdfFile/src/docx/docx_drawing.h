@@ -43,7 +43,7 @@ struct _docx_drawing : _oox_drawing
  //   std::wstring distL;
  //   std::wstring distR;
 
-    friend void docx_serialize(std::wostream & _Wostream, _docx_drawing const & val);    
+    friend void docx_serialize(std::wostream & _Wostream, _docx_drawing & val);    
 };
 }
 }

@@ -65,6 +65,7 @@ public:
 
 	HRESULT FinalConstruct()
 	{
+		defaultWinFontPath = GetDefWinFontDirectory();
 		return S_OK;
 	}
 
@@ -78,9 +79,12 @@ public:
 
 private:
 	HRESULT SaveToFileImpl(const std::wstring & srcPath, const std::wstring & srcTempPath,
-						   const std::wstring & dstTempPath,	 const std::wstring & dstFileName);
+						   const std::wstring & dstTempPath,	const std::wstring & fontPath, const std::wstring & dstFileName);
 
 	std::wstring DetectTypeDocument(const std::wstring & Path);
+	std::wstring GetDefWinFontDirectory();
+
+	std::wstring defaultWinFontPath;
 
 protected:
 

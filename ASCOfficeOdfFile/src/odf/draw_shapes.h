@@ -41,26 +41,24 @@ public:
 	virtual void xlsx_convert(oox::xlsx_conversion_context & Context) {}
 	virtual void pptx_convert(oox::pptx_conversion_context & Context) {}
 	
-	
 	void common_xlsx_convert(oox::xlsx_conversion_context & Context); 
 	void common_docx_convert(oox::docx_conversion_context & Context) ;
 	void common_pptx_convert(oox::pptx_conversion_context & Context) ;
 
-	odf_types::common_xlink_attlist	common_xlink_attlist_;
-	odf_types::common_presentation_attlist common_presentation_attlist_;
-	odf_types::union_common_draw_attlists  common_draw_attlists_;
-	
-	draw_shape_attlist draw_shape_attlist_;
-
-	_CP_OPT(std::wstring)		draw_id_;//используется для анимашек
+	odf_types::common_xlink_attlist			common_xlink_attlist_;
+	odf_types::common_presentation_attlist	common_presentation_attlist_;
+	odf_types::union_common_draw_attlists	common_draw_attlists_;
+	draw_shape_attlist						draw_shape_attlist_;
+	_CP_OPT(std::wstring)					draw_id_;//используется для анимашек
   
 	office_element_ptr_array content_;
 
 	CPDOCCORE_DEFINE_VISITABLE();
 	friend class odf_document;
-
-	int sub_type_;
-	std::vector<odf_reader::_property> additional_;
+//----------------------------------------------------------------------------------------------
+	bool								word_art_;
+	int									sub_type_;
+	std::vector<odf_reader::_property>	additional_;
 
 
 };
@@ -357,8 +355,9 @@ class draw_enhanced_geometry_attlist
 {
 public:
  	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
-	_CP_OPT(std::wstring) draw_type_;
-	_CP_OPT(std::wstring) draw_modifiers_;
+	_CP_OPT(std::wstring)	draw_type_;
+	_CP_OPT(std::wstring)	draw_modifiers_;
+	_CP_OPT(bool)			draw_text_path_;
 };
 /////////////////////////////////////////////////////////////////////////
 class draw_enhanced_geometry : public office_element_impl<draw_enhanced_geometry>
@@ -385,7 +384,7 @@ public:
 	_CP_OPT(int)			sub_type_;
 	_CP_OPT(int)			draw_type_oox_index_;
 	_CP_OPT(std::wstring)	svg_viewbox_;
-	bool					wordArt_;
+	bool					word_art_;
 
 	typedef std::pair<std::wstring,std::wstring> pair_string_value;
 

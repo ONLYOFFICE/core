@@ -467,7 +467,7 @@ void odf_page_layout_context::set_page_border_shadow(bool val)
 	style_page_layout_properties * props = get_properties();
 	if (!props)return;
 
-	props->style_page_layout_properties_attlist_.common_shadow_attlist_.style_shadow_ = L"#000000 0.159cm 0.159cm";
+	props->style_page_layout_properties_attlist_.common_shadow_attlist_.style_shadow_ = shadow_type::parse(L"#000000 0.159cm 0.159cm");
 }
 void odf_page_layout_context::set_page_border(std::wstring top, std::wstring left, std::wstring bottom, std::wstring right)
 {

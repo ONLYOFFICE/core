@@ -260,7 +260,7 @@ void draw_enhanced_geometry::pptx_convert(oox::pptx_conversion_context & Context
 	}
 	if (draw_type_oox_index_)
 	{
-		Context.get_slide_context().set_property(_property(L"draw-type-index",draw_type_oox_index_.get()));	
+		Context.get_slide_context().set_property(_property(L"odf-custom-draw-index",draw_type_oox_index_.get()));	
 	}
 	if (draw_enhanced_geometry_attlist_.draw_modifiers_)
 	{

@@ -70,7 +70,7 @@ public:
     }
 
 
-	void serialize(std::wostream & strm) const
+	void serialize(std::wostream & strm) 
     {
         CP_XML_WRITER(strm)
         {
@@ -80,7 +80,7 @@ public:
                 CP_XML_ATTR(L"xmlns:a"	, L"http://schemas.openxmlformats.org/drawingml/2006/main");
                 CP_XML_ATTR(L"xmlns:r"	, L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 
-				BOOST_FOREACH(_xlsx_drawing const & d, xlsx_drawings_)
+				BOOST_FOREACH(_xlsx_drawing & d, xlsx_drawings_)
                 {
                     xlsx_serialize(CP_XML_STREAM(), d);
                 }

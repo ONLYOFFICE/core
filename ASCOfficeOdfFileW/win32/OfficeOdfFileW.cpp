@@ -14,6 +14,7 @@
 
 #include "../source/Oox2OdfConverter/Oox2OdfConverter.h"
 
+#include <Shlobj.h>
 
 #ifndef STANDALONE_USE
 	#define STANDALONE_USE 0// что на входе: файл (1) или папка (0)
@@ -27,6 +28,18 @@ std::wstring bstr2wstring(BSTR str)
     return str ? std::wstring(&str[0], &str[::SysStringLen(str)]) : L"";
 }
 
+std::wstring COfficeOdfFileW::GetDefWinFontDirectory()
+{
+	std::wstring strPath;
+
+	wchar_t wsWinFontDir[1024] ={};
+	if ( !SHGetSpecialFolderPathW( NULL, wsWinFontDir, CSIDL_FONTS, FALSE ) )
+		wsWinFontDir[0] = '\0';
+
+
+	strPath = std::wstring(wsWinFontDir);
+	return strPath;
+}
 STDMETHODIMP COfficeOdfFileW::LoadFromFile(BSTR sSrcFileName, BSTR sDstPath, BSTR sXMLOptions)
 {
    return S_FALSE;
@@ -67,7 +80,7 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
         
         FileSystem::Directory::CreateDirectory(srcTempPath); // создаем временную директорию для результирующих файлов
 #endif
-        hr = SaveToFileImpl(bstr2wstring(sSrcPath),srcTempPath, dstTempPath, bstr2wstring(sDstFileName));
+        hr = SaveToFileImpl(bstr2wstring(sSrcPath),srcTempPath, dstTempPath, defaultWinFontPath, bstr2wstring(sDstFileName));
         
     }
     catch(...)
@@ -101,6 +114,7 @@ STDMETHODIMP COfficeOdfFileW::SaveToFile(BSTR sDstFileName, BSTR sSrcPath, BSTR 
 HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
                                         const std::wstring & srcTempPath,
                                         const std::wstring & dstTempPath,
+										const std::wstring & fontPath,
                                         const std::wstring & dstFileName)
 {
     HRESULT hr = E_FAIL;
@@ -122,7 +136,7 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
 		ffCallBack.OnProgressEx	=	OnProgressExFunc;
 		ffCallBack.caller		=	this;
 		
-		Oox2Odf::Converter converter(srcTempPath, type, &ffCallBack);
+		Oox2Odf::Converter converter(srcTempPath, type, fontPath, &ffCallBack);
 		
 
 		converter.convert();

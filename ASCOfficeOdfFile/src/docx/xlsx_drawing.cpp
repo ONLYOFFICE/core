@@ -75,7 +75,7 @@ void xlsx_serialize(std::wostream & strm, const xlsx_drawing_position & val)
     }
 }
 
-void xlsx_serialize_image(std::wostream & strm, _xlsx_drawing const & val)
+void xlsx_serialize_image(std::wostream & strm, _xlsx_drawing & val)
 {
     CP_XML_WRITER(strm)    
     {
@@ -119,28 +119,8 @@ void xlsx_serialize_image(std::wostream & strm, _xlsx_drawing const & val)
     }  // CP_XML_WRITER  
 }
 
-void xlsx_serialize_shape(std::wostream & strm, _xlsx_drawing const & val)
+void xlsx_serialize_shape(std::wostream & strm, _xlsx_drawing & val)
 {
-	std::wstring shapeType;
-	
-	if (val.sub_type<9 && val.sub_type>=0)
-	{
-		shapeType =	_ooxShapeType[val.sub_type];
-	}
-	if (val.sub_type == 7)//custom 
-	{
-		_CP_OPT(int) iVal;
-		odf_reader::GetProperty(val.additional,L"draw-type-index",iVal);
-		if (iVal)shapeType = _OO_OOX_custom_shapes[*iVal].oox;	
-	}
-	else if (val.sub_type<9 && val.sub_type>=0)
-	{
-		shapeType =	_ooxShapeType[val.sub_type];
-	} 
-
-	if (shapeType.length()<1)
-		shapeType =L"rect";//подмена неизвестного на прямоугольник (сделать невидимым ???)
-	
 	CP_XML_WRITER(strm)    
     {
         CP_XML_NODE(L"xdr:sp")
@@ -174,7 +154,7 @@ void xlsx_serialize_shape(std::wostream & strm, _xlsx_drawing const & val)
     }  // CP_XML_WRITER  
 }
 
-void xlsx_serialize_chart(std::wostream & strm, _xlsx_drawing const & val)
+void xlsx_serialize_chart(std::wostream & strm, _xlsx_drawing & val)
 {
     CP_XML_WRITER(strm)    
     {
@@ -211,7 +191,7 @@ void xlsx_serialize_chart(std::wostream & strm, _xlsx_drawing const & val)
     }  // CP_XML_WRITER  
 }
 
-void xlsx_serialize(std::wostream & strm, _xlsx_drawing const & val)
+void xlsx_serialize(std::wostream & strm, _xlsx_drawing & val)
 {
      CP_XML_WRITER(strm)    
     {

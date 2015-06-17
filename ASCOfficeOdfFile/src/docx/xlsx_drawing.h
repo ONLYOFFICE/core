@@ -28,7 +28,7 @@ struct _xlsx_drawing : _oox_drawing
     xlsx_drawing_position from;
     xlsx_drawing_position to;
     
-    friend void xlsx_serialize(std::wostream & _Wostream, _xlsx_drawing const & val);    
+    friend void xlsx_serialize(std::wostream & _Wostream, _xlsx_drawing & val);    
 };
 }
 }

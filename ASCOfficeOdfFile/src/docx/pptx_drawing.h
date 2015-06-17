@@ -18,7 +18,7 @@ struct _pptx_drawing : _oox_drawing
 	std::wstring place_holder_type_;
 	int place_holder_idx_;
 
-    friend void pptx_serialize(std::wostream & _Wostream, _pptx_drawing const & val);    
+    friend void pptx_serialize(std::wostream & _Wostream, _pptx_drawing & val);    
 };
 
 }

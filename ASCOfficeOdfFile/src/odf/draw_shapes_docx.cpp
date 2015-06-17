@@ -50,6 +50,17 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 	std::wstringstream temp_stream(Context.get_drawing_context().get_text_stream_shape());
 	Context.set_stream_man( boost::shared_ptr<oox::streams_man>( new oox::streams_man(temp_stream) ));
 
+//сначала элементы графики  потом все остальное	
+	BOOST_FOREACH(const office_element_ptr & elm, content_)
+    {
+		ElementType type = elm->get_type();
+		
+		if (type == typeDrawCustomShape) // || .... 
+		{
+			elm->docx_convert(Context);
+		}
+    }
+	
 	bool pParaState = Context.get_paragraph_state();
 	bool pRunState = Context.get_run_state();
 	Context.set_paragraph_state(false);		
@@ -58,7 +69,11 @@ void draw_shape::common_docx_convert(oox::docx_conversion_context & Context)
 	BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
 		ElementType type = elm->get_type();
-        elm->docx_convert(Context);
+		
+		if (type != typeDrawCustomShape)
+		{
+			elm->docx_convert(Context);
+		}
     }
 
 	Context.set_paragraph_state(pParaState);	
@@ -153,15 +168,17 @@ void draw_enhanced_geometry::docx_convert(oox::docx_conversion_context & Context
 
 	draw_shape * shape = Context.get_drawing_context().get_current_shape();//owner
 
+	shape->word_art_ = word_art_;
+
 	if (sub_type_)
 	{
 		shape->sub_type_ = sub_type_.get();
 	}
 	if (draw_type_oox_index_)
 	{
-		shape->additional_.push_back(_property(L"draw-type-index", draw_type_oox_index_.get()));	
+		shape->additional_.push_back(_property(L"odf-custom-draw-index", draw_type_oox_index_.get()));	
 
-		if (wordArt_ == true)
+		if (shape->word_art_ == true)
 			shape->additional_.push_back(_property(L"wordArt", true));	
 
 	}

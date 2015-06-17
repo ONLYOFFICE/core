@@ -85,8 +85,8 @@ std::pair<float, float> GetMaxDigitSizePixels(const std::wstring & fontName, dou
     catch(...)
     {
         // TODO: default value!
-        return std::pair<float, float>(7,8);
     }    
+	return std::pair<float, float>(7,8);
 }
 
 }

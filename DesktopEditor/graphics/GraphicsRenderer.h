@@ -6,6 +6,21 @@
 #include "ImageFilesCache.h"
 #include "../raster/BgraFrame.h"
 
+class IGraphicsRenderer_State
+{
+public:
+    int Type;
+
+    IGraphicsRenderer_State()
+    {
+        // пока не используется
+        Type = 0;
+    }
+    virtual ~IGraphicsRenderer_State()
+    {
+    }
+};
+
 class CGraphicsRenderer : public IRenderer
 {
 private:
@@ -42,7 +57,9 @@ private:
 	CImageFilesCache* m_pCache;
 
 	double m_dGlobalAlpha;
-	INT m_bGlobalAlphaEnabled;
+    bool m_bGlobalAlphaEnabled;
+
+    std::vector<IGraphicsRenderer_State*> m_arStates;
 
 public:
 	CGraphicsRenderer();
@@ -73,6 +90,9 @@ public:
 	void RestoreBrush(const NSStructures::CBrush& oBrush) { m_oBrush = oBrush; }
 	void SetSwapRGB(bool bValue){ if (m_pRenderer) m_pRenderer->m_bSwapRGB = bValue; }
     void SetTileImageDpi(const double& dDpi) { if (m_pRenderer) m_pRenderer->m_dDpiTile = dDpi; }
+
+    void Save();
+    void Restore();
 
 public:
 // тип рендерера-----------------------------------------------------------------------------

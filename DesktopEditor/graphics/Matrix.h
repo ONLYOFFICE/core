@@ -15,6 +15,7 @@ class CMatrix
 public:
 	CMatrix(double m11, double m12, double m21, double m22, double dx, double dy);
 	CMatrix();
+    CMatrix(const CMatrix& oSrc);
 	
 	~CMatrix();
 	

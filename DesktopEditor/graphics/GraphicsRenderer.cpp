@@ -1,5 +1,6 @@
 ﻿#include "GraphicsRenderer.h"
 #include <algorithm>
+#include "../raster/Metafile/MetaFile.h"
 
 ////////////////////////////////////////////////////////////////////////////////
 
@@ -127,7 +128,7 @@ CGraphicsRenderer::CGraphicsRenderer()
 	m_pCache	= NULL;
 
 	m_dGlobalAlpha			= 1.0;
-	m_bGlobalAlphaEnabled	= FALSE;
+    m_bGlobalAlphaEnabled	= false;
 }
 CGraphicsRenderer::~CGraphicsRenderer()
 {
@@ -969,6 +970,17 @@ HRESULT CGraphicsRenderer::DrawImage(IGrObject* pImage, const double& x, const d
 }
 HRESULT CGraphicsRenderer::DrawImageFromFile(const std::wstring& bstrVal, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha)
 {
+#if 0
+    MetaFile::CMetaFile oMetafile(m_pFontManager ? m_pFontManager->m_pApplication : NULL);
+    if (oMetafile.LoadFromFile(bstrVal.c_str()))
+    {
+        this->Save();
+        bool bRet = oMetafile.DrawOnRenderer(this, x, y, w, h);
+        this->Restore();
+        return bRet ? S_OK : S_FALSE;
+    }
+#endif
+
 	CCacheImage* pCacheImage = NULL;
     if (NULL != m_pCache)
 	{
@@ -976,7 +988,7 @@ HRESULT CGraphicsRenderer::DrawImageFromFile(const std::wstring& bstrVal, const 
 	}
     else
     {
-        pCacheImage = new CCacheImage(bstrVal);
+        pCacheImage = new CCacheImage(NULL, bstrVal);
     }
 
 	if (NULL != pCacheImage)
@@ -1231,4 +1243,80 @@ void CGraphicsRenderer::AddRect(const double& x, const double& y, const double& 
 	m_pPath->LineTo(x + w, y + h);
 	m_pPath->LineTo(x, y + h);
 	m_pPath->CloseFigure();
+}
+
+// SAVE/RESTORE section
+class CGraphicsRenderer_State : public IGraphicsRenderer_State
+{
+public:
+    CGraphicsRenderer_State() : IGraphicsRenderer_State()
+    {
+    }
+    CGraphicsRenderer_State(const Aggplus::CGraphics_ClipState& oState) : IGraphicsRenderer_State(), m_oClipState(oState)
+    {
+    }
+    virtual ~CGraphicsRenderer_State()
+    {
+    }
+
+public:
+    NSStructures::CPen              m_oPen;
+    NSStructures::CBrush            m_oBrush;
+    NSStructures::CFont             m_oFont;
+
+    Aggplus::CMatrix                m_oTransform;
+
+    double                          m_dGlobalAlpha;
+    bool                            m_bGlobalAlphaEnabled;
+    bool                            m_bIntegerGrid;
+
+    Aggplus::CGraphics_ClipState    m_oClipState;
+};
+
+void CGraphicsRenderer::Save()
+{
+    if (!m_pRenderer)
+        return;
+
+    CGraphicsRenderer_State* pState = new CGraphicsRenderer_State(m_pRenderer->m_oClipState);
+    pState->m_oPen      = m_oPen;
+    pState->m_oBrush    = m_oBrush;
+    pState->m_oFont     = m_oFont;
+
+    pState->m_oTransform    = *m_pRenderer->GetTransform();
+
+    pState->m_dGlobalAlpha          = m_dGlobalAlpha;
+    pState->m_bGlobalAlphaEnabled   = m_bGlobalAlphaEnabled;
+
+    pState->m_bIntegerGrid  = m_pRenderer->m_bIntegerGrid;
+
+    m_arStates.push_back(pState);
+}
+void CGraphicsRenderer::Restore()
+{
+    if (!m_pRenderer)
+        return;
+
+    if (0 == m_arStates.size())
+        return;
+
+    CGraphicsRenderer_State* pState = (CGraphicsRenderer_State*)m_arStates.at(m_arStates.size() - 1);
+    m_arStates.pop_back();
+
+    m_oPen      = pState->m_oPen;
+    m_oBrush    = pState->m_oBrush;
+    m_oFont     = pState->m_oFont;
+
+    ApplyTransform(&pState->m_oTransform);
+    this->put_IntegerGrid(pState->m_bIntegerGrid);
+    this->put_GlobalAlphaEnabled(pState->m_bGlobalAlphaEnabled, pState->m_dGlobalAlpha);
+
+    m_pRenderer->ResetClip();
+    for (std::vector<Aggplus::CGraphics_ClipStateRecord*>::iterator i = pState->m_oClipState.Records.begin(); i != pState->m_oClipState.Records.end(); i++)
+    {
+        Aggplus::CGraphics_ClipStateRecord* pRecord = *i;
+        m_pRenderer->InternalClip(pRecord->Path, pRecord->Transform, pRecord->Operation);
+    }
+
+    RELEASEOBJECT(pState);
 }

@@ -4,6 +4,9 @@
 #include "Image.h"
 #include "TemporaryCS.h"
 #include <map>
+#include "../fontengine/ApplicationFonts.h"
+#include "../raster/Metafile/MetaFile.h"
+#include "../common/File.h"
 
 class CCacheImage
 {
@@ -12,12 +15,35 @@ private:
 	LONG m_lRef;
 
 public:
-	CCacheImage() : m_oImage()
+    CCacheImage(CApplicationFonts* pFonts) : m_oImage()
 	{
 		m_lRef = 1;		
 	}
-	CCacheImage(const std::wstring& strFile) : m_oImage(strFile)
+
+    CCacheImage(CApplicationFonts* pFonts, const std::wstring& strFile)
 	{
+        if (NULL == pFonts)
+        {
+            m_oImage.Create(strFile);
+        }
+        else
+        {
+            MetaFile::CMetaFile oMetafile(pFonts);
+            bool bIsMetafile = oMetafile.LoadFromFile(strFile.c_str());
+            if (!bIsMetafile)
+            {
+                m_oImage.Create(strFile);
+            }
+            else
+            {
+                std::wstring sTempFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"AscMetafile_");
+                oMetafile.ConvertToRaster(sTempFile.c_str(), 4, 1000, -1);
+                m_oImage.Create(sTempFile);
+
+                NSFile::CFileBinary::Remove(sTempFile);
+            }
+        }
+
 		m_lRef = 1;
 	}
 
@@ -53,11 +79,14 @@ private:
 
 	LONG m_lRef;
 
+    CApplicationFonts* m_pApplicationFonts;
+
 	NSCriticalSection::CRITICAL_SECTION m_oCS;
 
 public:
-	CImageFilesCache()
+    CImageFilesCache(CApplicationFonts* pFonts = NULL)
 	{
+        m_pApplicationFonts = pFonts;
 		m_lMaxCount = 10;
 		m_lRef = 1;
 
@@ -98,18 +127,20 @@ public:
 		if (nCount >= m_lMaxCount)
 		{
 			int nNeedDelete = nCount - m_lMaxCount;
-            
-            std::map<std::wstring,CCacheImage*>::iterator it2 = m_mapImages.begin();
-            while (nNeedDelete > 0 && it2 != m_mapImages.end())
-			{
-				it2->second->Release();
-                m_mapImages.erase(it2);
-                it2++;
-                --nNeedDelete;
-			}
-		}
 
-		CCacheImage* pImage = new CCacheImage(strFile);
+            while (nNeedDelete > 0)
+            {
+                std::map<std::wstring,CCacheImage*>::iterator it2 = m_mapImages.begin();
+                if (it2 != m_mapImages.end())
+                {
+                    it2->second->Release();
+                    m_mapImages.erase(it2);
+                }
+                --nNeedDelete;
+            }
+        }
+
+        CCacheImage* pImage = new CCacheImage(m_pApplicationFonts, strFile);
 		m_mapImages[strFile] = pImage;
 
 		pImage->AddRef();

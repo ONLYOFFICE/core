@@ -6,6 +6,11 @@ namespace Aggplus
 	{
 	}
 
+    CMatrix::CMatrix(const CMatrix& oSrc) : m_agg_mtx()
+    {
+        m_agg_mtx	= oSrc.m_agg_mtx;
+    }
+
 	CMatrix::CMatrix() : m_agg_mtx() 
 	{
 	}

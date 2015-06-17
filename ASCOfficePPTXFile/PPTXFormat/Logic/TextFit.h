@@ -13,8 +13,11 @@ namespace PPTX
 		public:
 			enum eFit {FitEmpty = 0, FitNo = 1, FitSpAuto = 2, FitNormAuto = 3};
 
-			PPTX_LOGIC_BASE(TextFit)
-
+			TextFit(){
+				type = FitEmpty;
+			}
+			PPTX_LOGIC_BASE2(TextFit)
+			
 			virtual bool is_init(){return (type != FitEmpty);};
 
 		public:

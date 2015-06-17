@@ -38,6 +38,8 @@
 #include "Brush.h"
 #include "Image.h"
 
+#include <vector>
+
 #if defined(_WIN32) || defined (_WIN64)
 namespace NSStringFormat
 {
@@ -140,6 +142,86 @@ public:
 	virtual INT Create(LONG lWidth, LONG lHeight, double dDPIX, double dDPIY) = 0;
 };
 
+class CGraphics_ClipStateRecord
+{
+public:
+    CGraphicsPath*      Path;
+    Aggplus::CMatrix*   Transform;
+    agg::sbool_op_e     Operation;
+
+public:
+    CGraphics_ClipStateRecord()
+    {
+        Path        = NULL;
+        Transform   = NULL;
+        Operation   = agg::sbool_and;
+    }
+    ~CGraphics_ClipStateRecord()
+    {
+        RELEASEOBJECT(Path);
+        RELEASEOBJECT(Transform);
+    }
+
+    CGraphics_ClipStateRecord* Clone() const
+    {
+        CGraphics_ClipStateRecord* pRet = new CGraphics_ClipStateRecord();
+        if (Path)
+            pRet->Path = Path->Clone();
+        if (Transform)
+            pRet->Transform = new CMatrix(*Transform);
+        pRet->Operation = Operation;
+
+        return pRet;
+    }
+};
+
+class CGraphics_ClipState
+{
+public:
+    std::vector<CGraphics_ClipStateRecord*> Records;
+
+public:
+    CGraphics_ClipState()
+    {
+    }
+    CGraphics_ClipState(const CGraphics_ClipState& oSrc)
+    {
+        for (std::vector<CGraphics_ClipStateRecord*>::const_iterator i = oSrc.Records.begin(); i != oSrc.Records.end(); i++)
+        {
+            Records.push_back((*i)->Clone());
+        }
+    }
+    ~CGraphics_ClipState()
+    {
+        Clear();
+    }
+
+    void AddRecord(CGraphics_ClipStateRecord* pRecord)
+    {
+        Records.push_back(pRecord);
+    }
+    void Clear()
+    {
+        for (std::vector<CGraphics_ClipStateRecord*>::iterator i = Records.begin(); i != Records.end(); i++)
+        {
+            CGraphics_ClipStateRecord* pRec = *i;
+            RELEASEOBJECT(pRec);
+        }
+        Records.clear();
+    }
+
+    CGraphics_ClipState* Clone() const
+    {
+        CGraphics_ClipState* pRet = new CGraphics_ClipState();
+
+        for (std::vector<CGraphics_ClipStateRecord*>::const_iterator i = Records.begin(); i != Records.end(); i++)
+        {
+            pRet->Records.push_back((*i)->Clone());
+        }
+
+        return pRet;
+    }
+};
 
 class CGraphics
 {
@@ -204,6 +286,8 @@ public:
 
     double m_dDpiTile;
 
+    CGraphics_ClipState m_oClipState;
+
 public:
 
 	CGraphics();
@@ -247,6 +331,7 @@ public:
 	Status ResetClip();
 	Status ExclugeClip(CGraphicsPath* pPath);
 	Status CombineClip(CGraphicsPath* pPath, agg::sbool_op_e op);
+    Status InternalClip(CGraphicsPath* pPath, CMatrix* pTransform, agg::sbool_op_e op);
 
 	// измерение текста
 	INT MeasureString(const std::wstring& strText, CFontManager* pManager, double* lWidth, double* lHeight);

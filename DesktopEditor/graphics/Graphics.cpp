@@ -426,6 +426,7 @@ namespace Aggplus
 	Status CGraphics::ResetClip()
 	{
 		m_oClip.Reset();
+        m_oClipState.Clear();
 		return Ok;
 	}
 
@@ -444,18 +445,25 @@ namespace Aggplus
 
 	Status CGraphics::CombineClip(CGraphicsPath* pPath, agg::sbool_op_e op)
 	{
-		if (NULL == pPath)
-			return InvalidParameter;
-		
-		if (!m_bIntegerGrid)
-			m_oClip.Combine(pPath, &m_oFullTransform, op);
-		else
-		{
-			CMatrix transform;
-			m_oClip.Combine(pPath, &transform, op);
-		}
-		return Ok;
+        return InternalClip(pPath, m_bIntegerGrid ? NULL : &m_oFullTransform, op);
 	}
+
+    Status CGraphics::InternalClip(CGraphicsPath* pPath, CMatrix* pTransform, agg::sbool_op_e op)
+    {
+        if (NULL == pPath)
+            return InvalidParameter;
+
+        m_oClip.Combine(pPath, pTransform, op);
+
+        // write to clips history
+        CGraphics_ClipStateRecord* pRecord = new CGraphics_ClipStateRecord();
+        pRecord->Path = (NULL != pPath) ? pPath->Clone() : NULL;
+        pRecord->Transform = (NULL != pTransform) ? new CMatrix(*pTransform) : new CMatrix();
+        pRecord->Operation = op;
+        m_oClipState.AddRecord(pRecord);
+
+        return Ok;
+    }
 
 	INT CGraphics::MeasureString(const std::wstring& strText, CFontManager* pManager, double* lWidth, double* lHeight)
 	{

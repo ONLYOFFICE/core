@@ -295,6 +295,14 @@ std::wstring odf2oox_converter::Impl::convert(const std::wstring& expr)
     replace_cells_range(workstr);
     replace_semicolons(workstr);
     replace_vertical(workstr);
+
+	int res_find=0;
+	if ((res_find = workstr.find(L"CONCATINATE")) > 0)
+	{
+		//могут быть частично заданы диапазоны
+		//todooo
+
+	}
     return workstr;
 }
 

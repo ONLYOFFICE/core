@@ -128,6 +128,7 @@ size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_c
                                       const xlsx_cell_format * xlxsCellFormat,
                                       const std::wstring &num_format, bool  default_set, bool & is_visible )
 {
+	bool is_visible_set = is_visible;
     const size_t fontId = fonts_.fontId(textProp, parProp, cellProp);
     is_visible = false;
     
@@ -137,8 +138,8 @@ size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_c
     bool default_fill = false;
     const size_t fillId = fills_.fillId(textProp, parProp, cellProp, default_set,default_fill);
  
-    if (!default_border || !default_fill/* || (fillId >2 && default_set!=default_fill)*/)
-        is_visible = true;
+    if (!default_border || !default_fill || is_visible_set/* || (fillId >2 && default_set!=default_fill)*/)
+		is_visible = true;
 
     xlsx_alignment alignment = OdfProperties2XlsxAlignment(textProp, parProp, cellProp);
     const unsigned int id = next_index_;//static_cast<unsigned int>(cellXfs_.size());    

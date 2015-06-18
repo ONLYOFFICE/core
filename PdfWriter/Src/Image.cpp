@@ -47,6 +47,22 @@ namespace PdfWriter
 		Add("BitsPerComponent", 8);
 		SetFilter(STREAM_FILTER_JPX_DECODE);
 	}
+	void CImageDict::LoadJpx(BYTE* pBuffer, int nBufferSize, unsigned int unWidth, unsigned int unHeight)
+	{
+		CMemoryStream* pStream = new CMemoryStream();
+		if (!pStream)
+			return;
+
+		pStream->Write(pBuffer, nBufferSize);
+		SetStream(m_pXref, pStream);
+		Add("Type", "XObject");
+		Add("Subtype", "Image");
+		Add("Height", unHeight);
+		Add("Width", unWidth);
+		Add("ColorSpace", "DeviceRGB");
+		Add("BitsPerComponent", 8);
+		SetFilter(STREAM_FILTER_JPX_DECODE);
+	}
 	void CImageDict::LoadJb2(const wchar_t* wsFilePath, unsigned int unWidth, unsigned int unHeight)
 	{
 		CFileStream* pStream = new CFileStream();
@@ -108,15 +124,27 @@ namespace PdfWriter
 		Add("Height", unHeight);
 		Add("BitsPerComponent", 8);
 	}
-	void CImageDict::LoadSMask(const BYTE* pBgra, unsigned int unWidth, unsigned int unHeight)
+	void CImageDict::LoadSMask(const BYTE* pBgra, unsigned int unWidth, unsigned int unHeight, unsigned char unAlpha)
 	{
-		CMemoryStream* pStream = new CMemoryStream();
+		CMemoryStream* pStream = new CMemoryStream(unWidth * unHeight);
 		if (!pStream)
 			return;
 
-		for (unsigned int unIndex = 0, unSize = 4 * unWidth * unHeight; unIndex < unSize; unIndex += 4)
+		if (255 != unAlpha)
 		{
-			pStream->Write(pBgra + unIndex + 3, 1);
+			double dKoef = unAlpha / 255.0;
+			for (unsigned int unIndex = 0, unSize = 4 * unWidth * unHeight; unIndex < unSize; unIndex += 4)
+			{
+				BYTE nChar = *(pBgra + unIndex + 3) * dKoef;
+				pStream->Write(&nChar, 1);
+			}
+		}
+		else
+		{
+			for (unsigned int unIndex = 0, unSize = 4 * unWidth * unHeight; unIndex < unSize; unIndex += 4)
+			{
+				pStream->Write(pBgra + unIndex + 3, 1);
+			}
 		}
 
 		CImageDict* pImageSMask = new CImageDict(m_pXref, m_pDocument);

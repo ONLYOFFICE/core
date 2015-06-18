@@ -386,8 +386,8 @@ TBBox CFontManager::MeasureString()
 		float fT, fB, fL, fR;
 		m_oString.GetBBox(&fL, &fT, &fR, &fB, nIndex);
 
-		if (oBox.fMaxX < fB)
-			oBox.fMaxX = fB;
+		if (oBox.fMaxY < fB)
+			oBox.fMaxY = fB;
 
 		if (oBox.fMinY > fT)
 			oBox.fMinY = fT;

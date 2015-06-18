@@ -3,6 +3,8 @@
 
 #include "stdafx.h"
 
+#include "../PdfRenderer.h"
+
 #include "../Src/Streams.h"
 #include "../Src/Utils.h"
 #include "../Src/Objects.h"
@@ -29,6 +31,11 @@
 #include "../../DesktopEditor/raster/BgraFrame.h"
 
 #include "../../DesktopEditor/cximage/tiff/tiffio.h"
+
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/raster/Metafile/MetaFile.h"
+#include <vector>
+
 
 #ifdef DrawText
 #undef DrawText
@@ -821,19 +828,92 @@ void TestDocument9()
 	oPdf.Close();
 }
 
+std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstring wsExt)
+{
+	std::vector<std::wstring> vwsNames;
+
+	std::wstring wsSearchPath = wsFolder;
+	wsSearchPath.append(L"*.");
+	wsSearchPath.append(wsExt);
+
+	WIN32_FIND_DATA oFindData;
+	HANDLE hFind = ::FindFirstFile(wsSearchPath.c_str(), &oFindData);
+	if (hFind != INVALID_HANDLE_VALUE)
+	{
+		do
+		{
+			if (!(oFindData.dwFileAttributes & FILE_ATTRIBUTE_DIRECTORY))
+			{
+				vwsNames.push_back(oFindData.cFileName);
+			}
+		} while (::FindNextFile(hFind, &oFindData));
+		::FindClose(hFind);
+	}
+	return vwsNames;
+}
+void ConvertFolder(MetaFile::CMetaFile &oMetaFile, std::wstring wsFolderPath, const int nType)
+{
+	CPdfRenderer oRenderer;
+	
+	oMetaFile.Close();
+
+	std::wstring sExt;
+
+	switch (nType)
+	{
+		case MetaFile::c_lMetaEmf: sExt = L"emf"; break;
+		case MetaFile::c_lMetaWmf: sExt = L"wmf"; break;
+		case MetaFile::c_lMetaSvm: sExt = L"svm"; break;
+	}
+	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, sExt);
+	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
+	{
+		oRenderer.NewPage();
+
+		std::wstring wsFilePath = wsFolderPath;
+		wsFilePath.append(vFiles.at(nIndex));
+		if (oMetaFile.LoadFromFile(wsFilePath.c_str()))
+		{
+			double dW = 210;
+			double dH = 297;
+			//double dW, dH, dX, dY;
+			//oMetaFile.GetBounds(&dX, &dY, &dW, &dH);
+
+			oRenderer.put_Width(dW);
+			oRenderer.put_Height(dH);
+			oMetaFile.DrawOnRenderer(&oRenderer, 0, 0, dW, dH);
+			oMetaFile.Close();
+		}
+
+		printf("%d of %d %S\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());
+	}
+
+	oRenderer.SaveToFile(wsFolderPath + L"Out.pdf");
+}
+void TestMetafile()
+{
+	CApplicationFonts oFonts;
+	oFonts.Initialize();
+
+	MetaFile::CMetaFile oMetaFile(&oFonts);
+	ConvertFolder(oMetaFile, L"D://Test Files//Emf//", MetaFile::c_lMetaEmf);
+}
+
 void main()
 {
-	TestStreams();
-	TestObjects();
-	TestEncrypt();
-	TestDict();
-	TestDocument1();
-	TestDocument2();
-	TestDocument3();
-	TestDocument4();
-	TestDocument5();
-	TestDocument6();
-	TestDocument7();
-	TestDocument8();
-	TestDocument9();
+	//TestStreams();
+	//TestObjects();
+	//TestEncrypt();
+	//TestDict();
+	//TestDocument1();
+	//TestDocument2();
+	//TestDocument3();
+	//TestDocument4();
+	//TestDocument5();
+	//TestDocument6();
+	//TestDocument7();
+	//TestDocument8();
+	//TestDocument9();
+
+	TestMetafile();
 }

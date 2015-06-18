@@ -99,7 +99,7 @@
       <Optimization>Disabled</Optimization>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;_LIB;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>..\..\..\DesktopEditor\freetype-2.5.2\include;..\..\..\DesktopEditor\agg-2.4\include;..\..\..\DesktopEditor\cximage\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\DesktopEditor\freetype-2.5.2\include;..\..\DesktopEditor\agg-2.4\include;..\..\DesktopEditor\cximage\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <DisableSpecificWarnings>4018;4005;4267</DisableSpecificWarnings>
     </ClCompile>
     <Link>

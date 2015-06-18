@@ -108,16 +108,16 @@ public:
 
     void process_styles();
 
-    xlsx_text_context           & get_text_context()    { return xlsx_text_context_; }
-    xlsx_table_context          & get_table_context()   { return xlsx_table_context_; }
+    xlsx_text_context           & get_text_context()		{ return xlsx_text_context_; }
+    xlsx_table_context          & get_table_context()		{ return xlsx_table_context_; }
     const xlsx_table_context    & get_table_context() const { return xlsx_table_context_; }
-    xlsx_style_manager          & get_style_manager()   { return xlsx_style_; }
+    xlsx_style_manager          & get_style_manager()		{ return xlsx_style_; }
     xlsx_xml_worksheet          & current_sheet();
    
     oox_chart_context           & current_chart();
-    num_format_context          & get_num_format_context() { return num_format_context_; }
+    num_format_context          & get_num_format_context()		 { return num_format_context_; }
     size_t                        get_default_cell_style() const { return default_style_; }
-    xlsx_defined_names          & get_xlsx_defined_names() { return xlsx_defined_names_; }
+    xlsx_defined_names          & get_xlsx_defined_names()		 { return xlsx_defined_names_; }
     xlsx_table_metrics          & get_table_metrics();
     xlsx_drawing_context        & get_drawing_context();
     xlsx_drawing_context_handle & get_drawing_context_handle();	
@@ -130,11 +130,11 @@ private:
     void create_new_sheet(std::wstring const & name);
     void dump_sheet();   
 
-    package::xlsx_document      *output_document_;
-    const odf_reader::office_element   *spreadsheet_;
-    odf_reader::odf_document           *odf_document_;
+    package::xlsx_document				*output_document_;
+    const odf_reader::office_element	*spreadsheet_;
+    odf_reader::odf_document			*odf_document_;
 
-    CApplicationFonts           *applicationFonts_;
+    CApplicationFonts					*applicationFonts_;
 
     std::vector<xlsx_xml_worksheet_ptr> sheets_;
     std::vector<oox_chart_context_ptr>  charts_;

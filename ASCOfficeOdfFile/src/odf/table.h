@@ -391,7 +391,7 @@ public:
     void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
     
     bool	docx_convert(oox::docx_conversion_context & Context) ;
-    int		xlsx_convert(oox::xlsx_conversion_context & Context) ;
+    int		xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content & text_properties) ;
     bool	pptx_convert(oox::pptx_conversion_context & Context) ;
 
 private:
@@ -429,9 +429,9 @@ private:
     virtual void add_text(const std::wstring & Text);
 
 public:
-    table_table_cell_attlist table_table_cell_attlist_;
-    table_table_cell_attlist_extra table_table_cell_attlist_extra_;
-    table_table_cell_content table_table_cell_content_;
+    table_table_cell_attlist		table_table_cell_attlist_;
+    table_table_cell_attlist_extra	table_table_cell_attlist_extra_;
+    table_table_cell_content		table_table_cell_content_;
 
 };
 

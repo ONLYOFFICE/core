@@ -29,8 +29,8 @@ const xlsx_table_state & xlsx_table_context::state() const
 }
 
 xlsx_table_context::
-xlsx_table_context(xlsx_conversion_context & Context, xlsx_text_context & textCotnext): context_(Context),
-xlsx_text_context_(textCotnext)
+xlsx_table_context(xlsx_conversion_context & Context, xlsx_text_context & textContext): context_(Context),
+xlsx_text_context_(textContext)
 {        
 }
 

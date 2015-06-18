@@ -33,25 +33,26 @@ public:
 public:
 	void add_text(const std::wstring & text);
     
-    void start_paragraph(const std::wstring & styleName);
-    void end_paragraph();
+    void			start_paragraph(const std::wstring & styleName);
+    void			end_paragraph();
 
-    void start_span(const std::wstring & styleName);
-    void end_span();
-    std::wstring end_span2();
+    void			start_span(const std::wstring & styleName);
+    void			end_span();
+    std::wstring	end_span2();
 
-    void start_cell_content();
-    int end_cell_content();
+    void			start_cell_content();
+	void			set_cell_text_properties( odf_reader::text_format_properties_content * text_properties);
+    int				end_cell_content();
 
-	void start_comment_content();
-	std::wstring end_comment_content();
+	void			start_comment_content();
+	std::wstring	end_comment_content();
 
-	void start_drawing_content();
-	std::wstring end_drawing_content(); 
+	void			start_drawing_content();
+	std::wstring	end_drawing_content(); 
 
     void write_shared_strings(std::wostream & strm);
 	
-	void ApplyTextProperties(std::wstring style,odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type);
+	void ApplyTextProperties(std::wstring style, odf_reader::text_format_properties_content & propertiesOut, odf_types::style_family::type Type);
 
 	void set_local_styles_container(odf_reader::styles_container*  local_styles_);//это если стили объектов содержатся в другом документе
 
@@ -69,17 +70,17 @@ private:
 	bool in_paragraph;
 	bool in_cell_content;
 
-	odf_reader::styles_container & styles_;
-
-	odf_reader::styles_container * local_styles_ptr_;
+	odf_reader::styles_container				& styles_;
+	odf_reader::text_format_properties_content	* text_properties_cell_;
+	odf_reader::styles_container				* local_styles_ptr_;
 
     std::wstring dump_text();
     void write_rPr(std::wostream & strm);
    
 	size_t paragraphs_cout_; //???? тока из за начала отсчета?
    
-	std::wstringstream text_;
-    std::wstringstream output_;
+	std::wstringstream	text_;
+    std::wstringstream	output_;
     xlsx_shared_strings xlsx_shared_strings_;
    
 	std::wstring paragraph_style_name_;//был вектор ... не нужен, так как в один момент времени может быть тока один стиль параграфа,текста,объекта при приходе нового - дампится
@@ -96,6 +97,7 @@ void xlsx_text_context::Impl::write_shared_strings(std::wostream & strm)
 xlsx_text_context::Impl::Impl(odf_reader::styles_container & styles): paragraphs_cout_(0),styles_(styles),
 				in_comment(false),in_draw(false),in_paragraph(false),in_span(false),in_cell_content(false)
 {
+	text_properties_cell_ = NULL;
 }
 
 void xlsx_text_context::Impl::add_text(const std::wstring & text)
@@ -206,18 +208,27 @@ void xlsx_text_context::Impl::ApplyTextProperties(std::wstring style,odf_reader:
 	propertiesOut.apply_from(calc_text_properties_content(instances));
 }
 
+void xlsx_text_context::Impl::set_cell_text_properties(odf_reader::text_format_properties_content * text_properties)
+{
+	text_properties_cell_ = text_properties;
+}
+
 void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 {
 	if (paragraph_style_name_.length()<1 && span_style_name_.length()<1 && !(hyperlink_hId.length()>0 && in_draw) )return;
 
-	odf_reader::text_format_properties_content		text_properties_paragraph_;
-	ApplyTextProperties	(paragraph_style_name_,	text_properties_paragraph_,odf_types::style_family::Paragraph);
-	
+	odf_reader::text_format_properties_content		text_properties_paragraph_;	
 	odf_reader::text_format_properties_content		text_properties_span_;
-	ApplyTextProperties(span_style_name_,		text_properties_span_,odf_types::style_family::Text);
+	
+	ApplyTextProperties	(paragraph_style_name_,	text_properties_paragraph_	, odf_types::style_family::Paragraph);
+	ApplyTextProperties (span_style_name_,		text_properties_span_		, odf_types::style_family::Text);
 
 	odf_reader::text_format_properties_content text_properties_;
 
+	if (in_cell_content && text_properties_cell_)
+	{
+		text_properties_.apply_from(*text_properties_cell_);
+	}
 	text_properties_.apply_from(text_properties_paragraph_);
 	text_properties_.apply_from(text_properties_span_);
 
@@ -334,6 +345,8 @@ void xlsx_text_context::Impl::start_cell_content()
     span_style_name_ = L"";
 
 	in_cell_content = true;
+	
+	text_properties_cell_ = NULL;
 }
 
 void xlsx_text_context::Impl::start_comment_content()
@@ -417,6 +430,12 @@ void xlsx_text_context::set_local_styles_container(odf_reader::styles_container*
 {
 	return impl_->set_local_styles_container(local_styles_);
 }
+
+void xlsx_text_context::set_cell_text_properties(odf_reader::text_format_properties_content *text_properties)
+{
+	return impl_->set_cell_text_properties(text_properties);
+}
+
 
 void xlsx_text_context::add_text(const std::wstring & text)
 {

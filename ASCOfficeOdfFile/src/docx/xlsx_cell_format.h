@@ -16,14 +16,15 @@ public:
     xlsx_cell_format();
 public:
     XlsxCellType::type get_cell_type() const;
-    void set_cell_type(XlsxCellType::type type);
+    
+	void set_cell_type(XlsxCellType::type type);
 
-    int get_num_format() const;
-    void set_num_format(int numFmt);
+    int		get_num_format() const;
+    void	set_num_format(int numFmt);
 
 private:
-    XlsxCellType::type cell_type_;
-    int num_format_;
+    XlsxCellType::type	cell_type_;
+    int					num_format_;
 
 };
 

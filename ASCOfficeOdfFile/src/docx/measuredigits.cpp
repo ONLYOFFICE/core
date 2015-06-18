@@ -22,11 +22,11 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
 {
     if (pFontManager == NULL) return std::pair<float, float>(7,8);
 
-    HRESULT hr = S_OK;
+   int hr = FALSE;
 
-    if (S_OK != (hr = pFontManager->LoadFontByName(fontName, fontSize, fontStyle, dpi, dpi )))
+    if (FALSE == (hr = pFontManager->LoadFontByName(fontName, fontSize, fontStyle, dpi, dpi )))
 	{
-        if (S_OK != (hr = pFontManager->LoadFontByName(L"Arial", fontSize, fontStyle, dpi, dpi )))
+        if (FALSE == (hr = pFontManager->LoadFontByName(L"Arial", fontSize, fontStyle, dpi, dpi )))
 		{
             return std::pair<float, float>(7,8);
 		}
@@ -34,9 +34,13 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
 
     float maxWidth = 0;
     float maxHeight = 0;
+
+	float minWidth = 0xffff;
+	float minHeight = 0xffff;
+
     for (int i = 0; i <= 9; ++i)
     {
-        if (S_OK != (hr = pFontManager->LoadString2( boost::lexical_cast<std::wstring>(i), 0, 0)))
+        if (FALSE == (hr = pFontManager->LoadString2( boost::lexical_cast<std::wstring>(i), 0, 0)))
             return std::pair<float, float>(7,8);
 
        TBBox box;
@@ -48,15 +52,18 @@ std::pair<float, float> GetMaxDigitSizePixelsImpl(const std::wstring & fontName,
             return std::pair<float, float>(7,8);
 		}
 
-		if (box.fMaxX > 0xffff-1 || box.fMaxY > 0xffff-1 ||
-			box.fMinX < 0xffff+1 || box.fMinY > 0xffff+1)		
+		if (box.fMaxX < -0xffff+1 || box.fMaxY < -0xffff+1 ||
+			box.fMinX > 0xffff-1 || box.fMinY > 0xffff-1)		
 				return std::pair<float, float>(7,8);
           
         if (box.fMaxX - box.fMinX > maxWidth)   maxWidth = box.fMaxX - box.fMinX;
         if (box.fMaxY - box.fMinY > maxHeight)  maxHeight = box.fMaxY - box.fMinY;
+       
+		if (box.fMaxX - box.fMinX < minWidth)   minWidth = box.fMaxX - box.fMinX;
+        if (box.fMaxY - box.fMinY < minHeight)  minHeight = box.fMaxY - box.fMinY;
     }
 
-    return std::pair<float, float>(maxWidth,maxHeight);
+    return std::pair<float, float>((minWidth + 2*maxWidth)/3.f,maxHeight);
 }
 
 

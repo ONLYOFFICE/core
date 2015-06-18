@@ -52,20 +52,21 @@ void xlsx_serialize(std::wostream & _Wostream, const xlsx_xf & xf)
 bool xlsx_xf::operator == (const xlsx_xf & rVal) const
 {
     const bool res = 
-        applyAlignment.get_value_or(false) == rVal.applyAlignment.get_value_or(false) &&
-        applyFill.get_value_or(false) == rVal.applyFill.get_value_or(false) &&
-        applyFont.get_value_or(false) == rVal.applyFont.get_value_or(false) &&
+        applyAlignment.get_value_or(false)	== rVal.applyAlignment.get_value_or(false) &&
+		applyBorder.get_value_or(false)		== rVal.applyBorder.get_value_or(false) &&
+		applyFill.get_value_or(false)		== rVal.applyFill.get_value_or(false) &&
+        applyFont.get_value_or(false)		== rVal.applyFont.get_value_or(false) &&
         applyNumberForm.get_value_or(false) == rVal.applyNumberForm.get_value_or(false) &&
         applyProtection.get_value_or(false) == rVal.applyProtection.get_value_or(false) &&
-        borderId == rVal.borderId &&
-        fillId == rVal.fillId &&
-        fontId == rVal.fontId &&
-        numFmtId == rVal.numFmtId &&    
+        borderId	== rVal.borderId &&
+        fillId		== rVal.fillId &&
+        fontId		== rVal.fontId &&
+        numFmtId	== rVal.numFmtId &&    
         pivotButton.get_value_or(false) == rVal.pivotButton.get_value_or(false) &&
         quotePrefix.get_value_or(false) == rVal.quotePrefix.get_value_or(false) &&    
         //xfId == rVal.xfId &&
-        alignment == rVal.alignment &&
-        protection == rVal.protection;
+        alignment	== rVal.alignment &&
+        protection	== rVal.protection;
 
     return res;
 }

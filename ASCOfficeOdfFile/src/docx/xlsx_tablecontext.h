@@ -80,8 +80,8 @@ public:
    void serialize_hyperlinks(std::wostream & _Wostream);
 
 private:
-    xlsx_conversion_context & context_;
-    xlsx_text_context & xlsx_text_context_;
+    xlsx_conversion_context		& context_;
+    xlsx_text_context			& xlsx_text_context_;
     std::list<xlsx_table_state> table_state_stack_;
 };
 

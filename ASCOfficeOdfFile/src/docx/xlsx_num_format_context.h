@@ -26,6 +26,8 @@ public:
     void add_format(std::wstring const & cond, std::wstring const & format);
     void end_complex_format();
 
+	//std::wstring default_data_style(int type);
+
 private:
     class Impl;
     _CP_SCOPED_PTR(Impl) impl_;

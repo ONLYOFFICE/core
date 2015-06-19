@@ -940,7 +940,8 @@ void DocxConverter::convert(OOX::Logic::CSectionProperty *oox_section_pr, bool r
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	odt_context->page_layout_context()->start_master_page(root ? L"Standard" : L"");
 	
-	odt_context->set_master_page_name(odt_context->page_layout_context()->last_master().get_name());
+    odt_context->set_master_page_name(odt_context->page_layout_context()->last_master() ?
+                                          odt_context->page_layout_context()->last_master()->get_name() : L"");
 	
 	bool present_header = false;
 	bool present_footer = false;

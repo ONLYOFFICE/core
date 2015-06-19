@@ -38,19 +38,20 @@ odf_page_layout_context::~odf_page_layout_context()
 }
 
 
-odf_layout_state & odf_page_layout_context::last_layout()
+odf_layout_state * odf_page_layout_context::last_layout()
 {
+
 	if (layout_state_list_.size() >0)
-		return layout_state_list_.back();
+        return &layout_state_list_.back();
 	else
-		throw;
+        return NULL;
 }
-odf_master_state & odf_page_layout_context::last_master()
+odf_master_state * odf_page_layout_context::last_master()
 {
 	if (master_state_list_.size() >0)
-		return master_state_list_.back();
+        return &master_state_list_.back();
 	else
-		throw;
+        return NULL;
 }
 
 void odf_page_layout_context::start_master_page(std::wstring page_name)

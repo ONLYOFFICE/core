@@ -39,8 +39,8 @@ public:
 	void process_automatic_for_styles	(office_element_ptr root );
 	void process_office_styles			(office_element_ptr root );//картинки, шрифты, ... для мастер пэйджей и шаблонов
 
-    odf_layout_state & last_layout();
-    odf_master_state & last_master();
+    odf_layout_state * last_layout();
+    odf_master_state * last_master();
 
 	odf_style_context* get_local_styles_context() //для автоматических стилей самих стилей
 		{return local_style_context_.get();}

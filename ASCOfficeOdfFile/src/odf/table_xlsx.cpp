@@ -532,10 +532,10 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 	const std::wstring formula		= table_table_cell_attlist_.table_formula_.get_value_or(L"");
     const std::wstring styleName	= table_table_cell_attlist_.table_style_name_.get_value_or(style_ref(L"")).style_name();
 
-    bool	skip_next_cell	= false;
-	size_t	xfId_last_set	= 0;
-	bool	is_style_visible = true;
-	int		empty_cell		= 0;
+    bool	skip_next_cell		= false;
+	size_t	xfId_last_set		= 0;
+	bool	is_style_visible	= true;
+	int		empty_cell			= 0;
 
     for (unsigned int r = 0; r < table_table_cell_attlist_.table_number_columns_repeated_; ++r)
     {
@@ -556,7 +556,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 			defaultColumnCellStyle	= odfContext.styleContainer().style_by_name(Context.get_table_context().default_column_cell_style(), style_family::TableCell,false);
 			defaultRowCellStyle		= odfContext.styleContainer().style_by_name(Context.get_table_context().default_row_cell_style(), style_family::TableCell,false);
             
-			cellStyle = odfContext.styleContainer().style_by_name(styleName, style_family::TableCell,false);
+			cellStyle = odfContext.styleContainer().style_by_name(styleName, style_family::TableCell, false);
 		}
 		catch(...)
 		{
@@ -765,7 +765,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 				else
 				{
 					empty_cell++;
-					if (empty_cell > 4) 
+					if (empty_cell > 4 && table_table_cell_attlist_.table_number_columns_repeated_>100) 
 					{
 						skip_next_cell = true;
 					}

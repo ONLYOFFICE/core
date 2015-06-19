@@ -145,8 +145,12 @@ void xlsx_serialize_shape(std::wostream & strm, _xlsx_drawing & val)
 				oox_serialize_xfrm(CP_XML_STREAM(),val);
 
 				oox_serialize_shape(CP_XML_STREAM(),val);
+				
+				bool draw_always = false;
+				if (val.sub_type == 5 || val.sub_type == 6)//line собственно ) - если ее нет - в свойствах будет
+					draw_always = true;
 
-				oox_serialize_ln(CP_XML_STREAM(),val.additional);
+				oox_serialize_ln(CP_XML_STREAM(),val.additional, draw_always);
             } // xdr:spPr
 			
 			xlsx_serialize_text(CP_XML_STREAM(),val.additional);

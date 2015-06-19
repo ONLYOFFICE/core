@@ -765,7 +765,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 				else
 				{
 					empty_cell++;
-					if (empty_cell > 2) 
+					if (empty_cell > 4) 
 					{
 						skip_next_cell = true;
 					}

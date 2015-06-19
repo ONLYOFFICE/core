@@ -68,6 +68,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>%(AdditionalIncludeDirectories);..\..\..\Common\DocxFormat\Source\XML\libxml2\XML\include\libxml;..\..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
@@ -76,6 +77,7 @@
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <OutDir>$(SolutionDir)$(Configuration)\</OutDir>
     <IntDir>$(Configuration)\</IntDir>
+    <IncludePath>%(AdditionalIncludeDirectories);..\..\..\Common\DocxFormat\Source\XML\libxml2\XML\include\libxml;..\..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;$(IncludePath)</IncludePath>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\</OutDir>
@@ -91,7 +93,6 @@
       <PrecompiledHeader />
       <WarningLevel>Level3</WarningLevel>
       <DebugInformationFormat>EditAndContinue</DebugInformationFormat>
-      <AdditionalIncludeDirectories>..\..\..\Common\DocxFormat\Source\XML\libxml2\XML\include;..\..\..\Common\DocxFormat\Source\XML\libxml2\XML\include\libxml;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -375,6 +376,10 @@
     </ProjectReference>
     <ProjectReference Include="..\..\..\Common\DocxFormat\Projects\DocxFormat2005.vcxproj">
       <Project>{a100103a-353e-45e8-a9b8-90b87cc5c0b0}</Project>
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Common\DocxFormat\Source\XML\libxml2\win_build\libxml2.vcxproj">
+      <Project>{21663823-de45-479b-91d0-b4fef4916ef0}</Project>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
     <ProjectReference Include="..\..\..\DesktopEditor\graphics\graphics_vs2005.vcxproj">

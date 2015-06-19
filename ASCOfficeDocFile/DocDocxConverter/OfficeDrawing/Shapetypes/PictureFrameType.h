@@ -7,10 +7,10 @@ namespace DocFileFormat
   class PictureFrameType: public ShapeType
   {
     public: 
-	  PictureFrameType():
+	  PictureFrameType() :
       ShapeType(msosptPictureFrame)
       {
-		this->Path = _T( "m@4@5l@4@11@9@11@9@5xe" );
+		/*this->Path = _T( "m@4@5l@4@11@9@11@9@5xe" );
 
 		this->Formulas.push_back( std::wstring( _T( "if lineDrawn pixelLineWidth 0" ) ) );
         this->Formulas.push_back( std::wstring( _T( "sum @0 1 0" ) ) );
@@ -23,7 +23,7 @@ namespace DocFileFormat
         this->Formulas.push_back( std::wstring( _T( "prod @7 21600 pixelWidth" ) ) );
         this->Formulas.push_back( std::wstring( _T( "sum @8 21600 0" ) ) );
         this->Formulas.push_back( std::wstring( _T( "prod @7 21600 pixelHeight" ) ) );
-        this->Formulas.push_back( std::wstring( _T( "sum @10 21600 0" ) ) );
+        this->Formulas.push_back( std::wstring( _T( "sum @10 21600 0" ) ) );*/
 
         //pictures are not stroked or fileld by default
         this->Filled = false;
@@ -33,6 +33,11 @@ namespace DocFileFormat
 		this->Lock.fUsefLockAspectRatio = true;
         this->Lock.fLockAspectRatio = true;
       }
+	  void SetType(unsigned int nType)
+	  {
+		  this->TypeCode = nType;
+		  return;
+	  }
 
 	  virtual ~PictureFrameType()
 	  {

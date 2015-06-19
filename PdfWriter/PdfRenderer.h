@@ -172,6 +172,8 @@ private:
 	bool DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha);
 	void UpdateFont();
 	void UpdateTransform();
+	void UpdatePen();
+	void UpdateBrush();
 	bool IsValid()
 	{
 		return m_bValid;
@@ -251,6 +253,10 @@ private:
 		inline void   SetColor(const LONG& lColor)
 		{
 			m_oColor.Set(lColor);
+		}
+		inline TColor GetTColor()
+		{
+			return m_oColor;
 		}
 		inline LONG   GetAlpha()
 		{
@@ -349,6 +355,11 @@ private:
 				}
 			}
 		}
+		inline double*GetDashPattern(LONG& lSize)
+		{
+			lSize = m_lDashPatternSize;
+			return m_pDashPattern;
+		}
 
 		void Reset()
 		{
@@ -409,6 +420,10 @@ private:
 		{
 			return m_oColor1.lColor;
 		}
+		inline TColor       GetTColor1()
+		{
+			return m_oColor1;
+		}
 		inline void         SetColor1(const LONG& lColor)
 		{
 			m_oColor1.Set(lColor);
@@ -416,6 +431,10 @@ private:
 		inline LONG         GetColor2()
 		{
 			return m_oColor2.lColor;
+		}
+		inline TColor       GetTColor2()
+		{
+			return m_oColor2;
 		}
 		inline void         SetColor2(const LONG& lColor)
 		{
@@ -848,6 +867,7 @@ private:
 			virtual ~CPathCommandBase()
 			{
 			}
+			virtual void Draw(PdfWriter::CPage* pPage) = 0;
 			virtual void GetLastPoint(double& dX, double& dY) = 0;
 			virtual EPathCommandType GetType() = 0;
 		};
@@ -864,6 +884,7 @@ private:
 				dX = x;
 				dY = y;
 			}
+			void Draw(PdfWriter::CPage* pPage);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_MoveTo;
@@ -887,6 +908,7 @@ private:
 				dX = x;
 				dY = y;
 			}
+			void Draw(PdfWriter::CPage* pPage);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_LineTo;
@@ -904,7 +926,7 @@ private:
 			{
 				x1 = dX1;
 				y1 = dY1;
-				x2 = dXe;
+				x2 = dX2;
 				y2 = dY2;
 				xe = dXe;
 				ye = dYe;
@@ -914,6 +936,7 @@ private:
 				dX = xe;
 				dY = ye;
 			}
+			void Draw(PdfWriter::CPage* pPage);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_CurveTo;
@@ -946,6 +969,7 @@ private:
 				dX = x;
 				dY = y;
 			}
+			void Draw(PdfWriter::CPage* pPage);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_ArcTo;
@@ -972,6 +996,7 @@ private:
 				dX = 0;
 				dY = 0;
 			}
+			void Draw(PdfWriter::CPage* pPage);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_Close;
@@ -995,6 +1020,7 @@ private:
 				dX = x;
 				dY = y;
 			}
+			void Draw(PdfWriter::CPage* pPage);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_TextChar;
@@ -1028,6 +1054,7 @@ private:
 				dX = x;
 				dY = y;
 			}
+			void Draw(PdfWriter::CPage* pPage);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_Text;
@@ -1062,6 +1089,7 @@ private:
 				dX = x;
 				dY = y;
 			}
+			void Draw(PdfWriter::CPage* pPage);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_TextExChar;
@@ -1097,6 +1125,7 @@ private:
 				dX = x;
 				dY = y;
 			}
+			void Draw(PdfWriter::CPage* pPage);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_TextEx;
@@ -1197,6 +1226,7 @@ private:
 				m_vCommands.at(m_vCommands.size() - 1)->GetLastPoint(dX, dY);
 			}
 		}
+		void Draw(PdfWriter::CPage* pPage, bool bStroke, bool bFill, bool bEoFill);
 
 	private:
 

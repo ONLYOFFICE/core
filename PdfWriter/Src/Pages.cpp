@@ -429,7 +429,7 @@ namespace PdfWriter
 		m_pStream->WriteReal(dStartX);
 		m_pStream->WriteChar(' ');
 		m_pStream->WriteReal(dStartY);
-		m_pStream->WriteStr(" l\012");
+		m_pStream->WriteStr(" m\012");
 
 		// Дальше рисуем по четверям	
 		double dCurX = dStartX, dCurY = dStartY;
@@ -503,7 +503,7 @@ namespace PdfWriter
 		while (_dAngle2 < 0)
 			_dAngle2 += 360;
 
-		while (_dAngle2 >= 360)
+		while (_dAngle2 > 360)
 			_dAngle2 -= 360;
 
 		if (!bClockDirection)

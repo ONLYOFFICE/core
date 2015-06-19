@@ -15,6 +15,8 @@
 #define MM_2_PT(X) ((X) * 72.0 / 25.4)
 #define PT_2_MM(X) ((X) * 25.4 / 72.0)
 
+#define LONG_2_BOOL(X) ((X) ? true : false)
+
 #ifdef DrawText
 #undef DrawText
 #endif
@@ -435,6 +437,8 @@ HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const d
 	m_pPage->GrSave();
 	UpdateTransform();
 	UpdateFont();
+	UpdatePen();
+	UpdateBrush();
 
 	if (!m_pFont)
 		return S_FALSE;
@@ -541,17 +545,33 @@ HRESULT CPdfRenderer::PathCommandEnd()
 }
 HRESULT CPdfRenderer::DrawPath(const LONG& lType)
 {
+	if (!IsPageValid())
+		return S_FALSE;
+
+	m_pPage->GrSave();
+	UpdateTransform();
+	UpdatePen();
+	UpdateBrush();
+
 	// TODO: Реализовать
+
+	bool bStroke = LONG_2_BOOL(lType & c_nStroke);
+	bool bFill   = LONG_2_BOOL(lType & c_nWindingFillMode);
+	bool bEoFill = LONG_2_BOOL(lType & c_nEvenOddFillMode);
+
+	m_oPath.Draw(m_pPage, bStroke, bFill, bEoFill);
+	m_pPage->GrRestore();
+
 	return S_OK;
 }
 HRESULT CPdfRenderer::PathCommandMoveTo(const double& dX, const double& dY)
 {
-	m_oPath.MoveTo(dX, dY);
+	m_oPath.MoveTo(MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
 	return S_OK;
 }
 HRESULT CPdfRenderer::PathCommandLineTo(const double& dX, const double& dY)
 {
-	m_oPath.LineTo(dX, dY);
+	m_oPath.LineTo(MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
 	return S_OK;
 }
 HRESULT CPdfRenderer::PathCommandLinesTo(double* pPoints, const int& nCount)
@@ -560,19 +580,19 @@ HRESULT CPdfRenderer::PathCommandLinesTo(double* pPoints, const int& nCount)
 		return S_OK;
 
 	if (!m_oPath.IsMoveTo())
-		m_oPath.MoveTo(pPoints[0], pPoints[1]);
+		m_oPath.MoveTo(MM_2_PT(pPoints[0]), MM_2_PT(m_dPageHeight - pPoints[1]));
 
 	int nPointsCount = (nCount / 2) - 1;
 	for (int nIndex = 1; nIndex <= nPointsCount; ++nIndex)
 	{
-		m_oPath.LineTo(pPoints[nIndex * 2], pPoints[nIndex * 2 + 1]);
+		m_oPath.LineTo(MM_2_PT(pPoints[nIndex * 2]), MM_2_PT(m_dPageHeight - pPoints[nIndex * 2 + 1]));
 	}
 
 	return S_OK;
 }
 HRESULT CPdfRenderer::PathCommandCurveTo(const double& dX1, const double& dY1, const double& dX2, const double& dY2, const double& dXe, const double& dYe)
 {
-	m_oPath.CurveTo(dX1, dY1, dX2, dY2, dXe, dYe);
+	m_oPath.CurveTo(MM_2_PT(dX1), MM_2_PT(m_dPageHeight - dY1), MM_2_PT(dX2), MM_2_PT(m_dPageHeight - dY2), MM_2_PT(dXe), MM_2_PT(m_dPageHeight - dYe));
 	return S_OK;
 }
 HRESULT CPdfRenderer::PathCommandCurvesTo(double* pPoints, const int& nCount)
@@ -581,20 +601,20 @@ HRESULT CPdfRenderer::PathCommandCurvesTo(double* pPoints, const int& nCount)
 		return S_OK;
 
 	if (!m_oPath.IsMoveTo())
-		m_oPath.MoveTo(pPoints[0], pPoints[1]);
+		m_oPath.MoveTo(MM_2_PT(pPoints[0]), MM_2_PT(m_dPageHeight - pPoints[1]));
 
 	int nPointsCount = (nCount - 2) / 6;
 	double* pCur = pPoints + 2;
 	for (int nIndex = 0; nIndex <= nPointsCount; ++nIndex, pCur += 6)
 	{
-		m_oPath.CurveTo(pCur[0], pCur[1], pCur[2], pCur[3], pCur[4], pCur[5]);
+		m_oPath.CurveTo(MM_2_PT(pCur[0]), MM_2_PT(m_dPageHeight - pCur[1]), MM_2_PT(pCur[2]), MM_2_PT(m_dPageHeight - pCur[3]), MM_2_PT(pCur[4]), MM_2_PT(m_dPageHeight - pCur[5]));
 	}
 
 	return S_OK;
 }
 HRESULT CPdfRenderer::PathCommandArcTo(const double& dX, const double& dY, const double& dW, const double& dH, const double& dStartAngle, const double& dSweepAngle)
 {
-	m_oPath.ArcTo(dX, dY, dW, dH, dStartAngle, dSweepAngle);
+	m_oPath.ArcTo(MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH), dStartAngle, dSweepAngle);
 	return S_OK;
 }
 HRESULT CPdfRenderer::PathCommandClose()
@@ -605,26 +625,28 @@ HRESULT CPdfRenderer::PathCommandClose()
 HRESULT CPdfRenderer::PathCommandGetCurrentPoint(double* dX, double* dY)
 {
 	m_oPath.GetLastPoint(*dX, *dY);
+	*dX = PT_2_MM(*dX);
+	*dY = PT_2_MM(*dY);
 	return S_OK;
 }
 HRESULT CPdfRenderer::PathCommandTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
 {
-	m_oPath.AddText(m_oFont, lUnicode, dX, dY, dW, dH, dBaselineOffset);
+	m_oPath.AddText(m_oFont, lUnicode, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH), MM_2_PT(dBaselineOffset));
 	return S_OK;
 }
 HRESULT CPdfRenderer::PathCommandText(const std::wstring& wsText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
 {
-	m_oPath.AddText(m_oFont, wsText, dX, dY, dW, dH, dBaselineOffset);
+	m_oPath.AddText(m_oFont, wsText, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH), MM_2_PT(dBaselineOffset));
 	return S_OK;
 }
 HRESULT CPdfRenderer::PathCommandTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags)
 {
-	m_oPath.AddText(m_oFont, lUnicode, lGid, dX, dY, dW, dH, dBaselineOffset, dwFlags);
+	m_oPath.AddText(m_oFont, lUnicode, lGid, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH), MM_2_PT(dBaselineOffset), dwFlags);
 	return S_OK;
 }
 HRESULT CPdfRenderer::PathCommandTextEx(const std::wstring& wsUnicodeText, const std::wstring& wsGidText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags)
 {
-	m_oPath.AddText(m_oFont, wsUnicodeText, wsGidText, dX, dY, dW, dH, dBaselineOffset, dwFlags);
+	m_oPath.AddText(m_oFont, wsUnicodeText, wsGidText, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH), MM_2_PT(dBaselineOffset), dwFlags);
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
@@ -635,8 +657,6 @@ HRESULT CPdfRenderer::DrawImage(IGrObject* pImage, const double& dX, const doubl
 	if (!IsPageValid() || !pImage)
 		return S_OK;
 
-	// TODO: Нужно обновить трансформ
-
 	if (!DrawImage((Aggplus::CImage*)pImage, dX, dY, dW, dH, 255))
 		return S_FALSE;
 
@@ -646,8 +666,6 @@ HRESULT CPdfRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const d
 {
 	if (!IsPageValid())
 		return S_OK;
-
-	// TODO: Нужно обновить трансформ
 
 	Aggplus::CImage oAggImage(wsImagePath);
 	if (!DrawImage(&oAggImage, dX, dY, dW, dH, nAlpha))
@@ -770,7 +788,10 @@ bool CPdfRenderer::DrawImage(Aggplus::CImage* pImage, const double& dX, const do
 		pPdfImage->LoadSMask(pData, nImageW, nImageH, nAlpha);
 
 	pPdfImage->LoadJpx(pBuffer, nBufferSize, nImageW, nImageH);
+	m_pPage->GrSave();
+	UpdateTransform();
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
+	m_pPage->GrRestore();
 	free(pBuffer);
 
 	return true;
@@ -783,8 +804,8 @@ void CPdfRenderer::UpdateFont()
 	{
 		CFontSelectFormat oFontSelect;
 		oFontSelect.wsName = new std::wstring(m_oFont.GetName());
-		oFontSelect.bItalic = new INT(m_oFont.IsItalic() ? 0 : 1);
-		oFontSelect.bItalic = new INT(m_oFont.IsBold() ? 0 : 1);
+		oFontSelect.bItalic = new INT(m_oFont.IsItalic() ? 1 : 0);
+		oFontSelect.bBold   = new INT(m_oFont.IsBold() ? 1 : 0);
 		CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect);
 
 		wsFontPath = pFontInfo->m_wsFontPath;
@@ -807,4 +828,112 @@ void CPdfRenderer::UpdateTransform()
 	CTransform& t = m_oTransform;
 	m_pPage->Concat(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
 }
+void CPdfRenderer::UpdatePen()
+{
+	TColor& oColor = m_oPen.GetTColor();
+	m_pPage->SetStrokeColor(oColor.r, oColor.g, oColor.b);
+	m_pPage->SetLineWidth(MM_2_PT(m_oPen.GetSize()));
+	
+	LONG lDashCount = 0;
+	double* pDashPattern = NULL;
+	
+	LONG lDashStyle = m_oPen.GetDashStyle();
+	if (Aggplus::DashStyleSolid == lDashStyle)
+	{
+		// Ничего не делаем
+	}
+	else if (Aggplus::DashStyleCustom == lDashStyle)
+	{
+		double *pDashPatternMM = m_oPen.GetDashPattern(lDashCount);
+		if (pDashPatternMM && lDashCount)
+		{
+			pDashPattern = new double[lDashCount];
+			if (pDashPattern)
+			{
+				for (LONG lIndex = 0; lIndex < lDashCount; lIndex++)
+				{
+					pDashPattern[lIndex] = MM_2_PT(pDashPatternMM[lIndex]);
+				}
+			}
+		}
+	}
+	else
+	{
+		// TODO: Реализовать другие типы пунктирных линий
+	}
 
+	if (pDashPattern && lDashCount)
+	{
+		m_pPage->SetDash(pDashPattern, lDashCount, MM_2_PT(m_oPen.GetDashOffset()));
+		delete[] pDashPattern;
+	}
+
+
+	// TODO: Реализовать
+}
+void CPdfRenderer::UpdateBrush()
+{
+	TColor& oColor1 = m_oBrush.GetTColor1();
+	m_pPage->SetFillColor(oColor1.r, oColor1.g, oColor1.b);
+	// TODO: Реализовать
+}
+
+
+
+void CPdfRenderer::CPath::Draw(PdfWriter::CPage* pPage, bool bStroke, bool bFill, bool bEoFill)
+{
+	for (int nIndex = 0, nCount = m_vCommands.size(); nIndex < nCount; nIndex++)
+	{
+		CPathCommandBase* pCommand = m_vCommands.at(nIndex);
+		pCommand->Draw(pPage);
+	}
+
+	if (bStroke && !bFill && !bEoFill)
+		pPage->Stroke();
+	else if (bStroke && bFill)
+		pPage->FillStroke();
+	else if (bStroke && bEoFill)
+		pPage->EoFill();
+	else if (bFill)
+		pPage->Fill();
+	else if (bEoFill)
+		pPage->EoFill();
+	else
+		pPage->EndPath();
+}
+void CPdfRenderer::CPath::CPathMoveTo::Draw(PdfWriter::CPage* pPage)
+{
+	pPage->MoveTo(x, y);
+}
+void CPdfRenderer::CPath::CPathLineTo::Draw(PdfWriter::CPage* pPage)
+{
+	pPage->LineTo(x, y);
+}
+void CPdfRenderer::CPath::CPathCurveTo::Draw(PdfWriter::CPage* pPage)
+{
+	pPage->CurveTo(x1, y1, x2, y2, xe, ye);
+}
+void CPdfRenderer::CPath::CPathArcTo::Draw(PdfWriter::CPage* pPage)
+{
+	pPage->EllipseArcTo(x + w / 2, y + h / 2, w / 2, h / 2, startAngle, sweepAngle);
+}
+void CPdfRenderer::CPath::CPathClose::Draw(PdfWriter::CPage* pPage)
+{
+	pPage->ClosePath();
+}
+void CPdfRenderer::CPath::CPathTextChar::Draw(PdfWriter::CPage* pPage)
+{
+	// TODO: Реализовать
+}
+void CPdfRenderer::CPath::CPathText::Draw(PdfWriter::CPage* pPage)
+{
+	// TODO: Реализовать
+}
+void CPdfRenderer::CPath::CPathTextExChar::Draw(PdfWriter::CPage* pPage)
+{
+	// TODO: Реализовать
+}
+void CPdfRenderer::CPath::CPathTextEx::Draw(PdfWriter::CPage* pPage)
+{
+	// TODO: Реализовать
+}

@@ -865,11 +865,13 @@ void odt_conversion_context::end_table()
 
 bool odt_conversion_context::start_header(int type)
 {
-	if (page_layout_context()->add_header(type) == false) return false;
+    if (page_layout_context()->add_header(type) == false)   return false;
+    if (page_layout_context()->last_master() == NULL)       return false;
+
 	start_text_context();
 	text_context()->set_styles_context(page_layout_context()->get_local_styles_context());
 
-	text_context()->start_element(page_layout_context()->last_master().get_last_element());
+    text_context()->start_element(page_layout_context()->last_master()->get_last_element());
 
 	is_header_ = true;
 
@@ -894,12 +896,13 @@ void odt_conversion_context::set_background(_CP_OPT(color) & color, int type)
 
 bool odt_conversion_context::start_footer(int type)
 {
-	if (page_layout_context()->add_footer(type) == false) return false;
+    if (page_layout_context()->add_footer(type) == false)   return false;
+    if (page_layout_context()->last_master() == NULL)       return false;
 
 	start_text_context();
 	text_context()->set_styles_context(page_layout_context()->get_local_styles_context());
 	
-	text_context()->start_element(page_layout_context()->last_master().get_last_element());
+    text_context()->start_element(page_layout_context()->last_master()->get_last_element());
 
  	is_footer_ = true;
 

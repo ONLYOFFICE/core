@@ -93,7 +93,8 @@ void ods_conversion_context::start_sheet()
 		
 	page_layout_context()->start_master_page(L"");
 
-	current_table().set_table_master_page(page_layout_context()->last_master().get_name());
+    current_table().set_table_master_page(page_layout_context()->last_master() ?
+                                              page_layout_context()->last_master()->get_name() : L"");
 }
 
 void ods_conversion_context::set_sheet_dimension(const std::wstring & ref)

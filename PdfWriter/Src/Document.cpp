@@ -105,6 +105,7 @@ namespace PdfWriter
 		m_vExtGrStates.clear();
 		m_vPages.clear();
 		m_vShadings.clear();
+		m_vTTFonts.clear();
 	}
 	bool              CDocument::SaveToFile(const std::wstring& wsPath)
 	{
@@ -372,7 +373,19 @@ namespace PdfWriter
 	}
 	CFontCidTrueType* CDocument::CreateTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex)
 	{
-		return new CFontCidTrueType(m_pXref, this, wsFontPath, unIndex);
+		for (int nIndex = 0, nCount = m_vTTFonts.size(); nIndex < nCount; nIndex++)
+		{
+			TFontInfo& oInfo = m_vTTFonts.at(nIndex);
+			if (wsFontPath == oInfo.wsPath && unIndex == oInfo.unIndex)
+				return oInfo.pFont;
+		}
+
+		CFontCidTrueType* pFont = new CFontCidTrueType(m_pXref, this, wsFontPath, unIndex);
+		if (!pFont)
+			return NULL;
+
+		m_vTTFonts.push_back(TFontInfo(wsFontPath, unIndex, pFont));
+		return pFont;
 	}
 	char*             CDocument::GetTTFontTag()
 	{

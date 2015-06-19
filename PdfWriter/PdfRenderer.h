@@ -12,6 +12,7 @@ namespace PdfWriter
 {
 	class CDocument;
 	class CPage;
+	class CFontCidTrueType;
 }
 
 namespace Aggplus
@@ -19,10 +20,13 @@ namespace Aggplus
 	class CImage;
 }
 
+class CFontManager;
+class CApplicationFonts;
+
 class CPdfRenderer : public IRenderer
 {
 public:
-	CPdfRenderer();
+	CPdfRenderer(CApplicationFonts* pAppFonts);
 	~CPdfRenderer();
 	void SaveToFile(const std::wstring& wsPath);
 	//----------------------------------------------------------------------------------------
@@ -166,9 +170,8 @@ public:
 private:
 
 	bool DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha);
-
-private:
-
+	void UpdateFont();
+	void UpdateTransform();
 	bool IsValid()
 	{
 		return m_bValid;
@@ -735,6 +738,11 @@ private:
 	{
 	public:
 
+		CFontState() : m_wsPath(L""), m_wsName(L"Arial"), m_lStyle(0), m_bBold(false), m_bItalic(false), m_dCharSpace(0), 
+			m_lFaceIndex(0), m_dSize(10), m_bGid(false)
+		{
+		}
+
 		inline std::wstring GetName()
 		{
 			return m_wsName;
@@ -793,6 +801,14 @@ private:
 		{
 			m_dCharSpace = dCharSpace;
 		}
+		inline bool         IsBold()
+		{
+			return m_bBold;
+		}
+		inline bool         IsItalic()
+		{
+			return m_bItalic;
+		}
 
 	private:
 
@@ -806,295 +822,298 @@ private:
 		bool         m_bItalic;
 		double       m_dCharSpace;
 	};
-	enum EPathCommandType
-	{
-		rendererpathcommand_Unknown    = 0x00,
-		rendererpathcommand_MoveTo     = 0x01,
-		rendererpathcommand_LineTo     = 0x02,
-		rendererpathcommand_CurveTo    = 0x03,
-		rendererpathcommand_ArcTo      = 0x04,
-		rendererpathcommand_Close      = 0x05,
-		rendererpathcommand_TextChar   = 0x06,
-		rendererpathcommand_Text       = 0x07,
-		rendererpathcommand_TextExChar = 0x08,
-		rendererpathcommand_TextEx     = 0x09
-	};
-	class CPathCommandBase
-	{
-	public:
-		CPathCommandBase()
-		{
-		}
-		virtual ~CPathCommandBase()
-		{
-		}
-		virtual void GetLastPoint(double& dX, double& dY) = 0;
-		virtual EPathCommandType GetType() = 0;
-	};
-	class CPathMoveTo : public CPathCommandBase
-	{
-	public:
-		CPathMoveTo(const double& dX, const double& dY)
-		{
-			x = dX;
-			y = dY;
-		}
-		void GetLastPoint(double& dX, double& dY)
-		{
-			dX = x;
-			dY = y;
-		}
-		EPathCommandType GetType()
-		{
-			return rendererpathcommand_MoveTo;
-		}
-
-	public:
-
-		double x;
-		double y;
-	};
-	class CPathLineTo : public CPathCommandBase
-	{
-	public:
-		CPathLineTo(const double& dX, const double& dY)
-		{
-			x = dX;
-			y = dY;
-		}
-		void GetLastPoint(double& dX, double& dY)
-		{
-			dX = x;
-			dY = y;
-		}
-		EPathCommandType GetType()
-		{
-			return rendererpathcommand_LineTo;
-		}
-
-	public:
-
-		double x;
-		double y;
-	};
-	class CPathCurveTo : public CPathCommandBase
-	{
-	public:
-		CPathCurveTo(const double& dX1, const double& dY1, const double& dX2, const double& dY2, const double& dXe, const double& dYe)
-		{
-			x1 = dX1;
-			y1 = dY1;
-			x2 = dXe;
-			y2 = dY2;
-			xe = dXe;
-			ye = dYe;
-		}
-		void GetLastPoint(double& dX, double& dY)
-		{
-			dX = xe;
-			dY = ye;
-		}
-		EPathCommandType GetType()
-		{
-			return rendererpathcommand_CurveTo;
-		}
-
-	public:
-
-		double x1;
-		double y1;
-		double x2;
-		double y2;
-		double xe;
-		double ye;
-	};
-	class CPathArcTo : public CPathCommandBase
-	{
-	public:
-		CPathArcTo(const double& dX, const double& dY, const double& dW, const double& dH, const double& dStartAngle, const double& dSweepAngle)
-		{
-			x = dX;
-			y = dY;
-			w = dW;
-			h = dH;
-			startAngle = dStartAngle;
-			sweepAngle = dSweepAngle;
-		}
-		void GetLastPoint(double& dX, double& dY)
-		{
-			// TODO: Надо грамотно пересчитать
-			dX = x;
-			dY = y;
-		}
-		EPathCommandType GetType()
-		{
-			return rendererpathcommand_ArcTo;
-		}
-
-	public:
-
-		double x;
-		double y;
-		double w;
-		double h;
-		double startAngle;
-		double sweepAngle;
-	};
-	class CPathClose : public CPathCommandBase
-	{
-	public:
-		CPathClose()
-		{
-		}
-		void GetLastPoint(double& dX, double& dY)
-		{
-			// TODO: Надо грамотно пересчитать
-			dX = 0;
-			dY = 0;
-		}
-		EPathCommandType GetType()
-		{
-			return rendererpathcommand_Close;
-		}
-	};
-	class CPathTextChar : public CPathCommandBase
-	{
-	public:
-		CPathTextChar(const CFontState& oFont, const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
-		{
-			font     = oFont;
-			unicode  = lUnicode;
-			x        = dX;
-			y        = dY;
-			w        = dW;
-			h        = dH;
-			baseline = dBaselineOffset;
-		}
-		void GetLastPoint(double& dX, double& dY)
-		{
-			dX = x;
-			dY = y;
-		}
-		EPathCommandType GetType()
-		{
-			return rendererpathcommand_TextChar;
-		}
-
-	public:
-
-		CFontState font;
-		LONG       unicode;
-		double     x;
-		double     y;
-		double     w;
-		double     h;
-		double     baseline;
-	};
-	class CPathText : public CPathCommandBase
-	{
-	public:
-		CPathText(const CFontState& oFont, const std::wstring& wsText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
-		{
-			font     = oFont;
-			text     = wsText;
-			x        = dX;
-			y        = dY;
-			w        = dW;
-			h        = dH;
-			baseline = dBaselineOffset;
-		}
-		void GetLastPoint(double& dX, double& dY)
-		{
-			dX = x;
-			dY = y;
-		}
-		EPathCommandType GetType()
-		{
-			return rendererpathcommand_Text;
-		}
-
-	public:
-
-		CFontState   font;
-		std::wstring text;
-		double       x;
-		double       y;
-		double       w;
-		double       h;
-		double       baseline;
-	};
-	class CPathTextExChar : public CPathCommandBase
-	{
-	public:
-		CPathTextExChar(const CFontState& oFont, const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
-		{
-			font     = oFont;
-			unicode  = lUnicode;
-			gid      = lGid;
-			x        = dX;
-			y        = dY;
-			w        = dW;
-			h        = dH;
-			baseline = dBaselineOffset;
-		}
-		void GetLastPoint(double& dX, double& dY)
-		{
-			dX = x;
-			dY = y;
-		}
-		EPathCommandType GetType()
-		{
-			return rendererpathcommand_TextExChar;
-		}
-
-	public:
-
-		CFontState font;
-		LONG       unicode;
-		LONG       gid;
-		double     x;
-		double     y;
-		double     w;
-		double     h;
-		double     baseline;
-	};
-	class CPathTextEx : public CPathCommandBase
-	{
-	public:
-		CPathTextEx(const CFontState& oFont, const std::wstring& wsUnicodeText, const std::wstring& wsGidText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
-		{
-			font        = oFont;
-			unicodeText = wsUnicodeText;
-			gidText     = wsGidText;
-			x           = dX;
-			y           = dY;
-			w           = dW;
-			h           = dH;
-			baseline    = dBaselineOffset;
-		}
-		void GetLastPoint(double& dX, double& dY)
-		{
-			dX = x;
-			dY = y;
-		}
-		EPathCommandType GetType()
-		{
-			return rendererpathcommand_TextEx;
-		}
-
-	public:
-
-		CFontState   font;
-		std::wstring unicodeText;
-		std::wstring gidText;
-		double       x;
-		double       y;
-		double       w;
-		double       h;
-		double       baseline;
-	};
 	class CPath
 	{
+	private:
+
+		enum EPathCommandType
+		{
+			rendererpathcommand_Unknown    = 0x00,
+			rendererpathcommand_MoveTo     = 0x01,
+			rendererpathcommand_LineTo     = 0x02,
+			rendererpathcommand_CurveTo    = 0x03,
+			rendererpathcommand_ArcTo      = 0x04,
+			rendererpathcommand_Close      = 0x05,
+			rendererpathcommand_TextChar   = 0x06,
+			rendererpathcommand_Text       = 0x07,
+			rendererpathcommand_TextExChar = 0x08,
+			rendererpathcommand_TextEx     = 0x09
+		};
+		class CPathCommandBase
+		{
+		public:
+			CPathCommandBase()
+			{
+			}
+			virtual ~CPathCommandBase()
+			{
+			}
+			virtual void GetLastPoint(double& dX, double& dY) = 0;
+			virtual EPathCommandType GetType() = 0;
+		};
+		class CPathMoveTo : public CPathCommandBase
+		{
+		public:
+			CPathMoveTo(const double& dX, const double& dY)
+			{
+				x = dX;
+				y = dY;
+			}
+			void GetLastPoint(double& dX, double& dY)
+			{
+				dX = x;
+				dY = y;
+			}
+			EPathCommandType GetType()
+			{
+				return rendererpathcommand_MoveTo;
+			}
+
+		public:
+
+			double x;
+			double y;
+		};
+		class CPathLineTo : public CPathCommandBase
+		{
+		public:
+			CPathLineTo(const double& dX, const double& dY)
+			{
+				x = dX;
+				y = dY;
+			}
+			void GetLastPoint(double& dX, double& dY)
+			{
+				dX = x;
+				dY = y;
+			}
+			EPathCommandType GetType()
+			{
+				return rendererpathcommand_LineTo;
+			}
+
+		public:
+
+			double x;
+			double y;
+		};
+		class CPathCurveTo : public CPathCommandBase
+		{
+		public:
+			CPathCurveTo(const double& dX1, const double& dY1, const double& dX2, const double& dY2, const double& dXe, const double& dYe)
+			{
+				x1 = dX1;
+				y1 = dY1;
+				x2 = dXe;
+				y2 = dY2;
+				xe = dXe;
+				ye = dYe;
+			}
+			void GetLastPoint(double& dX, double& dY)
+			{
+				dX = xe;
+				dY = ye;
+			}
+			EPathCommandType GetType()
+			{
+				return rendererpathcommand_CurveTo;
+			}
+
+		public:
+
+			double x1;
+			double y1;
+			double x2;
+			double y2;
+			double xe;
+			double ye;
+		};
+		class CPathArcTo : public CPathCommandBase
+		{
+		public:
+			CPathArcTo(const double& dX, const double& dY, const double& dW, const double& dH, const double& dStartAngle, const double& dSweepAngle)
+			{
+				x = dX;
+				y = dY;
+				w = dW;
+				h = dH;
+				startAngle = dStartAngle;
+				sweepAngle = dSweepAngle;
+			}
+			void GetLastPoint(double& dX, double& dY)
+			{
+				// TODO: Надо грамотно пересчитать
+				dX = x;
+				dY = y;
+			}
+			EPathCommandType GetType()
+			{
+				return rendererpathcommand_ArcTo;
+			}
+
+		public:
+
+			double x;
+			double y;
+			double w;
+			double h;
+			double startAngle;
+			double sweepAngle;
+		};
+		class CPathClose : public CPathCommandBase
+		{
+		public:
+			CPathClose()
+			{
+			}
+			void GetLastPoint(double& dX, double& dY)
+			{
+				// TODO: Надо грамотно пересчитать
+				dX = 0;
+				dY = 0;
+			}
+			EPathCommandType GetType()
+			{
+				return rendererpathcommand_Close;
+			}
+		};
+		class CPathTextChar : public CPathCommandBase
+		{
+		public:
+			CPathTextChar(const CFontState& oFont, const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
+			{
+				font     = oFont;
+				unicode  = lUnicode;
+				x        = dX;
+				y        = dY;
+				w        = dW;
+				h        = dH;
+				baseline = dBaselineOffset;
+			}
+			void GetLastPoint(double& dX, double& dY)
+			{
+				dX = x;
+				dY = y;
+			}
+			EPathCommandType GetType()
+			{
+				return rendererpathcommand_TextChar;
+			}
+
+		public:
+
+			CFontState font;
+			LONG       unicode;
+			double     x;
+			double     y;
+			double     w;
+			double     h;
+			double     baseline;
+		};
+		class CPathText : public CPathCommandBase
+		{
+		public:
+			CPathText(const CFontState& oFont, const std::wstring& wsText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
+			{
+				font     = oFont;
+				text     = wsText;
+				x        = dX;
+				y        = dY;
+				w        = dW;
+				h        = dH;
+				baseline = dBaselineOffset;
+			}
+			void GetLastPoint(double& dX, double& dY)
+			{
+				dX = x;
+				dY = y;
+			}
+			EPathCommandType GetType()
+			{
+				return rendererpathcommand_Text;
+			}
+
+		public:
+
+			CFontState   font;
+			std::wstring text;
+			double       x;
+			double       y;
+			double       w;
+			double       h;
+			double       baseline;
+		};
+		class CPathTextExChar : public CPathCommandBase
+		{
+		public:
+			CPathTextExChar(const CFontState& oFont, const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
+			{
+				font     = oFont;
+				unicode  = lUnicode;
+				gid      = lGid;
+				x        = dX;
+				y        = dY;
+				w        = dW;
+				h        = dH;
+				baseline = dBaselineOffset;
+			}
+			void GetLastPoint(double& dX, double& dY)
+			{
+				dX = x;
+				dY = y;
+			}
+			EPathCommandType GetType()
+			{
+				return rendererpathcommand_TextExChar;
+			}
+
+		public:
+
+			CFontState font;
+			LONG       unicode;
+			LONG       gid;
+			double     x;
+			double     y;
+			double     w;
+			double     h;
+			double     baseline;
+		};
+		class CPathTextEx : public CPathCommandBase
+		{
+		public:
+			CPathTextEx(const CFontState& oFont, const std::wstring& wsUnicodeText, const std::wstring& wsGidText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
+			{
+				font        = oFont;
+				unicodeText = wsUnicodeText;
+				gidText     = wsGidText;
+				x           = dX;
+				y           = dY;
+				w           = dW;
+				h           = dH;
+				baseline    = dBaselineOffset;
+			}
+			void GetLastPoint(double& dX, double& dY)
+			{
+				dX = x;
+				dY = y;
+			}
+			EPathCommandType GetType()
+			{
+				return rendererpathcommand_TextEx;
+			}
+
+		public:
+
+			CFontState   font;
+			std::wstring unicodeText;
+			std::wstring gidText;
+			double       x;
+			double       y;
+			double       w;
+			double       h;
+			double       baseline;
+		};
+
 	public:
 
 		CPath()
@@ -1198,20 +1217,62 @@ private:
 		std::vector<CPathCommandBase*> m_vCommands;
 		bool                           m_bIsMoveTo;
 	};
+	class CTransform
+	{
+	public:
 
+		CTransform()
+		{
+			Reset();
+		}
+		void Reset()
+		{
+			m11 = 1.0;
+			m12 = 0.0;
+			m21 = 0.0;
+			m22 = 1.0;
+			dx  = 0;
+			dy  = 0;
+		}
+		void Set(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
+		{
+			m11 = dM11;
+			m12 = dM12;
+			m21 = dM21;
+			m22 = dM22;
+			dx  = dX;
+			dy  = dY;
+		}
 
-	PdfWriter::CDocument* m_pDocument;
-	PdfWriter::CPage*     m_pPage;
+	public:
 
-	CPenState             m_oPen;
-	CBrushState           m_oBrush;
-	CFontState            m_oFont;
-	CPath                 m_oPath;
-	LONG                  m_lClipMode;
+		double m11;
+		double m12;
+		double m21;
+		double m22;
+		double dx;
+		double dy;
+	};
 
-	bool                  m_bValid;
-	double                m_dPageHeight;
-	double                m_dPageWidth;
+private:
+
+	CApplicationFonts*           m_pAppFonts;
+	CFontManager*                m_pFontManager;
+
+	PdfWriter::CDocument*        m_pDocument;
+	PdfWriter::CPage*            m_pPage;
+	PdfWriter::CFontCidTrueType* m_pFont;
+
+	CPenState                    m_oPen;
+	CBrushState                  m_oBrush;
+	CFontState                   m_oFont;
+	CPath                        m_oPath;
+	CTransform                   m_oTransform;
+	LONG                         m_lClipMode;
+	double                       m_dPageHeight;
+	double                       m_dPageWidth;
+
+	bool                         m_bValid;
 };
 
 #endif // _PDF_WRITER_PDFRENDERER_H

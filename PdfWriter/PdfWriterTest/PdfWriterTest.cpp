@@ -851,9 +851,13 @@ std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstrin
 	}
 	return vwsNames;
 }
-void ConvertFolder(MetaFile::CMetaFile &oMetaFile, std::wstring wsFolderPath, const int nType)
+void ConvertFolder(std::wstring wsFolderPath, const int nType)
 {
-	CPdfRenderer oRenderer;
+	CApplicationFonts oFonts;
+	oFonts.Initialize();
+
+	MetaFile::CMetaFile oMetaFile(&oFonts);
+	CPdfRenderer oRenderer(&oFonts);
 	
 	oMetaFile.Close();
 
@@ -865,6 +869,7 @@ void ConvertFolder(MetaFile::CMetaFile &oMetaFile, std::wstring wsFolderPath, co
 		case MetaFile::c_lMetaWmf: sExt = L"wmf"; break;
 		case MetaFile::c_lMetaSvm: sExt = L"svm"; break;
 	}
+	double dPx2Mm = 25.4 / 96;
 	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, sExt);
 	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
 	{
@@ -874,14 +879,17 @@ void ConvertFolder(MetaFile::CMetaFile &oMetaFile, std::wstring wsFolderPath, co
 		wsFilePath.append(vFiles.at(nIndex));
 		if (oMetaFile.LoadFromFile(wsFilePath.c_str()))
 		{
-			double dW = 210;
-			double dH = 297;
-			//double dW, dH, dX, dY;
-			//oMetaFile.GetBounds(&dX, &dY, &dW, &dH);
+			double dW, dH, dX, dY;
+			oMetaFile.GetBounds(&dX, &dY, &dW, &dH);
+
+			dW *= dPx2Mm;
+			dH *= dPx2Mm;
+			dX *= dPx2Mm;
+			dY *= dPx2Mm;
 
 			oRenderer.put_Width(dW);
 			oRenderer.put_Height(dH);
-			oMetaFile.DrawOnRenderer(&oRenderer, 0, 0, dW, dH);
+			oMetaFile.DrawOnRenderer(&oRenderer, -dX, -dY, dW, dH);
 			oMetaFile.Close();
 		}
 
@@ -892,11 +900,7 @@ void ConvertFolder(MetaFile::CMetaFile &oMetaFile, std::wstring wsFolderPath, co
 }
 void TestMetafile()
 {
-	CApplicationFonts oFonts;
-	oFonts.Initialize();
-
-	MetaFile::CMetaFile oMetaFile(&oFonts);
-	ConvertFolder(oMetaFile, L"D://Test Files//Emf//", MetaFile::c_lMetaEmf);
+	ConvertFolder(L"D://Test Files//Emf//", MetaFile::c_lMetaEmf);
 }
 
 void main()

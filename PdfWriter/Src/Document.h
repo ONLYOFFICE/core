@@ -81,6 +81,21 @@ namespace PdfWriter
 		CDictObject*      CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
 
 	private:
+
+		struct TFontInfo
+		{
+			TFontInfo(const std::wstring& path, const unsigned int& index, CFontCidTrueType* font)
+			{
+				wsPath  = path;
+				unIndex = index;
+				pFont   = font;
+			}
+
+			std::wstring      wsPath;
+			unsigned int      unIndex;
+			CFontCidTrueType* pFont;
+		};
+
 		CCatalog*                 m_pCatalog;
 		COutline*                 m_pOutlines;
 		CXref*                    m_pXref;
@@ -98,6 +113,7 @@ namespace PdfWriter
 		char                      m_sTTFontTag[8]; // 6 символов + '+' + 0x00 ("BAAAAA+/0")
 		CJbig2Global*             m_pJbig2;
 		std::vector<CShading*>    m_vShadings;
+		std::vector<TFontInfo>    m_vTTFonts;
 
 		friend class CFontCidTrueType;
 	};

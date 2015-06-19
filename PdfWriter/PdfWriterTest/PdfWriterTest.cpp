@@ -887,9 +887,14 @@ void ConvertFolder(std::wstring wsFolderPath, const int nType)
 			dX *= dPx2Mm;
 			dY *= dPx2Mm;
 
+			double dAspect = dH / dW;
+			dW = 1000;
+			dH = dAspect * dW;
+
 			oRenderer.put_Width(dW);
 			oRenderer.put_Height(dH);
-			oMetaFile.DrawOnRenderer(&oRenderer, -dX, -dY, dW, dH);
+			//oMetaFile.DrawOnRenderer(&oRenderer, -dX, -dY, dW, dH);
+			oMetaFile.DrawOnRenderer(&oRenderer, 0, 0, dW, dH);
 			oMetaFile.Close();
 		}
 
@@ -900,7 +905,8 @@ void ConvertFolder(std::wstring wsFolderPath, const int nType)
 }
 void TestMetafile()
 {
-	ConvertFolder(L"D://Test Files//Emf//", MetaFile::c_lMetaEmf);
+	//ConvertFolder(L"D://Test Files//Emf//", MetaFile::c_lMetaEmf);
+	ConvertFolder(L"D://Test Files//Wmf//", MetaFile::c_lMetaWmf);
 }
 
 void main()

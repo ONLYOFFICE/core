@@ -91,11 +91,15 @@
       <SDLCheck>true</SDLCheck>
       <DisableSpecificWarnings>4018;4005;4267</DisableSpecificWarnings>
       <AdditionalIncludeDirectories>..\DesktopEditor\freetype-2.5.2\include;..\DesktopEditor\agg-2.4\include;..\DesktopEditor\cximage\zlib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <BrowseInformation>true</BrowseInformation>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <Bscmake>
+      <PreserveSbr>true</PreserveSbr>
+    </Bscmake>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>

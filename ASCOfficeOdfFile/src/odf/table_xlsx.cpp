@@ -28,7 +28,7 @@ namespace odf_reader {
 static formulasconvert::odf2oox_converter formulas_converter;
 
 
-int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content & text_properties) 
+int table_table_cell_content::xlsx_convert(oox::xlsx_conversion_context & Context, text_format_properties_content *text_properties) 
 {
     Context.get_table_context().start_cell_content();
 	Context.get_text_context().set_cell_text_properties(text_properties);
@@ -691,7 +691,7 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
         
 		xfId_last_set= Context.get_style_manager().xfId(&textFormatProperties, &parFormatProperties, &cellFormatProperties, &cellFormat, num_format,false, is_style_visible);
        
-		const int sharedStringId = table_table_cell_content_.xlsx_convert(Context, textFormatProperties);
+		const int sharedStringId = table_table_cell_content_.xlsx_convert(Context, &textFormatProperties);
 
 		if (t_val == XlsxCellType::str && sharedStringId >=0) t_val = XlsxCellType::s;//в случае текста, если он есть берем кэшированное значение
 		
@@ -787,7 +787,7 @@ void table_covered_table_cell::xlsx_convert(oox::xlsx_conversion_context & Conte
 {
     std::wostream & strm = Context.current_sheet().sheetData();
 
-	const int sharedStringId = table_table_cell_content_.xlsx_convert(Context);
+	const int sharedStringId = table_table_cell_content_.xlsx_convert(Context, NULL);
     
 	for (unsigned int r = 0; r < table_table_cell_attlist_.table_number_columns_repeated_; ++r)
     {

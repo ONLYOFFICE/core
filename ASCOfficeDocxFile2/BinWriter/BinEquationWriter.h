@@ -125,6 +125,7 @@ namespace MathEquation
 			
 			LONG nTextSize;
 			LONG nCtrlSize;
+			BYTE nHAlignPile;
 		public:
 			BinaryEquationWriter(NSBinPptxRW::CBinaryFileWriter &oStream) : bEmbel(false), m_oStream(oStream)
 			{				
@@ -164,10 +165,18 @@ namespace MathEquation
 						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontHAnsi);
 						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
 						m_oStream.WriteStringW(sFontName);
+
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontAE);
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Variable);
+						m_oStream.WriteStringW(sFontName);
 					}
 					if (nTextSize)
 					{
 						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontSize);
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
+						m_oStream.WriteLONG(nSize);
+
+						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontCS);
 						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
 						m_oStream.WriteLONG(nSize);
 					}
@@ -238,7 +247,7 @@ namespace MathEquation
 									case embelPrime:     str.Insert(0, 0x2032); break;
 									case embelDPrime:    str.Insert(0, 0x2033); break;
 									case embelLPrime:    str.Insert(0, 0x0300); break;
-									case embelTilde:     str.Insert(0, 0x007E); break;
+									case embelTilde:     str.Insert(0, 0x0303); break;
 									case embelHat:       str.Insert(0, 0x005E); break;
 									case embelSlash:     str.Insert(0, 0x002F); break;
 									case embelLArrow:    str.Insert(0, 0x2190); break;
@@ -448,14 +457,27 @@ namespace MathEquation
 			}
 			virtual void StartPile(uint8_t nHAlign, uint8_t nVAlign)
 			{
-				if (!m_aCommandStack.empty())
-					m_aCommandStack.top()->SetPile(true);
+				switch (nHAlign)
+				{
+				case 1: 
+				case 4: nHAlignPile = SimpleTypes::xalignLeft; break;
+				case 2: nHAlignPile = SimpleTypes::xalignCenter; break;
+				case 3: 
+				case 5: nHAlignPile = SimpleTypes::xalignRight; break;
+				default: nHAlignPile = SimpleTypes::xalignLeft; break;
+				}
+
+				/*if (m_aCommandStack.empty())
+				{
+					PushCommand(commandEqArray);
+				}*/
+				m_aCommandStack.top()->SetPile(true, nHAlignPile);
 			}
 			virtual void EndPile()
 			{
 				if (!m_aCommandStack.empty())
 				{
-					m_aCommandStack.top()->SetPile(false);
+					m_aCommandStack.top()->SetPile(false, SimpleTypes::xalignLeft);
 					CBaseCommand* pCommand = TopCommand();
 					pCommand->WriteEndBlock(this);
 
@@ -474,6 +496,7 @@ namespace MathEquation
 					if (type == commandIntegral || type == commandNArray)
 						pCommand->Next();
 				}
+				nHAlignPile = SimpleTypes::xalignLeft;
 			}
 			virtual void BeginBrackets(MBRACKETSTYPE eType, bool bOpen, bool bClose)
 			{
@@ -1381,14 +1404,15 @@ namespace MathEquation
 			commandNArray			 = 0x09,
 			//commandLongDivision		 = 0x0a,
 			commandBracketsSep		 = 0x0b,
-			commandVerticalBraceLim	 = 0x0c
+			commandVerticalBraceLim	 = 0x0c,
+			commandEqArray			 = 0x0d
 		};
 
 		class CBaseCommand
 		{
 		public:
 
-			CBaseCommand() : nBlockNum(-1), bPile(false), bEqArrayStart(false), nCount(0)
+			CBaseCommand() : nBlockNum(-1), bPile(false), bEqArrayStart(false), nCount(0), nHAlignPile(2)
 			{
 			}
 
@@ -1412,8 +1436,9 @@ namespace MathEquation
 			{
 				return nCount;
 			}
-            void SetPile(bool bSetPile)
+			void SetPile(bool bSetPile, BYTE nHPile)
 			{
+				nHAlignPile = nHPile;
 				bPile = bSetPile;
 				bEqArrayStart = !bSetPile;
 			}
@@ -1449,13 +1474,16 @@ namespace MathEquation
 
 					
 					nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::EqArrPr);
+
+					pWriter->WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::McJc, nHAlignPile);
+
 					int nCurPos1 = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathBottomNodesType::Row);		
 					pWriter->m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
 					pWriter->m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
-
-					pWriter->m_aRowsPosCounter.push( pWriter->WriteItemWithLengthStart());
-					
+					pWriter->m_aRowsPosCounter.push( pWriter->WriteItemWithLengthStart());					
 					pWriter->WriteItemEnd(nCurPos1);
+
+					
 
 					pWriter->WriteItemEnd(nElemPos);
 
@@ -1509,6 +1537,7 @@ namespace MathEquation
             bool bPile;
             bool bEqArrayStart;
 			int nBlockNum;
+			BYTE nHAlignPile;
 		};
 
 		class CMatrixCommand : public CBaseCommand
@@ -1868,6 +1897,35 @@ namespace MathEquation
 		private:
 			int nElemPos;
 		};
+		class CEqArrayCommand : public CBaseCommand
+		{
+		public:
+			CEqArrayCommand() {}
+			virtual ~CEqArrayCommand() {}
+			virtual ECommandType GetCommand(){ return commandEqArray; }
+
+			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter)
+			{
+				Write(pWriter, true);
+			}
+			virtual void WriteEndBlock(BinaryEquationWriter* pWriter)
+			{
+				Write(pWriter, false);
+			}
+
+		private:
+
+			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
+			{
+				bOpenNode = bBeginNode;
+				if (bBeginNode)
+					WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::EqArr);
+				else
+					WriteEndNode(pWriter);
+			}
+		private:
+			int nElemPos;
+		};
 		class CIntegralCommand : public CBaseCommand
 		{
 		public:
@@ -2137,6 +2195,7 @@ namespace MathEquation
 			case commandNArray:				pCommand = new CNArrayCommand(); break;
 			//case commandLongDivision:		pCommand = new CLongDivisionCommand(); break;
 			case commandBracketsSep:		pCommand = new CBracketsWithSeparatorCommand(); break;
+			case commandEqArray:			pCommand = new CEqArrayCommand(); break;
 			}
 
 			m_aCommandStack.push(pCommand);

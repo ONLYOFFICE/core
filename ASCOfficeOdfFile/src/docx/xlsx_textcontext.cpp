@@ -215,7 +215,9 @@ void xlsx_text_context::Impl::set_cell_text_properties(odf_reader::text_format_p
 
 void xlsx_text_context::Impl::write_rPr(std::wostream & strm)
 {
-	if (paragraph_style_name_.length()<1 && span_style_name_.length()<1 && !(hyperlink_hId.length()>0 && in_draw) )return;
+	if (paragraph_style_name_.length()<1 && span_style_name_.length()<1 
+			&& !(hyperlink_hId.length()>0	&& in_draw) 
+			&& !(text_properties_cell_		&& in_cell_content))return;
 
 	odf_reader::text_format_properties_content		text_properties_paragraph_;	
 	odf_reader::text_format_properties_content		text_properties_span_;

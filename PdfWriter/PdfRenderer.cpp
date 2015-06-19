@@ -3,18 +3,39 @@
 #include "Src/Document.h"
 #include "Src/Pages.h"
 #include "Src/Image.h"
+#include "Src/Font.h"
+#include "Src/FontCidTT.h"
 
 #include "../DesktopEditor/graphics/Image.h"
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/cximage/CxImage/ximage.h"
+#include "../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../DesktopEditor/fontengine/FontManager.h"
 
 #define MM_2_PT(X) ((X) * 72.0 / 25.4)
 #define PT_2_MM(X) ((X) * 25.4 / 72.0)
 
+#ifdef DrawText
+#undef DrawText
+#endif
+
 using namespace PdfWriter;
 
-CPdfRenderer::CPdfRenderer()
+#define HI_SURROGATE_START  0xD800
+#define HI_SURROGATE_END    0xDBFF
+#define LO_SURROGATE_START  0xDC00
+#define LO_SURROGATE_END    0xDFFF
+
+CPdfRenderer::CPdfRenderer(CApplicationFonts* pAppFonts)
 {
+	m_pAppFonts = pAppFonts;
+
+	// Создаем менеджер шрифтов с собственным кэшем
+	m_pFontManager = pAppFonts->GenerateFontManager();
+	CFontsCache* pMeasurerCache = new CFontsCache();
+	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
+	m_pFontManager->SetOwnerCache(pMeasurerCache);
+
 	m_pDocument = new CDocument();
 	if (!m_pDocument || !m_pDocument->CreateNew())
 	{
@@ -26,11 +47,12 @@ CPdfRenderer::CPdfRenderer()
 	m_dPageHeight = 297;
 	m_dPageWidth  = 210;
 	m_pPage       = NULL;
+	m_pFont       = NULL;
 }
 CPdfRenderer::~CPdfRenderer()
 {
-	if (m_pDocument)
-		delete m_pDocument;
+	RELEASEOBJECT(m_pDocument);
+	RELEASEINTERFACE(m_pFontManager);
 }
 void CPdfRenderer::SaveToFile(const std::wstring& wsPath)
 {
@@ -407,7 +429,77 @@ HRESULT CPdfRenderer::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX
 }
 HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
 {
-	// TODO: Реализовать
+	if (!IsPageValid() || !wsUnicodeText.size())
+		return S_FALSE;
+
+	m_pPage->GrSave();
+	UpdateTransform();
+	UpdateFont();
+
+	if (!m_pFont)
+		return S_FALSE;
+
+	unsigned int* pUnicodes = new unsigned int[wsUnicodeText.size()];
+	if (!pUnicodes)
+		return S_FALSE;
+
+	unsigned int* pOutput = pUnicodes;
+	unsigned int unLen = 0;
+	if (2 == sizeof(wchar_t))
+	{
+		const wchar_t* wsEnd = wsUnicodeText.c_str() + wsUnicodeText.size();
+		wchar_t* wsInput = (wchar_t*)wsUnicodeText.c_str();
+
+		wchar_t wLeading, wTrailing;
+		unsigned int unCode;
+		while (wsInput < wsEnd)
+		{
+			wLeading = *wsInput++;
+			if (wLeading < 0xD800 || wLeading > 0xDFFF)
+			{
+				pUnicodes[unLen++] = (unsigned int)wLeading;
+			}
+			else if (wLeading >= 0xDC00)
+			{
+				// Такого не должно быть
+				continue;
+			}
+			else
+			{
+				unCode = (wLeading & 0x3FF) << 10;
+				wTrailing = *wsInput++;
+				if (wTrailing < 0xDC00 || wTrailing > 0xDFFF)
+				{
+					// Такого не должно быть
+					continue;
+				}
+				else
+				{
+					pUnicodes[unLen++] = (unCode | (wTrailing & 0x3FF) + 0x10000);
+				}
+			}
+		}
+	}
+	else
+	{
+		unLen = wsUnicodeText.size();
+		for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
+		{
+			pUnicodes[unIndex] = (unsigned int)wsUnicodeText.at(unIndex);
+		}		
+	}
+
+	unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
+	delete[] pUnicodes;
+
+	m_pPage->BeginText();
+
+	m_pPage->SetFontAndSize(m_pFont, m_oFont.GetSize());
+	m_pPage->DrawText(MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), pCodes, unLen * 2);
+
+	m_pPage->EndText();
+	m_pPage->GrRestore();
+
 	return S_OK;
 }
 HRESULT CPdfRenderer::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags)
@@ -568,17 +660,22 @@ HRESULT CPdfRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const d
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
 {
-	// TODO: Реализовать
+	m_oTransform.Set(dM11, dM12, dM21, dM22, dX, dY);
 	return S_OK;
 }
 HRESULT CPdfRenderer::GetTransform(double* dM11, double* dM12, double* dM21, double* dM22, double* dX, double* dY)
 {
-	// TODO: Реализовать
+	*dM11 = m_oTransform.m11;
+	*dM12 = m_oTransform.m12;
+	*dM21 = m_oTransform.m21;
+	*dM22 = m_oTransform.m22;
+	*dX   = m_oTransform.dx;
+	*dY   = m_oTransform.dy;
 	return S_OK;
 }
 HRESULT CPdfRenderer::ResetTransform()
 {
-	// TODO: Реализовать
+	m_oTransform.Reset();
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
@@ -625,10 +722,14 @@ HRESULT CPdfRenderer::DrawImage1bpp(Pix* pImageBuffer, const unsigned int& unWid
 	if (!IsPageValid() || !pImageBuffer)
 		return S_OK;
 
-	// TODO: Учесть трансформ
+	m_pPage->GrSave();
+	UpdateTransform();
+	
 	CImageDict* pPdfImage = m_pDocument->CreateImage();
 	pPdfImage->LoadBW(pImageBuffer, unWidth, unHeight);
 	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
+
+	m_pPage->GrRestore();
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
@@ -673,5 +774,37 @@ bool CPdfRenderer::DrawImage(Aggplus::CImage* pImage, const double& dX, const do
 	free(pBuffer);
 
 	return true;
+}
+void CPdfRenderer::UpdateFont()
+{
+	std::wstring& wsFontPath = m_oFont.GetPath();
+	LONG lFaceIndex = m_oFont.GetFaceIndex();
+	if (L"" == wsFontPath)
+	{
+		CFontSelectFormat oFontSelect;
+		oFontSelect.wsName = new std::wstring(m_oFont.GetName());
+		oFontSelect.bItalic = new INT(m_oFont.IsItalic() ? 0 : 1);
+		oFontSelect.bItalic = new INT(m_oFont.IsBold() ? 0 : 1);
+		CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect);
+
+		wsFontPath = pFontInfo->m_wsFontPath;
+		lFaceIndex = pFontInfo->m_lIndex;
+	}
+
+	m_pFont = NULL;
+	if (L"" != wsFontPath)
+	{
+		// TODO: Пока мы здесь предполагаем, что шрифты только либо TrueType, либо OpenType
+		LONG lFaceIndex = m_oFont.GetFaceIndex();
+		m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, 10, 72, 72);
+		std::wstring wsFontType = m_pFontManager->GetFontType();
+		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
+			m_pFont = m_pDocument->CreateTrueTypeFont(wsFontPath, lFaceIndex);
+	}
+}
+void CPdfRenderer::UpdateTransform()
+{
+	CTransform& t = m_oTransform;
+	m_pPage->Concat(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
 }
 

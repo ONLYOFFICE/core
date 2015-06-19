@@ -121,7 +121,7 @@ public:
             if (check_border(cellProp->style_diagonal_bl_tr_))
             {
                 border.diagonal = xlsx_border_edge();
-				_CP_OPT(border_style) borderStyle = *cellProp->style_diagonal_bl_tr_;
+                _CP_OPT(border_style) borderStyle(*cellProp->style_diagonal_bl_tr_);
                 process_border(*border.diagonal, borderStyle);
                 border.diagonalUp = true;
             }
@@ -130,7 +130,7 @@ public:
             {
                 if (!border.diagonal)
                     border.diagonal = xlsx_border_edge();
- 				_CP_OPT(border_style) borderStyle = *cellProp->style_diagonal_tl_br_;
+                _CP_OPT(border_style) borderStyle (*cellProp->style_diagonal_tl_br_);
                process_border(*border.diagonal, borderStyle);
                 border.diagonalDown = true;
             }

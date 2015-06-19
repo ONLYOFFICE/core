@@ -44,6 +44,7 @@ namespace DocFileFormat
 
 			//v:shapetype
 			PictureFrameType type;
+			type.SetType(shape->Instance);
 			VMLShapeTypeMapping* vmlShapeTypeMapping = new VMLShapeTypeMapping( m_pXmlWriter, m_isBulletPicture );
 			type.Convert( vmlShapeTypeMapping );
 			RELEASEOBJECT( vmlShapeTypeMapping );

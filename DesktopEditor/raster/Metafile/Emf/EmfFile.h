@@ -29,7 +29,8 @@ namespace MetaFile
 
 		TEmfRectL*   GetBounds()
 		{
-			return &m_oHeader.oFrame;
+			//return &m_oHeader.oFrame;
+			return &m_oHeader.oFramePx;
 		}		
 		void         PlayMetaFile()
 		{
@@ -691,6 +692,8 @@ namespace MetaFile
 			m_oHeader.oFrameToBounds.nRight  = nR;
 			m_oHeader.oFrameToBounds.nTop    = nT;
 			m_oHeader.oFrameToBounds.nBottom = nB;
+
+			m_oHeader.oFramePx = m_oHeader.oFrameToBounds;
 		}
 		void Read_EMR_ALPHABLEND()
 		{

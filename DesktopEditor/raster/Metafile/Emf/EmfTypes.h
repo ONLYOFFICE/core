@@ -257,10 +257,25 @@ namespace MetaFile
 
 	struct TEmfRectL
 	{
+		TEmfRectL()
+		{
+			lLeft   = 0;
+			lTop    = 0;
+			lRight  = 0;
+			lBottom = 0;
+		}
+		TEmfRectL(const TRect& oRect)
+		{
+			lLeft   = oRect.nLeft;
+			lTop    = oRect.nTop;
+			lRight  = oRect.nRight;
+			lBottom = oRect.nBottom;
+		}
+
 		int lLeft;
 		int lTop;
 		int lRight;
-		int lBottom;
+		int lBottom;		
 	};
 
 	struct TEmfPointL
@@ -311,6 +326,7 @@ namespace MetaFile
 		TEmfSizeL      oDevice;
 		TEmfSizeL      oMillimeters;
 		TRect          oFrameToBounds;
+		TEmfRectL      oFramePx;
 	};
 
 	struct TEmfStretchDIBITS

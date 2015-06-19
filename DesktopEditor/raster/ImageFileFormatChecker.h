@@ -28,6 +28,7 @@ _CXIMAGE_FORMAT_RAW = 19,
 _CXIMAGE_FORMAT_PSD = 20,
 _CXIMAGE_FORMAT_EMF = 21,
 _CXIMAGE_FORMAT_WB = 22,
+_CXIMAGE_FORMAT_SVM = 23
 };
 
 class CImageFileFormatChecker
@@ -47,6 +48,7 @@ public:
 	
 	bool isImageFile(std::wstring& fileName);
 	bool isPngFile(std::wstring& fileName);
+	bool isSvmFile(std::wstring& fileName);
 
 	bool isRawFile(std::wstring& fileName);
 	bool isSvgFile(std::wstring& fileName);

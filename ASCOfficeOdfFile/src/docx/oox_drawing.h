@@ -60,7 +60,7 @@ namespace oox {
     };
     void oox_serialize_xfrm		(std::wostream & strm, _oox_drawing & val,std::wstring name_space = L"a");
     void oox_serialize_shape	(std::wostream & strm, _oox_drawing & val);
-    void oox_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val);
+    void oox_serialize_ln		(std::wostream & strm, const std::vector<odf_reader::_property> & val, bool always_draw = false);
     void oox_serialize_hlink	(std::wostream & strm, const std::vector<_hlink_desc> & val);
     void oox_serialize_bodyPr	(std::wostream & strm, const std::vector<odf_reader::_property> & val);
 	void oox_serialize_aLst		(std::wostream & strm, const std::vector<odf_reader::_property> & val);

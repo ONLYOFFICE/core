@@ -55,7 +55,7 @@ static const std::wstring _ooxDashStyle[]=
 	L"sysDashDotDot"
 };
 
-void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
+void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_property> & prop, bool always_draw)
 {
 	_CP_OPT(std::wstring)	strStrokeColor; 
 	_CP_OPT(int)			iStroke;
@@ -70,7 +70,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 	odf_reader::GetProperty(prop, L"stroke-width"	, dStrokeWidth);
 	odf_reader::GetProperty(prop, L"stroke-opacity"	, strStrokeOpacity);
 
-	if (!strStrokeColor && !iStroke && !dStrokeWidth)return;
+	if ((!strStrokeColor && !iStroke && !dStrokeWidth) && !always_draw)return;
 
 	CP_XML_WRITER(strm)
     {
@@ -96,7 +96,8 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 			{ 			
 				if (fill != L"a:noFill")
 				{
-					if (color.length()<1) color = L"ffffff";
+					if (color.length()<1 && always_draw) color = L"000000";
+					else if (color.length()<1) color = L"ffffff";
 					CP_XML_NODE(L"a:srgbClr")
 					{
 						CP_XML_ATTR(L"val",color);

@@ -101,6 +101,7 @@ bool CImageFileFormatChecker::isEmfFile(BYTE* pBuffer,DWORD dwBytes)
 
 	return false;
 }
+
 //pcx ( http://www.fileformat.info/format/pcx/corion.htm )
 bool CImageFileFormatChecker::isPcxFile(BYTE* pBuffer,DWORD dwBytes)
 {
@@ -271,23 +272,9 @@ bool CImageFileFormatChecker::isSvmFile(BYTE* pBuffer,DWORD dwBytes)
 {
 	if (eFileType)return false;
 
-	if ( (48 <= dwBytes) &&(0x56 == pBuffer[0] && 0x43 == pBuffer[1]  && 0x4c == pBuffer[2] && 0x4d == pBuffer[3]
-						 && 0x54 == pBuffer[4] && 0x46 == pBuffer[5]  && 0x01 == pBuffer[6] && 0x00 == pBuffer[7]
-						 
-						 && 0x31 == pBuffer[8] && 0x00 == pBuffer[9]  && 0x00 == pBuffer[10] && 0x00 == pBuffer[11]
-						 && 0x01 == pBuffer[12] && 0x00 == pBuffer[13]  && 0x00 == pBuffer[14] && 0x00 == pBuffer[15]
-						 
-						 && 0x01 == pBuffer[16] && 0x00 == pBuffer[17]  && 0x1b == pBuffer[18] && 0x00 == pBuffer[19]
-						 && 0x00 == pBuffer[20] && 0x00 == pBuffer[21]  && 0x00 == pBuffer[22] && 0x00 == pBuffer[23]
-						 
-						 && 0x00 == pBuffer[24] && 0x00 == pBuffer[25]  && 0x00 == pBuffer[26] && 0x00 == pBuffer[27]
-						 && 0x00 == pBuffer[28] && 0x00 == pBuffer[29]  && 0x00 == pBuffer[30] && 0x00 == pBuffer[31]
-						
-						 && 0x01 == pBuffer[32] && 0x00 == pBuffer[33]  && 0x00 == pBuffer[34] && 0x00 == pBuffer[35]
-						 && 0x01 == pBuffer[36] && 0x00 == pBuffer[37]  && 0x00 == pBuffer[38] && 0x00 == pBuffer[39]
-						 
-						 && 0x01 == pBuffer[40] && 0x00 == pBuffer[41]  && 0x00 == pBuffer[42] && 0x00 == pBuffer[43]
-						 && 0x01 == pBuffer[44] && 0x00 == pBuffer[45]  && 0x00 == pBuffer[46] && 0x00 == pBuffer[47]))
+	if ( (6 <= dwBytes) &&(0x56 == pBuffer[0] && 0x43 == pBuffer[1]  && 0x4c == pBuffer[2] && 0x4d == pBuffer[3]
+						 && 0x54 == pBuffer[4] && 0x46 == pBuffer[5]  && 0x01 == pBuffer[6] && 0x00 == pBuffer[7]						 
+						 && 0x31 == pBuffer[8] && 0x00 == pBuffer[9]  && 0x00 == pBuffer[10] && 0x00 == pBuffer[11]) )
 		return true;
 	 
 	return false;
@@ -486,6 +473,36 @@ bool CImageFileFormatChecker::isImageFile(std::wstring& fileName)
 	if (eFileType)return true;
 	return false;
 }
+bool CImageFileFormatChecker::isSvmFile(std::wstring & fileName)
+{
+	eFileType = _CXIMAGE_FORMAT_UNKNOWN;
+	////////////////////////////////////////////////////////////////////////////////
+	NSFile::CFileBinary file;
+	if (!file.OpenFile(fileName))
+		return false;
+
+	BYTE* buffer = new BYTE[12];
+	if (!buffer)
+		return false;
+
+	DWORD sizeRead = 0;
+	if (!file.ReadFile(buffer, 12, sizeRead))
+	{
+		delete []buffer;
+		return false;
+	}
+	file.CloseFile();
+	////////////////////////////////////////////////////////////////////////////////
+	
+	if (isSvmFile(buffer,sizeRead))
+	{
+		eFileType = _CXIMAGE_FORMAT_SVM;
+	}
+	delete [] buffer;
+
+	if (eFileType)return true;
+	else return false;
+}
 bool CImageFileFormatChecker::isPngFile(std::wstring & fileName)
 {
 	eFileType = _CXIMAGE_FORMAT_UNKNOWN;
@@ -541,6 +558,7 @@ std::wstring CImageFileFormatChecker::DetectFormatByData(BYTE *Data, int DataSiz
 	else if (isRasFile(Data,DataSize)) return L"ras";
 	else if (isTiffFile(Data,DataSize))return L"tif";
 	else if (isWmfFile(Data,DataSize)) return L"wmf";
+	else if (isSvmFile(Data,DataSize)) return L"svm";
 	
 	return L"jpg";
 }

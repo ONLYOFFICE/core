@@ -9,6 +9,7 @@
 #include "mediaitems.h"
 #include "../../DesktopEditor/common/File.h"
 #include "../../DesktopEditor/raster/Metafile/MetaFile.h"
+#include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 namespace cpdoccore { 
 namespace oox {
@@ -194,8 +195,8 @@ void media::write(const std::wstring & RootPath)
 			std::wstring & file_name  = item.href;
 			std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.outputName;
 			
-			int pos_svm = file_name.rfind(L".svm");
-			if ( pos_svm >= 0)
+			CImageFileFormatChecker svmFileChecker;
+			if (svmFileChecker.isSvmFile(file_name))
 			{
 				ConvertSvmToImage(file_name, file_name_out, appFonts_);
 			}

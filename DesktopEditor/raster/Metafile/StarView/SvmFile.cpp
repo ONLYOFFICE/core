@@ -248,10 +248,13 @@ void CSvmFile::Read_SVM_HEADER()
 
 	m_pDC->SetMapMode(m_oHeader.mapMode, true);
 	
-	m_oBoundingBox			= m_oHeader.boundRect;
-	m_oBoundingBox.nRight  *= m_pDC->m_dPixelWidthPrefered;
-	m_oBoundingBox.nBottom *= m_pDC->m_dPixelHeightPrefered;
+	m_oBoundingBox			 = m_oHeader.boundRect;
+	m_oBoundingBox.nRight	*= m_pDC->m_dPixelWidthPrefered * 2; 
+	m_oBoundingBox.nBottom	*= m_pDC->m_dPixelHeightPrefered * 2; 
 		
+	m_oBoundingBox.nLeft	*= m_pDC->m_dPixelWidthPrefered * 2; 
+	m_oBoundingBox.nTop		*= m_pDC->m_dPixelHeightPrefered * 2;
+		// *2 ради повышения качества картинки (если в векторе насамом деле растр - сментся на растровые размеры ниже
 	m_bFirstPoint = true;
 }
 void CSvmFile::Read_META_POLYLINE()

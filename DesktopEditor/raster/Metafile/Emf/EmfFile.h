@@ -511,8 +511,8 @@ namespace MetaFile
 
 			if (m_pOutput)
 			{
-				double dX = nX, dY = nY;
-				//TranslatePoint(nX, nY, dX, dY);
+				double dX, dY;
+				TranslatePoint(nX, nY, dX, dY);
 
 				double* pdDx = NULL;
 				if (pnDx)
@@ -526,8 +526,8 @@ namespace MetaFile
 						for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount; unCharIndex++)
 						{
 							int nX1 = nCurX + pnDx[unCharIndex];
-							double dX1 = nX1, dY1 = nY;
-							//TranslatePoint(nX1, nY, dX1, dY1);
+							double dX1, dY1;
+							TranslatePoint(nX1, nY, dX1, dY1);
 							pdDx[unCharIndex] = dX1 - dCurX;
 							nCurX = nX1;
 							dCurX = dX1;

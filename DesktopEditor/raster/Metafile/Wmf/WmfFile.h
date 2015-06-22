@@ -376,6 +376,10 @@ namespace MetaFile
 			unsigned int unReadedSize = m_oStream.Tell() - m_unRecordPos;
 			return (m_unRecordSize - unReadedSize);
 		}
+		inline double GetSweepAngle(const double& dStartAngle, const double& dEndAngle)
+		{
+			return (dEndAngle - dStartAngle) - 360;
+		}
 		void MoveTo(short shX, short shY)
 		{
 			if (m_pOutput)
@@ -936,10 +940,8 @@ namespace MetaFile
 			short shYEndArc, shXEndArc, shYStartArc, shXStartArc, shBottom, shRight, shTop, shLeft;
 			m_oStream >> shYEndArc >> shXEndArc >> shYStartArc >> shXStartArc >> shBottom >> shRight >> shTop >> shLeft;
 			double dStartAngle = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXStartArc, (int)shYStartArc);
-			double dSweepAngle = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXEndArc, (int)shYEndArc) - dStartAngle;
-
-			if (dSweepAngle <= 0)
-				dSweepAngle += 360;
+			double dEndAngle   = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXEndArc, (int)shYEndArc);
+			double dSweepAngle = GetSweepAngle(dStartAngle, dEndAngle);
 
 			m_pDC->SetCurPos(shXStartArc, shYStartArc);
 			ArcTo(shLeft, shTop, shRight, shBottom, dStartAngle, dSweepAngle);
@@ -951,10 +953,8 @@ namespace MetaFile
 			short shYEndArc, shXEndArc, shYStartArc, shXStartArc, shBottom, shRight, shTop, shLeft;
 			m_oStream >> shYEndArc >> shXEndArc >> shYStartArc >> shXStartArc >> shBottom >> shRight >> shTop >> shLeft;
 			double dStartAngle = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXStartArc, (int)shYStartArc);
-			double dSweepAngle = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXEndArc, (int)shYEndArc) - dStartAngle;
-
-			if (dSweepAngle <= 0)
-				dSweepAngle += 360;
+			double dEndAngle   = GetEllipseAngle((int)shLeft, (int)shTop, (int)shRight, (int)shBottom, (int)shXEndArc, (int)shYEndArc);
+			double dSweepAngle = GetSweepAngle(dStartAngle, dEndAngle);
 
 			MoveTo(shXStartArc, shYStartArc);
 			ArcTo(shLeft, shTop, shRight, shBottom, dStartAngle, dSweepAngle);
@@ -1080,7 +1080,8 @@ namespace MetaFile
 			m_oStream >> shB >> shR >> shT >> shL;
 
 			double dStartAngle = GetEllipseAngle(shL, shT, shR, shB, shXRadial1, shYRadial1);
-			double dSweepAngle = GetEllipseAngle(shL, shT, shR, shB, shXRadial2, shYRadial2) - dStartAngle;
+			double dEndAngle   = GetEllipseAngle(shL, shT, shR, shB, shXRadial2, shYRadial2);
+			double dSweepAngle = GetSweepAngle(dStartAngle, dEndAngle);
 
 			short shCenterX = (shL + shR) / 2;
 			short shCenterY = (shT + shB) / 2;
@@ -1185,7 +1186,7 @@ namespace MetaFile
 
 			MoveTo(shL + shW, shT);
 			LineTo(shR - shW, shT);
-			ArcTo(shR - shW, shT, shR, shT + shH, -90, 90);
+			ArcTo(shR - shW, shT, shR, shT + shH, 270, 90);
 			LineTo(shR, shB - shH);
 			ArcTo(shR - shW, shB - shH, shR, shB, 0, 90);
 			LineTo(shL + shW, shB);

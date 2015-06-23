@@ -554,12 +554,10 @@ namespace MetaFile
 					m_pRenderer->put_BrushAlpha2(255);
 
 					TColor oBgColor(m_pFile->GetTextBgColor());
-					oBgColor.SwapRGBtoBGR();
 					m_pRenderer->put_BrushColor2(oBgColor.ToInt());
 				}
 
 				TColor oFgColor(pBrush->GetColor());
-				oFgColor.SwapRGBtoBGR();
 				m_pRenderer->put_BrushTexturePath(wsBrushType);
 				m_pRenderer->put_BrushAlpha1(255);
 				m_pRenderer->put_BrushColor1(oFgColor.ToInt());

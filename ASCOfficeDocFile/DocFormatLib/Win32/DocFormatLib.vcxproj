@@ -268,6 +268,7 @@
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\SunType.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\TextboxType.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\TrapezoidType.h" />
+    <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\WordArtText.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\SplitMenuColorContainer.h" />
     <ClInclude Include="..\..\DocDocxConverter\OfficeDrawing\UnknownRecord.h" />
     <ClInclude Include="..\..\DocDocxConverter\OleObject.h" />

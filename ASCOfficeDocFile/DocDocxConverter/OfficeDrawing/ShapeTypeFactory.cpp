@@ -37,6 +37,7 @@
 #include "Shapetypes/BracketsType.h"
 #include "Shapetypes/CalloutsType.h"
 #include "Shapetypes/Connector.h"
+#include "Shapetypes/WordArtText.h"
 
 namespace DocFileFormat
 {
@@ -81,7 +82,6 @@ namespace DocFileFormat
 		case msosptDonut						:	{	pShape	=	new DonutType();						}	break;
 		case msosptPictureFrame 				:	{	pShape	=	new PictureFrameType();					}	break;
 		case msosptTextBox						:	{	pShape	=	new TextboxType();						}	break;
-		case msosptTextStop						:	{	pShape	=	new TextStop();							}	break;
 		case msosptBevel						:	{	pShape	=	new BevelType();						}	break;			
 		case msosptPentagon						:	{	pShape	=	new PentagonType();						}	break;
 		case msosptFoldedCorner 				:	{	pShape	=	new FoldedCornerlType();				}	break;
@@ -182,6 +182,50 @@ namespace DocFileFormat
 		case msosptCurvedConnector3				:	{	pShape	=	new CurvedConnector3();					}	break;		
 		case msosptCurvedConnector4				:	{	pShape	=	new CurvedConnector4();					}	break;		
 		case msosptCurvedConnector5				:	{	pShape	=	new CurvedConnector5();					}	break;		
+//wordArt		
+		
+		case msosptTextStop						:	{	pShape	=	new WordArtTextStop();					}	break;
+		case msosptTextArchUpCurve				:	{	pShape	=	new WordArtTextArchUpCurve();			}	break;
+		case msosptTextPlainText				:
+	//без детализаций - todooo прописать формулы
+		case msosptTextTriangle					:
+		case msosptTextTriangleInverted			:
+		case msosptTextChevron					:
+		case msosptTextChevronInverted			:
+		case msosptTextRingInside				:
+		case msosptTextRingOutside				:
+		case msosptTextArchDownCurve			:
+		case msosptTextCircleCurve				:
+		case msosptTextButtonCurve				:
+		case msosptTextArchUpPour				:
+		case msosptTextArchDownPour				:
+		case msosptTextCirclePour				:
+		case msosptTextButtonPour				:
+		case msosptTextCurveUp					:
+		case msosptTextCurveDown				:
+		case msosptTextCascadeUp				:
+		case msosptTextCascadeDown				:
+		case msosptTextWave1					:
+		case msosptTextWave2					:
+		case msosptTextWave3					:
+		case msosptTextWave4					:
+		case msosptTextInflate					:
+		case msosptTextDeflate					:
+		case msosptTextInflateBottom			:
+		case msosptTextDeflateBottom			:
+		case msosptTextInflateTop				:
+		case msosptTextDeflateTop				:
+		case msosptTextDeflateInflate			:
+		case msosptTextDeflateInflateDeflate	:
+		case msosptTextFadeRight				:
+		case msosptTextFadeLeft					:
+		case msosptTextFadeUp					:
+		case msosptTextFadeDown					:
+		case msosptTextSlantUp					:
+		case msosptTextSlantDown				:
+		case msosptTextCanUp					:
+		case msosptTextCanDown					:
+													{	pShape	=	new WordArtTextType(TypeCode);			}	break;
 
 		default									:	{	pShape	=	NULL;									}	break;
 		}

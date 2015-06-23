@@ -462,7 +462,7 @@ namespace DocFileFormat
 					}
 					else
 					{
-						VMLShapeMapping oShape (m_pXmlWriter, NULL, &pict, m_context,this,true);
+						VMLShapeMapping oShape (m_context, m_pXmlWriter, NULL, &pict, this,true);
 						pict.shapeContainer->Convert(&oShape);
 					}
 

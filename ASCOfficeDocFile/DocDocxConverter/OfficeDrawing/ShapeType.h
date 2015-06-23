@@ -315,6 +315,9 @@ namespace DocFileFormat
 		/// By default nothing is locked.
 		ProtectionBooleanProperties Lock;
 
+		///
+		std::wstring Textpath;
+
 	protected:
 		unsigned int TypeCode;
 	};

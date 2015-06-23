@@ -39,8 +39,9 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteAttribute( _T("adj"), pShape->AdjustmentValues.c_str() );
 
 			// Path
-			if (pShape->Path.length())
+			if (!pShape->Path.empty())
 				m_pXmlWriter->WriteAttribute( _T("path"), pShape->Path.c_str() );
+
 
 			//Default fill / stroke
 			if ( !pShape->Filled )
@@ -58,8 +59,15 @@ namespace DocFileFormat
 				m_pXmlWriter->WriteAttribute( _T( "o:preferrelative" ), _T( "t" ) );  
 			}
 
-			m_pXmlWriter->WriteNodeEnd( _T( "" ), true, false );
+			m_pXmlWriter->WriteNodeEnd( _T( "" ), true, false );//закрытие атрибутов
 
+			//Textpath
+			if (!pShape->Textpath.empty())
+			{
+				m_pXmlWriter->WriteNodeBegin( _T( "v:textpath" ), true );
+				m_pXmlWriter->WriteString( pShape->Textpath.c_str() );
+				m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
+			}
 			// Stroke
 			m_pXmlWriter->WriteNodeBegin( _T( "v:stroke" ), true );
 			m_pXmlWriter->WriteAttribute( _T( "joinstyle" ), FormatUtils::MapValueToWideString( pShape->Joins, &JoinStyleMap[0][0], 3, 6 ).c_str() );

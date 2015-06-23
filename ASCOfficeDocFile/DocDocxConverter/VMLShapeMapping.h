@@ -28,7 +28,7 @@ namespace DocFileFormat
 	{
 	public:
 
-		VMLShapeMapping (XmlUtils::CXmlWriter* writer, Spa* pSpa, PictureDescriptor* pict, ConversionContext* ctx , IMapping* caller, bool bullet = false);
+		VMLShapeMapping (ConversionContext* ctx ,XmlUtils::CXmlWriter* writer, Spa* pSpa, PictureDescriptor* pict,  IMapping* caller, bool bullet = false);
 		virtual ~VMLShapeMapping();
 		virtual void Apply(IVisitable* visited);
 

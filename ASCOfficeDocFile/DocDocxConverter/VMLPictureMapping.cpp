@@ -1,8 +1,25 @@
 ﻿
 #include "VMLPictureMapping.h"
 
+#include "OfficeDrawing/GeometryBooleanProperties.h"
+#include "OfficeDrawing/GeometryTextBooleanProperties.h"
+
+#include "../../DesktopEditor/common/String.h"
+
+
 namespace DocFileFormat
 {
+	void VMLPictureMapping::appendStyleProperty(std::wstring* b, const std::wstring& propName, const std::wstring& propValue) const
+	{
+		if ( b != NULL )
+		{
+			b->operator += ( propName );
+			b->operator += ( _T( ":" ) );
+			b->operator += ( propValue );
+			b->operator +=( _T( ";" ) );
+		}
+	}
+
 	VMLPictureMapping::VMLPictureMapping(ConversionContext* ctx, XmlUtils::CXmlWriter* writer, bool olePreview, IMapping* caller, bool isBulletPicture) : PropertiesMapping(writer)
 	{
 		m_ctx				=	ctx;
@@ -37,7 +54,7 @@ namespace DocFileFormat
 	{
 		PictureDescriptor* pict = static_cast<PictureDescriptor*>(visited);
 
-		if (CopyPicture(pict->blipStoreEntry))
+		if (pict->shapeContainer || pict->blipStoreEntry)
 		{
 			Shape* shape				=	static_cast<Shape*>(*(pict->shapeContainer->Children.begin()));
 			list<OptionEntry> options	=	pict->shapeContainer->ExtractOptions();
@@ -148,10 +165,13 @@ namespace DocFileFormat
 
 			m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
 
-			//v:imageData
-			appendValueAttribute(m_imageData, _T( "r:id" ), ( wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
-			appendValueAttribute(m_imageData, _T( "o:title" ) , _T( "" ));
-			m_pXmlWriter->WriteString(m_imageData->GetXMLString().c_str());
+			if (CopyPicture(pict->blipStoreEntry))
+			{
+				//v:imageData
+				appendValueAttribute(m_imageData, _T( "r:id" ), ( wstring( _T( "rId" ) ) + FormatUtils::IntToWideString(m_nImageId) ).c_str());
+				appendValueAttribute(m_imageData, _T( "o:title" ) , _T( "" ));
+				m_pXmlWriter->WriteString(m_imageData->GetXMLString().c_str());
+			}
 
 			//borders
 			writePictureBorder( _T( "bordertop" ), pict->brcTop );
@@ -175,7 +195,7 @@ namespace DocFileFormat
 		m_pXmlWriter->WriteNodeBegin( ( wstring( _T( "w10:" ) ) + wstring( name ) ).c_str(), true );
 		m_pXmlWriter->WriteAttribute( _T( "type" ), getBorderType( brc->brcType ).c_str() );
 		m_pXmlWriter->WriteAttribute( _T( "width" ), FormatUtils::IntToWideString( brc->dptLineWidth ).c_str() );
-		m_pXmlWriter->WriteNodeEnd( _T( "" ), true );
+		m_pXmlWriter->WriteNodeEnd	( _T( "" ), true );
 	}
 
 	/// Copies the picture from the binary stream to the zip archive 

@@ -21,9 +21,11 @@
 #include "OfficeDrawing/GroupShapeBooleanProperties.h"
 #include "OfficeDrawing/ProtectionBooleanProperties.h"
 
+#include "../../DesktopEditor/common/String.h"
+
 namespace DocFileFormat
 {
-	VMLShapeMapping::VMLShapeMapping (XmlUtils::CXmlWriter* pWriter, Spa* pSpa, PictureDescriptor* pPicture, ConversionContext* pConv, IMapping* pCaller, bool bullet) : PropertiesMapping(pWriter)
+	VMLShapeMapping::VMLShapeMapping (ConversionContext* pConv, XmlUtils::CXmlWriter* pWriter, Spa* pSpa, PictureDescriptor* pPicture, IMapping* pCaller, bool bullet) : PropertiesMapping(pWriter)
 	{		
 		m_bBullet			=	bullet;
 
@@ -126,7 +128,7 @@ namespace DocFileFormat
 						ShapeContainer* pChildShape	= static_cast<ShapeContainer*>(container->Children[i]);
 						if (pChildShape)
 						{
-							VMLShapeMapping vmlShapeMapping(m_pXmlWriter, m_pSpa, NULL, m_ctx, m_pCaller);
+							VMLShapeMapping vmlShapeMapping(m_ctx, m_pXmlWriter, m_pSpa, NULL,  m_pCaller);
 							pChildShape->Convert(&vmlShapeMapping);
 						}
 					}
@@ -148,7 +150,7 @@ namespace DocFileFormat
 				{
 					m_pXmlWriter->WriteNodeBegin( _T( "w10:wrap" ), TRUE );
 					m_pXmlWriter->WriteAttribute( _T( "type" ), wrap.c_str() );
-					m_pXmlWriter->WriteNodeEnd( _T( "w10:wrap" ), TRUE );
+					m_pXmlWriter->WriteNodeEnd	( _T( "w10:wrap" ), TRUE );
 				}
 			}
 
@@ -221,17 +223,16 @@ namespace DocFileFormat
 				int	nAdjValues			=	0;
 				int	nLTxID				=	-1;
 				
-				std::wstring adjValues[8];
-				ShadowStyleBooleanProperties shadowBoolean(0);
-				std::vector<CString> arrInscribe;
+				std::wstring					adjValues[8];
+				ShadowStyleBooleanProperties	shadowBoolean(0);
+				std::vector<CString>			arrInscribe;
 
 				std::list<OptionEntry>::const_iterator end = options.end();
 				for (std::list<OptionEntry>::const_iterator iter = options.begin(); iter != end; ++iter)
 				{
 					switch (iter->pid)
 					{
-						//BOOLEANS
-
+			//BOOLEANS
 					case geometryBooleans:
 						{
 							GeometryBooleanProperties booleans(iter->op);
@@ -676,61 +677,65 @@ namespace DocFileFormat
 					case dyTextTop:{ndyTextTop = (int)iter->op;break;}
 					case dxTextRight:{ndxTextRight = (int)iter->op;break;}
 					case dyTextBottom:{ndyTextBottom = (int)iter->op;break;}
-									  /*// TEXT PATH (Word Art)
+	
+	// TEXT PATH (Word Art)
 
-									  case ShapeOptions.PropertyId.gtextUNICODE:
-									  String text = Encoding.Unicode.GetString(entry.opComplex);
-									  text = text.Replace("\n", "");
-									  text = text.Replace("\0", "");
-									  appendValueAttribute(_textpath, "", "string", text, "");
-									  break;
+					case gtextUNICODE:
+					{
+						std::wstring text = NSString::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op-2)/2);
 
-									  case ShapeOptions.PropertyId.gtextFont:
-									  String font = Encoding.Unicode.GetString(entry.opComplex);
-									  font = font.Replace("\0", "");
-									  appendStyleProperty(_textPathStyle, "font-family", "\""+font+"\"");
-									  break;
+						text = FormatUtils::XmlEncode(text);
+						text = ReplaceString(text, _T("\n"), _T("&#xA;"));
+						appendValueAttribute(&m_textpath, L"string", text.c_str());
+					}break;
 
-									  case ShapeOptions.PropertyId.GeometryTextBooleanProperties:
-									  GeometryTextBooleanProperties props = new GeometryTextBooleanProperties(entry.op);
-									  if (props.fUsegtextFBestFit && props.gtextFBestFit)
-									  {
-									  appendValueAttribute(_textpath, "", "fitshape", "t", "");
-									  }
-									  if (props.fUsegtextFShrinkFit && props.gtextFShrinkFit)
-									  {
-									  appendValueAttribute(_textpath, "", "trim", "t", "");
-									  }
-									  if (props.fUsegtextFVertical && props.gtextFVertical)
-									  {
-									  appendStyleProperty(_textPathStyle, "v-rotate-letters", "t");
-									  //_twistDimension = true;
-									  }
-									  if (props.fUsegtextFKern && props.gtextFKern)
-									  {
-									  appendStyleProperty(_textPathStyle, "v-text-kern", "t");
-									  }
-									  if (props.fUsegtextFItalic && props.gtextFItalic)
-									  {
-									  appendStyleProperty(_textPathStyle, "font-style", "italic");
-									  }
-									  if (props.fUsegtextFBold && props.gtextFBold)
-									  {
-									  appendStyleProperty(_textPathStyle, "font-weight", "bold");
-									  }
-									  break;*/
+					case gtextFont:
+					{
+						std::wstring font = NSString::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op-8)/2);
+						font = std::wstring(_T("\"")) + font + std::wstring(_T("\""));
+						appendStyleProperty(&m_textPathStyle, L"font-family", font);
+					}break;
 
-									  // PATH
-					case shapePath :
+					case geometryTextBooleanProperties:
+					{
+						GeometryTextBooleanProperties props(iter->op);
+						if (props.fUsegtextFBestFit && props.gtextFBestFit)
 						{
-							bHavePath			=	true;
-
-							std::wstring path	=	ParsePath(options);
-
-							if (false == path.empty())
-								m_pXmlWriter->WriteAttribute (_T( "path" ), path.c_str());
+							appendValueAttribute(&m_textpath, L"fitshape", _T("t"));
 						}
-						break;
+						if (props.fUsegtextFShrinkFit && props.gtextFShrinkFit)
+						{
+							appendValueAttribute(&m_textpath, L"trim", _T("t"));
+						}
+						if (props.fUsegtextFVertical && props.gtextFVertical)
+						{
+							appendStyleProperty(&m_textPathStyle, L"v-rotate-letters", L"t");
+							//_twistDimension = true;
+						}
+						if (props.fUsegtextFKern && props.gtextFKern)
+						{
+							appendStyleProperty(&m_textPathStyle, L"v-text-kern", L"t");
+						}
+						if (props.fUsegtextFItalic && props.gtextFItalic)
+						{
+							appendStyleProperty(&m_textPathStyle, L"font-style", L"italic");
+						}
+						if (props.fUsegtextFBold && props.gtextFBold)
+						{
+							appendStyleProperty(&m_textPathStyle, L"font-weight", L"bold");
+						}
+					}break;
+
+		  // PATH
+					case shapePath :
+					{
+						bHavePath			=	true;
+
+						std::wstring path	=	ParsePath(options);
+
+						if (false == path.empty())
+							m_pXmlWriter->WriteAttribute (_T( "path" ), path.c_str());
+					}break;
 					}
 				}
 
@@ -912,7 +917,7 @@ namespace DocFileFormat
 					{
 						m_pXmlWriter->WriteNodeBegin( _T( "w10:wrap" ), TRUE );
 						m_pXmlWriter->WriteAttribute( _T( "type" ), wrap.c_str() );
-						m_pXmlWriter->WriteNodeEnd( _T( "w10:wrap" ), TRUE );
+						m_pXmlWriter->WriteNodeEnd	( _T( "w10:wrap" ), TRUE );
 					}
 				}
 
@@ -931,7 +936,7 @@ namespace DocFileFormat
 				// text path
 				if (m_textpath.GetAttributeCount())
 				{
-					appendValueAttribute(&m_textpath, _T( "style" ), m_textPathStyle.c_str());
+					appendValueAttribute(&m_textpath, _T( "style" ), FormatUtils::XmlEncode(m_textPathStyle).c_str());
 					m_pXmlWriter->WriteString(m_textpath.GetXMLString().c_str());
 				}
 
@@ -992,6 +997,13 @@ namespace DocFileFormat
 				}
 
 				WriteEndShapeNode(pShape);
+
+				//ShapeType 
+				if (NULL != pShape->GetShapeType() && !m_bBullet)
+				{
+					VMLShapeTypeMapping oXmlMapper(m_pXmlWriter);
+					pShape->GetShapeType()->Convert(&oXmlMapper);
+				}
 			}
 		}
 	}
@@ -1023,13 +1035,6 @@ namespace DocFileFormat
 			}
 			else
 			{
-				//SHAPE
-				if (NULL != pShape->GetShapeType() && !m_bBullet)
-				{
-					VMLShapeTypeMapping oXmlMapper(m_pXmlWriter);
-					pShape->GetShapeType()->Convert(&oXmlMapper);
-				}
-
 				m_pXmlWriter->WriteNodeBegin(_T( "v:shape" ), TRUE);
 			}
 		}

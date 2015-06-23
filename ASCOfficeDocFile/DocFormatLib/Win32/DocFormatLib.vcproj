@@ -360,10 +360,6 @@
 			Name="DOC_2_DOCX"
 			>
 			<File
-				RelativePath="..\..\DocDocxConverter\AbstractOpenXmlMapping.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\DocDocxConverter\AnnotationOwnerList.h"
 				>
 			</File>
@@ -392,23 +388,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\DocDocxConverter\CharacterPropertiesMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\CharacterPropertiesMapping.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\DocDocxConverter\CharacterPropertyExceptions.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\DocDocxConverter\CharacterRange.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\CommentsMapping.h"
 				>
 			</File>
 			<File
@@ -429,14 +413,6 @@
 			</File>
 			<File
 				RelativePath="..\..\DocDocxConverter\DateAndTime.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\DocumentMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\DocumentMapping.h"
 				>
 			</File>
 			<File
@@ -464,10 +440,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\DocDocxConverter\EndnotesMapping.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\DocDocxConverter\FieldCharacter.h"
 				>
 			</File>
@@ -488,27 +460,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\DocDocxConverter\FontTableMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\FontTableMapping.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\FooterMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\FooterMapping.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\DocDocxConverter\FootnoteDescriptor.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\FootnotesMapping.h"
 				>
 			</File>
 			<File
@@ -544,14 +496,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\DocDocxConverter\HeaderMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\HeaderMapping.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\DocDocxConverter\IBinaryReader.h"
 				>
 			</File>
@@ -565,14 +509,6 @@
 			</File>
 			<File
 				RelativePath="..\..\DocDocxConverter\LanguageId.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\LanguageIdMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\LanguageIdMapping.h"
 				>
 			</File>
 			<File
@@ -616,23 +552,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\DocDocxConverter\MainDocumentMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\MainDocumentMapping.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\DocDocxConverter\MemoryStream.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\NumberingMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\NumberingMapping.h"
 				>
 			</File>
 			<File
@@ -641,10 +561,6 @@
 			</File>
 			<File
 				RelativePath="..\..\DocDocxConverter\OleObject.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\OleObjectMapping.h"
 				>
 			</File>
 			<File
@@ -661,14 +577,6 @@
 			</File>
 			<File
 				RelativePath="..\..\DocDocxConverter\ParagraphHeight.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\ParagraphPropertiesMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\ParagraphPropertiesMapping.h"
 				>
 			</File>
 			<File
@@ -704,14 +612,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\DocDocxConverter\PropertiesMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\PropertiesMapping.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\DocDocxConverter\PropertyExceptions.cpp"
 				>
 			</File>
@@ -736,23 +636,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\DocDocxConverter\SectionPropertiesMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\SectionPropertiesMapping.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\DocDocxConverter\SectionPropertyExceptions.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\SettingsMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\SettingsMapping.h"
 				>
 			</File>
 			<File
@@ -808,23 +692,7 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\DocDocxConverter\StyleSheetMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\StyleSheetMapping.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\DocDocxConverter\TabDescriptor.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\TableCellPropertiesMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\TableCellPropertiesMapping.h"
 				>
 			</File>
 			<File
@@ -832,43 +700,11 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\DocDocxConverter\TableMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\TableMapping.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\TablePropertiesMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\TablePropertiesMapping.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\DocDocxConverter\TablePropertyExceptions.h"
 				>
 			</File>
 			<File
-				RelativePath="..\..\DocDocxConverter\TableRowPropertiesMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\TableRowPropertiesMapping.h"
-				>
-			</File>
-			<File
 				RelativePath="..\..\DocDocxConverter\Tbkd.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\TextboxMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\TextboxMapping.h"
 				>
 			</File>
 			<File
@@ -877,30 +713,6 @@
 			</File>
 			<File
 				RelativePath="..\..\DocDocxConverter\VirtualStreamReader.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\VMLPictureMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\VMLPictureMapping.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\VMLShapeMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\VMLShapeMapping.h"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\VMLShapeTypeMapping.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\DocDocxConverter\VMLShapeTypeMapping.h"
 				>
 			</File>
 			<File
@@ -1217,7 +1029,203 @@
 						RelativePath="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\TrapezoidType.h"
 						>
 					</File>
+					<File
+						RelativePath="..\..\DocDocxConverter\OfficeDrawing\Shapetypes\WordArtText.h"
+						>
+					</File>
 				</Filter>
+			</Filter>
+			<Filter
+				Name="Mapping"
+				>
+				<File
+					RelativePath="..\..\DocDocxConverter\AbstractOpenXmlMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\CharacterPropertiesMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\CharacterPropertiesMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\CommentsMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\DocumentMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\DocumentMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\EndnotesMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\FontTableMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\FontTableMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\FooterMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\FooterMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\FootnotesMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\HeaderMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\HeaderMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\LanguageIdMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\LanguageIdMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\MainDocumentMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\MainDocumentMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\NumberingMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\NumberingMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\OleObjectMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\ParagraphPropertiesMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\ParagraphPropertiesMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\PropertiesMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\PropertiesMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\SectionPropertiesMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\SectionPropertiesMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\SettingsMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\SettingsMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\StyleSheetMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\StyleSheetMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\TableCellPropertiesMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\TableCellPropertiesMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\TableMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\TableMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\TablePropertiesMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\TablePropertiesMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\TableRowPropertiesMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\TableRowPropertiesMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\TextboxMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\TextboxMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\VMLPictureMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\VMLPictureMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\VMLShapeMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\VMLShapeMapping.h"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\VMLShapeTypeMapping.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\..\DocDocxConverter\VMLShapeTypeMapping.h"
+					>
+				</File>
 			</Filter>
 		</Filter>
 		<File

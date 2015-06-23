@@ -24,6 +24,7 @@ namespace DocFileFormat
 	private:
 		/// Writes a border element
 		void writePictureBorder (const wchar_t* name, const BorderCode* brc);
+		void appendStyleProperty( wstring* b, const wstring& propName, const wstring& propValue ) const;
 
 	protected:
 		/// Copies the picture from the binary stream to the zip archive 

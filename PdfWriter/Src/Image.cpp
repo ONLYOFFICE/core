@@ -31,6 +31,22 @@ namespace PdfWriter
 		Add("BitsPerComponent", 8);
 		SetFilter(STREAM_FILTER_DCT_DECODE);
 	}
+	void CImageDict::LoadJpeg(BYTE* pBuffer, int nBufferSize, unsigned int unWidth, unsigned int unHeight)
+	{
+		CMemoryStream* pStream = new CMemoryStream();
+		if (!pStream)
+			return;
+
+		pStream->Write(pBuffer, nBufferSize);
+		SetStream(m_pXref, pStream);
+		Add("Type", "XObject");
+		Add("Subtype", "Image");
+		Add("Height", unHeight);
+		Add("Width", unWidth);
+		Add("ColorSpace", "DeviceRGB");
+		Add("BitsPerComponent", 8);
+		SetFilter(STREAM_FILTER_DCT_DECODE);
+	}
 	void CImageDict::LoadJpx(const wchar_t* wsFilePath, unsigned int unWidth, unsigned int unHeight)
 	{
 		CFileStream* pStream = new CFileStream();
@@ -107,7 +123,7 @@ namespace PdfWriter
 	}
 	void CImageDict::LoadRaw(const BYTE* pBgra, unsigned int unWidth, unsigned int unHeight)
 	{
-		CMemoryStream* pStream = new CMemoryStream();
+		CMemoryStream* pStream = new CMemoryStream(3 * unWidth * unHeight);
 		if (!pStream)
 			return;
 
@@ -123,6 +139,22 @@ namespace PdfWriter
 		Add("Width", unWidth);
 		Add("Height", unHeight);
 		Add("BitsPerComponent", 8);
+		SetFilter(STREAM_FILTER_FLATE_DECODE);
+	}
+	void CImageDict::LoadRaw(const BYTE* pBuffer, unsigned int unSize, unsigned int unWidth, unsigned int unHeight)
+	{
+		CMemoryStream* pStream = new CMemoryStream(unSize);
+		if (!pStream)
+			return;
+		pStream->Write(pBuffer, unSize);
+		SetStream(m_pXref, pStream);
+		Add("Type", "XObject");
+		Add("Subtype", "Image");
+		Add("ColorSpace", "DeviceRGB");
+		Add("Width", unWidth);
+		Add("Height", unHeight);
+		Add("BitsPerComponent", 8);
+		SetFilter(STREAM_FILTER_FLATE_DECODE);
 	}
 	void CImageDict::LoadSMask(const BYTE* pBgra, unsigned int unWidth, unsigned int unHeight, unsigned char unAlpha)
 	{
@@ -165,6 +197,27 @@ namespace PdfWriter
 		pImageSMask->SetFilter(STREAM_FILTER_FLATE_DECODE);
 //#endif
 
+		Add("SMask", pImageSMask);
+	}
+	void CImageDict::LoadSMask(const BYTE* pBuffer, unsigned int unSize, unsigned int unWidth, unsigned int unHeight)
+	{
+		CMemoryStream* pStream = new CMemoryStream(unSize);
+		if (!pStream)
+			return;
+
+		pStream->Write(pBuffer, unSize);
+		CImageDict* pImageSMask = new CImageDict(m_pXref, m_pDocument);
+		if (!pImageSMask)
+			return;
+
+		pImageSMask->SetStream(m_pXref, pStream);
+		pImageSMask->Add("Type", "XObject");
+		pImageSMask->Add("Subtype", "Image");
+		pImageSMask->Add("ColorSpace", "DeviceGray");
+		pImageSMask->Add("Width", unWidth);
+		pImageSMask->Add("Height", unHeight);
+		pImageSMask->Add("BitsPerComponent", 8);
+		pImageSMask->SetFilter(STREAM_FILTER_FLATE_DECODE);
 		Add("SMask", pImageSMask);
 	}
 	void CImageDict::LoadBW(const BYTE* pImage, unsigned int unWidth, unsigned int unHeight, unsigned int unStride)

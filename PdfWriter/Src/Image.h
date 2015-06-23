@@ -27,12 +27,15 @@ namespace PdfWriter
 		CImageDict(CXref* pXref, CDocument* pDocument);
 
 		void LoadJpeg(const wchar_t* wsTempFile, unsigned int unWidth, unsigned int unHeight);
+		void LoadJpeg(BYTE* pBuffer, int nBufferSize, unsigned int unWidth, unsigned int unHeight);
 		void LoadJpx(const wchar_t* wsTempFile, unsigned int unWidth, unsigned int unHeight);
 		void LoadJpx(BYTE* pBuffer, int nBufferSize, unsigned int unWidth, unsigned int unHeight);
 		void LoadJb2(const wchar_t* wsTempFile, unsigned int unWidth, unsigned int unHeight);
 		void LoadCCITT4(const wchar_t* wsTempFile, unsigned int unWidth, unsigned int unHeight);
 		void LoadRaw(const BYTE* pBgra, unsigned int unWidth, unsigned int unHeight);
+		void LoadRaw(const BYTE* pBuffer, unsigned int unSize, unsigned int unWidth, unsigned int unHeight);
 		void LoadSMask(const BYTE* pBgra, unsigned int unWidth, unsigned int unHeight, unsigned char lAlpha = 255);
+		void LoadSMask(const BYTE* pBuffer, unsigned int unSize, unsigned int unWidth, unsigned int unHeight);
 		void LoadBW(const BYTE* pImage, unsigned int unWidth, unsigned int unHeight, unsigned int unStride);
 		void LoadBW(Pix* pPix, unsigned int unWidth, unsigned int unHeight);
 

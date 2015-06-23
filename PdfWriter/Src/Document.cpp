@@ -15,6 +15,8 @@
 #include "Shading.h"
 #include "Pattern.h"
 
+#include "../../DesktopEditor/agg-2.4/include/agg_span_hatch.h"
+
 #ifdef CreateFont
 #undef CreateFont
 #endif
@@ -470,5 +472,33 @@ namespace PdfWriter
 	CImageTilePattern*CDocument::CreateImageTilePattern(double dW, double dH, CImageDict* pImageDict, EImageTilePatternType eType)
 	{
 		return new CImageTilePattern(m_pXref, dW, dH, pImageDict, eType);
+	}
+	CImageTilePattern*CDocument::CreateHatchPattern(double dW, double dH, const BYTE& nR1, const BYTE& nG1, const BYTE& nB1, const BYTE& nAlpha1, const BYTE& nR2, const BYTE& nG2, const BYTE& nB2, const BYTE& nAlpha2, const std::wstring& wsHatch)
+	{
+		// TODO: Надо бы сделать мап, чтобы не создавать одинаковых паттернов
+
+		CImageDict* pImage = CreateImage();
+		BYTE* pBuffer = new BYTE[3 * HATCH_TX_SIZE * HATCH_TX_SIZE];
+		if (!pBuffer)
+			return NULL;
+
+		TColor oColor1(nR1, nG1, nB1);
+		TColor oColor2(nR2, nG2, nB2);
+		agg::GetHatchPattern<TColor>(wsHatch, (TColor*)pBuffer, oColor1, oColor2);
+		pImage->LoadRaw(pBuffer, 3 * HATCH_TX_SIZE * HATCH_TX_SIZE, HATCH_TX_SIZE, HATCH_TX_SIZE);
+		delete[] pBuffer;
+
+		if (255 != nAlpha1 || 255 != nAlpha2)
+		{
+			BYTE* pSMask = new BYTE[HATCH_TX_SIZE * HATCH_TX_SIZE];
+			if (pSMask)
+			{
+				agg::GetHatchPattern<BYTE>(wsHatch, pSMask, nAlpha1, nAlpha2);
+				pImage->LoadSMask(pSMask, (unsigned int)HATCH_TX_SIZE * HATCH_TX_SIZE, (unsigned int)HATCH_TX_SIZE, (unsigned int)HATCH_TX_SIZE);
+				delete[] pSMask;
+			}
+		}
+
+		return CreateImageTilePattern(dW, dH, pImage, imagetilepatterntype_Default);
 	}
 }

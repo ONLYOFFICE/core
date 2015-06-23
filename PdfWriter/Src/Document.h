@@ -71,6 +71,7 @@ namespace PdfWriter
 		CShading*         CreateAxialShading(double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, double* pPoints, int nCount);
 		CShading*         CreateRaidalShading(double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, double* pPoints, int nCount);
 		CImageTilePattern*CreateImageTilePattern(double dW, double dH, CImageDict* pImageDict, EImageTilePatternType eType = imagetilepatterntype_Default);
+		CImageTilePattern*CreateHatchPattern(double dW, double dH, const BYTE& nR1, const BYTE& nG1, const BYTE& nB1, const BYTE& nAlpha1, const BYTE& nR2, const BYTE& nG2, const BYTE& nB2, const BYTE& nAlpha2, const std::wstring& wsHatch);
 					  
 	private:		  
 					  

@@ -888,7 +888,7 @@ void ConvertFolder(std::wstring wsFolderPath, const int nType)
 			dY *= dPx2Mm;
 
 			double dAspect = dH / dW;
-			dW = 1000;
+			dW = 595.27;
 			dH = dAspect * dW;
 
 			oRenderer.put_Width(dW);

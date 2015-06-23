@@ -7,12 +7,20 @@ namespace PdfWriter
 {
 	class CImageDict;
 	//----------------------------------------------------------------------------------------
-	// CImageTilePattern
+	// CPattern
 	//----------------------------------------------------------------------------------------
-	class CImageTilePattern : public CDictObject
+	class CPattern : public CDictObject
 	{
 	public:
-		CImageTilePattern(CXref* pXref, double dW, double dH, CImageDict* pImageDict, EImageTilePatternType eType = imagetilepatterntype_Default);
+		CPattern(CXref* pXref);
+	};
+	//----------------------------------------------------------------------------------------
+	// CImageTilePattern
+	//----------------------------------------------------------------------------------------
+	class CImageTilePattern : public CPattern
+	{
+	public:
+		CImageTilePattern(CXref* pXref, const double& dW, const double& dH, CImageDict* pImageDict, EImageTilePatternType eType = imagetilepatterntype_Default);
 	};
 }
 

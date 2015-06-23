@@ -13,6 +13,7 @@ namespace PdfWriter
 	class CDocument;
 	class CPage;
 	class CFontCidTrueType;
+	class CImageDict;
 }
 
 namespace Aggplus
@@ -169,6 +170,7 @@ public:
 
 private:
 
+	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha);
 	bool DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha);
 	void UpdateFont();
 	void UpdateTransform();
@@ -868,6 +870,7 @@ private:
 			{
 			}
 			virtual void Draw(PdfWriter::CPage* pPage) = 0;
+			virtual void UpdateBounds(double& dL, double& dT, double& dR, double& dB) = 0;
 			virtual void GetLastPoint(double& dX, double& dY) = 0;
 			virtual EPathCommandType GetType() = 0;
 		};
@@ -885,6 +888,7 @@ private:
 				dY = y;
 			}
 			void Draw(PdfWriter::CPage* pPage);
+			void UpdateBounds(double& dL, double& dT, double& dR, double& dB);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_MoveTo;
@@ -909,6 +913,7 @@ private:
 				dY = y;
 			}
 			void Draw(PdfWriter::CPage* pPage);
+			void UpdateBounds(double& dL, double& dT, double& dR, double& dB);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_LineTo;
@@ -937,6 +942,7 @@ private:
 				dY = ye;
 			}
 			void Draw(PdfWriter::CPage* pPage);
+			void UpdateBounds(double& dL, double& dT, double& dR, double& dB);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_CurveTo;
@@ -970,6 +976,7 @@ private:
 				dY = y;
 			}
 			void Draw(PdfWriter::CPage* pPage);
+			void UpdateBounds(double& dL, double& dT, double& dR, double& dB);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_ArcTo;
@@ -997,6 +1004,7 @@ private:
 				dY = 0;
 			}
 			void Draw(PdfWriter::CPage* pPage);
+			void UpdateBounds(double& dL, double& dT, double& dR, double& dB);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_Close;
@@ -1021,6 +1029,7 @@ private:
 				dY = y;
 			}
 			void Draw(PdfWriter::CPage* pPage);
+			void UpdateBounds(double& dL, double& dT, double& dR, double& dB);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_TextChar;
@@ -1055,6 +1064,7 @@ private:
 				dY = y;
 			}
 			void Draw(PdfWriter::CPage* pPage);
+			void UpdateBounds(double& dL, double& dT, double& dR, double& dB);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_Text;
@@ -1090,6 +1100,7 @@ private:
 				dY = y;
 			}
 			void Draw(PdfWriter::CPage* pPage);
+			void UpdateBounds(double& dL, double& dT, double& dR, double& dB);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_TextExChar;
@@ -1126,6 +1137,7 @@ private:
 				dY = y;
 			}
 			void Draw(PdfWriter::CPage* pPage);
+			void UpdateBounds(double& dL, double& dT, double& dR, double& dB);
 			EPathCommandType GetType()
 			{
 				return rendererpathcommand_TextEx;
@@ -1214,19 +1226,9 @@ private:
 		{
 			return m_bIsMoveTo;
 		}
-		void GetLastPoint(double& dX, double& dY)
-		{
-			if (m_vCommands.size() <= 0)
-			{
-				dX = 0;
-				dY = 0;
-			}
-			else
-			{
-				m_vCommands.at(m_vCommands.size() - 1)->GetLastPoint(dX, dY);
-			}
-		}
+		void GetLastPoint(double& dX, double& dY);
 		void Draw(PdfWriter::CPage* pPage, bool bStroke, bool bFill, bool bEoFill);
+		void GetBounds(double& dL, double& dT, double& dR, double& dB);
 
 	private:
 
@@ -1303,6 +1305,8 @@ private:
 	double                       m_dPageWidth;
 
 	bool                         m_bValid;
+
+	int                          m_nCounter; // TODO: для теста, убрать потом
 };
 
 #endif // _PDF_WRITER_PDFRENDERER_H

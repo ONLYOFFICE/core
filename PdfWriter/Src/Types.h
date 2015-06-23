@@ -181,6 +181,26 @@ namespace PdfWriter
 			return false;
 		}
 	};
+	struct TColor
+	{
+		unsigned char r;
+		unsigned char g;
+		unsigned char b;
+
+	public:
+		TColor()
+		{
+			r = 0;
+			g = 0;
+			b = 0;
+		}
+		TColor(const unsigned char& R, const unsigned char& G, const unsigned char& B)
+		{
+			r = R;
+			g = G;
+			b = B;
+		}
+	};
 	enum EPageLayout
 	{
 		pagelayout_Single         = 0,

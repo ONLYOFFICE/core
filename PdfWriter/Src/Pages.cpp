@@ -426,10 +426,10 @@ namespace PdfWriter
 		dStartX = dX + dXRad * cos(AngToEllPrm(dAngle1, dXRad, dYRad));
 		dStartY = dY + dYRad * sin(AngToEllPrm(dAngle1, dXRad, dYRad));
 	
-		m_pStream->WriteReal(dStartX);
-		m_pStream->WriteChar(' ');
-		m_pStream->WriteReal(dStartY);
-		m_pStream->WriteStr(" m\012");
+		//m_pStream->WriteReal(dStartX);
+		//m_pStream->WriteChar(' ');
+		//m_pStream->WriteReal(dStartY);
+		//m_pStream->WriteStr(" m\012");
 
 		// Дальше рисуем по четверям	
 		double dCurX = dStartX, dCurY = dStartY;

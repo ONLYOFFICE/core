@@ -5,9 +5,15 @@
 namespace PdfWriter
 {
 	//----------------------------------------------------------------------------------------
+	// CPattern
+	//----------------------------------------------------------------------------------------
+	CPattern::CPattern(CXref* pXref) : CDictObject(pXref, true)
+	{
+	}
+	//----------------------------------------------------------------------------------------
 	// CImageTilePattern
 	//----------------------------------------------------------------------------------------
-	CImageTilePattern::CImageTilePattern(CXref* pXref, double dW, double dH, CImageDict* pImageDict, EImageTilePatternType eType) : CDictObject(pXref, true)
+	CImageTilePattern::CImageTilePattern(CXref* pXref, const double& dW, const double& dH, CImageDict* pImageDict, EImageTilePatternType eType) : CPattern(pXref)
 	{
 		Add("Type", "Pattern");
 		Add("PatternType", 1);

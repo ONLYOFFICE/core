@@ -614,7 +614,7 @@ namespace DocFileFormat
 						if (pShape)
 						{
 							m_pXmlWriter->WriteNodeBegin (_T("w:pict"));
-							VMLShapeMapping oVmlWriter (m_pXmlWriter, pSpa, NULL, m_context, _caller);
+							VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, pSpa, NULL,  _caller);
 							pShape->Convert(&oVmlWriter);
 							m_pXmlWriter->WriteNodeEnd (_T("w:pict"));
 						}
@@ -626,15 +626,18 @@ namespace DocFileFormat
 
 					if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer))
 					{
-						VMLPictureMapping* pVMLPicture	=	new VMLPictureMapping(m_context, m_pXmlWriter, false, _caller);
-						if (pVMLPicture)
+						m_pXmlWriter->WriteNodeBegin (_T("w:pict"));
+						if (oPicture.blipStoreEntry)
 						{
-							m_pXmlWriter->WriteNodeBegin (_T("w:pict"));
-							oPicture.Convert (pVMLPicture);
-							m_pXmlWriter->WriteNodeEnd	 (_T("w:pict"));
-
-							RELEASEOBJECT(pVMLPicture);
+							VMLPictureMapping oVMLPicture(m_context, m_pXmlWriter, false, _caller);
+							oPicture.Convert (&oVMLPicture);
 						}
+						else
+						{
+							VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, NULL, &oPicture,  _caller);
+							oPicture.shapeContainer->Convert(&oVmlWriter);
+						}
+						m_pXmlWriter->WriteNodeEnd	 (_T("w:pict"));
 					}                   
 				}
 				else if ((TextMark::AutoNumberedFootnoteReference == c) && fSpec)

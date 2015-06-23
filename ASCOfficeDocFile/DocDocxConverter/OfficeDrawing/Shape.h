@@ -73,7 +73,13 @@ namespace DocFileFormat
 			fHaveAnchor			=	FormatUtils::BitmaskToBool( flag, 0x200 );
 			fBackground			=	FormatUtils::BitmaskToBool( flag, 0x400 );
 			fHaveSpt			=	FormatUtils::BitmaskToBool( flag, 0x800 );
-			shapeType			=	ShapeTypeFactory::NewShapeType((MSOSPT)Instance);
+
+			if (Instance > 0)
+				shapeType			=	ShapeTypeFactory::NewShapeType((MSOSPT)Instance);
+			else if (!fHaveSpt)
+			{
+				shapeType			=	ShapeTypeFactory::NewShapeType(msosptNotPrimitive);
+			}
 		}
 
 		virtual Record* NewObject( IBinaryReader* _reader, unsigned int bodySize, unsigned int typeCode, unsigned int version, unsigned int instance )

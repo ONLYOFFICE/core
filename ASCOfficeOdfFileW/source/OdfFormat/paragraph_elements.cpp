@@ -218,7 +218,7 @@ void text_span::serialize(std::wostream & _Wostream)
 			
 			BOOST_FOREACH(const office_element_ptr & parElement, paragraph_content_)
 			{
-				parElement->serialize(CP_XML_STREAM());
+                if (parElement)  parElement->serialize(CP_XML_STREAM());
 			}
 		}
 	}

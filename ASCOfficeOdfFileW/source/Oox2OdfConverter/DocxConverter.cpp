@@ -3509,8 +3509,10 @@ bool DocxConverter::convert(OOX::Logic::CTableProperty *oox_table_pr, odf_writer
 		_CP_OPT(odf_types::length) length;
 
 		convert(oox_table_pr->m_oTblInd.GetPointer(), length);
-		table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
-		
+        if (length)
+        {
+            table_properties->table_format_properties_.common_horizontal_margin_attlist_.fo_margin_left_ = odf_types::length(length->get_value_unit(odf_types::length::cm),odf_types::length::cm);
+        }
 		table_properties->table_format_properties_.table_align_ = odf_types::table_align(odf_types::table_align::Left);
 	}
 	else if(oox_table_pr->m_oTblpPr.IsInit()) //отступы, обтекание есть 

@@ -39,25 +39,13 @@ namespace ZLibZipUtils
   }
   static std::wstring ascii_to_unicode(const char *src)
   {
-	  size_t nSize = mbstowcs(0, src, 0);
-	  wchar_t* pBuffer = new wchar_t[nSize];
-	  nSize = mbstowcs(pBuffer, src, nSize);
-	  std::wstring sRes;
-	  if (nSize != (size_t)-1)
-		  sRes = std::wstring(pBuffer, nSize);
-	  delete[] pBuffer;
-	  return sRes;
+      std::string sAnsi(src);
+      return std::wstring(sAnsi.begin(), sAnsi.end());
   }
   static std::string unicode_to_ascii(const wchar_t *src)
   {
-	  size_t nSize = wcstombs(0, src, 0);
-	  char* pBuffer = new char[nSize];
-	  nSize = wcstombs(pBuffer, src, nSize);
-	  std::string sRes;
-	  if (nSize != (size_t)-1)
-		  sRes = std::string(pBuffer, nSize);
-	  delete[] pBuffer;
-	  return sRes;
+      std::wstring sUnicode(src);
+      return std::string(sUnicode.begin(), sUnicode.end());
   }
   /*This static functions are copies from ZLib miniunz.c with some changes.*/ 
   static std::wstring codepage_issue_fixFromOEM( const char* sVal)

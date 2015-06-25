@@ -877,7 +877,8 @@ void style_page_layout_properties_attlist::add_attributes( const xml::attributes
     common_num_format_prefix_suffix_attlist_.add_attributes(Attributes);
     CP_APPLY_ATTR(L"style:paper-tray-name", style_paper_tray_name_);
     CP_APPLY_ATTR(L"style:print-orientation", style_print_orientation_);
-    common_horizontal_margin_attlist_.add_attributes(Attributes);
+   
+	common_horizontal_margin_attlist_.add_attributes(Attributes);
     common_vertical_margin_attlist_.add_attributes(Attributes);
     common_margin_attlist_.add_attributes(Attributes);
     common_border_attlist_.add_attributes(Attributes);
@@ -885,23 +886,26 @@ void style_page_layout_properties_attlist::add_attributes( const xml::attributes
     common_padding_attlist_.add_attributes(Attributes);
     common_shadow_attlist_.add_attributes(Attributes);
     common_background_color_attlist_.add_attributes(Attributes);
-    CP_APPLY_ATTR(L"style:register-truth-ref-style-name", style_register_truth_ref_style_name_);
-    CP_APPLY_ATTR(L"style:print", style_print_);
-    CP_APPLY_ATTR(L"style:print-page-order", style_print_page_order_);
-    CP_APPLY_ATTR(L"style:first-page-number", style_first_page_number_);
-    CP_APPLY_ATTR(L"style:scale-to", style_scale_to_);
-    CP_APPLY_ATTR(L"style:scale-to_pages", style_scale_to_pages_);
-    CP_APPLY_ATTR(L"style:table-centering", style_table_centering_);
-    CP_APPLY_ATTR(L"style:footnote-max-height", style_footnote_max_height_);
-    common_writing_mode_attlist_.add_attributes(Attributes);
-    CP_APPLY_ATTR(L"style:layout-grid-mode", style_layout_grid_mode_);
+    
+	CP_APPLY_ATTR(L"style:register-truth-ref-style-name", style_register_truth_ref_style_name_);
+    CP_APPLY_ATTR(L"style:print",					style_print_);
+    CP_APPLY_ATTR(L"style:print-page-order",		style_print_page_order_);
+    CP_APPLY_ATTR(L"style:first-page-number",		style_first_page_number_);
+    CP_APPLY_ATTR(L"style:scale-to",				style_scale_to_);
+    CP_APPLY_ATTR(L"style:scale-to_pages",			style_scale_to_pages_);
+    CP_APPLY_ATTR(L"style:table-centering",			style_table_centering_);
+    CP_APPLY_ATTR(L"style:footnote-max-height",		style_footnote_max_height_);
+    
+	common_writing_mode_attlist_.add_attributes(Attributes);
+    
+	CP_APPLY_ATTR(L"style:layout-grid-mode",		style_layout_grid_mode_);
     CP_APPLY_ATTR(L"style:layout-grid-base-height", style_layout_grid_base_height_);
     CP_APPLY_ATTR(L"style:layout-grid-ruby-height", style_layout_grid_ruby_height_);
-    CP_APPLY_ATTR(L"style:layout-grid-lines", style_layout_grid_lines_);
-    CP_APPLY_ATTR(L"style:layout-grid-color", style_layout_grid_color_);
-    CP_APPLY_ATTR(L"style:layout-grid-ruby-below", style_layout_grid_ruby_below_);  
-    CP_APPLY_ATTR(L"style:layout-grid-print", style_layout_grid_print_);
-    CP_APPLY_ATTR(L"style:layout-grid-display", style_layout_grid_display_);
+    CP_APPLY_ATTR(L"style:layout-grid-lines",		style_layout_grid_lines_);
+    CP_APPLY_ATTR(L"style:layout-grid-color",		style_layout_grid_color_);
+    CP_APPLY_ATTR(L"style:layout-grid-ruby-below",	style_layout_grid_ruby_below_);  
+    CP_APPLY_ATTR(L"style:layout-grid-print",		style_layout_grid_print_);
+    CP_APPLY_ATTR(L"style:layout-grid-display",		style_layout_grid_display_);
 }
 
 /*
@@ -959,9 +963,11 @@ std::wstring process_page_margin(const _CP_OPT(length_or_percent) & Val,
 void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream & strm, oox::docx_conversion_context & Context, _CP_OPT(length_or_percent) margin_left, 
 																								_CP_OPT(length_or_percent) margin_right) 
 {
-    if (fo_page_width_ || fo_page_height_ || style_print_orientation_)
-    {
-        std::wstring w_w = L"";
+	double height_page = 0;
+	
+	if (fo_page_width_ || fo_page_height_ || style_print_orientation_)
+	{
+		std::wstring w_w = L"";
 		std::wstring w_h = L"";
 		
 		if (fo_page_width_)
@@ -974,34 +980,36 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 			}
 			w_w = boost::lexical_cast<std::wstring>(val);
 		}
-        if (fo_page_height_)
+		if (fo_page_height_)
 		{
 			int val = 0.5 + 20.0 * fo_page_height_->get_value_unit(length::pt);
 			if (val > 31680) val =31680;//22"
 			w_h = boost::lexical_cast<std::wstring>(val);
+
+			height_page = val;
 		}
                 
-        std::wstring w_orient;
-        if (style_print_orientation_)
-        {
-            if (L"landscape" == *style_print_orientation_)
-                w_orient = L"landscape";
-            else if (L"portrait" == *style_print_orientation_)
-                w_orient = L"portrait";
-        }
+		std::wstring w_orient;
+		if (style_print_orientation_)
+		{
+			if (L"landscape" == *style_print_orientation_)
+				w_orient = L"landscape";
+			else if (L"portrait" == *style_print_orientation_)
+				w_orient = L"portrait";
+		}
         
-        strm << L"<w:pgSz ";
-        if (!w_h.empty())
-            strm << L"w:h=\"" << w_h << L"\" ";
+		strm << L"<w:pgSz ";
+		if (!w_h.empty())
+			strm << L"w:h=\"" << w_h << L"\" ";
 
-        if (!w_w.empty())
-            strm << L"w:w=\"" << w_w << L"\" ";
+		if (!w_w.empty())
+			strm << L"w:w=\"" << w_w << L"\" ";
 
-        if (!w_orient.empty())
-            strm << L"w:orient=\"" << w_orient << L"\" ";
+		if (!w_orient.empty())
+			strm << L"w:orient=\"" << w_orient << L"\" ";
 
-        strm << L"/>";
-    }
+		strm << L"/>";
+	}
 
 	if (common_border_attlist_.fo_border_)
 	{
@@ -1054,28 +1062,56 @@ void style_page_layout_properties_attlist::docx_convert_serialize(std::wostream 
 		 strm << L"</w:pgBorders>";
 	}
    
-	if (common_horizontal_margin_attlist_.fo_margin_left_ ||
-        common_horizontal_margin_attlist_.fo_margin_right_ ||
-        common_vertical_margin_attlist_.fo_margin_top_ ||
-        common_vertical_margin_attlist_.fo_margin_bottom_ ||
-        common_margin_attlist_.fo_margin_ || margin_right || margin_left
-        )
-    {
-		_CP_OPT(odf_types::length)  margin_left_length, margin_right_length;
+	CP_XML_WRITER(strm)
+	{
+		if (common_horizontal_margin_attlist_.fo_margin_left_ ||
+		common_horizontal_margin_attlist_.fo_margin_right_ ||
+		common_vertical_margin_attlist_.fo_margin_top_ ||
+		common_vertical_margin_attlist_.fo_margin_bottom_ ||
+		common_margin_attlist_.fo_margin_ || margin_right || margin_left
+			)
+		{
+			_CP_OPT(odf_types::length)  margin_left_length, margin_right_length;
 
-		if (margin_left)	margin_left_length = margin_left->get_length();
-		if (margin_right)	margin_right_length = margin_right->get_length();
+			if (margin_left)	margin_left_length = margin_left->get_length();
+			if (margin_right)	margin_right_length = margin_right->get_length();
 
-		strm << L"<w:pgMar w:bottom=\"" 
-            << process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_, common_margin_attlist_.fo_margin_, Context.get_header_footer_context().footer()) <<
-            L"\" w:footer=\"" << process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_, common_margin_attlist_.fo_margin_) <<
-            L"\" w:gutter=\"" << 0 <<
-            L"\" w:header=\"" << process_page_margin(common_vertical_margin_attlist_.fo_margin_top_, common_margin_attlist_.fo_margin_) <<
-			L"\" w:left=\"" <<	process_page_margin(common_horizontal_margin_attlist_.fo_margin_left_, common_margin_attlist_.fo_margin_, margin_left_length) <<
-            L"\" w:right=\"" <<	process_page_margin(common_horizontal_margin_attlist_.fo_margin_right_, common_margin_attlist_.fo_margin_, margin_right_length) <<
-            L"\" w:top=\"" <<	process_page_margin(common_vertical_margin_attlist_.fo_margin_top_, common_margin_attlist_.fo_margin_, Context.get_header_footer_context().header()) <<
-            L"\" />";
-    }
+			CP_XML_NODE(L"w:pgMar")
+			{
+				CP_XML_ATTR(L"w:bottom"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_, common_margin_attlist_.fo_margin_, Context.get_header_footer_context().footer()) );
+				CP_XML_ATTR(L"w:footer"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_bottom_, common_margin_attlist_.fo_margin_) );
+				CP_XML_ATTR(L"w:gutter"	, 0 );
+				CP_XML_ATTR(L"w:header"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_, common_margin_attlist_.fo_margin_) );
+				CP_XML_ATTR(L"w:left"	, process_page_margin(common_horizontal_margin_attlist_.fo_margin_left_, common_margin_attlist_.fo_margin_, margin_left_length) );
+				CP_XML_ATTR(L"w:right"	, process_page_margin(common_horizontal_margin_attlist_.fo_margin_right_, common_margin_attlist_.fo_margin_, margin_right_length) );
+				CP_XML_ATTR(L"w:top"	, process_page_margin(common_vertical_margin_attlist_.fo_margin_top_, common_margin_attlist_.fo_margin_, Context.get_header_footer_context().header()) );
+			}
+		}
+
+		if ((style_layout_grid_mode_) && (style_layout_grid_mode_->get_type() != odf_types::layout_grid_mode::None))
+		{
+			CP_XML_NODE(L"w:docGrid")
+			{
+				if (style_layout_grid_mode_->get_type() == odf_types::layout_grid_mode::Line)
+					CP_XML_ATTR(L"w:type", L"lines");
+				if (style_layout_grid_mode_->get_type() == odf_types::layout_grid_mode::Both)	
+					CP_XML_ATTR(L"w:type", L"linesAndChars");
+
+				int val_step = 0;
+				if (style_layout_grid_base_height_ && style_layout_grid_ruby_height_)
+				{
+					val_step = 0.5	+ 20. * style_layout_grid_ruby_height_->get_value_unit(odf_types::length::pt) 
+									+ 20. * style_layout_grid_base_height_->get_value_unit(odf_types::length::pt);
+				}
+				else  if (style_layout_grid_lines_ && height_page > 0)
+				{
+					val_step = height_page / (*style_layout_grid_lines_);
+				}
+				
+				if (val_step > 0)CP_XML_ATTR(L"w:linePitch", val_step);
+			}			
+		}
+	}
 }
 
 void style_page_layout_properties_attlist::pptx_convert(oox::pptx_conversion_context & Context) 

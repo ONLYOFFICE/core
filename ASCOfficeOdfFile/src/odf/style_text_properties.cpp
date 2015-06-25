@@ -410,7 +410,7 @@ void text_format_properties_content::pptx_convert(oox::pptx_conversion_context &
 				under.get_type() == line_width::Thick;
 			std::wstring underline = L"";
 
-			if ( style_text_underline_type_ && style_text_underline_type_->get_type() == line_type::None ||
+            if ( style_text_underline_type_ && style_text_underline_type_->get_type() == line_type::Non ||
 				style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::None        
 				)
 			{
@@ -680,7 +680,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
             under.get_type() == line_width::Thick;
         std::wstring underline = L"";
 
-        if ( style_text_underline_type_ && style_text_underline_type_->get_type() == line_type::None ||
+        if ( style_text_underline_type_ && style_text_underline_type_->get_type() == line_type::Non ||
             style_text_underline_style_ && style_text_underline_style_->get_type() == line_style::None        
             )
         {
@@ -772,7 +772,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
     // 17.3.2.9
     // 17.3.2.37
     {
-        if (style_text_line_through_type_ && style_text_line_through_type_->get_type() == line_type::None ||
+        if (style_text_line_through_type_ && style_text_line_through_type_->get_type() == line_type::Non ||
             style_text_line_through_style_ && style_text_line_through_style_->get_type() == line_style::None
             )
         {

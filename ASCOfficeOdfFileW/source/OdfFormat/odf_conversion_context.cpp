@@ -260,7 +260,7 @@ void odf_conversion_context::add_tab(_CP_OPT(int) type, _CP_OPT(length) _length,
 			case 3: tab->style_leader_type_ = line_type::Single ; 
 					tab->style_leader_style_= line_style::LongDash;
 				break; //	tabtlcMiddleDot  = 3,
-			case 4: tab->style_leader_type_ = line_type::None;	
+            case 4: tab->style_leader_type_ = line_type::Non;
 				break; //	tabtlcNone       = 4,
 			case 5: tab->style_leader_type_ = line_type::Single; 
 					tab->style_leader_style_= line_style::Solid;

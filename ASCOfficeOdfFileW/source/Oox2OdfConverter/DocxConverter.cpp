@@ -1551,7 +1551,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 		   convert(oox_run_pr->m_oColor.GetPointer(),text_properties->content().fo_color_);
 	}
 
-	text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::None);
+    text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Non);
 	if (oox_run_pr->m_oU.IsInit())
 	{
 		text_properties->content().style_text_underline_style_	= odf_types::line_style(odf_types::line_style::Solid);
@@ -1575,7 +1575,7 @@ void DocxConverter::convert(OOX::Logic::CRunProperty *oox_run_pr, odf_writer::st
 					text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Double);break;
 			case SimpleTypes::underlineNone			:
 				{
-					text_properties->content().style_text_underline_type_	= odf_types::line_type(odf_types::line_type::None);
+                    text_properties->content().style_text_underline_type_	= odf_types::line_type(odf_types::line_type::Non);
 					text_properties->content().style_text_underline_style_	= boost::none;
 					text_properties->content().style_text_underline_color_  = boost::none;
 				}break;

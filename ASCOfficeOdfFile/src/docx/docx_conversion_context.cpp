@@ -597,7 +597,9 @@ void docx_conversion_context::end_process_style_content()
 void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId)
 {
 	std::wstringstream & paragraph_style = get_styles_context().paragraph_nodes();
-    if (!paragraph_style.str().empty() || !ParentId.empty())
+ 	std::wstringstream & run_style = get_styles_context().text_style();
+   
+	if (!paragraph_style.str().empty() || !ParentId.empty())
     {
 		CP_XML_WRITER(strm)
 		{
@@ -613,6 +615,14 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
 				}
 				CP_XML_STREAM() << paragraph_style.str();
 				docx_serialize_list_properties(CP_XML_STREAM());
+
+				if (run_style.tellp() > 0)
+				{
+					CP_XML_NODE(L"w:rPr")
+					{
+						CP_XML_STREAM() << run_style.str();
+					}
+				}
 			}
 		}
     }

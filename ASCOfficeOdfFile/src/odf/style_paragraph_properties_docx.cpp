@@ -432,14 +432,14 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context)
     {
         std::wstring leader;
 
-        if (style_leader_type_ && style_leader_type_->get_type() == line_type::None ||
+        if (style_leader_type_ && style_leader_type_->get_type() == line_type::Non ||
             style_leader_style_ && style_leader_style_->get_type() == line_style::None)
         {
             leader = L"none";
         }
         else if (
             !style_leader_type_ ||
-            style_leader_type_ && style_leader_type_->get_type() != line_type::None
+            style_leader_type_ && style_leader_type_->get_type() != line_type::Non
             )
         {
             if (style_leader_style_)

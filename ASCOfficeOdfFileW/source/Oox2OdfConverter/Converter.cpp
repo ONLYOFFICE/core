@@ -21,6 +21,10 @@
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
 
+#ifdef __linux__
+    #include "X11/Xlib.h"
+#endif
+
 #define PROGRESSEVENT_ID	0
 
 namespace Oox2Odf
@@ -1234,7 +1238,7 @@ void OoxConverter::convert(OOX::Drawing::CRunProperty * oox_run_pr, odf_writer::
 		switch(type)
 		{
 		case SimpleTypes::underlineNone	:
-				text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::None);break;
+                text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Non);break;
 		case SimpleTypes::underlineDash :
 		case SimpleTypes::underlineDashedHeavy:
 				text_properties->content().style_text_underline_style_ = odf_types::line_style(odf_types::line_style::Dash);break;

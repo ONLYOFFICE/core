@@ -17,7 +17,7 @@ class line_type
 public:
     enum type
     {
-        None,
+        Non,
         Single,
         Double
     };

@@ -564,7 +564,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 	}
 	convert(oox_run_pr->m_oColor.GetPointer(),text_properties->content().fo_color_);
 
-	text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::None);
+    text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Non);
 	if (oox_run_pr->m_oUnderline.IsInit())
 	{
 		text_properties->content().style_text_underline_style_ = odf_types::line_style(odf_types::line_style::Solid);
@@ -580,7 +580,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CRPr *oox_run_pr)
 					text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Double);break;
 			case SimpleTypes::Spreadsheet::underlineNone				:
 					text_properties->content().style_text_underline_style_	= boost::none;
-					text_properties->content().style_text_underline_type_	= odf_types::line_type(odf_types::line_type::None);break;
+                    text_properties->content().style_text_underline_type_	= odf_types::line_type(odf_types::line_type::Non);break;
 			case SimpleTypes::Spreadsheet::underlineSingle				:
 			case SimpleTypes::Spreadsheet::underlineSingleAccounting	:
 					text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Single);break;	
@@ -974,7 +974,7 @@ void XlsxConverter::convert(OOX::Spreadsheet::CFont * font, odf_writer::style_te
 					text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Double);break;
 			case SimpleTypes::Spreadsheet::underlineNone				:
 					text_properties->content().style_text_underline_style_ = boost::none;
-					text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::None);break;
+                    text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Non);break;
 			case SimpleTypes::Spreadsheet::underlineSingle				:
 			case SimpleTypes::Spreadsheet::underlineSingleAccounting	:
 					text_properties->content().style_text_underline_type_= odf_types::line_type(odf_types::line_type::Single);break;		

@@ -9,7 +9,7 @@ std::wostream & operator << (std::wostream & _Wostream, const line_type & _Val)
 {
     switch(_Val.get_type())
     {
-    case line_type::None:
+    case line_type::Non:
         _Wostream << "none";
         break;
     case line_type::Single:
@@ -30,7 +30,7 @@ line_type line_type::parse(const std::wstring & Str)
     boost::algorithm::to_lower(tmp);
     
     if (tmp == L"none")
-        return line_type( None );
+        return line_type( Non );
     else if (tmp == L"single")
         return line_type( Single );
     else if (tmp == L"double")
@@ -38,7 +38,7 @@ line_type line_type::parse(const std::wstring & Str)
     else
     {
         BOOST_THROW_EXCEPTION( errors::invalid_attribute() );        
-        return None;
+        return Non;
     }
 }
 

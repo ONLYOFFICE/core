@@ -82,7 +82,7 @@ xlsx_font OdfFont2XlsxFont(const odf_reader::text_format_properties_content * te
     }
 
     if (textProp->style_text_underline_type_ &&
-        textProp->style_text_underline_type_->get_type() != odf_types::line_type::None ||
+        textProp->style_text_underline_type_->get_type() != odf_types::line_type::Non ||
     
         textProp->style_text_underline_style_ &&
         textProp->style_text_underline_style_->get_type() != odf_types::line_style::None        
@@ -96,7 +96,7 @@ xlsx_font OdfFont2XlsxFont(const odf_reader::text_format_properties_content * te
     }
 
     if (textProp->style_text_line_through_type_ &&
-        textProp->style_text_line_through_type_->get_type() != odf_types::line_type::None ||
+        textProp->style_text_line_through_type_->get_type() != odf_types::line_type::Non ||
 
         textProp->style_text_line_through_style_ &&
         textProp->style_text_line_through_style_->get_type() != odf_types::line_style::None)

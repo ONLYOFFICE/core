@@ -72,8 +72,8 @@ public:
 	_CP_OPT(percent)			draw_fill_image_ref_point_y_;
 	_CP_OPT(percent)			draw_fill_image_ref_point_x_;
 
-	_CP_OPT(length)				draw_fill_image_width_;
-	_CP_OPT(length)				draw_fill_image_height_;
+	_CP_OPT(length_or_percent)	draw_fill_image_width_;
+	_CP_OPT(length_or_percent)	draw_fill_image_height_;
 };
 
 // common-horizontal-margin-attlist

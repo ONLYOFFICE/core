@@ -136,6 +136,19 @@ void draw_page::pptx_convert(oox::pptx_conversion_context & Context)
 				{
 					Context.get_slide_context().set_transitionSpeed(properties->content().presentation_transition_speed_.get());
 				}
+
+	////////////////////////////////////////////////
+				if ((properties->content().presentation_display_footer_) && (*properties->content().presentation_display_footer_))
+					Context.get_slide_context().set_footer();
+					
+				if ((properties->content().presentation_display_header_) && (*properties->content().presentation_display_header_))
+					Context.get_slide_context().set_header();			
+				
+				if ((properties->content().presentation_display_page_number_) && (*properties->content().presentation_display_page_number_))
+					Context.get_slide_context().set_page_number();
+				
+				if ((properties->content().presentation_display_date_time_) && (*properties->content().presentation_display_date_time_))
+					Context.get_slide_context().set_date_time();			
 			}
 		}
 	}

@@ -375,9 +375,9 @@ public:
             return temp_stream_;
     }
 
-    void add_element_to_run();
+    void add_element_to_run(std::wstring parenStyleId = _T(""));
     void finish_run();
-    void add_new_run();
+	void add_new_run(std::wstring parentStyleId = _T(""));
     bool get_run_state() { return current_run_; }
     void set_run_state(bool Val) { current_run_ = Val; }
   

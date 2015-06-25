@@ -82,6 +82,11 @@ public:
         std::wstring const & ref,
         mediaitems::Type type);
 
+	void set_footer();
+	void set_header();
+	
+	void set_page_number();
+	void set_date_time();
 private:
 	void process_common_properties(drawing_object_description& pic,_pptx_drawing & drawing);
 	void default_set();

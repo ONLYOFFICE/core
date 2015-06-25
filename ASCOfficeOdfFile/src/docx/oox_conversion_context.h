@@ -24,7 +24,7 @@ public:
     std::wstringstream & table_style();
     std::wstringstream & list_style();
 
-    void docx_serialize_text_style(std::wostream & strm);
+    void docx_serialize_text_style(std::wostream & strm, std::wstring parenStyleId);
     void docx_serialize_table_style(std::wostream & strm);
   
 	void pptx_serialize_table_style(std::wostream & strm);

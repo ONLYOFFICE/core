@@ -186,6 +186,16 @@ void draw_polygon::pptx_convert(oox::pptx_conversion_context & Context)
 
 	Context.get_slide_context().end_shape();
 }
+void draw_polyline::pptx_convert(oox::pptx_conversion_context & Context)
+{
+	reset_polyline_path();
+///////////////////////////////////////////////////////////////////////
+	Context.get_slide_context().start_shape(sub_type_);
+
+	common_pptx_convert(Context);
+
+	Context.get_slide_context().end_shape();
+}
 void draw_custom_shape::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	Context.get_slide_context().start_shape(sub_type_);

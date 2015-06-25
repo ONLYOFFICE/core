@@ -6,66 +6,15 @@ namespace cpdoccore { namespace odf_types {
 
 std::wostream & operator << (std::wostream & _Wostream, const border_style & borderStyle)
 {
-    std::wstring w_sz;
-    std::wstring w_color;
-    std::wstring w_val = L"single";
-    std::wstring w_space;
-
-    if (!borderStyle.initialized() || borderStyle.is_none())
-    {
-        w_val = L"none";
-    }
-    else if (borderStyle.initialized())
-    {
-        double width = borderStyle.get_length().get_value_unit(length::pt);
-        //borderLineWidths ? borderLineWidths->get_summ_unit(length::pt) : borderStyle.get_length().get_value_unit(length::pt);
-        int szInt = (int)(0.5 + 8.0 * width);
-        if (szInt <= 0)
-            szInt = 1;
-        w_sz = boost::lexical_cast<std::wstring>( szInt );
-        w_color = boost::lexical_cast<std::wstring>( borderStyle.get_color().get_hex_value() );
-
-        const std::wstring borderStyleStr = borderStyle.get_style();
-        if (szInt == 0)
-            w_val = L"none";
-        else if (borderStyleStr == L"solid" 
-            || borderStyleStr == L"single")
-            w_val = L"single";
-        else if (borderStyleStr == L"double")
-            w_val = L"double";
-        else if (borderStyleStr == L"dotted")
-            w_val = borderStyleStr;
-        else if (borderStyleStr == L"dashed")
-            w_val = borderStyleStr;
-        else if (borderStyleStr == L"groove")
-            w_val = L"thinThickMediumGap";
-        else if (borderStyleStr == L"ridge")
-            w_val = L"thickThinMediumGap";
-        else if (borderStyleStr == L"inset")
-            w_val = L"inset";
-        else if (borderStyleStr == L"outset")
-            w_val = L"outset";
-        else if (borderStyleStr == L"hidden")
-            w_val = L"nil";
-
-    }
-    std::wstring res;
-    if (!w_val.empty())
-        res += L" w:val=\"" + w_val + L"\" ";
-    if (!w_sz.empty())
-        res += L"w:sz=\"" + w_sz + L"\" ";
-    if (!w_color.empty())
-        res += L"w:color=\"" + w_color + L"\" ";
-    if (!w_space.empty())
-        res += L"w:space=\"" + w_space + L"\" ";
-
-	_Wostream << res;
+	_Wostream << borderStyle.set_border_style_;
 
     return _Wostream;    
 }
 
 border_style::border_style(const std::wstring & Value) : initialized_(false), none_(false)
 {
+	set_border_style_ = Value;
+
 	std::wstring tmp =  boost::algorithm::trim_copy(Value);
     boost::algorithm::to_lower(tmp);
     
@@ -94,6 +43,7 @@ border_style::border_style(const std::wstring & Value) : initialized_(false), no
         {
         }
     }
+
     initialized_ = true;
 }
 
@@ -101,6 +51,24 @@ border_style border_style::parse( const std::wstring & Value)
 {
 	return border_style(Value);
 }
+
+border_style::border_style(const color & color_,  const std::wstring & style_, const length & length_)
+{
+	this->color_	= color_;
+	this->style_	= style_;
+	this->length_	= length_;
+
+	std::wstringstream s;
+	
+	s << length_;
+	s << std::wstring(L" ");
+	s << style_;
+	s << std::wstring(L" ");
+	s << color_;
+	
+	set_border_style_ = s.str();
+}
+
 
 }
 }

@@ -251,6 +251,38 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_polygon);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//////////////////////////////////////////////////////////////////////////////////////////////////////////
+class draw_polyline_attlist
+{
+public:
+ 	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	_CP_OPT(std::wstring) draw_points_;
+	_CP_OPT(std::wstring) svg_viewbox_;
+
+};
+/////////////////////////////////////////////////////////////////////////
+class draw_polyline : public draw_shape
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+	
+	static const ElementType type = typeDrawPolyline;
+	static const xml::NodeType xml_type = xml::typeElement;
+
+	virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
+	
+	virtual void xlsx_convert(oox::xlsx_conversion_context & Context);
+	virtual void docx_convert(oox::docx_conversion_context & Context);
+    virtual void pptx_convert(oox::pptx_conversion_context & Context);
+
+    draw_polyline_attlist draw_polyline_attlist_;
+
+	void reset_polyline_path();//частный случай svg - все точки соединены прямыми
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(draw_polyline);
+/////////////////////////////////////////////////////////////////////////////////////////////////////
 class draw_custom_shape_attlist
 {
 public:

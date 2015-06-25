@@ -84,6 +84,10 @@ void drawing_page_properties::add_attributes( const xml::attributes_wc_ptr & Att
 	CP_APPLY_ATTR(L"presentation:transition-style",		presentation_transition_style_);
 	CP_APPLY_ATTR(L"presentation:transition-speed",		presentation_transition_speed_);
 
+	CP_APPLY_ATTR(L"presentation:display-footer",		presentation_display_footer_);
+	CP_APPLY_ATTR(L"presentation:display-page-number",	presentation_display_page_number_);
+	CP_APPLY_ATTR(L"presentation:display-date-time",	presentation_display_date_time_);
+	CP_APPLY_ATTR(L"presentation:display-header",		presentation_display_header_);
 }
 void drawing_page_properties::apply_from(const drawing_page_properties & Other)
 {
@@ -93,6 +97,16 @@ void drawing_page_properties::apply_from(const drawing_page_properties & Other)
 	_CP_APPLY_PROP2(draw_fill_image_width_); 
 	
 	_CP_APPLY_PROP2(draw_background_size_); 
+
+	_CP_APPLY_PROP2(presentation_transition_type_);
+	_CP_APPLY_PROP2(presentation_transition_style_);
+	_CP_APPLY_PROP2(presentation_transition_speed_);
+
+	_CP_APPLY_PROP2(presentation_display_footer_);
+	_CP_APPLY_PROP2(presentation_display_page_number_);
+	_CP_APPLY_PROP2(presentation_display_date_time_);
+	_CP_APPLY_PROP2(presentation_display_header_);
+
 }
 }
 }

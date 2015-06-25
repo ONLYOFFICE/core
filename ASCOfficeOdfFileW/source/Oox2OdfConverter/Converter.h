@@ -299,13 +299,18 @@ public:
 																oox_current_child_document = NULL; 
 																
 																pCallBack = CallBack;
-																bUserStopConvert = 0;}
+																bUserStopConvert = 0;
+																currentSystemDPI = getSystemDPI();
+															 }
 
         void set_fonts_directory (const std::wstring & fontsPath);
 		
 		const	ProgressCallback* pCallBack;
 		short	bUserStopConvert;
 		bool	UpdateProgress(long nComplete);
+
+		double	currentSystemDPI;
+		double	getSystemDPI();
 	
 //.......................................................................................................................
 		virtual cpdoccore::odf_writer::odf_conversion_context		*odf_context() = 0;

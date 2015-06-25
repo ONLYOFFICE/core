@@ -75,20 +75,26 @@ std::wstring styles_map::name(const std::wstring & Name, odf_types::style_family
 {
     return Name + L":" + boost::lexical_cast<std::wstring>(odf_types::style_family(Type));
 }
-void docx_conversion_context::add_element_to_run()
+void docx_conversion_context::add_element_to_run(std::wstring parenStyleId)
 {
     if (!current_run_)
     {
         current_run_ = true;
 	output_stream() << L"<w:r>";
 
-    if (!text_properties_stack_.empty())
+    if (!text_properties_stack_.empty() || parenStyleId.length() > 0)
     {
-        odf_reader::style_text_properties_ptr textProp = this->current_text_properties();
-        get_styles_context().start();
-        textProp->content().docx_convert(*this);
+		if (!text_properties_stack_.empty())
+		{
+			odf_reader::style_text_properties_ptr textProp = this->current_text_properties();
+			get_styles_context().start();
+
+
+			if(( textProp) && (textProp->content().r_style_))parenStyleId = _T("");
+			textProp->content().docx_convert(*this);
+		}
         
-		get_styles_context().docx_serialize_text_style( output_stream());
+		get_styles_context().docx_serialize_text_style( output_stream(), parenStyleId);
     }
 
 }
@@ -153,7 +159,7 @@ oox_chart_context & docx_conversion_context::current_chart()
         throw std::runtime_error("internal error");
     }
 }
-void docx_conversion_context::add_new_run()
+void docx_conversion_context::add_new_run(std::wstring parentStyleId)
 {
 	finish_run();
 	if (get_comments_context().state()==1)
@@ -161,7 +167,7 @@ void docx_conversion_context::add_new_run()
 		output_stream() << L"<w:commentRangeStart w:id=\"" << get_comments_context().current_id() << L"\" />";
 		get_comments_context().state(2);//active
 	}
-    add_element_to_run();
+    add_element_to_run(parentStyleId);
 }
 
 std::wstring docx_conversion_context::add_hyperlink(const std::wstring & href, bool draw)
@@ -585,7 +591,7 @@ void docx_conversion_context::end_process_style_content()
    docx_serialize_paragraph_style(output_stream(), automatic_parent_style_);
     
     if (automatic_parent_style_.empty())
-        styles_context_.docx_serialize_text_style( output_stream());
+        styles_context_.docx_serialize_text_style( output_stream(), _T(""));
 }
 
 void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId)
@@ -955,7 +961,7 @@ void docx_conversion_context::add_note_reference()
 {
     if (process_note_ == footNote || process_note_ ==  endNote)
     {
-        add_element_to_run();
+        add_element_to_run(_T(""));
         output_stream() << ((process_note_ == footNote) ? L"<w:footnoteRef />" : L"<w:endnoteRef />");
         finish_run();
         process_note_ = (NoteType) (process_note_ + 1); //add ref set

@@ -353,7 +353,7 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
     if (Context.check_page_break_after())
     {
 		is_empty = false;
-        Context.add_new_run();
+        Context.add_new_run(_T(""));
         _Wostream << L"<w:br w:type=\"page\" />";        
         Context.finish_run();
     }

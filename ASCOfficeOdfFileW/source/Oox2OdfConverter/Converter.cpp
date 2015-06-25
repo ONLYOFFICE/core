@@ -44,6 +44,7 @@ namespace Oox2Odf
     {
 		if (impl_ )delete impl_ ;
 	}
+
     void Converter::convert()
     {
 		if (!impl_)return;
@@ -62,6 +63,31 @@ namespace Oox2Odf
     }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
+double OoxConverter::getSystemDPI()
+{
+#if defined (_WIN32) || defined(_WIN64)
+	HDC screen = GetDC(0);
+
+	int dpiX = GetDeviceCaps (screen, LOGPIXELSX);
+	int dpiY = GetDeviceCaps (screen, LOGPIXELSY);
+
+	ReleaseDC (0, screen);
+
+	return dpiX;
+#elif defined (__linux__)
+	Display *dpy = XOpenDisplay (NULL);;
+
+	double xres = ((((double) DisplayWidth (dpy, 0)) * 25.4) / ((double) DisplayWidthMM(dpy, 0)));
+	double yres = ((((double) DisplayHeight(dpy, 0)) * 25.4) / ((double) DisplayHeightMM(dpy, 0)));
+
+	XCloseDisplay (dpy);
+
+	return xres;
+#else
+	return 96.;
+#endif
+}
+
 bool  OoxConverter::UpdateProgress(long nComplete)
 {
 	if (pCallBack)
@@ -760,6 +786,11 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	C
 		}
 		if (oox_bitmap_fill->m_oSrcRect.IsInit() && Width >0  && Height >0)//часть изображения
 		{
+			odf_context()->drawing_context()->set_image_client_rect_inch(
+				oox_bitmap_fill->m_oSrcRect->m_oL.GetValue() /100. * Width / currentSystemDPI,
+				oox_bitmap_fill->m_oSrcRect->m_oT.GetValue() /100. * Height/ currentSystemDPI,
+				oox_bitmap_fill->m_oSrcRect->m_oR.GetValue() /100. * Width / currentSystemDPI,
+				oox_bitmap_fill->m_oSrcRect->m_oB.GetValue() /100. * Height/ currentSystemDPI);
 		}
 		if (oox_bitmap_fill->m_oTile.IsInit())
 		{

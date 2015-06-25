@@ -348,12 +348,8 @@ void span::docx_convert(oox::docx_conversion_context & Context)
             else
             {
                 const std::wstring id = Context.get_style_map().get( styleInst->name(), styleInst->type() );
-                Context.add_new_run();
+                Context.add_new_run(id);
                 addNewRun = true;
-
-                _Wostream << L"<w:rPr>";
-                _Wostream << L"<w:rStyle w:val=\"" << id << L"\" />";
-                _Wostream << L"</w:rPr>";                
             }                        
         }
                                      
@@ -578,12 +574,8 @@ void note::docx_convert(oox::docx_conversion_context & Context)
                 )
             {
                 const std::wstring id = Context.get_style_map().get( styleInst->name(), styleInst->type() );
-				Context.add_new_run();
+				Context.add_new_run(id);
                 addNewRun = true;
-
-                _Wostream << L"<w:rPr>";
-                _Wostream << L"<w:rStyle w:val=\"" << id << L"\" />";
-                _Wostream << L"</w:rPr>";
             }
                                          
         }

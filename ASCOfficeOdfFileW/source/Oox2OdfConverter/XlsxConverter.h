@@ -60,6 +60,7 @@ namespace OOX
 		class CSheetViews;
 		class CPageSetup;
 		class CPageMargins;
+		class CSi;
 	}
 }
 
@@ -174,6 +175,7 @@ namespace Oox2Odf
 		void convert(OOX::Spreadsheet::CIconSet						*oox_cond_iconset);
 		void convert(OOX::Spreadsheet::CConditionalFormatValueObject*oox_cond_value);
 		void convert(OOX::Spreadsheet::CFormulaCF					*oox_cond_formula);
+		void convert(OOX::Spreadsheet::CSi							*oox_rtf_text);
 
 		void convert(double oox_size,						_CP_OPT(odf_types::length) & odf_size);
 		void convert_sharing_string(int number);

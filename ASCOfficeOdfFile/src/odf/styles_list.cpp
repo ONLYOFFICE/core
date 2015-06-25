@@ -379,7 +379,7 @@ void text_list_level_style_number::docx_convert(oox::docx_conversion_context & C
 			{
 				Context.get_styles_context().start();
 				textProperties->content().docx_convert(Context);//to style_context
-				Context.get_styles_context().docx_serialize_text_style( CP_XML_STREAM());//serialize style_context
+				Context.get_styles_context().docx_serialize_text_style( CP_XML_STREAM(), _T(""));//serialize style_context
 			}		
 		}
 	}
@@ -567,7 +567,7 @@ void text_list_level_style_bullet::docx_convert(oox::docx_conversion_context & C
 			{
 				Context.get_styles_context().start();
 				textProperties->content().docx_convert(Context);
-				Context.get_styles_context().docx_serialize_text_style(CP_XML_STREAM());
+				Context.get_styles_context().docx_serialize_text_style(CP_XML_STREAM(), _T(""));
 			}    
 		}
 	}

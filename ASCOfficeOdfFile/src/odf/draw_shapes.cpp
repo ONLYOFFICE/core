@@ -282,6 +282,64 @@ void draw_polygon::reset_polygon_path()
 		}
 	}
 }
+///////////////////////////////////////
+void draw_polyline_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    CP_APPLY_ATTR(L"draw:points", draw_points_);
+    CP_APPLY_ATTR(L"svg:viewBox", svg_viewbox_);
+
+}
+// draw:polyline
+const wchar_t * draw_polyline::ns = L"draw";
+const wchar_t * draw_polyline::name = L"polyline";
+
+void draw_polyline::add_attributes( const xml::attributes_wc_ptr & Attributes )
+{
+    draw_polyline_attlist_.add_attributes(Attributes);
+	draw_shape::add_attributes(Attributes);
+
+	sub_type_ = 8;
+	
+}
+void draw_polyline::reset_polyline_path()
+{
+	if (draw_polyline_attlist_.draw_points_)
+	{
+		std::vector<svg_path::_polyline> o_Polyline_pt;
+		std::vector<svg_path::_polyline> o_Polyline_cm;
+
+		bool res = svg_path::parsePolygon(o_Polyline_cm, draw_polyline_attlist_.draw_points_.get(), false);
+
+		_CP_OPT(double) start_x, start_y;
+		
+		BOOST_FOREACH(svg_path::_polyline  & poly, o_Polyline_cm)
+		{
+			for (long i=0;i<poly.points.size();i++)
+			{
+				if (poly.points[i].x)
+				{
+					if (!start_x)//вообщето это не верно .. но из за разных точек осей поворота фигура может "улететь"
+						start_x = length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu); 
+					poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu) - *start_x; 
+				}
+				if (poly.points[i].y)
+				{
+					if (!start_y)
+						start_y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu); 
+					poly.points[i].y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu) - *start_y; 
+				}
+			}
+			o_Polyline_pt.push_back(poly);
+		}
+		if (o_Polyline_pt.size()>0)
+		{
+			//сформируем xml-oox сдесь ... а то придется плодить массивы в drawing .. хоть и не красиво..
+			std::wstringstream output_;   
+            svg_path::oox_serialize(output_, o_Polyline_pt);
+			additional_.push_back(odf_reader::_property(L"custom_path",output_.str()));
+		}
+	}
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 void draw_equation_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {	

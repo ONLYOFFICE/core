@@ -146,6 +146,15 @@ void draw_polygon::docx_convert(oox::docx_conversion_context & Context)
 	reset_polygon_path();
 	draw_shape::docx_convert(Context);
 }
+void draw_polyline::docx_convert(oox::docx_conversion_context & Context)
+{
+	if (Context.get_drawing_context().get_current_level() >0 )return;
+
+	common_docx_convert(Context);
+	//...
+	reset_polyline_path();
+	draw_shape::docx_convert(Context);
+}
 void draw_custom_shape::docx_convert(oox::docx_conversion_context & Context)
 {
 	if (Context.get_drawing_context().get_current_level() >0 )return;

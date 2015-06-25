@@ -72,6 +72,9 @@ void common_draw_fill_attlist::add_attributes( const xml::attributes_wc_ptr & At
 	CP_APPLY_ATTR(L"draw:fill-hatch-solid",		draw_fill_hatch_solid_);
     CP_APPLY_ATTR(L"style:repeat",				style_repeat_);
 
+	CP_APPLY_ATTR(L"draw:fill-image-width",		draw_fill_image_width_);
+	CP_APPLY_ATTR(L"draw:fill-image-height",	draw_fill_image_height_);
+
 }
 void common_draw_fill_attlist::serialize(CP_ATTR_NODE)
 {
@@ -92,6 +95,7 @@ void common_draw_fill_attlist::serialize(CP_ATTR_NODE)
 	CP_XML_ATTR_OPT(L"draw:fill-image-ref-point",	draw_fill_image_ref_point_);
 	CP_XML_ATTR_OPT(L"draw:fill-image-ref-point-y",	draw_fill_image_ref_point_y_);
 	CP_XML_ATTR_OPT(L"draw:fill-image-ref-point-x",	draw_fill_image_ref_point_x_);
+
 	CP_XML_ATTR_OPT(L"draw:fill-image-width",		draw_fill_image_width_);
 	CP_XML_ATTR_OPT(L"draw:fill-image-height",		draw_fill_image_height_);
 
@@ -112,6 +116,9 @@ void common_draw_fill_attlist::apply_from(const common_draw_fill_attlist & Other
 
 	_CP_APPLY_PROP2(style_repeat_);
 	_CP_APPLY_PROP2(draw_fill_color_); 
+
+	_CP_APPLY_PROP2(draw_fill_image_width_);
+	_CP_APPLY_PROP2(draw_fill_image_height_);
 }
 
 void common_horizontal_margin_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )

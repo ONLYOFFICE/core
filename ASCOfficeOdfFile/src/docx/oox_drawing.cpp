@@ -133,18 +133,15 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 	odf_reader::GetProperty(prop, L"wordArt"				, bWordArt);
 	odf_reader::GetProperty(prop, L"odf-custom-draw-index"	, iShapeIndex);
 
-	if (!iShapeIndex)return;
-	int i = *iShapeIndex;
-
 	int count_values = 0, min_value = 0, max_value = 0;
 
-	if (!bWordArt)
+	if (!bWordArt && iShapeIndex)
 	{
 		count_values	= _OO_OOX_custom_shapes[*iShapeIndex].count_values;
 		min_value		= _OO_OOX_custom_shapes[*iShapeIndex].min;
 		max_value		= _OO_OOX_custom_shapes[*iShapeIndex].max;
 	}
-	else
+	else if (iShapeIndex)
 	{
 		count_values	= _OO_OOX_wordart[*iShapeIndex].count_values;
 		min_value		= _OO_OOX_wordart[*iShapeIndex].min;
@@ -156,7 +153,7 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 		CP_XML_NODE(L"a:avLst")
 		{
 			_CP_OPT(std::wstring) strVal;
-			if (odf_reader::GetProperty(prop,L"draw-modifiers",strVal))
+			if (odf_reader::GetProperty(prop,L"draw-modifiers",strVal) && iShapeIndex)
 			{
 				std::vector< std::wstring > values;
 				boost::algorithm::split(values, strVal.get(), boost::algorithm::is_any_of(L" "), boost::algorithm::token_compress_on);

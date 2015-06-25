@@ -67,7 +67,7 @@ std::wstringstream & styles_context::list_style()
     return list_style_;
 }
 
-void styles_context::docx_serialize_text_style(std::wostream & strm)
+void styles_context::docx_serialize_text_style(std::wostream & strm, std::wstring parenStyleId)
 {
     if (!text_style_.str().empty())
 	{
@@ -75,6 +75,10 @@ void styles_context::docx_serialize_text_style(std::wostream & strm)
 		{
 			CP_XML_NODE(L"w:rPr")
 			{
+				if (parenStyleId.length() > 0)
+				{
+					CP_XML_STREAM() << L"<w:rStyle w:val=\"" << parenStyleId << L"\" />";
+				}
 				CP_XML_STREAM() << text_style_.str();
 			}
 		}

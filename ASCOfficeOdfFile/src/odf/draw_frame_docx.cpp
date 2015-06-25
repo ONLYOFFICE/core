@@ -916,7 +916,10 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 	drawing.sub_type	= sub_type_;
 	drawing.additional	= additional_;//сюда могут добавиться свойства ...
 
-	drawing.additional.push_back(_property(L"text-content",Context.get_drawing_context().get_text_stream_shape()));
+	if (drawing.sub_type !=5 )//line
+	{
+		drawing.additional.push_back(_property(L"text-content",Context.get_drawing_context().get_text_stream_shape()));
+	}
 
 	Context.get_drawing_context().clear_stream_shape();
 /////////
@@ -941,7 +944,7 @@ void draw_shape::docx_convert(oox::docx_conversion_context & Context)
 		new_run = false;
 	}
 	else
-		Context.add_new_run();
+		Context.add_new_run(_T(""));
 
 	docx_serialize(strm, drawing);
 
@@ -1048,7 +1051,7 @@ void draw_image::docx_convert(oox::docx_conversion_context & Context)
 	pState = Context.get_paragraph_state();
 	Context.set_paragraph_state(false);
 
-	Context.add_new_run();
+	Context.add_new_run(_T(""));
 	docx_serialize(strm,drawing);
     Context.finish_run();
 
@@ -1133,7 +1136,7 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 	pState = Context.get_paragraph_state();
 	Context.set_paragraph_state(false);		
    
-	Context.add_new_run();    
+	Context.add_new_run(_T(""));    
 	docx_serialize(strm, drawing);
 	Context.finish_run();
 
@@ -1227,7 +1230,7 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		
 		std::wostream & strm = Context.output_stream();		
 		
-		Context.add_new_run();
+		Context.add_new_run(_T(""));
 		
 		docx_serialize(strm, drawing);
 		

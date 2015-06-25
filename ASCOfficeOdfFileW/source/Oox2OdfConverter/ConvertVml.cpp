@@ -275,7 +275,7 @@ void OoxConverter::convert(OOX::Vml::CImageData *vml_image_data)
 				if (vml_image_data->m_oCropRight.IsInit())	r_pt = vml_image_data->m_oCropRight->GetValue() * Width;
 				if (vml_image_data->m_oCropBottom.IsInit()) b_pt = vml_image_data->m_oCropBottom->GetValue()* Height;
 
-				odf_context()->drawing_context()->set_image_client_rect(l_pt ,t_pt ,r_pt, b_pt);
+				odf_context()->drawing_context()->set_image_client_rect_pt (l_pt ,t_pt ,r_pt, b_pt);
 			}
 
 		odf_context()->drawing_context()->end_bitmap_style();

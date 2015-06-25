@@ -54,21 +54,21 @@ public:
     void apply_from(const drawing_page_properties & Other);
 
 	odf_types::common_draw_fill_attlist		common_draw_fill_attlist_;
-	anim_transition_filter_attlist	anim_transition_filter_attlist_;
+	anim_transition_filter_attlist			anim_transition_filter_attlist_;
 
-	_CP_OPT(odf_types::length)			draw_fill_image_height_;
-	_CP_OPT(odf_types::length)			draw_fill_image_width_;
+	_CP_OPT(odf_types::length_or_percent)	draw_fill_image_height_;
+	_CP_OPT(odf_types::length_or_percent)	draw_fill_image_width_;
 	
-	_CP_OPT(std::wstring)	draw_background_size_;//"border" or "full"
+	_CP_OPT(std::wstring)					draw_background_size_;//"border" or "full"
 
-	_CP_OPT(std::wstring)presentation_transition_type_;//manual, automatic, semi-automatic (переход отделен от эффектов кликом)
-	_CP_OPT(std::wstring)presentation_transition_style_;//none, fade, move, uncover,clockwise, .... игнор если smil
-	_CP_OPT(std::wstring)presentation_transition_speed_;//slow, medium, fast
+	_CP_OPT(std::wstring)					presentation_transition_type_;//manual, automatic, semi-automatic (переход отделен от эффектов кликом)
+	_CP_OPT(std::wstring)					presentation_transition_style_;//none, fade, move, uncover,clockwise, .... игнор если smil
+	_CP_OPT(std::wstring)					presentation_transition_speed_;//slow, medium, fast
 	
-	//presentation:display-footer
-	//presentation:display-page-number
-	//presentation:display-date-time
-	//presentation:display-header
+	_CP_OPT(bool)							presentation_display_footer_;
+	_CP_OPT(bool)							presentation_display_page_number_;
+	_CP_OPT(bool)							presentation_display_date_time_;
+	_CP_OPT(bool)							presentation_display_header_;
 
 	//presentation:background-objects-visible
 	//presentation:background-visible

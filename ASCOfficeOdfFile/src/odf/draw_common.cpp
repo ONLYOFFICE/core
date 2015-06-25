@@ -391,7 +391,24 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, styles_lite_con
 				break;
 			}
 		}else
-			fill.bitmap->bTile = true;
+		{
+			fill.bitmap->bTile = true;// ???? 
+			if (props.draw_fill_image_width_ && props.draw_fill_image_height_)
+			{
+				if (props.draw_fill_image_width_->get_type() == odf_types::length_or_percent::Percent && 
+					props.draw_fill_image_height_->get_type() == odf_types::length_or_percent::Percent)
+				{
+					if (props.draw_fill_image_width_->get_percent().get_value()  > 99.9  && 
+						props.draw_fill_image_height_->get_percent().get_value() > 99.9  && 
+						props.draw_fill_image_width_->get_percent().get_value()  < 100.1 && 
+						props.draw_fill_image_height_->get_percent().get_value() < 100.1 )
+					{
+						fill.bitmap->bStretch	= true;
+						fill.bitmap->bTile		= false;
+					}
+				}
+			}
+		}
 	}
 	if (props.draw_fill_gradient_name_)
 	{

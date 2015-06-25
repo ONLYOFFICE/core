@@ -179,7 +179,8 @@ public:
 	void end_bitmap_style();
 //////////////////////////////////////////////////////////////////////////////////////
 	void set_image_style_repeat(int style);
-	void set_image_client_rect(double l_pt, double t_pt, double r_pt, double b_pt);
+	void set_image_client_rect_pt(double l, double t, double r, double b);
+	void set_image_client_rect_inch(double l, double t, double r, double b);
 	
 	void set_bitmap_tile_align(int align);
 	void set_bitmap_tile_scale_x(double scale_x);

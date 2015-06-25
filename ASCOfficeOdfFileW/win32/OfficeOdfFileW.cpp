@@ -156,8 +156,8 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
 //FileChecker в другом месте !!
 std::wstring COfficeOdfFileW::DetectTypeDocument(const std::wstring & Path)
 {
-	return  L"text";
-	//return  L"spreadsheet";
+	//return  L"text";
+	return  L"spreadsheet";
 }
 
 void COfficeOdfFileW::OnProgressFunc (LPVOID lpParam, long nID, long nPercent)

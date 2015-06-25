@@ -2485,17 +2485,32 @@ void odf_drawing_context::set_image_style_repeat(int style)
 	else
 		impl_->current_graphic_properties->content().common_draw_fill_attlist_.style_repeat_ = style_repeat(style_repeat::NoRepeat);//default
 }
-void odf_drawing_context::set_image_client_rect(double l_pt, double t_pt, double r_pt, double b_pt)
+void odf_drawing_context::set_image_client_rect_pt(double l, double t, double r, double b)
 {
 	if (!impl_->current_graphic_properties)return;
 	
 	//<top>, <right>, <bottom>, <left> 
 	std::wstringstream str_stream;
 	str_stream << std::wstring(L"rect(") 
-							<< length(length(t_pt,length::pt).get_value_unit(length::cm),length::cm) << std::wstring(L",")
-							<< length(length(r_pt,length::pt).get_value_unit(length::cm),length::cm) << std::wstring(L",")
-							<< length(length(b_pt,length::pt).get_value_unit(length::cm),length::cm) << std::wstring(L",")
-							<< length(length(l_pt,length::pt).get_value_unit(length::cm),length::cm) << std::wstring(L")");
+							<< length(length(t, length::pt).get_value_unit(length::cm),length::cm) << std::wstring(L",")
+							<< length(length(r, length::pt).get_value_unit(length::cm),length::cm) << std::wstring(L",")
+							<< length(length(b, length::pt).get_value_unit(length::cm),length::cm) << std::wstring(L",")
+							<< length(length(l, length::pt).get_value_unit(length::cm),length::cm) << std::wstring(L")");
+
+	impl_->current_graphic_properties->content().fo_clip_ = str_stream.str();
+
+}
+void odf_drawing_context::set_image_client_rect_inch(double l, double t, double r, double b)
+{
+	if (!impl_->current_graphic_properties)return;
+	
+	//<top>, <right>, <bottom>, <left> 
+	std::wstringstream str_stream;
+	str_stream	<< std::wstring(L"rect(") 
+				<< t << std::wstring(L"in, ")
+				<< r << std::wstring(L"in, ")
+				<< b << std::wstring(L"in, ")
+				<< l << std::wstring(L"in)");
 
 	impl_->current_graphic_properties->content().fo_clip_ = str_stream.str();
 

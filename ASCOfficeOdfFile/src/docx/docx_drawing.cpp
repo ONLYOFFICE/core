@@ -216,8 +216,9 @@ void docx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_pr
 				}
 			}
 
-
 		}
+		else
+			CP_XML_NODE(L"wps:bodyPr");
     }
 }
 void docx_serialize_image(std::wostream & strm, _docx_drawing & val)

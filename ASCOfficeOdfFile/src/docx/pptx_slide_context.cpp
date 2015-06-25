@@ -546,7 +546,22 @@ void pptx_slide_context::add_rels( bool isInternal, std::wstring const & rid, st
 {
 	impl_->add_additional_rels(isInternal, rid, ref, type);
 }
-
+void pptx_slide_context::set_footer()
+{
+	impl_->footer = true;
+}
+void pptx_slide_context::set_header()
+{
+	impl_->header = true;
+}
+void pptx_slide_context::set_page_number()
+{
+	impl_->date_time = true;
+}
+void pptx_slide_context::set_date_time()
+{
+	impl_->slideNum = true;
+}
 void pptx_slide_context::serialize_background(std::wostream & strm, bool always)
 {
 	if (!always && ( (!impl_->background_fill_) || (impl_->background_fill_->type==0))) return;
@@ -624,10 +639,10 @@ void pptx_slide_context::serialize_HeaderFooter(std::wostream & strm)
     {
 		CP_XML_NODE(L"p:hf")
 		{
-			if(impl_->footer)		CP_XML_ATTR(L"ftr",0);
-			if(impl_->header)		CP_XML_ATTR(L"hdr",0);
-			if(impl_->date_time)	CP_XML_ATTR(L"dt",0);
-			if(impl_->slideNum)		CP_XML_ATTR(L"sldNum",0);
+			if(impl_->footer)		CP_XML_ATTR(L"ftr",1);
+			if(impl_->header)		CP_XML_ATTR(L"hdr",1);
+			if(impl_->date_time)	CP_XML_ATTR(L"dt",1);
+			if(impl_->slideNum)		CP_XML_ATTR(L"sldNum",1);
 		}
 	}
 }

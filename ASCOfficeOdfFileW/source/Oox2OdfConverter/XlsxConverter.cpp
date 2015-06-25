@@ -104,7 +104,7 @@ void XlsxConverter::convertDocument()
     if (!xlsx_document)     return;
     if (!output_document)   return;
     if (!ods_context)       return;
-		
+
 	ods_context->start_document();
 
 	convert_styles();
@@ -458,8 +458,14 @@ void XlsxConverter::convert(OOX::Spreadsheet::CCell *oox_cell)
 		}
 	}
 
+	if (oox_cell->m_oRichText.IsInit())
+	{
+		convert(oox_cell->m_oRichText.GetPointer());
+	}
+
 	ods_context->end_cell();
 }
+
 void XlsxConverter::convert_sharing_string(int number)
 {
 	if (!ods_context) return;
@@ -469,15 +475,18 @@ void XlsxConverter::convert_sharing_string(int number)
 
 	if (number <0 || (SharedStrings->m_oCount.IsInit() && number > SharedStrings->m_oCount->GetValue()))return;//???? m_oUniqueCount;
 
-	OOX::Spreadsheet::CSi* pSi = static_cast<OOX::Spreadsheet::CSi*>(SharedStrings->m_arrItems[number]);
+	convert(static_cast<OOX::Spreadsheet::CSi*>(SharedStrings->m_arrItems[number]));
+}
 
-	if (pSi == NULL)return;
-
+void XlsxConverter::convert(OOX::Spreadsheet::CSi* oox_rtf_text)
+{
+	if (oox_rtf_text == NULL) return;
+	
 	ods_context->start_cell_text();
 
-	for(int i = 0; i < pSi->m_arrItems.size(); ++i)
+	for(int i = 0; i < oox_rtf_text->m_arrItems.size(); ++i)
 	{
-		convert(pSi->m_arrItems[i]);
+		convert(oox_rtf_text->m_arrItems[i]);
 	}
 
 	ods_context->end_cell_text();
@@ -1826,10 +1835,11 @@ void XlsxConverter::convert(OOX::Spreadsheet::CPic* oox_picture)
 		}
 		if (oox_picture->m_oBlipFill->m_oSrcRect.IsInit() && Width >0 && Height >0)
 		{
-			ods_context->drawing_context()->set_image_client_rect(oox_picture->m_oBlipFill->m_oSrcRect->m_oL.GetValue() * Width/100. ,
-																 oox_picture->m_oBlipFill->m_oSrcRect->m_oT.GetValue() * Height/100.,
-																 oox_picture->m_oBlipFill->m_oSrcRect->m_oR.GetValue() * Width/100. , 
-																 oox_picture->m_oBlipFill->m_oSrcRect->m_oB.GetValue() * Height/100.);
+			ods_context->drawing_context()->set_image_client_rect_inch(
+					oox_picture->m_oBlipFill->m_oSrcRect->m_oL.GetValue()/100. * Width  / currentSystemDPI ,
+					oox_picture->m_oBlipFill->m_oSrcRect->m_oT.GetValue()/100. * Height / currentSystemDPI ,
+					oox_picture->m_oBlipFill->m_oSrcRect->m_oR.GetValue()/100. * Width  / currentSystemDPI , 
+					oox_picture->m_oBlipFill->m_oSrcRect->m_oB.GetValue()/100. * Height / currentSystemDPI );
 		}		
 		if (oox_picture->m_oNvPicPr.IsInit())
 		{

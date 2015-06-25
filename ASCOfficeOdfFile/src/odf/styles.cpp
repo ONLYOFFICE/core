@@ -1438,8 +1438,10 @@ const wchar_t * hdrHeader = L"<w:hdr \
 							xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
 							xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
 							xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-							xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" >";
-							//xmlns:v=\"urn:schemas-microsoft-com:vml\" 
+							xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+							xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+							mc:Ignorable=\"w14 wp14\">";
+
 const wchar_t * ftrHeader = L"<w:ftr \
 							xmlns:o=\"urn:schemas-microsoft-com:office:office\" \
 							xmlns:r=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships\" \
@@ -1455,10 +1457,9 @@ const wchar_t * ftrHeader = L"<w:ftr \
 							xmlns:m=\"http://schemas.openxmlformats.org/officeDocument/2006/math\" \
 							xmlns:mc=\"http://schemas.openxmlformats.org/markup-compatibility/2006\" \
 							xmlns:wne=\"http://schemas.microsoft.com/office/word/2006/wordml\" \
-							xmlns:a14=\"http://schemas.microsoft.com/office/drawing/2010/main\" >";
-
-						//mc:Ignorable=\"w14 wp14\" 
-						//xmlns:v=\"urn:schemas-microsoft-com:vml\" 
+							xmlns:a=\"http://schemas.openxmlformats.org/drawingml/2006/main\" \
+							xmlns:v=\"urn:schemas-microsoft-com:vml\" \
+							mc:Ignorable=\"w14 wp14\">";
 
 void style_header::docx_convert(oox::docx_conversion_context & Context)
 {

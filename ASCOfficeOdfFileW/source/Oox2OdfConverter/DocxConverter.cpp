@@ -2186,10 +2186,11 @@ void DocxConverter::convert(OOX::Drawing::CPicture * oox_picture)
 		}
 		if (oox_picture->m_oBlipFill.m_oSrcRect.IsInit() && Width >0 && Height >0)
 		{
-			odt_context->drawing_context()->set_image_client_rect(oox_picture->m_oBlipFill.m_oSrcRect->m_oL.GetValue() * Width/100. ,
-																 oox_picture->m_oBlipFill.m_oSrcRect->m_oT.GetValue() * Height/100.,
-																 oox_picture->m_oBlipFill.m_oSrcRect->m_oR.GetValue() * Width/100. , 
-																 oox_picture->m_oBlipFill.m_oSrcRect->m_oB.GetValue() * Height/100.);
+			odt_context->drawing_context()->set_image_client_rect_inch(
+					oox_picture->m_oBlipFill.m_oSrcRect->m_oL.GetValue() * Width/100. /currentSystemDPI,
+					oox_picture->m_oBlipFill.m_oSrcRect->m_oT.GetValue() * Height/100./currentSystemDPI,
+					oox_picture->m_oBlipFill.m_oSrcRect->m_oR.GetValue() * Width/100. /currentSystemDPI, 
+					oox_picture->m_oBlipFill.m_oSrcRect->m_oB.GetValue() * Height/100./currentSystemDPI);
 		}		
 
 		OoxConverter::convert(&oox_picture->m_oNvPicPr.m_oCNvPr);		

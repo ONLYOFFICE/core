@@ -267,12 +267,12 @@ int text_format_properties_content::process_font_weight(const optional<font_weig
 {
     if (FontWeight)
     {
-        if (FontWeight->get_type() == font_weight::WBold) // TODO ???
-            return 1;
-        else
+		if (FontWeight->get_type() == font_weight::WNormal)
             return -1;
+        else
+            return +1; //bold
     }
-    return 0;
+    return 0; //not set
 }
 
 int text_format_properties_content::process_font_style(const optional<font_style>::Type & FontStyle)

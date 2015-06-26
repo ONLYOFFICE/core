@@ -456,18 +456,6 @@ namespace NSOnlineOfficeBinToPdf
 								{
 									pPositions[lIndex] = ReadInt(current, curindex) / 100000.0;
 									pColors[lIndex] = ReadInt(current, curindex);
-									//BYTE _r = *current++;
-									//BYTE _g = *current++;
-									//BYTE _b = *current++;
-									//BYTE _a = *current++;
-
-									//curindex += 4;
-
-									//int _color = ((_b << 16) & 0xFF0000) | ((_g << 8) & 0xFF00) | _r;
-
-									//CString sColor;
-									//sColor.Format(L"<stop stop-color='%d' stop-opacity='%f' offset='%f' />", _color, _a / 255.0, dPos);
-									//strColors += sColor;
 								}
 
 								pPdf->put_BrushGradientColors(pColors, pPositions, lColorsCount);

@@ -26,6 +26,9 @@ namespace Aggplus
 class CFontManager;
 class CApplicationFonts;
 
+class CRendererCommandBase;
+class CRendererTextCommand;
+
 class CPdfRenderer : public IRenderer
 {
 public:
@@ -1390,6 +1393,15 @@ private:
 		{
 			Reset();
 		}
+		void operator=(const CTransform& oT)
+		{
+			m11 = oT.m11;
+			m12 = oT.m12;
+			m21 = oT.m21;
+			m22 = oT.m22;
+			dx  = oT.dx;
+			dy  = oT.dy;
+		}
 		void Reset()
 		{
 			m11 = 1.0;
@@ -1398,6 +1410,18 @@ private:
 			m22 = 1.0;
 			dx  = 0;
 			dy  = 0;
+		}
+		bool IsIdentity() const
+		{
+			if (abs(m11 - 1) < 0.001
+				&& abs(m12) < 0.001
+				&& abs(m21) < 0.001
+				&& abs(m22 - 1) < 0.001
+				&& abs(dx) < 0.001
+				&& abs(dy) < 0.001)
+				return true;
+
+			return false;
 		}
 		void Set(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
 		{
@@ -1418,6 +1442,22 @@ private:
 		double dx;
 		double dy;
 	};
+	class CCommandManager
+	{
+	public:
+		CCommandManager(CPdfRenderer* pRenderer);
+		~CCommandManager();
+		CRendererTextCommand* AddText(unsigned char* pCodes, unsigned int nLen, const double& dX, const double& dY);
+		void Flush();
+		void SetTransform(const CTransform& oTransform);
+	private:
+		void Add(CRendererCommandBase* pCommand);		
+		void Clear();
+	private:
+		CPdfRenderer*                      m_pRenderer;
+		std::vector<CRendererCommandBase*> m_vCommands;
+		CTransform                         m_oTransform;
+	};
 
 private:
 
@@ -1425,12 +1465,20 @@ private:
 	CFontManager*                m_pFontManager;
 	std::wstring                 m_wsTempFolder;
 	std::wstring                 m_wsThemesPlace;
-
+								 
 	PdfWriter::CDocument*        m_pDocument;
 	PdfWriter::CPage*            m_pPage;
 	PdfWriter::CFontCidTrueType* m_pFont;
 	PdfWriter::CShading*         m_pShading;
 	PdfWriter::CExtGrState*      m_pShadingExtGrState;
+								 
+	bool                         m_bNeedUpdateTextFont;
+	bool                         m_bNeedUpdateTextColor;
+	bool                         m_bNeedUpdateTextAlpha;
+	bool                         m_bNeedUpdateTextCharSpace;
+	bool                         m_bNeedUpdateTextSize;
+
+	CCommandManager              m_oCommandManager;
 
 	CPenState                    m_oPen;
 	CBrushState                  m_oBrush;
@@ -1442,9 +1490,9 @@ private:
 	double                       m_dPageWidth;
 	LONG                         m_lClipDepth;
 	std::vector<TFontInfo>       m_vFonts;
-
+								 
 	bool                         m_bValid;
-
+								 
 	int                          m_nPagesCount;
 	int                          m_nCounter; // TODO: для теста, убрать потом
 };

@@ -44,7 +44,287 @@ using namespace PdfWriter;
 static const long c_BrushTypeLinearGradient = 8001;
 static const long c_BrushTypeRadialGradient = 8002;
 
-CPdfRenderer::CPdfRenderer(CApplicationFonts* pAppFonts)
+enum ERendererCommandType
+{
+	renderercommandtype_Text  = 0x01,
+	renderercommandtype_Image = 0x02,
+	renderercommandtype_Path  = 0x03,
+	renderercommandtype_Clip  = 0x04
+};
+//----------------------------------------------------------------------------------------
+//
+// CRendererCommandBase
+//
+//----------------------------------------------------------------------------------------
+class CRendererCommandBase
+{
+public:
+	virtual ~CRendererCommandBase(){};
+	virtual ERendererCommandType GetType() = 0;
+};
+//----------------------------------------------------------------------------------------
+//
+// CRendererTextCommand
+//
+//----------------------------------------------------------------------------------------
+#define RENDERERTEXTCOMMAND_FLAGS_FONT  0x0001
+#define RENDERERTEXTCOMMAND_FLAGS_SIZE  0x0002
+#define RENDERERTEXTCOMMAND_FLAGS_COLOR 0x0004
+#define RENDERERTEXTCOMMAND_FLAGS_ALPHA 0x0008
+#define RENDERERTEXTCOMMAND_FLAGS_SPACE 0x0010
+class CRendererTextCommand : public CRendererCommandBase
+{
+public:
+	CRendererTextCommand(unsigned char* pCodes, unsigned int nLen, const double& dX, const double& dY)
+	{
+		m_pCodes = pCodes;
+		m_nLen   = nLen;
+		m_dX     = dX;
+		m_dY     = dY;
+		m_nUpdateFlags = 0;
+	}
+	~CRendererTextCommand()
+	{
+		if (m_pCodes)
+			delete[] m_pCodes;
+	}
+	ERendererCommandType GetType()
+	{
+		return renderercommandtype_Text;
+	}
+
+	inline double GetX() const
+	{
+		return m_dX;
+	}
+	inline double GetY() const
+	{
+		return m_dY;
+	}
+	inline unsigned char* GetCodes() const
+	{
+		return m_pCodes;
+	}
+	inline unsigned int GetCodesLen() const
+	{
+		return m_nLen;
+	}
+	void SetFont(CFontDict* pFont)
+	{
+		m_pFont = pFont;
+		m_nUpdateFlags |= RENDERERTEXTCOMMAND_FLAGS_FONT;
+	}
+	void SetSize(const double& dSize)
+	{
+		m_dSize = dSize;
+		m_nUpdateFlags |= RENDERERTEXTCOMMAND_FLAGS_SIZE;
+	}
+	void SetColor(const LONG& lColor)
+	{
+		m_lColor = lColor;
+		m_nUpdateFlags |= RENDERERTEXTCOMMAND_FLAGS_COLOR;
+	}
+	void SetAlpha(const BYTE& nAlpha)
+	{
+		m_nAlpha = nAlpha;
+		m_nUpdateFlags |= RENDERERTEXTCOMMAND_FLAGS_ALPHA;
+	}
+	void SetCharSpace(const double& dCharSpace)
+	{
+		m_dCharSpace = dCharSpace;
+		m_nUpdateFlags |= RENDERERTEXTCOMMAND_FLAGS_SPACE;
+	}
+	inline bool IsPropertiesChanged() const
+	{
+		return (0 == m_nUpdateFlags ? false : true);
+	}
+	inline bool IsFontChanged() const
+	{
+		return LONG_2_BOOL(m_nUpdateFlags & RENDERERTEXTCOMMAND_FLAGS_FONT);
+	}
+	inline bool IsSizeChanged() const
+	{
+		return LONG_2_BOOL(m_nUpdateFlags & RENDERERTEXTCOMMAND_FLAGS_SIZE);
+	}
+	inline bool IsColorChanged() const
+	{
+		return LONG_2_BOOL(m_nUpdateFlags & RENDERERTEXTCOMMAND_FLAGS_COLOR);
+	}
+	inline bool IsAlphaChanged() const
+	{
+		return LONG_2_BOOL(m_nUpdateFlags & RENDERERTEXTCOMMAND_FLAGS_ALPHA);
+	}
+	inline bool IsSpaceChanged() const
+	{
+		return LONG_2_BOOL(m_nUpdateFlags & RENDERERTEXTCOMMAND_FLAGS_SPACE);
+	}
+	inline CFontDict* GetFont() const
+	{
+		return m_pFont;
+	}
+	inline double GetSize() const
+	{
+		return m_dSize;
+	}
+	inline LONG GetColor() const
+	{
+		return m_lColor;
+	}
+	inline BYTE GetAlpha() const
+	{
+		return m_nAlpha;
+	}
+	inline double GetSpace() const
+	{
+		return m_dCharSpace;
+	}
+
+private:
+
+	unsigned char* m_pCodes;
+	unsigned int   m_nLen;
+	double         m_dX;
+	double         m_dY;
+
+	int            m_nUpdateFlags;
+
+	CFontDict*     m_pFont;
+	double         m_dSize;
+	LONG           m_lColor;
+	BYTE           m_nAlpha;
+	double         m_dCharSpace;
+};
+//----------------------------------------------------------------------------------------
+//
+// CCommandManager
+//
+//----------------------------------------------------------------------------------------
+CPdfRenderer::CCommandManager::CCommandManager(CPdfRenderer* pRenderer) : m_pRenderer(pRenderer)
+{
+}
+CPdfRenderer::CCommandManager::~CCommandManager()
+{
+	Clear();
+}
+CRendererTextCommand* CPdfRenderer::CCommandManager::AddText(unsigned char* pCodes, unsigned int nLen, const double& dX, const double& dY)
+{
+	CRendererCommandBase* pCommand = new CRendererTextCommand(pCodes, nLen, dX, dY);
+	Add(pCommand);
+	return (CRendererTextCommand*)pCommand;
+}
+void CPdfRenderer::CCommandManager::Add(CRendererCommandBase* pCommand)
+{
+	if (pCommand)
+	{
+		if (m_vCommands.size() > 0 && pCommand->GetType() != m_vCommands.at(0)->GetType())
+			Flush();
+
+		m_vCommands.push_back(pCommand);
+	}
+}
+void CPdfRenderer::CCommandManager::Flush()
+{
+	int nCommandsCount = m_vCommands.size();
+	if (nCommandsCount > 0)
+	{
+		CPage* pPage = m_pRenderer->m_pPage;
+		pPage->GrSave();
+
+		if (!m_oTransform.IsIdentity())
+			pPage->Concat(m_oTransform.m11, m_oTransform.m12, m_oTransform.m21, m_oTransform.m22, m_oTransform.dx, m_oTransform.dy);
+
+		ERendererCommandType eType = m_vCommands.at(0)->GetType();
+		if (renderercommandtype_Text == eType)
+		{
+			pPage->BeginText();
+			CRendererTextCommand* pText = NULL;
+
+			CFontDict* pTextFont = NULL;
+			double     dTextSize = -1;
+			LONG      lTextColor = 0;
+			BYTE      nTextAlpha = 255;
+			double    dTextSpace = 0;
+
+			for (int nIndex = 0; nIndex < nCommandsCount; nIndex++)
+			{
+				pText = (CRendererTextCommand*)m_vCommands.at(nIndex);
+				if (!pText)
+					continue;
+
+				//if (pText->IsPropertiesChanged())
+				//{
+				//	if (pText->IsFontChanged() || pText->IsSizeChanged())
+				//		pPage->SetFontAndSize(pText->GetFont(), pText->GetSize());
+
+				//	if (pText->IsColorChanged())
+				//	{
+				//		TColor oColor = pText->GetColor();
+				//		pPage->SetFillColor(oColor.r, oColor.g, oColor.b);
+				//	}
+
+				//	if (pText->IsAlphaChanged())
+				//		pPage->SetFillAlpha(pText->GetAlpha());
+
+				//	if (pText->IsSpaceChanged())
+				//		pPage->SetCharSpace(pText->GetSpace());
+				//}
+
+				if (pTextFont != pText->GetFont() || abs(dTextSize - pText->GetSize()) > 0.001)
+				{
+					pTextFont = pText->GetFont();
+					dTextSize = pText->GetSize();
+					pPage->SetFontAndSize(pTextFont, dTextSize);
+				}
+
+				if (lTextColor != pText->GetColor())
+				{
+					lTextColor = pText->GetColor();
+					TColor oColor = lTextColor;
+					pPage->SetFillColor(oColor.r, oColor.g, oColor.b);
+				}
+
+				if (nTextAlpha != pText->GetAlpha())
+				{
+					nTextAlpha = pText->GetAlpha();
+					pPage->SetFillAlpha(nTextAlpha);
+				}
+
+				if (abs(dTextSpace - pText->GetSpace()) > 0.001)
+				{
+					dTextSpace = pText->GetSpace();
+					pPage->SetCharSpace(dTextSpace);
+				}
+
+				pPage->DrawText(pText->GetX(), pText->GetY(), pText->GetCodes(), pText->GetCodesLen() * 2);
+			}
+
+			pPage->EndText();
+		}
+
+		pPage->GrRestore();
+	}
+
+	Clear();
+}
+void CPdfRenderer::CCommandManager::Clear()
+{
+	for (int nIndex = 0, nCount = m_vCommands.size(); nIndex < nCount; nIndex++)
+	{
+		CRendererCommandBase* pCommand = m_vCommands.at(nIndex);
+		delete[] pCommand;
+	}
+	m_vCommands.clear();
+}
+void CPdfRenderer::CCommandManager::SetTransform(const CTransform& oTransform)
+{
+	m_oTransform = oTransform;
+}
+//----------------------------------------------------------------------------------------
+//
+// CPdfRenderer
+//
+//----------------------------------------------------------------------------------------
+CPdfRenderer::CPdfRenderer(CApplicationFonts* pAppFonts) : m_oCommandManager(this)
 {
 	m_pAppFonts = pAppFonts;
 
@@ -72,6 +352,12 @@ CPdfRenderer::CPdfRenderer(CApplicationFonts* pAppFonts)
 	m_nCounter = 0;
 	m_nPagesCount = 0;
 
+	m_bNeedUpdateTextFont      = true;
+	m_bNeedUpdateTextColor     = true;
+	m_bNeedUpdateTextAlpha     = true;
+	m_bNeedUpdateTextCharSpace = true;
+	m_bNeedUpdateTextSize      = true;
+
 	m_wsTempFolder = L"";
 	SetTempFolder(NSFile::CFileBinary::GetTempPath());
 }
@@ -87,6 +373,8 @@ void CPdfRenderer::SaveToFile(const std::wstring& wsPath)
 {
 	if (!IsValid())
 		return;
+
+	m_oCommandManager.Flush();
 
 	m_pDocument->SaveToFile(wsPath);
 }
@@ -129,6 +417,8 @@ HRESULT CPdfRenderer::get_Type(LONG* lType)
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::NewPage()
 {
+	m_oCommandManager.Flush();
+
 	if (!IsValid())
 		return S_FALSE;
 
@@ -320,7 +610,11 @@ HRESULT CPdfRenderer::get_BrushColor1(LONG* lColor)
 }
 HRESULT CPdfRenderer::put_BrushColor1(const LONG& lColor)
 {
-	m_oBrush.SetColor1(lColor);
+	if (lColor != m_oBrush.GetColor1())
+	{
+		m_oBrush.SetColor1(lColor);
+		m_bNeedUpdateTextColor = true;
+	}
 	return S_OK;
 }
 HRESULT CPdfRenderer::get_BrushAlpha1(LONG* lAlpha)
@@ -330,7 +624,11 @@ HRESULT CPdfRenderer::get_BrushAlpha1(LONG* lAlpha)
 }
 HRESULT CPdfRenderer::put_BrushAlpha1(const LONG& lAlpha)
 {
-	m_oBrush.SetAlpha1(lAlpha);
+	if (lAlpha != m_oBrush.GetAlpha1())
+	{
+		m_oBrush.SetAlpha1(lAlpha);
+		m_bNeedUpdateTextAlpha = true;
+	}
 	return S_OK;
 }
 HRESULT CPdfRenderer::get_BrushColor2(LONG* lColor)
@@ -420,7 +718,12 @@ HRESULT CPdfRenderer::get_FontName(std::wstring* wsName)
 }
 HRESULT CPdfRenderer::put_FontName(const std::wstring& wsName)
 {
-	m_oFont.SetName(wsName);
+	if (wsName != m_oFont.GetName())
+	{
+		m_oFont.SetName(wsName);
+		m_bNeedUpdateTextFont = true;
+	}
+
 	return S_OK;
 }
 HRESULT CPdfRenderer::get_FontPath(std::wstring* wsPath)
@@ -430,7 +733,11 @@ HRESULT CPdfRenderer::get_FontPath(std::wstring* wsPath)
 }
 HRESULT CPdfRenderer::put_FontPath(const std::wstring& wsPath)
 {
-	m_oFont.SetPath(wsPath);
+	if (wsPath != m_oFont.GetPath())
+	{
+		m_oFont.SetPath(wsPath);
+		m_bNeedUpdateTextFont = true;
+	}
 	return S_OK;
 }
 HRESULT CPdfRenderer::get_FontSize(double* dSize)
@@ -440,7 +747,11 @@ HRESULT CPdfRenderer::get_FontSize(double* dSize)
 }
 HRESULT CPdfRenderer::put_FontSize(const double& dSize)
 {
-	m_oFont.SetSize(dSize);
+	if (abs(dSize - m_oFont.GetSize()) > 0.001)
+	{
+		m_oFont.SetSize(dSize);
+		m_bNeedUpdateTextSize = true;
+	}
 	return S_OK;
 }
 HRESULT CPdfRenderer::get_FontStyle(LONG* lStyle)
@@ -450,7 +761,11 @@ HRESULT CPdfRenderer::get_FontStyle(LONG* lStyle)
 }
 HRESULT CPdfRenderer::put_FontStyle(const LONG& lStyle)
 {
-	m_oFont.SetStyle(lStyle);
+	if (lStyle != m_oFont.GetStyle())
+	{
+		m_oFont.SetStyle(lStyle);
+		m_bNeedUpdateTextFont = true;
+	}
 	return S_OK;
 }
 HRESULT CPdfRenderer::get_FontStringGID(INT* bGid)
@@ -470,7 +785,11 @@ HRESULT CPdfRenderer::get_FontCharSpace(double* dSpace)
 }
 HRESULT CPdfRenderer::put_FontCharSpace(const double& dSpace)
 {
-	m_oFont.SetCharSpace(dSpace);
+	if (abs(dSpace - m_oFont.GetCharSpace()) > 0.001)
+	{
+		m_oFont.SetCharSpace(dSpace);
+		m_bNeedUpdateTextCharSpace = true;
+	}
 	return S_OK;
 }
 HRESULT CPdfRenderer::get_FontFaceIndex(int* nFaceIndex)
@@ -480,7 +799,12 @@ HRESULT CPdfRenderer::get_FontFaceIndex(int* nFaceIndex)
 }
 HRESULT CPdfRenderer::put_FontFaceIndex(const int& nFaceIndex)
 {
-	m_oFont.SetFaceIndex(nFaceIndex);
+	if (nFaceIndex != m_oFont.GetFaceIndex())
+	{
+		m_oFont.SetFaceIndex(nFaceIndex);
+		m_bNeedUpdateTextFont = true;
+	}
+
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
@@ -494,15 +818,6 @@ HRESULT CPdfRenderer::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX
 HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
 {
 	if (!IsPageValid() || !wsUnicodeText.size())
-		return S_FALSE;
-
-	m_pPage->GrSave();
-	UpdateTransform();
-	UpdateFont();
-	UpdatePen();
-	UpdateBrush();
-
-	if (!m_pFont)
 		return S_FALSE;
 
 	unsigned int* pUnicodes = new unsigned int[wsUnicodeText.size()];
@@ -555,20 +870,21 @@ HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const d
 		}		
 	}
 
+	if (m_bNeedUpdateTextFont)
+		UpdateFont();
+
+	if (!m_pFont)
+		return S_FALSE;
+
 	unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
 	delete[] pUnicodes;
 
-	m_pPage->BeginText();
-
-	m_pPage->SetFontAndSize(m_pFont, m_oFont.GetSize());
-	
-	if (abs(m_oFont.GetCharSpace()) > 0.001)
-		m_pPage->SetCharSpace(MM_2_PT(m_oFont.GetCharSpace()));
-
-	m_pPage->DrawText(MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), pCodes, unLen * 2);
-
-	m_pPage->EndText();
-	m_pPage->GrRestore();
+	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, unLen * 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
+	pText->SetFont(m_pFont);
+	pText->SetSize(m_oFont.GetSize());
+	pText->SetColor(m_oBrush.GetColor1());
+	pText->SetAlpha((BYTE)m_oBrush.GetAlpha1());
+	pText->SetCharSpace(m_oFont.GetCharSpace());
 
 	return S_OK;
 }
@@ -598,6 +914,7 @@ HRESULT CPdfRenderer::EndCommand(const DWORD& dwType)
 	// Здесь мы различаем лишь 2 команды: присоединить текущий пат к клипу и отменить клип
 	if (c_nClipType == dwType)
 	{
+		m_oCommandManager.Flush();
 		m_pPage->GrSave();
 		m_lClipDepth++;
 		UpdateTransform();
@@ -609,6 +926,7 @@ HRESULT CPdfRenderer::EndCommand(const DWORD& dwType)
 	}
 	else if (c_nResetClipType == dwType)
 	{
+		m_oCommandManager.Flush();
 		while (m_lClipDepth)
 		{
 			m_pPage->GrRestore();
@@ -633,6 +951,8 @@ HRESULT CPdfRenderer::PathCommandEnd()
 }
 HRESULT CPdfRenderer::DrawPath(const LONG& lType)
 {
+	m_oCommandManager.Flush();
+
 	if (!IsPageValid())
 		return S_FALSE;
 
@@ -765,6 +1085,8 @@ HRESULT CPdfRenderer::PathCommandTextEx(const std::wstring& wsUnicodeText, const
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::DrawImage(IGrObject* pImage, const double& dX, const double& dY, const double& dW, const double& dH)
 {
+	m_oCommandManager.Flush();
+
 	if (!IsPageValid() || !pImage)
 		return S_OK;
 
@@ -775,6 +1097,8 @@ HRESULT CPdfRenderer::DrawImage(IGrObject* pImage, const double& dX, const doubl
 }
 HRESULT CPdfRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha)
 {
+	m_oCommandManager.Flush();
+
 	if (!IsPageValid())
 		return S_OK;
 
@@ -789,6 +1113,7 @@ HRESULT CPdfRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const d
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
 {
+	m_oCommandManager.Flush();
 	m_oTransform.Set(dM11, dM12, dM21, dM22, dX, dY);
 	return S_OK;
 }
@@ -804,6 +1129,7 @@ HRESULT CPdfRenderer::GetTransform(double* dM11, double* dM12, double* dM21, dou
 }
 HRESULT CPdfRenderer::ResetTransform()
 {
+	m_oCommandManager.Flush();
 	m_oTransform.Reset();
 	return S_OK;
 }
@@ -848,6 +1174,8 @@ HRESULT CPdfRenderer::PathCommandTextPdf(const std::wstring& bsUnicodeText, cons
 }
 HRESULT CPdfRenderer::DrawImage1bpp(Pix* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH)
 {
+	m_oCommandManager.Flush();
+
 	if (!IsPageValid() || !pImageBuffer)
 		return S_OK;
 
@@ -950,6 +1278,7 @@ bool CPdfRenderer::DrawImage(Aggplus::CImage* pImage, const double& dX, const do
 }
 void CPdfRenderer::UpdateFont()
 {
+	m_bNeedUpdateTextFont = false;
 	std::wstring& wsFontPath = m_oFont.GetPath();
 	LONG lFaceIndex = m_oFont.GetFaceIndex();
 	if (L"" == wsFontPath)

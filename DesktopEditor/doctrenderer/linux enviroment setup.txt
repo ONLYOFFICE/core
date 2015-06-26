@@ -1,0 +1,41 @@
+sudo apt-get update
+
+# gcc 4.9
+sudo add-apt-repository ppa:ubuntu-toolchain-r/test
+sudo apt-get update
+sudo apt-get install g++-4.9
+sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.9 20
+sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.9 20
+sudo update-alternatives --config gcc
+sudo update-alternatives --config g++
+
+# qt
+chmod +x qt-opensource-linux-x64-5.4.2.run
+./qt-opensource-linux-x64-5.4.2.run
+
+# shared folder
+add share forder in wizard vbox
+cd /home/oleg/
+sudo mkdir activex
+sudo mount -t vboxsf share activex
+
+# v8 ---------------------------------------------------------------------------------------------------
+sudo apt-get install git
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+export PATH=`pwd`/depot_tools:"$PATH"
+gclient
+fetch v8
+cd v8
+// make native
+CFLAGS="-fPIC" CXXFLAGS="-fPIC" make native
+# or ---------------------------------------------------------------------------------------------------
+sudo apt-get install git
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+export PATH=`pwd`/depot_tools:"$PATH"
+sudo apt-get install subversion
+svn co http://v8.googlecode.com/svn/branches/bleeding_edge v8
+cd v8
+make dependencies
+// make native
+CFLAGS="-fPIC" CXXFLAGS="-fPIC" make native
+---------------------------------------------------------------------------------------------------------

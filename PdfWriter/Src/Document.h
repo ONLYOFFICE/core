@@ -32,6 +32,7 @@ namespace PdfWriter
 	class CJbig2Global;
 	class CShading;
 	class CImageTilePattern;
+	class CPattern;
 	//----------------------------------------------------------------------------------------
 	// CDocument
 	//----------------------------------------------------------------------------------------
@@ -58,6 +59,8 @@ namespace PdfWriter
 		CDestination*     CreateDestination(unsigned int unPageIndex);
 					      
 		CExtGrState*      GetExtGState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);
+		CExtGrState*      GetStrokeAlpha(double dAlpha);
+		CExtGrState*      GetFillAlpha(double dAlpha);
 		CJbig2Global*     GetJbig2Global();
 					      
 		CAnnotation*      CreateTextAnnot(unsigned int unPageNum, TRect oRect, const char* sText);
@@ -68,10 +71,10 @@ namespace PdfWriter
 		CFont14*          CreateFont14(EStandard14Fonts eType);
 		CFontCidTrueType* CreateTrueTypeFont(const std::wstring& wsFontPath, unsigned int unIndex);
 
-		CShading*         CreateAxialShading(double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, double* pPoints, int nCount);
-		CShading*         CreateRaidalShading(double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, double* pPoints, int nCount);
-		CImageTilePattern*CreateImageTilePattern(double dW, double dH, CImageDict* pImageDict, EImageTilePatternType eType = imagetilepatterntype_Default);
+		CImageTilePattern*CreateImageTilePattern(double dW, double dH, CImageDict* pImageDict, CMatrix* pMatrix = NULL, EImageTilePatternType eType = imagetilepatterntype_Default);
 		CImageTilePattern*CreateHatchPattern(double dW, double dH, const BYTE& nR1, const BYTE& nG1, const BYTE& nB1, const BYTE& nAlpha1, const BYTE& nR2, const BYTE& nG2, const BYTE& nB2, const BYTE& nAlpha2, const std::wstring& wsHatch);
+		CShading*         CreateAxialShading(CPage* pPage, double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState);
+		CShading*         CreateRadialShading(CPage* pPage, double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState);
 					  
 	private:		  
 					  
@@ -80,6 +83,9 @@ namespace PdfWriter
 		void              SaveToStream(CStream* pStream);
 		void              PrepareEncryption();
 		CDictObject*      CreatePageLabel(EPageNumStyle eStyle, unsigned int unFirstPage, const char* sPrefix);
+		CShading*         CreateShading(CPage* pPage, double *pPattern, bool bAxial, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState);
+		CShading*         CreateAxialShading(double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, double* pPoints, int nCount);
+		CShading*         CreateRadialShading(double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, double* pPoints, int nCount);
 
 	private:
 
@@ -111,10 +117,13 @@ namespace PdfWriter
 		unsigned int              m_unCompressMode;
 		std::vector<CPage*>       m_vPages;
 		std::vector<CExtGrState*> m_vExtGrStates;
+		std::vector<CExtGrState*> m_vStrokeAlpha;
+		std::vector<CExtGrState*> m_vFillAlpha;
 		char                      m_sTTFontTag[8]; // 6 символов + '+' + 0x00 ("BAAAAA+/0")
 		CJbig2Global*             m_pJbig2;
 		std::vector<CShading*>    m_vShadings;
 		std::vector<TFontInfo>    m_vTTFonts;
+		CDictObject*              m_pTransparencyGroup;
 
 		friend class CFontCidTrueType;
 	};

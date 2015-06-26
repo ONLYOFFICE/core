@@ -141,6 +141,7 @@
     <Text Include="ReadMe.txt" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="OnlineOfficeBinToPdf.cpp" />
     <ClCompile Include="PdfRenderer.cpp" />
     <ClCompile Include="Src\Annotation.cpp" />
     <ClCompile Include="Src\Catalog.cpp" />
@@ -164,6 +165,7 @@
     <ClCompile Include="Src\Utils.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="OnlineOfficeBinToPdf.h" />
     <ClInclude Include="PdfRenderer.h" />
     <ClInclude Include="Src\Annotation.h" />
     <ClInclude Include="Src\Catalog.h" />

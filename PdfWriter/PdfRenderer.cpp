@@ -15,6 +15,9 @@
 #include "../DesktopEditor/fontengine/FontManager.h"
 
 #include "../DesktopEditor/common/File.h"
+#include "../DesktopEditor/common/Directory.h"
+
+#include "OnlineOfficeBinToPdf.h"
 
 
 #define MM_2_PT(X) ((X) * 72.0 / 25.4)
@@ -37,6 +40,10 @@ using namespace PdfWriter;
 #define LO_SURROGATE_START  0xDC00
 #define LO_SURROGATE_END    0xDFFF
 
+// Этих типов браша нет в рендерере, мы их используем, когда конвертим из веба
+static const long c_BrushTypeLinearGradient = 8001;
+static const long c_BrushTypeRadialGradient = 8002;
+
 CPdfRenderer::CPdfRenderer(CApplicationFonts* pAppFonts)
 {
 	m_pAppFonts = pAppFonts;
@@ -54,6 +61,8 @@ CPdfRenderer::CPdfRenderer(CApplicationFonts* pAppFonts)
 		return;
 	}
 
+	//m_pDocument->SetCompressionMode(COMP_ALL);
+
 	m_bValid      = true;
 	m_dPageHeight = 297;
 	m_dPageWidth  = 210;
@@ -61,6 +70,8 @@ CPdfRenderer::CPdfRenderer(CApplicationFonts* pAppFonts)
 	m_pFont       = NULL;
 
 	m_nCounter = 0;
+
+	SetTempFolder(NSFile::CFileBinary::GetTempPath());
 }
 CPdfRenderer::~CPdfRenderer()
 {
@@ -73,6 +84,22 @@ void CPdfRenderer::SaveToFile(const std::wstring& wsPath)
 		return;
 
 	m_pDocument->SaveToFile(wsPath);
+}
+void CPdfRenderer::SetTempFolder(const std::wstring& wsPath)
+{
+	m_wsTempFolder = wsPath;
+}
+std::wstring CPdfRenderer::GetTempFile()
+{
+	return NSFile::CFileBinary::CreateTempFileWithUniqueName(m_wsTempFolder, L"PDF");
+}
+void         CPdfRenderer::SetThemesPlace(const std::wstring& wsThemesPlace)
+{
+	m_wsThemesPlace = wsThemesPlace;
+}
+std::wstring CPdfRenderer::GetThemesPlace()
+{
+	return m_wsThemesPlace;
 }
 //----------------------------------------------------------------------------------------
 // Тип рендерера
@@ -102,6 +129,11 @@ HRESULT CPdfRenderer::NewPage()
 	m_pPage->SetHeight(m_dPageHeight);
 
 	m_oPen.Reset();
+	m_oBrush.Reset();
+	m_oFont.Reset();
+	m_oPath.Clear();
+
+	m_lClipDepth = 0;
 
 	return S_OK;
 }
@@ -344,19 +376,21 @@ HRESULT CPdfRenderer::put_BrushLinearAngle(const double& dAngle)
 	m_oBrush.SetLinearAngle(dAngle);
 	return S_OK;
 }
-HRESULT CPdfRenderer::BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height)
+HRESULT CPdfRenderer::BrushRect(const INT& nVal, const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
 {
-	// TODO: Пока определяется все по границам пата
+	// Данными параметрами пользуемся, только если пришла команда EnableBrushRect, если команда не пришла, тогда
+	// ориентируемся на границы пата.
+	m_oBrush.SetBrushRect(nVal, dLeft, dTop, dWidth, dHeight);
 	return S_OK;
 }
-HRESULT CPdfRenderer::BrushBounds(const double& left, const double& top, const double& width, const double& height)
+HRESULT CPdfRenderer::BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
 {
 	// TODO: Пока определяется все по границам пата
 	return S_OK;
 }
 HRESULT CPdfRenderer::put_BrushGradientColors(LONG* lColors, double* pPositions, LONG lCount)
 {
-	m_oBrush.SetShadingColors(lColors, pPositions, lCount);
+	m_oBrush.SetGradientColors(lColors, pPositions, lCount);
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
@@ -541,8 +575,30 @@ HRESULT CPdfRenderer::BeginCommand(const DWORD& dwType)
 }
 HRESULT CPdfRenderer::EndCommand(const DWORD& dwType)
 {
+	if (!IsPageValid())
+		return S_FALSE;
+
 	// Здесь мы различаем лишь 2 команды: присоединить текущий пат к клипу и отменить клип
-	// TODO: Реализовать
+	if (c_nClipType == dwType)
+	{
+		m_pPage->GrSave();
+		m_lClipDepth++;
+		UpdateTransform();
+
+		if (c_nClipRegionTypeWinding == c_nClipRegionTypeWinding)
+			m_oPath.Clip(m_pPage, false);
+		else
+			m_oPath.Clip(m_pPage, true);
+	}
+	else if (c_nResetClipType == dwType)
+	{
+		while (m_lClipDepth)
+		{
+			m_pPage->GrRestore();
+			m_lClipDepth--;
+		}
+	}
+
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
@@ -563,16 +619,41 @@ HRESULT CPdfRenderer::DrawPath(const LONG& lType)
 	if (!IsPageValid())
 		return S_FALSE;
 
-	m_pPage->GrSave();
-	UpdateTransform();
-	UpdatePen();
-	UpdateBrush();
-
 	bool bStroke = LONG_2_BOOL(lType & c_nStroke);
 	bool bFill   = LONG_2_BOOL(lType & c_nWindingFillMode);
 	bool bEoFill = LONG_2_BOOL(lType & c_nEvenOddFillMode);
 
-	m_oPath.Draw(m_pPage, bStroke, bFill, bEoFill);
+	m_pPage->GrSave();
+	UpdateTransform();
+
+	if (bStroke)
+		UpdatePen();
+
+	if (bFill || bEoFill)
+		UpdateBrush();
+
+	if (!m_pShading)
+	{
+		m_oPath.Draw(m_pPage, bStroke, bFill, bEoFill);
+	}
+	else
+	{
+		if (bFill || bEoFill)
+		{
+			m_pPage->GrSave();
+			m_oPath.Clip(m_pPage, bEoFill);
+
+			if (NULL != m_pShadingExtGrState)
+				m_pPage->SetExtGrState(m_pShadingExtGrState);
+
+			m_pPage->DrawShading(m_pShading);
+			m_pPage->GrRestore();
+		}
+
+		if (bStroke)
+			m_oPath.Draw(m_pPage, bStroke, false, false);
+	}
+
 	m_pPage->GrRestore();
 
 	return S_OK;
@@ -763,6 +844,23 @@ HRESULT CPdfRenderer::DrawImage1bpp(Pix* pImageBuffer, const unsigned int& unWid
 	m_pPage->GrRestore();
 	return S_OK;
 }
+HRESULT CPdfRenderer::EnableBrushRect(const LONG& lEnable)
+{
+	m_oBrush.EnableBrushRect(LONG_2_BOOL(lEnable));
+	return S_OK;
+}
+HRESULT CPdfRenderer::SetLinearGradient(const double& dX0, const double& dY0, const double& dX1, const double& dY1)
+{
+	m_oBrush.SetType(c_BrushTypeLinearGradient);
+	m_oBrush.SetLinearGradientPattern(dX0, dY0, dX1, dY1);
+	return S_OK;
+}
+HRESULT CPdfRenderer::SetRadialGradient(const double& dX0, const double& dY0, const double& dR0, const double& dX1, const double& dY1, const double& dR1)
+{
+	m_oBrush.SetType(c_BrushTypeRadialGradient);
+	m_oBrush.SetRadialGradientPattern(dX0, dY0, dR0, dX1, dY1, dR1);
+	return S_OK;
+}
 //----------------------------------------------------------------------------------------
 // Внутренние функции
 //----------------------------------------------------------------------------------------
@@ -778,6 +876,10 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 	if (nImageH < 100 || nImageW < 100)
 		bJpeg = true;
 
+	// TODO: Пока не разберемся как в CxImage управлять параметрами кодирования нельзя писать в Jpeg2000,
+	//       т.к. файлы получаются гораздо больше и конвертация идет намного дольше.
+	bJpeg = true;
+
 	// Пробегаемся по картинке и определяем есть ли у нас альфа-канал
 	bool bAlpha = false;
 	for (int nIndex = 0, nSize = nImageW * nImageH; nIndex < nSize; nIndex++)
@@ -792,6 +894,8 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 	CxImage oCxImage;
 	if (!oCxImage.CreateFromArray(pData, nImageW, nImageH, 32, nStride, (pImage->GetStride() >= 0) ? true : false))
 		return NULL;
+
+	oCxImage.SetJpegQualityF(85.0f);
 
 	BYTE* pBuffer = NULL;
 	int nBufferSize = 0;
@@ -847,7 +951,6 @@ void CPdfRenderer::UpdateFont()
 	if (L"" != wsFontPath)
 	{
 		// TODO: Пока мы здесь предполагаем, что шрифты только либо TrueType, либо OpenType
-		LONG lFaceIndex = m_oFont.GetFaceIndex();
 		m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, 10, 72, 72);
 		std::wstring wsFontType = m_pFontManager->GetFontType();
 		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
@@ -863,6 +966,7 @@ void CPdfRenderer::UpdatePen()
 {
 	TColor& oColor = m_oPen.GetTColor();
 	m_pPage->SetStrokeColor(oColor.r, oColor.g, oColor.b);
+	m_pPage->SetStrokeAlpha((unsigned char)m_oPen.GetAlpha());
 	m_pPage->SetLineWidth(MM_2_PT(m_oPen.GetSize()));
 	
 	LONG lDashCount = 0;
@@ -920,7 +1024,11 @@ void CPdfRenderer::UpdatePen()
 }
 void CPdfRenderer::UpdateBrush()
 {
+	m_pShading = NULL;
+	m_pShadingExtGrState = NULL;
+
 	LONG lBrushType = m_oBrush.GetType();
+	m_pDocument->GetExtGState();
 	if (c_BrushTypeTexture == lBrushType)
 	{
 		std::wstring& wsTexturePath = m_oBrush.GetTexturePath();
@@ -959,11 +1067,13 @@ void CPdfRenderer::UpdateBrush()
 
 			double dW = 10;
 			double dH = 10;
+
+			double dL, dR, dT, dB;
+			m_oPath.GetBounds(dL, dT, dR, dB);
+
 			if (c_BrushTextureModeStretch == lTextureMode)
 			{
 				// Растягиваем картинку по размерам пата
-				double dL, dR, dT, dB;
-				m_oPath.GetBounds(dL, dT, dR, dB);
 				dW = max(10, dR - dL);
 				dH = max(10, dB - dT);
 			}
@@ -972,9 +1082,15 @@ void CPdfRenderer::UpdateBrush()
 				// Размеры картинки заданы в пикселях. Размеры тайла - это размеры картинки в пунктах.
 				dW = nImageW * 72 / 96;
 				dH = nImageH * 72 / 96;
-			}
+			}			
 
-			m_pPage->SetPatternColorSpace(m_pDocument->CreateImageTilePattern(dW, dH, pImage));
+			// Нам нужно, чтобы левый нижний угол границ нашего пата являлся точкой переноса для матрицы преобразования.
+			CMatrix* pMatrix = m_pPage->GetTransform();
+			pMatrix->Apply(dL, dB);
+			CMatrix oPatternMatrix = *pMatrix;
+			oPatternMatrix.x = dL;
+			oPatternMatrix.y = dB;
+			m_pPage->SetPatternColorSpace(m_pDocument->CreateImageTilePattern(dW, dH, pImage, &oPatternMatrix));
 		}
 	}
 	else if (c_BrushTypeHatch1 == lBrushType)
@@ -991,11 +1107,64 @@ void CPdfRenderer::UpdateBrush()
 
 		m_pPage->SetPatternColorSpace(m_pDocument->CreateHatchPattern(dW, dH, oColor1.r, oColor1.g, oColor1.b, nAlpha1, oColor2.r, oColor2.g, oColor2.b, nAlpha2, wsHatchType));
 	}
+	else if (c_BrushTypeRadialGradient == lBrushType || c_BrushTypeLinearGradient == lBrushType)
+	{
+		TColor* pGradientColors;
+		double* pPoints;
+		LONG lCount;
+
+		m_oBrush.GetGradientColors(pGradientColors, pPoints, lCount);
+
+		if (lCount > 0)
+		{
+			unsigned char* pColors = new unsigned char[3 * lCount];
+			unsigned char* pAlphas = new unsigned char[lCount];
+			if (pColors)
+			{
+				for (LONG lIndex = 0; lIndex < lCount; lIndex++)
+				{
+					pColors[3 * lIndex + 0] = pGradientColors[lIndex].r;
+					pColors[3 * lIndex + 1] = pGradientColors[lIndex].g;
+					pColors[3 * lIndex + 2] = pGradientColors[lIndex].b;
+					pAlphas[lIndex]         = pGradientColors[lIndex].a;
+				}
+
+				if (c_BrushTypeLinearGradient == lBrushType)
+				{
+					double dX0, dY0, dX1, dY1;
+					m_oBrush.GetLinearGradientPattern(dX0, dY0, dX1, dY1);
+					m_pShading = m_pDocument->CreateAxialShading(m_pPage, MM_2_PT(dX0), MM_2_PT(m_dPageHeight - dY0), MM_2_PT(dX1), MM_2_PT(m_dPageHeight - dY1), pColors, pAlphas, pPoints, lCount, m_pShadingExtGrState);
+				}
+				else //if (c_BrushTypeRadialGradient == lBrushType)
+				{
+					double dX0, dY0, dR0, dX1, dY1, dR1;
+					m_oBrush.GetRadialGradientPattern(dX0, dY0, dR0, dX1, dY1, dR1);
+					m_pShading = m_pDocument->CreateRadialShading(m_pPage, MM_2_PT(dX0), MM_2_PT(m_dPageHeight - dY0), MM_2_PT(dR0), MM_2_PT(dX1), MM_2_PT(m_dPageHeight - dY1), MM_2_PT(dR1), pColors, pAlphas, pPoints, lCount, m_pShadingExtGrState);
+				}
+				delete[] pColors;
+			}
+		}
+	}
 	else// if (c_BrushTypeSolid == lBrushType)
 	{
 		TColor& oColor1 = m_oBrush.GetTColor1();
 		m_pPage->SetFillColor(oColor1.r, oColor1.g, oColor1.b);
+		m_pPage->SetFillAlpha((unsigned char)m_oBrush.GetAlpha1());
 	}
+}
+HRESULT CPdfRenderer::OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile)
+{
+	if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, false))
+		return S_FALSE;
+
+	return S_OK;
+}
+HRESULT CPdfRenderer::OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile)
+{
+	if (!NSOnlineOfficeBinToPdf::ConvertBinToPdf(this, wsSrcFile, wsDstFile, true))
+		return S_FALSE;
+
+	return S_OK;
 }
 
 static inline void UpdateMaxMinPoints(double& dMinX, double& dMinY, double& dMaxX, double& dMaxY, const double& dX, const double& dY)
@@ -1032,6 +1201,21 @@ void CPdfRenderer::CPath::Draw(PdfWriter::CPage* pPage, bool bStroke, bool bFill
 		pPage->EoFill();
 	else
 		pPage->EndPath();
+}
+void CPdfRenderer::CPath::Clip(PdfWriter::CPage* pPage, bool bEvenOdd)
+{
+	for (int nIndex = 0, nCount = m_vCommands.size(); nIndex < nCount; nIndex++)
+	{
+		CPathCommandBase* pCommand = m_vCommands.at(nIndex);
+		pCommand->Draw(pPage);
+	}
+
+	if (bEvenOdd)
+		pPage->Eoclip();
+	else
+		pPage->Clip();
+
+	pPage->EndPath();
 }
 void CPdfRenderer::CPath::GetLastPoint(double& dX, double& dY)
 {
@@ -1143,4 +1327,27 @@ void CPdfRenderer::CPath::CPathTextEx::Draw(PdfWriter::CPage* pPage)
 void CPdfRenderer::CPath::CPathTextEx::UpdateBounds(double& dL, double& dT, double& dR, double& dB)
 {
 	// TODO: Реализовать
+}
+void CPdfRenderer::CBrushState::Reset()
+{
+	m_lType = c_BrushTypeSolid;
+	m_oColor1.Set(0);
+	m_oColor2.Set(0);
+	m_nAlpha1 = 255;
+	m_nAlpha2 = 255;
+	m_wsTexturePath = L"";
+	m_lTextureMode  = c_BrushTextureModeStretch;
+	m_nTextureAlpha = 255;
+	m_dLinearAngle  = 0;
+	m_oRect.Reset();
+
+	if (m_pShadingColors)
+		delete[] m_pShadingColors;
+
+	if (m_pShadingPoints)
+		delete[] m_pShadingPoints;
+
+	m_pShadingColors      = NULL;
+	m_pShadingPoints      = NULL;
+	m_lShadingPointsCount = 0;
 }

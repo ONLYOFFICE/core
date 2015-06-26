@@ -43,6 +43,7 @@ namespace PdfWriter
 		m_unCompressMode    = COMP_NONE;
 		m_pJbig2            = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
+		m_pTransparencyGroup = NULL;
 	}
 	CDocument::~CDocument()
 	{
@@ -65,7 +66,7 @@ namespace PdfWriter
 			return false;
 
 		m_pCatalog->SetPageMode(pagemode_UseNone);
-		m_pCatalog->SetPageLayout(pagelayout_Single);
+		m_pCatalog->SetPageLayout(pagelayout_OneColumn);
 
 		m_pPageTree = m_pCatalog->GetRoot();
 		if (!m_pPageTree)
@@ -81,6 +82,11 @@ namespace PdfWriter
 		m_nCurPageNum = -1;
 
 		m_vPages.clear();
+		m_vExtGrStates.clear();
+		m_vFillAlpha.clear();
+		m_vStrokeAlpha.clear();
+
+		m_pTransparencyGroup = NULL;
 
 		return true;
 	}
@@ -186,7 +192,7 @@ namespace PdfWriter
 	}
 	CPage*            CDocument::AddPage()
 	{
-		CPage* pPage = new CPage(m_pXref, m_pPageTree);
+		CPage* pPage = new CPage(m_pXref, m_pPageTree, this);
 		m_pPageTree->AddPage(pPage);
 		m_pCurPage = pPage;
 		m_vPages.push_back(pPage);
@@ -330,6 +336,44 @@ namespace PdfWriter
 
 		return pExtGrState;
 	}
+	CExtGrState*      CDocument::GetStrokeAlpha(double dAlpha)
+	{
+		CExtGrState* pExtGrState = NULL;
+		for (unsigned int unIndex = 0, unCount = m_vStrokeAlpha.size(); unIndex < unCount; unIndex++)
+		{
+			pExtGrState = m_vStrokeAlpha.at(unIndex);
+
+			if (abs(dAlpha - pExtGrState->GetAlphaStroke()) < 0.001)
+				return pExtGrState;
+		}
+
+		pExtGrState = new CExtGrState(m_pXref);
+		if (!pExtGrState)
+			return NULL;
+
+		pExtGrState->SetAlphaStroke(dAlpha);
+		m_vStrokeAlpha.push_back(pExtGrState);
+		return pExtGrState;
+	}
+	CExtGrState*      CDocument::GetFillAlpha(double dAlpha)
+	{
+		CExtGrState* pExtGrState = NULL;
+		for (unsigned int unIndex = 0, unCount = m_vFillAlpha.size(); unIndex < unCount; unIndex++)
+		{
+			pExtGrState = m_vFillAlpha.at(unIndex);
+
+			if (abs(dAlpha == pExtGrState->GetAlphaFill()) < 0.001)
+				return pExtGrState;
+		}
+
+		pExtGrState = new CExtGrState(m_pXref);
+		if (!pExtGrState)
+			return NULL;
+
+		pExtGrState->SetAlphaFill(dAlpha);
+		m_vFillAlpha.push_back(pExtGrState);
+		return pExtGrState;
+	}
 	CAnnotation*      CDocument::CreateTextAnnot(unsigned int unPageNum, TRect oRect, const char* sText)
 	{
 		CAnnotation* pAnnot = new CTextAnnotation(m_pXref, oRect, sText);
@@ -423,6 +467,96 @@ namespace PdfWriter
 
 		return m_pJbig2;
 	}
+	CShading*         CDocument::CreateShading(CPage* pPage, double *pPattern, bool bAxial, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState)
+	{
+		pExtGrState = NULL;
+
+		bool bNeedAlpha = false;
+		unsigned char* pA = new unsigned char[3 * nCount];
+		if (!pA)
+			return NULL;
+
+		for (int nIndex = 0; nIndex < nCount; nIndex++)
+		{
+			pA[3 * nIndex + 0] = pAlphas[nIndex];
+			pA[3 * nIndex + 1] = pAlphas[nIndex];
+			pA[3 * nIndex + 2] = pAlphas[nIndex];
+
+			if (255 != pAlphas[nIndex])
+				bNeedAlpha = true;
+		}
+
+		if (!bNeedAlpha)
+		{
+			delete[] pA;
+			if (bAxial)
+				return CreateAxialShading(pPattern[0], pPattern[1], pPattern[2], pPattern[3], pColors, pPoints, nCount);
+			else
+				return CreateRadialShading(pPattern[0], pPattern[1], pPattern[2], pPattern[3], pPattern[4], pPattern[5], pColors, pPoints, nCount);
+		}
+
+		// Создаем 2 shading-объекта, один цветной RGB, второй серый со значениями альфа-канала
+		CShading* pColorShading = NULL;
+		CShading* pAlphaShading = NULL;
+
+		if (bAxial)
+		{
+			pColorShading = CreateAxialShading(pPattern[0], pPattern[1], pPattern[2], pPattern[3], pColors, pPoints, nCount);
+			pAlphaShading = CreateAxialShading(pPattern[0], pPattern[1], pPattern[2], pPattern[3], pA, pPoints, nCount);
+		}
+		else
+		{
+			pColorShading = CreateRadialShading(pPattern[0], pPattern[1], pPattern[2], pPattern[3], pPattern[4], pPattern[5], pColors, pPoints, nCount);
+			pAlphaShading = CreateRadialShading(pPattern[0], pPattern[1], pPattern[2], pPattern[3], pPattern[4], pPattern[5], pA, pPoints, nCount);
+		}
+		delete[] pA;
+
+		if (!m_pTransparencyGroup)
+		{
+			m_pTransparencyGroup = new CDictObject();
+			m_pTransparencyGroup->Add("Type", "Group");
+			m_pTransparencyGroup->Add("S", "Transparency");
+			m_pTransparencyGroup->Add("CS", "DeviceRGB");
+		}
+
+		pPage->Add("Group", m_pTransparencyGroup);
+		double dWidth  = pPage->GetWidth();
+		double dHeight = pPage->GetHeight();
+
+		// Создаем графический объект, который будет альфа-маской
+		CDictObject* pXObject = new CDictObject(m_pXref, true);
+		pXObject->Add("Type", "XObject");
+		pXObject->Add("Subtype", "Form");
+		pXObject->Add("BBox", CArrayObject::CreateBox(0, 0, dWidth, dHeight));
+		pXObject->Add("Group", m_pTransparencyGroup);
+		CDictObject* pResources = new CDictObject();
+		pXObject->Add("Resources", pResources);
+		CDictObject* pResShadings = new CDictObject();
+		pResources->Add("Shading", pResShadings);
+		pResShadings->Add("S1", pAlphaShading);
+		CStream* pStream = pXObject->GetStream();
+
+		pStream->WriteStr("0 0 ");
+		pStream->WriteReal(dWidth);
+		pStream->WriteChar(' ');
+		pStream->WriteReal(dHeight);
+		pStream->WriteStr(" re\012W\012\n\012/S1 sh\012");
+
+		// Создаем обект-маску для графического состояние
+		CDictObject* pMask = new CDictObject();
+		m_pXref->Add(pMask);
+		pMask->Add("Type", "Mask");
+		pMask->Add("S", "Luminosity");
+		pMask->Add("G", pXObject);
+
+		// Создаем ExtGState объект, в который мы запишем альфа-маску
+		pExtGrState = new CExtGrState(m_pXref);
+		pExtGrState->Add("BM", "Normal");
+		pExtGrState->Add("ca", 1);
+		pExtGrState->Add("SMask", pMask);
+
+		return pColorShading;
+	}
 	CShading*         CDocument::CreateAxialShading(double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, double* pPoints, int nCount)
 	{
 		for (int nIndex = 0, nShadingsCount = m_vShadings.size(); nIndex < nShadingsCount; nIndex++)
@@ -430,7 +564,7 @@ namespace PdfWriter
 			CShading* pShading = m_vShadings.at(nIndex);
 			if (shadingtype_Axial == pShading->GetShadingType()
 				&& ((CAxialShading*)pShading)->Compare(dX0, dY0, dX1, dY1)
-				&& pShading->CompareColors(pColors, pPoints, nCount)
+				&& pShading->CompareColors(pColors, pPoints, nCount, true)
 				&& pShading->CompareExtend(true, true))
 				return pShading;
 		}
@@ -439,21 +573,21 @@ namespace PdfWriter
 		if (!pShading)
 			return NULL;
 
-		pShading->SetColors(pColors, pPoints, nCount);
+		pShading->SetRgbColors(pColors, pPoints, nCount);
 		pShading->SetExtend(true, true);
 
 		m_vShadings.push_back(pShading);
 
 		return pShading;
 	}
-	CShading*         CDocument::CreateRaidalShading(double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, double* pPoints, int nCount)
+	CShading*         CDocument::CreateRadialShading(double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, double* pPoints, int nCount)
 	{
 		for (int nIndex = 0, nShadingsCount = m_vShadings.size(); nIndex < nShadingsCount; nIndex++)
 		{
 			CShading* pShading = m_vShadings.at(nIndex);
 			if (shadingtype_Radial == pShading->GetShadingType()
 				&& ((CRadialShading*)pShading)->Compare(dX0, dY0, dR0, dX1, dY1, dR1)
-				&& pShading->CompareColors(pColors, pPoints, nCount)
+				&& pShading->CompareColors(pColors, pPoints, nCount, true)
 				&& pShading->CompareExtend(true, true))
 				return pShading;
 		}
@@ -462,16 +596,16 @@ namespace PdfWriter
 		if (!pShading)
 			return NULL;
 
-		pShading->SetColors(pColors, pPoints, nCount);
+		pShading->SetRgbColors(pColors, pPoints, nCount);
 		pShading->SetExtend(true, true);
 
 		m_vShadings.push_back(pShading);
 
 		return pShading;
 	}
-	CImageTilePattern*CDocument::CreateImageTilePattern(double dW, double dH, CImageDict* pImageDict, EImageTilePatternType eType)
+	CImageTilePattern*CDocument::CreateImageTilePattern(double dW, double dH, CImageDict* pImageDict, CMatrix* pMatrix, EImageTilePatternType eType)
 	{
-		return new CImageTilePattern(m_pXref, dW, dH, pImageDict, eType);
+		return new CImageTilePattern(m_pXref, dW, dH, pImageDict, pMatrix, eType);
 	}
 	CImageTilePattern*CDocument::CreateHatchPattern(double dW, double dH, const BYTE& nR1, const BYTE& nG1, const BYTE& nB1, const BYTE& nAlpha1, const BYTE& nR2, const BYTE& nG2, const BYTE& nB2, const BYTE& nAlpha2, const std::wstring& wsHatch)
 	{
@@ -499,6 +633,16 @@ namespace PdfWriter
 			}
 		}
 
-		return CreateImageTilePattern(dW, dH, pImage, imagetilepatterntype_Default);
+		return CreateImageTilePattern(dW, dH, pImage, NULL, imagetilepatterntype_Default);
+	}
+	CShading*         CDocument::CreateAxialShading(CPage* pPage, double dX0, double dY0, double dX1, double dY1, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState)
+	{
+		double pPattern[] ={ dX0, dY0, dX1, dY1 };
+		return CreateShading(pPage, pPattern, true, pColors, pAlphas, pPoints, nCount, pExtGrState);
+	}
+	CShading*         CDocument::CreateRadialShading(CPage* pPage, double dX0, double dY0, double dR0, double dX1, double dY1, double dR1, unsigned char* pColors, unsigned char* pAlphas, double* pPoints, int nCount, CExtGrState*& pExtGrState)
+	{
+		double pPattern[] ={ dX0, dY0, dR0, dX1, dY1, dR1 };
+		return CreateShading(pPage, pPattern, false, pColors, pAlphas, pPoints, nCount, pExtGrState);
 	}
 }

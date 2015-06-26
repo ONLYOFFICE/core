@@ -2,6 +2,7 @@
 #define _PDF_WRITER_SRC_STREAMS_H
 
 #include "Objects.h"
+#include "Pattern.h"
 
 namespace PdfWriter
 {
@@ -20,9 +21,10 @@ namespace PdfWriter
 		CShading(CXref* pXref);
 		virtual ~CShading();
 
-		void SetColors(unsigned char* pColors, double* dPoints, int nCount);
+		void SetRgbColors(unsigned char* pColors, double* dPoints, int nCount);
+		void SetGrayColors(unsigned char* pColors, double* dPoints, int nCount);
 		void SetExtend(bool bBeing, bool bEnd);
-		bool CompareColors(unsigned char* pColors, double* pPoints, int nCount);
+		bool CompareColors(unsigned char* pColors, double* pPoints, int nCount, bool bRgb);
 		bool CompareExtend(bool bBeing, bool bEnd);
 
 		virtual EShadingType GetShadingType()
@@ -36,6 +38,7 @@ namespace PdfWriter
 		
 	private:
 
+		bool           m_bRgb;            // Rgb или Gray
 		unsigned char* m_pColors;
 		double*        m_pColorsPoints;
 		int            m_nColorsCount;

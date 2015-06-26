@@ -70,6 +70,7 @@ CPdfRenderer::CPdfRenderer(CApplicationFonts* pAppFonts)
 	m_pFont       = NULL;
 
 	m_nCounter = 0;
+	m_nPagesCount = 0;
 
 	m_wsTempFolder = L"";
 	SetTempFolder(NSFile::CFileBinary::GetTempPath());
@@ -148,6 +149,8 @@ HRESULT CPdfRenderer::NewPage()
 	m_oPath.Clear();
 
 	m_lClipDepth = 0;
+
+	printf("Page %d\n", m_nPagesCount++);
 
 	return S_OK;
 }
@@ -951,14 +954,35 @@ void CPdfRenderer::UpdateFont()
 	LONG lFaceIndex = m_oFont.GetFaceIndex();
 	if (L"" == wsFontPath)
 	{
-		CFontSelectFormat oFontSelect;
-		oFontSelect.wsName = new std::wstring(m_oFont.GetName());
-		oFontSelect.bItalic = new INT(m_oFont.IsItalic() ? 1 : 0);
-		oFontSelect.bBold   = new INT(m_oFont.IsBold() ? 1 : 0);
-		CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect);
+		std::wstring& wsFontName = m_oFont.GetName();
+		bool bBold   = m_oFont.IsBold();
+		bool bItalic = m_oFont.IsItalic();
+		bool bFind = false;
+		for (int nIndex = 0, nCount = m_vFonts.size(); nIndex < nCount; nIndex++)
+		{
+			TFontInfo& oInfo = m_vFonts.at(nIndex);
+			if (oInfo.wsFontName == wsFontName && oInfo.bBold == bBold && oInfo.bItalic == bItalic)
+			{
+				wsFontPath = oInfo.wsFontPath;
+				lFaceIndex = oInfo.lFaceIndex;
+				bFind = true;
+				break;
+			}
+		}
 
-		wsFontPath = pFontInfo->m_wsFontPath;
-		lFaceIndex = pFontInfo->m_lIndex;
+		if (!bFind)
+		{
+			CFontSelectFormat oFontSelect;
+			oFontSelect.wsName = new std::wstring(m_oFont.GetName());
+			oFontSelect.bItalic = new INT(m_oFont.IsItalic() ? 1 : 0);
+			oFontSelect.bBold   = new INT(m_oFont.IsBold() ? 1 : 0);
+			CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect);
+
+			wsFontPath = pFontInfo->m_wsFontPath;
+			lFaceIndex = pFontInfo->m_lIndex;
+
+			m_vFonts.push_back(TFontInfo(wsFontName, bBold, bItalic, wsFontPath, lFaceIndex));
+		}
 	}
 
 	m_pFont = NULL;
@@ -1042,7 +1066,6 @@ void CPdfRenderer::UpdateBrush()
 	m_pShadingExtGrState = NULL;
 
 	LONG lBrushType = m_oBrush.GetType();
-	m_pDocument->GetExtGState();
 	if (c_BrushTypeTexture == lBrushType)
 	{
 		std::wstring& wsTexturePath = m_oBrush.GetTexturePath();

@@ -362,7 +362,7 @@ namespace PdfWriter
 		{
 			pExtGrState = m_vFillAlpha.at(unIndex);
 
-			if (abs(dAlpha == pExtGrState->GetAlphaFill()) < 0.001)
+			if (abs(dAlpha - pExtGrState->GetAlphaFill()) < 0.001)
 				return pExtGrState;
 		}
 

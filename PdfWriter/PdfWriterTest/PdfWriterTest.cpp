@@ -918,7 +918,7 @@ void TestMetafile()
 }
 void TestOnlineBin()
 {
-	std::wstring wsFolderPath = L"D://Test Files//Txt//";
+	std::wstring wsFolderPath = L"D://Test Files//Txt//IvanovaVeronica//";
 	std::wstring wsTempFolder = L"D://Test Files//Temp//";
 
 	CApplicationFonts oFonts;

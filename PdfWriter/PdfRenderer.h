@@ -206,6 +206,23 @@ private:
 
 private:
 
+	struct TFontInfo
+	{
+		TFontInfo(const std::wstring& fontName, const bool& bold, const bool& italic, const std::wstring& fontPath, const LONG& faceIndex)
+		{
+			wsFontName = fontName;
+			bBold      = bold;
+			bItalic    = italic;
+			wsFontPath = fontPath;
+			lFaceIndex = faceIndex;
+		}
+
+		std::wstring wsFontName;
+		bool         bBold;
+		bool         bItalic;
+		std::wstring wsFontPath;
+		LONG         lFaceIndex;
+	};
 	struct TColor
 	{
 		TColor()
@@ -1424,9 +1441,11 @@ private:
 	double                       m_dPageHeight;
 	double                       m_dPageWidth;
 	LONG                         m_lClipDepth;
+	std::vector<TFontInfo>       m_vFonts;
 
 	bool                         m_bValid;
 
+	int                          m_nPagesCount;
 	int                          m_nCounter; // TODO: для теста, убрать потом
 };
 

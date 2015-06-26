@@ -71,12 +71,16 @@ CPdfRenderer::CPdfRenderer(CApplicationFonts* pAppFonts)
 
 	m_nCounter = 0;
 
+	m_wsTempFolder = L"";
 	SetTempFolder(NSFile::CFileBinary::GetTempPath());
 }
 CPdfRenderer::~CPdfRenderer()
 {
 	RELEASEOBJECT(m_pDocument);
 	RELEASEINTERFACE(m_pFontManager);
+
+	if (L"" != m_wsTempFolder)
+		NSDirectory::DeleteDirectory(m_wsTempFolder);
 }
 void CPdfRenderer::SaveToFile(const std::wstring& wsPath)
 {
@@ -87,7 +91,17 @@ void CPdfRenderer::SaveToFile(const std::wstring& wsPath)
 }
 void CPdfRenderer::SetTempFolder(const std::wstring& wsPath)
 {
-	m_wsTempFolder = wsPath;
+	if (L"" != m_wsTempFolder)
+		NSDirectory::DeleteDirectory(m_wsTempFolder);
+	
+	int nCounter = 0;
+	m_wsTempFolder = wsPath + L"\\PDF\\";
+	while (NSDirectory::Exists(m_wsTempFolder))
+	{
+		m_wsTempFolder = wsPath + L"\\PDF_" + std::to_wstring(nCounter) + L"\\";
+		nCounter++;
+	}
+	NSDirectory::CreateDirectory(m_wsTempFolder);
 }
 std::wstring CPdfRenderer::GetTempFile()
 {

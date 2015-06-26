@@ -8,6 +8,7 @@
 #include "Image.h"
 #include "Shading.h"
 #include "Pattern.h"
+#include "Document.h"
 
 #ifdef DrawText
 #undef DrawText
@@ -165,11 +166,12 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CPage
 	//----------------------------------------------------------------------------------------
-	CPage::CPage(CXref* pXref, CPageTree* pParent)
+	CPage::CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument)
 	{
 		pXref->Add(this);
 
 		m_pXref     = pXref;
+		m_pDocument = pDocument;
 		m_pContents = new CDictObject(pXref);
 		m_pStream   = m_pContents->GetStream();
 		m_eGrMode   = grmode_PAGE;
@@ -1087,6 +1089,18 @@ namespace PdfWriter
 		m_pStream->WriteEscapeName(sShadingName);
 		m_pStream->WriteStr(" sh\012");
 	}
+	void          CPage::SetStrokeAlpha(unsigned char unAlpha)
+	{
+		CExtGrState* pExtGrState = m_pDocument->GetStrokeAlpha((double)(unAlpha / 255.0));
+		if (pExtGrState)
+			SetExtGrState(pExtGrState);
+	}
+	void          CPage::SetFillAlpha(unsigned char unAlpha)
+	{
+		CExtGrState* pExtGrState = m_pDocument->GetFillAlpha((double)(unAlpha / 255.0));
+		if (pExtGrState)
+			SetExtGrState(pExtGrState);
+	}
 	const char*   CPage::GetLocalShadingName(CShading* pShading)
 	{
 		if (!m_pShadings)
@@ -1161,5 +1175,18 @@ namespace PdfWriter
 		m_pStream->WriteStr("/Pattern cs\012");
 		m_pStream->WriteEscapeName(sPatternName);
 		m_pStream->WriteStr(" scn\012");		
+	}
+	void          CPage::SetFilter(unsigned int unFiler)
+	{
+		if (m_pContents)
+			m_pContents->SetFilter(unFiler);
+	}
+	CMatrix*      CPage::GetTransform()
+	{
+		return &m_pGrState->m_oMatrix;
+	}
+	void          CPage::AddGroup(CDictObject* pDict)
+	{
+		Add("Group", pDict);
 	}
 }

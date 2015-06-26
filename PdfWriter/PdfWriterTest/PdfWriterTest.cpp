@@ -381,7 +381,9 @@ void TestDocument3()
 	pPage->ClosePath();
 	pPage->EoFillStroke();
 
-	pPage->SetExtGrState(oPdf.GetExtGState(0.8, 0.8));
+	//pPage->SetExtGrState(oPdf.GetExtGState(0.8, 0.8));
+	pPage->SetStrokeAlpha(20);
+	pPage->SetFillAlpha(20);
 	pPage->SetFillColor(15, 15, 120);
 	pPage->MoveTo(230, 210);
 	pPage->LineTo(320, 210);
@@ -404,7 +406,9 @@ void TestDocument3()
 	pPage->Clip();
 	pPage->EndPath();
 
-	pPage->SetExtGrState(oPdf.GetExtGState(0.5, 0.5));
+	pPage->SetStrokeAlpha(122);
+	pPage->SetFillAlpha(122);
+	//pPage->SetExtGrState(oPdf.GetExtGState(0.5, 0.5));
 	pPage->MoveTo(230, 310);
 	pPage->LineTo(320, 310);
 	pPage->LineTo(320, 340);
@@ -749,9 +753,11 @@ void TestDocument8()
 		0, 0, 255
 	};
 
-	double pPoints[] ={0, 1};
+	unsigned char pAlphas[] ={ 255, 255 };
+	CExtGrState* pExtGrState = NULL;
 
-	CShading* pShading = oPdf.CreateAxialShading(200, 150, 200, 250, pColors, pPoints, 2);
+	double pPoints[] ={0, 1};
+	CShading* pShading = oPdf.CreateAxialShading(pPage, 200, 150, 200, 250, pColors, pAlphas, pPoints, 2, pExtGrState);
 	pPage->DrawShading(pShading);
 	pPage->GrRestore();
 
@@ -768,10 +774,11 @@ void TestDocument8()
 		255, 255, 255,
 		0, 0, 255
 	};
+	unsigned char pAlphas2[] ={ 255, 255, 255, 255 };
 
 	double pPoints2[] ={ 0, 0.3, 0.7, 1 };
 
-	CShading* pShading2 = oPdf.CreateAxialShading(400, 150, 400, 250, pColors2, pPoints2, nCount2);
+	CShading* pShading2 = oPdf.CreateAxialShading(pPage, 400, 150, 400, 250, pColors2, pAlphas2, pPoints2, nCount2, pExtGrState);
 	pPage->DrawShading(pShading2);
 	pPage->GrRestore();
 
@@ -788,10 +795,11 @@ void TestDocument8()
 		255, 255, 0,
 		0, 0, 255
 	};
+	unsigned char pAlphas3[] ={ 255, 255, 255 };
 
 	double pPoints3[] ={ 0, 0.5, 1 };
 
-	CShading* pShading3 = oPdf.CreateRaidalShading(200, 375, 20, 200, 425, 100, pColors3, pPoints3, nCount3);
+	CShading* pShading3 = oPdf.CreateRadialShading(pPage, 200, 375, 20, 200, 425, 100, pColors3, pAlphas3, pPoints3, nCount3, pExtGrState);
 	pPage->DrawShading(pShading3);
 	pPage->GrRestore();
 
@@ -814,7 +822,7 @@ void TestDocument9()
 	CImageDict* pJpegImage = oPdf.CreateImage();
 	pJpegImage->LoadJpeg(L"D:/Test Files/Test.jpg", 600, 400);
 
-	CImageTilePattern* pPattern = oPdf.CreateImageTilePattern(70, 70, pJpegImage, imagetilepatterntype_InverseX);
+	CImageTilePattern* pPattern = oPdf.CreateImageTilePattern(70, 70, pJpegImage, NULL, imagetilepatterntype_InverseX);
 
 	pPage->GrSave();
 	pPage->SetPatternColorSpace(pPattern);
@@ -908,6 +916,27 @@ void TestMetafile()
 	//ConvertFolder(L"D://Test Files//Emf//", MetaFile::c_lMetaEmf);
 	ConvertFolder(L"D://Test Files//Wmf//", MetaFile::c_lMetaWmf);
 }
+void TestOnlineBin()
+{
+	std::wstring wsFolderPath = L"D://Test Files//Txt//";
+
+	CApplicationFonts oFonts;
+	oFonts.Initialize();
+
+	double dPx2Mm = 25.4 / 96;
+	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"txt");
+	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
+	{
+		std::wstring wsFilePath = wsFolderPath;
+		wsFilePath.append(vFiles.at(nIndex));
+		std::wstring wsOutPath = wsFolderPath + L"Out.pdf";
+
+		CPdfRenderer oRenderer(&oFonts);
+		oRenderer.OnlineWordToPdf(wsFilePath, wsOutPath);		
+
+		printf("%d of %d %S\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());
+	}
+}
 
 void main()
 {
@@ -924,6 +953,6 @@ void main()
 	//TestDocument7();
 	//TestDocument8();
 	//TestDocument9();
-
-	TestMetafile();
+	//TestMetafile();
+	TestOnlineBin();
 }

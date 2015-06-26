@@ -105,6 +105,7 @@ namespace PdfWriter
 		m_pXref = pXref;
 		pXref->Add(this);
 
+		m_bRgb          = true;
 		m_pColors       = NULL;
 		m_pColorsPoints = NULL;
 		m_nColorsCount  = 0;
@@ -119,11 +120,12 @@ namespace PdfWriter
 		if (m_pColorsPoints)
 			delete[] m_pColorsPoints;
 	}
-	void CShading::SetColors(unsigned char* pColors, double* pPoints, int nCount)
+	void CShading::SetRgbColors(unsigned char* pColors, double* pPoints, int nCount)
 	{
 		if (!pColors || !pPoints || nCount <= 1)
 			return;
 
+		m_bRgb          = true;
 		m_pColors       = new unsigned char[3 * nCount];
 		m_pColorsPoints = new double[nCount];
 		m_nColorsCount  = nCount;
@@ -193,6 +195,53 @@ namespace PdfWriter
 			delete[] ppValues;
 		}
 	}
+	void CShading::SetGrayColors(unsigned char* pColors, double* pPoints, int nCount)
+	{
+		if (!pColors || !pPoints || nCount <= 1)
+			return;
+
+		m_bRgb          = false;
+		m_pColors       = new unsigned char[nCount];
+		m_pColorsPoints = new double[nCount];
+		m_nColorsCount  = nCount;
+
+		if (!m_pColors || !m_pColorsPoints)
+			return;
+
+		memcpy(m_pColors, pColors, nCount);
+
+		Add("ColorSpace", "DeviceGray");
+
+		CArrayObject* pDomain = new CArrayObject();
+		if (!pDomain)
+			return;
+
+		pDomain->Add(0.0);
+		pDomain->Add(1.0);
+		Add("Domain", pDomain);
+
+		if (nCount <= 2)
+		{
+			double pC0Values = pColors[0] / 255.0;
+			double pC1Values = pColors[1] / 255.0;
+
+			CLinearFuntion* pFunction = new CLinearFuntion(m_pXref, &pC0Values, &pC1Values, 1);
+			Add("Function", pFunction);
+		}
+		else
+		{
+			double* pValues = new double[(nCount - 1) * 2];
+			for (int nIndex = 0; nIndex < nCount - 1; nIndex++)
+			{
+				pValues[2 * nIndex + 0] = pColors[nIndex] / 255.0;
+				pValues[2 * nIndex + 1] = pColors[nIndex + 1] / 255.0;
+			}
+
+			CLineSegmentFuntion* pFunction = new CLineSegmentFuntion(m_pXref, &pValues, pPoints + 1, nCount - 1, 1);
+			Add("Function", pFunction);
+			delete[] pValues;
+		}
+	}
 	void CShading::SetExtend(bool bBegin, bool bEnd)
 	{
 		CArrayObject* pExtend = new CArrayObject();
@@ -206,22 +255,35 @@ namespace PdfWriter
 		m_bBeginExtend = bBegin;
 		m_bEndExtend   = bEnd;
 	}
-	bool CShading::CompareColors(unsigned char* pColors, double* pPoints, int nCount)
+	bool CShading::CompareColors(unsigned char* pColors, double* pPoints, int nCount, bool bRgb)
 	{
 		if (nCount != m_nColorsCount
 			|| (pColors && !m_pColors)
 			|| (pPoints && !m_pColorsPoints)
 			|| (!pColors && m_pColors)
-			|| (!pPoints && m_pColorsPoints))
+			|| (!pPoints && m_pColorsPoints)
+			|| bRgb != m_bRgb)
 			return false;
 
-		for (int nIndex = 0; nIndex < nCount; nIndex++)
+		if (m_bRgb)
 		{
-			if (pColors[3 * nIndex + 0] != m_pColors[3 * nIndex + 0]
-				|| pColors[3 * nIndex + 1] != m_pColors[3 * nIndex + 1]
-				|| pColors[3 * nIndex + 2] != m_pColors[3 * nIndex + 2]
-				|| abs(pPoints[nIndex] - m_pColorsPoints[nIndex]) > 0.01)
-				return false;
+			for (int nIndex = 0; nIndex < nCount; nIndex++)
+			{
+				if (pColors[3 * nIndex + 0] != m_pColors[3 * nIndex + 0]
+					|| pColors[3 * nIndex + 1] != m_pColors[3 * nIndex + 1]
+					|| pColors[3 * nIndex + 2] != m_pColors[3 * nIndex + 2]
+					|| abs(pPoints[nIndex] - m_pColorsPoints[nIndex]) > 0.01)
+					return false;
+			}
+		}
+		else
+		{
+			for (int nIndex = 0; nIndex < nCount; nIndex++)
+			{
+				if (pColors[nIndex] != m_pColors[nIndex]
+					|| abs(pPoints[nIndex] - m_pColorsPoints[nIndex]) > 0.01)
+					return false;
+			}
 		}
 
 		return true;

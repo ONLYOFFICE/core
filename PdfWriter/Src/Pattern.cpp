@@ -13,12 +13,27 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CImageTilePattern
 	//----------------------------------------------------------------------------------------
-	CImageTilePattern::CImageTilePattern(CXref* pXref, const double& dW, const double& dH, CImageDict* pImageDict, EImageTilePatternType eType) : CPattern(pXref)
+	CImageTilePattern::CImageTilePattern(CXref* pXref, const double& dW, const double& dH, CImageDict* pImageDict, CMatrix* pMatrix, EImageTilePatternType eType) : CPattern(pXref)
 	{
 		Add("Type", "Pattern");
 		Add("PatternType", 1);
 		Add("PaintType", 1);    // Uncolored
 		Add("TilingType", 1);   // No distortion
+
+		if (pMatrix)
+		{
+			CArrayObject* pMatrixArray = new CArrayObject();
+			if (!pMatrixArray)
+				return;
+
+			pMatrixArray->Add(pMatrix->m11);
+			pMatrixArray->Add(pMatrix->m12);
+			pMatrixArray->Add(pMatrix->m21);
+			pMatrixArray->Add(pMatrix->m22);
+			pMatrixArray->Add(pMatrix->x);
+			pMatrixArray->Add(pMatrix->y);
+			Add("Matrix", pMatrixArray);
+		}
 
 		CDictObject* pResources = new CDictObject();
 		if (!pResources)

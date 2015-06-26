@@ -14,6 +14,8 @@ namespace PdfWriter
 	class CPage;
 	class CFontCidTrueType;
 	class CImageDict;
+	class CShading;
+	class CExtGrState;
 }
 
 namespace Aggplus
@@ -29,7 +31,11 @@ class CPdfRenderer : public IRenderer
 public:
 	CPdfRenderer(CApplicationFonts* pAppFonts);
 	~CPdfRenderer();
-	void SaveToFile(const std::wstring& wsPath);
+	void         SaveToFile(const std::wstring& wsPath);
+	void         SetTempFolder(const std::wstring& wsPath);
+	std::wstring GetTempFile();
+	void         SetThemesPlace(const std::wstring& wsThemesPlace);
+	std::wstring GetThemesPlace();
 	//----------------------------------------------------------------------------------------
 	// Тип рендерера
 	//----------------------------------------------------------------------------------------
@@ -89,8 +95,8 @@ public:
 	virtual HRESULT put_BrushTextureAlpha(const LONG& lAlpha);
 	virtual HRESULT get_BrushLinearAngle(double* dAngle);
 	virtual HRESULT put_BrushLinearAngle(const double& dAngle);
-	virtual HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height);
-	virtual HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height);
+	virtual HRESULT BrushRect(const INT& nVal, const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight);
+	virtual HRESULT BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight);
 	virtual HRESULT put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount);
 	//----------------------------------------------------------------------------------------
 	// Функции для работы со шрифтами
@@ -164,12 +170,18 @@ public:
 	//----------------------------------------------------------------------------------------
 	// Дополнительные функции Pdf рендерера
 	//----------------------------------------------------------------------------------------
-	virtual HRESULT CommandDrawTextPdf(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const std::wstring& wsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags);
-	virtual HRESULT PathCommandTextPdf(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags);
-	virtual HRESULT DrawImage1bpp(Pix* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH);
+	HRESULT CommandDrawTextPdf(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const std::wstring& wsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags);
+	HRESULT PathCommandTextPdf(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags);
+	HRESULT DrawImage1bpp(Pix* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH);
+	HRESULT EnableBrushRect(const LONG& lEnable);
+	HRESULT SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2);
+	HRESULT SetRadialGradient(const double& dX1, const double& dY1, const double& dR1, const double& dX2, const double& dY2, const double& dR2);
+	HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile);
+	HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile);
 
 private:
 
+	void OnlineWordToPdfInternal(BYTE* dstArray, LONG lLen, const std::wstring& wsHtmlPlace, std::wstring& wsHypers, int& nCountPages, const std::wstring& wsTempLogo, LONG lReg);
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha);
 	bool DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha);
 	void UpdateFont();
@@ -202,10 +214,11 @@ private:
 			r = 0;
 			g = 0;
 			b = 0;
+			a = 255;
 		}
-		TColor(const LONG& lColor)
+		TColor(const LONG& _lColor)
 		{
-			Set(lColor);
+			Set(_lColor);
 		}
 
 		void Set(const LONG& _lColor)
@@ -215,24 +228,27 @@ private:
 			r = (unsigned char)(lColor & 0xFF);
 			g = (unsigned char)((lColor >> 8) & 0xFF);
 			b = (unsigned char)((lColor >> 16) & 0xFF);
+			a = (unsigned char)((lColor >> 24) & 0xFF);
 		}
 		void operator=(const LONG& _lColor)
 		{
-			Set(lColor);
+			Set(_lColor);
 		}
-		void Set(BYTE _r, BYTE _g, BYTE _b)
+		void Set(BYTE _r, BYTE _g, BYTE _b, BYTE _a = 255)
 		{
 			r = _r;
 			g = _g;
 			b = _b;
+			a = _a;
 
-			lColor = (LONG)(((LONG)r) | ((LONG)g << 8) | ((LONG)b << 16) | ((LONG)0 << 24));
+			lColor = (LONG)(((LONG)r) | ((LONG)g << 8) | ((LONG)b << 16) | ((LONG)a << 24));
 		}
 
 		LONG lColor;
 		BYTE r;
 		BYTE g;
 		BYTE b;
+		BYTE a;
 	};
 	class CPenState
 	{
@@ -369,9 +385,16 @@ private:
 				delete[] m_pDashPattern;
 
 			m_oColor.Set(0);
-			m_dSize      = 0;
-			m_nAlpha     = 255;
-			m_nDashStyle = 0;
+			m_dSize  = 0;
+			m_nAlpha = 255;
+			m_nStartCapStyle = Aggplus::LineCapRound;
+			m_nEndCapStyle   = Aggplus::LineCapRound;
+			m_nJoinStyle     = Aggplus::LineJoinRound;
+
+			m_lAlign = 0;
+			m_dMiter = 0;
+
+			m_nDashStyle       = Aggplus::DashStyleSolid;
 			m_lDashPatternSize = 0;
 			m_pDashPattern     = NULL;
 		}
@@ -402,6 +425,7 @@ private:
 			m_pShadingColors      = NULL;
 			m_pShadingPoints      = NULL;
 			m_lShadingPointsCount = 0;
+			Reset();
 		}
 		~CBrushState()
 		{
@@ -410,6 +434,7 @@ private:
 			if (m_pShadingPoints)
 				delete[] m_pShadingPoints;
 		}
+		void                Reset();
 		inline LONG         GetType()
 		{
 			return m_lType;
@@ -490,7 +515,7 @@ private:
 		{
 			m_dLinearAngle = dAngle;
 		}
-		inline void         SetShadingColors(LONG* pColors, double* pPoints, const LONG& lCount)
+		inline void         SetGradientColors(LONG* pColors, double* pPoints, const LONG& lCount)
 		{
 			// Мы создаем упорядоченный по возрастанию массив, причем первая и последняя точки должны быть 0 и 1 соответственно.
 			if (m_pShadingColors)
@@ -539,8 +564,8 @@ private:
 						if (-1 == lMinIn || dPoint < vPoints.at(lMinIn).dPoint)
 							lMinIn = lIndex;
 
-						if (-1 == lMaxOut || dPoint > vPoints.at(lMaxOut).dPoint)
-							lMaxOut = lIndex;
+						if (-1 == lMaxIn || dPoint > vPoints.at(lMaxIn).dPoint)
+							lMaxIn = lIndex;
 					}
 					else if (dPoint < 0)
 					{
@@ -689,6 +714,56 @@ private:
 				}
 			}
 		}
+		inline void         SetBrushRect(const int& nVal, const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
+		{
+			m_oRect.nVal    = nVal;
+			m_oRect.dLeft   = dLeft;
+			m_oRect.dTop    = dTop;
+			m_oRect.dWidth  = dWidth;
+			m_oRect.dHeight = dHeight;
+		}
+		inline void         EnableBrushRect(bool bEnable)
+		{
+			m_oRect.bUse = bEnable;
+		}
+		inline void         SetLinearGradientPattern(const double& dX0, const double& dY0, const double& dX1, const double& dY1)
+		{
+			m_pShadingPattern[0] = dX0;
+			m_pShadingPattern[1] = dY0;
+			m_pShadingPattern[2] = dX1;
+			m_pShadingPattern[3] = dY1;
+		}
+		inline void         SetRadialGradientPattern(const double& dX0, const double& dY0, const double& dR0, const double& dX1, const double& dY1, const double& dR1)
+		{
+			m_pShadingPattern[0] = dX0;
+			m_pShadingPattern[1] = dY0;
+			m_pShadingPattern[2] = dR0;
+			m_pShadingPattern[3] = dX1;
+			m_pShadingPattern[4] = dY1;
+			m_pShadingPattern[5] = dR1;
+		}
+		inline void         GetLinearGradientPattern(double& dX0, double& dY0, double& dX1, double& dY1)
+		{
+			dX0 = m_pShadingPattern[0];
+			dY0 = m_pShadingPattern[1];
+			dX1 = m_pShadingPattern[2];
+			dY1 = m_pShadingPattern[3];
+		}
+		inline void         GetRadialGradientPattern(double& dX0, double& dY0, double& dR0, double& dX1, double& dY1, double& dR1)
+		{
+			dX0 = m_pShadingPattern[0];
+			dY0 = m_pShadingPattern[1];
+			dR0 = m_pShadingPattern[2];
+			dX1 = m_pShadingPattern[3];
+			dY1 = m_pShadingPattern[4];
+			dR1 = m_pShadingPattern[5];
+		}
+		inline void         GetGradientColors(TColor*& pColors, double*& pPoints, LONG& lCount)
+		{
+			pColors = m_pShadingColors;
+			pPoints = m_pShadingPoints;
+			lCount  = m_lShadingPointsCount;
+		}
 
 	private:
 
@@ -728,15 +803,40 @@ private:
 				BYTE r = (BYTE)max(0, min(255, (oColor1.r + (oColor2.r - oColor1.r) / dDiff * (dDstPoint - dPoint1))));
 				BYTE g = (BYTE)max(0, min(255, (oColor1.g + (oColor2.g - oColor1.g) / dDiff * (dDstPoint - dPoint1))));
 				BYTE b = (BYTE)max(0, min(255, (oColor1.b + (oColor2.b - oColor1.b) / dDiff * (dDstPoint - dPoint1))));
+				BYTE a = (BYTE)max(0, min(255, (oColor1.a + (oColor2.a - oColor1.a) / dDiff * (dDstPoint - dPoint1))));
 
 				TColor oResColor;
-				oResColor.Set(r, g, b);
+				oResColor.Set(r, g, b, a);
 				return oResColor.lColor;
 			}
 
 			LONG   lColor;
 			double dPoint;
 			bool   bUse;
+		};
+		struct TBrushRect
+		{
+			TBrushRect()
+			{
+				Reset();
+			}
+
+			void Reset()
+			{
+				bUse    = false;
+				nVal    = 0;
+				dLeft   = 0;
+				dTop    = 0;
+				dWidth  = 0;
+				dHeight = 0;
+			}
+
+			bool   bUse;
+			int    nVal;
+			double dLeft;
+			double dTop;
+			double dWidth;
+			double dHeight; 
 		};
 
 	private:
@@ -750,10 +850,12 @@ private:
 		LONG         m_lTextureMode;
 		BYTE         m_nTextureAlpha;
 		double       m_dLinearAngle;
+		TBrushRect   m_oRect;
 
 		TColor*      m_pShadingColors;
 		double*      m_pShadingPoints;
 		LONG         m_lShadingPointsCount;
+		double       m_pShadingPattern[6]; // У линейного градиента x0, y0, x1, y1 (2 не используются), у радиального x0, y0, r0, x1, y1, r1
 	};
 	class CFontState
 	{
@@ -762,6 +864,19 @@ private:
 		CFontState() : m_wsPath(L""), m_wsName(L"Arial"), m_lStyle(0), m_bBold(false), m_bItalic(false), m_dCharSpace(0), 
 			m_lFaceIndex(0), m_dSize(10), m_bGid(false)
 		{
+		}
+
+		void Reset()
+		{
+			m_wsPath     = L"";
+			m_wsName     = L"Arial";
+			m_lStyle     = 0;
+			m_bBold      = false;
+			m_bItalic    = false;
+			m_dCharSpace = 0;
+			m_lFaceIndex = 0;
+			m_dSize      = 10;
+			m_bGid       = false;
 		}
 
 		inline std::wstring GetName()
@@ -1228,6 +1343,7 @@ private:
 		}
 		void GetLastPoint(double& dX, double& dY);
 		void Draw(PdfWriter::CPage* pPage, bool bStroke, bool bFill, bool bEoFill);
+		void Clip(PdfWriter::CPage* pPage, bool bEvenOdd = false);
 		void GetBounds(double& dL, double& dT, double& dR, double& dB);
 
 	private:
@@ -1290,10 +1406,14 @@ private:
 
 	CApplicationFonts*           m_pAppFonts;
 	CFontManager*                m_pFontManager;
+	std::wstring                 m_wsTempFolder;
+	std::wstring                 m_wsThemesPlace;
 
 	PdfWriter::CDocument*        m_pDocument;
 	PdfWriter::CPage*            m_pPage;
 	PdfWriter::CFontCidTrueType* m_pFont;
+	PdfWriter::CShading*         m_pShading;
+	PdfWriter::CExtGrState*      m_pShadingExtGrState;
 
 	CPenState                    m_oPen;
 	CBrushState                  m_oBrush;
@@ -1303,6 +1423,7 @@ private:
 	LONG                         m_lClipMode;
 	double                       m_dPageHeight;
 	double                       m_dPageWidth;
+	LONG                         m_lClipDepth;
 
 	bool                         m_bValid;
 

@@ -59,6 +59,27 @@ namespace PdfWriter
 			y   = 0;
 		}
 
+		void Apply(double& dX, double& dY)
+		{
+			double _x = dX;
+			double _y = dY;
+
+			dX = _x * m11 + _y * m21 + x;
+			dY = _x * m12 + _y * m22 + y;
+		}
+		bool operator==(const CMatrix& oMatrix)
+		{
+			if (abs(oMatrix.m11 - m11) > 0.001
+				|| abs(oMatrix.m12 - m12) > 0.001
+				|| abs(oMatrix.m21 - m21) > 0.001
+				|| abs(oMatrix.m22 - m22) > 0.001
+				|| abs(oMatrix.x - x) > 0.001
+				|| abs(oMatrix.y - y) > 0.001)
+				return false;
+
+			return true;
+		}
+
 	public:
 
 		double m11;

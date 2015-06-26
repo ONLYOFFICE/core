@@ -90,6 +90,9 @@
     <ClCompile Include="PdfRenderer.cpp">
       <Filter>Src</Filter>
     </ClCompile>
+    <ClCompile Include="OnlineOfficeBinToPdf.cpp">
+      <Filter>Src</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Src\Annotation.h">
@@ -159,6 +162,9 @@
       <Filter>Src\Header Files</Filter>
     </ClInclude>
     <ClInclude Include="PdfRenderer.h">
+      <Filter>Src</Filter>
+    </ClInclude>
+    <ClInclude Include="OnlineOfficeBinToPdf.h">
       <Filter>Src</Filter>
     </ClInclude>
   </ItemGroup>

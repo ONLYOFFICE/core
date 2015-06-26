@@ -18,6 +18,7 @@ namespace PdfWriter
 	class CImageDict;
 	class CShading;
 	class CImageTilePattern;
+	class CDocument;
 	//----------------------------------------------------------------------------------------
 	// CPageTree
 	//----------------------------------------------------------------------------------------
@@ -40,7 +41,7 @@ namespace PdfWriter
 	class CPage : public CDictObject
 	{
 	public:
-		CPage(CXref* pXref, CPageTree* pParent);
+		CPage(CXref* pXref, CPageTree* pParent, CDocument* pDocument);
 		~CPage();
 
 		void      SetHeight(double dHeight);
@@ -82,6 +83,8 @@ namespace PdfWriter
 		void      SetExtGrState(CExtGrState* pExtGrState);
 		void      AddAnnotation(CAnnotation* pAnnot);
 		void      DrawShading(CShading* pShading);
+		void      SetStrokeAlpha(unsigned char unAlpha);
+		void      SetFillAlpha(unsigned char unAlpha);
 
 		void      BeginText();
 		void      EndText();
@@ -97,6 +100,9 @@ namespace PdfWriter
 		void      ExecuteXObject(CXObject* pXObject);
 		void      DrawImage(CImageDict* pImage, double dX, double dY, double dWidth, double dHeight);
 		void      SetPatternColorSpace(CImageTilePattern* pPattern);
+		void      SetFilter(unsigned int unFiler);
+		CMatrix*  GetTransform();
+		void      AddGroup(CDictObject* pDict);
 
 	private:
 
@@ -119,6 +125,7 @@ namespace PdfWriter
 
 	private:
 
+		CDocument*   m_pDocument;
 		CPageTree*   m_pParent;
 		CXref*       m_pXref;
 		CPoint       m_oStartPos;          // Позиция начала текущего пата

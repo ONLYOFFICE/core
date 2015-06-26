@@ -14,6 +14,8 @@ CONFIG += static
 CONFIG += shared
 CONFIG += plugin
 
+QMAKE_CXXFLAGS += -std=c++11
+
 DEFINES += UNICODE
 DEFINES += _UNICODE
 DEFINES += _USE_LIBXML2_READER_
@@ -88,18 +90,15 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
 
     LIBS += -L$$V8_CHECKOUT_PATH/out/native/obj.target/tools/gyp -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
     LIBS += -L$$V8_CHECKOUT_PATH/out/native/obj.target/third_party/icu -licui18n -licuuc -licudata
+
+    LIBS += -L../../Qt_build/graphics/Release -lgraphics
+    LIBS += -L../../../Common/DocxFormat/Source/XML/libxml2/linux_build/Release -llibxml2
 }
 
 linux-g++:contains(QMAKE_HOST.arch, x86_64):{
-    LIBS += -L../../../SDK/lib/linux_64 -lgraphics
-
-    LIBS += -L../../../SDK/lib/linux_64 -llibxml2
     message(linux64)
 }
 linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
-    LIBS += -L../../../SDK/lib/linux_32 -lgraphics
-
-    LIBS += -L../../../SDK/lib/linux_32 -llibxml2
     message(linux32)
 }
 
@@ -126,7 +125,7 @@ mac {
 INCLUDEPATH += \
             ../agg-2.4/include \
             ../freetype-2.5.2/include \
-            ../../Common/DocxFormat/Source/XML/libxml2/XML/include
+            ../../../Common/DocxFormat/Source/XML/libxml2/XML/include
 
 INCLUDEPATH += $$QT_SETUP_INCLUDES_PATH
 

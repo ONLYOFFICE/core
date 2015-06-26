@@ -919,6 +919,7 @@ void TestMetafile()
 void TestOnlineBin()
 {
 	std::wstring wsFolderPath = L"D://Test Files//Txt//";
+	std::wstring wsTempFolder = L"D://Test Files//Temp//";
 
 	CApplicationFonts oFonts;
 	oFonts.Initialize();
@@ -932,6 +933,7 @@ void TestOnlineBin()
 		std::wstring wsOutPath = wsFolderPath + L"Out.pdf";
 
 		CPdfRenderer oRenderer(&oFonts);
+		oRenderer.SetTempFolder(wsTempFolder);
 		oRenderer.OnlineWordToPdf(wsFilePath, wsOutPath);		
 
 		printf("%d of %d %S\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());

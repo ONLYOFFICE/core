@@ -5,8 +5,8 @@
 #include "../common/Types.h"
 #include "../common/File.h"
 
-#include "../../../../../../../v8_trunk/include/v8.h"
-#include "../../../../../../../v8_trunk/include/libplatform/libplatform.h"
+#include "v8.h"
+#include "libplatform/libplatform.h"
 
 class CMemoryStream
 {

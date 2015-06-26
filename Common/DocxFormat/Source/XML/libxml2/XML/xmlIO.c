@@ -3800,7 +3800,7 @@ xmlParserGetDirectory(const char *filename) {
     char dir[1024];
     char *cur;
 
-#if defined(_WIN32) || defined (_WIN64)_WCE  /* easy way by now ... wince does not have dirs! */
+#if defined(_WIN32) || defined (_WIN64)  /* easy way by now ... wince does not have dirs! */
     return NULL;
 #endif
 

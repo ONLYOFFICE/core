@@ -1,11 +1,6 @@
 #pragma once
 
-//#include "./win_build/config.h"
-#if defined(__linux__)
-    #include "/usr/include/libxml2/libxml/xmlreader.h"
-#else
-    #include "XML/include/libxml/xmlreader.h"
-#endif
+#include "XML/include/libxml/xmlreader.h"
 
 #include <vector>
 #include <map>

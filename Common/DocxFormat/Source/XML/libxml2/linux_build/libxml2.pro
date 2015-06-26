@@ -6,14 +6,15 @@
 
 QT       -= core gui
 
-TARGET = libxml2Lib
+TARGET = libxml2
 TEMPLATE = lib
 CONFIG += staticlib
 QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers -g
 DEFINES += UNICODE \
     _UNICODE \
     LINUX \
-    _LINUX_QT
+    _LINUX_QT \
+    HAVE_VA_COPY
 
 INCLUDEPATH += \
     ../XML/include \

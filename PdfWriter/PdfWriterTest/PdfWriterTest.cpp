@@ -920,14 +920,13 @@ void TestMetafile()
 }
 void TestOnlineBin()
 {
-	std::wstring wsFolderPath = L"D://Test Files//Txt//Text//";
+	std::wstring wsFolderPath = L"D://Test Files//Txt//IvanovaVeronica//";
 	std::wstring wsTempFolder = L"D://Test Files//Temp//";
 
 	CApplicationFonts oFonts;
 	oFonts.Initialize();
 
 	clock_t oBeginTime = clock();
-
 	double dPx2Mm = 25.4 / 96;
 	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"txt");
 	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
@@ -946,7 +945,6 @@ void TestOnlineBin()
 	clock_t oEndTime = clock();
 	double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
 	printf("%f\n", dElapsedSecs);
-
 }
 
 void main()

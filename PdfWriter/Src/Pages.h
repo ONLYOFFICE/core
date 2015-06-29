@@ -2,6 +2,7 @@
 #define _PDF_WRITER_SRC_PAGES_H
 
 #include "Objects.h"
+#include <vector>
 
 #ifdef DrawText
 #undef DrawText
@@ -19,6 +20,8 @@ namespace PdfWriter
 	class CShading;
 	class CImageTilePattern;
 	class CDocument;
+	class CTextLine;
+	class CTextWord;
 	//----------------------------------------------------------------------------------------
 	// CPageTree
 	//----------------------------------------------------------------------------------------
@@ -96,9 +99,7 @@ namespace PdfWriter
 		void      SetFontAndSize(CFontDict* pFont, double dSize);
 		void      SetTextRenderingMode(ETextRenderingMode eMode);
 		void      SetTextMatrix(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
-
-		void      DrawTextArray(double dX, double dY, const BYTE** ppTexts, unsigned int* pLens, unsigned int unCount, double* pShifts);
-
+		void      DrawTextLine(const CTextLine* pTextLine);
 
 		void      ExecuteXObject(CXObject* pXObject);
 		void      DrawImage(CImageDict* pImage, double dX, double dY, double dWidth, double dHeight);
@@ -151,6 +152,53 @@ namespace PdfWriter
 		unsigned int m_unShadingsCount;
 		CDictObject* m_pPatterns;
 		unsigned int m_unPatternsCount;
+	};
+	//----------------------------------------------------------------------------------------
+	// CTextWord
+	//----------------------------------------------------------------------------------------
+	class CTextWord
+	{
+	public:
+
+		CTextWord();
+		bool Add(unsigned char* pCodes, unsigned int unLen, double dX, double dY, double dWidth);
+
+	private:
+
+		unsigned char m_pText[200];
+		int           m_nIndex;
+		double        m_dStartX;
+		double        m_dStartY;
+
+		double        m_dCurX;
+
+		friend class CTextLine;
+		friend class CPage;
+	};
+	//----------------------------------------------------------------------------------------
+	// CTextLine
+	//----------------------------------------------------------------------------------------
+	class CTextLine
+	{
+	public:
+
+		CTextLine();
+		~CTextLine();
+		bool Add(unsigned char* pCodes, unsigned int unLen, double dX, double dY, double dWidth, double dFontSize);
+		void Flush(CPage* pPage);
+
+	private:
+
+		void Clear();
+
+	private:
+
+		std::vector<CTextWord*> m_vWords;
+		std::vector<double>     m_vShifts;
+		double                  m_dX;
+		double                  m_dY;
+
+		friend class CPage;
 	};
 }
 

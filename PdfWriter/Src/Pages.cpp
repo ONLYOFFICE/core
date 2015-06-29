@@ -925,9 +925,20 @@ namespace PdfWriter
 		MoveTextPos(dX, dY);
 		ShowText(sText, unLen);
 	}
-	void          CPage::DrawTextArray(double dXpos, double dYpos, const BYTE** ppTexts, unsigned int* pLens, unsigned int unCount, double* pShifts)
+	void          CPage::DrawTextLine(const CTextLine* pTextLine)
 	{
+		if (!pTextLine)
+			return;
+
+		int nCount = pTextLine->m_vWords.size();
+		if (nCount <= 0)
+			return;
+
 		CheckGrMode(grmode_TEXT);
+
+		double dXpos = pTextLine->m_dX;
+		double dYpos = pTextLine->m_dY;
+
 		double dX = 0.0;
 		double dY = 0.0;
 
@@ -943,15 +954,28 @@ namespace PdfWriter
 		}
 		MoveTextPos(dX, dY);
 
-		m_pStream->WriteChar('[');
-		for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
+		if (1 == nCount)
 		{
-			WriteText(ppTexts[unIndex], pLens[unIndex]);
-			if (unIndex != unCount - 1)
-				m_pStream->WriteReal(pShifts[unIndex]);
+			CTextWord* pWord = pTextLine->m_vWords.at(0);
+			ShowText(pWord->m_pText, pWord->m_nIndex * 2);
 		}
-		m_pStream->WriteStr("]TJ\012");
-
+		else
+		{
+			CTextWord* pWord = NULL;
+			double dShift = 0;
+			m_pStream->WriteChar('[');
+			for (int nIndex = 0; nIndex < nCount; nIndex++)
+			{
+				pWord  = pTextLine->m_vWords.at(nIndex);
+				WriteText(pWord->m_pText, pWord->m_nIndex * 2);
+				if (nIndex != nCount - 1)
+				{
+					dShift = pTextLine->m_vShifts.at(nIndex);
+					m_pStream->WriteReal(dShift);
+				}
+			}
+			m_pStream->WriteStr("]TJ\012");
+		}
 	}
 	void          CPage::SetCharSpace(double dValue)
 	{
@@ -1216,5 +1240,99 @@ namespace PdfWriter
 	void          CPage::AddGroup(CDictObject* pDict)
 	{
 		Add("Group", pDict);
+	}
+	//----------------------------------------------------------------------------------------
+	// CTextWord
+	//----------------------------------------------------------------------------------------
+	CTextWord::CTextWord()
+	{
+		m_nIndex = 0;
+	}
+	bool CTextWord::Add(unsigned char* pCodes, unsigned int unLen, double dX, double dY, double dWidth)
+	{
+		if (2 != unLen)
+			return false;
+
+		if (0 == m_nIndex)
+		{
+			m_pText[0] = pCodes[0];
+			m_pText[1] = pCodes[1];
+			m_nIndex++;
+			m_dStartX = dX;
+			m_dStartY = dY;
+
+			m_dCurX = dX + dWidth;
+		}
+		else
+		{
+			if (abs(dY - m_dStartY) > 0.001 || abs(dX - m_dCurX) > 0.01)
+				return false;
+
+			m_pText[m_nIndex * 2 + 0] = pCodes[0];
+			m_pText[m_nIndex * 2 + 1] = pCodes[1];
+			m_nIndex++;
+
+			m_dCurX = dX + dWidth;
+		}
+
+		return true;
+	}
+	//----------------------------------------------------------------------------------------
+	// CTextLine
+	//----------------------------------------------------------------------------------------
+	CTextLine::CTextLine()
+	{
+	}
+	CTextLine::~CTextLine()
+	{
+		Clear();
+	}
+	bool CTextLine::Add(unsigned char* pCodes, unsigned int unLen, double dX, double dY, double dWidth, double dSize)
+	{
+		if (2 != unLen)
+			return false;
+
+		if (0 == m_vWords.size())
+		{
+			CTextWord* pText = new CTextWord();
+			if (!pText || !pText->Add(pCodes, unLen, dX, dY, dWidth))
+				return false;
+
+			m_vWords.push_back(pText);
+			m_dX = dX;
+			m_dY = dY;
+			return true;
+		}
+
+		if (abs(dY - m_dY) > 0.001)
+			return false;
+
+		CTextWord* pLastText = m_vWords.at(m_vWords.size() - 1);
+		if (pLastText->Add(pCodes, unLen, dX, dY, dWidth))
+			return true;
+
+		CTextWord* pText = new CTextWord();
+		if (!pText || !pText->Add(pCodes, unLen, dX, dY, dWidth))
+			return false;
+
+		m_vWords.push_back(pText);
+		double dShift = (pLastText->m_dCurX - dX) * 1000 / dSize;
+		m_vShifts.push_back(dShift);
+		return true;
+	}
+	void CTextLine::Flush(CPage* pPage)
+	{
+		pPage->DrawTextLine(this);
+		Clear();
+	}
+	void CTextLine::Clear()
+	{
+		for (int nIndex = 0, nCount = m_vWords.size(); nIndex < nCount; nIndex++)
+		{
+			CTextWord* pText = m_vWords.at(nIndex);
+			RELEASEOBJECT(pText);
+		}
+		m_vWords.clear();
+		m_vShifts.clear();
 	}
 }

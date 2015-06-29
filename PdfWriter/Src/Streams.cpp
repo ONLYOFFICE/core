@@ -587,7 +587,8 @@ namespace PdfWriter
 		unsigned int unRemainBytes = m_nBufferSize - Tell();
 		if (unRemainBytes < unSize)
 		{
-			Shrink(unSize);
+			unsigned int unShrinkSize = max(unSize, 4096);
+			Shrink(unShrinkSize);
 		}
 		MemCpy(m_pCur, pBuffer, unSize);
 		m_pCur += unSize;

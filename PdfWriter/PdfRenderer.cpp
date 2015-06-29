@@ -249,66 +249,7 @@ void CPdfRenderer::CCommandManager::Flush()
 			double dPrevY = -1000;
 			unsigned short ushPrevCode = 0;
 
-			class CContiniousText
-			{
-			public:
-
-				CContiniousText()
-				{
-					m_nIndex = 0;
-				}
-				void Reset()
-				{
-					m_nIndex = 0;
-				}
-				bool Add(unsigned char* pCodes, unsigned int unLen, double dX, double dY, double dWidth)
-				{
-					if (2 != unLen)
-						return false;
-
-					if (0 == m_nIndex)
-					{
-						m_pText[0] = pCodes[0];
-						m_pText[1] = pCodes[1];
-						m_nIndex++;
-						m_dStartX = dX;
-						m_dStartY = dY;
-
-						m_dCurX = dX + dWidth;
-					}
-					else
-					{
-						if (abs(dY - m_dStartY) > 0.001 || abs(dX - m_dCurX) > 0.01)
-							return false;
-
-						m_pText[m_nIndex * 2 + 0] = pCodes[0];
-						m_pText[m_nIndex * 2 + 1] = pCodes[1];
-						m_nIndex++;
-
-						m_dCurX = dX + dWidth;
-					}
-
-					return true;
-				}
-				void Flush(PdfWriter::CPage* pPage)
-				{
-					if (m_nIndex > 0)
-						pPage->DrawText(m_dStartX, m_dStartY, m_pText, m_nIndex * 2);
-
-					m_nIndex = 0;
-				}
-
-			private:
-
-				unsigned char m_pText[200];
-				int           m_nIndex;
-				double        m_dStartX;
-				double        m_dStartY;
-							  
-				double        m_dCurX;
-			};
-
-			CContiniousText oContText;
+			CTextLine oTextLine;
 			for (int nIndex = 0; nIndex < nCommandsCount; nIndex++)
 			{
 				pText = (CRendererTextCommand*)m_vCommands.at(nIndex);
@@ -335,7 +276,7 @@ void CPdfRenderer::CCommandManager::Flush()
 
 				if (pTextFont != pText->GetFont() || abs(dTextSize - pText->GetSize()) > 0.001)
 				{
-					oContText.Flush(pPage);
+					oTextLine.Flush(pPage);
 					pTextFont = pText->GetFont();
 					dTextSize = pText->GetSize();
 					pPage->SetFontAndSize(pTextFont, dTextSize);					
@@ -343,7 +284,7 @@ void CPdfRenderer::CCommandManager::Flush()
 
 				if (lTextColor != pText->GetColor())
 				{
-					oContText.Flush(pPage);
+					oTextLine.Flush(pPage);
 					lTextColor = pText->GetColor();
 					TColor oColor = lTextColor;
 					pPage->SetFillColor(oColor.r, oColor.g, oColor.b);					
@@ -351,14 +292,14 @@ void CPdfRenderer::CCommandManager::Flush()
 
 				if (nTextAlpha != pText->GetAlpha())
 				{
-					oContText.Flush(pPage);
+					oTextLine.Flush(pPage);
 					nTextAlpha = pText->GetAlpha();
 					pPage->SetFillAlpha(nTextAlpha);					
 				}
 
 				if (abs(dTextSpace - pText->GetSpace()) > 0.001)
 				{
-					oContText.Flush(pPage);
+					oTextLine.Flush(pPage);
 					dTextSpace = pText->GetSpace();
 					pPage->SetCharSpace(dTextSpace);					
 				}
@@ -366,17 +307,18 @@ void CPdfRenderer::CCommandManager::Flush()
 				
 				//------------------------------------
 
-				unsigned char* pCodes = pText->GetCodes();
-				unsigned short ushCode = (pCodes[0] << 8) + pCodes[1];
-				unsigned int   unLen   = pText->GetCodesLen();
-				double dX = pText->GetX();
-				double dY = pText->GetY();
-				double dWidth = ((CFontCidTrueType*)pText->GetFont())->GetWidth(ushCode) / 1000.0 * pText->GetSize();
-
-				if (!oContText.Add(pCodes, unLen, dX, dY, dWidth))
+				unsigned char* pCodes    = pText->GetCodes();
+				unsigned short ushCode   = (pCodes[0] << 8) + pCodes[1];
+				unsigned int   unLen     = pText->GetCodesLen();
+				double         dX        = pText->GetX();
+				double         dY        = pText->GetY();
+				double         dTextSize = pText->GetSize();
+				double         dWidth    = ((CFontCidTrueType*)pText->GetFont())->GetWidth(ushCode) / 1000.0 * dTextSize;
+				
+				if (!oTextLine.Add(pCodes, unLen, dX, dY, dWidth, dTextSize))
 				{
-					oContText.Flush(pPage);
-					if (!oContText.Add(pCodes, unLen, dX, dY, dWidth))
+					oTextLine.Flush(pPage);
+					if (!oTextLine.Add(pCodes, unLen, dX, dY, dWidth, dTextSize))
 					{
 						pPage->DrawText(dX, dY, pCodes, unLen);
 					}
@@ -385,7 +327,7 @@ void CPdfRenderer::CCommandManager::Flush()
 
 				//pPage->DrawText(pText->GetX(), pText->GetY(), pText->GetCodes(), pText->GetCodesLen());
 			}
-			oContText.Flush(pPage);
+			oTextLine.Flush(pPage);
 
 			pPage->EndText();
 		}
@@ -434,7 +376,7 @@ CPdfRenderer::CPdfRenderer(CApplicationFonts* pAppFonts) : m_oCommandManager(thi
 		return;
 	}
 
-	//m_pDocument->SetCompressionMode(COMP_ALL);
+	m_pDocument->SetCompressionMode(COMP_ALL);
 
 	m_bValid      = true;
 	m_dPageHeight = 297;

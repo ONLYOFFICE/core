@@ -243,8 +243,72 @@ void CPdfRenderer::CCommandManager::Flush()
 			double     dTextSize = -1;
 			LONG      lTextColor = 0;
 			BYTE      nTextAlpha = 255;
-			double    dTextSpace = 0;
+			double    dTextSpace = 0;			
 
+			double dPrevX = -1000;
+			double dPrevY = -1000;
+			unsigned short ushPrevCode = 0;
+
+			class CContiniousText
+			{
+			public:
+
+				CContiniousText()
+				{
+					m_nIndex = 0;
+				}
+				void Reset()
+				{
+					m_nIndex = 0;
+				}
+				bool Add(unsigned char* pCodes, unsigned int unLen, double dX, double dY, double dWidth)
+				{
+					if (2 != unLen)
+						return false;
+
+					if (0 == m_nIndex)
+					{
+						m_pText[0] = pCodes[0];
+						m_pText[1] = pCodes[1];
+						m_nIndex++;
+						m_dStartX = dX;
+						m_dStartY = dY;
+
+						m_dCurX = dX + dWidth;
+					}
+					else
+					{
+						if (abs(dY - m_dStartY) > 0.001 || abs(dX - m_dCurX) > 0.01)
+							return false;
+
+						m_pText[m_nIndex * 2 + 0] = pCodes[0];
+						m_pText[m_nIndex * 2 + 1] = pCodes[1];
+						m_nIndex++;
+
+						m_dCurX = dX + dWidth;
+					}
+
+					return true;
+				}
+				void Flush(PdfWriter::CPage* pPage)
+				{
+					if (m_nIndex > 0)
+						pPage->DrawText(m_dStartX, m_dStartY, m_pText, m_nIndex * 2);
+
+					m_nIndex = 0;
+				}
+
+			private:
+
+				unsigned char m_pText[200];
+				int           m_nIndex;
+				double        m_dStartX;
+				double        m_dStartY;
+							  
+				double        m_dCurX;
+			};
+
+			CContiniousText oContText;
 			for (int nIndex = 0; nIndex < nCommandsCount; nIndex++)
 			{
 				pText = (CRendererTextCommand*)m_vCommands.at(nIndex);
@@ -271,32 +335,57 @@ void CPdfRenderer::CCommandManager::Flush()
 
 				if (pTextFont != pText->GetFont() || abs(dTextSize - pText->GetSize()) > 0.001)
 				{
+					oContText.Flush(pPage);
 					pTextFont = pText->GetFont();
 					dTextSize = pText->GetSize();
-					pPage->SetFontAndSize(pTextFont, dTextSize);
+					pPage->SetFontAndSize(pTextFont, dTextSize);					
 				}
 
 				if (lTextColor != pText->GetColor())
 				{
+					oContText.Flush(pPage);
 					lTextColor = pText->GetColor();
 					TColor oColor = lTextColor;
-					pPage->SetFillColor(oColor.r, oColor.g, oColor.b);
+					pPage->SetFillColor(oColor.r, oColor.g, oColor.b);					
 				}
 
 				if (nTextAlpha != pText->GetAlpha())
 				{
+					oContText.Flush(pPage);
 					nTextAlpha = pText->GetAlpha();
-					pPage->SetFillAlpha(nTextAlpha);
+					pPage->SetFillAlpha(nTextAlpha);					
 				}
 
 				if (abs(dTextSpace - pText->GetSpace()) > 0.001)
 				{
+					oContText.Flush(pPage);
 					dTextSpace = pText->GetSpace();
-					pPage->SetCharSpace(dTextSpace);
+					pPage->SetCharSpace(dTextSpace);					
 				}
 
-				pPage->DrawText(pText->GetX(), pText->GetY(), pText->GetCodes(), pText->GetCodesLen() * 2);
+				
+				//------------------------------------
+
+				unsigned char* pCodes = pText->GetCodes();
+				unsigned short ushCode = (pCodes[0] << 8) + pCodes[1];
+				unsigned int   unLen   = pText->GetCodesLen();
+				double dX = pText->GetX();
+				double dY = pText->GetY();
+				double dWidth = ((CFontCidTrueType*)pText->GetFont())->GetWidth(ushCode) / 1000.0 * pText->GetSize();
+
+				if (!oContText.Add(pCodes, unLen, dX, dY, dWidth))
+				{
+					oContText.Flush(pPage);
+					if (!oContText.Add(pCodes, unLen, dX, dY, dWidth))
+					{
+						pPage->DrawText(dX, dY, pCodes, unLen);
+					}
+				}
+				//-----------------------------------
+
+				//pPage->DrawText(pText->GetX(), pText->GetY(), pText->GetCodes(), pText->GetCodesLen());
 			}
+			oContText.Flush(pPage);
 
 			pPage->EndText();
 		}
@@ -318,6 +407,10 @@ void CPdfRenderer::CCommandManager::Clear()
 void CPdfRenderer::CCommandManager::SetTransform(const CTransform& oTransform)
 {
 	m_oTransform = oTransform;
+}
+void CPdfRenderer::CCommandManager::SetTransform(const double& m11, const double& m12, const double& m21, const double& m22, const double& dx, const double& dy)
+{
+	m_oTransform.Set(m11, m12, m21, m22, dx, dy);
 }
 //----------------------------------------------------------------------------------------
 //
@@ -879,12 +972,15 @@ HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const d
 	unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
 	delete[] pUnicodes;
 
+	CTransform& t = m_oTransform;
+	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
+
 	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, unLen * 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
 	pText->SetFont(m_pFont);
 	pText->SetSize(m_oFont.GetSize());
 	pText->SetColor(m_oBrush.GetColor1());
 	pText->SetAlpha((BYTE)m_oBrush.GetAlpha1());
-	pText->SetCharSpace(m_oFont.GetCharSpace());
+	pText->SetCharSpace(MM_2_PT(m_oFont.GetCharSpace()));
 
 	return S_OK;
 }

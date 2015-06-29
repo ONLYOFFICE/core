@@ -1450,6 +1450,7 @@ private:
 		CRendererTextCommand* AddText(unsigned char* pCodes, unsigned int nLen, const double& dX, const double& dY);
 		void Flush();
 		void SetTransform(const CTransform& oTransform);
+		void SetTransform(const double& m11, const double& m12, const double& m21, const double& m22, const double& dx, const double& dy);
 	private:
 		void Add(CRendererCommandBase* pCommand);		
 		void Clear();

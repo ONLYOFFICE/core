@@ -97,6 +97,9 @@ namespace PdfWriter
 		void      SetTextRenderingMode(ETextRenderingMode eMode);
 		void      SetTextMatrix(double dM11, double dM12, double dM21, double dM22, double dX, double dY);
 
+		void      DrawTextArray(double dX, double dY, const BYTE** ppTexts, unsigned int* pLens, unsigned int unCount, double* pShifts);
+
+
 		void      ExecuteXObject(CXObject* pXObject);
 		void      DrawImage(CImageDict* pImage, double dX, double dY, double dWidth, double dHeight);
 		void      SetPatternColorSpace(CImageTilePattern* pPattern);

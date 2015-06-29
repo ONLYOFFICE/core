@@ -107,9 +107,9 @@ private:
 	void create_new_slideLayout(int id);
 	void create_new_slideMaster(int id);
 
-	package::pptx_document	* output_document_; 
-    odf_reader::odf_document		* odf_document_;    
-	CApplicationFonts           *applicationFonts_;
+	package::pptx_document		* output_document_; 
+    odf_reader::odf_document	* odf_document_;    
+	CApplicationFonts           * applicationFonts_;
 
     pptx_slide_context		pptx_slide_context_;
 	pptx_text_context		pptx_text_context_;
@@ -123,8 +123,8 @@ private:
 	std::vector<pptx_xml_slideLayout_ptr>	slideLayouts_;
 	std::vector<pptx_xml_theme_ptr>			themes_;
 	
-	pptx_xml_authors_comments_ptr authors_comments_;
-	pptx_xml_presentation presentation_;
+	pptx_xml_authors_comments_ptr			authors_comments_;
+	pptx_xml_presentation					presentation_;
 
 	std::wstring current_master_page_name_;
 	std::wstring current_layout_page_name_;

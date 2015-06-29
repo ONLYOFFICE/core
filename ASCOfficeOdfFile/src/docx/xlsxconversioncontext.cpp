@@ -198,6 +198,8 @@ void xlsx_conversion_context::end_document()
         }
 
         output_document_->get_xl_files().set_workbook( package::simple_element::create(L"workbook.xml", strm_workbook.str()) );
+
+		output_document_->content_type().set_media(get_mediaitems());
         output_document_->get_xl_files().set_media(get_mediaitems(), applicationFonts_);
 
         package::xl_drawings_ptr drawings = package::xl_drawings::create(xlsx_drawing_context_handle_.content());
@@ -482,7 +484,7 @@ std::pair<float,float> xlsx_conversion_context::getMaxDigitSize()
 		else
 			font_size =10;
 		
-        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, /*getDefaultDpi()*/96., 0, applicationFonts_);
+        maxDigitSize_ = utils::GetMaxDigitSizePixels(font_name.c_str(), font_size, getSystemDPI(), 0, applicationFonts_);
     }    
     return maxDigitSize_;
 }

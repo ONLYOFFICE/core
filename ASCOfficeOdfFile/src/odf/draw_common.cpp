@@ -28,6 +28,8 @@
 	#pragma comment(lib, "gdiplus.lib")
 #endif
 
+extern double getSystemDPI();
+
 namespace _image_file_
 {
     bool GetResolution(const wchar_t* fileName, int & Width, int &Height)
@@ -104,7 +106,7 @@ bool parse_clipping(std::wstring strClipping,std::wstring fileName, double_4 & c
 	}
 	if (Points_pt.size()>3)//если другое количество точек .. попозже
 	{
-		float dpi_ = 96.;//getDefaultDpi();
+		float dpi_ = getSystemDPI();
 		clip_rect[0] = dpi_ * Points_pt[3].get_value_unit(length::inch);
 		clip_rect[1] = dpi_ * Points_pt[0].get_value_unit(length::inch);
 		clip_rect[2] = dpi_ * Points_pt[1].get_value_unit(length::inch);

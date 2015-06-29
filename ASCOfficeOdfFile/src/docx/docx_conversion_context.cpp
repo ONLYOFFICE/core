@@ -208,7 +208,7 @@ void docx_conversion_context::dump_notes(rels & Rels) const
 
 std::wstring docx_conversion_context::add_mediaitem(const std::wstring & uri, mediaitems::Type type, bool & isInternal, std::wstring & ref)
 {
-    return mediaitems_.add_or_find(uri, type, isInternal, ref);    
+	return mediaitems_.add_or_find(uri, type, isInternal, ref); 
 }
 
 void docx_conversion_context::start_document()
@@ -245,6 +245,7 @@ void docx_conversion_context::end_document()
     output_stream() << L"</w:document>";
     output_document_->get_word_files().set_document( package::simple_element::create(L"document.xml", document_xml_.str()) );
 
+	output_document_->content_type().set_media(mediaitems_);
     output_document_->get_word_files().set_media( mediaitems_, applicationFonts_);
     output_document_->get_word_files().set_headers_footers(headers_footers_);
 	output_document_->get_word_files().set_comments(comments_context_);

@@ -8,6 +8,39 @@
 #include "../../DesktopEditor/fontengine/FontManager.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
+#if defined(_WIN32) || defined(_WIN64)
+	#include <windows.h>
+	#include <gdiplus.h>
+#elif defined(__linux__)
+    #include "X11/Xlib.h"
+#endif
+
+double getSystemDPI()
+{
+#if defined (_WIN32) || defined(_WIN64)
+	HDC screen = GetDC(0);
+
+	int dpiX = GetDeviceCaps (screen, LOGPIXELSX);
+	int dpiY = GetDeviceCaps (screen, LOGPIXELSY);
+
+	ReleaseDC (0, screen);
+
+	return dpiX;
+#elif defined (__linux__)
+	Display *dpy = XOpenDisplay (NULL);;
+
+	double xres = ((((double) DisplayWidth (dpy, 0)) * 25.4) / ((double) DisplayWidthMM(dpy, 0)));
+	double yres = ((((double) DisplayHeight(dpy, 0)) * 25.4) / ((double) DisplayHeightMM(dpy, 0)));
+
+	XCloseDisplay (dpy);
+
+	return xres;
+#else
+	return 96.;
+#endif
+}
+
+
 namespace cpdoccore {
 namespace utils {
 

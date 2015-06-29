@@ -132,15 +132,16 @@ public:
     docx_document();
 
 public:
-    virtual void write(const std::wstring & RootPath);
-    word_files & get_word_files() { return word_files_; }
-    virtual content_types_file & content_type() { return content_type_; }
+			word_files			& get_word_files()	{ return word_files_; }
+    virtual content_types_file	& content_type()	{ return content_type_; }
+   
+	virtual void write(const std::wstring & RootPath);
 
 private:
-    docx_content_types_file content_type_;
-    word_files word_files_;
-    rels_files rels_files_;
-    docProps_files docProps_files_;
+    docx_content_types_file	content_type_;
+    word_files				word_files_;
+    rels_files				rels_files_;
+    docProps_files			docProps_files_;
 };
 
 }

@@ -50,6 +50,8 @@ std::wstring static get_default_file_name(mediaitems::Type type)
         return L"image";
     case mediaitems::typeChart:
         return L"chart";
+    case mediaitems::typeMedia:
+        return L"media";
 	default:
         return L"";
     }
@@ -110,6 +112,8 @@ std::wstring mediaitems::add_or_find(const std::wstring & href, Type type, bool 
 		number= count_image+1;
 	else if ( type == typeShape)
 		number= count_shape+1;
+	else if ( type == typeMedia)
+		number= count_media+1;
 	else
 		number= items_.size()+1;
 	

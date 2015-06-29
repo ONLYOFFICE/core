@@ -293,7 +293,9 @@ void text_list_level_style_number::docx_convert(oox::docx_conversion_context & C
 			CP_XML_NODE(L"w:suff")
 			{
 				if ((labelAlignment) && (labelAlignment->text_label_followed_by_))
+				{
 					CP_XML_ATTR(L"w:val",labelAlignment->text_label_followed_by_.get());
+				}
 				else 
 					CP_XML_ATTR(L"w:val",L"tab");
 			}
@@ -500,7 +502,9 @@ void text_list_level_style_bullet::docx_convert(oox::docx_conversion_context & C
 			CP_XML_NODE(L"w:suff")
 			{   
 				if ((labelAlignment) && (labelAlignment->text_label_followed_by_))
+				{
 					CP_XML_ATTR(L"w:val",labelAlignment->text_label_followed_by_.get() );
+				}
 				else 
 					CP_XML_ATTR(L"w:val",L"tab");
 			}

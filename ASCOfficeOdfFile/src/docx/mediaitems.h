@@ -11,7 +11,7 @@ class rels;
 class mediaitems
 {
 public:
-    enum Type { typeUnknown = 0, typeImage, typeChart, typeShape, typeTable, typeHyperlink, typeComment};
+    enum Type { typeUnknown = 0, typeImage, typeChart, typeShape, typeTable, typeHyperlink, typeComment, typeMedia};
 
     mediaitems(const std::wstring & odfPacket) : odf_packet_(odfPacket)
     {
@@ -19,6 +19,8 @@ public:
  		count_shape		=0;
  		count_image		=0;
  		count_tables	=0;
+ 		count_media		=0;
+			
 	}
 
     struct item 
@@ -43,6 +45,7 @@ public:
 	
 	size_t count_charts;
 	size_t count_image;
+	size_t count_media;
 	size_t count_shape;
 	size_t count_tables;
 

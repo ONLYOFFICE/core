@@ -19,6 +19,8 @@
 #include "../docx/xlsx_cell_format.h"
 #include "../formulasconvert/formulasconvert.h"
 
+extern	double getSystemDPI();
+
 namespace cpdoccore { 
 
 	using namespace odf_types;
@@ -413,7 +415,7 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
                                     in_width = 0.0;
                                 }
 								
-                                const double pixDpi = in_width * 96./*getDefaultDpi()*/;                
+                                const double pixDpi = in_width * getSystemDPI();                
                                 width = pixToSize(pixDpi, Context.getMaxDigitSize().first); 
 
 								//const double width = cmToChars(prop->style_table_column_properties_attlist_.style_column_width_->get_value_unit(length::cm));

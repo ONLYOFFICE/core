@@ -185,27 +185,27 @@ public:
 	void set_authors_comments(pptx_xml_authors_comments_ptr & authors_comments);    
 
 private:
-    rels_files rels_files_;
+    rels_files			rels_files_;
    
-	slides_files slides_files_;    
-	slideLayouts_files slideLayouts_files_;    
-	slideMasters_files slideMasters_files_;
+	slides_files		slides_files_;    
+	slideLayouts_files	slideLayouts_files_;    
+	slideMasters_files	slideMasters_files_;
 	
-	ppt_themes_files themes_files_;
+	ppt_themes_files	themes_files_;
 
-    ppt_charts_files charts_files_;
-	//slides_files notesSlides_files_;
-	//slides_files notesMasters_files_;
-	//slides_files handoutMasters_files_;
+    ppt_charts_files	charts_files_;
+	//slides_files		notesSlides_files_;
+	//slides_files		notesMasters_files_;
+	//slides_files		handoutMasters_files_;
  	
-	element_ptr authors_comments_;
+	element_ptr			authors_comments_;
 	
-	element_ptr presentation_;
+	element_ptr			presentation_;
 
-    element_ptr tableStyles_;
+    element_ptr			tableStyles_;
 
-	element_ptr comments_;
-    element_ptr media_;
+	element_ptr			comments_;
+    element_ptr			media_;
 };
 
 /// \class  xlsx_document

@@ -277,6 +277,7 @@ void pptx_conversion_context::end_document()
 
 	output_document_->get_ppt_files().set_presentation(presentation_);
        
+	output_document_->content_type().set_media(get_mediaitems());
 	output_document_->get_ppt_files().set_media(get_mediaitems(), applicationFonts_);
 
 	output_document_->get_ppt_files().set_authors_comments(authors_comments_);

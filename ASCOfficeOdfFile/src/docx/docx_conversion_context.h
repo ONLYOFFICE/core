@@ -522,9 +522,9 @@ private:
         
     boost::shared_ptr<streams_man> streams_man_;
 
-    package::docx_document	* output_document_;
-    odf_reader::odf_document		* odf_document_;
-    CApplicationFonts       * applicationFonts_;
+    package::docx_document		* output_document_;
+    odf_reader::odf_document	* odf_document_;
+    CApplicationFonts			* applicationFonts_;
 
 	std::vector<odf_reader::_property> settings_properties_;
 

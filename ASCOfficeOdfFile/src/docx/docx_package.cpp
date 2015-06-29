@@ -14,11 +14,8 @@ docx_content_types_file::docx_content_types_file()
     content_type_.add_default(L"xml",     L"application/xml");
 	//
     content_type_.add_default(L"jpg",     L"image/jpeg");
-    content_type_.add_default(L"gif",     L"image/gif");
-    content_type_.add_default(L"jpeg",    L"image/jpeg");
     content_type_.add_default(L"png",     L"image/png");
-    content_type_.add_default(L"wmf",     L"image/x-wmf");
-	content_type_.add_default(L"emf",     L"image/x-emf");
+	//
 
     content_type_.add_override(L"/_rels/.rels",                  L"application/vnd.openxmlformats-package.relationships+xml");
     content_type_.add_override(L"/word/_rels/document.xml.rels", L"application/vnd.openxmlformats-package.relationships+xml");
@@ -28,8 +25,8 @@ docx_content_types_file::docx_content_types_file()
     content_type_.add_override(L"/word/fontTable.xml",           L"application/vnd.openxmlformats-officedocument.wordprocessingml.fontTable+xml");
     content_type_.add_override(L"/docProps/app.xml",             L"application/vnd.openxmlformats-officedocument.extended-properties+xml");
     content_type_.add_override(L"/docProps/core.xml",            L"application/vnd.openxmlformats-package.core-properties+xml");
-
 }
+
 
 ////////////////////////////////////////////////////////////////////////////////////////
 

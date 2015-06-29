@@ -28,6 +28,24 @@ static void ConvertSvmToImage(std::wstring &file_svm, std::wstring &file_png, CA
 	}
 }
 
+static std::wstring get_mime_type(const std::wstring & extension)
+{
+	if (L"eps" == extension)	return  L"image/x-eps";
+	if (L"wmf" == extension)	return  L"image/x-wmf";
+	if (L"emf" == extension)	return  L"image/x-emf";
+  	if (L"gif" == extension)	return  L"image/x-gif";
+   	if (L"png" == extension)	return  L"image/x-png";
+ 	if (L"jpg" == extension)	return  L"image/x-jpeg";
+  	if (L"jpeg" == extension)	return  L"image/x-jpeg";
+  	if (L"tiff" == extension)	return  L"image/x-tiff";
+	if (L"pdf" == extension)	return  L"application/pdf";
+	if (L"wav" == extension)	return  L"audio/wav";
+	if (L"bin" == extension)	return  L"application/vnd.openxmlformats-officedocument.oleObject";
+	if (L"xlsx" == extension)	return  L"application/vnd.openxmlformats-officedocument.spreadsheetml.sheet";
+
+	return L"";
+}
+
 content_types_file::content_types_file() : filename_(L"[Content_Types].xml") 
 {}
 
@@ -40,6 +58,32 @@ void content_types_file::write(const std::wstring & RootPath)
     simple_element elm(filename_, resStream.str());
     elm.write(RootPath);
 }
+
+bool content_types_file::add_or_find_default(const std::wstring & extension)
+{
+	for (int i = 0 ; i < content_type_.get_default().size(); i++)
+	{
+		if (content_type_.get_default()[i].extension() == extension)
+			return true;
+	}
+	content_type_.add_default(extension, get_mime_type(extension));
+	return true;
+}
+void content_types_file::set_media(mediaitems & _Mediaitems)
+{
+    BOOST_FOREACH( mediaitems::item & item, _Mediaitems.items() )
+    {
+		if (item.type == mediaitems::typeImage || item.type == mediaitems::typeMedia)
+		{
+			int n = item.outputName.rfind(L".");
+			if (n > 0)
+			{
+				add_or_find_default(item.outputName.substr(n+1, item.outputName.length() - n));
+			}
+		}
+	}
+}
+
 
 /////////////////////////////////////////////////////////////////////////
 

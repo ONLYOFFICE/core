@@ -107,13 +107,46 @@ namespace PdfWriter
 		m_pToUnicodeStream = pToUnicodeDict->GetStream();
 
 		CreateCIDFont2(pFont);
+
+
+		//-----------------------------------------------------------------------------------------
+		FT_Init_FreeType(&m_pLibrary);
+		NSFile::CFileBinary oFile;
+		oFile.OpenFile(m_wsFontPath, false);
+		DWORD lFileSize = oFile.SizeFile();
+		m_pFaceMemory = new FT_Byte[lFileSize];
+		if (!m_pFaceMemory)
+		{
+			FT_Done_FreeType(m_pLibrary);
+			return;
+		}
+
+		NSFile::CFileBinary::ReadAllBytes(m_wsFontPath, &m_pFaceMemory, lFileSize);
+
+		FT_New_Memory_Face(m_pLibrary, m_pFaceMemory, lFileSize, m_unFontIndex, &m_pFace);
+		if (!m_pFace)
+		{
+			FT_Done_FreeType(m_pLibrary);
+			delete[] m_pFaceMemory;
+			m_pFaceMemory = NULL;
+			return;
+		}
 	}
 	CFontCidTrueType::~CFontCidTrueType()
 	{
 		if (m_pFontFile)
 			delete m_pFontFile;
+
+		if (m_pFace)
+			FT_Done_Face(m_pFace);
+
+		if (m_pLibrary)
+			FT_Done_FreeType(m_pLibrary);
+
+		if (m_pFaceMemory)
+			delete[] m_pFaceMemory;
 	}
-	void            CFontCidTrueType::CreateCIDFont2(CDictObject* pFont)
+	void           CFontCidTrueType::CreateCIDFont2(CDictObject* pFont)
 	{
 		m_pFont = pFont;
 		pFont->Add("Subtype", "CIDFontType2");
@@ -164,7 +197,7 @@ namespace PdfWriter
 		pCIDToGIDMapDict->SetFilter(STREAM_FILTER_FLATE_DECODE);
 		m_pCidToGidMapStream = pCIDToGIDMapDict->GetStream();
 	}
-	unsigned char*  CFontCidTrueType::EncodeString(unsigned int* pUnicodes, unsigned int unLen)
+	unsigned char* CFontCidTrueType::EncodeString(unsigned int* pUnicodes, unsigned int unLen)
 	{
 		unsigned char* pEncodedString = new unsigned char[unLen * 2];
 
@@ -181,11 +214,39 @@ namespace PdfWriter
 			}
 			else
 			{
-				m_mUnicodeToCode.insert(std::pair<unsigned int, unsigned short>(pUnicodes[unIndex], m_ushCodesCount));
+				unsigned int unUnicode = pUnicodes[unIndex];
 				ushCode = m_ushCodesCount;
-
-				m_vUnicodes.push_back(pUnicodes[unIndex]);
 				m_ushCodesCount++;
+
+				m_mUnicodeToCode.insert(std::pair<unsigned int, unsigned short>(unUnicode, ushCode));				
+				m_vUnicodes.push_back(unUnicode);
+
+				unsigned short ushGID = GetGID(m_pFace, unUnicode);
+				m_vCodeToGid.push_back(ushGID);
+
+				// Данный символ используется
+				m_mGlyphs.insert(std::pair<unsigned short, bool>(ushGID, true));
+
+				// Если данный символ составной (CompositeGlyf), тогда мы должны учесть все его дочерные символы (subglyfs)
+				if (0 == FT_Load_Glyph(m_pFace, ushGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE))
+				{
+					for (int nSubIndex = 0; nSubIndex < m_pFace->glyph->num_subglyphs; nSubIndex++)
+					{
+						FT_Int       nSubGID;
+						FT_UInt      unFlags;
+						FT_Int       nArg1;
+						FT_Int       nArg2;
+						FT_Matrix    oMatrix;
+						FT_Get_SubGlyph_Info(m_pFace->glyph, nSubIndex, &nSubGID, &unFlags, &nArg1, &nArg2, &oMatrix);
+
+						m_mGlyphs.insert(std::pair<unsigned short, bool>(nSubGID, true));
+					}
+
+					if (0 != m_pFace->units_per_EM)
+						m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance * 1000 / m_pFace->units_per_EM);
+					else
+						m_vWidths.push_back((unsigned int)m_pFace->glyph->metrics.horiAdvance);
+				}
 			}
 
 			pEncodedString[2 * unIndex + 0] = (ushCode >> 8) & 0xFF;
@@ -193,7 +254,14 @@ namespace PdfWriter
 		}
 		return pEncodedString;
 	}
-	void            CFontCidTrueType::BeforeWrite()
+	unsigned int   CFontCidTrueType::GetWidth(unsigned short ushCode)
+	{
+		if (ushCode >= m_vWidths.size())
+			return 0;
+
+		return m_vWidths.at(ushCode);
+	}
+	void           CFontCidTrueType::BeforeWrite()
 	{
 		if (m_pFontFile)
 		{
@@ -230,7 +298,7 @@ namespace PdfWriter
 			WriteToUnicode();
 		}
 	}
-	void            CFontCidTrueType::GetWidthsAndGids(unsigned short** ppCodeToGid, unsigned int** ppWidths, unsigned char** ppGlyphs, unsigned int& unGlyphsCount)
+	void           CFontCidTrueType::GetWidthsAndGids(unsigned short** ppCodeToGid, unsigned int** ppWidths, unsigned char** ppGlyphs, unsigned int& unGlyphsCount)
 	{
 		FT_Library pLibrary = NULL;
 		FT_Init_FreeType(&pLibrary);
@@ -321,13 +389,14 @@ namespace PdfWriter
 
 		FT_Done_Face(pFace);
 		FT_Done_FreeType(pLibrary);
+		delete[] pMemory;
 
 		*ppCodeToGid  = pCodeToGID;
 		*ppWidths     = pWidths;
 		*ppGlyphs     = pUseGlyf;
 		unGlyphsCount = lGlyfsCount;
 	}
-	void            CFontCidTrueType::WriteToUnicode()
+	void           CFontCidTrueType::WriteToUnicode()
 	{
 		CStream* pS = m_pToUnicodeStream;
 

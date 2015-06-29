@@ -925,6 +925,34 @@ namespace PdfWriter
 		MoveTextPos(dX, dY);
 		ShowText(sText, unLen);
 	}
+	void          CPage::DrawTextArray(double dXpos, double dYpos, const BYTE** ppTexts, unsigned int* pLens, unsigned int unCount, double* pShifts)
+	{
+		CheckGrMode(grmode_TEXT);
+		double dX = 0.0;
+		double dY = 0.0;
+
+		if (0 == m_oTextMatrix.m11)
+		{
+			dY = (dXpos - m_oTextMatrix.x) / m_oTextMatrix.m21;
+			dX = (dYpos - m_oTextMatrix.y - (dXpos - m_oTextMatrix.x) * m_oTextMatrix.m22 / m_oTextMatrix.m21) / m_oTextMatrix.m12;
+		}
+		else
+		{
+			dY = (dYpos - m_oTextMatrix.y - (dXpos - m_oTextMatrix.x) * m_oTextMatrix.m12 / m_oTextMatrix.m11) / (m_oTextMatrix.m22 - m_oTextMatrix.m21 * m_oTextMatrix.m12 / m_oTextMatrix.m11);
+			dX = (dXpos - m_oTextMatrix.x - dY * m_oTextMatrix.m21) / m_oTextMatrix.m11;
+		}
+		MoveTextPos(dX, dY);
+
+		m_pStream->WriteChar('[');
+		for (unsigned int unIndex = 0; unIndex < unCount; unIndex++)
+		{
+			WriteText(ppTexts[unIndex], pLens[unIndex]);
+			if (unIndex != unCount - 1)
+				m_pStream->WriteReal(pShifts[unIndex]);
+		}
+		m_pStream->WriteStr("]TJ\012");
+
+	}
 	void          CPage::SetCharSpace(double dValue)
 	{
 		// Operator   : Tc

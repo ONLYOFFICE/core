@@ -35,6 +35,8 @@
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 #include "../../DesktopEditor/raster/Metafile/MetaFile.h"
 #include <vector>
+#include <ctime>
+
 
 
 #ifdef DrawText
@@ -924,6 +926,8 @@ void TestOnlineBin()
 	CApplicationFonts oFonts;
 	oFonts.Initialize();
 
+	clock_t oBeginTime = clock();
+
 	double dPx2Mm = 25.4 / 96;
 	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"txt");
 	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
@@ -938,6 +942,11 @@ void TestOnlineBin()
 
 		printf("%d of %d %S\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());
 	}
+
+	clock_t oEndTime = clock();
+	double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
+	printf("%f\n", dElapsedSecs);
+
 }
 
 void main()
@@ -957,4 +966,7 @@ void main()
 	//TestDocument9();
 	//TestMetafile();
 	TestOnlineBin();
+
+	char q;
+	std::cin >> q;
 }

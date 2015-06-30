@@ -38,6 +38,7 @@ namespace PdfWriter
 		void LoadSMask(const BYTE* pBuffer, unsigned int unSize, unsigned int unWidth, unsigned int unHeight);
 		void LoadBW(const BYTE* pImage, unsigned int unWidth, unsigned int unHeight, unsigned int unStride);
 		void LoadBW(Pix* pPix, unsigned int unWidth, unsigned int unHeight);
+		void LoadMask(Pix* pPix, unsigned int unWidth, unsigned int unHeight);
 
 	private:
 

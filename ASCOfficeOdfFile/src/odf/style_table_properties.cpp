@@ -104,7 +104,13 @@ void table_format_properties::docx_convert(oox::docx_conversion_context & Contex
     {
         std::wstring w_val = L"left";
         if (table_align_->get_type() == table_align::Margins)
-            w_val = L"left";
+		{
+			if (common_horizontal_margin_attlist_.fo_margin_left_ && common_horizontal_margin_attlist_.fo_margin_right_)
+			{
+				if (common_horizontal_margin_attlist_.fo_margin_left_->get_length() == common_horizontal_margin_attlist_.fo_margin_right_->get_length())
+					w_val = L"center";
+			}
+		}
         else
             w_val = boost::lexical_cast<std::wstring>(*table_align_);
 

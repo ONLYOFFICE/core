@@ -166,7 +166,8 @@ int ComputeMarginX(const style_page_layout_properties * pagePropertiesNode,
     
     _CP_OPT(length) contextSubstractedValue(0, length::pt);
     _CP_OPT(style_wrap) styleWrap = graphicProperties.style_wrap_;
-    if (!styleWrap || 
+   
+	if (!styleWrap || 
         styleWrap->get_type() == style_wrap::None ||
         styleWrap->get_type() == style_wrap::RunThrough)
     {
@@ -547,7 +548,15 @@ int ComputeMarginY(const style_page_layout_properties_attlist & pageProperties,
         common_text_anchor_attlist_.
         type_;
 
-    _CP_OPT(vertical_rel) styleVerticalRel  = graphicProperties.common_vertical_rel_attlist_.style_vertical_rel_;
+	//todooo пока не ясно как привязать к определеной странице в документе ...
+	//const _CP_OPT(unsigned int) anchor_page_number = 
+	//	attlists_.shape_with_text_and_styles_.
+	//	common_draw_shape_with_styles_attlist_.
+	//	common_text_spreadsheet_shape_attlist_.
+	//	common_text_anchor_attlist_.
+	//	page_number_;
+
+	_CP_OPT(vertical_rel) styleVerticalRel  = graphicProperties.common_vertical_rel_attlist_.style_vertical_rel_;
     _CP_OPT(vertical_pos) styleVerticallPos = graphicProperties.common_vertical_pos_attlist_.style_vertical_pos_;
 
     const _CP_OPT(length) pageHeight = pageProperties.fo_page_height_;        
@@ -696,6 +705,11 @@ int ComputeMarginY(const style_page_layout_properties_attlist & pageProperties,
         if (attlists_.position_.svg_y_)
             svgY = *attlists_.position_.svg_y_;
     }
+
+	//if (anchor_page_number && pageHeight)....так нельзя .. только в пределах текущей страницы :(
+	//{
+	//	svgY = length(svgY->get_value_unit(length::pt) + pageHeight->get_value_unit(length::pt) * (*anchor_page_number - 1), length::pt );
+	//}
                 
     return get_value_emu(svgY);
 }
@@ -802,7 +816,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 //////////////////////////////////////////////
 	graphicProperties.apply_to(drawing.additional);
 //////////////////////////////////////////
-	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, Context.root()->odf_context().drawStyles() ,drawing.fill);	
+	Compute_GraphicFill(graphicProperties.common_draw_fill_attlist_, graphicProperties.style_background_image_, Context.root()->odf_context().drawStyles() ,drawing.fill);	
 
 	if ((drawing.fill.bitmap) && (drawing.fill.bitmap->rId.length() < 1))
 	{

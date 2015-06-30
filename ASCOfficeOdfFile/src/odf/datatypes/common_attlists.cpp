@@ -272,7 +272,10 @@ bool common_xlink_attlist::add_attributes( const xml::attributes_wc_ptr & Attrib
     CP_APPLY_ATTR(L"xlink:type",		type_);
     CP_APPLY_ATTR(L"xlink:show",		show_);    
     CP_APPLY_ATTR(L"xlink:actuate",		actuate_);    
-    return true;
+    
+	if (href_ || type_ || show_ || actuate_) return true;
+
+	return false;
 }
 void common_xlink_attlist::apply_from(const common_xlink_attlist & Other)
 {
@@ -292,24 +295,27 @@ void common_xlink_attlist::serialize(CP_ATTR_NODE)
 
 bool common_value_and_type_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"office:value-type", office_value_type_);
-    CP_APPLY_ATTR(L"office:value", office_value_);
-    CP_APPLY_ATTR(L"office:currency", office_currency_);
-    CP_APPLY_ATTR(L"office:date-value", office_date_value_);
-    CP_APPLY_ATTR(L"office:time-value", office_time_value_);
+    CP_APPLY_ATTR(L"office:value-type"	, office_value_type_);
+    CP_APPLY_ATTR(L"office:value"		, office_value_);
+    CP_APPLY_ATTR(L"office:currency"	, office_currency_);
+    CP_APPLY_ATTR(L"office:date-value"	, office_date_value_);
+    CP_APPLY_ATTR(L"office:time-value"	, office_time_value_);
     CP_APPLY_ATTR(L"office:boolean-value", office_boolean_value_);
     CP_APPLY_ATTR(L"office:string-value", office_string_value_);
-    return true;
+  
+	if (office_value_type_ || office_value_ || office_currency_ || office_date_value_	|| office_time_value_ 
+																|| office_boolean_value_ || office_string_value_) return true;
+	return false;
 }
 void common_value_and_type_attlist::apply_from(const common_value_and_type_attlist & Other)
 {
-    _CP_APPLY_PROP(office_value_type_ , Other.office_value_type_);
-    _CP_APPLY_PROP(office_value_, Other.office_value_);
-    _CP_APPLY_PROP(office_currency_, Other.office_currency_);
-    _CP_APPLY_PROP(office_date_value_, Other.office_date_value_);
-    _CP_APPLY_PROP(office_time_value_, Other.office_time_value_);
+    _CP_APPLY_PROP(office_value_type_	, Other.office_value_type_);
+    _CP_APPLY_PROP(office_value_		, Other.office_value_);
+    _CP_APPLY_PROP(office_currency_		, Other.office_currency_);
+    _CP_APPLY_PROP(office_date_value_	, Other.office_date_value_);
+    _CP_APPLY_PROP(office_time_value_	, Other.office_time_value_);
     _CP_APPLY_PROP(office_boolean_value_, Other.office_boolean_value_);
-    _CP_APPLY_PROP(office_string_value_, Other.office_string_value_);
+    _CP_APPLY_PROP(office_string_value_	, Other.office_string_value_);
 }
 void common_value_and_type_attlist::serialize(CP_ATTR_NODE)
 {
@@ -388,11 +394,11 @@ void common_border_line_width_attlist::serialize(CP_ATTR_NODE)
 
 void common_padding_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"fo:padding", fo_padding_);
-    CP_APPLY_ATTR(L"fo:padding-top", fo_padding_top_);
-    CP_APPLY_ATTR(L"fo:padding-bottom", fo_padding_bottom_);
-    CP_APPLY_ATTR(L"fo:padding-left", fo_padding_left_);
-    CP_APPLY_ATTR(L"fo:padding-right", fo_padding_right_);
+    CP_APPLY_ATTR(L"fo:padding"			, fo_padding_);
+    CP_APPLY_ATTR(L"fo:padding-top"		, fo_padding_top_);
+    CP_APPLY_ATTR(L"fo:padding-bottom"	, fo_padding_bottom_);
+    CP_APPLY_ATTR(L"fo:padding-left"	, fo_padding_left_);
+    CP_APPLY_ATTR(L"fo:padding-right"	, fo_padding_right_);
 }
 void common_padding_attlist::apply_from(const common_padding_attlist & Other)
 {
@@ -404,11 +410,11 @@ void common_padding_attlist::apply_from(const common_padding_attlist & Other)
 }
 void common_padding_attlist::serialize(CP_ATTR_NODE)
 {
-    CP_XML_ATTR_OPT(L"fo:padding", fo_padding_);
-    CP_XML_ATTR_OPT(L"fo:padding-top", fo_padding_top_);
+    CP_XML_ATTR_OPT(L"fo:padding"		, fo_padding_);
+    CP_XML_ATTR_OPT(L"fo:padding-top"	, fo_padding_top_);
     CP_XML_ATTR_OPT(L"fo:padding-bottom", fo_padding_bottom_);
-    CP_XML_ATTR_OPT(L"fo:padding-left", fo_padding_left_);
-    CP_XML_ATTR_OPT(L"fo:padding-right", fo_padding_right_);
+    CP_XML_ATTR_OPT(L"fo:padding-left"	, fo_padding_left_);
+    CP_XML_ATTR_OPT(L"fo:padding-right"	, fo_padding_right_);
 
 }
 //////////////////////////////////////////////////////////////////////////////////////////////////

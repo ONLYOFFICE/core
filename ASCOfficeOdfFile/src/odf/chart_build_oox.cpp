@@ -342,7 +342,7 @@ void process_build_chart::ApplyGraphicProperties(std::wstring style,std::vector<
 	{
 		graphic_format_properties properties = calc_graphic_properties_content(styleInst);
 
-		Compute_GraphicFill(properties.common_draw_fill_attlist_, draw_styles_ , fill);	
+		Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_ , draw_styles_ , fill);	
 		properties.apply_to(propertiesOut);
     }
 }	

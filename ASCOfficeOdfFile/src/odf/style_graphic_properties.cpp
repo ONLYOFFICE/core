@@ -130,6 +130,8 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
     common_shadow_attlist_.apply_from(Other.common_shadow_attlist_);
     common_background_color_attlist_.apply_from(Other.common_background_color_attlist_);
      
+
+    _CP_APPLY_PROP(style_background_image_, Other.style_background_image_);
 }
 
 
@@ -145,7 +147,10 @@ void style_graphic_properties::add_attributes( const xml::attributes_wc_ptr & At
 
 void style_graphic_properties::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
-   // CP_NOT_APPLICABLE_ELM();
+     if (L"style" == Ns && L"background-image" == Name)
+    {
+        CP_CREATE_ELEMENT(graphic_format_properties_.style_background_image_);
+    }
 
 	//if (CP_CHECK_NAME(L"text", L"list-style") 	
 	//	styles_.add_child_element(Reader, Ns, Name, getContext()); он тут и не нужен по сути... описание есть и в другом сместе

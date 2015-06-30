@@ -39,7 +39,8 @@ int Compute_BorderWidth(const graphic_format_properties & graphicProperties, Bor
 
 int GetMargin(const graphic_format_properties & graphicProperties, BorderSide borderSide);//emu
 
-void Compute_GraphicFill(const odf_types::common_draw_fill_attlist & props, styles_lite_container &styles, oox::_oox_fill & fill);
+void Compute_GraphicFill(const odf_types::common_draw_fill_attlist & props, 
+						 const office_element_ptr & style_image, styles_lite_container &styles, oox::_oox_fill & fill);
 
 typedef double double_4[4];
 bool parse_clipping(std::wstring strClipping,std::wstring fileName,double_4 & clip_rect);

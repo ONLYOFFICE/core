@@ -553,11 +553,11 @@ public:
 	void serialize(CP_ATTR_NODE);
 
 public:
-    _CP_OPT(std::wstring) table_end_cell_address_;
-    _CP_OPT(length) table_end_x_;
-    _CP_OPT(length) table_end_y_;
-    _CP_OPT(Bool) table_table_background_;
-    common_text_anchor_attlist common_text_anchor_attlist_;
+    _CP_OPT(std::wstring)		table_end_cell_address_;
+    _CP_OPT(length)				table_end_x_;
+    _CP_OPT(length)				table_end_y_;
+    _CP_OPT(Bool)				table_table_background_;
+    common_text_anchor_attlist	common_text_anchor_attlist_;
 
 };
 

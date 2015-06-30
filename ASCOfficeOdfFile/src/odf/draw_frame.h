@@ -104,8 +104,7 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    _CP_OPT(std::wstring) draw_copy_of_;
-
+    _CP_OPT(std::wstring)			draw_copy_of_;
 };
 
 
@@ -114,8 +113,8 @@ class draw_frame : public office_element_impl<draw_frame>
 public:
     static const wchar_t * ns;
     static const wchar_t * name;
-    static const xml::NodeType xml_type = xml::typeElement;
-    static const ElementType type = typeDrawFrame;
+    static const xml::NodeType	xml_type	= xml::typeElement;
+    static const ElementType	type		= typeDrawFrame;
     CPDOCCORE_DEFINE_VISITABLE();
 
     virtual void docx_convert(oox::docx_conversion_context & Context);
@@ -132,22 +131,22 @@ private:
 
 public:
 	int idx_in_owner ;
-	odf_types::common_presentation_attlist common_presentation_attlist_;
-	odf_types::union_common_draw_attlists  common_draw_attlists_;
-
+	odf_types::common_presentation_attlist	common_presentation_attlist_;
+	odf_types::union_common_draw_attlists	common_draw_attlists_;
   
-	odf_types::presentation_shape_attlist presentation_shape_attlist_;
-    draw_frame_attlist draw_frame_attlist_;
+	odf_types::presentation_shape_attlist	presentation_shape_attlist_;
+    draw_frame_attlist						draw_frame_attlist_;
 
     // draw-text-box, draw-image, draw-object, draw-object-ole, draw-applet, draw-floating-frame, draw-plugin
-    office_element_ptr_array content_;
+    office_element_ptr_array				content_;
 
-    office_element_ptr office_event_listeners_; // в content перенести нельзя - иначе событи будет добавляться не к этому объекту а следующему
-    office_element_ptr draw_glue_point_;
-    office_element_ptr draw_image_map_;
+    office_element_ptr						office_event_listeners_; 
+			// в content перенести нельзя - иначе событи будет добавляться не к этому объекту а следующему
+    office_element_ptr						draw_glue_point_;
+    office_element_ptr						draw_image_map_;
     //office_element_ptr draw_chart_map_;
 
-    office_element_ptr draw_contour_; // draw-contour-polygon or draw-contour-path
+    office_element_ptr						draw_contour_; // draw-contour-polygon or draw-contour-path
 
     friend class odf_document;
     friend class draw_image;

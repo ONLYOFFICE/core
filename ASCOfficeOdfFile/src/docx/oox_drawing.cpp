@@ -108,14 +108,14 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 			}
 			_CP_OPT(std::wstring)	strVal;
 
-			if (dash_style.length() >0)
+			if (dash_style.length() >0 && dash_style != L"solid")
 			{
-				CP_XML_NODE(L"a:prstDash"){CP_XML_ATTR(L"val",dash_style);}	
+				CP_XML_NODE(L"a:prstDash"){CP_XML_ATTR(L"val", dash_style);}	
 			}
-			odf_reader::GetProperty(prop,L"marker-start",strVal);	
+			odf_reader::GetProperty(prop,L"marker-start", strVal);	
 			if (strVal)
 			{
-				CP_XML_NODE(L"a:headEnd"){CP_XML_ATTR(L"type",strVal.get());}
+				CP_XML_NODE(L"a:headEnd"){CP_XML_ATTR(L"type", strVal.get());}
 			}
 			odf_reader::GetProperty(prop,L"marker-end",strVal);	
 			if (strVal)

@@ -37,6 +37,7 @@ void table_table_attlist::add_attributes( const xml::attributes_wc_ptr & Attribu
 	CP_APPLY_ATTR(L"table:use-banding-columns-styles",	table_use_banding_columns_styles_,false);
 	CP_APPLY_ATTR(L"table:use-first-column-styles",		table_use_first_column_styles_,false);
 
+	CP_APPLY_ATTR(L"table:is-sub-table",	table_is_sub_table_);
 }
 
 // table-table-row-attlist

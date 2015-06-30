@@ -23,19 +23,20 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
+	_CP_OPT(bool)					table_is_sub_table_;
     _CP_OPT(std::wstring)			table_name_;
     _CP_OPT(odf_types::style_ref)	table_style_name_;
 	_CP_OPT(std::wstring)			table_template_name_;
 
-    bool					table_protected_; // default false
-    _CP_OPT(std::wstring)	table_protection_key_; 
-    bool					table_print_; // default true
-    _CP_OPT(std::wstring)	table_print_ranges_;
+    bool							table_protected_; // default false
+    _CP_OPT(std::wstring)			table_protection_key_; 
+    bool							table_print_; // default true
+    _CP_OPT(std::wstring)			table_print_ranges_;
 
-	bool table_use_first_row_styles_; // default false;
-	bool table_use_banding_rows_styles_; //defualt false;
-	bool table_use_first_column_styles_;//defualt false;
-	bool table_use_banding_columns_styles_; //defualt false;
+	bool							table_use_first_row_styles_; // default false;
+	bool							table_use_banding_rows_styles_; //defualt false;
+	bool							table_use_first_column_styles_;//defualt false;
+	bool							table_use_banding_columns_styles_; //defualt false;
 
     friend class table_table;    
 };
@@ -682,14 +683,14 @@ private:
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
 
 public:
-    table_table_attlist table_table_attlist_;
-    office_element_ptr table_table_source_;//table-table-source
+    table_table_attlist			table_table_attlist_;
+    office_element_ptr			table_table_source_;//table-table-source
     //office-dde-source
     //table-scenario
     //office-forms
-    office_element_ptr table_shapes_;
-    table_columns_and_groups table_columns_and_groups_;//table-columns-and-groups
-    table_rows_and_groups table_rows_and_groups_;
+    office_element_ptr			table_shapes_;
+    table_columns_and_groups	table_columns_and_groups_;//table-columns-and-groups
+    table_rows_and_groups		table_rows_and_groups_;
 
 };
 

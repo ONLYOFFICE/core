@@ -181,12 +181,14 @@ public:
 	HRESULT SetRadialGradient(const double& dX1, const double& dY1, const double& dR1, const double& dX2, const double& dY2, const double& dR2);
 	HRESULT OnlineWordToPdf          (const std::wstring& wsSrcFile, const std::wstring& wsDstFile);
 	HRESULT OnlineWordToPdfFromBinary(const std::wstring& wsSrcFile, const std::wstring& wsDstFile);
+	HRESULT DrawImageWith1bppMask(IGrObject* pImage, Pix* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH);
 
 private:
 
 	void OnlineWordToPdfInternal(BYTE* dstArray, LONG lLen, const std::wstring& wsHtmlPlace, std::wstring& wsHypers, int& nCountPages, const std::wstring& wsTempLogo, LONG lReg);
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha);
 	bool DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha);
+	bool DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY);
 	void UpdateFont();
 	void UpdateTransform();
 	void UpdatePen();

@@ -260,6 +260,32 @@ namespace PdfWriter
 		pParams->Add("JBIG2Globals", pJbig2Global);
 		Add("DecodeParms", pDecodeParams);
 	}
+	void CImageDict::LoadMask(Pix* pPix, unsigned int unWidth, unsigned int unHeight)
+	{
+		CImageDict* pMask = new CImageDict(m_pXref, m_pDocument);
+		if (!pMask)
+			return;
+
+		pMask->SetStream(m_pXref, new CMemoryStream());
+		CJbig2Global* pJbig2Global = m_pDocument->GetJbig2Global();
+		pJbig2Global->AddImage(pPix, pMask->GetStream());
+
+		pMask->Add("Type", "XObject");
+		pMask->Add("Subtype", "Image");
+		pMask->Add("Width", unWidth);
+		pMask->Add("Height", unHeight);
+		pMask->Add("BitsPerComponent", 1);
+		pMask->Add("ImageMask", true);
+		pMask->SetFilter(STREAM_FILTER_JBIG2_DECODE);
+
+		CArrayObject* pDecodeParams = new CArrayObject();
+		CDictObject* pParams = new CDictObject();
+		pDecodeParams->Add(pParams);
+		pParams->Add("JBIG2Globals", pJbig2Global);
+		pMask->Add("DecodeParms", pDecodeParams);
+
+		Add("Mask", pMask);
+	}
 	//----------------------------------------------------------------------------------------
 	// CJbig2Global
 	//----------------------------------------------------------------------------------------

@@ -40,6 +40,64 @@ using namespace PdfWriter;
 #define LO_SURROGATE_START  0xDC00
 #define LO_SURROGATE_END    0xDFFF
 
+static unsigned int* WStringToUtf32(const std::wstring& wsUnicodeText, unsigned int& unLen)
+{
+	if (wsUnicodeText.size() <= 0)
+		return NULL;
+
+	unsigned int* pUnicodes = new unsigned int[wsUnicodeText.size()];
+	if (!pUnicodes)
+		return NULL;
+
+	unsigned int* pOutput = pUnicodes;
+	unLen = 0;
+	if (2 == sizeof(wchar_t))
+	{
+		const wchar_t* wsEnd = wsUnicodeText.c_str() + wsUnicodeText.size();
+		wchar_t* wsInput = (wchar_t*)wsUnicodeText.c_str();
+
+		wchar_t wLeading, wTrailing;
+		unsigned int unCode;
+		while (wsInput < wsEnd)
+		{
+			wLeading = *wsInput++;
+			if (wLeading < 0xD800 || wLeading > 0xDFFF)
+			{
+				pUnicodes[unLen++] = (unsigned int)wLeading;
+			}
+			else if (wLeading >= 0xDC00)
+			{
+				// Такого не должно быть
+				continue;
+			}
+			else
+			{
+				unCode = (wLeading & 0x3FF) << 10;
+				wTrailing = *wsInput++;
+				if (wTrailing < 0xDC00 || wTrailing > 0xDFFF)
+				{
+					// Такого не должно быть
+					continue;
+				}
+				else
+				{
+					pUnicodes[unLen++] = (unCode | (wTrailing & 0x3FF) + 0x10000);
+				}
+			}
+		}
+	}
+	else
+	{
+		unLen = wsUnicodeText.size();
+		for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
+		{
+			pUnicodes[unIndex] = (unsigned int)wsUnicodeText.at(unIndex);
+		}
+	}
+
+	return pUnicodes;
+}
+
 // Этих типов браша нет в рендерере, мы их используем, когда конвертим из веба
 static const long c_BrushTypeLinearGradient = 8001;
 static const long c_BrushTypeRadialGradient = 8002;
@@ -67,21 +125,22 @@ public:
 // CRendererTextCommand
 //
 //----------------------------------------------------------------------------------------
-#define RENDERERTEXTCOMMAND_FLAGS_FONT  0x0001
-#define RENDERERTEXTCOMMAND_FLAGS_SIZE  0x0002
-#define RENDERERTEXTCOMMAND_FLAGS_COLOR 0x0004
-#define RENDERERTEXTCOMMAND_FLAGS_ALPHA 0x0008
-#define RENDERERTEXTCOMMAND_FLAGS_SPACE 0x0010
 class CRendererTextCommand : public CRendererCommandBase
 {
 public:
 	CRendererTextCommand(unsigned char* pCodes, unsigned int nLen, const double& dX, const double& dY)
 	{
-		m_pCodes = pCodes;
-		m_nLen   = nLen;
-		m_dX     = dX;
-		m_dY     = dY;
-		m_nUpdateFlags = 0;
+		m_pCodes      = pCodes;
+		m_nLen        = nLen;
+		m_dX          = dX;
+		m_dY          = dY;
+		m_pFont       = NULL;
+		m_dSize       = -1;
+		m_lColor      = 0;
+		m_nAlpha      = 255;
+		m_dCharSpace  = 0;
+		m_dHorScaling = 100;
+		m_nMode       = (int)textrenderingmode_Fill;
 	}
 	~CRendererTextCommand()
 	{
@@ -93,11 +152,11 @@ public:
 		return renderercommandtype_Text;
 	}
 
-	inline double GetX() const
+	inline double         GetX() const
 	{
 		return m_dX;
 	}
-	inline double GetY() const
+	inline double         GetY() const
 	{
 		return m_dY;
 	}
@@ -105,78 +164,65 @@ public:
 	{
 		return m_pCodes;
 	}
-	inline unsigned int GetCodesLen() const
+	inline unsigned int   GetCodesLen() const
 	{
 		return m_nLen;
 	}
-	void SetFont(CFontDict* pFont)
+	inline void           SetFont(CFontDict* pFont)
 	{
 		m_pFont = pFont;
-		m_nUpdateFlags |= RENDERERTEXTCOMMAND_FLAGS_FONT;
 	}
-	void SetSize(const double& dSize)
+	inline void           SetSize(const double& dSize)
 	{
 		m_dSize = dSize;
-		m_nUpdateFlags |= RENDERERTEXTCOMMAND_FLAGS_SIZE;
 	}
-	void SetColor(const LONG& lColor)
+	inline void           SetColor(const LONG& lColor)
 	{
 		m_lColor = lColor;
-		m_nUpdateFlags |= RENDERERTEXTCOMMAND_FLAGS_COLOR;
 	}
-	void SetAlpha(const BYTE& nAlpha)
+	inline void           SetAlpha(const BYTE& nAlpha)
 	{
 		m_nAlpha = nAlpha;
-		m_nUpdateFlags |= RENDERERTEXTCOMMAND_FLAGS_ALPHA;
 	}
-	void SetCharSpace(const double& dCharSpace)
+	inline void           SetCharSpace(const double& dCharSpace)
 	{
 		m_dCharSpace = dCharSpace;
-		m_nUpdateFlags |= RENDERERTEXTCOMMAND_FLAGS_SPACE;
 	}
-	inline bool IsPropertiesChanged() const
+	inline void           SetHorScaling(const double& dKoef)
 	{
-		return (0 == m_nUpdateFlags ? false : true);
+		m_dHorScaling = dKoef;
 	}
-	inline bool IsFontChanged() const
+	inline void           SetMode(const int& nMode)
 	{
-		return LONG_2_BOOL(m_nUpdateFlags & RENDERERTEXTCOMMAND_FLAGS_FONT);
+		m_nMode = nMode;
 	}
-	inline bool IsSizeChanged() const
-	{
-		return LONG_2_BOOL(m_nUpdateFlags & RENDERERTEXTCOMMAND_FLAGS_SIZE);
-	}
-	inline bool IsColorChanged() const
-	{
-		return LONG_2_BOOL(m_nUpdateFlags & RENDERERTEXTCOMMAND_FLAGS_COLOR);
-	}
-	inline bool IsAlphaChanged() const
-	{
-		return LONG_2_BOOL(m_nUpdateFlags & RENDERERTEXTCOMMAND_FLAGS_ALPHA);
-	}
-	inline bool IsSpaceChanged() const
-	{
-		return LONG_2_BOOL(m_nUpdateFlags & RENDERERTEXTCOMMAND_FLAGS_SPACE);
-	}
-	inline CFontDict* GetFont() const
+	inline CFontDict*     GetFont() const
 	{
 		return m_pFont;
 	}
-	inline double GetSize() const
+	inline double         GetSize() const
 	{
 		return m_dSize;
 	}
-	inline LONG GetColor() const
+	inline LONG           GetColor() const
 	{
 		return m_lColor;
 	}
-	inline BYTE GetAlpha() const
+	inline BYTE           GetAlpha() const
 	{
 		return m_nAlpha;
 	}
-	inline double GetSpace() const
+	inline double         GetSpace() const
 	{
 		return m_dCharSpace;
+	}
+	inline double         GetHorScaling() const
+	{
+		return m_dHorScaling;
+	}
+	inline int            GetMode() const
+	{
+		return m_nMode;
 	}
 
 private:
@@ -193,6 +239,8 @@ private:
 	LONG           m_lColor;
 	BYTE           m_nAlpha;
 	double         m_dCharSpace;
+	int            m_nMode;
+	double         m_dHorScaling;
 };
 //----------------------------------------------------------------------------------------
 //
@@ -239,11 +287,13 @@ void CPdfRenderer::CCommandManager::Flush()
 			pPage->BeginText();
 			CRendererTextCommand* pText = NULL;
 
-			CFontDict* pTextFont = NULL;
-			double     dTextSize = -1;
-			LONG      lTextColor = 0;
-			BYTE      nTextAlpha = 255;
-			double    dTextSpace = 0;			
+			CFontDict*     pTextFont = NULL;
+			double         dTextSize = -1;
+			LONG          lTextColor = 0;
+			BYTE          nTextAlpha = 255;
+			double        dTextSpace = 0;			
+			double       dHorScaling = 100;
+			ETextRenderingMode eMode = textrenderingmode_Fill;
 
 			double dPrevX = -1000;
 			double dPrevY = -1000;
@@ -255,24 +305,6 @@ void CPdfRenderer::CCommandManager::Flush()
 				pText = (CRendererTextCommand*)m_vCommands.at(nIndex);
 				if (!pText)
 					continue;
-
-				//if (pText->IsPropertiesChanged())
-				//{
-				//	if (pText->IsFontChanged() || pText->IsSizeChanged())
-				//		pPage->SetFontAndSize(pText->GetFont(), pText->GetSize());
-
-				//	if (pText->IsColorChanged())
-				//	{
-				//		TColor oColor = pText->GetColor();
-				//		pPage->SetFillColor(oColor.r, oColor.g, oColor.b);
-				//	}
-
-				//	if (pText->IsAlphaChanged())
-				//		pPage->SetFillAlpha(pText->GetAlpha());
-
-				//	if (pText->IsSpaceChanged())
-				//		pPage->SetCharSpace(pText->GetSpace());
-				//}
 
 				if (pTextFont != pText->GetFont() || abs(dTextSize - pText->GetSize()) > 0.001)
 				{
@@ -304,8 +336,19 @@ void CPdfRenderer::CCommandManager::Flush()
 					pPage->SetCharSpace(dTextSpace);					
 				}
 
-				
-				//------------------------------------
+				if ((int)eMode != pText->GetMode())
+				{
+					oTextLine.Flush(pPage);
+					eMode = (ETextRenderingMode)pText->GetMode();
+					pPage->SetTextRenderingMode(eMode);
+				}
+
+				if (abs(dHorScaling - pText->GetHorScaling()) > 0.001)
+				{
+					oTextLine.Flush(pPage);
+					dHorScaling = pText->GetHorScaling();
+					pPage->SetHorizontalScalling(dHorScaling);
+				}
 
 				unsigned char* pCodes    = pText->GetCodes();
 				unsigned short ushCode   = (pCodes[0] << 8) + pCodes[1];
@@ -323,9 +366,6 @@ void CPdfRenderer::CCommandManager::Flush()
 						pPage->DrawText(dX, dY, pCodes, unLen);
 					}
 				}
-				//-----------------------------------
-
-				//pPage->DrawText(pText->GetX(), pText->GetY(), pText->GetCodes(), pText->GetCodesLen());
 			}
 			oTextLine.Flush(pPage);
 
@@ -847,94 +887,89 @@ HRESULT CPdfRenderer::put_FontFaceIndex(const int& nFaceIndex)
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
 {
-	// TODO: Реализовать
-	return S_OK;
+	if (!IsPageValid())
+		return S_FALSE;
+
+	unsigned int unUnicode = lUnicode;
+	bool bRes = DrawText(&unUnicode, 1, dX, dY);
+	return bRes ? S_OK : S_FALSE;
 }
 HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
 {
 	if (!IsPageValid() || !wsUnicodeText.size())
 		return S_FALSE;
 
-	unsigned int* pUnicodes = new unsigned int[wsUnicodeText.size()];
+	unsigned int unLen;
+	unsigned int* pUnicodes = WStringToUtf32(wsUnicodeText, unLen);
 	if (!pUnicodes)
 		return S_FALSE;
 
-	unsigned int* pOutput = pUnicodes;
-	unsigned int unLen = 0;
-	if (2 == sizeof(wchar_t))
+	// Специальный случай для текста из Djvu, нам не нужно, чтобы он рисовался
+	if (L"" == m_oFont.GetPath() && L"DjvuEmptyFont" == m_oFont.GetName())
 	{
-		const wchar_t* wsEnd = wsUnicodeText.c_str() + wsUnicodeText.size();
-		wchar_t* wsInput = (wchar_t*)wsUnicodeText.c_str();
-
-		wchar_t wLeading, wTrailing;
-		unsigned int unCode;
-		while (wsInput < wsEnd)
+		if (m_bNeedUpdateTextFont)
 		{
-			wLeading = *wsInput++;
-			if (wLeading < 0xD800 || wLeading > 0xDFFF)
-			{
-				pUnicodes[unLen++] = (unsigned int)wLeading;
-			}
-			else if (wLeading >= 0xDC00)
-			{
-				// Такого не должно быть
-				continue;
-			}
-			else
-			{
-				unCode = (wLeading & 0x3FF) << 10;
-				wTrailing = *wsInput++;
-				if (wTrailing < 0xDC00 || wTrailing > 0xDFFF)
-				{
-					// Такого не должно быть
-					continue;
-				}
-				else
-				{
-					pUnicodes[unLen++] = (unCode | (wTrailing & 0x3FF) + 0x10000);
-				}
-			}
+			m_oFont.SetName(L"Arial");
+			UpdateFont();
+			m_oFont.SetName(L"DjvuEmptyFont");
+			if (!m_pFont)
+				return S_FALSE;
 		}
-	}
-	else
-	{
-		unLen = wsUnicodeText.size();
+
+		double dFontSize = MM_2_PT(dH);
+		unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
+		delete[] pUnicodes;
+
+		double dStringWidth = 0;
 		for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
 		{
-			pUnicodes[unIndex] = (unsigned int)wsUnicodeText.at(unIndex);
-		}		
+			unsigned short ushCode = (pCodes[2 * unIndex] << 8) + pCodes[2 * unIndex + 1];
+			dStringWidth += m_pFont->GetWidth(ushCode) * dFontSize / 1000.0;
+		}
+
+		double dResultWidth = MM_2_PT(dW);
+
+		CTransform& t = m_oTransform;
+		m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
+
+		CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, unLen * 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH));
+		pText->SetFont(m_pFont);
+		pText->SetSize(dFontSize);
+		pText->SetMode(textrenderingmode_Invisible);
+		if (abs(dStringWidth) > 0.001)
+			pText->SetHorScaling(dResultWidth / dStringWidth * 100);
+
+		return S_OK;
 	}
 
-	if (m_bNeedUpdateTextFont)
-		UpdateFont();
-
-	if (!m_pFont)
-		return S_FALSE;
-
-	unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
+	bool bRes = DrawText(pUnicodes, unLen, dX, dY);
 	delete[] pUnicodes;
 
-	CTransform& t = m_oTransform;
-	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
-
-	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, unLen * 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
-	pText->SetFont(m_pFont);
-	pText->SetSize(m_oFont.GetSize());
-	pText->SetColor(m_oBrush.GetColor1());
-	pText->SetAlpha((BYTE)m_oBrush.GetAlpha1());
-	pText->SetCharSpace(MM_2_PT(m_oFont.GetCharSpace()));
-
-	return S_OK;
+	return bRes ? S_OK : S_FALSE;
 }
 HRESULT CPdfRenderer::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags)
 {
-	// TODO: Реализовать
-	return S_OK;
+	if (!IsPageValid())
+		return S_FALSE;
+
+	unsigned int unUnicode = lUnicode;
+	bool bRes = DrawText(&unUnicode, 1, dX, dY);
+	return bRes ? S_OK : S_FALSE;
 }
 HRESULT CPdfRenderer::CommandDrawTextEx(const std::wstring& wsUnicodeText, const std::wstring& wsGidText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags)
 {
-	// TODO: Реализовать
-	return S_OK;
+	if (!IsPageValid() || !wsUnicodeText.size())
+		return S_FALSE;
+
+	unsigned int unLen;
+	unsigned int* pUnicodes = WStringToUtf32(wsUnicodeText, unLen);
+	if (!pUnicodes)
+		return S_FALSE;
+
+	bool bRes = DrawText(pUnicodes, unLen, dX, dY);
+	delete[] pUnicodes;
+
+	return bRes ? S_OK : S_FALSE;
 }
 //----------------------------------------------------------------------------------------
 // Маркеры команд
@@ -1244,6 +1279,22 @@ HRESULT CPdfRenderer::SetRadialGradient(const double& dX0, const double& dY0, co
 	m_oBrush.SetRadialGradientPattern(dX0, dY0, dR0, dX1, dY1, dR1);
 	return S_OK;
 }
+HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, Pix* pMaskBuffer, const unsigned int& unMaskWidth, const unsigned int& unMaskHeight, const double& dX, const double& dY, const double& dW, const double& dH)
+{
+	m_oCommandManager.Flush();
+
+	if (!IsPageValid() || !pMaskBuffer || !pImage)
+		return S_OK;
+
+	m_pPage->GrSave();
+	UpdateTransform();
+	CImageDict* pPdfImage = LoadImage((Aggplus::CImage*)pImage, 255);
+	pPdfImage->LoadMask(pMaskBuffer, unMaskWidth, unMaskHeight);
+	m_pPage->DrawImage(pPdfImage, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY - dH), MM_2_PT(dW), MM_2_PT(dH));
+	m_pPage->GrRestore();
+	return S_OK;
+}
+
 //----------------------------------------------------------------------------------------
 // Внутренние функции
 //----------------------------------------------------------------------------------------
@@ -1314,6 +1365,29 @@ bool CPdfRenderer::DrawImage(Aggplus::CImage* pImage, const double& dX, const do
 	
 	return true;
 }
+bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY)
+{
+	if (m_bNeedUpdateTextFont)
+		UpdateFont();
+
+	if (!m_pFont)
+		return false;
+
+	unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
+	delete[] pUnicodes;
+
+	CTransform& t = m_oTransform;
+	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
+
+	CRendererTextCommand* pText = m_oCommandManager.AddText(pCodes, unLen * 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY));
+	pText->SetFont(m_pFont);
+	pText->SetSize(m_oFont.GetSize());
+	pText->SetColor(m_oBrush.GetColor1());
+	pText->SetAlpha((BYTE)m_oBrush.GetAlpha1());
+	pText->SetCharSpace(MM_2_PT(m_oFont.GetCharSpace()));
+
+	return true;
+}
 void CPdfRenderer::UpdateFont()
 {
 	m_bNeedUpdateTextFont = false;
@@ -1364,8 +1438,17 @@ void CPdfRenderer::UpdateFont()
 }
 void CPdfRenderer::UpdateTransform()
 {
-	CTransform& t = m_oTransform;
-	m_pPage->Concat(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
+	CTransform t;
+
+	t.m11 = m_oTransform.m11;
+	t.m12 = -m_oTransform.m12;
+	t.m21 = -m_oTransform.m21;
+	t.m22 = m_oTransform.m22;
+	t.dx  = MM_2_PT(t.dx + t.m21 * m_dPageHeight);
+	t.dy  = MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy);
+
+	if (!t.IsIdentity())
+		m_pPage->Concat(t.m11, t.m12, t.m21, t.m22, t.dx, t.dy);
 }
 void CPdfRenderer::UpdatePen()
 {

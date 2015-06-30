@@ -1,5 +1,3 @@
-
-
 #include <ostream>
 #include <sstream>
 #include <string>
@@ -14,6 +12,8 @@
 #include "serialize_elements.h"
 
 #include "draw_common.h"
+
+#include "style_paragraph_properties.h"
 
 #include "datatypes/length.h"
 #include "datatypes/borderstyle.h"
@@ -337,7 +337,7 @@ void Compute_GradientFill(draw_gradient * image_style,oox::oox_gradient_fill_ptr
 }
 
 
-void Compute_GraphicFill(const common_draw_fill_attlist & props, styles_lite_container &styles, oox::_oox_fill & fill)
+void Compute_GraphicFill(const common_draw_fill_attlist & props, const office_element_ptr & style_image, styles_lite_container &styles, oox::_oox_fill & fill)
 {
 	if (fill.type<1)fill.type = 0; 
 
@@ -374,27 +374,52 @@ void Compute_GraphicFill(const common_draw_fill_attlist & props, styles_lite_con
 		const std::wstring style_name = L"bitmap:" + *props.draw_fill_image_name_;
 		if (office_element_ptr style = styles.find_by_style_name(style_name))
 		{
-			if (draw_fill_image * image_style = dynamic_cast<draw_fill_image *>(style.get()))
+			if (draw_fill_image * fill_image = dynamic_cast<draw_fill_image *>(style.get()))
 			{			
 				fill.bitmap = oox::oox_bitmap_fill::create();
-				fill.bitmap->xlink_href_ = image_style->xlink_attlist_.href_.get_value_or(L"");
+				fill.bitmap->xlink_href_ = fill_image->xlink_attlist_.href_.get_value_or(L"");
+				fill.bitmap->bTile = true;
 			}
 		}
 	}
+
+	if (style_image)
+	{
+		if (style_background_image * image = dynamic_cast<style_background_image *>(style_image.get()))
+		{
+			if ((image) && (image->common_xlink_attlist_))
+			{
+				fill.type	= 2;
+				fill.bitmap = oox::oox_bitmap_fill::create();
+				fill.bitmap->xlink_href_ = image->common_xlink_attlist_->href_.get_value_or(L"");
+				if (image->style_repeat_)
+				{
+					switch(image->style_repeat_->get_type())
+					{
+						case style_repeat::Repeat	:	fill.bitmap->bTile = true;		break;
+						case style_repeat::Stretch	:	fill.bitmap->bStretch = true;	break;
+					}
+				}
+				if (image->draw_opacity_) 
+				{
+					fill.opacity = image->draw_opacity_->get_value();
+				}
+			}
+		}
+	}
+
 	if (fill.bitmap)
 	{
 		if (props.style_repeat_)
 		{
 			switch(props.style_repeat_->get_type())
 			{
-			case style_repeat::Repeat :	fill.bitmap->bTile = true;
-				break;
-			case style_repeat::Stretch :fill.bitmap->bStretch = true;
-				break;
+				case style_repeat::Repeat	:	fill.bitmap->bTile = true;		break;
+				case style_repeat::Stretch	:	fill.bitmap->bStretch = true;	break;
 			}
-		}else
+		}
+		else
 		{
-			fill.bitmap->bTile = true;// ???? 
 			if (props.draw_fill_image_width_ && props.draw_fill_image_height_)
 			{
 				if (props.draw_fill_image_width_->get_type() == odf_types::length_or_percent::Percent && 

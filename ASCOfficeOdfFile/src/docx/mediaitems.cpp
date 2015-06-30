@@ -58,6 +58,8 @@ std::wstring static get_default_file_name(mediaitems::Type type)
 }
 std::wstring mediaitems::create_file_name(const std::wstring & uri, mediaitems::Type type, size_t Num)
 {
+	if (uri.empty()) return L"";
+
 	std::wstring sExt;
 	int n = uri.rfind(L".");
 	if (n>0) sExt = uri.substr(n);

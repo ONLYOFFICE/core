@@ -115,33 +115,36 @@ void table_rows_and_groups::docx_convert(oox::docx_conversion_context & Context)
 void table_table::docx_convert(oox::docx_conversion_context & Context)
 {
     std::wostream & _Wostream = Context.output_stream();
-    _Wostream << L"<w:tbl>";
-    
 
-    std::wstring tableStyleName = L"";
-    if (table_table_attlist_.table_style_name_)
-        tableStyleName = table_table_attlist_.table_style_name_->style_name() ;
+	bool sub_table = table_table_attlist_.table_is_sub_table_.get_value_or(false);
+	//todooo придумать как сделать внешние границы sub-таблицы границами внешней ячейки (чтоб слияние произошло)
+	
+	std::wstring tableStyleName = L"";
+	if (table_table_attlist_.table_style_name_)
+		tableStyleName = table_table_attlist_.table_style_name_->style_name() ;
 
-    Context.get_table_context().start_table(tableStyleName);
+	_Wostream << L"<w:tbl>";    
+
+	Context.get_table_context().start_table(tableStyleName);
 
     style_instance * inst = 
-        Context.root()->odf_context().styleContainer().style_by_name( tableStyleName , style_family::Table,Context.process_headers_footers_);
+        Context.root()->odf_context().styleContainer().style_by_name( tableStyleName , style_family::Table, Context.process_headers_footers_);
     
     Context.get_styles_context().start();
 
     if (inst && inst->content())
         inst->content()->docx_convert(Context);
-    
-    Context.get_styles_context().docx_serialize_table_style(_Wostream);
 
-    _Wostream << L"<w:tblGrid>";
-    table_columns_and_groups_.docx_convert(Context);
-    _Wostream << L"</w:tblGrid>";
+	Context.get_styles_context().docx_serialize_table_style(_Wostream);
+
+	_Wostream << L"<w:tblGrid>";
+	table_columns_and_groups_.docx_convert(Context);
+	_Wostream << L"</w:tblGrid>";
 
     table_rows_and_groups_.docx_convert(Context);
 
-    Context.get_table_context().end_table();
-    _Wostream << L"</w:tbl>";
+	Context.get_table_context().end_table();
+	_Wostream << L"</w:tbl>";
 
     if (office_element * elm = Context.get_section_properties_in_table())
     {

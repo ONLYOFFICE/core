@@ -45,7 +45,7 @@ const wchar_t * text::name = L"";
 
 ::std::wostream & text::text_to_stream(::std::wostream & _Wostream) const
 {
-    _Wostream << xml::utils::replace_xml_to_text( text_ );
+    _Wostream << xml::utils::replace_text_to_xml( text_ );
     return _Wostream;
 }
 

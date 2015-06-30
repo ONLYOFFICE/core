@@ -387,7 +387,7 @@ void style_tab_stops::docx_convert(oox::docx_conversion_context & Context)
  
     _pPr << L"<w:tabs>";
 
-	if (style_tab_stops_.size())
+	if (style_tab_stops_.size() > 0)
 	{
 		BOOST_FOREACH(const office_element_ptr & elm, style_tab_stops_)
 		{
@@ -402,11 +402,19 @@ void style_tab_stop::docx_convert(oox::docx_conversion_context & Context)
     std::wstringstream & _pPr = Context.get_styles_context().paragraph_nodes();
 
     _pPr << L"<w:tab ";
+
+	length def_tab =  length(1.0, length::cm);// в ms значение 0.8 не корректно оќ
+	
+	int tab_pos = (int)( 20.0 * style_position_.get_value_unit(length::pt) ) ;
+	int min_tab_pos = (int)( 20.0 * def_tab.get_value_unit(length::pt) ) ;
+
+	if (tab_pos < min_tab_pos)
+		tab_pos = min_tab_pos;
     
-    _pPr << L"w:pos=\"" << (int)( 20.0 * style_position_.get_value_unit(length::pt) ) << "\" ";
+    _pPr << L"w:pos=\"" << tab_pos << "\" ";
     
     {
-        std::wstring val = L"left";
+        std::wstring val = L"left"; //????
         if (style_type_)
         {
             switch(style_type_->get_type())

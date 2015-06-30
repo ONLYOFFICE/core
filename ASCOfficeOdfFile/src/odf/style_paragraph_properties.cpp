@@ -405,7 +405,6 @@ void paragraph_format_properties::apply_from(const paragraph_format_properties &
 
     _CP_APPLY_PROP(fo_background_color_, Other.fo_background_color_);
 
-    // TODO
     _CP_APPLY_PROP(style_background_image_, Other.style_background_image_);
 
     _CP_APPLY_PROP(fo_border_, Other.fo_border_);

@@ -159,22 +159,19 @@ public:
 
     CPDOCCORE_DEFINE_VISITABLE();
 
-public:
     virtual ::std::wostream & text_to_stream(::std::wostream & _Wostream) const;
 
-private:
     virtual void add_attributes( const xml::attributes_wc_ptr & Attributes );
     virtual void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name);
     virtual void add_text(const std::wstring & Text);
     
-private:
-    _CP_OPT(odf_types::style_repeat) style_repeat_;
-    _CP_OPT(odf_types::style_position) style_position_;
-    _CP_OPT(std::wstring) filter_name_;
-    _CP_OPT(odf_types::percent) draw_opacity_;
+    _CP_OPT(odf_types::style_repeat)			style_repeat_;
+    _CP_OPT(odf_types::style_position)			style_position_;
+    _CP_OPT(std::wstring)						filter_name_;
+    _CP_OPT(odf_types::percent)					draw_opacity_;
 
-    _CP_OPT(odf_types::common_xlink_attlist) common_xlink_attlist_;
-    office_element_ptr office_binary_data_;
+    _CP_OPT(odf_types::common_xlink_attlist)	common_xlink_attlist_;
+    office_element_ptr							office_binary_data_;
 
 };
 
@@ -192,7 +189,6 @@ public:
     void docx_convert(oox::docx_conversion_context & Context);
     void pptx_convert(oox::pptx_conversion_context & Context);
 
-public:
     // 15.5.1 fo:line-height
     _CP_OPT(odf_types::line_width) fo_line_height_;                 // +
     

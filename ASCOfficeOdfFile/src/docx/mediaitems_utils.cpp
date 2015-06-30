@@ -18,6 +18,8 @@ namespace media {
 
 bool is_internal(const std::wstring & uri, const std::wstring & packetRoot)
 {
+	if (uri.empty())return false;
+
     std::wstring mediaPath = boost::regex_search(uri.begin(), uri.end(), boost::wregex(L"^/[A-Za-z]:")) 
         ? std::wstring(uri.begin() + 1, uri.end()) 
         : uri;

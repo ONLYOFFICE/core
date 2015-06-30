@@ -22,7 +22,8 @@ public:
     void start_row(const std::wstring & StyleName, const std::wstring & defaultCellStyleName);
     void end_row();
     std::wstring current_row_style() const;
-    void start_cell();
+   
+	void start_cell();
     void end_cell();
 
     bool start_covered_cell(docx_conversion_context & Context);
@@ -30,24 +31,24 @@ public:
 
     int current_column() const;
 
-    void set_columns_spanned(unsigned int Val);
-    unsigned int current_columns_spaned() const;
+    void			set_columns_spanned(unsigned int Val);
+    unsigned int	current_columns_spaned() const;
 
-    void set_rows_spanned(unsigned int Column, unsigned int Val, unsigned int ColumnsSpanned, const std::wstring & Style);
-    unsigned int current_rows_spanned(unsigned int Column) const;
+    void			set_rows_spanned(unsigned int Column, unsigned int Val, unsigned int ColumnsSpanned, const std::wstring & Style);
+    unsigned int	current_rows_spanned(unsigned int Column) const;
 
 private:
-    docx_conversion_context & context_;    
-    std::wstring table_style_;
-    std::list<std::wstring> table_row_style_stack_;
-    std::wstring default_row_cell_style_name_;
-    int current_table_column_;
-    unsigned int columns_spanned_num_;
-    std::wstring columns_spanned_style_;
+    docx_conversion_context	&	context_;    
+    std::wstring				table_style_;
+    std::list<std::wstring>		table_row_style_stack_;
+    std::wstring				default_row_cell_style_name_;
+    int							current_table_column_;
+    unsigned int				columns_spanned_num_;
+    std::wstring				columns_spanned_style_;
     std::vector<table_row_spanned> rows_spanned_;
-	bool close_table_covered_cell_;
-    std::vector<unsigned int> columns_;
-    std::vector<std::wstring> columnsDefaultCellStyleName_;
+	bool						close_table_covered_cell_;
+    std::vector<unsigned int>	columns_;
+    std::vector<std::wstring>	columnsDefaultCellStyleName_;
     
 };
 

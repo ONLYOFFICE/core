@@ -354,6 +354,7 @@ void docx_serialize_shape(std::wostream & strm, _docx_drawing & val)
 							CP_XML_ATTR(L"noChangeAspect", 1);
 						}
 					}
+
 					CP_XML_NODE(L"wps:spPr")
 					{
 						oox_serialize_xfrm(CP_XML_STREAM(),val);

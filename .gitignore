@@ -76,3 +76,14 @@ ASCOfficePPTXFile/PPTXFormat/!_
 ASCOfficePPTXFile/PPTXFormat/_
 ASCOfficePPTXFile/Release
 DesktopEditor/build
+DjVuFile/Debug
+DjVuFile/DjVuFile.pro.user
+DjVuFile/DjVuFile.sdf
+DjVuFile/DjVuFile.vcxproj.filters
+DjVuFile/DjVuFile.vcxproj.user
+DjVuFile/DjVuFileTest/Debug
+DjVuFile/DjVuFileTest/DjVuFileTest.vcxproj.filters
+DjVuFile/DjVuFileTest/DjVuFileTest.vcxproj.user
+DjVuFile/DjVuFileTest/x64
+DjVuFile/ipch
+DjVuFile/x64

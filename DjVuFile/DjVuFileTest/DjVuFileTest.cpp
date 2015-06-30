@@ -8,7 +8,10 @@
 #include <string>
 #include "windows.h"
 
+#include "../../DesktopEditor/common/String.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include <ctime>
+#include <iostream>
 
 std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstring wsExt)
 {
@@ -33,7 +36,7 @@ std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstrin
 	}
 	return vwsNames;
 }
-void ConvertFolder(CDjVuFile& oReader, std::wstring wsFolderPath)
+void ConvertFolderToRaster(CDjVuFile& oReader, std::wstring wsFolderPath)
 {
 	CApplicationFonts oFonts;
 	oFonts.Initialize();
@@ -64,9 +67,41 @@ void ConvertFolder(CDjVuFile& oReader, std::wstring wsFolderPath)
 		}
 	}
 }
+void ConvertFolderToPdf(CDjVuFile& oReader, std::wstring wsFolderPath)
+{
+	CApplicationFonts oFonts;
+	oFonts.Initialize();
+	oReader.Close();
+	
+	clock_t oBeginTime = clock();
+	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"djvu");
+	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
+	{
+		std::wstring wsFilePath = wsFolderPath;
+		wsFilePath.append(vFiles.at(nIndex));
+		std::wstring wsFilePathName = (wsFilePath.substr(0, wsFilePath.size() - 5));
+		if (oReader.LoadFromFile(wsFilePath.c_str()))
+		{
+			std::wstring wsDstFilePath = wsFilePathName + L".pdf";
+			oReader.ConvertToPdf(&oFonts, wsDstFilePath);
+			printf("%d of %d converted\n", nIndex, vFiles.size());
+		}
+		else
+		{
+			printf("%d of %d %S error\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());
+		}
+	}
+	clock_t oEndTime = clock();
+	double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
+	printf("%f\n", dElapsedSecs);
+}
 
 void main()
 {
 	CDjVuFile oFile;
-	ConvertFolder(oFile, L"D:/Test Files//");
+	//ConvertFolderToRaster(oFile, L"D:/Test Files//");
+	ConvertFolderToPdf(oFile, L"D:/Test Files//djvu//");
+
+	char q;
+	std::cin >> q;
 }

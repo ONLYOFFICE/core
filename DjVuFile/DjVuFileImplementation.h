@@ -9,6 +9,7 @@
 #include "libdjvu/DataPool.h"
 #include "libdjvu/DjVuText.h"
 #include "libdjvu/DjVmNav.h"
+#include "libdjvu/IW44Image.h"
 
 #define ZIP_NO_COMPRESSION         0
 #define ZIP_BEST_SPEED             1
@@ -45,13 +46,15 @@ public:
 	void         GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY) const;
 	void         DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	void         ConvertToRaster(CApplicationFonts* pAppFonts, int nPageIndex, const std::wstring& wsDstPath, int nImageType);
+	void         ConvertToPdf(CApplicationFonts* pAppFonts, const std::wstring& wsDstPath);
 
 private:
 
-	void               CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& text);
+	void               CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& oText);
+	void               CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, int nPage, XmlUtils::CXmlNode& oText);
 	void               CreateGrFrame(IRenderer* pRenderer, GP<DjVuImage>& pImage, bool* pBreak);
 	XmlUtils::CXmlNode ParseText(GP<DjVuImage> pPage);
 	void               TextToRenderer(IRenderer* pRenderer, XmlUtils::CXmlNode text, double koef, bool isView = true);
-	void               DrawText(IRenderer* pRenderer, double* pdCoords, const std::wstring& wsText);
+	void               DrawPageText(IRenderer* pRenderer, double* pdCoords, const std::wstring& wsText);
 	void               ParseCoords(const std::wstring& wsCoordsStr, double* pdCoords, double dKoef);
 };

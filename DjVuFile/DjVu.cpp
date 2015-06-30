@@ -57,3 +57,8 @@ void               CDjVuFile::ConvertToRaster(CApplicationFonts* pAppFonts, int 
 	if (m_pImplementation)
 		m_pImplementation->ConvertToRaster(pAppFonts, nPageIndex, wsDstPath, nImageType);
 }
+void               CDjVuFile::ConvertToPdf(CApplicationFonts* pAppFonts, const std::wstring& wsDstPath)
+{
+	if (m_pImplementation)
+		m_pImplementation->ConvertToPdf(pAppFonts, wsDstPath);
+}

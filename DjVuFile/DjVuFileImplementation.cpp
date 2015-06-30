@@ -12,6 +12,10 @@
 #include "../DesktopEditor/raster/BgraFrame.h"
 #include "../DesktopEditor/graphics/GraphicsRenderer.h"
 
+#include "../PdfWriter/PdfRenderer.h"
+#include "../DesktopEditor/raster/JBig2/source/Encoder/jbig2enc.h"
+#include "../DesktopEditor/raster/JBig2/source/LeptonLib/allheaders.h"
+
 #define VER_DPI		96
 #define HOR_DPI		96
 
@@ -58,7 +62,7 @@ namespace NSDjvu
 CDjVuFileImplementation::CDjVuFileImplementation()
 {
 	m_pDoc = NULL;
-	std::wstring wsTempPath = NSFile::CFileBinary::GetTempPathW();
+	std::wstring wsTempPath = NSFile::CFileBinary::GetTempPath();
 	wsTempPath += L"DJVU\\";
 	m_wsTempDirectory = wsTempPath;
 	NSDirectory::CreateDirectory(m_wsTempDirectory);
@@ -145,10 +149,15 @@ void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRende
 		{
 			CreateGrFrame(pRenderer, pPage, pBreak);
 		}
+		else if (c_nPDFWriter == lRendererType)
+		{
+			XmlUtils::CXmlNode oText = ParseText(pPage);
+			CreatePdfFrame(pRenderer, pPage, nPageIndex, oText);
+		}
 		else
 		{
-			XmlUtils::CXmlNode text = ParseText(pPage);
-			CreateFrame(pRenderer, pPage, nPageIndex, text);
+			XmlUtils::CXmlNode oText = ParseText(pPage);
+			CreateFrame(pRenderer, pPage, nPageIndex, oText);
 		}
 	}
 	catch (...)
@@ -194,6 +203,31 @@ void               CDjVuFileImplementation::ConvertToRaster(CApplicationFonts* p
 
 	oFrame.SaveFile(wsDstPath, nImageType);
 	RELEASEINTERFACE(pFontManager);
+}
+void               CDjVuFileImplementation::ConvertToPdf(CApplicationFonts* pAppFonts, const std::wstring& wsDstPath)
+{
+	CPdfRenderer oPdf(pAppFonts);
+	
+	bool bBreak = false;
+	for (int nPageIndex = 0, nPagesCount = GetPagesCount(); nPageIndex < nPagesCount; nPageIndex++)
+	{
+		oPdf.NewPage();
+
+		double dPageDpiX, dPageDpiY;
+		double dWidth, dHeight;
+		GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+		dWidth  *= 25.4 / dPageDpiX;
+		dHeight *= 25.4 / dPageDpiY;
+		oPdf.put_Width(dWidth);
+		oPdf.put_Height(dHeight);
+
+		DrawPageOnRenderer(&oPdf, nPageIndex, &bBreak);
+#ifdef _DEBUG
+		printf("%d of %d pages\n", nPageIndex + 1, nPagesCount);
+#endif
+	}
+
+	oPdf.SaveToFile(wsDstPath);
 }
 void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPage, XmlUtils::CXmlNode& text)
 {
@@ -398,6 +432,257 @@ void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP
 	pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dRendWidth, dRendHeight);
 	pRenderer->EndCommand(c_nPageType);
 }
+void               CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, int nPageIndex, XmlUtils::CXmlNode& oText)
+{
+	double dPageDpiX, dPageDpiY;
+	double dWidth, dHeight;
+	GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+	dWidth  *= 25.4 / dPageDpiX;
+	dHeight *= 25.4 / dPageDpiY;
+
+	pRenderer->BeginCommand(c_nPageType);
+
+	TextToRenderer(pRenderer, oText, 25.4 / pPage->get_dpi());
+
+	LONG lImageWidth  = pPage->get_real_width();
+	LONG lImageHeight = pPage->get_real_height();
+
+	CPdfRenderer* pPdf = (CPdfRenderer*)pRenderer;
+
+	if (pPage->is_legal_photo())
+	{
+		BYTE* pBufferDst = new BYTE[4 * lImageHeight * lImageWidth];
+		if (!pBufferDst)
+			return;
+
+		Aggplus::CImage oImage;
+		oImage.Create(pBufferDst, lImageWidth, lImageHeight, 4 * lImageWidth);
+
+		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
+		GP<GPixmap> pImage = pPage->get_pixmap(oRectAll, oRectAll);
+
+		BYTE* pBuffer = pBufferDst;
+		for (int j = lImageHeight - 1; j >= 0; --j)
+		{
+			GPixel* pLine = pImage->operator [](j);
+
+			for (int i = 0; i < lImageWidth; ++i, pBuffer += 4, ++pLine)
+			{
+				pBuffer[0] = pLine->b;
+				pBuffer[1] = pLine->g;
+				pBuffer[2] = pLine->r;
+				pBuffer[3] = 255;
+			}
+		}
+		pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dWidth, dHeight);
+	}
+	else if (pPage->is_legal_compound())
+	{
+		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
+		GP<IW44Image> pIW44Image = pPage->get_bg44();
+		if (NULL != pIW44Image)
+		{
+			int nBgWidth  = pIW44Image->get_width();
+			int nBgHeight = pIW44Image->get_height();
+
+			GP<GPixmap> pBgImage = pIW44Image->get_pixmap();
+			if (NULL != pBgImage)
+			{
+				BYTE* pBgBuffer = new BYTE[4 * nBgWidth * nBgHeight];
+				if (!pBgBuffer)
+					return;
+
+				Aggplus::CImage oBgImage;
+				oBgImage.Create(pBgBuffer, nBgWidth, nBgHeight, 4 * nBgWidth);
+
+				BYTE* pBuffer = pBgBuffer;
+				for (int j = nBgHeight - 1; j >= 0; --j)
+				{
+					GPixel* pLine = pBgImage->operator [](j);
+
+					for (int i = 0; i < nBgWidth; ++i, pBuffer += 4, ++pLine)
+					{
+						pBuffer[0] = pLine->b;
+						pBuffer[1] = pLine->g;
+						pBuffer[2] = pLine->r;
+						pBuffer[3] = 255;
+					}
+				}
+				pRenderer->DrawImage((IGrObject*)&oBgImage, 0, 0, dWidth, dHeight);
+			}
+		}
+		
+		GP<GPixmap> pImage = pPage->get_fgpm();
+		if (NULL == pImage)
+			pImage = pPage->get_fg_pixmap(oRectAll);
+
+		if (NULL != pImage)
+		{
+			unsigned int unPixmapH = pImage->rows();
+			unsigned int unPixmapW = pImage->columns();
+			BYTE* pBufferDst = new BYTE[4 * unPixmapH * unPixmapW];
+			if (!pBufferDst)
+				return;
+
+			Aggplus::CImage oImage;
+			oImage.Create(pBufferDst, unPixmapW, unPixmapH, 4 * unPixmapW);
+
+			BYTE* pBuffer = pBufferDst;
+			for (int j = unPixmapH - 1; j >= 0; --j)
+			{
+				GPixel* pLine = pImage->operator [](j);
+
+				for (int i = 0; i < unPixmapW; ++i, pBuffer += 4, ++pLine)
+				{
+					pBuffer[0] = pLine->b;
+					pBuffer[1] = pLine->g;
+					pBuffer[2] = pLine->r;
+					pBuffer[3] = 255;
+				}
+			}
+
+			GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
+			Pix* pPix = pixCreate(lImageWidth, lImageHeight, 1);
+			if (pPix)
+			{
+				for (int nY = 0; nY < lImageHeight; nY++)
+				{
+					BYTE* pLine = pBitmap->operator [](nY);
+					for (int nX = 0; nX < lImageWidth; nX++, pLine++)
+					{
+						pixSetPixel(pPix, nX, lImageHeight - 1 - nY, *pLine);
+					}
+				}
+
+				pPdf->DrawImageWith1bppMask((IGrObject*)&oImage, pPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
+				pixDestroy(&pPix);
+			}
+		}		
+	}	
+	else if (pPage->is_legal_bilevel())
+	{
+		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
+		GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
+
+		Pix* pPix = pixCreate(lImageWidth, lImageHeight, 1);
+		if (pPix)
+		{
+			for (int nY = 0; nY < lImageHeight; nY++)
+			{
+				BYTE* pLine = pBitmap->operator [](nY);
+				for (int nX = 0; nX < lImageWidth; nX++, pLine++)
+				{
+					pixSetPixel(pPix, nX, lImageHeight - 1 - nY, *pLine);
+				}
+			}
+
+			pPdf->DrawImage1bpp(pPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
+			pixDestroy(&pPix);
+		}
+	}
+	else
+	{
+		// белый фрейм??
+		//memset(pBufferDst, 0xFF, 4 * lImageWidth * lImageHeight);
+		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
+		GP<GPixmap> pImage = pPage->get_pixmap(oRectAll, oRectAll);
+
+		if (NULL != pImage)
+		{
+			BYTE* pBufferDst = new BYTE[4 * lImageHeight * lImageWidth];
+			if (pBufferDst)
+			{
+				Aggplus::CImage oImage;
+				oImage.Create(pBufferDst, lImageWidth, lImageHeight, 4 * lImageWidth);
+
+				BYTE* pBuffer = pBufferDst;
+				for (int j = lImageHeight - 1; j >= 0; --j)
+				{
+					GPixel* pLine = pImage->operator [](j);
+
+					for (int i = 0; i < lImageWidth; ++i, pBuffer += 4, ++pLine)
+					{
+						pBuffer[0] = pLine->b;
+						pBuffer[1] = pLine->g;
+						pBuffer[2] = pLine->r;
+						pBuffer[3] = 255;
+					}
+				}
+				pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dWidth, dHeight);
+			}
+		}
+		else
+		{
+			GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
+			if (NULL != pBitmap)
+			{
+				int nPaletteEntries = pBitmap->get_grays();
+				if (nPaletteEntries <= 2)
+				{
+					Pix* pPix = pixCreate(lImageWidth, lImageHeight, 1);
+					if (pPix)
+					{
+						for (int nY = 0; nY < lImageHeight; nY++)
+						{
+							BYTE* pLine = pBitmap->operator [](nY);
+							for (int nX = 0; nX < lImageWidth; nX++, pLine++)
+							{
+								pixSetPixel(pPix, nX, lImageHeight - 1 - nY, *pLine);
+							}
+						}
+
+						pPdf->DrawImage1bpp(pPix, lImageWidth, lImageHeight, 0, 0, dWidth, dHeight);
+						pixDestroy(&pPix);
+					}
+				}
+				else
+				{
+					BYTE* pBufferDst = new BYTE[4 * lImageHeight * lImageWidth];
+					if (!pBufferDst)
+						return;
+
+					Aggplus::CImage oImage;
+					oImage.Create(pBufferDst, lImageWidth, lImageHeight, 4 * lImageWidth);
+
+					DWORD* palette = new DWORD[nPaletteEntries];
+
+					// Create palette for the bitmap
+					int color = 0xff0000;
+					int decrement = color / (nPaletteEntries - 1);
+					for (int i = 0; i < nPaletteEntries; ++i)
+					{
+						BYTE level = (BYTE)(color >> 16);
+						palette[i] = (0xFF000000 | level << 16 | level << 8 | level);
+						color -= decrement;
+					}
+
+					DWORD* pBuffer = (DWORD*)pBufferDst;
+					for (int j = lImageHeight - 1; j >= 0; --j)
+					{
+						BYTE* pLine = pBitmap->operator [](j);
+
+						for (int i = 0; i < lImageWidth; ++i, ++pBuffer, ++pLine)
+						{
+							if (*pLine < nPaletteEntries)
+							{
+								*pBuffer = palette[*pLine];
+							}
+							else
+							{
+								*pBuffer = palette[0];
+							}
+						}
+					}
+
+					RELEASEARRAYOBJECTS(palette);
+					pRenderer->DrawImage((IGrObject*)&oImage, 0, 0, dWidth, dHeight);
+				}
+			}
+		}
+	}
+
+	pRenderer->EndCommand(c_nPageType);
+}
 void               CDjVuFileImplementation::CreateGrFrame(IRenderer* pRenderer, GP<DjVuImage>& pPage, bool* pBreak)
 {
 	int nWidth	= pPage->get_real_width();
@@ -580,7 +865,7 @@ XmlUtils::CXmlNode CDjVuFileImplementation::ParseText(GP<DjVuImage> pPage)
 void               CDjVuFileImplementation::TextToRenderer(IRenderer* pRenderer, XmlUtils::CXmlNode oTextNode, double dKoef, bool isView)
 {
 	// Выставим шрифт пустой (чтобы растягивать по всему ректу)
-	pRenderer->put_FontName(L"AVSEmptyFont");
+	pRenderer->put_FontName(L"DjvuEmptyFont");
 	CString csText = oTextNode.GetXml();
 	XmlUtils::CXmlNodes oLinesNodes;
 	oTextNode.GetNodes(L"LINE", oLinesNodes);
@@ -598,11 +883,11 @@ void               CDjVuFileImplementation::TextToRenderer(IRenderer* pRenderer,
 			CString csCoords = oWordNode.GetAttribute(L"coords");
 			double arrCoords[4];
 			ParseCoords(csCoords.GetBuffer(), arrCoords, dKoef);
-			DrawText(pRenderer, arrCoords, csWord.GetBuffer());
+			DrawPageText(pRenderer, arrCoords, csWord.GetBuffer());
 		}
 	}
 }
-void               CDjVuFileImplementation::DrawText(IRenderer* pRenderer, double* pdCoords, const std::wstring& wsText)
+void               CDjVuFileImplementation::DrawPageText(IRenderer* pRenderer, double* pdCoords, const std::wstring& wsText)
 {
 	pRenderer->put_FontSize(pdCoords[1] - pdCoords[3]);
 	pRenderer->CommandDrawText(wsText,

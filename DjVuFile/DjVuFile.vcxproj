@@ -90,7 +90,7 @@
       <PreprocessorDefinitions>WIN32;_DEBUG;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;HAVE_NAMESPACES</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <DisableSpecificWarnings>4267;4244</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>D:\Subversion\AVS\Sources\TeamlabOffice\trunk\ServerComponents\Common\DocxFormat\Source\XML\libxml2\XML\include;D:\Subversion\AVS\Sources\TeamlabOffice\trunk\ServerComponents\DesktopEditor\freetype-2.5.2\include;D:\Subversion\AVS\Sources\TeamlabOffice\trunk\ServerComponents\DesktopEditor\agg-2.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\ServerComponents\Common\DocxFormat\Source\XML\libxml2\XML\include;..\..\ServerComponents\DesktopEditor\freetype-2.5.2\include;..\..\ServerComponents\DesktopEditor\agg-2.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
@@ -126,7 +126,7 @@
       <PreprocessorDefinitions>WIN32;NDEBUG;_LIB;%(PreprocessorDefinitions);_CRT_SECURE_NO_WARNINGS;HAVE_NAMESPACES</PreprocessorDefinitions>
       <SDLCheck>true</SDLCheck>
       <DisableSpecificWarnings>4267;</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>D:\Subversion\AVS\Sources\TeamlabOffice\trunk\ServerComponents\DesktopEditor\freetype-2.5.2\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>..\..\ServerComponents\Common\DocxFormat\Source\XML\libxml2\XML\include;..\..\ServerComponents\DesktopEditor\freetype-2.5.2\include;..\..\ServerComponents\DesktopEditor\agg-2.4\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

@@ -1240,11 +1240,14 @@ namespace PdfReader
 				case fontCIDType2:
 				case fontCIDType2OT:
 				{
+					// Создаем карту CID-to-GID
+					// Если у нас есть мап ToUnicode, тогда на основе его читаем из файла гиды по юникодным значениям, 
+					// если не нашли, но у нас есть мап CIDtoGID, тогда строим по последнему.
+
 					pCodeToGID = NULL;
 					nLen = 0;
 					if (L"" != wsFileName)
 					{
-						// Создаем карту CID-to-GID
 						CharCodeToUnicode *pCodeToUnicode = NULL;
 						if ((pCodeToUnicode = ((GrCIDFont *)pFont)->GetToUnicode()))
 						{
@@ -1289,30 +1292,16 @@ namespace PdfReader
 							}
 							pCodeToUnicode->Release();
 						}
-						else
-						{
-							if (((GrCIDFont *)pFont)->GetCIDToGID())
-							{
-								nLen = ((GrCIDFont *)pFont)->GetCIDToGIDLen();
-								pCodeToGID = (unsigned short *)MemUtilsMallocArray(nLen, sizeof(unsigned short));
-								if (!pCodeToGID)
-									break;
-
-								memcpy(pCodeToGID, ((GrCIDFont *)pFont)->GetCIDToGID(), nLen * sizeof(unsigned short));
-							}
-						}
 					}
-					else
-					{
-						if (((GrCIDFont *)pFont)->GetCIDToGID())
-						{
-							nLen = ((GrCIDFont *)pFont)->GetCIDToGIDLen();
-							pCodeToGID = (unsigned short *)MemUtilsMallocArray(nLen, sizeof(unsigned short));
-							if (!pCodeToGID)
-								break;
 
-							memcpy(pCodeToGID, ((GrCIDFont *)pFont)->GetCIDToGID(), nLen * sizeof(unsigned short));
-						}
+					if (!pCodeToGID && ((GrCIDFont *)pFont)->GetCIDToGID())
+					{
+						nLen = ((GrCIDFont *)pFont)->GetCIDToGIDLen();
+						pCodeToGID = (unsigned short *)MemUtilsMallocArray(nLen, sizeof(unsigned short));
+						if (!pCodeToGID)
+							break;
+
+						memcpy(pCodeToGID, ((GrCIDFont *)pFont)->GetCIDToGID(), nLen * sizeof(unsigned short));
 					}
 
 					break;

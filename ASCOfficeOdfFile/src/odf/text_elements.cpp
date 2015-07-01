@@ -270,6 +270,15 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
     }
 	bool is_empty= paragraph_content_.size()==0;
 
+    BOOST_FOREACH(const office_element_ptr & elm, paragraph_content_)
+    {
+ 		if (elm->get_type() == typeTextSoftPageBreak && !Context.check_page_break_after() && !Context.check_page_break_before() && !(next_section_ || next_end_section_))
+		{//1 (206).odt - понатыканы soft-break в различных ситуациях
+			Context.add_page_break_before();
+		}
+
+   }
+
     Context.start_paragraph();
 	
 	std::wostream & _Wostream = Context.output_stream();
@@ -333,6 +342,14 @@ void paragraph::docx_convert(oox::docx_conversion_context & Context)
  		
 		if (Context.get_drop_cap_context().state() >0)		
 			Context.get_drop_cap_context().state(0);//disable
+
+		if (elm->get_type() == typeTextSoftPageBreak && !Context.check_page_break_after() && !Context.check_page_break_before())
+		{
+			_Wostream << L"<w:lastRenderedPageBreak/>";
+
+			if (next_section_ || next_end_section_)
+				Context.add_page_break_before();
+		}
 
    }
 

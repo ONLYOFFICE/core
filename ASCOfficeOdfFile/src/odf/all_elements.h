@@ -11,6 +11,7 @@
 #include "paragraph_elements.h"
 #include "office_binary_data.h"
 
+#include "math_elements.h"
 #include "text_elements.h"
 #include "list.h"
 #include "style_text_properties.h"

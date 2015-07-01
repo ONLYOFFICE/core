@@ -1232,6 +1232,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\odf\math_elements.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\src\odf\math_elements.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\odf\note.cpp"
 				>
 			</File>
@@ -1260,7 +1268,7 @@
 				>
 			</File>
 			<File
-				RelativePath=".\include\cpdoccore\odf\odf_document.h"
+				RelativePath="..\include\cpdoccore\odf\odf_document.h"
 				>
 			</File>
 			<File

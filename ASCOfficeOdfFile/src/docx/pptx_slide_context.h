@@ -61,6 +61,8 @@ public:
  	void start_object_ole();
     void end_object_ole();
 
+	void set_use_image_replacement();
+
 	bool empty() const;
 //////////////////////////////////////////////////////////////////////////////////////////////
 	void serialize_objects(std::wostream & strm);

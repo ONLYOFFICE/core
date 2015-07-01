@@ -286,6 +286,20 @@ namespace NSDirectory
         if (deleteRoot = false)CreateDirectory(strDirectory);
 #endif
 	}
+	static std::wstring GetFolderPath(const std::wstring& wsFolderPath)
+	{
+		int n1 = wsFolderPath.rfind('\\');
+		if (n1 < 0)
+		{
+			n1 = wsFolderPath.rfind('/');
+			if (n1 < 0)
+			{
+				return L"";
+			}
+			return wsFolderPath.substr(0, n1);
+		}
+		return wsFolderPath.substr(0, n1);
+	}
 }
 
 #endif //_BUILD_DIRECTORY_CROSSPLATFORM_H_

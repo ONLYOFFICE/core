@@ -28,18 +28,19 @@ namespace PdfWriter
 		~CFontCidTrueType();
 		unsigned char* EncodeString(unsigned int* pUnicodes, unsigned int unLen);
 		unsigned int   GetWidth(unsigned short ushCode);
-		EFontType GetFontType()
+		EFontType      GetFontType()
 		{
 			return fontCIDType2;
 		}
 
-
 	private:
 
 		void BeforeWrite();
-		void GetWidthsAndGids(unsigned short** ppCodeToGid, unsigned int** pWidths, unsigned char** ppGlyphs, unsigned int& unGlyphsCount);
+		bool GetWidthsAndGids(unsigned short** ppCodeToGid, unsigned int** pWidths, unsigned char** ppGlyphs, unsigned int& unGlyphsCount);
 		void CreateCIDFont2(CDictObject* pFont);
 		void WriteToUnicode();
+		bool OpenFontFace();
+		void CloseFontFace();
 
 	private:
 
@@ -61,9 +62,12 @@ namespace PdfWriter
 		std::vector<unsigned int>                m_vWidths;
 		std::map<unsigned short, bool>           m_mGlyphs;
 
-		FT_Library                               m_pLibrary;
 		FT_Face                                  m_pFace;
 		FT_Byte*                                 m_pFaceMemory;
+		int                                      m_nGlyphsCount;
+		int                                      m_nSymbolicCmap;
+
+		friend class CDocument;
 	};
 }
 

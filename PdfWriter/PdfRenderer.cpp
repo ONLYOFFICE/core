@@ -232,8 +232,6 @@ private:
 	double         m_dX;
 	double         m_dY;
 
-	int            m_nUpdateFlags;
-
 	CFontDict*     m_pFont;
 	double         m_dSize;
 	LONG           m_lColor;
@@ -382,7 +380,7 @@ void CPdfRenderer::CCommandManager::Clear()
 	for (int nIndex = 0, nCount = m_vCommands.size(); nIndex < nCount; nIndex++)
 	{
 		CRendererCommandBase* pCommand = m_vCommands.at(nIndex);
-		delete[] pCommand;
+		delete pCommand;
 	}
 	m_vCommands.clear();
 }
@@ -1374,7 +1372,6 @@ bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const d
 		return false;
 
 	unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
-	delete[] pUnicodes;
 
 	CTransform& t = m_oTransform;
 	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
@@ -1444,8 +1441,8 @@ void CPdfRenderer::UpdateTransform()
 	t.m12 = -m_oTransform.m12;
 	t.m21 = -m_oTransform.m21;
 	t.m22 = m_oTransform.m22;
-	t.dx  = MM_2_PT(t.dx + t.m21 * m_dPageHeight);
-	t.dy  = MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy);
+	t.dx  = MM_2_PT(m_oTransform.dx + m_oTransform.m21 * m_dPageHeight);
+	t.dy  = MM_2_PT(m_dPageHeight - m_dPageHeight * m_oTransform.m22 - m_oTransform.dy);
 
 	if (!t.IsIdentity())
 		m_pPage->Concat(t.m11, t.m12, t.m21, t.m22, t.dx, t.dy);
@@ -1629,6 +1626,7 @@ void CPdfRenderer::UpdateBrush()
 					m_pShading = m_pDocument->CreateRadialShading(m_pPage, MM_2_PT(dX0), MM_2_PT(m_dPageHeight - dY0), MM_2_PT(dR0), MM_2_PT(dX1), MM_2_PT(m_dPageHeight - dY1), MM_2_PT(dR1), pColors, pAlphas, pPoints, lCount, m_pShadingExtGrState);
 				}
 				delete[] pColors;
+				delete[] pAlphas;
 			}
 		}
 	}

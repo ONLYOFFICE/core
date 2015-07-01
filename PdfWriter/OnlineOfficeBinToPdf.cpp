@@ -318,6 +318,7 @@ namespace NSOnlineOfficeBinToPdf
 					bIsPathOpened = false;
 
 					pPdf->EndCommand(c_nPageType);
+
 					break;
 				}
 				case ctPenColor:

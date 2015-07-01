@@ -108,29 +108,10 @@ namespace PdfWriter
 
 		CreateCIDFont2(pFont);
 
-
-		//-----------------------------------------------------------------------------------------
-		FT_Init_FreeType(&m_pLibrary);
-		NSFile::CFileBinary oFile;
-		oFile.OpenFile(m_wsFontPath, false);
-		DWORD lFileSize = oFile.SizeFile();
-		m_pFaceMemory = new FT_Byte[lFileSize];
-		if (!m_pFaceMemory)
-		{
-			FT_Done_FreeType(m_pLibrary);
-			return;
-		}
-
-		NSFile::CFileBinary::ReadAllBytes(m_wsFontPath, &m_pFaceMemory, lFileSize);
-
-		FT_New_Memory_Face(m_pLibrary, m_pFaceMemory, lFileSize, m_unFontIndex, &m_pFace);
-		if (!m_pFace)
-		{
-			FT_Done_FreeType(m_pLibrary);
-			delete[] m_pFaceMemory;
-			m_pFaceMemory = NULL;
-			return;
-		}
+		m_pFace         = NULL;
+		m_pFaceMemory   = NULL;	
+		m_nGlyphsCount  = 0;
+		m_nSymbolicCmap = -1;
 	}
 	CFontCidTrueType::~CFontCidTrueType()
 	{
@@ -139,9 +120,6 @@ namespace PdfWriter
 
 		if (m_pFace)
 			FT_Done_Face(m_pFace);
-
-		if (m_pLibrary)
-			FT_Done_FreeType(m_pLibrary);
 
 		if (m_pFaceMemory)
 			delete[] m_pFaceMemory;
@@ -199,7 +177,12 @@ namespace PdfWriter
 	}
 	unsigned char* CFontCidTrueType::EncodeString(unsigned int* pUnicodes, unsigned int unLen)
 	{
+		if (!OpenFontFace())
+			return NULL;
+
 		unsigned char* pEncodedString = new unsigned char[unLen * 2];
+		if (!pEncodedString)
+			return NULL;
 
 		// Юникодные значения мы кодируем в наши собственные коды последовательно от 0x0000..0xFFFF
 		// для каждого юникодного значения находим соответствующий Gid в шрифте.
@@ -222,6 +205,9 @@ namespace PdfWriter
 				m_vUnicodes.push_back(unUnicode);
 
 				unsigned short ushGID = GetGID(m_pFace, unUnicode);
+				if (0 == ushGID && -1 != m_nSymbolicCmap)
+					ushGID = GetGID(m_pFace, unUnicode + 0xF000);
+
 				m_vCodeToGid.push_back(ushGID);
 
 				// Данный символ используется
@@ -266,11 +252,12 @@ namespace PdfWriter
 		if (m_pFontFile)
 		{
 			unsigned short* pCodeToGid;
-			unsigned int* pWidths;
-			unsigned char* pGlyphs;
-			unsigned int unGlyphsCount;
+			unsigned int*   pWidths;
+			unsigned char*  pGlyphs;
+			unsigned int    unGlyphsCount;
 
-			GetWidthsAndGids(&pCodeToGid, &pWidths, &pGlyphs, unGlyphsCount);
+			if (!GetWidthsAndGids(&pCodeToGid, &pWidths, &pGlyphs, unGlyphsCount))
+				return;
 
 			CStream* pStream = m_pFontFileDict->GetStream();
 			m_pFontFile->WriteTTF(pStream, NULL, pCodeToGid, m_ushCodesCount, pGlyphs, unGlyphsCount);
@@ -295,106 +282,60 @@ namespace PdfWriter
 				pStream->WriteChar((ushGid & 0xFF));
 			}
 
+			RELEASEARRAYOBJECTS(pCodeToGid);
+			RELEASEARRAYOBJECTS(pWidths);
+			RELEASEARRAYOBJECTS(pGlyphs);
+
 			WriteToUnicode();
 		}
 	}
-	void           CFontCidTrueType::GetWidthsAndGids(unsigned short** ppCodeToGid, unsigned int** ppWidths, unsigned char** ppGlyphs, unsigned int& unGlyphsCount)
+	bool           CFontCidTrueType::GetWidthsAndGids(unsigned short** ppCodeToGid, unsigned int** ppWidths, unsigned char** ppGlyphs, unsigned int& unGlyphsCount)
 	{
-		FT_Library pLibrary = NULL;
-		FT_Init_FreeType(&pLibrary);
-		FT_Face pFace = NULL;
+		*ppCodeToGid  = NULL;
+		*ppWidths     = NULL;
+		*ppGlyphs     = NULL;
+		unGlyphsCount = 0;
+		
+		if (!m_nGlyphsCount)
+			return false;
 
-		NSFile::CFileBinary oFile;
-		oFile.OpenFile(m_wsFontPath, false);
-		DWORD lFileSize = oFile.SizeFile();
-		FT_Byte* pMemory = new FT_Byte[lFileSize];
-		if (!pMemory)
-		{
-			FT_Done_FreeType(pLibrary);
-			return;
-		}
-
-		NSFile::CFileBinary::ReadAllBytes(m_wsFontPath, &pMemory, lFileSize);
-
-		FT_New_Memory_Face(pLibrary, pMemory, lFileSize, m_unFontIndex, &pFace);
-		if (!pFace)
-		{
-			FT_Done_FreeType(pLibrary);
-			return;
-		}
-
-		int nSymbolic = GetSymbolicCmapIndex(pFace);
 		unsigned short* pCodeToGID = new unsigned short[m_ushCodesCount];
-		for (unsigned short ushCode = 0; ushCode < m_ushCodesCount; ushCode++)
-		{
-			unsigned int unUnicode = m_vUnicodes[ushCode];
-			pCodeToGID[ushCode] = GetGID(pFace, unUnicode);
+		if (!pCodeToGID)
+			return false;
 
-			if (0 == pCodeToGID[ushCode] && -1 != nSymbolic)
-				pCodeToGID[ushCode] = GetGID(pFace, unUnicode + 0xF000);
-		}
-
-		// Создаем список используемых глифов, чтобы вшить шрифт только с данными символами
-		long lGlyfsCount = pFace->num_glyphs;
-		unsigned char *pUseGlyf = new unsigned char[lGlyfsCount];
-		memset((void *)pUseGlyf, 0x00, pFace->num_glyphs * sizeof(unsigned char));
-
-		// Заполняем список ширин символов
 		unsigned int* pWidths = new unsigned int[m_ushCodesCount];
+		if (!pWidths)
+		{
+			delete[] pCodeToGID;
+			return false;
+		}
 		memset((void*)pWidths, 0x00, m_ushCodesCount * sizeof(unsigned int));
+
 		for (unsigned short ushCode = 0; ushCode < m_ushCodesCount; ushCode++)
 		{
-			unsigned short ushGID = pCodeToGID[ushCode];
-
-			if ((long)ushGID >= lGlyfsCount)
-				continue;
-
-			// Данный символ используется
-			pUseGlyf[ushGID] = 1;
-
-			// Если данный символ составной (CompositeGlyf), тогда мы должны учесть все его дочерные символы (subglyfs)
-			if (0 == FT_Load_Glyph(pFace, ushGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE))
-			{
-				for (int nSubIndex = 0; nSubIndex < pFace->glyph->num_subglyphs; nSubIndex++)
-				{
-					FT_Int       nSubGID;
-					FT_UInt      unFlags;
-					FT_Int       nArg1;
-					FT_Int       nArg2;
-					FT_Matrix    oMatrix;
-					FT_Get_SubGlyph_Info(pFace->glyph, nSubIndex, &nSubGID, &unFlags, &nArg1, &nArg2, &oMatrix);
-
-					pUseGlyf[nSubGID] = 1;
-				}
-
-				if (0 != pFace->units_per_EM)
-					pWidths[ushCode] = (unsigned int)pFace->glyph->metrics.horiAdvance * 1000 / pFace->units_per_EM;
-				else
-					pWidths[ushCode] = (unsigned int)pFace->glyph->metrics.horiAdvance;
-			}
+			pCodeToGID[ushCode] = m_vCodeToGid.at(ushCode);
+			pWidths[ushCode]    = m_vWidths.at(ushCode);
 		}
 
-		// Дописываем имя шрифта во все необходимые словари, а также заполняем дескриптор
-		std::string sFontName = m_pDocument->GetTTFontTag() + std::string(pFace->family_name);
-		if (pFace->style_flags & FT_STYLE_FLAG_ITALIC)
-			sFontName += "-Italic";
-		if (pFace->style_flags & FT_STYLE_FLAG_BOLD)
-			sFontName += "-Bold";
+		unsigned char *pGlyphs = new unsigned char[m_nGlyphsCount];
+		if (!pGlyphs)
+		{
+			delete[] pCodeToGID;
+			delete[] pWidths;
+			return false;
+		}
 
-		const char* sName = sFontName.c_str();
-
-		Add("BaseFont", sName);
-		m_pFont->Add("BaseFont", sName);
-		m_pFontDescriptor->Add("FontName", sName);
-
-		FT_Done_Face(pFace);
-		FT_Done_FreeType(pLibrary);
-		delete[] pMemory;
+		memset((void *)pGlyphs, 0x00, m_nGlyphsCount * sizeof(unsigned char));
+		for (auto oIt : m_mGlyphs)
+		{
+			pGlyphs[oIt.first] = 1;
+		}
 
 		*ppCodeToGid  = pCodeToGID;
 		*ppWidths     = pWidths;
-		*ppGlyphs     = pUseGlyf;
-		unGlyphsCount = lGlyfsCount;
+		*ppGlyphs     = pGlyphs;
+		unGlyphsCount = m_nGlyphsCount;
+		return true;
 	}
 	void           CFontCidTrueType::WriteToUnicode()
 	{
@@ -431,5 +372,48 @@ namespace PdfWriter
 		}
 		pS->WriteStr("endbfchar\n");
 		m_pToUnicodeStream->WriteStr(c_sToUnicodeFooter);
+	}
+	void           CFontCidTrueType::CloseFontFace()
+	{
+		if (m_pFace)
+		{
+			FT_Done_Face(m_pFace);
+			m_pFace = NULL;
+		}
+
+		RELEASEARRAYOBJECTS(m_pFaceMemory);
+	}
+	bool           CFontCidTrueType::OpenFontFace()
+	{
+		if (m_pFace)
+		{
+			m_pDocument->AddFreeTypeFont(this);
+			return true;
+		}
+
+		m_nGlyphsCount  = 0;
+		m_nSymbolicCmap = -1;
+
+		FT_Library pLibrary = m_pDocument->GetFreeTypeLibrary();
+		if (!pLibrary)
+			return false;
+
+		DWORD dwFileSize;
+		m_pFaceMemory = NULL;
+		NSFile::CFileBinary::ReadAllBytes(m_wsFontPath, &m_pFaceMemory, dwFileSize);
+		if (!m_pFaceMemory)
+			return false;
+
+		FT_New_Memory_Face(pLibrary, m_pFaceMemory, dwFileSize, m_unFontIndex, &m_pFace);
+		if (!m_pFace)
+		{
+			RELEASEARRAYOBJECTS(m_pFaceMemory);
+			return false;
+		}
+
+		m_pDocument->AddFreeTypeFont(this);
+		m_nGlyphsCount  = m_pFace->num_glyphs;
+		m_nSymbolicCmap = GetSymbolicCmapIndex(m_pFace);
+		return true;
 	}
 }

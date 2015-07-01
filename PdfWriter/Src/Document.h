@@ -5,6 +5,10 @@
 #include <string>
 #include "Types.h"
 
+#include "../../DesktopEditor/fontengine/FontManager.h"
+#include "../../DesktopEditor/common/File.h"
+#include FT_TRUETYPE_TABLES_H
+
 #ifdef CreateFont
 #undef CreateFont
 #endif
@@ -79,6 +83,8 @@ namespace PdfWriter
 	private:		  
 					  
 		char*             GetTTFontTag();
+		void              AddFreeTypeFont(CFontCidTrueType* pFont);
+		FT_Library        GetFreeTypeLibrary();
 		CExtGrState*      FindExtGrState(double dAlphaStroke = -1, double dAlphaFill = -1, EBlendMode eMode = blendmode_Unknown, int nStrokeAdjustment = -1);
 		void              SaveToStream(CStream* pStream);
 		void              PrepareEncryption();
@@ -103,27 +109,29 @@ namespace PdfWriter
 			CFontCidTrueType* pFont;
 		};
 
-		CCatalog*                 m_pCatalog;
-		COutline*                 m_pOutlines;
-		CXref*                    m_pXref;
-		CPageTree*                m_pPageTree;
-		CPage*                    m_pCurPage;
-		int                       m_nCurPageNum;
-		CInfoDict*                m_pInfo;
-		CDictObject*              m_pTrailer;
-		CDictObject*              m_pResources;
-		bool                      m_bEncrypt;
-		CEncryptDict*             m_pEncryptDict;
-		unsigned int              m_unCompressMode;
-		std::vector<CPage*>       m_vPages;
-		std::vector<CExtGrState*> m_vExtGrStates;
-		std::vector<CExtGrState*> m_vStrokeAlpha;
-		std::vector<CExtGrState*> m_vFillAlpha;
-		char                      m_sTTFontTag[8]; // 6 символов + '+' + 0x00 ("BAAAAA+/0")
-		CJbig2Global*             m_pJbig2;
-		std::vector<CShading*>    m_vShadings;
-		std::vector<TFontInfo>    m_vTTFonts;
-		CDictObject*              m_pTransparencyGroup;
+		CCatalog*                      m_pCatalog;
+		COutline*                      m_pOutlines;
+		CXref*                         m_pXref;
+		CPageTree*                     m_pPageTree;
+		CPage*                         m_pCurPage;
+		int                            m_nCurPageNum;
+		CInfoDict*                     m_pInfo;
+		CDictObject*                   m_pTrailer;
+		CDictObject*                   m_pResources;
+		bool                           m_bEncrypt;
+		CEncryptDict*                  m_pEncryptDict;
+		unsigned int                   m_unCompressMode;
+		std::vector<CPage*>            m_vPages;
+		std::vector<CExtGrState*>      m_vExtGrStates;
+		std::vector<CExtGrState*>      m_vStrokeAlpha;
+		std::vector<CExtGrState*>      m_vFillAlpha;
+		char                           m_sTTFontTag[8]; // 6 символов + '+' + 0x00 ("BAAAAA+/0")
+		CJbig2Global*                  m_pJbig2;
+		std::vector<CShading*>         m_vShadings;
+		std::vector<TFontInfo>         m_vTTFonts;
+		CDictObject*                   m_pTransparencyGroup;
+		std::vector<CFontCidTrueType*> m_vFreeTypeFonts;
+		FT_Library                     m_pFreeTypeLibrary;
 
 		friend class CFontCidTrueType;
 	};

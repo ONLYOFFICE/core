@@ -7,6 +7,8 @@
 #include <vector>
 #include <string>
 #include "windows.h"
+#include "../../../DesktopEditor/raster/BgraFrame.h"
+#include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
 std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstring wsExt)
 {
@@ -68,6 +70,6 @@ void main()
 	PdfReader::CPdfReader oPdfReader(&oFonts);
 	oPdfReader.SetTempFolder(L"D://Test Files//Temp//");
 	oPdfReader.SetCMapFolder(L"D://Subversion//AVS//Redist//AVSOfficeStudio//CMaps//");
-	ConvertFolder(oPdfReader, L"D://Test Files//");
+	ConvertFolder(oPdfReader, L"D://Test Files//3//");
 }
 

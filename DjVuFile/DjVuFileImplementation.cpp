@@ -222,9 +222,9 @@ void               CDjVuFileImplementation::ConvertToPdf(CApplicationFonts* pApp
 		oPdf.put_Height(dHeight);
 
 		DrawPageOnRenderer(&oPdf, nPageIndex, &bBreak);
-#ifdef _DEBUG
+//#ifdef _DEBUG
 		printf("%d of %d pages\n", nPageIndex + 1, nPagesCount);
-#endif
+//#endif
 	}
 
 	oPdf.SaveToFile(wsDstPath);

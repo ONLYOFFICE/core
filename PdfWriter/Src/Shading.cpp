@@ -231,15 +231,18 @@ namespace PdfWriter
 		else
 		{
 			double* pValues = new double[(nCount - 1) * 2];
-			for (int nIndex = 0; nIndex < nCount - 1; nIndex++)
+			if (pValues)
 			{
-				pValues[2 * nIndex + 0] = pColors[nIndex] / 255.0;
-				pValues[2 * nIndex + 1] = pColors[nIndex + 1] / 255.0;
-			}
+				for (int nIndex = 0; nIndex < nCount - 1; nIndex++)
+				{
+					pValues[2 * nIndex + 0] = pColors[nIndex] / 255.0;
+					pValues[2 * nIndex + 1] = pColors[nIndex + 1] / 255.0;
+				}
 
-			CLineSegmentFuntion* pFunction = new CLineSegmentFuntion(m_pXref, &pValues, pPoints + 1, nCount - 1, 1);
-			Add("Function", pFunction);
-			delete[] pValues;
+				CLineSegmentFuntion* pFunction = new CLineSegmentFuntion(m_pXref, &pValues, pPoints + 1, nCount - 1, 1);
+				Add("Function", pFunction);
+				delete[] pValues;
+			}
 		}
 	}
 	void CShading::SetExtend(bool bBegin, bool bEnd)

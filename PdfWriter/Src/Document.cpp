@@ -44,6 +44,7 @@ namespace PdfWriter
 		m_pJbig2            = NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
 		m_pTransparencyGroup = NULL;
+		m_pFreeTypeLibrary  = NULL;
 	}
 	CDocument::~CDocument()
 	{
@@ -93,27 +94,35 @@ namespace PdfWriter
 	void              CDocument::Close()
 	{
 		// Все объекты удаляются внутри CXref
-		if (m_pXref)
-		{
-			delete m_pXref;
-			m_pXref = NULL;
-		}
+		RELEASEOBJECT(m_pXref);
 
 		m_pTrailer          = NULL;
+		m_pResources        = NULL;
 		m_pCatalog          = NULL;
 		m_pOutlines         = NULL;
 		m_pPageTree         = NULL;
 		m_pCurPage          = NULL;
+		m_nCurPageNum       = 0;
 		m_bEncrypt          = false;
 		m_pEncryptDict      = NULL;
 		m_pInfo             = NULL;
 		m_unCompressMode    = COMP_NONE;
+		m_pJbig2            = NULL;
+		m_pTransparencyGroup= NULL;
 		memset((void*)m_sTTFontTag, 0x00, 8);
 
-		m_vExtGrStates.clear();
 		m_vPages.clear();
+		m_vExtGrStates.clear();
+		m_vStrokeAlpha.clear();
+		m_vFillAlpha.clear();
 		m_vShadings.clear();
 		m_vTTFonts.clear();
+		m_vFreeTypeFonts.clear();
+		if (m_pFreeTypeLibrary)
+		{
+			FT_Done_FreeType(m_pFreeTypeLibrary);
+			m_pFreeTypeLibrary = NULL;
+		}
 	}
 	bool              CDocument::SaveToFile(const std::wstring& wsPath)
 	{
@@ -452,6 +461,41 @@ namespace PdfWriter
 		}
 
 		return m_sTTFontTag;
+	}
+	void              CDocument::AddFreeTypeFont(CFontCidTrueType* pFont)
+	{
+		for (int nIndex = 0, nCount = m_vFreeTypeFonts.size(); nIndex < nCount; nIndex++)
+		{
+			if (pFont == m_vFreeTypeFonts.at(nIndex))
+			{
+				if (nIndex >= 10)
+				{
+					m_vFreeTypeFonts.erase(m_vFreeTypeFonts.begin() + nIndex);
+					m_vFreeTypeFonts.insert(m_vFreeTypeFonts.begin(), pFont);
+				}
+				return;
+			}
+		}
+
+		m_vFreeTypeFonts.insert(m_vFreeTypeFonts.begin(), pFont);
+
+		int nFontsCount = m_vFreeTypeFonts.size();
+		if (nFontsCount > MAX_OPENED_FT_FACES)
+		{
+			for (int nFontIndex = MAX_OPENED_FT_FACES; nFontIndex < nFontsCount; nFontIndex++)
+			{
+				CFontCidTrueType* pFont = m_vFreeTypeFonts.at(nFontIndex);
+				pFont->CloseFontFace();
+			}
+			m_vFreeTypeFonts.erase(m_vFreeTypeFonts.begin() + MAX_OPENED_FT_FACES, m_vFreeTypeFonts.end());
+		}
+	}
+	FT_Library        CDocument::GetFreeTypeLibrary()
+	{
+		if (!m_pFreeTypeLibrary)
+			FT_Init_FreeType(&m_pFreeTypeLibrary);
+
+		return m_pFreeTypeLibrary;
 	}
 	CJbig2Global*     CDocument::GetJbig2Global()
 	{

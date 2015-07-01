@@ -913,8 +913,8 @@ void ConvertFolder(std::wstring wsFolderPath, const int nType)
 }
 void TestMetafile()
 {
-	//ConvertFolder(L"D://Test Files//Emf//", MetaFile::c_lMetaEmf);
-	ConvertFolder(L"D://Test Files//Wmf//", MetaFile::c_lMetaWmf);
+	ConvertFolder(L"D://Test Files//Emf//", MetaFile::c_lMetaEmf);
+	//ConvertFolder(L"D://Test Files//Wmf//", MetaFile::c_lMetaWmf);
 }
 void TestOnlineBin()
 {
@@ -961,8 +961,8 @@ void main()
 	//TestDocument7();
 	//TestDocument8();
 	//TestDocument9();
-	//TestMetafile();
-	TestOnlineBin();
+	TestMetafile();
+	//TestOnlineBin();
 
 	char q;
 	std::cin >> q;

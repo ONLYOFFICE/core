@@ -256,6 +256,10 @@ void xlsx_drawing_context::start_shape(int type)
 
 void xlsx_drawing_context::start_object_ole()
 {
+	
+}
+void xlsx_drawing_context::set_use_image_replacement()
+{
 	impl_->object_description_.use_image_replace_ = true;
 }
 

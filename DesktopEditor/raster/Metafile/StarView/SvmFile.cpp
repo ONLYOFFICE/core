@@ -116,20 +116,20 @@ void CSvmFile::PlayMetaFile()
 
         switch (actionType) 
 		{
-			case META_RECT_ACTION:				Read_META_RECTANGLE();		break;
-			case META_POLYLINE_ACTION:			Read_META_POLYLINE();       break;
-			case META_POLYGON_ACTION:			Read_META_POLYGON();        break;
-			case META_POLYPOLYGON_ACTION:		Read_META_POLYPOLYGON();	break;
-			case META_LINE_ACTION:				Read_META_LINE();		    break;
+			case META_RECT_ACTION:				Read_META_RECTANGLE();			break;
+			case META_POLYLINE_ACTION:			Read_META_POLYLINE();			break;
+			case META_POLYGON_ACTION:			Read_META_POLYGON();			break;
+			case META_POLYPOLYGON_ACTION:		Read_META_POLYPOLYGON();		break;
+			case META_LINE_ACTION:				Read_META_LINE();				break;
 			
-			case META_TEXT_ACTION:				Read_META_TEXT();			break;
-			case META_TEXTARRAY_ACTION:			Read_META_ARRAYTEXT();		break;
-			case META_TEXTALIGN_ACTION:			Read_META_TEXTALIGN();		break;
-			case META_TEXTRECT_ACTION:			Read_META_TEXTRECT();		break;
+			case META_TEXT_ACTION:				Read_META_TEXT();				break;
+			case META_TEXTARRAY_ACTION:			Read_META_ARRAYTEXT();			break;
+			case META_TEXTALIGN_ACTION:			Read_META_TEXTALIGN();			break;
+			case META_TEXTRECT_ACTION:			Read_META_TEXTRECT();			break;
 			case META_TEXTFILLCOLOR_ACTION:		Read_META_SETTEXTFILLCOLOR();	break;
 			case META_TEXTCOLOR_ACTION:			Read_META_SETTEXTCOLOR();		break;
+			case META_STRETCHTEXT_ACTION:		Read_META_STRETCHTEXT();		break;
 			case META_TEXTLANGUAGE_ACTION:
-			case META_STRETCHTEXT_ACTION:
 			case META_TEXTLINECOLOR_ACTION:
 			case META_TEXTLINE_ACTION:
 				break;
@@ -152,6 +152,9 @@ void CSvmFile::PlayMetaFile()
 			case META_TRANSPARENT_ACTION:		Read_META_TRANSPARENT();		break;	
 			case META_FLOATTRANSPARENT_ACTION:	Read_META_FLOATTRANSPARENT();	break;
 
+			case META_ISECTRECTCLIPREGION_ACTION:	Read_META_SECTRECTCLIPREGION(); break;
+			case META_ISECTREGIONCLIPREGION_ACTION:	Read_META_SECTREGIONCLIPREGION(); break;
+
 			case META_ROUNDRECT_ACTION:
 			case META_ELLIPSE_ACTION:
 			case META_ARC_ACTION:
@@ -169,8 +172,6 @@ void CSvmFile::PlayMetaFile()
 			case META_MASKSCALEPART_ACTION:
 			case META_WALLPAPER_ACTION:
 			case META_CLIPREGION_ACTION:
-			case META_ISECTRECTCLIPREGION_ACTION:
-			case META_ISECTREGIONCLIPREGION_ACTION:
 			case META_MOVECLIPREGION_ACTION:
 			case META_EPS_ACTION:
 			case META_REFPOINT_ACTION:
@@ -417,6 +418,42 @@ void CSvmFile::Read_META_SETMAPMODE()
 
 	UpdateOutputDC();
 }
+
+void CSvmFile::Read_META_STRETCHTEXT()
+{
+	std::wstring sText;
+	TSvmPoint   startPoint;
+
+	m_oStream >> startPoint;
+
+	parseString(m_oStream, sText, m_currentActionVersion, m_currentCharset);
+
+	unsigned short	Index;
+	unsigned short	Len;
+	unsigned int	Width;
+	
+	m_oStream >> Width;
+	m_oStream >> Index;
+	m_oStream >> Len;
+
+	if (m_currentActionVersion > 1)
+	{
+		unsigned short nLen;
+		m_oStream >> nLen;
+		
+		std::wstring buf;
+		unsigned short nTemp;
+		while ( nLen-- )
+		{
+			m_oStream >> nTemp;
+			buf += (wchar_t)nTemp;
+		}
+		sText = buf;
+	}
+	DrawText(sText, sText.length(), startPoint.x, startPoint.y);
+}
+
+
 void CSvmFile::Read_META_TEXT()
 {
 	std::wstring sText;
@@ -812,6 +849,16 @@ void CSvmFile::Read_META_RASTEROP()
 void CSvmFile::Read_META_BMP()
 {
 
+}
+
+void CSvmFile::Read_META_SECTRECTCLIPREGION()
+{
+	TSvmRect	rect;
+	
+	m_oStream >> rect;
+}
+void CSvmFile::Read_META_SECTREGIONCLIPREGION()
+{
 }
 void CSvmFile::Read_META_BMPSCALE()
 {

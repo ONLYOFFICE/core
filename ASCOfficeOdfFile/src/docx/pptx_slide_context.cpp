@@ -319,9 +319,13 @@ void pptx_slide_context::start_table()
 	impl_->object_description_.type_ = 0; //frame 
 }
 
-void pptx_slide_context::start_object_ole()
+void pptx_slide_context::set_use_image_replacement()
 {
 	impl_->object_description_.use_image_replace_ = true;
+}
+
+void pptx_slide_context::start_object_ole()
+{
 }
 
 void pptx_slide_context::start_chart(std::wstring const & path)

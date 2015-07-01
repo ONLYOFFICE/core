@@ -1210,48 +1210,55 @@ void draw_object::docx_convert(oox::docx_conversion_context & Context)
 		if (!contentSubDoc)
 			return;
 
-		chart_build chartBuild;
-		process_build_chart process_build_chart_(chartBuild,objectSubDoc.odf_context().styleContainer(),objectSubDoc.odf_context().drawStyles());
-        contentSubDoc->accept(process_build_chart_); 
+		chart_build objectBuild;
+		process_build_chart process_build_object_(objectBuild, objectSubDoc.odf_context().styleContainer(), objectSubDoc.odf_context().drawStyles());
+        contentSubDoc->accept(process_build_object_); 
 
-		if (chartBuild.object_type_ != 1)return;
-			//диаграмма
-		
-		chartBuild.docx_convert(Context);
+		objectBuild.docx_convert(Context);		
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//отображательная часть	
+		
+		if (objectBuild.object_type_ == 1) //диаграмма
+		{	
+			//отображательная часть	
+			const draw_frame * frame = Context.get_drawing_context().get_current_frame();//owner
+			if (!frame)
+				return;
+			oox::_docx_drawing drawing = oox::_docx_drawing();
 
-		const draw_frame * frame = Context.get_drawing_context().get_current_frame();//owner
-		if (!frame)
-			return;
-		oox::_docx_drawing drawing = oox::_docx_drawing();
+			drawing.type = oox::mediaitems::typeChart;
+			
+			drawing.id = Context.get_drawing_context().get_current_frame_id();
+			drawing.name = Context.get_drawing_context().get_current_object_name();
+			
+			bool isMediaInternal = true;        
+			drawing.chartId = Context.add_mediaitem(href, oox::mediaitems::typeChart, isMediaInternal, href);
 
-		drawing.type = oox::mediaitems::typeChart;
-		
-		drawing.id = Context.get_drawing_context().get_current_frame_id();
-		drawing.name = Context.get_drawing_context().get_current_object_name();
-		
-        bool isMediaInternal = true;        
-		drawing.chartId = Context.add_mediaitem(href, oox::mediaitems::typeChart, isMediaInternal, href);
+			common_draw_docx_convert(Context, frame->common_draw_attlists_, drawing);
+			
+			bool runState	= Context.get_run_state();
+			bool pState		= Context.get_paragraph_state();
+			
+			Context.set_run_state(false);	
+			Context.set_paragraph_state(false);	
+			
+			std::wostream & strm = Context.output_stream();		
+			
+			Context.add_new_run(_T(""));
+			
+			docx_serialize(strm, drawing);
+			
+			Context.finish_run();
+			
+			Context.set_run_state(runState);
+			Context.set_paragraph_state(pState);	
+		}
+		else if (objectBuild.object_type_ == 0 || objectBuild.object_type_ == 3) 
+		{
+			//временно - замещающая картинка(если она конечно присутствует)
 
-		common_draw_docx_convert(Context, frame->common_draw_attlists_, drawing);
-		
-		bool runState	= Context.get_run_state();
-		bool pState		= Context.get_paragraph_state();
-		
-		Context.set_run_state(false);	
-		Context.set_paragraph_state(false);	
-		
-		std::wostream & strm = Context.output_stream();		
-		
-		Context.add_new_run(_T(""));
-		
-		docx_serialize(strm, drawing);
-		
-		Context.finish_run();
-		
-		Context.set_run_state(runState);
-		Context.set_paragraph_state(pState);		
+			bool & use_image_replace = Context.get_drawing_context().get_use_image_replace();
+			use_image_replace = true;
+		}
 	}
     catch(...)
     {

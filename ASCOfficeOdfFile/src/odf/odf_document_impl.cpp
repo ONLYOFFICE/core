@@ -32,6 +32,7 @@
 
 #include "templates.h"
 
+#include "math_elements.h"
 #include "paragraph_elements.h"
 #include "text_elements.h"
 

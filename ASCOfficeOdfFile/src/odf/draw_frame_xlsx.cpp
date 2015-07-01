@@ -229,23 +229,23 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 		const office_element *contentSubDoc = objectSubDoc.get_impl()->get_content();
 		if (!contentSubDoc)return;
 
-		chart_build chartBuild;
+		chart_build objectBuild;
 
-		process_build_chart process_build_chart_(chartBuild,objectSubDoc.odf_context().styleContainer(),objectSubDoc.odf_context().drawStyles() );
-        contentSubDoc->accept(process_build_chart_); 
+		process_build_chart process_build_object_(objectBuild,objectSubDoc.odf_context().styleContainer(),objectSubDoc.odf_context().drawStyles() );
+        contentSubDoc->accept(process_build_object_); 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //отображательная часть	
 
-		if (chartBuild.object_type_ == 1)//диаграмма
+		if (objectBuild.object_type_ == 1)//диаграмма
 		{		
 			const std::wstring href_draw = common_xlink_attlist_.href_.get_value_or(L"");
-			chartBuild.xlsx_convert(Context);
+			objectBuild.xlsx_convert(Context);
 			
 			Context.get_drawing_context().start_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 
 			Context.get_drawing_context().end_chart();		
 		}
-		if (chartBuild.object_type_ == 2)//текст
+		else if (objectBuild.object_type_ == 2)//текст (odt text)
 		{
 			Context.get_drawing_context().start_shape(2); 
 			Context.get_text_context().start_drawing_content();
@@ -253,7 +253,7 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 			//сменить контекст с главного на другой ... проблема со стилями!!
 			Context.get_text_context().set_local_styles_container(&objectSubDoc.odf_context().styleContainer());
 
-			chartBuild.office_text_->xlsx_convert(Context);
+			objectBuild.xlsx_convert(Context);
 			
 			std::wstring text_content_ = Context.get_text_context().end_drawing_content();
 			Context.get_text_context().set_local_styles_container(NULL);//вытираем вручную ...
@@ -263,6 +263,11 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 				Context.get_drawing_context().set_property(_property(L"text-content",text_content_));
 			}
 			Context.get_drawing_context().end_shape();		
+		}
+		else
+		{
+			//временно - замещающая картинка(если она конечно присутствует)
+			Context.get_drawing_context().set_use_image_replacement();
 		}
 	
 	}
@@ -274,7 +279,11 @@ void draw_object::xlsx_convert(oox::xlsx_conversion_context & Context)
 void draw_object_ole::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 	//временно - замещающая картинка(если она конечно присутствует)
-	Context.get_drawing_context().start_object_ole();
+	//Context.get_drawing_context().start_object_ole();
+
+	Context.get_drawing_context().set_use_image_replacement();
+
+	//Context.get_drawing_context().end_object_ole();
 }
 }
 }

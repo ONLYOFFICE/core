@@ -196,6 +196,11 @@ class CSvmFile : virtual public IMetaFileBase
 	void Read_META_TRANSPARENT();
 	void Read_META_FLOATTRANSPARENT();
 
+	void Read_META_SECTRECTCLIPREGION();
+	void Read_META_SECTREGIONCLIPREGION();
+
+	void Read_META_STRETCHTEXT();
+
 	void Read_META_POLYPOLYGON(std::vector<TSvmPolygon> & polygons, std::vector<TSvmPolygon> & complexPolygons);
 
 	

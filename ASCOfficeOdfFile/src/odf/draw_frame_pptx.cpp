@@ -259,23 +259,23 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		}
 
 
-		chart_build chartBuild;
+		chart_build objectBuild;
 
-		process_build_chart process_build_chart_(chartBuild,objectSubDoc.odf_context().styleContainer(),objectSubDoc.odf_context().drawStyles());
-        contentSubDoc->accept(process_build_chart_); 
+		process_build_chart process_build_object_(objectBuild, objectSubDoc.odf_context().styleContainer(), objectSubDoc.odf_context().drawStyles());
+        contentSubDoc->accept(process_build_object_); 
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //отображательная часть	
 
-		if (chartBuild.object_type_ == 1)//диаграмма
+		if (objectBuild.object_type_ == 1)//диаграмма
 		{		
 			const std::wstring href_draw = common_xlink_attlist_.href_.get_value_or(L"");
-			chartBuild.pptx_convert(Context);
+			objectBuild.pptx_convert(Context);
 			
 			Context.get_slide_context().start_chart(href_draw); // в рисовательной части только место объекта, рамочки ... и релсы 
 			Context.get_slide_context().end_chart();		
 		}
-		if (chartBuild.object_type_ == 2)//текст
+		else if (objectBuild.object_type_ == 2)//odt текст
 		{
 			Context.get_slide_context().start_shape(2); 
 			Context.get_text_context().start_object();
@@ -283,7 +283,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 			//сменить контекст с главного на другой ... проблема со стилями!!
 			Context.get_text_context().set_local_styles_container(&objectSubDoc.odf_context().styleContainer());
 
-			chartBuild.office_text_->pptx_convert(Context);
+			objectBuild.pptx_convert(Context);
 			
 			std::wstring text_content_ = Context.get_text_context().end_object();
 			Context.get_text_context().set_local_styles_container(NULL);//вытираем вручную ...
@@ -297,7 +297,7 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 		else
 		{
 			//временно - замещающая картинка(если она конечно присутствует)
-			Context.get_slide_context().start_object_ole();
+			Context.get_slide_context().set_use_image_replacement();
 		}
 	
 	}
@@ -310,11 +310,13 @@ void draw_object::pptx_convert(oox::pptx_conversion_context & Context)
 void draw_object_ole::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	//объект бин в embeddings
+	//Context.get_slide_context().start_object_ole();
 	//распознать тип по guid???
 
-
 	//временно - замещающая картинка(если она конечно присутствует)
-	Context.get_slide_context().start_object_ole();
+	Context.get_slide_context().set_use_image_replacement();
+
+	//Context.get_slide_context().end_object_ole();
 }
 
 }

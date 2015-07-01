@@ -21,6 +21,7 @@
 #include "office_body.h"
 #include "office_chart.h"
 #include "office_text.h"
+#include "math_elements.h"
 #include "table.h"
 
 namespace cpdoccore { 
@@ -37,17 +38,17 @@ struct class_type_pair
 
 static const class_type_pair class_type_str[] = 
 {
-    {chart::chart_line, L"chart:line"},
-    {chart::chart_area, L"chart:area"},
-    {chart::chart_circle, L"chart:circle"},
-    {chart::chart_ring, L"chart:ring"},
-    {chart::chart_scatter, L"chart:scatter"},
-    {chart::chart_radar, L"chart:radar"},
-    {chart::chart_bar, L"chart:bar"},
-    {chart::chart_stock, L"chart:stock"},
-    {chart::chart_bubble, L"chart:bubble"},
-    {chart::chart_surface, L"chart:surface"},
-    {chart::chart_gantt, L"chart:gantt"},
+    {chart::chart_line		, L"chart:line"},
+    {chart::chart_area		, L"chart:area"},
+    {chart::chart_circle	, L"chart:circle"},
+    {chart::chart_ring		, L"chart:ring"},
+    {chart::chart_scatter	, L"chart:scatter"},
+    {chart::chart_radar		, L"chart:radar"},
+    {chart::chart_bar		, L"chart:bar"},
+    {chart::chart_stock		, L"chart:stock"},
+    {chart::chart_bubble	, L"chart:bubble"},
+    {chart::chart_surface	, L"chart:surface"},
+    {chart::chart_gantt		, L"chart:gantt"},
 	{chart::chart_filled_radar, L"chart:filled-radar"}
 };
 
@@ -80,7 +81,8 @@ public:
 		//target_table_(0/*targetTable*/),
 		columns_count_(0),
 		object_type_(0),
-		office_text_(NULL)
+		office_text_(NULL),
+		math_math_(NULL)
     {
 	}
 	
@@ -117,9 +119,10 @@ public:
     double width_pt_;
     double height_pt_;
 
-	int object_type_;
+	int			object_type_;
 	office_text *office_text_;
-  
+ 	math_math	*math_math_;
+ 
 	std::wstring str_class_;  
 	chart::class_type class_;  
 	std::wstring style_name_;
@@ -176,7 +179,9 @@ class process_build_chart : public base_visitor,
     public visitor<office_chart>,
     
 	public visitor<office_text>,
-    
+
+ 	public const_visitor<math_math>,
+   
     public const_visitor<chart_chart>,
 
     public const_visitor<chart_title>,
@@ -246,6 +251,7 @@ public:
 	virtual void visit(office_body& val);
     virtual void visit(office_chart& val);
     virtual void visit(office_text& val);
+    virtual void visit(const math_math& val);
     virtual void visit(const chart_chart& val);
 	virtual void visit(const chart_title& val);
     virtual void visit(const chart_subtitle& val);

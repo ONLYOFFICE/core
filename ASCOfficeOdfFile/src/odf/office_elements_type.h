@@ -160,6 +160,8 @@ enum ElementType
     typeOfficeDocumentMeta,
     typeOfficeDocumentSettings,
 
+	typeMathMath,
+
 	typeManifest,
 	typeManifestEntry,
 	typeManifestEncryptionData,

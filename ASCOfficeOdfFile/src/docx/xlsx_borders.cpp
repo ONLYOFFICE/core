@@ -27,13 +27,13 @@ std::wstring convert_border_style(const odf_types::border_style& borderStyle)
    
 	if (borderStyle.initialized())
     {
-        if (borderStyle.get_style() == L"none" || borderStyle.get_style().empty())
+        if (borderStyle.get_style() == odf_types::border_style::none || borderStyle.is_none())
            retVal = L"none";
-        else if (borderStyle.get_style() == L"double")
+        else if (borderStyle.get_style() == odf_types::border_style::double_)
             retVal = L"double";
-        else if (borderStyle.get_style() == L"dotted")
+        else if (borderStyle.get_style() == odf_types::border_style::dotted)
             retVal = L"dotted";
-        else if (borderStyle.get_style() == L"dashed")
+        else if (borderStyle.get_style() == odf_types::border_style::dashed)
             retVal = L"dashed";
         else
 

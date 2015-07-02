@@ -202,34 +202,18 @@ void convert_border_style(const odf_types::border_style& borderStyle, pptx_borde
     
 	if (borderStyle.initialized())
     {
-        if (borderStyle.get_style() == L"none" || borderStyle.get_style().empty())
-		{
-			border.present = false;
-		}
-        else if (borderStyle.get_style() == L"double")
-		{
-            border.cmpd = L"dbl";
-		}
-        else if (borderStyle.get_style() == L"dotted")
-		{
-            border.prstDash = L"dot";
-		}
-        else if (borderStyle.get_style() == L"dashed")
-		{
-             border.prstDash = L"dash";
-		}
-        else if (borderStyle.get_style() == L"long-dash")
-		{
-             border.prstDash = L"lgDash";
-		}
-         else if (borderStyle.get_style() == L"dot-dash")
-		{
-             border.prstDash = L"dashDot";
-		}
-         else if (borderStyle.get_style() == L"dot-dot-dash")
-		{
-             border.prstDash = L"lgDashDotDot";
-		}
+        if (borderStyle.is_none()) border.present = false;
+
+        switch(borderStyle.get_style())
+        {
+            case odf_types::border_style::none:              border.present = false;            break;
+            case odf_types::border_style::double_:           border.cmpd = L"dbl";              break;
+            case odf_types::border_style::dotted:            border.prstDash = L"dot";          break;
+            case odf_types::border_style::dashed:            border.prstDash = L"dash";         break;
+            case odf_types::border_style::long_dash:         border.prstDash = L"lgDash";       break;
+            case odf_types::border_style::dot_dash:          border.prstDash = L"dashDot";      break;
+            case odf_types::border_style::dot_dot_dash:      border.prstDash = L"lgDashDotDot"; break;
+        }
 	}
 }
 //dbl (Double Lines) Double lines of equal width

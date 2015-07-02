@@ -259,6 +259,12 @@ void oox_serialize_shape(std::wostream & strm, _oox_drawing & val)
 		_CP_OPT(int) iVal;
 		odf_reader::GetProperty(val.additional, L"odf-custom-draw-index",iVal);
 		if (iVal)shapeType = _OO_OOX_custom_shapes[*iVal].oox;	
+
+		if (shapeType == L"textBox")
+		{
+			val.sub_type = 1;
+			shapeType = L"rect";
+		}
 	}
 	else if (val.sub_type<9 && val.sub_type>=0)
 	{

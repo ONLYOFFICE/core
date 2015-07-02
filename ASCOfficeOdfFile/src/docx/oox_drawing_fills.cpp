@@ -115,7 +115,16 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
 					CP_XML_ATTR(L"b", static_cast<size_t>(val.bitmap->cropRect[3]*1000));
 				}
 			}
-			if (val.bitmap->bStretch)
+			if (val.bitmap->bTile)
+			{
+				CP_XML_NODE(L"a:tile")
+				{
+					//tx="0" ty="0" sx="100000" sy="100000"
+					CP_XML_ATTR(L"flip","none");
+					CP_XML_ATTR(L"algn",L"ctr");
+				}
+			}
+			else if (val.bitmap->bStretch)
 			{			
 				CP_XML_NODE(L"a:stretch")
 				{
@@ -125,16 +134,7 @@ void oox_serialize_bitmap_fill(std::wostream & strm, const _oox_fill & val)
 					}
 
 				}
-			}
-			if (val.bitmap->bTile)
-			{
-				CP_XML_NODE(L"a:tile")
-				{
-					//tx="0" ty="0" sx="100000" sy="100000"
-					CP_XML_ATTR(L"flip","none");
-					CP_XML_ATTR(L"algn",L"ctr");
-				}
-			}		
+			}	
 
 		}
 

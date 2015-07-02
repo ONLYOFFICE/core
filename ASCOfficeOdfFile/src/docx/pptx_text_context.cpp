@@ -143,15 +143,15 @@ void pptx_text_context::Impl::start_paragraph(const std::wstring & styleName)
 {
     if (paragraphs_cout_++ > 0)
     {	
-		if (paragraph_style_name_ != styleName)
-		{
-			dump_paragraph();
-		}
-		else if (in_list_ == false || in_comment == true)
+		if (in_list_ == false || in_comment == true)
 		{
 		// конец предыдущего абзаца и начало следующего
 		//text_ << L"&#10;";
 			text_ << L"\n"; 
+		}
+		else/* (paragraph_style_name_ != styleName)*/
+		{
+			dump_paragraph();
 		}
 	}else
 	{
@@ -181,8 +181,8 @@ void pptx_text_context::Impl::start_span(const std::wstring & styleName)//кусок 
 
 void pptx_text_context::Impl::end_span() 
 {
-    dump_run();
-    span_style_name_ = L"";
+    //dump_run();
+    //span_style_name_ = L"";
 	
 	in_span = false;
 }
@@ -505,22 +505,26 @@ void pptx_text_context::Impl::dump_run()
 	if (process_layouts_) return; 
 	
 	const std::wstring content = xml::utils::replace_text_to_xml(text_.str());
-	if (content.length() <1 &&  span_style_name_.length()<1) return ;     
+	//if (content.length() <1 &&  span_style_name_.length()<1) return ;      ... провеить с пустыми строками нужны ли  ...
 
-	CP_XML_WRITER(run_)
-    {
-		CP_XML_NODE(L"a:r")
+	if (content .length() > 0)
+	{
+		
+		CP_XML_WRITER(run_)
 		{
-			write_rPr(CP_XML_STREAM());   
-
-			CP_XML_NODE(L"a:t")
+			CP_XML_NODE(L"a:r")
 			{
-				//CP_XML_ATTR(L"xml:space", L"preserve"); 
-				CP_XML_STREAM() << content;
-			}
-         }
-        text_.str(std::wstring());			
-    }
+				write_rPr(CP_XML_STREAM());   
+
+				CP_XML_NODE(L"a:t")
+				{
+					//CP_XML_ATTR(L"xml:space", L"preserve"); 
+					CP_XML_STREAM() << content;
+				}
+			 }
+			text_.str(std::wstring());			
+		}
+	}
 	hyperlink_hId =L"";
 }
 

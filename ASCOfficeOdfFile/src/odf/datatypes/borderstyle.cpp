@@ -35,6 +35,8 @@ border_style::border_style(const border_style & Value)
     length_ = Value.get_length();
     style_ = Value.get_style();
 
+	none_ = Value.is_none();
+
     initialized_ = true;
 }
 
@@ -49,6 +51,7 @@ border_style::border_style(const std::wstring & Value) : initialized_(false), no
     }
     else
     {
+		none_ = false;
 
         std::vector< std::wstring > splitted;
         boost::algorithm::split(splitted, Value, boost::algorithm::is_any_of(L" \t"), boost::algorithm::token_compress_on);
@@ -92,6 +95,8 @@ border_style::border_style(const color & color_,  const type & style_, const len
 
     if (this->style_ == none)
         none_ = true;
+	else 
+		none_ = false;
 
     initialized_ = true;
 }

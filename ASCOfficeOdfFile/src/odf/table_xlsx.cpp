@@ -50,20 +50,31 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 ///обработка чтилей дл€ роу - 
 	size_t Default_Cell_style_in_row_ = 0; 
 
-    const std::wstring styleName = table_table_row_attlist_.table_style_name_.get_value_or( style_ref(L"") ).style_name();
+    const std::wstring rowStyleName = table_table_row_attlist_.table_style_name_.get_value_or( style_ref(L"") ).style_name();
     const std::wstring defaultCellStyleName = table_table_row_attlist_.table_default_cell_style_name_.get_value_or( style_ref(L"") ).style_name();
 
 	style_instance * instStyle_CellDefault = 
 				Context.root()->odf_context().styleContainer().style_by_name(defaultCellStyleName, style_family::TableCell,false/*false*/);
+	
 	style_table_cell_properties * prop_CellDefault = NULL;
 	
-	if ((instStyle_CellDefault) && (instStyle_CellDefault->content())) prop_CellDefault = instStyle_CellDefault->content()->get_style_table_cell_properties();
+	if ((instStyle_CellDefault) && (instStyle_CellDefault->content())) 
+		prop_CellDefault = instStyle_CellDefault->content()->get_style_table_cell_properties();
 //кастомные настройки стил€ €чеек в данном роу
-	if (prop_CellDefault)
-		//то есть проверим что есть вообще кастом дл€ роу- а потом уже посчитаем стиль
+
+	if (prop_CellDefault) //проверим что есть вообще кастом дл€ роу- а потом уже посчитаем стиль
 	{
 		odf_reader::style_table_cell_properties_attlist	cellFormatProperties	= calc_table_cell_properties(instStyle_CellDefault);
-		Default_Cell_style_in_row_ = Context.get_style_manager().xfId(NULL,NULL, &cellFormatProperties, NULL, L"",true);	
+		Default_Cell_style_in_row_ = Context.get_style_manager().xfId(NULL,NULL, &cellFormatProperties, NULL, L"", true);	
+	}
+	else //стил€ €чеек дл€ строки нет гл€нем что там внутри строки в последней €чейке
+	{
+		//возьмем стиль из последнего cell если он повтор€ющийс€ (тогда и €чейки вхолостую ненадо писать)
+		int ind_last_cell = content_.size()-1;
+		table_table_cell *last_cell = NULL;
+		if (ind_last_cell > 0)
+			last_cell = dynamic_cast<table_table_cell *>(content_[ind_last_cell].get());
+
 	}
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 	bool skip_next_row = false;
@@ -75,7 +86,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     do 
     {        
-        odf_reader::style_instance * rowStyle = odfContext.styleContainer().style_by_name(styleName, odf_types::style_family::TableRow,false/*false*/);
+        odf_reader::style_instance * rowStyle = odfContext.styleContainer().style_by_name(rowStyleName, odf_types::style_family::TableRow,false/*false*/);
         if (!rowStyle)
             break;
 
@@ -110,7 +121,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     for (unsigned int i = 0; i < table_table_row_attlist_.table_number_rows_repeated_; ++i)
     {
-        Context.start_table_row(styleName, defaultCellStyleName);
+        Context.start_table_row(rowStyleName, defaultCellStyleName);
         
         if (!skip_next_row)
         {
@@ -148,7 +159,7 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
                         CP_XML_ATTR(L"customHeight", L"true");
                         CP_XML_ATTR(L"ht", ht);                                            
                     }
-					if (Default_Cell_style_in_row_>0)
+					if (Default_Cell_style_in_row_ > 0)
 					{
 						CP_XML_ATTR(L"customFormat", 1);
 						CP_XML_ATTR(L"s", Default_Cell_style_in_row_ );
@@ -390,8 +401,8 @@ void table_table_column::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 							size_t style_ = Context.get_style_manager().xfId(NULL,NULL, &cellFormatProperties, NULL, L"", set_default);	
 
-							//if (style_>=0)
-							if (set_default)
+							if (style_>=0)
+							//if (set_default)
 								CP_XML_ATTR(L"style", style_ );
 						}
 					}
@@ -541,10 +552,10 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 
     for (unsigned int r = 0; r < table_table_cell_attlist_.table_number_columns_repeated_; ++r)
     {
-        Context.start_table_cell(formula,
-            table_table_cell_attlist_extra_.table_number_columns_spanned_ - 1,
-            table_table_cell_attlist_extra_.table_number_rows_spanned_ - 1
-            );
+        Context.start_table_cell (	formula,
+									table_table_cell_attlist_extra_.table_number_columns_spanned_ - 1,
+									table_table_cell_attlist_extra_.table_number_rows_spanned_ - 1
+									);
 
         if (skip_next_cell)break;
 
@@ -767,8 +778,8 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 				else
 				{
 					empty_cell++;
-					if (empty_cell > 4 && table_table_cell_attlist_.table_number_columns_repeated_>100) 
-					{
+					if ((empty_cell > 4 && table_table_cell_attlist_.table_number_columns_repeated_>299) || (cellStyle == NULL)) 
+					{//пишем простыню только если задан стиль тока дл€ этих €чеек
 						skip_next_cell = true;
 					}
 				}

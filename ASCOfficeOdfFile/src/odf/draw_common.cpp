@@ -148,7 +148,7 @@ _CP_OPT(border_widths) GetBorderLineWidths(const graphic_format_properties & gra
 }
 _CP_OPT(length) GetConsistentBorderValue(const graphic_format_properties & graphicProperties, const border_style & borderStyle, BorderSide borderSide)
 {
-    if (boost::algorithm::contains(borderStyle.get_style(), L"double"))
+    if ((borderStyle.get_style() ==  border_style::double_))
     {
         _CP_OPT(border_widths) borderWidths = GetBorderLineWidths(graphicProperties, borderSide);
         if (borderWidths)

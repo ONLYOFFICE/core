@@ -6,15 +6,40 @@ namespace cpdoccore { namespace odf_types {
 
 std::wostream & operator << (std::wostream & _Wostream, const border_style & borderStyle)
 {
-	_Wostream << borderStyle.set_border_style_;
+    if (borderStyle.is_none())
+    {
+        _Wostream << std::wstring(L"none");
+        return _Wostream;
+    }
 
-    return _Wostream;    
+    _Wostream << borderStyle.get_length();
+
+    switch (borderStyle.get_style())
+    {
+        case border_style::none:        _Wostream << L" none "; break;
+        case border_style::double_:     _Wostream << L" double "; break;
+        case border_style::dotted:      _Wostream << L" dotted "; break;
+        case border_style::dashed:      _Wostream << L" dashed "; break;
+        case border_style::dot_dashed:  _Wostream << L" dot-dashed "; break;
+        case border_style::solid:
+        default:
+            _Wostream <<  L" solid "; break;
+    }
+    _Wostream << borderStyle.get_color();
+    return _Wostream;
+}
+
+border_style::border_style(const border_style & Value)
+{
+    color_ = Value.get_color();
+    length_ = Value.get_length();
+    style_ = Value.get_style();
+
+    initialized_ = true;
 }
 
 border_style::border_style(const std::wstring & Value) : initialized_(false), none_(false)
 {
-	set_border_style_ = Value;
-
 	std::wstring tmp =  boost::algorithm::trim_copy(Value);
     boost::algorithm::to_lower(tmp);
     
@@ -34,7 +59,13 @@ border_style::border_style(const std::wstring & Value) : initialized_(false), no
                 length_ = length::parse(splitted[0]);
 
             if (splitted.size() > 1)
-                style_ = splitted[1];
+            {
+                if (splitted[1] == L"solid")        style_ = solid;
+                if (splitted[1] == L"double")       style_ = double_;
+                if (splitted[1] == L"dotted")       style_ = dotted;
+                if (splitted[1] == L"dashed")       style_ = dashed;
+                if (splitted[1] == L"dot-dashed")   style_ = dot_dashed;
+            }
 
             if (splitted.size() > 2)
                 color_ = color::parse(splitted[2]);
@@ -49,24 +80,20 @@ border_style::border_style(const std::wstring & Value) : initialized_(false), no
 
 border_style border_style::parse( const std::wstring & Value)
 {
-	return border_style(Value);
+    return border_style(Value);
+
 }
 
-border_style::border_style(const color & color_,  const std::wstring & style_, const length & length_)
+border_style::border_style(const color & color_,  const type & style_, const length & length_)
 {
 	this->color_	= color_;
 	this->style_	= style_;
 	this->length_	= length_;
 
-	std::wstringstream s;
-	
-	s << length_;
-	s << std::wstring(L" ");
-	s << style_;
-	s << std::wstring(L" ");
-	s << color_;
-	
-	set_border_style_ = s.str();
+    if (this->style_ == none)
+        none_ = true;
+
+    initialized_ = true;
 }
 
 

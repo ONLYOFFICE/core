@@ -43,29 +43,21 @@ std::wstring process_border(border_style & borderStyle,
         if (borderPadding)
             w_space = boost::lexical_cast<std::wstring>((int)(borderPadding->get_value_unit(length::pt) + 0.5) );
 
-        const std::wstring borderStyleStr = borderStyle.get_style();
-        if (szInt == 0)
-            w_val = L"none";
-        else if (borderStyleStr == L"solid" 
-            || borderStyleStr == L"single")
-            w_val = L"single";
-        else if (borderStyleStr == L"double")
-            w_val = L"double";
-        else if (borderStyleStr == L"dotted")
-            w_val = borderStyleStr;
-        else if (borderStyleStr == L"dashed")
-            w_val = borderStyleStr;
-        else if (borderStyleStr == L"groove")
-            w_val = L"thinThickMediumGap";
-        else if (borderStyleStr == L"ridge")
-            w_val = L"thickThinMediumGap";
-        else if (borderStyleStr == L"inset")
-            w_val = L"inset";
-        else if (borderStyleStr == L"outset")
-            w_val = L"outset";
-        else if (borderStyleStr == L"hidden")
-            w_val = L"nil";
-
+        switch(borderStyle.get_style())
+        {
+        case border_style::none:        w_val = L"none";    break;
+        case border_style::solid:
+        case border_style::single:
+                                        w_val = L"single";  break;
+        case border_style::double_:     w_val = L"double";  break;
+        case border_style::dotted:      w_val = L"dotted";  break;
+        case border_style::dashed:      w_val = L"dashed";  break;
+        case border_style::groove:      w_val = L"thinThickMediumGap";  break;
+        case border_style::ridge:       w_val = L"thickThinMediumGap";  break;
+        case border_style::inset:       w_val = L"inset";  break;
+        case border_style::outset:      w_val = L"outset";  break;
+        case border_style::hidden:      w_val = L"nil";     break;
+        }
     }
     std::wstring res;
     if (!w_val.empty())

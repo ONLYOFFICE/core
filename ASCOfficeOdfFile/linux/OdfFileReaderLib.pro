@@ -265,7 +265,8 @@ SOURCES += \
     ../src/common/CPColorUtils.cpp \
     ../src/common/CPString.cpp \
     ../src/common/readdocelement.cpp \
-    ../src/ConvertOO2OOX.cpp
+    ../src/ConvertOO2OOX.cpp \
+    ../src/odf/math_elements.cpp
 
 HEADERS += \
     ../formulasconvert/formulasconvert.h \
@@ -526,7 +527,8 @@ HEADERS += \
     ../include/cpdoccore/xml/utils.h \
     ../include/cpdoccore/xml/xmlchar.h \
     ../include/cpdoccore/xml/xmlelement.h \
-    ../src/ConvertOO2OOX.h
+    ../src/ConvertOO2OOX.h \
+    ../src/odf/math_elements.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

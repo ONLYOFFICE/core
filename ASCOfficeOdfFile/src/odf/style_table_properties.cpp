@@ -390,7 +390,7 @@ void insert_cell_border(oox::docx_conversion_context & Context,
 			{
 				w_color = BorderStyle->get_color().get_hex_value();
 
-				if (BorderStyle->get_style() == L"double")
+                if (BorderStyle->get_style() == border_style::double_)
 				{
 					w_val = L"double";
 					if (BorderWidths)
@@ -468,7 +468,7 @@ void insert_cell_border(oox::pptx_conversion_context & Context,
 
             w_color = borderStyle.get_color().get_hex_value();
 
-            if (borderStyle.get_style() == L"double")
+            if (borderStyle.get_style() == border_style::double_)
             {
                 w_val = L"double";
                 if (BorderWidths)

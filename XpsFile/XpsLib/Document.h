@@ -1,5 +1,5 @@
-#ifndef _XPS_XPSLIB_FOLDER_H
-#define _XPS_XPSLIB_FOLDER_H
+#ifndef _XPS_XPSLIB_DOCUMENT_H
+#define _XPS_XPSLIB_DOCUMENT_H
 
 #include "FontList.h"
 #include "Page.h"
@@ -15,11 +15,11 @@
 
 namespace XPS
 {
-	class Folder
+	class CDocument
 	{
 	public:
-		Folder(CFontManager* pFontManager);
-		~Folder();
+		CDocument(CFontManager* pFontManager);
+		~CDocument();
 
 		bool ReadFromPath(const std::wstring& wsPath);
 		int  GetPageCount() const;
@@ -36,4 +36,4 @@ namespace XPS
 	};
 }
 
-#endif //_XPS_XPSLIB_FOLDER_H
+#endif //_XPS_XPSLIB_DOCUMENT_H

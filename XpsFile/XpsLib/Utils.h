@@ -4,6 +4,11 @@
 #include <string>
 #include <vector>
 
+namespace XmlUtils
+{
+	class CXmlLiteReader;
+}
+
 namespace XPS
 {
 	bool   IsAlpha(wchar_t wChar);
@@ -19,6 +24,8 @@ namespace XPS
 	std::wstring RemoveNamespace(const std::wstring& wsString);
 
 	std::vector<std::vector<std::wstring>> Split(const std::wstring& wsString, wchar_t wDelim1, wchar_t wDelim2);
+
+	void ReadAttribute(XmlUtils::CXmlLiteReader& oReader, const wchar_t* wsAttrName, std::wstring& wsAttr);
 }
 
 #endif // _XPS_XPSLIB_UTILS_H

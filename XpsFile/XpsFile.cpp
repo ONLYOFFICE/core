@@ -1,11 +1,12 @@
 #include "XpsFile.h"
-#include "XpsLib/Folder.h"
+#include "XpsLib/Document.h"
 
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/fontengine/FontManager.h"
 #include "../DesktopEditor/fontengine/ApplicationFonts.h"
 #include "../DesktopEditor/graphics/GraphicsRenderer.h"
+#include "../PdfWriter/PdfRenderer.h"
 
 #include "../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 
@@ -13,11 +14,6 @@ using namespace XPS;
 
 CXpsFile::CXpsFile(CApplicationFonts* pAppFonts)
 {
-	std::wstring wsTemp = NSFile::CFileBinary::GetTempPath();
-	wsTemp += L"/XPS/";
-	m_wsTempDirectory = wsTemp;
-	NSDirectory::CreateDirectory(m_wsTempDirectory);
-
 	m_pAppFonts = pAppFonts;
 
 	// Создаем менеджер шрифтов с собственным кэшем
@@ -25,23 +21,35 @@ CXpsFile::CXpsFile(CApplicationFonts* pAppFonts)
 	CFontsCache* pMeasurerCache = new CFontsCache();
 	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
 	m_pFontManager->SetOwnerCache(pMeasurerCache);
+
+	m_wsTempFolder = L"";
+	SetTempFolder(NSFile::CFileBinary::GetTempPath());
 }
 CXpsFile::~CXpsFile()
 {
+	if (L"" != m_wsTempFolder)
+		NSDirectory::DeleteDirectory(m_wsTempFolder);
+
 	Close();
-	NSDirectory::DeleteDirectory(m_wsTempDirectory);
 	RELEASEINTERFACE(m_pFontManager);
 }
-std::wstring CXpsFile::GetTempDirectory() const
+std::wstring CXpsFile::GetTempFolder() const
 {
-	return m_wsTempDirectory;
+	return m_wsTempFolder;
 }
-void         CXpsFile::SetTempDirectory(const std::wstring& wsDirectory)
+void         CXpsFile::SetTempFolder(const std::wstring& wsPath)
 {
-	NSDirectory::DeleteDirectory(m_wsTempDirectory);
-	m_wsTempDirectory = wsDirectory;
-	m_wsTempDirectory += L"/XPS/";
-	NSDirectory::CreateDirectory(m_wsTempDirectory);
+	if (L"" != m_wsTempFolder)
+		NSDirectory::DeleteDirectory(m_wsTempFolder);
+
+	int nCounter = 0;
+	m_wsTempFolder = wsPath + L"\\XPS\\";
+	while (NSDirectory::Exists(m_wsTempFolder))
+	{
+		m_wsTempFolder = wsPath + L"\\XPS" + std::to_wstring(nCounter) + L"\\";
+		nCounter++;
+	}
+	NSDirectory::CreateDirectory(m_wsTempFolder);
 }
 bool         CXpsFile::LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXmlOptions)
 {
@@ -49,52 +57,52 @@ bool         CXpsFile::LoadFromFile(const std::wstring& wsSrcFileName, const std
 
 	// Распаковываем Zip-архив в темповую папку
 	COfficeUtils oUtils(NULL);
-	if (S_OK != oUtils.ExtractToDirectory(wsSrcFileName, m_wsTempDirectory, NULL, 0))
+	if (S_OK != oUtils.ExtractToDirectory(wsSrcFileName, m_wsTempFolder, NULL, 0))
 		return false;
 
-	m_pFolder = new XPS::Folder(m_pFontManager);
-	if (!m_pFolder)
+	m_pDocument = new XPS::CDocument(m_pFontManager);
+	if (!m_pDocument)
 		return false;
 
-	std::wstring wsPath = m_wsTempDirectory + L"/";
-	m_pFolder->ReadFromPath(wsPath);
+	std::wstring wsPath = m_wsTempFolder + L"/";
+	m_pDocument->ReadFromPath(wsPath);
 
 	return true;
 }
 void         CXpsFile::Close()
 {
-	if (m_pFolder)
+	if (m_pDocument)
 	{
-		m_pFolder->Close();
-		delete m_pFolder;
-		m_pFolder = NULL;
+		m_pDocument->Close();
+		delete m_pDocument;
+		m_pDocument = NULL;
 	}
 }
 int          CXpsFile::GetPagesCount()
 {
-	if (!m_pFolder)
+	if (!m_pDocument)
 		return 0;
 
-	return m_pFolder->GetPageCount();
+	return m_pDocument->GetPageCount();
 }
 void         CXpsFile::GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
 {
 	int nW = 0, nH = 0;
 
-	if (m_pFolder)
-		m_pFolder->GetPageSize(nPageIndex, nW, nH);
+	if (m_pDocument)
+		m_pDocument->GetPageSize(nPageIndex, nW, nH);
 
 	*pdWidth  = nW * 25.4 / 96;
 	*pdHeight = nH * 25.4 / 96;
-	*pdDpiX   = 96;
-	*pdDpiY   = 96;
+	*pdDpiX   = 25.4;
+	*pdDpiY   = 25.4;
 }
 void         CXpsFile::DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak)
 {
-	if (!m_pFolder)
+	if (!m_pDocument)
 		return;
 
-	m_pFolder->DrawPage(nPageIndex, pRenderer, pBreak);
+	m_pDocument->DrawPage(nPageIndex, pRenderer, pBreak);
 }
 void         CXpsFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType)
 {
@@ -134,4 +142,36 @@ void         CXpsFile::ConvertToRaster(int nPageIndex, const std::wstring& wsDst
 
 	oFrame.SaveFile(wsDstPath, nImageType);
 	RELEASEINTERFACE(pFontManager);
+}
+void         CXpsFile::ConvertToPdf(const std::wstring& wsPath)
+{
+	CPdfRenderer oPdf(m_pAppFonts);
+	bool bBreak = false;
+
+	int nPagesCount = GetPagesCount();
+	for (int nPageIndex = 0; nPageIndex < nPagesCount; nPageIndex++)
+	{
+		oPdf.NewPage();
+		oPdf.BeginCommand(c_nPageType);
+
+		double dPageDpiX, dPageDpiY;
+		double dWidth, dHeight;
+		GetPageInfo(nPageIndex, &dWidth, &dHeight, &dPageDpiX, &dPageDpiY);
+
+		dWidth  *= 25.4 / dPageDpiX;
+		dHeight *= 25.4 / dPageDpiY;
+
+		oPdf.put_Width(dWidth);
+		oPdf.put_Height(dHeight);
+
+		DrawPageOnRenderer(&oPdf, nPageIndex, &bBreak);
+
+		oPdf.EndCommand(c_nPageType);
+
+#ifdef _DEBUG
+		printf("page %d / %d\n", nPageIndex + 1, nPagesCount);
+#endif
+	}
+
+	oPdf.SaveToFile(wsPath);
 }

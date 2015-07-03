@@ -2,6 +2,9 @@
 #include <stdio.h>
 #include "../../DesktopEditor/common/String.h"
 #include "../../DesktopEditor/graphics/structures.h"
+#include "Document.h"
+
+#include <ctime>
 
 #ifndef M_PI
 #define M_PI       3.14159265358979323846
@@ -150,35 +153,79 @@ namespace XPS
 		dCpY = GetDouble(arrElements[nPos + 2]);
 		nPos += 4;
 	}
-	Page::Page(const std::wstring& wsPagePath, const std::wstring& wsRootPath, CFontList* pFontList, CFontManager* pFontManager)
+	Page::Page(const std::wstring& wsPagePath, const std::wstring& wsRootPath, CFontList* pFontList, CFontManager* pFontManager, CDocument* pDocument)
 	{
 		m_wsPagePath   = wsPagePath;
 		m_wsRootPath   = wsRootPath;
 		m_pFontList    = pFontList;
 		m_pFontManager = pFontManager;
+		m_pDocument    = pDocument;
 	}
 	Page::~Page()
 	{
 	}
 	void Page::GetSize(int& nW, int& nH) const
 	{
-		XmlUtils::CXmlNode oNode;
+		XmlUtils::CXmlLiteReader oReader;
+		clock_t oBeginTime = clock();
 
-		if (!oNode.FromXmlFile(m_wsPagePath.c_str()))
+		if (!oReader.FromFile(m_wsPagePath))
 			return;
 
-		if (L"FixedPage" != oNode.GetName())
+		clock_t oEndTime = clock();
+		double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
+		printf("%S %fseconds\n", m_wsPagePath.c_str(), dElapsedSecs);
+
+		if (!oReader.ReadNextNode())
 			return;
-		
-		nW = XmlUtils::GetInteger(oNode.GetAttribute(L"Width"));
-		nH = XmlUtils::GetInteger(oNode.GetAttribute(L"Height"));
+
+		std::wstring wsName = oReader.GetName();
+		if (L"FixedPage" != wsName)
+			return;
+
+		ReadAttribute(oReader, L"Width", wsName);
+		nW = XmlUtils::GetInteger(wsName.c_str());
+
+		ReadAttribute(oReader, L"Height", wsName);
+		nH = XmlUtils::GetInteger(wsName.c_str());
 	}
 	void Page::Draw(IRenderer* pRenderer, bool* pbBreak)
 	{
-		XmlUtils::CXmlNode oNode;
+		XmlUtils::CXmlLiteReader oReader;
+
+		clock_t oBeginTime = clock();
+
+		if (!oReader.FromFile(m_wsPagePath.c_str()))
+			return;
+
+		clock_t oEndTime = clock();
+		double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
+		printf("%S %fseconds\n", m_wsPagePath.c_str(), dElapsedSecs);
+
+		if (!oReader.ReadNextNode())
+			return;
+
+		std::wstring wsNodeName = oReader.GetName();
+		if (L"FixedPage" != wsNodeName)
+			return;
+
+		CContextState oState;
+		DrawCanvas(oReader, pRenderer, &oState, pbBreak);
+
+
+
+
+		/*XmlUtils::CXmlNode oNode;
+
+
+		clock_t oBeginTime = clock();
 
 		if (!oNode.FromXmlFile(m_wsPagePath.c_str()))
 			return;
+
+		clock_t oEndTime = clock();
+		double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
+		printf("%S %fseconds\n", m_wsPagePath.c_str(), dElapsedSecs);
 
 		if (L"FixedPage" != oNode.GetName())
 			return;
@@ -197,7 +244,15 @@ namespace XPS
 					std::wstring wsPath = m_wsRootPath + wsXmlSource;
 
 					XmlUtils::CXmlNode oNodeSource;
+
+					clock_t oBeginTime = clock();
+
 					oNodeSource.FromXmlFile(wsPath.c_str());
+
+					clock_t oEndTime = clock();
+					double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
+					printf("%S %fseconds\n", wsPath.c_str(), dElapsedSecs);
+					
 					if (oNodeSource.IsValid())
 					{
 						XmlUtils::CXmlNodes arrNodes;
@@ -238,7 +293,171 @@ namespace XPS
 		}
 
 		DrawCanvas(oNode, pRenderer, &oState, pbBreak);
-		return;
+		return;*/
+	}
+	void Page::DrawCanvas(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState, bool* pbBreak)
+	{
+		std::wstring wsClip;
+		ReadAttribute(oReader, L"Clip", wsClip);
+		bool bClip = false;
+		if (L"" != wsClip)
+		{
+			std::wstring wsValue = pState->GetFigure(wsClip);
+			if (L"" != wsValue)
+				wsClip = wsValue;
+
+			bClip = true;
+			pRenderer->PathCommandStart();
+			pRenderer->BeginCommand(c_nClipType);
+			pRenderer->put_ClipMode(0);
+			pRenderer->BeginCommand(c_nPathType);
+
+			VmlToRenderer(wsClip, pRenderer);
+
+			pRenderer->EndCommand(c_nPathType);
+			pRenderer->EndCommand(c_nClipType);
+			pRenderer->PathCommandEnd();
+		}
+
+		std::wstring wsTransform;
+		ReadAttribute(oReader, L"RenderTransform", wsTransform);
+		bool bTransform = false;
+		if (L"" != wsTransform)
+		{
+			bTransform = true;
+			TransformToRenderer(wsTransform, pRenderer, pState);
+		}
+
+		if (oReader.IsEmptyNode())
+			return;
+
+		std::wstring wsNodeName;
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			wsNodeName = oReader.GetName();
+			wsNodeName = RemoveNamespace(wsNodeName);
+
+			if (L"FixedPage.Resources" == wsNodeName)
+			{
+				ReadPageResources(oReader, pRenderer, pState);
+			}
+			else if (L"Glyphs" == wsNodeName)
+			{
+				DrawGlyph(oReader, pRenderer, pState);
+			}
+			else if (L"Canvas" == wsNodeName)
+			{
+				DrawCanvas(oReader, pRenderer, pState, pbBreak);
+			}
+			else if (L"Canvas.RenderTransform" == wsNodeName)
+			{
+				if (!bTransform)
+				{
+					CanvasTransform(oReader, pRenderer, pState);
+					bTransform = true;
+				}
+			}
+			else if (L"Path" == wsNodeName)
+			{
+				DrawPath(oReader, pRenderer, pState);
+			}
+
+			if (NULL != pbBreak && *pbBreak)
+				return;
+		}		
+
+		if (bClip)
+		{
+			pRenderer->BeginCommand(c_nResetClipType);
+			pRenderer->EndCommand(c_nResetClipType);
+		}
+
+		if (bTransform)
+			ResetTransform(pRenderer, pState);
+	}
+	void Page::ReadPageResources(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState)
+	{
+		if (oReader.IsEmptyNode())
+			return;
+
+		std::wstring wsNodeName;
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			wsNodeName = oReader.GetName();
+			if (L"ResourceDictionary" == wsNodeName)
+			{
+				std::wstring wsSource;
+				ReadAttribute(oReader, L"Source", wsSource);
+				if (!wsSource.empty())
+				{
+					std::wstring wsPath = m_wsRootPath + wsSource;
+					
+					XmlUtils::CXmlLiteReader oSourceReader;
+
+					clock_t oBeginTime = clock();
+
+					if (!oSourceReader.FromFile(wsPath))
+						return;
+
+					std::wstring wsNodeText;
+					while (oSourceReader.ReadNextNode())
+					{
+						wsNodeName = oSourceReader.GetName();
+						if (L"PathGeometry" == wsNodeName)
+						{
+							std::wstring wsKey, wsValue;
+
+							if (oSourceReader.MoveToFirstAttribute())
+							{
+								std::wstring wsAttrName = oSourceReader.GetName();
+								while (!wsAttrName.empty())
+								{
+									if (L"x:Key" == wsAttrName)
+										wsKey = oSourceReader.GetText();
+									else if (L"Figures" == wsAttrName)
+										wsValue = oSourceReader.GetText();
+
+									if (!oSourceReader.MoveToNextAttribute())
+										break;
+
+									wsAttrName = oSourceReader.GetName();
+								}
+
+								oSourceReader.MoveToElement();
+							}
+
+							wsKey = L"{StaticResource " + wsKey + L"}";
+							pState->AddFigure(wsKey, wsValue);
+						}
+					}
+
+					clock_t oEndTime = clock();
+					double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
+					printf("%S %fseconds\n", wsPath.c_str(), dElapsedSecs);
+				}
+				else
+				{
+					if (oReader.IsEmptyNode())
+						return;
+
+					int nPathDepth = oReader.GetDepth();
+					while (oReader.ReadNextSiblingNode(nPathDepth))
+					{
+						wsNodeName = oReader.GetName();
+						if (L"PathGeometry" == wsNodeName)
+						{
+							std::wstring wsKey, wsValue;
+							ReadAttribute(oReader, L"x:Key", wsKey);
+							ReadAttribute(oReader, L"Figures", wsValue);
+							wsKey = L"{StaticResource " + wsKey + L"}";
+							pState->AddFigure(wsKey, wsValue);
+						}
+					}
+				}
+			}
+		}
 	}
 	void Page::DrawCanvas(XmlUtils::CXmlNode& oCanvasNode, IRenderer* pRenderer, CContextState* pState, bool* pbBreak)
 	{
@@ -280,6 +499,7 @@ namespace XPS
 			arrNodes.GetAt(nIndex, oNode);
 			wsNodeName = oNode.GetName();
 			wsNodeName = RemoveNamespace(wsNodeName);
+
 			if (L"Glyphs" == wsNodeName)
 				DrawGlyph(oNode, pRenderer, pState);
 			else if (L"Canvas" == wsNodeName)
@@ -320,7 +540,7 @@ namespace XPS
 		bool bPrevCommandIsCurve = false;
 
 		PrepareVmlString(wsString);
-		std::vector<std::wstring> arrElements = NSString::Split(wsString, L" ,");
+		std::vector<std::wstring> arrElements = NSString::Split(wsString, L" ,", false);
 
 		int nElementsCount = (int)arrElements.size();
 		for (int nPos = 0; nPos < nElementsCount; nPos++)
@@ -555,12 +775,165 @@ namespace XPS
 		if (bTransform)
 			ResetTransform(pRenderer, pState);
 	}
+	void Page::DrawGlyph(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState)
+	{
+		int nBgr = 0, nAlpha = 255;
+		double dFontSize = 10.0;
+		bool bTransform = false;
+		int nTextLen = 0;
+		std::wstring wsText;
+		double dX = 0;
+		double dY = 0;
+		std::wstring wsFontPath;
+		std::wstring wsIndicies;
+		if (oReader.MoveToFirstAttribute())
+		{
+			std::wstring wsAttrName = oReader.GetName();
+			while (!wsAttrName.empty())
+			{
+				if (L"FontUri" == wsAttrName)
+				{
+					wsFontPath = oReader.GetText();
+					std::wstring wsFontName = GetFileName(wsFontPath);
+					wsFontPath = m_wsRootPath + L"/" + wsFontPath;
+					std::wstring wsExt = GetFileExtension(wsFontPath);
+					NSString::ToLower(wsExt);
+					if (L"odttf" == wsExt)
+					{
+						NSString::ToLower(wsFontName);
+						m_pFontList->Check(wsFontName, wsFontPath);
+					}
+					wsFontPath = NormalizePath(wsFontPath);
+					pRenderer->put_FontPath(wsFontPath);
+				}
+				else if (L"Fill" == wsAttrName)
+				{
+					int nBgr, nAlpha;
+					std::wstring wsFontColor = oReader.GetText();
+					ReadAttribute(oReader, L"Fill", wsFontColor);
+					GetBgra(wsFontColor, nBgr, nAlpha);
+				}
+				else if (L"StyleSimulations" == wsAttrName)
+				{
+					std::wstring wsFontStyle = oReader.GetText();
+					if (L"ItalicSimulation" == wsFontStyle)
+						pRenderer->put_FontStyle(0x02);
+					else if (L"BoldSimulation" == wsFontStyle)
+						pRenderer->put_FontStyle(0x01);
+					else if (L"BoldItalicSimulation" == wsFontStyle)
+						pRenderer->put_FontStyle(0x03);
+				}
+				else if (L"FontRenderingEmSize" == wsAttrName)
+				{
+					std::wstring wsFontSize = oReader.GetText();
+					dFontSize = GetDouble(wsFontSize);
+				}
+				else if (L"RenderTransform" == wsAttrName)
+				{
+					std::wstring wsTransform = oReader.GetText();
+					if (!wsTransform.empty())
+					{
+						TransformToRenderer(wsTransform, pRenderer, pState);
+						bTransform = true;
+
+						if (dFontSize < 5)
+						{
+							double dDet = pState->NormalizeTransform();
+							dFontSize *= dDet;
+							pState->SetTransformToRenderer(pRenderer);
+						}
+					}
+				}
+				else if (L"UnicodeString" == wsAttrName)
+				{
+					wsText = oReader.GetText();
+					nTextLen = wsText.length();
+				}
+				else if (L"OriginX" == wsAttrName)
+				{
+					std::wstring wsTextX = oReader.GetText();
+					dX = GetDouble(wsTextX);
+				}
+				else if (L"OriginY" == wsAttrName)
+				{
+					std::wstring wsTextY = oReader.GetText();
+					dY = GetDouble(wsTextY);
+				}
+				else if (L"Indices" == wsAttrName)
+				{
+					wsIndicies = oReader.GetText();
+				}
+
+				if (!oReader.MoveToNextAttribute())
+					break;
+
+				wsAttrName = oReader.GetName();
+			}
+		}
+		oReader.MoveToElement();
+
+		pRenderer->put_BrushColor1(nBgr & 0x00FFFFFF);
+		pRenderer->put_BrushAlpha1(nAlpha);
+		pRenderer->put_BrushType(c_BrushTypeSolid);
+		pRenderer->put_FontSize(dFontSize * 0.75);
+
+		std::wstring wsChar = wsText.substr(0, 1);
+		std::vector<std::vector<std::wstring>> arrElements = Split(wsIndicies, L';', L',');
+
+		m_pFontManager->LoadFontFromFile(wsFontPath, 0, (float)(dFontSize * 0.75), 96, 96);
+		for (int nIndex = 0; nIndex < nTextLen - 1; nIndex++)
+		{
+			if (nIndex >= arrElements.size())
+				arrElements.push_back(std::vector<std::wstring>());
+
+			pRenderer->CommandDrawText(wsChar, xpsUnitToMM(dX), xpsUnitToMM(dY), 0, 0, 0);
+
+			if (arrElements.at(nIndex).size() >= 2)
+			{
+				dX += GetDouble(arrElements.at(nIndex).at(1)) * dFontSize / 100.0;
+			}
+			else
+			{
+				m_pFontManager->LoadString1(wsChar, 0, 0);
+				TBBox oBox = m_pFontManager->MeasureString2();
+				dX += (oBox.fMaxX - oBox.fMinX);
+			}
+
+			wsChar = wsText.substr(nIndex + 1, 1);
+		}
+
+		if (nTextLen > 0)
+		{
+			pRenderer->CommandDrawText(wsChar, xpsUnitToMM(dX), xpsUnitToMM(dY), 0, 0, 0);
+		}
+
+		if (bTransform)
+			ResetTransform(pRenderer, pState);
+	}
 	void Page::CanvasTransform(XmlUtils::CXmlNode& oRootNode, IRenderer* pRenderer, CContextState* pState)
 	{
 		XmlUtils::CXmlNode oTransformNode;
 		oRootNode.GetNode(L"MatrixTransform", oTransformNode);
 		std::wstring wsMatrix = oTransformNode.GetAttribute(L"Matrix");
 		TransformToRenderer(wsMatrix, pRenderer, pState);
+	}
+	void Page::CanvasTransform(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState)
+	{
+		std::wstring wsNodeName;
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			wsNodeName = oReader.GetName();
+			wsNodeName = RemoveNamespace(wsNodeName);
+
+			if (L"MatrixTransform" == wsNodeName)
+			{
+				std::wstring wsMatrix;
+				ReadAttribute(oReader, L"Matrix", wsMatrix);
+				TransformToRenderer(wsMatrix, pRenderer, pState);
+				break;
+			}
+		}
 	}
 	void Page::DrawPath(XmlUtils::CXmlNode& oRootNode, IRenderer* pRenderer, CContextState* pState)
 	{
@@ -636,6 +1009,121 @@ namespace XPS
 		if (bTransform)
 			ResetTransform(pRenderer, pState);
 	}
+	void Page::DrawPath(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState)
+	{
+		bool bTransform = false;
+		bool bFillSetted = false;
+		double dPenSize = 1.0;
+		std::wstring wsData;
+		bool bStroke = false;
+		if (oReader.MoveToFirstAttribute())
+		{
+			std::wstring wsAttrName = oReader.GetName();
+			while (!wsAttrName.empty())
+			{				
+				if (L"RenderTransform" == wsAttrName)
+				{
+					std::wstring wsTransform = oReader.GetText();
+					if (!wsTransform.empty())
+					{
+						TransformToRenderer(wsTransform, pRenderer, pState);
+						bTransform = true;
+					}
+				}
+				else if (L"Stroke" == wsAttrName)
+				{
+					int nStrokeAlpha = 255, nStrokeBgr = 0;
+					std::wstring wsStrokeColor = oReader.GetText();
+					GetBgra(wsStrokeColor, nStrokeBgr, nStrokeAlpha);
+					pRenderer->put_PenColor(nStrokeBgr & 0x00FFFFFF);
+					pRenderer->put_PenAlpha(nStrokeAlpha);
+					bStroke = true;
+				}
+				else if (L"StrokeThickness" == wsAttrName)
+				{
+					std::wstring wsPenSize = oReader.GetText();
+					dPenSize = GetDouble(wsPenSize);
+				}
+				else if (L"Fill" == wsAttrName)
+				{
+					bFillSetted = true;
+					std::wstring wsFill = oReader.GetText();
+					int nFillBgra, nFillAlpha;
+					GetBgra(wsFill, nFillBgra, nFillAlpha);
+					pRenderer->put_BrushType(c_BrushTypeSolid);
+					pRenderer->put_BrushColor1(nFillBgra & 0x00FFFFFF);
+					pRenderer->put_BrushAlpha1(nFillAlpha);
+				}
+				else if (L"Data" == wsAttrName)
+				{
+					wsData = oReader.GetText();
+				}
+
+				if (!oReader.MoveToNextAttribute())
+					break;
+
+				wsAttrName = oReader.GetName();
+			}
+		}
+		oReader.MoveToElement();
+
+		pRenderer->put_PenSize(xpsUnitToMM(dPenSize));
+
+		bool bFill = bFillSetted;
+		if (!bFillSetted)
+		{
+			if (!oReader.IsEmptyNode())
+			{
+				std::wstring wsNodeName;
+				int nCurDepth = oReader.GetDepth();
+				while (oReader.ReadNextSiblingNode(nCurDepth))
+				{
+					wsNodeName = oReader.GetName();
+					wsNodeName = RemoveNamespace(wsNodeName);
+
+					if (L"Path.Fill" == wsNodeName)
+					{
+						bFill = FillToRenderer(oReader, pRenderer);
+					}
+				}
+			}
+		}
+
+		if (L"" == wsData)
+			ReadPathData(oReader, wsData);
+
+		if (L'{' == wsData[0])
+		{
+			std::wstring wsValue = pState->GetFigure(wsData);
+			if (L"" != wsValue)
+				wsData = wsValue;
+			else
+			{
+				if (bTransform)
+					ResetTransform(pRenderer, pState);
+
+				return;
+			}
+		}
+
+		pRenderer->BeginCommand(c_nPathType);
+		pRenderer->PathCommandStart();
+
+		bool bWindingFillMode = false;
+		if (L'{' != wsData[0])
+			bWindingFillMode = VmlToRenderer(wsData, pRenderer);
+
+		int nMode = bStroke ? c_nStroke : 0;
+		if (bFill)
+			nMode |= (bWindingFillMode ? c_nWindingFillMode : c_nEvenOddFillMode);
+
+		pRenderer->DrawPath(nMode);
+		pRenderer->EndCommand(c_nPathType);
+		pRenderer->PathCommandEnd();
+
+		if (bTransform)
+			ResetTransform(pRenderer, pState);
+	}
 	void Page::FillToRenderer(XmlUtils::CXmlNode& oRootNode, IRenderer* pRenderer)
 	{
 		XmlUtils::CXmlNode oBrushNode;
@@ -659,6 +1147,41 @@ namespace XPS
 			pRenderer->put_BrushAlpha1(0);
 			pRenderer->put_BrushAlpha2(0);
 		}
+	}
+	bool Page::FillToRenderer(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer)
+	{
+		if (!oReader.IsEmptyNode())
+		{
+			std::wstring wsNodeName;
+			int nCurDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nCurDepth))
+			{
+				wsNodeName = oReader.GetName();
+				wsNodeName = RemoveNamespace(wsNodeName);
+
+				if (L"SolidColorBrush" == wsNodeName)
+				{
+					int nBgr, nAlpha;
+					std::wstring wsColor;
+					ReadAttribute(oReader, L"Color", wsColor);
+					GetBgra(wsColor, nBgr, nAlpha);
+					pRenderer->put_BrushType(c_BrushTypeSolid);
+					pRenderer->put_BrushColor1(nBgr & 0x00FFFFFF);
+					pRenderer->put_BrushAlpha1(nAlpha);
+					return true;
+				}
+				else if (L"ImageBrush" == wsNodeName)
+				{
+					std::wstring wsImageSource;
+					ReadAttribute(oReader, L"ImageSource", wsImageSource);
+					pRenderer->put_BrushType(c_BrushTypeTexture);
+					pRenderer->put_BrushTexturePath(m_wsRootPath + wsImageSource);
+					return true;
+				}
+			}
+		}
+
+		return false;
 	}
 	void Page::GetDataFromNode(std::wstring& wsString, XmlUtils::CXmlNode& oNode)
 	{
@@ -736,4 +1259,135 @@ namespace XPS
 				wsString += L" Z ";
 		}
 	}	
+	void Page::ReadPathData(XmlUtils::CXmlLiteReader& oReader, std::wstring& wsData)
+	{
+		wsData = L"";
+
+		if (oReader.IsEmptyNode())
+			return;
+
+		std::wstring wsNodeName;
+		int nParentDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nParentDepth))
+		{
+			wsNodeName = oReader.GetName();
+			if (L"Path.Data" == wsNodeName)
+			{
+				if (!oReader.IsEmptyNode())
+				{
+					int nDataDepth = oReader.GetDepth();
+					while (oReader.ReadNextSiblingNode(nParentDepth))
+					{
+						wsNodeName = oReader.GetName();
+						if (L"PathGeometry" == wsNodeName)
+						{
+							return ReadPathGeometry(oReader, wsData);
+						}
+					}
+				}
+			}
+		}		
+	}
+	void Page::ReadPathGeometry(XmlUtils::CXmlLiteReader& oReader, std::wstring& wsData)
+	{
+		if (oReader.IsEmptyNode())
+			return;
+
+		std::wstring wsFillMode;
+		ReadAttribute(oReader, L"FillRule", wsFillMode);
+
+		if (L"EvenOdd" == wsFillMode)
+			wsData += L"F 0 ";
+		else
+			wsData += L"F 1 ";
+
+		std::wstring wsNodeName;
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			wsNodeName = oReader.GetName();
+			if (L"PathFigure" == wsNodeName)
+			{
+				ReadPathFigure(oReader, wsData);
+			}
+		}
+	}
+	void Page::ReadPathFigure(XmlUtils::CXmlLiteReader& oReader, std::wstring& wsData)
+	{
+		if (oReader.IsEmptyNode())
+			return;
+
+		std::wstring wsStartPoint;
+		ReadAttribute(oReader, L"StartPoint", wsStartPoint);
+		wsData += L" M " + wsStartPoint;
+
+		std::wstring wsNodeName;
+		std::wstring wsText;
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			wsNodeName = oReader.GetName();
+			wsText.empty();
+			if (L"PolyLineSegment" == wsNodeName)
+			{
+				ReadAttribute(oReader, L"Points", wsText);
+				wsData += L" L " + wsText;
+			}
+			else if (L"PolyBezierSegment" == wsNodeName)
+			{
+				ReadAttribute(oReader, L"Points", wsText);
+				wsData += L" C " + wsText;
+			}
+			else if (L"PolyQuadraticBezierSegment" == wsNodeName)
+			{
+				ReadAttribute(oReader, L"Points", wsText);
+				wsData += L" Q " + wsText;
+			}
+			else if (L"ArcSegment" == wsNodeName)
+			{
+				std::wstring wsSize, wsRotationAngle, wsIsLargeArc, wsSweepDirection, wsPoint;
+				if (oReader.MoveToFirstAttribute())
+				{
+					std::wstring wsAttrName = oReader.GetName();
+					while (!wsAttrName.empty())
+					{
+						if (L"Size" == wsAttrName)
+							wsSize = oReader.GetText();
+						else if (L"RotationAngle" == wsAttrName)
+							wsRotationAngle = oReader.GetText();
+						else if (L"IsLargeArc" == wsAttrName)
+							wsIsLargeArc = oReader.GetText();
+						else if (L"SweepDirection" == wsAttrName)
+							wsSweepDirection = oReader.GetText();
+						else if (L"Point" == wsAttrName)
+							wsPoint = oReader.GetText();
+
+						if (!oReader.MoveToNextAttribute())
+							break;
+
+						wsAttrName = oReader.GetName();
+					}
+					oReader.MoveToElement();
+				}
+
+				wsData += L" A " + wsSize + L" " + wsRotationAngle + L" ";
+				if (GetBool(wsIsLargeArc))
+					wsData += L"1 ";
+				else
+					wsData += L"0 ";
+
+				if (L"Counterclockwise" == wsSweepDirection)
+					wsData += L"0 ";
+				else
+					wsData += L"1 ";
+
+				wsData += wsPoint;
+			}			
+		}
+
+		std::wstring wsClosed;
+		ReadAttribute(oReader, L"IsClosed", wsClosed);
+		if (GetBool(wsClosed))
+			wsData += L" Z ";
+	}
 }

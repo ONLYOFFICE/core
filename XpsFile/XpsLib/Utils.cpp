@@ -1,6 +1,7 @@
 #include "Utils.h"
 #include "../../DesktopEditor/common/String.h"
 #include "../../DesktopEditor/common/Types.h"
+#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 
 namespace XPS
 {	
@@ -148,5 +149,30 @@ namespace XPS
 			arrResult.push_back(arrStr);
 		}
 		return arrResult;
+	}
+	void ReadAttribute(XmlUtils::CXmlLiteReader& oReader, const wchar_t* wsAttrName, std::wstring& wsAttr)
+	{
+		if (oReader.GetAttributesCount() <= 0)
+			return;
+
+		if (!oReader.MoveToFirstAttribute())
+			return;
+
+		std::wstring wsName = oReader.GetName();
+
+		while (!wsName.empty())
+		{
+			if (wsAttrName == wsName)
+			{
+				wsAttr = oReader.GetText();
+				break;
+			}
+			if (!oReader.MoveToNextAttribute())
+				break;
+
+			wsName = oReader.GetName();
+		}
+
+		oReader.MoveToElement();
 	}
 }

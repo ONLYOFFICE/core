@@ -11,6 +11,7 @@
 
 #include "../../Common/DocxFormat/Source/Base/Base.h"
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
+#include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 
 #include "../source/Oox2OdfConverter/Oox2OdfConverter.h"
 
@@ -153,11 +154,69 @@ HRESULT COfficeOdfFileW::SaveToFileImpl(const std::wstring & srcPath,
     return S_OK;
 }
 
-//FileChecker в другом месте !!
-std::wstring COfficeOdfFileW::DetectTypeDocument(const std::wstring & Path)
+std::wstring COfficeOdfFileW::DetectTypeDocument(const std::wstring & pathOOX)
 {
-	//return  L"text";
-	return  L"spreadsheet";
+	std::wstring sRes;
+
+	CFile file;
+
+	CString fileContentType = std_string2string(pathOOX + FILE_SEPARATOR_STR + L"[Content_Types].xml");
+
+	if (file.OpenFile(fileContentType) != S_OK) return sRes;
+
+	int nBufferSize = min (file.GetFileSize(), 4096);
+	BYTE *pBuffer = new BYTE[nBufferSize];
+
+	file.ReadFile(pBuffer, nBufferSize);
+	file.CloseFile();
+
+	if (pBuffer != NULL)
+	{
+
+		const char *docxFormatLine = "application/vnd.openxmlformats-officedocument.wordprocessingml.document.main+xml";
+		const char *dotxFormatLine = "application/vnd.openxmlformats-officedocument.wordprocessingml.template.main+xml";
+		const char *docmFormatLine = "application/vnd.ms-word.document.macroEnabled.main+xml";
+		const char *dotmFormatLine = "application/vnd.ms-word.template.macroEnabledTemplate.main+xml";
+
+		const char *xlsxFormatLine = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet.main+xml";
+		const char *xltxFormatLine = "application/vnd.openxmlformats-officedocument.spreadsheetml.template.main+xml";
+		const char *xlsmFormatLine = "application/vnd.ms-excel.sheet.macroEnabled.main+xml";
+		const char *xltmFormatLine = "application/vnd.ms-excel.template.macroEnabled.main+xml";
+
+		const char *pptxFormatLine = "application/vnd.openxmlformats-officedocument.presentationml.presentation.main+xml";
+		const char *ppsxFormatLine = "application/vnd.openxmlformats-officedocument.presentationml.slideshow.main+xml";
+		const char *potxFormatLine = "application/vnd.openxmlformats-officedocument.presentationml.template.main+xml";
+		const char *pptmFormatLine = "application/vnd.ms-powerpoint.presentation.macroEnabled.main+xml";
+		const char *ppsmFormatLine = "application/vnd.ms-powerpoint.slideshow.macroEnabled.main+xml";
+		const char *potmFormatLine = "application/vnd.ms-powerpoint.template.macroEnabled.main+xml";
+
+        std::string strContentTypes((char*)pBuffer, nBufferSize);
+
+        int res = 0;
+        if ( (res = strContentTypes.find(docxFormatLine))>0 || (res = strContentTypes.find(dotxFormatLine))>0 ||
+            (res = strContentTypes.find(docmFormatLine))>0 || (res = strContentTypes.find(dotmFormatLine))>0)
+		{
+			sRes = L"text";
+		}
+
+        else if ((res = strContentTypes.find(xlsxFormatLine))>0 || (res = strContentTypes.find(xltxFormatLine))>0 ||
+            (res = strContentTypes.find(xlsmFormatLine))>0 || (res = strContentTypes.find(xltmFormatLine))>0)
+		{
+			sRes = L"spreadsheet";
+		}
+
+        else if ((res = strContentTypes.find(pptxFormatLine) > 0) || /*(res = strContentTypes.find(ppsxFormatLine))>0 ||*/
+            (res = strContentTypes.find(potxFormatLine))>0 || (res = strContentTypes.find(pptmFormatLine))>0 ||
+            (res = strContentTypes.find(ppsmFormatLine))>0 || (res = strContentTypes.find(potmFormatLine))>0 ||
+			(res = strContentTypes.find(ppsxFormatLine)) >0 )
+		{
+		}
+
+		delete []pBuffer;
+		pBuffer = NULL;
+
+	}
+	return sRes;
 }
 
 void COfficeOdfFileW::OnProgressFunc (LPVOID lpParam, long nID, long nPercent)

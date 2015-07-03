@@ -110,7 +110,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
-				AdditionalIncludeDirectories="&quot;$(ProjectDir)include&quot;;&quot;$(SolutionDir)include&quot;"
+				AdditionalIncludeDirectories="../include;../src/odf/datatypes"
 				PreprocessorDefinitions="_DEBUG;_CONSOLE"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -243,7 +243,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				FavorSizeOrSpeed="1"
-				AdditionalIncludeDirectories=""
+				AdditionalIncludeDirectories="../include;../src/odf/datatypes"
 				PreprocessorDefinitions="NDEBUG;_CONSOLE"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"

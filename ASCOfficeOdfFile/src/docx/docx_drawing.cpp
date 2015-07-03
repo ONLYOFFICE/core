@@ -179,7 +179,7 @@ void docx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_pr
 
 				_CP_OPT(int) iAlign;
 
-				odf_reader::GetProperty(properties, L"textalign-vertical", iAlign);
+				odf_reader::GetProperty(properties, L"textarea-vertical_align", iAlign);
 				if (iAlign)
 				{
 					switch (iAlign.get())

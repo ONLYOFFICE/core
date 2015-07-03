@@ -30,7 +30,7 @@ void pptx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_pr
     {
 		CP_XML_NODE(L"p:txBody")
 		{  
-			oox_serialize_bodyPr(CP_XML_STREAM(),properties);
+			oox_serialize_bodyPr(CP_XML_STREAM(), properties);
 			if (strTextContent)
 			{	
 				CP_XML_STREAM() << strTextContent.get();

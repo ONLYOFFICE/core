@@ -60,7 +60,14 @@ public:
 	_CP_OPT(odf_types::text_align)			draw_textarea_horizontal_align_;
 	_CP_OPT(odf_types::vertical_align)		draw_textarea_vertical_align_;
 	
-    odf_types::common_draw_rel_size_attlist			common_draw_rel_size_attlist_;
+	_CP_OPT(bool)							draw_auto_grow_height_;
+	_CP_OPT(bool)							draw_auto_grow_width_;
+
+	_CP_OPT(bool)							draw_fit_to_size_;
+	_CP_OPT(bool)							draw_fit_to_contour_;
+	_CP_OPT(std::wstring)					draw_wrap_influence_on_position_;
+
+	odf_types::common_draw_rel_size_attlist			common_draw_rel_size_attlist_;
 	odf_types::common_draw_fill_attlist				common_draw_fill_attlist_;  
 	odf_types::common_horizontal_margin_attlist		common_horizontal_margin_attlist_;
 	odf_types::common_vertical_margin_attlist		common_vertical_margin_attlist_;
@@ -93,7 +100,6 @@ public:
 
     _CP_OPT(std::wstring)	fo_clip_;
 
-    _CP_OPT(std::wstring)	draw_wrap_influence_on_position_;
     
     office_element_ptr		style_background_image_;
         

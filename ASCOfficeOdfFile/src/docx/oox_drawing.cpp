@@ -207,7 +207,7 @@ void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf_reader::_p
 		{
 			_CP_OPT(int) iAlign;
 
-			odf_reader::GetProperty(prop,L"textalign-vertical",iAlign);
+			odf_reader::GetProperty(prop,L"textarea-vertical_align",iAlign);
 			if (iAlign)
 			{
 				switch (iAlign.get())
@@ -223,6 +223,22 @@ void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf_reader::_p
 					CP_XML_ATTR(L"anchor", L"b");break;
 				case 5://Justify
 					CP_XML_ATTR(L"anchor", L"just");break;
+				}
+			}
+			_CP_OPT(bool) bAutoGrowHeight;
+			_CP_OPT(bool) bFitToSize;
+			odf_reader::GetProperty(prop,L"fit-to-size", bFitToSize);
+			odf_reader::GetProperty(prop,L"auto-grow-height", bAutoGrowHeight);
+
+			if ((bAutoGrowHeight) && (*bAutoGrowHeight))
+			{
+				CP_XML_NODE(L"a:spAutoFit");
+			}
+			else if ((bFitToSize) && (*bFitToSize))
+			{
+				CP_XML_NODE(L"a:spAutoFit")
+				{
+					CP_XML_ATTR(L"lnSpcReduction", 10000);
 				}
 			}
 			//else CP_XML_ATTR(L"anchor", L"dist");break;

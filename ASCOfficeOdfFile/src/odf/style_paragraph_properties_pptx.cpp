@@ -273,25 +273,49 @@ void paragraph_format_properties::pptx_convert(oox::pptx_conversion_context & Co
 				}
 			}	
 		}
-		if (fo_margin_top_ || fo_margin_)
+		if (fo_margin_top_/* || fo_margin_*/)
 		{
-			std::wstring w_before = process_margin(fo_margin_top_, length::pt, 1000.0);
 			CP_XML_NODE(L"a:spcBef")
 			{
-				CP_XML_NODE(L"a:spcPct")
+				if (fo_margin_bottom_->get_type() == length_or_percent::Length)
 				{
-					CP_XML_ATTR(L"val",w_before);
+					std::wstring w_before = process_margin(fo_margin_top_, length::pt, 100.0);
+					CP_XML_NODE(L"a:spcPts")
+					{
+						CP_XML_ATTR(L"val",w_before);
+					}
+				}
+				else
+				{
+					std::wstringstream s;
+					s << fo_margin_top_;
+					CP_XML_NODE(L"a:spcPct")
+					{
+						CP_XML_ATTR(L"val", s.str());
+					}
 				}
 			}
 		}
-		if (fo_margin_bottom_ || fo_margin_)
+		if (fo_margin_bottom_/* || fo_margin_*/)
 		{
-			std::wstring w_after = process_margin(fo_margin_bottom_, length::pt, 1000.0);
 			CP_XML_NODE(L"a:spcAft")
 			{
-				CP_XML_NODE(L"a:spcPct")
+				if (fo_margin_bottom_->get_type() == length_or_percent::Length)
 				{
-					CP_XML_ATTR(L"val",w_after);
+					std::wstring w_after = process_margin(fo_margin_bottom_, length::pt, 100.0);
+					CP_XML_NODE(L"a:spcPts")
+					{
+						CP_XML_ATTR(L"val",w_after);
+					}
+				}
+				else
+				{
+					std::wstringstream s;
+					s << fo_margin_bottom_;
+					CP_XML_NODE(L"a:spcPct")
+					{
+						CP_XML_ATTR(L"val", s.str());
+					}
 				}
 			}
 		}

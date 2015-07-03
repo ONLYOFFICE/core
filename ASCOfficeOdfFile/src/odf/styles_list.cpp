@@ -267,7 +267,7 @@ void docx_serialize_level_justification(std::wostream & strm, style_list_level_p
 }
 void text_list_level_style_number::docx_convert(oox::docx_conversion_context & Context)
 {
-	if (text_list_level_style_attr_.get_text_level() - 1 >= 9)
+	if (text_list_level_style_attr_.get_text_level() - 1 > 10)
         return;
 
     std::wostream & strm = Context.output_stream();
@@ -389,7 +389,7 @@ void text_list_level_style_number::docx_convert(oox::docx_conversion_context & C
 
 void text_list_level_style_number::pptx_convert(oox::pptx_conversion_context & Context)
 {
-	if (text_list_level_style_attr_.get_text_level() - 1 >= 9)
+	if (text_list_level_style_attr_.get_text_level() - 1 > 10)
         return;
 
 	std::wostream & strm = Context.get_text_context().get_styles_context().list_style();
@@ -483,7 +483,7 @@ wchar_t convert_bullet_char(wchar_t c)
 
 void text_list_level_style_bullet::docx_convert(oox::docx_conversion_context & Context) 
 {    
-	if (text_list_level_style_attr_.get_text_level() - 1 >= 9)
+	if (text_list_level_style_attr_.get_text_level() - 1 > 10)
         return;
 
     std::wostream & strm = Context.output_stream();
@@ -580,7 +580,7 @@ void text_list_level_style_bullet::docx_convert(oox::docx_conversion_context & C
 
 void text_list_level_style_bullet::pptx_convert(oox::pptx_conversion_context & Context) 
 {    
-	if (text_list_level_style_attr_.get_text_level() - 1 >= 9)
+	if (text_list_level_style_attr_.get_text_level() - 1 > 10)
         return;
 
 	std::wostream & strm = Context.get_text_context().get_styles_context().list_style();

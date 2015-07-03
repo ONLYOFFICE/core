@@ -29,6 +29,19 @@ std::wostream & operator << (std::wostream & _Wostream, const border_style & bor
     return _Wostream;
 }
 
+bool operator == (border_style & _b1, border_style & _b2)
+{
+    if (_b1.is_none() && _b2.is_none()) return true;
+
+    if (_b1.is_none() || _b2.is_none()) return false;
+
+    if (    _b1.get_color()     == _b2.get_color()  &&
+            _b1.get_length()    == _b2.get_length() &&
+            _b1.get_style()     == _b2.get_style())     return true;
+
+    return false;
+}
+
 border_style::border_style(const border_style & Value)
 {
     color_ = Value.get_color();
@@ -39,7 +52,18 @@ border_style::border_style(const border_style & Value)
 
     initialized_ = true;
 }
+border_style& border_style::operator =(const border_style& Value)
+{
+    color_  = Value.get_color();
+    length_ = Value.get_length();
+    style_  = Value.get_style();
 
+    none_   = Value.is_none();
+
+    initialized_ = true;
+
+    return *this;
+}
 border_style::border_style(const std::wstring & Value) : initialized_(false), none_(false)
 {
 	std::wstring tmp =  boost::algorithm::trim_copy(Value);

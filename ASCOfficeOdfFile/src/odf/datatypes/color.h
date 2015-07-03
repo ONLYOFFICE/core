@@ -28,7 +28,7 @@ private:
 };
 
 std::wostream & operator << (std::wostream & _Wostream, const color & _Color);
-
+bool            operator== (const color & c1, const color & c2);
 } 
 
 APPLY_PARSE_XML_ATTRIBUTES(odf_types::color);

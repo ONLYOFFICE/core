@@ -73,6 +73,11 @@ bool operator== (length & _Length1, length & _Length2)
 	if (_Length1.get_value() == _Length2.get_value())return true;
 	else return false;
 }
+bool operator== (const length & _Length1, const length & _Length2)
+{
+    if (_Length1.get_value() == _Length2.get_value())return true;
+    else return false;
+}
 
 length length::parse(const std::wstring & Str)
 {

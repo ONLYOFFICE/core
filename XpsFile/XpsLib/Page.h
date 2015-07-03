@@ -11,10 +11,12 @@
 
 namespace XPS
 {
+	class CDocument;
+
 	class Page
 	{
 	public:
-		Page(const std::wstring& wsFile, const std::wstring& Path, CFontList* pFontList, CFontManager* pFontManager);
+		Page(const std::wstring& wsFile, const std::wstring& Path, CFontList* pFontList, CFontManager* pFontManager, CDocument* pDocument);
 		~Page();
 
 		void GetSize(int& nW, int& nH) const;
@@ -22,14 +24,24 @@ namespace XPS
 
 	private:
 
+		void DrawCanvas(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState, bool* pbBreak);
+		void ReadPageResources(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
+		void DrawGlyph(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
+		void CanvasTransform(XmlUtils::CXmlLiteReader& oRNode, IRenderer* pRenderer, CContextState* pState);
+		void DrawPath(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
+		bool FillToRenderer(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer);
+		void ReadPathData(XmlUtils::CXmlLiteReader& oReader, std::wstring& wsData);
+		void ReadPathGeometry(XmlUtils::CXmlLiteReader& oReader, std::wstring& wsData);
+		void ReadPathFigure(XmlUtils::CXmlLiteReader& oReader, std::wstring& wsData);
+
 		void DrawCanvas(XmlUtils::CXmlNode& oNode, IRenderer* pRenderer, CContextState* pState, bool* pbBreak);
 		void DrawGlyph(XmlUtils::CXmlNode& oNode, IRenderer* pRenderer, CContextState* pState);
 		void DrawPath(XmlUtils::CXmlNode& oNode, IRenderer* pRenderer, CContextState* pState);
 		void CanvasTransform(XmlUtils::CXmlNode& oNode, IRenderer* pRenderer, CContextState* pState);
 		void FillToRenderer(XmlUtils::CXmlNode& oNode, IRenderer* pRenderer);
+		void GetDataFromNode(std::wstring& wsString, XmlUtils::CXmlNode& oNode);
 
 		bool VmlToRenderer(std::wstring& wsValue, IRenderer* pRenderer);
-		void GetDataFromNode(std::wstring& wsString, XmlUtils::CXmlNode& oNode);
 		void TransformToRenderer(const std::wstring& wsString, IRenderer* pRenderer, CContextState* pState);
 		void ResetTransform(IRenderer* pRenderer, CContextState* pState);
 
@@ -41,6 +53,7 @@ namespace XPS
 		std::wstring  m_wsRootPath;
 		CFontList*    m_pFontList;
 		CFontManager* m_pFontManager;
+		CDocument*    m_pDocument;
 	};
 }
 

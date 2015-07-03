@@ -12,6 +12,8 @@
 #include "../../DesktopEditor/common/String.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
+#include <iostream>
+
 std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstring wsExt)
 {
 	std::vector<std::wstring> vwsNames;
@@ -35,9 +37,13 @@ std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstrin
 	}
 	return vwsNames;
 }
-void ConvertFolder(CXpsFile& oReader, std::wstring wsFolderPath)
+void ConvertFolderToRaster(const std::wstring& wsFolderPath)
 {
-	oReader.Close();
+	CApplicationFonts oFonts;
+	oFonts.Initialize();
+
+	CXpsFile oReader(&oFonts);
+	oReader.SetTempFolder(L"D:/Test Files/Temp/");
 
 	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"xps");
 	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
@@ -63,14 +69,39 @@ void ConvertFolder(CXpsFile& oReader, std::wstring wsFolderPath)
 		}
 	}
 }
-
-
-void main()
+void ConvertFolderToPdf(const std::wstring& wsFolderPath)
 {
 	CApplicationFonts oFonts;
 	oFonts.Initialize();
 
-	CXpsFile oFile(&oFonts);
-	oFile.SetTempDirectory(L"D:/Test Files/Temp/");
-	ConvertFolder(oFile, L"D:/Test Files//");
+	CXpsFile oReader(&oFonts);
+	oReader.SetTempFolder(L"D:/Test Files/Temp/");
+
+	std::vector<std::wstring> vFiles = GetAllFilesInFolder(wsFolderPath, L"xps");
+	for (int nIndex = 0; nIndex < vFiles.size(); nIndex++)
+	{
+		std::wstring wsFilePath = wsFolderPath;
+		wsFilePath.append(vFiles.at(nIndex));
+		std::wstring wsFilePathName = (wsFilePath.substr(0, wsFilePath.size() - 4));
+		if (oReader.LoadFromFile(wsFilePath.c_str()))
+		{
+			printf("%d of %d %S\n", nIndex + 1, vFiles.size(), vFiles.at(nIndex).c_str());
+			std::wstring wsDstFilePath = wsFilePathName + L".pdf";
+			oReader.ConvertToPdf(wsDstFilePath);
+			oReader.Close();
+		}
+		else
+		{
+			printf("%d of %d %S error\n", nIndex, vFiles.size(), vFiles.at(nIndex).c_str());
+		}
+	}
+}
+
+void main()
+{
+	//ConvertFolderToRaster(L"D:/Test Files//Xps//");
+	ConvertFolderToPdf(L"D:/Test Files//Xps//");
+
+	char q;
+	std::cin >> q;
 }

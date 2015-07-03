@@ -5,7 +5,7 @@
 
 namespace XPS
 {
-	class Folder;
+	class CDocument;
 }
 
 class IRenderer;
@@ -20,19 +20,20 @@ public:
 
 	bool         LoadFromFile(const std::wstring& wsSrcFileName, const std::wstring& wsXmlOptions = L"");
 	void         Close();
-	std::wstring GetTempDirectory() const;
-	void         SetTempDirectory(const std::wstring& wsPath);
+	std::wstring GetTempFolder() const;
+	void         SetTempFolder(const std::wstring& wsPath);
 	int          GetPagesCount();
 	void         GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 	void         DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pBreak);
 	void         ConvertToRaster(int nPageIndex, const std::wstring& wsDstPath, int nImageType);
+	void         ConvertToPdf(const std::wstring& wsDstPath);
 
 private:
 
 	CApplicationFonts* m_pAppFonts;
 	CFontManager*      m_pFontManager;
-	std::wstring       m_wsTempDirectory;
-	XPS::Folder*       m_pFolder;
+	std::wstring       m_wsTempFolder;
+	XPS::CDocument*    m_pDocument;
 };
 
 #endif // _XPS_FILE_H

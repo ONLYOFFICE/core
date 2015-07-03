@@ -14,7 +14,11 @@ std::wostream & operator << (std::wostream & _Wostream, const color & _Color)
     _Wostream << _Color.get_color();
     return _Wostream;
 }
-
+bool operator== (const color & c1, const color & c2)
+{
+    if (c1.get_hex_value() == c2.get_hex_value())return true;
+    else return false;
+}
 color color::parse(const std::wstring & Str)
 {
     return color(Str);

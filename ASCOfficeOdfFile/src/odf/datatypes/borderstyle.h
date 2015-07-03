@@ -37,7 +37,7 @@ public:
     border_style(const color & color_,  const type & style_, const length & length_);
 
     static border_style parse(const std::wstring & Str);
-
+    border_style& operator=(const border_style& ob);
 public:
     bool initialized() const    { return initialized_; }
     bool is_none()     const    { return none_; }
@@ -55,6 +55,7 @@ private:
 };
 
 std::wostream & operator << (std::wostream & _Wostream, const border_style & _Val);
+bool            operator == (border_style & _b1, border_style & _b2);
 
 } 
     APPLY_PARSE_XML_ATTRIBUTES(odf_types::border_style);

@@ -169,7 +169,9 @@ void pptx_text_context::Impl::end_paragraph()
 
 void pptx_text_context::Impl::start_span(const std::wstring & styleName)//кусок текста в абзаце(параграфе) со своими свойствами - этто может быть и 1 буква
 {
-	if ((span_style_name_ !=styleName  && span_style_name_.length()>0) || in_span)
+	int text_size = text_.str().length();
+	
+	if ((span_style_name_ !=styleName && text_size > 0) || in_span)
 	{
 		dump_run();
 	}
@@ -181,8 +183,8 @@ void pptx_text_context::Impl::start_span(const std::wstring & styleName)//кусок 
 
 void pptx_text_context::Impl::end_span() 
 {
-    //dump_run();
-    //span_style_name_ = L"";
+    dump_run();
+    span_style_name_ = L"";
 	
 	in_span = false;
 }
@@ -386,7 +388,7 @@ std::wstring pptx_text_context::Impl::dump_paragraph(/*bool last*/)
 {				
 	if (in_comment) return L""; 
 
-	dump_run();//last
+	end_span();
 
     std::wstring str_run = run_.str();
 

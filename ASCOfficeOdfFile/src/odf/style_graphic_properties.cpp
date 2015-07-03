@@ -17,36 +17,41 @@ void graphic_format_properties::add_attributes( const xml::attributes_wc_ptr & A
 {
 	common_draw_fill_attlist_.add_attributes(Attributes);
 
-	CP_APPLY_ATTR(L"draw:wrap-influence-on-position", draw_wrap_influence_on_position_);
-	CP_APPLY_ATTR(L"draw:textarea-horizontal-align", draw_textarea_horizontal_align_);
-	CP_APPLY_ATTR(L"draw:textarea-vertical-align", draw_textarea_vertical_align_);
-	
-	CP_APPLY_ATTR(L"draw:stroke",		draw_stroke_); 
-	CP_APPLY_ATTR(L"draw:stroke-dash",	draw_stroke_dash_); 
-	CP_APPLY_ATTR(L"draw:marker-start",	draw_marker_start_); 
-	CP_APPLY_ATTR(L"draw:marker-end",	draw_marker_end_); 
-	CP_APPLY_ATTR(L"svg:stroke-color",	svg_stroke_color_); 
-	CP_APPLY_ATTR(L"svg:stroke-width",	svg_stroke_width_);	
-	CP_APPLY_ATTR(L"svg:stroke-opacity",svg_stroke_opacity_); 
+	CP_APPLY_ATTR(L"draw:wrap-influence-on-position",	draw_wrap_influence_on_position_);
+	CP_APPLY_ATTR(L"draw:textarea-horizontal-align",	draw_textarea_horizontal_align_);
+	CP_APPLY_ATTR(L"draw:textarea-vertical-align",		draw_textarea_vertical_align_);
+	CP_APPLY_ATTR(L"draw:auto-grow-height",				draw_auto_grow_height_);
+	CP_APPLY_ATTR(L"draw:auto-grow-width",				draw_auto_grow_width_);
+	CP_APPLY_ATTR(L"draw:fit-to-size",					draw_fit_to_size_);
+	CP_APPLY_ATTR(L"draw:fit-to-contour",				draw_fit_to_contour_);
 
-	CP_APPLY_ATTR(L"fo:min-width",	fo_min_width_);
-    CP_APPLY_ATTR(L"fo:min-height", fo_min_height_);
-    CP_APPLY_ATTR(L"fo:max-width",	fo_max_width_);
-    CP_APPLY_ATTR(L"fo:max-height", fo_max_height_);
-    CP_APPLY_ATTR(L"fo:clip",		fo_clip_);
+	CP_APPLY_ATTR(L"draw:stroke",						draw_stroke_); 
+	CP_APPLY_ATTR(L"draw:stroke-dash",					draw_stroke_dash_); 
+	CP_APPLY_ATTR(L"draw:marker-start",					draw_marker_start_); 
+	CP_APPLY_ATTR(L"draw:marker-end",					draw_marker_end_); 
+
+	CP_APPLY_ATTR(L"svg:stroke-color",					svg_stroke_color_); 
+	CP_APPLY_ATTR(L"svg:stroke-width",					svg_stroke_width_);	
+	CP_APPLY_ATTR(L"svg:stroke-opacity",				svg_stroke_opacity_); 
+
+	CP_APPLY_ATTR(L"fo:min-width",						fo_min_width_);
+    CP_APPLY_ATTR(L"fo:min-height",						fo_min_height_);
+    CP_APPLY_ATTR(L"fo:max-width",						fo_max_width_);
+    CP_APPLY_ATTR(L"fo:max-height",						fo_max_height_);
+    CP_APPLY_ATTR(L"fo:clip",							fo_clip_);
    
-	CP_APPLY_ATTR(L"style:print-content", style_print_content_);
-    CP_APPLY_ATTR(L"style:protect", style_protect_);
- 	CP_APPLY_ATTR(L"style:editable", style_editable_);
-    CP_APPLY_ATTR(L"style:wrap", style_wrap_);
-    CP_APPLY_ATTR(L"style:wrap-dynamic-treshold", style_wrap_dynamic_treshold_);
-    CP_APPLY_ATTR(L"style:number-wrapped-paragraphs", style_number_wrapped_paragraphs_);
-    CP_APPLY_ATTR(L"style:wrap-contour", style_wrap_contour_);
-    CP_APPLY_ATTR(L"style:wrap-contour-mode", style_wrap_contour_mode_);
-    CP_APPLY_ATTR(L"style:run-through", style_run_through_); 
-    CP_APPLY_ATTR(L"style:flow-with-text", style_flow_with_text_);
-    CP_APPLY_ATTR(L"style:overflow-behavior", style_overflow_behavior_);
-    CP_APPLY_ATTR(L"style:mirror", style_mirror_);
+	CP_APPLY_ATTR(L"style:print-content",				style_print_content_);
+    CP_APPLY_ATTR(L"style:protect",						style_protect_);
+ 	CP_APPLY_ATTR(L"style:editable",					style_editable_);
+    CP_APPLY_ATTR(L"style:wrap",						style_wrap_);
+    CP_APPLY_ATTR(L"style:wrap-dynamic-treshold",		style_wrap_dynamic_treshold_);
+    CP_APPLY_ATTR(L"style:number-wrapped-paragraphs",	style_number_wrapped_paragraphs_);
+    CP_APPLY_ATTR(L"style:wrap-contour",				style_wrap_contour_);
+    CP_APPLY_ATTR(L"style:wrap-contour-mode",			style_wrap_contour_mode_);
+    CP_APPLY_ATTR(L"style:run-through",					style_run_through_); 
+    CP_APPLY_ATTR(L"style:flow-with-text",				style_flow_with_text_);
+    CP_APPLY_ATTR(L"style:overflow-behavior",			style_overflow_behavior_);
+    CP_APPLY_ATTR(L"style:mirror",						style_mirror_);
 	
 	common_draw_rel_size_attlist_.add_attributes(Attributes);
 	common_horizontal_margin_attlist_.add_attributes(Attributes);
@@ -77,9 +82,13 @@ void graphic_format_properties::apply_to(std::vector<_property> & properties)
 	if (draw_marker_start_)	properties.push_back(_property(L"marker-start",	draw_marker_start_->get() ));
 	if (draw_marker_end_)	properties.push_back(_property(L"marker-end",	draw_marker_end_->get() ));
 	
-	if (draw_textarea_horizontal_align_)properties.push_back(_property(L"textalign-horizontal",	draw_textarea_horizontal_align_->get_type() ));
-	if (draw_textarea_vertical_align_)properties.push_back(_property(L"textalign-vertical",	draw_textarea_vertical_align_->get_type() ));
+	if (draw_textarea_horizontal_align_)properties.push_back(_property(L"textarea-horizontal_align",draw_textarea_horizontal_align_->get_type() ));
+	if (draw_textarea_vertical_align_)	properties.push_back(_property(L"textarea-vertical_align",	draw_textarea_vertical_align_->get_type() ));
 
+	if (draw_auto_grow_height_)	properties.push_back(_property(L"auto-grow-height", *draw_auto_grow_height_));
+	if (draw_auto_grow_width_)	properties.push_back(_property(L"auto-grow-width",	*draw_auto_grow_width_));
+	if (draw_fit_to_size_)		properties.push_back(_property(L"fit-to-size",		*draw_fit_to_size_));
+	if (draw_fit_to_contour_)	properties.push_back(_property(L"fit-to-contour",	*draw_fit_to_contour_));
 }
 void graphic_format_properties::apply_from(const graphic_format_properties & Other)
 {
@@ -89,6 +98,10 @@ void graphic_format_properties::apply_from(const graphic_format_properties & Oth
 	_CP_APPLY_PROP2(draw_marker_end_); 
 	_CP_APPLY_PROP2(draw_textarea_horizontal_align_); 
 	_CP_APPLY_PROP2(draw_textarea_vertical_align_); 
+	_CP_APPLY_PROP2(draw_auto_grow_height_);
+	_CP_APPLY_PROP2(draw_auto_grow_width_);
+	_CP_APPLY_PROP2(draw_fit_to_size_);
+	_CP_APPLY_PROP2(draw_fit_to_contour_);
 	
 	_CP_APPLY_PROP2(svg_stroke_color_); 
 	_CP_APPLY_PROP2(svg_stroke_width_);	

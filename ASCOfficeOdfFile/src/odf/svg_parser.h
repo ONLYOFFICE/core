@@ -45,7 +45,7 @@ namespace svg_path
     void oox_serialize(std::wostream & _Wostream, std::vector<svg_path::_polyline> & path);
 
 	bool parseSvgD(std::vector<_polyline> & Polyline, const std::wstring &  rSvgDStatement, bool bWrongPositionAfterZ);
-	bool parsePolygon(std::vector<_polyline> & Polyline, const std::wstring &  rPolygonStatement, bool bWrongPositionAfterZ);
+	bool parsePolygon(std::vector<_polyline> & Polyline, const std::wstring &  rPolygonStatement, bool bWrongPositionAfterZ, bool closed);
 
 }
 }

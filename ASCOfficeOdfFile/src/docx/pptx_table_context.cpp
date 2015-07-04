@@ -78,7 +78,8 @@ void pptx_table_state::start_cell()
 }
 
 void pptx_table_state::end_cell()
-{}
+{
+}
 
 bool pptx_table_state::start_covered_cell(pptx_conversion_context & Context)
 {
@@ -127,11 +128,24 @@ void pptx_table_state::end_covered_cell()
     std::wostream & _Wostream = context_.get_table_context().tableData();
     if (close_table_covered_cell_)
     {
-		const std::wstring cellStyleName = default_row_cell_style_name_.length()>0 ? default_row_cell_style_name_ : default_cell_style_name_; 
-		
-		const odf_reader::style_instance * style_inst = context_.root()->odf_context().styleContainer().style_by_name(cellStyleName, odf_types::style_family::TableCell,false);
+		std::vector<const odf_reader::style_instance *> style_instances;
 
-		oox::oox_serialize_tcPr(_Wostream, style_inst, context_);
+		std::wstring				style_name;
+		odf_reader::style_instance *style_inst = context_.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::TableCell);
+		if (style_inst) style_instances.push_back(style_inst);
+
+		if (!default_cell_style_name_.empty())//template
+		{
+			style_inst = context_.root()->odf_context().styleContainer().style_by_name(default_cell_style_name_, odf_types::style_family::TableCell,false);
+			if (style_inst) style_instances.push_back(style_inst);
+		}
+		if (!default_row_cell_style_name_.empty())
+		{
+			style_inst = context_.root()->odf_context().styleContainer().style_by_name(default_row_cell_style_name_, odf_types::style_family::TableCell,false);
+			if (style_inst) style_instances.push_back(style_inst);
+		}
+
+		oox::oox_serialize_tcPr(_Wostream, style_instances, context_);
 
         // закрываем открытую €чейку
         _Wostream << L"</a:tc>";
@@ -262,20 +276,13 @@ void oox_serialize_border(std::wostream & strm, std::wstring Node, pptx_border_e
 	}
 }
 
-void oox_serialize_tcPr(std::wostream & strm, const odf_reader::style_instance* style_inst, oox::pptx_conversion_context & Context)
+void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::style_instance *> & instances, oox::pptx_conversion_context & Context)
 {
-	const odf_reader::style_instance * default_style_inst = Context.root()->odf_context().styleContainer().style_default_by_type(odf_types::style_family::TableCell);
-
-	std::vector<const odf_reader::style_instance *> instances;
-
-	if (default_style_inst)	instances.push_back(default_style_inst);
-	if (style_inst)			instances.push_back(style_inst);
-	
 	CP_XML_WRITER(strm)
     {
 		CP_XML_NODE(L"a:tcPr")
 		{				
-			if (style_inst || default_style_inst)
+			if (instances.size() > 0)
 			{
 				odf_reader::style_table_cell_properties_attlist style_cell_attlist = odf_reader::calc_table_cell_properties(instances);
 
@@ -314,7 +321,7 @@ void oox_serialize_tcPr(std::wostream & strm, const odf_reader::style_instance* 
 				//vert //
 				//style_cell_attlist.pptx_serialize(Context, CP_XML_STREAM());    //nodes        
 
-				odf_reader::paragraph_format_properties style_paragraph = odf_reader::calc_paragraph_properties_content(style_inst);//instances);
+				odf_reader::paragraph_format_properties style_paragraph = odf_reader::calc_paragraph_properties_content(instances);//instances);
 
 				pptx_border_edge left, top, bottom, right;
 				

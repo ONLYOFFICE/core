@@ -186,7 +186,7 @@ private:
     std::list<pptx_table_state> table_state_stack_;
 };
 
-void oox_serialize_tcPr(std::wostream & strm, const odf_reader::style_instance* style_inst, oox::pptx_conversion_context & Context);
+void oox_serialize_tcPr(std::wostream & strm, std::vector<const odf_reader::style_instance *> & style_inst, oox::pptx_conversion_context & Context);
 
 }
 }

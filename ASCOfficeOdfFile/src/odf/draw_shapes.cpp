@@ -256,7 +256,7 @@ void draw_polygon::reset_polygon_path()
 		std::vector<svg_path::_polyline> o_Polyline_pt;
 		std::vector<svg_path::_polyline> o_Polyline_cm;
 
-		bool res = svg_path::parsePolygon(o_Polyline_cm,draw_polygon_attlist_.draw_points_.get(),false);
+		bool res = svg_path::parsePolygon(o_Polyline_cm,draw_polygon_attlist_.draw_points_.get(),false, true);
 		
 		BOOST_FOREACH(svg_path::_polyline  & poly, o_Polyline_cm)
 		{
@@ -308,7 +308,7 @@ void draw_polyline::reset_polyline_path()
 		std::vector<svg_path::_polyline> o_Polyline_pt;
 		std::vector<svg_path::_polyline> o_Polyline_cm;
 
-		bool res = svg_path::parsePolygon(o_Polyline_cm, draw_polyline_attlist_.draw_points_.get(), false);
+		bool res = svg_path::parsePolygon(o_Polyline_cm, draw_polyline_attlist_.draw_points_.get(), false, false);
 
 		_CP_OPT(double) start_x, start_y;
 		
@@ -320,13 +320,13 @@ void draw_polyline::reset_polyline_path()
 				{
 					if (!start_x)//вообщето это не верно .. но из за разных точек осей поворота фигура может "улететь"
 						start_x = length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu); 
-					poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu) - *start_x; 
+					poly.points[i].x =  length(poly.points[i].x.get()/1000.,length::cm).get_value_unit(length::emu);// - *start_x; 
 				}
 				if (poly.points[i].y)
 				{
 					if (!start_y)
 						start_y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu); 
-					poly.points[i].y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu) - *start_y; 
+					poly.points[i].y = length(poly.points[i].y.get()/1000.,length::cm).get_value_unit(length::emu);// - *start_y; 
 				}
 			}
 			o_Polyline_pt.push_back(poly);

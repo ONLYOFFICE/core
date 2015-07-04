@@ -120,8 +120,15 @@ enum ElementType
     typeStylePageLayout,
     typeStyleMap,
 
-	typeTableBodyTemplate,
 	typeTableTemplate,
+	typeTableTemplateElement,
+	typeTableBodyTemplate,
+	typeTableFirstRowTemplate,
+	typeTableLastRowTemplate,
+	typeTableFirstColumnTemplate,
+	typeTableLastColumnTemplate,
+	typeTableOddColumnsTemplate,
+	typeTableOddRowsTemplate,
 
     typeTextNotesConfiguration,
 

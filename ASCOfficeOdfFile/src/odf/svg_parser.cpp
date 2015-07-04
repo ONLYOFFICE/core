@@ -743,7 +743,7 @@ namespace svg_path
         return true;
     }
 
-	bool parsePolygon(std::vector<_polyline> & Polyline, const std::wstring &  rPolygonStatement, bool bWrongPositionAfterZ)
+	bool parsePolygon(std::vector<_polyline> & Polyline, const std::wstring &  rPolygonStatement, bool bWrongPositionAfterZ, bool closed)
     {
         Polyline.clear();
 
@@ -770,7 +770,7 @@ namespace svg_path
 			aCurrPoly.points.clear();
 			aCurrPoly.command = L"a:lnTo";
 		}
-		if (Polyline.size()>2)
+		if (Polyline.size()>2 && closed)
 		{
 			//замкнем
 			Polyline.push_back(Polyline[0]);

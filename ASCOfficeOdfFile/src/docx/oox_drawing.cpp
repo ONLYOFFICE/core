@@ -72,6 +72,8 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 
 	if ((!strStrokeColor && !iStroke && !dStrokeWidth) && !always_draw)return;
 
+	if ((iStroke) && (*iStroke==0)) return; //none
+
 	CP_XML_WRITER(strm)
     {
         CP_XML_NODE(L"a:ln")
@@ -86,7 +88,7 @@ void oox_serialize_ln(std::wostream & strm, const std::vector<odf_reader::_prope
 				else dash_style =  _ooxDashStyle[iStroke.get()];	
 			}
 			
-			if ((dStrokeWidth) && (dStrokeWidth.get()> 0))
+			if ((dStrokeWidth) && (dStrokeWidth.get()>= 0))
 			{
 				CP_XML_ATTR(L"w",static_cast<size_t>(dStrokeWidth.get() * 12700));//in emu (1 pt = 12700)
 				if (color.length()<1)color = L"729FCF";

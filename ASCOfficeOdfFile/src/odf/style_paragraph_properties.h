@@ -284,57 +284,23 @@ public:
     _CP_OPT( odf_types::border_widths ) style_border_line_width_left_;  // +
     _CP_OPT( odf_types::border_widths ) style_border_line_width_right_; // +
 
-    // 15.5.27
-    // fo:padding
-    _CP_OPT(odf_types::length) fo_padding_;                 // +
-    
-    // fo:padding-top
-    _CP_OPT(odf_types::length) fo_padding_top_;             // +
-    
-    // fo:padding-bottom
-    _CP_OPT(odf_types::length) fo_padding_bottom_;          // +
-    
-    // fo:padding-left
-    _CP_OPT(odf_types::length) fo_padding_left_;            // +
-    
-    // fo:padding-right
-    _CP_OPT(odf_types::length) fo_padding_right_;           // +
-
-    // 15.5.28 style:shadow
-    _CP_OPT(odf_types::shadow_type) style_shadow_;
-
-    // 15.5.29 fo:keep-with-next
-    _CP_OPT(odf_types::keep_together) fo_keep_with_next_;   // +
-
-    // 15.5.30 text:number-lines
-    _CP_OPT(bool) text_number_lines_;
-
-    // 15.5.31 text:line-number
-    _CP_OPT(unsigned int) text_line_number_;
-
-    // 15.5.32 style:text-autospace
-    _CP_OPT(odf_types::text_autospace) style_text_autospace_;
-
-    // 15.5.33 style:punctuation-wrap
+    _CP_OPT(odf_types::length)			fo_padding_;                 // +
+    _CP_OPT(odf_types::length)			fo_padding_top_;             // +
+    _CP_OPT(odf_types::length)			fo_padding_bottom_;          // +
+    _CP_OPT(odf_types::length)			fo_padding_left_;            // +
+    _CP_OPT(odf_types::length)			fo_padding_right_;           // +
+    _CP_OPT(odf_types::shadow_type)		style_shadow_;
+    _CP_OPT(odf_types::keep_together)	fo_keep_with_next_;  
+    _CP_OPT(bool)						text_number_lines_;
+    _CP_OPT(unsigned int)				text_line_number_;
+    _CP_OPT(odf_types::text_autospace)	style_text_autospace_;
     _CP_OPT(odf_types::punctuation_wrap) style_punctuation_wrap_;
-
-    // 15.5.34 style:line-break
-    _CP_OPT(odf_types::line_break) style_line_break_;
-
-    // 15.5.35 style:vertical-align
-    _CP_OPT(odf_types::vertical_align) style_vertical_align_;   // +
-
-    // 15.5.36 style:writing-mode
-    _CP_OPT(odf_types::writing_mode) style_writing_mode_;
-
-    // 15.5.37 style:writing-mode-automatic
-    _CP_OPT(bool) style_writing_mode_automatic_;
-
-    // 15.5.38 style:snap-to-layout-grid
-    _CP_OPT(bool) style_snap_to_layout_grid_;
-    
-    // 15.5.39 style:page-number
-    _CP_OPT(unsigned int) style_page_number_;
+    _CP_OPT(odf_types::line_break)		style_line_break_;
+    _CP_OPT(odf_types::vertical_align)	style_vertical_align_; 
+    _CP_OPT(odf_types::writing_mode)	style_writing_mode_;
+    _CP_OPT(bool)						style_writing_mode_automatic_;
+    _CP_OPT(bool)						style_snap_to_layout_grid_;
+    _CP_OPT(unsigned int)				style_page_number_;
 
     // 15.5.40 style:background-transparency
     _CP_OPT(odf_types::percent) style_background_transparency_;

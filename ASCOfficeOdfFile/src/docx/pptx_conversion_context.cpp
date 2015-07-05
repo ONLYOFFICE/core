@@ -39,6 +39,7 @@ pptx_conversion_context::pptx_conversion_context(cpdoccore::oox::package::pptx_d
 	,pptx_comments_context_(comments_context_handle_)
 	,pptx_slide_context_(*this/*, pptx_text_context_*/)
 	,last_idx_placeHolder(1)
+	,last_uniq_big_id(1)
 {
     applicationFonts_ = new CApplicationFonts();
 }
@@ -183,7 +184,7 @@ void pptx_conversion_context::start_document()
 
 void pptx_conversion_context::end_document()
 {
-    unsigned int count = 0;
+    unsigned int count = 1;
    
 	BOOST_FOREACH(const pptx_xml_slideMaster_ptr& slideM, slideMasters_)
     {
@@ -198,11 +199,11 @@ void pptx_conversion_context::end_document()
         {
             CP_XML_NODE(L"p:sldMasterId")
             {
-                CP_XML_ATTR(L"id", 0x80000000 + count); 
+                CP_XML_ATTR(L"id", 0x80000000 + last_uniq_big_id++); 
                 CP_XML_ATTR(L"r:id", slideM->rId());            
             }
         }
-        count++;		
+		count++;
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 	count=0;
@@ -470,7 +471,7 @@ bool pptx_conversion_context::start_master(int master_index)
 
 	for (long i=0;i<masters.content[master_index].layouts.size();i++)
 	{
-		current_master().add_layout(masters.content[master_index].layouts[i].Id, masters.content[master_index].layouts[i].rId);
+		current_master().add_layout(masters.content[master_index].layouts[i].Id, masters.content[master_index].layouts[i].rId, 0x80000000 + last_uniq_big_id++);
 	}
 
 

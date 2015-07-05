@@ -207,8 +207,22 @@ void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf_reader::_p
     {
 		CP_XML_NODE(L"a:bodyPr")
 		{
-			_CP_OPT(int) iAlign;
+			_CP_OPT(double)dPaddingLeft, dPaddingRight, dPaddingTop, dPaddingBottom;
+			odf_reader::GetProperty(prop,L"text-padding-left"	, dPaddingLeft);
+			odf_reader::GetProperty(prop,L"text-padding-right"	, dPaddingRight);
+			odf_reader::GetProperty(prop,L"text-padding-top"	, dPaddingTop);
+			odf_reader::GetProperty(prop,L"text-padding-bottom"	, dPaddingBottom);
+			
+			if (dPaddingLeft)	CP_XML_ATTR(L"lIns", (int)(*dPaddingLeft));
+			if (dPaddingRight)	CP_XML_ATTR(L"rIns", (int)(*dPaddingRight));
+			if (dPaddingTop)	CP_XML_ATTR(L"tIns", (int)(*dPaddingTop));
+			if (dPaddingBottom)	CP_XML_ATTR(L"bIns", (int)(*dPaddingBottom));
 
+			_CP_OPT(int)	iWrap;
+			odf_reader::GetProperty(prop,L"text-wrap"	, iWrap);
+			if ((iWrap) && (*iWrap == 0))CP_XML_ATTR(L"wrap", L"none");
+
+			_CP_OPT(int) iAlign;
 			odf_reader::GetProperty(prop,L"textarea-vertical_align",iAlign);
 			if (iAlign)
 			{

@@ -59,11 +59,11 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 
     const int z_index = common_draw_attlist_.common_draw_z_index_attlist_.draw_z_index_.get_value_or(0);
 
-    const std::wstring name = common_draw_attlist_.common_draw_name_attlist_.draw_name_.get_value_or(L"");
+    const std::wstring name				= common_draw_attlist_.common_draw_name_attlist_.draw_name_.get_value_or(L"");
 
-    const std::wstring textStyleName = common_draw_attlists_.shape_with_text_and_styles_.
-        common_draw_text_style_name_attlist_.
-        draw_text_style_name_.get_value_or(style_ref(L"")).style_name();
+    const std::wstring textStyleName	= common_draw_attlists_.shape_with_text_and_styles_.
+														common_draw_text_style_name_attlist_.
+														draw_text_style_name_.get_value_or(style_ref(L"")).style_name();
 
 //////////////////////////////////////////////////////////////////////////
 	const _CP_OPT(length) svg_widthVal =  common_draw_attlists_.rel_size_.common_draw_size_attlist_.svg_width_;    
@@ -151,6 +151,14 @@ void draw_frame::pptx_convert(oox::pptx_conversion_context & Context)
 		
 		if (idx_in_owner >=0)
 			Context.get_slide_context().set_placeHolder_idx(idx_in_owner);
+	}
+
+	if (!textStyleName.empty())
+	{
+		odf_reader::style_instance* textStyleInst = 
+			Context.root()->odf_context().styleContainer().style_by_name(textStyleName, odf_types::style_family::Paragraph, Context.process_masters_);
+
+		paragraph_format_properties paragraph_properties = calc_paragraph_properties_content(textStyleInst);
 	}
 
 	if (office_event_listeners_)office_event_listeners_->pptx_convert(Context);

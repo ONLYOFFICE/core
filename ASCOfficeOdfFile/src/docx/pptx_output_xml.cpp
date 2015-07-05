@@ -194,9 +194,9 @@ void pptx_xml_slideMaster::add_theme(int id, const std::wstring & tId)
 			std::wstring(L"../theme/theme")  + boost::lexical_cast<std::wstring>(id) + L".xml"));
 }
 
-void pptx_xml_slideMaster::add_layout(int id, const std::wstring & rId)
+void pptx_xml_slideMaster::add_layout(int id, const std::wstring & rId, const unsigned int & uniqId)
 {
-	layoutsId_.push_back(rId);
+	layoutsId_.push_back(std::pair<std::wstring, unsigned int>(rId, uniqId));
 
 	rels_.add(relationship( rId,L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/slideLayout",
 			std::wstring(L"../slideLayouts/slideLayout")  + boost::lexical_cast<std::wstring>(id) + L".xml"));
@@ -236,18 +236,16 @@ void pptx_xml_slideMaster::write_to(std::wostream & strm)
 				CP_XML_ATTR(L"bg2",L"lt2");
 				CP_XML_ATTR(L"bg1",L"lt1");
 			}
-			long count=0;
 			CP_XML_NODE(L"p:sldLayoutIdLst")
 			{
-				BOOST_FOREACH(const std::wstring & q, layoutsId_)
+				for (int i = 0; i < layoutsId_.size(); i++)
 				{
 					CP_XML_NODE(L"p:sldLayoutId")
 					{
-						CP_XML_ATTR(L"r:id",q);
-						CP_XML_ATTR(L"id",0x80000000 + (++count) + (id_-1)*20); // ваще уникальные номера .. для всех мастер слайдов
+						CP_XML_ATTR(L"r:id", layoutsId_[i].first);
+						CP_XML_ATTR(L"id", layoutsId_[i].second);
 					}
 				}
-				count++;
 			}
 			CP_XML_STREAM() << slideMasterDataExtra_.str();
 			CP_XML_NODE(L"p:txStyles")

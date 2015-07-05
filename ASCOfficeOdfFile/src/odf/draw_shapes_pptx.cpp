@@ -111,6 +111,13 @@ void draw_shape::common_pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		Context.get_slide_context().set_property(p);
 	}
+	if (!textStyleName.empty())
+	{
+		odf_reader::style_instance* textStyleInst = 
+			Context.root()->odf_context().styleContainer().style_by_name(textStyleName, odf_types::style_family::Paragraph, Context.process_masters_);
+
+		paragraph_format_properties paragraph_properties = calc_paragraph_properties_content(textStyleInst);
+	}
 ///////////////////////////////////////////////////////////////////////////////////////	
 	oox::_oox_fill fill;
 	Compute_GraphicFill(properties.common_draw_fill_attlist_, properties.style_background_image_, 

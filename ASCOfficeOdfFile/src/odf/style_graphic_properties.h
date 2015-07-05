@@ -26,6 +26,7 @@
 #include "datatypes/markerstyle.h"
 #include "datatypes/verticalalign.h"
 #include "datatypes/gradientstyle.h"
+#include "datatypes/wrapoption.h"
 
 
 namespace cpdoccore { 
@@ -98,7 +99,8 @@ public:
     _CP_OPT(std::wstring)					style_overflow_behavior_;
     _CP_OPT(std::wstring)					style_mirror_;
 
-    _CP_OPT(std::wstring)	fo_clip_;
+    _CP_OPT(std::wstring)					fo_clip_;
+    _CP_OPT(odf_types::wrap_option)			fo_wrap_option_;
 
     
     office_element_ptr		style_background_image_;

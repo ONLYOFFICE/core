@@ -359,6 +359,7 @@ void text_format_properties_content::pptx_convert_as_list(oox::pptx_conversion_c
 			{				
 				CP_XML_NODE(L"a:buFont")
 				{			
+					removeCharsFromString(w_font, _T("'"));
 					CP_XML_ATTR(L"typeface", w_font);
 					if ((style_font_charset_))
 					{		

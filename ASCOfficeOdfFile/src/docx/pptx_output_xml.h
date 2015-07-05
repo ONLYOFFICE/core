@@ -112,7 +112,7 @@ public:
 	std::wostream & Background();
 	rels & Rels();
 
-	void add_layout(int id, const std::wstring & rId);
+	void add_layout(int id, const std::wstring & rId, const unsigned int & uniqId);
  	void add_theme(int id, const std::wstring & tId);
    
     void write_to(std::wostream & strm);
@@ -124,7 +124,7 @@ private:
 	std::wstringstream  slideMasterDataExtra_;
     std::wstringstream  slideMasterBackground_;
 	
-	std::vector<std::wstring> layoutsId_;
+	std::vector<std::pair<std::wstring, unsigned int>> layoutsId_;
 	std::wstring rId_;
 	int id_;
 

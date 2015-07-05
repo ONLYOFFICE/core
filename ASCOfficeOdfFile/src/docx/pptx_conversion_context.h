@@ -102,10 +102,11 @@ public:
 
 	int last_idx_placeHolder;
 private:
+	int		last_uniq_big_id;
 
-    void create_new_slide(std::wstring const & name);
-	void create_new_slideLayout(int id);
-	void create_new_slideMaster(int id);
+    void	create_new_slide(std::wstring const & name);
+	void	create_new_slideLayout(int id);
+	void	create_new_slideMaster(int id);
 
 	package::pptx_document		* output_document_; 
     odf_reader::odf_document	* odf_document_;    

@@ -608,7 +608,7 @@ void pptx_text_context::Impl::start_list_item(bool restart)
 
 void pptx_text_context::Impl::start_list(const std::wstring & StyleName, bool Continue)
 {
-    if (paragraphs_cout_ > 0)
+    if (paragraphs_cout_ > 0 && in_paragraph)
     {	
 		dump_paragraph();
 	}

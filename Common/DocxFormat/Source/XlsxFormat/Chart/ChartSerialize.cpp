@@ -14262,7 +14262,7 @@ namespace OOX{
 			WritingElement_ReadAttributes_Start_No_NS( oReader )
 				if(_T("val") == wsName)
 				{
-					char* pNewElem = new char;
+					signed char* pNewElem = new signed char;
 					CString sVal = oReader.GetText();
 					*pNewElem = _ttoi(sVal);
 					m_val = pNewElem;

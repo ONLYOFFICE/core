@@ -3057,7 +3057,7 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                     
                     std::wstring wsTempString = NSCommonReader::ReadString16(current, curindex, _sLen);
                     
-                    CString base64TempFile;
+					std::wstring base64TempFile;
                     if (0 == wsTempString.find(_T("data:")))
                     {
                         try
@@ -3076,8 +3076,8 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                             if (Base64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(),
                                                      byteIm, &nBuffLen))
                             {
-                                WriteFile_ (base64TempFile, byteIm, nBuffLen);
-                                wsTempString = string2std_string(base64TempFile);
+                                WriteFile_ (std_string2string(base64TempFile), byteIm, nBuffLen);
+                                wsTempString = base64TempFile;
                             }
                             else throw;
                         }
@@ -3320,7 +3320,7 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                     _sLen = NSCommonReader::ReadInt(current, curindex);
                     std::wstring wsTempString = NSCommonReader::ReadString16(current, curindex, _sLen);
 					
-                    CString base64TempFile;
+					std::wstring base64TempFile;
                     if (0 == wsTempString.find(_T("data:")))
                     {
                         try
@@ -3338,8 +3338,8 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                             
                             if (Base64::Base64Decode(sBase64MultyByte.c_str(), sBase64MultyByte.length(), byteIm, &nBuffLen))
                             {
-                                WriteFile_ (base64TempFile, byteIm,nBuffLen);
-                                wsTempString = string2std_string(base64TempFile);
+                                WriteFile_ (std_string2string(base64TempFile), byteIm,nBuffLen);
+                                wsTempString = base64TempFile;
                             }
                             else throw;
                         }

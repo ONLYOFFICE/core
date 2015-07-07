@@ -89,6 +89,8 @@ public:
 	void start_object(std::wstring name);
 	void end_object();
 
+	void corrected_line_fill();
+
 	office_element_ptr & get_root_element();
 
 	void start_element(office_element_ptr & elm, office_element_ptr  style_elm = office_element_ptr());

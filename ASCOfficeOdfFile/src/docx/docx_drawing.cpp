@@ -158,10 +158,11 @@ void serialize_wrap(std::wostream & strm, _docx_drawing const & val)
 
 void docx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_property> & properties)
 {
-    CP_XML_WRITER(strm)
-    {
-		_CP_OPT(std::wstring) strTextContent;
-		odf_reader::GetProperty(properties,L"text-content",strTextContent);
+	_CP_OPT(std::wstring) strTextContent;
+	odf_reader::GetProperty(properties,L"text-content",strTextContent);
+
+	CP_XML_WRITER(strm)
+	{			
 		if (strTextContent)
 		{
 			CP_XML_NODE(L"wps:txbx")
@@ -172,55 +173,12 @@ void docx_serialize_text(std::wostream & strm, const std::vector<odf_reader::_pr
 					CP_XML_STREAM() << test_string;
 				}
 			}
-			CP_XML_NODE(L"wps:bodyPr")
-			{	
-				_CP_OPT(bool)	bWordArt;
-				odf_reader::GetProperty(properties, L"wordArt", bWordArt);
-
-				_CP_OPT(int) iAlign;
-
-				odf_reader::GetProperty(properties, L"textarea-vertical_align", iAlign);
-				if (iAlign)
-				{
-					switch (iAlign.get())
-					{
-					case 0://Baseline,
-						CP_XML_ATTR(L"anchor", L"dist");break;
-					case 1://Top,
-					case 4://Auto,
-						CP_XML_ATTR(L"anchor", L"t");break;
-					case 2://Middle,
-						CP_XML_ATTR(L"anchor", L"ctr");break;
-					case 3://Bottom,
-						CP_XML_ATTR(L"anchor", L"b");break;
-					case 5://Justify
-						CP_XML_ATTR(L"anchor", L"just");break;
-					}
-				}
-				//else CP_XML_ATTR(L"anchor", L"dist");break;
-				if (bWordArt)
-				{
-					_CP_OPT(int) iVal;
-					odf_reader::GetProperty(properties, L"odf-custom-draw-index", iVal);
-					if (iVal)
-					{
-						int i = *iVal;
-						std::wstring shapeType = _OO_OOX_wordart[*iVal].oox;		
-						CP_XML_ATTR(L"fromWordArt", "1");
-						CP_XML_NODE(L"a:prstTxWarp")
-						{
-							CP_XML_ATTR(L"prst", shapeType);
-							oox_serialize_aLst(CP_XML_STREAM(), properties);
-						}
-					}
-				}
-			}
-
 		}
-		else
-			CP_XML_NODE(L"wps:bodyPr");
-    }
+	}	
+
+	oox_serialize_bodyPr(strm, properties, L"wps");
 }
+
 void docx_serialize_image(std::wostream & strm, _docx_drawing & val)
 {
     CP_XML_WRITER(strm)    

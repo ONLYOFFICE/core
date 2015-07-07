@@ -104,7 +104,9 @@ public:
     void add_attributes( const xml::attributes_wc_ptr & Attributes );
 
 public:
-    _CP_OPT(std::wstring)			draw_copy_of_;
+    _CP_OPT(std::wstring)					draw_copy_of_;
+    _CP_OPT(odf_types::length_or_percent)	fo_min_width_;
+    _CP_OPT(odf_types::length_or_percent)	fo_min_height_;
 };
 
 

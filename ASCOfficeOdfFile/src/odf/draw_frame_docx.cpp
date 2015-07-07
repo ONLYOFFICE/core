@@ -832,7 +832,7 @@ void common_draw_docx_convert(oox::docx_conversion_context & Context, const unio
 	
 	if (graphicProperties.common_border_attlist_.fo_border_)
 	{
-		if (graphicProperties.common_border_attlist_.fo_border_->initialized())
+		if (graphicProperties.common_border_attlist_.fo_border_->is_none() == false)
 		{
 			drawing.additional.push_back(_property(L"stroke-color",	graphicProperties.common_border_attlist_.fo_border_->get_color().get_hex_value() ));
 			drawing.additional.push_back(_property(L"stroke-width",	graphicProperties.common_border_attlist_.fo_border_->get_length().get_value_unit(odf_types::length::pt) ));
@@ -1122,15 +1122,29 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 /////////
 	common_draw_docx_convert(Context, frame->common_draw_attlists_, drawing);
 //+ локальные 
+
+	bool auto_fit_text = false;
+
+	if (!draw_text_box_attlist_.fo_min_height_)		draw_text_box_attlist_.fo_min_height_ = frame->draw_frame_attlist_.fo_min_height_;
+	if (!draw_text_box_attlist_.fo_min_width_)		draw_text_box_attlist_.fo_min_width_ = frame->draw_frame_attlist_.fo_min_width_;
+
 	if ((draw_text_box_attlist_.fo_min_height_) && (draw_text_box_attlist_.fo_min_height_->get_type()==length_or_percent::Length))
 	{
 		size_t min_y = get_value_emu(draw_text_box_attlist_.fo_min_height_->get_length());
-		if (drawing.cy < min_y) drawing.cy = min_y;
+		if (drawing.cy < min_y) 
+		{
+			drawing.cy = min_y;
+			auto_fit_text = true;
+		}
 	}
 	if ((draw_text_box_attlist_.fo_min_width_) && (draw_text_box_attlist_.fo_min_width_->get_type()==length_or_percent::Length))
 	{
 		size_t min_x = get_value_emu(draw_text_box_attlist_.fo_min_width_->get_length());
-		if (drawing.cx < min_x) drawing.cx = min_x;
+		if (drawing.cx < min_x)
+		{
+			drawing.cx = min_x;
+			auto_fit_text = true;
+		}
 	}
 	if ((draw_text_box_attlist_.fo_max_height_) && (draw_text_box_attlist_.fo_max_height_->get_type()==length_or_percent::Length))
 	{
@@ -1142,6 +1156,8 @@ void draw_text_box::docx_convert(oox::docx_conversion_context & Context)
 		size_t max_x = get_value_emu(draw_text_box_attlist_.fo_max_width_->get_length());
 		if (drawing.cx > max_x) drawing.cy = max_x;
 	}
+	if (auto_fit_text)
+		drawing.additional.push_back(_property(L"fit-to-size",	auto_fit_text));
 
 ///////////////////////////////////////////////////////////////////
 

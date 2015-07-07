@@ -17,6 +17,8 @@
 #include "style_text_properties.h"
 #include "documentcontext.h"
 
+#include "calcs_styles.h"
+
 namespace cpdoccore { 
 
 	using namespace odf_types;
@@ -116,12 +118,35 @@ int process_paragraph_attr(const paragraph_attrs & Attr, oox::docx_conversion_co
                 {
                     std::wstring id;
                     if (const style_instance * parentStyleContent = styleInst->parent())
+					{
                         id = Context.get_style_map().get( parentStyleContent->name(), parentStyleContent->type() );
+					}
+
                     Context.start_automatic_style(id);
+					
+					{//вытаскивает rtl c цепочки стилей !! - просто прописать в наследуемом Ќ≈Ћ№«я !!
+						paragraph_format_properties properties = calc_paragraph_properties_content(styleInst);
+
+ 						if (properties.style_writing_mode_)
+						{
+							writing_mode::type type = properties.style_writing_mode_->get_type();
+							switch(type)
+							{
+							case writing_mode::RlTb:
+							case writing_mode::TbRl:
+							case writing_mode::Rl:
+								Context.set_rtl(true);
+								break;
+							default:
+								Context.set_rtl(false);
+							}
+						}
+					}
                     
 					styleContent->docx_convert(Context);                
                    
 					Context.end_automatic_style();
+
                     Context.push_text_properties(styleContent->get_style_text_properties());
                     return 1;
                 }            

@@ -118,22 +118,22 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				Context.set_rtl(false);
 			}
 		}
-        
+		if (Context.rtl()) //может быть он установился от стиля родителя !!
+		{
+			_pPr << L"<w:bidi/>";
+		}
+	    
 		if (fo_text_align_)
 		{
 			std::wstring jc;
 			switch(fo_text_align_->get_type())
 			{
-			case text_align::Start:
-			case text_align::Left:
-				jc = L"left";	break;
-			case text_align::End:
-			case text_align::Right:
-				jc = L"right";	break;
-			case text_align::Center:
-				jc = L"center";	break;
-			case text_align::Justify:
-				jc = L"both";	break;
+				case text_align::Left:			jc = L"left";	break;
+				case text_align::Right:			jc = L"right";	break;
+				case text_align::Center:		jc = L"center";	break;
+				case text_align::Justify:		jc = L"both";	break;
+				case text_align::Start:			jc = Context.rtl() ? L"end": L"start"; break;
+				case text_align::End:			jc = Context.rtl() ? L"start": L"end"; break;
 			}
 
 			if (!jc.empty()) CP_XML_NODE(L"w:jc"){CP_XML_ATTR(L"w:val", jc );}
@@ -360,7 +360,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 				CP_XML_ATTR(L"w:val", L"clear"); 
 				CP_XML_ATTR(L"w:color", L"auto");
 				CP_XML_ATTR(L"w:fill", w_fill );
-		}
+			}
 		}
 	}
     if (fo_break_after_ && fo_break_after_->get_type() == fo_break::Page)

@@ -631,6 +631,8 @@ void odf_drawing_context::end_shape()
 	if (impl_->current_drawing_state_.oox_shape_preset == 3000) return end_image();
 	//вторичные, вычисляемые свойства шейпов
 
+	bool line_always_present = false;
+
 	draw_path* path = dynamic_cast<draw_path*>(impl_->current_drawing_state_.elements_[0].elm.get());
 	if (path)
 	{
@@ -640,6 +642,8 @@ void odf_drawing_context::end_shape()
 		
 		if (impl_->current_drawing_state_.path_.length()>1) 	path->draw_path_attlist_.svg_d_ = impl_->current_drawing_state_.path_;
 		if (impl_->current_drawing_state_.view_box_.length()>1)	path->draw_path_attlist_.svg_viewbox_ = impl_->current_drawing_state_.view_box_;
+
+		line_always_present = true;
 	}
 ////////////////////////////////////////////////////////////////////////////////////////////
 	draw_line* line = dynamic_cast<draw_line*>(impl_->current_level_.back().get());
@@ -676,6 +680,8 @@ void odf_drawing_context::end_shape()
 			line->draw_line_attlist_.svg_x1_ = line->draw_line_attlist_.svg_x2_;
 			line->draw_line_attlist_.svg_x2_ = tmp;
 		}
+		
+		line_always_present = true;
 	}
 
 ////////////////////////////////////////////////////////////////////////////////////
@@ -683,6 +689,7 @@ void odf_drawing_context::end_shape()
 	if (connector)
 	{
 		if (!connector->draw_connector_attlist_.draw_type_) connector->draw_connector_attlist_.draw_type_ = L"line";
+		line_always_present = true;
 	}
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -701,7 +708,10 @@ void odf_drawing_context::end_shape()
 			text_shape = true;
 		}
 		else
+		{
 			sub_type = L"polyline";
+			line_always_present = true;
+		}
 		
 		office_element_ptr enhanced_elm;
 		create_element(L"draw", L"enhanced-geometry", enhanced_elm, impl_->odf_context_);
@@ -797,7 +807,24 @@ void odf_drawing_context::end_shape()
 	}
 	end_element();
 }
-
+void odf_drawing_context::corrected_line_fill()
+{
+	if (!impl_->current_graphic_properties)return;
+	
+	if ( !impl_->current_graphic_properties->content().draw_stroke_ &&
+			 !impl_->current_graphic_properties->content().svg_stroke_color_ &&
+			 !impl_->current_graphic_properties->content().draw_stroke_dash_ &&
+			 !impl_->current_graphic_properties->content().svg_stroke_width_ && 
+			 !impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ &&
+			 !impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_color_ && 
+			 !impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_image_name_ &&
+			!impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_hatch_name_ &&
+			!impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_gradient_name_)
+	{
+		impl_->current_graphic_properties->content().svg_stroke_width_ = length(length(1. ,length::pt).get_value_unit(length::cm),length::cm);
+		impl_->current_graphic_properties->content().common_draw_fill_attlist_.draw_fill_ = draw_fill::none;;
+	}
+}
 void odf_drawing_context::start_frame()
 {
 	impl_->create_draw_base(0);

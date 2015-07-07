@@ -36,6 +36,8 @@ void draw_image_attlist::add_attributes( const xml::attributes_wc_ptr & Attribut
 void draw_frame_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 	CP_APPLY_ATTR(L"draw:copy-of", draw_copy_of_);
+    CP_APPLY_ATTR(L"fo:min-width", fo_min_width_);
+    CP_APPLY_ATTR(L"fo:min-height", fo_min_height_);
 }
 /// draw-gframe-attlist
 void draw_g_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )

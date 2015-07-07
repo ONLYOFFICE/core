@@ -262,7 +262,12 @@ void pptx_text_context::Impl::ApplyListProperties(odf_reader::paragraph_format_p
 			odf_reader::text_list_level_style_number* list_number = dynamic_cast<odf_reader::text_list_level_style_number *>(elm.get());
 			if (list_number)elm_list = list_number->style_list_level_properties_;
 		}
-	////////////////////
+		if (elm->get_type() == odf_reader::typeTextListLevelStyleImage)
+		{
+			odf_reader::text_list_level_style_image* list_image = dynamic_cast<odf_reader::text_list_level_style_image *>(elm.get());
+			if (list_image)elm_list = list_image->style_list_level_properties_;
+		}
+		////////////////////
 		if (elm_list)
 		{
 			list_properties = dynamic_cast<odf_reader::style_list_level_properties	*>(elm_list.get());

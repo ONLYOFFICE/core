@@ -198,14 +198,14 @@ void oox_serialize_aLst(std::wostream & strm, const std::vector<odf_reader::_pro
 		}
 	}
 }
-void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf_reader::_property> & prop)
+void oox_serialize_bodyPr(std::wostream & strm, const std::vector<odf_reader::_property> & prop, const std::wstring & namespace_)
 {
 	_CP_OPT(bool)	bWordArt;
 	odf_reader::GetProperty(prop,L"wordArt", bWordArt);
 
 	CP_XML_WRITER(strm)
     {
-		CP_XML_NODE(L"a:bodyPr")
+		CP_XML_NODE(namespace_ + L":bodyPr")
 		{
 			_CP_OPT(double)dPaddingLeft, dPaddingRight, dPaddingTop, dPaddingBottom;
 			odf_reader::GetProperty(prop,L"text-padding-left"	, dPaddingLeft);

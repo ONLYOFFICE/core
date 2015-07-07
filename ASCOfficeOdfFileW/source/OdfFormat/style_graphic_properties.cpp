@@ -31,29 +31,31 @@ void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar
 			CP_XML_ATTR_OPT(L"draw:textarea-vertical-align",	draw_textarea_vertical_align_);
 			CP_XML_ATTR_OPT(L"draw:auto-grow-height",			draw_auto_grow_height_);
 			CP_XML_ATTR_OPT(L"draw:auto-grow-width",			draw_auto_grow_width_);			
+			CP_XML_ATTR_OPT(L"draw:fit-to-size",				draw_fit_to_size_);
+			CP_XML_ATTR_OPT(L"draw:fit-to-contour",				draw_fit_to_contour_);
 			
-			CP_XML_ATTR_OPT(L"draw:stroke",			draw_stroke_); 
-			CP_XML_ATTR_OPT(L"draw:stroke-dash",	draw_stroke_dash_); 
-			CP_XML_ATTR_OPT(L"draw:marker-start",	draw_marker_start_); 
-			CP_XML_ATTR_OPT(L"draw:marker-end",		draw_marker_end_); 
-			CP_XML_ATTR_OPT(L"draw:marker-start-width",		draw_marker_start_width_);
-			CP_XML_ATTR_OPT(L"draw:marker-end-width",		draw_marker_end_width_);
-			CP_XML_ATTR_OPT(L"svg:stroke-color",	svg_stroke_color_); 
-			CP_XML_ATTR_OPT(L"svg:stroke-width",	svg_stroke_width_);	
-			CP_XML_ATTR_OPT(L"svg:stroke-opacity",	svg_stroke_opacity_); 
+			CP_XML_ATTR_OPT(L"draw:stroke",				draw_stroke_); 
+			CP_XML_ATTR_OPT(L"draw:stroke-dash",		draw_stroke_dash_); 
+			CP_XML_ATTR_OPT(L"draw:marker-start",		draw_marker_start_); 
+			CP_XML_ATTR_OPT(L"draw:marker-end",			draw_marker_end_); 
+			CP_XML_ATTR_OPT(L"draw:marker-start-width",	draw_marker_start_width_);
+			CP_XML_ATTR_OPT(L"draw:marker-end-width",	draw_marker_end_width_);
+			CP_XML_ATTR_OPT(L"svg:stroke-color",		svg_stroke_color_); 
+			CP_XML_ATTR_OPT(L"svg:stroke-width",		svg_stroke_width_);	
+			CP_XML_ATTR_OPT(L"svg:stroke-opacity",		svg_stroke_opacity_); 
 
-			CP_XML_ATTR_OPT(L"fo:min-width",	fo_min_width_);
-			CP_XML_ATTR_OPT(L"fo:min-height",	fo_min_height_);
-			CP_XML_ATTR_OPT(L"fo:max-width",	fo_max_width_);
-			CP_XML_ATTR_OPT(L"fo:max-height",	fo_max_height_);
-			CP_XML_ATTR_OPT(L"fo:clip",			fo_clip_);
-			CP_XML_ATTR_OPT(L"fo:wrap-option",	fo_wrap_option_);			
+			CP_XML_ATTR_OPT(L"fo:min-width",			fo_min_width_);
+			CP_XML_ATTR_OPT(L"fo:min-height",			fo_min_height_);
+			CP_XML_ATTR_OPT(L"fo:max-width",			fo_max_width_);
+			CP_XML_ATTR_OPT(L"fo:max-height",			fo_max_height_);
+			CP_XML_ATTR_OPT(L"fo:clip",					fo_clip_);
+			CP_XML_ATTR_OPT(L"fo:wrap-option",			fo_wrap_option_);			
 		   
 			CP_XML_ATTR_OPT(L"style:print-content",		style_print_content_);
 			CP_XML_ATTR_OPT(L"style:protect",			style_protect_);
  			CP_XML_ATTR_OPT(L"style:editable",			style_editable_);
 			CP_XML_ATTR_OPT(L"style:wrap",				style_wrap_);
-			CP_XML_ATTR_OPT(L"style:wrap-dynamic-treshold", style_wrap_dynamic_treshold_);
+			CP_XML_ATTR_OPT(L"style:wrap-dynamic-treshold",		style_wrap_dynamic_treshold_);
 			CP_XML_ATTR_OPT(L"style:number-wrapped-paragraphs", style_number_wrapped_paragraphs_);
 			CP_XML_ATTR_OPT(L"style:wrap-contour",		style_wrap_contour_);
 			CP_XML_ATTR_OPT(L"style:wrap-contour-mode", style_wrap_contour_mode_);
@@ -61,7 +63,6 @@ void graphic_format_properties::serialize(std::wostream & _Wostream ,const wchar
 			CP_XML_ATTR_OPT(L"style:flow-with-text",	style_flow_with_text_);
 			CP_XML_ATTR_OPT(L"style:overflow-behavior", style_overflow_behavior_);
 			CP_XML_ATTR_OPT(L"style:mirror",			style_mirror_);
-			CP_XML_ATTR_OPT(L"draw:fit-to-size", draw_fit_to_size_);
 			
 			//common_shadow_attlist_.serialize(CP_GET_XML_NODE());
 

@@ -420,7 +420,7 @@ const std::wstring & font_instance::style_name() const
 
 const std::wstring & font_instance::name() const
 {
-    static const std::wstring Symbol = L"Wingdings";
+    static const std::wstring Symbol = L"Symbol";
     if (name_ == L"StarSymbol")
         return Symbol;
     else

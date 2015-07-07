@@ -79,7 +79,8 @@ void styles_context::docx_serialize_text_style(std::wostream & strm, std::wstrin
 				{
 					CP_XML_STREAM() << L"<w:rStyle w:val=\"" << parenStyleId << L"\" />";
 				}
-				CP_XML_STREAM() << text_style_.str();
+				const std::wstring & test_str = text_style_.str();
+				CP_XML_STREAM() << test_str;
 			}
 		}
 	}

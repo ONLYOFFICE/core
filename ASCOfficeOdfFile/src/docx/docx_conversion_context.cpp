@@ -410,17 +410,20 @@ mc:Ignorable=\"w14 wp14\">";
     std::vector<int> numIds;
 	BOOST_FOREACH(odf_reader::list_style_instance_ptr & inst, list_styles.instances())
     {
-        //const int abstractNumId = list_context_.add_list_style(inst->get_text_list_style()->get_style_name());
-        const int abstractNumId = list_styles.id_by_name(inst->get_style_name());
-        strm << L"<w:abstractNum w:abstractNumId=\"" << abstractNumId << "\">";
-        numIds.push_back(abstractNumId);
-
         odf_reader::office_element_ptr_array & content = inst->get_text_list_style()->get_content();
+
+		if (content.size() < 1) 
+			continue;
+       
+		const int abstractNumId = list_styles.id_by_name(inst->get_style_name());
         
-        BOOST_FOREACH(odf_reader::office_element_ptr & elm, content)
+        strm << L"<w:abstractNum w:abstractNumId=\"" << abstractNumId << "\">";
+        numIds.push_back(abstractNumId);		
+		
+		for (int i = 0; i < (std::min)( content.size(), (unsigned int)9); i++)
         {
             start_text_list_style(inst->get_text_list_style()->get_style_name());
-            elm->docx_convert(*this);
+            content[i]->docx_convert(*this);
             // TODO
             end_text_list_style();        
         }
@@ -621,7 +624,8 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
 				{
 					CP_XML_NODE(L"w:rPr")
 					{
-						CP_XML_STREAM() << run_style.str();
+						const std::wstring & test_str = run_style.str();
+						CP_XML_STREAM() << test_str;
 					}
 				}
 			}

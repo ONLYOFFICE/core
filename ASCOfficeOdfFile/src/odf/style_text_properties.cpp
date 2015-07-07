@@ -573,7 +573,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
     std::wostream & _rPr = Context.get_styles_context().text_style();
     if (Context.rtl())
     {
-        _rPr << L"<w:rtl w:val=\"true\" />";
+        _rPr << L"<w:rtl/>";/* w:val=\"true\" */
     }
     
     if (r_style_)

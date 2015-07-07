@@ -1822,6 +1822,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 			OoxConverter::convert(oox_pic->m_oShape.GetPointer()); 		
 			OoxConverter::convert(oox_pic->m_oShapeOval.GetPointer());
 			
+			odf_context()->drawing_context()->corrected_line_fill();
 			odf_context()->drawing_context()->end_shape(); 
 		}
 		else if (oox_pic->m_oShapeCurve.IsInit())
@@ -1866,6 +1867,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 			OoxConverter::convert(oox_pic->m_oShape.GetPointer());		
 			OoxConverter::convert(oox_pic->m_oShapeArc.GetPointer());
 			
+			odf_context()->drawing_context()->corrected_line_fill();
 			odf_context()->drawing_context()->end_shape(); 
 		}
 		else if (oox_pic->m_oShapeRect.IsInit())
@@ -1888,6 +1890,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 				OoxConverter::convert(oox_pic->m_oShape.GetPointer());
 				OoxConverter::convert(oox_pic->m_oShapeRect.GetPointer());
 				
+				odf_context()->drawing_context()->corrected_line_fill();
 				odf_context()->drawing_context()->end_shape(); 
 			}
 		}
@@ -1899,6 +1902,7 @@ void DocxConverter::convert(OOX::Logic::CPicture* oox_pic)
 			OoxConverter::convert(oox_pic->m_oShape.GetPointer());
 			OoxConverter::convert(oox_pic->m_oShapeRoundRect.GetPointer());
 			
+			odf_context()->drawing_context()->corrected_line_fill();
 			odf_context()->drawing_context()->end_shape(); 
 		}
 		else if (oox_pic->m_oShapeType.IsInit())
@@ -2873,7 +2877,12 @@ void DocxConverter::convert(OOX::Numbering::CLvl* oox_num_lvl)
 			}
 		}
 	}
-	//nullable<ComplexTypes::Word::CDecimalNumber                  > m_oStart;
+	if ((oox_num_lvl->m_oStart.IsInit()) && (oox_num_lvl->m_oStart->m_oVal.IsInit()))
+	{
+		int start_value = oox_num_lvl->m_oStart->m_oVal->GetValue();
+		if (start_value > 1)
+			odt_context->styles_context()->lists_styles().set_start_number(start_value);
+	}
 	if (oox_num_lvl->m_oSuffix.IsInit())
 	{
 	}

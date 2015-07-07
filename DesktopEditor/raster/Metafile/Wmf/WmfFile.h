@@ -454,7 +454,7 @@ namespace MetaFile
 			}
 
 			IFont* pFont = GetFont();
-			NSString::CConverter::ESingleByteEncoding eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT;;
+			NSStringExt::CConverter::ESingleByteEncoding eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_DEFAULT;;
 			if (pFont)
 			{
 				// Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
@@ -484,27 +484,27 @@ namespace MetaFile
 				switch (pFont->GetCharSet())
 				{
 					default:
-					case DEFAULT_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
-					case SYMBOL_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
-					case ANSI_CHARSET:          eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1252; break;
-					case RUSSIAN_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1251; break;
-					case EASTEUROPE_CHARSET:    eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1250; break;
-					case GREEK_CHARSET:         eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1253; break;
-					case TURKISH_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1254; break;
-					case BALTIC_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1257; break;
-					case HEBREW_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1255; break;
-					case ARABIC_CHARSET:        eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1256; break;
-					case SHIFTJIS_CHARSET:      eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP932; break;
-					case HANGEUL_CHARSET:       eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP949; break;
-					case 134/*GB2313_CHARSET*/: eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP936; break;
-					case CHINESEBIG5_CHARSET:   eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP950; break;
-					case THAI_CHARSET:          eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP874; break;
-					case JOHAB_CHARSET:         eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1361; break;
-					case VIETNAMESE_CHARSET:    eCharSet = NSString::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1258; break;
+					case DEFAULT_CHARSET:       eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_DEFAULT; break;
+					case SYMBOL_CHARSET:        eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_DEFAULT; break;
+					case ANSI_CHARSET:          eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1252; break;
+					case RUSSIAN_CHARSET:       eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1251; break;
+					case EASTEUROPE_CHARSET:    eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1250; break;
+					case GREEK_CHARSET:         eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1253; break;
+					case TURKISH_CHARSET:       eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1254; break;
+					case BALTIC_CHARSET:        eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1257; break;
+					case HEBREW_CHARSET:        eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1255; break;
+					case ARABIC_CHARSET:        eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1256; break;
+					case SHIFTJIS_CHARSET:      eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP932; break;
+					case HANGEUL_CHARSET:       eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP949; break;
+					case 134/*GB2313_CHARSET*/: eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP936; break;
+					case CHINESEBIG5_CHARSET:   eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP950; break;
+					case THAI_CHARSET:          eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP874; break;
+					case JOHAB_CHARSET:         eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1361; break;
+					case VIETNAMESE_CHARSET:    eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1258; break;
 				}
 			}
 
-			std::wstring wsText = NSString::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)pString, (long)unCharsCount, eCharSet);
+			std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)pString, (long)unCharsCount, eCharSet);
 
 			if (m_pOutput)
 			{

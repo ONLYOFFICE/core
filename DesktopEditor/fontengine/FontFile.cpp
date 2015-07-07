@@ -1485,7 +1485,7 @@ std::wstring CFontFile::GetFontFormat() const
 		return L"";
 
 	const char* sFormat = FT_Get_X11_Font_Format(m_pFace);
-	return NSString::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)sFormat, strlen(sFormat));
+	return NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)sFormat, strlen(sFormat));
 }
 unsigned int CFontFile::GetNameIndex(const std::wstring& wsName) const
 {

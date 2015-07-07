@@ -1,7 +1,7 @@
 #ifndef _BUILD_CPENCODINGS_CODEPAGE950_CROSSPLATFORM_H_
 #define _BUILD_CPENCODINGS_CODEPAGE950_CROSSPLATFORM_H_
 
-namespace NSString
+namespace NSStringExt
 {
 	//-- CP950 Encoding -----------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ namespace NSString
 		0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0x0000
 	};
 
-	static const TCodePagePair c_aoUnicodeMapCP950WithLeadByte[] =
+	static const NSStringExt::TCodePagePair c_aoUnicodeMapCP950WithLeadByte[] =
 	{
 		{ 0xA140, 0x3000 }, //IDEOGRAPHIC SPACE
 		{ 0xA141, 0xFF0C }, //FULLWIDTH COMMA

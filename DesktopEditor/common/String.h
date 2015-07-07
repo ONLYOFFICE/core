@@ -6,7 +6,7 @@
 #include <sstream>
 #include <algorithm>
 
-namespace NSString
+namespace NSStringExt
 {
 #define NSSTRING_COMMON_CP(UnicodeMapCP, lCount, pData) \
 	for (long i = 0; i < lCount; ++i)\
@@ -108,22 +108,22 @@ namespace NSString
 
 					break;
 				}
-				case SINGLE_BYTE_ENCODING_CP866: NSSTRING_COMMON_CP(c_anUnicodeMapCP866, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP874: NSSTRING_COMMON_CP(c_anUnicodeMapCP874, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1250: NSSTRING_COMMON_CP(c_anUnicodeMapCP1250, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1251: NSSTRING_COMMON_CP(c_anUnicodeMapCP1251, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1252: NSSTRING_COMMON_CP(c_anUnicodeMapCP1252, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1253: NSSTRING_COMMON_CP(c_anUnicodeMapCP1253, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1254: NSSTRING_COMMON_CP(c_anUnicodeMapCP1254, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1255: NSSTRING_COMMON_CP(c_anUnicodeMapCP1255, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1256: NSSTRING_COMMON_CP(c_anUnicodeMapCP1256, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1257: NSSTRING_COMMON_CP(c_anUnicodeMapCP1257, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1258: NSSTRING_COMMON_CP(c_anUnicodeMapCP1258, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP932: NSSTRING_WITHLEADBYTE_CP(MSCP932_LEAD_CHAR, c_anUnicodeMapCP932, c_aoUnicodeMapCP932WithLeadByte, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP936: NSSTRING_WITHLEADBYTE_CP(MSCP936_LEAD_CHAR, c_anUnicodeMapCP936, c_aoUnicodeMapCP936WithLeadByte, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP949: NSSTRING_WITHLEADBYTE_CP(MSCP949_LEAD_CHAR, c_anUnicodeMapCP949, c_aoUnicodeMapCP949WithLeadByte, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP950: NSSTRING_WITHLEADBYTE_CP(MSCP950_LEAD_CHAR, c_anUnicodeMapCP950, c_aoUnicodeMapCP950WithLeadByte, lCount, pData); break;
-				case SINGLE_BYTE_ENCODING_CP1361:NSSTRING_WITHLEADBYTE_CP(MSCP1361_LEAD_CHAR, c_anUnicodeMapCP1361, c_aoUnicodeMapCP1361WithLeadByte, lCount, pData); break;
+                case SINGLE_BYTE_ENCODING_CP866: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP866, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP874: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP874, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP1250: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1250, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP1251: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1251, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP1252: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1252, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP1253: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1253, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP1254: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1254, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP1255: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1255, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP1256: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1256, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP1257: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1257, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP1258: NSSTRING_COMMON_CP(NSStringExt::c_anUnicodeMapCP1258, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP932: NSSTRING_WITHLEADBYTE_CP(MSCP932_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP932, c_aoUnicodeMapCP932WithLeadByte, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP936: NSSTRING_WITHLEADBYTE_CP(MSCP936_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP936, NSStringExt::c_aoUnicodeMapCP936WithLeadByte, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP949: NSSTRING_WITHLEADBYTE_CP(MSCP949_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP949, NSStringExt::c_aoUnicodeMapCP949WithLeadByte, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP950: NSSTRING_WITHLEADBYTE_CP(MSCP950_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP950, NSStringExt::c_aoUnicodeMapCP950WithLeadByte, lCount, pData); break;
+				case SINGLE_BYTE_ENCODING_CP1361:NSSTRING_WITHLEADBYTE_CP(MSCP1361_LEAD_CHAR, NSStringExt::c_anUnicodeMapCP1361, NSStringExt::c_aoUnicodeMapCP1361WithLeadByte, lCount, pData); break;
 			}
 
 			pUnicode[lCount] = 0;

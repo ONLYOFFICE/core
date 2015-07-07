@@ -1,7 +1,7 @@
 #ifndef _BUILD_CPENCODINGS_CODEPAGE1361_CROSSPLATFORM_H_
 #define _BUILD_CPENCODINGS_CODEPAGE1361_CROSSPLATFORM_H_
 
-namespace NSString
+namespace NSStringExt
 {
 	//-- CP950 Encoding -----------------------------------------------------------------------------
 

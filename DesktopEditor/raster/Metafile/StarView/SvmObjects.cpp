@@ -13,7 +13,7 @@ namespace MetaFile
 			unsigned int length;
 			stream >> length;
 			
-			string = NSString::CConverter::GetUnicodeFromUTF16((unsigned short*)stream.GetCurPtr(), length);
+			string = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)stream.GetCurPtr(), length);
 	
 			stream.Skip(length*2);
 		}
@@ -27,8 +27,8 @@ namespace MetaFile
 				std::string ansiString = std::string((char*)stream.GetCurPtr(),length);
 				string = std::wstring(ansiString.begin(), ansiString.end());
 			}else
-				string = NSString::CConverter::GetUnicodeFromSingleByteString((unsigned char*)stream.GetCurPtr(), length,
-																			(NSString::CConverter::ESingleByteEncoding)charset);
+				string = NSStringExt::CConverter::GetUnicodeFromSingleByteString((unsigned char*)stream.GetCurPtr(), length,
+																			(NSStringExt::CConverter::ESingleByteEncoding)charset);
 			stream.Skip(length);
 		}
 	}

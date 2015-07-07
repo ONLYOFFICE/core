@@ -367,14 +367,14 @@ void OoxConverter::convert(OOX::Vml::CFill	*vml_fill)
 	if (vml_fill->m_oOpacity.IsInit() && vml_fill->m_oOpacity2.IsInit() )
 	{
 		odf_context()->drawing_context()->start_opacity_style();
-			odf_context()->drawing_context()->set_opacity_start(100 - vml_fill->m_oOpacity->GetValue() * 100);
-			odf_context()->drawing_context()->set_opacity_end  (100 - vml_fill->m_oOpacity2->GetValue() * 100);
+			odf_context()->drawing_context()->set_opacity_start(vml_fill->m_oOpacity->GetValue() * 100);
+			odf_context()->drawing_context()->set_opacity_end  (vml_fill->m_oOpacity2->GetValue() * 100);
 			//.....
 		odf_context()->drawing_context()->end_opacity_style();
 	}
 	else if (vml_fill->m_oOpacity.IsInit()) 
 	{
-		odf_context()->drawing_context()->set_opacity(100 - vml_fill->m_oOpacity->GetValue() * 100);
+		odf_context()->drawing_context()->set_opacity(vml_fill->m_oOpacity->GetValue() * 100);
 	}
 	else if (vml_fill->m_oOpacity2.IsInit()) 
 	{
@@ -561,7 +561,8 @@ void OoxConverter::convert(OOX::Vml::CTextbox *vml_textbox)
 	{
 		for (unsigned int i=0 ; i < vml_textbox->m_oTxtbxContent->m_arrItems.size();i++)
 		{
-			if (docx_converter)docx_converter->convert(vml_textbox->m_oTxtbxContent->m_arrItems[i]);
+			if (docx_converter)
+				docx_converter->convert(vml_textbox->m_oTxtbxContent->m_arrItems[i]);
 		}
 		odf_context()->drawing_context()->set_text( odf_context()->text_context());
 	}

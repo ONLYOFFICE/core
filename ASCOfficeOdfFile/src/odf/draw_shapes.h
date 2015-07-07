@@ -219,7 +219,9 @@ public:
 };
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_path);
+
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//draw:polygon
 class draw_polygon_attlist
 {
 public:
@@ -251,6 +253,19 @@ public:
 
 CP_REGISTER_OFFICE_ELEMENT2(draw_polygon);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
+//draw:contour-polygon
+class draw_contour_polygon : public draw_polygon
+{
+public:
+    static const wchar_t * ns;
+    static const wchar_t * name;
+	
+	static const ElementType type = typeDrawContourPolygon;
+	static const xml::NodeType xml_type = xml::typeElement;
+
+};
+
+CP_REGISTER_OFFICE_ELEMENT2(draw_contour_polygon);
 //////////////////////////////////////////////////////////////////////////////////////////////////////////
 class draw_polyline_attlist
 {

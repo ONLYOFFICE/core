@@ -90,7 +90,7 @@ public:
 	odf_types::common_text_animation_attlist		common_text_animation_attlist_;
 
 	odf_types::common_border_attlist				common_border_attlist_;
-    odf_types::common_border_line_width_attlist	common_border_line_width_attlist_;
+    odf_types::common_border_line_width_attlist		common_border_line_width_attlist_;
 
 	odf_types::common_shadow_attlist				common_shadow_attlist_;
 

@@ -73,7 +73,7 @@ void content_types_file::set_media(mediaitems & _Mediaitems)
 {
     BOOST_FOREACH( mediaitems::item & item, _Mediaitems.items() )
     {
-		if (item.type == mediaitems::typeImage || item.type == mediaitems::typeMedia)
+		if ((item.type == mediaitems::typeImage || item.type == mediaitems::typeMedia) && item.mediaInternal)
 		{
 			int n = item.outputName.rfind(L".");
 			if (n > 0)

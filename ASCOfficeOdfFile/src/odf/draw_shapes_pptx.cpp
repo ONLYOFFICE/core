@@ -194,6 +194,7 @@ void draw_polygon::pptx_convert(oox::pptx_conversion_context & Context)
 
 	Context.get_slide_context().end_shape();
 }
+
 void draw_polyline::pptx_convert(oox::pptx_conversion_context & Context)
 {
 	reset_polyline_path();

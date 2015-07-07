@@ -241,6 +241,10 @@ void draw_polygon_attlist::add_attributes( const xml::attributes_wc_ptr & Attrib
 const wchar_t * draw_polygon::ns = L"draw";
 const wchar_t * draw_polygon::name = L"polygon";
 
+// draw:contour-polygon
+const wchar_t * draw_contour_polygon::ns = L"draw";
+const wchar_t * draw_contour_polygon::name = L"contour-polygon";
+
 void draw_polygon::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
     draw_polygon_attlist_.add_attributes(Attributes);

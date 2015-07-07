@@ -2866,7 +2866,7 @@ namespace OOX{
 		{
 		public:
 			//Attribute
-			char* m_val;
+			signed char* m_val;
 			CT_RotX();
 			~CT_RotX();
 			void fromXML(XmlUtils::CXmlLiteReader& oReader);

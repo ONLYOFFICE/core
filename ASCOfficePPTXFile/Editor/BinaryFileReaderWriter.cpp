@@ -469,6 +469,17 @@ namespace NSBinPptxRW
 		m_lPosition += BYTE_SIZEOF;
 		m_pStreamCur += BYTE_SIZEOF;
 	}
+	void CBinaryFileWriter::WriteSBYTE(const signed char& lValue)
+	{
+		CheckBufferSize(BYTE_SIZEOF);
+
+		if (lValue < 0)
+			*m_pStreamCur = (lValue + 256);
+		else
+			*m_pStreamCur = lValue;
+		m_lPosition += BYTE_SIZEOF;
+		m_pStreamCur += BYTE_SIZEOF;
+	}
 	void CBinaryFileWriter::WriteBOOL(const bool& bValue)
 	{			
 		WriteBYTE((bValue == true) ? 1 : 0);
@@ -1495,6 +1506,18 @@ namespace NSBinPptxRW
 			return 0;
 
 		BYTE res = *m_pDataCur;
+		++m_lPos;
+		++m_pDataCur;
+		return res;
+	}
+	signed char CBinaryFileReader::GetChar()
+	{
+		if (m_lPos >= m_lSize)
+			return 0;
+
+		BYTE res = *m_pDataCur;
+		if (res > 127)
+			res -= 256;
 		++m_lPos;
 		++m_pDataCur;
 		return res;

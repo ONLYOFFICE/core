@@ -242,6 +242,7 @@ namespace NSBinPptxRW
 		void CheckBufferSize(_UINT32 lPlus);
 		
 		void WriteBYTE(const BYTE& lValue);
+		void WriteSBYTE(const signed char& lValue);
 		void WriteBOOL(const bool& bValue);
 		void WriteUSHORT(const _UINT16& lValue);
 		
@@ -463,6 +464,7 @@ namespace NSBinPptxRW
 		
 		// 1 bytes
 		BYTE GetUChar();
+		signed char GetChar();
 		bool GetBool();
 		BYTE GetUChar_TypeNode();
 

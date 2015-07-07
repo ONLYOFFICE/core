@@ -1,7 +1,7 @@
 #ifndef _BUILD_CPENCODINGS_CODEPAGE936_CROSSPLATFORM_H_
 #define _BUILD_CPENCODINGS_CODEPAGE936_CROSSPLATFORM_H_
 
-namespace NSString
+namespace NSStringExt
 {
 	//-- CP936 Encoding -----------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ namespace NSString
 		0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0x0000
 	};
 
-	static const TCodePagePair c_aoUnicodeMapCP936WithLeadByte[] =
+	static const NSStringExt::TCodePagePair c_aoUnicodeMapCP936WithLeadByte[] =
 	{
 		{ 0x8140, 0x4E02 }, //CJK UNIFIED IDEOGRAPH
 		{ 0x8141, 0x4E04 }, //CJK UNIFIED IDEOGRAPH

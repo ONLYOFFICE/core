@@ -1,7 +1,7 @@
 #ifndef _BUILD_CPENCODINGS_CODEPAGE949_CROSSPLATFORM_H_
 #define _BUILD_CPENCODINGS_CODEPAGE949_CROSSPLATFORM_H_
 
-namespace NSString
+namespace NSStringExt
 {
 	//-- CP949 Encoding -----------------------------------------------------------------------------
 
@@ -44,7 +44,7 @@ namespace NSString
 		0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0xFFFF, 0x0000
 	};
 
-	static const TCodePagePair c_aoUnicodeMapCP949WithLeadByte[] =
+	static const NSStringExt::TCodePagePair c_aoUnicodeMapCP949WithLeadByte[] =
 	{
 		{ 0x8141, 0xAC02 }, //HANGUL SYLLABLE KIYEOK A SSANGKIYEOK
 		{ 0x8142, 0xAC03 }, //HANGUL SYLLABLE KIYEOK A KIYEOKSIOS

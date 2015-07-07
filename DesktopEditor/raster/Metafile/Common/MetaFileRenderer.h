@@ -13,6 +13,8 @@
 #include "MetaFileTypes.h"
 #include "MetaFileObjects.h"
 
+#include <cmath>
+
 namespace MetaFile
 {
 	class CMetaFileRenderer : public IOutputDevice

@@ -1,7 +1,7 @@
 #ifndef _BUILD_CPENCODINGS_CODEPAGE_CROSSPLATFORM_H_
 #define _BUILD_CPENCODINGS_CODEPAGE_CROSSPLATFORM_H_
 
-namespace NSString
+namespace NSStringExt
 {
 	struct TCodePagePair
 	{
@@ -16,7 +16,7 @@ namespace NSString
 #include "CodePage949.h"
 #include "CodePage950.h"
 
-namespace NSString
+namespace NSStringExt
 {
 
 #define MSCP_FIRST_CHAR       32

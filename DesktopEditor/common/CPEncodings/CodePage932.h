@@ -1,7 +1,7 @@
 #ifndef _BUILD_CPENCODINGS_CODEPAGE932_CROSSPLATFORM_H_
 #define _BUILD_CPENCODINGS_CODEPAGE932_CROSSPLATFORM_H_
 
-namespace NSString
+namespace NSStringExt
 {
 	//-- CP932 Encoding -----------------------------------------------------------------------------
 

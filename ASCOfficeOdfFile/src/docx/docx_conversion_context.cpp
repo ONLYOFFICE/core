@@ -178,7 +178,10 @@ std::wstring docx_conversion_context::add_hyperlink(const std::wstring & href, b
 	else if	(process_note_ == footNote	|| process_note_ == footNoteRefSet)	type = hyperlinks::footnote_place;
 	else if	(process_note_ == endNote	|| process_note_ == endNoteRefSet )	type = hyperlinks::endnote_place;
 	
-	return hyperlinks_.add(href, type, draw);
+	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
+    boost::algorithm::replace_all(href_correct, L" .", L".");//1 (130).odt
+	
+	return hyperlinks_.add(href_correct, type, draw);
 }
 hyperlinks::_ref  docx_conversion_context::last_hyperlink()
 {
@@ -671,28 +674,24 @@ odf_reader::style_text_properties_ptr docx_conversion_context::current_text_prop
     return cur;
 }
 
-void docx_conversion_context::add_page_break_after()
+void docx_conversion_context::set_page_break_after(bool val)
 {
-    page_break_after_ = true;
+    page_break_after_ = val;
 }
 
-bool docx_conversion_context::check_page_break_after()
+bool docx_conversion_context::get_page_break_after()
 {
-    bool t = page_break_after_;
-    page_break_after_ = false;
-    return t;
+    return page_break_after_ ;
 }
 
-void docx_conversion_context::add_page_break_before()
+void docx_conversion_context::set_page_break_before(bool val)
 {
-    page_break_before_ = true;
+    page_break_before_ = val;
 }
 
-bool docx_conversion_context::check_page_break_before()
+bool docx_conversion_context::get_page_break_before()
 {
-    bool t = page_break_before_;
-    page_break_before_ = false;
-    return t;
+    return page_break_before_;
 }
 
 
@@ -829,7 +828,10 @@ void docx_conversion_context::add_delayed_element(odf_reader::office_element * E
 
 void docx_conversion_context::docx_convert_delayed()
 {
+	if (delayed_elements_.empty()) return;
+
 	if(delayed_converting_)return; //зацикливание иначе
+	if(get_drawing_context().get_current_level() > 0 )return; //вложенный frame
 
 	delayed_converting_ = true;
     while(!delayed_elements_.empty())
@@ -930,6 +932,14 @@ void docx_conversion_context::process_headers_footers()
         process_one_header_footer(*this, styleName, page->style_footer_first_.get(), headers_footers::footerFirst );
         process_one_header_footer(*this, styleName, page->style_header_left_.get(), headers_footers::headerLeft );
         process_one_header_footer(*this, styleName, page->style_footer_left_.get(), headers_footers::footerLeft );
+
+		if (!page->style_header_ && !page->style_footer_ && !page->style_header_first_ && !page->style_footer_first_
+			&& !page->style_header_left_ && !page->style_footer_left_)
+		{
+			//отключенные колонтитулы
+			rels rels_;
+			get_headers_footers().add(styleName, L"", headers_footers::none, rels_);
+		}
     }
     process_headers_footers_ = false;
 }

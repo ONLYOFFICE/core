@@ -13,32 +13,36 @@ namespace cpdoccore {
 
 namespace odf_reader {
 
+// math
+//////////////////////////////////////////////////////////////////////////////////////////////////
+const wchar_t * math::ns = L"";
+const wchar_t * math::name = L"math";
 // math:math
 //////////////////////////////////////////////////////////////////////////////////////////////////
 const wchar_t * math_math::ns = L"math";
 const wchar_t * math_math::name = L"math";
 
-void math_math::add_attributes( const xml::attributes_wc_ptr & Attributes )
+void math::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
 
 }
 
-void math_math::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
+void math::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name)
 {
 	CP_NOT_APPLICABLE_ELM();
 }
 
 
-void math_math::docx_convert(oox::docx_conversion_context & Context) 
+void math::docx_convert(oox::docx_conversion_context & Context) 
 {
 
 }
 
-void math_math::xlsx_convert(oox::xlsx_conversion_context & Context)
+void math::xlsx_convert(oox::xlsx_conversion_context & Context)
 {
 
 }
-void math_math::pptx_convert(oox::pptx_conversion_context & Context)
+void math::pptx_convert(oox::pptx_conversion_context & Context)
 {
 
 }

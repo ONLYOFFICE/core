@@ -146,9 +146,9 @@ void chart_build::xlsx_convert(oox::xlsx_conversion_context & Context)
 	{
 		office_text_->xlsx_convert(Context);
 	}
-	else if (object_type_ == 3 && math_math_)
+	else if (object_type_ == 3 && office_math_)
 	{
-		math_math_->xlsx_convert(Context);
+		office_math_->xlsx_convert(Context);
 	}
 }
 void chart_build::docx_convert(oox::docx_conversion_context & Context)
@@ -166,9 +166,9 @@ void chart_build::docx_convert(oox::docx_conversion_context & Context)
 	{
 		office_text_->docx_convert(Context);
 	}
-	else if (object_type_ == 3 && math_math_)
+	else if (object_type_ == 3 && office_math_)
 	{
-		math_math_->docx_convert(Context);
+		office_math_->docx_convert(Context);
 	}
 }
 void chart_build::pptx_convert(oox::pptx_conversion_context & Context)
@@ -186,9 +186,9 @@ void chart_build::pptx_convert(oox::pptx_conversion_context & Context)
 	{
 		office_text_->pptx_convert(Context);
 	}
-	else if (object_type_ == 3 && math_math_)
+	else if (object_type_ == 3 && office_math_)
 	{
-		math_math_->pptx_convert(Context);
+		office_math_->pptx_convert(Context);
 	}
 }
 void chart_build::calc_cash_series(std::wstring adress, std::vector<std::wstring> & cash)
@@ -425,7 +425,7 @@ void process_build_chart::visit(office_text& val)
 	chart_build_.object_type_ = 2;
 	chart_build_.office_text_ = &val;//конвертация будет уровнем выше
 }
-void process_build_chart::visit(const math_math& val)
+void process_build_chart::visit(const math& val)
 {
 	chart_build_.object_type_ = 3;
 	//chart_build_.math_semantics_ = &val.semantics_;//конвертация будет уровнем выше

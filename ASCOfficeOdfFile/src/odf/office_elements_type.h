@@ -169,6 +169,7 @@ enum ElementType
     typeOfficeDocumentMeta,
     typeOfficeDocumentSettings,
 
+	typeMath,
 	typeMathMath,
 
 	typeManifest,

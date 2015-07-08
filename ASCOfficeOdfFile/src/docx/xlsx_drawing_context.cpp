@@ -1,7 +1,7 @@
 
 #include <boost/foreach.hpp>
 #include <iostream>
-#include "../formulasconvert/formulasconvert.h"
+#include <cpdoccore/xml/utils.h>
 
 #include "mediaitems_utils.h"
 
@@ -12,6 +12,7 @@
 #include "xlsx_table_metrics.h"
 
 #include "../odf/draw_common.h"
+#include "../formulasconvert/formulasconvert.h"
 
 #include "drawing_object_description.h"
 
@@ -234,12 +235,16 @@ void xlsx_drawing_context::set_fill(_oox_fill & fill)
 {
 	impl_->object_description_.fill_= fill;
 }
-std::wstring xlsx_drawing_context::add_hyperlink(std::wstring const & ref,bool object)
+std::wstring xlsx_drawing_context::add_hyperlink(std::wstring const & href,bool object)
 {
 	++hlinks_size_;
 	std::wstring hId=std::wstring(L"hId") + boost::lexical_cast<std::wstring>(hlinks_size_);
 	
-	_hlink_desc desc={hId, ref, object};
+	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
+    boost::algorithm::replace_all(href_correct, L" .", L".");//1 (130).odt
+
+	_hlink_desc desc = {hId, href_correct, object}; //корректность написания ссылки важна для ms office и не важна для open office ->
+	//todooo 
 	impl_->object_description_.hlinks_.push_back(desc);
 
 	return hId;

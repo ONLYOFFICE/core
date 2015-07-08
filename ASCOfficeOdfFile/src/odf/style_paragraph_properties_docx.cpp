@@ -183,8 +183,9 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
 			CP_XML_NODE(L"w:textAlignment"){CP_XML_ATTR(L"w:val", L"baseline");}
 		}
 
-		if (Context.check_page_break_before())
+		if (Context.get_page_break_before())
 		{
+			Context.set_page_break_before(false);
 			CP_XML_NODE(L"w:pageBreakBefore"){CP_XML_ATTR(L"w:val", L"true");  }  
 		}
 		else if (fo_break_before_)
@@ -367,7 +368,7 @@ void paragraph_format_properties::docx_convert(oox::docx_conversion_context & Co
     {
         if (Context.in_automatic_style())
         {
-            Context.add_page_break_after();
+            Context.set_page_break_after(true);
         }
     }
 	if (style_tab_stops_)	

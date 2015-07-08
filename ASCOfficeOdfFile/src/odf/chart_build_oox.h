@@ -32,8 +32,8 @@ namespace {
 
 struct class_type_pair
 {
-    chart::class_type class_type_;
-    std::wstring class_type_str_;
+    chart::class_type	class_type_;
+    std::wstring		class_type_str_;
 };
 
 static const class_type_pair class_type_str[] = 
@@ -82,7 +82,7 @@ public:
 		columns_count_(0),
 		object_type_(0),
 		office_text_(NULL),
-		math_math_(NULL)
+		office_math_(NULL)
     {
 	}
 	
@@ -121,7 +121,7 @@ public:
 
 	int			object_type_;
 	office_text *office_text_;
- 	math_math	*math_math_;
+ 	math		*office_math_;
  
 	std::wstring str_class_;  
 	chart::class_type class_;  
@@ -180,7 +180,7 @@ class process_build_chart : public base_visitor,
     
 	public visitor<office_text>,
 
- 	public const_visitor<math_math>,
+ 	public const_visitor<math>,
    
     public const_visitor<chart_chart>,
 
@@ -251,7 +251,7 @@ public:
 	virtual void visit(office_body& val);
     virtual void visit(office_chart& val);
     virtual void visit(office_text& val);
-    virtual void visit(const math_math& val);
+    virtual void visit(const math& val);
     virtual void visit(const chart_chart& val);
 	virtual void visit(const chart_title& val);
     virtual void visit(const chart_subtitle& val);

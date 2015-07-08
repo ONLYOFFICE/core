@@ -23,9 +23,14 @@ std::wstring headers_footers::add(const std::wstring & StyleName,
 								  rels &_rels
                                   )
 {
-    size_++;
-    const std::wstring id = create_id(size_);
-    const std::wstring name = create_name(size_, type);
+	std::wstring id, name;
+	if (type != headers_footers::none)
+	{
+		size_++;
+		
+		id = create_id(size_);
+		name = create_name(size_, type);
+	}
     instance_ptr inst = instance_ptr( new instance(id, Content, type, name) );
   
 	BOOST_FOREACH(const relationship & r, _rels.relationships())
@@ -81,11 +86,16 @@ bool headers_footers::write_sectPr(const std::wstring & StyleName, std::wostream
 			left=true;
 		}
 
-        std::wstring name = L"w:headerReference";  
+        std::wstring name;  
 		if (inst->type_ == footer || inst->type_ == footerLeft  || inst->type_ == footerFirst ) 
 			name =L"w:footerReference";
+		else if (inst->type_ == header || inst->type_ == headerLeft  || inst->type_ == headerFirst ) 
+			name =L"w:headerReference";
 
-        _Wostream << L"<" << name << L" r:id=\"" << inst->id_ << L"\" w:type=\"" << type << "\" />";
+		if (!name.empty())
+		{
+			_Wostream << L"<" << name << L" r:id=\"" << inst->id_ << L"\" w:type=\"" << type << "\" />";
+		}
 	
 		if (first)_Wostream << L"<w:titlePg/>";
 		res=true;

@@ -436,11 +436,11 @@ public:
     void pop_text_properties();
     odf_reader::style_text_properties_ptr current_text_properties();
 
-    void add_page_break_after();
-    bool check_page_break_after();
+    void set_page_break_after(bool val);
+    bool get_page_break_after();
 
-    void add_page_break_before();
-    bool check_page_break_before();
+    void set_page_break_before(bool val);
+    bool get_page_break_before();
 
     void set_page_properties(const std::wstring & StyleName);
     const std::wstring & get_page_properties() const;

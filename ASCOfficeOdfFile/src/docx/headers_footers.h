@@ -19,7 +19,7 @@ class headers_footers
 {
 public:
     headers_footers() : size_(0),enable_write_(false){}
-    enum Type { header, footer, headerLeft, footerLeft, headerFirst, footerFirst };
+    enum Type { header, footer, headerLeft, footerLeft, headerFirst, footerFirst, none };
     std::wstring add(const std::wstring & StyleName, const std::wstring & Content, Type type,rels &_rels);
    
 	struct instance 

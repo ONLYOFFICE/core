@@ -201,6 +201,8 @@ void headers_footers_elements::write(const std::wstring & RootPath)
     {
         BOOST_FOREACH(const headers_footers::instance_ptr & inst, instAr.second)
         {
+			if (inst->type_ == headers_footers::none) continue;
+
             simple_element(inst->name_, inst->content_).write(RootPath);
 
             if (document * doc = this->get_main_document())

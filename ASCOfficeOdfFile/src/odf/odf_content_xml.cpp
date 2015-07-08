@@ -49,7 +49,7 @@ void content_xml_t::add_child_element( xml::sax * Reader, const ::std::wstring &
     {
         create_element_and_read(Reader, Ns, Name, xml_content_, getContext(), true);
     }
-	else if CP_CHECK_NAME(L"math", L"math")
+	else if ( CP_CHECK_NAME(L"math", L"math") || CP_CHECK_NAME(L"", L"math"))
     {
         create_element_and_read(Reader, Ns, Name, xml_content_, getContext(), true);
     }

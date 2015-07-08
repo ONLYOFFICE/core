@@ -2,6 +2,7 @@
 #include <boost/foreach.hpp>
 #include <iostream>
 #include <cpdoccore/xml/simple_xml_writer.h>
+#include <cpdoccore/xml/utils.h>
 #include <cpdoccore/odf/odf_document.h>
 
 #include "mediaitems_utils.h"
@@ -272,12 +273,15 @@ void pptx_slide_context::set_fill(_oox_fill & fill)
 	impl_->object_description_.fill_= fill;
 }
 
-std::wstring pptx_slide_context::add_hyperlink(std::wstring const & ref,bool object)
+std::wstring pptx_slide_context::add_hyperlink(std::wstring const & href,bool object)
 {
 	++hlinks_size_;
 	std::wstring hId=std::wstring(L"hId") + boost::lexical_cast<std::wstring>(hlinks_size_);
 	
-	_hlink_desc desc={hId, ref, object};
+	std::wstring href_correct = xml::utils::replace_text_to_xml(href);
+	boost::algorithm::replace_all(href_correct, L" .", L".");//1 (130).odt
+
+	_hlink_desc desc={hId, href_correct, object};
 	impl_->object_description_.hlinks_.push_back(desc);
 
 	return hId;

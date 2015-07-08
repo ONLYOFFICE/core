@@ -1262,7 +1262,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"/Volumes/trunk/ServerComponents/Common/3dParty/curl/include/**",
+					"$(PROJECT_DIR)/../../**",
 				);
 				OTHER_CFLAGS = (
 					"-DHAVE_CONFIG_H",
@@ -1285,7 +1285,7 @@
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
-					"/Volumes/trunk/ServerComponents/Common/3dParty/curl/include/**",
+					"$(PROJECT_DIR)/../../**",
 				);
 				OTHER_CFLAGS = (
 					"-DHAVE_CONFIG_H",

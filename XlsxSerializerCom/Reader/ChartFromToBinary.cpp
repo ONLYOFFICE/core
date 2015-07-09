@@ -5586,8 +5586,8 @@ namespace BinXlsxRW{
 		CT_RotX* poVal = static_cast<CT_RotX*>(poResult);
 		if(c_oserct_rotxVAL == type)
 		{
-            signed char* pNewElem = new signed char;
-			*pNewElem = m_oBufferedStream.GetUChar();
+			signed char* pNewElem = new signed char;
+			*pNewElem = m_oBufferedStream.GetChar();
 			poVal->m_val = pNewElem;
 		}
 		else
@@ -10397,7 +10397,7 @@ namespace BinXlsxRW{
 		if(NULL != oVal.m_val)
 		{
 			int nCurPos = m_oBcw.WriteItemStart(c_oserct_rotxVAL);
-			m_oBcw.m_oStream.WriteBYTE(*oVal.m_val);
+			m_oBcw.m_oStream.WriteSBYTE(*oVal.m_val);
 			m_oBcw.WriteItemEnd(nCurPos);
 		}
 	}

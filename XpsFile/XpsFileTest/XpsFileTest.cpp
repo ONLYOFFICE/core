@@ -13,6 +13,7 @@
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
 #include <iostream>
+#include <ctime>
 
 std::vector<std::wstring> GetAllFilesInFolder(std::wstring wsFolder, std::wstring wsExt)
 {
@@ -99,8 +100,14 @@ void ConvertFolderToPdf(const std::wstring& wsFolderPath)
 
 void main()
 {
+	clock_t oBeginTime = clock();
+
 	//ConvertFolderToRaster(L"D:/Test Files//Xps//");
 	ConvertFolderToPdf(L"D:/Test Files//Xps//");
+
+	clock_t oEndTime = clock();
+	double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
+	printf("%fseconds\n", dElapsedSecs);
 
 	char q;
 	std::cin >> q;

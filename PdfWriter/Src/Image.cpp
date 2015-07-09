@@ -17,7 +17,7 @@ namespace PdfWriter
 	}
 	void CImageDict::LoadJpeg(const wchar_t* wsFilePath, unsigned int unWidth, unsigned int unHeight)
 	{
-		CFileStream* pStream = new CFileStream();
+		CImageFileStream* pStream = new CImageFileStream();
 		if (!pStream)
 			return;
 
@@ -49,7 +49,7 @@ namespace PdfWriter
 	}
 	void CImageDict::LoadJpx(const wchar_t* wsFilePath, unsigned int unWidth, unsigned int unHeight)
 	{
-		CFileStream* pStream = new CFileStream();
+		CImageFileStream* pStream = new CImageFileStream();
 		if (!pStream)
 			return;
 
@@ -81,7 +81,7 @@ namespace PdfWriter
 	}
 	void CImageDict::LoadJb2(const wchar_t* wsFilePath, unsigned int unWidth, unsigned int unHeight)
 	{
-		CFileStream* pStream = new CFileStream();
+		CImageFileStream* pStream = new CImageFileStream();
 		if (!pStream)
 			return;
 
@@ -97,7 +97,7 @@ namespace PdfWriter
 	}
 	void CImageDict::LoadCCITT4(const wchar_t* wsTempFile, unsigned int unWidth, unsigned int unHeight)
 	{
-		CFileStream* pStream = new CFileStream();
+		CImageFileStream* pStream = new CImageFileStream();
 		if (!pStream)
 			return;
 
@@ -289,7 +289,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	// CJbig2Global
 	//----------------------------------------------------------------------------------------
-	CJbig2Global::CJbig2Global(CXref* pXref) : CDictObject(pXref, true)
+	CJbig2Global::CJbig2Global(CXref* pXref) : CDictObject(pXref)
 	{
 		m_pXref = pXref;
 		m_pContext = jbig2_init(0.85, 0.5, -1, -1, false, -1);

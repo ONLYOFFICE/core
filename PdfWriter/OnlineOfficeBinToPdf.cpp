@@ -265,13 +265,13 @@ namespace NSOnlineOfficeBinToPdf
 					}
 				}
 
-				NSString::Replace(wsTempString, L"\\", L"/");
+				NSStringExt::Replace(wsTempString, L"\\", L"/");
 			}
 
 			if (0 == wsTempString.find(L"file:///"))
 			{
-				NSString::Replace(wsTempString, L"file:///", L"");
-				NSString::Replace(wsTempString, L"\\", L"/");
+				NSStringExt::Replace(wsTempString, L"file:///", L"");
+				NSStringExt::Replace(wsTempString, L"\\", L"/");
 			}
 		}
 

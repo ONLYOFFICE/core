@@ -37,6 +37,8 @@
 #include <vector>
 #include <ctime>
 
+#include "../Src/FastStringToDouble.h"
+
 #ifdef DrawText
 #undef DrawText
 #endif
@@ -918,8 +920,8 @@ void TestMetafile()
 }
 void TestOnlineBin()
 {
-	std::wstring wsFolderPath = L"D://Test Files//Txt//";
-	//std::wstring wsFolderPath = L"D://Test Files//Txt//IvanovaVeronica//";
+	//std::wstring wsFolderPath = L"D://Test Files//Txt//";
+	std::wstring wsFolderPath = L"D://Test Files//Txt//IvanovaVeronica//";
 	std::wstring wsTempFolder = L"D://Test Files//Temp//";
 
 	CApplicationFonts oFonts;
@@ -946,6 +948,78 @@ void TestOnlineBin()
 	printf("%f\n", dElapsedSecs);
 }
 
+void TestDouble()
+{
+	const int nMaxInt = NSFastIntToString::c_nMaxInt;
+	const int nCount = 100000;
+	double pDoubles[nCount];
+	for (int nIndex = 0; nIndex < nCount; nIndex++)
+	{
+		pDoubles[nIndex] = (rand() % (nMaxInt - 1) + (rand() % (nMaxInt - 1)) / (double)nMaxInt);
+	}
+	pDoubles[0] = 120.0012;
+	pDoubles[1] = 12.012312;
+	pDoubles[2] = 0.00012312;
+
+	clock_t oBeginTime = clock();
+
+	char pBuffer[32];
+	for (int nI = 0; nI < 10; nI++)
+	{
+		for (int nIndex = 0; nIndex < nCount; nIndex++)
+		{
+			double dValue = pDoubles[nIndex];
+			memset(pBuffer, 0x00, 32);
+			FtoA(pBuffer, dValue, pBuffer + 31);
+		}
+	}
+
+	clock_t oEndTime = clock();
+	double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
+	printf("FtoA %f\n", dElapsedSecs);
+
+	oBeginTime = clock();
+
+	for (int nI = 0; nI < 10; nI++)
+	{
+
+		for (int nIndex = 0; nIndex < nCount; nIndex++)
+		{
+			int nResLen = 0;
+			double dValue = pDoubles[nIndex];
+			int nIVal = (int)dValue;
+			int nFVal = (int)(abs(dValue - nIVal) * 10000);
+
+			int nLen = 0;
+			const char* sString = NSFastIntToString::GetString(abs(nIVal), nLen);
+			if (nIVal < 0)
+				pBuffer[nResLen++] = '-';
+
+			memcpy(pBuffer + nResLen, sString, nLen);
+			nResLen += nLen;
+
+			if (nFVal)
+			{
+				sString = NSFastIntToString::GetString(nFVal, nLen);
+
+				pBuffer[nResLen++] = '.';
+				int nZeros = 4 - nLen;
+				if (nZeros > 0)
+				{
+					memcpy(pBuffer + nResLen, NSFastIntToString::GetZeros(nZeros), nLen);
+					nResLen += nZeros;
+				}
+
+				memcpy(pBuffer + nResLen, sString, nLen);
+			}
+		}
+	}
+
+	oEndTime = clock();
+	dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
+	printf("Fast %f\n", dElapsedSecs);
+}
+
 void main()
 {
 	//TestStreams();
@@ -961,8 +1035,30 @@ void main()
 	//TestDocument7();
 	//TestDocument8();
 	//TestDocument9();
-	TestMetafile();
-	//TestOnlineBin();
+	//TestMetafile();
+	TestOnlineBin();
+	//TestDouble();
+
+	//std::string wsTest = "";
+
+	//wsTest = "static const char c_nPrecisionLen[] = {";
+
+	//int nMax = 100000;
+	//for (int nIndex = 0; nIndex < nMax; nIndex++)
+	//{
+
+	//	std::string sInt = std::to_string(nIndex);
+	//	while (sInt.length() > 1 && '0' == sInt.at(sInt.length() - 1))
+	//		sInt.pop_back();
+
+	//	wsTest += std::to_string(sInt.length());
+
+	//	if (nIndex != nMax - 1)
+	//		wsTest += ",";
+	//}
+
+	//wsTest += "};";
+
 
 	char q;
 	std::cin >> q;

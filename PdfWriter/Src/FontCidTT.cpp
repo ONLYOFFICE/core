@@ -84,6 +84,7 @@ namespace PdfWriter
 	//----------------------------------------------------------------------------------------
 	CFontCidTrueType::CFontCidTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex) : CFontDict(pXref, pDocument)
 	{
+		m_bNeedAddFontName = true;
 		CFontFileTrueType* pFontTT = CFontFileTrueType::LoadFromFile(wsFontPath, unIndex);
 		m_pFontFile = pFontTT;
 
@@ -101,7 +102,7 @@ namespace PdfWriter
 		pDescendantFonts->Add(pFont);
 
 		Add("DescendantFonts", pDescendantFonts);
-		CDictObject* pToUnicodeDict = new CDictObject(m_pXref, true);
+		CDictObject* pToUnicodeDict = new CDictObject(m_pXref);
 		Add("ToUnicode", pToUnicodeDict);
 		pToUnicodeDict->SetFilter(STREAM_FILTER_FLATE_DECODE);
 		m_pToUnicodeStream = pToUnicodeDict->GetStream();
@@ -165,12 +166,12 @@ namespace PdfWriter
 		pFontDescriptor->Add("StemV", 0);
 		pFontDescriptor->Add("FontWeight", m_pFontFile->GetWeight());
 
-		m_pFontFileDict = new CDictObject(m_pXref, true);
+		m_pFontFileDict = new CDictObject(m_pXref);
 		pFontDescriptor->Add("FontFile2", m_pFontFileDict);
 
 		pFont->Add("FontDescriptor", pFontDescriptor);
 
-		CDictObject* pCIDToGIDMapDict = new CDictObject(m_pXref, true);
+		CDictObject* pCIDToGIDMapDict = new CDictObject(m_pXref);
 		pFont->Add("CIDToGIDMap", pCIDToGIDMapDict);
 		pCIDToGIDMapDict->SetFilter(STREAM_FILTER_FLATE_DECODE);
 		m_pCidToGidMapStream = pCIDToGIDMapDict->GetStream();
@@ -414,6 +415,25 @@ namespace PdfWriter
 		m_pDocument->AddFreeTypeFont(this);
 		m_nGlyphsCount  = m_pFace->num_glyphs;
 		m_nSymbolicCmap = GetSymbolicCmapIndex(m_pFace);
+
+
+		if (m_bNeedAddFontName)
+		{
+			// Дописываем имя шрифта во все необходимые словари, а также заполняем дескриптор
+			std::string sFontName = m_pDocument->GetTTFontTag() + std::string(m_pFace->family_name);
+			if (m_pFace->style_flags & FT_STYLE_FLAG_ITALIC)
+				sFontName += "-Italic";
+			if (m_pFace->style_flags & FT_STYLE_FLAG_BOLD)
+				sFontName += "-Bold";
+
+			const char* sName = sFontName.c_str();
+
+			Add("BaseFont", sName);
+			m_pFont->Add("BaseFont", sName);
+			m_pFontDescriptor->Add("FontName", sName);
+			m_bNeedAddFontName = false;
+		}
+
 		return true;
 	}
 }

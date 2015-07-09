@@ -766,12 +766,27 @@ namespace PdfWriter
 		CMatrix oCTM = m_pGrState->m_oMatrix;
 	
 		// перемножаем матрицы oCTM(новая)= oCTM(преобразования(которая параметрами задана)) x oCTM(старая)
-		m_pGrState->m_oMatrix.m11 = oCTM.m11 * dM11 + oCTM.m12 * dM21;
-		m_pGrState->m_oMatrix.m12 = oCTM.m11 * dM12 + oCTM.m12 * dM22;
-		m_pGrState->m_oMatrix.m21 = oCTM.m21 * dM11 + oCTM.m22 * dM21;
-		m_pGrState->m_oMatrix.m22 = oCTM.m21 * dM12 + oCTM.m22 * dM22;
-		m_pGrState->m_oMatrix.x = oCTM.x + dX * oCTM.m11 + dY * oCTM.m21;
-		m_pGrState->m_oMatrix.y = oCTM.y + dX * oCTM.m12 + dY * oCTM.m22;
+		m_pGrState->m_oMatrix.m11 = dM11 * oCTM.m11 + dM12 * oCTM.m21;
+		m_pGrState->m_oMatrix.m12 = dM11 * oCTM.m12 + dM12 * oCTM.m22;
+		m_pGrState->m_oMatrix.m21 = dM21 * oCTM.m11 + dM22 * oCTM.m21;
+		m_pGrState->m_oMatrix.m22 = dM21 * oCTM.m12 + dM22 * oCTM.m22;
+		m_pGrState->m_oMatrix.x   =   dX * oCTM.m11 + dY * oCTM.m21 + oCTM.x;
+		m_pGrState->m_oMatrix.y   =   dX * oCTM.m12 + dY * oCTM.m22 + oCTM.y;
+	}
+	void          CPage::SetTransform(double dM11, double dM12, double dM21, double dM22, double dX, double dY)
+	{
+		CMatrix oInverse = m_pGrState->m_oMatrix.Inverse();
+
+		CMatrix oResult;
+		oResult.m11 = dM11 * oInverse.m11 + dM12 * oInverse.m21;
+		oResult.m12 = dM11 * oInverse.m12 + dM12 * oInverse.m22;
+		oResult.m21 = dM21 * oInverse.m11 + dM22 * oInverse.m21;
+		oResult.m22 = dM21 * oInverse.m12 + dM22 * oInverse.m22;
+		oResult.x   =   dX * oInverse.m11 +   dY * oInverse.m21 + oInverse.x;
+		oResult.y   =   dX * oInverse.m12 +   dY * oInverse.m22 + oInverse.y;
+
+		if (!oResult.IsIdentity())
+			Concat(oResult.m11, oResult.m12, oResult.m21, oResult.m22, oResult.x, oResult.y);
 	}
 	void          CPage::Clip()
 	{

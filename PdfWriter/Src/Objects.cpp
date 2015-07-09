@@ -334,7 +334,7 @@ namespace PdfWriter
 		m_unPredictor = STREAM_PREDICTOR_NONE;
 		m_pStream     = NULL;
 	}
-	CDictObject::CDictObject(CXref* pXref, bool bMemoryStream, const wchar_t* wsTempFile, unsigned int unCheckSum)
+	CDictObject::CDictObject(CXref* pXref)
 	{
 		m_unFilter    = STREAM_FILTER_NONE;
 		m_unPredictor = STREAM_PREDICTOR_NONE;
@@ -348,13 +348,7 @@ namespace PdfWriter
 
 		Add("Length", (CObjectBase*)pLength);
 
-		if (bMemoryStream)
-			m_pStream = new CMemoryStream(STREAM_BUF_SIZ);
-		else
-		{
-			m_pStream = new CFileStream();
-			((CFileStream*)m_pStream)->OpenTempFile(wsTempFile, unCheckSum);
-		}
+		m_pStream = new CMemoryStream(STREAM_BUF_SIZ);
 	}
 	CDictObject::~CDictObject()
 	{

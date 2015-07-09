@@ -387,12 +387,51 @@ private:
 			}
 			else
 			{
-				m_pDashPattern = new double[lSize];
-				if (m_pDashPattern)
+				// Избавляемся от нулей, потому что все pdf-ридеры плохо их воспринимают
+				std::vector<double> vPattern;
+				for (LONG lIndex = 0; lIndex < lSize; lIndex++)
 				{
-					memcpy((void*)m_pDashPattern, (const void*)pPattern, lSize * sizeof(double));
-					m_lDashPatternSize = lSize;
+					if (lIndex > 1 && abs(pPattern[lIndex]) < 0.001)
+					{
+						if (0 == lIndex % 2)
+						{
+							if (abs(pPattern[lIndex + 1]) < 0.001)
+							{
+								lIndex++;
+							}
+							else if (lIndex + 1 < lSize)
+							{
+								int nPatternSize = vPattern.size();
+								vPattern.at(nPatternSize - 1) = vPattern.at(nPatternSize - 1) + pPattern[lIndex + 1];
+								lIndex++;
+							}
+						}
+						else
+						{
+							int nPatternSize = vPattern.size();
+							vPattern.at(nPatternSize - 2) = vPattern.at(nPatternSize - 2) + vPattern.at(nPatternSize - 1);
+							vPattern.pop_back();
+						}
+					}
+					else
+					{
+						vPattern.push_back(pPattern[lIndex]);
+					}
 				}
+
+				int nPatternSize = vPattern.size();
+				if (nPatternSize)
+				{
+					m_pDashPattern = new double[nPatternSize];
+					if (m_pDashPattern)
+					{
+						for (int nIndex = 0; nIndex < nPatternSize; nIndex++)
+						{
+							m_pDashPattern[nIndex] = vPattern.at(nIndex);
+						}
+						m_lDashPatternSize = nPatternSize;
+					}
+				}				
 			}
 		}
 		inline double*GetDashPattern(LONG& lSize)
@@ -1460,6 +1499,14 @@ private:
 		CPdfRenderer*                      m_pRenderer;
 		std::vector<CRendererCommandBase*> m_vCommands;
 		CTransform                         m_oTransform;
+	};
+	struct TImageInfo
+	{
+		std::wstring           wsPath;
+		BYTE                   nAlpha;
+		int                    nWidth;
+		int                    nHeight;
+		PdfWriter::CImageDict* pImage;
 	};
 
 private:

@@ -167,5 +167,8 @@
     <ClInclude Include="OnlineOfficeBinToPdf.h">
       <Filter>Src</Filter>
     </ClInclude>
+    <ClInclude Include="Src\FastStringToDouble.h">
+      <Filter>Src\Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

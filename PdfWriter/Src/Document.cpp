@@ -568,7 +568,7 @@ namespace PdfWriter
 		double dHeight = pPage->GetHeight();
 
 		// Создаем графический объект, который будет альфа-маской
-		CDictObject* pXObject = new CDictObject(m_pXref, true);
+		CDictObject* pXObject = new CDictObject(m_pXref);
 		pXObject->Add("Type", "XObject");
 		pXObject->Add("Subtype", "Form");
 		pXObject->Add("BBox", CArrayObject::CreateBox(0, 0, dWidth, dHeight));

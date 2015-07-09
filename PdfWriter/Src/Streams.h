@@ -156,15 +156,43 @@ namespace PdfWriter
 		{
 			return StreamFile;
 		}
-
 		bool OpenFile(const std::wstring& wsFilePath, bool bWrite = false);
-		bool OpenTempFile(const std::wstring& wsFilePath = L"", unsigned int unCheckSum = 0);
 
 	private:
 
 		NSFile::CFileBinary m_oFile;
 		std::wstring        m_wsFilePath;
-		bool                m_bDelete;
+	};
+	class CImageFileStream : public CStream
+	{
+	public:
+
+		CImageFileStream();
+		~CImageFileStream();
+		bool         IsEof();
+		void         Write(const BYTE* pBuffer, unsigned int unSize);
+		void         Read(BYTE* pBuffer, unsigned int* punSize);
+		void         Seek(int nPos, EWhenceMode eMode);
+		int          Tell();
+		void         Close();
+		unsigned int Size();
+		EStreamType  GetType()
+		{
+			return StreamFile;
+		}
+		bool OpenFile(const std::wstring& wsFilePath, bool bWrite = false);
+
+	private:
+
+		bool OpenFile();
+		void CloseFile();
+		
+	private:
+
+		NSFile::CFileBinary m_oFile;
+		std::wstring        m_wsFilePath;
+		int                 m_nFilePos;
+		int                 m_nFileSize;
 	};
 }
 

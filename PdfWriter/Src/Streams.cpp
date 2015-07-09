@@ -2,6 +2,7 @@
 #include "Utils.h"
 #include "Encrypt.h"
 #include "Objects.h"
+#include "FastStringToDouble.h"
 
 #include <sstream>
 
@@ -11,6 +12,25 @@
 
 namespace PdfWriter
 {
+	static const char* c_pHexStrings[] =
+	{
+		"00", "01", "02", "03", "04", "05", "06", "07", "08", "09", "0A", "0B", "0C", "0D", "0E", "0F",
+		"10", "11", "12", "13", "14", "15", "16", "17", "18", "19", "1A", "1B", "1C", "1D", "1E", "1F",
+		"20", "21", "22", "23", "24", "25", "26", "27", "28", "29", "2A", "2B", "2C", "2D", "2E", "2F",
+		"30", "31", "32", "33", "34", "35", "36", "37", "38", "39", "3A", "3B", "3C", "3D", "3E", "3F",
+		"40", "41", "42", "43", "44", "45", "46", "47", "48", "49", "4A", "4B", "4C", "4D", "4E", "4F",
+		"50", "51", "52", "53", "54", "55", "56", "57", "58", "59", "5A", "5B", "5C", "5D", "5E", "5F",
+		"60", "61", "62", "63", "64", "65", "66", "67", "68", "69", "6A", "6B", "6C", "6D", "6E", "6F",
+		"70", "71", "72", "73", "74", "75", "76", "77", "78", "79", "7A", "7B", "7C", "7D", "7E", "7F",
+		"80", "81", "82", "83", "84", "85", "86", "87", "88", "89", "8A", "8B", "8C", "8D", "8E", "8F",
+		"90", "91", "92", "93", "94", "95", "96", "97", "98", "99", "9A", "9B", "9C", "9D", "9E", "9F",
+		"A0", "A1", "A2", "A3", "A4", "A5", "A6", "A7", "A8", "A9", "AA", "AB", "AC", "AD", "AE", "AF",
+		"B0", "B1", "B2", "B3", "B4", "B5", "B6", "B7", "B8", "B9", "BA", "BB", "BC", "BD", "BE", "BF",
+		"C0", "C1", "C2", "C3", "C4", "C5", "C6", "C7", "C8", "C9", "CA", "CB", "CC", "CD", "CE", "CF",
+		"D0", "D1", "D2", "D3", "D4", "D5", "D6", "D7", "D8", "D9", "DA", "DB", "DC", "DD", "DE", "DF",
+		"E0", "E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "E9", "EA", "EB", "EC", "ED", "EE", "EF",
+		"F0", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8", "F9", "FA", "FB", "FC", "FD", "FE", "FF"
+	};
 	//----------------------------------------------------------------------------------------
 	// CStream
 	//----------------------------------------------------------------------------------------
@@ -87,8 +107,22 @@ namespace PdfWriter
 	}
 	void           CStream::WriteInt(int nValue)
 	{
-		std::string sString = std::to_string(nValue);
-		Write((BYTE*)sString.c_str(), sString.length());
+		//int nLen = 0;
+		//const char* sString = NSFastIntToString::GetString(abs(nValue), nLen);
+		//if (sString)
+		//{
+		//	if (nValue < 0)
+		//		WriteChar('-');
+
+		//	Write((const BYTE*)sString, nLen);
+		//}
+		//else
+		//{
+			char pBuffer[32];
+			memset(pBuffer, 0x00, 32);
+			ItoA(pBuffer, nValue, pBuffer + 31);
+			return WriteStr(pBuffer);
+		//}
 	}
 	void           CStream::WriteUInt(unsigned int unValue)
 	{
@@ -96,26 +130,80 @@ namespace PdfWriter
 	}
 	void           CStream::WriteHex(int nValue, int nLen)
 	{
-		std::stringstream oStringStream;
-		oStringStream << std::hex << nValue;
-		std::string sString = oStringStream.str();
-
-		while (sString.length() < nLen)
+		if (2 == nLen)	
+			Write((const BYTE*)c_pHexStrings[(unsigned char)nValue], 2);
+		else if (4 == nLen)
 		{
-			sString = "0" + sString;
+			Write((const BYTE*)c_pHexStrings[(unsigned char)(nValue >> 8)], 2);
+			Write((const BYTE*)c_pHexStrings[(unsigned char)nValue], 2);
 		}
-
-		return WriteStr(sString.c_str());
 	}
 	void           CStream::WriteReal(float fValue)
 	{
-		std::string sString = std::to_string(fValue);
-		return WriteStr(sString.c_str());
+		char pBuffer[32];
+		memset(pBuffer, 0x00, 32);
+		FtoA(pBuffer, fValue, pBuffer + 31);
+		return WriteStr(pBuffer);
 	}
 	void           CStream::WriteReal(double dValue)
 	{
-		std::string sString = std::to_string(dValue);
-		return WriteStr(sString.c_str());
+		//int nIVal = (int)dValue;
+		//int nFVal = (int)(abs(dValue - nIVal) * 10000);
+
+		//int nLen = 0;
+		//const char* sString = NSFastIntToString::GetString(abs(nIVal), nLen);
+		//if (nIVal < 0)
+		//	WriteChar('-');
+
+		//Write((const BYTE*)sString, nLen);
+
+		//if (nFVal)
+		//{
+		//	sString = NSFastIntToString::GetString(nFVal, nLen);
+
+		//	WriteChar('.');
+		//	int nZeros = 4 - nLen;
+		//	if (nZeros > 0)
+		//		Write((const BYTE*)NSFastIntToString::GetZeros(nZeros), nZeros);
+
+		//	Write((const BYTE*)sString, nLen);
+		//}
+
+		//char pBuffer[32];
+		//int nResLen = 0;
+		//int nIVal = (int)dValue;
+		//int nFVal = (int)(abs(dValue - nIVal) * 10000);
+
+		//int nLen = 0;
+		//const char* sString = NSFastIntToString::GetString(abs(nIVal), nLen);
+		//if (nIVal < 0)
+		//	pBuffer[nResLen++] = '-';
+
+		//memcpy(pBuffer + nResLen, sString, nLen);
+		//nResLen += nLen;
+
+		//if (nFVal)
+		//{
+		//	int nRealLen = 0;
+		//	sString = NSFastIntToString::GetPrecisionString(nFVal, nLen, nRealLen);
+
+		//	pBuffer[nResLen++] = '.';
+		//	int nZeros = 4 - nRealLen;
+		//	if (nZeros > 0)
+		//	{
+		//		memcpy(pBuffer + nResLen, NSFastIntToString::GetZeros(nZeros), nZeros);
+		//		nResLen += nZeros;
+		//	}
+
+		//	memcpy(pBuffer + nResLen, sString, nLen);
+		//	nResLen += nLen;
+		//}
+		//return Write((const BYTE*)pBuffer, nResLen);
+
+		char pBuffer[32];
+		memset(pBuffer, 0x00, 32);
+		FtoA(pBuffer, dValue, pBuffer + 31);
+		return WriteStr(pBuffer);
 	}
 	void           CStream::WriteEscapeName(const char* sValue)
 	{
@@ -229,26 +317,7 @@ namespace PdfWriter
 
 		for (int nCounter = 0; nCounter < unLen; nCounter++, pBuffer++)
 		{
-			char nChar = *pBuffer >> 4;
-
-			if (nChar <= 9)
-				nChar += 0x30;
-			else
-				nChar += 0x41 - 10;
-			sBuf[nIndex++] = nChar;
-
-			nChar = *pBuffer & 0x0f;
-			if (nChar <= 9)
-				nChar += 0x30;
-			else
-				nChar += 0x41 - 10;
-			sBuf[nIndex++] = nChar;
-
-			if (nIndex > TEXT_DEFAULT_LEN - 2)
-			{
-				Write((BYTE*)sBuf, nIndex);
-				nIndex = 0;
-			}
+			Write((const BYTE*)c_pHexStrings[*pBuffer], 2);
 		}
 
 		if (nIndex > 0)
@@ -619,7 +688,10 @@ namespace PdfWriter
 	void         CMemoryStream::Close()
 	{
 		if (m_pBuffer)
-			delete[] m_pBuffer;
+		{
+			free(m_pBuffer);
+			//delete[] m_pBuffer;
+		}
 
 		m_nBufferSize = 0;
 		m_pBuffer     = NULL;
@@ -636,16 +708,24 @@ namespace PdfWriter
 		{
 			long lPos = Tell();
 
-			BYTE* pNewBuffer = new BYTE[m_nBufferSize + unSize];
-			MemCpy(pNewBuffer, m_pBuffer, m_unSize);
-			delete[] m_pBuffer;
-			m_pBuffer = pNewBuffer;
+			//BYTE* pNewBuffer = new BYTE[m_nBufferSize + unSize];
+			//MemCpy(pNewBuffer, m_pBuffer, m_unSize);
+			//delete[] m_pBuffer;
+			//m_pBuffer = pNewBuffer;
+			//m_pCur = m_pBuffer + lPos;
+			//m_nBufferSize = m_nBufferSize + unSize;
+
+			m_pBuffer = (BYTE*)realloc(m_pBuffer, m_nBufferSize + unSize);
 			m_pCur = m_pBuffer + lPos;
 			m_nBufferSize = m_nBufferSize + unSize;
 		}
 		else
 		{
-			m_pBuffer = new BYTE[unSize];
+			//m_pBuffer = new BYTE[unSize];
+			//m_pCur = m_pBuffer;
+			//m_nBufferSize = unSize;
+
+			m_pBuffer = (BYTE*)malloc(unSize);
 			m_pCur = m_pBuffer;
 			m_nBufferSize = unSize;
 		}
@@ -656,7 +736,6 @@ namespace PdfWriter
 	CFileStream::CFileStream()
 	{
 		m_wsFilePath = L"";
-		m_bDelete    = false;
 	}
 	CFileStream::~CFileStream()
 	{
@@ -696,13 +775,6 @@ namespace PdfWriter
 	void         CFileStream::Close()
 	{
 		m_oFile.CloseFile();
-
-		//if (m_bDelete)
-		//{
-		//	NSFile::CFileBinary::Remove(m_wsFilePath);
-		//	m_bDelete = false;
-		//	m_wsFilePath = L"";
-		//}
 	}
 	unsigned int CFileStream::Size()
 	{
@@ -713,7 +785,6 @@ namespace PdfWriter
 		Close();
 
 		m_wsFilePath = wsFilePath;
-		m_bDelete    = false;
 
 		if (!bWrite)
 		{
@@ -728,22 +799,97 @@ namespace PdfWriter
 
 		return true;
 	}
-	bool         CFileStream::OpenTempFile(const std::wstring& wsFilePath, unsigned int unCheckSum)
+	//----------------------------------------------------------------------------------------
+	// CImageFileStream
+	//----------------------------------------------------------------------------------------
+	CImageFileStream::CImageFileStream()
+	{
+		m_wsFilePath = L"";
+		m_nFilePos  = 0;
+		m_nFileSize = 0;
+	}
+	CImageFileStream::~CImageFileStream()
+	{
+		Close();
+	}
+	bool         CImageFileStream::IsEof()
+	{
+		if (m_nFilePos >= m_nFileSize)
+			return true;
+
+		return false;
+	}
+	void         CImageFileStream::Write(const BYTE* pBuffer, unsigned int unSize)
+	{
+		if (!OpenFile())
+			return;
+		m_oFile.WriteFile((BYTE*)pBuffer, unSize);
+		CloseFile();
+	}
+	void         CImageFileStream::Read(BYTE *pBuffer, unsigned int* punSize)
+	{
+		if (!OpenFile())
+			return;
+		DWORD dwBytesToRead = *punSize;
+		DWORD dwSizeRead = 0;
+		m_oFile.ReadFile(pBuffer, dwBytesToRead, dwSizeRead);
+		*punSize = dwSizeRead;
+		CloseFile();
+	}
+	void         CImageFileStream::Seek(int nPos, EWhenceMode eMode)
+	{
+		switch (eMode)
+		{
+			case SeekCur: m_nFilePos += nPos; break;
+			case SeekEnd: m_nFilePos = max(0, (m_nFileSize - nPos)); break;
+			case SeekSet: m_nFilePos = nPos; break;
+		}
+	}
+	int          CImageFileStream::Tell()
+	{
+		return m_nFilePos;
+	}
+	void         CImageFileStream::Close()
+	{
+		m_oFile.CloseFile();
+	}
+	unsigned int CImageFileStream::Size()
+	{
+		return m_nFileSize;
+	}
+	bool         CImageFileStream::OpenFile(const std::wstring& wsFilePath, bool bWrite)
 	{
 		Close();
 
 		m_wsFilePath = wsFilePath;
-		if (L"" == m_wsFilePath)
+
+		if (!bWrite)
 		{
-			m_wsFilePath = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"Pdf");
+			if (!m_oFile.OpenFile(wsFilePath))
+				return false;
+		}
+		else
+		{
+			if (!m_oFile.CreateFile(wsFilePath))
+				return false;
 		}
 
-		if (!m_oFile.CreateFile(m_wsFilePath))
+		m_nFilePos = 0;
+		m_nFileSize = m_oFile.SizeFile();
+		CloseFile();
+		return true;
+	}
+	bool         CImageFileStream::OpenFile()
+	{
+		if (!m_oFile.OpenFile(m_wsFilePath, true))
 			return false;
 
-		m_bDelete    = true;
-		m_unCheckSum = unCheckSum;
-
+		m_oFile.SeekFile(m_nFilePos);
 		return true;
+	}
+	void         CImageFileStream::CloseFile()
+	{
+		m_nFilePos = m_oFile.TellFile();
+		m_oFile.CloseFile();
 	}
 }

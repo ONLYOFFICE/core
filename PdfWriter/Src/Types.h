@@ -58,7 +58,18 @@ namespace PdfWriter
 			x   = 0;
 			y   = 0;
 		}
+		bool IsIdentity() const
+		{
+			if (abs(m11 - 1) < 0.001
+				&& abs(m12) < 0.001
+				&& abs(m21) < 0.001
+				&& abs(m22 - 1) < 0.001
+				&& abs(x) < 0.001
+				&& abs(y) < 0.001)
+				return true;
 
+			return false;
+		}
 		void Apply(double& dX, double& dY)
 		{
 			double _x = dX;
@@ -78,6 +89,23 @@ namespace PdfWriter
 				return false;
 
 			return true;
+		}
+		CMatrix Inverse()
+		{
+			CMatrix oInverse;
+
+			double dDet = m11 * m22 - m12 * m21;
+			if (dDet < 0.0001 && dDet > 0.0001)
+				return oInverse;
+
+			oInverse.m11 =  m22 / dDet;
+			oInverse.m12 = -m12 / dDet;
+			oInverse.m21 = -m21 / dDet;
+			oInverse.m22 =  m22 / dDet;
+			oInverse.x   =  y * m21 / dDet - x * m22 / dDet;
+			oInverse.y   =  x * m12 / dDet - y * m11 / dDet;
+
+			return oInverse;
 		}
 
 	public:

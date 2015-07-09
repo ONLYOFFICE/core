@@ -297,7 +297,7 @@ namespace PdfWriter
 	{
 	public:
 		CDictObject();
-		CDictObject(CXref* pXref, bool bMemoryStream = true, const wchar_t* wsTempFile = NULL, unsigned int unCheckSum = 0);
+		CDictObject(CXref* pXref);
 		virtual ~CDictObject();
 		virtual EObjectType GetType() const
 		{

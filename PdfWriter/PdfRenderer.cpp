@@ -276,8 +276,7 @@ void CPdfRenderer::CCommandManager::Flush()
 		CPage* pPage = m_pRenderer->m_pPage;
 		pPage->GrSave();
 
-		if (!m_oTransform.IsIdentity())
-			pPage->Concat(m_oTransform.m11, m_oTransform.m12, m_oTransform.m21, m_oTransform.m22, m_oTransform.dx, m_oTransform.dy);
+		pPage->SetTransform(m_oTransform.m11, m_oTransform.m12, m_oTransform.m21, m_oTransform.m22, m_oTransform.dx, m_oTransform.dy);
 
 		ERendererCommandType eType = m_vCommands.at(0)->GetType();
 		if (renderercommandtype_Text == eType)
@@ -990,10 +989,10 @@ HRESULT CPdfRenderer::EndCommand(const DWORD& dwType)
 		m_lClipDepth++;
 		UpdateTransform();
 
-		if (c_nClipRegionTypeWinding == c_nClipRegionTypeWinding)
-			m_oPath.Clip(m_pPage, false);
-		else
+		if (c_nClipRegionTypeEvenOdd & m_lClipMode)
 			m_oPath.Clip(m_pPage, true);
+		else
+			m_oPath.Clip(m_pPage, false);
 	}
 	else if (c_nResetClipType == dwType)
 	{
@@ -1435,17 +1434,8 @@ void CPdfRenderer::UpdateFont()
 }
 void CPdfRenderer::UpdateTransform()
 {
-	CTransform t;
-
-	t.m11 = m_oTransform.m11;
-	t.m12 = -m_oTransform.m12;
-	t.m21 = -m_oTransform.m21;
-	t.m22 = m_oTransform.m22;
-	t.dx  = MM_2_PT(m_oTransform.dx + m_oTransform.m21 * m_dPageHeight);
-	t.dy  = MM_2_PT(m_dPageHeight - m_dPageHeight * m_oTransform.m22 - m_oTransform.dy);
-
-	if (!t.IsIdentity())
-		m_pPage->Concat(t.m11, t.m12, t.m21, t.m22, t.dx, t.dy);
+	CTransform& t = m_oTransform;
+	m_pPage->SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));
 }
 void CPdfRenderer::UpdatePen()
 {
@@ -1491,7 +1481,7 @@ void CPdfRenderer::UpdatePen()
 	LONG lCapStyle = m_oPen.GetStartCapStyle();
 	if (Aggplus::LineCapRound == lCapStyle)
 		m_pPage->SetLineCap(linecap_Round);
-	else if (Aggplus::LineCapSquare)
+	else if (Aggplus::LineCapSquare == lCapStyle)
 		m_pPage->SetLineCap(linecap_ProjectingSquare);
 	else
 		m_pPage->SetLineCap(linecap_Butt);
@@ -1557,6 +1547,12 @@ void CPdfRenderer::UpdateBrush()
 
 			if (c_BrushTextureModeStretch == lTextureMode)
 			{
+				// Чтобы избавиться от погрешностей из-за которых могут возникать полоски, немного увеличим границы пата.
+				dL -= 1;
+				dT -= 1;
+				dB += 1;
+				dR += 1;
+
 				// Растягиваем картинку по размерам пата
 				dW = max(10, dR - dL);
 				dH = max(10, dB - dT);

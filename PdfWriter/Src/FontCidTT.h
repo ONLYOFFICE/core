@@ -66,6 +66,7 @@ namespace PdfWriter
 		FT_Byte*                                 m_pFaceMemory;
 		int                                      m_nGlyphsCount;
 		int                                      m_nSymbolicCmap;
+		bool                                     m_bNeedAddFontName;
 
 		friend class CDocument;
 	};

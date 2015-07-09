@@ -90,20 +90,24 @@ namespace PdfWriter
 	{
 		dValue = min(1, max(0, dValue));
 	    Add("CA", dValue);
+		m_dAlphaStroke = dValue;
 	}
 	void CExtGrState::SetAlphaFill       (double dValue)
 	{
 		dValue = min(1, max(0, dValue));
 	    Add("ca", dValue);
+		m_dAlphaFill = dValue;
 	}	
 	void CExtGrState::SetBlendMode       (EBlendMode eBlendMode)
 	{
 		eBlendMode = min(blendmode_Max, max(blendmode_Min, eBlendMode));
 		Add("BM", c_sBlendModeNames[(int)eBlendMode]);
+		m_eBlendMode = eBlendMode;
 	}	
 	void CExtGrState::SetStrokeAdjustment(bool bValue)
 	{
 	    Add("SA", bValue);
+		m_bStrokeAdj = bValue;
 	}
 	double     CExtGrState::GetAlphaStroke()
 	{

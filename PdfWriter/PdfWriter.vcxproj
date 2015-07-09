@@ -175,6 +175,7 @@
     <ClInclude Include="Src\Document.h" />
     <ClInclude Include="Src\Encrypt.h" />
     <ClInclude Include="Src\EncryptDictionary.h" />
+    <ClInclude Include="Src\FastStringToDouble.h" />
     <ClInclude Include="Src\Font.h" />
     <ClInclude Include="Src\Font14.h" />
     <ClInclude Include="Src\FontCidTT.h" />

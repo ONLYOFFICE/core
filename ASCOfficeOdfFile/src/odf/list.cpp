@@ -107,17 +107,17 @@ const wchar_t * list_header::name = L"list-header";
 
 void list_header::docx_convert(oox::docx_conversion_context & Context)
 {
-    bool restart = false;
-    //Context.start_list_item(restart);
-
 	//заголовок это не элемент списка
+
+	std::wstring s = Context.current_list_style();
+	Context.end_list();
 
     BOOST_FOREACH(const office_element_ptr & elm, content_)
     {
         elm->docx_convert(Context);
     }
 
-    //Context.end_list_item();
+	Context.start_list(s, true);
 }
 void list_header::pptx_convert(oox::pptx_conversion_context & Context)
 {

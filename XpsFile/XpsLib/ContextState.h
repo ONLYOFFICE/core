@@ -1,6 +1,8 @@
 #ifndef _XPS_XPSLIB_CONTEXTSTATE_H
 #define _XPS_XPSLIB_CONTEXTSTATE_H
 
+#include "Utils.h"
+
 #include "../../DesktopEditor/graphics/Matrix.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"
 
@@ -13,21 +15,26 @@ namespace XPS
 	{
 	public:
 
-		CContextState();
+		CContextState(IRenderer* pRenderer);
 		~CContextState();
 
-		void AddFigure(const std::wstring& wsKey, const std::wstring& wsName);
-		std::wstring GetFigure(const std::wstring& wsKey);
-		void PushTransform(const double arrTransform[6]);
-		void PopTransform();
+		void   PushClip(const CWString& wsClip);
+		void   PopClip();
+		void   PushTransform(const double arrTransform[6]);
+		void   PopTransform();
 		double NormalizeTransform();
-		void SetTransformToRenderer(IRenderer* pRenderer);
 
-	public:
+	private:
 
-		Aggplus::CMatrix                     m_oCurrentTransform;
-		std::list<Aggplus::CMatrix>          m_lTransformStack;
-		std::map<std::wstring, std::wstring> m_mFigures;
+		void SetClipToRenderer(const CWString& wsClip);
+		void SetTransformToRenderer();
+
+	private:
+
+		Aggplus::CMatrix            m_oCurrentTransform;
+		std::list<Aggplus::CMatrix> m_lTransformStack;
+		std::vector<CWString>       m_vClipStack;
+		IRenderer*                  m_pRenderer;
 	};
 }
 

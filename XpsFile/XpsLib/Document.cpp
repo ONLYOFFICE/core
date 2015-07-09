@@ -249,5 +249,24 @@ namespace XPS
 		}
 		m_mPages.clear();
 		m_oFontList.Clear();
+
+		for (std::map<std::wstring, CStaticResource*>::iterator oIter = m_mStaticResources.begin(); oIter != m_mStaticResources.end(); oIter++)
+		{
+			if (oIter->second)
+				delete oIter->second;
+		}
+		m_mStaticResources.clear();
+	}
+	CStaticResource* CDocument::GetStaticResource(const std::wstring& wsPath)
+	{
+		for (auto oIt : m_mStaticResources)
+		{
+			if (oIt.first == wsPath)
+				return oIt.second;
+		}
+
+		CStaticResource* pStaticResource = new CStaticResource(wsPath);
+		m_mStaticResources.insert(std::pair<std::wstring, CStaticResource*>(wsPath, pStaticResource));
+		return pStaticResource;
 	}
 }

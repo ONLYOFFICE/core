@@ -60,6 +60,7 @@ void headers_footers::dump_rels(rels & Rels) const//внешние релсы
     {
         BOOST_FOREACH(const instance_ptr & inst, instAr.second)
         {
+			if (inst->type_ == none) continue;
             Rels.add( relationship( inst->id_,  get_rel_type(inst->type_),  inst->name_, L"" ) );
         }
     }        

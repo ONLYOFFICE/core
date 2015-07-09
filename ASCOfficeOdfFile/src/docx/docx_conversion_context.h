@@ -423,7 +423,7 @@ public:
 	std::vector<odf_reader::_property> & get_settings_properties();
 
     void start_process_style_content();
-    void end_process_style_content();
+    void end_process_style_content(bool in_styles = false);
 
     void start_automatic_style(const std::wstring & ParentId);
     void end_automatic_style();
@@ -460,7 +460,7 @@ public:
     void end_list_item();
     
 	void docx_serialize_list_properties(std::wostream & strm);
-	void docx_serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId);
+	void docx_serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId, bool in_styles = false);
    
 	std::wstring find_list_rename(const std::wstring & ListStyleName) const;
 

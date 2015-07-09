@@ -526,49 +526,53 @@ void docx_conversion_context::process_styles()
         BOOST_FOREACH(odf_reader::style_instance_ptr & inst, styles.instances())
         {
             if (!inst->is_automatic() && 
-                (
-                inst->type() == odf_types::style_family::Paragraph ||
-                inst->type() == odf_types::style_family::Text
-                )
-                )
+					(
+					inst->type() == odf_types::style_family::Paragraph ||
+					inst->type() == odf_types::style_family::Text
+					))
             {
                 const std::wstring id = style_map_.get(inst->name(), inst->type());
-                _Wostream << L"<w:style w:styleId=\"" << id << L"\" w:type=\"" << StyleTypeOdf2Docx(inst->type()) << L"\" >\n";
+                _Wostream << L"<w:style w:styleId=\"" << id << L"\" w:type=\"" << StyleTypeOdf2Docx(inst->type()) << L"\""; 
+				if (!inst->is_default())
+				{
+					_Wostream << L" w:customStyle=\"1\"";
+				}
+				_Wostream << L">";
 
                 const std::wstring displayName = StyleDisplayName(inst->name(), inst->type());
 
-                _Wostream << L"<w:name w:val=\"" << displayName << L"\" />\n";
+                _Wostream << L"<w:name w:val=\"" << displayName << L"\" />";
 
                 if (odf_reader::style_instance * baseOn = inst->parent())
                 {
                     const std::wstring basedOnId = style_map_.get(baseOn->name(), baseOn->type());
-                    _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\" />\n";
+                    _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\" />";
                 }
                 else if (!inst->is_default() && style_map_.check(L"", inst->type()))
                 {
                     const std::wstring basedOnId = style_map_.get(L"", inst->type());
-                    _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\" />\n";
+                    _Wostream << L"<w:basedOn w:val=\"" << basedOnId << "\" />";
                 }
 
                 if (odf_reader::style_instance * next = inst->next())
                 {
                     const std::wstring nextId = style_map_.get(next->name(), next->type());
-                    _Wostream << L"<w:next w:val=\"" << nextId << "\" />\n";
+                    _Wostream << L"<w:next w:val=\"" << nextId << "\" />";
                 }
                 else if (inst->is_default())
                 {
                     // self
-                    _Wostream << L"<w:next w:val=\"" << id << "\" />\n";
+                    _Wostream << L"<w:next w:val=\"" << id << "\" />";
                 }
 
                 if (odf_reader::style_content * content = inst->content())
                 {
                     get_styles_context().start_process_style(inst.get());
-                    content->docx_convert(*this);
+                    content->docx_convert(*this, true);
                     get_styles_context().end_process_style();
                 }
 
-                _Wostream << L"</w:style>\n";                
+                _Wostream << L"</w:style>";                
             }
         }
     }
@@ -593,15 +597,17 @@ void docx_conversion_context::process_page_properties(std::wostream & strm)
     }
 }
 
-void docx_conversion_context::end_process_style_content()
+void docx_conversion_context::end_process_style_content(bool in_styles)
 {
-   docx_serialize_paragraph_style(output_stream(), automatic_parent_style_);
+   docx_serialize_paragraph_style(output_stream(), automatic_parent_style_, in_styles);
     
     if (automatic_parent_style_.empty())
         styles_context_.docx_serialize_text_style( output_stream(), _T(""));
 }
 
-void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId)
+void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & strm, const std::wstring & ParentId, bool in_styles)
+ //in_styles = true -> styles.xml
+//почему то конструкция <pPr><rPr/></pPr><rPr/> "не работает" в части в rPr в ms2010 )
 {
 	std::wstringstream & paragraph_style = get_styles_context().paragraph_nodes();
  	std::wstringstream & run_style = get_styles_context().text_style();
@@ -623,7 +629,7 @@ void docx_conversion_context::docx_serialize_paragraph_style(std::wostream & str
 				CP_XML_STREAM() << paragraph_style.str();
 				docx_serialize_list_properties(CP_XML_STREAM());
 
-				if (run_style.tellp() > 0)
+				if (run_style.tellp() > 0 && in_styles == false)
 				{
 					CP_XML_NODE(L"w:rPr")
 					{

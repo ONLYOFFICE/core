@@ -587,7 +587,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
         if (W)
         {
             if (W > 0)
-                _rPr << L"<w:b />";
+                _rPr << L"<w:b/>";
             else
                 _rPr << L"<w:b w:val=\"false\" />";
         }
@@ -598,7 +598,7 @@ void text_format_properties_content::docx_convert(oox::docx_conversion_context &
         if (WCs)
         {
             if (WCs > 0)
-                _rPr << L"<w:bCs />";
+                _rPr << L"<w:bCs/>";
             else
                 _rPr << L"<w:bCs w:val=\"false\" />";
         }

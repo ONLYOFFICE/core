@@ -177,7 +177,7 @@ void style_content::xlsx_convert(oox::xlsx_conversion_context & Context)
 
 }
 
-void style_content::docx_convert(oox::docx_conversion_context & Context) 
+void style_content::docx_convert(oox::docx_conversion_context & Context, bool in_styles) 
 {
     Context.start_process_style_content();
 
@@ -199,7 +199,7 @@ void style_content::docx_convert(oox::docx_conversion_context & Context)
     if (style_table_cell_properties_)
         style_table_cell_properties_->docx_convert(Context);        
 
-    Context.end_process_style_content();
+    Context.end_process_style_content(in_styles);
 }
 
 void style_content::add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context)

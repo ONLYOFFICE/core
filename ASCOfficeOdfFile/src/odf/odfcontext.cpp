@@ -25,12 +25,17 @@ style_instance::style_instance(
     content_(Content),
     is_automatic_(IsAutomatic),
     is_default_(IsDefault),
-    parent_name_(ParentStyleName),
     next_name_(NextStyleName),
-    parent_(Container->style_by_name(ParentStyleName, style_type_,false)),//????
-    next_(Container->style_by_name(NextStyleName, style_type_,false)),//?????
+    next_(Container->style_by_name(NextStyleName, style_type_,false)),
     data_style_name_(DataStyleName)
 {
+	parent_name_ = ParentStyleName;
+	if (parent_name_ == L"Textformatvorlage")//http://ask.libreoffice.org/en/question/35136/textformatvorlage-style/
+	{
+		parent_name_ = L"Standard";
+	}
+    parent_ = Container->style_by_name(parent_name_, style_type_,false);
+
 }
 
 std::wostream & style_instance::dbg_dump(std::wostream & _Wostream)

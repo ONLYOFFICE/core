@@ -56,7 +56,7 @@ class style_content : noncopyable
 public:
     void add_child_element( xml::sax * Reader, const ::std::wstring & Ns, const ::std::wstring & Name, document_context * Context);
     
-	void docx_convert(oox::docx_conversion_context & Context);
+	void docx_convert(oox::docx_conversion_context & Context, bool in_styles = false);
     void xlsx_convert(oox::xlsx_conversion_context & Context);
    
     style_text_properties *			get_style_text_properties() const;

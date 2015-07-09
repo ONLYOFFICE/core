@@ -119,7 +119,24 @@ namespace FileSystem {
         std::string sRes = pcRes;
         return stringUtf8ToWString (sRes);
     }
+    std::wstring Directory::CreateTempFileWithUniqueName (const std::wstring & strFolderPathRoot, std::wstring Prefix)
+    {
+        char pcRes[MAX_PATH];
+        if (NULL == pcRes) return _T("");
 
+        Prefix = strFolderPathRoot + FILE_SEPARATOR_STR + Prefix + _T("_XXXXXX");
+
+        std::wstring w_str  = Prefix.c_str();
+        std::string a_str   = stringWstingToUtf8String(w_str);
+
+        memcpy(pcRes, a_str.c_str(), a_str.length());
+        pcRes[a_str.length()] = '\0';
+
+        int res = mkstemp( pcRes);
+
+        std::string sRes = pcRes;
+        return stringUtf8ToWString (sRes);
+    }
     bool Directory::CreateDirectory (String strFolderPathRoot, String strFolderName)
     {
         String strFolder = strFolderPathRoot;

@@ -5586,7 +5586,7 @@ namespace BinXlsxRW{
 		CT_RotX* poVal = static_cast<CT_RotX*>(poResult);
 		if(c_oserct_rotxVAL == type)
 		{
-			char* pNewElem = new char;
+            signed char* pNewElem = new signed char;
 			*pNewElem = m_oBufferedStream.GetUChar();
 			poVal->m_val = pNewElem;
 		}

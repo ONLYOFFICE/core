@@ -398,7 +398,7 @@ namespace OOX
 						m_oSpPr = oReader;
 					else if ( _T("wps:style") == sName )
 						m_oShapeStyle = oReader;	
-					else if (_T("wps:txbx") == sName)
+					else if ((_T("wps:txbx") == sName) || (_T("wps:textbox") == sName))
 						m_oTxBody = oReader; 		
 					else if (_T("wps:bodyPr") == sName)
 						m_oTxBodyProperties = oReader; 

@@ -228,7 +228,7 @@
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
-				CommandLine="..\Redist\VersionControl.exe &quot;$(ProjectDir)\version.h&quot;"
+				CommandLine="..\..\Redist\VersionControl.exe &quot;..\version.h&quot;"
 				ExcludedFromBuild="false"
 			/>
 			<Tool

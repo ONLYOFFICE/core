@@ -38,6 +38,9 @@ namespace XPS
 		bool ClipToRenderer     (const wchar_t* wsString, CContextState* pState);
 		bool TransformToRenderer(const wchar_t* wsString, CContextState* pState);
 
+		CWString ReadMatrixTransform(XmlUtils::CXmlLiteReader& oReader);
+		CWString ReadClip           (XmlUtils::CXmlLiteReader& oReader);
+
 	private:
 
 		std::wstring     m_wsPagePath;

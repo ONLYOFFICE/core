@@ -6,15 +6,34 @@
 
 namespace XPS
 {
-	CContextState::CContextState(IRenderer* pRenderer) : m_oCurrentTransform(1.0, 0.0, 0.0, 1.0, 0.0, 0.0), m_pRenderer(pRenderer)
+	CContextState::CContextState(IRenderer* pRenderer) : m_oCurrentTransform(1.0, 0.0, 0.0, 1.0, 0.0, 0.0), m_pRenderer(pRenderer), m_dCurOpacity(1.0)
 	{
 		m_lTransformStack.push_back(m_oCurrentTransform);
+		m_vOpacity.push_back(m_dCurOpacity);
 	}
 	CContextState::~CContextState()
 	{
 		m_vClipStack.clear();
 		m_lTransformStack.clear();
+		m_vOpacity.clear();
 	}	
+	void CContextState::PushOpacity(const double& dOpacity)
+	{
+		m_dCurOpacity *= dOpacity;
+		m_vOpacity.push_back(m_dCurOpacity);
+	}
+	void CContextState::PopOpacity()
+	{
+		m_vOpacity.pop_back();
+		if (m_vOpacity.size())
+			m_dCurOpacity = m_vOpacity.at(m_vOpacity.size() - 1);
+		else
+			m_dCurOpacity = 1;
+	}
+	double CContextState::GetCurrentOpacity()
+	{
+		return m_dCurOpacity;
+	}
 	void CContextState::PushTransform(const double arrTransform[6])
 	{
 		Aggplus::CMatrix oTransform(arrTransform[0], arrTransform[1], arrTransform[2], arrTransform[3], arrTransform[4], arrTransform[5]);

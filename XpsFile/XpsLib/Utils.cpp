@@ -626,6 +626,30 @@ namespace XPS
 
 		oReader.MoveToElement();
 	}
+	void ReadAttribute(XmlUtils::CXmlLiteReader& oReader, const wchar_t* wsAttrName, CWString& wsAttr)
+	{
+		if (oReader.GetAttributesCount() <= 0)
+			return;
+
+		if (!oReader.MoveToFirstAttribute())
+			return;
+
+		CWString wsName = oReader.GetName();
+		while (!wsName.empty())
+		{
+			if (wsName == wsAttrName)
+			{
+				wsAttr.create(oReader.GetText(), true);
+				break;
+			}
+			if (!oReader.MoveToNextAttribute())
+				break;
+
+			wsName = oReader.GetName();
+		}
+
+		oReader.MoveToElement();
+	}
 	bool VmlToRenderer(const wchar_t* wsString, IRenderer* pRenderer)
 	{
 		bool bWinding = false;

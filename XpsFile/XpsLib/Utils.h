@@ -60,6 +60,7 @@ namespace XPS
 	std::vector<std::vector<std::wstring>> Split(const std::wstring& wsString, wchar_t wDelim1, wchar_t wDelim2);
 
 	void ReadAttribute(XmlUtils::CXmlLiteReader& oReader, const wchar_t* wsAttrName, std::wstring& wsAttr);
+	void ReadAttribute(XmlUtils::CXmlLiteReader& oReader, const wchar_t* wsAttrName, CWString& wsAttr);
 	bool VmlToRenderer(const wchar_t* wsString, IRenderer* pRenderer);
 }
 

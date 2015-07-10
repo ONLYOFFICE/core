@@ -18,6 +18,9 @@ namespace XPS
 		CContextState(IRenderer* pRenderer);
 		~CContextState();
 
+		void   PushOpacity(const double& dOpacity);
+		void   PopOpacity();
+		double GetCurrentOpacity();
 		void   PushClip(const CWString& wsClip);
 		void   PopClip();
 		void   PushTransform(const double arrTransform[6]);
@@ -35,6 +38,8 @@ namespace XPS
 		std::list<Aggplus::CMatrix> m_lTransformStack;
 		std::vector<CWString>       m_vClipStack;
 		IRenderer*                  m_pRenderer;
+		std::vector<double>         m_vOpacity;
+		double                      m_dCurOpacity;
 	};
 }
 

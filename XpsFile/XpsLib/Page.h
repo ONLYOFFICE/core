@@ -41,6 +41,7 @@ namespace XPS
 		CWString ReadMatrixTransform(XmlUtils::CXmlLiteReader& oReader);
 		CWString ReadClip           (XmlUtils::CXmlLiteReader& oReader);
 
+
 	private:
 
 		std::wstring     m_wsPagePath;

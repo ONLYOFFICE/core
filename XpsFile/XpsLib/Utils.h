@@ -41,6 +41,31 @@ namespace XPS
 		unsigned int m_unLen;
 		bool         m_bOwnBuffer;
 	};
+	struct TIndicesEntry
+	{
+	public:
+
+		TIndicesEntry() : nUnicode(0), nGid(0), dAdvance(0.0), dHorOffset(0.0), dVerOffset(0.0),
+			bUnicode(false), bGid(false), bAdvance(false), bHorOffset(false), bVerOffset(false)
+		{
+		}
+
+	public:
+
+		unsigned int   nUnicode;
+		unsigned short nGid;
+		double         dAdvance;
+		double         dHorOffset;
+		double         dVerOffset;
+
+		bool           bUnicode;
+		bool           bGid;
+		bool           bAdvance;
+		bool           bHorOffset;
+		bool           bVerOffset;
+
+		std::vector<unsigned int> vRemainUnicodes;
+	};
 
 
 	bool   IsAlpha(wchar_t wChar);
@@ -62,6 +87,7 @@ namespace XPS
 	void ReadAttribute(XmlUtils::CXmlLiteReader& oReader, const wchar_t* wsAttrName, std::wstring& wsAttr);
 	void ReadAttribute(XmlUtils::CXmlLiteReader& oReader, const wchar_t* wsAttrName, CWString& wsAttr);
 	bool VmlToRenderer(const wchar_t* wsString, IRenderer* pRenderer);
+	bool GetNextGlyph(const wchar_t* wsIndices, int& nIndicesPos, const int& nIndicesLen, unsigned short* pUtf16, int& nUtf16Pos, const int& nUtf16Len, TIndicesEntry& oEntry);
 }
 
 #endif // _XPS_XPSLIB_UTILS_H

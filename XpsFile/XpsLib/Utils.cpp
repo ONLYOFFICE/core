@@ -40,6 +40,24 @@ namespace XPS
 			if (nPos >= nLen)
 				return false;
 			wchar_t wChar = LookChar(wsString, nPos);
+			if (' ' == wChar)
+			{
+				nPos++;
+				continue;
+			}
+			else
+				break;
+		}
+
+		return true;
+	}
+	static inline bool   SkipWhiteSpacesAndCommas(const wchar_t* wsString, int& nPos, const int& nLen)
+	{
+		while (1)
+		{
+			if (nPos >= nLen)
+				return false;
+			wchar_t wChar = LookChar(wsString, nPos);
 			if (' ' == wChar || ',' == wChar)
 			{
 				nPos++;
@@ -51,9 +69,9 @@ namespace XPS
 
 		return true;
 	}
-	static inline double GetNumber(const wchar_t* wsString, int& nPos, const int& nLen)
+	static inline double GetDouble(const wchar_t* wsString, int& nPos, const int& nLen)
 	{
-		if (!SkipWhiteSpaces(wsString, nPos, nLen))
+		if (!SkipWhiteSpacesAndCommas(wsString, nPos, nLen))
 			return 0.0;
 
 		wchar_t wChar = GetChar(wsString, nPos);
@@ -116,9 +134,48 @@ namespace XPS
 
 		return 0.0;
 	}
-	static inline bool   GetBool(const wchar_t* wsString, int& nPos, const int& nLen)
+	static inline int    GetInt   (const wchar_t* wsString, int& nPos, const int& nLen)
 	{
 		if (!SkipWhiteSpaces(wsString, nPos, nLen))
+			return 0;
+
+		wchar_t wChar = GetChar(wsString, nPos);
+		if (IsNumber(wChar))
+		{
+			bool bNegative = false;
+			int nInt = 0;
+
+			if ('-' == wChar)
+			{
+				bNegative = true;
+			}
+			else
+			{
+				nInt = wChar - '0';
+			}
+
+			while (1)
+			{
+				wChar = LookChar(wsString, nPos);
+				if (isdigit(wChar))
+				{
+					nPos++;
+					nInt = nInt * 10 + (wChar - '0');
+				}
+				else
+				{
+					break;
+				}
+			}
+
+			return (bNegative ? -nInt : nInt);		
+		}
+
+		return 0;
+	}
+	static inline bool   GetBool(const wchar_t* wsString, int& nPos, const int& nLen)
+	{
+		if (!SkipWhiteSpacesAndCommas(wsString, nPos, nLen))
 			return false;
 
 		int nBufPos = 0;
@@ -149,15 +206,15 @@ namespace XPS
 		double x_cur_temp = dCurX;
 		double y_cur_temp = dCurY;
 
-		double rx    = GetNumber(wsString, nPos, nLen);
-		double ry    = GetNumber(wsString, nPos, nLen);
-		double angle = GetNumber(wsString, nPos, nLen);
+		double rx    = GetDouble(wsString, nPos, nLen);
+		double ry    = GetDouble(wsString, nPos, nLen);
+		double angle = GetDouble(wsString, nPos, nLen);
 
 		bool isLarge = GetBool(wsString, nPos, nLen);
 		bool isCCW	 = !GetBool(wsString, nPos, nLen);
 
-		double x_end = GetNumber(wsString, nPos, nLen);
-		double y_end = GetNumber(wsString, nPos, nLen);
+		double x_end = GetDouble(wsString, nPos, nLen);
+		double y_end = GetDouble(wsString, nPos, nLen);
 
 		tmatx.Translate(-dCurX, -dCurY);
 		tmatx.TransformPoint(x_cur_temp, y_cur_temp);
@@ -664,7 +721,7 @@ namespace XPS
 		wchar_t wChar = 0x00;
 		while (nPos < nLen)
 		{
-			if (!SkipWhiteSpaces(wsString, nPos, nLen))
+			if (!SkipWhiteSpacesAndCommas(wsString, nPos, nLen))
 				break;
 
 			wChar = GetChar(wsString, nPos);
@@ -672,7 +729,7 @@ namespace XPS
 			{
 				case 'F':
 				{
-					if (!SkipWhiteSpaces(wsString, nPos, nLen))
+					if (!SkipWhiteSpacesAndCommas(wsString, nPos, nLen))
 						break;
 
 					bWinding = GetBool(wsString, nPos, nLen);
@@ -681,16 +738,16 @@ namespace XPS
 				}
 				case 'm':
 				{
-					dCurX += GetNumber(wsString, nPos, nLen);
-					dCurY += GetNumber(wsString, nPos, nLen);
+					dCurX += GetDouble(wsString, nPos, nLen);
+					dCurY += GetDouble(wsString, nPos, nLen);
 					pRenderer->PathCommandMoveTo(xpsUnitToMM(dCurX), xpsUnitToMM(dCurY));
 					bPrevCommandIsCurve = false;
 					break;
 				}
 				case 'M':
 				{
-					dCurX = GetNumber(wsString, nPos, nLen);
-					dCurY = GetNumber(wsString, nPos, nLen);
+					dCurX = GetDouble(wsString, nPos, nLen);
+					dCurY = GetDouble(wsString, nPos, nLen);
 					pRenderer->PathCommandMoveTo(xpsUnitToMM(dCurX), xpsUnitToMM(dCurY));
 					bPrevCommandIsCurve = false;
 					break;
@@ -704,7 +761,7 @@ namespace XPS
 				{
 					while (true)
 					{
-						if (!SkipWhiteSpaces(wsString, nPos, nLen))
+						if (!SkipWhiteSpacesAndCommas(wsString, nPos, nLen))
 							break;
 
 						if (IsNumber(LookChar(wsString, nPos)))
@@ -713,34 +770,34 @@ namespace XPS
 							{
 								case 'L':
 								{
-									dCurX = GetNumber(wsString, nPos, nLen);
-									dCurY = GetNumber(wsString, nPos, nLen);
+									dCurX = GetDouble(wsString, nPos, nLen);
+									dCurY = GetDouble(wsString, nPos, nLen);
 									break;
 								}
 								case 'l':
 								{
-									dCurX = GetNumber(wsString, nPos, nLen);
-									dCurY = GetNumber(wsString, nPos, nLen);
+									dCurX = GetDouble(wsString, nPos, nLen);
+									dCurY = GetDouble(wsString, nPos, nLen);
 									break;
 								}
 								case 'H':
 								{
-									dCurX = GetNumber(wsString, nPos, nLen); 
+									dCurX = GetDouble(wsString, nPos, nLen);
 									break;
 								}
 								case 'h':
 								{
-									dCurX += GetNumber(wsString, nPos, nLen);
+									dCurX += GetDouble(wsString, nPos, nLen);
 									break;
 								}
 								case 'V':
 								{
-									dCurY = GetNumber(wsString, nPos, nLen); 
+									dCurY = GetDouble(wsString, nPos, nLen);
 									break;
 								}
 								case 'v':
 								{
-									dCurY += GetNumber(wsString, nPos, nLen);
+									dCurY += GetDouble(wsString, nPos, nLen);
 									break;
 								}
 							}
@@ -759,7 +816,7 @@ namespace XPS
 				{
 					while (true)
 					{
-						if (!SkipWhiteSpaces(wsString, nPos, nLen))
+						if (!SkipWhiteSpacesAndCommas(wsString, nPos, nLen))
 							break;
 
 						if (IsNumber(LookChar(wsString, nPos)))
@@ -775,7 +832,7 @@ namespace XPS
 				{
 					while (true)
 					{
-						if (!SkipWhiteSpaces(wsString, nPos, nLen))
+						if (!SkipWhiteSpacesAndCommas(wsString, nPos, nLen))
 							break;
 
 						if (IsNumber(LookChar(wsString, nPos)))
@@ -783,21 +840,21 @@ namespace XPS
 							double dX1, dY1, dX2, dY2;
 							if ('c' == wChar)
 							{
-								dX1 = dCurX + GetNumber(wsString, nPos, nLen);
-								dY1 = dCurY + GetNumber(wsString, nPos, nLen);
-								dX2 = dCurX + GetNumber(wsString, nPos, nLen);
-								dY2 = dCurY + GetNumber(wsString, nPos, nLen);
-								dCurX += GetNumber(wsString, nPos, nLen);
-								dCurY += GetNumber(wsString, nPos, nLen);
+								dX1 = dCurX + GetDouble(wsString, nPos, nLen);
+								dY1 = dCurY + GetDouble(wsString, nPos, nLen);
+								dX2 = dCurX + GetDouble(wsString, nPos, nLen);
+								dY2 = dCurY + GetDouble(wsString, nPos, nLen);
+								dCurX += GetDouble(wsString, nPos, nLen);
+								dCurY += GetDouble(wsString, nPos, nLen);
 							}
 							else
 							{
-								dX1 = GetNumber(wsString, nPos, nLen);
-								dY1 = GetNumber(wsString, nPos, nLen);
-								dX2 = GetNumber(wsString, nPos, nLen);
-								dY2 = GetNumber(wsString, nPos, nLen);
-								dCurX = GetNumber(wsString, nPos, nLen);
-								dCurY = GetNumber(wsString, nPos, nLen);
+								dX1 = GetDouble(wsString, nPos, nLen);
+								dY1 = GetDouble(wsString, nPos, nLen);
+								dX2 = GetDouble(wsString, nPos, nLen);
+								dY2 = GetDouble(wsString, nPos, nLen);
+								dCurX = GetDouble(wsString, nPos, nLen);
+								dCurY = GetDouble(wsString, nPos, nLen);
 							}
 							pRenderer->PathCommandCurveTo(xpsUnitToMM(dX1), xpsUnitToMM(dY1), xpsUnitToMM(dX2), xpsUnitToMM(dY2), xpsUnitToMM(dCurX), xpsUnitToMM(dCurY));
 							dCpX = dX2;
@@ -814,7 +871,7 @@ namespace XPS
 				{
 					while (true)
 					{
-						if (!SkipWhiteSpaces(wsString, nPos, nLen))
+						if (!SkipWhiteSpacesAndCommas(wsString, nPos, nLen))
 							break;
 
 						if (IsNumber(LookChar(wsString, nPos)))
@@ -822,17 +879,17 @@ namespace XPS
 							double dX1, dY1;
 							if ('q' == wChar)
 							{
-								dX1 = dCurX + GetNumber(wsString, nPos, nLen);
-								dY1 = dCurY + GetNumber(wsString, nPos, nLen);
-								dCurX += GetNumber(wsString, nPos, nLen);
-								dCurY += GetNumber(wsString, nPos, nLen);
+								dX1 = dCurX + GetDouble(wsString, nPos, nLen);
+								dY1 = dCurY + GetDouble(wsString, nPos, nLen);
+								dCurX += GetDouble(wsString, nPos, nLen);
+								dCurY += GetDouble(wsString, nPos, nLen);
 							}
 							else
 							{
-								dX1 = GetNumber(wsString, nPos, nLen);
-								dY1 = GetNumber(wsString, nPos, nLen);
-								dCurX = GetNumber(wsString, nPos, nLen);
-								dCurY = GetNumber(wsString, nPos, nLen);
+								dX1 = GetDouble(wsString, nPos, nLen);
+								dY1 = GetDouble(wsString, nPos, nLen);
+								dCurX = GetDouble(wsString, nPos, nLen);
+								dCurY = GetDouble(wsString, nPos, nLen);
 							}
 							pRenderer->PathCommandCurveTo(xpsUnitToMM(dX1), xpsUnitToMM(dY1), xpsUnitToMM(dX1), xpsUnitToMM(dY1), xpsUnitToMM(dCurX), xpsUnitToMM(dCurY));
 						}
@@ -847,7 +904,7 @@ namespace XPS
 				{
 					while (true)
 					{
-						if (!SkipWhiteSpaces(wsString, nPos, nLen))
+						if (!SkipWhiteSpacesAndCommas(wsString, nPos, nLen))
 							break;
 
 						if (IsNumber(LookChar(wsString, nPos)))
@@ -866,17 +923,17 @@ namespace XPS
 
 							if ('s' == wChar)
 							{
-								dX2 = dCurX + GetNumber(wsString, nPos, nLen);
-								dY2 = dCurX + GetNumber(wsString, nPos, nLen);
-								dCurX += GetNumber(wsString, nPos, nLen);
-								dCurY += GetNumber(wsString, nPos, nLen);
+								dX2 = dCurX + GetDouble(wsString, nPos, nLen);
+								dY2 = dCurX + GetDouble(wsString, nPos, nLen);
+								dCurX += GetDouble(wsString, nPos, nLen);
+								dCurY += GetDouble(wsString, nPos, nLen);
 							}
 							else
 							{
-								dX2 = GetNumber(wsString, nPos, nLen);
-								dY2 = GetNumber(wsString, nPos, nLen);
-								dCurX = GetNumber(wsString, nPos, nLen);
-								dCurY = GetNumber(wsString, nPos, nLen);
+								dX2 = GetDouble(wsString, nPos, nLen);
+								dY2 = GetDouble(wsString, nPos, nLen);
+								dCurX = GetDouble(wsString, nPos, nLen);
+								dCurY = GetDouble(wsString, nPos, nLen);
 							}
 
 							pRenderer->PathCommandCurveTo(xpsUnitToMM(dX1), xpsUnitToMM(dY1), xpsUnitToMM(dX2), xpsUnitToMM(dY2), xpsUnitToMM(dCurX), xpsUnitToMM(dCurY));
@@ -900,5 +957,233 @@ namespace XPS
 		}
 
 		return bWinding;
+	}
+	bool GetNextGlyph(const wchar_t* wsIndices, int& nIndicesPos, const int& nIndicesLen, unsigned short* pUtf16, int& nUtf16Pos, const int& nUtf16Len, TIndicesEntry& oEntry)
+	{
+		if (!wsIndices || nIndicesPos >= nIndicesLen)
+		{
+			if (!pUtf16 || nUtf16Pos >= nUtf16Len)
+				return false;
+
+			oEntry.nUnicode   = pUtf16[nUtf16Pos++];
+			oEntry.bUnicode   = true;
+			oEntry.bGid       = false;
+			oEntry.bAdvance   = false;
+			oEntry.bHorOffset = false;
+			oEntry.bVerOffset = false;
+			return true;
+		}
+
+		if (!SkipWhiteSpaces(wsIndices, nIndicesPos, nIndicesLen))
+			return false;
+
+		wchar_t wChar = LookChar(wsIndices, nIndicesPos);
+
+		int nCodeUnitCount = -1, nGlyphCount = -1;
+		if ('(' == wChar)
+		{
+			nIndicesPos++;
+			if (!SkipWhiteSpaces(wsIndices, nIndicesPos, nIndicesLen))
+				return false;
+
+			wChar = LookChar(wsIndices, nIndicesPos);
+			if (IsNumber(wChar))
+				nCodeUnitCount = GetInt(wsIndices, nIndicesPos, nIndicesLen);
+			else
+				nCodeUnitCount = 1;
+
+			if (!SkipWhiteSpaces(wsIndices, nIndicesPos, nIndicesLen))
+				return false;
+
+			wChar = LookChar(wsIndices, nIndicesPos);
+			if (':' == wChar)
+			{
+				nIndicesPos++;
+				if (!SkipWhiteSpaces(wsIndices, nIndicesPos, nIndicesLen))
+					return false;
+
+				wChar = LookChar(wsIndices, nIndicesPos);
+				if (IsNumber(wChar))
+					nGlyphCount = GetInt(wsIndices, nIndicesPos, nIndicesLen);
+				else
+					nGlyphCount = 1;
+			}
+			else
+				return false;
+
+			if (!SkipWhiteSpaces(wsIndices, nIndicesPos, nIndicesLen))
+				return false;
+
+			wChar = LookChar(wsIndices, nIndicesPos);
+			if (')' != wChar)
+				return false; // Такого не должно быть
+
+			nIndicesPos++;
+		}
+
+		if (nCodeUnitCount > 0 && nGlyphCount > 0)
+		{
+			oEntry.vRemainUnicodes.clear();
+			// Нам нужно прочитать сколько реальных юникодных значений лежит в 
+			// промежутке [pUnicode + nUnicodePos, pUnicode + nUnicodePos + nCodeUnitCount]
+			int nUnicodesCount = 0;
+			unsigned int* pUnicodes = NULL;
+			nCodeUnitCount = min(nUtf16Len - nUtf16Pos, nCodeUnitCount);
+			nUtf16Pos += nCodeUnitCount;
+			if (nCodeUnitCount)
+			{
+				pUnicodes = new unsigned int[nCodeUnitCount];
+				if (!pUnicodes)
+					return false;
+
+				unsigned short ushLeading, ushTraling;
+				unsigned int unCode;
+				int nCodeUnitPos = 0;
+				while (nCodeUnitPos < nCodeUnitCount)
+				{
+					ushLeading = pUtf16[nUtf16Pos + nCodeUnitPos++];
+					if (ushLeading < 0xD800 || ushLeading > 0xDFFF)
+					{
+						pUnicodes[nUnicodesCount++] = (unsigned int)ushLeading;
+					}
+					else if (ushLeading >= 0xDC00)
+					{
+						// Такого не должно быть
+						continue;
+					}
+					else
+					{
+						if (nCodeUnitPos >= nCodeUnitCount)
+							break;
+
+						unCode = (ushLeading & 0x3FF) << 10;
+						ushTraling =  pUtf16[nUtf16Pos + nCodeUnitPos++];
+						if (ushTraling < 0xDC00 || ushTraling > 0xDFFF)
+						{
+							// Такого не должно быть
+							continue;
+						}
+						else
+						{
+							pUnicodes[nUnicodesCount++] = (unCode | (ushTraling & 0x3FF) + 0x10000);
+						}
+					}
+				}
+			}
+
+			// Равномерно распределяем юникоды по глифам, в идеале их количество должно совпадать.
+			// Если юникодов больше, то лишние удаляем, если их меньше, то недостающие заполняем пробелами.
+			nUnicodesCount = min(nUnicodesCount, nGlyphCount);
+			for (int nIndex = 0; nIndex < nGlyphCount; nIndex++)
+			{
+				if (nIndex < nUnicodesCount)
+					oEntry.vRemainUnicodes.push_back(pUnicodes[nIndex]);
+				else
+					oEntry.vRemainUnicodes.push_back(0x20);
+			}
+
+			if (pUnicodes)
+				delete[] pUnicodes;
+		}
+
+		if (oEntry.vRemainUnicodes.size() <= 0)
+			return false;
+
+		// Теперь мы читаем ровно 1 глиф с возможными метриками
+		oEntry.nUnicode = oEntry.vRemainUnicodes.at(0);
+		oEntry.vRemainUnicodes.erase(oEntry.vRemainUnicodes.begin());
+
+		wChar = LookChar(wsIndices, nIndicesPos);
+		if (!SkipWhiteSpaces(wsIndices, nIndicesPos, nIndicesLen))
+			return false;
+
+		if (IsNumber(wChar))
+		{
+			oEntry.nGid = GetInt(wsIndices, nIndicesPos, nIndicesLen);
+			oEntry.bGid = true;
+		}
+		else
+		{
+			oEntry.bGid = false;
+		}
+
+		if (!SkipWhiteSpaces(wsIndices, nIndicesPos, nIndicesLen))
+			return true;
+
+		wChar = LookChar(wsIndices, nIndicesPos);
+		if (',' == wChar)
+		{
+			nIndicesPos++;
+
+			if (!SkipWhiteSpaces(wsIndices, nIndicesPos, nIndicesLen))
+				return true;
+
+			wChar = LookChar(wsIndices, nIndicesPos);
+			if (IsNumber(wChar))
+			{
+				oEntry.dAdvance = GetDouble(wsIndices, nIndicesPos, nIndicesLen);
+				oEntry.bAdvance = true;
+			}
+			else
+			{
+				oEntry.bAdvance = false;
+			}
+
+			if (!SkipWhiteSpaces(wsIndices, nIndicesPos, nIndicesLen))
+				return true;
+
+			wChar = LookChar(wsIndices, nIndicesPos);
+			if (',' == wChar)
+			{
+				nIndicesPos++;
+				if (!SkipWhiteSpaces(wsIndices, nIndicesPos, nIndicesLen))
+					return true;
+
+				wChar = LookChar(wsIndices, nIndicesPos);
+				if (IsNumber(wChar))
+				{
+					oEntry.dHorOffset = GetDouble(wsIndices, nIndicesPos, nIndicesLen);
+					oEntry.bHorOffset = true;
+				}
+				else
+				{
+					oEntry.bHorOffset = false;
+				}
+
+				if (!SkipWhiteSpaces(wsIndices, nIndicesPos, nIndicesLen))
+					return true;
+
+				wChar = LookChar(wsIndices, nIndicesPos);
+				if (',' == wChar)
+				{
+					nIndicesPos++;
+					if (!SkipWhiteSpaces(wsIndices, nIndicesPos, nIndicesLen))
+						return true;
+
+					wChar = LookChar(wsIndices, nIndicesPos);
+					if (IsNumber(wChar))
+					{
+						oEntry.dVerOffset = GetDouble(wsIndices, nIndicesPos, nIndicesLen);
+						oEntry.bVerOffset = true;
+					}
+					else
+					{
+						oEntry.bVerOffset = false;
+					}
+				}
+			}
+		}
+
+		if (!SkipWhiteSpaces(wsIndices, nIndicesPos, nIndicesLen))
+			return true;
+
+		wChar = LookChar(wsIndices, nIndicesPos);
+		if (';' == wChar)
+		{
+			nIndicesPos++;
+			return true;
+		}
+		else
+			return false; // Такого не должно быть
 	}
 }

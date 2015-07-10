@@ -218,14 +218,18 @@ namespace XPS
 		int nBgr = 0, nAlpha = 255;
 		double dFontSize = 10.0;
 		bool bTransform = false, bClip = false, bOpacity = false;
-		int nTextLen = 0;
-		std::wstring wsText;
+		unsigned int unTextLen = 0;
 		double dX = 0;
 		double dY = 0;
 		std::wstring wsFontPath;
 		std::wstring wsIndicies;
 		int nBidiLevel = 0;
 		CWString wsClip, wsTransform;
+		unsigned int* pUnicodes = NULL;
+		unsigned int* pUnicodesPtr = NULL;
+
+		CWString wsUnicodeString, wsIndices;
+
 		if (oReader.MoveToFirstAttribute())
 		{
 			std::wstring wsAttrName = oReader.GetName();
@@ -282,14 +286,20 @@ namespace XPS
 				}
 				else if (L"UnicodeString" == wsAttrName)
 				{
-					wsText = oReader.GetText();
-					nTextLen = wsText.length();
+					wsUnicodeString.create(oReader.GetText(), true);
 
-					if (nTextLen >= 2 && '{' == wsText.at(0) && '}' == wsText.at(1))
+					pUnicodesPtr = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeString.c_str(), unTextLen);
+
+					if (unTextLen >= 2 && '{' == pUnicodesPtr[0] && '}' == pUnicodesPtr[1])
 					{
-						wsText = wsText.substr(2);
-						nTextLen -= 2;
+						pUnicodes = pUnicodesPtr + 2;
+						unTextLen -= 2;
 					}
+					else
+					{
+						pUnicodes = pUnicodesPtr;
+					}
+
 				}
 				else if (L"OriginX" == wsAttrName)
 				{
@@ -303,6 +313,7 @@ namespace XPS
 				}
 				else if (L"Indices" == wsAttrName)
 				{
+					wsIndices.create(oReader.GetText(), true);
 					wsIndicies = oReader.GetText();
 				}
 				else if (L"BidiLevel" == wsAttrName)
@@ -357,46 +368,60 @@ namespace XPS
 		pRenderer->put_BrushType(c_BrushTypeSolid);
 		pRenderer->put_FontSize(dFontSize * 0.75);
 
-		std::wstring wsChar = wsText.substr(0, 1);
-		std::vector<std::vector<std::wstring>> arrElements = Split(wsIndicies, L';', L',');
+		TIndicesEntry oEntry;
+		int nIndicesPos = 0, nIndicesLen = wsIndices.size();
+		int nUtf16Pos = 0, nUtf16Len = wsUnicodeString.size();
+		while (GetNextGlyph(wsIndices.c_str(), nIndicesPos, nIndicesLen, (unsigned short*)wsUnicodeString.c_str(), nUtf16Pos, nUtf16Len, oEntry))
+		{
+			int k = 10;
+			k++;
+		}
 
+		std::vector<std::vector<std::wstring>> arrElements = Split(wsIndicies, L';', L',');
 		bool bRtoL = (nBidiLevel % 2 ? true : false);
 		m_pFontManager->LoadFontFromFile(wsFontPath, 0, (float)(dFontSize * 0.75), 96, 96);
-		for (int nIndex = 0; nIndex < nTextLen; nIndex++)
+		if (pUnicodesPtr)
 		{
-			if (nIndex >= arrElements.size())
-				arrElements.push_back(std::vector<std::wstring>());
-
-			if (bRtoL)
+			for (int nIndex = 0; nIndex < unTextLen; nIndex++)
 			{
-				if (arrElements.at(nIndex).size() >= 2)
+				std::wstring wsChar = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(pUnicodes + nIndex), 1);
+				if (nIndex >= arrElements.size())
+					arrElements.push_back(std::vector<std::wstring>());
+
+				if (bRtoL)
 				{
-					dX -= GetDouble(arrElements.at(nIndex).at(1)) * dFontSize / 100.0;
+					if (arrElements.at(nIndex).size() >= 2)
+					{
+						dX -= GetDouble(arrElements.at(nIndex).at(1)) * dFontSize / 100.0;
+					}
+					else
+					{
+						m_pFontManager->LoadString1(wsChar, 0, 0);
+						TBBox oBox = m_pFontManager->MeasureString2();
+						dX -= (oBox.fMaxX - oBox.fMinX);
+					}
+					pRenderer->CommandDrawTextEx(wsChar, L"", xpsUnitToMM(dX), xpsUnitToMM(dY), 0, 0, 0, 0);
 				}
 				else
 				{
-					m_pFontManager->LoadString1(wsChar, 0, 0);
-					TBBox oBox = m_pFontManager->MeasureString2();
-					dX -= (oBox.fMaxX - oBox.fMinX);
-				}
-				pRenderer->CommandDrawText(wsChar, xpsUnitToMM(dX), xpsUnitToMM(dY), 0, 0, 0);
-			}
-			else
-			{
-				pRenderer->CommandDrawText(wsChar, xpsUnitToMM(dX), xpsUnitToMM(dY), 0, 0, 0);
-				if (arrElements.at(nIndex).size() >= 2)
-				{
-					dX += GetDouble(arrElements.at(nIndex).at(1)) * dFontSize / 100.0;
-				}
-				else
-				{
-					m_pFontManager->LoadString1(wsChar, 0, 0);
-					TBBox oBox = m_pFontManager->MeasureString2();
-					dX += (oBox.fMaxX - oBox.fMinX);
+					pRenderer->CommandDrawTextEx(wsChar, L"", xpsUnitToMM(dX), xpsUnitToMM(dY), 0, 0, 0, 0);
+					if (nIndex < unTextLen - 1)
+					{
+						if (arrElements.at(nIndex).size() >= 2)
+						{
+							dX += GetDouble(arrElements.at(nIndex).at(1)) * dFontSize / 100.0;
+						}
+						else
+						{
+							m_pFontManager->LoadString1(wsChar, 0, 0);
+							TBBox oBox = m_pFontManager->MeasureString2();
+							dX += (oBox.fMaxX - oBox.fMinX);
+						}
+					}
 				}
 			}
 
-			wsChar = wsText.substr(nIndex + 1, 1);
+			delete[] pUnicodesPtr;
 		}
 
 		if (bClip)

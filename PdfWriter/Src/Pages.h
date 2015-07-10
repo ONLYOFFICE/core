@@ -162,11 +162,17 @@ namespace PdfWriter
 	public:
 
 		CTextWord();
+		~CTextWord();
 		bool Add(unsigned char* pCodes, unsigned int unLen, double dX, double dY, double dWidth);
 
 	private:
 
-		unsigned char m_pText[200];
+		void CheckBuffer();
+
+	private:
+
+		unsigned char*m_pText;
+		int           m_nSize;
 		int           m_nIndex;
 		double        m_dStartX;
 		double        m_dStartY;

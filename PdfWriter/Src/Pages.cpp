@@ -20,6 +20,8 @@
 #define MAX_CHARSPACE          300
 #define MAX_FONTSIZE           1000
 
+#define STR_BUF 200
+
 namespace PdfWriter
 {
 	static const double c_dKappa = 0.552;
@@ -1262,11 +1264,28 @@ namespace PdfWriter
 	CTextWord::CTextWord()
 	{
 		m_nIndex = 0;
+		m_pText = (unsigned char*)malloc(STR_BUF);
+		m_nSize = STR_BUF;
+	}
+	CTextWord::~CTextWord()
+	{
+		if (m_pText)
+			free(m_pText);
+	}
+	void CTextWord::CheckBuffer()
+	{
+		if (2 * m_nIndex >= m_nSize)
+		{
+			m_nSize += STR_BUF;
+			m_pText = (unsigned char*)realloc(m_pText, m_nSize);
+		}
 	}
 	bool CTextWord::Add(unsigned char* pCodes, unsigned int unLen, double dX, double dY, double dWidth)
 	{
 		if (2 != unLen)
 			return false;
+
+		CheckBuffer();
 
 		if (0 == m_nIndex)
 		{

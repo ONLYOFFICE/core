@@ -286,6 +286,9 @@ namespace XPS
 				}
 				else if (L"UnicodeString" == wsAttrName)
 				{
+					// TODO:
+					// 1. {}
+					// 2. “ут нам нужно получить unsigned short*, а не wchar_t*
 					wsUnicodeString.create(oReader.GetText(), true);
 
 					pUnicodesPtr = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeString.c_str(), unTextLen);
@@ -371,14 +374,50 @@ namespace XPS
 		TIndicesEntry oEntry;
 		int nIndicesPos = 0, nIndicesLen = wsIndices.size();
 		int nUtf16Pos = 0, nUtf16Len = wsUnicodeString.size();
+		bool bRtoL = (nBidiLevel % 2 ? true : false);
+		m_pFontManager->LoadFontFromFile(wsFontPath, 0, (float)(dFontSize * 0.75), 96, 96);
 		while (GetNextGlyph(wsIndices.c_str(), nIndicesPos, nIndicesLen, (unsigned short*)wsUnicodeString.c_str(), nUtf16Pos, nUtf16Len, oEntry))
 		{
-			int k = 10;
-			k++;
+			double dAdvance;
+			if (oEntry.bAdvance)
+				dAdvance = oEntry.dAdvance * dFontSize / 100;
+			else
+			{
+				if (oEntry.bGid)
+				{
+					std::wstring wsChar;
+					wsChar += wchar_t(oEntry.nGid);
+
+					m_pFontManager->SetStringGID(TRUE);
+					m_pFontManager->LoadString1(wsChar, 0, 0);
+				}
+				else
+				{
+					std::wstring wsChar = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&(oEntry.nUnicode)), 1);
+					m_pFontManager->SetStringGID(FALSE);
+					m_pFontManager->LoadString1(wsChar, 0, 0);
+				}
+				TBBox oBox = m_pFontManager->MeasureString2();
+				dAdvance = (oBox.fMaxX - oBox.fMinX);
+			}
+
+			if (bRtoL)
+				dX -= dAdvance;
+
+			std::wstring wsChar = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&(oEntry.nUnicode)), 1);
+			unsigned int unGid = oEntry.nGid;
+			std::wstring wsGid  = oEntry.bGid ? NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&(unGid)), 1) : L"";
+
+			if (oEntry.bHorOffset || oEntry.bVerOffset)
+				pRenderer->CommandDrawTextEx(wsChar, wsGid, xpsUnitToMM(dX + oEntry.dHorOffset), xpsUnitToMM(dY + oEntry.dVerOffset), 0, 0, 0, 0);
+			else
+				pRenderer->CommandDrawTextEx(wsChar, wsGid, xpsUnitToMM(dX), xpsUnitToMM(dY), 0, 0, 0, 0);
+
+			if (!bRtoL)
+				dX += dAdvance;
 		}
 
-		std::vector<std::vector<std::wstring>> arrElements = Split(wsIndicies, L';', L',');
-		bool bRtoL = (nBidiLevel % 2 ? true : false);
+		/*std::vector<std::vector<std::wstring>> arrElements = Split(wsIndicies, L';', L',');		
 		m_pFontManager->LoadFontFromFile(wsFontPath, 0, (float)(dFontSize * 0.75), 96, 96);
 		if (pUnicodesPtr)
 		{
@@ -422,7 +461,7 @@ namespace XPS
 			}
 
 			delete[] pUnicodesPtr;
-		}
+		}*/
 
 		if (bClip)
 			pState->PopClip();

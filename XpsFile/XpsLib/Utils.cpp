@@ -979,7 +979,7 @@ namespace XPS
 
 		wchar_t wChar = LookChar(wsIndices, nIndicesPos);
 
-		int nCodeUnitCount = -1, nGlyphCount = -1;
+		int nCodeUnitCount = 1, nGlyphCount = 1;
 		if ('(' == wChar)
 		{
 			nIndicesPos++;
@@ -1020,6 +1020,7 @@ namespace XPS
 
 			nIndicesPos++;
 		}
+
 
 		if (nCodeUnitCount > 0 && nGlyphCount > 0)
 		{

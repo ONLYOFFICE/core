@@ -5588,7 +5588,7 @@ namespace BinXlsxRW{
 		{
 			signed char* pNewElem = new signed char;
 			*pNewElem = m_oBufferedStream.GetChar();
-			poVal->m_val = pNewElem;
+			poVal->m_val = (signed char*)pNewElem;
 		}
 		else
 			res = c_oSerConstants::ReadUnknown;

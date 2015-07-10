@@ -544,6 +544,7 @@
 					LIBXML_READER_ENABLED,
 					MAC,
 					unix,
+					_IOS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (
@@ -576,6 +577,7 @@
 					LIBXML_READER_ENABLED,
 					MAC,
 					unix,
+					_IOS,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
 				HEADER_SEARCH_PATHS = (

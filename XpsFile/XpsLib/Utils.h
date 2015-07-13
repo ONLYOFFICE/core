@@ -49,6 +49,20 @@ namespace XPS
 			bUnicode(false), bGid(false), bAdvance(false), bHorOffset(false), bVerOffset(false)
 		{
 		}
+		void Reset()
+		{
+			bUnicode   = false;
+			bGid       = false;
+			bAdvance   = false;
+			bHorOffset = false;
+			bVerOffset = false;
+
+			nUnicode   = 0;
+			nGid       = 0;
+			dAdvance   = 0;
+			dHorOffset = 0;
+			dVerOffset = 0;
+		}
 
 	public:
 

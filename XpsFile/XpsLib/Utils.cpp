@@ -960,17 +960,14 @@ namespace XPS
 	}
 	bool GetNextGlyph(const wchar_t* wsIndices, int& nIndicesPos, const int& nIndicesLen, unsigned short* pUtf16, int& nUtf16Pos, const int& nUtf16Len, TIndicesEntry& oEntry)
 	{
+		oEntry.Reset();
 		if (!wsIndices || nIndicesPos >= nIndicesLen)
 		{
 			if (!pUtf16 || nUtf16Pos >= nUtf16Len)
 				return false;
 
-			oEntry.nUnicode   = pUtf16[nUtf16Pos++];
-			oEntry.bUnicode   = true;
-			oEntry.bGid       = false;
-			oEntry.bAdvance   = false;
-			oEntry.bHorOffset = false;
-			oEntry.bVerOffset = false;
+			oEntry.nUnicode = pUtf16[nUtf16Pos++];
+			oEntry.bUnicode = true;
 			return true;
 		}
 
@@ -1029,8 +1026,7 @@ namespace XPS
 			// промежутке [pUnicode + nUnicodePos, pUnicode + nUnicodePos + nCodeUnitCount]
 			int nUnicodesCount = 0;
 			unsigned int* pUnicodes = NULL;
-			nCodeUnitCount = min(nUtf16Len - nUtf16Pos, nCodeUnitCount);
-			nUtf16Pos += nCodeUnitCount;
+			nCodeUnitCount = min(nUtf16Len - nUtf16Pos, nCodeUnitCount);			
 			if (nCodeUnitCount)
 			{
 				pUnicodes = new unsigned int[nCodeUnitCount];
@@ -1085,6 +1081,8 @@ namespace XPS
 
 			if (pUnicodes)
 				delete[] pUnicodes;
+
+			nUtf16Pos += nCodeUnitCount;
 		}
 
 		if (oEntry.vRemainUnicodes.size() <= 0)

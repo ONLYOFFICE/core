@@ -6,7 +6,7 @@
 #include <iostream>
 #include <string>
 
-#import "../../../Redist/ASCOfficeXlsFile2.dll" rename_namespace("ASCOfficeXlsFile"), raw_interfaces_only
+#import "../debug/ASCOfficeXlsFile2.dll" rename_namespace("ASCOfficeXlsFile"), raw_interfaces_only
 
 #define HR_RET(HR) if FAILED(hr = (HR)) { _ASSERTE(false); return -1; }
 

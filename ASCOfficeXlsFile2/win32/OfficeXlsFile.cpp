@@ -16,7 +16,7 @@
 #include <boost/lexical_cast.hpp>
 #include "../Common/boost_filesystem_version.h"
 
-#include "source/ConvertXls2Xlsx.h"
+#include "../source/XlsXlsxConverter/ConvertXls2Xlsx.h"
 
 #include "../Common/XmlUtils.h"
 #include "../Common/ASCATLError.h"

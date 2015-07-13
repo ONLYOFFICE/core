@@ -13,7 +13,7 @@
 //#include <ostream>
 
 #include <boost/shared_ptr.hpp>
-#include <boost/bind.hpp>
+//#include <boost/bind.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/shared_array.hpp>
 

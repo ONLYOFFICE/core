@@ -83,7 +83,7 @@ BiffStructurePtr CellRangeRef::clone()
 //}
 //
 //
-//void CellRangeRef::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
+//void CellRangeRef::(MSXML2::IXMLDOMElementPtr xml_tag)
 //{
 //	xml_tag->setAttribute(L"name", toString().c_str());
 //	xml_tag->setAttribute(L"top_left_cell", getTopLeftCell().toString().c_str());

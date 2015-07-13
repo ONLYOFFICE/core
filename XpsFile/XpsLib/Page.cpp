@@ -64,38 +64,140 @@ namespace XPS
 		if (!oReader.ReadNextNode())
 			return;
 
-		std::wstring wsName = oReader.GetName();
-		if (L"FixedPage" != wsName)
-			return;
+		CWString wsNodeName = oReader.GetName(), wsAttrName;
+		if (wsNodeName == L"mc:AlternateContent")
+		{
+			if (!oReader.IsEmptyNode())
+			{
+				int nAltDepth = oReader.GetDepth();
+				while (oReader.ReadNextSiblingNode(nAltDepth))
+				{
+					wsNodeName = oReader.GetName();
+					if (wsNodeName == L"mc:Choice")
+					{
+						CWString wsAttr;
+						ReadAttribute(oReader, L"Requires", wsAttr);
+						if (wsAttr == L"xps")
+						{
+							if (!oReader.IsEmptyNode())
+							{
+								int nAltDepth2 = oReader.GetDepth();
+								while (oReader.ReadNextSiblingNode(nAltDepth2))
+								{
+									wsNodeName = oReader.GetName();
+									if (wsNodeName == L"FixedPage")
+									{
+										ReadAttribute(oReader, L"Width", wsAttrName);
+										nW = XmlUtils::GetInteger(wsAttrName.c_str());
 
-		ReadAttribute(oReader, L"Width", wsName);
-		nW = XmlUtils::GetInteger(wsName.c_str());
+										ReadAttribute(oReader, L"Height", wsAttrName);
+										nH = XmlUtils::GetInteger(wsAttrName.c_str());
+										break;
+									}
+								}
+							}
+							break;
+						}
+					}
+					else if (wsNodeName == L"mc:Fallback")
+					{
+						if (!oReader.IsEmptyNode())
+						{
+							int nAltDepth2 = oReader.GetDepth();
+							while (oReader.ReadNextSiblingNode(nAltDepth2))
+							{
+								wsNodeName = oReader.GetName();
+								if (wsNodeName == L"FixedPage")
+								{
+									ReadAttribute(oReader, L"Width", wsAttrName);
+									nW = XmlUtils::GetInteger(wsAttrName.c_str());
 
-		ReadAttribute(oReader, L"Height", wsName);
-		nH = XmlUtils::GetInteger(wsName.c_str());
+									ReadAttribute(oReader, L"Height", wsAttrName);
+									nH = XmlUtils::GetInteger(wsAttrName.c_str());
+									break;
+								}
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+		else if (wsNodeName == L"FixedPage")
+		{
+			ReadAttribute(oReader, L"Width", wsAttrName);
+			nW = XmlUtils::GetInteger(wsAttrName.c_str());
+
+			ReadAttribute(oReader, L"Height", wsAttrName);
+			nH = XmlUtils::GetInteger(wsAttrName.c_str());
+		}
 	}
 	void Page::Draw(IRenderer* pRenderer, bool* pbBreak)
 	{
 		XmlUtils::CXmlLiteReader oReader;
 
-		clock_t oBeginTime = clock();
-
 		if (!oReader.FromFile(m_wsPagePath.c_str()))
 			return;
-
-		clock_t oEndTime = clock();
-		double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
-		printf("%S %fseconds\n", m_wsPagePath.c_str(), dElapsedSecs);
 
 		if (!oReader.ReadNextNode())
 			return;
 
-		std::wstring wsNodeName = oReader.GetName();
-		if (L"FixedPage" != wsNodeName)
-			return;
-
 		CContextState oState(pRenderer);
-		DrawCanvas(oReader, pRenderer, &oState, pbBreak);
+		CWString wsNodeName = oReader.GetName();
+		if (wsNodeName == L"mc:AlternateContent")
+		{
+			if (!oReader.IsEmptyNode())
+			{
+				int nAltDepth = oReader.GetDepth();
+				while (oReader.ReadNextSiblingNode(nAltDepth))
+				{
+					wsNodeName = oReader.GetName();
+					if (wsNodeName == L"mc:Choice")
+					{
+						CWString wsAttr;
+						ReadAttribute(oReader, L"Requires", wsAttr);
+						if (wsAttr == L"xps")
+						{
+							if (!oReader.IsEmptyNode())
+							{
+								int nAltDepth2 = oReader.GetDepth();
+								while (oReader.ReadNextSiblingNode(nAltDepth2))
+								{
+									wsNodeName = oReader.GetName();
+									if (wsNodeName == L"FixedPage")
+									{
+										DrawCanvas(oReader, pRenderer, &oState, pbBreak);
+										break;
+									}
+								}
+							}
+							break;
+						}
+					}
+					else if (wsNodeName == L"mc:Fallback")
+					{
+						if (!oReader.IsEmptyNode())
+						{
+							int nAltDepth2 = oReader.GetDepth();
+							while (oReader.ReadNextSiblingNode(nAltDepth2))
+							{
+								wsNodeName = oReader.GetName();
+								if (wsNodeName == L"FixedPage")
+								{
+									DrawCanvas(oReader, pRenderer, &oState, pbBreak);
+									break;
+								}
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+		else if (wsNodeName == L"FixedPage")
+		{
+			DrawCanvas(oReader, pRenderer, &oState, pbBreak);
+		}
 	}
 	void Page::DrawCanvas(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState, bool* pbBreak)
 	{
@@ -126,33 +228,62 @@ namespace XPS
 		if (oReader.IsEmptyNode())
 			return;
 
-		std::wstring wsNodeName;
+		CWString wsNodeName;
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
 			wsNodeName = oReader.GetName();
-			wsNodeName = RemoveNamespace(wsNodeName);
 
-			if (L"FixedPage.Resources" == wsNodeName)
+			if (wsNodeName == L"FixedPage.Resources")
 			{
 				ReadPageResources(oReader, pRenderer, pState);
 			}
-			else if (L"Glyphs" == wsNodeName)
+			else if (wsNodeName == L"Canvas.Resources")
+			{
+				ReadResourceDictionary(oReader, pRenderer, pState);
+			}
+			else if (wsNodeName == L"Glyphs")
 			{
 				DrawGlyph(oReader, pRenderer, pState);
 			}
-			else if (L"Canvas" == wsNodeName)
+			else if (wsNodeName == L"Canvas")
 			{
 				DrawCanvas(oReader, pRenderer, pState, pbBreak);
 			}
-			else if (L"Canvas.RenderTransform" == wsNodeName)
+			else if (wsNodeName == L"Canvas.RenderTransform")
 			{
 				if (!bTransform)
 					bTransform = ReadTransform(oReader, pRenderer, pState);
 			}
-			else if (L"Path" == wsNodeName)
+			else if (wsNodeName == L"Path")
 			{
 				DrawPath(oReader, pRenderer, pState);
+			}
+			else if (wsNodeName == L"mc:AlternateContent")
+			{
+				if (!oReader.IsEmptyNode())
+				{
+					int nAltDepth = oReader.GetDepth();
+					while (oReader.ReadNextSiblingNode(nAltDepth))
+					{
+						wsNodeName = oReader.GetName();
+						if (wsNodeName == L"mc:Choice")
+						{
+							CWString wsAttr;
+							ReadAttribute(oReader, L"Requires", wsAttr);
+							if (wsAttr == L"xps")
+							{
+								DrawCanvas(oReader, pRenderer, pState, NULL);
+								break;
+							}
+						}
+						else if (wsNodeName == L"mc:Fallback")
+						{
+							DrawCanvas(oReader, pRenderer, pState, NULL);
+							break;
+						}
+					}
+				}
 			}
 
 			if (NULL != pbBreak && *pbBreak)

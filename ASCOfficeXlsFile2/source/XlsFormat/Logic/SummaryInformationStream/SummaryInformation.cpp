@@ -1,7 +1,7 @@
 #include "precompiled_xls.h"
 
 #include "SummaryInformation.h"
-#include "Binary\CFStream.h"
+#include "Binary/CFStream.h"
 
 
 namespace OLEPS

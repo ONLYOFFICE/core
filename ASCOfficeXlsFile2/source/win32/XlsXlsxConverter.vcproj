@@ -43,6 +43,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="..\XlsFormat"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -105,6 +106,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="..\XlsFormat"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -166,6 +168,7 @@
 			<Tool
 				Name="VCCLCompilerTool"
 				Optimization="0"
+				AdditionalIncludeDirectories="..\XlsFormat"
 				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
@@ -229,6 +232,7 @@
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
+				AdditionalIncludeDirectories="..\XlsFormat"
 				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
 				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
@@ -275,6 +279,14 @@
 			>
 			<File
 				RelativePath="..\XlsXlsxConverter\ConvertXls2Xlsx.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Common\DocxFormat\Source\SystemUtility\FileSystem\Directory.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Common\DocxFormat\Source\XML\stringcommon.cpp"
 				>
 			</File>
 		</Filter>

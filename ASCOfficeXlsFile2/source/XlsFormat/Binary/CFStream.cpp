@@ -4,6 +4,8 @@
 //#include <Exception/CompoundFileFormatError.h>
 //#include <Exception/EndOfStreamReached.h>
 
+#include <boost/bind.hpp>
+
 #include <sstream>
 
 namespace XLS

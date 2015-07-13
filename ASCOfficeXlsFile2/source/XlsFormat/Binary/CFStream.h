@@ -2,8 +2,8 @@
 
 #include "objidl.h"
 
-#include <Binary/CFRecordType.h>
-#include <Binary/BinSmartPointers.h>
+#include "CFRecordType.h"
+#include "BinSmartPointers.h"
 
 namespace XLS
 {;

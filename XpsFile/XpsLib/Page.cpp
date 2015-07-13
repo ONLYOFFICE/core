@@ -16,6 +16,21 @@
 
 namespace XPS
 {
+	static double GetAdvance(CFontManager* pFontManager, const std::wstring& wsChar, const std::wstring& wsGid, const bool& bGid)
+	{
+		if (bGid)
+		{
+			pFontManager->SetStringGID(TRUE);
+			pFontManager->LoadString1(wsGid, 0, 0);
+		}
+		else
+		{
+			pFontManager->SetStringGID(FALSE);
+			pFontManager->LoadString1(wsChar, 0, 0);
+		}
+		TBBox oBox = pFontManager->MeasureString2();
+		return (oBox.fMaxX - oBox.fMinX);
+	}
 	Page::Page(const std::wstring& wsPagePath, const std::wstring& wsRootPath, CFontList* pFontList, CFontManager* pFontManager, CDocument* pDocument)
 	{
 		m_wsPagePath   = wsPagePath;
@@ -218,17 +233,16 @@ namespace XPS
 		int nBgr = 0, nAlpha = 255;
 		double dFontSize = 10.0;
 		bool bTransform = false, bClip = false, bOpacity = false;
-		unsigned int unTextLen = 0;
 		double dX = 0;
 		double dY = 0;
 		std::wstring wsFontPath;
 		std::wstring wsIndicies;
 		int nBidiLevel = 0;
 		CWString wsClip, wsTransform;
-		unsigned int* pUnicodes = NULL;
-		unsigned int* pUnicodesPtr = NULL;
-
-		CWString wsUnicodeString, wsIndices;
+		unsigned short* pUtf16    = NULL;
+		unsigned short* pUtf16Ptr = NULL;
+		unsigned int unUtf16Len = 0;
+		CWString wsIndices;
 
 		if (oReader.MoveToFirstAttribute())
 		{
@@ -286,23 +300,21 @@ namespace XPS
 				}
 				else if (L"UnicodeString" == wsAttrName)
 				{
-					// TODO:
-					// 1. {}
-					// 2. “ут нам нужно получить unsigned short*, а не wchar_t*
-					wsUnicodeString.create(oReader.GetText(), true);
-
-					pUnicodesPtr = NSStringExt::CConverter::GetUtf32FromUnicode(wsUnicodeString.c_str(), unTextLen);
-
-					if (unTextLen >= 2 && '{' == pUnicodesPtr[0] && '}' == pUnicodesPtr[1])
+					CWString wsUnicodeString = oReader.GetText();
+					if (!wsUnicodeString.empty())
 					{
-						pUnicodes = pUnicodesPtr + 2;
-						unTextLen -= 2;
-					}
-					else
-					{
-						pUnicodes = pUnicodesPtr;
-					}
+						pUtf16Ptr = NSStringExt::CConverter::GetUtf16FromUnicode(wsUnicodeString.c_str(), unUtf16Len);
 
+						if (unUtf16Len >= 2 && '{' == pUtf16Ptr[0] && '}' == pUtf16Ptr[1])
+						{
+							pUtf16 = pUtf16Ptr + 2;
+							unUtf16Len -= 2;
+						}
+						else
+						{
+							pUtf16 = pUtf16Ptr;
+						}
+					}
 				}
 				else if (L"OriginX" == wsAttrName)
 				{
@@ -373,95 +385,48 @@ namespace XPS
 
 		TIndicesEntry oEntry;
 		int nIndicesPos = 0, nIndicesLen = wsIndices.size();
-		int nUtf16Pos = 0, nUtf16Len = wsUnicodeString.size();
+		int nUtf16Pos = 0;
 		bool bRtoL = (nBidiLevel % 2 ? true : false);
 		m_pFontManager->LoadFontFromFile(wsFontPath, 0, (float)(dFontSize * 0.75), 96, 96);
-		while (GetNextGlyph(wsIndices.c_str(), nIndicesPos, nIndicesLen, (unsigned short*)wsUnicodeString.c_str(), nUtf16Pos, nUtf16Len, oEntry))
+		double dFontKoef = dFontSize / 100.0;
+
+		while (GetNextGlyph(wsIndices.c_str(), nIndicesPos, nIndicesLen, pUtf16, nUtf16Pos, unUtf16Len, oEntry))
 		{
-			double dAdvance;
-			if (oEntry.bAdvance)
-				dAdvance = oEntry.dAdvance * dFontSize / 100;
-			else
-			{
-				if (oEntry.bGid)
-				{
-					std::wstring wsChar;
-					wsChar += wchar_t(oEntry.nGid);
-
-					m_pFontManager->SetStringGID(TRUE);
-					m_pFontManager->LoadString1(wsChar, 0, 0);
-				}
-				else
-				{
-					std::wstring wsChar = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&(oEntry.nUnicode)), 1);
-					m_pFontManager->SetStringGID(FALSE);
-					m_pFontManager->LoadString1(wsChar, 0, 0);
-				}
-				TBBox oBox = m_pFontManager->MeasureString2();
-				dAdvance = (oBox.fMaxX - oBox.fMinX);
-			}
-
-			if (bRtoL)
-				dX -= dAdvance;
-
 			std::wstring wsChar = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&(oEntry.nUnicode)), 1);
 			unsigned int unGid = oEntry.nGid;
 			std::wstring wsGid  = oEntry.bGid ? NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&(unGid)), 1) : L"";
 
+			double dAdvance, dRealAdvance;
+			if (oEntry.bAdvance)
+			{
+				dAdvance = oEntry.dAdvance * dFontKoef;
+
+				if (bRtoL)
+					dRealAdvance = GetAdvance(m_pFontManager, wsChar, wsGid, oEntry.bGid);
+				else
+					dRealAdvance = dAdvance;
+			}
+			else
+			{
+				dAdvance = GetAdvance(m_pFontManager, wsChar, wsGid, oEntry.bGid);
+				dRealAdvance = dAdvance;
+			}
+
+			if (bRtoL)
+				dX -= dRealAdvance;
+
 			if (oEntry.bHorOffset || oEntry.bVerOffset)
-				pRenderer->CommandDrawTextEx(wsChar, wsGid, xpsUnitToMM(dX + oEntry.dHorOffset), xpsUnitToMM(dY + oEntry.dVerOffset), 0, 0, 0, 0);
+				pRenderer->CommandDrawTextEx(wsChar, wsGid, xpsUnitToMM(dX + (bRtoL ? -oEntry.dHorOffset * dFontKoef : oEntry.dHorOffset * dFontKoef)), xpsUnitToMM(dY - oEntry.dVerOffset * dFontKoef), 0, 0, 0, 0);
 			else
 				pRenderer->CommandDrawTextEx(wsChar, wsGid, xpsUnitToMM(dX), xpsUnitToMM(dY), 0, 0, 0, 0);
 
 			if (!bRtoL)
 				dX += dAdvance;
+			else
+				dX -= (dAdvance - dRealAdvance);
 		}
 
-		/*std::vector<std::vector<std::wstring>> arrElements = Split(wsIndicies, L';', L',');		
-		m_pFontManager->LoadFontFromFile(wsFontPath, 0, (float)(dFontSize * 0.75), 96, 96);
-		if (pUnicodesPtr)
-		{
-			for (int nIndex = 0; nIndex < unTextLen; nIndex++)
-			{
-				std::wstring wsChar = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(pUnicodes + nIndex), 1);
-				if (nIndex >= arrElements.size())
-					arrElements.push_back(std::vector<std::wstring>());
-
-				if (bRtoL)
-				{
-					if (arrElements.at(nIndex).size() >= 2)
-					{
-						dX -= GetDouble(arrElements.at(nIndex).at(1)) * dFontSize / 100.0;
-					}
-					else
-					{
-						m_pFontManager->LoadString1(wsChar, 0, 0);
-						TBBox oBox = m_pFontManager->MeasureString2();
-						dX -= (oBox.fMaxX - oBox.fMinX);
-					}
-					pRenderer->CommandDrawTextEx(wsChar, L"", xpsUnitToMM(dX), xpsUnitToMM(dY), 0, 0, 0, 0);
-				}
-				else
-				{
-					pRenderer->CommandDrawTextEx(wsChar, L"", xpsUnitToMM(dX), xpsUnitToMM(dY), 0, 0, 0, 0);
-					if (nIndex < unTextLen - 1)
-					{
-						if (arrElements.at(nIndex).size() >= 2)
-						{
-							dX += GetDouble(arrElements.at(nIndex).at(1)) * dFontSize / 100.0;
-						}
-						else
-						{
-							m_pFontManager->LoadString1(wsChar, 0, 0);
-							TBBox oBox = m_pFontManager->MeasureString2();
-							dX += (oBox.fMaxX - oBox.fMinX);
-						}
-					}
-				}
-			}
-
-			delete[] pUnicodesPtr;
-		}*/
+		RELEASEARRAYOBJECTS(pUtf16Ptr);
 
 		if (bClip)
 			pState->PopClip();

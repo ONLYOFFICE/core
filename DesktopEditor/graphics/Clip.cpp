@@ -181,6 +181,7 @@ namespace Aggplus
 		conv_crv_type c_c_path(trans);
 			 
 		m_rasterizer.add_path(c_c_path);
+        m_rasterizer.filling_rule(pPath->m_bEvenOdd ? agg::fill_even_odd : agg::fill_non_zero);
 
 		m_bIsClip = true;
 		m_bIsClip2 = false;

@@ -176,7 +176,7 @@ namespace PdfWriter
 		pCIDToGIDMapDict->SetFilter(STREAM_FILTER_FLATE_DECODE);
 		m_pCidToGidMapStream = pCIDToGIDMapDict->GetStream();
 	}
-	unsigned char* CFontCidTrueType::EncodeString(unsigned int* pUnicodes, unsigned int unLen)
+	unsigned char* CFontCidTrueType::EncodeString(unsigned int* pUnicodes, unsigned int unLen, unsigned short* pGids)
 	{
 		if (!OpenFontFace())
 			return NULL;
@@ -190,13 +190,32 @@ namespace PdfWriter
 		// Для каждого кода получаем ширину символа.
 		for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
 		{
-			std::map<unsigned int, unsigned short>::const_iterator oIter = m_mUnicodeToCode.find(pUnicodes[unIndex]);
+			bool bFind = false;
 			unsigned short ushCode;
-			if (oIter != m_mUnicodeToCode.end())
+			if (pGids)
 			{
-				ushCode = oIter->second;
+				unsigned short ushGid = pGids[unIndex];
+				for (unsigned short ushCurCode = 0, ushCodesCount = m_vCodeToGid.size(); ushCurCode < ushCodesCount; ushCurCode++)
+				{
+					if (ushGid == m_vCodeToGid.at(ushCurCode))
+					{
+						ushCode = ushCurCode;
+						bFind = true;
+						break;
+					}
+				}
 			}
 			else
+			{
+				std::map<unsigned int, unsigned short>::const_iterator oIter = m_mUnicodeToCode.find(pUnicodes[unIndex]);
+				if (oIter != m_mUnicodeToCode.end())
+				{
+					ushCode = oIter->second;
+					bFind = true;
+				}
+			}
+
+			if (!bFind)
 			{
 				unsigned int unUnicode = pUnicodes[unIndex];
 				ushCode = m_ushCodesCount;
@@ -205,9 +224,17 @@ namespace PdfWriter
 				m_mUnicodeToCode.insert(std::pair<unsigned int, unsigned short>(unUnicode, ushCode));				
 				m_vUnicodes.push_back(unUnicode);
 
-				unsigned short ushGID = GetGID(m_pFace, unUnicode);
-				if (0 == ushGID && -1 != m_nSymbolicCmap)
-					ushGID = GetGID(m_pFace, unUnicode + 0xF000);
+				unsigned short ushGID;
+				if (!pGids)
+				{
+					ushGID = GetGID(m_pFace, unUnicode);
+					if (0 == ushGID && -1 != m_nSymbolicCmap)
+						ushGID = GetGID(m_pFace, unUnicode + 0xF000);
+				}
+				else
+				{
+					ushGID = pGids[unIndex];
+				}
 
 				m_vCodeToGid.push_back(ushGID);
 

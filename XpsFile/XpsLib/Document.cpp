@@ -1,4 +1,6 @@
 #include "Document.h"
+#include "StaticResources.h"
+
 #include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 
 namespace XPS
@@ -257,7 +259,7 @@ namespace XPS
 		}
 		m_mStaticResources.clear();
 	}
-	CStaticResource* CDocument::GetStaticResource(const std::wstring& wsPath)
+	CStaticResource* CDocument::GetStaticResource(const wchar_t* wsPath)
 	{
 		for (auto oIt : m_mStaticResources)
 		{

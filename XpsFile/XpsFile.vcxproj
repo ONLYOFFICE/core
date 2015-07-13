@@ -142,7 +142,9 @@
     <ClCompile Include="XpsLib\ContextState.cpp" />
     <ClCompile Include="XpsLib\Document.cpp" />
     <ClCompile Include="XpsLib\Page.cpp" />
+    <ClCompile Include="XpsLib\StaticResources.cpp" />
     <ClCompile Include="XpsLib\Utils.cpp" />
+    <ClCompile Include="XpsLib\WString.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="XpsFile.h" />
@@ -150,7 +152,9 @@
     <ClInclude Include="XpsLib\Document.h" />
     <ClInclude Include="XpsLib\FontList.h" />
     <ClInclude Include="XpsLib\Page.h" />
+    <ClInclude Include="XpsLib\StaticResources.h" />
     <ClInclude Include="XpsLib\Utils.h" />
+    <ClInclude Include="XpsLib\WString.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

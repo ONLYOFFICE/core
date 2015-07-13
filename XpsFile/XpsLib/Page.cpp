@@ -2,7 +2,9 @@
 #include <stdio.h>
 #include "../../DesktopEditor/common/String.h"
 #include "../../DesktopEditor/graphics/structures.h"
+
 #include "Document.h"
+#include "StaticResources.h"
 
 #include <ctime>
 
@@ -13,6 +15,8 @@
 #ifndef xpsUnitToMM
 #define xpsUnitToMM(x) ((x) * 25.4 / 96)
 #endif
+
+#define IsFromResource(String) (!String.empty() && '{' == String[0])
 
 namespace XPS
 {
@@ -38,16 +42,9 @@ namespace XPS
 		m_pFontList    = pFontList;
 		m_pFontManager = pFontManager;
 		m_pDocument    = pDocument;
-
-		m_pStaticResource       = NULL;
-		m_bDeleteStaticResource = false;
-
-		m_nCounter = 0;
 	}
 	Page::~Page()
 	{
-		if (m_bDeleteStaticResource)
-			RELEASEOBJECT(m_pStaticResource);
 	}
 	void Page::GetSize(int& nW, int& nH) const
 	{
@@ -201,7 +198,7 @@ namespace XPS
 	}
 	void Page::DrawCanvas(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState, bool* pbBreak)
 	{
-		bool bTransform = false, bClip = false, bOpacity = false;
+		bool bTransform = false, bClip = false, bOpacity = false, bResource = false;
 		if (oReader.MoveToFirstAttribute())
 		{
 			CWString wsAttrName = oReader.GetName();
@@ -236,11 +233,11 @@ namespace XPS
 
 			if (wsNodeName == L"FixedPage.Resources")
 			{
-				ReadPageResources(oReader, pRenderer, pState);
+				bResource = ReadResource(oReader, pRenderer, pState);
 			}
 			else if (wsNodeName == L"Canvas.Resources")
 			{
-				ReadResourceDictionary(oReader, pRenderer, pState);
+				bResource = ReadResource(oReader, pRenderer, pState);
 			}
 			else if (wsNodeName == L"Glyphs")
 			{
@@ -250,10 +247,11 @@ namespace XPS
 			{
 				DrawCanvas(oReader, pRenderer, pState, pbBreak);
 			}
-			else if (wsNodeName == L"Canvas.RenderTransform")
+			else if (wsNodeName == L"Canvas.RenderTransform" && !bTransform)
 			{
-				if (!bTransform)
-					bTransform = ReadTransform(oReader, pRenderer, pState);
+				CWString wsTransform;
+				ReadTransform(oReader, wsTransform);
+				bTransform = TransformToRenderer(wsTransform.c_str(), pState);
 			}
 			else if (wsNodeName == L"Path")
 			{
@@ -298,47 +296,52 @@ namespace XPS
 
 		if (bOpacity)
 			pState->PopOpacity();
+
+		if (bResource)
+			pState->PopResource();
 	}
-	void Page::ReadPageResources(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState)
+	bool Page::ReadResource(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState)
 	{
 		if (oReader.IsEmptyNode())
-			return;
+			return false;
 
-		std::wstring wsNodeName;
+		CWString wsNodeName;
 		int nCurDepth = oReader.GetDepth();
 		while (oReader.ReadNextSiblingNode(nCurDepth))
 		{
 			wsNodeName = oReader.GetName();
-			if (L"ResourceDictionary" == wsNodeName)
+			if (wsNodeName == L"ResourceDictionary")
 			{
-				std::wstring wsSource;
+				CWString wsSource;
 				ReadAttribute(oReader, L"Source", wsSource);
 				if (!wsSource.empty())
 				{
-					std::wstring wsPath = m_wsRootPath + wsSource;
-
-					m_pStaticResource = m_pDocument->GetStaticResource(wsPath);
-					m_bDeleteStaticResource = false;					
+					std::wstring wsPath = m_wsRootPath + wsSource.c_str();
+					pState->PushResource(m_pDocument->GetStaticResource(wsPath.c_str()), false);
 				}
 				else
 				{
-					m_pStaticResource = new CStaticResource(oReader);
-					m_bDeleteStaticResource = true;
+					pState->PushResource(new CStaticResource(oReader), true);
 				}
+
+				return true;
 			}
 		}
-	}	
+
+		return false;
+	}
 	bool Page::ClipToRenderer(const wchar_t* wsString, CContextState* pState)
 	{
 		CWString wsClip;
 		wsClip.create(wsString, true);
 		if (!wsClip.empty())
 		{
-			if ('{' == wsClip[0] && wsClip.size() >= 17)
+			if (IsFromResource(wsClip))
 			{
-				CWString wsKey((wchar_t*)(wsClip.c_str() + 16), false, wsClip.size() - 17);
-				wsClip = m_pStaticResource->Get(wsKey.c_str());
+				CWString wsPathTransform;
+				pState->GetPathGeometry(wsClip, wsClip, wsPathTransform);
 			}
+
 			pState->PushClip(wsClip);
 			return true;
 		}
@@ -486,7 +489,7 @@ namespace XPS
 
 				if (L"Glyphs.RenderTransform" == wsNodeName)
 				{
-					wsTransform = ReadMatrixTransform(oReader);
+					ReadTransform(oReader, wsTransform);
 				}
 			}
 		}
@@ -568,40 +571,6 @@ namespace XPS
 		if (bOpacity)
 			pState->PopOpacity();
 	}
-	bool Page::ReadTransform(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState)
-	{
-		std::wstring wsNodeName;
-		int nCurDepth = oReader.GetDepth();
-		while (oReader.ReadNextSiblingNode(nCurDepth))
-		{
-			wsNodeName = oReader.GetName();
-			wsNodeName = RemoveNamespace(wsNodeName);
-
-			if (L"MatrixTransform" == wsNodeName)
-			{
-				std::wstring wsMatrix;
-				ReadAttribute(oReader, L"Matrix", wsMatrix);
-				return TransformToRenderer(wsMatrix.c_str(), pState);
-			}
-		}
-
-		return false;
-	}
-	CWString Page::ReadMatrixTransform(XmlUtils::CXmlLiteReader& oReader)
-	{
-		CWString wsNodeName, wsTransform;
-		int nCurDepth = oReader.GetDepth();
-		while (oReader.ReadNextSiblingNode(nCurDepth))
-		{
-			wsNodeName = oReader.GetName();
-			if (wsNodeName ==  L"MatrixTransform")
-			{
-				ReadAttribute(oReader, L"Matrix", wsTransform);
-				break;
-			}
-		}
-		return wsTransform;
-	}	
 	CWString Page::ReadClip(XmlUtils::CXmlLiteReader& oReader)
 	{
 		CWString wsClip;
@@ -611,10 +580,11 @@ namespace XPS
 	void Page::DrawPath(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState)
 	{
 		bool bTransform = false, bClip = false, bOpacity = false;
-		bool bFillSetted = false;
+
 		double dPenSize = 1.0;
-		std::wstring wsData;
+
 		bool bStroke = false;
+		bool bFill   = false;
 
 		int nFillBgr = 0, nFillAlpha = 255, nStrokeBgr = 0, nStrokeAlpha = 255;
 
@@ -628,8 +598,7 @@ namespace XPS
 		LONG lDashPatternSize = 0;
 		double dDashOffset    = 0.0;
 
-		CWString wsClip, wsTransform;
-
+		CWString wsClip, wsTransform, wsPathData, wsPathTransform;
 		if (oReader.MoveToFirstAttribute())
 		{
 			std::wstring wsAttrName = oReader.GetName();
@@ -711,13 +680,13 @@ namespace XPS
 				}
 				else if (L"Fill" == wsAttrName)
 				{
-					bFillSetted = true;
+					bFill = true;
 					std::wstring wsFill = oReader.GetText();
 					GetBgra(wsFill, nFillBgr, nFillAlpha);
 				}
 				else if (L"Data" == wsAttrName)
 				{
-					wsData = oReader.GetText();
+					wsPathData.create(oReader.GetText(), true);
 				}
 
 				if (!oReader.MoveToNextAttribute())
@@ -728,28 +697,45 @@ namespace XPS
 		}
 		oReader.MoveToElement();
 
-		bool bFill = bFillSetted;
-		if (!bFillSetted)
+		if (bStroke)
 		{
-			if (!oReader.IsEmptyNode())
+			pRenderer->put_PenColor(nStrokeBgr & 0x00FFFFFF);
+			pRenderer->put_PenAlpha(nStrokeAlpha * pState->GetCurrentOpacity());
+		}
+
+		if (bFill)
+		{
+			pRenderer->put_BrushType(c_BrushTypeSolid);
+			pRenderer->put_BrushColor1(nFillBgr & 0x00FFFFFF);
+			pRenderer->put_BrushAlpha1(nFillAlpha * pState->GetCurrentOpacity());
+		}
+
+		if (!oReader.IsEmptyNode())
+		{
+			CWString wsNodeName;
+			int nCurDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nCurDepth))
 			{
-				CWString wsNodeName;
-				int nCurDepth = oReader.GetDepth();
-				while (oReader.ReadNextSiblingNode(nCurDepth))
+				wsNodeName = oReader.GetName();
+				if (wsNodeName == L"Path.RenderTransform")
 				{
-					wsNodeName = oReader.GetName();
-					if (wsNodeName == L"Path.Fill")
-					{
-						bFill = FillToRenderer(oReader, pRenderer);
-					}
-					else if (wsNodeName == L"Path.Data")
-					{
-						ReadPathData(oReader, wsData);
-					}
-					else if (wsNodeName == L"Path.RenderTransform")
-					{
-						wsTransform = ReadMatrixTransform(oReader);
-					}
+					ReadTransform(oReader, wsTransform);
+				}
+				else if (wsNodeName == L"Path.Clip")
+				{
+					wsClip = ReadClip(oReader);
+				}
+				else if (wsNodeName == L"Path.Fill" && !bFill)
+				{
+					bFill = FillToRenderer(oReader, pRenderer, pState);
+				}
+				else if (wsNodeName == L"Path.Stroke" && !bStroke)
+				{
+					bStroke = StrokeToRenderer(oReader, pRenderer, pState);
+				}
+				else if (wsNodeName == L"Path.Data" && wsPathData.empty())
+				{
+					ReadPathData(oReader, wsPathData, wsPathTransform);
 				}
 			}
 		}
@@ -788,19 +774,6 @@ namespace XPS
 			pRenderer->put_PenLineEndCap(nEndCap);
 		}
 
-		if (bStroke)
-		{
-			pRenderer->put_PenColor(nStrokeBgr & 0x00FFFFFF);
-			pRenderer->put_PenAlpha(nStrokeAlpha * pState->GetCurrentOpacity());
-		}
-		
-		if (bFill)
-		{
-			pRenderer->put_BrushType(c_BrushTypeSolid);
-			pRenderer->put_BrushColor1(nFillBgr & 0x00FFFFFF);
-			pRenderer->put_BrushAlpha1(nFillAlpha * pState->GetCurrentOpacity());
-		}
-
 		pRenderer->put_PenLineJoin(nJoinStyle);
 		if (nJoinStyle == Aggplus::LineJoinMiter)
 			pRenderer->put_PenMiterLimit(xpsUnitToMM(dMiter));
@@ -809,39 +782,14 @@ namespace XPS
 		pRenderer->BeginCommand(c_nPathType);
 		pRenderer->PathCommandStart();
 
-		bool bWindingFillMode = false;
-		if (L'{' == wsData[0])
-		{
-			const wchar_t* wsValue = NULL;			
-			if (m_pStaticResource)
-			{
-				CWString wsKey(((wchar_t*)wsData.c_str() + 16), false, wsData.length() - 17);
-				wsValue = m_pStaticResource->Get(wsKey);
-			}
+		if (IsFromResource(wsPathData))
+			pState->GetPathGeometry(wsPathData, wsPathData, wsPathTransform);
 
-			if (NULL != wsValue)
-			{
-				bWindingFillMode = VmlToRenderer(wsValue, pRenderer);
-			}
-			else
-			{
-				pRenderer->EndCommand(c_nPathType);
-				pRenderer->PathCommandEnd();
+		bool bPathTransform = false;
+		if (!wsPathTransform.empty())
+			bPathTransform = TransformToRenderer(wsPathTransform.c_str(), pState);
 
-				if (bClip)
-					pState->PopClip();
-
-				if (bTransform)
-					pState->PopTransform();
-
-				if (bOpacity)
-					pState->PopOpacity();
-
-				return;
-			}
-		}
-		else
-			bWindingFillMode = VmlToRenderer(wsData.c_str(), pRenderer);
+		bool bWindingFillMode = VmlToRenderer(wsPathData.c_str(), pRenderer);
 
 		int nMode = bStroke ? c_nStroke : 0;
 		if (bFill)
@@ -850,6 +798,9 @@ namespace XPS
 		pRenderer->DrawPath(nMode);
 		pRenderer->EndCommand(c_nPathType);
 		pRenderer->PathCommandEnd();
+
+		if (bPathTransform)
+			pState->PopTransform();
 
 		if (bTransform)
 			pState->PopTransform();
@@ -860,7 +811,7 @@ namespace XPS
 		if (bOpacity)
 			pState->PopOpacity();
 	}
-	bool Page::FillToRenderer(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer)
+	bool Page::FillToRenderer  (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState)
 	{
 		if (!oReader.IsEmptyNode())
 		{
@@ -879,7 +830,7 @@ namespace XPS
 					GetBgra(wsColor, nBgr, nAlpha);
 					pRenderer->put_BrushType(c_BrushTypeSolid);
 					pRenderer->put_BrushColor1(nBgr & 0x00FFFFFF);
-					pRenderer->put_BrushAlpha1(nAlpha);
+					pRenderer->put_BrushAlpha1((double)nAlpha * pState->GetCurrentOpacity());
 					return true;
 				}
 				else if (L"ImageBrush" == wsNodeName)
@@ -895,7 +846,33 @@ namespace XPS
 
 		return false;
 	}
-	void Page::ReadPathData(XmlUtils::CXmlLiteReader& oReader, std::wstring& wsData)
+	bool Page::StrokeToRenderer(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState)
+	{
+		if (!oReader.IsEmptyNode())
+		{
+			std::wstring wsNodeName;
+			int nCurDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nCurDepth))
+			{
+				wsNodeName = oReader.GetName();
+				wsNodeName = RemoveNamespace(wsNodeName);
+
+				if (L"SolidColorBrush" == wsNodeName)
+				{
+					int nBgr, nAlpha;
+					std::wstring wsColor;
+					ReadAttribute(oReader, L"Color", wsColor);
+					GetBgra(wsColor, nBgr, nAlpha);
+					pRenderer->put_PenColor(nBgr & 0x00FFFFFF);
+					pRenderer->put_PenAlpha((double)nAlpha * pState->GetCurrentOpacity());
+					return true;
+				}
+			}
+		}
+
+		return false;
+	}
+	void Page::ReadPathData(XmlUtils::CXmlLiteReader& oReader, CWString& wsData, CWString& wsTransform)
 	{
 		wsData = L"";
 
@@ -908,111 +885,7 @@ namespace XPS
 		{
 			wsNodeName = oReader.GetName();
 			if (wsNodeName == L"PathGeometry")
-			{
-				return ReadPathGeometry(oReader, wsData);
-			}
+				return ReadPathGeometry(oReader, wsData, wsTransform);
 		}
-	}
-	void Page::ReadPathGeometry(XmlUtils::CXmlLiteReader& oReader, std::wstring& wsData)
-	{
-		if (oReader.IsEmptyNode())
-			return;
-
-		std::wstring wsFillMode;
-		ReadAttribute(oReader, L"FillRule", wsFillMode);
-
-		if (L"EvenOdd" == wsFillMode)
-			wsData += L"F 0 ";
-		else
-			wsData += L"F 1 ";
-
-		std::wstring wsNodeName;
-		int nCurDepth = oReader.GetDepth();
-		while (oReader.ReadNextSiblingNode(nCurDepth))
-		{
-			wsNodeName = oReader.GetName();
-			if (L"PathFigure" == wsNodeName)
-			{
-				ReadPathFigure(oReader, wsData);
-			}
-		}
-	}
-	void Page::ReadPathFigure(XmlUtils::CXmlLiteReader& oReader, std::wstring& wsData)
-	{
-		if (oReader.IsEmptyNode())
-			return;
-
-		std::wstring wsStartPoint;
-		ReadAttribute(oReader, L"StartPoint", wsStartPoint);
-		wsData += L" M " + wsStartPoint;
-
-		std::wstring wsNodeName;
-		std::wstring wsText;
-		int nCurDepth = oReader.GetDepth();
-		while (oReader.ReadNextSiblingNode(nCurDepth))
-		{
-			wsNodeName = oReader.GetName();
-			wsText.empty();
-			if (L"PolyLineSegment" == wsNodeName)
-			{
-				ReadAttribute(oReader, L"Points", wsText);
-				wsData += L" L " + wsText;
-			}
-			else if (L"PolyBezierSegment" == wsNodeName)
-			{
-				ReadAttribute(oReader, L"Points", wsText);
-				wsData += L" C " + wsText;
-			}
-			else if (L"PolyQuadraticBezierSegment" == wsNodeName)
-			{
-				ReadAttribute(oReader, L"Points", wsText);
-				wsData += L" Q " + wsText;
-			}
-			else if (L"ArcSegment" == wsNodeName)
-			{
-				std::wstring wsSize, wsRotationAngle, wsIsLargeArc, wsSweepDirection, wsPoint;
-				if (oReader.MoveToFirstAttribute())
-				{
-					std::wstring wsAttrName = oReader.GetName();
-					while (!wsAttrName.empty())
-					{
-						if (L"Size" == wsAttrName)
-							wsSize = oReader.GetText();
-						else if (L"RotationAngle" == wsAttrName)
-							wsRotationAngle = oReader.GetText();
-						else if (L"IsLargeArc" == wsAttrName)
-							wsIsLargeArc = oReader.GetText();
-						else if (L"SweepDirection" == wsAttrName)
-							wsSweepDirection = oReader.GetText();
-						else if (L"Point" == wsAttrName)
-							wsPoint = oReader.GetText();
-
-						if (!oReader.MoveToNextAttribute())
-							break;
-
-						wsAttrName = oReader.GetName();
-					}
-					oReader.MoveToElement();
-				}
-
-				wsData += L" A " + wsSize + L" " + wsRotationAngle + L" ";
-				if (GetBool(wsIsLargeArc))
-					wsData += L"1 ";
-				else
-					wsData += L"0 ";
-
-				if (L"Counterclockwise" == wsSweepDirection)
-					wsData += L"0 ";
-				else
-					wsData += L"1 ";
-
-				wsData += wsPoint;
-			}			
-		}
-
-		std::wstring wsClosed;
-		ReadAttribute(oReader, L"IsClosed", wsClosed);
-		if (GetBool(wsClosed))
-			wsData += L" Z ";
 	}
 }

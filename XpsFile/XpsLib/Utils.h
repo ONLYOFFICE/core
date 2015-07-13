@@ -3,6 +3,7 @@
 
 #include <string>
 #include <vector>
+#include "WString.h"
 
 namespace XmlUtils
 {
@@ -13,34 +14,6 @@ class IRenderer;
 
 namespace XPS
 {
-	class CWStringBuffer;
-	class CWString
-	{
-	public:
-		CWString();
-		CWString(const wchar_t* wsString);
-		CWString(const CWString& wsString);
-		CWString(wchar_t* wsString, bool bCopy, int nLen = -1);
-		~CWString();
-		void create(const wchar_t*, bool bCopy, int nLen = -1);
-		void operator=(const wchar_t* wsString);
-		void operator=(const CWString& wsString);
-		bool operator<(const CWString& wsString) const;
-		bool operator>(const CWString& wsString) const;
-		bool operator==(const CWString& wsString) const;
-		bool operator==(const wchar_t* wsString) const;
-		unsigned int size() const;
-		bool empty() const;
-		wchar_t operator[](const unsigned int& unIndex) const;
-		const wchar_t* c_str() const;
-		void clear();
-
-	private:
-
-		void*        m_pBuffer;
-		unsigned int m_unLen;
-		bool         m_bOwnBuffer;
-	};
 	struct TIndicesEntry
 	{
 	public:
@@ -102,6 +75,10 @@ namespace XPS
 	void ReadAttribute(XmlUtils::CXmlLiteReader& oReader, const wchar_t* wsAttrName, CWString& wsAttr);
 	bool VmlToRenderer(const wchar_t* wsString, IRenderer* pRenderer);
 	bool GetNextGlyph(const wchar_t* wsIndices, int& nIndicesPos, const int& nIndicesLen, unsigned short* pUtf16, int& nUtf16Pos, const int& nUtf16Len, TIndicesEntry& oEntry);
+
+	void ReadTransform   (XmlUtils::CXmlLiteReader& oReader, CWString& wsTransform, CWString* pwsKey = NULL);
+	void ReadPathGeometry(XmlUtils::CXmlLiteReader& oReader, CWString& wsData, CWString& wsTransform, CWString* pwsKey = NULL);
+	void ReadPathFigure  (XmlUtils::CXmlLiteReader& oReader, CWString& _wsData, bool bEvenOdd);
 }
 
 #endif // _XPS_XPSLIB_UTILS_H

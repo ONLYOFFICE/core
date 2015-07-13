@@ -11,8 +11,24 @@
 
 namespace XPS
 {
+	class CStaticResource;
+
 	class CContextState
 	{
+	private:
+
+		struct TStaticRecource
+		{
+			TStaticRecource(CStaticResource* resource, bool own)
+			{
+				pResource = resource;
+				bOwn      = own;
+			}
+
+			CStaticResource* pResource;
+			bool             bOwn;
+		};
+
 	public:
 
 		CContextState(IRenderer* pRenderer);
@@ -26,6 +42,10 @@ namespace XPS
 		void   PushTransform(const double arrTransform[6]);
 		void   PopTransform();
 		double NormalizeTransform();
+		void   PushResource(CStaticResource* pResource, bool bOwn);
+		void   PopResource();
+
+		void   GetPathGeometry(const CWString& wsKey, CWString& wsPathData, CWString& wsPathTransform);
 
 	private:
 
@@ -40,6 +60,7 @@ namespace XPS
 		IRenderer*                  m_pRenderer;
 		std::vector<double>         m_vOpacity;
 		double                      m_dCurOpacity;
+		std::vector<TStaticRecource>m_vResourcesStack;
 	};
 }
 

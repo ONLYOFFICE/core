@@ -25,20 +25,17 @@ namespace XPS
 
 	private:
 
-		void DrawCanvas       (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState, bool* pbBreak);
-		void ReadPageResources(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
-		void DrawGlyph        (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
-		bool ReadTransform    (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
-		void DrawPath         (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
-		bool FillToRenderer   (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer);
-		void ReadPathData     (XmlUtils::CXmlLiteReader& oReader, std::wstring& wsData);
-		void ReadPathGeometry (XmlUtils::CXmlLiteReader& oReader, std::wstring& wsData);
-		void ReadPathFigure   (XmlUtils::CXmlLiteReader& oReader, std::wstring& wsData);
+		void DrawCanvas      (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState, bool* pbBreak);
+		bool ReadResource    (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
+		void DrawGlyph       (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
+		void DrawPath        (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
+		bool FillToRenderer  (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
+		bool StrokeToRenderer(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState);
+		void ReadPathData    (XmlUtils::CXmlLiteReader& oReader, CWString& wsData, CWString& wsTranform);
 		
 		bool ClipToRenderer     (const wchar_t* wsString, CContextState* pState);
 		bool TransformToRenderer(const wchar_t* wsString, CContextState* pState);
 
-		CWString ReadMatrixTransform(XmlUtils::CXmlLiteReader& oReader);
 		CWString ReadClip           (XmlUtils::CXmlLiteReader& oReader);
 
 
@@ -49,10 +46,6 @@ namespace XPS
 		CFontList*       m_pFontList;
 		CFontManager*    m_pFontManager;
 		CDocument*       m_pDocument;
-		CStaticResource* m_pStaticResource;
-		bool             m_bDeleteStaticResource;
-
-		int m_nCounter;
 	};
 }
 

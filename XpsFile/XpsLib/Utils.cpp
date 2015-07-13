@@ -4,8 +4,6 @@
 #include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"
 
-#define MAX_STRING_LEN 2147483648 
-
 #ifndef M_PI
 #define M_PI       3.14159265358979323846
 #endif
@@ -299,205 +297,6 @@ namespace XPS
 
 namespace XPS
 {	
-	class CWStringBuffer
-	{
-	public:
-
-		CWStringBuffer(const wchar_t* wsString, unsigned int unLen)
-		{
-			if (unLen)
-			{
-				m_pBuffer = new wchar_t[unLen + 1];
-				m_pBuffer[unLen] = 0x00;
-				memcpy(m_pBuffer, wsString, sizeof(wchar_t) * unLen);
-			}
-			else
-			{
-				m_pBuffer = NULL;
-			}
-
-			m_nRefCount = 1;
-		}
-		void AddRef()
-		{
-			m_nRefCount++;
-		}
-		int  Release()
-		{
-			return --m_nRefCount;
-		}
-		void Free()
-		{
-			RELEASEARRAYOBJECTS(m_pBuffer);
-		}
-		wchar_t operator[](const unsigned int& unIndex) const
-		{
-			return m_pBuffer[unIndex];
-		}
-
-	private:
-
-		wchar_t* m_pBuffer;
-		int      m_nRefCount;
-
-		friend class CWString;
-	};
-	CWString::CWString()
-	{
-		m_bOwnBuffer = false;
-		m_pBuffer    = NULL;
-		m_unLen      = 0;
-	}
-	CWString::CWString(const wchar_t* wsString)
-	{
-		m_bOwnBuffer = false;
-		m_pBuffer    = NULL;
-		m_unLen      = 0;
-		create(wsString, false);
-	}
-	CWString::CWString(wchar_t* wsString, bool bCopy, int nLen)
-	{
-		m_bOwnBuffer = false;
-		m_pBuffer    = NULL;
-		m_unLen      = 0;
-		create(wsString, bCopy, nLen);
-	}
-	CWString::CWString(const CWString& wsString)
-	{
-		m_unLen      = wsString.m_unLen;
-		m_bOwnBuffer = wsString.m_bOwnBuffer;
-		m_pBuffer    = wsString.m_pBuffer;
-		if (m_bOwnBuffer && m_pBuffer)
-			((CWStringBuffer*)m_pBuffer)->AddRef();
-	}
-	CWString::~CWString()
-	{
-		clear();
-	}
-	void CWString::create(const wchar_t* wsString, bool bCopy, int nLen)
-	{
-		clear();
-		unsigned int unLen = -1 == nLen ? min(wcslen(wsString), MAX_STRING_LEN) : (unsigned int)nLen;
-		m_unLen = unLen;
-		if (bCopy)
-		{
-			if (unLen)
-			{
-				m_pBuffer    = (void*)(new CWStringBuffer(wsString, m_unLen));
-				m_bOwnBuffer = true;
-			}
-		}
-		else
-		{
-			m_pBuffer    = (void*)wsString;
-			m_bOwnBuffer = false;
-		}
-	}
-	void CWString::clear()
-	{	
-		if (m_bOwnBuffer)
-		{
-			CWStringBuffer* pWStringBuffer = (CWStringBuffer*)m_pBuffer;
-			if (pWStringBuffer && !pWStringBuffer->Release())
-				delete pWStringBuffer;
-		}
-
-		m_bOwnBuffer = false;
-		m_pBuffer    = NULL;
-		m_unLen      = 0;
-	}
-	void CWString::operator=(const wchar_t* wsString)
-	{
-		clear();
-		create(wsString, false);
-	}
-	void CWString::operator=(const CWString& wsString)
-	{
-		clear();
-		m_unLen      = wsString.m_unLen;
-		m_bOwnBuffer = wsString.m_bOwnBuffer;
-		m_pBuffer    = wsString.m_pBuffer;
-		if (m_bOwnBuffer && m_pBuffer)
-			((CWStringBuffer*)m_pBuffer)->AddRef();
-	}
-	const wchar_t* CWString::c_str() const
-	{
-		if (m_bOwnBuffer)
-		{
-			CWStringBuffer* pWStringBuffer = (CWStringBuffer*)m_pBuffer;
-			if (pWStringBuffer)
-				return pWStringBuffer->m_pBuffer;
-
-			return NULL;
-		}
-
-		return (const wchar_t*)m_pBuffer;
-	}
-	bool CWString::operator<(const CWString& wsString) const
-	{
-		const wchar_t* wsLeft = this->c_str();
-		const wchar_t* wsRight = wsString.c_str();
-
-		unsigned int unLen = min(m_unLen, wsString.m_unLen);
-		for (unsigned int unPos = 0; unPos < unLen; unPos++)
-		{
-			if (wsLeft[unPos] < wsRight[unPos])
-				return true;
-			else if (wsLeft[unPos] > wsRight[unPos])
-				return false;
-		}
-
-		return (m_unLen > wsString.m_unLen);
-	}
-	bool CWString::operator>(const CWString& wsString) const
-	{		
-		return !operator<(wsString);
-	}
-	bool CWString::operator==(const CWString& wsString) const
-	{
-		const wchar_t* wsLeft = this->c_str();
-		const wchar_t* wsRight = wsString.c_str();
-
-		if (m_unLen != wsString.m_unLen)
-			return false;
-
-		for (unsigned int unPos = 0; unPos < m_unLen; unPos++)
-		{
-			if (wsLeft[unPos] != wsRight[unPos])
-				return false;
-		}
-
-		return true;
-	}
-	bool CWString::operator==(const wchar_t* wsString) const
-	{
-		const wchar_t* wsLeft = this->c_str();
-		unsigned unLen = min(wcslen(wsString), MAX_STRING_LEN);
-
-		if (m_unLen != unLen)
-			return false;
-
-		for (unsigned int unPos = 0; unPos < m_unLen; unPos++)
-		{
-			if (wsLeft[unPos] != wsString[unPos])
-				return false;
-		}
-
-		return true;
-	}
-	unsigned int CWString::size() const 
-	{ 
-		return m_unLen; 
-	}
-	wchar_t CWString::operator[](const unsigned int& unIndex) const 
-	{ 
-		return this->c_str()[unIndex]; 
-	}
-	bool CWString::empty() const
-	{
-		return 0 == m_unLen;
-	}
-
 	int    GetDigit(wchar_t wChar)
 	{
 		if (wChar >= '0' && wChar <= '9')
@@ -1184,5 +983,163 @@ namespace XPS
 		}
 		else
 			return false; // Такого не должно быть
+	}
+	void ReadTransform   (XmlUtils::CXmlLiteReader& oReader, CWString& wsTransform, CWString* pwsKey)
+	{
+		CWString wsNodeName;
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			wsNodeName = oReader.GetName();
+			if (wsNodeName == L"MatrixTransform")
+			{
+				if (oReader.GetAttributesCount() <= 0)
+					return;
+
+				if (!oReader.MoveToFirstAttribute())
+					return;
+
+				CWString wsAttrName = oReader.GetName();
+				while (!wsAttrName.empty())
+				{
+					if (wsAttrName == L"Matrix")
+						wsTransform.create(oReader.GetText(), true);
+					else if (wsAttrName == L"x:Key" && pwsKey)
+						pwsKey->create(oReader.GetText(), true);
+				}
+
+				oReader.MoveToElement();
+			}
+		}
+	}
+	void ReadPathGeometry(XmlUtils::CXmlLiteReader& oReader, CWString& wsData, CWString& wsTransform, CWString* pwsKey)
+	{
+		bool bEvenOdd = true;
+		CWString wsAttrName;
+		if (oReader.MoveToFirstAttribute())
+		{
+			wsAttrName = oReader.GetName();
+			while (!wsAttrName.empty())
+			{
+				if (wsAttrName == L"x:Key" && pwsKey)
+					pwsKey->create(oReader.GetText(), true);
+				else if (wsAttrName == L"Figures")
+					wsData.create(oReader.GetText(), true);
+				else if (wsAttrName == L"Transform")
+					wsTransform.create(oReader.GetText(), true);
+				else if (wsAttrName == L"FillRule")
+				{
+					CWString wsFillingRule = oReader.GetText();
+					bEvenOdd = wsFillingRule == L"EvenOdd" ? true : false;
+				}
+
+				if (!oReader.MoveToNextAttribute())
+					break;
+
+				wsAttrName = oReader.GetName();
+			}
+
+			oReader.MoveToElement();
+		}
+
+		if (oReader.IsEmptyNode())
+			return;
+
+		CWString wsNodeName;
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			wsNodeName = oReader.GetName();
+			if (wsNodeName == L"PathGeometry.Transform" && wsTransform.empty())
+				ReadTransform(oReader, wsTransform);
+			else if (wsNodeName == L"PathFigure" && wsData.empty())
+				ReadPathFigure(oReader, wsData, bEvenOdd);
+		}
+	}
+	void ReadPathFigure  (XmlUtils::CXmlLiteReader& oReader, CWString& _wsData, bool bEvenOdd)
+	{
+		// TODO: Улучшить здесь сложение строк и хождение по атрибутам
+		std::wstring wsData;
+
+		if (oReader.IsEmptyNode())
+			return;
+
+		if (!bEvenOdd)
+			wsData = L"F 1";
+
+		std::wstring wsStartPoint;
+		ReadAttribute(oReader, L"StartPoint", wsStartPoint);
+		wsData += L" M " + wsStartPoint;
+
+		std::wstring wsNodeName;
+		std::wstring wsText;
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			wsNodeName = oReader.GetName();
+			wsText.empty();
+			if (L"PolyLineSegment" == wsNodeName)
+			{
+				ReadAttribute(oReader, L"Points", wsText);
+				wsData += L" L " + wsText;
+			}
+			else if (L"PolyBezierSegment" == wsNodeName)
+			{
+				ReadAttribute(oReader, L"Points", wsText);
+				wsData += L" C " + wsText;
+			}
+			else if (L"PolyQuadraticBezierSegment" == wsNodeName)
+			{
+				ReadAttribute(oReader, L"Points", wsText);
+				wsData += L" Q " + wsText;
+			}
+			else if (L"ArcSegment" == wsNodeName)
+			{
+				std::wstring wsSize, wsRotationAngle, wsIsLargeArc, wsSweepDirection, wsPoint;
+				if (oReader.MoveToFirstAttribute())
+				{
+					std::wstring wsAttrName = oReader.GetName();
+					while (!wsAttrName.empty())
+					{
+						if (L"Size" == wsAttrName)
+							wsSize = oReader.GetText();
+						else if (L"RotationAngle" == wsAttrName)
+							wsRotationAngle = oReader.GetText();
+						else if (L"IsLargeArc" == wsAttrName)
+							wsIsLargeArc = oReader.GetText();
+						else if (L"SweepDirection" == wsAttrName)
+							wsSweepDirection = oReader.GetText();
+						else if (L"Point" == wsAttrName)
+							wsPoint = oReader.GetText();
+
+						if (!oReader.MoveToNextAttribute())
+							break;
+
+						wsAttrName = oReader.GetName();
+					}
+					oReader.MoveToElement();
+				}
+
+				wsData += L" A " + wsSize + L" " + wsRotationAngle + L" ";
+				if (GetBool(wsIsLargeArc))
+					wsData += L"1 ";
+				else
+					wsData += L"0 ";
+
+				if (L"Counterclockwise" == wsSweepDirection)
+					wsData += L"0 ";
+				else
+					wsData += L"1 ";
+
+				wsData += wsPoint;
+			}
+		}
+
+		std::wstring wsClosed;
+		ReadAttribute(oReader, L"IsClosed", wsClosed);
+		if (GetBool(wsClosed))
+			wsData += L" Z ";
+
+		_wsData.create(wsData.c_str(), true);
 	}
 }

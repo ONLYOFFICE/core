@@ -14,12 +14,12 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/uuid/uuid_io.hpp>
 #include <boost/lexical_cast.hpp>
-#include <boost_filesystem_version.h>
+#include "../Common/boost_filesystem_version.h"
 
-#include "source\ConvertXls2Xlsx.h"
+#include "source/ConvertXls2Xlsx.h"
 
-#include "..\Common\XmlUtils.h"
-#include "..\Common\ASCATLError.h"
+#include "../Common/XmlUtils.h"
+#include "../Common/ASCATLError.h"
 
 
 #include "OfficeXlsFile.h"

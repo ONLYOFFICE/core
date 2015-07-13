@@ -80,7 +80,7 @@ CGlyphString::CGlyphString(const std::wstring& wsString, float fX, float fY)
 		if (sizeof(wchar_t) == 2)
 		{
 			int nEmpty = 0;
-			for ( int nIndex = 0; nIndex < m_nGlyphsCount; ++nIndex )
+			for (int nIndex = 0, nGlyphIndex = 0; nIndex < m_nGlyphsCount; ++nIndex, ++nGlyphIndex)
 			{
 				int code = (int)pWchars[nIndex];
 				if (code >= 0xD800 && code <= 0xDFFF && (nIndex + 1) < m_nGlyphsCount)
@@ -90,8 +90,8 @@ CGlyphString::CGlyphString(const std::wstring& wsString, float fX, float fY)
 					code = 0x10000 + (((code & 0x3FF) << 10) | (0x03FF & pWchars[nIndex]));
 				}
 
-				m_pGlyphsBuffer[nIndex].lUnicode = code;
-				m_pGlyphsBuffer[nIndex].bBitmap  = false;
+				m_pGlyphsBuffer[nGlyphIndex].lUnicode = code;
+				m_pGlyphsBuffer[nGlyphIndex].bBitmap  = false;
 			}
 			m_nGlyphsCount -= nEmpty;
 		}
@@ -150,7 +150,7 @@ void CGlyphString::SetString(const std::wstring& wsString, float fX, float fY)
 		if (sizeof(wchar_t) == 2)
 		{
 			int nEmpty = 0;
-			for ( int nIndex = 0; nIndex < m_nGlyphsCount; ++nIndex )
+			for (int nIndex = 0, nGlyphIndex = 0; nIndex < m_nGlyphsCount; ++nIndex, ++nGlyphIndex)				 
 			{
 				int code = (int)pWchars[nIndex];
 				if (code >= 0xD800 && code <= 0xDFFF && (nIndex + 1) < m_nGlyphsCount)
@@ -160,8 +160,8 @@ void CGlyphString::SetString(const std::wstring& wsString, float fX, float fY)
 					code = 0x10000 + (((code & 0x3FF) << 10) | (0x03FF & pWchars[nIndex]));
 				}
 
-				m_pGlyphsBuffer[nIndex].lUnicode = code;
-				m_pGlyphsBuffer[nIndex].bBitmap  = false;
+				m_pGlyphsBuffer[nGlyphIndex].lUnicode = code;
+				m_pGlyphsBuffer[nGlyphIndex].bBitmap  = false;
 			}
 			m_nGlyphsCount -= nEmpty;
 		}

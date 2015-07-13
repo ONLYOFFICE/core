@@ -1,19 +1,19 @@
 
 #include "ConvertXls2Xlsx.h"
 
-#include "..\..\Common\OfficeFileErrorDescription.h"
+#include "../../../Common/OfficeFileErrorDescription.h"
 
-#include "XlsFormat\Document\Document.h" 
-#include "XlsFormat\Binary\CompoundFile.h"
-#include "XlsFormat\Binary\BinSmartPointers.h"
-#include "XlsFormat\Binary\CFStreamCacheReader.h"
-//#include "XlsFormat\Binary\CFStreamCacheWriter.h"
-#include "XlsFormat\Logic\GlobalWorkbookInfo.h"
-#include "XlsFormat\Logic\WorkbookStreamObject.h"
-#include "XlsFormat\Logic\BinProcessor.h"
-#include "XlsFormat\Logic\SummaryInformationStream\SummaryInformation.h"
-//#include "XlsFormat\Auxiliary\HelpersTagsGenerator.h"
-#include "XlsFormat\Logic\BaseObject.h"
+#include "../XlsFormat/Document/Document.h" 
+#include "../XlsFormat/Binary/CompoundFile.h"
+#include "../XlsFormat/Binary/BinSmartPointers.h"
+#include "../XlsFormat/Binary/CFStreamCacheReader.h"
+//#include "../XlsFormat/Binary/CFStreamCacheWriter.h"
+#include "../XlsFormat/Logic/GlobalWorkbookInfo.h"
+#include "../XlsFormat/Logic/WorkbookStreamObject.h"
+#include "../XlsFormat/Logic/BinProcessor.h"
+#include "../XlsFormat/Logic/SummaryInformationStream/SummaryInformation.h"
+//#include "../XlsFormat\Auxiliary\HelpersTagsGenerator.h"
+#include "../XlsFormat/Logic/BaseObject.h"
 
 HRESULT ConvertXls2Xlsx(const std::wstring & srcFile, const std::wstring & dstPath, const ProgressCallback* CallBack)
 {

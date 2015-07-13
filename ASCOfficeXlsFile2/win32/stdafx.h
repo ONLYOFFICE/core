@@ -33,20 +33,15 @@
 
 #include <atlbase.h>
 #include <atlcom.h>
-#include <atlwin.h>
-#include <atltypes.h>
-#include <atlctl.h>
-#include <atlhost.h>
-
 
 using namespace ATL;
 
-typedef void (*OnProgressCallback)( LPVOID lpParam, long nID, long nPercent );
-typedef void (*OnProgressExCallback)( LPVOID lpParam, long nID, long nPercent, short* Cancel );
+typedef void (*XlsOnProgressCallback)( LPVOID lpParam, long nID, long nPercent );
+typedef void (*XlsOnProgressExCallback)( LPVOID lpParam, long nID, long nPercent, short* Cancel );
 
 struct ProgressCallback
 {
-  OnProgressCallback OnProgress;
-  OnProgressExCallback OnProgressEx;
+  XlsOnProgressCallback OnProgress;
+  XlsOnProgressExCallback OnProgressEx;
   LPVOID caller;
 };

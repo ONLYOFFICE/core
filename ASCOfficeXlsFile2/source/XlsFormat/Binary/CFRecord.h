@@ -2,9 +2,9 @@
 
 #include "CFRecordType.h"
 #include "CFStream.h"
-#include <Binary/BinSmartPointers.h>
-#include <Logic/GlobalWorkbookInfo.h>
-#include <Auxiliary/nullable/nullable.h>
+#include "BinSmartPointers.h"
+#include "../Logic/GlobalWorkbookInfo.h"
+#include "../Auxiliary/nullable/nullable.h"
 
 
 namespace XLS

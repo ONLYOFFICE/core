@@ -5,7 +5,7 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include "../../Auxiliary/BetterVariantT.h"
+#include <Auxiliary/BetterVariantT.h>
 //#include <Logic/Biff_structures/BitMarkedStructs.h>
 
 class Document;

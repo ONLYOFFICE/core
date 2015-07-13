@@ -1,7 +1,7 @@
 #pragma once
 
 #include "Property.h"
-#include "Binary\BinSmartPointers.h"
+#include <Binary/BinSmartPointers.h>
 
 namespace OLEPS
 {;

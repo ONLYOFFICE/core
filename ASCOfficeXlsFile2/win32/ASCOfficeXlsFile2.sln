@@ -3,6 +3,8 @@ Microsoft Visual Studio Solution File, Format Version 9.00
 # Visual Studio 2005
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeXlsFile2", "ASCOfficeXlsFile2.vcproj", "{4260FEDF-E1DA-447F-991B-62F17DF5533E}"
 	ProjectSection(ProjectDependencies) = postProject
+		{37CA072A-5BDE-498B-B3A7-5E404F5F9BF2} = {37CA072A-5BDE-498B-B3A7-5E404F5F9BF2}
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6} = {3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}
 		{CBEDD0D1-10A8-45C1-AF81-8492F40964CA} = {CBEDD0D1-10A8-45C1-AF81-8492F40964CA}
 	EndProjectSection
 EndProject
@@ -17,6 +19,10 @@ Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeXlsFileTest", "..\
 	ProjectSection(ProjectDependencies) = postProject
 		{4260FEDF-E1DA-447F-991B-62F17DF5533E} = {4260FEDF-E1DA-447F-991B-62F17DF5533E}
 	EndProjectSection
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "ASCOfficeUtilsLib", "..\..\ASCOfficeUtils\ASCOfficeUtilsLib\Win\ASCOfficeUtilsLib.vcproj", "{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "graphics", "..\..\DesktopEditor\graphics\graphics_vs2005.vcproj", "{37CA072A-5BDE-498B-B3A7-5E404F5F9BF2}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -58,6 +64,22 @@ Global
 		{C2882DDD-07E6-4314-AD4B-48F43F38D722}.Release|Win32.Build.0 = Release|Win32
 		{C2882DDD-07E6-4314-AD4B-48F43F38D722}.Release|x64.ActiveCfg = Release|x64
 		{C2882DDD-07E6-4314-AD4B-48F43F38D722}.Release|x64.Build.0 = Release|x64
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.Debug|Win32.ActiveCfg = Debug|Win32
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.Debug|Win32.Build.0 = Debug|Win32
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.Debug|x64.ActiveCfg = Debug|x64
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.Debug|x64.Build.0 = Debug|x64
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.Release|Win32.ActiveCfg = Release|Win32
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.Release|Win32.Build.0 = Release|Win32
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.Release|x64.ActiveCfg = Release|x64
+		{3F3CB5A1-BB01-49C1-9342-4A69E30F9EF6}.Release|x64.Build.0 = Release|x64
+		{37CA072A-5BDE-498B-B3A7-5E404F5F9BF2}.Debug|Win32.ActiveCfg = Debug|Win32
+		{37CA072A-5BDE-498B-B3A7-5E404F5F9BF2}.Debug|Win32.Build.0 = Debug|Win32
+		{37CA072A-5BDE-498B-B3A7-5E404F5F9BF2}.Debug|x64.ActiveCfg = Debug|x64
+		{37CA072A-5BDE-498B-B3A7-5E404F5F9BF2}.Debug|x64.Build.0 = Debug|x64
+		{37CA072A-5BDE-498B-B3A7-5E404F5F9BF2}.Release|Win32.ActiveCfg = Release|Win32
+		{37CA072A-5BDE-498B-B3A7-5E404F5F9BF2}.Release|Win32.Build.0 = Release|Win32
+		{37CA072A-5BDE-498B-B3A7-5E404F5F9BF2}.Release|x64.ActiveCfg = Release|x64
+		{37CA072A-5BDE-498B-B3A7-5E404F5F9BF2}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

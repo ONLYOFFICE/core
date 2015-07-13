@@ -413,6 +413,9 @@ ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_structures/ODRAW svnc_tsvn_003alog
 ASCOfficeXlsFile2/source/XlsFormat/Logic/Biff_unions svnc_tsvn_003alogminsize=5
 ASCOfficeXlsFile2/source/XlsFormat/Logic/SummaryInformationStream svnc_tsvn_003alogminsize=5
 ASCOfficeXlsFile2/source/XlsFormat/Logic/SummaryInformationStream/Structures svnc_tsvn_003alogminsize=5
+ASCOfficeXlsFile2/source/XlsXlsxConverter svnc_tsvn_003alogminsize=5
+ASCOfficeXlsFile2/source/linux svnc_tsvn_003alogminsize=5
+ASCOfficeXlsFile2/source/win32 svnc_tsvn_003alogminsize=5
 Common/3dParty/curl/docs/curl-config.pdf svn_mime_002dtype=application%2Foctet-stream
 Common/3dParty/curl/docs/curl.pdf svn_mime_002dtype=application%2Foctet-stream
 Common/3dParty/curl/docs/libcurl/curl_easy_cleanup.pdf svn_mime_002dtype=application%2Foctet-stream

@@ -26,7 +26,7 @@ namespace PdfWriter
 
 		CFontCidTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex);
 		~CFontCidTrueType();
-		unsigned char* EncodeString(unsigned int* pUnicodes, unsigned int unLen);
+		unsigned char* EncodeString(unsigned int* pUnicodes, unsigned int unLen, unsigned short* pGid = NULL);
 		unsigned int   GetWidth(unsigned short ushCode);
 		EFontType      GetFontType()
 		{

@@ -888,7 +888,7 @@ HRESULT CPdfRenderer::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX
 		return S_FALSE;
 
 	unsigned int unUnicode = lUnicode;
-	bool bRes = DrawText(&unUnicode, 1, dX, dY);
+	bool bRes = DrawText(&unUnicode, 1, dX, dY, NULL);
 	return bRes ? S_OK : S_FALSE;
 }
 HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
@@ -939,7 +939,7 @@ HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const d
 		return S_OK;
 	}
 
-	bool bRes = DrawText(pUnicodes, unLen, dX, dY);
+	bool bRes = DrawText(pUnicodes, unLen, dX, dY, NULL);
 	delete[] pUnicodes;
 
 	return bRes ? S_OK : S_FALSE;
@@ -950,21 +950,62 @@ HRESULT CPdfRenderer::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lG
 		return S_FALSE;
 
 	unsigned int unUnicode = lUnicode;
-	bool bRes = DrawText(&unUnicode, 1, dX, dY);
+	unsigned short ushGid  = lGid;
+	bool bRes = DrawText(&unUnicode, 1, dX, dY, &ushGid);
 	return bRes ? S_OK : S_FALSE;
 }
 HRESULT CPdfRenderer::CommandDrawTextEx(const std::wstring& wsUnicodeText, const std::wstring& wsGidText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags)
 {
-	if (!IsPageValid() || !wsUnicodeText.size())
+	if (!IsPageValid() || (!wsUnicodeText.size() && !wsGidText.size()))
 		return S_FALSE;
 
-	unsigned int unLen;
-	unsigned int* pUnicodes = WStringToUtf32(wsUnicodeText, unLen);
-	if (!pUnicodes)
-		return S_FALSE;
+	unsigned int unLen = 0;
+	unsigned int* pUnicodes = NULL;
+	unsigned short* pGids = NULL;
 
-	bool bRes = DrawText(pUnicodes, unLen, dX, dY);
-	delete[] pUnicodes;
+	if (wsGidText.size())
+	{
+		unLen = wsGidText.size();
+
+		if (wsUnicodeText.size())
+		{
+			unsigned int unUnicodeLen;
+			pUnicodes = WStringToUtf32(wsUnicodeText, unUnicodeLen);
+			if (!pUnicodes || unUnicodeLen != unLen)
+				RELEASEARRAYOBJECTS(pUnicodes);
+		}
+
+		if (!pUnicodes)
+		{
+			pUnicodes = new unsigned int[unLen];
+			if (!pUnicodes)
+				return S_FALSE;
+
+			for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
+				pUnicodes[unIndex] = (unsigned int)wsGidText.at(unIndex);
+		}
+
+		pGids = new unsigned short[unLen];
+		if (!pGids)
+		{
+			RELEASEARRAYOBJECTS(pUnicodes);
+			return S_FALSE;
+		}
+
+		for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
+			pGids[unIndex] = (unsigned int)wsGidText.at(unIndex);
+	}
+	else
+	{
+		pUnicodes = WStringToUtf32(wsUnicodeText, unLen);
+		if (!pUnicodes)
+			return S_FALSE;
+	}
+
+	bool bRes = DrawText(pUnicodes, unLen, dX, dY, pGids);
+
+	RELEASEARRAYOBJECTS(pUnicodes);
+	RELEASEARRAYOBJECTS(pGids);
 
 	return bRes ? S_OK : S_FALSE;
 }
@@ -1362,7 +1403,7 @@ bool CPdfRenderer::DrawImage(Aggplus::CImage* pImage, const double& dX, const do
 	
 	return true;
 }
-bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY)
+bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, unsigned short* pGids)
 {
 	if (m_bNeedUpdateTextFont)
 		UpdateFont();
@@ -1370,7 +1411,7 @@ bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const d
 	if (!m_pFont)
 		return false;
 
-	unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen);
+	unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen, pGids);
 
 	CTransform& t = m_oTransform;
 	m_oCommandManager.SetTransform(t.m11, -t.m12, -t.m21, t.m22, MM_2_PT(t.dx + t.m21 * m_dPageHeight), MM_2_PT(m_dPageHeight - m_dPageHeight * t.m22 - t.dy));

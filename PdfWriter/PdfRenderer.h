@@ -188,7 +188,7 @@ private:
 	void OnlineWordToPdfInternal(BYTE* dstArray, LONG lLen, const std::wstring& wsHtmlPlace, std::wstring& wsHypers, int& nCountPages, const std::wstring& wsTempLogo, LONG lReg);
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha);
 	bool DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha);
-	bool DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY);
+	bool DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, unsigned short* pGids = NULL);
 	void UpdateFont();
 	void UpdateTransform();
 	void UpdatePen();

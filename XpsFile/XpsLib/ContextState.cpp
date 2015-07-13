@@ -1,4 +1,5 @@
 #include "ContextState.h"
+#include "StaticResources.h"
 
 #ifndef xpsUnitToMM
 #define xpsUnitToMM(x) ((x) * 25.4 / 96)
@@ -16,13 +17,16 @@ namespace XPS
 		m_vClipStack.clear();
 		m_lTransformStack.clear();
 		m_vOpacity.clear();
+
+		while (m_vResourcesStack.size())
+			PopResource();
 	}	
-	void CContextState::PushOpacity(const double& dOpacity)
+	void   CContextState::PushOpacity(const double& dOpacity)
 	{
 		m_dCurOpacity *= dOpacity;
 		m_vOpacity.push_back(m_dCurOpacity);
 	}
-	void CContextState::PopOpacity()
+	void   CContextState::PopOpacity()
 	{
 		m_vOpacity.pop_back();
 		if (m_vOpacity.size())
@@ -34,14 +38,14 @@ namespace XPS
 	{
 		return m_dCurOpacity;
 	}
-	void CContextState::PushTransform(const double arrTransform[6])
+	void   CContextState::PushTransform(const double arrTransform[6])
 	{
 		Aggplus::CMatrix oTransform(arrTransform[0], arrTransform[1], arrTransform[2], arrTransform[3], arrTransform[4], arrTransform[5]);
 		m_oCurrentTransform.Multiply(&oTransform);
 		m_lTransformStack.push_back(m_oCurrentTransform);
 		SetTransformToRenderer();
 	}
-	void CContextState::PopTransform()
+	void   CContextState::PopTransform()
 	{
 		m_lTransformStack.pop_back();
 		m_oCurrentTransform = m_lTransformStack.back();
@@ -61,12 +65,12 @@ namespace XPS
 
 		return dDet;
 	}
-	void CContextState::PushClip(const CWString& wsClip)
+	void   CContextState::PushClip(const CWString& wsClip)
 	{
 		m_vClipStack.push_back(wsClip);
 		SetClipToRenderer(wsClip);
 	}
-	void CContextState::PopClip()
+	void   CContextState::PopClip()
 	{
 		m_vClipStack.pop_back();
 		if (m_pRenderer)
@@ -81,7 +85,7 @@ namespace XPS
 			}
 		}
 	}
-	void CContextState::SetTransformToRenderer()
+	void   CContextState::SetTransformToRenderer()
 	{
 		if (m_pRenderer)
 		{
@@ -90,7 +94,7 @@ namespace XPS
 									  xpsUnitToMM(m_oCurrentTransform.m_agg_mtx.tx), xpsUnitToMM(m_oCurrentTransform.m_agg_mtx.ty));
 		}
 	}	
-	void CContextState::SetClipToRenderer(const CWString& wsClip)
+	void   CContextState::SetClipToRenderer(const CWString& wsClip)
 	{
 		if (!wsClip.empty() && m_pRenderer)
 		{
@@ -102,6 +106,41 @@ namespace XPS
 			m_pRenderer->EndCommand(c_nPathType);
 			m_pRenderer->EndCommand(c_nClipType);
 			m_pRenderer->PathCommandEnd();
+		}
+	}
+	void   CContextState::PushResource(CStaticResource* pResource, bool bOwn)
+	{
+		m_vResourcesStack.push_back(TStaticRecource(pResource, bOwn));
+	}
+	void   CContextState::PopResource()
+	{
+		if (m_vResourcesStack.size())
+		{
+			TStaticRecource& oPair = m_vResourcesStack.at(m_vResourcesStack.size() - 1);
+			if (oPair.pResource && oPair.bOwn)
+				delete oPair.pResource;
+
+			m_vResourcesStack.pop_back();
+		}
+	}
+	void   CContextState::GetPathGeometry(const CWString& _wsKey, CWString& wsPathData, CWString& wsPathTransform)
+	{
+		if (_wsKey.size() < 17)
+			return;
+
+		CWString wsKey((wchar_t*)(_wsKey.c_str() + 16), false, _wsKey.size() - 17);
+		const wchar_t* wsPath;
+		CStaticResource* pResource;
+
+		for (int nIndex = m_vResourcesStack.size() - 1; nIndex >= 0; nIndex--)
+		{
+			pResource = m_vResourcesStack.at(nIndex).pResource;
+			wsPath = pResource->Get(wsKey);
+			if (NULL != wsPath)
+			{
+				wsPathData.create(wsPath, true);
+				return;
+			}
 		}
 	}
 }

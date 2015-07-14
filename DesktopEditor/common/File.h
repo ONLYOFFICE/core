@@ -78,7 +78,7 @@ namespace NSFile
 
 			return s;
 		}
-		static std::wstring GetUnicodeFromCharPtr(std::string& sParam, INT bIsUtf8 = FALSE)
+		static std::wstring GetUnicodeFromCharPtr(const std::string& sParam, INT bIsUtf8 = FALSE)
 		{
 			return GetUnicodeFromCharPtr(sParam.c_str(), (LONG)sParam.length(), bIsUtf8);			
 		}

@@ -41,10 +41,10 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
 TEMPLATE = app
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../Debug/debug -ldoctrenderer
+    LIBS += -L../../Debug -ldoctrenderer
     message(debug)
 } else {
-    LIBS += -L../../Release/release -ldoctrenderer
+    LIBS += -L../../Release -ldoctrenderer
     message(release)
 }
 

@@ -45,20 +45,6 @@ BaseObjectPtr WorkbookStreamObject::clone()
 
 const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 {
-
-	/*try
-	{
-		while(1)
-		{
-			proc.mandatory<AnyObject>();
-		}
-	}
-	catch(EXCEPT::RT::EndOfStreamReached&)
-	{
-	}
-	return true;*/
-
-
 	bool to_continue = true;
 
 	unsigned __int16 substream_type;
@@ -83,6 +69,8 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 				if(proc.mandatory(GlobalsSubstream(code_page_)))
 				{
 					GlobalsSubstream_found = true;
+					m_GlobalsSubstream = elements_.back();
+					elements_.pop_back();
 				}
 			}
 			break;
@@ -97,6 +85,8 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 				if(proc.mandatory(WorksheetSubstream(ws_index++)))
 				{
 					WorksheetSubstream_found = true;
+					m_WorksheetSubstream.push_back(elements_.back());
+					elements_.pop_back();				
 				}
 			}
 			break;
@@ -111,6 +101,8 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 				if(proc.mandatory<ChartSheetSubstream>())
 				{
 					WorksheetSubstream_found = true;
+					m_ChartSheetSubstream.push_back(elements_.back());
+					elements_.pop_back();
 				}
 			}
 			break;
@@ -125,6 +117,8 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 				if(proc.mandatory<MacroSheetSubstream>())
 				{
 					WorksheetSubstream_found = true;
+					m_MacroSheetSubstream.push_back(elements_.back());
+					elements_.pop_back();
 				}
 			}
 			break;

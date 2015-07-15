@@ -185,7 +185,7 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 
 void XlsConverter::convert(XLS::GlobalsSubstream* elem)
 {
-	for (std::list<XLS::BaseObjectPtr>::iterator it = woorkbook->elements_.begin(); it != woorkbook->elements_.end(); it++)
+	for (std::list<XLS::BaseObjectPtr>::iterator it = elem->elements_.begin(); it != elem->elements_.end(); it++)
 	{
 		convert(it->get());
 	}

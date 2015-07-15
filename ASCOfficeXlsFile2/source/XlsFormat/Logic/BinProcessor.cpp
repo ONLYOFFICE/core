@@ -42,9 +42,8 @@ const int BinProcessor::repeated(BaseObject& object, const int fromN, const int 
 		if(!optional(*object.clone()))
 		{
 			break;
-		}
+		}else count++;
 		at_least_one_read = true;
-		if (count == 0) count = -1; 
 	}
 	return count;
 }

@@ -627,15 +627,16 @@ namespace DocFileFormat
 					if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer))
 					{
 						m_pXmlWriter->WriteNodeBegin (_T("w:pict"));
-						if (oPicture.blipStoreEntry)
-						{
-							VMLPictureMapping oVMLPicture(m_context, m_pXmlWriter, false, _caller);
-							oPicture.Convert (&oVMLPicture);
-						}
-						else
+
+						if (oPicture.shapeContainer)
 						{
 							VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, NULL, &oPicture,  _caller);
 							oPicture.shapeContainer->Convert(&oVmlWriter);
+						}
+						else
+						{
+							VMLPictureMapping oVMLPicture(m_context, m_pXmlWriter, false, _caller);
+							oPicture.Convert (&oVMLPicture);
 						}
 						m_pXmlWriter->WriteNodeEnd	 (_T("w:pict"));
 					}                   

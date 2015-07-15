@@ -20,19 +20,22 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeCRN;
+
+//-----------------------------
 	BIFF_BYTE colLast;
 	BIFF_BYTE colFirst;
 	BIFF_WORD row;
 	BiffStructurePtrVector crnOper;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(colLast)
-		BO_ATTRIB_MARKUP_ATTRIB(colFirst)
-		BO_ATTRIB_MARKUP_ATTRIB(row)
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(crnOper, SerAr) // Temporarily commented to avoid compilation errors
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(colLast)
+		//BO_ATTRIB_MARKUP_ATTRIB(colFirst)
+		//BO_ATTRIB_MARKUP_ATTRIB(row)
+		////BO_ATTRIB_MARKUP_VECTOR_COMPLEX(crnOper, SerAr) // Temporarily commented to avoid compilation errors
 
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_END
 
 };
 

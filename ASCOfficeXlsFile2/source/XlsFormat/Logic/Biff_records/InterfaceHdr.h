@@ -20,12 +20,12 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+//-----------------------------
 	BIFF_WORD codePage;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(codePage)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(codePage)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

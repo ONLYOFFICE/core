@@ -10,7 +10,7 @@ namespace XLS
 
 class XLUnicodeRichExtendedString : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(XLUnicodeRichExtendedString)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(XLUnicodeRichExtendedString)
 public:
 	XLUnicodeRichExtendedString(std::list<CFRecordPtr>& cont_recs);
 	~XLUnicodeRichExtendedString();

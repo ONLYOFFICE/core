@@ -19,14 +19,12 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+	
+	static const ElementType	type = typeXFCRC;
+
+//-----------------------------
 	BIFF_WORD cxfs;
 	BIFF_DWORD crc;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(cxfs)
-		BO_ATTRIB_MARKUP_ATTRIB(crc)
-	BO_ATTRIB_MARKUP_END
 
 };
 

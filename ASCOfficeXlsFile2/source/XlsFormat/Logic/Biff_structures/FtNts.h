@@ -10,7 +10,7 @@ class CFRecord;
 
 class FtNts : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FtNts)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtNts)
 public:
 	BiffStructurePtr clone();
 

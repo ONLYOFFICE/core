@@ -19,7 +19,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeCatSerRange;
+
+//-----------------------------
 	BIFF_SHORT catCross;
 	BIFF_SHORT catLabel;
 	BIFF_SHORT catMark;
@@ -27,14 +30,14 @@ private:
 	BIFF_BOOL fMaxCross;
 	BIFF_BOOL fReverse;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(catCross)
-		BO_ATTRIB_MARKUP_ATTRIB(catLabel)
-		BO_ATTRIB_MARKUP_ATTRIB(catMark)
-		BO_ATTRIB_MARKUP_ATTRIB(fBetween)
-		BO_ATTRIB_MARKUP_ATTRIB(fMaxCross)
-		BO_ATTRIB_MARKUP_ATTRIB(fReverse)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(catCross)
+		//BO_ATTRIB_MARKUP_ATTRIB(catLabel)
+		//BO_ATTRIB_MARKUP_ATTRIB(catMark)
+		//BO_ATTRIB_MARKUP_ATTRIB(fBetween)
+		//BO_ATTRIB_MARKUP_ATTRIB(fMaxCross)
+		//BO_ATTRIB_MARKUP_ATTRIB(fReverse)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

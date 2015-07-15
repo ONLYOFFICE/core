@@ -18,6 +18,8 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	static const ElementType	type = typeSORTDATA12;
+	
 };
 
 } // namespace XLS

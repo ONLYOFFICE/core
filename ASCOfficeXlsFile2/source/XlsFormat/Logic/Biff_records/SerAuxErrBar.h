@@ -19,23 +19,26 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeSerAuxErrBar;
+
+//-----------------------------
 	BIFF_BYTE sertm;
 	BIFF_BYTE ebsrc;
 	Boolean<unsigned char> fTeeTop;
 	BIFF_DOUBLE numValue;
 	BIFF_WORD cnum;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(sertm)
-		BO_ATTRIB_MARKUP_ATTRIB(ebsrc)
-		BO_ATTRIB_MARKUP_ATTRIB(fTeeTop)
-		if(0x04 != ebsrc && 0x05 != ebsrc)
-		{
-			BO_ATTRIB_MARKUP_ATTRIB(numValue)
-		}
-		BO_ATTRIB_MARKUP_ATTRIB(cnum)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(sertm)
+		//BO_ATTRIB_MARKUP_ATTRIB(ebsrc)
+		//BO_ATTRIB_MARKUP_ATTRIB(fTeeTop)
+		//if(0x04 != ebsrc && 0x05 != ebsrc)
+		//{
+		//	//BO_ATTRIB_MARKUP_ATTRIB(numValue)
+		//}
+		//BO_ATTRIB_MARKUP_ATTRIB(cnum)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

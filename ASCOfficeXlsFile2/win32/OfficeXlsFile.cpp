@@ -12,6 +12,7 @@
 #include "../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h"
 
 #include "../source/XlsXlsxConverter/ConvertXls2Xlsx.h"
+#include "../source/XlsXlsxConverter/progressCallback.h"
 
 #include "../Common/XmlUtils.h"
 

@@ -9,7 +9,7 @@ namespace XLS
 
 class List12DisplayName: public BiffStructure
 {	
-	BASE_OBJECT_DEFINE_CLASS_NAME(List12DisplayName)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(List12DisplayName)
 public:
 	BiffStructurePtr clone();
 

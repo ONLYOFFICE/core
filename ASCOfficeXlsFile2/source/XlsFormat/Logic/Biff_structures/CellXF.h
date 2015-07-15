@@ -10,7 +10,7 @@ class CFRecord;
 
 class CellXF : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(CellXF)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CellXF)
 public:
 	CellXF(size_t& cell_xf_current_id, size_t& style_xf_current_id);
 

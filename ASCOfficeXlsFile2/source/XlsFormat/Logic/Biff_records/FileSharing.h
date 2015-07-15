@@ -20,25 +20,28 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeFileSharing;
+
+//-----------------------------
 	Boolean<unsigned __int16> fReadOnlyRec;
 	unsigned __int16 wResPassNum;
 	BIFF_BSTR wResPass;
 	BIFF_WORD iNoResPass;
 	XLUnicodeString stUNUsername;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-	BO_ATTRIB_MARKUP_ATTRIB(fReadOnlyRec)
-	BO_ATTRIB_MARKUP_ATTRIB(wResPass)
-	if(!wResPassNum)
-	{
-		BO_ATTRIB_MARKUP_ATTRIB(iNoResPass)
-	}
-	else
-	{
-		BO_ATTRIB_MARKUP_ATTRIB(stUNUsername)
-	}
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+	//BO_ATTRIB_MARKUP_ATTRIB(fReadOnlyRec)
+	//BO_ATTRIB_MARKUP_ATTRIB(wResPass)
+	//if(!wResPassNum)
+	//{
+	//	//BO_ATTRIB_MARKUP_ATTRIB(iNoResPass)
+	//}
+	//else
+	//{
+	//	//BO_ATTRIB_MARKUP_ATTRIB(stUNUsername)
+	//}
+	//BO_ATTRIB_MARKUP_END
 
 };
 

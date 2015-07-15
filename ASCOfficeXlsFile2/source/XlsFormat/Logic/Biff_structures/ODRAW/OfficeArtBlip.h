@@ -17,7 +17,7 @@ typedef boost::shared_ptr<OfficeArtBlip> OfficeArtBlipPtr;
 
 class OfficeArtBlip : public OfficeArtRecord
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtBlip)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtBlip)
 public:
 	OfficeArtBlip(const unsigned __int16 recType);
 
@@ -38,7 +38,7 @@ typedef enum
 template<BLIP_PICT_INFO pict_info, unsigned __int16 recType>
 class OfficeArtBlipCommon : public OfficeArtBlip
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtBlip)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtBlip)
 public:
 	OfficeArtBlipCommon() : OfficeArtBlip(recType) {}
 	XLS::BiffStructurePtr clone()

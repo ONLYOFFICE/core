@@ -19,12 +19,15 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeDefColWidth;
+
+//-----------------------------
 	BIFF_WORD cchdefColWidth;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(cchdefColWidth)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(cchdefColWidth)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

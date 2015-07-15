@@ -9,7 +9,7 @@ class CFRecord;
 
 class Property : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(Property)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Property)
 public:
 	XLS::BiffStructurePtr clone();
 

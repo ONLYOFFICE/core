@@ -20,16 +20,19 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeNamePublish;
+
+//-----------------------------
 	BIFF_BOOL fPublished;
 	BIFF_BOOL fWorkbookParam;
 	XLNameUnicodeString strName;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fPublished)
-		BO_ATTRIB_MARKUP_ATTRIB(fWorkbookParam)
-		BO_ATTRIB_MARKUP_ATTRIB(strName)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fPublished)
+		//BO_ATTRIB_MARKUP_ATTRIB(fWorkbookParam)
+		//BO_ATTRIB_MARKUP_ATTRIB(strName)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

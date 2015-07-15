@@ -24,17 +24,18 @@ public:
 	static void catchUnusedCellOffset(CFStream& stream, const unsigned int data_place, const unsigned int data);
 	static void offsetFromRowMaker(CFStream& stream, const unsigned int data_place, const unsigned int data);
 
-private:
+	static const ElementType	type = typeDBCell;
+//-----------------------------
 	ForwardOnlyParam<unsigned int> dbRtrw;
 	BiffStructurePtrVector rgdb;
 	BackwardOnlyParam<unsigned int> num_pointers;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(dbRtrw)
-		BO_ATTRIB_MARKUP_ATTRIB(num_pointers)
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgdb, FileOffset)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(dbRtrw)
+		//BO_ATTRIB_MARKUP_ATTRIB(num_pointers)
+		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgdb, FileOffset)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

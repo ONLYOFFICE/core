@@ -20,13 +20,16 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType type = typePalette;
+
+//-----------------------------
 	BiffStructurePtrVector rgColor;
 	unsigned __int16 ccv;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgColor, LongRGB)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgColor, LongRGB)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

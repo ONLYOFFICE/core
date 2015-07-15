@@ -22,16 +22,19 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	static const ElementType	type = typeRK;
+
+
 	const CellRef getLocation() const;
 
-private:
+//-----------------------------
 	RkRec rkrec;
 	Cell cell;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(rkrec)
-		BO_ATTRIB_MARKUP_COMPLEX(cell)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_COMPLEX(rkrec)
+		//BO_ATTRIB_MARKUP_COMPLEX(cell)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

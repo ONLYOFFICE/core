@@ -19,18 +19,21 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typePLV;
+
+//-----------------------------
 	BIFF_WORD wScalePLV;
 	BIFF_BOOL fPageLayoutView;
 	BIFF_BOOL fRulerVisible;
 	BIFF_BOOL fWhitespaceHidden;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(wScalePLV)
-		BO_ATTRIB_MARKUP_ATTRIB(fPageLayoutView)
-		BO_ATTRIB_MARKUP_ATTRIB(fRulerVisible)
-		BO_ATTRIB_MARKUP_ATTRIB(fWhitespaceHidden)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(wScalePLV)
+		//BO_ATTRIB_MARKUP_ATTRIB(fPageLayoutView)
+		//BO_ATTRIB_MARKUP_ATTRIB(fRulerVisible)
+		//BO_ATTRIB_MARKUP_ATTRIB(fWhitespaceHidden)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

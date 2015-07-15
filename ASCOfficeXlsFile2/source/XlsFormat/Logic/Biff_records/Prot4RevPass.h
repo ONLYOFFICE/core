@@ -19,13 +19,16 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeProt4RevPass;
+
+//-----------------------------
 	BIFF_BSTR protPwdRev;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(protPwdRev)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(protPwdRev)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

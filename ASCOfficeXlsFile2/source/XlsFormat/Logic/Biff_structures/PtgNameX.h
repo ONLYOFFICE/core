@@ -10,7 +10,7 @@ class CFRecord;
 
 class PtgNameX: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgNameX)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgNameX)
 public:
 	PtgNameX();
 	PtgNameX(const std::wstring& word, BiffStructurePtr & parent, const PtgDataType data_type_init);

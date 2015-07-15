@@ -19,13 +19,12 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
-	BIFF_WORD count;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-	BO_ATTRIB_MARKUP_ATTRIB(count)
-	BO_ATTRIB_MARKUP_END
 
+	static const ElementType	type = typeBuiltInFnGroupCount;
+
+
+//-----------------------------
+	BIFF_WORD count;
 };
 
 } // namespace XLS

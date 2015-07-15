@@ -20,12 +20,15 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeOleObjectSize;
+
+//-----------------------------
 	RefU ref_;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(ref_)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_COMPLEX(ref_)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

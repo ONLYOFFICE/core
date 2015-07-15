@@ -10,7 +10,7 @@ class CFRecord;
 
 class VertBrk : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(VertBrk)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(VertBrk)
 public:
 	BiffStructurePtr clone();
 

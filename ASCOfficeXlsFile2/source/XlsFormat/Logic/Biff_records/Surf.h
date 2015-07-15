@@ -19,14 +19,17 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeSurf;
+
+//-----------------------------
 	BIFF_BOOL fFillSurface;
 	BIFF_BOOL f3DPhongShade;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fFillSurface)
-		BO_ATTRIB_MARKUP_ATTRIB(f3DPhongShade)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fFillSurface)
+		//BO_ATTRIB_MARKUP_ATTRIB(f3DPhongShade)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

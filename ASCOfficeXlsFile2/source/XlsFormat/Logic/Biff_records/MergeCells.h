@@ -20,14 +20,17 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeMergeCells;
+
+//-----------------------------
 	BIFF_WORD cmcs;
 	BiffStructurePtrVector rgref;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(cmcs)
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgref, Ref8)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(cmcs)
+		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgref, Ref8)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

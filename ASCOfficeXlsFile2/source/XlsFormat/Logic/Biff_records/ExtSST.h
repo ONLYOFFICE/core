@@ -20,16 +20,19 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeExtSST;
+
+//-----------------------------
 	BIFF_WORD dsst;
 	BiffStructurePtrVector rgISSTInf;
 	BackwardOnlyParam<unsigned int> num_sets;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(dsst)
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgISSTInf, ISSTInf);
-	BO_ATTRIB_MARKUP_ATTRIB(num_sets)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(dsst)
+		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgISSTInf, ISSTInf);
+	//BO_ATTRIB_MARKUP_ATTRIB(num_sets)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

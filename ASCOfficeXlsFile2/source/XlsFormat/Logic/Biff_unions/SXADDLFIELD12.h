@@ -17,7 +17,9 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
-
+	
+	static const ElementType	type = typeSXADDLFIELD12;
+	
 };
 
 } // namespace XLS

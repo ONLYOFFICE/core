@@ -9,7 +9,7 @@ class CFRecord;
 
 class SerNil : public SerAr
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(SerNil)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SerNil)
 public:
 	BiffStructurePtr clone();
 	virtual void load(CFRecord& record);

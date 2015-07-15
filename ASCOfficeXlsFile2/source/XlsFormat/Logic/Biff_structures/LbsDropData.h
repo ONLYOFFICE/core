@@ -10,7 +10,7 @@ class CFRecord;
 
 class LbsDropData : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(LbsDropData)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(LbsDropData)
 public:
 	BiffStructurePtr clone();
 

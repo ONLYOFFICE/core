@@ -14,7 +14,7 @@ namespace ODRAW
 
 class OfficeArtRecord : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtRecord)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtRecord)
 public:
 	OfficeArtRecord(const unsigned char recVer, const unsigned __int16 recType);
 

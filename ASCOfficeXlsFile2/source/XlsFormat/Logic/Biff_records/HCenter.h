@@ -19,12 +19,15 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeHCenter;
+
+//-----------------------------
 	Boolean<unsigned __int16> hcenter;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(hcenter)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(hcenter)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

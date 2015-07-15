@@ -19,12 +19,11 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeWinProtect;
+
+//-----------------------------
 	Boolean<unsigned __int16> fLockWn;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fLockWn)
-	BO_ATTRIB_MARKUP_END
 
 };
 

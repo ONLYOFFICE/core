@@ -19,7 +19,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeChart3d;
+
+//-----------------------------
 	BIFF_SHORT anRot;
 	BIFF_SHORT anElev;
 	BIFF_SHORT pcDist;
@@ -34,20 +37,20 @@ private:
 	BIFF_BOOL fWalls2D;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(anRot)
-		BO_ATTRIB_MARKUP_ATTRIB(anElev)
-		BO_ATTRIB_MARKUP_ATTRIB(pcDist)
-		BO_ATTRIB_MARKUP_ATTRIB(pcHeight)
-		BO_ATTRIB_MARKUP_ATTRIB(pcDepth)
-		BO_ATTRIB_MARKUP_ATTRIB(pcGap)
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(anRot)
+		//BO_ATTRIB_MARKUP_ATTRIB(anElev)
+		//BO_ATTRIB_MARKUP_ATTRIB(pcDist)
+		//BO_ATTRIB_MARKUP_ATTRIB(pcHeight)
+		//BO_ATTRIB_MARKUP_ATTRIB(pcDepth)
+		//BO_ATTRIB_MARKUP_ATTRIB(pcGap)
 
-		BO_ATTRIB_MARKUP_ATTRIB(fPerspective)
-		BO_ATTRIB_MARKUP_ATTRIB(fCluster)
-		BO_ATTRIB_MARKUP_ATTRIB(f3DScaling)
-		BO_ATTRIB_MARKUP_ATTRIB(fNotPieChart)
-		BO_ATTRIB_MARKUP_ATTRIB(fWalls2D)
-	BO_ATTRIB_MARKUP_END
+		//BO_ATTRIB_MARKUP_ATTRIB(fPerspective)
+		//BO_ATTRIB_MARKUP_ATTRIB(fCluster)
+		//BO_ATTRIB_MARKUP_ATTRIB(f3DScaling)
+		//BO_ATTRIB_MARKUP_ATTRIB(fNotPieChart)
+		//BO_ATTRIB_MARKUP_ATTRIB(fWalls2D)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -20,16 +20,16 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+//-----------------------------
 	BIFF_WORD cachName;
 	BIFF_WORD fgrp;
 	XLNameUnicodeString rgach;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(cachName)
-		BO_ATTRIB_MARKUP_ATTRIB(fgrp)
-		BO_ATTRIB_MARKUP_ATTRIB(rgach)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(cachName)
+		//BO_ATTRIB_MARKUP_ATTRIB(fgrp)
+		//BO_ATTRIB_MARKUP_ATTRIB(rgach)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

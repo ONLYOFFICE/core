@@ -11,7 +11,7 @@ class CFRecord;
 
 class PtgArea: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgArea)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgArea)
 public:
 	PtgArea();
 	PtgArea(const std::wstring& word, const PtgDataType data_type);

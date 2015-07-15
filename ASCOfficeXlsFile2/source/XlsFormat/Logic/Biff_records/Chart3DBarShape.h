@@ -19,14 +19,17 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeChart3DBarShape;
+
+//-----------------------------
 	BIFF_BYTE riser;
 	BIFF_BYTE taper;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(riser)
-		BO_ATTRIB_MARKUP_ATTRIB(taper)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(riser)
+		//BO_ATTRIB_MARKUP_ATTRIB(taper)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

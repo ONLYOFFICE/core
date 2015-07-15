@@ -20,9 +20,11 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	static const ElementType	type = typeContinueFrt11;
+
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+	//BO_ATTRIB_MARKUP_END
 
 };
 

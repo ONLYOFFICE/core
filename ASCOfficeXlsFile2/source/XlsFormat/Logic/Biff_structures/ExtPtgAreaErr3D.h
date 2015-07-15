@@ -10,7 +10,7 @@ class CFRecord;
 
 class ExtPtgAreaErr3D : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ExtPtgAreaErr3D)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ExtPtgAreaErr3D)
 public:
 	BiffStructurePtr clone();
 

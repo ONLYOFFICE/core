@@ -15,10 +15,13 @@ public:
 	BaseObjectPtr clone();
 
 	void writeFields(CFRecord& record);
-	void readFields(CFRecord& record);
+	void readFields(CFRecord& record);	
+
+	static const ElementType	type = typeLPr;
+
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+	//BO_ATTRIB_MARKUP_END
 
 };
 

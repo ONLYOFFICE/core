@@ -10,7 +10,7 @@ class CFRecord;
 
 class SDContainer : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(SDContainer)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SDContainer)
 public:
 	SDContainer();
 	SDContainer(CFRecord& record);

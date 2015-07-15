@@ -10,7 +10,7 @@ class CFRecord;
 
 class DXFPat : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(DXFPat)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(DXFPat)
 public:
 	BiffStructurePtr clone();
 

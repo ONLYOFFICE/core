@@ -9,7 +9,7 @@ class CFRecord;
 
 class SecurityDescriptor : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(SecurityDescriptor)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SecurityDescriptor)
 public:
 	SecurityDescriptor();
 	SecurityDescriptor(CFRecord& record);

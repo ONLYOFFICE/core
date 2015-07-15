@@ -19,7 +19,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeLegend;
+
+//-----------------------------
 	BIFF_DWORD x;
 	BIFF_DWORD y;
 	BIFF_DWORD dx;
@@ -32,19 +35,19 @@ private:
 	BIFF_BOOL fVert;
 	BIFF_BOOL fWasDataTable;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(x)
-		BO_ATTRIB_MARKUP_ATTRIB(y)
-		BO_ATTRIB_MARKUP_ATTRIB(dx)
-		BO_ATTRIB_MARKUP_ATTRIB(dy)
-		BO_ATTRIB_MARKUP_ATTRIB(wSpace)
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(x)
+		//BO_ATTRIB_MARKUP_ATTRIB(y)
+		//BO_ATTRIB_MARKUP_ATTRIB(dx)
+		//BO_ATTRIB_MARKUP_ATTRIB(dy)
+		//BO_ATTRIB_MARKUP_ATTRIB(wSpace)
 
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoPosition)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoPosX)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoPosY)
-		BO_ATTRIB_MARKUP_ATTRIB(fVert)
-		BO_ATTRIB_MARKUP_ATTRIB(fWasDataTable)
-	BO_ATTRIB_MARKUP_END
+		//BO_ATTRIB_MARKUP_ATTRIB(fAutoPosition)
+		//BO_ATTRIB_MARKUP_ATTRIB(fAutoPosX)
+		//BO_ATTRIB_MARKUP_ATTRIB(fAutoPosY)
+		//BO_ATTRIB_MARKUP_ATTRIB(fVert)
+		//BO_ATTRIB_MARKUP_ATTRIB(fWasDataTable)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

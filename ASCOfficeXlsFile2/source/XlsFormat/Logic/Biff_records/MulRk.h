@@ -24,16 +24,16 @@ public:
 
 	const long GetRow() const;
 
-private:
+//-----------------------------
 	Rw rw;
 	BiffStructurePtrVector rgrkrec;
 	BiffStructurePtrVector cells;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgrkrec, RkRec)
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(cells, Cell)
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgrkrec, RkRec)
+		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(cells, Cell)
 
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -10,7 +10,7 @@ class CFRecord;
 
 class FtMacro : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FtMacro)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtMacro)
 public:
 	FtMacro();
 	BiffStructurePtr clone();

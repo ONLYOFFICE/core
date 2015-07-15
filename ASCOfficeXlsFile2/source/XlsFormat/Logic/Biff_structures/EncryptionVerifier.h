@@ -9,7 +9,7 @@ class CFRecord;
 
 class EncryptionVerifier : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(EncryptionVerifier)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(EncryptionVerifier)
 public:
 	XLS::BiffStructurePtr clone();
 

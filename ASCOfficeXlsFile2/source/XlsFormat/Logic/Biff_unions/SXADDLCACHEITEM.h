@@ -18,6 +18,10 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	static const ElementType	type = typeSXADDLCACHEITEM;
+	
+
+
 };
 
 } // namespace XLS

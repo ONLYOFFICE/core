@@ -11,7 +11,7 @@ class CFRecord;
 
 class PtgFuncVar : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgFuncVar)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgFuncVar)
 	PtgFuncVar(const unsigned __int16 func_index, const unsigned char data_type);
 public:
 	PtgFuncVar();

@@ -19,14 +19,17 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeGuts;
+
+//-----------------------------
 	BIFF_WORD iLevelRwMac;
 	BIFF_WORD iLevelColMac;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(iLevelRwMac)
-		BO_ATTRIB_MARKUP_ATTRIB(iLevelColMac)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(iLevelRwMac)
+		//BO_ATTRIB_MARKUP_ATTRIB(iLevelColMac)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

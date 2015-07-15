@@ -10,7 +10,7 @@ class CFRecord;
 
 class PtgRefErr3d: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgRefErr3d)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgRefErr3d)
 public:
 	PtgRefErr3d();
 	PtgRefErr3d(const unsigned __int16 ixti, const PtgDataType data_type);

@@ -19,10 +19,13 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeEnd;
+
+//-----------------------------
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+	//BO_ATTRIB_MARKUP_END
 
 };
 

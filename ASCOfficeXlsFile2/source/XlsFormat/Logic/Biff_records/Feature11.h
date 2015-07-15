@@ -23,6 +23,10 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	static const ElementType	type = typeFeature11;
+
+
+
 public:
 	FrtRefHeaderU frtRefHeaderU;
 	BIFF_WORD isf;
@@ -34,15 +38,15 @@ public:
 	TableFeatureType rgbFeat;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(frtRefHeaderU)
-		BO_ATTRIB_MARKUP_ATTRIB(isf)
-		BO_ATTRIB_MARKUP_ATTRIB(cref2)
-		BO_ATTRIB_MARKUP_ATTRIB(cbFeatData)
-		BO_ATTRIB_MARKUP_ATTRIB(sqref)
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(refs2, Ref8U)
-		BO_ATTRIB_MARKUP_COMPLEX(rgbFeat)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_COMPLEX(frtRefHeaderU)
+		//BO_ATTRIB_MARKUP_ATTRIB(isf)
+		//BO_ATTRIB_MARKUP_ATTRIB(cref2)
+		//BO_ATTRIB_MARKUP_ATTRIB(cbFeatData)
+		//BO_ATTRIB_MARKUP_ATTRIB(sqref)
+		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(refs2, Ref8U)
+		//BO_ATTRIB_MARKUP_COMPLEX(rgbFeat)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

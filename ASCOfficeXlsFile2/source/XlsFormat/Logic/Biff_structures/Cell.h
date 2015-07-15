@@ -11,7 +11,7 @@ class CFRecord;
 
 class Cell : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(Cell)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Cell)
 public:
 	Cell();
 	Cell(const unsigned __int16 rw_init, const unsigned __int16 col_init, const unsigned __int16 ixfe_init);

@@ -9,7 +9,7 @@ class CFRecord;
 
 class PtgRefErr: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgRefErr)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgRefErr)
 public:
 	PtgRefErr();
 	PtgRefErr(const PtgDataType data_type_init);

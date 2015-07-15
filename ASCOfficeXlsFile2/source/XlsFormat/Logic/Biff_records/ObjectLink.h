@@ -19,16 +19,19 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeObjectLink;
+
+//-----------------------------
 	BIFF_WORD wLinkObj;
 	BIFF_WORD wLinkVar1;
 	BIFF_WORD wLinkVar2;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(wLinkObj)
-		BO_ATTRIB_MARKUP_ATTRIB(wLinkVar1)
-		BO_ATTRIB_MARKUP_ATTRIB(wLinkVar2)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(wLinkObj)
+		//BO_ATTRIB_MARKUP_ATTRIB(wLinkVar1)
+		//BO_ATTRIB_MARKUP_ATTRIB(wLinkVar2)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

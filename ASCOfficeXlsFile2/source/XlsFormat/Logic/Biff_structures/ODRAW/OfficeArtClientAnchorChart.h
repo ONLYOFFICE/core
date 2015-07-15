@@ -13,7 +13,7 @@ namespace ODRAW
 
 class OfficeArtClientAnchorChart : public OfficeArtRecord
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtClientAnchorChart)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtClientAnchorChart)
 public:
 	OfficeArtClientAnchorChart();
 	XLS::BiffStructurePtr clone();

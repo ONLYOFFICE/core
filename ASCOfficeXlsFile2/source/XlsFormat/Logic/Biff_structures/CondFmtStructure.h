@@ -10,7 +10,7 @@ class CFRecord;
 
 class CondFmtStructure : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(CondFmtStructure)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CondFmtStructure)
 public:
 	BiffStructurePtr clone();
 

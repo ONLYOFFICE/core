@@ -21,17 +21,21 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	static const ElementType	type = typeFeatHdr11;
+
+
+
 public:
 	FrtHeader frt;
 	SharedFeatureType isf;
 	BIFF_DWORD idListNext;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(frt)
-		BO_ATTRIB_MARKUP_ATTRIB(isf)
-		BO_ATTRIB_MARKUP_ATTRIB(idListNext)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_COMPLEX(frt)
+		//BO_ATTRIB_MARKUP_ATTRIB(isf)
+		//BO_ATTRIB_MARKUP_ATTRIB(idListNext)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -10,7 +10,7 @@ class CFRecord;
 
 class XFPropGradient : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(XFPropGradient)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(XFPropGradient)
 public:
 	BiffStructurePtr clone();
 

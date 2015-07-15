@@ -9,18 +9,18 @@ namespace XLS
 
 class IXFCellMulBlankSpecial : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(IXFCellMulBlankSpecial)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(IXFCellMulBlankSpecial)
 public:
 	BiffStructurePtr clone();
 
 	//virtual void toXML(MSXML2::IXMLDOMElementPtr xml_tag);
 	virtual void load(CFRecord& record, const size_t num_cells);
-private:
+//-----------------------------
 	virtual void load(CFRecord& record) {};
 	//virtual const bool fromXML(MSXML2::IXMLDOMElementPtr xml_tag) { return false; };
 	virtual void store(CFRecord& record){};
 
-private:
+//-----------------------------
 	unsigned __int16 common_ixfe;
 	std::vector<unsigned __int16> rgixfe;
 };
@@ -43,17 +43,17 @@ public:
 	
 	const long GetRow() const;
 
-private:
+//-----------------------------
 	Rw rw;
 	Col colFirst;
 	IXFCellMulBlankSpecial rgixfe;
 	Col colLast;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(colFirst)
-		BO_ATTRIB_MARKUP_ATTRIB(colLast)
-		BO_ATTRIB_MARKUP_COMPLEX(rgixfe)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(colFirst)
+		//BO_ATTRIB_MARKUP_ATTRIB(colLast)
+		//BO_ATTRIB_MARKUP_COMPLEX(rgixfe)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

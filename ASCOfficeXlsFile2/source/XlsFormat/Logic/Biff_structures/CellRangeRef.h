@@ -8,7 +8,7 @@ namespace XLS
 
 class CellRangeRef : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(CellRangeRef)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CellRangeRef)
 public:
 	typedef enum {
 		stRange,

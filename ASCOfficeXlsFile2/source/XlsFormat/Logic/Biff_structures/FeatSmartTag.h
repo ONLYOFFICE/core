@@ -11,7 +11,7 @@ class CFRecord;
 
 class FeatSmartTag : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FeatSmartTag)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FeatSmartTag)
 public:
 	FeatSmartTag();
 	FeatSmartTag(CFRecord& record);

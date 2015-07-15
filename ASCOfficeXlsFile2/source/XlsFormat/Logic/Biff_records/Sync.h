@@ -19,16 +19,13 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeSync;
+
+//-----------------------------
 	ForwardOnlyParam<unsigned __int16> rw;
 	ForwardOnlyParam<unsigned __int16> col;
 	BIFF_BSTR ref_;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(rw)
-		BO_ATTRIB_MARKUP_ATTRIB(col)
-		BO_ATTRIB_MARKUP_ATTRIB_NAME(ref_, L"ref")
-	BO_ATTRIB_MARKUP_END
 
 };
 

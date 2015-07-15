@@ -19,12 +19,12 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
+	static const ElementType	type = typeFORMULA;
+
 	const CellRef getLocation() const;
 
-private:
 	CellRef location;
 
-private:
 	std::vector<CellRef>& shared_formulas_locations_ref_;
 };
 

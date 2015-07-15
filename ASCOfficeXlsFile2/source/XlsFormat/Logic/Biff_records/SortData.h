@@ -21,7 +21,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeSortData;
+
+//-----------------------------
 	BIFF_BOOL fCol;
 	BIFF_BOOL fCaseSensitive;
 	BIFF_BOOL fAltMethod;
@@ -34,20 +37,20 @@ private:
 	BiffStructurePtrVector sortCond12Array;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fCol)
-		BO_ATTRIB_MARKUP_ATTRIB(fCaseSensitive)
-		BO_ATTRIB_MARKUP_ATTRIB(fAltMethod)
-		BO_ATTRIB_MARKUP_ATTRIB(sfp)
-		BO_ATTRIB_MARKUP_ATTRIB(rfx)
-		BO_ATTRIB_MARKUP_ATTRIB(cconditions)
-		if(0x01 == sfp || 0x03 == sfp)
-		{
-			BO_ATTRIB_MARKUP_ATTRIB(idParent)
-		}
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(sortCond12Array, SortCond12)
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fCol)
+		//BO_ATTRIB_MARKUP_ATTRIB(fCaseSensitive)
+		//BO_ATTRIB_MARKUP_ATTRIB(fAltMethod)
+		//BO_ATTRIB_MARKUP_ATTRIB(sfp)
+		//BO_ATTRIB_MARKUP_ATTRIB(rfx)
+		//BO_ATTRIB_MARKUP_ATTRIB(cconditions)
+		//if(0x01 == sfp || 0x03 == sfp)
+		//{
+		//	//BO_ATTRIB_MARKUP_ATTRIB(idParent)
+		//}
+		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(sortCond12Array, SortCond12)
 
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_END
 
 };
 

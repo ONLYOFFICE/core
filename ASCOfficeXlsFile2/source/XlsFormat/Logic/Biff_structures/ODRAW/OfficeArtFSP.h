@@ -14,7 +14,7 @@ namespace ODRAW
 
 class OfficeArtFSP : public OfficeArtRecord
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtFSP)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtFSP)
 public:
 	OfficeArtFSP();
 	XLS::BiffStructurePtr clone();

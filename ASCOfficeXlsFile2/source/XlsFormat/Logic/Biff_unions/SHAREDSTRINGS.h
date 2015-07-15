@@ -18,7 +18,9 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-private:
+	static const ElementType	type = typeSHAREDSTRINGS;
+	
+
 	unsigned __int16 code_page_;
 };
 

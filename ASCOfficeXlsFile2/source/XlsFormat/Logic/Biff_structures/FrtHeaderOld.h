@@ -11,7 +11,7 @@ class CFRecord;
 
 class FrtHeaderOld : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FrtHeaderOld)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FrtHeaderOld)
 public:
 	FrtHeaderOld();
 	FrtHeaderOld(const CFRecordType::TypeId type);

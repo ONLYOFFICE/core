@@ -48,7 +48,7 @@ const bool BiffRecord::read(CFStreamCacheReader& reader, BaseObject* parent, con
 
 		// XML generation
 		//BiffStructurePtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-		toFrom(BinReaderProcessor(reader, parent/*own_tag*/, is_mandatory));	
+		//toFrom(BinReaderProcessor(reader, parent/*own_tag*/, is_mandatory));	
 
 		parent->add_child(this->clone());
 	}

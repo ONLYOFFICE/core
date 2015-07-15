@@ -19,12 +19,15 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeGUIDTypeLib;
+
+//-----------------------------
 	BIFF_BSTR guid;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(guid)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(guid)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

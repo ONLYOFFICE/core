@@ -20,21 +20,24 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeSST;
+
+//-----------------------------
 	BIFF_LONG cstTotal;
 	BIFF_LONG cstUnique;
 	BiffStructurePtrVector rgb;
 
-private:
+//-----------------------------
 	unsigned __int16 code_page_;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(cstTotal)
-		BO_ATTRIB_MARKUP_ATTRIB(cstUnique)
-		proc.markVector(rgb, XLUnicodeRichExtendedString(continue_records[rt_Continue]));
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgb, XLUnicodeRichExtendedString)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(cstTotal)
+		//BO_ATTRIB_MARKUP_ATTRIB(cstUnique)
+		//proc.markVector(rgb, XLUnicodeRichExtendedString(continue_records[rt_Continue]));
+		////BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgb, XLUnicodeRichExtendedString)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

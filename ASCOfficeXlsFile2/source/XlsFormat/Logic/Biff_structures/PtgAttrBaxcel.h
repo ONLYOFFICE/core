@@ -9,7 +9,7 @@ class CFRecord;
 
 class PtgAttrBaxcel : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgAttrBaxcel)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgAttrBaxcel)
 public:
 	BiffStructurePtr clone();
 

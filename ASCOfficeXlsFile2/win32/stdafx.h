@@ -35,13 +35,3 @@
 #include <atlcom.h>
 
 using namespace ATL;
-
-typedef void (*XlsOnProgressCallback)( LPVOID lpParam, long nID, long nPercent );
-typedef void (*XlsOnProgressExCallback)( LPVOID lpParam, long nID, long nPercent, short* Cancel );
-
-struct ProgressCallback
-{
-  XlsOnProgressCallback OnProgress;
-  XlsOnProgressExCallback OnProgressEx;
-  LPVOID caller;
-};

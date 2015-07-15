@@ -20,7 +20,7 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+//-----------------------------
 	LongRGB rgb;
 	BIFF_WORD lns;
 	BIFF_SHORT we;
@@ -29,15 +29,15 @@ private:
 	BIFF_BOOL fAutoCo;
 	IcvChart icv;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(rgb)
-		BO_ATTRIB_MARKUP_ATTRIB(lns)
-		BO_ATTRIB_MARKUP_ATTRIB(we)
-		BO_ATTRIB_MARKUP_ATTRIB(fAuto)
-		BO_ATTRIB_MARKUP_ATTRIB(fAxisOn)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoCo)
-		BO_ATTRIB_MARKUP_ATTRIB(icv)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_COMPLEX(rgb)
+		//BO_ATTRIB_MARKUP_ATTRIB(lns)
+		//BO_ATTRIB_MARKUP_ATTRIB(we)
+		//BO_ATTRIB_MARKUP_ATTRIB(fAuto)
+		//BO_ATTRIB_MARKUP_ATTRIB(fAxisOn)
+		//BO_ATTRIB_MARKUP_ATTRIB(fAutoCo)
+		//BO_ATTRIB_MARKUP_ATTRIB(icv)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -28,13 +28,9 @@ public:
 
 	virtual const bool loadContentRead(BinReaderProcessor& proc);
 
-	//virtual void toXML(MSXML2::IXMLDOMElementPtr own_tag);
-	//virtual void fromXML(MSXML2::IXMLDOMElementPtr own_tag);
-
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-	BO_ATTRIB_MARKUP_END
-
+	static const ElementType	type = typeCompositeObject;
+	
+	virtual ElementType get_type() { return type; }
 };
 
 // This class helps to process parenthesis in ABNF specification
@@ -45,8 +41,9 @@ public:
 
 	virtual const bool read(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory);
 
-private:
-	virtual BiffStructurePtr createElement() { return BiffStructurePtr();};
+	static const ElementType	type = typeABNFParenthesis;
+	
+
 };
 
 

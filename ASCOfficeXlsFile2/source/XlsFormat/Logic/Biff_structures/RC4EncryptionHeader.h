@@ -9,7 +9,7 @@ namespace CRYPTO
 
 class RC4EncryptionHeader : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(RC4EncryptionHeader)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(RC4EncryptionHeader)
 public:
 	XLS::BiffStructurePtr clone();
 

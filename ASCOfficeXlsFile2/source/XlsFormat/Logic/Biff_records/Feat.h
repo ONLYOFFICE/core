@@ -23,7 +23,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeFeat;
+
+//-----------------------------
 	SharedFeatureType isf;
 	BIFF_WORD cref;
 	BIFF_DWORD cbFeatData;
@@ -35,27 +38,27 @@ private:
 	FeatSmartTag smart_tag;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(isf)
-		BO_ATTRIB_MARKUP_ATTRIB(cref)
-		BO_ATTRIB_MARKUP_ATTRIB(sqref)
-		BO_ATTRIB_MARKUP_ATTRIB(cbFeatData)
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(refs, Ref8U)
-		switch(isf)
-		{
-			case SharedFeatureType::ISFPROTECTION:
-				BO_ATTRIB_MARKUP_COMPLEX(protection)
-				break;
-			case SharedFeatureType::ISFFEC2:
-				BO_ATTRIB_MARKUP_COMPLEX(formula_err)
-				break;
-			case SharedFeatureType::ISFFACTOID:
-				BO_ATTRIB_MARKUP_COMPLEX(smart_tag)
-				break;
-		}
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(isf)
+		//BO_ATTRIB_MARKUP_ATTRIB(cref)
+		//BO_ATTRIB_MARKUP_ATTRIB(sqref)
+		//BO_ATTRIB_MARKUP_ATTRIB(cbFeatData)
+		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(refs, Ref8U)
+		//switch(isf)
+		//{
+		//	case SharedFeatureType::ISFPROTECTION:
+		//		//BO_ATTRIB_MARKUP_COMPLEX(protection)
+		//		break;
+		//	case SharedFeatureType::ISFFEC2:
+		//		//BO_ATTRIB_MARKUP_COMPLEX(formula_err)
+		//		break;
+		//	case SharedFeatureType::ISFFACTOID:
+		//		//BO_ATTRIB_MARKUP_COMPLEX(smart_tag)
+		//		break;
+		//}
 
 
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -20,12 +20,15 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeDropDownObjIds;
+
+//-----------------------------
 	BiffStructurePtrVector rgidObj;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgidObj, DropDownObjId)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgidObj, DropDownObjId)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

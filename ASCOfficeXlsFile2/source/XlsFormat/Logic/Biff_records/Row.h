@@ -19,7 +19,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeRow;
+
+//-----------------------------
 	Rw rw;
 	BackwardOnlyParam<unsigned __int16> colMic;
 	BackwardOnlyParam<unsigned __int16> colMac;
@@ -37,24 +40,24 @@ private:
 	BIFF_BOOL fPhonetic;
 	BackwardOnlyParam<unsigned int> in_block_position;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(rw)
-		BO_ATTRIB_MARKUP_ATTRIB(colMic)
-		BO_ATTRIB_MARKUP_ATTRIB(colMac)
-		BO_ATTRIB_MARKUP_ATTRIB(miyRw)
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(rw)
+		//BO_ATTRIB_MARKUP_ATTRIB(colMic)
+		//BO_ATTRIB_MARKUP_ATTRIB(colMac)
+		//BO_ATTRIB_MARKUP_ATTRIB(miyRw)
 
-		BO_ATTRIB_MARKUP_ATTRIB(iOutLevel)
-		BO_ATTRIB_MARKUP_ATTRIB(fCollapsed)
-		BO_ATTRIB_MARKUP_ATTRIB(fDyZero)
-		BO_ATTRIB_MARKUP_ATTRIB(fUnsynced)
-		BO_ATTRIB_MARKUP_ATTRIB(fGhostDirty)
+		//BO_ATTRIB_MARKUP_ATTRIB(iOutLevel)
+		//BO_ATTRIB_MARKUP_ATTRIB(fCollapsed)
+		//BO_ATTRIB_MARKUP_ATTRIB(fDyZero)
+		//BO_ATTRIB_MARKUP_ATTRIB(fUnsynced)
+		//BO_ATTRIB_MARKUP_ATTRIB(fGhostDirty)
 
-		BO_ATTRIB_MARKUP_ATTRIB(ixfe_val)
-		BO_ATTRIB_MARKUP_ATTRIB(fExAsc)
-		BO_ATTRIB_MARKUP_ATTRIB(fExDes)
-		BO_ATTRIB_MARKUP_ATTRIB(fPhonetic)
-		BO_ATTRIB_MARKUP_ATTRIB(in_block_position)
-	BO_ATTRIB_MARKUP_END
+		//BO_ATTRIB_MARKUP_ATTRIB(ixfe_val)
+		//BO_ATTRIB_MARKUP_ATTRIB(fExAsc)
+		//BO_ATTRIB_MARKUP_ATTRIB(fExDes)
+		//BO_ATTRIB_MARKUP_ATTRIB(fPhonetic)
+		//BO_ATTRIB_MARKUP_ATTRIB(in_block_position)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

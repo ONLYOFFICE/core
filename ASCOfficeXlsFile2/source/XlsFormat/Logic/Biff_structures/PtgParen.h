@@ -9,7 +9,7 @@ class CFRecord;
 
 class PtgParen : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgParen)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgParen)
 public:
 	PtgParen();
 	BiffStructurePtr clone();

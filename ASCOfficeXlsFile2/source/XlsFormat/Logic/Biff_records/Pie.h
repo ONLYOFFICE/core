@@ -19,18 +19,21 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typePie;
+
+//-----------------------------
 	BIFF_WORD anStart;
 	BIFF_WORD pcDonut;
 	BIFF_BOOL fHasShadow;
 	BIFF_BOOL fShowLdrLines;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(anStart)
-		BO_ATTRIB_MARKUP_ATTRIB(pcDonut)
-		BO_ATTRIB_MARKUP_ATTRIB(fHasShadow)
-		BO_ATTRIB_MARKUP_ATTRIB(fShowLdrLines)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(anStart)
+		//BO_ATTRIB_MARKUP_ATTRIB(pcDonut)
+		//BO_ATTRIB_MARKUP_ATTRIB(fHasShadow)
+		//BO_ATTRIB_MARKUP_ATTRIB(fShowLdrLines)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -21,6 +21,8 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	static const ElementType	type = typeAutoFilter;
+
 	BIFF_WORD iEntry;
 	BIFF_BYTE wJoin;
 	BIFF_BYTE fSimple1;
@@ -37,34 +39,24 @@ public:
 	XLUnicodeStringNoCch str1;
 	XLUnicodeStringNoCch str2;
 
-private:
+//-----------------------------
 
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(iEntry)
-		BO_ATTRIB_MARKUP_ATTRIB(wJoin)
-		BO_ATTRIB_MARKUP_ATTRIB(fSimple1)
-		BO_ATTRIB_MARKUP_ATTRIB(fSimple2)
-		BO_ATTRIB_MARKUP_ATTRIB(fTopN)
-		BO_ATTRIB_MARKUP_ATTRIB(fTop)
-		BO_ATTRIB_MARKUP_ATTRIB(fPercent)
-		BO_ATTRIB_MARKUP_ATTRIB(wTopN)
 
-		if (!m_bAutoFilter12)
-		{
-			if (fSimple1)
-			{
-				BO_ATTRIB_MARKUP_ATTRIB(str1)
-				BO_ATTRIB_MARKUP_COMPLEX(doper1)
-			}
-			if (fSimple2)
-			{
-				BO_ATTRIB_MARKUP_ATTRIB(str2)
-				BO_ATTRIB_MARKUP_COMPLEX(doper2)
-			}			
-		}
-		
-	BO_ATTRIB_MARKUP_END
+
+		//if (!m_bAutoFilter12)
+		//{
+		//	if (fSimple1)
+		//	{
+		//		//BO_ATTRIB_MARKUP_ATTRIB(str1)
+		//		//BO_ATTRIB_MARKUP_COMPLEX(doper1)
+		//	}
+		//	if (fSimple2)
+		//	{
+		//		//BO_ATTRIB_MARKUP_ATTRIB(str2)
+		//		//BO_ATTRIB_MARKUP_COMPLEX(doper2)
+		//	}			
+		//}
+
 
 };
 

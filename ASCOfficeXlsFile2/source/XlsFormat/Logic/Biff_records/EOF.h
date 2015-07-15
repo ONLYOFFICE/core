@@ -21,8 +21,11 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
-	BO_ATTRIB_MARKUP_BEGIN
-	BO_ATTRIB_MARKUP_END
+	static const ElementType	type = typeEOF_T;
+
+
+	//BO_ATTRIB_MARKUP_BEGIN
+	//BO_ATTRIB_MARKUP_END
 };
 
 } // namespace XLS

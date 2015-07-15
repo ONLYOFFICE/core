@@ -14,7 +14,7 @@ namespace ODRAW
 
 class OfficeArtSplitMenuColorContainer : public OfficeArtRecord
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtSplitMenuColorContainer)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtSplitMenuColorContainer)
 public:
 	OfficeArtSplitMenuColorContainer();
 	XLS::BiffStructurePtr clone();

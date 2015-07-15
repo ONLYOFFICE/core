@@ -20,7 +20,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeTick;
+
+//-----------------------------
 	BIFF_BYTE tktMajor;
 	BIFF_BYTE tktMinor;
 	BIFF_BYTE tlt;
@@ -35,23 +38,6 @@ private:
 
 	Icv icv;
 	BIFF_WORD trot;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(tktMajor)
-		BO_ATTRIB_MARKUP_ATTRIB(tktMinor)
-		BO_ATTRIB_MARKUP_ATTRIB(tlt)
-		BO_ATTRIB_MARKUP_ATTRIB(wBkgMode)
-		BO_ATTRIB_MARKUP_COMPLEX(rgb)
-
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoCo)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoMode)
-		BO_ATTRIB_MARKUP_ATTRIB(rot)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoRot)
-		BO_ATTRIB_MARKUP_ATTRIB(iReadingOrder)
-
-		BO_ATTRIB_MARKUP_ATTRIB(icv)
-		BO_ATTRIB_MARKUP_ATTRIB(trot)
-	BO_ATTRIB_MARKUP_END
 
 };
 

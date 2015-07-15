@@ -9,7 +9,7 @@ class CFRecord;
 
 class ISSTInf : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ISSTInf)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ISSTInf)
 public:
 	BiffStructurePtr clone();
 

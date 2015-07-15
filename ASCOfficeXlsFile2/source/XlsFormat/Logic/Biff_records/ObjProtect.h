@@ -19,12 +19,15 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeObjProtect;
+
+//-----------------------------
 	Boolean<unsigned __int16> fLockObj;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fLockObj)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fLockObj)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

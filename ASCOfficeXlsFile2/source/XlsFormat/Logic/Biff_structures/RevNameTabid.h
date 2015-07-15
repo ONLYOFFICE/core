@@ -10,7 +10,7 @@ class CFRecord;
 
 class RevNameTabid : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(RevNameTabid)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(RevNameTabid)
 public:
 	RevNameTabid();
 	RevNameTabid(CFRecord& record);

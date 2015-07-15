@@ -18,6 +18,11 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	static const ElementType	type = typeFORMATTING;
+
+	BaseObjectPtr				m_Styles;
+	BaseObjectPtr				m_XFS;
+	std::vector<BaseObjectPtr>	m_Formats;
 };
 
 } // namespace XLS

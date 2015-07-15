@@ -21,18 +21,18 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
-private:
+//-----------------------------
 	virtual const bool isStartingRecord(CFRecord& record);
 	virtual const bool isEndingRecord(CFRecord& record);
 	virtual void useContinueRecords(CFRecord& record);
 
-private:
+//-----------------------------
 	ODRAW::OfficeArtDgContainer rgChildRec;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(rgChildRec)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_COMPLEX(rgChildRec)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

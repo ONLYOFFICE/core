@@ -21,14 +21,17 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typePhoneticInfo;
+
+//-----------------------------
 	Phs phs;
 	SqRef sqref;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(phs)
-		BO_ATTRIB_MARKUP_COMPLEX(sqref)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_COMPLEX(phs)
+		//BO_ATTRIB_MARKUP_COMPLEX(sqref)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

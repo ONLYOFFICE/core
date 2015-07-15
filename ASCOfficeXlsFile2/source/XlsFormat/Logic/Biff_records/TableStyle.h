@@ -20,19 +20,15 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeTableStyle;
+
+//-----------------------------
 	BIFF_BOOL fIsPivot;
 	BIFF_BOOL fIsTable;
 	BIFF_DWORD ctse;
 	LPWideStringNoCch rgchName;
 
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fIsPivot)
-		BO_ATTRIB_MARKUP_ATTRIB(fIsTable)
-		BO_ATTRIB_MARKUP_ATTRIB(ctse)
-		BO_ATTRIB_MARKUP_ATTRIB(rgchName)
-	BO_ATTRIB_MARKUP_END
 
 };
 

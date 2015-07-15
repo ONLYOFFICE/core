@@ -19,14 +19,17 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeChartFrtInfo;
+
+//-----------------------------
 	BIFF_BYTE verOriginator;
 	BIFF_BYTE verWriter;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(verOriginator)
-		BO_ATTRIB_MARKUP_ATTRIB(verWriter)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(verOriginator)
+		//BO_ATTRIB_MARKUP_ATTRIB(verWriter)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

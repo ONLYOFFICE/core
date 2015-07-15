@@ -20,9 +20,11 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	static const ElementType	type = typeContinueFrt12;
+
 public:
-	BO_ATTRIB_MARKUP_BEGIN		
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN		
+	//BO_ATTRIB_MARKUP_END
 };
 
 typedef boost::shared_ptr<ContinueFrt12> ContinueFrt12Ptr;

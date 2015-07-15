@@ -20,22 +20,25 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
+
+	static const ElementType	type = typeCondFmt;
+
 	const CellRef getLocation() const;
 
-private:
+//-----------------------------
 	BIFF_WORD ccf;
 	BIFF_BOOL fToughRecalc;
 	BIFF_WORD nID;
 	SqRefU sqref;
 	BIFF_BSTR refBound;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(ccf)
-		BO_ATTRIB_MARKUP_ATTRIB(fToughRecalc)
-		BO_ATTRIB_MARKUP_ATTRIB(nID)
-		BO_ATTRIB_MARKUP_ATTRIB(refBound)
-		BO_ATTRIB_MARKUP_COMPLEX(sqref)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(ccf)
+		//BO_ATTRIB_MARKUP_ATTRIB(fToughRecalc)
+		//BO_ATTRIB_MARKUP_ATTRIB(nID)
+		//BO_ATTRIB_MARKUP_ATTRIB(refBound)
+		//BO_ATTRIB_MARKUP_COMPLEX(sqref)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

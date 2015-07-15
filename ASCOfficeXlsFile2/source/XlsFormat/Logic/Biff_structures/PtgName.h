@@ -10,7 +10,7 @@ class CFRecord;
 
 class PtgName: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgName)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgName)
 public:
 	PtgName();
 	PtgName(const unsigned int index, const PtgDataType data_type_init);

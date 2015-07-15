@@ -21,32 +21,35 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeFeatHdr;
+
+//-----------------------------
 	BIFF_BOOL is_contained_in_Globals;
 	SharedFeatureType isf;
 	BIFF_DWORD cbHdrData;
 	EnhancedProtection protection;
 	OSHARED::PropertyBagStore prop;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(isf)
-		BO_ATTRIB_MARKUP_ATTRIB(cbHdrData)
-		if(cbHdrData)
-		{
-			switch(isf)
-			{
-			case SharedFeatureType::ISFPROTECTION:
-				BO_ATTRIB_MARKUP_COMPLEX(protection)
-				break;
-			case SharedFeatureType::ISFFACTOID:
-				if(is_contained_in_Globals)
-				{
-					BO_ATTRIB_MARKUP_COMPLEX(prop)
-				}
-				break;
-			}
-		}
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(isf)
+		//BO_ATTRIB_MARKUP_ATTRIB(cbHdrData)
+		//if(cbHdrData)
+		//{
+		//	switch(isf)
+		//	{
+		//	case SharedFeatureType::ISFPROTECTION:
+		//		//BO_ATTRIB_MARKUP_COMPLEX(protection)
+		//		break;
+		//	case SharedFeatureType::ISFFACTOID:
+		//		if(is_contained_in_Globals)
+		//		{
+		//			//BO_ATTRIB_MARKUP_COMPLEX(prop)
+		//		}
+		//		break;
+		//	}
+		//}
+	//BO_ATTRIB_MARKUP_END
 
 };
 

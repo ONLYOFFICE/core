@@ -11,7 +11,7 @@ class CFRecord;
 
 class DXFId : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(DXFId)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(DXFId)
 public:
 	DXFId();
 	DXFId(CFRecord& record);

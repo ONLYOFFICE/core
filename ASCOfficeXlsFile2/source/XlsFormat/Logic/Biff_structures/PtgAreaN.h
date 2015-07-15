@@ -10,7 +10,7 @@ class CFRecord;
 
 class PtgAreaN: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgAreaN)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgAreaN)
 public:
 	PtgAreaN(const CellRef cell_base_ref_init);
 	PtgAreaN(const std::wstring& word, const PtgDataType data_type, const CellRef cell_base_ref_init);

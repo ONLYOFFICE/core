@@ -9,7 +9,7 @@ class CFRecord;
 
 class PtgArray: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgArray)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgArray)
 public:
 	PtgArray();
 	PtgArray(const PtgDataType data_type);

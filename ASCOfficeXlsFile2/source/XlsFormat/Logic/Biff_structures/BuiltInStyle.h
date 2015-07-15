@@ -9,7 +9,7 @@ class CFRecord;
 //#pragma pack(1)
 class BuiltInStyle : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(BuiltInStyle)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(BuiltInStyle)
 public:
 	BiffStructurePtr clone();
 

@@ -19,7 +19,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeBar;
+
+//-----------------------------
 	BIFF_SHORT pcOverlap;
 	BIFF_WORD pcGap;
 
@@ -28,15 +31,15 @@ private:
 	BIFF_BOOL f100;
 	BIFF_BOOL fHasShadow;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(pcOverlap)
-		BO_ATTRIB_MARKUP_ATTRIB(pcGap)
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(pcOverlap)
+		//BO_ATTRIB_MARKUP_ATTRIB(pcGap)
 
-		BO_ATTRIB_MARKUP_ATTRIB(fTranspose)
-		BO_ATTRIB_MARKUP_ATTRIB(fStacked)
-		BO_ATTRIB_MARKUP_ATTRIB(f100)
-		BO_ATTRIB_MARKUP_ATTRIB(fHasShadow)
-	BO_ATTRIB_MARKUP_END
+		//BO_ATTRIB_MARKUP_ATTRIB(fTranspose)
+		//BO_ATTRIB_MARKUP_ATTRIB(fStacked)
+		//BO_ATTRIB_MARKUP_ATTRIB(f100)
+		//BO_ATTRIB_MARKUP_ATTRIB(fHasShadow)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

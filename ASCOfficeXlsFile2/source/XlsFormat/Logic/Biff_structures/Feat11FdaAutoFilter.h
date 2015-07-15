@@ -12,7 +12,7 @@ class CFRecord;
 
 class Feat11FdaAutoFilter : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(Feat11FdaAutoFilter)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Feat11FdaAutoFilter)
 public:
 	BiffStructurePtr clone();
 

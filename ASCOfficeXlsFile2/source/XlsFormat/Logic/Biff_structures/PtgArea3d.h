@@ -11,7 +11,7 @@ class CFRecord;
 
 class PtgArea3d: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgArea3d)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgArea3d)
 public:
 	PtgArea3d(const CellRef& cell_base_ref_init);
 	PtgArea3d(const unsigned __int16 ixti, const std::wstring& word, const PtgDataType data_type, const CellRef& cell_base_ref_init);

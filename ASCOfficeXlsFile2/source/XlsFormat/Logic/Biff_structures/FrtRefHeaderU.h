@@ -12,7 +12,7 @@ class CFRecord;
 
 class FrtRefHeaderU : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FrtRefHeaderU)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FrtRefHeaderU)
 public:
 	BiffStructurePtr clone();
 

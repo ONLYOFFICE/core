@@ -11,7 +11,7 @@ class CFRecord;
 
 class PictFmlaKey : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PictFmlaKey)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PictFmlaKey)
 public:
 	PictFmlaKey();
 	BiffStructurePtr clone();

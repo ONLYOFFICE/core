@@ -18,6 +18,7 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 	//virtual void toXML(MSXML2::IXMLDOMElementPtr own_tag);
+	static const ElementType	type = typeWorksheetSubstream;
 
 private:
 	size_t ws_index_;

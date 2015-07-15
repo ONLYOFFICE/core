@@ -20,7 +20,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeWindow2;
+
+//-----------------------------
 	BIFF_BOOL fDspFmlaRt;
 	BIFF_BOOL fDspGridRt;
 	BIFF_BOOL fDspRwColRt;
@@ -44,34 +47,27 @@ private:
 	BIFF_BSTR topLeftCell;
 
 
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		//todooo ????
-		//is_contained_in_chart_substream = L"ChartSheetSubstream" == proc.getParent()->tagName_;
-		BO_ATTRIB_MARKUP_ATTRIB(fSelected)
-		if(!is_contained_in_chart_substream)
-		{
-			BO_ATTRIB_MARKUP_ATTRIB(fDspFmlaRt)
-			BO_ATTRIB_MARKUP_ATTRIB(fDspGridRt)
-			BO_ATTRIB_MARKUP_ATTRIB(fDspRwColRt)
-			BO_ATTRIB_MARKUP_ATTRIB(fFrozenRt)
-			BO_ATTRIB_MARKUP_ATTRIB(fDspZerosRt)
-			BO_ATTRIB_MARKUP_ATTRIB(fDefaultHdr)
-			BO_ATTRIB_MARKUP_ATTRIB(fRightToLeft)
-			BO_ATTRIB_MARKUP_ATTRIB(fDspGuts)
-			BO_ATTRIB_MARKUP_ATTRIB(fFrozenNoSplit)
-			BO_ATTRIB_MARKUP_ATTRIB(fPaged)
-			BO_ATTRIB_MARKUP_ATTRIB(fSLV)
-
-// 			BO_ATTRIB_MARKUP_ATTRIB_NAME(rwTop.rw, L"rwTop")
-// 			BO_ATTRIB_MARKUP_ATTRIB_NAME(colLeft.col, L"colLeft")
-			BO_ATTRIB_MARKUP_ATTRIB(topLeftCell)
-			BO_ATTRIB_MARKUP_ATTRIB(icvHdr)
-			BO_ATTRIB_MARKUP_ATTRIB(wScaleSLV)
-			BO_ATTRIB_MARKUP_ATTRIB(wScaleNormal)
-		}
-
-	BO_ATTRIB_MARKUP_END
+//		if(!is_contained_in_chart_substream)
+//		{
+//			//BO_ATTRIB_MARKUP_ATTRIB(fDspFmlaRt)
+//			//BO_ATTRIB_MARKUP_ATTRIB(fDspGridRt)
+//			//BO_ATTRIB_MARKUP_ATTRIB(fDspRwColRt)
+//			//BO_ATTRIB_MARKUP_ATTRIB(fFrozenRt)
+//			//BO_ATTRIB_MARKUP_ATTRIB(fDspZerosRt)
+//			//BO_ATTRIB_MARKUP_ATTRIB(fDefaultHdr)
+//			//BO_ATTRIB_MARKUP_ATTRIB(fRightToLeft)
+//			//BO_ATTRIB_MARKUP_ATTRIB(fDspGuts)
+//			//BO_ATTRIB_MARKUP_ATTRIB(fFrozenNoSplit)
+//			//BO_ATTRIB_MARKUP_ATTRIB(fPaged)
+//			//BO_ATTRIB_MARKUP_ATTRIB(fSLV)
+//
+//// 			//BO_ATTRIB_MARKUP_ATTRIB_NAME(rwTop.rw, L"rwTop")
+//// 			//BO_ATTRIB_MARKUP_ATTRIB_NAME(colLeft.col, L"colLeft")
+//			//BO_ATTRIB_MARKUP_ATTRIB(topLeftCell)
+//			//BO_ATTRIB_MARKUP_ATTRIB(icvHdr)
+//			//BO_ATTRIB_MARKUP_ATTRIB(wScaleSLV)
+//			//BO_ATTRIB_MARKUP_ATTRIB(wScaleNormal)
+//		}
 
 };
 

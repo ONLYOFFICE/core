@@ -20,7 +20,9 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
-private:
+	static const ElementType	type = typeWsBool;
+
+//-----------------------------
 	BIFF_BOOL fShowAutoBreaks;
 	BIFF_BOOL fDialog;
 	BIFF_BOOL fApplyStyles;
@@ -32,28 +34,7 @@ private:
 	BIFF_BOOL fSyncVert;
 	BIFF_BOOL fAltExprEval;
 	BIFF_BOOL fAltFormulaEntry;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fShowAutoBreaks)
-		BO_ATTRIB_MARKUP_ATTRIB(fDialog)
-		BO_ATTRIB_MARKUP_ATTRIB(fApplyStyles)
-		BO_ATTRIB_MARKUP_ATTRIB(fRowSumsBelow)
-		BO_ATTRIB_MARKUP_ATTRIB(fColSumsRight)
-		BO_ATTRIB_MARKUP_ATTRIB(fFitToPage)
-		BO_ATTRIB_MARKUP_ATTRIB(fDspGuts)
-		BO_ATTRIB_MARKUP_ATTRIB(fSyncHoriz)
-		BO_ATTRIB_MARKUP_ATTRIB(fSyncVert)
-		BO_ATTRIB_MARKUP_ATTRIB(fAltExprEval)
-		BO_ATTRIB_MARKUP_ATTRIB(fAltFormulaEntry)
-/*
-		IXMLDOMElementPtr ss_node = XMLSTUFF::findElementAmongParents(proc.getParent(), "WorksheetSubstream");
-		if(ss_node)
-		{
-			ss_node->setAttribute(L"isDialog", _variant_t(fDialog)); // If find a way how to change the name, do it instead of setting an attribute
-		}
-*/
 
-	BO_ATTRIB_MARKUP_END
 
 };
 

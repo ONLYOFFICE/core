@@ -19,7 +19,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeDv;
+
+//-----------------------------
 	BIFF_BYTE valType;
 	BIFF_BYTE errStyle;
 	BIFF_BOOL fStrLookup;
@@ -38,25 +41,25 @@ private:
 	DVParsedFormula formula2;
 	SqRefU sqref;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(valType)
-		BO_ATTRIB_MARKUP_ATTRIB(errStyle)
-		BO_ATTRIB_MARKUP_ATTRIB(fStrLookup)
-		BO_ATTRIB_MARKUP_ATTRIB(fAllowBlank)
-		BO_ATTRIB_MARKUP_ATTRIB(fSuppressCombo)
-		BO_ATTRIB_MARKUP_ATTRIB(mdImeMode)
-		BO_ATTRIB_MARKUP_ATTRIB(fShowInputMsg)
-		BO_ATTRIB_MARKUP_ATTRIB(fShowErrorMsg)
-		BO_ATTRIB_MARKUP_ATTRIB(typOperator)
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(valType)
+		//BO_ATTRIB_MARKUP_ATTRIB(errStyle)
+		//BO_ATTRIB_MARKUP_ATTRIB(fStrLookup)
+		//BO_ATTRIB_MARKUP_ATTRIB(fAllowBlank)
+		//BO_ATTRIB_MARKUP_ATTRIB(fSuppressCombo)
+		//BO_ATTRIB_MARKUP_ATTRIB(mdImeMode)
+		//BO_ATTRIB_MARKUP_ATTRIB(fShowInputMsg)
+		//BO_ATTRIB_MARKUP_ATTRIB(fShowErrorMsg)
+		//BO_ATTRIB_MARKUP_ATTRIB(typOperator)
 
-		BO_ATTRIB_MARKUP_ATTRIB(PromptTitle)
-		BO_ATTRIB_MARKUP_ATTRIB(ErrorTitle)
-		BO_ATTRIB_MARKUP_ATTRIB(Prompt)
-		BO_ATTRIB_MARKUP_ATTRIB(Error)
-		BO_ATTRIB_MARKUP_COMPLEX(formula1)
-		BO_ATTRIB_MARKUP_COMPLEX(formula2)
-		BO_ATTRIB_MARKUP_COMPLEX(formula2)
-	BO_ATTRIB_MARKUP_END
+		//BO_ATTRIB_MARKUP_ATTRIB(PromptTitle)
+		//BO_ATTRIB_MARKUP_ATTRIB(ErrorTitle)
+		//BO_ATTRIB_MARKUP_ATTRIB(Prompt)
+		//BO_ATTRIB_MARKUP_ATTRIB(Error)
+		//BO_ATTRIB_MARKUP_COMPLEX(formula1)
+		//BO_ATTRIB_MARKUP_COMPLEX(formula2)
+		//BO_ATTRIB_MARKUP_COMPLEX(formula2)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

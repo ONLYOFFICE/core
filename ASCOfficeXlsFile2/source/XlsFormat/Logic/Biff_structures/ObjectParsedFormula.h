@@ -9,7 +9,7 @@ class CFRecord;
 
 class ObjectParsedFormula : public ParsedFormula
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ObjectParsedFormula)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ObjectParsedFormula)
 public:
 	ObjectParsedFormula();
 	BiffStructurePtr clone();

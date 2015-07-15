@@ -9,7 +9,7 @@ class CFRecord;
 
 class PtgInt: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgInt)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgInt)
 public:
 	PtgInt();
 	PtgInt(const std::wstring& word);

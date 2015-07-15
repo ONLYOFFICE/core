@@ -9,7 +9,7 @@ class CFRecord;
 
 class LongRGBA : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(LongRGBA)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(LongRGBA)
 public:
 	LongRGBA();
 	LongRGBA(const bool alpha_present);
@@ -34,7 +34,7 @@ private:
 
 class LongRGB : public LongRGBA
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(LongRGB)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(LongRGB)
 public:
 	LongRGB();
 	BiffStructurePtr clone();

@@ -21,7 +21,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeBookExt;
+
+//-----------------------------
 	BIFF_DWORD cb;
 	BIFF_BOOL fDontAutoRecover;
 	BIFF_BOOL fHidePivotList;
@@ -35,28 +38,15 @@ private:
 
 	BookExt_Conditional11 grbit1;
 	BookExt_Conditional12 grbit2;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(cb)
-		BO_ATTRIB_MARKUP_ATTRIB(fDontAutoRecover)
-		BO_ATTRIB_MARKUP_ATTRIB(fHidePivotList)
-		BO_ATTRIB_MARKUP_ATTRIB(fFilterPrivacy)
-		BO_ATTRIB_MARKUP_ATTRIB(fEmbedFactoids)
-		BO_ATTRIB_MARKUP_ATTRIB(mdFactoidDisplay)
-		BO_ATTRIB_MARKUP_ATTRIB(fSavedDuringRecovery)
-		BO_ATTRIB_MARKUP_ATTRIB(fCreatedViaMinimalSave)
-		BO_ATTRIB_MARKUP_ATTRIB(fOpenedViaDataRecovery)
-		BO_ATTRIB_MARKUP_ATTRIB(fOpenedViaSafeLoad)
 
-		if(cb > 20)
-		{
-			BO_ATTRIB_MARKUP_COMPLEX(grbit1)
-		}
-		if(cb > 21)
-		{
-			BO_ATTRIB_MARKUP_COMPLEX(grbit2)
-		}
-	BO_ATTRIB_MARKUP_END
+		//if(cb > 20)
+		//{
+		//	//BO_ATTRIB_MARKUP_COMPLEX(grbit1)
+		//}
+		//if(cb > 21)
+		//{
+		//	//BO_ATTRIB_MARKUP_COMPLEX(grbit2)
+		//}
 
 };
 

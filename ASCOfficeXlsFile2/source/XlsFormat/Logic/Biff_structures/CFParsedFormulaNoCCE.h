@@ -9,7 +9,7 @@ class CFRecord;
 
 class CFParsedFormulaNoCCE : public ParsedFormula
 {
-		BASE_OBJECT_DEFINE_CLASS_NAME(CFParsedFormulaNoCCE)
+		BASE_STRUCTURE_DEFINE_CLASS_NAME(CFParsedFormulaNoCCE)
 public:
 	CFParsedFormulaNoCCE(const CellRef& cell_base_ref_init);
 	BiffStructurePtr clone();

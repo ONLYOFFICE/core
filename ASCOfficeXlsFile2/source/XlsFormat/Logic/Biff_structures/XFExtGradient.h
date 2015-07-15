@@ -12,7 +12,7 @@ class CFRecord;
 //#pragma pack(1)
 class XFExtGradient : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(XFExtGradient)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(XFExtGradient)
 public:
 	BiffStructurePtr clone();
 

@@ -7,7 +7,7 @@ namespace XLS
 
 class CellRef : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(CellRef)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CellRef)
 public:
 
 	CellRef();

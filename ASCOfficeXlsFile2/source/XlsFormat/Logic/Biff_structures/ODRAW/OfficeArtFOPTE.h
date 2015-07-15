@@ -20,7 +20,7 @@ typedef boost::shared_ptr<OfficeArtFOPTE> OfficeArtFOPTEPtr;
 
 class OfficeArtFOPTE : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtFOPTE)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtFOPTE)
 public:
 	XLS::BiffStructurePtr clone();
 
@@ -46,7 +46,7 @@ public:
 
 class fillColor : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillColor)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillColor)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
@@ -58,7 +58,7 @@ public:
 
 class TextBooleanProperties : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(TextBooleanProperties)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(TextBooleanProperties)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
@@ -67,7 +67,7 @@ public:
 
 class lineColor : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(lineColor)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineColor)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
@@ -79,7 +79,7 @@ public:
 
 class fillType : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillType)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillType)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
@@ -100,7 +100,7 @@ public:
 
 class pib : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(pib)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(pib)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
@@ -111,7 +111,7 @@ public:
 
 class pictureId : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(pictureId)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(pictureId)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
@@ -121,7 +121,7 @@ public:
 
 class pictureRecolor : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(pictureRecolor)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(pictureRecolor)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
@@ -132,7 +132,7 @@ public:
 
 class fillOpacity : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillOpacity)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillOpacity)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
@@ -144,7 +144,7 @@ public:
 
 class fillBackColor : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillBackColor)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBackColor)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
@@ -156,7 +156,7 @@ public:
 
 class fillBackOpacity : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillBackOpacity)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBackOpacity)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
@@ -168,7 +168,7 @@ public:
 
 class fillCrMod : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillCrMod)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillCrMod)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
@@ -180,7 +180,7 @@ public:
 
 class fillWidth : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillWidth)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillWidth)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
@@ -193,7 +193,7 @@ public:
 
 class fillShadeType : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillShadeType)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillShadeType)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
@@ -201,7 +201,7 @@ public:
 
 class FillStyleBooleanProperties : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FillStyleBooleanProperties)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillStyleBooleanProperties)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
@@ -209,7 +209,7 @@ public:
 
 class fillBlip : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillBlip)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBlip)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
 	virtual void ReadComplexData(XLS::CFRecord& record);
@@ -220,7 +220,7 @@ private:
 
 class fillBlipName : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillBlipName)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBlipName)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 	virtual void ReadComplexData(XLS::CFRecord& record);
@@ -232,7 +232,7 @@ private:
 
 class fillBlipFlags : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillBlipFlags)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBlipFlags)
 public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
@@ -250,7 +250,7 @@ private:
 
 class fillHeight : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillHeight)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillHeight)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -260,7 +260,7 @@ public:
 
 class fillAngle : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillAngle)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillAngle)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -270,7 +270,7 @@ public:
 
 class fillFocus : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillFocus)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillFocus)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -280,7 +280,7 @@ public:
 
 class fillToLeft : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillToLeft)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillToLeft)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -290,7 +290,7 @@ public:
 
 class fillToTop : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillToTop)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillToTop)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -300,7 +300,7 @@ public:
 
 class fillToRight : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillToRight)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillToRight)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -310,7 +310,7 @@ public:
 
 class fillToBottom : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillToBottom)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillToBottom)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -320,7 +320,7 @@ public:
 
 class fillRectLeft : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillRectLeft)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillRectLeft)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -330,7 +330,7 @@ public:
 
 class fillRectTop : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillRectTop)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillRectTop)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -340,7 +340,7 @@ public:
 
 class fillRectRight : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillRectRight)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillRectRight)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -350,7 +350,7 @@ public:
 
 class fillRectBottom : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillRectBottom)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillRectBottom)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -360,7 +360,7 @@ public:
 
 class fillDztype : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillDztype)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillDztype)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -370,7 +370,7 @@ public:
 
 class fillShadePreset : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillShadePreset)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillShadePreset)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -380,7 +380,7 @@ public:
 
 class fillShadeColors : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillShadeColors)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillShadeColors)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 	virtual void ReadComplexData(XLS::CFRecord& record);
@@ -391,7 +391,7 @@ private:
 
 class fillShapeOriginX : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillShapeOriginX)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillShapeOriginX)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -401,7 +401,7 @@ public:
 
 class fillShapeOriginY : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillShapeOriginY)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillShapeOriginY)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -411,7 +411,7 @@ public:
 
 class fillOriginX : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillOriginX)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillOriginX)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -421,7 +421,7 @@ public:
 
 class fillOriginY : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillOriginY)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillOriginY)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -431,7 +431,7 @@ public:
 
 class fillColorExt : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillColorExt)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillColorExt)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -441,49 +441,49 @@ public:
 
 class reserved415 : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(reserved415)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved415)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag){}
 };
 
 class reserved417 : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(reserved417)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved417)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag){}
 };
 
 class reserved419 : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(reserved419)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved419)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag){}
 };
 
 class reserved421 : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(reserved421)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved421)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag){}
 };
 
 class reserved422 : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(reserved422)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved422)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag){}
 };
 
 class reserved423 : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(reserved423)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved423)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag){}
 };
 
 class fillBackColorExt : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillBackColorExt)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBackColorExt)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -493,7 +493,7 @@ public:
 
 class fillColorExtMod : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillColorExtMod)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillColorExtMod)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -503,7 +503,7 @@ public:
 
 class fillBackColorExtMod : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(fillBackColorExtMod)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBackColorExtMod)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -513,28 +513,28 @@ public:
 
 class ProtectionBooleanProperties : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ProtectionBooleanProperties)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ProtectionBooleanProperties)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 };
 
 class LineStyleBooleanProperties : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(LineStyleBooleanProperties)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(LineStyleBooleanProperties)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 };
 
 class ShadowStyleBooleanProperties : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ShadowStyleBooleanProperties)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ShadowStyleBooleanProperties)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 };
 
 class lineWidth : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(lineWidth)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineWidth)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -544,7 +544,7 @@ public:
 
 class lineMiterLimit : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(lineMiterLimit)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineMiterLimit)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -554,7 +554,7 @@ public:
 
 class lineDashing : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(lineDashing)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineDashing)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{
@@ -564,7 +564,7 @@ public:
 
 class lineStyle : public OfficeArtFOPTE
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(lineStyle)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineStyle)
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 	//{

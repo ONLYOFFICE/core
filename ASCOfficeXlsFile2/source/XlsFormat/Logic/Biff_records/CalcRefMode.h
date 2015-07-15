@@ -19,12 +19,15 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeCalcRefMode;
+
+//-----------------------------
 	BIFF_BSTR fRefA1;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fRefA1)
-	BO_ATTRIB_MARKUP_END
+
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fRefA1)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

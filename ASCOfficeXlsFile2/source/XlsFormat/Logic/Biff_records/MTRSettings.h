@@ -19,16 +19,16 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+//-----------------------------
 	Boolean<unsigned int> fMTREnabled;
 	Boolean<unsigned int> fUserSetThreadCount;
 	BIFF_DWORD cUserThreadCount;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fMTREnabled)
-		BO_ATTRIB_MARKUP_ATTRIB(fUserSetThreadCount)
-		BO_ATTRIB_MARKUP_ATTRIB(cUserThreadCount)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fMTREnabled)
+		//BO_ATTRIB_MARKUP_ATTRIB(fUserSetThreadCount)
+		//BO_ATTRIB_MARKUP_ATTRIB(cUserThreadCount)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

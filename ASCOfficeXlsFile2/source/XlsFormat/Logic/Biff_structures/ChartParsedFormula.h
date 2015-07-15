@@ -9,7 +9,7 @@ class CFRecord;
 
 class ChartParsedFormula : public ParsedFormula
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ChartParsedFormula)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ChartParsedFormula)
 public:
 	ChartParsedFormula();
 

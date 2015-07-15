@@ -20,7 +20,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeSort;
+
+//-----------------------------
 
 	BIFF_BOOL fCol;
 	BIFF_BOOL fKey1Dsc;
@@ -35,19 +38,19 @@ private:
 	XLUnicodeStringNoCch stKey3;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fCol)
-		BO_ATTRIB_MARKUP_ATTRIB(fKey1Dsc)
-		BO_ATTRIB_MARKUP_ATTRIB(fKey2Dsc)
-		BO_ATTRIB_MARKUP_ATTRIB(fKey3Dsc)
-		BO_ATTRIB_MARKUP_ATTRIB(fCaseSensitive)
-		BO_ATTRIB_MARKUP_ATTRIB(iOrder)
-		BO_ATTRIB_MARKUP_ATTRIB(fAltMethod)
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fCol)
+		//BO_ATTRIB_MARKUP_ATTRIB(fKey1Dsc)
+		//BO_ATTRIB_MARKUP_ATTRIB(fKey2Dsc)
+		//BO_ATTRIB_MARKUP_ATTRIB(fKey3Dsc)
+		//BO_ATTRIB_MARKUP_ATTRIB(fCaseSensitive)
+		//BO_ATTRIB_MARKUP_ATTRIB(iOrder)
+		//BO_ATTRIB_MARKUP_ATTRIB(fAltMethod)
 
-		BO_ATTRIB_MARKUP_ATTRIB(stKey1)
-		BO_ATTRIB_MARKUP_ATTRIB(stKey2)
-		BO_ATTRIB_MARKUP_ATTRIB(stKey3)
-	BO_ATTRIB_MARKUP_END
+		//BO_ATTRIB_MARKUP_ATTRIB(stKey1)
+		//BO_ATTRIB_MARKUP_ATTRIB(stKey2)
+		//BO_ATTRIB_MARKUP_ATTRIB(stKey3)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

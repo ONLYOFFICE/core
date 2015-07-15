@@ -13,7 +13,7 @@ namespace ODRAW
 
 class OfficeArtDgContainer : public OfficeArtContainer
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtDgContainer)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtDgContainer)
 public:
 	XLS::BiffStructurePtr clone();
 	OfficeArtDgContainer(const OfficeArtClientAnchorType anchor_type);

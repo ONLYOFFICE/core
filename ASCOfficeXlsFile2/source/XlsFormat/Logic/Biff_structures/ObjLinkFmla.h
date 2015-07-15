@@ -10,7 +10,7 @@ class CFRecord;
 
 class ObjLinkFmla : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ObjLinkFmla)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ObjLinkFmla)
 public:
 	ObjLinkFmla();
 	BiffStructurePtr clone();

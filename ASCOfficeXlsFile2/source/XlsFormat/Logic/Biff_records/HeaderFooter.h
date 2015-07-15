@@ -20,7 +20,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeHeaderFooter;
+
+//-----------------------------
 	BIFF_BSTR guidSView;
 	BIFF_BOOL fHFDiffOddEven;
 	BIFF_BOOL fHFDiffFirst;
@@ -36,21 +39,21 @@ private:
 	XLUnicodeString strFooterFirst;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(guidSView)
-		BO_ATTRIB_MARKUP_ATTRIB(fHFDiffOddEven)
-		BO_ATTRIB_MARKUP_ATTRIB(fHFDiffFirst)
-		BO_ATTRIB_MARKUP_ATTRIB(fHFScaleWithDoc)
-		BO_ATTRIB_MARKUP_ATTRIB(fHFAlignMargins)
-// 		BO_ATTRIB_MARKUP_ATTRIB(cchHeaderEven)
-// 		BO_ATTRIB_MARKUP_ATTRIB(cchFooterEven)
-// 		BO_ATTRIB_MARKUP_ATTRIB(cchHeaderFirst)
-// 		BO_ATTRIB_MARKUP_ATTRIB(cchFooterFirst)
-		BO_ATTRIB_MARKUP_ATTRIB(strHeaderEven)
-		BO_ATTRIB_MARKUP_ATTRIB(strFooterEven)
-		BO_ATTRIB_MARKUP_ATTRIB(strHeaderFirst)
-		BO_ATTRIB_MARKUP_ATTRIB(strFooterFirst)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(guidSView)
+		//BO_ATTRIB_MARKUP_ATTRIB(fHFDiffOddEven)
+		//BO_ATTRIB_MARKUP_ATTRIB(fHFDiffFirst)
+		//BO_ATTRIB_MARKUP_ATTRIB(fHFScaleWithDoc)
+		//BO_ATTRIB_MARKUP_ATTRIB(fHFAlignMargins)
+// 		//BO_ATTRIB_MARKUP_ATTRIB(cchHeaderEven)
+// 		//BO_ATTRIB_MARKUP_ATTRIB(cchFooterEven)
+// 		//BO_ATTRIB_MARKUP_ATTRIB(cchHeaderFirst)
+// 		//BO_ATTRIB_MARKUP_ATTRIB(cchFooterFirst)
+		//BO_ATTRIB_MARKUP_ATTRIB(strHeaderEven)
+		//BO_ATTRIB_MARKUP_ATTRIB(strFooterEven)
+		//BO_ATTRIB_MARKUP_ATTRIB(strHeaderFirst)
+		//BO_ATTRIB_MARKUP_ATTRIB(strFooterFirst)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -10,7 +10,7 @@ class CellRef;
 
 class ExtNameParsedFormula : public ParsedFormula
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ExtNameParsedFormula)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ExtNameParsedFormula)
 public:
 	ExtNameParsedFormula();
 	BiffStructurePtr clone();

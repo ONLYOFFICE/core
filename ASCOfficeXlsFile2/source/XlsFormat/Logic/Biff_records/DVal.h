@@ -19,7 +19,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeDVal;
+
+//-----------------------------
 	BIFF_BOOL fWnClosed;
 	BIFF_DWORD xLeft;
 	BIFF_DWORD yTop;
@@ -27,13 +30,13 @@ private:
 	BIFF_DWORD idvMac;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fWnClosed)
-		BO_ATTRIB_MARKUP_ATTRIB(xLeft)
-		BO_ATTRIB_MARKUP_ATTRIB(yTop)
-		BO_ATTRIB_MARKUP_ATTRIB(idObj)
-		BO_ATTRIB_MARKUP_ATTRIB(idvMac)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fWnClosed)
+		//BO_ATTRIB_MARKUP_ATTRIB(xLeft)
+		//BO_ATTRIB_MARKUP_ATTRIB(yTop)
+		//BO_ATTRIB_MARKUP_ATTRIB(idObj)
+		//BO_ATTRIB_MARKUP_ATTRIB(idvMac)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

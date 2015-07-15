@@ -10,7 +10,7 @@ class CFRecord;
 
 class URLMoniker : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(URLMoniker)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(URLMoniker)
 public:
 	URLMoniker();
 	URLMoniker(XLS::CFRecord& record);

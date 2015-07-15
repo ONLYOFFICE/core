@@ -20,18 +20,21 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType type = typeLRng;
+
+//-----------------------------
 	BIFF_WORD crefRw;
 	BiffStructurePtrVector refRow;
 	BIFF_WORD crefCol;
 	BiffStructurePtrVector refCol;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(crefRw)
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(refRow, Ref8U)
-		BO_ATTRIB_MARKUP_ATTRIB(crefCol)
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(refCol, Ref8U)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(crefRw)
+		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(refRow, Ref8U)
+		//BO_ATTRIB_MARKUP_ATTRIB(crefCol)
+		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(refCol, Ref8U)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

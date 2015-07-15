@@ -10,7 +10,7 @@ class CFRecord;
 
 class FeatFormulaErr2 : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FeatFormulaErr2)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FeatFormulaErr2)
 public:
 	FeatFormulaErr2();
 	FeatFormulaErr2(CFRecord& record);

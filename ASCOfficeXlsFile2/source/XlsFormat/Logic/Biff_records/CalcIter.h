@@ -19,12 +19,11 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeCalcIter;
+
+//-----------------------------
 	Boolean<unsigned __int16> vfIter;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(vfIter)
-	BO_ATTRIB_MARKUP_END
 
 };
 

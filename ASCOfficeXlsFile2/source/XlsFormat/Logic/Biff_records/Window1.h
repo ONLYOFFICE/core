@@ -19,7 +19,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeWindow1;
+
+//-----------------------------
 	BIFF_SHORT xWn;
 	BIFF_SHORT yWn;
 	BIFF_SHORT dxWn;
@@ -35,24 +38,6 @@ private:
 	BIFF_WORD itabFirst;
 	BIFF_WORD ctabSel;
 	BIFF_WORD wTabRatio;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(xWn)
-		BO_ATTRIB_MARKUP_ATTRIB(yWn)
-		BO_ATTRIB_MARKUP_ATTRIB(dxWn)
-		BO_ATTRIB_MARKUP_ATTRIB(dyWn)
-		BO_ATTRIB_MARKUP_ATTRIB(fHidden)
-		BO_ATTRIB_MARKUP_ATTRIB(fIconic)
-		BO_ATTRIB_MARKUP_ATTRIB(fVeryHidden)
-		BO_ATTRIB_MARKUP_ATTRIB(fDspHScroll)
-		BO_ATTRIB_MARKUP_ATTRIB(fDspVScroll)
-		BO_ATTRIB_MARKUP_ATTRIB(fBotAdornment)
-		BO_ATTRIB_MARKUP_ATTRIB(fNoAFDateGroup)
-		BO_ATTRIB_MARKUP_ATTRIB(itabCur)
-		BO_ATTRIB_MARKUP_ATTRIB(itabFirst)
-		BO_ATTRIB_MARKUP_ATTRIB(ctabSel)
-		BO_ATTRIB_MARKUP_ATTRIB(wTabRatio)
-	BO_ATTRIB_MARKUP_END
 
 };
 

@@ -20,12 +20,15 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeFnGroupName;
+
+//-----------------------------
 	XLUnicodeString rgch;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-	BO_ATTRIB_MARKUP_ATTRIB(rgch)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+	//BO_ATTRIB_MARKUP_ATTRIB(rgch)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -20,19 +20,22 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeChart;
+
+//-----------------------------
 	OSHARED::FixedPoint x;
 	OSHARED::FixedPoint y;
 	OSHARED::FixedPoint dx;
 	OSHARED::FixedPoint dy;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(x)
-		BO_ATTRIB_MARKUP_ATTRIB(y)
-		BO_ATTRIB_MARKUP_ATTRIB(dx)
-		BO_ATTRIB_MARKUP_ATTRIB(dy)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(x)
+		//BO_ATTRIB_MARKUP_ATTRIB(y)
+		//BO_ATTRIB_MARKUP_ATTRIB(dx)
+		//BO_ATTRIB_MARKUP_ATTRIB(dy)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

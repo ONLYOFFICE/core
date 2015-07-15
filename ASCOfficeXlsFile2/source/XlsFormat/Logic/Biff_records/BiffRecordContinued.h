@@ -16,7 +16,7 @@ protected:
 	typedef std::map<CFRecordType::TypeId, std::list<CFRecordPtr> > ContinuesMap;
 	ContinuesMap continue_records; // All records must be removed from the list that means they are processed
 
-private:
+//-----------------------------
 	virtual void readFollowingContinue(CFStreamCacheReader& reader);
 	virtual void writeCreatedContinueRecords(CFStreamCacheWriter& writer);
 

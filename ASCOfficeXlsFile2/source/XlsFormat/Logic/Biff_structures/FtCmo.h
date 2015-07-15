@@ -9,7 +9,7 @@ class CFRecord;
 
 class FtCmo : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FtCmo)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtCmo)
 public:
 	BiffStructurePtr clone();
 

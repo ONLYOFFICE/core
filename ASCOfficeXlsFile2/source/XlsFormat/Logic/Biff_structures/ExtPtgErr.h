@@ -10,7 +10,7 @@ class CFRecord;
 
 class ExtPtgErr : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ExtPtgErr)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ExtPtgErr)
 public:
 	BiffStructurePtr clone();
 

@@ -22,15 +22,18 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	static const ElementType	type = typeCondFmt12;
+
+
 	const CellRef getLocation() const;
-private:
+//-----------------------------
 	FrtRefHeaderU frtRefHeaderU;
 	CondFmtStructure mainCF;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(frtRefHeaderU)
-		BO_ATTRIB_MARKUP_COMPLEX(mainCF)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_COMPLEX(frtRefHeaderU)
+		//BO_ATTRIB_MARKUP_COMPLEX(mainCF)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

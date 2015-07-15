@@ -12,7 +12,7 @@ namespace ODRAW
 
 class OfficeArtCOLORREF : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtCOLORREF)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtCOLORREF)
 public:
 	OfficeArtCOLORREF();
 	OfficeArtCOLORREF(const long raw_data);

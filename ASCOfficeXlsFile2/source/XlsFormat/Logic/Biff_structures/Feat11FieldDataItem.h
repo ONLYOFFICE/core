@@ -12,7 +12,7 @@ class CFRecord;
 
 class Feat11FieldDataItem : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(Feat11FieldDataItem)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Feat11FieldDataItem)
 public:
 	BiffStructurePtr clone();
 

@@ -11,7 +11,7 @@ class CFRecord;
 
 class RevNamePly : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(RevNamePly)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(RevNamePly)
 public:
 	RevNamePly();
 	RevNamePly(CFRecord& record);

@@ -10,7 +10,7 @@ class CFRecord;
 
 class DropDownObjId : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(DropDownObjId)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(DropDownObjId)
 public:
 	BiffStructurePtr clone();
 

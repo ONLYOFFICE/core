@@ -19,16 +19,19 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeCatLab;
+
+//-----------------------------
 	BIFF_WORD wOffset;
 	BIFF_WORD at;
 	BIFF_BOOL cAutoCatLabelReal;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(wOffset)
-		BO_ATTRIB_MARKUP_ATTRIB(at)
-		BO_ATTRIB_MARKUP_ATTRIB(cAutoCatLabelReal)
-	BO_ATTRIB_MARKUP_END
+
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(wOffset)
+		//BO_ATTRIB_MARKUP_ATTRIB(at)
+		//BO_ATTRIB_MARKUP_ATTRIB(cAutoCatLabelReal)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

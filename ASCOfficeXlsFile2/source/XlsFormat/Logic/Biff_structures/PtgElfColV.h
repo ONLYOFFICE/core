@@ -9,7 +9,7 @@ class CFRecord;
 
 class PtgElfColV: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgElfColV)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgElfColV)
 public:
 	BiffStructurePtr clone();
 

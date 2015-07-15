@@ -19,17 +19,20 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeHFPicture;
+
+//-----------------------------
 	BIFF_BOOL fIsDrawing;
 	BIFF_BOOL fIsDrawingGroup;
 	BIFF_BOOL fContinue;
 	//OfficeArtDgContainer rgDrawing;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fIsDrawing)
-		BO_ATTRIB_MARKUP_ATTRIB(fIsDrawingGroup)
-		BO_ATTRIB_MARKUP_ATTRIB(fContinue)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fIsDrawing)
+		//BO_ATTRIB_MARKUP_ATTRIB(fIsDrawingGroup)
+		//BO_ATTRIB_MARKUP_ATTRIB(fContinue)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

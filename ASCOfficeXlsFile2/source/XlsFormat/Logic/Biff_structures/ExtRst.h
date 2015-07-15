@@ -12,7 +12,7 @@ class CFRecord;
 
 class ExtRst : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ExtRst)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ExtRst)
 public:
 	BiffStructurePtr clone();
 

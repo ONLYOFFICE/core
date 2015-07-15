@@ -11,7 +11,7 @@ class CFRecord;
 
 class SheetExtOptional : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(SheetExtOptional)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SheetExtOptional)
 public:
 	SheetExtOptional();
 	SheetExtOptional(CFRecord& record);

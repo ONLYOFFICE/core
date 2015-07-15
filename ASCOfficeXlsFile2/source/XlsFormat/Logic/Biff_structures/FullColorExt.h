@@ -9,7 +9,7 @@ class CFRecord;
 
 class FullColorExt : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FullColorExt)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FullColorExt)
 public:
 	BiffStructurePtr clone();
 

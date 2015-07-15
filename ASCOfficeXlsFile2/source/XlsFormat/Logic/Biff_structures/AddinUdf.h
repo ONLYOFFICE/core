@@ -10,7 +10,7 @@ class CFRecord;
 
 class AddinUdf : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(AddinUdf)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(AddinUdf)
 public:
 	BiffStructurePtr clone();
 

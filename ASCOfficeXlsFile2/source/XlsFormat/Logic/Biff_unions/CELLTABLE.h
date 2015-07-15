@@ -19,6 +19,7 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	static const ElementType	type = typeCELLTABLE;
 private:
 	std::vector<CellRef>& shared_formulas_locations_ref_;
 };

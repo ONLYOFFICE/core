@@ -25,7 +25,9 @@ public:
 
 	void set_code_page(const unsigned __int16 code_page);
 
-private:
+	static const ElementType	type = typeWorkbookStreamObject;
+	
+
 	unsigned __int16 code_page_;
 };
 

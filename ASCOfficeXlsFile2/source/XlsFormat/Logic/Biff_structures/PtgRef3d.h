@@ -10,7 +10,7 @@ class CFRecord;
 
 class PtgRef3d: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgRef3d)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgRef3d)
 public:
 	PtgRef3d(const CellRef& cell_base_ref_init);
 	PtgRef3d(const unsigned __int16 ixti, const std::wstring& word, const PtgDataType data_type, const CellRef& cell_base_ref_init);

@@ -10,7 +10,7 @@ class CFRecord;
 
 class PtgRef: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgRef)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgRef)
 public:
 	PtgRef();
 	PtgRef(const std::wstring& word, const PtgDataType data_type);

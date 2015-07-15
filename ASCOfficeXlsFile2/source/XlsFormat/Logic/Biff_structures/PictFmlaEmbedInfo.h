@@ -10,7 +10,7 @@ class CFRecord;
 
 class PictFmlaEmbedInfo : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PictFmlaEmbedInfo)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PictFmlaEmbedInfo)
 public:
 	BiffStructurePtr clone();
 

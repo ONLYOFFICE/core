@@ -11,7 +11,7 @@ class CFRecord;
 
 class XFProp : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(XFProp)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(XFProp)
 public:
 	BiffStructurePtr clone();
 

@@ -9,7 +9,7 @@ class CFRecord;
 
 class DVParsedFormula : public ParsedFormula
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(DVParsedFormula)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(DVParsedFormula)
 public:
 	DVParsedFormula();
 	BiffStructurePtr clone();

@@ -20,7 +20,9 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-private:
+	static const ElementType	type = typeGlobalsSubstream;
+	
+	
 	unsigned __int16 code_page_;
 };
 

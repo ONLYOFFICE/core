@@ -9,7 +9,7 @@ class CFRecord;
 
 class CFParsedFormula : public ParsedFormula
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(CFParsedFormula)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFParsedFormula)
 public:
 	CFParsedFormula(const CellRef& cell_base_ref);
 	BiffStructurePtr clone();

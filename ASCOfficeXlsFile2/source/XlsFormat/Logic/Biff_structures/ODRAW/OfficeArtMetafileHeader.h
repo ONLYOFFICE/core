@@ -14,7 +14,7 @@ namespace ODRAW
 
 class OfficeArtMetafileHeader : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtMetafileHeader)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtMetafileHeader)
 public:
 	XLS::BiffStructurePtr clone();
 

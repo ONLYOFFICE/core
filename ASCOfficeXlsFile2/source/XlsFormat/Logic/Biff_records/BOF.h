@@ -22,6 +22,8 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	static const ElementType	type = typeBOF;
+
 	unsigned __int16 getSubstreamType();
 
 	typedef enum
@@ -34,9 +36,8 @@ public:
 		st_Macro = 0x040
 	} SubstreamType;
 
-//	MSXML2::IXMLDOMElementPtr createElement(const std::string& substream_name);
 
-private:
+//-----------------------------
 	BIFF_WORD vers;
 	BIFF_WORD dt;
 	BIFF_WORD rupBuild;
@@ -56,30 +57,6 @@ private:
 	BIFF_BYTE verLastXLSaved;
 	ForwardOnlyParam<unsigned int> stream_ptr;
 	
-
-public:
-	
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(vers)
-		BO_ATTRIB_MARKUP_ATTRIB(dt)
-		BO_ATTRIB_MARKUP_ATTRIB(rupBuild)
-		BO_ATTRIB_MARKUP_ATTRIB(rupYear)
-		BO_ATTRIB_MARKUP_ATTRIB(fWin)
-		BO_ATTRIB_MARKUP_ATTRIB(fRisc)
-		BO_ATTRIB_MARKUP_ATTRIB(fBeta)
-		BO_ATTRIB_MARKUP_ATTRIB(fWinAny)
-		BO_ATTRIB_MARKUP_ATTRIB(fMacAny)
-		BO_ATTRIB_MARKUP_ATTRIB(fBetaAny)
-		BO_ATTRIB_MARKUP_ATTRIB(fRiscAny)
-		BO_ATTRIB_MARKUP_ATTRIB(fOOM)
-		BO_ATTRIB_MARKUP_ATTRIB(fGlJmp)
-		BO_ATTRIB_MARKUP_ATTRIB(fFontLimit)
-		BO_ATTRIB_MARKUP_ATTRIB(verXLHigh)
-		BO_ATTRIB_MARKUP_ATTRIB(verLowestBiff)
-		BO_ATTRIB_MARKUP_ATTRIB(verLastXLSaved)
-		BO_ATTRIB_MARKUP_ATTRIB(stream_ptr)
-	BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

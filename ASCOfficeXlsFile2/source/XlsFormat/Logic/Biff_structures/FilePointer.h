@@ -9,7 +9,7 @@ class CFRecord;
 
 class FilePointer : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FilePointer)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FilePointer)
 public:
 	FilePointer();
 	FilePointer(const unsigned int ptr);

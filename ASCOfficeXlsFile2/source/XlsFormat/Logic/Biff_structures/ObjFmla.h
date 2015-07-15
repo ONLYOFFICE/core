@@ -11,7 +11,7 @@ class CFRecord;
 
 class ObjFmla : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ObjFmla)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ObjFmla)
 public:
 	ObjFmla(const bool is_part_of_FtPictFmla);
 	BiffStructurePtr clone();

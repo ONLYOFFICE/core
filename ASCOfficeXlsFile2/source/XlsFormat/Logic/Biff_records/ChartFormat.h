@@ -19,14 +19,17 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeChartFormat;
+
+//-----------------------------
 	BIFF_BOOL fVaried;
 	BIFF_WORD icrt;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fVaried)
-		BO_ATTRIB_MARKUP_ATTRIB(icrt)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fVaried)
+		//BO_ATTRIB_MARKUP_ATTRIB(icrt)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -20,7 +20,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeTable;
+
+//-----------------------------
 	Ref ref_;
 
 	BIFF_BOOL fAlwaysCalc;
@@ -32,21 +35,10 @@ private:
 	BIFF_BSTR r1;
 	BIFF_BSTR r2;
 
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(ref_)
-		BO_ATTRIB_MARKUP_ATTRIB(fAlwaysCalc)
-		BO_ATTRIB_MARKUP_ATTRIB(fRw)
-		BO_ATTRIB_MARKUP_ATTRIB(fTbl2)
-		BO_ATTRIB_MARKUP_ATTRIB(fDeleted1)
-		BO_ATTRIB_MARKUP_ATTRIB(fDeleted2)
-		BO_ATTRIB_MARKUP_ATTRIB(r1)
-		if(fTbl2)
-		{
-			BO_ATTRIB_MARKUP_ATTRIB(r2)
-		}
-	BO_ATTRIB_MARKUP_END
-
+		//if(fTbl2)
+		//{
+		//	//BO_ATTRIB_MARKUP_ATTRIB(r2)
+		//}
 };
 
 } // namespace XLS

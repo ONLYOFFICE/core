@@ -19,16 +19,13 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeTableStyles;
+
+//-----------------------------
 	BIFF_DWORD cts;
 	LPWideStringNoCch rgchDefTableStyle;
 	LPWideStringNoCch rgchDefPivotStyle;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(cts)
-		BO_ATTRIB_MARKUP_ATTRIB(rgchDefTableStyle)
-		BO_ATTRIB_MARKUP_ATTRIB(rgchDefPivotStyle)
-	BO_ATTRIB_MARKUP_END
 
 };
 

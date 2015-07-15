@@ -7,7 +7,7 @@ namespace XLS
 
 class PtgMissArg: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgMissArg)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgMissArg)
 public:
 	PtgMissArg();
 	BiffStructurePtr clone();

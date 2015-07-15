@@ -9,7 +9,7 @@ class CFRecord;
 
 class MDXStrIndex : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(MDXStrIndex)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(MDXStrIndex)
 public:
 	BiffStructurePtr clone();
 

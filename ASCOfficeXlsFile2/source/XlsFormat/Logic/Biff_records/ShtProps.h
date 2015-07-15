@@ -19,20 +19,23 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+	
+	static const ElementType	type = typeShtProps;
+
+//-----------------------------
 	BIFF_BOOL fManSerAlloc;
 	BIFF_BOOL fPlotVisOnly;
 	BIFF_BOOL fNotSizeWith;
 	BIFF_BOOL fAlwaysAutoPlotArea;
 	BIFF_BYTE mdBlank;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fManSerAlloc)
-		BO_ATTRIB_MARKUP_ATTRIB(fPlotVisOnly)
-		BO_ATTRIB_MARKUP_ATTRIB(fNotSizeWith)
-		BO_ATTRIB_MARKUP_ATTRIB(fAlwaysAutoPlotArea)
-		BO_ATTRIB_MARKUP_ATTRIB(mdBlank)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fManSerAlloc)
+		//BO_ATTRIB_MARKUP_ATTRIB(fPlotVisOnly)
+		//BO_ATTRIB_MARKUP_ATTRIB(fNotSizeWith)
+		//BO_ATTRIB_MARKUP_ATTRIB(fAlwaysAutoPlotArea)
+		//BO_ATTRIB_MARKUP_ATTRIB(mdBlank)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

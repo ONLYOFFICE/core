@@ -8,29 +8,16 @@ namespace XLS
 
 class BiffAttribute : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(BiffAttribute)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(BiffAttribute)
 public:
 	BiffAttribute() {};
 	BiffAttribute(const std::wstring  name_init) : attrib_name(name_init) {};
-	//virtual void toXML(BiffStructurePtr & parent, const std::wstring & attrib_name) = 0;
-	//virtual const bool fromXML(MSXML2::IXMLDOMElementPtr xml_tag, const std::wstring & attrib_name) = 0;
 
-	//virtual void toXML(BiffStructurePtr & parent)
-	//{
-	//	toXML(parent, attrib_name);
-	//};
-	//virtual const bool fromXML(MSXML2::IXMLDOMElementPtr xml_tag)
-	//{
-	//	return fromXML(xml_tag, attrib_name);
-	//};
-
-public:
 	void setName(const std::wstring  name_init)
 	{
 		attrib_name = name_init;
 	}
 
-private:
 	nullable<std::wstring > attrib_name;
 };
 

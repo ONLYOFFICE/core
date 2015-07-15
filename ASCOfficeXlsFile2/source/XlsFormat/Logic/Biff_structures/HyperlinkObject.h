@@ -11,7 +11,7 @@ class CFRecord;
 
 class HyperlinkObject : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(HyperlinkObject)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(HyperlinkObject)
 public:
 	XLS::BiffStructurePtr clone();
 

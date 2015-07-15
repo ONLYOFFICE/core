@@ -19,7 +19,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeValueRange;
+
+//-----------------------------
 	BIFF_DOUBLE numMin;
 	BIFF_DOUBLE numMax;
 	BIFF_DOUBLE numMajor;
@@ -34,24 +37,6 @@ private:
 	BIFF_BOOL fLog;
 	BIFF_BOOL fReversed;
 	BIFF_BOOL fMaxCross;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(numMin)
-		BO_ATTRIB_MARKUP_ATTRIB(numMax)
-		BO_ATTRIB_MARKUP_ATTRIB(numMajor)
-		BO_ATTRIB_MARKUP_ATTRIB(numMinor)
-		BO_ATTRIB_MARKUP_ATTRIB(numCross)
-	
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoMin)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoMax)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoMajor)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoMinor)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoCross)
-		BO_ATTRIB_MARKUP_ATTRIB(fLog)
-		BO_ATTRIB_MARKUP_ATTRIB(fReversed)
-		BO_ATTRIB_MARKUP_ATTRIB(fMaxCross)
-
-	BO_ATTRIB_MARKUP_END
 };
 
 } // namespace XLS

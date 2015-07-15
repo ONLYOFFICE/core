@@ -14,7 +14,7 @@ namespace ODRAW
 
 class OfficeArtFDGGBlock : public OfficeArtRecord
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtFDGGBlock)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtFDGGBlock)
 public:
 	OfficeArtFDGGBlock();
 	XLS::BiffStructurePtr clone();

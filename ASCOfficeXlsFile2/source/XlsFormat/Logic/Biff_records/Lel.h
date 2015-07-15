@@ -20,12 +20,12 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+//-----------------------------
 	XLUnicodeString stFormulaName;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-	BO_ATTRIB_MARKUP_ATTRIB(stFormulaName)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+	//BO_ATTRIB_MARKUP_ATTRIB(stFormulaName)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

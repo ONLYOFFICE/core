@@ -13,7 +13,7 @@ class CFRecord;
 
 class RC4CryptoAPIEncryptionHeader : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(RC4CryptoAPIEncryptionHeader)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(RC4CryptoAPIEncryptionHeader)
 public:
 	XLS::BiffStructurePtr clone();
 

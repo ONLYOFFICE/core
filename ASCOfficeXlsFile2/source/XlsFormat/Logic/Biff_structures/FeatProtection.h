@@ -11,7 +11,7 @@ class CFRecord;
 
 class FeatProtection : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FeatProtection)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FeatProtection)
 public:
 	FeatProtection();
 	FeatProtection(CFRecord& record);

@@ -11,7 +11,7 @@ class CFRecord;
 //#pragma pack(1)
 class XFPropBorder : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(XFPropBorder)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(XFPropBorder)
 public:
 	BiffStructurePtr clone();
 

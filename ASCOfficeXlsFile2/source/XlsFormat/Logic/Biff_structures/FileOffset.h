@@ -9,7 +9,7 @@ class CFRecord;
 
 class FileOffset : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FileOffset)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FileOffset)
 public:
 	BiffStructurePtr clone();
 

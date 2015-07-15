@@ -11,7 +11,7 @@ class CFRecord;
 
 class FactoidType : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FactoidType)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FactoidType)
 public:
 	XLS::BiffStructurePtr clone();
 

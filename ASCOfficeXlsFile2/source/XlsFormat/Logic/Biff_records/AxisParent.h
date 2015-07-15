@@ -19,12 +19,11 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeAxisParent;
+
+//-----------------------------
 	Boolean<unsigned __int16> iax;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(iax)
-	BO_ATTRIB_MARKUP_END
 
 };
 

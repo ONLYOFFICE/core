@@ -11,7 +11,7 @@ class CFRecord;
 
 class XORObfuscation : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(XORObfuscation)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(XORObfuscation)
 public:
 	BiffStructurePtr clone();
 

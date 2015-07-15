@@ -31,6 +31,7 @@ public:
 	USHORT		ushGID;     
 
 	float		fAdvanceX; 
+	float       fAdvanceY;
 
 	TBBox		oBBox;
 	TMetrics	oMetrics;

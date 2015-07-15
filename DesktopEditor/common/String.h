@@ -180,6 +180,162 @@ namespace NSStringExt
 
 			return sRet;
 		}
+		static std::wstring GetUnicodeFromUTF32(const unsigned int* pData, long lCount)
+		{
+			if (0 == lCount)
+				return L"";
+
+			if (4 == sizeof(wchar_t))
+				return std::wstring((wchar_t*)pData, lCount);
+
+			wchar_t* pUnicode = new wchar_t[2 * lCount + 1];
+			if (!pUnicode)
+				return L"";
+
+			wchar_t* pCur = pUnicode;
+
+			memset(pUnicode, 0x00, sizeof(wchar_t) * (2 * lCount + 1));
+			for (long lIndex = 0; lIndex < lCount; lIndex++)
+			{
+				unsigned int unUnicode = pData[lIndex];
+				if (unUnicode < 0x10000)
+				{
+					*pCur = unUnicode;
+					pCur++;
+				}
+				else
+				{
+					unUnicode = unUnicode - 0x10000;
+					*pCur = 0xD800 | (unUnicode >> 10);
+					pCur++;
+					*pCur = 0xDC00 | (unUnicode & 0x3FF);
+					pCur++;
+				}
+			}			
+
+			if (0 == pCur - pUnicode)
+				return L"";
+
+			std::wstring sRet(pUnicode, pCur - pUnicode);
+
+			if (pUnicode)
+				delete[] pUnicode;
+
+			return sRet;
+		}
+		static unsigned int* GetUtf32FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen)
+		{
+			if (wsUnicodeText.size() <= 0)
+				return NULL;
+
+			unsigned int* pUnicodes = new unsigned int[wsUnicodeText.size()];
+			if (!pUnicodes)
+				return NULL;
+
+			unsigned int* pOutput = pUnicodes;
+			unLen = 0;
+			if (2 == sizeof(wchar_t))
+			{
+				const wchar_t* wsEnd = wsUnicodeText.c_str() + wsUnicodeText.size();
+				wchar_t* wsInput = (wchar_t*)wsUnicodeText.c_str();
+
+				wchar_t wLeading, wTrailing;
+				unsigned int unCode;
+				while (wsInput < wsEnd)
+				{
+					wLeading = *wsInput++;
+					if (wLeading < 0xD800 || wLeading > 0xDFFF)
+					{
+						pUnicodes[unLen++] = (unsigned int)wLeading;
+					}
+					else if (wLeading >= 0xDC00)
+					{
+						// Такого не должно быть
+						continue;
+					}
+					else
+					{
+						unCode = (wLeading & 0x3FF) << 10;
+						wTrailing = *wsInput++;
+						if (wTrailing < 0xDC00 || wTrailing > 0xDFFF)
+						{
+							// Такого не должно быть
+							continue;
+						}
+						else
+						{
+							pUnicodes[unLen++] = (unCode | (wTrailing & 0x3FF) + 0x10000);
+						}
+					}
+				}
+			}
+			else
+			{
+				unLen = wsUnicodeText.size();
+				for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
+				{
+					pUnicodes[unIndex] = (unsigned int)wsUnicodeText.at(unIndex);
+				}
+			}
+
+			return pUnicodes;
+		}
+		static unsigned short* GetUtf16FromUnicode(const std::wstring& wsUnicodeText, unsigned int& unLen)
+		{
+			unsigned int unTextLen = wsUnicodeText.size();
+			if (unTextLen <= 0)
+				return NULL;
+
+			unsigned short* pUtf16 = NULL;
+			unLen = 0;
+			if (2 == sizeof(wchar_t))
+			{
+				pUtf16 = new unsigned short[unTextLen];
+				if (!pUtf16)
+					return NULL;
+
+				unLen = unTextLen;
+				for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
+				{
+					pUtf16[unIndex] = (unsigned short)wsUnicodeText.at(unIndex);
+				}
+			}
+			else
+			{
+				pUtf16 = new unsigned short[2 * unTextLen + 1];
+				if (!pUtf16)
+					return NULL;
+
+				unsigned short* pCur = pUtf16;
+				memset(pUtf16, 0x00, sizeof(unsigned short) * (2 * unTextLen + 1));
+				for (long lIndex = 0; lIndex < unTextLen; lIndex++)
+				{
+					unsigned int unUnicode = wsUnicodeText.at(lIndex);
+					if (unUnicode < 0x10000)
+					{
+						*pCur = unUnicode;
+						pCur++;
+					}
+					else
+					{
+						unUnicode = unUnicode - 0x10000;
+						*pCur = 0xD800 | (unUnicode >> 10);
+						pCur++;
+						*pCur = 0xDC00 | (unUnicode & 0x3FF);
+						pCur++;
+					}
+				}
+
+				unLen = (unsigned int)(pCur - pUtf16);
+				if (!unLen)
+				{
+					delete[] pUtf16;
+					return NULL;
+				}
+			}
+
+			return pUtf16;
+		}
 	};
 
 	static std::vector<std::wstring>& Split(const std::wstring& wsString, wchar_t nDelim, std::vector<std::wstring> &arrElements)
@@ -221,17 +377,39 @@ namespace NSStringExt
 
 		return arrElements;
 	}
-	static std::vector<std::wstring>  Split(const std::wstring& wsString, const std::wstring& wsDelim)
+	static std::vector<std::wstring>  Split(const std::wstring& wsString, const std::wstring& wsDelim, bool bWholeString = true)
 	{
 		std::vector<std::wstring> arrElements;
 
-		int nDelimLen = wsDelim.length();
-		if (0 == nDelimLen)
-			arrElements.push_back(wsString);
-		else if (1 == nDelimLen)
-			Split(wsString, wchar_t(wsDelim[0]), arrElements);
+		if (bWholeString)
+		{
+			int nDelimLen = wsDelim.length();
+			if (0 == nDelimLen)
+				arrElements.push_back(wsString);
+			else if (1 == nDelimLen)
+				Split(wsString, wchar_t(wsDelim[0]), arrElements);
+			else
+				Split(wsString, wsDelim, arrElements);
+		}
 		else
-			Split(wsString, wsDelim, arrElements);
+		{
+			std::vector<std::wstring> arrCurrent;
+			arrCurrent.push_back(wsString);
+			arrElements.push_back(wsString);
+			int nPos = 0;
+			int nLen = wsDelim.length();
+			while (nPos < nLen)
+			{
+				wchar_t wChar = wsDelim.at(nPos++);
+				arrElements.clear();
+				for (int nIndex = 0, nCount = arrCurrent.size(); nIndex < nCount; nIndex++)
+				{
+					std::vector<std::wstring>& arrTemp = Split(arrCurrent.at(nIndex), wChar);
+					arrElements.insert(arrElements.end(), arrTemp.begin(), arrTemp.end());
+				}
+				arrCurrent = arrElements;
+			}
+		}
 
 		return arrElements;
 	}

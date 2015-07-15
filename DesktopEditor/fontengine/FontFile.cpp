@@ -645,6 +645,7 @@ TFontCacheSizes CFontFile::GetChar(LONG lUnicode)
                     oSizes.ushGID		= -1;
                     oSizes.eState		= glyphstateMiss;
                     oSizes.fAdvanceX	= (pFace->size->metrics.max_advance >> 6) / 2.0f;
+					oSizes.fAdvanceY    = oSizes.fAdvanceX;
 
                     return oSizes;
                 }
@@ -688,6 +689,7 @@ TFontCacheSizes CFontFile::GetChar(LONG lUnicode)
 		FT_Done_Glyph( pGlyph );
 
 		oSizes.fAdvanceX = (float)(pFace->glyph->linearHoriAdvance * m_dUnitsKoef / pFace->units_per_EM);
+		oSizes.fAdvanceY = (float)(pFace->glyph->linearVertAdvance * m_dUnitsKoef / pFace->units_per_EM);
 		oSizes.oBBox.fMinX = (float)(oBBox.xMin >> 6);
 		oSizes.oBBox.fMaxX = (float)(oBBox.xMax >> 6);
 		oSizes.oBBox.fMinY = (float)(oBBox.yMin >> 6);

@@ -50,10 +50,10 @@ Aggplus::CBrush* CGraphicsRenderer::CreateBrush(NSStructures::CBrush* pBrush)
 					for( int i = 0; i < nCountSubColors; i++ )
 					{
 						DWORD dwColor = (DWORD)pBrush->m_arrSubColors[i].color;
-						BYTE r = (dwColor >> 24) & 0xFF;
-						BYTE g = (dwColor >> 16) & 0xFF;
-						BYTE b = (dwColor >> 8) & 0xFF;
-						BYTE a = (dwColor) & 0xFF;
+						BYTE a = (dwColor >> 24) & 0xFF;
+						BYTE b = (dwColor >> 16) & 0xFF;
+						BYTE g = (dwColor >> 8) & 0xFF;
+						BYTE r = (dwColor) & 0xFF;
 
                         if (bIsSwappedRGB)
                         {

@@ -24,7 +24,9 @@
       || '8' == (X)\
       || '9' == (X)\
       || '-' == (X)\
-	  || '.' == (X))
+	  || '.' == (X)\
+      || 'e' == (X)\
+	  || 'E' == (X))
 
 #define GetChar(STRING, POS) STRING[POS++] 
 #define LookChar(STRING, POS) STRING[POS] 
@@ -106,6 +108,12 @@ namespace XPS
 					dFloat = (double)nInt;
 					goto doReal;
 				}
+				else if ('e' == wChar || 'E' == wChar)
+				{
+					nPos++;
+					dFloat = (double)nInt;
+					goto doExponent;
+				}
 				else
 				{
 					break;
@@ -119,7 +127,13 @@ namespace XPS
 			while (1)
 			{
 				wChar = LookChar(wsString, nPos);
-				if (!isdigit(wChar))
+
+				if ('e' == wChar || 'E' == wChar)
+				{
+					nPos++;
+					goto doExponent;
+				}
+				else if (!isdigit(wChar))
 					break;
 
 				nPos++;
@@ -128,6 +142,49 @@ namespace XPS
 			}
 
 			return (bNegative ? (double)(-dFloat) : (double)dFloat);
+
+		doExponent:
+
+			wChar = GetChar(wsString, nPos);
+			bool bNegativeExponent = false;
+			int nExp = 0;
+			if ('-' == wChar)
+			{
+				bNegativeExponent = true;
+			}
+			else if ('+' == wChar)
+			{
+				bNegativeExponent = false;
+			}
+			else
+			{
+				nExp = wChar - '0';
+			}
+
+			while (1)
+			{
+				wChar = LookChar(wsString, nPos);
+				if (!isdigit(wChar))
+					break;
+
+				nPos++;
+				nExp = nExp * 10 + (wChar - '0');
+			}
+
+			dFloat = (bNegative ? (double)(-dFloat) : (double)dFloat);
+			nExp = max(20, min(0, nExp));
+
+			while (nExp)
+			{
+				if (bNegativeExponent)
+					dFloat /= 10;
+				else
+					dFloat *= 10;
+
+				nExp--;
+			}
+
+			return dFloat;			
 		}
 
 		return 0.0;
@@ -311,6 +368,10 @@ namespace XPS
 	bool   IsAlpha(wchar_t wChar)
 	{
 		return (((wChar >= 'A') && (wChar <= 'Z')) || ((wChar >= 'a') && (wChar <= 'z')));
+	}
+	double GetDouble(const CWString& wsString)
+	{
+		return _wtof(wsString.c_str());
 	}
 	double GetDouble(const std::wstring& wsString)
 	{
@@ -984,7 +1045,7 @@ namespace XPS
 		else
 			return false; // Такого не должно быть
 	}
-	void ReadTransform   (XmlUtils::CXmlLiteReader& oReader, CWString& wsTransform, CWString* pwsKey)
+	void ReadTransform    (XmlUtils::CXmlLiteReader& oReader, CWString& wsTransform, CWString* pwsKey)
 	{
 		CWString wsNodeName;
 		int nCurDepth = oReader.GetDepth();
@@ -1006,13 +1067,18 @@ namespace XPS
 						wsTransform.create(oReader.GetText(), true);
 					else if (wsAttrName == L"x:Key" && pwsKey)
 						pwsKey->create(oReader.GetText(), true);
+
+					if (!oReader.MoveToNextAttribute())
+						break;
+
+					wsAttrName = oReader.GetName();					
 				}
 
 				oReader.MoveToElement();
 			}
 		}
 	}
-	void ReadPathGeometry(XmlUtils::CXmlLiteReader& oReader, CWString& wsData, CWString& wsTransform, CWString* pwsKey)
+	void ReadPathGeometry (XmlUtils::CXmlLiteReader& oReader, CWString& wsData, CWString& wsTransform, CWString* pwsKey)
 	{
 		bool bEvenOdd = true;
 		CWString wsAttrName;
@@ -1056,7 +1122,7 @@ namespace XPS
 				ReadPathFigure(oReader, wsData, bEvenOdd);
 		}
 	}
-	void ReadPathFigure  (XmlUtils::CXmlLiteReader& oReader, CWString& _wsData, bool bEvenOdd)
+	void ReadPathFigure   (XmlUtils::CXmlLiteReader& oReader, CWString& _wsData, bool bEvenOdd)
 	{
 		// TODO: Улучшить здесь сложение строк и хождение по атрибутам
 		std::wstring wsData;
@@ -1141,5 +1207,146 @@ namespace XPS
 			wsData += L" Z ";
 
 		_wsData.create(wsData.c_str(), true);
+	}
+	void ReadGradientStops(XmlUtils::CXmlLiteReader& oReader, std::vector<LONG>& vColors, std::vector<double>& vPositions, const double& dOpacity)
+	{
+		if (oReader.IsEmptyNode())
+			return;
+
+		CWString wsNodeName, wsAttrName;
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			wsNodeName = oReader.GetName();
+			if (wsNodeName == L"GradientStop")
+			{				
+				double dPos = 0;
+				LONG lColor = 0;
+				if (oReader.MoveToFirstAttribute())
+				{
+					wsAttrName = oReader.GetName();
+					while (!wsAttrName.empty())
+					{
+						if (wsAttrName == L"Color")
+						{
+							int nBgr, nAlpha;
+							ReadSTColor(oReader.GetText(), nBgr, nAlpha);
+							nAlpha *= dOpacity;
+							lColor = (nAlpha << 24 & 0xFF000000) | (nBgr & 0xFFFFFF);
+						}
+						else if (wsAttrName == L"Offset")
+						{
+							ReadSTDouble(oReader.GetText(), dPos);
+						}
+
+						if (!oReader.MoveToNextAttribute())
+							break;
+
+						wsAttrName = oReader.GetName();
+					}
+
+					oReader.MoveToElement();
+				}
+				vColors.push_back(lColor);
+				vPositions.push_back(dPos);
+			}
+		}
+	}
+
+	void ReadSTPoint(const CWString& wsString, double& dX, double& dY)
+	{
+		int nCommaPos = 0;
+		while (nCommaPos < wsString.size())
+		{
+			if (wsString[nCommaPos] == ',')
+				break;
+
+			nCommaPos++;
+		}
+
+		if (nCommaPos >= wsString.size())
+		{
+			CWString wsX = wsString.c_str();
+			dX = GetDouble(wsX);
+			dY = 0;
+		}
+		else
+		{
+			CWString wsX((wchar_t*)wsString.c_str(), false, nCommaPos);
+			CWString wsY((wchar_t*)(wsString.c_str() + nCommaPos + 1), false, wsString.size() - nCommaPos - 1);
+			dX = GetDouble(wsX);
+			dY = GetDouble(wsY);
+		}
+	}
+	void ReadSTColor(const CWString& wsString, int& nBgr, int& nAlpha)
+	{
+		int nLen = wsString.size();
+		if (nLen <= 0)
+			return;
+
+		const wchar_t* pBuffer = wsString.c_str();
+		if (L'#' == pBuffer[0])
+		{
+			nLen--;
+			pBuffer++;
+
+			if (6 != nLen && 8 != nLen)
+				return;
+
+			if (8 == nLen)
+			{
+				nAlpha = GetDigit(*pBuffer++);
+				nAlpha <<= 4;
+				nAlpha += GetDigit(*pBuffer++);
+			}
+			else
+			{
+				nAlpha = 255;
+			}
+
+			nBgr = GetDigit(pBuffer[4]);
+			nBgr <<= 4;
+			nBgr += GetDigit(pBuffer[5]);
+			nBgr <<= 4;
+			nBgr += GetDigit(pBuffer[2]);
+			nBgr <<= 4;
+			nBgr += GetDigit(pBuffer[3]);
+			nBgr <<= 4;
+			nBgr += GetDigit(pBuffer[0]);
+			nBgr <<= 4;
+			nBgr += GetDigit(pBuffer[1]);
+		}
+		else if (nLen >= 3 && L's' == pBuffer[0] && L'c' == pBuffer[1] && L'#' == pBuffer[2])
+		{
+			int nPos = 3;
+			if (nPos >= nLen)
+				return;
+
+			CWString wsString2;
+			wsString2.create(pBuffer + 3, false);
+
+			std::vector<CWString> vElements = wsString2.split(',');
+			if (3 == vElements.size())
+			{
+				nAlpha = 255;
+				nBgr   = (((int)(min(GetDouble(vElements[2]), 1.0) * 255)) << 16) + (((int)(min(GetDouble(vElements[1]), 1.0) * 255)) << 8) + ((int)(min(GetDouble(vElements[0]), 1.0) * 255));
+			}
+			else if (4 == vElements.size())
+			{
+				nAlpha = (int)(min(GetDouble(vElements[0]), 1.0) * 255);
+				nBgr   = (((int)(min(GetDouble(vElements[3]), 1.0) * 255)) << 16) + (((int)(min(GetDouble(vElements[2]), 1.0) * 255)) << 8) + ((int)(min(GetDouble(vElements[1]), 1.0) * 255));
+			}
+		}
+	}
+	void ReadSTColor(const CWString& wsString, LONG& lColor)
+	{
+		int nBgr, nAlpha;
+		ReadSTColor(wsString, nBgr, nAlpha);
+		lColor = (nAlpha << 24 & 0xFF000000) | (nBgr & 0xFFFFFF);
+	}
+	void ReadSTDouble(const CWString& wsString, double& dValue)
+	{
+		int nPos = 0;
+		dValue = GetDouble(wsString.c_str(), nPos, wsString.size());
 	}
 }

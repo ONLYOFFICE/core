@@ -11,6 +11,7 @@
 
 namespace XPS
 {
+	class CBrush;
 	class CStaticResource;
 
 	class CContextState
@@ -34,18 +35,23 @@ namespace XPS
 		CContextState(IRenderer* pRenderer);
 		~CContextState();
 
-		void   PushOpacity(const double& dOpacity);
-		void   PopOpacity();
-		double GetCurrentOpacity();
-		void   PushClip(const CWString& wsClip);
-		void   PopClip();
-		void   PushTransform(const double arrTransform[6]);
-		void   PopTransform();
-		double NormalizeTransform();
-		void   PushResource(CStaticResource* pResource, bool bOwn);
-		void   PopResource();
-
-		void   GetPathGeometry(const CWString& wsKey, CWString& wsPathData, CWString& wsPathTransform);
+		void    PushOpacity(const double& dOpacity);
+		void    PopOpacity();
+		double  GetCurrentOpacity();
+		void    PushClip(const CWString& wsClip);
+		void    PopClip();
+		void    PushTransform(const double arrTransform[6]);
+		void    PopTransform();
+		double  NormalizeTransform();
+		void    PushResource(CStaticResource* pResource, bool bOwn);
+		void    PopResource();
+			    
+		void    GetPathGeometry(const CWString& wsKey, CWString& wsPathData, CWString& wsPathTransform);
+		CBrush* GetBrush(const CWString& wsKey);
+		Aggplus::CMatrix GetCurrentTransform()
+		{
+			return m_oCurrentTransform;
+		}
 
 	private:
 

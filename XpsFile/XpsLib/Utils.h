@@ -5,6 +5,8 @@
 #include <vector>
 #include "WString.h"
 
+#include "../../DesktopEditor/common/Types.h"
+
 namespace XmlUtils
 {
 	class CXmlLiteReader;
@@ -76,9 +78,16 @@ namespace XPS
 	bool VmlToRenderer(const wchar_t* wsString, IRenderer* pRenderer);
 	bool GetNextGlyph(const wchar_t* wsIndices, int& nIndicesPos, const int& nIndicesLen, unsigned short* pUtf16, int& nUtf16Pos, const int& nUtf16Len, TIndicesEntry& oEntry);
 
+	void ReadSTPoint(const CWString& wsString, double& dX, double& dY);
+	void ReadSTColor(const CWString& wsString, int& nBgr, int& nAlpha);
+	void ReadSTColor(const CWString& wsString, LONG& lColor);
+	void ReadSTDouble(const CWString& wsString, double& dValue);
+
 	void ReadTransform   (XmlUtils::CXmlLiteReader& oReader, CWString& wsTransform, CWString* pwsKey = NULL);
 	void ReadPathGeometry(XmlUtils::CXmlLiteReader& oReader, CWString& wsData, CWString& wsTransform, CWString* pwsKey = NULL);
 	void ReadPathFigure  (XmlUtils::CXmlLiteReader& oReader, CWString& _wsData, bool bEvenOdd);
+
+	void ReadGradientStops(XmlUtils::CXmlLiteReader& oReader, std::vector<LONG>& vColors, std::vector<double>& vPositions, const double& dOpacity);
 }
 
 #endif // _XPS_XPSLIB_UTILS_H

@@ -2,9 +2,12 @@
 #include <stdio.h>
 #include "../../DesktopEditor/common/String.h"
 #include "../../DesktopEditor/graphics/structures.h"
+#include "../../PdfWriter/PdfRenderer.h"
 
 #include "Document.h"
 #include "StaticResources.h"
+
+#include <iostream>
 
 #include <ctime>
 
@@ -20,21 +23,32 @@
 
 namespace XPS
 {
-	static double GetAdvance(CFontManager* pFontManager, const std::wstring& wsChar, const std::wstring& wsGid, const bool& bGid)
+	static double GetAdvanceX(CFontManager* pFontManager, const unsigned int& unUnicode, const unsigned int& unGid, const bool& bGid)
 	{
 		if (bGid)
 		{
 			pFontManager->SetStringGID(TRUE);
-			pFontManager->LoadString1(wsGid, 0, 0);
+			return pFontManager->MeasureChar(unGid).fAdvanceX;
 		}
 		else
 		{
 			pFontManager->SetStringGID(FALSE);
-			pFontManager->LoadString1(wsChar, 0, 0);
+			return pFontManager->MeasureChar(unUnicode).fAdvanceX;
 		}
-		TBBox oBox = pFontManager->MeasureString2();
-		return (oBox.fMaxX - oBox.fMinX);
 	}
+	static double GetAdvanceY(CFontManager* pFontManager, const unsigned int& unUnicode, const unsigned int& unGid, const bool& bGid)
+	{
+		if (bGid)
+		{
+			pFontManager->SetStringGID(TRUE);
+			return pFontManager->MeasureChar(unGid).fAdvanceY;
+		}
+		else
+		{
+			pFontManager->SetStringGID(FALSE);
+			return pFontManager->MeasureChar(unUnicode).fAdvanceY;
+		}
+	}	
 	Page::Page(const std::wstring& wsPagePath, const std::wstring& wsRootPath, CFontList* pFontList, CFontManager* pFontManager, CDocument* pDocument)
 	{
 		m_wsPagePath   = wsPagePath;
@@ -364,7 +378,6 @@ namespace XPS
 	}
 	void Page::DrawGlyph(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState)
 	{
-		int nBgr = 0, nAlpha = 255;
 		double dFontSize = 10.0;
 		bool bTransform = false, bClip = false, bOpacity = false;
 		double dX = 0;
@@ -377,6 +390,8 @@ namespace XPS
 		unsigned short* pUtf16Ptr = NULL;
 		unsigned int unUtf16Len = 0;
 		CWString wsIndices;
+		CWString wsFill;
+		bool bIsSideways = false;
 
 		if (oReader.MoveToFirstAttribute())
 		{
@@ -400,7 +415,9 @@ namespace XPS
 				}
 				else if (wsAttrName == L"Opacity")
 				{
-					pState->PushOpacity(GetDouble(oReader.GetText()));
+					double dOpacity;
+					ReadSTDouble(oReader.GetText(), dOpacity);
+					pState->PushOpacity(dOpacity);
 					bOpacity = true;
 				}
 				else if (L"Clip" == wsAttrName)
@@ -409,9 +426,7 @@ namespace XPS
 				}
 				else if (L"Fill" == wsAttrName)
 				{
-					std::wstring wsFontColor = oReader.GetText();
-					ReadAttribute(oReader, L"Fill", wsFontColor);
-					GetBgra(wsFontColor, nBgr, nAlpha);
+					wsFill.create(oReader.GetText(), true);
 				}
 				else if (L"StyleSimulations" == wsAttrName)
 				{
@@ -469,6 +484,10 @@ namespace XPS
 				{
 					nBidiLevel = GetInteger(oReader.GetText());
 				}
+				else if (wsAttrName == L"IsSideways")
+				{
+					bIsSideways = GetBool(oReader.GetText());
+				}
 
 				if (!oReader.MoveToNextAttribute())
 					break;
@@ -494,6 +513,41 @@ namespace XPS
 			}
 		}
 
+		CBrush* pBrush = NULL;
+		bool bDeleteBrush = false;
+		if (!wsFill.empty())
+		{
+			if (IsFromResource(wsFill))
+			{
+				pBrush = pState->GetBrush(wsFill);
+				bDeleteBrush = false;
+			}
+			else
+			{
+				pBrush = ReadBrush(wsFill.c_str(), pState->GetCurrentOpacity());
+				bDeleteBrush = true;
+			}
+		}
+
+		if (!pBrush || !pBrush->SetToRenderer(pRenderer))
+		{
+			if (bDeleteBrush)
+				RELEASEOBJECT(pBrush);
+
+			RELEASEARRAYOBJECTS(pUtf16Ptr);
+
+			if (bClip)
+				pState->PopClip();
+
+			if (bTransform)
+				pState->PopTransform();
+
+			if (bOpacity)
+				pState->PopOpacity();
+
+			return;
+		}
+
 		// Сначала задается матрица преобразования, потом клип, потому что даже
 		// если преобразование задано в дочерней ноде, а клип задан в атрибутах данной ноды,
 		// то преобразование влияется на клип все равно.
@@ -512,9 +566,6 @@ namespace XPS
 			bClip = ClipToRenderer(wsClip.c_str(), pState);
 		}
 
-		pRenderer->put_BrushColor1(nBgr & 0x00FFFFFF);
-		pRenderer->put_BrushAlpha1(((double)nAlpha * pState->GetCurrentOpacity()));
-		pRenderer->put_BrushType(c_BrushTypeSolid);
 		pRenderer->put_FontSize(dFontSize * 0.75);
 
 		TIndicesEntry oEntry;
@@ -524,41 +575,72 @@ namespace XPS
 		m_pFontManager->LoadFontFromFile(wsFontPath, 0, (float)(dFontSize * 0.75), 96, 96);
 		double dFontKoef = dFontSize / 100.0;
 
-		while (GetNextGlyph(wsIndices.c_str(), nIndicesPos, nIndicesLen, pUtf16, nUtf16Pos, unUtf16Len, oEntry))
+		if (!bIsSideways)
 		{
-			std::wstring wsChar = NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&(oEntry.nUnicode)), 1);
-			unsigned int unGid = oEntry.nGid;
-			std::wstring wsGid  = oEntry.bGid ? NSStringExt::CConverter::GetUnicodeFromUTF32((const unsigned int*)(&(unGid)), 1) : L"";
-
-			double dAdvance, dRealAdvance;
-			if (oEntry.bAdvance)
+			while (GetNextGlyph(wsIndices.c_str(), nIndicesPos, nIndicesLen, pUtf16, nUtf16Pos, unUtf16Len, oEntry))
 			{
-				dAdvance = oEntry.dAdvance * dFontKoef;
+				double dAdvance, dRealAdvance;
+				if (oEntry.bAdvance)
+				{
+					dAdvance = oEntry.dAdvance * dFontKoef;
+
+					if (bRtoL)
+						dRealAdvance = GetAdvanceX(m_pFontManager, oEntry.nUnicode, oEntry.nGid, oEntry.bGid);
+					else
+						dRealAdvance = dAdvance;
+				}
+				else
+				{
+					dAdvance = GetAdvanceX(m_pFontManager, oEntry.nUnicode, oEntry.nGid, oEntry.bGid);
+					dRealAdvance = dAdvance;
+				}
 
 				if (bRtoL)
-					dRealAdvance = GetAdvance(m_pFontManager, wsChar, wsGid, oEntry.bGid);
+					dX -= dRealAdvance;
+
+				double dXorigin = (oEntry.bHorOffset || oEntry.bVerOffset) ? dX + (bRtoL ? -oEntry.dHorOffset * dFontKoef : oEntry.dHorOffset * dFontKoef) : dX;
+				double dYorigin = (oEntry.bHorOffset || oEntry.bVerOffset) ? dY - oEntry.dVerOffset * dFontKoef : dY;	
+				if (oEntry.bGid)
+					pRenderer->CommandDrawTextExCHAR(oEntry.nUnicode, oEntry.nGid, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0, 0, 0);
 				else
-					dRealAdvance = dAdvance;
+					pRenderer->CommandDrawTextCHAR(oEntry.nUnicode,  xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0, 0);
+
+				if (!bRtoL)
+					dX += dAdvance;
+				else
+					dX -= (dAdvance - dRealAdvance);
 			}
-			else
-			{
-				dAdvance = GetAdvance(m_pFontManager, wsChar, wsGid, oEntry.bGid);
-				dRealAdvance = dAdvance;
-			}
-
-			if (bRtoL)
-				dX -= dRealAdvance;
-
-			if (oEntry.bHorOffset || oEntry.bVerOffset)
-				pRenderer->CommandDrawTextEx(wsChar, wsGid, xpsUnitToMM(dX + (bRtoL ? -oEntry.dHorOffset * dFontKoef : oEntry.dHorOffset * dFontKoef)), xpsUnitToMM(dY - oEntry.dVerOffset * dFontKoef), 0, 0, 0, 0);
-			else
-				pRenderer->CommandDrawTextEx(wsChar, wsGid, xpsUnitToMM(dX), xpsUnitToMM(dY), 0, 0, 0, 0);
-
-			if (!bRtoL)
-				dX += dAdvance;
-			else
-				dX -= (dAdvance - dRealAdvance);
 		}
+		else
+		{
+			while (GetNextGlyph(wsIndices.c_str(), nIndicesPos, nIndicesLen, pUtf16, nUtf16Pos, unUtf16Len, oEntry))
+			{
+				double dAdvanceX = GetAdvanceX(m_pFontManager, oEntry.nUnicode, oEntry.nGid, oEntry.bGid);
+				double dAdvanceY = GetAdvanceY(m_pFontManager, oEntry.nUnicode, oEntry.nGid, oEntry.bGid);
+
+				double dAdvance;
+				if (oEntry.bAdvance)
+					dAdvance = oEntry.dAdvance * dFontKoef;
+				else
+					dAdvance = dAdvanceY;
+
+				double dXorigin = (oEntry.bHorOffset || oEntry.bVerOffset) ? dX + oEntry.dHorOffset * dFontKoef : dX;
+				double dYorigin = (oEntry.bHorOffset || oEntry.bVerOffset) ? dY - oEntry.dVerOffset * dFontKoef : dY;
+				double pTransform[] ={ 0, -1, 1, 0, dXorigin + dAdvanceY, dYorigin + dAdvanceX / 2 };
+				pState->PushTransform(pTransform);
+
+				if (oEntry.bGid)
+					pRenderer->CommandDrawTextExCHAR(oEntry.nUnicode, oEntry.nGid, 0, 0, 0, 0, 0, 0);
+				else
+					pRenderer->CommandDrawTextCHAR(oEntry.nUnicode, 0, 0, 0, 0, 0);
+
+				pState->PopTransform();
+				dX += dAdvance;
+			}
+		}
+
+		if (bDeleteBrush)
+			RELEASEOBJECT(pBrush);
 
 		RELEASEARRAYOBJECTS(pUtf16Ptr);
 
@@ -597,6 +679,7 @@ namespace XPS
 		double* pDashPattern  = NULL;
 		LONG lDashPatternSize = 0;
 		double dDashOffset    = 0.0;
+		CWString wsFill;
 
 		CWString wsClip, wsTransform, wsPathData, wsPathTransform;
 		if (oReader.MoveToFirstAttribute())
@@ -614,7 +697,9 @@ namespace XPS
 				}
 				else if (L"Opacity" == wsAttrName)
 				{
-					pState->PushOpacity(GetDouble(oReader.GetText()));
+					double dOpacity;
+					ReadSTDouble(oReader.GetText(), dOpacity);
+					pState->PushOpacity(dOpacity);
 					bOpacity = true;
 				}
 				else if (L"Stroke" == wsAttrName)
@@ -680,9 +765,7 @@ namespace XPS
 				}
 				else if (L"Fill" == wsAttrName)
 				{
-					bFill = true;
-					std::wstring wsFill = oReader.GetText();
-					GetBgra(wsFill, nFillBgr, nFillAlpha);
+					wsFill.create(oReader.GetText(), true);
 				}
 				else if (L"Data" == wsAttrName)
 				{
@@ -697,17 +780,26 @@ namespace XPS
 		}
 		oReader.MoveToElement();
 
+		CBrush* pBrush = NULL;
+		bool bDeleteBrush = false;
+		if (!wsFill.empty())
+		{
+			if (IsFromResource(wsFill))
+			{
+				pBrush = pState->GetBrush(wsFill);
+				bDeleteBrush = false;
+			}
+			else
+			{
+				pBrush = ReadBrush(wsFill.c_str(), pState->GetCurrentOpacity());
+				bDeleteBrush = true;
+			}
+		}
+
 		if (bStroke)
 		{
 			pRenderer->put_PenColor(nStrokeBgr & 0x00FFFFFF);
 			pRenderer->put_PenAlpha(nStrokeAlpha * pState->GetCurrentOpacity());
-		}
-
-		if (bFill)
-		{
-			pRenderer->put_BrushType(c_BrushTypeSolid);
-			pRenderer->put_BrushColor1(nFillBgr & 0x00FFFFFF);
-			pRenderer->put_BrushAlpha1(nFillAlpha * pState->GetCurrentOpacity());
 		}
 
 		if (!oReader.IsEmptyNode())
@@ -725,9 +817,10 @@ namespace XPS
 				{
 					wsClip = ReadClip(oReader);
 				}
-				else if (wsNodeName == L"Path.Fill" && !bFill)
+				else if (wsNodeName == L"Path.Fill" && !pBrush)
 				{
-					bFill = FillToRenderer(oReader, pRenderer, pState);
+					pBrush = ReadBrush(oReader, pState->GetCurrentOpacity());
+					bDeleteBrush = true;
 				}
 				else if (wsNodeName == L"Path.Stroke" && !bStroke)
 				{
@@ -738,6 +831,16 @@ namespace XPS
 					ReadPathData(oReader, wsPathData, wsPathTransform);
 				}
 			}
+		}
+
+		if (pBrush)
+		{
+			if (pBrush->IsImageBrush())
+				((CImageBrush*)pBrush)->SetPaths(m_wsRootPath.c_str(), GetPath(m_wsPagePath).c_str());
+
+			bFill = pBrush->SetToRenderer(pRenderer);
+			if (bDeleteBrush)
+				RELEASEOBJECT(pBrush);
 		}
 
 		// Сначала задается матрица преобразования, потом клип, потому что даже
@@ -810,42 +913,7 @@ namespace XPS
 
 		if (bOpacity)
 			pState->PopOpacity();
-	}
-	bool Page::FillToRenderer  (XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState)
-	{
-		if (!oReader.IsEmptyNode())
-		{
-			std::wstring wsNodeName;
-			int nCurDepth = oReader.GetDepth();
-			while (oReader.ReadNextSiblingNode(nCurDepth))
-			{
-				wsNodeName = oReader.GetName();
-				wsNodeName = RemoveNamespace(wsNodeName);
-
-				if (L"SolidColorBrush" == wsNodeName)
-				{
-					int nBgr, nAlpha;
-					std::wstring wsColor;
-					ReadAttribute(oReader, L"Color", wsColor);
-					GetBgra(wsColor, nBgr, nAlpha);
-					pRenderer->put_BrushType(c_BrushTypeSolid);
-					pRenderer->put_BrushColor1(nBgr & 0x00FFFFFF);
-					pRenderer->put_BrushAlpha1((double)nAlpha * pState->GetCurrentOpacity());
-					return true;
-				}
-				else if (L"ImageBrush" == wsNodeName)
-				{
-					std::wstring wsImageSource;
-					ReadAttribute(oReader, L"ImageSource", wsImageSource);
-					pRenderer->put_BrushType(c_BrushTypeTexture);
-					pRenderer->put_BrushTexturePath(m_wsRootPath + wsImageSource);
-					return true;
-				}
-			}
-		}
-
-		return false;
-	}
+	}	
 	bool Page::StrokeToRenderer(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState)
 	{
 		if (!oReader.IsEmptyNode())

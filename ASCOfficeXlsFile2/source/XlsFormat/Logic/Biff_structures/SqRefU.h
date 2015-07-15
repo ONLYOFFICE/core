@@ -10,7 +10,7 @@ class CFRecord;
 
 class SqRefU : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(SqRefU)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SqRefU)
 public:
 	BiffStructurePtr clone();
 

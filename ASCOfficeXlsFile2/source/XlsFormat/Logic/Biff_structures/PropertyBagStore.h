@@ -11,7 +11,7 @@ class CFRecord;
 
 class PropertyBagStore : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PropertyBagStore)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PropertyBagStore)
 public:
 	XLS::BiffStructurePtr clone();
 

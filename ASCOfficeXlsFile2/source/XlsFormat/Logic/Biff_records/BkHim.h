@@ -19,12 +19,12 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeBkHim;
+
+//-----------------------------
 //	BIFF_WORD userName;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-//		BO_ATTRIB_MARKUP_ATTRIB(userName)
-	BO_ATTRIB_MARKUP_END
+
 
 };
 

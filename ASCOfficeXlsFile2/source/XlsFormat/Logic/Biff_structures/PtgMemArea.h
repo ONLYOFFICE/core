@@ -9,7 +9,7 @@ class CFRecord;
 
 class PtgMemArea : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgMemArea)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgMemArea)
 public:
 	BiffStructurePtr clone();
 

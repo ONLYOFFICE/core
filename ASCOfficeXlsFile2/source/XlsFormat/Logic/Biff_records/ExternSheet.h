@@ -20,14 +20,17 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeExternSheet;
+
+//-----------------------------
 	ForwardOnlyParam<unsigned __int16> cXTI;
 	BiffStructurePtrVector rgXTI;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(cXTI)
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgXTI, XTI)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(cXTI)
+		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgXTI, XTI)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

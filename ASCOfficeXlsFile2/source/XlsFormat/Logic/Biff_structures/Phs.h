@@ -10,7 +10,7 @@ class CFRecord;
 #pragma pack(1)
 class Phs : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(Phs)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Phs)
 public:
 	BiffStructurePtr clone();
 

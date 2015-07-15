@@ -18,7 +18,8 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-private:
+	static const ElementType	type = typeGLOBALS;
+
 	bool is_dialog;
 };
 

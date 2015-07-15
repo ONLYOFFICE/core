@@ -9,7 +9,7 @@ namespace XLS
 
 class AF12Criteria: public BiffStructure
 {	
-	BASE_OBJECT_DEFINE_CLASS_NAME(AF12Criteria)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(AF12Criteria)
 public:
 	BiffStructurePtr clone();
 

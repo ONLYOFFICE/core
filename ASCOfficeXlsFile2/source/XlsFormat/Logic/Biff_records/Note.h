@@ -21,23 +21,26 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeNote;
+
+//-----------------------------
 // 	BIFF_BOOL is_contained_in_Workbook_;
 	
 	NoteSh note_sh;
 // 	NoteRR note_rr;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
+	//BO_ATTRIB_MARKUP_BEGIN
 // 		if(is_contained_in_Workbook_)
 // 		{
-			BO_ATTRIB_MARKUP_COMPLEX(note_sh)
+			//BO_ATTRIB_MARKUP_COMPLEX(note_sh)
 // 		}
 // 		else
 // 		{
-// 			BO_ATTRIB_MARKUP_COMPLEX(note_rr)
+// 			//BO_ATTRIB_MARKUP_COMPLEX(note_rr)
 // 		}
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_END
 
 };
 

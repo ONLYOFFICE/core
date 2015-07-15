@@ -16,7 +16,7 @@ namespace ODRAW
 
 class OfficeArtBStoreContainerFileBlock : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtBStoreContainerFileBlock)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtBStoreContainerFileBlock)
 public:
 	XLS::BiffStructurePtr clone();
 

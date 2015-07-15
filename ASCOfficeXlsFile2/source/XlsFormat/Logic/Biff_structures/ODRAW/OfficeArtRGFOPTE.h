@@ -13,7 +13,7 @@ namespace ODRAW
 
 class OfficeArtRGFOPTE : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtRGFOPTE)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtRGFOPTE)
 public:
 	XLS::BiffStructurePtr clone();
 

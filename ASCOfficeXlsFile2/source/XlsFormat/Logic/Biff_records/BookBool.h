@@ -19,22 +19,16 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeBookBool;
+
+//-----------------------------
 	BIFF_BOOL fNoSaveSup;
 	BIFF_BOOL fHasEnvelope;
 	BIFF_BOOL fEnvelopeVisible;
 	BIFF_BOOL fEnvelopeInitDone;
 	BIFF_BSTR grUpdateLinks;
 	BIFF_BOOL fHideBorderUnselLists;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fNoSaveSup)
-		BO_ATTRIB_MARKUP_ATTRIB(fHasEnvelope)
-		BO_ATTRIB_MARKUP_ATTRIB(fEnvelopeVisible)
-		BO_ATTRIB_MARKUP_ATTRIB(fEnvelopeInitDone)
-		BO_ATTRIB_MARKUP_ATTRIB(grUpdateLinks)
-		BO_ATTRIB_MARKUP_ATTRIB(fHideBorderUnselLists)
-	BO_ATTRIB_MARKUP_END
 
 };
 

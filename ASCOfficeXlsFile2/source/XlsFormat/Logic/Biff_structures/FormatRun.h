@@ -10,7 +10,7 @@ class CFRecord;
 
 class FormatRun : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FormatRun)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FormatRun)
 public:
 	BiffStructurePtr clone();
 

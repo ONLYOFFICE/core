@@ -11,7 +11,7 @@ class CFRecord;
 
 class CFColor : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(CFColor)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFColor)
 public:
 	CFColor();
 	CFColor(CFRecord& record);

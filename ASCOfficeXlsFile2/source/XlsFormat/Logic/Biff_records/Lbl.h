@@ -22,9 +22,12 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	static const ElementType	type = typeLbl;
+
+
 	const XLUnicodeStringNoCch getName() const;
 
-private:
+//-----------------------------
 	BIFF_BOOL fHidden;
 	BIFF_BOOL fFunc;
 	BIFF_BOOL fOB;
@@ -41,21 +44,21 @@ private:
 	NameParsedFormula rgce;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fHidden)
-		BO_ATTRIB_MARKUP_ATTRIB(fFunc)
-		BO_ATTRIB_MARKUP_ATTRIB(fOB)
-		BO_ATTRIB_MARKUP_ATTRIB(fProc)
-		BO_ATTRIB_MARKUP_ATTRIB(fCalcExp)
-		BO_ATTRIB_MARKUP_ATTRIB(fBuiltin)
-		BO_ATTRIB_MARKUP_ATTRIB(fGrp)
-		BO_ATTRIB_MARKUP_ATTRIB(fPublished)
-		BO_ATTRIB_MARKUP_ATTRIB(fWorkbookParam)
-		BO_ATTRIB_MARKUP_ATTRIB(chKey)
-		BO_ATTRIB_MARKUP_ATTRIB(itab)
-		BO_ATTRIB_MARKUP_ATTRIB(Name)
-		BO_ATTRIB_MARKUP_COMPLEX(rgce)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fHidden)
+		//BO_ATTRIB_MARKUP_ATTRIB(fFunc)
+		//BO_ATTRIB_MARKUP_ATTRIB(fOB)
+		//BO_ATTRIB_MARKUP_ATTRIB(fProc)
+		//BO_ATTRIB_MARKUP_ATTRIB(fCalcExp)
+		//BO_ATTRIB_MARKUP_ATTRIB(fBuiltin)
+		//BO_ATTRIB_MARKUP_ATTRIB(fGrp)
+		//BO_ATTRIB_MARKUP_ATTRIB(fPublished)
+		//BO_ATTRIB_MARKUP_ATTRIB(fWorkbookParam)
+		//BO_ATTRIB_MARKUP_ATTRIB(chKey)
+		//BO_ATTRIB_MARKUP_ATTRIB(itab)
+		//BO_ATTRIB_MARKUP_ATTRIB(Name)
+		//BO_ATTRIB_MARKUP_COMPLEX(rgce)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

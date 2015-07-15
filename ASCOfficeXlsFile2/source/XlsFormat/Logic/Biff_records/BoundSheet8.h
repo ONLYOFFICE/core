@@ -21,19 +21,13 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
-private:
+	static const ElementType	type = typeBoundSheet8;
+
+//-----------------------------
 	ForwardOnlyParam<unsigned int> lbPlyPos;
 	BIFF_BSTR hsState;
 	BIFF_BYTE dt;
 	ShortXLUnicodeString stName;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(lbPlyPos)
-		BO_ATTRIB_MARKUP_ATTRIB(hsState)
-		BO_ATTRIB_MARKUP_ATTRIB(dt)
-		BO_ATTRIB_MARKUP_ATTRIB(stName)
-	BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

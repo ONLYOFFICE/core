@@ -9,7 +9,7 @@ class CFRecord;
 
 class EnhancedProtection : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(EnhancedProtection)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(EnhancedProtection)
 public:
 	EnhancedProtection();
 	EnhancedProtection(CFRecord& record);

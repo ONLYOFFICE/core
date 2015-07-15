@@ -10,7 +10,7 @@ class CFRecord;
 
 class ExtPtgRef3D : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ExtPtgRef3D)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ExtPtgRef3D)
 public:
 	ExtPtgRef3D(const CellRef& cell_base_ref_init);
 	BiffStructurePtr clone();

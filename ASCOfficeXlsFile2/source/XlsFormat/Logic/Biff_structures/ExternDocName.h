@@ -11,7 +11,7 @@ class CFRecord;
 
 class ExternDocName : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ExternDocName)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ExternDocName)
 public:
 	BiffStructurePtr clone();
 

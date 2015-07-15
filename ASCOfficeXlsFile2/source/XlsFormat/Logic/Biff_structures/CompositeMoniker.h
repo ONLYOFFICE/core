@@ -10,7 +10,7 @@ class CFRecord;
 
 class CompositeMoniker : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(CompositeMoniker)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CompositeMoniker)
 public:
 	CompositeMoniker();
 	CompositeMoniker(XLS::CFRecord& record);

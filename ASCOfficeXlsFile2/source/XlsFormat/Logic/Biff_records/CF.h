@@ -21,20 +21,23 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeCF;
+
+//-----------------------------
 	BIFF_BYTE ct;
 	BIFF_BYTE cp;
 	DXFN rgbdxf;
 	CFParsedFormulaNoCCE rgce1;
 	CFParsedFormulaNoCCE rgce2;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(ct)
-		BO_ATTRIB_MARKUP_ATTRIB(cp)
-		BO_ATTRIB_MARKUP_COMPLEX(rgbdxf)
-		BO_ATTRIB_MARKUP_COMPLEX(rgce1)
-		BO_ATTRIB_MARKUP_COMPLEX(rgce2)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(ct)
+		//BO_ATTRIB_MARKUP_ATTRIB(cp)
+		//BO_ATTRIB_MARKUP_COMPLEX(rgbdxf)
+		//BO_ATTRIB_MARKUP_COMPLEX(rgce1)
+		//BO_ATTRIB_MARKUP_COMPLEX(rgce2)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

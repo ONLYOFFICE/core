@@ -10,7 +10,7 @@ class CFRecord;
 
 class PtgExtraElf : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgExtraElf)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgExtraElf)
 public:
 	PtgExtraElf();
 	PtgExtraElf(CFRecord& record);

@@ -10,7 +10,7 @@ class CFRecord;
 
 class HorzBrk : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(HorzBrk)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(HorzBrk)
 public:
 	BiffStructurePtr clone();
 

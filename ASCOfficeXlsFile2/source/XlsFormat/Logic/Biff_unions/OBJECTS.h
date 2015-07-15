@@ -20,7 +20,8 @@ public:
 
 	virtual const bool loadContentRead(BinReaderProcessor& proc);
 
-private:
+	static const ElementType	type = typeOBJECTS;
+
 	bool is_inside_chart_sheet_;
 };
 

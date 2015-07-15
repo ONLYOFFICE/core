@@ -273,12 +273,10 @@
 	</References>
 	<Files>
 		<Filter
-			Name="Source Files"
-			Filter="cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx"
-			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
+			Name="common"
 			>
 			<File
-				RelativePath="..\XlsXlsxConverter\ConvertXls2Xlsx.cpp"
+				RelativePath="..\XlsXlsxConverter\common.h"
 				>
 			</File>
 			<File
@@ -286,20 +284,258 @@
 				>
 			</File>
 			<File
+				RelativePath="..\XlsXlsxConverter\simple_xml_writer.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\Common\DocxFormat\Source\XML\stringcommon.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\utils.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\utils.h"
 				>
 			</File>
 		</Filter>
 		<Filter
-			Name="Header Files"
-			Filter="h;hpp;hxx;hm;inl;inc;xsd"
-			UniqueIdentifier="{93995380-89BD-4b04-88EB-625FBE52EBFB}"
+			Name="styles"
 			>
 			<File
-				RelativePath="..\XlsXlsxConverter\ConvertXls2Xlsx.h"
+				RelativePath="..\XlsXlsxConverter\xlsx_alignment.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_alignment.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_border.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_border.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_borders.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_borders.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_cell_format.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_cell_format.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_cell_style.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_cell_style.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_cell_styles.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_cell_styles.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_color.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_color.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_fill.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_fill.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_fills.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_fills.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_font.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_font.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_fonts.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_fonts.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_numFmts.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_numFmts.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_protection.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_protection.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_xf.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_xf.h"
 				>
 			</File>
 		</Filter>
+		<Filter
+			Name="xlsx"
+			>
+			<File
+				RelativePath="..\XlsXlsxConverter\mediaitems.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\mediaitems.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\mediaitems_utils.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\namespaces.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\namespaces.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\oox_content_type.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\oox_content_type.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\oox_package.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\oox_package.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\oox_rels.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\oox_rels.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_conversion_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_conversion_context.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_output_xml.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_output_xml.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_package.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_package.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_sharedstrings.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_sharedstrings.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_styles.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_styles.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_tablecontext.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_tablecontext.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_textcontext.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_textcontext.h"
+				>
+			</File>
+		</Filter>
+		<File
+			RelativePath="..\XlsXlsxConverter\ConvertXls2Xlsx.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\XlsXlsxConverter\ConvertXls2Xlsx.h"
+			>
+		</File>
+		<File
+			RelativePath="..\XlsXlsxConverter\XlsConverter.cpp"
+			>
+		</File>
+		<File
+			RelativePath="..\XlsXlsxConverter\XlsConverter.h"
+			>
+		</File>
 	</Files>
 	<Globals>
 	</Globals>

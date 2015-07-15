@@ -10,7 +10,7 @@ class CFRecord;
 
 class PtgBool: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgBool)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgBool)
 public:
 	PtgBool();
 	PtgBool(const std::wstring& word);

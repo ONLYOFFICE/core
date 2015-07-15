@@ -7,7 +7,7 @@ namespace ODRAW
 
 class OfficeArtDggContainer : public OfficeArtContainer
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtDggContainer)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtDggContainer)
 public:
 	OfficeArtDggContainer(const OfficeArtClientAnchorType anchor_type) : OfficeArtContainer(0x0F, DggContainer, anchor_type) {}
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtDggContainer(*this)); }
@@ -16,7 +16,7 @@ public:
 
 class OfficeArtSpgrContainer : public OfficeArtContainer
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtSpgrContainer)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtSpgrContainer)
 public:
 	OfficeArtSpgrContainer(const OfficeArtClientAnchorType anchor_type) : OfficeArtContainer(0x0F, SpgrContainer, anchor_type) {}
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtSpgrContainer(*this)); }
@@ -25,7 +25,7 @@ public:
 
 class OfficeArtSpContainer : public OfficeArtContainer
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtSpContainer)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtSpContainer)
 public:
 	OfficeArtSpContainer(const OfficeArtClientAnchorType anchor_type) : OfficeArtContainer(0x0F, SpContainer, anchor_type) {}
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtSpContainer(*this)); }
@@ -34,7 +34,7 @@ public:
 
 class OfficeArtClientData : public OfficeArtRecord
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtClientData)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtClientData)
 public:
 	OfficeArtClientData() : OfficeArtRecord(0, ClientData) {}
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtClientData(*this)); }
@@ -47,7 +47,7 @@ public:
 
 class OfficeArtClientTextbox : public OfficeArtRecord
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtClientTextbox)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtClientTextbox)
 public:
 	OfficeArtClientTextbox() : OfficeArtRecord(0, ClientTextbox) {}
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtClientTextbox(*this)); }

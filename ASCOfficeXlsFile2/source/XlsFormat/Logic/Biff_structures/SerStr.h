@@ -10,7 +10,7 @@ class CFRecord;
 
 class SerStr : public SerAr
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(SerStr)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SerStr)
 public:
 	SerStr();
 	SerStr(const std::wstring& word);

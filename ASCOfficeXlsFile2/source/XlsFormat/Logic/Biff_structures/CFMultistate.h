@@ -10,7 +10,7 @@ class CFRecord;
 
 class CFMultistate : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(CFMultistate)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFMultistate)
 public:
 	BiffStructurePtr clone();
 

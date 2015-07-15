@@ -9,7 +9,7 @@ class CFRecord;
 
 class FtPioGrbit : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FtPioGrbit)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtPioGrbit)
 public:
 	BiffStructurePtr clone();
 

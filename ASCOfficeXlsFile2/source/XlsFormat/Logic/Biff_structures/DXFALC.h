@@ -9,7 +9,7 @@ class CFRecord;
 
 class DXFALC : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(DXFALC)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(DXFALC)
 public:
 	BiffStructurePtr clone();
 

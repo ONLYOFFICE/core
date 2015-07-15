@@ -19,19 +19,12 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeTheme;
+
+//-----------------------------
 	BIFF_DWORD dwThemeVersion;
 	//std::wstring rgb;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(dwThemeVersion)
-/*
-		if(!dwThemeVersion)
-		{
-			xml_tag->Puttext(rgb.c_str());
-		}
-*/
-	BO_ATTRIB_MARKUP_END
 
 };
 

@@ -9,7 +9,7 @@ class CFRecord;
 
 class PtgAreaErr: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgAreaErr)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgAreaErr)
 public:
 	PtgAreaErr();
 	PtgAreaErr(const PtgDataType data_type_init);

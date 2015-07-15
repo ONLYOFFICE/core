@@ -12,7 +12,7 @@ class CFRecord;
 
 class FtPictFmla : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FtPictFmla)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtPictFmla)
 public:
 	FtPictFmla();
 	BiffStructurePtr clone();

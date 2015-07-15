@@ -90,7 +90,7 @@ private:
 
 class CFExTemplateParams : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(CFExTemplateParams)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFExTemplateParams)
 	//virtual void toXML(BiffStructurePtr & parent) {};
 	//virtual const bool fromXML(BiffStructurePtr & parent) {return false;};
 public:

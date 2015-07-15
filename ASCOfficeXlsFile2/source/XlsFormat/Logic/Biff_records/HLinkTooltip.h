@@ -19,14 +19,17 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeHLinkTooltip;
+
+//-----------------------------
 	BIFF_BSTR wzTooltip;
 	BackwardOnlyParam<std::wstring > ref_;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB_NAME(ref_, L"ref")
-		BO_ATTRIB_MARKUP_ATTRIB(wzTooltip)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB_NAME(ref_, L"ref")
+		//BO_ATTRIB_MARKUP_ATTRIB(wzTooltip)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

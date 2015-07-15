@@ -20,21 +20,15 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeBRAI;
+
+//-----------------------------
 	BIFF_BYTE id;
 	BIFF_BYTE rt;
 	BIFF_BOOL fUnlinkedIfmt;
 	IFmt ifmt;
 	ChartParsedFormula formula;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(id)
-		BO_ATTRIB_MARKUP_ATTRIB(rt)
-		BO_ATTRIB_MARKUP_ATTRIB(fUnlinkedIfmt)
-		BO_ATTRIB_MARKUP_ATTRIB(ifmt)
-		BO_ATTRIB_MARKUP_COMPLEX(formula)
-	BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

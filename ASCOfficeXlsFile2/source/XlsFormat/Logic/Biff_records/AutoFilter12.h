@@ -25,7 +25,8 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
-public:
+	static const ElementType	type = typeAutoFilter12;
+
 	FrtRefHeader frtRefHeader;
 	BIFF_WORD iEntry;
 	BIFF_DWORD fHideArrow;
@@ -36,25 +37,15 @@ public:
 	BIFF_DWORD idList;
 	BiffStructurePtrVector rgbAF12Criteries;
 	
-private:
+//-----------------------------
 //	BIFF_WORD userName;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(frtRefHeader)
-		BO_ATTRIB_MARKUP_ATTRIB(iEntry)
-		BO_ATTRIB_MARKUP_ATTRIB(fHideArrow)
-		BO_ATTRIB_MARKUP_ATTRIB(ft)
-		BO_ATTRIB_MARKUP_ATTRIB(cft)
-		BO_ATTRIB_MARKUP_ATTRIB(cCriteria)
-		BO_ATTRIB_MARKUP_ATTRIB(cDateGroupings)
-		BO_ATTRIB_MARKUP_ATTRIB(idList)
 
-		if ( (ft == BIFF_DWORD(0)) && (cCriteria > 0) )
-		{
-			BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgbAF12Criteries, AF12Criteria)
-		}
 
-	BO_ATTRIB_MARKUP_END
+		//if ( (ft == BIFF_DWORD(0)) && (cCriteria > 0) )
+		//{
+		//	//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgbAF12Criteries, AF12Criteria)
+		//}
+
 
 };
 

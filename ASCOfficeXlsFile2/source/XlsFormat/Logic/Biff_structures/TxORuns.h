@@ -10,7 +10,7 @@ namespace XLS
 
 class TxORuns: public BiffStructure
 {	
-	BASE_OBJECT_DEFINE_CLASS_NAME(TxORuns)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(TxORuns)
 public:
 	BiffStructurePtr clone();
 

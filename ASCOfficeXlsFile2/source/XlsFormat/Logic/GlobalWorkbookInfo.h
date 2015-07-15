@@ -24,7 +24,6 @@ public:
 
 	std::map<BorderInfo, size_t> border_x_ids;
 	std::map<FillInfo, size_t> fill_x_ids;
-private:
 	unsigned int last_AXES_id;
 	const static unsigned int initial_AXES_id = 0;
 };

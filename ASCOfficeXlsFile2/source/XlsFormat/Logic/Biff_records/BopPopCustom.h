@@ -7,7 +7,7 @@ namespace XLS
 
 class BopPopCustomPiesIndices : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(RGISeriesListSpecial)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(RGISeriesListSpecial)
 public:
 	BiffStructurePtr clone();
 
@@ -16,7 +16,7 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record){}
 
-private:
+//-----------------------------
 	std::vector<unsigned __int16> pie_indices;
 };
 
@@ -35,12 +35,11 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeBopPopCustom;
+
+//-----------------------------
 	BopPopCustomPiesIndices rggrbit;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(rggrbit)
-	BO_ATTRIB_MARKUP_END
 
 };
 

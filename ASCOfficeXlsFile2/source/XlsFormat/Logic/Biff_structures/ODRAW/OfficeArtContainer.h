@@ -13,7 +13,7 @@ namespace ODRAW
 
 class OfficeArtContainer : public OfficeArtRecord
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtContainer)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtContainer)
 public:
 	OfficeArtContainer(const unsigned char recVer, const unsigned __int16 recType, const OfficeArtClientAnchorType anchor_type);
 

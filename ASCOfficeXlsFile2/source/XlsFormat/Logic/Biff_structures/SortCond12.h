@@ -12,7 +12,7 @@ class CFRecord;
 
 class SortCond12 : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(SortCond12)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SortCond12)
 public:
 	BiffStructurePtr clone();
 

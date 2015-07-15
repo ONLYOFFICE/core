@@ -16,7 +16,9 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
+	static const ElementType	type = typeRGISeriesListSpecial;
+
+//-----------------------------
 	std::vector<unsigned __int16> series;
 };
 
@@ -36,12 +38,15 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeSeriesList;
+
+//-----------------------------
 	RGISeriesListSpecial rgiser;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(rgiser)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_COMPLEX(rgiser)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

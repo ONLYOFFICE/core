@@ -11,7 +11,7 @@ class CFRecord;
 
 class FactoidData : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FactoidData)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FactoidData)
 public:
 	FactoidData();
 	FactoidData(CFRecord& record);

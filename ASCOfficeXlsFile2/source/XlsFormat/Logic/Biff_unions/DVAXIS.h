@@ -18,9 +18,9 @@ public:
 
 	virtual const bool loadContentRead(BinReaderProcessor& proc);
 	virtual const bool loadContent(BinProcessor& proc);
-	//virtual void toXML(MSXML2::IXMLDOMElementPtr own_tag);
 
-private:
+	static const ElementType	type = typeDVAXIS;
+
 	unsigned int id;
 
 };

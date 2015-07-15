@@ -10,7 +10,7 @@ class CFRecord;
 
 class EncryptionHeader : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(EncryptionHeader)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(EncryptionHeader)
 public:
 	XLS::BiffStructurePtr clone();
 

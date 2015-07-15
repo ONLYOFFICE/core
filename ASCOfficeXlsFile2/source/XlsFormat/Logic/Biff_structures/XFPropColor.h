@@ -11,7 +11,7 @@ class CFRecord;
 //#pragma pack(1)
 class XFPropColor : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(XFPropColor)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(XFPropColor)
 public:
 	BiffStructurePtr clone();
 

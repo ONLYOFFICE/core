@@ -20,7 +20,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeUserSViewBegin;
+
+//-----------------------------
 	BIFF_BSTR guid;
 	TabId iTabid;
 	BIFF_DWORD wScale;
@@ -61,51 +64,6 @@ private:
 	ForwardOnlyParam<unsigned __int16> rwBPane;
 
 	BIFF_BSTR pane_top_left_cell;
-
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(guid)
-		BO_ATTRIB_MARKUP_ATTRIB(iTabid)
-		BO_ATTRIB_MARKUP_ATTRIB(wScale)
-		BO_ATTRIB_MARKUP_ATTRIB(icvHdr)
-		BO_ATTRIB_MARKUP_ATTRIB(pnnSel)
-
-		BO_ATTRIB_MARKUP_ATTRIB(fShowBrks)
-		BO_ATTRIB_MARKUP_ATTRIB(fDspFmlaSv)
-		BO_ATTRIB_MARKUP_ATTRIB(fDspGridSv)
-		BO_ATTRIB_MARKUP_ATTRIB(fDspRwColSv)
-		BO_ATTRIB_MARKUP_ATTRIB(fDspGutsSv)
-		BO_ATTRIB_MARKUP_ATTRIB(fDspZerosSv)
-		BO_ATTRIB_MARKUP_ATTRIB(fHorizontal)
-		BO_ATTRIB_MARKUP_ATTRIB(fVertical)
-		BO_ATTRIB_MARKUP_ATTRIB(fPrintRwCol)
-		BO_ATTRIB_MARKUP_ATTRIB(fPrintGrid)
-		BO_ATTRIB_MARKUP_ATTRIB(fFitToPage)
-		BO_ATTRIB_MARKUP_ATTRIB(fPrintArea)
-		BO_ATTRIB_MARKUP_ATTRIB(fOnePrintArea)
-		BO_ATTRIB_MARKUP_ATTRIB(fFilterMode)
-		BO_ATTRIB_MARKUP_ATTRIB(fEzFilter)
-		BO_ATTRIB_MARKUP_ATTRIB(fFrozen)
-
-		BO_ATTRIB_MARKUP_ATTRIB(fFrozenNoSplit)
-		BO_ATTRIB_MARKUP_ATTRIB(fSplitV)
-		BO_ATTRIB_MARKUP_ATTRIB(fSplitH)
-		BO_ATTRIB_MARKUP_ATTRIB(fHiddenRw)
-		BO_ATTRIB_MARKUP_ATTRIB(fHiddenCol)
-		BO_ATTRIB_MARKUP_ATTRIB(fFilterUnique)
-		BO_ATTRIB_MARKUP_ATTRIB(fSheetLayoutView)
-		BO_ATTRIB_MARKUP_ATTRIB(fPageLayoutView)
-		BO_ATTRIB_MARKUP_ATTRIB(fRuler)
-
-		BO_ATTRIB_MARKUP_ATTRIB(ref8TopLeft)
-		BO_ATTRIB_MARKUP_ATTRIB_NAME(operNumX, L"operNumX")
-		BO_ATTRIB_MARKUP_ATTRIB_NAME(operNumY, L"operNumY")
-		BO_ATTRIB_MARKUP_ATTRIB_NAME(colRPane, L"colRPane")
-		BO_ATTRIB_MARKUP_ATTRIB_NAME(rwBPane, L"rwBPane")
-
-		BO_ATTRIB_MARKUP_ATTRIB_NAME(pane_top_left_cell, L"pane_top_left_cell")
-
-	BO_ATTRIB_MARKUP_END
 
 };
 

@@ -1,7 +1,11 @@
 #pragma once
-//#include <boost/enable_shared_from_this.hpp>
+
 #include <boost/shared_ptr.hpp>
 #include <list>
+#include <sstream>
+
+#include "Logging/Log.h"
+#include "XlsElementsType.h" //шоб со строками не работать
 
 namespace XLS
 {;
@@ -27,23 +31,30 @@ public:
 
 	virtual const bool read(CFStreamCacheReader& reader, BaseObject* parent, const bool mandatory) = 0; // Read self and children
 
-	virtual void toFrom(BinProcessor& proc) = 0; // This function shall contain only mark functions and is the universal XML serialiser
+	//virtual void toFrom(BinProcessor& proc) = 0; // This function shall contain only mark functions and is the universal XML serialiser
 
 	virtual const std::wstring & getClassName() const = 0; // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter
 
 	void add_child (BaseObjectPtr e) {elements_.push_back(e);}
 	
 	std::list<BaseObjectPtr> elements_;
+
+	virtual ElementType get_type() = 0;
+
+	virtual int serialize(std::wostream & _stream)
+	{
+		std::wstringstream s;
+		s << std::wstring(L"This element - ") << getClassName() << std::wstring(L"- not serialize");
+		Log::warning(s.str());
+		return 0;
+	}
 };
 
-#define BO_ATTRIB_MARKUP_BEGIN void toFrom(BinProcessor& proc) {
-#define BO_ATTRIB_MARKUP_ATTRIB(attr) /*(attr).toXML(proc.getParent(), L# attr); */{static std::wstring  attr ## _str(L# attr); proc.markAttribute(attr, attr ## _str);}
-#define BO_ATTRIB_MARKUP_ATTRIB_NAME(attr, name) /*(attr).toXML(proc.getParent(), name);*/ proc.markAttribute(attr, name);
-#define BO_ATTRIB_MARKUP_COMPLEX(attr) /*(attr).toXML(proc.getParent(), L# attr);*/ proc.markTaggedAttribute(attr);
-#define BO_ATTRIB_MARKUP_VECTOR_COMPLEX(vec, class_name)  proc.markVector(vec, class_name());
-#define BO_ATTRIB_MARKUP_END }
+#define BASE_OBJECT_DEFINE_CLASS_NAME(class_name)\
+public: const std::wstring & getClassName() const { static std::wstring  str(L# class_name); return str; };\
+virtual ElementType get_type() { return type; }
 
-#define BASE_OBJECT_DEFINE_CLASS_NAME(class_name) public: const std::wstring & getClassName() const { static std::wstring  str(L# class_name); return str; }
+#define BASE_OBJECT_DEFINE_CLASS_TYPE(class_name) public: const int & getClassType() const { static std::wstring  str(L# class_name); return str; }
 
 typedef enum 
 {

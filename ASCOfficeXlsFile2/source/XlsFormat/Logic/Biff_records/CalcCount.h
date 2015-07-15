@@ -19,13 +19,11 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
-	BIFF_SHORT cIter;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(cIter)
-	BO_ATTRIB_MARKUP_END
 
+	static const ElementType	type = typeCalcCount;
+
+//-----------------------------
+	BIFF_SHORT cIter;
 };
 
 } // namespace XLS

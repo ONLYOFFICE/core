@@ -11,7 +11,7 @@ class CFRecord;
 
 class URICreateFlags : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(URICreateFlags)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(URICreateFlags)
 public:
 	URICreateFlags();
 	URICreateFlags(XLS::CFRecord& record);

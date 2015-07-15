@@ -52,7 +52,7 @@ public:
 
 class PtgAdd : public BOperatorPtg_T<PtgAdd, 0x03, 25>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgAdd)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgAdd)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgAdd(*this)); };
 
@@ -66,7 +66,7 @@ public:
 
 class PtgSub : public BOperatorPtg_T<PtgSub, 0x04, 25>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgSub)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgSub)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgSub(*this)); };
 
@@ -80,7 +80,7 @@ public:
 
 class PtgMul : public BOperatorPtg_T<PtgMul, 0x05, 20>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgMul)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgMul)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgMul(*this)); };
 
@@ -94,7 +94,7 @@ public:
 
 class PtgDiv : public BOperatorPtg_T<PtgDiv, 0x06, 20>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgDiv)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgDiv)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgDiv(*this)); };
 
@@ -108,7 +108,7 @@ public:
 
 class PtgPower : public BOperatorPtg_T<PtgPower, 0x07, 15>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgPower)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgPower)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgPower(*this)); };
 
@@ -122,7 +122,7 @@ public:
 
 class PtgEq : public BOperatorPtg_T<PtgEq, 0x0B, 35>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgEq)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgEq)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgEq(*this)); };
 
@@ -136,7 +136,7 @@ public:
 
 class PtgNe : public BOperatorPtg_T<PtgNe, 0x0E, 35>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgNe)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgNe)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgNe(*this)); };
 
@@ -150,7 +150,7 @@ public:
 
 class PtgGt : public BOperatorPtg_T<PtgGt, 0x0D, 35>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgGt)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgGt)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgGt(*this)); };
 
@@ -164,7 +164,7 @@ public:
 
 class PtgGe : public BOperatorPtg_T<PtgGe, 0x0C, 35>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgGe)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgGe)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgGe(*this)); };
 
@@ -178,7 +178,7 @@ public:
 
 class PtgLt : public BOperatorPtg_T<PtgLt, 0x09, 35>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgLt)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgLt)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgLt(*this)); };
 
@@ -192,7 +192,7 @@ public:
 
 class PtgLe : public BOperatorPtg_T<PtgLe, 0x0A, 35>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgLe)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgLe)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgLe(*this)); };
 
@@ -206,7 +206,7 @@ public:
 
 class PtgConcat : public BOperatorPtg_T<PtgConcat, 0x08, 30>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgConcat)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgConcat)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgConcat(*this)); };
 
@@ -220,7 +220,7 @@ public:
 
 class PtgIsect : public BOperatorPtg_T<PtgIsect, 0x0F, 5>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgIsect)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgIsect)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgIsect(*this)); };
 
@@ -234,7 +234,7 @@ public:
 
 class PtgRange : public BOperatorPtg_T<PtgRange, 0x11, 4>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgRange)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgRange)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgRange(*this)); };
 
@@ -248,7 +248,7 @@ public:
 
 class PtgUnion : public BOperatorPtg_T<PtgUnion, 0x10, 6>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgUnion)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgUnion)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgUnion(*this)); };
 
@@ -262,7 +262,7 @@ public:
 
 class PtgUminus : public UOperatorPtg_T<PtgUminus, 0x13, 10>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgUminus)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgUminus)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgUminus(*this)); };
 
@@ -277,7 +277,7 @@ public:
 
 class PtgUplus : public UOperatorPtg_T<PtgUplus, 0x12, 10>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgUplus)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgUplus)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgUplus(*this)); };
 
@@ -292,7 +292,7 @@ public:
 
 class PtgPercent : public UOperatorPtg_T<PtgPercent, 0x14, 11>
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgPercent)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgPercent)
 public:
 	BiffStructurePtr clone() { return BiffStructurePtr(new PtgPercent(*this)); };
 

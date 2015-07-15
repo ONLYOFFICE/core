@@ -14,7 +14,7 @@ public:
 	BiffRecordSplit();
 	~BiffRecordSplit();
 
-private:
+//-----------------------------
 	virtual const bool storeRecordAndDecideProceeding(CFRecordPtr record);
 
 protected:
@@ -22,7 +22,7 @@ protected:
 	virtual const bool isEndingRecord(CFRecord& record) = 0;
 	virtual void useContinueRecords(CFRecord& record) = 0;
 
-private:
+//-----------------------------
 	CFRecordPtr stored_record;
 
 };

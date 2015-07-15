@@ -19,7 +19,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeAxcExt;
+
+//-----------------------------
 	BIFF_WORD catMin;
 	BIFF_WORD catMax;
 	BIFF_WORD catMajor;
@@ -37,25 +40,6 @@ private:
 	BIFF_BOOL fAutoBase;
 	BIFF_BOOL fAutoCross;
 	BIFF_BOOL fAutoDate;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(catMin)
-		BO_ATTRIB_MARKUP_ATTRIB(catMax)
-		BO_ATTRIB_MARKUP_ATTRIB(catMajor)
-		BO_ATTRIB_MARKUP_ATTRIB(duMajor)
-		BO_ATTRIB_MARKUP_ATTRIB(catMinor)
-		BO_ATTRIB_MARKUP_ATTRIB(duMinor)
-		BO_ATTRIB_MARKUP_ATTRIB(duBase)
-		BO_ATTRIB_MARKUP_ATTRIB(catCrossDate)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoMin)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoMax)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoMajor)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoMinor)
-		BO_ATTRIB_MARKUP_ATTRIB(fDateAxis)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoBase)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoCross)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoDate)
-	BO_ATTRIB_MARKUP_END
 
 };
 

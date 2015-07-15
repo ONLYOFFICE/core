@@ -11,7 +11,7 @@ class CFRecord;
 
 class ExtProp : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ExtProp)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ExtProp)
 public:
 	BiffStructurePtr clone();
 

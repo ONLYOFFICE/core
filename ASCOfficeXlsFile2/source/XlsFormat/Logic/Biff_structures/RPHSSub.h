@@ -10,7 +10,7 @@ class CFRecord;
 
 class RPHSSub : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(RPHSSub)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(RPHSSub)
 public:
 	BiffStructurePtr clone();
 

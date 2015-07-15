@@ -9,7 +9,7 @@ namespace XLS
 
 class List12TableStyleClientInfo: public BiffStructure
 {	
-	BASE_OBJECT_DEFINE_CLASS_NAME(List12TableStyleClientInfo)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(List12TableStyleClientInfo)
 public:
 	BiffStructurePtr clone();
 

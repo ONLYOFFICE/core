@@ -10,7 +10,7 @@ namespace XLS
 
 class TableFeatureType: public BiffStructure
 {	
-	BASE_OBJECT_DEFINE_CLASS_NAME(TableFeatureType)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(TableFeatureType)
 public:
 	BiffStructurePtr clone();
 

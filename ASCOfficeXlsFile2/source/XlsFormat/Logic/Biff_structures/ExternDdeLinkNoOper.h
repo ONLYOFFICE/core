@@ -10,7 +10,7 @@ class CFRecord;
 
 class ExternDdeLinkNoOper : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ExternDdeLinkNoOper)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ExternDdeLinkNoOper)
 public:
 	BiffStructurePtr clone();
 

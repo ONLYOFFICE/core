@@ -10,7 +10,7 @@ class CFRecord;
 
 class ControlInfo : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ControlInfo)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ControlInfo)
 public:
 	BiffStructurePtr clone();
 

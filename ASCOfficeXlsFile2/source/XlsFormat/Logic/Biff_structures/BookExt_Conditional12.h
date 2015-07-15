@@ -9,7 +9,7 @@ class CFRecord;
 
 class BookExt_Conditional12 : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(BookExt_Conditional12)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(BookExt_Conditional12)
 public:
 	BiffStructurePtr clone();
 

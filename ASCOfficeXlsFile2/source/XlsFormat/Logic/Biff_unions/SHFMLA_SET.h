@@ -19,9 +19,9 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
-	//virtual void toXML(MSXML2::IXMLDOMElementPtr own_tag);
 
-private:
+	static const ElementType	type = typeSHFMLA_SET;
+
 	std::vector<CellRef>& shared_formulas_locations_ref_;
 };
 

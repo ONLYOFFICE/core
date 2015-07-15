@@ -11,7 +11,7 @@ class CFRecord;
 
 class DXFProt : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(DXFProt)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(DXFProt)
 public:
 	BiffStructurePtr clone();
 

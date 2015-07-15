@@ -9,7 +9,7 @@ class CFRecord;
 
 class NameParsedFormula : public ParsedFormula
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(NameParsedFormula)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(NameParsedFormula)
 public:
 	// is_part_of_a_revision must be set to "true" from RRDDefName or RRDChgCell records only
 	NameParsedFormula(const bool is_part_of_a_revision);

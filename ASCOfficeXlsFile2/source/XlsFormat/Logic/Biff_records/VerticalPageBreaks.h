@@ -20,15 +20,12 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeVerticalPageBreaks;
+
+//-----------------------------
 	BIFF_WORD cbrk;
 	BiffStructurePtrVector rgbrk;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(cbrk)
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgbrk, VertBrk)
-	BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

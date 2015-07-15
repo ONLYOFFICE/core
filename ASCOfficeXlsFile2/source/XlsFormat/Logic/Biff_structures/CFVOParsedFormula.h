@@ -9,7 +9,7 @@ class CFRecord;
 
 class CFVOParsedFormula : public ParsedFormula
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(CFVOParsedFormula)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFVOParsedFormula)
 public:
 	CFVOParsedFormula();
 	BiffStructurePtr clone();

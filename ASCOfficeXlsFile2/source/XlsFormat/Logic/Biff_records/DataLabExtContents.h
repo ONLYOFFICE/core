@@ -20,7 +20,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeDataLabExtContents;
+
+//-----------------------------
 
 	BIFF_BOOL fSerName;
 	BIFF_BOOL fCatName;
@@ -31,15 +34,15 @@ private:
 	XLUnicodeStringMin2 rgchSep;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fSerName)
-		BO_ATTRIB_MARKUP_ATTRIB(fCatName)
-		BO_ATTRIB_MARKUP_ATTRIB(fValue)
-		BO_ATTRIB_MARKUP_ATTRIB(fPercent)
-		BO_ATTRIB_MARKUP_ATTRIB(fBubSizes)
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fSerName)
+		//BO_ATTRIB_MARKUP_ATTRIB(fCatName)
+		//BO_ATTRIB_MARKUP_ATTRIB(fValue)
+		//BO_ATTRIB_MARKUP_ATTRIB(fPercent)
+		//BO_ATTRIB_MARKUP_ATTRIB(fBubSizes)
 
-		BO_ATTRIB_MARKUP_ATTRIB(rgchSep)
-	BO_ATTRIB_MARKUP_END
+		//BO_ATTRIB_MARKUP_ATTRIB(rgchSep)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

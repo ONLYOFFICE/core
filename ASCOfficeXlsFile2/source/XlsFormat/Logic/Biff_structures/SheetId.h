@@ -9,7 +9,7 @@ class CFRecord;
 
 class SheetId : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(SheetId)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SheetId)
 public:
 	BiffStructurePtr clone();
 

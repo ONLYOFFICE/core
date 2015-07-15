@@ -10,7 +10,7 @@ class CFRecord;
 
 class RevLblName : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(RevLblName)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(RevLblName)
 public:
 	RevLblName();
 	RevLblName(CFRecord& record);

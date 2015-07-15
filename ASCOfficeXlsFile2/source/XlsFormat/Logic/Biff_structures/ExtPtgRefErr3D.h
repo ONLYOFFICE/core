@@ -10,7 +10,7 @@ class CFRecord;
 
 class ExtPtgRefErr3D : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(ExtPtgRefErr3D)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ExtPtgRefErr3D)
 public:
 	BiffStructurePtr clone();
 

@@ -9,7 +9,7 @@ class CFRecord;
 
 class AntiMoniker : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(AntiMoniker)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(AntiMoniker)
 public:
 	XLS::BiffStructurePtr clone();
 

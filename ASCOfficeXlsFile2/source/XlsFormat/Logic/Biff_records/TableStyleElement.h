@@ -19,16 +19,13 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeTableStyleElement;
+
+//-----------------------------
 	BIFF_DWORD tseType;
 	BIFF_DWORD size;
 	BIFF_DWORD index;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(tseType)
-		BO_ATTRIB_MARKUP_ATTRIB(size)
-		BO_ATTRIB_MARKUP_ATTRIB(index)
-	BO_ATTRIB_MARKUP_END
 
 };
 

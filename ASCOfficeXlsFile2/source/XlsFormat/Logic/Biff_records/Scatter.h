@@ -19,20 +19,23 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeScatter;
+
+//-----------------------------
 	BIFF_WORD pcBubbleSizeRatio;
 	BIFF_WORD wBubbleSize;
 	BIFF_BOOL fBubbles;
 	BIFF_BOOL fShowNegBubbles;
 	BIFF_BOOL fHasShadow;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(pcBubbleSizeRatio)
-		BO_ATTRIB_MARKUP_ATTRIB(wBubbleSize)
-		BO_ATTRIB_MARKUP_ATTRIB(fBubbles)
-		BO_ATTRIB_MARKUP_ATTRIB(fShowNegBubbles)
-		BO_ATTRIB_MARKUP_ATTRIB(fHasShadow)
-		BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(pcBubbleSizeRatio)
+		//BO_ATTRIB_MARKUP_ATTRIB(wBubbleSize)
+		//BO_ATTRIB_MARKUP_ATTRIB(fBubbles)
+		//BO_ATTRIB_MARKUP_ATTRIB(fShowNegBubbles)
+		//BO_ATTRIB_MARKUP_ATTRIB(fHasShadow)
+		//BO_ATTRIB_MARKUP_END
 
 };
 

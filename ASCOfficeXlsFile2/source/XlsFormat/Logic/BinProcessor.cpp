@@ -25,13 +25,16 @@ BinProcessor::~BinProcessor()
 }
 
 
-const bool BinProcessor::repeated(BaseObject& object, const int fromN, const int toN)
+const int BinProcessor::repeated(BaseObject& object, const int fromN, const int toN)
 {
+	int count = 0;
+
 	bool at_least_one_read = false;
 
 	for(int i = 0; i < fromN; ++i)
 	{
 		mandatory(*object.clone());
+		count++;
 		at_least_one_read = true;
 	}
 	for(int j = fromN; j < toN || !toN/*infinity*/; ++j)
@@ -41,8 +44,9 @@ const bool BinProcessor::repeated(BaseObject& object, const int fromN, const int
 			break;
 		}
 		at_least_one_read = true;
+		if (count == 0) count = -1; 
 	}
-	return at_least_one_read;
+	return count;
 }
 
 

@@ -14,7 +14,7 @@ namespace ODRAW
 template<class Type>
 class IMsoArray : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(IMsoArray)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(IMsoArray)
 public:
 	XLS::BiffStructurePtr clone(){return XLS::BiffStructurePtr(new IMsoArray(*this));}
 

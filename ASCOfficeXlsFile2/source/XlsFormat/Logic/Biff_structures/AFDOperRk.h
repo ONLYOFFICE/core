@@ -8,7 +8,7 @@ namespace XLS
 
 class AFDOperRk: public BiffStructure
 {	
-	BASE_OBJECT_DEFINE_CLASS_NAME(AFDOperRk)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(AFDOperRk)
 public:
 	BiffStructurePtr clone();
 

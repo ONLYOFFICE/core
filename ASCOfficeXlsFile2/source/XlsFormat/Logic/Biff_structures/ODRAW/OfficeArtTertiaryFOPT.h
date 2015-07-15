@@ -14,7 +14,7 @@ namespace ODRAW
 
 class OfficeArtTertiaryFOPT : public OfficeArtRecord
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtTertiaryFOPT)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtTertiaryFOPT)
 public:
 	OfficeArtTertiaryFOPT();
 	XLS::BiffStructurePtr clone();

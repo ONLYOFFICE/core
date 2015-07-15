@@ -9,7 +9,7 @@ class CFRecord;
 
 class SerBool : public SerAr
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(SerBool)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SerBool)
 public:
 	SerBool();
 	SerBool(const std::wstring& word); // Accepts only "TRUE" or "FALSE"

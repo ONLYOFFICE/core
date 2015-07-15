@@ -20,12 +20,15 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeRRTabId;
+
+//-----------------------------
 	BiffStructurePtrVector sheet_ids;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(sheet_ids, SheetId)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(sheet_ids, SheetId)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

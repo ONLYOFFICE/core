@@ -19,7 +19,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeBopPop;
+
+//-----------------------------
 	BIFF_BYTE pst;
 	Boolean<unsigned char> fAutoSplit;
 	BIFF_WORD split;
@@ -29,19 +32,6 @@ private:
 	BIFF_SHORT pcGap;
 	BIFF_DOUBLE numSplitValue;
 	BIFF_BOOL fHasShadow;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(pst)
-		BO_ATTRIB_MARKUP_ATTRIB(fAutoSplit)
-		BO_ATTRIB_MARKUP_ATTRIB(split)
-		BO_ATTRIB_MARKUP_ATTRIB(iSplitPos)
-		BO_ATTRIB_MARKUP_ATTRIB(pcSplitPercent)
-		BO_ATTRIB_MARKUP_ATTRIB(pcPie2Size)
-		BO_ATTRIB_MARKUP_ATTRIB(pcGap)
-		BO_ATTRIB_MARKUP_ATTRIB(numSplitValue)
-		BO_ATTRIB_MARKUP_ATTRIB(fHasShadow)
-	BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

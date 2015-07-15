@@ -13,7 +13,7 @@ class CFRecord;
 
 class FtLbsData : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FtLbsData)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtLbsData)
 public:
 	FtLbsData();
 	BiffStructurePtr clone();

@@ -11,7 +11,7 @@ class CFRecord;
 
 class CFMStateItem : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(CFMStateItem)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFMStateItem)
 public:
 	BiffStructurePtr clone();
 

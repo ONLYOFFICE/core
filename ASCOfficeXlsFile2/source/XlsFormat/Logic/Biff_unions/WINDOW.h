@@ -9,8 +9,11 @@ namespace XLS
 // Logical representation of WINDOW union of records 
 class WINDOW: public CompositeObject
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(WINDOW)
 public:
+	static const ElementType	type = typeWINDOW;
+	
+	BASE_OBJECT_DEFINE_CLASS_NAME(WINDOW);
+	
 	WINDOW();
 	~WINDOW();
 
@@ -18,6 +21,7 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	
 };
 
 } // namespace XLS

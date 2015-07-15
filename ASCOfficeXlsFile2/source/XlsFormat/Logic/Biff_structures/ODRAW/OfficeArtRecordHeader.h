@@ -13,7 +13,7 @@ namespace ODRAW
 
 class OfficeArtRecordHeader : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtRecordHeader)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtRecordHeader)
 public:
 	XLS::BiffStructurePtr clone();
 

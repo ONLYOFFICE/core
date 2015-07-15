@@ -22,18 +22,20 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	static const ElementType	type = typeNumber;
+
 	const CellRef getLocation() const;
 
-private:
+//-----------------------------
 	CellOffsetResender resender;
 	Cell cell;
 	BIFF_DOUBLE num;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(resender)
-		BO_ATTRIB_MARKUP_COMPLEX(cell)
-		BO_ATTRIB_MARKUP_ATTRIB(num)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_COMPLEX(resender)
+		//BO_ATTRIB_MARKUP_COMPLEX(cell)
+		//BO_ATTRIB_MARKUP_ATTRIB(num)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

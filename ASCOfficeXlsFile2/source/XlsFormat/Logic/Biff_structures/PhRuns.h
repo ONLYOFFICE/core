@@ -9,7 +9,7 @@ class CFRecord;
 
 class PhRuns : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PhRuns)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PhRuns)
 public:
 	BiffStructurePtr clone();
 

@@ -21,9 +21,12 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
+
+	static const ElementType	type = typeFormula;
+
 	const CellRef getLocation() const;
 
-private:
+//-----------------------------
 	Cell cell;
 	FormulaValue val;
 	BIFF_BOOL fAlwaysCalc;
@@ -33,16 +36,16 @@ private:
 
 	CellParsedFormula formula;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(cell)
-		BO_ATTRIB_MARKUP_ATTRIB(val)
-		BO_ATTRIB_MARKUP_ATTRIB(fAlwaysCalc)
-		BO_ATTRIB_MARKUP_ATTRIB(fFill)
-		BO_ATTRIB_MARKUP_ATTRIB(fShrFmla)
-		BO_ATTRIB_MARKUP_ATTRIB(fClearErrors)
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_COMPLEX(cell)
+		//BO_ATTRIB_MARKUP_ATTRIB(val)
+		//BO_ATTRIB_MARKUP_ATTRIB(fAlwaysCalc)
+		//BO_ATTRIB_MARKUP_ATTRIB(fFill)
+		//BO_ATTRIB_MARKUP_ATTRIB(fShrFmla)
+		//BO_ATTRIB_MARKUP_ATTRIB(fClearErrors)
 
-		BO_ATTRIB_MARKUP_COMPLEX(formula)
-	BO_ATTRIB_MARKUP_END
+		//BO_ATTRIB_MARKUP_COMPLEX(formula)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

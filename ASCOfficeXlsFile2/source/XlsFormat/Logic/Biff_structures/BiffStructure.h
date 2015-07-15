@@ -58,7 +58,10 @@ protected:
 	//MSXML2::IXMLDOMElementPtr getStructNode(BiffStructurePtr & parent, const std::wstring & tag_name);
 };
 
-#define BASE_OBJECT_DEFINE_CLASS_NAME(class_name) public: const std::wstring & getClassName() const { static std::wstring  str(L# class_name); return str; }
+#define BASE_STRUCTURE_DEFINE_CLASS_NAME(class_name)\
+	public: \
+		const std::wstring & getClassName() const { static std::wstring  str(L# class_name); return str; };
+	
 
 
 bool DiffBiff(BiffStructure_NoVtbl & val);

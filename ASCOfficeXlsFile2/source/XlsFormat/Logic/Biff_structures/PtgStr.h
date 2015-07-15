@@ -10,7 +10,7 @@ class CFRecord;
 
 class PtgStr: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgStr)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgStr)
 public:
 	PtgStr();
 	PtgStr(const std::wstring & str);

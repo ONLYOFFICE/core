@@ -24,7 +24,8 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
-public:
+	static const ElementType	type = typeTxO;
+
 	BIFF_BYTE hAlignment;
 	BIFF_BYTE vAlignment;
 	BIFF_BYTE fLockText;
@@ -39,25 +40,14 @@ public:
 	TxORuns TxOruns;
 	XLUnicodeStringNoCch commentText;
 
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(hAlignment)
-		BO_ATTRIB_MARKUP_ATTRIB(vAlignment)
-		BO_ATTRIB_MARKUP_ATTRIB(fLockText)
-		BO_ATTRIB_MARKUP_ATTRIB(fJustLast)
-		BO_ATTRIB_MARKUP_ATTRIB(fSecretEdit)
-		BO_ATTRIB_MARKUP_ATTRIB(rot)
-		BO_ATTRIB_MARKUP_ATTRIB(cchText)
-		BO_ATTRIB_MARKUP_ATTRIB(cbRuns)
-		if (cchText == BIFF_WORD(0)) {
-			BO_ATTRIB_MARKUP_ATTRIB(ifntEmpty)
-		}
-		if ( cbRuns )
-		{
-			BO_ATTRIB_MARKUP_COMPLEX(TxOruns)
-		}
-		BO_ATTRIB_MARKUP_ATTRIB(commentText)
-	BO_ATTRIB_MARKUP_END
+		//if (cchText == BIFF_WORD(0)) {
+		//	//BO_ATTRIB_MARKUP_ATTRIB(ifntEmpty)
+		//}
+		//if ( cbRuns )
+		//{
+		//	//BO_ATTRIB_MARKUP_COMPLEX(TxOruns)
+		//}
+
 
 };
 

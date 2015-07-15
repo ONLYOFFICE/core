@@ -9,7 +9,7 @@ class CFRecord;
 
 class FileMoniker : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FileMoniker)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FileMoniker)
 public:
 	FileMoniker();
 	FileMoniker(XLS::CFRecord& record);

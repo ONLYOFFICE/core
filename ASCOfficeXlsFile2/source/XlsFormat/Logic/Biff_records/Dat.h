@@ -20,19 +20,20 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
-private:
+	static const ElementType	type = typeDat;
+
+//-----------------------------
 	BIFF_BOOL fHasBordHorz;
 	BIFF_BOOL fHasBordVert;
 	BIFF_BOOL fHasBordOutline;
 	BIFF_BOOL fShowSeriesKey;
 
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fHasBordHorz)
-		BO_ATTRIB_MARKUP_ATTRIB(fHasBordVert)
-		BO_ATTRIB_MARKUP_ATTRIB(fHasBordOutline)
-		BO_ATTRIB_MARKUP_ATTRIB(fShowSeriesKey)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fHasBordHorz)
+		//BO_ATTRIB_MARKUP_ATTRIB(fHasBordVert)
+		//BO_ATTRIB_MARKUP_ATTRIB(fHasBordOutline)
+		//BO_ATTRIB_MARKUP_ATTRIB(fShowSeriesKey)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -12,7 +12,7 @@ class CFStream;
 
 class CellOffsetResender : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(CellOffsetResender)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CellOffsetResender)
 public:
 	BiffStructurePtr clone();
 

@@ -11,7 +11,7 @@ class CFRecord;
 
 class MOper : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(MOper)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(MOper)
 public:
 	BiffStructurePtr clone();
 

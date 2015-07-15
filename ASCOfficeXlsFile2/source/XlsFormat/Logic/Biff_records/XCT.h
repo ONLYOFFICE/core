@@ -19,18 +19,18 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeXCT;
+
+//-----------------------------
 	BIFF_WORD ccrn;
 	BIFF_WORD itab;
 	BIFF_BOOL itab_exist;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(ccrn)
-		if(itab_exist)
-		{
-			BO_ATTRIB_MARKUP_ATTRIB(itab)
-		}
-	BO_ATTRIB_MARKUP_END
+
+		//if(itab_exist)
+		//{
+		//	//BO_ATTRIB_MARKUP_ATTRIB(itab)
+		//}
 
 };
 

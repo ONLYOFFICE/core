@@ -22,16 +22,14 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	static const ElementType	type = typeBlank;
+
+
 	const CellRef getLocation() const;
 
-private:
+//-----------------------------
 	CellOffsetResender resender;
 	Cell cell;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(resender)
-		BO_ATTRIB_MARKUP_COMPLEX(cell)
-	BO_ATTRIB_MARKUP_END
 
 };
 

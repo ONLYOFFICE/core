@@ -10,7 +10,7 @@ class CFRecord;
 
 class RgbExtra : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(RgbExtra)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(RgbExtra)
 public:
 	BiffStructurePtr clone();
 

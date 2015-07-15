@@ -11,7 +11,7 @@ class CFRecord;
 
 class RevExtern : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(RevExtern)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(RevExtern)
 public:
 	RevExtern();
 	RevExtern(CFRecord& record);

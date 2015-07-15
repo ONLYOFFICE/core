@@ -22,26 +22,28 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
-private:
+	static const ElementType	type = typeStyle;
+
+//-----------------------------
 	BIFF_WORD ixfe;
 	BIFF_BOOL fBuiltIn;
 	BuiltInStyle builtInData;
 	XLUnicodeString user;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(ixfe)
-		BO_ATTRIB_MARKUP_ATTRIB(fBuiltIn)
-		if(fBuiltIn)
-		{
-			BO_ATTRIB_MARKUP_COMPLEX(builtInData)
-		}
-		else
-		{
-			BO_ATTRIB_MARKUP_ATTRIB(user)
-		}
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(ixfe)
+		//BO_ATTRIB_MARKUP_ATTRIB(fBuiltIn)
+		//if(fBuiltIn)
+		//{
+		//	//BO_ATTRIB_MARKUP_COMPLEX(builtInData)
+		//}
+		//else
+		//{
+		//	//BO_ATTRIB_MARKUP_ATTRIB(user)
+		//}
 
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_END
 
 };
 

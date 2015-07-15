@@ -12,7 +12,7 @@ namespace ODRAW
 
 class OfficeArtIDCL : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtIDCL)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtIDCL)
 public:
 	XLS::BiffStructurePtr clone();
 

@@ -417,6 +417,10 @@
 				RelativePath="..\XlsFormat\Logic\WorksheetSubstream.h"
 				>
 			</File>
+			<File
+				RelativePath="..\XlsFormat\Logic\XlsElementsType.h"
+				>
+			</File>
 			<Filter
 				Name="Biff_records"
 				>

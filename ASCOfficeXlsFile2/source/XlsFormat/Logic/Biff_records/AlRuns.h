@@ -20,12 +20,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeAlRuns;
+
 	BiffStructurePtrVector rgRuns;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgRuns, FormatRun)
-	BO_ATTRIB_MARKUP_END
 
 };
 

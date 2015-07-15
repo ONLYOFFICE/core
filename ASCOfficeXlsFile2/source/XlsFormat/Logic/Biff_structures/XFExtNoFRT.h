@@ -10,7 +10,7 @@ class CFRecord;
 
 class XFExtNoFRT : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(XFExtNoFRT)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(XFExtNoFRT)
 public:
 	XFExtNoFRT();
 	XFExtNoFRT(CFRecord& record);

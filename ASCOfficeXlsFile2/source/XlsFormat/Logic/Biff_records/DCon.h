@@ -19,7 +19,9 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeDCon;
+//-----------------------------
 //	BIFF_WORD userName;
 	unsigned __int16 iiftab;
 	unsigned __int16 fLeftCat;
@@ -28,9 +30,9 @@ private:
 
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-//		BO_ATTRIB_MARKUP_ATTRIB(userName)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+//		//BO_ATTRIB_MARKUP_ATTRIB(userName)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -20,7 +20,9 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+		
+	static const ElementType	type = typeAreaFormat;
+
 	LongRGB rgbFore;
 	LongRGB rgbBack;
 	BIFF_WORD fls;
@@ -28,16 +30,7 @@ private:
 	BIFF_BOOL fInvertNeg;
 	IcvChart icvFore;
 	IcvChart icvBack;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(rgbFore)
-		BO_ATTRIB_MARKUP_COMPLEX(rgbBack)
-		BO_ATTRIB_MARKUP_ATTRIB(fls)
-		BO_ATTRIB_MARKUP_ATTRIB(fAuto)
-		BO_ATTRIB_MARKUP_ATTRIB(fInvertNeg)
-		BO_ATTRIB_MARKUP_ATTRIB(icvFore)
-		BO_ATTRIB_MARKUP_ATTRIB(icvBack)
-	BO_ATTRIB_MARKUP_END
+
 
 };
 

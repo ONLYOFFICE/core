@@ -9,7 +9,7 @@ namespace XLS
 
 class Run: public BiffStructure
 {	
-	BASE_OBJECT_DEFINE_CLASS_NAME(Run)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Run)
 public:
 	BiffStructurePtr clone();
 

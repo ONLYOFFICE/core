@@ -12,7 +12,7 @@ class CFRecord;
 
 class NoteRR : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(NoteRR)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(NoteRR)
 public:
 	NoteRR();
 	NoteRR(CFRecord& record);

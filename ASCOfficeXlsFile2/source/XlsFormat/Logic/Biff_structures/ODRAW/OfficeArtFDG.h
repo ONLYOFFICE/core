@@ -13,7 +13,7 @@ namespace ODRAW
 
 class OfficeArtFDG : public OfficeArtRecord
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtFDG)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtFDG)
 public:
 	OfficeArtFDG();
 	XLS::BiffStructurePtr clone();

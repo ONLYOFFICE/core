@@ -19,12 +19,11 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeAxesUsed;
+
+//-----------------------------
 	BIFF_WORD cAxes;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(cAxes)
-	BO_ATTRIB_MARKUP_END
 
 };
 

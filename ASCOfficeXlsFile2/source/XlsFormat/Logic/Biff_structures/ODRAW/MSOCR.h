@@ -12,7 +12,7 @@ namespace ODRAW
 
 class MSOCR : public XLS::BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(MSOCR)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(MSOCR)
 public:
 	XLS::BiffStructurePtr clone();
 

@@ -13,6 +13,9 @@ class ClrtClient: public Palette // Absolutely the same as 'Palette'
 	BASE_OBJECT_DEFINE_CLASS_NAME(ClrtClient)
 public:
 	ClrtClient() : Palette(3) {};
+	
+	static const ElementType type = typeClrtClient;
+
 };
 
 } // namespace XLS

@@ -18,7 +18,8 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-private:
+	static const ElementType	type = typeMSODRAWINGGROUP;
+
 	bool is_inside_chart_sheet_;
 };
 

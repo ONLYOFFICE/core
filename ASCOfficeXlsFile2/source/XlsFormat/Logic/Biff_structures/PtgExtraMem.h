@@ -10,7 +10,7 @@ class CFRecord;
 
 class PtgExtraMem : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgExtraMem)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgExtraMem)
 public:
 	PtgExtraMem();
 	PtgExtraMem(CFRecord& record);

@@ -10,7 +10,7 @@ class CFRecord;
 
 class PtgFunc : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgFunc)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgFunc)
 	PtgFunc(const unsigned __int16 func_index, const unsigned char data_type);
 public:
 	PtgFunc();

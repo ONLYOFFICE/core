@@ -21,16 +21,12 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+	
+	static const ElementType	type = typeArray;
+
 	Ref ref_;
 	BIFF_BOOL fAlwaysCalc;
 	ArrayParsedFormula formula;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(ref_)
-		BO_ATTRIB_MARKUP_ATTRIB(fAlwaysCalc)
-		BO_ATTRIB_MARKUP_COMPLEX(formula)
-	BO_ATTRIB_MARKUP_END
 
 };
 

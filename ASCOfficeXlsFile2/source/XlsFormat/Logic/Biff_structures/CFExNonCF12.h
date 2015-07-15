@@ -11,7 +11,7 @@ class CFRecord;
 
 class CFExNonCF12 : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(CFExNonCF12)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(CFExNonCF12)
 public:
 	BiffStructurePtr clone();
 

@@ -10,7 +10,7 @@ class CFRecord;
 
 class Rgce : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(Rgce)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Rgce)
 public:
 	Rgce(const CellRef& cell_base_ref_init);
 	BiffStructurePtr clone();

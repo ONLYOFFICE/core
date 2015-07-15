@@ -33,13 +33,31 @@ BaseObjectPtr FORMATTING::clone()
 //FORMATTING = 1*510Font 8*218Format XFS *DXF STYLES [TABLESTYLES] [Palette] [ClrtClient]
 const bool FORMATTING::loadContent(BinProcessor& proc)
 {
+	int count = 0;
 	proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally  at least one Font is mandatory)
-	proc.repeated<Format>(0, 218); // Originally: proc.repeated<Format>(8, 218);
+	count = proc.repeated<Format>(0, 218); // Originally: proc.repeated<Format>(8, 218);
+
+	while(count > 0)
+	{
+		m_Formats.insert(m_Formats.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+
+	}
 	proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally Font follows by Format)
-	proc.mandatory<XFS>();
+	
+	if (proc.mandatory<XFS>())
+	{
+		m_XFS = elements_.back();
+		elements_.pop_back();
+	}
 	proc.repeated<DXF>(0, 0);
-	//proc.mandatory<STYLES>();
-	proc.optional<STYLES>();
+	
+	if (proc.optional<STYLES>())
+	{
+		m_Styles = elements_.back();
+		elements_.pop_back();
+	}
 	proc.optional<TABLESTYLES>();
 	proc.optional<Palette>();
 	proc.optional<ClrtClient>();

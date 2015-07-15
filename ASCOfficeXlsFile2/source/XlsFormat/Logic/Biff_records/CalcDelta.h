@@ -19,12 +19,11 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeCalcDelta;
+
+//-----------------------------
 	BIFF_DOUBLE numDelta;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(numDelta)
-	BO_ATTRIB_MARKUP_END
 
 };
 

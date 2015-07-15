@@ -9,7 +9,7 @@ class CFRecord;
 
 class MDir : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(MDir)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(MDir)
 public:
 	BiffStructurePtr clone();
 

@@ -18,7 +18,9 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-private:
+	static const ElementType	type = typeXFS;
+	
+	
 	size_t cell_xf_current_id;
 	size_t style_xf_current_id;
 

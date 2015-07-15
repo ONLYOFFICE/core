@@ -10,7 +10,7 @@ class CFRecord;
 
 class RRD : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(RRD)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(RRD)
 public:
 	RRD();
 	RRD(CFRecord& record);

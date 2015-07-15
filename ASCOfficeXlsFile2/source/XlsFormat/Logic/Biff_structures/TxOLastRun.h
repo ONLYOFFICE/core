@@ -8,7 +8,7 @@ namespace XLS
 
 class TxOLastRun: public BiffStructure
 {	
-	BASE_OBJECT_DEFINE_CLASS_NAME(TxOLastRun)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(TxOLastRun)
 public:
 	BiffStructurePtr clone();
 

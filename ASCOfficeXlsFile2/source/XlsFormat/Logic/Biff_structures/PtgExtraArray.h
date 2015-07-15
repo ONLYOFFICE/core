@@ -11,7 +11,7 @@ class CFRecord;
 
 class PtgExtraArray : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgExtraArray)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgExtraArray)
 public:
 	PtgExtraArray();
 	PtgExtraArray(const std::wstring& word);

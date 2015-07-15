@@ -21,7 +21,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typePane;
+
+//-----------------------------
 	BIFF_WORD x;
 	BIFF_WORD y;
 	R_RwU rwTop;
@@ -29,14 +32,14 @@ private:
 	PaneType pnnAcct;
 	BIFF_BSTR topLeftCell;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(x)
-		BO_ATTRIB_MARKUP_ATTRIB(y)
-//		BO_ATTRIB_MARKUP_ATTRIB(rwTop)
-//		BO_ATTRIB_MARKUP_ATTRIB(colLeft)
-		BO_ATTRIB_MARKUP_ATTRIB(pnnAcct)
-		BO_ATTRIB_MARKUP_ATTRIB(topLeftCell)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(x)
+		//BO_ATTRIB_MARKUP_ATTRIB(y)
+//		//BO_ATTRIB_MARKUP_ATTRIB(rwTop)
+//		//BO_ATTRIB_MARKUP_ATTRIB(colLeft)
+		//BO_ATTRIB_MARKUP_ATTRIB(pnnAcct)
+		//BO_ATTRIB_MARKUP_ATTRIB(topLeftCell)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

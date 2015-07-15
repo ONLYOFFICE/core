@@ -14,7 +14,7 @@ namespace ODRAW
 
 class OfficeArtColorMRUContainer : public OfficeArtRecord
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(OfficeArtColorMRUContainer)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtColorMRUContainer)
 public:
 	OfficeArtColorMRUContainer();
 	XLS::BiffStructurePtr clone();

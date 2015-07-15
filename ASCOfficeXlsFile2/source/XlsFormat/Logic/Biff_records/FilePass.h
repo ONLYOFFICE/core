@@ -24,7 +24,9 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
-private:
+	static const ElementType	type = typeFilePass;
+
+//-----------------------------
 	Boolean<unsigned __int16> wEncryptionType;
 	XORObfuscation key;
 	BIFF_WORD majorVer;
@@ -32,22 +34,22 @@ private:
 	CRYPTO::RC4CryptoAPIEncryptionHeader rc4CryptoAPIHeader;
 
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(wEncryptionType)
-		if(!wEncryptionType)
-		{
-			BO_ATTRIB_MARKUP_COMPLEX(key)
-		}
-		if(0x0001 == majorVer) // RC4 encryption header structure
-		{
-			BO_ATTRIB_MARKUP_COMPLEX(rc4Header)
-		}
-		else // RC4 CryptoAPI encryption header structure
-		{
-			BO_ATTRIB_MARKUP_COMPLEX(rc4CryptoAPIHeader)
-		}
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(wEncryptionType)
+		//if(!wEncryptionType)
+		//{
+		//	//BO_ATTRIB_MARKUP_COMPLEX(key)
+		//}
+		//if(0x0001 == majorVer) // RC4 encryption header structure
+		//{
+		//	//BO_ATTRIB_MARKUP_COMPLEX(rc4Header)
+		//}
+		//else // RC4 CryptoAPI encryption header structure
+		//{
+		//	//BO_ATTRIB_MARKUP_COMPLEX(rc4CryptoAPIHeader)
+		//}
 
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_END
 
 };
 

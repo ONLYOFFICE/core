@@ -9,7 +9,7 @@ class CFRecord;
 
 class SharedParsedFormula : public ParsedFormula
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(SharedParsedFormula)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(SharedParsedFormula)
 public:
 	SharedParsedFormula(const bool is_part_of_a_revision, const CellRef& cell_base_ref);
 	BiffStructurePtr clone();

@@ -9,7 +9,7 @@ class CFRecord;
 
 class FtCf : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(FtCf)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(FtCf)
 public:
 	FtCf() 
 	{

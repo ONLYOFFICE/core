@@ -20,14 +20,17 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typePlotGrowth;
+
+//-----------------------------
 	OSHARED::FixedPoint dxPlotGrowth;
 	OSHARED::FixedPoint dyPlotGrowth;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(dxPlotGrowth)
-		BO_ATTRIB_MARKUP_ATTRIB(dyPlotGrowth)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(dxPlotGrowth)
+		//BO_ATTRIB_MARKUP_ATTRIB(dyPlotGrowth)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

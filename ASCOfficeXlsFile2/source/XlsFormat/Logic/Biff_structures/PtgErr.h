@@ -10,7 +10,7 @@ class CFRecord;
 
 class PtgErr: public OperandPtg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(PtgErr)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgErr)
 public:
 	PtgErr();
 	PtgErr(const std::wstring  str);

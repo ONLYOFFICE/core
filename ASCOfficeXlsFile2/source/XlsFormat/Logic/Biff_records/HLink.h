@@ -21,16 +21,19 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeHLink;
+
+//-----------------------------
 	Ref8U ref8;
 	ForwardOnlyParam<std::wstring > hlinkClsid;
 	OSHARED::HyperlinkObject hyperlink;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_COMPLEX(ref8)
-		BO_ATTRIB_MARKUP_ATTRIB(hlinkClsid)
-		BO_ATTRIB_MARKUP_COMPLEX(hyperlink)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_COMPLEX(ref8)
+		//BO_ATTRIB_MARKUP_ATTRIB(hlinkClsid)
+		//BO_ATTRIB_MARKUP_COMPLEX(hyperlink)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

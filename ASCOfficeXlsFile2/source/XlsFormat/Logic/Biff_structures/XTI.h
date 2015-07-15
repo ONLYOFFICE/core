@@ -9,7 +9,7 @@ class CFRecord;
 
 class XTI : public BiffStructure
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(XTI)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(XTI)
 public:
 	BiffStructurePtr clone();
 

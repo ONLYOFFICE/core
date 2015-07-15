@@ -20,7 +20,10 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeSerAuxTrend;
+
+//-----------------------------
 	BIFF_BYTE regt;
 	BIFF_BYTE ordUser;
 	ChartNumNillable numIntercept;
@@ -29,15 +32,15 @@ private:
 	BIFF_DOUBLE numForecast;
 	BIFF_DOUBLE numBackcast;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(regt)
-		BO_ATTRIB_MARKUP_ATTRIB(ordUser)
-		BO_ATTRIB_MARKUP_ATTRIB(numIntercept)
-		BO_ATTRIB_MARKUP_ATTRIB(fEquation)
-		BO_ATTRIB_MARKUP_ATTRIB(fRSquared)
-		BO_ATTRIB_MARKUP_ATTRIB(numForecast)
-		BO_ATTRIB_MARKUP_ATTRIB(numBackcast)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(regt)
+		//BO_ATTRIB_MARKUP_ATTRIB(ordUser)
+		//BO_ATTRIB_MARKUP_ATTRIB(numIntercept)
+		//BO_ATTRIB_MARKUP_ATTRIB(fEquation)
+		//BO_ATTRIB_MARKUP_ATTRIB(fRSquared)
+		//BO_ATTRIB_MARKUP_ATTRIB(numForecast)
+		//BO_ATTRIB_MARKUP_ATTRIB(numBackcast)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

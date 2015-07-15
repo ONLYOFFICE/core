@@ -23,7 +23,9 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
-private:
+	static const ElementType	type = typeXF;
+
+//-----------------------------
 	FontIndex ifnt;
 	BIFF_WORD ifmt;
 	BIFF_BOOL fLocked;
@@ -35,24 +37,14 @@ private:
 	CellXF	cell;
 	StyleXF	style;
 	
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(ifnt)
-		BO_ATTRIB_MARKUP_ATTRIB(ifmt)
-		BO_ATTRIB_MARKUP_ATTRIB(fLocked)
-		BO_ATTRIB_MARKUP_ATTRIB(fHidden)
-		BO_ATTRIB_MARKUP_ATTRIB(fStyle)
-		BO_ATTRIB_MARKUP_ATTRIB(f123Prefix)
-		BO_ATTRIB_MARKUP_ATTRIB(ixfParent)
-		if(fStyle)
-		{
-			BO_ATTRIB_MARKUP_COMPLEX(style)
-		}
-		else
-		{
-			BO_ATTRIB_MARKUP_COMPLEX(cell)
-		}
-	BO_ATTRIB_MARKUP_END
+		//if(fStyle)
+		//{
+		//	//BO_ATTRIB_MARKUP_COMPLEX(style)
+		//}
+		//else
+		//{
+		//	//BO_ATTRIB_MARKUP_COMPLEX(cell)
+		//}
 
 };
 

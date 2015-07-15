@@ -12,7 +12,7 @@ class CFRecord;
 
 class RevName : public Ptg
 {
-	BASE_OBJECT_DEFINE_CLASS_NAME(RevName)
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(RevName)
 public:
 	RevName();
 	RevName(CFRecord& record);

@@ -41,13 +41,14 @@ public:
 	// Load the specified child object specified number of times
 	// fromN = 0 means the object is optional
 	// toN = 0 means no upper limit
+	//return count
 	template<class T>
-	const bool repeated(const int fromN, const int toN)
+	const int repeated(const int fromN, const int toN)
 	{
 		return repeated(T(), fromN, toN);
 	};
 
-	const bool repeated(BaseObject& object, const int fromN, const int toN);
+	const int repeated(BaseObject& object, const int fromN, const int toN);
 	virtual const bool optional(BaseObject& object) = 0;
 	virtual const bool mandatory(BaseObject& object) = 0;
 

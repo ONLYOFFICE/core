@@ -19,12 +19,15 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeCalcSaveRecalc;
+
+//-----------------------------
 	Boolean<unsigned __int16> fSaveRecalc;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fSaveRecalc)
-	BO_ATTRIB_MARKUP_END
+
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fSaveRecalc)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

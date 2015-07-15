@@ -43,6 +43,8 @@ public:
 		proc.repeated<DBCell>(0, 0); // OpenOffice Calc stored files workaround (DBCell must be present at least once according to [MS-XLS])
 		return true;
 	};
+	
+	static const ElementType	type = typeCELL_GROUP;
 
 private:
 	std::vector<CellRef>& shared_formulas_locations_ref_;

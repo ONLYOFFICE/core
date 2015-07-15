@@ -19,14 +19,17 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeRadarArea;
+
+//-----------------------------
 	BIFF_BOOL fRdrAxLab;
 	BIFF_BOOL fHasShadow;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fRdrAxLab)
-		BO_ATTRIB_MARKUP_ATTRIB(fHasShadow)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(fRdrAxLab)
+		//BO_ATTRIB_MARKUP_ATTRIB(fHasShadow)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

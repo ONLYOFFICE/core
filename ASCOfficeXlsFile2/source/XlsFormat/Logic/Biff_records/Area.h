@@ -19,16 +19,13 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeArea;
+
 	BIFF_BOOL fStacked;
 	BIFF_BOOL f100;
 	BIFF_BOOL fHasShadow;
-public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(fStacked)
-		BO_ATTRIB_MARKUP_ATTRIB(f100)
-		BO_ATTRIB_MARKUP_ATTRIB(fHasShadow)
-		BO_ATTRIB_MARKUP_END
+
 
 };
 

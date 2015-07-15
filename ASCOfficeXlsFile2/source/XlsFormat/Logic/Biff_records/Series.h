@@ -19,18 +19,21 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-private:
+
+	static const ElementType	type = typeSeries;
+
+//-----------------------------
 	BIFF_WORD sdtX;
 	BIFF_WORD cValx;
 	BIFF_WORD cValy;
 	BIFF_WORD cValBSize;
 public:
-	BO_ATTRIB_MARKUP_BEGIN
-		BO_ATTRIB_MARKUP_ATTRIB(sdtX)
-		BO_ATTRIB_MARKUP_ATTRIB(cValx)
-		BO_ATTRIB_MARKUP_ATTRIB(cValy)
-		BO_ATTRIB_MARKUP_ATTRIB(cValBSize)
-	BO_ATTRIB_MARKUP_END
+	//BO_ATTRIB_MARKUP_BEGIN
+		//BO_ATTRIB_MARKUP_ATTRIB(sdtX)
+		//BO_ATTRIB_MARKUP_ATTRIB(cValx)
+		//BO_ATTRIB_MARKUP_ATTRIB(cValy)
+		//BO_ATTRIB_MARKUP_ATTRIB(cValBSize)
+	//BO_ATTRIB_MARKUP_END
 
 };
 

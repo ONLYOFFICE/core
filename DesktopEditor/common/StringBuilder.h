@@ -6,6 +6,7 @@
 
 namespace NSStringUtils
 {
+	const wchar_t g_hex_values[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
 	class CStringBuilder
 	{
 	private:
@@ -71,14 +72,17 @@ namespace NSStringUtils
 
 	public:
 
-		inline void WriteString(const wchar_t* pString, size_t nLen)
+		inline void WriteStringNoSafe(const wchar_t* pString, size_t nLen)
 		{
-			AddSize(nLen);
-
 			memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
 
 			m_pDataCur += nLen;
 			m_lSizeCur += nLen;
+		}
+		inline void WriteString(const wchar_t* pString, size_t nLen)
+		{
+			AddSize(nLen);
+			WriteStringNoSafe(pString, nLen);
 		}
 
 		inline void WriteString(const std::wstring& sString)
@@ -86,6 +90,21 @@ namespace NSStringUtils
 			this->WriteString(sString.c_str(), sString.length());
 		}
 
+		inline void AddCharNoSafe(const wchar_t& _c)
+		{			
+			*m_pDataCur++ = _c;
+			++m_lSizeCur;
+		}
+		inline void AddCharNoCheck(const wchar_t& _c)
+		{
+			*m_pDataCur++ = _c;
+			++m_lSizeCur;
+		}
+		inline void AddSpaceNoCheck()
+		{
+			*m_pDataCur++ = ' ';
+			++m_lSizeCur;
+		}
 		inline void AddCharSafe(const wchar_t& _c)
 		{
 			AddSize(1);
@@ -173,6 +192,15 @@ namespace NSStringUtils
 		{
 			return m_lSizeCur;
 		}
+		inline void SetCurSize(size_t lCurSize)
+		{
+			m_lSizeCur = lCurSize;
+			m_pDataCur = m_pData + m_lSizeCur;
+		}
+		inline size_t GetSize()
+		{
+			return m_lSize;
+		}
 
 		inline void Write(CStringBuilder& oWriter)
 		{
@@ -201,6 +229,222 @@ namespace NSStringUtils
 		{
 			std::wstring str(m_pData, (int)m_lSizeCur);
 			return str;
+		}
+		wchar_t* GetBuffer()
+		{
+			return m_pData;
+		}
+
+		inline void RemoveLastSpaces()
+		{
+			wchar_t* pMemory = m_pDataCur - 1;
+			while ((pMemory > m_pData) && (wchar_t(' ') == *pMemory))
+			{
+				--pMemory;
+				--m_lSizeCur;
+				--m_pDataCur;
+			}
+
+		}
+		inline bool IsSpace()
+		{
+			if (1 != m_lSizeCur)
+				return false;
+			return (wchar_t(' ') == *m_pData);
+		}
+
+		void AddInt(int val)
+		{
+			AddSize(10);
+			AddIntNoCheck(val);
+		}
+		void AddIntDel10(int val)
+		{
+			AddSize(11);
+			AddIntNoCheckDel10(val);
+		}
+		void AddIntDel100(int val)
+		{
+			AddSize(11);
+			AddIntNoCheckDel100(val);
+		}
+
+		void AddIntNoCheck(int val)
+		{
+			if (0 == val)
+			{
+                                *m_pDataCur++ = (wchar_t)'0';
+				++m_lSizeCur;
+				return;
+			}
+			if (val < 0)
+			{
+				val = -val;
+                                *m_pDataCur++ = (wchar_t)'-';
+				++m_lSizeCur;
+			}
+
+			int len = 0;
+			int oval = val;
+			while (oval > 0)
+			{
+				oval /= 10;
+				++len;
+			}
+
+			oval = 1;
+			while (val > 0)
+			{
+                                m_pDataCur[len - oval] = (wchar_t)('0' + (val % 10));
+				++oval;
+				val /= 10;
+			}
+
+			m_pDataCur += len;
+			m_lSizeCur += len;
+		}
+
+		void AddIntNoCheckDel10(int val)
+		{
+			if (0 == val)
+			{
+                                *m_pDataCur++ = (wchar_t)'0';
+				++m_lSizeCur;
+				return;
+			}
+			if (val < 0)
+			{
+				val = -val;
+                                *m_pDataCur++ = (wchar_t)'-';
+				++m_lSizeCur;
+			}
+
+			int len = 0;
+			int oval = val;
+			while (oval > 0)
+			{
+				oval /= 10;
+				++len;
+			}
+
+			oval = 1;
+			int nLastS = (val % 10);
+			if (0 != nLastS)
+			{
+				++len;
+                                m_pDataCur[len - oval] = (wchar_t)('0' + nLastS);
+				++oval;
+                                m_pDataCur[len - oval] = (wchar_t)('.');
+				++oval;
+				val /= 10;
+			}
+			else
+			{
+				--len;
+				val /= 10;
+			}
+
+			while (val > 0)
+			{
+                                m_pDataCur[len - oval] = (wchar_t)('0' + (val % 10));
+				++oval;
+				val /= 10;
+			}
+
+			m_pDataCur += len;
+			m_lSizeCur += len;
+		}
+		void AddIntNoCheckDel100(int val)
+		{
+			if (0 == val)
+			{
+				*m_pDataCur++ = (wchar_t)'0';
+				++m_lSizeCur;
+				return;
+			}
+			if (val < 0)
+			{
+				val = -val;
+				*m_pDataCur++ = (wchar_t)'-';
+				++m_lSizeCur;
+			}
+
+			int len = 0;
+			int oval = val;
+			while (oval > 0)
+			{
+				oval /= 10;
+				++len;
+			}
+
+			oval = 1;
+			int nLastS = (val % 10);
+			if (0 != nLastS)
+			{
+				++len;
+				m_pDataCur[len - oval] = (wchar_t)('0' + nLastS);
+				++oval;
+				m_pDataCur[len - oval] = (wchar_t)('.');
+				++oval;
+				val /= 10;
+			}
+			else
+			{
+				--len;
+				val /= 10;
+			}
+
+			while (val > 0)
+			{
+				m_pDataCur[len - oval] = (wchar_t)('0' + (val % 10));
+				++oval;
+				val /= 10;
+			}
+
+			m_pDataCur += len;
+			m_lSizeCur += len;
+		}
+		void AddDouble(double val, int count)
+		{
+			// TODO:
+		}
+
+		inline void WriteHexByteNoSafe(const unsigned char& value)
+		{
+			*m_pDataCur++ = g_hex_values[(value >> 4) & 0x0F];
+			++m_lSizeCur;
+			*m_pDataCur++ = g_hex_values[value & 0x0F];
+			++m_lSizeCur;
+		}
+		inline void WriteHexByte(const unsigned char& value)
+		{
+			AddSize(2);
+			WriteHexByteNoSafe(value);
+		}
+		inline void WriteHexInt3(const unsigned int& value)
+		{
+			AddSize(6);
+			WriteHexByteNoSafe((value >> 16) & 0xFF);
+			WriteHexByteNoSafe((value >> 8) & 0xFF);
+			WriteHexByteNoSafe(value & 0xFF);
+		}
+		inline void WriteHexColor3(const unsigned char& r, const unsigned char& g, const unsigned char& b)
+		{
+			AddSize(7);
+			*m_pDataCur++ = (wchar_t)'#';
+			++m_lSizeCur;
+			WriteHexByteNoSafe(r);
+			WriteHexByteNoSafe(g);
+			WriteHexByteNoSafe(b);
+		}
+		inline void WriteHexColor3(const unsigned int& value)
+		{
+			AddSize(7);
+			*m_pDataCur++ = (wchar_t)'#';
+			++m_lSizeCur;
+                        WriteHexByteNoSafe(value & 0xFF);
+                        WriteHexByteNoSafe((value >> 8) & 0xFF);
+                        WriteHexByteNoSafe((value >> 16) & 0xFF);
 		}
 
 	protected:

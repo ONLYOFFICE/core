@@ -23,6 +23,8 @@ public:
 	BaseObjectPtr				m_Styles;
 	BaseObjectPtr				m_XFS;
 	std::vector<BaseObjectPtr>	m_Formats;
+	std::vector<BaseObjectPtr>	m_Fonts;
+	BaseObjectPtr				m_Palette;
 };
 
 } // namespace XLS

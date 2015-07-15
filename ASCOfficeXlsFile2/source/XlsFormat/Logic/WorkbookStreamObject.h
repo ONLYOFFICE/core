@@ -7,6 +7,17 @@
 namespace XLS
 {;
 
+	class GlobalsSubstream;
+	class WorksheetSubstream;
+	class ChartSheetSubstream;
+	class MacroSheetSubstream;
+
+typedef boost::shared_ptr<GlobalsSubstream>		GlobalsSubstreamPtr;
+typedef boost::shared_ptr<WorksheetSubstream>	WorksheetSubstreamPtr;
+typedef boost::shared_ptr<ChartSheetSubstream>	ChartSheetSubstreamPtr;
+typedef boost::shared_ptr<BaseObject>			MacroSheetSubstreamPtr;
+
+
 // Logical representation of Workbook stream
 class WorkbookStreamObject: public CompositeObject
 {
@@ -27,7 +38,12 @@ public:
 
 	static const ElementType	type = typeWorkbookStreamObject;
 	
+	BaseObjectPtr						m_GlobalsSubstream;
 
+	std::vector<BaseObjectPtr>			m_WorksheetSubstream;
+	std::vector<BaseObjectPtr>			m_ChartSheetSubstream;
+	std::vector<BaseObjectPtr>			m_MacroSheetSubstream;
+	
 	unsigned __int16 code_page_;
 };
 

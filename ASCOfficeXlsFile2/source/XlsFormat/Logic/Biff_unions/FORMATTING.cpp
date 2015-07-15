@@ -33,33 +33,51 @@ BaseObjectPtr FORMATTING::clone()
 //FORMATTING = 1*510Font 8*218Format XFS *DXF STYLES [TABLESTYLES] [Palette] [ClrtClient]
 const bool FORMATTING::loadContent(BinProcessor& proc)
 {
+	//todooo разобраться - ЗАЧЕМ 2 раза читаются фонты
 	int count = 0;
-	proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally  at least one Font is mandatory)
+	count = proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally  at least one Font is mandatory)
+	while(count > 0)
+	{
+		m_Fonts.insert(m_Fonts.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}	
+//---------------------------------------------------------------------------------------------------	
 	count = proc.repeated<Format>(0, 218); // Originally: proc.repeated<Format>(8, 218);
-
 	while(count > 0)
 	{
 		m_Formats.insert(m_Formats.begin(), elements_.back());
 		elements_.pop_back();
 		count--;
-
 	}
-	proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally Font follows by Format)
-	
+//----------------------------------------------------------------------------------------------------	
+	count = proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally Font follows by Format)
+	while(count > 0)
+	{
+		m_Fonts.insert(m_Fonts.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}	
+//----------------------------------------------------------------------------------------------------	
 	if (proc.mandatory<XFS>())
 	{
 		m_XFS = elements_.back();
 		elements_.pop_back();
 	}
 	proc.repeated<DXF>(0, 0);
-	
+//----------------------------------------------------------------------------------------------------	
 	if (proc.optional<STYLES>())
 	{
 		m_Styles = elements_.back();
 		elements_.pop_back();
 	}
+//----------------------------------------------------------------------------------------------------	
 	proc.optional<TABLESTYLES>();
-	proc.optional<Palette>();
+	if (proc.optional<Palette>())
+	{
+		m_Palette = elements_.back();
+		elements_.pop_back();
+	}
 	proc.optional<ClrtClient>();
 
 	return true;

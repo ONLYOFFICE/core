@@ -1,4 +1,4 @@
-#ifndef _METAFILE_COMMON_METAFILERENDERER_H
+п»ї#ifndef _METAFILE_COMMON_METAFILERENDERER_H
 #define _METAFILE_COMMON_METAFILERENDERER_H
 
 #include "../../../graphics/IRenderer.h"
@@ -160,7 +160,7 @@ namespace MetaFile
 
 				if (NULL != pDx && unCharsCount > 1)
 				{
-					// Тогда мы складываем все pDx кроме последнего символа, последний считаем отдельно
+					// РўРѕРіРґР° РјС‹ СЃРєР»Р°РґС‹РІР°РµРј РІСЃРµ pDx РєСЂРѕРјРµ РїРѕСЃР»РµРґРЅРµРіРѕ СЃРёРјРІРѕР»Р°, РїРѕСЃР»РµРґРЅРёР№ СЃС‡РёС‚Р°РµРј РѕС‚РґРµР»СЊРЅРѕ
 					double dTempTextW = 0;
 					for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount - 1; unCharIndex++)
 					{
@@ -186,7 +186,7 @@ namespace MetaFile
 					fW = (float)dMmToPt * (oBox.fMaxX - oBox.fMinX);
 				}
 
-				// Просчитаем положение подчеркивания
+				// РџСЂРѕСЃС‡РёС‚Р°РµРј РїРѕР»РѕР¶РµРЅРёРµ РїРѕРґС‡РµСЂРєРёРІР°РЅРёСЏ
 				pFontManager->GetUnderline(&fUndX1, &fUndY1, &fUndX2, &fUndY2, &fUndSize);
 				fUndY1   *= (float)dMmToPt;
 				fUndY2   *= (float)dMmToPt;
@@ -204,11 +204,11 @@ namespace MetaFile
 			double dX = oTextPoint.x;
 			double dY = oTextPoint.y;
 
-			// Найдем начальную точку текста
+			// РќР°Р№РґРµРј РЅР°С‡Р°Р»СЊРЅСѓСЋ С‚РѕС‡РєСѓ С‚РµРєСЃС‚Р°
 			unsigned int ulTextAlign = m_pFile->GetTextAlign();
 			if (ulTextAlign & TA_BASELINE)
 			{
-				// Ничего не делаем
+				// РќРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 			}
 			else if (ulTextAlign & TA_BOTTOM)
 			{
@@ -237,7 +237,7 @@ namespace MetaFile
 			}
 			else //if (ulTextAlign & TA_LEFT)
 			{
-				// Ничего не делаем
+				// РќРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 			}
 
 			if (pFont->IsUnderline())
@@ -251,12 +251,12 @@ namespace MetaFile
 			bool bChangeCTM = false;
 			if (0 != pFont->GetEscapement())
 			{
-				// TODO: тут реализован только параметр shEscapement, еще нужно реализовать параметр Orientation
+				// TODO: С‚СѓС‚ СЂРµР°Р»РёР·РѕРІР°РЅ С‚РѕР»СЊРєРѕ РїР°СЂР°РјРµС‚СЂ shEscapement, РµС‰Рµ РЅСѓР¶РЅРѕ СЂРµР°Р»РёР·РѕРІР°С‚СЊ РїР°СЂР°РјРµС‚СЂ Orientation
 				m_pRenderer->SetTransform(dCosTheta, dSinTheta, -dSinTheta, dCosTheta, dX - dX * dCosTheta + dY * dSinTheta, dY - dX * dSinTheta - dY * dCosTheta);
 				bChangeCTM = true;
 			}
 
-			// Для начала нарисуем фон текста
+			// Р”Р»СЏ РЅР°С‡Р°Р»Р° РЅР°СЂРёСЃСѓРµРј С„РѕРЅ С‚РµРєСЃС‚Р°
 			if (OPAQUE == m_pFile->GetTextBgMode())
 			{
 				m_pRenderer->put_BrushType(c_BrushTypeSolid);
@@ -275,7 +275,7 @@ namespace MetaFile
 				m_pRenderer->PathCommandEnd();
 			}
 
-			// Нарисуем подчеркивание 
+			// РќР°СЂРёСЃСѓРµРј РїРѕРґС‡РµСЂРєРёРІР°РЅРёРµ 
 			if (pFont->IsUnderline())
 			{
 				m_pRenderer->put_PenSize((double)fUndSize);
@@ -291,12 +291,12 @@ namespace MetaFile
 				m_pRenderer->PathCommandEnd();
 			}
 
-			// Установим цвет текста
+			// РЈСЃС‚Р°РЅРѕРІРёРј С†РІРµС‚ С‚РµРєСЃС‚Р°
 			m_pRenderer->put_BrushType(c_BrushTypeSolid);
 			m_pRenderer->put_BrushColor1(m_pFile->GetTextColor());
 			m_pRenderer->put_BrushAlpha1(255);
 
-			// Рисуем сам текст
+			// Р РёСЃСѓРµРј СЃР°Рј С‚РµРєСЃС‚
 
 			if (NULL == pDx)
 			{
@@ -548,7 +548,7 @@ namespace MetaFile
 				case HS_DIAGCROSS:  wsBrushType = L"diagCross"; break;
 				}
 
-				// TODO: Непонятно почему, но в Hatch все цвета идут не как RGB, а как BGR
+				// TODO: РќРµРїРѕРЅСЏС‚РЅРѕ РїРѕС‡РµРјСѓ, РЅРѕ РІ Hatch РІСЃРµ С†РІРµС‚Р° РёРґСѓС‚ РЅРµ РєР°Рє RGB, Р° РєР°Рє BGR
 				if (TRANSPARENT == m_pFile->GetTextBgMode())
 					m_pRenderer->put_BrushAlpha2(0);
 				else
@@ -632,7 +632,7 @@ namespace MetaFile
 			int nColor = pPen->GetColor();
 			double dPixelWidth = m_pFile->GetPixelWidth();
 
-			// TODO: dWidth зависит еще от флага PS_GEOMETRIC в стиле карандаша
+			// TODO: dWidth Р·Р°РІРёСЃРёС‚ РµС‰Рµ РѕС‚ С„Р»Р°РіР° PS_GEOMETRIC РІ СЃС‚РёР»Рµ РєР°СЂР°РЅРґР°С€Р°
 			double dWidth = pPen->GetWidth() * m_dScaleX * dPixelWidth;
 			if (dWidth <= 0.01)
 				dWidth = 0;
@@ -661,13 +661,13 @@ namespace MetaFile
 
 			double dMiterLimit = m_pFile->GetMiterLimit() * m_dScaleX * dPixelWidth;
 
-			// TODO: Реализовать PS_USERSTYLE
+			// TODO: Р РµР°Р»РёР·РѕРІР°С‚СЊ PS_USERSTYLE
 			BYTE nDashStyle = Aggplus::DashStyleSolid;;
 
-			// В WinGDI все карандаши толщиной больше 1px рисуются в стиле PS_SOLID
+			// Р’ WinGDI РІСЃРµ РєР°СЂР°РЅРґР°С€Рё С‚РѕР»С‰РёРЅРѕР№ Р±РѕР»СЊС€Рµ 1px СЂРёСЃСѓСЋС‚СЃСЏ РІ СЃС‚РёР»Рµ PS_SOLID
 			if (1 >= pPen->GetWidth() && PS_SOLID != ulPenStyle)
 			{
-				dWidth = 0; // Специальное значение для 1pх карандаша
+				dWidth = 0; // РЎРїРµС†РёР°Р»СЊРЅРѕРµ Р·РЅР°С‡РµРЅРёРµ РґР»СЏ 1pС… РєР°СЂР°РЅРґР°С€Р°
 
 				double dDpiX;
 				m_pRenderer->get_DpiX(&dDpiX);
@@ -753,9 +753,9 @@ namespace MetaFile
 			m_pRenderer->put_PenAlpha(255);
 			m_pRenderer->put_PenMiterLimit(dMiterLimit);
 
-			// TO DO: С текущим интерфейсом AVSRenderer, остальные случаи ushROPMode
-			//        реализовать невозможно. Потому что данный параметр нужно протаскивать
-			//        как параметр Pen'a, и тот кто рисует сам должен разруливать все случаи.
+			// TO DO: РЎ С‚РµРєСѓС‰РёРј РёРЅС‚РµСЂС„РµР№СЃРѕРј AVSRenderer, РѕСЃС‚Р°Р»СЊРЅС‹Рµ СЃР»СѓС‡Р°Рё ushROPMode
+			//        СЂРµР°Р»РёР·РѕРІР°С‚СЊ РЅРµРІРѕР·РјРѕР¶РЅРѕ. РџРѕС‚РѕРјСѓ С‡С‚Рѕ РґР°РЅРЅС‹Р№ РїР°СЂР°РјРµС‚СЂ РЅСѓР¶РЅРѕ РїСЂРѕС‚Р°СЃРєРёРІР°С‚СЊ
+			//        РєР°Рє РїР°СЂР°РјРµС‚СЂ Pen'a, Рё С‚РѕС‚ РєС‚Рѕ СЂРёСЃСѓРµС‚ СЃР°Рј РґРѕР»Р¶РµРЅ СЂР°Р·СЂСѓР»РёРІР°С‚СЊ РІСЃРµ СЃР»СѓС‡Р°Рё.
 
 			switch (m_pFile->GetRop2Mode())
 			{
@@ -786,12 +786,12 @@ namespace MetaFile
 		IRenderer*     m_pRenderer;
 		IMetaFileBase* m_pFile;
 		int            m_lDrawPathType;
-		double         m_dX;      // Координаты левого верхнего угла
+		double         m_dX;      // РљРѕРѕСЂРґРёРЅР°С‚С‹ Р»РµРІРѕРіРѕ РІРµСЂС…РЅРµРіРѕ СѓРіР»Р°
 		double         m_dY;      //
 		double         m_dW;      // 
 		double         m_dH;      // 
-		double         m_dScaleX; // Коэффициенты сжатия/растяжения, чтобы 
-		double         m_dScaleY; // результирующая картинка была нужных размеров.
+		double         m_dScaleX; // РљРѕСЌС„С„РёС†РёРµРЅС‚С‹ СЃР¶Р°С‚РёСЏ/СЂР°СЃС‚СЏР¶РµРЅРёСЏ, С‡С‚РѕР±С‹ 
+		double         m_dScaleY; // СЂРµР·СѓР»СЊС‚РёСЂСѓСЋС‰Р°СЏ РєР°СЂС‚РёРЅРєР° Р±С‹Р»Р° РЅСѓР¶РЅС‹С… СЂР°Р·РјРµСЂРѕРІ.
 		bool           m_bStartedPath;
 	};
 }

@@ -118,6 +118,8 @@ public:
 	
 	INT LoadString1(const std::wstring& wsBuffer, const float& fX, const float& fY);	
 	INT LoadString2(const std::wstring& wsBuffer, const float& fX, const float& fY);
+    INT LoadString1(const unsigned int* pGids, const unsigned int& nGidsCount, const float& fX, const float& fY);
+    INT LoadString2(const unsigned int* pGids, const unsigned int& nGidsCount, const float& fX, const float& fY);
 	INT LoadString3(const LONG& gid, const float& fX, const float& fY);
 	INT LoadString3C(const LONG& gid, const float& fX, const float& fY);
 	INT LoadString2C(const LONG& wsBuffer, const float& fX, const float& fY);

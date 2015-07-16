@@ -273,6 +273,26 @@ INT CFontManager::LoadString2(const std::wstring &wsBuffer, const float &fX, con
 	return TRUE;
 }
 
+INT CFontManager::LoadString1(const unsigned int* pGids, const unsigned int& nGidsCount, const float &fX, const float &fY)
+{
+    if (NULL == m_pFont)
+        return FALSE;
+
+    m_oString.SetString(pGids, nGidsCount, fX, fY);
+    m_pFont->GetString(m_oString);
+    return TRUE;
+}
+
+INT CFontManager::LoadString2(const unsigned int* pGids, const unsigned int& nGidsCount, const float &fX, const float &fY)
+{
+    if (NULL == m_pFont)
+        return FALSE;
+
+    m_oString.SetString(pGids, nGidsCount, fX, fY);
+    m_pFont->GetString2(m_oString);
+    return TRUE;
+}
+
 INT CFontManager::LoadString3(const LONG& gid, const float &fX, const float &fY)
 {
 	if (NULL == m_pFont)

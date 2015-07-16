@@ -70,6 +70,7 @@ public:
 	virtual bool _CurveTo(double x1, double y1, double x2, double y2, double x3, double y3);
 	virtual bool _Close();
 	Status AddString(const std::wstring& strText, CFontManager* pFont, double x, double y);
+    Status AddString(const unsigned int* pGids, const unsigned int nGidsCount, CFontManager* pFont, double x, double y);
 	Status AddStringC(const LONG& lText, CFontManager* pFont, double x, double y);
 	void z_Stroke(const NSStructures::CPen* Pen);
 	void Widen(const NSStructures::CPen* Pen, const CMatrix* matrix, float flatness);

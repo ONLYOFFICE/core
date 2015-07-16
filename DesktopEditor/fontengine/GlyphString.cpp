@@ -129,6 +129,32 @@ CGlyphString::~CGlyphString()
 		delete []m_pGlyphsBuffer;
 }
 
+void CGlyphString::SetString(const unsigned int* pGids, const unsigned int& nGidsCount, float fX, float fY)
+{
+    m_fX = fX + m_fTransX;
+    m_fY = fY + m_fTransY;
+
+    if ( m_pGlyphsBuffer )
+        delete []m_pGlyphsBuffer;
+
+    m_nGlyphIndex   = 0;
+    m_nGlyphsCount  = nGidsCount;
+
+    if ( m_nGlyphsCount > 0 )
+    {
+        m_pGlyphsBuffer = new TGlyph[m_nGlyphsCount];
+
+        for ( int nIndex = 0; nIndex < m_nGlyphsCount; ++nIndex )
+        {
+            m_pGlyphsBuffer[nIndex].lUnicode = (long)pGids[nIndex];
+            m_pGlyphsBuffer[nIndex].bBitmap  = false;
+        }
+    }
+    else
+    {
+        m_pGlyphsBuffer = NULL;
+    }
+}
 
 void CGlyphString::SetString(const std::wstring& wsString, float fX, float fY)
 {

@@ -405,6 +405,15 @@ namespace Aggplus
 		pFont->LoadString1(strText, (float)x, (float)y);
 		return (TRUE == pFont->GetStringPath(this)) ? Ok : InvalidParameter;
 	}
+    Status CGraphicsPath::AddString(const unsigned int* pGids, const unsigned int nGidsCount, CFontManager* pFont, double x, double y)
+    {
+        if (NULL == pFont)
+            return InvalidParameter;
+
+        pFont->LoadString1(pGids, nGidsCount, (float)x, (float)y);
+        return (TRUE == pFont->GetStringPath(this)) ? Ok : InvalidParameter;
+    }
+
 	Status CGraphicsPath::AddStringC(const LONG& lText, CFontManager* pFont, double x, double y)
 	{
 		if (NULL == pFont)

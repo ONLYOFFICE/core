@@ -999,6 +999,51 @@ namespace Aggplus
 
 		return TRUE;
 	}
+    INT CGraphics::DrawString(const unsigned int* pGids, const unsigned int nGidsCount, CFontManager* pFont, CBrush* pBrush, double x, double y)
+    {
+        if (pBrush->GetType() != BrushTypeSolidColor)
+            return TRUE;
+
+        CMatrix oMatrix = m_oBaseTransform;
+        oMatrix.Multiply(&m_oTransform, MatrixOrderPrepend);
+
+        double mass[6];
+        oMatrix.GetElements(mass);
+
+        double _x = x;
+        double _y = y;
+
+        CMatrix oM1 = oMatrix;
+        oM1.Invert();
+        oM1.Multiply(&m_oFullTransform, MatrixOrderPrepend);
+        oM1.TransformPoint(_x, _y);
+
+        pFont->SetTextMatrix((float)mass[0], (float)mass[1], (float)mass[2], (float)mass[3], (float)mass[4], (float)mass[5]);
+
+        pFont->LoadString2(pGids, nGidsCount, (float)_x, (float)_y);
+        float fX = 0;
+        float fY = 0;
+        INT bRes = FALSE;
+
+        while (TRUE)
+        {
+            TGlyph* pGlyph = NULL;
+            float fX = 0, fY = 0;
+
+            bRes = pFont->GetNextChar2(pGlyph, fX, fY);
+
+            if (FALSE == bRes)
+                break;
+
+            if (NULL != pGlyph)
+            {
+                FillGlyph2((int)fX, (int)fY, pGlyph, pBrush);
+            }
+        }
+
+        return TRUE;
+    }
+
 	INT CGraphics::DrawStringC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y)
 	{		
 		if (pBrush->GetType() != BrushTypeSolidColor)

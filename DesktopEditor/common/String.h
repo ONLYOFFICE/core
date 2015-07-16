@@ -6,6 +6,11 @@
 #include <sstream>
 #include <algorithm>
 
+
+#ifdef __linux__
+    #include <string.h>
+#endif
+
 namespace NSStringExt
 {
 #define NSSTRING_COMMON_CP(UnicodeMapCP, lCount, pData) \
@@ -404,7 +409,7 @@ namespace NSStringExt
 				arrElements.clear();
 				for (int nIndex = 0, nCount = arrCurrent.size(); nIndex < nCount; nIndex++)
 				{
-					std::vector<std::wstring>& arrTemp = Split(arrCurrent.at(nIndex), wChar);
+                                        std::vector<std::wstring> arrTemp = Split(arrCurrent.at(nIndex), wChar);
 					arrElements.insert(arrElements.end(), arrTemp.begin(), arrTemp.end());
 				}
 				arrCurrent = arrElements;

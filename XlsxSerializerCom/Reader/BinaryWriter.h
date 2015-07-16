@@ -3354,11 +3354,7 @@ namespace BinXlsxRW {
 				int nBinBufferLen = oBufferedStream.GetPosition();
 				int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
 				BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-#ifdef _IOS
                 if(true == Base64_1::Base64Encode(pbBinBuffer, nBinBufferLen, pbBase64Buffer, &nBase64BufferLen))
-#else
-                if(true == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
-#endif
 				{
 					CFile oFile;
 					oFile.CreateFile(sFileDst);
@@ -3507,11 +3503,7 @@ namespace BinXlsxRW {
 		{
 			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nLength, Base64::B64_BASE64_FLAG_NOCRLF);
 			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-#ifdef _IOS
             if(true == Base64_1::Base64Encode(pData, nLength, pbBase64Buffer, &nBase64BufferLen))
-#else
-            if(true == Base64::Base64Encode(pData, nLength, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
-#endif
 			{
 				CFile oFile;
 				oFile.CreateFile(sFileOutput);
@@ -3696,11 +3688,7 @@ namespace BinXlsxRW {
 			int nBinBufferLen = oBufferedStream.GetPosition();
 			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
 			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-#ifdef _IOS
-            if(true == Base64_1::Base64Encode(pbBinBuffer, nBinBufferLen, pbBase64Buffer, &nBase64BufferLen))
-#else
-            if(true == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
-#endif
+            if(true == Base64_1::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
 			{
 				CFile oFile;
 				oFile.CreateFile(sFileOutput);
@@ -3757,11 +3745,7 @@ namespace BinXlsxRW {
 			int nBinBufferLen = oBufferedStream.GetPosition();
 			int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
 			BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
-#ifdef _IOS
             if(true == Base64_1::Base64Encode(pbBinBuffer, nBinBufferLen, pbBase64Buffer, &nBase64BufferLen))
-#else
-            if(true == Base64::Base64Encode(pbBinBuffer, nBinBufferLen, (LPSTR)pbBase64Buffer, &nBase64BufferLen, Base64::B64_BASE64_FLAG_NOCRLF))
-#endif
 			{
 				CFile oFile;
 				oFile.CreateFile(sFileOutput);

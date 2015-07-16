@@ -28,8 +28,8 @@ BiffStructurePtr PtgTbl::clone()
 //{
 //	std::wstring  cell_ref = getStructAttribute(xml_tag, L"ref");
 //	RgceLoc location(cell_ref);
-//	row = static_cast<unsigned __int16>(location.getRow());
-//	col = static_cast<unsigned __int16>(location.getColumn());
+//	row = static_cast<unsigned short>(location.getRow());
+//	col = static_cast<unsigned short>(location.getColumn());
 //}
 
 

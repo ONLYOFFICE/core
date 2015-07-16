@@ -18,7 +18,7 @@ public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record, const unsigned __int16 ot);
+	virtual void store(CFRecord& record, const unsigned short ot);
 
 private:
 	virtual void store(CFRecord& record){}

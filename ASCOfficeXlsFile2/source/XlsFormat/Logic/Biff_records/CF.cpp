@@ -25,8 +25,8 @@ BaseObjectPtr CF::clone()
 void CF::writeFields(CFRecord& record)
 {
 	record << ct << cp;
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned __int16)/*cce*/);
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned __int16)/*cce*/);
+	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/);
+	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/);
 	record << rgbdxf;
 	rgce1.store(record);
 	rgce2.store(record);
@@ -37,8 +37,8 @@ void CF::writeFields(CFRecord& record)
 
 void CF::readFields(CFRecord& record)
 {
-	unsigned __int16 cce1;
-	unsigned __int16 cce2;
+	unsigned short cce1;
+	unsigned short cce2;
 	record >> ct >> cp >> cce1 >> cce2;
 	record >> rgbdxf;
 	rgce1.load(record, cce1);

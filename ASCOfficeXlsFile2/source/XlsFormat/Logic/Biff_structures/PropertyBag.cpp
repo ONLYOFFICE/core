@@ -39,7 +39,7 @@ void PropertyBag::store(XLS::CFRecord& record)
 
 void PropertyBag::load(XLS::CFRecord& record)
 {
-	unsigned __int16 cProp;
+	unsigned short cProp;
 	record >> id >> cProp;
 	record.skipNunBytes(2); // ignored
 	for (int i = 0; i < cProp ; i++)

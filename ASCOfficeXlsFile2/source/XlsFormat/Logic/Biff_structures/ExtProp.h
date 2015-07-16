@@ -21,14 +21,14 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 extType;
-	unsigned __int16 cb;
+	unsigned short extType;
+	unsigned short cb;
 	struct extPropData_Tag
 	{
 		FullColorExt color;
 		XFExtGradient gradient_fill;
 		unsigned char font_scheme;
-		unsigned __int16 indent_level;
+		unsigned short indent_level;
 
 	} extPropData;
 };

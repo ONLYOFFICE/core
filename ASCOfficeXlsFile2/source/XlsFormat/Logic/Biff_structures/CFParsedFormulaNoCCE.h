@@ -13,7 +13,7 @@ class CFParsedFormulaNoCCE : public ParsedFormula
 public:
 	CFParsedFormulaNoCCE(const CellRef& cell_base_ref_init);
 	BiffStructurePtr clone();
-	void load(CFRecord& record, const unsigned __int16 cce);
+	void load(CFRecord& record, const unsigned short cce);
 	virtual void store(CFRecord& record);
 private:
 	// stub to make the class non-abstract

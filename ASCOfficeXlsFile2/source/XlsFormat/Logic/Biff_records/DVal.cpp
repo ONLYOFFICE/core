@@ -22,7 +22,7 @@ BaseObjectPtr DVal::clone()
 
 void DVal::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fWnClosed);
 	record << flags << xLeft << yTop << idObj << idvMac;
 }
@@ -30,7 +30,7 @@ void DVal::writeFields(CFRecord& record)
 
 void DVal::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags >> xLeft >> yTop >> idObj >> idvMac;
 	fWnClosed = GETBIT(flags, 0);
 }

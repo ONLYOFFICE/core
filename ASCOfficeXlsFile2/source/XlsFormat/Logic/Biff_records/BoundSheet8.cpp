@@ -24,7 +24,7 @@ void BoundSheet8::writeFields(CFRecord& record)
 {
 	record.registerDelayedDataReceiver(NULL, sizeof(unsigned int));
 
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	unsigned char hsState_num;
 	if(hsState == std::wstring (L"visible"))
 	{
@@ -50,7 +50,7 @@ void BoundSheet8::writeFields(CFRecord& record)
 
 void BoundSheet8::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> lbPlyPos >> flags >> stName;
 
 	record.getGlobalWorkbookInfo()->sheets_names.push_back(stName);

@@ -3,6 +3,7 @@
 #include "objidl.h"
 #include "BinSmartPointers.h"
 
+#include <map>
 
 namespace XLS
 {;

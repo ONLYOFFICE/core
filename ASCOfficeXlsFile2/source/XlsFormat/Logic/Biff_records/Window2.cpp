@@ -22,7 +22,7 @@ BaseObjectPtr Window2::clone()
 
 void Window2::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 9, fSelected);
 
 	if(is_contained_in_chart_substream)
@@ -46,8 +46,8 @@ void Window2::writeFields(CFRecord& record)
 	record << flags;
 
 	CellRef topLeftCellRef(topLeftCell);
-	rwTop = static_cast<unsigned __int16>(topLeftCellRef.getRow());
-	colLeft = static_cast<unsigned __int16>(topLeftCellRef.getColumn());
+	rwTop = static_cast<unsigned short>(topLeftCellRef.getRow());
+	colLeft = static_cast<unsigned short>(topLeftCellRef.getColumn());
 	record << rwTop << colLeft << icvHdr;
 
 	record.reserveNunBytes(2); // reserved 
@@ -59,7 +59,7 @@ void Window2::writeFields(CFRecord& record)
 void Window2::readFields(CFRecord& record)
 {
 	is_contained_in_chart_substream = (10 == record.getDataSize());
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 
 	fSelected = GETBIT(flags, 9);

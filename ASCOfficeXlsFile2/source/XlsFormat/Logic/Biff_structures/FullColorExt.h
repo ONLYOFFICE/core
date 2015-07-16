@@ -19,7 +19,7 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 xclrType;
+	unsigned short xclrType;
 	short nTintShade;
 	unsigned int xclrValue;
 };

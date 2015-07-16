@@ -20,13 +20,13 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 ifnt;
+	unsigned short ifnt;
 	struct Phs_Data
 	{
-		unsigned __int16 phType : 2;
-		unsigned __int16 alcH : 2;
-		unsigned __int16 set_one : 2;
-		unsigned __int16 unused : 10;
+		unsigned short phType : 2;
+		unsigned short alcH : 2;
+		unsigned short set_one : 2;
+		unsigned short unused : 10;
 	} data;
 };
 #pragma pack()

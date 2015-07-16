@@ -4,7 +4,7 @@
 namespace XLS
 {;
 
-ExternName::ExternName(const unsigned __int16 supporting_link_type)
+ExternName::ExternName(const unsigned short supporting_link_type)
 :	supbook_cch(supporting_link_type)
 {
 }
@@ -23,7 +23,7 @@ BaseObjectPtr ExternName::clone()
 
 void ExternName::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fBuiltIn);
 	SETBIT(flags, 1, fWantAdvise);
 	SETBIT(flags, 2, fWantPict);
@@ -39,7 +39,7 @@ void ExternName::writeFields(CFRecord& record)
 
 void ExternName::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fBuiltIn = GETBIT(flags, 0);
 	fWantAdvise = GETBIT(flags, 1);

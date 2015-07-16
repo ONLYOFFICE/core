@@ -28,7 +28,7 @@ void AddinUdf::store(CFRecord& record)
 {
 	record.reserveNunBytes(4); // reserved
 	record << udfName;
-	unsigned __int16 cb = 0;
+	unsigned short cb = 0;
 	record << cb;
 	record.reserveNunBytes(cb); // unused
 }
@@ -40,7 +40,7 @@ void AddinUdf::load(CFRecord& record)
 	record >> udfName;
 	record.getGlobalWorkbookInfo()->AddinUdfs.push_back(udfName);
 
-	unsigned __int16 cb;
+	unsigned short cb;
 	record >> cb;
 	record.skipNunBytes(cb); // unused
 }

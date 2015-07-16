@@ -5,7 +5,7 @@
 namespace XLS
 {;
 
-class HideObjEnum : public BiffAttributeSimple<unsigned __int16>
+class HideObjEnum : public BiffAttributeSimple<unsigned short>
 {
 public:
 	BiffStructurePtr clone();

@@ -22,8 +22,8 @@ BaseObjectPtr Text::clone()
 
 void Text::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags1 = 0;
-	unsigned __int16 flags2 = 0;
+	unsigned short flags1 = 0;
+	unsigned short flags2 = 0;
 
 	SETBIT(flags1, 0, fAutoColor);
 	SETBIT(flags1, 1, fShowKey);
@@ -46,8 +46,8 @@ void Text::writeFields(CFRecord& record)
 
 void Text::readFields(CFRecord& record)
 {
-	unsigned __int16 flags1;
-	unsigned __int16 flags2;
+	unsigned short flags1;
+	unsigned short flags2;
 	record >> at  >> vat >> wBkgMode >> rgbText >> x >> y >> dx >> dy >> flags1 >> icvText >> flags2 >> trot;
 	
 	fAutoColor = GETBIT(flags1, 0);

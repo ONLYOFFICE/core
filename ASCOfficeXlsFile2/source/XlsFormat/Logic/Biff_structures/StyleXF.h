@@ -15,10 +15,10 @@ public:
 	StyleXF(size_t& cell_xf_current_id, size_t& style_xf_current_id);
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
+
+	int serialize(std::wostream & stream);
 
 private:
 

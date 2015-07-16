@@ -61,7 +61,7 @@ void NoteRR::store(CFRecord& record)
 void NoteRR::load(CFRecord& record)
 {
 	record >> rrd;
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	bitfDelNote = GETBIT(flags, 0);
 	bitfAddNote = GETBIT(flags, 1);

@@ -20,10 +20,10 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 ivtEdit;
-	Boolean<unsigned __int16> fMultiLine;
-	unsigned __int16 fVScroll;
-	unsigned __int16 id;
+	unsigned short ivtEdit;
+	Boolean<unsigned short> fMultiLine;
+	unsigned short fVScroll;
+	unsigned short id;
 };
 
 } // namespace XLS

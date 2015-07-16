@@ -57,7 +57,7 @@ void SortCond12::store(CFRecord& record)
 
 void SortCond12::load(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fSortDes = GETBIT(flags, 0);
 	sortOn = GETBITS(flags, 1, 4);

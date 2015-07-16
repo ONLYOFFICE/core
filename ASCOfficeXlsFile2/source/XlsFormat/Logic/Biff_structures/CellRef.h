@@ -170,10 +170,10 @@ public:
 };
 
 
-typedef CellRef_T<RgceLoc_name, unsigned __int16, unsigned __int16, rel_Present> RgceLoc;
-typedef CellRef_T<RgceLocRel_name, unsigned __int16, short, rel_Present> RgceLocRel;
-typedef CellRef_T<RgceElfLocExtra_name, unsigned __int16, unsigned __int16, rel_Present> RgceElfLocExtra;
-typedef CellRef_T<RgceElfLoc_name, unsigned __int16, unsigned __int16, rel_PresentQuoted> RgceElfLoc;
+typedef CellRef_T<RgceLoc_name, unsigned short, unsigned short, rel_Present> RgceLoc;
+typedef CellRef_T<RgceLocRel_name, unsigned short, short, rel_Present> RgceLocRel;
+typedef CellRef_T<RgceElfLocExtra_name, unsigned short, unsigned short, rel_Present> RgceElfLocExtra;
+typedef CellRef_T<RgceElfLoc_name, unsigned short, unsigned short, rel_PresentQuoted> RgceElfLoc;
 
 
 

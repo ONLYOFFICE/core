@@ -22,7 +22,7 @@ BaseObjectPtr Scatter::clone()
 
 void Scatter::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fBubbles);
 	SETBIT(flags, 1, fShowNegBubbles);
 	SETBIT(flags, 2, fHasShadow);
@@ -32,7 +32,7 @@ void Scatter::writeFields(CFRecord& record)
 
 void Scatter::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> pcBubbleSizeRatio >> wBubbleSize >> flags;
 	fBubbles = GETBIT(flags, 0);
 	fShowNegBubbles = GETBIT(flags, 1);

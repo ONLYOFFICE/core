@@ -23,6 +23,8 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	int serialize(std::wostream & stream);
+
 	static const ElementType	type = typeXF;
 
 //-----------------------------
@@ -36,16 +38,6 @@ public:
 
 	CellXF	cell;
 	StyleXF	style;
-	
-		//if(fStyle)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(style)
-		//}
-		//else
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(cell)
-		//}
-
 };
 
 } // namespace XLS

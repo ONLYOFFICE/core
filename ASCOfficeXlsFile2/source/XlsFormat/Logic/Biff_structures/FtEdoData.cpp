@@ -32,8 +32,8 @@ BiffStructurePtr FtEdoData::clone()
 
 void FtEdoData::store(CFRecord& record)
 {
-	unsigned __int16 ft = 0x0010; // reserved
-	unsigned __int16 cb = 0x0008; // reserved
+	unsigned short ft = 0x0010; // reserved
+	unsigned short cb = 0x0008; // reserved
 	record << ft << cb;
 
 	record << ivtEdit << fMultiLine << fVScroll << id;

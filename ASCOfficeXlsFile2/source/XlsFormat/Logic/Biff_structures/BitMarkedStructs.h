@@ -1,5 +1,6 @@
 #pragma once
 
+#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
 #include "BiffStructure.h"
 #include "BiffAttribute.h"
 //#include <Exception/WrongBiffRecord.h>
@@ -10,40 +11,40 @@
 namespace XLS
 {;
 
-typedef BiffAttributeSimple<unsigned int> RwLongU;
-typedef BiffAttributeSimple<unsigned __int16> ColU;
-typedef BiffAttributeSimple<unsigned __int16> Col256U;
-typedef BiffAttributeSimple<unsigned __int16> IXFCell;
-typedef BiffAttributeSimple<unsigned __int16> Rw;
-typedef BiffAttributeSimple<unsigned __int16> Col;
-typedef BiffAttributeSimple<unsigned __int16> Icv;
-typedef BiffAttributeSimple<unsigned __int16> IcvChart;
-typedef BiffAttributeSimple<unsigned __int16> TabId;
-typedef BiffAttributeSimple<short> Col_NegativeOne;
-typedef BiffAttributeSimple<unsigned __int16> R_RwU; // Special version for use as a record attribute
-typedef BiffAttributeSimple<unsigned __int16> IFmt;
-typedef BiffAttributeSimple<unsigned __int16> CrtLayout12Mode;
-typedef unsigned __int16 RwU;
-typedef unsigned __int16 Ilel;
+typedef BiffAttributeSimple<_UINT32>		RwLongU;
+typedef BiffAttributeSimple<unsigned short> ColU;
+typedef BiffAttributeSimple<unsigned short> Col256U;
+typedef BiffAttributeSimple<unsigned short> IXFCell;
+typedef BiffAttributeSimple<unsigned short> Rw;
+typedef BiffAttributeSimple<unsigned short> Col;
+typedef BiffAttributeSimple<unsigned short> Icv;
+typedef BiffAttributeSimple<unsigned short> IcvChart;
+typedef BiffAttributeSimple<unsigned short> TabId;
+typedef BiffAttributeSimple<_INT16>			Col_NegativeOne;
+typedef BiffAttributeSimple<unsigned short> R_RwU; // Special version for use as a record attribute
+typedef BiffAttributeSimple<unsigned short> IFmt;
+typedef BiffAttributeSimple<unsigned short> CrtLayout12Mode;
+typedef unsigned short RwU;
+typedef unsigned short Ilel;
 typedef unsigned char DColunByteU;
-typedef unsigned __int16 DRw;
+typedef unsigned short DRw;
 typedef unsigned char ColunByte;
 typedef unsigned char ColunByteU;
-typedef long Rw12;
-typedef long Col12;
-typedef unsigned __int16 Rwx;
-typedef unsigned __int16 Colx;
-typedef unsigned int ColorICV;
-typedef unsigned int ColorTheme;
-typedef unsigned __int16 ObjId;
+typedef _INT32 Rw12;
+typedef _INT32 Col12;
+typedef unsigned short Rwx;
+typedef unsigned short Colx;
+typedef _UINT32 ColorICV;
+typedef _UINT32 ColorTheme;
+typedef _UINT16 ObjId;
 typedef unsigned char FillPattern;
 
 
 typedef BiffAttributeSimple<unsigned char>		BIFF_BYTE;
-typedef BiffAttributeSimple<unsigned __int16>	BIFF_WORD;
-typedef BiffAttributeSimple<short>				BIFF_SHORT;
-typedef BiffAttributeSimple<unsigned int>		BIFF_DWORD;
-typedef BiffAttributeSimple<long>				BIFF_LONG;
+typedef BiffAttributeSimple<_UINT16>			BIFF_WORD;
+typedef BiffAttributeSimple<_INT16>				BIFF_SHORT;
+typedef BiffAttributeSimple<_UINT32>			BIFF_DWORD;
+typedef BiffAttributeSimple<_INT32>				BIFF_LONG;
 typedef BiffAttributeSimple<bool>				BIFF_BOOL;
 typedef BiffAttributeSimple<double>				BIFF_DOUBLE;
 typedef BiffAttributeSimple<std::wstring>		BIFF_BSTR;
@@ -178,7 +179,7 @@ struct XColorType : public BiffStructure_NoVtbl
 
 struct RevisionType : public BiffStructure_NoVtbl
 {
-	unsigned __int16 type;
+	unsigned short type;
 	enum
 	{
 		REVTINSRW = 0x0000,		// Insert Row.
@@ -216,7 +217,7 @@ public:
 	unsigned char ftsStrikeout : 1;
 private:
 	unsigned char unused3_1;
-	unsigned __int16 unused3_2;
+	unsigned short unused3_2;
 };
 
 
@@ -229,7 +230,7 @@ public:
 };
 
 
-class SharedFeatureType : public BiffAttributeSimple<unsigned __int16>
+class SharedFeatureType : public BiffAttributeSimple<_UINT16>
 {
 public:
 
@@ -319,8 +320,8 @@ private:
 
 struct CFrtId : public BiffStructure_NoVtbl
 {
-	unsigned __int16 rtFirst;
-	unsigned __int16 rtLast;
+	unsigned short rtFirst;
+	unsigned short rtLast;
 };
 
 
@@ -332,8 +333,8 @@ namespace CRYPTO
 
 struct Version : public XLS::BiffStructure_NoVtbl
 {
-	unsigned __int16 vMajor;
-	unsigned __int16 vMinor;
+	unsigned short vMajor;
+	unsigned short vMinor;
 };
 
 

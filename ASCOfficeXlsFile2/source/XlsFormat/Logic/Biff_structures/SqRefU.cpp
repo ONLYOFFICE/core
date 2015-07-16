@@ -30,7 +30,7 @@ void SqRefU::store(CFRecord& record)
 	std::vector<CellRangeRef> refs;
 	AUX::str2refs(sqref, refs);
 
-	unsigned __int16 cref = refs.size();
+	unsigned short cref = refs.size();
 	record << cref;
 	for(std::vector<CellRangeRef>::const_iterator it = refs.begin(), itEnd = refs.end(); it != itEnd ; ++it)
 	{
@@ -42,7 +42,7 @@ void SqRefU::store(CFRecord& record)
 
 void SqRefU::load(CFRecord& record)
 {
-	unsigned __int16 cref;
+	unsigned short cref;
 	record >> cref;
 	std::wstring  sqref_str;
 	for (size_t i = 0; i < cref ; ++i)

@@ -42,11 +42,11 @@ BiffStructurePtr FtPioGrbit::clone()
 //
 void FtPioGrbit::store(CFRecord& record)
 {
-	unsigned __int16 ft = 0x08; // reserved
-	unsigned __int16 cb = 0x02; // reserved
+	unsigned short ft = 0x08; // reserved
+	unsigned short cb = 0x02; // reserved
 	record << ft << cb;
 
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fAutoPict);
 	SETBIT(flags, 1, fDde);
 	SETBIT(flags, 2, fPrintCalc);
@@ -64,7 +64,7 @@ void FtPioGrbit::store(CFRecord& record)
 void FtPioGrbit::load(CFRecord& record)
 {
 	//record.skipNunBytes(4); // reserved
-	unsigned __int16 ft, cb;
+	unsigned short ft, cb;
 	record >> ft;
 	record >> cb;
 
@@ -74,7 +74,7 @@ void FtPioGrbit::load(CFRecord& record)
 		return;
 	}
 
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fAutoPict = GETBIT(flags, 0);
 	fDde = GETBIT(flags, 1);

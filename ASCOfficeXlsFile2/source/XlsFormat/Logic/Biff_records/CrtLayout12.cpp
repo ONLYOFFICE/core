@@ -26,7 +26,7 @@ void CrtLayout12::writeFields(CFRecord& record)
 	FrtHeader frtHeader(rt_CrtLayout12);
 	record << frtHeader;
 
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBITS(flags, 1, 4, autolayouttype);
 	record << dwCheckSum << flags << wXMode << wYMode << wWidthMode << wHeightMode << x << y << dx << dy;
 	record.reserveNunBytes(2); // reserved2
@@ -38,7 +38,7 @@ void CrtLayout12::readFields(CFRecord& record)
 	FrtHeader frtHeader;
 	record >> frtHeader;
 
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> dwCheckSum >> flags >> wXMode >> wYMode >> wWidthMode >> wHeightMode >> x >> y >> dx >> dy;
 	autolayouttype = GETBITS(flags, 1, 4);
 	record.skipNunBytes(2); // reserved2

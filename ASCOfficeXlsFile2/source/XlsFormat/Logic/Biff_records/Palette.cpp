@@ -10,7 +10,7 @@ Palette::Palette()
 }
 
 
-Palette::Palette(const unsigned __int16 ccv_init)
+Palette::Palette(const unsigned short ccv_init)
 :	ccv(ccv_init)
 {
 }
@@ -34,7 +34,7 @@ void Palette::writeFields(CFRecord& record)
 
 void Palette::readFields(CFRecord& record)
 {
-	unsigned __int16 ccv;
+	unsigned short ccv;
 	record >> ccv;
 	for(int i = 0; i < ccv; ++i)
 	{

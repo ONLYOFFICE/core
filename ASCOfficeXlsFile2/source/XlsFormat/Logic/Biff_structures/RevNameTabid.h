@@ -23,7 +23,7 @@ public:
 	const std::wstring toString() const;
 
 private:
-	unsigned __int16 tabid;
+	unsigned short tabid;
 	RevLblName name;
 };
 

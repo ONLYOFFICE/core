@@ -30,10 +30,10 @@ BiffStructurePtr DXFPat::clone()
 
 void DXFPat::store(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBITS(flags, 10, 15, fls);
 	record << flags;
-	unsigned __int16 flags2 = 0;
+	unsigned short flags2 = 0;
 	SETBITS(flags2, 0, 6, icvForeground);
 	SETBITS(flags2, 7, 13, icvBackground);
 	record << flags2;
@@ -42,7 +42,7 @@ void DXFPat::store(CFRecord& record)
 
 void DXFPat::load(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fls = GETBITS(flags, 10, 15);
 	record >> flags;

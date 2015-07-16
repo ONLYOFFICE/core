@@ -153,11 +153,11 @@ void BiffString::store(CFRecord& record, const bool is_wide)
 
 const size_t BiffString::getSize() const
 {
-	if(!cch_.is_init())
+	if(!cch_)
 	{
 		throw;// EXCEPT::LE::StructureSizeNotSet("BiffString", __FUNCTION__/*__FUNCDNAME__*/); 
 	}
-	return cch_;
+	return *cch_;
 }
 
 

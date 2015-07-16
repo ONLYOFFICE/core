@@ -47,13 +47,13 @@ void OfficeArtRGFOPTE::load(XLS::CFRecord& record)
 	}
 }
 
-void OfficeArtRGFOPTE::SetOptionsNumber(const unsigned __int16 number)
+void OfficeArtRGFOPTE::SetOptionsNumber(const unsigned short number)
 {
 	options_num = number;
 }
 
 
-const unsigned __int16 OfficeArtRGFOPTE::GetOptionsNumber()
+const unsigned short OfficeArtRGFOPTE::GetOptionsNumber()
 {
 	return options_num;
 }

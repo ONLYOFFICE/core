@@ -22,7 +22,7 @@ BaseObjectPtr LineFormat::clone()
 
 void LineFormat::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fAuto);
 	SETBIT(flags, 2, fAxisOn);
 	SETBIT(flags, 3, fAutoCo);
@@ -32,7 +32,7 @@ void LineFormat::writeFields(CFRecord& record)
 
 void LineFormat::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> rgb >> lns >> we >> flags >> icv;
 	fAuto = GETBIT(flags, 0);
 	fAxisOn = GETBIT(flags, 2);

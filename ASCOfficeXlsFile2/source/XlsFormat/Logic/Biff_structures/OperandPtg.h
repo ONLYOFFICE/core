@@ -9,7 +9,7 @@ class OperandPtg : public Ptg
 {
 public:
 	OperandPtg() {};
-	OperandPtg(const unsigned __int16 ptg_id_init) : Ptg(ptg_id_init) {};
+	OperandPtg(const unsigned short ptg_id_init) : Ptg(ptg_id_init) {};
 	enum PtgDataType
 	{
 		pdt_NO_TYPE_DATA = 0x0,	// Error value or type data is absent

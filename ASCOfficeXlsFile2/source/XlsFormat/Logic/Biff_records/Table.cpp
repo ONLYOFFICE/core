@@ -28,7 +28,7 @@ void Table::writeFields(CFRecord& record)
 	Col_NegativeOne colInpCol;
 
 	record << ref_;
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fAlwaysCalc);
 	SETBIT(flags, 2, fRw);
 	SETBIT(flags, 3, fTbl2);
@@ -39,7 +39,7 @@ void Table::writeFields(CFRecord& record)
 	if(!fDeleted1)
 	{
 		CellRef r1_ref(static_cast<std::wstring >(r1));
-		rwInpRw = static_cast<unsigned __int16>(r1_ref.getRow());
+		rwInpRw = static_cast<unsigned short>(r1_ref.getRow());
 		colInpRw = static_cast<short>(r1_ref.getColumn());
 	}
 	else
@@ -51,7 +51,7 @@ void Table::writeFields(CFRecord& record)
 	if(fTbl2 && !fDeleted1)
 	{
 		CellRef r2_ref(static_cast<std::wstring >(r2));
-		rwInpCol = static_cast<unsigned __int16>(r2_ref.getRow());
+		rwInpCol = static_cast<unsigned short>(r2_ref.getRow());
 		colInpCol = static_cast<short>(r2_ref.getColumn());
 	}
 	else
@@ -71,7 +71,7 @@ void Table::readFields(CFRecord& record)
 	Col_NegativeOne colInpCol;
 
 	record >> ref_;
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fAlwaysCalc = GETBIT(flags, 0);
 	fRw = GETBIT(flags, 2);

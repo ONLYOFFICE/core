@@ -12,7 +12,7 @@ SummaryInformation::SummaryInformation(XLS::CFStreamPtr stream)
 {
 }
 
-const unsigned __int16 SummaryInformation::GetCodePage()
+const unsigned short SummaryInformation::GetCodePage()
 {
 	return property_set_stream.GetCodePage();
 }

@@ -41,11 +41,11 @@ XLS::BiffStructurePtr OfficeArtCOLORREF::clone()
 //	}
 //	else if(fPaletteIndex)
 //	{
-//		own_tag->setAttribute(L"palette_index", STR::int2str((static_cast<unsigned __int16>(green) << 8) + red).c_str());
+//		own_tag->setAttribute(L"palette_index", STR::int2str((static_cast<unsigned short>(green) << 8) + red).c_str());
 //	}
 //	else if(fSysIndex)
 //	{
-//		own_tag->setAttribute(L"system_index", STR::int2str((static_cast<unsigned __int16>(green) << 8) + red).c_str());
+//		own_tag->setAttribute(L"system_index", STR::int2str((static_cast<unsigned short>(green) << 8) + red).c_str());
 //	}
 //
 //	own_tag->setAttribute(L"fPaletteIndex", fPaletteIndex);

@@ -479,7 +479,7 @@ const bool SyntaxPtg::extract_PtgRef(std::wstring::const_iterator& first, std::w
 
 
 // static
-const bool SyntaxPtg::extract_3D_part(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned __int16& ixti, BiffStructurePtr & parent)
+const bool SyntaxPtg::extract_3D_part(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned short& ixti, BiffStructurePtr & parent)
 {
 	//static boost::wregex reg_sheets(L"^(\\w[\\w\\d.]*(:\\w[\\w\\d.]*)?)!");
 	//static boost::wregex reg_quoted(L"^'((''|[^]['\\/*?])*)'!");

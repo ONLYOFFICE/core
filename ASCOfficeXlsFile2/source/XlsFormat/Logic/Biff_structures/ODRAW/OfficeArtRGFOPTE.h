@@ -22,12 +22,12 @@ public:
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-	void SetOptionsNumber(const unsigned __int16 number);
-	const unsigned __int16 GetOptionsNumber();
+	void SetOptionsNumber(const unsigned short number);
+	const unsigned short GetOptionsNumber();
 
 private:
 	std::vector<OfficeArtFOPTEPtr> rgfopte;
-	unsigned __int16 options_num;
+	unsigned short options_num;
 };
 
 typedef boost::shared_ptr<OfficeArtRGFOPTE> OfficeArtRGFOPTEPtr;

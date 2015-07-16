@@ -17,7 +17,7 @@ public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
 	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
 	void load(CFRecord& record, const PtgVector& records_from_rgce, bool is_part_of_a_revision);
-	void load(CFRecord& record, unsigned __int16 rgce_record_type, bool is_part_of_a_revision);
+	void load(CFRecord& record, unsigned short rgce_record_type, bool is_part_of_a_revision);
 	virtual void store(CFRecord& record);
 
 	const PtgQueue& getPtgs() const;

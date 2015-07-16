@@ -29,7 +29,7 @@ xlsx_table_context(xlsx_conversion_context & Context, xlsx_text_context & textCo
 {        
 }
 
-void xlsx_table_context::start_table(const std::wstring & tableName, const std::wstring & tableStyleName)
+void xlsx_table_context::start_table(const std::wstring & name)
 {
     //table_state_stack_.push_back( xlsx_table_state(context_, tableStyleName, tableName) );
 }

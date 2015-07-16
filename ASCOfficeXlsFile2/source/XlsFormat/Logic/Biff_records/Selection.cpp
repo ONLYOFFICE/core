@@ -23,15 +23,15 @@ BaseObjectPtr Selection::clone()
 void Selection::writeFields(CFRecord& record)
 {
 	CellRef activeCellRef(activeCell);
-	rwAct = static_cast<unsigned __int16>(activeCellRef.getRow());
-	colAct = static_cast<unsigned __int16>(activeCellRef.getColumn());
+	rwAct = static_cast<unsigned short>(activeCellRef.getRow());
+	colAct = static_cast<unsigned short>(activeCellRef.getColumn());
 	
 	record << pnn << rwAct << colAct << irefAct;
 	
 	std::vector<CellRangeRef> refs;
 	AUX::str2refs(sqref, refs);
 
-	unsigned __int16 cref = refs.size();
+	unsigned short cref = refs.size();
 	record << cref;
 	for(std::vector<CellRangeRef>::const_iterator it = refs.begin(), itEnd = refs.end(); it != itEnd ; ++it)
 	{
@@ -43,7 +43,7 @@ void Selection::writeFields(CFRecord& record)
 
 void Selection::readFields(CFRecord& record)
 {
-	unsigned __int16 cref;
+	unsigned short cref;
 	record >> pnn >> rwAct >> colAct >> irefAct >> cref;
 	activeCell = static_cast<std::wstring >(CellRef(rwAct, colAct, true, true));
 	std::wstring  sqref_str;

@@ -7,7 +7,7 @@ namespace XLS
 {;
 
 
-SHAREDSTRINGS::SHAREDSTRINGS(const unsigned __int16 code_page)
+SHAREDSTRINGS::SHAREDSTRINGS(const unsigned short code_page)
 : code_page_(code_page)
 {
 }

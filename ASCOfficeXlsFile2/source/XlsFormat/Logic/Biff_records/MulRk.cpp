@@ -33,12 +33,12 @@ void MulRk::readFields(CFRecord& record)
 	Col colFirst;
 	Col colLast;
 // A little hack to extract colLast before it is used
-	record.skipNunBytes(record.getDataSize() - sizeof(unsigned __int16));
+	record.skipNunBytes(record.getDataSize() - sizeof(unsigned short));
 	record >> colLast;
 	record.resetPointerToBegin();
 //------------------
 	record >> rw >> colFirst;
-	for(unsigned __int16 i = colFirst; i <= colLast; ++i)
+	for(unsigned short i = colFirst; i <= colLast; ++i)
 	{
 		RkRec rec;
 		record >> rec;
@@ -46,12 +46,12 @@ void MulRk::readFields(CFRecord& record)
 		cells.push_back(CellPtr(new Cell(rw, i, rec.get_ixfe())));
 	}
 
-	record.skipNunBytes(sizeof(unsigned __int16));
+	record.skipNunBytes(sizeof(unsigned short));
 }
 
 const long MulRk::GetRow() const
 {
-	return static_cast<unsigned __int16>(rw);
+	return static_cast<unsigned short>(rw);
 }
 
 } // namespace XLS

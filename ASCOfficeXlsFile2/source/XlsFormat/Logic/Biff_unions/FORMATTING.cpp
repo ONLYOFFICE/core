@@ -9,6 +9,9 @@
 #include <Logic/Biff_records/ClrtClient.h>
 #include <Logic/Biff_records/TableStyles.h>
 #include <Logic/Biff_unions/TABLESTYLES.h>
+#include <Logic/Biff_unions/TABLESTYLES.h>
+
+#include <simple_xml_writer.h>
 
 namespace XLS
 {;
@@ -78,10 +81,53 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 		m_Palette = elements_.back();
 		elements_.pop_back();
 	}
-	proc.optional<ClrtClient>();
+	if (proc.optional<ClrtClient>())
+	{
+		m_ClrtClient= elements_.back();
+		elements_.pop_back();
+	}
 
 	return true;
 }
+
+int FORMATTING::serialize(std::wostream & stream)
+{
+    CP_XML_WRITER(stream)    
+    {
+		if (m_Fonts.size() > 0)
+		{
+			CP_XML_NODE(L"fonts")
+			{
+				CP_XML_ATTR(L"count", m_Fonts.size());
+				for (long i = 0 ; i < m_Fonts.size(); i++)
+				{
+					m_Fonts[i]->serialize(CP_XML_STREAM());
+				}
+			}
+		}
+		if (m_XFS)
+		{
+			m_XFS->serialize(stream);
+		}
+		if (m_Styles)
+		{
+			m_Styles->serialize(stream);
+		}
+	}
+
+    //cpdoccore::oox::xlsx_serialize(_Wostream, numFmts_);
+    //cpdoccore::oox::xlsx_serialize(_Wostream, fonts_);
+    //cpdoccore::oox::xlsx_serialize(_Wostream, fills_);
+    //cpdoccore::oox::xlsx_serialize(_Wostream, borders_);
+
+    //
+    //xlsx_serialize_xf(_Wostream, cellStyleXfs_, L"cellStyleXfs");
+    //xlsx_serialize_xf(_Wostream, cellXfs_, L"cellXfs");
+    //cellStyles_.xlsx_serialize(_Wostream);
+
+	return 0;
+}
+
 
 } // namespace XLS
 

@@ -14,7 +14,7 @@ namespace XLS
 //}
 
 
-unsigned __int16 Cetab::getHighBit() const
+unsigned short Cetab::getHighBit() const
 {
 	return cetab & 0x8000;
 }

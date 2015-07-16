@@ -19,4 +19,3 @@
 
 #include "Auxiliary/HelpFunc.h"
 #include "Logging/Log.h"
-#include "Auxiliary/nullable/nullable.h"

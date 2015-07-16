@@ -4,8 +4,7 @@
 #include "CFStream.h"
 #include "BinSmartPointers.h"
 #include "../Logic/GlobalWorkbookInfo.h"
-#include "../Auxiliary/nullable/nullable.h"
-
+#include <common.h>
 
 namespace XLS
 {;
@@ -110,7 +109,7 @@ public:
 	GlobalWorkbookInfoPtr getGlobalWorkbookInfo() { return global_info_; }
 
 	CFRecord& operator>>(unsigned char& val)	{ loadAnyData(val);	return *this; };
-	CFRecord& operator>>(unsigned __int16& val)	{ loadAnyData(val);	return *this; };
+	CFRecord& operator>>(unsigned short& val)	{ loadAnyData(val);	return *this; };
 	CFRecord& operator>>(unsigned int& val)	{ loadAnyData(val);	return *this; };
 	CFRecord& operator>>(long& val)	{ loadAnyData(val);	return *this; };
 	CFRecord& operator>>(double& val)	{ loadAnyData(val);	return *this; };
@@ -122,7 +121,7 @@ public:
 	CFRecord& operator>>(std::wstring & val);
 
 	CFRecord& operator<<(unsigned char& val)	{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(unsigned __int16& val)	{ storeAnyData(val);	return *this; };
+	CFRecord& operator<<(unsigned short& val)	{ storeAnyData(val);	return *this; };
 	CFRecord& operator<<(unsigned int& val)	{ storeAnyData(val);	return *this; };
 	CFRecord& operator<<(long& val)	{ storeAnyData(val);	return *this; };
 	CFRecord& operator<<(double& val)	{ storeAnyData(val);	return *this; };
@@ -209,7 +208,7 @@ CFRecord& operator<<(CFRecord & record, std::basic_string<T, std::char_traits<T>
 
 // moved out of the class to be higher in priority than the universal operator
 template<class T>
-CFRecord& operator>>(CFRecord & record, nullable<T>& val)
+CFRecord& operator>>(CFRecord & record, _CP_OPT(T)& val)
 {
 	T temp_val;
 	record.loadAnyData(temp_val);
@@ -220,14 +219,14 @@ CFRecord& operator>>(CFRecord & record, nullable<T>& val)
 
 // moved out of the class to be higher in priority than the universal operator
 template<class T>
-CFRecord& operator<<(CFRecord & record, nullable<T>& val)
+CFRecord& operator<<(CFRecord & record,		_CP_OPT(T)& val)
 {
-	T temp_val(val);
+	T temp_val(*val);
 	record.storeAnyData(temp_val);
 	return record; 
 }
 
-#define DET_TYPE(num_bits) num_bits <= 8 ? unsigned char : num_bits <=16 ? unsigned __int16 : unsigned int 
+#define DET_TYPE(num_bits) num_bits <= 8 ? unsigned char : num_bits <=16 ? unsigned short : unsigned int 
 #define GETBIT(from, num) ((from & (1 << num)) != 0)
 #define GETBITS(from, numL, numH) ((from & (((1 << (numH - numL + 1)) - 1) << numL)) >> numL)
 #define SETBIT(to, num, setorclear) {setorclear ? to |= (1 << num) : to &= ~(1 << num);}

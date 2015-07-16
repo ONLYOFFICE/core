@@ -100,7 +100,7 @@ void OfficeArtFSP::loadFields(XLS::CFRecord& record)
 }
 
 
-const unsigned __int16 OfficeArtFSP::GetInstanceToStore()
+const unsigned short OfficeArtFSP::GetInstanceToStore()
 {
 	return shape_id;
 }

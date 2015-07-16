@@ -52,8 +52,8 @@ namespace XMLSTUFF
 // Makes a new tag and append it to parent (no attributes set)
 //BiffStructurePtr createElement(const std::wstring & tag_name, BiffStructurePtr & parent);
 
-const std::wstring make3dRef(const unsigned __int16 ixti, const std::wstring cell_ref, std::vector<std::wstring>& xti_parsed);
-//const unsigned __int16 sheetsnames2ixti(const std::wstring str, MSXML2::IXMLDOMDocumentPtr doc);
+const std::wstring make3dRef(const unsigned short ixti, const std::wstring cell_ref, std::vector<std::wstring>& xti_parsed);
+//const unsigned short sheetsnames2ixti(const std::wstring str, MSXML2::IXMLDOMDocumentPtr doc);
 
 const std::wstring xti_indexes2sheet_name(const short itabFirst, const short itabLast, std::vector<std::wstring>& sheets_names);
 

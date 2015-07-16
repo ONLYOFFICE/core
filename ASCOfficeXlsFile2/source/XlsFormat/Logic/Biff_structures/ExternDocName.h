@@ -21,7 +21,7 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 ixals;
+	unsigned short ixals;
 	ShortXLUnicodeString extName;
 	ExtNameParsedFormula nameDefinition;
 };

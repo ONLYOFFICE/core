@@ -37,7 +37,7 @@ BiffStructurePtr ExtRst::clone()
 
 void ExtRst::store(CFRecord& record)
 {
-	unsigned __int16 reserved = 1;
+	unsigned short reserved = 1;
 	record  << reserved << cb << phs << rphssub << rgphruns;
 }
 
@@ -48,7 +48,7 @@ void ExtRst::load(CFRecord& record)
 	record >> cb;
 	size_t data_start = record.getRdPtr();
 	record >> phs >> rphssub;
-	for(unsigned __int16 i = 0; i < rphssub.getRunsNumber(); ++i)
+	for(unsigned short i = 0; i < rphssub.getRunsNumber(); ++i)
 	{
 		PhRuns run;
 		record >> run;
@@ -65,7 +65,7 @@ void ExtRst::load(CFRecord& record)
 
 const size_t ExtRst::getSize() const
 {
-	return 2/*reserved*/ + sizeof(unsigned __int16) /*cb*/ + sizeof(unsigned __int16) * 2/*phs*/ + rphssub.getSize() + (rgphruns.size() ? rgphruns.size() * sizeof(short) * 3 : 0);
+	return 2/*reserved*/ + sizeof(unsigned short) /*cb*/ + sizeof(unsigned short) * 2/*phs*/ + rphssub.getSize() + (rgphruns.size() ? rgphruns.size() * sizeof(short) * 3 : 0);
 }
 
 

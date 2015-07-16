@@ -14,7 +14,7 @@ PtgRef3d::PtgRef3d(const CellRef& cell_base_ref_init)
 }
 
 
-PtgRef3d::PtgRef3d(const unsigned __int16 ixti_init, const std::wstring& ref_str, const PtgDataType data_type, const CellRef& cell_base_ref_init)
+PtgRef3d::PtgRef3d(const unsigned short ixti_init, const std::wstring& ref_str, const PtgDataType data_type, const CellRef& cell_base_ref_init)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
 	rgce_loc(boost::algorithm::to_upper_copy(ref_str)),
 	ixti(ixti_init),

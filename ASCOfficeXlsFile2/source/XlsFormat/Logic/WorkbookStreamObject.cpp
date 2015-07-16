@@ -21,12 +21,12 @@ WorkbookStreamObject::WorkbookStreamObject()
 }
 
 
-WorkbookStreamObject::WorkbookStreamObject(const unsigned __int16 code_page)
+WorkbookStreamObject::WorkbookStreamObject(const unsigned short code_page)
 : code_page_(code_page)
 {
 }
 
-void WorkbookStreamObject::set_code_page(const unsigned __int16 code_page)
+void WorkbookStreamObject::set_code_page(const unsigned short code_page)
 {
 	code_page_ = code_page;
 }
@@ -47,7 +47,7 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 {
 	bool to_continue = true;
 
-	unsigned __int16 substream_type;
+	unsigned short substream_type;
 	bool GlobalsSubstream_found = false;
 	bool WorksheetSubstream_found = false;
 	size_t ws_index = 0;

@@ -52,7 +52,7 @@ XLS::BiffStructurePtr OfficeArtClientAnchorSheet::clone()
 
 void OfficeArtClientAnchorSheet::storeFields(XLS::CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fMove);
 	SETBIT(flags, 1, fSize);
 	record << flags << colL << dxL << rwT << dyT << colR << dxR << rwB << dyB;
@@ -61,7 +61,7 @@ void OfficeArtClientAnchorSheet::storeFields(XLS::CFRecord& record)
 
 void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags >> colL >> dxL >> rwT >> dyT >> colR >> dxR >> rwB >> dyB;
 	fMove = GETBIT(flags, 0);
 	fSize = GETBIT(flags, 1);

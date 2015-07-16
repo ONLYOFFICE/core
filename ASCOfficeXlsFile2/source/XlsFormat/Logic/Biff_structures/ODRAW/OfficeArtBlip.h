@@ -19,7 +19,7 @@ class OfficeArtBlip : public OfficeArtRecord
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtBlip)
 public:
-	OfficeArtBlip(const unsigned __int16 recType);
+	OfficeArtBlip(const unsigned short recType);
 
 	static OfficeArtBlipPtr load_blip(XLS::CFRecord& record);
 
@@ -35,7 +35,7 @@ typedef enum
 	bpi_HasInternalTag,
 } BLIP_PICT_INFO;
 
-template<BLIP_PICT_INFO pict_info, unsigned __int16 recType>
+template<BLIP_PICT_INFO pict_info, unsigned short recType>
 class OfficeArtBlipCommon : public OfficeArtBlip
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtBlip)

@@ -17,7 +17,7 @@ public:
 private:
 	bool fTop : 1;
 	bool fPercent : 1;
-	unsigned __int16 iParam;
+	unsigned short iParam;
 
 private:
 	unsigned char reserved2_1;
@@ -33,10 +33,10 @@ public:
 	//void toXML(BiffStructurePtr & parent);
 
 private:
-	unsigned __int16 ctp;
+	unsigned short ctp;
 
 private:
-	unsigned __int16 reserved_1;
+	unsigned short reserved_1;
 	unsigned int reserved_2;
 	unsigned int reserved_3;
 	unsigned int reserved_4;
@@ -49,10 +49,10 @@ public:
 	//void toXML(BiffStructurePtr & parent);
 
 private:
-	unsigned __int16 dateOp;
+	unsigned short dateOp;
 
 private:
-	unsigned __int16 reserved_1;
+	unsigned short reserved_1;
 	unsigned int reserved_2;
 	unsigned int reserved_3;
 	unsigned int reserved_4;
@@ -65,10 +65,10 @@ public:
 	//void toXML(BiffStructurePtr & parent);
 
 private:
-	unsigned __int16 iParam;
+	unsigned short iParam;
 
 private:
-	unsigned __int16 reserved_1;
+	unsigned short reserved_1;
 	unsigned int reserved_2;
 	unsigned int reserved_3;
 	unsigned int reserved_4;

@@ -20,8 +20,8 @@ public:
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
-	virtual void load(CFRecord& record, const unsigned __int16 ot);
-	virtual void store(CFRecord& record, const unsigned __int16 ot);
+	virtual void load(CFRecord& record, const unsigned short ot);
+	virtual void store(CFRecord& record, const unsigned short ot);
 
 private:
 	virtual void load(CFRecord& record){}
@@ -29,8 +29,8 @@ private:
 
 private:
 	ObjFmla fmla;
-	unsigned __int16 cLines;
-	unsigned __int16 iSel;
+	unsigned short cLines;
+	unsigned short iSel;
 
 	bool fUseCB;
 	bool fValidPlex;
@@ -39,7 +39,7 @@ private:
 	unsigned char wListSelType;
 	unsigned char lct;
 
-	unsigned __int16 idEdit;
+	unsigned short idEdit;
 
 	LbsDropDataPtr dropData;
 	std::vector<XLUnicodeString> rgLines;

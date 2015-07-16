@@ -22,7 +22,7 @@ public:
 
 private:
 	XFPropColor color;
-	unsigned __int16 dgBorder;
+	unsigned short dgBorder;
 };
 //#pragma pack() // restore
 

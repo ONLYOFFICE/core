@@ -24,8 +24,8 @@ public:
 
 //-----------------------------
 	Rw rw;
-	BackwardOnlyParam<unsigned __int16> colMic;
-	BackwardOnlyParam<unsigned __int16> colMac;
+	BackwardOnlyParam<unsigned short> colMic;
+	BackwardOnlyParam<unsigned short> colMac;
 	BIFF_WORD miyRw;
 
 	BIFF_BYTE iOutLevel;

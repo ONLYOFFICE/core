@@ -24,8 +24,8 @@ void Pane::writeFields(CFRecord& record)
 {
 	record << x << y;
 	CellRef topLeftCell_ref(topLeftCell);
-	rwTop = static_cast<unsigned __int16>(topLeftCell_ref.getRow());
-	colLeft = static_cast<unsigned __int16>(topLeftCell_ref.getColumn());
+	rwTop = static_cast<unsigned short>(topLeftCell_ref.getRow());
+	colLeft = static_cast<unsigned short>(topLeftCell_ref.getColumn());
 	record << rwTop << colLeft << pnnAcct;
 	record.reserveNunBytes(1); // reserved
 }

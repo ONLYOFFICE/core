@@ -20,7 +20,7 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 cprops;
+	unsigned short cprops;
 	std::vector<XFProp> xfPropArray;
 };
 

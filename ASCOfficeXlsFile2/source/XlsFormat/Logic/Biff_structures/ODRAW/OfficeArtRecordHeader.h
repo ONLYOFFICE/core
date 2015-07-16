@@ -26,8 +26,8 @@ public:
 
 public:
 	unsigned char recVer;
-	unsigned __int16 recInstance;
-	unsigned __int16 recType;
+	unsigned short recInstance;
+	unsigned short recType;
 	unsigned int recLen;
 };
 

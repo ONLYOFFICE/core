@@ -40,7 +40,7 @@ void RkRec::load(CFRecord& record)
 }
 
 
-const unsigned __int16 RkRec::get_ixfe() const
+const unsigned short RkRec::get_ixfe() const
 {
 	return ixfe;
 }

@@ -22,7 +22,7 @@ BaseObjectPtr Legend::clone()
 
 void Legend::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fAutoPosition);
 	SETBIT(flags, 2, fAutoPosX);
 	SETBIT(flags, 3, fAutoPosY);
@@ -36,7 +36,7 @@ void Legend::writeFields(CFRecord& record)
 
 void Legend::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> x >> y >> dx >> dy;
 	record.skipNunBytes(1); // unused
 	record >> wSpace >> flags;

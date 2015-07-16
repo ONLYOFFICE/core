@@ -51,7 +51,7 @@ void OfficeArtColorMRUContainer::loadFields(XLS::CFRecord& record)
 	}
 }
 
-const unsigned __int16 OfficeArtColorMRUContainer::GetInstanceToStore()
+const unsigned short OfficeArtColorMRUContainer::GetInstanceToStore()
 {
 	return rgmsocr.size();
 }

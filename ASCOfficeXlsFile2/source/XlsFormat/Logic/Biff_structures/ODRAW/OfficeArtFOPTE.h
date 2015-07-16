@@ -37,7 +37,7 @@ public:
 
 
 public:
-	unsigned __int16 opid;
+	unsigned short opid;
 	bool fBid;
 	bool fComplex;
 	long op;

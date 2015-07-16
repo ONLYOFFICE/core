@@ -24,7 +24,7 @@ public:
 
 	static const ElementType	type = typeCFEx;
 
-	const unsigned __int16 getID() const;
+	const unsigned short getID() const;
 //-----------------------------
 	FrtRefHeaderU frtRefHeaderU;
 	Boolean<unsigned int> fIsCF12;

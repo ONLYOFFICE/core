@@ -22,7 +22,7 @@ BaseObjectPtr BopPop::clone()
 
 void BopPop::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fHasShadow);
 	record << pst << fAutoSplit << split << iSplitPos << pcSplitPercent << pcPie2Size << pcGap << numSplitValue << flags;
 }
@@ -30,7 +30,7 @@ void BopPop::writeFields(CFRecord& record)
 
 void BopPop::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> pst >> fAutoSplit >> split >> iSplitPos >> pcSplitPercent >> pcPie2Size >> pcGap >> numSplitValue >> flags;
 	fHasShadow = GETBIT(flags, 0);
 }

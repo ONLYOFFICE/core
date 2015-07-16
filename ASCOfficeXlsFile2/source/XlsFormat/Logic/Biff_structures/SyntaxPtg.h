@@ -46,7 +46,7 @@ public:
 
 	static const bool extract_PtgArea(std::wstring::const_iterator& first, std::wstring::const_iterator last, std::wstring& out_str);
 	static const bool extract_PtgRef(std::wstring::const_iterator& first, std::wstring::const_iterator last, std::wstring& out_str);
-	static const bool extract_3D_part(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned __int16& ixti, BiffStructurePtr & parent);
+	static const bool extract_3D_part(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned short& ixti, BiffStructurePtr & parent);
 
 	static const bool extract_PtgArray(std::wstring::const_iterator& first, std::wstring::const_iterator last, std::wstring& out_str);
 

@@ -11,7 +11,7 @@ class SHAREDSTRINGS: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(SHAREDSTRINGS)
 public:
-	SHAREDSTRINGS(const unsigned __int16 code_page);
+	SHAREDSTRINGS(const unsigned short code_page);
 	~SHAREDSTRINGS();
 
 	BaseObjectPtr clone();
@@ -21,7 +21,7 @@ public:
 	static const ElementType	type = typeSHAREDSTRINGS;
 	
 
-	unsigned __int16 code_page_;
+	unsigned short code_page_;
 };
 
 } // namespace XLS

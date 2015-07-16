@@ -51,7 +51,7 @@ void FactoidData::store(CFRecord& record)
 
 void FactoidData::load(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fDelete = GETBIT(flags, 0);
 	fXMLBased = GETBIT(flags, 0);

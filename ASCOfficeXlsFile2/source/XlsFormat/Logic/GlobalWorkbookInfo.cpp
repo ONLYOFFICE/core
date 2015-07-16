@@ -6,7 +6,7 @@ namespace XLS
 {;
 
 
-GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned __int16 code_page)
+GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page)
 :	CodePage(code_page)
 {
 	fill_x_ids[FillInfo(0, 0, 0)] = 0;

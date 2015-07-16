@@ -18,7 +18,7 @@ public:
     xlsx_table_context(xlsx_conversion_context & Context, xlsx_text_context & textCotnext);
 
 public:
-    void start_table(const std::wstring & tableName, const std::wstring & tableStyleName);
+	void start_table(const std::wstring & name);
     void end_table();
 
     std::wstring get_current_table_name() const;

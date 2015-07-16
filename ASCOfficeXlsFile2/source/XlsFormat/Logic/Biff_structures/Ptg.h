@@ -4,6 +4,7 @@
 #include "CellRef.h"
 #include <stack>
 #include <queue>
+#include <common.h>
 
 namespace XLS
 {;
@@ -24,7 +25,7 @@ class Ptg : public BiffStructure // still abstract
 {
 public:
 	Ptg();
-	Ptg(const unsigned __int16 ptg_id_init);
+	Ptg(const unsigned short ptg_id_init);
 
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
@@ -34,7 +35,7 @@ public:
 
 
 
-	virtual const unsigned __int16 getPtgId() const;// = 0;
+	virtual const unsigned short getPtgId() const;// = 0;
 	const size_t getOffsetInRecord() const;
 	const size_t getSizeOfStruct() const;
 
@@ -44,9 +45,9 @@ protected:
 	void addFuncWrapper(AssemblerStack& ptg_stack, const std::wstring& func_name);
 
 private:
-	nullable<unsigned __int16> ptg_id;
-	nullable<size_t> offset_in_record;
-	nullable<size_t> size_of_struct;
+	_CP_OPT(unsigned short)	ptg_id;
+	_CP_OPT(size_t)			offset_in_record;
+	_CP_OPT(size_t)			size_of_struct;
 };
 
 

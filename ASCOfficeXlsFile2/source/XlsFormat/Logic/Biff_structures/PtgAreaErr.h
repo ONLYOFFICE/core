@@ -20,10 +20,10 @@ public:
 
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
 
-	virtual const unsigned __int16 getPtgId() const	{ return id_fixed | (static_cast<unsigned char>(data_type) << 5);}
+	virtual const unsigned short getPtgId() const	{ return id_fixed | (static_cast<unsigned char>(data_type) << 5);}
 
 private:
-	static const unsigned __int16 id_fixed = 0x0A;
+	static const unsigned short id_fixed = 0x0A;
 	unsigned char data_type;
 };
 

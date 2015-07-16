@@ -30,7 +30,7 @@ private:
 			unsigned char Byte4;
 			unsigned char Byte5;
 			unsigned char Byte6;
-			unsigned __int16 fExprO;
+			unsigned short fExprO;
 		};
 		double xnum;
 	} data;

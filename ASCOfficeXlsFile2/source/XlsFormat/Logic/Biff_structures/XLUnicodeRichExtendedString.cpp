@@ -99,7 +99,7 @@ void XLUnicodeRichExtendedString::store(CFRecord& record)
 		record.registerDelayedDataSource(record.getDataSize(), rt_ExtSST);
 	}
 
-	unsigned __int16 cch = str_.length();
+	unsigned short cch = str_.length();
 	record << cch;
 	unsigned char flags = 0;
 	fHighByte = true; // We'll save always in UNICODE
@@ -107,7 +107,7 @@ void XLUnicodeRichExtendedString::store(CFRecord& record)
 	SETBIT(flags, 2, fExtSt);
 	SETBIT(flags, 3, fRichSt);
 	record << flags;
-	unsigned __int16 cRun = rgRun.size();
+	unsigned short cRun = rgRun.size();
 	if(fRichSt)
 	{
 		record << cRun;
@@ -161,13 +161,13 @@ void XLUnicodeRichExtendedString::store(CFRecord& record)
 
 void XLUnicodeRichExtendedString::load(CFRecord& record)
 {
-	unsigned __int16 cch;
+	unsigned short cch;
 	unsigned char flags;
 	record >> cch >> flags;
 	fHighByte = GETBIT(flags, 0);
 	fExtSt = GETBIT(flags, 2);
 	fRichSt = GETBIT(flags, 3);
-	unsigned __int16 cRun = 0;
+	unsigned short cRun = 0;
 	if(fRichSt)
 	{
 		record >> cRun;
@@ -268,10 +268,10 @@ CFRecord& operator>>(CFRecord& record, XLUnicodeRichExtendedString& val)
 
 const size_t XLUnicodeRichExtendedString::getNonVariablePartSize() const
 {	
-	unsigned __int16 size = sizeof(unsigned __int16)/*cch*/ + sizeof(unsigned char)/*flags*/;
+	unsigned short size = sizeof(unsigned short)/*cch*/ + sizeof(unsigned char)/*flags*/;
 	if(fRichSt)
 	{
-		size += sizeof(unsigned __int16)/*cRun*/;
+		size += sizeof(unsigned short)/*cRun*/;
 	}
 	if(fExtSt)
 	{
@@ -283,11 +283,11 @@ const size_t XLUnicodeRichExtendedString::getNonVariablePartSize() const
 
 const size_t XLUnicodeRichExtendedString::getFullSize() const
 {	
-	unsigned __int16 size = getNonVariablePartSize();
+	unsigned short size = getNonVariablePartSize();
 
 	size += str_.length() << (fHighByte ? 1 : 0);
 
-	size += rgRun.size() * (2 * sizeof(unsigned __int16))/*FormatRun*/;
+	size += rgRun.size() * (2 * sizeof(unsigned short))/*FormatRun*/;
 
 	if(fExtSt)
 	{

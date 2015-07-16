@@ -23,6 +23,8 @@ public:
 
 	static const ElementType	type = typeFont;
 
+	int serialize(std::wostream & stream);
+
 //-----------------------------
 	BIFF_WORD dyHeight; // measured in twips (1/20 of of a printer's point)
 

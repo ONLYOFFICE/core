@@ -31,14 +31,14 @@ BiffStructurePtr FtCblsData::clone()
 
 void FtCblsData::store(CFRecord& record)
 {
-	unsigned __int16 ft = 0x0012; // reserved
-	unsigned __int16 cb = 0x0008; // reserved
+	unsigned short ft = 0x0012; // reserved
+	unsigned short cb = 0x0008; // reserved
 	record << ft << cb;
 
 	record << fChecked << accel;
 	
 	record.reserveNunBytes(2); // reserved
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fNo3d);
 
 	record << flags;
@@ -51,7 +51,7 @@ void FtCblsData::load(CFRecord& record)
 
 	record >> fChecked >> accel;
 	record.skipNunBytes(2); // reserved
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fNo3d = GETBIT(flags, 0);
 

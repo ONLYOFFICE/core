@@ -31,8 +31,8 @@ void NameCmt::writeFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_HeaderFooter);
 	record << frtHeader;
-	unsigned __int16 cchName = static_cast<unsigned __int16>(name.getSize());
-	unsigned __int16 cchComment = static_cast<unsigned __int16>(comment.getSize());
+	unsigned short cchName = static_cast<unsigned short>(name.getSize());
+	unsigned short cchComment = static_cast<unsigned short>(comment.getSize());
 	record << cchName << cchComment;
 	record << name << comment;
 }
@@ -42,8 +42,8 @@ void NameCmt::readFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_HeaderFooter);
 	record >> frtHeader;
-	unsigned __int16 cchName;
-	unsigned __int16 cchComment;
+	unsigned short cchName;
+	unsigned short cchComment;
 	record >> cchName >> cchComment;
 	name.setSize(cchName);
 	comment.setSize(cchComment);

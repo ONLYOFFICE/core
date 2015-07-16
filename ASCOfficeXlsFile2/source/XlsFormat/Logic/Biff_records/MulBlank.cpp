@@ -31,7 +31,7 @@ void MulBlank::writeFields(CFRecord& record)
 void MulBlank::readFields(CFRecord& record)
 {
 	// A little hack to extract colLast before it is used
-	record.skipNunBytes(record.getDataSize() - sizeof(unsigned __int16));
+	record.skipNunBytes(record.getDataSize() - sizeof(unsigned short));
 	record >> colLast;
 	record.resetPointerToBegin();
 	//------------------
@@ -39,12 +39,12 @@ void MulBlank::readFields(CFRecord& record)
 
 	rgixfe.load(record, colLast - colFirst + 1);
 
-	record.skipNunBytes(sizeof(unsigned __int16));
+	record.skipNunBytes(sizeof(unsigned short));
 }
 
 const long MulBlank::GetRow() const
 {
-	return static_cast<unsigned __int16>(rw);
+	return static_cast<unsigned short>(rw);
 }
 
 
@@ -60,7 +60,7 @@ BiffStructurePtr IXFCellMulBlankSpecial::clone()
 
 void IXFCellMulBlankSpecial::load(CFRecord& record, const size_t num_cells)
 {
-	unsigned __int16 ixfe;
+	unsigned short ixfe;
 	for(size_t i = 0; i < num_cells; ++i)
 	{
 		record >> ixfe;

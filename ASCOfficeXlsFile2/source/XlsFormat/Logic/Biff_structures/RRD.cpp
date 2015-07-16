@@ -54,7 +54,7 @@ void RRD::store(CFRecord& record)
 
 void RRD::load(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> cbMemory >> revid >> revt >> flags;
 	fAccepted = GETBIT(flags, 0);
 	fUndoAction = GETBIT(flags, 1);

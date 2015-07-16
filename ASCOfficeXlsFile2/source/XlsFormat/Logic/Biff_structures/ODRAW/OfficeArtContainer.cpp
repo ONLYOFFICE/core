@@ -23,7 +23,7 @@ namespace ODRAW
 {;
 
 
-OfficeArtContainer::OfficeArtContainer(const unsigned char recVer, const unsigned __int16 recType, const OfficeArtClientAnchorType anchor_type)
+OfficeArtContainer::OfficeArtContainer(const unsigned char recVer, const unsigned short recType, const OfficeArtClientAnchorType anchor_type)
 :	OfficeArtRecord(recVer, recType), anchor_type_(anchor_type)
 {
 }

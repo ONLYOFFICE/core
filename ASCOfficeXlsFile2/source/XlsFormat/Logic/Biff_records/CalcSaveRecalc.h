@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeCalcSaveRecalc;
 
 //-----------------------------
-	Boolean<unsigned __int16> fSaveRecalc;
+	Boolean<unsigned short> fSaveRecalc;
 
 	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_ATTRIB(fSaveRecalc)

@@ -22,7 +22,7 @@ BaseObjectPtr Surf::clone()
 
 void Surf::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fFillSurface);
 	SETBIT(flags, 1, f3DPhongShade);
 	record << flags;
@@ -31,7 +31,7 @@ void Surf::writeFields(CFRecord& record)
 
 void Surf::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fFillSurface = GETBIT(flags, 0);
 	f3DPhongShade = GETBIT(flags, 1);

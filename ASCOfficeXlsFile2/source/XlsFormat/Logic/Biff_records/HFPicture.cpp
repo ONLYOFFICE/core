@@ -37,7 +37,7 @@ void HFPicture::readFields(CFRecord& record)
 	FrtHeader frtHeader(rt_HFPicture);
 	record >> frtHeader;
 
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fIsDrawing = GETBIT(flags, 0);
 	fIsDrawingGroup = GETBIT(flags, 0);

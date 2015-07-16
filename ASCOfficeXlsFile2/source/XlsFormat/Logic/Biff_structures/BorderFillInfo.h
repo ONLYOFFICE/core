@@ -1,5 +1,7 @@
 #pragma once
 
+#include <sstream>
+
 namespace XLS
 {;
 
@@ -23,6 +25,7 @@ struct FillInfo
 				(icvBack < right.icvBack));
 	}
 
+	int serialize(std::wostream & stream);
 };
 
 struct BorderInfo
@@ -54,6 +57,7 @@ struct BorderInfo
 				(icvDiag < right.icvDiag))))))))));
 	}
 
+	int serialize(std::wostream & stream);
 };
 
 

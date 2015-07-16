@@ -22,7 +22,7 @@ BaseObjectPtr AttachedLabel::clone()
 
 void AttachedLabel::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fShowValue);
 	SETBIT(flags, 1, fShowPercent);
 	SETBIT(flags, 2, fShowLabelAndPerc);
@@ -35,7 +35,7 @@ void AttachedLabel::writeFields(CFRecord& record)
 
 void AttachedLabel::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fShowValue = GETBIT(flags, 0);
 	fShowPercent = GETBIT(flags, 1);

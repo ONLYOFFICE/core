@@ -13,7 +13,7 @@ class PtgRefErr3d: public OperandPtg
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgRefErr3d)
 public:
 	PtgRefErr3d();
-	PtgRefErr3d(const unsigned __int16 ixti, const PtgDataType data_type);
+	PtgRefErr3d(const unsigned short ixti, const PtgDataType data_type);
 	BiffStructurePtr clone();
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
@@ -22,9 +22,9 @@ public:
 
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
 
-	static const unsigned __int16 fixed_id = 0x1C;
+	static const unsigned short fixed_id = 0x1C;
 private:
-	unsigned __int16 ixti;
+	unsigned short ixti;
 	GlobalWorkbookInfoPtr global_info;
 };
 

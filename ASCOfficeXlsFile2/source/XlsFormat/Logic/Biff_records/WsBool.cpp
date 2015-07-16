@@ -23,7 +23,7 @@ BaseObjectPtr WsBool::clone()
 
 void WsBool::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fShowAutoBreaks);
 	SETBIT(flags, 4, fDialog);
 	SETBIT(flags, 5, fApplyStyles);
@@ -41,7 +41,7 @@ void WsBool::writeFields(CFRecord& record)
 
 void WsBool::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fShowAutoBreaks = GETBIT(flags, 0);
 	fDialog = GETBIT(flags, 4);

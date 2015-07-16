@@ -30,7 +30,7 @@ void Sort::writeFields(CFRecord& record)
 
 void Sort::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fCol = GETBIT(flags, 0);
 	fKey1Dsc = GETBIT(flags, 1);

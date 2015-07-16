@@ -28,7 +28,7 @@ void CFParsedFormula::store(CFRecord& record)
 
 void CFParsedFormula::load(CFRecord& record)
 {
-	unsigned __int16 cce;
+	unsigned short cce;
 	record >> cce;
 	rgce.load(record, cce);
 }

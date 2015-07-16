@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeCalcPrecision;
 
 //-----------------------------
-	Boolean<unsigned __int16> fFullPrec;
+	Boolean<unsigned short> fFullPrec;
 
 	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_ATTRIB(fFullPrec)

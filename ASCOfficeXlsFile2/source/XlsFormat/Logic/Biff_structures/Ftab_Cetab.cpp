@@ -17,7 +17,7 @@ Ftab_Cetab::Ftab_Cetab(const std::wstring& word)
 }
 
 
-Ftab_Cetab::Ftab_Cetab(const unsigned __int16 func_index_init)
+Ftab_Cetab::Ftab_Cetab(const unsigned short func_index_init)
 :	func_index(func_index_init)
 {
 }
@@ -792,7 +792,7 @@ Ftab_Cetab::ValuesDetermination::ValuesDetermination()
 
 
 // static
-const std::wstring Ftab_Cetab::ValuesDetermination::getName(const unsigned __int16 iftab)
+const std::wstring Ftab_Cetab::ValuesDetermination::getName(const unsigned short iftab)
 {
 	const ParamsFixedSet::index<sort_by_iftab>::type& iftab_index = getInst().params_fixed.get<sort_by_iftab>();
 	const ParamsFixedSet::index<sort_by_iftab>::type::iterator found = iftab_index.find(iftab);
@@ -805,7 +805,7 @@ const std::wstring Ftab_Cetab::ValuesDetermination::getName(const unsigned __int
 
 
 // static
-const long Ftab_Cetab::ValuesDetermination::getParamsNum(const unsigned __int16 iftab)
+const long Ftab_Cetab::ValuesDetermination::getParamsNum(const unsigned short iftab)
 {
 	const ParamsFixedSet::index<sort_by_iftab>::type& iftab_index = getInst().params_fixed.get<sort_by_iftab>();
 	const ParamsFixedSet::index<sort_by_iftab>::type::iterator found = iftab_index.find(iftab);
@@ -818,7 +818,7 @@ const long Ftab_Cetab::ValuesDetermination::getParamsNum(const unsigned __int16 
 
 
 // static
-const unsigned __int16 Ftab_Cetab::ValuesDetermination::getIndex(const std::wstring& func_name)
+const unsigned short Ftab_Cetab::ValuesDetermination::getIndex(const std::wstring& func_name)
 {
 	const ParamsFixedSet::index<sort_by_name>::type& name_index = getInst().params_fixed.get<sort_by_name>();
 	const ParamsFixedSet::index<sort_by_name>::type::iterator found = name_index.find(func_name);
@@ -855,7 +855,7 @@ const long Ftab_Cetab::getParamsNum() const
 }
 
 
-const unsigned __int16 Ftab_Cetab::getIndex() const
+const unsigned short Ftab_Cetab::getIndex() const
 {
 	return func_index;
 }
@@ -868,7 +868,7 @@ const bool Ftab_Cetab::isMacro() const
 
 
 // static
-const unsigned __int16 Ftab_Cetab::recognizeFunction(const std::wstring& word)
+const unsigned short Ftab_Cetab::recognizeFunction(const std::wstring& word)
 {
 	return ValuesDetermination::getIndex(word);
 }

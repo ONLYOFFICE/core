@@ -48,7 +48,7 @@ public:
  //   void start_span(const std::wstring & styleName);
  //   void end_span();
 
-    bool start_table(const std::wstring & tableName, const std::wstring & tableStyleName);
+    bool start_table(const std::wstring & name);
     void end_table();
 
 

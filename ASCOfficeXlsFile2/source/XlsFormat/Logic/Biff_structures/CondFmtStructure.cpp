@@ -35,7 +35,7 @@ BiffStructurePtr CondFmtStructure::clone()
 void CondFmtStructure::store(CFRecord& record)
 {
 	record << ccf;
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fToughRecalc);
 	SETBITS(flags, 1, 15, nID);
 	record << flags;
@@ -46,7 +46,7 @@ void CondFmtStructure::store(CFRecord& record)
 void CondFmtStructure::load(CFRecord& record)
 {
 	record >> ccf;
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fToughRecalc = GETBIT(flags, 0);
 	nID = GETBITS(flags, 1, 15);

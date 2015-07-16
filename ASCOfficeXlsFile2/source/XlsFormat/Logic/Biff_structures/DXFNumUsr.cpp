@@ -33,7 +33,7 @@ BiffStructurePtr DXFNumUsr::clone()
 void DXFNumUsr::store(CFRecord& record)
 {
 	size_t start_ptr = record.getDataSize();
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned __int16)/*cb*/, rt_STRUCT_DXFNumUsr);
+	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cb*/, rt_STRUCT_DXFNumUsr);
 	record << fmt;
 	record.registerDelayedDataSource(record.getDataSize() - start_ptr, rt_STRUCT_DXFNumUsr);
 

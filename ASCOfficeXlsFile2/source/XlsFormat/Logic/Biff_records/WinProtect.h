@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeWinProtect;
 
 //-----------------------------
-	Boolean<unsigned __int16> fLockWn;
+	Boolean<unsigned short> fLockWn;
 
 };
 

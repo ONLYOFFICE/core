@@ -7,6 +7,9 @@ namespace XLS
 
 
 // Logical representation of WorksheetSubstream union of records 
+class WorksheetSubstream;
+typedef boost::shared_ptr<WorksheetSubstream>	WorksheetSubstreamPtr;
+
 class WorksheetSubstream: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(WorksheetSubstream)

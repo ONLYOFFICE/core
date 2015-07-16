@@ -28,13 +28,13 @@ BiffStructurePtr FtGboData::clone()
 
 void FtGboData::store(CFRecord& record)
 {
-	unsigned __int16 ft = 0x000F; // reserved
-	unsigned __int16 cb = 0x0006; // reserved
+	unsigned short ft = 0x000F; // reserved
+	unsigned short cb = 0x0006; // reserved
 	record << ft << cb;
 
 	record << accel;
 	record.reserveNunBytes(2); // reserved
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fNo3d);
 	record << flags;
 }
@@ -46,7 +46,7 @@ void FtGboData::load(CFRecord& record)
 
 	record >> accel;
 	record.skipNunBytes(2); // reserved
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fNo3d = GETBIT(flags, 0);
 }

@@ -22,7 +22,7 @@ BaseObjectPtr CondFmt::clone()
 
 void CondFmt::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record << ccf;
 	SETBIT(flags, 0, fToughRecalc);
 	SETBITS(flags, 1, 15, nID);
@@ -36,7 +36,7 @@ void CondFmt::writeFields(CFRecord& record)
 
 void CondFmt::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> ccf >> flags;
 	fToughRecalc = GETBIT(flags, 0);
 	nID = GETBITS(flags, 1, 15);

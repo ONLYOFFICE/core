@@ -61,11 +61,10 @@
 namespace XLS
 {;
 
-GlobalsSubstream::GlobalsSubstream(const unsigned __int16 code_page)
+GlobalsSubstream::GlobalsSubstream(const unsigned short code_page)
 :	code_page_(code_page)
 {
 }
-
 
 GlobalsSubstream::~GlobalsSubstream()
 {
@@ -117,7 +116,11 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	}
 	proc.optional<WriteProtect>();
 	proc.optional<FilePass>();
-	proc.optional<Template>();
+	if (proc.optional<Template>())
+	{
+		m_Template = elements_.back();
+		elements_.pop_back();
+	}
 	proc.mandatory<INTERFACE_T>();
 	proc.mandatory<WriteAccess>();
 	proc.optional<FileSharing>();
@@ -148,7 +151,12 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	proc.optional<RecalcId>(); // OpenOffice Calc stored files workaround
 	proc.repeated<Window1>(0, 0); // OpenOffice Calc stored files workaround
 
-	proc.mandatory<FORMATTING>();
+	if (proc.mandatory<FORMATTING>())
+	{
+		m_Formating = elements_.back();
+		elements_.pop_back();
+	}
+
 	proc.repeated<PIVOTCACHEDEFINITION>(0, 0);
 	proc.optional<DOCROUTE>();
 	proc.repeated<UserBView>(0, 0);
@@ -175,7 +183,12 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	proc.optional<BookExt>();
 	proc.repeated(FeatHdr(true), 0, 0);
 	proc.repeated<DConn>(0, 0);
-	proc.optional<THEME>();
+	
+	if (proc.optional<THEME>())
+	{
+		m_Theme = elements_.back();
+		elements_.pop_back();
+	}
 	proc.optional<CompressPictures>();
 	proc.optional<Compat12>();
 	proc.optional<GUIDTypeLib>();

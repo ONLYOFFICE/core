@@ -20,7 +20,7 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 xclrType;
+	unsigned short xclrType;
 	unsigned int xclrValue;
 	LongRGBA xclrValue_rgb;
 	double numPosition;

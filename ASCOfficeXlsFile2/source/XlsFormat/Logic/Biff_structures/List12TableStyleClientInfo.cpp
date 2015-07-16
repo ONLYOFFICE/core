@@ -44,7 +44,7 @@ void List12TableStyleClientInfo::store(CFRecord& record)
 
 void List12TableStyleClientInfo::load(CFRecord& record)
 {	
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 
 	fFirstColumn = static_cast<unsigned char>(GETBITS(flags, 0, 1));

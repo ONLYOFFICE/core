@@ -28,7 +28,7 @@ void DBCell::catchUnusedCellOffset(CFStream& stream, const unsigned int data_pla
 void DBCell::offsetFromRowMaker(CFStream& stream, const unsigned int data_place, const unsigned int data)
 {
 	stream.seekFromBegin(data_place);
-	unsigned int offset_from_Row = data_place - sizeof(unsigned __int16)/*size_short*/ - sizeof(CFRecordType::TypeId) - data /* Row file ptr */;
+	unsigned int offset_from_Row = data_place - sizeof(unsigned short)/*size_short*/ - sizeof(CFRecordType::TypeId) - data /* Row file ptr */;
 	stream.write(&offset_from_Row, sizeof(unsigned int)/*dbRtrw*/);
 }
 
@@ -41,7 +41,7 @@ void DBCell::writeFields(CFRecord& record)
 
 	for(unsigned int i = 0; i < num_pointers ; ++i)
 	{
-		record.registerDelayedDataReceiver(NULL, sizeof(unsigned __int16)/*FilePointer*/);
+		record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*FilePointer*/);
 	}
 
 }

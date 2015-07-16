@@ -24,8 +24,8 @@ BaseObjectPtr Sync::clone()
 void Sync::writeFields(CFRecord& record)
 {
 	CellRef ref_temp(ref_);
-	rw = static_cast<unsigned __int16>(ref_temp.getRow());
-	col = static_cast<unsigned __int16>(ref_temp.getColumn());
+	rw = static_cast<unsigned short>(ref_temp.getRow());
+	col = static_cast<unsigned short>(ref_temp.getColumn());
 	record << rw << col;
 }
 

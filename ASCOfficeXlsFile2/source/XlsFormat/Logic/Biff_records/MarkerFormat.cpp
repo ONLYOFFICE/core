@@ -22,7 +22,7 @@ BaseObjectPtr MarkerFormat::clone()
 
 void MarkerFormat::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fAuto);
 	SETBIT(flags, 4, fNotShowInt);
 	SETBIT(flags, 5, fNotShowBrd);
@@ -32,7 +32,7 @@ void MarkerFormat::writeFields(CFRecord& record)
 
 void MarkerFormat::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> rgbFore >> rgbBack >> imk >> flags >> icvFore >> icvBack >> miSize;
 	fAuto = GETBIT(flags, 0);
 	fNotShowInt = GETBIT(flags, 4);

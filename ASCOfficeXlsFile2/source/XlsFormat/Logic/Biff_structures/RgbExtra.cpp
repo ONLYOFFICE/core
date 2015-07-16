@@ -66,7 +66,7 @@ void RgbExtra::load(CFRecord& record, const PtgVector& records_from_rgce, bool i
 }
 
 
-void RgbExtra::load(CFRecord& record, unsigned __int16 rgce_record_type, bool is_part_of_a_revision)
+void RgbExtra::load(CFRecord& record, unsigned short rgce_record_type, bool is_part_of_a_revision)
 {
 	PtgPtr extra_ptg;
 	switch(rgce_record_type)

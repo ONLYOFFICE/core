@@ -48,13 +48,13 @@ BiffStructurePtr FtSbs::clone()
 //
 void FtSbs::store(CFRecord& record)
 {
-	unsigned __int16 ft = 0x0C; // reserved
-	unsigned __int16 cb = 0x14; // reserved
+	unsigned short ft = 0x0C; // reserved
+	unsigned short cb = 0x14; // reserved
 	record << ft << cb;
 
 	record.reserveNunBytes(4); // unused1
 
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fDraw);
 	SETBIT(flags, 1, fDrawSliderOnly);
 	SETBIT(flags, 2, fTrackElevator);
@@ -73,7 +73,7 @@ void FtSbs::load(CFRecord& record)
 
 	record.skipNunBytes(4); // unused1
 
-	unsigned __int16 flags;
+	unsigned short flags;
 
 	record >> iVal >> iMin >> iMax >> dInc >> dPage >> fHoriz >> dxScroll >> flags;
 

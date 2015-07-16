@@ -21,8 +21,8 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 xfPropType;
-	unsigned __int16 cb;
+	unsigned short xfPropType;
+	unsigned short cb;
 	BiffStructurePtr xfPropDataBlob;
 };
 

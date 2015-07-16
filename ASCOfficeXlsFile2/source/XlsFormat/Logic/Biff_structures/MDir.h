@@ -20,7 +20,7 @@ public:
 
 private:
 	long imdt;
-	unsigned __int16 mdd;
+	unsigned short mdd;
 };
 
 typedef boost::shared_ptr<MDir> MDirPtr;

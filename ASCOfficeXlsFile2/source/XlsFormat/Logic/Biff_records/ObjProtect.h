@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeObjProtect;
 
 //-----------------------------
-	Boolean<unsigned __int16> fLockObj;
+	Boolean<unsigned short> fLockObj;
 public:
 	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_ATTRIB(fLockObj)

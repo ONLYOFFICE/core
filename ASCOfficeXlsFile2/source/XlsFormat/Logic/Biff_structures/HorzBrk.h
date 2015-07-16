@@ -21,8 +21,8 @@ public:
 
 private:
 	RwU row;
-	unsigned __int16 colStart;
-	unsigned __int16 colEnd;
+	unsigned short colStart;
+	unsigned short colEnd;
 };
 
 typedef boost::shared_ptr<HorzBrk> HorzBrkPtr;

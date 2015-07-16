@@ -1,7 +1,7 @@
 #pragma once
 
-#include "BiffStructure.h"
 #include <Binary/CFRecord.h>
+#include "BiffStructure.h"
 
 namespace XLS
 {;
@@ -18,7 +18,7 @@ public:
 		attrib_name = name_init;
 	}
 
-	nullable<std::wstring > attrib_name;
+	_CP_OPT(std::wstring) attrib_name;
 };
 
 
@@ -32,6 +32,7 @@ public:
 	BiffAttributeSimple<Type>(const Type& val_init) : val(val_init) {};
 	BiffAttributeSimple<Type>(const Type& val_init, const std::wstring & attrib_name) : val(val_init), BiffAttribute(attrib_name) {};
 
+	_CP_OPT(Type) & value() {return val;}
 
 	BiffStructurePtr clone() 
 	{
@@ -56,7 +57,7 @@ public:
 		record << val;
 	};
 
-	operator const Type () const { return static_cast<Type>(val); };
+	operator const Type () const { return (val ? static_cast<Type>(*val) : (Type)0); };
 	operator const _variant_t () const { return static_cast<Type>(val);  };
 	
 	BiffAttributeSimple<Type> operator= (const BiffAttributeSimple<Type>& other)
@@ -76,7 +77,7 @@ public:
 	bool operator==(const Type & F2){return (val == F2);}
 
 protected:
-	nullable<Type> val;
+	_CP_OPT(Type) val;
 };
 
 //BiffAttributeSimple<std::wstring>::operator ==(const Type &F2)

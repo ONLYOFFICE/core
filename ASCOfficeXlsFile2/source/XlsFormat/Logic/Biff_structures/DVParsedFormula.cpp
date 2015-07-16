@@ -28,7 +28,7 @@ void DVParsedFormula::store(CFRecord& record)
 
 void DVParsedFormula::load(CFRecord& record)
 {
-	unsigned __int16 cce;
+	unsigned short cce;
 	record >> cce;
 	record.skipNunBytes(2); // unused
 	rgce.load(record, cce);

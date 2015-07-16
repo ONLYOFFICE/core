@@ -22,14 +22,14 @@ BaseObjectPtr Password::clone()
 
 void Password::writeFields(CFRecord& record)
 {
-	unsigned __int16 wPassword_num = static_cast<unsigned __int16>(STR::hex_str2int(wPassword));
+	unsigned short wPassword_num = static_cast<unsigned short>(STR::hex_str2int(wPassword));
 	record << wPassword_num;
 }
 
 
 void Password::readFields(CFRecord& record)
 {
-	unsigned __int16 wPassword_num;
+	unsigned short wPassword_num;
 	record >> wPassword_num;
 	wPassword = std::wstring (STR::int2hex_wstr(wPassword_num, sizeof(wPassword_num)).c_str());
 }

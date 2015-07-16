@@ -43,7 +43,7 @@ void OfficeArtTertiaryFOPT::loadFields(XLS::CFRecord& record)
 }
 
 
-const unsigned __int16 OfficeArtTertiaryFOPT::GetInstanceToStore()
+const unsigned short OfficeArtTertiaryFOPT::GetInstanceToStore()
 {
 	return fopt.GetOptionsNumber();
 }

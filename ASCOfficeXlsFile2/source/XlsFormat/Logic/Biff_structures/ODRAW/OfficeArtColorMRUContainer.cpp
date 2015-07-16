@@ -51,7 +51,7 @@ void OfficeArtSplitMenuColorContainer::loadFields(XLS::CFRecord& record)
 	}
 }
 
-const unsigned __int16 OfficeArtSplitMenuColorContainer::GetInstanceToStore()
+const unsigned short OfficeArtSplitMenuColorContainer::GetInstanceToStore()
 {
 	return smca.size();
 }

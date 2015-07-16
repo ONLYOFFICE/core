@@ -18,6 +18,8 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & stream);
+
 	static const ElementType	type = typeFORMATTING;
 
 	BaseObjectPtr				m_Styles;
@@ -25,6 +27,7 @@ public:
 	std::vector<BaseObjectPtr>	m_Formats;
 	std::vector<BaseObjectPtr>	m_Fonts;
 	BaseObjectPtr				m_Palette;
+	BaseObjectPtr				m_ClrtClient;
 };
 
 } // namespace XLS

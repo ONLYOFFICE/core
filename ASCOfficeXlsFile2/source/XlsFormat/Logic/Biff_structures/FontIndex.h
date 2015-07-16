@@ -9,7 +9,7 @@ namespace XLS
 
 class CFRecord;
 
-class FontIndex : public BiffAttributeSimple<unsigned __int16>
+class FontIndex : public BiffAttributeSimple<unsigned short>
 {
 public:
 	BiffStructurePtr clone();
@@ -17,7 +17,7 @@ public:
 	//virtual void toXML(BiffStructurePtr & parent, const std::wstring & attrib_name);
 	//virtual const bool fromXML(MSXML2::IXMLDOMElementPtr xml_tag, const std::wstring & attrib_name);
 	operator const _variant_t () const;
-	const unsigned __int16 getValue() const;
+	const unsigned short getValue() const;
 };
 
 } // namespace XLS

@@ -21,8 +21,8 @@ public:
 	virtual void store(CFRecord& record){};
 
 //-----------------------------
-	unsigned __int16 common_ixfe;
-	std::vector<unsigned __int16> rgixfe;
+	unsigned short common_ixfe;
+	std::vector<unsigned short> rgixfe;
 };
 
 

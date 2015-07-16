@@ -36,8 +36,8 @@ void CF12::readFields(CFRecord& record)
 {
 	record >> frtRefHeader;
 	record >> ct >> cp;
-	unsigned __int16 cce1;
-	unsigned __int16 cce2;
+	unsigned short cce1;
+	unsigned short cce2;
 	record >> cce1 >> cce2;
 	record >> dxf;
 	rgce1.load(record, cce1);

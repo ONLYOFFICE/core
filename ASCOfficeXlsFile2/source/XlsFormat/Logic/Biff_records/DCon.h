@@ -23,10 +23,10 @@ public:
 	static const ElementType	type = typeDCon;
 //-----------------------------
 //	BIFF_WORD userName;
-	unsigned __int16 iiftab;
-	unsigned __int16 fLeftCat;
-	unsigned __int16 fTopCat;
-	unsigned __int16 fLinkConsole;
+	unsigned short iiftab;
+	unsigned short fLeftCat;
+	unsigned short fTopCat;
+	unsigned short fLinkConsole;
 
 
 public:

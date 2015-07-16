@@ -41,7 +41,7 @@ void EncryptionHeaderFlags::store(XLS::CFRecord& record)
 
 void EncryptionHeaderFlags::load(XLS::CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fCryptoAPI = GETBIT(flags, 2);
 	fDocProps = GETBIT(flags, 3);

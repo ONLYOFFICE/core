@@ -36,7 +36,7 @@ void UserSViewBegin::writeFields(CFRecord& record)
 	record << pnnSel;
 	record.reserveNunBytes(3); // reserved
 
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fShowBrks);
 	SETBIT(flags, 1, fDspFmlaSv);
 	SETBIT(flags, 2, fDspGridSv);
@@ -79,7 +79,7 @@ void UserSViewBegin::writeFields(CFRecord& record)
 	}
 	else
 	{
-		colRPane = static_cast<unsigned __int16>(ref_tmp.getColumn());
+		colRPane = static_cast<unsigned short>(ref_tmp.getColumn());
 	}
 	if(fSplitH)
 	{
@@ -87,7 +87,7 @@ void UserSViewBegin::writeFields(CFRecord& record)
 	}
 	else
 	{
-		rwBPane = static_cast<unsigned __int16>(ref_tmp.getRow());
+		rwBPane = static_cast<unsigned short>(ref_tmp.getRow());
 	}
 
 	record << colRPane << rwBPane;
@@ -105,7 +105,7 @@ void UserSViewBegin::readFields(CFRecord& record)
 	record >> pnnSel;
 	record.skipNunBytes(3); // reserved
 	
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 
 	fShowBrks = GETBIT(flags, 0);

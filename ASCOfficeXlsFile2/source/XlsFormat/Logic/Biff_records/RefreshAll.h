@@ -24,7 +24,7 @@ public:
 
 
 //-----------------------------
-	Boolean<unsigned __int16> refreshAll;
+	Boolean<unsigned short> refreshAll;
 public:
 	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_ATTRIB(refreshAll)

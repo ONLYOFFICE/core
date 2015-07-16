@@ -1,6 +1,8 @@
 #include "precompiled_xls.h"
 #include "XF.h"
 
+#include <simple_xml_writer.h>
+
 namespace XLS
 {;
 
@@ -24,7 +26,7 @@ BaseObjectPtr XF::clone()
 
 void XF::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fLocked);
 	SETBIT(flags, 1, fHidden);
 	SETBIT(flags, 2, fStyle);
@@ -44,7 +46,7 @@ void XF::writeFields(CFRecord& record)
 
 void XF::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> ifnt >> ifmt >> flags;
 	fLocked = GETBIT(flags, 0);
 	fHidden = GETBIT(flags, 1);
@@ -59,6 +61,17 @@ void XF::readFields(CFRecord& record)
 	{
 		cell.load(record);
 	}
+}
+
+int XF::serialize(std::wostream & stream)
+{
+	if(fStyle)
+	{
+	}
+	else
+	{
+	}
+	return 0;
 }
 
 

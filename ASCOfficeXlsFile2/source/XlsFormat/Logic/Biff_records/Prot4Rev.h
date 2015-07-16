@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeProt4Rev;
 
 //-----------------------------
-	Boolean<unsigned __int16> fRevLock;
+	Boolean<unsigned short> fRevLock;
 public:
 	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_ATTRIB(fRevLock)

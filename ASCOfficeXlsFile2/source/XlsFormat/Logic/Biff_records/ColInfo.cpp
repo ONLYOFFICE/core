@@ -22,7 +22,7 @@ BaseObjectPtr ColInfo::clone()
 
 void ColInfo::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fHidden);
 	SETBIT(flags, 1, fUserSet);
 	SETBIT(flags, 2, fBestFit);
@@ -36,7 +36,7 @@ void ColInfo::writeFields(CFRecord& record)
 
 void ColInfo::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> colFirst >> colLast >> coldx >> ixfe >> flags;
 	fHidden = GETBIT(flags, 0);
 	fUserSet = GETBIT(flags, 1);

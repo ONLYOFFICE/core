@@ -12,27 +12,27 @@ Ptg::Ptg()
 }
 
 
-Ptg::Ptg(const unsigned __int16 ptg_id_init)
+Ptg::Ptg(const unsigned short ptg_id_init)
 :	ptg_id(ptg_id_init)
 {
 }
 
 
-const unsigned __int16 Ptg::getPtgId() const
+const unsigned short Ptg::getPtgId() const
 {
-	return ptg_id;
+	return ptg_id.get_value_or(0);
 }
 
 
 const size_t Ptg::getOffsetInRecord() const
 {
-	return offset_in_record;
+	return offset_in_record.get_value_or(0);
 }
 
 
 const size_t Ptg::getSizeOfStruct() const
 {
-	return size_of_struct;
+	return size_of_struct.get_value_or(0);
 }
 
 
@@ -51,7 +51,7 @@ void Ptg::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructur
 void Ptg::store(CFRecord& record)
 {
 	offset_in_record = record.getDataSize();
-	unsigned __int16 full_type = getPtgId();
+	unsigned short full_type = getPtgId();
 	unsigned char low_part = static_cast<unsigned char>(full_type);
 	if(0x18 == low_part || 0x19 == low_part)
 	{
@@ -62,7 +62,7 @@ void Ptg::store(CFRecord& record)
 		record << low_part;
 	}
 	storeFields(record);
-	size_of_struct = record.getDataSize() - offset_in_record;
+	size_of_struct = record.getDataSize() - offset_in_record.get_value_or(0);
 }
 
 
@@ -76,10 +76,10 @@ void Ptg::load(CFRecord& record)
 	{
 		unsigned char high_part;
 		record >> high_part;
-		ptg_id = static_cast<unsigned __int16>(short_type) + (static_cast<unsigned __int16>(high_part) << 8);
+		ptg_id = static_cast<unsigned short>(short_type) + (static_cast<unsigned short>(high_part) << 8);
 	}
 	loadFields(record);
-	size_of_struct = record.getRdPtr() - offset_in_record;
+	size_of_struct = record.getRdPtr() - offset_in_record.get_value_or(0);
 }
 
 

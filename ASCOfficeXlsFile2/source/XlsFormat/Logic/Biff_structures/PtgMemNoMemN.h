@@ -22,7 +22,7 @@ public:
 
 private:
 	unsigned char type;
-	unsigned __int16 cce;
+	unsigned short cce;
 };
 
 } // namespace XLS

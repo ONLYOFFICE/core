@@ -35,8 +35,8 @@ void Feature11::readFields(CFRecord& record)
 	record >> cbFeatData;
 	record.skipNunBytes(2);		// reserved3
 
-	unsigned __int16 _isf = isf;
-	unsigned __int16 _cref2 = cref2;
+	unsigned short _isf = isf;
+	unsigned short _cref2 = cref2;
 	unsigned int _cbFeatData = cbFeatData;	
 
 	std::wstring  sqref_str;

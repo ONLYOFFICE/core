@@ -32,7 +32,7 @@ void SortData::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
 #pragma message("############################ frtHeader skipped here")
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fCol = GETBIT(flags, 0);
 	fCaseSensitive = GETBIT(flags, 1);

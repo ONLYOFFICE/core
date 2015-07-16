@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeCalcIter;
 
 //-----------------------------
-	Boolean<unsigned __int16> vfIter;
+	Boolean<unsigned short> vfIter;
 
 };
 

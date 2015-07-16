@@ -22,7 +22,7 @@ BaseObjectPtr Units::clone()
 
 void Units::writeFields(CFRecord& record)
 {
-	unsigned __int16 reserved = 0;
+	unsigned short reserved = 0;
 	record << reserved;
 }
 

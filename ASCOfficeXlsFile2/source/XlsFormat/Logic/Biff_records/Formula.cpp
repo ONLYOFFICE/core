@@ -24,7 +24,7 @@ BaseObjectPtr Formula::clone()
 void Formula::writeFields(CFRecord& record)
 {
 	record << cell << val;
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fAlwaysCalc);
 	SETBIT(flags, 2, fFill);
 	SETBIT(flags, 3, fShrFmla);
@@ -40,7 +40,7 @@ void Formula::writeFields(CFRecord& record)
 
 void Formula::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> cell >> val >> flags;
 	fAlwaysCalc = GETBIT(flags, 0);
 	fFill = GETBIT(flags, 2);

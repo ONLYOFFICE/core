@@ -14,7 +14,7 @@ class Cell : public BiffStructure
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(Cell)
 public:
 	Cell();
-	Cell(const unsigned __int16 rw_init, const unsigned __int16 col_init, const unsigned __int16 ixfe_init);
+	Cell(const unsigned short rw_init, const unsigned short col_init, const unsigned short ixfe_init);
 
 	BiffStructurePtr clone();
 

@@ -32,7 +32,7 @@ void AutoFilter::readFields(CFRecord& record)
 
 	m_bAutoFilter12 = false;
 
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> iEntry >> flags;
 	wJoin = static_cast<unsigned char>(GETBITS(flags, 0, 1));
 	fSimple1 = GETBIT(flags, 2);
@@ -40,16 +40,16 @@ void AutoFilter::readFields(CFRecord& record)
 	fTopN = GETBIT(flags, 4);
 	fTop = GETBIT(flags, 5);
 	fPercent = GETBIT(flags, 6);
-	wTopN = static_cast<unsigned __int16>(GETBITS(flags, 7, 15));
+	wTopN = static_cast<unsigned short>(GETBITS(flags, 7, 15));
 
-	unsigned __int16 _iEntry = iEntry;
+	unsigned short _iEntry = iEntry;
 	unsigned char _wJoin = wJoin;			
 	unsigned char _fSimple1 = fSimple1;
 	unsigned char _fSimple2 = fSimple2;
 	unsigned char _fTopN = fTopN;			
 	unsigned char _fTop = fTop;				
 	unsigned char _fPercent = fPercent;		
-	unsigned __int16 _wTopN = wTopN;			
+	unsigned short _wTopN = wTopN;			
 	
 	if (fTopN != 1)
 		record >> doper1;			

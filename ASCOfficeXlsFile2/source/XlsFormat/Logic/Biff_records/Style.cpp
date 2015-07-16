@@ -22,7 +22,7 @@ BaseObjectPtr Style::clone()
 
 void Style::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBITS(flags, 0, 11, ixfe);
 	SETBIT(flags, 15, fBuiltIn);
 	record << flags;
@@ -39,7 +39,7 @@ void Style::writeFields(CFRecord& record)
 
 void Style::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	ixfe = GETBITS(flags, 0, 11);
 	fBuiltIn = GETBIT(flags, 15);

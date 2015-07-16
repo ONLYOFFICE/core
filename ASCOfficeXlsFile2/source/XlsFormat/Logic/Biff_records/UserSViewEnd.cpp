@@ -22,7 +22,7 @@ BaseObjectPtr UserSViewEnd::clone()
 
 void UserSViewEnd::writeFields(CFRecord& record)
 {
-	record.reserveNunBytes(2, static_cast<unsigned __int16>(1)); // reserved
+	record.reserveNunBytes(2, static_cast<unsigned short>(1)); // reserved
 }
 
 

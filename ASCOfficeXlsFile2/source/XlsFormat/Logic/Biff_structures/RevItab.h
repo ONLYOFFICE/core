@@ -23,7 +23,7 @@ public:
 
 private:
 	unsigned char type;
-	unsigned __int16 tabid;
+	unsigned short tabid;
 	XLUnicodeString sheet;
 };
 

@@ -23,8 +23,8 @@ private:
 	unsigned char wStyle;
 	bool fFiltered;
 
-	unsigned __int16 cLine;
-	unsigned __int16 dxMin;
+	unsigned short cLine;
+	unsigned short dxMin;
 
 	XLUnicodeString str;
 

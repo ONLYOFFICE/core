@@ -22,7 +22,7 @@ BaseObjectPtr BRAI::clone()
 
 void BRAI::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fUnlinkedIfmt);
 	record << id << rt << flags << ifmt;
 	formula.store(record);
@@ -31,7 +31,7 @@ void BRAI::writeFields(CFRecord& record)
 
 void BRAI::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> id >> rt >> flags;
 	fUnlinkedIfmt = static_cast<unsigned char>(GETBIT(flags, 0));
 	record >> ifmt;

@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeBackup;
 
 //-----------------------------
-	Boolean<unsigned __int16> fBackup;
+	Boolean<unsigned short> fBackup;
 public:
 	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_ATTRIB(fBackup)

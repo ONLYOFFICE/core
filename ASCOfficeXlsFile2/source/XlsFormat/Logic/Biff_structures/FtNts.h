@@ -21,7 +21,7 @@ public:
 
 private:
 	std::wstring  guid;
-	Boolean<unsigned __int16> fSharedNote;
+	Boolean<unsigned short> fSharedNote;
 };
 
 } // namespace XLS

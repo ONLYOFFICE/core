@@ -37,7 +37,7 @@ void PtgAttrChoose::loadFields(CFRecord& record)
 	record >> cOffset;
 	for(int i = 0; i < cOffset + 1; ++i)
 	{
-		unsigned __int16 val;
+		unsigned short val;
 		record >> val;
 		rgOffset.push_back(val);
 	}

@@ -27,11 +27,11 @@ void AutoFilter12::writeFields(CFRecord& record)
 
 void AutoFilter12::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	unsigned int unused2;
 	record >> frtRefHeader >> iEntry >> fHideArrow >> ft >> cft >> cCriteria >> cDateGroupings >> flags >> unused2 >> idList;
 
-	unsigned __int16 _iEntry = iEntry;
+	unsigned short _iEntry = iEntry;
 	unsigned int _fHideArrow = fHideArrow;
 	unsigned int _ft = ft;
 	unsigned int _cft = cft;

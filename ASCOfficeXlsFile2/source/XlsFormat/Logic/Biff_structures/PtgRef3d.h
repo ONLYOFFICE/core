@@ -13,7 +13,7 @@ class PtgRef3d: public OperandPtg
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgRef3d)
 public:
 	PtgRef3d(const CellRef& cell_base_ref_init);
-	PtgRef3d(const unsigned __int16 ixti, const std::wstring& word, const PtgDataType data_type, const CellRef& cell_base_ref_init);
+	PtgRef3d(const unsigned short ixti, const std::wstring& word, const PtgDataType data_type, const CellRef& cell_base_ref_init);
 	BiffStructurePtr clone();
 
 	void fromString(const std::wstring& str);
@@ -24,9 +24,9 @@ public:
 
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
 
-	static const unsigned __int16 fixed_id = 0x1A;
+	static const unsigned short fixed_id = 0x1A;
 private:
-	unsigned __int16 ixti;
+	unsigned short ixti;
 	RgceLocRel rgce_loc_rel;
 	RgceLoc rgce_loc;
 	const CellRef& cell_base_ref;

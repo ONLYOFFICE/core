@@ -31,7 +31,7 @@ void DXF::writeFields(CFRecord& record)
 void DXF::readFields(CFRecord& record)
 {
 	record >> frtRefHeaderU;
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags >> xfprops;
 	fNewBorder = GETBIT(flags, 1);
 }

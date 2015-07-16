@@ -28,8 +28,8 @@ public:
 	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag) {}
 	virtual void load(XLS::CFRecord& record)
 	{
-		unsigned __int16 nElems, nElemsAlloc;
-		unsigned __int16 cbElem;
+		unsigned short nElems, nElemsAlloc;
+		unsigned short cbElem;
 		record >> nElems >> nElemsAlloc >> cbElem;
 		while(nElems--)
 		{

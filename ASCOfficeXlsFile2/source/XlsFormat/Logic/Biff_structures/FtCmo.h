@@ -19,9 +19,9 @@ public:
 	virtual void store(CFRecord& record);
 
 public:
-	unsigned __int16 ot;
+	unsigned short ot;
 private:
-	unsigned __int16 id;
+	unsigned short id;
 
 	bool fLocked;
 	bool fDefaultSize;

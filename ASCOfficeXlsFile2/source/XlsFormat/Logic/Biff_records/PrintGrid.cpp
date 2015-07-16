@@ -22,7 +22,7 @@ BaseObjectPtr PrintGrid::clone()
 
 void PrintGrid::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fPrintGrid);
 	record << flags;
 }
@@ -30,7 +30,7 @@ void PrintGrid::writeFields(CFRecord& record)
 
 void PrintGrid::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fPrintGrid = GETBIT(flags, 0);
 }

@@ -11,7 +11,7 @@ class PropertySet
 public:
 	PropertySet(XLS::CFStreamPtr stream, const unsigned int property_set_offset);
 	
-	const unsigned __int16 GetCodePage();
+	const unsigned short GetCodePage();
 
 private:
 #pragma pack(1)
@@ -24,7 +24,7 @@ private:
 
 private:
 	std::vector<PropertyPtr> properties;
-	unsigned __int16 code_page; // no need to initialize because this info is a must for every SummaryInformation stream in a compound file
+	unsigned short code_page; // no need to initialize because this info is a must for every SummaryInformation stream in a compound file
 };
 
 typedef boost::shared_ptr<PropertySet> PropertySetPtr;

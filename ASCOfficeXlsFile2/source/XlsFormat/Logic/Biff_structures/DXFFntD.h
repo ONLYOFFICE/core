@@ -31,7 +31,7 @@ private:
 	Boolean<unsigned int> fBlsNinch;
 	long ich;
 	long cch;
-	unsigned __int16 iFnt;
+	unsigned short iFnt;
 
 };
 

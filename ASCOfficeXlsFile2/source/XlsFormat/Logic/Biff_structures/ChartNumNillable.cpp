@@ -7,7 +7,7 @@ namespace XLS
 {;
 
 
-ChartNumNillable::ChartNumNillable(const unsigned __int16 nil_type)
+ChartNumNillable::ChartNumNillable(const unsigned short nil_type)
 :	nil_type_(nil_type)
 {
 }

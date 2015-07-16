@@ -250,7 +250,7 @@ const bool StringPtgParser::parseToPtgs(const std::wstring& assembled_formula, R
 			OperandPtgPtr found_operand;
 			std::wstring operand_str;
 			unsigned int number;
-			unsigned __int16 ixti;
+			unsigned short ixti;
 
 			if(SyntaxPtg::extract_PtgBool(it, itEnd, operand_str))
 			{

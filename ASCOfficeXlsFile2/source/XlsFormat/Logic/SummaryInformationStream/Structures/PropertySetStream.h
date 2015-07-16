@@ -11,7 +11,7 @@ class PropertySetStream
 public:
 	PropertySetStream(XLS::CFStreamPtr stream);
 	
-	const unsigned __int16 GetCodePage();
+	const unsigned short GetCodePage();
 
 private:
 	std::vector<PropertySetPtr> property_sets;

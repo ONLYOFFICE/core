@@ -14,7 +14,7 @@ class Palette: public BiffRecord
 	BASE_OBJECT_DEFINE_CLASS_NAME(Palette)
 public:
 	Palette();
-	Palette(const unsigned __int16 ccv_init);
+	Palette(const unsigned short ccv_init);
 
 	BaseObjectPtr clone();
 
@@ -25,7 +25,7 @@ public:
 
 //-----------------------------
 	BiffStructurePtrVector rgColor;
-	unsigned __int16 ccv;
+	unsigned short ccv;
 public:
 	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgColor, LongRGB)

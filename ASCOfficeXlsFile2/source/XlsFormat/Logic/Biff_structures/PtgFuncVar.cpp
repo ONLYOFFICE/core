@@ -11,7 +11,7 @@ PtgFuncVar::PtgFuncVar()
 }
 
 
-PtgFuncVar::PtgFuncVar(const unsigned __int16 func_index, const unsigned char data_type)
+PtgFuncVar::PtgFuncVar(const unsigned short func_index, const unsigned char data_type)
 :	Ptg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
 	tab(func_index)
 {
@@ -79,7 +79,7 @@ void PtgFuncVar::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffS
 // static
 PtgPtr PtgFuncVar::create(const std::wstring& word, const unsigned char data_type)
 {
-	unsigned __int16 func_index = Ftab_Cetab::recognizeFunction(word);
+	unsigned short func_index = Ftab_Cetab::recognizeFunction(word);
 	if(0xFFFF != func_index)
 	{
 		Ftab_Cetab tab(func_index);

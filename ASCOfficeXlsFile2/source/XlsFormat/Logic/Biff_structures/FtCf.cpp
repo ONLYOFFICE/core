@@ -26,8 +26,8 @@ BiffStructurePtr FtCf::clone()
 
 void FtCf::store(CFRecord& record)
 {
-	unsigned __int16 ft = 0x07; // reserved
-	unsigned __int16 cb = 0x02; // reserved
+	unsigned short ft = 0x07; // reserved
+	unsigned short cb = 0x02; // reserved
 	record << ft << cb;
 
 	record << cf;
@@ -37,7 +37,7 @@ void FtCf::store(CFRecord& record)
 void FtCf::load(CFRecord& record)
 {
 	//record.skipNunBytes(4); // reserved
-	unsigned __int16 ft, cb;
+	unsigned short ft, cb;
 	record >> ft;
 	
 	// OpenOffice fuck!!!

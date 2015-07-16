@@ -13,7 +13,7 @@ class SST: public BiffRecordContinued
 	BIFF_RECORD_DEFINE_TYPE_INFO(SST)
 	BASE_OBJECT_DEFINE_CLASS_NAME(SST)
 public:
-	SST(const unsigned __int16 code_page);
+	SST(const unsigned short code_page);
 	~SST();
 
 	BaseObjectPtr clone();
@@ -29,7 +29,7 @@ public:
 	BiffStructurePtrVector rgb;
 
 //-----------------------------
-	unsigned __int16 code_page_;
+	unsigned short code_page_;
 
 public:
 	//BO_ATTRIB_MARKUP_BEGIN

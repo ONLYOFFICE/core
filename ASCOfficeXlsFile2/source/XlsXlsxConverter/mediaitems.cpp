@@ -6,7 +6,7 @@
 #include <boost/algorithm/string/case_conv.hpp>
 #include <boost/lexical_cast.hpp>
 
-#include "utils.h"
+#include <utils.h>
 
 #include "oox_rels.h"
 #include "mediaitems_utils.h"

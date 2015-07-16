@@ -22,7 +22,7 @@ BaseObjectPtr DefaultRowHeight::clone()
 
 void DefaultRowHeight::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fUnsynced);
 	SETBIT(flags, 1, fDyZero);
 	SETBIT(flags, 2, fExAsc);
@@ -41,7 +41,7 @@ void DefaultRowHeight::writeFields(CFRecord& record)
 
 void DefaultRowHeight::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fUnsynced = GETBIT(flags, 0);
 	fDyZero = GETBIT(flags, 1);

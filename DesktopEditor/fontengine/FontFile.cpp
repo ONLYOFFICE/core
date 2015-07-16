@@ -403,6 +403,115 @@ std::string CFontFile::GetStyleName()
 	return s;
 }
 
+void CFontFile::GetPanose(BYTE* pData)
+{
+    memset(pData, 0, 10);
+    if (!m_pFace)
+        return;
+
+    TT_OS2 *pTable = (TT_OS2 *)FT_Get_Sfnt_Table( m_pFace, ft_sfnt_os2 );
+    if ( NULL == pTable )
+        return;
+
+    memcpy( pData, pTable->panose, 10 );
+}
+
+bool CFontFile::IsFixedWidth()
+{
+    if (!m_pFace)
+        return false;
+    return FT_IS_FIXED_WIDTH( m_pFace ) != 0;
+}
+
+int CFontFile::IsUnicodeRangeAvailable(unsigned long ulBit, unsigned int un4ByteIndex)
+{
+    if (!m_pFace)
+        return -1;
+
+    TT_OS2 *pOs2 = (TT_OS2 *)FT_Get_Sfnt_Table( m_pFace, ft_sfnt_os2 );
+    if ( NULL == pOs2 || 0xFFFF == pOs2->version )
+        return -1;
+
+    int nResult = 0;
+
+    unsigned long ulMult = 1;
+    for ( unsigned long ulIndex = 0; ulIndex < ulBit; ulIndex++ )
+        ulMult <<= 1;
+
+    switch(un4ByteIndex)
+    {
+    case 0: if ( pOs2->ulUnicodeRange1  & ulMult ) nResult = 1; break;
+    case 1: if ( pOs2->ulUnicodeRange2  & ulMult ) nResult = 1; break;
+    case 2: if ( pOs2->ulUnicodeRange3  & ulMult ) nResult = 1; break;
+    case 3: if ( pOs2->ulUnicodeRange4  & ulMult ) nResult = 1; break;
+    case 4: if ( pOs2->ulCodePageRange1 & ulMult ) nResult = 1; break;
+    case 5: if ( pOs2->ulCodePageRange2 & ulMult ) nResult = 1; break;
+    }
+
+    // Специальная ветка для случаев, когда charset может быть задан не через значения
+    // ulCodePageRange, а непосредственно через тип Cmap.
+
+    //  Charset Name       Charset Value(hex)  Codepage number   Platform_ID   Encoding_ID   Description
+    //  -------------------------------------------------------------------------------------------------
+    //
+    //  SYMBOL_CHARSET            2 (x02)                             3            0           Symbol
+    //  SHIFTJIS_CHARSET        128 (x80)             932             3            2           ShiftJIS
+    //  GB2313_CHARSET          134 (x86)             936             3            3           PRC
+    //  CHINESEBIG5_CHARSET     136 (x88)             950             3            4           Big5
+    //  HANGEUL_CHARSET         129 (x81)             949             3            5           Wansung
+    //  JOHAB_CHARSET	        130 (x82)            1361             3            6           Johab
+
+    if ( 4 == un4ByteIndex && 0 == nResult )
+    {
+        for( int nIndex = 0; nIndex < m_pFace->num_charmaps; nIndex++ )
+        {
+            // Symbol
+            if ( 31 == ulBit && 0 == m_pFace->charmaps[nIndex]->encoding_id && 3 == m_pFace->charmaps[nIndex]->platform_id )
+            {
+                nResult = 1;
+                break;
+            }
+
+            // ShiftJIS
+            if ( 17 == ulBit && 2 == m_pFace->charmaps[nIndex]->encoding_id && 3 == m_pFace->charmaps[nIndex]->platform_id )
+            {
+                nResult = 1;
+                break;
+            }
+
+            // PRC
+            if ( 18 == ulBit && 3 == m_pFace->charmaps[nIndex]->encoding_id && 3 == m_pFace->charmaps[nIndex]->platform_id )
+            {
+                nResult = 1;
+                break;
+            }
+
+            // Big5
+            if ( 20 == ulBit && 4 == m_pFace->charmaps[nIndex]->encoding_id && 3 == m_pFace->charmaps[nIndex]->platform_id )
+            {
+                nResult = 1;
+                break;
+            }
+
+            // Wansung
+            if ( 19 == ulBit && 5 == m_pFace->charmaps[nIndex]->encoding_id && 3 == m_pFace->charmaps[nIndex]->platform_id )
+            {
+                nResult = 1;
+                break;
+            }
+
+            // Johab
+            if ( 21 == ulBit && 6 == m_pFace->charmaps[nIndex]->encoding_id && 3 == m_pFace->charmaps[nIndex]->platform_id )
+            {
+                nResult = 1;
+                break;
+            }
+        }
+    }
+
+    return nResult;
+}
+
 void CFontFile::UpdateStyles(const INT& bBold, const INT& bItalic)
 {
 	std::string sStyle = GetStyleName();

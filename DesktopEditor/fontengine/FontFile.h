@@ -217,6 +217,11 @@ public:
     void SetCharSpacing(const double& dCharSpacing);
     double GetCharSpacing();
     std::string GetStyleName();
+    void GetPanose(BYTE* pData);
+
+    bool IsFixedWidth();
+
+    int IsUnicodeRangeAvailable(unsigned long ulBit, unsigned int un4ByteIndex);
     
 	void UpdateStyles(const INT& bBold, const INT& bItalic);
     

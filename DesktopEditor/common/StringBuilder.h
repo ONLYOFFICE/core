@@ -72,6 +72,18 @@ namespace NSStringUtils
 
 	public:
 
+                inline void SetText(const std::wstring& bsText)
+		{
+			ClearNoAttack();
+			WriteString(bsText);
+
+                        for (size_t i = 0; i < m_lSizeCur; ++i)
+			{
+				if (WCHAR(8233) == m_pData[i])
+					m_pData[i] = WCHAR(' ');
+			}
+		}
+
 		inline void WriteStringNoSafe(const wchar_t* pString, size_t nLen)
 		{
 			memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
@@ -119,9 +131,10 @@ namespace NSStringUtils
 			m_lSizeCur += 2;
 		}
 
-		inline void WriteEncodeXmlString(const wchar_t* pString)
+		inline void WriteEncodeXmlString(const wchar_t* pString, int nCount = -1)
 		{
 			const wchar_t* pData = pString;
+			int nCounter = 0;
 			while (*pData != 0)
 			{
 				BYTE _code = CheckCode(*pData);
@@ -184,8 +197,13 @@ namespace NSStringUtils
 				}
 
 				++pData;
+				if (-1 != nCount)
+				{
+					++nCounter;
+					if (nCounter == nCount)
+						break;
+				}
 			}
-
 		}
 
 		inline size_t GetCurSize()

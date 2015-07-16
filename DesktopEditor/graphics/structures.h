@@ -493,6 +493,18 @@ namespace NSStructures
 			CharSpace = 0.0;
 			FaceIndex = 0;
 		}
+                LONG GetTextDecorationStyle()
+                {
+                        if ((0 == Underline) && (0 == Strikeout))
+                                return 0;
+                        if ((1 == Underline) && (0 == Strikeout))
+                                return 1;
+                        if ((0 == Underline) && (1 == Strikeout))
+                                return 2;
+                        if ((1 == Underline) && (1 == Strikeout))
+                                return 3;
+                        return 4;
+                }
 
 		
 	public:

@@ -586,7 +586,7 @@ HRESULT CGraphicsRenderer::put_FontFaceIndex(const int& lFaceIndex)
 }
 
 //-------- Функции для вывода текста --------------------------------------------------------
-HRESULT CGraphicsRenderer::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset)
+HRESULT CGraphicsRenderer::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
 {
 	if (c_nHyperlinkType == m_lCurrentCommandType)
 		return S_OK;
@@ -595,13 +595,13 @@ HRESULT CGraphicsRenderer::CommandDrawTextCHAR(const LONG& c, const double& x, c
 	_SetFont();
 
 	Aggplus::CBrush* pBrush = CreateBrush(&m_oBrush);				
-	m_pRenderer->DrawStringC(c, m_pFontManager, pBrush, x, y + baselineOffset);
+    m_pRenderer->DrawStringC(c, m_pFontManager, pBrush, x, y);
 	
 	RELEASEOBJECT(pBrush);
 
 	return S_OK;
 }
-HRESULT CGraphicsRenderer::CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset)
+HRESULT CGraphicsRenderer::CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)
 {
 	if (c_nHyperlinkType == m_lCurrentCommandType)
 		return S_OK;
@@ -610,35 +610,46 @@ HRESULT CGraphicsRenderer::CommandDrawText(const std::wstring& bsText, const dou
 	_SetFont();
 
 	Aggplus::CBrush* pBrush = CreateBrush(&m_oBrush);				
-	m_pRenderer->DrawString(bsText, m_pFontManager, pBrush, x, y + baselineOffset);
+    m_pRenderer->DrawString(bsText, m_pFontManager, pBrush, x, y);
 	
 	RELEASEOBJECT(pBrush);
 
 	return S_OK;
 }
 	
-HRESULT CGraphicsRenderer::CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags)
+HRESULT CGraphicsRenderer::CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
 {
 	if (gid >= 0)
 	{
 		m_oFont.StringGID = TRUE;
-		return CommandDrawTextCHAR(gid, x, y, w, h, baselineOffset);
+        return CommandDrawTextCHAR(gid, x, y, w, h);
 	}
 	
 	m_oFont.StringGID = FALSE;
-	return CommandDrawTextCHAR(c, x, y, w, h, baselineOffset);
+    return CommandDrawTextCHAR(c, x, y, w, h);
 }
 
-HRESULT CGraphicsRenderer::CommandDrawTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags)
+HRESULT CGraphicsRenderer::CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
 {
-	if (!bsGidText.empty())
+    if (NULL != pGids)
 	{
-		m_oFont.StringGID = TRUE;
-		return CommandDrawText(bsGidText, x, y, w, h, baselineOffset);
+        m_oFont.StringGID = TRUE;
+        if (c_nHyperlinkType == m_lCurrentCommandType)
+            return S_OK;
+
+        put_BrushType(c_BrushTypeSolid);
+
+        _SetFont();
+
+        Aggplus::CBrush* pBrush = CreateBrush(&m_oBrush);
+        m_pRenderer->DrawString(pGids, nGidsCount, m_pFontManager, pBrush, x, y);
+
+        RELEASEOBJECT(pBrush);
+        return S_OK;
 	}
-	
-	m_oFont.StringGID = FALSE;
-	return CommandDrawText(bsUnicodeText, x, y, w, h, baselineOffset);
+		
+    m_oFont.StringGID = FALSE;
+    return CommandDrawText(bsUnicodeText, x, y, w, h);
 }
 
 //-------- Маркеры для команд ---------------------------------------------------------------
@@ -909,7 +920,7 @@ HRESULT CGraphicsRenderer::PathCommandGetCurrentPoint(double* x, double* y)
 }
 
 // textpath
-HRESULT CGraphicsRenderer::PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset)
+HRESULT CGraphicsRenderer::PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
 {
 	if (!CheckValidate())
 		return S_FALSE;
@@ -918,11 +929,11 @@ HRESULT CGraphicsRenderer::PathCommandTextCHAR(const LONG& c, const double& x, c
 
 	// так как пат рисуется в миллиметрах - надо перевести пункты в миллиметры
 	float fSize = (float)(0.3528 * m_oFont.Size);
-	m_pPath->AddStringC(c, m_pFontManager, x, y + baselineOffset);
+    m_pPath->AddStringC(c, m_pFontManager, x, y);
 
 	return S_OK;
 }
-HRESULT CGraphicsRenderer::PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset)
+HRESULT CGraphicsRenderer::PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)
 {
 	if (!CheckValidate())
 		return S_FALSE;
@@ -931,32 +942,41 @@ HRESULT CGraphicsRenderer::PathCommandText(const std::wstring& bsText, const dou
 
 	// так как пат рисуется в миллиметрах - надо перевести пункты в миллиметры
 	float fSize = (float)(0.3528 * m_oFont.Size);
-	m_pPath->AddString(bsText, m_pFontManager, x, y + baselineOffset);
+    m_pPath->AddString(bsText, m_pFontManager, x, y);
 
 	return S_OK;
 }
 
-HRESULT CGraphicsRenderer::PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags)
+HRESULT CGraphicsRenderer::PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
 {
 	if (gid >= 0)
 	{
 		m_oFont.StringGID = TRUE;
-		return PathCommandTextCHAR(gid, x, y, w, h, baselineOffset);
+        return PathCommandTextCHAR(gid, x, y, w, h);
 	}
 	
 	m_oFont.StringGID = FALSE;
-	return PathCommandTextCHAR(c, x, y, w, h, baselineOffset);
+    return PathCommandTextCHAR(c, x, y, w, h);
 }
-HRESULT CGraphicsRenderer::PathCommandTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags)
+HRESULT CGraphicsRenderer::PathCommandTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
 {
-	if (!bsGidText.empty())
+    if (NULL != pGids)
 	{
 		m_oFont.StringGID = TRUE;
-		return PathCommandText(bsGidText, x, y, w, h, baselineOffset);
+        if (!CheckValidate())
+            return S_FALSE;
+
+        _SetFont();
+
+        // так как пат рисуется в миллиметрах - надо перевести пункты в миллиметры
+        float fSize = (float)(0.3528 * m_oFont.Size);
+        m_pPath->AddString(pGids, nGidsCount, m_pFontManager, x, y);
+
+        return S_OK;
 	}
 	
 	m_oFont.StringGID = FALSE;
-	return PathCommandText(bsUnicodeText, x, y, w, h, baselineOffset);
+    return PathCommandText(bsUnicodeText, x, y, w, h);
 }
 
 //-------- Функции для вывода изображений ---------------------------------------------------

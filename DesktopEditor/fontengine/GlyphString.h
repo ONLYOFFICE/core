@@ -135,6 +135,7 @@ public:
 	CGlyphString(const std::wstring& wsString, float fX = 0, float fY = 0);
 	~CGlyphString();
 	void SetString(const std::wstring& wsString, float fX = 0, float fY = 0);
+    void SetString(const unsigned int* pGids, const unsigned int& nGidsCount, float fX = 0, float fY = 0);
 	void SetStringGID(const LONG& gid, float fX = 0, float fY = 0);
 	void Reset();
 	int  GetLength();

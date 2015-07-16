@@ -300,7 +300,7 @@ namespace MetaFile
 
 			if (NULL == pDx)
 			{
-				m_pRenderer->CommandDrawText(wsText, dX, dY, 0, 0, 0);
+                m_pRenderer->CommandDrawText(wsText, dX, dY, 0, 0);
 			}
 			else
 			{
@@ -310,7 +310,7 @@ namespace MetaFile
 				{
 					std::wstring wsChar;
 					wsChar += wsText.at(unCharIndex);
-					m_pRenderer->CommandDrawText(wsChar, dX + dOffset, dY, 0, 0, 0);
+                    m_pRenderer->CommandDrawText(wsChar, dX + dOffset, dY, 0, 0);
 					dOffset += (pDx[unCharIndex] * dKoefX);
 				}
 			}

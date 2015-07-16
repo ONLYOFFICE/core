@@ -366,6 +366,7 @@ public:
 
 	// отрисовка текста
 	INT DrawString(const std::wstring& strText, CFontManager* pFont, CBrush* pBrush, double x, double y);
+    INT DrawString(const unsigned int* pGids, const unsigned int nGidsCount, CFontManager* pFont, CBrush* pBrush, double x, double y);
 	INT DrawStringC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y);
 	INT DrawStringPath(const std::wstring& strText, CFontManager* pFont, CBrush* pBrush, double x, double y);
 	INT DrawStringPathC(const LONG& lText, CFontManager* pFont, CBrush* pBrush, double x, double y);

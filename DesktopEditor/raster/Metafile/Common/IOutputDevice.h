@@ -1,4 +1,4 @@
-#ifndef _METAFILE_COMMON_IOUTPUTDEVICE_H
+п»ї#ifndef _METAFILE_COMMON_IOUTPUTDEVICE_H
 #define _METAFILE_COMMON_IOUTPUTDEVICE_H
 
 #include "MetaFileTypes.h"
@@ -12,11 +12,11 @@ namespace MetaFile
 		IOutputDevice() {}
 		virtual ~IOutputDevice() {}
 
-		// Начало и окончание работы устройства
+		// РќР°С‡Р°Р»Рѕ Рё РѕРєРѕРЅС‡Р°РЅРёРµ СЂР°Р±РѕС‚С‹ СѓСЃС‚СЂРѕР№СЃС‚РІР°
 		virtual void Begin() = 0;
 		virtual void End() = 0;
 
-		// pBuffer - BGRA картинка размерами ulWidth, ulHeight, которую надо нарисовать в заданном ректе
+		// pBuffer - BGRA РєР°СЂС‚РёРЅРєР° СЂР°Р·РјРµСЂР°РјРё ulWidth, ulHeight, РєРѕС‚РѕСЂСѓСЋ РЅР°РґРѕ РЅР°СЂРёСЃРѕРІР°С‚СЊ РІ Р·Р°РґР°РЅРЅРѕРј СЂРµРєС‚Рµ
 		virtual void DrawBitmap(double dX, double dY, double dW, double dH, BYTE* pBuffer, unsigned int unWidth, unsigned int unHeight) = 0;
 
 		virtual void DrawString(std::wstring& wsText, unsigned int unCharsCount, double dX, double dY, double* pDx) = 0;

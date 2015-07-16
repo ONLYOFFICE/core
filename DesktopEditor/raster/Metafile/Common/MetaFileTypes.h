@@ -1,4 +1,4 @@
-#ifndef _METAFILE_COMMON_METAFILETYPES_H
+п»ї#ifndef _METAFILE_COMMON_METAFILETYPES_H
 #define _METAFILE_COMMON_METAFILETYPES_H
 
 #include <string>
@@ -410,7 +410,7 @@ namespace MetaFile
 				Init();
 			else if (MWT_LEFTMULTIPLY == ulMode)
 			{
-				// oOther слева, текущая матрица справа
+				// oOther СЃР»РµРІР°, С‚РµРєСѓС‰Р°СЏ РјР°С‚СЂРёС†Р° СЃРїСЂР°РІР°
 				double dM11 = oOther.M11 * M11 + oOther.M12 * M21;
 				double dM12 = oOther.M11 * M21 + oOther.M12 * M22;
 				double dM21 = oOther.M21 * M11 + oOther.M22 * M21;
@@ -428,7 +428,7 @@ namespace MetaFile
 			}
 			else if (MWT_RIGHTMULTIPLY == ulMode)
 			{
-				// oOther справа, текущая матрица слева
+				// oOther СЃРїСЂР°РІР°, С‚РµРєСѓС‰Р°СЏ РјР°С‚СЂРёС†Р° СЃР»РµРІР°
 				double dM11 = M11 * oOther.M11 + M12 * oOther.M21;
 				double dM12 = M11 * oOther.M21 + M12 * oOther.M22;
 				double dM21 = M21 * oOther.M11 + M22 * oOther.M21;

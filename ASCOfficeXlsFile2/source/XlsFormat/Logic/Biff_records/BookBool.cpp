@@ -23,7 +23,7 @@ BaseObjectPtr BookBool::clone()
 
 void BookBool::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fNoSaveSup);
 	SETBIT(flags, 2, fHasEnvelope);
 	SETBIT(flags, 3, fEnvelopeVisible);
@@ -55,7 +55,7 @@ void BookBool::writeFields(CFRecord& record)
 
 void BookBool::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fNoSaveSup = GETBIT(flags, 0);
 	fHasEnvelope = GETBIT(flags, 2);

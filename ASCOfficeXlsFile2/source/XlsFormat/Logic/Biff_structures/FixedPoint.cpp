@@ -40,7 +40,7 @@ XLS::BiffStructurePtr FixedPoint::clone()
 //		EXCEPT::LE::AttributeDataWrong(attrib_name, parent->GetnodeName(), static_cast<std::wstring >(raw_value));
 //	}
 //	Integral = static_cast<short>(real_value);
-//	Fractional = static_cast<unsigned __int16>((real_value - static_cast<double>(Integral)) * 65536.0);
+//	Fractional = static_cast<unsigned short>((real_value - static_cast<double>(Integral)) * 65536.0);
 //	return true;
 //}
 //

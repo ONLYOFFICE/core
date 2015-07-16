@@ -12,12 +12,12 @@ class Cetab : public BiffStructure_NoVtbl
 {
 public:
 	//void toXML(BiffStructurePtr & parent);
-	unsigned __int16 getHighBit() const;
+	unsigned short getHighBit() const;
 	void clrHighBit();
 	const std::wstring getFuncName() const;
 
 private:
-	unsigned __int16 cetab;
+	unsigned short cetab;
 };
 #pragma pack() // restore
 

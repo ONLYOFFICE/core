@@ -23,8 +23,8 @@ public:
 	static const ElementType	type = typeSync;
 
 //-----------------------------
-	ForwardOnlyParam<unsigned __int16> rw;
-	ForwardOnlyParam<unsigned __int16> col;
+	ForwardOnlyParam<unsigned short> rw;
+	ForwardOnlyParam<unsigned short> col;
 	BIFF_BSTR ref_;
 
 };

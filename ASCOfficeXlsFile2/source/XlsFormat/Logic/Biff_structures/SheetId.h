@@ -19,7 +19,7 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 id;
+	unsigned short id;
 };
 
 typedef boost::shared_ptr<SheetId> SheetIdPtr;

@@ -52,7 +52,7 @@ void OfficeArtFRITContainer::loadFields(XLS::CFRecord& record)
 	}
 }
 
-const unsigned __int16 OfficeArtFRITContainer::GetInstanceToStore()
+const unsigned short OfficeArtFRITContainer::GetInstanceToStore()
 {
 	return rgfrit.size();
 }

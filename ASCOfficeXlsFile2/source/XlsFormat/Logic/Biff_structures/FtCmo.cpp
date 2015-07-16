@@ -46,11 +46,11 @@ BiffStructurePtr FtCmo::clone()
 
 void FtCmo::store(CFRecord& record)
 {
-	unsigned __int16 ft = 0x15; // reserved
-	unsigned __int16 cb = 0x12; // reserved
+	unsigned short ft = 0x15; // reserved
+	unsigned short cb = 0x12; // reserved
 	record << ft << cb;
 
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fLocked);
 	SETBIT(flags, 2, fDefaultSize);
 	SETBIT(flags, 3, fPublished);
@@ -69,7 +69,7 @@ void FtCmo::load(CFRecord& record)
 {
 	record.skipNunBytes(4); // reserved
 
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> ot >> id >> flags;
 	record.skipNunBytes(12); // unused
 

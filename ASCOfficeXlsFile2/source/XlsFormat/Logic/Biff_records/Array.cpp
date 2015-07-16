@@ -23,7 +23,7 @@ BaseObjectPtr Array::clone()
 void Array::writeFields(CFRecord& record)
 {
 	record << ref_;
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fAlwaysCalc);
 	record << flags;
 	record.reserveNunBytes(4); // unused
@@ -34,7 +34,7 @@ void Array::writeFields(CFRecord& record)
 void Array::readFields(CFRecord& record)
 {
 	record >> ref_;
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fAlwaysCalc = GETBIT(flags, 0);
 	record.skipNunBytes(4); // unused

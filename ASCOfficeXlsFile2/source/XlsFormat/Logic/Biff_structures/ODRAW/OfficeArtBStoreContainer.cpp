@@ -66,7 +66,7 @@ void OfficeArtBStoreContainer::loadFields(XLS::CFRecord& record)
 	}
 }
 
-const unsigned __int16 OfficeArtBStoreContainer::GetInstanceToStore()
+const unsigned short OfficeArtBStoreContainer::GetInstanceToStore()
 {
 	return rgfb.size();
 }

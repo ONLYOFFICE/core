@@ -31,7 +31,7 @@ BiffStructurePtr ObjFmla::clone()
 
 void ObjFmla::load(CFRecord& record)
 {
-	unsigned __int16 cbFmla;
+	unsigned short cbFmla;
 	record >> cbFmla;
 	size_t start_ptr = record.getRdPtr();
 
@@ -57,7 +57,7 @@ void ObjFmla::load(CFRecord& record)
 
 void ObjFmla::store(CFRecord& record)
 {
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned __int16)/*cbFmla*/);
+	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cbFmla*/);
 	size_t start_ptr = record.getDataSize();
 
 	if(fmla_found)

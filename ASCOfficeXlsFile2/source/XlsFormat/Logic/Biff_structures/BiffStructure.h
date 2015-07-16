@@ -1,7 +1,7 @@
 #pragma once
 
 #include <vector>
-#include <string>
+#include <sstream>
 
 #include <boost/shared_ptr.hpp>
 
@@ -48,6 +48,14 @@ public:
 
 	virtual void load(CFRecord& record) = 0;
 	virtual void store(CFRecord& record) = 0;
+
+	virtual int serialize(std::wostream & _stream)
+	{
+		std::wstringstream s;
+		s << std::wstring(L"This element - ") << getClassName() << std::wstring(L"- not serialize");
+		Log::warning(s.str());
+		return 0;
+	}
 
 	virtual const std::wstring & getClassName() const = 0;   // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter
 

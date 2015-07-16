@@ -20,8 +20,8 @@ public:
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
 
 private:
-	unsigned __int16 cOffset;
-	std::vector<unsigned __int16> rgOffset;
+	unsigned short cOffset;
+	std::vector<unsigned short> rgOffset;
 };
 
 } // namespace XLS

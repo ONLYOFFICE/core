@@ -14,7 +14,7 @@ Decryptor::Decryptor(const CRYPTO::RC4EncryptionHeader& header)
 {
 }
 
-void Decryptor::Decrypt(char* data, const size_t size, const unsigned __int64 stream_pos)
+void Decryptor::Decrypt(char* data, const size_t size, const unsigned long stream_pos)
 {
 	crypt->Decrypt(data, size, stream_pos);
 }

@@ -15,7 +15,7 @@ class Decryptor
 public:
 	Decryptor(const CRYPTO::RC4EncryptionHeader& header);
 
-	void Decrypt(char* data, const size_t size, const unsigned __int64 stream_pos);
+	void Decrypt(char* data, const size_t size, const unsigned long stream_pos);
 
 private:
 	CryptPtr crypt;

@@ -487,7 +487,7 @@ namespace XMLSTUFF
 
 const std::wstring tab2sheet_name(const short tabid, std::vector<std::wstring>& sheets_names)
 {
-	if(tabid >= 0 && static_cast<unsigned __int16>(tabid) < sheets_names.size())
+	if(tabid >= 0 && static_cast<unsigned short>(tabid) < sheets_names.size())
 	{
 		return sheets_names[tabid];
 	}
@@ -495,9 +495,9 @@ const std::wstring tab2sheet_name(const short tabid, std::vector<std::wstring>& 
 }
 
 //
-const std::wstring xti2sheets(const unsigned __int16 ixti, std::vector<std::wstring>& xti_parsed)
+const std::wstring xti2sheets(const unsigned short ixti, std::vector<std::wstring>& xti_parsed)
 {
-	if(ixti >= 0 && static_cast<unsigned __int16>(ixti) < xti_parsed.size())
+	if(ixti >= 0 && static_cast<unsigned short>(ixti) < xti_parsed.size())
 	{
 		return xti_parsed[ixti];
 	}
@@ -522,7 +522,7 @@ const std::wstring xti_indexes2sheet_name(const short itabFirst, const short ita
 	return escaped_prefix;
 }
 
-const std::wstring make3dRef(const unsigned __int16 ixti, const std::wstring cell_ref, std::vector<std::wstring>& xti_parsed)
+const std::wstring make3dRef(const unsigned short ixti, const std::wstring cell_ref, std::vector<std::wstring>& xti_parsed)
 {
 	std::wstring sheets_prefix = xti2sheets(ixti, xti_parsed);
 	if(L"#REF!" == sheets_prefix)
@@ -550,7 +550,7 @@ const std::wstring make3dRef(const unsigned __int16 ixti, const std::wstring cel
 //}
 //
 //
-//const unsigned __int16 sheetsnames2ixti(const std::wstring str, MSXML2::IXMLDOMDocumentPtr doc)
+//const unsigned short sheetsnames2ixti(const std::wstring str, MSXML2::IXMLDOMDocumentPtr doc)
 //{
 //	std::wstring  sheet_first_id;
 //	std::wstring  sheet_last_id;

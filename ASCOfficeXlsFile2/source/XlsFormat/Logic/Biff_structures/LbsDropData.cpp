@@ -35,7 +35,7 @@ BiffStructurePtr LbsDropData::clone()
 //
 void LbsDropData::store(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBITS(flags, 0, 1, wStyle);
 	SETBIT(flags, 3, fFiltered);
 
@@ -50,7 +50,7 @@ void LbsDropData::store(CFRecord& record)
 
 void LbsDropData::load(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags >> cLine >> dxMin >> str;
 	wStyle = GETBITS(flags, 0, 1);
 	fFiltered = GETBIT(flags, 3);

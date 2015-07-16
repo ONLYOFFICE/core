@@ -39,14 +39,14 @@ BiffStructurePtr BopPopCustomPiesIndices::clone()
 
 void BopPopCustomPiesIndices::load(CFRecord& record)
 {
-	unsigned __int16 cxi;
+	unsigned short cxi;
 	record >> cxi;
 
-	const unsigned __int16 padding = 8 - cxi % 8;
+	const unsigned short padding = 8 - cxi % 8;
 
 	unsigned char bit_data = 0;
 
-	for(unsigned __int16 i = padding; i < cxi - 1 + padding; i++)
+	for(unsigned short i = padding; i < cxi - 1 + padding; i++)
 	{
 		if(0 == i % 8 || padding == i)
 		{
@@ -69,7 +69,7 @@ void BopPopCustomPiesIndices::load(CFRecord& record)
 //	{
 //		static std::wstring  tag_name(L"pie");
 //		static std::wstring  attr_name(L"index");
-//		for(std::vector<unsigned __int16>::const_iterator it = pie_indices.begin(), itEnd = pie_indices.end(); it != itEnd; ++it)
+//		for(std::vector<unsigned short>::const_iterator it = pie_indices.begin(), itEnd = pie_indices.end(); it != itEnd; ++it)
 //		{
 //			BiffStructurePtr rgi_tag = XMLSTUFF::createElement(tag_name, xml_tag);
 //			rgi_tag->setAttribute(attr_name, *it);

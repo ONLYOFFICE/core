@@ -13,7 +13,7 @@ public:
 	RC4Crypt(const CRYPTO::RC4EncryptionHeader& header);
 
 	virtual void Encrypt(char* data, const size_t size);
-	virtual void Decrypt(char* data, const size_t size, const unsigned __int64 stream_pos);
+	virtual void Decrypt(char* data, const size_t size, const unsigned long stream_pos);
 
 private:
 	void CopyDWORDs2Bytes(const unsigned int b1, const unsigned int b2, const unsigned int b3, const unsigned int b4, unsigned char* byte_array);

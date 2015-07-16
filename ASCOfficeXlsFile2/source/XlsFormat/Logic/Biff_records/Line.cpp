@@ -22,7 +22,7 @@ BaseObjectPtr Line::clone()
 
 void Line::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fStacked);
 	SETBIT(flags, 1, f100);
 	SETBIT(flags, 2, fHasShadow);
@@ -32,7 +32,7 @@ void Line::writeFields(CFRecord& record)
 
 void Line::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fStacked = GETBIT(flags, 0);
 	f100 = GETBIT(flags, 1);

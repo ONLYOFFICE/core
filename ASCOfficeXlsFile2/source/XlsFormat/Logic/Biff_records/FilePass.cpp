@@ -42,7 +42,7 @@ void FilePass::readFields(CFRecord& record)
 	}
 	else
 	{
-		majorVer = *record.getCurData<unsigned __int16>();
+		majorVer = *record.getCurData<unsigned short>();
 		if(0x0001 == majorVer) // RC4 encryption header structure
 		{
 			record >> rc4Header;

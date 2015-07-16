@@ -24,7 +24,7 @@ BaseObjectPtr CatLab::clone()
 void CatLab::writeFields(CFRecord& record)
 {
 	FrtHeaderOld frtHeaderOld(rt_CatLab);
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, cAutoCatLabelReal);
 	record << frtHeaderOld << wOffset << at << flags;
 	record.reserveNunBytes(2); // reserved
@@ -34,7 +34,7 @@ void CatLab::writeFields(CFRecord& record)
 void CatLab::readFields(CFRecord& record)
 {
 	FrtHeaderOld frtHeaderOld;
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> frtHeaderOld >> wOffset >> at >> flags;
 	cAutoCatLabelReal = GETBIT(flags, 0);
 	record.skipNunBytes(2); // reserved

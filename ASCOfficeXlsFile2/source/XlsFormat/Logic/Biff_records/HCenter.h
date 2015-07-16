@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeHCenter;
 
 //-----------------------------
-	Boolean<unsigned __int16> hcenter;
+	Boolean<unsigned short> hcenter;
 public:
 	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_ATTRIB(hcenter)

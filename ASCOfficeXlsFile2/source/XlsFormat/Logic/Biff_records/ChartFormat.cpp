@@ -23,7 +23,7 @@ BaseObjectPtr ChartFormat::clone()
 void ChartFormat::writeFields(CFRecord& record)
 {
 	record.reserveNunBytes(16); // reserved
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fVaried);
 	record << flags << icrt;
 }
@@ -32,7 +32,7 @@ void ChartFormat::writeFields(CFRecord& record)
 void ChartFormat::readFields(CFRecord& record)
 {
 	record.skipNunBytes(16); // reserved
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags >> icrt;
 	fVaried = GETBIT(flags, 0);
 }

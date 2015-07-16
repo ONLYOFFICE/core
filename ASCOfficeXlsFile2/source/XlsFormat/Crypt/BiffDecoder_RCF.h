@@ -7,7 +7,7 @@
 namespace CRYPT
 {;
 
-const __int64 BIFF_RCF_BLOCKSIZE          = 1024;
+const long BIFF_RCF_BLOCKSIZE          = 1024;
 
 /** Base class for BIFF stream decoders. */
 class BiffDecoderBase //: public ::comphelper::IDocPasswordVerifier
@@ -24,7 +24,7 @@ public:
     inline bool isValid() const { return mbValid; }
 
     /** Decodes nBytes unsigned chars and writes encrypted data into the buffer pnDestData. */
-    void decode(unsigned char* pnDestData, const unsigned char* pnSrcData, const __int64 nStreamPos, const unsigned __int16 nBytes);
+    void decode(unsigned char* pnDestData, const unsigned char* pnSrcData, const long nStreamPos, const unsigned short nBytes);
 
 private:
     /** Derived classes implement password verification and initialization of
@@ -32,7 +32,7 @@ private:
 	virtual bool implVerify(const std::wstring& rPassword) = 0;
 
     /** Implementation of decryption of a memory block. */
-    virtual void implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const __int64 nStreamPos, const unsigned __int16 nBytes) = 0;
+    virtual void implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const long nStreamPos, const unsigned short nBytes) = 0;
 
 private:
     bool mbValid;        /// True = decoder is correctly initialized.
@@ -52,11 +52,11 @@ private:
 	virtual bool implVerify(const std::wstring& rPassword);
 
 	/** Implementation of decryption of a memory block. */
-	virtual void implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const __int64 nStreamPos, const unsigned __int16 nBytes);
+	virtual void implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const long nStreamPos, const unsigned short nBytes);
 
 private:
 	BinaryCodec_RCF maCodec;   /// Cipher algorithm implementation.
-	std::vector<unsigned __int16> maPassword;
+	std::vector<unsigned short> maPassword;
 	std::vector<unsigned char> maSalt;
 	std::vector<unsigned char> maVerifier;
 	std::vector<unsigned char> maVerifierHash;

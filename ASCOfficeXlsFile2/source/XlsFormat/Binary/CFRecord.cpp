@@ -17,12 +17,12 @@ CFRecord::CFRecord(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)
 {
 	file_ptr = static_cast<unsigned int>(stream->getStreamPointer()); // Assume that files have size < 4Gb
 	*stream >> type_id_;
-	unsigned __int16 size_short;
+	unsigned short size_short;
 	*stream >> size_short;
 	size_ = size_short;
 	data_ = new char[size_];
 	
-	unsigned __int64 rec_data_pos = stream->getStreamPointer();
+	unsigned long rec_data_pos = stream->getStreamPointer();
 
 	stream->read(data_, size_);
 	if(global_info->decryptor && 0 != size_)
@@ -64,7 +64,7 @@ void CFRecord::save(CFStreamPtr stream)
 {
 	file_ptr = static_cast<unsigned int>(stream->getStreamPointer()); // Assume that files have size < 4Gb
 	*stream << type_id_;
-	unsigned __int16 size_short = static_cast<unsigned __int16>(size_);
+	unsigned short size_short = static_cast<unsigned short>(size_);
 	*stream << size_short;
 	if(data_)
 	{
@@ -293,7 +293,7 @@ void CFRecord::registerDelayedDataReceiver(CFStream::DELAYED_DATA_SAVER fn, cons
 	//ASSERT(!data_); // This throws if used after Commit or while reading of binary
 	CFStream::ReceiverItem item;
 	item.fn = fn;
-	item.data_place = size_ + sizeof(unsigned __int16)/*size_short*/ + sizeof(CFRecordType::TypeId); // set offset relative to record beginning. 
+	item.data_place = size_ + sizeof(unsigned short)/*size_short*/ + sizeof(CFRecordType::TypeId); // set offset relative to record beginning. 
 	item.data_size = n;
 	item.receiver_id = rt_NONE == receiver_id ? getTypeId() : receiver_id;
 	receiver_items.push_back(item);

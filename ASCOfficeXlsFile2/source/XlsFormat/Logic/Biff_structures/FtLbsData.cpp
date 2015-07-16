@@ -106,16 +106,16 @@ BiffStructurePtr FtLbsData::clone()
 //}
 //
 //
-void FtLbsData::store(CFRecord& record, const unsigned __int16 ot)
+void FtLbsData::store(CFRecord& record, const unsigned short ot)
 {
-	unsigned __int16 ft = 0x0013; // reserved
+	unsigned short ft = 0x0013; // reserved
 	record << ft;
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned __int16)/*cbFmla*/);
+	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cbFmla*/);
 	size_t start_ptr = record.getDataSize();
 
 	fmla.store(record);
 
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fUseCB);
 	SETBIT(flags, 1, fValidPlex);
 	SETBIT(flags, 2, fValidIds);
@@ -144,13 +144,13 @@ void FtLbsData::store(CFRecord& record, const unsigned __int16 ot)
 }
 
 
-void FtLbsData::load(CFRecord& record, const unsigned __int16 ot)
+void FtLbsData::load(CFRecord& record, const unsigned short ot)
 {
 	record.skipNunBytes(4); // reserved
 
 	fmla.load(record);
 
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> cLines >> iSel >> flags >> idEdit;
 
 	fUseCB = GETBIT(flags, 0);

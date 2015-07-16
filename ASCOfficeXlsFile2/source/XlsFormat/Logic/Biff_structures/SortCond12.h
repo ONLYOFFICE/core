@@ -23,7 +23,7 @@ public:
 
 private:
 	bool fSortDes;
-	unsigned __int16 sortOn;
+	unsigned short sortOn;
 	RFX rfx;
 
 	CondDataValue condDataValue;

@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeAxisParent;
 
 //-----------------------------
-	Boolean<unsigned __int16> iax;
+	Boolean<unsigned short> iax;
 
 };
 

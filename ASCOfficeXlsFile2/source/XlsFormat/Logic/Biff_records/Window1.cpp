@@ -23,7 +23,7 @@ BaseObjectPtr Window1::clone()
 void Window1::writeFields(CFRecord& record)
 {
 	record << xWn << yWn << dxWn << dyWn;
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fHidden);
 	SETBIT(flags, 1, fIconic);
 	SETBIT(flags, 2, fVeryHidden);
@@ -37,7 +37,7 @@ void Window1::writeFields(CFRecord& record)
 
 void Window1::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> xWn >> yWn >> dxWn >> dyWn >> flags >> itabCur >> itabFirst >> ctabSel >> wTabRatio;
 	fHidden = GETBIT(flags, 0);
 	fIconic = GETBIT(flags, 1);

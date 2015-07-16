@@ -6,13 +6,13 @@
 namespace OLEPS
 {;
 
-CodePage::CodePage(const unsigned __int16 value_type, XLS::CFStreamPtr stream)
+CodePage::CodePage(const unsigned short value_type, XLS::CFStreamPtr stream)
 {
 	//ASSERT(value_type == Property::VT_I2);
 	*stream >> code_page;
 }
 
-const unsigned __int16 CodePage::GetCodePage()
+const unsigned short CodePage::GetCodePage()
 {
 	return code_page;
 }

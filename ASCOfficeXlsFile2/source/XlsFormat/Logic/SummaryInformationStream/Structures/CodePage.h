@@ -9,16 +9,16 @@ namespace OLEPS
 class CodePage : public Property
 {
 public:
-	CodePage(const unsigned __int16 value_type, XLS::CFStreamPtr stream);
+	CodePage(const unsigned short value_type, XLS::CFStreamPtr stream);
 	
 	static const unsigned int Type = 0x0001;
-	static const unsigned __int16 DefaultCodePage = 1250;
+	static const unsigned short DefaultCodePage = 1250;
 
-	const unsigned __int16 GetCodePage();
+	const unsigned short GetCodePage();
 
 
 private:
-	unsigned __int16 code_page;
+	unsigned short code_page;
 };
 
 typedef boost::shared_ptr<CodePage> CodePagePropertyPtr;

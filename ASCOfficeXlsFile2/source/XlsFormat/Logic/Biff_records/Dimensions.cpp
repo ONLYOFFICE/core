@@ -28,8 +28,8 @@ void Dimensions::writeFields(CFRecord& record)
 		CellRangeRef ref_ref(ref_);
 		rwMic = ref_ref.getRowFirst();
 		rwMac = ref_ref.getRowLast() + 1;// zero-based index of the row after the last row in the sheet that contains a used cell
-		colMic = static_cast<unsigned __int16>(ref_ref.getColumnFirst());
-		colMac = static_cast<unsigned __int16>(ref_ref.getColumnLast()) + 1; // zero-based index of the column after the last column in the sheet that contains a used cell
+		colMic = static_cast<unsigned short>(ref_ref.getColumnFirst());
+		colMac = static_cast<unsigned short>(ref_ref.getColumnLast()) + 1; // zero-based index of the column after the last column in the sheet that contains a used cell
 	}
 	else
 	{

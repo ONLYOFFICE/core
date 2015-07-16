@@ -22,7 +22,7 @@ BaseObjectPtr GridSet::clone()
 
 void GridSet::writeFields(CFRecord& record)
 {
-	unsigned __int16 reserved = 1;
+	unsigned short reserved = 1;
 	record << reserved;
 }
 

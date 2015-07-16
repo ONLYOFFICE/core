@@ -15,14 +15,14 @@ BinaryCodec_RCF::~BinaryCodec_RCF()
 	(void)memset( mpnDigestValue, 0, sizeof( mpnDigestValue ) );
 }
 
-void BinaryCodec_RCF::initKey( const unsigned __int16 pnPassData[ 16 ], const unsigned char pnSalt[ 16 ] )
+void BinaryCodec_RCF::initKey( const unsigned short pnPassData[ 16 ], const unsigned char pnSalt[ 16 ] )
 {
 	// create little-endian key data array from password data
 	unsigned char pnKeyData[ 64 ];
 	(void)memset( pnKeyData, 0, sizeof( pnKeyData ) );
 
-	const unsigned __int16* pnCurrPass = pnPassData;
-	const unsigned __int16* pnPassEnd = pnPassData + 16;
+	const unsigned short* pnCurrPass = pnPassData;
+	const unsigned short* pnPassEnd = pnPassData + 16;
 	unsigned char* pnCurrKey = pnKeyData;
 	size_t nPassSize = 0;
 	for( ; (pnCurrPass < pnPassEnd) && (*pnCurrPass != 0); ++pnCurrPass, ++nPassSize )

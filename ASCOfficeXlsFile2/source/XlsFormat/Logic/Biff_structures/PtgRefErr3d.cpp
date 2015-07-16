@@ -12,7 +12,7 @@ PtgRefErr3d::PtgRefErr3d()
 }
 
 
-PtgRefErr3d::PtgRefErr3d(const unsigned __int16 ixti_init, const PtgDataType data_type)
+PtgRefErr3d::PtgRefErr3d(const unsigned short ixti_init, const PtgDataType data_type)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5)),
 	ixti(ixti_init)
 {

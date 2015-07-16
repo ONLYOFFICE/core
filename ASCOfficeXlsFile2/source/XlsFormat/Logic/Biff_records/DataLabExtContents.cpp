@@ -26,7 +26,7 @@ void DataLabExtContents::writeFields(CFRecord& record)
 	FrtHeader frtHeader(rt_DataLabExtContents);
 	record << frtHeader;
 
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fSerName);
 	SETBIT(flags, 1, fCatName);
 	SETBIT(flags, 2, fValue);
@@ -42,7 +42,7 @@ void DataLabExtContents::readFields(CFRecord& record)
 	FrtHeader frtHeader;
 	record >> frtHeader;
 
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags >> rgchSep;
 
 	fSerName = GETBIT(flags, 0);

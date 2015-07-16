@@ -22,7 +22,7 @@ public:
 
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
 
-	static const unsigned __int16 fixed_id = 0x1D;
+	static const unsigned short fixed_id = 0x1D;
 
 private:
 	Boolean<unsigned char> boolean_;

@@ -39,7 +39,7 @@ void CFEx::readFields(CFRecord& record)
 }
 
 
-const unsigned __int16 CFEx::getID() const
+const unsigned short CFEx::getID() const
 {
 	return nID;
 }

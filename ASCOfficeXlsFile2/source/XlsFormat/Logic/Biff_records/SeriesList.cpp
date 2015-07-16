@@ -43,7 +43,7 @@ BiffStructurePtr RGISeriesListSpecial::clone()
 //	{
 //		static std::wstring  tag_name(L"rgi");
 //		static std::wstring  attr_name(L"index");
-//		for(std::vector<unsigned __int16>::const_iterator it = series.begin(), itEnd = series.end(); it != itEnd; ++it)
+//		for(std::vector<unsigned short>::const_iterator it = series.begin(), itEnd = series.end(); it != itEnd; ++it)
 //		{
 //			MSXML2::IXMLDOMElementPtr rgi_tag = XMLSTUFF::createElement(tag_name, xml_tag);
 //			rgi_tag->setAttribute(attr_name,*it);
@@ -60,7 +60,7 @@ BiffStructurePtr RGISeriesListSpecial::clone()
 //	MSXML2::IXMLDOMElementPtr rgi_node;
 //	while(rgi_node = rgi_nodes->nextNode())
 //	{
-//		unsigned __int16 rgi = getStructAttribute(rgi_node, attr_name);
+//		unsigned short rgi = getStructAttribute(rgi_node, attr_name);
 //		series.push_back(rgi);
 //	}
 //	return true;
@@ -69,11 +69,11 @@ BiffStructurePtr RGISeriesListSpecial::clone()
 
 void RGISeriesListSpecial::load(CFRecord& record)
 {
-	unsigned __int16 cser;
+	unsigned short cser;
 	record >> cser;
 	for (size_t i = 0; i < cser; ++i)
 	{
-		unsigned __int16 rgi;
+		unsigned short rgi;
 		record >> rgi;
 		series.push_back(rgi);
 	}
@@ -82,7 +82,7 @@ void RGISeriesListSpecial::load(CFRecord& record)
 
 void RGISeriesListSpecial::store(CFRecord& record)
 {
-	unsigned __int16 cser = series.size();
+	unsigned short cser = series.size();
 	record >> cser >> series;
 }
 

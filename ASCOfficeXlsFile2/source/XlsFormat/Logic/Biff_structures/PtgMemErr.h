@@ -22,7 +22,7 @@ public:
 
 private:
 	BErr err;
-	unsigned __int16 cce;
+	unsigned short cce;
 };
 
 } // namespace XLS

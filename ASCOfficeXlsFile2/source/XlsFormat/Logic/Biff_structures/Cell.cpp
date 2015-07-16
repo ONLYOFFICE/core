@@ -12,7 +12,7 @@ Cell::Cell()
 }
 
 
-Cell::Cell(const unsigned __int16 rw_init, const unsigned __int16 col_init, const unsigned __int16 ixfe_init)
+Cell::Cell(const unsigned short rw_init, const unsigned short col_init, const unsigned short ixfe_init)
 {
 	rw = rw_init;
 	col = col_init;

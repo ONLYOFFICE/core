@@ -29,8 +29,8 @@ BiffStructurePtr FtRboData::clone()
 
 void FtRboData::store(CFRecord& record)
 {
-	unsigned __int16 ft = 0x0011; // reserved
-	unsigned __int16 cb = 0x0004; // reserved
+	unsigned short ft = 0x0011; // reserved
+	unsigned short cb = 0x0004; // reserved
 	record << ft << cb;
 
 	record << idRadNext << fFirstBtn;

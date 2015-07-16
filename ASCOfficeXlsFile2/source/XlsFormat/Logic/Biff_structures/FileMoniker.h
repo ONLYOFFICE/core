@@ -21,12 +21,12 @@ public:
 	virtual void store(XLS::CFRecord& record);
 
 private:
-	unsigned __int16 cAnti;
+	unsigned short cAnti;
 	std::string ansiPath;
-	unsigned __int16 endServer;
-	unsigned __int16 versionNumber;
+	unsigned short endServer;
+	unsigned short versionNumber;
 	unsigned int cbUnicodePathSize;
-	unsigned __int16 usKeyValue;
+	unsigned short usKeyValue;
 	std::wstring unicodePath;
 };
 

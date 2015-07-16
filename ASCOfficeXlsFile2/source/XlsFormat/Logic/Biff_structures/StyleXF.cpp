@@ -115,7 +115,7 @@ void StyleXF::store(CFRecord& record)
 	SETBITS(flags, 26, 31, fill.fls);
 	record << flags;
 
-	unsigned __int16 flags2 = 0;
+	unsigned short flags2 = 0;
 	SETBITS(flags2, 0, 6, fill.icvFore);
 	SETBITS(flags2, 7, 13, fill.icvBack);
 	record << flags2;
@@ -127,7 +127,7 @@ void StyleXF::load(CFRecord& record)
 	unsigned int flags1;
 	unsigned int flags2;
 	unsigned int flags3;
-	unsigned __int16 flags4;
+	unsigned short flags4;
 	record >> flags1 >> flags2 >> flags3 >> flags4;
 	alc = static_cast<unsigned char>(GETBITS(flags1, 0, 2));
 	fWrap = GETBIT(flags1, 3);
@@ -159,6 +159,10 @@ void StyleXF::load(CFRecord& record)
 	fill_x_id = record.getGlobalWorkbookInfo()->RegisterFillId(fill);
 }
 
+int StyleXF::serialize(std::wostream & stream)
+{
+	return 0;
+}
 
 } // namespace XLS
 

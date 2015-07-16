@@ -26,8 +26,8 @@ void Obj::writeFields(CFRecord& record)
 	if(0 == cmo.ot)
 	{
 		// FtGmo
-		unsigned __int16 ft = 0x06;
-		unsigned __int16 cb = 0x02;
+		unsigned short ft = 0x06;
+		unsigned short cb = 0x02;
 		record << ft << cb; // reserved
 		record.reserveNunBytes(2); // unused
 	}
@@ -38,16 +38,16 @@ void Obj::writeFields(CFRecord& record)
 	if(0x0B == cmo.ot || 0x0C == cmo.ot)
 	{
 		// FtCbls
-		unsigned __int16 ft = 0x0A;
-		unsigned __int16 cb = 0x0C;
+		unsigned short ft = 0x0A;
+		unsigned short cb = 0x0C;
 		record << ft << cb; // reserved
 		record.reserveNunBytes(cb); // unused
 	}
 	if(0x0C == cmo.ot)
 	{
 		// FtRbo
-		unsigned __int16 ft = 0x0B;
-		unsigned __int16 cb = 0x06;
+		unsigned short ft = 0x0B;
+		unsigned short cb = 0x06;
 		record << ft << cb; // reserved
 		record.reserveNunBytes(cb); // unused
 	}

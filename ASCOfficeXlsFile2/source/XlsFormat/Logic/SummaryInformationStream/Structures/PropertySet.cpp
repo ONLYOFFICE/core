@@ -44,7 +44,7 @@ PropertySet::PropertySet(XLS::CFStreamPtr stream, const unsigned int property_se
 
 }
 
-const unsigned __int16 PropertySet::GetCodePage()
+const unsigned short PropertySet::GetCodePage()
 {
 	return code_page;
 }

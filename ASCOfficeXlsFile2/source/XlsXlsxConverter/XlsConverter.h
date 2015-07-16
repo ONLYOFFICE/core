@@ -17,14 +17,18 @@ namespace oox
 namespace XLS
 {
 	class BaseObject;
+	typedef boost::shared_ptr<BaseObject> BaseObjectPtr;
+	
+	class GlobalWorkbookInfo;
+	typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;
+
 	class WorkbookStreamObject;
 	class WorksheetSubstream;
 	class GlobalsSubstream;
-	class GlobalWorkbookInfo;
-	class FORMATTING;
 	
-	typedef boost::shared_ptr<BaseObject> BaseObjectPtr;
-	typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;
+	class FORMATTING;
+	class THEME;
+	
 }
 
 class XlsConverter
@@ -49,10 +53,11 @@ private:
 	XLS::BaseObjectPtr				xls_document;	
 	XLS::GlobalWorkbookInfoPtr		xls_global_info;
 
-	void convert(XLS::WorkbookStreamObject* woorkbook);
-	void convert(XLS::WorksheetSubstream* sheet);
-	void convert(XLS::GlobalsSubstream* elem);
-	void convert(XLS::FORMATTING* formating);
+	void convert(XLS::WorkbookStreamObject		* woorkbook);
+	void convert(XLS::WorksheetSubstream		* sheet);
+	void convert(XLS::GlobalsSubstream			* elem);
+	void convert(XLS::FORMATTING				* formating);
+	void convert(XLS::THEME						* theme);
 	
 
 };

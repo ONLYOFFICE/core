@@ -21,11 +21,11 @@ public:
 
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
 
-	static const unsigned __int16 fixed_id = 0x02;
+	static const unsigned short fixed_id = 0x02;
 
 private:
-	unsigned __int16 row;
-	unsigned __int16 col;
+	unsigned short row;
+	unsigned short col;
 };
 
 typedef boost::shared_ptr<PtgTbl> PtgTblPtr;

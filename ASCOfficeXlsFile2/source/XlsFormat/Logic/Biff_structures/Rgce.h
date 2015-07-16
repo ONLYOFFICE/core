@@ -34,7 +34,7 @@ private:
 	const CellRef cell_base_ref;
 
 private:
-	nullable<size_t> cce; // Size of rgce variable. Setting explicit is mandatory
+	_CP_OPT(size_t) cce; // Size of rgce variable. Setting explicit is mandatory
 	PtgVector sequence;
 };
 

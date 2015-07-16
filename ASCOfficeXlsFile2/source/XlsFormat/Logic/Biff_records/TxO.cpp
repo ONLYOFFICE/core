@@ -28,7 +28,7 @@ void TxO::writeFields(CFRecord& record)
 
 void TxO::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	hAlignment = static_cast<unsigned char>(GETBITS(flags, 1, 3));
 	vAlignment = static_cast<unsigned char>(GETBITS(flags, 4, 6));	// reserved2 (2 bits)	

@@ -19,7 +19,7 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 offset;
+	unsigned short offset;
 };
 
 typedef boost::shared_ptr<FileOffset> FileOffsetPtr;

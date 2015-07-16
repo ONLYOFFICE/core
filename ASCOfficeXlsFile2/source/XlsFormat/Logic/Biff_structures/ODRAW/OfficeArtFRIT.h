@@ -22,8 +22,8 @@ public:
 	virtual void store(XLS::CFRecord& record);
 
 public:
-	unsigned __int16 fridNew;
-	unsigned __int16 fridOld;
+	unsigned short fridNew;
+	unsigned short fridOld;
 };
 
 typedef boost::shared_ptr<OfficeArtFRIT> OfficeArtFRITPtr;

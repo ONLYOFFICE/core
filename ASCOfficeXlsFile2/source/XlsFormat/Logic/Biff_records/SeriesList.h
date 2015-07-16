@@ -19,7 +19,7 @@ public:
 	static const ElementType	type = typeRGISeriesListSpecial;
 
 //-----------------------------
-	std::vector<unsigned __int16> series;
+	std::vector<unsigned short> series;
 };
 
 

@@ -9,11 +9,14 @@ class CFStreamCacheReader;
 class BOF;
 
 // Logical representation of Globals substream 
+class GlobalsSubstream;
+typedef boost::shared_ptr<GlobalsSubstream>		GlobalsSubstreamPtr;
+
 class GlobalsSubstream: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(GlobalsSubstream)
 public:
-	GlobalsSubstream(const unsigned __int16 code_page);
+	GlobalsSubstream(const unsigned short code_page);
 	~GlobalsSubstream();
 
 	BaseObjectPtr clone();
@@ -22,8 +25,11 @@ public:
 
 	static const ElementType	type = typeGlobalsSubstream;
 	
+	BaseObjectPtr m_Theme;
+	BaseObjectPtr m_Formating;
+	BaseObjectPtr m_Template;
 	
-	unsigned __int16 code_page_;
+	unsigned short code_page_;
 };
 
 } // namespace XLS

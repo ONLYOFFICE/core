@@ -33,9 +33,9 @@ void DropDownObjIds::readFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_DropDownObjIds);
 	record >> frtHeader;
-	unsigned __int16 cidObj;
+	unsigned short cidObj;
 	record >> cidObj;
-	for(unsigned __int16 i = 0; i < cidObj; ++i)
+	for(unsigned short i = 0; i < cidObj; ++i)
 	{
 		DropDownObjIdPtr id(new DropDownObjId);
 		record >> *id;

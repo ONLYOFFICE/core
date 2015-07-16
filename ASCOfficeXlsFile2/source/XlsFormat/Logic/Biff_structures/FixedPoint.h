@@ -21,7 +21,7 @@ public:
 
 private:
 	short Integral;
-	unsigned __int16 Fractional;
+	unsigned short Fractional;
 };
 
 } // namespace OSHARED

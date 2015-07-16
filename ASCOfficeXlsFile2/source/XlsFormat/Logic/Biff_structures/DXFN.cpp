@@ -167,7 +167,7 @@ void DXFN::store(CFRecord& record)
 	SETBIT(flags, 30, ibitAtrProt);
 	SETBIT(flags, 31, iReadingOrderNinch);
 	record << flags;
-	unsigned __int16 flags2 = 0;
+	unsigned short flags2 = 0;
 	SETBIT(flags2, 0, fIfmtUser);
 	SETBIT(flags2, 2, fNewBorder);
 	SETBIT(flags2, 15, fZeroInited);
@@ -232,7 +232,7 @@ void DXFN::load(CFRecord& record)
 	ibitAtrPat = GETBIT(flags, 29);
 	ibitAtrProt = GETBIT(flags, 30);
 	iReadingOrderNinch = GETBIT(flags, 31);
-	unsigned __int16 flags2;
+	unsigned short flags2;
 	record >> flags2;
 	fIfmtUser = GETBIT(flags2, 0);
 	fNewBorder = GETBIT(flags2, 2);

@@ -16,14 +16,14 @@ class OfficeArtRecord : public XLS::BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtRecord)
 public:
-	OfficeArtRecord(const unsigned char recVer, const unsigned __int16 recType);
+	OfficeArtRecord(const unsigned char recVer, const unsigned short recType);
 
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 	bool IsThisHeaderMine(const OfficeArtRecordHeader& rh);
 
 	// For overriding:
-	virtual const unsigned __int16 GetInstanceToStore();
+	virtual const unsigned short GetInstanceToStore();
 	virtual void loadFields(XLS::CFRecord& record) = 0;
 	virtual void storeFields(XLS::CFRecord& record) = 0;
 

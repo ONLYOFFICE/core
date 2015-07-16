@@ -19,7 +19,7 @@ BiffStructurePtr ChartParsedFormula::clone()
 
 void ChartParsedFormula::store(CFRecord& record)
 {
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned __int16)/*cce*/);
+	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/);
 	rgce.store(record);
 	record.registerDelayedDataSource(rgce.getCCE(), rt_Formula);
 }
@@ -27,7 +27,7 @@ void ChartParsedFormula::store(CFRecord& record)
 
 void ChartParsedFormula::load(CFRecord& record)
 {
-	unsigned __int16 cce;
+	unsigned short cce;
 	record >> cce;
 	rgce.load(record, cce);
 }

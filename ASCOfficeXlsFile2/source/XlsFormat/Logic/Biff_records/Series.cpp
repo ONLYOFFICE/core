@@ -22,16 +22,16 @@ BaseObjectPtr Series::clone()
 
 void Series::writeFields(CFRecord& record)
 {
-	unsigned __int16 sdtY = 0x0001;
-	unsigned __int16 sdtBSize = 0x0001;
+	unsigned short sdtY = 0x0001;
+	unsigned short sdtBSize = 0x0001;
 	record << sdtX << sdtY << cValx << cValy << sdtBSize << cValBSize;
 }
 
 
 void Series::readFields(CFRecord& record)
 {
-	unsigned __int16 sdtY;
-	unsigned __int16 sdtBSize;
+	unsigned short sdtY;
+	unsigned short sdtBSize;
 	record >> sdtX >> sdtY >> cValx >> cValy >> sdtBSize >> cValBSize;
 }
 

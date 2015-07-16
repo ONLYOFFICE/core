@@ -23,7 +23,7 @@ BaseObjectPtr Lbl::clone()
 
 void Lbl::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fHidden);	
 	SETBIT(flags, 1, fFunc);
 	SETBIT(flags, 2, fOB);
@@ -37,7 +37,7 @@ void Lbl::writeFields(CFRecord& record)
 	record << flags << chKey;
 	unsigned char cch = static_cast<std::wstring >(Name).length();
 	record << cch;
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned __int16)/*cce*/);
+	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/);
 	record.reserveNunBytes(2);
 	record << itab;
 	record.reserveNunBytes(4);
@@ -129,7 +129,7 @@ void Lbl::writeFields(CFRecord& record)
 
 void Lbl::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags >> chKey;
 	fHidden = GETBIT(flags, 0);
 	fFunc = GETBIT(flags, 1);
@@ -141,7 +141,7 @@ void Lbl::readFields(CFRecord& record)
 	fPublished = GETBIT(flags, 13);
 	fWorkbookParam = GETBIT(flags, 14);
 	unsigned char cch;
-	unsigned __int16 cce;
+	unsigned short cce;
 	record >> cch >> cce;
 	record.skipNunBytes(2);
 	record >> itab;

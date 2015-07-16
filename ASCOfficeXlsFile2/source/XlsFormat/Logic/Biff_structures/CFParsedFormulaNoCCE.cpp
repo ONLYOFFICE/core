@@ -31,7 +31,7 @@ void CFParsedFormulaNoCCE::load(CFRecord& record)
 }
 
 
-void CFParsedFormulaNoCCE::load(CFRecord& record, const unsigned __int16 cce)
+void CFParsedFormulaNoCCE::load(CFRecord& record, const unsigned short cce)
 {
 	rgce.load(record, cce);
 }

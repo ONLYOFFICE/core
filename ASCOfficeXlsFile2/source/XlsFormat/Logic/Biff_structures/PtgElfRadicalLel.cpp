@@ -21,7 +21,7 @@ BiffStructurePtr PtgElfRadicalLel::clone()
 
 void PtgElfRadicalLel::storeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fQuoted);
 	record << ilel << flags;
 }
@@ -29,7 +29,7 @@ void PtgElfRadicalLel::storeFields(CFRecord& record)
 
 void PtgElfRadicalLel::loadFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> ilel >> flags;
 	fQuoted = GETBIT(flags, 0);
 }

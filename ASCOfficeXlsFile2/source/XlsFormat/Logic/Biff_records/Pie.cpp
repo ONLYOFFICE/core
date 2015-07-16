@@ -22,7 +22,7 @@ BaseObjectPtr Pie::clone()
 
 void Pie::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fHasShadow);
 	SETBIT(flags, 1, fShowLdrLines);
 	record >> anStart >> pcDonut >> flags;
@@ -31,7 +31,7 @@ void Pie::writeFields(CFRecord& record)
 
 void Pie::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> anStart >> pcDonut >> flags;
 	fHasShadow = GETBIT(flags, 0);
 	fShowLdrLines = GETBIT(flags, 1);

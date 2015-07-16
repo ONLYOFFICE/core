@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeUsesELFs;
 
 //-----------------------------
-	Boolean<unsigned __int16> useselfs;
+	Boolean<unsigned short> useselfs;
 
 };
 

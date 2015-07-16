@@ -24,7 +24,7 @@ public:
 
 
 //-----------------------------
-	Boolean<unsigned __int16> printRwCol;
+	Boolean<unsigned short> printRwCol;
 public:
 	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_ATTRIB(printRwCol)

@@ -45,7 +45,7 @@ void RC4Crypt::CopyDWORDs2Bytes(const unsigned int b1, const unsigned int b2, co
 	byte_array[15] = static_cast<unsigned char>((b4 & 0xff000000) >> 24);
 }
 
-void RC4Crypt::Decrypt(char* data, const size_t size, const unsigned __int64 stream_pos)
+void RC4Crypt::Decrypt(char* data, const size_t size, const unsigned long stream_pos)
 {
 	static unsigned char quick_buf[256];
 	if(size <= 256)

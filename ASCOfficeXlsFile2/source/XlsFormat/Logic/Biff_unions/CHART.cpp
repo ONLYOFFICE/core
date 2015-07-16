@@ -28,7 +28,7 @@ BaseObjectPtr CHART::clone()
 // Shit!!! It is.
 const bool CHART::loadContent(BinProcessor& proc)
 {
-	unsigned __int16 ss_type;
+	unsigned short ss_type;
 	if(!proc.getNextSubstreamType(ss_type) || BOF::st_Chart != ss_type)
 	{
 		return false;

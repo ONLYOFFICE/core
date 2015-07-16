@@ -25,10 +25,10 @@ public:
 	virtual void storeFields(XLS::CFRecord& record);
 
 	// overriden
-	const unsigned __int16 GetInstanceToStore();
+	const unsigned short GetInstanceToStore();
 
 private:
-	unsigned __int16 shape_id;
+	unsigned short shape_id;
 
 	unsigned int spid;
 

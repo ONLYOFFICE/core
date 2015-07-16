@@ -34,7 +34,7 @@ void FormatRun::store(CFRecord& record)
 void FormatRun::load(CFRecord& record)
 {
 	record >> ich >> ifnt;
-	unsigned __int16 _ich = ich;
+	unsigned short _ich = ich;
 }
 
 

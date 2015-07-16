@@ -20,7 +20,7 @@ BiffStructurePtr FontIndex::clone()
 //
 //const bool FontIndex::fromXML(MSXML2::IXMLDOMElementPtr xml_tag, const std::wstring & attrib_name)
 //{
-//	unsigned __int16 index = getStructAttribute(xml_tag, attrib_name);
+//	unsigned short index = getStructAttribute(xml_tag, attrib_name);
 //	if(index >= 4)
 //	{
 //		++index;
@@ -34,9 +34,9 @@ FontIndex::operator const _variant_t () const
 	return getValue();
 }
 
-const unsigned __int16 FontIndex::getValue() const
+const unsigned short FontIndex::getValue() const
 {	
-	unsigned __int16 index = static_cast<unsigned __int16>(val);
+	unsigned short index = static_cast<unsigned short>(val.get_value_or(0));
 	return index < 4 ? index : index - 1;
 }
 

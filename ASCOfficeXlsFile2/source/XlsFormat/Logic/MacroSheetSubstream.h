@@ -4,8 +4,8 @@
 
 namespace XLS
 {;
-
-
+class MacroSheetSubstream;
+typedef boost::shared_ptr<MacroSheetSubstream>			MacroSheetSubstreamPtr;
 // Logical representation of MacroSheetSubstream union of records 
 class MacroSheetSubstream: public CompositeObject
 {

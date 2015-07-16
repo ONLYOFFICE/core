@@ -23,7 +23,7 @@ bool BiffDecoderBase::verifyPassword(const std::wstring& rPassword)
 }
 
 
-void BiffDecoderBase::decode(unsigned char* pnDestData, const unsigned char* pnSrcData, const __int64 nStreamPos, const unsigned __int16 nBytes)
+void BiffDecoderBase::decode(unsigned char* pnDestData, const unsigned char* pnSrcData, const long nStreamPos, const unsigned short nBytes)
 {
 	if(pnDestData && pnSrcData && (nBytes> 0))
 	{
@@ -36,13 +36,13 @@ void BiffDecoderBase::decode(unsigned char* pnDestData, const unsigned char* pnS
 
 
 /** Returns the block index of the passed stream position for RCF decryption. */
-int lclGetRcfBlock(__int64 nStreamPos)
+int lclGetRcfBlock(long nStreamPos)
 {
 	return static_cast<int>(nStreamPos / BIFF_RCF_BLOCKSIZE);
 }
 
 /** Returns the offset of the passed stream position in a block for RCF decryption. */
-int lclGetRcfOffset(__int64 nStreamPos)
+int lclGetRcfOffset(long nStreamPos)
 {
 	return static_cast<int>(nStreamPos % BIFF_RCF_BLOCKSIZE);
 }
@@ -62,14 +62,14 @@ bool BiffDecoder_RCF::implVerify(const std::wstring& rPassword)
 	int nLen = rPassword.length();
 	if((0 <nLen) && (nLen <16))
 	{
-		// copy string to unsigned __int16 array
+		// copy string to unsigned short array
 		maPassword.clear();
 		maPassword.resize(16, 0);
 		const wchar_t* pcChar = rPassword.c_str();
 		const wchar_t* pcCharEnd = pcChar + nLen;
-		std::vector<unsigned __int16>::iterator aIt = maPassword.begin();
+		std::vector<unsigned short>::iterator aIt = maPassword.begin();
 		for(; pcChar <pcCharEnd; ++pcChar, ++aIt)
-			*aIt = static_cast<unsigned __int16>(*pcChar);
+			*aIt = static_cast<unsigned short>(*pcChar);
 
 		// init codec
 		maCodec.initKey(&maPassword.front(), &maSalt.front());
@@ -78,12 +78,12 @@ bool BiffDecoder_RCF::implVerify(const std::wstring& rPassword)
 	return false;
 }
 
-void BiffDecoder_RCF::implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const __int64 nStreamPos, const unsigned __int16 nBytes)
+void BiffDecoder_RCF::implDecode(unsigned char* pnDestData, const unsigned char* pnSrcData, const long nStreamPos, const unsigned short nBytes)
 {
 	unsigned char* pnCurrDest = pnDestData;
 	const unsigned char* pnCurrSrc = pnSrcData;
-	__int64 nCurrPos = nStreamPos;
-	unsigned __int16 nBytesLeft = nBytes;
+	long nCurrPos = nStreamPos;
+	unsigned short nBytesLeft = nBytes;
 	while(nBytesLeft> 0)
 	{
 		// initialize codec for current stream position
@@ -91,8 +91,8 @@ void BiffDecoder_RCF::implDecode(unsigned char* pnDestData, const unsigned char*
 		maCodec.skip(lclGetRcfOffset(nCurrPos));
 
 		// decode the block
-		unsigned __int16 nBlockLeft = static_cast<unsigned __int16>(BIFF_RCF_BLOCKSIZE - lclGetRcfOffset(nCurrPos));
-		unsigned __int16 nDecBytes = nBytesLeft < nBlockLeft ? nBytesLeft : nBlockLeft;
+		unsigned short nBlockLeft = static_cast<unsigned short>(BIFF_RCF_BLOCKSIZE - lclGetRcfOffset(nCurrPos));
+		unsigned short nDecBytes = nBytesLeft < nBlockLeft ? nBytesLeft : nBlockLeft;
 		maCodec.decode(pnCurrDest, pnCurrSrc, static_cast<int>(nDecBytes));
 
 		// prepare for next block

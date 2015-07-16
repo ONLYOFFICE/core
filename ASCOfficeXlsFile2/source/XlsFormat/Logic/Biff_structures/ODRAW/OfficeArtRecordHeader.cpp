@@ -24,7 +24,7 @@ XLS::BiffStructurePtr OfficeArtRecordHeader::clone()
 
 void OfficeArtRecordHeader::store(XLS::CFRecord& record)
 {
-	unsigned __int16 ver_inst;
+	unsigned short ver_inst;
 	SETBITS(ver_inst, 0, 3, recVer);
 	SETBITS(ver_inst, 4, 15, recInstance);
 	record << ver_inst << recType;
@@ -34,7 +34,7 @@ void OfficeArtRecordHeader::store(XLS::CFRecord& record)
 
 void OfficeArtRecordHeader::load(XLS::CFRecord& record)
 {
-	unsigned __int16 ver_inst;
+	unsigned short ver_inst;
 	record >> ver_inst >> recType >> recLen;
 	recVer = GETBITS(ver_inst, 0, 3);
 	recInstance = GETBITS(ver_inst, 4, 15);
@@ -43,7 +43,7 @@ void OfficeArtRecordHeader::load(XLS::CFRecord& record)
 
 const size_t OfficeArtRecordHeader::size() const
 {
-	return sizeof(unsigned __int16) + sizeof(recType) + sizeof(recLen);
+	return sizeof(unsigned short) + sizeof(recType) + sizeof(recLen);
 }
 
 } // namespace XLS

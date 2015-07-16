@@ -15,7 +15,7 @@ class SummaryInformation
 public:
 	SummaryInformation(XLS::CFStreamPtr stream);
 	
-	const unsigned __int16 GetCodePage();
+	const unsigned short GetCodePage();
 
 private:
 	PropertySetStream property_set_stream;

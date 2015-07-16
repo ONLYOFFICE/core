@@ -11,7 +11,7 @@ class ChartNumNillable : public BiffAttribute
 {
 public:
 
-	ChartNumNillable(const unsigned __int16 nil_type);
+	ChartNumNillable(const unsigned short nil_type);
 
 	BiffStructurePtr clone();
 
@@ -20,7 +20,7 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	void setNilType(const unsigned __int16 type);
+	void setNilType(const unsigned short type);
 	const bool isNil();
 
 private:
@@ -32,12 +32,12 @@ private:
 			unsigned char Byte2;
 			unsigned char Byte3;
 			unsigned char Byte4;
-			unsigned __int16 type;
-			unsigned __int16 fExprO;
+			unsigned short type;
+			unsigned short fExprO;
 		};
 		double xnum;
 	} data;
-	unsigned __int16 nil_type_;
+	unsigned short nil_type_;
 };
 
 } // namespace XLS

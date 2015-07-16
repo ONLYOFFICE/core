@@ -29,7 +29,7 @@ void Row::writeFields(CFRecord& record)
 
 	record << rw << colMic << colMac << miyRw;
 	record.reserveNunBytes(4); // reserved / unused
-	unsigned __int16 flags = 0x0100;
+	unsigned short flags = 0x0100;
 	SETBITS(flags, 0, 2, iOutLevel);
 	SETBIT(flags, 4, fCollapsed);
 	SETBIT(flags, 5, fDyZero);
@@ -46,7 +46,7 @@ void Row::writeFields(CFRecord& record)
 
 	if(1 == in_block_position)
 	{
-		record.registerDelayedFilePointerAndOffsetSource(record.getDataSize() + sizeof(unsigned __int16)/*size_short*/ + sizeof(CFRecordType::TypeId), rt_Blank); // For CELL container. All Cell containers will listen for rt_Blank
+		record.registerDelayedFilePointerAndOffsetSource(record.getDataSize() + sizeof(unsigned short)/*size_short*/ + sizeof(CFRecordType::TypeId), rt_Blank); // For CELL container. All Cell containers will listen for rt_Blank
 	}
 }
 
@@ -55,7 +55,7 @@ void Row::readFields(CFRecord& record)
 {
 	record >> rw >> colMic >> colMac >> miyRw;
 	record.skipNunBytes(4); // reserved / unused
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	iOutLevel = GETBITS(flags, 0, 2);
 	fCollapsed = GETBIT(flags, 4);

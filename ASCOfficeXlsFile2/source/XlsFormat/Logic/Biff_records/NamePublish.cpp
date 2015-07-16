@@ -32,7 +32,7 @@ void NamePublish::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
 #pragma message("############################ frtHeader skipped here")
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags >> strName;
 	fPublished = GETBIT(flags, 0);
 	fWorkbookParam = GETBIT(flags, 0);

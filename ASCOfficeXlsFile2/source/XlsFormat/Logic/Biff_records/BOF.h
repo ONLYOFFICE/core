@@ -24,7 +24,7 @@ public:
 
 	static const ElementType	type = typeBOF;
 
-	unsigned __int16 getSubstreamType();
+	unsigned short getSubstreamType();
 
 	typedef enum
 	{

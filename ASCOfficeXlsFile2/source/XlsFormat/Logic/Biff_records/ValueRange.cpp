@@ -22,7 +22,7 @@ BaseObjectPtr ValueRange::clone()
 
 void ValueRange::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fAutoMin);
 	SETBIT(flags, 1, fAutoMax);
 	SETBIT(flags, 2, fAutoMajor);
@@ -37,7 +37,7 @@ void ValueRange::writeFields(CFRecord& record)
 
 void ValueRange::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> numMin >> numMax >> numMajor >> numMinor >> numCross >> flags;
 
 	fAutoMin = GETBIT(flags, 0);

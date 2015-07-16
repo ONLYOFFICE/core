@@ -31,7 +31,7 @@ void List12::readFields(CFRecord& record)
 	record >> lsd;
 	record >> idList;
 
-	unsigned __int16 _lsd = lsd;
+	unsigned short _lsd = lsd;
 
 	switch (lsd)
 	{

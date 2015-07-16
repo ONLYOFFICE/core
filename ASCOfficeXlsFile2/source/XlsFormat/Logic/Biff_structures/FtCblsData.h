@@ -19,8 +19,8 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 fChecked;
-	unsigned __int16 accel;
+	unsigned short fChecked;
+	unsigned short accel;
 	bool fNo3d;
 };
 

@@ -23,7 +23,7 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 cf;
+	unsigned short cf;
 };
 
 } // namespace XLS

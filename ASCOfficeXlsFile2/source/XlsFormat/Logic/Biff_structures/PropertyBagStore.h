@@ -22,8 +22,8 @@ public:
 
 private:
 	std::vector<FactoidType> factoidTypes;
-	unsigned __int16 cbHdr;
-	unsigned __int16 sVer;
+	unsigned short cbHdr;
+	unsigned short sVer;
 	std::vector<PBString> stringTable;
 };
 

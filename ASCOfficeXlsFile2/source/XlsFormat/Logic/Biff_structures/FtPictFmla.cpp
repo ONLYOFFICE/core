@@ -37,9 +37,9 @@ BiffStructurePtr FtPictFmla::clone()
 
 void FtPictFmla::store(CFRecord& record, FtPioGrbit& pictFlags)
 {
-	unsigned __int16 ft = 0x0009; // reserved
+	unsigned short ft = 0x0009; // reserved
 	record << ft;
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned __int16)/*cbFmla*/);
+	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cbFmla*/);
 	size_t start_ptr = record.getDataSize();
 
 	fmla.store(record);

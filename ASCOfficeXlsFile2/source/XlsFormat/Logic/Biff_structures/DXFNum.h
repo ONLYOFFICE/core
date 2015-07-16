@@ -24,9 +24,9 @@ public:
 	const bool getIsUserDefined() const; 
 
 private:
-	nullable<bool> is_user_defined_;
-	DXFNumIFmt fmt_id;
-	DXFNumUsr user_defined;
+	_CP_OPT(bool)	is_user_defined_;
+	DXFNumIFmt		fmt_id;
+	DXFNumUsr		user_defined;
 
 };
 

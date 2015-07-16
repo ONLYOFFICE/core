@@ -51,7 +51,7 @@ void SupBook::readFields(CFRecord& record)
 }
 
 
-const unsigned __int16 SupBook::getSupportingLinkType() const
+const unsigned short SupBook::getSupportingLinkType() const
 {
 	return cch;
 }

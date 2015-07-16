@@ -9,8 +9,8 @@ namespace OLEPS
 
 PropertySetStream::PropertySetStream(XLS::CFStreamPtr stream)
 {
-	unsigned __int16 ByteOrder;
-	unsigned __int16 Version;
+	unsigned short ByteOrder;
+	unsigned short Version;
 	unsigned int SystemIdentifier;
 	CLSID clsid;
 	unsigned int NumPropertySets;
@@ -31,7 +31,7 @@ PropertySetStream::PropertySetStream(XLS::CFStreamPtr stream)
 	}
 }
 
-const unsigned __int16 PropertySetStream::GetCodePage()
+const unsigned short PropertySetStream::GetCodePage()
 {
 	return 0 != property_sets.size() ? property_sets[0]->GetCodePage() : 0;
 }

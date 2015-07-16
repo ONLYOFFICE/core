@@ -21,10 +21,10 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 icf;
+	unsigned short icf;
 	unsigned char cp;
 	unsigned char icfTemplate;
-	unsigned __int16 ipriority;
+	unsigned short ipriority;
 
 	bool fActive;
 	bool fStopIfTrue;

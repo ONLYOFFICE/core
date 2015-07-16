@@ -4,7 +4,7 @@
 namespace XLS
 {;
 
-SST::SST(const unsigned __int16 code_page)
+SST::SST(const unsigned short code_page)
 :	code_page_(code_page)
 {
 }

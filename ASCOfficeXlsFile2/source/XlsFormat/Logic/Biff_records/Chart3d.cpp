@@ -22,21 +22,21 @@ BaseObjectPtr Chart3d::clone()
 
 void Chart3d::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fPerspective);
 	SETBIT(flags, 1, fCluster);
 	SETBIT(flags, 2, f3DScaling);
 	SETBIT(flags, 4, fNotPieChart);
 	SETBIT(flags, 5, fWalls2D);
-	unsigned __int16 pcHeight_raw = static_cast<unsigned __int16>(pcHeight);
+	unsigned short pcHeight_raw = static_cast<unsigned short>(pcHeight);
 	record << anRot << anElev << pcDist << pcHeight_raw << pcDepth << pcGap << flags;
 }
 
 
 void Chart3d::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
-	unsigned __int16 pcHeight_raw;
+	unsigned short flags;
+	unsigned short pcHeight_raw;
 	record >> anRot >> anElev >> pcDist >> pcHeight_raw >> pcDepth >> pcGap >> flags;
 	fPerspective = GETBIT(flags, 0);
 	fCluster = GETBIT(flags, 1);

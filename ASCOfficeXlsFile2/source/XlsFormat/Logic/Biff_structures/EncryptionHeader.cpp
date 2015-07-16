@@ -44,7 +44,7 @@ void EncryptionHeader::store(XLS::CFRecord& record)
 void EncryptionHeader::load(XLS::CFRecord& record)
 {
 	record.skipNunBytes(2); // reserved
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	record >> Flags;
 	record. skipNunBytes(4); // reserved (SizeExtra)

@@ -20,7 +20,7 @@ public:
 
 private:
 	unsigned int ib;
-	unsigned __int16 cbOffset;
+	unsigned short cbOffset;
 };
 
 typedef boost::shared_ptr<ISSTInf> ISSTInfPtr;

@@ -24,7 +24,7 @@ BaseObjectPtr Setup::clone()
 
 void Setup::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fLeftToRight);
 	SETBIT(flags, 1, fPortrait);
 	SETBIT(flags, 2, fNoPls);
@@ -43,7 +43,7 @@ void Setup::writeFields(CFRecord& record)
 
 void Setup::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> iPaperSize >> iScale >> iPageStart >> iFitWidth >> iFitHeight >> flags;
 	fLeftToRight = GETBIT(flags, 0);
 	fPortrait = GETBIT(flags, 1);

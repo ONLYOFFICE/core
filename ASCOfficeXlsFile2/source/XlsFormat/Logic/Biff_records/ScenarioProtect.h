@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeScenarioProtect;
 
 //-----------------------------
-	Boolean<unsigned __int16> fScenProtect;
+	Boolean<unsigned short> fScenProtect;
 public:
 	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_ATTRIB(fScenProtect)

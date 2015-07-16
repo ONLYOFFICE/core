@@ -2,7 +2,7 @@
 #include "OfficeArtBStoreContainerFileBlock.h"
 #include <Document/Document.h>
 
-#import "..\..\..\Redist\ASCOfficeUtils.dll" named_guids raw_interfaces_only rename_namespace("AVSOfficeUtilsLib")
+#include "../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 
 namespace ODRAW
 {;
@@ -44,17 +44,13 @@ void OfficeArtBStoreContainerFileBlock::readCompressedData(XLS::CFRecord& record
 	data_size = metafileHeader.cbSize;
 	pict_data = new char[data_size];
 
-	CoInitialize(NULL);
-	AVSOfficeUtilsLib::IOfficeUtilsPtr decompressor;
-	decompressor.CreateInstance(AVSOfficeUtilsLib::CLSID_COfficeUtils);
+	COfficeUtils decompressor(NULL);
 
-	HRESULT hr = decompressor->Uncompress((unsigned char*)pict_data, ((unsigned long*)&data_size), inBuff, metafileHeader.cbSave);
-	decompressor.Release();
+	HRESULT hr = decompressor.Uncompress((unsigned char*)pict_data, ((unsigned long*)&data_size), inBuff, metafileHeader.cbSave);
 	delete [] inBuff;
 
 	record.skipNunBytes(metafileHeader.cbSave);					
 
-	CoUninitialize();
 }
 
 void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
@@ -70,7 +66,7 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 		record >> rc_header;
 
 		record.skipNunBytes(18);
-		unsigned __int16 tag;
+		unsigned short tag;
 		record >> tag;
 		unsigned int size;
 		record >> size;

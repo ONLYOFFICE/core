@@ -22,7 +22,7 @@ BaseObjectPtr DataFormat::clone()
 
 void DataFormat::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fUnknown);
 	record << xi << yi << iss << flags;
 }
@@ -30,7 +30,7 @@ void DataFormat::writeFields(CFRecord& record)
 
 void DataFormat::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> xi >> yi >> iss >> flags;
 	fUnknown = GETBIT(flags, 0);
 }

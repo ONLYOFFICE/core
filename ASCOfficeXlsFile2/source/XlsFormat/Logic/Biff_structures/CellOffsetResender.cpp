@@ -33,7 +33,7 @@ BiffStructurePtr CellOffsetResender::clone()
 
 void CellOffsetResender::resend(CFStream& stream, const unsigned int data_place, const unsigned int data)
 {
-	unsigned int CELL_start_pos = data_place - sizeof(unsigned __int16)/*size_short*/ - sizeof(CFRecordType::TypeId);
+	unsigned int CELL_start_pos = data_place - sizeof(unsigned short)/*size_short*/ - sizeof(CFRecordType::TypeId);
 	CFStream::SourceItems source_items;
 	CFStream::SourceItem item;
 	item.is_file_ptr = false;

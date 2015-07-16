@@ -22,7 +22,7 @@ BiffStructurePtr ArrayParsedFormula::clone()
 
 void ArrayParsedFormula::load(CFRecord& record)
 {
-	unsigned __int16 cce;
+	unsigned short cce;
 	record >> cce;
 	rgce.load(record, cce);
 	rgcb.load(record, rgce.getPtgs(), is_part_of_a_revision_);
@@ -31,7 +31,7 @@ void ArrayParsedFormula::load(CFRecord& record)
 
 void ArrayParsedFormula::store(CFRecord& record)
 {
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned __int16)/*cce*/);
+	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/);
 	rgce.store(record);
 	record.registerDelayedDataSource(rgce.getCCE(), rt_Array);
 	rgcb.store(record);

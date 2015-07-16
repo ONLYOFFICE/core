@@ -104,7 +104,7 @@ void TableFeatureType::load(CFRecord& record)
 
 	record.skipNunBytes(2);		// unused1
 
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	
 	fAutoFilter = static_cast<unsigned char>(GETBIT(flags, 1));

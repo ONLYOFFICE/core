@@ -20,10 +20,10 @@ public:
 	virtual void store(CFRecord& record);
 
 	const size_t getSize() const;
-	const unsigned __int16 getRunsNumber() const;
+	const unsigned short getRunsNumber() const;
 
 private:
-	unsigned __int16 crun;
+	unsigned short crun;
 	LPWideString st;
 };
 

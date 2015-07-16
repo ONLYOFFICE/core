@@ -16,7 +16,7 @@ public:
 	SupBook();
 	~SupBook();
 
-	const unsigned __int16 getSupportingLinkType() const;
+	const unsigned short getSupportingLinkType() const;
 
 	BaseObjectPtr clone();
 

@@ -35,6 +35,8 @@ public:
 	
 	operator const std::wstring  () const;
 
+	std::wstring & value() {return str_;}
+
 	BiffString operator=(const std::wstring & str);
 	BiffStructurePtr clone();
 
@@ -63,9 +65,10 @@ public:
 	const bool getWideRecommendation() const;
 
 protected:
-	size_t struct_size;
 	std::wstring 	str_;
-	nullable<size_t> cch_;
+
+	size_t struct_size;
+	_CP_OPT(size_t) cch_;
 };
 
 
@@ -115,19 +118,19 @@ private:
 				is_wide = false;
 				break;
 		}
-		return struct_size_local + (cch_ << (is_wide ? 1 : 0));
+		return struct_size_local + (cch_.get_value_or(0) << (is_wide ? 1 : 0));
 	}
 private:
-	nullable<bool> is_wide_rec;
+	_CP_OPT(bool) is_wide_rec;
 };
 
 
-typedef XLUnicodeString_T<unsigned __int16, aw_READ_FROM_RECORD, cch_READ_FROM_RECORD> XLUnicodeString;
+typedef XLUnicodeString_T<unsigned short, aw_READ_FROM_RECORD, cch_READ_FROM_RECORD> XLUnicodeString;
 typedef XLUnicodeString_T<unsigned char, aw_READ_FROM_RECORD, cch_READ_FROM_RECORD> ShortXLUnicodeString;
-typedef XLUnicodeString_T<unsigned __int16, aw_WIDE, cch_READ_FROM_RECORD> LPWideString;
-typedef XLUnicodeString_T<unsigned __int16, aw_WIDE, cch_PASSED_AS_AN_ARGUMENT> LPWideStringNoCch;
-typedef XLUnicodeString_T<unsigned __int16, aw_READ_FROM_RECORD, cch_PASSED_AS_AN_ARGUMENT> XLUnicodeStringNoCch;
-typedef XLUnicodeString_T<unsigned __int16, aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO, cch_READ_FROM_RECORD> XLUnicodeStringMin2;
+typedef XLUnicodeString_T<unsigned short, aw_WIDE, cch_READ_FROM_RECORD> LPWideString;
+typedef XLUnicodeString_T<unsigned short, aw_WIDE, cch_PASSED_AS_AN_ARGUMENT> LPWideStringNoCch;
+typedef XLUnicodeString_T<unsigned short, aw_READ_FROM_RECORD, cch_PASSED_AS_AN_ARGUMENT> XLUnicodeStringNoCch;
+typedef XLUnicodeString_T<unsigned short, aw_READ_FROM_RECORD_IF_CCH_NOT_ZERO, cch_READ_FROM_RECORD> XLUnicodeStringMin2;
 
 typedef XLUnicodeString XLNameUnicodeString; // temporarily equal
 typedef XLUnicodeString VirtualPath; // temporarily equal
@@ -241,7 +244,7 @@ CFRecord& operator<<(CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_wh
 namespace OSHARED
 {;
 
-typedef XLS::XLUnicodeString_T<unsigned __int16, XLS::aw_READ_FROM_CCH, XLS::cch_READ_FROM_RECORD> PBString;
+typedef XLS::XLUnicodeString_T<unsigned short, XLS::aw_READ_FROM_CCH, XLS::cch_READ_FROM_RECORD> PBString;
 typedef XLS::XLUnicodeString_T<unsigned int, XLS::aw_WIDE, XLS::cch_READ_FROM_RECORD> HyperlinkString;
 
 } // namespace OSHARED

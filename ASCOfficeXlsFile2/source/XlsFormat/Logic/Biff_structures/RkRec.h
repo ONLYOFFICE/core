@@ -18,10 +18,10 @@ public:
 	//virtual const bool fromXML(BiffStructurePtr & parent);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
-	const unsigned __int16 get_ixfe() const;
+	const unsigned short get_ixfe() const;
 
 public:
-	unsigned __int16 ixfe;
+	unsigned short ixfe;
 	RkNumber RK_;
 };
 

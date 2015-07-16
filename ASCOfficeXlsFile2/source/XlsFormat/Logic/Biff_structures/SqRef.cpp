@@ -31,7 +31,7 @@ BiffStructurePtr SqRef::clone()
 
 void SqRef::store(CFRecord& record)
 {
-	unsigned __int16 cref = rgrefs.size();
+	unsigned short cref = rgrefs.size();
 	record << cref;
 	for(std::vector<Ref8U>::iterator it = rgrefs.begin(), itEnd = rgrefs.end(); it != itEnd; ++it)
 	{
@@ -42,7 +42,7 @@ void SqRef::store(CFRecord& record)
 
 void SqRef::load(CFRecord& record)
 {
-	unsigned __int16 cref;
+	unsigned short cref;
 	record >> cref;
 	for(int i = 0; i < cref; ++i)
 	{

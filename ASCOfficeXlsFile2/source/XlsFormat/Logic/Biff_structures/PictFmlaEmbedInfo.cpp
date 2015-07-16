@@ -29,7 +29,7 @@ void PictFmlaEmbedInfo::store(CFRecord& record)
 	unsigned char ttb = 0x03; // reserved
 	record << ttb;
 
-	unsigned __int16 cbClass = static_cast<unsigned char>(strClass.getSize());
+	unsigned short cbClass = static_cast<unsigned char>(strClass.getSize());
 	record << cbClass;
 	record.reserveNunBytes(1); // reserved
 

@@ -57,7 +57,7 @@ void NoteSh::store(CFRecord& record)
 
 void NoteSh::load(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> row >> col >> flags;
 	fShow = GETBIT(flags, 1);
 	fRwHidden = GETBIT(flags, 7);

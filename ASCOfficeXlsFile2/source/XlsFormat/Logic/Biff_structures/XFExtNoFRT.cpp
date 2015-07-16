@@ -50,9 +50,9 @@ void XFExtNoFRT::store(CFRecord& record)
 void XFExtNoFRT::load(CFRecord& record)
 {
 	record.skipNunBytes(6); // reserved
-	unsigned __int16 cexts;
+	unsigned short cexts;
 	record >> cexts;
-	for(unsigned __int16 i = 0; i < cexts; ++i)
+	for(unsigned short i = 0; i < cexts; ++i)
 	{
 		ExtProp prop;
 		record >> prop;

@@ -34,7 +34,7 @@ public:
 	@param pnSalt
 	Random salt data block read from or written to the file.
 	*/
-	void initKey(const unsigned __int16 pnPassData[ 16 ], const unsigned char pnSalt[ 16 ] );
+	void initKey(const unsigned short pnPassData[ 16 ], const unsigned char pnSalt[ 16 ] );
 
 	/** Verifies the validity of the password using the passed salt data.
 

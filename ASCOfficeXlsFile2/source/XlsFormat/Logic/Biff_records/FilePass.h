@@ -27,7 +27,7 @@ public:
 	static const ElementType	type = typeFilePass;
 
 //-----------------------------
-	Boolean<unsigned __int16> wEncryptionType;
+	Boolean<unsigned short> wEncryptionType;
 	XORObfuscation key;
 	BIFF_WORD majorVer;
 	CRYPTO::RC4EncryptionHeader rc4Header;

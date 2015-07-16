@@ -24,8 +24,8 @@ public:
 	static const ElementType	type = typeFileSharing;
 
 //-----------------------------
-	Boolean<unsigned __int16> fReadOnlyRec;
-	unsigned __int16 wResPassNum;
+	Boolean<unsigned short> fReadOnlyRec;
+	unsigned short wResPassNum;
 	BIFF_BSTR wResPass;
 	BIFF_WORD iNoResPass;
 	XLUnicodeString stUNUsername;

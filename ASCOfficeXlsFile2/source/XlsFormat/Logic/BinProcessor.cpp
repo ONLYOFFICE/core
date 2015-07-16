@@ -171,7 +171,7 @@ const bool BinReaderProcessor::checkNextRecord(const CFRecordType::TypeId desira
 
 // Assume that the next record is BOF (if not - return false) and get the type without extracting is from cache
 // In the case of stream end returns false
-const bool BinReaderProcessor::getNextSubstreamType(unsigned __int16& type)
+const bool BinReaderProcessor::getNextSubstreamType(unsigned short& type)
 {
 	CFRecordPtr record = reader_.touchTheNextRecord();
 	if(!record)
@@ -183,7 +183,7 @@ const bool BinReaderProcessor::getNextSubstreamType(unsigned __int16& type)
 		//throw XLS::RequestedRecordNotFound(rt_BOF, record->getTypeId());
 		return false;
 	}
-	unsigned __int16 vers;
+	unsigned short vers;
 	*record >> vers >> type;
 	record->resetPointerToBegin();
 	return true;

@@ -24,7 +24,7 @@ public:
 	static const ElementType	type = typeExternSheet;
 
 //-----------------------------
-	ForwardOnlyParam<unsigned __int16> cXTI;
+	ForwardOnlyParam<unsigned short> cXTI;
 	BiffStructurePtrVector rgXTI;
 public:
 	//BO_ATTRIB_MARKUP_BEGIN

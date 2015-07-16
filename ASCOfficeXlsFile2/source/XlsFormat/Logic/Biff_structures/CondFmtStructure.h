@@ -22,9 +22,9 @@ public:
 	const CellRef getLocation() const;
 
 private:
-	unsigned __int16 ccf;
+	unsigned short ccf;
 	bool fToughRecalc;
-	unsigned __int16 nID;
+	unsigned short nID;
 	Ref8U refBound;
 	SqRefU sqref;
 };

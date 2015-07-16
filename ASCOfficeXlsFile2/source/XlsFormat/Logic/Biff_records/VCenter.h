@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeVCenter;
 
 //-----------------------------
-	Boolean<unsigned __int16> vcenter;
+	Boolean<unsigned short> vcenter;
 
 };
 

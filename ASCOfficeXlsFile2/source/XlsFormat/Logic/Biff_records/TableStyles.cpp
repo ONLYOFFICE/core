@@ -32,8 +32,8 @@ void TableStyles::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
 #pragma message("############################ frtHeader skipped here")
-	unsigned __int16 cchDefTableStyle;
-	unsigned __int16 cchDefPivotStyle;
+	unsigned short cchDefTableStyle;
+	unsigned short cchDefPivotStyle;
 	record >> cts >> cchDefTableStyle >> cchDefPivotStyle;
 	rgchDefTableStyle.setSize(cchDefTableStyle);
 	rgchDefPivotStyle.setSize(cchDefPivotStyle);

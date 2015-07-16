@@ -22,12 +22,12 @@ public:
 
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
 
-	static const unsigned __int16 fixed_id = 0x19;
+	static const unsigned short fixed_id = 0x19;
 private:
 	void fromString(const std::wstring& word, BiffStructurePtr & parent);
 
 private:
-	unsigned __int16 ixti;
+	unsigned short ixti;
 	unsigned int nameindex;
 	GlobalWorkbookInfoPtr global_info;
 };

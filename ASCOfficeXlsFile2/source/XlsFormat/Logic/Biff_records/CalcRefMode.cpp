@@ -23,7 +23,7 @@ BaseObjectPtr CalcRefMode::clone()
 
 void CalcRefMode::writeFields(CFRecord& record)
 {
-	Boolean<unsigned __int16> fRef;
+	Boolean<unsigned short> fRef;
 	if(fRefA1 == std::wstring (L"A1"))
 	{
 		fRef = true;
@@ -42,7 +42,7 @@ void CalcRefMode::writeFields(CFRecord& record)
 
 void CalcRefMode::readFields(CFRecord& record)
 {
-	Boolean<unsigned __int16> fRef;
+	Boolean<unsigned short> fRef;
 	record >> fRef;
 	if(fRef)
 	{

@@ -32,11 +32,11 @@ void TableStyle::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
 #pragma message("############################ frtHeader skipped here")
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fIsPivot = GETBIT(flags, 1);
 	fIsTable = GETBIT(flags, 2);
-	unsigned __int16 cchName;
+	unsigned short cchName;
 	record >> ctse >> cchName;
 	rgchName.setSize(cchName);
 	record >> rgchName;

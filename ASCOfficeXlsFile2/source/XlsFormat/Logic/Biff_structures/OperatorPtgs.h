@@ -8,7 +8,7 @@ namespace XLS
 class OperatorPtg : public Ptg
 {
 public:
-	OperatorPtg(const unsigned __int16 ptg_id_init) : Ptg(ptg_id_init) {};
+	OperatorPtg(const unsigned short ptg_id_init) : Ptg(ptg_id_init) {};
 	virtual const std::wstring& getOperatorSymbols() const = 0;
 	virtual const int getOperatorPriority() const = 0;
 	virtual const bool isPercent() const {return false;};
@@ -18,7 +18,7 @@ public:
 typedef boost::shared_ptr<OperatorPtg> OperatorPtgPtr;
 
 
-template<class T, unsigned __int16 fixedPtgId, int priority>
+template<class T, unsigned short fixedPtgId, int priority>
 class BOperatorPtg_T: public OperatorPtg
 {
 public:
@@ -29,13 +29,13 @@ public:
 		ptg_stack.pop();
 		ptg_stack.top() += getOperatorSymbols() + operand2;
 	};
-	virtual const unsigned __int16 getPtgId() const {return fixedPtgId;};
+	virtual const unsigned short getPtgId() const {return fixedPtgId;};
 	virtual const std::wstring& getOperatorSymbols() const {return T::getSymbols();};
 	virtual const int getOperatorPriority() const {return priority;};
 };
 
 
-template<class T, unsigned __int16 fixedType, int priority>
+template<class T, unsigned short fixedType, int priority>
 class UOperatorPtg_T: public OperatorPtg
 {
 public:
@@ -44,7 +44,7 @@ public:
 	{
 		ptg_stack.top() = T::getSymbols() + ptg_stack.top();
 	};
-	virtual const unsigned __int16 getPtgId() const {return fixedType;};
+	virtual const unsigned short getPtgId() const {return fixedType;};
 	virtual const std::wstring& getOperatorSymbols() const {return T::getSymbols();};
 	virtual const int getOperatorPriority() const {return priority;};
 };

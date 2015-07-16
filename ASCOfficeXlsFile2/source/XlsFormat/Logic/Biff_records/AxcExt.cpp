@@ -22,7 +22,7 @@ BaseObjectPtr AxcExt::clone()
 
 void AxcExt::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fAutoMin);
 	SETBIT(flags, 1, fAutoMax);
 	SETBIT(flags, 2, fAutoMajor);
@@ -38,7 +38,7 @@ void AxcExt::writeFields(CFRecord& record)
 
 void AxcExt::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> catMin >> catMax >> catMajor >> duMajor >> catMinor >> duMinor >> duBase >> catCrossDate >> flags;
 
 	fAutoMin = GETBIT(flags, 0);

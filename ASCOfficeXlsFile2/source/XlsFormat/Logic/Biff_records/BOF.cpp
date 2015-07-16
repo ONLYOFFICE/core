@@ -76,7 +76,7 @@ void BOF::readFields(CFRecord& record)
 	record.skipNunBytes(2); // reserved
 }
 
-unsigned __int16 BOF::getSubstreamType()
+unsigned short BOF::getSubstreamType()
 {
 	return dt;
 }

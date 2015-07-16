@@ -16,10 +16,10 @@ public:
 
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
+	
+	int serialize(std::wostream & stream);
 
 private:
 	unsigned char alc;

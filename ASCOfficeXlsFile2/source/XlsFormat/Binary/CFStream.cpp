@@ -84,7 +84,7 @@ const bool CFStream::isEOF() const
 
 
 // Stream pointer
-const unsigned __int64 CFStream::getStreamPointer() const
+const unsigned long CFStream::getStreamPointer() const
 {
 	LARGE_INTEGER null_ptr;
 	null_ptr.QuadPart = 0;
@@ -102,7 +102,7 @@ void CFStream::seekFromCurForward(const size_t offset)
 }
 
 
-void CFStream::seekFromBegin(const unsigned __int64 offset)
+void CFStream::seekFromBegin(const unsigned long offset)
 {
 	LARGE_INTEGER seek_ptr;
 	seek_ptr.QuadPart = offset;
@@ -119,7 +119,7 @@ void CFStream::seekToEnd()
 
 
 // Stream current size
-const unsigned __int64 CFStream::getStreamSize() const
+const unsigned long CFStream::getStreamSize() const
 {
 	STATSTG info;
 	stream_->Stat(&info, STATFLAG_DEFAULT);
@@ -166,7 +166,7 @@ void CFStream::writeAndApplyDelayedItems(void* buf, const size_t size, const Rec
 // Then all items will be appended to the common queue
 void CFStream::appendDelayedItems(const ReceiverItems& receiver_items_from_record, const SourceItems& source_items_from_record)
 {
-	const unsigned int record_start_pointer = static_cast<unsigned int>(getStreamPointer()) - sizeof(unsigned __int16)/*size_short*/ - sizeof(CFRecordType::TypeId);
+	const unsigned int record_start_pointer = static_cast<unsigned int>(getStreamPointer()) - sizeof(unsigned short)/*size_short*/ - sizeof(CFRecordType::TypeId);
 
 	for(ReceiverItems::const_iterator it = receiver_items_from_record.begin(), itEnd = receiver_items_from_record.end(); it != itEnd; ++it)
 	{

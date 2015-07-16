@@ -20,7 +20,7 @@ public:
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
 
 private:
-	unsigned __int16 cce;
+	unsigned short cce;
 };
 
 } // namespace XLS

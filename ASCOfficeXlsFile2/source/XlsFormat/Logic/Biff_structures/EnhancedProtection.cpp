@@ -63,7 +63,7 @@ void EnhancedProtection::store(CFRecord& record)
 
 void EnhancedProtection::load(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 
 	iprotObjects = GETBIT(flags, 0);

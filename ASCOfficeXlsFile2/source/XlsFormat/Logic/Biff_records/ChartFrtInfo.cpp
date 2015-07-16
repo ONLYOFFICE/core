@@ -33,7 +33,7 @@ void ChartFrtInfo::readFields(CFRecord& record)
 {
 	FrtHeaderOld frtHeaderOld;
 	record >> frtHeaderOld >> verOriginator >> verWriter;
-	unsigned __int16 cCFRTID;
+	unsigned short cCFRTID;
 	record >> cCFRTID;
 
 #pragma message("####################### ChartFrtInfo record is not implemented")

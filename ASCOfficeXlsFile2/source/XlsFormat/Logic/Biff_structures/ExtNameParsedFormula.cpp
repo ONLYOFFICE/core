@@ -34,7 +34,7 @@ void ExtNameParsedFormula::store(CFRecord& record)
 
 void ExtNameParsedFormula::load(CFRecord& record) // Maybe this class shouldn't be a ParsedFormulas's derived?
 {
-	unsigned __int16 cb;
+	unsigned short cb;
 	record >> cb;
 	if(cb)
 	{

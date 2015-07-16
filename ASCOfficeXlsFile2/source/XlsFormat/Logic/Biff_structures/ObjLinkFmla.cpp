@@ -29,9 +29,9 @@ BiffStructurePtr ObjLinkFmla::clone()
 //}
 //
 
-void ObjLinkFmla::store(CFRecord& record, const unsigned __int16 ot)
+void ObjLinkFmla::store(CFRecord& record, const unsigned short ot)
 {
-	unsigned __int16 ft = ot == 0x0B || ot == 0x0C ? 0x0014 : 0x000E; // reserved
+	unsigned short ft = ot == 0x0B || ot == 0x0C ? 0x0014 : 0x000E; // reserved
 	record << ft;
 
 	fmla.store(record);

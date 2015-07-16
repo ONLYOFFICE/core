@@ -20,7 +20,7 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 accel;
+	unsigned short accel;
 	bool fNo3d;
 };
 

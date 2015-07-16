@@ -22,7 +22,7 @@ BaseObjectPtr Dat::clone()
 
 void Dat::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fHasBordHorz);
 	SETBIT(flags, 1, fHasBordVert);
 	SETBIT(flags, 2, fHasBordOutline);
@@ -33,7 +33,7 @@ void Dat::writeFields(CFRecord& record)
 
 void Dat::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fHasBordHorz = GETBIT(flags, 0);
 	fHasBordVert = GETBIT(flags, 1);

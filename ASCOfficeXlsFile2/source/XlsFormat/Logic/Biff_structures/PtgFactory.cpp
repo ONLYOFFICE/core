@@ -60,10 +60,10 @@ namespace XLS
 PtgPtr PtgFactory::loadPtg(CFRecord& record, const CellRef& cell_base_ref)
 {
 	unsigned char rec_type = *record.getCurData<unsigned char>();
-	unsigned __int16 full_type = rec_type;
+	unsigned short full_type = rec_type;
 	if(0x18 == rec_type || 0x19 == rec_type)
 	{
-		full_type = *record.getCurData<unsigned __int16>();
+		full_type = *record.getCurData<unsigned short>();
 	}
 
 	PtgPtr ptg = createPtg(full_type, cell_base_ref);
@@ -77,7 +77,7 @@ PtgPtr PtgFactory::loadPtg(CFRecord& record, const CellRef& cell_base_ref)
 
 
 // static
-PtgPtr PtgFactory::createPtg(const unsigned __int16 type, const CellRef& cell_base_ref)
+PtgPtr PtgFactory::createPtg(const unsigned short type, const CellRef& cell_base_ref)
 {
 	switch(type)
 	{

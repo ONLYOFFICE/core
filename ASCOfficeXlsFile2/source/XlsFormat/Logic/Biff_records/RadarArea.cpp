@@ -22,7 +22,7 @@ BaseObjectPtr RadarArea::clone()
 
 void RadarArea::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fRdrAxLab);
 	SETBIT(flags, 1, fHasShadow);
 	record << flags;
@@ -32,7 +32,7 @@ void RadarArea::writeFields(CFRecord& record)
 
 void RadarArea::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 	fRdrAxLab = GETBIT(flags, 0);
 	fHasShadow = GETBIT(flags, 1);

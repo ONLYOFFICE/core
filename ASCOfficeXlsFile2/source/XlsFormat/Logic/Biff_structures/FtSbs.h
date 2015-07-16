@@ -20,8 +20,8 @@ public:
 	virtual void store(CFRecord& record);
 
 public:
-	unsigned __int16 ft;
-	unsigned __int16 cb;
+	unsigned short ft;
+	unsigned short cb;
 
 private:
 	short iVal;
@@ -29,7 +29,7 @@ private:
 	short iMax;
 	short dInc;
 	short dPage;
-	Boolean<unsigned __int16> fHoriz;
+	Boolean<unsigned short> fHoriz;
 	short dxScroll;
 
 	bool fDraw;

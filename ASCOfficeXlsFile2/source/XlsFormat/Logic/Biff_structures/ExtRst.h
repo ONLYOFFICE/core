@@ -24,7 +24,7 @@ public:
 	const size_t getSize() const;
 
 private:
-	unsigned __int16 cb;
+	unsigned short cb;
 	Phs phs;
 	RPHSSub rphssub;
 	std::vector<PhRuns> rgphruns;

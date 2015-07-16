@@ -39,7 +39,7 @@ void PtgExtraMem::store(CFRecord& record)
 
 void PtgExtraMem::load(CFRecord& record)
 {
-	unsigned __int16 count;
+	unsigned short count;
 	record >> count;
 	for(int i = 0; i < count; ++i)
 	{

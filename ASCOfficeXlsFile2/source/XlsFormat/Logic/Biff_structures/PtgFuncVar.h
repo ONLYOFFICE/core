@@ -12,7 +12,7 @@ class CFRecord;
 class PtgFuncVar : public Ptg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgFuncVar)
-	PtgFuncVar(const unsigned __int16 func_index, const unsigned char data_type);
+	PtgFuncVar(const unsigned short func_index, const unsigned char data_type);
 public:
 	PtgFuncVar();
 	BiffStructurePtr clone();
@@ -27,7 +27,7 @@ public:
 
 	void setParamsNum(const unsigned char num);
 
-	static const unsigned __int16 fixed_id = 0x02;
+	static const unsigned short fixed_id = 0x02;
 private:
 	unsigned char cparams;
 	Ftab_Cetab tab;

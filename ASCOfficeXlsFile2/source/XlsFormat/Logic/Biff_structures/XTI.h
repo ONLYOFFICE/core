@@ -19,7 +19,7 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 iSupBook;
+	unsigned short iSupBook;
 	short itabFirst;
 	short itabLast;
 };

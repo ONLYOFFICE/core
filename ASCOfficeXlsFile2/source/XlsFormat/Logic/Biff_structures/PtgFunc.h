@@ -11,7 +11,7 @@ class CFRecord;
 class PtgFunc : public Ptg
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PtgFunc)
-	PtgFunc(const unsigned __int16 func_index, const unsigned char data_type);
+	PtgFunc(const unsigned short func_index, const unsigned char data_type);
 public:
 	PtgFunc();
 	BiffStructurePtr clone();
@@ -26,7 +26,7 @@ public:
 
 	const long getParametersNum() const;
 	
-	static const unsigned __int16 fixed_id = 0x01;
+	static const unsigned short fixed_id = 0x01;
 private:
 	Ftab_Cetab iftab;
 };

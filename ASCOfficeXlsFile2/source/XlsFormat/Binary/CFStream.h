@@ -30,14 +30,14 @@ public:
 	void read(void* buf, const size_t size); // Read 'size' unsigned chars from the stream
 	void write(const void* buf, const size_t size); // Write 'size' unsigned chars to the stream
 	void seekFromCurForward(const size_t offset);
-	void seekFromBegin(const unsigned __int64 offset);
+	void seekFromBegin(const unsigned long offset);
 	void seekToEnd();
 	// If the current pointer is exactly at the end of the stream.
 	const bool isEOF() const;
 	// Stream pointer
-	const unsigned __int64 getStreamPointer() const;
+	const unsigned long getStreamPointer() const;
 	// Stream current size
-	const unsigned __int64 getStreamSize() const;
+	const unsigned long getStreamSize() const;
 
 	typedef void (*DELAYED_DATA_SAVER)(CFStream& stream, const unsigned int data_place, const unsigned int data);
 	typedef struct  

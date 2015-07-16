@@ -22,7 +22,7 @@ BaseObjectPtr Tick::clone()
 
 void Tick::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fAutoCo);
 	SETBIT(flags, 1, fAutoMode);
 	SETBITS(flags, 2, 4, rot);
@@ -37,7 +37,7 @@ void Tick::writeFields(CFRecord& record)
 
 void Tick::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> tktMajor >> tktMinor >> tlt >> wBkgMode >> rgb;
 	record.skipNunBytes(16); // reserved
 	record >> flags >> icv >> trot;

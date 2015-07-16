@@ -20,8 +20,8 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 idRadNext;
-	Boolean<unsigned __int16> fFirstBtn;
+	unsigned short idRadNext;
+	Boolean<unsigned short> fFirstBtn;
 };
 
 } // namespace XLS

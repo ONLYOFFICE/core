@@ -35,7 +35,7 @@ void TxOLastRun::store(CFRecord& record)
 void TxOLastRun::load(CFRecord& record)
 {
 	record >> cchText;
-	unsigned __int16 _cchText = cchText;
+	unsigned short _cchText = cchText;
 	record.skipNunBytes(6);	// unused1 + unused2
 }
 

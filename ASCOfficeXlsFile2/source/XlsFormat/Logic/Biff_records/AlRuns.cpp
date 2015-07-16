@@ -22,7 +22,7 @@ BaseObjectPtr AlRuns::clone()
 
 void AlRuns::writeFields(CFRecord& record)
 {
-	unsigned __int16 cRuns = rgRuns.size();
+	unsigned short cRuns = rgRuns.size();
 	record << cRuns;
 	for(BiffStructurePtrVector::iterator it = rgRuns.begin(), itEnd = rgRuns.end(); it != itEnd; ++it)
 	{
@@ -33,7 +33,7 @@ void AlRuns::writeFields(CFRecord& record)
 
 void AlRuns::readFields(CFRecord& record)
 {
-	unsigned __int16 cRuns;
+	unsigned short cRuns;
 	record >> cRuns;
 	for(int i = 0; i < cRuns; ++i)
 	{

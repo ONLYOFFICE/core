@@ -27,24 +27,24 @@ BiffStructurePtr RPHSSub::clone()
 
 void RPHSSub::store(CFRecord& record)
 {
-	unsigned __int16 cch = st.getSize();
+	unsigned short cch = st.getSize();
 	record << crun << cch << st;
 }
 
 
 void RPHSSub::load(CFRecord& record)
 {
-	unsigned __int16 cch;
+	unsigned short cch;
 	record >> crun >> cch >> st;
 }
 
 
 const size_t RPHSSub::getSize() const
 {
-	return sizeof(unsigned __int16)/*crun*/ + sizeof(unsigned __int16)/*cch*/ + st.getStructSizeWouldWritten();
+	return sizeof(unsigned short)/*crun*/ + sizeof(unsigned short)/*cch*/ + st.getStructSizeWouldWritten();
 }
 
-const unsigned __int16 RPHSSub::getRunsNumber() const
+const unsigned short RPHSSub::getRunsNumber() const
 {
 	return crun;
 }

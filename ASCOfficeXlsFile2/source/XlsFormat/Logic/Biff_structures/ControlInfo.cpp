@@ -30,7 +30,7 @@ void ControlInfo::store(CFRecord& record)
 
 void ControlInfo::load(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags;
 
 	fDefault = GETBIT(flags, 0);

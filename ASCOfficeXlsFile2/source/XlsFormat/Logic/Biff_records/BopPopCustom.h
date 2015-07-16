@@ -17,7 +17,7 @@ public:
 	virtual void store(CFRecord& record){}
 
 //-----------------------------
-	std::vector<unsigned __int16> pie_indices;
+	std::vector<unsigned short> pie_indices;
 };
 
 

@@ -79,7 +79,7 @@ void Rgce::store(CFRecord& record)
 
 void Rgce::load(CFRecord& record)
 {
-	size_t where_to_stop = record.getRdPtr() + cce;
+	size_t where_to_stop = record.getRdPtr() + cce.get_value_or(0);
 	while(record.getRdPtr() < where_to_stop)
 	{
 		sequence.push_back(PtgFactory::loadPtg(record, cell_base_ref));
@@ -89,7 +89,7 @@ void Rgce::load(CFRecord& record)
 
 const size_t Rgce::getCCE() const
 {
-	return cce;
+	return cce.get_value_or(0);
 }
 
 

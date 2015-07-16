@@ -23,7 +23,7 @@ public:
 	static const ElementType	type = typeProtect;
 
 //-----------------------------
-	Boolean<unsigned __int16> fLock;
+	Boolean<unsigned short> fLock;
 public:
 	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_ATTRIB(fLock)

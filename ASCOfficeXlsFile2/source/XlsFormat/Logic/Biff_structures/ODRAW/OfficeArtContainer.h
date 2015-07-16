@@ -15,7 +15,7 @@ class OfficeArtContainer : public OfficeArtRecord
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtContainer)
 public:
-	OfficeArtContainer(const unsigned char recVer, const unsigned __int16 recType, const OfficeArtClientAnchorType anchor_type);
+	OfficeArtContainer(const unsigned char recVer, const unsigned short recType, const OfficeArtClientAnchorType anchor_type);
 
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
 	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);

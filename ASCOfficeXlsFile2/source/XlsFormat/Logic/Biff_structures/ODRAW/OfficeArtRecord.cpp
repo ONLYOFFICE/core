@@ -6,7 +6,7 @@ namespace ODRAW
 {;
 
 
-OfficeArtRecord::OfficeArtRecord(const unsigned char recVer, const unsigned __int16 recType)
+OfficeArtRecord::OfficeArtRecord(const unsigned char recVer, const unsigned short recType)
 {
 	rh_own.recVer = recVer;
 	rh_own.recType = recType;
@@ -36,7 +36,7 @@ bool OfficeArtRecord::IsThisHeaderMine(const OfficeArtRecordHeader& rh_check)
 }
 
 // Default implementation suitable for most classes
-const unsigned __int16 OfficeArtRecord::GetInstanceToStore()
+const unsigned short OfficeArtRecord::GetInstanceToStore()
 {
 	return 0;
 }

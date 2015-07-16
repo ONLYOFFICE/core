@@ -29,8 +29,8 @@ BiffStructurePtr FtNts::clone()
 
 void FtNts::store(CFRecord& record)
 {
-	unsigned __int16 ft = 0x0D; // reserved
-	unsigned __int16 cb = 0x16; // reserved
+	unsigned short ft = 0x0D; // reserved
+	unsigned short cb = 0x16; // reserved
 	record << ft << cb;
 
 	GUID guid_num;

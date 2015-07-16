@@ -31,14 +31,14 @@ void LRng::writeFields(CFRecord& record)
 void LRng::readFields(CFRecord& record)
 {
 	record >> crefRw;
-	for(unsigned __int16 i = 0; i < crefRw; ++i)
+	for(unsigned short i = 0; i < crefRw; ++i)
 	{
 		Ref8U cell_ref;
 		record >> cell_ref;
 		refRow.push_back(CellRangeRefPtr(new Ref8U(cell_ref)));
 	}
 	record >> crefCol;
-	for(unsigned __int16 i = 0; i < crefCol; ++i)
+	for(unsigned short i = 0; i < crefCol; ++i)
 	{
 		Ref8U cell_ref;
 		record >> cell_ref;

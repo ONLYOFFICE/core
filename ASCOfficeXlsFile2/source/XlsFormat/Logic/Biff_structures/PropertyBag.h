@@ -20,7 +20,7 @@ public:
 	virtual void store(XLS::CFRecord& record);
 
 private:
-	unsigned __int16 id;
+	unsigned short id;
 	std::vector<Property> properties;
 };
 

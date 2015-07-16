@@ -67,13 +67,13 @@ xlsx_xml_worksheet & xlsx_conversion_context::current_sheet()
         throw std::runtime_error("internal error");
     }
 }
-bool xlsx_conversion_context::start_table(const std::wstring & tableName, const std::wstring & tableStyleName)
+bool xlsx_conversion_context::start_table(const std::wstring & name)
 {
     //if (get_table_context().depth() > 0)
     //    return false;
 
-    sheets_.push_back(xlsx_xml_worksheet::create(tableName));
-    get_table_context().start_table(tableName, tableStyleName);
+    sheets_.push_back(xlsx_xml_worksheet::create(name));
+    get_table_context().start_table(name);
 
 	//current_sheet().cols() << L"<cols>";
     return true;
@@ -234,11 +234,6 @@ void xlsx_conversion_context::end_document()
         output_document_->get_xl_files().set_sharedStrings( package::simple_element::create(L"sharedStrings.xml", strm.str()) );
     }
 
-    {
-        std::wstringstream strm;
-        xlsx_style_.xlsx_serialize(strm);
-        output_document_->get_xl_files().set_styles( package::simple_element::create(L"styles.xml", strm.str()) );
-    }
 
     {
         std::wstringstream strm_workbook;

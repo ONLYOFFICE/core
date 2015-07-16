@@ -20,7 +20,7 @@ BiffStructurePtr CFVOParsedFormula::clone()
 
 void CFVOParsedFormula::store(CFRecord& record)
 {
-	record.registerDelayedDataReceiver(NULL, sizeof(unsigned __int16)/*cce*/, rt_STRUCT_CFVOParsedFormula);
+	record.registerDelayedDataReceiver(NULL, sizeof(unsigned short)/*cce*/, rt_STRUCT_CFVOParsedFormula);
 	rgce.store(record);
 	record.registerDelayedDataSource(rgce.getCCE(), rt_STRUCT_CFVOParsedFormula);
 }
@@ -28,7 +28,7 @@ void CFVOParsedFormula::store(CFRecord& record)
 
 void CFVOParsedFormula::load(CFRecord& record)
 {
-	unsigned __int16 cce;
+	unsigned short cce;
 	record >> cce;
 	rgce.load(record, cce);
 }

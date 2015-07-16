@@ -5,7 +5,7 @@
 namespace ODRAW
 {;
 
-OfficeArtBlip::OfficeArtBlip(const unsigned __int16 recType)
+OfficeArtBlip::OfficeArtBlip(const unsigned short recType)
 :	OfficeArtRecord(0, recType)
 {
 }

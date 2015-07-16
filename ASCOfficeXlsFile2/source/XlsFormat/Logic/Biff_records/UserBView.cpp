@@ -33,7 +33,7 @@ void UserBView::writeFields(CFRecord& record)
 	}
 	record << guid_num << x << y << dx << dy << wTabRatio;
 
-	unsigned __int16 flags1 = 0;
+	unsigned short flags1 = 0;
 	SETBIT(flags1, 0, fDspFmlaBar);
 	SETBIT(flags1, 1, fDspStatus);
 	unsigned char mdNoteDisp_num;
@@ -87,7 +87,7 @@ void UserBView::writeFields(CFRecord& record)
 	record << flags1;
 
 	record.reserveNunBytes(2); // unused2
-	unsigned __int16 flags2 = 0;
+	unsigned short flags2 = 0;
 	SETBIT(flags2, 0, fPersonalView);
 	SETBIT(flags2, 1, fIconic);
 	record << flags2;
@@ -114,7 +114,7 @@ void UserBView::readFields(CFRecord& record)
 	record >> guid_num >> x >> y >> dx >> dy >> wTabRatio;
 	guid = STR::guid2bstr(guid_num);
 
-	unsigned __int16 flags1;
+	unsigned short flags1;
 	record >> flags1;
 	fDspFmlaBar = GETBIT(flags1, 0);
 	fDspStatus = GETBIT(flags1, 1);
@@ -160,7 +160,7 @@ void UserBView::readFields(CFRecord& record)
 	fOnlySync = GETBIT(flags1, 15);
 
 	record.skipNunBytes(2); // unused2
-	unsigned __int16 flags2;
+	unsigned short flags2;
 	record >> flags2;
 	fPersonalView = GETBIT(flags2, 0);
 	fIconic = GETBIT(flags2, 1);

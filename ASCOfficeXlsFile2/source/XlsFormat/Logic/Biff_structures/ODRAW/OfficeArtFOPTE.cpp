@@ -35,7 +35,7 @@ void OfficeArtFOPTE::store(XLS::CFRecord& record)
 
 void OfficeArtFOPTE::load(XLS::CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> flags >> op;
 	opid = GETBITS(flags, 0, 13);
 	fBid = GETBIT(flags, 14);
@@ -46,8 +46,8 @@ void OfficeArtFOPTE::load(XLS::CFRecord& record)
 
 OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 {
-	const unsigned __int16* op = record.getCurData<unsigned __int16>();
-	unsigned __int16 opid = GETBITS(*op, 0, 13);
+	const unsigned short* op = record.getCurData<unsigned short>();
+	unsigned short opid = GETBITS(*op, 0, 13);
 
 	OfficeArtFOPTEPtr fopte;
 	switch(opid)

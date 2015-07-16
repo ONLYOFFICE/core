@@ -60,8 +60,8 @@ public:
 	BIFF_BSTR ref8TopLeft;
 	BIFF_DOUBLE operNumX;
 	BIFF_DOUBLE operNumY;
-	ForwardOnlyParam<unsigned __int16> colRPane;
-	ForwardOnlyParam<unsigned __int16> rwBPane;
+	ForwardOnlyParam<unsigned short> colRPane;
+	ForwardOnlyParam<unsigned short> rwBPane;
 
 	BIFF_BSTR pane_top_left_cell;
 

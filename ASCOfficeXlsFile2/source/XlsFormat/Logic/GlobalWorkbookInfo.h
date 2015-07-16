@@ -1,5 +1,8 @@
 #pragma once
 
+#include <map>
+#include <vector>
+
 #include "../Crypt/Decryptor.h"
 #include "Biff_structures/BorderFillInfo.h"
 
@@ -10,13 +13,13 @@ namespace XLS
 class GlobalWorkbookInfo
 {
 public:
-	GlobalWorkbookInfo(const unsigned __int16 code_page);
+	GlobalWorkbookInfo(const unsigned short code_page);
 
 	const size_t RegisterBorderId(const BorderInfo& border);
 	const size_t RegisterFillId(const FillInfo& fill);
 	const unsigned int GenerateAXESId();
 
-	unsigned __int16 CodePage;
+	unsigned short CodePage;
 	CRYPT::DecryptorPtr decryptor;
 	std::vector<std::wstring> sheets_names;
 	std::vector<std::wstring> xti_parsed;

@@ -22,7 +22,7 @@ BaseObjectPtr CatSerRange::clone()
 
 void CatSerRange::writeFields(CFRecord& record)
 {
-	unsigned __int16 flags = 0;
+	unsigned short flags = 0;
 	SETBIT(flags, 0, fBetween);
 	SETBIT(flags, 1, fMaxCross);
 	SETBIT(flags, 2, fReverse);
@@ -33,7 +33,7 @@ void CatSerRange::writeFields(CFRecord& record)
 
 void CatSerRange::readFields(CFRecord& record)
 {
-	unsigned __int16 flags;
+	unsigned short flags;
 	record >> catCross >> catLabel >> catMark >> flags;
 
 	fBetween = GETBIT(flags, 0);

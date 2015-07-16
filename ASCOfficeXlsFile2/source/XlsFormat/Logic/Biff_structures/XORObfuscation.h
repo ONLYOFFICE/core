@@ -21,8 +21,8 @@ public:
 	virtual void store(CFRecord& record);
 
 private:
-	unsigned __int16 key;
-	unsigned __int16 verificationBytes;
+	unsigned short key;
+	unsigned short verificationBytes;
 };
 
 } // namespace XLS

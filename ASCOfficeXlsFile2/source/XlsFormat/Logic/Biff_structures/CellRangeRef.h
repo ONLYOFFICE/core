@@ -174,13 +174,13 @@ public:
 };
 
 
-typedef CellRangeRef_T<Ref_name, unsigned __int16, unsigned char, rel_Absent> Ref;
-typedef CellRangeRef_T<Ref8_name, unsigned __int16, unsigned __int16, rel_Absent> Ref8;
-typedef CellRangeRef_T<Ref8U_name, unsigned __int16, unsigned __int16, rel_Absent> Ref8U;
-typedef CellRangeRef_T<RefU_name, unsigned __int16, unsigned char, rel_Absent> RefU;
+typedef CellRangeRef_T<Ref_name, unsigned short, unsigned char, rel_Absent> Ref;
+typedef CellRangeRef_T<Ref8_name, unsigned short, unsigned short, rel_Absent> Ref8;
+typedef CellRangeRef_T<Ref8U_name, unsigned short, unsigned short, rel_Absent> Ref8U;
+typedef CellRangeRef_T<RefU_name, unsigned short, unsigned char, rel_Absent> RefU;
 typedef CellRangeRef_T<Ref8U2007_name, unsigned int, unsigned int, rel_Absent> Ref8U2007;
 typedef CellRangeRef_T<RFX_name, long, long, rel_Absent> RFX;
-typedef CellRangeRef_T<RgceArea_name, unsigned __int16, unsigned __int16, rel_Present> RgceArea;
+typedef CellRangeRef_T<RgceArea_name, unsigned short, unsigned short, rel_Present> RgceArea;
 typedef CellRangeRef_T<RgceAreaRel_name, short, short, rel_Present> RgceAreaRel;
 
 

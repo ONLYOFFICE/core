@@ -1,4 +1,4 @@
-#ifndef _XPS_XPSLIB_WSTRING_H
+﻿#ifndef _XPS_XPSLIB_WSTRING_H
 #define _XPS_XPSLIB_WSTRING_H
 
 #include <vector>

@@ -1,4 +1,4 @@
-#ifndef _XPS_XPSLIB_CONTEXTSTATE_H
+﻿#ifndef _XPS_XPSLIB_CONTEXTSTATE_H
 #define _XPS_XPSLIB_CONTEXTSTATE_H
 
 #include "Utils.h"

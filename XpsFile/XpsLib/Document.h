@@ -1,4 +1,4 @@
-#ifndef _XPS_XPSLIB_DOCUMENT_H
+﻿#ifndef _XPS_XPSLIB_DOCUMENT_H
 #define _XPS_XPSLIB_DOCUMENT_H
 
 #include "FontList.h"

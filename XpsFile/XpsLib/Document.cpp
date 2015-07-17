@@ -1,7 +1,8 @@
-#include "Document.h"
+﻿#include "Document.h"
 #include "StaticResources.h"
 
 #include "../../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../../DesktopEditor/common/File.h"
 
 namespace XPS
 {
@@ -23,15 +24,8 @@ namespace XPS
 		XmlUtils::CXmlLiteReader oReader;
 
 		std::wstring wsRelsPath = NormalizePath(wsPath + L"_rels/.rels");
-
-		clock_t oBeginTime = clock();
-
 		if (!oReader.FromFile(wsRelsPath))
 			return false;
-
-		clock_t oEndTime = clock();
-		double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
-		printf("%S %fseconds\n", wsRelsPath.c_str(), dElapsedSecs);
 
 		if (!oReader.ReadNextNode())
 			return false;
@@ -40,7 +34,7 @@ namespace XPS
 		if (L"Relationships" != wsName)
 			return false;
 
-		std::wstring wsFile;
+		std::wstring wsTargetFile;
 		while (oReader.ReadNextNode())
 		{
 			wsName = oReader.GetName();
@@ -51,25 +45,27 @@ namespace XPS
 
 				if (L"http://schemas.microsoft.com/xps/2005/06/fixedrepresentation" == wsAttr)
 				{
-					ReadAttribute(oReader, L"Target", wsFile);
+					ReadAttribute(oReader, L"Target", wsTargetFile);
 					break;
 				}
 			}
 		}
 
-		if (wsFile.empty())
+		if (wsTargetFile.empty())
 			return false;
 
 		oReader.Clear();
 
-		oBeginTime = clock();
-
-		if (!oReader.FromFile(wsPath + wsFile))
+		std::wstring wsTargerFullPath = m_wsPath + wsTargetFile;
+		if (!NSFile::CFileBinary::Exists(wsTargerFullPath))
+		{
+			wsTargerFullPath = GetPath(wsRelsPath) + wsTargetFile;
+			if (!NSFile::CFileBinary::Exists(wsTargerFullPath))
+				return false;
+		}
+		
+		if (!oReader.FromFile(wsTargerFullPath))
 			return false;
-
-		oEndTime = clock();
-		dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
-		printf("%S %fseconds\n", (wsPath + wsFile).c_str(), dElapsedSecs);
 
 		if (!oReader.ReadNextNode())
 			return false;
@@ -78,30 +74,33 @@ namespace XPS
 		if (L"FixedDocumentSequence" != wsName)
 			return false;
 
-		wsFile.clear();
+		std::wstring wsSourceFile;
 		while (oReader.ReadNextNode())
 		{
 			wsName = oReader.GetName();
 			if (L"DocumentReference" == wsName)
 			{
-				ReadAttribute(oReader, L"Source", wsFile);
+				ReadAttribute(oReader, L"Source", wsSourceFile);
 				break;
 			}
 		}
 
-		if (wsFile.empty())
+		if (wsSourceFile.empty())
 			return false;
 
 		oReader.Clear();
 
-		oBeginTime = clock();
 
-		if (!oReader.FromFile(m_wsPath + wsFile))
+		std::wstring wsSourceFullPath = m_wsPath + wsSourceFile;
+		if (!NSFile::CFileBinary::Exists(wsSourceFullPath))
+		{
+			wsSourceFullPath = GetPath(wsTargerFullPath) + wsSourceFile;
+			if (!NSFile::CFileBinary::Exists(wsSourceFullPath))
+				return false;
+		}
+
+		if (!oReader.FromFile(wsSourceFullPath))
 			return false;
-
-		oEndTime = clock();
-		dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
-		printf("%S %fseconds\n", (m_wsPath + wsFile).c_str(), dElapsedSecs);
 
 		if (!oReader.ReadNextNode())
 			return false;
@@ -110,7 +109,7 @@ namespace XPS
 		if (L"FixedDocument" != wsName)
 			return false;
 
-		std::wstring wsFilePath = GetPath(m_wsPath + wsFile);
+		std::wstring wsFilePath = GetPath(wsSourceFullPath);
 		std::wstring wsPagePath;
 		std::wstring wsSource;
 
@@ -122,10 +121,14 @@ namespace XPS
 			if (L"PageContent" == wsName)
 			{
 				ReadAttribute(oReader, L"Source", wsSource);
-				if ('/' == wsSource[0])
-					wsPagePath = m_wsPath + wsSource;
-				else
+
+				std::wstring wsPagePath = m_wsPath + wsSource;
+				if (!NSFile::CFileBinary::Exists(wsPagePath))
+				{
 					wsPagePath = wsFilePath + wsSource;
+					if (!NSFile::CFileBinary::Exists(wsPagePath))
+						continue;
+				}
 
 				m_mPages.insert(std::pair<int, XPS::Page*>(nIndex++, new XPS::Page(wsPagePath, wsPath, &m_oFontList, m_pFontManager, this)));
 			}

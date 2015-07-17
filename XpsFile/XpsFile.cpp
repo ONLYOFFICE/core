@@ -1,4 +1,4 @@
-#include "XpsFile.h"
+п»ї#include "XpsFile.h"
 #include "XpsLib/Document.h"
 
 #include "../DesktopEditor/common/File.h"
@@ -16,7 +16,7 @@ CXpsFile::CXpsFile(CApplicationFonts* pAppFonts)
 {
 	m_pAppFonts = pAppFonts;
 
-	// Создаем менеджер шрифтов с собственным кэшем
+	// РЎРѕР·РґР°РµРј РјРµРЅРµРґР¶РµСЂ С€СЂРёС„С‚РѕРІ СЃ СЃРѕР±СЃС‚РІРµРЅРЅС‹Рј РєСЌС€РµРј
 	m_pFontManager = pAppFonts->GenerateFontManager();
 	CFontsCache* pMeasurerCache = new CFontsCache();
 	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
@@ -55,7 +55,7 @@ bool         CXpsFile::LoadFromFile(const std::wstring& wsSrcFileName, const std
 {
 	Close();
 
-	// Распаковываем Zip-архив в темповую папку
+	// Р Р°СЃРїР°РєРѕРІС‹РІР°РµРј Zip-Р°СЂС…РёРІ РІ С‚РµРјРїРѕРІСѓСЋ РїР°РїРєСѓ
 	COfficeUtils oUtils(NULL);
 	if (S_OK != oUtils.ExtractToDirectory(wsSrcFileName, m_wsTempFolder, NULL, 0))
 		return false;

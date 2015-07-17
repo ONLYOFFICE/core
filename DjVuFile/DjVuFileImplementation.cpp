@@ -894,12 +894,11 @@ void               CDjVuFileImplementation::DrawPageText(IRenderer* pRenderer, d
 							   (float)(pdCoords[0]),
 							   (float)(pdCoords[3]),
 							   (float)(pdCoords[2] - pdCoords[0]),
-							   (float)(pdCoords[1] - pdCoords[3]),
 							   (float)(pdCoords[1] - pdCoords[3]));
 }
 void               CDjVuFileImplementation::ParseCoords(const std::wstring& wsCoordsStr, double* pdCoords, double dKoef)
 {
-	std::vector<std::wstring> vCoords = NSString::Split(wsCoordsStr, L',');
+	std::vector<std::wstring> vCoords = NSStringExt::Split(wsCoordsStr, L',');
 	if (vCoords.size() >= 4)
 	{
 		for (int nIndex = 0; nIndex < 4; nIndex++)

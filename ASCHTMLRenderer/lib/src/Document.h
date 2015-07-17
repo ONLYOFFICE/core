@@ -1,5 +1,9 @@
-﻿#pragma once
-#include "File.h"
+﻿#ifndef _ASC_HTMLRENDERER_DOCUMENT_H_
+#define _ASC_HTMLRENDERER_DOCUMENT_H_
+
+#include "Common.h"
+#include <vector>
+#include "../../../DesktopEditor/graphics/GraphicsRenderer.h"
 
 namespace NSHtmlRenderer
 {
@@ -79,7 +83,7 @@ namespace NSHtmlRenderer
 	private:
 		
 	public:
-		CAtlArray<CPageInfo> m_arrPages;
+        std::vector<CPageInfo> m_arrPages;
 		IBaseMatrixUpdater*	 m_pUpdater;	
 
 	public:
@@ -96,14 +100,13 @@ namespace NSHtmlRenderer
 		
 		inline void NewPage()
 		{
-			m_arrPages.Add();
-			
-			size_t nCount = m_arrPages.GetCount();
-			m_arrPages[nCount - 1].SetUpdater(m_pUpdater);
+            CPageInfo oInfo;
+            oInfo.SetUpdater(m_pUpdater);
+            m_arrPages.push_back(oInfo);
 		}
 		inline void SetWidth(const double& dValue)
 		{
-			size_t nCount = m_arrPages.GetCount();
+            size_t nCount = m_arrPages.size();
 			if (nCount > 0)
 			{
 				m_arrPages[nCount - 1].SetWidth(dValue);
@@ -111,7 +114,7 @@ namespace NSHtmlRenderer
 		}
 		inline void SetHeight(const double& dValue)
 		{
-			size_t nCount = m_arrPages.GetCount();
+            size_t nCount = m_arrPages.size();
 			if (nCount > 0)
 			{
 				m_arrPages[nCount - 1].SetHeight(dValue);
@@ -120,247 +123,200 @@ namespace NSHtmlRenderer
 
 		// --------------------------------------------------------------------
 
-		CString GetThumbnailsHTML()
+        std::wstring GetThumbnailsHTML()
 		{
-			CString strHTML = _T("<html>");
+            std::wstring strHTML = L"<html>";
 
 			strHTML += GetThumbnailsHeader();
 			strHTML += GetThumbnailsBody();
 
-			strHTML += _T("</html>");
+            strHTML += L"</html>";
 
 			return strHTML;
 		}
-		CString GetViewerHTML()
+        std::wstring GetViewerHTML()
 		{
-			CString strHTML = _T("<html>");
+            std::wstring strHTML = L"<html>";
 
 			strHTML += GetViewerHeader();
 			strHTML += GetViewerBody();
 
-			strHTML += _T("</html>");
+            strHTML += L"</html>";
 
 			return strHTML;
 		}
 
-		CString GetThumbnailBlockHTML(int nPageNum)
+        std::wstring GetThumbnailBlockHTML(int nPageNum)
 		{
-			CString strPage = _T("");
-			strPage.Format(_T("%d"), nPageNum);
+            std::wstring strPage = std::to_wstring(nPageNum);
 			
-			CString strResult = _T("<div class=\"blockpage\"><div class=\"blockthumbnail\" align=\"center\"><img align=\"center\" src=\"thumbnails\\page") +
-									strPage + _T(".png\" onClick=\"OnChangePage(") + strPage + _T(")\" width=\"100%\" height=\"90%\"/>") + _T("page") + strPage + _T("</div></div>");
+            std::wstring strResult = L"<div class=\"blockpage\"><div class=\"blockthumbnail\" align=\"center\"><img align=\"center\" src=\"thumbnails\\page" +
+                                    strPage + L".png\" onClick=\"OnChangePage(" + strPage + L")\" width=\"100%\" height=\"90%\"/>" + L"page" + strPage + L"</div></div>";
 			return strResult;
 		}
-		CString GetThumbnailsBody()
+        std::wstring GetThumbnailsBody()
 		{
-			CString strBody = _T("<body bgcolor=\"#FEFEFE\">");
+            std::wstring strBody = L"<body bgcolor=\"#FEFEFE\">";
 
-			size_t nCount = m_arrPages.GetCount();
+            size_t nCount = m_arrPages.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				strBody += GetThumbnailBlockHTML((int)(i + 1));
 			}
 
-			strBody += _T("</body>");
+            strBody += L"</body>";
 			return strBody;
 		}
 
-		CString GetThumbnailsHeader()
+        std::wstring GetThumbnailsHeader()
 		{
-			CString strHead = _T("<head>\
-									<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\
-									<title>thumbnails</title>\
-									<style type=\"text/css\">\
-										.blockpage {\
-										width: 80%;\
-										height: 200px;\
-										background: #FEFEFE;\
-										padding: 10px;\
-										float: none;\
-										text-align: center;\
-										}\
-										.blockthumbnail {\
-										width: 100%;\
-										height: 100%;\
-										background: #FEFEFE;\
-										padding: 0px;\
-										float: none;\
-										}\
-									</style>\
-									<script language=\"JavaScript\">\
-										function OnChangePage(pageNum)\
-										{\
-											top.frames['viewer'].OnChangePage(pageNum);\
-										}\
-									</script>\
-								</head>");
-
-			return strHead;
+            return L"<head>\
+                        <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\
+                        <title>thumbnails</title>\
+                        <style type=\"text/css\">\
+                            .blockpage {\
+                            width: 80%;\
+                            height: 200px;\
+                            background: #FEFEFE;\
+                            padding: 10px;\
+                            float: none;\
+                            text-align: center;\
+                            }\
+                            .blockthumbnail {\
+                            width: 100%;\
+                            height: 100%;\
+                            background: #FEFEFE;\
+                            padding: 0px;\
+                            float: none;\
+                            }\
+                        </style>\
+                        <script language=\"JavaScript\">\
+                            function OnChangePage(pageNum)\
+                            {\
+                                top.frames['viewer'].OnChangePage(pageNum);\
+                            }\
+                        </script>\
+                    </head>";
 		}
 
-		CString GetViewerHeader()
+        std::wstring GetViewerHeader()
 		{
-			CString strHead = _T("<head>\
-									 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\
-									 <title>viewer</title>\
-									 <style type=\"text/css\">\
-										 .blockpage {\
-										 position: relative;\
-										 left: 20%;\
-										 width: 60%;\
-										 height: 1200px;\
-										 background: #FFFFFF;\
-										 padding: 10px;\
-										 border-style: outset;\
-										 border-color: #F0F0F0;\
-										 border-width: 2px 3px 3px 2px;\
-										 float: none;\
-										 text-align: center;\
-										 }\
-										 .blockpagebetween {\
-										 width: 100%;\
-										 height: 20px;\
-										 background: #FEFEFE;\
-										 padding: 0px;\
-										 float: none;\
-										 text-align: center;\
-										 }\
-										 .blockpagenatural {\
-										 width: 100%;\
-										 height: 100%;\
-										 background: #FEFEFE;\
-										 padding: 0px;\
-										 float: none;\
-										 }\
-									 </style>\
-									 <script language=\"JavaScript\">\
-										 function OnChangePage(pageNum)\
-										 {\
-											var nPage = Number(pageNum);\
-											var position = ((nPage - 1) * 1225 + (nPage - 1) * 20);\
-											scroll(0, position);\
-										 }\
-									 </script>\
-								 </head>");
-
-			return strHead;
+            return L"<head>\
+                         <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\
+                         <title>viewer</title>\
+                         <style type=\"text/css\">\
+                             .blockpage {\
+                             position: relative;\
+                             left: 20%;\
+                             width: 60%;\
+                             height: 1200px;\
+                             background: #FFFFFF;\
+                             padding: 10px;\
+                             border-style: outset;\
+                             border-color: #F0F0F0;\
+                             border-width: 2px 3px 3px 2px;\
+                             float: none;\
+                             text-align: center;\
+                             }\
+                             .blockpagebetween {\
+                             width: 100%;\
+                             height: 20px;\
+                             background: #FEFEFE;\
+                             padding: 0px;\
+                             float: none;\
+                             text-align: center;\
+                             }\
+                             .blockpagenatural {\
+                             width: 100%;\
+                             height: 100%;\
+                             background: #FEFEFE;\
+                             padding: 0px;\
+                             float: none;\
+                             }\
+                         </style>\
+                         <script language=\"JavaScript\">\
+                             function OnChangePage(pageNum)\
+                             {\
+                                var nPage = Number(pageNum);\
+                                var position = ((nPage - 1) * 1225 + (nPage - 1) * 20);\
+                                scroll(0, position);\
+                             }\
+                         </script>\
+                     </head>";
 		}
 
-		CString GetViewerBlockHTML(int nPageNum)
+        std::wstring GetViewerBlockHTML(int nPageNum)
 		{
-			CString strPage = _T("");
-			strPage.Format(_T("%d"), nPageNum);
+            std::wstring strPage = std::to_wstring(nPageNum);
 			
-			CString strResult = _T("<div class=\"blockpage\">\n<div class=\"blockpagenatural\" align=\"center\">\n<img align=\"center\" src=\"thumbnails\\page") +
-									strPage + _T(".png\" onClick=\"OnChangePage(") + strPage + _T(")\" width=\"100%\" height=\"100%\"/>\n") + _T("</div>\n</div>\n") + _T("<div class=\"blockpagebetween\"></div>\n");
+            std::wstring strResult = L"<div class=\"blockpage\">\n<div class=\"blockpagenatural\" align=\"center\">\n<img align=\"center\" src=\"thumbnails\\page" +
+                                    strPage + L".png\" onClick=\"OnChangePage(" + strPage + L")\" width=\"100%\" height=\"100%\"/>\n" + L"</div>\n</div>\n" + L"<div class=\"blockpagebetween\"></div>\n";
 			return strResult;
 		}
-		CString GetViewerBody()
+        std::wstring GetViewerBody()
 		{
-			CString strBody = _T("<body bgcolor=\"#FEFEFE\">");
+            std::wstring strBody = L"<body bgcolor=\"#FEFEFE\">";
 
-			size_t nCount = m_arrPages.GetCount();
+            size_t nCount = m_arrPages.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				strBody += GetViewerBlockHTML((int)(i + 1));
 			}
 
-			strBody += _T("</body>");
+            strBody += L"</body>";
 
 			return strBody;
 		}
 
-		CString GetMenuHTML()
+        std::wstring GetMenuHTML()
 		{
-			CString strHtml = _T("<html>\
-									 <head>\
-										 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\
-										 <title>menu</title>\
-									 </head>\
-										<body bgcolor=\"#5F5F5F\">\
-										</body>\
-								</html>");
-			return strHtml;
+            return L"<html>\
+                         <head>\
+                             <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\
+                             <title>menu</title>\
+                         </head>\
+                        <body bgcolor=\"#5F5F5F\">\
+                        </body>\
+                    </html>";
 		}
-		CString GetDocumentHTML()
+        std::wstring GetDocumentHTML()
 		{
-			CString strHtml = _T("<html>\
-									 <head>\
-										 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\
-										 <title>document viewer</title>\
-									 </head>\
-									 <frameset rows=\"50,*\" framespacing=\"0\" frameborder=\"0\">\
-										 <frame src=\"menu.html\" name=\"menu\" noresize border=\"1\" bordercolor=\"#F0F0F0\" scrolling=\"no\"></frame>\
-										 <frameset cols=\"*,200\">\
-											 <frame id=\"id_viewer\" src=\"viewer.html\" name=\"viewer\" noresize></frame>\
-											 <frame id=\"id_thumbnails\" src=\"thumbnails.html\" name=\"thumbnail\"></frame>\
-										 </frameset>\
-									 </frameset>\
-								 </html>");
-			return strHtml;
+            return L"<html>\
+                     <head>\
+                         <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\
+                         <title>document viewer</title>\
+                     </head>\
+                     <frameset rows=\"50,*\" framespacing=\"0\" frameborder=\"0\">\
+                         <frame src=\"menu.html\" name=\"menu\" noresize border=\"1\" bordercolor=\"#F0F0F0\" scrolling=\"no\"></frame>\
+                         <frameset cols=\"*,200\">\
+                             <frame id=\"id_viewer\" src=\"viewer.html\" name=\"viewer\" noresize></frame>\
+                             <frame id=\"id_thumbnails\" src=\"thumbnails.html\" name=\"thumbnail\"></frame>\
+                         </frameset>\
+                     </frameset>\
+                 </html>";
 		}
 
-		static CStringA ConvertToUTF8 (CStringW aUnicodeXML)
+        void CreateDirectories(std::wstring strHTML)
 		{
-			// Convert to UTF-8
-			int iSize = WideCharToMultiByte (CP_UTF8, 0, aUnicodeXML, -1, NULL, 0, NULL, NULL);
-			if (iSize <= 0)
-			{
-				ATLTRACE2 ("ConvertToUTF8() error (size detection): 0x%x\n", GetLastError());
-				return CStringA(aUnicodeXML); // Conversion to ANSI
-			}
-			CStringA sOutXML;
-			if (0 == WideCharToMultiByte (CP_UTF8, 0, aUnicodeXML, -1, sOutXML.GetBuffer(iSize + 1), iSize, NULL, NULL))
-			{
-				ATLTRACE2 ("ConvertToUTF8() error (utf-8 conversion): 0x%x\n", GetLastError());
-				return CStringA(aUnicodeXML);
-			}
-			sOutXML.ReleaseBuffer();
-			return sOutXML;
-		}
-
-		void CreateDirectories(CString strHTML)
-		{
-			CDirectory::CreateDirectory(strHTML);
-			CDirectory::CreateDirectory(strHTML, _T("thumbnails"));
+            NSDirectory::CreateDirectory(strHTML);
+            NSDirectory::CreateDirectory(strHTML + L"/thumbnails");
 		}
 		
-		void CreateHTMLs(CString strHTML)
+        void CreateHTMLs(std::wstring strHTML)
 		{
-			CFile oFile;
-			oFile.CreateFile(strHTML + _T("\\docviewer.html"));
-			CString strDocHTML = GetDocumentHTML();
-			CStringA str1 = ConvertToUTF8(strDocHTML);
-			oFile.WriteFile((void*)str1.GetBuffer(), str1.GetLength());
-			oFile.CloseFile();
-
-			oFile.CreateFile(strHTML + _T("\\menu.html"));
-			CString strMenuHTML = GetMenuHTML();
-			CStringA str2 = ConvertToUTF8(strMenuHTML);
-			oFile.WriteFile((void*)str2.GetBuffer(), str2.GetLength());
-			oFile.CloseFile();	
-
-			oFile.CreateFile(strHTML + _T("\\viewer.html"));
-			CString strViewerHTML = GetViewerHTML();
-			CStringA str3 = ConvertToUTF8(strViewerHTML);
-			oFile.WriteFile((void*)str3.GetBuffer(), str3.GetLength());
-			oFile.CloseFile();
-
-			oFile.CreateFile(strHTML + _T("\\thumbnails.html"));
-			CString strThHTML = GetThumbnailsHTML();
-			CStringA str4 = ConvertToUTF8(strThHTML);
-			oFile.WriteFile((void*)str4.GetBuffer(), str4.GetLength());
-			oFile.CloseFile();
+            NSFile::CFileBinary::SaveToFile(strHTML + L"/docviewer.html", GetDocumentHTML(), true);
+            NSFile::CFileBinary::SaveToFile(strHTML + L"/menu.html", GetMenuHTML(), true);
+            NSFile::CFileBinary::SaveToFile(strHTML + L"/viewer.html", GetViewerHTML(), true);
+            NSFile::CFileBinary::SaveToFile(strHTML + L"/thumbnails.html", GetThumbnailsHTML(), true);
 		}
 
 	};
 
-	class CThumbnails
+    class CThumbnails
 	{
 	private:
-		Graphics::IASCRenderer*				m_pRenderer;
-		MediaCore::IAVSUncompressedVideoFrame*	m_pFrame;
+        CGraphicsRenderer*	m_pRenderer;
+        CBgraFrame*         m_pFrame;
 
 		LONG	m_lWidth;
 		LONG	m_lHeight;
@@ -375,8 +331,8 @@ namespace NSHtmlRenderer
 		}
 		~CThumbnails()
 		{
-			RELEASEINTERFACE(m_pRenderer);
-			RELEASEINTERFACE(m_pFrame);
+            RELEASEOBJECT(m_pRenderer);
+            RELEASEOBJECT(m_pFrame);
 		}
 
 	public:
@@ -399,15 +355,14 @@ namespace NSHtmlRenderer
 			if ((m_lWidth == lWidthNew) && (m_lHeight == lHeightNew) && (NULL != m_pFrame))
 			{
 				// размер не поменялся - значит и память перевыделять не нужно
-				BYTE* pBuffer	= NULL;
-				m_pFrame->get_Buffer(&pBuffer);
+                BYTE* pBuffer = m_pFrame->get_Data();
 				memset(pBuffer, 0xFF, 4 * m_lWidth * m_lHeight);
 
 				CreateRenderer();
 				return;
 			}
 			
-			RELEASEINTERFACE(m_pFrame);
+            RELEASEOBJECT(m_pFrame);
 			m_lWidth	= lWidthNew;
 			m_lHeight	= lHeightNew;
 
@@ -417,7 +372,7 @@ namespace NSHtmlRenderer
 			m_pRenderer->put_Width(dWidth);
 			m_pRenderer->put_Height(dHeight);
 		}
-		inline void Save(CString& strFile)
+        inline void Save(std::wstring& strFile)
 		{
 			SaveFrame(strFile);			
 		}
@@ -425,65 +380,28 @@ namespace NSHtmlRenderer
 	protected:
 		void CreateMediaData()
 		{
-			RELEASEINTERFACE(m_pFrame);
-			CoCreateInstance(__uuidof( MediaCore::CAVSUncompressedVideoFrame), NULL ,CLSCTX_INPROC_SERVER,
-				__uuidof(MediaCore::IAVSUncompressedVideoFrame), (void**)&m_pFrame);
+            RELEASEOBJECT(m_pFrame);
 
-			m_pFrame->put_Width(m_lWidth);
-			m_pFrame->put_Height(m_lHeight);
-			m_pFrame->put_ColorSpace(64);
-			m_pFrame->SetDefaultStrides();
-			m_pFrame->AllocateBuffer(-1);
-
-			BYTE* pBuffer = NULL;
-			m_pFrame->get_Buffer(&pBuffer);
-			memset(pBuffer, 0xFF, 4 * m_lWidth * m_lHeight);
+            m_pFrame = new CBgraFrame();
+            m_pFrame->put_Width(m_lWidth);
+            m_pFrame->put_Height(m_lHeight);
+            m_pFrame->put_Stride(4 * m_lWidth);
+            BYTE* pBuffer = new BYTE[4 * m_lWidth * m_lHeight];
+            memset(pBuffer, 0xFF, 4 * m_lWidth * m_lHeight);
+            m_pFrame->put_Data(pBuffer);
 		}
 		void CreateRenderer()
 		{
 			// теперь на всякий случай (сбросить все состояния) - пересоздадим рендерер
 			RELEASEINTERFACE(m_pRenderer);
-			
-			Graphics::IASCGraphicsRenderer* pGrRenderer;			
-			CoCreateInstance(__uuidof( Graphics::CASCGraphicsRenderer), NULL, CLSCTX_INPROC_SERVER, 
-				__uuidof(Graphics::IASCGraphicsRenderer), (void**)&pGrRenderer);
-						
-			//ставим FontManager
-			VARIANT vtVariant;
-			vtVariant.vt = VT_UNKNOWN;
-			vtVariant.punkVal = NULL;
-			pGrRenderer->SetAdditionalParam( L"FontManager", vtVariant );
 
-			IUnknown* punkFrame = NULL;
-			m_pFrame->QueryInterface(IID_IUnknown, (void**)&punkFrame);
-
-			pGrRenderer->CreateFromMediaData(punkFrame, 0, 0, m_lWidth, m_lHeight);
-
-			RELEASEINTERFACE(punkFrame);
-			pGrRenderer->QueryInterface(Graphics::IID_IASCRenderer, (void**)&m_pRenderer);
-			RELEASEINTERFACE(pGrRenderer);
+            m_pRenderer = new CGraphicsRenderer();
+            m_pRenderer->CreateFromBgraFrame(m_pFrame);
 		}
 
-		void SaveFrame(const CString& strFile)
+        void SaveFrame(const std::wstring& strFile)
 		{
-			ImageStudio::IImageTransforms* pTransform = NULL;
-			CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL ,CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
-
-			VARIANT var;
-			var.vt = VT_UNKNOWN;
-			var.punkVal = (IUnknown*)m_pFrame;
-			pTransform->SetSource(0, var);
-
-			CString strXml = _T("<transforms><ImageFile-SaveAsPng destinationpath=\"") + strFile + _T("\" format=\"888\"></ImageFile-SaveAsPng></transforms>");
-			
-			VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-			BSTR bsXml = strXml.AllocSysString();
-			pTransform->SetXml(bsXml, &vbSuccess);
-			SysFreeString(bsXml);
-
-			pTransform->Transform(&vbSuccess);
-
-			RELEASEINTERFACE(pTransform);
+            m_pFrame->SaveFile(strFile, 4);
 		}
 
 	public:
@@ -504,7 +422,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_Height(dHeight);
 		}
-		inline HRESULT put_Height(double dHeight)
+        inline HRESULT put_Height(const double& dHeight)
 		{
 			if (NULL == m_pRenderer)
 				return S_OK;
@@ -515,7 +433,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_Width(dWidth);
 		}
-		inline HRESULT put_Width(double dWidth)
+        inline HRESULT put_Width(const double& dWidth)
 		{
 			if (NULL == m_pRenderer)
 				return S_OK;
@@ -532,15 +450,11 @@ namespace NSHtmlRenderer
 		}
 
 	// pen --------------------------------------------------------------------------------------
-		inline HRESULT SetPen(BSTR bsXML)
-		{
-			return m_pRenderer->SetPen(bsXML);
-		}
 		inline HRESULT get_PenColor(LONG* lColor)
 		{
 			return m_pRenderer->get_PenColor(lColor);
 		}
-		inline HRESULT put_PenColor(LONG lColor)
+        inline HRESULT put_PenColor(const LONG& lColor)
 		{
 			return m_pRenderer->put_PenColor(lColor);
 		}
@@ -548,7 +462,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_PenAlpha(lAlpha);
 		}
-		inline HRESULT put_PenAlpha(LONG lAlpha)
+        inline HRESULT put_PenAlpha(const LONG& lAlpha)
 		{
 			return m_pRenderer->put_PenAlpha(lAlpha);
 		}
@@ -556,7 +470,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_PenSize(dSize);
 		}
-		inline HRESULT put_PenSize(double dSize)
+        inline HRESULT put_PenSize(const double& dSize)
 		{
 			return m_pRenderer->put_PenSize(dSize);
 		}
@@ -564,7 +478,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_PenDashStyle(val);
 		}
-		inline HRESULT put_PenDashStyle(BYTE val)
+        inline HRESULT put_PenDashStyle(const BYTE& val)
 		{
 			return m_pRenderer->put_PenDashStyle(val);
 		}
@@ -572,7 +486,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_PenLineStartCap(val);
 		}
-		inline HRESULT put_PenLineStartCap(BYTE val)
+        inline HRESULT put_PenLineStartCap(const BYTE& val)
 		{
 			return m_pRenderer->put_PenLineStartCap(val);
 		}
@@ -580,7 +494,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_PenLineEndCap(val);
 		}
-		inline HRESULT put_PenLineEndCap(BYTE val)
+        inline HRESULT put_PenLineEndCap(const BYTE& val)
 		{
 			return m_pRenderer->put_PenLineEndCap(val);
 		}
@@ -588,7 +502,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_PenLineJoin(val);
 		}
-		inline HRESULT put_PenLineJoin(BYTE val)
+        inline HRESULT put_PenLineJoin(const BYTE& val)
 		{
 			return m_pRenderer->put_PenLineJoin(val);
 		}
@@ -596,7 +510,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_PenDashOffset(val);
 		}
-		inline HRESULT put_PenDashOffset(double val)
+        inline HRESULT put_PenDashOffset(const double& val)
 		{
 			return m_pRenderer->put_PenDashOffset(val);
 		}
@@ -604,7 +518,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_PenAlign(val);
 		}
-		inline HRESULT put_PenAlign(LONG val)
+        inline HRESULT put_PenAlign(const LONG& val)
 		{
 			return m_pRenderer->put_PenAlign(val);
 		}
@@ -612,25 +526,21 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_PenMiterLimit(val);
 		}
-		inline HRESULT put_PenMiterLimit(double val)
+        inline HRESULT put_PenMiterLimit(const double& val)
 		{
 			return m_pRenderer->put_PenMiterLimit(val);
 		}
-		inline HRESULT PenDashPattern(SAFEARRAY* pPattern)
+        inline HRESULT PenDashPattern(double* pPattern, LONG lCount)
 		{
-			return m_pRenderer->PenDashPattern(pPattern);
+            return m_pRenderer->PenDashPattern(pPattern, lCount);
 		}
 
 	// brush ------------------------------------------------------------------------------------
-		inline HRESULT SetBrush(BSTR bsXML)
-		{
-			return m_pRenderer->SetBrush(bsXML);
-		}
 		inline HRESULT get_BrushType(LONG* lType)
 		{
 			return m_pRenderer->get_BrushType(lType);
 		}
-		inline HRESULT put_BrushType(LONG lType)
+        inline HRESULT put_BrushType(const LONG& lType)
 		{
 			return m_pRenderer->put_BrushType(lType);
 		}
@@ -638,7 +548,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_BrushColor1(lColor);
 		}
-		inline HRESULT put_BrushColor1(LONG lColor)
+        inline HRESULT put_BrushColor1(const LONG& lColor)
 		{
 			return m_pRenderer->put_BrushColor1(lColor);
 		}
@@ -646,7 +556,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_BrushAlpha1(lAlpha);
 		}
-		inline HRESULT put_BrushAlpha1(LONG lAlpha)
+        inline HRESULT put_BrushAlpha1(const LONG& lAlpha)
 		{
 			return m_pRenderer->put_BrushAlpha1(lAlpha);
 		}
@@ -654,7 +564,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_BrushColor2(lColor);
 		}
-		inline HRESULT put_BrushColor2(LONG lColor)
+        inline HRESULT put_BrushColor2(const LONG& lColor)
 		{
 			return m_pRenderer->put_BrushColor2(lColor);
 		}
@@ -662,15 +572,15 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_BrushAlpha2(lAlpha);
 		}
-		inline HRESULT put_BrushAlpha2(LONG lAlpha)
+        inline HRESULT put_BrushAlpha2(const LONG& lAlpha)
 		{
 			return m_pRenderer->put_BrushAlpha2(lAlpha);
 		}
-		inline HRESULT get_BrushTexturePath(BSTR* bsPath)
+        inline HRESULT get_BrushTexturePath(std::wstring* sPath)
 		{
-			return m_pRenderer->get_BrushTexturePath(bsPath);
+            return m_pRenderer->get_BrushTexturePath(sPath);
 		}
-		inline HRESULT put_BrushTexturePath(BSTR bsPath)
+        inline HRESULT put_BrushTexturePath(const std::wstring& bsPath)
 		{
 			return m_pRenderer->put_BrushTexturePath(bsPath);
 		}
@@ -678,7 +588,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_BrushTextureMode(lMode);
 		}
-		inline HRESULT put_BrushTextureMode(LONG lMode)
+        inline HRESULT put_BrushTextureMode(const LONG& lMode)
 		{
 			return m_pRenderer->put_BrushTextureMode(lMode);
 		}
@@ -686,7 +596,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_BrushTextureAlpha(lTxAlpha);
 		}
-		inline HRESULT put_BrushTextureAlpha(LONG lTxAlpha)
+        inline HRESULT put_BrushTextureAlpha(const LONG lTxAlpha)
 		{
 			return m_pRenderer->put_BrushTextureAlpha(lTxAlpha);
 		}
@@ -694,33 +604,39 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_BrushLinearAngle(dAngle);
 		}
-		inline HRESULT put_BrushLinearAngle(double dAngle)
+        inline HRESULT put_BrushLinearAngle(const double& dAngle)
 		{
 			return m_pRenderer->put_BrushLinearAngle(dAngle);
 		}
-		inline HRESULT BrushRect(BOOL val, double left, double top, double width, double height)
-		{
-			return m_pRenderer->BrushRect(val, left, top, width, height);
-		}
+        inline HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height)
+        {
+            return m_pRenderer->BrushRect(val, left, top, width, height);
+        }
+
+        inline HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height)
+        {
+            return m_pRenderer->BrushBounds(left, top, width, height);
+        }
+
+        inline HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount)
+        {
+            return m_pRenderer->put_BrushGradientColors(lColors, pPositions, nCount);
+        }
 
 	// font -------------------------------------------------------------------------------------
-		inline HRESULT SetFont(BSTR bsXML)
-		{
-			return m_pRenderer->SetFont(bsXML);
-		}
-		inline HRESULT get_FontName(BSTR* bsName)
+        inline HRESULT get_FontName(std::wstring* bsName)
 		{
 			return m_pRenderer->get_FontName(bsName);
 		}
-		inline HRESULT put_FontName(BSTR bsName)
+        inline HRESULT put_FontName(const std::wstring& bsName)
 		{
 			return m_pRenderer->put_FontName(bsName);
 		}
-		inline HRESULT get_FontPath(BSTR* bsName)
+        inline HRESULT get_FontPath(std::wstring* bsName)
 		{
 			return m_pRenderer->get_FontPath(bsName);
 		}
-		inline HRESULT put_FontPath(BSTR bsName)
+        inline HRESULT put_FontPath(const std::wstring& bsName)
 		{
 			return m_pRenderer->put_FontPath(bsName);
 		}
@@ -728,7 +644,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_FontSize(dSize);
 		}
-		inline HRESULT put_FontSize(double dSize)
+        inline HRESULT put_FontSize(const double& dSize)
 		{
 			return m_pRenderer->put_FontSize(dSize);
 		}
@@ -736,15 +652,15 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_FontStyle(lStyle);
 		}
-		inline HRESULT put_FontStyle(LONG lStyle)
+        inline HRESULT put_FontStyle(const LONG& lStyle)
 		{
 			return m_pRenderer->put_FontStyle(lStyle);
 		}
-		inline HRESULT get_FontStringGID(BOOL* bGID)
+        inline HRESULT get_FontStringGID(INT* bGID)
 		{
-			return m_pRenderer->get_FontStringGID((LONG*)bGID);
+            return m_pRenderer->get_FontStringGID(bGID);
 		}
-		inline HRESULT put_FontStringGID(BOOL bGID)
+        inline HRESULT put_FontStringGID(const INT& bGID)
 		{
 			return m_pRenderer->put_FontStringGID(bGID);
 		}
@@ -752,145 +668,70 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_FontCharSpace(dSpace);
 		}
-		inline HRESULT put_FontCharSpace(double dSpace)
+        inline HRESULT put_FontCharSpace(const double& dSpace)
 		{
 			return m_pRenderer->put_FontCharSpace(dSpace);
 		}
-
-	// shadow -----------------------------------------------------------------------------------
-		inline HRESULT SetShadow(BSTR bsXML)
-		{
-			return m_pRenderer->SetShadow(bsXML);
-		}
-		inline HRESULT get_ShadowDistanceX(double* val)
-		{
-			return m_pRenderer->get_ShadowDistanceX(val);
-		}
-		inline HRESULT put_ShadowDistanceX(double val)
-		{
-			return m_pRenderer->put_ShadowDistanceX(val);
-		}
-		inline HRESULT get_ShadowDistanceY(double* val)
-		{
-			return m_pRenderer->get_ShadowDistanceY(val);
-		}
-		inline HRESULT put_ShadowDistanceY(double val)
-		{
-			return m_pRenderer->put_ShadowDistanceY(val);
-		}
-		inline HRESULT get_ShadowBlurSize(double* val)
-		{
-			return m_pRenderer->get_ShadowBlurSize(val);
-		}
-		inline HRESULT put_ShadowBlurSize(double val)
-		{
-			return m_pRenderer->put_ShadowBlurSize(val);
-		}
-		inline HRESULT get_ShadowColor(LONG* val)
-		{
-			return m_pRenderer->get_ShadowColor(val);
-		}
-		inline HRESULT put_ShadowColor(LONG val)
-		{
-			return m_pRenderer->put_ShadowColor(val);
-		}
-		inline HRESULT get_ShadowAlpha(LONG* val)
-		{
-			return m_pRenderer->get_ShadowAlpha(val);
-		}
-		inline HRESULT put_ShadowAlpha(LONG val)
-		{
-			return m_pRenderer->put_ShadowAlpha(val);
-		}
-		inline HRESULT get_ShadowVisible(BOOL* val)
-		{
-			return m_pRenderer->get_ShadowVisible((LONG*)val);
-		}
-		inline HRESULT put_ShadowVisible(BOOL val)
-		{
-			return m_pRenderer->put_ShadowVisible(val);
-		}
-
-	// edge -------------------------------------------------------------------------------------
-		inline HRESULT SetEdgeText(BSTR bsXML)
-		{
-			return m_pRenderer->SetEdgeText(bsXML);
-		}
-		inline HRESULT get_EdgeVisible(LONG* val)
-		{
-			return m_pRenderer->get_EdgeVisible(val);
-		}
-		inline HRESULT put_EdgeVisible(LONG val)
-		{
-			return m_pRenderer->put_EdgeVisible(val);
-		}
-		inline HRESULT get_EdgeColor(LONG* val)
-		{
-			return m_pRenderer->get_EdgeColor(val);
-		}
-		inline HRESULT put_EdgeColor(LONG val)
-		{
-			return m_pRenderer->put_EdgeColor(val);
-		}
-		inline HRESULT get_EdgeAlpha(LONG* val)
-		{
-			return m_pRenderer->get_EdgeAlpha(val);
-		}
-		inline HRESULT put_EdgeAlpha(LONG val)
-		{
-			return m_pRenderer->put_EdgeAlpha(val);
-		}
-		inline HRESULT get_EdgeDist(double* val)
-		{
-			return m_pRenderer->get_EdgeDist(val);
-		}
-		inline HRESULT put_EdgeDist(double val)
-		{
-			return m_pRenderer->put_EdgeDist(val);
-		}
+        inline HRESULT get_FontFaceIndex(int* lFaceIndex)
+        {
+            return m_pRenderer->get_FontFaceIndex(lFaceIndex);
+        }
+        inline HRESULT put_FontFaceIndex(const int& lFaceIndex)
+        {
+            return m_pRenderer->put_FontFaceIndex(lFaceIndex);
+        }
 
 	//-------- Функции для вывода текста --------------------------------------------------------
-		inline HRESULT CommandDrawText(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
-		{
-			return m_pRenderer->CommandDrawText(bsText, fX, fY, fWidth, fHeight, fBaseLineOffset);
-		}
-		inline HRESULT CommandDrawTextEx(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
-		{
-			return m_pRenderer->CommandDrawTextEx(bsText, bsGidText, bsSourceCodeText, fX, fY, fWidth, fHeight, fBaseLineOffset, lFlags);
-		}
+        virtual HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
+        {
+            return m_pRenderer->CommandDrawTextCHAR(c, x, y, w, h);
+        }
+        virtual HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)
+        {
+            return m_pRenderer->CommandDrawText(bsText, x, y, w, h);
+        }
+        virtual HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
+        {
+            return m_pRenderer->CommandDrawTextExCHAR(c, gid, x, y, w, h);
+        }
+        virtual HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
+        {
+            return m_pRenderer->CommandDrawTextEx(bsUnicodeText, pGids, nGidsCount, x, y, w, h);
+        }
+
 
 	//-------- Маркеры для команд ---------------------------------------------------------------
-		inline HRESULT BeginCommand(DWORD lType)
+        inline HRESULT BeginCommand(const DWORD& lType)
 		{
 			return m_pRenderer->BeginCommand(lType);
 		}
-		inline HRESULT EndCommand(DWORD lType)
+        inline HRESULT EndCommand(const DWORD& lType)
 		{
 			return m_pRenderer->EndCommand(lType);
 		}
 
 	//-------- Функции для работы с Graphics Path -----------------------------------------------
-		inline HRESULT PathCommandMoveTo(double fX, double fY)
+        inline HRESULT PathCommandMoveTo(const double& fX, const double& fY)
 		{
 			return m_pRenderer->PathCommandMoveTo(fX, fY);
 		}
-		inline HRESULT PathCommandLineTo(double fX, double fY)
+        inline HRESULT PathCommandLineTo(const double& fX, const double& fY)
 		{
 			return m_pRenderer->PathCommandLineTo(fX, fY);
 		}
-		inline HRESULT PathCommandLinesTo(SAFEARRAY* pPoints)
+        inline HRESULT PathCommandLinesTo(double* points, const int& count)
 		{
-			return m_pRenderer->PathCommandLinesTo(pPoints);
+            return m_pRenderer->PathCommandLinesTo(points, count);
 		}
-		inline HRESULT PathCommandCurveTo(double fX1, double fY1, double fX2, double fY2, double fX3, double fY3)
+        inline HRESULT PathCommandCurveTo(const double& fX1, const double& fY1, const double& fX2, const double& fY2, const double& fX3, const double& fY3)
 		{
 			return m_pRenderer->PathCommandCurveTo(fX1, fY1, fX2, fY2, fX3, fY3);
 		}
-		inline HRESULT PathCommandCurvesTo(SAFEARRAY* pPoints)
+        inline HRESULT PathCommandCurvesTo(double* points, const int& count)
 		{
-			return m_pRenderer->PathCommandCurvesTo(pPoints);
+            return m_pRenderer->PathCommandCurvesTo(points, count);
 		}
-		inline HRESULT PathCommandArcTo(double fX, double fY, double fWidth, double fHeight, double fStartAngle, double fSweepAngle)
+        inline HRESULT PathCommandArcTo(const double& fX, const double& fY, const double& fWidth, const double& fHeight, const double& fStartAngle, const double& fSweepAngle)
 		{
 			return m_pRenderer->PathCommandArcTo(fX, fY, fWidth, fHeight, fStartAngle, fSweepAngle);
 		}
@@ -902,7 +743,7 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->PathCommandEnd();
 		}
-		inline HRESULT DrawPath(long nType)
+        inline HRESULT DrawPath(const LONG& nType)
 		{
 			return m_pRenderer->DrawPath(nType);
 		}
@@ -914,36 +755,36 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->PathCommandGetCurrentPoint(fX, fY);
 		}
-		inline HRESULT PathCommandText(BSTR bsText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset)
-		{
-			return m_pRenderer->PathCommandText(bsText, fX, fY, fWidth, fHeight, fBaseLineOffset);
-		}
-		inline HRESULT PathCommandTextEx(BSTR bsText, BSTR bsGidText, BSTR bsSourceCodeText, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags)
-		{
-			return m_pRenderer->PathCommandTextEx(bsText, bsGidText, bsSourceCodeText, fX, fY, fWidth, fHeight, fBaseLineOffset, lFlags);
-		}
+
+        inline HRESULT PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
+        {
+            return m_pRenderer->PathCommandTextCHAR(c, x, y, w, h);
+        }
+        inline HRESULT PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)
+        {
+            return m_pRenderer->PathCommandText(bsText, x, y, w, h);
+        }
+        inline HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
+        {
+            return m_pRenderer->PathCommandTextExCHAR(c, gid, x, y, w, h);
+        }
+        inline HRESULT PathCommandTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
+        {
+            return m_pRenderer->PathCommandTextEx(bsUnicodeText, pGids, nGidsCount, x, y, w, h);
+        }
 
 	//-------- Функции для вывода изображений ---------------------------------------------------
-		inline HRESULT DrawImage(IUnknown* pInterface, double fX, double fY, double fWidth, double fHeight)
+        inline HRESULT DrawImage(IGrObject* pInterface, const double& fX, const double& fY, const double& fWidth, const double& fHeight)
 		{
 			return m_pRenderer->DrawImage(pInterface, fX, fY, fWidth, fHeight);
 		}
-		inline HRESULT DrawImageFromFile(BSTR bstrVal, double fX, double fY, double fWidth, double fHeight)
+        inline HRESULT DrawImageFromFile(const std::wstring& sPath, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255)
 		{
-			return m_pRenderer->DrawImageFromFile(bstrVal, fX, fY, fWidth, fHeight);
+            return m_pRenderer->DrawImageFromFile(sPath, x, y, w, h, lAlpha);
 		}
 
 	// transform --------------------------------------------------------------------------------
-		inline HRESULT GetCommandParams(double* dAngle, double* dLeft, double* dTop, double* dWidth, double* dHeight, DWORD* lFlags)
-		{
-			return m_pRenderer->GetCommandParams(dAngle, dLeft, dTop, dWidth, dHeight, lFlags);
-		}
-		inline HRESULT SetCommandParams(double dAngle, double dLeft, double dTop, double dWidth, double dHeight, DWORD lFlags)
-		{
-			return m_pRenderer->SetCommandParams(dAngle, dLeft, dTop, dWidth, dHeight, lFlags);
-		}
-
-		inline HRESULT SetTransform(double dA, double dB, double dC, double dD, double dE, double dF)
+        inline HRESULT SetTransform(const double& dA, const double& dB, const double& dC, const double& dD, const double& dE, const double& dF)
 		{
 			return m_pRenderer->SetTransform(dA, dB, dC, dD, dE, dF);
 		}
@@ -961,20 +802,26 @@ namespace NSHtmlRenderer
 		{
 			return m_pRenderer->get_ClipMode(plMode);
 		}
-		inline HRESULT put_ClipMode(LONG lMode)
+        inline HRESULT put_ClipMode(const LONG& lMode)
 		{
 			return m_pRenderer->put_ClipMode(lMode);
 		}
 
 	// additiaonal params ----------------------------------------------------------------------
-		inline HRESULT SetAdditionalParam(BSTR ParamName, VARIANT ParamValue)
-		{
-			return m_pRenderer->SetAdditionalParam(ParamName, ParamValue);
-		}
-		inline HRESULT GetAdditionalParam(BSTR ParamName, VARIANT* ParamValue)
-		{
-			return m_pRenderer->GetAdditionalParam(ParamName, ParamValue);
-		}
+        inline HRESULT CommandLong(const LONG& lType, const LONG& lCommand)
+        {
+            m_pRenderer->CommandLong(lType, lCommand);
+        }
+        inline HRESULT CommandDouble(const LONG& lType, const double& dCommand)
+        {
+            m_pRenderer->CommandDouble(lType, dCommand);
+        }
+        inline HRESULT CommandString(const LONG& lType, const std::wstring& sCommand)
+        {
+            m_pRenderer->CommandString(lType, sCommand);
+        }
 
 	};
 }
+
+#endif // _ASC_HTMLRENDERER_DOCUMENT_H_

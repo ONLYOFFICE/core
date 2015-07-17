@@ -1158,23 +1158,68 @@ HRESULT CPdfRenderer::PathCommandGetCurrentPoint(double* dX, double* dY)
 }
 HRESULT CPdfRenderer::PathCommandTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
 {
-	m_oPath.AddText(m_oFont, lUnicode, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH));
-	return S_OK;
+	unsigned int unUnicode = lUnicode;
+	bool bRes = PathCommandDrawText(&unUnicode, 1, dX, dY, NULL);
+	return bRes ? S_OK : S_FALSE;
 }
-HRESULT CPdfRenderer::PathCommandText(const std::wstring& wsText, const double& dX, const double& dY, const double& dW, const double& dH)
+HRESULT CPdfRenderer::PathCommandText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH)
 {
-	m_oPath.AddText(m_oFont, wsText, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH));
+	unsigned int unLen;
+	unsigned int* pUnicodes = WStringToUtf32(wsUnicodeText, unLen);
+	if (!pUnicodes)
+		return S_FALSE;
+
+	PathCommandDrawText(pUnicodes, unLen, dX, dY, NULL);
+	delete[] pUnicodes;
+
 	return S_OK;
 }
 HRESULT CPdfRenderer::PathCommandTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
 {
-	m_oPath.AddText(m_oFont, lUnicode, lGid, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH));
-	return S_OK;
+	unsigned int unUnicode = lUnicode;
+	unsigned int unGid     = lGid;
+	bool bRes = PathCommandDrawText(&unUnicode, 1, dX, dY, &unGid);
+	return bRes ? S_OK : S_FALSE;
 }
 HRESULT CPdfRenderer::PathCommandTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
 {
-	m_oPath.AddText(m_oFont, wsUnicodeText, pGids, unGidsCount, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH));
-	return S_OK;
+	if (!IsPageValid() || (!wsUnicodeText.size() && (!pGids || !unGidsCount)))
+		return S_FALSE;
+
+	unsigned int unLen = 0;
+	unsigned int* pUnicodes = NULL;
+	if (pGids && unGidsCount)
+	{
+		unLen = unGidsCount;
+		if (wsUnicodeText.size())
+		{
+			unsigned int unUnicodeLen;
+			pUnicodes = WStringToUtf32(wsUnicodeText, unUnicodeLen);
+			if (!pUnicodes || unUnicodeLen != unLen)
+				RELEASEARRAYOBJECTS(pUnicodes);
+		}
+
+		if (!pUnicodes)
+		{
+			pUnicodes = new unsigned int[unLen];
+			if (!pUnicodes)
+				return S_FALSE;
+
+			for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
+				pUnicodes[unIndex] = pGids[unIndex];
+		}
+	}
+	else
+	{
+		pUnicodes = WStringToUtf32(wsUnicodeText, unLen);
+		if (!pUnicodes)
+			return S_FALSE;
+	}
+
+	bool bRes = PathCommandDrawText(pUnicodes, unLen, dX, dY, pGids);
+	RELEASEARRAYOBJECTS(pUnicodes);
+
+	return bRes ? S_OK : S_FALSE;
 }
 //----------------------------------------------------------------------------------------
 // Функции для вывода изображений
@@ -1317,7 +1362,6 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, Pix* pMaskBuffer,
 	m_pPage->GrRestore();
 	return S_OK;
 }
-
 //----------------------------------------------------------------------------------------
 // Внутренние функции
 //----------------------------------------------------------------------------------------
@@ -1408,6 +1452,18 @@ bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const d
 	pText->SetAlpha((BYTE)m_oBrush.GetAlpha1());
 	pText->SetCharSpace(MM_2_PT(m_oFont.GetCharSpace()));
 
+	return true;
+}
+bool CPdfRenderer::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids)
+{
+	if (m_bNeedUpdateTextFont)
+		UpdateFont();
+
+	if (!m_pFont)
+		return false;
+
+	unsigned char* pCodes = m_pFont->EncodeString(pUnicodes, unLen, pGids);
+	m_oPath.AddText(m_pFont, pCodes, unLen * 2, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), m_oFont.GetSize(), MM_2_PT(m_oFont.GetCharSpace()));
 	return true;
 }
 void CPdfRenderer::UpdateFont()
@@ -1803,37 +1859,19 @@ void CPdfRenderer::CPath::CPathClose::Draw(PdfWriter::CPage* pPage)
 void CPdfRenderer::CPath::CPathClose::UpdateBounds(double& dL, double& dT, double& dR, double& dB)
 {
 }
-void CPdfRenderer::CPath::CPathTextChar::Draw(PdfWriter::CPage* pPage)
-{
-	// TODO: Реализовать
-}
-void CPdfRenderer::CPath::CPathTextChar::UpdateBounds(double& dL, double& dT, double& dR, double& dB)
-{
-	// TODO: Реализовать
-}
 void CPdfRenderer::CPath::CPathText::Draw(PdfWriter::CPage* pPage)
 {
-	// TODO: Реализовать
+	// TODO: Если данная команда будет часто вызываться, тогда ее нужно будет оптимизировать, точно также как это делается в обычном тексте
+	pPage->BeginText();
+	pPage->SetFontAndSize(font, fontSize);
+	pPage->SetCharSpace(charSpace);
+	pPage->SetTextRenderingMode(textrenderingmode_Stroke);
+	pPage->DrawText(x, y, codes, codesCount);
+	pPage->EndText();
 }
 void CPdfRenderer::CPath::CPathText::UpdateBounds(double& dL, double& dT, double& dR, double& dB)
 {
-	// TODO: Реализовать
-}
-void CPdfRenderer::CPath::CPathTextExChar::Draw(PdfWriter::CPage* pPage)
-{
-	// TODO: Реализовать
-}
-void CPdfRenderer::CPath::CPathTextExChar::UpdateBounds(double& dL, double& dT, double& dR, double& dB)
-{
-	// TODO: Реализовать
-}
-void CPdfRenderer::CPath::CPathTextEx::Draw(PdfWriter::CPage* pPage)
-{
-	// TODO: Реализовать
-}
-void CPdfRenderer::CPath::CPathTextEx::UpdateBounds(double& dL, double& dT, double& dR, double& dB)
-{
-	// TODO: Реализовать
+	UpdateMaxMinPoints(dL, dT, dR, dB, x, y);
 }
 void CPdfRenderer::CBrushState::Reset()
 {

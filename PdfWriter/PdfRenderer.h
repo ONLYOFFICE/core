@@ -16,6 +16,7 @@ namespace PdfWriter
 	class CImageDict;
 	class CShading;
 	class CExtGrState;
+	class CFontDict;
 }
 
 namespace Aggplus
@@ -189,6 +190,7 @@ private:
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha);
 	bool DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha);
 	bool DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
+	bool PathCommandDrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
 	void UpdateFont();
 	void UpdateTransform();
 	void UpdatePen();
@@ -1186,50 +1188,22 @@ private:
 				return rendererpathcommand_Close;
 			}
 		};
-		class CPathTextChar : public CPathCommandBase
-		{
-		public:
-			CPathTextChar(const CFontState& oFont, const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
-			{
-				font     = oFont;
-				unicode  = lUnicode;
-				x        = dX;
-				y        = dY;
-				w        = dW;
-				h        = dH;
-			}
-			void GetLastPoint(double& dX, double& dY)
-			{
-				dX = x;
-				dY = y;
-			}
-			void Draw(PdfWriter::CPage* pPage);
-			void UpdateBounds(double& dL, double& dT, double& dR, double& dB);
-			EPathCommandType GetType()
-			{
-				return rendererpathcommand_TextChar;
-			}
-
-		public:
-
-			CFontState font;
-			LONG       unicode;
-			double     x;
-			double     y;
-			double     w;
-			double     h;
-		};
 		class CPathText : public CPathCommandBase
 		{
 		public:
-			CPathText(const CFontState& oFont, const std::wstring& wsText, const double& dX, const double& dY, const double& dW, const double& dH)
+			CPathText(PdfWriter::CFontDict* pFont, unsigned char* pCodes, const unsigned int& unCodesCount, const double& dX, const double& dY, const double& dSize, const double& dCharSpace)
 			{
-				font     = oFont;
-				text     = wsText;
-				x        = dX;
-				y        = dY;
-				w        = dW;
-				h        = dH;
+				font       = pFont;
+				codes      = pCodes;
+				codesCount = unCodesCount;
+				x          = dX;
+				y          = dY;
+				fontSize   = dSize;
+				charSpace  = dCharSpace;
+			}
+			~CPathText()
+			{
+				RELEASEARRAYOBJECTS(codes);
 			}
 			void GetLastPoint(double& dX, double& dY)
 			{
@@ -1245,106 +1219,13 @@ private:
 
 		public:
 
-			CFontState   font;
-			std::wstring text;
-			double       x;
-			double       y;
-			double       w;
-			double       h;
-		};
-		class CPathTextExChar : public CPathCommandBase
-		{
-		public:
-			CPathTextExChar(const CFontState& oFont, const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
-			{
-				font     = oFont;
-				unicode  = lUnicode;
-				gid      = lGid;
-				x        = dX;
-				y        = dY;
-				w        = dW;
-				h        = dH;
-			}
-			void GetLastPoint(double& dX, double& dY)
-			{
-				dX = x;
-				dY = y;
-			}
-			void Draw(PdfWriter::CPage* pPage);
-			void UpdateBounds(double& dL, double& dT, double& dR, double& dB);
-			EPathCommandType GetType()
-			{
-				return rendererpathcommand_TextExChar;
-			}
-
-		public:
-
-			CFontState font;
-			LONG       unicode;
-			LONG       gid;
-			double     x;
-			double     y;
-			double     w;
-			double     h;
-		};
-		class CPathTextEx : public CPathCommandBase
-		{
-		public:
-			CPathTextEx(const CFontState& oFont, const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
-			{
-				font        = oFont;
-				unicodeText = wsUnicodeText;
-				x           = dX;
-				y           = dY;
-				w           = dW;
-				h           = dH;
-
-				if (pGids && unGidsCount)
-				{
-					gids = new unsigned int[unGidsCount];
-					if (gids)
-					{
-						memcpy(gids, pGids, unGidsCount * sizeof(unsigned int));
-						gidsCount = unGidsCount;
-					}
-					else
-					{
-						gids      = NULL;
-						gidsCount = 0;
-					}
-				}
-				else
-				{
-					gidsCount = 0;
-					gids      = NULL;
-				}
-			}
-			~CPathTextEx()
-			{
-				RELEASEARRAYOBJECTS(gids);
-			}
-			void GetLastPoint(double& dX, double& dY)
-			{
-				dX = x;
-				dY = y;
-			}
-			void Draw(PdfWriter::CPage* pPage);
-			void UpdateBounds(double& dL, double& dT, double& dR, double& dB);
-			EPathCommandType GetType()
-			{
-				return rendererpathcommand_TextEx;
-			}
-
-		public:
-
-			CFontState   font;
-			std::wstring unicodeText;
-			unsigned int*gids;
-			unsigned int gidsCount;
-			double       x;
-			double       y;
-			double       w;
-			double       h;
+			PdfWriter::CFontDict* font;
+			unsigned char*        codes;
+			unsigned int          codesCount;
+			double                x;
+			double                y;
+			double                fontSize;
+			double                charSpace;
 		};
 
 	public:
@@ -1384,21 +1265,9 @@ private:
 
 			return Add(new CPathArcTo(dX, dY, dW, dH, dStart, dSweep));
 		}
-		bool AddText(const CFontState& oFont, const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
+		bool AddText(PdfWriter::CFontDict* pFont, unsigned char* pCodes, const unsigned int& unLen, const double& dX, const double& dY, const double& dSize, const double& dCharSpace)
 		{
-			return Add(new CPathTextChar(oFont, lUnicode, dX, dY, dW, dH));
-		}
-		bool AddText(const CFontState& oFont, const std::wstring& wsText, const double& dX, const double& dY, const double& dW, const double& dH)
-		{
-			return Add(new CPathText(oFont, wsText, dX, dY, dW, dH));
-		}
-		bool AddText(const CFontState& oFont, const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
-		{
-			return Add(new CPathTextExChar(oFont, lUnicode, lGid, dX, dY, dW, dH));
-		}
-		bool AddText(const CFontState& oFont, const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
-		{
-			return Add(new CPathTextEx(oFont, wsUnicodeText, pGids, unGidsCount, dX, dY, dW, dH));
+			return Add(new CPathText(pFont, pCodes, unLen, dX, dY, dSize, dCharSpace));
 		}
 		bool Close()
 		{

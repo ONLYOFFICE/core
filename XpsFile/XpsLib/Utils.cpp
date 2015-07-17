@@ -1056,22 +1056,33 @@ namespace XPS
 
 						if (IsNumber(LookChar(wsString, nPos)))
 						{
-							double dX1, dY1;
+							double dX1, dY1, dEndX, dEndY;
+
 							if ('q' == wChar)
 							{
-								dX1 = dCurX + GetDouble(wsString, nPos, nLen);
-								dY1 = dCurY + GetDouble(wsString, nPos, nLen);
-								dCurX += GetDouble(wsString, nPos, nLen);
-								dCurY += GetDouble(wsString, nPos, nLen);
+								dX1   = dCurX + GetDouble(wsString, nPos, nLen);
+								dY1   = dCurY + GetDouble(wsString, nPos, nLen);
+								dEndX = dCurX + GetDouble(wsString, nPos, nLen);
+								dEndY = dCurY + GetDouble(wsString, nPos, nLen);
 							}
 							else
 							{
-								dX1 = GetDouble(wsString, nPos, nLen);
-								dY1 = GetDouble(wsString, nPos, nLen);
-								dCurX = GetDouble(wsString, nPos, nLen);
-								dCurY = GetDouble(wsString, nPos, nLen);
+								dX1   = GetDouble(wsString, nPos, nLen);
+								dY1   = GetDouble(wsString, nPos, nLen);
+								dEndX = GetDouble(wsString, nPos, nLen);
+								dEndY = GetDouble(wsString, nPos, nLen);
 							}
-							pRenderer->PathCommandCurveTo(xpsUnitToMM(dX1), xpsUnitToMM(dY1), xpsUnitToMM(dX1), xpsUnitToMM(dY1), xpsUnitToMM(dCurX), xpsUnitToMM(dCurY));
+
+							double dCx1 = dCurX / 3 + 2 * dX1 / 3;
+							double dCy1 = dCurY / 3 + 2 * dY1 / 3;
+
+							double dCx2 = dEndX / 3 + 2 * dX1 / 3;
+							double dCy2 = dEndY / 3 + 2 * dY1 / 3;
+
+							pRenderer->PathCommandCurveTo(xpsUnitToMM(dCx1), xpsUnitToMM(dCy1), xpsUnitToMM(dCx2), xpsUnitToMM(dCy2), xpsUnitToMM(dEndX), xpsUnitToMM(dEndY));
+
+							dCurX = dEndX;
+							dCurY = dEndY;
 						}
 						else
 							break;

@@ -16,6 +16,8 @@
 #include "../../DesktopEditor/common/Array.h"
 #include "../../DesktopEditor/graphics/BaseThread.h"
 
+#include "../../PdfWriter/PdfRenderer.h"
+
 // TODO: 1. Реализовать по-нормальному градиентные заливки (Axial и Radial) 
 //       2. m_pRenderer->SetAdditionalParam(L"TilingHtmlPattern", oWriter.GetXmlString());
 //       3. Подбор шрифтов необходимо перенести в GlobalParams->FindFontFile
@@ -2745,7 +2747,7 @@ namespace PdfReader
 		m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionUnion);
 		m_pRenderer->PathCommandEnd();
 		m_pRenderer->put_FontStringGID(true);
-		m_pRenderer->PathCommandTextEx(wsText, L"", PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight), PDFCoordsToMM(dBaseLineOffset), 0);
+		m_pRenderer->PathCommandText(wsText, PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
 		m_pRenderer->EndCommand(c_nClipType);
 	}
 	void RendererOutputDev::BeginStringOperator(GrState *pGState)
@@ -2840,7 +2842,12 @@ namespace PdfReader
 		double *pTm   = pGState->GetTextMatrix();
 		GrFont *pFont = pGState->GetFont();
 
-		std::wstring  wsUnicodeText, wsGidText;
+		unsigned int unGidsCount = seString->GetLength();
+		unsigned int* pGids = new unsigned int[unGidsCount];
+		if (!pGids)
+			return;
+
+		std::wstring  wsUnicodeText;
 		for (int nIndex = 0; nIndex < seString->GetLength(); nIndex++)
 		{
 			char nChar = seString->GetAt(nIndex);
@@ -2852,20 +2859,14 @@ namespace PdfReader
 			}
 
 			if (NULL != oEntry.pCodeToGID)
-			{
-				unsigned short unGID;
-				if (0 != (unGID = oEntry.pCodeToGID[nChar]))
-					wsGidText += (wchar_t(unGID));
-			}
+				pGids[nIndex] = oEntry.pCodeToGID[nChar];
 			else
-			{
-				int nCurCode = (0 == nChar ? 65534 : nChar);
-				wsGidText += (wchar_t(nCurCode));
-			}
+				pGids[nIndex] = (0 == nChar ? 65534 : nChar);
 
 		}
 
-		m_pRenderer->CommandDrawTextEx(wsUnicodeText, wsGidText, PDFCoordsToMM(100), PDFCoordsToMM(100), 0, PDFCoordsToMM(0), PDFCoordsToMM(0), 0);
+		m_pRenderer->CommandDrawTextEx(wsUnicodeText, pGids, unGidsCount, PDFCoordsToMM(100), PDFCoordsToMM(100), 0, PDFCoordsToMM(0));
+		RELEASEARRAYOBJECTS(pGids);
 	}
 	void RendererOutputDev::DrawChar(GrState *pGState, double dX, double dY, double dDx, double dDy, double dOriginX, double dOriginY, CharCode nCode, int nBytesCount, Unicode *pUnicode, int nUnicodeLen)
 	{
@@ -2965,19 +2966,20 @@ namespace PdfReader
 			}
 		}
 
-		std::wstring wsGidText = L"";
+		unsigned int unGidsCount = 0;
+		unsigned int unGid       = 0;
 		if (NULL != oEntry.pCodeToGID && nCode < oEntry.unLenGID)
 		{
-			unsigned short unGID;
-			if (0 == (unGID = oEntry.pCodeToGID[nCode]))
-				wsGidText = L"";
+			if (0 == (unGid = oEntry.pCodeToGID[nCode]))
+				unGidsCount = 0;
 			else
-				wsGidText = wchar_t(unGID);
+				unGidsCount = 1;
 		}
 		else
 		{
 			int nCurCode = (0 == nCode ? 65534 : nCode);
-			wsGidText = wchar_t(nCurCode);
+			unGid       = (unsigned int)nCurCode;
+			unGidsCount = 1;
 		}
 
 		std::wstring wsSrcCodeText;
@@ -3010,9 +3012,14 @@ namespace PdfReader
 		if (nRenderMode == 0 || nRenderMode == 2 || nRenderMode == 4 || nRenderMode == 6)
 		{
 			if (c_nPDFWriter == m_lRendererType)
-				m_pRenderer->CommandDrawTextPdf(wsUnicodeText, wsGidText, wsSrcCodeText, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy), PDFCoordsToMM(0), 0);
+			{
+				CPdfRenderer* pPdfRenderer = (CPdfRenderer*)m_pRenderer;
+				pPdfRenderer->CommandDrawTextPdf(wsUnicodeText, &unGid, unGidsCount, wsSrcCodeText, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+			}
 			else
-				m_pRenderer->CommandDrawTextEx(wsUnicodeText, wsGidText, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy), PDFCoordsToMM(0), 0);
+			{
+				m_pRenderer->CommandDrawTextEx(wsUnicodeText, &unGid, unGidsCount, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+			}
 		}
 
 		if (nRenderMode == 1 || nRenderMode == 2 || nRenderMode == 5 || nRenderMode == 6)
@@ -3038,13 +3045,14 @@ namespace PdfReader
 		if (4 <= nRenderMode)
 		{
 			std::wstring wsTempFontName, wsTempFontPath;
+			std::wstring wsClipText; wsClipText += (wchar_t)(unGid);
 			double dTempFontSize;
 			long lTempFontStyle;
 			m_pRenderer->get_FontName(&wsTempFontName);
 			m_pRenderer->get_FontPath(&wsTempFontPath);
 			m_pRenderer->get_FontSize(&dTempFontSize);
 			m_pRenderer->get_FontStyle(&lTempFontStyle);
-			m_pBufferTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsGidText, 0 + dShiftX, /*-fabs(pFont->GetFontBBox()[3]) * dTfs*/ + dShiftY, 0, 0, 0);
+			m_pBufferTextClip->ClipToText(wsTempFontName, wsTempFontPath, dTempFontSize, (int)lTempFontStyle, arrMatrix, wsClipText, 0 + dShiftX, /*-fabs(pFont->GetFontBBox()[3]) * dTfs*/ +dShiftY, 0, 0, 0);
 		}
 
 		m_pRenderer->put_FontSize(dOldSize);
@@ -3546,7 +3554,7 @@ namespace PdfReader
 				m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionUnion);
 				m_pRenderer->PathCommandEnd();
 				m_pRenderer->put_FontStringGID(true);
-				m_pRenderer->PathCommandTextEx(wsText, L"", PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight), PDFCoordsToMM(dBaseLineOffset), 0);
+				m_pRenderer->PathCommandText(wsText, PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
 				m_pRenderer->EndCommand(c_nClipType);
 			}
 		}

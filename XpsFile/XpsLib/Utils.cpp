@@ -310,6 +310,7 @@ namespace XPSEllipse
 			dCy1 = SQRT(dRoot);
 			dCy2 = -dCy1;
 		}
+		return true;
 	}
 	inline bool GetEllipses            (const double& dX1, const double& dY1, double& dRadX, double& dRadY, double& dCx1, double& dCy1, double& dCx2, double& dCy2)
 	{
@@ -1376,7 +1377,31 @@ namespace XPS
 		else
 			return false; // Такого не должно быть
 	}
-	void ReadTransform    (XmlUtils::CXmlLiteReader& oReader, CWString& wsTransform, CWString* pwsKey)
+	void ReadMatrixTransform(XmlUtils::CXmlLiteReader& oReader, CWString& wsTransform, CWString* pwsKey)
+	{
+		if (oReader.GetAttributesCount() <= 0)
+			return;
+
+		if (!oReader.MoveToFirstAttribute())
+			return;
+
+		CWString wsAttrName = oReader.GetName();
+		while (!wsAttrName.empty())
+		{
+			if (wsAttrName == L"Matrix")
+				wsTransform.create(oReader.GetText(), true);
+			else if (wsAttrName == L"x:Key" && pwsKey)
+				pwsKey->create(oReader.GetText(), true);
+
+			if (!oReader.MoveToNextAttribute())
+				break;
+
+			wsAttrName = oReader.GetName();
+		}
+
+		oReader.MoveToElement();
+	}
+	void ReadTransform      (XmlUtils::CXmlLiteReader& oReader, CWString& wsTransform, CWString* pwsKey)
 	{
 		CWString wsNodeName;
 		int nCurDepth = oReader.GetDepth();
@@ -1385,27 +1410,7 @@ namespace XPS
 			wsNodeName = oReader.GetName();
 			if (wsNodeName == L"MatrixTransform")
 			{
-				if (oReader.GetAttributesCount() <= 0)
-					return;
-
-				if (!oReader.MoveToFirstAttribute())
-					return;
-
-				CWString wsAttrName = oReader.GetName();
-				while (!wsAttrName.empty())
-				{
-					if (wsAttrName == L"Matrix")
-						wsTransform.create(oReader.GetText(), true);
-					else if (wsAttrName == L"x:Key" && pwsKey)
-						pwsKey->create(oReader.GetText(), true);
-
-					if (!oReader.MoveToNextAttribute())
-						break;
-
-					wsAttrName = oReader.GetName();					
-				}
-
-				oReader.MoveToElement();
+				ReadMatrixTransform(oReader, wsTransform, pwsKey);
 			}
 		}
 	}

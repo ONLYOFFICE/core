@@ -19,17 +19,20 @@ namespace XPS
 		~CStaticResource();
 		const wchar_t* GetFigure(CWString& wsKey);
 		CBrush*        GetBrush(CWString& wsKey);
+		const wchar_t* GetTransform(CWString& wsKey);
 
 	private:
 
 		void Parse(XmlUtils::CXmlLiteReader& oReader);
 		void AddFigure(const CWString& wsKey, const CWString& wsValue);
 		void AddBrush(const CWString& wsKey, CBrush* pBrush);
+		void AddTransform(const CWString& wsKey, const CWString& wsValue);
 
 	private:
 
 		std::map<CWString, CWString> m_mFigures;
 		std::map<CWString, CBrush*>  m_mBrushes;
+		std::map<CWString, CWString> m_mTransforms;
 	};
 
 	class CBrush

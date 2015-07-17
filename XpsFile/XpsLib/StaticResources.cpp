@@ -51,6 +51,14 @@ namespace XPS
 
 		return NULL;
 	}
+	const wchar_t* CStaticResource::GetTransform(CWString& wsKey)
+	{
+		std::map<CWString, CWString>::iterator oIter = m_mTransforms.find(wsKey);
+		if (oIter != m_mTransforms.end())
+			return oIter->second.c_str();
+
+		return NULL;
+	}
 	void CStaticResource::Parse(XmlUtils::CXmlLiteReader& oReader)
 	{
 		CWString wsNodeName;
@@ -95,6 +103,13 @@ namespace XPS
 				if (pBrush)
 					AddBrush(wsKey, pBrush);
 			}
+			else if (wsNodeName == L"MatrixTransform")
+			{
+				CWString wsKey, wsValue;
+				ReadMatrixTransform(oReader, wsValue, &wsKey);
+				if (!wsKey.empty() && !wsValue.empty())
+					AddTransform(wsKey, wsValue);
+			}
 		}
 	}
 	void CStaticResource::AddFigure(const CWString& wsKey, const CWString& wsValue)
@@ -105,7 +120,10 @@ namespace XPS
 	{
 		m_mBrushes.insert(std::pair<CWString, CBrush*>(wsKey, pBrush));
 	}
-
+	void CStaticResource::AddTransform(const CWString& wsKey, const CWString& wsValue)
+	{
+		m_mTransforms.insert(std::pair<CWString, CWString>(wsKey, wsValue));
+	}
 	bool CSolidBrush::SetToRenderer(IRenderer* pRenderer)
 	{
 		pRenderer->put_BrushType(c_BrushTypeSolid);

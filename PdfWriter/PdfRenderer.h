@@ -121,10 +121,10 @@ public:
 	//----------------------------------------------------------------------------------------
 	// Функции для вывода текста
 	//----------------------------------------------------------------------------------------
-	virtual HRESULT CommandDrawTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset);
-	virtual HRESULT CommandDrawText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset);
-	virtual HRESULT CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags);
-	virtual HRESULT CommandDrawTextEx(const std::wstring& wsUnicodeText, const std::wstring& wsGidText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags);
+	virtual HRESULT CommandDrawTextCHAR  (const LONG& lUnicode,                   const double& dX, const double& dY, const double& dW, const double& dH);
+	virtual HRESULT CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH);
+	virtual HRESULT CommandDrawText      (const std::wstring& wsUnicodeText,                                                           const double& dX, const double& dY, const double& dW, const double& dH);
+	virtual HRESULT CommandDrawTextEx    (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH);
 	//----------------------------------------------------------------------------------------
 	// Маркеры команд
 	//----------------------------------------------------------------------------------------
@@ -144,10 +144,10 @@ public:
 	virtual HRESULT DrawPath(const LONG& lType);
 	virtual HRESULT PathCommandStart();
 	virtual HRESULT PathCommandGetCurrentPoint(double* dX, double* dY);
-	virtual HRESULT PathCommandTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset);
-	virtual HRESULT PathCommandText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset);
-	virtual HRESULT PathCommandTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags);
-	virtual HRESULT PathCommandTextEx(const std::wstring& wsUnicodeText, const std::wstring& wsGidText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags);
+	virtual HRESULT PathCommandTextCHAR  (const LONG& lUnicode,                   const double& dX, const double& dY, const double& dW, const double& dH);
+	virtual HRESULT PathCommandTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH);
+	virtual HRESULT PathCommandText      (const std::wstring& wsUnicodeText,                                                           const double& dX, const double& dY, const double& dW, const double& dH);
+	virtual HRESULT PathCommandTextEx    (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH);
 	//----------------------------------------------------------------------------------------
 	// Функции для вывода изображений
 	//----------------------------------------------------------------------------------------
@@ -173,8 +173,8 @@ public:
 	//----------------------------------------------------------------------------------------
 	// Дополнительные функции Pdf рендерера
 	//----------------------------------------------------------------------------------------
-	HRESULT CommandDrawTextPdf(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const std::wstring& wsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags);
-	HRESULT PathCommandTextPdf(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags);
+	HRESULT CommandDrawTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const std::wstring& wsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH);
+	HRESULT PathCommandTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH);
 	HRESULT DrawImage1bpp(Pix* pImageBuffer, const unsigned int& unWidth, const unsigned int& unHeight, const double& dX, const double& dY, const double& dW, const double& dH);
 	HRESULT EnableBrushRect(const LONG& lEnable);
 	HRESULT SetLinearGradient(const double& dX1, const double& dY1, const double& dX2, const double& dY2);
@@ -188,7 +188,7 @@ private:
 	void OnlineWordToPdfInternal(BYTE* dstArray, LONG lLen, const std::wstring& wsHtmlPlace, std::wstring& wsHypers, int& nCountPages, const std::wstring& wsTempLogo, LONG lReg);
 	PdfWriter::CImageDict* LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha);
 	bool DrawImage(Aggplus::CImage* pImage, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha);
-	bool DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, unsigned short* pGids = NULL);
+	bool DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids = NULL);
 	void UpdateFont();
 	void UpdateTransform();
 	void UpdatePen();
@@ -1189,7 +1189,7 @@ private:
 		class CPathTextChar : public CPathCommandBase
 		{
 		public:
-			CPathTextChar(const CFontState& oFont, const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
+			CPathTextChar(const CFontState& oFont, const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
 			{
 				font     = oFont;
 				unicode  = lUnicode;
@@ -1197,7 +1197,6 @@ private:
 				y        = dY;
 				w        = dW;
 				h        = dH;
-				baseline = dBaselineOffset;
 			}
 			void GetLastPoint(double& dX, double& dY)
 			{
@@ -1219,12 +1218,11 @@ private:
 			double     y;
 			double     w;
 			double     h;
-			double     baseline;
 		};
 		class CPathText : public CPathCommandBase
 		{
 		public:
-			CPathText(const CFontState& oFont, const std::wstring& wsText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
+			CPathText(const CFontState& oFont, const std::wstring& wsText, const double& dX, const double& dY, const double& dW, const double& dH)
 			{
 				font     = oFont;
 				text     = wsText;
@@ -1232,7 +1230,6 @@ private:
 				y        = dY;
 				w        = dW;
 				h        = dH;
-				baseline = dBaselineOffset;
 			}
 			void GetLastPoint(double& dX, double& dY)
 			{
@@ -1254,12 +1251,11 @@ private:
 			double       y;
 			double       w;
 			double       h;
-			double       baseline;
 		};
 		class CPathTextExChar : public CPathCommandBase
 		{
 		public:
-			CPathTextExChar(const CFontState& oFont, const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
+			CPathTextExChar(const CFontState& oFont, const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
 			{
 				font     = oFont;
 				unicode  = lUnicode;
@@ -1268,7 +1264,6 @@ private:
 				y        = dY;
 				w        = dW;
 				h        = dH;
-				baseline = dBaselineOffset;
 			}
 			void GetLastPoint(double& dX, double& dY)
 			{
@@ -1291,21 +1286,42 @@ private:
 			double     y;
 			double     w;
 			double     h;
-			double     baseline;
 		};
 		class CPathTextEx : public CPathCommandBase
 		{
 		public:
-			CPathTextEx(const CFontState& oFont, const std::wstring& wsUnicodeText, const std::wstring& wsGidText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
+			CPathTextEx(const CFontState& oFont, const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
 			{
 				font        = oFont;
 				unicodeText = wsUnicodeText;
-				gidText     = wsGidText;
 				x           = dX;
 				y           = dY;
 				w           = dW;
 				h           = dH;
-				baseline    = dBaselineOffset;
+
+				if (pGids && unGidsCount)
+				{
+					gids = new unsigned int[unGidsCount];
+					if (gids)
+					{
+						memcpy(gids, pGids, unGidsCount * sizeof(unsigned int));
+						gidsCount = unGidsCount;
+					}
+					else
+					{
+						gids      = NULL;
+						gidsCount = 0;
+					}
+				}
+				else
+				{
+					gidsCount = 0;
+					gids      = NULL;
+				}
+			}
+			~CPathTextEx()
+			{
+				RELEASEARRAYOBJECTS(gids);
 			}
 			void GetLastPoint(double& dX, double& dY)
 			{
@@ -1323,12 +1339,12 @@ private:
 
 			CFontState   font;
 			std::wstring unicodeText;
-			std::wstring gidText;
+			unsigned int*gids;
+			unsigned int gidsCount;
 			double       x;
 			double       y;
 			double       w;
 			double       h;
-			double       baseline;
 		};
 
 	public:
@@ -1368,21 +1384,21 @@ private:
 
 			return Add(new CPathArcTo(dX, dY, dW, dH, dStart, dSweep));
 		}
-		bool AddText(const CFontState& oFont, const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
+		bool AddText(const CFontState& oFont, const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
 		{
-			return Add(new CPathTextChar(oFont, lUnicode, dX, dY, dW, dH, dBaselineOffset));
+			return Add(new CPathTextChar(oFont, lUnicode, dX, dY, dW, dH));
 		}
-		bool AddText(const CFontState& oFont, const std::wstring& wsText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
+		bool AddText(const CFontState& oFont, const std::wstring& wsText, const double& dX, const double& dY, const double& dW, const double& dH)
 		{
-			return Add(new CPathText(oFont, wsText, dX, dY, dW, dH, dBaselineOffset));
+			return Add(new CPathText(oFont, wsText, dX, dY, dW, dH));
 		}
-		bool AddText(const CFontState& oFont, const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags)
+		bool AddText(const CFontState& oFont, const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
 		{
-			return Add(new CPathTextExChar(oFont, lUnicode, lGid, dX, dY, dW, dH, dBaselineOffset));
+			return Add(new CPathTextExChar(oFont, lUnicode, lGid, dX, dY, dW, dH));
 		}
-		bool AddText(const CFontState& oFont, const std::wstring& wsUnicodeText, const std::wstring& wsGidText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags)
+		bool AddText(const CFontState& oFont, const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
 		{
-			return Add(new CPathTextEx(oFont, wsUnicodeText, wsGidText, dX, dY, dW, dH, dBaselineOffset));
+			return Add(new CPathTextEx(oFont, wsUnicodeText, pGids, unGidsCount, dX, dY, dW, dH));
 		}
 		bool Close()
 		{

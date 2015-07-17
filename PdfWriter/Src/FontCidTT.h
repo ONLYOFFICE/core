@@ -26,7 +26,7 @@ namespace PdfWriter
 
 		CFontCidTrueType(CXref* pXref, CDocument* pDocument, const std::wstring& wsFontPath, unsigned int unIndex);
 		~CFontCidTrueType();
-		unsigned char* EncodeString(unsigned int* pUnicodes, unsigned int unLen, unsigned short* pGid = NULL);
+		unsigned char* EncodeString(unsigned int* pUnicodes, unsigned int unLen, const unsigned int* pGids = NULL);
 		unsigned int   GetWidth(unsigned short ushCode);
 		EFontType      GetFontType()
 		{
@@ -58,7 +58,7 @@ namespace PdfWriter
 		std::map<unsigned int, unsigned short>   m_mUnicodeToCode;  // Мап Юникод->код символа
 		std::vector<unsigned int>                m_vUnicodes;       // Обратный мап код символа -> юникод
 
-		std::vector<unsigned short>              m_vCodeToGid;
+		std::vector<unsigned int>                m_vCodeToGid;
 		std::vector<unsigned int>                m_vWidths;
 		std::map<unsigned short, bool>           m_mGlyphs;
 

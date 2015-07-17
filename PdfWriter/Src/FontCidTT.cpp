@@ -17,7 +17,7 @@ namespace PdfWriter
 	static const char* c_sToUnicodeInfo = "/CIDSystemInfo\n<< /Registry (Adobe)\n /Ordering (UCS)\n /Supplement 0\n >> def\n/CMapName /Adobe-Identity-UCS def\n/CMapType 2 def\n1 begincodespacerange\n<0000> <FFFF>\nendcodespacerange\n";
 	static const char* c_sToUnicodeFooter = "endcmap\nCMapName currentdict /CMap defineresource pop\nend\nend\n";
 
-	static unsigned short GetGID(FT_Face pFace, unsigned int unUnicode)
+	static unsigned int GetGID(FT_Face pFace, unsigned int unUnicode)
 	{
 		int nCharIndex = 0;
 
@@ -176,7 +176,7 @@ namespace PdfWriter
 		pCIDToGIDMapDict->SetFilter(STREAM_FILTER_FLATE_DECODE);
 		m_pCidToGidMapStream = pCIDToGIDMapDict->GetStream();
 	}
-	unsigned char* CFontCidTrueType::EncodeString(unsigned int* pUnicodes, unsigned int unLen, unsigned short* pGids)
+	unsigned char* CFontCidTrueType::EncodeString(unsigned int* pUnicodes, unsigned int unLen, const unsigned int* pGids)
 	{
 		if (!OpenFontFace())
 			return NULL;
@@ -224,25 +224,25 @@ namespace PdfWriter
 				m_mUnicodeToCode.insert(std::pair<unsigned int, unsigned short>(unUnicode, ushCode));				
 				m_vUnicodes.push_back(unUnicode);
 
-				unsigned short ushGID;
+				unsigned int unGID;
 				if (!pGids)
 				{
-					ushGID = GetGID(m_pFace, unUnicode);
-					if (0 == ushGID && -1 != m_nSymbolicCmap)
-						ushGID = GetGID(m_pFace, unUnicode + 0xF000);
+					unGID = GetGID(m_pFace, unUnicode);
+					if (0 == unGID && -1 != m_nSymbolicCmap)
+						unGID = GetGID(m_pFace, unUnicode + 0xF000);
 				}
 				else
 				{
-					ushGID = pGids[unIndex];
+					unGID = pGids[unIndex];
 				}
 
-				m_vCodeToGid.push_back(ushGID);
+				m_vCodeToGid.push_back(unGID);
 
 				// Данный символ используется
-				m_mGlyphs.insert(std::pair<unsigned short, bool>(ushGID, true));
+				m_mGlyphs.insert(std::pair<unsigned int, bool>(unGID, true));
 
 				// Если данный символ составной (CompositeGlyf), тогда мы должны учесть все его дочерные символы (subglyfs)
-				if (0 == FT_Load_Glyph(m_pFace, ushGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE))
+				if (0 == FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE))
 				{
 					for (int nSubIndex = 0; nSubIndex < m_pFace->glyph->num_subglyphs; nSubIndex++)
 					{

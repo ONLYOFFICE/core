@@ -599,7 +599,7 @@ namespace NSOnlineOfficeBinToPdf
 					double m1 = ReadInt(current, curindex) / 100000.0;
 					double m2 = ReadInt(current, curindex) / 100000.0;
 
-					pPdf->CommandDrawText(wsTempString, m1, m2, 0, 0, 0);
+					pPdf->CommandDrawText(wsTempString, m1, m2, 0, 0);
 					break;
 				}
 				case ctBeginCommand:

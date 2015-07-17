@@ -882,7 +882,7 @@ HRESULT CPdfRenderer::put_FontFaceIndex(const int& nFaceIndex)
 //----------------------------------------------------------------------------------------
 // Функции для вывода текста
 //----------------------------------------------------------------------------------------
-HRESULT CPdfRenderer::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
+HRESULT CPdfRenderer::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	if (!IsPageValid())
 		return S_FALSE;
@@ -891,7 +891,7 @@ HRESULT CPdfRenderer::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX
 	bool bRes = DrawText(&unUnicode, 1, dX, dY, NULL);
 	return bRes ? S_OK : S_FALSE;
 }
-HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
+HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	if (!IsPageValid() || !wsUnicodeText.size())
 		return S_FALSE;
@@ -944,29 +944,26 @@ HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const d
 
 	return bRes ? S_OK : S_FALSE;
 }
-HRESULT CPdfRenderer::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags)
+HRESULT CPdfRenderer::CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	if (!IsPageValid())
 		return S_FALSE;
 
 	unsigned int unUnicode = lUnicode;
-	unsigned short ushGid  = lGid;
-	bool bRes = DrawText(&unUnicode, 1, dX, dY, &ushGid);
+	unsigned int unGid     = lGid;
+	bool bRes = DrawText(&unUnicode, 1, dX, dY, &unGid);
 	return bRes ? S_OK : S_FALSE;
 }
-HRESULT CPdfRenderer::CommandDrawTextEx(const std::wstring& wsUnicodeText, const std::wstring& wsGidText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags)
+HRESULT CPdfRenderer::CommandDrawTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
 {
-	if (!IsPageValid() || (!wsUnicodeText.size() && !wsGidText.size()))
+	if (!IsPageValid() || (!wsUnicodeText.size() && (!pGids || !unGidsCount)))
 		return S_FALSE;
 
 	unsigned int unLen = 0;
 	unsigned int* pUnicodes = NULL;
-	unsigned short* pGids = NULL;
-
-	if (wsGidText.size())
+	if (pGids && unGidsCount)
 	{
-		unLen = wsGidText.size();
-
+		unLen = unGidsCount;
 		if (wsUnicodeText.size())
 		{
 			unsigned int unUnicodeLen;
@@ -982,18 +979,8 @@ HRESULT CPdfRenderer::CommandDrawTextEx(const std::wstring& wsUnicodeText, const
 				return S_FALSE;
 
 			for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
-				pUnicodes[unIndex] = (unsigned int)wsGidText.at(unIndex);
+				pUnicodes[unIndex] = pGids[unIndex];
 		}
-
-		pGids = new unsigned short[unLen];
-		if (!pGids)
-		{
-			RELEASEARRAYOBJECTS(pUnicodes);
-			return S_FALSE;
-		}
-
-		for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
-			pGids[unIndex] = (unsigned int)wsGidText.at(unIndex);
 	}
 	else
 	{
@@ -1003,9 +990,7 @@ HRESULT CPdfRenderer::CommandDrawTextEx(const std::wstring& wsUnicodeText, const
 	}
 
 	bool bRes = DrawText(pUnicodes, unLen, dX, dY, pGids);
-
 	RELEASEARRAYOBJECTS(pUnicodes);
-	RELEASEARRAYOBJECTS(pGids);
 
 	return bRes ? S_OK : S_FALSE;
 }
@@ -1171,24 +1156,24 @@ HRESULT CPdfRenderer::PathCommandGetCurrentPoint(double* dX, double* dY)
 	*dY = PT_2_MM(*dY);
 	return S_OK;
 }
-HRESULT CPdfRenderer::PathCommandTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
+HRESULT CPdfRenderer::PathCommandTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
 {
-	m_oPath.AddText(m_oFont, lUnicode, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH), MM_2_PT(dBaselineOffset));
+	m_oPath.AddText(m_oFont, lUnicode, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH));
 	return S_OK;
 }
-HRESULT CPdfRenderer::PathCommandText(const std::wstring& wsText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset)
+HRESULT CPdfRenderer::PathCommandText(const std::wstring& wsText, const double& dX, const double& dY, const double& dW, const double& dH)
 {
-	m_oPath.AddText(m_oFont, wsText, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH), MM_2_PT(dBaselineOffset));
+	m_oPath.AddText(m_oFont, wsText, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH));
 	return S_OK;
 }
-HRESULT CPdfRenderer::PathCommandTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags)
+HRESULT CPdfRenderer::PathCommandTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH)
 {
-	m_oPath.AddText(m_oFont, lUnicode, lGid, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH), MM_2_PT(dBaselineOffset), dwFlags);
+	m_oPath.AddText(m_oFont, lUnicode, lGid, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH));
 	return S_OK;
 }
-HRESULT CPdfRenderer::PathCommandTextEx(const std::wstring& wsUnicodeText, const std::wstring& wsGidText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags)
+HRESULT CPdfRenderer::PathCommandTextEx(const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const double& dX, const double& dY, const double& dW, const double& dH)
 {
-	m_oPath.AddText(m_oFont, wsUnicodeText, wsGidText, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH), MM_2_PT(dBaselineOffset), dwFlags);
+	m_oPath.AddText(m_oFont, wsUnicodeText, pGids, unGidsCount, MM_2_PT(dX), MM_2_PT(m_dPageHeight - dY), MM_2_PT(dW), MM_2_PT(dH));
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
@@ -1275,11 +1260,11 @@ HRESULT CPdfRenderer::CommandString(const LONG& lType, const std::wstring& sComm
 //----------------------------------------------------------------------------------------
 // Дополнительные функции Pdf рендерера
 //----------------------------------------------------------------------------------------
-HRESULT CPdfRenderer::CommandDrawTextPdf(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const std::wstring& wsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags)
+HRESULT CPdfRenderer::CommandDrawTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	return S_OK;
 }
-HRESULT CPdfRenderer::PathCommandTextPdf(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH, const double& dBaselineOffset, const DWORD& dwFlags)
+HRESULT CPdfRenderer::PathCommandTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH)
 {
 	return S_OK;
 }
@@ -1403,7 +1388,7 @@ bool CPdfRenderer::DrawImage(Aggplus::CImage* pImage, const double& dX, const do
 	
 	return true;
 }
-bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, unsigned short* pGids)
+bool CPdfRenderer::DrawText(unsigned int* pUnicodes, unsigned int unLen, const double& dX, const double& dY, const unsigned int* pGids)
 {
 	if (m_bNeedUpdateTextFont)
 		UpdateFont();

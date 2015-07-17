@@ -7,10 +7,6 @@
 #include "Document.h"
 #include "StaticResources.h"
 
-#include <iostream>
-
-#include <ctime>
-
 #ifndef M_PI
 #define M_PI       3.14159265358979323846
 #endif
@@ -63,14 +59,9 @@ namespace XPS
 	void Page::GetSize(int& nW, int& nH) const
 	{
 		XmlUtils::CXmlLiteReader oReader;
-		clock_t oBeginTime = clock();
 
 		if (!oReader.FromFile(m_wsPagePath))
 			return;
-
-		clock_t oEndTime = clock();
-		double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
-		printf("%S %fseconds\n", m_wsPagePath.c_str(), dElapsedSecs);
 
 		if (!oReader.ReadNextNode())
 			return;
@@ -364,12 +355,16 @@ namespace XPS
 	bool Page::TransformToRenderer(const wchar_t* wsString, CContextState* pState)
 	{
 		CWString wsTransform = wsString;
+
 		if (!wsTransform.empty())
 		{
-			std::vector<std::wstring> arrElements = NSStringExt::Split(wsString, L',');
+			if (IsFromResource(wsTransform))
+				pState->GetTransform(wsTransform, wsTransform);
+
+			std::vector<CWString> arrElements = wsTransform.split(',');
 			double arrRes[6] ={ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
 			for (int nIndex = 0, nCount = min(6, arrElements.size()); nIndex < nCount; nIndex++)
-				arrRes[nIndex] = GetDouble(arrElements[nIndex]);
+				arrRes[nIndex] = GetDouble(arrElements[nIndex].c_str());
 
 			pState->PushTransform(arrRes);
 			return true;
@@ -392,6 +387,9 @@ namespace XPS
 		CWString wsIndices;
 		CWString wsFill;
 		bool bIsSideways = false;
+
+		bool bForceItalic = false;
+		bool bForceBold   = false;
 
 		if (oReader.MoveToFirstAttribute())
 		{
@@ -430,18 +428,24 @@ namespace XPS
 				}
 				else if (L"StyleSimulations" == wsAttrName)
 				{
-					std::wstring wsFontStyle = oReader.GetText();
-					if (L"ItalicSimulation" == wsFontStyle)
-						pRenderer->put_FontStyle(0x02);
-					else if (L"BoldSimulation" == wsFontStyle)
-						pRenderer->put_FontStyle(0x01);
-					else if (L"BoldItalicSimulation" == wsFontStyle)
-						pRenderer->put_FontStyle(0x03);
+					CWString wsFontStyle = oReader.GetText();
+					if (wsFontStyle == L"ItalicSimulation")
+					{
+						bForceItalic  = true;
+					}
+					else if (wsFontStyle == L"BoldSimulation")
+					{
+						bForceBold = true;
+					}
+					else if (wsFontStyle == L"BoldItalicSimulation")
+					{
+						bForceItalic = true;
+						bForceBold   = true;
+					}
 				}
 				else if (L"FontRenderingEmSize" == wsAttrName)
 				{
-					std::wstring wsFontSize = oReader.GetText();
-					dFontSize = GetDouble(wsFontSize);
+					dFontSize = GetDouble(oReader.GetText());
 				}
 				else if (L"RenderTransform" == wsAttrName)
 				{
@@ -467,13 +471,11 @@ namespace XPS
 				}
 				else if (L"OriginX" == wsAttrName)
 				{
-					std::wstring wsTextX = oReader.GetText();
-					dX = GetDouble(wsTextX);
+					dX = GetDouble(oReader.GetText());
 				}
 				else if (L"OriginY" == wsAttrName)
 				{
-					std::wstring wsTextY = oReader.GetText();
-					dY = GetDouble(wsTextY);
+					dY = GetDouble(oReader.GetText());
 				}
 				else if (L"Indices" == wsAttrName)
 				{
@@ -575,6 +577,25 @@ namespace XPS
 		m_pFontManager->LoadFontFromFile(wsFontPath, 0, (float)(dFontSize * 0.75), 96, 96);
 		double dFontKoef = dFontSize / 100.0;
 
+		bool bNeedItalic = false, bNeedBold = false;
+		if (m_pFontManager->m_pFont && m_pFontManager->m_pFont->m_pFace)
+		{
+			FT_Face pFace = m_pFontManager->m_pFont->m_pFace;
+			if (!(pFace->style_flags & FT_STYLE_FLAG_ITALIC) && bForceItalic)
+				bNeedItalic = true;
+
+			if (!(pFace->style_flags & FT_STYLE_FLAG_BOLD) && bForceBold)
+			{
+				LONG lTextColor, lTextAlpha;
+				pRenderer->get_BrushColor1(&lTextColor);
+				pRenderer->get_BrushAlpha1(&lTextAlpha);
+				pRenderer->put_PenColor(lTextColor);
+				pRenderer->put_PenAlpha(lTextAlpha);
+				pRenderer->put_PenSize(xpsUnitToMM(1));
+				bNeedBold = true;
+			}
+		}
+
 		if (!bIsSideways)
 		{
 			while (GetNextGlyph(wsIndices.c_str(), nIndicesPos, nIndicesLen, pUtf16, nUtf16Pos, unUtf16Len, oEntry))
@@ -600,10 +621,36 @@ namespace XPS
 
 				double dXorigin = (oEntry.bHorOffset || oEntry.bVerOffset) ? dX + (bRtoL ? -oEntry.dHorOffset * dFontKoef : oEntry.dHorOffset * dFontKoef) : dX;
 				double dYorigin = (oEntry.bHorOffset || oEntry.bVerOffset) ? dY - oEntry.dVerOffset * dFontKoef : dY;	
+
+				if (bNeedItalic)
+				{
+					double dAlpha = sin(-15 * M_PI / 180);
+					double pTransform[] ={ 1, 0, dAlpha, 1, -dAlpha * dYorigin, 0 };
+					pState->PushTransform(pTransform);
+				}
+
 				if (oEntry.bGid)
-					pRenderer->CommandDrawTextExCHAR(oEntry.nUnicode, oEntry.nGid, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0, 0, 0);
+					pRenderer->CommandDrawTextExCHAR(oEntry.nUnicode, oEntry.nGid, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0);
 				else
-					pRenderer->CommandDrawTextCHAR(oEntry.nUnicode,  xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0, 0);
+					pRenderer->CommandDrawTextCHAR(oEntry.nUnicode,  xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0);
+
+				if (bNeedBold)
+				{
+					pRenderer->BeginCommand(c_nPathType);
+					pRenderer->PathCommandStart();
+
+					if (oEntry.bGid)
+						pRenderer->PathCommandTextExCHAR(oEntry.nUnicode, oEntry.nGid, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0);
+					else
+						pRenderer->PathCommandTextCHAR(oEntry.nUnicode, xpsUnitToMM(dXorigin), xpsUnitToMM(dYorigin), 0, 0);
+
+					pRenderer->DrawPath(c_nStroke);
+					pRenderer->EndCommand(c_nPathType);
+					pRenderer->PathCommandEnd();
+				}
+
+				if (bNeedItalic)
+					pState->PopTransform();
 
 				if (!bRtoL)
 					dX += dAdvance;
@@ -626,15 +673,40 @@ namespace XPS
 
 				double dXorigin = (oEntry.bHorOffset || oEntry.bVerOffset) ? dX + oEntry.dHorOffset * dFontKoef : dX;
 				double dYorigin = (oEntry.bHorOffset || oEntry.bVerOffset) ? dY - oEntry.dVerOffset * dFontKoef : dY;
+				if (bNeedItalic)
+				{
+					double dAlpha = sin(15 * M_PI / 180);
+					double pTransform[] ={ 1, dAlpha, 0, 1, 0, -dAlpha * dXorigin };
+					pState->PushTransform(pTransform);
+				}
 				double pTransform[] ={ 0, -1, 1, 0, dXorigin + dAdvanceY, dYorigin + dAdvanceX / 2 };
 				pState->PushTransform(pTransform);
 
 				if (oEntry.bGid)
-					pRenderer->CommandDrawTextExCHAR(oEntry.nUnicode, oEntry.nGid, 0, 0, 0, 0, 0, 0);
+					pRenderer->CommandDrawTextExCHAR(oEntry.nUnicode, oEntry.nGid, 0, 0, 0, 0);
 				else
-					pRenderer->CommandDrawTextCHAR(oEntry.nUnicode, 0, 0, 0, 0, 0);
+					pRenderer->CommandDrawTextCHAR(oEntry.nUnicode, 0, 0, 0, 0);
+
+				if (bNeedBold)
+				{
+					pRenderer->BeginCommand(c_nPathType);
+					pRenderer->PathCommandStart();
+
+					if (oEntry.bGid)
+						pRenderer->PathCommandTextExCHAR(oEntry.nUnicode, oEntry.nGid, 0, 0, 0, 0);
+					else
+						pRenderer->PathCommandTextCHAR(oEntry.nUnicode, 0, 0, 0, 0);
+
+					pRenderer->DrawPath(c_nStroke);
+					pRenderer->EndCommand(c_nPathType);
+					pRenderer->PathCommandEnd();
+				}
 
 				pState->PopTransform();
+
+				if (bNeedItalic)
+					pState->PopTransform();
+
 				dX += dAdvance;
 			}
 		}
@@ -865,7 +937,7 @@ namespace XPS
 
 			pRenderer->put_PenDashStyle(Aggplus::DashStyleCustom);
 			pRenderer->PenDashPattern(pDashPattern, lDashPatternSize);
-			pRenderer->put_PenDashOffset(dDashOffset);
+			pRenderer->put_PenDashOffset(xpsUnitToMM(dDashOffset * dPenSize));
 			pRenderer->put_PenLineStartCap(nDashCap);
 			pRenderer->put_PenLineEndCap(nDashCap);
 			delete[] pDashPattern;

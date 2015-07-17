@@ -162,4 +162,24 @@ namespace XPS
 
 		return NULL;
 	}
+	void    CContextState::GetTransform(const CWString& _wsKey, CWString& wsTransform)
+	{
+		if (_wsKey.size() < 17)
+			return;
+
+		CWString wsKey((wchar_t*)(_wsKey.c_str() + 16), false, _wsKey.size() - 17);
+		const wchar_t* pTransform;
+		CStaticResource* pResource;
+
+		for (int nIndex = m_vResourcesStack.size() - 1; nIndex >= 0; nIndex--)
+		{
+			pResource = m_vResourcesStack.at(nIndex).pResource;
+			pTransform = pResource->GetTransform(wsKey);
+			if (NULL != pTransform)
+			{
+				wsTransform.create(pTransform, true);
+				return;
+			}
+		}
+	}
 }

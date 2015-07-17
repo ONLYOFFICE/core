@@ -48,6 +48,7 @@ namespace XPS
 			    
 		void    GetPathGeometry(const CWString& wsKey, CWString& wsPathData, CWString& wsPathTransform);
 		CBrush* GetBrush(const CWString& wsKey);
+		void    GetTransform(const CWString& wsKey, CWString& wsTransform);
 		Aggplus::CMatrix GetCurrentTransform()
 		{
 			return m_oCurrentTransform;

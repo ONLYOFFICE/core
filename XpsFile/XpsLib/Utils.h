@@ -83,9 +83,10 @@ namespace XPS
 	void ReadSTColor(const CWString& wsString, LONG& lColor);
 	void ReadSTDouble(const CWString& wsString, double& dValue);
 
-	void ReadTransform   (XmlUtils::CXmlLiteReader& oReader, CWString& wsTransform, CWString* pwsKey = NULL);
-	void ReadPathGeometry(XmlUtils::CXmlLiteReader& oReader, CWString& wsData, CWString& wsTransform, CWString* pwsKey = NULL);
-	void ReadPathFigure  (XmlUtils::CXmlLiteReader& oReader, std::wstring&, bool bEvenOdd);
+	void ReadMatrixTransform(XmlUtils::CXmlLiteReader& oReader, CWString& wsTransform, CWString* pwsKey = NULL);
+	void ReadTransform      (XmlUtils::CXmlLiteReader& oReader, CWString& wsTransform, CWString* pwsKey = NULL);
+	void ReadPathGeometry   (XmlUtils::CXmlLiteReader& oReader, CWString& wsData, CWString& wsTransform, CWString* pwsKey = NULL);
+	void ReadPathFigure     (XmlUtils::CXmlLiteReader& oReader, std::wstring&, bool bEvenOdd);
 
 	void ReadGradientStops(XmlUtils::CXmlLiteReader& oReader, std::vector<LONG>& vColors, std::vector<double>& vPositions, const double& dOpacity);
 }

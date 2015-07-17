@@ -101,7 +101,7 @@ namespace XPS
 			m_pRenderer->PathCommandStart();
 			m_pRenderer->BeginCommand(c_nClipType);
 			m_pRenderer->BeginCommand(c_nPathType);
-			bool bWinding = VmlToRenderer(wsClip.c_str(), m_pRenderer);
+			bool bWinding = VmlToRenderer(wsClip, m_pRenderer);
 			m_pRenderer->put_ClipMode(bWinding ? c_nClipRegionTypeWinding : c_nClipRegionTypeEvenOdd);
 			m_pRenderer->EndCommand(c_nPathType);
 			m_pRenderer->EndCommand(c_nClipType);
@@ -129,18 +129,12 @@ namespace XPS
 			return;
 
 		CWString wsKey((wchar_t*)(_wsKey.c_str() + 16), false, _wsKey.size() - 17);
-		const wchar_t* wsPath;
 		CStaticResource* pResource;
-
 		for (int nIndex = m_vResourcesStack.size() - 1; nIndex >= 0; nIndex--)
 		{
 			pResource = m_vResourcesStack.at(nIndex).pResource;
-			wsPath = pResource->GetFigure(wsKey);
-			if (NULL != wsPath)
-			{
-				wsPathData.create(wsPath, true);
+			if (pResource->GetFigure(wsKey, wsPathData))
 				return;
-			}
 		}
 	}
 	CBrush* CContextState::GetBrush(const CWString& _wsKey)
@@ -168,18 +162,12 @@ namespace XPS
 			return;
 
 		CWString wsKey((wchar_t*)(_wsKey.c_str() + 16), false, _wsKey.size() - 17);
-		const wchar_t* pTransform;
 		CStaticResource* pResource;
-
 		for (int nIndex = m_vResourcesStack.size() - 1; nIndex >= 0; nIndex--)
 		{
 			pResource = m_vResourcesStack.at(nIndex).pResource;
-			pTransform = pResource->GetTransform(wsKey);
-			if (NULL != pTransform)
-			{
-				wsTransform.create(pTransform, true);
+			if (pResource->GetTransform(wsKey, wsTransform))
 				return;
-			}
 		}
 	}
 }

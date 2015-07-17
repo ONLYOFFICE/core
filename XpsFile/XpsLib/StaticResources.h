@@ -17,9 +17,9 @@ namespace XPS
 		CStaticResource(const wchar_t* wsPath);
 		CStaticResource(XmlUtils::CXmlLiteReader& oReader);
 		~CStaticResource();
-		const wchar_t* GetFigure(CWString& wsKey);
-		CBrush*        GetBrush(CWString& wsKey);
-		const wchar_t* GetTransform(CWString& wsKey);
+		bool    GetFigure(CWString& wsKey, CWString& wsFigure);
+		CBrush* GetBrush(CWString& wsKey);
+		bool    GetTransform(CWString& wsKey, CWString& wsTransform);
 
 	private:
 

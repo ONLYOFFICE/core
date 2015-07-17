@@ -258,6 +258,12 @@ namespace XPS
 				ReadTransform(oReader, wsTransform);
 				bTransform = TransformToRenderer(wsTransform.c_str(), pState);
 			}
+			else if (wsNodeName == L"Canvas.Clip" && !bClip)
+			{
+				CWString wsClip;
+				ReadClip(oReader, wsClip);
+				bClip = ClipToRenderer(wsClip.c_str(), pState);
+			}
 			else if (wsNodeName == L"Path")
 			{
 				DrawPath(oReader, pRenderer, pState);
@@ -499,22 +505,6 @@ namespace XPS
 		}
 		oReader.MoveToElement();
 
-		if (!oReader.IsEmptyNode())
-		{
-			std::wstring wsNodeName;
-			int nCurDepth = oReader.GetDepth();
-			while (oReader.ReadNextSiblingNode(nCurDepth))
-			{
-				wsNodeName = oReader.GetName();
-				wsNodeName = RemoveNamespace(wsNodeName);
-
-				if (L"Glyphs.RenderTransform" == wsNodeName)
-				{
-					ReadTransform(oReader, wsTransform);
-				}
-			}
-		}
-
 		CBrush* pBrush = NULL;
 		bool bDeleteBrush = false;
 		if (!wsFill.empty())
@@ -528,6 +518,25 @@ namespace XPS
 			{
 				pBrush = ReadBrush(wsFill.c_str(), pState->GetCurrentOpacity());
 				bDeleteBrush = true;
+			}
+		}
+
+		if (!oReader.IsEmptyNode())
+		{
+			CWString wsNodeName;
+			int nCurDepth = oReader.GetDepth();
+			while (oReader.ReadNextSiblingNode(nCurDepth))
+			{
+				wsNodeName = oReader.GetName();
+				if (wsNodeName == L"Glyphs.RenderTransform")
+				{
+					ReadTransform(oReader, wsTransform);
+				}
+				else if (wsNodeName == L"Glyphs.Fill" && !pBrush)
+				{
+					pBrush = ReadBrush(oReader, pState->GetCurrentOpacity());
+					bDeleteBrush = true;
+				}
 			}
 		}
 
@@ -725,12 +734,6 @@ namespace XPS
 		if (bOpacity)
 			pState->PopOpacity();
 	}
-	CWString Page::ReadClip(XmlUtils::CXmlLiteReader& oReader)
-	{
-		CWString wsClip;
-		// TODO: Реализовать чтение Clip
-		return wsClip;
-	}
 	void Page::DrawPath(XmlUtils::CXmlLiteReader& oReader, IRenderer* pRenderer, CContextState* pState)
 	{
 		bool bTransform = false, bClip = false, bOpacity = false;
@@ -887,7 +890,7 @@ namespace XPS
 				}
 				else if (wsNodeName == L"Path.Clip")
 				{
-					wsClip = ReadClip(oReader);
+					ReadClip(oReader, wsClip);
 				}
 				else if (wsNodeName == L"Path.Fill" && !pBrush)
 				{
@@ -964,13 +967,14 @@ namespace XPS
 		if (!wsPathTransform.empty())
 			bPathTransform = TransformToRenderer(wsPathTransform.c_str(), pState);
 
-		bool bWindingFillMode = VmlToRenderer(wsPathData.c_str(), pRenderer);
+		bool bWindingFillMode = VmlToRenderer(wsPathData, pRenderer);
 
 		int nMode = bStroke ? c_nStroke : 0;
 		if (bFill)
 			nMode |= (bWindingFillMode ? c_nWindingFillMode : c_nEvenOddFillMode);
 
 		pRenderer->DrawPath(nMode);
+
 		pRenderer->EndCommand(c_nPathType);
 		pRenderer->PathCommandEnd();
 

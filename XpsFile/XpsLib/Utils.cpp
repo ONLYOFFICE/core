@@ -888,12 +888,13 @@ namespace XPS
 
 		oReader.MoveToElement();
 	}
-	bool VmlToRenderer(const wchar_t* wsString, IRenderer* pRenderer)
+	bool VmlToRenderer(const CWString& _wsString, IRenderer* pRenderer)
 	{
 		bool bWinding = false;
 
+		const wchar_t* wsString = _wsString.c_str();
+		int nLen = _wsString.size();
 		int nPos = 0;
-		int nLen = wcslen(wsString);
 
 		double dCurX = 0.0, dCurY = 0.0;
 		double dCpX = 0.0, dCpY = 0.0;
@@ -1209,6 +1210,11 @@ namespace XPS
 
 			nIndicesPos++;
 		}
+		else if (oEntry.vRemainUnicodes.size() > 0)
+		{
+			nCodeUnitCount = 0;
+			nGlyphCount    = 0;
+		}
 
 
 		if (nCodeUnitCount > 0 && nGlyphCount > 0)
@@ -1414,7 +1420,7 @@ namespace XPS
 			}
 		}
 	}
-	void ReadPathGeometry (XmlUtils::CXmlLiteReader& oReader, CWString& wsData, CWString& wsTransform, CWString* pwsKey)
+	void ReadPathGeometry   (XmlUtils::CXmlLiteReader& oReader, CWString& wsData, CWString& wsTransform, CWString* pwsKey)
 	{
 		bool bEvenOdd = true;
 		CWString wsAttrName;
@@ -1460,17 +1466,19 @@ namespace XPS
 		}
 		wsData.create(_wsData.c_str(), true);
 	}
-	void ReadPathFigure   (XmlUtils::CXmlLiteReader& oReader, std::wstring& wsData, bool bEvenOdd)
+	void ReadPathFigure     (XmlUtils::CXmlLiteReader& oReader, std::wstring& wsData, bool bEvenOdd)
 	{
 		// TODO: Улучшить здесь сложение строк и хождение по атрибутам
 		if (oReader.IsEmptyNode())
 			return;
 
 		if (!bEvenOdd)
-			wsData = L"F 1";
+			wsData += L"F 1";
 
 		std::wstring wsStartPoint;
+		std::wstring wsIsClosed;
 		ReadAttribute(oReader, L"StartPoint", wsStartPoint);
+		ReadAttribute(oReader, L"IsClosed", wsIsClosed);
 		wsData += L" M " + wsStartPoint;
 
 		std::wstring wsNodeName;
@@ -1537,12 +1545,10 @@ namespace XPS
 			}
 		}
 
-		std::wstring wsClosed;
-		ReadAttribute(oReader, L"IsClosed", wsClosed);
-		if (GetBool(wsClosed))
+		if (GetBool(wsIsClosed))
 			wsData += L" Z ";
 	}
-	void ReadGradientStops(XmlUtils::CXmlLiteReader& oReader, std::vector<LONG>& vColors, std::vector<double>& vPositions, const double& dOpacity)
+	void ReadGradientStops  (XmlUtils::CXmlLiteReader& oReader, std::vector<LONG>& vColors, std::vector<double>& vPositions, const double& dOpacity)
 	{
 		if (oReader.IsEmptyNode())
 			return;
@@ -1583,6 +1589,20 @@ namespace XPS
 				}
 				vColors.push_back(lColor);
 				vPositions.push_back(dPos);
+			}
+		}
+	}
+	void ReadClip           (XmlUtils::CXmlLiteReader& oReader, CWString& wsClip)
+	{
+		CWString wsNodeName;
+		int nCurDepth = oReader.GetDepth();
+		while (oReader.ReadNextSiblingNode(nCurDepth))
+		{
+			wsNodeName = oReader.GetName();
+			if (wsNodeName == L"PathGeometry")
+			{
+				CWString wsTransform;
+				ReadPathGeometry(oReader, wsClip, wsTransform);
 			}
 		}
 	}

@@ -75,7 +75,7 @@ namespace XPS
 
 	void ReadAttribute(XmlUtils::CXmlLiteReader& oReader, const wchar_t* wsAttrName, std::wstring& wsAttr);
 	void ReadAttribute(XmlUtils::CXmlLiteReader& oReader, const wchar_t* wsAttrName, CWString& wsAttr);
-	bool VmlToRenderer(const wchar_t* wsString, IRenderer* pRenderer);
+	bool VmlToRenderer(const CWString& wsString, IRenderer* pRenderer);
 	bool GetNextGlyph(const wchar_t* wsIndices, int& nIndicesPos, const int& nIndicesLen, unsigned short* pUtf16, int& nUtf16Pos, const int& nUtf16Len, TIndicesEntry& oEntry);
 
 	void ReadSTPoint(const CWString& wsString, double& dX, double& dY);
@@ -87,6 +87,7 @@ namespace XPS
 	void ReadTransform      (XmlUtils::CXmlLiteReader& oReader, CWString& wsTransform, CWString* pwsKey = NULL);
 	void ReadPathGeometry   (XmlUtils::CXmlLiteReader& oReader, CWString& wsData, CWString& wsTransform, CWString* pwsKey = NULL);
 	void ReadPathFigure     (XmlUtils::CXmlLiteReader& oReader, std::wstring&, bool bEvenOdd);
+	void ReadClip           (XmlUtils::CXmlLiteReader& oReader, CWString& wsClip);
 
 	void ReadGradientStops(XmlUtils::CXmlLiteReader& oReader, std::vector<LONG>& vColors, std::vector<double>& vPositions, const double& dOpacity);
 }

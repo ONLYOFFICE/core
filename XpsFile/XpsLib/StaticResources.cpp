@@ -35,13 +35,16 @@ namespace XPS
 	CStaticResource::~CStaticResource()
 	{
 	}
-	const wchar_t* CStaticResource::GetFigure(CWString& wsKey)
+	bool CStaticResource::GetFigure(CWString& wsKey, CWString& wsData)
 	{
 		std::map<CWString, CWString>::iterator oIter = m_mFigures.find(wsKey);
 		if (oIter != m_mFigures.end())
-			return oIter->second.c_str();
+		{
+			wsData = oIter->second;
+			return true;
+		}
 
-		return NULL;
+		return false;
 	}
 	CBrush* CStaticResource::GetBrush(CWString& wsKey)
 	{
@@ -51,13 +54,16 @@ namespace XPS
 
 		return NULL;
 	}
-	const wchar_t* CStaticResource::GetTransform(CWString& wsKey)
+	bool CStaticResource::GetTransform(CWString& wsKey, CWString& wsTransform)
 	{
 		std::map<CWString, CWString>::iterator oIter = m_mTransforms.find(wsKey);
 		if (oIter != m_mTransforms.end())
-			return oIter->second.c_str();
+		{			
+			wsTransform = oIter->second;
+			return true;
+		}
 
-		return NULL;
+		return false;
 	}
 	void CStaticResource::Parse(XmlUtils::CXmlLiteReader& oReader)
 	{
@@ -68,27 +74,9 @@ namespace XPS
 		{
 			wsNodeName = oReader.GetName();
 			if (wsNodeName == L"PathGeometry")
-			{
-				CWString wsKey, wsValue;
-
-				if (oReader.MoveToFirstAttribute())
-				{
-					wsAttrName = oReader.GetName();
-					while (!wsAttrName.empty())
-					{
-						if (wsAttrName == L"x:Key")
-							wsKey.create(oReader.GetText(), true);
-						else if (wsAttrName == L"Figures")
-							wsValue.create(oReader.GetText(), true);
-
-						if (!oReader.MoveToNextAttribute())
-							break;
-
-						wsAttrName = oReader.GetName();
-					}
-
-					oReader.MoveToElement();
-				}
+			{				
+				CWString wsKey, wsValue, wsTrasform;
+				ReadPathGeometry(oReader, wsValue, wsTrasform, &wsKey);				
 
 				if (!wsKey.empty() && !wsValue.empty())
 					AddFigure(wsKey, wsValue);

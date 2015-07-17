@@ -1,33 +1,18 @@
-﻿#pragma once
-#include "..\stdafx.h"
-#include "Const.h"
-#include "StringWriter.h"
-#include "..\Graphics\Structures.h"
-#include "..\Graphics\Matrix.h"
+﻿#ifndef _ASC_HTMLRENDERER_TEXT_H_
+#define _ASC_HTMLRENDERER_TEXT_H_
+
 #include "FontManager.h"
 
 namespace NSHtmlRenderer
 {
-	static wchar_t g_wc_amp		= wchar_t('&');
-	static wchar_t g_wc_apos	= wchar_t('\'');
-	static wchar_t g_wc_lt		= wchar_t('<');
-	static wchar_t g_wc_qt		= wchar_t('>');
-	static wchar_t g_wc_quot	= wchar_t('\"');
-
-	static _bstr_t g_bstr_amp	= L"&amp;";
-	static _bstr_t g_bstr_apos	= L"&apos;";
-	static _bstr_t g_bstr_lt	= L"&lt;";
-	static _bstr_t g_bstr_qt	= L"&gt;";
-	static _bstr_t g_bstr_quot	= L"\"";
-
 	class CStyles
 	{
 	private:
-		CAtlMap<CString, LONG>			m_mapStyles;
+        std::map<std::wstring, LONG>	m_mapStyles;
 		LONG							m_lNexrID;
 
 	public:
-		NSStrings::CStringWriter		m_oWriterCSS;
+        NSStringUtils::CStringBuilder	m_oWriterCSS;
 		double							m_dDpiY;
 
 	public:
@@ -36,96 +21,101 @@ namespace NSHtmlRenderer
 		}
 		~CStyles()
 		{
-			m_mapStyles.RemoveAll();
+            m_mapStyles.clear();
 		}
 
 	public:
 		void NewDocument()
 		{
-			m_mapStyles.RemoveAll();
+            m_mapStyles.clear();
 			m_lNexrID = 0;
 
 			m_oWriterCSS.Clear();
 
 
-			CString strCSS = 
-_T(".blockpage { position: relative; background: #FFFFFF; padding: 0; float: none; margin: 0px auto; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.5); -moz-box-shadow: 0 0 10px rgba(0,0,0,0.5); -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.5); }\n\
+            std::wstring strCSS =
+L".blockpage { position: relative; background: #FFFFFF; padding: 0; float: none; margin: 0px auto; overflow: hidden; box-shadow: 0 0 10px rgba(0,0,0,0.5); -moz-box-shadow: 0 0 10px rgba(0,0,0,0.5); -webkit-box-shadow: 0 0 10px rgba(0,0,0,0.5); }\n\
 .blockpagebetween { width: 100%; height: 20px; background: #FEFEFE; padding: 0px; float: none; text-align: center; }\n\
 .bt { position: absolute; margin-top: 0px; padding: 0px; float: none; }\n\
 .bs { margin-top: 0px; padding: 0px; float: none; }\n\
 .rt { position: absolute; font-size: 0; padding: 0px; margin-left: 0px; margin-top: 0px; border-style: solid; }\n\
 ._svg { -moz-user-select: none;-khtml-user-select: none;user-select: none; width:100%; height:100%;}\n\
 v\\:vmlframe { behavior:url(#default#VML); display: block; width: 100%; height: 100%; position: absolute; padding: 0px; margin-left:0px;margin-top:0px; }\n\
-v\\:*{behavior:url(#default#VML)}\n");
+v\\:*{behavior:url(#default#VML)}\n";
 
 			m_oWriterCSS.WriteString(strCSS);
 		}
 		void CloseDocument()
 		{
-			m_mapStyles.RemoveAll();
+            m_mapStyles.clear();
 			m_lNexrID = 0;
 
 			m_oWriterCSS.Clear();
 		}
 
-		void WriteStylesForDiffBrowsers(const CString& strDir)
+        void WriteStylesForDiffBrowsers(const std::wstring& strDir)
 		{
-			CString strIE = _T(".bp { position: absolute; z-index:100; margin-left: 0px; margin-top: 0px; padding: 0px; float: none; text-align: justify; text-align-last: justify; }");
-			CString strOp = _T(".bp { position: absolute; z-index:100; margin-left: 0px; margin-top: 0px; padding: 0px; float: none; display:inline-table; text-align: justify; text-align-last: justify; }\
-.bp:after { content:\"\"; display:inline-block; width:100%; font-size: 0px; height:0; overflow:hidden; }");
-			CString strOt = _T(".bp { position: absolute; z-index:100; margin-left: 0px; margin-top: 0px; padding: 0px; float: none; display:inline-table; white-space:pre-line; text-align: justify; text-align-last: justify; }\
-.bp:after { content:\"\"; display:inline-block; width:100%; font-size: 0px; height:0; overflow:hidden; }");
+            std::wstring strIE = L".bp { position: absolute; z-index:100; margin-left: 0px; margin-top: 0px; padding: 0px; float: none; text-align: justify; text-align-last: justify; }";
+            std::wstring strOp = L".bp { position: absolute; z-index:100; margin-left: 0px; margin-top: 0px; padding: 0px; float: none; display:inline-table; text-align: justify; text-align-last: justify; }\
+.bp:after { content:\"\"; display:inline-block; width:100%; font-size: 0px; height:0; overflow:hidden; }";
+            std::wstring strOt = L".bp { position: absolute; z-index:100; margin-left: 0px; margin-top: 0px; padding: 0px; float: none; display:inline-table; white-space:pre-line; text-align: justify; text-align-last: justify; }\
+.bp:after { content:\"\"; display:inline-block; width:100%; font-size: 0px; height:0; overflow:hidden; }";
 
-			CDirectory::SaveToFile(strDir + _T("\\css_ie.css"), strIE);
-			CDirectory::SaveToFile(strDir + _T("\\css_opera.css"), strOp);
-			CDirectory::SaveToFile(strDir + _T("\\css_other.css"), strOt);
+            NSFile::CFileBinary::SaveToFile(strDir + L"\\css_ie.css", strIE);
+            NSFile::CFileBinary::SaveToFile(strDir + L"\\css_opera.css", strOp);
+            NSFile::CFileBinary::SaveToFile(strDir + L"\\css_other.css", strOt);
 		}
 
 		LONG GetClassID(NSStructures::CFont* pFont, NSStructures::CBrush* pBrush)
 		{
-			CString strFormat = _T("");
-
-			int nSize = round(m_dDpiY * pFont->Size / 72);
+            int nSize = round(m_dDpiY * pFont->Size / 72);
 
 			if (nSize >= 10)
 				--nSize;
 
+            NSStringUtils::CStringBuilder oBuilder;
+            oBuilder.WriteString(L"font-family: ");
+            oBuilder.WriteString(pFont->Name);
+            oBuilder.WriteString(L"; font-size: ");
+            oBuilder.AddInt(nSize);
+            oBuilder.WriteString(L"px; color:");
+            oBuilder.WriteHexColor3(pBrush->Color1);
+
 			if (pFont->Italic && pFont->Bold)
 			{
-				strFormat.Format(g_string_text_css_ib, pFont->Name, nSize, ConvertColor(pBrush->Color1));
+                oBuilder.WriteString(L"; font-style:italic; font-weight:bold;", 38);
 			}
 			else if (pFont->Italic)
 			{
-				strFormat.Format(g_string_text_css_i, pFont->Name, nSize, ConvertColor(pBrush->Color1));
+                oBuilder.WriteString(L"; font-style:italic; font-weight:normal;", 40);
 			}
 			else if (pFont->Bold)
 			{
-				strFormat.Format(g_string_text_css_b, pFont->Name, nSize, ConvertColor(pBrush->Color1));
+                oBuilder.WriteString(L"; font-weight:bold; font-style:normal;", 38);
 			}
 			else
 			{
-				strFormat.Format(g_string_text_css, pFont->Name, nSize, ConvertColor(pBrush->Color1));
+                oBuilder.WriteString(L"; font-style:normal; font-weight:normal;", 40);
 			}
 
-			CAtlMap<CString, LONG>::CPair* pPair = m_mapStyles.Lookup(strFormat);
+            std::wstring sFormat = oBuilder.GetData();
+            std::map<std::wstring, LONG>::iterator iFind = m_mapStyles.find(sFormat);
 
-			if (NULL == pPair)
+            if (iFind == m_mapStyles.end())
 			{
 				// новый стиль
 				++m_lNexrID;
-				m_mapStyles.SetAt(strFormat, m_lNexrID);
+                m_mapStyles.insert(std::pair<std::wstring, LONG>(sFormat, m_lNexrID));
 
-				CString strCSS = _T("");				
-				strCSS.Format(g_string_style_name, m_lNexrID);
-
-				m_oWriterCSS.WriteString(strCSS);
-				m_oWriterCSS.WriteString(strFormat);
-				m_oWriterCSS.WriteString(g_bstr_script_close);
-
+                m_oWriterCSS.WriteString(L".s", 2);
+                m_oWriterCSS.AddInt(m_lNexrID);
+                m_oWriterCSS.WriteString(L" {", 2);
+                m_oWriterCSS.WriteString(sFormat);
+                m_oWriterCSS.WriteString(L"}\n", 2);
 				return m_lNexrID;
 			}
 
-			return pPair->m_value;
+            return iFind->second;
 		}
 	};
 
@@ -134,7 +124,7 @@ v\\:*{behavior:url(#default#VML)}\n");
 	public:
 		NSStructures::CFont		m_oFont;
 		NSStructures::CBrush	m_oBrush;
-		NSStrings::CTextItem	m_oText;
+        NSStringUtils::CStringBuilder	m_oText;
 		
 		double					m_dX;
 		double					m_dY;
@@ -145,7 +135,7 @@ v\\:*{behavior:url(#default#VML)}\n");
 		double					m_dWidthWithoutSpaces;
 
 	public:
-		CWord() : m_oFont(), m_oBrush(), m_oText(10)
+        CWord() : m_oFont(), m_oBrush(), m_oText()
 		{
 			m_dX				= 0;
 			m_dY				= 0;
@@ -155,14 +145,14 @@ v\\:*{behavior:url(#default#VML)}\n");
 
 			m_dWidthWithoutSpaces = 0;
 		}
-		CWord(CFontManager* pFontManager, NSStructures::CBrush* pBrush, NSStrings::CTextItem& oText, 
+        CWord(CFontManager* pFontManager, NSStructures::CBrush* pBrush, NSStringUtils::CStringBuilder& oText,
 			double& x, double& y, double& width, double& height, double& baseoffset) : m_oFont(pFontManager->m_oFont.m_oFont), m_oBrush(*pBrush), m_oText(oText), 
 			m_dX(x), m_dY(y), m_dWidth(width), m_dHeight(height), m_dBaseLinePos(baseoffset), m_dWidthWithoutSpaces(width)
 		{
 			if (GetCountSpaceLast() == m_oText.GetCurSize())
 				m_dWidthWithoutSpaces = 0;
 
-			if (_T("") != pFontManager->m_strCurrentPickFont)
+            if (L"" != pFontManager->m_strCurrentPickFont)
 			{
 				m_oFont.Name	= pFontManager->m_strCurrentPickFont;
 				m_oFont.SetStyle(pFontManager->m_lCurrentPictFontStyle);
@@ -221,98 +211,17 @@ v\\:*{behavior:url(#default#VML)}\n");
 			return lCur;
 		}
 
-		AVSINLINE void GetCorrectString(CString& strText)
+        inline void WriteToStringWriter(NSStringUtils::CStringBuilder& oWriter)
 		{
-			strText.Replace(_T("&"),	_T("&amp;"));			
-			strText.Replace(_T("'"),	_T("&apos;"));
-			strText.Replace(_T("<"),	_T("&lt;"));
-			strText.Replace(_T(">"),	_T("&gt;"));
-			strText.Replace(_T("\""),	_T("&quot;"));
-		}
-		AVSINLINE void WriteToStringWriter(NSStrings::CStringWriter& oWriter)
-		{
-			size_t nCurrent = 0;
-			size_t nCount	= m_oText.GetCurSize();
-
-			size_t nCurrentOld = nCurrent;
-			wchar_t* pData = m_oText.GetBuffer();
-			wchar_t* pStartData = pData;
-
-			while (nCurrent < nCount)
-			{
-				wchar_t c = *pData++;
-
-				if (g_wc_amp == c)
-				{
-					if (nCurrentOld != nCurrent)
-						oWriter.WriteString(pStartData, nCurrent - nCurrentOld);
-
-					oWriter.WriteString(g_bstr_amp);
-					
-					++nCurrent;
-					nCurrentOld = nCurrent;
-					pStartData = pData;
-				}
-				/*else if (g_wc_apos == c)
-				{
-					if (nCurrentOld != nCurrent)
-						oWriter.WriteString(pStartData, nCurrent - nCurrentOld);
-
-					oWriter.WriteString(g_bstr_apos);
-					
-					++nCurrent;
-					nCurrentOld = nCurrent;
-					pStartData = pData;
-				}*/
-				else if (g_wc_lt == c)
-				{
-					if (nCurrentOld != nCurrent)
-						oWriter.WriteString(pStartData, nCurrent - nCurrentOld);
-
-					oWriter.WriteString(g_bstr_lt);
-					
-					++nCurrent;
-					nCurrentOld = nCurrent;
-					pStartData = pData;
-				}
-				else if (g_wc_qt == c)
-				{
-					if (nCurrentOld != nCurrent)
-						oWriter.WriteString(pStartData, nCurrent - nCurrentOld);
-
-					oWriter.WriteString(g_bstr_qt);
-					
-					++nCurrent;
-					nCurrentOld = nCurrent;
-					pStartData = pData;
-				}
-				else if (g_wc_quot == c)
-				{
-					if (nCurrentOld != nCurrent)
-						oWriter.WriteString(pStartData, nCurrent - nCurrentOld);
-
-					oWriter.WriteString(g_bstr_quot);
-					
-					++nCurrent;
-					nCurrentOld = nCurrent;
-					pStartData = pData;
-				}
-				else
-				{
-					++nCurrent;
-				}
-			}
-
-			if (nCurrentOld != nCurrent)
-				oWriter.WriteString(pStartData, nCurrent - nCurrentOld);			
-		}
+            oWriter.WriteEncodeXmlString(m_oText.GetBuffer(), (int)m_oText.GetCurSize());
+        }
 	};
 
 	class CTextLine
 	{
 	public:
-		NSStrings::CStringWriter* m_pTextMeasurer;
-		CAtlList<CWord*> m_arWords;
+        NSStringUtils::CStringBuilder* m_pTextMeasurer;
+        std::list<CWord*> m_arWords;
 		LONG m_lNextID;
 		double m_dMinTop;
 
@@ -330,31 +239,25 @@ v\\:*{behavior:url(#default#VML)}\n");
 		{
 			Clear();
 			
-			POSITION pos = oSrc.m_arWords.GetHeadPosition();
+            for (std::list<CWord*>::const_iterator iter = oSrc.m_arWords.begin(); iter != oSrc.m_arWords.end(); iter++)
+            {
+                CWord* pWord = new CWord(**iter);
+                m_arWords.push_back(pWord);
+            }
 
-			while (NULL != pos)
-			{
-				CWord* pWord	= oSrc.m_arWords.GetNext(pos);
-				CWord* pWordNew	= new CWord(*pWord);
-
-				m_arWords.AddTail(pWordNew);
-			}
-
-			return *this;
+            return *this;
 		}
 
 	public:
 		void Clear()
-		{
-			POSITION pos = m_arWords.GetHeadPosition();
-
-			while (NULL != pos)
+        {
+            for (std::list<CWord*>::iterator iter = m_arWords.begin(); iter != m_arWords.end(); iter++)
 			{
-				CWord* pWord = m_arWords.GetNext(pos);
+                CWord* pWord = *iter;
 				RELEASEOBJECT(pWord);
 			}
 
-			m_arWords.RemoveAll();
+            m_arWords.clear();
 
 			m_dMinTop = 10000000;
 		}
@@ -363,13 +266,14 @@ v\\:*{behavior:url(#default#VML)}\n");
 			// смотрим, какое слово предыдущее.
 			// если оно - полностью пробел - то он прищел из пдф. а значит он любой длины может быть.
 			// зачем он нужен?? непонятно. Поэтому удаляем такое слово
-			POSITION pos = m_arWords.GetTailPosition();
-			if (NULL != pos)
+            if (m_arWords.size() > 0)
 			{
-				CWord* pTail = m_arWords.GetNext(pos);
+                std::list<CWord*>::iterator iter = m_arWords.end();
+                iter--;
+                CWord* pTail = *iter;
 				if (pTail->GetCountSpaceLast() == pTail->m_oText.GetCurSize())
 				{
-					m_arWords.RemoveTail();
+                    m_arWords.pop_back();
 					RELEASEOBJECT(pTail);
 				}
 			}
@@ -377,123 +281,139 @@ v\\:*{behavior:url(#default#VML)}\n");
 			if (m_dMinTop > pWord->m_dY)
 				m_dMinTop = pWord->m_dY;
 			
-			m_arWords.AddTail(pWord);
+            m_arWords.push_back(pWord);
 		}
 		CWord* GetLast()
 		{
-			return m_arWords.GetTail();
+            if (0 == m_arWords.size())
+                return NULL;
+
+            std::list<CWord*>::iterator iter = m_arWords.end();
+            iter--;
+            return *iter;
 		}
 		CWord* GetHead()
 		{
-			return m_arWords.GetHead();
+            if (0 == m_arWords.size())
+                return NULL;
+
+            return *m_arWords.begin();
 		}
 		size_t GetCount()
 		{
-			return m_arWords.GetCount();
+            return m_arWords.size();
 		}
 
 	public:
 
-		inline void Write(NSStrings::CStringWriter* pWriter, double& dDpiX, double& dDpiY, CStyles* pStyles, const LONG& lIndexZ)
+        inline void Write(NSStringUtils::CStringBuilder* pWriter, double& dDpiX, double& dDpiY, CStyles* pStyles, const LONG& lIndexZ)
 		{
 			return Write3(pWriter, dDpiX, dDpiY, pStyles, lIndexZ);
 		}
 
-		void Write1(NSStrings::CStringWriter* pWriter, double& dDpiX, double& dDpiY, CStyles* pStyles)
+        void Write1(NSStringUtils::CStringBuilder* pWriter, double& dDpiX, double& dDpiY, CStyles* pStyles)
 		{
 			// временно 
 			//return Write2(pWriter, dDpiX, dDpiY);
 
-			size_t nCountWords = m_arWords.GetCount();
+            size_t nCountWords = m_arWords.size();
 			if (0 == nCountWords)
 				return;
 
 			// генерим параграф, один на строку
-			CWord* pWord = m_arWords.GetTail();
+            CWord* pWord = GetLast();
 			NSStructures::CFont* pFont0		= &pWord->m_oFont;
 			NSStructures::CBrush* pBrush0	= &pWord->m_oBrush;
 			
-			CString strPar = _T("");
-			strPar.Format(g_string_paragraph2, pWord->m_oFont.Name, (int)(dDpiY * pWord->m_oFont.Size / 72), ConvertColor(pWord->m_oBrush.Color1));
+            pWriter->WriteString(L"<p class=\"bp\" style=\"font-family: ", 34);
+            pWriter->WriteString(pWord->m_oFont.Name);
+            pWriter->WriteString(L"; font-size: ");
+            pWriter->AddInt((int)(dDpiY * pWord->m_oFont.Size / 72));
+            pWriter->WriteString(L"px; color:", 10);
+            pWriter->WriteHexColor3(pWord->m_oBrush.Color1);
+            pWriter->WriteString(L";\">");
 
-			pWriter->WriteString(strPar);
-
-			POSITION pos = m_arWords.GetHeadPosition();
-			POSITION posOld = m_arWords.GetTailPosition();
-			while (NULL != pos)
+            for (std::list<CWord*>::iterator pos = m_arWords.begin(); pos != m_arWords.end();)
 			{
-				pWord = m_arWords.GetNext(pos);
+                pWord = *pos;
 
 				if (pWord->m_oFont.IsEqual(pFont0) && (pWord->m_oBrush.IsEqual(pBrush0)))
 				{
-					CString strSpan = _T("");
-					strSpan.Format(g_string_span1, (int)pWord->m_dX, (int)pWord->m_dY);
-
-					pWriter->WriteString(strSpan);
+                    pWriter->WriteString(L"<span class=\"bt\" style=\"left:", 29);
+                    pWriter->AddInt((int)pWord->m_dX);
+                    pWriter->WriteString(L"; top:", 6);
+                    pWriter->AddInt((int)pWord->m_dY);
+                    pWriter->WriteString(L";\">", 3);
 				}
 				else
 				{
-					CString strSpan = _T("");
-					strSpan.Format(g_string_span3, pWord->m_oFont.Name, (int)(dDpiY * pWord->m_oFont.Size / 72), ConvertColor(pWord->m_oBrush.Color1));
-
-					pWriter->WriteString(strSpan);
+                    pWriter->WriteString(L"<span class=\"bs\" style=\"font-family: ", 37);
+                    pWriter->WriteString(pWord->m_oFont.Name);
+                    pWriter->WriteString(L"; font-size: ", 13);
+                    pWriter->AddInt((int)(dDpiY * pWord->m_oFont.Size / 72));
+                    pWriter->WriteString(L"px; color:", 10);
+                    pWriter->WriteHexColor3(pWord->m_oBrush.Color1);
+                    pWriter->WriteString(L";\">", 3);
 				}
 
-				//pWriter->WriteString(pWord->m_strText);
 				pWord->WriteToStringWriter(*pWriter);
 
-				if (pos != posOld)
+                pos++;
+                if (pos != m_arWords.end())
 				{
-					pWriter->WriteString(g_bstr_space);
+                    pWriter->WriteString(L"&nbsp;", 6);
 				}
-				pWriter->WriteString(g_bstr_span_end);
+                pWriter->WriteString(L"</span>", 7);
 			}
 
-			pWriter->WriteString(g_bstr_paragraph_end);
+            pWriter->WriteString(L"</p>\n", 5);
 		}
-		void Write2(NSStrings::CStringWriter* pWriter, double& dDpiX, double& dDpiY, CStyles* pStyles)
+        void Write2(NSStringUtils::CStringBuilder* pWriter, double& dDpiX, double& dDpiY, CStyles* pStyles)
 		{
-			size_t nCountWords = m_arWords.GetCount();
+            size_t nCountWords = m_arWords.size();
 			if (0 == nCountWords)
 				return;
 
 			// генерим параграф, один на строку
-			CWord* pWord = m_arWords.GetHead();
+            CWord* pWord = GetHead();
 			NSStructures::CFont* pFont0		= &pWord->m_oFont;
 			NSStructures::CBrush* pBrush0	= &pWord->m_oBrush;
 
+            pWriter->WriteString(L"<p class=\"bp\" style=\"left: ", 27);
+            pWriter->AddInt((int)pWord->m_dX);
+            pWriter->WriteString(L"px; top: ", 9);
+            pWriter->AddInt((int)pWord->m_dY);
+            pWriter->WriteString(L"px; font-family: ", 17);
+            pWriter->WriteString(pWord->m_oFont.Name);
+            pWriter->WriteString(L"; font-size: ", 13);
+            pWriter->AddInt((int)(dDpiY * pWord->m_oFont.Size / 72));
+            pWriter->WriteString(L"px; color:", 10);
+            pWriter->WriteHexColor3(pWord->m_oBrush.Color1);
+            pWriter->WriteString(L"; white-space: nowrap;\">", 24);
 			
-			CString strPar = _T("");
-			strPar.Format(g_string_paragraph3, (int)pWord->m_dX, (int)pWord->m_dY, pWord->m_oFont.Name, (int)(dDpiY * pWord->m_oFont.Size / 72), ConvertColor(pWord->m_oBrush.Color1));
+            for (std::list<CWord*>::iterator pos = m_arWords.begin(); pos != m_arWords.end();)
+            {
+                pWord = *pos;
+                pWriter->Write(pWord->m_oText);
 
-			pWriter->WriteString(strPar);
+                pos++;
+                if (pos != m_arWords.end())
+                    pWriter->AddCharSafe(' ');
+            }
 
-			CString strText = _T("");
-			POSITION pos = m_arWords.GetHeadPosition();
-			while (NULL != pos)
-			{
-				pWord = m_arWords.GetNext(pos);
-				strText += pWord->m_oText.GetCString();
-
-				if (NULL != pos)
-					strText += _T(" ");
-			}
-
-			pWriter->WriteString(strText);
-
-			pWriter->WriteString(g_bstr_paragraph_end);
+            pWriter->WriteString(L"</p>\n", 5);
 		}
 
-		void Write3(NSStrings::CStringWriter* pWriter, double& dDpiX, double& dDpiY, CStyles* pStyles, const LONG& lIndexZ)
+        void Write3(NSStringUtils::CStringBuilder* pWriter, double& dDpiX, double& dDpiY, CStyles* pStyles, const LONG& lIndexZ)
 		{
 			DeleteEmptyWords();
 
-			size_t nCountWords = m_arWords.GetCount();
+            size_t nCountWords = m_arWords.size();
 			if (0 == nCountWords)
 				return;
 
 			// генерим параграф, один на строку
-			CWord* pWord = m_arWords.GetHead();
+            CWord* pWord = GetHead();
 			NSStructures::CFont* pFont0		= &pWord->m_oFont;
 			NSStructures::CBrush* pBrush0	= &pWord->m_oBrush;
 
@@ -504,28 +424,33 @@ v\\:*{behavior:url(#default#VML)}\n");
 
 			double dRight = pWord->m_dX + pWord->m_dWidthWithoutSpaces;
 
-			POSITION pos = m_arWords.GetHeadPosition();
-			m_arWords.GetNext(pos);
-			while (NULL != pos)
-			{
-				pWord = m_arWords.GetNext(pos);
-				pWord->m_dWidth = pWord->m_dWidthWithoutSpaces;
-				nRight = (int)(pWord->m_dX + pWord->m_dWidth);
-			}
+            std::list<CWord*>::iterator pos = m_arWords.begin();
+            pos++;
 
-			pos		= m_arWords.GetHeadPosition();
-			pWord	= m_arWords.GetHead();
+            while (pos != m_arWords.end())
+            {
+                pWord->m_dWidth = pWord->m_dWidthWithoutSpaces;
+                nRight = (int)(pWord->m_dX + pWord->m_dWidth);
+                pos++;
+            }
+
+            pos		= m_arWords.begin();
+            pWord	= *pos;
 
 			pStyles->m_dDpiY = dDpiY;
 			LONG lID = pStyles->GetClassID(&pWord->m_oFont, &pWord->m_oBrush);
 
 			LONG lDecoration = pWord->m_oFont.GetTextDecorationStyle();
 
-			CString strPar = _T("");
-			strPar.Format(g_string_paragraph_style, lID, (int)pWord->m_dX, (int)m_dMinTop, nRight - nLeft);
-
-			pWriter->WriteString(strPar);
-			pWriter->WriteString(g_bstr_nobr_start);
+            pWriter->WriteString(L"<p class=\"bp s", 14);
+            pWriter->AddInt(lID);
+            pWriter->WriteString(L"\" style=\"left: ", 15);
+            pWriter->AddInt((int)pWord->m_dX);
+            pWriter->WriteString(L"px; top: ", 9);
+            pWriter->AddInt((int)m_dMinTop);
+            pWriter->WriteString(L"px; width: ", 11);
+            pWriter->AddInt(nRight - nLeft);
+            pWriter->WriteString(L"px;\"><nobr>", 11);
 
 			if ((0 == lDecoration) || (3 < lDecoration))
 			{
@@ -534,16 +459,16 @@ v\\:*{behavior:url(#default#VML)}\n");
 			}
 			else
 			{
-				switch (lDecoration)
+                switch (lDecoration)
 				{
 				case 1:
-					pWriter->WriteString(g_string_span_style_underline2);
+                    pWriter->WriteString(L"<span style=\"text-decoration:underline;\">", 41);
 					break;
 				case 2:
-					pWriter->WriteString(g_string_span_style_strike2);
+                    pWriter->WriteString(L"<span style=\"text-decoration:line-through;\">", 44);
 					break;
 				case 3:
-					pWriter->WriteString(g_string_span_style_underline_strike2);
+                    pWriter->WriteString(L"<span style=\"text-decoration:underline line-through;\">", 54);
 					break;
 				default:
 					break;
@@ -551,61 +476,68 @@ v\\:*{behavior:url(#default#VML)}\n");
 
 				//pWriter->WriteString(pWord->GetCorrectString());
 				pWord->WriteToStringWriter(*pWriter);
-				pWriter->WriteString(g_bstr_span_end);
+                pWriter->WriteString(L"</span>", 7);
 			}
 
-			m_arWords.GetNext(pos);
+            pos++;
 
 			bool bSpanClose = false;
-			while (NULL != pos)
+            while (pos != m_arWords.end())
 			{
-				pWord = m_arWords.GetNext(pos);
+                pWord = *pos;
 
 				if (1.0 < (pWord->m_dX - dRight))
 				{
-					pWriter->WriteString(g_bstr_space2);
+                    pWriter->AddCharSafe(' ');
 				}
 				dRight = pWord->m_dX + pWord->m_dWidthWithoutSpaces;
 
 				if (bSpanClose)
-					pWriter->WriteString(g_bstr_span_end);
+                    pWriter->WriteString(L"</span>", 7);
 
 				bSpanClose = true;
 
 				lID = pStyles->GetClassID(&pWord->m_oFont, &pWord->m_oBrush);
 
-				CString strSpan = _T("");
-
 				lDecoration = pWord->m_oFont.GetTextDecorationStyle();
 				switch (lDecoration)
 				{
 				case 0:
-					strSpan.Format(g_string_span_style, lID);
+                    pWriter->WriteString(L"<span class=\"s", 14);
+                    pWriter->AddInt(lID);
+                    pWriter->WriteString(L"\">", 2);
 					break;
 				case 1:
-					strSpan.Format(g_string_span_style_underline, lID);
+                    pWriter->WriteString(L"<span class=\"s", 14);
+                    pWriter->AddInt(lID);
+                    pWriter->WriteString(L"\" style=\"text-decoration:underline;\">", 37);
 					break;
 				case 2:
-					strSpan.Format(g_string_span_style_strike, lID);
+                    pWriter->WriteString(L"<span class=\"s", 14);
+                    pWriter->AddInt(lID);
+                    pWriter->WriteString(L"\" style=\"text-decoration:line-through;\">", 40);
 					break;
 				case 3:
-					strSpan.Format(g_string_span_style_underline_strike, lID);
+                    pWriter->WriteString(L"<span class=\"s", 14);
+                    pWriter->AddInt(lID);
+                    pWriter->WriteString(L"\" style=\"text-decoration:underline line-through;\">", 50);
 					break;
 				default:
-					strSpan.Format(g_string_span_style, lID);
+                    pWriter->WriteString(L"<span class=\"s", 14);
+                    pWriter->AddInt(lID);
+                    pWriter->WriteString(L"\">", 2);
 					break;
 				}
 
-				pWriter->WriteString(strSpan);
-				//pWriter->WriteString(pWord->GetCorrectString());
 				pWord->WriteToStringWriter(*pWriter);
+
+                pos++;
 			}
 
 			if (bSpanClose)
-				pWriter->WriteString(g_bstr_span_end);
+                pWriter->WriteString(L"</span>", 7);
 
-			pWriter->WriteString(g_bstr_nobr_end);
-			pWriter->WriteString(g_bstr_paragraph_end);
+            pWriter->WriteString(L"</nobr></p>\n", 12);
 
 			//CString strLine = _T("");
 			//strLine.Format(g_string_lineFunc, m_lNextID++, nRight - nLeft);
@@ -614,44 +546,47 @@ v\\:*{behavior:url(#default#VML)}\n");
 
 		void DeleteEmptyWords()
 		{
-			POSITION pos = m_arWords.GetHeadPosition();
-			CWord* pWord = NULL;
-			while (NULL != pos)
+            std::list<CWord*>::iterator pos = m_arWords.begin();
+            while (pos != m_arWords.end())
 			{
-				POSITION posOld = pos;
-				pWord = m_arWords.GetNext(pos);
+                CWord* pWord = *pos;
 
 				if (pWord->GetCountSpaceLast() == pWord->m_oText.GetCurSize())
 				{
-					m_arWords.RemoveAt(posOld);
+                    pos = m_arWords.erase(pos);
 					RELEASEOBJECT(pWord);
+                    continue;
 				}
+
+                pos++;
 			}
 
-			if (0 != m_arWords.GetCount())
+            if (0 != m_arWords.size())
 			{
 				// удалим последние пробелы линии.
-				pWord = m_arWords.GetTail();
+                CWord* pWord = GetLast();
 				pWord->m_oText.RemoveLastSpaces();
 			}
 		}
 
 		void Merge()
 		{
-			POSITION pos		= m_arWords.GetHeadPosition();
-			if (NULL == pos)
+            std::list<CWord*>::iterator pos = m_arWords.begin();
+            if (pos == m_arWords.end())
 				return;
 			
-			POSITION posCur		= pos;
-			CWord* pWordPrev	= m_arWords.GetNext(posCur);
+            std::list<CWord*>::iterator posCur = pos;
+            CWord* pWordPrev	= *pos;
+            posCur++;
 
 			double dRightPos	= pWordPrev->m_dX + pWordPrev->m_dWidth;			
 
-			while (NULL != posCur)
+            while (posCur != m_arWords.end())
 			{
-				POSITION posCurOld = posCur;
+                std::list<CWord*>::iterator posCurOld = posCur;
 
-				CWord* pWord = m_arWords.GetNext(posCur);
+                CWord* pWord = *posCur;
+                posCur++;
 				bool bNextWord = true;
 				
 				if (FABS(pWord->m_dX - dRightPos) < 0.1)
@@ -667,17 +602,17 @@ v\\:*{behavior:url(#default#VML)}\n");
 					// продолжаем текущий спан
 					if (bNextWord)
 					{
-						pWordPrev->m_oText.AddSpace();
+                        pWordPrev->m_oText.AddCharSafe(' ');
 					}
-					pWordPrev->m_oText += pWord->m_oText;
+                    pWordPrev->m_oText.Write(pWord->m_oText);
 
-					m_arWords.RemoveAt(posCurOld);
+                    posCur = m_arWords.erase(posCurOld);
 					RELEASEOBJECT(pWord);
 				}
 				else
 				{
 					if (bNextWord)
-						pWordPrev->m_oText.AddSpace();
+                        pWordPrev->m_oText.AddCharSafe(' ');
 
 					pos			= posCur;
 					pWordPrev	= pWord;
@@ -692,7 +627,7 @@ v\\:*{behavior:url(#default#VML)}\n");
 		CFontManager	m_oFontManager;
 		CTextLine		m_oCurrentLine;
 
-		NSStrings::CStringWriter* m_pWriter;
+        NSStringUtils::CStringBuilder* m_pWriter;
 
 		//NSStrings::CStringWriter m_oTextMeasurer;
 
@@ -705,21 +640,21 @@ v\\:*{behavior:url(#default#VML)}\n");
 		NSStructures::CBrush*	m_pBrush;
 		NSStructures::CFont*	m_pFont;
 
-		NSHtmlRenderer::CMatrix* m_pTransform;
+        Aggplus::CMatrix* m_pTransform;
 
 		LONG			m_lIndexZ;
 
 		bool			m_bIsNewLine;
 		bool			m_bIsPDFTextStyle;
 
-		NSStrings::CTextItem m_oTextItem;
+        NSStringUtils::CStringBuilder m_oTextItem;
 		
 	private:
 		double			m_dEpsX;
 		double			m_dEpsY;
 
 	public:
-		CText() : m_oFontManager(), m_oCurrentLine(), m_oTextItem(10)//, m_oTextMeasurer()
+        CText() : m_oFontManager(), m_oCurrentLine(), m_oTextItem()//, m_oTextMeasurer()
  		{
 			m_pWriter	= NULL;
 			m_dEpsX		= 0.5;
@@ -741,7 +676,7 @@ v\\:*{behavior:url(#default#VML)}\n");
 			m_bIsPDFTextStyle = false;
 		}
 
-		void SetParams(NSStructures::CPen* pPen, NSStructures::CBrush* pBrush, NSStructures::CFont* pFont, CStyles* pStyles, NSHtmlRenderer::CMatrix* pTransform)
+        void SetParams(NSStructures::CPen* pPen, NSStructures::CBrush* pBrush, NSStructures::CFont* pFont, CStyles* pStyles, Aggplus::CMatrix* pTransform)
 		{
 			m_pPen					= pPen;
 			m_pBrush				= pBrush;
@@ -787,7 +722,7 @@ v\\:*{behavior:url(#default#VML)}\n");
 	
 	protected:
 
-		AVSINLINE bool GetIsNewLine()
+        inline bool GetIsNewLine()
 		{
 			if (m_bIsNewLine)
 			{
@@ -800,9 +735,9 @@ v\\:*{behavior:url(#default#VML)}\n");
 		void CommandText1(double& x, double& y, double& width, double& height, double& baselineoffset)
 		{
 			double dScaleFont = ((m_pTransform->m_agg_mtx.sx + m_pTransform->m_agg_mtx.sy) / 2);
-			BOOL bIsFontChanged = !m_oFontManager.m_oFont.m_oFont.IsEqual2(m_pFont, dScaleFont);
+            bool bIsFontChanged = !CFontManagerBase::IsEqual2(&m_oFontManager.m_oFont.m_oFont, m_pFont, dScaleFont);
 
-			BOOL bIsTextDecorationChanged = ((m_oFontManager.m_oFont.m_oFont.Underline != m_pFont->Underline) ||
+            bool bIsTextDecorationChanged = ((m_oFontManager.m_oFont.m_oFont.Underline != m_pFont->Underline) ||
 												(m_oFontManager.m_oFont.m_oFont.Strikeout != m_pFont->Strikeout));
 
 			if (bIsFontChanged)
@@ -817,7 +752,7 @@ v\\:*{behavior:url(#default#VML)}\n");
 			}
 
 			// никакого подбора здесь нет. нужное имя должно быть выставлено у m_pFont			
-			m_oFontManager.m_strCurrentPickFont		= _T("");
+            m_oFontManager.m_strCurrentPickFont		= L"";
 
 			bool bIsNewLine = GetIsNewLine();
 
@@ -840,7 +775,7 @@ v\\:*{behavior:url(#default#VML)}\n");
 
 				LONG lGid = m_oFontManager.GetStringGid();
 				m_oFontManager.SetStringGid(0);
-				m_oFontManager.MeasureStringPix(m_oTextItem.GetCString(), x, y, _x, _y, _w, _h, CFontManager::MeasureTypePosition);
+                m_oFontManager.MeasureStringPix(m_oTextItem.GetData(), x, y, _x, _y, _w, _h, CFontManager::MeasureTypePosition);
 				m_oFontManager.SetStringGid(lGid);
 
 				width  = _w;
@@ -895,10 +830,10 @@ v\\:*{behavior:url(#default#VML)}\n");
 				if (1.0 < FABS(pTail->m_dX + pTail->m_dWidth - x))
 				{
 					// это не одно и то же слово!!!
-					pTail->m_oText.AddSpace();
+                    pTail->m_oText.AddCharSafe(' ');
 				}
 
-				pTail->m_oText += m_oTextItem;
+                pTail->m_oText.Write(m_oTextItem);
 				pTail->m_dWidth = (x + width - pTail->m_dX);
 				pTail->m_dWidthWithoutSpaces = pTail->m_dWidth;
 			}
@@ -908,12 +843,12 @@ v\\:*{behavior:url(#default#VML)}\n");
 				m_oCurrentLine.AddWord(pWord);
 			}
 		}
-		void CommandText2(BSTR bsGid, double& x, double& y, double& width, double& height, double& baselineoffset)
+        void CommandText2(const std::wstring& bsGid, double& x, double& y, double& width, double& height, double& baselineoffset)
 		{
 			bool bIsNewLine = GetIsNewLine();
 
 			double dScaleFont = ((m_pTransform->m_agg_mtx.sx + m_pTransform->m_agg_mtx.sy) / 2);
-			BOOL bIsFontChanged = !m_oFontManager.m_oFont.m_oFont.IsEqual2(m_pFont, dScaleFont);
+            bool bIsFontChanged = !CFontManagerBase::IsEqual2(&m_oFontManager.m_oFont.m_oFont, m_pFont, dScaleFont);
 
 			if (bIsFontChanged)
 			{
@@ -949,12 +884,10 @@ v\\:*{behavior:url(#default#VML)}\n");
 
 			if (0 >= width)
 			{	
-				if (NULL == bsGid)
+                if (bsGid.empty())
 				{
 					m_oFontManager.SetStringGid(0);
-					BSTR bsText = m_oTextItem.GetCString().AllocSysString();
-					m_oFontManager.MeasureStringPix(bsText, x, y, _x, _y, _w, _h, CFontManager::MeasureTypePosition);
-					SysFreeString(bsText);
+                    m_oFontManager.MeasureStringPix(m_oTextItem.GetData(), x, y, _x, _y, _w, _h, CFontManager::MeasureTypePosition);
 				}
 				else
 				{
@@ -1027,14 +960,14 @@ v\\:*{behavior:url(#default#VML)}\n");
 				{
 					if (0 == pWordLast->GetCountSpaceLast())
 					{
-						pWordLast->m_oText += m_oTextItem;
+                        pWordLast->m_oText.Write(m_oTextItem);
 						pWordLast->m_dWidth = x + width - pWordLast->m_dX;
 					}
 					return;
 				}
 				
 				if (dDelta > dSpace)
-					pWordLast->m_oText.AddSpace();
+                    pWordLast->m_oText.AddCharSafe(' ');
 
 				if (bIsFontChanged || bIsBrushChanged)
 				{
@@ -1043,7 +976,7 @@ v\\:*{behavior:url(#default#VML)}\n");
 				}
 				else
 				{
-					pWordLast->m_oText += m_oTextItem;
+                    pWordLast->m_oText.Write(m_oTextItem);
 					pWordLast->m_dWidth					= x + width - pWordLast->m_dX;
 					pWordLast->m_dWidthWithoutSpaces	= pWordLast->m_dWidth;
 				}
@@ -1061,7 +994,7 @@ v\\:*{behavior:url(#default#VML)}\n");
 				}
 				else
 				{
-					pWordLast->m_oText += m_oTextItem;
+                    pWordLast->m_oText.Write(m_oTextItem);
 					pWordLast->m_dWidth		= x + width - pWordLast->m_dX; // чтобы не накапливалась ошибка, не используем сумму длин
 
 					if (5 < pWordLast->GetCountLastPoints())
@@ -1074,9 +1007,9 @@ v\\:*{behavior:url(#default#VML)}\n");
 		}
 		
 	public:
-		AVSINLINE void CommandText(BSTR& bsText, BSTR& bsGid, double& x, double& y, double& width, double& height, double& baselineoffset, LONG& lIndexZ)
+        inline void CommandText(const std::wstring& bsText, const std::wstring& bsGid, double& x, double& y, double& width, double& height, double& baselineoffset, LONG& lIndexZ)
 		{
-			if (NULL == bsText)
+            if (bsText.empty())
 				return;
 
 			m_lIndexZ = lIndexZ;
@@ -1085,9 +1018,9 @@ v\\:*{behavior:url(#default#VML)}\n");
 			if (0 == m_oTextItem.GetCurSize())
 				return;
 
-			if (bsGid != NULL)
+            if (!bsGid.empty())
 			{
-				m_oTextItem.CorrectUnicode(m_oFontManager.m_mapUnicode);
+                // TODO: m_oTextItem.CorrectUnicode(m_oFontManager.m_mapUnicode);
 				return CommandText2(bsGid, x, y, width, height, baselineoffset);
 			}
 			if (m_bIsPDFTextStyle)
@@ -1100,3 +1033,5 @@ v\\:*{behavior:url(#default#VML)}\n");
 	};
 
 }
+
+#endif // _ASC_HTMLRENDERER_TEXT_H_

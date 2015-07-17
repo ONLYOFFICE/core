@@ -61,11 +61,9 @@ HEADERS +=  \
     src/Document.h \
     src/FontManager.h \
     src/FontManagerBase.h \
-    src/StringWriter.h \
     src/SVGWriter.h \
     src/SVGWriter2.h \
     src/Text.h \
-    src/TextItem.h \
     src/VectorGraphicsWriter.h \
     src/VectorGraphicsWriter2.h \
     src/VMLWriter.h \

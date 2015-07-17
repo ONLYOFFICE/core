@@ -1,11 +1,5 @@
-﻿#pragma once
-
-#include "..\stdafx.h"
-#include "Const.h"
-#include "Common.h"
-#include "StringWriter.h"
-#include "..\Graphics\Structures.h"
-#include "..\Graphics\Matrix.h"
+﻿#ifndef _ASC_HTMLRENDERER_FM_H_
+#define _ASC_HTMLRENDERER_FM_H_
 
 #include "FontManagerBase.h"
 
@@ -18,10 +12,10 @@ namespace NSHtmlRenderer
 	class CFontManager : public CFontManagerBase
 	{
 	public:
-		NSStructures::CFont*			m_pFont;
-		NSHtmlRenderer::CMatrix*		m_pTransform;
+        NSStructures::CFont*	m_pFont;
+        Aggplus::CMatrix*		m_pTransform;
 
-		double							m_dSpaceWidthMM;
+        double					m_dSpaceWidthMM;
 
 	public:
 		CFontManager() : m_pFont(NULL), CFontManagerBase()
@@ -44,7 +38,7 @@ namespace NSHtmlRenderer
 
 			m_pFont->Size = dSizeFont;
 
-			if (m_pFont->IsEqual2(&m_oFont.m_oFont))
+            if (IsEqual2(m_pFont, &m_oFont.m_oFont))
 			{
 				m_pFont->Size = dSize;
 				return;
@@ -55,7 +49,7 @@ namespace NSHtmlRenderer
 
 			bool bIsPath = false;
 
-			if (_T("") == m_pFont->Path)
+            if (L"" == m_pFont->Path)
 			{
 				CFontManagerBase::LoadFontByName(m_oFont.m_oFont.Name, m_oFont.m_oFont.Size, m_oFont.m_oFont.GetStyle());
 			}
@@ -72,21 +66,16 @@ namespace NSHtmlRenderer
 			CalculateSpace();
 		}
 
-		AVSINLINE void CalculateSpace()
+        inline void CalculateSpace()
 		{
-			LONG lGid = 0;
-			m_pManager->GetStringGID(&lGid);
-			m_pManager->SetStringGID(FALSE);
+            LONG lGid = m_pManager->m_bStringGID;
+            m_pManager->SetStringGID(FALSE);
 			
-			m_pManager->LoadString(L" ", 0, 0);
-			float _x = 0;
-			float _y = 0;
-			float _w = 0;
-			float _h = 0;
+            m_pManager->LoadString1(L" ", 0, 0);
 
-			m_pManager->MeasureString2(&_x, &_y, &_w, &_h);
+            TBBox _box = m_pManager->MeasureString2();
 
-			m_dSpaceWidthMM = (double)_w * c_dPixToMM;
+            m_dSpaceWidthMM = (double)(_box.fMaxX - _box.fMinX) * c_dPixToMM;
 			if (0 >= m_dSpaceWidthMM)
 			{
 				m_dSpaceWidthMM = 1.0;
@@ -96,3 +85,5 @@ namespace NSHtmlRenderer
 		}
 	};
 }
+
+#endif // _ASC_HTMLRENDERER_FM_H_

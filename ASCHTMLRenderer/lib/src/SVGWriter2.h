@@ -795,30 +795,24 @@ namespace NSHtmlRenderer
 			bIsLine = WriteToPathToSVGPath(false, (bFill && !bStroke) ? true : false);
 			#endif
 			
-#if 0
 			if (!bFill)
 			{
 				// stroke
-				int nColorPen	= ConvertColor(m_pPen->Color);
+                m_oDocument.WriteString(L"<path style=\"fill:none;stroke:", 30);
+                m_oDocument.WriteHexColor3(m_pPen->Color);
+                m_oDocument.WriteString(L";stroke-width:", 14);
+                m_oDocument.AddInt(nPenW);
+                m_oDocument.WriteString(L";stroke-opacity:", 16);
+                m_oDocument.AddDouble((double)m_pPen->Alpha / 255, 2);
+                if (m_pPen->DashStyle == 0)
+                    m_oDocument.WriteString(L";\" ", 3);
+                else
+                    m_oDocument.WriteString(L";stroke-dasharray: 2,2;\" ", 25);
 
-				CString strStyle = _T("");
-
-				if (m_pPen->DashStyle == 0)
-				{
-					strStyle.Format(g_svg_string_vml_StyleStroke, nColorPen, nPenW, (double)m_pPen->Alpha / 255);
-				}
-				else
-				{
-					strStyle.Format(g_svg_string_vml_StyleStrokeDash, nColorPen, nPenW, (double)m_pPen->Alpha / 255);
-				}
-
-				m_oDocument.WriteString(g_svg_bstr_vml_Path);
-				m_oDocument.WriteString(strStyle);
 				WriteStyleClip();
-				m_oDocument.WriteString(g_svg_bstr_path_d);
-				m_oDocument.Write(m_oPath);
-				m_oDocument.WriteString(g_svg_bstr_path_d_end);
-				m_oDocument.WriteString(g_svg_bstr_nodeClose);
+                m_oDocument.WriteString(L" d=\"", 4);
+                m_oDocument.Write(m_oPath);
+                m_oDocument.WriteString(L"\" />\n", 5);
 				return;
 			}
 			else if (c_BrushTypeTexture == m_pBrush->Type)
@@ -827,7 +821,7 @@ namespace NSHtmlRenderer
 				double y = 0;
 				double w = 0;
 				double h = 0;
-				pConverter->PathCommandGetBounds(&x, &y, &w, &h);
+                pConverter->PathCommandGetBounds(x, y, w, h);
 
 				if (m_pBrush->TextureMode == c_BrushTextureModeStretch || true)
 				{
@@ -836,71 +830,84 @@ namespace NSHtmlRenderer
 					double _tx = mtx->tx * m_dCoordsScaleX;
 					double _ty = mtx->ty * m_dCoordsScaleY;
 
-					CString strPatt = _T("");
-					
-					double _w = w * m_dCoordsScaleX;
-					double _h = h * m_dCoordsScaleY;
-					if (itJPG == oInfo.m_eType)
-					{
-						strPatt.Format(g_svg_string_pattern_jpg_mtx, m_lPatternID, round(_w), round(_h), round(_w), round(_h),
-							mtx->sx, mtx->shy, mtx->shx, mtx->sy, _tx, _ty, round(_w), round(_h), oInfo.m_lID);
-					}
-					else
-					{
-						strPatt.Format(g_svg_string_pattern_png_mtx, m_lPatternID, round(_w), round(_h), round(_w), round(_h),
-							mtx->sx, mtx->shy, mtx->shx, mtx->sy, _tx, _ty, round(_w), round(_h), oInfo.m_lID);
-					}
-					m_oDocument.WriteString(strPatt);
-				}
+                    double _w = w * m_dCoordsScaleX;
+                    double _h = h * m_dCoordsScaleY;
+
+                    m_oDocument.WriteString(L"<pattern id=\"pt", 15);
+                    m_oDocument.AddInt(m_lPatternID);
+                    m_oDocument.WriteString(L"\" patternUnits=\"userSpaceOnUse\" x=\"0\" y=\"0\" width=\"", 51);
+                    m_oDocument.AddInt(round(_w));
+                    m_oDocument.WriteString(L"\" height=\"", 10);
+                    m_oDocument.AddInt(round(_h));
+                    m_oDocument.WriteString(L"\" viewBox=\"0 0 ", 15);
+                    m_oDocument.AddInt(round(_w));
+                    m_oDocument.AddCharSafe(' ');
+                    m_oDocument.AddInt(round(_h));
+                    m_oDocument.WriteString(L"\" transform=\"matrix(");
+                    m_oDocument.AddDouble(mtx->sx, 3);
+                    m_oDocument.AddCharSafe(',');
+                    m_oDocument.AddDouble(mtx->shy, 3);
+                    m_oDocument.AddCharSafe(',');
+                    m_oDocument.AddDouble(mtx->shx, 3);
+                    m_oDocument.AddCharSafe(',');
+                    m_oDocument.AddDouble(mtx->sy, 3);
+                    m_oDocument.AddCharSafe(',');
+                    m_oDocument.AddDouble(_tx, 3);
+                    m_oDocument.AddCharSafe(',');
+                    m_oDocument.AddDouble(_ty, 3);
+                    m_oDocument.WriteString(L")\"><image x=\"0\" y=\"0\" width=\"", 29);
+                    m_oDocument.AddInt(round(_w));
+                    m_oDocument.WriteString(L"\" height=\"", 10);
+                    m_oDocument.AddInt(round(_h));
+                    m_oDocument.WriteString(L"\" xlink:href=\"image", 19);
+                    m_oDocument.AddInt(oInfo.m_lID);
+                    if (itJPG == oInfo.m_eType)
+                        m_oDocument.WriteString(L".jpg\" preserveAspectRatio=\"none\"/></pattern>", 44);
+                    else
+                        m_oDocument.WriteString(L".png\" preserveAspectRatio=\"none\"/></pattern>", 44);
+                }
 				else
 				{
 					// TODO:
 				}
 
-				CString strMode = _T("nonzero");
-				if (nType & c_nEvenOddFillMode)
-					strMode = _T("evenodd");
+                m_oDocument.WriteString(L"<path style=\"fill:url(#pt", 25);
+                m_oDocument.AddInt(m_lPatternID);
+                m_oDocument.WriteString(L");fill-opacity:");
+                m_oDocument.AddDouble((double)m_pBrush->Alpha1 / 255, 2);
+                if (nType & c_nEvenOddFillMode)
+                    m_oDocument.WriteString(L";fill-rule:evenodd;", 19);
+                else
+                    m_oDocument.WriteString(L";fill-rule:nonzero;", 19);
 
-				if (!bStroke)
-				{
-					CString strStyle = _T("");
-					strStyle.Format(g_svg_string_vml_StyleFillTx, m_lPatternID, (double)m_pBrush->Alpha1 / 255, strMode);
+                if (!bStroke)
+                {
+                    m_oDocument.WriteString(L"stroke:none;\" ", 14);
+                }
+                else
+                {
+                    m_oDocument.WriteString(L"stroke:", 7);
+                    m_oDocument.WriteHexColor3(m_pPen->Color);
+                    m_oDocument.WriteString(L";stroke-width:", 14);
+                    m_oDocument.AddInt(nPenW);
+                    m_oDocument.WriteString(L";stroke-opacity:", 16);
+                    m_oDocument.AddDouble((double)m_pPen->Alpha / 255, 2);
+                    m_oDocument.WriteString(L"\" ", 2);
+                }
 
-					m_oDocument.WriteString(g_svg_bstr_vml_Path);
-					m_oDocument.WriteString(strStyle);
-					WriteStyleClip();
-					m_oDocument.WriteString(g_svg_bstr_path_d);
-					m_oDocument.Write(m_oPath);
-					m_oDocument.WriteString(g_svg_bstr_path_d_end);
-					m_oDocument.WriteString(g_svg_bstr_nodeClose);
-				}
-				else
-				{
-					int nPenColor = ConvertColor(m_pPen->Color);
+                WriteStyleClip();
+                m_oDocument.WriteString(L" d=\"", 4);
+                m_oDocument.Write(m_oPath);
+                m_oDocument.WriteString(L"\" />\n", 5);
 
-					CString strStyle = _T("");
-					strStyle.Format(g_svg_string_vml_StyleTx, m_lPatternID, (double)m_pBrush->Alpha1 / 255, strMode, nPenColor, nPenW, (double)m_pPen->Alpha / 255);
-
-					m_oDocument.WriteString(g_svg_bstr_vml_Path);
-					m_oDocument.WriteString(strStyle);
-					WriteStyleClip();
-					m_oDocument.WriteString(g_svg_bstr_path_d);
-					m_oDocument.Write(m_oPath);
-					m_oDocument.WriteString(g_svg_bstr_path_d_end);
-					m_oDocument.WriteString(g_svg_bstr_nodeClose);
-				}
-
-				++m_lPatternID;
+                ++m_lPatternID;
 				return;
 			}
 			
 			int nColorBrush	= ConvertColor(m_pBrush->Color1);
-			CString strMode = _T("nonzero");
-			if (nType & c_nEvenOddFillMode)
+            if (nType & c_nEvenOddFillMode)
 			{
-				strMode = _T("evenodd");
-				
-				#ifdef USE_SIMPLE_GRAPHICS_NOSVG
+                #ifdef USE_SIMPLE_GRAPHICS_NOSVG
 				m_bIsSimpleGraphics = false;
 				#endif
 			}
@@ -909,46 +916,56 @@ namespace NSHtmlRenderer
 			{
 				if (bIsLine)
 				{
-					CString strStyle = _T("");
-					strStyle.Format(g_svg_string_vml_StyleStroke, nColorBrush, 1, (double)m_pBrush->Alpha1 / 255);
+                    m_oDocument.WriteString(L"<path style=\"fill:none;stroke:", 30);
+                    m_oDocument.WriteHexColor3(m_pBrush->Color1);
+                    m_oDocument.WriteString(L";stroke-width:", 14);
+                    m_oDocument.AddInt(1);
+                    m_oDocument.WriteString(L";stroke-opacity:", 16);
+                    m_oDocument.AddDouble((double)m_pBrush->Alpha1 / 255, 2);
+                    m_oDocument.WriteString(L";\" ", 3);
 
-					m_oDocument.WriteString(g_svg_bstr_vml_Path);
-					m_oDocument.WriteString(strStyle);
-					WriteStyleClip();
-					m_oDocument.WriteString(g_svg_bstr_path_d);
-					m_oDocument.Write(m_oPath);
-					m_oDocument.WriteString(g_svg_bstr_path_d_end);
-					m_oDocument.WriteString(g_svg_bstr_nodeClose);
+                    WriteStyleClip();
+                    m_oDocument.WriteString(L" d=\"", 4);
+                    m_oDocument.Write(m_oPath);
+                    m_oDocument.WriteString(L"\" />\n", 5);
 					return;
 				}
 
-				CString strStyle = _T("");
-				strStyle.Format(g_svg_string_vml_StyleFill, nColorBrush, (double)m_pBrush->Alpha1 / 255, strMode);
+                m_oDocument.WriteString(L"<path style=\"fill:", 18);
+                m_oDocument.WriteHexColor3(m_pBrush->Color1);
+                m_oDocument.WriteString(L";fill-opacity:", 14);
+                m_oDocument.AddDouble((double)m_pBrush->Alpha1 / 255, 2);
+                if (nType & c_nEvenOddFillMode)
+                    m_oDocument.WriteString(L";fill-rule:evenodd;stroke:none\" ", 32);
+                else
+                    m_oDocument.WriteString(L";fill-rule:nonzero;stroke:none\" ", 32);
 
-				m_oDocument.WriteString(g_svg_bstr_vml_Path);
-				m_oDocument.WriteString(strStyle);
 				WriteStyleClip();
-				m_oDocument.WriteString(g_svg_bstr_path_d);
-				m_oDocument.Write(m_oPath);
-				m_oDocument.WriteString(g_svg_bstr_path_d_end);
-				m_oDocument.WriteString(g_svg_bstr_nodeClose);
+                m_oDocument.WriteString(L" d=\"", 4);
+                m_oDocument.Write(m_oPath);
+                m_oDocument.WriteString(L"\" />\n", 5);
 				return;
 			}
-			
-			int nPenColor = ConvertColor(m_pPen->Color);
 
-			CString strStyle = _T("");
-			strStyle.Format(g_svg_string_vml_Style, nColorBrush, (double)m_pBrush->Alpha1 / 255, strMode, nPenColor, nPenW, (double)m_pPen->Alpha / 255);
+            m_oDocument.WriteString(L"<path style=\"fill:", 18);
+            m_oDocument.WriteHexInt3(m_pBrush->Color1);
+            m_oDocument.WriteString(L";fill-opacity:", 14);
+            m_oDocument.AddDouble((double)m_pBrush->Alpha1 / 255, 2);
+            if (nType & c_nEvenOddFillMode)
+                m_oDocument.WriteString(L";fill-rule:evenodd;stroke:", 26);
+            else
+                m_oDocument.WriteString(L";fill-rule:nonzero;stroke:", 26);
+            m_oDocument.WriteHexInt3(m_pPen->Color);
+            m_oDocument.WriteString(L";stroke-width:", 14);
+            m_oDocument.AddInt(nPenW);
+            m_oDocument.WriteString(L";stroke-opacity:", 16);
+            m_oDocument.AddDouble((double)m_pPen->Alpha / 255, 2);
+            m_oDocument.WriteString(L";\" ", 3);
 
-			m_oDocument.WriteString(g_svg_bstr_vml_Path);
-			m_oDocument.WriteString(strStyle);
-			WriteStyleClip();
-			m_oDocument.WriteString(g_svg_bstr_path_d);
-			m_oDocument.Write(m_oPath);
-			m_oDocument.WriteString(g_svg_bstr_path_d_end);
-			m_oDocument.WriteString(g_svg_bstr_nodeClose);
-
-#endif
+            WriteStyleClip();
+            m_oDocument.WriteString(L" d=\"", 4);
+            m_oDocument.Write(m_oPath);
+            m_oDocument.WriteString(L"\" />\n", 5);
 		}
 
 		void WritePathClip()

@@ -402,6 +402,7 @@ namespace Aggplus
 		if (NULL == pFont)
 			return InvalidParameter;
 		
+		pFont->SetTextMatrix(1, 0, 0, 1, 0, 0);
 		pFont->LoadString1(strText, (float)x, (float)y);
 		return (TRUE == pFont->GetStringPath(this)) ? Ok : InvalidParameter;
 	}
@@ -410,6 +411,7 @@ namespace Aggplus
         if (NULL == pFont)
             return InvalidParameter;
 
+		pFont->SetTextMatrix(1, 0, 0, 1, 0, 0);
         pFont->LoadString1(pGids, nGidsCount, (float)x, (float)y);
         return (TRUE == pFont->GetStringPath(this)) ? Ok : InvalidParameter;
     }
@@ -419,8 +421,9 @@ namespace Aggplus
 		if (NULL == pFont)
 			return InvalidParameter;
 
-		std::wstring strText((wchar_t)lText, 1);		
-		pFont->LoadString1(strText, (float)x, (float)y);
+		unsigned int _c = (int)lText;
+		pFont->SetTextMatrix(1, 0, 0, 1, 0, 0);
+		pFont->LoadString1(&_c, 1, (float)x, (float)y);
 		return (TRUE == pFont->GetStringPath(this)) ? Ok : InvalidParameter;
 	}
 

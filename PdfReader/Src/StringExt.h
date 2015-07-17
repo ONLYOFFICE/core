@@ -42,11 +42,11 @@ namespace PdfReader
 
 	static std::wstring* AStringToPWString(const char* sString)
 	{
-		return new std::wstring(NSString::CConverter::GetUnicodeFromSingleByteString((unsigned char*)sString, strlen(sString)));
+		return new std::wstring(NSStringExt::CConverter::GetUnicodeFromSingleByteString((unsigned char*)sString, strlen(sString)));
 	}
 	static std::wstring AStringToWString(const char* sString)
 	{
-		return std::wstring(NSString::CConverter::GetUnicodeFromSingleByteString((unsigned char*)sString, strlen(sString)));
+		return std::wstring(NSStringExt::CConverter::GetUnicodeFromSingleByteString((unsigned char*)sString, strlen(sString)));
 	}
 
 
@@ -129,7 +129,7 @@ namespace PdfReader
 
 		std::wstring GetWString()
 		{
-			return NSString::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)m_sData, m_nLength);
+			return NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)m_sData, m_nLength);
 		}
 
 		char GetAt(int nIndex)

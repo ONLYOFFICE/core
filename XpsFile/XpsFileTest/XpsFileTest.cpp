@@ -102,13 +102,13 @@ void main()
 {
 	clock_t oBeginTime = clock();
 
-	//ConvertFolderToRaster(L"D:/Test Files//Xps//");
+	ConvertFolderToRaster(L"D:/Test Files//Xps//");
 	ConvertFolderToPdf(L"D:/Test Files//Xps//");
 
 	clock_t oEndTime = clock();
 	double dElapsedSecs = double(oEndTime - oBeginTime) / CLOCKS_PER_SEC;
 	printf("%fseconds\n", dElapsedSecs);
 
-	char q;
-	std::cin >> q;
+	//char q;
+	//std::cin >> q;
 }

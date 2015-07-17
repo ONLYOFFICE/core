@@ -1,4 +1,4 @@
-#include "WString.h"
+﻿#include "WString.h"
 #include "Utils.h"
 
 #include "../../DesktopEditor/common/String.h"

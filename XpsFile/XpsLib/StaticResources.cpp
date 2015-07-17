@@ -1,4 +1,4 @@
-#include "StaticResources.h"
+п»ї#include "StaticResources.h"
 
 #include "../../Common/DocxFormat/Source/XML/xmlutils.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"
@@ -383,8 +383,8 @@ namespace XPS
 	{
 		CBrush* pBrush = NULL;
 
-		// TODO: 1. Трансформы здесь не реализованы, потому что их невозможно учесть с текущим интерфейсом рендерера
-		//       2. Не реализован VisualBrush
+		// TODO: 1. РўСЂР°РЅСЃС„РѕСЂРјС‹ Р·РґРµСЃСЊ РЅРµ СЂРµР°Р»РёР·РѕРІР°РЅС‹, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РёС… РЅРµРІРѕР·РјРѕР¶РЅРѕ СѓС‡РµСЃС‚СЊ СЃ С‚РµРєСѓС‰РёРј РёРЅС‚РµСЂС„РµР№СЃРѕРј СЂРµРЅРґРµСЂРµСЂР°
+		//       2. РќРµ СЂРµР°Р»РёР·РѕРІР°РЅ VisualBrush
 		if (!oReader.IsEmptyNode())
 		{
 			CWString wsNodeName;

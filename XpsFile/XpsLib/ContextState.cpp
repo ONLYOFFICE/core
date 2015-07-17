@@ -1,4 +1,4 @@
-#include "ContextState.h"
+﻿#include "ContextState.h"
 #include "StaticResources.h"
 
 #ifndef xpsUnitToMM

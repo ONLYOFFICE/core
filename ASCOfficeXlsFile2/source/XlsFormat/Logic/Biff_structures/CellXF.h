@@ -21,7 +21,6 @@ public:
 	
 	int serialize(std::wostream & stream);
 
-private:
 	unsigned char alc;
 	bool fWrap;
 	unsigned char alcV;
@@ -46,7 +45,6 @@ private:
 	size_t border_x_id;
 	size_t fill_x_id;
 
-private:
 	size_t& cell_xf_current_id_;
 	size_t& style_xf_current_id_;
 };

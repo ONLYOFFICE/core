@@ -25,29 +25,16 @@ public:
 
 	static const ElementType	type = typeStyleExt;
 
+	int serialize(std::wostream & stream);
+
 //-----------------------------
-	BIFF_BOOL fBuiltIn;
-	BIFF_BOOL fHidden;
-	BIFF_BOOL fCustom;
-	BIFF_BYTE iCategory;
-	BuiltInStyle builtInData;
-	LPWideString stName;
-	XFProps xfProps;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fBuiltIn)
-		//BO_ATTRIB_MARKUP_ATTRIB(fHidden)
-		//BO_ATTRIB_MARKUP_ATTRIB(fCustom)
-		//BO_ATTRIB_MARKUP_ATTRIB(iCategory)
-		//BO_ATTRIB_MARKUP_ATTRIB(stName)
-		//if(fBuiltIn)
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(builtInData)
-		//}
-		//BO_ATTRIB_MARKUP_COMPLEX(xfProps)
-
-	//BO_ATTRIB_MARKUP_END
-
+	BIFF_BOOL		fBuiltIn;
+	BIFF_BOOL		fHidden;
+	BIFF_BOOL		fCustom;
+	BIFF_BYTE		iCategory;
+	BuiltInStyle	builtInData;
+	LPWideString	stName;
+	XFProps			xfProps;
 };
 
 } // namespace XLS

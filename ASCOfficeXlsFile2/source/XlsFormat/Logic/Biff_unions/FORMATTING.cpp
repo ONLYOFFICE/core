@@ -90,10 +90,21 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	return true;
 }
 
-int FORMATTING::serialize(std::wostream & stream)
+int FORMATTING::serialize1(std::wostream & stream)
 {
-    CP_XML_WRITER(stream)    
+   CP_XML_WRITER(stream)    
     {
+		if (m_Formats.size() > 0)
+		{
+			CP_XML_NODE(L"numFmts")
+			{
+				CP_XML_ATTR(L"count", m_Formats.size());
+				for (long i = 0 ; i < m_Formats.size(); i++)
+				{
+					m_Formats[i]->serialize(CP_XML_STREAM());
+				}
+			}
+		}
 		if (m_Fonts.size() > 0)
 		{
 			CP_XML_NODE(L"fonts")
@@ -105,6 +116,14 @@ int FORMATTING::serialize(std::wostream & stream)
 				}
 			}
 		}
+   }
+	return 0;
+}
+
+int FORMATTING::serialize2(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+    {
 		if (m_XFS)
 		{
 			m_XFS->serialize(stream);
@@ -114,16 +133,6 @@ int FORMATTING::serialize(std::wostream & stream)
 			m_Styles->serialize(stream);
 		}
 	}
-
-    //cpdoccore::oox::xlsx_serialize(_Wostream, numFmts_);
-    //cpdoccore::oox::xlsx_serialize(_Wostream, fonts_);
-    //cpdoccore::oox::xlsx_serialize(_Wostream, fills_);
-    //cpdoccore::oox::xlsx_serialize(_Wostream, borders_);
-
-    //
-    //xlsx_serialize_xf(_Wostream, cellStyleXfs_, L"cellStyleXfs");
-    //xlsx_serialize_xf(_Wostream, cellXfs_, L"cellXfs");
-    //cellStyles_.xlsx_serialize(_Wostream);
 
 	return 0;
 }

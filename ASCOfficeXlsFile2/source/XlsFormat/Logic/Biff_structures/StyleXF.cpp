@@ -2,6 +2,8 @@
 #include "StyleXF.h"
 #include <Binary/CFRecord.h>
 
+#include <simple_xml_writer.h>
+
 namespace XLS
 {;
 
@@ -17,73 +19,6 @@ BiffStructurePtr StyleXF::clone()
 	return BiffStructurePtr(new StyleXF(*this));
 }
 
-
-//void StyleXF::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"alc", alc);
-//	xml_tag->setAttribute(L"fWrap", fWrap);
-//	xml_tag->setAttribute(L"alcV", alcV);
-//	xml_tag->setAttribute(L"fJustLast", fJustLast);
-//	xml_tag->setAttribute(L"trot", trot);
-//	xml_tag->setAttribute(L"cIndent", cIndent);
-//	xml_tag->setAttribute(L"fShrinkToFit", fShrinkToFit);
-//	xml_tag->setAttribute(L"iReadOrder", iReadOrder);
-//
-//	xml_tag->setAttribute(L"dgLeft", border.dgLeft);
-//	xml_tag->setAttribute(L"dgRight", border.dgRight);
-//	xml_tag->setAttribute(L"dgTop", border.dgTop);
-//	xml_tag->setAttribute(L"dgBottom", border.dgBottom);
-//	xml_tag->setAttribute(L"icvLeft", border.icvLeft);
-//	xml_tag->setAttribute(L"icvRight", border.icvRight);
-//	xml_tag->setAttribute(L"grbitDiag", border.grbitDiag);
-//
-//	xml_tag->setAttribute(L"icvTop", border.icvTop);
-//	xml_tag->setAttribute(L"icvBottom", border.icvBottom);
-//	xml_tag->setAttribute(L"icvDiag", border.icvDiag);
-//	xml_tag->setAttribute(L"dgDiag", border.dgDiag);
-//	xml_tag->setAttribute(L"fls", fill.fls);
-//
-//	xml_tag->setAttribute(L"icvFore", fill.icvFore);
-//	xml_tag->setAttribute(L"icvBack", fill.icvBack);
-//
-//	xml_tag->setAttribute(L"xf_current_id", cell_xf_current_id_ + style_xf_current_id_);
-//	xml_tag->setAttribute(L"style_xf_current_id", style_xf_current_id_++);
-//
-//	xml_tag->setAttribute(L"border_x_id", border_x_id);
-//	xml_tag->setAttribute(L"fill_x_id", fill_x_id);
-//}
-//
-//
-//void StyleXF::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	alc = getStructAttribute(xml_tag, L"alc");
-//	fWrap = getStructAttribute(xml_tag, L"fWrap");
-//	alcV = getStructAttribute(xml_tag, L"alcV");
-//	fJustLast = getStructAttribute(xml_tag, L"fJustLast");
-//	trot = getStructAttribute(xml_tag, L"trot");
-//	cIndent = getStructAttribute(xml_tag, L"cIndent");
-//	fShrinkToFit = getStructAttribute(xml_tag, L"fShrinkToFit");
-//	iReadOrder = getStructAttribute(xml_tag, L"iReadOrder");
-//
-//	border.dgLeft = getStructAttribute(xml_tag, L"dgLeft");
-//	border.dgRight = getStructAttribute(xml_tag, L"dgRight");
-//	border.dgTop = getStructAttribute(xml_tag, L"dgTop");
-//	border.dgBottom = getStructAttribute(xml_tag, L"dgBottom");
-//	border.icvLeft = getStructAttribute(xml_tag, L"icvLeft");
-//	border.icvRight = getStructAttribute(xml_tag, L"icvRight");
-//	border.grbitDiag = getStructAttribute(xml_tag, L"grbitDiag");
-//
-//	border.icvTop = getStructAttribute(xml_tag, L"icvTop");
-//	border.icvBottom = getStructAttribute(xml_tag, L"icvBottom");
-//	border.icvDiag = getStructAttribute(xml_tag, L"icvDiag");
-//	border.dgDiag = getStructAttribute(xml_tag, L"dgDiag");
-//	fill.fls = getStructAttribute(xml_tag, L"fls");
-//
-//	fill.icvFore = getStructAttribute(xml_tag, L"icvFore");
-//	fill.icvBack = getStructAttribute(xml_tag, L"icvBack");
-//}
-//
-//
 void StyleXF::store(CFRecord& record)
 {
 	unsigned int flags = 0;
@@ -156,7 +91,7 @@ void StyleXF::load(CFRecord& record)
 	fill.icvBack = GETBITS(flags4, 7, 13);
 
 	border_x_id = record.getGlobalWorkbookInfo()->RegisterBorderId(border);
-	fill_x_id = record.getGlobalWorkbookInfo()->RegisterFillId(fill);
+	fill_x_id	= record.getGlobalWorkbookInfo()->RegisterFillId(fill);
 }
 
 int StyleXF::serialize(std::wostream & stream)

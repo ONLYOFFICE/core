@@ -1,6 +1,8 @@
 #include "precompiled_xls.h"
 #include "StyleExt.h"
 
+#include <simple_xml_writer.h>
+
 namespace XLS
 {;
 
@@ -40,6 +42,11 @@ void StyleExt::readFields(CFRecord& record)
 	record >> iCategory>> builtInData >> stName >> xfProps;
 }
 
+int StyleExt::serialize(std::wostream & stream)
+{
+
+	return 0;
+}
 
 } // namespace XLS
 

@@ -19,7 +19,6 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned short cprops;
 	std::vector<XFProp> xfPropArray;
 };

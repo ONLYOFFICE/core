@@ -1,6 +1,8 @@
 #include "precompiled_xls.h"
 #include "Style.h"
 
+#include <simple_xml_writer.h>
+
 namespace XLS
 {;
 
@@ -53,6 +55,10 @@ void Style::readFields(CFRecord& record)
 	}
 }
 
+int Style::serialize(std::wostream & stream)
+{
+	return 0;
+}
 
 } // namespace XLS
 

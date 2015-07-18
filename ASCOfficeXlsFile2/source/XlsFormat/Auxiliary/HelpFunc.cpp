@@ -201,40 +201,43 @@ const std::string bin2str(const char* buf, const size_t nbuf)
 }
 
 
-const std::wstring  guid2bstr(const GUID guid)
+const std::wstring  guid2bstr(const _GUID_ guid)
 {
-	LPOLESTR guid_str;
-	if(S_OK != StringFromIID(guid, &guid_str))
-	{
-		// The only case is E_OUTOFMEMORY, so just throw anything
-		throw;// EXCEPT::LE::WhatIsTheFuck("StringFromIID failed.", "guid2bstr");
-	}
-	std::wstring  guid_ret = guid_str;
-	CoTaskMemFree(guid_str);
+	//todooooo
+
+	//LPOLESTR guid_str;
+	//if(S_OK != StringFromIID(guid, &guid_str))
+	//{
+	//	// The only case is E_OUTOFMEMORY, so just throw anything
+	//	throw;// EXCEPT::LE::WhatIsTheFuck("StringFromIID failed.", "guid2bstr");
+	//}
+	std::wstring  guid_ret;// = guid_str;
+	//CoTaskMemFree(guid_str);
 	return guid_ret;
 }
 
 
-const std::string guid2str(const GUID guid)
+const std::string guid2str(const _GUID_ guid)
 {
 	std::wstring s = guid2bstr(guid);
 	return std::string(s.begin(),s.end());
 }
 
 
-const bool bstr2guid(const std::wstring & guid_str, GUID& guid)
+const bool bstr2guid(const std::wstring & guid_str, _GUID_& guid)
 {
-	HRESULT res = IIDFromString((LPWSTR)(guid_str.c_str()), &guid);
-	if(S_OK != res)
-	{
-		switch(res)
-		{
-			case E_INVALIDARG:
-				return false;
-			case E_OUTOFMEMORY:
-				throw;// EXCEPT::LE::WhatIsTheFuck("IIDFromString failed.", "bstr2guid");
-		}
-	}
+	//todoooo
+	//HRESULT res = IIDFromString((LPWSTR)(guid_str.c_str()), &guid);
+	//if(S_OK != res)
+	//{
+	//	switch(res)
+	//	{
+	//		case E_INVALIDARG:
+	//			return false;
+	//		case E_OUTOFMEMORY:
+	//			throw;// EXCEPT::LE::WhatIsTheFuck("IIDFromString failed.", "bstr2guid");
+	//	}
+	//}
 	return true;
 }
 

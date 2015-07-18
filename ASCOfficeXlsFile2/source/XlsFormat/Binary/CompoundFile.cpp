@@ -10,120 +10,94 @@ namespace XLS
 
 CompoundFile::~CompoundFile()
 {
-	storage_->Commit(0);
 	streams.clear();
-	storage_->Release();
+
+	if (storage_)delete storage_;
+	storage_ = NULL;
 }
 
 CompoundFile::CompoundFile(const std::wstring & file_path, const ReadWriteMode mode)
 :	rwMode(mode)
 {
-	HRESULT hres = S_OK;
 	unsigned int grfMode = 0;
 
+	storage_ = new POLE::Storage(file_path.c_str());
+	if (storage_ == NULL) return;
+
 	switch(rwMode)
-	{
+	{		
 		case cf_ReadMode:
-			hres = StgIsStorageFile(file_path.c_str());
-			switch(hres)
-			{
-			case S_FALSE:
-				throw;// EXCEPT::RT::CompoundFileFormatError("The specified file \"" + std::string(static_cast<char*>(file_path)) + "\" is not a valid Compound File.", hres);;
-			case STG_E_FILENOTFOUND:
-				throw;// EXCEPT::RT::CompoundFileFormatError("Not found the path \"" + std::string(static_cast<char*>(file_path)) + "\"", hres);;
-			}
-			grfMode = STGM_READ | STGM_DIRECT | STGM_SHARE_DENY_WRITE;
-			if(FAILED( hres = StgOpenStorage(file_path.c_str(), NULL, grfMode, NULL, 0, &storage_)))
-			{
-				throw;// EXCEPT::RT::CompoundFileFormatError("Error opening \"" + std::string(static_cast<char*>(file_path)) + "\"", hres);
-			}
-			break;
+		{
+			if (storage_->open(false, false) == false)
+				throw;
+			
+		}break;
 		case cf_WriteMode:
-			grfMode = STGM_CREATE | STGM_READWRITE | STGM_SIMPLE | STGM_SHARE_EXCLUSIVE;
-			if(FAILED( hres = StgCreateStorageEx(file_path.c_str(), grfMode, STGFMT_STORAGE, 0, NULL, NULL,
-						IID_IStorage, reinterpret_cast<void**>(&storage_))))
-			{
-				throw;// EXCEPT::RT::CompoundFileFormatError("Error creating \"" + std::string(static_cast<char*>(file_path)) + "\"", hres);
-			}
-			break;
+		{
+			if (storage_->open(true, true) == false)
+				throw;			
+		}break;
 	}
-
-
-
-/*
-	IEnumSTATSTG* storageInfo = NULL;
-	if(FAILED(hres = storage_->EnumElements(0, 0, 0, &storageInfo)))
-	{
-		throw 1;
-	}
-	
-	Log::info("The Compound File contains the following streams:");
-	STATSTG elem;
-	while(S_OK == storageInfo->Next(1, &elem, 0))
-	{
-		Log::info(std::string("name: \"") + static_cast<char*>(std::wstring (elem.pwcsName)) + "\"  type: " + STR::int2str(elem.type) + " size: " +
-			STR::int2hex_wstr(elem.cbSize.HighPart) + STR::int2hex_wstr(elem.cbSize.LowPart));
-	}
-*/
 }
+
 
 // Opens "Workbook" stream and returns the only reference
 CFStreamPtr CompoundFile::getWorkbookStream()
 {
-	return getNamedStream(L"Workbook");
+	return getNamedStream("Workbook");
 }
 
 
 // Creates "Workbook" stream and returns the only reference
 CFStreamPtr CompoundFile::createWorkbookStream()
 {
-	return createNamedStream(L"Workbook");
+	return createNamedStream("Workbook");
 }
 
 
 // Opens "SummaryInformation" stream and returns the only reference
 CFStreamPtr CompoundFile::getSummaryInformationStream()
 {
-	return getNamedStream(L"\005SummaryInformation");
+	return getNamedStream("\005SummaryInformation");
 }
 
 
 // Creates "SummaryInformation" stream and returns the only reference
 CFStreamPtr CompoundFile::createSummaryInformationStream()
 {
-	return createNamedStream(L"\005SummaryInformation");
+	return createNamedStream("\005SummaryInformation");
 }
 
 
 // Closes "SummaryInformation" stream
 void CompoundFile::closeSummaryInformationStream()
 {
-	return closeNamedStream(L"\005SummaryInformation");
+	return closeNamedStream("\005SummaryInformation");
 }
 
 
 // Opens "SummaryInformation" stream and returns the only reference
 CFStreamPtr CompoundFile::getDocumentSummaryInformationStream()
 {
-	return getNamedStream(L"\005DocumentSummaryInformation");
+	return getNamedStream("\005DocumentSummaryInformation");
 }
 
 
 // Creates "SummaryInformation" stream and returns the only reference
 CFStreamPtr CompoundFile::createDocumentSummaryInformationStream()
 {
-	return createNamedStream(L"\005DocumentSummaryInformation");
+	return createNamedStream("\005DocumentSummaryInformation");
 }
 
 
 // Closes "SummaryInformation" stream
 void CompoundFile::closeDocumentSummaryInformationStream()
 {
-	closeNamedStream(L"\005DocumentSummaryInformation");
+	closeNamedStream("\005DocumentSummaryInformation");
 }
 
 
-CFStreamPtr CompoundFile::getNamedStream(const std::wstring& name)
+CFStreamPtr CompoundFile::getNamedStream(const std::string& name)
 {
 	if(!streams[name])
 	{
@@ -133,7 +107,7 @@ CFStreamPtr CompoundFile::getNamedStream(const std::wstring& name)
 }
 
 
-CFStreamPtr CompoundFile::createNamedStream(const std::wstring& name)
+CFStreamPtr CompoundFile::createNamedStream(const std::string& name)
 {
 	if(!streams[name])
 	{
@@ -143,18 +117,17 @@ CFStreamPtr CompoundFile::createNamedStream(const std::wstring& name)
 }
 
 
-void CompoundFile::closeNamedStream(const std::wstring& name)
+void CompoundFile::closeNamedStream(const std::string& name)
 {
 	streams[name].reset();
 }
 
 
 // Opens a stream in the storage (shall be called not more than once per stream)
-IStream* CompoundFile::openStream(const std::wstring & stream_name)
+POLE::Stream* CompoundFile::openStream(const std::string & stream_name)
 {
-	IStream* pStream = NULL;
-	HRESULT hres = storage_->OpenStream(stream_name.c_str(), NULL, STGM_READ | STGM_DIRECT | STGM_SHARE_EXCLUSIVE, NULL, &pStream );
-	if(FAILED(hres))
+	POLE::Stream* pStream = new POLE::Stream(storage_, stream_name);
+	if(pStream == NULL)
 	{
 		throw;// EXCEPT::RT::CompoundFileFormatError(std::string("Error opening \"") + static_cast<char*>(stream_name) + "\" stream", hres);
 	}
@@ -163,11 +136,10 @@ IStream* CompoundFile::openStream(const std::wstring & stream_name)
 
 
 // Creates a new stream in the storage
-IStream* CompoundFile::createStream(const std::wstring & stream_name)
+POLE::Stream* CompoundFile::createStream(const std::string & stream_name)
 {
-	IStream* pStream = NULL;
-	HRESULT hres = storage_->CreateStream(stream_name.c_str(), STGM_READWRITE | STGM_SHARE_EXCLUSIVE, NULL, NULL, &pStream);
-	if(FAILED(hres))
+	POLE::Stream* pStream = new POLE::Stream(storage_, stream_name, true);
+	if(pStream == NULL)
 	{
 		throw;// EXCEPT::RT::CompoundFileFormatError(std::string("Error creating \"") + static_cast<char*>(stream_name) + "\" stream", hres);
 	}

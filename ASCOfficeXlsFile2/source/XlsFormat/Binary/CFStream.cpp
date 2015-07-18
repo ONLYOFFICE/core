@@ -11,20 +11,20 @@
 namespace XLS
 {;
 
-CFStream::CFStream(IStream* stream)
-:	stream_(stream)
+CFStream::CFStream(POLE::Stream* stream)
 {
 	if(NULL == stream)
 	{
 		throw;// EXCEPT::RT::CompoundFileFormatError("Wrong IStream pointer (NULL)");
 	}
+	stream_ = stream;
 }
 
 
 CFStream::~CFStream()
 {
-	stream_->Commit(0);
-	stream_->Release();
+	if (stream_) delete stream_;
+	stream_ = NULL;
 }
 
 
@@ -35,17 +35,11 @@ void CFStream::read(void* buf, const size_t size)
 	{
 		throw;// EXCEPT::RT::CompoundFileFormatError("Wrong buffer pointer (NULL)");
 	}
-	ULONG num_read = 0;
-	HRESULT hres = stream_->Read(buf, size, &num_read);
-	if(FAILED(hres))
-	{
-		std::wstringstream str;
-		str << L"Impossible to read " << size << L" unsigned chars from \"" << getStreamName() << L"\" stream";
-		throw;// EXCEPT::RT::CompoundFileFormatError(str.str(), hres);
-	}
+	POLE::uint64 num_read = stream_->read((unsigned char*)buf, size);
+
 	if(num_read < size)
 	{
-		throw;// EXCEPT::RT::EndOfStreamReached(getStreamName(), num_read, size);
+		throw;// EXCEPT::RT::EndOfStreamReached(stream_->fullName(), num_read, size);
 	}
 	// Tipa successful
 }
@@ -58,12 +52,11 @@ void CFStream::write(const void* buf, const size_t size)
 	{
 		throw;// EXCEPT::RT::CompoundFileFormatError("Wrong buffer pointer (NULL)");
 	}
-	ULONG num_written = 0;
-	HRESULT hres = stream_->Write(buf, size, &num_written);
-	if(FAILED(hres))
+	POLE::uint64 num_written = stream_->write((unsigned char*)buf, size);
+	if(num_written != size)
 	{
-		std::wstringstream str;
-		str << L"Impossible to write " << size << L" unsigned chars to \"" << getStreamName() << L"\" stream";
+		//std::wstringstream str;
+		//str << L"Impossible to write " << size << L" unsigned chars to \"" << stream_->fullName() << L"\" stream";
 		throw;// EXCEPT::RT::CompoundFileFormatError(str.str(), hres);
 	}
 	if(num_written < size)
@@ -86,70 +79,38 @@ const bool CFStream::isEOF() const
 // Stream pointer
 const unsigned long CFStream::getStreamPointer() const
 {
-	LARGE_INTEGER null_ptr;
-	null_ptr.QuadPart = 0;
-	ULARGE_INTEGER seek_ptr;
-	stream_->Seek(null_ptr, STREAM_SEEK_CUR, &seek_ptr);
-	return seek_ptr.QuadPart;
+	POLE::uint64 pos = stream_->tell();
+	return pos;
 }
 
 
 void CFStream::seekFromCurForward(const size_t offset)
 {
-	LARGE_INTEGER seek_ptr;
-	seek_ptr.QuadPart = offset;
-	stream_->Seek(seek_ptr, STREAM_SEEK_CUR, NULL);
+	POLE::uint64 pos = offset + stream_->tell();
+
+	stream_->seek(pos);
 }
 
 
 void CFStream::seekFromBegin(const unsigned long offset)
 {
-	LARGE_INTEGER seek_ptr;
-	seek_ptr.QuadPart = offset;
-	HRESULT result = stream_->Seek(seek_ptr, STREAM_SEEK_SET, NULL);
+	POLE::uint64 pos = offset;
+
+	stream_->seek(pos);
 }
 
 
 void CFStream::seekToEnd()
 {
-	LARGE_INTEGER seek_ptr;
-	seek_ptr.QuadPart = 0;
-	HRESULT result = stream_->Seek(seek_ptr, STREAM_SEEK_END, NULL);
+	stream_->seek(stream_->size());
 }
-
 
 // Stream current size
 const unsigned long CFStream::getStreamSize() const
 {
-	STATSTG info;
-	stream_->Stat(&info, STATFLAG_DEFAULT);
-	return info.cbSize.QuadPart;
+	return stream_->size();
 }
 
-
-// Stream name
-//const std::string CFStream::getStreamName() const
-//{
-//	STATSTG info;
-//	HRESULT hres = stream_->Stat(&info, STATFLAG_DEFAULT);
-//	if(FAILED(hres))
-//	{
-//		Log::warning("Can't obtain the name of the Compound File stream");
-//		return "";
-//	}
-//	return static_cast<char*>(std::wstring (info.pwcsName));
-//}
-const std::wstring CFStream::getStreamName() const
-{
-	STATSTG info;
-	HRESULT hres = stream_->Stat(&info, STATFLAG_DEFAULT);
-	if(FAILED(hres))
-	{
-		Log::warning("Can't obtain the name of the Compound File stream");
-		return L"";
-	}
-	return std::wstring (info.pwcsName);
-}
 
 void CFStream::writeAndApplyDelayedItems(void* buf, const size_t size, const ReceiverItems& receiver_items_from_record, const SourceItems& source_items_from_record)
 {

@@ -284,14 +284,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\..\..\Common\3dParty\pole\pole.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\..\..\Common\3dParty\pole\pole.h"
-				>
-			</File>
-			<File
 				RelativePath="..\common\simple_xml_writer.h"
 				>
 			</File>

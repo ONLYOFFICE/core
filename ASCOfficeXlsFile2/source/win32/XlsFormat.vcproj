@@ -327,6 +327,14 @@
 				RelativePath="..\XlsFormat\Binary\CompoundFile.h"
 				>
 			</File>
+			<File
+				RelativePath="..\..\..\Common\3dParty\pole\pole.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Common\3dParty\pole\pole.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Logic"

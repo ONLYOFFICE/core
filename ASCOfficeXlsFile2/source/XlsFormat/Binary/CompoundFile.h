@@ -1,6 +1,7 @@
 #pragma once
 
-#include "objidl.h"
+#include "../../../Common/3dParty/pole/pole.h"
+
 #include "BinSmartPointers.h"
 
 #include <map>
@@ -27,24 +28,24 @@ public:
 
 	CFStreamPtr getSummaryInformationStream();
 	CFStreamPtr createSummaryInformationStream();
-	void closeSummaryInformationStream();
+	void		closeSummaryInformationStream();
 
 	CFStreamPtr getDocumentSummaryInformationStream();
 	CFStreamPtr createDocumentSummaryInformationStream();
-	void closeDocumentSummaryInformationStream();
+	void		closeDocumentSummaryInformationStream();
 
 private:
-	IStream* openStream		(const std::wstring & stream_name); // Opens a stream in the storage (shall be called not more than once per stream)
-	IStream* createStream	(const std::wstring & stream_name); // Creates a new stream in the storage
+	POLE::Stream* openStream		(const std::string & stream_name); // Opens a stream in the storage (shall be called not more than once per stream)
+	POLE::Stream* createStream		(const std::string & stream_name); // Creates a new stream in the storage
 
-	CFStreamPtr getNamedStream		(const std::wstring& name);
-	CFStreamPtr createNamedStream	(const std::wstring& name);
-	void closeNamedStream			(const std::wstring& name);
+	CFStreamPtr getNamedStream		(const std::string& name);
+	CFStreamPtr createNamedStream	(const std::string& name);
+	void		closeNamedStream	(const std::string& name);
 
 private:
-	std::map<std::wstring, CFStreamPtr> streams;
-	IStorage* storage_;
-	ReadWriteMode rwMode;
+	std::map<std::string, CFStreamPtr>	streams;
+	POLE::Storage						*storage_;
+	ReadWriteMode						rwMode;
 };
 
 } // namespace XLS

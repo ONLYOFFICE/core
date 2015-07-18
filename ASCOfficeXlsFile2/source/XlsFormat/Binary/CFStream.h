@@ -1,6 +1,7 @@
 #pragma once
 
-#include "objidl.h"
+#include "../../../Common/3dParty/pole/pole.h"
+
 
 #include "CFRecordType.h"
 #include "BinSmartPointers.h"
@@ -12,7 +13,7 @@ namespace XLS
 class CFStream
 {
 public:
-	CFStream(IStream* stream);
+	CFStream(POLE::Stream* stream);
 	~CFStream();
 	
 	template<class Type>
@@ -64,14 +65,11 @@ public:
 	void appendDelayedItems(const ReceiverItems& receiver_items_from_record, const SourceItems& source_items_from_record);
 	void applyDelayedItems();
 
-private:
-	// Stream name
-	const std::wstring getStreamName() const;
 
 private:
-	IStream* stream_;
-	CFStream::ReceiverItems receiver_items;
-	CFStream::SourceItems source_items;
+	POLE::Stream				* stream_;
+	CFStream::ReceiverItems		receiver_items;
+	CFStream::SourceItems		source_items;
 };
 
 } // namespace XLS

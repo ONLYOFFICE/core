@@ -110,26 +110,26 @@ public:
 
 	CFRecord& operator>>(unsigned char& val)	{ loadAnyData(val);	return *this; };
 	CFRecord& operator>>(unsigned short& val)	{ loadAnyData(val);	return *this; };
-	CFRecord& operator>>(unsigned int& val)	{ loadAnyData(val);	return *this; };
-	CFRecord& operator>>(long& val)	{ loadAnyData(val);	return *this; };
-	CFRecord& operator>>(double& val)	{ loadAnyData(val);	return *this; };
-	CFRecord& operator>>(GUID& val)	{ loadAnyData(val);	return *this; };
+	CFRecord& operator>>(unsigned int& val)		{ loadAnyData(val);	return *this; };
+	CFRecord& operator>>(long& val)				{ loadAnyData(val);	return *this; };
+	CFRecord& operator>>(double& val)			{ loadAnyData(val);	return *this; };
+	CFRecord& operator>>(_GUID_& val)			{ loadAnyData(val);	return *this; };
 	//CFRecord& operator>>(unsigned int& val)	{ loadAnyData(val);	return *this; };
-	CFRecord& operator>>(short& val)	{ loadAnyData(val);	return *this; };
-	CFRecord& operator>>(char& val)	{ loadAnyData(val);	return *this; };
+	CFRecord& operator>>(short& val)			{ loadAnyData(val);	return *this; };
+	CFRecord& operator>>(char& val)				{ loadAnyData(val);	return *this; };
 	CFRecord& operator>>(bool& val);
 	CFRecord& operator>>(std::wstring & val);
 
 	CFRecord& operator<<(unsigned char& val)	{ storeAnyData(val);	return *this; };
 	CFRecord& operator<<(unsigned short& val)	{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(unsigned int& val)	{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(long& val)	{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(double& val)	{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(GUID& val)	{ storeAnyData(val);	return *this; };
+	CFRecord& operator<<(unsigned int& val)		{ storeAnyData(val);	return *this; };
+	CFRecord& operator<<(long& val)				{ storeAnyData(val);	return *this; };
+	CFRecord& operator<<(double& val)			{ storeAnyData(val);	return *this; };
+	CFRecord& operator<<(_GUID_& val)			{ storeAnyData(val);	return *this; };
 	//CFRecord& operator<<(unsigned int& val)	{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(short& val)	{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(char& val)	{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(wchar_t& val)	{ storeAnyData(val);	return *this; };
+	CFRecord& operator<<(short& val)			{ storeAnyData(val);	return *this; };
+	CFRecord& operator<<(char& val)				{ storeAnyData(val);	return *this; };
+	CFRecord& operator<<(wchar_t& val)			{ storeAnyData(val);	return *this; };
 	CFRecord& operator<<(bool& val);
 	CFRecord& operator<<(std::wstring & val);
 

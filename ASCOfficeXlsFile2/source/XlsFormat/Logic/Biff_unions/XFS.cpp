@@ -82,10 +82,6 @@ int XFS::serialize(std::wostream & stream)
 				m_cell_xfs[i]->serialize(CP_XML_STREAM());
 			}
 		}
-		CP_XML_NODE(L"cellStyles")
-		{
-			CP_XML_ATTR(L"count", 0);
-		}
 	}
 	return 0;
 }

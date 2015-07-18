@@ -25,6 +25,11 @@ struct FillInfo
 				(icvBack < right.icvBack));
 	}
 
+	bool operator == (const FillInfo & rVal) const;
+	bool operator != (const FillInfo & rVal) const;
+
+	friend std::size_t hash_value(FillInfo const & val);
+
 	int serialize(std::wostream & stream);
 };
 
@@ -42,6 +47,19 @@ struct BorderInfo
 	unsigned char icvBottom;
 	unsigned char icvDiag;
 
+	BorderInfo(){}
+
+	BorderInfo(	const unsigned char dgLeft_set, const unsigned char dgRight_set, const unsigned char dgTop_set, 
+			const unsigned char dgBottom_set, const unsigned char dgDiag_set, const unsigned char grbitDiag_set, 
+			const unsigned char icvLeft_set, const unsigned char icvRight_set, const unsigned char icvTop_set, 
+			const unsigned char icvBottom_set, const unsigned char icvDiag_set	)
+
+		:	dgLeft(dgLeft_set), dgRight(dgRight_set), dgTop(dgTop_set), dgBottom(dgBottom_set), 
+			dgDiag(dgDiag_set), grbitDiag(grbitDiag_set),
+			icvLeft(icvLeft_set), icvRight(icvRight_set), icvTop(icvTop_set), icvBottom(icvBottom_set),
+			icvDiag(icvDiag_set)
+	{	
+	}
 	bool operator < (const BorderInfo& right) const
 	{
 		return  dgLeft < right.dgLeft || dgLeft == right.dgLeft && 
@@ -57,8 +75,14 @@ struct BorderInfo
 				(icvDiag < right.icvDiag))))))))));
 	}
 
+	bool operator == (const BorderInfo & rVal) const;
+	bool operator != (const BorderInfo & rVal) const;
+	
+	friend std::size_t hash_value(BorderInfo const & val);
+
 	int serialize(std::wostream & stream);
 };
+
 
 
 } // namespace XLS

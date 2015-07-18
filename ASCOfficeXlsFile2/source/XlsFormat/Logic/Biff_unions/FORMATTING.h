@@ -18,7 +18,8 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	int serialize(std::wostream & stream);
+	int serialize1(std::wostream & stream);
+	int serialize2(std::wostream & stream);
 
 	static const ElementType	type = typeFORMATTING;
 

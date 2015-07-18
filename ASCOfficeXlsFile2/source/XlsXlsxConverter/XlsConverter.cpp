@@ -25,6 +25,8 @@
 
 #include <simple_xml_writer.h>
 
+#include <vector>
+
 XlsConverter::XlsConverter(const std::wstring & path, const ProgressCallback* CallBack) 
 {
 	output_document = NULL;
@@ -148,7 +150,7 @@ void XlsConverter::convert(XLS::BaseObject	*xls_unknown)
 
 	switch (type)
 	{
-
+	case XLS::typeAnyObject:	
 	default:
 		{
 			for (std::list<XLS::BaseObjectPtr>::iterator it = xls_unknown->elements_.begin(); it != xls_unknown->elements_.end(); it++)
@@ -194,13 +196,23 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 	convert((XLS::THEME*)global->m_Theme.get());
 
 }
+template<class T>
+struct map_data_compare : public std::binary_function<typename T::value_type,typename T::mapped_type,bool>
+{
+	public:
+		bool operator() (typename T::value_type &pair,typename T::mapped_type i)
+		{
+			return pair.second == i;
+		}
+};
+
+typedef boost::unordered_map<XLS::FillInfo, int>	mapFillInfo;
+typedef boost::unordered_map<XLS::BorderInfo, int>	mapBorderInfo;
 
 void XlsConverter::convert(XLS::FORMATTING* formating)
 {
 	if (formating == NULL) return;
 
-	typedef std::map<XLS::FillInfo, size_t>		mapFillInfo;
- 	typedef std::map<XLS::BorderInfo, size_t>	mapBorderInfo;
   
 	std::wstringstream strm;
     CP_XML_WRITER(strm)    
@@ -209,36 +221,42 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
         {   
 			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 
+			formating->serialize1(CP_XML_STREAM()); //важен порядок в styles
+
 			CP_XML_NODE(L"fills")
 			{
-				CP_XML_ATTR(L"count", xls_global_info->fill_x_ids.size());
-				for (long i = 0 ; i < xls_global_info->fill_x_ids.size() ; i++)
-				{
-					mapFillInfo::iterator it = 
-						std::find_if( xls_global_info->fill_x_ids.begin(), xls_global_info->fill_x_ids.end(), std::bind2nd(map_data_compare<mapFillInfo>(), i) );
+				std::vector<XLS::FillInfo> fills_out;
+				fills_out.resize(xls_global_info->fill_x_ids.size());
 
-					if (it != xls_global_info->fill_x_ids.end())
-					{
-						it->first.serialize(CP_XML_STREAM());
-					}
+				for (mapFillInfo::iterator it = xls_global_info->fill_x_ids.begin(); it != xls_global_info->fill_x_ids.end(); it++)
+				{
+					fills_out[it->second] = it->first;
+				}
+
+				CP_XML_ATTR(L"count", fills_out.size());
+				for (int i = 0 ;i < fills_out.size(); i++)
+				{
+					fills_out[i].serialize(CP_XML_STREAM());
 				}
 			}
 			CP_XML_NODE(L"borders")
-			{
-				CP_XML_ATTR(L"count", xls_global_info->border_x_ids.size());
-				for (long i = 0 ; i < xls_global_info->border_x_ids.size() ; i++)
-				{
-					mapBorderInfo::iterator it = 
-						std::find_if( xls_global_info->border_x_ids.begin(), xls_global_info->border_x_ids.end(), std::bind2nd(map_data_compare<mapBorderInfo>(), i) );
+			{				
+				std::vector<XLS::BorderInfo> borders_out;
+				borders_out.resize(xls_global_info->border_x_ids.size());
 
-					if (it != xls_global_info->fill_x_ids.end())
-					{
-						it->first.serialize(CP_XML_STREAM());
-					}
+				for (mapBorderInfo::iterator it = xls_global_info->border_x_ids.begin(); it != xls_global_info->border_x_ids.end(); it++)
+				{
+					borders_out[it->second] = it->first;
+				}
+				
+				CP_XML_ATTR(L"count", borders_out.size());
+				for (int i = 0 ;i < borders_out.size(); i++)
+				{
+					borders_out[i].serialize(CP_XML_STREAM());
 				}
 			}
 
-			formating->serialize(CP_XML_STREAM());
+			formating->serialize2(CP_XML_STREAM());
 
 		}
 	}

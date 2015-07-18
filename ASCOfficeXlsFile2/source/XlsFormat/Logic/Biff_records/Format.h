@@ -23,14 +23,10 @@ public:
 
 	static const ElementType	type = typeFormat;
 
+	int serialize(std::wostream & stream);
 //-----------------------------
 	BIFF_WORD ifmt;
 	XLUnicodeString stFormat;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(ifmt)
-		//BO_ATTRIB_MARKUP_ATTRIB(stFormat)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

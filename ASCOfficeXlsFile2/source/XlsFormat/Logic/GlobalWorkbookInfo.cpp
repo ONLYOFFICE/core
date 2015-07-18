@@ -9,19 +9,20 @@ namespace XLS
 GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page)
 :	CodePage(code_page)
 {
-	fill_x_ids[FillInfo(0, 0, 0)] = 0;
-	fill_x_ids[FillInfo(17, 64, 65)] = 1;
+	fill_x_ids[FillInfo(0, 0, 0)]		= 0;
+	fill_x_ids[FillInfo(17, 64, 65)]	= 1;
 	last_AXES_id = initial_AXES_id;
 }
 
 
 const size_t GlobalWorkbookInfo::RegisterBorderId(const BorderInfo& border)
 {
-	std::map<BorderInfo, size_t>::const_iterator it_find = border_x_ids.find(border);
+	boost::unordered_map<BorderInfo, int>::const_iterator it_find = border_x_ids.find(border);
 	if(border_x_ids.end() == it_find)
 	{
-		size_t id = border_x_ids.size();
-		return border_x_ids[border] = id;
+		int id = border_x_ids.size();
+		border_x_ids[border] = id;
+		return id;
 	}
 	else
 	{
@@ -36,11 +37,12 @@ const size_t GlobalWorkbookInfo::RegisterFillId(const FillInfo& fill)
 		return 0;
 	}
 
-	std::map<FillInfo, size_t>::const_iterator it_find = fill_x_ids.find(fill);
+	boost::unordered_map<FillInfo, int>::const_iterator it_find = fill_x_ids.find(fill);
 	if(fill_x_ids.end() == it_find)
 	{
-		size_t id = fill_x_ids.size();
-		return fill_x_ids[fill] = id;
+		int id = fill_x_ids.size();
+		fill_x_ids[fill] = id;
+		return id;
 	}
 	else
 	{

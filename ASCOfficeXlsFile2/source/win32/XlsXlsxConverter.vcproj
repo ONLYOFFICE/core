@@ -82,12 +82,11 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Release|Win32"
-			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
-			IntermediateDirectory="$(ConfigurationName)"
+			Name="Debug|x64"
+			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
+			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
-			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -103,12 +102,16 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
+				TargetEnvironment="3"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				AdditionalIncludeDirectories="..\XlsFormat"
-				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
-				RuntimeLibrary="2"
+				Optimization="0"
+				AdditionalIncludeDirectories="..\XlsFormat; ..\Common"
+				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
+				MinimalRebuild="true"
+				BasicRuntimeChecks="3"
+				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -143,11 +146,12 @@
 			/>
 		</Configuration>
 		<Configuration
-			Name="Debug|x64"
-			OutputDirectory="$(SolutionDir)$(PlatformName)\$(ConfigurationName)"
-			IntermediateDirectory="$(PlatformName)\$(ConfigurationName)"
+			Name="Release|Win32"
+			OutputDirectory="$(SolutionDir)$(ConfigurationName)"
+			IntermediateDirectory="$(ConfigurationName)"
 			ConfigurationType="4"
 			CharacterSet="1"
+			WholeProgramOptimization="1"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -163,16 +167,12 @@
 			/>
 			<Tool
 				Name="VCMIDLTool"
-				TargetEnvironment="3"
 			/>
 			<Tool
 				Name="VCCLCompilerTool"
-				Optimization="0"
-				AdditionalIncludeDirectories="..\XlsFormat; ..\Common"
-				PreprocessorDefinitions="WIN32;_DEBUG;_LIB"
-				MinimalRebuild="true"
-				BasicRuntimeChecks="3"
-				RuntimeLibrary="3"
+				AdditionalIncludeDirectories="..\XlsFormat"
+				PreprocessorDefinitions="WIN32;NDEBUG;_LIB"
+				RuntimeLibrary="2"
 				UsePrecompiledHeader="0"
 				WarningLevel="3"
 				Detect64BitPortabilityProblems="true"
@@ -284,6 +284,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\..\..\Common\3dParty\pole\pole.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\Common\3dParty\pole\pole.h"
+				>
+			</File>
+			<File
 				RelativePath="..\common\simple_xml_writer.h"
 				>
 			</File>
@@ -297,122 +305,6 @@
 			</File>
 			<File
 				RelativePath="..\common\utils.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="styles"
-			>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_alignment.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_alignment.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_border.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_border.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_borders.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_borders.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_cell_format.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_cell_format.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_cell_style.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_cell_style.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_cell_styles.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_cell_styles.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_color.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_color.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_fill.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_fill.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_fills.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_fills.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_font.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_font.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_fonts.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_fonts.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_numFmts.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_numFmts.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_protection.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_protection.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_xf.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_xf.h"
 				>
 			</File>
 		</Filter>
@@ -493,14 +385,6 @@
 			</File>
 			<File
 				RelativePath="..\XlsXlsxConverter\xlsx_sharedstrings.h"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_styles.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_styles.h"
 				>
 			</File>
 			<File

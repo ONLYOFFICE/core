@@ -2,6 +2,8 @@
 #include "CellXF.h"
 #include <Binary/CFRecord.h>
 
+#include <simple_xml_writer.h>
+
 namespace XLS
 {;
 
@@ -195,6 +197,7 @@ void CellXF::load(CFRecord& record)
 
 int CellXF::serialize(std::wostream & stream)
 {
+
 	return 0;
 }
 

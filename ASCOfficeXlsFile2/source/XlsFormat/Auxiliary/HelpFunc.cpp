@@ -2,7 +2,7 @@
 
 #include "HelpFunc.h"
 #include "shlwapi.h"
-//#include <Exception/UnexpectedProgramPath.h>
+
 #include <Logic/Biff_structures/CellRangeRef.h>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
@@ -393,17 +393,9 @@ const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std
 	return numeric;
 }
 
-
-//const std::wstring hres2str(const HRESULT hres)
-//{
-//	_com_error error(hres);
-//	std::string  errorText = error.ErrorMessage();
-//	return (errorText);
-//}
-
-
 const std::string toStdString(const std::wstring& wide_string, const unsigned int code_page)
 {
+	//todooo разрулить на linux - e !!!
 	unsigned int bufferSize = (unsigned int)wide_string.length() + 1;
 	boost::scoped_array<char> pBuffer(new char[bufferSize]);
 	WideCharToMultiByte(code_page, 0, wide_string.c_str(), (int)wide_string.length(), pBuffer.get(), bufferSize, NULL, NULL);
@@ -414,6 +406,7 @@ const std::string toStdString(const std::wstring& wide_string, const unsigned in
 
 const std::wstring toStdWString(const std::string& ansi_string, const unsigned int code_page)
 {
+	//todooo разрулить на linux - e !!!
 	unsigned int bufferSize = (unsigned int)ansi_string.length() + 1;
 	boost::scoped_array<wchar_t> pBuffer(new wchar_t[bufferSize]);
 	unsigned int code = code_page == 1251 ? 1252 : code_page ;
@@ -429,60 +422,7 @@ const std::wstring toStdWString(const std::string& ansi_string, const unsigned i
 
 namespace XMLSTUFF
 {;
-//
-//
-//const bool loadXSLTFromResources(MSXML2::IXMLDOMDocumentPtr xslt_doc, const std::vector<std::wstring>& resources)
-//{
-//	if(resources.empty())
-//	{
-//		return true;
-//	}
-//	//std::wstring prefix = std::wstring(L"res://") + moduleFileName() + L"/XSL/";
-//
-//	if(VARIANT_TRUE != xslt_doc->load(resources.begin()->c_str()))
-//	{
-//		return false;
-//	}
-//	MSXML2::IXMLDOMNodePtr dst_node = xslt_doc->GetdocumentElement(); // assuming xsl:stylesheet
-//	if(!dst_node)
-//	{
-//		return false;
-//	}
-//	for (std::vector<std::wstring>::const_iterator it = ++resources.begin(), itEnd = resources.end(); it != itEnd; ++it)
-//	{
-//		MSXML2::IXMLDOMDocument3Ptr another_xslt(_T("Msxml2.FreeThreadedDOMDocument.6.0"));
-//		another_xslt->Putasync(VARIANT_TRUE);
-//		if(VARIANT_TRUE != another_xslt->load(it->c_str()))
-//		{
-//			return false;
-//		}
-//		MSXML2::IXMLDOMDocumentFragmentPtr fragment = another_xslt->createDocumentFragment();
-//		//MSXML2::IXMLDOMNodeListPtr ins_elems = another_xslt->selectNodes(L"xsl:stylesheet/* | xsl:stylesheet/@*" );
-//		MSXML2::IXMLDOMNodePtr root_node = another_xslt->GetdocumentElement(); // assuming xsl:stylesheet
-//		MSXML2::IXMLDOMNodeListPtr ins_elems  = root_node->GetchildNodes();
-//		MSXML2::IXMLDOMNodePtr child;
-//		while(child = ins_elems->nextNode())
-//		{
-//			fragment->appendChild(child->cloneNode(VARIANT_TRUE));
-//		}
-//
-//		dst_node->appendChild(fragment);
-//	}
-//
-//	return true;
-//}
-//
-//
-//// Makes a new XML tag and append it to parent (no attributes set)
-//BiffStructurePtr createElement(const std::wstring & tag_name, BiffStructurePtr & parent)
-//{
-//	BiffStructurePtr own_tag;// = createElement(tag_name);
-//	
-//	if (parent)
-//		parent->appendChild(own_tag);
-//
-//	return own_tag;
-//}
+
 
 
 const std::wstring tab2sheet_name(const short tabid, std::vector<std::wstring>& sheets_names)
@@ -532,56 +472,6 @@ const std::wstring make3dRef(const unsigned short ixti, const std::wstring cell_
 	return sheets_prefix + L'!' + cell_ref;
 }
 
-//
-//const std::wstring  sheet_name2tabid(const std::wstring sheet_name, MSXML2::IXMLDOMDocumentPtr doc)
-//{
-//	std::wstring  query = L"root/WorkbookStreamObject/GlobalsSubstream/BUNDLESHEET/BoundSheet8";
-//	MSXML2::IXMLDOMNodeListPtr nodes = doc->selectNodes(query);
-//	MSXML2::IXMLDOMElementPtr sheet;
-//	for(size_t counter = 0; (sheet = nodes->nextNode()); ++counter)
-//	{
-//		MSXML2::IXMLDOMAttributePtr stName(sheet->getAttributeNode(L"stName"));
-//		if(stName && std::wstring (sheet_name.c_str()) == static_cast<std::wstring >(stName->Getvalue()))
-//		{
-//			return STR::int2wstr(counter).c_str();
-//		}
-//	}
-//	return L"-1";
-//}
-//
-//
-//const unsigned short sheetsnames2ixti(const std::wstring str, MSXML2::IXMLDOMDocumentPtr doc)
-//{
-//	std::wstring  sheet_first_id;
-//	std::wstring  sheet_last_id;
-//	size_t colon_pos = str.find_first_of(L':');
-//	if(std::wstring::npos == colon_pos)
-//	{
-//		sheet_last_id = sheet_first_id = sheet_name2tabid(str, doc);
-//	}
-//	else
-//	{
-//		sheet_first_id = sheet_name2tabid(str.substr(0, colon_pos), doc);
-//		sheet_last_id = sheet_name2tabid(str.substr(colon_pos + 1, str.length() - colon_pos - 1), doc);
-//	}
-//
-//	std::wstring  query(L"root/WorkbookStreamObject/GlobalsSubstream/SUPBOOK/ExternSheet/XTI");
-//	MSXML2::IXMLDOMNodeListPtr nodes = doc->selectNodes(query);
-//	MSXML2::IXMLDOMElementPtr xti;
-//	for(size_t counter = 0; (xti = nodes->nextNode()); ++counter)
-//	{
-//		MSXML2::IXMLDOMAttributePtr itabFirst(xti->getAttributeNode(L"itabFirst"));
-//		MSXML2::IXMLDOMAttributePtr itabLast(xti->getAttributeNode(L"itabLast"));
-//		if(itabFirst && itabLast && sheet_first_id == static_cast<std::wstring >(itabFirst->Getvalue()) &&
-//									sheet_last_id == static_cast<std::wstring >(itabLast->Getvalue()))
-//		{
-//			return counter;
-//		}
-//	}
-//	return 0xFFFF;
-//}
-//
-//
-//
+
 } //namespace XMLSTUFF
 

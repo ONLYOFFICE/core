@@ -5,7 +5,6 @@
 
 #include "xlsx_textcontext.h"
 #include "xlsx_tablecontext.h"
-#include "xlsx_styles.h"
 
 #include "xlsx_output_xml.h"
 
@@ -122,7 +121,6 @@ private:
     //size_t                              default_style_;
     mediaitems                          mediaitems_;
   
-    xlsx_style_manager              xlsx_style_;
     //xlsx_defined_names              xlsx_defined_names_;
     xlsx_table_context              xlsx_table_context_;
     xlsx_text_context               xlsx_text_context_;

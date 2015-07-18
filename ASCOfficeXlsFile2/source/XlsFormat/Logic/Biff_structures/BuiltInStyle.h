@@ -18,7 +18,6 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned char istyBuiltIn;
 	unsigned char iLevel;
 };

@@ -32,7 +32,7 @@ void GUIDTypeLib::readFields(CFRecord& record)
 {
 	record.skipNunBytes(12);
 #pragma message("############################ frtHeader skipped here")
-	GUID guid_num;
+	_GUID_ guid_num;
 	record >> guid_num;
 	guid = STR::guid2bstr(guid_num);
 }

@@ -32,7 +32,7 @@ private:
 	bool fShow;
 	bool fRwHidden;
 	bool fColHidden;
-	GUID guid;
+	_GUID_ guid;
 	unsigned int ichEnd;
 	unsigned int cchNote;
 	XLUnicodeString stAuthor;

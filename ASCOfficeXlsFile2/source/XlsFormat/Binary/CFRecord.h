@@ -4,7 +4,10 @@
 #include "CFStream.h"
 #include "BinSmartPointers.h"
 #include "../Logic/GlobalWorkbookInfo.h"
+
 #include <common.h>
+#include <Auxiliary/HelpFunc.h>
+
 
 namespace XLS
 {;

@@ -26,7 +26,7 @@ void HeaderFooter::writeFields(CFRecord& record)
 {
 	FrtHeader frtHeader(rt_HeaderFooter);
 	record << frtHeader;
-	GUID guid_num;
+	_GUID_ guid_num;
 	if(!STR::bstr2guid(guidSView, guid_num))
 	{
 		throw;// EXCEPT::LE::AttributeDataWrong(L"guid", L"HeaderFooter", guidSView);
@@ -67,7 +67,7 @@ void HeaderFooter::readFields(CFRecord& record)
 	FrtHeader frtHeader(rt_HeaderFooter);
 	record >> frtHeader;
 	unsigned short flags;
-	GUID guid_num;
+	_GUID_ guid_num;
 	record >> guid_num >> flags;
 	guidSView = STR::guid2bstr(guid_num);
 	fHFDiffOddEven = GETBIT(flags, 0);

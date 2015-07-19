@@ -145,7 +145,7 @@ void HyperlinkObject::store(XLS::CFRecord& record)
 	}
 	if(hlstmfHasGUID)
 	{
-		GUID guid_num;
+		_GUID_ guid_num;
 		if(!STR::bstr2guid(guid, guid_num))
 		{
 			throw;// EXCEPT::LE::AttributeDataWrong(L"guid", L"HyperlinkObject", guid);
@@ -197,7 +197,7 @@ void HyperlinkObject::load(XLS::CFRecord& record)
 	}
 	if(hlstmfHasGUID)
 	{
-		GUID guid_num;
+		_GUID_ guid_num;
 		record >> guid_num;
 		guid = STR::guid2bstr(guid_num);
 	}

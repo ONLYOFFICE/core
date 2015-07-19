@@ -26,7 +26,7 @@ void UserBView::writeFields(CFRecord& record)
 	record.reserveNunBytes(4); // unused1
 	record << tabId;
 	record.reserveNunBytes(2); // reserved1
-	GUID guid_num;
+	_GUID_ guid_num;
 	if(!STR::bstr2guid(guid, guid_num))
 	{
 		throw;// EXCEPT::LE::AttributeDataWrong(L"guid", L"UserBView", guid);
@@ -110,7 +110,7 @@ void UserBView::readFields(CFRecord& record)
 	record.skipNunBytes(4); // unused1
 	record >> tabId;
 	record.skipNunBytes(2); // reserved1
-	GUID guid_num;
+	_GUID_ guid_num;
 	record >> guid_num >> x >> y >> dx >> dy >> wTabRatio;
 	guid = STR::guid2bstr(guid_num);
 

@@ -1,6 +1,7 @@
 #include "precompiled_xls.h"
 
 #include <Logic\Biff_Structures\BiffStructure.h>
+#include <../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h>
 
 #include "Document.h"
 
@@ -16,7 +17,7 @@ Document::Document(const std::wstring & root_name)
 
 Document::~Document()
 {
-	all_documents[guid_] = NULL;
+	all_documents[uniq_] = NULL;
 }
 
 //
@@ -34,20 +35,38 @@ Document::~Document()
 
 void Document::newDoc(const std::wstring & root_name)
 {
-	if(guid_.length()>0)
+	if(!uniq_.empty())
 	{
-		all_documents.erase(guid_);
+		all_documents.erase(uniq_);
 	}
-	GUID guid = {0};
-	CoCreateGuid(&guid);
-	guid_ = STR::guid2bstr(guid);
-	
+
+#if defined(_WIN32) || defined (_WIN64)
+	UUID		uuid;
+    RPC_WSTR	str_uuid;
+    
+	UuidCreate		(&uuid);
+    UuidToString	(&uuid, &str_uuid);
+
+	uniq_ = (TCHAR *) str_uuid;
+
+	RpcStringFree (&str_uuid);
+#else
+        char pcRes[MAX_PATH] = "XXXXXX";
+        pcRes[6] = '\0';
+
+        int res = mkstemp( pcRes);
+
+        std::string sRes = pcRes;
+
+		uniq_ = stringUtf8ToWString(sRes);
+#endif
+
 	//xmlDoc->set_document_guid(guid_);
 	//xmlDoc->set_document_name(root_name);
 
 	//xmlDoc->loadXML(L"<?xml version=\"1.0\" encoding=\"utf-8\" ?> <" + root_name + L" id=\"" + guid_ + L"\"/>"); // Initial tag;
 	
-	all_documents[guid_] = this;
+	all_documents[uniq_] = this;
 }
 
 const int Document::appendBinaryData(XLS::BiffStructurePtr &  elem, const char * data, const size_t size)
@@ -89,7 +108,7 @@ const std::pair<char*, size_t> Document::getBinaryData(const int index) const
 
 Document* Document::findDocumentByElement(XLS::BiffStructurePtr & elem)
 {
-	return all_documents[static_cast<std::wstring>(elem->get_document()->guid_)];
+	return all_documents[static_cast<std::wstring>(elem->get_document()->uniq_)];
 }
 
 

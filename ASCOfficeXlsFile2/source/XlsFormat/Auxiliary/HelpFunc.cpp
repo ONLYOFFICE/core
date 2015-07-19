@@ -6,6 +6,7 @@
 #include <Logic/Biff_structures/CellRangeRef.h>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
+
 namespace AUX
 {;
 

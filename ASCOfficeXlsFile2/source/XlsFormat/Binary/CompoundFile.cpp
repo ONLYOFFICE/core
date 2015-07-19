@@ -58,42 +58,42 @@ CFStreamPtr CompoundFile::createWorkbookStream()
 // Opens "SummaryInformation" stream and returns the only reference
 CFStreamPtr CompoundFile::getSummaryInformationStream()
 {
-	return getNamedStream("\005SummaryInformation");
+	return getNamedStream("SummaryInformation");
 }
 
 
 // Creates "SummaryInformation" stream and returns the only reference
 CFStreamPtr CompoundFile::createSummaryInformationStream()
 {
-	return createNamedStream("\005SummaryInformation");
+	return createNamedStream("SummaryInformation");
 }
 
 
 // Closes "SummaryInformation" stream
 void CompoundFile::closeSummaryInformationStream()
 {
-	return closeNamedStream("\005SummaryInformation");
+	return closeNamedStream("SummaryInformation");
 }
 
 
 // Opens "SummaryInformation" stream and returns the only reference
 CFStreamPtr CompoundFile::getDocumentSummaryInformationStream()
 {
-	return getNamedStream("\005DocumentSummaryInformation");
+	return getNamedStream("DocumentSummaryInformation");
 }
 
 
 // Creates "SummaryInformation" stream and returns the only reference
 CFStreamPtr CompoundFile::createDocumentSummaryInformationStream()
 {
-	return createNamedStream("\005DocumentSummaryInformation");
+	return createNamedStream("DocumentSummaryInformation");
 }
 
 
 // Closes "SummaryInformation" stream
 void CompoundFile::closeDocumentSummaryInformationStream()
 {
-	closeNamedStream("\005DocumentSummaryInformation");
+	closeNamedStream("DocumentSummaryInformation");
 }
 
 

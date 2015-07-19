@@ -29,7 +29,7 @@ public:
 
 	const std::pair<char*, size_t> getBinaryData(const int index) const;
 	
-	std::wstring guid_;
+	std::wstring uniq_;
 
 private:
 	//XLS::BiffStructurePtr xmlDoc;

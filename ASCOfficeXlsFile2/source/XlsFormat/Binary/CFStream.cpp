@@ -31,7 +31,7 @@ CFStream::~CFStream()
 // Read 'size' unsigned chars from the stream
 void CFStream::read(void* buf, const size_t size)
 {
-	if(NULL == buf)
+	if(NULL == buf || stream_ == NULL)
 	{
 		throw;// EXCEPT::RT::CompoundFileFormatError("Wrong buffer pointer (NULL)");
 	}
@@ -48,7 +48,7 @@ void CFStream::read(void* buf, const size_t size)
 // Write 'size' unsigned chars to the stream
 void CFStream::write(const void* buf, const size_t size)
 {
-	if(NULL == buf)
+	if(NULL == buf || stream_ == NULL)
 	{
 		throw;// EXCEPT::RT::CompoundFileFormatError("Wrong buffer pointer (NULL)");
 	}

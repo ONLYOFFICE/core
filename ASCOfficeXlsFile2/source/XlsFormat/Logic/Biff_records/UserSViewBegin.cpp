@@ -24,7 +24,7 @@ BaseObjectPtr UserSViewBegin::clone()
 
 void UserSViewBegin::writeFields(CFRecord& record)
 {
-	GUID guid_num;
+	_GUID_ guid_num;
 	if(!STR::bstr2guid(guid, guid_num))
 	{
 		throw;// EXCEPT::LE::AttributeDataWrong(L"guid", L"UserSViewBegin", guid);
@@ -96,7 +96,7 @@ void UserSViewBegin::writeFields(CFRecord& record)
 
 void UserSViewBegin::readFields(CFRecord& record)
 {
-	GUID guid_num;
+	_GUID_ guid_num;
 	record >> guid_num >> iTabid;
 	guid = STR::guid2bstr(guid_num);
 	record.skipNunBytes(2); // reserved

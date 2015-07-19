@@ -2,6 +2,8 @@
 #include "Dimensions.h"
 #include <Logic/Biff_structures/CellRangeRef.h>
 
+#include <simple_xml_writer.h>
+
 namespace XLS
 {;
 
@@ -47,9 +49,10 @@ void Dimensions::readFields(CFRecord& record)
 {
 	record >> rwMic >> rwMac >> colMic >> colMac;
 	record.skipNunBytes(2); // reserved
-	if(rwMac && colMac)
+	
+	if(rwMac.value() && colMac.value())
 	{
-		ref_ = static_cast<std::wstring >(CellRangeRef(CellRef(rwMic, colMic, true, true), CellRef(rwMac - 1, colMac - 1, true, true)).toString(false).c_str());
+		ref_ = static_cast<std::wstring >(CellRangeRef(CellRef(*rwMic.value(), *colMic.value(), true, true), CellRef(*rwMac.value() - 1, *colMac.value() - 1, true, true)).toString(false).c_str());
 	}
 	else
 	{
@@ -57,5 +60,18 @@ void Dimensions::readFields(CFRecord& record)
 	}
 }
 
+int Dimensions::serialize(std::wostream & stream)
+{
+	if (ref_.empty()) return 0;
+
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"dimension")
+		{
+			CP_XML_ATTR(L"ref", ref_);
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

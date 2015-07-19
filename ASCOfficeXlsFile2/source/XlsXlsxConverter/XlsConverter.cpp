@@ -185,7 +185,31 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 {
 	if (sheet == NULL) return;
 
-
+	if (sheet->m_Dimensions)
+	{
+		sheet->m_Dimensions->serialize(xlsx_context->current_sheet().dimension());
+	}
+	if (sheet->m_COLUMNS)
+	{
+		sheet->m_COLUMNS->serialize(xlsx_context->current_sheet().cols());
+	}
+	if (sheet->m_CELLTABLE)
+	{
+		sheet->m_CELLTABLE->serialize(xlsx_context->current_sheet().sheetData());
+	}
+	if (sheet->m_MergeCells.size() > 0)
+	{
+		CP_XML_WRITER(xlsx_context->current_sheet().mergeCells())    
+		{
+			CP_XML_NODE(L"mergeCells")
+			{  		
+				for (long i = 0 ; i < sheet->m_MergeCells.size(); i++)
+				{
+					sheet->m_MergeCells[i]->serialize(CP_XML_STREAM());
+				}
+			}
+		}
+	}
 }
 
 void XlsConverter::convert(XLS::GlobalsSubstream* global)
@@ -213,7 +237,6 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 {
 	if (formating == NULL) return;
 
-  
 	std::wstringstream strm;
     CP_XML_WRITER(strm)    
     {

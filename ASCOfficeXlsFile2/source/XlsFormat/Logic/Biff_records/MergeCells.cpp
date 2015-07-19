@@ -1,6 +1,8 @@
 #include "precompiled_xls.h"
 #include "MergeCells.h"
 
+#include <simple_xml_writer.h>
+
 namespace XLS
 {;
 
@@ -39,6 +41,12 @@ void MergeCells::readFields(CFRecord& record)
 		record >> *ref8;
 		rgref.push_back(ref8);
 	}
+}
+
+int MergeCells::serialize(std::wostream & stream)
+{
+
+	return 0;
 }
 
 } // namespace XLS

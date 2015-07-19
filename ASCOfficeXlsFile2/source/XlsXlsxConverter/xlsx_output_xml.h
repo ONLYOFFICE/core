@@ -22,6 +22,8 @@ public:
 public:
     std::wstring name() const;
    
+    std::wostream & dimension();
+	std::wostream & sheetViews();
 	std::wostream & cols();
     std::wostream & sheetFormat();
     std::wostream & sheetData();

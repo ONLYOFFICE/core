@@ -22,6 +22,8 @@ public:
 
 	static const ElementType	type = typeRow;
 
+	int serialize(std::wostream & stream);
+
 //-----------------------------
 	Rw rw;
 	BackwardOnlyParam<unsigned short> colMic;

@@ -20,8 +20,12 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeCELLTABLE;
-private:
+
+	int serialize(std::wostream & stream);
+
 	std::vector<CellRef>& shared_formulas_locations_ref_;
+
+	long m_count_CELL_GROUP;
 };
 
 } // namespace XLS

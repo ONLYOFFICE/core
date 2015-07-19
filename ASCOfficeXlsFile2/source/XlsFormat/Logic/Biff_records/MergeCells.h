@@ -23,14 +23,11 @@ public:
 
 	static const ElementType	type = typeMergeCells;
 
+	int serialize(std::wostream & stream);
+
 //-----------------------------
 	BIFF_WORD cmcs;
 	BiffStructurePtrVector rgref;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(cmcs)
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgref, Ref8)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

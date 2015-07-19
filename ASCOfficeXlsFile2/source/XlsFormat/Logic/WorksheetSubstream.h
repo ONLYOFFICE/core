@@ -20,11 +20,18 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
-	//virtual void toXML(MSXML2::IXMLDOMElementPtr own_tag);
 	static const ElementType	type = typeWorksheetSubstream;
 
-private:
-	size_t ws_index_;
+	size_t						ws_index_;
+
+	std::vector<BaseObjectPtr>	m_MergeCells;
+	
+	BaseObjectPtr				m_BACKGROUND;
+	BaseObjectPtr				m_COLUMNS;
+	BaseObjectPtr				m_CELLTABLE;
+	BaseObjectPtr				m_SHFMLA_SET;
+	BaseObjectPtr				m_Dimensions;
+	BaseObjectPtr				m_HLINK;
 };
 
 } // namespace XLS

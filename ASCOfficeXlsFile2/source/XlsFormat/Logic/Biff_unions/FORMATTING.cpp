@@ -92,7 +92,7 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 
 int FORMATTING::serialize1(std::wostream & stream)
 {
-   CP_XML_WRITER(stream)    
+	CP_XML_WRITER(stream)    
     {
 		if (m_Formats.size() > 0)
 		{

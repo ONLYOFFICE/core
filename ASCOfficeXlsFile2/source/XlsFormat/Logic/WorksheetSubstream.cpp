@@ -71,33 +71,71 @@ WORKSHEET = BOF WORKSHEETCONTENT
 */
 const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 {
+	int count = 0;
+
 	if(!proc.mandatory<BOF>())
 	{
 		return false;
 	}
 
 	proc.optional<Uncalced>();
-	proc.optional<Index>(); // OpenOffice Calc stored files workaround (Index is mandatory according to [MS-XLS])
+	proc.optional<Index>();			// OpenOffice Calc stored files workaround (Index is mandatory according to [MS-XLS])
 	proc.mandatory(GLOBALS(false)); // not dialog
-	proc.optional<COLUMNS>(); // OpenOffice Calc stored files workaround (DefColWidth is mandatory and located inside COLUMNS according to [MS-XLS])
+	
+	// OpenOffice Calc stored files workaround (DefColWidth is mandatory and located inside COLUMNS according to [MS-XLS])
+	if (proc.optional<COLUMNS>())
+	{
+		m_COLUMNS = elements_.back();
+		elements_.pop_back();
+	}
 	proc.mandatory<PAGESETUP>();
 	//proc.optional<HeaderFooter>(); // Moved inside PAGESETUP
-	proc.optional<BACKGROUND>();
+	
+	if (proc.optional<BACKGROUND>())
+	{
+		m_BACKGROUND = elements_.back();
+		elements_.pop_back();
+	}
+
 	proc.repeated<BIGNAME>(0, 0);
 	proc.optional<PROTECTION_COMMON>();
-	proc.optional<COLUMNS>();
+	
+	if (proc.optional<COLUMNS>())
+	{
+		if (!m_COLUMNS)
+		{
+			m_COLUMNS = elements_.back();
+			elements_.pop_back();
+		}
+	}
+
 	proc.optional<SCENARIOS>();
 	proc.optional<SORTANDFILTER>();  // Let it be optional
-	proc.mandatory<Dimensions>();
+	
+	if (proc.mandatory<Dimensions>())
+	{
+		m_Dimensions = elements_.back();
+		elements_.pop_back();
+	}
 
-	std::vector<CellRef> shared_formulas_locations;
-	proc.optional(CELLTABLE(shared_formulas_locations));
+	std::vector<CellRef>		shared_formulas_locations;
+	if (proc.optional(CELLTABLE(shared_formulas_locations)))
+	{
+		m_CELLTABLE = elements_.back();
+		elements_.pop_back();
+	}
+	
 	if(0 != shared_formulas_locations.size())
 	{
-		proc.optional(SHFMLA_SET(shared_formulas_locations));
+		if (proc.optional(SHFMLA_SET(shared_formulas_locations)))
+		{
+			m_SHFMLA_SET = elements_.back();
+			elements_.pop_back();
+		}
 	}
 
 	proc.optional(OBJECTS(false));  // Let it be optional
+	
 	proc.repeated<HFPicture>(0, 0);
 	proc.repeated<Note>(0, 0);
 	proc.repeated<PIVOTVIEW>(0, 0);
@@ -106,12 +144,26 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	proc.repeated<CUSTOMVIEW>(0, 0);
 	proc.repeated<SORT>(0, 2);
 	proc.optional<DxGCol>();
-	proc.repeated<MergeCells>(0, 0);
+	
+	count = proc.repeated<MergeCells>(0, 0);
+	while(count > 0)
+	{
+		m_MergeCells.insert(m_MergeCells.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
+	
 	proc.optional<LRng>();
 	proc.repeated<QUERYTABLE>(0, 0);
 	proc.optional<PHONETICINFO>();
 	proc.optional<CONDFMTS>();  // Let it be optional
-	proc.repeated<HLINK>(0, 0);
+	
+	if (proc.repeated<HLINK>(0, 0))
+	{
+		m_HLINK = elements_.back();
+		elements_.pop_back();
+	}
+	
 	proc.optional<DVAL>();
 	proc.optional<CodeName>();
 	proc.repeated<WebPub>(0, 0);

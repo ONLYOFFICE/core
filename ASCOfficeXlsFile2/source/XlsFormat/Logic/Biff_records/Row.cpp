@@ -1,6 +1,8 @@
 #include "precompiled_xls.h"
 #include "Row.h"
 
+#include <simple_xml_writer.h>
+
 namespace XLS
 {;
 
@@ -68,6 +70,17 @@ void Row::readFields(CFRecord& record)
 	fExAsc = GETBIT(flags, 12);
 	fExDes = GETBIT(flags, 13);
 	fPhonetic = GETBIT(flags, 14);
+}
+
+int Row::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"row")
+		{
+		}
+	}
+	return 0;
 }
 
 } // namespace XLS

@@ -137,6 +137,14 @@ SOURCES += \
     ../../../fontengine/FontPath.cpp \
     ../../../fontengine/GlyphString.cpp \
     \
+    ../../../fontengine/fontconverter/FontConverter.cpp \
+    ../../../fontengine/fontconverter/FontFileEncodings.cpp \
+    ../../../fontengine/fontconverter/FontFileTrueType.cpp \
+    ../../../fontengine/fontconverter/FontFileType1.cpp \
+    ../../../fontengine/fontconverter/FontFileType1C.cpp \
+    ../../../fontengine/fontconverter/Hash.cpp \
+    ../../../fontengine/fontconverter/StringExt.cpp \
+    \
     ../../../cximage/jasper/base/jas_cm.c \
     ../../../cximage/jasper/base/jas_debug.c \
     ../../../cximage/jasper/base/jas_getopt.c \
@@ -643,6 +651,18 @@ HEADERS += \
     ../../../fontengine/FontManager.h \
     ../../../fontengine/FontPath.h \
     ../../../fontengine/GlyphString.h \
+    ../../../fontengine/FontConverter.h \
+    \
+    ../../../fontengine/fontconverter/Consts.h \
+    ../../../fontengine/fontconverter/FontFileBase.h \
+    ../../../fontengine/fontconverter/FontFileEncodings.h \
+    ../../../fontengine/fontconverter/FontFileTrueType.h \
+    ../../../fontengine/fontconverter/FontFileType1.h \
+    ../../../fontengine/fontconverter/FontFileType1C.h \
+    ../../../fontengine/fontconverter/Hash.h \
+    ../../../fontengine/fontconverter/MemoryUtils.h \
+    ../../../fontengine/fontconverter/StringExt.h \
+    ../../../fontengine/fontconverter/Utils.h \
     \
     ../../../cximage/jasper/bmp/bmp_cod.h \
     ../../../cximage/jasper/bmp/bmp_enc.h \

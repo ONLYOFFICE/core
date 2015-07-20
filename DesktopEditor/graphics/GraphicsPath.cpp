@@ -835,6 +835,22 @@ namespace Aggplus
 		return PathCommandText(bsText, pManager, fX, fY, fWidth, fHeight, fBaseLineOffset);
 	}
 
+    bool CGraphicsPathSimpleConverter::PathCommandText2(const int* pUnicodes, const int* pGids, const int& nCount, CFontManager* pManager,
+                          const double& x, const double& y, const double& w, const double& h)
+    {
+        if (NULL == pGids)
+        {
+            pManager->SetStringGID(FALSE);
+            pManager->LoadString1((const unsigned int*)pUnicodes, (unsigned int)nCount, (float)x, (float)y);
+            return (TRUE == pManager->GetStringPath(this)) ? true : false;
+        }
+        else
+        {
+            pManager->SetStringGID(TRUE);
+            pManager->LoadString1((const unsigned int*)pGids, (unsigned int)nCount, (float)x, (float)y);
+            return (TRUE == pManager->GetStringPath(this)) ? true : false;
+        }
+    }
 
 	bool CGraphicsPathSimpleConverter::PathCommandGetBounds(double& left, double& top, double& width, double &height)
 	{

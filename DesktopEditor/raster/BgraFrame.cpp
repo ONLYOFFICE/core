@@ -62,7 +62,7 @@ bool CBgraFrame::SaveFile(const std::wstring& strFileName, unsigned int nFileTyp
 	}
 	return true;
 }
-bool CBgraFrame::Resize(const long& nNewWidth, const long& nNewHeight)
+bool CBgraFrame::Resize(const long& nNewWidth, const long& nNewHeight, bool bDestroyData)
 {
 	CxImage img;
 	if (!img.CreateFromArray(m_pData, m_lWidth, m_lHeight, 32, 4 * m_lWidth, (m_lStride >= 0) ? true : false))
@@ -71,6 +71,9 @@ bool CBgraFrame::Resize(const long& nNewWidth, const long& nNewHeight)
 	CxImage imgDst;
 	if (!img.Resample( nNewWidth, nNewHeight, 2/*bicubic spline interpolation*/, &imgDst ))
 		return false;
+
+    if (bDestroyData)
+        Destroy();
 
 	CxImageToMediaFrame( imgDst );
 	return true;

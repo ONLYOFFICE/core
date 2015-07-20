@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "COLUMNS.h"
 #include <Logic/Biff_records/DefColWidth.h>
 #include <Logic/Biff_records/ColInfo.h>

@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "StartObject.h"
 #include <Logic/Biff_structures/FrtHeaderOld.h>
 

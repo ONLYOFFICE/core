@@ -77,25 +77,7 @@ int ConvertSingle(int argc, _TCHAR* argv[])
 	ATL::CComPtr<ASCOfficeXlsFile::IAVSOfficeFileTemplate> officeXlsFile;
     HRESULT hr;
 	HR_RET(officeXlsFile.CoCreateInstance(__uuidof(ASCOfficeXlsFile::COfficeXlsFile)));
-//_______________________________________________________________________________________________________
-		IUnknown *pUnk;
-		IConnectionPointContainer* pContainer;
-		IConnectionPoint* pCP;
-		CCallback *pEvents = NULL;
-		DWORD dwAdvise=0;
 
-		pEvents = new CCallback;
-		pEvents->AddRef();
-
-		HR_RET(officeXlsFile->QueryInterface(IID_IConnectionPointContainer, (void**)&pContainer));
-		HR_RET(pContainer->FindConnectionPoint(__uuidof(ASCOfficeXlsFile::_IAVSOfficeFileTemplateEvents),&pCP));	
-
-		HR_RET(pEvents->QueryInterface(IID_IUnknown,(VOID **)&pUnk));
-		HR_RET(pCP->Advise(pUnk,&dwAdvise));
-
-		pContainer->Release();pContainer=NULL;
-		pUnk->Release(); pUnk=NULL;
-//____________
     boost::timer t1;
     officeXlsFile->LoadFromFile(ATL::CComBSTR(argv[1]), ATL::CComBSTR(argv[2]), NULL);
     std::cout << "\n\nTime : " << t1.elapsed() << "\n";    

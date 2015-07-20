@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "NoteSh.h"
 #include "CellRef.h"
 #include <Binary/CFRecord.h>

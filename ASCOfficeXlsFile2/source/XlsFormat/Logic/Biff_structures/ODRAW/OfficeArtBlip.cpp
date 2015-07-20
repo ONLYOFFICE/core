@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "OfficeArtBlip.h"
 #include <Binary/CFRecord.h>
 

@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "MSODRAWINGGROUP.h"
 #include <Logic/Biff_records/MsoDrawingGroup.h>
 #include <Logic/Biff_records/Continue.h>

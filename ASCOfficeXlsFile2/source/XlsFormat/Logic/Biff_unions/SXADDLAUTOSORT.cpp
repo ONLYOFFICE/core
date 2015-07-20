@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "SXADDLAUTOSORT.h"
 #include <Logic/Biff_unions/SXADDLSXRULE.h>
 #include <Logic/Biff_records/SXAddl.h>

@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 
 #include "Decryptor.h"
 #include "RC4Crypt.h"

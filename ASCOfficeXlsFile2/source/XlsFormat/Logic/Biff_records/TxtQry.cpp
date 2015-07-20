@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "TxtQry.h"
 
 namespace XLS

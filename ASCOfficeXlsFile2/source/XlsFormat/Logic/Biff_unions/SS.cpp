@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "SS.h"
 #include <Logic/Biff_records/DataFormat.h>
 #include <Logic/Biff_records/Begin.h>

@@ -1,7 +1,6 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/Cell.h>
 
 namespace XLS
 {;
@@ -13,11 +12,9 @@ class IXFCellMulBlankSpecial : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(MSXML2::IXMLDOMElementPtr xml_tag);
 	virtual void load(CFRecord& record, const size_t num_cells);
 //-----------------------------
 	virtual void load(CFRecord& record) {};
-	//virtual const bool fromXML(MSXML2::IXMLDOMElementPtr xml_tag) { return false; };
 	virtual void store(CFRecord& record){};
 
 //-----------------------------
@@ -43,18 +40,13 @@ public:
 	
 	const long GetRow() const;
 
+	int serialize(std::wostream & stream);
+
 //-----------------------------
 	Rw rw;
 	Col colFirst;
 	IXFCellMulBlankSpecial rgixfe;
 	Col colLast;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(colFirst)
-		//BO_ATTRIB_MARKUP_ATTRIB(colLast)
-		//BO_ATTRIB_MARKUP_COMPLEX(rgixfe)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 

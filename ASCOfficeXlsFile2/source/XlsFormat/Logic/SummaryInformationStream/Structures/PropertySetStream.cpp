@@ -1,8 +1,8 @@
-#include "precompiled_xls.h"
 
 #include "PropertySetStream.h"
-#include "Binary\CFStream.h"
+#include "Binary/CFStream.h"
 
+#include "Auxiliary/HelpFunc.h"
 
 namespace OLEPS
 {;

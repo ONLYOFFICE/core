@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "QUERYTABLE.h"
 #include <Logic/Biff_records/Qsi.h>
 #include <Logic/Biff_records/QsiSXTag.h>

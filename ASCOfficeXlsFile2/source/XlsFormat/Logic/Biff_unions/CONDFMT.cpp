@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "CONDFMT.h"
 #include <Logic/Biff_records/CondFmt.h>
 #include <Logic/Biff_records/CF.h>

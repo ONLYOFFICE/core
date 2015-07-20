@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "ScenMan.h"
 
 namespace XLS

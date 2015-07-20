@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "ExternOleDdeLink.h"
 #include <Binary/CFRecord.h>
 

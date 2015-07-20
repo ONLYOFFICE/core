@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "XFS.h"
 #include <Logic/Biff_records/XF.h>
 #include <Logic/Biff_records/XFCRC.h>
@@ -9,6 +9,7 @@
 namespace XLS
 {;
 
+int cellStyleXfs_count = 0;
 
 XFS::XFS()
 :	cell_xf_current_id(0), style_xf_current_id(0)
@@ -30,6 +31,8 @@ BaseObjectPtr XFS::clone()
 // XFS = 16*XF [XFCRC 16*4050XFExt]
 const bool XFS::loadContent(BinProcessor& proc)
 {
+	cellStyleXfs_count = 0;
+	
 	int count = proc.repeated(XF(cell_xf_current_id, style_xf_current_id) ,16, 0);
 
 	while (count > 0)
@@ -40,6 +43,7 @@ const bool XFS::loadContent(BinProcessor& proc)
 		if ((xfs->fStyle.value()) && (*xfs->fStyle.value()))
 		{
 			m_cell_styles.insert(m_cell_styles.begin(), elements_.back());
+			cellStyleXfs_count++;
 		}
 		else
 		{

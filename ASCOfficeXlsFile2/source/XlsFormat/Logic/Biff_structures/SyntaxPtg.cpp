@@ -1,9 +1,11 @@
-#include "precompiled_xls.h"
+
 #include "SyntaxPtg.h"
 #include "OperatorPtgs.h"
 #include "PtgParen.h"
+
 #include <boost/regex.hpp>
-//#include <boost/algorithm/string/regex.hpp>
+#include <boost/algorithm/string.hpp>
+
 namespace XLS
 {;
 

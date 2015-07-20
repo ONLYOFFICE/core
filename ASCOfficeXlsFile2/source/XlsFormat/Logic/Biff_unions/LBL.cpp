@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "LBL.h"
 #include <Logic/Biff_records/Lbl.h>
 #include <Logic/Biff_records/NameCmt.h>

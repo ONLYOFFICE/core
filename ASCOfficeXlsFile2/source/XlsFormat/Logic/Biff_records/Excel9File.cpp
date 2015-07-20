@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "Excel9File.h"
 
 namespace XLS

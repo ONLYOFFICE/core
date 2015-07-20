@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PtgArea.h"
 #include "CellRangeRef.h"
 #include "PtgParam.h"

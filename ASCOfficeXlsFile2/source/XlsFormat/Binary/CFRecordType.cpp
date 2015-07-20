@@ -1,13 +1,21 @@
-#include "precompiled_xls.h"
+
 #include "CFRecordType.h"
+
+#include <vector>
+
+#include <boost/shared_ptr.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace XLS
 {;
 
-struct CFRecordTypeValue{
+struct CFRecordTypeValue
+{
 	CFRecordType::TypeString name;
 	CFRecordType::TypeId id;
-}CFRecordTypeValues[] = {
+}
+CFRecordTypeValues[] = 
+{
 	{"Formula",					rt_Formula},
 	{"EOF",						rt_EOF},
 	{"CalcCount",				rt_CalcCount},

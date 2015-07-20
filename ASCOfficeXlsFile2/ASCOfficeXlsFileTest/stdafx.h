@@ -10,7 +10,7 @@
 #endif						
 
 #include <stdio.h>
-#include <tchar.h>
+#include  <tchar.h>
 
 #include <atlbase.h>
 #include <atlcom.h>

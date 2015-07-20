@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PIVOTLI.h"
 #include <Logic/Biff_records/SXLI.h>
 #include <Logic/Biff_records/Continue.h>

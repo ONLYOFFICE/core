@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "Compat12.h"
 #include <Logic/Biff_structures/FrtHeader.h>
 

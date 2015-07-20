@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "LPr.h"
 //#include <Exception/UnexpectedProgramPath.h>
 

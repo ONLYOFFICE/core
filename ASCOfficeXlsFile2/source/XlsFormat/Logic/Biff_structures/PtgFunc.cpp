@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PtgFunc.h"
 #include <Binary/CFRecord.h>
 

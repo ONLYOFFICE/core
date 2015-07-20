@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "HLinkTooltip.h"
 #include <Logic/Biff_structures/CellRangeRef.h>
 #include <Logic/Biff_structures/FrtRefHeaderNoGrbit.h>

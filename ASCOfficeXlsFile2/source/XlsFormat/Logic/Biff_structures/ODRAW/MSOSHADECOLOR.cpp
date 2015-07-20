@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "MSOSHADECOLOR.h"
 #include <Binary/CFRecord.h>
 

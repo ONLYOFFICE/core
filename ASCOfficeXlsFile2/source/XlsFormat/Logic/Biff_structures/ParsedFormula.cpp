@@ -1,8 +1,9 @@
-#include "precompiled_xls.h"
+
 #include "NameParsedFormula.h"
 #include <Binary/CFRecord.h>
-//#include <Exception/WrongAPIUsage.h>
 #include "StringPtgParser.h"
+
+#include <boost/algorithm/string.hpp>
 
 namespace XLS
 {;

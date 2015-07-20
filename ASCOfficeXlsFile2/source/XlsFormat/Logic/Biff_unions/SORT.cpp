@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "SORT.h"
 #include <Logic/Biff_records/RRSort.h>
 #include <Logic/Biff_records/Continue.h>

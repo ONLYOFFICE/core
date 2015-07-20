@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "OBJECTS.h"
 #include <Logic/Biff_records/MsoDrawingSelection.h>
 #include <Logic/Biff_records/MsoDrawing.h>

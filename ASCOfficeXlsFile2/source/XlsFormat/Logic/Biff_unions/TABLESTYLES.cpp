@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "TABLESTYLES.h"
 #include <Logic/Biff_records/TableStyles.h>
 #include <Logic/Biff_records/TableStyle.h>

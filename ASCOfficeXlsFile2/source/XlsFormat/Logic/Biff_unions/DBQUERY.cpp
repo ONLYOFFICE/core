@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "DBQUERY.h"
 #include <Logic/Biff_records/DbOrParamQry.h>
 #include <Logic/Biff_records/SXString.h>

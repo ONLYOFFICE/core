@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "ScenarioProtect.h"
 
 namespace XLS

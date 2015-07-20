@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "CHARTFOMATS.h"
 #include <Logic/Biff_records/Chart.h>
 #include <Logic/Biff_records/Begin.h>

@@ -18,14 +18,11 @@ public:
 
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
 	const CellRef getLocation() const;
 
-private:
 	Rw rw;
 	Col col;
 	IXFCell ixfe;

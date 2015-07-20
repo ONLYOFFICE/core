@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "NameFnGrp12.h"
 
 namespace XLS

@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "Sync.h"
 #include <Logic/Biff_structures/CellRef.h>
 

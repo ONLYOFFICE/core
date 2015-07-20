@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "CalcPrecision.h"
 
 namespace XLS

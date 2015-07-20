@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PIVOTRULE.h"
 #include <Logic/Biff_records/SxRule.h>
 #include <Logic/Biff_unions/PRFILTER.h>

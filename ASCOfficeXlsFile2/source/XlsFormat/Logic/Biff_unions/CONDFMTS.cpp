@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "CONDFMTS.h"
 #include <Logic/Biff_unions/CONDFMT.h>
 #include <Logic/Biff_unions/CONDFMT12.h>

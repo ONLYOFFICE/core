@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "MACROSORTANDFILTER.h"
 #include <Logic/Biff_records/Sort.h>
 #include <Logic/Biff_records/DropDownObjIds.h>

@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "Font.h"
 
 #include <simple_xml_writer.h>

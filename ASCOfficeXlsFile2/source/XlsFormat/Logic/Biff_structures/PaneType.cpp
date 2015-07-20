@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PaneType.h"
 //#include <Exception/WrongBiffRecord.h>
 

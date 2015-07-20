@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "CellOffsetResender.h"
 #include <Binary/CFRecord.h>
 #include <Binary/CFStream.h>

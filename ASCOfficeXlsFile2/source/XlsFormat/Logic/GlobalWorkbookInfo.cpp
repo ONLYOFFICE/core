@@ -1,5 +1,3 @@
-#include "precompiled_xls.h"
-
 #include "GlobalWorkbookInfo.h"
 
 namespace XLS

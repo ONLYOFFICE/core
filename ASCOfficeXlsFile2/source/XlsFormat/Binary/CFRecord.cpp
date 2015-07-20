@@ -1,9 +1,6 @@
-#include "precompiled_xls.h"
+
 #include "CFRecord.h"
 #include "CFStream.h"
-//#include <Exception/WrongFormatInterpretation.h>
-//#include <Exception/WrongAPIUsage.h>
-//#include <Exception/WrongBiffRecord.h>
 
 namespace XLS
 {;

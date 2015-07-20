@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "BinProcessor.h"
 #include <Binary/CFStream.h>
 #include <Binary/CFStreamCacheReader.h>
@@ -42,7 +42,8 @@ const int BinProcessor::repeated(BaseObject& object, const int fromN, const int 
 		if(!optional(*object.clone()))
 		{
 			break;
-		}else count++;
+		}
+		count++;
 		at_least_one_read = true;
 	}
 	return count;
@@ -59,12 +60,12 @@ BinReaderProcessor::BinReaderProcessor(CFStreamCacheReader& reader, BaseObject* 
 {
 }
 
-BinReaderProcessor::BinReaderProcessor(CFStreamCacheReader& reader, const bool is_mandatory)
-:	reader_(reader),
-	BinProcessor(reader.getGlobalWorkbookInfo()),
-	is_mandatory_(is_mandatory)
-{
-}
+//BinReaderProcessor::BinReaderProcessor(CFStreamCacheReader& reader, const bool is_mandatory)
+//:	reader_(reader),
+//	BinProcessor(reader.getGlobalWorkbookInfo()),
+//	is_mandatory_(is_mandatory)
+//{
+//}
 
 const bool BinReaderProcessor::optional(BaseObject& object)
 {
@@ -87,32 +88,10 @@ const bool BinReaderProcessor::mandatory(BaseObject& object)
 }
 
 
-void BinReaderProcessor::markAttribute(BiffAttribute& attrib, const std::wstring & attrib_name)
-{
-	attrib.setName(attrib_name);
-}
-
-
-void BinReaderProcessor::markTaggedAttribute(BiffStructure& attrib)
-{
-}
-
-
-void BinReaderProcessor::markVector(BiffStructurePtrVector& vec, BiffStructure& exClone)
-{
-	if (parent_ == NULL) return;
-
-	for(std::vector<BiffStructurePtr>::iterator it = vec.begin(), itEnd = vec.end(); it != itEnd; ++it)
-	{
-		//parent_->add_child(*it);
-	}
-}
-
-
 // object_copy is necessary in case we haven't found the desired record and have to put it to the queue
 const bool BinReaderProcessor::readChild(BaseObject& object, const bool is_mandatory)
 {
-	bool ret_val = true;
+	bool ret_val = false;
 	try
 	{
 		ret_val = object.read(reader_, parent_, is_mandatory /* log warning if mandatory tag absent*/);
@@ -120,12 +99,11 @@ const bool BinReaderProcessor::readChild(BaseObject& object, const bool is_manda
 		{
 			// We don't update ret_val here because we are reading to the copy of the object.
 			// And the real object will remain uninitialized
-			wanted_objects.push_back(object.clone()); // store the copy of the object that was not found (this line is here to take another chance to be read after some trash processed)
-			
-			for(BaseObjectPtrList::iterator it = wanted_objects.begin()/*, itEnd = */; it != wanted_objects.end();)
+			wanted_objects.push_back(object.clone()); // store the copy of the object that was not found (this line is here to take another chance to be read after some trash processed)			
+			for(BaseObjectPtrList::iterator it = wanted_objects.begin()/*, itEnd = */; 
+							it != wanted_objects.end();)
 			{
-				const BaseObjectPtr w_object = *it;
-				
+				const BaseObjectPtr w_object = *it;				
 				if(w_object->read(reader_, parent_, false))
 				{
 					// Remove successfully read object from the wanted objects list
@@ -138,23 +116,6 @@ const bool BinReaderProcessor::readChild(BaseObject& object, const bool is_manda
 			}
 		}
 	}
-	//catch(EXCEPT::LogicalException&)
-	//{
-	//	Log::message(std::string(static_cast<char*>(object.getClassName())) + " record has generated a logical exception while loading and has been skipped. Sorry.");
-	//	return true; // This doesn't mean the operation is successful, but indicate the parent container to continue repeated operations
-	//}
-	//catch(EXCEPT::RuntimeException&)
-	//{
-	//	Log::message(std::string(static_cast<char*>(object.getClassName())) + " record has generated a run-time exception while loading and has been skipped. Sorry.");
-	//	return true; // This doesn't mean the operation is successful, but indicate the parent container to continue repeated operations
-	//}
-	//catch(_com_error error)
-	//{
-	//	std::string additional_descr = error.Description().length() ? std::string("Description: ") + static_cast<char*>(error.Description()) : "";
-	//	Log::error(std::string("_com_error exception!!! HRESULT: ") + STR::int2hex_wstr(error.Error()) + "(" + static_cast<char*>(std::wstring (error.ErrorMessage())) + ") "+ additional_descr);
-	//	Log::message(std::string(static_cast<char*>(object.getClassName())) + " record has generated a _com_error exception while loading and has been skipped. Sorry.");
-	//	return true; // This doesn't mean the operation is successful, but indicate the parent container to continue repeated operations
-	//}
 	catch(...)
 	{
 	}

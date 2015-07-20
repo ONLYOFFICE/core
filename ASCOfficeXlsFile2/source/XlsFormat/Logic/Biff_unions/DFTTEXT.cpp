@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "DFTTEXT.h"
 #include <Logic/Biff_records/DataLabExt.h>
 #include <Logic/Biff_records/StartObject.h>

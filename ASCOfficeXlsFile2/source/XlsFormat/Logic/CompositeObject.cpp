@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "CompositeObject.h"
 #include "BinProcessor.h"
 

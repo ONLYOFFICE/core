@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "BACKGROUND.h"
 #include <Logic/Biff_records/BkHim.h>
 #include <Logic/Biff_records/Continue.h>

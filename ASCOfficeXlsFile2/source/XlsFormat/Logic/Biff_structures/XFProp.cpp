@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "XFProp.h"
 #include <Binary/CFRecord.h>
 #include "XFPropColor.h"

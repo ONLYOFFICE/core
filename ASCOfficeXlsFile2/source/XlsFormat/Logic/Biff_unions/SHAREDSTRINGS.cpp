@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "SHAREDSTRINGS.h"
 #include <Logic/Biff_records/SST.h>
 #include <Logic/Biff_records/Continue.h>

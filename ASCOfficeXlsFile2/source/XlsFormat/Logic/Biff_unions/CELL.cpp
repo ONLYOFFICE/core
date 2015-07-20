@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "CELL.h"
 #include <Logic/Biff_records/Blank.h>
 #include <Logic/Biff_unions/FORMULA.h>
@@ -9,9 +9,10 @@
 #include <Logic/Biff_records/Number.h>
 #include <Logic/Biff_records/LabelSst.h>
 
+#include <simple_xml_writer.h>
+
 namespace XLS
 {;
-
 
 CELL::CELL(std::vector<CellRef>& shared_formulas_locations_ref) : shared_formulas_locations_ref_(shared_formulas_locations_ref)
 {
@@ -33,13 +34,15 @@ BaseObjectPtr CELL::clone()
 const bool CELL::loadContent(BinProcessor& proc)
 {
 	FORMULA formula_union(shared_formulas_locations_ref_);
-	Blank blank;
-	MulBlank mulblank;
-	RK rk;
-	MulRk mulrk;
-	BoolErr boolerr;
-	Number number;
-	LabelSst labelsst;
+	
+	Blank		blank;
+	MulBlank	mulblank;
+	RK			rk;
+	MulRk		mulrk;
+	BoolErr		boolerr;
+	Number		number;
+	LabelSst	labelsst;
+
 	if(proc.optional(formula_union))
 	{
 		RowNumber = formula_union.getLocation().getRow();
@@ -78,12 +81,18 @@ const bool CELL::loadContent(BinProcessor& proc)
 	}
 	return true;
 }
-//
-//void CELL::toXML(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	static std::wstring  row_name("rw");
-//	own_tag->setAttribute(row_name, RowNumber);
-//}
+
+int CELL::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+    {
+		for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
+		{
+			it->get()->serialize(stream);
+		}
+	}
+	return 0;
+}
 
 } // namespace XLS
 

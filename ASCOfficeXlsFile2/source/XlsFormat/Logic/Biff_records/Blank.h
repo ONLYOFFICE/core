@@ -24,6 +24,7 @@ public:
 
 	static const ElementType	type = typeBlank;
 
+	int serialize(std::wostream & stream);
 
 	const CellRef getLocation() const;
 

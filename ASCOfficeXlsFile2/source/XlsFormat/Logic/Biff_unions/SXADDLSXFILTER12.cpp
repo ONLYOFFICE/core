@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "SXADDLSXFILTER12.h"
 #include <Logic/Biff_records/SXAddl.h>
 

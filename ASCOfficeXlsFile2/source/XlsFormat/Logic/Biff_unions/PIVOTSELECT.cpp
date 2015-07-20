@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PIVOTSELECT.h"
 #include <Logic/Biff_records/SxSelect.h>
 #include <Logic/Biff_unions/PIVOTRULE.h>

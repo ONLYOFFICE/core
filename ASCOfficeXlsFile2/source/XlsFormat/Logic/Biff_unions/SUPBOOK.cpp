@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "SUPBOOK.h"
 #include <Logic/Biff_records/SupBook.h>
 #include <Logic/Biff_records/ExternName.h>

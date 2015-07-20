@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "FORMATTING.h"
 #include <Logic/Biff_records/Font.h>
 #include <Logic/Biff_records/Format.h>

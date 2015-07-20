@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "StyleExt.h"
 
 #include <simple_xml_writer.h>

@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "RECORD12.h"
 #include <Logic/Biff_records/HeaderFooter.h>
 

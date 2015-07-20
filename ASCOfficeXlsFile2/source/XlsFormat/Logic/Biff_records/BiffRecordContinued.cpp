@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "BiffRecordContinued.h"
 #include "Binary/CFStreamCacheReader.h"
 #include "Binary/CFStreamCacheWriter.h"

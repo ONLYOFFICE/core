@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PtgRefN.h"
 #include "CellRef.h"
 #include <Binary/CFRecord.h>

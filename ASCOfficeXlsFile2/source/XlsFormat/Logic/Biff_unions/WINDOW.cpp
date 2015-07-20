@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "WINDOW.h"
 #include <Logic/Biff_records/Window2.h>
 #include <Logic/Biff_records/PLV.h>

@@ -18,13 +18,13 @@ public:
 	BaseObjectPtr clone();
 
 	virtual const bool loadContent(BinProcessor& proc);
-	//virtual void toXML(MSXML2::IXMLDOMElementPtr own_tag);
+
+	int serialize(std::wostream & stream);
 
 	static const ElementType	type = typeCELL;
-private:
+
 	long RowNumber;
 
-private:
 	std::vector<CellRef>& shared_formulas_locations_ref_;
 };
 

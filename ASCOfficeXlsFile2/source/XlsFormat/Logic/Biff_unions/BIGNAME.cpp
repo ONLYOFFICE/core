@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "BIGNAME.h"
 #include <Logic/Biff_records/BigName.h>
 #include <Logic/Biff_records/ContinueBigName.h>

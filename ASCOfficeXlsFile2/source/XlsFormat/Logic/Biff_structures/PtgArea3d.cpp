@@ -1,8 +1,10 @@
-#include "precompiled_xls.h"
+
 #include "PtgArea3d.h"
 #include "RevExtern.h"
 #include "CellRangeRef.h"
 #include <Binary/CFRecord.h>
+
+#include <boost/algorithm/string.hpp>
 
 namespace XLS
 {;

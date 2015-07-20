@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "MDXTUPLESET.h"
 #include <Logic/Biff_records/MDXTuple.h>
 #include <Logic/Biff_records/MDXSet.h>

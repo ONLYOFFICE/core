@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "RTD.h"
 #include <Logic/Biff_records/RealTimeData.h>
 #include <Logic/Biff_records/ContinueFrt.h>

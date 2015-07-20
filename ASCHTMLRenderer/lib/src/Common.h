@@ -221,6 +221,16 @@ namespace NSHtmlRenderer
         LONG bottom;
     };
 
+    inline bool IsEqualMain(const Aggplus::CMatrix* pMatrix, const Aggplus::CMatrix* pMatrix2)
+    {
+        if (fabs(pMatrix->m_agg_mtx.sx  - pMatrix2->m_agg_mtx.sx) < 0.001 &&
+            fabs(pMatrix->m_agg_mtx.sy  - pMatrix2->m_agg_mtx.sy) < 0.001 &&
+            fabs(pMatrix->m_agg_mtx.shx - pMatrix2->m_agg_mtx.shx) < 0.001 &&
+            fabs(pMatrix->m_agg_mtx.shy - pMatrix2->m_agg_mtx.shy) < 0.001)
+            return true;
+        return false;
+    }
+
     static RECT GetImageBounds(CBgraFrame* pFrame)
     {
         BYTE* pBuffer = pFrame->get_Data();
@@ -686,6 +696,21 @@ namespace NSHtmlRenderer
         {
             *((WCHAR*)(m_pBuffer + m_lPosition))	= lValue;
             m_lPosition += sizeof(WCHAR);
+        }
+        inline void WriteWCHAR_nocheck2(const int& lValue)
+        {
+            if (lValue < 0x10000)
+            {
+                *((USHORT*)(m_pBuffer + m_lPosition)) = lValue;
+                m_lPosition += 2;
+            }
+            else
+            {
+                int code = lValue - 0x10000;
+                *((USHORT*)(m_pBuffer + m_lPosition))      = 0xD800 | ((code >> 10) & 0x03FF);
+                *((USHORT*)(m_pBuffer + m_lPosition + 2))  = 0xDC00 | (code & 0x03FF);
+                m_lPosition += 4;
+            }
         }
         inline void WriteDouble_nocheck(const double& dValue)
         {

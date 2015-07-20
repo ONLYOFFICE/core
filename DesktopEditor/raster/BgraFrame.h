@@ -81,7 +81,7 @@ public:
 public:
 	bool OpenFile(const std::wstring& strFileName, unsigned int nFileType = 0);	//0 - detect
 	bool SaveFile(const std::wstring& strFileName, unsigned int nFileType);
-	bool Resize(const long& nNewWidth, const long& nNewHeight);
+    bool Resize(const long& nNewWidth, const long& nNewHeight, bool bDestroyData = true);
 private:
 
 	void CxImageToMediaFrame( CxImage& img );

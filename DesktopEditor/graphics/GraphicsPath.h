@@ -126,6 +126,10 @@ public:
 	bool PathCommandGetCurrentPoint(double* fX, double* fY);
 	bool PathCommandText(const std::wstring& bsText, CFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset);
 	bool PathCommandTextEx(std::wstring& bsText, std::wstring& bsGidText, CFontManager* pManager, double fX, double fY, double fWidth, double fHeight, double fBaseLineOffset, DWORD lFlags);
+
+    bool PathCommandText2(const int* pUnicodes, const int* pGids, const int& nCount, CFontManager* pManager,
+                          const double& x, const double& y, const double& w, const double& h);
+
 	bool PathCommandGetBounds(double& left, double& top, double& width, double &height);
 	
 public:

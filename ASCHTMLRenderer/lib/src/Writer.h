@@ -1,1374 +1,1858 @@
-﻿#pragma once
+﻿#ifndef _ASC_HTMLRENDERER_WRITER_H_
+#define _ASC_HTMLRENDERER_WRITER_H_
+
+#include "SVGWriter2.h"
+#include <map>
+#include "../../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../../DesktopEditor/common/CalculatorCRC32.h"
 #include "Text.h"
 #include "Document.h"
-#include "CalculatorCRC32.h"
-#include "..\Graphics\Matrix.h"
-#include "VectorGraphicsWriter2.h"
 
 namespace NSHtmlRenderer
 {
-	class CPageWriter
-	{
-	public:
-		LONG			m_lPageNumber;
-		CStringWriter	m_oWriterPage;
-
-		CText			m_oText;
-
-		LONG			m_lPixWidth;
-		LONG			m_lPixHeight;
-		double			m_dDpiX;
-		double			m_dDpiY;
-
-		NSStructures::CPen*		m_pPen;
-		NSStructures::CBrush*	m_pBrush;
-		NSStructures::CFont*	m_pFont;
-
-		BOOL					m_bIsClip;
-		BOOL					m_bIsClipping;
-
-		Graphics::IASCGraphicSimpleComverter* m_pSimpleConverter;
-		CMatrix*				m_pFullTransform;
-
-		LONG					m_lCurTxBrush;
-
-		CVectorGraphicsWriter	m_oVectorWriter;
-
-		CString					m_strDstDirectory;
-		CString					m_strDstMedia;
-
-		LONG					m_lIndexZ;
-
-	public:
-		CPageWriter() : m_lPageNumber(0), m_oVectorWriter()
-		{
-			m_oText.m_pWriter				= &m_oWriterPage;
-
-			m_lPixWidth		= 0;
-			m_lPixHeight	= 0;
-			m_dDpiX			= 1;
-			m_dDpiY			= 1;
-
-			m_pPen			= NULL;
-			m_pBrush		= NULL;
-			m_pFont			= NULL;
-
-			m_bIsClip		= FALSE;
-			m_bIsClipping	= FALSE;
-
-			m_pSimpleConverter = NULL;
-			m_pFullTransform   = NULL;
-
-			m_lCurTxBrush	= 0;
-		}
-		~CPageWriter()
-		{
-		}
-
-	public:
-		AVSINLINE void NewPage(double dDpiX, double dDpiY, LONG lPixW, LONG lPixH)
-		{
-			m_lPixWidth		= lPixW;
-			m_lPixHeight	= lPixH;
-
-			m_dDpiX			= dDpiX;
-			m_dDpiY			= dDpiY;
-
-			m_oText.NewPage(dDpiX, dDpiY);
-
-			double w = (double)m_lPixWidth;
-			double h = (double)m_lPixHeight;
-			
-			m_oVectorWriter.NewPage(w, h, m_lPageNumber);
-
-			m_lCurTxBrush	= 0;
-			m_lIndexZ		= 0;
-		}
-
-		AVSINLINE void SetSettings(NSStructures::CPen* pPen, NSStructures::CBrush* pBrush, NSStructures::CFont* pFont, CStyles* pStyles, NSHtmlRenderer::CMatrix* pTransform)
-		{
-			m_pPen		= pPen;
-			m_pBrush	= pBrush;
-			m_pFont		= pFont;
-
-			m_oText.SetParams(pPen, pBrush, pFont, pStyles, pTransform);
-		
-			m_oVectorWriter.SetSettings(pPen, pBrush, m_pSimpleConverter);
-		}
-		AVSINLINE void ClosePage()
-		{
-			m_oVectorWriter.EndPage();
-			m_oWriterPage.ClearNoAttack();
-
-			m_oText.m_oCurrentLine.Clear();
-
-			m_lCurTxBrush = 0;
-		}
-
-	public:
-		void Write(CStringWriter* pWriterDoc, CStringWriter* pWriterScript, CStringWriter* pWriterThumbnails, CStringWriter* pTextMeasurer, double dHeightDoc, LONG lPageNumber, CDstInfo& oInfo)
-		{
-			CString strPage = _T("");
-			strPage.Format(g_string_viewer_page, lPageNumber + 1, (LONG)0/*dHeightDoc*/, m_lPixWidth, (LONG)m_lPixHeight);
-			pWriterDoc->WriteString(strPage);
-			
-			m_oText.ClosePage();
-
-			if (m_oVectorWriter.IsGraphics())
-			{
-				m_oVectorWriter.WriteToDocument(pWriterDoc, oInfo);
-
-				// чтобы работал клик
-				CString strTransparentDiv = _T("<div style=\"position:absolute; top: 0px; width:100%; height:100%;\"></div>\n");
-				pWriterDoc->WriteString(strTransparentDiv);
-			}
-
-			pWriterDoc->Write(m_oWriterPage);
-			pWriterDoc->WriteString(g_bstr_viewer_end_div2);
-		}
-
-	public:
-		AVSINLINE void WriteImage(double& x, double& y, double& width, double& height, CImageInfo& oInfo, double dAngle)
-		{
-			m_oVectorWriter.WriteImage(x, y, width, height, oInfo, dAngle);
-		}
-
-		AVSINLINE void WriteBeginPath()
-		{
-			m_oVectorWriter.WritePathStart();
-		}
-
-		AVSINLINE void WriteEndPath()
-		{
-			m_oVectorWriter.WriteEndPath();
-		}		
-		
-		AVSINLINE void WritePathStart()
-		{
-			m_oVectorWriter.WritePathStart();
-		}
-		AVSINLINE void WritePathClose()
-		{
-			m_oVectorWriter.WritePathClose();
-		}
-
-		AVSINLINE void WritePathMoveTo(double& x, double& y)
-		{
-			m_oVectorWriter.WritePathMoveTo(x, y);
-		}
-		AVSINLINE void WritePathLineTo(double& x, double& y)
-		{
-			m_oVectorWriter.WritePathLineTo(x, y);
-		}
-		AVSINLINE void WritePathCurveTo(double& x1, double& y1, double& x2, double& y2, double& x3, double& y3)
-		{
-			m_oVectorWriter.WritePathCurveTo(x1, y1, x2, y2, x3, y3);
-		}
-		AVSINLINE void WriteDrawPath(LONG lType, CImageInfo& oInfo, const double& dAngle)
-		{
-			m_oVectorWriter.WriteDrawPath(lType, oInfo, dAngle);
-			m_oText.m_bIsNewLine = true;
-		}
-		AVSINLINE void WriteNewTableBox()
-		{
-			m_oText.m_bIsNewLine = true;
-		}
-
-		AVSINLINE void WritePathClip()
-		{
-			m_oVectorWriter.WritePathClip();
-		}
-		AVSINLINE void WritePathClipEnd()
-		{
-			m_oVectorWriter.WritePathClipEnd();
-		}
-		AVSINLINE void WritePathResetClip()
-		{
-			m_oVectorWriter.WritePathResetClip();
-		}
-
-		AVSINLINE void WriteText(BSTR bsText, BSTR bsGid, double x, double y, double width, double height, double baselineoffset)
-		{
-			//WriteGraphics();
-			m_oText.CommandText(bsText, bsGid, x, y, width, height, baselineoffset, m_lIndexZ);
-		}
-
-		AVSINLINE void WriteGraphics()
-		{
-			if (m_oVectorWriter.IsGraphics())
-			{
-				//m_oVectorWriter.WriteToDocument(&m_oWriterPage, m_strDstMedia);
-				++m_lIndexZ;
-			}
-		}
-	};
-
-	class CWriter
-	{
-	private:
-		CStringWriter m_oWriter;
-		CStringWriter m_oWriterThumbnails;
-		CStringWriter m_oWriterScript;
-
-		CStringWriter m_oWriterTextMeasurer;
-		CStyles		  m_oWriterCSS;
-
-	public:
-		NSStructures::CPen*		m_pPen;
-		NSStructures::CBrush*	m_pBrush;
-		NSStructures::CFont*	m_pFont;
-
-		double m_dDpiX;
-		double m_dDpiY;
-
-		BOOL					m_bPathClosed;
-		CPageWriter				m_oPage;
-
-		CAtlMap<CString, CImageInfo>	m_mapImagesFile;
-		CAtlMap<DWORD, CImageInfo>		m_mapImageData;
-
-		CCalculatorCRC32		m_oCRC;
-
-		LONG m_lWidthDocPix;
-		LONG m_lHeightDocPix;
-		LONG m_lHeightPagePix;
-
-		CDstInfo m_oDstInfo;
-
-		Graphics::IASCGraphicSimpleComverter* m_pSimpleConverter;
-
-	public:
-
-		double					m_dWidthPix;
-		double					m_dHeigthPix;
-
-	private:
-
-		LONG					m_lNextIDShape;
-		LONG					m_lNextIDImage;
-
-		LONG					m_lCurrentPage;
-		LONG					m_lPagesCount;
-
-		BOOL					m_bIsClip;
-		BOOL					m_bIsClipping;
-
-		double					m_dHeightDoc;
-
-		LONG					m_lMaxSizeImage;
-
-	public:
-		CString					m_strDstDirectory;
-		CString					m_strDstMedia;
-		CString					m_strDstDirectoryFiles;
-		CString					m_strFileName;
-
-	public:
-		bool					m_bIsThumbnails;
-		bool					m_bIsMenu;
-
-	private:
-		// здесь данные для накопления слов (а лучше и строки??)
-
-	public:
-		CWriter()
-		{
-			m_dDpiX = 96.0;
-			m_dDpiY = 96.0;
-
-			m_dWidthPix		= 0;
-			m_dHeigthPix	= 0;
-
-			m_lNextIDImage	= 0;
-			m_lNextIDShape	= 0;
-
-			m_lCurrentPage	= -1;
-			m_bIsClip		= FALSE;
-			m_bIsClipping	= FALSE;
-
-			m_bPathClosed	= TRUE;
-			m_dHeightDoc	= 0;
-
-			m_pSimpleConverter = NULL;
-
-			m_lMaxSizeImage = 800;
-
-			m_lWidthDocPix		= 0;
-			m_lHeightDocPix		= 0;
-			m_lHeightPagePix	= 0;
-
-			m_bIsThumbnails		= false;
-			m_bIsMenu			= false;
-
-			m_lPagesCount		= 0;
-		}
-
-		AVSINLINE NSHtmlRenderer::CStyles* GetStyles()
-		{
-			return &m_oWriterCSS;
-		}
-
-		void CreateFile(CString& strDir, CString& strFileName)
-		{
-			m_lPagesCount		= 0;
-
-			m_strDstDirectory		= strDir;
-			m_strDstDirectoryFiles	= m_strDstDirectory + _T("\\") + strFileName + _T("_files");
-			m_strFileName			= strFileName;
-
-			CDirectory::CreateDirectory(m_strDstDirectoryFiles);
-			m_strDstMedia = m_strDstDirectoryFiles + _T("\\media");
-			CDirectory::CreateDirectory(m_strDstMedia);
-
-			if (m_bIsThumbnails)
-				CDirectory::CreateDirectory(m_strDstDirectoryFiles + _T("\\thumbnails"));
-
-			m_oPage.m_strDstDirectory	= m_strDstDirectoryFiles;
-			m_oPage.m_strDstMedia		= m_strDstMedia;
-
-			m_oDstInfo.m_strDstFilePath = m_strDstDirectoryFiles;
-			m_oDstInfo.m_strDstMedia = m_strDstMedia;
-			m_oDstInfo.m_strDstFilePath.Replace(_T("\\"), _T("/"));
-			m_oDstInfo.m_strAdditionalPath = _T("");
-			
-			LONG lStart = m_oDstInfo.m_strDstFilePath.ReverseFind(TCHAR('/'));
-			if (-1 != lStart)
-			{
-				m_oDstInfo.m_strAdditionalPath = m_oDstInfo.m_strDstFilePath.Mid(0, lStart);
-				lStart = m_oDstInfo.m_strAdditionalPath.ReverseFind(TCHAR('/'));
-				if (-1 != lStart)
-				{
-					m_oDstInfo.m_strAdditionalPath = m_oDstInfo.m_strDstFilePath.Mid(lStart + 1);
-				}
-			}
-
-			m_oWriter.Clear();
-			m_oWriterScript.Clear();
-			m_oWriterThumbnails.Clear();
-			m_oWriterTextMeasurer.Clear();
-		}
-
-		void SetSimpleConverter(Graphics::IASCGraphicSimpleComverter* pSimpleConverter, CMatrix* pMatrix)
-		{
-			m_pSimpleConverter = pSimpleConverter;
-			m_oPage.m_pSimpleConverter = m_pSimpleConverter;
-			m_oPage.m_pFullTransform = pMatrix;
-
-			m_oPage.m_oVectorWriter.m_pSimpleConverter  = m_pSimpleConverter;
-			m_oPage.m_oVectorWriter.m_pFullTransform	= pMatrix;
-		}
-				
-		AVSINLINE void WriteText(BSTR bsText, BSTR bsGid, double x, double y, double width, double height, double baselineoffset)
-		{
-			m_oPage.WriteText(bsText, bsGid, x, y, width, height, baselineoffset);
-		}
-		void WriteImage(IUnknown* punkImage, double x, double y, double width, double height, double dAngle)
-		{
-			//if (width < 0)
-			//{
-			//	FlipX(punkImage);
-			//	width = -width;
-			//}
-			if (height < 0)
-			{
-				FlipY(punkImage);
-				height = -height;
-				y -= height;
-			}
-			
-			CImageInfo oID = GenerateImageID(punkImage);
-			m_oPage.WriteImage(x, y, width, height, oID, dAngle);
-		}
-		AVSINLINE void WriteImage(CString& strFile, double x, double y, double width, double height, double dAngle)
-		{
-			CImageInfo oID = GenerateImageID(strFile);
-			m_oPage.WriteImage(x, y, width, height, oID, dAngle);
-		}
-		
-		AVSINLINE void WriteBeginPath()
-		{
-			m_oPage.WriteBeginPath();
-		}
-
-		AVSINLINE void WriteEndPath()
-		{
-			m_oPage.WriteEndPath();
-		}		
-		
-		AVSINLINE void WritePathStart()
-		{
-			m_oPage.WritePathStart();
-		}
-		AVSINLINE void WritePathClose()
-		{
-			m_oPage.WritePathClose();
-		}
-
-		AVSINLINE void WritePathMoveTo(double& x, double& y)
-		{
-			m_oPage.WritePathMoveTo(x, y);
-		}
-		AVSINLINE void WritePathLineTo(double& x, double& y)
-		{
-			m_oPage.WritePathLineTo(x, y);
-		}
-		AVSINLINE void WritePathCurveTo(double& x1, double& y1, double& x2, double& y2, double& x3, double& y3)
-		{
-			m_oPage.WritePathCurveTo(x1, y1, x2, y2, x3, y3);
-		}
-		AVSINLINE void WriteDrawPath(LONG lType, const double& dAngle)
-		{
-			CImageInfo oInfo;
-			if ((lType > 0xFF) && (c_BrushTypeTexture == m_pBrush->Type))
-			{
-				oInfo = GenerateImageID(m_pBrush->TexturePath);
-			}
-
-			m_oPage.WriteDrawPath(lType, oInfo, dAngle);
-		}
-
-		AVSINLINE void WritePathClip()
-		{
-			m_oPage.WritePathClip();
-		}
-		AVSINLINE void WritePathClipEnd()
-		{
-			m_oPage.WritePathClipEnd();
-		}
-		AVSINLINE void WritePathResetClip()
-		{
-			m_oPage.WritePathResetClip();
-		}
-
-		void NewPage(double& dWidthPix, double& dHeightPix)
-		{
-			if (0 != m_lPagesCount)
-			{
-				CString strNewPageWrite = _T("<div style=\"position:relative;margin:0;padding:0;top:0px;width:100%;height:20px\"></div>");
-			m_oWriter.WriteString(strNewPageWrite);
-			}
-
-			++m_lPagesCount;
-
-			m_dWidthPix		= dWidthPix;
-			m_dHeigthPix	= dHeightPix;
-
-			if (m_lWidthDocPix < (LONG)dWidthPix)
-				m_lWidthDocPix = (LONG)dWidthPix;
-			if (m_lHeightPagePix < (LONG)dHeightPix)
-				m_lHeightPagePix = (LONG)dHeightPix;
-
-			m_lHeightDocPix += (LONG)dHeightPix;
-
-			++m_lCurrentPage;
-
-			m_oPage.m_lPageNumber = m_lCurrentPage;
-			m_oPage.NewPage(m_dDpiX, m_dDpiY, (LONG)m_dWidthPix, (LONG)m_dHeigthPix);
-		}
-		void EndPage(bool bIsWEB)
-		{
-			if (m_bIsThumbnails)
-			{
-				// thumbnails
-				CString strPageThumbnail = _T("");
-				strPageThumbnail.Format(_T("<div class=\"blockpage\">\n\
-												<div class=\"blockthumbnail\" align=\"center\">\n\
-													<img align=\"center\" src=\"thumbnails/page%d.png\" onClick=\"OnChangePage(%d)\" width=\"%s\" height=\"%s\"/>\n\
-													page%d\n\
-												</div>\n\
-											</div>\n"), m_lCurrentPage + 1, m_lCurrentPage + 1, _T("100%"), _T("90%"), m_lCurrentPage + 1);
-
-				m_oWriterThumbnails.WriteString(strPageThumbnail);
-			}
-
-			// page
-			//m_oWriter.WriteString(g_bstr_viewer_end_div);
-			m_oPage.Write(&m_oWriter, &m_oWriterScript, &m_oWriterThumbnails, &m_oWriterTextMeasurer, /*m_dHeightDoc*/20 * m_lCurrentPage, m_lCurrentPage, m_oDstInfo);
-			m_oPage.ClosePage();
-
-			if (bIsWEB)
-			{
-				CString str = _T("");
-				str.Format(_T("<script type=\"text/javascript\">this.__pagesLoaded = %d;</script>"), m_lCurrentPage + 1);
-				m_oWriter.WriteString(str);
-			}
-
-			m_dHeightDoc += m_oPage.m_lPixHeight;
-			m_dHeightDoc += 20; // const
-		}
-
-		void WriteStartDocument()
-		{
-			//// 1) главный документ
-			//CString strHtml = 
-			//	_T("<html>\n\
-			//		  <head>\n\
-			//			 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\n\
-			//			 <title>document viewer</title>\n\
-			//		 </head>\n\
-			//		 <frameset rows=\"50,*\" framespacing=\"0\" frameborder=\"0\">\n\
-			//			 <frame src=\"menu.html\" name=\"menu\" noresize border=\"1\" bordercolor=\"#F0F0F0\" scrolling=\"no\"></frame>\n\
-			//			 <frameset cols=\"*,200\">\n\
-			//				 <frame id=\"id_viewer\" src=\"viewer.html\" name=\"viewer\" noresize></frame>\n\
-			//				 <frame id=\"id_thumbnails\" src=\"thumbnails.html\" name=\"thumbnail\"></frame>\n\
-			//			 </frameset>\n\
-			//		 </frameset>\n\
-			//	 </html>");
-			//
-			//CDirectory::SaveToFile(m_strDstDirectory + _T("\\document.html"), strHtml);
-
-			//// 2) menu
-			//CString strMenu = 
-			//	_T("<html>\n\
-			//		 <head>\n\
-			//			 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\n\
-			//			 <title>menu</title>\n\
-			//		 </head>\n\
-			//			<body bgcolor=\"#5F5F5F\">\n\
-			//			</body>\n\
-			//	</html>");
-			//
-			//CDirectory::SaveToFile(m_strDstDirectory + _T("\\menu.html"), strMenu);
-
-			//// 3) viewer
-			//CString strViewer	= 
-			//	_T("<!--[if IE]><!DOCTYPE html><![endif]-->\
-			//	   <html xmlns:v=\"urn:schemas-microsoft-com:vml\">\n\
-			//		 <head>\n\
-			//			 <meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\n\
-			//			 <title>viewer</title>\n\
-			//			 <link rel=\"stylesheet\" href=\"docstyles.css\" type=\"text/css\"/>\n\
-			//			 <script language=\"JavaScript\">\n\
-			//				 function OnChangePage(pageNum)\n\
-			//				 {\nvar _div_name = \"page\" + pageNum;\nvar _div = document.getElementById(_div_name);\nif (_div)\n{\nscroll(0, _div.offsetTop);\n}\n}\n\
-			//			 </script>\n\
-			//			 <script type=\"text/javascript\" src=\"script.js\"></script>\n\
-			//		 </head>\n\
-			//		 <body style=\"margin: 0px;\" bgcolor=\"#CBCFD4\">\n");
-
-			//m_oWriter.WriteString(strViewer);
-
-			//// 4) thumbnails
-			//CString strThumbnails = _T("<html>\
-			//							<head>\n\
-			//								<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\n\
-			//								<title>thumbnails</title>\n\
-			//								<style type=\"text/css\">\n\
-			//									.blockpage {\n\
-			//									width: 80%;\n\
-			//									height: 200px;\n\
-			//									background: #FEFEFE;\n\
-			//									padding: 10px;\n\
-			//									float: none;\n\
-			//									text-align: center;\n\
-			//									}\n\
-			//									.blockthumbnail {\n\
-			//									width: 100%;\n\
-			//									height: 100%;\n\
-			//									background: #FEFEFE;\n\
-			//									padding: 0px;\n\
-			//									float: none;\n\
-			//									}\n\
-			//								</style>\n\
-			//								<script language=\"JavaScript\">\n\
-			//									function OnChangePage(pageNum)\n\
-			//									{\n\
-			//										top.frames['viewer'].OnChangePage(pageNum);\n\
-			//									}\n\
-			//								</script>\n\
-			//							</head>\n\
-			//							<body bgcolor=\"#FEFEFE\">");
-
-			//m_oWriterThumbnails.WriteString(strThumbnails);
-
-			m_dHeightDoc = 0;
-
-			m_oPage.m_oText.NewDocument();
-
-			//m_oWriterScript.WriteString(g_bstr_basicscript);
-
-			m_oWriterCSS.NewDocument();
-			
-			//m_oWriterTextMeasurer.WriteString(g_bstr_lineMeasure);			
-		}
-		void WriteEndDocument(CDocument& oDocument)
-		{
-			// скидывание canvas  - у нас SVG
-			// CDirectory::SaveToFile(m_strDstDirectory + _T("\\script.js"), m_oWriterScript.GetData());
-
-			// docstyles
-			CDirectory::SaveToFile(m_strDstDirectoryFiles + _T("\\docstyles.css"), m_oWriterCSS.m_oWriterCSS.GetCString());
-			m_oWriterCSS.WriteStylesForDiffBrowsers(m_strDstDirectoryFiles);
-
-			// viewer.html
-			CFile oFileViewer;
-			oFileViewer.CreateFile(m_strDstDirectoryFiles + _T("\\viewer.html"));
-
-			CString strViewer = _T("<!--[if IE]><!DOCTYPE html><![endif]-->\n\
-<html xmlns:v=\"urn:schemas-microsoft-com:vml\">\n\
-<head>\n\
-<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\n\
-<title>viewer</title>\n\
-<link rel=\"stylesheet\" href=\"docstyles.css\" type=\"text/css\"/>\n\
-<script language=\"JavaScript\">\n");
-
-			CString strInfoDoc = _T("");
-			strInfoDoc.Format(_T("var dZoomKoef = 1.0;var lWidthDoc = %d; var lHeightPage = %d; var lHeightDoc = %d;var bIsFitToPage = 0;var nPagesCount = %d;\n"), 
-				m_lWidthDocPix, m_lHeightPagePix, m_lHeightDocPix, m_lPagesCount);
-
-			strViewer += strInfoDoc;
-
-			CString str2 = _T("var bIsIE 	= /*@cc_on ! @*/ false;\
-var bIsOpera 	= (window.opera != undefined);\
-if (bIsIE)\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"css_ie.css\\\"/>\");\
-}\
-else if (bIsOpera)\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"css_opera.css\\\"/>\");\
-}\
-else\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"css_other.css\\\"/>\");\
-}\n\
-</script>\n");
-			strViewer += str2;
-
-			oFileViewer.WriteStringUTF8(strViewer);			
-
-			CString strMainDiv = _T("");
-			strMainDiv.Format(_T("</head>\n\
-<body style=\"padding: 0; margin: 0px;\" bgcolor=\"#eef0f2\">\n\
-<div style=\"position:relative;margin:0px;padding:0px;height:16px;background-color:#eef0f2;\"></div>\n<div id=\"maindiv\" style=\"position: relative; width: %dpx; padding: 0; margin: 0 auto;\">\n"), m_lWidthDocPix);
-
-			oFileViewer.WriteStringUTF8(strMainDiv);
-			oFileViewer.WriteStringUTF8(m_oWriter.GetCString());
-
-			CString strEndBody = _T("<div style=\"position:relative;margin:0px;padding:0px;height:16px;\"></div></div></body></html>");
-			oFileViewer.WriteStringUTF8(strEndBody);
-			
-			oFileViewer.CloseFile();
-
-			m_oPage.ClosePage();
-			m_mapImageData.RemoveAll();
-			m_mapImagesFile.RemoveAll();
-
-			m_oWriterCSS.CloseDocument();
-
-			// document.html
-			if (m_bIsThumbnails)
-			{
-				CString strHtml = 
-				_T("<html>\n\
-<head>\n\
-<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\n\
-<title>document viewer</title>\n\
-</head>\n\
-<frameset cols=\"*,200\" framespacing=\"0\" frameborder=\"0\">\n\
-<frame id=\"id_viewer\" src=\"") + m_strFileName + _T("_files/viewer.html\" name=\"viewer\" noresize></frame>\n\
- <frame id=\"id_thumbnails\" src=\"") + m_strFileName + _T("_files/thumbnails.html\" name=\"thumbnail\"></frame>\n\
-</frameset>\n\
-</frameset>\n\
-</html>");
-			
-				CDirectory::SaveToFile(m_strDstDirectory + _T("\\") + m_strFileName + _T(".html"), strHtml);
-			}
-			else
-			{
-				CString strHtml = 
-				_T("<html>\n\
-<head>\n\
-<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\n\
-<title>document viewer</title>\n\
-</head>\n\
-<frameset framespacing=\"0\" frameborder=\"0\">\n\
- <frame id=\"id_viewer\" src=\"") + m_strFileName + _T("_files/viewer.html\" name=\"viewer\" noresize></frame>\n\
-</frameset>\n\
-</frameset>\n\
-</html>");
-			
-				CDirectory::SaveToFile(m_strDstDirectory + _T("\\") + m_strFileName + _T(".html"), strHtml);
-			}
-		}
-
-		void WriteEndDocument2(CDocument& oDocument)
-		{
-			// docstyles
-			CDirectory::SaveToFile(m_strDstDirectoryFiles + _T("\\docstyles.css"), m_oWriterCSS.m_oWriterCSS.GetCString());
-			m_oWriterCSS.WriteStylesForDiffBrowsers(m_strDstDirectoryFiles);
-
-			// viewer.html
-			CFile oFileViewer;
-			oFileViewer.CreateFile(m_strDstDirectoryFiles + _T("\\viewer.html"));
-
-			CString strViewer1 = _T("<!--[if IE]><!DOCTYPE html><![endif]-->\n\
-<html xmlns:v=\"urn:schemas-microsoft-com:vml\">\n\
-<head>\n\
-<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\n\
-<title>viewer</title>\n\
-<meta http-equiv=\"X-UA-Compatible\" content=\"IE=8;IE=9;chrome=1;\"/>\n\
-<link rel=\"stylesheet\" href=\"") + m_oDstInfo.m_strAdditionalPath + _T("/docstyles.css\" type=\"text/css\"/>\n\
-<link rel=\"stylesheet\" href=\"styles/docviewer.css\" type=\"text/css\"/>\
-<script type=\"text/javascript\" src=\"jquery/jquery-1.6.1.min.js\"></script>\
-<script type=\"text/javascript\" src=\"jquery/jquery.mousewheel.js\"></script>\
-<script language=\"JavaScript\">\n");
-			oFileViewer.WriteStringUTF8(strViewer1);
-
-			CString strInfoDoc = _T("");
-			strInfoDoc.Format(_T("var dZoomKoef = 1.0;var lWidthDoc = %d; var lHeightPage = %d; var lHeightDoc = %d;var bIsFitToPage = 0;var nPagesCount = %d;\n"), 
-				m_lWidthDocPix, m_lHeightPagePix, m_lHeightDocPix, m_lPagesCount);
-
-			CString str1 = _T("var arrayOffsets = [0");
-			CStringWriter oWriterPagesInfo;
-			oWriterPagesInfo.WriteString(str1);
-
-			size_t offsetOld = 0;
-			for (LONG i = 1; i < m_lPagesCount; ++i)
-			{
-				offsetOld += (size_t)(96 * oDocument.m_arrPages[i - 1].GetHeight() / 25.4);
-
-				CString strPage = _T("");
-				strPage.Format(_T(",%u"), offsetOld + 36);
-				oWriterPagesInfo.WriteString(strPage);
-			}
-
-			if (m_oDstInfo.m_bIsWeb)
-			{
-				CString str2 = _T("];\n\
-var bIsIE 	= /*@cc_on ! @*/ false;\
-var bIsOpera 	= (window.opera != undefined);\
-if (bIsIE)\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"styles/css_ie.css\\\"/>\");\
-}\
-else if (bIsOpera)\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"styles/css_opera.css\\\"/>\");\
-}\
-else\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"styles/css_other.css\\\"/>\");\
-}</script>\n");
-				oWriterPagesInfo.WriteString(str2);
-			}
-			else
-			{
-				CString str2 = _T("];\n\
-var bIsIE 	= /*@cc_on ! @*/ false;\
-var bIsOpera 	= (window.opera != undefined);\
-if (bIsIE)\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"css_ie.css\\\"/>\");\
-}\
-else if (bIsOpera)\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"css_opera.css\\\"/>\");\
-}\
-else\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"css_other.css\\\"/>\");\
-}</script>\n");
-				oWriterPagesInfo.WriteString(str2);
-			}
-			
-			strInfoDoc += oWriterPagesInfo.GetCString();
-			oFileViewer.WriteStringUTF8(strInfoDoc);			
-
-			CString strMainDiv = _T("");
-			strMainDiv.Format(_T("<script type=\"text/javascript\" src=\"js/dochtmlviewer.js\"></script></head>\n\
-<body class=\"viewerbody\">\n\
-<div style=\"position:relative;margin:0px;padding:0px;height:16px;background-color:#eef0f2;\"></div>\n<div id=\"maindiv\" style=\"position: relative; width: %dpx; padding: 0; margin: 0 auto;\">\n"), m_lWidthDocPix);
-
-			oFileViewer.WriteStringUTF8(strMainDiv);
-			oFileViewer.WriteStringUTF8(m_oWriter.GetCString());
-
-			CString strEndBody = _T("<div style=\"position:relative;margin:0;padding:0;top:0px;width:100%;height: 16px\"></div></div><script type=\"text/javascript\">SetPageCountToMenu();stopTimer();</script></body></html>");
-			oFileViewer.WriteStringUTF8(strEndBody);
-			
-			oFileViewer.CloseFile();
-		}
-
-		void WriteEndDocument3(CDocument& oDocument)
-		{
-			// docstyles
-			CDirectory::SaveToFile(m_strDstDirectoryFiles + _T("\\docstyles.css"), m_oWriterCSS.m_oWriterCSS.GetCString());
-			m_oWriterCSS.WriteStylesForDiffBrowsers(m_strDstDirectoryFiles);
-
-			// viewer.html
-			CFile oFileViewer;
-			oFileViewer.CreateFile(m_strDstDirectoryFiles + _T("\\viewer.html"));
-
-			CString strViewer1 = _T("<!DOCTYPE html><html><head><meta http-equiv=\"content-type\" content=\"text/html; charset=utf-8\"/>\
-<title></title><meta http-equiv=\"X-UA-Compatible\" content=\"IE=8;IE=9;chrome=1;\"/>\
-<link rel=\"stylesheet\" href=\"docstyles.css\" type=\"text/css\"/><script language=\"JavaScript\">");
-			oFileViewer.WriteStringUTF8(strViewer1);
-
-			CString strInfoDoc = _T("");
-			strInfoDoc.Format(_T("var dZoomKoef = 1.0;var lWidthDoc = %d; var lHeightPage = %d; var lHeightDoc = %d;var bIsFitToPage = 0;var nPagesCount = %d;\n"), 
-				m_lWidthDocPix, m_lHeightPagePix, m_lHeightDocPix, m_lPagesCount);
-
-			CString str1 = _T("var arrayOffsets = [0");
-			CStringWriter oWriterPagesInfo;
-			oWriterPagesInfo.WriteString(str1);
-
-			size_t offsetOld = 0;
-			for (LONG i = 1; i < m_lPagesCount; ++i)
-			{
-				offsetOld += (size_t)(96 * oDocument.m_arrPages[i - 1].GetHeight() / 25.4);
-
-				CString strPage = _T("");
-				strPage.Format(_T(",%u"), offsetOld + 36);
-				oWriterPagesInfo.WriteString(strPage);
-			}
-
-			if (m_oDstInfo.m_bIsWeb)
-			{
-				CString str2 = _T("];\n\
-var bIsIE 	= /*@cc_on ! @*/ false;\
-var bIsOpera 	= (window.opera != undefined);\
-if (bIsIE)\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"styles/css_ie.css\\\"/>\");\
-}\
-else if (bIsOpera)\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"styles/css_opera.css\\\"/>\");\
-}\
-else\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"styles/css_other.css\\\"/>\");\
-}</script>\n");
-				oWriterPagesInfo.WriteString(str2);
-			}
-			else
-			{
-				CString str2 = _T("];\n\
-var bIsIE 	= /*@cc_on ! @*/ false;\
-var bIsOpera 	= (window.opera != undefined);\
-if (bIsIE)\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"css_ie.css\\\"/>\");\
-}\
-else if (bIsOpera)\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"css_opera.css\\\"/>\");\
-}\
-else\
-{\
-   document.write(\"<link rel=\\\"stylesheet\\\" type=\\\"text/css\\\" href=\\\"css_other.css\\\"/>\");\
-}</script>\n");
-				oWriterPagesInfo.WriteString(str2);
-			}
-			
-			strInfoDoc += oWriterPagesInfo.GetCString();
-			oFileViewer.WriteStringUTF8(strInfoDoc);
-
-			CString strHead___ = _T("<script type=\"text/javascript\" src=\"common/dochtmlviewer.js\"></script>\
-<link rel=\"stylesheet\" type=\"text/css\" href=\"common/MenuStyle.css\"/>\
-<link rel=\"stylesheet\" type=\"text/css\" href=\"common/docviewer.css\"/>\
-<link rel=\"stylesheet\" type=\"text/css\" href=\"common/clickmenu.css\"/>\
-<link rel=\"stylesheet\" type=\"text/css\" href=\"common/jquery-ui.css\"/>\
-<link rel=\"stylesheet\" type=\"text/css\" href=\"common/jquery-custom.css\"/>\
-<!--[if IE 8]>\
-<link rel=\"stylesheet\" type=\"text/css\" href=\"common/IE.css\"/>\
-<![endif]-->\
-<!--[if IE 9]>\
-<link rel=\"stylesheet\" type=\"text/css\" href=\"common/IE9.css\"/>\
-<![endif]-->\
-<script type=\"text/javascript\" src=\"common/jquery-1.6.1.min.js\"></script>\
-<script type=\"text/javascript\" src=\"common/jquery-ui.js\"></script>\
-<script type=\"text/javascript\" src=\"common/jquery.clickmenu.js\"></script>\
-<script type=\"text/javascript\" src=\"common/jquery.mousewheel.js\"></script>\
-<script type=\"text/javascript\" src=\"common/docviewer.js\"></script>\
-<script type=\"text/javascript\" src=\"common/common.js\"></script>\
-<script type=\"text/javascript\">\n\
-var isMobileAgent = /android|avantgo|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od|ad)|iris|kindle|lge |maemo|midp|mmp|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\\/|plucker|pocket|psp|symbian|treo|up\\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent || navigator.vendor || window.opera);\n\
-$(function(){\n\
-if (isMobileAgent)\n\
-$(\"#menu\").hide();\n\
-window.onresize = OnResizeBrowser;\n\
-$(window).resize();\n\
-var windowWidth = $(window).width();\n\
-var windowHeight = $(window).height();\n\
-startTimer();\n\
-});\n\
-function OnResizeBrowser()\n\
-{\n\
-var elemMenu = document.getElementById(\"menu\");\n\
-var heightMenu = elemMenu.offsetHeight;\n\
-var elemDiv = document.getElementById(\"content\");\n\
-\n\
-var allheight = 0;\n\
-if (this.innerHeight)\n\
-	allheight = this.innerHeight;\n\
-else if (document.documentElement && document.documentElement.clientHeight)\n\
-	allheight = document.documentElement.clientHeight;\n\
-else if (document.body)\n\
-	allheight = document.body.clientHeight;\n\
-\n\
-var __height = (allheight - heightMenu) + \"px\";\n\
-elemDiv.style.height = __height;\n\
-\n\
-CheckFitToPage();\n\
-}\n\
-</script>\
-</head>\
-<body style=\"padding: 0; margin: 0 auto;overflow:hidden;\">\n\
-<table id=\"menu\" class=\"utilFont\" style=\"width:100%\"><tr><td id=\"toolbar\"><table style=\"\"><tr>\n\
-<td class=\"ToolbarIconOut selectableIcon\" title=\"ZoomOut\" onclick=\"funZoomOut()\"><div id=\"zoomOut\" class=\"iconToolbar\"><img class=\"ToolbarIcon ToolbarZoomOut\" src=\"common/img/spacer.gif\"/></div></td>\n\
-<td class=\"ToolbarIconOut selectableIcon\" title=\"ZoomIn\" onclick=\"funZoomIn()\"><div id=\"zoomIn\" class=\"iconToolbar\"><img class=\"ToolbarIcon ToolbarZoomIn\" src=\"common/img/spacer.gif\"/></div></td>\n\
-<td class=\"ToolbarIconOut selectableIcon\" title=\"ActualSize\" onclick=\"funZoom(0,null)\"><div id=\"actualSize\" class=\"iconToolbar\"><img class=\"ToolbarIcon ToolbarActualSize\" src=\"common/img/spacer.gif\"/></div></td>\n\
-<td id=\"td_fitToPage\" class=\"ToolbarIconOut selectableIcon iconPressed2\" title=\"FitToPage\" onclick=\"funZoom(1,this)\"><div id=\"fitToPage\" class=\"iconToolbar\"><img class=\"ToolbarIcon ToolbarFitToPage\" src=\"common/img/spacer.gif\"/></div></td>\n\
-<td id=\"td_fitToWidth\" class=\"ToolbarIconOut selectableIcon iconPressed2\" title=\"FitToWidth\" onclick=\"funZoom(2,this)\"><div id=\"fitToWidth\" class=\"iconToolbar\"><img class=\"ToolbarIcon ToolbarFitToWidth\" src=\"common/img/spacer.gif\"/></div></td>\n\
-<td class=\"ToolbarIconOut\" style=\"min-width: 20px;\"><div><ul id=\"zoomMenu\"><li id=\"zoom\" class=\"item main textSelect textSelectBoard\"><span id=\"zoomValuePercent\">100%</span><ul>\n\
-<li id=\"8\" class=\"SubItem\"  value=\"8\">8%</li><li id=\"12\" class=\"SubItem\" value=\"12\">12%</li><li id=\"25\" class=\"SubItem\" value=\"25\">25%</li>\
-<li id=\"33\" class=\"SubItem\" value=\"33\">33%</li><li id=\"50\" class=\"SubItem\" value=\"50\">50%</li><li id=\"66\" class=\"SubItem\" value=\"66\">66%</li>\
-<li id=\"75\" class=\"SubItem\" value=\"75\">75%</li><li id=\"100\" class=\"SubItem\" value=\"100\">100%</li><li id=\"125\" class=\"SubItem\" value=\"125\">125%</li>\
-<li id=\"150\" class=\"SubItem\" value=\"150\">150%</li><li id=\"200\" class=\"SubItem\" value=\"200\">200%</li><li id=\"300\" class=\"SubItem\" value=\"300\">300%</li>\
-<li id=\"400\" class=\"SubItem\" value=\"400\">400%</li><li id=\"500\" class=\"SubItem\" value=\"500\">500%</li></ul><div class=\"ToolbarDropDown dropdown\"></div></li></ul></div></td>\n\
-<td class=\"toolbarSep\"><div class=\"ToolbarIconOut\"><img src=\"common/img/Border.png\"/></div></td>\n\
-<td class=\"ToolbarIconOut selectableIcon iconToolbar\" title=\"PrevPage\" onclick=\"OnPagePrev()\"><div id=\"td_prevPage\" class=\"iconToolbar\"><img class=\"ToolbarIcon ToolbarPrevPage\" src=\"common/img/spacer.gif\"/></div></td>\n\
-<td class=\"ToolbarIconOut selectableIcon iconToolbar\" title=\"NextPage\" onclick=\"OnPageNext()\"><div id=\"td_nextPage\" class=\"iconToolbar\"><img class=\"ToolbarIcon ToolbarNextPage\" src=\"common/img/spacer.gif\"/></div></td>\n\
-<td class=\"\" id=\"ie8textarea\"><input class=\"txblock\" style=\"width: 28px;text-align: center;\" type=\"text\" id=\"pageNum\" value=\"1\" onkeypress=\"return onlyNumber(this, event)\"/></td>\n\
-<td class=\"ToolbarIconOut\" style=\"border: 0 none;\"><p id=\"pageCounts\" class=\"txblock\" style=\"margin: 0 6px 0 0; padding: 0;\">/ 1</p></td>\n\
-<td class=\"toolbarSep\" style=\"display:none;\"><div class=\"ToolbarIconOut\"><img src=\"common/img/Border.png\"/></div></td>\n\
-<td id=\"downloadButton\" class=\"ToolbarIconOut selectableIcon iconToolbar\" style=\"display:none;\" title=\"LoadDocument\"><div id=\"td_load\" class=\"iconToolbar\"><img class=\"ToolbarIcon ToolbarLoadDoc\" src=\"common/img/spacer.gif\"/></div></td>\n\
-<td class=\"ToolbarIconOut selectableIcon iconToolbar\" title=\"Print\" style=\"display:none;\"><div id=\"td_print\" class=\"iconToolbar\" style=\"margin-left: 1px;\"><img class=\"ToolbarIcon ToolbarPrint\" src=\"common/img/spacer.gif\"/></div></td>\n\
-<td class=\"toolbarSep\" style=\"padding-left: 3px;\"><div class=\"ToolbarIconOut\" style=\"margin-left: -1px;\"><img src=\"common/img/Border.png\"/></div></td>\n\
-</tr></table></td></tr><tr><td id=\"topmenuSep\" colspan=\"2\" class=\"separatingLine\"></td></tr></table>\n\
-<table id=\"statusbar\" class=\"utilFont layerTop\"><tr><td id=\"netstatus\" style=\"width:177px; text-align: center; color:#FFF;\"></td></tr></table>\n\
-<div id=\"content\" onclick=\"closeMenu();\"><div id=\"id_viewer\" class=\"viewerbody\" name=\"viewer\" width=\"100%\" height=\"100%\">\n\
-<div style=\"position:relative;margin:0px;padding:0px;height:16px;background-color:#eef0f2;\"></div>");
-
-			oFileViewer.WriteStringUTF8(strHead___);
-
-			CString strMainDiv = _T("");
-			strMainDiv.Format(_T("<div id=\"maindiv\" style=\"position: relative; width: %dpx; padding: 0; margin: 0 auto;\">\n"), m_lWidthDocPix);
-
-			oFileViewer.WriteStringUTF8(strMainDiv);
-			oFileViewer.WriteStringUTF8(m_oWriter.GetCString());
-
-			CString strEndBody = _T("<div style=\"position:relative;margin:0;padding:0;top:0px;width:100%;height: 16px\"></div></div><script type=\"text/javascript\">SetPageCountToMenu();stopTimer();</script></div>\
-</div><div id=\"vertScrollContainer\"><div class=\"spV\" style=\"width:18px\"><div id=\"scrollbarV\">\
-<div id=\"ssV\"><img src=\"common/img/spacer.gif\" height=\"1\" width=\"1\"/></div></div></div></div>\
-<div id=\"horzScrollContainer\"><div class=\"scH\"><div id=\"scrollbarH\"><div id=\"ssH\"><img src=\"common/img/spacer.gif\" height=\"1\" width=\"1\"/></div></div></div></div>\
-<div id=\"blockUI\"></div></body></html>");
-			oFileViewer.WriteStringUTF8(strEndBody);
-			
-			oFileViewer.CloseFile();
-
-			OfficeUtils::IOfficeUtilsPtr ptrUtils;
-			ptrUtils.CreateInstance(__uuidof(OfficeUtils::COfficeUtils));
-			
-			if (NULL != ptrUtils)
-			{
-				HINSTANCE hInst = _AtlBaseModule.GetModuleInstance();
-
-				CString strCommonFiles = m_strDstDirectoryFiles + _T("\\common.zip");
-				LoadResourceFile(hInst, MAKEINTRESOURCE(IDB_COMMON_ZIP), _T("HTML2"), strCommonFiles);
-
-				CString strCommonDst = m_strDstDirectoryFiles + _T("\\common");
-				BSTR input	= strCommonFiles.AllocSysString();
-				BSTR output = strCommonDst.AllocSysString();
-
-				::CreateDirectoryW(output, NULL);
-				HRESULT hr = ptrUtils->ExtractToDirectory(input, output, NULL, 0);
-				ptrUtils.Release();
-
-				SysFreeString(input);
-				SysFreeString(output);
-
-				::DeleteFileW(input);
-			}
-
-			// обертка
-			CString strHtml = _T("<html>\n<head>\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></meta>\n<meta http-equiv=\"X-UA-Compatible\" content=\"IE=8;IE=9;chrome=1;\"/>\n<title>document viewer</title>\n\
-</head>\n<frameset framespacing=\"0\" frameborder=\"0\">\n<frame id=\"id_viewer\" src=\"") + m_strFileName + 
-_T("_files/viewer.html\" name=\"viewer\" noresize></frame>\n</frameset>\n</frameset>\n</html>");
-			
-			CDirectory::SaveToFile(m_strDstDirectory + _T("\\") + m_strFileName + _T(".html"), strHtml);
-		}
-
-protected:
-		AVSINLINE void CopyFile(CString& strFileSrc, CString& strFileDst)
-		{
-			CDirectory::CopyFile(strFileSrc, strFileDst, NULL, NULL);
-		}
-		void SaveImage(CString& strFileSrc, CImageInfo& oInfo)
-		{
-			CString strLoadXml = _T("<transforms><ImageFile-LoadImage sourcepath=\"") + strFileSrc + _T("\"/></transforms>");
-
-			ImageStudio::IImageTransforms* pTransform = NULL;
-			CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL, CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
-
-			VARIANT_BOOL vbRes = VARIANT_FALSE;
-			BSTR bsLoad = strLoadXml.AllocSysString();
-			pTransform->SetXml(bsLoad, &vbRes);
-			SysFreeString(bsLoad);
-
-			pTransform->Transform(&vbRes);
-
-			VARIANT var;
-			var.punkVal = NULL;
-			pTransform->GetResult(0, &var);
-
-			if (NULL == var.punkVal)
-			{
-				RELEASEINTERFACE(pTransform);
-				return;
-			}
-
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			var.punkVal->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
-
-			RELEASEINTERFACE((var.punkVal));
-
-			if (NULL == pFrame)
-			{
-				RELEASEINTERFACE(pTransform);
-				return;
-			}
-
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-
-			oInfo.m_eType = GetImageType(pFrame);
-
-			RELEASEINTERFACE(pFrame);
-
-			CString strSaveItem = _T("");
-			strSaveItem.Format(_T("\\image%d."), oInfo.m_lID);
-			if (itJPG == oInfo.m_eType)
-			{
-				strSaveItem = _T("<ImageFile-SaveAsJpeg destinationpath=\"") + m_strDstMedia + strSaveItem + _T("jpg\" format=\"888\"/>");
-			}
-			else
-			{
-				strSaveItem = _T("<ImageFile-SaveAsPng destinationpath=\"") + m_strDstMedia + strSaveItem + _T("png\" format=\"888\"/>");
-			}
-
-			CString strXml = _T("");
-
-			LONG lMaxSizeImage = m_lMaxSizeImage;
-			if (oInfo.m_lID < 3)
-				lMaxSizeImage = 1200;
-
-			if ((lWidth <= lMaxSizeImage) && (lHeight <= lMaxSizeImage))
-			{
-				strXml = _T("<transforms>") + strSaveItem + _T("</transforms>");
-			}
-			else
-			{
-				LONG lW = 0;
-				LONG lH = 0;
-				double dAspect = (double)lWidth / lHeight;
-
-				if (lWidth >= lHeight)
-				{
-					lW = lMaxSizeImage;
-					lH = (LONG)((double)lW / dAspect);
-				}
-				else
-				{
-					lH = lMaxSizeImage;
-					lW = (LONG)(dAspect * lH);
-				}
-
-				CString strResize = _T("");
-				strResize.Format(_T("<ImageTransform-TransformResize type=\"65536\" width=\"%d\" height=\"%d\"/>"), lW, lH);
-
-				strXml = _T("<transforms>") + strResize + strSaveItem + _T("</transforms>");
-			}
-			
-			VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-			BSTR bsXml = strXml.AllocSysString();
-			pTransform->SetXml(bsXml, &vbSuccess);
-			SysFreeString(bsXml);
-
-			pTransform->Transform(&vbSuccess);
-
-			RELEASEINTERFACE(pTransform);
-		}
-		void SaveImage(IUnknown* punkImage, CImageInfo& oInfo)
-		{
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			punkImage->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
-
-			if (NULL == pFrame)
-				return;
-
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-
-			oInfo.m_eType = GetImageType(pFrame);
-
-			RELEASEINTERFACE(pFrame);
-			
-			ImageStudio::IImageTransforms* pTransform = NULL;
-			CoCreateInstance(ImageStudio::CLSID_ImageTransforms, NULL ,CLSCTX_INPROC_SERVER, ImageStudio::IID_IImageTransforms, (void**)&pTransform);
-
-			VARIANT var;
-			var.vt = VT_UNKNOWN;
-			var.punkVal = punkImage;
-			pTransform->SetSource(0, var);
-
-			CString strSaveItem = _T("");
-			strSaveItem.Format(_T("\\image%d."), oInfo.m_lID);
-			if (itJPG == oInfo.m_eType)
-			{
-				strSaveItem = _T("<ImageFile-SaveAsJpeg destinationpath=\"") + m_strDstMedia + strSaveItem + _T("jpg\" format=\"888\"/>");
-			}
-			else
-			{
-				strSaveItem = _T("<ImageFile-SaveAsPng destinationpath=\"") + m_strDstMedia + strSaveItem + _T("png\" format=\"888\"/>");
-			}
-
-			LONG lMaxSizeImage = m_lMaxSizeImage;
-			if (oInfo.m_lID < 3)
-				lMaxSizeImage = 1200;
-
-			CString strXml = _T("");
-			if ((lWidth <= lMaxSizeImage) && (lHeight <= lMaxSizeImage))
-			{
-				strXml = _T("<transforms>") + strSaveItem + _T("</transforms>");
-			}
-			else
-			{
-				LONG lW = 0;
-				LONG lH = 0;
-				double dAspect = (double)lWidth / lHeight;
-
-				if (lWidth >= lHeight)
-				{
-					lW = lMaxSizeImage;
-					lH = (LONG)((double)lW / dAspect);
-				}
-				else
-				{
-					lH = lMaxSizeImage;
-					lW = (LONG)(dAspect * lH);
-				}
-
-				CString strResize = _T("");
-				strResize.Format(_T("<ImageTransform-TransformResize type=\"65536\" width=\"%d\" height=\"%d\"/>"), lW, lH);
-
-				strXml = _T("<transforms>") + strResize + strSaveItem + _T("</transforms>");
-			}
-			
-			VARIANT_BOOL vbSuccess = VARIANT_FALSE;
-			BSTR bsXml = strXml.AllocSysString();
-			pTransform->SetXml(bsXml, &vbSuccess);
-			SysFreeString(bsXml);
-
-			pTransform->Transform(&vbSuccess);
-
-			RELEASEINTERFACE(pTransform);
-		}
-
-		CImageInfo GenerateImageID(IUnknown* punkData)
-		{
-			CImageInfo oInfo;
-
-			if (NULL == punkData)
-				return oInfo;
-
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			punkData->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
-
-			BYTE* pBuffer = NULL;
-			LONG lLen = 0;
-
-			pFrame->get_Buffer(&pBuffer);
-			pFrame->get_BufferSize(&lLen);
-
-			DWORD dwSum = m_oCRC.Calc(pBuffer, lLen);
-
-			CAtlMap<DWORD, CImageInfo>::CPair* pPair = m_mapImageData.Lookup(dwSum);
-			if (NULL == pPair)
-			{
-				// нужно добавить
-				++m_lNextIDImage;
-				
-				oInfo.m_lID = m_lNextIDImage;
-				SaveImage(punkData, oInfo);
-				m_mapImageData.SetAt(dwSum, oInfo);
-			}
-			else
-			{
-				oInfo = pPair->m_value;
-			}
-
-			RELEASEINTERFACE(pFrame);
-
-			return oInfo;
-		}
-
-		CImageInfo GenerateImageID(CString& strFileName)
-		{
-			CImageInfo oInfo;
-			CAtlMap<CString, CImageInfo>::CPair* pPair = m_mapImagesFile.Lookup(strFileName);
-
-			if (NULL == pPair)
-			{
-				// нужно добавить
-				++m_lNextIDImage;
-				
-				oInfo.m_lID = m_lNextIDImage;
-				SaveImage(strFileName, oInfo);
-				m_mapImagesFile.SetAt(strFileName, oInfo);
-			}
-			else
-			{
-				oInfo = pPair->m_value;
-			}
-
-			return oInfo;
-		}
-
-		ImageType GetImageType(MediaCore::IAVSUncompressedVideoFrame* pFrame)
-		{
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			BYTE* pBuffer	= NULL;
-
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-			pFrame->get_Buffer(&pBuffer);
-
-			BYTE* pBufferMem = pBuffer + 3;
-			LONG lCountPix = lWidth * lHeight;
-
-			for (LONG i = 0; i < lCountPix; ++i, pBufferMem += 4)
-			{
-				if (255 != *pBufferMem)
-					return itPNG;
-			}
-			return itJPG;
-		}
-
-		void FlipY(IUnknown* punkImage)
-		{
-			if (NULL == punkImage)
-				return;
-
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			punkImage->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
-
-			if (NULL == pFrame)
-				return;
-
-			BYTE* pBuffer	= NULL;
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			LONG lStride	= 0;
-
-			pFrame->get_Buffer(&pBuffer);
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-			pFrame->get_Stride(0, &lStride);
-
-			if (lStride < 0)
-				lStride = -lStride;
-			
-			if ((lWidth * 4) != lStride)
-			{
-				RELEASEINTERFACE(pFrame);
-				return;
-			}
-
-			BYTE* pBufferMem = new BYTE[lStride];
-
-			BYTE* pBufferEnd = pBuffer + lStride * (lHeight - 1);
-
-			LONG lCountV = lHeight / 2;
-
-			for (LONG lIndexV = 0; lIndexV < lCountV; ++lIndexV)
-			{
-				memcpy(pBufferMem, pBuffer, lStride);
-				memcpy(pBuffer, pBufferEnd, lStride);
-				memcpy(pBufferEnd, pBufferMem, lStride);
-				
-				pBuffer		+= lStride;
-				pBufferEnd	-= lStride;
-			}
-
-			RELEASEARRAYOBJECTS(pBufferMem);
-			RELEASEINTERFACE(pFrame);
-		}
-
-		void FlipX(IUnknown* punkImage)
-		{
-			if (NULL == punkImage)
-				return;
-
-			MediaCore::IAVSUncompressedVideoFrame* pFrame = NULL;
-			punkImage->QueryInterface(MediaCore::IID_IAVSUncompressedVideoFrame, (void**)&pFrame);
-
-			if (NULL == pFrame)
-				return;
-
-			BYTE* pBuffer	= NULL;
-			LONG lWidth		= 0;
-			LONG lHeight	= 0;
-			LONG lStride	= 0;
-
-			pFrame->get_Buffer(&pBuffer);
-			pFrame->get_Width(&lWidth);
-			pFrame->get_Height(&lHeight);
-			pFrame->get_Stride(0, &lStride);
-
-			if (lStride < 0)
-				lStride = -lStride;
-			
-			if ((lWidth * 4) != lStride)
-			{
-				RELEASEINTERFACE(pFrame);
-				return;
-			}
-
-			DWORD* pBufferDWORD	= (DWORD*)pBuffer;
-
-			LONG lW2 = lWidth / 2;
-			for (LONG lIndexV = 0; lIndexV < lHeight; ++lIndexV)
-			{
-				DWORD* pMem1 = pBufferDWORD;
-				DWORD* pMem2 = pBufferDWORD + lWidth - 1;
-				
-				LONG lI = 0;
-				while (lI < lW2)
-				{
-					DWORD dwMem = *pMem1;
-					*pMem1++ = *pMem2;
-					*pMem2-- = dwMem;
-				}
-			}
-
-			RELEASEINTERFACE(pFrame);
-		}
-
-	public:
-
-		void LoadResourceFile(HINSTANCE hInst, LPCTSTR sResName, LPCTSTR sResType, const CString& strDstFile)
-		{
-			HRSRC hrRes = FindResource(hInst, sResName, sResType);
-			if (!hrRes)
-				return;
-
-			HGLOBAL hGlobal = LoadResource(hInst, hrRes);
-			DWORD sz = SizeofResource(hInst, hrRes);
-			void* ptrRes = LockResource(hGlobal);
-			
-			CFile oFile;
-			oFile.CreateFile(strDstFile);
-			oFile.WriteFile(ptrRes, sz);
-
-			UnlockResource(hGlobal);
-			FreeResource(hGlobal);
-		}
-	};
+    static double	__g_matrix_eps	= 0.0001;
+
+    class CTileInfo
+    {
+        /*
+        _T("<htmltiling x=\"%.2lf\" y=\"%.2lf\" countx=\"%.2lf\" county=\"%.2lf\" stepx=\"%.2lf\" stepy=\"%.2lf\">\
+    <bbox x=\".2lf\" y=\"%.2lf\" r=\"%.2lf\" b=\"%.2lf\" />\
+    <transform m1=\"%.2lf\" m2=\"%.2lf\" m3=\"%.2lf\" m4=\"%.2lf\" m5=\"%.2lf\" m6=\"%.2lf\" />\
+    </htmltiling>
+        */
+
+    public:
+        double x;
+        double y;
+        double countx;
+        double county;
+        double stepx;
+        double stepy;
+
+        double bbox_x;
+        double bbox_y;
+        double bbox_r;
+        double bbox_b;
+
+        double transform_1;
+        double transform_2;
+        double transform_3;
+        double transform_4;
+        double transform_5;
+        double transform_6;
+
+    public:
+        CTileInfo()
+        {
+            Clear();
+        }
+
+    public:
+
+        void Clear()
+        {
+            x = 0;
+            y = 0;
+            countx = 0;
+            county = 0;
+            stepx = 0;
+            stepy = 0;
+
+            bbox_x = 0;
+            bbox_y = 0;
+            bbox_r = 0;
+            bbox_b = 0;
+
+            transform_1 = 1;
+            transform_2 = 0;
+            transform_3 = 0;
+            transform_4 = 1;
+            transform_5 = 0;
+            transform_6 = 0;
+        }
+
+        void LoadFromXml(const std::wstring& strXml)
+        {
+            XmlUtils::CXmlNode oNode;
+            if (oNode.FromXmlString(strXml))
+            {
+                x		= oNode.ReadAttributeDouble(L"x", 0);
+                y		= oNode.ReadAttributeDouble(L"y", 0);
+                countx	= oNode.ReadAttributeDouble(L"countx", 0);
+                county	= oNode.ReadAttributeDouble(L"county", 0);
+                stepx	= oNode.ReadAttributeDouble(L"stepx", 0);
+                stepy	= oNode.ReadAttributeDouble(L"stepy", 0);
+
+                XmlUtils::CXmlNode oNodeBox;
+                if (oNode.GetNode(L"bbox", oNodeBox))
+                {
+                    bbox_x	= oNode.ReadAttributeDouble(L"x", 0);
+                    bbox_y	= oNode.ReadAttributeDouble(L"y", 0);
+                    bbox_r	= oNode.ReadAttributeDouble(L"r", 0);
+                    bbox_b	= oNode.ReadAttributeDouble(L"b", 0);
+                }
+
+                XmlUtils::CXmlNode oNodeTr;
+                if (oNode.GetNode(L"transform", oNodeTr))
+                {
+                    transform_1	= oNode.ReadAttributeDouble(L"m1", 0);
+                    transform_2	= oNode.ReadAttributeDouble(L"m2", 0);
+                    transform_3	= oNode.ReadAttributeDouble(L"m3", 0);
+                    transform_4	= oNode.ReadAttributeDouble(L"m4", 0);
+                    transform_5	= oNode.ReadAttributeDouble(L"m5", 0);
+                    transform_6	= oNode.ReadAttributeDouble(L"m6", 0);
+                }
+            }
+        }
+    };
+
+    class CGraphicsDumper
+    {
+    public:
+        CGraphicsRenderer*		m_pRenderer;
+        CBgraFrame*             m_pFrame;
+
+        double					m_dWidth;
+        double					m_dHeight;
+
+        int 					m_lWidthPix;
+        int 					m_lHeightPix;
+
+        RECT					m_oBounds;
+
+        CTileInfo				m_oTile;
+
+    public:
+        CGraphicsDumper()
+        {
+            m_pRenderer			= NULL;
+            m_pFrame			= NULL;
+
+            m_dWidth			= -1;
+            m_dHeight			= -1;
+
+            m_lWidthPix			= -1;
+            m_lHeightPix		= -1;
+
+            m_oBounds.left		= 0;
+            m_oBounds.top		= 0;
+            m_oBounds.right		= 0;
+            m_oBounds.bottom	= 0;
+        }
+        ~CGraphicsDumper()
+        {
+            RELEASEOBJECT(m_pRenderer);
+            RELEASEOBJECT(m_pFrame);
+        }
+
+        void NewPage(double dWidth, double dHeight)
+        {
+            if (dWidth != m_dWidth || dHeight != m_dHeight)
+            {
+                RELEASEOBJECT(m_pFrame);
+
+                m_dWidth	= dWidth;
+                m_dHeight	= dHeight;
+            }
+
+            RELEASEOBJECT(m_pRenderer);
+
+            m_lWidthPix		= (int)(96 * dWidth / 25.4);
+            m_lHeightPix	= (int)(96 * dHeight / 25.4);
+
+            if (NULL == m_pFrame)
+            {
+                m_pFrame = new CBgraFrame();
+                m_pFrame->put_Width(m_lWidthPix);
+                m_pFrame->put_Height(m_lHeightPix);
+                m_pFrame->put_Stride(4 * m_lWidthPix * m_lHeightPix);
+                m_pFrame->put_Data(new BYTE[4 * m_lWidthPix * m_lHeightPix]);
+            }
+
+            BYTE* pBuffer = m_pFrame->get_Data();
+            memset(pBuffer, 0xFF, 4 * m_lWidthPix * m_lHeightPix);
+
+            m_pRenderer = new CGraphicsRenderer();
+            m_pRenderer->put_Width(m_dWidth);
+            m_pRenderer->put_Height(m_dHeight);
+            m_pRenderer->CreateFromBgraFrame(m_pFrame);
+        }
+
+        CBgraFrame* ConvertVectorGraphics()
+        {
+            BYTE* pBuffer = m_pFrame->get_Data();
+
+            BYTE* pBufferSrcMem = pBuffer + 4 * m_oBounds.top * m_lWidthPix + 4 * m_oBounds.left;
+            int lWidthShape     = (int)(m_oBounds.right - m_oBounds.left + 1);
+            int lHeightShape	= (int)(m_oBounds.bottom - m_oBounds.top + 1);
+
+            CBgraFrame* pReturnFrame = new CBgraFrame();
+            pReturnFrame->put_Width(lWidthShape);
+            pReturnFrame->put_Height(lHeightShape);
+            pReturnFrame->put_Stride(4 * lWidthShape * lHeightShape);
+
+            BYTE* pBufferDst = new BYTE[4 * lWidthShape * lHeightShape];
+            pReturnFrame->put_Data(pBufferDst);
+
+            for (LONG lLine = 0; lLine < lHeightShape; ++lLine)
+            {
+                memcpy(pBufferDst, pBufferSrcMem, 4 * lWidthShape);
+
+                pBufferDst		+= 4 * lWidthShape;
+                pBufferSrcMem	+= 4 * m_lWidthPix;
+            }
+
+            return pReturnFrame;
+        }
+
+    public:
+        inline HRESULT get_Type(LONG* lType)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_Type(lType);
+            return S_OK;
+        }
+
+    //-------- Функции для работы со страницей --------------------------------------------------
+        inline HRESULT NewPage()
+        {
+            if (m_pRenderer)
+               return m_pRenderer->NewPage();
+            return S_OK;
+        }
+        inline HRESULT get_Height(double* dHeight)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_Height(dHeight);
+            return S_OK;
+        }
+        inline HRESULT put_Height(const double& dHeight)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_Height(dHeight);
+            return S_OK;
+        }
+        inline HRESULT get_Width(double* dWidth)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_Width(dWidth);
+            return S_OK;
+        }
+        inline HRESULT put_Width(const double& dWidth)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_Width(dWidth);
+            return S_OK;
+        }
+        inline HRESULT get_DpiX(double* dDpiX)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_DpiX(dDpiX);
+            return S_OK;
+        }
+        inline HRESULT get_DpiY(double* dDpiY)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_DpiY(dDpiY);
+            return S_OK;
+        }
+
+    // pen --------------------------------------------------------------------------------------
+        inline HRESULT get_PenColor(LONG* lColor)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_PenColor(lColor);
+            return S_OK;
+        }
+        inline HRESULT put_PenColor(const LONG& lColor)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_PenColor(lColor);
+            return S_OK;
+        }
+        inline HRESULT get_PenAlpha(LONG* lAlpha)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_PenAlpha(lAlpha);
+            return S_OK;
+        }
+        inline HRESULT put_PenAlpha(const LONG& lAlpha)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_PenAlpha(lAlpha);
+            return S_OK;
+        }
+        inline HRESULT get_PenSize(double* dSize)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_PenSize(dSize);
+            return S_OK;
+        }
+        inline HRESULT put_PenSize(const double& dSize)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_PenSize(dSize);
+            return S_OK;
+        }
+        inline HRESULT get_PenDashStyle(BYTE* val)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_PenDashStyle(val);
+            return S_OK;
+        }
+        inline HRESULT put_PenDashStyle(const BYTE& val)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_PenDashStyle(val);
+            return S_OK;
+        }
+        inline HRESULT get_PenLineStartCap(BYTE* val)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_PenLineStartCap(val);
+            return S_OK;
+        }
+        inline HRESULT put_PenLineStartCap(const BYTE& val)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_PenLineStartCap(val);
+            return S_OK;
+        }
+        inline HRESULT get_PenLineEndCap(BYTE* val)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_PenLineEndCap(val);
+            return S_OK;
+        }
+        inline HRESULT put_PenLineEndCap(const BYTE& val)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_PenLineEndCap(val);
+            return S_OK;
+        }
+        inline HRESULT get_PenLineJoin(BYTE* val)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_PenLineJoin(val);
+            return S_OK;
+        }
+        inline HRESULT put_PenLineJoin(const BYTE& val)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_PenLineJoin(val);
+            return S_OK;
+        }
+        inline HRESULT get_PenDashOffset(double* dOffset)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_PenDashOffset(dOffset);
+            return S_OK;
+        }
+        inline HRESULT put_PenDashOffset(const double& dOffset)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_PenDashOffset(dOffset);
+            return S_OK;
+        }
+        inline HRESULT get_PenAlign(LONG* lAlign)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_PenAlign(lAlign);
+            return S_OK;
+        }
+        inline HRESULT put_PenAlign(const LONG& lAlign)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_PenAlign(lAlign);
+            return S_OK;
+        }
+        inline HRESULT get_PenMiterLimit(double* dOffset)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_PenMiterLimit(dOffset);
+            return S_OK;
+        }
+        inline HRESULT put_PenMiterLimit(const double& dOffset)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_PenMiterLimit(dOffset);
+            return S_OK;
+        }
+        inline HRESULT PenDashPattern(double* pPattern, LONG lCount)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PenDashPattern(pPattern, lCount);
+            return S_OK;
+        }
+
+    // brush ------------------------------------------------------------------------------------
+        inline HRESULT get_BrushType(LONG* lType)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_BrushType(lType);
+            return S_OK;
+        }
+        inline HRESULT put_BrushType(const LONG& lType)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_BrushType(lType);
+            return S_OK;
+        }
+        inline HRESULT get_BrushColor1(LONG* lColor)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_BrushColor1(lColor);
+            return S_OK;
+        }
+        inline HRESULT put_BrushColor1(const LONG& lColor)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_BrushColor1(lColor);
+            return S_OK;
+        }
+        inline HRESULT get_BrushAlpha1(LONG* lAlpha)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_BrushAlpha1(lAlpha);
+            return S_OK;
+        }
+        inline HRESULT put_BrushAlpha1(const LONG& lAlpha)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_BrushAlpha1(lAlpha);
+            return S_OK;
+        }
+        inline HRESULT get_BrushColor2(LONG* lColor)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_BrushColor2(lColor);
+            return S_OK;
+        }
+        inline HRESULT put_BrushColor2(const LONG& lColor)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_BrushColor2(lColor);
+            return S_OK;
+        }
+        inline HRESULT get_BrushAlpha2(LONG* lAlpha)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_BrushAlpha2(lAlpha);
+            return S_OK;
+        }
+        inline HRESULT put_BrushAlpha2(const LONG& lAlpha)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_BrushAlpha2(lAlpha);
+            return S_OK;
+        }
+        inline HRESULT get_BrushTexturePath(std::wstring* bsPath)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_BrushTexturePath(bsPath);
+            return S_OK;
+        }
+        inline HRESULT put_BrushTexturePath(const std::wstring& bsPath)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_BrushTexturePath(bsPath);
+            return S_OK;
+        }
+        inline HRESULT get_BrushTextureMode(LONG* lMode)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_BrushTextureMode(lMode);
+            return S_OK;
+        }
+        inline HRESULT put_BrushTextureMode(const LONG& lMode)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_BrushTextureMode(lMode);
+            return S_OK;
+        }
+        inline HRESULT get_BrushTextureAlpha(LONG* lTxAlpha)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_BrushTextureAlpha(lTxAlpha);
+            return S_OK;
+        }
+        inline HRESULT put_BrushTextureAlpha(const LONG& lTxAlpha)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_BrushTextureAlpha(lTxAlpha);
+            return S_OK;
+        }
+        inline HRESULT get_BrushLinearAngle(double* dAngle)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_BrushLinearAngle(dAngle);
+            return S_OK;
+        }
+        inline HRESULT put_BrushLinearAngle(const double& dAngle)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_BrushLinearAngle(dAngle);
+            return S_OK;
+        }
+        inline HRESULT BrushRect(const INT& val, const double& left, const double& top, const double& width, const double& height)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->BrushRect(val, left, top, width, height);
+            return S_OK;
+        }
+        inline HRESULT BrushBounds(const double& left, const double& top, const double& width, const double& height)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->BrushBounds(left, top, width, height);
+            return S_OK;
+        }
+        inline HRESULT put_BrushGradientColors(LONG* lColors, double* pPositions, LONG nCount)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_BrushGradientColors(lColors, pPositions, nCount);
+            return S_OK;
+        }
+
+    // font -------------------------------------------------------------------------------------
+        inline HRESULT get_FontName(std::wstring* bsName)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_FontName(bsName);
+            return S_OK;
+        }
+        inline HRESULT put_FontName(const std::wstring& bsName)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_FontName(bsName);
+            return S_OK;
+        }
+        inline HRESULT get_FontPath(std::wstring* bsName)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_FontPath(bsName);
+            return S_OK;
+        }
+        inline HRESULT put_FontPath(const std::wstring& bsName)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_FontPath(bsName);
+            return S_OK;
+        }
+        inline HRESULT get_FontSize(double* dSize)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_FontSize(dSize);
+            return S_OK;
+        }
+        inline HRESULT put_FontSize(const double& dSize)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_FontSize(dSize);
+            return S_OK;
+        }
+        inline HRESULT get_FontStyle(LONG* lStyle)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_FontStyle(lStyle);
+            return S_OK;
+        }
+        inline HRESULT put_FontStyle(const LONG& lStyle)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_FontStyle(lStyle);
+            return S_OK;
+        }
+        inline HRESULT get_FontStringGID(INT* bGID)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_FontStringGID(bGID);
+            return S_OK;
+        }
+        inline HRESULT put_FontStringGID(const INT& bGID)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_FontStringGID(bGID);
+            return S_OK;
+        }
+        inline HRESULT get_FontCharSpace(double* dSpace)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_FontCharSpace(dSpace);
+            return S_OK;
+        }
+        inline HRESULT put_FontCharSpace(const double& dSpace)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_FontCharSpace(dSpace);
+            return S_OK;
+        }
+        inline HRESULT get_FontFaceIndex(int* lFaceIndex)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_FontFaceIndex(lFaceIndex);
+            return S_OK;
+        }
+        inline HRESULT put_FontFaceIndex(const int& lFaceIndex)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_FontFaceIndex(lFaceIndex);
+            return S_OK;
+        }
+
+    //-------- Функции для вывода текста --------------------------------------------------------
+        inline HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->CommandDrawTextCHAR(c, x, y, w, h);
+            return S_OK;
+        }
+        inline HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->CommandDrawText(bsText, x, y, w, h);
+            return S_OK;
+        }
+        inline HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->CommandDrawTextExCHAR(c, gid, x, y, w, h);
+            return S_OK;
+        }
+        inline HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->CommandDrawTextEx(bsUnicodeText, pGids, nGidsCount, x, y, w, h);
+            return S_OK;
+        }
+
+    //-------- Маркеры для команд ---------------------------------------------------------------
+        inline HRESULT BeginCommand(const DWORD& lType)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->BeginCommand(lType);
+            return S_OK;
+        }
+        inline HRESULT EndCommand(const DWORD& lType)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->EndCommand(lType);
+            return S_OK;
+        }
+
+    //-------- Функции для работы с Graphics Path -----------------------------------------------
+        inline HRESULT PathCommandMoveTo(const double& x, const double& y)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PathCommandMoveTo(x, y);
+            return S_OK;
+        }
+        inline HRESULT PathCommandLineTo(const double& x, const double& y)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PathCommandLineTo(x, y);
+            return S_OK;
+        }
+        inline HRESULT PathCommandLinesTo(double* points, const int& count)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PathCommandLinesTo(points, count);
+            return S_OK;
+        }
+        inline HRESULT PathCommandCurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PathCommandCurveTo(x1, y1, x2, y2, x3, y3);
+            return S_OK;
+        }
+        inline HRESULT PathCommandCurvesTo(double* points, const int& count)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PathCommandCurvesTo(points, count);
+            return S_OK;
+        }
+        inline HRESULT PathCommandArcTo(const double& x, const double& y, const double& w, const double& h, const double& startAngle, const double& sweepAngle)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PathCommandArcTo(x, y, w, h, startAngle, sweepAngle);
+            return S_OK;
+        }
+        inline HRESULT PathCommandClose()
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PathCommandClose();
+            return S_OK;
+        }
+        inline HRESULT PathCommandEnd()
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PathCommandEnd();
+            return S_OK;
+        }
+        inline HRESULT DrawPath(const LONG& nType)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->DrawPath(nType);
+            return S_OK;
+        }
+        inline HRESULT PathCommandStart()
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PathCommandStart();
+            return S_OK;
+        }
+        inline HRESULT PathCommandGetCurrentPoint(double* x, double* y)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PathCommandGetCurrentPoint(x, y);
+            return S_OK;
+        }
+        inline HRESULT PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PathCommandTextCHAR(c, x, y, w, h);
+            return S_OK;
+        }
+        inline HRESULT PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PathCommandText(bsText, x, y, w, h);
+            return S_OK;
+        }
+        inline HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PathCommandTextExCHAR(c, gid, x, y, w, h);
+            return S_OK;
+        }
+        inline HRESULT PathCommandTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->PathCommandTextEx(bsUnicodeText, pGids, nGidsCount, x, y, w, h);
+            return S_OK;
+        }
+
+    //-------- Функции для вывода изображений ---------------------------------------------------
+        inline HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->DrawImage(pImage, x, y, w, h);
+            return S_OK;
+        }
+
+        inline HRESULT DrawImageFromFile(const std::wstring& sPath, const double& x, const double& y, const double& w, const double& h, const BYTE& lAlpha = 255)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->DrawImageFromFile(sPath, x, y, w, h, lAlpha);
+            return S_OK;
+        }
+
+    // transform --------------------------------------------------------------------------------
+        inline HRESULT SetTransform(const double& m1, const double& m2, const double& m3, const double& m4, const double& m5, const double& m6)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->SetTransform(m1, m2, m3, m4, m5, m6);
+            return S_OK;
+        }
+        inline HRESULT GetTransform(double *pdA, double *pdB, double *pdC, double *pdD, double *pdE, double *pdF)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->GetTransform(pdA, pdB, pdC, pdD, pdE, pdF);
+            return S_OK;
+        }
+        inline HRESULT ResetTransform()
+        {
+            if (m_pRenderer)
+               return m_pRenderer->ResetTransform();
+            return S_OK;
+        }
+
+    // -----------------------------------------------------------------------------------------
+        inline HRESULT get_ClipMode(LONG* plMode)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->get_ClipMode(plMode);
+            return S_OK;
+        }
+        inline HRESULT put_ClipMode(const LONG& lMode)
+        {
+            if (m_pRenderer)
+               return m_pRenderer->put_ClipMode(lMode);
+            return S_OK;
+        }
+    };
+
+
+    class CPageMeta
+    {
+    public:
+        double m_dWidth;
+        double m_dHeight;
+        LONG m_lStart;
+        LONG m_lEnd;
+
+    public:
+        CPageMeta()
+        {
+            m_dWidth = 0;
+            m_dHeight = 0;
+            m_lStart = 0;
+            m_lEnd = 0;
+        }
+        CPageMeta(const CPageMeta& oSrc)
+        {
+            *this = oSrc;
+        }
+
+        CPageMeta& operator=(const CPageMeta& oSrc)
+        {
+            m_dWidth = oSrc.m_dWidth;
+            m_dHeight = oSrc.m_dHeight;
+            m_lStart = oSrc.m_lStart;
+            m_lEnd = oSrc.m_lEnd;
+
+            return *this;
+        }
+    };
+
+    class CFontEmbedded
+    {
+    public:
+        std::map<int, BYTE>     m_mapChars;
+
+        std::wstring			m_strFontName;
+        LONG					m_lFontStyle;
+        int						m_lFontPathLen;
+
+        std::wstring			m_strFontPath;
+        DWORD					m_dwCRC32;
+
+    public:
+        CFontEmbedded() : m_mapChars()
+        {
+            m_strFontName		= L"";
+            m_strFontPath		= L"";
+
+            m_lFontPathLen		= 0;
+            m_lFontStyle		= 0;
+            m_dwCRC32			= 0;
+        }
+        CFontEmbedded(const CFontEmbedded& oSrc)
+        {
+            *this = oSrc;
+        }
+        CFontEmbedded& operator=(const CFontEmbedded& oSrc)
+        {
+            m_strFontPath		= oSrc.m_strFontPath;
+            m_strFontName		= oSrc.m_strFontName;
+            m_lFontStyle		= oSrc.m_lFontStyle;
+            m_dwCRC32			= oSrc.m_dwCRC32;
+
+            m_lFontPathLen		= oSrc.m_lFontPathLen;
+
+            for (std::map<int, BYTE>::const_iterator i = oSrc.m_mapChars.begin(); i != oSrc.m_mapChars.end(); i++)
+            {
+                m_mapChars.insert(std::pair<int, BYTE>(i->first, i->second));
+            }
+            return *this;
+        }
+
+    public:
+        void AddString(const int* sText, const int& len)
+        {
+            if (NULL == sText || 0 == len)
+            {
+                for (int i = 0; i < len; ++i)
+                {
+                    if (m_mapChars.end() == m_mapChars.find(sText[i]))
+                        m_mapChars.insert(std::pair<int, BYTE>(sText[i], 1));
+                }
+            }
+        }
+        void GenerateArray(int*& pData, int& nCount)
+        {
+            nCount = m_mapChars.size();
+            if (0 == nCount)
+                return;
+
+            pData = new int[nCount];
+
+            int* pDataCur = pData;
+            for (std::map<int, BYTE>::const_iterator i = m_mapChars.begin(); i != m_mapChars.end(); i++)
+            {
+                *pDataCur++ = i->first;
+            }
+        }
+    };
+
+    class CDstFontInfo
+    {
+    public:
+        DWORD   CRC32;
+        int     Index;
+    };
+
+    class CFontDstGenerator
+    {
+    public:
+        CFontEmbedded*	m_pFonts;
+        LONG			m_lCurrentIndex;
+        LONG			m_lCountFonts;
+        LONG			m_lSize;
+
+        std::map<std::wstring, CDstFontInfo> m_mapFontPathCRC;
+        CCalculatorCRC32 m_oCalc;
+
+        std::wstring   m_strCurrentFontPath;
+        int            m_lCurrentFontStyle;
+        int            m_lCurrentFontPathLen;
+        std::map<std::wstring, int> m_mapFontPathToIndex;
+
+    public:
+        CFontDstGenerator()
+        {
+            m_lSize			= 50;
+            m_pFonts		= NULL;
+            m_lCurrentIndex	= -1;
+            m_lCountFonts	= 0;
+
+            m_strCurrentFontPath = L"";
+            m_lCurrentFontPathLen = 0;
+            m_lCurrentFontStyle = -1;
+
+            Grow();
+        }
+        ~CFontDstGenerator()
+        {
+            RELEASEARRAYOBJECTS(m_pFonts);
+        }
+    public:
+        LONG AddFont2(NSStructures::CFont* pFont, CFontManagerBase* pBase, const int* symbols, const int& count)
+        {
+            // TODO:
+            return 0;
+        }
+
+        LONG AddFont(NSStructures::CFont* pFont, CFontManagerBase* pBase, const int* symbols, const int& count)
+        {
+            // TODO:
+            return 0;
+        }
+
+
+    public:
+        void WriteFonts(CFontManager* pFontManager, const std::wstring& strFolderDst, bool bIsGid = false)
+        {
+            // TODO:
+        }
+
+    protected:
+        void Grow()
+        {
+            if (NULL == m_pFonts)
+            {
+                m_pFonts = new CFontEmbedded[m_lSize];
+                return;
+            }
+
+            m_lSize *= 2;
+            CFontEmbedded* pNewBuffer = new CFontEmbedded[m_lSize];
+            for (LONG i = 0; i < m_lCountFonts; ++i)
+            {
+                pNewBuffer[i] = m_pFonts[i];
+            }
+            RELEASEARRAYOBJECTS(m_pFonts);
+            m_pFonts = pNewBuffer;
+        }
+    };
+
+    class CWriter
+    {
+    public:
+        CMetafile		m_oPage;
+        CSVGWriter2		m_oSVGWriter;
+
+        std::vector<CPageMeta>	m_arrPages;
+        bool					m_bIsBigPicture;
+
+        int 					m_lTilingCounter;
+
+    public:
+        NSStructures::CPen*		m_pPen;
+        NSStructures::CBrush*	m_pBrush;
+        NSStructures::CFont*	m_pFont;
+
+        NSStructures::CPen		m_oLastPen;
+        NSStructures::CBrush	m_oLastBrush;
+        NSStructures::CFont		m_oLastFont;
+
+        int 					m_lCurrentFont;
+        double					m_dCurrentFontSize;
+
+        CFontDstGenerator               m_oDstFontGenerator;
+        NSHtmlRenderer::CFontManager    m_oFontManager;
+
+        CHText					m_oSmartText;
+
+        double m_dDpiX;
+        double m_dDpiY;
+
+        bool					m_bPathClosed;
+
+        std::map<std::wstring, CImageInfo>	m_mapImagesFile;
+        std::map<DWORD, CImageInfo>         m_mapImageData;
+
+        CCalculatorCRC32		m_oCRC;
+
+        double m_dWidthDocMM;
+        double m_dHeightDocMM;
+        double m_dHeightPageMM;
+
+        Aggplus::CGraphicsPathSimpleConverter*	m_pSimpleConverter;
+        NSFile::CFileBinary m_oFileWriter;
+
+        bool m_bIsGids;
+
+    public:
+
+        double					m_dWidth;
+        double					m_dHeight;
+        bool					m_bIsImageFromVectors;
+
+    private:
+
+        LONG					m_lNextIDShape;
+        LONG					m_lNextIDImage;
+
+        LONG					m_lCurrentPage;
+        LONG					m_lCurrentFunctionPage;
+        LONG					m_lPagesCount;
+
+        LONG					m_lMaxSizeImage;
+
+    public:
+        std::wstring			m_strDstDirectory;
+        std::wstring			m_strDstMedia;
+        std::wstring			m_strDstDirectoryFiles;
+        std::wstring			m_strFileName;
+
+        Aggplus::CMatrix*   	m_pTransform;
+        Aggplus::CMatrix		m_oLastTransform;
+
+        int 					m_lCurrentDumpSize;
+
+        int 					m_lSrcFileType;
+
+        bool					m_bIsClipping;
+        bool					m_bIsSimpleGraphics;
+
+    public:
+        void SetApplicationFonts(CApplicationFonts* pFonts)
+        {
+
+        }
+
+        void SetSimpleConverter(Aggplus::CGraphicsPathSimpleConverter* pSimpleConverter, Aggplus::CMatrix* pMatrix)
+        {
+            m_pSimpleConverter = pSimpleConverter;
+            m_pTransform = pMatrix;
+
+            m_oSVGWriter.m_pTransform = m_pTransform;
+
+            m_oSVGWriter.m_pPen = m_pPen;
+            m_oSVGWriter.m_pBrush = m_pBrush;
+
+            m_oSVGWriter.m_pLastPen = &m_oLastPen;
+            m_oSVGWriter.m_pLastBrush = &m_oLastBrush;
+        }
+
+        void WriteText(const int* pUnicodes, const int* pGids, const int& nCount, const double& x, const double& y,
+                      const double& width, const double& height, const bool& bIsChangedFontParamBetweenDrawText)
+        {
+            if (m_lSrcFileType == AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU)
+            {
+                // не нужно ничего писать из djvu
+                return;
+            }
+
+            CheckVectorGraphics();
+            CheckTectClipRect();
+
+            bool bIsDumpFont = false;
+
+            if (m_lCurrentFont == -1 || bIsChangedFontParamBetweenDrawText)
+            {
+                const int* pSymbols = (NULL == pGids) ? pUnicodes : pGids;
+                LONG lCurrentFontIndex = m_oDstFontGenerator.AddFont(m_pFont, &m_oFontManager, pSymbols, nCount);
+                if ((lCurrentFontIndex != m_lCurrentFont) || (m_pFont->Size != m_dCurrentFontSize))
+                {
+                    m_lCurrentFont		= lCurrentFontIndex;
+                    m_dCurrentFontSize	= m_pFont->Size;
+
+                    bIsDumpFont = true;
+                }
+            }
+            else
+            {
+                const int* pSymbols = (NULL == pGids) ? pUnicodes : pGids;
+                m_oDstFontGenerator.m_pFonts[m_lCurrentFont].AddString(pSymbols, nCount);
+            }
+
+            if (NULL != pGids)
+                m_bIsGids = true;
+
+            m_oSmartText.CommandText(pUnicodes, pGids, nCount, x, y, width, height, bIsDumpFont, this);
+            return;
+        }
+
+        inline void CheckTectClipRect()
+        {
+            // смотрим, нужно ли обновить рект для клиппирования текста
+            if (m_oSVGWriter.m_bIsTextClipWriteCleared)
+            {
+                if (!m_oSVGWriter.m_oTextClipBounds.IsCleared)
+                {
+                    m_oSmartText.DumpLine();
+                    // записать клип
+                    m_oPage.WriteCommandType(CMetafile::ctCommandTextClipRect);
+                    m_oPage.WriteDouble(m_oSVGWriter.m_oTextClipBounds.x);
+                    m_oPage.WriteDouble(m_oSVGWriter.m_oTextClipBounds.y);
+                    m_oPage.WriteDouble(m_oSVGWriter.m_oTextClipBounds.r);
+                    m_oPage.WriteDouble(m_oSVGWriter.m_oTextClipBounds.b);
+                    m_oSVGWriter.m_bIsTextClipWriteCleared = false;
+                }
+            }
+            else
+            {
+                if (m_oSVGWriter.m_oTextClipBounds.IsCleared)
+                {
+                    m_oSmartText.DumpLine();
+                    // записать команду сброса клипа текстректа
+                    m_oPage.WriteCommandType(CMetafile::ctCommandTextClipRectReset);
+                    m_oSVGWriter.m_bIsTextClipWriteCleared = true;
+                    return;
+                }
+                else if (m_oSVGWriter.m_bIsIntersectNewClipRect)
+                {
+                    m_oSmartText.DumpLine();
+                    // записать клип
+                    m_oPage.WriteCommandType(CMetafile::ctCommandTextClipRect);
+                    m_oPage.WriteDouble(m_oSVGWriter.m_oTextClipBounds.x);
+                    m_oPage.WriteDouble(m_oSVGWriter.m_oTextClipBounds.y);
+                    m_oPage.WriteDouble(m_oSVGWriter.m_oTextClipBounds.r);
+                    m_oPage.WriteDouble(m_oSVGWriter.m_oTextClipBounds.b);
+                    m_oSVGWriter.m_bIsIntersectNewClipRect = false;
+                }
+            }
+        }
+
+        inline void WriteBeginPath()
+        {
+        }
+        inline void WriteEndPath()
+        {
+            m_oSVGWriter.WritePathEnd();
+        }
+        inline void WritePathStart()
+        {
+        }
+        inline void WritePathClose()
+        {
+            m_oSVGWriter.WritePathClose();
+        }
+        inline void WritePathMoveTo(const double& x, const double& y)
+        {
+            m_oSVGWriter.WritePathMoveTo(x, y);
+        }
+        inline void WritePathLineTo(const double& x, const double& y)
+        {
+            m_oSVGWriter.WritePathLineTo(x, y);
+        }
+        inline void WritePathCurveTo(const double& x1, const double& y1, const double& x2, const double& y2, const double& x3, const double& y3)
+        {
+            m_oSVGWriter.WritePathCurveTo(x1, y1, x2, y2, x3, y3);
+        }
+        inline void WriteDrawPath(LONG lType)
+        {
+            /*
+            if (lType > 0xFF)
+            {
+                if (!m_oLastBrush.IsEqual(m_pBrush))
+                {
+                    m_oLastBrush = *m_pBrush;
+                    SetFillColor(true);
+                }
+            }
+            if (lType & 0x01)
+            {
+                if (!m_oLastPen.IsEqual(m_pPen))
+                {
+                    m_oLastPen = *m_pPen;
+                    SetStrokeColor(true);
+                    SetLineWidth(true);
+                }
+            }
+
+            m_oVectors.WriteCommandType(CMetafile::ctDrawPath);
+            m_oVectors.WriteLONG(lType);
+            */
+
+            CImageInfo oInfo;
+            if ((lType > 0xFF) && (c_BrushTypeTexture == m_pBrush->Type))
+            {
+                oInfo = GenerateImageID(m_pBrush->TexturePath);
+
+                if (TRUE)
+                {
+                    // пока делаем так
+                    double x = 0;
+                    double y = 0;
+                    double w = 0;
+                    double h = 0;
+                    m_pSimpleConverter->PathCommandGetBounds(x, y, w, h);
+
+                    CheckVectorGraphics();
+
+                    /*
+                    bool bIsClip = (m_oSVGWriter.m_oClipMetafile.GetPosition() > 0) ? true : false;
+                    if (bIsClip)
+                        m_oPage.Write(m_oSVGWriter.m_oClipMetafile);
+                    */
+                    LONG _oldPos = m_oSVGWriter.WriteTempClip();
+                    m_oPage.Write(m_oSVGWriter.m_oClipMetafile);
+
+                    WriteImage2(oInfo, x, y, w, h);
+
+                    m_oSVGWriter.m_oClipMetafile.Seek(_oldPos);
+
+                    /*
+                    if (bIsClip)
+                        m_oPage.WriteLONG(CMetafile::ctBeginCommand, c_nResetClipType);
+                    */
+                    m_oPage.WriteLONG(CMetafile::ctBeginCommand, c_nResetClipType);
+
+                    lType &= 0xFF;
+                }
+            }
+
+            m_oSVGWriter.WriteDrawPath(lType, m_pSimpleConverter, oInfo);
+        }
+        inline void WritePathClip()
+        {
+           m_oSVGWriter.WritePathClip();
+        }
+        inline void WritePathClipEnd()
+        {
+           m_oSVGWriter.WritePathClipEnd();
+        }
+        inline void WritePathResetClip()
+        {
+           m_oSVGWriter.WritePathResetClip();
+        }
+
+        void NewPage(const double& dWidthMM, const double& dHeightMM)
+        {
+            ++m_lPagesCount;
+
+            CPageMeta oInfo;
+            oInfo.m_dWidth = dWidthMM;
+            oInfo.m_dHeight = dHeightMM;
+            oInfo.m_lStart = m_lCurrentDumpSize;
+            oInfo.m_lEnd = 0;
+
+            m_dWidth = dWidthMM;
+            m_dHeight = dHeightMM;
+
+            m_arrPages.push_back(oInfo);
+
+            m_oLastBrush.Color1 = -1;
+            m_oLastPen.Color	= -1;
+            m_oLastFont.Name	= L"";
+
+            m_lCurrentFont		= -1;
+            m_dCurrentFontSize	= 0.0;
+
+            m_oLastTransform.Reset();
+            m_pTransform->Reset();
+
+            m_bIsBigPicture = false;
+
+            m_oSVGWriter.NewDocument(m_dWidth, m_dHeight, m_lPagesCount - 1);
+        }
+        void EndPage()
+        {
+            m_oSmartText.ClosePage();
+            CheckVectorGraphics();
+
+            m_arrPages[m_arrPages.size() - 1].m_lEnd = m_lCurrentDumpSize + m_oPage.GetPosition();
+            m_lCurrentDumpSize += m_oPage.GetPosition();
+
+            m_oFileWriter.WriteFile(m_oPage.GetData(), m_oPage.GetPosition());
+            m_oPage.Clear();
+        }
+
+        inline void CheckVectorGraphics()
+        {
+            /*
+            if (0 < m_oVectors.GetPosition() && m_bIsSimpleGraphics && !m_oSVGWriter.m_bIsClipping)
+            {
+                m_oPage.Write(m_oVectors);
+            }
+            else if (m_oSVGWriter.m_oDocument.GetCurSize() > 0)
+            {
+                WriteImageID_SVG();
+            }
+
+            m_oVectors.ClearNoAttack();
+            */
+            if (m_oSVGWriter.m_lEmtyDocChecker < (ULONG)m_oSVGWriter.m_oDocument.GetCurSize())
+                WriteImageID_SVG();
+        }
+
+        inline void WritePattern(CBgraFrame* pPattern, CTileInfo& oTile)
+        {
+            CheckVectorGraphics();
+            m_oSmartText.DumpLine();
+            SetTransformToDocument(true);
+
+            NSHtmlRenderer::CImageInfo oInfo = GenerateImageID(pPattern);
+
+            bool bIsClip = (m_oSVGWriter.m_oClipMetafile.GetPosition() > 0) ? true : false;
+            if (bIsClip)
+                m_oPage.Write(m_oSVGWriter.m_oClipMetafile);
+
+            WriteImagePattrern(oInfo, oTile);
+
+            if (bIsClip)
+                m_oPage.WriteLONG(CMetafile::ctBeginCommand, c_nResetClipType);
+        }
+
+        inline void WriteImage(IGrObject* pImage, double x, double y, double width, double height)
+        {
+            CheckVectorGraphics();
+            m_oSmartText.DumpLine();
+            SetTransformToDocument(true);
+
+            bool bIsClip = (m_oSVGWriter.m_oClipMetafile.GetPosition() > 0) ? true : false;
+            if (bIsClip)
+                m_oPage.Write(m_oSVGWriter.m_oClipMetafile);
+
+            NSHtmlRenderer::CImageInfo oInfo = GenerateImageID(pImage);
+            //m_oSVGWriter.WriteImage(oInfo, x, y, width, height);
+            WriteImage2(oInfo, x, y, width, height);
+
+            if (bIsClip)
+                m_oPage.WriteLONG(CMetafile::ctBeginCommand, c_nResetClipType);
+        }
+        inline void WriteImage(const std::wstring& sPath, double x, double y, double width, double height)
+        {
+            if (m_lTilingCounter > 0)
+            {
+                NSHtmlRenderer::CImageInfo oInfo = GenerateImageID(sPath);
+                m_oSVGWriter.WriteImage(oInfo, x, y, width, height);
+                return;
+            }
+
+            CheckVectorGraphics();
+            m_oSmartText.DumpLine();
+            SetTransformToDocument(true);
+
+            bool bIsClip = (m_oSVGWriter.m_oClipMetafile.GetPosition() > 0) ? true : false;
+            if (bIsClip)
+                m_oPage.Write(m_oSVGWriter.m_oClipMetafile);
+
+            NSHtmlRenderer::CImageInfo oInfo = GenerateImageID(sPath);
+            //m_oSVGWriter.WriteImage(oInfo, x, y, width, height);
+            WriteImage2(oInfo, x, y, width, height);
+
+            if (bIsClip)
+                m_oPage.WriteLONG(CMetafile::ctBeginCommand, c_nResetClipType);
+        }
+
+        NSHtmlRenderer::CImageInfo GenerateImageID(IGrObject* pGrObject)
+        {
+            Aggplus::CImage* pImage = (Aggplus::CImage*)pGrObject;
+
+            CBgraFrame* pFrame = new CBgraFrame();
+            pFrame->put_Width((int)pImage->GetWidth());
+            pFrame->put_Height((int)pImage->GetHeight());
+            pFrame->put_Stride((int)pImage->GetStride());
+            pFrame->put_Data(pImage->GetData());
+
+            NSHtmlRenderer::CImageInfo _info = GenerateImageID(pFrame, true);
+            RELEASEOBJECT(pFrame);
+            return _info;
+        }
+
+        NSHtmlRenderer::CImageInfo GenerateImageID(CBgraFrame* pFrame, bool bIsFromObject = false)
+        {
+            CImageInfo oInfo;
+
+            if (NULL == pFrame)
+                return oInfo;
+
+            int nLen = 4 * pFrame->get_Width() * pFrame->get_Height();
+            BYTE* pBuffer = pFrame->get_Data();
+
+            DWORD dwSum = (DWORD)m_oCRC.Calc(pBuffer, nLen);
+
+            std::map<DWORD, CImageInfo>::const_iterator pPair = m_mapImageData.find(dwSum);
+            if (m_mapImageData.end() == pPair)
+            {
+                // нужно добавить
+                ++m_lNextIDImage;
+
+                oInfo.m_lID = m_lNextIDImage;
+                SaveImage(pFrame, oInfo, !bIsFromObject);
+
+                m_mapImageData.insert(std::pair<DWORD, CImageInfo>(dwSum, oInfo));
+            }
+            else
+            {
+                oInfo = pPair->second;
+            }
+
+            return oInfo;
+        }
+        CImageInfo GenerateImageID(const std::wstring& strFileName)
+        {
+            CImageInfo oInfo;
+            std::map<std::wstring, CImageInfo>::const_iterator pPair = m_mapImagesFile.find(strFileName);
+
+            if (m_mapImagesFile.end() == pPair)
+            {
+                // нужно добавить
+                ++m_lNextIDImage;
+
+                oInfo.m_lID = m_lNextIDImage;
+
+                CBgraFrame oFrame;
+                oFrame.OpenFile(strFileName);
+                SaveImage(&oFrame, oInfo, true);
+
+                m_mapImagesFile.insert(std::pair<std::wstring, CImageInfo>(strFileName, oInfo));
+            }
+            else
+            {
+                oInfo = pPair->second;
+            }
+
+            return oInfo;
+        }
+
+        ImageType GetImageType(CBgraFrame* pFrame)
+        {
+            BYTE* pBufferMem = pFrame->get_Data() + 3;
+            LONG lCountPix = pFrame->get_Width() * pFrame->get_Height();
+
+            for (LONG i = 0; i < lCountPix; ++i, pBufferMem += 4)
+            {
+                if (255 != *pBufferMem)
+                    return itPNG;
+            }
+            return itJPG;
+        }
+
+        inline void SaveImage(CBgraFrame* pFrame, CImageInfo& oInfo, bool bIsDestroy)
+        {
+            oInfo.m_eType = GetImageType(pFrame);
+
+            int lWidth = pFrame->get_Width();
+            int lHeight = pFrame->get_Height();
+
+            if (true || (lWidth <= m_lMaxSizeImage) && (lHeight <= m_lMaxSizeImage))
+            {
+                // не ресайзим
+            }
+            else
+            {
+                LONG lW = 0;
+                LONG lH = 0;
+                double dAspect = (double)lWidth / lHeight;
+
+                if (lWidth >= lHeight)
+                {
+                    lW = m_lMaxSizeImage;
+                    lH = (LONG)((double)lW / dAspect);
+                }
+                else
+                {
+                    lH = m_lMaxSizeImage;
+                    lW = (LONG)(dAspect * lH);
+                }
+
+                pFrame->Resize(lW, lH, bIsDestroy);
+            }
+
+            std::wstring strSave = m_strDstMedia + L"/image" + std::to_wstring(oInfo.m_lID) + ((itJPG == oInfo.m_eType) ? L".jpg" : L".png");
+            pFrame->SaveFile(strSave, (itJPG == oInfo.m_eType) ? 3 : 4);
+        }
+
+        inline void WriteImage2(NSHtmlRenderer::CImageInfo& oID, const double& x, const double& y, const double& w, const double& h)
+        {
+            SetTransformToDocument(true);
+
+            if (fabs(m_pTransform->m_agg_mtx.shx) < 0.0000001 && fabs(m_pTransform->m_agg_mtx.shy) < 0.0000001 &&
+                m_pTransform->m_agg_mtx.sx >= 0 && m_pTransform->m_agg_mtx.sy >= 0)
+            {
+                double xx = x;
+                double yy = y;
+                double rr = x + w;
+                double bb = y + h;
+                m_pTransform->TransformPoint(xx, yy);
+                m_pTransform->TransformPoint(rr, bb);
+
+                if (oID.m_eType == itJPG)
+                {
+                    m_oPage.WriteCommandType(CMetafile::ctDrawImage);
+                    m_oPage.WriteBYTE(0);
+                    m_oPage.WriteLONG(oID.m_lID);
+                    m_oPage.WriteDouble(xx);
+                    m_oPage.WriteDouble(yy);
+                    m_oPage.WriteDouble(rr - xx);
+                    m_oPage.WriteDouble(bb - yy);
+                }
+                else
+                {
+                    m_oPage.WriteCommandType(CMetafile::ctDrawImage);
+                    m_oPage.WriteBYTE(1);
+                    m_oPage.WriteLONG(oID.m_lID);
+                    m_oPage.WriteDouble(xx);
+                    m_oPage.WriteDouble(yy);
+                    m_oPage.WriteDouble(rr - xx);
+                    m_oPage.WriteDouble(bb - yy);
+                }
+            }
+            else
+            {
+                if (oID.m_eType == itJPG)
+                {
+                    m_oPage.WriteCommandType(CMetafile::ctDrawImage);
+                    m_oPage.WriteBYTE(10);
+                    m_oPage.WriteLONG(oID.m_lID);
+                    m_oPage.WriteDouble(x);
+                    m_oPage.WriteDouble(y);
+                    m_oPage.WriteDouble(w);
+                    m_oPage.WriteDouble(h);
+
+                    agg::trans_affine* t = &m_pTransform->m_agg_mtx;
+                    m_oPage.WriteDouble(t->sx);
+                    m_oPage.WriteDouble(t->shy);
+                    m_oPage.WriteDouble(t->shx);
+                    m_oPage.WriteDouble(t->sy);
+                    m_oPage.WriteDouble(t->tx);
+                    m_oPage.WriteDouble(t->ty);
+                }
+                else
+                {
+                    m_oPage.WriteCommandType(CMetafile::ctDrawImage);
+                    m_oPage.WriteBYTE(11);
+                    m_oPage.WriteLONG(oID.m_lID);
+                    m_oPage.WriteDouble(x);
+                    m_oPage.WriteDouble(y);
+                    m_oPage.WriteDouble(w);
+                    m_oPage.WriteDouble(h);
+
+                    agg::trans_affine* t = &m_pTransform->m_agg_mtx;
+                    m_oPage.WriteDouble(t->sx);
+                    m_oPage.WriteDouble(t->shy);
+                    m_oPage.WriteDouble(t->shx);
+                    m_oPage.WriteDouble(t->sy);
+                    m_oPage.WriteDouble(t->tx);
+                    m_oPage.WriteDouble(t->ty);
+                }
+            }
+        }
+
+        inline void WriteImagePattrern(NSHtmlRenderer::CImageInfo& oID, CTileInfo& oTile)
+        {
+            SetTransformToDocument(true);
+            double dKoef = 25.4 / m_dDpiX;
+
+            double xx = oTile.bbox_x * dKoef;
+            double yy = oTile.bbox_y * dKoef;
+            double rr = oTile.bbox_r * dKoef;
+            double bb = oTile.bbox_b * dKoef;
+
+            if (oID.m_eType == itJPG)
+            {
+                m_oPage.WriteCommandType(CMetafile::ctDrawImage);
+                m_oPage.WriteBYTE(0);
+                m_oPage.WriteLONG(oID.m_lID);
+                m_oPage.WriteDouble(xx);
+                m_oPage.WriteDouble(yy);
+                m_oPage.WriteDouble(rr - xx);
+                m_oPage.WriteDouble(bb - yy);
+            }
+            else
+            {
+                m_oPage.WriteCommandType(CMetafile::ctDrawImage);
+                m_oPage.WriteBYTE(1);
+                m_oPage.WriteLONG(oID.m_lID);
+                m_oPage.WriteDouble(xx);
+                m_oPage.WriteDouble(yy);
+                m_oPage.WriteDouble(rr - xx);
+                m_oPage.WriteDouble(bb - yy);
+            }
+        }
+
+        void WriteImageID_SVG()
+        {
+            m_oSmartText.DumpLine();
+            SetTransformToDocument(true);
+
+            bool bIsBIG = false;
+
+#ifdef USE_SIMPLE_GRAPHICS_NOSVG
+
+            if (m_oSVGWriter.m_bIsSimpleGraphics)
+            {
+                if (m_oSVGWriter.m_oVectors.GetPosition() > SVG_TO_RASTER_MIN_SIZE)
+                    bIsBIG = true;
+
+                if (!bIsBIG)
+                {
+                    m_oPage.Write(m_oSVGWriter.m_oVectors);
+                    m_oSVGWriter.NewSVG();
+                    return;
+                }
+            }
+
+#endif
+
+            if (!bIsBIG)
+            {
+                if (m_oSVGWriter.m_oDocument.GetCurSize() > SVG_TO_RASTER_MIN_SIZE)
+                    bIsBIG = true;
+            }
+
+            bool bIsNeedWriteEndSVG = true;
+            if (bIsBIG)
+            {
+#ifdef USE_BIG_GRAPHICS_TORASTER
+                bool bIsBIGWrite = WriteSVGAsBitmap();
+                bIsNeedWriteEndSVG = false;
+                if (bIsBIGWrite)
+                {
+                    m_oSVGWriter.NewSVG();
+                    return;
+                }
+#endif
+            }
+
+            if ((m_oSVGWriter.m_oDocument.GetCurSize() > SVG_INLINE_MAX_SIZE))
+            {
+                ++m_lNextIDImage;
+
+                std::wstring strSaveItem = m_strDstMedia + L"/image" + std::to_wstring(m_lNextIDImage) + L".svg";
+                m_oSVGWriter.CloseFile2(strSaveItem, bIsNeedWriteEndSVG);
+
+                m_oPage.WriteCommandType(CMetafile::ctDrawImage);
+                m_oPage.WriteBYTE(2);
+                m_oPage.WriteLONG(m_lNextIDImage);
+            }
+            else
+            {
+                m_oPage.WriteCommandType(CMetafile::ctDrawImage);
+                m_oPage.WriteBYTE(3);
+                m_oSVGWriter.CloseFile3(&m_oPage, bIsNeedWriteEndSVG);
+            }
+
+            m_oSVGWriter.NewSVG();
+        }
+
+
+        bool WriteSVGAsBitmap()
+        {
+            // TODO:
+            return true;
+        }
+
+        inline void SetTransformToDocument(bool bIsFromGraphics)
+        {
+            if (NULL == m_pTransform)
+                return;
+
+            if (bIsFromGraphics)
+            {
+                if ((fabs(1 - m_oLastTransform.m_agg_mtx.sx) < __g_matrix_eps) &&
+                    (fabs(0 - m_oLastTransform.m_agg_mtx.shx) < __g_matrix_eps) &&
+                    (fabs(0 - m_oLastTransform.m_agg_mtx.shy) < __g_matrix_eps) &&
+                    (fabs(1 - m_oLastTransform.m_agg_mtx.sy) < __g_matrix_eps))
+                {
+                    // ничего делать не нужно
+                }
+                else
+                {
+                    m_oPage.WriteCommandType(CMetafile::ctResetTransform);
+                    m_oLastTransform.Reset();
+                }
+            }
+            else
+            {
+                if (true)
+                {
+                    m_oLastTransform = *m_pTransform;
+
+                    agg::trans_affine* m = &m_pTransform->m_agg_mtx;
+                    //m_oPage.Write(CMetafile::ctSetTransform, m->sx, m->shy, m->shx, m->sy, m->tx, m->ty);
+                    m_oPage.WriteCommandType(CMetafile::ctSetTransform);
+                    m_oPage.WriteDouble(m->sx);
+                    m_oPage.WriteDouble(m->shy);
+                    m_oPage.WriteDouble(m->shx);
+                    m_oPage.WriteDouble(m->sy);
+                    m_oPage.WriteDouble(m->tx);
+                    m_oPage.WriteDouble(m->ty);
+                    return;
+                }
+
+                if ((fabs(m_pTransform->m_agg_mtx.sx - m_oLastTransform.m_agg_mtx.sx) < __g_matrix_eps) &&
+                    (fabs(m_pTransform->m_agg_mtx.shx - m_oLastTransform.m_agg_mtx.shx) < __g_matrix_eps) &&
+                    (fabs(m_pTransform->m_agg_mtx.shy - m_oLastTransform.m_agg_mtx.shy) < __g_matrix_eps) &&
+                    (fabs(m_pTransform->m_agg_mtx.sy - m_oLastTransform.m_agg_mtx.sy) < __g_matrix_eps) &&
+                    (fabs(m_pTransform->m_agg_mtx.tx - m_oLastTransform.m_agg_mtx.tx) < __g_matrix_eps) &&
+                    (fabs(m_pTransform->m_agg_mtx.ty - m_oLastTransform.m_agg_mtx.ty) < __g_matrix_eps))
+                {
+                    // ничего делать не нужно
+                    return;
+                }
+
+                if ((fabs(1 - m_pTransform->m_agg_mtx.sx) < __g_matrix_eps) &&
+                    (fabs(0 - m_pTransform->m_agg_mtx.shx) < __g_matrix_eps) &&
+                    (fabs(0 - m_pTransform->m_agg_mtx.shy) < __g_matrix_eps) &&
+                    (fabs(1 - m_pTransform->m_agg_mtx.sy) < __g_matrix_eps) &&
+                    (fabs(1 - m_oLastTransform.m_agg_mtx.sx) < __g_matrix_eps) &&
+                    (fabs(0 - m_oLastTransform.m_agg_mtx.shx) < __g_matrix_eps) &&
+                    (fabs(0 - m_oLastTransform.m_agg_mtx.shy) < __g_matrix_eps) &&
+                    (fabs(1 - m_oLastTransform.m_agg_mtx.sy) < __g_matrix_eps))
+                {
+                    // ничего делать не нужно
+                    m_oLastTransform.Reset();
+                }
+                else
+                {
+                    if ((fabs(1 - m_pTransform->m_agg_mtx.sx) < __g_matrix_eps) &&
+                        (fabs(0 - m_pTransform->m_agg_mtx.shx) < __g_matrix_eps) &&
+                        (fabs(0 - m_pTransform->m_agg_mtx.shy) < __g_matrix_eps) &&
+                        (fabs(1 - m_pTransform->m_agg_mtx.sy) < __g_matrix_eps))
+                    {
+                        // ничего делать не нужно
+                        m_oPage.WriteCommandType(CMetafile::ctResetTransform);
+                        m_oLastTransform.Reset();
+                        return;
+                    }
+
+                    m_oLastTransform = *m_pTransform;
+
+                    agg::trans_affine* m = &m_pTransform->m_agg_mtx;
+                    //m_oPage.Write(CMetafile::ctSetTransform, m->sx, m->shy, m->shx, m->sy, m->tx, m->ty);
+                    m_oPage.WriteCommandType(CMetafile::ctSetTransform);
+                    m_oPage.WriteDouble(m->sx);
+                    m_oPage.WriteDouble(m->shy);
+                    m_oPage.WriteDouble(m->shx);
+                    m_oPage.WriteDouble(m->sy);
+                    m_oPage.WriteDouble(m->tx);
+                    m_oPage.WriteDouble(m->ty);
+                }
+            }
+        }
+
+        /////////////////////////////////////////////////////
+        void WriteStartDocument()
+        {
+            m_bIsGids = false;
+        }
+
+        void WriteEndDocument(CDocument& oDocument)
+        {
+            CMetafile oDocInfo;
+            oDocInfo.WriteLONG(m_lPagesCount);
+            oDocInfo.WriteLONG(m_oSmartText.m_lCountParagraphs);
+            oDocInfo.WriteLONG(m_oSmartText.m_lCountWords);
+            oDocInfo.WriteLONG(m_oSmartText.m_lCountSymbols);
+            oDocInfo.WriteLONG(m_oSmartText.m_lCountSpaces);
+
+            oDocInfo.WriteLONG(m_oDstFontGenerator.m_lCountFonts);
+
+            LONG lOffset = (6 + 4 * m_lPagesCount) * sizeof(LONG);
+            for (LONG i = 0; i < m_lPagesCount; i++)
+            {
+                CPageMeta& oMeta = m_arrPages[i];
+                oDocInfo.WriteDouble(oMeta.m_dWidth);
+                oDocInfo.WriteDouble(oMeta.m_dHeight);
+                oDocInfo.WriteLONG(oMeta.m_lStart + lOffset);
+                oDocInfo.WriteLONG(oMeta.m_lEnd + lOffset);
+            }
+
+            m_oFileWriter.CloseFile();
+
+            NSFile::CFileBinary oFilePages;
+            oFilePages.OpenFile(m_strDstDirectoryFiles + L"/document_temp.bin");
+
+            LONG lMetaSize = (LONG)oFilePages.GetFileSize();
+            LONG lSizeAll = oDocInfo.GetPosition() + lMetaSize;
+
+            BYTE* pData = new BYTE[lSizeAll];
+            memcpy(pData, oDocInfo.GetData(), oDocInfo.GetPosition());
+
+            DWORD dwRead = 0;
+            oFilePages.ReadFile(pData + oDocInfo.GetPosition(), lMetaSize, dwRead);
+
+            oFilePages.CloseFile();
+
+            NSFile::CFileBinary::Remove(m_strDstDirectoryFiles + L"/document_temp.bin");
+
+            char* pOutput = NULL;
+            int nOutputLen = 0;
+            NSFile::CBase64Converter::Encode(pData, lSizeAll, pOutput, nOutputLen);
+
+            RELEASEARRAYOBJECTS(pData);
+
+            std::string sDstLen = std::to_string(nOutputLen);
+            sDstLen += ";";
+
+            NSFile::CFileBinary _file;
+            _file.CreateFile(m_strDstDirectoryFiles + L"/document.js");
+
+            _file.WriteFile((BYTE*)sDstLen.c_str(), (DWORD)sDstLen.length());
+            _file.WriteFile((BYTE*)pOutput, (DWORD)nOutputLen);
+
+            _file.CloseFile();
+
+            m_oDstFontGenerator.WriteFonts(NULL, m_strDstDirectoryFiles + L"/fonts", m_bIsGids);
+        }
+
+        void CreateFile(std::wstring& strDir, std::wstring& strFileName)
+        {
+            m_lPagesCount		= 0;
+            m_lCurrentPage		= -1;
+
+            m_strDstDirectory		= strDir;
+            m_strDstDirectoryFiles	= m_strDstDirectory + L"/" + strFileName;// + _T("_files");
+            m_strFileName			= strFileName;
+
+            NSDirectory::CreateDirectory(m_strDstDirectoryFiles);
+            m_strDstMedia = m_strDstDirectoryFiles + L"/media";
+            NSDirectory::CreateDirectory(m_strDstMedia);
+
+            std::wstring strFileFonts = m_strDstDirectoryFiles + L"/fonts";
+            NSDirectory::CreateDirectory(strFileFonts);
+
+            std::wstring strDocRendererS = m_strDstDirectoryFiles + L"/document_temp.bin";
+            m_oFileWriter.CreateFile(strDocRendererS);
+
+            m_oPage.Clear();
+            m_arrPages.clear();
+            m_bIsGids = false;
+            m_lCurrentDumpSize = 0;
+
+            m_oSmartText.SetParams(this);
+
+            m_oSmartText.m_lCountParagraphs = 0;
+            m_oSmartText.m_lCountWords = 0;
+            m_oSmartText.m_lCountSymbols = 0;
+            m_oSmartText.m_lCountSpaces = 0;
+        }
+    };
 }
+
+#endif // _ASC_HTMLRENDERER_WRITER_H_

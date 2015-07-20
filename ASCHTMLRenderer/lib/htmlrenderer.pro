@@ -51,8 +51,6 @@ INCLUDEPATH += \
             ../../DesktopEditor/freetype-2.5.2/include
 
 SOURCES +=  \
-    src/HTMLRenderer.cpp \
-    src/HTMLRenderer2.cpp \
     src/HTMLRenderer3.cpp
 
 HEADERS +=  \
@@ -68,11 +66,6 @@ HEADERS +=  \
     src/VectorGraphicsWriter2.h \
     src/VMLWriter.h \
     src/Writer.h \
-    src/Writer2.h \
-    src/Writer3.h \
-    src/Writer4.h \
-    include/HTMLRenderer.h \
-    include/HTMLRenderer2.h \
     include/HTMLRenderer3.h
 
 unix {

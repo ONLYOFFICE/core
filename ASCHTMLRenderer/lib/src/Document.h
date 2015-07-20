@@ -42,6 +42,7 @@ namespace NSHtmlRenderer
 			m_bInitH	= oSrc.m_bInitH;
 
 			m_pUpdater	= oSrc.m_pUpdater;
+            return *this;
 		}
 
 		inline double GetWidth()

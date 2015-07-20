@@ -7,6 +7,9 @@ class CASCHTMLRenderer_Private;
 class CASCHTMLRenderer : public IRenderer
 {
 public:
+    CASCHTMLRenderer();
+    ~CASCHTMLRenderer();
+public:
 // тип рендерера-----------------------------------------------------------------------------
     virtual HRESULT get_Type(LONG* lType);
 //-------- Функции для работы со страницей --------------------------------------------------

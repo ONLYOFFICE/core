@@ -3,6 +3,8 @@
 #include "Property.h"
 #include <Binary/BinSmartPointers.h>
 
+#include <vector>
+
 namespace OLEPS
 {;
 

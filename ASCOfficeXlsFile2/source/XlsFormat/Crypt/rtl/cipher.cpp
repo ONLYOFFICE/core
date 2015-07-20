@@ -1,6 +1,6 @@
-#include "precompiled_xls.h"
 
 #include "cipher.h"
+#include <memory>
 
 
 CipherARCFOUR::CipherARCFOUR()

@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "SxFormat.h"
 
 namespace XLS

@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "ExternSheet.h"
 #include <Logic/Biff_structures/XTI.h>
 

@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PtgElfCol.h"
 #include "CellRangeRef.h"
 #include <Binary/CFRecord.h>

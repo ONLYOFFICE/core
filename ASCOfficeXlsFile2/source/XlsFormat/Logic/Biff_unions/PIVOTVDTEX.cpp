@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PIVOTVDTEX.h"
 #include <Logic/Biff_records/SXVDTEx.h>
 #include <Logic/Biff_records/ContinueFrt.h>

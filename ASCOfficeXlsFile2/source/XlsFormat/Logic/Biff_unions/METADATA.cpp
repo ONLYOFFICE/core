@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "METADATA.h"
 #include <Logic/Biff_unions/MDTINFO.h>
 #include <Logic/Biff_unions/MDXSTR.h>

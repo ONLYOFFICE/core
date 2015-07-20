@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "FORMULA.h"
 #include <Logic/Biff_records/Uncalced.h>
 #include <Logic/Biff_records/Formula.h>

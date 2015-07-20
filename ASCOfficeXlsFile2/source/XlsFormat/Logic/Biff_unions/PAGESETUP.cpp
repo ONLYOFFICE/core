@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PAGESETUP.h"
 #include <Logic/Biff_records/Header.h>
 #include <Logic/Biff_records/Footer.h>
@@ -72,7 +72,7 @@ const bool PAGESETUP::loadContent(BinProcessor& proc)
 	proc.optional<TopMargin>();
 	proc.optional<BottomMargin>();
 	proc.optional<Parenthesis_PAGESETUP_1>();
-	//proc.optional(Pls(proc.getParent())); // OpenOffice Calc stored files workaround ?????????
+	proc.optional(Pls(proc.getParent())); // OpenOffice Calc stored files workaround ?????????
 	proc.mandatory<Setup>();
 	proc.optional<HeaderFooter>(); // Moved from WorksheetSubstream
 

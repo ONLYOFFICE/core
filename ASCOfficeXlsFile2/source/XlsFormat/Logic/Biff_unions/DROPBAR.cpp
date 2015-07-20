@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "DROPBAR.h"
 #include <Logic/Biff_records/DropBar.h>
 #include <Logic/Biff_records/Begin.h>

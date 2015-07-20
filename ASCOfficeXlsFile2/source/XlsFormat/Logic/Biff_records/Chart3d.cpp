@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "Chart3d.h"
 
 namespace XLS

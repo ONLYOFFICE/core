@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "Dimensions.h"
 #include <Logic/Biff_structures/CellRangeRef.h>
 

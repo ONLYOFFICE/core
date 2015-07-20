@@ -1,4 +1,4 @@
-//#include "precompiled_xls.h"
+//
 #include "AttachedLabel.h"
 
 namespace XLS

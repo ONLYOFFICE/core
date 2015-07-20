@@ -1,6 +1,9 @@
-#include "precompiled_xls.h"
+
 #include "CellRef.h"
 #include "CellRangeRef.h"
+
+#include "Auxiliary/HelpFunc.h"
+
 
 namespace XLS
 {;

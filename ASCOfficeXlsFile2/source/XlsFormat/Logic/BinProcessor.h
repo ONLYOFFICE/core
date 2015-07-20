@@ -41,7 +41,6 @@ public:
 	// Load the specified child object specified number of times
 	// fromN = 0 means the object is optional
 	// toN = 0 means no upper limit
-	//return count
 	template<class T>
 	const int repeated(const int fromN, const int toN)
 	{
@@ -51,10 +50,6 @@ public:
 	const int repeated(BaseObject& object, const int fromN, const int toN);
 	virtual const bool optional(BaseObject& object) = 0;
 	virtual const bool mandatory(BaseObject& object) = 0;
-
-	virtual void markAttribute(BiffAttribute& attrib, const std::wstring & attrib_name) = 0;
-	virtual void markTaggedAttribute(BiffStructure& attrib) = 0;
-	virtual void markVector(BiffStructurePtrVector& vec, BiffStructure& exClone) = 0;
 
 	// Universal check if the we have the specified record in our processing plans (in binary it is not more than 'num_records_to_check' records forward)
 	virtual const bool checkNextRecord(const CFRecordType::TypeId desirable_type, const size_t num_records_to_check) = 0;
@@ -74,14 +69,10 @@ class BinReaderProcessor : public BinProcessor
 {
 public:
 	BinReaderProcessor(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory);
-	BinReaderProcessor(CFStreamCacheReader& reader, const bool is_mandatory); //root ???
+	//BinReaderProcessor(CFStreamCacheReader& reader, const bool is_mandatory); //root ???
 
 	virtual const bool optional(BaseObject& object);
 	virtual const bool mandatory(BaseObject& object);
-
-	virtual void markAttribute			(BiffAttribute& attrib, const std::wstring & attrib_name);
-	virtual void markTaggedAttribute	(BiffStructure& attrib);
-	virtual void markVector				(BiffStructurePtrVector& vec, BiffStructure& exClone);
 
 	// Check if the next read record would be of desired type
 	const bool checkNextRecord(const CFRecordType::TypeId desirable_type, const size_t num_records_to_check);

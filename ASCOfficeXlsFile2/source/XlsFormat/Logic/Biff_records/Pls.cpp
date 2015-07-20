@@ -1,11 +1,11 @@
-#include "precompiled_xls.h"
+
 #include "Pls.h"
 #include <Document/Document.h>
 
 namespace XLS
 {;
 
-Pls::Pls(BiffStructurePtr & parent)
+Pls::Pls(BaseObject* parent)
 :	parent_(parent)
 {
 }

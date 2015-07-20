@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "ContinueFrt12.h"
 
 namespace XLS

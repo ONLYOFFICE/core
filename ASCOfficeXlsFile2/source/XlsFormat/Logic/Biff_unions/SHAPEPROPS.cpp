@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "SHAPEPROPS.h"
 #include <Logic/Biff_records/ShapePropsStream.h>
 #include <Logic/Biff_records/ContinueFrt12.h>

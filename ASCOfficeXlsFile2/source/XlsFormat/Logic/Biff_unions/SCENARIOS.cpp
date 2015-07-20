@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "SCENARIOS.h"
 #include <Logic/Biff_records/ScenMan.h>
 #include <Logic/Biff_records/SCENARIO.h>

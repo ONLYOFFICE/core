@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PROTECTION.h"
 #include <Logic/Biff_records/WinProtect.h>
 #include <Logic/Biff_records/Protect.h>

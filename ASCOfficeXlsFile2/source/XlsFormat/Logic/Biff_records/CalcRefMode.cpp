@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "CalcRefMode.h"
 //#include <Exception/AttributeDataWrong.h>
 

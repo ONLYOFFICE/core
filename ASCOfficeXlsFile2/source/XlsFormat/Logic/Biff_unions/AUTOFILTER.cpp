@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "AUTOFILTER.h"
 #include <Logic/Biff_records/AutoFilterInfo.h>
 #include <Logic/Biff_records/AutoFilter12.h>

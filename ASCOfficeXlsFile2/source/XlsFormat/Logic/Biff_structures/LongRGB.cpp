@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "LongRGB.h"
 #include <Binary/CFRecord.h>
 //#include <Exception/AttributeDataWrong.h>

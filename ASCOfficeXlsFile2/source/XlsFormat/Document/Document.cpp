@@ -1,6 +1,6 @@
-#include "precompiled_xls.h"
 
-#include <Logic\Biff_Structures\BiffStructure.h>
+
+#include <Logic/BaseObjectDocument.h>
 #include <../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h>
 
 #include "Document.h"
@@ -9,7 +9,7 @@ std::map<std::wstring, Document*> Document::all_documents;
 
 Document::Document(const std::wstring & root_name)
 {
-	//xmlDoc = boost::shared_ptr<XLS::BiffStructure>(new XLS::BiffStructure());
+	objectDoc = boost::shared_ptr<XLS::BaseObjectDocument>(new XLS::BaseObjectDocument());
 	
 	newDoc(L"root");
 }
@@ -61,15 +61,20 @@ void Document::newDoc(const std::wstring & root_name)
 		uniq_ = stringUtf8ToWString(sRes);
 #endif
 
-	//xmlDoc->set_document_guid(guid_);
-	//xmlDoc->set_document_name(root_name);
+	XLS::BaseObjectDocument * doc = dynamic_cast<XLS::BaseObjectDocument *>(objectDoc.get());
+
+	if (doc)
+	{
+		doc->set_document_uniq(uniq_);
+		doc->set_document_name(root_name);
+	}
 
 	//xmlDoc->loadXML(L"<?xml version=\"1.0\" encoding=\"utf-8\" ?> <" + root_name + L" id=\"" + guid_ + L"\"/>"); // Initial tag;
 	
 	all_documents[uniq_] = this;
 }
 
-const int Document::appendBinaryData(XLS::BiffStructurePtr &  elem, const char * data, const size_t size)
+const int Document::appendBinaryData(XLS::BaseObject *  elem, const char * data, const size_t size)
 {
 	if (elem == NULL) 
 		return 0;
@@ -80,12 +85,13 @@ const int Document::appendBinaryData(XLS::BiffStructurePtr &  elem, const char *
 }
 
 
-const int Document::appendBinaryData(XLS::BiffStructurePtr & elem, boost::shared_array<char>& pre_allocated_data, const size_t size)
+const int Document::appendBinaryData(XLS::BaseObject * elem, boost::shared_array<char>& pre_allocated_data, const size_t size)
 {
 	if (elem == NULL) 
 		return 0;
 
-	std::wstring name = elem->tagName_;
+	std::wstring name = elem->getClassName();
+	
 	Document* doc = findDocumentByElement(elem);
 	if(!doc)
 	{
@@ -106,9 +112,16 @@ const std::pair<char*, size_t> Document::getBinaryData(const int index) const
 }
 
 
-Document* Document::findDocumentByElement(XLS::BiffStructurePtr & elem)
+Document* Document::findDocumentByElement(XLS::BaseObject* elem)
 {
-	return all_documents[static_cast<std::wstring>(elem->get_document()->uniq_)];
+	XLS::BaseObjectDocument * doc = dynamic_cast<XLS::BaseObjectDocument *>(elem);
+
+	if (doc)
+	{
+		return all_documents[doc->m_document_uniq];
+	}
+	else
+		return NULL;
 }
 
 

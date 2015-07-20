@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "CondFmt12.h"
 
 namespace XLS

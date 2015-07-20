@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PtgExtraArray.h"
 #include "SyntaxPtg.h"
 #include <Binary/CFRecord.h>

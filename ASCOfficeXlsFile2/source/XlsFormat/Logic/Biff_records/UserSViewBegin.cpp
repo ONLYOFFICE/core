@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "UserSViewBegin.h"
 #include <Logic/Biff_structures/CellRangeRef.h>
 //#include <Exception/AttributeDataWrong.h>

@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PIVOTFRT9.h"
 #include <Logic/Biff_records/QsiSXTag.h>
 #include <Logic/Biff_unions/DBQUERYEXT.h>

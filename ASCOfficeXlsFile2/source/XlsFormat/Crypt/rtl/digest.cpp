@@ -1,6 +1,5 @@
-#include "precompiled_xls.h"
-
 #include "digest.h"
+#include <memory>
 
 #define RTL_DIGEST_ROTL(a,n) (((a) << (n)) | ((a) >> (32 - (n))))
 

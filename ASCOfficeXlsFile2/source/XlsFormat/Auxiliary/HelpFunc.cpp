@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 
 #include "HelpFunc.h"
 #include "shlwapi.h"
@@ -6,6 +6,7 @@
 #include <Logic/Biff_structures/CellRangeRef.h>
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
+#include <boost/algorithm/string.hpp>
 
 namespace AUX
 {;

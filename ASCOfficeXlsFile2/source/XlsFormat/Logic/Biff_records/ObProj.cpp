@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "ObProj.h"
 
 namespace XLS

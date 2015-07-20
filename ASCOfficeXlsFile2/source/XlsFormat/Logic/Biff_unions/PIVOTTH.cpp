@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PIVOTTH.h"
 #include <Logic/Biff_records/SXTH.h>
 #include <Logic/Biff_records/ContinueFrt.h>

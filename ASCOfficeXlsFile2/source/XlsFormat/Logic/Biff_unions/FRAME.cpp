@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "FRAME.h"
 #include <Logic/Biff_records/Frame.h>
 #include <Logic/Biff_records/Begin.h>

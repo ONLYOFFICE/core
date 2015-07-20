@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "ArrayParsedFormula.h"
 #include <Binary/CFRecord.h>
 //#include <Exception/UnexpectedProgramPath.h>

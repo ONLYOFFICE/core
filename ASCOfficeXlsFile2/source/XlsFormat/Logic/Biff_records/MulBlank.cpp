@@ -1,8 +1,43 @@
-#include "precompiled_xls.h"
+
 #include "MulBlank.h"
+
+#include <boost/lexical_cast.hpp>
+#include <simple_xml_writer.h>
 
 namespace XLS
 {;
+
+extern int cellStyleXfs_count;
+
+std::wstring getColAddress(int col)
+{
+    static const size_t r = (L'Z' - L'A' + 1);
+    std::wstring res;
+    size_t r0 = col / r;
+
+    if (r0 > 0)
+    {
+        const std::wstring rest = getColAddress(col - r*r0);
+        const std::wstring res = getColAddress(r0-1) + rest;
+        return res;
+    }
+    else
+        return std::wstring(1, (wchar_t)(L'A' + col));
+}
+
+
+
+std::wstring getRowAddress(int row)
+{
+    return boost::lexical_cast<std::wstring>(row+1);
+}
+
+std::wstring getColRowRef(int col, int row)
+{
+	//(0,0) = A1
+
+	return getColAddress(col) + getRowAddress(row);
+}
 
 MulBlank::MulBlank()
 {
@@ -47,6 +82,32 @@ const long MulBlank::GetRow() const
 	return static_cast<unsigned short>(rw);
 }
 
+int MulBlank::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+    {
+		int row = GetRow();
+
+		for (long i = colFirst; i < colLast; i++)
+		{
+			std::wstring ref =  getColRowRef(i, row);
+			CP_XML_NODE(L"c")
+			{
+				CP_XML_ATTR(L"r", ref);
+
+				if (rgixfe.common_ixfe > 0)
+				{
+					CP_XML_ATTR(L"s", rgixfe.common_ixfe - cellStyleXfs_count);
+				}
+				else if( i < rgixfe.rgixfe.size())
+				{
+					CP_XML_ATTR(L"s", rgixfe.rgixfe[i] - cellStyleXfs_count);
+				}
+			}			
+		}
+	}
+	return 0;
+}
 
 
 

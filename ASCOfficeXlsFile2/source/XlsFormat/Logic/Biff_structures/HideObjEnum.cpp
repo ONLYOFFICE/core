@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "HideObjEnum.h"
 //#include <Exception/WrongBiffRecord.h>
 

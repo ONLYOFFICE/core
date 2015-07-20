@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "UserBView.h"
 //#include <Exception/AttributeDataWrong.h>
 

@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "ATTACHEDLABEL.h"
 #include <Logic/Biff_records/Text.h>
 #include <Logic/Biff_records/Begin.h>

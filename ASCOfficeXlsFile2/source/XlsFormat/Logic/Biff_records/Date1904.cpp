@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "Date1904.h"
 
 namespace XLS

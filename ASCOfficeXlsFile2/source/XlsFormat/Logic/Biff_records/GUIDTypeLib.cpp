@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "GUIDTypeLib.h"
 
 namespace XLS

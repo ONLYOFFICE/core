@@ -1,7 +1,6 @@
-#include "precompiled_xls.h"
+
 #include "CellRangeRef.h"
-//#include <Exception/UnexpectedProgramPath.h>
-//#include <Exception/WrongIntermediateXMLFormat.h>
+#include "Auxiliary/HelpFunc.h"
 
 namespace XLS
 {;

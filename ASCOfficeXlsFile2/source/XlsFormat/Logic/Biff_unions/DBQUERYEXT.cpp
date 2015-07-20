@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "DBQUERYEXT.h"
 #include <Logic/Biff_records/DBQueryExt.h>
 #include <Logic/Biff_records/ExtString.h>

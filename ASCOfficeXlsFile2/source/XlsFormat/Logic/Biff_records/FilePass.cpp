@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "FilePass.h"
 //#include <Exception/FileIsEncrypted.h>
 #include <Crypt/Decryptor.h>

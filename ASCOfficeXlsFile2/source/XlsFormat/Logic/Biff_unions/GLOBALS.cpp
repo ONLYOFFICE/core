@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "GLOBALS.h"
 #include <Logic/Biff_records/Protect.h>
 #include <Logic/Biff_records/CalcMode.h>

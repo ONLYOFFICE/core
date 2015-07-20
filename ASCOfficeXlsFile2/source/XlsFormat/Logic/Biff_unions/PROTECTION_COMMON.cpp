@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PROTECTION_COMMON.h"
 #include <Logic/Biff_records/Protect.h>
 #include <Logic/Biff_records/ScenarioProtect.h>

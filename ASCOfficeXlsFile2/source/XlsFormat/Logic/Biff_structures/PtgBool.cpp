@@ -1,7 +1,9 @@
-#include "precompiled_xls.h"
+
 #include "PtgBool.h"
 #include <Binary/CFRecord.h>
-//#include <Exception/FormulaParsingError.h>
+
+#include <boost/algorithm/string.hpp>
+
 
 namespace XLS
 {;

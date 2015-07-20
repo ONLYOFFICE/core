@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "CUSTOMVIEW.h"
 #include <Logic/Biff_records/UserSViewBegin.h>
 #include <Logic/Biff_records/Selection.h>

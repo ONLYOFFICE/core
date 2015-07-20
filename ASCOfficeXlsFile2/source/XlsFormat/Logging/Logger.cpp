@@ -1,7 +1,9 @@
-#include "precompiled_xls.h"
+
 #include "Logger.h"
 
 #include <iostream>
+#include <sstream>
+#include <time.h>
 
 Logger::Logger(const std::string& log_file)
 : m_log(log_file.c_str())

@@ -4,6 +4,8 @@
 #include "rtl/cipher.h"
 #include "rtl/digest.h"
 
+#include <vector>
+
 namespace CRYPT
 {;
 

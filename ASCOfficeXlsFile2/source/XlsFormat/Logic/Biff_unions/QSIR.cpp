@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "QSIR.h"
 #include <Logic/Biff_records/Qsir.h>
 #include <Logic/Biff_records/Qsif.h>

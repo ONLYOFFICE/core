@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "WorksheetSubstream.h"
 #include <Logic/Biff_records/Uncalced.h>
 #include <Logic/Biff_records/Index.h>
@@ -158,7 +158,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	proc.optional<PHONETICINFO>();
 	proc.optional<CONDFMTS>();  // Let it be optional
 	
-	if (proc.repeated<HLINK>(0, 0))
+	if (proc.repeated<HLINK>(0, 0) > 0)
 	{
 		m_HLINK = elements_.back();
 		elements_.pop_back();

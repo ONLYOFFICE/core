@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "FrtRefHeaderU.h"
 #include <Binary/CFRecord.h>
 #include <Logic/Biff_structures/CellRangeRef.h>

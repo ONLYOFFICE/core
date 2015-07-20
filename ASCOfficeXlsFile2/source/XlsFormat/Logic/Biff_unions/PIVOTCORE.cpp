@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PIVOTCORE.h"
 #include <Logic/Biff_records/SxView.h>
 #include <Logic/Biff_unions/PIVOTVD.h>

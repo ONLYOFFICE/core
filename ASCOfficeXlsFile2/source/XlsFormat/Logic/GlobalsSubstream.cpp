@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "GlobalsSubstream.h"
 #include <Logic/Biff_records/BOF.h>
 #include <Logic/Biff_records/WriteProtect.h>

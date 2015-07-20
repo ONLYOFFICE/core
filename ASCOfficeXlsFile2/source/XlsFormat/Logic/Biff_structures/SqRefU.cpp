@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "SqRefU.h"
 #include "CellRangeRef.h"
 #include <Binary/CFRecord.h>

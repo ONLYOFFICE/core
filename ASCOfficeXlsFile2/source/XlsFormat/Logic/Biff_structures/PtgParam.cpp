@@ -1,5 +1,7 @@
-#include "precompiled_xls.h"
+
 #include "PtgParam.h"
+
+#include "Auxiliary/HelpFunc.h"
 
 namespace XLS
 {;

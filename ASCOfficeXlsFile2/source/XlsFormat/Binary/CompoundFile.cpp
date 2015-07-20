@@ -1,7 +1,7 @@
-#include "precompiled_xls.h"
+
 #include "CompoundFile.h"
 #include "CFStream.h"
-//#include <Exception/CompoundFileFormatError.h>
+
 #include <sstream>
 
 namespace XLS

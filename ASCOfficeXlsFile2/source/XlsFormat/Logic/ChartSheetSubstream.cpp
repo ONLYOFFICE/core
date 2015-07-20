@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "ChartSheetSubstream.h"
 #include <Logic/Biff_records/WriteProtect.h>
 #include <Logic/Biff_records/SheetExt.h>

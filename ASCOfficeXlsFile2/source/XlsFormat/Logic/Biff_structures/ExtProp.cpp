@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "ExtProp.h"
 #include <Binary/CFRecord.h>
 //#include <Exception/WrongBiffRecord.h>

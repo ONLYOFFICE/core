@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "SXADDLGROUP.h"
 #include <Logic/Biff_records/SXAddl.h>
 #include <Logic/Biff_unions/UNKNOWNFRT.h>

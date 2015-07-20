@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "HeaderFooter.h"
 #include <Logic/Biff_structures/FrtHeader.h>
 //#include <Exception/AttributeDataWrong.h>

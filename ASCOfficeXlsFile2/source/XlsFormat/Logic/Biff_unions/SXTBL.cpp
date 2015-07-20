@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "SXTBL.h"
 #include <Logic/Biff_records/SXTbl.h>
 #include <Logic/Biff_unions/DREF.h>

@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "XLUnicodeRichExtendedString.h"
 #include <Logic/BaseObject.h>
 

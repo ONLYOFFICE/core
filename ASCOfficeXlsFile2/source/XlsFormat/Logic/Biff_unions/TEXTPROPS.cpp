@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "TEXTPROPS.h"
 #include <Logic/Biff_records/RichTextStream.h>
 #include <Logic/Biff_records/TextPropsStream.h>

@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "SERIESFORMAT.h"
 #include <Logic/Biff_records/Series.h>
 #include <Logic/Biff_records/Begin.h>

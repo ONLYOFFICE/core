@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "StringPtgParser.h"
 #include "PtgInt.h"
 #include "PtgNum.h"

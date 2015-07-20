@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "FileMoniker.h"
 #include <Binary/CFRecord.h>
 

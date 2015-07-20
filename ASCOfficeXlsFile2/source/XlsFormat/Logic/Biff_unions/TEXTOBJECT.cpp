@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "TEXTOBJECT.h"
 #include <Logic/Biff_records/TxO.h>
 #include <Logic/Biff_records/Continue.h>

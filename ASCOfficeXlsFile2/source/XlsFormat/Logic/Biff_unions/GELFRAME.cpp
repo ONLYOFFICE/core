@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "GELFRAME.h"
 #include <Logic/Biff_records/GelFrame.h>
 #include <Logic/Biff_records/Continue.h>

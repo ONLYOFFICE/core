@@ -1,7 +1,8 @@
-#include "precompiled_xls.h"
+
 #include "Bes.h"
 #include <Binary/CFRecord.h>
-//#include <Exception/WrongBiffRecord.h>
+
+#include <boost/algorithm/string.hpp>
 
 namespace XLS
 {;

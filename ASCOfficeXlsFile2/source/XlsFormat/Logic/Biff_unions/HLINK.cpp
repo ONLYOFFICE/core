@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "HLINK.h"
 #include <Logic/Biff_records/HLink.h>
 #include <Logic/Biff_records/HLinkTooltip.h>

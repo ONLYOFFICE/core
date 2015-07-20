@@ -1,4 +1,4 @@
-#include "precompiled_xls.h"
+
 #include "PtgMemArea.h"
 #include "PtgExtraMem.h"
 #include <Binary/CFRecord.h>

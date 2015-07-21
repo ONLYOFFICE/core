@@ -122,11 +122,11 @@ namespace NSHtmlRenderer
 		HRESULT put_FontFaceIndex(const int& lFaceIndex);
 
 		//-------- Функции для вывода текста --------------------------------------------------------
-		HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset);
-		HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset);
+		HRESULT CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h);
+		HRESULT CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h);
 
-		HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
-		HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
+		HRESULT CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h) ;
+		HRESULT CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h);
 
 		//-------- Маркеры для команд ---------------------------------------------------------------
 		HRESULT BeginCommand(const DWORD& lType);
@@ -145,11 +145,11 @@ namespace NSHtmlRenderer
 		HRESULT PathCommandStart();
 		HRESULT PathCommandGetCurrentPoint(double* x, double* y);
 
-		HRESULT PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset);
-		HRESULT PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset);
+		HRESULT PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h) ;
+		HRESULT PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h) ;
 
-		HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
-		HRESULT PathCommandTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags);
+		HRESULT PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h) ;
+		HRESULT PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h) ;
 
 		//-------- Функции для вывода изображений ---------------------------------------------------
 		HRESULT DrawImage(IGrObject* pImage, const double& x, const double& y, const double& w, const double& h);

@@ -519,7 +519,7 @@ HRESULT NSPresentationEditor::CShapeWriter::put_EdgeDist(double val)
 	return S_OK;
 }
 //-------- Функции для вывода текста --------------------------------------------------------
-HRESULT NSPresentationEditor::CShapeWriter::CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset)
+HRESULT NSPresentationEditor::CShapeWriter::CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset)
 {
 	if (c_nHyperlinkType == m_lCurrentCommandType)
 		return S_OK;
@@ -528,7 +528,7 @@ HRESULT NSPresentationEditor::CShapeWriter::CommandDrawText(const std::wstring& 
 	{
 		PathCommandEnd();
 		BeginCommand(c_nPathType);
-		PathCommandText(bsText, x, y, w, h, baselineOffset);
+		PathCommandText(bsText, x, y, w, h);//, baselineOffset);
 		DrawPath(c_nWindingFillMode);
 		EndCommand(c_nPathType);
 		PathCommandEnd();
@@ -537,22 +537,22 @@ HRESULT NSPresentationEditor::CShapeWriter::CommandDrawText(const std::wstring& 
 
 	return S_OK;
 }
-HRESULT NSPresentationEditor::CShapeWriter::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset)
+HRESULT NSPresentationEditor::CShapeWriter::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset)
 {
 
 	return S_OK;
 }
-HRESULT NSPresentationEditor::CShapeWriter::CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags)
+HRESULT NSPresentationEditor::CShapeWriter::CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
 {
 
 	return S_OK;
 }
-HRESULT NSPresentationEditor::CShapeWriter::PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset)
+HRESULT NSPresentationEditor::CShapeWriter::PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset)
 {
 
 	return S_OK;
 }
-HRESULT NSPresentationEditor::CShapeWriter::PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags)
+HRESULT NSPresentationEditor::CShapeWriter::PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
 {
 
 	return S_OK;
@@ -573,13 +573,13 @@ HRESULT NSPresentationEditor::CShapeWriter::CommandString(const LONG& lType, con
 	return S_OK;
 }
 
-HRESULT NSPresentationEditor::CShapeWriter::CommandDrawTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags)
+HRESULT NSPresentationEditor::CShapeWriter::CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
 {
     if (true)
 	{
 		PathCommandEnd();
 		BeginCommand(c_nPathType);
-		PathCommandTextEx(bsUnicodeText, bsGidText,x, y, w, h, baselineOffset, lFlags);
+		PathCommandTextEx(bsUnicodeText, pGids, nGidsCount ,x, y, w, h);//, baselineOffset, lFlags);
 		DrawPath(c_nWindingFillMode);
 		EndCommand(c_nPathType);
 		PathCommandEnd();
@@ -736,23 +736,24 @@ HRESULT NSPresentationEditor::CShapeWriter::PathCommandGetCurrentPoint(double* f
 	m_pSimpleGraphicsConverter->PathCommandGetCurrentPoint(fX, fY);	
 	return S_OK;
 }
-HRESULT NSPresentationEditor::CShapeWriter::PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset)
+HRESULT NSPresentationEditor::CShapeWriter::PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset)
 {
 	_SetFont();
-	m_pSimpleGraphicsConverter->PathCommandText(bsText, m_pFontManager, x, y, w, h, baselineOffset);
+	m_pSimpleGraphicsConverter->PathCommandText(bsText, m_pFontManager, x, y, w, h, 0);//, baselineOffset);
 	return S_OK;
 }
-HRESULT NSPresentationEditor::CShapeWriter::PathCommandTextEx(const std::wstring& bsUnicodeText, const std::wstring& bsGidText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset, const DWORD& lFlags)
+HRESULT NSPresentationEditor::CShapeWriter::PathCommandTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
 {
     bool bGid = m_oFont.StringGID;
-	if (NULL != bsGidText)
-	{
-        m_oFont.StringGID = true;
-		PathCommandText(bsUnicodeText, x, y, w, h, baselineOffset);
-	}
+	//TODOO
+	//if (NULL != bsGidText)
+	//{
+ //       m_oFont.StringGID = true;
+	//	PathCommandText(bsUnicodeText, x, y, w, h, baselineOffset);
+	//}
 	
     m_oFont.StringGID = false;
-	PathCommandText(bsUnicodeText, x, y, w, h, baselineOffset);
+	PathCommandText(bsUnicodeText, x, y, w, h);//, baselineOffset);
 
 	m_oFont.StringGID = bGid;
 	return S_OK;

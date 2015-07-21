@@ -3431,7 +3431,7 @@ void CPdfWriterLib::OnlineWordToPdfInternal(BYTE* dstArray, LONG len, const std:
                     m1 = NSCommonReader::ReadInt(current, curindex) / 100000.0;
                     m2 = NSCommonReader::ReadInt(current, curindex) / 100000.0;
                     
-                    CommandDrawText(wsTempString, m1, m2, 0, 0, 0);
+                    CommandDrawText(wsTempString, m1, m2, 0, 0);//, 0);
                 }
                     break;
                 case ctBeginCommand:
@@ -3703,7 +3703,7 @@ HRESULT CPdfWriterLib::OnlineWordToPdfExec (std::wstring sPathXml, std::wstring 
 		if (!nReg)
 		{
 			BeginCommand(8);
-            CommandDrawText(sHypers, 0, 0, 0, 0, 0);
+            CommandDrawText(sHypers, 0, 0, 0, 0/*, 0*/);
 			EndCommand(8);
 		}
 

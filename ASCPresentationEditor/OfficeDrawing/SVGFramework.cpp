@@ -717,17 +717,17 @@ namespace SVG
 
 		if ( FontTextAnchorStart == element->GetFontStyle().LongAttribute(FontTextAnchor))
 		{
-			m_render->CommandDrawText ( bsText, element->m_Pos.X, element->m_Pos.Y, BoundX, 0.0, OffSetY ); 
+			m_render->CommandDrawText ( bsText, element->m_Pos.X, element->m_Pos.Y, BoundX, 0.0/*, OffSetY */); 
 		}
 
 		if ( FontTextAnchorMiddle == element->GetFontStyle().LongAttribute(FontTextAnchor))
 		{
-			m_render->CommandDrawText ( bsText, element->m_Pos.X - BoundX * 0.5, element->m_Pos.Y, BoundX, 0.0, OffSetY );
+			m_render->CommandDrawText ( bsText, element->m_Pos.X - BoundX * 0.5, element->m_Pos.Y, BoundX, 0.0/*, OffSetY */);
 		}
 
 		if (FontTextAnchorEnd == element->GetFontStyle ().LongAttribute(FontTextAnchor))
 		{
-			m_render->CommandDrawText ( bsText, element->m_Pos.X - BoundX, element->m_Pos.Y, BoundX, 0.0, OffSetY ); 
+			m_render->CommandDrawText ( bsText, element->m_Pos.X - BoundX, element->m_Pos.Y, BoundX, 0.0/*, OffSetY */); 
 		}
 
         DoClip (element->GetClip(), false);

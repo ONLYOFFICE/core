@@ -33,7 +33,7 @@ namespace NSWMFToImageConverter
 			{
 				m_pSVGRenderer = new NSHtmlRenderer::CASCSVGWriter();
 			}
-			if(NULL != m_pFontManager)
+			if(NULL != m_pFontManager && m_pSVGRenderer)
 				m_pSVGRenderer->SetFontManager(m_pFontManager);
 		}
 

@@ -1,6 +1,6 @@
 #pragma once
 #include <atlbase.h>
-
+/*
 // тип в DrawPath
 const long c_nStroke			= 0x0001;
 const long c_nWindingFillMode   = 0x0100;
@@ -77,7 +77,7 @@ const long c_nEbookWriter		= 0x0007;
 const long c_nDocxWriter		= 0x0008;
 const long c_nVifFormat			= 0x0009;
 
-
+*/
 // IASCRenderer
 [object, uuid("97F3816A-C2BD-43b2-B480-24711DBE7C8D"), dual, pointer_default(unique)]
 __interface IASCRenderer : IDispatch

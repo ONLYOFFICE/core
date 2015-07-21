@@ -6,6 +6,7 @@
 #include <ft2build.h>
 #include FT_FREETYPE_H
 #include FT_TRUETYPE_TABLES_H
+#include "MemoryUtils.h"
 
 #include <string>
 
@@ -43,7 +44,7 @@ namespace NSFontConverter
             sBuffer[nLen++] = nChar;
         }
 
-        void Write(char *sString, int nStringLen = -1)
+        void Write(const char *sString, int nStringLen = -1)
         {
             if ( nStringLen < 0 )
                 nStringLen = strlen( sString );
@@ -77,13 +78,13 @@ namespace NSFontConverter
         }
     };
 
-    static void CharBufferWrite(void *pBuffer, char *sData, int nLen)
+    static void CharBufferWrite(void *pBuffer, const char *sData, int nLen)
     {
         TCharBuffer *pCharBuffer = (TCharBuffer*)pBuffer;
         pCharBuffer->Write( sData, nLen );
     }
 
-    static void FileWrite(void* pFile, char *sData, int nLen)
+    static void FileWrite(void* pFile, const char *sData, int nLen)
     {
         ::fwrite( sData, 1, nLen, (FILE*)pFile );
         ::fflush( (FILE*)pFile );
@@ -111,7 +112,7 @@ namespace NSFontConverter
         inline static int64_t GetHex     (const std::wstring& string)
         {
             int64_t nResult = 0;
-            int nLen = string.length();
+            int nLen = (int)string.length();
             const wchar_t* buf = string.c_str();
             for ( int nIndex = 0; nIndex < nLen; ++nIndex )
             {
@@ -119,6 +120,25 @@ namespace NSFontConverter
             }
 
             return nResult;
+        }
+
+        inline static int     GetInteger (const std::wstring& string)
+        {
+            return std::stoi(string);
+        }
+        inline static int     GetInteger (const char* string)
+        {
+            return atoi(string);
+        }
+        inline static double  GetDouble  (const std::wstring& string)
+        {
+            return std::stod(string);
+        }
+        inline static double  GetDouble  (const char* string)
+        {
+            double d = 0;
+            sscanf(string, "%lf", &d);
+            return d;
         }
     }
 

@@ -1,4 +1,5 @@
 ﻿#include "FontFileEncodings.h"
+#include "../../common/File.h"
 
 namespace NSFontConverter
 {
@@ -5741,6 +5742,7 @@ namespace NSFontConverter
 
     int Type1NameToUnicodeA(const char *sName)
     {
-        return Type1NameToUnicodeW( A2W( sName ) );
+        std::wstring sUnicode = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sName, (LONG)strlen(sName));
+        return Type1NameToUnicodeW( sUnicode.c_str() );
     }
 }

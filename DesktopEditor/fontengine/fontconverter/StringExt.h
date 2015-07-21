@@ -122,9 +122,9 @@ namespace NSFontConverter
 
         void Resize(int nLength);
 
-        static void FormatInt   (         long nValue, char *sBuffer, int nBufferSize, BOOL bZeroFill, int nWidth, int nBase, char **ppData, int *nLen);
-        static void FormatUInt  (unsigned long nValue, char *sBuffer, int nBufferSize, BOOL bZeroFill, int nWidth, int nBase, char **ppData, int *nLen);
-        static void FormatDouble(       double nValue, char *sBuffer, int nBufferSize, int nPrecision, BOOL bTrim,            char **ppData, int *nLen);
+        static void FormatInt   (         long nValue, char *sBuffer, int nBufferSize, bool bZeroFill, int nWidth, int nBase, char **ppData, int *nLen);
+        static void FormatUInt  (unsigned long nValue, char *sBuffer, int nBufferSize, bool bZeroFill, int nWidth, int nBase, char **ppData, int *nLen);
+        static void FormatDouble(       double nValue, char *sBuffer, int nBufferSize, int nPrecision, bool bTrim,            char **ppData, int *nLen);
 
     private:
 

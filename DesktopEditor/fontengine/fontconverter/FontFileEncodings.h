@@ -1,6 +1,9 @@
 ﻿#ifndef _ASC_FONTCONVERTER_FONNT_FILE_ENCODINGS_H
 #define _ASC_FONTCONVERTER_FONNT_FILE_ENCODINGS_H
 
+#include "../../common/Types.h"
+#include <string>
+
 namespace NSFontConverter
 {
     class CWCharWrapper

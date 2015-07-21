@@ -3353,7 +3353,7 @@ namespace BinXlsxRW {
 				BYTE* pbBinBuffer = oBufferedStream.GetBuffer();
 				int nBinBufferLen = oBufferedStream.GetPosition();
 				int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nBinBufferLen, Base64::B64_BASE64_FLAG_NOCRLF);
-				BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen];
+				BYTE* pbBase64Buffer = new BYTE[nBase64BufferLen+64];
                 if(true == Base64_1::Base64Encode(pbBinBuffer, nBinBufferLen, pbBase64Buffer, &nBase64BufferLen))
 				{
 					CFile oFile;

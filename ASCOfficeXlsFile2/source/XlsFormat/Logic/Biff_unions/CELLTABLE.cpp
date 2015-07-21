@@ -7,8 +7,6 @@
 
 #include <simple_xml_writer.h>
 
-
-
 namespace XLS
 {;
 
@@ -82,6 +80,7 @@ int CELL_GROUP::serialize(std::wostream & stream)
 			CP_XML_NODE(L"row")
 			{		
 				current_row = *row->rw.value();
+				
 				CP_XML_ATTR(L"r", current_row + 1);
 				
 				bool xf_set = true;
@@ -89,12 +88,24 @@ int CELL_GROUP::serialize(std::wostream & stream)
 				
 				if (row->ixfe_val.value() && xf_set)
 				{
-					CP_XML_ATTR(L"s", *row->ixfe_val.value() - cellStyleXfs_count);
+					CP_XML_ATTR(L"s", row->ixfe_val - cellStyleXfs_count);
 					CP_XML_ATTR(L"customFormat", true);
 				}
 
-				for (std::list<XLS::BaseObjectPtr>::iterator it_cell = current_cell_start; it_cell != elements_.end(); it_cell++)
+				if (row->miyRw.value())
 				{
+					CP_XML_ATTR(L"ht", row->miyRw / 20.);
+					CP_XML_ATTR(L"customHeight", true);
+				}
+
+				std::list<XLS::BaseObjectPtr>::iterator it_cell = current_cell_start;
+				while(true)
+				{
+					if (it_cell == elements_.end())
+					{
+						current_cell_start = it_cell;
+						break;
+					}
 					CELL * cell = dynamic_cast<CELL *>(it_cell->get());
 
 					if (cell == NULL) continue;
@@ -105,7 +116,7 @@ int CELL_GROUP::serialize(std::wostream & stream)
 						break;
 					}
 					cell->serialize(CP_XML_STREAM());
-			
+					it_cell++;
 				}
 			}
 		}

@@ -20,7 +20,13 @@ public:
 
 	static const ElementType	type = typeGLOBALS;
 
+	int serialize(std::wostream & stream);
+
 	bool is_dialog;
+
+	BaseObjectPtr				 m_DefColWidth;
+	BaseObjectPtr				 m_DefaultRowHeight;
+	BaseObjectPtr				 m_Guts;
 };
 
 } // namespace XLS

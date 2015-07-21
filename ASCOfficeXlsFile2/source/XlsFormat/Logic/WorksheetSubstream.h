@@ -26,6 +26,8 @@ public:
 
 	std::vector<BaseObjectPtr>	m_MergeCells;
 	
+	BaseObjectPtr				m_GLOBALS;
+	BaseObjectPtr				m_PAGESETUP;
 	BaseObjectPtr				m_BACKGROUND;
 	BaseObjectPtr				m_COLUMNS;
 	BaseObjectPtr				m_CELLTABLE;

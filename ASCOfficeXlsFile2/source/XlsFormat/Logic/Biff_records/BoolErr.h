@@ -25,6 +25,8 @@ public:
 
 	static const ElementType	type = typeBoolErr;
 
+	int serialize(std::wostream & stream);
+
 	const CellRef getLocation() const;
 
 //-----------------------------

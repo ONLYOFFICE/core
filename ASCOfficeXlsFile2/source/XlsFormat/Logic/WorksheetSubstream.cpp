@@ -80,7 +80,12 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 
 	proc.optional<Uncalced>();
 	proc.optional<Index>();			// OpenOffice Calc stored files workaround (Index is mandatory according to [MS-XLS])
-	proc.mandatory(GLOBALS(false)); // not dialog
+	
+	if (proc.mandatory(GLOBALS(false)))
+	{
+		m_GLOBALS = elements_.back();
+		elements_.pop_back();
+	}
 	
 	// OpenOffice Calc stored files workaround (DefColWidth is mandatory and located inside COLUMNS according to [MS-XLS])
 	if (proc.optional<COLUMNS>())
@@ -88,8 +93,11 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		m_COLUMNS = elements_.back();
 		elements_.pop_back();
 	}
-	proc.mandatory<PAGESETUP>();
-	//proc.optional<HeaderFooter>(); // Moved inside PAGESETUP
+	if (proc.mandatory<PAGESETUP>())
+	{
+		m_PAGESETUP = elements_.back();
+		elements_.pop_back();
+	}
 	
 	if (proc.optional<BACKGROUND>())
 	{
@@ -181,11 +189,6 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	return true;
 }
 
-//void WorksheetSubstream::toXML(MSXML2::IXMLDOMElementPtr own_tag)
-//{
-//	static std::wstring  index_name("index");
-//	own_tag->setAttribute(index_name, ws_index_);
-//}
 
 } // namespace XLS
 

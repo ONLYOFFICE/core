@@ -22,18 +22,14 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	int serialize(std::wostream & stream);
+
 	const CellRef getLocation() const;
 
 //-----------------------------
 	CellOffsetResender resender;
 	Cell cell;
 	BIFF_DWORD isst;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(resender);
-		//BO_ATTRIB_MARKUP_COMPLEX(cell);
-		//BO_ATTRIB_MARKUP_ATTRIB(isst)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

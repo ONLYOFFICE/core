@@ -29,21 +29,6 @@ public:
 	BIFF_BOOL fExDsc;
 	BIFF_SHORT miyRw; // measured in twips (1/20 of of a printer's point)
 	BIFF_SHORT miyRwHidden;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(fUnsynced)
-		//BO_ATTRIB_MARKUP_ATTRIB(fDyZero)
-		//BO_ATTRIB_MARKUP_ATTRIB(fExAsc)
-		//BO_ATTRIB_MARKUP_ATTRIB(fExDsc)
-		//if(!fDyZero)
-		//{
-		//	//BO_ATTRIB_MARKUP_ATTRIB(miyRw)
-		//}
-		//else
-		//{
-		//	//BO_ATTRIB_MARKUP_ATTRIB(miyRwHidden)
-		//}
-	//BO_ATTRIB_MARKUP_END
 
 };
 

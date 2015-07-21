@@ -25,11 +25,6 @@ public:
 
 //-----------------------------
 	XLUnicodeString ast;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(ast)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

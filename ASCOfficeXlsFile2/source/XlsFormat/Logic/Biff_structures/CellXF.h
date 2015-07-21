@@ -1,7 +1,8 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/BorderFillInfo.h>
+#include "BorderFillInfo.h"
+#include "ExtProp.h"
 
 namespace XLS
 {;
@@ -18,6 +19,8 @@ public:
 
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
+
+	GlobalWorkbookInfoPtr m_GlobalWorkbookInfo;
 	
 	int serialize(std::wostream & stream);
 
@@ -39,6 +42,8 @@ public:
 	BorderInfo border;
 	FillInfo fill;
 
+	BiffStructurePtrVector ext_props;
+
 	bool fHasXFExt;
 	bool fsxButton;
 
@@ -47,6 +52,8 @@ public:
 
 	size_t& cell_xf_current_id_;
 	size_t& style_xf_current_id_;
+
+	void RegisterFillBorder();
 };
 
 } // namespace XLS

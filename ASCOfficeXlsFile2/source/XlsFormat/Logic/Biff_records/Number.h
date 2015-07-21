@@ -24,18 +24,15 @@ public:
 
 	static const ElementType	type = typeNumber;
 
+	int serialize(std::wostream & stream);
+
 	const CellRef getLocation() const;
 
 //-----------------------------
 	CellOffsetResender resender;
 	Cell cell;
 	BIFF_DOUBLE num;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(resender)
-		//BO_ATTRIB_MARKUP_COMPLEX(cell)
-		//BO_ATTRIB_MARKUP_ATTRIB(num)
-	//BO_ATTRIB_MARKUP_END
+
 
 };
 

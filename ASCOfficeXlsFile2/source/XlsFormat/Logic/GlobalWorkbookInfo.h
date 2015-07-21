@@ -14,8 +14,9 @@ class GlobalWorkbookInfo
 public:
 	GlobalWorkbookInfo(const unsigned short code_page);
 
-	const size_t RegisterBorderId(const BorderInfo& border);
-	const size_t RegisterFillId(const FillInfo& fill);
+	const size_t RegisterBorderId	(const BorderInfo& border);
+	const size_t RegisterFillId		(const FillInfo& fill);
+
 	const unsigned int GenerateAXESId();
 
 	unsigned short						CodePage;

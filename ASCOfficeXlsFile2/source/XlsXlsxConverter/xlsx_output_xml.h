@@ -31,6 +31,7 @@ public:
     std::wostream & mergeCells();
     std::wostream & drawing(); 
     std::wostream & comments(); 
+	std::wostream & pageProperties();
 	
 	rels & hyperlinks_rels();
 

@@ -25,11 +25,6 @@ public:
 //-----------------------------
 	BIFF_WORD iLevelRwMac;
 	BIFF_WORD iLevelColMac;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(iLevelRwMac)
-		//BO_ATTRIB_MARKUP_ATTRIB(iLevelColMac)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

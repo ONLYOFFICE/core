@@ -47,13 +47,6 @@ BiffStructurePtr ExtProp::clone()
 //
 //}
 //
-//const bool ExtProp::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### ExtProp record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! ExtProp record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
-
 
 void ExtProp::store(CFRecord& record)
 {

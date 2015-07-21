@@ -150,6 +150,8 @@ void CellXF::store(CFRecord& record)
 
 void CellXF::load(CFRecord& record)
 {
+	m_GlobalWorkbookInfo = record.getGlobalWorkbookInfo();
+
 	unsigned int flags1;
 	unsigned int flags2;
 	unsigned int flags3;
@@ -170,11 +172,11 @@ void CellXF::load(CFRecord& record)
 	fAtrPat = GETBIT(flags1, 30);
 	fAtrProt = GETBIT(flags1, 31);
 
-	border.dgLeft = static_cast<unsigned char>(GETBITS(flags2, 0, 3));
-	border.dgRight = static_cast<unsigned char>(GETBITS(flags2, 4, 7));
-	border.dgTop = static_cast<unsigned char>(GETBITS(flags2, 8, 11));
+	border.dgLeft	= static_cast<unsigned char>(GETBITS(flags2, 0, 3));
+	border.dgRight	= static_cast<unsigned char>(GETBITS(flags2, 4, 7));
+	border.dgTop	= static_cast<unsigned char>(GETBITS(flags2, 8, 11));
 	border.dgBottom = static_cast<unsigned char>(GETBITS(flags2, 12, 15));
-	border.dgDiag = static_cast<unsigned char>(GETBITS(flags3, 21, 24));
+	border.dgDiag	= static_cast<unsigned char>(GETBITS(flags3, 21, 24));
 
 	border.icvLeft = 0 != border.dgLeft ? static_cast<unsigned char>(GETBITS(flags2, 16, 22)) : 0;
 	border.icvRight = 0 != border.dgRight ? static_cast<unsigned char>(GETBITS(flags2, 23, 29)) : 0;
@@ -184,15 +186,25 @@ void CellXF::load(CFRecord& record)
 	
 	border.grbitDiag = static_cast<unsigned char>(GETBITS(flags2, 30, 31));
 
-	fHasXFExt = GETBIT(flags3, 25);
-	fill.fls = static_cast<unsigned char>(GETBITS(flags3, 26, 31));
+	fHasXFExt		= GETBIT(flags3, 25);
+	fill.fls		= static_cast<unsigned char>(GETBITS(flags3, 26, 31));
 
-	fill.icvFore = GETBITS(flags4, 0, 6);
-	fill.icvBack = GETBITS(flags4, 7, 13);
-	fsxButton = GETBIT(flags4, 14);
+	fill.icvFore	= GETBITS(flags4, 0, 6);
+	fill.icvBack	= GETBITS(flags4, 7, 13);
+	fsxButton		= GETBIT(flags4, 14);
+}
 
-	border_x_id = record.getGlobalWorkbookInfo()->RegisterBorderId(border);
-	fill_x_id = record.getGlobalWorkbookInfo()->RegisterFillId(fill);
+void CellXF::RegisterFillBorder()
+{
+	border_x_id	 = m_GlobalWorkbookInfo->RegisterBorderId(border);
+	
+	if (ext_props.size() > 0 )
+	{
+	}
+	else
+	{
+	}
+	fill_x_id	= m_GlobalWorkbookInfo->RegisterFillId(fill);
 }
 
 int CellXF::serialize(std::wostream & stream)

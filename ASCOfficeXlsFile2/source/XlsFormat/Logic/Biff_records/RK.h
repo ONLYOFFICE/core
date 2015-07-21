@@ -24,17 +24,13 @@ public:
 
 	static const ElementType	type = typeRK;
 
+	int serialize(std::wostream & stream);
 
 	const CellRef getLocation() const;
 
 //-----------------------------
 	RkRec rkrec;
 	Cell cell;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(rkrec)
-		//BO_ATTRIB_MARKUP_COMPLEX(cell)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

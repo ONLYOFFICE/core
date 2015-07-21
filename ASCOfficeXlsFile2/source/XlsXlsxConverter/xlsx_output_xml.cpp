@@ -22,6 +22,7 @@ public:
     std::wstringstream  comments_;
     std::wstringstream  dimension_;
     std::wstringstream  sheetViews_;
+	std::wstringstream  pageProperties_;
 
 	rels hyperlinks_rels_;
 
@@ -85,6 +86,10 @@ std::wostream & xlsx_xml_worksheet::drawing()
 {
     return impl_->drawing_;
 }
+std::wostream & xlsx_xml_worksheet::pageProperties()
+{
+	return impl_->pageProperties_;
+}
 std::wostream & xlsx_xml_worksheet::comments()
 {
     return impl_->comments_;
@@ -141,6 +146,7 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 				}
 			}
 
+			CP_XML_STREAM() << impl_->pageProperties_.str();
 			//CP_XML_NODE(L"headerFooter){}
 
 			//CP_XML_NODE(L"rowBreaks){}

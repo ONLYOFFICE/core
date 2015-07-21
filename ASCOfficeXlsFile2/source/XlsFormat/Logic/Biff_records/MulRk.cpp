@@ -1,8 +1,9 @@
-
 #include "MulRk.h"
+#include <simple_xml_writer.h>
 
 namespace XLS
 {;
+extern int cellStyleXfs_count;
 
 MulRk::MulRk()
 {
@@ -54,5 +55,29 @@ const long MulRk::GetRow() const
 	return static_cast<unsigned short>(rw);
 }
 
+int MulRk::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+    {
+		int row = GetRow();
+			
+		for (long i = 0; i < cells.size(); i++)
+		{
+			Cell * cell = dynamic_cast<Cell *>(cells[i].get());
+			
+			std::wstring ref = cell->getLocation().toString();// getColRowRef(i, row);
+			CP_XML_NODE(L"c")
+			{
+				CP_XML_ATTR(L"r", ref);
+
+				if (cell->ixfe.value())
+				{
+					CP_XML_ATTR(L"s", *(cell->ixfe.value()) - cellStyleXfs_count);
+				}
+			}
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

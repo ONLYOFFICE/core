@@ -59,6 +59,8 @@ void StyleXF::store(CFRecord& record)
 
 void StyleXF::load(CFRecord& record)
 {
+	m_GlobalWorkbookInfo = record.getGlobalWorkbookInfo();
+
 	unsigned int flags1;
 	unsigned int flags2;
 	unsigned int flags3;
@@ -90,10 +92,20 @@ void StyleXF::load(CFRecord& record)
 	fill.icvFore = GETBITS(flags4, 0, 6);
 	fill.icvBack = GETBITS(flags4, 7, 13);
 
-	border_x_id = record.getGlobalWorkbookInfo()->RegisterBorderId(border);
-	fill_x_id	= record.getGlobalWorkbookInfo()->RegisterFillId(fill);
 }
 
+void StyleXF::RegisterFillBorder()
+{
+	border_x_id		= m_GlobalWorkbookInfo->RegisterBorderId(border);
+
+	if (ext_props.size() > 0 )
+	{
+	}
+	else
+	{
+	}
+	fill_x_id	= m_GlobalWorkbookInfo->RegisterFillId(fill);
+}
 int StyleXF::serialize(std::wostream & stream)
 {
 	return 0;

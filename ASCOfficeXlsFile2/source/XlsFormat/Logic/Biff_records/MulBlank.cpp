@@ -88,7 +88,7 @@ int MulBlank::serialize(std::wostream & stream)
     {
 		int row = GetRow();
 
-		for (long i = colFirst; i < colLast; i++)
+		for (long i = colFirst; i <= colLast; i++)
 		{
 			std::wstring ref =  getColRowRef(i, row);
 			CP_XML_NODE(L"c")

@@ -18,7 +18,13 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & stream);
+
 	static const ElementType	type = typePAGESETUP;
+
+	BaseObjectPtr m_HeaderFooter;
+	BaseObjectPtr m_Setup;
+
 };
 
 } // namespace XLS

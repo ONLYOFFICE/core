@@ -24,10 +24,6 @@ public:
 
 //-----------------------------
 	BIFF_DOUBLE num;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(num)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

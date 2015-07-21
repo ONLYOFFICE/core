@@ -24,16 +24,11 @@ public:
 
 	const long GetRow() const;
 
+	int serialize(std::wostream & stream);
 //-----------------------------
 	Rw rw;
 	BiffStructurePtrVector rgrkrec;
 	BiffStructurePtrVector cells;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgrkrec, RkRec)
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(cells, Cell)
-
-	//BO_ATTRIB_MARKUP_END
 
 };
 

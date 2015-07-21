@@ -24,11 +24,6 @@ public:
 
 //-----------------------------
 	BIFF_WORD cchdefColWidth;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(cchdefColWidth)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

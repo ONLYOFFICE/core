@@ -4,6 +4,7 @@
 #include <Logic/Biff_records/XFCRC.h>
 #include <Logic/Biff_records/XFExt.h>
 
+#include <Logic/Biff_structures/ExtProp.h>
 #include <simple_xml_writer.h>
 
 namespace XLS
@@ -38,32 +39,69 @@ const bool XFS::loadContent(BinProcessor& proc)
 	while (count > 0)
 	{
 		//разделить style & complex
-		XF* xfs = dynamic_cast<XF*>(elements_.back().get());
+		XF* xfs = dynamic_cast<XF*>(elements_.front().get());
 
 		if ((xfs->fStyle.value()) && (*xfs->fStyle.value()))
 		{
-			m_cell_styles.insert(m_cell_styles.begin(), elements_.back());
+			m_cell_styles.push_back(elements_.front());
 			cellStyleXfs_count++;
 		}
 		else
 		{
-			m_cell_xfs.insert(m_cell_xfs.begin(), elements_.back());
+			m_cell_xfs.push_back(elements_.front());
 		}
 		
-		elements_.pop_back();
+		elements_.pop_front();
 		count--;
 	}
 	
 	if(proc.optional<XFCRC>())
 	{
+		elements_.pop_back(); // Crc не нужен
+
 		count = proc.repeated<XFExt>(16, 4050);
 		while (count > 0)
 		{
-			m_xf_ext.insert(m_xf_ext.begin(), elements_.back());
-			elements_.pop_back();
+			XFExt* ext = dynamic_cast<XFExt*>(elements_.front().get());
+
+			m_xf_ext.push_back(elements_.front());
+			elements_.pop_front();
 			count--;
 		}
 	}
+
+
+	for (long i = 0 ; i < m_cell_styles.size(); i++)
+	{
+		XF		*xfs = dynamic_cast<XF*>(m_cell_styles[i].get());
+
+		if (m_xf_ext.size() > 0)
+		{
+			XFExt *ext = dynamic_cast<XFExt*>(m_xf_ext[i].get());
+			{
+				xfs->style.ext_props = ext->rgExt;
+			}
+		}
+		
+		xfs->style.RegisterFillBorder();
+	}
+	
+	for (long i = 0 ; i < m_cell_xfs.size(); i++)
+	{
+		XF		*xfs = dynamic_cast<XF*>(m_cell_xfs[i].get());
+
+		if (m_xf_ext.size() > cellStyleXfs_count)
+		{
+			XFExt*ext = dynamic_cast<XFExt*>(m_xf_ext[i + cellStyleXfs_count].get());
+			if (ext)
+			{
+				xfs->cell.ext_props = ext->rgExt;
+			}
+		}
+		
+		xfs->cell.RegisterFillBorder();
+	}
+
 	return true;
 }
 int XFS::serialize(std::wostream & stream)

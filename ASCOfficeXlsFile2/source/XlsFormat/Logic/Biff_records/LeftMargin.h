@@ -17,14 +17,12 @@ public:
 
 	BaseObjectPtr clone();
 
+	static const ElementType	type = typeLeftMargin;
+
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 //-----------------------------
 	BIFF_DOUBLE num;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(num)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

@@ -12,13 +12,9 @@
 
 #include "../XlsFormat/Logic/Biff_unions/FORMATTING.h"
 #include "../XlsFormat/Logic/Biff_unions/THEME.h"
+#include "../XlsFormat/Logic/Biff_unions/GLOBALS.h"
+#include "../XlsFormat/Logic/Biff_unions/COLUMNS.h"
 
-
-//#include "../XlsFormat/Binary/CFStreamCacheWriter.h"
-//#include "../XlsFormat/Logic/BaseObject.h"
-
-//#include "../XlsFormat/Binary/BinSmartPointers.h"
-//#include "../XlsFormat\Auxiliary\HelpersTagsGenerator.h"
 
 #include "xlsx_conversion_context.h"
 #include "xlsx_package.h"
@@ -189,6 +185,17 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 	{
 		sheet->m_Dimensions->serialize(xlsx_context->current_sheet().dimension());
 	}
+	if (sheet->m_GLOBALS)
+	{
+		XLS::GLOBALS * globals  = dynamic_cast<XLS::GLOBALS *>(sheet->m_GLOBALS.get());
+		XLS::COLUMNS * columns = dynamic_cast<XLS::COLUMNS *>(sheet->m_COLUMNS.get());
+
+		if (globals && columns)
+		{
+			globals->m_DefColWidth = columns->m_DefColWidth; 
+		}
+		sheet->m_GLOBALS->serialize(xlsx_context->current_sheet().sheetFormat());
+	}
 	if (sheet->m_COLUMNS)
 	{
 		sheet->m_COLUMNS->serialize(xlsx_context->current_sheet().cols());
@@ -209,6 +216,10 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 				}
 			}
 		}
+	}
+	if (sheet->m_PAGESETUP)
+	{
+		sheet->m_PAGESETUP->serialize(xlsx_context->current_sheet().pageProperties());
 	}
 }
 

@@ -512,7 +512,7 @@ namespace NSCommon
                     oRenderer.put_FontPath(strFontPath);
                     pManager->LoadFontFromFile(strFontPath, lFaceIndex, 14, dDpi, dDpi);
 
-                    BOOL bIsSymbol = FALSE;
+                    INT bIsSymbol = FALSE;
 
                     if (pManager->m_pFont)
                     {
@@ -550,7 +550,7 @@ namespace NSCommon
                     oRenderer.put_FontCharSpace(0);
                     oRenderer.put_FontSize(14);
 
-                    oRenderer.CommandDrawText(pPair->second.m_sName, 5, 25.4 * (index * lH1_px + lH1_px) / dDpi - 2, 0, 0, 0);
+                    oRenderer.CommandDrawText(pPair->second.m_sName, 5, 25.4 * (index * lH1_px + lH1_px) / dDpi - 2, 0, 0);
                 }
 
                 std::wstring strThumbnailPath = strFolderThumbnails + L"/fonts_thumbnail";

@@ -23,6 +23,7 @@ ASCHTMLRenderer2/Resources svnc_tsvn_003alogminsize=5
 ASCHTMLRenderer2/lib svnc_tsvn_003alogminsize=5
 ASCHTMLRenderer2/lib/include svnc_tsvn_003alogminsize=5
 ASCHTMLRenderer2/lib/src svnc_tsvn_003alogminsize=5
+ASCHTMLRenderer2/lib/test svnc_tsvn_003alogminsize=5
 ASCImageStudio3/ASCGraphics/Expat/lib/libexpat.lib svn_mime_002dtype=application%2Foctet-stream
 ASCImageStudio3/ASCGraphics/Objects/Font/FreeType/freetype242_vs2005.lib svn_mime_002dtype=application%2Foctet-stream
 ASCImageStudio3/ASCGraphics/OfficeSvmFile/zlibstat.lib svn_mime_002dtype=application%2Foctet-stream

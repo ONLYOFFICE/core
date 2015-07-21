@@ -9,7 +9,7 @@ namespace NSFontConverter
 {
     //------------------------------------------------------------------------
 
-    typedef void (*FontFileOutputFunc)(void *pStream, char *sData, int nLen);
+    typedef void (*FontFileOutputFunc)(void *pStream, const char *sData, int nLen);
 
     //------------------------------------------------------------------------
     // CFontFileBase
@@ -39,7 +39,7 @@ namespace NSFontConverter
         {
             m_nPos = 0;
         }
-        static char *ReadFile(wchar_t *wsFileName, int *pnFileLen)
+        static char *ReadFile(const wchar_t *wsFileName, int *pnFileLen)
         {
             NSFile::CFileBinary oFile;
             if ( !oFile.OpenFile(wsFileName) )

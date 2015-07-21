@@ -101,7 +101,7 @@ namespace NSFontConverter
 
     StringExt::StringExt(const char *sSrc)
     {
-        int nLen = strlen( sSrc );
+        int nLen = (int)strlen( sSrc );
 
         m_sData = NULL;
         Resize(m_nLength = nLen);
@@ -148,7 +148,7 @@ namespace NSFontConverter
         char *pData = NULL;
         int   nLen;
 
-        FormatInt( nValue, sBuffer, sizeof( sBuffer ), FALSE, 0, 10, &pData, &nLen);
+        FormatInt( nValue, sBuffer, sizeof( sBuffer ), false, 0, 10, &pData, &nLen);
         return new StringExt( pData, nLen );
     }
 
@@ -231,7 +231,7 @@ namespace NSFontConverter
     {
         StringExtFormatArg uArg;
         int nIndex, nWidth, nPrecision;
-        BOOL bReverseAlign, bZeroFill;
+        bool bReverseAlign, bZeroFill;
         StringExtFormatType eFormatType;
         char sBuffer[65];
         int nLen;
@@ -266,11 +266,11 @@ namespace NSFontConverter
                     ++pCur;
                     if ( *pCur == '-' )
                     {
-                        bReverseAlign = TRUE;
+                        bReverseAlign = true;
                         ++pCur;
                     }
                     else
-                        bReverseAlign = FALSE;
+                        bReverseAlign = false;
                     nWidth = 0;
                     bZeroFill = *pCur == '0';
                     for (; *pCur >= '0' && *pCur <= '9'; ++pCur )
@@ -415,10 +415,10 @@ namespace NSFontConverter
                         FormatUInt( uArg.ulValue, sBuffer, sizeof(sBuffer), bZeroFill, nWidth, 2, &sTemp, &nLen );
                         break;
                     case fmtDouble:
-                        FormatDouble( uArg.fValue, sBuffer, sizeof(sBuffer), nPrecision, FALSE, &sTemp, &nLen );
+                        FormatDouble( uArg.fValue, sBuffer, sizeof(sBuffer), nPrecision, false, &sTemp, &nLen );
                         break;
                     case fmtDoubleTrim:
-                        FormatDouble( uArg.fValue, sBuffer, sizeof(sBuffer), nPrecision, TRUE, &sTemp, &nLen );
+                        FormatDouble( uArg.fValue, sBuffer, sizeof(sBuffer), nPrecision, true, &sTemp, &nLen );
                         break;
                     case fmtChar:
                         sBuffer[0] = uArg.cValue;
@@ -474,10 +474,10 @@ namespace NSFontConverter
         return this;
     }
 
-    void StringExt::FormatInt (         long nValue, char *sBuffer, int nBufferSize, BOOL bZeroFill, int nWidth, int nBase, char **ppData, int *pnLen)
+    void StringExt::FormatInt (         long nValue, char *sBuffer, int nBufferSize, bool bZeroFill, int nWidth, int nBase, char **ppData, int *pnLen)
     {
         static char c_sValues[17] = "0123456789abcdef";
-        BOOL bNegative = FALSE;
+        bool bNegative = false;
         int nStart;
 
         int nCur = nBufferSize;
@@ -513,7 +513,7 @@ namespace NSFontConverter
         *pnLen = nBufferSize - nCur;
     }
 
-    void StringExt::FormatUInt(unsigned long nValue, char *sBuffer, int nBufferSize, BOOL bZeroFill, int nWidth, int nBase, char **ppData, int *pnLen)
+    void StringExt::FormatUInt(unsigned long nValue, char *sBuffer, int nBufferSize, bool bZeroFill, int nWidth, int nBase, char **ppData, int *pnLen)
     {
         static char c_sValues[17] = "0123456789abcdef";
 
@@ -541,9 +541,9 @@ namespace NSFontConverter
         *pnLen = nBufferSize - nCur;
     }
 
-    void StringExt::FormatDouble(     double dValue, char *sBuffer, int nBufferSize, int nPrecision, BOOL bTrim,            char **ppData, int *pnLen)
+    void StringExt::FormatDouble(     double dValue, char *sBuffer, int nBufferSize, int nPrecision, bool bTrim,            char **ppData, int *pnLen)
     {
-        BOOL bNegative = FALSE, bStarted = FALSE;
+        bool bNegative = false, bStarted = false;
         double dTemp = 0;
         int nInt;
 
@@ -560,7 +560,7 @@ namespace NSFontConverter
             if ( bStarted || nInt != 0 )
             {
                 sBuffer[--nCur] = '0' + nInt;
-                bStarted = TRUE;
+                bStarted = true;
             }
             dValue = dTemp;
         }

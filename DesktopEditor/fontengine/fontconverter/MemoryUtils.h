@@ -2,6 +2,8 @@
 #define _ASC_FONT_CONVERTER_MEMORY_UTILS_H_
 
 #include <stdio.h>
+#include <limits>
+#include <string>
 
 namespace NSFontConverter
 {

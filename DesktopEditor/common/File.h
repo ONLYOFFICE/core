@@ -658,12 +658,12 @@ namespace NSFile
 			dwSizeRead = (DWORD)fread((void*)pData, 1, nBytesToRead, m_pFile);
 			return true;
 		}
-		bool WriteFile(BYTE* pData, DWORD nBytesCount)
+		bool WriteFile(const BYTE* pData, DWORD nBytesCount)
 		{
 			if (!m_pFile)
 				return false;
 
-			size_t nCountWrite = fwrite((void*)pData, 1, nBytesCount, m_pFile);
+			size_t nCountWrite = fwrite((const void*)pData, 1, nBytesCount, m_pFile);
 			return true;
 		}
 		long TellFile()

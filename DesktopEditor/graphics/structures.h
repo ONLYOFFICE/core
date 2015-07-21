@@ -471,6 +471,15 @@ namespace NSStructures
 			lStyle |= Strikeout << 7;
 			return lStyle;
 		}
+		long GetStyle2() const
+		{
+			long lStyle = 0;
+			if (Bold)
+				lStyle |= 0x01;
+			if (Italic)
+				lStyle |= 0x02;
+			return lStyle;
+		}
 		void SetStyle(long const& lStyle)
 		{
 			Bold	= (0x01 == (0x01 & lStyle));

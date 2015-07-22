@@ -45,6 +45,12 @@ DocxConverter::DocxConverter(const std::wstring & path, const ProgressCallback* 
 	
 	if (UpdateProgress(290000))return;
 }
+DocxConverter::~DocxConverter()
+{
+	if (odt_context)		delete odt_context;		odt_context		= NULL;
+	if (docx_document)		delete docx_document;	docx_document	= NULL;
+	if (output_document)	delete output_document;	output_document = NULL;
+}
 void DocxConverter::write(const std::wstring & path)
 {
 	if (!output_document)return;

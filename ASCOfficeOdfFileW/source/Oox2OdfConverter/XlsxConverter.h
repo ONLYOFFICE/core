@@ -98,18 +98,19 @@ namespace Oox2Odf
 	{
 	public:
 		XlsxConverter(const std::wstring & path, const ProgressCallback* ffCallBack);
+		~XlsxConverter();
 
 		virtual void convertDocument();
 		virtual void write(const std::wstring & path);
 		
 		virtual odf_writer::odf_conversion_context		*odf_context();		
-		virtual OOX::CTheme						*oox_theme();
-		virtual CString							 find_link_by_id (CString sId, int t);
+		virtual OOX::CTheme								*oox_theme();
+		virtual CString									find_link_by_id (CString sId, int t);
 
 		void convert(OOX::Spreadsheet::WritingElement	*oox_unknown);
     private:		
-		OOX::Spreadsheet::CXlsx			*xlsx_document;
-		OOX::Spreadsheet::CDrawing		*xlsx_current_drawing; //пока сюда .. потом покрасивше, для внешних ссылок
+		OOX::Spreadsheet::CXlsx					*xlsx_document;
+		OOX::Spreadsheet::CDrawing				*xlsx_current_drawing; //пока сюда .. потом покрасивше, для внешних ссылок
 		
 		odf_writer::ods_conversion_context		*ods_context;
 

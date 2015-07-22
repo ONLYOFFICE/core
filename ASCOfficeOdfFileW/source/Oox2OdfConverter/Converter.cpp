@@ -38,7 +38,7 @@ namespace Oox2Odf
 		impl_ = NULL;
 		
         if (type == _T("text"))			impl_ = new DocxConverter(path, CallBack);
-        if (type == _T("spreadsheet"))		impl_ = new XlsxConverter(path, CallBack);
+        if (type == _T("spreadsheet"))	impl_ = new XlsxConverter(path, CallBack);
 
         if (impl_)
             impl_->set_fonts_directory(fontsPath);

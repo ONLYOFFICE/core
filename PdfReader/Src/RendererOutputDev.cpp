@@ -3014,7 +3014,7 @@ namespace PdfReader
 			if (c_nPDFWriter == m_lRendererType)
 			{
 				CPdfRenderer* pPdfRenderer = (CPdfRenderer*)m_pRenderer;
-				pPdfRenderer->CommandDrawTextPdf(wsUnicodeText, &unGid, unGidsCount, wsSrcCodeText, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
+				//pPdfRenderer->CommandDrawTextPdf(wsUnicodeText, &unGid, unGidsCount, wsSrcCodeText, PDFCoordsToMM(0 + dShiftX), PDFCoordsToMM(dShiftY), PDFCoordsToMM(dDx), PDFCoordsToMM(dDy));
 			}
 			else
 			{

@@ -6,8 +6,42 @@
 
 QT       -= core gui
 
+VERSION = 1.0.0.1
 TARGET = PdfReader
 TEMPLATE = lib
+
+#CONFIG += staticlib
+CONFIG += shared
+
+CONFIG(debug, debug|release) {
+    DESTDIR = Debug
+} else {
+    DESTDIR = Release
+}
+
+staticlib {
+    message(static)
+} else {
+    DEFINES += PDF_USE_DYNAMIC_LIBRARY
+    message(dynamic)
+
+win32 {
+    DEFINES += \
+    WIN32 \
+    _WIN32
+
+    LIBS += -L../../ASCOfficeUtils/ASCOfficeUtilsLib/Win/x64/Debug -lASCOfficeUtilsLib
+    LIBS += -L../../DesktopEditor/Qt_build/graphics/Debug/debug -lgraphics
+    LIBS += -L../../SDK/lib/win_64/DEBUG -llibxml
+    LIBS += -lgdi32 \
+            -ladvapi32 \
+            -luser32 \
+            -lshell32
+
+    TARGET_EXT = .dll
+}
+
+}
 
 DEFINES += PDFREADER_LIBRARY
 
@@ -21,6 +55,25 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     CONFIG += c++11
 
     message(linux)
+}
+
+DEFINES += \
+    _QT \
+    FT2_BUILD_LIBRARY \
+    EXCLUDE_JPG_SUPPORT \
+    MNG_SUPPORT_DISPLAY \
+    MNG_SUPPORT_READ \
+    MNG_SUPPORT_WRITE \
+    MNG_ACCESS_CHUNKS \
+    MNG_STORE_CHUNKS\
+    MNG_ERROR_TELLTALE
+
+win32 {
+    DEFINES += \
+    JAS_WIN_MSVC_BUILD \
+    WIN32
+
+    message(windows)
 }
 
 INCLUDEPATH += \

@@ -7,13 +7,20 @@ class IRenderer;
 class CFontManager;
 class CApplicationFonts;
 
+#ifndef PDF_USE_DYNAMIC_LIBRARY
+#define PDF_DECL_EXPORT
+#else
+#include "../DesktopEditor/common/base_export.h"
+#define PDF_DECL_EXPORT Q_DECL_EXPORT
+#endif
+
 namespace PdfReader
 {
 	class PDFDoc;
 	class GlobalParams;
 	class CFontList;
 
-	class CPdfReader
+    class PDF_DECL_EXPORT CPdfReader
 	{
 	public:
 

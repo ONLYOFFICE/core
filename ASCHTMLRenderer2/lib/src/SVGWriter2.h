@@ -117,7 +117,7 @@ namespace NSHtmlRenderer
 			LONG lWidthShape	= rect.right - rect.left + 1;
 			LONG lHeightShape	= rect.bottom - rect.top + 1;
 
-            pShapePicture = new CBgraFrame();
+            CBgraFrame* pShapePicture = new CBgraFrame();
             pShapePicture->put_Width((int)lWidthShape);
             pShapePicture->put_Height((int)lHeightShape);
             pShapePicture->put_Stride(4 * ((int)lWidthShape));
@@ -137,7 +137,7 @@ namespace NSHtmlRenderer
 			double dW = 25.4 * lWidthShape / 96.0;
 			double dH = 25.4 * lHeightShape / 96.0;
 
-			double dHeightMM	= 25.4 * m_lHeight / 96.0;
+            double dHeightMM	= 25.4 * m_lWidthPix / 96.0;
 			dT = (dHeightMM - dT - dH);
 			
             pPage->WriteImage(pShapePicture, dL, dT, dW, dH);
@@ -705,12 +705,12 @@ namespace NSHtmlRenderer
 				}				
 			}
 
-			BOOL bStroke	= (0x01 == (0x01 & nType));
+            bool bStroke	= (0x01 == (0x01 & nType));
 
 			if (nPenW == 0 && bStroke)
 				nPenW = 1;
 
-			BOOL bFill		= (0x01 < nType);
+            bool bFill		= (0x01 < nType);
 			bool bIsLine = false;
 
 			#ifdef USE_SIMPLE_GRAPHICS_NOSVG

@@ -2049,7 +2049,7 @@ namespace NSHtmlRenderer
             sDstLen += ";";
 
             NSFile::CFileBinary _file;
-            _file.CreateFile(m_strDstDirectoryFiles + L"/Editor.bin");
+            _file.CreateFileW(m_strDstDirectoryFiles + L"/Editor.bin");
 
             _file.WriteFile((BYTE*)sDstLen.c_str(), (DWORD)sDstLen.length());
             _file.WriteFile((BYTE*)pOutput, (DWORD)nOutputLen);
@@ -2078,7 +2078,7 @@ namespace NSHtmlRenderer
             NSDirectory::CreateDirectory(strFileFonts);
 
             std::wstring strDocRendererS = m_strDstDirectoryFiles + L"/document_temp.bin";
-            m_oFileWriter.CreateFile(strDocRendererS);
+            m_oFileWriter.CreateFileW(strDocRendererS);
 
             m_oPage.Clear();
             m_arrPages.clear();

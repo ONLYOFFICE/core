@@ -4,6 +4,11 @@
 #include "FontManager.h"
 #include "../../../Common/OfficeFileFormats.h"
 
+#ifdef min
+#undef min
+#endif
+#include <algorithm>
+
 namespace NSHtmlRenderer
 {
     class CHChar
@@ -630,7 +635,7 @@ namespace NSHtmlRenderer
             _dumpMtx[2] = _src->shx;
             _dumpMtx[3] = _src->sy;
 
-            double dTextScale = min( sqrt( _dumpMtx[2] * _dumpMtx[2] + _dumpMtx[3] * _dumpMtx[3] ), sqrt( _dumpMtx[0] * _dumpMtx[0] + _dumpMtx[1] * _dumpMtx[1] ) );
+            double dTextScale = std::min( sqrt( _dumpMtx[2] * _dumpMtx[2] + _dumpMtx[3] * _dumpMtx[3] ), sqrt( _dumpMtx[0] * _dumpMtx[0] + _dumpMtx[1] * _dumpMtx[1] ) );
 
             if ((_dumpSize < 0.1 && dTextScale > 10) || (_dumpSize > 10 && dTextScale < 0.1))
             {

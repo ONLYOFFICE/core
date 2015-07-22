@@ -6,8 +6,6 @@
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
-#pragma comment(lib, "graphics.lib")
-
 namespace PdfReader
 {
 	JPXStream::JPXStream(Stream *pStream) :

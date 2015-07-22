@@ -860,7 +860,7 @@ namespace NSHtmlRenderer
     public:
         void AddString(const int* sText, const int& len)
         {
-            if (NULL == sText || 0 == len)
+            if (NULL != sText)
             {
                 for (int i = 0; i < len; ++i)
                 {
@@ -1114,7 +1114,7 @@ namespace NSHtmlRenderer
 
                 char* pOutput = NULL;
                 int nOutputLen = 0;
-                NSFile::CBase64Converter::Encode(pData, nInputLen, pOutput, nOutputLen);
+                NSFile::CBase64Converter::Encode(pData, nInputLen, pOutput, nOutputLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
                 NSFile::CFileBinary oFileFontFileJS;
                 oFileFontFileJS.CreateFileW(sDstF + L"/embedded" + std::to_wstring(lIndex) + L".js");
@@ -1204,6 +1204,8 @@ namespace NSHtmlRenderer
 
         bool m_bIsGids;
 
+        CApplicationFonts*      m_pApplicationFonts;
+
     public:
 
         double					m_dWidth;
@@ -1238,9 +1240,43 @@ namespace NSHtmlRenderer
         bool					m_bIsSimpleGraphics;
 
     public:
+        CWriter()
+        {
+            m_dDpiX = 96.0;
+            m_dDpiY = 96.0;
+
+            m_dWidth	= 0;
+            m_dHeight	= 0;
+
+            m_lNextIDImage	= 0;
+            m_lNextIDShape	= 0;
+
+            m_lCurrentPage	= -1;
+
+            m_bPathClosed	= true;
+
+            m_pSimpleConverter = NULL;
+
+            m_lMaxSizeImage = 800;
+
+            m_dWidthDocMM	= 0;
+            m_dHeightDocMM	= 0;
+            m_dHeightPageMM	= 0;
+
+            m_lPagesCount		= 0;
+
+            m_bIsImageFromVectors = false;
+
+            m_lSrcFileType = 0;
+
+            m_bIsClipping = false;
+            m_bIsSimpleGraphics = false;
+            m_lTilingCounter = 0;
+        }
+
         void SetApplicationFonts(CApplicationFonts* pFonts)
         {
-
+            m_pApplicationFonts = pFonts;
         }
 
         void SetSimpleConverter(Aggplus::CGraphicsPathSimpleConverter* pSimpleConverter, Aggplus::CMatrix* pMatrix)
@@ -1600,6 +1636,7 @@ namespace NSHtmlRenderer
             }
             else
             {
+                pFrame->put_Data(NULL);
                 oInfo = pPair->second;
             }
 
@@ -1651,6 +1688,7 @@ namespace NSHtmlRenderer
             int lWidth = pFrame->get_Width();
             int lHeight = pFrame->get_Height();
 
+            bool bIsResized = false;
             if (true || (lWidth <= m_lMaxSizeImage) && (lHeight <= m_lMaxSizeImage))
             {
                 // не ресайзим
@@ -1672,11 +1710,15 @@ namespace NSHtmlRenderer
                     lW = (LONG)(dAspect * lH);
                 }
 
+                bIsResized = true;
                 pFrame->Resize(lW, lH, bIsDestroy);
             }
 
             std::wstring strSave = m_strDstMedia + L"/image" + std::to_wstring(oInfo.m_lID) + ((itJPG == oInfo.m_eType) ? L".jpg" : L".png");
             pFrame->SaveFile(strSave, (itJPG == oInfo.m_eType) ? 3 : 4);
+
+            if (!bIsDestroy && !bIsResized)
+                pFrame->put_Data(NULL);
         }
 
         inline void WriteImage2(NSHtmlRenderer::CImageInfo& oID, const double& x, const double& y, const double& w, const double& h)
@@ -1791,6 +1833,10 @@ namespace NSHtmlRenderer
         {
             m_oSmartText.DumpLine();
             SetTransformToDocument(true);
+
+#if 0
+            m_oSVGWriter.DEBUG_DumpSVG(m_strDstMedia);
+#endif
 
             bool bIsBIG = false;
 
@@ -1995,7 +2041,7 @@ namespace NSHtmlRenderer
 
             char* pOutput = NULL;
             int nOutputLen = 0;
-            NSFile::CBase64Converter::Encode(pData, lSizeAll, pOutput, nOutputLen);
+            NSFile::CBase64Converter::Encode(pData, lSizeAll, pOutput, nOutputLen, NSBase64::B64_BASE64_FLAG_NOCRLF);
 
             RELEASEARRAYOBJECTS(pData);
 
@@ -2003,14 +2049,16 @@ namespace NSHtmlRenderer
             sDstLen += ";";
 
             NSFile::CFileBinary _file;
-            _file.CreateFile(m_strDstDirectoryFiles + L"/document.js");
+            _file.CreateFile(m_strDstDirectoryFiles + L"/Editor.bin");
 
             _file.WriteFile((BYTE*)sDstLen.c_str(), (DWORD)sDstLen.length());
             _file.WriteFile((BYTE*)pOutput, (DWORD)nOutputLen);
 
             _file.CloseFile();
 
-            m_oDstFontGenerator.WriteFonts(NULL, m_strDstDirectoryFiles + L"/fonts", m_bIsGids);
+            ::CFontManager* pFontManager = m_pApplicationFonts->GenerateFontManager();
+            m_oDstFontGenerator.WriteFonts(pFontManager, m_strDstDirectoryFiles + L"/fonts", m_bIsGids);
+            RELEASEOBJECT(pFontManager);
         }
 
         void CreateFile(std::wstring& strDir, std::wstring& strFileName)

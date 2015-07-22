@@ -9,6 +9,9 @@ namespace NSHtmlRenderer
     class CASCHTMLRenderer3 : public IRenderer
     {
     public:
+        CASCHTMLRenderer3();
+        virtual ~CASCHTMLRenderer3();
+    public:
     // тип рендерера-----------------------------------------------------------------------------
         virtual HRESULT get_Type(LONG* lType);
     //-------- Функции для работы со страницей --------------------------------------------------

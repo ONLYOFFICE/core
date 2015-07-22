@@ -1,4 +1,5 @@
 #include "LabelSst.h"
+
 #include <simple_xml_writer.h>
 
 namespace XLS
@@ -49,9 +50,19 @@ int LabelSst::serialize(std::wostream & stream)
 		{
 			CP_XML_ATTR(L"r", ref);
 
-			if (cell.ixfe.value())
+			if ((cell.ixfe.value()) && (cell.ixfe > cellStyleXfs_count))
 			{
-				CP_XML_ATTR(L"s", *cell.ixfe.value() - cellStyleXfs_count);
+				CP_XML_ATTR(L"s", cell.ixfe - cellStyleXfs_count);
+			}
+			
+			CP_XML_ATTR(L"t", L"s");
+			
+			if (isst.value())
+			{
+				CP_XML_NODE(L"v")
+				{
+					CP_XML_STREAM() << isst;
+				}
 			}
 		}			
 	}

@@ -81,7 +81,7 @@ int XF::serialize(std::wostream & stream)
 			
 			if (ifmt.value())
 			{
-				CP_XML_ATTR(L"numFmtIs"	, *ifmt.value());
+				CP_XML_ATTR(L"numFmtId"	, *ifmt.value());
 			}
 
 			if(fStyle)

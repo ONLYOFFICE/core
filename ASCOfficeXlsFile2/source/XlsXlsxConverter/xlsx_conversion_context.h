@@ -28,6 +28,7 @@ public:
     void end_document();
 
 	std::wostream & current_stream();
+	std::wostream & shared_strings() {return xlsx_shared_strings_;}
 
 
  //   void start_chart(std::wstring const & name);
@@ -124,6 +125,8 @@ private:
     //xlsx_defined_names              xlsx_defined_names_;
     xlsx_table_context              xlsx_table_context_;
     xlsx_text_context               xlsx_text_context_;
+	std::wstringstream				xlsx_shared_strings_;
+
     //xlsx_drawing_context_handle     xlsx_drawing_context_handle_;
     //xlsx_comments_context_handle    xlsx_comments_context_handle_;
     

@@ -1,4 +1,5 @@
 #include "BorderFillInfo.h"
+#include <Auxiliary/HelpFunc.h>
 #include <boost/functional/hash/hash.hpp>
 
 #include <simple_xml_writer.h>
@@ -86,13 +87,48 @@ int FillInfo::serialize(std::wostream & stream)
 				{
 					CP_XML_NODE(L"fgColor")
 					{
-						//if (icvFore < 65 ) 
+						if (foreFillInfo_.enabled)
+						{
+							switch(foreFillInfo_.xclrType)
+							{
+							case 0://auto
+								/*CP_XML_ATTR(L"auto");*/ break;
+							case 1://indexed
+								CP_XML_ATTR(L"indexed",  foreFillInfo_.icv); break;
+							case 2://rgb
+								CP_XML_ATTR(L"rgb", STR::toARGB(foreFillInfo_.xclrValue)); break;
+							case 3://theme color
+								CP_XML_ATTR(L"theme", foreFillInfo_.xclrValue + 1); 
+								CP_XML_ATTR(L"tint", foreFillInfo_.nTintShade / 32767.0); break;
+							case 4://not set
+								break;
+							}
+						}else
 							CP_XML_ATTR(L"indexed", icvFore);
+
 					}
 					CP_XML_NODE(L"bgColor")
 					{
-						//if (icvBack < 65 )	
+						if (backFillInfo_.enabled)
+						{
+							switch(backFillInfo_.xclrType)
+							{
+							case 0://auto
+								/*CP_XML_ATTR(L"auto");*/ break;
+							case 1://indexed
+								CP_XML_ATTR(L"indexed",  backFillInfo_.icv); break;
+							case 2://rgb
+								CP_XML_ATTR(L"rgb", STR::toARGB(backFillInfo_.xclrValue)); break;
+							case 3://theme color
+								CP_XML_ATTR(L"theme", backFillInfo_.xclrValue + 1); 
+								CP_XML_ATTR(L"tint", backFillInfo_.nTintShade / 32767.0); break;
+							case 4://not set
+								break;
+							}
+						}
+						else
 							CP_XML_ATTR(L"indexed", icvBack);
+
 					}
 				}
 			}

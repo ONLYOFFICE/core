@@ -175,7 +175,13 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	proc.optional<RecalcId>();
 	proc.repeated<HFPicture>(0, 0); /////
 	proc.repeated(MSODRAWINGGROUP(false), 0, 0);
-	proc.optional(SHAREDSTRINGS(code_page_));
+	
+	if (proc.optional(SHAREDSTRINGS(code_page_)))
+	{
+		m_SHAREDSTRINGS = elements_.back();
+		elements_.pop_back();
+	}
+	
 	proc.optional<ExtSST>(); // OpenOffice Calc stored files workaround (ExtSST is mandatory according to [MS-XLS])
 	proc.repeated<WebPub>(0, 0);
 	proc.optional<WOpt>();

@@ -15,14 +15,12 @@ class ExtProp : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned short extType;
 	unsigned short cb;
+	
 	struct extPropData_Tag
 	{
 		FullColorExt color;

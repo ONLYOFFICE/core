@@ -373,14 +373,6 @@
 				>
 			</File>
 			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_sharedstrings.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsXlsxConverter\xlsx_sharedstrings.h"
-				>
-			</File>
-			<File
 				RelativePath="..\XlsXlsxConverter\xlsx_tablecontext.cpp"
 				>
 			</File>

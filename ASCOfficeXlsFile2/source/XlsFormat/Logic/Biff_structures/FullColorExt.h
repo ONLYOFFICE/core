@@ -13,15 +13,13 @@ class FullColorExt : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
-	unsigned short xclrType;
-	short nTintShade;
-	unsigned int xclrValue;
+	unsigned char	icv;
+	unsigned char	xclrType;
+	short			nTintShade;
+	unsigned int	xclrValue;
 };
 
 } // namespace XLS

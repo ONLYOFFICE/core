@@ -3,6 +3,8 @@
 #include <Logic/Biff_records/SST.h>
 #include <Logic/Biff_records/Continue.h>
 
+#include <simple_xml_writer.h>
+
 namespace XLS
 {;
 
@@ -34,6 +36,16 @@ const bool SHAREDSTRINGS::loadContent(BinProcessor& proc)
 	proc.repeated<Continue>(0, 0);
 	return true;
 }
+
+int SHAREDSTRINGS::serialize(std::wostream & stream)
+{
+	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
+	{
+		(*it)->serialize(stream);
+	}
+	return 0;
+}
+
 
 } // namespace XLS
 

@@ -2,12 +2,13 @@
 
 #include "BiffStructure.h"
 #include "BorderFillInfo.h"
-#include "ExtProp.h"
 
 namespace XLS
 {;
 
 class CFRecord;
+class GlobalWorkbookInfo;
+typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;
 
 class CellXF : public BiffStructure
 {

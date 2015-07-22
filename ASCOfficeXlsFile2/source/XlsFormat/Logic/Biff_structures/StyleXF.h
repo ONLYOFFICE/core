@@ -2,12 +2,13 @@
 
 #include "BiffStructure.h"
 #include "BorderFillInfo.h"
-#include "ExtProp.h"
 
 namespace XLS
 {;
 
 class CFRecord;
+class GlobalWorkbookInfo;
+typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;
 
 class StyleXF : public BiffStructure
 {
@@ -25,14 +26,14 @@ public:
 
 	void RegisterFillBorder();
 
-	unsigned char alc;
-	bool fWrap;
-	unsigned char alcV;
-	bool fJustLast;
-	unsigned char trot;
-	unsigned char cIndent;
-	bool fShrinkToFit;
-	unsigned char iReadOrder;
+	unsigned char	alc;
+	bool			fWrap;
+	unsigned char	alcV;
+	bool			fJustLast;
+	unsigned char	trot;
+	unsigned char	cIndent;
+	bool			fShrinkToFit;
+	unsigned char	iReadOrder;
 
 	BorderInfo		border;
 	FillInfo		fill;

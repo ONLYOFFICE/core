@@ -45,8 +45,7 @@ public:
 	void			start_drawing_content();
 	std::wstring	end_drawing_content(); 
 
-    void write_shared_strings(std::wostream & strm);
-	
+
 	void ApplyTextProperties();
 
 	void set_local_styles_container();//это если стили объектов содержатся в другом документе
@@ -76,17 +75,12 @@ private:
    
 	std::wstringstream	text_;
     std::wstringstream	output_;
-    xlsx_shared_strings xlsx_shared_strings_;
    
 	std::wstring paragraph_style_name_;//был вектор ... не нужен, так как в один момент времени может быть тока один стиль параграфа,текста,объекта при приходе нового - дампится
     std::wstring span_style_name_;
 
 };
 
-void xlsx_text_context::Impl::write_shared_strings(std::wostream & strm)
-{
-    xlsx_shared_strings_.xlsx_serialize(strm);    
-}
 
 
 xlsx_text_context::Impl::Impl(): paragraphs_cout_(0),
@@ -341,7 +335,7 @@ int xlsx_text_context::Impl::end_cell_content()
 {
 	dump_text();
 
-	const int sharedStrId = output_.str().empty() ? (-1) :  static_cast<int>(xlsx_shared_strings_.add(output_.str()));
+	const int sharedStrId = 0;//output_.str().empty() ? (-1) :  static_cast<int>(xlsx_shared_strings_.add(output_.str()));
 	//???? нужно ли здесь очищать все ????? - проверить стили на кучках - и проверить как меняются стили внутри одной ячейки - то есть здешнее переопределение внешнего стиля
 	in_cell_content = false;   
 	return sharedStrId;
@@ -435,10 +429,6 @@ void xlsx_text_context::end_hyperlink(std::wstring hId)
 std::wstring xlsx_text_context::end_drawing_content()
 {
 	return impl_->end_drawing_content();
-}
-void xlsx_text_context::write_shared_strings(std::wostream & strm)
-{
-    return impl_->write_shared_strings(strm);
 }
 
     

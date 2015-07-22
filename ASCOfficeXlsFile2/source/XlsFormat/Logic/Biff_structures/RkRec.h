@@ -14,13 +14,11 @@ class RkRec : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
+
 	const unsigned short get_ixfe() const;
 
-public:
 	unsigned short ixfe;
 	RkNumber RK_;
 };

@@ -20,6 +20,7 @@ public:
 
 	static const ElementType	type = typeSHAREDSTRINGS;
 	
+	int serialize(std::wostream & stream);
 
 	unsigned short code_page_;
 };

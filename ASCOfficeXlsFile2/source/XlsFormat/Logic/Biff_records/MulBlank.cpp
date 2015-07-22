@@ -95,11 +95,11 @@ int MulBlank::serialize(std::wostream & stream)
 			{
 				CP_XML_ATTR(L"r", ref);
 
-				if (rgixfe.common_ixfe > 0)
+				if  ((rgixfe.common_ixfe > 0) && (rgixfe.common_ixfe > cellStyleXfs_count))
 				{
 					CP_XML_ATTR(L"s", rgixfe.common_ixfe - cellStyleXfs_count);
 				}
-				else if( i < rgixfe.rgixfe.size())
+				else if(( i < rgixfe.rgixfe.size()) && (rgixfe.rgixfe[i] > cellStyleXfs_count))
 				{
 					CP_XML_ATTR(L"s", rgixfe.rgixfe[i] - cellStyleXfs_count);
 				}

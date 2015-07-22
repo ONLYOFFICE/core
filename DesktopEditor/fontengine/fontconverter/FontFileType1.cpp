@@ -462,7 +462,7 @@ namespace NSFontConverter
 
                         if ( m_oPrivateDict.nLenIV > 0 && m_oPrivateDict.nLenIV < nLength )
                         {
-                            Type1Charstring& oCharstring = DecodeCharString( sData + m_oPrivateDict.nLenIV, nLength - m_oPrivateDict.nLenIV );
+                            Type1Charstring oCharstring = DecodeCharString( sData + m_oPrivateDict.nLenIV, nLength - m_oPrivateDict.nLenIV );
                             if ( bGlyphsSection )
                             {
                                 int nUnicode = Type1NameToUnicodeW( sGlyph.c_str() );

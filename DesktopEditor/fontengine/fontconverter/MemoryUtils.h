@@ -5,6 +5,10 @@
 #include <limits>
 #include <string>
 
+#ifdef __linux__
+    #include <string.h>
+#endif
+
 namespace NSFontConverter
 {
     //------------------------------------------------------------------------
@@ -59,7 +63,7 @@ namespace NSFontConverter
             return NULL;
 
         int nSize = nObjectsCount * nObjectSize;
-        if ( nObjectSize <= 0 || nObjectsCount < 0 || nObjectsCount >= INT_MAX / nObjectSize )
+        if ( nObjectSize <= 0 || nObjectsCount < 0 || nObjectsCount >= 0x7fffffff / nObjectSize )
         {
             // TO DO: Выдать ошибку выделения памяти
         }
@@ -83,7 +87,7 @@ namespace NSFontConverter
         }
         int nSize = nObjectsCount * nObjectSize;
 
-        if ( nObjectSize <= 0 || nObjectsCount < 0 || nObjectsCount >= INT_MAX / nObjectSize )
+        if ( nObjectSize <= 0 || nObjectsCount < 0 || nObjectsCount >= 0x7fffffff / nObjectSize )
         {
             // TO DO: Выдать ошибку выделения памяти
         }

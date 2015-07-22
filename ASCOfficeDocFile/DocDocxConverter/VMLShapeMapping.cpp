@@ -44,7 +44,19 @@ namespace DocFileFormat
 		m_3dstyle			=	XMLTools::XMLElement<wchar_t>(_T("o:extrusion"));
 		m_textpath			=	XMLTools::XMLElement<wchar_t>(_T("v:textpath"));
 
-		Record* recBs		=	m_ctx->_doc->GetOfficeArt()->GetDrawingGroup()->FirstChildWithType<BlipStoreContainer>();
+		Record* recBs		=	NULL;
+		if ((m_ctx) && (m_ctx->_doc))
+		{
+			OfficeArtContent* officeArt = m_ctx->_doc->GetOfficeArt();
+			if (officeArt)
+			{
+				const DrawingGroup* group = officeArt->GetDrawingGroup();
+				if (group)
+				{
+					recBs = group->FirstChildWithType<BlipStoreContainer>();
+				}
+			}
+		}
 
 		if (recBs)
 		{

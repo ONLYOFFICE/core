@@ -606,7 +606,7 @@ void CFontFile::CheckHintsSupport()
         return;
     }
 
-	std::string sFamilyName(m_pFace->family_name);
+	std::string sFamilyName((NULL != m_pFace->family_name) ? m_pFace->family_name : "");
 
     if (sFamilyName == "MS Mincho" || sFamilyName == "Castellar")
         m_bHintsSupport = FALSE;

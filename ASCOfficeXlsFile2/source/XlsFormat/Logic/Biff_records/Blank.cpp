@@ -48,9 +48,9 @@ int Blank::serialize(std::wostream & stream)
 		{
 			CP_XML_ATTR(L"r", ref);
 
-			if (cell.ixfe.value())
+			if ((cell.ixfe.value()) && (cell.ixfe > cellStyleXfs_count))
 			{
-				CP_XML_ATTR(L"s", *cell.ixfe.value() - cellStyleXfs_count);
+				CP_XML_ATTR(L"s", cell.ixfe - cellStyleXfs_count);
 			}
 		}			
 	}

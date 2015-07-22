@@ -3,7 +3,7 @@
 #include "../../../Common/DocxFormat/Source/Base/Types_32.h"
 #include "BiffStructure.h"
 #include "BiffAttribute.h"
-//#include <Exception/WrongBiffRecord.h>
+#include <Auxiliary/HelpFunc.h>
 #include "Boolean.h"
 
 #pragma pack(1)
@@ -73,6 +73,18 @@ struct RkNumber : public BiffStructure_NoVtbl
 		else
 		{
 			return fX100 ? toDouble() / 100.0 : toDouble();
+		}
+	}
+	std::wstring value()
+	{
+		if(fInt)
+		{
+			//return fX100 ? num / 100 : num;
+			return fX100 ? STR::double2str(num / 100.0) : STR::int2wstr(num);
+		}
+		else
+		{
+			return STR::double2str( fX100 ? toDouble() / 100.0 : toDouble() );
 		}
 	}
 private:

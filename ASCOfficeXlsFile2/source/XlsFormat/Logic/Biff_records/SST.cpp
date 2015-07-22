@@ -1,5 +1,6 @@
-
 #include "SST.h"
+
+#include <simple_xml_writer.h>
 
 namespace XLS
 {;
@@ -72,6 +73,32 @@ void SST::readFields(CFRecord& record)
 		record >> *element;
 		rgb.push_back(element);
 	}
+}
+
+
+int SST::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+	{
+		CP_XML_NODE(L"sst")
+		{
+			CP_XML_ATTR(L"uniqueCount", rgb.size());
+			CP_XML_ATTR(L"xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
+
+			for (long i=0; i < rgb.size(); i++)
+			{
+				CP_XML_NODE(L"si")
+				{				
+					CP_XML_NODE(L"t")
+					{		
+						XLUnicodeRichExtendedString *richText = dynamic_cast<XLUnicodeRichExtendedString *>(rgb[i].get());
+						CP_XML_STREAM() << richText->str_;
+					}
+				}
+			}
+		}
+	}
+	return 0;
 }
 
 } // namespace XLS

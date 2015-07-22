@@ -28,6 +28,7 @@ namespace XLS
 	
 	class FORMATTING;
 	class THEME;
+	class SHAREDSTRINGS;
 	
 }
 
@@ -58,6 +59,7 @@ private:
 	void convert(XLS::GlobalsSubstream			* elem);
 	void convert(XLS::FORMATTING				* formating);
 	void convert(XLS::THEME						* theme);
+	void convert(XLS::SHAREDSTRINGS				* sharedstrings);
 	
 
 };

@@ -28,6 +28,7 @@ public:
 	BaseObjectPtr m_Theme;
 	BaseObjectPtr m_Formating;
 	BaseObjectPtr m_Template;
+	BaseObjectPtr m_SHAREDSTRINGS;
 	
 	unsigned short code_page_;
 };

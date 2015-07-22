@@ -1,5 +1,6 @@
 
 #include "StyleXF.h"
+#include "ExtProp.h"
 #include <Binary/CFRecord.h>
 
 #include <simple_xml_writer.h>
@@ -96,15 +97,53 @@ void StyleXF::load(CFRecord& record)
 
 void StyleXF::RegisterFillBorder()
 {
-	border_x_id		= m_GlobalWorkbookInfo->RegisterBorderId(border);
+	for (long i = 0; i < ext_props.size(); i++ )
+	{
+		ExtProp* ext_prop = dynamic_cast<ExtProp*>(ext_props[i].get());
 
-	if (ext_props.size() > 0 )
-	{
-	}
-	else
-	{
-	}
+		switch(ext_prop->extType)
+		{
+			case 0x0004:
+			{
+				fill.foreFillInfo_.enabled		= true;
+				fill.foreFillInfo_.icv			= ext_prop->extPropData.color.icv;
+				fill.foreFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
+				fill.foreFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
+				fill.foreFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;
+			}break;
+			case 0x0005:
+			{
+				fill.backFillInfo_.enabled		= true;
+				fill.backFillInfo_.icv			= ext_prop->extPropData.color.icv;
+				fill.backFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
+				fill.backFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
+				fill.backFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;
+			}break;
+			//case 0x0007:
+			//case 0x0008:
+			//case 0x0009:
+			//case 0x000A:
+			//case 0x000B:
+			//case 0x000C:
+			//case 0x000D:
+			//	extPropData.color.toXML(own_tag);
+			//	break;
+			//case 0x0006:
+			//	extPropData.gradient_fill.toXML(own_tag);
+			//	break;
+			//case 0x000E:
+			//	own_tag->Puttext(STR::int2str(extPropData.font_scheme, 10).c_str());
+			//	break;
+			//case 0x000F:
+			//	own_tag->Puttext(STR::int2str(extPropData.indent_level, 10).c_str());
+			//	break;
+		}
+	}	
+	
+	border_x_id	= m_GlobalWorkbookInfo->RegisterBorderId(border);
 	fill_x_id	= m_GlobalWorkbookInfo->RegisterFillId(fill);
+	
+
 }
 int StyleXF::serialize(std::wostream & stream)
 {

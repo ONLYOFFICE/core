@@ -1,5 +1,6 @@
 
 #include "CellXF.h"
+#include "ExtProp.h"
 #include <Binary/CFRecord.h>
 
 #include <simple_xml_writer.h>
@@ -19,89 +20,6 @@ BiffStructurePtr CellXF::clone()
 	return BiffStructurePtr(new CellXF(*this));
 }
 
-
-//void CellXF::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"alc", alc);
-//	xml_tag->setAttribute(L"fWrap", fWrap);
-//	xml_tag->setAttribute(L"alcV", alcV);
-//	xml_tag->setAttribute(L"fJustLast", fJustLast);
-//	xml_tag->setAttribute(L"trot", trot);
-//	xml_tag->setAttribute(L"cIndent", cIndent);
-//	xml_tag->setAttribute(L"fShrinkToFit", fShrinkToFit);
-//	xml_tag->setAttribute(L"iReadOrder", iReadOrder);
-//	xml_tag->setAttribute(L"fAtrNum", fAtrNum);
-//	xml_tag->setAttribute(L"fAtrFnt", fAtrFnt);
-//	xml_tag->setAttribute(L"fAtrAlc", fAtrAlc);
-//	xml_tag->setAttribute(L"fAtrBdr", fAtrBdr);
-//	xml_tag->setAttribute(L"fAtrPat", fAtrPat);
-//	xml_tag->setAttribute(L"fAtrProt", fAtrProt);
-//
-//	xml_tag->setAttribute(L"dgLeft", border.dgLeft);
-//	xml_tag->setAttribute(L"dgRight", border.dgRight);
-//	xml_tag->setAttribute(L"dgTop", border.dgTop);
-//	xml_tag->setAttribute(L"dgBottom", border.dgBottom);
-//	xml_tag->setAttribute(L"icvLeft", border.icvLeft);
-//	xml_tag->setAttribute(L"icvRight", border.icvRight);
-//	xml_tag->setAttribute(L"grbitDiag", border.grbitDiag);
-//
-//	xml_tag->setAttribute(L"icvTop", border.icvTop);
-//	xml_tag->setAttribute(L"icvBottom", border.icvBottom);
-//	xml_tag->setAttribute(L"icvDiag", border.icvDiag);
-//	xml_tag->setAttribute(L"dgDiag", border.dgDiag);
-//	xml_tag->setAttribute(L"fHasXFExt", fHasXFExt);
-//	xml_tag->setAttribute(L"fls", fill.fls);
-//
-//	xml_tag->setAttribute(L"icvFore", fill.icvFore);
-//	xml_tag->setAttribute(L"icvBack", fill.icvBack);
-//	xml_tag->setAttribute(L"fsxButton", fsxButton);
-//
-//	xml_tag->setAttribute(L"xf_current_id", cell_xf_current_id_ + style_xf_current_id_);
-//	xml_tag->setAttribute(L"cell_xf_current_id", cell_xf_current_id_++);
-//
-//	xml_tag->setAttribute(L"border_x_id", border_x_id);
-//	xml_tag->setAttribute(L"fill_x_id", fill_x_id);
-//}
-//
-//
-//void CellXF::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	alc = getStructAttribute(xml_tag, L"alc");
-//	fWrap = getStructAttribute(xml_tag, L"fWrap");
-//	alcV = getStructAttribute(xml_tag, L"alcV");
-//	fJustLast = getStructAttribute(xml_tag, L"fJustLast");
-//	trot = getStructAttribute(xml_tag, L"trot");
-//	cIndent = getStructAttribute(xml_tag, L"cIndent");
-//	fShrinkToFit = getStructAttribute(xml_tag, L"fShrinkToFit");
-//	iReadOrder = getStructAttribute(xml_tag, L"iReadOrder");
-//	fAtrNum = getStructAttribute(xml_tag, L"fAtrNum");
-//	fAtrFnt = getStructAttribute(xml_tag, L"fAtrFnt");
-//	fAtrAlc = getStructAttribute(xml_tag, L"fAtrAlc");
-//	fAtrBdr = getStructAttribute(xml_tag, L"fAtrBdr");
-//	fAtrPat = getStructAttribute(xml_tag, L"fAtrPat");
-//	fAtrProt = getStructAttribute(xml_tag, L"fAtrProt");
-//
-//	border.dgLeft = getStructAttribute(xml_tag, L"dgLeft");
-//	border.dgRight = getStructAttribute(xml_tag, L"dgRight");
-//	border.dgTop = getStructAttribute(xml_tag, L"dgTop");
-//	border.dgBottom = getStructAttribute(xml_tag, L"dgBottom");
-//	border.icvLeft = getStructAttribute(xml_tag, L"icvLeft");
-//	border.icvRight = getStructAttribute(xml_tag, L"icvRight");
-//	border.grbitDiag = getStructAttribute(xml_tag, L"grbitDiag");
-//
-//	border.icvTop = getStructAttribute(xml_tag, L"icvTop");
-//	border.icvBottom = getStructAttribute(xml_tag, L"icvBottom");
-//	border.icvDiag = getStructAttribute(xml_tag, L"icvDiag");
-//	border.dgDiag = getStructAttribute(xml_tag, L"dgDiag");
-//	fHasXFExt = getStructAttribute(xml_tag, L"fHasXFExt");
-//	fill.fls = getStructAttribute(xml_tag, L"fls");
-//
-//	fill.icvFore = getStructAttribute(xml_tag, L"icvFore");
-//	fill.icvBack = getStructAttribute(xml_tag, L"icvBack");
-//	fsxButton = getStructAttribute(xml_tag, L"fsxButton");
-//}
-//
-//
 void CellXF::store(CFRecord& record)
 {
 	unsigned int flags = 0;
@@ -196,14 +114,49 @@ void CellXF::load(CFRecord& record)
 
 void CellXF::RegisterFillBorder()
 {
+	for (long i = 0; i < ext_props.size(); i++ )
+	{
+		ExtProp* ext_prop = dynamic_cast<ExtProp*>(ext_props[i].get());
+
+		switch(ext_prop->extType)
+		{
+			case 0x0004:
+			{
+				fill.foreFillInfo_.enabled		= true;
+				fill.foreFillInfo_.icv			= ext_prop->extPropData.color.icv;
+				fill.foreFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
+				fill.foreFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
+				fill.foreFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;
+			}break;
+			case 0x0005:
+			{
+				fill.backFillInfo_.enabled		= true;
+				fill.backFillInfo_.icv			= ext_prop->extPropData.color.icv;
+				fill.backFillInfo_.xclrType		= ext_prop->extPropData.color.xclrType;
+				fill.backFillInfo_.nTintShade	= ext_prop->extPropData.color.nTintShade;
+				fill.backFillInfo_.xclrValue	= ext_prop->extPropData.color.xclrValue;
+			}break;
+			//case 0x0007:
+			//case 0x0008:
+			//case 0x0009:
+			//case 0x000A:
+			//case 0x000B:
+			//case 0x000C:
+			//case 0x000D:
+			//	extPropData.color.toXML(own_tag);
+			//	break;
+			//case 0x0006:
+			//	extPropData.gradient_fill.toXML(own_tag);
+			//	break;
+			//case 0x000E:
+			//	own_tag->Puttext(STR::int2str(extPropData.font_scheme, 10).c_str());
+			//	break;
+			//case 0x000F:
+			//	own_tag->Puttext(STR::int2str(extPropData.indent_level, 10).c_str());
+			//	break;
+		}
+	}	
 	border_x_id	 = m_GlobalWorkbookInfo->RegisterBorderId(border);
-	
-	if (ext_props.size() > 0 )
-	{
-	}
-	else
-	{
-	}
 	fill_x_id	= m_GlobalWorkbookInfo->RegisterFillId(fill);
 }
 

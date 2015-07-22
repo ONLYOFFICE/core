@@ -14,6 +14,7 @@
 #include "../XlsFormat/Logic/Biff_unions/THEME.h"
 #include "../XlsFormat/Logic/Biff_unions/GLOBALS.h"
 #include "../XlsFormat/Logic/Biff_unions/COLUMNS.h"
+#include "../XlsFormat/Logic/Biff_unions/SHAREDSTRINGS.h"
 
 
 #include "xlsx_conversion_context.h"
@@ -151,7 +152,7 @@ void XlsConverter::convert(XLS::BaseObject	*xls_unknown)
 		{
 			for (std::list<XLS::BaseObjectPtr>::iterator it = xls_unknown->elements_.begin(); it != xls_unknown->elements_.end(); it++)
 			{
-				it->get()->serialize(xlsx_context->current_stream());
+				(*it)->serialize(xlsx_context->current_stream());
 			}
 		}
 	}
@@ -230,16 +231,8 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 	
 	convert((XLS::THEME*)global->m_Theme.get());
 
+	convert((XLS::SHAREDSTRINGS*)global->m_SHAREDSTRINGS.get());
 }
-template<class T>
-struct map_data_compare : public std::binary_function<typename T::value_type,typename T::mapped_type,bool>
-{
-	public:
-		bool operator() (typename T::value_type &pair,typename T::mapped_type i)
-		{
-			return pair.second == i;
-		}
-};
 
 typedef boost::unordered_map<XLS::FillInfo, int>	mapFillInfo;
 typedef boost::unordered_map<XLS::BorderInfo, int>	mapBorderInfo;
@@ -301,4 +294,14 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 void XlsConverter::convert(XLS::THEME* theme)
 {
 	if (theme == NULL) return;
+}
+
+void XlsConverter::convert(XLS::SHAREDSTRINGS* sharedstrings)
+{
+	if (sharedstrings == NULL) return;
+	
+	for (std::list<XLS::BaseObjectPtr>::iterator it = sharedstrings->elements_.begin(); it != sharedstrings->elements_.end(); it++)
+	{
+		(*it)->serialize(xlsx_context->shared_strings());
+	}
 }

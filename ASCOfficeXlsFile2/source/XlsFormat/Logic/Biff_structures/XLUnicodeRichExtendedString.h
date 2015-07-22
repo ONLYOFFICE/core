@@ -30,16 +30,16 @@ public:
 	const size_t getNonVariablePartSize() const;
 	const size_t getFullSize() const;
 
-//private:
-	// Append data of the next Continue record if exists and remove it from the list
 	const bool appendNextContinue(CFRecord& record, const bool read_high_byte);
 
-private:
 	std::wstring  str_;
+
 	bool fHighByte;
 	bool fExtSt;
 	bool fRichSt;
+	
 	std::vector<FormatRun> rgRun;
+	
 	ExtRst extRst;
 	std::list<CFRecordPtr>& cont_recs_;
 	bool mark_set_start;

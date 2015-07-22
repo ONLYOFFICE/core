@@ -12,42 +12,6 @@ BiffStructurePtr ExtProp::clone()
 	return BiffStructurePtr(new ExtProp(*this));
 }
 
-
-//void ExtProp::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//	own_tag->setAttribute(L"extType", extType);
-//	own_tag->setAttribute(L"cb", cb);
-//
-//	switch(extType)
-//	{
-//		case 0x0004:
-//		case 0x0005:
-//		case 0x0007:
-//		case 0x0008:
-//		case 0x0009:
-//		case 0x000A:
-//		case 0x000B:
-//		case 0x000C:
-//		case 0x000D:
-//			extPropData.color.toXML(own_tag);
-//			break;
-//		case 0x0006:
-//			extPropData.gradient_fill.toXML(own_tag);
-//			break;
-//		case 0x000E:
-//			own_tag->Puttext(STR::int2str(extPropData.font_scheme, 10).c_str());
-//			break;
-//		case 0x000F:
-//			own_tag->Puttext(STR::int2str(extPropData.indent_level, 10).c_str());
-//			break;
-//		default:
-//			break;
-//	}
-//
-//}
-//
-
 void ExtProp::store(CFRecord& record)
 {
 #pragma message("####################### ExtProp record has no BiffStructure::store() implemented")

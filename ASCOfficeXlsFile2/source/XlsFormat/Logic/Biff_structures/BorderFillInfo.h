@@ -5,6 +5,17 @@
 namespace XLS
 {;
 
+struct FillInfoExt
+{
+	FillInfoExt()	{enabled = false; xclrType = icv = 0; nTintShade = 0; xclrValue = 0;}
+	bool			enabled;
+
+	unsigned char	xclrType;
+	unsigned char	icv;
+	short			nTintShade;
+	unsigned int	xclrValue;
+};
+
 struct FillInfo
 {
 	FillInfo(){}
@@ -31,6 +42,13 @@ struct FillInfo
 	friend std::size_t hash_value(FillInfo const & val);
 
 	int serialize(std::wostream & stream);
+
+//additional (сравнение по базовому, расширения тока пишем)
+
+	FillInfoExt foreFillInfo_;
+	FillInfoExt backFillInfo_;
+
+
 };
 
 struct BorderInfo

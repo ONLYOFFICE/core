@@ -23,6 +23,8 @@ public:
 
 	static const ElementType	type = typeSST;
 
+	int serialize(std::wostream & stream);
+
 //-----------------------------
 	BIFF_LONG cstTotal;
 	BIFF_LONG cstUnique;
@@ -30,14 +32,6 @@ public:
 
 //-----------------------------
 	unsigned short code_page_;
-
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(cstTotal)
-		//BO_ATTRIB_MARKUP_ATTRIB(cstUnique)
-		//proc.markVector(rgb, XLUnicodeRichExtendedString(continue_records[rt_Continue]));
-		////BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgb, XLUnicodeRichExtendedString)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

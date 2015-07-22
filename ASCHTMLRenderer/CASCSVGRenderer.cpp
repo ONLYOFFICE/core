@@ -462,18 +462,18 @@ namespace NSHtmlRenderer
 		return S_OK;
 	}
 	//-------- Функции для вывода текста --------------------------------------------------------
-	HRESULT CASCSVGRenderer::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset)
+	HRESULT CASCSVGRenderer::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
 	{
 		//todo new command
 		return S_OK;
 	}
-	HRESULT CASCSVGRenderer::CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset)
+	HRESULT CASCSVGRenderer::CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)
 	{
 		if (c_nHyperlinkType == m_lCurrentCommandType)
 			return S_OK;
 
 		PathCommandStart();
-		PathCommandText(bsText, x, y, w, h);//, baselineOffset);
+		PathCommandText(bsText, x, y, w, h);
 
 		//double	dOldPenW = m_pPen->Size;
 		//long	lOldPenC = m_pPen->Color;
@@ -503,22 +503,22 @@ namespace NSHtmlRenderer
 
 		return S_OK;
 	}
-	HRESULT CASCSVGRenderer::CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
+	HRESULT CASCSVGRenderer::CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
 	{
 		//todo new command
 		return S_OK;
 	}
-	HRESULT CASCSVGRenderer::CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
+	HRESULT CASCSVGRenderer::CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
 	{
 		//TODOOO
 		//if (!bsGidText.empty())
 		//{
 		//	m_pFont->StringGID = TRUE;
-		//	return CommandDrawText(bsGidText, x, y, w, h/*, baselineOffset*/);
+		//	return CommandDrawText(bsGidText, x, y, w, h);
 		//}
 
 		m_pFont->StringGID = FALSE;
-		return CommandDrawText(bsUnicodeText, x, y, w, h/*, baselineOffset*/);
+		return CommandDrawText(bsUnicodeText, x, y, w, h);
 		return S_OK;
 	}
 	//-------- Маркеры для команд ---------------------------------------------------------------
@@ -763,12 +763,12 @@ namespace NSHtmlRenderer
 		m_pSimpleGraphicsConverter->PathCommandGetCurrentPoint(fX, fY);	
 		return S_OK;
 	}
-	HRESULT CASCSVGRenderer::PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset)
+	HRESULT CASCSVGRenderer::PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
 	{
 		//todo new command
 		return S_OK;
 	}
-	HRESULT CASCSVGRenderer::PathCommandText(const std::wstring& bsText, const double& fX, const double& fY, const double& fWidth, const double& fHeight)//, const double& fBaseLineOffset)
+	HRESULT CASCSVGRenderer::PathCommandText(const std::wstring& bsText, const double& fX, const double& fY, const double& fWidth, const double& fHeight)
 	{
 		if (NULL == m_pFontManager)
 		{
@@ -777,25 +777,25 @@ namespace NSHtmlRenderer
 		}
 
 		_SetFont();
-		m_pSimpleGraphicsConverter->PathCommandText(bsText, m_pFontManager, fX, fY, fWidth, fHeight,0);//, fBaseLineOffset);
+		m_pSimpleGraphicsConverter->PathCommandText(bsText, m_pFontManager, fX, fY, fWidth, fHeight,0);
 		return S_OK;
 	}
-	HRESULT CASCSVGRenderer::PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
+	HRESULT CASCSVGRenderer::PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
 	{
 		//todo new command
 		return S_OK;
 	}
-	HRESULT CASCSVGRenderer::PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
+	HRESULT CASCSVGRenderer::PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
 	{
 		//TODOOO
 		//if (!bsGidText.empty())
 		//{
 		//	m_pFont->StringGID = TRUE;
-		//	return PathCommandText(bsGidText, x, y, w, h);//, baselineOffset);
+		//	return PathCommandText(bsGidText, x, y, w, h);
 		//}
 
 		m_pFont->StringGID = FALSE;
-		return PathCommandText(sText, x, y, w, h);//, baselineOffset);
+		return PathCommandText(sText, x, y, w, h);
 	}
 	//-------- Функции для вывода изображений ---------------------------------------------------
 	HRESULT CASCSVGRenderer::DrawImage(IGrObject* pImage, const double& fX, const double& fY, const double& fWidth, const double& fHeight)

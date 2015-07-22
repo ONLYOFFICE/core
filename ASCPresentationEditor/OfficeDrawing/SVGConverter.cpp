@@ -508,7 +508,7 @@ HRESULT NSPresentationEditor::CSVGConverter::put_EdgeDist(const double& val)
 	return S_OK;
 }
 //-------- Функции для вывода текста --------------------------------------------------------
-HRESULT NSPresentationEditor::CSVGConverter::CommandDrawText(const std::wstring& bsText, const double& fX, const double& fY, const double& fWidth, const double& fHeight)//, const double& fBaseLineOffset)
+HRESULT NSPresentationEditor::CSVGConverter::CommandDrawText(const std::wstring& bsText, const double& fX, const double& fY, const double& fWidth, const double& fHeight)
 {
 	if (c_nHyperlinkType == m_lCurrentCommandType)
 		return S_OK;
@@ -517,7 +517,7 @@ HRESULT NSPresentationEditor::CSVGConverter::CommandDrawText(const std::wstring&
 	{
 		PathCommandEnd();
 		BeginCommand(c_nPathType);
-		PathCommandText(bsText, fX, fY, fWidth, fHeight);//, fBaseLineOffset);
+		PathCommandText(bsText, fX, fY, fWidth, fHeight);
 		DrawPath(c_nWindingFillMode);
 		EndCommand(c_nPathType);
 		PathCommandEnd();
@@ -534,13 +534,13 @@ HRESULT NSPresentationEditor::CSVGConverter::CommandDrawText(const std::wstring&
 
 	return S_OK;
 }
-HRESULT NSPresentationEditor::CSVGConverter::CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
+HRESULT NSPresentationEditor::CSVGConverter::CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
 {
 	if (abs(m_dTransformAngle) > 1)
 	{
 		PathCommandEnd();
 		BeginCommand(c_nPathType);
-		PathCommandTextEx(bsUnicodeText,  pGids, nGidsCount, x, y, w, h);//, baselineOffset, lFlags);
+		PathCommandTextEx(bsUnicodeText,  pGids, nGidsCount, x, y, w, h);
 		DrawPath(c_nWindingFillMode);
 		EndCommand(c_nPathType);
 		PathCommandEnd();
@@ -691,24 +691,24 @@ HRESULT NSPresentationEditor::CSVGConverter::PathCommandGetCurrentPoint(double* 
 	m_pSimpleGraphicsConverter->PathCommandGetCurrentPoint(fX, fY);	
 	return S_OK;
 }
-HRESULT NSPresentationEditor::CSVGConverter::PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset)
+HRESULT NSPresentationEditor::CSVGConverter::PathCommandText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h)
 {
 	_SetFont();
-	m_pSimpleGraphicsConverter->PathCommandText(bsText, m_pFontManager, x, y, w, h,0/*, baselineOffset*/);
+	m_pSimpleGraphicsConverter->PathCommandText(bsText, m_pFontManager, x, y, w, h, 0);
 	return S_OK;
 }
-HRESULT NSPresentationEditor::CSVGConverter::PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
+HRESULT NSPresentationEditor::CSVGConverter::PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
 {
     bool bGid = m_oFont.StringGID;
 	//TODOOO
 	//if (NULL != bsGidText)
 	//{
  //       m_oFont.StringGID = true;
-	//	PathCommandText(bsGidText, x, y, w, h);//, baselineOffset);
+	//	PathCommandText(bsGidText, x, y, w, h);
 	//}
 	
     m_oFont.StringGID = false;
-	PathCommandText(sText, x, y, w, h);//, baselineOffset);
+	PathCommandText(sText, x, y, w, h);
 
 	m_oFont.StringGID = bGid;
 	return S_OK;

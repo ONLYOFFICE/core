@@ -673,7 +673,7 @@ HRESULT CPdfWriterLib::put_EdgeDist (const double &dDist)
 	return S_OK;
 }
 //--------- Функции для вывода текста ------------------------------------------------------------
-HRESULT CPdfWriterLib::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset)
+HRESULT CPdfWriterLib::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
 {
 	//if (c_nHyperlinkType == m_lCurrentCommandType)
 	//	return S_OK;
@@ -688,21 +688,21 @@ HRESULT CPdfWriterLib::CommandDrawTextCHAR(const LONG& c, const double& x, const
 
 	return S_OK;
 }
-HRESULT CPdfWriterLib::CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
+HRESULT CPdfWriterLib::CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
 {
 	if (gid >= 0)
 	{
         m_oFont.StringGID = true;
-		return CommandDrawTextCHAR(gid, x, y, w, h);//, baselineOffset);
+		return CommandDrawTextCHAR(gid, x, y, w, h);
 	}
 	
     m_oFont.StringGID = false;
-	return CommandDrawTextCHAR(c, x, y, w, h);//, baselineOffset);
+	return CommandDrawTextCHAR(c, x, y, w, h);
 }
 
 
 HRESULT CPdfWriterLib::CommandDrawText (const std::wstring & bsText,const double & fX,const  double &fY, 
-										const double & fWidth, const double & fHeight)//, const double & fBaseLineOffset)
+										const double & fWidth, const double & fHeight)
 {
 	HRESULT hRes = S_OK;
 
@@ -750,7 +750,6 @@ HRESULT CPdfWriterLib::CommandDrawText (const std::wstring & bsText,const double
 	
 	double fWidth1			= MMToPDFCoords( fWidth );
 	double fHeight1			= MMToPDFCoords( fHeight );
-	//double fBaseLineOffset1	= MMToPDFCoords( fBaseLineOffset );
 
 	PToUnicode pToUnicode = FindToUnicodeForString( m_pDocument, bsText );
 	if ( !pToUnicode )
@@ -986,7 +985,7 @@ HRESULT CPdfWriterLib::CommandDrawText (const std::wstring & bsText,const double
 		}
 
 		// Выводим текст
-        hRes = TextOut_( (float)dXShadow, fPageHeight - (float) (dYShadow/* + fBaseLineOffset*/), bsCodedString ) ;
+        hRes = TextOut_( (float)dXShadow, fPageHeight - (float) (dYShadow), bsCodedString ) ;
         if ( hRes != S_OK)
 			return hRes;
 
@@ -1001,12 +1000,12 @@ HRESULT CPdfWriterLib::CommandDrawText (const std::wstring & bsText,const double
 		//	double dItalicAdd = tan( (double)dItalicAngle ) * fXHeight * fFontSize / 2;
 		//	if ( !m_oFont.Italic )
 		//		dItalicAdd = 0;
-        //	if ( S_OK != ( hRes = MoveTo( (float)dXShadow + dItalicAdd, fPageHeight - (float) ( dYShadow + fBaseLineOffset - fXHeight * fFontSize / 2 ) ) ) )
+        //	if ( S_OK != ( hRes = MoveTo( (float)dXShadow + dItalicAdd, fPageHeight - (float) ( dYShadow - fXHeight * fFontSize / 2 ) ) ) )
 		//	{
 		//		::SysFreeString( bsCodedString );
 		//		return hRes;
 		//	}
-        //	if ( S_OK != ( hRes = LineTo( (float)dXShadow + fTextWidth + dItalicAdd, fPageHeight - (float) ( dYShadow + fBaseLineOffset - fXHeight * fFontSize / 2 ) ) ) )
+        //	if ( S_OK != ( hRes = LineTo( (float)dXShadow + fTextWidth + dItalicAdd, fPageHeight - (float) ( dYShadow  - fXHeight * fFontSize / 2 ) ) ) )
 		//	{
 		//		::SysFreeString( bsCodedString );
 		//		return hRes;
@@ -1028,12 +1027,12 @@ HRESULT CPdfWriterLib::CommandDrawText (const std::wstring & bsText,const double
 		//		::SysFreeString( bsCodedString );
 		//		return hRes;
 		//	}
-        //	if ( S_OK != ( hRes = MoveTo( (float)dXShadow, fPageHeight - ( (float)dYShadow + fBaseLineOffset + fUnderLineOffset /*fDescent * fFontSize*/ ) ) ) )
+        //	if ( S_OK != ( hRes = MoveTo( (float)dXShadow, fPageHeight - ( (float)dYShadow + fUnderLineOffset /*fDescent * fFontSize*/ ) ) ) )
 		//	{
 		//		::SysFreeString( bsCodedString );
 		//		return hRes;
 		//	}
-        //	if ( S_OK != ( hRes = LineTo( (float)dXShadow + fTextWidth, fPageHeight - ( (float)dYShadow + fBaseLineOffset + fUnderLineOffset /*fDescent * fFontSize*/ ) ) ) )
+        //	if ( S_OK != ( hRes = LineTo( (float)dXShadow + fTextWidth, fPageHeight - ( (float)dYShadow  + fUnderLineOffset /*fDescent * fFontSize*/ ) ) ) )
 		//	{
 		//		::SysFreeString( bsCodedString );
 		//		return hRes;
@@ -1205,7 +1204,7 @@ HRESULT CPdfWriterLib::CommandDrawText (const std::wstring & bsText,const double
 	}
 
 	// Выводим текст
-    if ( S_OK != ( hRes = TextOut_( (float)fX, fPageHeight - (float) (fY /*+ fBaseLineOffset*/), bsCodedString )))
+    if ( S_OK != ( hRes = TextOut_( (float)fX, fPageHeight - (float) (fY), bsCodedString )))
 		return hRes;
 
     if ( S_OK != ( hRes = EndText() ) )
@@ -1224,11 +1223,11 @@ HRESULT CPdfWriterLib::CommandDrawText (const std::wstring & bsText,const double
 	//	double dItalicAdd = tan( (double)dItalicAngle ) * fXHeight * fFontSize / 2;
 	//	if ( !m_oFont.Italic )
 	//		dItalicAdd = 0;
-    //	if ( S_OK != ( hRes = MoveTo( (float)fX + dItalicAdd, fPageHeight - (float) ( fY + fBaseLineOffset - fXHeight * fFontSize / 2 ) ) ) )
+    //	if ( S_OK != ( hRes = MoveTo( (float)fX + dItalicAdd, fPageHeight - (float) ( fY - fXHeight * fFontSize / 2 ) ) ) )
 	//	{
 	//		return hRes;
 	//	}
-    //	if ( S_OK != ( hRes = LineTo( (float)fX + fTextWidth + dItalicAdd, fPageHeight - (float) ( fY + fBaseLineOffset - fXHeight * fFontSize / 2 ) ) ) )
+    //	if ( S_OK != ( hRes = LineTo( (float)fX + fTextWidth + dItalicAdd, fPageHeight - (float) ( fY - fXHeight * fFontSize / 2 ) ) ) )
 	//	{
 	//		return hRes;
 	//	}
@@ -1254,12 +1253,12 @@ HRESULT CPdfWriterLib::CommandDrawText (const std::wstring & bsText,const double
 	//		::SysFreeString( bsCodedString );
 	//		return hRes;
 	//	}
-    //	if ( S_OK != ( hRes = MoveTo( (float)fX, fPageHeight - (float) (fY + fBaseLineOffset + fUnderLineOffset) /*fDescent * fFontSize*/ ) ) )
+    //	if ( S_OK != ( hRes = MoveTo( (float)fX, fPageHeight - (float) (fY + fUnderLineOffset) /*fDescent * fFontSize*/ ) ) )
 	//	{
 	//		::SysFreeString( bsCodedString );
 	//		return hRes;
 	//	}
-    //	if ( S_OK != ( hRes = LineTo( (float)fX + fTextWidth, fPageHeight - (float) (fY + fBaseLineOffset + fUnderLineOffset) /*fDescent * fFontSize*/ ) ) )
+    //	if ( S_OK != ( hRes = LineTo( (float)fX + fTextWidth, fPageHeight - (float) (fY + fUnderLineOffset) /*fDescent * fFontSize*/ ) ) )
 	//	{
 	//		::SysFreeString( bsCodedString );
 	//		return hRes;
@@ -1316,8 +1315,8 @@ HRESULT CPdfWriterLib::CommandDrawText (const std::wstring & bsText,const double
 	return S_OK;
 }
 HRESULT CPdfWriterLib::CommandDrawTextEx (const std::wstring & bsUnicodeText,const unsigned int* pGids, const unsigned int nGidsCount,
-							/*const std::wstring & bsSrcCodeText, */const double & fX1,const  double & fY1, 
-							const double & fWidth1, const double & fHeight1)//, const double & fBaseLineOffset1,const  DWORD & nFlags)
+							const double & fX1,const  double & fY1, 
+							const double & fWidth1, const double & fHeight1)
 {
 	// TODO: Сделать обработку DrawTextEx тоже через Состояния рендерера
 	SetState( rendstateNone );
@@ -1344,8 +1343,6 @@ HRESULT CPdfWriterLib::CommandDrawTextEx (const std::wstring & bsUnicodeText,con
 
 	double fWidth = MMToPDFCoords( fWidth1 );
 	double fHeight = MMToPDFCoords( fHeight1 );
-
-	//double fBaseLineOffset = MMToPDFCoords( fBaseLineOffset1 );
 
 	std::wstring bsCodedString;
 
@@ -1654,7 +1651,7 @@ HRESULT CPdfWriterLib::CommandDrawTextEx (const std::wstring & bsUnicodeText,con
 		}
 
 		// Выводим текст
-        if ( S_OK != ( hRes = TextOut_( (float)dXShadow, fPageHeight - (float) (dYShadow /*+ fBaseLineOffset*/), bsCodedString ) ) )
+        if ( S_OK != ( hRes = TextOut_( (float)dXShadow, fPageHeight - (float) (dYShadow), bsCodedString ) ) )
 		{
 			return hRes;
 		}
@@ -1671,11 +1668,11 @@ HRESULT CPdfWriterLib::CommandDrawTextEx (const std::wstring & bsUnicodeText,con
 			double dItalicAdd = tan( (double)dItalicAngle ) * fXHeight * fFontSize / 2;
 			if ( !m_oFont.Italic )
 				dItalicAdd = 0;
-            if ( S_OK != ( hRes = MoveTo( (float)dXShadow + dItalicAdd, fPageHeight - (float) ( dYShadow /*+ fBaseLineOffset*/ - fXHeight * fFontSize / 2 ) ) ) )
+            if ( S_OK != ( hRes = MoveTo( (float)dXShadow + dItalicAdd, fPageHeight - (float) ( dYShadow  - fXHeight * fFontSize / 2 ) ) ) )
 			{
 				return hRes;
 			}
-            if ( S_OK != ( hRes = LineTo( (float)dXShadow + fTextWidth + dItalicAdd, fPageHeight - (float) ( dYShadow /*+ fBaseLineOffset*/ - fXHeight * fFontSize / 2 ) ) ) )
+            if ( S_OK != ( hRes = LineTo( (float)dXShadow + fTextWidth + dItalicAdd, fPageHeight - (float) ( dYShadow  - fXHeight * fFontSize / 2 ) ) ) )
 			{
 				return hRes;
 			}
@@ -1694,11 +1691,11 @@ HRESULT CPdfWriterLib::CommandDrawTextEx (const std::wstring & bsUnicodeText,con
 			{
 				return hRes;
 			}
-            if ( S_OK != ( hRes = MoveTo( (float)dXShadow, fPageHeight - ( (float)dYShadow /*+ fBaseLineOffset*/ + fUnderLineOffset /*fDescent * fFontSize*/ ) ) ) )
+            if ( S_OK != ( hRes = MoveTo( (float)dXShadow, fPageHeight - ( (float)dYShadow + fUnderLineOffset /*fDescent * fFontSize*/ ) ) ) )
 			{
 				return hRes;
 			}
-            if ( S_OK != ( hRes = LineTo( (float)dXShadow + fTextWidth, fPageHeight - ( (float)dYShadow/* + fBaseLineOffset*/ + fUnderLineOffset /*fDescent * fFontSize*/ ) ) ) )
+            if ( S_OK != ( hRes = LineTo( (float)dXShadow + fTextWidth, fPageHeight - ( (float)dYShadow + fUnderLineOffset /*fDescent * fFontSize*/ ) ) ) )
 			{
 				return hRes;
 			}
@@ -1840,7 +1837,7 @@ HRESULT CPdfWriterLib::CommandDrawTextEx (const std::wstring & bsUnicodeText,con
 	}
 
 	// Выводим текст
-    if ( S_OK != ( hRes = TextOut_( (float)fX, fPageHeight - (float) (fY /*+ fBaseLineOffset*/), bsCodedString ) ) )
+    if ( S_OK != ( hRes = TextOut_( (float)fX, fPageHeight - (float) (fY), bsCodedString ) ) )
 	{
 		return hRes;
 	}
@@ -1861,11 +1858,11 @@ HRESULT CPdfWriterLib::CommandDrawTextEx (const std::wstring & bsUnicodeText,con
 		double dItalicAdd = tan( (double)dItalicAngle ) * fXHeight * fFontSize / 2;
 		if ( !m_oFont.Italic )
 			dItalicAdd = 0;
-        if ( S_OK != ( hRes = MoveTo( (float)fX + dItalicAdd, fPageHeight - (float) ( fY /*+ fBaseLineOffset*/ - fXHeight * fFontSize / 2 ) ) ) )
+        if ( S_OK != ( hRes = MoveTo( (float)fX + dItalicAdd, fPageHeight - (float) ( fY - fXHeight * fFontSize / 2 ) ) ) )
 		{
 			return hRes;
 		}
-        if ( S_OK != ( hRes = LineTo( (float)fX + fTextWidth + dItalicAdd, fPageHeight - (float) ( fY/* + fBaseLineOffset */- fXHeight * fFontSize / 2 ) ) ) )
+        if ( S_OK != ( hRes = LineTo( (float)fX + fTextWidth + dItalicAdd, fPageHeight - (float) ( fY- fXHeight * fFontSize / 2 ) ) ) )
 		{
 			return hRes;
 		}
@@ -1890,11 +1887,11 @@ HRESULT CPdfWriterLib::CommandDrawTextEx (const std::wstring & bsUnicodeText,con
 		{
 			return hRes;
 		}
-        if ( S_OK != ( hRes = MoveTo( (float)fX, fPageHeight - (float) (fY /*+ fBaseLineOffset */+ fUnderLineOffset) /*fDescent * fFontSize*/ ) ) )
+        if ( S_OK != ( hRes = MoveTo( (float)fX, fPageHeight - (float) (fY + fUnderLineOffset) /*fDescent * fFontSize*/ ) ) )
 		{
 			return hRes;
 		}
-        if ( S_OK != ( hRes = LineTo( (float)fX + fTextWidth, fPageHeight - (float) (fY /*+ fBaseLineOffset*/ + fUnderLineOffset) /*fDescent * fFontSize*/ ) ) )
+        if ( S_OK != ( hRes = LineTo( (float)fX + fTextWidth, fPageHeight - (float) (fY  + fUnderLineOffset) /*fDescent * fFontSize*/ ) ) )
 		{
 			return hRes;
 		}
@@ -2582,14 +2579,14 @@ HRESULT CPdfWriterLib::PathCommandGetCurrentPoint (double *pfX, double *pfY)
 }
 
 HRESULT CPdfWriterLib::PathCommandText  (const std::wstring & bsText, const double & fX, const double & fY, 
-										 const double & fWidth, const double & fHeight)//t, const double & fBaseLineOffset )
+										 const double & fWidth, const double & fHeight)
 {
 	// В данная команда может прийти либо для обводки текста, либо для клипа по тексту
-	CommandDrawText( bsText, fX, fY, fWidth, fHeight);//, fBaseLineOffset );
+	CommandDrawText( bsText, fX, fY, fWidth, fHeight);
 	return S_OK;
 }
 
-HRESULT CPdfWriterLib::PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset)
+HRESULT CPdfWriterLib::PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
 {
 	//if (!CheckValidate())
 	//	return S_FALSE;
@@ -2602,22 +2599,22 @@ HRESULT CPdfWriterLib::PathCommandTextCHAR(const LONG& c, const double& x, const
 
 	return S_OK;
 }
-HRESULT CPdfWriterLib::PathCommandTextEx (const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
+HRESULT CPdfWriterLib::PathCommandTextEx (const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
 {
 	// В данная команда может прийти либо для обводки текста, либо для клипа по тексту
-	CommandDrawTextEx( bsUnicodeText,pGids, nGidsCount/*bsGidText*//*, bsSrcCodeText*/, x, y, w, h);//, baselineOffset, lFlags );
+	CommandDrawTextEx( bsUnicodeText,pGids, nGidsCount, x, y, w, h);
 	return S_OK;
 }
-HRESULT CPdfWriterLib::PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
+HRESULT CPdfWriterLib::PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
 {
 	if (gid >= 0)
 	{
         m_oFont.StringGID = 1;
-		return PathCommandTextCHAR(gid, x, y, w, h);//, baselineOffset);
+		return PathCommandTextCHAR(gid, x, y, w, h);
 	}
 	
     m_oFont.StringGID = 0;
-	return PathCommandTextCHAR(c, x, y, w, h);//, baselineOffset);
+	return PathCommandTextCHAR(c, x, y, w, h);
 }
 
 //--------- Функции для вывода изображений -------------------------------------------------------

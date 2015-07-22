@@ -396,13 +396,12 @@ namespace NSHtmlRenderer
 		return S_OK;
 	}
 	//-------- Функции для вывода текста --------------------------------------------------------
-	HRESULT CASCSVGWriter::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)// const double& baselineOffset)
+	HRESULT CASCSVGWriter::CommandDrawTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
 	{
 		//todo new command
 		return S_OK;
 	}
 	HRESULT CASCSVGWriter::CommandDrawText(const std::wstring& bsText,const double& x,const double& y,const double& w, const double& h)
-		//CommandDrawText(const std::wstring& bsText, const double& x, const double& y, const double& w, const double& h, const double& baselineOffset)
 	{
 		if (c_nHyperlinkType == m_lCurrentCommandType)
 			return S_OK;
@@ -412,25 +411,25 @@ namespace NSHtmlRenderer
 
 		PathCommandEnd();
 		BeginCommand(c_nPathType);
-		PathCommandText(bsText, x, y, w, h/* baselineOffset*/);
+		PathCommandText(bsText, x, y, w, h);
 		DrawPath(c_nWindingFillMode);
 		EndCommand(c_nPathType);
 		PathCommandEnd();
 		return S_OK;
 	}
-	HRESULT CASCSVGWriter::CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)// const double& baselineOffset, const DWORD& lFlags)
+	HRESULT CASCSVGWriter::CommandDrawTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
 	{
 		//todo new command
 		return S_OK;
 	}
-	HRESULT CASCSVGWriter::CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
+	HRESULT CASCSVGWriter::CommandDrawTextEx(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
 	{
 		if (m_bIsRaster)
 			return S_OK;
 
 		PathCommandEnd();
 		BeginCommand(c_nPathType);
-		PathCommandTextEx(bsUnicodeText, pGids,nGidsCount , x, y, w, h);//, baselineOffset, lFlags);
+		PathCommandTextEx(bsUnicodeText, pGids,nGidsCount , x, y, w, h);
 		DrawPath(c_nWindingFillMode);
 		EndCommand(c_nPathType);
 		PathCommandEnd();
@@ -607,26 +606,26 @@ namespace NSHtmlRenderer
 		m_pSimpleGraphicsConverter->PathCommandGetCurrentPoint(fX, fY);	
 		return S_OK;
 	}
-	HRESULT CASCSVGWriter::PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset)
+	HRESULT CASCSVGWriter::PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
 	{
 		//todo new command
 		return S_OK;
 	}
-	HRESULT CASCSVGWriter::PathCommandText(const std::wstring& bsText, const double& fX, const double& fY, const double& fWidth, const double& fHeight)//, const double& fBaseLineOffset)
+	HRESULT CASCSVGWriter::PathCommandText(const std::wstring& bsText, const double& fX, const double& fY, const double& fWidth, const double& fHeight)
 	{
 		if (m_bIsRaster)
 			return S_OK;
 
 		_SetFont();
-		m_pSimpleGraphicsConverter->PathCommandText(bsText, m_pFontManager, fX, fY, fWidth, fHeight, 0);//, fBaseLineOffset);
+		m_pSimpleGraphicsConverter->PathCommandText(bsText, m_pFontManager, fX, fY, fWidth, fHeight, 0);
 		return S_OK;
 	}
-	HRESULT CASCSVGWriter::PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
+	HRESULT CASCSVGWriter::PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
 	{
 		//todo new command
 		return S_OK;
 	}
-	HRESULT CASCSVGWriter::PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)//, const double& baselineOffset, const DWORD& lFlags)
+	HRESULT CASCSVGWriter::PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
 	{
 		if (m_bIsRaster)
 			return S_OK;
@@ -641,7 +640,7 @@ namespace NSHtmlRenderer
 		//}
 
         m_pFont->StringGID = 0;
-		PathCommandText(sText, x, y, w, h);//, baselineOffset);
+		PathCommandText(sText, x, y, w, h);
 
         m_pFont->StringGID = bGid ? 1 : 0;
 		return S_OK;

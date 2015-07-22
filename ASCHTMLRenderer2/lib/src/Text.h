@@ -396,6 +396,7 @@ namespace NSHtmlRenderer
     public:
         void LoadFontMetrics()
         {
+            m_pManager->AfterLoad();
             m_oCurrentInfo.m_lAscent = (m_pManager->m_lAscender < 0) ? ((USHORT)(-m_pManager->m_lAscender)) : (USHORT)m_pManager->m_lAscender;
             m_oCurrentInfo.m_lDescent = (m_pManager->m_lDescender < 0) ? ((USHORT)(-m_pManager->m_lDescender)) : (USHORT)m_pManager->m_lDescender;
             m_oCurrentInfo.m_lLineHeight = (m_pManager->m_lLineHeight < 0) ? ((USHORT)(-m_pManager->m_lLineHeight)) : (USHORT)m_pManager->m_lLineHeight;

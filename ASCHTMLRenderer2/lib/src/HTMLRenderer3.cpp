@@ -67,6 +67,7 @@ namespace NSHtmlRenderer
             m_pFontManager = NULL;
 
             m_oWriter.SetSimpleConverter(&m_oSimpleGraphicsConverter, &m_oTransform);
+            m_oWriter.SetApplicationFonts(&m_oApplicationFonts);
 
             m_bIsMetafileDrawing = false;
             m_bIsTextGraphicType = false;
@@ -209,6 +210,15 @@ namespace NSHtmlRenderer
             m_oInstalledFont = m_oFont;
         }
     };
+
+    CASCHTMLRenderer3::CASCHTMLRenderer3()
+    {
+        m_pInternal = new CASCHTMLRenderer3_Private();
+    }
+    CASCHTMLRenderer3::~CASCHTMLRenderer3()
+    {
+        RELEASEOBJECT(m_pInternal);
+    }
 
     HRESULT CASCHTMLRenderer3::get_Type(LONG* lType)
     {

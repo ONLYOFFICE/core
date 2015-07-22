@@ -280,6 +280,8 @@ namespace NSHtmlRenderer
         // клип для картинок. для конвертации сложной векторной графики в растр
 		CMetafile						m_oClipMetafile;
 
+        int                             m_nDEBUG_svg_index;
+
 		#ifdef USE_SIMPLE_GRAPHICS_NOSVG
 		
 		CMetafile		m_oVectors;
@@ -331,6 +333,8 @@ namespace NSHtmlRenderer
 			m_bIsIntersectNewClipRect = false;
 
 			m_bIsCurveToExist = false;
+
+            m_nDEBUG_svg_index = 0;
 
 #ifdef USE_SIMPLE_GRAPHICS_NOSVG
 			m_bIsSimpleGraphics = true;
@@ -400,6 +404,24 @@ namespace NSHtmlRenderer
 
             return m_oDocument.GetData();
 		}
+
+        void DEBUG_DumpSVG(const std::wstring& sTempPath)
+        {
+            std::wstring sEndDebug = L"";
+            int nCountWriteClips = m_oClip.m_lCountWriteClips;
+            while (nCountWriteClips > 0)
+            {
+                sEndDebug += L"</g>\n";
+                --nCountWriteClips;
+            }
+            sEndDebug += L"</svg>";
+
+            m_nDEBUG_svg_index++;
+
+            std::wstring sDocument = m_oDocument.GetData() + sEndDebug;
+
+            NSFile::CFileBinary::SaveToFile(sTempPath + L"/svg_" + std::to_wstring(m_nDEBUG_svg_index) + L".svg", sDocument);
+        }
 
         void CloseFile2(std::wstring strFile, bool bIsNeedEnd = true)
 		{

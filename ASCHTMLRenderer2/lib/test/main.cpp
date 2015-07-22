@@ -8,11 +8,13 @@ int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
 
-    std::wstring sFile = L"\\\\KIRILLOV8\\_Office\\PDF\\Android intro(2p).pdf";
+    //std::wstring sFile = L"\\\\KIRILLOV8\\_Office\\PDF\\Android intro(2p).pdf";
+    std::wstring sFile = L"\\\\kirillov8\\_Office\\PDF\\Main Window(15p).pdf";
 
     CApplicationFonts oFonts;
     oFonts.Initialize();
     PdfReader::CPdfReader oReader(&oFonts);
+    oReader.SetTempFolder(L"D:\\test\\Document");
     bool bResult = oReader.LoadFromFile(sFile.c_str());
 
     NSHtmlRenderer::CASCHTMLRenderer3 oHtmlRenderer;
@@ -21,15 +23,6 @@ int main(int argc, char *argv[])
     int nPagesCount = oReader.GetPagesCount();
     for (int i = 0; i < nPagesCount; ++i)
     {
-        double dWidth = 0;
-        double dHeight = 0;
-
-        oReader.GetPageSize(i, &dWidth, &dHeight);
-
-        oHtmlRenderer.NewPage();
-        oHtmlRenderer.put_Width(dWidth);
-        oHtmlRenderer.put_Height(dHeight);
-
         oReader.DrawPageOnRenderer(&oHtmlRenderer, i, NULL);
     }
 

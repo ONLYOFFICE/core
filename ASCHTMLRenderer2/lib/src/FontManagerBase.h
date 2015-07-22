@@ -316,6 +316,7 @@ namespace NSHtmlRenderer
         public:
             void LoadFontMetrics()
             {
+                m_pManager->AfterLoad();
                 m_oFont.m_dAscent = m_pManager->m_lAscender;
                 m_oFont.m_dDescent = m_pManager->m_lDescender;
                 m_oFont.m_dLineSpacing = m_pManager->m_lLineHeight;

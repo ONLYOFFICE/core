@@ -96,21 +96,22 @@ namespace Oox2Odf
 	{
 	public:
 		DocxConverter(const std::wstring & path, const ProgressCallback* ffCallBack);
+		~DocxConverter();
 
 		virtual void convertDocument();
 		virtual void write(const std::wstring & path);
 		
 		virtual odf_writer::odf_conversion_context		*odf_context();
-		virtual OOX::CTheme						*oox_theme();
-		virtual CString							 find_link_by_id (CString sId, int t);
+		virtual OOX::CTheme								*oox_theme();
+		virtual CString									find_link_by_id (CString sId, int t);
 
-		void convert(OOX::WritingElement		*oox_unknown);
+		void convert(OOX::WritingElement *oox_unknown);
     private:
-		OOX::CDocx								*docx_document;
+		OOX::CDocx										*docx_document;
 		cpdoccore::odf_writer::package::odf_document	*output_document;
 		
 		odf_writer::odt_conversion_context				*odt_context;
-        OOX::Logic::CSectionProperty			*last_section_properties;
+        OOX::Logic::CSectionProperty					*last_section_properties;
 
 		void apply_from(OOX::Logic::CSectionProperty *props, OOX::Logic::CSectionProperty *other);
 		

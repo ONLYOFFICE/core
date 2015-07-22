@@ -38,6 +38,12 @@ XlsxConverter::XlsxConverter(const std::wstring & path, const ProgressCallback* 
 
 	if (UpdateProgress(400000))return;
 }
+XlsxConverter::~XlsxConverter() 
+{
+	if (ods_context)		delete ods_context;		ods_context		= NULL;
+	if (xlsx_document)		delete xlsx_document;	xlsx_document	= NULL;
+	if (output_document)	delete output_document;	output_document = NULL;
+}
 void XlsxConverter::write(const std::wstring & path)
 {
 	if (!output_document)return;

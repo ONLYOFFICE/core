@@ -252,7 +252,7 @@ namespace XmlUtils
 		{
 			std::wstring sAttr;
 			if (GetAttributeIfExist(std::wstring(bsName), sAttr))
-				value = sAttr.GetString();
+				value = sAttr;
 		}
 		template<typename T>
 		void ReadAllAttributes(T& strNames, T& strValues)
@@ -260,11 +260,11 @@ namespace XmlUtils
 			if (!IsValid())
 				return;
 
-			std::map<CStringA, CStringA>::iterator p;
+			std::map<std::string, std::string>::iterator p;
 			for (p = m_pBase->m_attributes.begin(); p != m_pBase->m_attributes.end(); ++p)
 			{
-				strNames.push_back(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.GetString(), p->first.GetLength(), true));
-				strValues.push_back(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.GetString(), p->second.GetLength(), true));
+				strNames.push_back(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->first.c_str(), (LONG)p->first.length()), true);
+				strValues.push_back(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->second.c_str(), (LONG)p->second.length()), true);
 			}
 		}
 		template <typename T>

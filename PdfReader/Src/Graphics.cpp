@@ -3594,7 +3594,7 @@ namespace PdfReader
 		m_pOut->EndStringOperator(m_pGState);
 	}
 
-	// \ 
+    // '\'
 	void Graphics::OperatorMoveSetShowText(Object arrArguments[], int nArgumentsCount)
 	{
 		if (m_pGState->GetFont())

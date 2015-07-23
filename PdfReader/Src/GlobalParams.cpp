@@ -1,7 +1,6 @@
 ﻿#include <string.h>
 #include <stdio.h>
 #include <ctype.h>
-#include <shlobj.h>
 
 #include "MemoryUtils.h"
 #include "StringExt.h"

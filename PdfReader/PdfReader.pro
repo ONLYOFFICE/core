@@ -13,35 +13,59 @@ TEMPLATE = lib
 #CONFIG += staticlib
 CONFIG += shared
 
+############### destination path ###############
+DESTINATION_SDK_PATH = $$PWD/../SDK/lib
+
+# WINDOWS
+win32:contains(QMAKE_TARGET.arch, x86_64):{
 CONFIG(debug, debug|release) {
-    DESTDIR = Debug
+    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
 } else {
-    DESTDIR = Release
+    DESTDIR = $$DESTINATION_SDK_PATH/win_64
+}
+}
+win32:!contains(QMAKE_TARGET.arch, x86_64):{
+CONFIG(debug, debug|release) {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
+} else {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_32
+}
 }
 
-staticlib {
-    message(static)
-} else {
+linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
+}
+linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
+}
+
+################################################
+
+############# dynamic dependencies #############
+shared {
     DEFINES += PDF_USE_DYNAMIC_LIBRARY
+
+    LIBS += -L$$DESTDIR -lASCOfficeUtilsLib
+    LIBS += -L$$DESTDIR -lgraphics
+    LIBS += -L$$DESTDIR -llibxml
+
     message(dynamic)
 
-win32 {
-    DEFINES += \
-    WIN32 \
-    _WIN32
+    win32 {
+        LIBS += -lgdi32 \
+                -ladvapi32 \
+                -luser32 \
+                -lshell32
 
-    LIBS += -L../../ASCOfficeUtils/ASCOfficeUtilsLib/Win/x64/Debug -lASCOfficeUtilsLib
-    LIBS += -L../../DesktopEditor/Qt_build/graphics/Debug/debug -lgraphics
-    LIBS += -L../../SDK/lib/win_64/DEBUG -llibxml
-    LIBS += -lgdi32 \
-            -ladvapi32 \
-            -luser32 \
-            -lshell32
+        TARGET_EXT = .dll
+    }
 
-    TARGET_EXT = .dll
+    linux-g++ | linux-g++-64 | linux-g++-32 {
+        CONFIG += plugin
+        TARGET_EXT = .so
+    }
 }
-
-}
+################################################
 
 DEFINES += PDFREADER_LIBRARY
 

@@ -14,6 +14,7 @@ CONFIG   -= app_bundle
 
 DEFINES += PDFREADER_USE_DYNAMIC_LIBRARY
 DEFINES += HTMLRENDERER_USE_DYNAMIC_LIBRARY
+DEFINES += DJVU_USE_DYNAMIC_LIBRARY
 
 INCLUDEPATH += \
     ../../DesktopEditor/freetype-2.5.2/include
@@ -25,6 +26,7 @@ LIBS += -L../../../SDK/lib/win_64/DEBUG -lgraphics
 LIBS += -L../../../SDK/lib/win_64/DEBUG -lHtmlRenderer
 LIBS += -L../../../SDK/lib/win_64/DEBUG -llibxml
 LIBS += -L../../../SDK/lib/win_64/DEBUG -lPdfReader
+LIBS += -L../../../SDK/lib/win_64/DEBUG -lDjVuFile
 LIBS += -lgdi32 \
         -ladvapi32 \
         -luser32 \

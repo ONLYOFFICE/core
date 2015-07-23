@@ -1469,11 +1469,11 @@ bool CPdfRenderer::PathCommandDrawText(unsigned int* pUnicodes, unsigned int unL
 void CPdfRenderer::UpdateFont()
 {
 	m_bNeedUpdateTextFont = false;
-	std::wstring& wsFontPath = m_oFont.GetPath();
+    std::wstring wsFontPath = m_oFont.GetPath();
 	LONG lFaceIndex = m_oFont.GetFaceIndex();
 	if (L"" == wsFontPath)
 	{
-		std::wstring& wsFontName = m_oFont.GetName();
+        std::wstring wsFontName = m_oFont.GetName();
 		bool bBold   = m_oFont.IsBold();
 		bool bItalic = m_oFont.IsItalic();
 		bool bFind = false;
@@ -1521,7 +1521,7 @@ void CPdfRenderer::UpdateTransform()
 }
 void CPdfRenderer::UpdatePen()
 {
-	TColor& oColor = m_oPen.GetTColor();
+    TColor oColor = m_oPen.GetTColor();
 	m_pPage->SetStrokeColor(oColor.r, oColor.g, oColor.b);
 	m_pPage->SetStrokeAlpha((unsigned char)m_oPen.GetAlpha());
 	m_pPage->SetLineWidth(MM_2_PT(m_oPen.GetSize()));
@@ -1587,7 +1587,7 @@ void CPdfRenderer::UpdateBrush()
 	LONG lBrushType = m_oBrush.GetType();
 	if (c_BrushTypeTexture == lBrushType)
 	{
-		std::wstring& wsTexturePath = m_oBrush.GetTexturePath();
+        std::wstring wsTexturePath = m_oBrush.GetTexturePath();
 		CImageFileFormatChecker oImageFormat(wsTexturePath);
 
 		CImageDict* pImage = NULL;
@@ -1636,8 +1636,8 @@ void CPdfRenderer::UpdateBrush()
 				dR += 1;
 
 				// Растягиваем картинку по размерам пата
-				dW = max(10, dR - dL);
-				dH = max(10, dB - dT);
+                dW = std::max(10.0, dR - dL);
+                dH = std::max(10.0, dB - dT);
 			}
 			else
 			{
@@ -1657,13 +1657,13 @@ void CPdfRenderer::UpdateBrush()
 	}
 	else if (c_BrushTypeHatch1 == lBrushType)
 	{
-		std::wstring& wsHatchType = m_oBrush.GetTexturePath();
+        std::wstring wsHatchType = m_oBrush.GetTexturePath();
 
 		double dW = 8 * 72 / 96;
 		double dH = 8 * 72 / 96;
 
-		TColor& oColor1 = m_oBrush.GetTColor1();
-		TColor& oColor2 = m_oBrush.GetTColor2();
+        TColor oColor1 = m_oBrush.GetTColor1();
+        TColor oColor2 = m_oBrush.GetTColor2();
 		BYTE nAlpha1 = (BYTE)m_oBrush.GetAlpha1();
 		BYTE nAlpha2 = (BYTE)m_oBrush.GetAlpha2();
 
@@ -1710,7 +1710,7 @@ void CPdfRenderer::UpdateBrush()
 	}
 	else// if (c_BrushTypeSolid == lBrushType)
 	{
-		TColor& oColor1 = m_oBrush.GetTColor1();
+        TColor oColor1 = m_oBrush.GetTColor1();
 		m_pPage->SetFillColor(oColor1.r, oColor1.g, oColor1.b);
 		m_pPage->SetFillAlpha((unsigned char)m_oBrush.GetAlpha1());
 	}

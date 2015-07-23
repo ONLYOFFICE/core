@@ -249,7 +249,7 @@ namespace PdfWriter
 		if (!pLabel)
 			return NULL;
 
-		eStyle = min(max(eStyle, pagenumstyle_Min), pagenumstyle_Max);
+        eStyle = std::min(std::max(eStyle, pagenumstyle_Min), pagenumstyle_Max);
 		switch (eStyle)
 		{
 		case pagenumstyle_UpperRoman: pLabel->Add("S", "R"); break;

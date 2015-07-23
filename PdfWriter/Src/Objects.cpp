@@ -144,7 +144,7 @@ namespace PdfWriter
 	}
 	void CBinaryObject::Set(const BYTE* pValue, unsigned int unLen)
 	{
-		unLen = min(LIMIT_MAX_STRING_LEN, unLen);
+        unLen = std::min((unsigned int)LIMIT_MAX_STRING_LEN, unLen);
 		if (m_pValue)
 		{
 			delete[] m_pValue;

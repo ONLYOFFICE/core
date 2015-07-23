@@ -189,7 +189,7 @@ namespace NSOnlineOfficeBinToPdf
 		if (sizeof(wchar_t) == 4)
 		{
 #if !defined(_WIN32) && !defined(_WIN64)
-			wsTempString = stringUtf16ToWString((UTF16*)pData, nLen / 2);
+            wsTempString = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)pData, nLen / 2);
 #endif
 		}
 		else

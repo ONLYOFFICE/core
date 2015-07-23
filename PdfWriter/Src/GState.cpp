@@ -88,19 +88,19 @@ namespace PdfWriter
 	}
 	void CExtGrState::SetAlphaStroke     (double dValue)
 	{
-		dValue = min(1, max(0, dValue));
+        dValue = std::min(1.0, std::max(0.0, dValue));
 	    Add("CA", dValue);
 		m_dAlphaStroke = dValue;
 	}
 	void CExtGrState::SetAlphaFill       (double dValue)
 	{
-		dValue = min(1, max(0, dValue));
+        dValue = std::min(1.0, std::max(0.0, dValue));
 	    Add("ca", dValue);
 		m_dAlphaFill = dValue;
 	}	
 	void CExtGrState::SetBlendMode       (EBlendMode eBlendMode)
 	{
-		eBlendMode = min(blendmode_Max, max(blendmode_Min, eBlendMode));
+        eBlendMode = std::min(blendmode_Max, std::max(blendmode_Min, eBlendMode));
 		Add("BM", c_sBlendModeNames[(int)eBlendMode]);
 		m_eBlendMode = eBlendMode;
 	}	

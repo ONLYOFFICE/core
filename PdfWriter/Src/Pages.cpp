@@ -209,7 +209,7 @@ namespace PdfWriter
 	}
 	void          CPage::SetWidth(double dValue)
 	{
-		dValue = min(max(dValue, 1), 14400);
+        dValue = std::min(std::max(dValue, 1.0), 14400.0);
 		SetMediaBoxValue(2, dValue);
 	}
 	double        CPage::GetWidth()
@@ -218,7 +218,7 @@ namespace PdfWriter
 	}
 	void          CPage::SetHeight(double dValue)
 	{
-		dValue = min(max(dValue, 1), 14400);
+        dValue = std::min(std::max(dValue, 1.0), 14400.0);
 		SetMediaBoxValue(3, dValue);
 	}
 	double        CPage::GetHeight()
@@ -421,8 +421,8 @@ namespace PdfWriter
 		int nFirstPointQuard  = int(_dAngle1) / 90 + 1;
 		int nSecondPointQuard = int(_dAngle2) / 90 + 1;
 	
-		nSecondPointQuard = min(4, max(1, nSecondPointQuard));
-		nFirstPointQuard  = min(4, max(1, nFirstPointQuard));
+        nSecondPointQuard = std::min(4, std::max(1, nSecondPointQuard));
+        nFirstPointQuard  = std::min(4, std::max(1, nFirstPointQuard));
 
 		// Проведем линию в начальную точку дуги
 		double dStartX = 0.0, dStartY = 0.0, dEndX = 0.0, dEndY = 0.0;
@@ -603,7 +603,7 @@ namespace PdfWriter
 		// Operator   : w 
 		// Descriprion: устанавливаем толщину линии
 
-		dLineWidth = max(dLineWidth, 0);
+        dLineWidth = std::max(dLineWidth, 0.0);
 		m_pStream->WriteReal(dLineWidth);
 		m_pStream->WriteStr(" w\012");
 		m_pGrState->m_dLineWidth = dLineWidth;
@@ -613,7 +613,7 @@ namespace PdfWriter
 		// Operator   : J 
 		// Descriprion: устанавливаем вид окончания линии (LineCapStyle)
 
-		eLineCap = max(linecap_Min, min(linecap_Max, eLineCap));
+        eLineCap = std::max(linecap_Min, std::min(linecap_Max, eLineCap));
 		m_pStream->WriteInt((unsigned int)eLineCap);
 		m_pStream->WriteStr(" J\012");
 		m_pGrState->m_eLineCap = eLineCap;
@@ -622,7 +622,7 @@ namespace PdfWriter
 	{
 		// Operator   : j
 		// Descriprion: устанавливаем вид соединения линий (LineJoinStyle)
-		eLineJoin = max(linejoin_Min, min(linejoin_Max, eLineJoin));
+        eLineJoin = std::max(linejoin_Min, std::min(linejoin_Max, eLineJoin));
 		m_pStream->WriteInt((unsigned int)eLineJoin);
 		m_pStream->WriteStr(" j\012");
 		m_pGrState->m_eLineJoin = eLineJoin;
@@ -631,7 +631,7 @@ namespace PdfWriter
 	{
 		// Operator   : M
 		// Descriprion: устанавливаем MiterLimit - константа, относящаяся к виду соединения линий
-		dMiterLimit = max(1, dMiterLimit);
+        dMiterLimit = std::max(1.0, dMiterLimit);
 		m_pStream->WriteReal(dMiterLimit);
 		m_pStream->WriteStr(" M\012");
 		m_pGrState->m_dMiterLimit = dMiterLimit;
@@ -673,7 +673,7 @@ namespace PdfWriter
 	{
 		// Operator   : i
 		// Descriprion: устанавливаем порог ошибки линии (Flatness tolerance)
-		dFlatness = min(100, max(0, dFlatness));
+        dFlatness = std::min(100.0, std::max(0.0, dFlatness));
 		m_pStream->WriteReal(dFlatness);
 		m_pStream->WriteStr(" i\012");
 		m_pGrState->m_dFlatness = dFlatness;
@@ -1000,7 +1000,7 @@ namespace PdfWriter
 		// Description: Устанавливаем расстояние между буквами
 		CheckGrMode(grmode_TEXT);
 
-		dValue = min(MAX_CHARSPACE, max(MIN_CHARSPACE, dValue));
+        dValue = std::min((double)MAX_CHARSPACE, std::max((double)MIN_CHARSPACE, dValue));
 		m_pStream->WriteReal(dValue);
 		m_pStream->WriteStr(" Tc\012");
 	}
@@ -1010,7 +1010,7 @@ namespace PdfWriter
 		// Description: Устанавливаем горизонтальное растяжение/сжатие
 		CheckGrMode(grmode_TEXT);
 
-		dValue = min(MAX_HORIZONTALSCALING, max(MIN_HORIZONTALSCALING, dValue));
+        dValue = std::min((double)MAX_HORIZONTALSCALING, std::max((double)MIN_HORIZONTALSCALING, dValue));
 		m_pStream->WriteReal(dValue);
 		m_pStream->WriteStr(" Tz\012");
 	}
@@ -1019,7 +1019,7 @@ namespace PdfWriter
 		// Operator   : Tf
 		// Description: Устанавливаем фонт и размер фонта
 
-		dSize = min(MAX_FONTSIZE, max(0, dSize));
+        dSize = std::min((double)MAX_FONTSIZE, std::max(0.0, dSize));
 		const char* sFontName = GetLocalFontName(pFont);
 		if (!sFontName)
 			return;

@@ -94,7 +94,8 @@ DEFINES += \
 win32 {
     DEFINES += \
     JAS_WIN_MSVC_BUILD \
-    WIN32
+    WIN32 \
+    NOMINMAX
 
     message(windows)
 }

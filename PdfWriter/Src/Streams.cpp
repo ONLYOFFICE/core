@@ -656,17 +656,17 @@ namespace PdfWriter
 		unsigned int unRemainBytes = m_nBufferSize - Tell();
 		if (unRemainBytes < unSize)
 		{
-			unsigned int unShrinkSize = max(unSize, STREAM_BUF_SIZ);
+            unsigned int unShrinkSize = std::max(unSize, (unsigned int)STREAM_BUF_SIZ);
 			Shrink(unShrinkSize);
 		}
 		MemCpy(m_pCur, pBuffer, unSize);
 		m_pCur += unSize;
-		m_unSize = (unsigned int)max(m_unSize, m_pCur - m_pBuffer);
+        m_unSize = (unsigned int)std::max(m_unSize, (unsigned int)(m_pCur - m_pBuffer));
 	}
 	void         CMemoryStream::Read(BYTE* pBuffer, unsigned int* punSize)
 	{
 		unsigned int unRemainBytes = m_unSize - Tell();
-		unsigned int unReadedBytes = (punSize ? min(*punSize, unRemainBytes) : unRemainBytes);
+        unsigned int unReadedBytes = (punSize ? std::min(*punSize, unRemainBytes) : unRemainBytes);
 		MemCpy(pBuffer, m_pCur, unReadedBytes);
 		m_pCur += unReadedBytes;
 		if (punSize)
@@ -841,7 +841,7 @@ namespace PdfWriter
 		switch (eMode)
 		{
 			case SeekCur: m_nFilePos += nPos; break;
-			case SeekEnd: m_nFilePos = max(0, (m_nFileSize - nPos)); break;
+        case SeekEnd: m_nFilePos = std::max(0, (m_nFileSize - nPos)); break;
 			case SeekSet: m_nFilePos = nPos; break;
 		}
 	}

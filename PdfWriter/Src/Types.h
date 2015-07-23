@@ -3,7 +3,20 @@
 
 #include "Consts.h"
 #include "../../DesktopEditor/common/Types.h"
+
+#ifdef max
+#undef max
+#endif
+#ifdef min
+#undef min
+#endif
+
 #include <string>
+#include <algorithm>
+
+#ifdef __linux__
+#include <string.h>
+#endif
 
 namespace PdfWriter
 {

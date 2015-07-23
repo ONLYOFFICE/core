@@ -1,14 +1,6 @@
 ﻿#ifndef _PDF_WRITER_SRC_CONSTS_H
 #define _PDF_WRITER_SRC_CONSTS_H
 
-#ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
-#endif
-
-#ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
-
 #define  OK                    0
 #define  NOERROR               0
 

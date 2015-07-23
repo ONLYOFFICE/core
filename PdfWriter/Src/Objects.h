@@ -161,11 +161,11 @@ namespace PdfWriter
 		}
 		void Set(float fValue)
 		{
-			m_fValue = min(max(fValue, LIMIT_MIN_REAL), LIMIT_MAX_REAL);
+            m_fValue = std::min(std::max(fValue, LIMIT_MIN_REAL), LIMIT_MAX_REAL);
 		}
-		void Set(double dValue)
+        void Set(double dValue)
 		{
-			m_fValue = (float)min(max(dValue, LIMIT_MIN_REAL), LIMIT_MAX_REAL);
+            m_fValue = (float)std::min(std::max((float)dValue, LIMIT_MIN_REAL), LIMIT_MAX_REAL);
 		}
 		float Get() const
 		{

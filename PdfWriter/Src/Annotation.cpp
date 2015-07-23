@@ -107,7 +107,7 @@ namespace PdfWriter
 	}
 	void CLinkAnnotation::SetBorderStyle(float fWidth, unsigned short nDashOn, unsigned short nDashOff)
 	{
-		fWidth = max(fWidth, 0);
+        fWidth = std::max(fWidth, 0.f);
 
 		CArrayObject* pArray = new CArrayObject();
 		if (!pArray)
@@ -152,7 +152,7 @@ namespace PdfWriter
 	void SetOpened(bool bOpened);
 	void CTextAnnotation::SetIcon(EAnnotIcon eIcon)
 	{
-		eIcon = (EAnnotIcon)min(max(AnnotIconMin, eIcon), AnnotIconMax);
+        eIcon = (EAnnotIcon)std::min(std::max(AnnotIconMin, eIcon), AnnotIconMax);
 		Add("Name", c_sAnnotIconNames[(int)eIcon]);
 	}
 	void CTextAnnotation::SetOpened(bool bOpened)

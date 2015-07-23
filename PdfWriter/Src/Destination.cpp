@@ -44,8 +44,8 @@ namespace PdfWriter
 		if (fZoom < 0.08 || fZoom > 32)
 			fZoom = 0;
 
-		fLeft = max(fLeft, 0);
-		fTop  = max(fTop, 0);
+        fLeft = std::max(fLeft, 0.f);
+        fTop  = std::max(fTop, 0.f);
 
 		PrepareArray();
 		Add("XYZ");

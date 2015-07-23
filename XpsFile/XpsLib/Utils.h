@@ -63,7 +63,7 @@ namespace XPS
 	bool   GetBool(const std::wstring& wsString);
 	void   GetBgra(const std::wstring& wsString, int& nBgr, int& nAlpha);
 
-	unsigned char GetCapStyle(const wchar_t* wsCapStyle);
+    unsigned char GetCapStyle(const std::string& wsCapStyle);
 
 	std::wstring NormalizePath(const std::wstring& wsPath);
 	std::wstring GetPath(const std::wstring& wsPath);

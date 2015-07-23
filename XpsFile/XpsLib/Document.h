@@ -6,11 +6,6 @@
 #include <map>
 #include <vector>
 
-#define UNICODE
-#define _UNICODE
-#define _USE_LIBXML2_READER_
-#define LIBXML_READER_ENABLED
-
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/graphics/TemporaryCS.h"
 

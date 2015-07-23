@@ -90,10 +90,10 @@ namespace XPS
 									if (wsNodeName == L"FixedPage")
 									{
 										ReadAttribute(oReader, L"Width", wsAttrName);
-										nW = XmlUtils::GetInteger(wsAttrName.c_str());
+                                        nW = wsAttrName.tointeger();
 
 										ReadAttribute(oReader, L"Height", wsAttrName);
-										nH = XmlUtils::GetInteger(wsAttrName.c_str());
+                                        nH = wsAttrName.tointeger();
 										break;
 									}
 								}
@@ -112,10 +112,10 @@ namespace XPS
 								if (wsNodeName == L"FixedPage")
 								{
 									ReadAttribute(oReader, L"Width", wsAttrName);
-									nW = XmlUtils::GetInteger(wsAttrName.c_str());
+                                    nW = wsAttrName.tointeger();
 
 									ReadAttribute(oReader, L"Height", wsAttrName);
-									nH = XmlUtils::GetInteger(wsAttrName.c_str());
+                                    nH = wsAttrName.tointeger();
 									break;
 								}
 							}
@@ -128,10 +128,10 @@ namespace XPS
 		else if (wsNodeName == L"FixedPage")
 		{
 			ReadAttribute(oReader, L"Width", wsAttrName);
-			nW = XmlUtils::GetInteger(wsAttrName.c_str());
+            nW = wsAttrName.tointeger();
 
 			ReadAttribute(oReader, L"Height", wsAttrName);
-			nH = XmlUtils::GetInteger(wsAttrName.c_str());
+            nH = wsAttrName.tointeger();
 		}
 	}
 	void Page::Draw(IRenderer* pRenderer, bool* pbBreak)
@@ -206,14 +206,14 @@ namespace XPS
 		bool bTransform = false, bClip = false, bOpacity = false, bResource = false;
 		if (oReader.MoveToFirstAttribute())
 		{
-			CWString wsAttrName = oReader.GetName();
+            std::string wsAttrName = oReader.GetNameA();
 			while (!wsAttrName.empty())
 			{
-				if (wsAttrName == L"Clip")
-					bClip = ClipToRenderer(oReader.GetText(), pState);
-				else if (wsAttrName == L"RenderTransform")
-					bTransform = TransformToRenderer(oReader.GetText(), pState);
-				else if (wsAttrName == L"Opacity")
+                if (wsAttrName == "Clip")
+                    bClip = ClipToRenderer(oReader.GetText().c_str(), pState);
+                else if (wsAttrName == "RenderTransform")
+                    bTransform = TransformToRenderer(oReader.GetText().c_str(), pState);
+                else if (wsAttrName == "Opacity")
 				{
 					pState->PushOpacity(GetDouble(oReader.GetText()));
 					bOpacity = true;
@@ -222,7 +222,7 @@ namespace XPS
 				if (!oReader.MoveToNextAttribute())
 					break;
 
-				wsAttrName = oReader.GetName();
+                wsAttrName = oReader.GetNameA();
 			}
 		}
 		oReader.MoveToElement();
@@ -813,15 +813,15 @@ namespace XPS
 				}
 				else if (L"StrokeDashCap" == wsAttrName)
 				{
-					nDashCap = GetCapStyle(oReader.GetText());
+                    nDashCap = GetCapStyle(oReader.GetTextA());
 				}
 				else if (L"StrokeEndLineCap" == wsAttrName)
 				{
-					nEndCap = GetCapStyle(oReader.GetText());
+                    nEndCap = GetCapStyle(oReader.GetTextA());
 				}
 				else if (L"StrokeStartLineCap" == wsAttrName)
 				{
-					nStartCap = GetCapStyle(oReader.GetText());
+                    nStartCap = GetCapStyle(oReader.GetTextA());
 				}
 				else if (L"StrokeLineJoin" == wsAttrName)
 				{

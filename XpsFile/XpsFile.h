@@ -3,6 +3,13 @@
 
 #include <string>
 
+#ifndef XPS_USE_DYNAMIC_LIBRARY
+#define XPS_DECL_EXPORT
+#else
+#include "../DesktopEditor/common/base_export.h"
+#define XPS_DECL_EXPORT Q_DECL_EXPORT
+#endif
+
 namespace XPS
 {
 	class CDocument;
@@ -12,7 +19,7 @@ class IRenderer;
 class CApplicationFonts;
 class CFontManager;
 
-class CXpsFile
+class XPS_DECL_EXPORT CXpsFile
 {
 public:
 	CXpsFile(CApplicationFonts* pAppFonts);

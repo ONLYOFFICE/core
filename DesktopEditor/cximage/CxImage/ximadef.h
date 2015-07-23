@@ -59,12 +59,14 @@
 #endif
 
 #if defined(_WIN32) || defined (_WIN64)
+#ifndef NOMINMAX
     #ifndef min
     #define min(a,b) (((a)<(b))?(a):(b))
     #endif
     #ifndef max
     #define max(a,b) (((a)>(b))?(a):(b))
     #endif
+#endif
 #endif
 
 #ifndef PI

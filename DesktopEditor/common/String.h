@@ -1,4 +1,4 @@
-#ifndef _BUILD_STRING_CROSSPLATFORM_H_
+п»ї#ifndef _BUILD_STRING_CROSSPLATFORM_H_
 #define _BUILD_STRING_CROSSPLATFORM_H_
 
 #include "CPEncodings/CodePage.h"
@@ -84,7 +84,7 @@ namespace NSStringExt
 			SINGLE_BYTE_ENCODING_CP874   = 0xDE, // THAI_CHARSET            222 (xDE)
 			SINGLE_BYTE_ENCODING_CP1361  = 0x82, // JOHAB_CHARSET	        130 (x82)
 			SINGLE_BYTE_ENCODING_CP1258  = 0xA3, // VIETNAMESE_CHARSET      163 (xA3)
-			SINGLE_BYTE_ENCODING_CP866   = 0xFF  // OEM_CHARSET             255 (xFF) // Проверить, что OEM соответствует CP866
+			SINGLE_BYTE_ENCODING_CP866   = 0xFF  // OEM_CHARSET             255 (xFF) // РџСЂРѕРІРµСЂРёС‚СЊ, С‡С‚Рѕ OEM СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓРµС‚ CP866
 		} ESingleByteEncoding;
 
 		static std::wstring GetUnicodeFromSingleByteString(const unsigned char* pData, long lCount, ESingleByteEncoding eType = SINGLE_BYTE_ENCODING_DEFAULT)
@@ -105,7 +105,7 @@ namespace NSStringExt
 				}
 				case SINGLE_BYTE_ENCODING_SYMBOL:
 				{
-					// Добавляем 0xF000 к кодам всех символов
+					// Р”РѕР±Р°РІР»СЏРµРј 0xF000 Рє РєРѕРґР°Рј РІСЃРµС… СЃРёРјРІРѕР»РѕРІ
 					for (long i = 0; i < lCount; ++i)
 					{
 						pUnicode[i] = (wchar_t)(0xF000 | (unsigned char)pData[i]);
@@ -255,7 +255,7 @@ namespace NSStringExt
 					}
 					else if (wLeading >= 0xDC00)
 					{
-						// Такого не должно быть
+						// РўР°РєРѕРіРѕ РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ
 						continue;
 					}
 					else
@@ -264,7 +264,7 @@ namespace NSStringExt
 						wTrailing = *wsInput++;
 						if (wTrailing < 0xDC00 || wTrailing > 0xDFFF)
 						{
-							// Такого не должно быть
+							// РўР°РєРѕРіРѕ РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ
 							continue;
 						}
 						else

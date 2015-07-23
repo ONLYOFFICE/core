@@ -99,13 +99,6 @@ typedef long HRESULT;
 
 #if defined(_WIN32) || defined (_WIN64)
     #include "winerror.h"
-    #ifndef max
-        #define max(a,b)            (((a) > (b)) ? (a) : (b))
-    #endif
-
-    #ifndef min
-        #define min(a,b)            (((a) < (b)) ? (a) : (b))
-    #endif
 #else
     #ifndef S_OK
         #define S_OK                                   ((HRESULT)0x00000000L)

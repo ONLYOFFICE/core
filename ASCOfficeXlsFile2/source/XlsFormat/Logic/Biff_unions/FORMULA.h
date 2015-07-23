@@ -21,7 +21,15 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 	static const ElementType	type = typeFORMULA;
 
+	int serialize(std::wostream & stream);
+
 	const CellRef getLocation() const;
+
+	BaseObjectPtr		m_Formula;
+	BaseObjectPtr		m_TableFormula;
+	BaseObjectPtr		m_ArrayFormula;
+	BaseObjectPtr		m_SharedFormula;
+
 
 	CellRef location;
 

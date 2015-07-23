@@ -27,26 +27,14 @@ public:
 	const CellRef getLocation() const;
 
 //-----------------------------
-	Cell cell;
-	FormulaValue val;
-	BIFF_BOOL fAlwaysCalc;
+	Cell					cell;
+	FormulaValue			val;
+	BIFF_BOOL				fAlwaysCalc;
 	BackwardOnlyParam<bool> fFill;
-	BIFF_BOOL fShrFmla;
+	BIFF_BOOL				fShrFmla;
 	BackwardOnlyParam<bool> fClearErrors;
 
-	CellParsedFormula formula;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(cell)
-		//BO_ATTRIB_MARKUP_ATTRIB(val)
-		//BO_ATTRIB_MARKUP_ATTRIB(fAlwaysCalc)
-		//BO_ATTRIB_MARKUP_ATTRIB(fFill)
-		//BO_ATTRIB_MARKUP_ATTRIB(fShrFmla)
-		//BO_ATTRIB_MARKUP_ATTRIB(fClearErrors)
-
-		//BO_ATTRIB_MARKUP_COMPLEX(formula)
-	//BO_ATTRIB_MARKUP_END
-
+	CellParsedFormula		formula;
 };
 
 typedef boost::shared_ptr<Formula> FormulaPtr;

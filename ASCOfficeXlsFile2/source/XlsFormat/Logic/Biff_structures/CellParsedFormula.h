@@ -16,7 +16,6 @@ public:
 	void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	bool is_part_of_a_revision_;
 };
 

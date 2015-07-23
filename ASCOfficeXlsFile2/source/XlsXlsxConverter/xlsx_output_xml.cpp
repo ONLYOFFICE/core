@@ -128,16 +128,10 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			//объединенные €чейки раньше чем гиперлинки !!!
            
 			CP_XML_STREAM() << impl_->mergeCells_.str();
-
-            if (!impl_->hyperlinks_.str().empty())
-            {
-                CP_XML_NODE(L"hyperlinks")
-                {
-                    CP_XML_STREAM() << impl_->hyperlinks_.str();
-                }
-            }
+			CP_XML_STREAM() << impl_->hyperlinks_.str();
 
             CP_XML_STREAM() << impl_->drawing_.str();
+		
 			if (impl_->commentsId_.length()>0)
 			{
 				CP_XML_NODE(L"legacyDrawing")

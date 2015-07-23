@@ -30,7 +30,14 @@ const bool HLINK::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
-	proc.optional<HLinkTooltip>();
+	m_HLink = elements_.back();
+	elements_.pop_back();
+
+	if (proc.optional<HLinkTooltip>())
+	{
+		m_HLinkTooltip = elements_.back();
+		elements_.pop_back();
+	}
 
 	return true;
 }

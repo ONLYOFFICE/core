@@ -17,6 +17,8 @@ namespace oox
 namespace XLS
 {
 	class BaseObject;
+	class BiffStructure;
+
 	typedef boost::shared_ptr<BaseObject> BaseObjectPtr;
 	
 	class GlobalWorkbookInfo;
@@ -29,6 +31,7 @@ namespace XLS
 	class FORMATTING;
 	class THEME;
 	class SHAREDSTRINGS;
+	class HLINK;
 	
 }
 
@@ -60,6 +63,9 @@ private:
 	void convert(XLS::FORMATTING				* formating);
 	void convert(XLS::THEME						* theme);
 	void convert(XLS::SHAREDSTRINGS				* sharedstrings);
+	void convert(XLS::HLINK						* hlink);
+
 	
+	std::wstring GetTargetMoniker(XLS::BiffStructure *moniker);
 
 };

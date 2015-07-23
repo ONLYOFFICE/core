@@ -121,7 +121,6 @@ public:
 	CFRecord& operator>>(short& val)			{ loadAnyData(val);	return *this; };
 	CFRecord& operator>>(char& val)				{ loadAnyData(val);	return *this; };
 	CFRecord& operator>>(bool& val);
-	CFRecord& operator>>(std::wstring & val);
 
 	CFRecord& operator<<(unsigned char& val)	{ storeAnyData(val);	return *this; };
 	CFRecord& operator<<(unsigned short& val)	{ storeAnyData(val);	return *this; };
@@ -134,7 +133,6 @@ public:
 	CFRecord& operator<<(char& val)				{ storeAnyData(val);	return *this; };
 	CFRecord& operator<<(wchar_t& val)			{ storeAnyData(val);	return *this; };
 	CFRecord& operator<<(bool& val);
-	CFRecord& operator<<(std::wstring & val);
 
 private:
 	static const size_t MAX_RECORD_SIZE = 8224;

@@ -19,6 +19,9 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeHLINK;
+
+	BaseObjectPtr m_HLink;
+	BaseObjectPtr m_HLinkTooltip;
 };
 
 } // namespace XLS

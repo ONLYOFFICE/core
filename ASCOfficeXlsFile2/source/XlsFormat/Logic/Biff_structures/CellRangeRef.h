@@ -49,11 +49,9 @@ public:
 	void operator+=(const CellRef& appended_ref);
 	void operator-=(const CellRef& subtracted_ref);
 
-private:
 	virtual void load(CFRecord& record) {};
 	virtual void store(CFRecord& record) {};
 
-protected:
 	long rowFirst;
 	long rowLast;
 	bool rowFirstRelative;

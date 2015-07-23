@@ -33,7 +33,7 @@ public:
 	BaseObjectPtr				m_CELLTABLE;
 	BaseObjectPtr				m_SHFMLA_SET;
 	BaseObjectPtr				m_Dimensions;
-	BaseObjectPtr				m_HLINK;
+	std::vector<BaseObjectPtr>	m_HLINK;
 };
 
 } // namespace XLS

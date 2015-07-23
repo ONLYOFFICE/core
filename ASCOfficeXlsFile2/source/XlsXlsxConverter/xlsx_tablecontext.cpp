@@ -36,7 +36,6 @@ void xlsx_table_context::start_table(const std::wstring & name)
 
 void xlsx_table_context::end_table()
 {
-    //table_state_stack_.pop_back();
 }
 //
 //std::wstring xlsx_table_context::get_current_table_name() const
@@ -149,11 +148,8 @@ void xlsx_table_context::end_table()
 //{
 //    return state().serialize_hyperlinks(_Wostream);
 //}
-//void xlsx_table_context::dump_rels_hyperlinks(rels & Rels)
-//{
-//	return state().dump_rels_hyperlinks(Rels);
-//}
-//
+
+
 //xlsx_table_metrics & xlsx_table_context::get_table_metrics()
 //{
 //    return state().get_table_metrics();
@@ -183,10 +179,18 @@ void xlsx_table_context::end_table()
 //    return state().start_hyperlink();
 //}
 //
-// std::wstring xlsx_table_context::end_hyperlink(std::wstring const & ref, std::wstring const & href, std::wstring const & display)
-//{
-//    return state().end_hyperlink(ref, href, display);
-//}
-//
+ std::wstring xlsx_table_context::add_hyperlink(std::wstring const & ref, std::wstring const & target, std::wstring const & display)
+{
+    return xlsx_hyperlinks_.add( ref, target, display);
+}
+ void xlsx_table_context::dump_rels_hyperlinks(rels & Rels)
+{
+	return xlsx_hyperlinks_.dump_rels(Rels);
+}
+void xlsx_table_context::serialize_hyperlinks(std::wostream & _Wostream)
+{
+    return xlsx_hyperlinks_.serialize(_Wostream);
+}
+
 
 }

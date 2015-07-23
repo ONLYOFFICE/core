@@ -13,12 +13,9 @@ class HyperlinkMoniker : public XLS::BiffStructure
 public:
 	XLS::BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-private:
 	std::wstring  monikerClsid;
 	boost::shared_ptr<BiffStructure> data;
 };

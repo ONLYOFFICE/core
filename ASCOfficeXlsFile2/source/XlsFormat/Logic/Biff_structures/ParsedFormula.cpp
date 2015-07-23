@@ -15,38 +15,6 @@ ParsedFormula::ParsedFormula(const CellRef& cell_base_ref)
 {
 }
 
-
-//void ParsedFormula::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	if(!rgce.isEmpty())
-//	{
-//		rgce.toXML(xml_tag);
-//	}
-//// RgbExtra is not necessary for XSLT
-//// 	if(!rgcb.isEmpty())
-//// 	{
-//// 		rgcb.toXML(xml_tag);
-//// 	}
-//
-//	static std::wstring  attr_name(L"assembled_formula");
-//	xml_tag->setAttribute(attr_name, getAssembledFormula(xml_tag->GetparentNode()).c_str());
-//}
-
-
-//void ParsedFormula::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	std::wstring  assembled_formula = getStructAttribute(xml_tag, L"assembled_formula");
-//	if(!assembled_formula || std::wstring (L"") == assembled_formula) // for shares formulas, array formulas, or tables
-//	{
-//		rgce.fromXML(xml_tag);
-//	}
-//	else
-//	{
-//		parseStringFormula(static_cast<wchar_t*>(assembled_formula), xml_tag);
-//	}
-//}
-
-
 void ParsedFormula::setCCE(const size_t cce_val)
 {
 	rgce.setCCE(cce_val);

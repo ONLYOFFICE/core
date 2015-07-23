@@ -3,11 +3,11 @@
 
 #include "SVGWriter2.h"
 #include <map>
-#include "../../../DesktopEditor/xml/include/xmlutils.h"
-#include "../../../DesktopEditor/common/CalculatorCRC32.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../DesktopEditor/common/CalculatorCRC32.h"
 #include "Text.h"
 #include "Document.h"
-#include "../../../DesktopEditor/fontengine/FontConverter.h"
+#include "../../DesktopEditor/fontengine/FontConverter.h"
 
 namespace NSHtmlRenderer
 {

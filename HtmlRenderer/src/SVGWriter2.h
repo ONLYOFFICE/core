@@ -2,7 +2,7 @@
 #define _ASC_HTMLRENDERER_SVGWRITER2_H_
 
 #include "SVGWriter.h"
-#include "../../../DesktopEditor/graphics/GraphicsRenderer.h"
+#include "../../DesktopEditor/graphics/GraphicsRenderer.h"
 
 #define SVG_INLINE_MAX_SIZE		500000 // 500Kb
 #define SVG_TO_RASTER_MIN_SIZE 50000000 // 1Mb

@@ -1,16 +1,16 @@
 ﻿#ifndef _ASC_HTMLRENDERER_COMMON_H_
 #define _ASC_HTMLRENDERER_COMMON_H_
 
-#include "../../../DesktopEditor/common/Types.h"
-#include "../../../DesktopEditor/common/File.h"
-#include "../../../DesktopEditor/common/Directory.h"
-#include "../../../DesktopEditor/raster/BgraFrame.h"
-#include "../../../DesktopEditor/graphics/Matrix.h"
-#include "../../../DesktopEditor/graphics/structures.h"
-#include "../../../DesktopEditor/fontengine/ApplicationFonts.h"
-#include "../../../DesktopEditor/common/StringBuilder.h"
-#include "../../../DesktopEditor/graphics/IRenderer.h"
-#include "../../../DesktopEditor/xml/include/xmlutils.h"
+#include "../../DesktopEditor/common/Types.h"
+#include "../../DesktopEditor/common/File.h"
+#include "../../DesktopEditor/common/Directory.h"
+#include "../../DesktopEditor/raster/BgraFrame.h"
+#include "../../DesktopEditor/graphics/Matrix.h"
+#include "../../DesktopEditor/graphics/structures.h"
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+#include "../../DesktopEditor/common/StringBuilder.h"
+#include "../../DesktopEditor/graphics/IRenderer.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 
 namespace NSHtmlRenderer
 {

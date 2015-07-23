@@ -2,7 +2,7 @@
 #define _ASC_HTMLRENDERER_TEXT_H_
 
 #include "FontManager.h"
-#include "../../../Common/OfficeFileFormats.h"
+#include "../../Common/OfficeFileFormats.h"
 
 #ifdef min
 #undef min

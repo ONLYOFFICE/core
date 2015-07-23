@@ -2,7 +2,7 @@
 #define _ASC_HTMLRENDERER_VGW_H_
 
 #include "Common.h"
-#include "../../../DesktopEditor/graphics/GraphicsPath.h"
+#include "../../DesktopEditor/graphics/GraphicsPath.h"
 #include <vector>
 
 namespace NSHtmlRenderer

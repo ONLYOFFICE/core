@@ -1,8 +1,9 @@
 ﻿#include <QCoreApplication>
 
-#include "../../../PdfReader/PdfReader.h"
+#include "../../DesktopEditor/fontengine/ApplicationFonts.h"
+
+#include "../../PdfReader/PdfReader.h"
 #include "../include/HTMLRenderer3.h"
-#include "../../../DesktopEditor/fontengine/ApplicationFonts.h"
 
 int main(int argc, char *argv[])
 {

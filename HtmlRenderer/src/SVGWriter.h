@@ -3,7 +3,7 @@
 
 #include "Common.h"
 #include <vector>
-#include "../../../DesktopEditor/graphics/GraphicsPath.h"
+#include "../../DesktopEditor/graphics/GraphicsPath.h"
 
 namespace NSHtmlRenderer
 {

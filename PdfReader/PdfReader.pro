@@ -43,7 +43,7 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
 
 ############# dynamic dependencies #############
 shared {
-    DEFINES += PDF_USE_DYNAMIC_LIBRARY
+    DEFINES += PDFREADER_USE_DYNAMIC_LIBRARY
 
     LIBS += -L$$DESTDIR -lASCOfficeUtilsLib
     LIBS += -L$$DESTDIR -lgraphics

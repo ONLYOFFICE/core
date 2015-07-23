@@ -1,12 +1,19 @@
 ﻿#ifndef _ASC_HTMLRENDERER3_H_
 #define _ASC_HTMLRENDERER3_H_
 
-#include "../../../DesktopEditor/graphics/IRenderer.h"
+#include "../../DesktopEditor/graphics/IRenderer.h"
+
+#ifndef HTMLRENDERER_USE_DYNAMIC_LIBRARY
+#define HTMLRENDERER_DECL_EXPORT
+#else
+#include "../../DesktopEditor/common/base_export.h"
+#define HTMLRENDERER_DECL_EXPORT Q_DECL_EXPORT
+#endif
 
 namespace NSHtmlRenderer
 {
     class CASCHTMLRenderer3_Private;
-    class CASCHTMLRenderer3 : public IRenderer
+    class HTMLRENDERER_DECL_EXPORT CASCHTMLRenderer3 : public IRenderer
     {
     public:
         CASCHTMLRenderer3();

@@ -39,3 +39,6 @@ make dependencies
 // make native
 CFLAGS="-fPIC" CXXFLAGS="-fPIC" make native
 ---------------------------------------------------------------------------------------------------------
+
+# additionals
+zlib: sudo apt-get install --reinstall zlibc zlib1g zlib1g-dev

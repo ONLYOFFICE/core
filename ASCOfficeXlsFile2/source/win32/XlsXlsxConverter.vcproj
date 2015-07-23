@@ -357,6 +357,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_hyperlinks.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_hyperlinks.h"
+				>
+			</File>
+			<File
 				RelativePath="..\XlsXlsxConverter\xlsx_output_xml.cpp"
 				>
 			</File>

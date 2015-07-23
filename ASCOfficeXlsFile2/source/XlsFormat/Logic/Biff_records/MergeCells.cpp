@@ -45,7 +45,18 @@ void MergeCells::readFields(CFRecord& record)
 
 int MergeCells::serialize(std::wostream & stream)
 {
-
+	CP_XML_WRITER(stream)    
+    {
+		
+		for (long i = 0 ; i < rgref.size(); i++)
+		{	
+			Ref8* ref = dynamic_cast<Ref8*>(rgref[i].get());
+			CP_XML_NODE(L"mergeCell")
+			{
+				CP_XML_ATTR(L"ref", ref->toString());
+			}	
+		}
+	}
 	return 0;
 }
 

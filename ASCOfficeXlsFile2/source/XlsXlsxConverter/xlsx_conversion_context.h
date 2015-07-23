@@ -27,28 +27,7 @@ public:
     void start_document();
     void end_document();
 
-	std::wostream & current_stream();
-	std::wostream & shared_strings() {return xlsx_shared_strings_;}
-
-
- //   void start_chart(std::wstring const & name);
- //   void end_chart();
-	//
-	//void start_body();
- //   void end_body();
-
- //   void start_office_spreadsheet(const odf_reader::office_element * elm);
- //   void end_office_spreadsheet();
-
- //   const odf_reader::office_element * get_spreadsheet();
-
- //   void start_paragraph(const std::wstring & styleName);
- //   void end_paragraph();
-
- //   void start_span(const std::wstring & styleName);
- //   void end_span();
-
-    bool start_table(const std::wstring & name);
+	bool start_table(const std::wstring & name);
     void end_table();
 
 
@@ -86,7 +65,8 @@ public:
 
  //   void process_styles();
 
-    xlsx_text_context           & get_text_context()		{ return xlsx_text_context_; }
+ 	std::wostream & shared_strings() {return xlsx_shared_strings_;}    
+	xlsx_text_context           & get_text_context()		{ return xlsx_text_context_; }
     xlsx_table_context          & get_table_context()		{ return xlsx_table_context_; }
  //   const xlsx_table_context    & get_table_context() const { return xlsx_table_context_; }
  //   xlsx_style_manager          & get_style_manager()		{ return xlsx_style_; }
@@ -106,7 +86,6 @@ public:
 
 private:
 
-	std::wstringstream  other_stream;
     void create_new_sheet(std::wstring const & name);
 
     package::xlsx_document				*output_document_;

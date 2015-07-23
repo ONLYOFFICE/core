@@ -266,19 +266,9 @@ CFRecord& CFRecord::operator>>(bool& val)
 }
 
 
-CFRecord& CFRecord::operator>>(std::wstring & val)
-{
-	throw;// EXCEPT::LE::WrongAPIUsage("This function may only be called by mistake.", __FUNCTION__);
-}
 
 
 CFRecord& CFRecord::operator<<(bool& val)
-{
-	throw;// EXCEPT::LE::WrongAPIUsage("This function may only be called by mistake.", __FUNCTION__);
-}
-
-
-CFRecord& CFRecord::operator<<(std::wstring & val)
 {
 	throw;// EXCEPT::LE::WrongAPIUsage("This function may only be called by mistake.", __FUNCTION__);
 }

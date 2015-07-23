@@ -27,7 +27,7 @@ public:
 //-----------------------------
 	Ref8U ref8;
 	ForwardOnlyParam<std::wstring > hlinkClsid;
-	OSHARED::HyperlinkObject hyperlink;
+	OSHARED::HyperlinkObject		hyperlink;
 
 
 };

@@ -15,7 +15,12 @@
 #include "../XlsFormat/Logic/Biff_unions/GLOBALS.h"
 #include "../XlsFormat/Logic/Biff_unions/COLUMNS.h"
 #include "../XlsFormat/Logic/Biff_unions/SHAREDSTRINGS.h"
+#include "../XlsFormat/Logic/Biff_unions/HLINK.h"
 
+
+#include <Logic/Biff_records/HLink.h>
+#include <Logic/Biff_structures/URLMoniker.h>
+#include <Logic/Biff_structures/FileMoniker.h>
 
 #include "xlsx_conversion_context.h"
 #include "xlsx_package.h"
@@ -91,11 +96,13 @@ XlsConverter::XlsConverter(const std::wstring & path, const ProgressCallback* Ca
 	output_document		= new oox::package::xlsx_document();
     xlsx_context		= new oox::xlsx_conversion_context(output_document);
 }
+
 XlsConverter::~XlsConverter() 
 {
 	if (xlsx_context)		delete xlsx_context;
 	if (output_document)	delete output_document;
 }
+
 #define PROGRESSEVENT_ID	0
 
 bool XlsConverter::UpdateProgress(long nComplete)
@@ -147,12 +154,17 @@ void XlsConverter::convert(XLS::BaseObject	*xls_unknown)
 
 	switch (type)
 	{
+	case XLS::typeHLINK:
+		{
+			XLS::HLINK * hlink = dynamic_cast<XLS::HLINK *>(xls_unknown);
+			convert(hlink);
+		}break;
 	case XLS::typeAnyObject:	
 	default:
 		{
 			for (std::list<XLS::BaseObjectPtr>::iterator it = xls_unknown->elements_.begin(); it != xls_unknown->elements_.end(); it++)
 			{
-				(*it)->serialize(xlsx_context->current_stream());
+				(*it)->serialize(xlsx_context->current_sheet().sheetData());
 			}
 		}
 	}
@@ -218,6 +230,11 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 			}
 		}
 	}
+	for (long i = 0 ; i < sheet->m_HLINK.size(); i++)
+	{
+		convert(sheet->m_HLINK[i].get());
+	}
+
 	if (sheet->m_PAGESETUP)
 	{
 		sheet->m_PAGESETUP->serialize(xlsx_context->current_sheet().pageProperties());
@@ -291,6 +308,40 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 	output_document->get_xl_files().set_styles( oox::package::simple_element::create(L"styles.xml", strm.str()) );
 }
 
+std::wstring XlsConverter::GetTargetMoniker(XLS::BiffStructure *moniker)
+{
+	if (moniker->getClassName() == L"URLMoniker")
+	{
+		OSHARED::URLMoniker* urlMoniker = dynamic_cast<OSHARED::URLMoniker* >(moniker);
+		if (urlMoniker)return urlMoniker->url;
+	}
+	else if (moniker->getClassName() == L"FileMoniker")
+	{
+		OSHARED::FileMoniker* fileMoniker = dynamic_cast<OSHARED::FileMoniker* >(moniker);
+		if (fileMoniker)
+		{
+			if (!fileMoniker->unicodePath.empty()) return fileMoniker->unicodePath;
+			else return std::wstring(fileMoniker->ansiPath.begin(), fileMoniker->ansiPath.end());//codePage ??? todooo
+		}
+	}
+
+	return L"";
+}
+
+void XlsConverter::convert(XLS::HLINK * HLINK_)
+{
+	XLS::HLink * hLink = dynamic_cast<XLS::HLink*>(HLINK_->m_HLink.get());
+	
+	std::wstring target = GetTargetMoniker(hLink->hyperlink.oleMoniker.data.get());
+
+	std::wstring display = hLink->hyperlink.displayName;
+
+	if (display.empty())	display = target;
+
+	xlsx_context->get_table_context().add_hyperlink( hLink->ref8.toString(), target, display);
+
+
+}
 void XlsConverter::convert(XLS::THEME* theme)
 {
 	if (theme == NULL) return;

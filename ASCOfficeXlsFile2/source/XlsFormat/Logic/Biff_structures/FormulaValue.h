@@ -12,14 +12,11 @@ class FormulaValue : public BiffAttribute
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent, const std::wstring & attrib_name);
-	//virtual const bool fromXML(BiffStructurePtr & parent, const std::wstring & attrib_name);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
 	const unsigned char getType() const;
 
-private:
 	union
 	{
 		struct  

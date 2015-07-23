@@ -1,7 +1,6 @@
 ﻿
 #include "xlsx_textcontext.h"
 #include "xlsx_conversion_context.h"
-#include "xlsx_sharedstrings.h"
 
 #include <iostream>
 #include <list>

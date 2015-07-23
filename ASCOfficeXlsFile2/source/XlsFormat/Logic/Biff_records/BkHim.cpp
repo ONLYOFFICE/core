@@ -39,8 +39,14 @@ void BkHim::readFields(CFRecord& record)
 
 	record >> cf;
 	record.skipNunBytes(2);
-	record >> lcb;
-	record.skipNunBytes(lcb);
+	record >> lcb;//imageBlob size
+
+	unsigned int sz = record.getDataSize() - record.getRdPtr();
+	
+	if (record.checkFitReadSafe(lcb))
+	{
+		record.skipNunBytes(lcb);
+	}
 }
 
 } // namespace XLS

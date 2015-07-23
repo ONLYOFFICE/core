@@ -166,10 +166,12 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	proc.optional<PHONETICINFO>();
 	proc.optional<CONDFMTS>();  // Let it be optional
 	
-	if (proc.repeated<HLINK>(0, 0) > 0)
+	count = proc.repeated<HLINK>(0, 0) ;
+	while(count > 0)
 	{
-		m_HLINK = elements_.back();
+		m_HLINK.insert(m_HLINK.begin(), elements_.back());
 		elements_.pop_back();
+		count--;
 	}
 	
 	proc.optional<DVAL>();

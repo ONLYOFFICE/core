@@ -21,14 +21,13 @@ public:
 	const size_t getCCE() const;
 	const bool HasPtgTbl() const;
 
-private:
 	const std::wstring getAssembledFormula(BiffStructurePtr & parent) const;
+	
 	const bool parseStringFormula(const std::wstring formula, BiffStructurePtr & parent);
 
-protected:
 	Rgce rgce;
 	RgbExtra rgcb;
-private:
+
 	size_t cce; // Size of rgce variable. Setting explicit is mandatory
 	bool cce_is_set;
 };

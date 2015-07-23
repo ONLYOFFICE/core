@@ -1,4 +1,4 @@
-#include "FontCidTT.h"
+п»ї#include "FontCidTT.h"
 #include "Document.h"
 #include "Streams.h"
 #include "Utils.h"
@@ -65,7 +65,7 @@ namespace PdfWriter
 		if (NULL == pOs2 || 0xFFFF == pOs2->version)
 			return -1;
 
-		// Проверяем установлен ли 31 бит
+		// РџСЂРѕРІРµСЂСЏРµРј СѓСЃС‚Р°РЅРѕРІР»РµРЅ Р»Рё 31 Р±РёС‚
 		if (!(pOs2->ulCodePageRange1 & 0x80000000) && !(pOs2->ulCodePageRange1 == 0 && pOs2->ulCodePageRange2 == 0))
 			return -1;
 
@@ -138,12 +138,12 @@ namespace PdfWriter
 		pFont->Add("CIDSystemInfo", pSystemInfo);
 
 		CDictObject* pFontDescriptor = new CDictObject();
-		// FontDescriptor обязательно должен идти ссылкой
+		// FontDescriptor РѕР±СЏР·Р°С‚РµР»СЊРЅРѕ РґРѕР»Р¶РµРЅ РёРґС‚Рё СЃСЃС‹Р»РєРѕР№
 		m_pXref->Add(pFontDescriptor);
 		pFontDescriptor->Add("Type", "FontDescriptor");
 		m_pFontDescriptor = pFontDescriptor;
 
-		// Выставляем бит Symbolic, а бит NonSymbolic убираем
+		// Р’С‹СЃС‚Р°РІР»СЏРµРј Р±РёС‚ Symbolic, Р° Р±РёС‚ NonSymbolic СѓР±РёСЂР°РµРј
 		unsigned int nFlags = 0;
 		if (!(nFlags & 4))
 			UIntChangeBit(nFlags, 2);
@@ -185,9 +185,9 @@ namespace PdfWriter
 		if (!pEncodedString)
 			return NULL;
 
-		// Юникодные значения мы кодируем в наши собственные коды последовательно от 0x0000..0xFFFF
-		// для каждого юникодного значения находим соответствующий Gid в шрифте.
-		// Для каждого кода получаем ширину символа.
+		// Р®РЅРёРєРѕРґРЅС‹Рµ Р·РЅР°С‡РµРЅРёСЏ РјС‹ РєРѕРґРёСЂСѓРµРј РІ РЅР°С€Рё СЃРѕР±СЃС‚РІРµРЅРЅС‹Рµ РєРѕРґС‹ РїРѕСЃР»РµРґРѕРІР°С‚РµР»СЊРЅРѕ РѕС‚ 0x0000..0xFFFF
+		// РґР»СЏ РєР°Р¶РґРѕРіРѕ СЋРЅРёРєРѕРґРЅРѕРіРѕ Р·РЅР°С‡РµРЅРёСЏ РЅР°С…РѕРґРёРј СЃРѕРѕС‚РІРµС‚СЃС‚РІСѓСЋС‰РёР№ Gid РІ С€СЂРёС„С‚Рµ.
+		// Р”Р»СЏ РєР°Р¶РґРѕРіРѕ РєРѕРґР° РїРѕР»СѓС‡Р°РµРј С€РёСЂРёРЅСѓ СЃРёРјРІРѕР»Р°.
 		for (unsigned int unIndex = 0; unIndex < unLen; unIndex++)
 		{
 			bool bFind = false;
@@ -238,10 +238,10 @@ namespace PdfWriter
 
 				m_vCodeToGid.push_back(unGID);
 
-				// Данный символ используется
+				// Р”Р°РЅРЅС‹Р№ СЃРёРјРІРѕР» РёСЃРїРѕР»СЊР·СѓРµС‚СЃСЏ
 				m_mGlyphs.insert(std::pair<unsigned int, bool>(unGID, true));
 
-				// Если данный символ составной (CompositeGlyf), тогда мы должны учесть все его дочерные символы (subglyfs)
+				// Р•СЃР»Рё РґР°РЅРЅС‹Р№ СЃРёРјРІРѕР» СЃРѕСЃС‚Р°РІРЅРѕР№ (CompositeGlyf), С‚РѕРіРґР° РјС‹ РґРѕР»Р¶РЅС‹ СѓС‡РµСЃС‚СЊ РІСЃРµ РµРіРѕ РґРѕС‡РµСЂРЅС‹Рµ СЃРёРјРІРѕР»С‹ (subglyfs)
 				if (0 == FT_Load_Glyph(m_pFace, unGID, FT_LOAD_NO_SCALE | FT_LOAD_NO_RECURSE))
 				{
 					for (int nSubIndex = 0; nSubIndex < m_pFace->glyph->num_subglyphs; nSubIndex++)
@@ -446,7 +446,7 @@ namespace PdfWriter
 
 		if (m_bNeedAddFontName)
 		{
-			// Дописываем имя шрифта во все необходимые словари, а также заполняем дескриптор
+			// Р”РѕРїРёСЃС‹РІР°РµРј РёРјСЏ С€СЂРёС„С‚Р° РІРѕ РІСЃРµ РЅРµРѕР±С…РѕРґРёРјС‹Рµ СЃР»РѕРІР°СЂРё, Р° С‚Р°РєР¶Рµ Р·Р°РїРѕР»РЅСЏРµРј РґРµСЃРєСЂРёРїС‚РѕСЂ
 			std::string sFontName = m_pDocument->GetTTFontTag() + std::string(m_pFace->family_name);
 			if (m_pFace->style_flags & FT_STYLE_FLAG_ITALIC)
 				sFontName += "-Italic";

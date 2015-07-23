@@ -1,4 +1,4 @@
-#include "OnlineOfficeBinToPdf.h"
+п»ї#include "OnlineOfficeBinToPdf.h"
 
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
@@ -627,7 +627,7 @@ namespace NSOnlineOfficeBinToPdf
 				}
 				case ctGradientFill:
 				{
-					// TODO: Эта команда не должна приходить
+					// TODO: Р­С‚Р° РєРѕРјР°РЅРґР° РЅРµ РґРѕР»Р¶РЅР° РїСЂРёС…РѕРґРёС‚СЊ
 					_INT32 gradientType = ReadInt(current, curindex);
 
 					std::wstring sXml, sXmlStop;
@@ -674,7 +674,7 @@ namespace NSOnlineOfficeBinToPdf
 				}
 				case ctGradientFillXML:
 				{
-					// TODO: Эта команда не должна приходить
+					// TODO: Р­С‚Р° РєРѕРјР°РЅРґР° РЅРµ РґРѕР»Р¶РЅР° РїСЂРёС…РѕРґРёС‚СЊ
 					_INT32 gradientType = ReadInt(current, curindex);
 					int _sLen = ReadInt(current, curindex);
 					std::wstring wsTempString = ReadString16(current, curindex, _sLen);
@@ -682,7 +682,7 @@ namespace NSOnlineOfficeBinToPdf
 				}
 				case ctGradientStroke:
 				{
-					// TODO: Эта команда не должна приходить
+					// TODO: Р­С‚Р° РєРѕРјР°РЅРґР° РЅРµ РґРѕР»Р¶РЅР° РїСЂРёС…РѕРґРёС‚СЊ
 					_INT32 gradientType = ReadInt(current, curindex);
 					if (0 == gradientType)	//	linearGradient
 					{
@@ -725,7 +725,7 @@ namespace NSOnlineOfficeBinToPdf
 				}
 				case ctGradientStrokeXML:
 				{
-					// TODO: Эта команда не должна приходить
+					// TODO: Р­С‚Р° РєРѕРјР°РЅРґР° РЅРµ РґРѕР»Р¶РЅР° РїСЂРёС…РѕРґРёС‚СЊ
 					_INT32 gradientType = ReadInt(current, curindex);
 					int _sLen = (int)ReadInt(current, curindex);
 					std::wstring wsTempString = ReadString16(current, curindex, _sLen);

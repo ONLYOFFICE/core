@@ -1,4 +1,4 @@
-#ifndef _PDF_WRITER_SRC_SHADING_H
+ï»¿#ifndef _PDF_WRITER_SRC_SHADING_H
 #define _PDF_WRITER_SRC_STREAMS_H
 
 #include "Objects.h"
@@ -38,7 +38,7 @@ namespace PdfWriter
 		
 	private:
 
-		bool           m_bRgb;            // Rgb èëè Gray
+		bool           m_bRgb;            // Rgb Ð¸Ð»Ð¸ Gray
 		unsigned char* m_pColors;
 		double*        m_pColorsPoints;
 		int            m_nColorsCount;

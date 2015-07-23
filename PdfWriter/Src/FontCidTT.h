@@ -1,4 +1,4 @@
-#ifndef _PDF_WRITER_SRC_FONTCIDTT_H
+п»ї#ifndef _PDF_WRITER_SRC_FONTCIDTT_H
 #define _PDF_WRITER_SRC_FONTCIDTT_H
 
 #include "Font.h"
@@ -54,9 +54,9 @@ namespace PdfWriter
 		CDictObject*                             m_pFont;
 		CDictObject*                             m_pFontDescriptor;
 
-		unsigned short                           m_ushCodesCount;   // Количество закодированных символов
-		std::map<unsigned int, unsigned short>   m_mUnicodeToCode;  // Мап Юникод->код символа
-		std::vector<unsigned int>                m_vUnicodes;       // Обратный мап код символа -> юникод
+		unsigned short                           m_ushCodesCount;   // РљРѕР»РёС‡РµСЃС‚РІРѕ Р·Р°РєРѕРґРёСЂРѕРІР°РЅРЅС‹С… СЃРёРјРІРѕР»РѕРІ
+		std::map<unsigned int, unsigned short>   m_mUnicodeToCode;  // РњР°Рї Р®РЅРёРєРѕРґ->РєРѕРґ СЃРёРјРІРѕР»Р°
+		std::vector<unsigned int>                m_vUnicodes;       // РћР±СЂР°С‚РЅС‹Р№ РјР°Рї РєРѕРґ СЃРёРјРІРѕР»Р° -> СЋРЅРёРєРѕРґ
 
 		std::vector<unsigned int>                m_vCodeToGid;
 		std::vector<unsigned int>                m_vWidths;

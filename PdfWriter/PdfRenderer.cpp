@@ -1,4 +1,4 @@
-#include "PdfRenderer.h"
+п»ї#include "PdfRenderer.h"
 
 #include "Src/Document.h"
 #include "Src/Pages.h"
@@ -67,7 +67,7 @@ static unsigned int* WStringToUtf32(const std::wstring& wsUnicodeText, unsigned 
 			}
 			else if (wLeading >= 0xDC00)
 			{
-				// Такого не должно быть
+				// РўР°РєРѕРіРѕ РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ
 				continue;
 			}
 			else
@@ -76,7 +76,7 @@ static unsigned int* WStringToUtf32(const std::wstring& wsUnicodeText, unsigned 
 				wTrailing = *wsInput++;
 				if (wTrailing < 0xDC00 || wTrailing > 0xDFFF)
 				{
-					// Такого не должно быть
+					// РўР°РєРѕРіРѕ РЅРµ РґРѕР»Р¶РЅРѕ Р±С‹С‚СЊ
 					continue;
 				}
 				else
@@ -98,7 +98,7 @@ static unsigned int* WStringToUtf32(const std::wstring& wsUnicodeText, unsigned 
 	return pUnicodes;
 }
 
-// Этих типов браша нет в рендерере, мы их используем, когда конвертим из веба
+// Р­С‚РёС… С‚РёРїРѕРІ Р±СЂР°С€Р° РЅРµС‚ РІ СЂРµРЅРґРµСЂРµСЂРµ, РјС‹ РёС… РёСЃРїРѕР»СЊР·СѓРµРј, РєРѕРіРґР° РєРѕРЅРІРµСЂС‚РёРј РёР· РІРµР±Р°
 static const long c_BrushTypeLinearGradient = 8001;
 static const long c_BrushTypeRadialGradient = 8002;
 
@@ -400,7 +400,7 @@ CPdfRenderer::CPdfRenderer(CApplicationFonts* pAppFonts) : m_oCommandManager(thi
 {
 	m_pAppFonts = pAppFonts;
 
-	// Создаем менеджер шрифтов с собственным кэшем
+	// РЎРѕР·РґР°РµРј РјРµРЅРµРґР¶РµСЂ С€СЂРёС„С‚РѕРІ СЃ СЃРѕР±СЃС‚РІРµРЅРЅС‹Рј РєСЌС€РµРј
 	m_pFontManager = pAppFonts->GenerateFontManager();
 	CFontsCache* pMeasurerCache = new CFontsCache();
 	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
@@ -477,7 +477,7 @@ std::wstring CPdfRenderer::GetThemesPlace()
 	return m_wsThemesPlace;
 }
 //----------------------------------------------------------------------------------------
-// Тип рендерера
+// РўРёРї СЂРµРЅРґРµСЂРµСЂР°
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::get_Type(LONG* lType)
 {
@@ -485,7 +485,7 @@ HRESULT CPdfRenderer::get_Type(LONG* lType)
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
-// Функции для работы со страницей
+// Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂР°РЅРёС†РµР№
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::NewPage()
 {
@@ -555,7 +555,7 @@ HRESULT CPdfRenderer::get_DpiY(double* dDpiY)
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
-// Функции для работы с Pen
+// Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Pen
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::get_PenColor(LONG* lColor)
 {
@@ -663,7 +663,7 @@ HRESULT CPdfRenderer::PenDashPattern(double* pPattern, LONG lCount)
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
-// Функции для работы с Brush
+// Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Brush
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::get_BrushType(LONG* lType)
 {
@@ -765,14 +765,14 @@ HRESULT CPdfRenderer::put_BrushLinearAngle(const double& dAngle)
 }
 HRESULT CPdfRenderer::BrushRect(const INT& nVal, const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
 {
-	// Данными параметрами пользуемся, только если пришла команда EnableBrushRect, если команда не пришла, тогда
-	// ориентируемся на границы пата.
+	// Р”Р°РЅРЅС‹РјРё РїР°СЂР°РјРµС‚СЂР°РјРё РїРѕР»СЊР·СѓРµРјСЃСЏ, С‚РѕР»СЊРєРѕ РµСЃР»Рё РїСЂРёС€Р»Р° РєРѕРјР°РЅРґР° EnableBrushRect, РµСЃР»Рё РєРѕРјР°РЅРґР° РЅРµ РїСЂРёС€Р»Р°, С‚РѕРіРґР°
+	// РѕСЂРёРµРЅС‚РёСЂСѓРµРјСЃСЏ РЅР° РіСЂР°РЅРёС†С‹ РїР°С‚Р°.
 	m_oBrush.SetBrushRect(nVal, dLeft, dTop, dWidth, dHeight);
 	return S_OK;
 }
 HRESULT CPdfRenderer::BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight)
 {
-	// TODO: Пока определяется все по границам пата
+	// TODO: РџРѕРєР° РѕРїСЂРµРґРµР»СЏРµС‚СЃСЏ РІСЃРµ РїРѕ РіСЂР°РЅРёС†Р°Рј РїР°С‚Р°
 	return S_OK;
 }
 HRESULT CPdfRenderer::put_BrushGradientColors(LONG* lColors, double* pPositions, LONG lCount)
@@ -781,7 +781,7 @@ HRESULT CPdfRenderer::put_BrushGradientColors(LONG* lColors, double* pPositions,
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
-// Функции для работы со шрифтами
+// Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ С€СЂРёС„С‚Р°РјРё
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::get_FontName(std::wstring* wsName)
 {
@@ -880,7 +880,7 @@ HRESULT CPdfRenderer::put_FontFaceIndex(const int& nFaceIndex)
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
-// Функции для вывода текста
+// Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р°
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::CommandDrawTextCHAR(const LONG& lUnicode, const double& dX, const double& dY, const double& dW, const double& dH)
 {
@@ -901,7 +901,7 @@ HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const d
 	if (!pUnicodes)
 		return S_FALSE;
 
-	// Специальный случай для текста из Djvu, нам не нужно, чтобы он рисовался
+	// РЎРїРµС†РёР°Р»СЊРЅС‹Р№ СЃР»СѓС‡Р°Р№ РґР»СЏ С‚РµРєСЃС‚Р° РёР· Djvu, РЅР°Рј РЅРµ РЅСѓР¶РЅРѕ, С‡С‚РѕР±С‹ РѕРЅ СЂРёСЃРѕРІР°Р»СЃСЏ
 	if (L"" == m_oFont.GetPath() && L"DjvuEmptyFont" == m_oFont.GetName())
 	{
 		if (m_bNeedUpdateTextFont)
@@ -995,11 +995,11 @@ HRESULT CPdfRenderer::CommandDrawTextEx(const std::wstring& wsUnicodeText, const
 	return bRes ? S_OK : S_FALSE;
 }
 //----------------------------------------------------------------------------------------
-// Маркеры команд
+// РњР°СЂРєРµСЂС‹ РєРѕРјР°РЅРґ
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::BeginCommand(const DWORD& dwType)
 {
-	// Здесь мы ничего не делаем
+	// Р—РґРµСЃСЊ РјС‹ РЅРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 	return S_OK;
 }
 HRESULT CPdfRenderer::EndCommand(const DWORD& dwType)
@@ -1007,7 +1007,7 @@ HRESULT CPdfRenderer::EndCommand(const DWORD& dwType)
 	if (!IsPageValid())
 		return S_FALSE;
 
-	// Здесь мы различаем лишь 2 команды: присоединить текущий пат к клипу и отменить клип
+	// Р—РґРµСЃСЊ РјС‹ СЂР°Р·Р»РёС‡Р°РµРј Р»РёС€СЊ 2 РєРѕРјР°РЅРґС‹: РїСЂРёСЃРѕРµРґРёРЅРёС‚СЊ С‚РµРєСѓС‰РёР№ РїР°С‚ Рє РєР»РёРїСѓ Рё РѕС‚РјРµРЅРёС‚СЊ РєР»РёРї
 	if (c_nClipType == dwType)
 	{
 		m_oCommandManager.Flush();
@@ -1033,7 +1033,7 @@ HRESULT CPdfRenderer::EndCommand(const DWORD& dwType)
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
-// Функции для работы с патом
+// Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РїР°С‚РѕРј
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::PathCommandStart()
 {
@@ -1222,7 +1222,7 @@ HRESULT CPdfRenderer::PathCommandTextEx(const std::wstring& wsUnicodeText, const
 	return bRes ? S_OK : S_FALSE;
 }
 //----------------------------------------------------------------------------------------
-// Функции для вывода изображений
+// Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::DrawImage(IGrObject* pImage, const double& dX, const double& dY, const double& dW, const double& dH)
 {
@@ -1250,7 +1250,7 @@ HRESULT CPdfRenderer::DrawImageFromFile(const std::wstring& wsImagePath, const d
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
-// Функции для выставления преобразования
+// Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹СЃС‚Р°РІР»РµРЅРёСЏ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY)
 {
@@ -1275,7 +1275,7 @@ HRESULT CPdfRenderer::ResetTransform()
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
-// Тип клипа
+// РўРёРї РєР»РёРїР°
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::get_ClipMode(LONG* lMode)
 {
@@ -1288,7 +1288,7 @@ HRESULT CPdfRenderer::put_ClipMode(const LONG& lMode)
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
-// Дополнительные функции
+// Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::CommandLong(const LONG& lType, const LONG& lCommand)
 {
@@ -1303,7 +1303,7 @@ HRESULT CPdfRenderer::CommandString(const LONG& lType, const std::wstring& sComm
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
-// Дополнительные функции Pdf рендерера
+// Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё Pdf СЂРµРЅРґРµСЂРµСЂР°
 //----------------------------------------------------------------------------------------
 HRESULT CPdfRenderer::CommandDrawTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int unGidsCount, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH)
 {
@@ -1363,7 +1363,7 @@ HRESULT CPdfRenderer::DrawImageWith1bppMask(IGrObject* pImage, Pix* pMaskBuffer,
 	return S_OK;
 }
 //----------------------------------------------------------------------------------------
-// Внутренние функции
+// Р’РЅСѓС‚СЂРµРЅРЅРёРµ С„СѓРЅРєС†РёРё
 //----------------------------------------------------------------------------------------
 PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BYTE& nAlpha)
 {
@@ -1372,16 +1372,16 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 	BYTE* pData = pImage->GetData();
 	int nStride = 4 * nImageW;
 
-	// Картинки совсем маленьких размеров нельзя делать Jpeg2000
+	// РљР°СЂС‚РёРЅРєРё СЃРѕРІСЃРµРј РјР°Р»РµРЅСЊРєРёС… СЂР°Р·РјРµСЂРѕРІ РЅРµР»СЊР·СЏ РґРµР»Р°С‚СЊ Jpeg2000
 	bool bJpeg = false;
 	if (nImageH < 100 || nImageW < 100)
 		bJpeg = true;
 
-	// TODO: Пока не разберемся как в CxImage управлять параметрами кодирования нельзя писать в Jpeg2000,
-	//       т.к. файлы получаются гораздо больше и конвертация идет намного дольше.
+	// TODO: РџРѕРєР° РЅРµ СЂР°Р·Р±РµСЂРµРјСЃСЏ РєР°Рє РІ CxImage СѓРїСЂР°РІР»СЏС‚СЊ РїР°СЂР°РјРµС‚СЂР°РјРё РєРѕРґРёСЂРѕРІР°РЅРёСЏ РЅРµР»СЊР·СЏ РїРёСЃР°С‚СЊ РІ Jpeg2000,
+	//       С‚.Рє. С„Р°Р№Р»С‹ РїРѕР»СѓС‡Р°СЋС‚СЃСЏ РіРѕСЂР°Р·РґРѕ Р±РѕР»СЊС€Рµ Рё РєРѕРЅРІРµСЂС‚Р°С†РёСЏ РёРґРµС‚ РЅР°РјРЅРѕРіРѕ РґРѕР»СЊС€Рµ.
 	bJpeg = true;
 
-	// Пробегаемся по картинке и определяем есть ли у нас альфа-канал
+	// РџСЂРѕР±РµРіР°РµРјСЃСЏ РїРѕ РєР°СЂС‚РёРЅРєРµ Рё РѕРїСЂРµРґРµР»СЏРµРј РµСЃС‚СЊ Р»Рё Сѓ РЅР°СЃ Р°Р»СЊС„Р°-РєР°РЅР°Р»
 	bool bAlpha = false;
 	for (int nIndex = 0, nSize = nImageW * nImageH; nIndex < nSize; nIndex++)
 	{
@@ -1507,7 +1507,7 @@ void CPdfRenderer::UpdateFont()
 	m_pFont = NULL;
 	if (L"" != wsFontPath)
 	{
-		// TODO: Пока мы здесь предполагаем, что шрифты только либо TrueType, либо OpenType
+		// TODO: РџРѕРєР° РјС‹ Р·РґРµСЃСЊ РїСЂРµРґРїРѕР»Р°РіР°РµРј, С‡С‚Рѕ С€СЂРёС„С‚С‹ С‚РѕР»СЊРєРѕ Р»РёР±Рѕ TrueType, Р»РёР±Рѕ OpenType
 		m_pFontManager->LoadFontFromFile(wsFontPath, lFaceIndex, 10, 72, 72);
 		std::wstring wsFontType = m_pFontManager->GetFontType();
 		if (L"TrueType" == wsFontType || L"OpenType" == wsFontType || L"CFF" == wsFontType)
@@ -1532,7 +1532,7 @@ void CPdfRenderer::UpdatePen()
 	LONG lDashStyle = m_oPen.GetDashStyle();
 	if (Aggplus::DashStyleSolid == lDashStyle)
 	{
-		// Ничего не делаем
+		// РќРёС‡РµРіРѕ РЅРµ РґРµР»Р°РµРј
 	}
 	else if (Aggplus::DashStyleCustom == lDashStyle)
 	{
@@ -1551,7 +1551,7 @@ void CPdfRenderer::UpdatePen()
 	}
 	else
 	{
-		// TODO: Реализовать другие типы пунктирных линий
+		// TODO: Р РµР°Р»РёР·РѕРІР°С‚СЊ РґСЂСѓРіРёРµ С‚РёРїС‹ РїСѓРЅРєС‚РёСЂРЅС‹С… Р»РёРЅРёР№
 	}
 
 	if (pDashPattern && lDashCount)
@@ -1629,24 +1629,24 @@ void CPdfRenderer::UpdateBrush()
 
 			if (c_BrushTextureModeStretch == lTextureMode)
 			{
-				// Чтобы избавиться от погрешностей из-за которых могут возникать полоски, немного увеличим границы пата.
+				// Р§С‚РѕР±С‹ РёР·Р±Р°РІРёС‚СЊСЃСЏ РѕС‚ РїРѕРіСЂРµС€РЅРѕСЃС‚РµР№ РёР·-Р·Р° РєРѕС‚РѕСЂС‹С… РјРѕРіСѓС‚ РІРѕР·РЅРёРєР°С‚СЊ РїРѕР»РѕСЃРєРё, РЅРµРјРЅРѕРіРѕ СѓРІРµР»РёС‡РёРј РіСЂР°РЅРёС†С‹ РїР°С‚Р°.
 				dL -= 1;
 				dT -= 1;
 				dB += 1;
 				dR += 1;
 
-				// Растягиваем картинку по размерам пата
+				// Р Р°СЃС‚СЏРіРёРІР°РµРј РєР°СЂС‚РёРЅРєСѓ РїРѕ СЂР°Р·РјРµСЂР°Рј РїР°С‚Р°
 				dW = max(10, dR - dL);
 				dH = max(10, dB - dT);
 			}
 			else
 			{
-				// Размеры картинки заданы в пикселях. Размеры тайла - это размеры картинки в пунктах.
+				// Р Р°Р·РјРµСЂС‹ РєР°СЂС‚РёРЅРєРё Р·Р°РґР°РЅС‹ РІ РїРёРєСЃРµР»СЏС…. Р Р°Р·РјРµСЂС‹ С‚Р°Р№Р»Р° - СЌС‚Рѕ СЂР°Р·РјРµСЂС‹ РєР°СЂС‚РёРЅРєРё РІ РїСѓРЅРєС‚Р°С….
 				dW = nImageW * 72 / 96;
 				dH = nImageH * 72 / 96;
 			}			
 
-			// Нам нужно, чтобы левый нижний угол границ нашего пата являлся точкой переноса для матрицы преобразования.
+			// РќР°Рј РЅСѓР¶РЅРѕ, С‡С‚РѕР±С‹ Р»РµРІС‹Р№ РЅРёР¶РЅРёР№ СѓРіРѕР» РіСЂР°РЅРёС† РЅР°С€РµРіРѕ РїР°С‚Р° СЏРІР»СЏР»СЃСЏ С‚РѕС‡РєРѕР№ РїРµСЂРµРЅРѕСЃР° РґР»СЏ РјР°С‚СЂРёС†С‹ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ.
 			CMatrix* pMatrix = m_pPage->GetTransform();
 			pMatrix->Apply(dL, dB);
 			CMatrix oPatternMatrix = *pMatrix;
@@ -1861,7 +1861,7 @@ void CPdfRenderer::CPath::CPathClose::UpdateBounds(double& dL, double& dT, doubl
 }
 void CPdfRenderer::CPath::CPathText::Draw(PdfWriter::CPage* pPage)
 {
-	// TODO: Если данная команда будет часто вызываться, тогда ее нужно будет оптимизировать, точно также как это делается в обычном тексте
+	// TODO: Р•СЃР»Рё РґР°РЅРЅР°СЏ РєРѕРјР°РЅРґР° Р±СѓРґРµС‚ С‡Р°СЃС‚Рѕ РІС‹Р·С‹РІР°С‚СЊСЃСЏ, С‚РѕРіРґР° РµРµ РЅСѓР¶РЅРѕ Р±СѓРґРµС‚ РѕРїС‚РёРјРёР·РёСЂРѕРІР°С‚СЊ, С‚РѕС‡РЅРѕ С‚Р°РєР¶Рµ РєР°Рє СЌС‚Рѕ РґРµР»Р°РµС‚СЃСЏ РІ РѕР±С‹С‡РЅРѕРј С‚РµРєСЃС‚Рµ
 	pPage->BeginText();
 	pPage->SetFontAndSize(font, fontSize);
 	pPage->SetCharSpace(charSpace);

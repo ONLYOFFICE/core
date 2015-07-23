@@ -1,4 +1,4 @@
-#ifndef _PDF_WRITER_PDFRENDERER_H
+п»ї#ifndef _PDF_WRITER_PDFRENDERER_H
 #define _PDF_WRITER_PDFRENDERER_H
 
 #include "../DesktopEditor/graphics/IRenderer.h"
@@ -41,11 +41,11 @@ public:
 	void         SetThemesPlace(const std::wstring& wsThemesPlace);
 	std::wstring GetThemesPlace();
 	//----------------------------------------------------------------------------------------
-	// Тип рендерера
+	// РўРёРї СЂРµРЅРґРµСЂРµСЂР°
 	//----------------------------------------------------------------------------------------
 	virtual HRESULT get_Type(LONG* lType);
 	//----------------------------------------------------------------------------------------
-	// Функции для работы со страницей
+	// Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ СЃС‚СЂР°РЅРёС†РµР№
 	//----------------------------------------------------------------------------------------
 	virtual HRESULT NewPage();
 	virtual HRESULT get_Height(double* dHeight);
@@ -55,7 +55,7 @@ public:
 	virtual HRESULT get_DpiX(double* dDpiX);
 	virtual HRESULT get_DpiY(double* dDpiY);
 	//----------------------------------------------------------------------------------------
-	// Функции для работы с Pen
+	// Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Pen
 	//----------------------------------------------------------------------------------------
 	virtual HRESULT get_PenColor(LONG* lColor);
 	virtual HRESULT put_PenColor(const LONG& lColor);
@@ -79,7 +79,7 @@ public:
 	virtual HRESULT put_PenMiterLimit(const double& dMiter);
 	virtual HRESULT PenDashPattern(double* pPattern, LONG lCount);
 	//----------------------------------------------------------------------------------------
-	// Функции для работы с Brush
+	// Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ Brush
 	//----------------------------------------------------------------------------------------
 	virtual HRESULT get_BrushType(LONG* lType);
 	virtual HRESULT put_BrushType(const LONG& lType);
@@ -103,7 +103,7 @@ public:
 	virtual HRESULT BrushBounds(const double& dLeft, const double& dTop, const double& dWidth, const double& dHeight);
 	virtual HRESULT put_BrushGradientColors(LONG* pColors, double* pPositions, LONG lCount);
 	//----------------------------------------------------------------------------------------
-	// Функции для работы со шрифтами
+	// Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃРѕ С€СЂРёС„С‚Р°РјРё
 	//----------------------------------------------------------------------------------------
 	virtual HRESULT get_FontName(std::wstring* wsName);
 	virtual HRESULT put_FontName(const std::wstring& wsName);
@@ -120,19 +120,19 @@ public:
 	virtual HRESULT get_FontFaceIndex(int* lFaceIndex);
 	virtual HRESULT put_FontFaceIndex(const int& lFaceIndex);
 	//----------------------------------------------------------------------------------------
-	// Функции для вывода текста
+	// Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° С‚РµРєСЃС‚Р°
 	//----------------------------------------------------------------------------------------
 	virtual HRESULT CommandDrawTextCHAR  (const LONG& lUnicode,                   const double& dX, const double& dY, const double& dW, const double& dH);
 	virtual HRESULT CommandDrawTextExCHAR(const LONG& lUnicode, const LONG& lGid, const double& dX, const double& dY, const double& dW, const double& dH);
 	virtual HRESULT CommandDrawText      (const std::wstring& wsUnicodeText,                                                           const double& dX, const double& dY, const double& dW, const double& dH);
 	virtual HRESULT CommandDrawTextEx    (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH);
 	//----------------------------------------------------------------------------------------
-	// Маркеры команд
+	// РњР°СЂРєРµСЂС‹ РєРѕРјР°РЅРґ
 	//----------------------------------------------------------------------------------------
 	virtual HRESULT BeginCommand(const DWORD& lType);
 	virtual HRESULT EndCommand(const DWORD& lType);
 	//----------------------------------------------------------------------------------------
-	// Функции для работы с патом
+	// Р¤СѓРЅРєС†РёРё РґР»СЏ СЂР°Р±РѕС‚С‹ СЃ РїР°С‚РѕРј
 	//----------------------------------------------------------------------------------------
 	virtual HRESULT PathCommandMoveTo(const double& dX, const double& dY);
 	virtual HRESULT PathCommandLineTo(const double& dX, const double& dY);
@@ -150,29 +150,29 @@ public:
 	virtual HRESULT PathCommandText      (const std::wstring& wsUnicodeText,                                                           const double& dX, const double& dY, const double& dW, const double& dH);
 	virtual HRESULT PathCommandTextEx    (const std::wstring& wsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const double& dX, const double& dY, const double& dW, const double& dH);
 	//----------------------------------------------------------------------------------------
-	// Функции для вывода изображений
+	// Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹РІРѕРґР° РёР·РѕР±СЂР°Р¶РµРЅРёР№
 	//----------------------------------------------------------------------------------------
 	virtual HRESULT DrawImage(IGrObject* pImage, const double& dX, const double& dY, const double& dW, const double& dH);
 	virtual HRESULT DrawImageFromFile(const std::wstring& wsImagePath, const double& dX, const double& dY, const double& dW, const double& dH, const BYTE& nAlpha = 255);
 	//----------------------------------------------------------------------------------------
-	// Функции для выставления преобразования
+	// Р¤СѓРЅРєС†РёРё РґР»СЏ РІС‹СЃС‚Р°РІР»РµРЅРёСЏ РїСЂРµРѕР±СЂР°Р·РѕРІР°РЅРёСЏ
 	//----------------------------------------------------------------------------------------
 	virtual HRESULT SetTransform(const double& dM11, const double& dM12, const double& dM21, const double& dM22, const double& dX, const double& dY);
 	virtual HRESULT GetTransform(double* dM11, double* dM12, double* dM21, double* dM22, double* dX, double* dY);
 	virtual HRESULT ResetTransform();
 	//----------------------------------------------------------------------------------------
-	// Тип клипа
+	// РўРёРї РєР»РёРїР°
 	//----------------------------------------------------------------------------------------
 	virtual HRESULT get_ClipMode(LONG* lMode);
 	virtual HRESULT put_ClipMode(const LONG& lMode);
 	//----------------------------------------------------------------------------------------
-	// Дополнительные функции
+	// Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё
 	//----------------------------------------------------------------------------------------
 	virtual HRESULT CommandLong(const LONG& lType, const LONG& lCommand);
 	virtual HRESULT CommandDouble(const LONG& lType, const double& dCommand);
 	virtual HRESULT CommandString(const LONG& lType, const std::wstring& sCommand);
 	//----------------------------------------------------------------------------------------
-	// Дополнительные функции Pdf рендерера
+	// Р”РѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ С„СѓРЅРєС†РёРё Pdf СЂРµРЅРґРµСЂРµСЂР°
 	//----------------------------------------------------------------------------------------
 	HRESULT CommandDrawTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const std::wstring& wsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH);
 	HRESULT PathCommandTextPdf(const std::wstring& bsUnicodeText, const unsigned int* pGids, const unsigned int nGidsCount, const std::wstring& bsSrcCodeText, const double& dX, const double& dY, const double& dW, const double& dH);
@@ -389,7 +389,7 @@ private:
 			}
 			else
 			{
-				// Избавляемся от нулей, потому что все pdf-ридеры плохо их воспринимают
+				// РР·Р±Р°РІР»СЏРµРјСЃСЏ РѕС‚ РЅСѓР»РµР№, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РІСЃРµ pdf-СЂРёРґРµСЂС‹ РїР»РѕС…Рѕ РёС… РІРѕСЃРїСЂРёРЅРёРјР°СЋС‚
 				std::vector<double> vPattern;
 				for (LONG lIndex = 0; lIndex < lSize; lIndex++)
 				{
@@ -580,7 +580,7 @@ private:
 		}
 		inline void         SetGradientColors(LONG* pColors, double* pPoints, const LONG& lCount)
 		{
-			// Мы создаем упорядоченный по возрастанию массив, причем первая и последняя точки должны быть 0 и 1 соответственно.
+			// РњС‹ СЃРѕР·РґР°РµРј СѓРїРѕСЂСЏРґРѕС‡РµРЅРЅС‹Р№ РїРѕ РІРѕР·СЂР°СЃС‚Р°РЅРёСЋ РјР°СЃСЃРёРІ, РїСЂРёС‡РµРј РїРµСЂРІР°СЏ Рё РїРѕСЃР»РµРґРЅСЏСЏ С‚РѕС‡РєРё РґРѕР»Р¶РЅС‹ Р±С‹С‚СЊ 0 Рё 1 СЃРѕРѕС‚РІРµС‚СЃС‚РІРµРЅРЅРѕ.
 			if (m_pShadingColors)
 			{
 				delete[] m_pShadingColors;
@@ -918,7 +918,7 @@ private:
 		TColor*      m_pShadingColors;
 		double*      m_pShadingPoints;
 		LONG         m_lShadingPointsCount;
-		double       m_pShadingPattern[6]; // У линейного градиента x0, y0, x1, y1 (2 не используются), у радиального x0, y0, r0, x1, y1, r1
+		double       m_pShadingPattern[6]; // РЈ Р»РёРЅРµР№РЅРѕРіРѕ РіСЂР°РґРёРµРЅС‚Р° x0, y0, x1, y1 (2 РЅРµ РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ), Сѓ СЂР°РґРёР°Р»СЊРЅРѕРіРѕ x0, y0, r0, x1, y1, r1
 	};
 	class CFontState
 	{
@@ -1149,7 +1149,7 @@ private:
 			}
 			void GetLastPoint(double& dX, double& dY)
 			{
-				// TODO: Надо грамотно пересчитать
+				// TODO: РќР°РґРѕ РіСЂР°РјРѕС‚РЅРѕ РїРµСЂРµСЃС‡РёС‚Р°С‚СЊ
 				dX = x;
 				dY = y;
 			}
@@ -1177,7 +1177,7 @@ private:
 			}
 			void GetLastPoint(double& dX, double& dY)
 			{
-				// TODO: Надо грамотно пересчитать
+				// TODO: РќР°РґРѕ РіСЂР°РјРѕС‚РЅРѕ РїРµСЂРµСЃС‡РёС‚Р°С‚СЊ
 				dX = 0;
 				dY = 0;
 			}
@@ -1429,7 +1429,7 @@ private:
 	bool                         m_bValid;
 								 
 	int                          m_nPagesCount;
-	int                          m_nCounter; // TODO: для теста, убрать потом
+	int                          m_nCounter; // TODO: РґР»СЏ С‚РµСЃС‚Р°, СѓР±СЂР°С‚СЊ РїРѕС‚РѕРј
 };
 
 #endif // _PDF_WRITER_PDFRENDERER_H

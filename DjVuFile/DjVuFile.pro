@@ -6,14 +6,71 @@
 
 QT       -= core gui
 
+VERSION = 1.0.0.1
 TARGET = DjVuFile
 TEMPLATE = lib
-CONFIG += staticlib
 
-DEFINES += UNICODE
-DEFINES += _UNICODE
-DEFINES += _USE_LIBXML2_READER_
-DEFINES += LIBXML_READER_ENABLED
+#CONFIG += staticlib
+CONFIG += shared
+
+############### destination path ###############
+DESTINATION_SDK_PATH = $$PWD/../SDK/lib
+
+# WINDOWS
+win32:contains(QMAKE_TARGET.arch, x86_64):{
+CONFIG(debug, debug|release) {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
+} else {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_64
+}
+}
+win32:!contains(QMAKE_TARGET.arch, x86_64):{
+CONFIG(debug, debug|release) {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
+} else {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_32
+}
+}
+
+linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
+}
+linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
+}
+
+################################################
+
+############# dynamic dependencies #############
+shared {
+    DEFINES += DJVU_USE_DYNAMIC_LIBRARY
+
+    LIBS += -L$$DESTDIR -lASCOfficeUtilsLib
+    LIBS += -L$$DESTDIR -lgraphics
+    LIBS += -L$$DESTDIR -llibxml
+    LIBS += -L$$DESTDIR -lPdfWriter
+
+    message(dynamic)
+
+    win32 {
+        LIBS += -lgdi32 \
+                -ladvapi32 \
+                -luser32 \
+                -lshell32
+
+        TARGET_EXT = .dll
+    }
+
+    linux-g++ | linux-g++-64 | linux-g++-32 {
+        CONFIG += plugin
+        TARGET_EXT = .so
+    }
+}
+################################################
+
+INCLUDEPATH += \
+    ../DesktopEditor/agg-2.4/include \
+    ../DesktopEditor/freetype-2.5.2/include
 
 SOURCES += DjVu.cpp \
     DjVuFileImplementation.cpp \

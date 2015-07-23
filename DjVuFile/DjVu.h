@@ -1,14 +1,20 @@
-#pragma once
+п»ї#pragma once
 
 #include <string>
 #include "../DesktopEditor/graphics/IRenderer.h"
 
+#ifndef DJVU_USE_DYNAMIC_LIBRARY
+#define DJVU_DECL_EXPORT
+#else
+#include "../DesktopEditor/common/base_export.h"
+#define DJVU_DECL_EXPORT Q_DECL_EXPORT
+#endif
 
-// Работаем через класс CDjVuFileImplementation, чтобы когда цеплялся данный h-файл, ничего лишнего не инклюдилось
+// вЂ“Р°Р±РѕС‚Р°РµРј С‡РµСЂРµР· РєР»Р°СЃСЃ CDjVuFileImplementation, С‡С‚РѕР±С‹ РєРѕРіРґР° С†РµРїР»В¤Р»СЃВ¤ РґР°РЅРЅС‹Р№ h-С„Р°Р№Р», РЅРёС‡РµРіРѕ Р»РёС€РЅРµРіРѕ РЅРµ РёРЅРєР»СЋРґРёР»РѕСЃСЊ
 class CDjVuFileImplementation;
 class CApplicationFonts;
 
-class CDjVuFile
+class DJVU_DECL_EXPORT CDjVuFile
 {
 private:
 

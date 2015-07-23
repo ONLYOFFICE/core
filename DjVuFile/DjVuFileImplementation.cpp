@@ -1,4 +1,4 @@
-#include "DjVuFileImplementation.h"
+п»ї#include "DjVuFileImplementation.h"
 
 #include "../DesktopEditor/common/File.h"
 #include "../DesktopEditor/common/Directory.h"
@@ -29,11 +29,10 @@ namespace NSDjvu
         GUTF8String utf8String(sText.c_str());
         return utf8String;
 	}
-	static CString MakeCString(GUTF8String& strText)
+    static std::string MakeCString(GUTF8String& strText)
 	{
 		std::string sString(strText.getbuf());
-		std::wstring wsString = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sString.c_str(), sString.length());
-		return CString(wsString.c_str());
+        return sString;
 	}
 	static int     GetInteger(const std::wstring& wsString)
 	{
@@ -42,7 +41,7 @@ namespace NSDjvu
 
 		try
 		{
-			return _ttoi(wsString.c_str());
+            return std::stoi(wsString);
 		}
 		catch (...)
 		{
@@ -162,7 +161,7 @@ void               CDjVuFileImplementation::DrawPageOnRenderer(IRenderer* pRende
 	}
 	catch (...)
 	{
-		// белая страница
+		// Р±РµР»Р°СЏ СЃС‚СЂР°РЅРёС†Р°
 	}
 }
 void               CDjVuFileImplementation::ConvertToRaster(CApplicationFonts* pAppFonts, int nPageIndex, const std::wstring& wsDstPath, int nImageType)
@@ -252,6 +251,10 @@ void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP
 	double dRendWidth = 0;
 	double dRendHeight = 0;
 
+    pRenderer->NewPage();
+    pRenderer->put_Width(25.4 * nWidth / dRendDpiX);
+    pRenderer->put_Height(25.4 * nHeight / dRendDpiY);
+
 	pRenderer->get_Width(&dRendWidth);
 	pRenderer->get_Height(&dRendHeight);
 
@@ -272,7 +275,7 @@ void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP
 	}
 	else if (c_nHtmlRendrerer == lRendererType)
 	{
-		// TODO: Нужно реализовать функцию 
+		// TODO: РќСѓР¶РЅРѕ СЂРµР°Р»РёР·РѕРІР°С‚СЊ С„СѓРЅРєС†РёСЋ 
 		// pRenderer->GetMaxImageSize();
 		//VARIANT var;
 		//renderer->GetAdditionalParam(L"MaxImageSize", &var);
@@ -358,7 +361,7 @@ void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP
 	}
 	else
 	{
-		// белый фрейм??
+		// Р±РµР»С‹Р№ С„СЂРµР№Рј??
 		//memset(pBufferDst, 0xFF, 4 * lImageWidth * lImageHeight);
 		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
 		GP<GPixmap> pImage = pPage->get_pixmap(oRectAll, oRectAll);
@@ -582,7 +585,7 @@ void               CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer,
 	}
 	else
 	{
-		// белый фрейм??
+		// Р±РµР»С‹Р№ С„СЂРµР№Рј??
 		//memset(pBufferDst, 0xFF, 4 * lImageWidth * lImageHeight);
 		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
 		GP<GPixmap> pImage = pPage->get_pixmap(oRectAll, oRectAll);
@@ -692,7 +695,7 @@ void               CDjVuFileImplementation::CreateGrFrame(IRenderer* pRenderer, 
 	LONG	lImageWidth	 = 0;
 	LONG	lImageHeight = 0;
 
-	// TODO: Реализовать для графического рендерера
+	// TODO: Р РµР°Р»РёР·РѕРІР°С‚СЊ РґР»СЏ РіСЂР°С„РёС‡РµСЃРєРѕРіРѕ СЂРµРЅРґРµСЂРµСЂР°
 
 	//VARIANT var;
 	//renderer->GetAdditionalParam(L"Pixels", &var);
@@ -773,7 +776,7 @@ void               CDjVuFileImplementation::CreateGrFrame(IRenderer* pRenderer, 
 	}
 	else
 	{
-		// белый фрейм??
+		// Р±РµР»С‹Р№ С„СЂРµР№Рј??
 		//memset(pBufferDst, 0xFF, 4 * lImageWidth * lImageHeight);
 		GRect oRectAll(0, 0, lImageWidth, lImageHeight);
 		GP<GPixmap> pImage = pPage->get_pixmap(oRectAll, oRectAll);
@@ -855,18 +858,18 @@ XmlUtils::CXmlNode CDjVuFileImplementation::ParseText(GP<DjVuImage> pPage)
 		XmlUtils::CXmlNode hiddenText;
 		XmlUtils::CXmlNode pageColumn;
 		XmlUtils::CXmlNode region;
-		hiddenText.FromXmlString(NSDjvu::MakeCString(pageText));
-		hiddenText.GetNode(_T("PAGECOLUMN"), pageColumn);
-		pageColumn.GetNode(_T("REGION"), region);
-		region.GetNode(_T("PARAGRAPH"), paragraph);
+        hiddenText.FromXmlStringA(NSDjvu::MakeCString(pageText));
+        hiddenText.GetNode(L"PAGECOLUMN", pageColumn);
+        pageColumn.GetNode(L"REGION", region);
+        region.GetNode(L"PARAGRAPH", paragraph);
 	}
 	return paragraph;
 }
 void               CDjVuFileImplementation::TextToRenderer(IRenderer* pRenderer, XmlUtils::CXmlNode oTextNode, double dKoef, bool isView)
 {
-	// Выставим шрифт пустой (чтобы растягивать по всему ректу)
+	// Р’С‹СЃС‚Р°РІРёРј С€СЂРёС„С‚ РїСѓСЃС‚РѕР№ (С‡С‚РѕР±С‹ СЂР°СЃС‚СЏРіРёРІР°С‚СЊ РїРѕ РІСЃРµРјСѓ СЂРµРєС‚Сѓ)
 	pRenderer->put_FontName(L"DjvuEmptyFont");
-	CString csText = oTextNode.GetXml();
+    //std::wstring csText = oTextNode.GetXml();
 	XmlUtils::CXmlNodes oLinesNodes;
 	oTextNode.GetNodes(L"LINE", oLinesNodes);
 	for (int nLineIndex = 0; nLineIndex < oLinesNodes.GetCount(); ++nLineIndex)
@@ -879,11 +882,11 @@ void               CDjVuFileImplementation::TextToRenderer(IRenderer* pRenderer,
 		{
 			XmlUtils::CXmlNode oWordNode;
 			oWordsNodes.GetAt(nWordIndex, oWordNode);
-			CString csWord   = oWordNode.GetText();
-			CString csCoords = oWordNode.GetAttribute(L"coords");
+            std::wstring csWord   = oWordNode.GetText();
+            std::wstring csCoords = oWordNode.GetAttribute(L"coords");
 			double arrCoords[4];
-			ParseCoords(csCoords.GetBuffer(), arrCoords, dKoef);
-			DrawPageText(pRenderer, arrCoords, csWord.GetBuffer());
+            ParseCoords(csCoords, arrCoords, dKoef);
+            DrawPageText(pRenderer, arrCoords, csWord);
 		}
 	}
 }

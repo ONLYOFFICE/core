@@ -2,7 +2,7 @@
 #include "Utils.h"
 #include "Encrypt.h"
 #include "Objects.h"
-#include "FastStringToDouble.h"
+//#include "FastStringToDouble.h"
 
 #include <sstream>
 
@@ -793,7 +793,7 @@ namespace PdfWriter
 		}
 		else
 		{
-			if (!m_oFile.CreateFile(wsFilePath))
+            if (!m_oFile.CreateFileW(wsFilePath))
 				return false;
 		}
 
@@ -870,7 +870,7 @@ namespace PdfWriter
 		}
 		else
 		{
-			if (!m_oFile.CreateFile(wsFilePath))
+            if (!m_oFile.CreateFileW(wsFilePath))
 				return false;
 		}
 

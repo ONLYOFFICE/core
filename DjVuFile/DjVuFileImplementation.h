@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "libdjvu/DjVuDocument.h"
 #include "libdjvu/DjVuImage.h"
@@ -20,7 +20,7 @@
 #define _UNICODE
 #define _USE_LIBXML2_READER_
 #define LIBXML_READER_ENABLED
-#include "../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../DesktopEditor/xml/include/xmlutils.h"
 
 #include "../DesktopEditor/graphics/IRenderer.h"
 

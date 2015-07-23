@@ -6,6 +6,13 @@
 #include <vector>
 #include <algorithm>
 
+#ifndef PDFWRITER_USE_DYNAMIC_LIBRARY
+#define PDFWRITER_DECL_EXPORT
+#else
+#include "../DesktopEditor/common/base_export.h"
+#define PDFWRITER_DECL_EXPORT Q_DECL_EXPORT
+#endif
+
 struct Pix;
 
 namespace PdfWriter
@@ -30,7 +37,7 @@ class CApplicationFonts;
 class CRendererCommandBase;
 class CRendererTextCommand;
 
-class CPdfRenderer : public IRenderer
+class PDFWRITER_DECL_EXPORT CPdfRenderer : public IRenderer
 {
 public:
 	CPdfRenderer(CApplicationFonts* pAppFonts);

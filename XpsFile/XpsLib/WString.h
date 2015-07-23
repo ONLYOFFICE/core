@@ -2,6 +2,7 @@
 #define _XPS_XPSLIB_WSTRING_H
 
 #include <vector>
+#include <string>
 
 namespace XPS
 {
@@ -11,10 +12,12 @@ namespace XPS
 	public:
 		CWString();
 		CWString(const wchar_t* wsString);
+        CWString(const std::wstring& wsString);
 		CWString(const CWString& wsString);
 		CWString(wchar_t* wsString, bool bCopy, int nLen = -1);
 		~CWString();
 		void create(const wchar_t*, bool bCopy, int nLen = -1);
+        void create(const std::wstring& sString, bool bCopy);
 		void operator=(const wchar_t* wsString);
 		void operator=(const CWString& wsString);
 		bool operator<(const CWString& wsString) const;
@@ -26,6 +29,8 @@ namespace XPS
 		wchar_t operator[](const unsigned int& unIndex) const;
 		const wchar_t* c_str() const;
 		void clear();
+
+        int tointeger() const;
 
 		std::vector<CWString> split(wchar_t wChar, bool bCopy = false);
 

@@ -2,7 +2,7 @@
 #define _XPS_XPSLIB_PAGE_H
 
 #include "../../DesktopEditor/graphics/IRenderer.h"
-#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/fontengine/FontManager.h"
 
 #include "FontList.h"

@@ -14,6 +14,8 @@ using namespace XPS;
 
 CXpsFile::CXpsFile(CApplicationFonts* pAppFonts)
 {
+    m_pDocument = NULL;
+
 	m_pAppFonts = pAppFonts;
 
 	// Создаем менеджер шрифтов с собственным кэшем

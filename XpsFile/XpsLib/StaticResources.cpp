@@ -1,6 +1,6 @@
 ﻿#include "StaticResources.h"
 
-#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"
 #include "../../DesktopEditor/graphics/structures.h"
 #include "../../PdfWriter/PdfRenderer.h"
@@ -230,7 +230,7 @@ namespace XPS
 				{
 					if (wsAttrName == L"ImageSource")
 					{
-						pBrush = new CImageBrush(oReader.GetText());
+                        pBrush = new CImageBrush(oReader.GetText().c_str());
 					}
 					else if (wsAttrName == L"x:Key" && pwsKey)
 					{

@@ -1,7 +1,7 @@
 ﻿#include "Utils.h"
 #include "../../DesktopEditor/common/String.h"
 #include "../../DesktopEditor/common/Types.h"
-#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"
 
 #ifndef M_PI
@@ -758,17 +758,16 @@ namespace XPS
 		else
 			return;
 	}
-	unsigned char GetCapStyle(const wchar_t* wsCapStyle)
+    unsigned char GetCapStyle(const std::string& wsCapStyle)
 	{
 		BYTE nCapStyle = Aggplus::LineCapFlat;
-		CWString wsDashCap = wsCapStyle;
-		if (wsDashCap == L"Flat")
+        if (wsCapStyle == "Flat")
 			nCapStyle = Aggplus::LineCapFlat;
-		else if (wsDashCap == L"Round")
+        else if (wsCapStyle == "Round")
 			nCapStyle = Aggplus::LineCapRound;
-		else if (wsDashCap == L"Square")
+        else if (wsCapStyle == "Square")
 			nCapStyle = Aggplus::LineCapSquare;
-		else if (wsDashCap == L"Triangle")
+        else if (wsCapStyle == "Triangle")
 			nCapStyle = Aggplus::LineCapTriangle;
 
 		return nCapStyle;

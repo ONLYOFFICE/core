@@ -1,7 +1,7 @@
 ﻿#include "Document.h"
 #include "StaticResources.h"
 
-#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../../DesktopEditor/xml/include/xmlutils.h"
 #include "../../DesktopEditor/common/File.h"
 
 namespace XPS

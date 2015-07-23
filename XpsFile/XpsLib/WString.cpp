@@ -64,6 +64,13 @@ namespace XPS
 		m_unLen      = 0;
 		create(wsString, false);
 	}
+    CWString::CWString(const std::wstring& wsString)
+    {
+        m_bOwnBuffer = false;
+        m_pBuffer    = NULL;
+        m_unLen      = 0;
+        create(wsString, true);
+    }
 	CWString::CWString(wchar_t* wsString, bool bCopy, int nLen)
 	{
 		m_bOwnBuffer = false;
@@ -102,6 +109,12 @@ namespace XPS
 			m_bOwnBuffer = false;
 		}
 	}
+    void CWString::create(const std::wstring& sString, bool bCopy)
+    {
+        // unused bCopy
+        create(sString.c_str(), true, (int)sString.length());
+    }
+
 	void CWString::clear()
 	{
 		if (m_bOwnBuffer)
@@ -206,6 +219,10 @@ namespace XPS
 	{
 		return 0 == m_unLen;
 	}
+    int CWString::tointeger() const
+    {
+        return _wtoi(c_str());
+    }
 	std::vector<CWString> CWString::split(wchar_t wChar, bool bCopy)
 	{
 		std::vector<CWString> vResult;

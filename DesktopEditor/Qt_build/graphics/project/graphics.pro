@@ -9,6 +9,35 @@ QT       -= core gui
 TARGET = graphics
 TEMPLATE = lib
 CONFIG += staticlib
+
+############### destination path ###############
+DESTINATION_SDK_PATH = $$PWD/../../../../SDK/lib
+
+# WINDOWS
+win32:contains(QMAKE_TARGET.arch, x86_64):{
+CONFIG(debug, debug|release) {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
+} else {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_64
+}
+}
+win32:!contains(QMAKE_TARGET.arch, x86_64):{
+CONFIG(debug, debug|release) {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
+} else {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_32
+}
+}
+
+linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
+}
+linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
+}
+
+################################################
+
 DEFINES += \
     _QT \
     FT2_BUILD_LIBRARY \
@@ -49,6 +78,8 @@ win32 {
     WIN32
 
     DEFINES -= UNICODE
+
+    QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
 
     message(windows)
 }

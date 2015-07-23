@@ -111,8 +111,8 @@ namespace XPSEllipse
 		// Выясним в каких четвертях находятся начальная и конечная точки
 		unsigned int nFirstPointQuard  = int(fAngle1) / 90 + 1;
 		unsigned int nSecondPointQuard = int(fAngle2) / 90 + 1;
-		nSecondPointQuard = min(4, max(1, nSecondPointQuard));
-		nFirstPointQuard  = min(4, max(1, nFirstPointQuard));
+        nSecondPointQuard = std::min((unsigned int)4, std::max((unsigned int)1, nSecondPointQuard));
+        nFirstPointQuard  = std::min((unsigned int)4, std::max((unsigned int)1, nFirstPointQuard));
 		// Проведем линию в начальную точку дуги
 		double fStartX = 0.0, fStartY = 0.0, fEndX = 0.0, fEndY = 0.0;
 
@@ -495,7 +495,7 @@ namespace XPS
 			}
 
 			dFloat = (bNegative ? (double)(-dFloat) : (double)dFloat);
-			nExp = max(20, min(0, nExp));
+            nExp = std::max(20, std::min(0, nExp));
 
 			while (nExp)
 			{
@@ -692,15 +692,15 @@ namespace XPS
 	}
 	double GetDouble(const CWString& wsString)
 	{
-		return _wtof(wsString.c_str());
+        return std::stod(wsString.c_str());
 	}
 	double GetDouble(const std::wstring& wsString)
 	{
-		return _wtof(wsString.c_str());
+        return std::stod(wsString.c_str());
 	}
 	int    GetInteger(const std::wstring& wsString)
 	{
-		return _wtoi(wsString.c_str());
+        return std::stoi(wsString.c_str());
 	}
 	bool   GetBool(const std::wstring& wsString)
 	{
@@ -747,12 +747,12 @@ namespace XPS
 			if (3 == arrElements.size())
 			{
 				nAlpha = 255;
-				nBgr = (((int)(min(GetDouble(arrElements[2]), 1.0) * 255)) << 16) + (((int)(min(GetDouble(arrElements[1]), 1.0) * 255)) << 8) + ((int)(min(GetDouble(arrElements[0]), 1.0) * 255));
+                nBgr = (((int)(std::min(GetDouble(arrElements[2]), 1.0) * 255)) << 16) + (((int)(std::min(GetDouble(arrElements[1]), 1.0) * 255)) << 8) + ((int)(std::min(GetDouble(arrElements[0]), 1.0) * 255));
 			}
 			else if (4 == arrElements.size())
 			{
 				nAlpha = GetDouble(arrElements[0]) * 255;
-				nBgr = (((int)(min(GetDouble(arrElements[3]), 1.0) * 255)) << 16) + (((int)(min(GetDouble(arrElements[2]), 1.0) * 255)) << 8) + ((int)(min(GetDouble(arrElements[1]), 1.0) * 255));
+                nBgr = (((int)(std::min(GetDouble(arrElements[3]), 1.0) * 255)) << 16) + (((int)(std::min(GetDouble(arrElements[2]), 1.0) * 255)) << 8) + ((int)(std::min(GetDouble(arrElements[1]), 1.0) * 255));
 			}
 		}
 		else
@@ -1223,7 +1223,7 @@ namespace XPS
 			// промежутке [pUnicode + nUnicodePos, pUnicode + nUnicodePos + nCodeUnitCount]
 			int nUnicodesCount = 0;
 			unsigned int* pUnicodes = NULL;
-			nCodeUnitCount = min(nUtf16Len - nUtf16Pos, nCodeUnitCount);			
+            nCodeUnitCount = std::min(nUtf16Len - nUtf16Pos, nCodeUnitCount);
 			if (nCodeUnitCount)
 			{
 				pUnicodes = new unsigned int[nCodeUnitCount];
@@ -1267,7 +1267,7 @@ namespace XPS
 
 			// Равномерно распределяем юникоды по глифам, в идеале их количество должно совпадать.
 			// Если юникодов больше, то лишние удаляем, если их меньше, то недостающие заполняем пробелами.
-			nUnicodesCount = min(nUnicodesCount, nGlyphCount);
+            nUnicodesCount = std::min(nUnicodesCount, nGlyphCount);
 			for (int nIndex = 0; nIndex < nGlyphCount; nIndex++)
 			{
 				if (nIndex < nUnicodesCount)
@@ -1682,12 +1682,12 @@ namespace XPS
 			if (3 == vElements.size())
 			{
 				nAlpha = 255;
-				nBgr   = (((int)(min(GetDouble(vElements[2]), 1.0) * 255)) << 16) + (((int)(min(GetDouble(vElements[1]), 1.0) * 255)) << 8) + ((int)(min(GetDouble(vElements[0]), 1.0) * 255));
+                nBgr   = (((int)(std::min(GetDouble(vElements[2]), 1.0) * 255)) << 16) + (((int)(std::min(GetDouble(vElements[1]), 1.0) * 255)) << 8) + ((int)(std::min(GetDouble(vElements[0]), 1.0) * 255));
 			}
 			else if (4 == vElements.size())
 			{
-				nAlpha = (int)(min(GetDouble(vElements[0]), 1.0) * 255);
-				nBgr   = (((int)(min(GetDouble(vElements[3]), 1.0) * 255)) << 16) + (((int)(min(GetDouble(vElements[2]), 1.0) * 255)) << 8) + ((int)(min(GetDouble(vElements[1]), 1.0) * 255));
+                nAlpha = (int)(std::min(GetDouble(vElements[0]), 1.0) * 255);
+                nBgr   = (((int)(std::min(GetDouble(vElements[3]), 1.0) * 255)) << 16) + (((int)(std::min(GetDouble(vElements[2]), 1.0) * 255)) << 8) + ((int)(std::min(GetDouble(vElements[1]), 1.0) * 255));
 			}
 		}
 	}

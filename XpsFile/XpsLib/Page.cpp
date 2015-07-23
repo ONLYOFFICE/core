@@ -369,7 +369,7 @@ namespace XPS
 
 			std::vector<CWString> arrElements = wsTransform.split(',');
 			double arrRes[6] ={ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
-			for (int nIndex = 0, nCount = min(6, arrElements.size()); nIndex < nCount; nIndex++)
+            for (int nIndex = 0, nCount = std::min(6, (int)arrElements.size()); nIndex < nCount; nIndex++)
 				arrRes[nIndex] = GetDouble(arrElements[nIndex].c_str());
 
 			pState->PushTransform(arrRes);

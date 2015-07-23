@@ -176,7 +176,7 @@ namespace XPS
 		{
 			CPdfRenderer* pPdf = (CPdfRenderer*)pRenderer;
 			pPdf->put_BrushGradientColors(m_pColors, m_pPositions, m_lCount);
-			pPdf->SetRadialGradient(m_dXo, m_dYo, 0, m_dXc, m_dYc, max(m_dRadX, m_dRadY));
+            pPdf->SetRadialGradient(m_dXo, m_dYo, 0, m_dXc, m_dYc, std::max(m_dRadX, m_dRadY));
 		}
 		else
 		{
@@ -352,7 +352,7 @@ namespace XPS
 				}
 			}
 
-			LONG lCount = min(vColors.size(), vPositions.size());
+            LONG lCount = std::min(vColors.size(), vPositions.size());
 			if (lCount <= 0)
 			{
 				delete pBrush;

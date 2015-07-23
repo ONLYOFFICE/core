@@ -93,7 +93,7 @@ namespace XPS
 	void CWString::create(const wchar_t* wsString, bool bCopy, int nLen)
 	{
 		clear();
-		unsigned int unLen = -1 == nLen ? min(wcslen(wsString), MAX_STRING_LEN) : (unsigned int)nLen;
+        unsigned int unLen = -1 == nLen ? std::min((unsigned int)wcslen(wsString), (unsigned int)MAX_STRING_LEN) : (unsigned int)nLen;
 		m_unLen = unLen;
 		if (bCopy)
 		{
@@ -160,7 +160,7 @@ namespace XPS
 		const wchar_t* wsLeft = this->c_str();
 		const wchar_t* wsRight = wsString.c_str();
 
-		unsigned int unLen = min(m_unLen, wsString.m_unLen);
+        unsigned int unLen = std::min(m_unLen, wsString.m_unLen);
 		for (unsigned int unPos = 0; unPos < unLen; unPos++)
 		{
 			if (wsLeft[unPos] < wsRight[unPos])
@@ -194,7 +194,7 @@ namespace XPS
 	bool CWString::operator==(const wchar_t* wsString) const
 	{
 		const wchar_t* wsLeft = this->c_str();
-		unsigned unLen = min(wcslen(wsString), MAX_STRING_LEN);
+        unsigned unLen = std::min((unsigned int)wcslen(wsString), (unsigned int)MAX_STRING_LEN);
 
 		if (m_unLen != unLen)
 			return false;
@@ -221,7 +221,7 @@ namespace XPS
 	}
     int CWString::tointeger() const
     {
-        return _wtoi(c_str());
+        return std::stoi(c_str());
     }
 	std::vector<CWString> CWString::split(wchar_t wChar, bool bCopy)
 	{

@@ -45,10 +45,10 @@ void         CXpsFile::SetTempFolder(const std::wstring& wsPath)
 		NSDirectory::DeleteDirectory(m_wsTempFolder);
 
 	int nCounter = 0;
-	m_wsTempFolder = wsPath + L"\\XPS\\";
+	m_wsTempFolder = wsPath + L"/XPS/";
 	while (NSDirectory::Exists(m_wsTempFolder))
 	{
-		m_wsTempFolder = wsPath + L"\\XPS" + std::to_wstring(nCounter) + L"\\";
+		m_wsTempFolder = wsPath + L"/XPS" + std::to_wstring(nCounter) + L"/";
 		nCounter++;
 	}
 	NSDirectory::CreateDirectory(m_wsTempFolder);

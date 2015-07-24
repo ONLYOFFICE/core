@@ -774,6 +774,7 @@ namespace XPS
 	}
 	std::wstring NormalizePath(const std::wstring& wsPath)
 	{		
+#ifdef WIN32
 		std::wstring wsResult = wsPath;
 		NSStringExt::Replace(wsResult, L"/", L"\\");
 		while (std::wstring::npos != wsResult.find(L"\\\\"))
@@ -781,6 +782,11 @@ namespace XPS
 			NSStringExt::Replace(wsResult, L"\\\\", L"\\");
 		}
 		return wsResult;
+#else
+		std::wstring wsResult = wsPath;
+		NSStringExt::Replace(wsResult, L"//", L"/");
+		return wsResult;
+#endif
 	}
 	std::wstring GetPath(const std::wstring& wsPath)
 	{

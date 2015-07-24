@@ -1178,7 +1178,7 @@ namespace PdfWriter
 
 		ReadOS2();
 	}
-	int          CFontFileTrueType::SeekTable(char *sTag)
+	int          CFontFileTrueType::SeekTable(const char *sTag)
 	{
 		unsigned int nTagIndex = ((sTag[0] & 0xff) << 24) | ((sTag[1] & 0xff) << 16) | ((sTag[2] & 0xff) << 8) | (sTag[3] & 0xff);
 		for (int nIndex = 0; nIndex < m_nTablesCount; ++nIndex)

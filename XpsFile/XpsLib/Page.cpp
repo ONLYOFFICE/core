@@ -370,7 +370,7 @@ namespace XPS
 			std::vector<CWString> arrElements = wsTransform.split(',');
 			double arrRes[6] ={ 1.0, 0.0, 0.0, 1.0, 0.0, 0.0 };
             for (int nIndex = 0, nCount = std::min(6, (int)arrElements.size()); nIndex < nCount; nIndex++)
-				arrRes[nIndex] = GetDouble(arrElements[nIndex].c_str());
+				arrRes[nIndex] = GetDouble(arrElements[nIndex]);
 
 			pState->PushTransform(arrRes);
 			return true;
@@ -835,8 +835,8 @@ namespace XPS
 				}
 				else if (L"StrokeMiterLimit" == wsAttrName)
 				{
-					CWString wsMiterLimit = oReader.GetText();
-					dMiter = GetDouble(wsMiterLimit.c_str());
+					std::wstring wsMiterLimit = oReader.GetText();
+					dMiter = GetDouble(wsMiterLimit);
 				}
 				else if (L"Fill" == wsAttrName)
 				{

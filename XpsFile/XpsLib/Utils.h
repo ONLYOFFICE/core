@@ -58,6 +58,7 @@ namespace XPS
 
 
 	bool   IsAlpha(wchar_t wChar);
+    double GetDouble(const CWString& wsString);
 	double GetDouble(const std::wstring& wsString);
 	int    GetInteger(const std::wstring& wsString);
 	bool   GetBool(const std::wstring& wsString);

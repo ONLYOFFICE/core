@@ -2011,7 +2011,7 @@ namespace NSHtmlRenderer
 
             oDocInfo.WriteLONG(m_oDstFontGenerator.m_lCountFonts);
 
-            LONG lOffset = (6 + 4 * m_lPagesCount) * sizeof(LONG);
+            LONG lOffset = (6 + 4 * m_lPagesCount) * sizeof(int);
             for (LONG i = 0; i < m_lPagesCount; i++)
             {
                 CPageMeta& oMeta = m_arrPages[i];

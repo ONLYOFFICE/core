@@ -692,7 +692,8 @@ namespace XPS
 	}
 	double GetDouble(const CWString& wsString)
 	{
-        return std::stod(wsString.c_str());
+		std::wstring sTmp(wsString.c_str(), wsString.size());
+		return std::stod(sTmp);
 	}
 	double GetDouble(const std::wstring& wsString)
 	{

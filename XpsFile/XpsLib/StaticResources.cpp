@@ -268,10 +268,10 @@ namespace XPS
 						}
 						else if (wsAttrName == L"Opacity")
 						{
-							CWString wsOpacity = oReader.GetText();
+							std::wstring wsOpacity = oReader.GetText();
 
 							if (!wsOpacity.empty())
-								dOpacity = GetDouble(wsOpacity.c_str());
+								dOpacity = GetDouble(wsOpacity);
 						}
 						else if (wsAttrName == L"x:Key" && pwsKey)
 						{
@@ -305,10 +305,10 @@ namespace XPS
 						}
 						else if (wsAttrName == L"Opacity")
 						{
-							CWString wsOpacity = oReader.GetText();
+							std::wstring wsOpacity = oReader.GetText();
 
 							if (!wsOpacity.empty())
-								dOpacity = GetDouble(wsOpacity.c_str());
+								dOpacity = GetDouble(wsOpacity);
 						}
 						else if (wsAttrName == L"RadiusX")
 						{

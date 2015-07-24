@@ -1,4 +1,4 @@
-﻿#include <QCoreApplication>
+﻿//#include <QCoreApplication>
 
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
@@ -9,7 +9,7 @@
 
 int main(int argc, char *argv[])
 {
-    QCoreApplication a(argc, argv);
+    //QCoreApplication a(argc, argv);
 
 #if 0
     //std::wstring sFile = L"\\\\KIRILLOV8\\_Office\\PDF\\Android intro(2p).pdf";
@@ -75,5 +75,5 @@ int main(int argc, char *argv[])
 
     oHtmlRenderer.CloseFile();
 
-    return a.exec();
+    return 0;
 }

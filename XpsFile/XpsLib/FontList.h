@@ -50,7 +50,8 @@ namespace XPS
 				FILE* pFile = oFile.GetFileNative();
 				fseek(pFile, 0, SEEK_SET);
 				fwrite(sFontData, 1, 32, pFile);
-				fclose(pFile);
+
+				oFile.CloseFile();
 			}
 			m_oCS.Leave();
 		}

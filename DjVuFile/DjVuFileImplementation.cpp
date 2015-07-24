@@ -327,7 +327,7 @@ void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP
 		GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
 		int nPaletteEntries = pBitmap->get_grays();
 
-		DWORD* palette = new DWORD[nPaletteEntries];
+        unsigned int* palette = new unsigned int[nPaletteEntries];
 
 		// Create palette for the bitmap
 		int color = 0xff0000;
@@ -339,7 +339,7 @@ void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP
 			color -= decrement;
 		}
 
-		DWORD* pBuffer = (DWORD*)pBufferDst;
+        unsigned int* pBuffer = (unsigned int*)pBufferDst;
 		for (int j = lImageHeight - 1; j >= 0; --j)
 		{
 			BYTE* pLine = pBitmap->operator [](j);
@@ -390,7 +390,7 @@ void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP
 			{
 				int nPaletteEntries = pBitmap->get_grays();
 
-				DWORD* palette = new DWORD[nPaletteEntries];
+                unsigned int* palette = new unsigned int[nPaletteEntries];
 
 				// Create palette for the bitmap
 				int color = 0xff0000;
@@ -402,7 +402,7 @@ void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP
 					color -= decrement;
 				}
 
-				DWORD* pBuffer = (DWORD*)pBufferDst;
+                unsigned int* pBuffer = (unsigned int*)pBufferDst;
 				for (int j = lImageHeight - 1; j >= 0; --j)
 				{
 					BYTE* pLine = pBitmap->operator [](j);
@@ -647,7 +647,7 @@ void               CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer,
 					Aggplus::CImage oImage;
 					oImage.Create(pBufferDst, lImageWidth, lImageHeight, 4 * lImageWidth);
 
-					DWORD* palette = new DWORD[nPaletteEntries];
+                    unsigned int* palette = new unsigned int[nPaletteEntries];
 
 					// Create palette for the bitmap
 					int color = 0xff0000;
@@ -659,7 +659,7 @@ void               CDjVuFileImplementation::CreatePdfFrame(IRenderer* pRenderer,
 						color -= decrement;
 					}
 
-					DWORD* pBuffer = (DWORD*)pBufferDst;
+                    unsigned int* pBuffer = (unsigned int*)pBufferDst;
 					for (int j = lImageHeight - 1; j >= 0; --j)
 					{
 						BYTE* pLine = pBitmap->operator [](j);
@@ -739,7 +739,7 @@ void               CDjVuFileImplementation::CreateGrFrame(IRenderer* pRenderer, 
 		GP<GBitmap> pBitmap = pPage->get_bitmap(oRectAll, oRectAll, 4);
 		int nPaletteEntries = pBitmap->get_grays();
 
-		DWORD* palette = new DWORD[nPaletteEntries];
+        unsigned int* palette = new unsigned int[nPaletteEntries];
 
 		// Create palette for the bitmap
 		int color = 0xff0000;
@@ -751,7 +751,7 @@ void               CDjVuFileImplementation::CreateGrFrame(IRenderer* pRenderer, 
 			color -= decrement;
 		}
 
-		DWORD* pBuffer = (DWORD*)pBufferDst;
+        unsigned int* pBuffer = (unsigned int*)pBufferDst;
 		for (int j = 0; j < lImageHeight; ++j)
 		{
 			BYTE* pLine = pBitmap->operator [](j);
@@ -809,7 +809,7 @@ void               CDjVuFileImplementation::CreateGrFrame(IRenderer* pRenderer, 
 		{
 			int nPaletteEntries = pBitmap->get_grays();
 
-			DWORD* palette = new DWORD[nPaletteEntries];
+            unsigned int* palette = new unsigned int[nPaletteEntries];
 
 			// Create palette for the bitmap
 			int color = 0xff0000;
@@ -821,7 +821,7 @@ void               CDjVuFileImplementation::CreateGrFrame(IRenderer* pRenderer, 
 				color -= decrement;
 			}
 
-			DWORD* pBuffer = (DWORD*)pBufferDst;
+            unsigned int* pBuffer = (unsigned int*)pBufferDst;
 			for (int j = 0; j < lImageHeight; ++j)
 			{
 				BYTE* pLine = pBitmap->operator [](j);

@@ -41,7 +41,7 @@ namespace PdfReader
 			return NULL;
 		}
 
-		fclose(pFile);
+		oFile.CloseFile();
 		*pnFileLen = nLen;
 		return sBuffer;
 	}

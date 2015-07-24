@@ -970,21 +970,21 @@ public:
   /** Inserts an element after the last element of the list. 
       The new element is initialized with a copy of argument #elt#. */
   void append(const TYPE &elt)
-    { GListImpl<TI>::append(newnode((const TI&)elt)); }
+    { GListImpl<TI>::append(this->newnode((const TI&)elt)); }
   /** Inserts an element before the first element of the list. 
       The new element is initialized with a copy of argument #elt#. */
   void prepend(const TYPE &elt)
-    { GListImpl<TI>::prepend(newnode((const TI&)elt)); }
+    { GListImpl<TI>::prepend(this->newnode((const TI&)elt)); }
   /** Inserts a new element after the list element at position #pos#.  When
       position #pos# is null the element is inserted at the beginning of the
       list.  The new element is initialized with a copy of #elt#. */
   void insert_after(GPosition pos, const TYPE &elt)
-    { GListImpl<TI>::insert_after(pos, newnode((const TI&)elt)); }
+    { GListImpl<TI>::insert_after(pos, this->newnode((const TI&)elt)); }
   /** Inserts a new element before the list element at position #pos#. When
       position #pos# is null the element is inserted at the end of the
       list. The new element is initialized with a copy of #elt#. */
   void insert_before(GPosition pos, const TYPE &elt)
-    { GListImpl<TI>::insert_before(pos, newnode((const TI&)elt)); }
+    { GListImpl<TI>::insert_before(pos, this->newnode((const TI&)elt)); }
   /** Inserts an element of another list into this list.  This function
       removes the element at position #frompos# in list #frompos#, inserts it
       in the current list before the element at position #pos#, and advances
@@ -1205,7 +1205,7 @@ GMapImpl<K,TI>::GMapImpl(const GCONT Traits &traits)
 template<class K, class TI> GCONT HNode *
 GMapImpl<K,TI>::get_or_create(const K &key)
 {
-  GCONT HNode *m = get(key);
+  GCONT HNode *m = this->get(key);
   if (m) return m;
   MNode *n = (MNode*) operator new (sizeof(MNode));
 #if GCONTAINER_ZERO_FILL
@@ -1214,7 +1214,7 @@ GMapImpl<K,TI>::get_or_create(const K &key)
   new ((void*)&(n->key)) K  (key);
   new ((void*)&(n->val)) TI ();
   n->hashcode = hash((const K&)(n->key));
-  installnode(n);
+  this->installnode(n);
   return n;
 }
 
@@ -1280,13 +1280,13 @@ public:
       contains key #key#. This variant of #operator[]# is necessary when
       dealing with a #const GMAP<KTYPE,VTYPE>#. */
   const VTYPE& operator[](const KTYPE &key) const
-    { return (const VTYPE&)(((const typename GMapImpl<KTYPE,TI>::MNode*)(get_or_throw(key)))->val); }
+    { return (const VTYPE&)(((const typename GMapImpl<KTYPE,TI>::MNode*)(this->get_or_throw(key)))->val); }
   /** Returns a reference to the value of the map entry for key #key#.  This
       reference can be used for both reading (as "#a[n]#") and modifying (as
       "#a[n]=v#"). If there is no entry for key #key#, a new entry is created
       for that key with the null constructor #VTYPE::VTYPE()#. */
   VTYPE& operator[](const KTYPE &key)
-    { return (VTYPE&)(((typename GMapImpl<KTYPE,TI>::MNode*)(get_or_create(key)))->val); }
+    { return (VTYPE&)(((typename GMapImpl<KTYPE,TI>::MNode*)(this->get_or_create(key)))->val); }
   /** Destroys the map entry for position #pos#.  
       Nothing is done if position #pos# is not a valid position. */
   void del(GPosition &pos)

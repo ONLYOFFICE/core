@@ -163,7 +163,7 @@ JB2Dict::get_shape(const int shapeno)
   }else
   {
     G_THROW( ERR_MSG("JB2Image.bad_number") );
-	retval = &(JB2Shape());
+    retval = new JB2Shape();
   }
   return *retval;
 }
@@ -181,7 +181,7 @@ JB2Dict::get_shape(const int shapeno) const
   }else
   {
     G_THROW( ERR_MSG("JB2Image.bad_number") );
-	retval = &(JB2Shape());
+    retval = new JB2Shape();
   }
   return *retval;
 }

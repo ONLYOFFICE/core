@@ -78,6 +78,11 @@
 
 #include "debug.h"
 
+#ifdef __linux__
+typedef unsigned int	UINT;
+#endif
+
+#include <algorithm>
 
 #ifdef HAVE_NAMESPACES
 namespace DJVU {
@@ -1919,11 +1924,11 @@ void DjVuDocument::ReadPageInfo(int nPage, int& width, int& height, int& nDpi)
 				pInfo->decode(*chunk_stream);
 
 				// Check data for consistency
-				width = max(pInfo->width, 0);
-				height = max(pInfo->height, 0);
+                width = std::max(pInfo->width, 0);
+                height = std::max(pInfo->height, 0);
 				
 				int nInitialRotate = pInfo->orientation;
-				nDpi = max(pInfo->dpi, 0);
+                nDpi = std::max(pInfo->dpi, 0);
 
 				if ((nInitialRotate & 1) != 0)
 				{

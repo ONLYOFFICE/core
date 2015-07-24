@@ -68,6 +68,42 @@ shared {
 }
 ################################################
 
+CONFIG += c++11
+
+DEFINES += \
+    _QT \
+    FT2_BUILD_LIBRARY \
+    EXCLUDE_JPG_SUPPORT \
+    MNG_SUPPORT_DISPLAY \
+    MNG_SUPPORT_READ \
+    MNG_SUPPORT_WRITE \
+    MNG_ACCESS_CHUNKS \
+    MNG_STORE_CHUNKS\
+    MNG_ERROR_TELLTALE
+
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    DEFINES += \
+    HAVE_UNISTD_H \
+    LINUX \
+    _LINUX \
+    _LINUX_QT \
+    HAVE_MBSTATE_T \
+    GCONTAINER_NO_MEMBER_TEMPLATES="1" \
+    HAS_WCHAR \
+    HAVE_WCHAR_H \
+    UNIX \
+    HAVE_STDINCLUDES
+}
+
+win32 {
+    DEFINES += \
+    JAS_WIN_MSVC_BUILD \
+    WIN32 \
+    NOMINMAX
+
+    DEFINES -= UNICODE
+}
+
 INCLUDEPATH += \
     ../DesktopEditor/agg-2.4/include \
     ../DesktopEditor/freetype-2.5.2/include

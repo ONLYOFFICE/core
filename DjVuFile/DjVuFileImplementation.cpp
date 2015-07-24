@@ -49,7 +49,7 @@ namespace NSDjvu
 
 		try
 		{
-			return static_cast<int>(_wtoi64(wsString.c_str()));
+            return static_cast<int>(std::stol(wsString));
 		}
 		catch (...)
 		{

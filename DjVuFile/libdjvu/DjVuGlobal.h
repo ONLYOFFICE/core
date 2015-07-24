@@ -72,7 +72,11 @@ inline void * operator new(size_t, void * ptr) { return ptr; }
 #elif defined(AUTOCONF) && defined(HAVE_STDINCLUDES)
 # include <new>
 #else
-# include <new.h>
+# include <new>
+#endif
+
+#ifdef WIN32
+#include <new.h>
 #endif
 
 //#ifdef WIN32

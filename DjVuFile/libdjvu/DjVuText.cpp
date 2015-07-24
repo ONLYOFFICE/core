@@ -301,7 +301,10 @@ DjVuTXT::Zone::decode(const GP<ByteStream> &gbs, int maxtext,
     z->decode(gbs, maxtext, this, prev_child);
 //< Changed for WinDjView project
     if (z->rect.isempty())
-      children.del(children.lastpos());
+    {
+        GPosition _lastpos = children.lastpos();
+        children.del(_lastpos);
+    }
     else
 //>
     prev_child=z;

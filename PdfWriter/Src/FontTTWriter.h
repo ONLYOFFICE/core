@@ -68,7 +68,7 @@ namespace PdfWriter
 
 		unsigned int ComputeTableChecksum(unsigned char *sData, int nLength);
 		void Parse();
-		int  SeekTable(char *sTag);
+        int  SeekTable(const char *sTag);
 		void ReadOS2();
 
 	private:

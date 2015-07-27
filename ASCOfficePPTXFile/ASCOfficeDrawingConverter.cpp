@@ -3435,12 +3435,11 @@ HRESULT CDrawingConverter::SaveObject(LONG lStart, LONG lLength, const CString& 
 
 	oXmlWriter.m_bIsTop = (1 == m_nCurrentIndexObject) ? true : false;
 
-	//TODOOO
-//#if defined(BUILD_CONFIG_FULL_VERSION) && defined(AVS_USE_CONVERT_PPTX_TOCUSTOM_VML)
-//	if (NULL == m_pOOXToVMLRenderer)
-//		m_pOOXToVMLRenderer = new COOXToVMLGeometry();
-//	oXmlWriter.m_pOOXToVMLRenderer = m_pOOXToVMLRenderer;
-//#endif
+#if defined(BUILD_CONFIG_FULL_VERSION) && defined(AVS_USE_CONVERT_PPTX_TOCUSTOM_VML)
+	if (NULL == m_pOOXToVMLRenderer)
+		m_pOOXToVMLRenderer = new COOXToVMLGeometry();
+	oXmlWriter.m_pOOXToVMLRenderer = m_pOOXToVMLRenderer;
+#endif
 	if(bOle)
 	{
 		if (oElem.is<PPTX::Logic::Shape>())

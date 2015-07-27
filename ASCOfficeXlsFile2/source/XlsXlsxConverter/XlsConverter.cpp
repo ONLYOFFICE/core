@@ -16,6 +16,7 @@
 #include "../XlsFormat/Logic/Biff_unions/COLUMNS.h"
 #include "../XlsFormat/Logic/Biff_unions/SHAREDSTRINGS.h"
 #include "../XlsFormat/Logic/Biff_unions/HLINK.h"
+#include "../XlsFormat/Logic/Biff_unions/LBL.h"
 
 
 #include <Logic/Biff_records/HLink.h>
@@ -159,6 +160,11 @@ void XlsConverter::convert(XLS::BaseObject	*xls_unknown)
 			XLS::HLINK * hlink = dynamic_cast<XLS::HLINK *>(xls_unknown);
 			convert(hlink);
 		}break;
+	case XLS::typeLBL:	
+		{
+			XLS::LBL * lbl = dynamic_cast<XLS::LBL *>(xls_unknown);
+			convert(lbl);
+		}break;
 	case XLS::typeAnyObject:	
 	default:
 		{
@@ -249,6 +255,11 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 	convert((XLS::THEME*)global->m_Theme.get());
 
 	convert((XLS::SHAREDSTRINGS*)global->m_SHAREDSTRINGS.get());
+
+	for (long i = 0 ; i < global->m_LBL.size(); i++)
+	{
+		convert(global->m_LBL[i].get());
+	}
 }
 
 typedef boost::unordered_map<XLS::FillInfo, int>	mapFillInfo;
@@ -339,9 +350,15 @@ void XlsConverter::convert(XLS::HLINK * HLINK_)
 	if (display.empty())	display = target;
 
 	xlsx_context->get_table_context().add_hyperlink( hLink->ref8.toString(), target, display);
-
-
 }
+
+void XlsConverter::convert(XLS::LBL * def_name)
+{
+	if (def_name == NULL) return;
+
+	def_name->serialize(xlsx_context->defined_names());
+}
+
 void XlsConverter::convert(XLS::THEME* theme)
 {
 	if (theme == NULL) return;

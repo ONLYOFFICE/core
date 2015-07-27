@@ -46,7 +46,7 @@ void PtgRefErr3d::loadFields(CFRecord& record)
 }
 
 
-void PtgRefErr3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgRefErr3d::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	RevExternPtr tab_ids;
 	if(!extra_data.empty() && (tab_ids = boost::dynamic_pointer_cast<RevExtern>(extra_data.front())))

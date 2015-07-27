@@ -25,7 +25,7 @@ void PtgElfColS::loadFields(CFRecord& record)
 }
 
 
-void PtgElfColS::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgElfColS::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	PtgExtraElfPtr range;
 	Log::message("PtgElfColS found!!! PtgElfColS found!!! PtgElfColS found!!! PtgElfColS found!!!");

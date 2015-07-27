@@ -31,7 +31,7 @@ void PtgAttrBaxcel::loadFields(CFRecord& record)
 }
 
 
-void PtgAttrBaxcel::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgAttrBaxcel::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_datat)
 {
 	// volatile property is not seen in the textual form
 }

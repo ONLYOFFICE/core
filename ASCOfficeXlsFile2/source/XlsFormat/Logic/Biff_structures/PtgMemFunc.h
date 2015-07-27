@@ -17,7 +17,7 @@ public:
 	virtual void loadFields(CFRecord& record);
 	virtual void storeFields(CFRecord& record);
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
+	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data);
 
 private:
 	unsigned short cce;

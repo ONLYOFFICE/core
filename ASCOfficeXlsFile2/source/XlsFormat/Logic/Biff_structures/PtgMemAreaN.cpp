@@ -31,7 +31,7 @@ void PtgMemAreaN::loadFields(CFRecord& record)
 }
 
 
-void PtgMemAreaN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgMemAreaN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	PtgExtraMemPtr range;
 	if(extra_data.empty() || !(range = boost::dynamic_pointer_cast<PtgExtraMem>(extra_data.front())))

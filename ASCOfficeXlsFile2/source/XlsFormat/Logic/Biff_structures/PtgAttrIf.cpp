@@ -30,7 +30,7 @@ void PtgAttrIf::loadFields(CFRecord& record)
 }
 
 
-void PtgAttrIf::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgAttrIf::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	// All control tokens shall be skipped
 }

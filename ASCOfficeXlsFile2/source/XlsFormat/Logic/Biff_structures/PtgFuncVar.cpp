@@ -47,7 +47,7 @@ void PtgFuncVar::loadFields(CFRecord& record)
 }
 
 
-void PtgFuncVar::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgFuncVar::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	std::wstring arguments;
 	std::wstring func_name = tab.getFuncName();
@@ -57,17 +57,20 @@ void PtgFuncVar::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffS
 	{
 		--nparams;
 	}
-	if(nparams)
+	
+	int sz = ptg_stack.size();
+	
+	if(nparams )
 	{
 		arguments += ptg_stack.top();
 		ptg_stack.pop();
-		for(unsigned char i = 0; i < nparams - 1; ++i)
+		for(unsigned char i = 0; i < nparams - 1 ; ++i)
 		{
 			arguments = ptg_stack.top() + L',' + arguments;
 			ptg_stack.pop();
 		}
 	}
-	if(0xFF == tab.getIndex()) // user-defined function
+	if(0xFF == tab.getIndex() && ptg_stack.size() > 0) // user-defined function
 	{
 		func_name = ptg_stack.top();
 		ptg_stack.pop();

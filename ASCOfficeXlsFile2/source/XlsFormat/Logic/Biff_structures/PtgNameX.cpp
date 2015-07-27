@@ -2,7 +2,6 @@
 #include "PtgNameX.h"
 #include "RevName.h"
 #include <Binary/CFRecord.h>
-//#include <Exception/WrongIntermediateXMLFormat.h>
 
 namespace XLS
 {;
@@ -13,10 +12,10 @@ PtgNameX::PtgNameX()
 }
 
 
-PtgNameX::PtgNameX(const std::wstring& word, BiffStructurePtr & parent, const PtgDataType data_type)
+PtgNameX::PtgNameX(const std::wstring& word, const PtgDataType data_type)
 :	OperandPtg(fixed_id | (static_cast<unsigned char>(data_type) << 5))
 {
-	fromString(word, parent);
+	fromString(word);
 }
 
 
@@ -24,13 +23,6 @@ BiffStructurePtr PtgNameX::clone()
 {
 	return BiffStructurePtr(new PtgNameX(*this));
 }
-
-
-//void PtgNameX::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"ixti", ixti);
-//	xml_tag->setAttribute(L"nameindex", nameindex);
-//}
 
 
 void PtgNameX::storeFields(CFRecord& record)
@@ -46,7 +38,7 @@ void PtgNameX::loadFields(CFRecord& record)
 }
 
 
-void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	RevNamePtr tab_id;
 	if(!extra_data.empty() && (tab_id = boost::dynamic_pointer_cast<RevName>(extra_data.front())))
@@ -77,10 +69,12 @@ void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStr
 }
 
 
-void PtgNameX::fromString(const std::wstring& word, BiffStructurePtr & parent)
+void PtgNameX::fromString(const std::wstring& word)
 {
  	std::wstring  query = L"root/WorkbookStreamObject/GlobalsSubstream/SUPBOOK";
-	
+//
+//
+//	parent.get();
 //	MSXML2::IXMLDOMNodeListPtr nodes = parent->GetownerDocument()->selectNodes(query);
 //	MSXML2::IXMLDOMElementPtr supbook;
 //	size_t scounter = 0;
@@ -114,7 +108,7 @@ void PtgNameX::fromString(const std::wstring& word, BiffStructurePtr & parent)
 //		}
 //		++scounter;
 //	}	
-	throw;// EXCEPT::LE::WrongIntermediateXMLFormat("Necessary 'ExternName' tag was not found.", __FUNCTION__);
+//	throw;// EXCEPT::LE::WrongIntermediateXMLFormat("Necessary 'ExternName' tag was not found.", __FUNCTION__);
 }
 
 

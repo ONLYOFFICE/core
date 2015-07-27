@@ -32,6 +32,7 @@ namespace XLS
 	class THEME;
 	class SHAREDSTRINGS;
 	class HLINK;
+	class LBL;
 	
 }
 
@@ -64,6 +65,7 @@ private:
 	void convert(XLS::THEME						* theme);
 	void convert(XLS::SHAREDSTRINGS				* sharedstrings);
 	void convert(XLS::HLINK						* hlink);
+	void convert(XLS::LBL						* def_name);
 
 	
 	std::wstring GetTargetMoniker(XLS::BiffStructure *moniker);

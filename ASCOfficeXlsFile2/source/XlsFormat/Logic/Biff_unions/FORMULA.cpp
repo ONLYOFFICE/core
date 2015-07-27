@@ -9,6 +9,7 @@
 #include <Logic/Biff_records/String.h>
 #include <Logic/Biff_records/Continue.h>
 
+#include <utils.h>
 #include <simple_xml_writer.h>
 
 namespace XLS
@@ -107,23 +108,23 @@ int FORMULA::serialize(std::wostream & stream)
 			{
 				CP_XML_ATTR(L"s", formula->cell.ixfe - cellStyleXfs_count);
 			}
-			CP_XML_NODE(L"f")
-			{
-				CP_XML_STREAM() << formula->formula.getAssembledFormula(BiffStructurePtr());
-			}
-
 			switch (formula->val.getType())
 			{
 				case 0: CP_XML_ATTR(L"t", L"str");	break;
 				case 1: CP_XML_ATTR(L"t", L"b");	break;
 				case 2: CP_XML_ATTR(L"t", L"e");	break;
-				case 4:
+			}		
+			CP_XML_NODE(L"f")
+			{
+				CP_XML_STREAM() << xml::utils::replace_text_to_xml(formula->formula.getAssembledFormula());
+			}
+			std::wstring str_val = formula->val.getValue();
+			if (!str_val.empty())
+			{
+				CP_XML_NODE(L"v")
 				{
-					CP_XML_NODE(L"v")
-					{
-						CP_XML_STREAM() << STR::double2str(formula->val.data.xnum);
-					}		
-				}break;
+					CP_XML_STREAM() << str_val;
+				}
 			}
 		}			
 	}

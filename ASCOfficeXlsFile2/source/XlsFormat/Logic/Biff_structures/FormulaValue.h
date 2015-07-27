@@ -15,8 +15,9 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	const unsigned char getType() const;
+	unsigned char getType();
 
+	std::wstring getValue();
 	union
 	{
 		struct  

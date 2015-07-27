@@ -35,7 +35,7 @@ void PtgElfRadicalLel::loadFields(CFRecord& record)
 }
 
 
-void PtgElfRadicalLel::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgElfRadicalLel::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	// The significant tag follows (PtgArea or PtgAreaErr)
 }

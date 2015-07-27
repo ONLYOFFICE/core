@@ -30,7 +30,7 @@ void PtgMemFunc::loadFields(CFRecord& record)
 }
 
 
-void PtgMemFunc::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgMemFunc::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	// no textual form
 }

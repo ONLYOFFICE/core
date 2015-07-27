@@ -73,15 +73,15 @@ int Font::serialize(std::wostream & stream)
             {
                 CP_XML_NODE(L"charset")
                 {
-                    CP_XML_ATTR(L"val", *bCharSet.value());
+                    CP_XML_ATTR(L"val", bCharSet);
                 }
             }
 
-            if (icv.value())
+            if ((icv.value()) && (icv < 0x7fff) )
 			{
                 CP_XML_NODE(L"color")
                 {
-                    CP_XML_ATTR(L"indexed", *icv.value());
+                    CP_XML_ATTR(L"indexed", icv);
                 }
 			}
 
@@ -93,11 +93,11 @@ int Font::serialize(std::wostream & stream)
                 }
             }
 
-			if ((fExtend.value()) && (*fExtend.value()))
+			if ((fExtend.value()) && (fExtend))
             {
                 CP_XML_NODE(L"extend")
                 {
-                    CP_XML_ATTR(L"val", (int)(*fExtend.value()));
+                    CP_XML_ATTR(L"val", fExtend);
                 }
             }
 
@@ -105,15 +105,15 @@ int Font::serialize(std::wostream & stream)
             {
                 CP_XML_NODE(L"family")
                 {
-                    CP_XML_ATTR(L"val", (int)(*bFamily.value()));
+                    CP_XML_ATTR(L"val", bFamily);
                 }
             }
 
-            if ((fItalic.value()) && (*fItalic.value()))
+            if ((fItalic.value()) && (fItalic))
             {
                 CP_XML_NODE(L"i")
                 {
-                    CP_XML_ATTR(L"val", (int)(*fItalic.value()));
+                    CP_XML_ATTR(L"val", fItalic);
                 }
             }
 
@@ -125,11 +125,11 @@ int Font::serialize(std::wostream & stream)
                 }
             }
 
-			if (fOutline.value())
+			if ((fOutline.value()) && (fOutline))
             {
                 CP_XML_NODE(L"outline")
                 {
-                    CP_XML_ATTR(L"val", (int)(*fOutline.value()));
+                    CP_XML_ATTR(L"val", fOutline);
                 }
             }
 
@@ -141,19 +141,19 @@ int Font::serialize(std::wostream & stream)
             //    }
             //}
 
-			if ((fShadow.value()) && (*fShadow.value()))
+			if ((fShadow.value()) && (fShadow))
             {
                 CP_XML_NODE(L"shadow")
                 {
-					CP_XML_ATTR(L"val", (int)(*fShadow.value()));
+					CP_XML_ATTR(L"val", fShadow);
                 }
             }
 
-            if ((fStrikeOut.value()) && (*fStrikeOut.value()))
+            if ((fStrikeOut.value()) && (fStrikeOut))
             {
                 CP_XML_NODE(L"strike")
                 {
-                    CP_XML_ATTR(L"val", (int)(*fStrikeOut.value()));
+                    CP_XML_ATTR(L"val", fStrikeOut);
                 }
             }
 
@@ -161,7 +161,7 @@ int Font::serialize(std::wostream & stream)
             {
                 CP_XML_NODE(L"sz")
                 {
-                    CP_XML_ATTR(L"val", *dyHeight.value()/20);
+                    CP_XML_ATTR(L"val", dyHeight/20);
                 }
             }
 
@@ -169,7 +169,7 @@ int Font::serialize(std::wostream & stream)
             {
                 CP_XML_NODE(L"u")
                 {
-					switch(*uls.value())
+					switch(uls)
 					{
 						case 1:		CP_XML_ATTR(L"val", "single");break;
 						case 2:		CP_XML_ATTR(L"val", "double");break;

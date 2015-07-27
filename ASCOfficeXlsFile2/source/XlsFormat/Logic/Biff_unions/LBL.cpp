@@ -5,6 +5,9 @@
 #include <Logic/Biff_records/NameFnGrp12.h>
 #include <Logic/Biff_records/NamePublish.h>
 
+#include <utils.h>
+#include <simple_xml_writer.h>
+
 namespace XLS
 {;
 
@@ -28,18 +31,45 @@ BaseObjectPtr LBL::clone()
 // LBL = Lbl [NameCmt] [NameFnGrp12] [NamePublish]
 const bool LBL::loadContent(BinProcessor& proc)
 {
-	Lbl lbl;
-	if(!proc.mandatory(lbl))
+	if(!proc.mandatory<Lbl>())
 	{
 		return false;
 	}
-	XLUnicodeStringNoCch name = lbl.getName();
-	proc.optional(NameCmt(name));
+	m_Lbl = elements_.back();
+	elements_.pop_back();
+
+	Lbl *lbl = dynamic_cast<Lbl*>(m_Lbl.get());
+
+	XLUnicodeStringNoCch name = lbl->getName();
+	
+	if (proc.optional(NameCmt(name)))
+	{
+	}
 	proc.optional<NameFnGrp12>();
 	proc.optional<NamePublish>();
 
+	GlobalWorkbookInfoPtr	global_info_ = proc.getGlobalWorkbookInfo();
+
+	global_info_->defineNames.push_back(name);
+
+
 	return true;
 }
+int LBL::serialize(std::wostream & stream)
+{
+	Lbl *lbl = dynamic_cast<Lbl*>(m_Lbl.get());
+	if (lbl == NULL) return 0;
 
+	CP_XML_WRITER(stream)    
+    {
+		CP_XML_NODE(L"definedName")
+		{
+			CP_XML_ATTR(L"name", lbl->Name_bin.value());
+
+			CP_XML_STREAM() << xml::utils::replace_text_to_xml(lbl->rgce.getAssembledFormula());
+		}
+	}
+	return 0;
+}
 } // namespace XLS
 

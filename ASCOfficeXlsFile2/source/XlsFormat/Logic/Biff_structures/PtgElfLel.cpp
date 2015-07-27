@@ -35,7 +35,7 @@ void PtgElfLel::loadFields(CFRecord& record)
 }
 
 
-void PtgElfLel::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgElfLel::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	ptg_stack.push(L"#NAME?"); // The best decision I think
 }

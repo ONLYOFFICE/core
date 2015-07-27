@@ -17,14 +17,13 @@ public:
 	PtgArea(const std::wstring& word, const PtgDataType data_type);
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
 	virtual void loadFields(CFRecord& record);
 	virtual void storeFields(CFRecord& record);
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
+	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data);
 
 	static const unsigned short fixed_id = 0x05;
-private:
+
 	RgceArea area;
 };
 

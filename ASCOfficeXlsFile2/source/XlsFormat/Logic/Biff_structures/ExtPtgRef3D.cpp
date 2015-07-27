@@ -48,7 +48,7 @@ void ExtPtgRef3D::load(CFRecord& record)
 }
 
 
-void ExtPtgRef3D::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void ExtPtgRef3D::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 #pragma message("####################### ExtPtgRef3D record is not implemented")
 	Log::info("ExtPtgRef3D record is not implemented.");

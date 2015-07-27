@@ -42,7 +42,7 @@ void PtgNum::loadFields(CFRecord& record)
 }
 
 
-void PtgNum::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgNum::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	ptg_stack.push(STR::double2str(value_));
 }

@@ -42,7 +42,7 @@ void Ptg::addFuncWrapper(AssemblerStack& ptg_stack, const std::wstring& func_nam
 }
 
 
-void Ptg::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void Ptg::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 
 }

@@ -42,7 +42,7 @@ void PtgErr::loadFields(CFRecord& record)
 }
 
 
-void PtgErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	ptg_stack.push(err.toString());
 }

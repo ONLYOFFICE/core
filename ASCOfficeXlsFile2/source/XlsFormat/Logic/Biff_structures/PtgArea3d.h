@@ -21,10 +21,9 @@ public:
 	virtual void loadFields(CFRecord& record);
 	virtual void storeFields(CFRecord& record);
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
-
+	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data);
 	static const unsigned short fixed_id = 0x1B;
-private:
+
 	unsigned short ixti;
 	RgceAreaRel area_rel;
 	RgceArea area;

@@ -12,7 +12,7 @@ public:
 	PtgMissArg();
 	BiffStructurePtr clone();
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
+	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data);
 	static const unsigned short fixed_id = 0x16;
 };
 

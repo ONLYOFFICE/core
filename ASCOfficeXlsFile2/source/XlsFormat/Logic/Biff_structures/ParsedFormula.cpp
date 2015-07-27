@@ -40,7 +40,7 @@ const bool ParsedFormula::HasPtgTbl() const
 }
 
 
-const std::wstring ParsedFormula::getAssembledFormula(BiffStructurePtr & parent) const
+const std::wstring ParsedFormula::getAssembledFormula() const
 {
 	const PtgVector& ptgs = rgce.getPtgs();
 	if(ptgs.empty())
@@ -51,7 +51,7 @@ const std::wstring ParsedFormula::getAssembledFormula(BiffStructurePtr & parent)
 	PtgQueue extra_data = rgcb.getPtgs();
 	for(PtgVectorIterator it = ptgs.begin(), itEnd = ptgs.end(); it != itEnd; ++it)
 	{
-		(*it)->assemble(ptg_stack, extra_data, parent);
+		(*it)->assemble(ptg_stack, extra_data);
 	}
 	if(1 != ptg_stack.size())
 	{
@@ -61,15 +61,15 @@ const std::wstring ParsedFormula::getAssembledFormula(BiffStructurePtr & parent)
 }
 
 
-const bool ParsedFormula::parseStringFormula(const std::wstring formula, BiffStructurePtr & parent)
-{
-	StringPtgParser parser;
-	if(parser.parseToPtgs(boost::algorithm::trim_copy(formula), rgce, rgcb, parent))
-	{
-		return true;
-	}
-	return false;
-}
+//const bool ParsedFormula::parseStringFormula(const std::wstring formula, const std::wstring & tag_name)
+//{
+//	StringPtgParser parser;
+//	if(parser.parseToPtgs(boost::algorithm::trim_copy(formula), rgce, rgcb, tag_name))
+//	{
+//		return true;
+//	}
+//	return false;
+//}
 
 
 } // namespace XLS

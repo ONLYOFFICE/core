@@ -39,14 +39,14 @@ public:
 	static const bool extract_PtgNum(std::wstring::const_iterator& first, std::wstring::const_iterator last, std::wstring& out_str);
 	static const bool extract_PtgBool(std::wstring::const_iterator& first, std::wstring::const_iterator last, std::wstring& out_str);
 	static const bool extract_PtgStr(std::wstring::const_iterator& first, std::wstring::const_iterator last, std::wstring& out_str);
-	static const bool extract_PtgName(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned int& out_num, BiffStructurePtr & parent);
+	static const bool extract_PtgName(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned int& out_num);
 	static const bool extract_PtgRefErr(std::wstring::const_iterator& first, std::wstring::const_iterator last);
 	static const bool extract_PtgErr(std::wstring::const_iterator& first, std::wstring::const_iterator last, std::wstring& out_str);
 	static const bool extract_UndefinedName(std::wstring::const_iterator& first, std::wstring::const_iterator last);
 
 	static const bool extract_PtgArea(std::wstring::const_iterator& first, std::wstring::const_iterator last, std::wstring& out_str);
 	static const bool extract_PtgRef(std::wstring::const_iterator& first, std::wstring::const_iterator last, std::wstring& out_str);
-	static const bool extract_3D_part(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned short& ixti, BiffStructurePtr & parent);
+	static const bool extract_3D_part(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned short& ixti);
 
 	static const bool extract_PtgArray(std::wstring::const_iterator& first, std::wstring::const_iterator last, std::wstring& out_str);
 

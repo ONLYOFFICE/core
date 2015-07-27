@@ -18,7 +18,7 @@ BiffStructurePtr PtgMissArg::clone()
 }
 
 
-void PtgMissArg::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgMissArg::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	ptg_stack.push(L"");
 }

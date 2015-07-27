@@ -30,13 +30,6 @@ BiffStructurePtr PtgExtraArray::clone()
 }
 
 
-//void PtgExtraArray::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"cols", cols);
-//	xml_tag->setAttribute(L"rows", rows);
-//	std::for_each(array_.begin(), array_.end(), boost::bind(&SerAr::toXML, _1, xml_tag));
-//}
-//
 
 void PtgExtraArray::store(CFRecord& record)
 {

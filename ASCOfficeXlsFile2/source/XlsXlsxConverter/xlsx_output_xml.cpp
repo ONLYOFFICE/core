@@ -141,7 +141,6 @@ void xlsx_xml_worksheet::write_to(std::wostream & strm)
 			}
 
 			CP_XML_STREAM() << impl_->pageProperties_.str();
-			//CP_XML_NODE(L"headerFooter){}
 
 			//CP_XML_NODE(L"rowBreaks){}
 

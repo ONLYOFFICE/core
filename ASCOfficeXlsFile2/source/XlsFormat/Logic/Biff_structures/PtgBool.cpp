@@ -58,7 +58,7 @@ void PtgBool::loadFields(CFRecord& record)
 }
 
 
-void PtgBool::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgBool::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	ptg_stack.push(boolean_ ? L"TRUE" : L"FALSE");
 }

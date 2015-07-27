@@ -44,7 +44,7 @@ void PtgAttrChoose::loadFields(CFRecord& record)
 }
 
 
-void PtgAttrChoose::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgAttrChoose::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	// All control tokens shall be skipped
 }

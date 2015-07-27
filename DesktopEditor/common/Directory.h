@@ -69,13 +69,30 @@ namespace NSDirectory
         {
             while ((dirp = readdir(dp)) != NULL)
             {
+                int nType = 0;
                 if(DT_REG == dirp->d_type)
+                    nType = 2;
+                else if (DT_DIR == dirp->d_type)
+                    nType = 1;
+                else if (DT_UNKNOWN == dirp->d_type)
+                {
+                     // XFS problem
+                     struct stat buff;
+                     std::string sTmp = std::string((char*)pUtf8) + "/" + std::string(dirp->d_name);
+                     stat(sTmp.c_str(), &buff);
+                     if (S_ISREG(buff.st_mode))
+                        nType = 2;
+                     else if (S_ISDIR(buff.st_mode))
+                        nType = 1;
+                }
+
+                if (2 == nType)
                 {
                     std::wstring sName = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)dirp->d_name, strlen(dirp->d_name));
                     oArray.Add(strDirectory + L"/" + sName);
                 }
 
-                if (bIsRecursion && DT_DIR == dirp->d_type)
+                if (bIsRecursion && (1 == nType))
                 {
                     if(dirp->d_name[0] != '.')
                     {

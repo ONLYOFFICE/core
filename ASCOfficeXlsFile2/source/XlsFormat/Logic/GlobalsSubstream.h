@@ -25,10 +25,14 @@ public:
 
 	static const ElementType	type = typeGlobalsSubstream;
 	
-	BaseObjectPtr m_Theme;
-	BaseObjectPtr m_Formating;
-	BaseObjectPtr m_Template;
-	BaseObjectPtr m_SHAREDSTRINGS;
+	BaseObjectPtr				m_Theme;
+	BaseObjectPtr				m_Formating;
+	BaseObjectPtr				m_Template;
+	BaseObjectPtr				m_SHAREDSTRINGS;
+
+	std::vector<BaseObjectPtr>	m_HFPicture;
+	std::vector<BaseObjectPtr>	m_LBL;
+	std::vector<BaseObjectPtr>	m_MSODRAWINGGROUP;
 	
 	unsigned short code_page_;
 };

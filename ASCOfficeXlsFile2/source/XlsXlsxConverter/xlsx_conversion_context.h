@@ -65,17 +65,19 @@ public:
 
  //   void process_styles();
 
- 	std::wostream & shared_strings() {return xlsx_shared_strings_;}    
+ 	std::wostream				& shared_strings()			{ return xlsx_shared_strings_; }    
+ 	std::wostream				& defined_names()			{ return xlsx_defined_names_; }    
+	
 	xlsx_text_context           & get_text_context()		{ return xlsx_text_context_; }
     xlsx_table_context          & get_table_context()		{ return xlsx_table_context_; }
- //   const xlsx_table_context    & get_table_context() const { return xlsx_table_context_; }
- //   xlsx_style_manager          & get_style_manager()		{ return xlsx_style_; }
     xlsx_xml_worksheet          & current_sheet();
+ 
+	//   const xlsx_table_context    & get_table_context() const { return xlsx_table_context_; }
+ //   xlsx_style_manager          & get_style_manager()		{ return xlsx_style_; }
  //  
  //   oox_chart_context           & current_chart();
  //   num_format_context          & get_num_format_context()		 { return num_format_context_; }
  //   size_t                        get_default_cell_style() const { return default_style_; }
- //   xlsx_defined_names          & get_xlsx_defined_names()		 { return xlsx_defined_names_; }
  //   xlsx_table_metrics          & get_table_metrics();
  //   xlsx_drawing_context        & get_drawing_context();
  //   xlsx_drawing_context_handle & get_drawing_context_handle();	
@@ -101,10 +103,11 @@ private:
     //size_t                              default_style_;
     mediaitems                          mediaitems_;
   
-    //xlsx_defined_names              xlsx_defined_names_;
     xlsx_table_context              xlsx_table_context_;
     xlsx_text_context               xlsx_text_context_;
+
 	std::wstringstream				xlsx_shared_strings_;
+	std::wstringstream				xlsx_defined_names_;
 
     //xlsx_drawing_context_handle     xlsx_drawing_context_handle_;
     //xlsx_comments_context_handle    xlsx_comments_context_handle_;

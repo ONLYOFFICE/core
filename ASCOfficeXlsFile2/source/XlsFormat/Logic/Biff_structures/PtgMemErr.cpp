@@ -35,7 +35,7 @@ void PtgMemErr::loadFields(CFRecord& record)
 }
 
 
-void PtgMemErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgMemErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	//ptg_stack.push("#CACHE(" + STR::int2str(getOffsetInRecord() + getSizeOfStruct() + cce, 10) + ")!" + err.toString());
 }

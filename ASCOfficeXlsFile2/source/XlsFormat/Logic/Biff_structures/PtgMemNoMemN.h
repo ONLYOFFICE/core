@@ -18,7 +18,7 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
+	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data);
 
 private:
 	unsigned char type;

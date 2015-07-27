@@ -24,7 +24,7 @@ void PtgAttrSum::loadFields(CFRecord& record)
 }
 
 
-void PtgAttrSum::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgAttrSum::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	addFuncWrapper(ptg_stack, L"SUM");
 }

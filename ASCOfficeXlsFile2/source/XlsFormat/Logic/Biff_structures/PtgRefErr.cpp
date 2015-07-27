@@ -35,7 +35,7 @@ void PtgRefErr::loadFields(CFRecord& record)
 }
 
 
-void PtgRefErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgRefErr::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	ptg_stack.push(L"#REF!");
 }

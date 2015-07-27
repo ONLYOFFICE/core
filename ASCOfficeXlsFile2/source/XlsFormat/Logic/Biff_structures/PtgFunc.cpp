@@ -42,15 +42,16 @@ void PtgFunc::loadFields(CFRecord& record)
 }
 
 
-void PtgFunc::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgFunc::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	long num_params = iftab.getParamsNum();
 	std::wstring arguments;
-	if(num_params)
+	
+	if(num_params && ptg_stack.size() > 0)
 	{
 		arguments += ptg_stack.top();
 		ptg_stack.pop();
-		for(long i = 0; i < num_params - 1; ++i)
+		for(long i = 0; i < num_params - 1 && ptg_stack.size() > 0; ++i)
 		{
 			arguments = ptg_stack.top() + L',' + arguments;
 			ptg_stack.pop();

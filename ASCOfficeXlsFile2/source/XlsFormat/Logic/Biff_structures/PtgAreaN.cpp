@@ -46,7 +46,7 @@ void PtgAreaN::loadFields(CFRecord& record)
 }
 
 
-void PtgAreaN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgAreaN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	ptg_stack.push((area + cell_base_ref).toString());
 }

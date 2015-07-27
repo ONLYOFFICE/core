@@ -14,16 +14,13 @@ class ParsedFormula : public BiffStructure
 public:
 	ParsedFormula(const CellRef& cell_base_ref);
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
-
 	void setCCE(const size_t cce_val); // mandatory to call before any use of "cce"
 	const size_t getCCE() const;
 	const bool HasPtgTbl() const;
 
-	const std::wstring getAssembledFormula(BiffStructurePtr & parent) const;
+	const std::wstring getAssembledFormula() const;
 	
-	const bool parseStringFormula(const std::wstring formula, BiffStructurePtr & parent);
+	//const bool parseStringFormula(const std::wstring formula, const std::wstring & tag_name);
 
 	Rgce rgce;
 	RgbExtra rgcb;

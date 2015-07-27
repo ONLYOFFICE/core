@@ -42,7 +42,7 @@ void PtgRef::loadFields(CFRecord& record)
 	record >> loc;
 }
 
-void PtgRef::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgRef::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	ptg_stack.push(loc.toString());
 }

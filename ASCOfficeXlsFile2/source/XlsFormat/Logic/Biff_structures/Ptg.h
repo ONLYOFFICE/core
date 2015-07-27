@@ -34,20 +34,19 @@ public:
 	virtual void storeFields(CFRecord& record) {};
 
 
-
 	virtual const unsigned short getPtgId() const;// = 0;
 	const size_t getOffsetInRecord() const;
 	const size_t getSizeOfStruct() const;
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
+	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data);
+
+	_CP_OPT(unsigned short)	ptg_id;
+	_CP_OPT(size_t)			offset_in_record;
+	_CP_OPT(size_t)			size_of_struct;
 
 protected:
 	void addFuncWrapper(AssemblerStack& ptg_stack, const std::wstring& func_name);
 
-private:
-	_CP_OPT(unsigned short)	ptg_id;
-	_CP_OPT(size_t)			offset_in_record;
-	_CP_OPT(size_t)			size_of_struct;
 };
 
 

@@ -64,15 +64,20 @@ int MulRk::serialize(std::wostream & stream)
 		for (long i = 0; i < cells.size(); i++)
 		{
 			Cell * cell = dynamic_cast<Cell *>(cells[i].get());
+			RkRec * rkrec = dynamic_cast<RkRec *>(rgrkrec[i].get());
 			
 			std::wstring ref = cell->getLocation().toString();// getColRowRef(i, row);
 			CP_XML_NODE(L"c")
 			{
 				CP_XML_ATTR(L"r", ref);
 
-				if (cell->ixfe.value())
+				if ((cell->ixfe.value()) && (cell->ixfe > cellStyleXfs_count))
 				{
-					CP_XML_ATTR(L"s", *(cell->ixfe.value()) - cellStyleXfs_count);
+					CP_XML_ATTR(L"s", cell->ixfe - cellStyleXfs_count);
+				}
+				CP_XML_NODE(L"v")
+				{
+					CP_XML_STREAM() << rkrec->RK_.value();
 				}
 			}
 		}

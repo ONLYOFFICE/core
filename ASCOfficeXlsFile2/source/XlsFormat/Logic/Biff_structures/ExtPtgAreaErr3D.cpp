@@ -44,7 +44,7 @@ void ExtPtgAreaErr3D::load(CFRecord& record)
 }
 
 
-void ExtPtgAreaErr3D::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void ExtPtgAreaErr3D::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 #pragma message("####################### ExtPtgAreaErr3D record is not implemented")
 	Log::info("ExtPtgAreaErr3D record is not implemented.");

@@ -97,7 +97,14 @@ int CELL_GROUP::serialize(std::wostream & stream)
 					CP_XML_ATTR(L"ht", row->miyRw / 20.);
 					CP_XML_ATTR(L"customHeight", true);
 				}
-
+				if ((row->iOutLevel.value()) && (row->iOutLevel > 0))
+				{
+					CP_XML_ATTR(L"outlineLevel", row->iOutLevel);
+				}
+				if ((row->fCollapsed.value()) && (row->fCollapsed))
+				{
+					CP_XML_ATTR(L"collapsed", row->fCollapsed);
+				}
 				std::list<XLS::BaseObjectPtr>::iterator it_cell = current_cell_start;
 				while(true)
 				{

@@ -45,7 +45,7 @@ void PtgTbl::loadFields(CFRecord& record)
 }
 
 
-void PtgTbl::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgTbl::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	// The reference coordinates shall be obtained from row/column values.
 	// No textual form need but the empty line.

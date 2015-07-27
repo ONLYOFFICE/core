@@ -30,7 +30,7 @@ void PtgAttrGoto::loadFields(CFRecord& record)
 }
 
 
-void PtgAttrGoto::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgAttrGoto::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	// All control tokens shall be skipped
 }

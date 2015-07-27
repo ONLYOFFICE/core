@@ -42,9 +42,20 @@ void BkHim::readFields(CFRecord& record)
 	record >> lcb;//imageBlob size
 
 	unsigned int sz = record.getDataSize() - record.getRdPtr();
+
+	if (cf == 0x09)
+	{
+		//bitmap
+	}
+	else
+	{
+		//native
+	}
 	
+	//imageBlob
 	if (record.checkFitReadSafe(lcb))
 	{
+
 		record.skipNunBytes(lcb);
 	}
 }

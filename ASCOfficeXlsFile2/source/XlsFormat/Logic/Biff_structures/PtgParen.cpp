@@ -19,7 +19,7 @@ BiffStructurePtr PtgParen::clone()
 }
 
 
-void PtgParen::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgParen::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	ptg_stack.top() = L'(' + ptg_stack.top() + L')';
 }

@@ -32,7 +32,7 @@ void PtgMemNoMem::loadFields(CFRecord& record)
 }
 
 
-void PtgMemNoMem::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgMemNoMem::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 // I assume it doesn't generate an error.
 }

@@ -17,10 +17,8 @@ public:
 	virtual void load(CFRecord& record, const size_t cce);
 	virtual void store(CFRecord& record);
 
-private:
 	virtual void load(CFRecord& record) {};
 
-private:
 	bool is_part_of_a_revision_;
 };
 

@@ -15,14 +15,11 @@ public:
 	ExtPtgRef3D(const CellRef& cell_base_ref_init);
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent);
+	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data);
 
-private:
 	ExtSheetPair iTabs;
 	RgceLocRel loc;
 	const CellRef& cell_base_ref;

@@ -30,7 +30,7 @@ void PtgSxName::loadFields(CFRecord& record)
 }
 
 
-void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgSxName::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 #pragma message("####################### PtgSxName struct is not implemented")
 	Log::info("PtgSxName structure is not implemented.");

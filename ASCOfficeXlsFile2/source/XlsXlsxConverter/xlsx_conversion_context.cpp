@@ -161,7 +161,10 @@ void xlsx_conversion_context::end_document()
                     CP_XML_STREAM() << workbook_content.str();
                 }
 
-                //get_xlsx_defined_names().xlsx_serialize(CP_XML_STREAM());
+                CP_XML_NODE(L"definedNames")
+                {
+					CP_XML_STREAM() << xlsx_defined_names_.str();
+				}
             }
         }
 

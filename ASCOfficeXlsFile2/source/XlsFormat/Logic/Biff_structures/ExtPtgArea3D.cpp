@@ -50,7 +50,7 @@ void ExtPtgArea3D::load(CFRecord& record)
 }
 
 
-void ExtPtgArea3D::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void ExtPtgArea3D::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 #pragma message("####################### ExtPtgArea3D record is not implemented")
 	Log::info("ExtPtgArea3D record is not implemented.");

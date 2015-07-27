@@ -45,7 +45,7 @@ void PtgMemNoMemN::load(CFRecord& record)
 }
 
 
-void PtgMemNoMemN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgMemNoMemN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	// I assume it doesn't generate an error.
 }

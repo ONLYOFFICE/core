@@ -389,7 +389,7 @@ const bool SyntaxPtg::extract_PtgStr(std::wstring::const_iterator& first, std::w
 
 
 // static
-const bool SyntaxPtg::extract_PtgName(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned int& out_num, BiffStructurePtr & parent)
+const bool SyntaxPtg::extract_PtgName(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned int& out_num)
 {
 	static boost::wregex reg_name(L"^(\\w[\\w\\d.]*)([-+*/^&%<=>: ;),]|$)");
 	
@@ -481,7 +481,7 @@ const bool SyntaxPtg::extract_PtgRef(std::wstring::const_iterator& first, std::w
 
 
 // static
-const bool SyntaxPtg::extract_3D_part(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned short& ixti, BiffStructurePtr & parent)
+const bool SyntaxPtg::extract_3D_part(std::wstring::const_iterator& first, std::wstring::const_iterator last, unsigned short& ixti)
 {
 	//static boost::wregex reg_sheets(L"^(\\w[\\w\\d.]*(:\\w[\\w\\d.]*)?)!");
 	//static boost::wregex reg_quoted(L"^'((''|[^]['\\/*?])*)'!");

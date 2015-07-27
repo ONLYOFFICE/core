@@ -18,7 +18,12 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	int serialize(std::wostream & stream);
+	
 	static const ElementType	type = typeLBL;
+
+	BaseObjectPtr m_Lbl;
+
 };
 
 } // namespace XLS

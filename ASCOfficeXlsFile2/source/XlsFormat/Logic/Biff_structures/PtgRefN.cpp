@@ -45,7 +45,7 @@ void PtgRefN::loadFields(CFRecord& record)
 }
 
 
-void PtgRefN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgRefN::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	ptg_stack.push((loc + cell_base_ref).toString());
 }

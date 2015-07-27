@@ -46,7 +46,7 @@ void PtgExp::loadFields(CFRecord& record)
 }
 
 
-void PtgExp::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgExp::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	// The reference coordinates shall be obtained from row/column values.
 	// No textual form need but the empty line.

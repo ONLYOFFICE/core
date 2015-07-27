@@ -99,6 +99,7 @@ int PAGESETUP::serialize(std::wostream & stream)
 {
 	Setup * setup = dynamic_cast<Setup*>(m_Setup.get());
 
+	bool headerFooter = false;
 	CP_XML_WRITER(stream)    
     {
 		CP_XML_NODE(L"pageMargins")
@@ -106,10 +107,16 @@ int PAGESETUP::serialize(std::wostream & stream)
 			if (setup)
 			{
 				if (setup->numHdr.value())
+				{
 					CP_XML_ATTR(L"header", setup->numHdr);
+					headerFooter = true;
+				}
 
 				if (setup->numFtr.value())
+				{
 					CP_XML_ATTR(L"footer", setup->numFtr);
+					headerFooter = true;
+				}
 			}
 			for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
 			{
@@ -143,6 +150,13 @@ int PAGESETUP::serialize(std::wostream & stream)
 				}
 			}
 		}
+
+		if (headerFooter)
+		{
+		
+			//CP_XML_NODE(L"headerFooter"){}
+		}
+
 		CP_XML_NODE(L"pageSetup")
 		{
 		}

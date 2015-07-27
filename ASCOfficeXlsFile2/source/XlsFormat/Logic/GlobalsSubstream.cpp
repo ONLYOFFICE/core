@@ -110,6 +110,8 @@ WORKBOOK = BOF WORKBOOKCONTENT
 */
 const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 {
+	int count = 0;
+
 	if(!proc.mandatory<BOF>())
 	{
 		return false;
@@ -169,13 +171,34 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 
 	proc.optional<Country>();
 	proc.repeated<SUPBOOK>(0, 0);
-	proc.repeated<LBL>(0, 0);
+	
+	count = proc.repeated<LBL>(0, 0);
+	while(count > 0)
+	{
+		m_LBL.insert(m_LBL.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
 	proc.repeated<RTD>(0, 0);
 
 	proc.optional<RecalcId>();
-	proc.repeated<HFPicture>(0, 0); /////
-	proc.repeated(MSODRAWINGGROUP(false), 0, 0);
 	
+	count = proc.repeated<HFPicture>(0, 0);
+	while(count > 0)
+	{
+		m_HFPicture.insert(m_HFPicture.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
+	
+	count = proc.repeated(MSODRAWINGGROUP(false), 0, 0);
+	while(count > 0)
+	{
+		m_MSODRAWINGGROUP.insert(m_MSODRAWINGGROUP.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
+
 	if (proc.optional(SHAREDSTRINGS(code_page_)))
 	{
 		m_SHAREDSTRINGS = elements_.back();

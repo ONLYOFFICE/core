@@ -31,7 +31,7 @@ void PtgElfRwV::loadFields(CFRecord& record)
 }
 
 
-void PtgElfRwV::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, BiffStructurePtr & parent)
+void PtgElfRwV::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
 	ptg_stack.push(CellRangeRef(loc, CellRangeRef::stRow).toString());
 }

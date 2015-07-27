@@ -30,6 +30,8 @@ public:
 	
 	unsigned int last_AXES_id;
 	const static unsigned int initial_AXES_id = 0;
+
+	std::vector<std::wstring>				defineNames;
 };
 
 typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;

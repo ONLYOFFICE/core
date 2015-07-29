@@ -467,10 +467,10 @@ namespace MathEquation
 				default: nHAlignPile = SimpleTypes::xalignLeft; break;
 				}
 
-				/*if (m_aCommandStack.empty())
+				if (m_aCommandStack.empty())
 				{
 					PushCommand(commandEqArray);
-				}*/
+				}
 				m_aCommandStack.top()->SetPile(true, nHAlignPile);
 			}
 			virtual void EndPile()
@@ -1492,6 +1492,41 @@ namespace MathEquation
 					m_aBaseStack.push(nElemPos);
 				}
 			}
+			void WriteBeginNode(BinaryEquationWriter* pWriter)
+			{
+				int nElemPos;
+				if (bEqArrayStart)
+				{
+					nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+					nRows++;
+					m_aBaseStack.push(nElemPos);
+				}
+				if (bPile && !bEqArrayStart)
+				{
+					bEqArrayStart = true;
+					nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::EqArr);
+					m_aBaseStack.push(nElemPos);
+
+
+					nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::EqArrPr);
+
+					pWriter->WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::McJc, nHAlignPile);
+
+					int nCurPos1 = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathBottomNodesType::Row);
+					pWriter->m_oStream.WriteBYTE(BinDocxRW::c_oSer_OMathBottomNodesValType::Val);
+					pWriter->m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
+					pWriter->m_aRowsPosCounter.push(pWriter->WriteItemWithLengthStart());
+					pWriter->WriteItemEnd(nCurPos1);
+
+
+
+					pWriter->WriteItemEnd(nElemPos);
+
+					nElemPos = pWriter->WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+					nRows = 1;
+					m_aBaseStack.push(nElemPos);
+				}
+			}
 
 			void WriteEndNode(BinaryEquationWriter* pWriter)
 			{
@@ -1520,8 +1555,8 @@ namespace MathEquation
 					{
 						nCurPos = m_aBaseStack.top();
 						m_aBaseStack.pop();
-					}
-					pWriter->WriteItemEnd(nCurPos);
+						pWriter->WriteItemEnd(nCurPos);
+					}					
 				}
 			}
 
@@ -1919,7 +1954,7 @@ namespace MathEquation
 			{
 				bOpenNode = bBeginNode;
 				if (bBeginNode)
-					WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::EqArr);
+					WriteBeginNode(pWriter);
 				else
 					WriteEndNode(pWriter);
 			}

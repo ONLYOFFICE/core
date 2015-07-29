@@ -1,5 +1,6 @@
 #pragma once
 
+#include <boost/optional/optional_io.hpp>
 #include <boost/optional.hpp>
 
 namespace cpdoccore

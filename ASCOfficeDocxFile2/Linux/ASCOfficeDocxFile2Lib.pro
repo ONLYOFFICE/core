@@ -9,12 +9,41 @@ QT       -= core gui
 TARGET = ASCOfficeDocxFile2Lib
 TEMPLATE = lib
 CONFIG += staticlib
-QMAKE_CXXFLAGS += -std=c++0x -Wall -Wno-ignored-qualifiers
+win32 {
+    QMAKE_CXXFLAGS += -std=c++11
+} else {
+    QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
+}
+
+############### destination path ###############
+DESTINATION_SDK_PATH = $$PWD/../../SDK/lib
+
+# WINDOWS
+win32:contains(QMAKE_TARGET.arch, x86_64):{
+CONFIG(debug, debug|release) {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
+} else {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_64
+}
+}
+win32:!contains(QMAKE_TARGET.arch, x86_64):{
+CONFIG(debug, debug|release) {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
+} else {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_32
+}
+}
+
+linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
+}
+linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
+}
+############### destination path ###############
+
 DEFINES += UNICODE \
 	_UNICODE \
-        _LINUX \
-        _LINUX_QT \
-        LINUX \
         NODOCX \
 	_USE_XMLLITE_READER_ \
 	USE_LITE_READER \
@@ -26,14 +55,25 @@ DEFINES += UNICODE \
 	LIBXML_READER_ENABLED
 
 INCLUDEPATH += \
-    ../../DesktopEditor/freetype-2.5.2/include \
-    ../../Common/DocxFormat/Source/XML/libxml2/XML/include
+    ../../DesktopEditor/freetype-2.5.2/include
 
-INCLUDEPATH += \
-    /usr/include/libxml2
+#################### WINDOWS #####################
+win32 {
+INCLUDEPATH += ../../Common/DocxFormat/Source/XML/libxml2/XML/include
+}
+#################### WINDOWS #####################
 
-LIBS += -lxml2
-	
+#################### LINUX ########################
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    DEFINES += \
+        LINUX \
+        _LINUX \
+        _LINUX_QT
+
+INCLUDEPATH += /usr/include/libxml2
+}
+#################### LINUX ########################
+
 SOURCES += ../DocWrapper/DocxSerializer.cpp \
     ../DocWrapper/FontProcessor.cpp \
     ../DocWrapper/XlsxSerializer.cpp \

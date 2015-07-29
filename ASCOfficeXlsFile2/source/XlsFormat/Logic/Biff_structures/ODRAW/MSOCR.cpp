@@ -11,24 +11,6 @@ XLS::BiffStructurePtr MSOCR::clone()
 	return XLS::BiffStructurePtr(new MSOCR(*this));
 }
 
-//
-//void MSOCR::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"red", red);
-//	xml_tag->setAttribute(L"green", green);
-//	xml_tag->setAttribute(L"blue", blue);
-//	xml_tag->setAttribute(L"fSchemeIndex", fSchemeIndex);
-//}
-//
-//void MSOCR::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	red = getStructAttribute(xml_tag, L"red");
-//	green = getStructAttribute(xml_tag, L"green");
-//	blue = getStructAttribute(xml_tag, L"blue");
-//	fSchemeIndex = getStructAttribute(xml_tag, L"fSchemeIndex");
-//}
-
-
 void MSOCR::store(XLS::CFRecord& record)
 {
 	unsigned char flags = 0;

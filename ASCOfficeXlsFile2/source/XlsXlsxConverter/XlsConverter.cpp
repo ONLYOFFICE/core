@@ -17,7 +17,7 @@
 #include "../XlsFormat/Logic/Biff_unions/SHAREDSTRINGS.h"
 #include "../XlsFormat/Logic/Biff_unions/HLINK.h"
 #include "../XlsFormat/Logic/Biff_unions/LBL.h"
-
+#include "../XlsFormat/Logic/Biff_unions/OBJECTS.h"
 
 #include <Logic/Biff_records/HLink.h>
 #include <Logic/Biff_structures/URLMoniker.h>
@@ -165,6 +165,11 @@ void XlsConverter::convert(XLS::BaseObject	*xls_unknown)
 			XLS::LBL * lbl = dynamic_cast<XLS::LBL *>(xls_unknown);
 			convert(lbl);
 		}break;
+	case XLS::typeOBJECTS:
+		{
+			XLS::OBJECTS * obj = dynamic_cast<XLS::OBJECTS *>(xls_unknown);
+			convert(obj);
+		}break;
 	case XLS::typeAnyObject:	
 	default:
 		{
@@ -240,6 +245,7 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 	{
 		convert(sheet->m_HLINK[i].get());
 	}
+	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get());
 
 	if (sheet->m_PAGESETUP)
 	{
@@ -250,6 +256,7 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 void XlsConverter::convert(XLS::GlobalsSubstream* global)
 {
 	if (global == NULL) return;
+	
 	convert((XLS::FORMATTING*)global->m_Formating.get());
 	
 	convert((XLS::THEME*)global->m_Theme.get());
@@ -258,8 +265,11 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 
 	for (long i = 0 ; i < global->m_LBL.size(); i++)
 	{
-		convert(global->m_LBL[i].get());
+		convert((XLS::LBL*)global->m_LBL[i].get());
 	}
+
+	for (long i = 0 ; i < global->m_MSODRAWINGGROUP.size(); i++)
+		convert((XLS::MSODRAWINGGROUP*)global->m_MSODRAWINGGROUP[i].get());
 }
 
 typedef boost::unordered_map<XLS::FillInfo, int>	mapFillInfo;
@@ -339,6 +349,10 @@ std::wstring XlsConverter::GetTargetMoniker(XLS::BiffStructure *moniker)
 	return L"";
 }
 
+void XlsConverter::convert(XLS::MSODRAWINGGROUP * mso_drawing)
+{
+	
+}
 void XlsConverter::convert(XLS::HLINK * HLINK_)
 {
 	XLS::HLink * hLink = dynamic_cast<XLS::HLink*>(HLINK_->m_HLink.get());
@@ -362,6 +376,27 @@ void XlsConverter::convert(XLS::LBL * def_name)
 void XlsConverter::convert(XLS::THEME* theme)
 {
 	if (theme == NULL) return;
+}
+
+void XlsConverter::convert(XLS::OBJECTS* objects)
+{
+	if (objects == NULL) return;
+
+	for (long i = 0 ; i < objects->m_OBJs.size(); i++)
+	{
+		xlsx_context->get_drawing_context().start_drawing(L"", 1);
+
+
+		xlsx_context->get_drawing_context().end_drawing();
+	}
+
+	for (long i = 0 ; i < objects->m_CHARTs.size(); i++)
+	{
+		//xlsx_context->get_chart_context().start_drawing();
+
+
+		//xlsx_context->get_chart_context().end_drawing();
+	}
 }
 
 void XlsConverter::convert(XLS::SHAREDSTRINGS* sharedstrings)

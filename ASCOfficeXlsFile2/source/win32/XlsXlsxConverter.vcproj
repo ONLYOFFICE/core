@@ -357,6 +357,22 @@
 				>
 			</File>
 			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_drawing_context.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_drawing_context.h"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_drawings.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\XlsXlsxConverter\xlsx_drawings.h"
+				>
+			</File>
+			<File
 				RelativePath="..\XlsXlsxConverter\xlsx_hyperlinks.cpp"
 				>
 			</File>

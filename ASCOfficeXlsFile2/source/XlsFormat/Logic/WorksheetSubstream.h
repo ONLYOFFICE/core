@@ -33,6 +33,7 @@ public:
 	BaseObjectPtr				m_CELLTABLE;
 	BaseObjectPtr				m_SHFMLA_SET;
 	BaseObjectPtr				m_Dimensions;
+	BaseObjectPtr				m_OBJECTS;
 	std::vector<BaseObjectPtr>	m_HLINK;
 };
 

@@ -16,7 +16,7 @@ public:
 	PtgName(const unsigned int index, const PtgDataType data_type_init);
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
+	
 	virtual void loadFields(CFRecord& record);
 	virtual void storeFields(CFRecord& record);
 

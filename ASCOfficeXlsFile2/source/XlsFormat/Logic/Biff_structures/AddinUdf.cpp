@@ -12,17 +12,6 @@ BiffStructurePtr AddinUdf::clone()
 }
 
 
-//void AddinUdf::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"udfName", udfName);
-//}
-//
-//
-//void AddinUdf::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	udfName = static_cast<std::wstring >(getStructAttribute(xml_tag, L"udfName"));
-//}
-
 
 void AddinUdf::store(CFRecord& record)
 {

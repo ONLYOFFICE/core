@@ -12,18 +12,6 @@ XLS::BiffStructurePtr AntiMoniker::clone()
 }
 
 
-//void AntiMoniker::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"count", count);
-//}
-//
-//
-//void AntiMoniker::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//#pragma message("####################### AntiMoniker record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! AntiMoniker record has no BiffStructure::fromXML() implemented.");
-//}
-
 
 void AntiMoniker::store(XLS::CFRecord& record)
 {

@@ -4,7 +4,7 @@
 
 #include <boost/noncopyable.hpp>
 
-//#include "xlsx_drawings.h"
+#include "xlsx_drawings.h"
 //#include "xlsx_comments.h"
 //
 //class CApplicationFonts;
@@ -91,34 +91,33 @@ public:
 //
 //};
 //
-//class xl_drawings;
-//typedef _CP_PTR(xl_drawings) xl_drawings_ptr;
+class xl_drawings;
+typedef _CP_PTR(xl_drawings) xl_drawings_ptr;
 
-/// \class xl_drawings
-//class xl_drawings: public element
-//{
-//public:
-//    virtual void write(const std::wstring & RootPath);
-//    void set_rels(rels_files * rels)
-//    {
-//        rels_ = rels;
-//    }
-//
-//    xl_drawings(const std::vector<drawing_elm> & elms) : drawings_ ( elms )
-//    {
-//    }
-//
-//    static xl_drawings_ptr create(const std::vector<drawing_elm> & elms);
-//
-//private:
-//    const std::vector<drawing_elm> & drawings_;
-//    rels_files * rels_;
-//
-//};
-//class xl_vml_drawings;
-//typedef _CP_PTR(xl_vml_drawings) xl_vml_drawings_ptr;
-//
-///// \class xl_drawings
+class xl_drawings: public element
+{
+public:
+    virtual void write(const std::wstring & RootPath);
+    void set_rels(rels_files * rels)
+    {
+        rels_ = rels;
+    }
+
+    xl_drawings(const std::vector<drawing_elm> & elms) : drawings_ ( elms )
+    {
+    }
+
+    static xl_drawings_ptr create(const std::vector<drawing_elm> & elms);
+
+private:
+    const std::vector<drawing_elm> & drawings_;
+    rels_files * rels_;
+
+};
+class xl_vml_drawings;
+typedef _CP_PTR(xl_vml_drawings) xl_vml_drawings_ptr;
+
+
 //class xl_vml_drawings: public element
 //{
 //public:

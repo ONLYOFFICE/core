@@ -11,20 +11,6 @@ BiffStructurePtr BookExt_Conditional11::clone()
 	return BiffStructurePtr(new BookExt_Conditional11(*this));
 }
 
-
-//void BookExt_Conditional11::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"fBuggedUserAboutSolution", fBuggedUserAboutSolution);
-//	xml_tag->setAttribute(L"fShowInkAnnotation", fShowInkAnnotation);
-//}
-//
-//void BookExt_Conditional11::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	fBuggedUserAboutSolution = getStructAttribute(xml_tag, L"fBuggedUserAboutSolution");
-//	fShowInkAnnotation = getStructAttribute(xml_tag, L"fShowInkAnnotation");
-//}
-
-
 void BookExt_Conditional11::store(CFRecord& record)
 {
 	unsigned char flags = 0;

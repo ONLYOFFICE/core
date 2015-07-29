@@ -17,7 +17,7 @@ public:
 	PtgArea3d(const unsigned short ixti, const std::wstring& word, const PtgDataType data_type, const CellRef& cell_base_ref_init);
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
+	
 	virtual void loadFields(CFRecord& record);
 	virtual void storeFields(CFRecord& record);
 

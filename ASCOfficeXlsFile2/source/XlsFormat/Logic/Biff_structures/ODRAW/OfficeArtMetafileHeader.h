@@ -18,8 +18,8 @@ class OfficeArtMetafileHeader : public XLS::BiffStructure
 public:
 	XLS::BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
+	
+	
 	virtual void store(XLS::CFRecord& record);
 	virtual void load(XLS::CFRecord& record);
 

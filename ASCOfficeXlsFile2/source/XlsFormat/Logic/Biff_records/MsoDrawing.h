@@ -29,11 +29,6 @@ public:
 //-----------------------------
 	ODRAW::OfficeArtDgContainer rgChildRec;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(rgChildRec)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 typedef boost::shared_ptr<MsoDrawing> MsoDrawingPtr;

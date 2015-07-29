@@ -18,7 +18,7 @@ public:
 	// The following non-standard overriding is intended not to let empty <Rgce/> to be generated
 	//virtual void toXML(BiffStructurePtr & parent);
 
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
+	
 	void load(CFRecord& record, const size_t cce_val);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
@@ -30,10 +30,8 @@ public:
 	void addPtg(const PtgPtr ptg);
 	const CellRef& getLocation() const;
 
-private:
 	const CellRef cell_base_ref;
 
-private:
 	_CP_OPT(size_t) cce; // Size of rgce variable. Setting explicit is mandatory
 	PtgVector sequence;
 };

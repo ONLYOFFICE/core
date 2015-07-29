@@ -142,7 +142,11 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		}
 	}
 
-	proc.optional(OBJECTS(false));  // Let it be optional
+	if (proc.optional(OBJECTS(false)))
+	{
+		m_OBJECTS = elements_.back();
+		elements_.pop_back();
+	}
 	
 	proc.repeated<HFPicture>(0, 0);
 	proc.repeated<Note>(0, 0);

@@ -25,8 +25,8 @@ public:
 
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
+	
+	
 
 	const std::wstring toString(const bool useShortForm = true) const;
 	void fromString(const std::wstring& str);

@@ -18,17 +18,6 @@ XLS::BiffStructurePtr OfficeArtBStoreContainer::clone()
 	return XLS::BiffStructurePtr(new OfficeArtBStoreContainer(*this));
 }
 
-//
-//void OfficeArtBStoreContainer::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	std::for_each(rgfb.begin(), rgfb.end(), boost::bind(&OfficeArtBStoreContainerFileBlock::toXML, _1, xml_tag));
-//}
-//
-//
-//void OfficeArtBStoreContainer::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//}
-
 
 void OfficeArtBStoreContainer::storeFields(XLS::CFRecord& record)
 {	

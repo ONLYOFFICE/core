@@ -18,14 +18,6 @@ class IMsoArray : public XLS::BiffStructure
 public:
 	XLS::BiffStructurePtr clone(){return XLS::BiffStructurePtr(new IMsoArray(*this));}
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-	//{
-	//	for (std::vector<Type>::iterator it = data.begin(), itEnd = data.end(); it != itEnd; ++it)
-	//	{
-	//		it->toXML(xml_tag);
-	//	}
-	//}
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag) {}
 	virtual void load(XLS::CFRecord& record)
 	{
 		unsigned short nElems, nElemsAlloc;

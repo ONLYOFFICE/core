@@ -14,11 +14,8 @@ namespace oox {
     
 
 xlsx_conversion_context::xlsx_conversion_context( package::xlsx_document * outputDocument): output_document_(outputDocument),
-	xlsx_table_context_(*this, xlsx_text_context_)
-	//
-	//maxDigitSize_ (std::pair<float,float>(-1.0, -1.0) ),
-	//default_style_( (std::numeric_limits<size_t>::max)() ),
-	//xlsx_drawing_context_handle_(mediaitems_)
+	xlsx_table_context_(*this/*, xlsx_text_context_*/), 
+	xlsx_drawing_context_handle_(get_mediaitems())
 {
 }
 
@@ -35,6 +32,10 @@ xlsx_conversion_context::~xlsx_conversion_context()
 //{
 //	current_stream_ = stream;
 //}
+xlsx_drawing_context & xlsx_conversion_context::get_drawing_context()
+{
+    return get_table_context().get_drawing_context();
+}
 
 void xlsx_conversion_context::start_document()
 {
@@ -65,6 +66,11 @@ void xlsx_conversion_context::end_table()
 	get_table_context().dump_rels_hyperlinks(current_sheet().hyperlinks_rels());
 
     get_table_context().end_table();
+}
+
+xlsx_drawing_context_handle & xlsx_conversion_context::get_drawing_context_handle()
+{
+    return xlsx_drawing_context_handle_;
 }
 
 void xlsx_conversion_context::end_document()
@@ -173,8 +179,8 @@ void xlsx_conversion_context::end_document()
 		output_document_->content_type().set_media(get_mediaitems());
         output_document_->get_xl_files().set_media(get_mediaitems());
 
-        //package::xl_drawings_ptr drawings = package::xl_drawings::create(xlsx_drawing_context_handle_.content());
-        //output_document_->get_xl_files().set_drawings(drawings);
+        package::xl_drawings_ptr drawings = package::xl_drawings::create(xlsx_drawing_context_handle_.content());
+        output_document_->get_xl_files().set_drawings(drawings);
 	
         //package::xl_comments_ptr comments = package::xl_comments::create(xlsx_comments_context_handle_.content());
         //output_document_->get_xl_files().set_comments(comments);

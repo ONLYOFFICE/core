@@ -17,8 +17,8 @@ class OfficeArtContainer : public OfficeArtRecord
 public:
 	OfficeArtContainer(const unsigned char recVer, const unsigned short recType, const OfficeArtClientAnchorType anchor_type);
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
+	
+	
 	// overridden:
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);

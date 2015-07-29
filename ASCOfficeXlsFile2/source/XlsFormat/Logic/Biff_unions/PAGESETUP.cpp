@@ -118,9 +118,9 @@ int PAGESETUP::serialize(std::wostream & stream)
 					headerFooter = true;
 				}
 			}
+			bool b = false, t = false, l = false, r = false ;
 			for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
 			{
-				bool b = false, t = false; //double set???
 				switch((*it)->get_type())
 				{
 				case typeTopMargin:
@@ -141,19 +141,27 @@ int PAGESETUP::serialize(std::wostream & stream)
 					{
 						LeftMargin* left = dynamic_cast<LeftMargin*>(it->get());
 						CP_XML_ATTR(L"left", left->num);
+						l= true;
 					}break;				
 				case typeRightMargin:
 					{
 						RightMargin* right = dynamic_cast<RightMargin*>(it->get());
 						CP_XML_ATTR(L"right", right->num);
+						r= true;
 					}break;		
 				}
+			}
+			if (headerFooter)
+			{
+				if (!t)CP_XML_ATTR(L"top", 1);
+				if (!b)CP_XML_ATTR(L"bottom", 1);
+				if (!l)CP_XML_ATTR(L"left", 0.75);
+				if (!r)CP_XML_ATTR(L"right", 0.75);
 			}
 		}
 
 		if (headerFooter)
-		{
-		
+		{		
 			//CP_XML_NODE(L"headerFooter"){}
 		}
 

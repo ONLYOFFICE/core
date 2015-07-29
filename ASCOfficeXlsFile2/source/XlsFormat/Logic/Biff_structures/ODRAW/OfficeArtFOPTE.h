@@ -24,8 +24,8 @@ class OfficeArtFOPTE : public XLS::BiffStructure
 public:
 	XLS::BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
+	
+	
 	virtual void store(XLS::CFRecord& record);
 
 protected:
@@ -211,7 +211,7 @@ class fillBlip : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBlip)
 public:
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
+	
 	virtual void ReadComplexData(XLS::CFRecord& record);
 
 private:

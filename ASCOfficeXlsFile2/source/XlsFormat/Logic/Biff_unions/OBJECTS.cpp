@@ -66,13 +66,11 @@ public:
 		{
 			return false;
 		}
+
 		proc.repeated(Parenthesis_OBJECTS_2(), 0, 0);
 		return true;
 	}
 
-
-
-private:
 	MsoDrawingPtr mso_drawing_;
 };
 
@@ -93,11 +91,26 @@ const bool OBJECTS::loadContent(BinProcessor& proc)
 // OBJECTS = *(MSODRAWING *(TEXTOBJECT / OBJ / CHART)) [MsoDrawingSelection]
 const bool OBJECTS::loadContentRead(BinReaderProcessor& proc)
 {
-	MsoDrawingPtr mso_drawing(new MsoDrawing(is_inside_chart_sheet_));
-	bool res1 = proc.repeated(Parenthesis_OBJECTS_1(mso_drawing), 0, 0);
-	bool res2 = proc.optional(MsoDrawingSelection());
+	m_MsoDrawing = boost::shared_ptr<MsoDrawing>(new MsoDrawing(is_inside_chart_sheet_));
+	
+	int count1 = proc.repeated(Parenthesis_OBJECTS_1(m_MsoDrawing), 0, 0);
 
-	return res1 || res2;
+	for(std::list<BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end() ; it++)
+	{
+		XLS::ElementType type = (*it)->get_type();
+
+		switch (type)
+		{
+		case XLS::typeOBJ:			m_OBJs.push_back(*it);				break;
+		case XLS::typeTEXTOBJECT:	m_TEXTOBJECTs.push_back(*it);		break;
+		case XLS::typeCHART:		m_CHARTs.push_back(*it);			break;
+		}
+	}
+	elements_.clear();
+
+	int count2  = proc.optional(MsoDrawingSelection());
+
+	return count1 > 0 || count2 > 0;
 }
 
 

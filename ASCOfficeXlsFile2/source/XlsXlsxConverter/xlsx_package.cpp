@@ -257,35 +257,35 @@ void xl_files::set_vml_drawings(element_ptr Element)
 //    }
 //}
 //////////////////////////
-//xl_drawings_ptr xl_drawings::create(const std::vector<drawing_elm> & elms)
-//{
-//    return boost::make_shared<xl_drawings>(boost::ref(elms));
-//}
+xl_drawings_ptr xl_drawings::create(const std::vector<drawing_elm> & elms)
+{
+    return boost::make_shared<xl_drawings>(boost::ref(elms));
+}
 
-//void xl_drawings::write(const std::wstring & RootPath)
-//{
-//	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"drawings";
-//	FileSystem::Directory::CreateDirectory(path.c_str());
-//
-//    BOOST_FOREACH(drawing_elm const & e, drawings_)
-//    {
-//        package::simple_element(e.filename, e.content).write(path);        
-//
-//        rels_files relFiles;
-//        rels_file_ptr r = rels_file::create(e.filename + L".rels");
-//        e.drawings->dump_rels(r->get_rels());
-//               
-//                
-//        relFiles.add_rel_file(r);
-//        relFiles.write(path);
-//        
-//
-//        content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
-//
-//        const std::wstring kDrawingCT = L"application/vnd.openxmlformats-officedocument.drawing+xml";
-//        contentTypes.add_override(L"/xl/drawings/" + e.filename, kDrawingCT);
-//    }
-//}
+void xl_drawings::write(const std::wstring & RootPath)
+{
+	std::wstring path = RootPath + FILE_SEPARATOR_STR + L"drawings";
+	FileSystem::Directory::CreateDirectory(path.c_str());
+
+    BOOST_FOREACH(drawing_elm const & e, drawings_)
+    {
+        package::simple_element(e.filename, e.content).write(path);        
+
+        rels_files relFiles;
+        rels_file_ptr r = rels_file::create(e.filename + L".rels");
+        e.drawings->dump_rels(r->get_rels());
+               
+                
+        relFiles.add_rel_file(r);
+        relFiles.write(path);
+        
+
+        content_type & contentTypes = this->get_main_document()->content_type().get_content_type();
+
+        const std::wstring kDrawingCT = L"application/vnd.openxmlformats-officedocument.drawing+xml";
+        contentTypes.add_override(L"/xl/drawings/" + e.filename, kDrawingCT);
+    }
+}
 
 //////////////////////////////
 //xl_comments_ptr xl_comments::create(const std::vector<comment_elm> & elms)

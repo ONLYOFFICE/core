@@ -13,7 +13,7 @@ class PtgElfRwV: public OperandPtg
 public:
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
+	
 	virtual void loadFields(CFRecord& record);
 	virtual void storeFields(CFRecord& record);
 

@@ -38,8 +38,6 @@ class OfficeArtClientData : public OfficeArtRecord
 public:
 	OfficeArtClientData() : OfficeArtRecord(0, ClientData) {}
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtClientData(*this)); }
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag) {}
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag) {}
 	virtual void loadFields(XLS::CFRecord& record) {}
 	virtual void storeFields(XLS::CFRecord& record) {}
 
@@ -51,8 +49,6 @@ class OfficeArtClientTextbox : public OfficeArtRecord
 public:
 	OfficeArtClientTextbox() : OfficeArtRecord(0, ClientTextbox) {}
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtClientTextbox(*this)); }
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag) {}
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag) {}
 	virtual void loadFields(XLS::CFRecord& record) {}
 	virtual void storeFields(XLS::CFRecord& record) {}
 

@@ -46,25 +46,7 @@ public:
 		return XLS::BiffStructurePtr(new OfficeArtBlipCommon<pict_info, recType>(*this));
 	}
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-	//{
-	//	xml_tag->setAttribute(L"rgbUid", rgbUid.c_str());
-	//	switch(pict_info)
-	//	{
-	//		case bpi_HasMetaData:
-	//			metafileHeader.toXML(xml_tag);
-	//			break;
 
-	//		case bpi_HasInternalTag:
-	//			xml_tag->setAttribute(L"tag", tag);
-	//			break;
-	//	}
-
-	//}
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-	//{
-	//	// We don't support xlsx to xls conversion
-	//}
 
 	virtual void loadFields(XLS::CFRecord& record)
 	{

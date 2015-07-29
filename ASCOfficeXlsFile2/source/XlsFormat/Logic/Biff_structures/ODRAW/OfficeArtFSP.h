@@ -19,15 +19,12 @@ public:
 	OfficeArtFSP();
 	XLS::BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
 
 	// overriden
 	const unsigned short GetInstanceToStore();
 
-private:
 	unsigned short shape_id;
 
 	unsigned int spid;

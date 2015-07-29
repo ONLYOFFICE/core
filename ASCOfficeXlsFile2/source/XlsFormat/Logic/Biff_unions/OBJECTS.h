@@ -5,6 +5,8 @@
 namespace XLS
 {;
 
+class  MsoDrawing;
+typedef boost::shared_ptr<MsoDrawing> MsoDrawingPtr;
 
 // Logical representation of OBJECTS union of records 
 class OBJECTS: public CompositeObject
@@ -23,6 +25,12 @@ public:
 	static const ElementType	type = typeOBJECTS;
 
 	bool is_inside_chart_sheet_;
+
+	MsoDrawingPtr				m_MsoDrawing;
+	
+	std::vector<BaseObjectPtr>	m_OBJs;
+	std::vector<BaseObjectPtr>	m_TEXTOBJECTs;
+	std::vector<BaseObjectPtr>	m_CHARTs;
 };
 
 } // namespace XLS

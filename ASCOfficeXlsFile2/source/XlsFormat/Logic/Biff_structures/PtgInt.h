@@ -15,7 +15,7 @@ public:
 	PtgInt(const std::wstring& word);
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
+	
 	virtual void loadFields(CFRecord& record);
 	virtual void storeFields(CFRecord& record);
 

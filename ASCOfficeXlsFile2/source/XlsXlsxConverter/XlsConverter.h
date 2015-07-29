@@ -33,6 +33,8 @@ namespace XLS
 	class SHAREDSTRINGS;
 	class HLINK;
 	class LBL;
+	class OBJECTS;
+	class MSODRAWINGGROUP;
 	
 }
 
@@ -66,8 +68,9 @@ private:
 	void convert(XLS::SHAREDSTRINGS				* sharedstrings);
 	void convert(XLS::HLINK						* hlink);
 	void convert(XLS::LBL						* def_name);
+	void convert(XLS::OBJECTS					* objects);
+	void convert(XLS::MSODRAWINGGROUP			* mso_drawing);
 
-	
 	std::wstring GetTargetMoniker(XLS::BiffStructure *moniker);
 
 };

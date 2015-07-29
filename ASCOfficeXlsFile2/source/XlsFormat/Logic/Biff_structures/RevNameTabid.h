@@ -16,7 +16,7 @@ public:
 	RevNameTabid(CFRecord& record);
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag);
+	
 	virtual void load(CFRecord& record); // No type info
 	virtual void store(CFRecord& record); // No type info
 

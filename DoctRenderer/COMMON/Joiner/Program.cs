@@ -22,13 +22,20 @@ namespace Joiner
             List<string> files = new List<string>();
 
             string[] arrFilesConfig = {
+                "Common/3rdparty/jquery/jquery.min.js",
+                "Common/3rdparty/Underscore/underscore-min.js",
+                "Common/3rdparty/Sockjs/sockjs-0.3.min.js",
+                "Common/3rdparty/XRegExp/xregexp-all-min.js",
+				"Common/3rdparty/jszip/jszip.min.js",
+				"Common/3rdparty/jszip-utils/jszip-utils.min.js",
+
+                "Common/AllFonts.js",
+
                 "Common/Build/License.js",
                 "Common/browser.js",
-                "Common/docscoapisettings.js",
                 "Common/docscoapicommon.js",
                 "Common/docscoapi.js",
                 "Common/apiCommon.js",
-                "Common/spellcheckapisettings.js",
                 "Common/spellcheckapi.js",
                 "Common/wordcopypaste.js",
                 "Common/spellCheckLanguage.js",
@@ -113,7 +120,6 @@ namespace Joiner
                 "Word/Editor/FontClassification.js",
                 "Word/Editor/Spelling.js",
                 "Word/Drawing/Graphics.js",
-				"Word/Drawing/Private/Graphics.js",
                 "Word/Drawing/Overlay.js",
                 "Word/Drawing/HatchPattern.js",
                 "Word/Drawing/ShapeDrawer.js",
@@ -128,6 +134,7 @@ namespace Joiner
                 "Word/Drawing/documentrenderer.js",
                 "Common/scroll.js",
                 "Word/Editor/SerializeCommon.js",
+                "Word/apiDefines.js",
                 "Word/document/empty.js",
                 "Word/Math/mathTypes.js",
                 "Word/Math/mathText.js",
@@ -144,19 +151,18 @@ namespace Joiner
                 "Word/Math/borderBox.js",
                 "Excel/utils/utils.js",
                 "Excel/model/CellComment.js",
-				"Excel/model/Private/CellComment.js",
                 "Excel/model/Serialize.js",
                 "Excel/model/WorkbookElems.js",
                 "Excel/model/Workbook.js",
                 "Excel/model/CellInfo.js",
                 "Excel/model/AdvancedOptions.js",
 
-                "Common/Private/Locks.js",
+                "Common/Locks.js",
 
                 "Common/Shapes/EditorSettings.js",
-                "Word/apiDefines.js",
+
                 "Word/apiCommon.js",
-                "Word/api.js",
+                "Word/api.js"
             };
 
             if (true)

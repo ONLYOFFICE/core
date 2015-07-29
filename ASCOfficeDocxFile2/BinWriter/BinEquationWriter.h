@@ -44,6 +44,14 @@ namespace MathEquation
 				bAccent = bAcc;
 				eType = type;
 			}
+			TMathFont* GetFont()
+			{
+				return pFont;
+			}
+			LONG GetSize()
+			{
+				return nTextSize;
+			}
 	};
 
 	class RunManager
@@ -176,9 +184,9 @@ namespace MathEquation
 						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
 						m_oStream.WriteLONG(nSize);
 
-						m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontCS);
+						/*m_oStream.WriteBYTE(BinDocxRW::c_oSerProp_rPrType::FontSizeCS);
 						m_oStream.WriteBYTE(BinDocxRW::c_oSerPropLenType::Long);
-						m_oStream.WriteLONG(nSize);
+						m_oStream.WriteLONG(nSize);*/
 					}
 					WriteItemEnd(nCurPos);
 				}
@@ -236,40 +244,82 @@ namespace MathEquation
 							}
 							else
 							{
-								int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Acc);
-								int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::AccPr);
-								CString str;
-								switch (oRun.eType)
+								if (embelPrime == oRun.eType || embelDPrime == oRun.eType || embelTPrime == oRun.eType)
 								{
-									case embelDot:       str.Insert(0, 0x0307); break;
-									case embelDDot:      str.Insert(0, 0x0308); break;
-									case embelDDDot:     str.Insert(0, 0x20DB); break;
-									case embelPrime:     str.Insert(0, 0x2032); break;
-									case embelDPrime:    str.Insert(0, 0x2033); break;
-									case embelLPrime:    str.Insert(0, 0x0300); break;
-									case embelTilde:     str.Insert(0, 0x0303); break;
-									case embelHat:       str.Insert(0, 0x005E); break;
-									case embelSlash:     str.Insert(0, 0x002F); break;
-									case embelLArrow:    str.Insert(0, 0x2190); break;
-									case embelRArrow:    str.Insert(0, 0x2192); break;
-									case embelDArrow:    str.Insert(0, 0x2194); break;
-									case embelLHarpoon:  str.Insert(0, 0x21BC); break;
-									case embelRHarpoon:  str.Insert(0, 0x21C0); break;
-									case embelStrikeout: str.Insert(0, 0x0336); break;
-									case embelBar:       str.Insert(0, 0x0305); break;
-									case embelTPrime:    str.Insert(0, 0x2034); break;
-									case embelFrown:     str.Insert(0, 0x23DD); break;
-									case embelSmile:     str.Insert(0, 0x23DC); break;
+									int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSup);
+									int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SSupPr);
+									CString str;
+									switch (oRun.eType)
+									{
+										case embelPrime:     str.Insert(0, 0x2032); break;
+										case embelDPrime:    str.Insert(0, 0x2033); break;
+										case embelTPrime:    str.Insert(0, 0x2034); break;
+									}
+									WriteItemEnd(nCurPos1);
+									
+									nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Sup);
+									EquationRun oSupRun;
+									oSupRun.AddChar(str, oRun.GetFont(), oRun.GetSize());
+									WriteRunContent(oSupRun, bIsOpen);
+									WriteItemEnd(nCurPos1);
+
+									nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+									WriteRunContent(oRun, bIsOpen);
+									WriteItemEnd(nCurPos1);
+									WriteItemEnd(nCurPos);
 								}
-								WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
-								WriteItemEnd(nCurPos1);
+								else if (embelLPrime == oRun.eType)
+								{
+									int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SPre);
+									int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::SPrePr);
+									CString str;
+									str.Insert(0, 0x2035);
+									WriteItemEnd(nCurPos1);
 
-								int nCurPos2 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+									nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Sup);
+									EquationRun oSupRun;
+									oSupRun.AddChar(str, oRun.GetFont(), oRun.GetSize());
+									WriteRunContent(oSupRun, bIsOpen);
+									WriteItemEnd(nCurPos1);
 
-								WriteRunContent(oRun, bIsOpen);	
+									nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+									WriteRunContent(oRun, bIsOpen);
+									WriteItemEnd(nCurPos1);
+									WriteItemEnd(nCurPos);
+								}
+								else
+								{
+									int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Acc);
+									int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::AccPr);
+									CString str;
+									switch (oRun.eType)
+									{
+										case embelDot:       str.Insert(0, 0x0307); break;
+										case embelDDot:      str.Insert(0, 0x0308); break;
+										case embelDDDot:     str.Insert(0, 0x20DB); break;
+										case embelTilde:     str.Insert(0, 0x0303); break;
+										case embelHat:       str.Insert(0, 0x005E); break;
+										case embelSlash:     str.Insert(0, 0x002F); break;
+										case embelLArrow:    str.Insert(0, 0x2190); break;
+										case embelRArrow:    str.Insert(0, 0x2192); break;
+										case embelDArrow:    str.Insert(0, 0x2194); break;
+										case embelLHarpoon:  str.Insert(0, 0x21BC); break;
+										case embelRHarpoon:  str.Insert(0, 0x21C0); break;
+										case embelStrikeout: str.Insert(0, 0x0336); break;
+										case embelBar:       str.Insert(0, 0x0305); break;
+										case embelFrown:     str.Insert(0, 0x23DD); break;
+										case embelSmile:     str.Insert(0, 0x23DC); break;
+									}
+									WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
+									WriteItemEnd(nCurPos1);
 
-								WriteItemEnd(nCurPos2);
-								WriteItemEnd(nCurPos);
+									int nCurPos2 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Element);
+
+									WriteRunContent(oRun, bIsOpen);
+
+									WriteItemEnd(nCurPos2);
+									WriteItemEnd(nCurPos);
+								}
 							}
 						}
 					}

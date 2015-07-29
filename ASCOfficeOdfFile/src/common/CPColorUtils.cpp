@@ -3,6 +3,7 @@
 #include <boost/foreach.hpp>
 #include <cmath>
 
+#include <boost/optional/optional_io.hpp>
 #include <boost/optional.hpp>
 #include <boost/lexical_cast.hpp>
 

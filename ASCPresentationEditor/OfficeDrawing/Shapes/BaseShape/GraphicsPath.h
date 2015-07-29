@@ -3,7 +3,8 @@
 
 #include "../../Metric.h"
 #include "../../Attributes.h"
-
+#define _USE_MATH_DEFINES
+#include <math.h>//M_PI
 #include <vector>
 
 namespace NSPresentationEditor

@@ -1,4 +1,5 @@
 #include "codecvt.h"
+#include <algorithm>
 
 using namespace std;
 
@@ -10,7 +11,7 @@ ucs2_conversion::do_in(mbstate_t&,
 {
 	const int max_input = (from_end - from) & ~1;
 	const int max_output = (to_limit - to);
-	int count = min(max_input / 2, max_output); // TODO попробовать оптимизировать, заменив деление на сдвиг
+    int count = std::min(max_input / 2, max_output); // TODO попробовать оптимизировать, заменив деление на сдвиг
 
 	from_next = from;
 	to_next = to;
@@ -35,7 +36,7 @@ ucs2_conversion::do_out(mbstate_t&,
 {
 	const int max_input = (from_end - from);
 	const int max_output = (to_limit - to) & ~1;
-	int count = min(max_input, max_output / 2);	// TODO попробовать оптимизировать, заменив деление на сдвиг
+    int count = std::min(max_input, max_output / 2);	// TODO попробовать оптимизировать, заменив деление на сдвиг
 
 	from_next = from;
 	to_next = to;
@@ -57,7 +58,7 @@ ube_conversion::do_in(mbstate_t&,
 {
 	const int max_input = (from_end - from) & ~1;
 	const int max_output = (to_limit - to);
-	int count = min(max_input / 2, max_output); // TODO попробовать оптимизировать, заменив деление на сдвиг
+    int count = std::min(max_input / 2, max_output); // TODO попробовать оптимизировать, заменив деление на сдвиг
 
 	from_next = from;
 	to_next = to;
@@ -81,7 +82,7 @@ ube_conversion::do_out(mbstate_t&,
 {
 	const int max_input = (from_end - from);
 	const int max_output = (to_limit - to) & ~1;
-	int count = min(max_input, max_output / 2);	// TODO попробовать оптимизировать, заменив деление на сдвиг
+    int count = std::min(max_input, max_output / 2);	// TODO попробовать оптимизировать, заменив деление на сдвиг
 
 	from_next = from;
 	to_next = to;

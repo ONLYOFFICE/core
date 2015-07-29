@@ -28,13 +28,13 @@ DateTime::DateTime()
 
 DateTime::DateTime(const CString &sValue, const CString &sPattern)	
 	:
-	m_nYear         ( ParseValue( sValue, sPattern, "%YYYY") ),
-	m_nMonth        ( ParseValue( sValue, sPattern, "%MM"  ) ),
-	m_nDay          ( ParseValue( sValue, sPattern, "%DD"  ) ),
-	m_nHour         ( ParseValue( sValue, sPattern, "%hh"  ) ),
-	m_nMinute       ( ParseValue( sValue, sPattern, "%mm"  ) ),
-	m_nSecond       ( ParseValue( sValue, sPattern, "%ss"  ) ),
-	m_nMillisecond	( ParseValue( sValue, sPattern, "%ms"  ) )
+    m_nYear         ( ParseValue( sValue, sPattern, _T("%YYYY")) ),
+    m_nMonth        ( ParseValue( sValue, sPattern, _T("%MM")  ) ),
+    m_nDay          ( ParseValue( sValue, sPattern, _T("%DD")  ) ),
+    m_nHour         ( ParseValue( sValue, sPattern, _T("%hh")  ) ),
+    m_nMinute       ( ParseValue( sValue, sPattern, _T("%mm")  ) ),
+    m_nSecond       ( ParseValue( sValue, sPattern, _T("%ss")  ) ),
+    m_nMillisecond	( ParseValue( sValue, sPattern, _T("%ms")  ) )
 {
 }
 

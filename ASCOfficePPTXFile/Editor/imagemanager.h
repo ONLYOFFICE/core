@@ -25,13 +25,6 @@ using namespace NSFontCutter;
 #include "../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h"
 #include <list>
 
-#ifndef min
-#define min(a,b) (((a)<(b))?(a):(b))
-#endif
-#ifndef max
-#define max(a,b) (((a)>(b))?(a):(b))
-#endif
-
 namespace NSShapeImageGen
 {
 	const long c_nMaxImageSize = 2000;

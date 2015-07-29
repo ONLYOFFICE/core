@@ -9,13 +9,60 @@ QT       -= core gui
 TARGET = DocxFormatLib
 TEMPLATE = lib
 CONFIG += staticlib
-QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
+win32 {
+    QMAKE_CXXFLAGS += -std=c++11
+} else {
+    QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
+}
 
-DEFINES += _LINUX LINUX UNICODE _UNICODE _USE_LIBXML2_READER_ _LINUX_QT _USE_XMLLITE_READER_ USE_LITE_READER
+############### destination path ###############
+DESTINATION_SDK_PATH = $$PWD/../../../SDK/lib
 
-LIBS += -lxml2
+# WINDOWS
+win32:contains(QMAKE_TARGET.arch, x86_64):{
+CONFIG(debug, debug|release) {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
+} else {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_64
+}
+}
+win32:!contains(QMAKE_TARGET.arch, x86_64):{
+CONFIG(debug, debug|release) {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
+} else {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_32
+}
+}
+
+linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
+}
+linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
+}
+############### destination path ###############
+
+DEFINES += UNICODE _UNICODE _USE_LIBXML2_READER_ _USE_XMLLITE_READER_ USE_LITE_READER
+
+#################### WINDOWS #####################
+win32 {
+    DEFINES += \
+        LIBXML_READER_ENABLED
+
+INCLUDEPATH += ../Source/XML/libxml2/XML/include
+}
+#################### WINDOWS #####################
+
+#################### LINUX ########################
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    DEFINES += \
+        LINUX \
+        _LINUX \
+        _LINUX_QT
 
 INCLUDEPATH += /usr/include/libxml2
+}
+#################### LINUX ########################
 
 SOURCES += docxformatlib.cpp \
     ../Source/Common/Align.cpp \
@@ -50,8 +97,6 @@ SOURCES += docxformatlib.cpp \
     ../Source/DocxFormat/Docx.cpp \
     ../Source/DocxFormat/FileFactory.cpp \
     ../Source/DocxFormat/IFileContainer.cpp \
-    ../Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
-    ../Source/SystemUtility/FileSystem/FilePosix.cpp \
     ../Source/SystemUtility/SystemUtility.cpp \
     ../Source/Utility/codecvt.cpp \
     ../Source/Utility/DateTime.cpp \
@@ -65,6 +110,16 @@ SOURCES += docxformatlib.cpp \
     ../Source/MathEquation/MathEquation.cpp \
     ../Source/Base/unicode_util.cpp \
     ../../3dParty/pole/pole.cpp
+
+win32 {
+    SOURCES += \
+        ../Source/SystemUtility/FileSystem/Directory.cpp \
+        ../Source/SystemUtility/FileSystem/File.cpp \
+} else {
+    SOURCES += \
+        ../Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
+        ../Source/SystemUtility/FileSystem/FilePosix.cpp \
+}
 
 HEADERS += docxformatlib.h \
     ../Source/Base/Base.h \

@@ -9,13 +9,42 @@ QT       -= core gui
 TARGET = PPTXFormatLib
 TEMPLATE = lib
 CONFIG += staticlib
-QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
+win32 {
+    QMAKE_CXXFLAGS += -std=c++11
+} else {
+    QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
+}
+
+############### destination path ###############
+DESTINATION_SDK_PATH = $$PWD/../../../../SDK/lib
+
+# WINDOWS
+win32:contains(QMAKE_TARGET.arch, x86_64):{
+CONFIG(debug, debug|release) {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
+} else {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_64
+}
+}
+win32:!contains(QMAKE_TARGET.arch, x86_64):{
+CONFIG(debug, debug|release) {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
+} else {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_32
+}
+}
+
+linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
+}
+linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
+}
+############### destination path ###############
+
 DEFINES += UNICODE \
     _UNICODE \
     _USE_LIBXML2_READER_ \
-    _LINUX_QT \
-    _LINUX \
-    LINUX \
     _USE_XMLLITE_READER_ \
     USE_LITE_READER \
     PPTX_DEF\
@@ -29,8 +58,25 @@ DEFINES += UNICODE \
     DONT_WRITE_EMBEDDED_FONTS \
     CXIMAGE_DONT_DECLARE_TCHAR
 
-INCLUDEPATH += \
-    /usr/include/libxml2
+#################### WINDOWS #####################
+win32 {
+    DEFINES += \
+        LIBXML_READER_ENABLED
+
+INCLUDEPATH += ../../../../Common/DocxFormat/Source/XML/libxml2/XML/include
+}
+#################### WINDOWS #####################
+
+#################### LINUX ########################
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    DEFINES += \
+        LINUX \
+        _LINUX \
+        _LINUX_QT
+
+INCLUDEPATH += /usr/include/libxml2
+}
+#################### LINUX ########################
 
 INCLUDEPATH += \
     ../../../../DesktopEditor/freetype-2.5.2/include \
@@ -86,14 +132,11 @@ SOURCES += pptxformatlib.cpp \
     ../../../PPTXFormat/Folder.cpp \
     ../../../Editor/BinaryFileReaderWriter.cpp \
     ../../../Editor/FontPicker.cpp \
-    ../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
     ../../../../XlsxSerializerCom/Reader/CSVReader.cpp \
     ../../../../XlsxSerializerCom/Writer/CSVWriter.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp \
-    ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
-    ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/FilePosix.cpp \
     ../../../PPTXFormat/Logic/Controls.cpp
 
 HEADERS += pptxformatlib.h \
@@ -510,17 +553,11 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/PPTXWriter.h \
     ../../../Editor/WMFToImageConverter.h \
     ../../../Editor/XmlWriter.h \
-    ../../../../Common/DocxFormat/Source/SystemUtility/File.h \
-    ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/FileSystem.h \
-    ../../../../Common/DocxFormat/Source/SystemUtility/SystemUtility.h \
     ../../Settings.h \
     ../../../../ASCPresentationEditor/ASCPresentationEditorDef.h \
     ../../../../Common/FileDownloader.h \
-    ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/Directory.h \
-    ../../../../Common/DocxFormat/Source/SystemUtility/FileSystem/File.h \
     ../../../Editor/DefaultNotesMaster.h \
     ../../../Editor/DefaultNotesTheme.h \
-    ../../../../Common/FileDownloader.h \
     ../../../PPTXFormat/DocxFormat/Drawing/LegacyDiagramText.h \
     ../../../PPTXFormat/DocxFormat/Drawing/VmlDrawing.h \
     ../../../PPTXFormat/Logic/Controls.h \

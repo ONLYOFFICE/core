@@ -26,8 +26,6 @@ public:
 			delete rgfb[i];
 		}
 	}
-
-	
 	
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
@@ -35,7 +33,6 @@ public:
 	// overriden
 	const unsigned short GetInstanceToStore();
 
-public:	
 	std::vector<OfficeArtBStoreContainerFileBlock*> rgfb;
 };
 

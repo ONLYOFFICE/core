@@ -31,6 +31,9 @@ const bool MSODRAWINGGROUP::loadContent(BinProcessor& proc)
 	{		
 		return false;
 	}
+	m_MsoDrawingGroup = elements_.back();
+	elements_.pop_back();
+
 	proc.repeated<Continue>(0, 0);
 
 	return true;

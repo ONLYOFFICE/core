@@ -7,11 +7,11 @@
 
 long ConvertXls2Xlsx(const std::wstring & srcFile, const std::wstring & dstPath, const ProgressCallback* pCallBack)
 {
-	XlsConverter converter(srcFile, pCallBack);
+	XlsConverter converter(srcFile, dstPath,  pCallBack);
 
 	converter.convertDocument();
 	
-	converter.write(dstPath);
+	converter.write();
 
 	return 0;
 

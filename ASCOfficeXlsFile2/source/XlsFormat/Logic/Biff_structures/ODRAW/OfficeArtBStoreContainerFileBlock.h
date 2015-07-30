@@ -24,7 +24,7 @@ public:
 	{
 		data_size = 0;
 		pict_data = NULL;
-		pict_type = L"jpeg";
+		pict_type = L".jpeg";
 		rgbUid1 = L"";
 		rgbUid2 = L"";
 		result = false;
@@ -38,14 +38,22 @@ public:
 			pict_data = NULL;
 		}
 	}
-
-	
 	
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
 	void readCompressedData(XLS::CFRecord& record, OfficeArtMetafileHeader metafileHeader);
 
+	int bin_data_id;
+
+	size_t data_size;
+	char* pict_data;
+	std::wstring  pict_type;
+
+	size_t recType;	
+	std::wstring rgbUid1;
+	std::wstring rgbUid2;
+	bool result;
 private:
 	const std::wstring ReadMD4Digest(XLS::CFRecord& record)
 	{
@@ -59,18 +67,6 @@ private:
 		return result;
 	}
 
-private:
-	int bin_data_id;
-
-	size_t data_size;
-	char* pict_data;
-	std::wstring  pict_type;
-
-public:
-	size_t recType;	
-	std::wstring rgbUid1;
-	std::wstring rgbUid2;
-	bool result;
 };
 
 typedef boost::shared_ptr<OfficeArtBStoreContainerFileBlock> OfficeArtBStoreContainerFileBlockPtr;

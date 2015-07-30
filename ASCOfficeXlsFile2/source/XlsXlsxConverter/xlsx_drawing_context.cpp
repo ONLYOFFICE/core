@@ -17,12 +17,12 @@ namespace oox {
 class xlsx_drawing_context_handle::Impl
 {
 public:
-    Impl(mediaitems & items)
+    Impl(external_items & items)
         : items_(items), next_rId_(1), next_drawing_id_(1) 
     {
     }  
 
-    mediaitems & get_mediaitems() { return items_; }
+    external_items & get_mediaitems() { return items_; }
 
     size_t next_rId()
     {
@@ -46,7 +46,7 @@ public:
 
 	xlsx_drawings_ptr get_drawings();
 private:
-    mediaitems & items_;
+    external_items & items_;
     size_t next_rId_;
     
     std::vector<drawing_elm> drawings_;
@@ -54,7 +54,7 @@ private:
     size_t next_drawing_id_;
 };
 
-xlsx_drawing_context_handle::xlsx_drawing_context_handle(mediaitems & items)
+xlsx_drawing_context_handle::xlsx_drawing_context_handle(external_items & items)
 : impl_(new xlsx_drawing_context_handle::Impl(items))
 {
 }
@@ -82,16 +82,23 @@ xlsx_drawing_context::xlsx_drawing_context(xlsx_drawing_context_handle & h)
 void xlsx_drawing_context::start_drawing(std::wstring const & name, int type)
 {
 	count_object++;
+
+	bool isIternal = false;
+	std::wstring target;
+	std::wstring rId = handle_.impl_->get_mediaitems().find_image(type, target, isIternal);
+
+
+	if (!rId.empty())
+	{
+		xlsx_drawings_->add(stream_.str(), isIternal, rId , target, external_items::typeImage);
+	}
 }
 
 void xlsx_drawing_context::end_drawing()
 {
 	bool isMediaInternal = true;
-	//std::wstring ref = L"A8";
 
-	//std::wstring rId = handle_.impl_->get_mediaitems().add_or_find(L"", mediaitems::typeImage, isMediaInternal, ref);
-
-	//xlsx_drawings_->add(stream_.str(), isMediaInternal, rId , ref, mediaitems::typeImage);
+	//xlsx_drawings_->add(stream_.str(), isMediaInternal, rId , ref, external_items::typeImage);
 	stream_.clear();
 
 }

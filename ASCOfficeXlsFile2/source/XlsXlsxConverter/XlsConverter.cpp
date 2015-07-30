@@ -18,20 +18,30 @@
 #include "../XlsFormat/Logic/Biff_unions/HLINK.h"
 #include "../XlsFormat/Logic/Biff_unions/LBL.h"
 #include "../XlsFormat/Logic/Biff_unions/OBJECTS.h"
+#include "../XlsFormat/Logic/Biff_unions/MSODRAWINGGROUP.h"
+#include "../XlsFormat/Logic/Biff_unions/OBJ.h"
 
 #include <Logic/Biff_records/HLink.h>
+#include <Logic/Biff_records/MsoDrawingGroup.h>
+#include <Logic/Biff_records/MsoDrawing.h>
+#include <Logic/Biff_records/Obj.h>
+
 #include <Logic/Biff_structures/URLMoniker.h>
 #include <Logic/Biff_structures/FileMoniker.h>
+
+#include <Logic/Biff_structures/ODRAW/OfficeArtBStoreContainer.h>
 
 #include "xlsx_conversion_context.h"
 #include "xlsx_package.h"
 
 #include <simple_xml_writer.h>
 
-#include <vector>
+#include <boost/lexical_cast.hpp>
+#include "../../../DesktopEditor/common/File.h"
 
-XlsConverter::XlsConverter(const std::wstring & path, const ProgressCallback* CallBack) 
+XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const ProgressCallback* CallBack) 
 {
+	xlsx_path		= _xlsx_path;
 	output_document = NULL;
 	xlsx_context	= NULL;
 	
@@ -39,7 +49,7 @@ XlsConverter::XlsConverter(const std::wstring & path, const ProgressCallback* Ca
 	bUserStopConvert	= false;
 
 	try{
-		XLS::CompoundFile cfile(path, XLS::CompoundFile::cf_ReadMode);
+		XLS::CompoundFile cfile(xls_file, XLS::CompoundFile::cf_ReadMode);
 
 		XLS::CFStreamPtr summary;
 		XLS::CFStreamPtr doc_summary;
@@ -120,10 +130,10 @@ bool XlsConverter::UpdateProgress(long nComplete)
 
 	return FALSE;
 }
-void XlsConverter::write(const std::wstring & path)
+void XlsConverter::write()
 {
 	if (!output_document)return;
-	output_document->write(path);
+	output_document->write(xlsx_path);
 
 	delete output_document; output_document = NULL;
 
@@ -243,7 +253,7 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 	}
 	for (long i = 0 ; i < sheet->m_HLINK.size(); i++)
 	{
-		convert(sheet->m_HLINK[i].get());
+		convert((XLS::HLINK*)sheet->m_HLINK[i].get());
 	}
 	convert((XLS::OBJECTS*)sheet->m_OBJECTS.get());
 
@@ -269,7 +279,9 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 	}
 
 	for (long i = 0 ; i < global->m_MSODRAWINGGROUP.size(); i++)
+	{
 		convert((XLS::MSODRAWINGGROUP*)global->m_MSODRAWINGGROUP[i].get());
+	}
 }
 
 typedef boost::unordered_map<XLS::FillInfo, int>	mapFillInfo;
@@ -351,8 +363,61 @@ std::wstring XlsConverter::GetTargetMoniker(XLS::BiffStructure *moniker)
 
 void XlsConverter::convert(XLS::MSODRAWINGGROUP * mso_drawing)
 {
-	
+	if ( mso_drawing == NULL) return;
+	XLS::MsoDrawingGroup * mso_group = dynamic_cast<XLS::MsoDrawingGroup*>(mso_drawing->m_MsoDrawingGroup.get());
+	if (mso_group == NULL) return;
+
+
+	for (long i = 0 ; i < mso_group->rgChildRec.child_records.size(); i++)
+	{
+		ODRAW::OfficeArtRecord * art_record = dynamic_cast<ODRAW::OfficeArtRecord*>(mso_group->rgChildRec.child_records[i].get());
+
+		if (art_record == NULL) return;
+
+		switch(art_record->rh_own.recType)
+		{
+		case ODRAW::OfficeArtRecord::BStoreContainer:
+			{
+				convert((ODRAW::OfficeArtBStoreContainer*)art_record);
+			}break;
+		case ODRAW::OfficeArtRecord::BlipPICT:
+			{
+			}break;
+		}
+	}
+		
 }
+
+void XlsConverter::convert(ODRAW::OfficeArtBStoreContainer* art_bstore)
+{
+	if (art_bstore == NULL) return;
+
+	for (long i =0 ; i < art_bstore->rgfb.size(); i++)
+	{
+		int bin_id = i + 1;
+		if (art_bstore->rgfb[i]->data_size > 0)
+		{
+			FileSystem::Directory::CreateDirectory((xlsx_path + FILE_SEPARATOR_STR + L"media").c_str());
+			
+			std::wstring file_name = L"image" + boost::lexical_cast<std::wstring>(bin_id) + art_bstore->rgfb[i]->pict_type;
+
+			NSFile::CFileBinary file;
+			if (file.CreateFileW(xlsx_path + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR + file_name))
+			{
+				file.WriteFile((BYTE*)art_bstore->rgfb[i]->pict_data, art_bstore->rgfb[i]->data_size);
+				file.CloseFile();
+			}
+
+			xlsx_context->get_mediaitems().add_image(L"media/" + file_name, bin_id);
+		}
+		else
+		{
+			//???
+		}
+
+	}
+}
+
 void XlsConverter::convert(XLS::HLINK * HLINK_)
 {
 	XLS::HLink * hLink = dynamic_cast<XLS::HLink*>(HLINK_->m_HLink.get());
@@ -384,10 +449,16 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 
 	for (long i = 0 ; i < objects->m_OBJs.size(); i++)
 	{
-		xlsx_context->get_drawing_context().start_drawing(L"", 1);
+		XLS::OBJ* OBJ = dynamic_cast<XLS::OBJ*>(objects->m_OBJs[i].get());
+		XLS::Obj *obj = dynamic_cast<XLS::Obj*>(OBJ->m_Obj.get());
+
+		if (obj->cmo.ot == 0x08)//image
+		{
+			xlsx_context->get_drawing_context().start_drawing(L"", obj->cmo.id);
 
 
-		xlsx_context->get_drawing_context().end_drawing();
+			xlsx_context->get_drawing_context().end_drawing();
+		}
 	}
 
 	for (long i = 0 ; i < objects->m_CHARTs.size(); i++)

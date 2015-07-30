@@ -2,14 +2,14 @@
 
 #include <string>
 
-#include "mediaitems.h"
+#include "external_items.h"
 
 namespace oox {
 namespace utils {
 namespace media {
 
-	bool is_internal(const std::wstring & uri, const std::wstring & packetRoot);
-	std::wstring get_rel_type(mediaitems::Type type);
+	bool is_internal(const std::wstring & uri);
+	std::wstring get_rel_type(external_items::Type type);
 
 }
 }

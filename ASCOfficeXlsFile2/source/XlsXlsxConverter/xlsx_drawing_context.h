@@ -6,12 +6,12 @@
 	
 namespace oox {
 
-class mediaitems;
+class external_items;
 
 class xlsx_drawing_context_handle
 {
 public:
-    xlsx_drawing_context_handle(mediaitems & items);
+    xlsx_drawing_context_handle(external_items & items);
     ~xlsx_drawing_context_handle();
     
     std::pair<std::wstring, std::wstring> add_drawing_xml(std::wstring const & content, xlsx_drawings_ptr drawings);

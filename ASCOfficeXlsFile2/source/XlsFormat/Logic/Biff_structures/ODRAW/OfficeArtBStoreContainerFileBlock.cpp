@@ -14,19 +14,6 @@ XLS::BiffStructurePtr OfficeArtBStoreContainerFileBlock::clone()
 }
 
 
-//void OfficeArtBStoreContainerFileBlock::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{		
-//	bin_data_id = Document::appendBinaryData(xml_tag, pict_data, data_size);
-//	xml_tag->setAttribute("bin_data_id", bin_data_id);
-//	xml_tag->setAttribute("type", pict_type);	
-//	xml_tag->setAttribute("rgbUid1", rgbUid1.c_str());
-//	xml_tag->setAttribute("rgbUid2", rgbUid2.c_str());
-//}
-//
-//void OfficeArtBStoreContainerFileBlock::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//}
-
 void OfficeArtBStoreContainerFileBlock::store(XLS::CFRecord& record)
 {	
 }
@@ -91,7 +78,7 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 		{
 			case OfficeArtRecord::BlipEMF:
 				{
-					pict_type = L"emf";
+					pict_type = L".emf";
 					if (rc_header.recInstance == 0x3D4)
 						rgbUid1 = ReadMD4Digest(record);
 					else
@@ -112,7 +99,7 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 				break;
 			case OfficeArtRecord::BlipWMF:
 				{
-					pict_type = L"wmf";
+					pict_type = L".wmf";
 					if (rc_header.recInstance == 0x216)
 						rgbUid1 = ReadMD4Digest(record);
 					else
@@ -152,7 +139,7 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 				}
 				break;				
 			case OfficeArtRecord::BlipJPEG:
-				pict_type = L"jpeg";
+				pict_type = L".jpeg";
 				if ((rc_header.recInstance == 0x46A) || (rc_header.recInstance == 0x6E2))
 				{
 					skipLen = 17;
@@ -168,7 +155,7 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 				}
 				break;
 			case OfficeArtRecord::BlipPNG:
-				pict_type = L"png";
+				pict_type = L".png";
 				if (rc_header.recInstance == 0x6E0) {
 					skipLen = 17;
 					rgbUid1 = ReadMD4Digest(record);
@@ -200,7 +187,7 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 				dumpToFile = false;
 				break;
 			case OfficeArtRecord::BlipTIFF:
-				pict_type = L"tiff";
+				pict_type = L".tiff";
 				if (rc_header.recInstance == 0x6E4)
 				{
 					skipLen = 17;

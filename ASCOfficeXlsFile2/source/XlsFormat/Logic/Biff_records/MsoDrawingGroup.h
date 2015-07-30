@@ -20,13 +20,9 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
-//-----------------------------
+
 	ODRAW::OfficeArtDggContainer rgChildRec;
 
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(rgChildRec)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

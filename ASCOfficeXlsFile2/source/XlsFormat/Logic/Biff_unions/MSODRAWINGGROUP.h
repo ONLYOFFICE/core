@@ -20,6 +20,8 @@ public:
 
 	static const ElementType	type = typeMSODRAWINGGROUP;
 
+	BaseObjectPtr m_MsoDrawingGroup;
+
 	bool is_inside_chart_sheet_;
 };
 

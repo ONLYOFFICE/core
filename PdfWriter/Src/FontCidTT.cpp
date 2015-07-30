@@ -113,6 +113,7 @@ namespace PdfWriter
 		m_pFaceMemory   = NULL;	
 		m_nGlyphsCount  = 0;
 		m_nSymbolicCmap = -1;
+		m_ushCodesCount = 0;
 	}
 	CFontCidTrueType::~CFontCidTrueType()
 	{

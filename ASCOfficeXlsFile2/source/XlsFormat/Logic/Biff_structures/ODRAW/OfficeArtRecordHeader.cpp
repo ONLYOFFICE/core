@@ -11,16 +11,6 @@ XLS::BiffStructurePtr OfficeArtRecordHeader::clone()
 {
 	return XLS::BiffStructurePtr(new OfficeArtRecordHeader(*this));
 }
-//
-//
-//void OfficeArtRecordHeader::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//}
-//
-//void OfficeArtRecordHeader::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//}
-//
 
 void OfficeArtRecordHeader::store(XLS::CFRecord& record)
 {
@@ -36,7 +26,7 @@ void OfficeArtRecordHeader::load(XLS::CFRecord& record)
 {
 	unsigned short ver_inst;
 	record >> ver_inst >> recType >> recLen;
-	recVer = GETBITS(ver_inst, 0, 3);
+	recVer		= GETBITS(ver_inst, 0, 3);
 	recInstance = GETBITS(ver_inst, 4, 15);
 }
 

@@ -18,6 +18,8 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
+	BaseObjectPtr m_Obj;
+
 	static const ElementType	type = typeOBJ;
 };
 

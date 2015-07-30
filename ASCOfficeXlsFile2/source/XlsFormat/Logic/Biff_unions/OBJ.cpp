@@ -30,6 +30,10 @@ const bool OBJ::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+
+	m_Obj = elements_.back();
+	elements_.pop_back();
+
 	proc.repeated<Continue>(0, 0);
 
 	return true;

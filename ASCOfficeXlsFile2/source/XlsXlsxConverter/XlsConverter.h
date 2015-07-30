@@ -35,13 +35,17 @@ namespace XLS
 	class LBL;
 	class OBJECTS;
 	class MSODRAWINGGROUP;
-	
+}
+
+namespace ODRAW
+{
+	class OfficeArtBStoreContainer;
 }
 
 class XlsConverter
 {
 public:
-	XlsConverter(const std::wstring & path, const ProgressCallback* ffCallBack);
+	XlsConverter(const std::wstring & xls_file, const std::wstring & xlsx_path, const ProgressCallback* ffCallBack);
 	~XlsConverter() ;
 
 	const	ProgressCallback* pCallBack;
@@ -49,11 +53,12 @@ public:
 	bool	UpdateProgress(long nComplete);
 
 	void convertDocument();
-	void write(const std::wstring & path);
+	void write();
 
 	void convert(XLS::BaseObject	*xls_unknown);
 
 private:		
+	std::wstring					xlsx_path;
 	oox::package::xlsx_document		*output_document;
     oox::xlsx_conversion_context	*xlsx_context;
 
@@ -70,6 +75,7 @@ private:
 	void convert(XLS::LBL						* def_name);
 	void convert(XLS::OBJECTS					* objects);
 	void convert(XLS::MSODRAWINGGROUP			* mso_drawing);
+	void convert(ODRAW::OfficeArtBStoreContainer* art_bstore);
 
 	std::wstring GetTargetMoniker(XLS::BiffStructure *moniker);
 

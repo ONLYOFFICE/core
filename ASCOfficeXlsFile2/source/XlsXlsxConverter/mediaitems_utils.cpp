@@ -14,26 +14,20 @@ namespace utils {
 namespace media {
 
 
-bool is_internal(const std::wstring & uri, const std::wstring & packetRoot)
+bool is_internal(const std::wstring & uri)
 {
 	if (uri.empty())return false;
 
-    std::wstring mediaPath = boost::regex_search(uri.begin(), uri.end(), boost::wregex(L"^/[A-Za-z]:")) 
-        ? std::wstring(uri.begin() + 1, uri.end()) 
-        : uri;
-
-	std::wstring  resultPath = packetRoot + FILE_SEPARATOR_STR + mediaPath;
-
-	return FileSystem::Directory::IsExist(resultPath);
+	return FileSystem::Directory::IsExist(uri);
 }
 
-std::wstring get_rel_type(mediaitems::Type type)
+std::wstring get_rel_type(external_items::Type type)
 {
     switch (type)
     {
-    case mediaitems::typeImage:
+    case external_items::typeImage:
         return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image";
-     case mediaitems::typeChart:
+     case external_items::typeChart:
         return L"http://schemas.openxmlformats.org/officeDocument/2006/relationships/chart";
    default:
         return L"";

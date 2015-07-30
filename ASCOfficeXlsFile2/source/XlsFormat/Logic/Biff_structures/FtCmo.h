@@ -13,14 +13,11 @@ class FtCmo : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
 public:
 	unsigned short ot;
-private:
 	unsigned short id;
 
 	bool fLocked;

@@ -7,7 +7,7 @@
 
 #include "../../../ASCOfficeOdfFile/include/cpdoccore/utf8cpp/utf8.h"
 
-#include "mediaitems.h"
+#include "external_items.h"
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
@@ -55,16 +55,16 @@ bool content_types_file::add_or_find_default(const std::wstring & extension)
 	content_type_.add_default(extension, get_mime_type(extension));
 	return true;
 }
-void content_types_file::set_media(mediaitems & _Mediaitems)
+void content_types_file::set_media(external_items & _Mediaitems)
 {
-    BOOST_FOREACH( mediaitems::item & item, _Mediaitems.items() )
+    BOOST_FOREACH( external_items::item & item, _Mediaitems.items() )
     {
-		if ((item.type == mediaitems::typeImage || item.type == mediaitems::typeMedia) && item.mediaInternal)
+		if ((item.type == external_items::typeImage || item.type == external_items::typeMedia) && item.mediaInternal)
 		{
-			int n = item.outputName.rfind(L".");
+			int n = item.uri.rfind(L".");
 			if (n > 0)
 			{
-				add_or_find_default(item.outputName.substr(n+1, item.outputName.length() - n));
+				add_or_find_default(item.uri.substr(n+1, item.uri.length() - n));
 			}
 		}
 	}
@@ -209,31 +209,30 @@ void docProps_files::write(const std::wstring & RootPath)
 ////////////
 
 
-media::media(mediaitems & _Mediaitems) : mediaitems_(_Mediaitems)
+media::media(external_items & _Mediaitems) : mediaitems_(_Mediaitems)
 {    
 }
 
 void media::write(const std::wstring & RootPath)
 {
-    std::wstring path = RootPath + FILE_SEPARATOR_STR + L"media";
-	FileSystem::Directory::CreateDirectory(path.c_str());
+   // std::wstring path = RootPath + FILE_SEPARATOR_STR + L"media";
 
-    BOOST_FOREACH( mediaitems::item & item, mediaitems_.items() )
-    {
-        if (item.mediaInternal && item.valid && item.type == mediaitems::typeImage )
-        {
-			std::wstring & file_name  = item.href;
-			std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.outputName;
-			
-			NSFile::CFileBinary::Copy(item.href, file_name_out);
-        }
-    }
+   // BOOST_FOREACH( external_items::item & item, mediaitems_.items() )
+   // {
+   //     if (item.mediaInternal && item.type == external_items::typeImage )
+   //     {
+			////std::wstring & file_name  = item.href;
+			////std::wstring file_name_out = RootPath + FILE_SEPARATOR_STR + item.outputName;
+			////
+			////NSFile::CFileBinary::Copy(item.href, file_name_out);
+   //     }
+   // }
 
 }
 ///////////////////////////////////////////////////////////////////////////////////
 
 
-charts::charts(mediaitems & _ChartsItems) : chartsitems_(_ChartsItems)
+charts::charts(external_items & _ChartsItems) : chartsitems_(_ChartsItems)
 {    
 }
 

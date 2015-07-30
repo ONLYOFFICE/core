@@ -38,6 +38,7 @@ public:
 //-----------------------------
 	FtCmo cmo;
 	FtCf pictFormat;
+
 	FtPioGrbit pictFlags;
 	FtSbs sbs;
 	FtNts nts;

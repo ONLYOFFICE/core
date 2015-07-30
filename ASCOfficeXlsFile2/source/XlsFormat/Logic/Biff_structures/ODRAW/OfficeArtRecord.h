@@ -29,8 +29,6 @@ public:
 
 	OfficeArtRecordHeader rh_own;
 
-public:
-
 	enum OfficeArtRecordType
 	{
 		DggContainer	= 0xF000,
@@ -74,6 +72,7 @@ public:
 		SecondaryFOPT			= 0xF121,
 		TertiaryFOPT			= 0xF122, // Implemented		
 	};
+	
 	enum OfficeArtClientAnchorType
 	{
 		CA_Sheet,

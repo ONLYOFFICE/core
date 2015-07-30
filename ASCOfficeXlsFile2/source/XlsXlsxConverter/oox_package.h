@@ -15,7 +15,7 @@
 
 namespace oox {
 
-class mediaitems;
+class external_items;
 
 namespace package 
 {
@@ -52,7 +52,7 @@ public:
     virtual void write(const std::wstring & RootPath);
     content_type & get_content_type() { return content_type_; }
 	bool add_or_find_default(const std::wstring & extension);
-	void set_media(mediaitems & _Mediaitems);
+	void set_media(external_items & _Mediaitems);
 
 protected:
     content_type content_type_;
@@ -173,26 +173,26 @@ private:
 class media : public element
 {
 public:
-    media(mediaitems & _Mediaitems);
+    media(external_items & _Mediaitems);
 
 public:
     virtual void write(const std::wstring & RootPath);
 
 private:
-    mediaitems			& mediaitems_;
+    external_items			& mediaitems_;
         
 };
 
 class charts : public element
 {
 public:
-    charts(mediaitems & _ChartsItems);
+    charts(external_items & _ChartsItems);
 
 public:
     virtual void write(const std::wstring & RootPath);
 
 private:
-    mediaitems & chartsitems_;
+    external_items & chartsitems_;
         
 };
 

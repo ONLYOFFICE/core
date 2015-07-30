@@ -3,7 +3,7 @@
 #include <sstream>
 
 #include <common.h>
-#include "mediaitems.h"
+#include "external_items.h"
 
 namespace oox {
 
@@ -34,14 +34,14 @@ public:
 	void add(std::wstring const & d,
         bool isInternal,
         std::wstring const & rid,
-        std::wstring const & ref,
-		mediaitems::Type type
+        std::wstring const & target,
+		external_items::Type type
         );
     void add(
         bool isInternal,
         std::wstring const & rid,
-        std::wstring const & ref,
-		mediaitems::Type type
+        std::wstring const & target,
+		external_items::Type type
         );
     bool empty() const;
 

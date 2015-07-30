@@ -9,7 +9,7 @@
 
 #include "xlsx_output_xml.h"
 
-#include "mediaitems.h"
+#include "external_items.h"
 
 namespace oox {
 
@@ -46,14 +46,14 @@ public:
  //	xlsx_comments_context       & get_comments_context();
 //	xlsx_comments_context_handle & get_comments_context_handle();
 
-	mediaitems & get_mediaitems() { return mediaitems_; }
+	external_items & get_mediaitems() { return mediaitems_; }
 private:
 
     void create_new_sheet(std::wstring const & name);
 
     package::xlsx_document				*output_document_;
 
-	mediaitems							mediaitems_;
+	external_items							mediaitems_;
    //CApplicationFonts					*applicationFonts_;
 
     std::vector<xlsx_xml_worksheet_ptr> sheets_;

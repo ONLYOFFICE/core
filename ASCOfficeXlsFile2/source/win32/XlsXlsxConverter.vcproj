@@ -305,11 +305,11 @@
 			Name="xlsx"
 			>
 			<File
-				RelativePath="..\XlsXlsxConverter\mediaitems.cpp"
+				RelativePath="..\XlsXlsxConverter\external_items.cpp"
 				>
 			</File>
 			<File
-				RelativePath="..\XlsXlsxConverter\mediaitems.h"
+				RelativePath="..\XlsXlsxConverter\external_items.h"
 				>
 			</File>
 			<File

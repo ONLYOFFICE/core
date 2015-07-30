@@ -36,12 +36,19 @@ int CHtmlFile::Convert(const std::wstring& sXml, const std::wstring& sPathIntern
     ZeroMemory(&sturtupinfo,sizeof(STARTUPINFO));
     sturtupinfo.cb = sizeof(STARTUPINFO);
 
+    std::wstring sTempFileForParams = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"XML");
+    NSFile::CFileBinary oFile;
+    oFile.CreateFile(sTempFileForParams);
+    oFile.WriteStringUTF8(sXml, true);
+    oFile.CloseFile();
+
+    std::wstring sApp = L"HtmlFileInternal <html>" + sTempFileForParams;
     wchar_t* pCommandLine = NULL;
     if (!sXml.empty())
     {
-        pCommandLine = new wchar_t[sXml.length() + 1];
-        memcpy(pCommandLine, sXml.c_str(), sXml.length() * sizeof(wchar_t));
-        pCommandLine[sXml.length()] = (wchar_t)'\0';
+        pCommandLine = new wchar_t[sApp.length() + 1];
+        memcpy(pCommandLine, sApp.c_str(), sApp.length() * sizeof(wchar_t));
+        pCommandLine[sApp.length()] = (wchar_t)'\0';
     }
 
     PROCESS_INFORMATION processinfo;
@@ -62,6 +69,8 @@ int CHtmlFile::Convert(const std::wstring& sXml, const std::wstring& sPathIntern
 
     CloseHandle(processinfo.hProcess);
     CloseHandle(processinfo.hThread);
+
+    NSFile::CFileBinary::Remove(sTempFileForParams);
 #endif
 
 #ifdef LINUX

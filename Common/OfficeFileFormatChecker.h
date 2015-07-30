@@ -46,4 +46,10 @@ private:
 	bool isBinaryDoctFormatFile	(unsigned char* pBuffer,int dwBytes);
 	bool isBinaryXlstFormatFile	(unsigned char* pBuffer,int dwBytes);
 	bool isBinaryPpttFormatFile	(unsigned char* pBuffer,int dwBytes);
+
+    bool isDjvuFormatFile(unsigned char* pBuffer,int dwBytes);
+    bool isMobiFormatFile(unsigned char* pBuffer,int dwBytes);
+    bool isFB2FormatFile(unsigned char* pBuffer,int dwBytes);
+    bool isXpsFile(const std::wstring & fileName);
+
 };

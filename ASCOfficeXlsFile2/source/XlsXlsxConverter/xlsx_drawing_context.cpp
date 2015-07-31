@@ -152,6 +152,18 @@ void xlsx_drawing_context::end_drawing()
 
 }
 
+void xlsx_drawing_context::set_anchor(std::wstring & str)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().anchor = str;
+}
+
+void xlsx_drawing_context::set_properties(std::wstring & str)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().shape = str;
+}
+
 bool xlsx_drawing_context::empty()
 {
 	return xlsx_drawings_->empty();

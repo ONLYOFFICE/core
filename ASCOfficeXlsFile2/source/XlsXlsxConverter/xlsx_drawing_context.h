@@ -57,6 +57,9 @@ public:
 	void start_image();
 	void start_shape(int type);
 
+	void set_anchor(std::wstring & str);
+	void set_properties(std::wstring & str);
+
 private:
 
 	std::vector<_drawing_state>		drawing_state;

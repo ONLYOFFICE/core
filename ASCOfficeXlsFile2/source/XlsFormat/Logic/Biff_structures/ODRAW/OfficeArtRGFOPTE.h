@@ -17,15 +17,12 @@ class OfficeArtRGFOPTE : public XLS::BiffStructure
 public:
 	XLS::BiffStructurePtr clone();
 
-	
-	
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
 	void SetOptionsNumber(const unsigned short number);
 	const unsigned short GetOptionsNumber();
 
-private:
 	std::vector<OfficeArtFOPTEPtr> rgfopte;
 	unsigned short options_num;
 };

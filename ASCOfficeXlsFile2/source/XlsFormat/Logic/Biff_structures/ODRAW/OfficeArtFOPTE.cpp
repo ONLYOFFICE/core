@@ -13,20 +13,6 @@ XLS::BiffStructurePtr OfficeArtFOPTE::clone()
 }
 
 
-//void OfficeArtFOPTE::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"opid", STR::int2hex_wstr(opid, sizeof(opid)).c_str());
-//	xml_tag->setAttribute(L"fBid", fBid);
-//	xml_tag->setAttribute(L"fComplex", fComplex);
-//	xml_tag->setAttribute(L"op", STR::int2hex_wstr(op).c_str());
-//}
-//
-//void OfficeArtFOPTE::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	// We don't support xlsx to xls conversion
-//}
-
-
 void OfficeArtFOPTE::store(XLS::CFRecord& record)
 {
 	// We don't support xlsx to xls conversion

@@ -3300,7 +3300,7 @@ namespace BinXlsxRW {
 			RELEASEOBJECT(m_oBcw);
 		}
         void Open(const CString& sInputDir, const CString& sFileDst, NSFontCutter::CEmbeddedFontsManager* pEmbeddedFontsManager,
-			NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, CString& sXMLOptions)
+            NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const CString& sXMLOptions)
 		{
 			OOX::CPath path(sFileDst);
 			//создаем папку для media

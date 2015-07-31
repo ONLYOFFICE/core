@@ -51,7 +51,7 @@ public:
 	virtual void loadFields(XLS::CFRecord& record) {}
 	virtual void storeFields(XLS::CFRecord& record) {}
 
-	static const ElementType	type = XLS::typeOfficeArtClientData;
+	static const XLS::ElementType	type = XLS::typeOfficeArtClientData;
 
 };
 

@@ -31,6 +31,8 @@
 
 #include <Logic/Biff_structures/ODRAW/OfficeArtBStoreContainer.h>
 #include <Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h>
+#include <Logic/Biff_structures/ODRAW/OfficeArtFOPT.h>
+#include <Logic/Biff_structures/ODRAW/OfficeArtBlip.h>
 
 #include "xlsx_conversion_context.h"
 #include "xlsx_package.h"
@@ -482,13 +484,44 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 
 	std::wstringstream strm;
 
-	art->serialize(strm);
-
-	switch(art->rh_own.recType)
+	switch(art->get_type())
 	{
-		break;
+	case XLS::typeOfficeArtFOPT://properties
+		{
+			convert(dynamic_cast<ODRAW::OfficeArtFOPT *>(art));
+		}break;
+	case XLS::typeOfficeArtFSP:
+		{
+			art->serialize(strm);
+			xlsx_context->get_drawing_context().set_properties(strm.str());
+		}break;
+	case XLS::typeOfficeArtClientAnchorSheet:
+		{
+			art->serialize(strm);
+			xlsx_context->get_drawing_context().set_anchor(strm.str());
+		}break;
 	}
 
+}
+
+void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
+{
+	if (fort == NULL) return;
+
+	for (long i = 0 ; i < fort->fopt.rgfopte.size(); i++)
+	{
+		switch(fort->fopt.rgfopte[i]->opid)
+		{
+		case 0x104:
+			{
+				ODRAW::pib * pib = dynamic_cast<ODRAW::pib*>(fort->fopt.rgfopte[i].get());
+				if (pib)
+				{
+				}
+			}break;
+		}
+
+	}
 }
 
 void XlsConverter::convert(XLS::SHAREDSTRINGS* sharedstrings)

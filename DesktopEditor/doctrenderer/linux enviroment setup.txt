@@ -42,3 +42,9 @@ CFLAGS="-fPIC" CXXFLAGS="-fPIC" make native
 
 # additionals
 zlib: sudo apt-get install --reinstall zlibc zlib1g zlib1g-dev
+
+cef3:
+sudo apt-get install libperl-dev  (??)
+sudo apt-get install libgtk2.0-dev
+sudo apt-get install libcairo2-dev
+sudo apt-get install libgtkglext1-dev

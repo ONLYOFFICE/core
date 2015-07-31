@@ -1,6 +1,5 @@
 
 #include "OfficeArtBStoreContainerFileBlock.h"
-#include <Document/Document.h>
 
 #include "../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 

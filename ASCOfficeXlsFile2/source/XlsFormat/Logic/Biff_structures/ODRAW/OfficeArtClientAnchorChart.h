@@ -18,12 +18,12 @@ public:
 	OfficeArtClientAnchorChart();
 	XLS::BiffStructurePtr clone();
 
+	static const XLS::ElementType	type = XLS::typeOfficeArtClientAnchorChart;
 	
 	
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
 
-private:
 // 	bool fMove; // This attribute is ignored for chart sheets
 	bool fSize;
 

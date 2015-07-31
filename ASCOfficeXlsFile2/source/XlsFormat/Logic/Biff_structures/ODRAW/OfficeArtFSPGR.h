@@ -18,12 +18,11 @@ public:
 	OfficeArtFSPGR();
 	XLS::BiffStructurePtr clone();
 
-	
+	static const XLS::ElementType	type = XLS::typeOfficeArtFSPGR;
 	
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
 
-private:
 	long xLeft;
 	long yTop;
 	long xRight;

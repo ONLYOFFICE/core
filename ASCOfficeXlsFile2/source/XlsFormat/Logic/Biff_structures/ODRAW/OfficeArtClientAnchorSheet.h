@@ -19,12 +19,11 @@ public:
 	OfficeArtClientAnchorSheet();
 	XLS::BiffStructurePtr clone();
 
-	
+	static const XLS::ElementType	type = XLS::typeOfficeArtClientAnchorSheet;
 	
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
 
-private:
 	bool fMove;
 	bool fSize;
 

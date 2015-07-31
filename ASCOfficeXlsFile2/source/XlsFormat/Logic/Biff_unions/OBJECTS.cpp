@@ -95,15 +95,16 @@ const bool OBJECTS::loadContentRead(BinReaderProcessor& proc)
 	
 	int count1 = proc.repeated(Parenthesis_OBJECTS_1(m_MsoDrawing), 0, 0);
 
+	int i = 0 ;
 	for(std::list<BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end() ; it++)
 	{
 		XLS::ElementType type = (*it)->get_type();
 
 		switch (type)
 		{
-		case XLS::typeOBJ:			m_OBJs.push_back(*it);				break;
-		case XLS::typeTEXTOBJECT:	m_TEXTOBJECTs.push_back(*it);		break;
-		case XLS::typeCHART:		m_CHARTs.push_back(*it);			break;
+		case XLS::typeOBJ:			m_OBJs.push_back(std::pair<BaseObjectPtr, int>(*it, i));		i++; break;
+		case XLS::typeTEXTOBJECT:	m_TEXTOBJECTs.push_back(std::pair<BaseObjectPtr, int>(*it, i));	i++; break;
+		case XLS::typeCHART:		m_CHARTs.push_back(std::pair<BaseObjectPtr, int>(*it, i));		i++; break;
 		}
 	}
 	elements_.clear();

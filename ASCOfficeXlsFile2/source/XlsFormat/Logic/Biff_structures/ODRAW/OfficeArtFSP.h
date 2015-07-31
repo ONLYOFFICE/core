@@ -22,7 +22,8 @@ public:
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
 
-	// overriden
+	static const XLS::ElementType	type = XLS::typeOfficeArtFSP;
+
 	const unsigned short GetInstanceToStore();
 
 	unsigned short shape_id;

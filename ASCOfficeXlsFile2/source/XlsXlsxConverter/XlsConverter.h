@@ -39,7 +39,9 @@ namespace XLS
 
 namespace ODRAW
 {
+	class OfficeArtRecord;
 	class OfficeArtBStoreContainer;
+	class OfficeArtSpContainer;
 }
 
 class XlsConverter
@@ -75,7 +77,10 @@ private:
 	void convert(XLS::LBL						* def_name);
 	void convert(XLS::OBJECTS					* objects);
 	void convert(XLS::MSODRAWINGGROUP			* mso_drawing);
+
+	void convert(ODRAW::OfficeArtRecord			* art);
 	void convert(ODRAW::OfficeArtBStoreContainer* art_bstore);
+	void convert(ODRAW::OfficeArtSpContainer	* sp);
 
 	std::wstring GetTargetMoniker(XLS::BiffStructure *moniker);
 

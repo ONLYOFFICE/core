@@ -18,12 +18,11 @@ public:
 	OfficeArtClientAnchorHF();
 	XLS::BiffStructurePtr clone();
 
-	
+	static const XLS::ElementType	type = XLS::typeOfficeArtClientAnchorHF;
 	
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
 
-private:
 	long width;
 	long height;
 };

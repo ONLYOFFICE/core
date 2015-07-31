@@ -22,8 +22,9 @@ public:
 	OfficeArtBlip(const unsigned short recType);
 
 	static OfficeArtBlipPtr load_blip(XLS::CFRecord& record);
+	
+	static const XLS::ElementType	type = XLS::typeOfficeArtBlip;
 
-public:
 	unsigned int csp;
 	unsigned int spidCur;
 };

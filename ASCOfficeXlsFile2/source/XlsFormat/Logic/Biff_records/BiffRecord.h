@@ -2,7 +2,6 @@
 
 #include <Logic/BaseObject.h> 
 #include <Logic/Biff_structures/BitMarkedStructs.h> 
-//#include <Logic/Biff_structures/BiffAttribute.h>
 #include <Logic/BinProcessor.h>
 
 namespace XLS
@@ -17,7 +16,6 @@ public:
 	BiffRecord();
 	~BiffRecord();
 
-//	virtual const bool doSomething(BinProcessor& proc);
 	virtual const bool read(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory); // Read self and children
 	//virtual const bool write(BinWriterProcessor& proc, const bool is_mandatory); // Write self and children
 	

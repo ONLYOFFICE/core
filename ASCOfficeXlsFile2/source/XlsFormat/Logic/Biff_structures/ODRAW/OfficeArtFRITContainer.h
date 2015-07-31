@@ -18,8 +18,8 @@ class OfficeArtFRITContainer : public OfficeArtRecord
 public:
 	OfficeArtFRITContainer();
 	XLS::BiffStructurePtr clone();
-
 	
+	static const XLS::ElementType	type = XLS::typeOfficeArtFRITContainer;
 	
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
@@ -27,7 +27,6 @@ public:
 	// overriden
 	const unsigned short GetInstanceToStore();
 
-public:
 	std::vector<OfficeArtFRIT> rgfrit;
 };
 

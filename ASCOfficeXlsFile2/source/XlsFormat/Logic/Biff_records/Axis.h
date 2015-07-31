@@ -20,7 +20,7 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
-	static const ElementType	type = typeAxis;;
+	static const ElementType	type = typeAxis;
 
 //-----------------------------
 	BIFF_WORD wType;

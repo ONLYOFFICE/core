@@ -35,8 +35,8 @@ namespace PPTX
 			if (lpShapeElement == NULL)
 				return;
 
-			double dCoordSizeX = (double)max(lWidth, 1);
-			double dCoordSizeY = (double)max(lHeight, 1);
+            double dCoordSizeX = (double)(std::max)((int)lWidth, 1);
+            double dCoordSizeY = (double)(std::max)((int)lHeight, 1);
 
 			LONG lCoordSize = 100000;
 
@@ -95,8 +95,8 @@ namespace PPTX
 				double _dHeight = ShapeSize;
 				lpShapeElement->m_oShape.m_pShape->GetWidthHeightLogic(_dWidth, _dHeight);
 
-				double dkoefX = (double)lCoordSize / max(1, _dWidth);
-				double dkoefY = (double)lCoordSize / max(1, _dHeight);
+                double dkoefX = (double)lCoordSize / (std::max)(1., _dWidth);
+                double dkoefY = (double)lCoordSize / (std::max)(1., _dHeight);
 
 				strRect = _T("");
 				strRect.Format(_T("%d,%d,%d,%d"), (int)(dkoefX * txRect.left), (int)(dkoefY * txRect.top),

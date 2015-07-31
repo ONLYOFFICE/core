@@ -83,7 +83,7 @@ namespace BinXlsxRW{
 		oBinaryFileReader.ReadFile(sSrcFileName, sDstPath, &oOfficeDrawingConverter, sXMLOptions);
 		return true;
 	}
-    bool CXlsxSerializer::saveToFile(const CString& sDstFileName, const CString& sSrcPath, CString& sXMLOptions)
+    bool CXlsxSerializer::saveToFile(const CString& sDstFileName, const CString& sSrcPath, const CString& sXMLOptions)
 	{
 		COfficeFontPicker* pFontPicker = new COfficeFontPicker();
 		pFontPicker->Init(m_sFontDir);

@@ -26,11 +26,11 @@ public:
 
 	bool is_inside_chart_sheet_;
 
-	MsoDrawingPtr				m_MsoDrawing;
+	MsoDrawingPtr								m_MsoDrawing;
 	
-	std::vector<BaseObjectPtr>	m_OBJs;
-	std::vector<BaseObjectPtr>	m_TEXTOBJECTs;
-	std::vector<BaseObjectPtr>	m_CHARTs;
+	std::vector<std::pair<BaseObjectPtr, int>>	m_OBJs;
+	std::vector<std::pair<BaseObjectPtr, int>>	m_TEXTOBJECTs;
+	std::vector<std::pair<BaseObjectPtr, int>>	m_CHARTs;
 };
 
 } // namespace XLS

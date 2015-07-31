@@ -79,27 +79,76 @@ xlsx_drawing_context::xlsx_drawing_context(xlsx_drawing_context_handle & h)
 {    
 }
 
-void xlsx_drawing_context::start_drawing(std::wstring const & name, int type)
+bool xlsx_drawing_context::start_drawing(int type)
 {
-	count_object++;
-
-	bool isIternal = false;
-	std::wstring target;
-	std::wstring rId = handle_.impl_->get_mediaitems().find_image(type, target, isIternal);
-
-
-	if (!rId.empty())
+	switch(type)
 	{
-		xlsx_drawings_->add(stream_.str(), isIternal, rId , target, external_items::typeImage);
+	case 0x0000: // Group
+	case 0x0001: // Line
+	case 0x0002: // Rectangle
+	case 0x0003: // Oval
+	case 0x0004: // Arc
+		start_shape(type); return true;
+	case 0x0005: // Chart  
+	case 0x0006: // Text
+	case 0x0007: // Button
+		break;
+	case 0x0008: // Picture
+		start_image(); return true;
+	case 0x0009: // Polygon:
+	case 0x000B: // Checkbox
+	case 0x000C: // Radio button
+	case 0x000D: // Edit box
+	case 0x000E: // Label
+	case 0x000F: // Dialog box
+	case 0x0010: // Spin control
+	case 0x0011: // Scrollbar
+	case 0x0012: // List
+	case 0x0013: // Group box
+	case 0x0014: // Dropdown list
+	case 0x0019: // Note
+	case 0x001E: // OfficeArt object
+		break;
 	}
+	return false;
+	//count_object++;
+
+	//bool isIternal = false;
+	//std::wstring target;
+	//std::wstring rId = handle_.impl_->get_mediaitems().find_image(type, target, isIternal);
+
+
+	//if (!rId.empty())
+	//{
+	//	xlsx_drawings_->add(stream_.str(), isIternal, rId , target, external_items::typeImage);
+	//}
 }
 
+void xlsx_drawing_context::start_image()
+{
+	_drawing_state st;
+	drawing_state.push_back(st);
+
+	drawing_state.back().type = external_items::typeImage;
+}
+
+void xlsx_drawing_context::start_shape(int type)
+{
+	_drawing_state st;
+	drawing_state.push_back(st);
+
+	drawing_state.back().type = external_items::typeShape;
+}
 void xlsx_drawing_context::end_drawing()
 {
-	bool isMediaInternal = true;
+	if (drawing_state.size() < 1 )return;
 
-	//xlsx_drawings_->add(stream_.str(), isMediaInternal, rId , ref, external_items::typeImage);
-	stream_.clear();
+	std::wstringstream strm;
+
+	//serialize
+
+	xlsx_drawings_->add(strm.str(), drawing_state.back().isMediaInternal, 
+						drawing_state.back().rId , drawing_state.back().target, drawing_state.back().type);
 
 }
 

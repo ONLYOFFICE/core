@@ -19,15 +19,13 @@ public:
 	OfficeArtSplitMenuColorContainer();
 	XLS::BiffStructurePtr clone();
 
-	
+	static const XLS::ElementType	type = XLS::typeOfficeArtSplitMenuColorContainer;
 	
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
 
-	// overriden
 	const unsigned short GetInstanceToStore();
 
-public:
 	std::vector<MSOCR> smca;
 };
 

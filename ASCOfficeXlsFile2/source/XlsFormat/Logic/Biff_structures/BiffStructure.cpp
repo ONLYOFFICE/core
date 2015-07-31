@@ -1,20 +1,9 @@
 
 #include "BiffStructure.h"
 #include <Binary/CFRecord.h>
-#include <Document/Document.h>
 
 namespace XLS
 {;
-
-Document* BiffStructure::get_document() 
-{
-	return document_;
-}
-
-void BiffStructure::set_document(Document* d) 
-{
-	document_ = d;
-} 
 
 // this function will never be called ( look at operator>>(CFRecord& record, T& val))
 void BiffStructure_NoVtbl::store(CFRecord& record)

@@ -5013,6 +5013,10 @@
 						>
 					</File>
 					<File
+						RelativePath="..\XlsFormat\Logic\Biff_structures\ODRAW\SimpleOfficeArtContainers.cpp"
+						>
+					</File>
+					<File
 						RelativePath="..\XlsFormat\Logic\Biff_structures\ODRAW\SimpleOfficeArtContainers.h"
 						>
 					</File>
@@ -7460,18 +7464,6 @@
 			</File>
 			<File
 				RelativePath="..\XlsFormat\Logging\Logger.h"
-				>
-			</File>
-		</Filter>
-		<Filter
-			Name="Document"
-			>
-			<File
-				RelativePath="..\XlsFormat\Document\Document.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsFormat\Document\Document.h"
 				>
 			</File>
 		</Filter>

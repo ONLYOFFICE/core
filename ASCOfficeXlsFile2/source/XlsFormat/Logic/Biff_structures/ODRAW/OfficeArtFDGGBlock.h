@@ -19,12 +19,12 @@ public:
 	OfficeArtFDGGBlock();
 	XLS::BiffStructurePtr clone();
 
+	static const XLS::ElementType	type = XLS::typeOfficeArtFDGGBlock;
 	
 	
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
 
-public:
 	unsigned int spidMax;
 	unsigned int cspSaved;
 	unsigned int cdgSaved;

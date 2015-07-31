@@ -125,8 +125,8 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 				art_record = OfficeArtRecordPtr(new OfficeArtSplitMenuColorContainer);
 				break;
 			case BStoreContainer:
-				Log::event("OfficeArtBStoreContainer record found. OfficeArtBStoreContainerFileBlock records count = " + STR::int2str(rh_child.recInstance) + 
-					". RecLen = " + STR::int2str(rh_child.recLen));
+				//Log::event("OfficeArtBStoreContainer record found. OfficeArtBStoreContainerFileBlock records count = " + STR::int2str(rh_child.recInstance) + 
+				//	". RecLen = " + STR::int2str(rh_child.recLen));
 				art_record = OfficeArtRecordPtr(new OfficeArtBStoreContainer);
 				break;
 			case TertiaryFOPT:

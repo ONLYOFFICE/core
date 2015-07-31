@@ -17,6 +17,7 @@ class OfficeArtContainer : public OfficeArtRecord
 public:
 	OfficeArtContainer(const unsigned char recVer, const unsigned short recType, const OfficeArtClientAnchorType anchor_type);
 
+	static const XLS::ElementType	type = XLS::typeOfficeArtContainer;
 
 	// overridden:
 	virtual void loadFields(XLS::CFRecord& record);
@@ -24,8 +25,9 @@ public:
 
 	static OfficeArtRecordPtr loadAnyArtRecord(XLS::CFRecord& record);
 
-	std::vector<OfficeArtRecordPtr>		child_records;
 	OfficeArtClientAnchorType			anchor_type_;
+	std::vector<OfficeArtRecordPtr>		child_records;
+
 };
 
 typedef boost::shared_ptr<OfficeArtContainer> OfficeArtContainerPtr;

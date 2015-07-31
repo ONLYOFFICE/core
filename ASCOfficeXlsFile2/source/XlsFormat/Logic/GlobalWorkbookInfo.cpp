@@ -9,6 +9,7 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page)
 {
 	fill_x_ids[FillInfo(0, 0, 0)]		= 0;
 	fill_x_ids[FillInfo(17, 64, 65)]	= 1;
+	
 	last_AXES_id = initial_AXES_id;
 }
 

@@ -30,6 +30,7 @@
 #include <Logic/Biff_structures/FileMoniker.h>
 
 #include <Logic/Biff_structures/ODRAW/OfficeArtBStoreContainer.h>
+#include <Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h>
 
 #include "xlsx_conversion_context.h"
 #include "xlsx_package.h"
@@ -367,24 +368,9 @@ void XlsConverter::convert(XLS::MSODRAWINGGROUP * mso_drawing)
 	XLS::MsoDrawingGroup * mso_group = dynamic_cast<XLS::MsoDrawingGroup*>(mso_drawing->m_MsoDrawingGroup.get());
 	if (mso_group == NULL) return;
 
+	//files 
+	convert (dynamic_cast<ODRAW::OfficeArtBStoreContainer*>(mso_group->rgChildRec.m_OfficeArtBStoreContainer.get()));
 
-	for (long i = 0 ; i < mso_group->rgChildRec.child_records.size(); i++)
-	{
-		ODRAW::OfficeArtRecord * art_record = dynamic_cast<ODRAW::OfficeArtRecord*>(mso_group->rgChildRec.child_records[i].get());
-
-		if (art_record == NULL) return;
-
-		switch(art_record->rh_own.recType)
-		{
-		case ODRAW::OfficeArtRecord::BStoreContainer:
-			{
-				convert((ODRAW::OfficeArtBStoreContainer*)art_record);
-			}break;
-		case ODRAW::OfficeArtRecord::BlipPICT:
-			{
-			}break;
-		}
-	}
 		
 }
 
@@ -446,16 +432,25 @@ void XlsConverter::convert(XLS::THEME* theme)
 void XlsConverter::convert(XLS::OBJECTS* objects)
 {
 	if (objects == NULL) return;
+		
+	ODRAW::OfficeArtSpgrContainer *spgr = dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpgrContainer.get());
+
+	if (spgr == NULL) return;
 
 	for (long i = 0 ; i < objects->m_OBJs.size(); i++)
 	{
-		XLS::OBJ* OBJ = dynamic_cast<XLS::OBJ*>(objects->m_OBJs[i].get());
+		int ind = objects->m_OBJs[i].second;
+		
+		if (ind > spgr->child_records.size()-1) continue;
+
+		XLS::OBJ* OBJ = dynamic_cast<XLS::OBJ*>(objects->m_OBJs[i].first.get());
 		XLS::Obj *obj = dynamic_cast<XLS::Obj*>(OBJ->m_Obj.get());
-
-		if (obj->cmo.ot == 0x08)//image
+		
+		if (xlsx_context->get_drawing_context().start_drawing(obj->cmo.ot))
 		{
-			xlsx_context->get_drawing_context().start_drawing(L"", obj->cmo.id);
+			ODRAW::OfficeArtSpContainer *sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
 
+			convert(sp);
 
 			xlsx_context->get_drawing_context().end_drawing();
 		}
@@ -463,11 +458,37 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 
 	for (long i = 0 ; i < objects->m_CHARTs.size(); i++)
 	{
+		int ind = objects->m_OBJs[i].second;
 		//xlsx_context->get_chart_context().start_drawing();
-
+  
 
 		//xlsx_context->get_chart_context().end_drawing();
 	}
+}
+
+void XlsConverter::convert(ODRAW::OfficeArtSpContainer *sp)
+{
+	if (sp == NULL) return;
+
+	for (int i = 0; i < sp->child_records.size(); i++)
+	{
+		convert(sp->child_records[i].get());
+	}
+}
+
+void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
+{
+	if (art == NULL) return;
+
+	std::wstringstream strm;
+
+	art->serialize(strm);
+
+	switch(art->rh_own.recType)
+	{
+		break;
+	}
+
 }
 
 void XlsConverter::convert(XLS::SHAREDSTRINGS* sharedstrings)

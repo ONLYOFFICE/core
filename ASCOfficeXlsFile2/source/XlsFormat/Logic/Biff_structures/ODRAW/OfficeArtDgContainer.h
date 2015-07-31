@@ -21,6 +21,13 @@ public:
 	static const bool CheckIfContainerStartFound(XLS::CFRecord& record);
 	static const bool CheckIfContainerSizeOK(XLS::CFRecord& record);
 
+	void loadFields(XLS::CFRecord& record);
+	
+	OfficeArtRecordPtr		m_OfficeArtFDG;
+	OfficeArtRecordPtr		m_OfficeArtFRITContainer;
+	OfficeArtRecordPtr		m_OfficeArtSpgrContainer;
+	OfficeArtRecordPtr		m_OfficeArtSpContainer; // todooo - one????
+	OfficeArtRecordPtr		m_OfficeArtSpgrContainerFileBlock;
 };
 
 typedef boost::shared_ptr<OfficeArtDgContainer> OfficeArtDgContainerPtr;

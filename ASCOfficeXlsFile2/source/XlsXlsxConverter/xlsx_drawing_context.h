@@ -1,6 +1,7 @@
 #pragma once
 
 #include <vector>
+#include <iosfwd>
 
 #include "xlsx_drawings.h"
 	
@@ -23,25 +24,43 @@ private:
     _CP_PTR(Impl) impl_;
 };
 
+class _drawing_state
+{
+public:
+	_drawing_state() {isMediaInternal = false;}
+
+	external_items::Type			type;
+
+	std::wstring					rId;
+	std::wstring					target;
+	std::wstring					anchor;
+	std::wstring					shape;
+	bool							isMediaInternal;
+};
 
 class xlsx_drawing_context
 {
 public:
+
+
     xlsx_drawing_context(xlsx_drawing_context_handle & h);
 	~xlsx_drawing_context(){}
 
-	void start_drawing(std::wstring const & name, int type);	
+	bool start_drawing(int type);	
 
 	void end_drawing();
 
-	std::wostream & drawing_stream() {return stream_;}
-    
 	xlsx_drawings_ptr get_drawings();
 
 	bool empty();
 
+	void start_image();
+	void start_shape(int type);
+
 private:
-	std::wstringstream				stream_;
+
+	std::vector<_drawing_state>		drawing_state;
+	
 	xlsx_drawing_context_handle	  & handle_;
 	xlsx_drawings_ptr				xlsx_drawings_;
 	int								count_object;

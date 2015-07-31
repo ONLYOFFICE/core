@@ -27,6 +27,7 @@ public:
 	virtual void loadFields(XLS::CFRecord& record) = 0;
 	virtual void storeFields(XLS::CFRecord& record) = 0;
 
+	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
 	OfficeArtRecordHeader rh_own;
 
 	enum OfficeArtRecordType
@@ -70,7 +71,8 @@ public:
 		FPSPL					= 0xF11D,
 		SplitMenuColorContainer	= 0xF11E, // Implemented
 		SecondaryFOPT			= 0xF121,
-		TertiaryFOPT			= 0xF122, // Implemented		
+		TertiaryFOPT			= 0xF122, // Implemented	
+		SpgrContainerFileBlock
 	};
 	
 	enum OfficeArtClientAnchorType

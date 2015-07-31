@@ -460,8 +460,28 @@ enum ElementType
 	typeGlobalsSubstream,
 	typeMacroSheetSubstream,
 	typeWorkbookStreamObject,
-	typeWorksheetSubstream
+	typeWorksheetSubstream,
 
+	typeBiffStructure = 2000,
+
+	typeOfficeArtRecord = 3000,
+	typeOfficeArtBlip,
+	typeOfficeArtBStoreContainer,
+	typeOfficeArtClientAnchorChart,
+	typeOfficeArtClientAnchorHF,
+	typeOfficeArtClientAnchorSheet,
+	typeOfficeArtColorMRUContainer,
+	typeOfficeArtContainer,
+	typeOfficeArtFDG,
+	typeOfficeArtFDGGBlock,
+	typeOfficeArtFOPT,
+	typeOfficeArtFRITContainer,
+	typeOfficeArtFSP,
+	typeOfficeArtFSPGR,
+	typeOfficeArtSplitMenuColorContainer,
+	typeOfficeArtTertiaryFOPT,
+	typeOfficeArtClientData,
+	typeOfficeArtClientTextbox
 
 
 };

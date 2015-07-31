@@ -2,15 +2,13 @@
 
 #include <vector>
 #include <sstream>
-
 #include <boost/shared_ptr.hpp>
+
+#include "../XlsElementsType.h"
 
 #include <Auxiliary/BetterVariantT.h>
 #include <Logging/Log.h>
 
-//#include <Logic/Biff_structures/BitMarkedStructs.h>
-
-class Document;
 
 namespace XLS
 {;
@@ -24,8 +22,6 @@ public:
 	void load(CFRecord& record); // this function will never be called ( look at operator>>(CFRecord& record, T& val))
 	void store(CFRecord& record); // this function will never be called ( look at operator>>(CFRecord& record, T& val))
 
-// protected:
-// 	static MSXML2::IXMLDOMElementPtr createElement(BiffStructurePtr & parent, const std::wstring  tag_name);
 };
 
 class BiffStructure;
@@ -38,18 +34,11 @@ public:
 
 	virtual BiffStructurePtr clone() = 0;
 
-	Document*	get_document();
-	void		set_document(Document* d);
-
-	//// Makes XML data
-	////virtual void toXML(BiffStructurePtr & parent);
-	//// Reads XML data
-	////virtual const bool fromXML(BiffStructurePtr & parent, const size_t position, const bool is_mandatory);
-
-	////virtual const bool fromXML(BiffStructurePtr & parent);
-
 	virtual void load(CFRecord& record) = 0;
 	virtual void store(CFRecord& record) = 0;
+	
+	static const ElementType	type = typeBiffStructure;
+	virtual ElementType			get_type() const { return type; }
 
 	virtual int serialize(std::wostream & _stream)
 	{
@@ -61,11 +50,6 @@ public:
 
 	virtual const std::wstring & getClassName() const = 0;   // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter
 
-	std::wstring tagName_;
-protected:
-	Document * document_;
-	//const AUX::BetterVariantT getStructAttribute(BiffStructurePtr & parent, const std::wstring & attrib_name);
-	//MSXML2::IXMLDOMElementPtr getStructNode(BiffStructurePtr & parent, const std::wstring & tag_name);
 };
 
 #define BASE_STRUCTURE_DEFINE_CLASS_NAME(class_name)\

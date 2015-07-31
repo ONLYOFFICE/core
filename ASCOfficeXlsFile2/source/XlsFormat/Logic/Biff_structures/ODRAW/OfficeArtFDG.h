@@ -21,7 +21,8 @@ public:
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
 
-public:
+	static const XLS::ElementType	type = XLS::typeOfficeArtFDG;
+
 	unsigned int csp;
 	unsigned int spidCur;
 };

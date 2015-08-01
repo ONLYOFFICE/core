@@ -16,12 +16,11 @@ public:
 	CompositeMoniker(XLS::CFRecord& record);
 	XLS::BiffStructurePtr clone();
 
-	
+	static const XLS::ElementType	type = XLS::typeCompositeMoniker;
 	
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-private:
 	std::vector<HyperlinkMoniker> monikerArray;
 };
 

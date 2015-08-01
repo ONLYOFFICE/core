@@ -13,12 +13,11 @@ class SheetId : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeSheetId;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned short id;
 };
 

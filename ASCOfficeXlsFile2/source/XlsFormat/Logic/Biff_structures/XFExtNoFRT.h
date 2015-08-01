@@ -16,8 +16,8 @@ public:
 	XFExtNoFRT(CFRecord& record);
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
+	static const ElementType	type = typeXFExtNoFRT;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 

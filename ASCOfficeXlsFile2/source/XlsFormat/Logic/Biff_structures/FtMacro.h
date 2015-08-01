@@ -15,12 +15,11 @@ public:
 	FtMacro();
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
+	static const ElementType	type = typeFtMacro;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	ObjFmla fmla;
 };
 

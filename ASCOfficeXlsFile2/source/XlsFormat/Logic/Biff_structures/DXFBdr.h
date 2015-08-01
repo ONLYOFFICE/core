@@ -13,12 +13,11 @@ class DXFBdr : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeDXFBdr;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned char dgLeft;
 	unsigned char dgRight;
 	unsigned char dgTop;

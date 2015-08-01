@@ -16,12 +16,11 @@ public:
 	Run();
 	~Run();
 
-	
+	static const ElementType	type = typeRun;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-public:	
 	FormatRun formatRun;
 };
 

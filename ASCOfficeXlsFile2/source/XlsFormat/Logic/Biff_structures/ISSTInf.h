@@ -13,12 +13,11 @@ class ISSTInf : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeISSTInf;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned int ib;
 	unsigned short cbOffset;
 };

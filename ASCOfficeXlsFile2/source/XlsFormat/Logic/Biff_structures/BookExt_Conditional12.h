@@ -13,12 +13,11 @@ class BookExt_Conditional12 : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeBookExt_Conditional12;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	bool fPublishedBookItems;
 	bool fShowPivotChartFilter;
 };

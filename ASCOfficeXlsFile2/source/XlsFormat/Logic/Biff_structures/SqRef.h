@@ -14,12 +14,11 @@ class SqRef : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeSqRef;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	std::vector<Ref8U> rgrefs;
 };
 

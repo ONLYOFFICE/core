@@ -15,8 +15,7 @@ public:
 	Rgce(const CellRef& cell_base_ref_init);
 	BiffStructurePtr clone();
 
-	// The following non-standard overriding is intended not to let empty <Rgce/> to be generated
-	//virtual void toXML(BiffStructurePtr & parent);
+	static const ElementType	type = typeRgce;
 
 	
 	void load(CFRecord& record, const size_t cce_val);

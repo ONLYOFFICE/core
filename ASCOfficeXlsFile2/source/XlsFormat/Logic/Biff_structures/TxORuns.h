@@ -17,12 +17,11 @@ public:
 	TxORuns();
 	~TxORuns();
 
-	
+	static const ElementType	type = typeTxORuns;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-public:
 	int m_runCount;
 	std::vector<RunPtr> rgTxoRuns;
 	TxOLastRun lastRun;

@@ -13,12 +13,11 @@ class Property : public XLS::BiffStructure
 public:
 	XLS::BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
+	static const XLS::ElementType	type = XLS::typeProperty;
+
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-private:
 	unsigned int keyIndex;
 	unsigned int valueIndex;
 };

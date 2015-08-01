@@ -16,13 +16,13 @@ public:
 	ObjFmla(const bool is_part_of_FtPictFmla);
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
+	static const ElementType	type = typeObjFmla;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
 	ObjectParsedFormula fmla;
-private:
+
 	bool is_part_of_FtPictFmla_;
 	bool fmla_found;
 	PictFmlaEmbedInfo embedInfo;

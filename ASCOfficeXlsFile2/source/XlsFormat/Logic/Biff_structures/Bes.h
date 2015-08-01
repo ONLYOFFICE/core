@@ -14,6 +14,7 @@ class Bes : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
+	static const ElementType	type = typeBes;
 	
 	
 	virtual void load(CFRecord& record);

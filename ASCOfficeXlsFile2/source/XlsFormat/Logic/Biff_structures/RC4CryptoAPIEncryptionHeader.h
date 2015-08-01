@@ -17,12 +17,11 @@ class RC4CryptoAPIEncryptionHeader : public XLS::BiffStructure
 public:
 	XLS::BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
+	static const XLS::ElementType	type = XLS::typeRC4CryptoAPIEncryptionHeader;
+
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-private:
 	Version EncryptionVersionInfo;
 	EncryptionHeaderFlags Flags;
 	unsigned int EncryptionHeaderSize;

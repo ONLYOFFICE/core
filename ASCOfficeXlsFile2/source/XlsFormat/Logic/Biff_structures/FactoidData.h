@@ -17,12 +17,11 @@ public:
 	FactoidData(CFRecord& record);
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
+	static const ElementType	type = typeFactoidData;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	bool fDelete;
 	bool fXMLBased;
 	OSHARED::PropertyBag propertyBag;

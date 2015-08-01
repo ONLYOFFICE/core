@@ -23,10 +23,9 @@ public:
 
 	static void resend(CFStream& stream, const unsigned int data_place, const unsigned int data);
 
-private:
+	static const ElementType	type = typeCellOffsetResender;
 	 // Stubbed to make class non-abstract
 
-private:
 	bool row_starts;
 };
 

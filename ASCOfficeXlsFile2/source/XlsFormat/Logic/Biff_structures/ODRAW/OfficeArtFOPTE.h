@@ -24,7 +24,7 @@ class OfficeArtFOPTE : public XLS::BiffStructure
 public:
 	XLS::BiffStructurePtr clone();
 
-	
+	static const XLS::ElementType	type = XLS::typeOfficeArtFOPTE;
 	
 	virtual void store(XLS::CFRecord& record);
 

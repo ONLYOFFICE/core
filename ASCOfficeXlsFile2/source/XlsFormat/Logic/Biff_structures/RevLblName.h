@@ -16,14 +16,13 @@ public:
 	RevLblName(CFRecord& record);
 	BiffStructurePtr clone();
 
-	//virtual void toXML(MSXML2::IXMLDOMElementPtr parent);
-	//virtual const bool fromXML(MSXML2::IXMLDOMElementPtr parent);
+	static const ElementType	type = typeRevLblName;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
 	const std::wstring toString() const;
 
-private:
 	std::wstring  st;
 };
 

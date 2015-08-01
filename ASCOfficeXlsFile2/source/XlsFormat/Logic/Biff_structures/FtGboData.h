@@ -14,12 +14,11 @@ class FtGboData : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
+	static const ElementType	type = typeFtGboData;
+
 	unsigned short accel;
 	bool fNo3d;
 };

@@ -14,16 +14,14 @@ class FtSbs : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
+	static const ElementType	type = typeFtSbs;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-public:
 	unsigned short ft;
 	unsigned short cb;
 
-private:
 	short iVal;
 	short iMin;
 	short iMax;

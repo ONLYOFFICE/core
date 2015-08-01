@@ -17,12 +17,11 @@ public:
 	CFColor(CFRecord& record);
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
+	static const ElementType	type = typeCFColor;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	XColorType xclrType;
 	ColorICV icv;
 	LongRGBA rgb;

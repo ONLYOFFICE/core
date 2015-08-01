@@ -14,7 +14,7 @@ class CFVO : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeCFVO;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);

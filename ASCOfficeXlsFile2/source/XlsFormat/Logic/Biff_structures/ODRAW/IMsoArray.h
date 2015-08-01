@@ -18,6 +18,8 @@ class IMsoArray : public XLS::BiffStructure
 public:
 	XLS::BiffStructurePtr clone(){return XLS::BiffStructurePtr(new IMsoArray(*this));}
 
+	static const XLS::ElementType	type = XLS::typeIMsoArray;
+
 	virtual void load(XLS::CFRecord& record)
 	{
 		unsigned short nElems, nElemsAlloc;

@@ -49,6 +49,7 @@ public:
     //std::wstring add_or_find(const std::wstring & href, Type type, bool & isInternal);//возможны ссылки на один и тот же объект
     std::wstring add_image(const std::wstring & file_name, int bin_id);
 	std::wstring find_image(int id, std::wstring & target, bool & isExternal);
+	std::wstring find_image(const std::wstring & target, bool & isExternal);
 
 	void dump_rels(rels & Rels);
     items_array & items() { return items_; }

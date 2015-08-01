@@ -25,8 +25,7 @@ public:
 
 	BiffStructurePtr clone();
 
-	
-	
+	static const ElementType	type = typeCellRangeRef;
 
 	const std::wstring toString(const bool useShortForm = true) const;
 	void fromString(const std::wstring& str);

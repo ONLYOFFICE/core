@@ -18,6 +18,8 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
+	static const ElementType	type = typeXORObfuscation;
+
 	unsigned short key;
 	unsigned short verificationBytes;
 };

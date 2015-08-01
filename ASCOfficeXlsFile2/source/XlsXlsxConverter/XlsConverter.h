@@ -43,6 +43,7 @@ namespace ODRAW
 	class OfficeArtBStoreContainer;
 	class OfficeArtSpContainer;
 	class OfficeArtFOPT;
+	class OfficeArtFSP;
 }
 
 class XlsConverter
@@ -83,6 +84,7 @@ private:
 	void convert(ODRAW::OfficeArtBStoreContainer* art_bstore);
 	void convert(ODRAW::OfficeArtSpContainer	* sp);
 	void convert(ODRAW::OfficeArtFOPT 			* fort);
+	void convert(ODRAW::OfficeArtFSP 			* fsp);
 
 	std::wstring GetTargetMoniker(XLS::BiffStructure *moniker);
 

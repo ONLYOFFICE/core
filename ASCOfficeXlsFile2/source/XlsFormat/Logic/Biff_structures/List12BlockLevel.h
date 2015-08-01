@@ -16,12 +16,11 @@ public:
 	List12BlockLevel();
 	~List12BlockLevel();
 
-	
+	static const ElementType	type = typeList12BlockLevel;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-public:
 	BIFF_DWORD cbdxfHeader;
 	BIFF_DWORD istnHeader;
 	BIFF_DWORD cbdxfData;

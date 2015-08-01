@@ -16,12 +16,12 @@ public:
 	AF12Criteria();
 	~AF12Criteria();
 
-	
-	
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-public:
+	static const ElementType	type = typeAF12Criteria;
+
 	AFDOper doper;
 	XLUnicodeStringNoCch str;
 	BIFF_BSTR _str;

@@ -13,8 +13,8 @@ class AntiMoniker : public XLS::BiffStructure
 public:
 	XLS::BiffStructurePtr clone();
 
-	
-	
+	static const XLS::ElementType	type = XLS::typeAntiMoniker;
+
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 

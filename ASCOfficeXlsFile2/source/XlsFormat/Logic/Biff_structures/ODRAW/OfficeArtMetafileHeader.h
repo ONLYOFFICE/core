@@ -18,12 +18,11 @@ class OfficeArtMetafileHeader : public XLS::BiffStructure
 public:
 	XLS::BiffStructurePtr clone();
 
-	
+	static const XLS::ElementType	type = XLS::typeOfficeArtMetafileHeader;
 	
 	virtual void store(XLS::CFRecord& record);
 	virtual void load(XLS::CFRecord& record);
 
-public:
 	unsigned int cbSize;
 	RECT rcBounds;
 	POINT ptSize;

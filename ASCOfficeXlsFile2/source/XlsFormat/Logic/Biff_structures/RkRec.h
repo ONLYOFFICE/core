@@ -17,6 +17,8 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
+	static const ElementType	type = typeRkRec;
+
 	const unsigned short get_ixfe() const;
 
 	unsigned short ixfe;

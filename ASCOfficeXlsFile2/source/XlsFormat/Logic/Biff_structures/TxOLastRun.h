@@ -15,7 +15,7 @@ public:
 	TxOLastRun();
 	~TxOLastRun();
 
-	
+	static const ElementType	type = typeTxOLastRun;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);

@@ -12,13 +12,12 @@ class DXFALC : public BiffStructure
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(DXFALC)
 public:
 	BiffStructurePtr clone();
+	
+	static const ElementType	type = typeDXFALC;
 
-	
-	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned char alc;
 	bool fWrap;
 	unsigned char alcv;

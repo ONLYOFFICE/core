@@ -22,6 +22,8 @@ public:
 
 	GlobalWorkbookInfoPtr m_GlobalWorkbookInfo;
 
+	static const ElementType	type = typeStyleXF;
+
 	int serialize(std::wostream & stream);
 
 	void RegisterFillBorder();

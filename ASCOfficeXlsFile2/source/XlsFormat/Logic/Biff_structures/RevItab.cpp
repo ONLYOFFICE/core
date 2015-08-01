@@ -33,7 +33,7 @@ void RevItab::store(CFRecord& record)
 
 void RevItab::load(CFRecord& record)
 {
-	record >> type;
+	record >> type1;
 	switch(type)
 	{
 		case 0x00: 

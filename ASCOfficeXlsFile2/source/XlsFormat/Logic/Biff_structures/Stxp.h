@@ -14,12 +14,11 @@ class Stxp : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
-	
+	static const ElementType	type = typeStxp;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	long twpHeight;
 	Ts ts;
 	short bls;

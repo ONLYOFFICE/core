@@ -14,12 +14,11 @@ class VertBrk : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeVertBrk;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	ColU col;
 	RwU rowStart;
 	RwU rowEnd;

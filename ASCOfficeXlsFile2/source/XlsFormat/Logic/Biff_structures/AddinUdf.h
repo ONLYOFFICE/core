@@ -13,13 +13,12 @@ class AddinUdf : public BiffStructure
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(AddinUdf)
 public:
 	BiffStructurePtr clone();
-
-	
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
+	static const ElementType	type = typeAddinUdf;
+
 	ShortXLUnicodeString udfName;
 };
 

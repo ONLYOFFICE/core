@@ -15,19 +15,17 @@ public:
 	LongRGBA(const bool alpha_present);
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeLongRGBA;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-protected:
 	unsigned char red;
 	unsigned char green;
 	unsigned char blue;
 	unsigned char alpha;
 	std::wstring  argb;
 
-private:
 	bool is_alpha;
 };
 

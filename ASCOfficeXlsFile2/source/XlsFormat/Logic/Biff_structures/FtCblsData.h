@@ -13,12 +13,11 @@ class FtCblsData : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
+	static const ElementType	type = typeFtCblsData;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned short fChecked;
 	unsigned short accel;
 	bool fNo3d;

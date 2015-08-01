@@ -17,6 +17,8 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
+	static const ElementType	type = typeGradStop;
+
 	unsigned short xclrType;
 	unsigned int xclrValue;
 	LongRGBA xclrValue_rgb;

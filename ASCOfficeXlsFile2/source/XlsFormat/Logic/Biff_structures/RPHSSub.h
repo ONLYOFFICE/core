@@ -14,7 +14,7 @@ class RPHSSub : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeRPHSSub;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
@@ -22,7 +22,6 @@ public:
 	const size_t getSize() const;
 	const unsigned short getRunsNumber() const;
 
-private:
 	unsigned short crun;
 	LPWideString st;
 };

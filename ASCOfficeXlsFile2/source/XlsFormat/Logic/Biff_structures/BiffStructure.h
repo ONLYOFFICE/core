@@ -37,8 +37,7 @@ public:
 	virtual void load(CFRecord& record) = 0;
 	virtual void store(CFRecord& record) = 0;
 	
-	static const ElementType	type = typeBiffStructure;
-	virtual ElementType			get_type() const { return type; }
+	virtual ElementType get_type() = 0;
 
 	virtual int serialize(std::wostream & _stream)
 	{
@@ -54,7 +53,8 @@ public:
 
 #define BASE_STRUCTURE_DEFINE_CLASS_NAME(class_name)\
 	public: \
-		const std::wstring & getClassName() const { static std::wstring  str(L# class_name); return str; };
+		const std::wstring & getClassName() const { static std::wstring  str(L# class_name); return str; };\
+		virtual XLS::ElementType get_type() { return type; }
 	
 
 

@@ -17,12 +17,11 @@ public:
 	TableFeatureType();
 	~TableFeatureType();
 
-	
+	static const ElementType	type = typeTableFeatureType;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-public:
 	BIFF_DWORD lt;		// SourceType
 	BIFF_DWORD idList;
 	BIFF_DWORD crwHeader;

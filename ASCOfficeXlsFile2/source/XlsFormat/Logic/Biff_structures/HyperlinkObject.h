@@ -20,6 +20,8 @@ public:
 
 	unsigned int streamVersion;
 
+	static const XLS::ElementType	type = XLS::typeHyperlinkObject;
+
 	bool hlstmfHasMoniker;
 	bool hlstmfIsAbsolute;
 	bool hlstmfSiteGaveDisplayName;

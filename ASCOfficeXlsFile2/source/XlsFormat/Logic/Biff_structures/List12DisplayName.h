@@ -16,12 +16,11 @@ public:
 	List12DisplayName();
 	~List12DisplayName();
 
-	
+	static const ElementType	type = typeList12DisplayName;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-public:
 	XLNameUnicodeString stListName;
 	XLUnicodeString stListComment;
 };

@@ -16,8 +16,8 @@ class OfficeArtFRIT : public XLS::BiffStructure
 public:
 	XLS::BiffStructurePtr clone();
 
-	
-	
+	static const XLS::ElementType	type = XLS::typeOfficeArtFRIT;
+
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 

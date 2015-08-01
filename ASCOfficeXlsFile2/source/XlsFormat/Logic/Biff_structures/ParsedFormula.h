@@ -20,7 +20,7 @@ public:
 
 	const std::wstring getAssembledFormula() const;
 	
-	//const bool parseStringFormula(const std::wstring formula, const std::wstring & tag_name);
+	static const ElementType	type = typeParsedFormula;
 
 	Rgce rgce;
 	RgbExtra rgcb;

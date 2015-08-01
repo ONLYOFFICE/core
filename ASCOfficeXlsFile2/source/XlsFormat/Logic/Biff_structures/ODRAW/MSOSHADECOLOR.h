@@ -20,12 +20,11 @@ public:
 	MSOSHADECOLOR();
 	XLS::BiffStructurePtr clone();
 
-	
+	static const XLS::ElementType	type = XLS::typeMSOSHADECOLOR;
 	
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-public:
 	OfficeArtCOLORREF color;
 	OSHARED::FixedPoint position;
 };

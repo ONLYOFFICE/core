@@ -16,7 +16,7 @@ class FrtRefHeader : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeFrtRefHeader;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);

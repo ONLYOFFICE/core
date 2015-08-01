@@ -16,7 +16,7 @@ public:
 
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeCellRef;
 	
 
 	const std::wstring toString() const;

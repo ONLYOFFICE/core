@@ -16,6 +16,7 @@ public:
 	~XLUnicodeRichExtendedString();
 	XLUnicodeRichExtendedString operator=(const XLUnicodeRichExtendedString& other);
 
+	static const ElementType	type = typeXLUnicodeRichExtendedString;
 
 	BiffStructurePtr clone();
 

@@ -17,6 +17,7 @@ public:
 	{
 		attrib_name = name_init;
 	}
+	static const ElementType	type = typeBiffAttribute;
 
 	_CP_OPT(std::wstring) attrib_name;
 };

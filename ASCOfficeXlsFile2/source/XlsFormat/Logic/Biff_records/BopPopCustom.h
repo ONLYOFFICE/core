@@ -11,11 +11,10 @@ class BopPopCustomPiesIndices : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(MSXML2::IXMLDOMElementPtr xml_tag);
-	//virtual const bool fromXML(MSXML2::IXMLDOMElementPtr xml_tag){return false;}
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record){}
 
+	static const ElementType	type = typeBopPopCustomPiesIndices;
 //-----------------------------
 	std::vector<unsigned short> pie_indices;
 };

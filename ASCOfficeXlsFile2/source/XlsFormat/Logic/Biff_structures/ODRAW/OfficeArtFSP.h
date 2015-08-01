@@ -26,9 +26,8 @@ public:
 
 	const unsigned short GetInstanceToStore();
 
-	unsigned short shape_id;
-
-	unsigned int spid;
+	unsigned short	shape_id;
+	unsigned int	spid;
 
 	bool fGroup;
 	bool fChild;

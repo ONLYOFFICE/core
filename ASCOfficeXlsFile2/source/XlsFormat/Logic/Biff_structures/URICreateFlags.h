@@ -17,12 +17,11 @@ public:
 	URICreateFlags(XLS::CFRecord& record);
 	XLS::BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
+	static const XLS::ElementType	type = XLS::typeURICreateFlags;
+
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-private:
 	bool createAllowRelative;
 	bool createAllowImplicitWildcardScheme;
 	bool createAllowImplicitFileScheme;

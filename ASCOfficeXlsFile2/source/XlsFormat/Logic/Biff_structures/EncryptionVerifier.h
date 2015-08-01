@@ -13,12 +13,11 @@ class EncryptionVerifier : public XLS::BiffStructure
 public:
 	XLS::BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
+	static const XLS::ElementType	type = XLS::typeEncryptionVerifier;
+
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-private:
 	unsigned int SaltSize;
 	struct SALT_TAG {
 		unsigned int b1;

@@ -16,7 +16,9 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	Boolean<unsigned int> type;
+	static const ElementType	type = typeXFPropGradient;
+
+	Boolean<unsigned int> type1;
 	double numDegree;
 	double numFillToLeft;
 	double numFillToRight;

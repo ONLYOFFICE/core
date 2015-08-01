@@ -13,12 +13,11 @@ class FtPioGrbit : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
+	static const ElementType	type = typeFtPioGrbit;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-public:
 	bool fAutoPict;
 	bool fDde;
 	bool fPrintCalc;

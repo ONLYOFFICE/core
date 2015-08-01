@@ -20,6 +20,8 @@ public:
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
+	static const XLS::ElementType	type = XLS::typeOfficeArtRGFOPTE;
+
 	void SetOptionsNumber(const unsigned short number);
 	const unsigned short GetOptionsNumber();
 

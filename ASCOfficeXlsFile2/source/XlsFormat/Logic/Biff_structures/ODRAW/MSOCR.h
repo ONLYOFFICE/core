@@ -19,6 +19,8 @@ public:
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
+	static const XLS::ElementType	type = XLS::typeMSOCR;
+
 	unsigned char red;
 	unsigned char green;
 	unsigned char blue;

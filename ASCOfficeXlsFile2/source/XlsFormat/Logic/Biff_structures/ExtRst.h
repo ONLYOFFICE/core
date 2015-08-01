@@ -16,14 +16,13 @@ class ExtRst : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeExtRst;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
 	const size_t getSize() const;
 
-private:
 	unsigned short cb;
 	Phs phs;
 	RPHSSub rphssub;

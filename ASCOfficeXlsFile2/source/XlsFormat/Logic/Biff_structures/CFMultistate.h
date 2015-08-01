@@ -14,7 +14,7 @@ class CFMultistate : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeCFMultistate;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);

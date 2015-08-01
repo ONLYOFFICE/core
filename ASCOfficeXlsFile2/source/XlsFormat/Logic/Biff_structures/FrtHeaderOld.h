@@ -18,12 +18,11 @@ public:
 
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeFrtHeaderOld;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	CFRecordType::TypeId rt;
 	FrtFlags grbitFrt;
 };

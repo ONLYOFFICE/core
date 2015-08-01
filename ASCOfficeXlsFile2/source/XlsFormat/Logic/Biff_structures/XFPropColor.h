@@ -8,7 +8,6 @@ namespace XLS
 
 class CFRecord;
 
-//#pragma pack(1)
 class XFPropColor : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(XFPropColor)
@@ -18,12 +17,13 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
+	static const ElementType	type = typeXFPropColor;
+
 	bool fValidRGBA;
 	unsigned char xclrType;
 	unsigned char icv;
 	short nTintShade;
 	LongRGBA dwRgba;
 };
-//#pragma pack() // restore
 
 } // namespace XLS

@@ -100,7 +100,8 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
+	static const ElementType	type = typeCFExTemplateParams;
+
 	union
 	{
 		CFExFilterParams filter;

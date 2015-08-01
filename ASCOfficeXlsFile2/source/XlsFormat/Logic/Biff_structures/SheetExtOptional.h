@@ -17,12 +17,11 @@ public:
 	SheetExtOptional(CFRecord& record);
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
+	static const ElementType	type = typeSheetExtOptional;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned char icvPlain12;
 	bool fCondFmtCalc;
 	bool fNotPublished;

@@ -14,12 +14,11 @@ class HorzBrk : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeHorzBrk;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	RwU row;
 	unsigned short colStart;
 	unsigned short colEnd;

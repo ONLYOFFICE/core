@@ -42,6 +42,8 @@ public:
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
+	static const XLS::ElementType	type = XLS::typeOfficeArtBStoreContainerFileBlock;
+
 	void readCompressedData(XLS::CFRecord& record, OfficeArtMetafileHeader metafileHeader);
 
 	int bin_data_id;
@@ -54,7 +56,7 @@ public:
 	std::wstring rgbUid1;
 	std::wstring rgbUid2;
 	bool result;
-private:
+
 	const std::wstring ReadMD4Digest(XLS::CFRecord& record)
 	{
 		std::wstring result;

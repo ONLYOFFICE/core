@@ -14,12 +14,11 @@ class DXFPat : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeDXFPat;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	FillPattern fls;
 	unsigned char icvForeground;
 	unsigned char icvBackground;

@@ -86,7 +86,18 @@ std::wstring external_items::find_image(int _id, std::wstring & target, bool & i
 	}
 	return L"";
 }
-
+std::wstring external_items::find_image(const std::wstring & target, bool & isInternal)
+{
+	for (long i=0 ; i <items_.size(); i ++)
+	{
+		if (items_[i].type == typeImage && items_[i].uri == target)
+		{
+			isInternal = items_[i].mediaInternal;
+			return items_[i].rId;
+		}
+	}
+	return L"";
+}
 void external_items::dump_rels(rels & Rels)
 {
     size_t i = 0;

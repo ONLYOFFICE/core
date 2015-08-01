@@ -13,12 +13,11 @@ class PhRuns : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typePhRuns;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	short ichFirst;
 	short ichMom;
 	short cchMom;

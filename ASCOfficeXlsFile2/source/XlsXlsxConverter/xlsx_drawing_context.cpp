@@ -2,13 +2,9 @@
 #include <boost/lexical_cast.hpp>
 #include <boost/foreach.hpp>
 
-//#include <cpdoccore/xml/utils.h>
-//
-//#include "mediaitems_utils.h"
-//
-//#include "xlsx_utils.h"
 #include "xlsx_drawing_context.h"
 
+#include <simple_xml_writer.h>
 
 
 namespace oox {
@@ -111,17 +107,7 @@ bool xlsx_drawing_context::start_drawing(int type)
 		break;
 	}
 	return false;
-	//count_object++;
 
-	//bool isIternal = false;
-	//std::wstring target;
-	//std::wstring rId = handle_.impl_->get_mediaitems().find_image(type, target, isIternal);
-
-
-	//if (!rId.empty())
-	//{
-	//	xlsx_drawings_->add(stream_.str(), isIternal, rId , target, external_items::typeImage);
-	//}
 }
 
 void xlsx_drawing_context::start_image()
@@ -130,6 +116,8 @@ void xlsx_drawing_context::start_image()
 	drawing_state.push_back(st);
 
 	drawing_state.back().type = external_items::typeImage;
+	
+	count_object++;
 }
 
 void xlsx_drawing_context::start_shape(int type)
@@ -138,6 +126,29 @@ void xlsx_drawing_context::start_shape(int type)
 	drawing_state.push_back(st);
 
 	drawing_state.back().type = external_items::typeShape;
+
+	count_object++;
+}
+
+void xlsx_drawing_context::set_id(int id)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().id = id;
+}
+void xlsx_drawing_context::set_FlipH()
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().flipH = true;
+}
+void xlsx_drawing_context::set_FlipV()
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().flipV = true;
+}
+void xlsx_drawing_context::set_shape_id(int id)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().shape_id = id;
 }
 void xlsx_drawing_context::end_drawing()
 {
@@ -145,11 +156,104 @@ void xlsx_drawing_context::end_drawing()
 
 	std::wstringstream strm;
 
-	//serialize
+	switch(drawing_state.back().type)
+	{
+	case external_items::typeImage:
+		if (!drawing_state.back().image_target.empty())
+		{
+			bool isIternal = false;
+			std::wstring rId = handle_.impl_->get_mediaitems().find_image( drawing_state.back().image_target, isIternal);
+			
+			serialize_pic(rId);
+			serialize(strm);
+			xlsx_drawings_->add(strm.str(), isIternal, 	rId , drawing_state.back().image_target, drawing_state.back().type);
+		}
+		break;
+	}
 
-	xlsx_drawings_->add(strm.str(), drawing_state.back().isMediaInternal, 
-						drawing_state.back().rId , drawing_state.back().target, drawing_state.back().type);
+	drawing_state.pop_back();
 
+}
+void xlsx_drawing_context::serialize_pic(std::wstring rId)
+{
+	std::wstringstream strm;
+
+	CP_XML_WRITER(strm)    
+	{
+		CP_XML_NODE(L"xdr:pic")
+		{ 
+			CP_XML_NODE(L"xdr:nvPicPr")
+			{
+				CP_XML_NODE(L"xdr:cNvPr")
+				{
+					if (drawing_state.back().id >= 0) CP_XML_ATTR(L"id", drawing_state.back().id);
+					CP_XML_ATTR(L"name", L"Picture_" + rId.substr(5));
+				}
+				CP_XML_NODE(L"xdr:cNvPicPr")
+				{
+					CP_XML_NODE(L"a:picLocks")
+					{
+						CP_XML_ATTR(L"noChangeArrowheads", 1);
+						CP_XML_ATTR(L"noChangeAspect", 1);
+					}
+				}
+			}
+			CP_XML_NODE(L"xdr:blipFill")
+			{
+				CP_XML_NODE(L"a:blip")
+				{
+					CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+					CP_XML_ATTR(L"r:embed", rId);
+				}
+				CP_XML_NODE(L"a:srcRect");
+
+				CP_XML_NODE(L"a:stretch")
+				{
+					CP_XML_NODE(L"a:fillRect");
+				}
+			}
+			CP_XML_NODE(L"xdr:spPr")
+			{
+				CP_XML_NODE(L"a:xfrm")
+				{
+					CP_XML_NODE(L"a:off")
+					{
+						CP_XML_ATTR(L"y", 0);
+						CP_XML_ATTR(L"x", 0);
+					}
+					CP_XML_NODE(L"a:ext")
+					{
+						CP_XML_ATTR(L"cy", 0);
+						CP_XML_ATTR(L"cx", 0);
+					}
+				}
+				CP_XML_NODE(L"a:prstGeom")
+				{
+					CP_XML_ATTR(L"prst", "rect");
+					CP_XML_NODE(L"a:avLst");
+				}
+
+				CP_XML_NODE(L"a:noFill");
+			}
+		}
+	}
+
+	drawing_state.back().shape = strm.str();
+}
+void xlsx_drawing_context::serialize(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+	{
+		CP_XML_NODE(L"xdr:twoCellAnchor")
+		{ 
+			CP_XML_ATTR(L"editAs", L"oneCell");
+
+			CP_XML_STREAM() << drawing_state.back().anchor;
+			CP_XML_STREAM() << drawing_state.back().shape;
+			
+			CP_XML_NODE(L"xdr:clientData");
+		}
+	}
 }
 
 void xlsx_drawing_context::set_anchor(std::wstring & str)
@@ -157,7 +261,11 @@ void xlsx_drawing_context::set_anchor(std::wstring & str)
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().anchor = str;
 }
-
+void xlsx_drawing_context::set_image(std::wstring & str)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().image_target = str;
+}
 void xlsx_drawing_context::set_properties(std::wstring & str)
 {
 	if (drawing_state.size() < 1 )return;

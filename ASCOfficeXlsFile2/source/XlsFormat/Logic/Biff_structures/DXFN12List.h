@@ -17,12 +17,11 @@ public:
 	DXFN12List();
 	~DXFN12List();
 
-	
+	static const ElementType	type = typeDXFN12List;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-public:
 	DXFN dxfn;
 	XFExtNoFRT xfext;
 };

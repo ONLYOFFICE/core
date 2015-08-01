@@ -15,12 +15,11 @@ class XFProp : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
+	static const ElementType	type = typeXFProp;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned short xfPropType;
 	unsigned short cb;
 	BiffStructurePtr xfPropDataBlob;

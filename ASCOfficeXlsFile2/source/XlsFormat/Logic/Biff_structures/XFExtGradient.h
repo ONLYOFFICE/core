@@ -18,6 +18,8 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
+	static const ElementType	type = typeXFExtGradient;
+
 	XFPropGradient			gradient;
 	unsigned int			cGradStops;
 	std::vector<GradStop>	rgGradStops;

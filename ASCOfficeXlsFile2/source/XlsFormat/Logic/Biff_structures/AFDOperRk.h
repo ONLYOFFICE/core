@@ -17,7 +17,8 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);	
 
-public:
+	static const ElementType	type = typeAFDOperRk;
+
 	BIFF_DWORD rk;
 };
 

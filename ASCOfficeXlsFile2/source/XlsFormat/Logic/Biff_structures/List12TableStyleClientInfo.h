@@ -16,12 +16,11 @@ public:
 	List12TableStyleClientInfo();
 	~List12TableStyleClientInfo();
 
-	
+	static const ElementType	type = typeList12TableStyleClientInfo;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-public:
 	BIFF_BYTE fFirstColumn;
 	BIFF_BYTE fLastColumn;
 	BIFF_BYTE fRowStripes;

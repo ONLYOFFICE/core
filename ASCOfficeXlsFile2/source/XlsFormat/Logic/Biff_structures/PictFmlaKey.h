@@ -16,12 +16,11 @@ public:
 	PictFmlaKey();
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
+	static const ElementType	type = typePictFmlaKey;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	ObjFmla fmlaLinkedCell;
 	ObjFmla fmlaListFillRange;
 };

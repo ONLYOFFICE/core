@@ -16,12 +16,11 @@ class Feat11FdaAutoFilter : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeFeat11FdaAutoFilter;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-public:
 	BIFF_DWORD cbAutoFilter;
 	AutoFilter recAutoFilter;
 };

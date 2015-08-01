@@ -17,6 +17,7 @@ public:
 	AFDOperStr(bool bAutoFilter);
 	~AFDOperStr();
 
+	static const ElementType	type = typeAFDOperStr;
 	
 	
 	virtual void load(CFRecord& record);
@@ -25,7 +26,6 @@ public:
 	BIFF_BYTE cch;
 	BIFF_BYTE fCompare;	
 
-public:
 	bool m_bAutoFilter;
 };
 

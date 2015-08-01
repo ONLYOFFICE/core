@@ -16,12 +16,11 @@ class DXFFntD : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeDXFFntD;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	XLUnicodeStringNoCch stFontName;
 	Stxp stxp;
 	long icvFore;

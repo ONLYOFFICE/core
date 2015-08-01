@@ -15,12 +15,11 @@ class ExternDocName : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
+	static const ElementType	type = typeExternDocName;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned short ixals;
 	ShortXLUnicodeString extName;
 	ExtNameParsedFormula nameDefinition;

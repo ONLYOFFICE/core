@@ -8,15 +8,14 @@ namespace XLS
 
 class CFRecord;
 
-//#pragma pack(1)
 class XFPropBorder : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(XFPropBorder)
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
+	static const ElementType	type = typeXFPropBorder;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 

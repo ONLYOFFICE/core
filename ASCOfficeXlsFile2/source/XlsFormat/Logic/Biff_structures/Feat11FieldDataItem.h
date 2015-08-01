@@ -16,12 +16,11 @@ class Feat11FieldDataItem : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeFeat11FieldDataItem;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-public:
 	BIFF_DWORD idField;
 	BIFF_DWORD lfdt;
 	BIFF_DWORD lfxidt;

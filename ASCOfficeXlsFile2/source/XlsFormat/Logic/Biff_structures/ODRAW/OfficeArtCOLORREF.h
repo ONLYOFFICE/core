@@ -18,6 +18,8 @@ public:
 	OfficeArtCOLORREF(const long raw_data);
 	XLS::BiffStructurePtr clone();
 
+	static const XLS::ElementType	type = XLS::typeOfficeArtCOLORREF;
+
 	virtual void load(XLS::CFRecord& record) {};
 	virtual void store(XLS::CFRecord& record) {};
 

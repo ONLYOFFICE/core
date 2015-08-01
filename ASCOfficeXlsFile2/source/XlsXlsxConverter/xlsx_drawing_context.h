@@ -27,15 +27,20 @@ private:
 class _drawing_state
 {
 public:
-	_drawing_state() {isMediaInternal = false;}
+	_drawing_state() {isInternal = false; id = shape_id = -1; flipV = flipH = false;}
 
-	external_items::Type			type;
+	external_items::Type	type;
 
-	std::wstring					rId;
-	std::wstring					target;
-	std::wstring					anchor;
-	std::wstring					shape;
-	bool							isMediaInternal;
+	std::wstring			anchor;
+	std::wstring			shape;
+
+	std::wstring			image_target;
+	int						id;
+	int						shape_id;
+	bool					flipV;
+	bool					flipH;
+	
+	bool					isInternal;
 };
 
 class xlsx_drawing_context
@@ -46,20 +51,27 @@ public:
     xlsx_drawing_context(xlsx_drawing_context_handle & h);
 	~xlsx_drawing_context(){}
 
-	bool start_drawing(int type);	
-
-	void end_drawing();
-
 	xlsx_drawings_ptr get_drawings();
+	bool empty();	
+	
+	bool start_drawing(int type);	
+		void start_image();
+		void start_shape(int type);
 
-	bool empty();
+		void set_id ( int id);
+		void set_FlipH();
+		void set_FlipV();
+		void set_shape_id(int id);
 
-	void start_image();
-	void start_shape(int type);
 
-	void set_anchor(std::wstring & str);
-	void set_properties(std::wstring & str);
+		void set_image(std::wstring & str);
+		void set_anchor(std::wstring & str);
+		void set_properties(std::wstring & str);
 
+		void serialize(std::wostream & stream);
+
+		void serialize_pic(std::wstring rId);	
+	void end_drawing();
 private:
 
 	std::vector<_drawing_state>		drawing_state;

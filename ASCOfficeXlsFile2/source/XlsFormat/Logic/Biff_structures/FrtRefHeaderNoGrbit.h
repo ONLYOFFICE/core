@@ -19,12 +19,11 @@ public:
 
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
+	static const ElementType	type = typeFrtRefHeaderNoGrbit;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	CFRecordType::TypeId rt;
 	Ref8U ref8;
 };

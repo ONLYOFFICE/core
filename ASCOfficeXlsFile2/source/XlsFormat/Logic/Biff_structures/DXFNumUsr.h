@@ -15,12 +15,11 @@ public:
 	DXFNumUsr();
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
+	static const ElementType	type = typeDXFNumUsr;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned short cb;
 	XLUnicodeString fmt;
 };

@@ -21,12 +21,8 @@ public:
 	const unsigned short getIndex() const;
 	const bool isMacro() const;
 
-	//void toXML(BiffStructurePtr & parent);
-
-public:
 	static const unsigned short recognizeFunction(const std::wstring& word);
 
-private:
 	class ValuesDetermination
 	{
 	public:
@@ -35,7 +31,6 @@ private:
 		static const unsigned short getIndex(const std::wstring& func_name);
 		static const long getParamsNum(const std::wstring& func_name);
 
-	private:
 		ValuesDetermination();
 		static ValuesDetermination& getInst()
 		{
@@ -58,11 +53,9 @@ private:
 		> ParamsFixedSet;
 
 
-	private:
 		ParamsFixedSet params_fixed;
 	};
 
-private:
 	unsigned short func_index;
 };
 #pragma pack() // restore

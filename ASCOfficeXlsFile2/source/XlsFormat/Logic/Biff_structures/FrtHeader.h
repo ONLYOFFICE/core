@@ -22,8 +22,8 @@ public:
 	virtual void store(CFRecord& record);
 
 	
+	static const ElementType	type = typeFrtHeader;
 	
-private:
 	CFRecordType::TypeId rt;
 	FrtFlags grbitFrt;
 };

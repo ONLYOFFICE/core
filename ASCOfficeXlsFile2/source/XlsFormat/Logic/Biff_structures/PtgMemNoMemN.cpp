@@ -11,21 +11,6 @@ BiffStructurePtr PtgMemNoMemN::clone()
 	return BiffStructurePtr(new PtgMemNoMemN(*this));
 }
 
-//
-//void PtgMemNoMemN::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//
-//	own_tag->setAttribute(L"type", type);
-//}
-//
-//
-//const bool PtgMemNoMemN::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### PtgMemNoMemN record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! PtgMemNoMemN record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
 
 
 void PtgMemNoMemN::store(CFRecord& record)
@@ -40,7 +25,7 @@ void PtgMemNoMemN::load(CFRecord& record)
 {
 	unsigned char rec_type;
 	record >> rec_type;
-	type = GETBITS(rec_type, 5, 6);
+	type1 = GETBITS(rec_type, 5, 6);
 	record >> cce;
 }
 

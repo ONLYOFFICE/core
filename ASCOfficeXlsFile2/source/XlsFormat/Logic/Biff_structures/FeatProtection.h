@@ -17,12 +17,11 @@ public:
 	FeatProtection(CFRecord& record);
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
+	static const ElementType	type = typeFeatProtection;
+
 	bool fSD;
 	unsigned int wPassword;
 	XLUnicodeString stTitle;

@@ -13,12 +13,11 @@ class MDXStrIndex : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeMDXStrIndex;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned int index;
 };
 

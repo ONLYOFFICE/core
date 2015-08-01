@@ -16,12 +16,11 @@ public:
 	FeatFormulaErr2(CFRecord& record);
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
+	static const ElementType	type = typeFeatFormulaErr2;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	FFErrorCheck grffecIgnore;
 };
 

@@ -23,6 +23,8 @@ public:
 
 	const CellRef getLocation() const;
 
+	static const ElementType	type = typeCell;
+
 	Rw rw;
 	Col col;
 	IXFCell ixfe;

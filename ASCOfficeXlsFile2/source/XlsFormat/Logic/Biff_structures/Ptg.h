@@ -33,6 +33,7 @@ public:
 	virtual void loadFields(CFRecord& record) {};
 	virtual void storeFields(CFRecord& record) {};
 
+	static const ElementType	type = typePtg;
 
 	virtual const unsigned short getPtgId() const;// = 0;
 	const size_t getOffsetInRecord() const;

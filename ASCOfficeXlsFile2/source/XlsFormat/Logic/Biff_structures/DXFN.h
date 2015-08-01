@@ -19,12 +19,11 @@ class DXFN : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeDXFN;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	bool alchNinch;
 	bool alcvNinch;
 	bool wrapNinch;

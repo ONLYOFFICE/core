@@ -15,7 +15,7 @@ class DXFNum : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeDXFNum;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
@@ -23,7 +23,6 @@ public:
 	void setIsUserDefined(const bool is_user_defined); 
 	const bool getIsUserDefined() const; 
 
-private:
 	_CP_OPT(bool)	is_user_defined_;
 	DXFNumIFmt		fmt_id;
 	DXFNumUsr		user_defined;

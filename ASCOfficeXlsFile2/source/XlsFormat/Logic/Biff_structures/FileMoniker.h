@@ -15,6 +15,8 @@ public:
 	FileMoniker(XLS::CFRecord& record);
 	XLS::BiffStructurePtr clone();
 
+	static const XLS::ElementType	type = XLS::typeFileMoniker;
+
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 

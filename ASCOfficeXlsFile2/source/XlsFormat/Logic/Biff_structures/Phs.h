@@ -14,12 +14,11 @@ class Phs : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
-	
+	static const ElementType	type = typePhs;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned short ifnt;
 	struct Phs_Data
 	{

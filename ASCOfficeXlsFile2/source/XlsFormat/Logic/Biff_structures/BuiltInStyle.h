@@ -13,7 +13,7 @@ class BuiltInStyle : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeBuiltInStyle;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);

@@ -32,6 +32,7 @@
 #include <Logic/Biff_structures/ODRAW/OfficeArtBStoreContainer.h>
 #include <Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h>
 #include <Logic/Biff_structures/ODRAW/OfficeArtFOPT.h>
+#include <Logic/Biff_structures/ODRAW/OfficeArtFSP.h>
 #include <Logic/Biff_structures/ODRAW/OfficeArtBlip.h>
 
 #include "xlsx_conversion_context.h"
@@ -379,18 +380,22 @@ void XlsConverter::convert(XLS::MSODRAWINGGROUP * mso_drawing)
 void XlsConverter::convert(ODRAW::OfficeArtBStoreContainer* art_bstore)
 {
 	if (art_bstore == NULL) return;
+	if (art_bstore->rgfb.size() < 1) return;
+
+	std::wstring xl_path = xlsx_path + FILE_SEPARATOR_STR + L"xl";
+	FileSystem::Directory::CreateDirectory(xl_path.c_str());
+	
+	FileSystem::Directory::CreateDirectory((xl_path + FILE_SEPARATOR_STR + L"media").c_str());
 
 	for (long i =0 ; i < art_bstore->rgfb.size(); i++)
 	{
 		int bin_id = i + 1;
 		if (art_bstore->rgfb[i]->data_size > 0)
-		{
-			FileSystem::Directory::CreateDirectory((xlsx_path + FILE_SEPARATOR_STR + L"media").c_str());
-			
+		{			
 			std::wstring file_name = L"image" + boost::lexical_cast<std::wstring>(bin_id) + art_bstore->rgfb[i]->pict_type;
 
 			NSFile::CFileBinary file;
-			if (file.CreateFileW(xlsx_path + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR + file_name))
+			if (file.CreateFileW(xl_path + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR + file_name))
 			{
 				file.WriteFile((BYTE*)art_bstore->rgfb[i]->pict_data, art_bstore->rgfb[i]->data_size);
 				file.CloseFile();
@@ -492,8 +497,7 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 		}break;
 	case XLS::typeOfficeArtFSP:
 		{
-			art->serialize(strm);
-			xlsx_context->get_drawing_context().set_properties(strm.str());
+			convert(dynamic_cast<ODRAW::OfficeArtFSP *>(art));
 		}break;
 	case XLS::typeOfficeArtClientAnchorSheet:
 		{
@@ -503,7 +507,16 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 	}
 
 }
+void XlsConverter::convert(ODRAW::OfficeArtFSP * fsp)
+{
+	if (fsp == NULL) return;
 
+	if (fsp->fFlipH) xlsx_context->get_drawing_context().set_FlipH();
+	if (fsp->fFlipV) xlsx_context->get_drawing_context().set_FlipV();
+
+	xlsx_context->get_drawing_context().set_id(fsp->spid);
+	xlsx_context->get_drawing_context().set_shape_id(fsp->shape_id);
+}
 void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
 {
 	if (fort == NULL) return;
@@ -514,10 +527,10 @@ void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
 		{
 		case 0x104:
 			{
-				ODRAW::pib * pib = dynamic_cast<ODRAW::pib*>(fort->fopt.rgfopte[i].get());
-				if (pib)
-				{
-				}
+				bool isIternal = false;
+				std::wstring target;
+				std::wstring rId = xlsx_context->get_mediaitems().find_image(fort->fopt.rgfopte[i]->op , target, isIternal);
+				xlsx_context->get_drawing_context().set_image(target);
 			}break;
 		}
 

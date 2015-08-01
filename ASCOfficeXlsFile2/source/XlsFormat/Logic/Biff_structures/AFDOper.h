@@ -17,16 +17,15 @@ public:
 	AFDOper(bool bAutoFilter);
 	~AFDOper();
 
-	
-	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
+
+	static const ElementType	type = typeAFDOper;
 
 	BIFF_BYTE vt;
 	BIFF_BYTE grbitSign;
 	AFDOperStr vtValue;
 
-public:
 	bool m_bAutoFilter;
 };
 

@@ -16,12 +16,11 @@ class FrtRefHeaderU : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeFrtRefHeaderU;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	CFRecordType::TypeId rt;
 	FrtFlags grbitFrt;
 	Ref8U ref8;

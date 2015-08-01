@@ -17,15 +17,14 @@ public:
 	FtPictFmla();
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 	virtual void load(CFRecord& record, FtPioGrbit& pictFlags);
 	virtual void store(CFRecord& record, FtPioGrbit& pictFlags);
-private:
+
+	static const ElementType	type = typeFtPictFmla;
+
 	virtual void load(CFRecord& record){}
 	virtual void store(CFRecord& record){}
 
-private:
 	ObjFmla fmla;
 	unsigned int lPosInCtlStm;
 	unsigned int cbBufInCtlStm;

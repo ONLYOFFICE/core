@@ -14,14 +14,13 @@ class SqRefU : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeSqRefU;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
 	const CellRef getLocationFirstCell() const;
 
-private:
 	std::wstring  sqref;
 };
 

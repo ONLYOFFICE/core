@@ -14,12 +14,11 @@ class FormatRun : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeFormatRun;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned short ich;
 	FontIndex ifnt;
 };

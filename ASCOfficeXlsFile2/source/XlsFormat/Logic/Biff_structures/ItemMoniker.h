@@ -15,12 +15,11 @@ public:
 	ItemMoniker(XLS::CFRecord& record);
 	XLS::BiffStructurePtr clone();
 
-	
+	static const XLS::ElementType	type = XLS::typeItemMoniker;
 	
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-private:
 	std::string delimiterAnsi;
 	std::wstring delimiterUnicode;
 	std::string itemAnsi;

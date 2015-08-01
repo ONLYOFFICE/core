@@ -13,15 +13,13 @@ class PtgMemNoMemN : public Ptg
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent);
-	//virtual const bool fromXML(BiffStructurePtr & parent);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data);
 
 private:
-	unsigned char type;
+	unsigned char type1;
 	unsigned short cce;
 };
 

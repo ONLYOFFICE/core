@@ -18,16 +18,14 @@ public:
 	FtLbsData();
 	BiffStructurePtr clone();
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
-	//virtual void getXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
+	static const ElementType	type = typeFtLbsData;
+
 	virtual void load(CFRecord& record, const unsigned short ot);
 	virtual void store(CFRecord& record, const unsigned short ot);
 
-private:
 	virtual void load(CFRecord& record){}
 	virtual void store(CFRecord& record){}
 
-private:
 	ObjFmla fmla;
 	unsigned short cLines;
 	unsigned short iSel;

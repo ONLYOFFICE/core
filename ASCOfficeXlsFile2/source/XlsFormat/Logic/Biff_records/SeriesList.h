@@ -11,14 +11,12 @@ class RGISeriesListSpecial : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(MSXML2::IXMLDOMElementPtr xml_tag);
-	//virtual const bool fromXML(MSXML2::IXMLDOMElementPtr xml_tag);
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
 	static const ElementType	type = typeRGISeriesListSpecial;
 
-//-----------------------------
+	//-----------------------------
 	std::vector<unsigned short> series;
 };
 

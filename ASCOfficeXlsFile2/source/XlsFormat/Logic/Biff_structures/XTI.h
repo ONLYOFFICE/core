@@ -13,12 +13,11 @@ class XTI : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeXTI;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned short iSupBook;
 	short itabFirst;
 	short itabLast;

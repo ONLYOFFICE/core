@@ -15,12 +15,12 @@ class CFMStateItem : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeCFMStateItem;
+
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	CFVO cfvo;
 	Boolean<unsigned char> fEqual;
 };

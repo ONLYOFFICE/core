@@ -2,6 +2,9 @@
 #include "OfficeArtClientAnchorSheet.h"
 #include <Binary/CFRecord.h>
 
+#include <boost/lexical_cast.hpp>
+#include <simple_xml_writer.h>
+
 namespace ODRAW
 {;
 
@@ -9,6 +12,7 @@ namespace ODRAW
 OfficeArtClientAnchorSheet::OfficeArtClientAnchorSheet()
 :	OfficeArtRecord(0x00, ClientAnchor)
 {
+
 }
 
 
@@ -17,38 +21,51 @@ XLS::BiffStructurePtr OfficeArtClientAnchorSheet::clone()
 	return XLS::BiffStructurePtr(new OfficeArtClientAnchorSheet(*this));
 }
 
-
-//void OfficeArtClientAnchorSheet::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"fMove", fMove);
-//	xml_tag->setAttribute(L"fSize", fSize);
-//
-//	xml_tag->setAttribute(L"colL", colL);
-//	xml_tag->setAttribute(L"dxL", _dxL);
-//	xml_tag->setAttribute(L"rwT", rwT);
-//	xml_tag->setAttribute(L"dyT", _dyT);
-//	xml_tag->setAttribute(L"colR", colR);
-//	xml_tag->setAttribute(L"dxR", _dxR);
-//	xml_tag->setAttribute(L"rwB", rwB);
-//	xml_tag->setAttribute(L"dyB", _dyB);
-//}
-
-
-//void OfficeArtClientAnchorSheet::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	fMove = getStructAttribute(xml_tag, L"fMove");
-//	fSize = getStructAttribute(xml_tag, L"fSize");
-//
-//	colL = getStructAttribute(xml_tag, L"colL");
-//	dxL = getStructAttribute(xml_tag, L"dxL");
-//	rwT = getStructAttribute(xml_tag, L"rwT");
-//	dyT = getStructAttribute(xml_tag, L"dyT");
-//	colR = getStructAttribute(xml_tag, L"colR");
-//	dxR = getStructAttribute(xml_tag, L"dxR");
-//	rwB = getStructAttribute(xml_tag, L"rwB");
-//	dyB = getStructAttribute(xml_tag, L"dyB");
-//}
-
+int OfficeArtClientAnchorSheet::serialize(std::wostream &stream)
+{
+	CP_XML_WRITER(stream)    
+	{
+		CP_XML_NODE(L"xdr:from")
+		{ 
+			CP_XML_NODE(L"xdr:col")
+			{
+				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(colL);
+			}
+			CP_XML_NODE(L"xdr:colOff")
+			{
+				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(dxL * 256);
+			}
+			CP_XML_NODE(L"xdr:row")
+			{
+				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(rwT); 
+			}
+			CP_XML_NODE(L"xdr:rowOff")
+			{
+				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(dyT * 256);
+			}
+		}
+		CP_XML_NODE(L"xdr:to")
+		{  		
+			CP_XML_NODE(L"xdr:col")
+			{
+				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(colR); 
+			}
+			CP_XML_NODE(L"xdr:colOff")
+			{
+				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(dxR * 256);
+			}
+			CP_XML_NODE(L"xdr:row")
+			{
+				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(rwB);
+			}
+			CP_XML_NODE(L"xdr:rowOff")
+			{
+				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(dyB * 256); 
+			}
+		}
+	}
+	return 0;
+}
 
 void OfficeArtClientAnchorSheet::storeFields(XLS::CFRecord& record)
 {

@@ -14,6 +14,8 @@ class XFPropGradientStop : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
+	static const ElementType	type = typeXFPropGradientStop;
+
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 

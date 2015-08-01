@@ -17,6 +17,7 @@ public:
 	virtual void load(CFRecord& record) {};
 	virtual void store(CFRecord& record){};
 
+	static const ElementType	type = typeIXFCellMulBlankSpecial;
 //-----------------------------
 	unsigned short common_ixfe;
 	std::vector<unsigned short> rgixfe;

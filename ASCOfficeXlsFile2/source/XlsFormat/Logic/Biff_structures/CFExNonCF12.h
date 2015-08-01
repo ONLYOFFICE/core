@@ -15,12 +15,11 @@ class CFExNonCF12 : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
-	
+	static const ElementType	type = typeCFExNonCF12;
 	
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-private:
 	unsigned short icf;
 	unsigned char cp;
 	unsigned char icfTemplate;

@@ -27,6 +27,7 @@ public:
 	bool is_inside_chart_sheet_;
 
 	MsoDrawingPtr								m_MsoDrawing;
+	MsoDrawingPtr								m_MsoDrawingObjects;
 	
 	std::vector<std::pair<BaseObjectPtr, int>>	m_OBJs;
 	std::vector<std::pair<BaseObjectPtr, int>>	m_TEXTOBJECTs;

@@ -18,14 +18,16 @@
 namespace XLS
 {;
 
+class  MsoDrawing;
+typedef boost::shared_ptr<MsoDrawing> MsoDrawingPtr;
 
 // Logical representation of Obj record in BIFF8
-class Obj: public BiffRecordContinued
+class Obj : public BiffRecordContinued
 {
 	BIFF_RECORD_DEFINE_TYPE_INFO(Obj)
 	BASE_OBJECT_DEFINE_CLASS_NAME(Obj)
 public:
-	Obj();
+	Obj(MsoDrawingPtr mso_drawing);
 	~Obj();
 
 	BaseObjectPtr clone();
@@ -35,6 +37,7 @@ public:
 
 	static const ElementType	type = typeObj;
 
+	MsoDrawingPtr mso_drawing_;
 //-----------------------------
 	FtCmo cmo;
 	FtCf pictFormat;

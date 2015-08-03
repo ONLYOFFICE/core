@@ -64,7 +64,12 @@ int LBL::serialize(std::wostream & stream)
     {
 		CP_XML_NODE(L"definedName")
 		{
-			CP_XML_ATTR(L"name", lbl->Name_bin.value());
+			std::wstring name;
+			if (lbl->fBuiltin)	name = lbl->Name.value().get_value_or(L"");
+			
+			if (name.empty())	name = lbl->Name_bin.value();
+
+			CP_XML_ATTR(L"name", xml::utils::replace_text_to_xml(name));
 
 			CP_XML_STREAM() << xml::utils::replace_text_to_xml(lbl->rgce.getAssembledFormula());
 		}

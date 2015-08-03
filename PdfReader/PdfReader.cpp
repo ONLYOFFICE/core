@@ -188,6 +188,42 @@ namespace PdfReader
 			*pdHeight = PDFCoordsToMM(m_pPDFDocument->GetPageCropHeight(nPageIndex));
 		}
 	}
+	void         CPdfReader::GetPageInfo(int _nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY)
+	{
+		int nPageIndex = _nPageIndex + 1;
+
+		if (!m_pPDFDocument)
+			return;
+
+		const double c_dInch = 25.399; // Миллиметров в дюйме
+		const double c_dXResolution = 154.0;
+		const double c_dYResolution = 154.0;
+
+		double dKoefX = c_dInch / c_dXResolution;
+		double dKoefY = c_dInch / c_dYResolution;
+
+		int nRotate = m_pPDFDocument->GetPageRotate(nPageIndex);
+
+		while (nRotate >= 360)
+			nRotate -= 360;
+
+		while (nRotate < 0)
+			nRotate += 360;
+
+		if (0 != nRotate && 180 != nRotate)
+		{
+			*pdHeight = m_pPDFDocument->GetPageCropWidth(nPageIndex);
+			*pdWidth  = m_pPDFDocument->GetPageCropHeight(nPageIndex);
+		}
+		else
+		{
+			*pdWidth  = m_pPDFDocument->GetPageCropWidth(nPageIndex);
+			*pdHeight = m_pPDFDocument->GetPageCropHeight(nPageIndex);
+		}
+
+		*pdDpiX   = 72;
+		*pdDpiY   = 72;
+	}
 	void         CPdfReader::DrawPageOnRenderer(IRenderer* pRenderer, int _nPageIndex, bool* pbBreak)
 	{
 		int nPageIndex = _nPageIndex + 1;

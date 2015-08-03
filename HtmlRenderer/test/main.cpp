@@ -13,17 +13,17 @@ int main(int argc, char *argv[])
 
 #if 0
     //std::wstring sFile = L"\\\\KIRILLOV8\\_Office\\PDF\\Android intro(2p).pdf";
-    //std::wstring sFile = L"\\\\kirillov8\\_Office\\PDF\\Main Window(15p).pdf";
+    std::wstring sFile = L"\\\\kirillov8\\_Office\\PDF\\Main Window(15p).pdf";
     //std::wstring sFile = L"D:\\knut.djvu";
-    std::wstring sFile = L"D:\\bankomats.xps";
+    //std::wstring sFile = L"D:\\bankomats.xps";
     std::wstring sDst = L"D:\\test\\Document";
 #endif
 
 #if 1
     //std::wstring sFile = L"/home/oleg/activex/Android intro(2p).pdf";
-    //std::wstring sFile = L"/home/oleg/activex/knut.djvu";
-    std::wstring sFile = L"/home/oleg/activex/bankomats.xps";
-    std::wstring sDst = L"/home/oleg/Document";
+    std::wstring sFile = L"/home/oleg/activex/knut.djvu";
+    //std::wstring sFile = L"/home/oleg/activex/bankomats.xps";
+    std::wstring sDst = L"/home/oleg/activex/1";
 #endif
 
     CApplicationFonts oFonts;
@@ -34,11 +34,11 @@ int main(int argc, char *argv[])
     oReader.SetTempFolder(sDst.c_str());
 #endif
 
-#if 0
+#if 1
     CDjVuFile oReader;
 #endif
 
-#if 1
+#if 0
     CXpsFile oReader(&oFonts);
     oReader.SetTempFolder(sDst.c_str());
 #endif
@@ -51,7 +51,6 @@ int main(int argc, char *argv[])
     int nPagesCount = oReader.GetPagesCount();
     for (int i = 0; i < nPagesCount; ++i)
     {
-#if 1
         oHtmlRenderer.NewPage();
         oHtmlRenderer.BeginCommand(c_nPageType);
 
@@ -64,13 +63,10 @@ int main(int argc, char *argv[])
 
         oHtmlRenderer.put_Width(dWidth);
         oHtmlRenderer.put_Height(dHeight);
-#endif
 
         oReader.DrawPageOnRenderer(&oHtmlRenderer, i, NULL);
 
-#if 1
         oHtmlRenderer.EndCommand(c_nPageType);
-#endif
     }
 
     oHtmlRenderer.CloseFile();

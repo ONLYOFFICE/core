@@ -36,6 +36,7 @@ namespace PdfReader
 				   
 		int          GetPagesCount();
 		void         GetPageSize(int nPageIndex, double* pdWidth, double* pdHeight);
+		void         GetPageInfo(int nPageIndex, double* pdWidth, double* pdHeight, double* pdDpiX, double* pdDpiY);
 		void         DrawPageOnRenderer(IRenderer* pRenderer, int nPageIndex, bool* pbBreak);
 		void         ConvertToRaster(int nPageIndex, const wchar_t* wsDstPath, int nImageType);
 

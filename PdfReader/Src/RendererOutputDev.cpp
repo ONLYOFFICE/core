@@ -409,19 +409,12 @@ namespace PdfReader
 	}
 	void RendererOutputDev::StartPage(int nPageIndex, GrState *pGState)
 	{
-		m_pRenderer->NewPage();
 		m_pRenderer->BeginCommand(c_nPageType);
 
 		// Переводим пункты в миллиметры
-		double dPageHeight = PDFCoordsToMM(pGState->GetPageHeight());
-		double dPageWidth  = PDFCoordsToMM(pGState->GetPageWidth());
-
 		m_arrMatrix[0] = 1; m_arrMatrix[1] = 0;
 		m_arrMatrix[2] = 0; m_arrMatrix[3] = 1;
 		m_arrMatrix[4] = 0; m_arrMatrix[5] = 0;
-
-		m_pRenderer->put_Width(dPageWidth);
-		m_pRenderer->put_Height(dPageHeight);
 
 		m_bTransparentGroup = false;
 		m_bTransparentGroupSoftMask = false;

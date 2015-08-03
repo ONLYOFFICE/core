@@ -73,6 +73,22 @@ SOURCES +=  \
     ../../ZLIB/zlib-1.2.3/contrib/minizip/mztools.c \
     ../../ZLIB/zlib-1.2.3/contrib/minizip/unzip.c \
     ../../ZLIB/zlib-1.2.3/contrib/minizip/zip.c
+
+#SOURCES += \
+#    ../../ZLIB/zlib-1.2.3/adler32.c \
+#    ../../ZLIB/zlib-1.2.3/compress.c \
+#    ../../ZLIB/zlib-1.2.3/crc32.c \
+#    ../../ZLIB/zlib-1.2.3/deflate.c \
+#    ../../ZLIB/zlib-1.2.3/example.c \
+#    ../../ZLIB/zlib-1.2.3/gzio.c \
+#    ../../ZLIB/zlib-1.2.3/infback.c \
+#    ../../ZLIB/zlib-1.2.3/inffast.c \
+#    ../../ZLIB/zlib-1.2.3/inflate.c \
+#    ../../ZLIB/zlib-1.2.3/inftrees.c \
+#    ../../ZLIB/zlib-1.2.3/minigzip.c \
+#    ../../ZLIB/zlib-1.2.3/trees.c \
+#    ../../ZLIB/zlib-1.2.3/uncompr.c \
+#    ../../ZLIB/zlib-1.2.3/zutil.c
 	
 	
 HEADERS +=  \

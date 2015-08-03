@@ -10,7 +10,6 @@
 
 namespace ZLibZipUtils
 {
-  AVSOfficeCriticalSection  criticalSection;
   static zipFile zipOpenHelp(const wchar_t* filename)
   {
 #if defined(_WIN32) || defined (_WIN64)
@@ -449,9 +448,7 @@ namespace ZLibZipUtils
 
   /*========================================================================================================*/
   int ZipDir( const WCHAR* dir, const WCHAR* outputFile, const OnProgressCallback* progress, int compressionLevel )
-  {
-    criticalSection.Enter();
-	  
+  { 
 	int err = -1;
 
     if ( ( dir != NULL ) && ( outputFile != NULL ) )
@@ -563,17 +560,13 @@ namespace ZLibZipUtils
 	  }
 	}
 
-    criticalSection.Leave();
-
     return err;
   }
 
   /*========================================================================================================*/
 
   int ZipFile( const WCHAR* inputFile, const WCHAR* outputFile, int compressionLevel )
-  {
-    criticalSection.Enter();
-	  
+  { 
 	int err = -1;
 
     if ( ( inputFile != NULL ) && ( outputFile != NULL ) )
@@ -635,8 +628,6 @@ namespace ZLibZipUtils
 		}
 	}
 
-	criticalSection.Leave();
-
     return false;
   }
 
@@ -644,8 +635,6 @@ namespace ZLibZipUtils
 
   bool ClearDirectory( const WCHAR* dir, bool delDir )
   {
-    criticalSection.Enter();
-
 	bool result = false;
 	  
 	if ( dir != NULL )
@@ -676,8 +665,6 @@ namespace ZLibZipUtils
       result = false;
     }
 
-	criticalSection.Leave();
-
 	return result;
   }
 
@@ -685,8 +672,6 @@ namespace ZLibZipUtils
 
   int UnzipToDir( const WCHAR* zipFile, const WCHAR* unzipDir, const OnProgressCallback* progress, const WCHAR* password, bool opt_extract_without_path, bool clearOutputDirectory )
   {
-    criticalSection.Enter();
-	
     unzFile uf = NULL;
 
     int err = -1;
@@ -748,8 +733,6 @@ namespace ZLibZipUtils
 	  }
     }
 
-    criticalSection.Leave();
-
     return err;
   }
   
@@ -757,14 +740,10 @@ namespace ZLibZipUtils
   
   int UncompressBytes( BYTE* destBuf, ULONG* destSize, const BYTE* sourceBuf, ULONG sourceSize )
   {
-    criticalSection.Enter();
-	  
 	int err = -1;
 
 	err = uncompress( destBuf, destSize, sourceBuf, sourceSize );
 
-	criticalSection.Leave();
-	
 	return err;
   }
 
@@ -772,13 +751,9 @@ namespace ZLibZipUtils
 
   int CompressBytes( BYTE* destBuf, ULONG* destSize, const BYTE* sourceBuf, ULONG sourceSize, SHORT level )
   {
-    criticalSection.Enter();
-	  
 	int err = -1;
 
 	err = compress2( destBuf, destSize, sourceBuf, sourceSize, level );
-
-	criticalSection.Leave();
 
 	return err;
   }
@@ -787,8 +762,6 @@ namespace ZLibZipUtils
 
 	bool IsArchive(const WCHAR* filename)
 	{
-		criticalSection.Enter();
-
 	  unzFile uf = NULL;
 	  bool isZIP = false;
 
@@ -801,8 +774,6 @@ namespace ZLibZipUtils
 		  unzClose( uf );
 	  }
 
-	  criticalSection.Leave();
-
 	  return isZIP;
 	}
 
@@ -810,8 +781,6 @@ namespace ZLibZipUtils
 
   bool IsFileExistInArchive(const WCHAR* zipFile, const WCHAR* filePathInZip)
   {
-	  criticalSection.Enter();
-
 	  unzFile uf = NULL;
 	  bool isIn = false;
 
@@ -823,7 +792,6 @@ namespace ZLibZipUtils
 		  unzClose( uf );
 	  }	 
 
-	  criticalSection.Leave();
 	  return isIn;
   }
 
@@ -831,8 +799,6 @@ namespace ZLibZipUtils
 
   bool LoadFileFromArchive(const WCHAR* zipFile, const WCHAR* filePathInZip, BYTE** fileInBytes, ULONG& nFileSize)
   {
-	  criticalSection.Enter();
-
 	  unzFile uf = NULL;
 	  bool isIn = false;
 
@@ -845,7 +811,6 @@ namespace ZLibZipUtils
 		  unzClose( uf );
 	  }
 	  
-	  criticalSection.Leave();
 	  return isIn;
   }
 
@@ -853,8 +818,6 @@ namespace ZLibZipUtils
 
 	bool ExtractFiles(const wchar_t* zip_file_path, const ExtractedFileCallback& callback, void* pParam)
 	{
-		CSLocker locker(criticalSection);
-
 		unzFile unzip_file_handle = unzOpenHelp(zip_file_path);
 		if ( unzip_file_handle != NULL )
 		{		  
@@ -882,8 +845,6 @@ namespace ZLibZipUtils
 
 	bool CompressFiles(const wchar_t* zip_file_path, const RequestFileCallback& callback, void* pParam, int compression_level)
 	{
-		CSLocker locker(criticalSection);
-
 		zipFile zip_file_handle = zipOpenHelp(zip_file_path);
 
 		if(NULL != zip_file_handle)

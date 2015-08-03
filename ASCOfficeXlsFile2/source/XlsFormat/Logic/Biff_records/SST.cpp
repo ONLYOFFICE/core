@@ -1,6 +1,7 @@
 #include "SST.h"
 
 #include <simple_xml_writer.h>
+#include <utils.h>
 
 namespace XLS
 {;
@@ -92,7 +93,7 @@ int SST::serialize(std::wostream & stream)
 					CP_XML_NODE(L"t")
 					{		
 						XLUnicodeRichExtendedString *richText = dynamic_cast<XLUnicodeRichExtendedString *>(rgb[i].get());
-						CP_XML_STREAM() << richText->str_;
+						CP_XML_STREAM() << xml::utils::replace_text_to_xml(richText->str_);
 					}
 				}
 			}

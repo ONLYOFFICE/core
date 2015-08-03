@@ -1,10 +1,12 @@
 
 #include "Obj.h"
+#include <Logic/Biff_records/MsoDrawing.h>
+#include <Logic/Biff_structures/ODRAW/OfficeArtDgContainer.h>
 
 namespace XLS
 {;
 
-Obj::Obj()
+Obj::Obj(MsoDrawingPtr mso_drawing) : mso_drawing_(mso_drawing)
 {
 }
 
@@ -162,6 +164,21 @@ void Obj::readFields(CFRecord& record)
 	if(0x12 != cmo.ot && 0x14 != cmo.ot)
 	{
 		record.skipNunBytes(4); // reserved
+	}
+
+	if (continue_records.size() > 0)
+	{
+		std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
+
+		ODRAW::OfficeArtDgContainer dg(ODRAW::OfficeArtRecord::CA_Sheet);
+
+		while( !recs.empty() )
+		{
+			//dg.loadFields(*recs.front());
+			mso_drawing_->storeRecordAndDecideProceeding(recs.front());
+			recs.pop_front();
+		}
+		
 	}
 }
 

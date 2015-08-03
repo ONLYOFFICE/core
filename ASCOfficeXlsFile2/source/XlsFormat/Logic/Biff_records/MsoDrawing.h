@@ -20,6 +20,7 @@ public:
 
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
+	void readFields();
 
 //-----------------------------
 	virtual const bool isStartingRecord(CFRecord& record);
@@ -28,6 +29,8 @@ public:
 
 //-----------------------------
 	ODRAW::OfficeArtDgContainer rgChildRec;
+
+	bool isReading;
 
 };
 

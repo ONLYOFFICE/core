@@ -7,6 +7,7 @@ namespace XLS
 MsoDrawing::MsoDrawing(const bool is_inside_chart_sheet)
 :	rgChildRec(is_inside_chart_sheet ? ODRAW::OfficeArtRecord::CA_Chart : ODRAW::OfficeArtRecord::CA_Sheet)
 {
+	isReading = false;
 }
 
 
@@ -26,10 +27,18 @@ void MsoDrawing::writeFields(CFRecord& record)
 	record << rgChildRec;
 }
 
+void MsoDrawing::readFields()
+{
+	rgChildRec.rh_own.recLen = stored_record->getDataSize();
+
+	rgChildRec.loadFields(*stored_record);
+}
 
 void MsoDrawing::readFields(CFRecord& record)
 {
 	record >> rgChildRec;
+
+	isReading = true;
 }
 
 

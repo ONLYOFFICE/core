@@ -2,6 +2,7 @@
 #include "TEXTOBJECT.h"
 #include <Logic/Biff_records/TxO.h>
 #include <Logic/Biff_records/Continue.h>
+#include <Logic/Biff_records/MsoDrawing.h>
 
 namespace XLS
 {;

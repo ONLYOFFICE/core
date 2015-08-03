@@ -47,7 +47,8 @@ void TxO::readFields(CFRecord& record)
 	record >> ifntEmpty;
 	fmla.load(record);
 	
-	if ( cbRuns ) {
+	if ( cbRuns )
+	{
 		std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
 		if ( recs.size() )
 		{
@@ -62,6 +63,8 @@ void TxO::readFields(CFRecord& record)
 
 			TxOruns.m_runCount = cbRuns / 8 - 1;
 			TxOruns.load(record);
+			
+			///+120 byte ???
 		}
 	}
 }

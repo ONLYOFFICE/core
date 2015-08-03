@@ -33,12 +33,19 @@ const bool OfficeArtDgContainer::CheckIfContainerSizeOK(XLS::CFRecord& record)
 	if(!record.checkFitReadSafe(rh.size())) return false;
 	record >> rh;
 
-	return 0xF002 == rh.recType && record.getDataSize() == rh.recLen + rh.size();
+	bool res = record.getDataSize() == rh.recLen + rh.size();
+
+	return 0xF002 == rh.recType && res;
 }
 
 void OfficeArtDgContainer::loadFields(XLS::CFRecord& record)
 {
-	OfficeArtContainer::loadFields(record);
+	try
+	{
+		OfficeArtContainer::loadFields(record);
+	}catch(...)
+	{
+	}
 	
 	for (long i = 0 ; i < child_records.size(); i++)
 	{
@@ -61,7 +68,7 @@ void OfficeArtDgContainer::loadFields(XLS::CFRecord& record)
 			}break;
 		case ODRAW::OfficeArtRecord::SpContainer:
 			{
-				m_OfficeArtSpContainer = child_records[i];
+				m_OfficeArtSpContainer.push_back(child_records[i]);
 				child_records.erase(child_records.begin() + i,child_records.begin() + i + 1); i--; 
 			}break;			
 		//case ODRAW::OfficeArtRecord::SpgrContainerFileBlock:

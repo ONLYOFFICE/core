@@ -23,11 +23,11 @@ public:
 
 	void loadFields(XLS::CFRecord& record);
 	
-	OfficeArtRecordPtr		m_OfficeArtFDG;
-	OfficeArtRecordPtr		m_OfficeArtFRITContainer;
-	OfficeArtRecordPtr		m_OfficeArtSpgrContainer;
-	OfficeArtRecordPtr		m_OfficeArtSpContainer; // todooo - one????
-	OfficeArtRecordPtr		m_OfficeArtSpgrContainerFileBlock;
+	OfficeArtRecordPtr					m_OfficeArtFDG;
+	OfficeArtRecordPtr					m_OfficeArtFRITContainer;
+	OfficeArtRecordPtr					m_OfficeArtSpgrContainer;
+	std::vector<OfficeArtRecordPtr>		m_OfficeArtSpContainer; 
+	OfficeArtRecordPtr					m_OfficeArtSpgrContainerFileBlock;
 };
 
 typedef boost::shared_ptr<OfficeArtDgContainer> OfficeArtDgContainerPtr;

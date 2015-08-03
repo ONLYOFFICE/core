@@ -440,23 +440,30 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 {
 	if (objects == NULL) return;
 		
-	ODRAW::OfficeArtSpgrContainer *spgr = dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpgrContainer.get());
+	ODRAW::OfficeArtSpgrContainer	*spgr = dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpgrContainer.get());
+	//ODRAW::OfficeArtSpContainer		*sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpContainer.get());
 
-	if (spgr == NULL) return;
+	if (spgr == NULL && objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpContainer.size() < 1) return;
 
 	for (long i = 0 ; i < objects->m_OBJs.size(); i++)
 	{
 		int ind = objects->m_OBJs[i].second;
 		
-		if (ind > spgr->child_records.size()-1) continue;
-
+		ODRAW::OfficeArtSpContainer *sp = NULL;
+		if ( (spgr) && (ind < spgr->child_records.size()))
+		{
+			sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
+		}
+		else if (ind < objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpContainer.size())
+		{
+			sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpContainer[ind].get());
+		}
+		
 		XLS::OBJ* OBJ = dynamic_cast<XLS::OBJ*>(objects->m_OBJs[i].first.get());
 		XLS::Obj *obj = dynamic_cast<XLS::Obj*>(OBJ->m_Obj.get());
 		
 		if (xlsx_context->get_drawing_context().start_drawing(obj->cmo.ot))
 		{
-			ODRAW::OfficeArtSpContainer *sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
-
 			convert(sp);
 
 			xlsx_context->get_drawing_context().end_drawing();

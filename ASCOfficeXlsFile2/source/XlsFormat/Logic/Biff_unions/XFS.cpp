@@ -70,16 +70,31 @@ const bool XFS::loadContent(BinProcessor& proc)
 		}
 	}
 
+	int first_xf_ext = 0;
 
-	for (long i = 0 ; i < m_cell_styles.size(); i++)
+	for (_UINT16 i = 0 ; i < m_cell_styles.size(); i++)
 	{
 		XF		*xfs = dynamic_cast<XF*>(m_cell_styles[i].get());
 
 		if (m_xf_ext.size() > 0)
 		{
-			XFExt *ext = dynamic_cast<XFExt*>(m_xf_ext[i].get());
+			XFExt *ext_find = NULL;
+			
+			for (_UINT16 j = first_xf_ext ; j < m_xf_ext.size(); j++)
 			{
-				xfs->style.ext_props = ext->rgExt;
+				XFExt *ext = dynamic_cast<XFExt*>(m_xf_ext[j].get());
+				if (ext->ixfe > i)break;
+
+				if (ext->ixfe == i)
+				{
+					ext_find = ext;
+					first_xf_ext = j + 1;
+					break;
+				}
+			}
+			if (ext_find)
+			{
+				xfs->style.ext_props = ext_find->rgExt;
 			}
 		}
 		

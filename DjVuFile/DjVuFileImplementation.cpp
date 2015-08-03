@@ -251,10 +251,6 @@ void               CDjVuFileImplementation::CreateFrame(IRenderer* pRenderer, GP
 	double dRendWidth = 0;
 	double dRendHeight = 0;
 
-    pRenderer->NewPage();
-    pRenderer->put_Width(25.4 * nWidth / dRendDpiX);
-    pRenderer->put_Height(25.4 * nHeight / dRendDpiY);
-
 	pRenderer->get_Width(&dRendWidth);
 	pRenderer->get_Height(&dRendHeight);
 

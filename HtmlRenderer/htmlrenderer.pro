@@ -50,7 +50,8 @@ shared {
 
     LIBS += -L$$DESTDIR -lASCOfficeUtilsLib
     LIBS += -L$$DESTDIR -lgraphics
-    LIBS += -L$$DESTDIR -llibxml
+
+    include(../DesktopEditor/xml/build/qt/libxml2.pri)
 
     message(dynamic)
 
@@ -65,8 +66,14 @@ shared {
 
     linux-g++ | linux-g++-64 | linux-g++-32 {
         CONFIG += plugin
+
+        QMAKE_CXXFLAGS += -fvisibility=hidden
+        QMAKE_CFLAGS += -fvisibility=hidden
+
         TARGET_EXT = .so
     }
+} else {
+    LIBS += -L$$DESTDIR -llibxml
 }
 ################################################
 

@@ -58,6 +58,7 @@
 #define isnan(d) (_isnan(d))
 #endif
 #else /* _MSC_VER */
+#ifdef WIN32
 #ifndef isinf
 int isinf (double d) {
     int expon = 0;
@@ -91,6 +92,7 @@ int isnan (double d) {
         return 0;
     }
 }
+#endif
 #endif
 #endif /* _MSC_VER */
 

@@ -786,6 +786,7 @@ namespace XPS
 #else
 		std::wstring wsResult = wsPath;
 		NSStringExt::Replace(wsResult, L"//", L"/");
+        NSStringExt::Replace(wsResult, L"//", L"/");
 		return wsResult;
 #endif
 	}

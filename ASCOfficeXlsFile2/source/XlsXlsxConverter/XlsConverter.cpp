@@ -32,6 +32,7 @@
 #include <Logic/Biff_structures/ODRAW/OfficeArtBStoreContainer.h>
 #include <Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h>
 #include <Logic/Biff_structures/ODRAW/OfficeArtFOPT.h>
+#include <Logic/Biff_structures/ODRAW/OfficeArtFOPTE.h>
 #include <Logic/Biff_structures/ODRAW/OfficeArtFSP.h>
 #include <Logic/Biff_structures/ODRAW/OfficeArtBlip.h>
 
@@ -443,24 +444,25 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 	ODRAW::OfficeArtSpgrContainer	*spgr = dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpgrContainer.get());
 	//ODRAW::OfficeArtSpContainer		*sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpContainer.get());
 
-	if (spgr == NULL && objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpContainer.size() < 1) return;
+	//if (spgr == NULL/* && objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpContainer.size() < 1*/) return;
 
 	for (long i = 0 ; i < objects->m_OBJs.size(); i++)
 	{
 		int ind = objects->m_OBJs[i].second;
+		XLS::OBJ* OBJ = dynamic_cast<XLS::OBJ*>(objects->m_OBJs[i].first.get());
+		XLS::Obj *obj = dynamic_cast<XLS::Obj*>(OBJ->m_Obj.get());
 		
 		ODRAW::OfficeArtSpContainer *sp = NULL;
-		if ( (spgr) && (ind < spgr->child_records.size()))
+		
+		if (obj->m_OfficeArtSpContainer)
+		{
+			sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(obj->m_OfficeArtSpContainer.get());
+		}
+		else if ( (spgr) && (ind < spgr->child_records.size()))
 		{
 			sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
 		}
-		else if (ind < objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpContainer.size())
-		{
-			sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpContainer[ind].get());
-		}
 		
-		XLS::OBJ* OBJ = dynamic_cast<XLS::OBJ*>(objects->m_OBJs[i].first.get());
-		XLS::Obj *obj = dynamic_cast<XLS::Obj*>(OBJ->m_Obj.get());
 		
 		if (xlsx_context->get_drawing_context().start_drawing(obj->cmo.ot))
 		{
@@ -539,8 +541,16 @@ void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
 				std::wstring rId = xlsx_context->get_mediaitems().find_image(fort->fopt.rgfopte[i]->op , target, isIternal);
 				xlsx_context->get_drawing_context().set_image(target);
 			}break;
+		case 0x0382:
+			{
+				ODRAW::pihlShape *pihlShape = dynamic_cast<ODRAW::pihlShape*>(fort->fopt.rgfopte[i].get());
+				if (pihlShape)
+				{
+					std::wstring target = GetTargetMoniker(pihlShape->IHlink_complex.hyperlink.oleMoniker.data.get());
+					xlsx_context->get_drawing_context().set_hyperlink(target);
+				}
+			}break;
 		}
-
 	}
 }
 

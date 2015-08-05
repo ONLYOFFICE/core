@@ -141,15 +141,15 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 
 			if(record.getRdPtr() != child_beginning_ptr + rh_child.recLen)
 			{
-				if(record.getRdPtr() < child_beginning_ptr + rh_child.recLen)
+				if(record.getRdPtr() < child_beginning_ptr + rh_child.recLen - 8)
 				{
 					Log::warning(STR::int2wstr(child_beginning_ptr + rh_child.recLen - record.getRdPtr(), 10) + 
 						L" unsigned chars were not processed while reading from OfficeArt record of type 0x" + 
 						STR::int2hex_wstr(rh_child.recType, sizeof(rh_child.recType)));
 				}
-				else
+				else if(record.getRdPtr() > child_beginning_ptr + rh_child.recLen)
 				{
-					throw;// EXCEPT::RT::WrongBiffRecord("Wrong data parsed in OfficeArt record of type 0x" + 
+					 throw;// EXCEPT::RT::WrongBiffRecord("Wrong data parsed in OfficeArt record of type 0x" + 
 						//STR::int2hex_wstr(rh_child.recType, sizeof(rh_child.recType)), record.getTypeString());
 				}
 			}

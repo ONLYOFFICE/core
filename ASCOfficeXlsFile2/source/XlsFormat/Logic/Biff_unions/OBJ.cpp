@@ -2,13 +2,12 @@
 #include "OBJ.h"
 #include <Logic/Biff_records/Obj.h>
 #include <Logic/Biff_records/Continue.h>
-#include <Logic/Biff_records/MsoDrawing.h>
 
 namespace XLS
 {;
 
 
-OBJ::OBJ(MsoDrawingPtr mso_drawing) : mso_drawing_(mso_drawing)
+OBJ::OBJ()
 {
 }
 
@@ -27,8 +26,7 @@ BaseObjectPtr OBJ::clone()
 // OBJ = Obj *Continue
 const bool OBJ::loadContent(BinProcessor& proc)
 {
-	Obj Obj_(mso_drawing_);
-	if(!proc.mandatory(Obj_))
+	if(!proc.mandatory<Obj>())
 	{
 		return false;
 	}

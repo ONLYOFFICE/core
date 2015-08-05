@@ -20,15 +20,6 @@ TxORuns::~TxORuns()
 {
 }
 
-//void TxORuns::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//	std::for_each(rgTxoRuns.begin(), rgTxoRuns.end(), boost::bind(&Run::toXML, _1, xml_tag));
-//	lastRun.toXML(xml_tag);
-//}
-//
-//void TxORuns::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//}
 
 void TxORuns::store(CFRecord& record)
 {	

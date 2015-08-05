@@ -244,6 +244,9 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 			fopte = OfficeArtFOPTEPtr(new ShadowStyleBooleanProperties);
 			break;
 
+		case 0x0382:
+			fopte = OfficeArtFOPTEPtr(new pihlShape);
+			break;
 		default:
 			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;
@@ -486,5 +489,20 @@ void fillShadeColors::ReadComplexData(XLS::CFRecord& record)
 //	own_tag->setAttribute(L"fUsefshadowObscured", fUsefshadowObscured);
 //	own_tag->setAttribute(L"fUsefShadow", fUsefShadow);
 //}
+XLS::BiffStructurePtr IHlink::clone()
+{
+	return XLS::BiffStructurePtr(new IHlink(*this));
+}
 
-} // namespace XLS
+void IHlink::load(XLS::CFRecord& record)
+{
+	record >> CLSID_StdHlink;
+	record >> hyperlink;
+}
+
+void pihlShape::ReadComplexData(XLS::CFRecord& record)
+{
+	record >> IHlink_complex;
+}
+
+} 

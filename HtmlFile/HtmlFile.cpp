@@ -38,7 +38,7 @@ int CHtmlFile::Convert(const std::wstring& sXml, const std::wstring& sPathIntern
 
     std::wstring sTempFileForParams = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"XML");
     NSFile::CFileBinary oFile;
-    oFile.CreateFile(sTempFileForParams);
+    oFile.CreateFileW(sTempFileForParams);
     oFile.WriteStringUTF8(sXml, true);
     oFile.CloseFile();
 
@@ -74,17 +74,17 @@ int CHtmlFile::Convert(const std::wstring& sXml, const std::wstring& sPathIntern
 #endif
 
 #ifdef LINUX
+    std::wstring sTempFileForParams = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"XML");
+    NSFile::CFileBinary oFile;
+    oFile.CreateFileW(sTempFileForParams);
+    oFile.WriteStringUTF8(sXml, true);
+    oFile.CloseFile();
+
     pid_t pid = fork(); // create child process
     int status;
 
     std::string sProgramm = U_TO_UTF8(sInternal);
-    std::string sXmlA = "";
-    if (!sXml.empty())
-        sXmlA = U_TO_UTF8(sXml);
-
-    FILE* f = fopen("/home/oleg/a.txt", "a+");
-    fprintf(f, "HtmlCodeAfterFork\n");
-    fclose(f);
+    std::string sXmlA = "<html>" + U_TO_UTF8(sTempFileForParams);
 
     switch (pid)
     {
@@ -93,7 +93,22 @@ int CHtmlFile::Convert(const std::wstring& sXml, const std::wstring& sPathIntern
 
     case 0: // child process
     {
-        execl(sProgramm.c_str(), sXmlA.empty() ? NULL : sXmlA.c_str(), 0); // run the command
+        std::string sLibraryDir = sProgramm;
+        if (std::string::npos != sProgramm.find_last_of('/'))
+            sLibraryDir = "LD_LIBRARY_PATH=" + sProgramm.substr(0, sProgramm.find_last_of('/'));
+
+        const char* nargs[2];
+        nargs[0] = sXmlA.c_str();
+        nargs[1] = NULL;
+
+        const char* nenv[3];
+        nenv[0] = sLibraryDir.c_str();
+        nenv[1] = "DISPLAY=:0";
+        nenv[2] = NULL;
+
+        execve(sProgramm.c_str(),
+               (char * const *)nargs,
+               (char * const *)nenv);
         exit(EXIT_SUCCESS);
         break;
     }
@@ -107,5 +122,6 @@ int CHtmlFile::Convert(const std::wstring& sXml, const std::wstring& sPathIntern
     }
 #endif
 
+    NSFile::CFileBinary::Remove(sTempFileForParams);
     return nReturnCode;
 }

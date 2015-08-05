@@ -26,10 +26,6 @@ class Parenthesis_OBJECTS_2: public ABNFParenthesis
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_OBJECTS_2)
 public:
-	Parenthesis_OBJECTS_2(MsoDrawingPtr mso_drawing) : mso_drawing_(mso_drawing)
-	{
-	}
-
 	BaseObjectPtr clone()
 	{
 		return BaseObjectPtr(new Parenthesis_OBJECTS_2(*this));
@@ -37,14 +33,12 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		OBJ OBJ_(mso_drawing_);
-		bool res =	proc.optional<TEXTOBJECT>()		||
-					proc.optional(OBJ_)||
-					proc.optional<CHART>();
+		bool res = proc.optional<TEXTOBJECT>() ||
+				proc.optional<OBJ>() ||
+				proc.optional<CHART>();
 
 		return res;
 	};
-	MsoDrawingPtr mso_drawing_;
 };
 
 
@@ -53,13 +47,13 @@ class Parenthesis_OBJECTS_1: public ABNFParenthesis
 	BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_OBJECTS_1)
 public:
 
-	Parenthesis_OBJECTS_1(MsoDrawingPtr mso_drawing,MsoDrawingPtr mso_drawing2) : mso_drawing_(mso_drawing), mso_drawing2_(mso_drawing2)
+	Parenthesis_OBJECTS_1(MsoDrawingPtr mso_drawing) : mso_drawing_(mso_drawing)
 	{
 	}
 
 	BaseObjectPtr clone()
 	{
-		return BaseObjectPtr(new Parenthesis_OBJECTS_1(mso_drawing_, mso_drawing2_));
+		return BaseObjectPtr(new Parenthesis_OBJECTS_1(mso_drawing_));
 	}
 
 	const bool loadContent(BinProcessor& proc)
@@ -74,13 +68,12 @@ public:
 		{
 			return false;
 		}
-		int count1 = proc.repeated(Parenthesis_OBJECTS_2(mso_drawing2_), 0, 0);
-
+		proc.repeated(Parenthesis_OBJECTS_2(), 0, 0);
+		proc.repeated<Continue>(0,0);
 		return true;
 	}
 
 	MsoDrawingPtr mso_drawing_;
-	MsoDrawingPtr mso_drawing2_;
 };
 
 
@@ -101,22 +94,9 @@ const bool OBJECTS::loadContent(BinProcessor& proc)
 const bool OBJECTS::loadContentRead(BinReaderProcessor& proc)
 {
 	m_MsoDrawing = boost::shared_ptr<MsoDrawing>(new MsoDrawing(is_inside_chart_sheet_));
-	m_MsoDrawingObjects = boost::shared_ptr<MsoDrawing>(new MsoDrawing(is_inside_chart_sheet_));
 	
-	int count1 = proc.repeated(Parenthesis_OBJECTS_1(m_MsoDrawing, m_MsoDrawingObjects), 0, 0);
+	int count1 = proc.repeated(Parenthesis_OBJECTS_1(m_MsoDrawing), 0, 0);
 
-	if (m_MsoDrawing->isReading == false)
-	{
-		try
-		{
-			m_MsoDrawingObjects->readFields();
-			m_MsoDrawing = m_MsoDrawingObjects;
-		}
-		catch(...)
-		{
-		}
-	}
-	
 	int i = 0 ;
 	for(std::list<BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end() ; it++)
 	{

@@ -7,6 +7,7 @@
 #include "IMsoArray.h"
 #include "MSOSHADECOLOR.h"
 #include "MSO_enums.h"
+#include <Logic/Biff_structures/HyperlinkObject.h>
 
 namespace XLS
 {
@@ -61,7 +62,6 @@ class TextBooleanProperties : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(TextBooleanProperties)
 public:
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 
 };
 
@@ -384,7 +384,7 @@ class fillShadeColors : public OfficeArtFOPTE
 public:
 	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 	virtual void ReadComplexData(XLS::CFRecord& record);
-private:
+
 	IMsoArray<MSOSHADECOLOR> fillShadeColors_complex;
 };
 
@@ -572,6 +572,35 @@ public:
 	//}
 };
 
+class IHlink;
+typedef boost::shared_ptr<IHlink> IHlinkPtr;
+
+class IHlink : public XLS::BiffStructure
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(IHlink)
+public:
+	IHlink(){}
+
+	XLS::BiffStructurePtr clone();
+
+	void load(XLS::CFRecord& record);
+	void store(XLS::CFRecord& record){}
+	
+	static const XLS::ElementType	type = XLS::typeIHLink;
+
+	_GUID_							CLSID_StdHlink;
+	OSHARED::HyperlinkObject		hyperlink;
+};
+
+class pihlShape : public OfficeArtFOPTE
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(pihlShape)
+public:
+	virtual void ReadComplexData(XLS::CFRecord& record);
+
+	IHlink IHlink_complex;
+};
 
 
-} // namespace XLS
+
+}

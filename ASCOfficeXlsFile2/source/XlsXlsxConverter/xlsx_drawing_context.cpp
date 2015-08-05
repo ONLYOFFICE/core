@@ -5,7 +5,7 @@
 #include "xlsx_drawing_context.h"
 
 #include <simple_xml_writer.h>
-
+#include <utils.h>
 
 namespace oox {
 
@@ -150,6 +150,7 @@ void xlsx_drawing_context::set_shape_id(int id)
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().shape_id = id;
 }
+
 void xlsx_drawing_context::end_drawing()
 {
 	if (drawing_state.size() < 1 )return;
@@ -188,6 +189,17 @@ void xlsx_drawing_context::serialize_pic(std::wstring rId)
 				{
 					if (drawing_state.back().id >= 0) CP_XML_ATTR(L"id", drawing_state.back().id);
 					CP_XML_ATTR(L"name", L"Picture_" + rId.substr(5));
+
+					if (!drawing_state.back().hyperlink.empty())
+					{
+						CP_XML_NODE(L"a:hlinkClick")
+						{
+							CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+							//CP_XML_ATTR(L"xmlns:a", L"http://schemas.openxmlformats.org/drawingml/2006/main");
+							
+							CP_XML_ATTR(L"r:id", drawing_state.back().hyperlink);
+						}
+					}
 				}
 				CP_XML_NODE(L"xdr:cNvPicPr")
 				{
@@ -266,6 +278,23 @@ void xlsx_drawing_context::set_image(std::wstring & str)
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().image_target = str;
 }
+
+void xlsx_drawing_context::set_hyperlink(std::wstring & str)
+{
+	if (drawing_state.size() < 1 )return;
+
+	std::wstring hId=std::wstring(L"hId") + boost::lexical_cast<std::wstring>(hlinks_.size()+1);
+	
+	std::wstring href_correct = xml::utils::replace_text_to_xml(str);
+
+	_hlink_desc desc = {hId, href_correct};
+
+	hlinks_.push_back(desc);
+	drawing_state.back().hyperlink = hId;
+
+	xlsx_drawings_->add( false, hId , href_correct, external_items::typeHyperlink);
+}
+
 void xlsx_drawing_context::set_properties(std::wstring & str)
 {
 	if (drawing_state.size() < 1 )return;

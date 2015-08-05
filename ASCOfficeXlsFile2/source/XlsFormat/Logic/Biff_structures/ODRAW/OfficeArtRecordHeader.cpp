@@ -6,6 +6,10 @@
 namespace ODRAW
 {;
 
+OfficeArtRecordHeader::OfficeArtRecordHeader()
+{
+	recVer = recInstance = recType = recLen = 0;
+}
 
 XLS::BiffStructurePtr OfficeArtRecordHeader::clone()
 {

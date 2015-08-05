@@ -39,8 +39,14 @@ public:
 	int						shape_id;
 	bool					flipV;
 	bool					flipH;
+	std::wstring			hyperlink;
 	
 	bool					isInternal;
+};
+struct _hlink_desc
+{
+    std::wstring hId;
+    std::wstring hRef;
 };
 
 class xlsx_drawing_context
@@ -67,6 +73,7 @@ public:
 		void set_image(std::wstring & str);
 		void set_anchor(std::wstring & str);
 		void set_properties(std::wstring & str);
+		void set_hyperlink(std::wstring & str);
 
 		void serialize(std::wostream & stream);
 
@@ -79,6 +86,8 @@ private:
 	xlsx_drawing_context_handle	  & handle_;
 	xlsx_drawings_ptr				xlsx_drawings_;
 	int								count_object;
+	
+	std::vector<_hlink_desc>		hlinks_;
 };
 
 }

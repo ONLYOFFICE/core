@@ -64,7 +64,24 @@ void TxO::readFields(CFRecord& record)
 			TxOruns.m_runCount = cbRuns / 8 - 1;
 			TxOruns.load(record);
 			
-			///+120 byte ???
+		///+120 byte ???
+
+
+			/*BYTE* Add = NULL;*/
+			int size = 0;
+			if (record.getRdPtr() <  record.getDataSize())
+			{
+				//XLUnicodeStringNoCch add;
+				//record >> add;
+				size = record.getDataSize() - record.getRdPtr();
+				//Add = new BYTE [size];
+				//memcpy(Add, record.getData(), size);
+				record.skipNunBytes(size);
+			}
+			//if (Add)
+			//{
+			//	delete []Add;
+			//}
 		}
 	}
 }

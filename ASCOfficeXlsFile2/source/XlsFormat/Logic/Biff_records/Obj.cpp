@@ -1,12 +1,12 @@
 
 #include "Obj.h"
 #include <Logic/Biff_records/MsoDrawing.h>
-#include <Logic/Biff_structures/ODRAW/OfficeArtDgContainer.h>
+#include <Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h>
 
 namespace XLS
 {;
 
-Obj::Obj(MsoDrawingPtr mso_drawing) : mso_drawing_(mso_drawing)
+Obj::Obj()
 {
 }
 
@@ -171,12 +171,28 @@ void Obj::readFields(CFRecord& record)
 		std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
 
 		ODRAW::OfficeArtDgContainer dg(ODRAW::OfficeArtRecord::CA_Sheet);
-
-		while( !recs.empty() )
+		if (recs.size())
 		{
-			//dg.loadFields(*recs.front());
-			mso_drawing_->storeRecordAndDecideProceeding(recs.front());
-			recs.pop_front();
+			m_OfficeArtSpContainer = ODRAW::OfficeArtRecordPtr(new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet));
+			while( !recs.empty() )
+			{
+				record.appendRawData(recs.front());
+				recs.pop_front();
+			}
+			record >> *m_OfficeArtSpContainer;
+
+			BYTE* Add = NULL;
+			if (record.getRdPtr() <  record.getDataSize())
+			{
+				int size = record.getDataSize() - record.getRdPtr();
+				Add = new BYTE [size];
+				memcpy(Add, record.getData(), size);
+				record.skipNunBytes(size);
+			}
+			if (Add)
+			{
+				delete []Add;
+			}
 		}
 		
 	}

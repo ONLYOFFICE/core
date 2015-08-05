@@ -15,6 +15,7 @@ class OfficeArtRecordHeader : public XLS::BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtRecordHeader)
 public:
+	OfficeArtRecordHeader();
 	XLS::BiffStructurePtr clone();
 	
 	virtual void load(XLS::CFRecord& record);

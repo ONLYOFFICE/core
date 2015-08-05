@@ -147,6 +147,7 @@ enum ElementType
 	typeHFPicture,
 	typeHideObj,
 	typeHLink,
+	typeIHLink,
 	typeHLinkTooltip,
 	typeHorizontalPageBreaks,
 	typeIFmtRecord,

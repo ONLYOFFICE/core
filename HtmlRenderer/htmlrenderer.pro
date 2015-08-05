@@ -51,6 +51,7 @@ shared {
     LIBS += -L$$DESTDIR -lASCOfficeUtilsLib
     LIBS += -L$$DESTDIR -lgraphics
 
+    LIB_XML_PRI_PATH = ../DesktopEditor/xml
     include(../DesktopEditor/xml/build/qt/libxml2.pri)
 
     message(dynamic)

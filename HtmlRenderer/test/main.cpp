@@ -5,6 +5,7 @@
 #include "../../PdfReader/PdfReader.h"
 #include "../../DjVuFile/DjVu.h"
 #include "../../XpsFile/XpsFile.h"
+#include "../../PdfWriter/PdfRenderer.h"
 #include "../include/HTMLRenderer3.h"
 
 int main(int argc, char *argv[])
@@ -21,8 +22,8 @@ int main(int argc, char *argv[])
 
 #if 1
     //std::wstring sFile = L"/home/oleg/activex/Android intro(2p).pdf";
-    std::wstring sFile = L"/home/oleg/activex/knut.djvu";
-    //std::wstring sFile = L"/home/oleg/activex/bankomats.xps";
+    //std::wstring sFile = L"/home/oleg/activex/knut.djvu";
+    std::wstring sFile = L"/home/oleg/activex/bankomats.xps";
     std::wstring sDst = L"/home/oleg/activex/1";
 #endif
 
@@ -34,19 +35,24 @@ int main(int argc, char *argv[])
     oReader.SetTempFolder(sDst.c_str());
 #endif
 
-#if 1
+#if 0
     CDjVuFile oReader;
 #endif
 
-#if 0
+#if 1
     CXpsFile oReader(&oFonts);
     oReader.SetTempFolder(sDst.c_str());
 #endif
 
     bool bResult = oReader.LoadFromFile(sFile.c_str());
 
+#if 0
     NSHtmlRenderer::CASCHTMLRenderer3 oHtmlRenderer;
     oHtmlRenderer.CreateOfficeFile(sDst);
+#else
+    CPdfRenderer oHtmlRenderer(&oFonts);
+    oHtmlRenderer.SetTempFolder(sDst);
+#endif
 
     int nPagesCount = oReader.GetPagesCount();
     for (int i = 0; i < nPagesCount; ++i)
@@ -69,7 +75,11 @@ int main(int argc, char *argv[])
         oHtmlRenderer.EndCommand(c_nPageType);
     }
 
+#if 0
     oHtmlRenderer.CloseFile();
+#else
+    oHtmlRenderer.SaveToFile(L"/home/oleg/activex/1/1.pdf");
+#endif
 
     return 0;
 }

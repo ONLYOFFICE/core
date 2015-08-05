@@ -3,8 +3,8 @@
 
 int main(int argc, char *argv[])
 {
-#if 0
-    std::wstring sPath = NSFile::GetProcessDirectory() + L"/../../Internal/windows/Debug/";
+#ifdef WIN32
+    std::wstring sPath = NSFile::GetProcessDirectory() + L"/../../Internal/windows/Release/";
 
     std::wstring sXml = L"\
 <html>\
@@ -14,7 +14,7 @@ int main(int argc, char *argv[])
 </html>\
 ";
 #else
-    std::wstring sPath = NSFile::GetProcessDirectory() + L"/../../Internal/linux/Debug/";
+    std::wstring sPath = NSFile::GetProcessDirectory() + L"/../../Internal/linux/Release/";
 
     std::wstring sXml = L"\
 <html>\

@@ -49,6 +49,7 @@ shared {
     LIBS += -L$$DESTDIR -lgraphics
     LIBS += -L$$DESTDIR -lPdfWriter
 
+    LIB_XML_PRI_PATH = ../DesktopEditor/xml
     include(../DesktopEditor/xml/build/qt/libxml2.pri)
 
     message(dynamic)

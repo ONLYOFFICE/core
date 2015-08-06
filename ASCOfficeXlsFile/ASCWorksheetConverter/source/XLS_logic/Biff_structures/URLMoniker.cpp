@@ -51,7 +51,8 @@ void URLMoniker::store(XLS::CFRecord& record)
 void URLMoniker::load(XLS::CFRecord& record)
 {
 	DWORD length;
-	record >> length >> url;
+	record >> length;
+	record >> url;
 
 	if(!record.isEOF())
 	{

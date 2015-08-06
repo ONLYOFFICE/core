@@ -57,6 +57,8 @@ void PtgFuncVar::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data, MSXML
 	{
 		--nparams;
 	}
+	int sz = ptg_stack.size();
+
 	if(nparams)
 	{
 		arguments += ptg_stack.top();

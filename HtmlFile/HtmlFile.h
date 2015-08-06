@@ -33,6 +33,16 @@ public:
     /// \return 1 error, 0 - success
     ///
     int Convert(const std::wstring& sXml, const std::wstring& sPathInternal = L"");
+
+    ///
+    /// \brief ConvertEpub
+    /// \param sFolder - unzip folder (slash or without slash)
+    /// \param sMetaInfo - epub meta data
+    /// \param sXmlPart - <sdk>file:///D:/activex/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/Word/sdk-all.js</sdk><destination>D:/test/Document/</destination> (end /!!!)
+    /// \param sPathInternal - like Convert html
+    /// \return 1 error, 0 - success
+    ///
+    int ConvertEpub(const std::wstring& sFolder, std::wstring& sMetaInfo, const std::wstring& sXmlPart, const std::wstring& sPathInternal = L"");
 };
 
 #endif // _HTMLFILE_HTMLFILE_H_

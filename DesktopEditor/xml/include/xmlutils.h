@@ -206,6 +206,7 @@ namespace XmlUtils
 		CXmlNode ReadNode(const wchar_t* strNodeName);
 		CXmlNode ReadNode(const std::wstring& strNodeName);
 		CXmlNode ReadNodeNoNS(const std::wstring& strNodeName);
+		CXmlNodes ReadNodesNoNS(const std::wstring& strNodeName);
 
 		CXmlNode GetNode(const std::wstring& sName);
 		CXmlNodes GetNodes(const std::wstring& sName);

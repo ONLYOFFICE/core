@@ -45,7 +45,8 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
 shared {
     DEFINES += HTMLFILE_USE_DYNAMIC_LIBRARY
 
-    LIBS += -L$$DESTDIR -llibxml
+    LIB_XML_PRI_PATH = ../DesktopEditor/xml
+    include(../DesktopEditor/xml/build/qt/libxml2.pri)
 
     message(dynamic)
 

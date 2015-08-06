@@ -11,7 +11,7 @@ TEMPLATE = lib
 CONFIG += staticlib
 
 win32 {
-    QMAKE_CXXFLAGS += -std=c++11
+    QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
 } else {
     QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
 }

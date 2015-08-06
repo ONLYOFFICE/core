@@ -31,8 +31,7 @@ void OfficeArtBStoreContainer::loadFields(XLS::CFRecord& record)
 		OfficeArtBStoreContainerFileBlock *fileBlock = new OfficeArtBStoreContainerFileBlock();;		
 		record >> *fileBlock;
 
-		if (fileBlock->result && (fileBlock->recType != OfficeArtRecord::BlipDIB))
-			rgfb.push_back(fileBlock);
+		rgfb.push_back(fileBlock);
 	}	
 
 	// OpenOffice

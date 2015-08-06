@@ -103,10 +103,6 @@ class pib : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(pib)
 public:
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-	//{	
-	//	own_tag->setAttribute(L"op", op);
-	//}
 };
 
 class pictureId : public OfficeArtFOPTE
@@ -114,9 +110,6 @@ class pictureId : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(pictureId)
 public:
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-	//{
-	//}
 };
 
 class pictureRecolor : public OfficeArtFOPTE
@@ -124,9 +117,6 @@ class pictureRecolor : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(pictureRecolor)
 public:
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-	//{
-	//}
 };
 
 
@@ -196,7 +186,6 @@ class fillShadeType : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillShadeType)
 public:
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 };
 
 class FillStyleBooleanProperties : public OfficeArtFOPTE
@@ -204,7 +193,6 @@ class FillStyleBooleanProperties : public OfficeArtFOPTE
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(FillStyleBooleanProperties)
 public:
 
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 };
 
 class fillBlip : public OfficeArtFOPTE
@@ -222,7 +210,6 @@ class fillBlipName : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillBlipName)
 public:
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 	virtual void ReadComplexData(XLS::CFRecord& record);
 
 private:
@@ -443,42 +430,36 @@ class reserved415 : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved415)
 public:
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag){}
 };
 
 class reserved417 : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved417)
 public:
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag){}
 };
 
 class reserved419 : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved419)
 public:
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag){}
 };
 
 class reserved421 : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved421)
 public:
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag){}
 };
 
 class reserved422 : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved422)
 public:
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag){}
 };
 
 class reserved423 : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(reserved423)
 public:
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag){}
 };
 
 class fillBackColorExt : public OfficeArtFOPTE
@@ -515,21 +496,18 @@ class ProtectionBooleanProperties : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(ProtectionBooleanProperties)
 public:
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 };
 
 class LineStyleBooleanProperties : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(LineStyleBooleanProperties)
 public:
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 };
 
 class ShadowStyleBooleanProperties : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(ShadowStyleBooleanProperties)
 public:
-	//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag);
 };
 
 class lineWidth : public OfficeArtFOPTE
@@ -596,7 +574,7 @@ class pihlShape : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(pihlShape)
 public:
-	virtual void ReadComplexData(XLS::CFRecord& record);
+	void ReadComplexData(XLS::CFRecord& record);
 
 	IHlink IHlink_complex;
 };

@@ -153,6 +153,9 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	proc.repeated<PIVOTVIEW>(0, 0);
 	proc.optional<DCON>();
 	proc.repeated<WINDOW>(1, 0);
+
+	proc.optional<SheetExt>(); //BulletinSearch.xls ??? тута или ниже
+
 	proc.repeated<CUSTOMVIEW>(0, 0);
 	proc.repeated<SORT>(0, 2);
 	proc.optional<DxGCol>();

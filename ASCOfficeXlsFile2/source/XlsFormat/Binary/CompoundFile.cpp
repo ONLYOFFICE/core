@@ -44,7 +44,10 @@ CompoundFile::CompoundFile(const std::wstring & file_path, const ReadWriteMode m
 // Opens "Workbook" stream and returns the only reference
 CFStreamPtr CompoundFile::getWorkbookStream()
 {
-	return getNamedStream("Workbook");
+	CFStreamPtr stream = getNamedStream("Workbook");
+
+	if (stream == NULL) stream = getNamedStream("Book");
+	return stream;
 }
 
 

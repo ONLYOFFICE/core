@@ -8,7 +8,7 @@ namespace Log
 void info(const std::string& message)
 {
 #ifdef _DEBUG
-	Logger::getLogger().writeLine("Info", message);
+	Logger::getLogger().writeLine(" Info", message);
 #endif
 }
 
@@ -16,7 +16,7 @@ void info(const std::string& message)
 void event(const std::string& message)
 {
 #ifdef _DEBUG
-	Logger::getLogger().writeLine("Event", message);
+	Logger::getLogger().writeLine(" Event", message);
 #endif
 }
 
@@ -24,7 +24,7 @@ void event(const std::string& message)
 void message(const std::string& message)
 {
 #ifdef _DEBUG
-	Logger::getLogger().writeLine("Message", message);
+	Logger::getLogger().writeLine(" Message", message);
 #endif
 }
 
@@ -32,13 +32,13 @@ void message(const std::string& message)
 void warning(const std::string& message)
 {
 #ifdef _DEBUG
-	Logger::getLogger().writeLine("WARNING", message);
+	Logger::getLogger().writeLine(" WARNING", message);
 #endif
 }
 void warning(const std::wstring& message)
 {
 #ifdef _DEBUG
-	Logger::getLogger().writeLine(L"WARNING", message);
+	Logger::getLogger().writeLine(L" WARNING", message);
 #endif
 }
 
@@ -46,7 +46,7 @@ void warning(const std::wstring& message)
 void error(const std::string& message)
 {
 #ifdef _DEBUG
-	Logger::getLogger().writeLine("!!ERROR", message);
+	Logger::getLogger().writeLine(" !!ERROR", message);
 #endif
 }
 

@@ -90,10 +90,19 @@ int SST::serialize(std::wostream & stream)
 			{
 				CP_XML_NODE(L"si")
 				{				
-					CP_XML_NODE(L"t")
-					{		
-						XLUnicodeRichExtendedString *richText = dynamic_cast<XLUnicodeRichExtendedString *>(rgb[i].get());
-						CP_XML_STREAM() << xml::utils::replace_text_to_xml(richText->str_);
+					XLUnicodeRichExtendedString *richText = dynamic_cast<XLUnicodeRichExtendedString *>(rgb[i].get());
+					//внутрь не втаскиваем- в некоторых элементах обязательно писать r-rPr-t в некоторых достаточно t
+
+					if (richText->rgRun.size() >0)
+					{							
+						richText->serialize(CP_XML_STREAM());
+					}
+					else
+					{
+						CP_XML_NODE(L"t")
+						{		
+							CP_XML_STREAM() << xml::utils::replace_text_to_xml(richText->str_);
+						}
 					}
 				}
 			}

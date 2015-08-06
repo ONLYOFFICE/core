@@ -116,6 +116,14 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+
+	BOF* bof = dynamic_cast<BOF*>(elements_.back().get());
+	
+	if (bof->vers != 0x0600) //testdoc01.xls
+	{
+		proc.getGlobalWorkbookInfo()->Version = bof->vers;
+		return false;
+	}
 	proc.optional<WriteProtect>();
 	proc.optional<FilePass>();
 	if (proc.optional<Template>())
@@ -157,6 +165,12 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	{
 		m_Formating = elements_.back();
 		elements_.pop_back();
+
+		FORMATTING* fmts = dynamic_cast<FORMATTING*>(m_Formating.get());
+		if (fmts)
+		{
+			proc.getGlobalWorkbookInfo()->fonts = &fmts->m_Fonts;
+		}
 	}
 
 	proc.repeated<PIVOTCACHEDEFINITION>(0, 0);
@@ -198,6 +212,7 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 		count--;
 	}
+	proc.repeated<SUPBOOK>(0, 0);//order_history.xls
 
 	if (proc.optional(SHAREDSTRINGS(code_page_)))
 	{

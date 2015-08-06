@@ -66,7 +66,7 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 					return false;
 				}
 				Log::event("Globals substream detected");
-				if(proc.mandatory(GlobalsSubstream(code_page_)))
+				if((proc.mandatory(GlobalsSubstream(code_page_))) && (elements_.size() > 0))
 				{
 					GlobalsSubstream_found = true;
 					m_GlobalsSubstream = elements_.back();
@@ -82,7 +82,7 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 					return false;
 				}
 				Log::event("Worksheet or Dialog substream detected");
-				if(proc.mandatory(WorksheetSubstream(ws_index++)))
+				if ((proc.mandatory(WorksheetSubstream(ws_index++))) && (elements_.size() > 0))
 				{
 					WorksheetSubstream_found = true;
 					m_WorksheetSubstream.push_back(elements_.back());
@@ -98,7 +98,7 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 					return false;
 				}
 				Log::event("Chart substream detected");
-				if(proc.mandatory<ChartSheetSubstream>())
+				if ((proc.mandatory<ChartSheetSubstream>())  && (elements_.size() > 0))
 				{
 					WorksheetSubstream_found = true;
 					m_ChartSheetSubstream.push_back(elements_.back());
@@ -114,7 +114,7 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 					return false;
 				}
 				Log::event("Macro substream detected");
-				if(proc.mandatory<MacroSheetSubstream>())
+				if ((proc.mandatory<MacroSheetSubstream>()) && (elements_.size() > 0))
 				{
 					WorksheetSubstream_found = true;
 					m_MacroSheetSubstream.push_back(elements_.back());
@@ -127,7 +127,6 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 					"  The substream is skipped! Sorry.");
 				proc.SeekToEOF();
 				proc.mandatory<EOF_T>();
-				//throw XLS::WrongBiffRecord("Substream of unsupported type " + STR::int2str(substream_type, 10), "BOF");
 		
 		}
 	}

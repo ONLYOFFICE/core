@@ -17,7 +17,11 @@ class CELL_GROUP : public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(CELL_GROUP)
 public:
-	CELL_GROUP(std::vector<CellRef>& shared_formulas_locations_ref) : shared_formulas_locations_ref_(shared_formulas_locations_ref) {}
+	CELL_GROUP(std::vector<CellRef>& shared_formulas_locations_ref) : 
+							shared_formulas_locations_ref_(shared_formulas_locations_ref)
+							, m_count_rows (0)
+	{
+	}
 
 	BaseObjectPtr clone()
 	{
@@ -26,22 +30,23 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		int count = 0;
-		if(!proc.mandatory<Row>())
+		int count, count_row = 0;
+		
+		if(proc.mandatory<Row>() == true)
 		{
-			return false;
-		}
-		count = 1 + proc.repeated<Row>(0, 0);
-	
-		while(count > 0)
-		{
-			m_rows.insert(m_rows.begin(), elements_.back());
-			elements_.pop_back();
-			count--;
+			count_row = count =  1 + proc.repeated<Row>(0, 0);
+		
+			while(count > 0)
+			{
+				m_rows.insert(m_rows.begin(), elements_.back());
+				elements_.pop_back();
+				count--;
+				m_count_rows++;
+			}
 		}	
 		
 		//------------------------------------------------------------------------------------------------------------------
-		count = proc.repeated(CELL(shared_formulas_locations_ref_), 0, 0);
+		int count_cells = proc.repeated(CELL(shared_formulas_locations_ref_), 0, 0);
 
 
 		count = proc.repeated<DBCell>(0, 0); // OpenOffice Calc stored files workaround (DBCell must be present at least once according to [MS-XLS])
@@ -50,15 +55,17 @@ public:
 			m_DBCells.insert(m_DBCells.begin(), elements_.back());
 			elements_.pop_back();
 			count--;
-		}			
-		return true;
+		}	
+		if (count_cells > 0 || count_row > 0)	return true;
+		else									return false;
 	};
 	int serialize(std::wostream & stream);
 	static const ElementType	type = typeCELL_GROUP;
 
+	int							m_count_rows;
 	std::list<BaseObjectPtr>	m_rows;
 	std::list<BaseObjectPtr>	m_DBCells;
-	//elements_ = cells
+
 private:
 	std::vector<CellRef>& shared_formulas_locations_ref_;
 };
@@ -69,7 +76,7 @@ int CELL_GROUP::serialize(std::wostream & stream)
     {
 		std::list<XLS::BaseObjectPtr>::iterator current_cell_start = elements_.begin();
 
-		int current_row = 1;
+		int current_row = 0;
 
 		for (std::list<XLS::BaseObjectPtr>::iterator it_row = m_rows.begin(); it_row != m_rows.end(); it_row++)
 		{
@@ -127,6 +134,44 @@ int CELL_GROUP::serialize(std::wostream & stream)
 				}
 			}
 		}
+
+		if (current_row < 1 )//order_history.xls - нет описанных Row, тока €чейки
+		{
+			while(current_row ==0)
+			{
+				CP_XML_NODE(L"row")
+				{	
+					std::list<XLS::BaseObjectPtr>::iterator it_cell = current_cell_start;
+					while(true)
+					{
+						if (it_cell == elements_.end())
+						{
+							current_cell_start = it_cell;
+							current_row = -1;
+							break;
+						}
+						CELL * cell = dynamic_cast<CELL *>(it_cell->get());
+
+						if (cell == NULL) continue;
+
+						if (current_row < 1) 
+						{
+							current_row = cell->RowNumber + 1;
+							CP_XML_ATTR(L"r", current_row);
+						}
+
+						if (cell->RowNumber > current_row - 1)
+						{
+							current_cell_start = it_cell;
+							current_row = 0;
+							break;
+						}
+						cell->serialize(CP_XML_STREAM());
+						it_cell++;
+					}
+				}
+			}
+		}
 	}
 	return 0;
 }
@@ -134,8 +179,9 @@ int CELL_GROUP::serialize(std::wostream & stream)
 //-----------------------------------------------------------------------------------------------------------------
 
 
-CELLTABLE::CELLTABLE(std::vector<CellRef>& shared_formulas_locations_ref) : m_count_CELL_GROUP(0), 
-													shared_formulas_locations_ref_(shared_formulas_locations_ref)
+CELLTABLE::CELLTABLE(std::vector<CellRef>& shared_formulas_locations_ref) : 
+												 m_count_CELL_GROUP(0)
+												,shared_formulas_locations_ref_(shared_formulas_locations_ref)
 {
 }
 
@@ -159,7 +205,7 @@ const bool CELLTABLE::loadContent(BinProcessor& proc)
 	}
 	
 	m_count_CELL_GROUP = proc.repeated(CELL_GROUP(shared_formulas_locations_ref_), 0, 0);
-		
+
 	proc.repeated<EntExU2>(0, 0);
 
 	return true;

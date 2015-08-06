@@ -61,141 +61,159 @@ int Font::serialize(std::wostream & stream)
     {
         CP_XML_NODE(L"font")
         {
-            if ((bls.value()) && (*bls.value() == 700))
-            {
-                CP_XML_NODE(L"b")
-                {
-                    CP_XML_ATTR(L"val", true);
-                }            
-            }
-
-            if (bCharSet.value())
-            {
-                CP_XML_NODE(L"charset")
-                {
-                    CP_XML_ATTR(L"val", bCharSet);
-                }
-            }
-
-            if ((icv.value()) && (icv < 0x7fff) )
-			{
-                CP_XML_NODE(L"color")
-                {
-                    CP_XML_ATTR(L"indexed", icv);
-                }
-			}
-
-            if ((fCondense.value()) && (*fCondense.value()))
-            {
-                CP_XML_NODE(L"condense")
-                {
-                    CP_XML_ATTR(L"val", (int)(*fCondense.value()));
-                }
-            }
-
-			if ((fExtend.value()) && (fExtend))
-            {
-                CP_XML_NODE(L"extend")
-                {
-                    CP_XML_ATTR(L"val", fExtend);
-                }
-            }
-
-            if (bFamily.value())
-            {
-                CP_XML_NODE(L"family")
-                {
-                    CP_XML_ATTR(L"val", bFamily);
-                }
-            }
-
-            if ((fItalic.value()) && (fItalic))
-            {
-                CP_XML_NODE(L"i")
-                {
-                    CP_XML_ATTR(L"val", fItalic);
-                }
-            }
-
-			if (!fontName.value().empty())
-            {
-                CP_XML_NODE(L"name")
-                {
-                    CP_XML_ATTR(L"val", fontName.value());
-                }
-            }
-
-			if ((fOutline.value()) && (fOutline))
-            {
-                CP_XML_NODE(L"outline")
-                {
-                    CP_XML_ATTR(L"val", fOutline);
-                }
-            }
-
-            //if (font.scheme)
-            //{
-            //    CP_XML_NODE(L"scheme")
-            //    {
-            //        CP_XML_ATTR(L"val", *font.scheme);
-            //    }
-            //}
-
-			if ((fShadow.value()) && (fShadow))
-            {
-                CP_XML_NODE(L"shadow")
-                {
-					CP_XML_ATTR(L"val", fShadow);
-                }
-            }
-
-            if ((fStrikeOut.value()) && (fStrikeOut))
-            {
-                CP_XML_NODE(L"strike")
-                {
-                    CP_XML_ATTR(L"val", fStrikeOut);
-                }
-            }
-
-            if (dyHeight.value())
-            {
-                CP_XML_NODE(L"sz")
-                {
-                    CP_XML_ATTR(L"val", dyHeight/20);
-                }
-            }
-
-            if ((uls.value()) && (*uls.value() > 0))
-            {
-                CP_XML_NODE(L"u")
-                {
-					switch(uls)
-					{
-						case 1:		CP_XML_ATTR(L"val", "single");break;
-						case 2:		CP_XML_ATTR(L"val", "double");break;
-						case 33:	CP_XML_ATTR(L"val", "singleAccounting");break;
-						case 34:	CP_XML_ATTR(L"val", "doubleAccounting");break;
-					}
-                }
-            }
-
-            if ((sss.value()) && (*sss.value() > 0))
-            {
-                CP_XML_NODE(L"vertAlign")
-                {
- 					switch(*sss.value())
-					{
-						case 1:	CP_XML_ATTR(L"val", L"superscript");break;
-						case 2:	CP_XML_ATTR(L"val", L"subscript");break;
-					}
-                   
-                }
-            }
-			}
-            
-        }
-		return 0;
+			serialize_properties(CP_XML_STREAM());
+		}
 	}
+	return 0;
+}
+
+int Font::serialize_properties(std::wostream & stream, bool rPr)
+{
+    CP_XML_WRITER(stream)    
+    {
+        if ((bls.value()) && (*bls.value() == 700))
+        {
+            CP_XML_NODE(L"b")
+            {
+                CP_XML_ATTR(L"val", true);
+            }            
+        }
+
+        if (bCharSet.value())
+        {
+            CP_XML_NODE(L"charset")
+            {
+                CP_XML_ATTR(L"val", bCharSet);
+            }
+        }
+
+        if ((icv.value()) && (icv < 0x7fff) )
+		{
+            CP_XML_NODE(L"color")
+            {
+                CP_XML_ATTR(L"indexed", icv);
+            }
+		}
+
+        if ((fCondense.value()) && (*fCondense.value()))
+        {
+            CP_XML_NODE(L"condense")
+            {
+                CP_XML_ATTR(L"val", (int)(*fCondense.value()));
+            }
+        }
+
+		if ((fExtend.value()) && (fExtend))
+        {
+            CP_XML_NODE(L"extend")
+            {
+                CP_XML_ATTR(L"val", fExtend);
+            }
+        }
+
+        if (bFamily.value())
+        {
+            CP_XML_NODE(L"family")
+            {
+                CP_XML_ATTR(L"val", bFamily);
+            }
+        }
+
+        if ((fItalic.value()) && (fItalic))
+        {
+            CP_XML_NODE(L"i")
+            {
+                CP_XML_ATTR(L"val", fItalic);
+            }
+        }
+
+		if (!fontName.value().empty())
+		{
+			if (rPr)
+			{
+				CP_XML_NODE(L"rFont")
+				{
+					CP_XML_ATTR(L"val", fontName.value());
+				}
+			}
+			else
+			{
+				CP_XML_NODE(L"name")
+				{
+					CP_XML_ATTR(L"val", fontName.value());
+				}
+			}
+		}
+
+		if ((fOutline.value()) && (fOutline))
+        {
+            CP_XML_NODE(L"outline")
+            {
+                CP_XML_ATTR(L"val", fOutline);
+            }
+        }
+
+        //if (font.scheme)
+        //{
+        //    CP_XML_NODE(L"scheme")
+        //    {
+        //        CP_XML_ATTR(L"val", *font.scheme);
+        //    }
+        //}
+
+		if ((fShadow.value()) && (fShadow))
+        {
+            CP_XML_NODE(L"shadow")
+            {
+				CP_XML_ATTR(L"val", fShadow);
+            }
+        }
+
+        if ((fStrikeOut.value()) && (fStrikeOut))
+        {
+            CP_XML_NODE(L"strike")
+            {
+                CP_XML_ATTR(L"val", fStrikeOut);
+            }
+        }
+
+        if (dyHeight.value())
+        {
+            CP_XML_NODE(L"sz")
+            {
+                CP_XML_ATTR(L"val", dyHeight/20);
+            }
+        }
+
+        if ((uls.value()) && (*uls.value() > 0))
+        {
+            CP_XML_NODE(L"u")
+            {
+				switch(uls)
+				{
+					case 1:		CP_XML_ATTR(L"val", "single");break;
+					case 2:		CP_XML_ATTR(L"val", "double");break;
+					case 33:	CP_XML_ATTR(L"val", "singleAccounting");break;
+					case 34:	CP_XML_ATTR(L"val", "doubleAccounting");break;
+				}
+            }
+        }
+
+        if ((sss.value()) && (*sss.value() > 0))
+        {
+            CP_XML_NODE(L"vertAlign")
+            {
+				switch(*sss.value())
+				{
+					case 1:	CP_XML_ATTR(L"val", L"superscript");break;
+					case 2:	CP_XML_ATTR(L"val", L"subscript");break;
+				}
+               
+            }
+        }
+	}
+	return 0;
+}
 
 } // namespace XLS
 

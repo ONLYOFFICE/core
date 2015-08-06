@@ -77,8 +77,8 @@ const bool BinReaderProcessor::mandatory(BaseObject& object)
 {
 	if(is_mandatory_) // if the composite object is mandatory, do as usual - log warning if the record is not found
 	{
-		readChild(object, true);
-		return true;
+		bool res = readChild(object, true);
+		return res;
 	}
 	else
 	{

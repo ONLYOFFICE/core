@@ -147,7 +147,7 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
     std::wstring sTempFileForParams = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"XML");
     NSFile::CFileBinary oFile;
     oFile.CreateFileW(sTempFileForParams);
-    oFile.WriteStringUTF8(sXml, true);
+    oFile.WriteStringUTF8(oBuilder.GetData(), true);
     oFile.CloseFile();
 
     pid_t pid = fork(); // create child process

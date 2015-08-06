@@ -920,6 +920,9 @@ DesktopEditor/ChromiumBasedEditors/app/cefbuilds/linux64/cef_200_percent.pak svn
 DesktopEditor/ChromiumBasedEditors/app/cefbuilds/linux64/chrome-sandbox svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors/app/cefbuilds/linux64/devtools_resources.pak svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors/app/cefbuilds/linux64/icudtl.dat svn_mime_002dtype=application%2Foctet-stream
+DesktopEditor/ChromiumBasedEditors/app/cefbuilds/linux64/libcef.so svn_mime_002dtype=application%2Foctet-stream
+DesktopEditor/ChromiumBasedEditors/app/cefbuilds/linux64/libffmpegsumo.so svn_mime_002dtype=application%2Foctet-stream
+DesktopEditor/ChromiumBasedEditors/app/cefbuilds/linux64/libpdf.so svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors/app/cefbuilds/linux64/locales svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors/app/cefbuilds/linux64/locales/am.pak svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors/app/cefbuilds/linux64/locales/ar.pak svn_mime_002dtype=application%2Foctet-stream

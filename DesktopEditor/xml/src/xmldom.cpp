@@ -559,6 +559,29 @@ namespace XmlUtils
 		}
 		return node;
 	}
+	CXmlNodes CXmlNode::ReadNodesNoNS(const std::wstring& sName)
+	{
+		CXmlNodes oNodes;
+		if (IsValid())
+		{
+			bool bGetAll = false;
+			if (L"*" == sName)
+				bGetAll = true;
+			int nCount = (int)m_pBase->m_nodes.size();
+			for (int i = 0; i < nCount; ++i)
+			{
+				if (bGetAll || sName == GetNameNoNS(m_pBase->m_nodes[i]->m_sName))
+				{
+					CXmlNode oNode;
+					CXmlNodeBase* pBase = m_pBase->m_nodes[i];
+					oNode.SetBase(pBase);
+					oNodes.m_nodes.insert(oNodes.m_nodes.end(), oNode);
+				}
+			}
+		}
+
+		return oNodes;
+	}
 
 	CXmlNode CXmlNode::GetNode(const std::wstring& sName)
 	{

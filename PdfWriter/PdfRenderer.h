@@ -1375,7 +1375,7 @@ private:
 		double dx;
 		double dy;
 	};
-	class CCommandManager
+    class PDFWRITER_DECL_EXPORT CCommandManager
 	{
 	public:
 		CCommandManager(CPdfRenderer* pRenderer);

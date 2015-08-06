@@ -1,4 +1,4 @@
-
+﻿
 #include "Oox2OdfConverter.h"
 
 #include "Converter.h"
@@ -20,10 +20,6 @@
 
 #include "../../../Common/DocxFormat/Source/XlsxFormat/Xlsx.h"
 #include "../../../Common/DocxFormat/Source/DocxFormat/Docx.h"
-
-#ifdef __linux__
-    #include "X11/Xlib.h"
-#endif
 
 #define PROGRESSEVENT_ID	0
 
@@ -69,27 +65,12 @@ namespace Oox2Odf
 /////////////////////////////////////////////////////////////////////////////////////////////////////////////
 double OoxConverter::getSystemDPI()
 {
-#if defined (_WIN32) || defined(_WIN64)
-	HDC screen = GetDC(0);
-
-	int dpiX = GetDeviceCaps (screen, LOGPIXELSX);
-	int dpiY = GetDeviceCaps (screen, LOGPIXELSY);
-
-	ReleaseDC (0, screen);
-
-	return dpiX;
-#elif defined (__linux__)
-	Display *dpy = XOpenDisplay (NULL);;
-
-	double xres = ((((double) DisplayWidth (dpy, 0)) * 25.4) / ((double) DisplayWidthMM(dpy, 0)));
-	double yres = ((((double) DisplayHeight(dpy, 0)) * 25.4) / ((double) DisplayHeightMM(dpy, 0)));
-
-	XCloseDisplay (dpy);
-
-	return xres;
-#else
+    //При запросе системных настроек-проблема в linux без графического интерфейса.
+    //Используется в GetMaxDigitSizePixels для измерения символов, можно указывать любой dpi,
+    //потому что после измерения pix переводятся обратно в метрические величины.
+    //Используется для конвертации картинок с процентными размерами oox->odf. Из редактора никогда не приходят относительные размеры,
+    //думаю тут несущественнен dpi.
 	return 96.;
-#endif
 }
 
 bool  OoxConverter::UpdateProgress(long nComplete)
@@ -233,12 +214,12 @@ void OoxConverter::convert(OOX::WritingElement  *oox_unknown)
 				OOX::VmlWord::CWrap *vml = static_cast<OOX::VmlWord::CWrap*>(oox_unknown);
 				convert(vml);
 			}break;
-			// "��������" ��������
+			// "ненужные" элементы
 			case OOX::et_w_softHyphen:
 			case OOX::et_w_proofErr:
 			case OOX::et_w_proofState:
 			{
-				//����
+				//бяка
 			}break;
 
 			default:
@@ -290,7 +271,7 @@ void OoxConverter::convert(OOX::Drawing::CShape	*oox_shape)
 		odf_context()->drawing_context()->start_shape(type);
 		
 		convert(oox_shape->m_oSpPr.GetPointer(), oox_shape->m_oShapeStyle.GetPointer());
-	//���, ���������, ����� ...	
+	//имя, описалово, номер ...	
 		if (oox_shape->m_oNvSpPr.IsInit())
 			convert(oox_shape->m_oNvSpPr->m_oCNvPr.GetPointer());	
 
@@ -640,7 +621,7 @@ void OoxConverter::convert(OOX::Drawing::CLineProperties *oox_line_prop, CString
 
 	if (oox_line_prop->m_oCustDash.IsInit())
 	{
-		//����� ������� ����� � �������� ���������
+		//через задание стиля и описание геометрии
 	}
 	if (oox_line_prop->m_oPrstDash.IsInit() && oox_line_prop->m_oPrstDash->m_oVal.IsInit())
 	{
@@ -651,7 +632,7 @@ void OoxConverter::convert(OOX::Drawing::CLineProperties *oox_line_prop, CString
 	//nullable<SimpleTypes::CCompoundLine<>>            m_oCmpd;
 
 
-	//ELineJoinType                                     m_eJoinType;   // ��� ���������� �����
+	//ELineJoinType                                     m_eJoinType;   // Тип соединения линий
 	//nullable<OOX::Drawing::CLineJoinBevel>            m_oBevel;
 	//nullable<OOX::Drawing::CLineJoinMiterProperties>  m_oMiter;
 	//nullable<OOX::Drawing::CLineJoinRound>            m_oRound;
@@ -788,7 +769,7 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	C
 			for (unsigned int i=0 ; i < oox_bitmap_fill->m_oBlip->m_arrEffects.size(); i++)
 				convert(oox_bitmap_fill->m_oBlip->m_arrEffects[i]);
 		}
-		if (oox_bitmap_fill->m_oSrcRect.IsInit() && Width >0  && Height >0)//����� �����������
+		if (oox_bitmap_fill->m_oSrcRect.IsInit() && Width >0  && Height >0)//часть изображения
 		{
 			odf_context()->drawing_context()->set_image_client_rect_inch(
 				oox_bitmap_fill->m_oSrcRect->m_oL.GetValue() /100. * Width / currentSystemDPI,
@@ -825,7 +806,7 @@ void OoxConverter::convert(OOX::Drawing::CBlipFillProperties *oox_bitmap_fill,	C
 		if (oox_bitmap_fill->m_oStretch.IsInit())
 		{
 			odf_context()->drawing_context()->set_image_style_repeat(1);
-			if (oox_bitmap_fill->m_oStretch->m_oFillRect.IsInit()){} //���������� ��������� ������
+			if (oox_bitmap_fill->m_oStretch->m_oFillRect.IsInit()){} //заполнение неполного объема
 		}
 	}
 	odf_context()->drawing_context()->end_bitmap_style();
@@ -1132,7 +1113,7 @@ void OoxConverter::convert(OOX::Drawing::CTextBodyProperties	*oox_bodyPr)
 	if (oox_bodyPr->m_oNumCol.GetValue() > 1)
 	{
 		//+ style section
-		//+element text:section � ������� ���������
+		//+element text:section в котором параграфы
 	}
 	if (oox_bodyPr->m_oFromWordArt.ToBool() && oox_bodyPr->m_oPrstTxWrap.IsInit())
 	{
@@ -1348,13 +1329,13 @@ void OoxConverter::convert(OOX::Drawing::CParagraphProperty * oox_paragraph_pr, 
 
 
 
-	if (oox_paragraph_pr->m_oDefRunProperty.IsInit())//����� ���� ������ !!!
+	if (oox_paragraph_pr->m_oDefRunProperty.IsInit())//может быть пустым !!!
 	{
 		odf_writer::style_text_properties * text_properties = odf_context()->text_context()->get_text_properties();
 		if (text_properties) 
 			convert(oox_paragraph_pr->m_oDefRunProperty.GetPointer(), text_properties);
 
-		//���� �������� ��� ����� ��������� �� family !!! 
+		//надо подумать как брать последний по family !!! 
 		//convert(oox_paragraph_pr->m_oDefRunProperty.GetPointer());
 		//odf_context()->text_context()->set_parent_span_style(odf_context()->styles_context()->last_state().get_name());
 	}
@@ -1384,7 +1365,7 @@ void OoxConverter::convert(OOX::Drawing::CParagraph		*oox_paragraph)
 	if (oox_paragraph->m_oParagraphProperty.IsInit())
 	{
 		odf_writer::style_paragraph_properties	* paragraph_properties = odf_context()->text_context()->get_paragraph_properties();
-													//�������� ����� ���� ��������� �� ������ � ���������, �� � � ������ �������		
+													//свойства могут быть приписаны не только к параграфу, но и к самому объекту		
 		if (!paragraph_properties)
 		{
 			odf_context()->styles_context()->create_style(L"",odf_types::style_family::Paragraph, true, false, -1);	

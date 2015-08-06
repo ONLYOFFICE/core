@@ -1,4 +1,4 @@
-#include "measuredigits.h"
+﻿#include "measuredigits.h"
 
 #include <boost/lexical_cast.hpp>
 #include <logging.h>
@@ -8,36 +8,14 @@
 #include "../../DesktopEditor/fontengine/FontManager.h"
 #include "../../DesktopEditor/fontengine/ApplicationFonts.h"
 
-#if defined(_WIN32) || defined(_WIN64)
-	#include <windows.h>
-	#include <gdiplus.h>
-#elif defined(__linux__)
-    #include "X11/Xlib.h"
-#endif
-
 double getSystemDPI()
 {
-#if defined (_WIN32) || defined(_WIN64)
-	HDC screen = GetDC(0);
-
-	int dpiX = GetDeviceCaps (screen, LOGPIXELSX);
-	int dpiY = GetDeviceCaps (screen, LOGPIXELSY);
-
-	ReleaseDC (0, screen);
-
-	return dpiX;
-#elif defined (__linux__)
-	Display *dpy = XOpenDisplay (NULL);;
-
-	double xres = ((((double) DisplayWidth (dpy, 0)) * 25.4) / ((double) DisplayWidthMM(dpy, 0)));
-	double yres = ((((double) DisplayHeight(dpy, 0)) * 25.4) / ((double) DisplayHeightMM(dpy, 0)));
-
-	XCloseDisplay (dpy);
-
-	return xres;
-#else
+	//При запросе системных настроек-проблема в linux без графического интерфейса.
+    //Используется в GetMaxDigitSizePixels для измерения символов, можно указывать любой dpi,
+    //потому что после измерения pix переводятся обратно в метрические величины.
+    //Используется для конвертации картинок с процентными размерами oox->odf. Из редактора никогда не приходят относительные размеры,
+    //думаю тут несущественнен dpi.
 	return 96.;
-#endif
 }
 
 

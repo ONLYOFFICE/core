@@ -19,8 +19,8 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	unsigned short ich;
-	FontIndex ifnt;
+	unsigned short	ich;
+	FontIndex		ifnt;
 };
 
 typedef boost::shared_ptr<FormatRun> FormatRunPtr;

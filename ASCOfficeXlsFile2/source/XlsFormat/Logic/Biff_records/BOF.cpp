@@ -53,27 +53,33 @@ void BOF::writeFields(CFRecord& record)
 void BOF::readFields(CFRecord& record)
 {
 	record >> vers >> dt >> rupBuild >> rupYear;
+	
+	if (vers == (_UINT16)0x600)
+	{
+		unsigned int flags;
+		record >> flags;
+		fWin = GETBIT(flags, 0);
+		fRisc = GETBIT(flags, 1);
+		fBeta = GETBIT(flags, 2);
+		fWinAny = GETBIT(flags, 3);
+		fMacAny = GETBIT(flags, 4);
+		fBetaAny = GETBIT(flags, 5);
+		fRiscAny = GETBIT(flags, 8);
+		fOOM = GETBIT(flags, 9);
+		fGlJmp = GETBIT(flags, 10);
+		fFontLimit = GETBIT(flags, 13);
+		verXLHigh = static_cast<unsigned char>(GETBITS(flags, 14, 17));
 
-	unsigned int flags;
-	record >> flags;
-	fWin = GETBIT(flags, 0);
-	fRisc = GETBIT(flags, 1);
-	fBeta = GETBIT(flags, 2);
-	fWinAny = GETBIT(flags, 3);
-	fMacAny = GETBIT(flags, 4);
-	fBetaAny = GETBIT(flags, 5);
-	fRiscAny = GETBIT(flags, 8);
-	fOOM = GETBIT(flags, 9);
-	fGlJmp = GETBIT(flags, 10);
-	fFontLimit = GETBIT(flags, 13);
-	verXLHigh = static_cast<unsigned char>(GETBITS(flags, 14, 17));
-
-	record >> verLowestBiff;
-	unsigned char flags2;
-	record >> flags2;
-	verLastXLSaved = GETBITS(flags2, 0, 3);
-	stream_ptr = record.getStreamPointer();
-	record.skipNunBytes(2); // reserved
+		record >> verLowestBiff;
+		unsigned char flags2;
+		record >> flags2;
+		verLastXLSaved = GETBITS(flags2, 0, 3);
+		stream_ptr = record.getStreamPointer();
+		record.skipNunBytes(2); // reserved
+	}
+	else if (vers == (_UINT16)0x500)//testdoc01.xls
+	{
+	}
 }
 
 unsigned short BOF::getSubstreamType()

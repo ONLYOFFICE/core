@@ -95,6 +95,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 
 		xls_global_info = boost::shared_ptr<XLS::GlobalWorkbookInfo>(new XLS::GlobalWorkbookInfo(workbook_code_page));
 
+
 		XLS::CFStreamCacheReader stream_reader(cfile.getWorkbookStream(), xls_global_info);
 
 		xls_document = boost::shared_ptr<XLS::WorkbookStreamObject>(new XLS::WorkbookStreamObject(workbook_code_page));

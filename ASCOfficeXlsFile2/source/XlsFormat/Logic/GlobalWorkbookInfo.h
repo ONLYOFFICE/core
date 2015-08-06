@@ -10,6 +10,9 @@
 namespace XLS
 {;
 
+class BaseObject;
+typedef boost::shared_ptr<BaseObject> BaseObjectPtr;
+
 class GlobalWorkbookInfo
 {
 public:
@@ -20,14 +23,17 @@ public:
 
 	const unsigned int GenerateAXESId();
 
-	unsigned short						CodePage;
-	CRYPT::DecryptorPtr					decryptor;
-	std::vector<std::wstring>			sheets_names;
-	std::vector<std::wstring>			xti_parsed;
-	std::vector<std::wstring>			AddinUdfs;
+	unsigned short								CodePage;
+	CRYPT::DecryptorPtr							decryptor;
+	
+	std::vector<std::wstring>					sheets_names;
+	std::vector<std::wstring>					xti_parsed;
+	std::vector<std::wstring>					AddinUdfs;
 
 	boost::unordered_map<BorderInfo, int>		border_x_ids;
 	boost::unordered_map<FillInfo, int>			fill_x_ids;
+
+	std::vector<BaseObjectPtr>					*fonts;
 	
 	unsigned int								last_AXES_id;
 	const static unsigned int					initial_AXES_id = 0;
@@ -35,6 +41,9 @@ public:
 	std::vector<std::wstring>					defineNames;
 
 	std::vector<std::pair<boost::shared_array<char>, size_t> >	bin_data;
+
+
+	int Version;
 
 };
 

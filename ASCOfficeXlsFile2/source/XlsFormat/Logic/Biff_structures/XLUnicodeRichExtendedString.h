@@ -8,6 +8,9 @@
 namespace XLS
 {;
 
+class GlobalWorkbookInfo;
+typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;
+
 class XLUnicodeRichExtendedString : public BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(XLUnicodeRichExtendedString)
@@ -20,10 +23,13 @@ public:
 
 	BiffStructurePtr clone();
 
+	int serialize		(std::wostream & _stream);	
+	int serialize_rPr	(std::wostream & _stream, int iFmt);
 	
-	
-	virtual void load(CFRecord& record);
-	virtual void store(CFRecord& record);
+	virtual void load	(CFRecord& record);
+	virtual void store	(CFRecord& record);
+
+	GlobalWorkbookInfoPtr pGlobalWorkbookInfoPtr;
 
 	void loadSymbols(CFRecord& record, const size_t cch, const bool is_wide);
 	void storeSymbols(CFRecord& record, const size_t start_pos, const size_t cch, const bool is_wide);

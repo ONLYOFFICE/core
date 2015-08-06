@@ -1,10 +1,14 @@
 
 #include "XLUnicodeRichExtendedString.h"
 #include <Logic/BaseObject.h>
+#include <Logic/GlobalWorkbookInfo.h>
+#include <Logic/Biff_records/Font.h>
+
+#include <simple_xml_writer.h>
+#include <utils.h>
 
 namespace XLS
 {;
-
 
 XLUnicodeRichExtendedString XLUnicodeRichExtendedString::operator=(const XLUnicodeRichExtendedString& other)
 {
@@ -13,14 +17,11 @@ XLUnicodeRichExtendedString XLUnicodeRichExtendedString::operator=(const XLUnico
 	return *this;
 }
 
-
-
 XLUnicodeRichExtendedString::XLUnicodeRichExtendedString(std::list<CFRecordPtr>& cont_recs)
 :	cont_recs_(cont_recs),
 	fHighByte(true)
 {
 }
-
 
 const bool XLUnicodeRichExtendedString::appendNextContinue(CFRecord& record, const bool read_high_byte)
 {
@@ -52,44 +53,54 @@ BiffStructurePtr XLUnicodeRichExtendedString::clone()
 	return BiffStructurePtr(new XLUnicodeRichExtendedString(*this));
 }
 
-//
-//void XLUnicodeRichExtendedString::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	static std::wstring  text_str(L"text");
-//	xml_tag->setAttribute(text_str, STR::escape_ST_Xstring(static_cast<wchar_t*>(str_)).c_str());
-//
-//	std::for_each(rgRun.begin(), rgRun.end(), boost::bind(&FormatRun::toXML, _1, xml_tag));
-//	if(fExtSt)
-//	{
-//		extRst.toXML(xml_tag);
-//	}
-//	
-//}
-//
-//void XLUnicodeRichExtendedString::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	static std::wstring  text_str(L"text");
-//	static std::wstring  mark_set_start_str(L"mark_set_start");
-//	str_ = getStructAttribute(xml_tag, text_str);
-//	str_ = STR::unescape_ST_Xstring(static_cast<wchar_t*>(str_)).c_str();
-//
-//	fRichSt = false;
-//	FormatRun run;
-//	size_t number = 0;
-//	while(run.fromXML(xml_tag, ++number, false))
-//	{
-//		rgRun.push_back(run);
-//		fRichSt = true;
-//	}
-//
-//	fExtSt = false;
-//	if(extRst.fromXML(xml_tag))
-//	{
-//		fExtSt = true;
-//	}
-//	mark_set_start = getStructAttribute(xml_tag, mark_set_start_str);
-//
-//}
+int XLUnicodeRichExtendedString::serialize (std::wostream & _stream)
+{
+	int start_string = 0;
+	int Fmt = 0;
+	
+	CP_XML_WRITER(_stream)    
+	{
+		for (int i = 0 ; i < rgRun.size(); i++)
+		{
+			CP_XML_NODE(L"r")
+			{
+				serialize_rPr(CP_XML_STREAM(), Fmt );
+				Fmt = rgRun[i].ifnt;
+
+				CP_XML_NODE(L"t")
+				{		
+					CP_XML_ATTR(L"xml:space", L"preserve");
+
+					std::wstring str_part = str_.substr( start_string, rgRun[i].ich - start_string );
+					start_string = rgRun[i].ich;
+					CP_XML_STREAM() << xml::utils::replace_text_to_xml(str_part);
+				}
+			}
+		}
+	}
+	
+	return 0;
+}
+int XLUnicodeRichExtendedString::serialize_rPr	(std::wostream & _stream, int iFmt)
+{
+	if (!pGlobalWorkbookInfoPtr)		return 0;
+	if (!pGlobalWorkbookInfoPtr->fonts) return 0;
+
+	int sz = pGlobalWorkbookInfoPtr->fonts->size();
+	if (iFmt -1 > sz || iFmt < 1) return 0;
+
+	CP_XML_WRITER(_stream)    
+	{
+		CP_XML_NODE(L"rPr")
+		{
+			Font * font = dynamic_cast<Font*>(pGlobalWorkbookInfoPtr->fonts->at(iFmt-1).get());
+
+			if (font) font->serialize_properties(CP_XML_STREAM(), true);
+		}
+	}
+	
+	return 0;
+}
 
 void XLUnicodeRichExtendedString::store(CFRecord& record)
 {
@@ -161,6 +172,8 @@ void XLUnicodeRichExtendedString::store(CFRecord& record)
 
 void XLUnicodeRichExtendedString::load(CFRecord& record)
 {
+	pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();
+
 	unsigned short cch;
 	unsigned char flags;
 	record >> cch >> flags;

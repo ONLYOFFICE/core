@@ -15,21 +15,6 @@ CompositeObject::~CompositeObject()
 {
 }
 
-/*
-const bool CompositeObject::doSomething(BinProcessor& proc)
-{
-	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-	
-	BinReaderProcessor reader_proc(reader, own_tag, is_mandatory);
-	if(loadContent(reader_proc))
-	{
-		return true;
-	}
-	parent->removeChild(own_tag); // When nothing was read for this composite. For example, if loadFirstMandatory returns false
-	return false;
-}
-
-*/
 
 const bool CompositeObject::read(CFStreamCacheReader& reader, BaseObject* parent, const bool is_mandatory)
 {

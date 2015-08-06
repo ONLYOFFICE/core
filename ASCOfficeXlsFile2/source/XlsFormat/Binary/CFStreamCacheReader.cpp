@@ -131,7 +131,7 @@ const size_t CFStreamCacheReader::readFromStream(const size_t num_of_records_min
 		return current_records_num;
 	}
 
-	while(records_cache.size() < num_of_records_min_necessary && !stream_->isEOF())
+	while(records_cache.size() < num_of_records_min_necessary && ((stream_) && (!stream_->isEOF())))
 	{
 		records_cache.push_back(CFRecordPtr(new CFRecord(stream_, global_info_)));
 	}
@@ -170,6 +170,8 @@ void CFStreamCacheReader::checkAndAppendContinueData()
 
 const bool CFStreamCacheReader::isEOF() const
 {
+	if (stream_ == NULL) return true;
+
 	return !records_cache.size() && stream_->isEOF();
 }
 
@@ -177,7 +179,10 @@ const bool CFStreamCacheReader::isEOF() const
 // Skip the specified number of unsigned chars without processing
 void CFStreamCacheReader::skipNunBytes(const size_t n)
 {
-	stream_->seekFromCurForward(n);
+	if (stream_)
+	{
+		stream_->seekFromCurForward(n);
+	}
 }
 
 

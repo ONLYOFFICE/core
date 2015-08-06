@@ -41,8 +41,8 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	count = proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally  at least one Font is mandatory)
 	while(count > 0)
 	{
-		m_Fonts.insert(m_Fonts.begin(), elements_.back());
-		elements_.pop_back();
+		m_Fonts.push_back(elements_.front());
+		elements_.pop_front();
 		count--;
 	}	
 //---------------------------------------------------------------------------------------------------	
@@ -55,9 +55,10 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 	}
 //----------------------------------------------------------------------------------------------------	
 	count = proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally Font follows by Format)
+	int countFonts = m_Fonts.size();
 	while(count > 0)
 	{
-		m_Fonts.insert(m_Fonts.begin(), elements_.back());
+		m_Fonts.insert(m_Fonts.begin()+countFonts, elements_.back());
 		elements_.pop_back();
 		count--;
 	}	

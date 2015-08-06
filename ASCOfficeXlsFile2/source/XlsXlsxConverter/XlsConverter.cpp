@@ -442,9 +442,6 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 	if (objects == NULL) return;
 		
 	ODRAW::OfficeArtSpgrContainer	*spgr = dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpgrContainer.get());
-	//ODRAW::OfficeArtSpContainer		*sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpContainer.get());
-
-	//if (spgr == NULL/* && objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpContainer.size() < 1*/) return;
 
 	for (long i = 0 ; i < objects->m_OBJs.size(); i++)
 	{

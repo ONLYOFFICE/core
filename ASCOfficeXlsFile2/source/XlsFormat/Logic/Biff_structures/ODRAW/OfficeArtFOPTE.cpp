@@ -261,7 +261,6 @@ void OfficeArtFOPTE::ReadComplexData(XLS::CFRecord& record)
 	record.skipNunBytes(op); // default is to skip complex data
 };
 
-
 //void TextBooleanProperties::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 //{
 //	bool fFitShapeToText = GETBIT(op, 1);

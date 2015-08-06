@@ -3,58 +3,36 @@
 
 int main(int argc, char *argv[])
 {
-#if 0
+#if 1
 
 #ifdef WIN32
     std::wstring sPath = NSFile::GetProcessDirectory() + L"/../../Internal/windows/Release/";
 
-    std::wstring sXml = L"\
-<html>\
-<sdk>file:///D:/activex/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/Word/sdk-all.js</sdk>\
-<file>file:///C:/Users/oleg.korshul/Desktop/original_message%20(5).html</file>\
-<destination>D:/test/Document/</destination>\
-</html>\
-";
+    std::vector<std::wstring> arFiles;
+    arFiles.push_back(L"file:///C:/Users/oleg.korshul/Desktop/original_message%20(5).html");
+    std::wstring sDstFolder = L"D:/test/Document";
 #else
     std::wstring sPath = NSFile::GetProcessDirectory() + L"/../../Internal/linux/Release/";
-
-    std::wstring sXml = L"\
-<html>\
-<sdk>file:///home/oleg/activex/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/Word/sdk-all.js</sdk>\
-<file>file:///home/oleg/activex/test.html</file>\
-<destination>/home/oleg/activex/1/</destination>\
-</html>\
-";
+    std::wstring sDstFolder = L"/home/oleg/activex/1/";
 #endif
 
     CHtmlFile oFile;
-    int nResult = oFile.Convert(sXml, sPath);
+    int nResult = oFile.Convert(arFiles, sDstFolder, sPath);
     nResult;
 
 #else
 
 #ifdef WIN32
     std::wstring sPath = NSFile::GetProcessDirectory() + L"/../../Internal/windows/Release/";
-
-    std::wstring sXml = L"\
-<sdk>file:///D:/activex/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/Word/sdk-all.js</sdk>\
-<destination>D:/test/Document/</destination>\
-";
+    std::wstring sDstFolder = L"D:/test/Document";
 #else
     std::wstring sPath = NSFile::GetProcessDirectory() + L"/../../Internal/linux/Release/";
-
-    std::wstring sXml = L"\
-<html>\
-<sdk>file:///home/oleg/activex/AVS/Sources/TeamlabOffice/trunk/OfficeWeb/Word/sdk-all.js</sdk>\
-<file>file:///home/oleg/activex/test.html</file>\
-<destination>/home/oleg/activex/1/</destination>\
-</html>\
-";
+    std::wstring sDstFolder = L"/home/oleg/activex/1/";
 #endif
 
     CHtmlFile oFile;
     std::wstring sMetaInfo;
-    int nResult = oFile.ConvertEpub(L"D:\\37898EB", sMetaInfo, sXml, sPath);
+    int nResult = oFile.ConvertEpub(L"D:\\37898EB", sMetaInfo, sDstFolder, sPath);
     nResult;
 
 #endif

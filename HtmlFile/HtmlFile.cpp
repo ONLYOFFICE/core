@@ -23,7 +23,41 @@ CHtmlFile::~CHtmlFile()
 
 }
 
-int CHtmlFile::Convert(const std::wstring& sXml, const std::wstring& sPathInternal)
+static std::wstring GetSdkPath()
+{
+    std::wstring sProcess = NSFile::GetProcessDirectory() + L"/";
+    std::wstring sPathConfig = sProcess + L"DoctRenderer.config";
+    XmlUtils::CXmlNode oNode;
+    if (!oNode.FromXmlFile(sPathConfig))
+        return L"";
+
+    std::wstring sPath = oNode.ReadValueString(L"DoctSdk");
+    if (NSFile::CFileBinary::Exists(sPath))
+        return sPath;
+
+    return sProcess + sPath;
+}
+static std::wstring CorrectHtmlPath(const std::wstring& sPath)
+{
+    std::wstring sReturn = sPath;
+    NSStringExt::Replace(sReturn, L"\\", L"/");
+
+    if (std::wstring::npos != sReturn.find(L"://"))
+        return sReturn;
+
+    if (sReturn.find(L"//") == 0)
+        return L"file:" + sReturn;
+
+    if (!sPath.empty())
+    {
+        wchar_t c = sPath.c_str()[0];
+        if (c == wchar_t('/'))
+            return L"file://" + sPath;
+    }
+    return L"file:///" + sPath;
+}
+
+int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstring& sDstfolder, const std::wstring& sPathInternal)
 {
     std::wstring sInternal = sPathInternal;
     if (sInternal.empty())
@@ -37,6 +71,36 @@ int CHtmlFile::Convert(const std::wstring& sXml, const std::wstring& sPathIntern
 
     int nReturnCode = 0;
 
+    NSStringUtils::CStringBuilder oBuilder;
+    oBuilder.WriteString(L"<html>");
+
+    // sdk
+    oBuilder.WriteString(L"<sdk>");
+    oBuilder.WriteEncodeXmlString(CorrectHtmlPath(GetSdkPath()));
+    oBuilder.WriteString(L"</sdk>");
+
+    // destination
+    oBuilder.WriteString(L"<destination>");
+    oBuilder.WriteEncodeXmlString(sDstfolder);
+
+    if (!sDstfolder.empty())
+    {
+        wchar_t _c = sDstfolder.c_str()[sDstfolder.length() - 1];
+        if (_c != '\\' && _c != '/')
+            oBuilder.AddCharSafe('/');
+    }
+
+    oBuilder.WriteString(L"</destination>");
+
+    for (std::vector<std::wstring>::const_iterator iter = arFiles.begin(); iter != arFiles.end(); iter++)
+    {
+        oBuilder.WriteString(L"<file>");
+        oBuilder.WriteEncodeXmlString(CorrectHtmlPath(*iter));
+        oBuilder.WriteString(L"</file>");
+    }
+
+    oBuilder.WriteString(L"</html>");
+
 #ifdef WIN32
     STARTUPINFO sturtupinfo;
     ZeroMemory(&sturtupinfo,sizeof(STARTUPINFO));
@@ -45,12 +109,12 @@ int CHtmlFile::Convert(const std::wstring& sXml, const std::wstring& sPathIntern
     std::wstring sTempFileForParams = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"XML");
     NSFile::CFileBinary oFile;
     oFile.CreateFileW(sTempFileForParams);
-    oFile.WriteStringUTF8(sXml, true);
+    oFile.WriteStringUTF8(oBuilder.GetData(), true);
     oFile.CloseFile();
 
     std::wstring sApp = L"HtmlFileInternal <html>" + sTempFileForParams;
     wchar_t* pCommandLine = NULL;
-    if (!sXml.empty())
+    if (true)
     {
         pCommandLine = new wchar_t[sApp.length() + 1];
         memcpy(pCommandLine, sApp.c_str(), sApp.length() * sizeof(wchar_t));
@@ -294,7 +358,7 @@ static std::vector<std::wstring> ParseEpub(const std::wstring& sPackagePath, std
     return arHtmls;
 }
 
-int CHtmlFile::ConvertEpub(const std::wstring& sFolder, std::wstring& sMetaInfo, const std::wstring& sXmlPart, const std::wstring& sPathInternal)
+int CHtmlFile::ConvertEpub(const std::wstring& sFolder, std::wstring& sMetaInfo, const std::wstring& sDstfolder, const std::wstring& sPathInternal)
 {
     std::wstring sFolderWithSlash = sFolder;
     NSStringExt::Replace(sFolderWithSlash, L"\\", L"/");
@@ -348,20 +412,5 @@ int CHtmlFile::ConvertEpub(const std::wstring& sFolder, std::wstring& sMetaInfo,
     if (arHtmls.size() == 0)
         return 1;
 
-    NSStringUtils::CStringBuilder oBuilder;
-    for (std::vector<std::wstring>::iterator iter = arHtmls.begin(); iter != arHtmls.end(); iter++)
-    {
-        oBuilder.WriteString(L"<file>", 6);
-
-        wchar_t c = iter->c_str()[0];
-        if (c == '/')
-            oBuilder.WriteString(L"file://", 7);
-        else
-            oBuilder.WriteString(L"file:///", 8);
-        oBuilder.WriteEncodeXmlString(iter->c_str(), iter->length());
-
-        oBuilder.WriteString(L"</file>", 7);
-    }
-
-    return this->Convert(L"<html>" + oBuilder.GetData() + sXmlPart + L"</html>", sPathInternal);
+    return this->Convert(arHtmls, sDstfolder, sPathInternal);
 }

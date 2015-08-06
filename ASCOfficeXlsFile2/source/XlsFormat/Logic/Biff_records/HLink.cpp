@@ -1,6 +1,5 @@
 
 #include "HLink.h"
-//#include <Exception/AttributeDataWrong.h>
 
 namespace XLS
 {;

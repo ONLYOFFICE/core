@@ -101,7 +101,9 @@ CFStreamPtr CompoundFile::getNamedStream(const std::string& name)
 {
 	if(!streams[name])
 	{
-		streams[name].reset(new CFStream(openStream(name.c_str())));
+		POLE::Stream * pStream = openStream(name.c_str());
+		if (pStream)	
+			streams[name].reset(new CFStream(pStream));
 	}
 	return streams[name];
 }
@@ -111,7 +113,9 @@ CFStreamPtr CompoundFile::createNamedStream(const std::string& name)
 {
 	if(!streams[name])
 	{
-		streams[name].reset(new CFStream(createStream(name.c_str())));
+		POLE::Stream * pStream = createStream(name.c_str());
+		if (pStream)	
+			streams[name].reset(new CFStream(pStream));
 	}
 	return streams[name];
 }
@@ -131,7 +135,9 @@ POLE::Stream* CompoundFile::openStream(const std::string & stream_name)
 	{
 		throw;// EXCEPT::RT::CompoundFileFormatError(std::string("Error opening \"") + static_cast<char*>(stream_name) + "\" stream", hres);
 	}
-	return pStream;
+	if ((pStream) && (pStream->size() > 0))
+		return pStream;
+	else return NULL;
 }
 
 

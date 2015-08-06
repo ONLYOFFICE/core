@@ -131,6 +131,11 @@ namespace NSStringUtils
 			m_lSizeCur += 2;
 		}
 
+		inline void WriteEncodeXmlString(const std::wstring& sString)
+		{
+			WriteEncodeXmlString(sString.c_str(), (int)sString.length());
+		}
+
 		inline void WriteEncodeXmlString(const wchar_t* pString, int nCount = -1)
 		{
 			const wchar_t* pData = pString;

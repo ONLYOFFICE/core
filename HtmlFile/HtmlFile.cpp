@@ -52,9 +52,9 @@ static std::wstring CorrectHtmlPath(const std::wstring& sPath)
     {
         wchar_t c = sPath.c_str()[0];
         if (c == wchar_t('/'))
-            return L"file://" + sPath;
+            return L"file://" + sReturn;
     }
-    return L"file:///" + sPath;
+    return L"file:///" + sReturn;
 }
 
 int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstring& sDstfolder, const std::wstring& sPathInternal)
@@ -81,12 +81,16 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
 
     // destination
     oBuilder.WriteString(L"<destination>");
-    oBuilder.WriteEncodeXmlString(sDstfolder);
 
-    if (!sDstfolder.empty())
+    std::wstring sDstOut = sDstfolder;
+    NSStringExt::Replace(sDstOut, L"\\", L"/");
+
+    oBuilder.WriteEncodeXmlString(sDstOut);
+
+    if (!sDstOut.empty())
     {
-        wchar_t _c = sDstfolder.c_str()[sDstfolder.length() - 1];
-        if (_c != '\\' && _c != '/')
+        wchar_t _c = sDstOut.c_str()[sDstOut.length() - 1];
+        if (_c != '/')
             oBuilder.AddCharSafe('/');
     }
 

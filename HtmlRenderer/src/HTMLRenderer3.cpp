@@ -52,6 +52,7 @@ namespace NSHtmlRenderer
         CASCHTMLRenderer3_Private()
         {
             m_oApplicationFonts.Initialize();
+            m_oApplicationFonts.GetCache()->SetCacheSize(16);
 
             m_lLastSavedPage = 0;
             m_oDocument.SetUpdater(this);

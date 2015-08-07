@@ -610,7 +610,6 @@ namespace PdfWriter
 	}
 	void        CXref::WriteToStream(CStream* pStream, CEncrypt* pEncrypt)
 	{
-		std::string sBuffer;
 		char sBuf[SHORT_BUFFER_SIZE];
 		char* pBuf;
 		char* pEndPtr = sBuf + SHORT_BUFFER_SIZE - 1;
@@ -649,20 +648,16 @@ namespace PdfWriter
 		{
 			pXref->m_unAddr = pStream->Tell();
 
-			pBuf = sBuf;
-			pBuf = (char*)StrCpy(pBuf, "xref\012", pEndPtr);
-			pBuf = ItoA(pBuf, pXref->m_unStartOffset, pEndPtr);
-			*pBuf++ = ' ';
-			pBuf = ItoA(pBuf, pXref->m_arrEntries.size(), pEndPtr);
-			StrCpy(pBuf, "\012", pEndPtr);
-
-			pStream->WriteStr(sBuffer.c_str());
+			pStream->WriteStr("xref\012");
+			pStream->WriteInt(pXref->m_unStartOffset);
+			pStream->WriteChar(' ');
+			pStream->WriteInt(pXref->m_arrEntries.size());
+			pStream->WriteChar('\012');
 
 			for (unsigned int unIndex = 0, unCount = pXref->m_arrEntries.size(); unIndex < unCount; unIndex++)
 			{
 				TXrefEntry* pEntry = pXref->GetEntry(unIndex);
 
-				sBuffer = 
 				pBuf = sBuf;
 				pBuf = ItoA2(pBuf, pEntry->unByteOffset, BYTE_OFFSET_LEN + 1);
 				*pBuf++ = ' ';

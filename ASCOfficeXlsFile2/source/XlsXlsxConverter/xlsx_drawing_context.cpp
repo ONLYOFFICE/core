@@ -130,7 +130,7 @@ void xlsx_drawing_context::start_shape(int type)
 	count_object++;
 }
 
-void xlsx_drawing_context::set_id(int id)
+void xlsx_drawing_context::set_id(long id)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().id = id;
@@ -187,8 +187,14 @@ void xlsx_drawing_context::serialize_pic(std::wstring rId)
 			{
 				CP_XML_NODE(L"xdr:cNvPr")
 				{
-					if (drawing_state.back().id >= 0) CP_XML_ATTR(L"id", drawing_state.back().id);
-					CP_XML_ATTR(L"name", L"Picture_" + rId.substr(5));
+					if (drawing_state.back().id >= 0)	CP_XML_ATTR(L"id", drawing_state.back().id);
+					if (drawing_state.back().name.empty())	drawing_state.back().name = L"Picture_" + rId.substr(5);
+
+					CP_XML_ATTR(L"name", drawing_state.back().name);
+					if (!drawing_state.back().description.empty())
+					{
+						CP_XML_ATTR(L"desc", drawing_state.back().description);
+					}
 
 					if (!drawing_state.back().hyperlink.empty())
 					{
@@ -205,7 +211,6 @@ void xlsx_drawing_context::serialize_pic(std::wstring rId)
 				{
 					CP_XML_NODE(L"a:picLocks")
 					{
-						CP_XML_ATTR(L"noChangeArrowheads", 1);
 						CP_XML_ATTR(L"noChangeAspect", 1);
 					}
 				}
@@ -217,8 +222,17 @@ void xlsx_drawing_context::serialize_pic(std::wstring rId)
 					CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
 					CP_XML_ATTR(L"r:embed", rId);
 				}
-				CP_XML_NODE(L"a:srcRect");
 
+				CP_XML_NODE(L"a:srcRect")
+				{
+					if (drawing_state.back().image_crop_enabled)
+					{		
+						CP_XML_ATTR(L"l", static_cast<size_t>(drawing_state.back().image_crop[0]));
+						CP_XML_ATTR(L"t", static_cast<size_t>(drawing_state.back().image_crop[1]));
+						CP_XML_ATTR(L"r", static_cast<size_t>(drawing_state.back().image_crop[2]));
+						CP_XML_ATTR(L"b", static_cast<size_t>(drawing_state.back().image_crop[3]));
+					}
+				}
 				CP_XML_NODE(L"a:stretch")
 				{
 					CP_XML_NODE(L"a:fillRect");
@@ -258,7 +272,7 @@ void xlsx_drawing_context::serialize(std::wostream & stream)
 	{
 		CP_XML_NODE(L"xdr:twoCellAnchor")
 		{ 
-			CP_XML_ATTR(L"editAs", L"oneCell");
+			//CP_XML_ATTR(L"editAs", L"oneCell");
 
 			CP_XML_STREAM() << drawing_state.back().anchor;
 			CP_XML_STREAM() << drawing_state.back().shape;
@@ -267,7 +281,16 @@ void xlsx_drawing_context::serialize(std::wostream & stream)
 		}
 	}
 }
-
+void xlsx_drawing_context::set_name(std::wstring & str)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().name = str;
+}
+void xlsx_drawing_context::set_description(std::wstring & str)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().description = str;
+}
 void xlsx_drawing_context::set_anchor(std::wstring & str)
 {
 	if (drawing_state.size() < 1 )return;
@@ -279,6 +302,26 @@ void xlsx_drawing_context::set_image(std::wstring & str)
 	drawing_state.back().image_target = str;
 }
 
+void xlsx_drawing_context::set_crop_top	(long val)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().image_crop[1] = val;
+}
+void xlsx_drawing_context::set_crop_bottom(long val)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().image_crop[3] = val;
+}
+void xlsx_drawing_context::set_crop_left (long val)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().image_crop[0]= val;
+}
+void xlsx_drawing_context::set_crop_right (long val)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().image_crop[2] = val;
+}
 void xlsx_drawing_context::set_hyperlink(std::wstring & str)
 {
 	if (drawing_state.size() < 1 )return;

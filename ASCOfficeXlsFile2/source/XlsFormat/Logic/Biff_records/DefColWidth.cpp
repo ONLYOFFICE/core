@@ -29,7 +29,10 @@ void DefColWidth::writeFields(CFRecord& record)
 
 void DefColWidth::readFields(CFRecord& record)
 {
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
 	record >> cchdefColWidth;
+
+	global_info->defaultColumnWidth = cchdefColWidth ;
 }
 
 } // namespace XLS

@@ -41,6 +41,8 @@ void DefaultRowHeight::writeFields(CFRecord& record)
 
 void DefaultRowHeight::readFields(CFRecord& record)
 {
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+
 	unsigned short flags;
 	record >> flags;
 	fUnsynced = GETBIT(flags, 0);
@@ -50,10 +52,12 @@ void DefaultRowHeight::readFields(CFRecord& record)
 	if(!fDyZero)
 	{
 		record >> miyRw;
+		global_info->defaultRowHeight = miyRw / 20.;
 	}
 	else
 	{
 		record >> miyRwHidden;
+		global_info->defaultRowHeight = miyRwHidden / 20.;
 	}
 }
 

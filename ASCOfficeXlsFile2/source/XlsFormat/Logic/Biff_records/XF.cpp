@@ -81,7 +81,7 @@ int XF::serialize(std::wostream & stream)
 			
 			if (ifmt.value())
 			{
-				CP_XML_ATTR(L"numFmtId"	, *ifmt.value());
+				CP_XML_ATTR(L"numFmtId"	, ifmt);
 			}
 
 			if(fStyle)
@@ -91,7 +91,7 @@ int XF::serialize(std::wostream & stream)
 			}
 			else
 			{
-				CP_XML_ATTR(L"xfId"		, *ixfParent.value() );
+				CP_XML_ATTR(L"xfId"		, ixfParent );
 				CP_XML_ATTR(L"borderId"	, cell.border_x_id);
 				CP_XML_ATTR(L"fillId"	, cell.fill_x_id);
 			}

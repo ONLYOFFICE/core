@@ -48,9 +48,9 @@ BaseObjectPtr STYLES::clone()
 // STYLES = 1*(Style [StyleExt])
 const bool STYLES::loadContent(BinProcessor& proc)
 {
-	styles_count = proc.repeated<Parenthesis_STYLES_1>(1, 0);
+	styles_count = proc.repeated<Parenthesis_STYLES_1>(0, 0);
 	
-	return styles_count > 0 ? true : false;
+	return true;
 }
 
 int STYLES::serialize(std::wostream & stream)
@@ -59,59 +59,71 @@ int STYLES::serialize(std::wostream & stream)
     {
 		CP_XML_NODE(L"cellStyles")
 		{
-			CP_XML_ATTR(L"count", styles_count);
-
-			for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
+			if (styles_count > 0)
 			{
-				Parenthesis_STYLES_1 * style_1 = dynamic_cast<Parenthesis_STYLES_1*>(it->get());
+				CP_XML_ATTR(L"count", styles_count);
 
-				if (style_1)
+				for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
 				{
-					CP_XML_NODE(L"cellStyle")
+					Parenthesis_STYLES_1 * style_1 = dynamic_cast<Parenthesis_STYLES_1*>(it->get());
+
+					if (style_1)
 					{
-						XLS::Style		* style		= dynamic_cast<Style*>	(style_1->m_Style.get());
-						XLS::StyleExt	* styleExt	= dynamic_cast<StyleExt*>(style_1->m_StyleEx.get());
-						
-						if (styleExt)
+						CP_XML_NODE(L"cellStyle")
 						{
-							CP_XML_ATTR(L"name", styleExt->stName.value());
-						
-							if ((styleExt->fBuiltIn.value()) && (*styleExt->fBuiltIn.value()))
-							{
-								CP_XML_ATTR(L"builtinId", styleExt->builtInData.istyBuiltIn);
-								if (styleExt->builtInData.iLevel > 0 && styleExt->builtInData.iLevel < 255)
-								{
-									CP_XML_ATTR(L"iLevel", styleExt->builtInData.iLevel);
-								}
-							}
-
-							for (long i = 0; i < styleExt->xfProps.xfPropArray.size(); i++)
-							{
-							}
-						}
-						else
-						{
-							CP_XML_ATTR(L"name", style->user.value());
-								
-							if ((style->fBuiltIn.value()) && (*style->fBuiltIn.value()))
-							{
-								CP_XML_ATTR(L"builtinId", style->builtInData.istyBuiltIn);
-								if (style->builtInData.iLevel > 0 && style->builtInData.iLevel < 255)
-								{
-									CP_XML_ATTR(L"iLevel", style->builtInData.iLevel);
-								}
-							}
-						}
-
-						if (style->ixfe.value())
-						{
-							int xfId = *style->ixfe.value() - 1;
-							if (xfId < 0) xfId = 0;
+							XLS::Style		* style		= dynamic_cast<Style*>	(style_1->m_Style.get());
+							XLS::StyleExt	* styleExt	= dynamic_cast<StyleExt*>(style_1->m_StyleEx.get());
 							
-							CP_XML_ATTR(L"xfId", xfId);
+							if (styleExt)
+							{
+								CP_XML_ATTR(L"name", styleExt->stName.value());
+							
+								if ((styleExt->fBuiltIn.value()) && (*styleExt->fBuiltIn.value()))
+								{
+									CP_XML_ATTR(L"builtinId", styleExt->builtInData.istyBuiltIn);
+									if (styleExt->builtInData.iLevel > 0 && styleExt->builtInData.iLevel < 255)
+									{
+										CP_XML_ATTR(L"iLevel", styleExt->builtInData.iLevel);
+									}
+								}
+
+								for (long i = 0; i < styleExt->xfProps.xfPropArray.size(); i++)
+								{
+								}
+							}
+							else
+							{
+								CP_XML_ATTR(L"name", style->user.value());
+									
+								if ((style->fBuiltIn.value()) && (*style->fBuiltIn.value()))
+								{
+									CP_XML_ATTR(L"builtinId", style->builtInData.istyBuiltIn);
+									if (style->builtInData.iLevel > 0 && style->builtInData.iLevel < 255)
+									{
+										CP_XML_ATTR(L"iLevel", style->builtInData.iLevel);
+									}
+								}
+							}
+
+							if (style->ixfe.value())
+							{
+								int xfId = *style->ixfe.value() - 1;
+								if (xfId < 0) xfId = 0;
+								
+								CP_XML_ATTR(L"xfId", xfId);
+							}
 						}
 					}
-
+				}
+			}
+			else
+			{
+				CP_XML_ATTR(L"count",1);
+				CP_XML_NODE(L"cellStyle")
+				{
+					CP_XML_ATTR(L"xfId", 0);
+					CP_XML_ATTR(L"builtinId", 0);
+					CP_XML_ATTR(L"name", L"Обычный");
 				}
 			}
 		}

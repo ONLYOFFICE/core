@@ -9,7 +9,6 @@
 #include <Logic/Biff_records/ClrtClient.h>
 #include <Logic/Biff_records/TableStyles.h>
 #include <Logic/Biff_unions/TABLESTYLES.h>
-#include <Logic/Biff_unions/TABLESTYLES.h>
 
 #include <simple_xml_writer.h>
 
@@ -69,7 +68,8 @@ const bool FORMATTING::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 	proc.repeated<DXF>(0, 0);
-//----------------------------------------------------------------------------------------------------	
+
+	//----------------------------------------------------------------------------------------------------	
 	if (proc.optional<STYLES>())
 	{
 		m_Styles = elements_.back();

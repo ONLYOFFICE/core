@@ -43,6 +43,8 @@
 
 #include <boost/lexical_cast.hpp>
 #include "../../../DesktopEditor/common/File.h"
+#include "../../../DesktopEditor/raster/BgraFrame.h"
+
 
 XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const ProgressCallback* CallBack) 
 {
@@ -392,18 +394,41 @@ void XlsConverter::convert(ODRAW::OfficeArtBStoreContainer* art_bstore)
 	for (long i =0 ; i < art_bstore->rgfb.size(); i++)
 	{
 		int bin_id = i + 1;
-		if (art_bstore->rgfb[i]->data_size > 0)
-		{			
-			std::wstring file_name = L"image" + boost::lexical_cast<std::wstring>(bin_id) + art_bstore->rgfb[i]->pict_type;
-
-			NSFile::CFileBinary file;
-			if (file.CreateFileW(xl_path + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR + file_name))
+		if (art_bstore->rgfb[i]->data_size > 0 && art_bstore->rgfb[i]->pict_data)
+		{	
+			bool res = false;
+			std::wstring file_name = L"image" + boost::lexical_cast<std::wstring>(bin_id);
+			if (art_bstore->rgfb[i]->pict_type == L"dib_data")
 			{
-				file.WriteFile((BYTE*)art_bstore->rgfb[i]->pict_data, art_bstore->rgfb[i]->data_size);
-				file.CloseFile();
+				file_name += std::wstring(L".png");
+
+				BITMAPINFOHEADER * header = (BITMAPINFOHEADER *)art_bstore->rgfb[i]->pict_data;
+
+				CBgraFrame frame;
+				frame.put_Data((BYTE*)art_bstore->rgfb[i]->pict_data + header->biSize);
+
+				frame.put_Height(header->biHeight);
+				frame.put_Width	(header->biWidth);
+				frame.put_Stride(-header->biBitCount / 8 * header->biWidth);
+
+				res = frame.SaveFile(xl_path + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR + file_name, 4);
+				frame.put_Data(NULL);
+			}
+			else
+			{
+				file_name  += art_bstore->rgfb[i]->pict_type;
+
+				NSFile::CFileBinary file;
+				if (file.CreateFileW(xl_path + FILE_SEPARATOR_STR + L"media" + FILE_SEPARATOR_STR + file_name))
+				{
+					file.WriteFile((BYTE*)art_bstore->rgfb[i]->pict_data, art_bstore->rgfb[i]->data_size);
+					file.CloseFile();
+					res = true;
+				}
 			}
 
-			xlsx_context->get_mediaitems().add_image(L"media/" + file_name, bin_id);
+			if (res)
+				xlsx_context->get_mediaitems().add_image(L"media/" + file_name, bin_id);
 		}
 		else
 		{
@@ -532,12 +557,39 @@ void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
 	{
 		switch(fort->fopt.rgfopte[i]->opid)
 		{
+		case 0x100:
+			{
+				xlsx_context->get_drawing_context().set_crop_top(fort->fopt.rgfopte[i]->op);
+			}break;
+		case 0x101:
+			{
+				xlsx_context->get_drawing_context().set_crop_bottom(fort->fopt.rgfopte[i]->op);
+			}break;
+		case 0x102:
+			{
+				xlsx_context->get_drawing_context().set_crop_left(fort->fopt.rgfopte[i]->op);
+			}break;
+		case 0x103:
+			{
+				xlsx_context->get_drawing_context().set_crop_right(fort->fopt.rgfopte[i]->op);
+			}break;
 		case 0x104:
 			{
 				bool isIternal = false;
 				std::wstring target;
 				std::wstring rId = xlsx_context->get_mediaitems().find_image(fort->fopt.rgfopte[i]->op , target, isIternal);
 				xlsx_context->get_drawing_context().set_image(target);
+			}break;
+		case 0x105://старое имя файла картинки 
+		case 0x380:
+			{
+				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(fort->fopt.rgfopte[i].get());
+				xlsx_context->get_drawing_context().set_name(str->string_);
+			}break;
+		case 0x381:
+			{
+				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(fort->fopt.rgfopte[i].get());
+				xlsx_context->get_drawing_context().set_description(str->string_);
 			}break;
 		case 0x0382:
 			{

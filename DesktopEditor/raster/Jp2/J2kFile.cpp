@@ -27,11 +27,6 @@ namespace Jpeg2000
 		}
 		return pMemBlock;
 	}
-	void  Free(void* pMem)
-	{
-		free(pMem);
-		pMem = NULL;
-	}
 	int check_j2000_type(FILE* pFile)
 	{
 		if (!pFile)

@@ -17,7 +17,16 @@ namespace Jpeg2000
 #define J2K_MAXSSFTR 2    // Max SubSampling Factor (Значения больше 2 могут привести к ошибке)
 
 	void* Malloc(size_t nSize);
-	void  Free(void* pMem);
+
+	template<typename T>
+	void  Free(T*& pMem)
+	{
+		if (NULL != pMem)
+		{
+			free(pMem);
+			pMem = NULL;
+		}
+	}
 	//-------------------------------------------------------------------------------------------------------------------------------
 	// Enum definitions
 	//-------------------------------------------------------------------------------------------------------------------------------

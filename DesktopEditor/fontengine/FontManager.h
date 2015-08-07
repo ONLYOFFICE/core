@@ -3,6 +3,7 @@
 
 #include "FontFile.h"
 #include <map>
+#include <list>
 
 class CFontSelectFormat;
 class CFontInfo;
@@ -51,11 +52,16 @@ class CFontsCache
 private:
 	std::map<std::string, CFontFile*>	m_mapFiles;
 	CApplicationFontStreams*			m_pApplicationFontStreams;
+
+private:
+    std::list<std::string>              m_arFiles;
+    int m_lCacheSize;
     
 public:
     CFontsCache()
     {
         m_pApplicationFontStreams = NULL;
+        m_lCacheSize = -1;
     }
     ~CFontsCache()
     {
@@ -69,6 +75,16 @@ public:
             RELEASEOBJECT(pFile);
         }
         m_mapFiles.clear();
+
+        if (-1 != m_lCacheSize)
+            m_arFiles.clear();
+    }
+    void SetCacheSize(const int& lMaxSize)
+    {
+        if (lMaxSize <= 0)
+            m_lCacheSize = -1;
+        else
+            m_lCacheSize = lMaxSize;
     }
 
 public:

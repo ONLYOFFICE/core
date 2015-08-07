@@ -175,9 +175,28 @@ CFontFile* CFontsCache::LockFont(FT_Library library, const std::wstring& strFile
 	if (NULL == pFile)
 		return NULL;
 
+    if (-1 != m_lCacheSize)
+    {
+        m_arFiles.push_back(sLock);
+        if ((int)m_arFiles.size() > m_lCacheSize)
+        {
+            std::string sPop = *m_arFiles.begin();
+            m_arFiles.pop_front();
+
+            std::map<std::string, CFontFile*>::iterator _find = m_mapFiles.find(sPop);
+            if (m_mapFiles.end() != _find)
+            {
+                CFontFile* pFontRemove = _find->second;
+                RELEASEOBJECT(pFontRemove);
+                m_mapFiles.erase(_find);
+            }
+        }
+    }
+
 	pFile->m_pStream = pStream;
 	pFile->m_pStream->AddRef();
 	m_mapFiles[sLock] = pFile;	
+
 	return pFile;
 }
 

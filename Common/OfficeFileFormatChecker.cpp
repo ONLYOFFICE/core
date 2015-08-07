@@ -1,4 +1,4 @@
-#include <algorithm>
+п»ї#include <algorithm>
 #include "OfficeFileFormatChecker.h"
 #include "DocxFormat/Source/SystemUtility/File.h"
 #include "../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
@@ -115,7 +115,7 @@ bool COfficeFileFormatChecker::isPptFormatFile	(POLE::Storage * storage)
 }
 bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
 {
-    //приоритет как оказывается важен
+    //РїСЂРёРѕСЂРёС‚РµС‚ РєР°Рє РѕРєР°Р·С‹РІР°РµС‚СЃСЏ РІР°Р¶РµРЅ
     //Metamorphic Manual for windows 28415.doc
 	POLE::Storage storage(fileName.c_str());
     if (storage.open())
@@ -212,7 +212,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
 		nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
 	else if (0 == sExt.compare(_T(".bin"))) //base64 string 
 		nFileType = AVS_OFFICESTUDIO_FILE_CANVAS_PDF;
-    else //if (0 == sExt.compare(_T(".txt")) || 0 == sExt.compare(_T(".xml"))) //volsciv.rtf -или любой другой
+    else //if (0 == sExt.compare(_T(".txt")) || 0 == sExt.compare(_T(".xml"))) //volsciv.rtf -РёР»Рё Р»СЋР±РѕР№ РґСЂСѓРіРѕР№
         nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT;
 
 	if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
@@ -284,7 +284,7 @@ bool COfficeFileFormatChecker::isOnlyOfficeFormatFile(const std::wstring & fileN
 {
 	COfficeUtils OfficeUtils(NULL);
 	
-	ULONG nBufferSize = 128; // ограничим считывание из бинарника
+	ULONG nBufferSize = 128; // РѕРіСЂР°РЅРёС‡РёРј СЃС‡РёС‚С‹РІР°РЅРёРµ РёР· Р±РёРЅР°СЂРЅРёРєР°
 	BYTE *pBuffer = NULL;
 
 	HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"Editor.bin", &pBuffer, nBufferSize);
@@ -315,6 +315,7 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
     const char *odtFormatLine = "application/vnd.oasis.opendocument.text";
     const char *odsFormatLine = "application/vnd.oasis.opendocument.spreadsheet";
     const char *odpFormatLine = "application/vnd.oasis.opendocument.presentation";
+    const char *epubFormatLine = "application/epub+zip";
 
     COfficeUtils OfficeUtils(NULL);
 	
@@ -340,13 +341,18 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
 			nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP;
 		}
 
+        else if ( NULL != strstr((char*)pBuffer, epubFormatLine) )
+        {
+            nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB;
+        }
+
 		delete []pBuffer;
 		pBuffer = NULL;
 
 		if (nFileType != AVS_OFFICESTUDIO_FILE_UNKNOWN) return true;
     }else
     {
-       //если не записан тип смотрим манифест
+       //РµСЃР»Рё РЅРµ Р·Р°РїРёСЃР°РЅ С‚РёРї СЃРјРѕС‚СЂРёРј РјР°РЅРёС„РµСЃС‚
         HRESULT hresult = OfficeUtils.LoadFileFromArchive(fileName, L"META-INF/manifest.xml", &pBuffer, nBufferSize);
         if (hresult == S_OK && pBuffer != NULL)
         {

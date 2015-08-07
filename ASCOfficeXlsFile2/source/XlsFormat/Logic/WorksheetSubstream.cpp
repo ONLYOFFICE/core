@@ -71,6 +71,8 @@ WORKSHEET = BOF WORKSHEETCONTENT
 */
 const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 {
+	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
+
 	int count = 0;
 
 	if(!proc.mandatory<BOF>())
@@ -194,6 +196,8 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	proc.SeekToEOF(); // Thus we skip problems with the trash at the end of the stream (found in Domens.xls)
 	
 	proc.mandatory<EOF_T>();
+
+	global_info->customColumnsWidth.clear();
 
 	return true;
 }

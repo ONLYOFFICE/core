@@ -10,10 +10,12 @@ GlobalWorkbookInfo::GlobalWorkbookInfo(const unsigned short code_page)
 	fill_x_ids[FillInfo(0, 0, 0)]		= 0;
 	fill_x_ids[FillInfo(17, 64, 65)]	= 1;
 	
-	last_AXES_id = initial_AXES_id;
+	last_AXES_id			= initial_AXES_id;
 
+	defaultColumnWidth		= 8;
+	defaultRowHeight		= 14.4; 
 
-	Version = 0x0600; //собственно xls
+	Version					= 0x0600; //собственно xls
 }
 
 

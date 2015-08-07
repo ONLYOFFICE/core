@@ -29,6 +29,8 @@ BaseObjectPtr COLUMNS::clone()
 // COLUMNS = DefColWidth *255ColInfo
 const bool COLUMNS::loadContent(BinProcessor& proc)
 {
+	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
+
 	bool def_ok = proc.optional<DefColWidth>(); 
 			// OpenOffice Calc stored files workaround (DefColWidth is mandatory according to [MS-XLS])
 
@@ -39,6 +41,30 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 	}
 
 	bool col_ok = proc.repeated<ColInfo>(0, 255);
+
+	int last_add = 0;
+
+	for (std::list<XLS::BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end(); it++)
+	{
+		ColInfo* column_info = dynamic_cast<ColInfo*>(it->get());
+
+		for (int i = last_add ; i < column_info->colFirst; i++)
+		{
+			global_info->customColumnsWidth.push_back(global_info->defaultColumnWidth);
+		}
+		for (int i = column_info->colFirst; i <= column_info->colLast; i++)
+		{
+			if (column_info->coldx.value())
+			{
+				global_info->customColumnsWidth.push_back(column_info->coldx / 256.);
+			}
+			else
+			{
+				global_info->customColumnsWidth.push_back(global_info->defaultColumnWidth);
+			}
+		}
+
+	}
 
 	return def_ok || col_ok;
 }

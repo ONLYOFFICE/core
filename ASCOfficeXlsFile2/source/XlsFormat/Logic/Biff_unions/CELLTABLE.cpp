@@ -74,59 +74,140 @@ int CELL_GROUP::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    
     {
-		std::list<XLS::BaseObjectPtr>::iterator current_cell_start = elements_.begin();
+		std::list<XLS::BaseObjectPtr>::iterator current_cell_start	= elements_.begin();
+		std::list<XLS::BaseObjectPtr>::iterator current_row			= m_rows.begin();
 
-		int current_row = 0;
+		int current_row_number = 0;
 
-		for (std::list<XLS::BaseObjectPtr>::iterator it_row = m_rows.begin(); it_row != m_rows.end(); it_row++)
+		//for (std::list<XLS::BaseObjectPtr>::iterator it_row = m_rows.begin(); it_row != m_rows.end(); it_row++)
+		//{
+		//	Row * row = dynamic_cast<Row *>(it_row->get());
+		//	
+		//	if (row == NULL) continue;
+
+		//	CP_XML_NODE(L"row")
+		//	{		
+		//		current_row = *row->rw.value();
+		//		
+		//		CP_XML_ATTR(L"r", current_row + 1);
+		//		
+		//		bool xf_set = true;
+		//		if ((row->fGhostDirty.value()) && ( *row->fGhostDirty.value()== false)) xf_set = false;
+		//		
+		//		if (row->ixfe_val.value() && xf_set)
+		//		{
+		//			CP_XML_ATTR(L"s", row->ixfe_val - cellStyleXfs_count);
+		//			CP_XML_ATTR(L"customFormat", true);
+		//		}
+
+		//		if (row->miyRw.value())
+		//		{
+		//			CP_XML_ATTR(L"ht", row->miyRw / 20.);
+		//			CP_XML_ATTR(L"customHeight", true);
+		//		}
+		//		if ((row->iOutLevel.value()) && (row->iOutLevel > 0))
+		//		{
+		//			CP_XML_ATTR(L"outlineLevel", row->iOutLevel);
+		//		}
+		//		if ((row->fCollapsed.value()) && (row->fCollapsed))
+		//		{
+		//			CP_XML_ATTR(L"collapsed", row->fCollapsed);
+		//		}
+		//		std::list<XLS::BaseObjectPtr>::iterator it_cell = current_cell_start;
+		//		while(true)
+		//		{
+		//			if (it_cell == elements_.end())
+		//			{
+		//				current_cell_start = it_cell;
+		//				break;
+		//			}
+		//			CELL * cell = dynamic_cast<CELL *>(it_cell->get());
+
+		//			if (cell == NULL) continue;
+
+		//			if (cell->RowNumber >current_row)
+		//			{
+		//				current_cell_start = it_cell;
+		//				break;
+		//			}
+		//			cell->serialize(CP_XML_STREAM());
+		//			it_cell++;
+		//		}
+		//	}
+		//}
+
+		while(current_row_number == 0)
 		{
-			Row * row = dynamic_cast<Row *>(it_row->get());
-			
-			if (row == NULL) continue;
-
 			CP_XML_NODE(L"row")
-			{		
-				current_row = *row->rw.value();
-				
-				CP_XML_ATTR(L"r", current_row + 1);
-				
-				bool xf_set = true;
-				if ((row->fGhostDirty.value()) && ( *row->fGhostDirty.value()== false)) xf_set = false;
-				
-				if (row->ixfe_val.value() && xf_set)
-				{
-					CP_XML_ATTR(L"s", row->ixfe_val - cellStyleXfs_count);
-					CP_XML_ATTR(L"customFormat", true);
-				}
-
-				if (row->miyRw.value())
-				{
-					CP_XML_ATTR(L"ht", row->miyRw / 20.);
-					CP_XML_ATTR(L"customHeight", true);
-				}
-				if ((row->iOutLevel.value()) && (row->iOutLevel > 0))
-				{
-					CP_XML_ATTR(L"outlineLevel", row->iOutLevel);
-				}
-				if ((row->fCollapsed.value()) && (row->fCollapsed))
-				{
-					CP_XML_ATTR(L"collapsed", row->fCollapsed);
-				}
+			{	
 				std::list<XLS::BaseObjectPtr>::iterator it_cell = current_cell_start;
 				while(true)
 				{
 					if (it_cell == elements_.end())
 					{
 						current_cell_start = it_cell;
+						current_row_number = -1;
 						break;
 					}
 					CELL * cell = dynamic_cast<CELL *>(it_cell->get());
 
 					if (cell == NULL) continue;
 
-					if (cell->RowNumber >current_row)
+					if (current_row_number < 1)  //нова€ строка
+					{
+						current_row_number = cell->RowNumber + 1; // номер из €чейки
+					
+						bool skip_cells = false;
+						if (current_row != m_rows.end())
+						{
+							Row * row = dynamic_cast<Row *>(current_row->get());
+							if (row->rw + 1  < current_row_number)
+							{
+								current_row_number = row->rw + 1;
+								skip_cells = true;
+							}
+							CP_XML_ATTR(L"r", current_row_number);
+							
+							if (row->rw + 1  == current_row_number)
+							{
+								bool xf_set = true;
+								if ((row->fGhostDirty.value()) && ( *row->fGhostDirty.value()== false)) xf_set = false;
+								
+								if (row->ixfe_val.value() && xf_set)
+								{
+									CP_XML_ATTR(L"s", row->ixfe_val - cellStyleXfs_count);
+									CP_XML_ATTR(L"customFormat", true);
+								}
+								if (row->miyRw.value())
+								{
+									CP_XML_ATTR(L"ht", row->miyRw / 20.);
+									CP_XML_ATTR(L"customHeight", true);
+								}
+								if ((row->iOutLevel.value()) && (row->iOutLevel > 0))
+								{
+									CP_XML_ATTR(L"outlineLevel", row->iOutLevel);
+								}
+								if ((row->fCollapsed.value()) && (row->fCollapsed))
+								{
+									CP_XML_ATTR(L"collapsed", row->fCollapsed);
+								}
+							}
+							current_row ++;
+						}											
+						else
+						{
+							CP_XML_ATTR(L"r", current_row_number);
+						}
+						if (skip_cells)
+						{
+							current_row = 0;
+							break;
+						}
+					}
+					if (cell->RowNumber + 1 > current_row_number)
 					{
 						current_cell_start = it_cell;
+						current_row_number = 0;
 						break;
 					}
 					cell->serialize(CP_XML_STREAM());
@@ -134,40 +215,41 @@ int CELL_GROUP::serialize(std::wostream & stream)
 				}
 			}
 		}
-
-		if (current_row < 1 )//order_history.xls - нет описанных Row, тока €чейки
+		if ( current_row != m_rows.end())
 		{
-			while(current_row ==0)
+			for (std::list<XLS::BaseObjectPtr>::iterator it_row = current_row; it_row != m_rows.end(); it_row++)
 			{
+				Row * row = dynamic_cast<Row *>(it_row->get());
+				
+				if (row == NULL) continue;
+
 				CP_XML_NODE(L"row")
-				{	
-					std::list<XLS::BaseObjectPtr>::iterator it_cell = current_cell_start;
-					while(true)
+				{		
+					current_row_number = row->rw + 1;
+					
+					CP_XML_ATTR(L"r", current_row_number);
+					
+					bool xf_set = true;
+					if ((row->fGhostDirty.value()) && ( *row->fGhostDirty.value()== false)) xf_set = false;
+					
+					if (row->ixfe_val.value() && xf_set)
 					{
-						if (it_cell == elements_.end())
-						{
-							current_cell_start = it_cell;
-							current_row = -1;
-							break;
-						}
-						CELL * cell = dynamic_cast<CELL *>(it_cell->get());
+						CP_XML_ATTR(L"s", row->ixfe_val - cellStyleXfs_count);
+						CP_XML_ATTR(L"customFormat", true);
+					}
 
-						if (cell == NULL) continue;
-
-						if (current_row < 1) 
-						{
-							current_row = cell->RowNumber + 1;
-							CP_XML_ATTR(L"r", current_row);
-						}
-
-						if (cell->RowNumber > current_row - 1)
-						{
-							current_cell_start = it_cell;
-							current_row = 0;
-							break;
-						}
-						cell->serialize(CP_XML_STREAM());
-						it_cell++;
+					if (row->miyRw.value())
+					{
+						CP_XML_ATTR(L"ht", row->miyRw / 20.);
+						CP_XML_ATTR(L"customHeight", true);
+					}
+					if ((row->iOutLevel.value()) && (row->iOutLevel > 0))
+					{
+						CP_XML_ATTR(L"outlineLevel", row->iOutLevel);
+					}
+					if ((row->fCollapsed.value()) && (row->fCollapsed))
+					{
+						CP_XML_ATTR(L"collapsed", row->fCollapsed);
 					}
 				}
 			}

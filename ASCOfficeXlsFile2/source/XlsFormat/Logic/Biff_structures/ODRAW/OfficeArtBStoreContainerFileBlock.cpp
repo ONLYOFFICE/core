@@ -69,8 +69,8 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 		// read OfficeArtBlipPNG, OfficeArtBlipJPG ...			
 		record >> rc_header;
 		size_t skipLen = 0;
+
 		bool isCompressed = false;
-		bool dumpToFile = true;
 		recType = rc_header.recType;
 
 		switch (rc_header.recType)
@@ -135,6 +135,7 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 						isCompressed = true;
 						readCompressedData(record, metafileHeader);
 					}
+					pict_type = L".wmf";///???? todooo
 				}
 				break;				
 			case OfficeArtRecord::BlipJPEG:
@@ -169,6 +170,7 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 				}
 				break;
 			case OfficeArtRecord::BlipDIB:
+				pict_type = L"dib_data";
 				if (rc_header.recInstance == 0x7A8)
 				{
 					skipLen = 17;
@@ -183,7 +185,6 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 					record.RollRdPtrBack(32);
 				}
 
-				dumpToFile = false;
 				break;
 			case OfficeArtRecord::BlipTIFF:
 				pict_type = L".tiff";
@@ -217,7 +218,6 @@ void OfficeArtBStoreContainerFileBlock::load(XLS::CFRecord& record)
 			else
 				result = true;
 
-			if (dumpToFile)
 			{
 				pict_data = new char[data_size];
 				memcpy(pict_data, record.getCurData<char>(), data_size);

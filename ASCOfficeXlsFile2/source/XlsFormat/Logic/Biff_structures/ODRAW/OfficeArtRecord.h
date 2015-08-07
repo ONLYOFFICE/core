@@ -6,6 +6,9 @@
 namespace XLS
 {
 	class CFRecord;
+	
+	class GlobalWorkbookInfo;
+	typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;
 }
 
 
@@ -81,6 +84,8 @@ public:
 		CA_Chart,
 		CA_HF
 	};
+
+	XLS::GlobalWorkbookInfoPtr	m_pGlobalWorkbookInfoPtr;
 };
 
 typedef boost::shared_ptr<OfficeArtRecord> OfficeArtRecordPtr;

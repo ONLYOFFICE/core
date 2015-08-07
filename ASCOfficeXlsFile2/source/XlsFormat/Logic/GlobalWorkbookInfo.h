@@ -42,6 +42,11 @@ public:
 
 	std::vector<std::pair<boost::shared_array<char>, size_t> >	bin_data;
 
+	std::vector<double>							customColumnsWidth;
+	std::vector<double>							customRowHeight;
+
+	double										defaultColumnWidth;
+	double										defaultRowHeight;
 
 	int Version;
 

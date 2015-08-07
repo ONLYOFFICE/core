@@ -23,6 +23,7 @@ XLS::BiffStructurePtr OfficeArtClientAnchorSheet::clone()
 
 int OfficeArtClientAnchorSheet::serialize(std::wostream &stream)
 {
+//-------------------------------------------------
 	CP_XML_WRITER(stream)    
 	{
 		CP_XML_NODE(L"xdr:from")
@@ -33,7 +34,7 @@ int OfficeArtClientAnchorSheet::serialize(std::wostream &stream)
 			}
 			CP_XML_NODE(L"xdr:colOff")
 			{
-				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(dxL * 256);
+				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(_dxL );
 			}
 			CP_XML_NODE(L"xdr:row")
 			{
@@ -41,7 +42,7 @@ int OfficeArtClientAnchorSheet::serialize(std::wostream &stream)
 			}
 			CP_XML_NODE(L"xdr:rowOff")
 			{
-				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(dyT * 256);
+				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(_dyT);
 			}
 		}
 		CP_XML_NODE(L"xdr:to")
@@ -52,7 +53,7 @@ int OfficeArtClientAnchorSheet::serialize(std::wostream &stream)
 			}
 			CP_XML_NODE(L"xdr:colOff")
 			{
-				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(dxR * 256);
+				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(_dxR );
 			}
 			CP_XML_NODE(L"xdr:row")
 			{
@@ -60,7 +61,7 @@ int OfficeArtClientAnchorSheet::serialize(std::wostream &stream)
 			}
 			CP_XML_NODE(L"xdr:rowOff")
 			{
-				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(dyB * 256); 
+				CP_XML_STREAM() << boost::lexical_cast<std::wstring>(_dyB); 
 			}
 		}
 	}
@@ -78,15 +79,31 @@ void OfficeArtClientAnchorSheet::storeFields(XLS::CFRecord& record)
 
 void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 {
+	XLS::GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+	
 	unsigned short flags;
 	record >> flags >> colL >> dxL >> rwT >> dyT >> colR >> dxR >> rwB >> dyB;
+	
 	fMove = GETBIT(flags, 0);
 	fSize = GETBIT(flags, 1);
 
-	_dxL = dxL * 595;
-	_dyT = dyT * 744;
-	_dxR = dxR * 595;
-	_dyB = dyB * 744;
+	double kfRow	= (global_info->defaultRowHeight	* 360000 * 2.54 / 72);
+	double kfColumn = ( 360000 * 2.54 / 72) / 256.;
+
+	if (colL < global_info->customColumnsWidth.size())
+		_dxL = dxL * kfColumn * global_info->customColumnsWidth[colL];	
+	else 
+		_dxL = dxL * kfColumn * global_info->defaultColumnWidth;	
+
+	if (colR < global_info->customColumnsWidth.size())
+		_dxR = dxR * kfColumn * global_info->customColumnsWidth[colR];	
+	else 
+		_dxR = dxR * kfColumn * global_info->defaultColumnWidth;	
+
+
+	_dyT = dyT * kfRow		/ 256. ;
+	_dyB = dyB * kfRow		/ 256 ;		//744;
+
 }
 
 

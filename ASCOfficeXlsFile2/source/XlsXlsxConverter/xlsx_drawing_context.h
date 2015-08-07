@@ -27,16 +27,27 @@ private:
 class _drawing_state
 {
 public:
-	_drawing_state() {isInternal = false; id = shape_id = -1; flipV = flipH = false;}
+	_drawing_state() 
+	{
+		isInternal = false; id = shape_id = -1; 
+		flipV = flipH = false;  
+		memset(image_crop, 0, 4 * sizeof(int));
+	}
 
 	external_items::Type	type;
+	std::wstring			name;
+	std::wstring			description;
 
 	std::wstring			anchor;
 	std::wstring			shape;
 
 	std::wstring			image_target;
+	int						image_crop[4];
+	bool					image_crop_enabled;
+	
 	int						id;
 	int						shape_id;
+	
 	bool					flipV;
 	bool					flipH;
 	std::wstring			hyperlink;
@@ -52,8 +63,6 @@ struct _hlink_desc
 class xlsx_drawing_context
 {
 public:
-
-
     xlsx_drawing_context(xlsx_drawing_context_handle & h);
 	~xlsx_drawing_context(){}
 
@@ -64,16 +73,23 @@ public:
 		void start_image();
 		void start_shape(int type);
 
-		void set_id ( int id);
-		void set_FlipH();
-		void set_FlipV();
-		void set_shape_id(int id);
+		void set_id			(long id);
+		void set_FlipH		();
+		void set_FlipV		();
+		void set_shape_id	(int id);
 
+		void set_name		(std::wstring & str);
+		void set_description(std::wstring & str);
+		
+		void set_crop_top	(long val);
+		void set_crop_bottom(long val);
+		void set_crop_left	(long val);
+		void set_crop_right	(long val);
 
-		void set_image(std::wstring & str);
-		void set_anchor(std::wstring & str);
-		void set_properties(std::wstring & str);
-		void set_hyperlink(std::wstring & str);
+		void set_image		(std::wstring & str);
+		void set_anchor		(std::wstring & str);
+		void set_properties	(std::wstring & str);
+		void set_hyperlink	(std::wstring & str);
 
 		void serialize(std::wostream & stream);
 

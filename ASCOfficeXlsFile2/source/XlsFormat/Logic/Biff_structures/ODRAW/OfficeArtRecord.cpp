@@ -25,6 +25,8 @@ void OfficeArtRecord::store(XLS::CFRecord& record)
 
 void OfficeArtRecord::load(XLS::CFRecord& record)
 {
+	m_pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();
+
 	record >> rh_own;
 	loadFields(record);
 }

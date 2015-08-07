@@ -186,6 +186,7 @@ namespace NSHtmlRenderer
             CFontManagerBase() : m_oFont(), m_mapFontPathToProperties(), m_oApplicationFonts()
             {
                 m_oApplicationFonts.Initialize();
+                m_oApplicationFonts.GetCache()->SetCacheSize(16);
                 m_pManager = m_oApplicationFonts.GenerateFontManager();
 
                 SetDefaultFont(L"Arial");

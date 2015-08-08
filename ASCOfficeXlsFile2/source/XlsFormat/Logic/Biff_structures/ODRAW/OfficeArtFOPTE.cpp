@@ -206,11 +206,18 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 		case 0x01CE:
 			fopte = OfficeArtFOPTEPtr(new lineDashing);
 			break;
+/*todo*/case 0x1D0:	//lineStartArrowhead
+/*todo*/case 0x1D1:	//lineEndArrowhead
+			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
+			break;
 		case 0x01FF:
 			fopte = OfficeArtFOPTEPtr(new LineStyleBooleanProperties);
 			break;
 		case 0x023F:
 			fopte = OfficeArtFOPTEPtr(new ShadowStyleBooleanProperties);
+			break;
+/*todo*/case 0x0303: //cxstyle
+			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;
 		case 0x033F:
 			fopte = OfficeArtFOPTEPtr(new ShapeBooleanProperties);

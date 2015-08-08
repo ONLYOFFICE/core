@@ -109,6 +109,10 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 				art_record = OfficeArtRecordPtr(new OfficeArtClientData);
 				break;
 
+			case FConnectorRule:
+				art_record = OfficeArtRecordPtr(new OfficeArtFConnectorRule);
+				break;
+
 			case ClientTextbox:
 				art_record = OfficeArtRecordPtr(new OfficeArtClientTextbox);
 				break;
@@ -125,12 +129,10 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 				art_record = OfficeArtRecordPtr(new OfficeArtSplitMenuColorContainer);
 				break;
 			case BStoreContainer:
-				//Log::event("OfficeArtBStoreContainer record found. OfficeArtBStoreContainerFileBlock records count = " + STR::int2str(rh_child.recInstance) + 
-				//	". RecLen = " + STR::int2str(rh_child.recLen));
 				art_record = OfficeArtRecordPtr(new OfficeArtBStoreContainer);
 				break;
 			case TertiaryFOPT:
-				//art_record = OfficeArtRecordPtr(new OfficeArtTertiaryFOPT);
+				art_record = OfficeArtRecordPtr(new OfficeArtTertiaryFOPT);
 				break;
 
 		}

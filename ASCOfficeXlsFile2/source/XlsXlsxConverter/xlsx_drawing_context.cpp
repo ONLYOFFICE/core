@@ -84,6 +84,7 @@ bool xlsx_drawing_context::start_drawing(int type)
 	case 0x0002: // Rectangle
 	case 0x0003: // Oval
 	case 0x0004: // Arc
+	//case 0x0009: // Polygon:
 		start_shape(type); return true;
 	case 0x0005: // Chart  
 	case 0x0006: // Text
@@ -91,7 +92,6 @@ bool xlsx_drawing_context::start_drawing(int type)
 		break;
 	case 0x0008: // Picture
 		start_image(); return true;
-	case 0x0009: // Polygon:
 	case 0x000B: // Checkbox
 	case 0x000C: // Radio button
 	case 0x000D: // Edit box
@@ -126,6 +126,7 @@ void xlsx_drawing_context::start_shape(int type)
 	drawing_state.push_back(st);
 
 	drawing_state.back().type = external_items::typeShape;
+	drawing_state.back().shape_type = type;
 
 	count_object++;
 }
@@ -169,12 +170,165 @@ void xlsx_drawing_context::end_drawing()
 			serialize(strm);
 			xlsx_drawings_->add(strm.str(), isIternal, 	rId , drawing_state.back().image_target, drawing_state.back().type);
 		}
+		else
+		{
+			serialize_shape();
+			serialize(strm);
+			xlsx_drawings_->add(strm.str(), true, L"" , L"", drawing_state.back().type);
+		}
 		break;
+	case external_items::typeShape:
+		{
+			serialize_shape();
+			serialize(strm);
+			xlsx_drawings_->add(strm.str(), true, L"" , L"", drawing_state.back().type);
+		}break;
 	}
 
 	drawing_state.pop_back();
 
 }
+void xlsx_drawing_context::serialize_shape()
+{
+	std::wstringstream strm;
+
+	std::wstring prstGeom;
+
+	switch(drawing_state.back().shape_type)
+	{
+	case 1:	prstGeom = L"line";		break;
+	case 2:	prstGeom = L"rect";		break;
+	case 3:	prstGeom = L"ellipse";	break;
+	case 4:	prstGeom = L"arc";		break;
+	case 9:	prstGeom = L"polygon";	break;
+	default: prstGeom = L"custom";	break;
+	}
+
+	CP_XML_WRITER(strm)    
+	{
+		CP_XML_NODE(L"xdr:sp")
+		{ 
+			CP_XML_NODE(L"xdr:nvSpPr")
+			{
+				CP_XML_NODE(L"xdr:cNvPr")
+				{
+					if (drawing_state.back().id >= 0)	CP_XML_ATTR(L"id", drawing_state.back().id);
+					if (drawing_state.back().name.empty())	drawing_state.back().name = L"Shape_" + count_object;
+
+					CP_XML_ATTR(L"name", drawing_state.back().name);
+					if (!drawing_state.back().description.empty())
+					{
+						CP_XML_ATTR(L"descr", drawing_state.back().description);
+					}
+
+					if (!drawing_state.back().hyperlink.empty())
+					{
+						CP_XML_NODE(L"a:hlinkClick")
+						{
+							CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+							
+							CP_XML_ATTR(L"r:id", drawing_state.back().hyperlink);
+						}
+					}
+				}
+				CP_XML_NODE(L"xdr:cNvSpPr");
+			}
+			
+			CP_XML_NODE(L"xdr:spPr")
+			{
+				CP_XML_NODE(L"a:xfrm")
+				{
+					CP_XML_NODE(L"a:off")
+					{
+						CP_XML_ATTR(L"y", 0);
+						CP_XML_ATTR(L"x", 0);
+					}
+					CP_XML_NODE(L"a:ext")
+					{
+						CP_XML_ATTR(L"cy", 0);
+						CP_XML_ATTR(L"cx", 0);
+					}
+				}
+				CP_XML_NODE(L"a:prstGeom")
+				{
+					CP_XML_ATTR(L"prst", prstGeom);
+					CP_XML_NODE(L"a:avLst");
+				}
+				serialize_fill(CP_XML_STREAM());
+
+				CP_XML_NODE(L"a:ln")
+				{
+					CP_XML_NODE(L"a:solidFill")
+					{
+						CP_XML_NODE(L"a:srgbClr")
+						{
+							CP_XML_ATTR(L"val", "000000");
+						}
+					
+					}
+				}
+			}
+		}
+	}
+
+	drawing_state.back().shape = strm.str();
+}
+
+void xlsx_drawing_context::serialize_fill(std::wostream & stream)
+{
+	if (!drawing_state.back().image_target.empty())
+	{
+		bool  isIternal = false;
+		std::wstring rId = handle_.impl_->get_mediaitems().find_image( drawing_state.back().image_target, isIternal);
+		if (!rId.empty())
+		{
+			xlsx_drawings_->add(L"", isIternal, 	rId , drawing_state.back().image_target, drawing_state.back().type);
+			serialize_bitmap_fill(stream, rId);
+		}else 
+			serialize_none_fill(stream);
+	}
+	else 
+		serialize_none_fill(stream);
+}
+
+void xlsx_drawing_context::serialize_none_fill(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+	{
+		CP_XML_NODE(L"a:noFill");
+	}
+}
+
+void xlsx_drawing_context::serialize_bitmap_fill(std::wostream & stream, std::wstring rId, const std::wstring ns)
+{
+	CP_XML_WRITER(stream)    
+	{
+		CP_XML_NODE(ns + L"blipFill")
+		{
+			CP_XML_NODE(L"a:blip")
+			{
+				CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
+				CP_XML_ATTR(L"r:embed", rId);
+			}
+
+			CP_XML_NODE(L"a:srcRect")
+			{
+				if (drawing_state.back().image_crop_enabled)
+				{		
+					CP_XML_ATTR(L"l", static_cast<size_t>(drawing_state.back().image_crop[0]));
+					CP_XML_ATTR(L"t", static_cast<size_t>(drawing_state.back().image_crop[1]));
+					CP_XML_ATTR(L"r", static_cast<size_t>(drawing_state.back().image_crop[2]));
+					CP_XML_ATTR(L"b", static_cast<size_t>(drawing_state.back().image_crop[3]));
+				}
+			}
+			CP_XML_NODE(L"a:stretch")
+			{
+				CP_XML_NODE(L"a:fillRect");
+			}
+		}
+	}
+}
+
 void xlsx_drawing_context::serialize_pic(std::wstring rId)
 {
 	std::wstringstream strm;
@@ -215,29 +369,8 @@ void xlsx_drawing_context::serialize_pic(std::wstring rId)
 					}
 				}
 			}
-			CP_XML_NODE(L"xdr:blipFill")
-			{
-				CP_XML_NODE(L"a:blip")
-				{
-					CP_XML_ATTR(L"xmlns:r", L"http://schemas.openxmlformats.org/officeDocument/2006/relationships");
-					CP_XML_ATTR(L"r:embed", rId);
-				}
+			serialize_bitmap_fill(CP_XML_STREAM(), rId, L"xdr:");
 
-				CP_XML_NODE(L"a:srcRect")
-				{
-					if (drawing_state.back().image_crop_enabled)
-					{		
-						CP_XML_ATTR(L"l", static_cast<size_t>(drawing_state.back().image_crop[0]));
-						CP_XML_ATTR(L"t", static_cast<size_t>(drawing_state.back().image_crop[1]));
-						CP_XML_ATTR(L"r", static_cast<size_t>(drawing_state.back().image_crop[2]));
-						CP_XML_ATTR(L"b", static_cast<size_t>(drawing_state.back().image_crop[3]));
-					}
-				}
-				CP_XML_NODE(L"a:stretch")
-				{
-					CP_XML_NODE(L"a:fillRect");
-				}
-			}
 			CP_XML_NODE(L"xdr:spPr")
 			{
 				CP_XML_NODE(L"a:xfrm")
@@ -266,6 +399,7 @@ void xlsx_drawing_context::serialize_pic(std::wstring rId)
 
 	drawing_state.back().shape = strm.str();
 }
+
 void xlsx_drawing_context::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    

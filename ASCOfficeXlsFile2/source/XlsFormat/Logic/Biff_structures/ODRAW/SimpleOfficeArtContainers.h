@@ -55,6 +55,26 @@ public:
 
 };
 
+class OfficeArtFConnectorRule : public OfficeArtRecord
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtFConnectorRule)
+public:
+	OfficeArtFConnectorRule() : OfficeArtRecord(0, FConnectorRule) {}
+	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtFConnectorRule(*this)); }
+	virtual void loadFields(XLS::CFRecord& record);
+	virtual void storeFields(XLS::CFRecord& record) {}
+
+	static const XLS::ElementType	type = XLS::typeOfficeArtClientData;//FConnectorRule
+
+	unsigned int ruid;
+	unsigned int spidA;
+	unsigned int spidB;
+	unsigned int spidC;
+	unsigned int cptiA;
+	unsigned int cptiB;
+
+};
+
 class OfficeArtClientTextbox : public OfficeArtRecord
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtClientTextbox)

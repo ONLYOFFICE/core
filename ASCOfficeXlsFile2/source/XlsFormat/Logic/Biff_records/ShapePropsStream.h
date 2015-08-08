@@ -1,5 +1,6 @@
 #pragma once
 
+#include <Logic/Biff_structures/FrtHeader.h>
 #include "BiffRecord.h"
 
 namespace XLS
@@ -22,12 +23,12 @@ public:
 	
 	static const ElementType	type = typeShapePropsStream;
 
-//-----------------------------
-//	BIFF_WORD userName;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-//		//BO_ATTRIB_MARKUP_ATTRIB(userName)
-	//BO_ATTRIB_MARKUP_END
+	FrtHeader		frtHeader;
+	unsigned short  wObjContext;
+	unsigned int	dwChecksum;
+
+	std::string		xml_;
+
 
 };
 

@@ -72,6 +72,9 @@ WORKSHEET = BOF WORKSHEETCONTENT
 const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 {
 	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
+	
+	global_info->defaultColumnWidth		= 8;
+	global_info->defaultRowHeight		= 14.4; 
 
 	int count = 0;
 
@@ -198,6 +201,7 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	proc.mandatory<EOF_T>();
 
 	global_info->customColumnsWidth.clear();
+	global_info->customRowsHeight.clear();
 
 	return true;
 }

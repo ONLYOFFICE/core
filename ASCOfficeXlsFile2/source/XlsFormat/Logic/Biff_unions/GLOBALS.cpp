@@ -99,7 +99,10 @@ int GLOBALS::serialize(std::wostream & stream)
 				if (def_row)
 				{
 					if(!def_row->fDyZero.value() || ((def_row->fDyZero.value()) && (!def_row->fDyZero)))
+					{
 						CP_XML_ATTR(L"defaultRowHeight", def_row->miyRw / 20.);
+						CP_XML_ATTR(L"customHeight", true);
+					}
 					else 
 					{
 						CP_XML_ATTR(L"zeroHeight", true);

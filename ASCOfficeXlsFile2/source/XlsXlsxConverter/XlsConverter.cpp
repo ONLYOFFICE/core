@@ -405,6 +405,7 @@ void XlsConverter::convert(ODRAW::OfficeArtBStoreContainer* art_bstore)
 				BITMAPINFOHEADER * header = (BITMAPINFOHEADER *)art_bstore->rgfb[i]->pict_data;
 
 				CBgraFrame frame;
+				int offset = art_bstore->rgfb[i]->data_size - header->biSizeImage;
 				frame.put_Data((BYTE*)art_bstore->rgfb[i]->pict_data + header->biSize);
 
 				frame.put_Height(header->biHeight);

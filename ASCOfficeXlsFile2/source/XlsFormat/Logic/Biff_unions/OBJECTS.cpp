@@ -97,6 +97,9 @@ const bool OBJECTS::loadContentRead(BinReaderProcessor& proc)
 	
 	int count1 = proc.repeated(Parenthesis_OBJECTS_1(m_MsoDrawing), 0, 0);
 
+	proc.repeated(Parenthesis_OBJECTS_2(), 0, 0);
+	proc.repeated<Continue>(0,0);
+
 	int i = 0 ;
 	for(std::list<BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end() ; it++)
 	{

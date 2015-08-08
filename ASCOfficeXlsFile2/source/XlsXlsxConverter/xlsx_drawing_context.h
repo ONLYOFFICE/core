@@ -34,6 +34,7 @@ public:
 		memset(image_crop, 0, 4 * sizeof(int));
 	}
 
+	int						shape_type;
 	external_items::Type	type;
 	std::wstring			name;
 	std::wstring			description;
@@ -94,6 +95,12 @@ public:
 		void serialize(std::wostream & stream);
 
 		void serialize_pic(std::wstring rId);	
+		void serialize_shape();	
+		
+		void serialize_fill			(std::wostream & stream);
+		void serialize_bitmap_fill	(std::wostream & stream, std::wstring rId, const std::wstring ns = L"a:");
+		void serialize_none_fill	(std::wostream & stream);
+
 	void end_drawing();
 private:
 

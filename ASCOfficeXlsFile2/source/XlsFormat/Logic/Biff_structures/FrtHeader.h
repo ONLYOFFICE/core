@@ -2,7 +2,7 @@
 
 #include "BiffStructure.h"
 #include <Binary/CFRecordType.h>
-#include <Logic/Biff_structures/BitMarkedStructs.h>
+#include "BitMarkedStructs.h"
 
 namespace XLS
 {;
@@ -24,8 +24,8 @@ public:
 	
 	static const ElementType	type = typeFrtHeader;
 	
-	CFRecordType::TypeId rt;
-	FrtFlags grbitFrt;
+	CFRecordType::TypeId	rt;
+	FrtFlags				grbitFrt;
 };
 
 typedef boost::shared_ptr<FrtHeader> FrtHeaderPtr;

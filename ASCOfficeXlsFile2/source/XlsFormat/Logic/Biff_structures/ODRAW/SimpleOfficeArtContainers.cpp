@@ -5,6 +5,10 @@
 namespace ODRAW
 {;
 
+void OfficeArtFConnectorRule::loadFields(XLS::CFRecord& record)
+{
+	record >> ruid >> spidA >> spidB >> spidC >> cptiA >> cptiB;
+}
 
 void OfficeArtDggContainer::loadFields(XLS::CFRecord& record)
 {

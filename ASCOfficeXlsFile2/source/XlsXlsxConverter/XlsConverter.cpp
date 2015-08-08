@@ -486,6 +486,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		{
 			sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
 		}
+		else continue;
 		
 		
 		if (xlsx_context->get_drawing_context().start_drawing(obj->cmo.ot))

@@ -56,31 +56,24 @@ void Row::writeFields(CFRecord& record)
 void Row::readFields(CFRecord& record)
 {
 	record >> rw >> colMic >> colMac >> miyRw;
+
 	record.skipNunBytes(4); // reserved / unused
+
 	unsigned short flags;
 	record >> flags;
-	iOutLevel = GETBITS(flags, 0, 2);
-	fCollapsed = GETBIT(flags, 4);
-	fDyZero = GETBIT(flags, 5);
-	fUnsynced = GETBIT(flags, 6);
+	
+	iOutLevel	= GETBITS(flags, 0, 2);
+	fCollapsed	= GETBIT(flags, 4);
+	fDyZero		= GETBIT(flags, 5);
+	fUnsynced	= GETBIT(flags, 6);
 	fGhostDirty = GETBIT(flags, 7);
 
 	record >> flags;
-	ixfe_val = GETBITS(flags, 0, 11);
-	fExAsc = GETBIT(flags, 12);
-	fExDes = GETBIT(flags, 13);
-	fPhonetic = GETBIT(flags, 14);
-}
 
-int Row::serialize(std::wostream & stream)
-{
-	CP_XML_WRITER(stream)    
-    {
-		CP_XML_NODE(L"row")
-		{
-		}
-	}
-	return 0;
+	ixfe_val	= GETBITS(flags, 0, 11);
+	fExAsc		= GETBIT(flags, 12);
+	fExDes		= GETBIT(flags, 13);
+	fPhonetic	= GETBIT(flags, 14);
 }
 
 } // namespace XLS

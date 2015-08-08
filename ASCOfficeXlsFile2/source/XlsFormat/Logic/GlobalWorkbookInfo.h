@@ -3,6 +3,7 @@
 #include <boost/unordered_map.hpp> 
 #include <boost/smart_ptr/shared_array.hpp>
 #include <vector>
+#include <map>
 
 #include "../Crypt/Decryptor.h"
 #include "Biff_structures/BorderFillInfo.h"
@@ -42,8 +43,8 @@ public:
 
 	std::vector<std::pair<boost::shared_array<char>, size_t> >	bin_data;
 
-	std::vector<double>							customColumnsWidth;
-	std::vector<double>							customRowHeight;
+	std::map<int, double>						customColumnsWidth;
+	std::map<int, double>						customRowsHeight;
 
 	double										defaultColumnWidth;
 	double										defaultRowHeight;

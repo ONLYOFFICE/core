@@ -19,7 +19,6 @@ class CELL_GROUP : public CompositeObject
 public:
 	CELL_GROUP(std::vector<CellRef>& shared_formulas_locations_ref) : 
 							shared_formulas_locations_ref_(shared_formulas_locations_ref)
-							, m_count_rows (0)
 	{
 	}
 
@@ -30,6 +29,8 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
+		GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
+		
 		int count, count_row = 0;
 		
 		if(proc.mandatory<Row>() == true)
@@ -38,10 +39,17 @@ public:
 		
 			while(count > 0)
 			{
+				Row* row = dynamic_cast<Row*>(elements_.back().get());
+				if (row)
+				{
+					if (row->miyRw.value())
+					{
+						global_info->customRowsHeight.insert(std::pair<int, double>(row->rw,row->miyRw / 20.));
+					}
+				}
 				m_rows.insert(m_rows.begin(), elements_.back());
 				elements_.pop_back();
-				count--;
-				m_count_rows++;
+				count--;				
 			}
 		}	
 		
@@ -62,7 +70,6 @@ public:
 	int serialize(std::wostream & stream);
 	static const ElementType	type = typeCELL_GROUP;
 
-	int							m_count_rows;
 	std::list<BaseObjectPtr>	m_rows;
 	std::list<BaseObjectPtr>	m_DBCells;
 
@@ -79,63 +86,6 @@ int CELL_GROUP::serialize(std::wostream & stream)
 
 		int current_row_number = 0;
 
-		//for (std::list<XLS::BaseObjectPtr>::iterator it_row = m_rows.begin(); it_row != m_rows.end(); it_row++)
-		//{
-		//	Row * row = dynamic_cast<Row *>(it_row->get());
-		//	
-		//	if (row == NULL) continue;
-
-		//	CP_XML_NODE(L"row")
-		//	{		
-		//		current_row = *row->rw.value();
-		//		
-		//		CP_XML_ATTR(L"r", current_row + 1);
-		//		
-		//		bool xf_set = true;
-		//		if ((row->fGhostDirty.value()) && ( *row->fGhostDirty.value()== false)) xf_set = false;
-		//		
-		//		if (row->ixfe_val.value() && xf_set)
-		//		{
-		//			CP_XML_ATTR(L"s", row->ixfe_val - cellStyleXfs_count);
-		//			CP_XML_ATTR(L"customFormat", true);
-		//		}
-
-		//		if (row->miyRw.value())
-		//		{
-		//			CP_XML_ATTR(L"ht", row->miyRw / 20.);
-		//			CP_XML_ATTR(L"customHeight", true);
-		//		}
-		//		if ((row->iOutLevel.value()) && (row->iOutLevel > 0))
-		//		{
-		//			CP_XML_ATTR(L"outlineLevel", row->iOutLevel);
-		//		}
-		//		if ((row->fCollapsed.value()) && (row->fCollapsed))
-		//		{
-		//			CP_XML_ATTR(L"collapsed", row->fCollapsed);
-		//		}
-		//		std::list<XLS::BaseObjectPtr>::iterator it_cell = current_cell_start;
-		//		while(true)
-		//		{
-		//			if (it_cell == elements_.end())
-		//			{
-		//				current_cell_start = it_cell;
-		//				break;
-		//			}
-		//			CELL * cell = dynamic_cast<CELL *>(it_cell->get());
-
-		//			if (cell == NULL) continue;
-
-		//			if (cell->RowNumber >current_row)
-		//			{
-		//				current_cell_start = it_cell;
-		//				break;
-		//			}
-		//			cell->serialize(CP_XML_STREAM());
-		//			it_cell++;
-		//		}
-		//	}
-		//}
-
 		while(current_row_number == 0)
 		{
 			CP_XML_NODE(L"row")
@@ -151,16 +101,23 @@ int CELL_GROUP::serialize(std::wostream & stream)
 					}
 					CELL * cell = dynamic_cast<CELL *>(it_cell->get());
 
-					if (cell == NULL) continue;
+					if (cell == NULL)
+					{
+						it_cell++;
+						continue;
+					}
 
 					if (current_row_number < 1)  //нова€ строка
 					{
 						current_row_number = cell->RowNumber + 1; // номер из €чейки
 					
 						bool skip_cells = false;
+
 						if (current_row != m_rows.end())
 						{
 							Row * row = dynamic_cast<Row *>(current_row->get());
+						
+							int row_n = row->rw;
 							if (row->rw + 1  < current_row_number)
 							{
 								current_row_number = row->rw + 1;
@@ -178,9 +135,9 @@ int CELL_GROUP::serialize(std::wostream & stream)
 									CP_XML_ATTR(L"s", row->ixfe_val - cellStyleXfs_count);
 									CP_XML_ATTR(L"customFormat", true);
 								}
-								if (row->miyRw.value())
+								if (row->miyRw.value())// 255 twips(1/20 pt)
 								{
-									CP_XML_ATTR(L"ht", row->miyRw / 20.);
+									CP_XML_ATTR(L"ht", row->miyRw / 16.);
 									CP_XML_ATTR(L"customHeight", true);
 								}
 								if ((row->iOutLevel.value()) && (row->iOutLevel > 0))
@@ -192,7 +149,10 @@ int CELL_GROUP::serialize(std::wostream & stream)
 									CP_XML_ATTR(L"collapsed", row->fCollapsed);
 								}
 							}
-							current_row ++;
+							if (row->rw + 1  <= current_row_number)
+							{								
+								current_row++;
+							}
 						}											
 						else
 						{
@@ -200,7 +160,7 @@ int CELL_GROUP::serialize(std::wostream & stream)
 						}
 						if (skip_cells)
 						{
-							current_row = 0;
+							current_row_number = 0;
 							break;
 						}
 					}

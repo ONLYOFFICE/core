@@ -39,7 +39,6 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 		m_DefColWidth = elements_.back();
 		elements_.pop_back();
 	}
-
 	bool col_ok = proc.repeated<ColInfo>(0, 255);
 
 	int last_add = 0;
@@ -48,19 +47,11 @@ const bool COLUMNS::loadContent(BinProcessor& proc)
 	{
 		ColInfo* column_info = dynamic_cast<ColInfo*>(it->get());
 
-		for (int i = last_add ; i < column_info->colFirst; i++)
-		{
-			global_info->customColumnsWidth.push_back(global_info->defaultColumnWidth);
-		}
 		for (int i = column_info->colFirst; i <= column_info->colLast; i++)
 		{
 			if (column_info->coldx.value())
 			{
-				global_info->customColumnsWidth.push_back(column_info->coldx / 256.);
-			}
-			else
-			{
-				global_info->customColumnsWidth.push_back(global_info->defaultColumnWidth);
+				global_info->customColumnsWidth.insert(std::pair<int, double>(i,column_info->coldx / 256.));
 			}
 		}
 

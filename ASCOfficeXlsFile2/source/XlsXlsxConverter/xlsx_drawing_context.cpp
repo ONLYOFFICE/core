@@ -193,7 +193,7 @@ void xlsx_drawing_context::serialize_pic(std::wstring rId)
 					CP_XML_ATTR(L"name", drawing_state.back().name);
 					if (!drawing_state.back().description.empty())
 					{
-						CP_XML_ATTR(L"desc", drawing_state.back().description);
+						CP_XML_ATTR(L"descr", drawing_state.back().description);
 					}
 
 					if (!drawing_state.back().hyperlink.empty())
@@ -305,22 +305,22 @@ void xlsx_drawing_context::set_image(std::wstring & str)
 void xlsx_drawing_context::set_crop_top	(long val)
 {
 	if (drawing_state.size() < 1 )return;
-	drawing_state.back().image_crop[1] = val;
+	drawing_state.back().image_crop[1] = val * 1.5;
 }
 void xlsx_drawing_context::set_crop_bottom(long val)
 {
 	if (drawing_state.size() < 1 )return;
-	drawing_state.back().image_crop[3] = val;
+	drawing_state.back().image_crop[3] = val* 1.5;
 }
 void xlsx_drawing_context::set_crop_left (long val)
 {
 	if (drawing_state.size() < 1 )return;
-	drawing_state.back().image_crop[0]= val;
+	drawing_state.back().image_crop[0]= val* 1.5;
 }
 void xlsx_drawing_context::set_crop_right (long val)
 {
 	if (drawing_state.size() < 1 )return;
-	drawing_state.back().image_crop[2] = val;
+	drawing_state.back().image_crop[2] = val* 1.5;
 }
 void xlsx_drawing_context::set_hyperlink(std::wstring & str)
 {

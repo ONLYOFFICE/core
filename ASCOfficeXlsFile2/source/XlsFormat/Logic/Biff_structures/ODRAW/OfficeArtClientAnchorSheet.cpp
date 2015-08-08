@@ -86,24 +86,38 @@ void OfficeArtClientAnchorSheet::loadFields(XLS::CFRecord& record)
 	
 	fMove = GETBIT(flags, 0);
 	fSize = GETBIT(flags, 1);
+//----------------------------------------------------------------------------------------------------
+	double kfCol	= 17640 / 256.;
+	double kfRow	= ( 360000 * 2.54 / 72) / 256. ;
 
-	double kfRow	= (global_info->defaultRowHeight	* 360000 * 2.54 / 72);
-	double kfColumn = ( 360000 * 2.54 / 72) / 256.;
-
-	if (colL < global_info->customColumnsWidth.size())
-		_dxL = dxL * kfColumn * global_info->customColumnsWidth[colL];	
+	if (global_info->customColumnsWidth.find(colL) != global_info->customColumnsWidth.end())
+	{
+		_dxL = dxL * kfCol * global_info->customColumnsWidth[colL];	
+	}
 	else 
-		_dxL = dxL * kfColumn * global_info->defaultColumnWidth;	
+		_dxL = dxL * kfCol * global_info->defaultColumnWidth;	
 
-	if (colR < global_info->customColumnsWidth.size())
-		_dxR = dxR * kfColumn * global_info->customColumnsWidth[colR];	
+	if (global_info->customColumnsWidth.find(colR) != global_info->customColumnsWidth.end())
+	{
+		_dxR = dxR * kfCol * global_info->customColumnsWidth[colR];	
+	}
 	else 
-		_dxR = dxR * kfColumn * global_info->defaultColumnWidth;	
+		_dxR = dxR * kfCol * global_info->defaultColumnWidth;	
 
+//---------------------------------------------------------------------------------------------------
+	if (global_info->customRowsHeight.find(rwT) != global_info->customRowsHeight.end())
+	{
+		_dyT = dyT * kfRow * global_info->customRowsHeight[rwT];	
+	}
+	else 
+		_dyT = dyT * kfRow * global_info->defaultRowHeight;	
 
-	_dyT = dyT * kfRow		/ 256. ;
-	_dyB = dyB * kfRow		/ 256 ;		//744;
-
+	if (global_info->customRowsHeight.find(rwB) != global_info->customRowsHeight.end())
+	{
+		_dyB = dyB * kfRow * global_info->customRowsHeight[rwB];	
+	}
+	else 
+		_dyB = dyB * kfRow * global_info->defaultRowHeight;	
 }
 
 

@@ -6,6 +6,7 @@
 
 #include <simple_xml_writer.h>
 #include <utils.h>
+#include <Auxiliary/HelpFunc.h>
 
 namespace oox {
 
@@ -149,18 +150,26 @@ void xlsx_drawing_context::set_FlipV()
 void xlsx_drawing_context::set_shape_id(int id)
 {
 	if (drawing_state.size() < 1 )return;
-	drawing_state.back().shape_id = id;
+	drawing_state.back().shape_id = (MSOSPT)id;
 }
 
 void xlsx_drawing_context::end_drawing()
 {
 	if (drawing_state.size() < 1 )return;
 
+	if (drawing_state.back().anchor.empty())
+	{
+		drawing_state.pop_back();
+		return;
+	}
+
 	std::wstringstream strm;
 
-	switch(drawing_state.back().type)
+	if ( drawing_state.back().type == external_items::typeImage ||
+		drawing_state.back().shape_id == msosptPictureFrame )
 	{
-	case external_items::typeImage:
+		drawing_state.back().type = external_items::typeImage;
+
 		if (!drawing_state.back().image_target.empty())
 		{
 			bool isIternal = false;
@@ -170,19 +179,14 @@ void xlsx_drawing_context::end_drawing()
 			serialize(strm);
 			xlsx_drawings_->add(strm.str(), isIternal, 	rId , drawing_state.back().image_target, drawing_state.back().type);
 		}
-		else
-		{
-			serialize_shape();
-			serialize(strm);
-			xlsx_drawings_->add(strm.str(), true, L"" , L"", drawing_state.back().type);
-		}
-		break;
-	case external_items::typeShape:
-		{
-			serialize_shape();
-			serialize(strm);
-			xlsx_drawings_->add(strm.str(), true, L"" , L"", drawing_state.back().type);
-		}break;
+		else 
+			drawing_state.back().type = external_items::typeShape;
+	}
+	if ( drawing_state.back().type == external_items::typeShape)
+	{
+		serialize_shape();
+		serialize(strm);
+		xlsx_drawings_->add(strm.str(), true, L"" , L"", drawing_state.back().type);
 	}
 
 	drawing_state.pop_back();
@@ -192,17 +196,13 @@ void xlsx_drawing_context::serialize_shape()
 {
 	std::wstringstream strm;
 
-	std::wstring prstGeom;
-
-	switch(drawing_state.back().shape_type)
+	std::wstring prstGeom = Spt2ShapeType(drawing_state.back().shape_id);
+	
+	if (prstGeom.empty())
 	{
-	case 1:	prstGeom = L"line";		break;
-	case 2:	prstGeom = L"rect";		break;
-	case 3:	prstGeom = L"ellipse";	break;
-	case 4:	prstGeom = L"arc";		break;
-	case 9:	prstGeom = L"polygon";	break;
-	default: prstGeom = L"custom";	break;
+		prstGeom = L"custom";
 	}
+
 
 	CP_XML_WRITER(strm)    
 	{
@@ -256,17 +256,8 @@ void xlsx_drawing_context::serialize_shape()
 				}
 				serialize_fill(CP_XML_STREAM());
 
-				CP_XML_NODE(L"a:ln")
-				{
-					CP_XML_NODE(L"a:solidFill")
-					{
-						CP_XML_NODE(L"a:srgbClr")
-						{
-							CP_XML_ATTR(L"val", "000000");
-						}
-					
-					}
-				}
+				serialize_line(CP_XML_STREAM());
+
 			}
 		}
 	}
@@ -298,7 +289,24 @@ void xlsx_drawing_context::serialize_none_fill(std::wostream & stream)
 		CP_XML_NODE(L"a:noFill");
 	}
 }
+void xlsx_drawing_context::serialize_line(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+	{
+		CP_XML_NODE(L"a:ln")
+		{
 
+			CP_XML_NODE(L"a:" + drawing_state.back().line.type)
+			{
+				CP_XML_NODE(L"a:srgbClr")
+				{
+					CP_XML_ATTR(L"val", drawing_state.back().line.color);
+				}
+			
+			}
+		}
+	}
+}
 void xlsx_drawing_context::serialize_bitmap_fill(std::wostream & stream, std::wstring rId, const std::wstring ns)
 {
 	CP_XML_WRITER(stream)    
@@ -455,6 +463,38 @@ void xlsx_drawing_context::set_crop_right (long val)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().image_crop[2] = val* 1.5;
+}
+void xlsx_drawing_context::set_rotation (long val)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().rotation = val;
+}
+void xlsx_drawing_context::set_line_color (std::wstring color)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().line.color = color;
+}
+void xlsx_drawing_context::set_line_type (long val)
+{
+	if (drawing_state.size() < 1 )return;
+	switch(val)
+	{
+	case 0: drawing_state.back().line.type = L"solidFill";		break;
+	case 1: drawing_state.back().line.type = L"patternFill";	break;
+	case 2: drawing_state.back().line.type = L"blipFill";		break;
+	}
+}
+void xlsx_drawing_context::set_line_style (long val)
+{
+	if (drawing_state.size() < 1 )return;
+	switch(val)
+	{
+	case 0: drawing_state.back().line.style = L"simple"; break;
+	case 1: drawing_state.back().line.style = L"double"; break;
+	case 2: drawing_state.back().line.style = L"thickThin"; break;
+	case 3: drawing_state.back().line.style = L"thinThick"; break;
+	case 4: drawing_state.back().line.style = L"triple"; break;
+	}
 }
 void xlsx_drawing_context::set_hyperlink(std::wstring & str)
 {

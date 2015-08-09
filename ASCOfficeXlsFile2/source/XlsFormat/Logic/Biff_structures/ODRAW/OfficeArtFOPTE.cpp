@@ -38,8 +38,27 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 	OfficeArtFOPTEPtr fopte;
 	switch(opid)
 	{
+		case 0x0004:
+			fopte = OfficeArtFOPTEPtr(new Rotation);
+			break;
 		case 0x007F:
 			fopte = OfficeArtFOPTEPtr(new ProtectionBooleanProperties);
+			break;
+/*todo*/case 0x0080://lTxid
+		case 0x0081://dxTextLeft
+		case 0x0082://dyTextTop
+		case 0x0083://dxTextRight
+		case 0x0084://dyTextBottom
+		case 0x0085://WrapText
+		case 0x0086://unused134
+		case 0x0087://anchorText
+		case 0x0088://txflTextFlow
+		case 0x0089://cdirFont
+		case 0x008a://hspNext
+		case 0x008b://txdir
+		case 0x008c://unused140
+		case 0x008d://unused141
+			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
 			break;
 		case 0x00BF:
 			fopte = OfficeArtFOPTEPtr(new TextBooleanProperties);
@@ -70,6 +89,42 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 			break;
 		case 0x013F:
 			fopte = OfficeArtFOPTEPtr(new BlipBooleanProperties);
+			break;
+/*todo*/case 0x0140: //geoLeft
+		case 0x0141: //geoTop
+		case 0x0142: //geoRight
+		case 0x0143: //geoBottom
+		case 0x0144: //shapePath
+			fopte = OfficeArtFOPTEPtr(new ShapePath);
+			break;
+		case 0x0145: //pVertices
+		case 0x0146: //pSegmentInfo
+			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
+			break;
+		case 0x0147: //adjustValue .... //adjust8Value
+		case 0x0148:
+		case 0x0149:
+		case 0x014A:
+		case 0x014B:
+		case 0x014C:
+		case 0x014D:
+		case 0x014E:
+			fopte = OfficeArtFOPTEPtr(new AdjustValue);
+			break;
+		case 0x0151:
+			fopte = OfficeArtFOPTEPtr(new pAdjustHandles);
+			break;
+		case 0x0152:
+		case 0x0153:
+		case 0x0154:
+		case 0x0155:
+		case 0x0156:
+		case 0x0157:
+		case 0x0158:
+			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
+			break;
+		case 0x017f:
+			fopte = OfficeArtFOPTEPtr(new GeometryBooleanProperties);
 			break;
 		case 0x0180:
 			fopte = OfficeArtFOPTEPtr(new fillType);
@@ -194,6 +249,21 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 		case 0x01C0:
 			fopte = OfficeArtFOPTEPtr(new lineColor);
 			break;
+		case 0x01C1:
+			fopte = OfficeArtFOPTEPtr(new lineOpacity);
+			break;
+		case 0x01C2:
+			fopte = OfficeArtFOPTEPtr(new lineBackColor);
+			break;
+		case 0x01C3:
+			fopte = OfficeArtFOPTEPtr(new lineCrMod);
+			break;
+		case 0x01C4:
+			fopte = OfficeArtFOPTEPtr(new lineType);
+			break;
+		case 0x01C5:
+			fopte = OfficeArtFOPTEPtr(new fillBlip);
+			break;
 		case 0x01CB:
 			fopte = OfficeArtFOPTEPtr(new lineWidth);
 			break;
@@ -250,22 +320,34 @@ void TextBooleanProperties::load(XLS::CFRecord& record)
 {
 	OfficeArtFOPTE::load(record);
 
-	fFitShapeToText = GETBIT(op, 1);
-	fAutoTextMargin = GETBIT(op, 3);
-	fSelectText = GETBIT(op, 4);
+	fFitShapeToText		= GETBIT(op, 1);
+	fAutoTextMargin		= GETBIT(op, 3);
+	fSelectText			= GETBIT(op, 4);
 	fUsefFitShapeToText = GETBIT(op, 17);
 	fUsefAutoTextMargin = GETBIT(op, 19);
-	fUsefSelectText = GETBIT(op, 20);
+	fUsefSelectText		= GETBIT(op, 20);
 }
 
+void lineColor::load(XLS::CFRecord& record)
+{
+	unsigned short flags;
+	record >> flags >> op;
+
+	OfficeArtCOLORREF c(op);
+	color = c;
+	
+	opid = GETBITS(flags, 0, 13);
+	fBid = GETBIT(flags, 14);
+	fComplex = GETBIT(flags, 15);
+}
 
 //void fillShadeType::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 //{
-//	bool msoshadeNone = GETBIT(op, 0);
-//	bool msoshadeGamma = GETBIT(op, 1);
-//	bool msoshadeSigma = GETBIT(op, 2);
-//	bool msoshadeBand = GETBIT(op, 3);
-//	bool msoshadeOneColor = GETBIT(op, 4);
+//	msoshadeNone = GETBIT(op, 0);
+//	msoshadeGamma = GETBIT(op, 1);
+//	msoshadeSigma = GETBIT(op, 2);
+//	msoshadeBand = GETBIT(op, 3);
+//	msoshadeOneColor = GETBIT(op, 4);
 //}
 
 void FillStyleBooleanProperties::load(XLS::CFRecord& record)
@@ -387,6 +469,25 @@ void ShadowStyleBooleanProperties::load(XLS::CFRecord& record)
 	fShadow = GETBIT(op, 1);
 	fUsefshadowObscured = GETBIT(op, 16);
 	fUsefShadow = GETBIT(op, 17);
+}
+
+void GeometryBooleanProperties::load(XLS::CFRecord& record)
+{
+	OfficeArtFOPTE::load(record);
+
+	fUsefShadowOK			= GETBIT(op, 8);
+	fUsef3DOK				= GETBIT(op, 9);
+	fUsefLineOK				= GETBIT(op, 10);
+	fUsefGtextOK			= GETBIT(op, 11);
+	fUsefFillShadeShapeOK	= GETBIT(op, 12);
+	fUsefFillOK				= GETBIT(op, 13);
+	
+	fShadowOK				= GETBIT(op, 22);
+	f3DOK					= GETBIT(op, 23);
+	fLineOK					= GETBIT(op, 24);
+	fGtextOK				= GETBIT(op, 25);
+	fFillShadeShapeOK		= GETBIT(op, 26);
+	fFillOK					= GETBIT(op, 27);
 }
 XLS::BiffStructurePtr IHlink::clone()
 {

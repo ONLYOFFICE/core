@@ -349,6 +349,10 @@
 				>
 			</File>
 			<File
+				RelativePath="..\XlsXlsxConverter\ShapeType.h"
+				>
+			</File>
+			<File
 				RelativePath="..\XlsXlsxConverter\xlsx_conversion_context.cpp"
 				>
 			</File>

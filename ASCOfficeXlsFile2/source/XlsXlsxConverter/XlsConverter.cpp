@@ -1,4 +1,4 @@
-#include "XlsConverter.h"
+п»ї#include "XlsConverter.h"
 
 #include "../XlsFormat/Binary/CompoundFile.h"
 #include "../XlsFormat/Binary/CFStreamCacheReader.h"
@@ -306,7 +306,7 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
         {   
 			CP_XML_ATTR(L"xmlns", L"http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 
-			formating->serialize1(CP_XML_STREAM()); //важен порядок в styles
+			formating->serialize1(CP_XML_STREAM()); //РІР°Р¶РµРЅ РїРѕСЂСЏРґРѕРє РІ styles
 
 			CP_XML_NODE(L"fills")
 			{
@@ -489,7 +489,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		else continue;
 		
 		
-		if (xlsx_context->get_drawing_context().start_drawing(obj->cmo.ot))
+		if (xlsx_context->get_drawing_context().start_drawing(obj->cmo.ot))//С‚СѓС‚ С‚РёРї С€РµР№РїР° Р’Р РђРќР¬Р• !!! РїСЂРёРјРµСЂ - 7.SINIF I.DГ–NEM III.YAZILI SINAV.xls
 		{
 			convert(sp);
 
@@ -551,51 +551,117 @@ void XlsConverter::convert(ODRAW::OfficeArtFSP * fsp)
 	xlsx_context->get_drawing_context().set_id(fsp->spid);
 	xlsx_context->get_drawing_context().set_shape_id(fsp->shape_id);
 }
-void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
+void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
-	if (fort == NULL) return;
-
-	for (long i = 0 ; i < fort->fopt.rgfopte.size(); i++)
+	for (int i = 0 ; i < props.size() ; i++)
 	{
-		switch(fort->fopt.rgfopte[i]->opid)
+	}
+}
+void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
+{
+	for (int i = 0 ; i < props.size() ; i++)
+	{
+		switch(props[i]->opid)
+		{
+			case 0x01C0:
+			{
+				ODRAW::lineColor * color = (ODRAW::lineColor *)props[i].get();
+				if (!color->color.colorRGB.empty())
+					xlsx_context->get_drawing_context().set_line_color(color->color.colorRGB);
+			}break;
+			case 0x01C4:
+			{
+				xlsx_context->get_drawing_context().set_line_type(props[i]->op);
+			}break;
+			case 0x01C5: //blip 
+			{
+			}break;
+			case 0x01CD:
+			{
+				xlsx_context->get_drawing_context().set_line_style(props[i]->op);
+			}break;
+		}
+	}
+}
+void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
+{
+	for (int i = 0 ; i < props.size() ; i++)
+	{
+		switch(props[i]->opid)
 		{
 		case 0x100:
 			{
-				xlsx_context->get_drawing_context().set_crop_top(fort->fopt.rgfopte[i]->op);
+				xlsx_context->get_drawing_context().set_crop_top(props[i]->op);
 			}break;
 		case 0x101:
 			{
-				xlsx_context->get_drawing_context().set_crop_bottom(fort->fopt.rgfopte[i]->op);
+				xlsx_context->get_drawing_context().set_crop_bottom(props[i]->op);
 			}break;
 		case 0x102:
 			{
-				xlsx_context->get_drawing_context().set_crop_left(fort->fopt.rgfopte[i]->op);
+				xlsx_context->get_drawing_context().set_crop_left(props[i]->op);
 			}break;
 		case 0x103:
 			{
-				xlsx_context->get_drawing_context().set_crop_right(fort->fopt.rgfopte[i]->op);
+				xlsx_context->get_drawing_context().set_crop_right(props[i]->op);
 			}break;
 		case 0x104:
 			{
 				bool isIternal = false;
 				std::wstring target;
-				std::wstring rId = xlsx_context->get_mediaitems().find_image(fort->fopt.rgfopte[i]->op , target, isIternal);
+				std::wstring rId = xlsx_context->get_mediaitems().find_image(props[i]->op , target, isIternal);
 				xlsx_context->get_drawing_context().set_image(target);
 			}break;
-		case 0x105://старое имя файла картинки 
+		}
+	}
+}
+void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
+{
+	for (int i = 0 ; i < props.size() ; i++)
+	{
+	}
+}
+void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
+{
+	for (int i = 0 ; i < props.size() ; i++)
+	{
+	}
+}
+void XlsConverter::convert_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
+{
+}
+void XlsConverter::convert_shadow(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
+{
+	for (int i = 0 ; i < props.size() ; i++)
+	{
+	}
+}
+void XlsConverter::convert_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
+{
+	for (int i = 0 ; i < props.size() ; i++)
+	{
+
+	}
+}
+void XlsConverter::convert_group_shape(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
+{
+	for (int i = 0 ; i < props.size() ; i++)
+	{
+		switch(props[i]->opid)
+		{
 		case 0x380:
 			{
-				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(fort->fopt.rgfopte[i].get());
+				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(props[i].get());
 				xlsx_context->get_drawing_context().set_name(str->string_);
 			}break;
 		case 0x381:
 			{
-				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(fort->fopt.rgfopte[i].get());
+				ODRAW::anyString *str = dynamic_cast<ODRAW::anyString*>(props[i].get());
 				xlsx_context->get_drawing_context().set_description(str->string_);
 			}break;
 		case 0x0382:
 			{
-				ODRAW::pihlShape *pihlShape = dynamic_cast<ODRAW::pihlShape*>(fort->fopt.rgfopte[i].get());
+				ODRAW::pihlShape *pihlShape = dynamic_cast<ODRAW::pihlShape*>(props[i].get());
 				if (pihlShape)
 				{
 					std::wstring target = GetTargetMoniker(pihlShape->IHlink_complex.hyperlink.oleMoniker.data.get());
@@ -604,6 +670,34 @@ void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
 			}break;
 		}
 	}
+}
+void XlsConverter::convert_transform(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
+{
+	for (int i = 0 ; i < props.size() ; i++)
+	{
+		switch(props[i]->opid)
+		{
+			case 0x0004:
+			{
+				xlsx_context->get_drawing_context().set_rotation(props[i]->op);
+			}break;
+		}
+	}
+}
+void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
+{
+	if (fort == NULL) return;
+
+	convert_shape			(fort->fopt.Shape_props);
+	convert_group_shape		(fort->fopt.GroupShape_props);
+	convert_transform		(fort->fopt.Shape_props);
+	convert_blip			(fort->fopt.Blip_props);
+	convert_geometry		(fort->fopt.Geometry_props);
+	convert_fill_style		(fort->fopt.FillStyle_props);
+	convert_line_style		(fort->fopt.LineStyle_props);
+	convert_shadow			(fort->fopt.Shadow_props);
+	convert_text			(fort->fopt.Text_props);
+	convert_geometry_text	(fort->fopt.GeometryText_props);
 }
 
 void XlsConverter::convert(XLS::SHAREDSTRINGS* sharedstrings)

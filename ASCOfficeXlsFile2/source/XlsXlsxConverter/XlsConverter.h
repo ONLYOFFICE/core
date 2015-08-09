@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <vector>
 #include <boost/shared_ptr.hpp>
 
 #include "progressCallback.h"
@@ -44,6 +45,9 @@ namespace ODRAW
 	class OfficeArtSpContainer;
 	class OfficeArtFOPT;
 	class OfficeArtFSP;
+	class OfficeArtFOPTE;	
+	typedef boost::shared_ptr<OfficeArtFOPTE> OfficeArtFOPTEPtr;
+		
 }
 
 class XlsConverter
@@ -85,6 +89,17 @@ private:
 	void convert(ODRAW::OfficeArtSpContainer	* sp);
 	void convert(ODRAW::OfficeArtFOPT 			* fort);
 	void convert(ODRAW::OfficeArtFSP 			* fsp);
+
+	void convert_shape			(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
+	void convert_group_shape	(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
+	void convert_blip			(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
+	void convert_text			(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
+	void convert_geometry		(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
+	void convert_geometry_text	(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
+	void convert_fill_style		(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
+	void convert_line_style		(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
+	void convert_shadow			(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
+	void convert_transform		(std::vector<ODRAW::OfficeArtFOPTEPtr> & fort);
 
 	std::wstring GetTargetMoniker(XLS::BiffStructure *moniker);
 

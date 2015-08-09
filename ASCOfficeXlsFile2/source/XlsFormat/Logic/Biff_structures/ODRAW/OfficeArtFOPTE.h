@@ -67,26 +67,14 @@ class TextBooleanProperties : public OfficeArtFOPTE
 class lineColor : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineColor)
+
+	virtual void load(XLS::CFRecord& record);
+	OfficeArtCOLORREF color;
 };
 
 class fillType : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(fillType)
-
-		//virtual void setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
-	//{
-	//	static std::wstring  fills[10] = {L"msofillSolid", L"msofillPattern", L"msofillTexture", L"msofillPicture", L"msofillShade", L"msofillShadeCenter", L"msofillShadeShape", L"msofillShadeScale", L"msofillShadeTitle", L"msofillBackground"};
-
-	//	if(op >= 0 && op < 10)
-	//	{
-	//		own_tag->setAttribute(L"type", fills[op]);
-	//	}
-	//	else
-	//	{
-	//		own_tag->setAttribute(L"type", L"unknown");
-	//	}
-	//}
-
 };
 
 class pib : public OfficeArtFOPTE
@@ -411,6 +399,27 @@ class ShadowStyleBooleanProperties : public OfficeArtFOPTE
 	bool fUsefShadow ;
 };
 
+class GeometryBooleanProperties : public OfficeArtFOPTE
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(GeometryBooleanProperties)
+	
+	virtual void load(XLS::CFRecord& record);
+
+	bool fUsefShadowOK;
+	bool fUsef3DOK ;
+	bool fUsefLineOK ;
+	bool fUsefGtextOK ;
+	bool fUsefFillShadeShapeOK ;
+	bool fUsefFillOK ;
+
+	bool fShadowOK;
+	bool f3DOK;
+	bool fLineOK;
+	bool fGtextOK;
+	bool fFillShadeShapeOK;
+	bool fFillOK;
+};
+
 class lineWidth : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineWidth)
@@ -448,6 +457,45 @@ class cropFromLeft : public OfficeArtFOPTE
 class cropFromRight : public OfficeArtFOPTE 
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(cropFromRight)
+};
+
+class Rotation : public OfficeArtFOPTE 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(Rotation)
+};
+
+class ShapePath : public OfficeArtFOPTE 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(ShapePath)
+};
+
+class AdjustValue : public OfficeArtFOPTE 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(AdjustValue)
+};
+
+class pAdjustHandles : public OfficeArtFOPTE 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(pAdjustHandles)
+};
+
+class lineOpacity : public OfficeArtFOPTE 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineOpacity)
+};
+
+class lineBackColor : public OfficeArtFOPTE 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineBackColor)
+};
+
+class lineCrMod : public OfficeArtFOPTE 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineCrMod)
+};
+class lineType : public OfficeArtFOPTE 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineType)
 };
 
 class IHlink;

@@ -33,6 +33,9 @@ public:
 	bool fSchemeIndex;
 	bool fSysIndex;
 
+	std::wstring	colorRGB;
+	short			index;
+
 };
 
 typedef boost::shared_ptr<OfficeArtCOLORREF> OfficeArtCOLORREFPtr;

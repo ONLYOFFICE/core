@@ -4,7 +4,9 @@
 #include <iosfwd>
 
 #include "xlsx_drawings.h"
-	
+
+#include "ShapeType.h"	
+
 namespace oox {
 
 class external_items;
@@ -29,7 +31,7 @@ class _drawing_state
 public:
 	_drawing_state() 
 	{
-		isInternal = false; id = shape_id = -1; 
+		isInternal = false; id = -1; shape_id = msosptNotPrimitive; 
 		flipV = flipH = false;  
 		memset(image_crop, 0, 4 * sizeof(int));
 	}
@@ -47,13 +49,24 @@ public:
 	bool					image_crop_enabled;
 	
 	int						id;
-	int						shape_id;
+	MSOSPT					shape_id;
 	
 	bool					flipV;
 	bool					flipH;
 	std::wstring			hyperlink;
+	int						rotation;
 	
 	bool					isInternal;
+
+	struct _line
+	{
+		_line() {opacity = 0; type = L"solid"; style = L"simple";}
+		std::wstring	color;
+		int				opacity;
+		std::wstring	type;
+		std::wstring	style;
+	}line;
+
 };
 struct _hlink_desc
 {
@@ -87,6 +100,12 @@ public:
 		void set_crop_left	(long val);
 		void set_crop_right	(long val);
 
+		void set_rotation	(long val);
+
+		void set_line_color	(std::wstring val);
+		void set_line_type	(long val);
+		void set_line_style	(long val);
+
 		void set_image		(std::wstring & str);
 		void set_anchor		(std::wstring & str);
 		void set_properties	(std::wstring & str);
@@ -97,6 +116,7 @@ public:
 		void serialize_pic(std::wstring rId);	
 		void serialize_shape();	
 		
+		void serialize_line			(std::wostream & stream);
 		void serialize_fill			(std::wostream & stream);
 		void serialize_bitmap_fill	(std::wostream & stream, std::wstring rId, const std::wstring ns = L"a:");
 		void serialize_none_fill	(std::wostream & stream);

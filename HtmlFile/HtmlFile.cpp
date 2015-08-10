@@ -32,11 +32,12 @@ static std::wstring GetSdkPath()
         return L"";
 
     std::wstring sPath = oNode.ReadValueString(L"DoctSdk");
-    if (NSFile::CFileBinary::Exists(sPath))
+    if (NSFile::CFileBinary::Exists(sPath) && !NSFile::CFileBinary::Exists(sProcess + sPath))
         return sPath;
 
     return sProcess + sPath;
 }
+
 static std::wstring CorrectHtmlPath(const std::wstring& sPath)
 {
     std::wstring sReturn = sPath;
@@ -57,6 +58,73 @@ static std::wstring CorrectHtmlPath(const std::wstring& sPath)
     return L"file:///" + sReturn;
 }
 
+static void GetScriptsPath(NSStringUtils::CStringBuilder& oBuilder)
+{
+    std::wstring sProcess = NSFile::GetProcessDirectory() + L"/";
+    std::wstring sPathConfig = sProcess + L"DoctRenderer.config";
+    XmlUtils::CXmlNode oNode;
+    if (!oNode.FromXmlFile(sPathConfig))
+        return;
+
+    XmlUtils::CXmlNodes oNodesFiles;
+    if (oNode.GetNodes(L"file", oNodesFiles))
+    {
+        int nCount = oNodesFiles.GetCount();
+        for (int i = 0; i < nCount; ++i)
+        {
+            XmlUtils::CXmlNode _node;
+            oNodesFiles.GetAt(i, _node);
+
+            std::wstring sFile = _node.GetText();
+
+            if (!NSFile::CFileBinary::Exists(sFile) || NSFile::CFileBinary::Exists(sProcess + sFile))
+                sFile = sProcess + sFile;
+
+            sFile =  CorrectHtmlPath(sFile);
+
+            bool bIsNeedAdd = true;
+            if (std::wstring::npos != sFile.find(L"/Native/"))
+                bIsNeedAdd = false;
+
+            if (bIsNeedAdd)
+            {
+                oBuilder.WriteString(L"<sdk>");
+                oBuilder.WriteEncodeXmlString(sFile);
+                oBuilder.WriteString(L"</sdk>");
+            }
+        }
+    }
+    XmlUtils::CXmlNodes oNodesHtmlFiles;
+    if (oNode.GetNodes(L"htmlfile", oNodesHtmlFiles))
+    {
+        int nCount = oNodesHtmlFiles.GetCount();
+        for (int i = 0; i < nCount; ++i)
+        {
+            XmlUtils::CXmlNode _node;
+            oNodesHtmlFiles.GetAt(i, _node);
+
+            std::wstring sFile = _node.GetText();
+
+            if (!NSFile::CFileBinary::Exists(sFile) || NSFile::CFileBinary::Exists(sProcess + sFile))
+                sFile = sProcess + sFile;
+
+            sFile =  CorrectHtmlPath(sFile);
+
+            oBuilder.WriteString(L"<sdk>");
+            oBuilder.WriteEncodeXmlString(sFile);
+            oBuilder.WriteString(L"</sdk>");
+        }
+    }
+
+    std::wstring sPath = oNode.ReadValueString(L"DoctSdk");
+    if (!NSFile::CFileBinary::Exists(sPath) || NSFile::CFileBinary::Exists(sProcess + sPath))
+        sPath = sProcess + sPath;
+
+    oBuilder.WriteString(L"<sdk>");
+    oBuilder.WriteEncodeXmlString(CorrectHtmlPath(sPath));
+    oBuilder.WriteString(L"</sdk>");
+}
+
 int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstring& sDstfolder, const std::wstring& sPathInternal)
 {
     std::wstring sInternal = sPathInternal;
@@ -74,10 +142,7 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
     NSStringUtils::CStringBuilder oBuilder;
     oBuilder.WriteString(L"<html>");
 
-    // sdk
-    oBuilder.WriteString(L"<sdk>");
-    oBuilder.WriteEncodeXmlString(CorrectHtmlPath(GetSdkPath()));
-    oBuilder.WriteString(L"</sdk>");
+    GetScriptsPath(oBuilder);
 
     // destination
     oBuilder.WriteString(L"<destination>");

@@ -565,9 +565,11 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 		{
 			case 0x01C0:
 			{
-				ODRAW::lineColor * color = (ODRAW::lineColor *)props[i].get();
-				if (!color->color.colorRGB.empty())
-					xlsx_context->get_drawing_context().set_line_color(color->color.colorRGB);
+				ODRAW::OfficeArtCOLORREF color(props[i]->op);
+				if (!color.colorRGB.empty())
+					xlsx_context->get_drawing_context().set_line_color(color.colorRGB);
+				else
+					xlsx_context->get_drawing_context().set_line_color(color.index, color.fSchemeIndex ? 1 : (color. fPaletteIndex ? 2 : 3 ));
 			}break;
 			case 0x01C4:
 			{

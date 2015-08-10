@@ -42,6 +42,8 @@ public:
 
 	BiffStructurePtrVector ext_props;
 
+	int font_scheme;
+
 	size_t border_x_id;
 	size_t fill_x_id;
 

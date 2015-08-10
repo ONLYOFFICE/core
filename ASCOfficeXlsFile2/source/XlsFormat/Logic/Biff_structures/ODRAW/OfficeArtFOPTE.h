@@ -67,9 +67,6 @@ class TextBooleanProperties : public OfficeArtFOPTE
 class lineColor : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(lineColor)
-
-	virtual void load(XLS::CFRecord& record);
-	OfficeArtCOLORREF color;
 };
 
 class fillType : public OfficeArtFOPTE

@@ -65,6 +65,11 @@ struct BorderInfo
 	unsigned char icvBottom;
 	unsigned char icvDiag;
 
+	FillInfoExt leftFillInfo_;
+	FillInfoExt rightFillInfo_;
+	FillInfoExt topFillInfo_;
+	FillInfoExt bottomFillInfo_;
+
 	BorderInfo(){}
 
 	BorderInfo(	const unsigned char dgLeft_set, const unsigned char dgRight_set, const unsigned char dgTop_set, 

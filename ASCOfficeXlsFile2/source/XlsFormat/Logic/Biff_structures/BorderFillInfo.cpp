@@ -197,7 +197,39 @@ void serialize1(std::wostream & _stream, unsigned char type, unsigned color, con
         }
     }
 }
+void serialize1(std::wostream & _stream, unsigned char type, FillInfoExt & color, const std::wstring & name)
+{
+    if (type < 1 || type > 13) return;
+    
+	CP_XML_WRITER(_stream)
+    {
+        CP_XML_NODE(name)
+        {
+			CP_XML_ATTR(L"style", border_type[type]);
 
+            if (color.enabled)
+			{
+				CP_XML_NODE(L"color")
+				{              
+					switch(color.xclrType)
+					{
+					case 0://auto
+						/*CP_XML_ATTR(L"auto");*/ break;
+					case 1://indexed
+						CP_XML_ATTR(L"indexed",  color.icv); break;
+					case 2://rgb
+						CP_XML_ATTR(L"rgb", STR::toARGB(color.xclrValue)); break;
+					case 3://theme color
+						CP_XML_ATTR(L"theme", color.xclrValue + 1); 
+						CP_XML_ATTR(L"tint", color.nTintShade / 32767.0); break;
+					case 4://not set
+						break;
+					}
+				}
+			}
+        }
+    }
+}
 int BorderInfo::serialize(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    
@@ -209,11 +241,19 @@ int BorderInfo::serialize(std::wostream & stream)
             if (grbitDiag == 1 || grbitDiag == 3) 
                 CP_XML_ATTR(L"diagonalDown", true);
             
-            serialize1(CP_XML_STREAM(), dgLeft	, icvLeft	, L"left");
-            serialize1(CP_XML_STREAM(), dgRight	, icvRight	, L"right");
-            serialize1(CP_XML_STREAM(), dgTop	, icvTop	, L"top");
-            serialize1(CP_XML_STREAM(), dgBottom, icvBottom	, L"bottom");
-            serialize1(CP_XML_STREAM(), dgDiag	, icvDiag	, L"diagonal");
+			if (leftFillInfo_.enabled)	serialize1(CP_XML_STREAM(), dgLeft	, leftFillInfo_	, L"left");
+			else						serialize1(CP_XML_STREAM(), dgLeft	, icvLeft		, L"left");
+          
+			if (rightFillInfo_.enabled)	serialize1(CP_XML_STREAM(), dgRight	, rightFillInfo_, L"right");
+			else						serialize1(CP_XML_STREAM(), dgRight	, icvRight		, L"right");
+            
+			if (topFillInfo_.enabled)	serialize1(CP_XML_STREAM(), dgTop	, topFillInfo_	, L"top");
+			else						serialize1(CP_XML_STREAM(), dgTop	, icvTop		, L"top");
+
+            if (bottomFillInfo_.enabled)serialize1(CP_XML_STREAM(), dgBottom, bottomFillInfo_, L"bottom");
+			else						serialize1(CP_XML_STREAM(), dgBottom, icvBottom		, L"bottom");
+            
+			serialize1(CP_XML_STREAM(), dgDiag	, icvDiag	, L"diagonal");
  		}
 	}
 	return 0;

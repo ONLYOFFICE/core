@@ -26,6 +26,15 @@ private:
     _CP_PTR(Impl) impl_;
 };
 
+struct _color
+{
+	_color() : index(-1), bScheme(false), bPalette(false){}
+	std::wstring	rgb;
+	int				index;
+	bool			bScheme;
+	bool			bPalette;
+};
+
 class _drawing_state
 {
 public:
@@ -60,8 +69,8 @@ public:
 
 	struct _line
 	{
-		_line() {opacity = 0; type = L"solid"; style = L"simple";}
-		std::wstring	color;
+		_line() {opacity = 0; type = L"solidFill"; style = L"simple";}
+		_color			color;
 		int				opacity;
 		std::wstring	type;
 		std::wstring	style;
@@ -102,7 +111,8 @@ public:
 
 		void set_rotation	(long val);
 
-		void set_line_color	(std::wstring val);
+		void set_line_color	(std::wstring color);
+		void set_line_color	(int index, int type);
 		void set_line_type	(long val);
 		void set_line_style	(long val);
 
@@ -116,6 +126,7 @@ public:
 		void serialize_pic(std::wstring rId);	
 		void serialize_shape();	
 		
+		void serialize_color		(std::wostream & stream, const _color &color);
 		void serialize_line			(std::wostream & stream);
 		void serialize_fill			(std::wostream & stream);
 		void serialize_bitmap_fill	(std::wostream & stream, std::wstring rId, const std::wstring ns = L"a:");

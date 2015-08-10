@@ -25,8 +25,6 @@ public:
 
 	GlobalWorkbookInfoPtr m_GlobalWorkbookInfo;
 	
-	int serialize(std::wostream & stream);
-
 	unsigned char alc;
 	bool fWrap;
 	unsigned char alcV;
@@ -35,6 +33,7 @@ public:
 	unsigned char cIndent;
 	bool fShrinkToFit;
 	unsigned char iReadOrder;
+	
 	bool fAtrNum;
 	bool fAtrFnt;
 	bool fAtrAlc;
@@ -46,6 +45,8 @@ public:
 	FillInfo fill;
 
 	BiffStructurePtrVector ext_props;
+
+	int font_scheme;
 
 	bool fHasXFExt;
 	bool fsxButton;

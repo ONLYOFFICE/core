@@ -328,19 +328,6 @@ void TextBooleanProperties::load(XLS::CFRecord& record)
 	fUsefSelectText		= GETBIT(op, 20);
 }
 
-void lineColor::load(XLS::CFRecord& record)
-{
-	unsigned short flags;
-	record >> flags >> op;
-
-	OfficeArtCOLORREF c(op);
-	color = c;
-	
-	opid = GETBITS(flags, 0, 13);
-	fBid = GETBIT(flags, 14);
-	fComplex = GETBIT(flags, 15);
-}
-
 //void fillShadeType::setXMLAttributes(MSXML2::IXMLDOMElementPtr own_tag)
 //{
 //	msoshadeNone = GETBIT(op, 0);

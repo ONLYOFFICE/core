@@ -10,6 +10,8 @@
 
 namespace oox {
 
+	const static std::wstring shemeColor[17] = 
+	{L"accent1",L"accent2",L"accent3",L"accent4",L"accent5",L"accent6",L"bg1",L"bg2",L"dk1",L"dk2",L"folHlink",L"hlink",L"lt1",L"lt2",L"phClr",L"tx1",L"tx2"};
 
 class xlsx_drawing_context_handle::Impl
 {
@@ -289,20 +291,38 @@ void xlsx_drawing_context::serialize_none_fill(std::wostream & stream)
 		CP_XML_NODE(L"a:noFill");
 	}
 }
+void xlsx_drawing_context::serialize_color	(std::wostream & stream, const _color &color)
+{
+	CP_XML_WRITER(stream)    
+	{
+		if (!color.rgb.empty())
+		{
+			CP_XML_NODE(L"a:srgbClr")
+			{
+				CP_XML_ATTR(L"val", color.rgb);		
+			}
+		}
+		else if (color.bPalette){CP_XML_NODE(L"a:prstClr")	{	CP_XML_ATTR(L"val",L"black");}}
+		else if (color.bScheme)
+		//else
+		{
+			CP_XML_NODE(L"a:schemeClr")
+			{
+				CP_XML_ATTR(L"val", (color.index >=0 && color.index < 17) ? shemeColor[color.index] : L"tx1");		
+			}
+		}
+		else{CP_XML_NODE(L"a:sysClr")	{	CP_XML_ATTR(L"val",L"windowText");}}
+	}
+}
 void xlsx_drawing_context::serialize_line(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    
 	{
 		CP_XML_NODE(L"a:ln")
 		{
-
 			CP_XML_NODE(L"a:" + drawing_state.back().line.type)
 			{
-				CP_XML_NODE(L"a:srgbClr")
-				{
-					CP_XML_ATTR(L"val", drawing_state.back().line.color);
-				}
-			
+				serialize_color(CP_XML_STREAM(), drawing_state.back().line.color);			
 			}
 		}
 	}
@@ -472,7 +492,16 @@ void xlsx_drawing_context::set_rotation (long val)
 void xlsx_drawing_context::set_line_color (std::wstring color)
 {
 	if (drawing_state.size() < 1 )return;
-	drawing_state.back().line.color = color;
+	drawing_state.back().line.color.rgb = color;
+}
+void xlsx_drawing_context::set_line_color (int index, int type)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().line.color.index = index;
+	
+	if (type == 1)		drawing_state.back().line.color.bScheme = true;
+	else if (type == 2) drawing_state.back().line.color.bPalette = true;
+
 }
 void xlsx_drawing_context::set_line_type (long val)
 {

@@ -1,12 +1,5 @@
 ﻿#include "Graphics.h"
-
-#ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
-#endif
-
-#ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
+#include <algorithm>
 
 namespace Aggplus
 {
@@ -366,10 +359,10 @@ namespace Aggplus
 		m_oFullTransform.TransformPoint(dx1, dy1);
 		m_oFullTransform.TransformPoint(dx2, dy2);
 
-		m_dClipLeft		= max(0, dx1);
-		m_dClipTop		= max(0, dy1);
-		m_dClipWidth	= min(dx2, m_dWidthPix - 1) - m_dClipLeft;
-		m_dClipHeight	= min(dy2, m_dHeightPix - 1) - m_dClipTop;
+        m_dClipLeft		= std::max(0.0, dx1);
+        m_dClipTop		= std::max(0.0, dy1);
+        m_dClipWidth	= std::min(dx2, m_dWidthPix - 1) - m_dClipLeft;
+        m_dClipHeight	= std::min(dy2, m_dHeightPix - 1) - m_dClipTop;
 
 		m_oClip.Reset();
 		
@@ -377,10 +370,10 @@ namespace Aggplus
 	}
 	Status CGraphics::SetClipRect2(double dLeft, double dTop, double dWidth, double dHeight)
 	{
-		m_dClipLeft		= max(0, dLeft);
-		m_dClipTop		= max(0, dTop);
-		m_dClipWidth	= min(dWidth, m_dWidthPix - 1 - m_dClipLeft);
-		m_dClipHeight	= min(dHeight, m_dHeightPix - 1 - m_dClipTop);
+        m_dClipLeft		= std::max(0.0, dLeft);
+        m_dClipTop		= std::max(0.0, dTop);
+        m_dClipWidth	= std::min(dWidth, m_dWidthPix - 1 - m_dClipLeft);
+        m_dClipHeight	= std::min(dHeight, m_dHeightPix - 1 - m_dClipTop);
 
 		m_rasterizer.get_rasterizer().clip_box(m_dClipLeft, m_dClipTop, m_dClipWidth + m_dClipLeft, m_dClipHeight + m_dClipTop);
 		m_oClip.Reset();

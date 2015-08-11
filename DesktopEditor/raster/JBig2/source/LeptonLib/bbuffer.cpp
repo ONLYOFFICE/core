@@ -87,7 +87,7 @@
 #include <stdlib.h>
 #include "allheaders.h"
 
-static const l_int32  INITIAL_BUFFER_ARRAYSIZE = 1024;   /* n'importe quoi */
+static const l_int32  INITIAL_BUFFER_ARRAYSIZE_BBUFFER = 1024;   /* n'importe quoi */
 
 
 /*--------------------------------------------------------------------------*
@@ -115,7 +115,7 @@ BBUFFER  *bb;
     PROCNAME("bbufferCreate");
 
     if (nalloc <= 0)
-        nalloc = INITIAL_BUFFER_ARRAYSIZE;
+        nalloc = INITIAL_BUFFER_ARRAYSIZE_BBUFFER;
 
     if ((bb = (BBUFFER *)CALLOC(1, sizeof(BBUFFER))) == NULL)
         return (BBUFFER *)ERROR_PTR("bb not made", procName, NULL);

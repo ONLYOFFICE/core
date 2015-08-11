@@ -449,7 +449,7 @@ keymatch (char * arg, const char * keyword, int minchars)
 /*
  * The main program.
  */
-#ifndef _IOS
+#if 0
 
 int
 main (int argc, char **argv)

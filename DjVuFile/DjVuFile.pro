@@ -46,8 +46,11 @@ shared {
     DEFINES += DJVU_USE_DYNAMIC_LIBRARY
 
     LIBS += -L$$DESTDIR -lASCOfficeUtilsLib
-    LIBS += -L$$DESTDIR -lgraphics
     LIBS += -L$$DESTDIR -lPdfWriter
+
+    #LIBS += -L$$DESTDIR -lgraphics
+    LIB_GRAPHICS_PRI_PATH = ../DesktopEditor
+    include(../DesktopEditor/Qt_build/graphics/project/graphics.pri)
 
     LIB_XML_PRI_PATH = ../DesktopEditor/xml
     include(../DesktopEditor/xml/build/qt/libxml2.pri)

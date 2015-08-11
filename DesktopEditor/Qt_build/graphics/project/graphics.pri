@@ -218,8 +218,7 @@ SOURCES += \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/cdjpeg.c \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/cjpeg.c \
     $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/ckconfig.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/djpeg.c \
-    $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/example.c
+    $$LIB_GRAPHICS_PRI_PATH/cximage/jpeg/djpeg.c
 
 SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri.c
 SOURCES += $$LIB_GRAPHICS_PRI_PATH/Qt_build/graphics/project/libpsd_pri2.c

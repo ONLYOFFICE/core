@@ -299,8 +299,7 @@ SOURCES += \
     ../../../cximage/jpeg/cdjpeg.c \
     ../../../cximage/jpeg/cjpeg.c \
     ../../../cximage/jpeg/ckconfig.c \
-    ../../../cximage/jpeg/djpeg.c \
-    ../../../cximage/jpeg/example.c \
+    ../../../cximage/jpeg/djpeg.c \    
     \
     ../../../cximage/libpsd/adjustment.c \
     ../../../cximage/libpsd/bevel_emboss.c \

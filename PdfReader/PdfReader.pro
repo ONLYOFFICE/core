@@ -49,7 +49,10 @@ shared {
     DEFINES += PDFREADER_USE_DYNAMIC_LIBRARY
 
     LIBS += -L$$DESTDIR -lASCOfficeUtilsLib
-    LIBS += -L$$DESTDIR -lgraphics
+
+    #LIBS += -L$$DESTDIR -lgraphics
+    LIB_GRAPHICS_PRI_PATH = ../DesktopEditor
+    include(../DesktopEditor/Qt_build/graphics/project/graphics.pri)
 
     #include(../DesktopEditor/xml/build/qt/libxml2.pri)
 

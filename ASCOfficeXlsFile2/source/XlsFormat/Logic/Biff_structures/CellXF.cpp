@@ -10,7 +10,7 @@ namespace XLS
 
 
 CellXF::CellXF(size_t& cell_xf_current_id, size_t& style_xf_current_id)
-:	cell_xf_current_id_(cell_xf_current_id), style_xf_current_id_(style_xf_current_id), font_scheme(-1)
+:	cell_xf_current_id_(cell_xf_current_id), style_xf_current_id_(style_xf_current_id), font_id(0xFFFF)
 {
 }
 
@@ -170,20 +170,25 @@ void CellXF::RegisterFillBorder()
 			}break;
 			//case 0x000B:	//diag color
 			//case 0x000C:	//diag color
-			//case 0x000D:	//text color
-			//	extPropData.color.toXML(own_tag);
-			//	break;
+			case 0x000D:
+				font_color.enabled		= true;
+				font_color.icv			= ext_prop->extPropData.color.icv;
+				font_color.xclrType		= ext_prop->extPropData.color.xclrType;
+				font_color.nTintShade	= ext_prop->extPropData.color.nTintShade;
+				font_color.xclrValue	= ext_prop->extPropData.color.xclrValue;			
+				break;
 			//case 0x0006:
 			//	extPropData.gradient_fill.toXML(own_tag);
 			//	break;
 			case 0x000E:
-				font_scheme = ext_prop->extPropData.font_scheme;
+				font_id		= ext_prop->extPropData.font_scheme;
 				break;
 			case 0x000F:
 				cIndent		= ext_prop->extPropData.indent_level;
 				break;
 		}
 	}	
+
 	border_x_id	= m_GlobalWorkbookInfo->RegisterBorderId(border);
 	fill_x_id	= m_GlobalWorkbookInfo->RegisterFillId(fill);
 }

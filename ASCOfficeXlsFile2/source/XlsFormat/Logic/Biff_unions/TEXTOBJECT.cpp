@@ -31,6 +31,8 @@ const bool TEXTOBJECT::loadContent(BinProcessor& proc)
 	{
 		return false;
 	}
+	m_TxO = elements_.back();
+	elements_.pop_back();
 	proc.repeated<Continue>(0, 0);
 
 	return true;

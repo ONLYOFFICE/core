@@ -16,6 +16,44 @@ namespace XLS
 
 namespace ODRAW
 {;
+		enum MSOPATHTYPE
+		{
+			msopathLineTo,
+			msopathCurveTo,
+			msopathMoveTo,
+			msopathClose,
+			msopathEnd,
+			msopathEscape,
+			msopathClientEscape,
+			msopathInvalid
+		};
+
+		enum MSOPATHESCAPE
+		{
+			msopathEscapeExtension 				=	0x00000000,	
+			msopathEscapeAngleEllipseTo  		=	0x00000001,
+			msopathEscapeAngleEllipse 	 		=	0x00000002,
+			msopathEscapeArcTo  				=	0x00000003,
+			msopathEscapeArc  					=	0x00000004,
+			msopathEscapeClockwiseArcTo  		=	0x00000005,
+			msopathEscapeClockwiseArc 	 		=	0x00000006,
+			msopathEscapeEllipticalQuadrantX  	=	0x00000007,
+			msopathEscapeEllipticalQuadrantY 	=	0x00000008,
+			msopathEscapeQuadraticBezier 	 	=	0x00000009,
+			msopathEscapeNoFill  				=	0x0000000A,
+			msopathEscapeNoLine  				=	0x0000000B,
+			msopathEscapeAutoLine  				=	0x0000000C,
+			msopathEscapeAutoCurve  			=	0x0000000D,
+			msopathEscapeCornerLine  			=	0x0000000E,
+			msopathEscapeCornerCurve 			=	0x0000000F,
+			msopathEscapeSmoothLine  			=	0x00000010,
+			msopathEscapeSmoothCurve  			=	0x00000011,
+			msopathEscapeSymmetricLine 			=	0x00000012,
+			msopathEscapeSymmetricCurve 		=	0x00000013,
+			msopathEscapeFreeform 				=	0x00000014,
+			msopathEscapeFillColor 				=	0x00000015,
+			msopathEscapeLineColor 				=	0x00000016
+		};
 class OfficeArtFOPTE;
 typedef boost::shared_ptr<OfficeArtFOPTE> OfficeArtFOPTEPtr;
 
@@ -460,10 +498,85 @@ class Rotation : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(Rotation)
 };
+class OfficeArtShapeRectCoord : public OfficeArtFOPTE
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtShapeRectCoord)
+};
 
+class MSOPOINT : public XLS::BiffStructure  
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(MSOPOINT)
+	
+	MSOPOINT(){}
+	XLS::BiffStructurePtr clone();
+
+	virtual void load(XLS::CFRecord& record);
+	virtual void store(XLS::CFRecord& record){}
+
+	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
+
+	long x;
+	long y;
+};
+
+class MSOPATHINFO : public XLS::BiffStructure 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(MSOPATHINFO)
+
+	MSOPATHINFO(){}
+	XLS::BiffStructurePtr clone();
+
+	virtual void load(XLS::CFRecord& record);
+	virtual void store(XLS::CFRecord& record){}
+
+	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
+
+	//enum msoPathSegmentType
+	//{
+	//	msopathLineTo = 0,
+	//	msopathCurveTo,
+	//	msopathMoveTo,
+	//	msopathClose,
+	//	msopathEnd,
+	//	msopathEscape,
+	//	msopathClientEscape
+	//};
+
+	MSOPATHTYPE			typeSegment;
+	short				Segments;
+	short				VertexCount;
+	MSOPATHESCAPE		EscapeCode;
+};
 class ShapePath : public OfficeArtFOPTE 
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(ShapePath)
+
+	enum msoShapePathType
+	{
+		msoshapeLines  =0, 
+		msoshapeLinesClosed,
+		msoshapeCurves,
+		msoshapeCurvesClosed,
+		msoshapeComplex
+	};
+};
+
+class PVertices : public OfficeArtFOPTE 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PVertices)
+
+	virtual void ReadComplexData(XLS::CFRecord& record);
+
+	IMsoArray<MSOPOINT> path_complex;
+};
+
+class PSegmentInfo : public OfficeArtFOPTE 
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(PSegmentInfo)
+
+	virtual void ReadComplexData(XLS::CFRecord& record);
+
+	IMsoArray<MSOPATHINFO> path_complex;
 };
 
 class AdjustValue : public OfficeArtFOPTE 
@@ -501,7 +614,7 @@ typedef boost::shared_ptr<IHlink> IHlinkPtr;
 class IHlink : public XLS::BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(IHlink)
-public:
+
 	IHlink(){}
 
 	XLS::BiffStructurePtr clone();
@@ -518,7 +631,7 @@ public:
 class pihlShape : public OfficeArtFOPTE
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(pihlShape)
-public:
+
 	void ReadComplexData(XLS::CFRecord& record);
 
 	IHlink IHlink_complex;

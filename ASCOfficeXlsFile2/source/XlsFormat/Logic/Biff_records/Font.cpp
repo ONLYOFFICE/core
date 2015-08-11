@@ -67,6 +67,11 @@ int Font::serialize(std::wostream & stream)
 	return 0;
 }
 
+void Font::set_color_ext(FillInfoExt & color_ext_)
+{
+	color_ext = color_ext_;
+}
+
 int Font::serialize_properties(std::wostream & stream, bool rPr)
 {
     CP_XML_WRITER(stream)    
@@ -87,11 +92,31 @@ int Font::serialize_properties(std::wostream & stream, bool rPr)
             }
         }
 
-        if ((icv.value()) && (icv < 0x7fff) )
+        if (((icv.value()) && (icv < 0x7fff)) || color_ext.enabled )
 		{
             CP_XML_NODE(L"color")
             {
-                CP_XML_ATTR(L"indexed", icv);
+				if (color_ext.enabled )
+				{
+					switch(color_ext.xclrType)
+					{
+					case 0://auto
+						/*CP_XML_ATTR(L"auto");*/ break;
+					case 1://indexed
+						CP_XML_ATTR(L"indexed",  color_ext.icv); break;
+					case 2://rgb
+						CP_XML_ATTR(L"rgb", STR::toARGB(color_ext.xclrValue)); break;
+					case 3://theme color
+						CP_XML_ATTR(L"theme", color_ext.xclrValue + 1); 
+						CP_XML_ATTR(L"tint", color_ext.nTintShade / 32767.0); break;
+					case 4://not set
+						break;
+					}
+				}
+				else
+				{
+					CP_XML_ATTR(L"indexed", icv);
+				}
             }
 		}
 

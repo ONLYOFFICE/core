@@ -6,6 +6,12 @@
 #include <Logic/Biff_structures/ObjFmla.h>
 #include <Logic/Biff_structures/TxORuns.h>
 
+namespace ODRAW
+{
+	class OfficeArtRecord;
+	typedef boost::shared_ptr<OfficeArtRecord> OfficeArtRecordPtr;
+}
+
 namespace XLS
 {;
 
@@ -26,28 +32,21 @@ public:
 
 	static const ElementType	type = typeTxO;
 
-	BIFF_BYTE hAlignment;
-	BIFF_BYTE vAlignment;
-	BIFF_BYTE fLockText;
-	BIFF_BYTE fJustLast;
-	BIFF_BYTE fSecretEdit;
-	BIFF_WORD rot;
-	ControlInfo controlInfo;
-	BIFF_WORD cchText;
-	BIFF_WORD cbRuns;
-	FontIndex ifntEmpty;
-	ObjFmla fmla;
-	TxORuns TxOruns;
-	XLUnicodeStringNoCch commentText;
+	BIFF_BYTE				hAlignment;
+	BIFF_BYTE				vAlignment;
+	BIFF_BYTE				fLockText;
+	BIFF_BYTE				fJustLast;
+	BIFF_BYTE				fSecretEdit;
+	BIFF_WORD				rot;
+	ControlInfo				controlInfo;
+	BIFF_WORD				cchText;
+	BIFF_WORD				cbRuns;
+	FontIndex				ifntEmpty;
+	ObjFmla					fmla;
+	TxORuns					TxOruns;
+	XLUnicodeStringNoCch	commentText;
 
-		//if (cchText == BIFF_WORD(0)) {
-		//	//BO_ATTRIB_MARKUP_ATTRIB(ifntEmpty)
-		//}
-		//if ( cbRuns )
-		//{
-		//	//BO_ATTRIB_MARKUP_COMPLEX(TxOruns)
-		//}
-
+	ODRAW::OfficeArtRecordPtr		m_OfficeArtSpContainer; 
 
 };
 

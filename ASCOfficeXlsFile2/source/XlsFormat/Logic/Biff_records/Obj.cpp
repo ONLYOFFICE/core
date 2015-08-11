@@ -170,21 +170,21 @@ void Obj::readFields(CFRecord& record)
 	{
 		std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
 
-		ODRAW::OfficeArtDgContainer dg(ODRAW::OfficeArtRecord::CA_Sheet);
 		if (recs.size())
 		{
-			m_OfficeArtSpContainer = ODRAW::OfficeArtRecordPtr(new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet));
 			while( !recs.empty() )
 			{
 				record.appendRawData(recs.front());
 				recs.pop_front();
 			}
-			record >> *m_OfficeArtSpContainer;
+			m_OfficeArtSpContainer = ODRAW::OfficeArtRecordPtr(new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet));
+			record >> *m_OfficeArtSpContainer; //todooo !!! сделать проверку на тип
 
-			BYTE* Add = NULL;
+			BYTE*	Add		= NULL;
+			int		size	= 0;
 			if (record.getRdPtr() <  record.getDataSize())
 			{
-				int size = record.getDataSize() - record.getRdPtr();
+				size = record.getDataSize() - record.getRdPtr();
 				Add = new BYTE [size];
 				memcpy(Add, record.getData(), size);
 				record.skipNunBytes(size);

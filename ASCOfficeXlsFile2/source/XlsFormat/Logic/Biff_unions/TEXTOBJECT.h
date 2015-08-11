@@ -20,6 +20,7 @@ public:
 
 	static const ElementType	type = typeTEXTOBJECT;
 	
+	BaseObjectPtr		m_TxO;
 };
 
 } // namespace XLS

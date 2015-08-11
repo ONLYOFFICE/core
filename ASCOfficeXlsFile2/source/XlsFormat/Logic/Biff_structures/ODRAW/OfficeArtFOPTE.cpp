@@ -2,10 +2,31 @@
 #include "OfficeArtFOPTE.h"
 #include <Binary/CFRecord.h>
 #include "OfficeArtBlip.h"
+#include <bitset>
 
 namespace ODRAW
 {;
+	static int BitmaskToInt( int value, int mask )
+	{
+		int ret = value & mask;
 
+		//shift for all trailing zeros
+		std::bitset<sizeof(int)*8> bits( mask );
+
+		for ( unsigned int i = 0; i < bits.size(); i++ )
+		{
+			if ( !bits[i] )
+			{
+				ret >>= 1;
+			}
+			else
+			{
+				break;
+			}
+		}
+
+		return ret;
+	}
 
 XLS::BiffStructurePtr OfficeArtFOPTE::clone()
 {
@@ -90,16 +111,20 @@ OfficeArtFOPTEPtr OfficeArtFOPTE::load_and_create(XLS::CFRecord& record)
 		case 0x013F:
 			fopte = OfficeArtFOPTEPtr(new BlipBooleanProperties);
 			break;
-/*todo*/case 0x0140: //geoLeft
-		case 0x0141: //geoTop
-		case 0x0142: //geoRight
-		case 0x0143: //geoBottom
-		case 0x0144: //shapePath
+		case 0x0140: 
+		case 0x0141:
+		case 0x0142: 
+		case 0x0143:
+			fopte = OfficeArtFOPTEPtr(new OfficeArtShapeRectCoord);
+			break;
+		case 0x0144: 
 			fopte = OfficeArtFOPTEPtr(new ShapePath);
 			break;
-		case 0x0145: //pVertices
-		case 0x0146: //pSegmentInfo
-			fopte = OfficeArtFOPTEPtr(new OfficeArtFOPTE);
+		case 0x0145:
+			fopte = OfficeArtFOPTEPtr(new PVertices);
+			break;
+		case 0x0146: 
+			fopte = OfficeArtFOPTEPtr(new PSegmentInfo);
 			break;
 		case 0x0147: //adjustValue .... //adjust8Value
 		case 0x0148:
@@ -490,6 +515,53 @@ void IHlink::load(XLS::CFRecord& record)
 void pihlShape::ReadComplexData(XLS::CFRecord& record)
 {
 	record >> IHlink_complex;
+}
+
+XLS::BiffStructurePtr MSOPOINT::clone() 
+{
+	return XLS::BiffStructurePtr(new MSOPOINT(*this));
+}
+
+void MSOPOINT::load(XLS::CFRecord& record)
+{
+	record >> x >> y;
+}
+
+XLS::BiffStructurePtr MSOPATHINFO::clone()
+{
+	return XLS::BiffStructurePtr(new MSOPATHINFO(*this));
+}
+
+void MSOPATHINFO::load(XLS::CFRecord& record)
+{
+	unsigned short val;
+	record >> val;
+
+	typeSegment			=	(MSOPATHTYPE)BitmaskToInt (val, 0xE000);
+
+	EscapeCode	= msopathEscapeExtension;
+	VertexCount	= 0;
+
+	if (msopathEscape == typeSegment)
+	{
+		EscapeCode	=	(MSOPATHESCAPE)	BitmaskToInt (val, 0x1F00);
+		VertexCount	=					BitmaskToInt (val, 0x00FF);
+	}
+	else
+	{
+		Segments		=				BitmaskToInt (val, 0x1FFF);
+	}
+}
+
+void PVertices::ReadComplexData(XLS::CFRecord& record)
+{
+
+	record >> path_complex;
+}
+
+void PSegmentInfo::ReadComplexData(XLS::CFRecord& record)
+{
+	record >> path_complex;
 }
 
 } 

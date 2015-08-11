@@ -39,10 +39,11 @@ public:
 
 	BorderInfo		border;
 	FillInfo		fill;
+	
+	FillInfoExt		font_color;
+	size_t			font_id;
 
 	BiffStructurePtrVector ext_props;
-
-	int font_scheme;
 
 	size_t border_x_id;
 	size_t fill_x_id;

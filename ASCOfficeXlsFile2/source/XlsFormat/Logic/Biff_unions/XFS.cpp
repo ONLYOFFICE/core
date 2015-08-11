@@ -32,6 +32,8 @@ BaseObjectPtr XFS::clone()
 // XFS = 16*XF [XFCRC 16*4050XFExt]
 const bool XFS::loadContent(BinProcessor& proc)
 {
+	GlobalWorkbookInfoPtr global_info = proc.getGlobalWorkbookInfo();
+	
 	cellStyleXfs_count = 0;
 	
 	int count = proc.repeated(XF(cell_xf_current_id, style_xf_current_id) ,16, 0);
@@ -76,7 +78,7 @@ const bool XFS::loadContent(BinProcessor& proc)
 	{
 		XF		*xfs = dynamic_cast<XF*>(m_cell_styles[i].get());
 
-		if (m_xf_ext.size() > 0)
+		if (m_xf_ext.size() > 0 && xfs->cell.fHasXFExt)
 		{
 			XFExt *ext_find = NULL;
 			
@@ -97,8 +99,19 @@ const bool XFS::loadContent(BinProcessor& proc)
 				xfs->style.ext_props = ext_find->rgExt;
 			}
 		}
-		
 		xfs->style.RegisterFillBorder();
+		
+		//if (xfs->cell.font_id < 0xFFFF)
+		//{
+		//	xfs->ifnt.setValue((unsigned short) xfs->style.font_id);
+		//}
+		
+
+/*		if (xfs->style.font_color.enabled)
+		{
+			int font_id = xfs->ifnt;
+			global_info->RegisterFontColorId(font_id, xfs->style.font_color);
+		}*/		
 	}
 	
 	for (long i = 0 ; i < m_cell_xfs.size(); i++)
@@ -115,6 +128,17 @@ const bool XFS::loadContent(BinProcessor& proc)
 		}
 		
 		xfs->cell.RegisterFillBorder();
+
+		//if (xfs->cell.font_id < 0xFFFF)
+		//{
+		//	xfs->ifnt.setValue( (unsigned short) xfs->cell.font_id);
+		//}
+		
+		//if (xfs->cell.font_color.enabled)
+		//{
+		//	int font_id = xfs->ifnt;
+		//	global_info->RegisterFontColorId(font_id, xfs->cell.font_color);
+		//}
 	}
 
 	return true;

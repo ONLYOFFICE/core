@@ -14,18 +14,6 @@ XLS::BiffStructurePtr MSOSHADECOLOR::clone()
 	return XLS::BiffStructurePtr(new MSOSHADECOLOR(*this));
 }
 
-//
-//void MSOSHADECOLOR::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	color.toXML(xml_tag);
-//	position.toXML(xml_tag, L"position");
-//}
-//
-//void MSOSHADECOLOR::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	// We don't support xlsx to xls conversion
-//}
-
 
 void MSOSHADECOLOR::store(XLS::CFRecord& record)
 {

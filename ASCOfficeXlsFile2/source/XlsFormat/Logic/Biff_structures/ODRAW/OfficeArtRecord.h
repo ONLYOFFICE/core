@@ -75,7 +75,8 @@ public:
 		SplitMenuColorContainer	= 0xF11E, // Implemented
 		SecondaryFOPT			= 0xF121,
 		TertiaryFOPT			= 0xF122, // Implemented	
-		SpgrContainerFileBlock
+
+
 	};
 	
 	enum OfficeArtClientAnchorType

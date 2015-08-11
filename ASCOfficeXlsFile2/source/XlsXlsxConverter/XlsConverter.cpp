@@ -20,11 +20,13 @@
 #include "../XlsFormat/Logic/Biff_unions/OBJECTS.h"
 #include "../XlsFormat/Logic/Biff_unions/MSODRAWINGGROUP.h"
 #include "../XlsFormat/Logic/Biff_unions/OBJ.h"
+#include "../XlsFormat/Logic/Biff_unions/TEXTOBJECT.h"
 
 #include <Logic/Biff_records/HLink.h>
 #include <Logic/Biff_records/MsoDrawingGroup.h>
 #include <Logic/Biff_records/MsoDrawing.h>
 #include <Logic/Biff_records/Obj.h>
+#include <Logic/Biff_records/TxO.h>
 
 #include <Logic/Biff_structures/URLMoniker.h>
 #include <Logic/Biff_structures/FileMoniker.h>
@@ -486,10 +488,38 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		{
 			sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
 		}
-		else continue;
+		//else continue;
 		
 		
 		if (xlsx_context->get_drawing_context().start_drawing(obj->cmo.ot))//тут тип шейпа ВРАНЬЕ !!! пример - 7.SINIF I.DÖNEM III.YAZILI SINAV.xls
+		{
+			convert(sp);
+
+			xlsx_context->get_drawing_context().end_drawing();
+		}
+	}
+
+	for (long i = 0; i <objects->m_TEXTOBJECTs.size(); i++)
+	{
+		int ind = objects->m_OBJs[i].second;
+		XLS::TEXTOBJECT* textObject = dynamic_cast<XLS::TEXTOBJECT*>(objects->m_TEXTOBJECTs[i].first.get());
+
+		if (textObject == NULL) continue;
+
+		XLS::TxO * txO = dynamic_cast<XLS::TxO *>(textObject->m_TxO.get());
+		
+		if (txO == NULL) continue;
+		ODRAW::OfficeArtSpContainer *sp = NULL;
+		
+		if (txO->m_OfficeArtSpContainer)
+		{
+			sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(txO->m_OfficeArtSpContainer.get());
+		}
+		else if ( (spgr) && (ind < spgr->child_records.size()))
+		{
+			sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
+		}
+		if (xlsx_context->get_drawing_context().start_drawing(0x0006))
 		{
 			convert(sp);
 
@@ -578,6 +608,10 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			case 0x01C5: //blip 
 			{
 			}break;
+			case 0x01CB: 
+				xlsx_context->get_drawing_context().set_line_width(props[i]->op);
+			{
+			}break;
 			case 0x01CD:
 			{
 				xlsx_context->get_drawing_context().set_line_style(props[i]->op);
@@ -619,8 +653,87 @@ void XlsConverter::convert_blip(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 }
 void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
 {
+	std::vector<ODRAW::MSOPOINT>		points;
+	std::vector<ODRAW::MSOPATHINFO>		command;
+	ODRAW::ShapePath::msoShapePathType	shapeType;
+	oox::_rect rect;
+	
 	for (int i = 0 ; i < props.size() ; i++)
 	{
+		switch(props[i]->opid)
+		{
+		case 0x0140:	rect.left	= props[i]->op; break;
+		case 0x0141:	rect.top	= props[i]->op; break;
+		case 0x0142:	rect.right	= props[i]->op; break;
+		case 0x0143:	rect.bottom = props[i]->op; break;
+		case 0x0144:	shapeType	= (ODRAW::ShapePath::msoShapePathType)props[i]->op; break;
+		case 0x0145:
+			{
+				ODRAW::PVertices * v = (ODRAW::PVertices *)(props[i].get());
+				points = v->path_complex.data;
+			}break;
+		case 0x0146:
+			{
+				ODRAW::PSegmentInfo * s = (ODRAW::PSegmentInfo *)(props[i].get());
+				command = s->path_complex.data;
+			}break;
+		}
+	}
+
+	if (points.size() > 0 || command.size() > 0)
+	{
+		std::wstringstream strm;
+		CP_XML_WRITER(strm)    
+		{
+			if (command.size() == 0)
+			{
+				for (int i = 0 ; i < points.size(); i++)
+				{
+					CP_XML_NODE(L"a:lnTo")
+					{
+						CP_XML_NODE(L"a:pt")
+						{
+							CP_XML_ATTR(L"x", points[i].x);
+							CP_XML_ATTR(L"y", points[i].y);
+						}
+					}
+				}
+			}
+			else
+			{
+				int ind_point = 0;
+				std::wstring comm[] = 
+				{
+					L"a:lnTo", L"a:cubicBezTo", L"a:moveTo", L"a:close"
+				};
+				for (int i = 0 ; i < command.size(); i++)
+				{
+					if (command[i].typeSegment == ODRAW::msopathEnd) break;
+					if (command[i].typeSegment > 4) continue;
+
+					if (command[i].typeSegment < 3 && command[i+1].Segments < 1) 
+						continue;
+
+					CP_XML_NODE(comm[command[i].typeSegment])
+					{
+						for (int j=0 ; j < command[i+1].Segments; j ++)
+						{
+							if (ind_point > points.size())
+								break;
+							CP_XML_NODE(L"a:pt")
+							{
+								CP_XML_ATTR(L"x", points[ind_point].x);
+								CP_XML_ATTR(L"y", points[ind_point].y);
+								ind_point++;
+							}
+						}
+					}
+				}
+			}
+		}
+		//xlsx_context->get_drawing_context().set_shapeType
+		xlsx_context->get_drawing_context().set_path_rect(rect);
+		xlsx_context->get_drawing_context().set_path(strm.str());
 	}
 }
 void XlsConverter::convert_geometry_text(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)

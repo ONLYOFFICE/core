@@ -87,14 +87,14 @@ bool xlsx_drawing_context::start_drawing(int type)
 	case 0x0002: // Rectangle
 	case 0x0003: // Oval
 	case 0x0004: // Arc
-	//case 0x0009: // Polygon:
-		start_shape(type); return true;
-	case 0x0005: // Chart  
 	case 0x0006: // Text
-	case 0x0007: // Button
-		break;
+	case 0x001E: // OfficeArt object
+	case 0x0009: // Polygon:
+		start_shape(type); return true;
 	case 0x0008: // Picture
 		start_image(); return true;
+	case 0x0005: // Chart  
+	case 0x0007: // Button
 	case 0x000B: // Checkbox
 	case 0x000C: // Radio button
 	case 0x000D: // Edit box
@@ -106,7 +106,6 @@ bool xlsx_drawing_context::start_drawing(int type)
 	case 0x0013: // Group box
 	case 0x0014: // Dropdown list
 	case 0x0019: // Note
-	case 0x001E: // OfficeArt object
 		break;
 	}
 	return false;
@@ -131,6 +130,16 @@ void xlsx_drawing_context::start_shape(int type)
 	drawing_state.back().type = external_items::typeShape;
 	drawing_state.back().shape_type = type;
 
+	if (0x0006 == type)
+	{
+		drawing_state.back().shape_type = msosptTextBox;
+		drawing_state.back().bTextBox = true;
+	}
+	if (0x001E == type)
+	{
+		drawing_state.back().shape_type = msosptTextBox;
+		//drawing_state.back().bWordArt = true;
+	}
 	count_object++;
 }
 
@@ -151,7 +160,10 @@ void xlsx_drawing_context::set_FlipV()
 }
 void xlsx_drawing_context::set_shape_id(int id)
 {
-	if (drawing_state.size() < 1 )return;
+	if (drawing_state.size() < 1 )		return;
+	
+	if (drawing_state.back().bTextBox)	return;
+
 	drawing_state.back().shape_id = (MSOSPT)id;
 }
 
@@ -198,14 +210,29 @@ void xlsx_drawing_context::serialize_shape()
 {
 	std::wstringstream strm;
 
-	std::wstring prstGeom = Spt2ShapeType(drawing_state.back().shape_id);
-	
+	std::wstring prstTxWarp;
+	std::wstring prstGeom	= Spt2ShapeType(drawing_state.back().shape_id);
+
 	if (prstGeom.empty())
 	{
-		prstGeom = L"custom";
+		prstTxWarp = Spt2WordArtShapeType(drawing_state.back().shape_id);
+		if (prstTxWarp.empty() == false)
+		{
+			drawing_state.back().bWordArt = true;
+			drawing_state.back().bTextBox = true;
+			prstGeom = L"rect";
+		}
+		else if (drawing_state.back().path.empty())
+		{
+			//error !!!
+			prstGeom = L"rect";
+		}
 	}
-
-
+	else
+	{
+		if (drawing_state.back().shape_id == msosptTextBox)	drawing_state.back().bTextBox = true;
+	}
+	
 	CP_XML_WRITER(strm)    
 	{
 		CP_XML_NODE(L"xdr:sp")
@@ -233,33 +260,53 @@ void xlsx_drawing_context::serialize_shape()
 						}
 					}
 				}
-				CP_XML_NODE(L"xdr:cNvSpPr");
+				CP_XML_NODE(L"xdr:cNvSpPr")
+				{
+					if (drawing_state.back().bTextBox)CP_XML_ATTR(L"txBox", 1);
+				}
 			}
 			
 			CP_XML_NODE(L"xdr:spPr")
 			{
-				CP_XML_NODE(L"a:xfrm")
+				serialize_xfrm(CP_XML_STREAM());
+
+				if (prstGeom.empty() == false)
 				{
-					CP_XML_NODE(L"a:off")
+					CP_XML_NODE(L"a:prstGeom")
 					{
-						CP_XML_ATTR(L"y", 0);
-						CP_XML_ATTR(L"x", 0);
-					}
-					CP_XML_NODE(L"a:ext")
-					{
-						CP_XML_ATTR(L"cy", 0);
-						CP_XML_ATTR(L"cx", 0);
+						CP_XML_ATTR(L"prst", prstGeom);
+						if (!drawing_state.back().bWordArt)	CP_XML_NODE(L"a:avLst");
 					}
 				}
-				CP_XML_NODE(L"a:prstGeom")
+				else
 				{
-					CP_XML_ATTR(L"prst", prstGeom);
-					CP_XML_NODE(L"a:avLst");
+					CP_XML_NODE(L"a:custGeom")
+					{        
+						CP_XML_NODE(L"a:avLst");
+						//oox_serialize_aLst(CP_XML_STREAM(),val.additional);
+						CP_XML_NODE(L"a:ahLst");
+						//CP_XML_NODE(L"a:gdLst");
+						CP_XML_NODE(L"a:rect")
+						{
+							CP_XML_ATTR(L"b",L"b");
+							CP_XML_ATTR(L"l",0);
+							CP_XML_ATTR(L"r",L"r");
+							CP_XML_ATTR(L"t",0);
+						}
+						CP_XML_NODE(L"a:pathLst")
+						{ 	
+							CP_XML_NODE(L"a:path")
+							{
+								CP_XML_ATTR(L"w", drawing_state.back().path_rect.right - drawing_state.back().path_rect.left);
+								CP_XML_ATTR(L"h", drawing_state.back().path_rect.bottom- drawing_state.back().path_rect.top);
+								
+								CP_XML_STREAM() << drawing_state.back().path;
+							}
+						}
+					}
 				}
-				serialize_fill(CP_XML_STREAM());
-
-				serialize_line(CP_XML_STREAM());
-
+				//serialize_fill(CP_XML_STREAM());
+				serialize_line(CP_XML_STREAM());		
 			}
 		}
 	}
@@ -291,6 +338,32 @@ void xlsx_drawing_context::serialize_none_fill(std::wostream & stream)
 		CP_XML_NODE(L"a:noFill");
 	}
 }
+
+void xlsx_drawing_context::serialize_xfrm(std::wostream & stream)
+{
+	CP_XML_WRITER(stream)    
+	{
+		CP_XML_NODE(L"a:xfrm")
+		{
+			if (drawing_state.back().flipV)			CP_XML_ATTR(L"flipV", true);
+			if (drawing_state.back().flipH)			CP_XML_ATTR(L"flipH", true);
+			
+			if (drawing_state.back().rotation != 0)	CP_XML_ATTR(L"rot", drawing_state.back().rotation);
+			
+			CP_XML_NODE(L"a:off")
+			{
+				CP_XML_ATTR(L"x", 0);
+				CP_XML_ATTR(L"y", 0);
+			}
+			CP_XML_NODE(L"a:ext")
+			{
+				CP_XML_ATTR(L"cx", 0);
+				CP_XML_ATTR(L"cy", 0);
+			}
+		}
+	}
+}
+
 void xlsx_drawing_context::serialize_color	(std::wostream & stream, const _color &color)
 {
 	CP_XML_WRITER(stream)    
@@ -320,6 +393,8 @@ void xlsx_drawing_context::serialize_line(std::wostream & stream)
 	{
 		CP_XML_NODE(L"a:ln")
 		{
+			if (drawing_state.back().line.width > 0)
+				CP_XML_ATTR(L"w", drawing_state.back().line.width);//in emu (1 pt = 12700) ??? 
 			CP_XML_NODE(L"a:" + drawing_state.back().line.type)
 			{
 				serialize_color(CP_XML_STREAM(), drawing_state.back().line.color);			
@@ -401,19 +476,8 @@ void xlsx_drawing_context::serialize_pic(std::wstring rId)
 
 			CP_XML_NODE(L"xdr:spPr")
 			{
-				CP_XML_NODE(L"a:xfrm")
-				{
-					CP_XML_NODE(L"a:off")
-					{
-						CP_XML_ATTR(L"y", 0);
-						CP_XML_ATTR(L"x", 0);
-					}
-					CP_XML_NODE(L"a:ext")
-					{
-						CP_XML_ATTR(L"cy", 0);
-						CP_XML_ATTR(L"cx", 0);
-					}
-				}
+				serialize_xfrm(CP_XML_STREAM());
+
 				CP_XML_NODE(L"a:prstGeom")
 				{
 					CP_XML_ATTR(L"prst", "rect");
@@ -525,6 +589,13 @@ void xlsx_drawing_context::set_line_style (long val)
 	case 4: drawing_state.back().line.style = L"triple"; break;
 	}
 }
+
+void xlsx_drawing_context::set_line_width (long val)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().line.width = val;
+}
+
 void xlsx_drawing_context::set_hyperlink(std::wstring & str)
 {
 	if (drawing_state.size() < 1 )return;
@@ -539,6 +610,18 @@ void xlsx_drawing_context::set_hyperlink(std::wstring & str)
 	drawing_state.back().hyperlink = hId;
 
 	xlsx_drawings_->add( false, hId , href_correct, external_items::typeHyperlink);
+}
+
+void xlsx_drawing_context::set_path (const std::wstring & path)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().path = path;
+}
+
+void xlsx_drawing_context::set_path_rect(_rect & rect)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().path_rect = rect;
 }
 
 void xlsx_drawing_context::set_properties(std::wstring & str)

@@ -35,7 +35,8 @@ BaseObjectPtr FORMATTING::clone()
 //FORMATTING = 1*510Font 8*218Format XFS *DXF STYLES [TABLESTYLES] [Palette] [ClrtClient]
 const bool FORMATTING::loadContent(BinProcessor& proc)
 {
-	//todooo разобраться - ЗАЧЕМ 2 раза читаются фонты
+	global_info = proc.getGlobalWorkbookInfo();
+
 	int count = 0;
 	count = proc.repeated<Font>(0, 510); // Wrong records sequence workaround (originally  at least one Font is mandatory)
 	while(count > 0)
@@ -113,6 +114,12 @@ int FORMATTING::serialize1(std::wostream & stream)
 				CP_XML_ATTR(L"count", m_Fonts.size());
 				for (long i = 0 ; i < m_Fonts.size(); i++)
 				{
+					Font * font = dynamic_cast<Font*>(m_Fonts[i].get());
+					std::map<int, FillInfoExt>::iterator it = global_info->fonts_color_ext.find(i);
+					if (font && (it!=global_info->fonts_color_ext.end()))
+					{					
+						font->set_color_ext(it->second);
+					}
 					m_Fonts[i]->serialize(CP_XML_STREAM());
 				}
 			}

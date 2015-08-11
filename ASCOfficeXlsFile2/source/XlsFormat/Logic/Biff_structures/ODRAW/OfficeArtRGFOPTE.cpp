@@ -20,8 +20,6 @@ void OfficeArtRGFOPTE::store(XLS::CFRecord& record)
 
 void OfficeArtRGFOPTE::load(XLS::CFRecord& record)
 {
-// 	size_t end = record.getRdPtr() + data_size;
-	
 	for(int i = 0; i < options_num; ++i)
 	{
 		OfficeArtFOPTEPtr fopte = OfficeArtFOPTE::load_and_create(record);
@@ -53,7 +51,7 @@ void OfficeArtRGFOPTE::load(XLS::CFRecord& record)
 		{
 			FillStyle_props.push_back(fopte);
 		}
-		else if (type_prop	>= 0x01C0	&&	type_prop < 0x0540) //2.3.8 Line Style
+		else if (type_prop	>= 0x01C0	&&	type_prop < 0x0200) //2.3.8 Line Style
 		{
 			LineStyle_props.push_back(fopte);
 		}
@@ -99,6 +97,8 @@ void OfficeArtRGFOPTE::load(XLS::CFRecord& record)
 			(*it)->ReadComplexData(record);
 		}
 	}
+
+	rgfopte.clear();
 }
 
 void OfficeArtRGFOPTE::SetOptionsNumber(const unsigned short number)

@@ -2,6 +2,7 @@
 
 #include "BiffRecord.h"
 #include <Logic/Biff_structures/BiffString.h>
+#include <Logic/Biff_structures/BorderFillInfo.h>
 
 namespace XLS
 {;
@@ -26,6 +27,8 @@ public:
 	int serialize				(std::wostream & stream);
 	int serialize_properties	(std::wostream & stream, bool rPr = false);
 
+	void set_color_ext			(FillInfoExt & color_ext);
+
 //-----------------------------
 	BIFF_WORD dyHeight; // measured in twips (1/20 of of a printer's point)
 
@@ -43,27 +46,9 @@ public:
 	BIFF_BYTE bFamily;
 	BIFF_BYTE bCharSet;
 
-	ShortXLUnicodeString fontName;
+	FillInfoExt				color_ext;
+	ShortXLUnicodeString	fontName;
 	
-
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(dyHeight)
-		//BO_ATTRIB_MARKUP_ATTRIB(fItalic)
-		//BO_ATTRIB_MARKUP_ATTRIB(fStrikeOut)
-		//BO_ATTRIB_MARKUP_ATTRIB(fOutline)
-		//BO_ATTRIB_MARKUP_ATTRIB(fShadow)
-		//BO_ATTRIB_MARKUP_ATTRIB(fCondense)
-		//BO_ATTRIB_MARKUP_ATTRIB(fExtend)
-		//BO_ATTRIB_MARKUP_ATTRIB(icv)
-		//BO_ATTRIB_MARKUP_ATTRIB(bls)
-		//BO_ATTRIB_MARKUP_ATTRIB(sss)
-		//BO_ATTRIB_MARKUP_ATTRIB(uls)
-		//BO_ATTRIB_MARKUP_ATTRIB(bFamily)
-		//BO_ATTRIB_MARKUP_ATTRIB(bCharSet)
-		//BO_ATTRIB_MARKUP_ATTRIB(fontName)
-	//BO_ATTRIB_MARKUP_END
-
 };
 
 } // namespace XLS

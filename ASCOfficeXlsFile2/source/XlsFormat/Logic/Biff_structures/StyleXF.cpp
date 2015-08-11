@@ -10,8 +10,11 @@ namespace XLS
 
 
 StyleXF::StyleXF(size_t& cell_xf_current_id, size_t& style_xf_current_id)
-:	cell_xf_current_id_(cell_xf_current_id), style_xf_current_id_(style_xf_current_id), font_scheme(-1)
+:	cell_xf_current_id_(cell_xf_current_id), style_xf_current_id_(style_xf_current_id), font_id(0xFFFF)
 {
+	font_id	= -1;
+	border_x_id = -1;
+	fill_x_id	= -1;
 }
 
 
@@ -66,7 +69,9 @@ void StyleXF::load(CFRecord& record)
 	unsigned int flags2;
 	unsigned int flags3;
 	unsigned short flags4;
+	
 	record >> flags1 >> flags2 >> flags3 >> flags4;
+	
 	alc = static_cast<unsigned char>(GETBITS(flags1, 0, 2));
 	fWrap = GETBIT(flags1, 3);
 	alcV = static_cast<unsigned char>(GETBITS(flags1, 4, 6));
@@ -83,11 +88,11 @@ void StyleXF::load(CFRecord& record)
 	border.dgDiag = static_cast<unsigned char>(GETBITS(flags3, 21, 24));
 	border.grbitDiag = static_cast<unsigned char>(GETBITS(flags2, 30, 31));
 
-	border.icvLeft = 0 != border.dgLeft ? static_cast<unsigned char>(GETBITS(flags2, 16, 22)) : 0;
+	border.icvLeft	= 0 != border.dgLeft ? static_cast<unsigned char>(GETBITS(flags2, 16, 22)) : 0;
 	border.icvRight = 0 != border.dgRight ? static_cast<unsigned char>(GETBITS(flags2, 23, 29)) : 0;
-	border.icvTop = 0 != border.dgTop ? static_cast<unsigned char>(GETBITS(flags3, 0, 6)) : 0;
+	border.icvTop	= 0 != border.dgTop ? static_cast<unsigned char>(GETBITS(flags3, 0, 6)) : 0;
 	border.icvBottom = 0 != border.dgBottom ? static_cast<unsigned char>(GETBITS(flags3, 7, 13)) : 0;
-	border.icvDiag = 0 != border.dgDiag ? static_cast<unsigned char>(GETBITS(flags3, 14, 20)) : 0;
+	border.icvDiag	= 0 != border.dgDiag ? static_cast<unsigned char>(GETBITS(flags3, 14, 20)) : 0;
 	
 	fill.fls = static_cast<unsigned char>(GETBITS(flags3, 26, 31));
 	fill.icvFore = GETBITS(flags4, 0, 6);
@@ -153,21 +158,24 @@ void StyleXF::RegisterFillBorder()
 			}break;
 			//case 0x000B:	//diag color
 			//case 0x000C:	//diag color
-			//case 0x000D:	//text color
-			//	extPropData.color.toXML(own_tag);
-			//	break;
+			case 0x000D:
+				font_color.enabled		= true;
+				font_color.icv			= ext_prop->extPropData.color.icv;
+				font_color.xclrType		= ext_prop->extPropData.color.xclrType;
+				font_color.nTintShade	= ext_prop->extPropData.color.nTintShade;
+				font_color.xclrValue	= ext_prop->extPropData.color.xclrValue;			
+				break;
 			//case 0x0006:
 			//	extPropData.gradient_fill.toXML(own_tag);
 			//	break;
 			case 0x000E:
-				font_scheme = ext_prop->extPropData.font_scheme;
+				font_id		= ext_prop->extPropData.font_scheme;
 				break;
 			case 0x000F:
 				cIndent		= ext_prop->extPropData.indent_level;
 				break;
 		}
 	}	
-	
 	border_x_id	= m_GlobalWorkbookInfo->RegisterBorderId(border);
 	fill_x_id	= m_GlobalWorkbookInfo->RegisterFillId(fill);
 	

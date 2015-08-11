@@ -54,6 +54,11 @@ const size_t GlobalWorkbookInfo::RegisterFillId(const FillInfo& fill)
 	}
 }
 
+void GlobalWorkbookInfo::RegisterFontColorId (int id, const FillInfoExt & font_color)
+{
+	fonts_color_ext.insert(std::pair<int, FillInfoExt>(id,font_color));
+}
+
 const unsigned int GlobalWorkbookInfo::GenerateAXESId()
 {
 	return last_AXES_id += 1;

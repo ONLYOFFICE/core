@@ -35,17 +35,29 @@ struct _color
 	bool			bPalette;
 };
 
+struct _rect
+{
+	_rect() : left(0), top(0), right(0),bottom(0){}
+
+    int   left;
+    int   top;
+    int   right;
+    int   bottom;
+
+};
+
 class _drawing_state
 {
 public:
-	_drawing_state() 
+	_drawing_state() : isInternal(false), shape_id(msosptNotPrimitive),  flipH(false), flipV(false), bTextBox(false), bWordArt(false)
 	{
-		isInternal = false; id = -1; shape_id = msosptNotPrimitive; 
-		flipV = flipH = false;  
+		id = -1;
 		memset(image_crop, 0, 4 * sizeof(int));
+		rotation = 0;
 	}
 
 	int						shape_type;
+
 	external_items::Type	type;
 	std::wstring			name;
 	std::wstring			description;
@@ -64,16 +76,22 @@ public:
 	bool					flipH;
 	std::wstring			hyperlink;
 	int						rotation;
+
+	std::wstring			path;
+	_rect					path_rect;
 	
 	bool					isInternal;
+	bool					bTextBox;
+	bool					bWordArt;
 
 	struct _line
 	{
-		_line() {opacity = 0; type = L"solidFill"; style = L"simple";}
+		_line() {opacity = 0; type = L"solidFill"; style = L"simple"; width = 0;}
 		_color			color;
 		int				opacity;
 		std::wstring	type;
 		std::wstring	style;
+		long			width;
 	}line;
 
 };
@@ -115,22 +133,26 @@ public:
 		void set_line_color	(int index, int type);
 		void set_line_type	(long val);
 		void set_line_style	(long val);
+		void set_line_width (long val);
 
 		void set_image		(std::wstring & str);
 		void set_anchor		(std::wstring & str);
 		void set_properties	(std::wstring & str);
 		void set_hyperlink	(std::wstring & str);
 
-		void serialize(std::wostream & stream);
-
-		void serialize_pic(std::wstring rId);	
-		void serialize_shape();	
+		void set_path_rect	(_rect & rect);
+		void set_path		(const std::wstring & path);
 		
+//------------------------------------------------------------------------------		
+		void serialize				(std::wostream & stream);
+		void serialize_pic			(std::wstring rId);	
+		void serialize_shape();			
 		void serialize_color		(std::wostream & stream, const _color &color);
 		void serialize_line			(std::wostream & stream);
 		void serialize_fill			(std::wostream & stream);
 		void serialize_bitmap_fill	(std::wostream & stream, std::wstring rId, const std::wstring ns = L"a:");
 		void serialize_none_fill	(std::wostream & stream);
+		void serialize_xfrm			(std::wostream & stream);
 
 	void end_drawing();
 private:

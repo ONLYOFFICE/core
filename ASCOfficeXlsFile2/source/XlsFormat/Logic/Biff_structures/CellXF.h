@@ -46,7 +46,8 @@ public:
 
 	BiffStructurePtrVector ext_props;
 
-	int font_scheme;
+	FillInfoExt		font_color;
+	size_t			font_id;
 
 	bool fHasXFExt;
 	bool fsxButton;

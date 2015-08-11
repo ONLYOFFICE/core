@@ -25,10 +25,10 @@ public:
 	
 	struct extPropData_Tag
 	{
-		FullColorExt color;
-		XFExtGradient gradient_fill;
-		unsigned char font_scheme;
-		unsigned short indent_level;
+		FullColorExt	color;
+		XFExtGradient	gradient_fill;
+		unsigned char	font_scheme;
+		unsigned short	indent_level;
 
 	} extPropData;
 };

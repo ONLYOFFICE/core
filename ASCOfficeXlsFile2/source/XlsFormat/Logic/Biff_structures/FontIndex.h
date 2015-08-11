@@ -14,10 +14,9 @@ class FontIndex : public BiffAttributeSimple<unsigned short>
 public:
 	BiffStructurePtr clone();
 
-	//virtual void toXML(BiffStructurePtr & parent, const std::wstring & attrib_name);
-	//virtual const bool fromXML(MSXML2::IXMLDOMElementPtr xml_tag, const std::wstring & attrib_name);
 	operator const _variant_t () const;
-	const unsigned short getValue() const;
+	const unsigned short	getValue() const;
+	void					setValue(unsigned short val);
 };
 
 } // namespace XLS

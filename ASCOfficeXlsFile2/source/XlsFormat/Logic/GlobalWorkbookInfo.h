@@ -21,8 +21,9 @@ public:
 
 	const size_t RegisterBorderId	(const BorderInfo& border);
 	const size_t RegisterFillId		(const FillInfo& fill);
-
-	const unsigned int GenerateAXESId();
+	
+	void				RegisterFontColorId	(int id, const FillInfoExt & font_color);
+	const unsigned int	GenerateAXESId();
 
 	unsigned short								CodePage;
 	CRYPT::DecryptorPtr							decryptor;
@@ -33,6 +34,7 @@ public:
 
 	boost::unordered_map<BorderInfo, int>		border_x_ids;
 	boost::unordered_map<FillInfo, int>			fill_x_ids;
+	std::map<int,  FillInfoExt>					fonts_color_ext;
 
 	std::vector<BaseObjectPtr>					*fonts;
 	

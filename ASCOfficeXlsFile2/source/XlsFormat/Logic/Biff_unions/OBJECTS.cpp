@@ -64,13 +64,14 @@ public:
 
 	const bool loadContentRead(BinReaderProcessor& proc)
 	{
-		if(!proc.mandatory(*mso_drawing_))
-		{
-			return false;
-		}
-		proc.repeated(Parenthesis_OBJECTS_2(), 0, 0);
+		bool res = proc.mandatory(*mso_drawing_);
+		//if(!res)
+		//{
+		//	return false;
+		//}
+		int count = proc.repeated(Parenthesis_OBJECTS_2(), 0, 0);
 		proc.repeated<Continue>(0,0);
-		return true;
+		return res || count>0;
 	}
 
 	MsoDrawingPtr mso_drawing_;

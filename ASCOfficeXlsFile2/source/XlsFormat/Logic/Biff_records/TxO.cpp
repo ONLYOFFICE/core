@@ -1,5 +1,6 @@
 
 #include "TxO.h"
+#include <Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h>
 
 namespace XLS
 {;
@@ -63,25 +64,14 @@ void TxO::readFields(CFRecord& record)
 
 			TxOruns.m_runCount = cbRuns / 8 - 1;
 			TxOruns.load(record);
-			
-		///+120 byte ???
+		
 
-
-			/*BYTE* Add = NULL;*/
-			int size = 0;
 			if (record.getRdPtr() <  record.getDataSize())
 			{
-				//XLUnicodeStringNoCch add;
-				//record >> add;
-				size = record.getDataSize() - record.getRdPtr();
-				//Add = new BYTE [size];
-				//memcpy(Add, record.getData(), size);
-				record.skipNunBytes(size);
+				m_OfficeArtSpContainer = ODRAW::OfficeArtRecordPtr(new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet));
+				record >> *m_OfficeArtSpContainer; //todooo !!! сделать проверку на тип
+
 			}
-			//if (Add)
-			//{
-			//	delete []Add;
-			//}
 		}
 	}
 }

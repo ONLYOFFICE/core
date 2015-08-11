@@ -76,9 +76,7 @@ int XF::serialize(std::wostream & stream)
     {
 		CP_XML_NODE(L"xf")
 		{	
-			if (style.font_scheme >=0)		CP_XML_ATTR(L"fontId"	, style.font_scheme);
-			else if (cell.font_scheme >=0)	CP_XML_ATTR(L"fontId"	, cell.font_scheme);
-			else if (ifnt.value())			CP_XML_ATTR(L"fontId"	, ifnt.getValue());
+			if (ifnt.value())			CP_XML_ATTR(L"fontId"	, ifnt.getValue());
 			
 			if (ifmt.value())
 			{

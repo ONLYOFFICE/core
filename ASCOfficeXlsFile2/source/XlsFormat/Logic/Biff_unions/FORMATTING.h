@@ -29,6 +29,9 @@ public:
 	std::vector<BaseObjectPtr>	m_Fonts;
 	BaseObjectPtr				m_Palette;
 	BaseObjectPtr				m_ClrtClient;
+
+
+	GlobalWorkbookInfoPtr		global_info;
 };
 
 } // namespace XLS

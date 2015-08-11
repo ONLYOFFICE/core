@@ -1,13 +1,5 @@
 ﻿#include "GraphicsPath.h"
 
-#ifndef max
-#define max(a,b)            (((a) > (b)) ? (a) : (b))
-#endif
-
-#ifndef min
-#define min(a,b)            (((a) < (b)) ? (a) : (b))
-#endif
-
 namespace Aggplus
 {
 	// GraphicsPath
@@ -550,8 +542,8 @@ namespace Aggplus
 		// Выясним в каких четвертях находятся начальная и конечная точки
 		unsigned int nFirstPointQuard  = int(fAngle1) / 90 + 1; 
 		unsigned int nSecondPointQuard = int(fAngle2) / 90 + 1;
-		nSecondPointQuard = min( 4, max( 1, nSecondPointQuard ) );
-		nFirstPointQuard  = min( 4, max( 1, nFirstPointQuard ) );
+        nSecondPointQuard = std::min( 4, std::max( 1, (int)nSecondPointQuard ) );
+        nFirstPointQuard  = std::min( 4, std::max( 1, (int)nFirstPointQuard ) );
 		// Проведем линию в начальную точку дуги
 		double fStartX = 0.0, fStartY = 0.0, fEndX = 0.0, fEndY = 0.0;
 
@@ -1046,8 +1038,8 @@ namespace Aggplus
 		// Выясним в каких четвертях находятся начальная и конечная точки
 		unsigned int nFirstPointQuard  = int(fAngle1) / 90 + 1; 
 		unsigned int nSecondPointQuard = int(fAngle2) / 90 + 1;
-		nSecondPointQuard = min( 4, max( 1, nSecondPointQuard ) );
-		nFirstPointQuard  = min( 4, max( 1, nFirstPointQuard ) );
+        nSecondPointQuard = std::min( 4, std::max( 1, (int)nSecondPointQuard ) );
+        nFirstPointQuard  = std::min( 4, std::max( 1, (int)nFirstPointQuard ) );
 		// Проведем линию в начальную точку дуги
 		double fStartX = 0.0, fStartY = 0.0, fEndX = 0.0, fEndY = 0.0;
 

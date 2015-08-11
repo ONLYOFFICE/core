@@ -10,6 +10,8 @@ TARGET = graphics
 TEMPLATE = lib
 CONFIG += staticlib
 
+CONFIG += c++11
+
 ############### destination path ###############
 DESTINATION_SDK_PATH = $$PWD/../../../../SDK/lib
 

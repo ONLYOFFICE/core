@@ -404,7 +404,7 @@ keymatch (char * arg, const char * keyword, int minchars)
   return 1;			/* A-OK */
 }
 
-#ifndef _IOS
+#if 0
 
 /*
  * The main program.

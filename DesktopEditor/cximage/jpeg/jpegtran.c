@@ -360,7 +360,7 @@ parse_switches (j_compress_ptr cinfo, int argc, char **argv,
   return argn;			/* return index of next arg (file name) */
 }
 
-#ifndef _IOS
+#if 0
 
 /*
  * The main program.

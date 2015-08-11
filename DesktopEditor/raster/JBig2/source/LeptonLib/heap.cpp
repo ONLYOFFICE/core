@@ -66,8 +66,8 @@
 #include <stdlib.h>
 #include "allheaders.h"
 
-static const l_int32  MIN_BUFFER_SIZE = 20;             /* n'importe quoi */
-static const l_int32  INITIAL_BUFFER_ARRAYSIZE = 128;   /* n'importe quoi */
+static const l_int32  MIN_BUFFER_SIZE_HEAP = 20;             /* n'importe quoi */
+//static const l_int32  INITIAL_BUFFER_ARRAYSIZE = 128;   /* n'importe quoi */
 
 #define SWAP_ITEMS(i, j)       { void *tempitem = lh->array[(i)]; \
                                  lh->array[(i)] = lh->array[(j)]; \
@@ -92,8 +92,8 @@ L_HEAP  *lh;
 
     PROCNAME("lheapCreate");
 
-    if (nalloc < MIN_BUFFER_SIZE)
-        nalloc = MIN_BUFFER_SIZE;
+    if (nalloc < MIN_BUFFER_SIZE_HEAP)
+        nalloc = MIN_BUFFER_SIZE_HEAP;
 
         /* Allocate ptr array and initialize counters. */
     if ((lh = (L_HEAP *)CALLOC(1, sizeof(L_HEAP))) == NULL)

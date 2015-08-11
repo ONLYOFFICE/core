@@ -416,7 +416,7 @@ print_text_marker (j_decompress_ptr cinfo)
   return TRUE;
 }
 
-#ifndef _IOS
+#if 0
 
 /*
  * The main program.

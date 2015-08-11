@@ -626,7 +626,7 @@ SOURCES += \
     ../../../raster/JBig2/source/LeptonLib/textops.cpp \
     ../../../raster/JBig2/source/LeptonLib/tiffio.cpp \
     ../../../raster/JBig2/source/LeptonLib/tiffiostub.cpp \
-    ../../../raster/JBig2/source/LeptonLib/utils.cpp \
+    ../../../raster/JBig2/source/LeptonLib/lepton_utils.cpp \
     ../../../raster/JBig2/source/LeptonLib/viewfiles.cpp \
     ../../../raster/JBig2/source/LeptonLib/warper.cpp \
     ../../../raster/JBig2/source/LeptonLib/watershed.cpp \

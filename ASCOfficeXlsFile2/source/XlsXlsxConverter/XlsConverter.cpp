@@ -702,21 +702,16 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 			else
 			{
 				int ind_point = 0;
-				std::wstring comm[] = 
-				{
-					L"a:lnTo", L"a:cubicBezTo", L"a:moveTo", L"a:close"
-				};
+				std::wstring comm[] = { L"a:lnTo", L"a:cubicBezTo", L"a:moveTo", L"a:close" };
+				int count_point[] = { 1, 3, 1, 0};
 				for (int i = 0 ; i < command.size(); i++)
 				{
 					if (command[i].typeSegment == ODRAW::msopathEnd) break;
 					if (command[i].typeSegment > 4) continue;
 
-					if (command[i].typeSegment < 3 && command[i+1].Segments < 1) 
-						continue;
-
 					CP_XML_NODE(comm[command[i].typeSegment])
 					{
-						for (int j=0 ; j < command[i+1].Segments; j ++)
+						for (int j=0 ; j < count_point[command[i].typeSegment]; j ++)
 						{
 							if (ind_point > points.size())
 								break;
@@ -794,7 +789,10 @@ void XlsConverter::convert_transform(std::vector<ODRAW::OfficeArtFOPTEPtr> & pro
 		{
 			case 0x0004:
 			{
-				xlsx_context->get_drawing_context().set_rotation(props[i]->op);
+				double d = props[i]->op / 65536.;
+				d *= 60000; //60 000 per 1 gr - 19.5.5 oox 
+
+				xlsx_context->get_drawing_context().set_rotation((int)d);
 			}break;
 		}
 	}
@@ -805,7 +803,7 @@ void XlsConverter::convert(ODRAW::OfficeArtFOPT * fort)
 
 	convert_shape			(fort->fopt.Shape_props);
 	convert_group_shape		(fort->fopt.GroupShape_props);
-	convert_transform		(fort->fopt.Shape_props);
+	convert_transform		(fort->fopt.Transform_props);
 	convert_blip			(fort->fopt.Blip_props);
 	convert_geometry		(fort->fopt.Geometry_props);
 	convert_fill_style		(fort->fopt.FillStyle_props);

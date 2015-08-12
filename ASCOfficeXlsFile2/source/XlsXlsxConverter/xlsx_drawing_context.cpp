@@ -550,7 +550,7 @@ void xlsx_drawing_context::set_crop_right (long val)
 }
 void xlsx_drawing_context::set_rotation (long val)
 {
-	if (drawing_state.size() < 1 )return;
+	if (drawing_state.size() < 1 )return;//in degrees
 	drawing_state.back().rotation = val;
 }
 void xlsx_drawing_context::set_line_color (std::wstring color)

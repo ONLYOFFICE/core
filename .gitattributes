@@ -7638,6 +7638,7 @@ Redist/ASCOfficeUtils.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeWSHtmlFile.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeXPSFile.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCOfficeXlsFile.dll svn_mime_002dtype=application%2Foctet-stream
+Redist/ASCOfficeXlsFile2.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCPresentationEditor.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/ASCVectorImage.dll svn_mime_002dtype=application%2Foctet-stream
 Redist/DoctRenderer.dll svn_mime_002dtype=application%2Foctet-stream

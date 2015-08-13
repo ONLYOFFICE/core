@@ -50,4 +50,23 @@ CONFIG(debug, debug|release) {
 
 LIBS += -L$$DESTINATION_SDK_PATH_DOCTRENDERER -ldoctrenderer
 
+#################### PDF ######################
+#DEFINES += USE_PDF_RENDERER
+#
+#DEFINES += PDFWRITER_USE_DYNAMIC_LIBRARY
+#LIBS += -L$$DESTINATION_SDK_PATH_DOCTRENDERER -lPdfWriter
+#
+#INCLUDEPATH += \
+#    ../../agg-2.4/include \
+#    ../../freetype-2.5.2/include \
+#    ../../cximage/jasper/include \
+#    ../../cximage/jpeg \
+#    ../../cximage/png \
+#    ../../cximage/zlib
+#LIBS += -L$$DESTINATION_SDK_PATH_DOCTRENDERER -lgraphics
+#win32 {
+#    LIBS += -lShell32 -lAdvapi32
+#}
+###############################################
+
 SOURCES += main.cpp

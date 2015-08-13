@@ -2,7 +2,7 @@
 
 int main(int argc, char *argv[])
 {
-#if 0
+#if 1
 
 #if 1
     std::wstring strXml = L"<Settings>\

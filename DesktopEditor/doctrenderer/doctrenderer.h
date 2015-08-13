@@ -4,8 +4,7 @@
 #include <string>
 #include "../common/Types.h"
 #include "../common/Array.h"
-
-#include <QtCore/qglobal.h>
+#include "../common/base_export.h"
 
 namespace NSDoctRenderer
 {

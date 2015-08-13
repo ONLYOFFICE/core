@@ -1,0 +1,43 @@
+windows:
+
+1) install git: 
+http://msysgit.github.io/
+
+2) checkout v8
+
+cd .../ServerComponents/DesktopEditor/doctrenderer
+create folder v8_windows
+
+cd v8_windows
+git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
+
+add System Environment Path:
+.../ServerComponents/DesktopEditor/doctrenderer/v8_windows/depot_tools;
+.../ServerComponents/DesktopEditor/doctrenderer/v8_windows/depot_tools/python276_bin;
+
+fetch v8
+cd v8
+git checkout 3.30.34
+
+3) generate visual studio project
+32bit: python build/gyp_v8
+64bit: python build/gyp_v8 -Dtarget_arch=x64
+
+build project in visual studio (не из-под админа, иначе переменные среды тоже для админа надо)
+a) open all.sln
+b) select projects:
+icui18n
+icuuc
+mksnapshot
+v8_base
+v8_libbase
+v8_libplatform
+v8_nosnapshot
+с) Project Properies -> Configuration Properties -> C/C++ ->Code Generation
+for Debug Configuration change "Runtime Library" to "Multi-threaded Debug DLL (/MDd)"
+for Release Configuration change "Runtime Library" to "Multi-threaded Debug (/MD)"
+
+Rebuild All
+
+4) Rebuild doctrenderer project
+

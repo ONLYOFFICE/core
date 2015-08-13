@@ -13,11 +13,13 @@ git clone https://chromium.googlesource.com/chromium/tools/depot_tools.git
 
 add System Environment Path:
 .../ServerComponents/DesktopEditor/doctrenderer/v8_windows/depot_tools;
-.../ServerComponents/DesktopEditor/doctrenderer/v8_windows/depot_tools/python276_bin;
 
 fetch v8
 cd v8
 git checkout 3.30.34
+
+add System Environment Path:
+.../ServerComponents/DesktopEditor/doctrenderer/v8_windows/depot_tools/python276_bin;
 
 3) generate visual studio project
 32bit: python build/gyp_v8

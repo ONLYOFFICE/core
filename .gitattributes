@@ -7790,7 +7790,6 @@ SDK/lib/win_64/DEBUG/doctrenderer.dll svn_mime_002dtype=application%2Foctet-stre
 SDK/lib/win_64/DEBUG/doctrenderer.lib svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/win_64/DEBUG/graphics.lib svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/win_64/DEBUG/libxml.lib svn_mime_002dtype=application%2Foctet-stream
-SDK/lib/win_64/DEBUG/libxml2.lib svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/win_64/DjVuFile.dll svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/win_64/DjVuFile.lib svn_mime_002dtype=application%2Foctet-stream
 SDK/lib/win_64/HtmlFile.dll svn_mime_002dtype=application%2Foctet-stream

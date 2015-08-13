@@ -6,11 +6,7 @@
 
 #include "nativecontrol.h"
 
-#define _USE_LIBXML2_READER_
-#define LIBXML_READER_ENABLED
-#define _UNICODE
-
-#include "../../Common/DocxFormat/Source/XML/xmlutils.h"
+#include "../xml/include/xmlutils.h"
 
 // TEST!!!
 #if 0
@@ -110,15 +106,15 @@ namespace NSDoctRenderer
         if (!oNode.FromXmlString(strXml))
             return FALSE;
 
-        m_strSrcFilePath = string2std_string( oNode.ReadValueString(L"SrcFilePath") );
-        m_strDstFilePath = string2std_string( oNode.ReadValueString(L"DstFilePath") );
+        m_strSrcFilePath = oNode.ReadValueString(L"SrcFilePath");
+        m_strDstFilePath = oNode.ReadValueString(L"DstFilePath");
 
         m_eSrcFormat = (DoctRendererFormat::FormatFile)(oNode.ReadValueInt(L"SrcFileType"));
         m_eDstFormat = (DoctRendererFormat::FormatFile)(oNode.ReadValueInt(L"DstFileType"));
 
-        m_strFontsDirectory = string2std_string( oNode.ReadValueString(L"FontsDirectory") );
-        m_strImagesDirectory = string2std_string( oNode.ReadValueString(L"ImagesDirectory") );
-        m_strThemesDirectory = string2std_string( oNode.ReadValueString(L"ThemesDirectory") );
+        m_strFontsDirectory = oNode.ReadValueString(L"FontsDirectory");
+        m_strImagesDirectory = oNode.ReadValueString(L"ImagesDirectory");
+        m_strThemesDirectory = oNode.ReadValueString(L"ThemesDirectory");
 
         XmlUtils::CXmlNode oNodeChanges;
         if (oNode.GetNode(L"Changes", oNodeChanges))
@@ -134,17 +130,17 @@ namespace NSDoctRenderer
                 XmlUtils::CXmlNode _node;
                 oNodes.GetAt(i, _node);
 
-                m_arChanges.Add(string2std_string(_node.GetText()));
+                m_arChanges.Add(_node.GetText());
             }
         }
 
         XmlUtils::CXmlNode oNodeMailMerge;
         if (oNode.GetNode(L"MailMergeData", oNodeMailMerge))
         {
-            m_strMailMergeDatabasePath = string2std_string( oNodeMailMerge.ReadAttribute(L"DatabasePath") );
+            m_strMailMergeDatabasePath = oNodeMailMerge.ReadAttribute(L"DatabasePath");
             m_nMailMergeIndexStart = oNodeMailMerge.ReadAttributeInt(L"Start", -1);
             m_nMailMergeIndexEnd = oNodeMailMerge.ReadAttributeInt(L"End", -1);
-            m_strMailMergeField = string2std_string( oNodeMailMerge.ReadAttribute(L"Field") );
+            m_strMailMergeField = oNodeMailMerge.ReadAttribute(L"Field");
         }
 
         return true;
@@ -189,9 +185,10 @@ namespace NSDoctRenderer
                 for (int i = 0; i < nCount; ++i)
                 {
                     oNodes.GetAt(i, _node);
-                    std::wstring strFilePath = string2std_string(_node.GetText());
+                    std::wstring strFilePath = _node.GetText();
 
-                    if (NSFile::CFileBinary::Exists(strFilePath))
+                    if (NSFile::CFileBinary::Exists(strFilePath) &&
+                        !NSFile::CFileBinary::Exists(m_strConfigDir + strFilePath))
                         m_arrFiles.Add(strFilePath);
                     else
                         m_arrFiles.Add(m_strConfigDir + strFilePath);
@@ -205,15 +202,15 @@ namespace NSDoctRenderer
 
         XmlUtils::CXmlNode oNodeSdk = oNode.ReadNode(L"DoctSdk");
         if (oNodeSdk.IsValid())
-            m_strDoctSDK = string2std_string(oNodeSdk.GetText());
+            m_strDoctSDK = oNodeSdk.GetText();
 
         oNodeSdk = oNode.ReadNode(L"PpttSdk");
         if (oNodeSdk.IsValid())
-            m_strPpttSDK = string2std_string(oNodeSdk.GetText());
+            m_strPpttSDK = oNodeSdk.GetText();
 
         oNodeSdk = oNode.ReadNode(L"XlstSdk");
         if (oNodeSdk.IsValid())
-            m_strXlstSDK = string2std_string(oNodeSdk.GetText());
+            m_strXlstSDK = oNodeSdk.GetText();
 
         if (!NSFile::CFileBinary::Exists(m_strDoctSDK))
             m_strDoctSDK = m_strConfigDir + m_strDoctSDK;

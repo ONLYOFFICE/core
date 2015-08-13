@@ -7,53 +7,85 @@
 QT       -= core
 QT       -= gui
 
+VERSION = 1.0.0.1
 TARGET = doctrenderer
 TEMPLATE = lib
 
-CONFIG += static
 CONFIG += shared
 CONFIG += plugin
 
-QMAKE_CXXFLAGS += -std=c++11
+CONFIG += c++11
 
-DEFINES += UNICODE
-DEFINES += _UNICODE
-DEFINES += _USE_LIBXML2_READER_
-DEFINES += LIBXML_READER_ENABLED
+############### destination path ###############
+DESTINATION_SDK_PATH = $$PWD/../../SDK/lib
 
-V8_CHECKOUT_PATH = /home/oleg/v8
-V8_BUILD_LIBRARY_PATH_WINDOWS = ../../../SDK/lib
-QT_SETUP_INCLUDES_PATH = /home/oleg/Qt5.4.2/5.4/gcc_64/include
+# WINDOWS
+win32:contains(QMAKE_TARGET.arch, x86_64):{
+CONFIG(debug, debug|release) {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_64/DEBUG
+} else {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_64
+}
+}
+win32:!contains(QMAKE_TARGET.arch, x86_64):{
+CONFIG(debug, debug|release) {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_32/DEBUG
+} else {
+    DESTDIR = $$DESTINATION_SDK_PATH/win_32
+}
+}
+
+linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+    DESTDIR = $$DESTINATION_SDK_PATH/linux_64
+}
+linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+    DESTDIR = $$DESTINATION_SDK_PATH/linux_32
+}
+
+################################################
+
+win32 {
+    V8_CHECKOUT_PATH = $$PWD/v8_windows/v8
+} else {
+    V8_CHECKOUT_PATH = /home/oleg/v8
+}
+
+win32 {
+    LIBS += -lwinmm
+    LIBS += -ladvapi32
+    LIBS += -lShell32
+
+    TARGET_EXT = .dll
+}
+
+linux-g++ | linux-g++-64 | linux-g++-32 {
+    CONFIG += plugin
+
+    QMAKE_CXXFLAGS += -fvisibility=hidden
+    QMAKE_CFLAGS += -fvisibility=hidden
+
+    TARGET_EXT = .so
+}
 
 INCLUDEPATH += \
     $$V8_CHECKOUT_PATH \
     $$V8_CHECKOUT_PATH/include
 
 #################### WINDOWS #####################
-win32 {
-    DEFINES += \
-    WIN32
+DESKTOPEDITOR_PATH = ..
+include(../Qt_build/graphics/project/graphics_fonts.pri)
 
-    LIBS += -lwinmm
-    LIBS += -ladvapi32
-}
+LIB_XML_PRI_PATH = ../xml
+include(../xml/build/qt/libxml2.pri)
 
 win32:contains(QMAKE_TARGET.arch, x86_64):{
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../Qt_build/graphics/Debug/debug -lgraphics
-
-    LIBS += -L../../../SDK/lib/win_64/DEBUG -llibxml2
-
-    LIBS += -L$$V8_BUILD_LIBRARY_PATH_WINDOWS/win_64/DEBUG -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
-    LIBS += -L$$V8_BUILD_LIBRARY_PATH_WINDOWS/win_64/DEBUG -licui18n -licuuc
+    LIBS += -L$$V8_CHECKOUT_PATH/build/Debug/lib -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
+    LIBS += -L$$V8_CHECKOUT_PATH/build/Debug/lib -licui18n -licuuc
 } else {
-    LIBS += -L../../Qt_build/graphics/Release/release -lgraphics
-
-    LIBS += -L../../../SDK/lib/win_64 -llibxml2
-
-    LIBS += -L$$V8_BUILD_LIBRARY_PATH_WINDOWS/win_64 -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
-    LIBS += -L$$V8_BUILD_LIBRARY_PATH_WINDOWS/win_64 -licui18n -licuuc
+    LIBS += -L$$V8_CHECKOUT_PATH/build/Release/lib -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
+    LIBS += -L$$V8_CHECKOUT_PATH/build/Release/lib -licui18n -licuuc
 }
 
     message(windows64)
@@ -61,19 +93,11 @@ CONFIG(debug, debug|release) {
 win32:!contains(QMAKE_TARGET.arch, x86_64):{
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../Qt_build/graphics/Debug/debug -lgraphics
-
-    LIBS += -L../../../SDK/lib/win_32/DEBUG -llibxml2
-
-    LIBS += -L$$V8_BUILD_LIBRARY_PATH_WINDOWS/win_32/DEBUG -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
-    LIBS += -L$$V8_BUILD_LIBRARY_PATH_WINDOWS/win_32/DEBUG -licui18n -licuuc
+    LIBS += -L$$V8_CHECKOUT_PATH/build/Debug/lib -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
+    LIBS += -L$$V8_CHECKOUT_PATH/build/Debug/lib -licui18n -licuuc
 } else {
-    LIBS += -L../../Qt_build/graphics/Release/release -lgraphics
-
-    LIBS += -L../../../SDK/lib/win_32 -llibxml2
-
-    LIBS += -L$$V8_BUILD_LIBRARY_PATH_WINDOWS/win_32 -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
-    LIBS += -L$$V8_BUILD_LIBRARY_PATH_WINDOWS/win_32 -licui18n -licuuc
+    LIBS += -L$$V8_CHECKOUT_PATH/build/Release/lib -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
+    LIBS += -L$$V8_CHECKOUT_PATH/build/Release/lib -licui18n -licuuc
 }
 
     message(windows32)
@@ -90,9 +114,6 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
 
     LIBS += -L$$V8_CHECKOUT_PATH/out/native/obj.target/tools/gyp -lv8_base -lv8_libbase -lv8_libplatform -lv8_nosnapshot -lv8_snapshot
     LIBS += -L$$V8_CHECKOUT_PATH/out/native/obj.target/third_party/icu -licui18n -licuuc -licudata
-
-    LIBS += -L../../Qt_build/graphics/Release -lgraphics
-    LIBS += -L../../../Common/DocxFormat/Source/XML/libxml2/linux_build/Release -llibxml2
 }
 
 linux-g++:contains(QMAKE_HOST.arch, x86_64):{
@@ -122,17 +143,7 @@ mac {
 }
 ##################################################
 
-INCLUDEPATH += \
-            ../agg-2.4/include \
-            ../freetype-2.5.2/include \
-            ../../../Common/DocxFormat/Source/XML/libxml2/XML/include
-
-INCLUDEPATH += $$QT_SETUP_INCLUDES_PATH
-
-SOURCES +=  doctrenderer.cpp \
-            ../../../Common/DocxFormat/Source/XML/libxml2/libxml2.cpp \
-            ../../../Common/DocxFormat/Source/XML/stringcommon.cpp \
-            ../../../Common/DocxFormat/Source/Base/unicode_util.cpp
+SOURCES +=  doctrenderer.cpp
 
 HEADERS += doctrenderer.h \
     memorystream.h \

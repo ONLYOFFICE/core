@@ -513,7 +513,16 @@ namespace XmlUtils
 		{
 			std::wstring sText;
 			if (oTemp.GetTextIfExist(sText))
-				nRes = std::stoi(str);
+            {
+                try
+                {
+                    nRes = std::stoi(sText);
+                }
+                catch (...)
+                {
+                    nRes = nDef;
+                }
+            }
 		}
 		return nRes;
 	}

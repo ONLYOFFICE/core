@@ -1,5 +1,10 @@
 #include "../doctrenderer.h"
 
+#ifdef USE_PDF_RENDERER
+#include "../../../PdfWriter/PdfRenderer.h"
+#include "../../fontengine/ApplicationFonts.h"
+#endif
+
 int main(int argc, char *argv[])
 {
 #if 1
@@ -47,10 +52,25 @@ int main(int argc, char *argv[])
 </Settings>";
 #endif
 
+#if 1
+
     NSDoctRenderer::CDoctrenderer oRenderer;
 
     std::wstring sError;
     oRenderer.Execute(strXml, sError);
+
+#endif
+
+#ifdef USE_PDF_RENDERER
+
+    CApplicationFonts oFonts;
+    oFonts.Initialize();
+    CPdfRenderer oPDF(&oFonts);
+    oPDF.SetTempFolder(L"D:\\test_pdf");
+
+    oPDF.OnlineWordToPdfFromBinary(L"D:\\test_pdf\\pdf.bin", L"D:\\test_pdf\\123.pdf");
+
+#endif
 
     return 0;
 }

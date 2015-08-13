@@ -252,7 +252,12 @@ namespace NSOnlineOfficeBinToPdf
 				else
 				{
 					if (wsHtmlPlace.length() > 0)
-						wsTempString = wsHtmlPlace + L"/" + wsTempString;
+                    {
+                        if (0 == wsTempString.find(L"media") || NSFile::CFileBinary::Exists(wsTempString = wsHtmlPlace + L"/" + wsTempString))
+                            wsTempString = wsHtmlPlace + L"/" + wsTempString;
+                        else
+                            wsTempString = wsHtmlPlace + L"/media/" + wsTempString;
+                    }
 
 					std::wstring wsSvgExt(L".svg");
 					if (0 == wsTempString.compare(wsTempString.length() - wsSvgExt.length(), std::wstring::npos, wsSvgExt))
@@ -270,6 +275,7 @@ namespace NSOnlineOfficeBinToPdf
 
 			if (0 == wsTempString.find(L"file:///"))
 			{
+                // TODO: под linux код неправильный
 				NSStringExt::Replace(wsTempString, L"file:///", L"");
 				NSStringExt::Replace(wsTempString, L"\\", L"/");
 			}

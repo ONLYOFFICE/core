@@ -23,25 +23,6 @@ BiffStructurePtr SheetExtOptional::clone()
 }
 
 
-//void SheetExtOptional::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//
-//	own_tag->setAttribute(L"icvPlain12", icvPlain12);
-//	own_tag->setAttribute(L"fCondFmtCalc", fCondFmtCalc);
-//	own_tag->setAttribute(L"fNotPublished", fNotPublished);
-//	color.toXML(own_tag);
-//}
-//
-//
-//const bool SheetExtOptional::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### SheetExtOptional record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! SheetExtOptional record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
-
-
 void SheetExtOptional::store(CFRecord& record)
 {
 #pragma message("####################### SheetExtOptional record has no BiffStructure::store() implemented")

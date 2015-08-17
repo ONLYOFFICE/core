@@ -22,35 +22,6 @@ BiffStructurePtr CFColor::clone()
 	return BiffStructurePtr(new CFColor(*this));
 }
 
-//
-//void CFColor::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//
-//	own_tag->setAttribute(L"xclrType", xclrType.type);
-//	switch(xclrType.type)
-//	{
-//		case XColorType::XCLRINDEXED:
-//			own_tag->setAttribute(L"xclrValue", icv);
-//			break;
-//		case XColorType::XCLRRGB:
-//			rgb.toXML(own_tag);
-//			break;
-//		case XColorType::XCLRTHEMED:
-//			own_tag->setAttribute(L"xclrValue", theme);
-//			break;
-//	}
-//	own_tag->setAttribute(L"numTint", numTint);
-//}
-//
-//
-//const bool CFColor::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### CFColor record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! CFColor record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
-
 
 void CFColor::store(CFRecord& record)
 {

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/ChartParsedFormula.h>
+#include "../../Logic/Biff_structures/ChartParsedFormula.h"
 
 namespace XLS
 {;

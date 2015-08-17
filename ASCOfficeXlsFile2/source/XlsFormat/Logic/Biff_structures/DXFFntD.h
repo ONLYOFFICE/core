@@ -1,9 +1,9 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/Stxp.h>
-#include <Logic/Biff_structures/BiffString.h>
-#include <Logic/Biff_structures/Boolean.h>
+#include "Stxp.h"
+#include "BiffString.h"
+#include "Boolean.h"
 
 namespace XLS
 {;

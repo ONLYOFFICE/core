@@ -11,6 +11,6 @@ namespace Log
 	void warning(const std::wstring& message);
 	void error(const std::string& message);
 
-}; // namespace Log
+}
 
 

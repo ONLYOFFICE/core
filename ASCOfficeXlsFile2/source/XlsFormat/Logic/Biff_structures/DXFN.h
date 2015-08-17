@@ -1,12 +1,12 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/DXFNum.h>
-#include <Logic/Biff_structures/DXFFntD.h>
-#include <Logic/Biff_structures/DXFALC.h>
-#include <Logic/Biff_structures/DXFBdr.h>
-#include <Logic/Biff_structures/DXFPat.h>
-#include <Logic/Biff_structures/DXFProt.h>
+#include "DXFNum.h"
+#include "DXFFntD.h"
+#include "DXFALC.h"
+#include "DXFBdr.h"
+#include "DXFPat.h"
+#include "DXFProt.h"
 
 namespace XLS
 {;

@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/Ptg.h>
+#include "Ptg.h"
 
 namespace XLS
 {;

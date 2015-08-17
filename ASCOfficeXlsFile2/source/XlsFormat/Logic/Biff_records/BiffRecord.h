@@ -1,8 +1,8 @@
 #pragma once
 
-#include <Logic/BaseObject.h> 
-#include <Logic/Biff_structures/BitMarkedStructs.h> 
-#include <Logic/BinProcessor.h>
+#include "../BaseObject.h"
+#include "../Biff_structures/BitMarkedStructs.h"
+#include "../BinProcessor.h"
 
 namespace XLS
 {;

@@ -5,8 +5,8 @@
 #include "BinSmartPointers.h"
 #include "../Logic/GlobalWorkbookInfo.h"
 
-#include <common.h>
-#include <Auxiliary/HelpFunc.h>
+#include "../../Common/common.h"
+#include "../Auxiliary/HelpFunc.h"
 
 
 namespace XLS
@@ -167,47 +167,17 @@ CFRecord& operator>>(CFRecord& record, std::vector<T>& vec)
 }
 
 
-// moved out of the class to be higher in priority than the universal operator
+
 template<class T>
-CFRecord& operator<<(CFRecord& record, std::vector<T>& vec)
-{
-	for(std::vector<T>::iterator it = vec.begin(), itEnd = vec.end(); it != itEnd; ++it)
-	{
-		record << *it;
-	}
-	return record;
-}
+CFRecord& operator<<(CFRecord& record, std::vector<T>& vec);
 
-
-// moved out of the class to be higher in priority than the universal operator
 template<class T>
-CFRecord& operator>>(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str)
-{
-	str.clear();
-	T symbol;
-	do 
-	{
-		record.loadAnyData(symbol);
-		str += symbol;
-	} while (symbol);
-	return record; 
-}
+CFRecord& operator>>(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str);
 
-
-// moved out of the class to be higher in priority than the universal operator
 template<class T>
-CFRecord& operator<<(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str)
-{
-	for(std::basic_string<T, std::char_traits<T>, std::allocator<T> >::iterator it = str.begin(), itEnd = str.end(); it != itEnd; ++it)
-	{
-		record << *it;
-	}
-	record.storeAnyData(static_cast<T>(0));
-	return record; 
-}
+CFRecord& operator<<(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str);
 
 
-// moved out of the class to be higher in priority than the universal operator
 template<class T>
 CFRecord& operator>>(CFRecord & record, _CP_OPT(T)& val)
 {

@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/DXFN.h>
-#include <Logic/Biff_structures/CFParsedFormulaNoCCE.h>
+#include "../../Logic/Biff_structures/DXFN.h"
+#include "../../Logic/Biff_structures/CFParsedFormulaNoCCE.h"
 
 namespace XLS
 {;

@@ -14,7 +14,6 @@ class FontIndex : public BiffAttributeSimple<unsigned short>
 public:
 	BiffStructurePtr clone();
 
-	operator const _variant_t () const;
 	const unsigned short	getValue() const;
 	void					setValue(unsigned short val);
 };

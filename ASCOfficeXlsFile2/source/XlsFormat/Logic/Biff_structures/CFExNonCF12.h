@@ -1,11 +1,11 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/DXFN12.h>
-#include <Logic/Biff_structures/CFExTemplateParams.h>
+#include "DXFN12.h"
+#include "CFExTemplateParams.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

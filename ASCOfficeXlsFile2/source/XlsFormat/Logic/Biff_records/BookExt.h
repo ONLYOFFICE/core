@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/BookExt_Conditional11.h>
-#include <Logic/Biff_structures/BookExt_Conditional12.h>
+#include "../../Logic/Biff_structures/BookExt_Conditional11.h"
+#include "../../Logic/Biff_structures/BookExt_Conditional12.h"
 
 namespace XLS
 {;

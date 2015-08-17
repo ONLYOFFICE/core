@@ -22,25 +22,6 @@ BiffStructurePtr FactoidData::clone()
 	return BiffStructurePtr(new FactoidData(*this));
 }
 
-
-//void FactoidData::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//
-//	own_tag->setAttribute(L"fDelete", fDelete);
-//	own_tag->setAttribute(L"fXMLBased", fXMLBased);
-//	propertyBag.toXML(own_tag);
-//}
-
-
-//const bool FactoidData::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### FactoidData record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! FactoidData record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
-
-
 void FactoidData::store(CFRecord& record)
 {
 #pragma message("####################### FactoidData record has no BiffStructure::store() implemented")

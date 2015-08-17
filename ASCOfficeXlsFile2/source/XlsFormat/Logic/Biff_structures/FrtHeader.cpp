@@ -1,6 +1,6 @@
 
 #include "FrtHeader.h"
-#include <Binary/CFRecord.h>
+#include "../../Binary/CFRecord.h"
 
 namespace XLS
 {;

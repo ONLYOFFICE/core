@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/DXFN.h>
-#include <Logic/Biff_structures/XFExtNoFRT.h>
+#include "DXFN.h"
+#include "XFExtNoFRT.h"
 
 namespace XLS
 {;

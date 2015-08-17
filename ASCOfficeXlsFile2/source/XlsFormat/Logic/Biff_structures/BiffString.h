@@ -1,10 +1,9 @@
 #pragma once
 
 #include "BiffAttribute.h"
-#include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 typedef enum
 {
@@ -31,8 +30,7 @@ public:
 	BiffString(const std::wstring & str);
 	~BiffString();
 
-	operator const _variant_t () const;
-	
+
 	operator const std::wstring  () const;
 
 	std::wstring & value() {return str_;}
@@ -76,21 +74,21 @@ template<class cchType, AW_DETERMINATION det_id, CCH_SOURCE cch_where>
 class XLUnicodeString_T : public BiffString
 {
 public:
-	XLUnicodeString_T() {};
+    XLUnicodeString_T() {}
 	//XLUnicodeString_T(const XLUnicodeString_T& other) : struct_size(other.struct_size), str_(other.str_), cch_(other.cch_) {};
-	XLUnicodeString_T(const size_t size) : BiffString(size) {};
-	XLUnicodeString_T(const std::wstring & str) : BiffString(str) {};
+    XLUnicodeString_T(const size_t size) : BiffString(size) {}
+    XLUnicodeString_T(const std::wstring & str) : BiffString(str) {}
 	XLUnicodeString_T operator=(const std::wstring & str) 
 	{
 		std::wstring  temp(str);
 		std::swap(str_, temp);
 		cch_ = str.length();
 		return *this;
-	};
+    }
 	const size_t getStructSizeWouldWritten() const // Number of unsigned chars that would be written
 	{
 		return recalculateStructSize();
-	};
+    }
 
 private:
 	const size_t recalculateStructSize() const

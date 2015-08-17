@@ -1,11 +1,11 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/FrtRefHeader.h>
-#include <Logic/Biff_structures/DXFN12.h>
-#include <Logic/Biff_structures/CFParsedFormulaNoCCE.h>
-#include <Logic/Biff_structures/CFParsedFormula.h>
-#include <Logic/Biff_structures/CFExTemplateParams.h>
+#include "../../Logic/Biff_structures/FrtRefHeader.h"
+#include "../../Logic/Biff_structures/DXFN12.h"
+#include "../../Logic/Biff_structures/CFParsedFormulaNoCCE.h"
+#include "../../Logic/Biff_structures/CFParsedFormula.h"
+#include "../../Logic/Biff_structures/CFExTemplateParams.h"
 
 namespace XLS
 {;

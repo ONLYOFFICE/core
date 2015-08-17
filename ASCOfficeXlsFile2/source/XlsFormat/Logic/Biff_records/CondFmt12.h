@@ -1,11 +1,11 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/CondFmtStructure.h>
-#include <Logic/Biff_structures/FrtRefHeaderU.h>
+#include "../../Logic/Biff_structures/CondFmtStructure.h"
+#include "../../Logic/Biff_structures/FrtRefHeaderU.h"
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of CondFmt12 record in BIFF8
@@ -29,11 +29,6 @@ public:
 //-----------------------------
 	FrtRefHeaderU frtRefHeaderU;
 	CondFmtStructure mainCF;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_COMPLEX(frtRefHeaderU)
-		//BO_ATTRIB_MARKUP_COMPLEX(mainCF)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

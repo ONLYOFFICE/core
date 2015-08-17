@@ -1,6 +1,6 @@
 
 #include "CRN.h"
-#include <Logic/Biff_structures/SerAr.h>
+#include "../../Logic/Biff_structures/SerAr.h"
 
 namespace XLS
 {;

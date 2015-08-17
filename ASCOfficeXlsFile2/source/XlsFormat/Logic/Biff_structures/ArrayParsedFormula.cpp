@@ -1,10 +1,9 @@
 
 #include "ArrayParsedFormula.h"
-#include <Binary/CFRecord.h>
-//#include <Exception/UnexpectedProgramPath.h>
+#include "../../Binary/CFRecord.h"
 
 namespace XLS
-{;
+{
 
 ArrayParsedFormula::ArrayParsedFormula(const bool is_part_of_a_revision, const CellRef& cell_base_ref)
 :	is_part_of_a_revision_(is_part_of_a_revision),

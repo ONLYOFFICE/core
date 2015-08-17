@@ -12,22 +12,6 @@ BiffStructurePtr ExternDdeLinkNoOper::clone()
 }
 
 
-//void ExternDdeLinkNoOper::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//
-//	own_tag->setAttribute(L"linkName", linkName);
-//}
-//
-//
-//const bool ExternDdeLinkNoOper::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### ExternDdeLinkNoOper record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! ExternDdeLinkNoOper record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
-
-
 void ExternDdeLinkNoOper::store(CFRecord& record)
 {
 #pragma message("####################### ExternDdeLinkNoOper record has no BiffStructure::store() implemented")

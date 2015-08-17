@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/Rgce.h>
-#include <Logic/Biff_structures/RgbExtra.h>
+#include "Rgce.h"
+#include "RgbExtra.h"
 
 namespace XLS
 {;

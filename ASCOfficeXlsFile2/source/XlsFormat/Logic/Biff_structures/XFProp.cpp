@@ -17,26 +17,6 @@ BiffStructurePtr XFProp::clone()
 	return BiffStructurePtr(new XFProp(*this));
 }
 
-//
-//void XFProp::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//	own_tag->setAttribute(L"xfPropType", xfPropType);
-//	own_tag->setAttribute(L"cb", cb);
-//	if(xfPropDataBlob) 
-//	{
-//		xfPropDataBlob->toXML(own_tag);
-//	}
-//}
-//
-//
-//const bool XFProp::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### XFProp record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! XFProp record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
-
 
 void XFProp::store(CFRecord& record)
 {

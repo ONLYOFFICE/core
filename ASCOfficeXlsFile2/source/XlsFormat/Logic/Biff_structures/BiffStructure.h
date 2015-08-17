@@ -6,15 +6,14 @@
 
 #include "../XlsElementsType.h"
 
-#include <Auxiliary/BetterVariantT.h>
-#include <Logging/Log.h>
+#include "../../Logging/Log.h"
+
+#include "../../Binary/CFRecord.h"
+
 
 
 namespace XLS
-{;
-
-class CFRecord;
-
+{
 
 class BiffStructure_NoVtbl
 {
@@ -41,19 +40,19 @@ public:
 
 	virtual int serialize(std::wostream & _stream)
 	{
-		std::wstringstream s;
-		s << std::wstring(L"This element - ") << getClassName() << std::wstring(L"- not serialize");
+        std::stringstream s;
+        s << std::string("This element - ") << getClassName() << std::string("- not serialize");
 		Log::warning(s.str());
 		return 0;
 	}
 
-	virtual const std::wstring & getClassName() const = 0;   // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter
+    virtual const std::string & getClassName() const = 0;   // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter
 
 };
 
 #define BASE_STRUCTURE_DEFINE_CLASS_NAME(class_name)\
 	public: \
-		const std::wstring & getClassName() const { static std::wstring  str(L# class_name); return str; };\
+        const std::string & getClassName() const { static std::string  str(#class_name); return str;};\
 		virtual XLS::ElementType get_type() { return type; }
 	
 

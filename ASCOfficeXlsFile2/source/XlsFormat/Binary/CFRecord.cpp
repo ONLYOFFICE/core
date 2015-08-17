@@ -2,8 +2,46 @@
 #include "CFRecord.h"
 #include "CFStream.h"
 
+#ifdef __linux__
+    #include <string.h>
+#endif
+
 namespace XLS
 {;
+
+ template<class T>
+ CFRecord& operator<<(CFRecord& record, std::vector<T>& vec)
+ {
+     for(typename std::vector<T>::iterator it = vec.begin(); it != vec.end(); ++it)
+     {
+         record << *it;
+     }
+     return record;
+ }
+
+  template<class T>
+  CFRecord& operator>>(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str)
+  {
+      str.clear();
+      T symbol;
+      do
+      {
+          record.loadAnyData(symbol);
+          str += symbol;
+      } while (symbol);
+      return record;
+  }
+
+ template<class T>
+ CFRecord& operator<<(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str)
+ {
+     for(typename std::basic_string<T, std::char_traits<T>, std::allocator<T> >::iterator it = str.begin(); it != str.end(); ++it)
+     {
+         record << *it;
+     }
+     record.storeAnyData(static_cast<T>(0));
+     return record;
+ }
 
 char CFRecord::intData[MAX_RECORD_SIZE];
 
@@ -80,7 +118,7 @@ void CFRecord::commitData()
 			throw;// EXCEPT::RT::WrongBiffRecord("Too much data written to CFRecord.", getTypeString());
 		}
 		data_ = new char[size_];
-		memcpy_s(data_, size_, intData, size_);
+        memcpy(data_, intData, size_);
 	}
 }
 
@@ -330,8 +368,12 @@ void CFRecord::registerDelayedFilePointerAndOffsetSource(const unsigned int offs
 void CFRecord::storeLongData(const char* buf, const size_t size)
 {
 	checkFitWrite(size);
-	memcpy_s(&intData[size_], getMaxRecordSize() - size_, buf, size);
-	size_ += size;
+
+    if (getMaxRecordSize() - size_ >= size)
+    {
+        memcpy(&intData[size_], buf, size);
+        size_ += size;
+    }
 }
 
 

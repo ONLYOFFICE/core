@@ -12,23 +12,6 @@ XLS::BiffStructurePtr Property::clone()
 }
 
 
-//void Property::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//
-//	own_tag->setAttribute(L"keyIndex", keyIndex);
-//	own_tag->setAttribute(L"valueIndex", valueIndex);
-//}
-//
-//
-//const bool Property::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### Property record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! Property record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
-
-
 void Property::store(XLS::CFRecord& record)
 {
 #pragma message("####################### Property record has no BiffStructure::store() implemented")

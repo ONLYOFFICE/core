@@ -694,7 +694,7 @@ namespace DocFileFormat
 
 					case gtextUNICODE:
 					{
-						std::wstring text = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op-2)/2);
+						std::wstring text = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
 
 						text = FormatUtils::XmlEncode(text);
 						text = ReplaceString(text, _T("\n"), _T("&#xA;"));
@@ -703,7 +703,7 @@ namespace DocFileFormat
 
 					case gtextFont:
 					{
-						std::wstring font = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op-8)/2);
+						std::wstring font = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)iter->opComplex, (iter->op)/2);
 						font = std::wstring(_T("\"")) + font + std::wstring(_T("\""));
 						appendStyleProperty(&m_textPathStyle, L"font-family", font);
 					}break;

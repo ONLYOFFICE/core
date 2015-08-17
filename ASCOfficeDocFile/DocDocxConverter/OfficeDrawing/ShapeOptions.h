@@ -595,7 +595,18 @@ namespace DocFileFormat
 			for (unsigned int i = 0; i < instance; ++i)
 			{
 				if (Options[i].fComplex)
-					Options[i].opComplex = Reader->ReadBytes( ( (int)Options[i].op + 6 ), true );
+				{
+					int read_size =  (int)Options[i].op + 6 ; //???? 	
+					//todooo !!!! проверить все остальные !! тут размер в зависимости от типа Complex!!!		
+					switch(Options[i].pid)
+					{
+					case PropertyId::gtextUNICODE:
+					case PropertyId::gtextFont:
+						read_size =  (int)Options[i].op;
+						break;
+					}
+					Options[i].opComplex = Reader->ReadBytes( read_size, true );
+				}
 
 				OptionsByID.insert(pair<PropertyId, OptionEntry>(Options[i].pid, Options[i]));
 			}

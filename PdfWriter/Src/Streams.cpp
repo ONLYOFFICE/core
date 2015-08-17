@@ -108,7 +108,7 @@ namespace PdfWriter
 	void           CStream::WriteInt(int nValue)
 	{
 		//int nLen = 0;
-		//const char* sString = NSFastIntToString::GetString(abs(nValue), nLen);
+		//const char* sString = NSFastIntToString::GetString(fabs(nValue), nLen);
 		//if (sString)
 		//{
 		//	if (nValue < 0)
@@ -148,10 +148,10 @@ namespace PdfWriter
 	void           CStream::WriteReal(double dValue)
 	{
 		//int nIVal = (int)dValue;
-		//int nFVal = (int)(abs(dValue - nIVal) * 10000);
+		//int nFVal = (int)(fabs(dValue - nIVal) * 10000);
 
 		//int nLen = 0;
-		//const char* sString = NSFastIntToString::GetString(abs(nIVal), nLen);
+		//const char* sString = NSFastIntToString::GetString(fabs(nIVal), nLen);
 		//if (nIVal < 0)
 		//	WriteChar('-');
 
@@ -172,10 +172,10 @@ namespace PdfWriter
 		//char pBuffer[32];
 		//int nResLen = 0;
 		//int nIVal = (int)dValue;
-		//int nFVal = (int)(abs(dValue - nIVal) * 10000);
+		//int nFVal = (int)(fabs(dValue - nIVal) * 10000);
 
 		//int nLen = 0;
-		//const char* sString = NSFastIntToString::GetString(abs(nIVal), nLen);
+		//const char* sString = NSFastIntToString::GetString(fabs(nIVal), nLen);
 		//if (nIVal < 0)
 		//	pBuffer[nResLen++] = '-';
 

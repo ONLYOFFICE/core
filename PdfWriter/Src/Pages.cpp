@@ -1299,7 +1299,7 @@ namespace PdfWriter
 		}
 		else
 		{
-			if (abs(dY - m_dStartY) > 0.001 || abs(dX - m_dCurX) > 0.01)
+			if (fabs(dY - m_dStartY) > 0.001 || fabs(dX - m_dCurX) > 0.01)
 				return false;
 
 			m_pText[m_nIndex * 2 + 0] = pCodes[0];
@@ -1338,7 +1338,7 @@ namespace PdfWriter
 			return true;
 		}
 
-		if (abs(dY - m_dY) > 0.001)
+		if (fabs(dY - m_dY) > 0.001)
 			return false;
 
 		CTextWord* pLastText = m_vWords.at(m_vWords.size() - 1);

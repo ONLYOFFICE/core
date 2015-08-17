@@ -303,7 +303,7 @@ void CPdfRenderer::CCommandManager::Flush()
 				if (!pText)
 					continue;
 
-				if (pTextFont != pText->GetFont() || abs(dTextSize - pText->GetSize()) > 0.001)
+				if (pTextFont != pText->GetFont() || fabs(dTextSize - pText->GetSize()) > 0.001)
 				{
 					oTextLine.Flush(pPage);
 					pTextFont = pText->GetFont();
@@ -326,7 +326,7 @@ void CPdfRenderer::CCommandManager::Flush()
 					pPage->SetFillAlpha(nTextAlpha);					
 				}
 
-				if (abs(dTextSpace - pText->GetSpace()) > 0.001)
+				if (fabs(dTextSpace - pText->GetSpace()) > 0.001)
 				{
 					oTextLine.Flush(pPage);
 					dTextSpace = pText->GetSpace();
@@ -340,7 +340,7 @@ void CPdfRenderer::CCommandManager::Flush()
 					pPage->SetTextRenderingMode(eMode);
 				}
 
-				if (abs(dHorScaling - pText->GetHorScaling()) > 0.001)
+				if (fabs(dHorScaling - pText->GetHorScaling()) > 0.001)
 				{
 					oTextLine.Flush(pPage);
 					dHorScaling = pText->GetHorScaling();
@@ -413,7 +413,7 @@ CPdfRenderer::CPdfRenderer(CApplicationFonts* pAppFonts) : m_oCommandManager(thi
 		return;
 	}
 
-	m_pDocument->SetCompressionMode(COMP_ALL);
+    m_pDocument->SetCompressionMode(COMP_ALL);
 
 	m_bValid      = true;
 	m_dPageHeight = 297;
@@ -819,7 +819,7 @@ HRESULT CPdfRenderer::get_FontSize(double* dSize)
 }
 HRESULT CPdfRenderer::put_FontSize(const double& dSize)
 {
-	if (abs(dSize - m_oFont.GetSize()) > 0.001)
+	if (fabs(dSize - m_oFont.GetSize()) > 0.001)
 	{
 		m_oFont.SetSize(dSize);
 		m_bNeedUpdateTextSize = true;
@@ -857,7 +857,7 @@ HRESULT CPdfRenderer::get_FontCharSpace(double* dSpace)
 }
 HRESULT CPdfRenderer::put_FontCharSpace(const double& dSpace)
 {
-	if (abs(dSpace - m_oFont.GetCharSpace()) > 0.001)
+	if (fabs(dSpace - m_oFont.GetCharSpace()) > 0.001)
 	{
 		m_oFont.SetCharSpace(dSpace);
 		m_bNeedUpdateTextCharSpace = true;
@@ -933,7 +933,7 @@ HRESULT CPdfRenderer::CommandDrawText(const std::wstring& wsUnicodeText, const d
 		pText->SetFont(m_pFont);
 		pText->SetSize(dFontSize);
 		pText->SetMode(textrenderingmode_Invisible);
-		if (abs(dStringWidth) > 0.001)
+		if (fabs(dStringWidth) > 0.001)
 			pText->SetHorScaling(dResultWidth / dStringWidth * 100);
 
 		return S_OK;

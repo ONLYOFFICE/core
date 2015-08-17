@@ -623,7 +623,6 @@ namespace NSOnlineOfficeBinToPdf
 				{
 					if (bIsPathOpened)
 					{
-						pPdf->PathCommandEnd();
 						pPdf->EndCommand(4);
 						bIsPathOpened = false;
 					}

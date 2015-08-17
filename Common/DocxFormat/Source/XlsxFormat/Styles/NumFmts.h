@@ -41,8 +41,13 @@ namespace OOX
 				}
 				if(m_oFormatCode.IsInit())
 				{
-                    CString sVal;sVal.Format(_T(" formatCode=\"%ls\""), XmlUtils::EncodeXmlString(m_oFormatCode.get()));
-					writer.WriteString(sVal);
+                    //CString sVal;sVal.Format(_T(" formatCode=\"%ls\""), XmlUtils::EncodeXmlString(m_oFormatCode.get()));
+                    
+                    CString sVal(_T(" formatCode=\""));
+                    sVal += XmlUtils::EncodeXmlString(m_oFormatCode.get());
+                    sVal += CString(_T("\""));
+                    
+                    writer.WriteString(sVal);
 				}
 				if(m_oSourceLinked.IsInit())
 				{

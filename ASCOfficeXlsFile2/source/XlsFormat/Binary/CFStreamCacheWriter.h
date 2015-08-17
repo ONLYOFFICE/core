@@ -1,10 +1,10 @@
 #pragma once
 
 #include "BinSmartPointers.h"
-#include "../Logic/GlobalWorkbookInfo.h"
+#include <Logic/GlobalWorkbookInfo.h>
 
 namespace XLS
-{;
+{
 
 // The purpose of the writer is to avoid seeking back through IStream when, for example, 
 // we have write an offset of a record that would appear in processing much later.

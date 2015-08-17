@@ -2,7 +2,7 @@
 #include "SerAuxTrend.h"
 
 namespace XLS
-{;
+{
 
 SerAuxTrend::SerAuxTrend()
 :	numIntercept(0x0100)

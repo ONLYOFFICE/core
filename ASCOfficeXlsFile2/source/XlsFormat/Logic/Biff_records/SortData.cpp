@@ -2,7 +2,7 @@
 #include "SortData.h"
 
 namespace XLS
-{;
+{
 
 SortData::SortData()
 {

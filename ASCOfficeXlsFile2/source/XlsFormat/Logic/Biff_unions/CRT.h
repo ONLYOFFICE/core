@@ -3,7 +3,7 @@
 #include <Logic/CompositeObject.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of CRT union of records 

@@ -3,7 +3,7 @@
 #include "BiffRecord.h"
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of AxisParent record in BIFF8

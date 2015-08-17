@@ -2,7 +2,7 @@
 #include "SupBook.h"
 
 namespace XLS
-{;
+{
 
 SupBook::SupBook()
 {

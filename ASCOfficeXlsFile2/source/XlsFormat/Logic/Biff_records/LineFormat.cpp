@@ -2,7 +2,7 @@
 #include "LineFormat.h"
 
 namespace XLS
-{;
+{
 
 LineFormat::LineFormat()
 {

@@ -8,7 +8,7 @@
 #include <simple_xml_writer.h>
 
 namespace XLS
-{;
+{
 
 extern int cellStyleXfs_count;
 // This class is made a deriver of CompositeObject intentionally.
@@ -54,7 +54,9 @@ public:
 		}	
 		
 		//------------------------------------------------------------------------------------------------------------------
-		int count_cells = proc.repeated(CELL(shared_formulas_locations_ref_), 0, 0);
+        CELL cell(shared_formulas_locations_ref_);
+
+        int count_cells = proc.repeated(cell, 0, 0);
 
 
 		count = proc.repeated<DBCell>(0, 0); // OpenOffice Calc stored files workaround (DBCell must be present at least once according to [MS-XLS])
@@ -241,12 +243,14 @@ BaseObjectPtr CELLTABLE::clone()
 // CELLTABLE = 1*(1*Row *CELL 1*DBCell) *EntExU2
 const bool CELLTABLE::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory(CELL_GROUP(shared_formulas_locations_ref_)))
+    CELL_GROUP cell_group(shared_formulas_locations_ref_);
+
+    if(!proc.mandatory(cell_group))
 	{
 		return false;
 	}
 	
-	m_count_CELL_GROUP = proc.repeated(CELL_GROUP(shared_formulas_locations_ref_), 0, 0);
+    m_count_CELL_GROUP = proc.repeated(cell_group, 0, 0);
 
 	proc.repeated<EntExU2>(0, 0);
 

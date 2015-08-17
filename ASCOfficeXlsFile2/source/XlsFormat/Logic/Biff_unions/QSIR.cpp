@@ -4,7 +4,7 @@
 #include <Logic/Biff_records/Qsif.h>
 
 namespace XLS
-{;
+{
 
 
 QSIR::QSIR()

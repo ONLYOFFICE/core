@@ -8,7 +8,7 @@
 #include <Logic/Biff_records/MDXKPI.h>
 
 namespace XLS
-{;
+{
 
 
 METADATA::METADATA()

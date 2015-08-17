@@ -10,7 +10,7 @@
 #include <Logic/Biff_unions/SHAPEPROPS.h>
 
 namespace XLS
-{;
+{
 
 
 FRAME::FRAME()

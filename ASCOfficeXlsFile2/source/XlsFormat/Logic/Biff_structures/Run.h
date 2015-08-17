@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/FormatRun.h>
 
 namespace XLS
-{;
+{
 
 class Run: public BiffStructure
 {	

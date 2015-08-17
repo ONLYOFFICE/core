@@ -7,7 +7,7 @@
 #include <Logic/Biff_records/Prot4RevPass.h>
 
 namespace XLS
-{;
+{
 
 
 PROTECTION::PROTECTION()

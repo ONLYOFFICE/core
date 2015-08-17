@@ -2,7 +2,7 @@
 #include "RichTextStream.h"
 
 namespace XLS
-{;
+{
 
 RichTextStream::RichTextStream()
 {

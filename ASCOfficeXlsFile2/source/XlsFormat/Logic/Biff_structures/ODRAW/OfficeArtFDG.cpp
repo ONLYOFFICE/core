@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace ODRAW
-{;
+{
 
 OfficeArtFDG::OfficeArtFDG()
 :	OfficeArtRecord(0, FDG)

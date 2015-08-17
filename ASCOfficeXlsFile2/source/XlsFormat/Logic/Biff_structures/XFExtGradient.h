@@ -5,7 +5,7 @@
 #include "GradStop.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

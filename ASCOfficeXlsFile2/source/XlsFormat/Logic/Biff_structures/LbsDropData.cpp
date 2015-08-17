@@ -4,7 +4,7 @@
 //#include <Exception/AttributeDataWrong.h>
 
 namespace XLS
-{;
+{
 
 
 BiffStructurePtr LbsDropData::clone()

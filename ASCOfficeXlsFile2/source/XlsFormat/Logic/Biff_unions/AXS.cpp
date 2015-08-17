@@ -12,7 +12,7 @@
 #include <Logic/Biff_records/ContinueFrt12.h>
 
 namespace XLS
-{;
+{
 
 
 AXS::AXS()

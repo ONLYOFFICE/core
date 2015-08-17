@@ -3,7 +3,7 @@
 #include <Logic/CompositeObject.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of SXADDLSXFILTER12 union of records 

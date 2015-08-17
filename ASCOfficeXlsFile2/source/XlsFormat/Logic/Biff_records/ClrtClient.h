@@ -4,7 +4,7 @@
 #include "Palette.h"
 
 namespace XLS
-{;
+{
 
 // Logical representation of ClrtClient record in BIFF8
 class ClrtClient: public Palette // Absolutely the same as 'Palette'

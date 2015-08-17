@@ -2,7 +2,7 @@
 #include "DConn.h"
 
 namespace XLS
-{;
+{
 
 DConn::DConn()
 {

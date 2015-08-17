@@ -3,7 +3,7 @@
 #include "BiffRecord.h"
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of AttachedLabel record in BIFF8

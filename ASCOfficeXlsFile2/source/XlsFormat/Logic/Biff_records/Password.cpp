@@ -2,7 +2,7 @@
 #include "Password.h"
 
 namespace XLS
-{;
+{
 
 Password::Password()
 {

@@ -3,7 +3,7 @@
 #include "BiffRecordContinued.h"
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of BkHim record in BIFF8

@@ -2,7 +2,7 @@
 #include "XFCRC.h"
 
 namespace XLS
-{;
+{
 
 XFCRC::XFCRC()
 {

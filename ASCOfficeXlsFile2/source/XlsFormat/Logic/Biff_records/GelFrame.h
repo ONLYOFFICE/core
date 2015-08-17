@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/ODRAW/OfficeArtTertiaryFOPT.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of GelFrame record in BIFF8

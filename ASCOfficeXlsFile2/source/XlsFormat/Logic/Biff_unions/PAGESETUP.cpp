@@ -16,7 +16,7 @@
 #include <simple_xml_writer.h>
 
 namespace XLS
-{;
+{
 
 
 PAGESETUP::PAGESETUP()
@@ -77,7 +77,8 @@ const bool PAGESETUP::loadContent(BinProcessor& proc)
 	
 	proc.optional<Parenthesis_PAGESETUP_1>();
 
-	proc.optional(Pls(proc.getParent())); // OpenOffice Calc stored files workaround ?????????
+    Pls pls(proc.getParent());
+    proc.optional(pls); // OpenOffice Calc stored files workaround ?????????
 	
 	if (proc.mandatory<Setup>())
 	{

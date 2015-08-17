@@ -2,7 +2,7 @@
 #include "PieFormat.h"
 
 namespace XLS
-{;
+{
 
 PieFormat::PieFormat()
 {

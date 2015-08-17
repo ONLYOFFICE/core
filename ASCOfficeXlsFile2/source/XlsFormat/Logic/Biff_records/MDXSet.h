@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/MDXStrIndex.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of MDXSet record in BIFF8

@@ -3,7 +3,7 @@
 #include "BiffRecord.h"
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Dat record in BIFF8

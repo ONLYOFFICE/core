@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/PaneType.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Selection record in BIFF8

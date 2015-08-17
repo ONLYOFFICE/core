@@ -2,7 +2,7 @@
 #include "ContinueBigName.h"
 
 namespace XLS
-{;
+{
 
 ContinueBigName::ContinueBigName()
 {

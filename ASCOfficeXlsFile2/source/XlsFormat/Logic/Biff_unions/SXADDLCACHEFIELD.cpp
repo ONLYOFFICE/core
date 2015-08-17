@@ -4,7 +4,7 @@
 #include <Logic/Biff_unions/SXADDLCACHEITEM.h>
 
 namespace XLS
-{;
+{
 
 
 SXADDLCACHEFIELD::SXADDLCACHEFIELD()

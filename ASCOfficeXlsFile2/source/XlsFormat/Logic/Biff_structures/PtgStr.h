@@ -4,7 +4,7 @@
 #include "BiffString.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

@@ -2,7 +2,7 @@
 #include "FontX.h"
 
 namespace XLS
-{;
+{
 
 FontX::FontX()
 {

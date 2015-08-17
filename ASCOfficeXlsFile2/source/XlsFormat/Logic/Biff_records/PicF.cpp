@@ -2,7 +2,7 @@
 #include "PicF.h"
 
 namespace XLS
-{;
+{
 
 PicF::PicF()
 {

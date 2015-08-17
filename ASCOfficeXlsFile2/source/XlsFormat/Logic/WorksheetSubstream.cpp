@@ -86,7 +86,8 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	proc.optional<Uncalced>();
 	proc.optional<Index>();			// OpenOffice Calc stored files workaround (Index is mandatory according to [MS-XLS])
 	
-	if (proc.mandatory(GLOBALS(false)))
+    GLOBALS globals(false);
+    if (proc.mandatory(globals))
 	{
 		m_GLOBALS = elements_.back();
 		elements_.pop_back();
@@ -131,8 +132,9 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 
-	std::vector<CellRef>		shared_formulas_locations;
-	if (proc.optional(CELLTABLE(shared_formulas_locations)))
+    std::vector<CellRef>	shared_formulas_locations;
+    CELLTABLE               cell_table(shared_formulas_locations);
+    if (proc.optional(cell_table))
 	{
 		m_CELLTABLE = elements_.back();
 		elements_.pop_back();
@@ -140,14 +142,16 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	
 	if(0 != shared_formulas_locations.size())
 	{
-		if (proc.optional(SHFMLA_SET(shared_formulas_locations)))
+        SHFMLA_SET shfmla_set(shared_formulas_locations);
+        if (proc.optional(shfmla_set))
 		{
 			m_SHFMLA_SET = elements_.back();
 			elements_.pop_back();
 		}
 	}
 
-	if (proc.optional(OBJECTS(false)))
+    OBJECTS objects(false);
+    if (proc.optional(objects))
 	{
 		m_OBJECTS = elements_.back();
 		elements_.pop_back();

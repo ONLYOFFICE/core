@@ -5,7 +5,7 @@
 #include "RevItab.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

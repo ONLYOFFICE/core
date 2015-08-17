@@ -3,7 +3,7 @@
 #include "BiffRecord.h"
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of ObProj record in BIFF8

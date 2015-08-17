@@ -2,7 +2,7 @@
 #include "SerToCrt.h"
 
 namespace XLS
-{;
+{
 
 SerToCrt::SerToCrt()
 {

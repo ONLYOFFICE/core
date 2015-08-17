@@ -10,7 +10,7 @@
 #include <Logic/Biff_records/End.h>
 
 namespace XLS
-{;
+{
 
 
 IVAXIS::IVAXIS()

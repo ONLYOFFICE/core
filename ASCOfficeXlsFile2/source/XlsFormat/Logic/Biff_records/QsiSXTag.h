@@ -3,7 +3,7 @@
 #include "BiffRecord.h"
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of QsiSXTag record in BIFF8

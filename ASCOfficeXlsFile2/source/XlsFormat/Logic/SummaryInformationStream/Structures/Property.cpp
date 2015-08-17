@@ -2,7 +2,7 @@
 #include "Property.h"
 
 namespace OLEPS
-{;
+{
 
 Property::Property()
 {

@@ -2,7 +2,7 @@
 #include "Selection.h"
 
 namespace XLS
-{;
+{
 
 Selection::Selection()
 {

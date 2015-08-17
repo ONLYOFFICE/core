@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace ODRAW
-{;
+{
 
 OfficeArtDgContainer::OfficeArtDgContainer(const OfficeArtClientAnchorType anchor_type)
 :	OfficeArtContainer(0x0F, DgContainer, anchor_type)

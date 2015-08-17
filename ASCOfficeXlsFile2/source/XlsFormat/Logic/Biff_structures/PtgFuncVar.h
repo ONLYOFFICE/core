@@ -5,7 +5,7 @@
 #include "Ftab_Cetab.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

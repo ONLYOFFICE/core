@@ -3,7 +3,7 @@
 #include <Logic/CompositeObject.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of SXADDLSXMG union of records 

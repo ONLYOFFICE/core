@@ -2,7 +2,7 @@
 #include "Axis.h"
 
 namespace XLS
-{;
+{
 
 Axis::Axis()
 {

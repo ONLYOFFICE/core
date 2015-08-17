@@ -2,7 +2,7 @@
 #include "OleObjectSize.h"
 
 namespace XLS
-{;
+{
 
 OleObjectSize::OleObjectSize()
 {

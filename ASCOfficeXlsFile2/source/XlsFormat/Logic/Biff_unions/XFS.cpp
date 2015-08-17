@@ -8,7 +8,7 @@
 #include <simple_xml_writer.h>
 
 namespace XLS
-{;
+{
 
 int cellStyleXfs_count = 0;
 
@@ -36,7 +36,8 @@ const bool XFS::loadContent(BinProcessor& proc)
 	
 	cellStyleXfs_count = 0;
 	
-	int count = proc.repeated(XF(cell_xf_current_id, style_xf_current_id) ,16, 0);
+    XF xf(cell_xf_current_id, style_xf_current_id);
+    int count = proc.repeated(xf ,16, 0);
 
 	while (count > 0)
 	{

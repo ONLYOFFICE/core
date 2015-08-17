@@ -9,7 +9,7 @@
 //#include <Exception/UnexpectedProgramPath.h>
 
 namespace XLS
-{;
+{
 
 
 ExtNameParsedFormula::ExtNameParsedFormula()

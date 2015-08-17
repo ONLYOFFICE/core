@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace ODRAW
-{;
+{
 
 
 OfficeArtRecord::OfficeArtRecord(const unsigned char recVer, const unsigned short recType)

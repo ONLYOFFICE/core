@@ -2,7 +2,7 @@
 #include "CodePage.h"
 
 namespace XLS
-{;
+{
 
 CodePage::CodePage()
 {

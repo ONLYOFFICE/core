@@ -2,7 +2,7 @@
 #include "Units.h"
 
 namespace XLS
-{;
+{
 
 Units::Units()
 {

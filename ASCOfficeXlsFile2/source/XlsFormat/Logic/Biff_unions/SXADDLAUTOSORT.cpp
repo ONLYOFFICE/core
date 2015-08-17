@@ -4,7 +4,7 @@
 #include <Logic/Biff_records/SXAddl.h>
 
 namespace XLS
-{;
+{
 
 
 SXADDLAUTOSORT::SXADDLAUTOSORT()

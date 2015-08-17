@@ -1,9 +1,7 @@
-
-
 #include "BiffDecoder_RCF.h"
 
 namespace CRYPT
-{;
+{
 
 
 BiffDecoderBase::BiffDecoderBase() : mbValid(false)

@@ -2,7 +2,7 @@
 #include "ObNoMacros.h"
 
 namespace XLS
-{;
+{
 
 ObNoMacros::ObNoMacros()
 {

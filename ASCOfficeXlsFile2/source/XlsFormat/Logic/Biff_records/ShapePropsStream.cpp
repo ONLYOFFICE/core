@@ -2,7 +2,7 @@
 #include "ShapePropsStream.h"
 
 namespace XLS
-{;
+{
 
 ShapePropsStream::ShapePropsStream()
 {

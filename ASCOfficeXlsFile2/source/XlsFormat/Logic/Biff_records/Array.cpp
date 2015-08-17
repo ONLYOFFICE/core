@@ -2,7 +2,7 @@
 #include "Array.h"
 
 namespace XLS
-{;
+{
 
 Array::Array(const CellRef& cell_base_ref_init)
 :	formula(false, cell_base_ref_init)

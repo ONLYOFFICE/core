@@ -1,10 +1,11 @@
 
 #include "Bes.h"
+#include <Binary/CFRecord.h>
 
 #include <boost/algorithm/string.hpp>
 
 namespace XLS
-{;
+{
 
 
 BiffStructurePtr Bes::clone()

@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 
 BiffStructurePtr Feat11FdaAutoFilter::clone()

@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/XFProp.h>
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

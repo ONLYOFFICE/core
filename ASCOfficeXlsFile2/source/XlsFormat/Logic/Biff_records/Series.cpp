@@ -2,7 +2,7 @@
 #include "Series.h"
 
 namespace XLS
-{;
+{
 
 Series::Series()
 {

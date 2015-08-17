@@ -6,7 +6,7 @@
 #include <Logic/Biff_structures/XFExtNoFRT.h>
 
 namespace XLS
-{;
+{
 
 class DXFN12List: public BiffStructure
 {	

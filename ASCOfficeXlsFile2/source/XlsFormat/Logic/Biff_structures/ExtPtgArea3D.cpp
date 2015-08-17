@@ -4,7 +4,7 @@
 #include "CellRangeRef.h"
 
 namespace XLS
-{;
+{
 
 
 ExtPtgArea3D::ExtPtgArea3D(const CellRef& cell_base_ref_init)

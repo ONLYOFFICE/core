@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/Boolean.h>
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

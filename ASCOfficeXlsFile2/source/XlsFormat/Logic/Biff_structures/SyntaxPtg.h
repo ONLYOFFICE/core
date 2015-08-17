@@ -3,7 +3,7 @@
 #include "Ptg.h"
 
 namespace XLS
-{;
+{
 
 class SyntaxPtg
 {

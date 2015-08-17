@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/CellRef.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Window2 record in BIFF8

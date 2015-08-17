@@ -2,7 +2,7 @@
 #include "PlotGrowth.h"
 
 namespace XLS
-{;
+{
 
 PlotGrowth::PlotGrowth()
 {

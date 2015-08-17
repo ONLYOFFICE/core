@@ -6,7 +6,7 @@
 #include <boost/algorithm/string.hpp>
 
 namespace XLS
-{;
+{
 
 ParsedFormula::ParsedFormula(const CellRef& cell_base_ref)
 :	cce(0),

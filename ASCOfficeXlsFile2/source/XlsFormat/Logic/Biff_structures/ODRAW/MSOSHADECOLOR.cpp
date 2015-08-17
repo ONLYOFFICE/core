@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace ODRAW
-{;
+{
 
 MSOSHADECOLOR::MSOSHADECOLOR()
 {

@@ -6,7 +6,7 @@
 #include <Logic/Biff_unions/SXADDLCACHE.h>
 
 namespace XLS
-{;
+{
 
 
 PIVOTCACHEDEFINITION::PIVOTCACHEDEFINITION()

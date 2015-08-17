@@ -13,7 +13,7 @@ namespace XLS
 
 
 namespace ODRAW
-{;
+{
 
 class OfficeArtRecord : public XLS::BiffStructure
 {

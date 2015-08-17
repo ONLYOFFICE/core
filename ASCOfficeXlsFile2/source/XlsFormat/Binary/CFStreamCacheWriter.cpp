@@ -7,7 +7,7 @@
 
 
 namespace XLS
-{;
+{
 
 
 CFStreamCacheWriter::CFStreamCacheWriter(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)

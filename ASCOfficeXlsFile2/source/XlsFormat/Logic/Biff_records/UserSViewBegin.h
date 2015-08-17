@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/PaneType.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of UserSViewBegin record in BIFF8

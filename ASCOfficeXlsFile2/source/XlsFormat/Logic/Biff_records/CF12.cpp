@@ -1,9 +1,9 @@
 
 #include "CF12.h"
-#include "../../Logic/Biff_structures/CFMultistate.h"
+#include <Logic/Biff_structures/CFMultistate.h>
 
 namespace XLS
-{;
+{
 
 CF12::CF12(const CellRef& cell_base_ref)
 :	rgce1(cell_base_ref),

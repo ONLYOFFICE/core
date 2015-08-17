@@ -1,10 +1,10 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../../Logic/Biff_structures/FormatRun.h"
+#include <Logic/Biff_structures/FormatRun.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of AlRuns record in BIFF8

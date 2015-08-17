@@ -4,7 +4,7 @@
 #include "PropertySet.h"
 
 namespace OLEPS
-{;
+{
 
 class PropertySetStream
 {

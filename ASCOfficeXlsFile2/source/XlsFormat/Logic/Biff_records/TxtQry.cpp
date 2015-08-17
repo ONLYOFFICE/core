@@ -2,7 +2,7 @@
 #include "TxtQry.h"
 
 namespace XLS
-{;
+{
 
 TxtQry::TxtQry()
 {

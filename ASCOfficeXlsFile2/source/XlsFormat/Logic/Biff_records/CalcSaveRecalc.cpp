@@ -2,7 +2,7 @@
 #include "CalcSaveRecalc.h"
 
 namespace XLS
-{;
+{
 
 CalcSaveRecalc::CalcSaveRecalc()
 {

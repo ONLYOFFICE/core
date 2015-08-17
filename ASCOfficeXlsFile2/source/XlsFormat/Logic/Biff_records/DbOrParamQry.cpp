@@ -2,7 +2,7 @@
 #include "DbOrParamQry.h"
 
 namespace XLS
-{;
+{
 
 DbOrParamQry::DbOrParamQry()
 {

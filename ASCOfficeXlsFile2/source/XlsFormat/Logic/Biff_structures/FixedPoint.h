@@ -3,7 +3,7 @@
 #include "BiffAttribute.h"
 
 namespace OSHARED
-{;
+{
 
 class CFRecord;
 

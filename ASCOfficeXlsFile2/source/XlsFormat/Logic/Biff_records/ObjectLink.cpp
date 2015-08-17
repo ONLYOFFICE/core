@@ -2,7 +2,7 @@
 #include "ObjectLink.h"
 
 namespace XLS
-{;
+{
 
 ObjectLink::ObjectLink()
 {

@@ -2,7 +2,7 @@
 #include "DBQueryExt.h"
 
 namespace XLS
-{;
+{
 
 DBQueryExt::DBQueryExt()
 {

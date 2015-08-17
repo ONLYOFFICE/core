@@ -4,7 +4,7 @@
 #include <Logic/ChartSheetSubstream.h>
 
 namespace XLS
-{;
+{
 
 
 CHART::CHART()

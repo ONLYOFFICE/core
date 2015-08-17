@@ -2,7 +2,7 @@
 #include "MDB.h"
 
 namespace XLS
-{;
+{
 
 MDB::MDB()
 {

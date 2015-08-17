@@ -2,7 +2,7 @@
 #include "IFmtRecord.h"
 
 namespace XLS
-{;
+{
 
 IFmtRecord::IFmtRecord()
 {

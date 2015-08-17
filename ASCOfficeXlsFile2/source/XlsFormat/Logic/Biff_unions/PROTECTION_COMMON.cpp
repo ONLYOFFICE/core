@@ -6,7 +6,7 @@
 #include <Logic/Biff_records/Password.h>
 
 namespace XLS
-{;
+{
 
 
 PROTECTION_COMMON::PROTECTION_COMMON()

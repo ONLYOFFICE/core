@@ -11,7 +11,7 @@
 #include <Logic/Biff_records/End.h>
 
 namespace XLS
-{;
+{
 
 
 LD::LD()

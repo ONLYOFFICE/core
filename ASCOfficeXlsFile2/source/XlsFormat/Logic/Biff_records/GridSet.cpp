@@ -2,7 +2,7 @@
 #include "GridSet.h"
 
 namespace XLS
-{;
+{
 
 GridSet::GridSet()
 {

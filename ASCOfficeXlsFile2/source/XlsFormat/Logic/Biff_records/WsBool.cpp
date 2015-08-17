@@ -2,7 +2,7 @@
 #include "WsBool.h"
 
 namespace XLS
-{;
+{
 
 WsBool::WsBool(const bool is_dialog_sheet)
 :	fDialog(is_dialog_sheet)

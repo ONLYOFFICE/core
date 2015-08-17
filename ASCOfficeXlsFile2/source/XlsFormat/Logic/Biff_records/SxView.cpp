@@ -2,7 +2,7 @@
 #include "SxView.h"
 
 namespace XLS
-{;
+{
 
 SxView::SxView()
 {

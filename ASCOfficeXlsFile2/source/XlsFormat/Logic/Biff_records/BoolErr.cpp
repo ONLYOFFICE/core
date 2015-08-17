@@ -1,8 +1,8 @@
 #include "BoolErr.h"
-#include "../Common/simple_xml_writer.h"
+#include <simple_xml_writer.h>
 
 namespace XLS
-{;
+{
 extern int cellStyleXfs_count;
 
 BoolErr::BoolErr()

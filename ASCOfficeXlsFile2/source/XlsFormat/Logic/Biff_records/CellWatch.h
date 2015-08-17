@@ -1,10 +1,10 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../../Logic/Biff_structures/FrtRefHeaderU.h"
+#include <Logic/Biff_structures/FrtRefHeaderU.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of CellWatch record in BIFF8

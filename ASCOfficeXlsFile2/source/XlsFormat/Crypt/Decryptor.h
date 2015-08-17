@@ -3,12 +3,12 @@
 #include "Crypt.h"
 
 namespace CRYPTO
-{;
+{
 class RC4EncryptionHeader;
 } // namespace CRYPTO
 
 namespace CRYPT
-{;
+{
 
 class Decryptor
 {

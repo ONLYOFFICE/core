@@ -9,7 +9,7 @@
 #include <Logic/Biff_structures/BitMarkedStructs.h>
 
 namespace XLS
-{;
+{
 
 
 BiffStructurePtr XFProp::clone()

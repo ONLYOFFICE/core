@@ -2,7 +2,7 @@
 #include "FnGrp12.h"
 
 namespace XLS
-{;
+{
 
 FnGrp12::FnGrp12()
 {

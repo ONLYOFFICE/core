@@ -2,7 +2,7 @@
 #include "Dat.h"
 
 namespace XLS
-{;
+{
 
 Dat::Dat()
 {

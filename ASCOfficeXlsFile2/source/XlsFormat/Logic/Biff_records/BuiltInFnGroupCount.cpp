@@ -2,7 +2,7 @@
 #include "BuiltInFnGroupCount.h"
 
 namespace XLS
-{;
+{
 
 BuiltInFnGroupCount::BuiltInFnGroupCount()
 {

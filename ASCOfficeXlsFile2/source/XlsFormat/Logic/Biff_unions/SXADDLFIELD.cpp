@@ -4,7 +4,7 @@
 #include <Logic/Biff_unions/SXADDLFIELD12.h>
 
 namespace XLS
-{;
+{
 
 
 SXADDLFIELD::SXADDLFIELD()

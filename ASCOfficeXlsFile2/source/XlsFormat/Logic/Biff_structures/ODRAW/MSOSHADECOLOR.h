@@ -11,7 +11,7 @@ namespace XLS
 
 
 namespace ODRAW
-{;
+{
 
 class MSOSHADECOLOR : public XLS::BiffStructure
 {

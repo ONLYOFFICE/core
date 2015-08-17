@@ -5,7 +5,7 @@
 #include <Logic/Biff_unions/UNKNOWNFRT.h>
 
 namespace XLS
-{;
+{
 
 
 SXADDLFIELD12::SXADDLFIELD12()

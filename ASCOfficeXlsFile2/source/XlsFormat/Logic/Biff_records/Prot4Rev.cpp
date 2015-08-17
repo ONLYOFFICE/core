@@ -2,7 +2,7 @@
 #include "Prot4Rev.h"
 
 namespace XLS
-{;
+{
 
 Prot4Rev::Prot4Rev()
 {

@@ -1,8 +1,9 @@
 
 #include "AntiMoniker.h"
+#include <Binary/CFRecord.h>
 
 namespace OSHARED
-{;
+{
 
 
 XLS::BiffStructurePtr AntiMoniker::clone()

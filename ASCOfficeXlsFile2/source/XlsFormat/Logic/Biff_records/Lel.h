@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/BiffString.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Lel record in BIFF8

@@ -1,11 +1,11 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../../Logic/Biff_structures/FrtRefHeaderU.h"
-#include "../../Logic/Biff_structures/CFExNonCF12.h"
+#include <Logic/Biff_structures/FrtRefHeaderU.h>
+#include <Logic/Biff_structures/CFExNonCF12.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of CFEx record in BIFF8

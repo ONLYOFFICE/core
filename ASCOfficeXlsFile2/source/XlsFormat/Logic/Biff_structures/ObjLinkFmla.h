@@ -4,7 +4,7 @@
 #include "ObjFmla.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

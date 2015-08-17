@@ -2,7 +2,7 @@
 #include "MDXKPI.h"
 
 namespace XLS
-{;
+{
 
 MDXKPI::MDXKPI()
 {

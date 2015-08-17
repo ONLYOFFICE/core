@@ -5,7 +5,7 @@
 #include "Logic/GlobalWorkbookInfo.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

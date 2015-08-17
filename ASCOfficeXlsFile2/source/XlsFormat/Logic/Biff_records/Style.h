@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/BuiltInStyle.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Style record in BIFF8

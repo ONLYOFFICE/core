@@ -47,6 +47,23 @@
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
 
+#if !defined(_WIN32) && !defined(_WIN64)
+
+    typedef struct tagBITMAPINFOHEADER
+    {
+            _UINT32      biSize;
+            _INT32       biWidth;
+            _INT32       biHeight;
+            _UINT16       biPlanes;
+            _UINT16       biBitCount;
+            _UINT32      biCompression;
+            _UINT32      biSizeImage;
+            _INT32       biXPelsPerMeter;
+            _INT32       biYPelsPerMeter;
+            _UINT32      biClrUsed;
+            _UINT32      biClrImportant;
+    } BITMAPINFOHEADER;
+#endif
 
 XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _xlsx_path, const ProgressCallback* CallBack) 
 {
@@ -80,7 +97,7 @@ XlsConverter::XlsConverter(const std::wstring & xls_file, const std::wstring & _
 			return;
 		}
 
-		WORD workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
+        _UINT16 workbook_code_page = XLS::WorkbookStreamObject::DefaultCodePage;
 		if(summary)
 		{
 			OLEPS::SummaryInformation summary_info(summary);
@@ -353,12 +370,12 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 
 std::wstring XlsConverter::GetTargetMoniker(XLS::BiffStructure *moniker)
 {
-	if (moniker->getClassName() == L"URLMoniker")
+    if (moniker->getClassName() == "URLMoniker")
 	{
 		OSHARED::URLMoniker* urlMoniker = dynamic_cast<OSHARED::URLMoniker* >(moniker);
 		if (urlMoniker)return urlMoniker->url;
 	}
-	else if (moniker->getClassName() == L"FileMoniker")
+    else if (moniker->getClassName() == "FileMoniker")
 	{
 		OSHARED::FileMoniker* fileMoniker = dynamic_cast<OSHARED::FileMoniker* >(moniker);
 		if (fileMoniker)
@@ -566,7 +583,7 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
 	case XLS::typeOfficeArtClientAnchorSheet:
 		{
 			art->serialize(strm);
-			xlsx_context->get_drawing_context().set_anchor(strm.str());
+            xlsx_context->get_drawing_context().set_anchor(strm.str());
 		}break;
 	}
 

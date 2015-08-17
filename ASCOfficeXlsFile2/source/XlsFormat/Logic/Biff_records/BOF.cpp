@@ -1,10 +1,10 @@
 
 #include "BOF.h"
-#include "../../Binary/CFStream.h"
+#include <Binary/CFStream.h>
 
 
 namespace XLS
-{;
+{
 
 BOF::BOF()
 {

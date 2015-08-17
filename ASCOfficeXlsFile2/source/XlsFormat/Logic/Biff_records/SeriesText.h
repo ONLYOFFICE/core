@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/BiffString.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of SeriesText record in BIFF8

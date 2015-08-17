@@ -2,7 +2,7 @@
 
 #include <Logic/CompositeObject.h>
 namespace XLS
-{;
+{
 
 class CFStreamCacheReader;
 

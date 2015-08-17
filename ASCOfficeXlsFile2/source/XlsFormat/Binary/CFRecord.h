@@ -5,12 +5,12 @@
 #include "BinSmartPointers.h"
 #include "../Logic/GlobalWorkbookInfo.h"
 
-#include "../../Common/common.h"
-#include "../Auxiliary/HelpFunc.h"
+#include <common.h>
+#include <Auxiliary/HelpFunc.h>
 
 
 namespace XLS
-{;
+{
 
 // Binary representation of a record in BIFF8
 class CFRecord

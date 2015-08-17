@@ -4,7 +4,7 @@
 #include <vector>
 
 namespace XLS
-{;
+{
 
 class PtgParam
 {

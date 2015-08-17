@@ -2,7 +2,7 @@
 #include "SxSelect.h"
 
 namespace XLS
-{;
+{
 
 SxSelect::SxSelect()
 {

@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/NameParsedFormula.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Lbl record in BIFF8

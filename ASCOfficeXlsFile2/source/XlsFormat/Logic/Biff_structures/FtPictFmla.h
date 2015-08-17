@@ -6,7 +6,7 @@
 #include "FtPioGrbit.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

@@ -3,7 +3,7 @@
 //#include <Exception/UnexpectedProgramPath.h>
 
 namespace XLS
-{;
+{
 
 
 BaseObjectPtr LPr::clone()

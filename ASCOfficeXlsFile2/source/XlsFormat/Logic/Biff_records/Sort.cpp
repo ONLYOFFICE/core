@@ -2,7 +2,7 @@
 #include "Sort.h"
 
 namespace XLS
-{;
+{
 
 Sort::Sort()
 {

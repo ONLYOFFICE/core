@@ -2,7 +2,7 @@
 #include "CrtMlFrt.h"
 
 namespace XLS
-{;
+{
 
 CrtMlFrt::CrtMlFrt()
 {

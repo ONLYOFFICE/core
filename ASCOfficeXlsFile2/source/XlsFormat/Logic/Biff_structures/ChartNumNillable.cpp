@@ -4,7 +4,7 @@
 //#include <Logic/Biff_structures/BitMarkedStructs.h>
 
 namespace XLS
-{;
+{
 
 
 ChartNumNillable::ChartNumNillable(const unsigned short nil_type)

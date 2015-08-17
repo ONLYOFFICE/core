@@ -2,7 +2,7 @@
 #include "SxItm.h"
 
 namespace XLS
-{;
+{
 
 SxItm::SxItm()
 {

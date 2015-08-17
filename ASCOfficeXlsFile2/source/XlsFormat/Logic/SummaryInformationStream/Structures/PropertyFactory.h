@@ -4,7 +4,7 @@
 #include "Property.h"
 
 namespace OLEPS
-{;
+{
 
 class PropertyFactory 
 {

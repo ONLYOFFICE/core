@@ -5,7 +5,7 @@
 #include <bitset>
 
 namespace ODRAW
-{;
+{
 	static int BitmaskToInt( int value, int mask )
 	{
 		int ret = value & mask;

@@ -11,7 +11,7 @@
 #include <Logic/Biff_unions/SORTDATA12.h>
 
 namespace XLS
-{;
+{
 
 
 FEAT11::FEAT11()

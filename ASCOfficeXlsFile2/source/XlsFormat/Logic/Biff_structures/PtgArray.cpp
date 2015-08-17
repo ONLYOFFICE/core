@@ -4,7 +4,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 
 PtgArray::PtgArray()

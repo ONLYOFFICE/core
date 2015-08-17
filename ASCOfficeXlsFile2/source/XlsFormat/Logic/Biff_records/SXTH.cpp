@@ -2,7 +2,7 @@
 #include "SXTH.h"
 
 namespace XLS
-{;
+{
 
 SXTH::SXTH()
 {

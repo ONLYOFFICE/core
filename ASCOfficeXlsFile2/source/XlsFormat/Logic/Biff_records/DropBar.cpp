@@ -2,7 +2,7 @@
 #include "DropBar.h"
 
 namespace XLS
-{;
+{
 
 DropBar::DropBar()
 {

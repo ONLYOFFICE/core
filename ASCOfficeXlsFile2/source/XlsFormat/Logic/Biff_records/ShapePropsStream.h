@@ -4,7 +4,7 @@
 #include "BiffRecord.h"
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of ShapePropsStream record in BIFF8

@@ -2,7 +2,7 @@
 #include "Window1.h"
 
 namespace XLS
-{;
+{
 
 Window1::Window1()
 {

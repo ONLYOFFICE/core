@@ -5,7 +5,7 @@
 #include "RevLblName.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

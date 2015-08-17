@@ -7,7 +7,7 @@
 #include <boost/algorithm/string.hpp>
 
 namespace XLS
-{;
+{
 
 struct CFRecordTypeValue
 {

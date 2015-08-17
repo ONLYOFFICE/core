@@ -5,7 +5,7 @@
 #include <Logic/Biff_records/InterfaceEnd.h>
 
 namespace XLS
-{;
+{
 
 
 INTERFACE_T::INTERFACE_T()

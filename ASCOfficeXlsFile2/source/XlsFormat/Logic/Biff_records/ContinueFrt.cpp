@@ -2,7 +2,7 @@
 #include "ContinueFrt.h"
 
 namespace XLS
-{;
+{
 
 ContinueFrt::ContinueFrt()
 {

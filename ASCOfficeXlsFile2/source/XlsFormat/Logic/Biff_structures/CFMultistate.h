@@ -4,7 +4,7 @@
 #include "CFMStateItem.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

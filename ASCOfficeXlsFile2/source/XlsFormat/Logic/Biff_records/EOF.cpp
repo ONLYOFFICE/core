@@ -2,7 +2,7 @@
 #include "EOF.h"
 
 namespace XLS
-{;
+{
 
 
 EOF_T::EOF_T()

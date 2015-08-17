@@ -2,7 +2,7 @@
 #include "Intl.h"
 
 namespace XLS
-{;
+{
 
 Intl::Intl()
 {

@@ -6,7 +6,7 @@
 #include <Logic/Biff_structures/ExtRst.h>
 
 namespace XLS
-{;
+{
 
 class GlobalWorkbookInfo;
 typedef boost::shared_ptr<GlobalWorkbookInfo> GlobalWorkbookInfoPtr;

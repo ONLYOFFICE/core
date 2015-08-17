@@ -2,7 +2,7 @@
 #include "CrtLayout12A.h"
 
 namespace XLS
-{;
+{
 
 CrtLayout12A::CrtLayout12A()
 {

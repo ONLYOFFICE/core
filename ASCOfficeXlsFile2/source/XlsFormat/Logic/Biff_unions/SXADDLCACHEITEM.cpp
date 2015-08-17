@@ -3,7 +3,7 @@
 #include <Logic/Biff_records/SXAddl.h>
 
 namespace XLS
-{;
+{
 
 
 SXADDLCACHEITEM::SXADDLCACHEITEM()

@@ -2,7 +2,7 @@
 #include "Protect.h"
 
 namespace XLS
-{;
+{
 
 Protect::Protect()
 {

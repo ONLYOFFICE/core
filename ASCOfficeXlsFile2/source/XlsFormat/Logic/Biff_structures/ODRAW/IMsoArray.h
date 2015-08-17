@@ -9,7 +9,7 @@ namespace XLS
 
 
 namespace ODRAW
-{;
+{
 
 template<class Type>
 class IMsoArray : public XLS::BiffStructure

@@ -2,7 +2,7 @@
 #include "MDXTuple.h"
 
 namespace XLS
-{;
+{
 
 MDXTuple::MDXTuple()
 {

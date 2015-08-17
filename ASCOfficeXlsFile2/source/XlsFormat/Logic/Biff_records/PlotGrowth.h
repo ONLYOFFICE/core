@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/FixedPoint.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of PlotGrowth record in BIFF8

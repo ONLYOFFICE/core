@@ -2,7 +2,7 @@
 #include "RealTimeData.h"
 
 namespace XLS
-{;
+{
 
 RealTimeData::RealTimeData()
 {

@@ -9,7 +9,7 @@
 #include <Logic/Biff_unions/PIVOTEX.h>
 
 namespace XLS
-{;
+{
 
 
 PIVOTCORE::PIVOTCORE()

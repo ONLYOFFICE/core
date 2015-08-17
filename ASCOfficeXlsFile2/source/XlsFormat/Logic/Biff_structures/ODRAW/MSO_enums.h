@@ -11,7 +11,7 @@ namespace XLS
 
 
 namespace ODRAW
-{;
+{
 
 class MSOLINEDASHING
 {

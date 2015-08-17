@@ -2,7 +2,7 @@
 #include "SBaseRef.h"
 
 namespace XLS
-{;
+{
 
 SBaseRef::SBaseRef()
 {

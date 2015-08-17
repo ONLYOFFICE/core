@@ -2,7 +2,7 @@
 #include "RRSort.h"
 
 namespace XLS
-{;
+{
 
 RRSort::RRSort()
 {

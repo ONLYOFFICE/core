@@ -2,7 +2,7 @@
 #include "Surf.h"
 
 namespace XLS
-{;
+{
 
 Surf::Surf()
 {

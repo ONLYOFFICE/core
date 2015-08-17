@@ -2,7 +2,7 @@
 #include "CF.h"
 
 namespace XLS
-{;
+{
 
 CF::CF(const CellRef& cell_base_ref)
 :	rgce1(cell_base_ref),

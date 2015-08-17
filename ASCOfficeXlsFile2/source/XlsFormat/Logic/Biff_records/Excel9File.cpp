@@ -2,7 +2,7 @@
 #include "Excel9File.h"
 
 namespace XLS
-{;
+{
 
 Excel9File::Excel9File()
 {

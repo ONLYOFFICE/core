@@ -2,7 +2,7 @@
 #include "PrintSize.h"
 
 namespace XLS
-{;
+{
 
 PrintSize::PrintSize()
 {

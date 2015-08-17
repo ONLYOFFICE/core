@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/ExtProp.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of XFExt record in BIFF8

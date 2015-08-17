@@ -7,7 +7,7 @@
 //#include <Logic/Biff_unions/PAGESETUP.h>
 
 namespace XLS
-{;
+{
 
 
 TEXTPROPS::TEXTPROPS()

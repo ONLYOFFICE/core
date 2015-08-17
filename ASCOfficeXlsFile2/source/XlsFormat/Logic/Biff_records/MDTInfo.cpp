@@ -2,7 +2,7 @@
 #include "MDTInfo.h"
 
 namespace XLS
-{;
+{
 
 MDTInfo::MDTInfo()
 {

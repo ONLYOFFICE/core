@@ -2,7 +2,7 @@
 #include "PrintGrid.h"
 
 namespace XLS
-{;
+{
 
 PrintGrid::PrintGrid()
 {

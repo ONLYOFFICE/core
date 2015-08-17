@@ -3,7 +3,7 @@
 #include "BiffRecord.h"
 
 namespace XLS
-{;
+{
 
 
 class IXFCellMulBlankSpecial : public BiffStructure

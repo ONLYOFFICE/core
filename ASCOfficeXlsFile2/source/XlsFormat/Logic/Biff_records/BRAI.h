@@ -1,10 +1,10 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../../Logic/Biff_structures/ChartParsedFormula.h"
+#include <Logic/Biff_structures/ChartParsedFormula.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of BRAI record in BIFF8

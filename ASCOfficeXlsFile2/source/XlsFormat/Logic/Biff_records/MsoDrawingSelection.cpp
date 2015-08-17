@@ -2,7 +2,7 @@
 #include "MsoDrawingSelection.h"
 
 namespace XLS
-{;
+{
 
 MsoDrawingSelection::MsoDrawingSelection()
 {

@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/FontIndex.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Fbi record in BIFF8

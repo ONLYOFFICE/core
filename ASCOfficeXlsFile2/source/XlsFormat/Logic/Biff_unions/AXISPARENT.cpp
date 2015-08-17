@@ -9,7 +9,7 @@
 #include <Logic/Biff_unions/CRT.h>
 
 namespace XLS
-{;
+{
 
 
 AXISPARENT::AXISPARENT()

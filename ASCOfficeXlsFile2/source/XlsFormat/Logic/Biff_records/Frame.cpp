@@ -2,7 +2,7 @@
 #include "Frame.h"
 
 namespace XLS
-{;
+{
 
 Frame::Frame()
 {

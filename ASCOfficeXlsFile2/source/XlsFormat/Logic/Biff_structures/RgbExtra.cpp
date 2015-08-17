@@ -11,7 +11,7 @@
 
 
 namespace XLS
-{;
+{
 
 
 BiffStructurePtr RgbExtra::clone()

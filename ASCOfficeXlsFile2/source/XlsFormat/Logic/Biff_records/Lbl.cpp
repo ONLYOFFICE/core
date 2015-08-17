@@ -2,7 +2,7 @@
 #include "Lbl.h"
 
 namespace XLS
-{;
+{
 
 Lbl::Lbl()
 :	rgce(false)

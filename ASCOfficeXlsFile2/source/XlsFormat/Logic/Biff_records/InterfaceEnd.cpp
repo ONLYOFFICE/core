@@ -3,7 +3,7 @@
 
 
 namespace XLS
-{;
+{
 
 InterfaceEnd::InterfaceEnd()
 {

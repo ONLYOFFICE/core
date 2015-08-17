@@ -9,7 +9,7 @@
 #include <Logic/Biff_records/End.h>
 
 namespace XLS
-{;
+{
 
 
 DROPBAR::DROPBAR()

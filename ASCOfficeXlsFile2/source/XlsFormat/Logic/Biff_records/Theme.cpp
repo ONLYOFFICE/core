@@ -4,7 +4,7 @@
 #include <iostream>      // endl
 
 namespace XLS
-{;
+{
 
 Theme::Theme()
 {

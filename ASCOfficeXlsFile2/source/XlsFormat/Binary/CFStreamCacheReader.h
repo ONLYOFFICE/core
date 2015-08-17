@@ -2,11 +2,11 @@
 
 #include "CFRecordType.h"
 #include "BinSmartPointers.h"
-#include "../Logic/GlobalWorkbookInfo.h"
-#include "../Logic/Biff_structures/ODRAW/OfficeArtRecordHeader.h"
+#include <Logic/GlobalWorkbookInfo.h>
+#include <Logic/Biff_structures/ODRAW/OfficeArtRecordHeader.h>
 
 namespace XLS
-{;
+{
 
 // The only purpose of the reader is to avoid seeking back through IStream when, for example, 
 // we have read a record from a binary stream to the CFRecord, but the record of this type is

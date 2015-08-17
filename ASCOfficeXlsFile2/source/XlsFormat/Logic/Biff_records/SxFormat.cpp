@@ -2,7 +2,7 @@
 #include "SxFormat.h"
 
 namespace XLS
-{;
+{
 
 SxFormat::SxFormat()
 {

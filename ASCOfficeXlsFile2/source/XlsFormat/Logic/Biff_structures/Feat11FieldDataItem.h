@@ -6,7 +6,7 @@
 #include <Logic/Biff_structures/Feat11FdaAutoFilter.h>
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

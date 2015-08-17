@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/FtPioGrbit.h>
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

@@ -4,7 +4,7 @@
 #include <Logic/Biff_unions/SXADDLSXFILTER12.h>
 
 namespace XLS
-{;
+{
 
 
 SXADDLSXFILTERS12::SXADDLSXFILTERS12()

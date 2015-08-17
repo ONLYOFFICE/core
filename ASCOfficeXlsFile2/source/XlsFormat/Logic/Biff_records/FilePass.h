@@ -6,7 +6,7 @@
 #include <Logic/Biff_structures/RC4CryptoAPIEncryptionHeader.h>
 
 namespace XLS
-{;
+{
 
 class CFStreamCacheReader;
 

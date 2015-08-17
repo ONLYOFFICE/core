@@ -2,7 +2,7 @@
 #include "CFEx.h"
 
 namespace XLS
-{;
+{
 
 CFEx::CFEx()
 {

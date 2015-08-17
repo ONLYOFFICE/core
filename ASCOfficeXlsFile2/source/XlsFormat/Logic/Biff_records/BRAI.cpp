@@ -2,7 +2,7 @@
 #include "BRAI.h"
 
 namespace XLS
-{;
+{
 
 BRAI::BRAI()
 {

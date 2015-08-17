@@ -1,10 +1,10 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../Biff_structures/AFDOper.h"
+#include <Logic/Biff_structures/AFDOper.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of AutoFilter record in BIFF8

@@ -2,7 +2,7 @@
 #include "Fbi.h"
 
 namespace XLS
-{;
+{
 
 Fbi::Fbi()
 {

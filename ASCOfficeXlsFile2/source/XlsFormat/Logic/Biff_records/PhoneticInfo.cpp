@@ -2,7 +2,7 @@
 #include "PhoneticInfo.h"
 
 namespace XLS
-{;
+{
 
 PhoneticInfo::PhoneticInfo()
 {

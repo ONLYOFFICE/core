@@ -6,7 +6,7 @@
 #include <Logic/Biff_unions/PICF.h>
 
 namespace XLS
-{;
+{
 
 
 GELFRAME::GELFRAME()

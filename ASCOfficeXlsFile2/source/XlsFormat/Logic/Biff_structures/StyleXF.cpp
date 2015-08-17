@@ -6,7 +6,7 @@
 #include <simple_xml_writer.h>
 
 namespace XLS
-{;
+{
 
 
 StyleXF::StyleXF(size_t& cell_xf_current_id, size_t& style_xf_current_id)

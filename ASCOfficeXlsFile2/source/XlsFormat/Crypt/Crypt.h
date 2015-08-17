@@ -3,7 +3,7 @@
 #include <boost/shared_ptr.hpp>
 
 namespace CRYPT
-{;
+{
 
 class Crypt
 {

@@ -3,7 +3,7 @@
 #include "Auxiliary/HelpFunc.h"
 
 namespace XLS
-{;
+{
 
 
 CellRangeRef::CellRangeRef()

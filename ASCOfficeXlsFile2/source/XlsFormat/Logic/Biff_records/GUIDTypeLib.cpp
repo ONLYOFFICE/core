@@ -2,7 +2,7 @@
 #include "GUIDTypeLib.h"
 
 namespace XLS
-{;
+{
 
 GUIDTypeLib::GUIDTypeLib()
 {

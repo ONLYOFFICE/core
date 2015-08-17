@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/HyperlinkObject.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of HLink record in BIFF8

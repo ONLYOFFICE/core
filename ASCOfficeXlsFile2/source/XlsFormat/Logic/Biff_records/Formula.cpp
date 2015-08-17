@@ -2,7 +2,7 @@
 #include "Formula.h"
 
 namespace XLS
-{;
+{
 
 Formula::Formula()
 :	formula(false)

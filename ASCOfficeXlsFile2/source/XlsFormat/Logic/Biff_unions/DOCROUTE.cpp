@@ -4,7 +4,7 @@
 #include <Logic/Biff_records/RecipName.h>
 
 namespace XLS
-{;
+{
 
 
 DOCROUTE::DOCROUTE()

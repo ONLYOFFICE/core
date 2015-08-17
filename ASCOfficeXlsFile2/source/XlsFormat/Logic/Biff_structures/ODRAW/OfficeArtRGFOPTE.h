@@ -9,7 +9,7 @@ namespace XLS
 }
 
 namespace ODRAW
-{;
+{
 
 class OfficeArtRGFOPTE : public XLS::BiffStructure
 {

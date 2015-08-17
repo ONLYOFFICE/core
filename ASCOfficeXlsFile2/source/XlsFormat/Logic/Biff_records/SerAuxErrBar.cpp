@@ -2,7 +2,7 @@
 #include "SerAuxErrBar.h"
 
 namespace XLS
-{;
+{
 
 SerAuxErrBar::SerAuxErrBar()
 {

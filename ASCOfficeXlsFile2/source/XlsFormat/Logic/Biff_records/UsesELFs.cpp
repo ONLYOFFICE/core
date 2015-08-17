@@ -2,7 +2,7 @@
 #include "UsesELFs.h"
 
 namespace XLS
-{;
+{
 
 UsesELFs::UsesELFs()
 {

@@ -6,7 +6,7 @@
 //#include <Logic/Biff_structures/RC4CryptoAPIEncryptionHeader.h>
 
 namespace CRYPT
-{;
+{
 
 Decryptor::Decryptor(const CRYPTO::RC4EncryptionHeader& header)
 :	crypt(new RC4Crypt(header)),

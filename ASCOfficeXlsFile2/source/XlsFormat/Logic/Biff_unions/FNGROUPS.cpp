@@ -5,7 +5,7 @@
 #include <Logic/Biff_records/FnGrp12.h>
 
 namespace XLS
-{;
+{
 
 
 FNGROUPS::FNGROUPS()

@@ -3,7 +3,7 @@
 #include "OperandPtg.h"
 
 namespace XLS
-{;
+{
 
 class PtgMissArg: public OperandPtg
 {

@@ -8,7 +8,7 @@
 #include <Logic/Biff_records/CRN.h>
 
 namespace XLS
-{;
+{
 
 
 SUPBOOK::SUPBOOK()

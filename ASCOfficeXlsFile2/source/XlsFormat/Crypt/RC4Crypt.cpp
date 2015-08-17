@@ -5,7 +5,7 @@
 #include <boost/scoped_array.hpp>
 
 namespace CRYPT
-{;
+{
 
 RC4Crypt::RC4Crypt(const CRYPTO::RC4EncryptionHeader& header)
 {
@@ -51,13 +51,13 @@ void RC4Crypt::Decrypt(char* data, const size_t size, const unsigned long stream
 	if(size <= 256)
 	{
 		mxDecoder->decode( quick_buf, reinterpret_cast<unsigned char*>(data), stream_pos, size );
-		memcpy_s(data, size, quick_buf, size);
+        memcpy(data, quick_buf, size);
 	}
 	else
 	{
 		boost::scoped_array<unsigned char> out_data(new unsigned char[size]);
 		mxDecoder->decode( out_data.get(), reinterpret_cast<unsigned char*>(data), stream_pos, size );
-		memcpy_s(data, size, out_data.get(), size);
+        memcpy(data, out_data.get(), size);
 	}
 }
 

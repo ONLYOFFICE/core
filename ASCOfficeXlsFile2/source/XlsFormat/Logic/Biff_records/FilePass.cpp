@@ -4,7 +4,7 @@
 #include <Crypt/Decryptor.h>
 
 namespace XLS
-{;
+{
 
 
 FilePass::FilePass()

@@ -2,7 +2,7 @@
 #include "SXTBRGIITM.h"
 
 namespace XLS
-{;
+{
 
 SXTBRGIITM::SXTBRGIITM()
 {

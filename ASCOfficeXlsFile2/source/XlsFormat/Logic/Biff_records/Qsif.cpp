@@ -2,7 +2,7 @@
 #include "Qsif.h"
 
 namespace XLS
-{;
+{
 
 Qsif::Qsif()
 {

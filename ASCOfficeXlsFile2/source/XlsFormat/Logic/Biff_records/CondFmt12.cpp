@@ -2,7 +2,7 @@
 #include "CondFmt12.h"
 
 namespace XLS
-{;
+{
 
 CondFmt12::CondFmt12()
 {

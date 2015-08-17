@@ -4,7 +4,7 @@
 #include <Binary/CFStream.h>
 
 namespace XLS
-{;
+{
 
 
 BiffStructurePtr CellOffsetResender::clone()

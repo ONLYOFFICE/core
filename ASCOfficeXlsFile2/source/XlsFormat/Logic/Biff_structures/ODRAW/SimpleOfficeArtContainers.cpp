@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace ODRAW
-{;
+{
 
 void OfficeArtFConnectorRule::loadFields(XLS::CFRecord& record)
 {

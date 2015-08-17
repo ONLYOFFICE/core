@@ -2,7 +2,7 @@
 #include "CrErr.h"
 
 namespace XLS
-{;
+{
 
 CrErr::CrErr()
 {

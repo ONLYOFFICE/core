@@ -5,7 +5,7 @@
 #include "RgbExtra.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

@@ -8,7 +8,7 @@
 //#include <Exception/NotImplemented.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of ExternName record in BIFF8

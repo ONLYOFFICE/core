@@ -2,7 +2,7 @@
 #include "ScenMan.h"
 
 namespace XLS
-{;
+{
 
 ScenMan::ScenMan()
 {

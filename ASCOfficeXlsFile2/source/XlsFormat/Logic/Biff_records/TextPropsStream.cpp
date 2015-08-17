@@ -2,7 +2,7 @@
 #include "TextPropsStream.h"
 
 namespace XLS
-{;
+{
 
 TextPropsStream::TextPropsStream()
 {

@@ -4,7 +4,7 @@
 #include <Binary/CFRecordType.h>
 
 namespace ODRAW
-{;
+{
 
 OfficeArtRecordHeader::OfficeArtRecordHeader()
 {

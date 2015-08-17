@@ -205,7 +205,8 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 		count--;
 	}
 	
-	count = proc.repeated(MSODRAWINGGROUP(false), 0, 0);
+    MSODRAWINGGROUP mso_drawiing_group(false);
+    count = proc.repeated(mso_drawiing_group, 0, 0);
 	while(count > 0)
 	{
 		m_MSODRAWINGGROUP.insert(m_MSODRAWINGGROUP.begin(), elements_.back());
@@ -214,7 +215,8 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	}
 	proc.repeated<SUPBOOK>(0, 0);//order_history.xls
 
-	if (proc.optional(SHAREDSTRINGS(code_page_)))
+    SHAREDSTRINGS shared_strings(code_page_);
+    if (proc.optional(shared_strings))
 	{
 		m_SHAREDSTRINGS = elements_.back();
 		elements_.pop_back();
@@ -225,8 +227,11 @@ const bool GlobalsSubstream::loadContent(BinProcessor& proc)
 	proc.optional<WOpt>();
 	proc.optional<CrErr>();
 	proc.optional<BookExt>();
-	proc.repeated(FeatHdr(true), 0, 0);
-	proc.repeated<DConn>(0, 0);
+
+    FeatHdr feat_hdr(true);
+    proc.repeated(feat_hdr, 0, 0);
+
+    proc.repeated<DConn>(0, 0);
 	
 	if (proc.optional<THEME>())
 	{

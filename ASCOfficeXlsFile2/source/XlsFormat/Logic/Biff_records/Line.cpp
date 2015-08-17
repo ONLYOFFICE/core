@@ -2,7 +2,7 @@
 #include "Line.h"
 
 namespace XLS
-{;
+{
 
 Line::Line()
 {

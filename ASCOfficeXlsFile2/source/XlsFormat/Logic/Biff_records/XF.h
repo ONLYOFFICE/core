@@ -6,7 +6,7 @@
 #include <Logic/Biff_structures/StyleXF.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of XF record in BIFF8

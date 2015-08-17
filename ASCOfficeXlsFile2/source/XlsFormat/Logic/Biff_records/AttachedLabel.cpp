@@ -2,7 +2,7 @@
 #include "AttachedLabel.h"
 
 namespace XLS
-{;
+{
 
 AttachedLabel::AttachedLabel()
 {

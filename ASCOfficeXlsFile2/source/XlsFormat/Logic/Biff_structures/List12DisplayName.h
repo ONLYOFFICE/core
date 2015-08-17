@@ -5,7 +5,7 @@
 
 
 namespace XLS
-{;
+{
 
 class List12DisplayName: public BiffStructure
 {	

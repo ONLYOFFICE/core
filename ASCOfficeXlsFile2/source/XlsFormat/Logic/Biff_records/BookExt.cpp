@@ -1,9 +1,9 @@
 
 #include "BookExt.h"
-#include "../../Logic/Biff_structures/FrtHeader.h"
+#include <Logic/Biff_structures/FrtHeader.h>
 
 namespace XLS
-{;
+{
 
 BookExt::BookExt()
 : cb(22)

@@ -6,7 +6,7 @@
 #include <Logic/Biff_records/DConRef.h>
 
 namespace XLS
-{;
+{
 
 
 DCON::DCON()

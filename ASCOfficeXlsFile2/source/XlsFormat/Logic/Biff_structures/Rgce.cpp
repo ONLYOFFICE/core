@@ -7,7 +7,7 @@
 #include "PtgTbl.h"
 
 namespace XLS
-{;
+{
 
 
 Rgce::Rgce(const CellRef& cell_base_ref_init)

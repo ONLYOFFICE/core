@@ -2,7 +2,7 @@
 #include "WebPub.h"
 
 namespace XLS
-{;
+{
 
 WebPub::WebPub()
 {

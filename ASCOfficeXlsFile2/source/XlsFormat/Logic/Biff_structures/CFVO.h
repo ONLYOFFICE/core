@@ -4,7 +4,7 @@
 #include "CFVOParsedFormula.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

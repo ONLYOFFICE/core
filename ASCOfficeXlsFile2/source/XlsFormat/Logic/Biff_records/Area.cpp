@@ -2,7 +2,7 @@
 #include "Area.h"
 
 namespace XLS
-{;
+{
 
 Area::Area()
 {

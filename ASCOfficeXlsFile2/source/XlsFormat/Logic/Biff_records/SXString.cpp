@@ -2,7 +2,7 @@
 #include "SXString.h"
 
 namespace XLS
-{;
+{
 
 SXString::SXString()
 {

@@ -240,7 +240,7 @@ CFRecord& operator<<(CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_wh
 
 
 namespace OSHARED
-{;
+{
 
 typedef XLS::XLUnicodeString_T<unsigned short, XLS::aw_READ_FROM_CCH, XLS::cch_READ_FROM_RECORD> PBString;
 typedef XLS::XLUnicodeString_T<unsigned int, XLS::aw_WIDE, XLS::cch_READ_FROM_RECORD> HyperlinkString;

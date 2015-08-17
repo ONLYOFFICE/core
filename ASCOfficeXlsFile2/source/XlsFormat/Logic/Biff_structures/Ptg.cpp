@@ -5,7 +5,7 @@
 
 
 namespace XLS
-{;
+{
 
 Ptg::Ptg()
 {

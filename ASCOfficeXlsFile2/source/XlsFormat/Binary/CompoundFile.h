@@ -7,7 +7,7 @@
 #include <map>
 
 namespace XLS
-{;
+{
 
 
 class CompoundFile

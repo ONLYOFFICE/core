@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace ODRAW
-{;
+{
 
 
 XLS::BiffStructurePtr OfficeArtFRIT::clone()

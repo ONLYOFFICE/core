@@ -2,7 +2,7 @@
 #include "FnGroupName.h"
 
 namespace XLS
-{;
+{
 
 FnGroupName::FnGroupName()
 {

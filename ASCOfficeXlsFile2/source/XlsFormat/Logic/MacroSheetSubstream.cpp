@@ -68,7 +68,10 @@ const bool MacroSheetSubstream::loadContent(BinProcessor& proc)
 	proc.optional<Uncalced>();
 	proc.mandatory<Index>();
 	proc.optional<Intl>();
-	proc.mandatory(GLOBALS(false)); // not dialog
+
+    GLOBALS globals(false);
+    proc.mandatory(globals); // not dialog
+
 	proc.mandatory<PAGESETUP>();
 	proc.optional<HeaderFooter>();
 	proc.optional<BACKGROUND>();
@@ -79,9 +82,12 @@ const bool MacroSheetSubstream::loadContent(BinProcessor& proc)
 	proc.mandatory<Dimensions>();
 
 	std::vector<CellRef> shared_formulas_locations;
-	proc.optional(CELLTABLE(shared_formulas_locations));
+    CELLTABLE cell_table(shared_formulas_locations);
+    proc.optional(cell_table);
 
-	proc.mandatory(OBJECTS(false));
+    OBJECTS objects(false);
+    proc.mandatory(objects);
+
 	proc.repeated<HFPicture>(0, 0);
 	proc.repeated<Note>(0, 0);
 	proc.optional<DCON>();

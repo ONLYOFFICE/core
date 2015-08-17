@@ -1,8 +1,9 @@
 
 #include "AF12Criteria.h"
+#include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 
 BiffStructurePtr AF12Criteria::clone()

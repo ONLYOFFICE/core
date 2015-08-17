@@ -9,7 +9,7 @@
 #include <Logic/Biff_unions/SXADDLSXFILTERS12.h>
 
 namespace XLS
-{;
+{
 
 
 PIVOTADDL::PIVOTADDL()

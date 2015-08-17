@@ -2,7 +2,7 @@
 #include "String.h"
 
 namespace XLS
-{;
+{
 
 String::String()
 {

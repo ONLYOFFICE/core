@@ -51,9 +51,6 @@ win32 {
     DEFINES += \
         LIBXML_READER_ENABLED
 
-INCLUDEPATH += ../XlsFormat
-INCLUDEPATH += ../Common
-INCLUDEPATH += ../../Common
 }
 #################### WINDOWS #####################
 
@@ -64,9 +61,12 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
         _LINUX \
         _LINUX_QT
 
-INCLUDEPATH += /usr/include/libxml2
+
 }
 #################### LINUX ########################
+
+INCLUDEPATH += ../XlsFormat
+INCLUDEPATH += ../Common
 
 SOURCES +=  \
     ../XlsFormat/Logic/Biff_records/AlRuns.cpp \
@@ -800,7 +800,17 @@ SOURCES +=  \
     ../XlsXlsxConverter/xlsx_package.cpp \
     ../XlsXlsxConverter/xlsx_protection.cpp \
     ../XlsXlsxConverter/xlsx_tablecontext.cpp \
-    ../XlsXlsxConverter/xlsx_textcontext.cpp
+    ../XlsXlsxConverter/xlsx_textcontext.cpp \
+    ../XlsFormat/Logic/AnyObject.cpp \
+    ../XlsFormat/Logic/AnySubstream.cpp \
+    ../XlsFormat/Logic/BinProcessor.cpp \
+    ../XlsFormat/Logic/ChartSheetSubstream.cpp \
+    ../XlsFormat/Logic/CompositeObject.cpp \
+    ../XlsFormat/Logic/GlobalsSubstream.cpp \
+    ../XlsFormat/Logic/GlobalWorkbookInfo.cpp \
+    ../XlsFormat/Logic/MacroSheetSubstream.cpp \
+    ../XlsFormat/Logic/WorkbookStreamObject.cpp \
+    ../XlsFormat/Logic/WorksheetSubstream.cpp
 
 
 
@@ -1550,7 +1560,22 @@ HEADERS +=  \
     ../XlsXlsxConverter/xlsx_package.h \
     ../XlsXlsxConverter/xlsx_protection.h \
     ../XlsXlsxConverter/xlsx_tablecontext.h \
-    ../XlsXlsxConverter/xlsx_textcontext.h
+    ../XlsXlsxConverter/xlsx_textcontext.h \
+    ../XlsFormat/Logic/AnyObject.h \
+    ../XlsFormat/Logic/AnySubstream.h \
+    ../XlsFormat/Logic/BaseObject.h \
+    ../XlsFormat/Logic/BaseObjectDocument.h \
+    ../XlsFormat/Logic/BinProcessor.h \
+    ../XlsFormat/Logic/BinProcessor.h.autosave \
+    ../XlsFormat/Logic/ChartSheetSubstream.h \
+    ../XlsFormat/Logic/CompositeObject.h \
+    ../XlsFormat/Logic/GlobalsSubstream.h \
+    ../XlsFormat/Logic/GlobalWorkbookInfo.h \
+    ../XlsFormat/Logic/MacroSheetSubstream.h \
+    ../XlsFormat/Logic/WorkbookStreamObject.h \
+    ../XlsFormat/Logic/WorksheetSubstream.h \
+    ../XlsFormat/Logic/XlsElementsType.h \
+    ../XlsXlsxConverter/ShapeType.h
 
 
 

@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../Biff_records/BiffRecord.h"
-#include "BiffString.h"
+#include <Logic/Biff_records/BiffRecord.h>
+#include <Logic/Biff_structures/BiffString.h>
 #include "AFDOper.h"
 
 namespace XLS
-{;
+{
 
 class AF12Criteria: public BiffStructure
 {	

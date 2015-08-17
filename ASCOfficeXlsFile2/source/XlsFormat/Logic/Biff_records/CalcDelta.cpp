@@ -2,7 +2,7 @@
 #include "CalcDelta.h"
 
 namespace XLS
-{;
+{
 
 CalcDelta::CalcDelta()
 {

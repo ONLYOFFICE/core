@@ -3,7 +3,7 @@
 #include "BiffRecordContinued.h"
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of SxItm record in BIFF8

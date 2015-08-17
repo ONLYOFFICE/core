@@ -15,7 +15,7 @@
 #include <Logic/Biff_unions/TEXTPROPS.h>
 
 namespace XLS
-{;
+{
 
 
 SERIESFORMAT::SERIESFORMAT()

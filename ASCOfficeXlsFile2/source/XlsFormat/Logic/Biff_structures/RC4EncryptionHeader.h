@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/BitMarkedStructs.h>
 
 namespace CRYPTO
-{;
+{
 
 
 class RC4EncryptionHeader : public XLS::BiffStructure

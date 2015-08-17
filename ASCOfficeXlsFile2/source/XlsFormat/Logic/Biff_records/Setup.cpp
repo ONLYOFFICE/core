@@ -2,7 +2,7 @@
 #include "Setup.h"
 
 namespace XLS
-{;
+{
 
 Setup::Setup()
 // the following may appear uninitialized but we have to store them

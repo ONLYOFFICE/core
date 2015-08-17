@@ -2,7 +2,7 @@
 #include "Lel.h"
 
 namespace XLS
-{;
+{
 
 Lel::Lel()
 {

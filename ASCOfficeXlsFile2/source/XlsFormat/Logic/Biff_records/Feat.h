@@ -7,7 +7,7 @@
 #include <Logic/Biff_structures/FeatSmartTag.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Feat record in BIFF8

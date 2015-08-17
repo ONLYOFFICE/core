@@ -20,7 +20,7 @@
 #include <Logic/Biff_unions/AUTOFILTER.h>
 
 namespace XLS
-{;
+{
 
 
 CUSTOMVIEW::CUSTOMVIEW()
@@ -61,7 +61,10 @@ const bool CUSTOMVIEW::loadContent(BinProcessor& proc)
 	proc.optional<RightMargin>();
 	proc.optional<TopMargin>();
 	proc.optional<BottomMargin>();
-	proc.optional(Pls(proc.getParent()));//??????
+
+    Pls pls(proc.getParent());
+    proc.optional(pls);//??????
+
 	proc.optional<Setup>();
 	proc.optional<PrintSize>();
 	proc.optional<HeaderFooter>();

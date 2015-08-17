@@ -2,7 +2,7 @@
 #include "DVal.h"
 
 namespace XLS
-{;
+{
 
 DVal::DVal()
 {

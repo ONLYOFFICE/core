@@ -3,7 +3,7 @@
 #include "SerAr.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

@@ -2,7 +2,7 @@
 #include "BigName.h"
 
 namespace XLS
-{;
+{
 
 BigName::BigName()
 {

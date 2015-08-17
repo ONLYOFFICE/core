@@ -2,7 +2,7 @@
 #include "RecipName.h"
 
 namespace XLS
-{;
+{
 
 RecipName::RecipName()
 {

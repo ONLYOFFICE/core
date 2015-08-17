@@ -2,7 +2,7 @@
 #include "SxTbpg.h"
 
 namespace XLS
-{;
+{
 
 SxTbpg::SxTbpg()
 {

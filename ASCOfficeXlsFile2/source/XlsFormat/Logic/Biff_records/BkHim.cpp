@@ -2,7 +2,7 @@
 #include "BkHim.h"
 
 namespace XLS
-{;
+{
 
 BkHim::BkHim()
 {

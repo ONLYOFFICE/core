@@ -4,7 +4,7 @@
 #include "LongRGB.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

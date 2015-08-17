@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 
 BiffStructurePtr BookExt_Conditional11::clone()

@@ -15,7 +15,7 @@ namespace XLS
 }
 
 namespace ODRAW
-{;
+{
 		enum MSOPATHTYPE
 		{
 			msopathLineTo,

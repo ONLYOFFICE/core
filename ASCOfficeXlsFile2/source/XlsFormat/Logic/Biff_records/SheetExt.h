@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/SheetExtOptional.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of SheetExt record in BIFF8

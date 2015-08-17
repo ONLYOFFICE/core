@@ -10,7 +10,7 @@ namespace XLS
 
 
 namespace ODRAW
-{;
+{
 
 class OfficeArtBStoreContainer : public OfficeArtRecord
 {

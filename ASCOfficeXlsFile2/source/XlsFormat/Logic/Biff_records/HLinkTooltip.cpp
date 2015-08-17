@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/FrtRefHeaderNoGrbit.h>
 
 namespace XLS
-{;
+{
 
 HLinkTooltip::HLinkTooltip()
 {

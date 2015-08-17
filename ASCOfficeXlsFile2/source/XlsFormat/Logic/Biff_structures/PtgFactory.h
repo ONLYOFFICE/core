@@ -5,7 +5,7 @@
 #include "Ptg.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

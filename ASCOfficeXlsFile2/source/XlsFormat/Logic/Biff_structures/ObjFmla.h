@@ -5,7 +5,7 @@
 #include "PictFmlaEmbedInfo.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

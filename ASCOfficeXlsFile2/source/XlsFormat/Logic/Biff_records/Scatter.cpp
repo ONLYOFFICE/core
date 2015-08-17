@@ -2,7 +2,7 @@
 #include "Scatter.h"
 
 namespace XLS
-{;
+{
 
 Scatter::Scatter()
 {

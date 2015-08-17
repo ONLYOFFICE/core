@@ -2,7 +2,7 @@
 #include "Pie.h"
 
 namespace XLS
-{;
+{
 
 Pie::Pie()
 {

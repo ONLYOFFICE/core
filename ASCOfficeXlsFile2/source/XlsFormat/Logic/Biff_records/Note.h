@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/NoteRR.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Note record in BIFF8

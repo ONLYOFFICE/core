@@ -2,7 +2,7 @@
 #include "HideObj.h"
 
 namespace XLS
-{;
+{
 
 HideObj::HideObj()
 {

@@ -2,7 +2,7 @@
 #include "HorizontalPageBreaks.h"
 
 namespace XLS
-{;
+{
 
 HorizontalPageBreaks::HorizontalPageBreaks()
 {

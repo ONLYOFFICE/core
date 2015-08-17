@@ -2,7 +2,7 @@
 #include "Guts.h"
 
 namespace XLS
-{;
+{
 
 Guts::Guts()
 {

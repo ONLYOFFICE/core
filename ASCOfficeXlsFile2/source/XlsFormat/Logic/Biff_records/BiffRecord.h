@@ -1,11 +1,11 @@
 #pragma once
 
-#include "../BaseObject.h"
-#include "../Biff_structures/BitMarkedStructs.h"
-#include "../BinProcessor.h"
+#include <Logic/BaseObject.h> 
+#include <Logic/Biff_structures/BitMarkedStructs.h> 
+#include <Logic/BinProcessor.h>
 
 namespace XLS
-{;
+{
 
 class CFStream;
 

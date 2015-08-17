@@ -3,7 +3,7 @@
 #include <Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h>
 
 namespace XLS
-{;
+{
 
 TxO::TxO():fmla(false)
 {

@@ -2,7 +2,7 @@
 #include "FeatHdr11.h"
 
 namespace XLS
-{;
+{
 
 FeatHdr11::FeatHdr11()
 {

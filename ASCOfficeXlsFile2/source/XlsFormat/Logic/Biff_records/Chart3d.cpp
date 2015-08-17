@@ -2,7 +2,7 @@
 #include "Chart3d.h"
 
 namespace XLS
-{;
+{
 
 Chart3d::Chart3d()
 {

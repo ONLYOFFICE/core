@@ -2,7 +2,7 @@
 #include "CellWatch.h"
 
 namespace XLS
-{;
+{
 
 CellWatch::CellWatch()
 {

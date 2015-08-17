@@ -2,7 +2,7 @@
 #include "FileSharing.h"
 
 namespace XLS
-{;
+{
 
 FileSharing::FileSharing()
 {

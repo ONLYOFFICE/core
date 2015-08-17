@@ -4,7 +4,7 @@
 //#include <Logic/Biff_unions/InterfaceHdr.h>
 
 namespace XLS
-{;
+{
 
 
 SUB::SUB()

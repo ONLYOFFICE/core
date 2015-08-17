@@ -2,7 +2,7 @@
 #include "CrtLink.h"
 
 namespace XLS
-{;
+{
 
 CrtLink::CrtLink()
 {

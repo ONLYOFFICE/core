@@ -2,7 +2,7 @@
 #include "OleDbConn.h"
 
 namespace XLS
-{;
+{
 
 OleDbConn::OleDbConn()
 {

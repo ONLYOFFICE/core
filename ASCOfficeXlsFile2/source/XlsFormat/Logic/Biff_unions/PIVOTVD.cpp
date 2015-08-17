@@ -5,7 +5,7 @@
 #include <Logic/Biff_records/SXVDEx.h>
 
 namespace XLS
-{;
+{
 
 
 PIVOTVD::PIVOTVD()

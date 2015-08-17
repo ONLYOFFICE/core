@@ -2,7 +2,7 @@
 #include "Qsi.h"
 
 namespace XLS
-{;
+{
 
 Qsi::Qsi()
 {

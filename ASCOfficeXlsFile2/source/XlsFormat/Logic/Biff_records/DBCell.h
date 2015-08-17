@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/FileOffset.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of DBCell record in BIFF8

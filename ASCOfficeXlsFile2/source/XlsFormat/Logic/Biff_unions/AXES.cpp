@@ -9,7 +9,7 @@
 #include <Logic/Biff_unions/FRAME.h>
 
 namespace XLS
-{;
+{
 
 
 AXES::AXES()

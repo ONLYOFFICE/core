@@ -7,7 +7,7 @@
 #include <boost/algorithm/string.hpp>
 
 namespace XLS
-{;
+{
 
 
 PtgRef3d::PtgRef3d(const CellRef& cell_base_ref_init)

@@ -4,7 +4,7 @@
 #include <Logic/Biff_records/Dv.h>
 
 namespace XLS
-{;
+{
 
 
 DVAL::DVAL()

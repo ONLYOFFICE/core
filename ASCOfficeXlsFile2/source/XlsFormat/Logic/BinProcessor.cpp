@@ -67,6 +67,15 @@ BinReaderProcessor::BinReaderProcessor(CFStreamCacheReader& reader, BaseObject* 
 //{
 //}
 
+ // Load the specified child object specified number of times
+ // fromN = 0 means the object is optional
+ // toN = 0 means no upper limit
+ template<class T>
+ const int repeated(const int fromN, const int toN)
+ {
+     T obj;
+     return repeated(obj, fromN, toN);
+ }
 const bool BinReaderProcessor::optional(BaseObject& object)
 {
 	return readChild(object, false);

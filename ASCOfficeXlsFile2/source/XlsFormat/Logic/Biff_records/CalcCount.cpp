@@ -2,7 +2,7 @@
 #include "CalcCount.h"
 
 namespace XLS
-{;
+{
 
 CalcCount::CalcCount()
 {

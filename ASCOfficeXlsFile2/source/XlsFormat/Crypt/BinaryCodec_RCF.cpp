@@ -3,7 +3,7 @@
 #include "BinaryCodec_RCF.h"
 
 namespace CRYPT
-{;
+{
 
 BinaryCodec_RCF::BinaryCodec_RCF()
 {

@@ -3,7 +3,7 @@
 #include "BiffRecordContinued.h"
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of SXVDEx record in BIFF8

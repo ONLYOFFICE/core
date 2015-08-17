@@ -2,7 +2,7 @@
 #include "SXPI.h"
 
 namespace XLS
-{;
+{
 
 SXPI::SXPI()
 {

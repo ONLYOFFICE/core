@@ -2,7 +2,7 @@
 #include "LRng.h"
 
 namespace XLS
-{;
+{
 
 LRng::LRng()
 {

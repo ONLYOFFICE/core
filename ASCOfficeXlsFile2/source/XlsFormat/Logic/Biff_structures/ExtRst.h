@@ -6,7 +6,7 @@
 #include <Logic/Biff_structures/PhRuns.h>
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

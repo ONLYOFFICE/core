@@ -10,7 +10,7 @@ namespace XLS
 
 
 namespace ODRAW
-{;
+{
 
 class OfficeArtSplitMenuColorContainer : public OfficeArtRecord
 {

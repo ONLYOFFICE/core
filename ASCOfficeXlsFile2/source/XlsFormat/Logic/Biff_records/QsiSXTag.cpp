@@ -2,7 +2,7 @@
 #include "QsiSXTag.h"
 
 namespace XLS
-{;
+{
 
 QsiSXTag::QsiSXTag()
 {

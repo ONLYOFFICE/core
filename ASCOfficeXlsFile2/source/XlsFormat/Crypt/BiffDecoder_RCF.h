@@ -7,7 +7,7 @@
 #include <vector>
 
 namespace CRYPT
-{;
+{
 
 const long BIFF_RCF_BLOCKSIZE          = 1024;
 

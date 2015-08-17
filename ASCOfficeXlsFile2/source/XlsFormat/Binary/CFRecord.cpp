@@ -7,7 +7,7 @@
 #endif
 
 namespace XLS
-{;
+{
 
  template<class T>
  CFRecord& operator<<(CFRecord& record, std::vector<T>& vec)

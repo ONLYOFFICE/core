@@ -6,7 +6,7 @@
 
 #include "../XlsElementsType.h"
 
-#include "../../Logging/Log.h"
+#include <Logging/Log.h>
 
 #include "../../Binary/CFRecord.h"
 

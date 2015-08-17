@@ -2,7 +2,7 @@
 #include "Backup.h"
 
 namespace XLS
-{;
+{
 
 Backup::Backup()
 {

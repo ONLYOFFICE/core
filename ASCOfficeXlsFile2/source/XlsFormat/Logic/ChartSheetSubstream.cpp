@@ -78,8 +78,13 @@ const bool ChartSheetSubstream::loadContent(BinProcessor& proc)
 	proc.optional<SXViewLink>();
 	proc.optional<PivotChartBits>();
 	proc.optional<SBaseRef>();
-	proc.optional(MsoDrawingGroup(true));
-	proc.mandatory(OBJECTS(true));
+
+    MsoDrawingGroup mso_drawing_group(true);
+    proc.optional(mso_drawing_group);
+
+    OBJECTS objects(true);
+    proc.mandatory(objects);
+
 	proc.mandatory<Units>();
 	proc.mandatory<CHARTFOMATS>();
 	proc.mandatory<SERIESDATA>();

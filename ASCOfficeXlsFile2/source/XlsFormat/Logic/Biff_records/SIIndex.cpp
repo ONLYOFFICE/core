@@ -2,7 +2,7 @@
 #include "SIIndex.h"
 
 namespace XLS
-{;
+{
 
 SIIndex::SIIndex()
 {

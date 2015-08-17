@@ -2,7 +2,7 @@
 #include "MDXProp.h"
 
 namespace XLS
-{;
+{
 
 MDXProp::MDXProp()
 {

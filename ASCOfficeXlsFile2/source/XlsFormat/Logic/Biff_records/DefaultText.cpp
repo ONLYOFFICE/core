@@ -2,7 +2,7 @@
 #include "DefaultText.h"
 
 namespace XLS
-{;
+{
 
 DefaultText::DefaultText()
 {

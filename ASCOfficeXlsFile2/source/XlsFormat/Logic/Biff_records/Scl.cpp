@@ -2,7 +2,7 @@
 #include "Scl.h"
 
 namespace XLS
-{;
+{
 
 Scl::Scl()
 {

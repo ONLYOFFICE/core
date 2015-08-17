@@ -2,7 +2,7 @@
 #include "SXVI.h"
 
 namespace XLS
-{;
+{
 
 SXVI::SXVI()
 {

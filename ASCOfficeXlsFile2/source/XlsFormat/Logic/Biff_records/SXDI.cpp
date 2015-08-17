@@ -2,7 +2,7 @@
 #include "SXDI.h"
 
 namespace XLS
-{;
+{
 
 SXDI::SXDI()
 {

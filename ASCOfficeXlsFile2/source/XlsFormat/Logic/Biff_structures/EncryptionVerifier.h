@@ -3,7 +3,7 @@
 #include "BiffStructure.h"
 
 namespace CRYPTO
-{;
+{
 
 class CFRecord;
 

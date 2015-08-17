@@ -4,7 +4,7 @@
 #include <Logic/Biff_unions/UNKNOWNFRT.h>
 
 namespace XLS
-{;
+{
 
 
 SXADDLGROUP::SXADDLGROUP()

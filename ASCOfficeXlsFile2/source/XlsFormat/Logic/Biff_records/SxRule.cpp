@@ -2,7 +2,7 @@
 #include "SxRule.h"
 
 namespace XLS
-{;
+{
 
 SxRule::SxRule()
 {

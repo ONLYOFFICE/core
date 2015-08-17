@@ -4,7 +4,7 @@
 #include "BorderFillInfo.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 class GlobalWorkbookInfo;

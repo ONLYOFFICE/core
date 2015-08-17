@@ -2,7 +2,7 @@
 #include "DxGCol.h"
 
 namespace XLS
-{;
+{
 
 DxGCol::DxGCol()
 {

@@ -2,7 +2,7 @@
 #include "Continue.h"
 
 namespace XLS
-{;
+{
 
 Continue::Continue()
 {

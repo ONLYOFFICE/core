@@ -2,7 +2,7 @@
 #include "AxisLine.h"
 
 namespace XLS
-{;
+{
 
 AxisLine::AxisLine()
 {

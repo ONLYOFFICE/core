@@ -4,8 +4,10 @@
 #include "rtl/cipher.h"
 #include "rtl/digest.h"
 
+#include <string.h>
+
 namespace CRYPT
-{;
+{
 
 /** Encodes and decodes data from protected MSO 97+ documents.
 

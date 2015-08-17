@@ -3,7 +3,7 @@
 #include <Logic/Biff_structures/FrtHeader.h>
 
 namespace XLS
-{;
+{
 
 SheetExt::SheetExt()
 {

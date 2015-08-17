@@ -5,7 +5,7 @@
 #include <simple_xml_writer.h>
 
 namespace XLS
-{;
+{
 
 extern int cellStyleXfs_count;
 

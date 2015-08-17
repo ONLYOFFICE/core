@@ -275,7 +275,7 @@ namespace PdfWriter
 				if (pColors[3 * nIndex + 0] != m_pColors[3 * nIndex + 0]
 					|| pColors[3 * nIndex + 1] != m_pColors[3 * nIndex + 1]
 					|| pColors[3 * nIndex + 2] != m_pColors[3 * nIndex + 2]
-					|| abs(pPoints[nIndex] - m_pColorsPoints[nIndex]) > 0.01)
+					|| fabs(pPoints[nIndex] - m_pColorsPoints[nIndex]) > 0.01)
 					return false;
 			}
 		}
@@ -284,7 +284,7 @@ namespace PdfWriter
 			for (int nIndex = 0; nIndex < nCount; nIndex++)
 			{
 				if (pColors[nIndex] != m_pColors[nIndex]
-					|| abs(pPoints[nIndex] - m_pColorsPoints[nIndex]) > 0.01)
+					|| fabs(pPoints[nIndex] - m_pColorsPoints[nIndex]) > 0.01)
 					return false;
 			}
 		}
@@ -322,10 +322,10 @@ namespace PdfWriter
 	}
 	bool CAxialShading::Compare(double dX0, double dY0, double dX1, double dY1)
 	{
-		if (abs(dX0 - m_dX0) > 0.01
-			|| abs(dY0 - m_dY0) > 0.01
-			|| abs(dX1 - m_dX1) > 0.01
-			|| abs(dY1 - m_dY1) > 0.01)
+		if (fabs(dX0 - m_dX0) > 0.01
+			|| fabs(dY0 - m_dY0) > 0.01
+			|| fabs(dX1 - m_dX1) > 0.01
+			|| fabs(dY1 - m_dY1) > 0.01)
 			return false;
 
 		return true;
@@ -358,12 +358,12 @@ namespace PdfWriter
 	}
 	bool CRadialShading::Compare(double dX0, double dY0, double dR0, double dX1, double dY1, double dR1)
 	{
-		if (abs(dX0 - m_dX0) > 0.01
-			|| abs(dY0 - m_dY0) > 0.01
-			|| abs(dR0 - m_dR0) > 0.01
-			|| abs(dX1 - m_dX1) > 0.01
-			|| abs(dY1 - m_dY1) > 0.01
-			|| abs(dR1 - m_dR1) > 0.01)
+		if (fabs(dX0 - m_dX0) > 0.01
+			|| fabs(dY0 - m_dY0) > 0.01
+			|| fabs(dR0 - m_dR0) > 0.01
+			|| fabs(dX1 - m_dX1) > 0.01
+			|| fabs(dY1 - m_dY1) > 0.01
+			|| fabs(dR1 - m_dR1) > 0.01)
 			return false;
 
 		return true;

@@ -400,11 +400,11 @@ private:
 				std::vector<double> vPattern;
 				for (LONG lIndex = 0; lIndex < lSize; lIndex++)
 				{
-					if (lIndex > 1 && abs(pPattern[lIndex]) < 0.001)
+					if (lIndex > 1 && fabs(pPattern[lIndex]) < 0.001)
 					{
 						if (0 == lIndex % 2)
 						{
-							if (abs(pPattern[lIndex + 1]) < 0.001)
+							if (fabs(pPattern[lIndex + 1]) < 0.001)
 							{
 								lIndex++;
 							}
@@ -864,7 +864,7 @@ private:
 				LONG lColor2 = oPoint2.lColor;
 
 				double dDiff = dPoint2 - dPoint1;
-				if (abs(dDiff) < 0)
+				if (fabs(dDiff) < 0)
 					return lColor1;
 
 				TColor oColor1 = lColor1;
@@ -1346,12 +1346,12 @@ private:
 		}
 		bool IsIdentity() const
 		{
-			if (abs(m11 - 1) < 0.001
-				&& abs(m12) < 0.001
-				&& abs(m21) < 0.001
-				&& abs(m22 - 1) < 0.001
-				&& abs(dx) < 0.001
-				&& abs(dy) < 0.001)
+			if (fabs(m11 - 1) < 0.001
+				&& fabs(m12) < 0.001
+				&& fabs(m21) < 0.001
+				&& fabs(m22 - 1) < 0.001
+				&& fabs(dx) < 0.001
+				&& fabs(dy) < 0.001)
 				return true;
 
 			return false;

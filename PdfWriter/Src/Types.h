@@ -73,12 +73,12 @@ namespace PdfWriter
 		}
 		bool IsIdentity() const
 		{
-			if (abs(m11 - 1) < 0.001
-				&& abs(m12) < 0.001
-				&& abs(m21) < 0.001
-				&& abs(m22 - 1) < 0.001
-				&& abs(x) < 0.001
-				&& abs(y) < 0.001)
+			if (fabs(m11 - 1) < 0.001
+				&& fabs(m12) < 0.001
+				&& fabs(m21) < 0.001
+				&& fabs(m22 - 1) < 0.001
+				&& fabs(x) < 0.001
+				&& fabs(y) < 0.001)
 				return true;
 
 			return false;
@@ -93,12 +93,12 @@ namespace PdfWriter
 		}
 		bool operator==(const CMatrix& oMatrix)
 		{
-			if (abs(oMatrix.m11 - m11) > 0.001
-				|| abs(oMatrix.m12 - m12) > 0.001
-				|| abs(oMatrix.m21 - m21) > 0.001
-				|| abs(oMatrix.m22 - m22) > 0.001
-				|| abs(oMatrix.x - x) > 0.001
-				|| abs(oMatrix.y - y) > 0.001)
+			if (fabs(oMatrix.m11 - m11) > 0.001
+				|| fabs(oMatrix.m12 - m12) > 0.001
+				|| fabs(oMatrix.m21 - m21) > 0.001
+				|| fabs(oMatrix.m22 - m22) > 0.001
+				|| fabs(oMatrix.x - x) > 0.001
+				|| fabs(oMatrix.y - y) > 0.001)
 				return false;
 
 			return true;

@@ -1550,6 +1550,11 @@ namespace BinXlsxRW {
 				pDefinedName->m_oLocalSheetId.Init();
 				pDefinedName->m_oLocalSheetId->SetValue(m_oBufferedStream.GetLong());
 			}
+            else if(c_oSerDefinedNameTypes::Hidden == type)
+            {
+                 pDefinedName->m_oHidden.Init();
+                 pDefinedName->m_oHidden->SetValue(false != m_oBufferedStream.GetBool() ? SimpleTypes::onoffTrue : SimpleTypes::onoffFalse);
+            }
 			return res;
 		};
 	};

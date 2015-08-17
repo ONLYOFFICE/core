@@ -13,6 +13,21 @@ namespace DocFileFormat
 			this->Path		= _T( "m@7,l@8,m@5,21600l@6,21600e" ); 
 			this->Textpath	= _T(" on=\"t\" style=\"v-text-kern:t\" fitpath=\"t\"");
 
+			Formulas.push_back(_T("sum #0 0 10800"));
+			Formulas.push_back(_T("prod #0 2 1"));
+			Formulas.push_back(_T("sum 21600 0 @1"));
+			Formulas.push_back(_T("sum 0 0 @2"));
+			Formulas.push_back(_T("sum 21600 0 @3"));
+			Formulas.push_back(_T("if @0 @3 0"));
+			Formulas.push_back(_T("if @0 21600 @1"));
+			Formulas.push_back(_T("if @0 0 @2"));
+			Formulas.push_back(_T("if @0 @4 21600"));
+			Formulas.push_back(_T("mid @5 @6"));
+			Formulas.push_back(_T("mid @8 @5"));
+			Formulas.push_back(_T("mid @7 @8"));
+			Formulas.push_back(_T("mid @6 @7"));
+			Formulas.push_back(_T("sum @6 0 @5"));
+
 			 AdjustmentValues	=	_T("10800");
 		}
 

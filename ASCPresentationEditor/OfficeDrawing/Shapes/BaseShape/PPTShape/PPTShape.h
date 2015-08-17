@@ -455,6 +455,7 @@ public:
 		m_strPathLimoX = ((CPPTShape*)Shape)->m_strPathLimoX;
 		m_strPathLimoY = ((CPPTShape*)Shape)->m_strPathLimoY;
 
+		m_arStringTextRects.clear();
 		m_arStringTextRects.insert(m_arStringTextRects.end(), ((CPPTShape*)Shape)->m_arStringTextRects.begin(), ((CPPTShape*)Shape)->m_arStringTextRects.end());
 		
 		return CBaseShape::SetProperties(Shape);
@@ -476,6 +477,7 @@ public:
 		((CPPTShape*)Shape)->m_strPathLimoX = m_strPathLimoX;
 		((CPPTShape*)Shape)->m_strPathLimoY = m_strPathLimoY;
 
+		((CPPTShape*)Shape)->m_arStringTextRects.clear();
 		((CPPTShape*)Shape)->m_arStringTextRects.insert(((CPPTShape*)Shape)->m_arStringTextRects.end(), m_arStringTextRects.begin(), m_arStringTextRects.end());
 
 		return CBaseShape::SetToDublicate(Shape);
@@ -540,6 +542,14 @@ public:
 
 		dPercentRight	= (double)(lWidth - lRight)		/ lWidth;
 		dPercentBottom	= (double)(lHeight - lBottom)	/ lHeight;
+	}
+
+	bool IsWordArt()
+	{
+		if (m_eType >= PPTShapes::ShapeType::sptCTextPlain && m_eType <= PPTShapes::ShapeType::sptCTextCanDown)
+			return true;
+		else
+			return false;
 	}
 
 protected:

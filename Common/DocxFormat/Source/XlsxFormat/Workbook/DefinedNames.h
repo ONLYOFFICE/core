@@ -40,9 +40,16 @@ namespace OOX
 				}
 				if(m_oLocalSheetId.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" localSheetId=\"%d\""), m_oLocalSheetId->GetValue());
+                    CString sVal;
+                    sVal.Format(_T(" localSheetId=\"%d\""), m_oLocalSheetId->GetValue());
 					writer.WriteString(sVal);
 				}
+                if(m_oHidden.IsInit())
+                {
+                    CString sVal;
+                    sVal.Format(_T(" hidden=\"%ls\""), m_oHidden->ToString2(SimpleTypes::onofftostring1));
+                    writer.WriteString(sVal);
+                }
 				writer.WriteString(_T(">"));
 				if(m_oRef.IsInit())
 					writer.WriteString(XmlUtils::EncodeXmlString(m_oRef.get()));

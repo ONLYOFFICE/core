@@ -31,7 +31,12 @@ namespace OOX
 				writer.WriteString(_T("<cellStyle"));
 				if(m_oName.IsInit())
 				{
-					CString sVal;sVal.Format(_T(" name=\"%ls\""), XmlUtils::EncodeXmlString(m_oName.get()));
+					//CString sVal;sVal.Format(_T(" name=\"%ls\""), XmlUtils::EncodeXmlString(m_oName.get()));
+                    
+                    CString sVal(_T(" name=\""));
+                    sVal += XmlUtils::EncodeXmlString(m_oName.get());
+                    sVal += CString(_T("\""));
+                    
 					writer.WriteString(sVal);
 				}
 				if(m_oXfId.IsInit())

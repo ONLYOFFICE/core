@@ -1576,14 +1576,9 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 
         CString strXmlPPTX;
 
-#ifdef ENABLE_PPT_TO_PPTX_CONVERT
-        strXmlPPTX= oShapeElem.ConvertPPTShapeToPPTX(true);
-#endif
 		PPTX::Logic::Shape* pShape = new PPTX::Logic::Shape();
 		
-		XmlUtils::CXmlNode oNodeG;
-		oNodeG.FromXmlString(strXmlPPTX);
-		pShape->spPr.Geometry = oNodeG;
+		
 
 		/*
 #ifdef _DEBUG
@@ -1613,13 +1608,13 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 		if (!pShape->TextBoxBodyPr.is_init())
 			pShape->TextBoxBodyPr = new PPTX::Logic::BodyPr();
 
-		PPTShapes::ShapeType eShapeType = pPPTShape->m_eType;
-		if (eShapeType && eShapeType >= 136 && eShapeType<=175 )
+		if (pPPTShape->IsWordArt())
 		{
+			PPTShapes::ShapeType eShapeType = pPPTShape->m_eType;
 			SimpleTypes::ETextShapeType eTextShapeType;
 			switch (eShapeType)
 			{
-				case PPTShapes::ShapeType::sptCTextPlain:					eTextShapeType = SimpleTypes::ETextShapeType::textshapetypeTextNoShape; break;
+				case PPTShapes::ShapeType::sptCTextPlain:					eTextShapeType = SimpleTypes::ETextShapeType::textshapetypeTextPlain; break;
 				case PPTShapes::ShapeType::sptCTextArchUp:					eTextShapeType = SimpleTypes::ETextShapeType::textshapetypeTextArchUp; break;
 				case PPTShapes::ShapeType::sptCTextArchDown:				eTextShapeType = SimpleTypes::ETextShapeType::textshapetypeTextArchDown; break;
 				case PPTShapes::ShapeType::sptCTextButton:					eTextShapeType = SimpleTypes::ETextShapeType::textshapetypeTextButton; break;
@@ -1668,7 +1663,103 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 			oPrstTxWarpNode.FromXmlString(strPrstTxWarp);
 
 			pShape->TextBoxBodyPr->prstTxWarp = oPrstTxWarpNode;
+
+			//convert text
+			XmlUtils::CXmlNodes oChilds;
+			if (oNodeShape.GetNodes(_T("*"), oChilds))
+			{
+				CString sTxbxContent = _T("<w:txbxContent><w:p><w:r>");
+
+				LONG lChildsCount = oChilds.GetCount();
+				CString strString = _T("");
+				BYTE lAlpha;
+				bool bOpacity = false;
+				PPTX::Logic::ColorModifier oMod;				
+
+				for (LONG k = 0; k < lChildsCount; k++)
+				{
+					XmlUtils::CXmlNode oNodeP;
+					oChilds.GetAt(k, oNodeP);
+
+					CString strNameP = XmlUtils::GetNameNoNS(oNodeP.GetName());
+					if (_T("textpath") == strNameP)
+					{
+						strString = oNodeP.GetAttribute(_T("string"));
+						strString.Replace(_T("\n"), _T("&#xA;"));
+					}
+					else if (_T("fill") == strNameP)
+					{
+						bOpacity = true;
+						nullable_string sOpacity;
+						oNodeP.ReadAttributeBase(L"opacity", sOpacity);
+						lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
+						oMod.name = _T("alpha");
+						int nA = (int)(lAlpha * 100000.0 / 255.0);
+						oMod.val = nA;
+					}
+				}
+
+				nullable_string sFillColor; 
+				nullable_string sStrokeColor;
+				nullable_string sStrokeWeight;
+				oNodeShape.ReadAttributeBase(L"fillcolor", sFillColor);
+				oNodeShape.ReadAttributeBase(L"strokecolor", sStrokeColor);
+				oNodeShape.ReadAttributeBase(L"strokeweight", sStrokeWeight);
+				if (sFillColor.is_init() || sStrokeColor.is_init())
+				{
+					sTxbxContent += _T("<w:rPr>");
+					if (sFillColor.is_init())
+					{
+						sTxbxContent += _T("<w14:textFill>");
+
+						NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
+						PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+						pSolid->m_namespace = _T("a");
+						pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+						pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
+						if (bOpacity)
+							pSolid->Color.Color->Modifiers.push_back(oMod);
+						sTxbxContent += pSolid->toXML() + _T("</w14:textFill>");
+					}
+					if (sStrokeColor.is_init())
+					{
+						double m_dValue;
+						CString strStrokeW;
+						if (sStrokeWeight.is_init())
+						{
+							CString strW(*sStrokeWeight);
+							strW.Remove('pt');
+							m_dValue = _wtof(strW);
+						}
+						else
+							m_dValue = 1;
+						strStrokeW.Format(_T("%d"), (int)Pt_To_Emu(m_dValue));
+						sTxbxContent += _T("<w14:textOutline w14:w=\"") + strStrokeW + _T("\">");
+
+						NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sStrokeColor);
+						PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+						pSolid->m_namespace = _T("a");
+						pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+						pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
+
+						sTxbxContent += pSolid->toXML() + _T("</w14:textOutline>");						
+					}					
+				}
+				sTxbxContent += _T("</w:rPr><w:t>") + strString + _T("</w:t></w:r></w:p></w:txbxContent>");
+				pShape->TextBoxShape = sTxbxContent;
+			}
+			strXmlPPTX = _T("<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");			
 		}
+		else
+		{
+#ifdef ENABLE_PPT_TO_PPTX_CONVERT
+			strXmlPPTX = oShapeElem.ConvertPPTShapeToPPTX(true);
+#endif
+		}
+
+		XmlUtils::CXmlNode oNodeG;
+		oNodeG.FromXmlString(strXmlPPTX);
+		pShape->spPr.Geometry = oNodeG;
 
 		XmlUtils::CXmlNode oNodeTextBox;
 		if (oNodeShape.GetNode(_T("v:textbox"), oNodeTextBox))
@@ -1754,8 +1845,6 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 		oProps.IsTop = bIsTop;
 		CString strMainPos = GetDrawingMainProps(oNodeShape, oCSSParser, oProps);
 /////////////////////////////////////////text options
-		// в старом офисе нету такого флага. всегда - не поворачивать
-		pShape->TextBoxBodyPr->upright = true;
 
 		if (oCSSParser.m_mapSettings.size() > 0)
 		{
@@ -1870,7 +1959,8 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 
 		elem.InitElem(pShape);
 
-		CheckPenShape(elem, oNodeShape, pPPTShape->m_eType, pPPTShape);
+		if (!pPPTShape->IsWordArt())
+			CheckPenShape(elem, oNodeShape, pPPTShape->m_eType, pPPTShape);		
 		CheckBrushShape(elem, oNodeShape, pPPTShape->m_eType, pPPTShape);
 	}
 
@@ -2772,7 +2862,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 
 	nullable_string sFillColor;
 	oNode.ReadAttributeBase(L"fillcolor", sFillColor);
-	if (sFillColor.is_init())
+	if (sFillColor.is_init() && !pPPTShape->IsWordArt())
 	{
 		NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
 
@@ -2966,20 +3056,29 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 	// default params
 	if (!pShape->spPr.Fill.Fill.is_init())
 	{
-		PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
-		pSolid->m_namespace = _T("a");
-		pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-		pSolid->Color.Color->SetRGB(0xFF, 0xFF, 0xFF);
-		pShape->spPr.Fill.Fill = pSolid;
-
-		if (sOpacity.is_init())
+		if (pPPTShape->IsWordArt())
 		{
-			BYTE lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
-			PPTX::Logic::ColorModifier oMod;
-			oMod.name = _T("alpha");
-			int nA = (int)(lAlpha * 100000.0 / 255.0);
-			oMod.val = nA;
-			pSolid->Color.Color->Modifiers.push_back(oMod);
+			PPTX::Logic::NoFill* pNoFill = new PPTX::Logic::NoFill();
+			pNoFill->m_namespace = _T("a");
+			pShape->spPr.Fill.Fill = pNoFill;
+		}
+		else
+		{
+			PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+			pSolid->m_namespace = _T("a");
+			pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+			pSolid->Color.Color->SetRGB(0xFF, 0xFF, 0xFF);
+			pShape->spPr.Fill.Fill = pSolid;
+
+			if (sOpacity.is_init())
+			{
+				BYTE lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
+				PPTX::Logic::ColorModifier oMod;
+				oMod.name = _T("alpha");
+				int nA = (int)(lAlpha * 100000.0 / 255.0);
+				oMod.val = nA;
+				pSolid->Color.Color->Modifiers.push_back(oMod);
+			}
 		}
 	}
 }

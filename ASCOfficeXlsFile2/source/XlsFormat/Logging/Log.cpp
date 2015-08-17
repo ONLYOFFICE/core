@@ -51,4 +51,4 @@ void error(const std::string& message)
 }
 
 
-}; // namespace Log
+}

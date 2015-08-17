@@ -2,8 +2,7 @@
 #include "CFStreamCacheReader.h"
 #include "CFRecord.h"
 #include "CFStream.h"
-#include <Logic/Biff_records/BOF.h>
-//#include <Exception/RequestedRecordNotFound.h>
+#include "../Logic/Biff_records/BOF.h"
 
 
 

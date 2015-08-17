@@ -23,22 +23,6 @@ BiffStructurePtr DXFId::clone()
 }
 
 
-//void DXFId::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//
-//	own_tag->setAttribute(L"index", index);
-//}
-//
-//
-//const bool DXFId::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### DXFId record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! DXFId record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
-
-
 void DXFId::store(CFRecord& record)
 {
 	record << index;

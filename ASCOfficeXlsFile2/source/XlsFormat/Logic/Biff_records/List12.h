@@ -1,10 +1,10 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/FrtHeader.h>
-#include <Logic/Biff_structures/List12BlockLevel.h>
-#include <Logic/Biff_structures/List12TableStyleClientInfo.h>
-#include <Logic/Biff_structures/List12DisplayName.h>
+#include "../Biff_structures/FrtHeader.h"
+#include "../Biff_structures/List12BlockLevel.h"
+#include "../Biff_structures/List12TableStyleClientInfo.h">"
+#include "../Biff_structures/List12DisplayName.h"
 
 namespace XLS
 {;

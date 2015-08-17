@@ -73,11 +73,6 @@ void CellRef::fromString(const std::wstring& str)
 }
 
 
-CellRef::operator const _variant_t () const 
-{
-	return toString().c_str();
-}
-
 
 CellRef::operator const std::wstring  () const 
 {

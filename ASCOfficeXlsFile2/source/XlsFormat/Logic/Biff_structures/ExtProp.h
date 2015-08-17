@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/FullColorExt.h>
-#include <Logic/Biff_structures/XFExtGradient.h>
+#include "FullColorExt.h"
+#include "XFExtGradient.h"
 
 namespace XLS
 {;

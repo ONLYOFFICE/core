@@ -1,6 +1,6 @@
 
 #include "CompressPictures.h"
-#include <Logic/Biff_structures/FrtHeader.h>
+#include "../../Logic/Biff_structures/FrtHeader.h"
 
 namespace XLS
 {;

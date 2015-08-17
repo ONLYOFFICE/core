@@ -1,7 +1,7 @@
 
 
 #include "CodePage.h"
-#include "Binary\CFStream.h"
+#include "../../../Binary/CFStream.h"
 
 namespace OLEPS
 {;

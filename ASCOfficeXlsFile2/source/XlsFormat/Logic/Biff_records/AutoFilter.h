@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/AFDOper.h>
+#include "../Biff_structures/AFDOper.h"
 
 namespace XLS
 {;

@@ -1,7 +1,7 @@
 
 #include "BiffRecordContinued.h"
-#include "Binary/CFStreamCacheReader.h"
-#include "Binary/CFStreamCacheWriter.h"
+#include "../../Binary/CFStreamCacheReader.h"
+#include "../../Binary/CFStreamCacheWriter.h"
 
 
 namespace XLS

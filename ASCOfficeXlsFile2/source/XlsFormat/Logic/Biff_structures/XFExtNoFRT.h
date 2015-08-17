@@ -1,7 +1,7 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/ExtProp.h>
+#include "ExtProp.h"
 
 namespace XLS
 {;

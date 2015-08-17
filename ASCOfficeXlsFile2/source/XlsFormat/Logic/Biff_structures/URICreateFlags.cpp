@@ -22,37 +22,6 @@ XLS::BiffStructurePtr URICreateFlags::clone()
 	return XLS::BiffStructurePtr(new URICreateFlags(*this));
 }
 
-//
-//void URICreateFlags::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//
-//	own_tag->setAttribute(L"createAllowRelative", createAllowRelative);
-//	own_tag->setAttribute(L"createAllowImplicitWildcardScheme", createAllowImplicitWildcardScheme);
-//	own_tag->setAttribute(L"createAllowImplicitFileScheme", createAllowImplicitFileScheme);
-//	own_tag->setAttribute(L"createNoFrag", createNoFrag);
-//	own_tag->setAttribute(L"createNoCanonicalize", createNoCanonicalize);
-//	own_tag->setAttribute(L"createCanonicalize", createCanonicalize);
-//	own_tag->setAttribute(L"createFileUseDosPath", createFileUseDosPath);
-//	own_tag->setAttribute(L"createDecodeExtraInfo", createDecodeExtraInfo);
-//	own_tag->setAttribute(L"createNoDecodeExtraInfo", createNoDecodeExtraInfo);
-//	own_tag->setAttribute(L"createCrackUnknownSchemes", createCrackUnknownSchemes);
-//	own_tag->setAttribute(L"createNoCrackUnknownSchemes", createNoCrackUnknownSchemes);
-//	own_tag->setAttribute(L"createPreProcessHtmlUri", createPreProcessHtmlUri);
-//	own_tag->setAttribute(L"createNoPreProcessHtmlUri", createNoPreProcessHtmlUri);
-//	own_tag->setAttribute(L"createIESettings", createIESettings);
-//	own_tag->setAttribute(L"createNoIESettings", createNoIESettings);
-//	own_tag->setAttribute(L"createNoEncodeForbiddenCharacters", createNoEncodeForbiddenCharacters);
-//}
-//
-//
-//const bool URICreateFlags::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### URICreateFlags record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! URICreateFlags record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
-
 
 void URICreateFlags::store(XLS::CFRecord& record)
 {

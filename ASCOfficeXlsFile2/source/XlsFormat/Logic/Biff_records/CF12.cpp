@@ -1,6 +1,6 @@
 
 #include "CF12.h"
-#include <Logic/Biff_structures/CFMultistate.h>
+#include "../../Logic/Biff_structures/CFMultistate.h"
 
 namespace XLS
 {;

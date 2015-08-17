@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/DXFNumUsr.h>
-#include <Logic/Biff_structures/BitMarkedStructs.h>
+#include "DXFNumUsr.h"
+#include "BitMarkedStructs.h"
 
 namespace XLS
 {;

@@ -1,6 +1,6 @@
 
 #include "Template.h"
-#include <Binary/CFStream.h>
+#include "../../Binary/CFStream.h"
 
 namespace XLS
 {;

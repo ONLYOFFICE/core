@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BiffStructure.h"
-#include <Logic/Biff_structures/XFPropGradient.h>
-#include <Logic/Biff_structures/GradStop.h>
+#include "XFPropGradient.h"
+#include "GradStop.h"
 
 namespace XLS
 {;

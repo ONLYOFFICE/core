@@ -72,43 +72,6 @@ void PtgNameX::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 void PtgNameX::fromString(const std::wstring& word)
 {
  	std::wstring  query = L"root/WorkbookStreamObject/GlobalsSubstream/SUPBOOK";
-//
-//
-//	parent.get();
-//	MSXML2::IXMLDOMNodeListPtr nodes = parent->GetownerDocument()->selectNodes(query);
-//	MSXML2::IXMLDOMElementPtr supbook;
-//	size_t scounter = 0;
-//	while(supbook = nodes->nextNode())
-//	{
-//		MSXML2::IXMLDOMNodeListPtr names = supbook->selectNodes(L"ExternName");
-//		MSXML2::IXMLDOMElementPtr name;
-//		size_t ncounter = 1;
-//		while(name = names->nextNode())
-//		{
-//			MSXML2::IXMLDOMElementPtr addinf = name->selectSingleNode((L"AddinUdf[@udfName = '" + word + L"']").c_str());
-//			if(addinf)
-//			{
-//				nameindex = ncounter;
-//// 				std::wstring query = std::wstring(L"root/WorkbookStreamObject/GlobalsSubstream/SUPBOOK/ExternSheet/XTI[@iSupBook = '") + STR::int2wstr(ncounter) + L"']";
-//				MSXML2::IXMLDOMNodeListPtr xtis = parent->GetownerDocument()->selectNodes(L"root/WorkbookStreamObject/GlobalsSubstream/SUPBOOK/ExternSheet/XTI");
-//				MSXML2::IXMLDOMElementPtr xti;
-//				size_t xcounter = 0;
-//				while(xti = xtis->nextNode())
-//				{
-//					if(_variant_t(std::wstring (L"-2")) == xti->getAttribute(L"itabFirst"))
-//					{
-//						ixti = xcounter;
-//						return;
-//					}
-//					++xcounter;
-//				}
-//				throw;// EXCEPT::LE::WrongIntermediateXMLFormat("Necessary 'XTI' tag was not found.", __FUNCTION__);
-//			}
-//			++ncounter;
-//		}
-//		++scounter;
-//	}	
-//	throw;// EXCEPT::LE::WrongIntermediateXMLFormat("Necessary 'ExternName' tag was not found.", __FUNCTION__);
 }
 
 

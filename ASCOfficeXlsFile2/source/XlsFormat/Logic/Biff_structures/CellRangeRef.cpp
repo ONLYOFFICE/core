@@ -170,11 +170,6 @@ void CellRangeRef::fromString(const std::wstring& str)
 }
 
 
-CellRangeRef::operator const _variant_t () const
-{
-	return toString().c_str();
-}
-
 
 CellRangeRef::operator const std::wstring  () const
 {

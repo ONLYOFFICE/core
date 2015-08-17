@@ -29,7 +29,6 @@ public:
 
 	const std::wstring toString(const bool useShortForm = true) const;
 	void fromString(const std::wstring& str);
-	operator const _variant_t() const;
 	operator const std::wstring  () const;
 
 	const CellRef getTopLeftCell() const;
@@ -48,8 +47,8 @@ public:
 	void operator+=(const CellRef& appended_ref);
 	void operator-=(const CellRef& subtracted_ref);
 
-	virtual void load(CFRecord& record) {};
-	virtual void store(CFRecord& record) {};
+    virtual void load(CFRecord& record) {}
+    virtual void store(CFRecord& record) {}
 
 	long rowFirst;
 	long rowLast;
@@ -78,40 +77,40 @@ template<class NameProducer, class RwType, class ColType, RELATIVE_INFO rel_info
 class CellRangeRef_T : public CellRangeRef
 {
 public:
-	CellRangeRef_T(const std::wstring & str_ref) : CellRangeRef(str_ref) {};
-	CellRangeRef_T() {};
+    CellRangeRef_T(const std::wstring & str_ref) : CellRangeRef(str_ref) {}
+    CellRangeRef_T() {}
 
 	template<class otherNameProducer, class otherRwType, class otherColType, RELATIVE_INFO otherRel_info>
 	CellRangeRef_T(CellRangeRef_T<otherNameProducer, otherRwType, otherColType, otherRel_info>& other)
 	:	CellRangeRef(other)
 	{
-	};
+    }
 
 	CellRangeRef_T(CellRangeRef& other)
 	:	CellRangeRef(other)
 	{
-	};
+    }
 
-	virtual const std::wstring & getClassName() const { return NameProducer()();}
+    virtual const std::string & getClassName() const { return NameProducer()();}
 
 	CellRangeRef_T operator+(const CellRef& appended_ref)
 	{
 		CellRangeRef_T ret_val(*this);
 		ret_val +=(appended_ref);
 		return ret_val;
-	};
+    }
 
 	CellRangeRef_T operator-(const CellRef& subtracted_ref)
 	{
 		CellRangeRef_T ret_val(*this);
 		ret_val -=(subtracted_ref);
 		return ret_val;
-	};
+    }
 
 	BiffStructurePtr clone()
 	{
 		return BiffStructurePtr(new CellRangeRef_T(*this));
-	};
+    }
 
 	virtual void load(CFRecord& record)
 	{

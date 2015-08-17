@@ -1,8 +1,8 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include <Logic/Biff_structures/CellOffsetResender.h>
-#include <Logic/Biff_structures/Cell.h>
+#include "../../Logic/Biff_structures/CellOffsetResender.h"
+#include "../../Logic/Biff_structures/Cell.h"
 
 namespace XLS
 {;

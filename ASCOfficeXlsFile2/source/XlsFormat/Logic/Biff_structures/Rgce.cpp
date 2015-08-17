@@ -21,22 +21,6 @@ BiffStructurePtr Rgce::clone()
 	return BiffStructurePtr(new Rgce(*this));
 }
 
-//void Rgce::toXML(BiffStructurePtr & parent)
-//{
-//	// Filtering Ptg records before serializing to XML. No Ptg except PtgExp is necessary for XSL conversion
-//	PtgPtr ptg_exp;
-//	for (PtgVectorIterator it = sequence.begin(), itEnd = sequence.end(); it != itEnd; ++it)
-//	{
-//		ptg_exp = boost::dynamic_pointer_cast<PtgExp>(*it);
-//		if(ptg_exp)
-//		{
-//			MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//			ptg_exp->toXML(own_tag);
-//			return;
-//		}
-//	}
-//
-//}
 
 
 void Rgce::load(CFRecord& record, const size_t cce_val)

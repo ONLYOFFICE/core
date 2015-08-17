@@ -1,10 +1,8 @@
 
 #include "BiffString.h"
-//#include <Exception/UnexpectedProgramPath.h>
-//#include <Exception/StructureSizeNotSet.h>
 
 namespace XLS
-{;
+{
 
 
 BiffString::BiffString()
@@ -33,10 +31,6 @@ BiffString::~BiffString()
 }
 
 
-BiffString::operator const _variant_t () const 
-{
-	return _variant_t(str_.c_str());
-}
 
 
 BiffString::operator const std::wstring  () const 
@@ -57,41 +51,6 @@ BiffStructurePtr BiffString::clone()
 {
 	return BiffStructurePtr(new BiffString(*this));
 }
-
-
-//// Attribute version
-//void BiffString::toXML(BiffStructurePtr & parent, const std::wstring & attrib_name)
-//{
-//	parent->setAttribute(attrib_name, getEscaped_ST_Xstring());
-//}
-//
-//
-//// Attribute version
-//const bool BiffString::fromXML(MSXML2::IXMLDOMElementPtr xml_tag, const std::wstring & attrib_name)
-//{
-//	str_ = getStructAttribute(xml_tag, attrib_name);
-//	str_ = STR::unescape_ST_Xstring(static_cast<wchar_t*>(str_)).c_str();
-//	cch_ = str_.length();
-//	return true;
-//}
-
-
-/*
-void BiffString::toXML(BiffStructurePtr & parent, const std::string& tag_name)
-{
-	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(tag_name.c_str(), parent);
-	own_tag->setAttribute(L"str", str_);
-}
-
-
-const bool BiffString::fromXML(BiffStructurePtr & parent, const std::string& tag_name)
-{
-#pragma message("####################### BiffString record has no BiffStructure::fromXML() implemented")
-	Log::error(" Error!!! BiffString record has no BiffStructure::fromXML() implemented.");
-	return false;
-}
-*/
-
 
 void BiffString::store(CFRecord& record)
 {

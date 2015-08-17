@@ -17,25 +17,6 @@ BiffStructurePtr ExtPtgRef3D::clone()
 	return BiffStructurePtr(new ExtPtgRef3D(*this));
 }
 
-
-//void ExtPtgRef3D::toXML(BiffStructurePtr & parent)
-//{
-//	MSXML2::IXMLDOMElementPtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-//
-//	own_tag->setAttribute(L"itabFirst", iTabs.itabFirst);
-//	own_tag->setAttribute(L"itabLast", iTabs.itabLast);
-//	own_tag->setAttribute(L"loc", loc + cell_base_ref);
-//}
-//
-//
-//const bool ExtPtgRef3D::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### ExtPtgRef3D record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! ExtPtgRef3D record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
-//
-
 void ExtPtgRef3D::store(CFRecord& record)
 {
 	record << iTabs << loc;

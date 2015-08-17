@@ -3,7 +3,7 @@
 #include "../../../Common/DocxFormat/Source/Base/Types_32.h"
 #include "BiffStructure.h"
 #include "BiffAttribute.h"
-#include <Auxiliary/HelpFunc.h>
+#include "../../Auxiliary/HelpFunc.h"
 #include "Boolean.h"
 
 #pragma pack(1)
@@ -63,18 +63,7 @@ struct RkNumber : public BiffStructure_NoVtbl
 	unsigned int fX100 : 1;
 	unsigned int fInt : 1;
 	unsigned int num : 30;
-	operator _variant_t()
-	{
-		if(fInt)
-		{
-			//return fX100 ? num / 100 : num;
-			return fX100 ? num / 100.0 : num;
-		}
-		else
-		{
-			return fX100 ? toDouble() / 100.0 : toDouble();
-		}
-	}
+
 	std::wstring value()
 	{
 		if(fInt)
@@ -95,8 +84,8 @@ private:
 			double full;
 			struct 
 			{
-				UINT64 remainder : 34;
-				UINT64 significant : 30;
+                _UINT64 remainder : 34;
+                _UINT64 significant : 30;
 			};
 		} val;
 		val.significant = num;
@@ -109,7 +98,7 @@ private:
 struct BErr : public BiffStructure_NoVtbl
 {
 	unsigned char err;
-	BErr() {};
+    BErr() {}
 	BErr(const std::wstring  str)
 	{
 		if(std::wstring (L"#NULL!") == str)
@@ -145,10 +134,6 @@ struct BErr : public BiffStructure_NoVtbl
 			throw;// EXCEPT::RT::WrongBiffRecord("Unsupported type of BErr.", "unknown");
 		}
 	};
-	operator const _variant_t()
-	{
-		return toString().c_str();
-	}
 
 	const std::wstring toString() const
 	{

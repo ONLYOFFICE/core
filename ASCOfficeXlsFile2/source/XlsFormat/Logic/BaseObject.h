@@ -4,11 +4,11 @@
 #include <list>
 #include <sstream>
 
-#include "Logging/Log.h"
+#include "../Logging/Log.h"
 #include "XlsElementsType.h" //шоб со строками не работать
 
 namespace XLS
-{;
+{
 
 class CFStream;
 class BinProcessor;
@@ -33,7 +33,7 @@ public:
 
 	//virtual void toFrom(BinProcessor& proc) = 0; // This function shall contain only mark functions and is the universal XML serialiser
 
-	virtual const std::wstring & getClassName() const = 0; // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter
+        virtual const std::string & getClassName() const = 0; // Must be overridden in every deriver. The return value must be a reference to a static variable inside the getter
 
 	void add_child (BaseObjectPtr e) {elements_.push_back(e);}
 	
@@ -43,18 +43,18 @@ public:
 
 	virtual int serialize(std::wostream & _stream)
 	{
-		std::wstringstream s;
-		s << std::wstring(L"This element - ") << getClassName() << std::wstring(L"- not serialize");
+                std::stringstream s;
+                s << std::string("This element - ") << getClassName() << std::string("- not serialize");
 		Log::warning(s.str());
 		return 0;
 	}
 };
 
 #define BASE_OBJECT_DEFINE_CLASS_NAME(class_name)\
-public: const std::wstring & getClassName() const { static std::wstring  str(L# class_name); return str; };\
+public: const std::string & getClassName() const { static std::string  str(#class_name); return str; };\
 virtual ElementType get_type() { return type; }
 
-#define BASE_OBJECT_DEFINE_CLASS_TYPE(class_name) public: const int & getClassType() const { static std::wstring  str(L# class_name); return str; }
+#define BASE_OBJECT_DEFINE_CLASS_TYPE(class_name) public: const int & getClassType() const { static std::string  str(#class_name); return str; }
 
 typedef enum 
 {

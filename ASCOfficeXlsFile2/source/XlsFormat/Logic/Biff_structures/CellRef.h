@@ -21,7 +21,6 @@ public:
 
 	const std::wstring toString() const;
 	void fromString(const std::wstring& str);
-	operator const _variant_t () const;
 	operator const std::wstring  () const;
 
 	void operator+=(const CellRef& appended_ref);
@@ -55,9 +54,9 @@ typedef boost::shared_ptr<CellRangeRef> CellRangeRefPtr;
 class name ## _name \
 {\
 public:\
-	const std::wstring & operator() ()\
+    const std::string & operator() ()\
 {\
-	static std::wstring  name_str(L#name); \
+    static std::string  name_str(#name); \
 	return name_str;\
 };\
 };

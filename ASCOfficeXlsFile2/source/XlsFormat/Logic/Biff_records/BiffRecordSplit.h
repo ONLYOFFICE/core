@@ -1,10 +1,9 @@
 #pragma once
 
-#include <Logic/Biff_records/BiffRecordContinued.h> 
-//#include <Binary/BinSmartPointers.h>
+#include "../../Logic/Biff_records/BiffRecordContinued.h"
 
 namespace XLS
-{;
+{
 
 // Logical representation of a record in BIFF8 that is followed by a number of Continue records 
 // and the whole content is split into several records not following each other

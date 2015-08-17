@@ -12,11 +12,6 @@ BiffStructurePtr FontIndex::clone()
 }
 
 
-FontIndex::operator const _variant_t () const
-{
-	return getValue();
-}
-
 const unsigned short FontIndex::getValue() const
 {	
 	unsigned short index = static_cast<unsigned short>(val.get_value_or(0));

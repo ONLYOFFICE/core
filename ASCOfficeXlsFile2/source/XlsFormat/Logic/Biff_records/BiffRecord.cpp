@@ -1,8 +1,8 @@
 
 #include "BiffRecord.h"
-#include <Binary/CFStream.h>
-#include "Binary/CFStreamCacheReader.h"
-#include "Binary/CFStreamCacheWriter.h"
+#include "../../Binary/CFStream.h"
+#include "../../Binary/CFStreamCacheReader.h"
+#include "../../Binary/CFStreamCacheWriter.h"
 
 
 namespace XLS
@@ -46,9 +46,6 @@ const bool BiffRecord::read(CFStreamCacheReader& reader, BaseObject* parent, con
 			Log::warning(STR::int2str(record->getDataSize() - record->getRdPtr(), 10) + " unsigned chars were not processed while reading from " + record->getTypeString());
 		}
 
-		// XML generation
-		//BiffStructurePtr own_tag = XMLSTUFF::createElement(getClassName(), parent);
-		//toFrom(BinReaderProcessor(reader, parent/*own_tag*/, is_mandatory));	
 
 		parent->add_child(this->clone());
 	}

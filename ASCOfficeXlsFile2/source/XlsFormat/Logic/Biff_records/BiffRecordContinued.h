@@ -1,6 +1,6 @@
 #pragma once
 
-#include <Logic/Biff_records/BiffRecord.h> 
+#include "../Biff_records/BiffRecord.h"
 
 namespace XLS
 {;

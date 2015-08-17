@@ -2,7 +2,7 @@
 #include "Label.h"
 
 namespace XLS
-{;
+{
 
 Label::Label()
 {

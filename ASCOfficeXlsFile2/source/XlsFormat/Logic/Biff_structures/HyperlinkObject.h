@@ -4,8 +4,17 @@
 #include <Logic/Biff_structures/HyperlinkMoniker.h>
 #include <Logic/Biff_structures/BiffString.h>
 
+#if !defined(_WIN32) && !defined(_WIN64)
+
+    typedef struct _FILETIME {
+        _UINT32 dwLowDateTime;
+        _UINT32 dwHighDateTime;
+    } FILETIME;
+
+#endif
+
 namespace OSHARED
-{;
+{
 
 class CFRecord;
 

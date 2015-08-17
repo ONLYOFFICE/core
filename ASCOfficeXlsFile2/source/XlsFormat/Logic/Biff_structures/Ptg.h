@@ -4,10 +4,10 @@
 #include "CellRef.h"
 #include <stack>
 #include <queue>
-#include "../../../Common/common.h"
+#include <common.h>
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

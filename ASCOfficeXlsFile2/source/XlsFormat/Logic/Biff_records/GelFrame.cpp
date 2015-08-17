@@ -2,7 +2,7 @@
 #include "GelFrame.h"
 
 namespace XLS
-{;
+{
 
 GelFrame::GelFrame()
 {

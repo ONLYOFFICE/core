@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/VertBrk.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of VerticalPageBreaks record in BIFF8

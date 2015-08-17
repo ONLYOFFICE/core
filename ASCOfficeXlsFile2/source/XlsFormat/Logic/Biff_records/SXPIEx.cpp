@@ -2,7 +2,7 @@
 #include "SXPIEx.h"
 
 namespace XLS
-{;
+{
 
 SXPIEx::SXPIEx()
 {

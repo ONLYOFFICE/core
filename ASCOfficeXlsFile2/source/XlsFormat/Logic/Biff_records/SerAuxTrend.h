@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/ChartNumNillable.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of SerAuxTrend record in BIFF8

@@ -2,7 +2,7 @@
 #include "Uncalced.h"
 
 namespace XLS
-{;
+{
 
 Uncalced::Uncalced()
 {

@@ -6,7 +6,7 @@
 #include <Logic/Biff_structures/FormulaValue.h>
 
 namespace XLS
-{;
+{
 
 // Logical representation of Formula record in BIFF8
 class Formula: public BiffRecord

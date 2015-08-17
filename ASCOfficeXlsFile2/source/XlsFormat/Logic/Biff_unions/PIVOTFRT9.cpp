@@ -6,7 +6,7 @@
 #include <Logic/Biff_records/SXViewEx9.h>
 
 namespace XLS
-{;
+{
 
 
 PIVOTFRT9::PIVOTFRT9()

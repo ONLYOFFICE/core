@@ -2,7 +2,7 @@
 #include "SXAddl.h"
 
 namespace XLS
-{;
+{
 
 SXAddl::SXAddl()
 {

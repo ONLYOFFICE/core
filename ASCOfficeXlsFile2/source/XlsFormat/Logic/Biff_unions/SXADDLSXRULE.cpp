@@ -4,7 +4,7 @@
 #include <Logic/Biff_unions/SXADDLSXFILT.h>
 
 namespace XLS
-{;
+{
 
 
 SXADDLSXRULE::SXADDLSXRULE()

@@ -35,7 +35,7 @@
 
 
 namespace XLS
-{;
+{
 
 
 CRT::CRT()

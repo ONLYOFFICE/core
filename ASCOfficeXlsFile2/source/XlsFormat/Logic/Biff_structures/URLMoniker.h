@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/URICreateFlags.h>
 
 namespace OSHARED
-{;
+{
 
 class CFRecord;
 

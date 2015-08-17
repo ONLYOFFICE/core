@@ -1,10 +1,10 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../Biff_structures/HideObjEnum.h"
+#include <Logic/Biff_structures/HideObjEnum.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of HideObj record in BIFF8

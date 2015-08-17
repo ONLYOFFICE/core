@@ -5,7 +5,7 @@
 #include "Auxiliary/HelpFunc.h"
 
 namespace OLEPS
-{;
+{
 
 PropertySetStream::PropertySetStream(XLS::CFStreamPtr stream)
 {

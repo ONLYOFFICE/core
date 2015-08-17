@@ -3,7 +3,7 @@
 #include "BiffAttribute.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

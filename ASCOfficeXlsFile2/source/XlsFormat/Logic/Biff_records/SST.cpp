@@ -4,7 +4,7 @@
 #include <utils.h>
 
 namespace XLS
-{;
+{
 
 SST::SST(const unsigned short code_page)
 :	code_page_(code_page)

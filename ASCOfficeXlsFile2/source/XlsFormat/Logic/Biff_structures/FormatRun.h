@@ -4,7 +4,7 @@
 #include "FontIndex.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

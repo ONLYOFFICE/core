@@ -3,7 +3,7 @@
 #include <Logic/Biff_structures/Cell.h>
 
 namespace XLS
-{;
+{
 
 
 SHFMLA_SET::SHFMLA_SET(std::vector<CellRef>& shared_formulas_locations_ref) : shared_formulas_locations_ref_(shared_formulas_locations_ref)

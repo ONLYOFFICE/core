@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/BorderFillInfo.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Font record in BIFF8

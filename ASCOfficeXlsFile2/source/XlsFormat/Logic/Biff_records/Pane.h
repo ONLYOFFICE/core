@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/PaneType.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Pane record in BIFF8

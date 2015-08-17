@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 
 PtgInt::PtgInt()
@@ -14,7 +14,12 @@ PtgInt::PtgInt()
 PtgInt::PtgInt(const std::wstring& word)
 :	OperandPtg(fixed_id)
 {
-	integer = _wtoi(word.c_str());
+#if defined(_WIN32) || defined (_WIN64)
+    integer = _wtoi(word.c_str());
+#else
+     wchar_t * pEnd;
+    integer = wcstol(word.c_str(), &pEnd ,10);
+#endif
 }
 
 

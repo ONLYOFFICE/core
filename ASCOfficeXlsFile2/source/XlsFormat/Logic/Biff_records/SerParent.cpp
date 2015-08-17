@@ -2,7 +2,7 @@
 #include "SerParent.h"
 
 namespace XLS
-{;
+{
 
 SerParent::SerParent()
 {

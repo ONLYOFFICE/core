@@ -8,7 +8,7 @@
 #include <Logic/Biff_records/Label.h>
 
 namespace XLS
-{;
+{
 
 
 SERIESDATA::SERIESDATA()

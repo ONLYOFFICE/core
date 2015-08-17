@@ -4,7 +4,7 @@
 #include <Logic/Biff_unions/PIVOTFRT.h>
 
 namespace XLS
-{;
+{
 
 
 PIVOTVIEW::PIVOTVIEW()

@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/XTI.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of ExternSheet record in BIFF8

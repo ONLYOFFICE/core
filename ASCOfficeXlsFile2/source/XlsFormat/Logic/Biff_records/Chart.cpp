@@ -2,7 +2,7 @@
 #include "Chart.h"
 
 namespace XLS
-{;
+{
 
 Chart::Chart()
 {

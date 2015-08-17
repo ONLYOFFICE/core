@@ -2,10 +2,10 @@
 
 #include "BiffStructure.h"
 #include "CellRef.h"
-#include "../../Logic/Biff_structures/BitMarkedStructs.h"
+#include <Logic/Biff_structures/BitMarkedStructs.h>
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

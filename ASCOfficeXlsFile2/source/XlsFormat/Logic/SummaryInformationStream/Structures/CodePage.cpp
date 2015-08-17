@@ -1,10 +1,10 @@
 
 
 #include "CodePage.h"
-#include "../../../Binary/CFStream.h"
+#include <Binary/CFStream.h>
 
 namespace OLEPS
-{;
+{
 
 CodePage::CodePage(const unsigned short value_type, XLS::CFStreamPtr stream)
 {

@@ -7,7 +7,7 @@
 #include <Logic/Biff_records/EndObject.h>
 
 namespace XLS
-{;
+{
 
 
 FONTLIST::FONTLIST()

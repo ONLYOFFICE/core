@@ -2,7 +2,7 @@
 #include "ValueRange.h"
 
 namespace XLS
-{;
+{
 
 ValueRange::ValueRange()
 {

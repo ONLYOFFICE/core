@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/CellRangeRef.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Table record in BIFF8

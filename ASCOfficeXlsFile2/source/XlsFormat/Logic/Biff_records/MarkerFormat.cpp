@@ -2,7 +2,7 @@
 #include "MarkerFormat.h"
 
 namespace XLS
-{;
+{
 
 MarkerFormat::MarkerFormat()
 {

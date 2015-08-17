@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace ODRAW
-{;
+{
 
 OfficeArtBlip::OfficeArtBlip(const unsigned short recType)
 :	OfficeArtRecord(0, recType)

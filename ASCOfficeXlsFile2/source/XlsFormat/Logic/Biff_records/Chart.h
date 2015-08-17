@@ -1,10 +1,10 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../../Logic/Biff_structures/FixedPoint.h"
+#include <Logic/Biff_structures/FixedPoint.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Chart record in BIFF8

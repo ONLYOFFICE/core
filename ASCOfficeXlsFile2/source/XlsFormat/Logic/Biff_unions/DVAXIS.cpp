@@ -15,7 +15,7 @@
 #include <Logic/Biff_records/LineFormat.h>
 
 namespace XLS
-{;
+{
 
 
 DVAXIS::DVAXIS()

@@ -2,7 +2,7 @@
 #include "SXTbl.h"
 
 namespace XLS
-{;
+{
 
 SXTbl::SXTbl()
 {

@@ -5,7 +5,7 @@
 #include <Logic/Biff_records/MsoDrawing.h>
 
 namespace XLS
-{;
+{
 
 
 TEXTOBJECT::TEXTOBJECT()

@@ -8,7 +8,7 @@
 #include <Logic/Biff_unions/ATTACHEDLABEL.h>
 
 namespace XLS
-{;
+{
 
 
 DFTTEXT::DFTTEXT()

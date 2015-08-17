@@ -2,7 +2,7 @@
 #include "Legend.h"
 
 namespace XLS
-{;
+{
 
 Legend::Legend()
 {

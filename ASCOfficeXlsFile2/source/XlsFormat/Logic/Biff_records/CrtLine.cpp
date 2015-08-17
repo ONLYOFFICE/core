@@ -2,7 +2,7 @@
 #include "CrtLine.h"
 
 namespace XLS
-{;
+{
 
 CrtLine::CrtLine()
 {

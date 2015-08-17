@@ -20,7 +20,7 @@
 #include "OfficeArtTertiaryFOPT.h"
 
 namespace ODRAW
-{;
+{
 
 
 OfficeArtContainer::OfficeArtContainer(const unsigned char recVer, const unsigned short recType, const OfficeArtClientAnchorType anchor_type)

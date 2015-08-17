@@ -28,68 +28,27 @@ INCLUDEPATH += \
 SOURCES += \
     XlsFileConverter.cpp
 
-CONFIG(debug, debug|release){
-
-message(Debug)
 
 linux-g++{
 
     message(64 bit)
 
-    unix:!macx: LIBS += -L$$PWD/../../ASCOfficeUtils/ASCOfficeUtilsLib/build-ASCOfficeUtilsLib-Desktop64-Debug/ -lASCOfficeUtilsLib
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../ASCOfficeUtils/ASCOfficeUtilsLib/build-ASCOfficeUtilsLib-Desktop64-Debug/libASCOfficeUtilsLib.a
+    unix:!macx: LIBS += -L$$PWD/../../SDK/lib/linux_64/ -lXlsFormatLib
+    unix:!macx: PRE_TARGETDEPS += $$PWD/../../SDK/lib/linux_64/libXlsFormatLib.a
 
-    unix:!macx: LIBS += -L$$PWD/../../Common/DocxFormat/build-DocxFormatLib-Desktop64-Debug/ -lDocxFormatLib
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../Common/DocxFormat/build-DocxFormatLib-Desktop64-Debug/libDocxFormatLib.a
-
-    unix:!macx: LIBS += -L$$PWD/../../DesktopEditor/Qt_build/graphics/build-graphics-Desktop64-Debug/ -lgraphics
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../DesktopEditor/Qt_build/graphics/build-graphics-Desktop64-Debug/libgraphics.a
-}
+    unix:!macx: LIBS += -L$$PWD/../../SDK/lib/linux_64/ -lgraphics
+    unix:!macx: PRE_TARGETDEPS += $$PWD/../../SDK/lib/linux_64/libgraphics.a
+  }
 
 else{
 
     message(32 bit)
 
-    unix:!macx: LIBS += -L$$PWD/../../ASCOfficeUtils/ASCOfficeUtilsLib/build-ASCOfficeUtilsLib-Desktop-Debug/ -lASCOfficeUtilsLib
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../ASCOfficeUtils/ASCOfficeUtilsLib/build-ASCOfficeUtilsLib-Desktop-Debug/libASCOfficeUtilsLib.a
+    unix:!macx: LIBS += -L$$PWD/../../SDK/lib/linux_32/ -lXlsFormatLib
+    unix:!macx: PRE_TARGETDEPS += $$PWD/../../SDK/lib/linux_32/libXlsFormatLib.a
 
-    unix:!macx: LIBS += -L$$PWD/../../Common/DocxFormat/build-DocxFormatLib-Desktop-Debug/ -lDocxFormatLib
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../Common/DocxFormat/build-DocxFormatLib-Desktop-Debug/libDocxFormatLib.a
-
-    unix:!macx: LIBS += -L$$PWD/../../DesktopEditor/Qt_build/graphics/build-graphics-Desktop-Debug/ -lgraphics
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../DesktopEditor/Qt_build/graphics/build-graphics-Desktop-Debug/libgraphics.a
-}
+   unix:!macx: LIBS += -L$$PWD/../../SDK/lib/linux_32/ -lgraphics
+    unix:!macx: PRE_TARGETDEPS += $$PWD/../../SDK/lib/linux_32/libgraphics.a
 }
 
-CONFIG(release, debug|release){
 
-message(Release)
-
-linux-g++{
-
-    message(64 bit)
-
-    unix:!macx: LIBS += -L$$PWD/../../ASCOfficeUtils/ASCOfficeUtilsLib/build-ASCOfficeUtilsLib-Desktop64-Release/ -lASCOfficeUtilsLib
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../ASCOfficeUtils/ASCOfficeUtilsLib/build-ASCOfficeUtilsLib-Desktop64-Release/libASCOfficeUtilsLib.a
-
-    unix:!macx: LIBS += -L$$PWD/../../Common/DocxFormat/build-DocxFormatLib-Desktop64-Release/ -lDocxFormatLib
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../Common/DocxFormat/build-DocxFormatLib-Desktop64-Release/libDocxFormatLib.a
-
-    unix:!macx: LIBS += -L$$PWD/../../DesktopEditor/Qt_build/graphics/build-graphics-Desktop64-Release/ -lgraphics
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../DesktopEditor/Qt_build/graphics/build-graphics-Desktop64-Release/libgraphics.a
-}
-
-else{
-
-    message(32 bit)
-
-    unix:!macx: LIBS += -L$$PWD/../../ASCOfficeUtils/ASCOfficeUtilsLib/build-ASCOfficeUtilsLib-Desktop-Release/ -lASCOfficeUtilsLib
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../ASCOfficeUtils/ASCOfficeUtilsLib/build-ASCOfficeUtilsLib-Desktop-Release/libASCOfficeUtilsLib.a
-
-    unix:!macx: LIBS += -L$$PWD/../../Common/DocxFormat/build-DocxFormatLib-Desktop-Release/ -lDocxFormatLib
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../Common/DocxFormat/build-DocxFormatLib-Desktop-Release/libDocxFormatLib.a
-
-    unix:!macx: LIBS += -L$$PWD/../../DesktopEditor/Qt_build/graphics/build-graphics-Desktop-Release/ -lgraphics
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../DesktopEditor/Qt_build/graphics/build-graphics-Desktop-Release/libgraphics.a
-}
-}

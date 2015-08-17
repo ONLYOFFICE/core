@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace CRYPTO
-{;
+{
 
 
 XLS::BiffStructurePtr EncryptionVerifier::clone()

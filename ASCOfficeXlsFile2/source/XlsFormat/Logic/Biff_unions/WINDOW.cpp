@@ -7,7 +7,7 @@
 #include <Logic/Biff_records/Selection.h>
 
 namespace XLS
-{;
+{
 
 
 WINDOW::WINDOW()

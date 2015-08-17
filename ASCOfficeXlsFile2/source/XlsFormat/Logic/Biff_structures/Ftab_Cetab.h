@@ -6,7 +6,7 @@
 #include <boost/multi_index/ordered_index.hpp>
 
 namespace XLS
-{;
+{
 
 #pragma pack(1)
 class Ftab_Cetab : public BiffStructure_NoVtbl

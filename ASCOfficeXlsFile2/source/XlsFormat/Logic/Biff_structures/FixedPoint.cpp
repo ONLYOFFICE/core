@@ -4,7 +4,7 @@
 //#include <Exception/AttributeDataWrong.h>
 
 namespace OSHARED
-{;
+{
 
 
 FixedPoint::FixedPoint()

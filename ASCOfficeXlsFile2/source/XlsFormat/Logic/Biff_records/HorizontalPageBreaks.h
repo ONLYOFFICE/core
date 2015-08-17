@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/HorzBrk.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of HorizontalPageBreaks record in BIFF8

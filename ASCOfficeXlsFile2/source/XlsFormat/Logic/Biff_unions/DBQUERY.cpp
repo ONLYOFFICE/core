@@ -4,7 +4,7 @@
 #include <Logic/Biff_records/SXString.h>
 
 namespace XLS
-{;
+{
 
 
 DBQUERY::DBQUERY()

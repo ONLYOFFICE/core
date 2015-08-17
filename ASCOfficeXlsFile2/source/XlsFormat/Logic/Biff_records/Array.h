@@ -1,11 +1,11 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../Biff_structures/CellRangeRef.h"
-#include "../Biff_structures/ArrayParsedFormula.h"
+#include <Logic/Biff_structures/CellRangeRef.h>
+#include <Logic/Biff_structures/ArrayParsedFormula.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Array record in BIFF8

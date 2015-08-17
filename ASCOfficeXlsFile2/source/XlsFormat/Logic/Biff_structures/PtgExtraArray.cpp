@@ -10,7 +10,7 @@
 #include "SerStr.h"
 
 namespace XLS
-{;
+{
 
 
 PtgExtraArray::PtgExtraArray()

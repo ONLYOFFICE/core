@@ -6,7 +6,7 @@
 #include <simple_xml_writer.h>
 
 namespace XLS
-{;
+{
 
 class Parenthesis_STYLES_1 : public CompositeObject //: public ABNFParenthesis
 {
@@ -123,7 +123,7 @@ int STYLES::serialize(std::wostream & stream)
 				{
 					CP_XML_ATTR(L"xfId", 0);
 					CP_XML_ATTR(L"builtinId", 0);
-					CP_XML_ATTR(L"name", L"Обычный");
+                    CP_XML_ATTR(L"name", L"Common");
 				}
 			}
 		}

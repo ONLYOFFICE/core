@@ -2,7 +2,7 @@
 #include "TableStyle.h"
 
 namespace XLS
-{;
+{
 
 TableStyle::TableStyle()
 {

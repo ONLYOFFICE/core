@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/LongRGB.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Tick record in BIFF8

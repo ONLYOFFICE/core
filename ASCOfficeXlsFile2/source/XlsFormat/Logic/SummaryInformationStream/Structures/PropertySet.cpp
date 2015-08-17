@@ -1,13 +1,13 @@
 
 
 #include "PropertySet.h"
-#include "Binary\CFStream.h"
+#include <Binary/CFStream.h>
 #include "PropertyFactory.h"
 #include "CodePage.h"
 
 
 namespace OLEPS
-{;
+{
 
 PropertySet::PropertySet(XLS::CFStreamPtr stream, const unsigned int property_set_offset)
 {

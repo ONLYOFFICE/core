@@ -2,7 +2,7 @@
 #include "List12.h"
 
 namespace XLS
-{;
+{
 
 List12::List12()
 {

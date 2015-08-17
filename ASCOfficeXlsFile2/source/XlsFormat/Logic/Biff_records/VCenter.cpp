@@ -2,7 +2,7 @@
 #include "VCenter.h"
 
 namespace XLS
-{;
+{
 
 VCenter::VCenter()
 {

@@ -6,7 +6,7 @@
 #include <Logic/Biff_structures/SqRefU.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Dv record in BIFF8

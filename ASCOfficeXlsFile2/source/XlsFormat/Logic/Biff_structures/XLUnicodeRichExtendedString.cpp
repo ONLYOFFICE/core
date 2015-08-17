@@ -8,7 +8,7 @@
 #include <utils.h>
 
 namespace XLS
-{;
+{
 
 XLUnicodeRichExtendedString XLUnicodeRichExtendedString::operator=(const XLUnicodeRichExtendedString& other)
 {
@@ -193,13 +193,13 @@ void XLUnicodeRichExtendedString::load(CFRecord& record)
 	
 	if(!record.checkFitReadSafe(static_cast<size_t>(cch) << (fHighByte ? 1 : 0)))
 	{
-		size_t num_symbols = min(cch, (record.getDataSize() - record.getRdPtr()) >> (fHighByte ? 1 : 0));
+        size_t num_symbols = (std::min)(static_cast<size_t>(cch), (record.getDataSize() - record.getRdPtr()) >> (fHighByte ? 1 : 0));
 		loadSymbols(record, num_symbols, fHighByte);
 		std::wstring  str_full(str_);
 		do
 		{
 			appendNextContinue(record, true); // fHighByte changes here
-			num_symbols = min(cch - str_full.length(), (record.getDataSize() - record.getRdPtr()) >> (fHighByte ? 1 : 0));
+            num_symbols = (std::min)(cch - str_full.length(), (record.getDataSize() - record.getRdPtr()) >> (fHighByte ? 1 : 0));
 			loadSymbols(record, num_symbols, fHighByte); // cch has changed, fHighByte has changed
 			str_full += str_;
 		} 

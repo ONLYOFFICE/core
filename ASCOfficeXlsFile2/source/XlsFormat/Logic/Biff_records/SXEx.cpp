@@ -2,7 +2,7 @@
 #include "SXEx.h"
 
 namespace XLS
-{;
+{
 
 SXEx::SXEx()
 {

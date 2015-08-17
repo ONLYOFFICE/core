@@ -5,7 +5,7 @@
 #include <Logic/Biff_records/TableStyleElement.h>
 
 namespace XLS
-{;
+{
 
 
 TABLESTYLES::TABLESTYLES()

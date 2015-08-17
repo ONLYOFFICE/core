@@ -5,7 +5,7 @@
 #include "XFExtGradient.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

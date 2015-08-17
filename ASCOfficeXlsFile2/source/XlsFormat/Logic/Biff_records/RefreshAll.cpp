@@ -2,7 +2,7 @@
 #include "RefreshAll.h"
 
 namespace XLS
-{;
+{
 
 RefreshAll::RefreshAll()
 {

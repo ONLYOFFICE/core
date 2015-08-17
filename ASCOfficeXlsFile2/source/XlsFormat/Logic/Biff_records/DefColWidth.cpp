@@ -2,7 +2,7 @@
 #include "DefColWidth.h"
 
 namespace XLS
-{;
+{
 
 DefColWidth::DefColWidth()
 {

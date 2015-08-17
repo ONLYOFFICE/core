@@ -2,7 +2,7 @@
 #include "Pls.h"
 
 namespace XLS
-{;
+{
 
 Pls::Pls(BaseObject* parent)
 :	parent_(parent)
@@ -66,7 +66,7 @@ void Pls::readFields(CFRecord& record)
 	const char* data	= record.getData() + 2;
 
 	boost::shared_array<char> buffer(new char[size]);
-	memcpy_s(buffer.get(), size, data, size);
+    memcpy(buffer.get(), data, size);
 	
 	bin_data_id = -1;
 

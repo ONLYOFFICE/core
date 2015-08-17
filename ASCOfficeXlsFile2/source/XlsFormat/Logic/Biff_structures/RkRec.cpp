@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 extern int cellStyleXfs_count;
 
 BiffStructurePtr RkRec::clone()

@@ -9,7 +9,7 @@
 #include "DXFProt.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

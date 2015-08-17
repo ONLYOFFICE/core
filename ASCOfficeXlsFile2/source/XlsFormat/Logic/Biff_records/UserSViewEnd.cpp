@@ -2,7 +2,7 @@
 #include "UserSViewEnd.h"
 
 namespace XLS
-{;
+{
 
 UserSViewEnd::UserSViewEnd()
 {

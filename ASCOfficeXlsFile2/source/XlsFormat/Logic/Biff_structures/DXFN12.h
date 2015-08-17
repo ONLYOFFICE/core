@@ -5,7 +5,7 @@
 #include "XFExtNoFRT.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

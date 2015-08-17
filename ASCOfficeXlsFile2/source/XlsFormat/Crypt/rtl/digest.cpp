@@ -1,5 +1,6 @@
 #include "digest.h"
 #include <memory>
+#include <string.h>
 
 #define RTL_DIGEST_ROTL(a,n) (((a) << (n)) | ((a) >> (32 - (n))))
 

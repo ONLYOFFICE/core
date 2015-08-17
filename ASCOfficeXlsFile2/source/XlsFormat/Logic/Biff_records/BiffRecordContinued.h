@@ -1,9 +1,9 @@
 #pragma once
 
-#include "../Biff_records/BiffRecord.h"
+#include <Logic/Biff_records/BiffRecord.h> 
 
 namespace XLS
-{;
+{
 
 // Logical representation of a record in BIFF8 that is followed by a number of Continue records
 class BiffRecordContinued: public BiffRecord

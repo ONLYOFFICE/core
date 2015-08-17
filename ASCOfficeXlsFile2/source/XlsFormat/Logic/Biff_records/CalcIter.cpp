@@ -2,7 +2,7 @@
 #include "CalcIter.h"
 
 namespace XLS
-{;
+{
 
 CalcIter::CalcIter()
 {

@@ -2,7 +2,7 @@
 #include "ShtProps.h"
 
 namespace XLS
-{;
+{
 
 ShtProps::ShtProps()
 {

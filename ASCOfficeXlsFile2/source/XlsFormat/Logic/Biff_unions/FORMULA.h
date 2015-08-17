@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/CellRef.h>
 
 namespace XLS
-{;
+{
 
 class CellRef;
 

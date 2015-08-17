@@ -2,7 +2,7 @@
 #include "RRTabId.h"
 
 namespace XLS
-{;
+{
 
 RRTabId::RRTabId()
 {

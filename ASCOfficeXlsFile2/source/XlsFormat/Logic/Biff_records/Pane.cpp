@@ -2,7 +2,7 @@
 #include "Pane.h"
 
 namespace XLS
-{;
+{
 
 Pane::Pane()
 {

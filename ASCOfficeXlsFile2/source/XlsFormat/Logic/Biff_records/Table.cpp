@@ -2,7 +2,7 @@
 #include "Table.h"
 
 namespace XLS
-{;
+{
 
 Table::Table()
 {

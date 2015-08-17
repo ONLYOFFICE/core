@@ -3,7 +3,7 @@
 #include <sstream>
 
 namespace XLS
-{;
+{
 
 struct FillInfoExt
 {

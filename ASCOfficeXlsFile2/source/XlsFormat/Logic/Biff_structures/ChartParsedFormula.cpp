@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 ChartParsedFormula::ChartParsedFormula()
 :	ParsedFormula(CellRef())

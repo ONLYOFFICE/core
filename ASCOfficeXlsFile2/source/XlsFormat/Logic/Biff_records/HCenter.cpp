@@ -2,7 +2,7 @@
 #include "HCenter.h"
 
 namespace XLS
-{;
+{
 
 HCenter::HCenter()
 {

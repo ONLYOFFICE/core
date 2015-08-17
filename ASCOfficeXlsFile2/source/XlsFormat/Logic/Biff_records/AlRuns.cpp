@@ -2,7 +2,7 @@
 #include "AlRuns.h"
 
 namespace XLS
-{;
+{
 
 AlRuns::AlRuns()
 {

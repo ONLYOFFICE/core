@@ -4,13 +4,31 @@
 #include "OfficeArtCOLORREF.h"
 #include "../FixedPoint.h"
 
+#if !defined(_WIN32) && !defined(_WIN64)
+
+    typedef struct tagPOINT
+    {
+        long  x;
+        long  y;
+    } POINT;
+
+    typedef struct tagRECT
+    {
+        long    left;
+        long    top;
+        long    right;
+        long    bottom;
+    } RECT;
+
+#endif
+
 namespace XLS
 {
 	class CFRecord;
 }
 
 namespace ODRAW
-{;
+{
 
 class OfficeArtMetafileHeader : public XLS::BiffStructure
 {

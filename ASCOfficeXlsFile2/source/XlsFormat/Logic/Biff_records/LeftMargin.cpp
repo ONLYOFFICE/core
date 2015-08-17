@@ -2,7 +2,7 @@
 #include "LeftMargin.h"
 
 namespace XLS
-{;
+{
 
 LeftMargin::LeftMargin()
 {

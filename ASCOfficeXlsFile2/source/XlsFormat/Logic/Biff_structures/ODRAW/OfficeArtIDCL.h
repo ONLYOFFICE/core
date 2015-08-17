@@ -8,7 +8,7 @@ namespace XLS
 }
 
 namespace ODRAW
-{;
+{
 
 class OfficeArtIDCL : public XLS::BiffStructure
 {

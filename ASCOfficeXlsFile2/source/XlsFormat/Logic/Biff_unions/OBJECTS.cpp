@@ -8,7 +8,7 @@
 #include <Logic/Biff_records/Continue.h>
 
 namespace XLS
-{;
+{
 
 
 OBJECTS::OBJECTS(const bool is_inside_chart_sheet)
@@ -69,7 +69,8 @@ public:
 		//{
 		//	return false;
 		//}
-		int count = proc.repeated(Parenthesis_OBJECTS_2(), 0, 0);
+        Parenthesis_OBJECTS_2 parenthesis_objects_2;
+        int count = proc.repeated(parenthesis_objects_2, 0, 0);
 		proc.repeated<Continue>(0,0);
 		return res || count>0;
 	}
@@ -96,9 +97,11 @@ const bool OBJECTS::loadContentRead(BinReaderProcessor& proc)
 {
 	m_MsoDrawing = boost::shared_ptr<MsoDrawing>(new MsoDrawing(is_inside_chart_sheet_));
 	
-	int count1 = proc.repeated(Parenthesis_OBJECTS_1(m_MsoDrawing), 0, 0);
+    Parenthesis_OBJECTS_1 parenthesis_objects_1(m_MsoDrawing);
+    int count1 = proc.repeated(parenthesis_objects_1, 0, 0);
 
-	proc.repeated(Parenthesis_OBJECTS_2(), 0, 0);
+    Parenthesis_OBJECTS_2 parenthesis_objects_2;
+    proc.repeated(parenthesis_objects_2, 0, 0);
 	proc.repeated<Continue>(0,0);
 
 	int i = 0 ;
@@ -115,7 +118,8 @@ const bool OBJECTS::loadContentRead(BinReaderProcessor& proc)
 	}
 	elements_.clear();
 
-	int count2  = proc.optional(MsoDrawingSelection());
+    MsoDrawingSelection mso_drawing_selection;
+    int count2  = proc.optional(mso_drawing_selection);
 
 	return count1 > 0 || count2 > 0;
 }

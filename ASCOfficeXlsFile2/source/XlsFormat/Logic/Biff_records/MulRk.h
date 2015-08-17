@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/Cell.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of MulRk record in BIFF8

@@ -2,7 +2,7 @@
 #include "DocRoute.h"
 
 namespace XLS
-{;
+{
 
 DocRoute::DocRoute()
 {

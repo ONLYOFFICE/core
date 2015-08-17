@@ -2,7 +2,7 @@
 #include "CalcPrecision.h"
 
 namespace XLS
-{;
+{
 
 CalcPrecision::CalcPrecision()
 {

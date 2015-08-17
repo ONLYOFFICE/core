@@ -4,7 +4,7 @@
 #include "BitMarkedStructs.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

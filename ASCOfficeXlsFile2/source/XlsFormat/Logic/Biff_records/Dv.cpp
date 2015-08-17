@@ -2,7 +2,7 @@
 #include "Dv.h"
 
 namespace XLS
-{;
+{
 
 BaseObjectPtr Dv::clone()
 {

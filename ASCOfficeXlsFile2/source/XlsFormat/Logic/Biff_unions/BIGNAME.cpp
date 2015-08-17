@@ -4,7 +4,7 @@
 #include <Logic/Biff_records/ContinueBigName.h>
 
 namespace XLS
-{;
+{
 
 
 BIGNAME::BIGNAME()

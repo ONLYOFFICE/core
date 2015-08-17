@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/FrtHeader.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of FeatHdr11 record in BIFF8

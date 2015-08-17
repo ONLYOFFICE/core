@@ -2,7 +2,7 @@
 #include "CodeName.h"
 
 namespace XLS
-{;
+{
 
 CodeName::CodeName()
 {

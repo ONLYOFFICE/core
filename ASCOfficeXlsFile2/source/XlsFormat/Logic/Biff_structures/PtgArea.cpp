@@ -5,7 +5,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 
 PtgArea::PtgArea()

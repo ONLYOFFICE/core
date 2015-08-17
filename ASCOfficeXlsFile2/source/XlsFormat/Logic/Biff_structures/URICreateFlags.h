@@ -5,7 +5,7 @@
 //#include <Logic/Biff_structures/BiffString.h>
 
 namespace OSHARED
-{;
+{
 
 class CFRecord;
 

@@ -2,7 +2,7 @@
 #include "BopPop.h"
 
 namespace XLS
-{;
+{
 
 BopPop::BopPop()
 {

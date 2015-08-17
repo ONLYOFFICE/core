@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace CRYPTO
-{;
+{
 
 
 XLS::BiffStructurePtr EncryptionHeaderFlags::clone()

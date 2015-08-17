@@ -2,7 +2,7 @@
 #include "Sxvd.h"
 
 namespace XLS
-{;
+{
 
 Sxvd::Sxvd()
 {

@@ -4,7 +4,7 @@
 #include "ExtProp.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

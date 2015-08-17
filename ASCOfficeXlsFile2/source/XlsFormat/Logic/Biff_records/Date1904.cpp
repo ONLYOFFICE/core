@@ -2,7 +2,7 @@
 #include "Date1904.h"
 
 namespace XLS
-{;
+{
 
 Date1904::Date1904()
 {

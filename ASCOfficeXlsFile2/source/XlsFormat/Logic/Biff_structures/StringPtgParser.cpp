@@ -33,7 +33,7 @@
 
 
 namespace XLS
-{;
+{
 
 
 // The algorithm has been copied to EWSEditor. All code changes shall be synchronized.

@@ -4,7 +4,7 @@
 #include "Auxiliary/HelpFunc.h"
 
 namespace XLS
-{;
+{
 
 PtgParam::PtgParam(const std::wstring unparsed_line)
 :	type_(ptNONE)
@@ -33,7 +33,17 @@ PtgParam::PtgParam(const std::wstring unparsed_line)
 			while(last_paren > param_pos)
 			{
 				const size_t end_of_param = unparsed_line.find_first_of(L"),");
-				params.push_back(_wtol(unparsed_line.substr(param_pos, end_of_param - param_pos).c_str()));
+
+                int lVal = 0;
+
+#if defined(_WIN32) || defined (_WIN64)
+                 lVal = _wtol(unparsed_line.substr(param_pos, end_of_param - param_pos).c_str());
+#else
+                wchar_t * pEnd;
+                lVal = wcstol(unparsed_line.substr(param_pos, end_of_param - param_pos).c_str(), &pEnd ,10);
+#endif
+
+                params.push_back(lVal);
 				param_pos = end_of_param + 1;
 			}
 		}

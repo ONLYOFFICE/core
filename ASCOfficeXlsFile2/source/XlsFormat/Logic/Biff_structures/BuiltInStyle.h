@@ -2,7 +2,7 @@
 
 #include "BiffStructure.h"
 namespace XLS
-{;
+{
 
 class CFRecord;
 

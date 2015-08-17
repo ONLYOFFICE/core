@@ -2,7 +2,7 @@
 #include "AutoFilter.h"
 
 namespace XLS
-{;
+{
 
 AutoFilter::AutoFilter()
 {

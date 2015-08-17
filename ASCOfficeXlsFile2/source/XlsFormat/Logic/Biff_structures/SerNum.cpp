@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 
 SerNum::SerNum()
@@ -12,8 +12,13 @@ SerNum::SerNum()
 
 
 SerNum::SerNum(const std::wstring& word)
-:	xnum(_wtof(word.c_str()))
 {
+#if defined(_WIN32) || defined (_WIN64)
+    xnum = _wtof(word.c_str());
+#else
+    wchar_t *pEnd;
+    xnum = wcstod(word.c_str(), &pEnd);
+#endif
 }
 
 

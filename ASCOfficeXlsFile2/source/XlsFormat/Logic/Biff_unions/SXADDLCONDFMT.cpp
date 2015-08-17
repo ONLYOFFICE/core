@@ -4,7 +4,7 @@
 #include <Logic/Biff_unions/SXADDLSXRULE.h>
 
 namespace XLS
-{;
+{
 
 
 SXADDLCONDFMT::SXADDLCONDFMT()

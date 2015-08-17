@@ -7,7 +7,7 @@
 #include <Logic/Biff_records/SXString.h>
 
 namespace XLS
-{;
+{
 
 
 SXTBL::SXTBL()

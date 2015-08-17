@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/HyperlinkMoniker.h>
 
 namespace OSHARED
-{;
+{
 
 class CFRecord;
 

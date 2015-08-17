@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/SecurityDescriptor.h>
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

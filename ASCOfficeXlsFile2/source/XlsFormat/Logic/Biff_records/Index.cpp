@@ -2,7 +2,7 @@
 #include "Index.h"
 
 namespace XLS
-{;
+{
 
 Index::Index()
 {

@@ -2,7 +2,7 @@
 #include "ColInfo.h"
 
 namespace XLS
-{;
+{
 
 ColInfo::ColInfo()
 {

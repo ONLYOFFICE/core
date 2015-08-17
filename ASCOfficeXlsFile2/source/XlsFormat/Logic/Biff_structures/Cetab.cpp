@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 
 //void Cetab::toXML(BiffStructurePtr & parent)

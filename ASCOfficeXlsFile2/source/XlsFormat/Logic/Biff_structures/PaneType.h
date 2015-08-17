@@ -3,7 +3,7 @@
 #include "BiffAttribute.h"
 
 namespace XLS
-{;
+{
 
 class PaneType : public BiffAttributeSimple<unsigned char>
 {

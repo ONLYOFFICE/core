@@ -2,7 +2,7 @@
 #include "Radar.h"
 
 namespace XLS
-{;
+{
 
 Radar::Radar()
 {

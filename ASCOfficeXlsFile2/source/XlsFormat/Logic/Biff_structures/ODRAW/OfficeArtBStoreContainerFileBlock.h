@@ -12,7 +12,7 @@ namespace XLS
 }
 
 namespace ODRAW
-{;
+{
 
 class OfficeArtBStoreContainerFileBlock : public XLS::BiffStructure
 {

@@ -2,7 +2,7 @@
 #include "End.h"
 
 namespace XLS
-{;
+{
 
 End::End()
 {

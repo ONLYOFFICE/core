@@ -23,7 +23,7 @@
 #include <simple_xml_writer.h>
 
 namespace XLS
-{;
+{
 
 
 GLOBALS::GLOBALS(const bool is_dialog_sheet)
@@ -76,7 +76,9 @@ const bool GLOBALS::loadContent(BinProcessor& proc)
 		elements_.pop_back();
 	}
 	
-	proc.mandatory(WsBool(is_dialog)); // The most interesting
+    WsBool wsbool(is_dialog);
+    proc.mandatory(wsbool); // The most interesting
+
 	proc.optional<Sync>();
 	proc.optional<LPr>();
 	proc.optional<HorizontalPageBreaks>();

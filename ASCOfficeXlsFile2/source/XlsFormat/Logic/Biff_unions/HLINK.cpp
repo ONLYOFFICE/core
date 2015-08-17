@@ -4,7 +4,7 @@
 #include <Logic/Biff_records/HLinkTooltip.h>
 
 namespace XLS
-{;
+{
 
 
 HLINK::HLINK()

@@ -2,8 +2,37 @@
 
 #include "BiffStructure.h"
 
+
+#if !defined(_WIN32) && !defined(_WIN64)
+
+    typedef struct _ACL {
+        unsigned char  AclRevision;
+        unsigned char  Sbz1;
+        _UINT16   AclSize;
+        _UINT16   AceCount;
+        _UINT16   Sbz2;
+    } ACL;
+    typedef ACL *PACL;
+
+    typedef void* PSID;
+    typedef _UINT16   SECURITY_DESCRIPTOR_CONTROL, *PSECURITY_DESCRIPTOR_CONTROL;
+
+    typedef struct _SECURITY_DESCRIPTOR
+    {
+       unsigned char  Revision;
+       unsigned char  Sbz1;
+       SECURITY_DESCRIPTOR_CONTROL Control;
+       PSID Owner;
+       PSID Group;
+       PACL Sacl;
+       PACL Dacl;
+
+    } SECURITY_DESCRIPTOR, *PISECURITY_DESCRIPTOR;
+
+#endif
+
 namespace XLS
-{;
+{
 
 class CFRecord;
 

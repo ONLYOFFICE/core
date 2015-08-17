@@ -2,7 +2,7 @@
 #include "AxcExt.h"
 
 namespace XLS
-{;
+{
 
 AxcExt::AxcExt()
 {

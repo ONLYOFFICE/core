@@ -5,7 +5,7 @@
 #include <Logic/Biff_unions/DBQUERY.h>
 
 namespace XLS
-{;
+{
 
 
 SXSRC::SXSRC()

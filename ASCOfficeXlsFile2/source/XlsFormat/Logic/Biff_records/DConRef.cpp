@@ -2,7 +2,7 @@
 #include "DConRef.h"
 
 namespace XLS
-{;
+{
 
 DConRef::DConRef()
 {

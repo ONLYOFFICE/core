@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/SheetId.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of RRTabId record in BIFF8

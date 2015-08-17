@@ -16,7 +16,7 @@
 #include <Logic/Biff_unions/CRTMLFRT.h>
 
 namespace XLS
-{;
+{
 
 
 SS::SS()

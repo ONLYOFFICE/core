@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/SortCond12.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of SortData record in BIFF8

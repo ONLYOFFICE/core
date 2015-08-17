@@ -7,7 +7,7 @@
 #include <Logic/Biff_unions/SORTDATA12.h>
 
 namespace XLS
-{;
+{
 
 
 AUTOFILTER::AUTOFILTER()

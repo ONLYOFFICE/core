@@ -4,7 +4,7 @@
 
 
 namespace ODRAW
-{;
+{
 
 
 OfficeArtBStoreContainer::OfficeArtBStoreContainer()

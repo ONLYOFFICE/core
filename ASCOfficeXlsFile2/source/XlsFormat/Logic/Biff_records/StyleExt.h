@@ -6,7 +6,7 @@
 #include <Logic/Biff_structures/XFProps.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of StyleExt record in BIFF8

@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/XLUnicodeRichExtendedString.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of SST record in BIFF8

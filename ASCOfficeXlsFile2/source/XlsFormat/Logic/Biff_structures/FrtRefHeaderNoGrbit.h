@@ -6,7 +6,7 @@
 #include <Logic/Biff_structures/BitMarkedStructs.h>
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

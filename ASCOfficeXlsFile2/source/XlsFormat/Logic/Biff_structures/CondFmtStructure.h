@@ -4,7 +4,7 @@
 #include "SqRefU.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

@@ -1,9 +1,9 @@
 
 #include "CrtLayout12.h"
-#include "../../Logic/Biff_structures/FrtHeader.h"
+#include <Logic/Biff_structures/FrtHeader.h>
 
 namespace XLS
-{;
+{
 
 CrtLayout12::CrtLayout12()
 {

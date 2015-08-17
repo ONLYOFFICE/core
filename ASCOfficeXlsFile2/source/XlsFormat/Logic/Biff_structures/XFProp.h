@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/XFExtGradient.h>
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

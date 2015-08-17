@@ -3,7 +3,7 @@
 #include <Logic/Biff_structures/CellRef.h>
 
 namespace XLS
-{;
+{
 
 Sync::Sync()
 {

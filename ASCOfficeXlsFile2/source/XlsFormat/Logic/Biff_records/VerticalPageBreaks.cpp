@@ -2,7 +2,7 @@
 #include "VerticalPageBreaks.h"
 
 namespace XLS
-{;
+{
 
 VerticalPageBreaks::VerticalPageBreaks()
 {

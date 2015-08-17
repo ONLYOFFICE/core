@@ -2,7 +2,7 @@
 #include "ScenarioProtect.h"
 
 namespace XLS
-{;
+{
 
 ScenarioProtect::ScenarioProtect()
 {

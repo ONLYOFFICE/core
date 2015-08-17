@@ -3,7 +3,7 @@
 #include <map>
 
 namespace XLS
-{;
+{
 
 class CFRecordType
 {

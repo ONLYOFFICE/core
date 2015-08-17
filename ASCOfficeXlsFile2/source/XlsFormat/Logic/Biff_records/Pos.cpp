@@ -2,7 +2,7 @@
 #include "Pos.h"
 
 namespace XLS
-{;
+{
 
 Pos::Pos()
 {

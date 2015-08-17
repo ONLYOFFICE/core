@@ -2,7 +2,7 @@
 #include "SxFilt.h"
 
 namespace XLS
-{;
+{
 
 SxFilt::SxFilt()
 {

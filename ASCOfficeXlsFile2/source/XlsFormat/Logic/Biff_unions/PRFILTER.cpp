@@ -5,7 +5,7 @@
 #include <Logic/Biff_records/Continue.h>
 
 namespace XLS
-{;
+{
 
 
 PRFILTER::PRFILTER()

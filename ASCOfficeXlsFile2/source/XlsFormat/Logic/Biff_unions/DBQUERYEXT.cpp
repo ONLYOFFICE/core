@@ -6,7 +6,7 @@
 #include <Logic/Biff_records/TxtQry.h>
 
 namespace XLS
-{;
+{
 
 
 DBQUERYEXT::DBQUERYEXT()

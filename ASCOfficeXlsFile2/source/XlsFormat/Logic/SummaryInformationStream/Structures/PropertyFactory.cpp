@@ -1,12 +1,12 @@
 
 
-#include "Binary\CFStream.h"
+#include <Binary/CFStream.h>
 #include "PropertyFactory.h"
 #include "CodePage.h"
 
 
 namespace OLEPS
-{;
+{
 
 PropertyFactory::PropertyFactory()
 {

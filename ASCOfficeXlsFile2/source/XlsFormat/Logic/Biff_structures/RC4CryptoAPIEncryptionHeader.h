@@ -7,7 +7,7 @@
 #include <Logic/Biff_structures/BitMarkedStructs.h>
 
 namespace CRYPTO
-{;
+{
 
 class CFRecord;
 

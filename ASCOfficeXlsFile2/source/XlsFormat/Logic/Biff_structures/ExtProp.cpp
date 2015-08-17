@@ -4,7 +4,7 @@
 //#include <Exception/WrongBiffRecord.h>
 
 namespace XLS
-{;
+{
 
 
 BiffStructurePtr ExtProp::clone()

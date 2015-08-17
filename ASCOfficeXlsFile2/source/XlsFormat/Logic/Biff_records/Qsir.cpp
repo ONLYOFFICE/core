@@ -2,7 +2,7 @@
 #include "Qsir.h"
 
 namespace XLS
-{;
+{
 
 Qsir::Qsir()
 {

@@ -4,7 +4,7 @@
 #include <Logic/Biff_records/ContinueFrt12.h>
 
 namespace XLS
-{;
+{
 
 
 SORTDATA12::SORTDATA12()

@@ -2,7 +2,7 @@
 #include "NamePublish.h"
 
 namespace XLS
-{;
+{
 
 NamePublish::NamePublish()
 {

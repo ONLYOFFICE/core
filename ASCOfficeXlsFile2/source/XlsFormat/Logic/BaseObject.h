@@ -4,7 +4,7 @@
 #include <list>
 #include <sstream>
 
-#include "../Logging/Log.h"
+#include "Logging/Log.h"
 #include "XlsElementsType.h" //шоб со строками не работать
 
 namespace XLS

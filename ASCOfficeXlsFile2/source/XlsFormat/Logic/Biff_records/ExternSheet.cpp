@@ -3,7 +3,7 @@
 #include <Logic/Biff_structures/XTI.h>
 
 namespace XLS
-{;
+{
 
 ExternSheet::ExternSheet()
 {

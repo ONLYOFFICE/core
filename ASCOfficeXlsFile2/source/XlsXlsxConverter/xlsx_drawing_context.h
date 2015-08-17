@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <iosfwd>
+#include <string.h>
 
 #include "xlsx_drawings.h"
 
@@ -119,8 +120,8 @@ public:
 		void set_FlipV		();
 		void set_shape_id	(int id);
 
-		void set_name		(std::wstring & str);
-		void set_description(std::wstring & str);
+        void set_name		(const std::wstring & str);
+        void set_description(const std::wstring & str);
 		
 		void set_crop_top	(long val);
 		void set_crop_bottom(long val);
@@ -129,16 +130,16 @@ public:
 
 		void set_rotation	(long val);
 
-		void set_line_color	(std::wstring color);
+        void set_line_color	(const std::wstring & color);
 		void set_line_color	(int index, int type);
 		void set_line_type	(long val);
 		void set_line_style	(long val);
 		void set_line_width (long val);
 
-		void set_image		(std::wstring & str);
-		void set_anchor		(std::wstring & str);
-		void set_properties	(std::wstring & str);
-		void set_hyperlink	(std::wstring & str);
+        void set_image		(const std::wstring & str);
+        void set_anchor		(const std::wstring & str);
+        void set_properties	(const std::wstring & str);
+        void set_hyperlink	(const std::wstring & str);
 
 		void set_path_rect	(_rect & rect);
 		void set_path		(const std::wstring & path);

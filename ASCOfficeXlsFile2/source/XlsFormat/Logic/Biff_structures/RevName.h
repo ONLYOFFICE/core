@@ -6,7 +6,7 @@
 #include "RevNamePly.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

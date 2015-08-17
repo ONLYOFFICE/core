@@ -2,7 +2,7 @@
 #include "Note.h"
 
 namespace XLS
-{;
+{
 
 Note::Note()
 {

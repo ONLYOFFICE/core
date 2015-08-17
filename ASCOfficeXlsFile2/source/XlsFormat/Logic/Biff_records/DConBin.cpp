@@ -2,7 +2,7 @@
 #include "DConBin.h"
 
 namespace XLS
-{;
+{
 
 DConBin::DConBin()
 {

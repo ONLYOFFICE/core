@@ -3,7 +3,7 @@
 #include <Logic/Biff_structures/FrtHeader.h>
 
 namespace XLS
-{;
+{
 //const wchar_t FileOffsetStr[] = L"FileOffset";
 DropDownObjIds::DropDownObjIds()
 {

@@ -2,7 +2,7 @@
 #include "Text.h"
 
 namespace XLS
-{;
+{
 
 Text::Text()
 {

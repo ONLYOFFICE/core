@@ -2,7 +2,7 @@
 #include "RecalcId.h"
 
 namespace XLS
-{;
+{
 
 RecalcId::RecalcId()
 {

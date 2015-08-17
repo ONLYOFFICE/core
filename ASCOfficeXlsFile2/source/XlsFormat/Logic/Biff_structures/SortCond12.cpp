@@ -4,7 +4,7 @@
 #include "CellRangeRef.h"
 
 namespace XLS
-{;
+{
 
 
 BiffStructurePtr SortCond12::clone()

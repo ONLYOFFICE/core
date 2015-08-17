@@ -2,7 +2,7 @@
 #include "AxesUsed.h"
 
 namespace XLS
-{;
+{
 
 AxesUsed::AxesUsed()
 {

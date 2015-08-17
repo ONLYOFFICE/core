@@ -2,7 +2,7 @@
 #include "YMult.h"
 
 namespace XLS
-{;
+{
 
 YMult::YMult()
 {

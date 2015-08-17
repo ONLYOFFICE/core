@@ -5,7 +5,7 @@
 #include "BiffDecoder_RCF.h"
 
 namespace CRYPT
-{;
+{
 
 class RC4Crypt : public Crypt
 {

@@ -2,7 +2,7 @@
 #include "BottomMargin.h"
 
 namespace XLS
-{;
+{
 
 BottomMargin::BottomMargin()
 {

@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/DXFN12List.h>
 
 namespace XLS
-{;
+{
 
 class List12BlockLevel: public BiffStructure
 {	

@@ -6,7 +6,7 @@
 #include <simple_xml_writer.h>
 
 namespace XLS
-{;
+{
 
 
 SHAREDSTRINGS::SHAREDSTRINGS(const unsigned short code_page)
@@ -29,7 +29,8 @@ BaseObjectPtr SHAREDSTRINGS::clone()
 // SHAREDSTRINGS = SST *Continue
 const bool SHAREDSTRINGS::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory(SST(code_page_)))
+    SST sst(code_page_);
+    if(!proc.mandatory(sst))
 	{
 		return false;
 	}

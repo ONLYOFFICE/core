@@ -2,7 +2,7 @@
 #include "HLink.h"
 
 namespace XLS
-{;
+{
 
 HLink::HLink()
 {

@@ -4,7 +4,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 
 PtgRefErr3d::PtgRefErr3d()

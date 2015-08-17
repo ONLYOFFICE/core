@@ -3,7 +3,7 @@
 #include "OfficeArtContainer.h"
 
 namespace ODRAW
-{;
+{
 
 class OfficeArtDggContainer : public OfficeArtContainer
 {

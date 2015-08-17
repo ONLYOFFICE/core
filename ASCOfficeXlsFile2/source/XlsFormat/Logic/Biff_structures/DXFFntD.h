@@ -6,7 +6,7 @@
 #include "Boolean.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

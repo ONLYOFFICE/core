@@ -8,7 +8,7 @@ namespace XLS
 }
 
 namespace ODRAW
-{;
+{
 
 class MSOCR : public XLS::BiffStructure
 {

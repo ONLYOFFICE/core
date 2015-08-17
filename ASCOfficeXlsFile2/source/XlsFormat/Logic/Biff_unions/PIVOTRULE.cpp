@@ -4,7 +4,7 @@
 #include <Logic/Biff_unions/PRFILTER.h>
 
 namespace XLS
-{;
+{
 
 
 PIVOTRULE::PIVOTRULE()

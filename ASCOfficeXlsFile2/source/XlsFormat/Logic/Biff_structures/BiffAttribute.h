@@ -101,7 +101,7 @@ public:
 
     BackwardOnlyParam<Type> operator= (const BackwardOnlyParam<Type>& other)
 	{
-        return BiffAttributeSimple<Type>::operator=(other);
+        BiffAttributeSimple<Type>::val = other.val;
     }
 
 };

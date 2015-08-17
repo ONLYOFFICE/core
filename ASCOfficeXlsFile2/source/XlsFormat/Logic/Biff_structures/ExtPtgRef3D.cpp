@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 
 ExtPtgRef3D::ExtPtgRef3D(const CellRef& cell_base_ref_init)

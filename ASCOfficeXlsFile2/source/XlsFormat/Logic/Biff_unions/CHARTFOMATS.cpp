@@ -25,7 +25,7 @@
 #include <Logic/Biff_unions/TEXTPROPS.h>
 
 namespace XLS
-{;
+{
 
 
 CHARTFOMATS::CHARTFOMATS()

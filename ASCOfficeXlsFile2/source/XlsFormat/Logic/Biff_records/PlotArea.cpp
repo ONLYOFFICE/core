@@ -2,7 +2,7 @@
 #include "PlotArea.h"
 
 namespace XLS
-{;
+{
 
 PlotArea::PlotArea()
 {

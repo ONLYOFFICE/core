@@ -6,7 +6,7 @@
 #include <Logic/Biff_unions/AUTOFILTER.h>
 
 namespace XLS
-{;
+{
 
 
 MACROSORTANDFILTER::MACROSORTANDFILTER()

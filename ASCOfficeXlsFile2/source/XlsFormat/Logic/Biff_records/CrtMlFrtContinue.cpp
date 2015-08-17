@@ -2,7 +2,7 @@
 #include "CrtMlFrtContinue.h"
 
 namespace XLS
-{;
+{
 
 CrtMlFrtContinue::CrtMlFrtContinue()
 {

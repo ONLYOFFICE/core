@@ -4,7 +4,7 @@
 #include <Logic/Biff_records/CF.h>
 
 namespace XLS
-{;
+{
 
 
 CONDFMT::CONDFMT()

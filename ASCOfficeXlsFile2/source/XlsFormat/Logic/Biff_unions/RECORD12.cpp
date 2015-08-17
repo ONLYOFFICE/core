@@ -3,7 +3,7 @@
 #include <Logic/Biff_records/HeaderFooter.h>
 
 namespace XLS
-{;
+{
 
 
 RECORD12::RECORD12()

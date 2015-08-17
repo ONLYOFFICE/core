@@ -2,7 +2,7 @@
 #include "Feature11.h"
 
 namespace XLS
-{;
+{
 
 Feature11::Feature11()
 {

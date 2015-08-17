@@ -1,10 +1,10 @@
 #pragma once
 #include "Property.h"
 
-#include "../../../Binary/BinSmartPointers.h"
+#include <Binary/BinSmartPointers.h>
 
 namespace OLEPS
-{;
+{
 
 class CodePage : public Property
 {

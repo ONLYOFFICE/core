@@ -2,7 +2,7 @@
 #include "MsoDrawingGroup.h"
 
 namespace XLS
-{;
+{
 
 MsoDrawingGroup::MsoDrawingGroup(const bool is_inside_chart_sheet)
 :	rgChildRec(is_inside_chart_sheet ? ODRAW::OfficeArtRecord::CA_Chart : ODRAW::OfficeArtRecord::CA_Sheet)

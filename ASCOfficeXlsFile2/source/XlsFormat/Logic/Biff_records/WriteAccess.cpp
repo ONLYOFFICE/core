@@ -2,7 +2,7 @@
 #include "WriteAccess.h"
 
 namespace XLS
-{;
+{
 
 WriteAccess::WriteAccess()
 {

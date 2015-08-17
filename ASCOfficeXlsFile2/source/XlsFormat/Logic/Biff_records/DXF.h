@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/XFProps.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of DXF record in BIFF8

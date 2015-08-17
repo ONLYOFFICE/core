@@ -2,7 +2,7 @@
 #include "PivotChartBits.h"
 
 namespace XLS
-{;
+{
 
 PivotChartBits::PivotChartBits()
 {

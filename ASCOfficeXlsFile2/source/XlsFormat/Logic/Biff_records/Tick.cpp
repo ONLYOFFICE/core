@@ -2,7 +2,7 @@
 #include "Tick.h"
 
 namespace XLS
-{;
+{
 
 Tick::Tick()
 {

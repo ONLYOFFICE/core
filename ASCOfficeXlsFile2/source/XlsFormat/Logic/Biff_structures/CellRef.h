@@ -3,7 +3,7 @@
 #include "BiffStructure.h"
 
 namespace XLS
-{;
+{
 
 class CellRef : public BiffStructure
 {
@@ -78,37 +78,37 @@ template<class NameProducer, class RwType, class ColType, RELATIVE_INFO rel_info
 class CellRef_T : public CellRef
 {
 public:
-	CellRef_T(const std::wstring & str_ref) : CellRef(str_ref) {};
-	CellRef_T() {};
+    CellRef_T(const std::wstring & str_ref) : CellRef(str_ref) {}
+    CellRef_T() {}
 	CellRef_T(const long row_init, const long column_init, const bool row_relative_init, const bool col_relative_init)
-		:	CellRef(row_init, column_init, row_relative_init, col_relative_init) {};
+        :	CellRef(row_init, column_init, row_relative_init, col_relative_init) {}
 
 	template<class otherNameProducer, class otherRwType, class otherColType, RELATIVE_INFO otherRel_info>
 	CellRef_T(CellRef_T<otherNameProducer, otherRwType, otherColType, otherRel_info>& other)
 		:	CellRef(other)
 	{
-	};
+    }
 
 	CellRef_T(CellRef& other)
 		:	CellRef(other)
 	{
-	};
+    }
 
-	virtual const std::wstring & getClassName() const { return NameProducer()();}
+    virtual const std::string & getClassName() const { return NameProducer()();}
 
 	CellRef_T operator+(const CellRef& appended_ref)
 	{
 		CellRef_T ret_val(*this);
 		ret_val +=(appended_ref);
 		return ret_val;
-	};
+    }
 
 	CellRef_T operator-(const CellRef& subtracted_ref)
 	{
 		CellRef_T ret_val(*this);
 		ret_val -=(subtracted_ref);
 		return ret_val;
-	};
+    }
 
 	BiffStructurePtr clone()
 	{

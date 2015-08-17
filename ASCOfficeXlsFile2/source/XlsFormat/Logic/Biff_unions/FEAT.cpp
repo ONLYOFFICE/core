@@ -5,7 +5,7 @@
 #include <Logic/Biff_records/ContinueFrt.h>
 
 namespace XLS
-{;
+{
 
 
 FEAT::FEAT()
@@ -49,7 +49,8 @@ BaseObjectPtr FEAT::clone()
 // FEAT = FeatHdr *(Feat *ContinueFrt)
 const bool FEAT::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory(FeatHdr(false)))
+    FeatHdr featHdr(false);
+    if(!proc.mandatory(featHdr))
 	{
 		return false;
 	}

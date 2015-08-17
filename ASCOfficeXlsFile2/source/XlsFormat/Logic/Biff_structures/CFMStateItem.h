@@ -5,7 +5,7 @@
 #include "CFVO.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

@@ -6,7 +6,7 @@
 #include <vector>
 
 namespace OLEPS
-{;
+{
 
 class PropertySet
 {

@@ -2,7 +2,7 @@
 #include "Palette.h"
 
 namespace XLS
-{;
+{
 
 Palette::Palette()
 :	ccv(56)

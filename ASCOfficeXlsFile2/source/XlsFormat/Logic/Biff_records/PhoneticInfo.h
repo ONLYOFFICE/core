@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/SqRef.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of PhoneticInfo record in BIFF8

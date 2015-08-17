@@ -6,7 +6,7 @@
 
 
 namespace XLS
-{;
+{
 
 
 PtgBool::PtgBool()

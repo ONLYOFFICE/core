@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/EnhancedProtection.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of FeatHdr record in BIFF8

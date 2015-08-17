@@ -2,7 +2,7 @@
 #include "Country.h"
 
 namespace XLS
-{;
+{
 
 Country::Country()
 {

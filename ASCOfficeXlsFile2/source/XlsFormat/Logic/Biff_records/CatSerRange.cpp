@@ -2,7 +2,7 @@
 #include "CatSerRange.h"
 
 namespace XLS
-{;
+{
 
 CatSerRange::CatSerRange()
 {

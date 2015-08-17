@@ -4,7 +4,7 @@
 #include <Logic/Biff_records/CrtMlFrtContinue.h>
 
 namespace XLS
-{;
+{
 
 
 CRTMLFRT::CRTMLFRT()

@@ -4,7 +4,7 @@
 #include "EncryptionHeaderFlags.h"
 
 namespace CRYPTO
-{;
+{
 
 class CFRecord;
 

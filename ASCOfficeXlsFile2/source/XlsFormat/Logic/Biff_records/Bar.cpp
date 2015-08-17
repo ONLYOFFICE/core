@@ -2,7 +2,7 @@
 #include "Bar.h"
 
 namespace XLS
-{;
+{
 
 Bar::Bar()
 {

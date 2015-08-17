@@ -4,7 +4,7 @@
 #include "CellRangeRef.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

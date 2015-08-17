@@ -2,7 +2,7 @@
 #include "LegendException.h"
 
 namespace XLS
-{;
+{
 
 LegendException::LegendException()
 {

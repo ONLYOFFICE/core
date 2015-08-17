@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/Cell.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Label record in BIFF8

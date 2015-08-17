@@ -2,7 +2,7 @@
 #include "BopPopCustom.h"
 
 namespace XLS
-{;
+{
 
 BopPopCustom::BopPopCustom()
 {

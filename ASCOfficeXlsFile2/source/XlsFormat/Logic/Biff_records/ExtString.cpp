@@ -2,7 +2,7 @@
 #include "ExtString.h"
 
 namespace XLS
-{;
+{
 
 ExtString::ExtString()
 {

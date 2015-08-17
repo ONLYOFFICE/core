@@ -2,7 +2,7 @@
 #include "MDXStr.h"
 
 namespace XLS
-{;
+{
 
 MDXStr::MDXStr()
 {

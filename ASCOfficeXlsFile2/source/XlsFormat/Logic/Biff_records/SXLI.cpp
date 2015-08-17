@@ -2,7 +2,7 @@
 #include "SXLI.h"
 
 namespace XLS
-{;
+{
 
 SXLI::SXLI()
 {

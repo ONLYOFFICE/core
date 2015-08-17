@@ -5,7 +5,7 @@
 #include <sstream>
 
 namespace XLS
-{;
+{
 
 
 CompoundFile::~CompoundFile()

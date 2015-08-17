@@ -2,7 +2,7 @@
 #include "Begin.h"
 
 namespace XLS
-{;
+{
 
 Begin::Begin()
 {

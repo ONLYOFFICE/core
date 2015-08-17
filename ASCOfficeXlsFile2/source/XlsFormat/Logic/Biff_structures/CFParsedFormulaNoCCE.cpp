@@ -4,7 +4,7 @@
 //#include <Exception/UnexpectedProgramPath.h>
 
 namespace XLS
-{;
+{
 
 
 CFParsedFormulaNoCCE::CFParsedFormulaNoCCE(const CellRef& cell_base_ref_init)

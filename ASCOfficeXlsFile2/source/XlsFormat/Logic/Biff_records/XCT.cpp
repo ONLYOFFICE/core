@@ -2,7 +2,7 @@
 #include "XCT.h"
 
 namespace XLS
-{;
+{
 
 XCT::XCT()
 {

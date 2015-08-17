@@ -4,7 +4,7 @@
 #include <Logic/Biff_records/Continue.h>
 
 namespace XLS
-{;
+{
 
 
 MSODRAWINGGROUP::MSODRAWINGGROUP(const bool is_inside_chart_sheet)
@@ -27,7 +27,8 @@ BaseObjectPtr MSODRAWINGGROUP::clone()
 // MSODRAWINGGROUP = MsoDrawingGroup *Continue
 const bool MSODRAWINGGROUP::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory(MsoDrawingGroup(is_inside_chart_sheet_)))
+    MsoDrawingGroup mso_drawing_group(is_inside_chart_sheet_);
+    if(!proc.mandatory(mso_drawing_group))
 	{		
 		return false;
 	}

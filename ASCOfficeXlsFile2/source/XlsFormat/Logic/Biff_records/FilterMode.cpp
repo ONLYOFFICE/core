@@ -2,7 +2,7 @@
 #include "FilterMode.h"
 
 namespace XLS
-{;
+{
 
 FilterMode::FilterMode()
 {

@@ -2,7 +2,7 @@
 #include "MDXSet.h"
 
 namespace XLS
-{;
+{
 
 MDXSet::MDXSet()
 {

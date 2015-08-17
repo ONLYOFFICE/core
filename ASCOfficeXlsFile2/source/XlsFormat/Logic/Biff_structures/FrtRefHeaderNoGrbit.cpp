@@ -5,7 +5,7 @@
 //#include <Exception/WrongAPIUsage.h>
 
 namespace XLS
-{;
+{
 
 
 FrtRefHeaderNoGrbit::FrtRefHeaderNoGrbit(const CFRecordType::TypeId type)

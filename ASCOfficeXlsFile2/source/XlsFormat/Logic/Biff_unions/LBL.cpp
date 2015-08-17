@@ -9,7 +9,7 @@
 #include <simple_xml_writer.h>
 
 namespace XLS
-{;
+{
 
 
 LBL::LBL()
@@ -42,7 +42,8 @@ const bool LBL::loadContent(BinProcessor& proc)
 
 	XLUnicodeStringNoCch name = lbl->getName();
 	
-	if (proc.optional(NameCmt(name)))
+    NameCmt namecmt(name);
+    if (proc.optional(namecmt))
 	{
 	}
 	proc.optional<NameFnGrp12>();

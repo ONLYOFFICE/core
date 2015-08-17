@@ -2,7 +2,7 @@
 #include "FrtFontList.h"
 
 namespace XLS
-{;
+{
 
 FrtFontList::FrtFontList()
 {

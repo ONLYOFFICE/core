@@ -3,7 +3,7 @@
 #include <Logic/CompositeObject.h>
 
 namespace XLS
-{;
+{
 
 class  MsoDrawing;
 typedef boost::shared_ptr<MsoDrawing> MsoDrawingPtr;

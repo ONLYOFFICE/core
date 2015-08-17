@@ -2,12 +2,13 @@
 #include "CFStreamCacheReader.h"
 #include "CFRecord.h"
 #include "CFStream.h"
-#include "../Logic/Biff_records/BOF.h"
+#include <Logic/Biff_records/BOF.h>
+
 
 
 
 namespace XLS
-{;
+{
 
 
 CFStreamCacheReader::CFStreamCacheReader(CFStreamPtr stream, GlobalWorkbookInfoPtr global_info)

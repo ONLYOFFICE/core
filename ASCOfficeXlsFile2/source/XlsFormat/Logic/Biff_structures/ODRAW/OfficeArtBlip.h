@@ -10,7 +10,7 @@ namespace XLS
 
 
 namespace ODRAW
-{;
+{
 
 class OfficeArtBlip;
 typedef boost::shared_ptr<OfficeArtBlip> OfficeArtBlipPtr;

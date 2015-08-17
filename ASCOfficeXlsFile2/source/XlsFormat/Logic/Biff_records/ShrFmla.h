@@ -5,7 +5,7 @@
 #include <Logic/Biff_structures/SharedParsedFormula.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of ShrFmla record in BIFF8

@@ -13,7 +13,7 @@ namespace ODRAW
 }
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of TxO record in BIFF8

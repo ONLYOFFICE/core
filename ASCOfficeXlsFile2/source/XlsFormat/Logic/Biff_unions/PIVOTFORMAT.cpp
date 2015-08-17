@@ -5,7 +5,7 @@
 #include <Logic/Biff_records/SxDXF.h>
 
 namespace XLS
-{;
+{
 
 
 PIVOTFORMAT::PIVOTFORMAT()

@@ -2,7 +2,7 @@
 #include "AxisParent.h"
 
 namespace XLS
-{;
+{
 
 AxisParent::AxisParent()
 {

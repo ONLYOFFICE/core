@@ -3,7 +3,7 @@
 #include <Binary/CFStream.h>
 
 namespace XLS
-{;
+{
 
 
 Mms::Mms()

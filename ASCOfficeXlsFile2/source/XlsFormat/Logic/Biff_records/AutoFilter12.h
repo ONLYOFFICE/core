@@ -1,14 +1,14 @@
 #pragma once
 
 #include "BiffRecordContinued.h"
-#include "../Biff_structures/FrtRefHeader.h"
-#include "../Biff_structures/BiffString.h"
-#include "../Biff_structures/FrtRefHeader.h"
-#include "../Biff_structures/AFDOper.h"
-#include "../Biff_structures/AF12Criteria.h"
+#include <Logic/Biff_structures/FrtRefHeader.h>
+#include <Logic/Biff_structures/BiffString.h>
+#include <Logic/Biff_structures/FrtRefHeader.h>
+#include <Logic/Biff_structures/AFDOper.h>
+#include <Logic/Biff_structures/AF12Criteria.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of AutoFilter12 record in BIFF8

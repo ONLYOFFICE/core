@@ -4,7 +4,7 @@
 //#include <Exception/AttributeDataWrong.h>
 
 namespace XLS
-{;
+{
 
 UserSViewBegin::UserSViewBegin()
 {
@@ -143,7 +143,8 @@ void UserSViewBegin::readFields(CFRecord& record)
 
 	record >> operNumX >> operNumY >> colRPane >> rwBPane;
 
-	pane_top_left_cell = std::wstring (CellRef(fSplitH ? rwBPane : 0 , fSplitV ? colRPane : 0, true, true).toString().c_str());
+    //todooo
+    //pane_top_left_cell = std::wstring (CellRef(fSplitH ? rwBPane : 0 , fSplitV ? colRPane : 0, true, true).toString().c_str());
 }
 
 } // namespace XLS

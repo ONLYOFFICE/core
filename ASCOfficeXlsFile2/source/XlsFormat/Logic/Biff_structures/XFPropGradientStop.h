@@ -4,7 +4,7 @@
 #include "XFPropColor.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

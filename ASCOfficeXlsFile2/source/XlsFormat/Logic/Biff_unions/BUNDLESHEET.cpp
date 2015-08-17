@@ -3,7 +3,7 @@
 #include <Logic/Biff_records/BoundSheet8.h>
 
 namespace XLS
-{;
+{
 
 
 BUNDLESHEET::BUNDLESHEET()

@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/DropDownObjId.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of DropDownObjIds record in BIFF8

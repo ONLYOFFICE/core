@@ -4,7 +4,7 @@
 #include "../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
 
 namespace ODRAW
-{;
+{
 
 
 XLS::BiffStructurePtr OfficeArtBStoreContainerFileBlock::clone()

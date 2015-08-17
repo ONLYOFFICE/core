@@ -2,7 +2,7 @@
 #include "SCENARIO.h"
 
 namespace XLS
-{;
+{
 
 SCENARIO::SCENARIO()
 {

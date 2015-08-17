@@ -2,7 +2,7 @@
 #include "Header.h"
 
 namespace XLS
-{;
+{
 
 Header::Header()
 {

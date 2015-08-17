@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/ISSTInf.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of ExtSST record in BIFF8

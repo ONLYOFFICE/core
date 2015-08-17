@@ -9,7 +9,7 @@
 //#include <Exception/WrongBiffRecord.h>
 
 namespace XLS
-{;
+{
 
 
 //void SerAr::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)

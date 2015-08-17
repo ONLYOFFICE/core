@@ -2,7 +2,7 @@
 #include "DefaultRowHeight.h"
 
 namespace XLS
-{;
+{
 
 DefaultRowHeight::DefaultRowHeight()
 {

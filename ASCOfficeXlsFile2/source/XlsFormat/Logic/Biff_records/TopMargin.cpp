@@ -2,7 +2,7 @@
 #include "TopMargin.h"
 
 namespace XLS
-{;
+{
 
 TopMargin::TopMargin()
 {

@@ -6,7 +6,7 @@
 #include <Logic/Biff_unions/SXADDLSXMGS.h>
 
 namespace XLS
-{;
+{
 
 
 SXADDLCACHE12::SXADDLCACHE12()

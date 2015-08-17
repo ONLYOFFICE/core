@@ -7,7 +7,7 @@
 #include <boost/algorithm/string.hpp>
 
 namespace XLS
-{;
+{
 
 // static
 const bool SyntaxPtg::is_operators(std::wstring::const_iterator first, std::wstring::const_iterator last)

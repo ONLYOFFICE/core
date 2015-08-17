@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 
 ObjFmla::ObjFmla(const bool is_part_of_FtPictFmla)

@@ -6,7 +6,7 @@
 #include <Logic/Biff_unions/UNKNOWNFRT.h>
 
 namespace XLS
-{;
+{
 
 
 SXADDLCACHE::SXADDLCACHE()

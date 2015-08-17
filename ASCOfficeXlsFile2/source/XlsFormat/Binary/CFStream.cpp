@@ -10,7 +10,7 @@
 #include <sstream>
 
 namespace XLS
-{;
+{
 
 CFStream::CFStream(POLE::Stream* stream)
 {

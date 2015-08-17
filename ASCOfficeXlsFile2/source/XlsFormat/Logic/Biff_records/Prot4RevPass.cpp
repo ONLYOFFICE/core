@@ -2,7 +2,7 @@
 #include "Prot4RevPass.h"
 
 namespace XLS
-{;
+{
 
 Prot4RevPass::Prot4RevPass()
 {

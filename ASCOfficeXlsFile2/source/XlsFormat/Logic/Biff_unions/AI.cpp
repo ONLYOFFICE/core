@@ -6,7 +6,7 @@
 //#include <Logic/Biff_unions/PAGESETUP.h>
 
 namespace XLS
-{;
+{
 
 
 AI::AI()

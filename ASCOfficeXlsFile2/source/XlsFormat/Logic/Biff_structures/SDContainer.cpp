@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 
 SDContainer::SDContainer()
@@ -21,20 +21,6 @@ BiffStructurePtr SDContainer::clone()
 {
 	return BiffStructurePtr(new SDContainer(*this));
 }
-
-
-//void SDContainer::toXML(BiffStructurePtr & parent)
-//{
-//	sd.toXML(parent);
-//}
-
-//
-//const bool SDContainer::fromXML(BiffStructurePtr & parent)
-//{
-//#pragma message("####################### SDContainer record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! SDContainer record has no BiffStructure::fromXML() implemented.");
-//	return false;
-//}
 
 
 void SDContainer::store(CFRecord& record)

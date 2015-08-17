@@ -2,7 +2,7 @@
 #include "DXF.h"
 
 namespace XLS
-{;
+{
 
 DXF::DXF()
 {

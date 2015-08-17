@@ -2,7 +2,7 @@
 #include "Chart3DBarShape.h"
 
 namespace XLS
-{;
+{
 
 Chart3DBarShape::Chart3DBarShape()
 {

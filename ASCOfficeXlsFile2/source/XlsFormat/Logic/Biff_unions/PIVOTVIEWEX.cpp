@@ -6,7 +6,7 @@
 #include <Logic/Biff_unions/PIVOTVDTEX.h>
 
 namespace XLS
-{;
+{
 
 
 PIVOTVIEWEX::PIVOTVIEWEX()

@@ -2,7 +2,7 @@
 #include "SXVDTEx.h"
 
 namespace XLS
-{;
+{
 
 SXVDTEx::SXVDTEx()
 {

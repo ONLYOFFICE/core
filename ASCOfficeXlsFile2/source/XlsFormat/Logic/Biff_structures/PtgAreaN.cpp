@@ -4,7 +4,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 
 PtgAreaN::PtgAreaN(const CellRef cell_base_ref_init)

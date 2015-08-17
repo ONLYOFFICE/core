@@ -2,7 +2,7 @@
 #include "PrintRowCol.h"
 
 namespace XLS
-{;
+{
 
 PrintRowCol::PrintRowCol()
 {

@@ -2,7 +2,7 @@
 #include "Footer.h"
 
 namespace XLS
-{;
+{
 
 Footer::Footer()
 {

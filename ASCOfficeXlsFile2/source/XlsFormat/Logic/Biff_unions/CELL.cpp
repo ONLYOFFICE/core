@@ -12,7 +12,7 @@
 #include <simple_xml_writer.h>
 
 namespace XLS
-{;
+{
 
 CELL::CELL(std::vector<CellRef>& shared_formulas_locations_ref) : shared_formulas_locations_ref_(shared_formulas_locations_ref)
 {

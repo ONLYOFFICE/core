@@ -4,7 +4,7 @@
 //#include <Exception/StructureParameterNotSet.h>
 
 namespace XLS
-{;
+{
 
 
 void DXFNum::setIsUserDefined(const bool is_user_defined)

@@ -507,22 +507,22 @@ void xlsx_drawing_context::serialize(std::wostream & stream)
 		}
 	}
 }
-void xlsx_drawing_context::set_name(std::wstring & str)
+void xlsx_drawing_context::set_name(const std::wstring & str)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().name = str;
 }
-void xlsx_drawing_context::set_description(std::wstring & str)
+void xlsx_drawing_context::set_description(const std::wstring & str)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().description = str;
 }
-void xlsx_drawing_context::set_anchor(std::wstring & str)
+void xlsx_drawing_context::set_anchor(const std::wstring & str)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().anchor = str;
 }
-void xlsx_drawing_context::set_image(std::wstring & str)
+void xlsx_drawing_context::set_image(const std::wstring & str)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().image_target = str;
@@ -553,7 +553,7 @@ void xlsx_drawing_context::set_rotation (long val)
 	if (drawing_state.size() < 1 )return;//in degrees
 	drawing_state.back().rotation = val;
 }
-void xlsx_drawing_context::set_line_color (std::wstring color)
+void xlsx_drawing_context::set_line_color (const std::wstring & color)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().line.color.rgb = color;
@@ -596,7 +596,7 @@ void xlsx_drawing_context::set_line_width (long val)
 	drawing_state.back().line.width = val;
 }
 
-void xlsx_drawing_context::set_hyperlink(std::wstring & str)
+void xlsx_drawing_context::set_hyperlink(const std::wstring & str)
 {
 	if (drawing_state.size() < 1 )return;
 
@@ -624,7 +624,7 @@ void xlsx_drawing_context::set_path_rect(_rect & rect)
 	drawing_state.back().path_rect = rect;
 }
 
-void xlsx_drawing_context::set_properties(std::wstring & str)
+void xlsx_drawing_context::set_properties(const std::wstring & str)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().shape = str;

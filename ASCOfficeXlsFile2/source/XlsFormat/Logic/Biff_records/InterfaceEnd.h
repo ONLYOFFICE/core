@@ -3,7 +3,7 @@
 #include "BiffRecord.h"
 
 namespace XLS
-{;
+{
 
 // Logical representation of InterfaceEnd record in BIFF8
 class InterfaceEnd: public BiffRecord

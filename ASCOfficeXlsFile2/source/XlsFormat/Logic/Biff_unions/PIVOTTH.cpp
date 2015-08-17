@@ -4,7 +4,7 @@
 #include <Logic/Biff_records/ContinueFrt.h>
 
 namespace XLS
-{;
+{
 
 
 PIVOTTH::PIVOTTH()

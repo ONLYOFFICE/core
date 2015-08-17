@@ -2,7 +2,7 @@
 #include "ExtSST.h"
 
 namespace XLS
-{;
+{
 
 ExtSST::ExtSST()
 {

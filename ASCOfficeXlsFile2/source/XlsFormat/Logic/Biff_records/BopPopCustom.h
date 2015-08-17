@@ -3,7 +3,7 @@
 #include "BiffRecord.h"
 
 namespace XLS
-{;
+{
 
 class BopPopCustomPiesIndices : public BiffStructure
 {

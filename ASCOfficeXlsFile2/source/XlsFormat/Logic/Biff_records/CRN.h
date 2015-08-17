@@ -1,10 +1,10 @@
 #pragma once
 
 #include "BiffRecord.h"
-#include "../../Logic/Biff_structures/SerAr.h"
+#include <Logic/Biff_structures/SerAr.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of CRN record in BIFF8

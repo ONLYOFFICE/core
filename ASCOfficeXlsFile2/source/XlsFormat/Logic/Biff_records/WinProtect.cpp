@@ -2,7 +2,7 @@
 #include "WinProtect.h"
 
 namespace XLS
-{;
+{
 
 WinProtect::WinProtect()
 {

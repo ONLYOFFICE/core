@@ -2,7 +2,7 @@
 #include "DataFormat.h"
 
 namespace XLS
-{;
+{
 
 DataFormat::DataFormat()
 {

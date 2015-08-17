@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/MDir.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of MDB record in BIFF8

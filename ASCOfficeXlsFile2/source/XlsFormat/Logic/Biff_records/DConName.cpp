@@ -2,7 +2,7 @@
 #include "DConName.h"
 
 namespace XLS
-{;
+{
 
 DConName::DConName()
 {

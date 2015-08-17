@@ -4,7 +4,7 @@
 #include <Logic/Biff_structures/ODRAW/OfficeArtDgContainer.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of MsoDrawing record in BIFF8

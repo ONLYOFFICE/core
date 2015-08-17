@@ -2,7 +2,7 @@
 #include "SerFmt.h"
 
 namespace XLS
-{;
+{
 
 SerFmt::SerFmt()
 {

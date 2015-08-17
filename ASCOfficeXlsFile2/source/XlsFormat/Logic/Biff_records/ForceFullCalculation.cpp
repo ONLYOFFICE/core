@@ -2,7 +2,7 @@
 #include "ForceFullCalculation.h"
 
 namespace XLS
-{;
+{
 
 ForceFullCalculation::ForceFullCalculation()
 {

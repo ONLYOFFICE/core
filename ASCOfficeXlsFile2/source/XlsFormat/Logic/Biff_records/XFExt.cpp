@@ -2,7 +2,7 @@
 #include "XFExt.h"
 
 namespace XLS
-{;
+{
 
 XFExt::XFExt()
 {

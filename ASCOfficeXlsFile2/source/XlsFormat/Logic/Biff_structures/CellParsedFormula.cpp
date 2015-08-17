@@ -3,7 +3,7 @@
 #include <Binary/CFRecord.h>
 
 namespace XLS
-{;
+{
 
 
 CellParsedFormula::CellParsedFormula(const bool is_part_of_a_revision)

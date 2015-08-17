@@ -54,7 +54,7 @@
 #include "PtgMemNoMemN.h"
 
 namespace XLS
-{;
+{
 
 // Loads a Ptg record // static
 PtgPtr PtgFactory::loadPtg(CFRecord& record, const CellRef& cell_base_ref)

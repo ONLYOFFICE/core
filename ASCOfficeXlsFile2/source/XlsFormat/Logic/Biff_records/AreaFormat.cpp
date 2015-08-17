@@ -2,7 +2,7 @@
 #include "AreaFormat.h"
 
 namespace XLS
-{;
+{
 
 AreaFormat::AreaFormat()
 {

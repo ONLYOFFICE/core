@@ -2,7 +2,7 @@
 #include "DBCell.h"
 
 namespace XLS
-{;
+{
 
 DBCell::DBCell()
 {

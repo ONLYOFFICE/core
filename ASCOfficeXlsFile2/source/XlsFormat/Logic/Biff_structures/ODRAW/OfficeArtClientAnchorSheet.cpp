@@ -6,7 +6,7 @@
 #include <simple_xml_writer.h>
 
 namespace ODRAW
-{;
+{
 
 
 OfficeArtClientAnchorSheet::OfficeArtClientAnchorSheet()

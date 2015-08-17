@@ -3,7 +3,7 @@
 #include "ParsedFormula.h"
 
 namespace XLS
-{;
+{
 
 class CFRecord;
 

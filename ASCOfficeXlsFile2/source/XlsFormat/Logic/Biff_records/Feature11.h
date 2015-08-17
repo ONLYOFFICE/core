@@ -6,7 +6,7 @@
 #include <Logic/Biff_structures/TableFeatureType.h>
 
 namespace XLS
-{;
+{
 
 
 // Logical representation of Feature11 record in BIFF8

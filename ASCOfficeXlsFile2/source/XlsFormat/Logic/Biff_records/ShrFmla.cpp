@@ -2,7 +2,7 @@
 #include "ShrFmla.h"
 
 namespace XLS
-{;
+{
 
 ShrFmla::ShrFmla(const CellRef& cell_base_ref_init)
 :	formula(false, cell_base_ref_init)

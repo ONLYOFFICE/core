@@ -2,7 +2,7 @@
 #include "DSF.h"
 
 namespace XLS
-{;
+{
 
 DSF::DSF()
 {

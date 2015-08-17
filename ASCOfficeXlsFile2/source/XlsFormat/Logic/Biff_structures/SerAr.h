@@ -3,7 +3,7 @@
 #include "BiffStructure.h"
 
 namespace XLS
-{;
+{
 
 class SerAr;
 typedef boost::shared_ptr<SerAr> SerArPtr;

@@ -3,7 +3,7 @@
 #include <boost/shared_ptr.hpp>
 
 namespace OLEPS
-{;
+{
 
 // The only necessity of this class is to place all properties into a single array
 class Property

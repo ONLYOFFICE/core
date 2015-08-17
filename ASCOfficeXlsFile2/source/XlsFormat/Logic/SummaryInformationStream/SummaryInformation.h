@@ -4,7 +4,7 @@
 #include "Structures/PropertySetStream.h"
 
 namespace OLEPS
-{;
+{
 
 // This class and the beneath tree is created for future full implementation
 // The current necessity is to extract code page from a SummaryInformation stream

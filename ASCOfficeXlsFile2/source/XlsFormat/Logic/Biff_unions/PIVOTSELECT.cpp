@@ -4,7 +4,7 @@
 #include <Logic/Biff_unions/PIVOTRULE.h>
 
 namespace XLS
-{;
+{
 
 
 PIVOTSELECT::PIVOTSELECT()

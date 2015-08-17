@@ -5,7 +5,7 @@
 #include <Logic/Biff_unions/PIVOTFORMAT.h>
 
 namespace XLS
-{;
+{
 
 
 PIVOTEX::PIVOTEX()

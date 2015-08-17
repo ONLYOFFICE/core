@@ -6,7 +6,7 @@
 #include "TxOLastRun.h"
 
 namespace XLS
-{;
+{
 
 class TxORuns: public BiffStructure
 {	

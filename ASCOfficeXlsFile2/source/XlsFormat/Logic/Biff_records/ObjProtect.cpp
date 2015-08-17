@@ -2,7 +2,7 @@
 #include "ObjProtect.h"
 
 namespace XLS
-{;
+{
 
 ObjProtect::ObjProtect()
 {

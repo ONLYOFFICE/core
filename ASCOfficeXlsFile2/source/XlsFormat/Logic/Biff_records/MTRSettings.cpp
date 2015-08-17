@@ -2,7 +2,7 @@
 #include "MTRSettings.h"
 
 namespace XLS
-{;
+{
 
 MTRSettings::MTRSettings()
 {

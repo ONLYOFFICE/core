@@ -3,7 +3,7 @@
 //#include <Exception/UnexpectedProgramPath.h>
 
 namespace XLS
-{;
+{
 
 EntExU2::EntExU2()
 {

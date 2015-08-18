@@ -125,7 +125,7 @@ void XLUnicodeRichExtendedString::store(CFRecord& record)
 	}
 	if(fExtSt)
 	{
-		long cbExtRst = extRst.getSize();
+        int cbExtRst = extRst.getSize();
 		record << cbExtRst;
 	}
 
@@ -185,7 +185,7 @@ void XLUnicodeRichExtendedString::load(CFRecord& record)
 	{
 		record >> cRun;
 	}
-	long cbExtRst = 0;
+    int cbExtRst = 0;
 	if(fExtSt)
 	{
 		record >> cbExtRst;
@@ -232,8 +232,12 @@ void XLUnicodeRichExtendedString::loadSymbols(CFRecord& record, const size_t cch
 
 	if(is_wide)
 	{
-		std::wstring int_str(record.getCurData<wchar_t>(), cch);
+#if defined(_WIN32) || defined(_WIN64)
+        std::wstring int_str(record.getCurData<wchar_t>(), cch);
 		str_ = int_str.c_str();
+#else
+        str_ = convertUtf16ToWString(record.getCurData<UTF16>(), cch);
+#endif
 	}
 	else
 	{
@@ -284,11 +288,11 @@ const size_t XLUnicodeRichExtendedString::getNonVariablePartSize() const
 	unsigned short size = sizeof(unsigned short)/*cch*/ + sizeof(unsigned char)/*flags*/;
 	if(fRichSt)
 	{
-		size += sizeof(unsigned short)/*cRun*/;
+        size += sizeof(unsigned short)/*cRun*/; //2 !!!!
 	}
 	if(fExtSt)
 	{
-		size += sizeof(long)/*cbExtRst*/;
+        size += sizeof(int)/*cbExtRst*/; // ??? 4!!!
 	}
 	return size;
 }

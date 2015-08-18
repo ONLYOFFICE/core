@@ -8,6 +8,7 @@ namespace XLS
 
 SerErr::SerErr()
 {
+    fixed_type= typeSerErr;
 }
 
 

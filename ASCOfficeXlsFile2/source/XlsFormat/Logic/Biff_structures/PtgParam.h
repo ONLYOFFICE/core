@@ -21,13 +21,13 @@ public:
 
 	const ParamType getType() const;
 	const std::wstring getClearLine() const;
-	const long getFirstParam() const;
-	const long getSecondParam() const;
-	const long getParam(const size_t pos) const;
-	const long getParamsNum() const;
+    const int getFirstParam() const;
+    const int getSecondParam() const;
+    const int getParam(const size_t pos) const;
+    const int getParamsNum() const;
 	const std::wstring toString() const;
 
-	void addParam(const long param);
+    void addParam(const int param);
 
 
 
@@ -37,7 +37,7 @@ private:
 
 private:
 	ParamType type_;
-	std::vector<long> params;
+    std::vector<int> params;
 	std::wstring clear_line_;
 	
 };

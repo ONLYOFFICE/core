@@ -17,7 +17,6 @@ public:
 	virtual const std::wstring toString() const;
 
 private:
-    const static SerType fixed_type = typeSerNum;
     double xnum;
 };
 

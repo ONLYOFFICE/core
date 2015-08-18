@@ -20,8 +20,8 @@ public:
 	virtual void store(XLS::CFRecord& record);
 
 	EncryptionHeaderFlags Flags;
-	long AlgID;
-	long AlgIDHash;
+    int AlgID;
+    int AlgIDHash;
 	unsigned int KeySize;
 	unsigned int ProviderType;
 	std::wstring CSPName;

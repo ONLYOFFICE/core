@@ -22,7 +22,7 @@ public:
 	virtual void store(CFRecord& record);
 
 	unsigned int cbMemory;
-	long revid;
+    int revid;
 	RevisionType revt;
 	bool fAccepted;
 	bool fUndoAction;

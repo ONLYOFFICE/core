@@ -23,13 +23,13 @@ public:
 
 	XLUnicodeStringNoCch stFontName;
 	Stxp stxp;
-	long icvFore;
+    int icvFore;
 	Ts tsNinch;
 	Boolean<unsigned int> fSssNinch;
 	Boolean<unsigned int> fUlsNinch;
 	Boolean<unsigned int> fBlsNinch;
-	long ich;
-	long cch;
+    int ich;
+    int cch;
 	unsigned short iFnt;
 
 };

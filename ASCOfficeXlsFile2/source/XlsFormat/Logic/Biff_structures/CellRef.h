@@ -12,7 +12,7 @@ public:
 
 	CellRef();
 	CellRef(const std::wstring  str);
-	CellRef(const long row_init, const long column_init, const bool row_relative_init, const bool col_relative_init);
+    CellRef(const int row_init, const int column_init, const bool row_relative_init, const bool col_relative_init);
 
 	BiffStructurePtr clone();
 
@@ -27,18 +27,18 @@ public:
 	void operator-=(const CellRef& subtracted_ref);
 
 private:
-	virtual void load(CFRecord& record) {};
-	virtual void store(CFRecord& record) {};
+    virtual void load(CFRecord& record) {}
+    virtual void store(CFRecord& record) {}
 
 public:
-	const long getRow() const;
-	const long getColumn() const;
+    const int getRow() const;
+    const int getColumn() const;
 	const bool getRowRelative() const;
 	const bool getColumnRelative() const;
 
 protected:
-	long row;
-	long column;
+    int row;
+    int column;
 	bool rowRelative;
 	bool colRelative;
 	bool fQuoted;
@@ -80,7 +80,7 @@ class CellRef_T : public CellRef
 public:
     CellRef_T(const std::wstring & str_ref) : CellRef(str_ref) {}
     CellRef_T() {}
-	CellRef_T(const long row_init, const long column_init, const bool row_relative_init, const bool col_relative_init)
+    CellRef_T(const int row_init, const int column_init, const bool row_relative_init, const bool col_relative_init)
         :	CellRef(row_init, column_init, row_relative_init, col_relative_init) {}
 
 	template<class otherNameProducer, class otherRwType, class otherColType, RELATIVE_INFO otherRel_info>

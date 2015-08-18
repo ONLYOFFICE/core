@@ -102,7 +102,7 @@ void StyleXF::load(CFRecord& record)
 
 void StyleXF::RegisterFillBorder()
 {
-	for (long i = 0; i < ext_props.size(); i++ )
+    for (int i = 0; i < ext_props.size(); i++ )
 	{
 		ExtProp* ext_prop = dynamic_cast<ExtProp*>(ext_props[i].get());
 

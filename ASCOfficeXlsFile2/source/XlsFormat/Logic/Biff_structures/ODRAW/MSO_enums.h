@@ -16,7 +16,7 @@ namespace ODRAW
 class MSOLINEDASHING
 {
 public:
-	static const std::wstring  ToString(const long raw_data)
+    static const std::wstring  ToString(const int raw_data)
 	{
 		switch (raw_data)
 		{
@@ -61,7 +61,7 @@ public:
 class MSOLINESTYLE
 {
 public:
-	static const std::wstring  ToString(const long raw_data)
+    static const std::wstring  ToString(const int raw_data)
 	{
 		switch (raw_data)
 		{

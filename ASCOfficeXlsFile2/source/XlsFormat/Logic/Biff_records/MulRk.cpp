@@ -50,7 +50,7 @@ void MulRk::readFields(CFRecord& record)
 	record.skipNunBytes(sizeof(unsigned short));
 }
 
-const long MulRk::GetRow() const
+const int MulRk::GetRow() const
 {
 	return static_cast<unsigned short>(rw);
 }
@@ -61,7 +61,7 @@ int MulRk::serialize(std::wostream & stream)
     {
 		int row = GetRow();
 			
-		for (long i = 0; i < cells.size(); i++)
+        for (int i = 0; i < cells.size(); i++)
 		{
 			Cell * cell = dynamic_cast<Cell *>(cells[i].get());
 			RkRec * rkrec = dynamic_cast<RkRec *>(rgrkrec[i].get());

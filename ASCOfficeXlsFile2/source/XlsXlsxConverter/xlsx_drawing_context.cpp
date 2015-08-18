@@ -143,7 +143,7 @@ void xlsx_drawing_context::start_shape(int type)
 	count_object++;
 }
 
-void xlsx_drawing_context::set_id(long id)
+void xlsx_drawing_context::set_id(int id)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().id = id;
@@ -528,27 +528,27 @@ void xlsx_drawing_context::set_image(const std::wstring & str)
 	drawing_state.back().image_target = str;
 }
 
-void xlsx_drawing_context::set_crop_top	(long val)
+void xlsx_drawing_context::set_crop_top	(int val)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().image_crop[1] = val * 1.5;
 }
-void xlsx_drawing_context::set_crop_bottom(long val)
+void xlsx_drawing_context::set_crop_bottom(int val)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().image_crop[3] = val* 1.5;
 }
-void xlsx_drawing_context::set_crop_left (long val)
+void xlsx_drawing_context::set_crop_left (int val)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().image_crop[0]= val* 1.5;
 }
-void xlsx_drawing_context::set_crop_right (long val)
+void xlsx_drawing_context::set_crop_right (int val)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().image_crop[2] = val* 1.5;
 }
-void xlsx_drawing_context::set_rotation (long val)
+void xlsx_drawing_context::set_rotation (int val)
 {
 	if (drawing_state.size() < 1 )return;//in degrees
 	drawing_state.back().rotation = val;
@@ -567,7 +567,7 @@ void xlsx_drawing_context::set_line_color (int index, int type)
 	else if (type == 2) drawing_state.back().line.color.bPalette = true;
 
 }
-void xlsx_drawing_context::set_line_type (long val)
+void xlsx_drawing_context::set_line_type (int val)
 {
 	if (drawing_state.size() < 1 )return;
 	switch(val)
@@ -577,7 +577,7 @@ void xlsx_drawing_context::set_line_type (long val)
 	case 2: drawing_state.back().line.type = L"blipFill";		break;
 	}
 }
-void xlsx_drawing_context::set_line_style (long val)
+void xlsx_drawing_context::set_line_style (int val)
 {
 	if (drawing_state.size() < 1 )return;
 	switch(val)
@@ -590,7 +590,7 @@ void xlsx_drawing_context::set_line_style (long val)
 	}
 }
 
-void xlsx_drawing_context::set_line_width (long val)
+void xlsx_drawing_context::set_line_width (int val)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().line.width = val;

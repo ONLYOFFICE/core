@@ -75,7 +75,11 @@ void content_types_file::set_media(external_items & _Mediaitems)
 
 simple_element::simple_element(const std::wstring & FileName, const std::wstring & Content) : file_name_(FileName)
 {
-    utf8::utf16to8(Content.begin(), Content.end(), std::back_inserter(content_utf8_));
+    //utf8::utf16to8(Content.begin(), Content.end(), std::back_inserter(content_utf8_));
+    //падает на спец символах
+
+    content = Content;
+
 }
 
 void simple_element::write(const std::wstring & RootPath)
@@ -86,9 +90,10 @@ void simple_element::write(const std::wstring & RootPath)
 	if ( file.CreateFileW(name_) == true)
 	{
 		std::string root = "<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>";
-		file.WriteFile((BYTE*)root.c_str(), root.length());
-		file.WriteFile((BYTE*)content_utf8_.c_str(), content_utf8_.length());
-		file.CloseFile();
+        file.WriteFile((BYTE*)root.c_str(), root.length());
+        //file.WriteFile((BYTE*)content_utf8_.c_str(), content_utf8_.length());
+        file.WriteStringUTF8(content);
+        file.CloseFile();
 	}
 }
 

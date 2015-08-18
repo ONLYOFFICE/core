@@ -27,7 +27,7 @@ CellRef::CellRef(const std::wstring str_ref)
 }
 
 
-CellRef::CellRef(const long row_init, const long column_init, const bool row_relative_init, const bool col_relative_init)
+CellRef::CellRef(const int row_init, const int column_init, const bool row_relative_init, const bool col_relative_init)
 :	row(row_init),
 	column(column_init),
 	rowRelative(row_relative_init),
@@ -80,11 +80,11 @@ CellRef::operator const std::wstring  () const
 }
 
 
-const long CellRef::getRow() const
+const int CellRef::getRow() const
 {
 	return row;
 }
-const long CellRef::getColumn() const
+const int CellRef::getColumn() const
 {
 	return column;
 }

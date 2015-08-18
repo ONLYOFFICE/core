@@ -11,7 +11,7 @@ OfficeArtCOLORREF::OfficeArtCOLORREF()
 	index = -1;
 }
 
-OfficeArtCOLORREF::OfficeArtCOLORREF(const long raw_data)
+OfficeArtCOLORREF::OfficeArtCOLORREF(const int raw_data)
 {
 	red		= static_cast<unsigned char>(GETBITS(raw_data, 0, 7));
 	green	= static_cast<unsigned char>(GETBITS(raw_data, 8, 15));

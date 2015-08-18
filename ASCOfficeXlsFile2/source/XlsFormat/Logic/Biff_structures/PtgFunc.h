@@ -24,7 +24,7 @@ public:
 
 	virtual void assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data);
 
-	const long getParametersNum() const;
+    const int getParametersNum() const;
 	
 	static const unsigned short fixed_id = 0x01;
 private:

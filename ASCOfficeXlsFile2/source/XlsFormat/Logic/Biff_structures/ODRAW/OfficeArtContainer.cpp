@@ -28,20 +28,6 @@ OfficeArtContainer::OfficeArtContainer(const unsigned char recVer, const unsigne
 {
 }
 
-
-//void OfficeArtContainer::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	std::for_each(child_records.begin(), child_records.end(), boost::bind(&OfficeArtRecord::toXML, _1, xml_tag));
-//}
-//
-//
-//void OfficeArtContainer::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//#pragma message("####################### OfficeArtContainer composite has no BiffStructure::getXMLAttributes() implemented")
-//	Log::error(" Error!!! OfficeArtContainer composite has no BiffStructure::getXMLAttributes() implemented.");
-//}
-
-
 void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 {
 	size_t container_beginning_ptr = record.getRdPtr();

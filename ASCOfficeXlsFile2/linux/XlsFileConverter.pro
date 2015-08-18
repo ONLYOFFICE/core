@@ -14,6 +14,11 @@ DEFINES += UNICODE \
      _LINUX_QT \
      LINUX 
 
+CONFIG(debug, debug|release){
+
+message(Debug)
+DEFINES += _DEBUG
+}
 TARGET = ASCXlsConverter
 
 CONFIG  += console

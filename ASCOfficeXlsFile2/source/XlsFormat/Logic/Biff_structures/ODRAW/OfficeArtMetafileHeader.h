@@ -8,16 +8,16 @@
 
     typedef struct tagPOINT
     {
-        long  x;
-        long  y;
+        _INT32  x;
+        _INT32  y;
     } POINT;
 
     typedef struct tagRECT
     {
-        long    left;
-        long    top;
-        long    right;
-        long    bottom;
+        _INT32    left;
+        _INT32    top;
+        _INT32    right;
+        _INT32    bottom;
     } RECT;
 #else
 	#include <windows.h>

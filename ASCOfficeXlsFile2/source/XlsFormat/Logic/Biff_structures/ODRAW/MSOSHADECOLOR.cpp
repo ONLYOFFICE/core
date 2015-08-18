@@ -23,7 +23,7 @@ void MSOSHADECOLOR::store(XLS::CFRecord& record)
 
 void MSOSHADECOLOR::load(XLS::CFRecord& record)
 {
-	long raw_color;
+    int raw_color;
 	record >> raw_color >> position;
 	color = OfficeArtCOLORREF(raw_color);
 }

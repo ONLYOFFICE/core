@@ -10,6 +10,7 @@ namespace XLS
 
 SerStr::SerStr()
 {
+    fixed_type = typeSerStr;
 }
 
 

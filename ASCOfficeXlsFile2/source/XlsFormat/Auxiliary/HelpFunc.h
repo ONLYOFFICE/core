@@ -23,9 +23,9 @@ namespace AUX
 	const int normalizeRow(const int row);
 	const std::wstring column2str(const int column);
 	const std::wstring row2str(const int row);
-	const std::wstring loc2str(const long row, const bool row_rel, const long column, const bool col_rel);
-	void str2loc(const std::wstring& str, long& row, bool& row_rel, long& column, bool& col_rel);
-	void str2loc(std::wstring::const_iterator& str_begin, std::wstring::const_iterator& str_end, long& row, bool& row_rel, long& column, bool& col_rel);
+    const std::wstring loc2str(const int row, const bool row_rel, const int column, const bool col_rel);
+    void str2loc(const std::wstring& str, int& row, bool& row_rel, int& column, bool& col_rel);
+    void str2loc(std::wstring::const_iterator& str_begin, std::wstring::const_iterator& str_end, int& row, bool& row_rel, int& column, bool& col_rel);
 	void str2refs(const std::wstring& str, std::vector<XLS::CellRangeRef>& vec);
 };
 
@@ -51,8 +51,8 @@ namespace STR
 	const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std::wstring::const_iterator& it_end);
 	//const std::string hres2wstr(const HRESULT hres);
 
-	const std::string toStdString(const std::wstring& wide_string, const unsigned int code_page);
-	const std::wstring toStdWString(const std::string& ansi_string, const unsigned int code_page);
+    const std::string toStdString(std::wstring wide_string, const unsigned int code_page);
+    const std::wstring toStdWString(std::string ansi_string, const unsigned int code_page);
 };
 
 namespace XMLSTUFF

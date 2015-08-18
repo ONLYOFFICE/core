@@ -77,7 +77,7 @@ void MulBlank::readFields(CFRecord& record)
 	record.skipNunBytes(sizeof(unsigned short));
 }
 
-const long MulBlank::GetRow() const
+const int MulBlank::GetRow() const
 {
 	return static_cast<unsigned short>(rw);
 }

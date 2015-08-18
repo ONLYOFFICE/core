@@ -33,12 +33,12 @@ public:
 
 	const CellRef getTopLeftCell() const;
 
-	const long getRowFirst() const { return rowFirst; }
-	const long getRowLast() const { return rowLast; }
+    const int getRowFirst() const { return rowFirst; }
+    const int getRowLast() const { return rowLast; }
 	const bool getRowFirstRelative() const { return rowFirstRelative; }
 	const bool getRowLastRelative() const { return rowLastRelative; }
-	const long getColumnFirst() const { return columnFirst; }
-	const long getColumnLast() const { return columnLast; }
+    const int getColumnFirst() const { return columnFirst; }
+    const int getColumnLast() const { return columnLast; }
 	const bool getColumnFirstRelative() const { return columnFirstRelative; }
 	const bool getColumnLastRelative() const { return columnLastRelative; }
 	void setColumnRelativity(const bool is_relative);
@@ -50,12 +50,12 @@ public:
     virtual void load(CFRecord& record) {}
     virtual void store(CFRecord& record) {}
 
-	long rowFirst;
-	long rowLast;
+    int rowFirst;
+    int rowLast;
 	bool rowFirstRelative;
 	bool rowLastRelative;
-	long columnFirst;
-	long columnLast;
+    int columnFirst;
+    int columnLast;
 	bool columnFirstRelative;
 	bool columnLastRelative;
 
@@ -175,7 +175,7 @@ typedef CellRangeRef_T<Ref8_name, unsigned short, unsigned short, rel_Absent> Re
 typedef CellRangeRef_T<Ref8U_name, unsigned short, unsigned short, rel_Absent> Ref8U;
 typedef CellRangeRef_T<RefU_name, unsigned short, unsigned char, rel_Absent> RefU;
 typedef CellRangeRef_T<Ref8U2007_name, unsigned int, unsigned int, rel_Absent> Ref8U2007;
-typedef CellRangeRef_T<RFX_name, long, long, rel_Absent> RFX;
+typedef CellRangeRef_T<RFX_name, int, int, rel_Absent> RFX;
 typedef CellRangeRef_T<RgceArea_name, unsigned short, unsigned short, rel_Present> RgceArea;
 typedef CellRangeRef_T<RgceAreaRel_name, short, short, rel_Present> RgceAreaRel;
 

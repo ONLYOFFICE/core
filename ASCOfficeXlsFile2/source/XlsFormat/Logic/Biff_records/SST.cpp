@@ -86,7 +86,7 @@ int SST::serialize(std::wostream & stream)
 			CP_XML_ATTR(L"uniqueCount", rgb.size());
 			CP_XML_ATTR(L"xmlns", "http://schemas.openxmlformats.org/spreadsheetml/2006/main");
 
-			for (long i=0; i < rgb.size(); i++)
+            for (int i=0; i < rgb.size(); i++)
 			{
 				CP_XML_NODE(L"si")
 				{				

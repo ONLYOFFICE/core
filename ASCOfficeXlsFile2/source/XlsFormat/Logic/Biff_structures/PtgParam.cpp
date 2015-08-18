@@ -113,31 +113,31 @@ const std::wstring PtgParam::getClearLine() const
 }
 
 
-const long PtgParam::getFirstParam() const
+const int PtgParam::getFirstParam() const
 {
 	return params[0];
 }
 
 
-const long PtgParam::getSecondParam() const
+const int PtgParam::getSecondParam() const
 {
 	return params[1];
 }
 
 
-const long PtgParam::getParam(const size_t pos) const
+const int PtgParam::getParam(const size_t pos) const
 {
 	return params[pos];
 }
 
 
-const long PtgParam::getParamsNum() const
+const int PtgParam::getParamsNum() const
 {
 	return params.size();
 }
 
 
-void PtgParam::addParam(const long param)
+void PtgParam::addParam(const int param)
 {
 	params.push_back(param);
 }
@@ -149,7 +149,7 @@ const std::wstring PtgParam::toString() const
 	if(!params.empty())
 	{
 		result += L'(';
-		for(std::vector<long>::const_iterator it = params.begin(), itEnd = --params.end(); it != itEnd; ++it)
+        for(std::vector<int>::const_iterator it = params.begin(), itEnd = --params.end(); it != itEnd; ++it)
 		{
 			result += STR::int2wstr(*it) + L',';
 		}

@@ -23,10 +23,10 @@ public:
 	virtual void loadFields(XLS::CFRecord& record);
 	virtual void storeFields(XLS::CFRecord& record);
 
-	long xLeft;
-	long yTop;
-	long xRight;
-	long yBottom;
+    int xLeft;
+    int yTop;
+    int xRight;
+    int yBottom;
 };
 
 typedef boost::shared_ptr<OfficeArtFSPGR> OfficeArtFSPGRPtr;

@@ -1,6 +1,7 @@
 ﻿#ifndef _ASC_HTMLRENDERER_SVGWRITER2_H_
 #define _ASC_HTMLRENDERER_SVGWRITER2_H_
 
+#include "Common2.h"
 #include "SVGWriter.h"
 #include "../../DesktopEditor/graphics/GraphicsRenderer.h"
 

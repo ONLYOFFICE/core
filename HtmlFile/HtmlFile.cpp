@@ -236,6 +236,7 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
         if (std::string::npos != sProgramm.find_last_of('/'))
             sLibraryDir = "LD_LIBRARY_PATH=" + sProgramm.substr(0, sProgramm.find_last_of('/'));
 
+#if 0
         const char* nargs[2];
         nargs[0] = sXmlA.c_str();
         nargs[1] = NULL;
@@ -249,6 +250,37 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
                (char * const *)nargs,
                (char * const *)nenv);
         exit(EXIT_SUCCESS);
+#else
+        const char* nargs[4];
+        nargs[0] = "--auto-servernum";
+        nargs[1] = sProgramm.c_str();
+        nargs[2] = sXmlA.c_str();
+        nargs[3] = NULL;
+
+        const char* nenv[3];
+        nenv[0] = sLibraryDir.c_str();
+        nenv[1] = "DISPLAY=:99";
+        nenv[2] = NULL;
+
+        execve("/usr/bin/xvfb-run", (char * const *)nargs, (char * const *)nenv);
+
+        /*
+        std::string ssXml = "\"" + sXmlA + "\"";
+
+        int nRes = execl("/usr/bin/Xvfb", "X", ":4");
+
+        execl("/usr/bin/xvfb-run",
+                        "-a",
+                         "/home/oleg/activex/AVS/Sources/TeamlabOffice/trunk/ServerComponents/HtmlFile/Internal/linux/Release/HtmlFileInternal",
+                         ssXml.c_str());                         
+
+        FILE* f = fopen("/home/oleg/activex/1/111.log", "a+");
+        fprintf(f, "ececl: %d\n", (int)errno);
+        fclose(f);
+        */
+
+        exit(EXIT_SUCCESS);
+#endif
         break;
     }
     default: // parent process, pid now contains the child pid

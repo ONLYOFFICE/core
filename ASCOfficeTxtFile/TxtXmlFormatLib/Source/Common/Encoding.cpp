@@ -39,26 +39,30 @@ const std::wstring Encoding::cp2unicode(const std::string& sline, const unsigned
     size_t insize = sline.length();
     std::wstring w_out;
 
-    w_out.reserve(insize);
-
     char *inptr = (char*)sline.c_str();
-    char* outptr = (char*)w_out.c_str();
 
-    if (nCodepage > 0)
+    if (nCodepage >= 0)
     {
         std::string sCodepage =  "CP" + std::to_string(nCodepage);
 
         iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());
         if (ic != (iconv_t) -1)
         {
-            size_t nconv = 0, avail = (insize) * sizeof(wchar_t);
+            size_t nconv = 0, avail = (insize + 1) * sizeof(wchar_t);
+
+            char* out_str   = new char[avail];
+            char* outptr    = out_str;
 
             nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
             if (nconv == 0)
             {
+                insize = sline.length();
+                ((wchar_t*)out_str)[insize] = 0;
+                w_out = std::wstring((wchar_t*)out_str, insize);
                 ansi = false;
             }
             iconv_close(ic);
+            delete []out_str;
         }
     }
     if (ansi)
@@ -119,7 +123,7 @@ const std::wstring Encoding::utf82unicode(const std::string& line)
 		if (conversionOK != eUnicodeConversionResult)
 		{
 			delete [] pStrUtf32;
-			return std::wstring();
+            return cp2unicode(line,0);
 		}
 		std::wstring utf32Str ((wchar_t *) pStrUtf32);
 
@@ -219,7 +223,7 @@ const std::string Encoding::unicode2cp(const std::wstring& sLine, const unsigned
     char *inptr = (char*)sLine.c_str();
     char* outptr = (char*)out.c_str();
 
-    if (nCodepage > 0)
+    if (nCodepage >= 0)
     {
         std::string sCodepage =  "CP" + std::to_string(nCodepage);
 

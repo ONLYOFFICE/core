@@ -5,8 +5,6 @@
 namespace XLS
 {
 
-class CFRecord;
-
 class SerNum : public SerAr
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(SerNum)
@@ -18,9 +16,10 @@ public:
 	virtual void store(CFRecord& record);
 	virtual const std::wstring toString() const;
 
-	static const unsigned char fixed_type = 0x01;
 private:
-	double xnum;
+    const SerType fixed_type = typeSerNum;
+    double xnum;
 };
+
 
 } // namespace XLS

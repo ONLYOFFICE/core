@@ -160,25 +160,6 @@ const bool BiffString::isConformToVirtPath() const
 	return true;
 }
 
-
-
-const std::wstring  BiffString::getEscapedUrlW() const
-{
-	if(!str_.length())
-	{
-		return str_;
-	}
-	std::wstring copy_str(str_);
-	return STR::escapeUrlW(copy_str).c_str();
-}
-
-
-void BiffString::EscapeUrlW()
-{
-	str_ = getEscapedUrlW();
-}
-
-
 const std::wstring  BiffString::getEscaped_ST_Xstring() const
 {
 	if(!str_.length())

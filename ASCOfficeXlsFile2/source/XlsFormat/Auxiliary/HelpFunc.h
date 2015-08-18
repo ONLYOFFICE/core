@@ -41,7 +41,6 @@ namespace STR
 	const bool bstr2guid(const std::wstring & guid_str, _GUID_& guid);
 	const std::wstring int2hex_wstr(const int val, const size_t size_of = 4);
 	const std::wstring wchar_t2hex_str(const wchar_t val);
-	const std::wstring escapeUrlW(const std::wstring& str);
 	const std::wstring escape_ST_Xstring(const std::wstring& str);
 	const std::wstring unescape_ST_Xstring(const std::wstring& str);
 	const std::wstring toARGB(const unsigned int rgba);

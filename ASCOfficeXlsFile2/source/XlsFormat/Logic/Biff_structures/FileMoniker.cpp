@@ -22,27 +22,6 @@ XLS::BiffStructurePtr FileMoniker::clone()
 	return XLS::BiffStructurePtr(new FileMoniker(*this));
 }
 
-//
-//void FileMoniker::setXMLAttributes(BiffStructurePtr & xml_tag)
-//{
-//	xml_tag->setAttribute(L"cAnti", cAnti);
-//	xml_tag->setAttribute(L"ansiPath", ansiPath.c_str());
-//	xml_tag->setAttribute(L"endServer", endServer);
-//	xml_tag->setAttribute(L"versionNumber", versionNumber);
-//	if(cbUnicodePathSize)
-//	{
-//		xml_tag->setAttribute(L"usKeyValue", usKeyValue);
-//		xml_tag->setAttribute(L"unicodePath", STR::escapeUrlW(unicodePath).c_str());
-//	}
-//}
-
-
-//void FileMoniker::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//#pragma message("####################### FileMoniker record has no BiffStructure::fromXML() implemented")
-//	Log::error(" Error!!! FileMoniker record has no BiffStructure::fromXML() implemented.");
-//}
-
 
 void FileMoniker::store(XLS::CFRecord& record)
 {

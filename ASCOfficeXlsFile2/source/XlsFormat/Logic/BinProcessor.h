@@ -7,7 +7,7 @@
 #include "GlobalWorkbookInfo.h"
 
 namespace XLS
-{;
+{
 
 class BiffString;
 class CFStreamCacheWriter;

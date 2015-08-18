@@ -1,7 +1,7 @@
 #pragma once
 
 #include "CompositeObject.h"
-#include "SummaryInformationStream/Structures/CodePage.h"
+#include "SummaryInformationStream/Structures/CodePageOle.h"
 #include "GlobalWorkbookInfo.h"
 
 namespace XLS
@@ -21,7 +21,7 @@ public:
 
 	virtual const bool loadContent(BinProcessor& proc);
 
-	static const unsigned short DefaultCodePage = OLEPS::CodePage::DefaultCodePage;
+    static const unsigned short DefaultCodePage = OLEPS::CodePageOle::DefaultCodePage;
 
 	void set_code_page(const unsigned short code_page);
 

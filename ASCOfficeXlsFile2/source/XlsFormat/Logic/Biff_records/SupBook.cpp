@@ -42,7 +42,7 @@ void SupBook::readFields(CFRecord& record)
 	{
 		virtPath.setSize(cch);
 		record >> virtPath;
-		virtPath.EscapeUrlW();
+        //virtPath.EscapeUrlW(); //todooo проверить спец символы !!!
 		//if(virtPath.isConformToVirtPath() && !virtPath.isConformToOleLink())
 		{
 			record >> rgst;

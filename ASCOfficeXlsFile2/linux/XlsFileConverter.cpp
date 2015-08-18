@@ -1,9 +1,13 @@
-﻿#include "../DocFormatLib/DocFormatLib.h"
+﻿#include "../source/XlsXlsxConverter/ConvertXls2Xlsx.h"
 
-#include "../Win32/ASCOfficeCriticalSection.h"
+#if defined(_WIN32) || defined(_WIN64)
+    #include <windows.h>
+#else
+    #include "../../DesktopEditor/common/ASCVariant.h"
+#endif
 
 #include <iostream>
-#include "../Win32/version.h"
+#include "../version.h"
 
 static std::wstring utf8_to_unicode(const char *src)
 {
@@ -39,7 +43,6 @@ static std::wstring utf8_to_unicode(const char *src)
             return wsEntryName;
 }
 
-ASCOfficeCriticalSection  g_oCriticalSection;
 
 int main(int argc, char *argv[])
 {
@@ -51,28 +54,26 @@ int main(int argc, char *argv[])
         std::cout << std::endl;
         std::cout << std::endl;
         std::cout << "-------------------------------------------------------------------------------" << std::endl;
-        std::cout << "\t\tDoc/Docx file converter. Version: " << STRVER  << std::endl;
+        std::cout << "\t\tXls/Xlsx file converter. Version: " << STRVER  << std::endl;
         std::cout << "-------------------------------------------------------------------------------" << std::endl;
         std::cout << std::endl;
-        std::cout << "USAGE: ASCDocConverter \"path_to_file_1\" \"path_to_file_2\" " << std::endl;
+        std::cout << "USAGE: ASCXlsConverter \"path_to_file_1\" \"path_to_file_2\" " << std::endl;
         std::cout << "WHERE:" << std::endl;
         std::cout << "\t\"path_to_file_1\" is a path to file to be converted" << std::endl;
         std::cout << "\t\"path_to_file_2\" is a path to the corresponding output file" << std::endl << std::endl;
        return 1;
     }
-    CString sArg1, sArg2, sExePath;
+    std::wstring sArg1, sArg2, sExePath;
 
     sExePath    = utf8_to_unicode(argv [0]);
     sArg1       = utf8_to_unicode(argv [1]);
     sArg2       = utf8_to_unicode(argv [2]);
 
 
-    CString sXMLOptions = _T("");
+    {// xls->xlsx
 
-    {// doc->docx
-        COfficeDocFile docFile;
 
-        HRESULT hRes = docFile.LoadFromFile(sArg1, sArg2, sXMLOptions);
+        HRESULT hRes = ConvertXls2Xlsx(sArg1, sArg2, NULL);
 
         if (hRes != S_OK)return 2;
 

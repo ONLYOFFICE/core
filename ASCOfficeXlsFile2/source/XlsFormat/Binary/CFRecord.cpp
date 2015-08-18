@@ -9,40 +9,6 @@
 namespace XLS
 {
 
- template<class T>
- CFRecord& operator<<(CFRecord& record, std::vector<T>& vec)
- {
-     for(typename std::vector<T>::iterator it = vec.begin(); it != vec.end(); ++it)
-     {
-         record << *it;
-     }
-     return record;
- }
-
-  template<class T>
-  CFRecord& operator>>(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str)
-  {
-      str.clear();
-      T symbol;
-      do
-      {
-          record.loadAnyData(symbol);
-          str += symbol;
-      } while (symbol);
-      return record;
-  }
-
- template<class T>
- CFRecord& operator<<(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str)
- {
-     for(typename std::basic_string<T, std::char_traits<T>, std::allocator<T> >::iterator it = str.begin(); it != str.end(); ++it)
-     {
-         record << *it;
-     }
-     record.storeAnyData(static_cast<T>(0));
-     return record;
- }
-
 char CFRecord::intData[MAX_RECORD_SIZE];
 
 // Create a record and read its data from the stream

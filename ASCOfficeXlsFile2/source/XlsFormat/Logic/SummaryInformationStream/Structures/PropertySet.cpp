@@ -3,7 +3,7 @@
 #include "PropertySet.h"
 #include <Binary/CFStream.h>
 #include "PropertyFactory.h"
-#include "CodePage.h"
+#include "CodePageOle.h"
 
 
 namespace OLEPS
@@ -26,7 +26,7 @@ PropertySet::PropertySet(XLS::CFStreamPtr stream, const unsigned int property_se
 		prop_offsets.push_back(prop_offset);
 	}
 
-	code_page = CodePage::DefaultCodePage;
+    code_page = CodePageOle::DefaultCodePage;
 	for(unsigned int i = 0; i < NumProperties; ++i)
 	{
 		PropertyPtr next_property = PropertyFactory::ReadProperty(prop_offsets[i].PropertyIdentifier, stream, property_set_offset + prop_offsets[i].Offset);
@@ -34,7 +34,7 @@ PropertySet::PropertySet(XLS::CFStreamPtr stream, const unsigned int property_se
 		{
 			properties.push_back(next_property);
 
-			CodePagePropertyPtr code_page_property = boost::dynamic_pointer_cast<CodePage>(next_property);
+            CodePagePropertyPtr code_page_property = boost::dynamic_pointer_cast<CodePageOle>(next_property);
 			if(code_page_property)
 			{
 				code_page = code_page_property->GetCodePage();

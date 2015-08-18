@@ -111,27 +111,27 @@ public:
 
 	GlobalWorkbookInfoPtr getGlobalWorkbookInfo() { return global_info_; }
 
-	CFRecord& operator>>(unsigned char& val)	{ loadAnyData(val);	return *this; };
-	CFRecord& operator>>(unsigned short& val)	{ loadAnyData(val);	return *this; };
-	CFRecord& operator>>(unsigned int& val)		{ loadAnyData(val);	return *this; };
-	CFRecord& operator>>(long& val)				{ loadAnyData(val);	return *this; };
-	CFRecord& operator>>(double& val)			{ loadAnyData(val);	return *this; };
-	CFRecord& operator>>(_GUID_& val)			{ loadAnyData(val);	return *this; };
-	//CFRecord& operator>>(unsigned int& val)	{ loadAnyData(val);	return *this; };
-	CFRecord& operator>>(short& val)			{ loadAnyData(val);	return *this; };
-	CFRecord& operator>>(char& val)				{ loadAnyData(val);	return *this; };
+    CFRecord& operator>>(unsigned char& val)	{ loadAnyData(val);	return *this; }
+    CFRecord& operator>>(unsigned short& val)	{ loadAnyData(val);	return *this; }
+    CFRecord& operator>>(unsigned int& val)		{ loadAnyData(val);	return *this; }
+    CFRecord& operator>>(long& val)				{ loadAnyData(val);	return *this; }
+    CFRecord& operator>>(double& val)			{ loadAnyData(val);	return *this; }
+    CFRecord& operator>>(_GUID_& val)			{ loadAnyData(val);	return *this; }
+    //CFRecord& operator>>(unsigned int& val)	{ loadAnyData(val);	return *this; }
+    CFRecord& operator>>(short& val)			{ loadAnyData(val);	return *this; }
+    CFRecord& operator>>(char& val)				{ loadAnyData(val);	return *this; }
 	CFRecord& operator>>(bool& val);
 
-	CFRecord& operator<<(unsigned char& val)	{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(unsigned short& val)	{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(unsigned int& val)		{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(long& val)				{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(double& val)			{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(_GUID_& val)			{ storeAnyData(val);	return *this; };
-	//CFRecord& operator<<(unsigned int& val)	{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(short& val)			{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(char& val)				{ storeAnyData(val);	return *this; };
-	CFRecord& operator<<(wchar_t& val)			{ storeAnyData(val);	return *this; };
+    CFRecord& operator<<(unsigned char& val)	{ storeAnyData(val);	return *this; }
+    CFRecord& operator<<(unsigned short& val)	{ storeAnyData(val);	return *this; }
+    CFRecord& operator<<(unsigned int& val)		{ storeAnyData(val);	return *this; }
+    CFRecord& operator<<(long& val)				{ storeAnyData(val);	return *this; }
+    CFRecord& operator<<(double& val)			{ storeAnyData(val);	return *this; }
+    CFRecord& operator<<(_GUID_& val)			{ storeAnyData(val);	return *this; }
+    //CFRecord& operator<<(unsigned int& val)	{ storeAnyData(val);	return *this; }
+    CFRecord& operator<<(short& val)			{ storeAnyData(val);	return *this; }
+    CFRecord& operator<<(char& val)				{ storeAnyData(val);	return *this; }
+    CFRecord& operator<<(wchar_t& val)			{ storeAnyData(val);	return *this; }
 	CFRecord& operator<<(bool& val);
 
 private:
@@ -153,7 +153,6 @@ private:
 	GlobalWorkbookInfoPtr global_info_;
 };
 
-// moved out of the class to be higher in priority than the universal operator
 template<class T>
 CFRecord& operator>>(CFRecord& record, std::vector<T>& vec)
 {
@@ -166,17 +165,41 @@ CFRecord& operator>>(CFRecord& record, std::vector<T>& vec)
 	return record;
 }
 
+template<class T>
+CFRecord& operator<<(CFRecord& record, std::vector<T>& vec)
+{
+    for(typename std::vector<T>::iterator it = vec.begin(), itEnd = vec.end(); it != itEnd; ++it)
+    {
+        record << *it;
+    }
+    return record;
+}
 
 
 template<class T>
-CFRecord& operator<<(CFRecord& record, std::vector<T>& vec);
+CFRecord& operator>>(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str)
+{
+    str.clear();
+    T symbol;
+    do
+    {
+        record.loadAnyData(symbol);
+        str += symbol;
+    } while (symbol);
+    return record;
+}
+
 
 template<class T>
-CFRecord& operator>>(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str);
-
-template<class T>
-CFRecord& operator<<(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str);
-
+CFRecord& operator<<(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str)
+{
+    for(typename std::basic_string<T, std::char_traits<T>, std::allocator<T> >::iterator it = str.begin(), itEnd = str.end(); it != itEnd; ++it)
+    {
+        record << *it;
+    }
+    record.storeAnyData(static_cast<T>(0));
+    return record;
+}
 
 template<class T>
 CFRecord& operator>>(CFRecord & record, _CP_OPT(T)& val)

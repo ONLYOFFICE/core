@@ -54,9 +54,6 @@ public:
 	const bool isConformToOleLink() const;
 	const bool isConformToVirtPath() const;
 
-	const std::wstring  getEscapedUrlW() const;
-	void EscapeUrlW();
-
 	const std::wstring  getEscaped_ST_Xstring() const;
 	void Escape_ST_Xstring();
 

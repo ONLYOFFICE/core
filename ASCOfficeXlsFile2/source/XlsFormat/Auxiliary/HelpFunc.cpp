@@ -1,15 +1,21 @@
 
 
 #include "HelpFunc.h"
-#include "shlwapi.h"
+
+#if defined (_WIN32) || defined (_WIN64)
+    #include "shlwapi.h"
+#else
+    #include <iconv.h>
+#endif
 
 #include <Logic/Biff_structures/CellRangeRef.h>
+
 #include <boost/regex.hpp>
 #include <boost/lexical_cast.hpp>
 #include <boost/algorithm/string.hpp>
 
 namespace AUX
-{;
+{
 
 const int normalizeColumn(const int column)
 {
@@ -125,20 +131,23 @@ const bool str2rel(std::wstring::const_iterator& str_begin, std::wstring::const_
 	return true;
 }
 
+void str2loc(std::wstring::const_iterator& str_begin, std::wstring::const_iterator& str_end, long& row, bool& row_rel, long& column, bool& col_rel)
+{
+    col_rel     = str2rel       (str_begin, str_end);
+    column      = str2column    (str_begin, str_end);
+    row_rel     = str2rel       (str_begin, str_end);
+    row         = str2row       (str_begin, str_end);
+}
 
 void str2loc(const std::wstring& str, long& row, bool& row_rel, long& column, bool& col_rel)
 {
-	str2loc(str.begin(), str.end(), row, row_rel, column, col_rel);
+   std::wstring::const_iterator str_begin  = str.begin();
+   std::wstring::const_iterator str_end    = str.end();
+
+    str2loc(str_begin, str_end, row, row_rel, column, col_rel);
 }
 
 
-void str2loc(std::wstring::const_iterator& str_begin, std::wstring::const_iterator& str_end, long& row, bool& row_rel, long& column, bool& col_rel)
-{
-	col_rel = str2rel(str_begin, str_end);
-	column = str2column(str_begin, str_end);
-	row_rel = str2rel(str_begin, str_end);
-	row = str2row(str_begin, str_end);
-}
 
 
 void str2refs(const std::wstring& str, std::vector<XLS::CellRangeRef>& vec)
@@ -167,16 +176,24 @@ namespace STR
 
 const std::string int2str(const int val, const int radix)
 {
-	static char num_buf[10];
-	_itoa_s(val, num_buf, 9, radix);
-	return num_buf;
+    static char num_buf[10]={};
+#if defined(_WIN64) || defined(_WIN64)
+    _itoa_s(val, num_buf, 9, radix);
+#else
+    sprintf( num_buf, "%d", val);
+#endif
+    return num_buf;
 }
 
 
 const std::wstring int2wstr(const int val, const int radix)
 {
-	static wchar_t num_buf[10];
-	_itow_s(val, num_buf, 9, radix);
+    static wchar_t num_buf[10]={};
+#if defined(_WIN64) || defined(_WIN64)
+    _itow_s(val, num_buf, 9, radix);
+#else
+    wprintf( num_buf, "%d", val);
+#endif
 	return num_buf;
 }
 
@@ -205,16 +222,20 @@ const std::string bin2str(const char* buf, const size_t nbuf)
 
 const std::wstring  guid2bstr(const _GUID_ guid)
 {
-	//todooooo
+    std::wstring  guid_ret;
+#if defined(_WIN64) || defined(_WIN64)
+    LPOLESTR guid_str;
+    if(S_OK != StringFromIID(guid, &guid_str))
+    {
+        // The only case is E_OUTOFMEMORY, so just throw anything
+        throw;// EXCEPT::LE::WhatIsTheFuck("StringFromIID failed.", "guid2bstr");
+    }
+    guid_ret = guid_str;
+    CoTaskMemFree(guid_str);
+#else
+    //todooooo
 
-	//LPOLESTR guid_str;
-	//if(S_OK != StringFromIID(guid, &guid_str))
-	//{
-	//	// The only case is E_OUTOFMEMORY, so just throw anything
-	//	throw;// EXCEPT::LE::WhatIsTheFuck("StringFromIID failed.", "guid2bstr");
-	//}
-	std::wstring  guid_ret;// = guid_str;
-	//CoTaskMemFree(guid_str);
+#endif
 	return guid_ret;
 }
 
@@ -228,30 +249,38 @@ const std::string guid2str(const _GUID_ guid)
 
 const bool bstr2guid(const std::wstring & guid_str, _GUID_& guid)
 {
-	//todoooo
-	//HRESULT res = IIDFromString((LPWSTR)(guid_str.c_str()), &guid);
-	//if(S_OK != res)
-	//{
-	//	switch(res)
-	//	{
-	//		case E_INVALIDARG:
-	//			return false;
-	//		case E_OUTOFMEMORY:
-	//			throw;// EXCEPT::LE::WhatIsTheFuck("IIDFromString failed.", "bstr2guid");
-	//	}
-	//}
+#if defined(_WIN64) || defined(_WIN64)
+    HRESULT res = IIDFromString((LPWSTR)(guid_str.c_str()), &guid);
+    if(S_OK != res)
+    {
+        switch(res)
+        {
+            case E_INVALIDARG:
+                return false;
+            case E_OUTOFMEMORY:
+                throw;// EXCEPT::LE::WhatIsTheFuck("IIDFromString failed.", "bstr2guid");
+        }
+    }
+#else
+    //todooooo
+
+#endif
+
 	return true;
 }
 
 
 const std::wstring int2hex_wstr(const int val, const size_t size_of)
 {
-	static wchar_t num_buf[10];
-	if(size_of > 4)
-	{
-		return L"";
-	}
-	swprintf_s(num_buf, 9, (L"%0" + STR::int2wstr(size_of << 1, 10) + L"X").c_str(), val);
+    if(size_of > 4) return L"";
+
+    static wchar_t num_buf[10]={};
+#if defined(_WIN64) || defined(_WIN64)
+    swprintf_s(num_buf, 9, (L"%0" + STR::int2wstr(size_of << 1, 10) + L"X").c_str(), val);
+#else
+    //todooooo
+
+#endif
 	return std::wstring(num_buf);
 }
 
@@ -267,25 +296,6 @@ const std::wstring wchar_t2hex_str(const wchar_t val)
 	code_string[4] = 0;
 
 	return code_string;
-}
-
-
-const std::wstring escapeUrlW(const std::wstring& str)
-{
-	wchar_t dumb[2];
-	DWORD buffer_size = 1;
-	HRESULT res = UrlEscapeW(str.c_str(), dumb, &buffer_size, 0);
-	if (0 == buffer_size)
-	{
-		return L"";
-	}
-	
-	wchar_t* buffer = new wchar_t[buffer_size + 1];
-	res = UrlEscapeW(str.c_str(), buffer, &buffer_size, 0);
-
-	std::wstring ret_val(buffer);
-	delete[] buffer;
-	return ret_val;
 }
 
 
@@ -321,9 +331,14 @@ const std::wstring unescape_ST_Xstring(const std::wstring& wstr)
 	std::wstring::const_iterator x_pos_next;// = wstr.begin();
 	std::wstring::const_iterator wstr_end = wstr.end();
 	std::wstring ret_val = L"";
-	while(wstr_end != (x_pos_next = boost::algorithm::find_first(boost::make_iterator_range(x_pos_noncopied, wstr_end), L"_x").begin()))
+
+    while(true)
 	{
-		if(!boost::regex_search(x_pos_next, wstr_end, match_hex))
+        const auto it_range = boost::make_iterator_range(x_pos_noncopied, wstr_end);
+        x_pos_next = boost::algorithm::find_first(it_range, L"_x").begin();
+
+        if ( wstr_end == x_pos_next) break;
+        if(!boost::regex_search(x_pos_next, wstr_end, match_hex))
 		{
 			x_pos_next += 2;
 			ret_val.append(x_pos_noncopied, x_pos_next);
@@ -400,25 +415,100 @@ const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std
 
 const std::string toStdString(const std::wstring& wide_string, const unsigned int code_page)
 {
-	//todooo разрулить на linux - e !!!
-	unsigned int bufferSize = (unsigned int)wide_string.length() + 1;
-	boost::scoped_array<char> pBuffer(new char[bufferSize]);
-	WideCharToMultiByte(code_page, 0, wide_string.c_str(), (int)wide_string.length(), pBuffer.get(), bufferSize, NULL, NULL);
-	pBuffer[bufferSize - 1] = '\0';
-	return pBuffer.get();
+#if defined (_WIN32) || defined (_WIN64)
+    const int nSize = WideCharToMultiByte(code_page, 0, wide_string.c_str(), wide_string.length(), NULL, 0, NULL, NULL);
+    char *sTemp = new char[nSize];
+    if (!sTemp)
+        return std::string();
+
+    int size = WideCharToMultiByte(code_page, 0, wide_string.c_str(), wide_string.length(), sTemp, nSize, NULL, NULL);
+
+    std::string sResult(sTemp, size);
+    delete []sTemp;
+
+    return sResult;
+#else
+    std::string out;
+    bool ansi = true;
+
+    size_t insize = wide_string.length();
+    out.reserve(insize);
+
+    char *inptr = (char*)wide_string.c_str();
+    char* outptr = (char*)out.c_str();
+
+    if (code_page >= 0)
+    {
+        std::string sCodepage =  "CP" + std::to_string(code_page);
+
+        iconv_t ic= iconv_open(sCodepage.c_str(), "WCHAR_T");
+        if (ic != (iconv_t) -1)
+        {
+            size_t nconv = 0, avail = insize * sizeof(wchar_t);
+
+            nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
+            if (nconv == 0) ansi = false;
+            iconv_close(ic);
+        }
+    }
+
+    if (ansi)
+        out = std::string(wide_string.begin(), wide_string.end());
+
+    return out;
+
+#endif
 }
 
 
 const std::wstring toStdWString(const std::string& ansi_string, const unsigned int code_page)
 {
-	//todooo разрулить на linux - e !!!
-	unsigned int bufferSize = (unsigned int)ansi_string.length() + 1;
-	boost::scoped_array<wchar_t> pBuffer(new wchar_t[bufferSize]);
-	unsigned int code = code_page == 1251 ? 1252 : code_page ;
+#if defined (_WIN32) || defined (_WIN64)
+    const int nSize = MultiByteToWideChar(code_page, 0, ansi_string.c_str(), ansi_string.size(), NULL, 0);
 
-	MultiByteToWideChar(/*code_page*/code, 0, ansi_string.c_str(), (int)ansi_string.length(), pBuffer.get(), bufferSize);
-	pBuffer[bufferSize - 1] = L'\0';
-	return pBuffer.get();
+    wchar_t *sTemp = new wchar_t[nSize];
+    if (!sTemp)
+        return std::wstring();
+
+    int size = MultiByteToWideChar(code_page, 0, ansi_string.c_str(), ansi_string.size(), sTemp, nSize);
+
+    std::wstring sResult(sTemp, size);
+    delete []sTemp;
+
+    return sResult;
+#else
+    bool ansi = true;
+
+    size_t insize = ansi_string.length();
+    std::wstring w_out;
+
+    w_out.reserve(insize);
+
+    char *inptr = (char*)ansi_string.c_str();
+    char* outptr = (char*)w_out.c_str();
+
+    if (code_page >= 0)
+    {
+        std::string sCodepage =  "CP" + std::to_string(code_page);
+
+        iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());
+        if (ic != (iconv_t) -1)
+        {
+            size_t nconv = 0, avail = (insize) * sizeof(wchar_t);
+
+            nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
+            if (nconv == 0)
+            {
+                ansi = false;
+            }
+            iconv_close(ic);
+        }
+    }
+    if (ansi)
+        w_out = std::wstring(ansi_string.begin(), ansi_string.end());
+
+    return w_out;
+#endif
 }
 
 

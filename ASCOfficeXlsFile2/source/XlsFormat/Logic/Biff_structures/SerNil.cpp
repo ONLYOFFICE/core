@@ -14,7 +14,7 @@ BiffStructurePtr SerNil::clone()
 
 void SerNil::store(CFRecord& record)
 {
-	record.storeAnyData(fixed_type);
+    record.storeAnyData(fixed_type);
 	record.skipNunBytes(8); // reserved/unused
 }
 

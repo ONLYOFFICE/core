@@ -1669,7 +1669,9 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 			if (oNodeShape.GetNodes(_T("*"), oChilds))
 			{
 				CString sTxbxContent = _T("<w:txbxContent><w:p><w:r>");
-
+				CString srPr;
+				CString sFont = (_T("Arial Black"));
+				int nFontSize = 36;
 				LONG lChildsCount = oChilds.GetCount();
 				CString strString = _T("");
 				BYTE lAlpha;
@@ -1685,70 +1687,120 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 					if (_T("textpath") == strNameP)
 					{
 						strString = oNodeP.GetAttribute(_T("string"));
-						strString.Replace(_T("\n"), _T("&#xA;"));
+						//strString.Replace(_T("\n"), _T("&#xA;"));
+
+						CString strStyle = oNodeP.GetAttribute(_T("style"));
+						PPTX::CCSS oCSSParser;
+						oCSSParser.LoadFromString2(strStyle);
+						std::map<CString, CString>::iterator pPair = oCSSParser.m_mapSettings.find(_T("font-family"));
+						if (pPair != oCSSParser.m_mapSettings.end())
+						{
+							sFont = pPair->second;
+							sFont.Replace(_T("\""), _T(""));
+						}
+						pPair = oCSSParser.m_mapSettings.find(_T("font-size"));
+						if (pPair != oCSSParser.m_mapSettings.end())
+						{
+							//nFontSize = _wtoi(pPair->second.GetBuffer());
+							nFontSize = _wtoi(pPair->second.GetBuffer()) * 2;
+						}
+						
+
 					}
 					else if (_T("fill") == strNameP)
-					{
-						bOpacity = true;
+					{						
 						nullable_string sOpacity;
 						oNodeP.ReadAttributeBase(L"opacity", sOpacity);
-						lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
-						oMod.name = _T("alpha");
-						int nA = (int)(lAlpha * 100000.0 / 255.0);
-						oMod.val = nA;
+						if (sOpacity.is_init())
+						{
+							bOpacity = true;
+							lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity);
+							oMod.name = _T("alpha");
+							int nA = (int)(lAlpha * 100000.0 / 255.0);
+							oMod.val = nA;
+						}
 					}
 				}
+
+				srPr += _T("<w:rPr>");
+				srPr += _T("<w:rFonts w:ascii=\"") + sFont + _T("\" w:hAnsi=\"") + sFont + _T("\"/>");
+				CString strSize;
+				strSize.Format(_T("%d"), nFontSize);
+				srPr += _T("<w:sz w:val=\"") + strSize + _T("\"/><w:szCs w:val=\"") + strSize + _T("\"/>");
 
 				nullable_string sFillColor; 
 				nullable_string sStrokeColor;
 				nullable_string sStrokeWeight;
+				nullable_string sStroked;
 				oNodeShape.ReadAttributeBase(L"fillcolor", sFillColor);
 				oNodeShape.ReadAttributeBase(L"strokecolor", sStrokeColor);
 				oNodeShape.ReadAttributeBase(L"strokeweight", sStrokeWeight);
-				if (sFillColor.is_init() || sStrokeColor.is_init())
+				oNodeShape.ReadAttributeBase(L"stroked", sStroked);
+
+				//textFill
+				srPr += _T("<w14:textFill>");							
+				if (sFillColor.is_init())
 				{
-					sTxbxContent += _T("<w:rPr>");
-					if (sFillColor.is_init())
-					{
-						sTxbxContent += _T("<w14:textFill>");
-
-						NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
-						PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
-						pSolid->m_namespace = _T("a");
-						pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-						pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
-						if (bOpacity)
-							pSolid->Color.Color->Modifiers.push_back(oMod);
-						sTxbxContent += pSolid->toXML() + _T("</w14:textFill>");
-					}
-					if (sStrokeColor.is_init())
-					{
-						double m_dValue;
-						CString strStrokeW;
-						if (sStrokeWeight.is_init())
-						{
-							CString strW(*sStrokeWeight);
-							strW.Remove('pt');
-							m_dValue = _wtof(strW);
-						}
-						else
-							m_dValue = 1;
-						strStrokeW.Format(_T("%d"), (int)Pt_To_Emu(m_dValue));
-						sTxbxContent += _T("<w14:textOutline w14:w=\"") + strStrokeW + _T("\">");
-
-						NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sStrokeColor);
-						PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
-						pSolid->m_namespace = _T("a");
-						pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-						pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
-
-						sTxbxContent += pSolid->toXML() + _T("</w14:textOutline>");						
-					}					
+					NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
+					PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+					pSolid->m_namespace = _T("a");
+					pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+					pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
+					if (bOpacity)
+						pSolid->Color.Color->Modifiers.push_back(oMod);
+					srPr += pSolid->toXML();
 				}
-				sTxbxContent += _T("</w:rPr><w:t>") + strString + _T("</w:t></w:r></w:p></w:txbxContent>");
+				else
+					srPr += _T("<w14:noFill/>");
+				srPr += _T("</w14:textFill>");
+
+				//textOutline
+				double m_dValue;
+				CString strStrokeW;
+				if (sStrokeWeight.is_init())
+				{
+					CString strW(*sStrokeWeight);
+					strW.Remove('pt');
+					m_dValue = _wtof(strW);
+				}
+				else
+					m_dValue = 1;
+				strStrokeW.Format(_T("%d"), (int)Pt_To_Emu(m_dValue));
+				srPr += _T("<w14:textOutline w14:w=\"") + strStrokeW + _T("\">");
+
+				PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+				pSolid->m_namespace = _T("a");
+				pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+				NSPresentationEditor::CColor color;
+				
+				bool bStroked = true;
+				if (sStroked.is_init())
+				{
+					if (*sStroked == _T("false") || *sStroked == _T("f"))
+					{
+						srPr += _T("<w14:noFill/>");
+						bStroked = false;
+					}
+				}				
+				
+				if (sStrokeColor.is_init())
+				{
+					color = NS_DWC_Common::getColorFromString(*sStrokeColor);
+					pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
+				}
+				else
+					pSolid->Color.Color->SetRGB(0x00, 0x00, 0x00);
+
+				if (bStroked)
+					srPr += pSolid->toXML();
+
+				srPr += _T("</w14:textOutline>");			
+
+				srPr += _T("</w:rPr>");
+				sTxbxContent += srPr + _T("<w:t>") + strString + _T("</w:t></w:r></w:p></w:txbxContent>");
 				pShape->TextBoxShape = sTxbxContent;
 			}
-			strXmlPPTX = _T("<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");			
+			strXmlPPTX = _T("<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
 		}
 		else
 		{

@@ -11,31 +11,24 @@
 namespace XLS
 {
 
-
-//void SerAr::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->Puttext(toString().c_str());
-//}
-
-
 // static 
 SerArPtr SerAr::createSerAr(const unsigned char type)
 {
 	switch(type)
 	{
-	case SerBool::fixed_type:
+    case typeSerBool:
 		return SerArPtr(new SerBool);
 		break;
-	case SerErr::fixed_type:
+    case typeSerErr:
 		return SerArPtr(new SerErr);
 		break;
-	case SerNil::fixed_type:
+    case typeSerNil:
 		return SerArPtr(new SerNil);
 		break;
-	case SerNum::fixed_type:
+    case typeSerNum:
 		return SerArPtr(new SerNum);
 		break;
-	case SerStr::fixed_type:
+    case typeSerStr:
 		return SerArPtr(new SerStr);
 		break;
 	default:

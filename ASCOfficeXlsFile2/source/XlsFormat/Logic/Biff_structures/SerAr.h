@@ -11,6 +11,15 @@ typedef boost::shared_ptr<SerAr> SerArPtr;
 class SerAr : public BiffStructure
 {
 public:
+    enum SerType
+    {
+        typeSerNil  = 0x00,
+        typeSerNum  = 0x01,
+        typeSerStr  = 0x02,
+        typeSerBool = 0x04,
+        typeSerErr  = 0x10
+
+    };
 
 	static SerArPtr createSerAr(const unsigned char type);
 

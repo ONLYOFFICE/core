@@ -5,7 +5,6 @@
 #-------------------------------------------------
 
 QT       -= core
-
 QT       -= gui
 
 QMAKE_CXXFLAGS += -std=c++11 -Wall -Wno-ignored-qualifiers
@@ -17,8 +16,9 @@ DEFINES += UNICODE \
 
 TARGET = ASCXlsConverter
 
-CONFIG   += console
-CONFIG   -= app_bundle
+CONFIG  += console
+CONFIG  -= app_bundle
+CONFIG  += c++11
 
 TEMPLATE = app
 
@@ -26,7 +26,12 @@ INCLUDEPATH += \
     /usr/include/libxml2
 
 SOURCES += \
-    XlsFileConverter.cpp
+    XlsFileConverter.cpp \
+    ../../Common/DocxFormat/Source/Base/unicode_util.cpp \
+    ../../Common/3dParty/pole/pole.cpp \
+    ../../Common/DocxFormat/Source/SystemUtility/FileSystem/FilePosix.cpp \
+    ../../Common/DocxFormat/Source/SystemUtility/FileSystem/DirectoryPosix.cpp \
+    ../../Common/DocxFormat/Source/XML/stringcommon.cpp
 
 
 linux-g++{
@@ -36,8 +41,8 @@ linux-g++{
     unix:!macx: LIBS += -L$$PWD/../../SDK/lib/linux_64/ -lXlsFormatLib
     unix:!macx: PRE_TARGETDEPS += $$PWD/../../SDK/lib/linux_64/libXlsFormatLib.a
 
-    unix:!macx: LIBS += -L$$PWD/../../SDK/lib/linux_64/ -lgraphics
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../SDK/lib/linux_64/libgraphics.a
+    LIBS += -L$$PWD/../../SDK/lib/linux_64/ -lgraphics
+    LIBS += -L$$PWD/../../SDK/lib/linux_64/ -lASCOfficeUtilsLib
   }
 
 else{
@@ -47,8 +52,12 @@ else{
     unix:!macx: LIBS += -L$$PWD/../../SDK/lib/linux_32/ -lXlsFormatLib
     unix:!macx: PRE_TARGETDEPS += $$PWD/../../SDK/lib/linux_32/libXlsFormatLib.a
 
-   unix:!macx: LIBS += -L$$PWD/../../SDK/lib/linux_32/ -lgraphics
-    unix:!macx: PRE_TARGETDEPS += $$PWD/../../SDK/lib/linux_32/libgraphics.a
+    LIBS += -L$$PWD/../../SDK/lib/linux_32/ -lgraphics
+    LIBS += -L$$PWD/../../SDK/lib/linux_32/ -lASCOfficeUtilsLib
 }
 
+LIBS += -lboost_regex
+LIBS += -lz
+LIBS += -lxml2
+LIBS += -lcurl
 

@@ -1,7 +1,6 @@
 #pragma once
 
-#include "BiffStructure.h"
-#include <Logic/Biff_structures/Property.h>
+#include "SharedProperty.h"
 
 namespace OSHARED
 {
@@ -12,6 +11,8 @@ class PropertyBag : public XLS::BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(PropertyBag)
 public:
+    PropertyBag();
+
 	XLS::BiffStructurePtr clone();
 
 	static const XLS::ElementType	type = XLS::typePropertyBag;
@@ -20,7 +21,7 @@ public:
 	virtual void store(XLS::CFRecord& record);
 
 	unsigned short id;
-	std::vector<Property> properties;
+    std::vector<SharedProperty> properties;
 };
 
 } // namespace OSHARED

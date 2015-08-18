@@ -516,7 +516,6 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_structures/Phs.cpp \
     ../XlsFormat/Logic/Biff_structures/PictFmlaEmbedInfo.cpp \
     ../XlsFormat/Logic/Biff_structures/PictFmlaKey.cpp \
-    ../XlsFormat/Logic/Biff_structures/Property.cpp \
     ../XlsFormat/Logic/Biff_structures/PropertyBag.cpp \
     ../XlsFormat/Logic/Biff_structures/PropertyBagStore.cpp \
     ../XlsFormat/Logic/Biff_structures/Ptg.cpp \
@@ -777,7 +776,6 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_unions/UNKNOWNFRT.cpp \
     ../XlsFormat/Logic/Biff_unions/WINDOW.cpp \
     ../XlsFormat/Logic/Biff_unions/XFS.cpp \
-    ../XlsFormat/Logic/SummaryInformationStream/Structures/CodePage.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/Property.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertyFactory.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySet.cpp \
@@ -810,7 +808,11 @@ SOURCES +=  \
     ../XlsFormat/Logic/GlobalWorkbookInfo.cpp \
     ../XlsFormat/Logic/MacroSheetSubstream.cpp \
     ../XlsFormat/Logic/WorkbookStreamObject.cpp \
-    ../XlsFormat/Logic/WorksheetSubstream.cpp
+    ../XlsFormat/Logic/WorksheetSubstream.cpp \
+    ../XlsFormat/Auxiliary/HelpersTagsGenerator.cpp \
+    ../XlsFormat/Auxiliary/HelpFunc.cpp \
+    ../XlsFormat/Logic/SummaryInformationStream/Structures/CodePageOle.cpp \
+    ../XlsFormat/Logic/Biff_structures/SharedProperty.cpp
 
 
 
@@ -1271,7 +1273,6 @@ HEADERS +=  \
     ../XlsFormat/Logic/Biff_structures/Phs.h \
     ../XlsFormat/Logic/Biff_structures/PictFmlaEmbedInfo.h \
     ../XlsFormat/Logic/Biff_structures/PictFmlaKey.h \
-    ../XlsFormat/Logic/Biff_structures/Property.h \
     ../XlsFormat/Logic/Biff_structures/PropertyBag.h \
     ../XlsFormat/Logic/Biff_structures/PropertyBagStore.h \
     ../XlsFormat/Logic/Biff_structures/Ptg.h \
@@ -1534,7 +1535,6 @@ HEADERS +=  \
     ../XlsFormat/Logic/Biff_unions/UNKNOWNFRT.h \
     ../XlsFormat/Logic/Biff_unions/WINDOW.h \
     ../XlsFormat/Logic/Biff_unions/XFS.h \
-    ../XlsFormat/Logic/SummaryInformationStream/Structures/CodePage.h \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/Property.h \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertyFactory.h \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySet.h \
@@ -1575,7 +1575,11 @@ HEADERS +=  \
     ../XlsFormat/Logic/WorkbookStreamObject.h \
     ../XlsFormat/Logic/WorksheetSubstream.h \
     ../XlsFormat/Logic/XlsElementsType.h \
-    ../XlsXlsxConverter/ShapeType.h
+    ../XlsXlsxConverter/ShapeType.h \
+    ../XlsFormat/Auxiliary/HelpersTagsGenerator.h \
+    ../XlsFormat/Auxiliary/HelpFunc.h \
+    ../XlsFormat/Logic/SummaryInformationStream/Structures/CodePageOle.h \
+    ../XlsFormat/Logic/Biff_structures/SharedProperty.h
 
 
 

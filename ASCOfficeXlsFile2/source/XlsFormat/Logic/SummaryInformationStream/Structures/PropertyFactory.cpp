@@ -2,7 +2,7 @@
 
 #include <Binary/CFStream.h>
 #include "PropertyFactory.h"
-#include "CodePage.h"
+#include "CodePageOle.h"
 
 
 namespace OLEPS
@@ -21,8 +21,8 @@ PropertyPtr PropertyFactory::ReadProperty(const unsigned int prop_type, XLS::CFS
 
 	switch(prop_type)
 	{
-		case CodePage::Type:
-			return PropertyPtr(new CodePage(value_type, stream));
+        case CodePageOle::Type:
+            return PropertyPtr(new CodePageOle(value_type, stream));
 
 		default:
 			return PropertyPtr();

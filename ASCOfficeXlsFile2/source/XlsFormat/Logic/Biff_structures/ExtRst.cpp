@@ -11,34 +11,10 @@ BiffStructurePtr ExtRst::clone()
 	return BiffStructurePtr(new ExtRst(*this));
 }
 
-
-//void ExtRst::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"cb", cb);
-//	phs.toXML(xml_tag);
-//	rphssub.toXML(xml_tag);
-//	std::for_each(rgphruns.begin(), rgphruns.end(), boost::bind(&PhRuns::toXML, _1, xml_tag));
-//}
-
-//void ExtRst::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	cb = getStructAttribute(xml_tag, L"cb");
-//	phs.fromXML(xml_tag);
-//	rphssub.fromXML(xml_tag);
-//
-//	PhRuns runs;
-//	size_t number = 0;
-//	while(runs.fromXML(xml_tag, ++number, false))
-//	{
-//		rgphruns.push_back(runs);
-//	}
-//}
-//
-
 void ExtRst::store(CFRecord& record)
 {
-	unsigned short reserved = 1;
-	record  << reserved << cb << phs << rphssub << rgphruns;
+//	unsigned short reserved = 1;
+//	record  << reserved << cb << phs << rphssub << rgphruns;
 }
 
 

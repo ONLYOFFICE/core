@@ -17,27 +17,9 @@ XLS::BiffStructurePtr OfficeArtSplitMenuColorContainer::clone()
 	return XLS::BiffStructurePtr(new OfficeArtSplitMenuColorContainer(*this));
 }
 
-//
-//void OfficeArtSplitMenuColorContainer::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	std::for_each(smca.begin(), smca.end(), boost::bind(&MSOCR::toXML, _1, xml_tag));
-//}
-//
-//
-//void OfficeArtSplitMenuColorContainer::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	MSOCR color;
-//	size_t number = 0;
-//	while(color.fromXML(xml_tag, ++number, false))
-//	{
-//		smca.push_back(color);
-//	}
-//}
-
-
 void OfficeArtSplitMenuColorContainer::storeFields(XLS::CFRecord& record)
 {
-	record << smca;
+//	record << smca;
 }
 
 

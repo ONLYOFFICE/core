@@ -21,10 +21,6 @@ public:
 	void readFields(CFRecord& record);
 //-----------------------------
 	BIFF_WORD cv;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_ATTRIB(cv)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

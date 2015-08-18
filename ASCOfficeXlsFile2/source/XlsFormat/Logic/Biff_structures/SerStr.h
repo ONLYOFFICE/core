@@ -18,7 +18,7 @@ public:
 	virtual const std::wstring toString() const;
 
 private:
-    const SerType fixed_type = typeSerStr;
+    const static SerType fixed_type = typeSerStr;
     XLUnicodeString string_;
 };
 

@@ -28,7 +28,8 @@
        PACL Dacl;
 
     } SECURITY_DESCRIPTOR, *PISECURITY_DESCRIPTOR;
-
+#else
+	#include <windows.h>
 #endif
 
 namespace XLS

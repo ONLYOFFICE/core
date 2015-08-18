@@ -225,7 +225,9 @@ const std::wstring  guid2bstr(const _GUID_ guid)
     std::wstring  guid_ret;
 #if defined(_WIN64) || defined(_WIN64)
     LPOLESTR guid_str;
-    if(S_OK != StringFromIID(guid, &guid_str))
+	GUID guid1={};
+	memcpy(&guid1, &guid, sizeof(GUID));
+    if(S_OK != StringFromIID(guid1,&guid_str))
     {
         // The only case is E_OUTOFMEMORY, so just throw anything
         throw;// EXCEPT::LE::WhatIsTheFuck("StringFromIID failed.", "guid2bstr");
@@ -250,7 +252,9 @@ const std::string guid2str(const _GUID_ guid)
 const bool bstr2guid(const std::wstring & guid_str, _GUID_& guid)
 {
 #if defined(_WIN64) || defined(_WIN64)
-    HRESULT res = IIDFromString((LPWSTR)(guid_str.c_str()), &guid);
+
+	GUID guid1={};
+    HRESULT res = IIDFromString((LPWSTR)(guid_str.c_str()), &guid1);
     if(S_OK != res)
     {
         switch(res)
@@ -261,6 +265,7 @@ const bool bstr2guid(const std::wstring & guid_str, _GUID_& guid)
                 throw;// EXCEPT::LE::WhatIsTheFuck("IIDFromString failed.", "bstr2guid");
         }
     }
+	else memcpy(&guid, &guid1, sizeof(guid1));
 #else
     //todooooo
 
@@ -334,9 +339,12 @@ const std::wstring unescape_ST_Xstring(const std::wstring& wstr)
 
     while(true)
 	{
-        const auto it_range = boost::make_iterator_range(x_pos_noncopied, wstr_end);
+#ifdef __linux__
+		const auto it_range = boost::make_iterator_range(x_pos_noncopied, wstr_end);
         x_pos_next = boost::algorithm::find_first(it_range, L"_x").begin();
-
+#else
+        x_pos_next = boost::algorithm::find_first(boost::make_iterator_range(x_pos_noncopied, wstr_end), L"_x").begin();
+#endif
         if ( wstr_end == x_pos_next) break;
         if(!boost::regex_search(x_pos_next, wstr_end, match_hex))
 		{

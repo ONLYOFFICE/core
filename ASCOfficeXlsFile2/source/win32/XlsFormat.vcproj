@@ -3930,14 +3930,6 @@
 					>
 				</File>
 				<File
-					RelativePath="..\XlsFormat\Logic\Biff_structures\Property.cpp"
-					>
-				</File>
-				<File
-					RelativePath="..\XlsFormat\Logic\Biff_structures\Property.h"
-					>
-				</File>
-				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\PropertyBag.cpp"
 					>
 				</File>
@@ -4575,6 +4567,14 @@
 				</File>
 				<File
 					RelativePath="..\XlsFormat\Logic\Biff_structures\SharedParsedFormula.h"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\SharedProperty.cpp"
+					>
+				</File>
+				<File
+					RelativePath="..\XlsFormat\Logic\Biff_structures\SharedProperty.h"
 					>
 				</File>
 				<File
@@ -7237,47 +7237,11 @@
 					Name="Structures"
 					>
 					<File
-						RelativePath="..\XlsFormat\Logic\SummaryInformationStream\Structures\CodePage.cpp"
+						RelativePath="..\XlsFormat\Logic\SummaryInformationStream\Structures\CodePageOle.cpp"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Debug|x64"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|x64"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\XlsFormat\Logic\SummaryInformationStream\Structures\CodePage.h"
+						RelativePath="..\XlsFormat\Logic\SummaryInformationStream\Structures\CodePageOle.h"
 						>
 					</File>
 					<File

@@ -19,7 +19,8 @@
         long    right;
         long    bottom;
     } RECT;
-
+#else
+	#include <windows.h>
 #endif
 
 namespace XLS

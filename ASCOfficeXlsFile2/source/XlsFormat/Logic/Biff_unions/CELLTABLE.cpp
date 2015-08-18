@@ -243,14 +243,14 @@ BaseObjectPtr CELLTABLE::clone()
 // CELLTABLE = 1*(1*Row *CELL 1*DBCell) *EntExU2
 const bool CELLTABLE::loadContent(BinProcessor& proc)
 {
-    CELL_GROUP cell_group(shared_formulas_locations_ref_);
-
-    if(!proc.mandatory(cell_group))
+    CELL_GROUP cell_group1(shared_formulas_locations_ref_);
+	if(!proc.mandatory(cell_group1))
 	{
 		return false;
 	}
 	
-    m_count_CELL_GROUP = proc.repeated(cell_group, 0, 0);
+	CELL_GROUP cell_group2(shared_formulas_locations_ref_);
+	m_count_CELL_GROUP = proc.repeated(cell_group2, 0, 0);
 
 	proc.repeated<EntExU2>(0, 0);
 

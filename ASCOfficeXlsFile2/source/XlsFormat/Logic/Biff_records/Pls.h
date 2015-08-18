@@ -68,6 +68,8 @@
     #endif
     #endif /* WINVER >= 0x0400 */
     } DEVMODE;
+#else
+	#include <windows.h>
 #endif
 
 namespace XLS

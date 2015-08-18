@@ -15,7 +15,7 @@ public:
 	virtual const std::wstring toString() const;
 
 private:
-    const SerType fixed_type = typeSerNil;
+    const static SerType fixed_type = typeSerNil;
 };
 
 } // namespace XLS

@@ -2,18 +2,8 @@
 
 #include <string>
 
-#if defined(_WIN32) || defined(_WIN64)
-    #include <tchar.h>
-#else
-    #ifdef UNICODE
-        #define __T(x)      L##x
-    #else // UNICODE
-        #define __T(x)      x
-    #endif // UNICODE
+#include <tchar.h>
 
-    #define _T(x)       __T(x)
-    #define _TEXT(x)    __T(x)
-#endif
 
 namespace oox 
 {

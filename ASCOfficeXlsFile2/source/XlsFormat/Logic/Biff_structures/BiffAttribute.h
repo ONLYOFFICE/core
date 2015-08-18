@@ -84,6 +84,7 @@ public:
     ForwardOnlyParam<Type> operator= (const ForwardOnlyParam<Type>& other)
 	{
        BiffAttributeSimple<Type>::val = other.val;
+	   return *this;
     }
 
 };
@@ -102,6 +103,7 @@ public:
     BackwardOnlyParam<Type> operator= (const BackwardOnlyParam<Type>& other)
 	{
         BiffAttributeSimple<Type>::val = other.val;
+		return *this;
     }
 
 };

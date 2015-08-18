@@ -10,7 +10,8 @@
         _UINT32 dwLowDateTime;
         _UINT32 dwHighDateTime;
     } FILETIME;
-
+#else
+	#include <windows.h>
 #endif
 
 namespace OSHARED

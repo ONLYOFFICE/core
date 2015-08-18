@@ -92,9 +92,6 @@ SOURCES += pptxformatlib.cpp \
     ../../../ASCOfficePPTXFileRealization.cpp \
     ../../../../Common/DocxFormat/Source/XML/libxml2/libxml2.cpp \
     ../../../../Common/DocxFormat/Source/XML/stringcommon.cpp \
-    ../../../../ASCOfficeDocxFile2/DocWrapper/DocxSerializer.cpp \
-    ../../../../ASCOfficeDocxFile2/DocWrapper/FontProcessor.cpp \
-    ../../../../ASCOfficeDocxFile2/DocWrapper/XlsxSerializer.cpp \
     ../../../PPTXFormat/DocxFormat/IFileContainer.cpp \
     ../../../PPTXFormat/Logic/Colors/SchemeClr.cpp \
     ../../../PPTXFormat/Logic/Fills/Blip.cpp \
@@ -136,8 +133,6 @@ SOURCES += pptxformatlib.cpp \
     ../../../Editor/FontPicker.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/Layout.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/TextAttributesEx.cpp \
-    ../../../../XlsxSerializerCom/Reader/CSVReader.cpp \
-    ../../../../XlsxSerializerCom/Writer/CSVWriter.cpp \
     ../../../../ASCPresentationEditor/OfficeDrawing/Elements.cpp \
     ../../../PPTXFormat/Logic/Controls.cpp
 
@@ -562,10 +557,7 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/DefaultNotesTheme.h \
     ../../../PPTXFormat/DocxFormat/Drawing/LegacyDiagramText.h \
     ../../../PPTXFormat/DocxFormat/Drawing/VmlDrawing.h \
-    ../../../PPTXFormat/Logic/Controls.h \
-    ../../../../ASCOfficeDocxFile2/BinReader/DefaultThemeWriter.h \
-    ../../../../ASCOfficeDocxFile2/BinReader/FileWriter.h \
-    ../../../../ASCOfficeDocxFile2/BinReader/SettingWriter.h
+    ../../../PPTXFormat/Logic/Controls.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

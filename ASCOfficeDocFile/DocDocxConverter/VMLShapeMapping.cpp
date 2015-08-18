@@ -677,7 +677,7 @@ namespace DocFileFormat
 						}
 						break;
 
-						// TEXTBOX
+			// TEXTBOX
 
 					case lTxid:
 						{
@@ -685,10 +685,10 @@ namespace DocFileFormat
 							nLTxID		=	(((iter->op) >> 16) & 0xFFFF);
 						}
 						break;
-					case dxTextLeft:{ndxTextLeft = (int)iter->op;break;}
-					case dyTextTop:{ndyTextTop = (int)iter->op;break;}
-					case dxTextRight:{ndxTextRight = (int)iter->op;break;}
-					case dyTextBottom:{ndyTextBottom = (int)iter->op;break;}
+					case dxTextLeft:	{ndxTextLeft	= (int)iter->op;break;}
+					case dyTextTop:		{ndyTextTop		= (int)iter->op;break;}
+					case dxTextRight:	{ndxTextRight	= (int)iter->op;break;}
+					case dyTextBottom:	{ndyTextBottom	= (int)iter->op;break;}
 	
 	// TEXT PATH (Word Art)
 
@@ -707,7 +707,11 @@ namespace DocFileFormat
 						font = std::wstring(_T("\"")) + font + std::wstring(_T("\""));
 						appendStyleProperty(&m_textPathStyle, L"font-family", font);
 					}break;
-
+					case gtextSize:
+					{
+						std::wstring fontSize = FormatUtils::IntToWideString(iter->op/65535);
+						appendStyleProperty(&m_textPathStyle, L"font-size", fontSize + L"pt");
+					}break;
 					case geometryTextBooleanProperties:
 					{
 						GeometryTextBooleanProperties props(iter->op);

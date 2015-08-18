@@ -119,7 +119,8 @@ HEADERS +=  \
     src/VectorGraphicsWriter2.h \
     src/VMLWriter.h \
     src/Writer.h \
-    include/HTMLRenderer3.h
+    include/HTMLRenderer3.h \
+    src/Common2.h
 
 unix {
     target.path = /usr/lib

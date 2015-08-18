@@ -12,6 +12,8 @@ TARGET = test
 CONFIG   += console
 CONFIG   -= app_bundle
 
+CONFIG += c++11
+
 DEFINES += PDFREADER_USE_DYNAMIC_LIBRARY
 DEFINES += PDFWRITER_USE_DYNAMIC_LIBRARY
 DEFINES += XPS_USE_DYNAMIC_LIBRARY
@@ -50,6 +52,7 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
 }
 
 LIBS += -L$$DESTINATION_SDK_PATH -lgraphics
+LIBS += -L$$DESTINATION_SDK_PATH -lASCOfficeUtilsLib
 LIBS += -L$$DESTINATION_SDK_PATH -lHtmlRenderer
 LIBS += -L$$DESTINATION_SDK_PATH -lPdfReader
 LIBS += -L$$DESTINATION_SDK_PATH -lDjVuFile
@@ -63,4 +66,8 @@ LIBS += -lgdi32 \
         -lshell32
 }
 
-SOURCES += main.cpp
+SOURCES += main.cpp \
+    ../src/ASCSVGWriter.cpp
+
+HEADERS += \
+    ../include/ASCSVGWriter.h

@@ -18,7 +18,7 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	long imdt;
+    int imdt;
 	unsigned short mdd;
 };
 

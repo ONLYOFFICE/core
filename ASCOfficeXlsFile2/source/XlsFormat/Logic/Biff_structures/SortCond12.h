@@ -28,7 +28,7 @@ public:
 	CondDataValue condDataValue;
 	CFFlag cfflag;
 
-	long cchSt;
+    int cchSt;
 	XLUnicodeStringNoCch stSslist;
 };
 

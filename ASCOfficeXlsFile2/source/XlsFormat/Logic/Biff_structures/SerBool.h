@@ -17,7 +17,7 @@ public:
 	virtual const std::wstring toString() const;
 
 private:
-    const static SerType fixed_type = typeSerBool;
+
     unsigned char f;
 };
 

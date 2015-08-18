@@ -1,5 +1,6 @@
 
 #include "BiffString.h"
+#include <utils.h>
 
 namespace XLS
 {
@@ -72,9 +73,12 @@ void BiffString::load(CFRecord& record, const size_t cch, const bool is_wide)
 
 	if(is_wide)
 	{
-		//todoooo разрулить wchar_t = 4 !!!!
-		std::wstring int_str(record.getCurData<wchar_t>(), cch);
+#if defined(_WIN32) || defined(_WIN64)
+        std::wstring int_str(record.getCurData<wchar_t>(), cch);
 		str_ = int_str.c_str();
+#else
+        str_= convertUtf16ToWString(record.getCurData<UTF16>(), cch);
+#endif
 	}
 	else
 	{

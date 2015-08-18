@@ -25,7 +25,7 @@ public:
 
 	std::vector<CellRef>& shared_formulas_locations_ref_;
 
-	long m_count_CELL_GROUP;
+    int m_count_CELL_GROUP;
 };
 
 } // namespace XLS

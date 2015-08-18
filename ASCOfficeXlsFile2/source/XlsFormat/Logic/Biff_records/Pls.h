@@ -6,8 +6,8 @@
 
     typedef struct tagPOINT
     {
-        long  x;
-        long  y;
+        _INT32  x;
+        _INT32  y;
     } POINT;
 
     typedef struct _devicemodeW

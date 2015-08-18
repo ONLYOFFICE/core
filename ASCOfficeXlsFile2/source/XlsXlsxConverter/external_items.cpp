@@ -75,7 +75,7 @@ std::wstring external_items::add_image(const std::wstring & image, int bin_id)
 
 std::wstring external_items::find_image(int _id, std::wstring & target, bool & isInternal)
 {
-	for (long i=0 ; i <items_.size(); i ++)
+    for (int i=0 ; i <items_.size(); i ++)
 	{
 		if (items_[i].type == typeImage && items_[i].id == _id)
 		{
@@ -88,7 +88,7 @@ std::wstring external_items::find_image(int _id, std::wstring & target, bool & i
 }
 std::wstring external_items::find_image(const std::wstring & target, bool & isInternal)
 {
-	for (long i=0 ; i <items_.size(); i ++)
+    for (int i=0 ; i <items_.size(); i ++)
 	{
 		if (items_[i].type == typeImage && items_[i].uri == target)
 		{

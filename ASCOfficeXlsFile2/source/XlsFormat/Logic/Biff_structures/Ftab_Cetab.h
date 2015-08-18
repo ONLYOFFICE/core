@@ -17,7 +17,7 @@ public:
 	Ftab_Cetab(const unsigned short func_index_init);
 
 	const std::wstring getFuncName() const;
-	const long getParamsNum() const;
+    const int getParamsNum() const;
 	const unsigned short getIndex() const;
 	const bool isMacro() const;
 
@@ -27,21 +27,22 @@ public:
 	{
 	public:
 		static const std::wstring getName(const unsigned short iftab);
-		static const long getParamsNum(const unsigned short iftab);
+        static const int getParamsNum(const unsigned short iftab);
 		static const unsigned short getIndex(const std::wstring& func_name);
-		static const long getParamsNum(const std::wstring& func_name);
+        static const int getParamsNum(const std::wstring& func_name);
 
 		ValuesDetermination();
 		static ValuesDetermination& getInst()
 		{
 			static ValuesDetermination inst;
 			return inst;
-		};
+        }
 		struct ParamsFixed{
-			ParamsFixed(const unsigned short iftab_, const long params_num_, const std::wstring& name_): name(name_), iftab(iftab_), params_num(params_num_) {};
+            ParamsFixed(const unsigned short iftab_, const int params_num_, const std::wstring& name_):
+                name(name_), iftab(iftab_), params_num(params_num_) {}
 			std::wstring name;
 			unsigned short iftab;
-			long params_num;
+            int params_num;
 		};
 		struct sort_by_name {};
 		struct sort_by_iftab {};

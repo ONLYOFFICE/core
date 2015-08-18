@@ -12,7 +12,7 @@ FixedPoint::FixedPoint()
 }
 
 
-FixedPoint::FixedPoint(const long raw_data)
+FixedPoint::FixedPoint(const int raw_data)
 {
 	Fractional = static_cast<unsigned char>(raw_data & 0xFFFF);
 	Integral = static_cast<unsigned char>(raw_data >> 16);

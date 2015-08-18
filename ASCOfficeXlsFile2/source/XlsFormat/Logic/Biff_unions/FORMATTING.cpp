@@ -101,7 +101,7 @@ int FORMATTING::serialize1(std::wostream & stream)
 			CP_XML_NODE(L"numFmts")
 			{
 				CP_XML_ATTR(L"count", m_Formats.size());
-				for (long i = 0 ; i < m_Formats.size(); i++)
+                for (int i = 0 ; i < m_Formats.size(); i++)
 				{
 					m_Formats[i]->serialize(CP_XML_STREAM());
 				}
@@ -112,7 +112,7 @@ int FORMATTING::serialize1(std::wostream & stream)
 			CP_XML_NODE(L"fonts")
 			{
 				CP_XML_ATTR(L"count", m_Fonts.size());
-				for (long i = 0 ; i < m_Fonts.size(); i++)
+                for (int i = 0 ; i < m_Fonts.size(); i++)
 				{
 					Font * font = dynamic_cast<Font*>(m_Fonts[i].get());
 					std::map<int, FillInfoExt>::iterator it = global_info->fonts_color_ext.find(i);

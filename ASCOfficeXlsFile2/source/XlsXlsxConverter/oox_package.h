@@ -72,7 +72,8 @@ public:
 
 private:
     std::wstring file_name_;
-    std::string content_utf8_;
+    //std::string content_utf8_;
+    std::wstring content;
 
 };
 

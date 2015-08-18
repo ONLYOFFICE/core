@@ -92,7 +92,7 @@ public:
 		int				opacity;
 		std::wstring	type;
 		std::wstring	style;
-		long			width;
+        int             width;
 	}line;
 
 };
@@ -115,7 +115,7 @@ public:
 		void start_image();
 		void start_shape(int type);
 
-		void set_id			(long id);
+        void set_id			(int id);
 		void set_FlipH		();
 		void set_FlipV		();
 		void set_shape_id	(int id);
@@ -123,18 +123,18 @@ public:
         void set_name		(const std::wstring & str);
         void set_description(const std::wstring & str);
 		
-		void set_crop_top	(long val);
-		void set_crop_bottom(long val);
-		void set_crop_left	(long val);
-		void set_crop_right	(long val);
+        void set_crop_top	(int val);
+        void set_crop_bottom(int val);
+        void set_crop_left	(int val);
+        void set_crop_right	(int val);
 
-		void set_rotation	(long val);
+        void set_rotation	(int val);
 
         void set_line_color	(const std::wstring & color);
 		void set_line_color	(int index, int type);
-		void set_line_type	(long val);
-		void set_line_style	(long val);
-		void set_line_width (long val);
+        void set_line_type	(int val);
+        void set_line_style	(int val);
+        void set_line_width (int val);
 
         void set_image		(const std::wstring & str);
         void set_anchor		(const std::wstring & str);

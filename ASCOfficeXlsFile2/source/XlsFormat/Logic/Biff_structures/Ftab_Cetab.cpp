@@ -805,7 +805,7 @@ const std::wstring Ftab_Cetab::ValuesDetermination::getName(const unsigned short
 
 
 // static
-const long Ftab_Cetab::ValuesDetermination::getParamsNum(const unsigned short iftab)
+const int Ftab_Cetab::ValuesDetermination::getParamsNum(const unsigned short iftab)
 {
 	const ParamsFixedSet::index<sort_by_iftab>::type& iftab_index = getInst().params_fixed.get<sort_by_iftab>();
 	const ParamsFixedSet::index<sort_by_iftab>::type::iterator found = iftab_index.find(iftab);
@@ -831,7 +831,7 @@ const unsigned short Ftab_Cetab::ValuesDetermination::getIndex(const std::wstrin
 
 
 // static
-const long Ftab_Cetab::ValuesDetermination::getParamsNum(const std::wstring& func_name)
+const int Ftab_Cetab::ValuesDetermination::getParamsNum(const std::wstring& func_name)
 {
 	const ParamsFixedSet::index<sort_by_name>::type& name_index = getInst().params_fixed.get<sort_by_name>();
 	const ParamsFixedSet::index<sort_by_name>::type::iterator found = name_index.find(func_name);
@@ -849,7 +849,7 @@ const std::wstring Ftab_Cetab::getFuncName() const
 }
 
 
-const long Ftab_Cetab::getParamsNum() const
+const int Ftab_Cetab::getParamsNum() const
 {
 	return ValuesDetermination::getParamsNum(func_index);
 }

@@ -225,7 +225,7 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
 
 	convert((XLS::GlobalsSubstream*)woorkbook->m_GlobalsSubstream.get());
 
-	for (long i=0 ; i < woorkbook->m_WorksheetSubstream.size(); i++)
+    for (int i=0 ; i < woorkbook->m_WorksheetSubstream.size(); i++)
 	{
 		xlsx_context->start_table(xls_global_info->sheets_names[i]);
 		convert((XLS::WorksheetSubstream*)woorkbook->m_WorksheetSubstream[i].get());
@@ -271,14 +271,14 @@ void XlsConverter::convert(XLS::WorksheetSubstream* sheet)
 		{
 			CP_XML_NODE(L"mergeCells")
 			{  		
-				for (long i = 0 ; i < sheet->m_MergeCells.size(); i++)
+                for (int i = 0 ; i < sheet->m_MergeCells.size(); i++)
 				{
 					sheet->m_MergeCells[i]->serialize(CP_XML_STREAM());
 				}
 			}
 		}
 	}
-	for (long i = 0 ; i < sheet->m_HLINK.size(); i++)
+    for (int i = 0 ; i < sheet->m_HLINK.size(); i++)
 	{
 		convert((XLS::HLINK*)sheet->m_HLINK[i].get());
 	}
@@ -300,12 +300,12 @@ void XlsConverter::convert(XLS::GlobalsSubstream* global)
 
 	convert((XLS::SHAREDSTRINGS*)global->m_SHAREDSTRINGS.get());
 
-	for (long i = 0 ; i < global->m_LBL.size(); i++)
+    for (int i = 0 ; i < global->m_LBL.size(); i++)
 	{
 		convert((XLS::LBL*)global->m_LBL[i].get());
 	}
 
-	for (long i = 0 ; i < global->m_MSODRAWINGGROUP.size(); i++)
+    for (int i = 0 ; i < global->m_MSODRAWINGGROUP.size(); i++)
 	{
 		convert((XLS::MSODRAWINGGROUP*)global->m_MSODRAWINGGROUP[i].get());
 	}
@@ -410,7 +410,7 @@ void XlsConverter::convert(ODRAW::OfficeArtBStoreContainer* art_bstore)
 	
 	FileSystem::Directory::CreateDirectory((xl_path + FILE_SEPARATOR_STR + L"media").c_str());
 
-	for (long i =0 ; i < art_bstore->rgfb.size(); i++)
+    for (int i =0 ; i < art_bstore->rgfb.size(); i++)
 	{
 		int bin_id = i + 1;
 		if (art_bstore->rgfb[i]->data_size > 0 && art_bstore->rgfb[i]->pict_data)
@@ -489,7 +489,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		
 	ODRAW::OfficeArtSpgrContainer	*spgr = dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpgrContainer.get());
 
-	for (long i = 0 ; i < objects->m_OBJs.size(); i++)
+    for (int i = 0 ; i < objects->m_OBJs.size(); i++)
 	{
 		int ind = objects->m_OBJs[i].second;
 		XLS::OBJ* OBJ = dynamic_cast<XLS::OBJ*>(objects->m_OBJs[i].first.get());
@@ -516,7 +516,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		}
 	}
 
-	for (long i = 0; i <objects->m_TEXTOBJECTs.size(); i++)
+    for (int i = 0; i <objects->m_TEXTOBJECTs.size(); i++)
 	{
 		int ind = objects->m_OBJs[i].second;
 		XLS::TEXTOBJECT* textObject = dynamic_cast<XLS::TEXTOBJECT*>(objects->m_TEXTOBJECTs[i].first.get());
@@ -544,7 +544,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		}
 	}
 
-	for (long i = 0 ; i < objects->m_CHARTs.size(); i++)
+    for (int i = 0 ; i < objects->m_CHARTs.size(); i++)
 	{
 		int ind = objects->m_OBJs[i].second;
 		//xlsx_context->get_chart_context().start_drawing();

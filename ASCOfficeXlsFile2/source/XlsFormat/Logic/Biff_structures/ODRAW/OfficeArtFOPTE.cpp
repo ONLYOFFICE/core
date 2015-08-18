@@ -3,6 +3,7 @@
 #include <Binary/CFRecord.h>
 #include "OfficeArtBlip.h"
 #include <bitset>
+#include <utils.h>
 
 namespace ODRAW
 {
@@ -388,8 +389,12 @@ void fillBlip::ReadComplexData(XLS::CFRecord& record)
 }
 
 void anyString::ReadComplexData(XLS::CFRecord& record)
-{
-	string_ = std::wstring(record.getCurData<wchar_t>(), op);
+{	
+#if defined(_WIN32) || defined(_WIN64)
+        string_ = std::wstring(record.getCurData<wchar_t>(), op);
+#else
+        string_ = convertUtf16ToWString(record.getCurData<UTF16>(), op);
+#endif
 	record.skipNunBytes(op);
 }
 

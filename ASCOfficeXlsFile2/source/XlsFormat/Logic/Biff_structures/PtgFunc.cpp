@@ -44,14 +44,14 @@ void PtgFunc::loadFields(CFRecord& record)
 
 void PtgFunc::assemble(AssemblerStack& ptg_stack, PtgQueue& extra_data)
 {
-	long num_params = iftab.getParamsNum();
+    int num_params = iftab.getParamsNum();
 	std::wstring arguments;
 	
 	if(num_params && ptg_stack.size() > 0)
 	{
 		arguments += ptg_stack.top();
 		ptg_stack.pop();
-		for(long i = 0; i < num_params - 1 && ptg_stack.size() > 0; ++i)
+        for(int i = 0; i < num_params - 1 && ptg_stack.size() > 0; ++i)
 		{
 			arguments = ptg_stack.top() + L',' + arguments;
 			ptg_stack.pop();
@@ -78,7 +78,7 @@ PtgPtr PtgFunc::create(const std::wstring& word, const unsigned char data_type)
 }
 
 
-const long PtgFunc::getParametersNum() const
+const int PtgFunc::getParametersNum() const
 {
 	return iftab.getParamsNum();
 }

@@ -70,7 +70,7 @@ const std::wstring row2str(const int row)
 }
 
 
-const std::wstring loc2str(const long row, const bool row_rel, const long column, const bool col_rel)
+const std::wstring loc2str(const int row, const bool row_rel, const int column, const bool col_rel)
 {
 	return (col_rel ? L"" : L"$") + column2str(column) + (row_rel ? L"" : L"$") + row2str(row);
 }
@@ -131,7 +131,7 @@ const bool str2rel(std::wstring::const_iterator& str_begin, std::wstring::const_
 	return true;
 }
 
-void str2loc(std::wstring::const_iterator& str_begin, std::wstring::const_iterator& str_end, long& row, bool& row_rel, long& column, bool& col_rel)
+void str2loc(std::wstring::const_iterator& str_begin, std::wstring::const_iterator& str_end, int& row, bool& row_rel, int& column, bool& col_rel)
 {
     col_rel     = str2rel       (str_begin, str_end);
     column      = str2column    (str_begin, str_end);
@@ -139,7 +139,7 @@ void str2loc(std::wstring::const_iterator& str_begin, std::wstring::const_iterat
     row         = str2row       (str_begin, str_end);
 }
 
-void str2loc(const std::wstring& str, long& row, bool& row_rel, long& column, bool& col_rel)
+void str2loc(const std::wstring& str, int& row, bool& row_rel, int& column, bool& col_rel)
 {
    std::wstring::const_iterator str_begin  = str.begin();
    std::wstring::const_iterator str_end    = str.end();
@@ -279,14 +279,19 @@ const std::wstring int2hex_wstr(const int val, const size_t size_of)
 {
     if(size_of > 4) return L"";
 
-    static wchar_t num_buf[10]={};
-#if defined(_WIN64) || defined(_WIN64)
-    swprintf_s(num_buf, 9, (L"%0" + STR::int2wstr(size_of << 1, 10) + L"X").c_str(), val);
-#else
-    //todooooo
 
+#if defined(_WIN64) || defined(_WIN64)
+    static wchar_t num_buf[10]={};
+    std::wstring wstr =  STR::int2wstr(size_of << 1, 10);
+    swprintf_s(num_buf, 9, (L"%0" + wstr + L"X").c_str(), val);
+    return std::wstring(num_buf);
+#else
+    char num_buf[10]={};
+    std::string str =  STR::int2str(size_of << 1, 10);
+    snprintf(num_buf, 9, ("%0" + str + "X").c_str(), val);
+    std::string res(num_buf);
+    return std::wstring(res.begin(), res.end());
 #endif
-	return std::wstring(num_buf);
 }
 
 
@@ -421,7 +426,7 @@ const size_t hex_str2int(const std::wstring::const_iterator& it_begin, const std
 	return numeric;
 }
 
-const std::string toStdString(const std::wstring& wide_string, const unsigned int code_page)
+const std::string toStdString(std::wstring wide_string, const unsigned int code_page)
 {
 #if defined (_WIN32) || defined (_WIN64)
     const int nSize = WideCharToMultiByte(code_page, 0, wide_string.c_str(), wide_string.length(), NULL, 0, NULL, NULL);
@@ -469,7 +474,7 @@ const std::string toStdString(const std::wstring& wide_string, const unsigned in
 }
 
 
-const std::wstring toStdWString(const std::string& ansi_string, const unsigned int code_page)
+const std::wstring toStdWString(std::string ansi_string, const unsigned int code_page)
 {
 #if defined (_WIN32) || defined (_WIN64)
     const int nSize = MultiByteToWideChar(code_page, 0, ansi_string.c_str(), ansi_string.size(), NULL, 0);
@@ -490,10 +495,7 @@ const std::wstring toStdWString(const std::string& ansi_string, const unsigned i
     size_t insize = ansi_string.length();
     std::wstring w_out;
 
-    w_out.reserve(insize);
-
     char *inptr = (char*)ansi_string.c_str();
-    char* outptr = (char*)w_out.c_str();
 
     if (code_page >= 0)
     {
@@ -502,14 +504,21 @@ const std::wstring toStdWString(const std::string& ansi_string, const unsigned i
         iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());
         if (ic != (iconv_t) -1)
         {
-            size_t nconv = 0, avail = (insize) * sizeof(wchar_t);
+            size_t nconv = 0, avail = (insize + 1) * sizeof(wchar_t);
+
+            char* out_str   = new char[avail];
+            char* outptr    = out_str;
 
             nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
             if (nconv == 0)
             {
+                insize = ansi_string.length();
+                ((wchar_t*)out_str)[insize] = 0;
+                w_out = std::wstring((wchar_t*)out_str, insize);
                 ansi = false;
             }
             iconv_close(ic);
+            delete []out_str;
         }
     }
     if (ansi)

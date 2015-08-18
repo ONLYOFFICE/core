@@ -27,10 +27,10 @@ public:
 // 	bool fMove; // This attribute is ignored for chart sheets
 	bool fSize;
 
-	long lx1;
-	long ly1;
-	long lx2;
-	long ly2;
+    int lx1;
+    int ly1;
+    int lx2;
+    int ly2;
 };
 
 typedef boost::shared_ptr<OfficeArtClientAnchorChart> OfficeArtClientAnchorChartPtr;

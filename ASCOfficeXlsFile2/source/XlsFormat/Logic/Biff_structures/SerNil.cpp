@@ -5,6 +5,10 @@
 namespace XLS
 {
 
+SerNil::SerNil()
+{
+    fixed_type = typeSerNil;
+}
 
 BiffStructurePtr SerNil::clone()
 {

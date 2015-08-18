@@ -44,7 +44,11 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
 DEFINES +=  UNICODE \
         _UNICODE 
 
+CONFIG(debug, debug|release){
 
+message(Debug)
+DEFINES += _DEBUG
+}
 
 #################### WINDOWS #####################
 win32 {

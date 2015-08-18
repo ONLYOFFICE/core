@@ -94,10 +94,10 @@ const std::wstring CellRangeRef::toString(const bool useShortForm) const
 {
 	if(to_string_cache.empty())
 	{
-		long rowLast_norm = AUX::normalizeRow(rowLast);
-		long rowFirst_norm = AUX::normalizeRow(rowFirst);
-		long columnFirst_norm = AUX::normalizeColumn(columnFirst);
-		long columnLast_norm = AUX::normalizeColumn(columnLast);
+        int rowLast_norm = AUX::normalizeRow(rowLast);
+        int rowFirst_norm = AUX::normalizeRow(rowFirst);
+        int columnFirst_norm = AUX::normalizeColumn(columnFirst);
+        int columnLast_norm = AUX::normalizeColumn(columnLast);
 		if(0 == rowFirst_norm && 65535 == rowLast_norm ) // whole column or range of columns
 		{
 			if(useShortForm)

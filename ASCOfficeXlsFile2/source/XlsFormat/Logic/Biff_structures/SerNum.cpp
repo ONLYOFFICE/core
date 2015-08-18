@@ -8,6 +8,7 @@ namespace XLS
 
 SerNum::SerNum()
 {
+    fixed_type = typeSerNum;
 }
 
 

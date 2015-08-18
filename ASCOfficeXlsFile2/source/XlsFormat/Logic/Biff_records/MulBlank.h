@@ -39,7 +39,7 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 	
-	const long GetRow() const;
+    const int GetRow() const;
 
 	int serialize(std::wostream & stream);
 

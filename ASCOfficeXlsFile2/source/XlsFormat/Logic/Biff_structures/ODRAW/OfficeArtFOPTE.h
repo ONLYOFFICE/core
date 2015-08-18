@@ -79,7 +79,7 @@ public:
 	unsigned short opid;
 	bool fBid;
 	bool fComplex;
-	long op;
+    _INT32 op;
 };
 
 
@@ -515,8 +515,8 @@ class MSOPOINT : public XLS::BiffStructure
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtRecord;
 
-	long x;
-	long y;
+    int x;
+    int y;
 };
 
 class MSOPATHINFO : public XLS::BiffStructure 

@@ -23,7 +23,7 @@ public:
 
 	static const ElementType	type = typeCELL;
 
-	long RowNumber;
+    int RowNumber;
 
 	std::vector<CellRef>& shared_formulas_locations_ref_;
 };

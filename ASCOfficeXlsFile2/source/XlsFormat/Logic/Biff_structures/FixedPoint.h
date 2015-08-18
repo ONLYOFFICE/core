@@ -11,7 +11,7 @@ class FixedPoint : public XLS::BiffAttribute
 {
 public:
 	FixedPoint();
-	FixedPoint(const long raw_data);
+    FixedPoint(const int raw_data);
 	XLS::BiffStructurePtr clone();
 
 	//virtual void toXML(BiffStructurePtr & parent, const std::wstring & attrib_name);

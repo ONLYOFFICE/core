@@ -17,8 +17,6 @@ public:
 	virtual void store(CFRecord& record);
 	virtual const std::wstring toString() const;
 
-private:
-    const static SerType fixed_type = typeSerStr;
     XLUnicodeString string_;
 };
 

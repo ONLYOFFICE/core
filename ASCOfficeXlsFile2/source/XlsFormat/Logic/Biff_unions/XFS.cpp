@@ -115,7 +115,7 @@ const bool XFS::loadContent(BinProcessor& proc)
 		}*/		
 	}
 	
-	for (long i = 0 ; i < m_cell_xfs.size(); i++)
+    for (int i = 0 ; i < m_cell_xfs.size(); i++)
 	{
 		XF		*xfs = dynamic_cast<XF*>(m_cell_xfs[i].get());
 
@@ -151,7 +151,7 @@ int XFS::serialize(std::wostream & stream)
 		CP_XML_NODE(L"cellStyleXfs")
 		{
 			CP_XML_ATTR(L"count", m_cell_styles.size());
-			for (long i = 0; i < m_cell_styles.size(); i++)
+            for (int i = 0; i < m_cell_styles.size(); i++)
 			{
 				m_cell_styles[i]->serialize(CP_XML_STREAM());
 			}
@@ -159,7 +159,7 @@ int XFS::serialize(std::wostream & stream)
 		CP_XML_NODE(L"cellXfs")
 		{
 			CP_XML_ATTR(L"count", m_cell_xfs.size());
-			for (long i = 0; i < m_cell_xfs.size(); i++)
+            for (int i = 0; i < m_cell_xfs.size(); i++)
 			{
 				m_cell_xfs[i]->serialize(CP_XML_STREAM());
 			}

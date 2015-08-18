@@ -19,7 +19,7 @@ public:
 	virtual void load(CFRecord& record);
 	virtual void store(CFRecord& record);
 
-	long twpHeight;
+    int twpHeight;
 	Ts ts;
 	short bls;
 	short sss;

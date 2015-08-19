@@ -2,6 +2,7 @@
 #define DOCTRENDERER_H
 
 #include <string>
+#include <vector>
 #include "../common/Types.h"
 #include "../common/Array.h"
 #include "../common/base_export.h"
@@ -54,34 +55,19 @@ namespace NSDoctRenderer
 
 namespace NSDoctRenderer
 {
+    class CDoctRenderer_Private;
     class Q_DECL_EXPORT CDoctrenderer
     {
-    private:
-        CExecuteParams m_oParams;
-
-        std::wstring m_strConfigDir;
-        std::wstring m_strConfigPath;
-        CArray<std::wstring> m_arrFiles;
-
-        std::wstring m_strDoctSDK;
-        std::wstring m_strPpttSDK;
-        std::wstring m_strXlstSDK;
-
-        std::wstring m_strEditorType;
-        std::wstring m_strFilePath;
-
-        bool m_bIsInitTypedArrays;
-
     public:
         CDoctrenderer();
         ~CDoctrenderer();
 
     public:
         bool Execute(const std::wstring& strXml, std::wstring& strError);
+        std::vector<std::wstring> GetImagesInChanges();
 
     private:
-        bool ExecuteScript(const std::string& strScript, std::wstring& strError, std::wstring& sReturnParams);
-        std::string ReadScriptFile(const std::wstring& strFile);
+        CDoctRenderer_Private* m_pInternal;
     };
 }
 

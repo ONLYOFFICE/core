@@ -51,6 +51,8 @@ public:
     int m_nSaveBinaryLen;
     std::string m_sHeader;
 
+    std::map<std::wstring, bool> m_mapImagesInChanges;
+
 public:
     CMemoryStream* m_pStream;
 
@@ -436,6 +438,23 @@ void _ConsoleLog(const v8::FunctionCallbackInfo<v8::Value>& args)
     pNative->ConsoleLog(to_cstringA(args[0]));
 }
 
+void _AddImageInChanges(const v8::FunctionCallbackInfo<v8::Value>& args)
+{
+    args.GetReturnValue().Set(v8::Undefined(v8::Isolate::GetCurrent()));
+    if (args.Length() < 1)
+        return;
+
+    CNativeControl* pNative = unwrap_nativeobject(args.This());
+
+    std::wstring sImage = to_cstring(args[0]);
+    if (sImage.empty())
+        return;
+
+    std::map<std::wstring, bool>::const_iterator iter = pNative->m_mapImagesInChanges.find(sImage);
+    if (iter == pNative->m_mapImagesInChanges.end())
+        pNative->m_mapImagesInChanges.insert(std::pair<std::wstring, bool>(sImage, true));
+}
+
 v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
 {
     //v8::HandleScope handle_scope(isolate);
@@ -464,6 +483,8 @@ v8::Handle<v8::ObjectTemplate> CreateNativeControlTemplate(v8::Isolate* isolate)
     result->Set(v8::String::NewFromUtf8(current, "Save_AllocNative"), v8::FunctionTemplate::New(current, _Save_AllocNative));
     result->Set(v8::String::NewFromUtf8(current, "Save_ReAllocNative"), v8::FunctionTemplate::New(current, _Save_ReAllocNative));
     result->Set(v8::String::NewFromUtf8(current, "Save_End"), v8::FunctionTemplate::New(current, _Save_End));
+
+    result->Set(v8::String::NewFromUtf8(current, "AddImageInChanges"), v8::FunctionTemplate::New(current, _AddImageInChanges));
 
     result->Set(v8::String::NewFromUtf8(current, "ConsoleLog"), v8::FunctionTemplate::New(current, _ConsoleLog));
 

@@ -637,9 +637,13 @@ namespace NSDoctRenderer
                         }
 
                         // images in changes
-                        for (std::map<std::wstring, bool>::const_iterator iter = pNative->m_mapImagesInChanges.begin(); iter != pNative->m_mapImagesInChanges.end(); iter++)
+                        if (NULL != pNative)
                         {
-                            m_arImagesInChanges.push_back(iter->first);
+                            for (std::map<std::wstring, bool>::const_iterator iter = pNative->m_mapImagesInChanges.begin();
+                                 iter != pNative->m_mapImagesInChanges.end(); iter++)
+                            {
+                                m_arImagesInChanges.push_back(iter->first);
+                            }
                         }
                     }
                 }

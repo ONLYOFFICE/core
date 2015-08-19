@@ -77,6 +77,19 @@ int XLUnicodeRichExtendedString::serialize (std::wostream & _stream)
 				}
 			}
 		}
+		if (start_string < str_.size())
+		{
+			CP_XML_NODE(L"r")
+			{
+				serialize_rPr(CP_XML_STREAM(), Fmt );
+
+				CP_XML_NODE(L"t")
+				{	
+					std::wstring str_part = str_.substr( start_string, str_.size() - start_string );
+					CP_XML_STREAM() << xml::utils::replace_text_to_xml(str_part);
+				}
+			}
+		}
 	}
 	
 	return 0;

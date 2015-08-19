@@ -37,7 +37,7 @@ public:
 	//
 	table_state_ptr & state();
 
-	std::wstring	add_hyperlink(std::wstring const & ref, std::wstring const & target, std::wstring const & display);
+	std::wstring	add_hyperlink(std::wstring const & ref, std::wstring const & target, std::wstring const & display, bool bExternal);
 	void			dump_rels_hyperlinks(rels & Rels);
 	void			serialize_hyperlinks(std::wostream & _Wostream);
 

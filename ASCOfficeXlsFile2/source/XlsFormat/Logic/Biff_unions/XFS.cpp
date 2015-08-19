@@ -119,7 +119,7 @@ const bool XFS::loadContent(BinProcessor& proc)
 	{
 		XF		*xfs = dynamic_cast<XF*>(m_cell_xfs[i].get());
 
-		if (m_xf_ext.size() > cellStyleXfs_count)
+		if (m_xf_ext.size() > cellStyleXfs_count + i)
 		{
 			XFExt*ext = dynamic_cast<XFExt*>(m_xf_ext[i + cellStyleXfs_count].get());
 			if (ext)

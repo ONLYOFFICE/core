@@ -18,16 +18,6 @@ Run::Run()
 Run::~Run()
 {
 }
-//
-//void Run::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//	formatRun.toXML(xml_tag);
-//}
-//
-//void Run::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{	
-//}
-
 void Run::store(CFRecord& record)
 {	
 }

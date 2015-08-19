@@ -83,9 +83,9 @@ xlsx_drawing_context & xlsx_table_context::get_drawing_context()
 //    return state().start_hyperlink();
 //}
 //
- std::wstring xlsx_table_context::add_hyperlink(std::wstring const & ref, std::wstring const & target, std::wstring const & display)
+ std::wstring xlsx_table_context::add_hyperlink(std::wstring const & ref, std::wstring const & target, std::wstring const & display, bool bExternal)
 {
-    return state()->hyperlinks_.add( ref, target, display);
+    return state()->hyperlinks_.add( ref, target, display, bExternal);
 }
  void xlsx_table_context::dump_rels_hyperlinks(rels & Rels)
 {

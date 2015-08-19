@@ -33,8 +33,13 @@ void ObjectParsedFormula::load(CFRecord& record)
 	record >> cce;
 	cce = GETBITS(cce, 0, 14);
 
-	record.skipNunBytes(4); // unused
-	rgce.load(record, cce);
+	if (record.getRdPtr() + 4 < record.getDataSize()) //Рабочая точка.xls - cce == 0
+		record.skipNunBytes(4); // unused
+	
+	if (cce > 0) 
+	{
+		rgce.load(record, cce);
+	}
 }
 
 

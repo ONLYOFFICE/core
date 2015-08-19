@@ -26,6 +26,7 @@ public:
 
 	int serialize				(std::wostream & stream);
 	int serialize_properties	(std::wostream & stream, bool rPr = false);
+	int serialize_rPr			(std::wostream & stream);
 
 	void set_color_ext			(FillInfoExt & color_ext);
 

@@ -188,13 +188,16 @@ const std::string int2str(const int val, const int radix)
 
 const std::wstring int2wstr(const int val, const int radix)
 {
-    static wchar_t num_buf[10]={};
 #if defined(_WIN64) || defined(_WIN64)
+    static wchar_t num_buf[10]={};
     _itow_s(val, num_buf, 9, radix);
+    return std::wstring(num_buf);
 #else
-    wprintf( num_buf, "%d", val);
+    static char num_buf[10]={};
+    sprintf( num_buf, "%d", val);
+    std::string a_str(num_buf);
+    return std::wstring(a_str.begin(), a_str.end());
 #endif
-	return num_buf;
 }
 
 

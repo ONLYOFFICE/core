@@ -532,21 +532,25 @@ void xlsx_drawing_context::set_crop_top	(int val)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().image_crop[1] = val * 1.5;
+    drawing_state.back().image_crop_enabled = true;
 }
 void xlsx_drawing_context::set_crop_bottom(int val)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().image_crop[3] = val* 1.5;
+    drawing_state.back().image_crop_enabled = true;
 }
 void xlsx_drawing_context::set_crop_left (int val)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().image_crop[0]= val* 1.5;
+    drawing_state.back().image_crop_enabled = true;
 }
 void xlsx_drawing_context::set_crop_right (int val)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().image_crop[2] = val* 1.5;
+    drawing_state.back().image_crop_enabled = true;
 }
 void xlsx_drawing_context::set_rotation (int val)
 {

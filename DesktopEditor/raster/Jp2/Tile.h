@@ -374,8 +374,8 @@ namespace Jpeg2000
 								CodeBlock *pCodeBlock = &pPrecinct->pCodeBlocks[nCodeBlockIndex];
 
 								// Границы CodeBlock (глобальные)
-                                pCodeBlock->nX0 = (std::min)(nCodeBlockStartX, pPrecinct->nX0);
-                                pCodeBlock->nY0 = (std::min)(nCodeBlockStartY, pPrecinct->nY0);
+                                pCodeBlock->nX0 = (std::max)(nCodeBlockStartX, pPrecinct->nX0);
+                                pCodeBlock->nY0 = (std::max)(nCodeBlockStartY, pPrecinct->nY0);
                                 pCodeBlock->nX1 = (std::min)(nCodeBlockEndX, pPrecinct->nX1);
                                 pCodeBlock->nY1 = (std::min)(nCodeBlockEndY, pPrecinct->nY1);
 							}
@@ -886,8 +886,8 @@ namespace Jpeg2000
 
 								// Границы CodeBlock (глобальные)
 								CodeBlock *pCodeBlock = &pPrecinct->pCodeBlocks[nCodeBlockIndex];
-                                pCodeBlock->nX0 = (std::min)(nCodeBlockStartX, pPrecinct->nX0);
-                                pCodeBlock->nY0 = (std::min)(nCodeBlockStartY, pPrecinct->nY0);
+                                pCodeBlock->nX0 = (std::max)(nCodeBlockStartX, pPrecinct->nX0);
+                                pCodeBlock->nY0 = (std::max)(nCodeBlockStartY, pPrecinct->nY0);
                                 pCodeBlock->nX1 = (std::min)(nCodeBlockEndX, pPrecinct->nX1);
                                 pCodeBlock->nY1 = (std::min)(nCodeBlockEndY, pPrecinct->nY1);
 							}

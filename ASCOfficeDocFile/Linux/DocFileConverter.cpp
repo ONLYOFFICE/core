@@ -3,7 +3,7 @@
 #include "../Win32/ASCOfficeCriticalSection.h"
 
 #include <iostream>
-#include "../Win32/version.h"
+#include "../version.h"
 
 static std::wstring utf8_to_unicode(const char *src)
 {

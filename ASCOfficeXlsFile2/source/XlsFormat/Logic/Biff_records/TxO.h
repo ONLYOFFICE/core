@@ -32,6 +32,11 @@ public:
 
 	static const ElementType	type = typeTxO;
 
+	int serialize		(std::wostream & _stream);	
+	int serialize_rPr	(std::wostream & _stream, int iFmt);
+
+	GlobalWorkbookInfoPtr	pGlobalWorkbookInfoPtr;
+
 	BIFF_BYTE				hAlignment;
 	BIFF_BYTE				vAlignment;
 	BIFF_BYTE				fLockText;

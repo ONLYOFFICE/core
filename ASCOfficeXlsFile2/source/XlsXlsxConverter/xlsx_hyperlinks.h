@@ -12,7 +12,7 @@ public:
     xlsx_hyperlinks();
     ~xlsx_hyperlinks();
 
-    std::wstring add( std::wstring const & ref, std::wstring const & target, std::wstring const & display);
+    std::wstring add( std::wstring const & ref, std::wstring const & target, std::wstring const & display, bool bExternal);
 
 	void dump_rels(rels & Rels) const;
 	void serialize(std::wostream & _stream) const;

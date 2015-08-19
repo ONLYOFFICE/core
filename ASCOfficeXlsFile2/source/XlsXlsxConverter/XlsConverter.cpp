@@ -7,6 +7,8 @@
 #include "../XlsFormat/Logic/WorkbookStreamObject.h"
 #include "../XlsFormat/Logic/WorksheetSubstream.h"
 #include "../XlsFormat/Logic/GlobalsSubstream.h"
+#include "../XlsFormat/Logic/ChartSheetSubstream.h"
+
 #include "../XlsFormat/Logic/BinProcessor.h"
 #include "../XlsFormat/Logic/SummaryInformationStream/SummaryInformation.h"
 
@@ -21,6 +23,7 @@
 #include "../XlsFormat/Logic/Biff_unions/MSODRAWINGGROUP.h"
 #include "../XlsFormat/Logic/Biff_unions/OBJ.h"
 #include "../XlsFormat/Logic/Biff_unions/TEXTOBJECT.h"
+#include "../XlsFormat/Logic/Biff_unions/CHART.h"
 
 #include <Logic/Biff_records/HLink.h>
 #include <Logic/Biff_records/MsoDrawingGroup.h>
@@ -370,6 +373,8 @@ void XlsConverter::convert(XLS::FORMATTING* formating)
 
 std::wstring XlsConverter::GetTargetMoniker(XLS::BiffStructure *moniker)
 {
+	if (moniker == NULL) return L"";
+
     if (moniker->getClassName() == "URLMoniker")
 	{
 		OSHARED::URLMoniker* urlMoniker = dynamic_cast<OSHARED::URLMoniker* >(moniker);
@@ -462,13 +467,25 @@ void XlsConverter::convert(XLS::HLINK * HLINK_)
 {
 	XLS::HLink * hLink = dynamic_cast<XLS::HLink*>(HLINK_->m_HLink.get());
 	
-	std::wstring target = GetTargetMoniker(hLink->hyperlink.oleMoniker.data.get());
+	std::wstring target;
+	
+	bool bExternal = false;
+	
+	if (hLink->hyperlink.hlstmfHasMoniker)
+	{
+		target = GetTargetMoniker(hLink->hyperlink.oleMoniker.data.get());
+		bExternal = true;
+	}
+	else if (hLink->hyperlink.hlstmfHasLocationStr)
+	{
+		target = hLink->hyperlink.location.value();
+	}
 
 	std::wstring display = hLink->hyperlink.displayName;
 
 	if (display.empty())	display = target;
 
-	xlsx_context->get_table_context().add_hyperlink( hLink->ref8.toString(), target, display);
+	xlsx_context->get_table_context().add_hyperlink( hLink->ref8.toString(), target, display, bExternal);
 }
 
 void XlsConverter::convert(XLS::LBL * def_name)
@@ -488,7 +505,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 	if (objects == NULL) return;
 		
 	ODRAW::OfficeArtSpgrContainer	*spgr = dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpgrContainer.get());
-
+/*
     for (int i = 0 ; i < objects->m_OBJs.size(); i++)
 	{
 		int ind = objects->m_OBJs[i].second;
@@ -540,6 +557,11 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		{
 			convert(sp);
 
+			std::wstringstream strm;
+			txO->serialize(strm);
+
+			xlsx_context->get_drawing_context().set_text(strm.str());
+
 			xlsx_context->get_drawing_context().end_drawing();
 		}
 	}
@@ -552,6 +574,86 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 
 		//xlsx_context->get_chart_context().end_drawing();
 	}
+*/
+	bool note = false;
+	int ind = 0;
+	for ( std::list<XLS::BaseObjectPtr>::iterator elem = objects->elements_.begin(); elem != objects->elements_.end(); elem++)
+	{
+		short type_object = 0;
+
+		ODRAW::OfficeArtSpContainer *sp			= NULL;
+		ODRAW::OfficeArtSpContainer *sp_common	= NULL;
+		
+		XLS::OBJ		* OBJ			= dynamic_cast<XLS::OBJ*>		(elem->get());
+		XLS::TEXTOBJECT	* TEXTOBJECT	= dynamic_cast<XLS::TEXTOBJECT*>(elem->get());
+		XLS::CHART		* CHART			= dynamic_cast<XLS::CHART*>		(elem->get());
+
+		XLS::Obj * obj		= NULL;
+		XLS::TxO * text_obj	= NULL; 
+
+		XLS::ChartSheetSubstream * chart = NULL;
+
+		if (OBJ)		obj			= dynamic_cast<XLS::Obj*>(OBJ->m_Obj.get());		
+		if (TEXTOBJECT) text_obj	= dynamic_cast<XLS::TxO *>(TEXTOBJECT->m_TxO.get());
+		if (CHART)		chart		= dynamic_cast<XLS::ChartSheetSubstream *>(CHART->elements_.back().get());
+		
+		if (obj)
+		{ 
+			type_object = obj->cmo.ot;	//тут тип шейпа ВРАНЬЕ !!! пример - 7.SINIF I.DÖNEM III.YAZILI SINAV.xls
+			
+			if (obj->m_OfficeArtSpContainer)
+				sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(obj->m_OfficeArtSpContainer.get());
+		}
+		if (text_obj)
+		{ 
+			type_object = 0x0006;
+			
+			if (text_obj->m_OfficeArtSpContainer)
+				sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(text_obj->m_OfficeArtSpContainer.get());
+		}
+		if (chart)
+		{
+			type_object = 0x0005;
+		}
+//-----------------------------------------------------------------------------
+		if ( (spgr) && (ind+1< spgr->child_records.size()))
+		{
+			sp_common = dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
+		}
+		
+		if (note && text_obj)
+		{
+			//convert_comment(text_obj/*, note_obj*/);
+			note = false;
+			continue;
+		}
+		note = false;
+
+		if (xlsx_context->get_drawing_context().start_drawing(type_object))		
+		{
+			convert(sp);
+			convert(sp_common);
+
+			if (text_obj)
+			{
+				std::wstringstream strm;
+				text_obj->serialize(strm);
+
+				xlsx_context->get_drawing_context().set_text(strm.str());
+			}
+
+			xlsx_context->get_drawing_context().end_drawing();
+		}
+		else
+		{
+			if (type_object == 0x19)
+			{
+				note = true;
+			}
+		}
+		if (sp == NULL)  ind++;
+	}
+
 }
 
 void XlsConverter::convert(ODRAW::OfficeArtSpContainer *sp)

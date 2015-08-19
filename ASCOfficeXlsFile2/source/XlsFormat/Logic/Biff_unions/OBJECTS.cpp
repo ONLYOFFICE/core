@@ -33,9 +33,9 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		bool res = proc.optional<TEXTOBJECT>() ||
-				proc.optional<OBJ>() ||
-				proc.optional<CHART>();
+		bool res =	proc.optional<OBJ>()		||
+					proc.optional<TEXTOBJECT>()	||
+					proc.optional<CHART>()		;
 
 		return res;
 	};
@@ -70,8 +70,10 @@ public:
 		//	return false;
 		//}
         Parenthesis_OBJECTS_2 parenthesis_objects_2;
-        int count = proc.repeated(parenthesis_objects_2, 0, 0);
-		proc.repeated<Continue>(0,0);
+        
+		int count			= proc.repeated(parenthesis_objects_2, 0, 0);
+		int count_continue	= proc.repeated<Continue>(0,0);
+		
 		return res || count>0;
 	}
 
@@ -98,30 +100,17 @@ const bool OBJECTS::loadContentRead(BinReaderProcessor& proc)
 	m_MsoDrawing = boost::shared_ptr<MsoDrawing>(new MsoDrawing(is_inside_chart_sheet_));
 	
     Parenthesis_OBJECTS_1 parenthesis_objects_1(m_MsoDrawing);
-    int count1 = proc.repeated(parenthesis_objects_1, 0, 0);
+    //Parenthesis_OBJECTS_2 parenthesis_objects_2;
 
-    Parenthesis_OBJECTS_2 parenthesis_objects_2;
-    proc.repeated(parenthesis_objects_2, 0, 0);
-	proc.repeated<Continue>(0,0);
+    int count_1 = proc.repeated(parenthesis_objects_1, 0, 0);
 
-	int i = 0 ;
-	for(std::list<BaseObjectPtr>::iterator it = elements_.begin(); it != elements_.end() ; it++)
-	{
-		XLS::ElementType type = (*it)->get_type();
-
-		switch (type)
-		{
-		case XLS::typeOBJ:			m_OBJs.push_back(std::pair<BaseObjectPtr, int>(*it, i));		i++; break;
-		case XLS::typeTEXTOBJECT:	m_TEXTOBJECTs.push_back(std::pair<BaseObjectPtr, int>(*it, i));	i++; break;
-		case XLS::typeCHART:		m_CHARTs.push_back(std::pair<BaseObjectPtr, int>(*it, i));		i++; break;
-		}
-	}
-	elements_.clear();
+    //int count_2 = proc.repeated(parenthesis_objects_2, 0, 0);
+	//int count_3 = proc.repeated<Continue>(0,0);
 
     MsoDrawingSelection mso_drawing_selection;
-    int count2  = proc.optional(mso_drawing_selection);
+    int count_4  = proc.optional(mso_drawing_selection);
 
-	return count1 > 0 || count2 > 0;
+	return count_1 > 0 || count_4 > 0;
 }
 
 

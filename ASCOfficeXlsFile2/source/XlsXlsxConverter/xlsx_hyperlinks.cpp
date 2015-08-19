@@ -36,7 +36,7 @@ public:
 		}
 	}
 
-    std::wstring add(std::wstring const & ref, std::wstring const & target1, std::wstring const & display)
+    std::wstring add(std::wstring const & ref, std::wstring const & target1, std::wstring const & display, bool bExternal)
     {
 		std::wstring target =target1;
 
@@ -51,7 +51,9 @@ public:
 		r.display = display;
 		r.id = std::wstring(L"hId") + boost::lexical_cast<std::wstring>(records_.size()+1);
 		r.location = target;
-		r.type = L"External" ;
+		
+		if (bExternal)	r.type = L"External" ;
+		else			r.type = L"Internal";
 
 		if (r.display.length()<1)
 			r.display =target;
@@ -104,9 +106,9 @@ xlsx_hyperlinks::~xlsx_hyperlinks()
 {
 }
 
-std::wstring xlsx_hyperlinks::add(std::wstring const & ref, std::wstring const & target, std::wstring const & display)
+std::wstring xlsx_hyperlinks::add(std::wstring const & ref, std::wstring const & target, std::wstring const & display, bool bExternal)
 {   
-    return impl_->add(ref, target, display);
+    return impl_->add(ref, target, display, bExternal);
 }
 
 void xlsx_hyperlinks::dump_rels(rels & Rels) const

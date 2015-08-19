@@ -48,7 +48,7 @@ void ObjFmla::load(CFRecord& record)
 
 	size_t data_size = record.getRdPtr() - start_ptr;
 	size_t padding_size = cbFmla - data_size;
-	if(0 != padding_size)
+	if(0 != padding_size && (record.getRdPtr() + padding_size) <= record.getDataSize())
 	{
 		record.skipNunBytes(padding_size);
 	}

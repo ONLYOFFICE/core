@@ -29,9 +29,6 @@ public:
 	MsoDrawingPtr								m_MsoDrawing;
 	MsoDrawingPtr								m_MsoDrawingObjects;
 	
-	std::vector<std::pair<BaseObjectPtr, int>>	m_OBJs;
-	std::vector<std::pair<BaseObjectPtr, int>>	m_TEXTOBJECTs;
-	std::vector<std::pair<BaseObjectPtr, int>>	m_CHARTs;
 };
 
 } // namespace XLS

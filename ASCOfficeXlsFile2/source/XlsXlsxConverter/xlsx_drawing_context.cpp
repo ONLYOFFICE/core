@@ -133,7 +133,7 @@ void xlsx_drawing_context::start_shape(int type)
 	if (0x0006 == type)
 	{
 		drawing_state.back().shape_type = msosptTextBox;
-		drawing_state.back().bTextBox = true;
+		//drawing_state.back().bTextBox = true;
 	}
 	if (0x001E == type)
 	{
@@ -308,6 +308,7 @@ void xlsx_drawing_context::serialize_shape()
 				//serialize_fill(CP_XML_STREAM());
 				serialize_line(CP_XML_STREAM());		
 			}
+			serialize_text(CP_XML_STREAM());
 		}
 	}
 
@@ -387,6 +388,26 @@ void xlsx_drawing_context::serialize_color	(std::wostream & stream, const _color
 		else{CP_XML_NODE(L"a:sysClr")	{	CP_XML_ATTR(L"val",L"windowText");}}
 	}
 }
+
+void xlsx_drawing_context::serialize_text(std::wostream & stream)
+{
+	if (drawing_state.back().text_content.empty()) return;
+
+	CP_XML_WRITER(stream)    
+	{
+		CP_XML_NODE(L"xdr:txBody")
+		{  
+			CP_XML_NODE(L"a:bodyPr");
+			CP_XML_NODE(L"a:lstStyle");		
+			
+			CP_XML_NODE(L"a:p")
+			{
+				CP_XML_STREAM() << drawing_state.back().text_content;
+			}
+		}
+	}
+}
+
 void xlsx_drawing_context::serialize_line(std::wostream & stream)
 {
 	CP_XML_WRITER(stream)    
@@ -620,6 +641,12 @@ void xlsx_drawing_context::set_path (const std::wstring & path)
 {
 	if (drawing_state.size() < 1 )return;
 	drawing_state.back().path = path;
+}
+
+void xlsx_drawing_context::set_text (const std::wstring & text)
+{
+	if (drawing_state.size() < 1 )return;
+	drawing_state.back().text_content = text;
 }
 
 void xlsx_drawing_context::set_path_rect(_rect & rect)

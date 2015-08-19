@@ -55,6 +55,7 @@ public:
 		id = -1;
 		memset(image_crop, 0, 4 * sizeof(int));
 		rotation = 0;
+		image_crop_enabled = false;
 	}
 
 	int						shape_type;
@@ -80,6 +81,8 @@ public:
 
 	std::wstring			path;
 	_rect					path_rect;
+
+	std::wstring			text_content;
 	
 	bool					isInternal;
 	bool					bTextBox;
@@ -143,6 +146,8 @@ public:
 
 		void set_path_rect	(_rect & rect);
 		void set_path		(const std::wstring & path);
+
+		void set_text		(const std::wstring & text);
 		
 //------------------------------------------------------------------------------		
 		void serialize				(std::wostream & stream);
@@ -154,6 +159,7 @@ public:
 		void serialize_bitmap_fill	(std::wostream & stream, std::wstring rId, const std::wstring ns = L"a:");
 		void serialize_none_fill	(std::wostream & stream);
 		void serialize_xfrm			(std::wostream & stream);
+		void serialize_text			(std::wostream & stream);
 
 	void end_drawing();
 private:

@@ -10,6 +10,34 @@ CONFIG += plugin
 
 DEFINES += HUNSPELL_STATIC
 
+win32:contains(QMAKE_TARGET.arch, x86_64):{
+    PLATFORM_BUILD = win64
+    message(windows64)
+}
+win32:!contains(QMAKE_TARGET.arch, x86_64):{
+    PLATFORM_BUILD = win32
+    message(windows64)
+}
+
+CONFIG(debug, debug|release) {
+    DESTINATION_BUILD_OBJ = $$PWD/build/$$PLATFORM_BUILD/Debug/obj
+    DESTINATION_BUILD_MOC = $$PWD/build/$$PLATFORM_BUILD/Debug/moc
+    DESTINATION_BUILD_QMAKE = = $$PWD/build/$$PLATFORM_BUILD/Debug
+    DESTINATION_BUILD = $$PWD/../app/corebuilds/$$PLATFORM_BUILD/debug
+    message(debug)
+} else {
+    DESTINATION_BUILD_OBJ = $$PWD/build/$$PLATFORM_BUILD/Release/obj
+    DESTINATION_BUILD_MOC = $$PWD/build/$$PLATFORM_BUILD/Release/moc
+    DESTINATION_BUILD_QMAKE = = $$PWD/build/$$PLATFORM_BUILD/Release
+    DESTINATION_BUILD = $$PWD/../app/corebuilds/$$PLATFORM_BUILD
+    message(release)
+}
+
+DESTDIR     = $$DESTINATION_BUILD
+OBJECTS_DIR = $$DESTINATION_BUILD_OBJ
+MOC_DIR     = $$DESTINATION_BUILD_MOC
+OUT_PWD     = $$DESTINATION_BUILD_QMAKE
+
 DEFINES += \
     _QT \
     FT2_BUILD_LIBRARY \
@@ -587,22 +615,22 @@ SOURCES += \
     src/cef/windows/cefclient/renderer/performance_test_tests.cc
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../../../Qt_build/graphics/Debug/debug -lgraphics
-    LIBS += -L../../../../hunspell-1.3.3/src/qt/Debug/debug -lhunspell
+    LIBS += -L../../../../SDK/lib/win_64/DEBUG -lgraphics
+    LIBS += -L../../../hunspell-1.3.3/src/qt/Debug/debug -lhunspell
 } else {
-    LIBS += -L../../../../Qt_build/graphics/Release/release -lgraphics
-    LIBS += -L../../../../hunspell-1.3.3/src/qt/Release/release -lhunspell
+    LIBS += -L../../../../SDK/lib/win_64/release -lgraphics
+    LIBS += -L../../../hunspell-1.3.3/src/qt/Release/release -lhunspell
 }
 
 win32:contains(QMAKE_TARGET.arch, x86_64):{
 
 CONFIG(debug, debug|release) {
-    LIBS += -L../../../app/cefbuilds/win64 -llibcef
-    LIBS += -L../../../../../ASCOfficeUtils/ASCOfficeUtilsLib/Win/x64/Debug -lASCOfficeUtilsLib
+    LIBS += -L../../app/cefbuilds/win64 -llibcef
+    LIBS += -L../../../../ASCOfficeUtils/ASCOfficeUtilsLib/Win/x64/Debug -lASCOfficeUtilsLib
     message(debug)
 } else {
-    LIBS += -L../../../app/cefbuilds/win64 -llibcef
-    LIBS += -L../../../../../ASCOfficeUtils/ASCOfficeUtilsLib/Win/x64/Release -lASCOfficeUtilsLib
+    LIBS += -L../../app/cefbuilds/win64 -llibcef
+    LIBS += -L../../../../ASCOfficeUtils/ASCOfficeUtilsLib/Win/x64/Release -lASCOfficeUtilsLib
     message(release)
 }
 

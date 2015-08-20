@@ -35,21 +35,6 @@ XLS::BiffStructurePtr HyperlinkMoniker::clone()
 	return XLS::BiffStructurePtr(new HyperlinkMoniker(*this));
 }
 
-
-//void HyperlinkMoniker::toXML(BiffStructurePtr & parent)
-//{
-//	data->toXML(parent);
-//}
-
-
-//const bool HyperlinkMoniker::fromXML(BiffStructurePtr & parent)
-//{
-//	data.reset(new URLMoniker);
-//	data->fromXML(parent, 1, true);
-//	return true;
-//}
-
-
 void HyperlinkMoniker::store(XLS::CFRecord& record)
 {
 	_GUID_ clsid = URLMoniker_CLSID;
@@ -60,9 +45,8 @@ void HyperlinkMoniker::store(XLS::CFRecord& record)
 
 void HyperlinkMoniker::load(XLS::CFRecord& record)
 {
-	_GUID_ clsid;
+    _GUID_ clsid={};
 	record >> clsid;
-	monikerClsid = STR::guid2bstr(clsid);
 
 	if(URLMoniker_CLSID == clsid)
 	{

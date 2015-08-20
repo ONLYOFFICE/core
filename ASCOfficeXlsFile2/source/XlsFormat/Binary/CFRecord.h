@@ -8,9 +8,38 @@
 #include <common.h>
 #include <Auxiliary/HelpFunc.h>
 
-
+#include "../../../Common/DocxFormat/Source/Base/unicode_util.h"
 namespace XLS
 {
+
+
+static std::wstring convertUtf16ToWString(const UTF16 * Data, int nLength)
+{
+    UTF32 *pStrUtf32 = new UTF32 [nLength + 1];
+    memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength + 1));
+
+    // this values will be modificated
+    const UTF16 *pStrUtf16_Conv = Data;
+    UTF32 *pStrUtf32_Conv = pStrUtf32;
+
+    ConversionResult eUnicodeConversionResult =
+            ConvertUTF16toUTF32 (&pStrUtf16_Conv,
+                                 &Data[nLength]
+            , &pStrUtf32_Conv
+            , &pStrUtf32 [nLength]
+            , strictConversion);
+
+    if (conversionOK != eUnicodeConversionResult)
+    {
+        delete [] pStrUtf32;
+        return std::wstring();
+    }
+
+    std::wstring wstr ((wchar_t *) pStrUtf32);
+
+    delete [] pStrUtf32;
+    return wstr;
+}
 
 // Binary representation of a record in BIFF8
 class CFRecord
@@ -98,7 +127,9 @@ public:
 		checkFitRead(sizeof(T));
 		val = * getCurData<T>();
 		rdPtr += sizeof(T);
-	}
+    }
+
+    void loadAnyData(wchar_t & val);
 
 	template<class T>
 	void storeAnyData(const T& val)
@@ -174,19 +205,26 @@ CFRecord& operator<<(CFRecord& record, std::vector<T>& vec)
 }
 
 
-template<class T>
-CFRecord& operator>>(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str)
-{
-    str.clear();
-    T symbol;
-    do
-    {
-        record.loadAnyData(symbol);
-        str += symbol;
-    } while (symbol);
-    return record;
-}
 
+#if defined(_WIN32) || defined(_WIN64)
+
+    template<class T>
+    CFRecord& operator>>(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str)
+    {
+        str.clear();
+        T symbol;
+        do
+        {
+            record.loadAnyData(symbol);
+            str += symbol;
+        } while (symbol);
+        return record;
+    }
+
+#else
+    CFRecord& operator>>(CFRecord & record, std::string & str);
+    CFRecord& operator>>(CFRecord & record, std::wstring & str);
+#endif
 
 template<class T>
 CFRecord& operator<<(CFRecord & record, std::basic_string<T, std::char_traits<T>, std::allocator<T> >& str)

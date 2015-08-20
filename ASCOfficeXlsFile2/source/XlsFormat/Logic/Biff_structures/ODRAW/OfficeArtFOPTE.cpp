@@ -393,7 +393,7 @@ void anyString::ReadComplexData(XLS::CFRecord& record)
 #if defined(_WIN32) || defined(_WIN64)
         string_ = std::wstring(record.getCurData<wchar_t>(), op);
 #else
-        string_ = convertUtf16ToWString(record.getCurData<UTF16>(), op);
+        string_ = XLS::convertUtf16ToWString(record.getCurData<UTF16>(), op);
 #endif
 	record.skipNunBytes(op);
 }

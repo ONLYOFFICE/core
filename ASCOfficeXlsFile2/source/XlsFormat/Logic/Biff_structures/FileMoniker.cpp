@@ -1,7 +1,6 @@
 
 #include "FileMoniker.h"
 #include <Binary/CFRecord.h>
-#include <utils.h>
 
 namespace OSHARED
 {
@@ -46,7 +45,7 @@ void FileMoniker::load(XLS::CFRecord& record)
 #if defined(_WIN32) || defined(_WIN64)
         unicodePath = std::wstring(record.getCurData<wchar_t>(), cbUnicodePathBytes / 2);
 #else
-        unicodePath = convertUtf16ToWString(record.getCurData<UTF16>(), cbUnicodePathBytes / 2);
+        unicodePath = XLS::convertUtf16ToWString(record.getCurData<UTF16>(), cbUnicodePathBytes / 2);
 #endif
 		record.skipNunBytes(cbUnicodePathBytes);
 	}

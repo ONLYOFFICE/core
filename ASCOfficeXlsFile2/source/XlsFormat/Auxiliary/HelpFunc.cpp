@@ -177,7 +177,7 @@ namespace STR
 const std::string int2str(const int val, const int radix)
 {
     static char num_buf[10]={};
-#if defined(_WIN64) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64)
     _itoa_s(val, num_buf, 9, radix);
 #else
     sprintf( num_buf, "%d", val);
@@ -188,7 +188,7 @@ const std::string int2str(const int val, const int radix)
 
 const std::wstring int2wstr(const int val, const int radix)
 {
-#if defined(_WIN64) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64)
     static wchar_t num_buf[10]={};
     _itow_s(val, num_buf, 9, radix);
     return std::wstring(num_buf);
@@ -226,7 +226,7 @@ const std::string bin2str(const char* buf, const size_t nbuf)
 const std::wstring  guid2bstr(const _GUID_ guid)
 {
     std::wstring  guid_ret;
-#if defined(_WIN64) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64)
     LPOLESTR guid_str;
 	GUID guid1={};
 	memcpy(&guid1, &guid, sizeof(GUID));
@@ -254,7 +254,7 @@ const std::string guid2str(const _GUID_ guid)
 
 const bool bstr2guid(const std::wstring & guid_str, _GUID_& guid)
 {
-#if defined(_WIN64) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64)
 
 	GUID guid1={};
     HRESULT res = IIDFromString((LPWSTR)(guid_str.c_str()), &guid1);
@@ -283,7 +283,7 @@ const std::wstring int2hex_wstr(const int val, const size_t size_of)
     if(size_of > 4) return L"";
 
 
-#if defined(_WIN64) || defined(_WIN64)
+#if defined(_WIN32) || defined(_WIN64)
     static wchar_t num_buf[10]={};
     std::wstring wstr =  STR::int2wstr(size_of << 1, 10);
     swprintf_s(num_buf, 9, (L"%0" + wstr + L"X").c_str(), val);

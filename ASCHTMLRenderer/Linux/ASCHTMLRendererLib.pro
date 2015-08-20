@@ -59,12 +59,13 @@ INCLUDEPATH += \
     ../../DesktopEditor/freetype-2.5.2/include \
     ../../DesktopEditor/agg-2.4/include
 	
-SOURCES += ../ASCSVGWriter.cpp \
+SOURCES += \
     ../CASCSVGRenderer.cpp \
     ../CMetafile.cpp \
-    ../CASCImage.cpp
+    ../CASCImage.cpp \
+    ../../HtmlRenderer/src/ASCSVGWriter.cpp
 
-HEADERS += ../ASCSVGWriter.h \
+HEADERS += \
     ../CASCImage.h \
     ../CASCSVGRenderer.h \
     ../CMetafile.h \
@@ -75,7 +76,8 @@ HEADERS += ../ASCSVGWriter.h \
     ../Writer/StringWriter.h \
     ../Writer/SVGWriter.h \
     ../Writer/VectorGraphicsWriter2.h \
-    ../Writer/VMLWriter.h
+    ../Writer/VMLWriter.h \
+    ../../HtmlRenderer/include/ASCSVGWriter.h
 
 unix {
     target.path = /usr/lib

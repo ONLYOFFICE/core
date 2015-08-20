@@ -15,7 +15,7 @@ void DXFNum::setIsUserDefined(const bool is_user_defined)
 
 const bool DXFNum::getIsUserDefined() const
 {
-	return is_user_defined_;
+    return true == is_user_defined_;
 }
 
 

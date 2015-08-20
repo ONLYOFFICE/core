@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #if defined(_WIN32) || defined (_WIN64)
 	#include <atlwin.h>
@@ -6,7 +6,7 @@
 	#include <atlcoll.h>
 #endif
 #include "../../DesktopEditor/graphics/IRenderer.h"
-#include "../../ASCHTMLRenderer/ASCSVGWriter.h"
+#include "../../HtmlRenderer/include/ASCSVGWriter.h"
 #include "../../ASCHTMLRenderer/CASCImage.h"
 
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
@@ -109,7 +109,7 @@ namespace NSWMFToImageConverter
 			if (NULL == pRenderer)
 				return;
 
-			// Запоминаем все настройки Brush, Font, Pen, Shadow и т.д.
+			// Р—Р°РїРѕРјРёРЅР°РµРј РІСЃРµ РЅР°СЃС‚СЂРѕР№РєРё Brush, Font, Pen, Shadow Рё С‚.Рґ.
 			LONG brush_Alpha1 = 0;
 			LONG brush_Alpha2 = 0;
 			LONG brush_Color1 = 0;
@@ -160,6 +160,10 @@ namespace NSWMFToImageConverter
 				LONG _lh = 0;
 				oASCImage.get_Width(&_lw);
 				oASCImage.get_Height(&_lh);
+                if(_lw <= 0)
+                    _lw = 1;
+                if(_lh <= 0)
+                    _lh = 1;
 
                 LONG lMax = (std::max) (_lw, _lh);
 				double dKoef = 1000.0 / lMax;
@@ -173,7 +177,7 @@ namespace NSWMFToImageConverter
 
 			oASCImage.DrawOnRenderer( pRenderer, 0, 0, dW, dH );
 
-			// Восстанавливаем параметры
+			// Р’РѕСЃСЃС‚Р°РЅР°РІР»РёРІР°РµРј РїР°СЂР°РјРµС‚СЂС‹
 			pRenderer->put_BrushAlpha1( brush_Alpha1 );
 			pRenderer->put_BrushAlpha2( brush_Alpha2 );
 			pRenderer->put_BrushColor1( brush_Color1 );
@@ -194,7 +198,7 @@ namespace NSWMFToImageConverter
 			pRenderer->put_PenAlpha( pen_Alpha );
 			pRenderer->put_PenColor( pen_Color );
 
-			// на всякий случай скидываем path
+			// РЅР° РІСЃСЏРєРёР№ СЃР»СѓС‡Р°Р№ СЃРєРёРґС‹РІР°РµРј path
 			pRenderer->PathCommandEnd();
 		}
 	public:

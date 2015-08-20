@@ -66,10 +66,19 @@ void BiffString::load(CFRecord& record)
 }
 
 
-void BiffString::load(CFRecord& record, const size_t cch, const bool is_wide)
+void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
 {
+	bool is_wide	= is_wide1;
+	size_t cch		= cch1;
+
 	size_t raw_length = cch << (is_wide ? 1 : 0);
-	record.checkFitRead(raw_length);
+	//record.checkFitRead(raw_length);
+
+	if (record.getDataSize() - record.getRdPtr() < raw_length)
+	{
+		raw_length = record.getDataSize() - record.getRdPtr();
+		cch = is_wide ? raw_length/2 : raw_length ;
+	}
 
 	if(is_wide)
 	{

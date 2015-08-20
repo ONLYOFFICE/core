@@ -64,15 +64,20 @@ void SST::readFields(CFRecord& record)
 	long unique = cstUnique;
 		
 	std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
+	int count = 0 ;
 	while(!record.isEOF() || !recs.empty())
 	{
 		XLUnicodeRichExtendedStringPtr element(new XLUnicodeRichExtendedString(recs));
+
+		element->set_code_page(code_page_);
+
 		if(record.isEOF()) // If the break is at the XLUnicodeRichExtendedString boundary
 		{
 			element->appendNextContinue(record, false);
 		}
 		record >> *element;
 		rgb.push_back(element);
+		count++;
 	}
 }
 

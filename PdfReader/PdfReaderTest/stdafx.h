@@ -9,11 +9,11 @@
 
 #ifdef _DEBUG
 #pragma comment(lib, "../x64/Debug/PdfReader.lib")
-#pragma comment(lib, "../../DesktopEditor/Qt_build/graphics/project/debug/graphics.lib")
+#pragma comment(lib, "../../SDK/lib/win_64/DEBUG/graphics.lib")
 #pragma comment(lib, "../../PdfWriter/x64/Debug/PdfWriter.lib")
 #else
 #pragma comment(lib, "../x64/Release/PdfReader.lib")
-#pragma comment(lib, "../../DesktopEditor/Qt_build/graphics/project/release/graphics.lib")
+#pragma comment(lib, "../../SDK/lib/win_64/graphics.lib")
 #pragma comment(lib, "../../PdfWriter/x64/Release/PdfWriter.lib")
 #endif
 

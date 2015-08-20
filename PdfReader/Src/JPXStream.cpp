@@ -6,6 +6,8 @@
 #include "../../DesktopEditor/raster/BgraFrame.h"
 #include "../../DesktopEditor/raster/ImageFileFormatChecker.h"
 
+#include "../../DesktopEditor/raster/Jp2/J2kFile.h"
+
 namespace PdfReader
 {
 	JPXStream::JPXStream(Stream *pStream) :
@@ -26,12 +28,12 @@ namespace PdfReader
 	{
 		m_pStream->Reset();
 
-		// »нициализаци¤
+		// Инизиализация
 		m_lCurPos       = 0;
 		m_lBufferSize   = 0;
 		m_pSourceBuffer = NULL;
 
-		// —оздаем темповый файл, в который сбрасываем картинку
+		// Создаем темповый файл, в который сбрасываем картинку
 		FILE *pTempFile = NULL;
 
 		std::wstring wsTempFile = L"";
@@ -70,44 +72,38 @@ namespace PdfReader
 			fclose(pTempFile);
 		}
 
-		CBgraFrame oFrame;
-		if (!oFrame.OpenFile(wsTempFile, _CXIMAGE_FORMAT_JP2))
+		BYTE* pBufferPointer;
+		int nHeight = 0;
+		int nWidth  = 0;
+		int nComponentsCount = 0;
+
+		Jpeg2000::CJ2kFile oJ2;
+		if (!oJ2.Open(&pBufferPointer, nComponentsCount, nWidth, nHeight, wsTempFile, std::wstring(L"")) || !pBufferPointer)
 		{
 			NSFile::CFileBinary::Remove(wsTempFile);
 			return;
 		}
 
-		int nHeight          = oFrame.get_Height();
-		int nWidth           = oFrame.get_Width();
-		int nStride          = oFrame.get_Stride();
-		BYTE* pBufferPointer = oFrame.get_Data();
-
-		m_lBufferSize = 3 * nWidth * nHeight;
-
+		m_lBufferSize = nWidth * nHeight * nComponentsCount;
 		m_pSourceBuffer = (unsigned char*)MemUtilsMalloc(m_lBufferSize);
 		if (!m_pSourceBuffer)
 		{
+			delete[] pBufferPointer;
 			NSFile::CFileBinary::Remove(wsTempFile);
 			m_lBufferSize = 0;
 			return;
 		}
 
+		int nStride = nWidth * nComponentsCount;
 		unsigned char* pDst = m_pSourceBuffer;
 		for (int nY = 0; nY < nHeight; nY++)
 		{
-			unsigned char* pSrc = pBufferPointer + nWidth * 4 * (nHeight - nY - 1);
-
-			for (int nX = 0; nX < nWidth; nX++)
-			{
-				pDst[0] = pSrc[2];
-				pDst[1] = pSrc[1];
-				pDst[2] = pSrc[0];
-
-				pDst += 3;
-				pSrc += 4;
-			}
+			unsigned char* pSrc = pBufferPointer + nStride * (nHeight - 1 - nY);
+			::memcpy(pDst, pSrc, nStride);
+			pDst += nStride;
 		}
 
+		delete[] pBufferPointer;
 		NSFile::CFileBinary::Remove(wsTempFile);
 	}
 

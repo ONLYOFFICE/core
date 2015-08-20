@@ -23,6 +23,7 @@ CXpsFile::CXpsFile(CApplicationFonts* pAppFonts)
 	CFontsCache* pMeasurerCache = new CFontsCache();
 	pMeasurerCache->SetStreams(pAppFonts->GetStreams());
 	m_pFontManager->SetOwnerCache(pMeasurerCache);
+    pMeasurerCache->SetCacheSize(16);
 
 	m_wsTempFolder = L"";
 	SetTempFolder(NSFile::CFileBinary::GetTempPath());

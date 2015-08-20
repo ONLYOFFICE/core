@@ -36,6 +36,7 @@ namespace PdfReader
 		CFontsCache* pMeasurerCache = new CFontsCache();
 		pMeasurerCache->SetStreams(pAppFonts->GetStreams());
 		m_pFontManager->SetOwnerCache(pMeasurerCache);
+        pMeasurerCache->SetCacheSize(1);
 		m_pGlobalParams->SetFontManager(m_pFontManager);
 	}
 	CPdfReader::~CPdfReader()
@@ -69,6 +70,7 @@ namespace PdfReader
 		CFontsCache* pMeasurerCache = new CFontsCache();
 		pMeasurerCache->SetStreams(m_pAppFonts->GetStreams());
 		m_pFontManager->SetOwnerCache(pMeasurerCache);
+        pMeasurerCache->SetCacheSize(1);
 		m_pGlobalParams->SetFontManager(m_pFontManager);
 		//------------------------------------------------------
 

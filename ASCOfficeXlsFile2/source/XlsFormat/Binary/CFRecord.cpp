@@ -160,6 +160,19 @@ void CFRecord::appendRawData(const char* raw_data, const size_t size)
 
 }
 
+void CFRecord::loadAnyData(wchar_t & val)
+{
+    checkFitRead(2);
+#if defined(_WIN32) || defined(_WIN64)
+     val = * getCurData<wchar_t>();
+#else
+    unsigned short val_utf16 = * getCurData<unsigned short>();
+
+    val = val_utf16;
+#endif
+    rdPtr += 2;
+}
+
 void CFRecord::insertDataFromRecordToBeginning(CFRecordPtr where_from)
 {
 	const char* src_data = where_from->getData();
@@ -341,8 +354,35 @@ void CFRecord::storeLongData(const char* buf, const size_t size)
         size_ += size;
     }
 }
+#if !defined(_WIN32) && !defined(_WIN64)
+CFRecord& operator>>(CFRecord & record, std::string & str)
+{
+    str.clear();
+    char symbol;
+    do
+    {
+        record.loadAnyData(symbol);
+        str += symbol;
+    } while (symbol);
+    return record;
+}
 
+CFRecord& operator>>(CFRecord & record, std::wstring & str)
+{
+    std::vector<unsigned short> utf16;
+    str.clear();
+    unsigned short symbol;
+    do
+    {
+        record.loadAnyData(symbol);
+        utf16.push_back(symbol);
+    } while (symbol);
 
+    str = convertUtf16ToWString(utf16.data(),utf16.size());
+    utf16.clear();
+    return record;
+}
+#endif
 } // namespace XLS
 
 

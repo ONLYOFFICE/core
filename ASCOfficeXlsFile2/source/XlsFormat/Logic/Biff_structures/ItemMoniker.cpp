@@ -1,7 +1,6 @@
 
 #include "ItemMoniker.h"
 #include <Binary/CFRecord.h>
-#include <utils.h>
 
 namespace OSHARED
 {
@@ -59,7 +58,7 @@ void ItemMoniker::load(XLS::CFRecord& record)
 #if defined(_WIN32) || defined(_WIN64)
         delimiterUnicode = std::wstring(record.getCurData<wchar_t>(), sizeof_delimiterUnicode / 2);
 #else
-        delimiterUnicode = convertUtf16ToWString(record.getCurData<UTF16>(), sizeof_delimiterUnicode / 2);
+        delimiterUnicode = XLS::convertUtf16ToWString(record.getCurData<UTF16>(), sizeof_delimiterUnicode / 2);
 #endif
         record.skipNunBytes(sizeof_delimiterUnicode);
 	}
@@ -73,7 +72,7 @@ void ItemMoniker::load(XLS::CFRecord& record)
 #if defined(_WIN32) || defined(_WIN64)
         itemUnicode = std::wstring(record.getCurData<wchar_t>(), sizeof_itemUnicode / 2);
 #else
-        itemUnicode = convertUtf16ToWString(record.getCurData<UTF16>(), sizeof_itemUnicode / 2);
+        itemUnicode = XLS::convertUtf16ToWString(record.getCurData<UTF16>(), sizeof_itemUnicode / 2);
 #endif
         record.skipNunBytes(sizeof_itemUnicode);
 	}

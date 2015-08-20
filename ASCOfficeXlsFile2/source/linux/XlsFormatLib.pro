@@ -655,62 +655,62 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_structures/ODRAW/OfficeArtTertiaryFOPT.cpp \
     ../XlsFormat/Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.cpp \
     ../XlsFormat/Logic/Biff_unions/AI.cpp \
-    ../XlsFormat/Logic/Biff_unions/ATTACHEDLABEL.cpp \
-    ../XlsFormat/Logic/Biff_unions/AUTOFILTER.cpp \
+    ../XlsFormat/Logic/Biff_unions/ATTACHEDLABEL_bu.cpp \
+    ../XlsFormat/Logic/Biff_unions/AUTOFILTER_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/AXES.cpp \
-    ../XlsFormat/Logic/Biff_unions/AXISPARENT.cpp \
+    ../XlsFormat/Logic/Biff_unions/AXISPARENT_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/AXM.cpp \
     ../XlsFormat/Logic/Biff_unions/AXS.cpp \
     ../XlsFormat/Logic/Biff_unions/BACKGROUND.cpp \
-    ../XlsFormat/Logic/Biff_unions/BIGNAME.cpp \
+    ../XlsFormat/Logic/Biff_unions/BIGNAME_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/BUNDLESHEET.cpp \
-    ../XlsFormat/Logic/Biff_unions/CELL.cpp \
+    ../XlsFormat/Logic/Biff_unions/CELL_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/CELLTABLE.cpp \
-    ../XlsFormat/Logic/Biff_unions/CHART.cpp \
+    ../XlsFormat/Logic/Biff_unions/CHART_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/CHARTFOMATS.cpp \
     ../XlsFormat/Logic/Biff_unions/COLUMNS.cpp \
-    ../XlsFormat/Logic/Biff_unions/CONDFMT.cpp \
-    ../XlsFormat/Logic/Biff_unions/CONDFMT12.cpp \
+    ../XlsFormat/Logic/Biff_unions/CONDFMT_bu.cpp \
+    ../XlsFormat/Logic/Biff_unions/CONDFMT12_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/CONDFMTS.cpp \
     ../XlsFormat/Logic/Biff_unions/CRT.cpp \
-    ../XlsFormat/Logic/Biff_unions/CRTMLFRT.cpp \
+    ../XlsFormat/Logic/Biff_unions/CRTMLFRT_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/CUSTOMVIEW.cpp \
-    ../XlsFormat/Logic/Biff_unions/DAT.cpp \
+    ../XlsFormat/Logic/Biff_unions/DAT_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/DBQUERY.cpp \
-    ../XlsFormat/Logic/Biff_unions/DBQUERYEXT.cpp \
-    ../XlsFormat/Logic/Biff_unions/DCON.cpp \
+    ../XlsFormat/Logic/Biff_unions/DBQUERYEXT_bu.cpp \
+    ../XlsFormat/Logic/Biff_unions/DCON_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/DFTTEXT.cpp \
-    ../XlsFormat/Logic/Biff_unions/DOCROUTE.cpp \
+    ../XlsFormat/Logic/Biff_unions/DOCROUTE_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/DREF.cpp \
-    ../XlsFormat/Logic/Biff_unions/DROPBAR.cpp \
-    ../XlsFormat/Logic/Biff_unions/DVAL.cpp \
+    ../XlsFormat/Logic/Biff_unions/DROPBAR_bu.cpp \
+    ../XlsFormat/Logic/Biff_unions/DVAL_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/DVAXIS.cpp \
-    ../XlsFormat/Logic/Biff_unions/FEAT.cpp \
+    ../XlsFormat/Logic/Biff_unions/FEAT_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/FEAT11.cpp \
     ../XlsFormat/Logic/Biff_unions/FNGROUPS.cpp \
     ../XlsFormat/Logic/Biff_unions/FONTLIST.cpp \
     ../XlsFormat/Logic/Biff_unions/FORMATTING.cpp \
-    ../XlsFormat/Logic/Biff_unions/FORMULA.cpp \
-    ../XlsFormat/Logic/Biff_unions/FRAME.cpp \
-    ../XlsFormat/Logic/Biff_unions/GELFRAME.cpp \
+    ../XlsFormat/Logic/Biff_unions/FORMULA_bu.cpp \
+    ../XlsFormat/Logic/Biff_unions/FRAME_bu.cpp \
+    ../XlsFormat/Logic/Biff_unions/GELFRAME_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/GLOBALS.cpp \
-    ../XlsFormat/Logic/Biff_unions/HLINK.cpp \
+    ../XlsFormat/Logic/Biff_unions/HLINK_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/INTERFACE.cpp \
     ../XlsFormat/Logic/Biff_unions/IVAXIS.cpp \
-    ../XlsFormat/Logic/Biff_unions/LBL.cpp \
+    ../XlsFormat/Logic/Biff_unions/LBL_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/LD.cpp \
     ../XlsFormat/Logic/Biff_unions/MACROSORTANDFILTER.cpp \
     ../XlsFormat/Logic/Biff_unions/MDBLOCK.cpp \
-    ../XlsFormat/Logic/Biff_unions/MDTINFO.cpp \
-    ../XlsFormat/Logic/Biff_unions/MDXSTR.cpp \
+    ../XlsFormat/Logic/Biff_unions/MDTINFO_bu.cpp \
+    ../XlsFormat/Logic/Biff_unions/MDXSTR_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/MDXTUPLESET.cpp \
     ../XlsFormat/Logic/Biff_unions/METADATA.cpp \
-    ../XlsFormat/Logic/Biff_unions/MSODRAWINGGROUP.cpp \
-    ../XlsFormat/Logic/Biff_unions/OBJ.cpp \
+    ../XlsFormat/Logic/Biff_unions/MSODRAWINGGROUP_bu.cpp \
+    ../XlsFormat/Logic/Biff_unions/OBJ_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/OBJECTS.cpp \
     ../XlsFormat/Logic/Biff_unions/PAGESETUP.cpp \
-    ../XlsFormat/Logic/Biff_unions/PHONETICINFO.cpp \
-    ../XlsFormat/Logic/Biff_unions/PICF.cpp \
+    ../XlsFormat/Logic/Biff_unions/PHONETICINFO_bu.cpp \
+    ../XlsFormat/Logic/Biff_unions/PICF_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/PIVOTADDL.cpp \
     ../XlsFormat/Logic/Biff_unions/PIVOTCACHEDEFINITION.cpp \
     ../XlsFormat/Logic/Biff_unions/PIVOTCORE.cpp \
@@ -731,7 +731,7 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_unions/PRFILTER.cpp \
     ../XlsFormat/Logic/Biff_unions/PROTECTION.cpp \
     ../XlsFormat/Logic/Biff_unions/PROTECTION_COMMON.cpp \
-    ../XlsFormat/Logic/Biff_unions/QSIR.cpp \
+    ../XlsFormat/Logic/Biff_unions/QSIR_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/QUERYTABLE.cpp \
     ../XlsFormat/Logic/Biff_unions/RECORD12.cpp \
     ../XlsFormat/Logic/Biff_unions/RTD.cpp \
@@ -742,13 +742,13 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_unions/SHAPEPROPS.cpp \
     ../XlsFormat/Logic/Biff_unions/SHAREDSTRINGS.cpp \
     ../XlsFormat/Logic/Biff_unions/SHFMLA_SET.cpp \
-    ../XlsFormat/Logic/Biff_unions/SORT.cpp \
+    ../XlsFormat/Logic/Biff_unions/SORT_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/SORTANDFILTER.cpp \
     ../XlsFormat/Logic/Biff_unions/SORTDATA12.cpp \
     ../XlsFormat/Logic/Biff_unions/SS.cpp \
     ../XlsFormat/Logic/Biff_unions/STYLES.cpp \
     ../XlsFormat/Logic/Biff_unions/SUB.cpp \
-    ../XlsFormat/Logic/Biff_unions/SUPBOOK.cpp \
+    ../XlsFormat/Logic/Biff_unions/SUPBOOK_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/SXADDLAUTOSORT.cpp \
     ../XlsFormat/Logic/Biff_unions/SXADDLCACHE.cpp \
     ../XlsFormat/Logic/Biff_unions/SXADDLCACHE12.cpp \
@@ -772,15 +772,15 @@ SOURCES +=  \
     ../XlsFormat/Logic/Biff_unions/SXADDLSXMGS.cpp \
     ../XlsFormat/Logic/Biff_unions/SXADDLSXRULE.cpp \
     ../XlsFormat/Logic/Biff_unions/SXSRC.cpp \
-    ../XlsFormat/Logic/Biff_unions/SXTBL.cpp \
-    ../XlsFormat/Logic/Biff_unions/TABLESTYLES.cpp \
+    ../XlsFormat/Logic/Biff_unions/SXTBL_bu.cpp \
+    ../XlsFormat/Logic/Biff_unions/TABLESTYLES_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/TEXTOBJECT.cpp \
     ../XlsFormat/Logic/Biff_unions/TEXTPROPS.cpp \
-    ../XlsFormat/Logic/Biff_unions/THEME.cpp \
+    ../XlsFormat/Logic/Biff_unions/THEME_bu.cpp \
     ../XlsFormat/Logic/Biff_unions/UNKNOWNFRT.cpp \
     ../XlsFormat/Logic/Biff_unions/WINDOW.cpp \
     ../XlsFormat/Logic/Biff_unions/XFS.cpp \
-    ../XlsFormat/Logic/SummaryInformationStream/Structures/Property.cpp \
+    ../XlsFormat/Logic/SummaryInformationStream/Structures/Property_Structures.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertyFactory.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySet.cpp \
     ../XlsFormat/Logic/SummaryInformationStream/Structures/PropertySetStream.cpp \

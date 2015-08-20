@@ -23,7 +23,11 @@ void ExtRst::load(CFRecord& record)
 	record.skipNunBytes(2); // reserved
 	record >> cb;
 	size_t data_start = record.getRdPtr();
-	record >> phs >> rphssub;
+	record >> phs;
+
+	rphssub.sz = cb;
+
+	record >> rphssub;
 	for(unsigned short i = 0; i < rphssub.getRunsNumber(); ++i)
 	{
 		PhRuns run;

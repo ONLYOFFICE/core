@@ -24,6 +24,8 @@ public:
 
 	unsigned short crun;
 	LPWideString st;
+
+	int sz;
 };
 
 } // namespace XLS

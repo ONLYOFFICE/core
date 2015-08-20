@@ -19,7 +19,8 @@ XLUnicodeRichExtendedString XLUnicodeRichExtendedString::operator=(const XLUnico
 
 XLUnicodeRichExtendedString::XLUnicodeRichExtendedString(std::list<CFRecordPtr>& cont_recs)
 :	cont_recs_(cont_recs),
-	fHighByte(true)
+	fHighByte(true),
+	code_page_(0)
 {
 }
 
@@ -45,6 +46,7 @@ const bool XLUnicodeRichExtendedString::appendNextContinue(CFRecord& record, con
 
 XLUnicodeRichExtendedString::~XLUnicodeRichExtendedString()
 {
+	code_page_  = 0;
 }
 
 
@@ -187,6 +189,9 @@ void XLUnicodeRichExtendedString::load(CFRecord& record)
 {
 	pGlobalWorkbookInfoPtr = record.getGlobalWorkbookInfo();
 
+	if (code_page_== 0) 
+		code_page_ = pGlobalWorkbookInfoPtr ->CodePage;
+
 	unsigned short cch;
 	unsigned char flags;
 	record >> cch >> flags;
@@ -202,6 +207,15 @@ void XLUnicodeRichExtendedString::load(CFRecord& record)
 	if(fExtSt)
 	{
 		record >> cbExtRst;
+
+		if (cbExtRst < 0)
+		{
+			fExtSt = false;
+			fRichSt = true;
+			record.RollRdPtrBack(4);
+
+			record >> cRun;
+		}
 	}
 	
 	if(!record.checkFitReadSafe(static_cast<size_t>(cch) << (fHighByte ? 1 : 0)))
@@ -211,7 +225,8 @@ void XLUnicodeRichExtendedString::load(CFRecord& record)
 		std::wstring  str_full(str_);
 		do
 		{
-			appendNextContinue(record, true); // fHighByte changes here
+			if (appendNextContinue(record, true) == false) // fHighByte changes here
+				break; //dicionario de kanji.xls
             num_symbols = (std::min)(cch - str_full.length(), (record.getDataSize() - record.getRdPtr()) >> (fHighByte ? 1 : 0));
 			loadSymbols(record, num_symbols, fHighByte); // cch has changed, fHighByte has changed
 			str_full += str_;
@@ -232,7 +247,7 @@ void XLUnicodeRichExtendedString::load(CFRecord& record)
 		rgRun.push_back(format);
 	}
 
-	if(fExtSt)
+	if(fExtSt && cbExtRst > 0)
 	{
 		record >> extRst;
 	}

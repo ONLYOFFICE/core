@@ -35,7 +35,9 @@ void RPHSSub::store(CFRecord& record)
 void RPHSSub::load(CFRecord& record)
 {
 	unsigned short cch;
-	record >> crun >> cch >> st;
+	record >> crun >> cch;
+	
+	record >> st;
 }
 
 

@@ -19,7 +19,7 @@ namespace NSSystemPath
 #if defined(_WIN32) || defined (_WIN64)
                 TCHAR tDrive[256];
 		TCHAR tFolder[256];
-		_tsplitpath( strFileName.c_str(), tDrive, tFolder, NULL, NULL );
+		_wsplitpath( strFileName.c_str(), tDrive, tFolder, NULL, NULL );
 		sRes.append(tDrive);
 		sRes.append(tFolder);
 #elif __linux__ || MAC
@@ -38,7 +38,7 @@ namespace NSSystemPath
 #if defined(_WIN32) || defined (_WIN64)
 		TCHAR tFilename[256];
 		TCHAR tExt[256];
-		_tsplitpath( strFileName.c_str(), NULL, NULL, tFilename, tExt );
+		_wsplitpath( strFileName.c_str(), NULL, NULL, tFilename, tExt );
 		sRes.append(tFilename);
 		sRes.append(tExt);
 		return sRes;

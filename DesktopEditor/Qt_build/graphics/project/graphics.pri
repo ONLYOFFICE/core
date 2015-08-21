@@ -45,6 +45,8 @@ win32 {
     message(windows)
 }
 
+LIB_GRAPHICS_PRI_PATH = $$PWD/../../..
+
 INCLUDEPATH += \
     $$LIB_GRAPHICS_PRI_PATH/agg-2.4/include \
     $$LIB_GRAPHICS_PRI_PATH/freetype-2.5.2/include \

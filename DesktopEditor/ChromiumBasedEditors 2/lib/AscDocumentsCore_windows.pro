@@ -4,19 +4,26 @@ QT -= gui
 TARGET = ascdocumentscore
 TEMPLATE = lib
 
-CONFIG += static
 CONFIG += shared
 CONFIG += plugin
 
-DEFINES += HUNSPELL_STATIC
+DEFINES += \
+    WIN32 \
+    NOMINMAX \
+    _QT
+
+CONFIG -= debug_and_release debug_and_release_target
+QMAKE_CXXFLAGS_RELEASE -= -Zc:strictStrings
 
 win32:contains(QMAKE_TARGET.arch, x86_64):{
     PLATFORM_BUILD = win64
+    PLATFORM_BUILD2 = win_64
     message(windows64)
 }
 win32:!contains(QMAKE_TARGET.arch, x86_64):{
     PLATFORM_BUILD = win32
-    message(windows64)
+    PLATFORM_BUILD2 = win_32
+    message(windows32)
 }
 
 CONFIG(debug, debug|release) {
@@ -24,6 +31,8 @@ CONFIG(debug, debug|release) {
     DESTINATION_BUILD_MOC = $$PWD/build/$$PLATFORM_BUILD/Debug/moc
     DESTINATION_BUILD_QMAKE = = $$PWD/build/$$PLATFORM_BUILD/Debug
     DESTINATION_BUILD = $$PWD/../app/corebuilds/$$PLATFORM_BUILD/debug
+
+    PLATFORM_BUILD2 = $$PLATFORM_BUILD2/DEBUG
     message(debug)
 } else {
     DESTINATION_BUILD_OBJ = $$PWD/build/$$PLATFORM_BUILD/Release/obj
@@ -36,18 +45,20 @@ CONFIG(debug, debug|release) {
 DESTDIR     = $$DESTINATION_BUILD
 OBJECTS_DIR = $$DESTINATION_BUILD_OBJ
 MOC_DIR     = $$DESTINATION_BUILD_MOC
-OUT_PWD     = $$DESTINATION_BUILD_QMAKE
 
-DEFINES += \
-    _QT \
-    FT2_BUILD_LIBRARY \
-    EXCLUDE_JPG_SUPPORT \
-    MNG_SUPPORT_DISPLAY \
-    MNG_SUPPORT_READ \
-    MNG_SUPPORT_WRITE \
-    MNG_ACCESS_CHUNKS \
-    MNG_STORE_CHUNKS\
-    MNG_ERROR_TELLTALE
+# common projects --------------------------------------
+#zlib
+#CONFIG += build_all_zlib build_zlib_as_sources
+#include($$PWD/../../../OfficeUtils/OfficeUtils.pri)
+#hunspell
+#include($$PWD/../../hunspell-1.3.3/src/qt/hunspell.pri)
+#graphics
+#include($$PWD/../../Qt_build/graphics/project/graphics.pri)
+
+DEFINES += HUNSPELL_STATIC
+
+LIBS += -L$$PWD/../../../SDK/lib/$$PLATFORM_BUILD2 -lOfficeUtils -lgraphics -lhunspell
+# ------------------------------------------------------
 
 DEFINES += \
     "V8_DEPRECATION_WARNINGS" \
@@ -614,30 +625,7 @@ SOURCES += \
     src/cef/windows/cefclient/renderer/performance_test.cc \
     src/cef/windows/cefclient/renderer/performance_test_tests.cc
 
-CONFIG(debug, debug|release) {
-    LIBS += -L../../../../SDK/lib/win_64/DEBUG -lgraphics
-    LIBS += -L../../../hunspell-1.3.3/src/qt/Debug/debug -lhunspell
-} else {
-    LIBS += -L../../../../SDK/lib/win_64/release -lgraphics
-    LIBS += -L../../../hunspell-1.3.3/src/qt/Release/release -lhunspell
-}
-
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-
-CONFIG(debug, debug|release) {
-    LIBS += -L../../app/cefbuilds/win64 -llibcef
-    LIBS += -L../../../../ASCOfficeUtils/ASCOfficeUtilsLib/Win/x64/Debug -lASCOfficeUtilsLib
-    message(debug)
-} else {
-    LIBS += -L../../app/cefbuilds/win64 -llibcef
-    LIBS += -L../../../../ASCOfficeUtils/ASCOfficeUtilsLib/Win/x64/Release -lASCOfficeUtilsLib
-    message(release)
-}
-
-    message(windows64)
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-}
+LIBS += -L$$PWD/../app/cefbuilds/$$PLATFORM_BUILD -llibcef
 
 INCLUDEPATH += \
     ../../agg-2.4/include \

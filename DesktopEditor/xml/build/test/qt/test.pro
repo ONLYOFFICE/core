@@ -14,6 +14,8 @@ CONFIG   -= app_bundle
 
 TEMPLATE = app
 
-LIBS += -L../../../qt/Debug/debug -llibxml
+#LIBS += -L../../../../../SDK/lib/win_64/DEBUG -llibxml
+LIB_XML_PRI_PATH = ../../../../../DesktopEditor/xml
+include(../../../../../DesktopEditor/xml/build/qt/libxml2.pri)
 
 SOURCES += main.cpp

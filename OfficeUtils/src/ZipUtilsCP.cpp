@@ -98,7 +98,7 @@ namespace ZLibZipUtils
     HANDLE hFile;
     FILETIME ftm,ftLocal,ftCreate,ftLastAcc,ftLastWrite;
 
-    hFile = CreateFile(filename,GENERIC_READ | GENERIC_WRITE,
+    hFile = CreateFileW(filename,GENERIC_READ | GENERIC_WRITE,
                         0,NULL,OPEN_EXISTING,0,NULL);
     GetFileTime(hFile,&ftCreate,&ftLastAcc,&ftLastWrite);
     DosDateTimeToFileTime((WORD)(dosdate>>16),(WORD)dosdate,&ftLocal);

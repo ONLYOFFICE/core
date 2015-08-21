@@ -136,6 +136,10 @@ CFRecord& operator>>(CFRecord& record, XLUnicodeString_T<cchType, det_id, cch_wh
 {
 	size_t cch;
 	size_t struct_size = 0;
+
+	if (record.getRdPtr() >= record.getDataSize())
+		return record;
+
 	switch(cch_where)
 	{
 		case cch_READ_FROM_RECORD:

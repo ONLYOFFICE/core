@@ -71,7 +71,7 @@ public:
 	const bool checkFitReadSafe(const size_t size) const;
 	// Checks whether the specified number of unsigned chars present in the non-read part of the buffer
 	// Generates an exception
-	void checkFitRead(const size_t size) const;
+	bool checkFitRead(const size_t size) const;
 	// Checks whether the specified number of unsigned chars fits in max size of the buffer
 	// Doesn't generate an exception
 	const bool checkFitWriteSafe(const size_t size) const;
@@ -121,15 +121,19 @@ public:
 	const size_t getRdPtr() const;
 
 	template<class T>
-	void loadAnyData(T& val)
+	bool loadAnyData(T& val)
 	{
 		////ASSERT(data_); // This throws if we use >> instead of <<
-		checkFitRead(sizeof(T));
-		val = * getCurData<T>();
-		rdPtr += sizeof(T);
+		if (checkFitRead(sizeof(T)))
+		{
+			val = * getCurData<T>();
+			rdPtr += sizeof(T);
+			return true;
+		}
+		return false;
     }
 
-    void loadAnyData(wchar_t & val);
+    bool loadAnyData(wchar_t & val);
 
 	template<class T>
 	void storeAnyData(const T& val)
@@ -215,7 +219,8 @@ CFRecord& operator<<(CFRecord& record, std::vector<T>& vec)
         T symbol;
         do
         {
-            record.loadAnyData(symbol);
+            if (record.loadAnyData(symbol) == false) 
+				break;
             str += symbol;
         } while (symbol);
         return record;
@@ -241,8 +246,10 @@ template<class T>
 CFRecord& operator>>(CFRecord & record, _CP_OPT(T)& val)
 {
 	T temp_val;
-	record.loadAnyData(temp_val);
-	val = temp_val;
+	if (record.loadAnyData(temp_val))
+	{
+		val = temp_val;
+	}
 	return record; 
 }
 
@@ -251,6 +258,8 @@ CFRecord& operator>>(CFRecord & record, _CP_OPT(T)& val)
 template<class T>
 CFRecord& operator<<(CFRecord & record,		_CP_OPT(T)& val)
 {
+	if (!val) return record;
+
 	T temp_val(*val);
 	record.storeAnyData(temp_val);
 	return record; 

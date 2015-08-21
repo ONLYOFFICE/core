@@ -231,7 +231,17 @@ void XlsConverter::convert(XLS::WorkbookStreamObject* woorkbook)
     for (int i=0 ; i < woorkbook->m_WorksheetSubstream.size(); i++)
 	{
 		xlsx_context->start_table(xls_global_info->sheets_names[i]);
-		convert((XLS::WorksheetSubstream*)woorkbook->m_WorksheetSubstream[i].get());
+
+		if (woorkbook->m_WorksheetSubstream[i]->get_type() == XLS::typeWorksheetSubstream)
+		{
+			convert(dynamic_cast<XLS::WorksheetSubstream*>(woorkbook->m_WorksheetSubstream[i].get()));
+		}
+		else if (woorkbook->m_WorksheetSubstream[i]->get_type() == XLS::typeChartSheetSubstream)
+		{
+			//в xl\chartsheets
+			convert(dynamic_cast<XLS::ChartSheetSubstream*>(woorkbook->m_WorksheetSubstream[i].get()));
+		}
+
 		xlsx_context->end_table();
 	}
 
@@ -505,81 +515,12 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 	if (objects == NULL) return;
 		
 	ODRAW::OfficeArtSpgrContainer	*spgr = dynamic_cast<ODRAW::OfficeArtSpgrContainer*>(objects->m_MsoDrawing.get()->rgChildRec.m_OfficeArtSpgrContainer.get());
-/*
-    for (int i = 0 ; i < objects->m_OBJs.size(); i++)
-	{
-		int ind = objects->m_OBJs[i].second;
-		XLS::OBJ* OBJ = dynamic_cast<XLS::OBJ*>(objects->m_OBJs[i].first.get());
-		XLS::Obj *obj = dynamic_cast<XLS::Obj*>(OBJ->m_Obj.get());
-		
-		ODRAW::OfficeArtSpContainer *sp = NULL;
-		
-		if (obj->m_OfficeArtSpContainer)
-		{
-			sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(obj->m_OfficeArtSpContainer.get());
-		}
-		else if ( (spgr) && (ind < spgr->child_records.size()))
-		{
-			sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
-		}
-		//else continue;
-		
-		
-		if (xlsx_context->get_drawing_context().start_drawing(obj->cmo.ot))//тут тип шейпа ВРАНЬЕ !!! пример - 7.SINIF I.DÖNEM III.YAZILI SINAV.xls
-		{
-			convert(sp);
 
-			xlsx_context->get_drawing_context().end_drawing();
-		}
-	}
-
-    for (int i = 0; i <objects->m_TEXTOBJECTs.size(); i++)
-	{
-		int ind = objects->m_OBJs[i].second;
-		XLS::TEXTOBJECT* textObject = dynamic_cast<XLS::TEXTOBJECT*>(objects->m_TEXTOBJECTs[i].first.get());
-
-		if (textObject == NULL) continue;
-
-		XLS::TxO * txO = dynamic_cast<XLS::TxO *>(textObject->m_TxO.get());
-		
-		if (txO == NULL) continue;
-		ODRAW::OfficeArtSpContainer *sp = NULL;
-		
-		if (txO->m_OfficeArtSpContainer)
-		{
-			sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(txO->m_OfficeArtSpContainer.get());
-		}
-		else if ( (spgr) && (ind < spgr->child_records.size()))
-		{
-			sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
-		}
-		if (xlsx_context->get_drawing_context().start_drawing(0x0006))
-		{
-			convert(sp);
-
-			std::wstringstream strm;
-			txO->serialize(strm);
-
-			xlsx_context->get_drawing_context().set_text(strm.str());
-
-			xlsx_context->get_drawing_context().end_drawing();
-		}
-	}
-
-    for (int i = 0 ; i < objects->m_CHARTs.size(); i++)
-	{
-		int ind = objects->m_OBJs[i].second;
-		//xlsx_context->get_chart_context().start_drawing();
-  
-
-		//xlsx_context->get_chart_context().end_drawing();
-	}
-*/
 	bool note = false;
 	int ind = 0;
 	for ( std::list<XLS::BaseObjectPtr>::iterator elem = objects->elements_.begin(); elem != objects->elements_.end(); elem++)
 	{
-		short type_object = 0;
+		short type_object = -1;
 
 		ODRAW::OfficeArtSpContainer *sp			= NULL;
 		ODRAW::OfficeArtSpContainer *sp_common	= NULL;
@@ -609,7 +550,9 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 			type_object = 0x0006;
 			
 			if (text_obj->m_OfficeArtSpContainer)
+			{
 				sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(text_obj->m_OfficeArtSpContainer.get());
+			}
 		}
 		if (chart)
 		{
@@ -618,7 +561,18 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 //-----------------------------------------------------------------------------
 		if ( (spgr) && (ind+1< spgr->child_records.size()))
 		{
-			sp_common = dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
+			ODRAW::OfficeArtClientData* client_data = NULL;
+
+			sp_common	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
+			client_data = dynamic_cast<ODRAW::OfficeArtClientData*>(spgr->child_records[ind+1].get());
+			
+			if (sp_common == NULL && client_data)
+			{
+				ind++;
+				if (ind+1< spgr->child_records.size())
+					sp_common	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
+			}
+
 		}
 		
 		if (note && text_obj)
@@ -628,6 +582,8 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 			continue;
 		}
 		note = false;
+
+		if (type_object < 0)continue;
 
 		if (xlsx_context->get_drawing_context().start_drawing(type_object))		
 		{
@@ -651,7 +607,26 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 				note = true;
 			}
 		}
-		if (sp == NULL)  ind++;
+		if (sp == NULL)
+		{
+			ind++;
+			if ( spgr ) 
+			{
+				while (ind+1 < spgr->child_records.size())
+				{
+					ODRAW::OfficeArtClientData*		client_data = NULL;
+					ODRAW::OfficeArtClientTextbox*	text_client_data = NULL;
+
+					client_data			= dynamic_cast<ODRAW::OfficeArtClientData*>		(spgr->child_records[ind+1].get());
+					text_client_data	= dynamic_cast<ODRAW::OfficeArtClientTextbox*>	(spgr->child_records[ind+1].get());
+					
+					if (client_data || text_client_data)
+					{
+						ind++;
+					}else break;
+				}
+			}
+		}
 	}
 
 }

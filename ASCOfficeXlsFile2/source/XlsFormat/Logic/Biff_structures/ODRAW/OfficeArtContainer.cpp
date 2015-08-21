@@ -137,8 +137,12 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 				}
 				else if(record.getRdPtr() > child_beginning_ptr + rh_child.recLen)
 				{
-					 throw;// EXCEPT::RT::WrongBiffRecord("Wrong data parsed in OfficeArt record of type 0x" + 
+					 //throw EXCEPT::RT::WrongBiffRecord("Wrong data parsed in OfficeArt record of type 0x" + 
 						//STR::int2hex_wstr(rh_child.recType, sizeof(rh_child.recType)), record.getTypeString());
+					Log::warning(std::wstring(L"Wrong data parsed in OfficeArt record of type 0x") + 
+						STR::int2hex_wstr(rh_child.recType, sizeof(rh_child.recType)));
+
+					record.RollRdPtrBack( record.getRdPtr() - child_beginning_ptr + rh_child.recLen);
 				}
 			}
 		}

@@ -160,17 +160,22 @@ void CFRecord::appendRawData(const char* raw_data, const size_t size)
 
 }
 
-void CFRecord::loadAnyData(wchar_t & val)
+bool CFRecord::loadAnyData(wchar_t & val)
 {
-    checkFitRead(2);
-#if defined(_WIN32) || defined(_WIN64)
-     val = * getCurData<wchar_t>();
-#else
-    unsigned short val_utf16 = * getCurData<unsigned short>();
+    if (checkFitRead(2))
+	{
+	#if defined(_WIN32) || defined(_WIN64)
+		 val = * getCurData<wchar_t>();
+	#else
+		unsigned short val_utf16 = * getCurData<unsigned short>();
 
-    val = val_utf16;
-#endif
-    rdPtr += 2;
+		val = val_utf16;
+	#endif
+		rdPtr += 2;
+
+		return true;
+	}
+	return false;
 }
 
 void CFRecord::insertDataFromRecordToBeginning(CFRecordPtr where_from)
@@ -214,12 +219,13 @@ const bool CFRecord::checkFitReadSafe(const size_t size) const
 
 // Checks whether the specified number of unsigned chars present in the non-read part of the buffer
 // Generates an exception
-void CFRecord::checkFitRead(const size_t size) const
+bool CFRecord::checkFitRead(const size_t size) const
 {
 	if(!checkFitReadSafe(size))
 	{
-		throw;// EXCEPT::RT::WrongBiffRecord("Wrong record size.", getTypeString());
+		return false;// EXCEPT::RT::WrongBiffRecord("Wrong record size.", getTypeString());
 	}
+	return true;
 }
 
 
@@ -246,8 +252,10 @@ void CFRecord::checkFitWrite(const size_t size) const
 void CFRecord::skipNunBytes(const size_t n)
 {
 	//ASSERT(data_); // This throws if we use skipNunBytes instead of reserveNunBytes
-	checkFitRead(n);
-	rdPtr += n;
+	if (checkFitRead(n))
+	{
+		rdPtr += n;
+	}
 }
 
 
@@ -361,7 +369,7 @@ CFRecord& operator>>(CFRecord & record, std::string & str)
     char symbol;
     do
     {
-        record.loadAnyData(symbol);
+        if (record.loadAnyData(symbol) == false) break;
         str += symbol;
     } while (symbol);
     return record;
@@ -374,7 +382,7 @@ CFRecord& operator>>(CFRecord & record, std::wstring & str)
     unsigned short symbol;
     do
     {
-        record.loadAnyData(symbol);
+        if (record.loadAnyData(symbol) == false) break;
         utf16.push_back(symbol);
     } while (symbol);
 

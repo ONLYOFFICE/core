@@ -83,6 +83,9 @@ void Feat11FieldDataItem::load(CFRecord& record)
 	record >> strFieldName;
 	record >> strCaption;
 
+	if (record.getRdPtr() >= record.getDataSize())
+		return;//125 Planilhas de Excel.xls
+
 	if (cbFmtAgg > 0)
 		record >> dxfFmtAgg;
 	if (cbFmtInsertRow > 0)

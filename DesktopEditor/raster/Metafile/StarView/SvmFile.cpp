@@ -6,7 +6,7 @@
 #include "../Common/MetaFileTypes.h"
 #include "../Common/MetaFileRenderer.h"
 
-#include "../../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
+#include "../../../../OfficeUtils/src/OfficeUtils.h"
 #ifdef _DEBUG
 	#include <iostream>
 #endif

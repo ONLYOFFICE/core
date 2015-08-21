@@ -3,10 +3,28 @@ QT  += core gui widgets gui-private widgets-private core-private printsupport
 TEMPLATE = app
 CONFIG += app_bundle
 
+CONFIG -= debug_and_release debug_and_release_target
+
 CONFIG(debug, debug|release) {
     DESTDIR = $$PWD/build/windows/Debug
 } else {
     DESTDIR = $$PWD/build/windows/Release
+}
+
+win32:contains(QMAKE_TARGET.arch, x86_64):{
+    PLATFORM_BUILD = win64
+    message(windows64)
+}
+win32:!contains(QMAKE_TARGET.arch, x86_64):{
+    PLATFORM_BUILD = win32
+    message(windows32)
+}
+
+CONFIG(debug, debug|release) {
+    PLATFORM_BUILD2 = $$PLATFORM_BUILD/debug
+    message(debug)
+} else {
+    PLATFORM_BUILD2 = $$PLATFORM_BUILD
 }
 
 HEADERS += \
@@ -60,43 +78,7 @@ LIBS += -lwininet \
         -ldwmapi \
         -lOpenGL32
 
-win32:contains(QMAKE_TARGET.arch, x86_64):{
-
-DEFINES += JAS_WIN_MSVC_BUILD WIN32
-
 QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.02
 
-CONFIG(debug, debug|release) {
-
-    LIBS += -L../../cefbuilds/win64 -llibcef
-    LIBS += -L../../../lib/build/Debug/debug -lascdocumentscore
-
-} else {
-
-    LIBS += -L../../cefbuilds/win64 -llibcef
-    LIBS += -L../../../lib/build/Release/release -lascdocumentscore
-
-}
-
-    message(windows64)
-}
-win32:!contains(QMAKE_TARGET.arch, x86_64):{
-
-DEFINES += JAS_WIN_MSVC_BUILD WIN32 _WIN32
-
-QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.01
-
-CONFIG(debug, debug|release) {
-
-    LIBS += -L../../cefbuilds/win32 -llibcef
-    LIBS += -L../../../lib/build/Debug/debug -lascdocumentscore
-
-} else {
-
-    LIBS += -L../../cefbuilds/win32 -llibcef
-    LIBS += -L../../../lib/build/Release/release -lascdocumentscore
-
-}
-
-    message(windows32)
-}
+LIBS += -L$$PWD/../cefbuilds/$$PLATFORM_BUILD -llibcef
+LIBS += -L$$PWD/../corebuilds/$$PLATFORM_BUILD2 -lascdocumentscore

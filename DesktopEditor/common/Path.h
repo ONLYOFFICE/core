@@ -17,8 +17,8 @@ namespace NSSystemPath
 	{
 		std::wstring sRes;
 #if defined(_WIN32) || defined (_WIN64)
-                TCHAR tDrive[256];
-		TCHAR tFolder[256];
+		wchar_t tDrive[256];
+		wchar_t tFolder[256];
 		_wsplitpath( strFileName.c_str(), tDrive, tFolder, NULL, NULL );
 		sRes.append(tDrive);
 		sRes.append(tFolder);
@@ -36,8 +36,8 @@ namespace NSSystemPath
 	{
 		std::wstring sRes;
 #if defined(_WIN32) || defined (_WIN64)
-		TCHAR tFilename[256];
-		TCHAR tExt[256];
+		wchar_t tFilename[256];
+		wchar_t tExt[256];
 		_wsplitpath( strFileName.c_str(), NULL, NULL, tFilename, tExt );
 		sRes.append(tFilename);
 		sRes.append(tExt);

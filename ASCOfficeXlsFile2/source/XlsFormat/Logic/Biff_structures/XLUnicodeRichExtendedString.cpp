@@ -256,23 +256,24 @@ void XLUnicodeRichExtendedString::load(CFRecord& record)
 void XLUnicodeRichExtendedString::loadSymbols(CFRecord& record, const size_t cch, const bool is_wide)
 {
 	size_t raw_length = cch << (is_wide ? 1 : 0);
-	record.checkFitRead(raw_length);
-
-	if(is_wide)
+	if (record.checkFitRead(raw_length))
 	{
-#if defined(_WIN32) || defined(_WIN64)
-        std::wstring int_str(record.getCurData<wchar_t>(), cch);
-		str_ = int_str.c_str();
-#else
-        str_ = convertUtf16ToWString(record.getCurData<UTF16>(), cch);
-#endif
+		if(is_wide)
+		{
+	#if defined(_WIN32) || defined(_WIN64)
+			std::wstring int_str(record.getCurData<wchar_t>(), cch);
+			str_ = int_str.c_str();
+	#else
+			str_ = convertUtf16ToWString(record.getCurData<UTF16>(), cch);
+	#endif
+		}
+		else
+		{
+			std::string int_str(record.getCurData<char>(), cch);
+			str_ = STR::toStdWString(int_str, record.getGlobalWorkbookInfo()->CodePage).c_str();
+		}
+		record.skipNunBytes(raw_length);
 	}
-	else
-	{
-		std::string int_str(record.getCurData<char>(), cch);
-		str_ = STR::toStdWString(int_str, record.getGlobalWorkbookInfo()->CodePage).c_str();
-	}
-	record.skipNunBytes(raw_length);
 }
 
 

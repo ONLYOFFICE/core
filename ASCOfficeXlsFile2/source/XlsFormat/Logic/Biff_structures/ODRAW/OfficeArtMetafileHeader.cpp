@@ -23,8 +23,9 @@ void OfficeArtMetafileHeader::store(XLS::CFRecord& record)
 void OfficeArtMetafileHeader::load(XLS::CFRecord& record)
 {
 	record >> cbSize;
-	record.loadAnyData(rcBounds);
-	record.loadAnyData(ptSize);
+	if (record.loadAnyData(rcBounds) == false)	return;
+	if (record.loadAnyData(ptSize) == false)	return;
+	
 	record >> cbSave >> compression >> filter;
 }
 

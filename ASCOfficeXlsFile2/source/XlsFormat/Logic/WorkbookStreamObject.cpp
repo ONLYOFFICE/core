@@ -103,7 +103,7 @@ const bool WorkbookStreamObject::loadContent(BinProcessor& proc)
 				if ((proc.mandatory<ChartSheetSubstream>())  && (elements_.size() > 0))
 				{
 					WorksheetSubstream_found = true;
-					m_ChartSheetSubstream.push_back(elements_.back());
+					m_WorksheetSubstream.push_back(elements_.back());
 					elements_.pop_back();
 				}
 			}

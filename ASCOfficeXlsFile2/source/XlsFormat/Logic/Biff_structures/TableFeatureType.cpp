@@ -141,6 +141,8 @@ void TableFeatureType::load(CFRecord& record)
 	record >> rgbName;
 	record >> cFieldData;
 
+	int r = cFieldData;
+
 	if (fLoadCSPName)
 		record >> cSPName;
 
@@ -149,6 +151,9 @@ void TableFeatureType::load(CFRecord& record)
 	
 	for (size_t i = 0; i < cFieldData; i++)
 	{
+		if (record.getRdPtr() >= record.getDataSize())
+			return;
+		
 		Feat11FieldDataItemPtr item(new Feat11FieldDataItem);
 		item->load(record);
 		fieldData.push_back(item);

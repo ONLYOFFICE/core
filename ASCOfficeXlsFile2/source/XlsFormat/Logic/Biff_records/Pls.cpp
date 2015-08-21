@@ -60,7 +60,8 @@ void Pls::writeFields(CFRecord& record)
 void Pls::readFields(CFRecord& record)
 {
 	record.skipNunBytes(2); // reserved
-	record.loadAnyData(rgb);
+	
+	if (record.loadAnyData(rgb) == false) return;
 
 	int size	= record.getDataSize() - 2;
 	const char* data	= record.getData() + 2;

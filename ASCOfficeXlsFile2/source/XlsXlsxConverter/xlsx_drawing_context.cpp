@@ -171,11 +171,11 @@ void xlsx_drawing_context::end_drawing()
 {
 	if (drawing_state.size() < 1 )return;
 
-	if (drawing_state.back().anchor.empty())
-	{
-		drawing_state.pop_back();
-		return;
-	}
+	//if (drawing_state.back().anchor.empty())
+	//{
+	//	drawing_state.pop_back();
+	//	return;
+	//}
 
 	std::wstringstream strm;
 
@@ -540,7 +540,9 @@ void xlsx_drawing_context::set_description(const std::wstring & str)
 }
 void xlsx_drawing_context::set_anchor(const std::wstring & str)
 {
-	if (drawing_state.size() < 1 )return;
+	if (str.empty())				return;
+	if (drawing_state.size() < 1 )	return;
+	
 	drawing_state.back().anchor = str;
 }
 void xlsx_drawing_context::set_image(const std::wstring & str)

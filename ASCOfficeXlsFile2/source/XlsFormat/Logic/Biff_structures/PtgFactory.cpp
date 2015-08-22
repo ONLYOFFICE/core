@@ -67,12 +67,12 @@ PtgPtr PtgFactory::loadPtg(CFRecord& record, const CellRef& cell_base_ref)
 	}
 
 	PtgPtr ptg = createPtg(full_type, cell_base_ref);
-	if(!ptg)
+	if(ptg)
 	{
-		throw;// EXCEPT::RT::WrongBiffRecord("Unsupported type of Ptg.", record.getTypeString());
+		ptg->load(record);// throw EXCEPT::RT::WrongBiffRecord("Unsupported type of Ptg.", record.getTypeString());
 	}
-	ptg->load(record);
-	return ptg;
+	
+	return ptg; 
 }
 
 

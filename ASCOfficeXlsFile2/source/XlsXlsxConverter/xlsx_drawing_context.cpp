@@ -83,6 +83,7 @@ bool xlsx_drawing_context::start_drawing(int type)
 	switch(type)
 	{
 	case 0x0000: // Group
+		start_group();		return true;
 	case 0x0001: // Line
 	case 0x0002: // Rectangle
 	case 0x0003: // Oval
@@ -90,9 +91,9 @@ bool xlsx_drawing_context::start_drawing(int type)
 	case 0x0006: // Text
 	case 0x001E: // OfficeArt object
 	case 0x0009: // Polygon:
-		start_shape(type); return true;
+		start_shape(type);	return true;
 	case 0x0008: // Picture
-		start_image(); return true;
+		start_image();		return true;
 	case 0x0005: // Chart  
 	case 0x0007: // Button
 	case 0x000B: // Checkbox
@@ -105,6 +106,7 @@ bool xlsx_drawing_context::start_drawing(int type)
 	case 0x0012: // List
 	case 0x0013: // Group box
 	case 0x0014: // Dropdown list
+		start_shape(0x0002); return true;
 	case 0x0019: // Note
 		break;
 	}
@@ -120,6 +122,10 @@ void xlsx_drawing_context::start_image()
 	drawing_state.back().type = external_items::typeImage;
 	
 	count_object++;
+}
+
+void xlsx_drawing_context::start_group()
+{
 }
 
 void xlsx_drawing_context::start_shape(int type)
@@ -171,11 +177,11 @@ void xlsx_drawing_context::end_drawing()
 {
 	if (drawing_state.size() < 1 )return;
 
-	//if (drawing_state.back().anchor.empty())
-	//{
-	//	drawing_state.pop_back();
-	//	return;
-	//}
+	if (drawing_state.back().anchor.empty())
+	{
+		drawing_state.pop_back();
+		return;
+	}
 
 	std::wstringstream strm;
 

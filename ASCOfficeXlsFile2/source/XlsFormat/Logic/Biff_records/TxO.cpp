@@ -55,30 +55,36 @@ void TxO::readFields(CFRecord& record)
 	record >> ifntEmpty;
 	fmla.load(record);
 	
-	if ( cbRuns )
+	std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
+	if ( recs.size() )
 	{
-		std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
-		if ( recs.size() )
+		while( !recs.empty() )
 		{
-			while( !recs.empty() )
-			{
-				record.appendRawData(recs.front());
-				recs.pop_front();
-			}
-						
-			commentText.setSize(cchText);
-			record >> commentText;
+			record.appendRawData(recs.front());
+			recs.pop_front();
+		}
 
-			TxOruns.m_runCount = cbRuns / 8 - 1;
-			TxOruns.load(record);
-		
+	}
 
-			if (record.getRdPtr() <  record.getDataSize())
-			{
-				m_OfficeArtSpContainer = ODRAW::OfficeArtRecordPtr(new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet));
-				record >> *m_OfficeArtSpContainer; //todooo !!! сделать проверку на тип
+	if ( cbRuns )
+	{					
+		commentText.setSize(cchText);
+		record >> commentText;
 
-			}
+		TxOruns.m_runCount = cbRuns / 8 - 1;
+		TxOruns.load(record);
+	}
+
+	if (record.getRdPtr() <  record.getDataSize() - 8)
+	{
+		ODRAW::OfficeArtRecordHeader rh_child;
+		record >> rh_child;
+		record.RollRdPtrBack(rh_child.size());
+
+		if (rh_child.recType == ODRAW::OfficeArtContainer::SpContainer)
+		{
+			m_OfficeArtSpContainer = ODRAW::OfficeArtRecordPtr(new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet));
+			record >> *m_OfficeArtSpContainer;
 		}
 	}
 }

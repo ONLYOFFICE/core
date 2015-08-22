@@ -117,6 +117,7 @@ public:
 	bool start_drawing(int type);	
 		void start_image();
 		void start_shape(int type);
+		void start_group();
 
         void set_id			(int id);
 		void set_FlipH		();

@@ -22,6 +22,7 @@ public:
 	void readFields(CFRecord& record);
 	void readFields();
 
+	static const ElementType	type = typeMsoDrawing;
 //-----------------------------
 	virtual const bool isStartingRecord(CFRecord& record);
 	virtual const bool isEndingRecord(CFRecord& record);

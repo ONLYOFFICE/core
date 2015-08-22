@@ -65,6 +65,8 @@ const bool XFS::loadContent(BinProcessor& proc)
 		count = proc.repeated<XFExt>(16, 4050);
 		while (count > 0)
 		{
+			if (elements_.empty()) break;
+
 			XFExt* ext = dynamic_cast<XFExt*>(elements_.front().get());
 
 			m_xf_ext.push_back(elements_.front());

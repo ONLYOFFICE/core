@@ -47,6 +47,7 @@
 #include <simple_xml_writer.h>
 
 #include <boost/lexical_cast.hpp>
+#include <boost/utility.hpp>
 #include "../../../DesktopEditor/common/File.h"
 #include "../../../DesktopEditor/raster/BgraFrame.h"
 
@@ -523,10 +524,17 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		short type_object = -1;
 
 		ODRAW::OfficeArtSpContainer *sp			= NULL;
+		ODRAW::OfficeArtSpContainer *sp_text	= NULL;
 		ODRAW::OfficeArtSpContainer *sp_common	= NULL;
 		
 		XLS::OBJ		* OBJ			= dynamic_cast<XLS::OBJ*>		(elem->get());
-		XLS::TEXTOBJECT	* TEXTOBJECT	= dynamic_cast<XLS::TEXTOBJECT*>(elem->get());
+		XLS::TEXTOBJECT	* TEXTOBJECT	= NULL;
+		
+		std::list<XLS::BaseObjectPtr>::iterator elem_next = boost::next(elem);
+		if ( elem_next !=objects->elements_.end() )
+		{
+			TEXTOBJECT	= dynamic_cast<XLS::TEXTOBJECT*>(elem_next->get());
+		}
 		XLS::CHART		* CHART			= dynamic_cast<XLS::CHART*>		(elem->get());
 
 		XLS::Obj * obj		= NULL;
@@ -547,11 +555,11 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		}
 		if (text_obj)
 		{ 
-			type_object = 0x0006;
+			if (type_object <0) type_object = 0x0006;
 			
 			if (text_obj->m_OfficeArtSpContainer)
 			{
-				sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(text_obj->m_OfficeArtSpContainer.get());
+				sp_text = dynamic_cast<ODRAW::OfficeArtSpContainer*>(text_obj->m_OfficeArtSpContainer.get());
 			}
 		}
 		if (chart)
@@ -561,18 +569,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 //-----------------------------------------------------------------------------
 		if ( (spgr) && (ind+1< spgr->child_records.size()))
 		{
-			ODRAW::OfficeArtClientData* client_data = NULL;
-
 			sp_common	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
-			client_data = dynamic_cast<ODRAW::OfficeArtClientData*>(spgr->child_records[ind+1].get());
-			
-			if (sp_common == NULL && client_data)
-			{
-				ind++;
-				if (ind+1< spgr->child_records.size())
-					sp_common	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
-			}
-
 		}
 		
 		if (note && text_obj)
@@ -587,6 +584,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 
 		if (xlsx_context->get_drawing_context().start_drawing(type_object))		
 		{
+			convert(sp_text);
 			convert(sp);
 			convert(sp_common);
 
@@ -607,28 +605,29 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 				note = true;
 			}
 		}
-		if (sp == NULL)
+		if ( sp == NULL )	ind++;
+		if ( spgr ) 
 		{
-			ind++;
-			if ( spgr ) 
+			while (ind+1 < spgr->child_records.size()) // бывает что эти элементы не привязаны к sp, а "лежат" сверху - FilterClickColour_2003.xls
 			{
-				while (ind+1 < spgr->child_records.size())
-				{
-					ODRAW::OfficeArtClientData*		client_data = NULL;
-					ODRAW::OfficeArtClientTextbox*	text_client_data = NULL;
+				ODRAW::OfficeArtClientData*		client_data = NULL;
+				ODRAW::OfficeArtClientTextbox*	text_client_data = NULL;
 
-					client_data			= dynamic_cast<ODRAW::OfficeArtClientData*>		(spgr->child_records[ind+1].get());
-					text_client_data	= dynamic_cast<ODRAW::OfficeArtClientTextbox*>	(spgr->child_records[ind+1].get());
-					
-					if (client_data || text_client_data)
-					{
-						ind++;
-					}else break;
-				}
+				client_data			= dynamic_cast<ODRAW::OfficeArtClientData*>		(spgr->child_records[ind+1].get());
+				text_client_data	= dynamic_cast<ODRAW::OfficeArtClientTextbox*>	(spgr->child_records[ind+1].get());
+				
+				if (client_data || text_client_data)
+				{
+					ind++;
+				}else break;
 			}
+		}	
+		if (TEXTOBJECT)
+		{
+			elem++;
+			if ( sp_text == NULL )	ind++;
 		}
 	}
-
 }
 
 void XlsConverter::convert(ODRAW::OfficeArtSpContainer *sp)

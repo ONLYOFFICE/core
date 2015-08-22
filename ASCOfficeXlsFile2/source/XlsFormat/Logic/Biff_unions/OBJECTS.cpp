@@ -65,14 +65,11 @@ public:
 	const bool loadContentRead(BinReaderProcessor& proc)
 	{
 		bool res = proc.mandatory(*mso_drawing_);
-		//if(!res)
-		//{
-		//	return false;
-		//}
+
         Parenthesis_OBJECTS_2 parenthesis_objects_2;
         
 		int count			= proc.repeated(parenthesis_objects_2, 0, 0);
-		int count_continue	= proc.repeated<Continue>(0,0);
+		//int count_continue	= proc.repeated<Continue>(0,0);
 		
 		return res || count>0;
 	}
@@ -100,15 +97,21 @@ const bool OBJECTS::loadContentRead(BinReaderProcessor& proc)
 	m_MsoDrawing = boost::shared_ptr<MsoDrawing>(new MsoDrawing(is_inside_chart_sheet_));
 	
     Parenthesis_OBJECTS_1 parenthesis_objects_1(m_MsoDrawing);
-    //Parenthesis_OBJECTS_2 parenthesis_objects_2;
 
     int count_1 = proc.repeated(parenthesis_objects_1, 0, 0);
 
-    //int count_2 = proc.repeated(parenthesis_objects_2, 0, 0);
-	//int count_3 = proc.repeated<Continue>(0,0);
-
     MsoDrawingSelection mso_drawing_selection;
     int count_4  = proc.optional(mso_drawing_selection);
+	
+	for (std::list<BaseObjectPtr>::iterator elem = elements_.begin(); elem != elements_.end(); elem++)
+	{
+		if (elem->get()->get_type() == typeMsoDrawing)
+		{
+			elements_.erase(elem);
+			break;
+		}
+
+	}
 
 	return count_1 > 0 || count_4 > 0;
 }

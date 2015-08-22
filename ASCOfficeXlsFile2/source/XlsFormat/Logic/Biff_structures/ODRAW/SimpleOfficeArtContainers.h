@@ -40,6 +40,7 @@ public:
 	OfficeArtSpContainer(const OfficeArtClientAnchorType anchor_type) : OfficeArtContainer(0x0F, SpContainer, anchor_type) {}
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtSpContainer(*this)); }
 
+	void loadFields(XLS::CFRecord& record);
 };
 
 class OfficeArtClientData : public OfficeArtRecord
@@ -48,8 +49,9 @@ class OfficeArtClientData : public OfficeArtRecord
 public:
 	OfficeArtClientData() : OfficeArtRecord(0, ClientData) {}
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtClientData(*this)); }
-	virtual void loadFields(XLS::CFRecord& record) {}
-	virtual void storeFields(XLS::CFRecord& record) {}
+	
+	void loadFields(XLS::CFRecord& record);
+	void storeFields(XLS::CFRecord& record) {}
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtClientData;
 
@@ -81,8 +83,9 @@ class OfficeArtClientTextbox : public OfficeArtRecord
 public:
 	OfficeArtClientTextbox() : OfficeArtRecord(0, ClientTextbox) {}
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtClientTextbox(*this)); }
-	virtual void loadFields(XLS::CFRecord& record) {}
-	virtual void storeFields(XLS::CFRecord& record) {}
+	
+	void loadFields(XLS::CFRecord& record);
+	void storeFields(XLS::CFRecord& record) {}
 
 	static const XLS::ElementType	type = XLS::typeOfficeArtClientTextbox;
 

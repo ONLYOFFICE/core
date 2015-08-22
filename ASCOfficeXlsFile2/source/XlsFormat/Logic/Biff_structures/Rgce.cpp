@@ -27,26 +27,16 @@ void Rgce::load(CFRecord& record, const size_t cce_val)
 {
 	cce = cce_val;
 	size_t where_to_stop = record.getRdPtr() + cce_val;
+	
 	while(record.getRdPtr() < where_to_stop)
 	{
-		sequence.push_back(PtgFactory::loadPtg(record, cell_base_ref));
+		static PtgPtr & ptg = PtgFactory::loadPtg(record, cell_base_ref);
+		if (ptg.get() == NULL)
+			break;
+
+		sequence.push_back(ptg);
 	}
 }
-
-//
-//void Rgce::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	PtgExpPtr ptg_exp(new PtgExp);
-//	if(ptg_exp->fromXML(xml_tag))
-//	{
-//		sequence.push_back(ptg_exp);
-//	}
-//	PtgTblPtr ptg_tbl(new PtgTbl);
-//	if(ptg_tbl->fromXML(xml_tag))
-//	{
-//		sequence.push_back(ptg_tbl);
-//	}
-//}
 
 
 void Rgce::store(CFRecord& record)

@@ -27,7 +27,6 @@ public:
 	bool is_inside_chart_sheet_;
 
 	MsoDrawingPtr								m_MsoDrawing;
-	MsoDrawingPtr								m_MsoDrawingObjects;
 	
 };
 

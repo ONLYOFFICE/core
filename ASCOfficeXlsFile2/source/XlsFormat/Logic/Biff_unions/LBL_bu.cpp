@@ -60,6 +60,10 @@ int LBL::serialize(std::wostream & stream)
 {
 	Lbl *lbl = dynamic_cast<Lbl*>(m_Lbl.get());
 	if (lbl == NULL) return 0;
+		
+	const std::wstring & value = lbl->rgce.getAssembledFormula();
+
+	if (value.empty()) return 0;
 
 	CP_XML_WRITER(stream)    
     {
@@ -72,7 +76,7 @@ int LBL::serialize(std::wostream & stream)
 
 			CP_XML_ATTR(L"name", xml::utils::replace_text_to_xml(name));
 
-			CP_XML_STREAM() << xml::utils::replace_text_to_xml(lbl->rgce.getAssembledFormula());
+			CP_XML_STREAM() << xml::utils::replace_text_to_xml(value);
 		}
 	}
 	return 0;

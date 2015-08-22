@@ -40,12 +40,12 @@ void URLMoniker::load(XLS::CFRecord& record)
 	{
 	}
 
-	//if(!record.isEOF())
-	//{
-	//	_GUID_ guid;
-	//	record >> guid >> serialVersion >> uriFlags;
-	//	serialGUID = STR::guid2bstr(guid);
-	//}
+	if(!record.isEOF() && (length - url.length()*2) == 24)
+	{
+		_GUID_ guid;
+		record >> guid >> serialVersion >> uriFlags;
+		serialGUID = STR::guid2bstr(guid);
+	}
 }
 
 

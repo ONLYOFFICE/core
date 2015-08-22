@@ -177,25 +177,35 @@ void Obj::readFields(CFRecord& record)
 				record.appendRawData(recs.front());
 				recs.pop_front();
 			}
-			m_OfficeArtSpContainer = ODRAW::OfficeArtRecordPtr(new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet));
-			record >> *m_OfficeArtSpContainer; //todooo !!! сделать проверку на тип
-
-            unsigned char*	Add		= NULL;
-			int		size	= 0;
-			if (record.getRdPtr() <  record.getDataSize())
-			{
-				size = record.getDataSize() - record.getRdPtr();
-                Add = new unsigned char [size];
-				memcpy(Add, record.getData(), size);
-				record.skipNunBytes(size);
-			}
-			if (Add)
-			{
-				delete []Add;
-			}
 		}
-		
 	}
+
+	if (record.getRdPtr() <  record.getDataSize() - 8)
+	{
+		ODRAW::OfficeArtRecordHeader rh_child;
+		record >> rh_child;
+		record.RollRdPtrBack(rh_child.size());
+
+		if (rh_child.recType == ODRAW::OfficeArtContainer::SpContainer)
+		{
+			m_OfficeArtSpContainer = ODRAW::OfficeArtRecordPtr(new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet));
+			record >> *m_OfficeArtSpContainer;
+		}
+	}
+ //   unsigned char*	Add		= NULL;
+	//int		size	= 0;
+	//if (record.getRdPtr() <  record.getDataSize())
+	//{
+	//	size = record.getDataSize() - record.getRdPtr();
+ //       Add = new unsigned char [size];
+	//	memcpy(Add, record.getData(), size);
+	//	record.skipNunBytes(size);
+	//}
+	//if (Add)
+	//{
+	//	delete []Add;
+	//}	
+
 }
 
 } // namespace XLS

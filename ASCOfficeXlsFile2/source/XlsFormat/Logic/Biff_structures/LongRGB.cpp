@@ -1,7 +1,6 @@
 
 #include "LongRGB.h"
 #include <Binary/CFRecord.h>
-//#include <Exception/AttributeDataWrong.h>
 
 namespace XLS
 {
@@ -35,29 +34,6 @@ BiffStructurePtr LongRGB::clone()
 {
 	return BiffStructurePtr(new LongRGB(*this));
 }
-
-//
-//void LongRGBA::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"red", red);
-//	xml_tag->setAttribute(L"green", green);
-//	xml_tag->setAttribute(L"blue", blue);
-//	if(is_alpha)
-//	{
-//		xml_tag->setAttribute(L"alpha", alpha);
-//	}
-//	xml_tag->setAttribute(L"argb", argb);
-//}
-//
-//void LongRGBA::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	argb = getStructAttribute(xml_tag, L"argb");
-//	if(!STR::fromARGB(static_cast<wchar_t*>(argb), red, green, blue, alpha))
-//	{
-//		throw;// EXCEPT::LE::AttributeDataWrong(L"argb", static_cast<char*>(getClassName()), argb);
-//	}
-//}
-
 
 void LongRGBA::store(CFRecord& record)
 {

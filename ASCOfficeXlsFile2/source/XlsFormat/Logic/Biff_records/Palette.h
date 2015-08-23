@@ -21,15 +21,13 @@ public:
 	void writeFields(CFRecord& record);
 	void readFields(CFRecord& record);
 
+	int serialize(std::wostream & stream);
+
 	static const ElementType type = typePalette;
 
 //-----------------------------
 	BiffStructurePtrVector rgColor;
 	unsigned short ccv;
-public:
-	//BO_ATTRIB_MARKUP_BEGIN
-		//BO_ATTRIB_MARKUP_VECTOR_COMPLEX(rgColor, LongRGB)
-	//BO_ATTRIB_MARKUP_END
 
 };
 

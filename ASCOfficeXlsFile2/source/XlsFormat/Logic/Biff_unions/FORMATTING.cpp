@@ -140,6 +140,13 @@ int FORMATTING::serialize2(std::wostream & stream)
 		{
 			m_Styles->serialize(stream);
 		}
+		if (m_Palette)
+		{
+			CP_XML_NODE(L"colors")
+			{
+				m_Palette->serialize(CP_XML_STREAM());
+			}
+		}
 	}
 
 	return 0;

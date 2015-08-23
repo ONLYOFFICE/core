@@ -30,6 +30,8 @@ public:
 
 	void set_color_ext			(FillInfoExt & color_ext);
 
+	GlobalWorkbookInfoPtr global_info;
+
 //-----------------------------
 	BIFF_WORD dyHeight; // measured in twips (1/20 of of a printer's point)
 

@@ -43,6 +43,8 @@ void Font::writeFields(CFRecord& record)
 
 void Font::readFields(CFRecord& record)
 {
+	global_info = record.getGlobalWorkbookInfo();
+
 	unsigned short flags;
 	record >> dyHeight >> flags;
 	fItalic = GETBIT(flags, 1);
@@ -157,12 +159,12 @@ int Font::serialize_rPr(std::wostream & stream)
 					}
 					else
 					{
-						int index = icv;
-						if (icv < 17)
-						{						
-							CP_XML_NODE(L"a:schemeClr")
-							{						
-								CP_XML_ATTR(L"val", shemeColor[icv]);
+						std::map<int,  std::wstring>::iterator it = global_info->colors_palette.find(icv);
+						if (it != global_info->colors_palette.end())
+						{					
+							CP_XML_NODE(L"a:srgbClr")
+							{
+								CP_XML_ATTR(L"val", it->second); 
 							}
 						}
 					}

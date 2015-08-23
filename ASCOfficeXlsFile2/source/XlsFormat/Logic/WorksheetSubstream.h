@@ -25,6 +25,7 @@ public:
 	size_t						ws_index_;
 
 	std::vector<BaseObjectPtr>	m_MergeCells;
+	std::vector<BaseObjectPtr>	m_WINDOW;
 	
 	BaseObjectPtr				m_GLOBALS;
 	BaseObjectPtr				m_PAGESETUP;
@@ -33,6 +34,7 @@ public:
 	BaseObjectPtr				m_CELLTABLE;
 	BaseObjectPtr				m_SHFMLA_SET;
 	BaseObjectPtr				m_Dimensions;
+	BaseObjectPtr				m_SORTANDFILTER;
 	BaseObjectPtr				m_OBJECTS;
 	std::vector<BaseObjectPtr>	m_HLINK;
 };

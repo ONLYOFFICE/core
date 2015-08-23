@@ -124,7 +124,11 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	}
 
 	proc.optional<SCENARIOS>();
-	proc.optional<SORTANDFILTER>();  // Let it be optional
+	if (proc.optional<SORTANDFILTER>())// Let it be optional
+	{
+		m_SORTANDFILTER = elements_.back();
+		elements_.pop_back();
+	}		
 	
 	if (proc.mandatory<Dimensions>())
 	{
@@ -161,7 +165,14 @@ const bool WorksheetSubstream::loadContent(BinProcessor& proc)
 	proc.repeated<Note>(0, 0);
 	proc.repeated<PIVOTVIEW>(0, 0);
 	proc.optional<DCON>();
-	proc.repeated<WINDOW>(1, 0);
+	
+	count = proc.repeated<WINDOW>(1, 0);
+	while(count > 0)
+	{
+		m_WINDOW.insert(m_WINDOW.begin(), elements_.back());
+		elements_.pop_back();
+		count--;
+	}
 
 	proc.optional<SheetExt>(); //BulletinSearch.xls ??? тута или ниже
 

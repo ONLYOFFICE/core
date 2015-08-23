@@ -19,10 +19,11 @@ class GlobalWorkbookInfo
 public:
 	GlobalWorkbookInfo(const unsigned short code_page);
 
-	const size_t RegisterBorderId	(const BorderInfo& border);
-	const size_t RegisterFillId		(const FillInfo& fill);
-	
-	void				RegisterFontColorId	(int id, const FillInfoExt & font_color);
+	const size_t	RegisterBorderId	(const BorderInfo& border);
+	const size_t	RegisterFillId		(const FillInfo& fill);	
+	void			RegisterFontColorId	(int id, const FillInfoExt & font_color);
+	void			RegisterPaletteColor(int id, const std::wstring & argb);
+
 	const unsigned int	GenerateAXESId();
 
 	unsigned short								CodePage;
@@ -35,6 +36,7 @@ public:
 	boost::unordered_map<BorderInfo, int>		border_x_ids;
 	boost::unordered_map<FillInfo, int>			fill_x_ids;
 	std::map<int,  FillInfoExt>					fonts_color_ext;
+	std::map<int,  std::wstring>				colors_palette;
 
 	std::vector<BaseObjectPtr>					*fonts;
 	

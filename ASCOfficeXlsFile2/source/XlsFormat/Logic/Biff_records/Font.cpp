@@ -142,7 +142,7 @@ int Font::serialize_rPr(std::wostream & stream)
 						case 2://rgb
 							CP_XML_NODE(L"a:srgbClr")
 							{
-								CP_XML_ATTR(L"val", STR::toARGB(color_ext.xclrValue)); 
+								CP_XML_ATTR(L"val", STR::toRGB(color_ext.xclrValue)); 
 							}break;
 						case 3://theme color
 							CP_XML_NODE(L"a:schemeClr")

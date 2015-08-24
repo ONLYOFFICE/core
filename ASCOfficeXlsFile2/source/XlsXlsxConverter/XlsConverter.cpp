@@ -799,14 +799,14 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 				int count_point[] = { 1, 3, 1, 0};
 				for (int i = 0 ; i < command.size(); i++)
 				{
-					if (command[i].typeSegment == ODRAW::msopathEnd) break;
-					if (command[i].typeSegment > 4) continue;
+					//if (command[i].typeSegment == ODRAW::msopathEnd) break;
+					if (command[i].typeSegment > 3) continue;
 
 					CP_XML_NODE(comm[command[i].typeSegment])
 					{
 						for (int j=0 ; j < count_point[command[i].typeSegment]; j ++)
 						{
-							if (ind_point > points.size())
+							if (ind_point >= points.size())
 								break;
 							CP_XML_NODE(L"a:pt")
 							{

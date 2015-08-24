@@ -191,6 +191,13 @@ void Obj::readFields(CFRecord& record)
 			m_OfficeArtSpContainer = ODRAW::OfficeArtRecordPtr(new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet));
 			record >> *m_OfficeArtSpContainer;
 		}
+
+		int sz_skip = record.getDataSize() - record.getRdPtr();
+
+		if (sz_skip > 0)
+		{
+			record.skipNunBytes(sz_skip);
+		}
 	}
  //   unsigned char*	Add		= NULL;
 	//int		size	= 0;

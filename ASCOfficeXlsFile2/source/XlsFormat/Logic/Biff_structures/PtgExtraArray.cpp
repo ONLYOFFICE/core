@@ -46,6 +46,8 @@ void PtgExtraArray::load(CFRecord& record)
 	record >> cols >> rows;
 	for(int i = 0; i < (cols + 1) * (rows + 1); ++i)
 	{
+		if (record.getRdPtr() >= record.getDataSize()) 
+			break;
 		unsigned char rec_type;
 		record >> rec_type;
 		SerArPtr ser(SerAr::createSerAr(rec_type));

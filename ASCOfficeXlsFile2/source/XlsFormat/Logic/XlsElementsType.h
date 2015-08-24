@@ -626,6 +626,7 @@ enum ElementType
 	typeOfficeArtClientAnchorChart,
 	typeOfficeArtClientAnchorHF,
 	typeOfficeArtClientAnchorSheet,
+	typeOfficeArtChildAnchor,
 	typeOfficeArtColorMRUContainer,
 	typeOfficeArtContainer,
 	typeOfficeArtFDG,

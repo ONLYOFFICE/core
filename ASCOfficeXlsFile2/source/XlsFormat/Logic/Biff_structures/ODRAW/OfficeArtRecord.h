@@ -50,7 +50,7 @@ public:
 
 		ClientTextbox	= 0xF00D, // Implemented
 
-		ChildAnchor		= 0xF00F,
+		ChildAnchor		= 0xF00F, // Implemented
 		ClientAnchor	= 0xF010, // Implemented
 		ClientData		= 0xF011, // Implemented
 		FConnectorRule	= 0xF012,

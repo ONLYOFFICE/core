@@ -189,11 +189,11 @@ const std::string int2str(const int val, const int radix)
 const std::wstring int2wstr(const int val, const int radix)
 {
 #if defined(_WIN32) || defined(_WIN64)
-    static wchar_t num_buf[10]={};
-    _itow_s(val, num_buf, 9, radix);
+    static wchar_t num_buf[20]={};
+    _itow_s(val, num_buf, 19, radix);
     return std::wstring(num_buf);
 #else
-    static char num_buf[10]={};
+    static char num_buf[20]={};
     sprintf( num_buf, "%d", val);
     std::string a_str(num_buf);
     return std::wstring(a_str.begin(), a_str.end());
@@ -379,6 +379,11 @@ const std::wstring toARGB(const unsigned int rgba)
 		static_cast<unsigned char>((rgba >> 16) & 0xff), static_cast<unsigned char>((rgba >> 24) & 0xff));
 }
 
+const std::wstring toRGB(const unsigned int rgba)
+{
+	return toRGB(static_cast<unsigned char>(rgba & 0xff), static_cast<unsigned char>((rgba >> 8) & 0xff),
+		static_cast<unsigned char>((rgba >> 16) & 0xff));
+}
 
 const std::wstring toARGB(const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha)
 {

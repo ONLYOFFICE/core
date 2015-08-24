@@ -27,7 +27,7 @@ public:
 		record >> nElems >> nElemsAlloc >> cbElem;
 		while(nElems--)
 		{
-			Type element;
+			Type element(cbElem);
 			record >> element;
 			data.push_back(element);
 		}

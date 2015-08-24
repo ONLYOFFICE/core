@@ -75,7 +75,7 @@ int XLUnicodeRichExtendedString::serialize (std::wostream & _stream)
 
 					std::wstring str_part = str_.substr( start_string, rgRun[i].ich - start_string );
 					start_string = rgRun[i].ich;
-					CP_XML_STREAM() << xml::utils::replace_text_to_xml(str_part);
+					CP_XML_STREAM() << STR::escape_ST_Xstring(xml::utils::replace_text_to_xml(str_part));
 				}
 			}
 		}

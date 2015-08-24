@@ -1,17 +1,25 @@
 #ifndef APPLICATION_BASE_H
 #define APPLICATION_BASE_H
 
+#include "../../common/base_export.h"
+
 #ifdef WIN32
-#ifndef Q_DECL_EXPORT
-#define Q_DECL_EXPORT __declspec(dllexport)
 
 #include "windows.h"
+#define WindowHandleId HWND
+#include <wchar.h>
 
 #endif
 
-#define WindowHandleId HWND
+#if defined(_LINUX) && !defined(_MAC)
 
-#include <wchar.h>
+#define WindowHandleId XID
+
+#endif
+
+#ifdef _MAC
+
+#define WindowHandleId XID
 
 #endif
 

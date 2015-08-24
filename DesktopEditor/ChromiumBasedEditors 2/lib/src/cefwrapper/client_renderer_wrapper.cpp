@@ -695,10 +695,13 @@ public:
             CefRefPtr<CefV8Value> val = *arguments.begin();
             std::wstring sFileUrl = val->GetStringValue().ToWString();
 
-            if (sFileUrl.find(L"file:///") == 0)
-                sFileUrl = sFileUrl.substr(8);
-            else if (sFileUrl.find(L"file://") == 0)
-                sFileUrl = sFileUrl.substr(7);
+            if (sFileUrl.find(L"file://") == 0)
+            {
+                if (NSFile::CFileBinary::Exists(sFileUrl.substr(7)))
+                    sFileUrl = sFileUrl.substr(7);
+                else if (NSFile::CFileBinary::Exists(sFileUrl.substr(8)))
+                    sFileUrl = sFileUrl.substr(8);
+            }
 
             std::string sHeader = "";
 

@@ -1,7 +1,7 @@
 #ifndef APPLICATION_BASE_H
 #define APPLICATION_BASE_H
 
-#include "../../common/base_export.h"
+#include "../../../common/base_export.h"
 
 #ifdef WIN32
 

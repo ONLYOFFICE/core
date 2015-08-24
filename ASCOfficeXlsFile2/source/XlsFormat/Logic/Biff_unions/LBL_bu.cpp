@@ -40,7 +40,10 @@ const bool LBL::loadContent(BinProcessor& proc)
 
 	Lbl *lbl = dynamic_cast<Lbl*>(m_Lbl.get());
 
-	XLUnicodeStringNoCch name = lbl->getName();
+	std::wstring name;
+	if (lbl->fBuiltin)	name = lbl->Name.value().get_value_or(L"");
+	
+	if (name.empty())	name = lbl->Name_bin.value();
 	
     NameCmt namecmt(name);
     if (proc.optional(namecmt))

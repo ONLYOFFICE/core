@@ -522,6 +522,21 @@ void pihlShape::ReadComplexData(XLS::CFRecord& record)
 	record >> IHlink_complex;
 }
 
+MSOPOINT::MSOPOINT()
+{
+	cbElement = 4;
+}
+
+MSOPOINT::MSOPOINT(unsigned short cbElement_)
+{
+	cbElement = 4;
+
+	if (cbElement_ == 0xfff0)
+	{
+		cbElement = 2;
+	}
+}
+
 XLS::BiffStructurePtr MSOPOINT::clone() 
 {
 	return XLS::BiffStructurePtr(new MSOPOINT(*this));
@@ -529,7 +544,29 @@ XLS::BiffStructurePtr MSOPOINT::clone()
 
 void MSOPOINT::load(XLS::CFRecord& record)
 {
-	record >> x >> y;
+	if (cbElement == 4)
+	{
+		record >> x >> y;
+	}
+	else
+	{
+		unsigned char x_;
+		record >> x_;
+		y = GETBITS(x_,0 , 3) << 8;
+		x = GETBITS(x_,4 , 8) << 8;
+	}
+}
+
+MSOPATHINFO::MSOPATHINFO()
+{
+	cbElement = 4;
+}
+MSOPATHINFO::MSOPATHINFO(unsigned short cbElement_)
+{
+	cbElement = 4;
+
+	if (cbElement_ == 0xfff0)
+		cbElement = 2;
 }
 
 XLS::BiffStructurePtr MSOPATHINFO::clone()
@@ -546,15 +583,16 @@ void MSOPATHINFO::load(XLS::CFRecord& record)
 
 	EscapeCode	= msopathEscapeExtension;
 	VertexCount	= 0;
+	Segments	= 0;
 
-	if (msopathEscape == typeSegment)
+	if (msopathEscape == typeSegment || msopathClientEscape == typeSegment)
 	{
 		EscapeCode	=	(MSOPATHESCAPE)	BitmaskToInt (val, 0x1F00);
-		VertexCount	=					BitmaskToInt (val, 0x00FF);
+		VertexCount =					BitmaskToInt (val, 0x00FF);
 	}
 	else
 	{
-		Segments		=				BitmaskToInt (val, 0x1FFF);
+		Segments	=	BitmaskToInt (val, 0x1FFF);
 	}
 }
 

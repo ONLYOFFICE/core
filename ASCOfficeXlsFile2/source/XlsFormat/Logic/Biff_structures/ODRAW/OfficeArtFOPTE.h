@@ -507,7 +507,9 @@ class MSOPOINT : public XLS::BiffStructure
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(MSOPOINT)
 	
-	MSOPOINT(){}
+	MSOPOINT(unsigned short cbElement_);
+	MSOPOINT();
+
 	XLS::BiffStructurePtr clone();
 
 	virtual void load(XLS::CFRecord& record);
@@ -517,13 +519,17 @@ class MSOPOINT : public XLS::BiffStructure
 
     int x;
     int y;
+
+	int cbElement;
 };
 
 class MSOPATHINFO : public XLS::BiffStructure 
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(MSOPATHINFO)
 
-	MSOPATHINFO(){}
+	MSOPATHINFO();
+	MSOPATHINFO(unsigned short cbElement_);
+
 	XLS::BiffStructurePtr clone();
 
 	virtual void load(XLS::CFRecord& record);
@@ -541,6 +547,7 @@ class MSOPATHINFO : public XLS::BiffStructure
 	//	msopathEscape,
 	//	msopathClientEscape
 	//};
+	unsigned short		cbElement;
 
 	MSOPATHTYPE			typeSegment;
 	short				Segments;

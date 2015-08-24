@@ -46,5 +46,30 @@ public:
 
 typedef boost::shared_ptr<OfficeArtClientAnchorSheet> OfficeArtClientAnchorSheetPtr;
 
+class OfficeArtChildAnchor : public OfficeArtRecord
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtChildAnchor)
+public:
+	OfficeArtChildAnchor();
+	XLS::BiffStructurePtr clone();
 
+	static const XLS::ElementType	type = XLS::typeOfficeArtChildAnchor;
+	
+	virtual void loadFields(XLS::CFRecord& record);
+	virtual void storeFields(XLS::CFRecord& record){}
+
+	int serialize(std::wostream & stream);
+
+	short dxL;
+	short dyT;
+	short dxR;
+	short dyB;
+
+	unsigned int _dxL;
+	unsigned int _dyT;
+	unsigned int _dxR;
+	unsigned int _dyB;
+};
+
+typedef boost::shared_ptr<OfficeArtChildAnchor> OfficeArtChildAnchorPtr;
 } // namespace XLS

@@ -18,6 +18,8 @@ class MSOSHADECOLOR : public XLS::BiffStructure
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(MSOSHADECOLOR)
 public:
 	MSOSHADECOLOR();
+	MSOSHADECOLOR(unsigned short cbElement_);
+
 	XLS::BiffStructurePtr clone();
 
 	static const XLS::ElementType	type = XLS::typeMSOSHADECOLOR;
@@ -25,7 +27,8 @@ public:
 	virtual void load(XLS::CFRecord& record);
 	virtual void store(XLS::CFRecord& record);
 
-	OfficeArtCOLORREF color;
+	unsigned short		cbElement;
+	OfficeArtCOLORREF	color;
 	OSHARED::FixedPoint position;
 };
 

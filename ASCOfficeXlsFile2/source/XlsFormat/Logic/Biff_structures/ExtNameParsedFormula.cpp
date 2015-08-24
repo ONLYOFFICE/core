@@ -36,7 +36,7 @@ void ExtNameParsedFormula::load(CFRecord& record) // Maybe this class shouldn't 
 {
 	unsigned short cb;
 	record >> cb;
-	if(cb)
+	if(cb && record.getDataSize() > record.getRdPtr())
 	{
 		unsigned char extPtg;
 		record >> extPtg;

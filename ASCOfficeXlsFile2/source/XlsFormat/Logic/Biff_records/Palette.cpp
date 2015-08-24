@@ -33,24 +33,6 @@ void Palette::writeFields(CFRecord& record)
 	}
 }
 
-
-void Palette::readFields(CFRecord& record)
-{
-	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
-	
-	unsigned short ccv;
-	record >> ccv;
-	
-	for(int i = 0; i < ccv; ++i)
-	{
-		LongRGBPtr rgb(new LongRGB);
-		record >> *rgb;
-		rgColor.push_back(rgb);
-
-		global_info->RegisterPaletteColor(i, rgb->argb);
-	}
-}
-
 const std::wstring standart_color[8] = {
 										L"00000000",
 										L"00FFFFFF",
@@ -60,6 +42,33 @@ const std::wstring standart_color[8] = {
 										L"00FFFF00",
 										L"00FF00FF",
 										L"0000FFFF"};
+
+
+void Palette::readFields(CFRecord& record)
+{
+	GlobalWorkbookInfoPtr global_info = record.getGlobalWorkbookInfo();
+	
+	unsigned short ccv;
+	record >> ccv;
+	
+	for(int i = 0; i < 8; ++i)
+	{	
+		global_info->RegisterPaletteColor(i, standart_color[i].substr(2,6));
+	}
+
+	for(int i = 0; i < ccv; ++i)
+	{
+		LongRGBPtr rgb(new LongRGB);
+		record >> *rgb;
+		rgColor.push_back(rgb);
+
+		std::wstring rgb_color = STR::toRGB(rgb->red, rgb->green, rgb->blue);
+
+		global_info->RegisterPaletteColor(i+8, rgb_color);
+	}
+}
+
+
 
 int Palette::serialize(std::wostream & stream)
 {

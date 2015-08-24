@@ -45,6 +45,7 @@ namespace STR
 	const std::wstring unescape_ST_Xstring(const std::wstring& str);
 	const std::wstring toARGB(const unsigned int rgba);
 	const std::wstring toARGB(const unsigned char red, const unsigned char green, const unsigned char blue, const unsigned char alpha);
+	const std::wstring toRGB(const unsigned int rgba);
 	const std::wstring toRGB(const unsigned char red, const unsigned char green, const unsigned char blue);
 	const bool fromARGB(const std::wstring& argb, unsigned char& red, unsigned char& green, unsigned char& blue, unsigned char& alpha);
 	const size_t hex_str2int(const std::wstring& hex);

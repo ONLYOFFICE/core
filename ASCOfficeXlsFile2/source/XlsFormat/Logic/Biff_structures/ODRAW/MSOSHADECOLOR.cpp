@@ -7,8 +7,15 @@ namespace ODRAW
 
 MSOSHADECOLOR::MSOSHADECOLOR()
 {
+	cbElement = 4;
 }
-
+MSOSHADECOLOR::MSOSHADECOLOR(unsigned short cbElement_)
+{
+	if (cbElement_ == 0xFFF0)
+	{
+		cbElement = 2;
+	}
+}
 XLS::BiffStructurePtr MSOSHADECOLOR::clone()
 {
 	return XLS::BiffStructurePtr(new MSOSHADECOLOR(*this));

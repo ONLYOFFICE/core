@@ -29,13 +29,19 @@ CompoundFile::CompoundFile(const std::wstring & file_path, const ReadWriteMode m
 		case cf_ReadMode:
 		{
 			if (storage_->open(false, false) == false)
-				throw;
+			{
+				delete storage_;
+				storage_ = NULL;
+			}
 			
 		}break;
 		case cf_WriteMode:
 		{
 			if (storage_->open(true, true) == false)
-				throw;			
+			{
+				delete storage_;
+				storage_ = NULL;
+			}
 		}break;
 	}
 }
@@ -133,10 +139,12 @@ void CompoundFile::closeNamedStream(const std::string& name)
 // Opens a stream in the storage (shall be called not more than once per stream)
 POLE::Stream* CompoundFile::openStream(const std::string & stream_name)
 {
+	if (storage_ == NULL) return NULL;
+
 	POLE::Stream* pStream = new POLE::Stream(storage_, stream_name);
 	if(pStream == NULL)
 	{
-		throw;// EXCEPT::RT::CompoundFileFormatError(std::string("Error opening \"") + static_cast<char*>(stream_name) + "\" stream", hres);
+		return NULL;
 	}
 	if ((pStream) && (pStream->size() > 0))
 		return pStream;
@@ -147,10 +155,12 @@ POLE::Stream* CompoundFile::openStream(const std::string & stream_name)
 // Creates a new stream in the storage
 POLE::Stream* CompoundFile::createStream(const std::string & stream_name)
 {
+	if (storage_ == NULL) return NULL;
+
 	POLE::Stream* pStream = new POLE::Stream(storage_, stream_name, true);
 	if(pStream == NULL)
 	{
-		throw;// EXCEPT::RT::CompoundFileFormatError(std::string("Error creating \"") + static_cast<char*>(stream_name) + "\" stream", hres);
+		return NULL;
 	}
 	return pStream;
 }

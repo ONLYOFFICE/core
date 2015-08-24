@@ -106,7 +106,7 @@ int SST::serialize(std::wostream & stream)
 					{
 						CP_XML_NODE(L"t")
 						{		
-							CP_XML_STREAM() << xml::utils::replace_text_to_xml(richText->str_);
+							CP_XML_STREAM() << STR::escape_ST_Xstring(xml::utils::replace_text_to_xml(richText->str_));
 						}
 					}
 				}

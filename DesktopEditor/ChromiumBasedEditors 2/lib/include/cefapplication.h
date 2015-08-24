@@ -14,7 +14,7 @@ public:
 
     CApplicationCEF();
 
-    void Init_CEF(CAscApplicationManager* );
+    void Init_CEF(CAscApplicationManager* , int argc = 0, char* argv[] = NULL);
     virtual ~CApplicationCEF();
     void Close();
 };

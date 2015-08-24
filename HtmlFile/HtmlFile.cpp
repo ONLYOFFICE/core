@@ -251,34 +251,21 @@ int CHtmlFile::Convert(const std::vector<std::wstring>& arFiles, const std::wstr
                (char * const *)nenv);
         exit(EXIT_SUCCESS);
 #else
-        const char* nargs[4];
-        nargs[0] = "--auto-servernum";
-        nargs[1] = sProgramm.c_str();
-        nargs[2] = sXmlA.c_str();
-        nargs[3] = NULL;
+
+        const char* nargs[6];
+        nargs[0] = "-a";
+        nargs[1] = "--auto-servernum";
+        nargs[2] = "--server-num=1";
+        nargs[3] = sProgramm.c_str();
+        nargs[4] = sXmlA.c_str();
+        nargs[5] = NULL;
 
         const char* nenv[3];
         nenv[0] = sLibraryDir.c_str();
-        nenv[1] = "DISPLAY=:99";
+        nenv[1] = NULL;//"DISPLAY=:99";
         nenv[2] = NULL;
 
         execve("/usr/bin/xvfb-run", (char * const *)nargs, (char * const *)nenv);
-
-        /*
-        std::string ssXml = "\"" + sXmlA + "\"";
-
-        int nRes = execl("/usr/bin/Xvfb", "X", ":4");
-
-        execl("/usr/bin/xvfb-run",
-                        "-a",
-                         "/home/oleg/activex/AVS/Sources/TeamlabOffice/trunk/ServerComponents/HtmlFile/Internal/linux/Release/HtmlFileInternal",
-                         ssXml.c_str());                         
-
-        FILE* f = fopen("/home/oleg/activex/1/111.log", "a+");
-        fprintf(f, "ececl: %d\n", (int)errno);
-        fclose(f);
-        */
-
         exit(EXIT_SUCCESS);
 #endif
         break;

@@ -49,6 +49,7 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
 }
 
 LIBS += -L$$DESTINATION_SDK_PATH -lHtmlFile
+LIBS += -L$$DESTINATION_SDK_PATH -lgraphics
 
 win32 {
 LIBS += -ladvapi32 \

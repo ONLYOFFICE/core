@@ -14,6 +14,7 @@
 #include "../../graphics/GraphicsRenderer.h"
 #include "../../common/File.h"
 #include "../../common/Directory.h"
+#include "../../common/StringBuilder.h"
 
 #include "./filedownloader.h"
 
@@ -30,252 +31,6 @@ using namespace std;
 
 namespace NSCommon
 {
-    class CTextItem
-    {
-    protected:
-        wchar_t*	m_pData;
-        size_t		m_lSize;
-
-        wchar_t*	m_pDataCur;
-        size_t		m_lSizeCur;
-
-    public:
-        CTextItem()
-        {
-            m_pData = NULL;
-            m_lSize = 0;
-
-            m_pDataCur	= m_pData;
-            m_lSizeCur	= m_lSize;
-        }
-        CTextItem(const CTextItem& oSrc)
-        {
-            m_pData = NULL;
-            *this = oSrc;
-        }
-        CTextItem& operator=(const CTextItem& oSrc)
-        {
-            RELEASEMEM(m_pData);
-
-            m_lSize		= oSrc.m_lSize;
-            m_lSizeCur	= oSrc.m_lSizeCur;
-            m_pData		= (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-            memcpy(m_pData, oSrc.m_pData, m_lSizeCur * sizeof(wchar_t));
-
-            m_pDataCur = m_pData + m_lSizeCur;
-
-            return *this;
-        }
-
-        CTextItem(const size_t& nLen)
-        {
-            m_lSize = nLen;
-            m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-            m_lSizeCur = 0;
-            m_pDataCur = m_pData;
-        }
-        CTextItem(wchar_t* pData, const size_t& nLen)
-        {
-            m_lSize = nLen;
-            m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-            memcpy(m_pData, pData, m_lSize * sizeof(wchar_t));
-
-            m_lSizeCur = m_lSize;
-            m_pDataCur = m_pData + m_lSize;
-        }
-        CTextItem(wchar_t* pData, BYTE* pUnicodeChecker = NULL)
-        {
-            size_t nLen = GetStringLen(pData);
-
-            m_lSize = nLen;
-            m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-            memcpy(m_pData, pData, m_lSize * sizeof(wchar_t));
-
-            m_lSizeCur = m_lSize;
-            m_pDataCur = m_pData + m_lSize;
-
-            if (NULL != pUnicodeChecker)
-            {
-                wchar_t* pMemory = m_pData;
-                while (pMemory < m_pDataCur)
-                {
-                    if (!pUnicodeChecker[*pMemory])
-                        *pMemory = wchar_t(' ');
-                    ++pMemory;
-                }
-            }
-        }
-        virtual ~CTextItem()
-        {
-            RELEASEMEM(m_pData);
-        }
-
-        inline void AddSize(const size_t& nSize)
-        {
-            if (NULL == m_pData)
-            {
-                m_lSize = 1000;
-                if (nSize > m_lSize)
-                    m_lSize = nSize;
-
-                m_pData = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-
-                m_lSizeCur = 0;
-                m_pDataCur = m_pData;
-                return;
-            }
-
-            if ((m_lSizeCur + nSize) > m_lSize)
-            {
-                while ((m_lSizeCur + nSize) > m_lSize)
-                {
-                    m_lSize *= 2;
-                }
-
-                wchar_t* pRealloc = (wchar_t*)realloc(m_pData, m_lSize * sizeof(wchar_t));
-                if (NULL != pRealloc)
-                {
-                    // реаллок сработал
-                    m_pData		= pRealloc;
-                    m_pDataCur	= m_pData + m_lSizeCur;
-                }
-                else
-                {
-                    wchar_t* pMalloc = (wchar_t*)malloc(m_lSize * sizeof(wchar_t));
-                    memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(wchar_t));
-
-                    free(m_pData);
-                    m_pData		= pMalloc;
-                    m_pDataCur	= m_pData + m_lSizeCur;
-                }
-            }
-        }
-
-    public:
-
-        inline void operator+=(const std::wstring& oTemp)
-        {
-            WriteString(oTemp.c_str(), oTemp.length());
-        }
-        inline wchar_t operator[](const size_t& nIndex)
-        {
-            if (nIndex < m_lSizeCur)
-                return m_pData[nIndex];
-
-            return 0;
-        }
-
-        inline void AddSpace()
-        {
-            AddSize(1);
-            *m_pDataCur = wchar_t(' ');
-
-            ++m_lSizeCur;
-            ++m_pDataCur;
-        }
-        inline void CorrectUnicode(const BYTE* pUnicodeChecker)
-        {
-            if (NULL != pUnicodeChecker)
-            {
-                wchar_t* pMemory = m_pData;
-                while (pMemory < m_pDataCur)
-                {
-                    if (!pUnicodeChecker[*pMemory])
-                        *pMemory = wchar_t(' ');
-                    ++pMemory;
-                }
-            }
-        }
-        inline void RemoveLastSpaces()
-        {
-            wchar_t* pMemory = m_pDataCur - 1;
-            while ((pMemory > m_pData) && (wchar_t(' ') == *pMemory))
-            {
-                --pMemory;
-                --m_lSizeCur;
-                --m_pDataCur;
-            }
-
-        }
-        inline bool IsSpace()
-        {
-            if (1 != m_lSizeCur)
-                return false;
-            return (wchar_t(' ') == *m_pData);
-        }
-
-    public:
-        inline void WriteString(const wchar_t* pString, const size_t& nLen)
-        {
-            AddSize(nLen);
-            memcpy(m_pDataCur, pString, nLen * sizeof(wchar_t));
-            m_pDataCur += nLen;
-            m_lSizeCur += nLen;
-        }
-        inline size_t GetCurSize()
-        {
-            return m_lSizeCur;
-        }
-        inline size_t GetSize()
-        {
-            return m_lSize;
-        }
-        inline void Clear()
-        {
-            RELEASEMEM(m_pData);
-
-            m_pData = NULL;
-            m_lSize = 0;
-
-            m_pDataCur	= m_pData;
-            m_lSizeCur	= 0;
-        }
-        inline void ClearNoAttack()
-        {
-            m_pDataCur	= m_pData;
-            m_lSizeCur	= 0;
-        }
-
-        inline size_t GetStringLen(wchar_t* pData)
-        {
-            wchar_t* s = pData;
-            for (; *s != 0; ++s);
-            return (size_t)(s - pData);
-        }
-
-        inline std::wstring GetCString()
-        {
-            std::wstring str(m_pData, (int)m_lSizeCur);
-            return str;
-        }
-        inline wchar_t* GetBuffer()
-        {
-            return m_pData;
-        }
-    };
-
-    class CStringWriter : public CTextItem
-    {
-    public:
-        CStringWriter() : CTextItem()
-        {
-        }
-        virtual ~CStringWriter()
-        {
-        }
-
-    public:
-
-        inline void Write(CStringWriter& oWriter)
-        {
-            CTextItem::WriteString(oWriter.m_pData, oWriter.m_lSizeCur);
-        }
-    };
-
     class CFontInfoJS
     {
     public:
@@ -587,12 +342,12 @@ namespace NSCommon
         // все объекты, которые позволят не знать о существующих фонтах
         if (0 != strFile.length())
         {
-            CStringWriter oWriterJS;
+            NSStringUtils::CStringBuilder oWriterJS;
 
             // сначала все файлы
             size_t nCountFiles = mapFontFiles.size();
             if (nCountFiles == 0)
-                oWriterJS += (L"window[\"__fonts_files\"] = []; \n\n");
+                oWriterJS.WriteString(L"window[\"__fonts_files\"] = []; \n\n");
             else
             {
                 std::wstring* pMassFiles = new std::wstring[nCountFiles];
@@ -609,22 +364,22 @@ namespace NSCommon
                     pMassFiles[pos->second] = strFontId;
                 }
 
-                oWriterJS += (L"window[\"__fonts_files\"] = [\n");
+                oWriterJS.WriteString(L"window[\"__fonts_files\"] = [\n");
                 for (size_t nIndex = 0; nIndex < nCountFiles; ++nIndex)
                 {
-                    oWriterJS += (L"\"");
-                    oWriterJS += (pMassFiles[nIndex]);
+                    oWriterJS.WriteString(L"\"");
+                    oWriterJS.WriteString(pMassFiles[nIndex]);
                     if (nIndex != (nCountFiles - 1))
-                        oWriterJS += (L"\",\n");
+                        oWriterJS.WriteString(L"\",\n");
                     else
-                        oWriterJS += (L"\"");
+                        oWriterJS.WriteString(L"\"");
                 }
-                oWriterJS += (L"\n];\n\n");
+                oWriterJS.WriteString(L"\n];\n\n");
 
                 delete [] pMassFiles;
             }
 
-            oWriterJS += L"window[\"__fonts_infos\"] = [\n";
+            oWriterJS.WriteString(L"window[\"__fonts_infos\"] = [\n");
 
             for (int index = 0; index < nCountFonts; ++index)
             {
@@ -638,16 +393,16 @@ namespace NSCommon
 
                 std::string sBuffer(buffer);
 
-                oWriterJS += L"[\"";
-                oWriterJS += pPair->second.m_sName;
-                oWriterJS += NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sBuffer);
+                oWriterJS.WriteString(L"[\"");
+                oWriterJS.WriteString(pPair->second.m_sName);
+                oWriterJS.WriteString(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(sBuffer));
 
                 if (index != (nCountFonts - 1))
-                    oWriterJS += (L",\n");
+                    oWriterJS.WriteString(L",\n");
                 else
-                    oWriterJS += (L"\n");
+                    oWriterJS.WriteString(L"\n");
             }
-            oWriterJS += (L"];\n\n");
+            oWriterJS.WriteString(L"];\n\n");
 
             if (true)
             {
@@ -661,9 +416,9 @@ namespace NSCommon
 
                 std::wstring sData64 = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(cData64, (LONG)nData64Dst, FALSE);
 
-                oWriterJS += (L"window[\"g_fonts_selection_bin\"] = \"");
-                oWriterJS += sData64;
-                oWriterJS += L"\";\n";
+                oWriterJS.WriteString(L"window[\"g_fonts_selection_bin\"] = \"");
+                oWriterJS.WriteString(sData64);
+                oWriterJS.WriteString(L"\";\n");
 
                 RELEASEARRAYOBJECTS(pData);
                 RELEASEARRAYOBJECTS(cData64);
@@ -671,7 +426,7 @@ namespace NSCommon
 
             NSFile::CFileBinary oFile;
             oFile.CreateFileW(strFile);
-            oFile.WriteStringUTF8(oWriterJS.GetCString(), true);
+            oFile.WriteStringUTF8(oWriterJS.GetData(), true);
             oFile.CloseFile();
         }
 

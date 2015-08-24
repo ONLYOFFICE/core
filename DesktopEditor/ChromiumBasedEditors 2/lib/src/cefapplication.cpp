@@ -30,7 +30,7 @@ CApplicationCEF::CApplicationCEF()
     m_pInternal = new CApplicationCEF_Private();
 }
 
-void CApplicationCEF::Init_CEF(CAscApplicationManager* pManager)
+void CApplicationCEF::Init_CEF(CAscApplicationManager* pManager, int argc, char* argv[])
 {
     // Enable High-DPI support on Windows 7 or newer.
     CefEnableHighDPISupport();
@@ -45,6 +45,7 @@ void CApplicationCEF::Init_CEF(CAscApplicationManager* pManager)
 #endif
 
 #ifdef WIN32
+    CefMainArgs main_args((HINSTANCE)GetModuleHandle(NULL));
 
     // Parse command-line arguments.
     CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
@@ -54,14 +55,47 @@ void CApplicationCEF::Init_CEF(CAscApplicationManager* pManager)
     client::ClientApp::ProcessType process_type = client::ClientApp::GetProcessType(command_line);
     if (process_type == client::ClientApp::BrowserProcess)
         m_pInternal->m_app = new CAscClientAppBrowser();
-    else if (process_type == client::ClientApp::RendererProcess)
+    else if (process_type == client::ClientApp::RendererProcess ||
+             process_type == client::ClientApp::ZygoteProcess)
         m_pInternal->m_app = new CAscClientAppRenderer();
     else if (process_type == client::ClientApp::OtherProcess)
         m_pInternal->m_app = new CAscClientAppOther();
+#endif
 
-    CefMainArgs main_args((HINSTANCE)GetModuleHandle(NULL));
-#else
-    CefMainArgs main_args;
+#if defined(_LINUX) && !defined(_MAC)
+    CefMainArgs main_args(argc, argv);
+
+    // Parse command-line arguments.
+    CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
+    command_line->InitFromArgv(argc, argv);
+
+    // Create a ClientApp of the correct type.
+    client::ClientApp::ProcessType process_type = client::ClientApp::GetProcessType(command_line);
+    if (process_type == client::ClientApp::BrowserProcess)
+        m_pInternal->m_app = new CAscClientAppBrowser();
+    else if (process_type == client::ClientApp::RendererProcess ||
+             process_type == client::ClientApp::ZygoteProcess)
+        m_pInternal->m_app = new CAscClientAppRenderer();
+    else if (process_type == client::ClientApp::OtherProcess)
+        m_pInternal->m_app = new CAscClientAppOther();
+#endif
+
+#ifdef _MAC
+    CefMainArgs main_args(argc, argv);
+
+    // Parse command-line arguments.
+    CefRefPtr<CefCommandLine> command_line = CefCommandLine::CreateCommandLine();
+    command_line->InitFromArgv(argc, argv);
+
+    // Create a ClientApp of the correct type.
+    client::ClientApp::ProcessType process_type = client::ClientApp::GetProcessType(command_line);
+    if (process_type == client::ClientApp::BrowserProcess)
+        m_pInternal->m_app = new CAscClientAppBrowser();
+    else if (process_type == client::ClientApp::RendererProcess ||
+             process_type == client::ClientApp::ZygoteProcess)
+        m_pInternal->m_app = new CAscClientAppRenderer();
+    else if (process_type == client::ClientApp::OtherProcess)
+        m_pInternal->m_app = new CAscClientAppOther();
 #endif
 
 #if 1
@@ -73,11 +107,7 @@ void CApplicationCEF::Init_CEF(CAscApplicationManager* pManager)
     }
 #endif
 
-    // Parse command line arguments. The passed in values are ignored on Windows.
-    //AppInitCommandLine(0, NULL);
-
     CefSettings settings;
-    //settings.command_line_args_disabled = true;
 
 #if !defined(CEF_USE_SANDBOX)
     settings.no_sandbox = true;
@@ -92,19 +122,36 @@ void CApplicationCEF::Init_CEF(CAscApplicationManager* pManager)
     m_pInternal->context.reset(new client::MainContextImpl(command_line, true));
     m_pInternal->context->PopulateSettings(&settings);
 
-#if 1
+#ifdef WIN32
     settings.multi_threaded_message_loop = 1;
     //settings.windowless_rendering_enabled = 1;
 #endif
 
+#ifdef WIN32
     if (settings.multi_threaded_message_loop)
         m_pInternal->message_loop.reset(new client::MainMessageLoopMultithreadedWin);
     else
         m_pInternal->message_loop.reset(new client::MainMessageLoopStd);
+#else
+    m_pInternal->message_loop.reset(new client::MainMessageLoopStd);
+#endif
 
+    // ASC command line props
+#ifdef WIN32
     std::string sCommandLine = GetCommandLineA();
     if (sCommandLine.find("--ascdesktop-support-debug-info") != std::string::npos)
         pManager->SetDebugInfoSupport(true);
+#else
+    for (int i = 0; i < argc; ++i)
+    {
+        std::string sCommandLine(argv[i]);
+        if (sCommandLine.find("--ascdesktop-support-debug-info") != std::string::npos)
+        {
+            pManager->SetDebugInfoSupport(true);
+            break;
+        }
+    }
+#endif
 
     std::wstring sCachePath = pManager->m_oSettings.cache_path;
 

@@ -22,6 +22,7 @@
 #include "include/wrapper/cef_stream_resource_handler.h"
 #include "include/wrapper/cef_byte_read_handler.h"
 
+#ifdef WIN32
 LRESULT CALLBACK MyMouseHook(int nCode, WPARAM wp, LPARAM lp)
 {
     MOUSEHOOKSTRUCT *pmh = (MOUSEHOOKSTRUCT *) lp;
@@ -36,6 +37,7 @@ LRESULT CALLBACK MyMouseHook(int nCode, WPARAM wp, LPARAM lp)
 
     return CallNextHookEx(NULL, nCode, wp, lp);
 }
+#endif
 
 class CPagePrintData
 {
@@ -345,88 +347,6 @@ public:
     }
 };
 
-class CDragAndDropWrapper : public IDropTarget
-{
-public:
-    CAscClientHandler*  m_pHandler;
-    HWND                m_hWnd;
-    ULONG               m_lRef;
-
-public:
-    CDragAndDropWrapper()
-    {
-        m_pHandler = NULL;
-        m_lRef = 1;
-    }
-    ~CDragAndDropWrapper()
-    {
-        m_pHandler = NULL;
-        RevokeDragDrop(m_hWnd);
-    }
-
-public:
-
-    // ------------------------- IUnknown -------------------------------------
-    virtual HRESULT STDMETHODCALLTYPE QueryInterface(
-        /* [in] */ REFIID riid,
-        /* [iid_is][out] */ _COM_Outptr_ void __RPC_FAR *__RPC_FAR *ppvObject)
-    {
-        return S_OK;
-    }
-
-    virtual ULONG STDMETHODCALLTYPE AddRef( void)
-    {
-        ++m_lRef;
-        return m_lRef;
-    }
-
-    virtual ULONG STDMETHODCALLTYPE Release( void)
-    {
-        --m_lRef;
-        if (0 < m_lRef)
-            return m_lRef;
-
-        delete this;
-        return 0;
-    }
-
-    // ------------------------- IDropTarget ----------------------------------
-    virtual HRESULT STDMETHODCALLTYPE DragEnter(
-        /* [unique][in] */ __RPC__in_opt IDataObject *pDataObj,
-        /* [in] */ DWORD grfKeyState,
-        /* [in] */ POINTL pt,
-        /* [out][in] */ __RPC__inout DWORD *pdwEffect)
-    {
-        OutputDebugStringA( "DragEnter" );
-        return S_OK;
-    }
-
-    virtual HRESULT STDMETHODCALLTYPE DragOver(
-        /* [in] */ DWORD grfKeyState,
-        /* [in] */ POINTL pt,
-        /* [out][in] */ __RPC__inout DWORD *pdwEffect)
-    {
-        OutputDebugStringA( "DragOver" );
-        return S_OK;
-    }
-
-    virtual HRESULT STDMETHODCALLTYPE DragLeave( void)
-    {
-        OutputDebugStringA( "DragLeave" );
-        return S_OK;
-    }
-
-    virtual HRESULT STDMETHODCALLTYPE Drop(
-        /* [unique][in] */ __RPC__in_opt IDataObject *pDataObj,
-        /* [in] */ DWORD grfKeyState,
-        /* [in] */ POINTL pt,
-        /* [out][in] */ __RPC__inout DWORD *pdwEffect)
-    {
-        OutputDebugStringA( "Drop" );
-        return S_OK;
-    }
-};
-
 class CCefBinaryFileReaderCounter : public CefBase
 {
 public:
@@ -451,7 +371,6 @@ class CCefView_Private : public NSEditorApi::IMenuEventDataBase
 {
 public:
     CefRefPtr<CAscClientHandler>        m_handler;
-    CDragAndDropWrapper*                m_pDragAndDropWrapper;
     CAscApplicationManager*             m_pManager;
     CCefViewWidgetImpl*                 m_pWidgetImpl;
 
@@ -476,7 +395,6 @@ public:
 public:
     CCefView_Private()
     {
-        m_pDragAndDropWrapper = NULL;
         m_pManager = NULL;
         m_pWidgetImpl = NULL;
         m_nParentId = -1;
@@ -493,7 +411,6 @@ public:
 
     ~CCefView_Private()
     {
-        RELEASEOBJECT(m_pDragAndDropWrapper);
     }
 
     void CloseBrowser(bool _force_close);
@@ -519,7 +436,7 @@ public:
     };
 
 public:
-    CAscClientHandler() : client::ClientHandler(this, false, "https://onlyoffice.com")
+    CAscClientHandler() : client::ClientHandler(this, false, "https://onlyoffice.com/")
     {
         m_pParent = NULL;
         m_bIsLoaded = false;
@@ -1723,8 +1640,10 @@ void CCefView::focus(bool value)
             {
                 if (this->GetType() == cvwtSimple)
                 {
+#ifdef WIN32
                     DWORD threadId = GetWindowThreadProcessId(browser->GetHost()->GetWindowHandle(), NULL);
                     HHOOK hook = SetWindowsHookEx(WH_MOUSE, MyMouseHook, NULL, threadId);
+#endif
                 }
 
                 m_pInternal->m_bIsMouseHook = true;

@@ -17,6 +17,10 @@ void ExtRst::store(CFRecord& record)
 //	record  << reserved << cb << phs << rphssub << rgphruns;
 }
 
+ExtRst::ExtRst(std::list<CFRecordPtr>& cont_recs) : cont_recs_(cont_recs)
+{
+}
+
 
 void ExtRst::load(CFRecord& record)
 {
@@ -33,11 +37,16 @@ void ExtRst::load(CFRecord& record)
 		PhRuns run;
 		record >> run;
 		rgphruns.push_back(run);
+
 	}
 	size_t data_end = record.getRdPtr();
-	if(data_end - data_start < cb)
+	if(data_end - data_start != cb)
 	{
-		record.skipNunBytes(cb - (data_end - data_start)); // trash for unknown reason
+		//ОШИБКА - нехватило Continue records - нужно найти место где именно и подзагрузить
+		if ((data_end - data_start)  < cb )
+			record.skipNunBytes( cb - (data_end - data_start)); // trash for unknown reason
+		else
+			record.RollRdPtrBack((data_end - data_start) - cb);
 	}
 
 }

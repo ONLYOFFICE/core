@@ -114,9 +114,13 @@ int FORMULA::serialize(std::wostream & stream)
 				case 1: CP_XML_ATTR(L"t", L"b");	break;
 				case 2: CP_XML_ATTR(L"t", L"e");	break;
 			}		
-			CP_XML_NODE(L"f")
+			const std::wstring & f_ = formula->formula.getAssembledFormula();
+			if (!f_.empty())
 			{
-				CP_XML_STREAM() << xml::utils::replace_text_to_xml(formula->formula.getAssembledFormula());
+				CP_XML_NODE(L"f")
+				{
+					CP_XML_STREAM() << xml::utils::replace_text_to_xml(f_);
+				}
 			}
 			std::wstring str_val = formula->val.getValue();
 			if (!str_val.empty())

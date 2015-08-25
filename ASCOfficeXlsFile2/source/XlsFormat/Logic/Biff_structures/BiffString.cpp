@@ -69,28 +69,35 @@ void BiffString::load(CFRecord& record)
 void BiffString::load(CFRecord& record, const size_t cch1, const bool is_wide1)
 {
 	bool is_wide	= is_wide1;
-	size_t cch		= cch1;
 
+	size_t cch = cch1;
+	if ((cch_) && (*cch_ != cch1) && cch1 < 1)
+	{
+		cch =  cch_.get();
+	}
 	size_t raw_length = cch << (is_wide ? 1 : 0);
 	
-	if (record.checkFitRead(raw_length))
+	if (record.checkFitRead(raw_length)==false)
 	{
-		if(is_wide)
-		{
-	#if defined(_WIN32) || defined(_WIN64)
-			std::wstring int_str(record.getCurData<wchar_t>(), cch);
-			str_ = int_str.c_str();
-	#else
-			str_= convertUtf16ToWString(record.getCurData<UTF16>(), cch);
-	#endif
-		}
-		else
-		{
-			std::string int_str(record.getCurData<char>(), cch);
-			str_ = STR::toStdWString(int_str, record.getGlobalWorkbookInfo()->CodePage).c_str();
-		}
-		record.skipNunBytes(raw_length);
+		//ОШИБКА - нехватило Continue records - нужно найти место где именно и подзагрузить
+		return;
 	}
+
+	if(is_wide)
+	{
+#if defined(_WIN32) || defined(_WIN64)
+		std::wstring int_str(record.getCurData<wchar_t>(), cch);
+		str_ = int_str.c_str();
+#else
+		str_= convertUtf16ToWString(record.getCurData<UTF16>(), cch);
+#endif
+	}
+	else
+	{
+		std::string int_str(record.getCurData<char>(), cch);
+		str_ = STR::toStdWString(int_str, record.getGlobalWorkbookInfo()->CodePage).c_str();
+	}
+	record.skipNunBytes(raw_length);
 }
 
 

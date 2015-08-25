@@ -134,7 +134,14 @@ int CELL_GROUP::serialize(std::wostream & stream)
 								
 								if (row->ixfe_val.value() && xf_set)
 								{
-									CP_XML_ATTR(L"s", row->ixfe_val - cellStyleXfs_count);
+									if (row->ixfe_val > cellStyleXfs_count)
+									{
+										CP_XML_ATTR(L"s", row->ixfe_val - cellStyleXfs_count);
+									}
+									else
+									{
+										CP_XML_ATTR(L"s", row->ixfe_val);
+									}
 									CP_XML_ATTR(L"customFormat", true);
 								}
 								if (row->miyRw.value())// 255 twips(1/20 pt)
@@ -204,7 +211,14 @@ int CELL_GROUP::serialize(std::wostream & stream)
 					
 					if (row->ixfe_val.value() && xf_set)
 					{
-						CP_XML_ATTR(L"s", row->ixfe_val - cellStyleXfs_count);
+						if (row->ixfe_val > cellStyleXfs_count)
+						{
+							CP_XML_ATTR(L"s", row->ixfe_val - cellStyleXfs_count);
+						}
+						else
+						{
+							CP_XML_ATTR(L"s", row->ixfe_val);
+						}
 						CP_XML_ATTR(L"customFormat", true);
 					}
 

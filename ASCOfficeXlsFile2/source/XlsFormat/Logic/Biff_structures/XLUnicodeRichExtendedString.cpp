@@ -20,7 +20,7 @@ XLUnicodeRichExtendedString XLUnicodeRichExtendedString::operator=(const XLUnico
 XLUnicodeRichExtendedString::XLUnicodeRichExtendedString(std::list<CFRecordPtr>& cont_recs)
 :	cont_recs_(cont_recs),
 	fHighByte(true),
-	code_page_(0)
+	extRst(cont_recs)
 {
 }
 
@@ -30,16 +30,31 @@ const bool XLUnicodeRichExtendedString::appendNextContinue(CFRecord& record, con
 	{
 		return false;
 	}
-	if(read_high_byte)
+
+	RecordType type = (RecordType)cont_recs_.front()->getTypeId();
+	
+	while(!cont_recs_.empty())
 	{
-		fHighByte = 0x01 == cont_recs_.front()->getData()[0];
-		record.appendRawData(cont_recs_.front()->getData() + 1, cont_recs_.front()->getDataSize() - 1);
+		type = (RecordType)cont_recs_.front()->getTypeId();
+
+		if (type == rt_SST || type == rt_Continue)
+		{
+			if(read_high_byte)
+			{
+				fHighByte = (0x01 == cont_recs_.front()->getData()[0]);
+				record.appendRawData(cont_recs_.front()->getData() + 1, cont_recs_.front()->getDataSize() - 1);
+			}
+			else
+			{
+				record.appendRawData(cont_recs_.front());
+			}
+			cont_recs_.pop_front();
+			break;
+		}
+		else
+			cont_recs_.pop_front();
+
 	}
-	else
-	{
-		record.appendRawData(cont_recs_.front());
-	}
-	cont_recs_.pop_front();
 	return true;
 }
 
@@ -180,7 +195,7 @@ void XLUnicodeRichExtendedString::store(CFRecord& record)
 
 	if(fExtSt)
 	{
-		record << extRst;
+		extRst.store(record);
 	}
 }
 
@@ -192,18 +207,27 @@ void XLUnicodeRichExtendedString::load(CFRecord& record)
 	if (code_page_== 0) 
 		code_page_ = pGlobalWorkbookInfoPtr ->CodePage;
 
-	unsigned short cch;
-	unsigned char flags;
+	unsigned short cch = 0;
+	unsigned char flags = 0;
 	record >> cch >> flags;
-	fHighByte = GETBIT(flags, 0);
-	fExtSt = GETBIT(flags, 2);
-	fRichSt = GETBIT(flags, 3);
+
+	if (record.getDataSize() == record.getRdPtr())
+	{
+		if (appendNextContinue(record,false) == false) 
+			return;
+	}
+
+	fHighByte	= GETBIT(flags, 0);
+	fExtSt		= GETBIT(flags, 2);
+	fRichSt		= GETBIT(flags, 3);
+
 	unsigned short cRun = 0;
 	if(fRichSt)
 	{
 		record >> cRun;
 	}
     int cbExtRst = 0;
+	
 	if(fExtSt)
 	{
 		record >> cbExtRst;
@@ -217,21 +241,24 @@ void XLUnicodeRichExtendedString::load(CFRecord& record)
 			record >> cRun;
 		}
 	}
-	
+
 	if(!record.checkFitReadSafe(static_cast<size_t>(cch) << (fHighByte ? 1 : 0)))
 	{
-        size_t num_symbols = (std::min)(static_cast<size_t>(cch), (record.getDataSize() - record.getRdPtr()) >> (fHighByte ? 1 : 0));
+		size_t num_symbols = (std::min)(static_cast<size_t>(cch), (record.getDataSize() - record.getRdPtr()) >> (fHighByte ? 1 : 0));
 		loadSymbols(record, num_symbols, fHighByte);
+		size_t str_sz = num_symbols;
+
 		std::wstring  str_full(str_);
 		do
 		{
 			if (appendNextContinue(record, true) == false) // fHighByte changes here
 				break; //dicionario de kanji.xls
-            num_symbols = (std::min)(cch - str_full.length(), (record.getDataSize() - record.getRdPtr()) >> (fHighByte ? 1 : 0));
+			num_symbols = (std::min)(cch - str_full.length(), (record.getDataSize() - record.getRdPtr()) >> (fHighByte ? 1 : 0));
 			loadSymbols(record, num_symbols, fHighByte); // cch has changed, fHighByte has changed
-			str_full += str_;
+			str_full	+= str_;
+			str_sz		+= num_symbols;
 		} 
-		while(str_full.length() < cch);
+		while(str_sz < cch);
 		
 		std::swap(str_full, str_); // Thus we avoid additional copy in operator=
 	}
@@ -239,7 +266,11 @@ void XLUnicodeRichExtendedString::load(CFRecord& record)
 	{
 		loadSymbols(record, cch, fHighByte);
 	}
-	
+	if (record.getRdPtr() + cRun * 4 > record.getDataSize() && !cont_recs_.empty())
+	{
+		record.appendRawData(cont_recs_.front());		
+		cont_recs_.pop_front();	
+	}
 	for(size_t i = 0; i < cRun; ++i)
 	{
 		FormatRun format;
@@ -249,7 +280,12 @@ void XLUnicodeRichExtendedString::load(CFRecord& record)
 
 	if(fExtSt && cbExtRst > 0)
 	{
-		record >> extRst;
+		if (record.getRdPtr() + cbExtRst > record.getDataSize() && !cont_recs_.empty())
+		{
+			record.appendRawData(cont_recs_.front());		
+			cont_recs_.pop_front();	
+		}
+		extRst.load(record);
 	}
 }
 

@@ -503,7 +503,7 @@ copy "$(TargetPath)" "$(SolutionDir)..\..\..\..\ASC\Redist\ASCOfficeStudio"
       <TargetMachine>MachineX86</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Message>copy to RedistOpenSource</Message>
+      <Message>copy to Redist</Message>
       <Command>copy "$(TargetPath)" "$(SolutionDir)..\Redist"
 </Command>
     </PostBuildEvent>
@@ -552,7 +552,7 @@ copy "$(TargetPath)" "$(SolutionDir)..\..\..\..\ASC\Redist\ASCOfficeStudio"
       <TargetMachine>MachineX64</TargetMachine>
     </Link>
     <PostBuildEvent>
-      <Message>copy to RedistOpenSource</Message>
+      <Message>copy to Redist</Message>
       <Command>copy "$(TargetPath)" "$(SolutionDir)..\Redist"
 </Command>
     </PostBuildEvent>

@@ -434,6 +434,7 @@ namespace NSBinPptxRW
 		//CRelsGenerator m_oRels;
 		CString m_strFolder;
 		CString m_strFolderThemes;
+		CString m_strFolderExternalThemes;
 
 		_INT32 m_lChartNumber;
 		CString m_strContentTypes;

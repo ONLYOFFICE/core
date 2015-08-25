@@ -83,7 +83,7 @@ namespace NSBinPptxRW
             m_oReader.m_strFolderThemes = pathTheme.GetPath();
         }
 
-        void OpenPPTY(BYTE* pBuffer, int len, CString srcFolder)
+        void OpenPPTY(BYTE* pBuffer, int len, CString srcFolder, CString strThemesFolder)
 		{
 			int start_pos = 0;
 
@@ -130,6 +130,7 @@ namespace NSBinPptxRW
 			m_oReader.m_strContentTypes = _T("");
 			m_oReader.Init(pDstBuffer, 0, dstLen);
 			m_oReader.m_strFolder = srcFolder;
+            m_oReader.m_strFolderExternalThemes = strThemesFolder;
 			
 			for (LONG i = 0; i < 30/*main tables max*/; ++i)
 			{

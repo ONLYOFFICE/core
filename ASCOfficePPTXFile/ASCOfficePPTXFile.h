@@ -74,7 +74,7 @@ public:
 	STDMETHOD(SetUseSystemFonts)(VARIANT_BOOL useSystemFonts);
 	STDMETHOD(OpenFileToPPTY)(BSTR bsInput, BSTR bsOutput);
 	STDMETHOD(OpenDirectoryToPPTY)(BSTR bsInput, BSTR bsOutput);
-	STDMETHOD(ConvertPPTYToPPTX)(BSTR bsInput, BSTR bsOutput);
+    STDMETHOD(ConvertPPTYToPPTX)(BSTR bsInput, BSTR bsOutput, BSTR bsThemesFolder);
 #else
     HRESULT get_TempDirectory(BSTR* pVal);
     HRESULT put_TempDirectory(BSTR newVal);
@@ -95,7 +95,7 @@ public:
     HRESULT SetUseSystemFonts(VARIANT_BOOL useSystemFonts);
     HRESULT OpenFileToPPTY(BSTR bsInput, BSTR bsOutput);
     HRESULT OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput);
-    HRESULT ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput);
+    HRESULT ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput, BSTR bsThemesFolder);
 #endif
 };
 #endif //ASC_OFFICE_PPTX_FILE

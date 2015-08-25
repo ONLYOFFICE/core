@@ -12,7 +12,8 @@ int main( int argc, char *argv[] )
     for (int i = 0; i < argc; ++i)
     {
         if ((0 == strcmp("--type=gpu-process", argv[i])) ||
-            (0 == strcmp("--type=renderer", argv[i])))
+            (0 == strcmp("--type=renderer", argv[i])) ||
+            (0 == strcmp("--type=zygote", argv[i])))
         {
             bIsChromiumSubprocess = true;
             break;

@@ -344,7 +344,7 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput)
 	return S_OK;
 }
 
-HRESULT CPPTXFile::ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput)//bsOutput и файл и директория может быть 
+HRESULT CPPTXFile::ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput, BSTR bsThemesFolder)//bsOutput и файл и директория может быть 
 {
 	OOX::CPath pathLocalTempDirectory;
 	
@@ -374,7 +374,7 @@ HRESULT CPPTXFile::ConvertPPTYToPPTX(BSTR bsInput, BSTR bsOutput)//bsOutput и фа
 	CString strBsInput = bsInput;
     CString srcFolder = FileSystem::Directory::GetFolderPath(strBsInput);
 
-    oWriter.OpenPPTY(pSrcBuffer, lFileSize, srcFolder);
+    oWriter.OpenPPTY(pSrcBuffer, lFileSize, srcFolder, bsThemesFolder);
 	
 	RELEASEARRAYOBJECTS(pSrcBuffer);
 	HRESULT hRes = S_OK;

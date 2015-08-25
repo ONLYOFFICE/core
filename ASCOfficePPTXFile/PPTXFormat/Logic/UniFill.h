@@ -331,7 +331,7 @@ namespace PPTX
 														{
 															if (0 == strUrl.Find(_T("theme")))
 															{
-                                                                strUrl = pReader->m_strFolderThemes + FILE_SEPARATOR_STR + strUrl;
+                                                                strUrl = pReader->m_strFolderExternalThemes + FILE_SEPARATOR_STR + strUrl;
 															}
 															else
 															{

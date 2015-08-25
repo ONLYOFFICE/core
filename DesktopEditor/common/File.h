@@ -957,12 +957,14 @@ namespace NSFile
 
 			BYTE* pMode = NULL;
 			LONG lLenMode;
-			CUtf8Converter::GetUtf8StringFromUnicode(sMode.c_str(), sMode.length(), pMode, lLenMode, false)
+			CUtf8Converter::GetUtf8StringFromUnicode(sMode.c_str(), sMode.length(), pMode, lLenMode, false);
 
-			m_pFile = fopen((char*)pUtf8, (char*)pMode);
+			FILE* pFile = fopen((char*)pUtf8, (char*)pMode);
 
 			delete [] pUtf8;
 			delete [] pMode;
+
+			return pFile;
 #endif
 		}
 	};

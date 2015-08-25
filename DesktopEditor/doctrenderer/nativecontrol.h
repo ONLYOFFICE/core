@@ -53,6 +53,8 @@ public:
 
     std::map<std::wstring, bool> m_mapImagesInChanges;
 
+    std::wstring m_sConsoleLogFile;
+
 public:
     CMemoryStream* m_pStream;
 
@@ -67,6 +69,8 @@ public:
         m_pSaveBinary = NULL;
         m_nSaveLen = 0;
         m_nSaveBinaryLen = 0;
+
+        m_sConsoleLogFile = L"";
     }
     ~CNativeControl()
     {
@@ -142,12 +146,13 @@ public:
 
     void ConsoleLog(/*UTF8*/const std::string& strVal)
     {
-#if 1
-        FILE* f = fopen("C:/log.txt", "a+");
-        fprintf(f, strVal.c_str());
-        fprintf(f, "\n");
-        fclose(f);
-#endif
+        if (!m_sConsoleLogFile.empty())
+        {
+            FILE* f = NSFile::CFileBinary::OpenFileNative(m_sConsoleLogFile, L"a+");
+            fprintf(f, strVal.c_str());
+            fprintf(f, "\n");
+            fclose(f);
+        }
     }
 
     void CheckFonts()

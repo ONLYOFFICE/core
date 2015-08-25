@@ -946,6 +946,25 @@ namespace NSFile
 
 			return FALSE;
 		}
+		static FILE* OpenFileNative(const std::wstring& sFileName, const std::wstring& sMode)
+		{
+#if defined(_WIN32) || defined(_WIN32_WCE) || defined(_WIN64)
+			return _wfopen(sFileName.c_str(), sMode.c_str());
+#else
+			BYTE* pUtf8 = NULL;
+			LONG lLen = 0;
+			CUtf8Converter::GetUtf8StringFromUnicode(sFileName.c_str(), sFileName.length(), pUtf8, lLen, false);
+
+			BYTE* pMode = NULL;
+			LONG lLenMode;
+			CUtf8Converter::GetUtf8StringFromUnicode(sMode.c_str(), sMode.length(), pMode, lLenMode, false)
+
+			m_pFile = fopen((char*)pUtf8, (char*)pMode);
+
+			delete [] pUtf8;
+			delete [] pMode;
+#endif
+		}
 	};
 
 	class CBase64Converter

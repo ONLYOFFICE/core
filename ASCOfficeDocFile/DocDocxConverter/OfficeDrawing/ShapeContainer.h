@@ -2,6 +2,7 @@
 
 #include "RegularContainer.h"
 #include "ShapeOptions.h"
+#include "Shape.h"
 
 namespace DocFileFormat
 {
@@ -20,6 +21,22 @@ namespace DocFileFormat
 		ShapeContainer( IBinaryReader* _reader, unsigned int size, unsigned int typeCode, unsigned int version, unsigned int instance ):
 		RegularContainer( _reader, size, typeCode, version, instance ), Index(0) 
 		{ 
+		}
+
+		int getShapeType()
+		{
+			int ret = 0;
+
+			for ( vector<Record*>::const_iterator iter = this->Children.begin(); iter != this->Children.end(); iter++ )
+			{
+				Shape* sh = dynamic_cast<Shape*>( *iter );
+				if (sh)
+				{
+					if (sh->shapeType) return sh->shapeType->GetTypeCode();
+					else return 0;
+				}
+			}
+			return 0;
 		}
 
 		virtual ~ShapeContainer()

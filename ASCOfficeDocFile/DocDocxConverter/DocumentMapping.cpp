@@ -628,16 +628,25 @@ namespace DocFileFormat
 					{
 						m_pXmlWriter->WriteNodeBegin (_T("w:pict"));
 
+						bool picture = true;
+
 						if (oPicture.shapeContainer)
+						{
+							int shape_type = oPicture.shapeContainer->getShapeType();
+
+							if (shape_type != msosptPictureFrame) picture = false;
+						}
+						
+						if (picture)
+						{
+							VMLPictureMapping oVMLPicture(m_context, m_pXmlWriter, false, _caller);
+							oPicture.Convert (&oVMLPicture);
+						}else
 						{
 							VMLShapeMapping oVmlWriter (m_context, m_pXmlWriter, NULL, &oPicture,  _caller);
 							oPicture.shapeContainer->Convert(&oVmlWriter);
 						}
-						else
-						{
-							VMLPictureMapping oVMLPicture(m_context, m_pXmlWriter, false, _caller);
-							oPicture.Convert (&oVMLPicture);
-						}
+						
 						m_pXmlWriter->WriteNodeEnd	 (_T("w:pict"));
 					}                   
 				}

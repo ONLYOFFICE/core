@@ -950,11 +950,49 @@ public:
     virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE
     {
         client::ClientHandler::OnAfterCreated(browser);
-        if (!GetBrowser())   {
-          // We need to keep the main child window, but not popup windows
-          browser_ = browser;
-          browser_id_ = browser->GetIdentifier();
+        if (!GetBrowser())
+        {
+            // We need to keep the main child window, but not popup windows
+            browser_ = browser;
+            browser_id_ = browser->GetIdentifier();
         }
+    }
+
+    virtual void OnBeforeClose(CefRefPtr<CefBrowser> browser) OVERRIDE
+    {
+        CEF_REQUIRE_UI_THREAD();
+
+        if (--browser_count_ == 0)
+        {
+            // Remove and delete message router handlers.
+            MessageHandlerSet::const_iterator it =
+                message_handler_set_.begin();
+            for (; it != message_handler_set_.end(); ++it)
+            {
+                message_router_->RemoveHandler(*(it));
+                delete *(it);
+            }
+            message_handler_set_.clear();
+            message_router_ = NULL;
+        }
+
+        NotifyBrowserClosed(browser);
+    }
+
+    virtual bool DoClose(CefRefPtr<CefBrowser> browser) OVERRIDE
+    {
+        CEF_REQUIRE_UI_THREAD();
+
+        NotifyBrowserClosing(browser);
+
+        if (GetBrowserId() == browser->GetIdentifier())
+        {
+            SetParent(browser->GetHost()->GetWindowHandle(), NULL);
+        }
+
+        // Allow the close. For windowed browsers this will result in the OS close
+        // event being sent.
+        return false;
     }
 
     virtual void OnBeforeContextMenu(CefRefPtr<CefBrowser> browser,

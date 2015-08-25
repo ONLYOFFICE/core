@@ -69,12 +69,14 @@ void SST::readFields(CFRecord& record)
 	{
 		XLUnicodeRichExtendedStringPtr element(new XLUnicodeRichExtendedString(recs));
 
-		element->set_code_page(code_page_);
-
-		if(record.isEOF()) // If the break is at the XLUnicodeRichExtendedString boundary
+		if (record.getRdPtr() + 3 > record.getDataSize()) // If the break is at the XLUnicodeRichExtendedString boundary
 		{
 			element->appendNextContinue(record, false);
 		}
+
+		if (record.getRdPtr() + 3 > record.getDataSize())
+			break;
+
 		record >> *element;
 		rgb.push_back(element);
 		count++;
@@ -93,21 +95,30 @@ int SST::serialize(std::wostream & stream)
 
             for (int i=0; i < rgb.size(); i++)
 			{
-				CP_XML_NODE(L"si")
-				{				
-					XLUnicodeRichExtendedString *richText = dynamic_cast<XLUnicodeRichExtendedString *>(rgb[i].get());
-					//внутрь не втаскиваем- в некоторых элементах обязательно писать r-rPr-t в некоторых достаточно t
+				XLUnicodeRichExtendedString *richText = dynamic_cast<XLUnicodeRichExtendedString *>(rgb[i].get());
 
-					if (richText->rgRun.size() >0)
-					{							
-						richText->serialize(CP_XML_STREAM());
-					}
-					else
+				if (richText == NULL) continue;
+
+				CP_XML_NODE(L"si")
+				{	
+					try
 					{
-						CP_XML_NODE(L"t")
-						{		
-							CP_XML_STREAM() << STR::escape_ST_Xstring(xml::utils::replace_text_to_xml(richText->str_));
+						//внутрь не втаскиваем- в некоторых элементах обязательно писать r-rPr-t в некоторых достаточно t
+						if (richText->rgRun.size() >0)
+						{							
+							richText->serialize(CP_XML_STREAM());
 						}
+						else
+						{
+							CP_XML_NODE(L"t")
+							{		
+								CP_XML_STREAM() << STR::escape_ST_Xstring(xml::utils::replace_text_to_xml(richText->str_));
+							}
+						}
+					}
+					catch(...)
+					{
+						CP_XML_NODE(L"t");
 					}
 				}
 			}

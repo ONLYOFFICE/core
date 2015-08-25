@@ -16,6 +16,8 @@ class ExtRst : public BiffStructure
 public:
 	BiffStructurePtr clone();
 
+	ExtRst(std::list<CFRecordPtr>& cont_recs);
+
 	static const ElementType	type = typeExtRst;
 	
 	virtual void load(CFRecord& record);
@@ -27,6 +29,8 @@ public:
 	Phs phs;
 	RPHSSub rphssub;
 	std::vector<PhRuns> rgphruns;
+
+	std::list<CFRecordPtr>& cont_recs_;
 };
 
 } // namespace XLS

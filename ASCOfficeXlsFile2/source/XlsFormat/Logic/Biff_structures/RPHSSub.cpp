@@ -12,19 +12,6 @@ BiffStructurePtr RPHSSub::clone()
 }
 
 
-//void RPHSSub::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	xml_tag->setAttribute(L"crun", crun);
-//	xml_tag->setAttribute(L"st", st);
-//}
-//
-//void RPHSSub::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	crun = getStructAttribute(xml_tag, L"crun");
-//	st = static_cast<std::wstring >(getStructAttribute(xml_tag, L"st"));
-//}
-
-
 void RPHSSub::store(CFRecord& record)
 {
 	unsigned short cch = st.getSize();
@@ -37,6 +24,8 @@ void RPHSSub::load(CFRecord& record)
 	unsigned short cch;
 	record >> crun >> cch;
 	
+	st.setSize(cch);
+
 	record >> st;
 }
 

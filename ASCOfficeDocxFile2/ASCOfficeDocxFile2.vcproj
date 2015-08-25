@@ -721,7 +721,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="copy to RedistOpenSource"
+				Description="copy to Redist"
 				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\Redist&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>
@@ -822,7 +822,7 @@
 			/>
 			<Tool
 				Name="VCPostBuildEventTool"
-				Description="copy to RedistOpenSource"
+				Description="copy to Redist"
 				CommandLine="copy &quot;$(TargetPath)&quot; &quot;$(SolutionDir)..\Redist&quot;&#x0D;&#x0A;"
 			/>
 		</Configuration>

@@ -46,6 +46,7 @@ public:
     void focus(bool value = true);
 
     void resizeEvent(int width = 0, int height = 0);
+    void moveEvent();
     bool nativeEvent(const char* data, const int& datalen, void *message, long *result);
 
     void Apply(NSEditorApi::CAscMenuEvent* );

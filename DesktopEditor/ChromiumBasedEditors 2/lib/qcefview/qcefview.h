@@ -22,8 +22,8 @@ public:
     void SetBackgroundCefColor(unsigned char r, unsigned char g, unsigned char b);
 
     virtual void focusInEvent(QFocusEvent* e);
-
     virtual void resizeEvent(QResizeEvent* e);
+    virtual void moveEvent(QMoveEvent* e);
 
     virtual bool nativeEvent(const QByteArray &eventType, void *message, long *result);
 

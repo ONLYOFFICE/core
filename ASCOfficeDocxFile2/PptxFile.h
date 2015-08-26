@@ -41,7 +41,7 @@ __interface IAVSOfficePPTXFile2 : IDispatch
 	[id(10000 + 3)] HRESULT SetFontDir([in] BSTR bsFontDir);
 
 	[id(10000 + 4)] HRESULT SetUseSystemFonts([in] VARIANT_BOOL useSystemFonts);
-	[id(10000 + 5)] HRESULT ConvertPPTYToPPTX([in] BSTR bsInputFile, [in] BSTR bsFileDst);
+	[id(10000 + 5)] HRESULT ConvertPPTYToPPTX([in] BSTR bsInputFile, [in] BSTR bsFileDst, [in] BSTR bsThemesFolder);
 
 	[id(10000 + 6)] HRESULT SetThemesDir([in] BSTR bsThemesPath);
 };
@@ -146,9 +146,9 @@ public:
 	{
 		return m_oCPPTXFile.OpenDirectoryToPPTY(bsInput, bsOutput);
 	}
-	STDMETHOD(ConvertPPTYToPPTX)(BSTR bsInput, BSTR bsOutput)
+	STDMETHOD(ConvertPPTYToPPTX)(BSTR bsInput, BSTR bsOutput, BSTR bsThemesFolder)
 	{
-		return m_oCPPTXFile.ConvertPPTYToPPTX(bsInput, bsOutput);
+		return m_oCPPTXFile.ConvertPPTYToPPTX(bsInput, bsOutput, bsThemesFolder);
 	}
 	//void LoadResourceFile(HINSTANCE hInst, LPCTSTR sResName, LPCTSTR sResType, const CString& strDstFile)
 	//{

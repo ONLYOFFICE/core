@@ -712,6 +712,24 @@ public:
     int FrameId;
 };
 
+class CAscApplicationManager_Private;
+class CTimerKeyboardChecker : public NSTimers::CTimer
+{
+    CAscApplicationManager_Private* m_pManager;
+public:
+    CTimerKeyboardChecker(CAscApplicationManager_Private* pManagerPrivate) : NSTimers::CTimer()
+    {
+        m_pManager = pManagerPrivate;
+        SetInterval(100);
+    }
+    virtual ~CTimerKeyboardChecker()
+    {
+    }
+
+protected:
+    virtual void OnTimer();
+};
+
 class CAscApplicationManager_Private : public CefBase, public CCookieFoundCallback, public NSThreads::CBaseThread, public CCefScriptLoader::ICefScriptLoaderCallback
 {
 public:
@@ -736,8 +754,10 @@ public:
 
     int m_nIsCefSaveDialogWait;
 
+    CTimerKeyboardChecker m_oKeyboardTimer;
+
 public:
-    CAscApplicationManager_Private()
+    CAscApplicationManager_Private() : m_oKeyboardTimer(this)
     {
         m_pListener = NULL;
         m_nIdCounter = 0;
@@ -762,6 +782,7 @@ public:
 
     void CloseApplication()
     {
+        m_oKeyboardTimer.Stop();
         Stop();
         m_oSpellChecker.End();
     }
@@ -957,6 +978,12 @@ protected:
     }
 };
 
+void CTimerKeyboardChecker::OnTimer()
+{
+    if (m_pManager->m_pMain)
+        m_pManager->m_pMain->OnNeedCheckKeyboard();
+}
+
 CAscApplicationManager::CAscApplicationManager()
 {
     m_pInternal = new CAscApplicationManager_Private();
@@ -983,6 +1010,15 @@ void CAscApplicationManager::StopSpellChecker()
 void CAscApplicationManager::SpellCheck(const int& nEditorId, const std::string& sTask, int nId)
 {
     m_pInternal->m_oSpellChecker.AddTask(nEditorId, sTask, nId);
+}
+
+void CAscApplicationManager::StartKeyboardChecker()
+{
+    m_pInternal->m_oKeyboardTimer.Start(0);
+}
+void CAscApplicationManager::OnNeedCheckKeyboard()
+{
+    // none. evaluate in UI thread
 }
 
 void CAscApplicationManager::CheckKeyboard()

@@ -18,6 +18,7 @@ signals:
     void signal_Modified(int, bool);
     void signal_Print(int, int);
     void signal_DialogSave();
+    void signal_CheckKeyboard();
 
 public:
     QAscMainPanel( QWidget *parent, CAscApplicationManager* pManager, bool bIsCustomWindow );
@@ -34,6 +35,7 @@ public slots:
     void slot_Modified(int, bool);
     void slot_Print(int, int);
     void slot_DialogSave();
+    void slot_CheckKeyboard();
 
 public:
     WId GetHwndForKeyboard()
@@ -47,6 +49,7 @@ public:
     virtual bool IsSupportEvent(int nEventType) { return true; }
 
     void OpenDialogSave(std::wstring sName);
+    void CheckKeyboard();
 
 protected:
     void RecalculatePlaces();

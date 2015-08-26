@@ -54,6 +54,9 @@ public:
         ((QAscApplicationManager*)pAppManager)->m_pPanel = (QAscMainPanel*)pMainPanel;
 
         QMetaObject::connectSlotsByName(this);
+
+        pAppManager->StartSpellChecker();
+        pAppManager->StartKeyboardChecker();
     }
 
     ~QAscMainWindow()

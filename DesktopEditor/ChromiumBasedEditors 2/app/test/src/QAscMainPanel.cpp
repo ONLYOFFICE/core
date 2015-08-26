@@ -13,12 +13,14 @@
 
 #include "../../../lib/include/qascprinter.h"
 
-QAscMainPanel::QAscMainPanel( QWidget* parent, CAscApplicationManager* pManager ) : QWidget( parent )
+QAscMainPanel::QAscMainPanel( QWidget* parent, CAscApplicationManager* pManager, bool bIsCustomWindow ) : QWidget( parent )
 {
-    QObject::connect(this, SIGNAL( downloadEvent(NSEditorApi::CAscDownloadFileInfo*) ), this, SLOT( downloadEventSlot(NSEditorApi::CAscDownloadFileInfo*) ), Qt::QueuedConnection );
-    QObject::connect(this, SIGNAL( setModified(int,bool)) , this, SLOT( onSetModified(int,bool)), Qt::QueuedConnection );
-    QObject::connect(this, SIGNAL( signalPrint(int,int)) , this, SLOT( slotPrint(int,int)), Qt::QueuedConnection );
-    QObject::connect(this, SIGNAL( dialogSave()), this, SLOT( onDialogSave()), Qt::QueuedConnection);
+    m_bIsCustomWindow = bIsCustomWindow;
+
+    QObject::connect(this, SIGNAL( signal_Download(NSEditorApi::CAscDownloadFileInfo*)), this, SLOT( slot_Download(NSEditorApi::CAscDownloadFileInfo*)), Qt::QueuedConnection );
+    QObject::connect(this, SIGNAL( signal_Modified(int,bool)) , this, SLOT( slot_Modified(int,bool)), Qt::QueuedConnection );
+    QObject::connect(this, SIGNAL( signal_Print(int,int)) , this, SLOT( slot_Print(int,int)), Qt::QueuedConnection );
+    QObject::connect(this, SIGNAL( signal_DialogSave()), this, SLOT( slot_DialogSave()), Qt::QueuedConnection);
 
     m_pManager = pManager;
 
@@ -35,7 +37,6 @@ QAscMainPanel::QAscMainPanel( QWidget* parent, CAscApplicationManager* pManager 
     centralWidget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
     centralWidget->setStyleSheet("background-color:#313437");
 
-    QWidget *centralWidget2 = new QWidget( centralWidget );
     centralWidget->setObjectName( "centralWidget" );
     centralWidget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
 
@@ -52,32 +53,41 @@ QAscMainPanel::QAscMainPanel( QWidget* parent, CAscApplicationManager* pManager 
 
     m_pSaveModifiedButton->setStyleSheet("background-color:#FFFFFF;border:none;margin:0;padding:0;");
 
-    // Minimize
-    m_pButtonMinimize = new QPushButton( "", centralWidget );
-    m_pButtonMinimize->setObjectName( "pushButtonMinimize" );
-    QObject::connect( m_pButtonMinimize, SIGNAL( clicked() ), this, SLOT( pushButtonMinimizeClicked() ) );
+    if (m_bIsCustomWindow)
+    {
+        // Minimize
+        m_pButtonMinimize = new QPushButton( "", centralWidget );
+        m_pButtonMinimize->setObjectName( "pushButtonMinimize" );
+        QObject::connect( m_pButtonMinimize, SIGNAL( clicked() ), this, SLOT( pushButtonMinimizeClicked() ) );
 
-    m_pButtonMinimize->setStyleSheet("QPushButton {background-image:url(:/Icons/new_collapse_normal.png);border:none;margin:0;padding:0;}\
-QPushButton::hover {background-image:url(:/Icons/new_collapse_hover.png);border:none;margin:0;padding:0;}\
-QPushButton::pressed {background-image:url(:/Icons/new_collapse_hover.png);border:none;margin:0;padding:0;}");
+        m_pButtonMinimize->setStyleSheet("QPushButton {background-image:url(:/Icons/new_collapse_normal.png);border:none;margin:0;padding:0;}\
+    QPushButton::hover {background-image:url(:/Icons/new_collapse_hover.png);border:none;margin:0;padding:0;}\
+    QPushButton::pressed {background-image:url(:/Icons/new_collapse_hover.png);border:none;margin:0;padding:0;}");
 
-    // Maximize
-    m_pButtonMaximize = new QPushButton( "", centralWidget );
-    m_pButtonMaximize->setObjectName( "pushButtonMaximize" );
-    QObject::connect( m_pButtonMaximize, SIGNAL( clicked() ), this, SLOT( pushButtonMaximizeClicked() ) );
+        // Maximize
+        m_pButtonMaximize = new QPushButton( "", centralWidget );
+        m_pButtonMaximize->setObjectName( "pushButtonMaximize" );
+        QObject::connect( m_pButtonMaximize, SIGNAL( clicked() ), this, SLOT( pushButtonMaximizeClicked() ) );
 
-    m_pButtonMaximize->setStyleSheet("QPushButton {background-image:url(:/Icons/new_deploy_normal.png);border:none;margin:0;padding:0;}\
-QPushButton::hover {background-image:url(:/Icons/new_deploy_hover.png);border:none;margin:0;padding:0;}\
-QPushButton::pressed {background-image:url(:/Icons/new_deploy_hover.png);border:none;margin:0;padding:0;}");
+        m_pButtonMaximize->setStyleSheet("QPushButton {background-image:url(:/Icons/new_deploy_normal.png);border:none;margin:0;padding:0;}\
+    QPushButton::hover {background-image:url(:/Icons/new_deploy_hover.png);border:none;margin:0;padding:0;}\
+    QPushButton::pressed {background-image:url(:/Icons/new_deploy_hover.png);border:none;margin:0;padding:0;}");
 
-    // Close
-    m_pButtonClose = new QPushButton( "", centralWidget );
-    m_pButtonClose->setObjectName( "pushButtonClose" );
-    QObject::connect( m_pButtonClose, SIGNAL( clicked() ), this, SLOT( pushButtonCloseClicked() ) );
+        // Close
+        m_pButtonClose = new QPushButton( "", centralWidget );
+        m_pButtonClose->setObjectName( "pushButtonClose" );
+        QObject::connect( m_pButtonClose, SIGNAL( clicked() ), this, SLOT( pushButtonCloseClicked() ) );
 
-    m_pButtonClose->setStyleSheet("QPushButton {background-image:url(:/Icons/new_exit_normal.png);border:none;margin:0;padding:0;}\
-QPushButton::hover {background-image:url(:/Icons/new_exit_hover.png);border:none;margin:0;padding:0;}\
-QPushButton::pressed {background-image:url(:/Icons/new_exit_hover.png);border:none;margin:0;padding:0;}");
+        m_pButtonClose->setStyleSheet("QPushButton {background-image:url(:/Icons/new_exit_normal.png);border:none;margin:0;padding:0;}\
+    QPushButton::hover {background-image:url(:/Icons/new_exit_hover.png);border:none;margin:0;padding:0;}\
+    QPushButton::pressed {background-image:url(:/Icons/new_exit_hover.png);border:none;margin:0;padding:0;}");
+    }
+    else
+    {
+        m_pButtonMinimize = NULL;
+        m_pButtonMaximize = NULL;
+        m_pButtonClose = NULL;
+    }
 
     // Main
     m_pButtonMain = new QPushButton( "", centralWidget );
@@ -179,11 +189,18 @@ void QAscMainPanel::RecalculatePlaces()
     int nY = (nCaptionH - nButtonW) >> 1;
     nY = 5;
 
-    m_pButtonClose->setGeometry(nWindowW - nStartOffset - nButtonW, nY, nButtonW, nButtonW);
-    m_pButtonMaximize->setGeometry(nWindowW - nStartOffset - 2 * nButtonW - nBetweenApp, nY, nButtonW, nButtonW);
-    m_pButtonMinimize->setGeometry(nWindowW - nStartOffset - 3 * nButtonW - 2 * nBetweenApp, nY, nButtonW, nButtonW);
+    if (m_bIsCustomWindow)
+    {
+        m_pButtonClose->setGeometry(nWindowW - nStartOffset - nButtonW, nY, nButtonW, nButtonW);
+        m_pButtonMaximize->setGeometry(nWindowW - nStartOffset - 2 * nButtonW - nBetweenApp, nY, nButtonW, nButtonW);
+        m_pButtonMinimize->setGeometry(nWindowW - nStartOffset - 3 * nButtonW - 2 * nBetweenApp, nY, nButtonW, nButtonW);
 
-    m_pSaveModifiedButton->setGeometry(nWindowW - nStartOffset - 4 * nButtonW - 3 * nBetweenApp, nY, nButtonW, nButtonW);
+        m_pSaveModifiedButton->setGeometry(nWindowW - nStartOffset - 4 * nButtonW - 3 * nBetweenApp, nY, nButtonW, nButtonW);
+    }
+    else
+    {
+        m_pSaveModifiedButton->setGeometry(nWindowW - nStartOffset - nButtonW, nY, nButtonW, nButtonW);
+    }
 
     m_pMainWidget->setGeometry(0, nCaptionH, nWindowW, nWindowH - nCaptionH);
 
@@ -258,7 +275,20 @@ void QAscMainPanel::pushButtonMainClicked()
     }
 }
 
-void QAscMainPanel::downloadEventSlot(NSEditorApi::CAscDownloadFileInfo* pInfo)
+void QAscMainPanel::pushButtonMinimizeClicked()
+{
+
+}
+void QAscMainPanel::pushButtonMaximizeClicked()
+{
+
+}
+void QAscMainPanel::pushButtonCloseClicked()
+{
+
+}
+
+void QAscMainPanel::slot_Download(NSEditorApi::CAscDownloadFileInfo* pInfo)
 {
     if (pInfo->get_IsComplete())
     {
@@ -336,7 +366,7 @@ void QAscMainPanel::downloadEventSlot(NSEditorApi::CAscDownloadFileInfo* pInfo)
     m_pDownloadLable->setText(sText);
 }
 
-void QAscMainPanel::onSetModified(int id, bool value)
+void QAscMainPanel::slot_Modified(int id, bool value)
 {
     bool bIsMain = !m_pMainWidget->isHidden();
     if (bIsMain)
@@ -352,7 +382,7 @@ void QAscMainPanel::onSetModified(int id, bool value)
     }
 }
 
-void QAscMainPanel::slotPrint(int id, int pagesCount)
+void QAscMainPanel::slot_Print(int id, int pagesCount)
 {
     QAscPrinterContext* pContext = new QAscPrinterContext();
 
@@ -394,7 +424,7 @@ void QAscMainPanel::slotPrint(int id, int pagesCount)
     pContext->Release();
 }
 
-void QAscMainPanel::onDialogSave()
+void QAscMainPanel::slot_DialogSave()
 {
     std::wstring sName = m_sDownloadName;
 
@@ -408,10 +438,10 @@ void QAscMainPanel::onDialogSave()
     m_sDownloadName = L"";
 }
 
-void QAscMainPanel::sendDialogSave(std::wstring sName)
+void QAscMainPanel::OpenDialogSave(std::wstring sName)
 {
     m_sDownloadName = sName;
-    emit dialogSave();
+    emit signal_DialogSave();
 }
 
 void QAscMainPanel::resizeEvent(QResizeEvent* event)
@@ -476,7 +506,7 @@ void QAscMainPanel::OnEvent(NSEditorApi::CAscMenuEvent* pEvent)
         }
 
         ADDREFINTERFACE(pData);
-        emit downloadEvent(pData);
+        emit signal_Download(pData);
 
         break;
     }
@@ -492,20 +522,20 @@ void QAscMainPanel::OnEvent(NSEditorApi::CAscMenuEvent* pEvent)
     case ASC_MENU_EVENT_TYPE_CEF_MODIFY_CHANGED:
     {
         NSEditorApi::CAscDocumentModifyChanged* pData = (NSEditorApi::CAscDocumentModifyChanged*)pEvent->m_pData;
-        emit setModified(pData->get_Id(), pData->get_Changed());
+        emit signal_Modified(pData->get_Id(), pData->get_Changed());
 
         break;
     }
     case ASC_MENU_EVENT_TYPE_CEF_ONSAVE:
     {
-        OutputDebugStringA("onsave");
+        //OutputDebugStringA("onsave");
 
         break;
     }
     case ASC_MENU_EVENT_TYPE_CEF_ONBEFORE_PRINT_END:
     {
         NSEditorApi::CAscPrintEnd* pData = (NSEditorApi::CAscPrintEnd*)pEvent->m_pData;
-        emit signalPrint(pData->get_Id(), pData->get_PagesCount());
+        emit signal_Print(pData->get_Id(), pData->get_PagesCount());
         break;
     }
     case ASC_MENU_EVENT_TYPE_CEF_ONKEYBOARDDOWN:
@@ -518,10 +548,7 @@ void QAscMainPanel::OnEvent(NSEditorApi::CAscMenuEvent* pEvent)
                     QString::number((int)pData->get_IsShift()),
                     QString::number((int)pData->get_IsAlt()));
 
-        std::string sOut = sFormat.toStdString();
-
-        OutputDebugStringA(sOut.c_str());
-
+#if 0
         if (pData->get_KeyCode() == 32 && pData->get_IsAlt() == true)
         {
             RECT winrect;
@@ -530,6 +557,7 @@ void QAscMainPanel::OnEvent(NSEditorApi::CAscMenuEvent* pEvent)
             GetWindowRect( windowHandle, &winrect );
             TrackPopupMenu( GetSystemMenu( windowHandle, false ), TPM_TOPALIGN | TPM_LEFTALIGN, winrect.left + 5, winrect.top + 5, 0, windowHandle, NULL);
         }
+#endif
         break;
     }
     }

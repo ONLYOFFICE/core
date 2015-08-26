@@ -9,6 +9,14 @@
 
 #include "../../../lib/include/applicationmanager.h"
 
+class CMainButtonsController
+{
+public:
+    virtual void pushButtonMinimizeClicked() {}
+    virtual void pushButtonMaximizeClicked() {}
+    virtual void pushButtonCloseClicked() {}
+};
+
 class QAscMainPanel : public QWidget, public NSEditorApi::CAscMenuEventListener
 {
     Q_OBJECT
@@ -41,6 +49,10 @@ public:
     WId GetHwndForKeyboard()
     {
         return ((QWidget*)m_pTabs->parent())->winId();
+    }
+    void SetMainButtonsController(CMainButtonsController* pController)
+    {
+        m_pMainButtonsController = pController;
     }
 
 public:
@@ -77,6 +89,8 @@ protected:
     QLabel*         m_pDownloadLable;
 
     bool            m_bIsCustomWindow;
+
+    CMainButtonsController* m_pMainButtonsController;
 };
 
 #endif // QMAINPANEL_H

@@ -5,16 +5,12 @@
 #include <windows.h>
 #include <stdexcept>
 
-#include <QtWidgets/QPushButton>
 #include <QFile>
 #include <QPixmap>
 
 #include <QDebug>
 
 HWND winId = 0;
-
-//QMainPanel*     CMainWindow::mainPanel;
-//QApplication*   CMainWindow::a;
 
 CMainWindow::CMainWindow( QApplication *app, HBRUSH windowBackground, const int x, const int y, const int width, const int height, CAscApplicationManager* pManager ) :
     hWnd(0),
@@ -28,7 +24,6 @@ CMainWindow::CMainWindow( QApplication *app, HBRUSH windowBackground, const int 
     mainPanel = NULL;
 
     m_pManager = pManager;
-    m_pManager->StartSpellChecker();
 
     WNDCLASSEXW wcx = { 0 };
     wcx.cbSize = sizeof( WNDCLASSEX );
@@ -75,22 +70,12 @@ CMainWindow::CMainWindow( QApplication *app, HBRUSH windowBackground, const int 
     toggleBorderless();
 
     a = app;
-
-    m_nTimerLanguageId = 5000;
-
-    SetTimer(hWnd, m_nTimerLanguageId, 100, NULL);    
 }
 
 CMainWindow::~CMainWindow()
 {
-    if (-1 != m_nTimerLanguageId)
-        ::KillTimer(hWnd, m_nTimerLanguageId);
-
     hide();
     DestroyWindow( hWnd );
-
-    //m_pManager->StopSpellChecker();
-    //RELEASEOBJECT(m_pManager);
 }
 
 LRESULT CALLBACK CMainWindow::WndProc( HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam )
@@ -185,13 +170,6 @@ LRESULT CALLBACK CMainWindow::WndProc( HWND hWnd, UINT message, WPARAM wParam, L
     case WM_DESTROY:
     {
         PostQuitMessage(0);
-        break;
-    }
-
-    case WM_TIMER:
-    {
-        if (NULL != window->m_pManager)
-            window->m_pManager->CheckKeyboard();
         break;
     }
 
@@ -444,13 +422,6 @@ QPushButton::pressed {background-image:url(:/Icons/new_deploy_hover.png);border:
     case WM_ENDSESSION:
     {
         window->m_pManager->CloseApplication();
-
-        if (-1 != window->m_nTimerLanguageId)
-        {
-            ::KillTimer(hWnd, window->m_nTimerLanguageId);
-            window->m_nTimerLanguageId = -1;
-        }
-
         break;
     }
 #if 0

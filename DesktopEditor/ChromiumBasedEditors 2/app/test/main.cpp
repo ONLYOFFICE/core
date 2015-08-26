@@ -1,12 +1,44 @@
-#include <QFile>
-#include "QAscApplicationManager.h"
-#include "mainwindow.h"
-#include <QScreen>
+#pragma once
 
+#include <QFile>
+#include <QScreen>
+#include <QDir>
+
+#include "mainwindow.h"
+#include "./src/QAscApplicationManager.h"
+
+#ifdef WIN32
 #include <shlwapi.h>
 #include <shlobj.h>
+#endif
 
-int main( int argc, char *argv[] )
+#include <QStandardPaths>
+
+static std::wstring GetAppDataPath()
+{
+#ifdef WIN32
+    WCHAR szPath[MAX_PATH];
+    // Get path for each computer, non-user specific and non-roaming data.
+    if ( SUCCEEDED( SHGetFolderPathW( NULL, CSIDL_COMMON_APPDATA, NULL, 0, szPath ) ) )
+    {
+        // TODO: [0]
+        // QStringList arr = QStandardPaths::standardLocations(QStandardPaths::AppDataLocation);
+
+        // Append product-specific path
+        std::wstring sAppData(szPath);
+        sAppData += L"/ONLYOFFICE";
+        return sAppData;
+    }
+#else
+    std::wstring sAppData = QDir::homePath().toStdWString();
+    sAppData += L"/ONLYOFFICE";
+    return sAppData;
+#endif
+
+    return L"";
+}
+
+static int AscEditor_MainWindows( int argc, char *argv[] )
 {
     bool bIsChromiumSubprocess = false;
     for (int i = 0; i < argc; ++i)
@@ -38,15 +70,8 @@ int main( int argc, char *argv[] )
         CApplicationCEF oCef;
         CAscApplicationManager oManager;
 
-        WCHAR szPath[MAX_PATH];
-        // Get path for each computer, non-user specific and non-roaming data.
-        if ( SUCCEEDED( SHGetFolderPathW( NULL, CSIDL_COMMON_APPDATA, NULL, 0, szPath ) ) )
-        {
-            // Append product-specific path
-            std::wstring sAppData(szPath);
-            sAppData += L"/ONLYOFFICE";
-            oManager.m_oSettings.SetUserDataPath(sAppData);
-        }
+        std::wstring sUserPath = GetAppDataPath();
+        oManager.m_oSettings.SetUserDataPath(sUserPath);
 
         oCef.Init_CEF(&oManager);
         return aa.exec();
@@ -57,15 +82,8 @@ int main( int argc, char *argv[] )
 
     CAscApplicationManager* pApplicationManager = new QAscApplicationManager();
 
-    WCHAR szPath[MAX_PATH];
-    // Get path for each computer, non-user specific and non-roaming data.
-    if ( SUCCEEDED( SHGetFolderPathW( NULL, CSIDL_COMMON_APPDATA, NULL, 0, szPath ) ) )
-    {
-        // Append product-specific path
-        std::wstring sAppData(szPath);
-        sAppData += L"/ONLYOFFICE";
-        pApplicationManager->m_oSettings.SetUserDataPath(sAppData);
-    }
+    std::wstring sUserPath = GetAppDataPath();
+    pApplicationManager->m_oSettings.SetUserDataPath(sUserPath);
 
     qreal ww = a.primaryScreen()->logicalDotsPerInch();
     qreal hh = a.primaryScreen()->physicalDotsPerInch();
@@ -90,7 +108,10 @@ int main( int argc, char *argv[] )
     CMainWindow window( &a, windowBackground, 100, 100, 1024 * 2, 600 * 2, pApplicationManager );
     window.setMinimumSize( 100, 100 );
 
-    ((QAscApplicationManager*)pApplicationManager)->m_pPanel = window.mainPanel;
+    ((QAscApplicationManager*)pApplicationManager)->m_pPanel = window.mainPanel->m_pPanel;
+
+    pApplicationManager->StartSpellChecker();
+    pApplicationManager->StartKeyboardChecker();
 
     // Launch
     a.exec();
@@ -100,4 +121,11 @@ int main( int argc, char *argv[] )
 
     delete application_cef;
     delete pApplicationManager;
+
+    return 0;
+}
+
+int main( int argc, char *argv[] )
+{
+    return AscEditor_MainWindows(argc, argv);
 }

@@ -1,7 +1,7 @@
 #ifndef QWINHOST_H
 #define QWINHOST_H
 
-#include <QtWidgets/QWidget>
+#include <QWidget>
 #include <Windows.h>
 
 class QWinHost : public QWidget

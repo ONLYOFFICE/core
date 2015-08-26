@@ -16,6 +16,7 @@
 QAscMainPanel::QAscMainPanel( QWidget* parent, CAscApplicationManager* pManager, bool bIsCustomWindow ) : QWidget( parent )
 {
     m_bIsCustomWindow = bIsCustomWindow;
+    m_pMainButtonsController = NULL;
 
     QObject::connect(this, SIGNAL( signal_Download(NSEditorApi::CAscDownloadFileInfo*)), this, SLOT( slot_Download(NSEditorApi::CAscDownloadFileInfo*)), Qt::QueuedConnection );
     QObject::connect(this, SIGNAL( signal_Modified(int,bool)) , this, SLOT( slot_Modified(int,bool)), Qt::QueuedConnection );
@@ -168,8 +169,6 @@ QPushButton::pressed {background-image:url(:/Icons/Documents_active_hover.png);b
 
     RecalculatePlaces();
 
-    show();
-
     m_pManager->SetEventListener(this);
 }
 
@@ -278,15 +277,18 @@ void QAscMainPanel::pushButtonMainClicked()
 
 void QAscMainPanel::pushButtonMinimizeClicked()
 {
-
+    if (m_pMainButtonsController)
+        m_pMainButtonsController->pushButtonMinimizeClicked();
 }
 void QAscMainPanel::pushButtonMaximizeClicked()
 {
-
+    if (m_pMainButtonsController)
+        m_pMainButtonsController->pushButtonMaximizeClicked();
 }
 void QAscMainPanel::pushButtonCloseClicked()
 {
-
+    if (m_pMainButtonsController)
+        m_pMainButtonsController->pushButtonCloseClicked();
 }
 
 void QAscMainPanel::slot_Download(NSEditorApi::CAscDownloadFileInfo* pInfo)

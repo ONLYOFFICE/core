@@ -1,11 +1,9 @@
 #include <windows.h>
 
-#include "../../lib/include/applicationmanager.h"
-
 #include "qmainpanel.h"
 #include "qwinwidget.h"
 
-#include <QtWidgets/QApplication>
+#include <QApplication>
 
 class CMainWindow
 {
@@ -71,6 +69,4 @@ private:
 
     sizeType minimumSize;
     sizeType maximumSize;
-
-    UINT_PTR            m_nTimerLanguageId;
 };

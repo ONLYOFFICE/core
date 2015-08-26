@@ -15,7 +15,7 @@ SOURCES += \
     $$PWD/QAscMainPanel.cpp
 
 RESOURCES += \
-    Icons.qrc
+    $$PWD/Icons.qrc
 
 win32 {
 LIBS += -lwininet \

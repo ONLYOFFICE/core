@@ -48,7 +48,7 @@ public:
     explicit QAscMainWindow(QWidget *parent, CAscApplicationManager* pAppManager) : QMainWindow(parent)
     {
         this->resize(1000, 500);
-        QWidget* pMainPanel = new QAscMainPanel(this, pAppManager);
+        QWidget* pMainPanel = new QAscMainPanel(this, pAppManager, false);
         this->setCentralWidget(pMainPanel);
 
         ((QAscApplicationManager*)pAppManager)->m_pPanel = (QAscMainPanel*)pMainPanel;

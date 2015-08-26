@@ -14,25 +14,44 @@ class QAscMainPanel : public QWidget, public NSEditorApi::CAscMenuEventListener
     Q_OBJECT
 
 signals:
-    void downloadEvent( NSEditorApi::CAscDownloadFileInfo* );
-    void setModified(int, bool);
-    void signalPrint(int, int);
-    void dialogSave();
+    void signal_Download( NSEditorApi::CAscDownloadFileInfo* );
+    void signal_Modified(int, bool);
+    void signal_Print(int, int);
+    void signal_DialogSave();
 
 public:
-    QAscMainPanel( QWidget *parent, CAscApplicationManager* pManager );
-
-    void resizeEvent(QResizeEvent* event);
+    QAscMainPanel( QWidget *parent, CAscApplicationManager* pManager, bool bIsCustomWindow );
 
 public slots:
     void pushButtonSaveClicked();
     void pushButtonMainClicked();
-    void downloadEventSlot( NSEditorApi::CAscDownloadFileInfo* );
-    void onSetModified(int, bool);
-    void slotPrint(int, int);
-    void onDialogSave();
 
-private:
+    void pushButtonMinimizeClicked();
+    void pushButtonMaximizeClicked();
+    void pushButtonCloseClicked();
+
+    void slot_Download( NSEditorApi::CAscDownloadFileInfo* );
+    void slot_Modified(int, bool);
+    void slot_Print(int, int);
+    void slot_DialogSave();
+
+public:
+    WId GetHwndForKeyboard()
+    {
+        return ((QWidget*)m_pTabs->parent())->winId();
+    }
+
+public:
+    void resizeEvent(QResizeEvent* event);
+    virtual void OnEvent(NSEditorApi::CAscMenuEvent* pEvent);
+    virtual bool IsSupportEvent(int nEventType) { return true; }
+
+    void OpenDialogSave(std::wstring sName);
+
+protected:
+    void RecalculatePlaces();
+
+protected:
     QPushButton*    m_pButtonMain;
     QWidget*        m_pMainWidget;
 
@@ -54,23 +73,7 @@ private:
     QWidget*        m_pDownloadBackground;
     QLabel*         m_pDownloadLable;
 
-public:
-    WId GetHwndForKeyboard()
-    {
-        return ((QWidget*)m_pTabs->parent())->winId();
-    }
-
-public:
-    virtual void OnEvent(NSEditorApi::CAscMenuEvent* pEvent);
-    virtual bool IsSupportEvent(int nEventType)
-    {
-        return true;
-    }
-
-    void sendDialogSave(std::wstring sName);
-
-private:
-    void RecalculatePlaces();
+    bool            m_bIsCustomWindow;
 };
 
 #endif // QMAINPANEL_H

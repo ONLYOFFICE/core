@@ -28,7 +28,7 @@ public:
         // слоты родителю. Т.е. классу CAscApplicationManager.
         // А в либе я не буду затачиваться на QT
 
-        ((QAscMainPanel*)m_pPanel)->sendDialogSave(sName);
+        ((QAscMainPanel*)m_pPanel)->OpenDialogSave(sName);
     }
 };
 

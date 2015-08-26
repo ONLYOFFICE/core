@@ -37,10 +37,7 @@ QAscMainPanel::QAscMainPanel( QWidget* parent, CAscApplicationManager* pManager,
     QWidget *centralWidget = new QWidget( this );
     centralWidget->setObjectName( "centralWidget" );
     centralWidget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
-    centralWidget->setStyleSheet("background-color:#313437");
-
-    centralWidget->setObjectName( "centralWidget" );
-    centralWidget->setSizePolicy( QSizePolicy::Expanding, QSizePolicy::Expanding );
+    //centralWidget->setStyleSheet("background-color:#313437");
 
     QAscTabWidget* pTabs = new QAscTabWidget(centralWidget);
     pTabs->setGeometry(0, 0, centralWidget->width(), centralWidget->height());

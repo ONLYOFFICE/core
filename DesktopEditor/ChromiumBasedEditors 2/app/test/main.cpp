@@ -94,7 +94,7 @@ static int AscEditor_MainWindows( int argc, char *argv[] )
 
     a.setStyleSheet("#mainPanel { margin: 0; padding: 0; }\
 #systemPanel { margin: 0; padding: 0; } \
-#centralWidget { background: #fff; }");
+#centralWidget { background: #313437; }");
 
     // Font
     QFont mainFont = a.font();

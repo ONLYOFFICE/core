@@ -21,6 +21,9 @@ public:
 	void readFields(CFRecord& record);
 
 	static const ElementType	type = typeContinue;
+
+	char*	m_pData;
+	int		m_iDataSize;
 };
 
 } // namespace XLS

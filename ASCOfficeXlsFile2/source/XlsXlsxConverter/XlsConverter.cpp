@@ -523,54 +523,45 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 	{
 		short type_object = -1;
 
-		ODRAW::OfficeArtSpContainer *sp			= NULL;
-		ODRAW::OfficeArtSpContainer *sp_text	= NULL;
-		ODRAW::OfficeArtSpContainer *sp_common	= NULL;
-		
 		XLS::OBJ		* OBJ			= dynamic_cast<XLS::OBJ*>		(elem->get());
+
 		XLS::TEXTOBJECT	* TEXTOBJECT	= NULL;
+		XLS::CHART		* CHART			= NULL;
 		
 		std::list<XLS::BaseObjectPtr>::iterator elem_next = boost::next(elem);
 		if ( elem_next !=objects->elements_.end() )
 		{
 			TEXTOBJECT	= dynamic_cast<XLS::TEXTOBJECT*>(elem_next->get());
+			CHART		= dynamic_cast<XLS::CHART*>		(elem_next->get());
 		}
-		XLS::CHART		* CHART			= dynamic_cast<XLS::CHART*>		(elem->get());
 
-		XLS::Obj * obj		= NULL;
-		XLS::TxO * text_obj	= NULL; 
+		XLS::Obj					* obj		= NULL;
+		XLS::TxO					* text_obj	= NULL; 
+		XLS::ChartSheetSubstream	* chart		= NULL;
 
-		XLS::ChartSheetSubstream * chart = NULL;
-
-		if (OBJ)		obj			= dynamic_cast<XLS::Obj*>(OBJ->m_Obj.get());		
+		if (OBJ)		obj			= dynamic_cast<XLS::Obj *>(OBJ->m_Obj.get());		
 		if (TEXTOBJECT) text_obj	= dynamic_cast<XLS::TxO *>(TEXTOBJECT->m_TxO.get());
 		if (CHART)		chart		= dynamic_cast<XLS::ChartSheetSubstream *>(CHART->elements_.back().get());
 		
-		if (obj)
-		{ 
-			type_object = obj->cmo.ot;	//тут тип шейпа ВРАНЬЕ !!! пример - 7.SINIF I.DÖNEM III.YAZILI SINAV.xls
-			
-			if (obj->m_OfficeArtSpContainer)
-				sp = dynamic_cast<ODRAW::OfficeArtSpContainer*>(obj->m_OfficeArtSpContainer.get());
-		}
+		if (obj)	type_object = obj->cmo.ot;
+		if (chart)	type_object = 0x0005;
+
 		if (text_obj)
 		{ 
-			if (type_object <0) type_object = 0x0006;
-			
-			if (text_obj->m_OfficeArtSpContainer)
-			{
-				sp_text = dynamic_cast<ODRAW::OfficeArtSpContainer*>(text_obj->m_OfficeArtSpContainer.get());
-			}
+			if (type_object <0) type_object = 0x0006;			
 		}
-		if (chart)
-		{
-			type_object = 0x0005;
-		}
+
 //-----------------------------------------------------------------------------
-		if ( (spgr) && (ind+1< spgr->child_records.size()))
+		ODRAW::OfficeArtSpContainer *sp			= NULL;
+		ODRAW::OfficeArtSpContainer *sp_text	= NULL;
+		if ( spgr) 
 		{
-			sp_common	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
+			if (ind + 1 < spgr->child_records.size())
+				sp		= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
+			if (text_obj && ind + 2 < spgr->child_records.size())
+				sp_text	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+2].get());	
 		}
+
 		
 		if (note && text_obj)
 		{
@@ -584,9 +575,8 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 
 		if (xlsx_context->get_drawing_context().start_drawing(type_object))		
 		{
-			convert(sp_text);
 			convert(sp);
-			convert(sp_common);
+			convert(sp_text);
 
 			if (text_obj)
 			{
@@ -595,7 +585,9 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 
 				xlsx_context->get_drawing_context().set_text(strm.str());
 			}
-
+			if (chart)
+			{
+			}
 			xlsx_context->get_drawing_context().end_drawing();
 		}
 		else
@@ -605,10 +597,10 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 				note = true;
 			}
 		}
-		if ( sp == NULL )	ind++;
+		ind++;
 		if ( spgr ) 
 		{
-			while (ind+1 < spgr->child_records.size()) // бывает что эти элементы не привязаны к sp, а "лежат" сверху - FilterClickColour_2003.xls
+			while (ind + 1 < spgr->child_records.size()) // бывает что эти элементы не привязаны к sp, а "лежат" сверху - FilterClickColour_2003.xls
 			{
 				ODRAW::OfficeArtClientData*		client_data = NULL;
 				ODRAW::OfficeArtClientTextbox*	text_client_data = NULL;
@@ -622,10 +614,10 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 				}else break;
 			}
 		}	
-		if (TEXTOBJECT)
+		if (TEXTOBJECT || CHART)
 		{
 			elem++;
-			if ( sp_text == NULL )	ind++;
+			ind++;
 		}
 	}
 }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Logic/CompositeObject.h>
+#include <Logic/Biff_records/MsoDrawing.h>
 
 namespace XLS
 {
@@ -11,7 +12,9 @@ class CHART: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(CHART)
 public:
-	CHART();
+	CHART(MsoDrawingPtr mso_drawing) : mso_drawing_(mso_drawing)
+	{
+	}
 	~CHART();
 
 	BaseObjectPtr clone();
@@ -19,6 +22,8 @@ public:
 	virtual const bool loadContent(BinProcessor& proc);
 
 	static const ElementType	type = typeCHART;
+	
+	MsoDrawingPtr mso_drawing_;
 };
 
 } // namespace XLS

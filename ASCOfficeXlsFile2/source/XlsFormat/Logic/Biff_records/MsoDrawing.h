@@ -18,15 +18,17 @@ public:
 
 	BaseObjectPtr clone();
 
-	void writeFields(CFRecord& record);
-	void readFields(CFRecord& record);
-	void readFields();
+	void writeFields	(CFRecord& record);
+	void readFields		(CFRecord& record);
+	void readFields		();
+
+	void resetToBegin	();
 
 	static const ElementType	type = typeMsoDrawing;
 //-----------------------------
-	virtual const bool isStartingRecord(CFRecord& record);
-	virtual const bool isEndingRecord(CFRecord& record);
-	virtual void useContinueRecords(CFRecord& record);
+	virtual const	bool isStartingRecord	(CFRecord& record);
+	virtual const	bool isEndingRecord		(CFRecord& record);
+	virtual			void useContinueRecords	(CFRecord& record);
 
 //-----------------------------
 	ODRAW::OfficeArtDgContainer rgChildRec;

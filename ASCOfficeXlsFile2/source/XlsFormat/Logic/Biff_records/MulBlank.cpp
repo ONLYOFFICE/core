@@ -72,6 +72,10 @@ void MulBlank::readFields(CFRecord& record)
 	//------------------
 	record >> rw >> colFirst;
 
+	int r = rw;
+	int colL = colLast;
+	int colF = colFirst;
+
 	rgixfe.load(record, colLast - colFirst + 1);
 
 	record.skipNunBytes(sizeof(unsigned short));
@@ -94,17 +98,29 @@ int MulBlank::serialize(std::wostream & stream)
 			CP_XML_NODE(L"c")
 			{
 				CP_XML_ATTR(L"r", ref);
-
+				
 				if(( (i-colFirst) < rgixfe.rgixfe.size()) && (rgixfe.rgixfe[i-colFirst] > cellStyleXfs_count))
 				{
+					int st = (int)rgixfe.rgixfe[i-colFirst] - cellStyleXfs_count;
 					CP_XML_ATTR(L"s", rgixfe.rgixfe[i-colFirst] - cellStyleXfs_count);
 				}
 				else if  ((rgixfe.common_ixfe > 0) && (rgixfe.common_ixfe > cellStyleXfs_count))
 				{
+					int st = (int)rgixfe.common_ixfe - cellStyleXfs_count;
 					CP_XML_ATTR(L"s", rgixfe.common_ixfe - cellStyleXfs_count);
 				}
+			}		
 
-			}			
+			//if(( (i-colFirst) < rgixfe.rgixfe.size()) && (rgixfe.rgixfe[i-colFirst] > cellStyleXfs_count))
+			//{
+			//	CP_XML_NODE(L"c")
+			//	{
+			//		CP_XML_ATTR(L"r", ref);
+			//		
+			//		int st = (int)rgixfe.rgixfe[i-colFirst] - cellStyleXfs_count;
+			//		CP_XML_ATTR(L"s", rgixfe.rgixfe[i-colFirst] - cellStyleXfs_count);
+			//	}
+			//}	
 		}
 	}
 	return 0;
@@ -122,8 +138,10 @@ BiffStructurePtr IXFCellMulBlankSpecial::clone()
 
 void IXFCellMulBlankSpecial::load(CFRecord& record, const size_t num_cells)
 {
+	size_t sz = (record.getDataSize() - record.getRdPtr()-2)/2;
+
 	unsigned short ixfe;
-	for(size_t i = 0; i < num_cells; ++i)
+	for(size_t i = 0; i < (std::min)(sz, num_cells); ++i) //Lighting Load Calculation.xls - третий лист 
 	{
 		record >> ixfe;
 		rgixfe.push_back(ixfe);

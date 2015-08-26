@@ -1,6 +1,7 @@
 #pragma once
 
 #include <Logic/CompositeObject.h>
+#include <Logic/Biff_records/MsoDrawing.h>
 
 namespace XLS
 {
@@ -11,7 +12,9 @@ class OBJ: public CompositeObject
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(OBJ)
 public:
-	OBJ();
+	OBJ(MsoDrawingPtr mso_drawing) : mso_drawing_(mso_drawing)
+	{
+	}
 	~OBJ();
 
 	BaseObjectPtr clone();
@@ -21,6 +24,8 @@ public:
 	BaseObjectPtr m_Obj;
 
 	static const ElementType	type = typeOBJ;
+	
+	MsoDrawingPtr mso_drawing_;
 };
 
 } // namespace XLS

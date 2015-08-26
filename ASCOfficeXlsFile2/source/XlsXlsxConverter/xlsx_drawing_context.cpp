@@ -311,7 +311,7 @@ void xlsx_drawing_context::serialize_shape()
 						}
 					}
 				}
-				//serialize_fill(CP_XML_STREAM());
+				serialize_fill(CP_XML_STREAM());
 				serialize_line(CP_XML_STREAM());		
 			}
 			serialize_text(CP_XML_STREAM());

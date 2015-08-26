@@ -23,9 +23,19 @@ const bool BiffRecordSplit::storeRecordAndDecideProceeding(CFRecordPtr record)
 {
 	useContinueRecords(*record);
 	record->resetPointerToBegin();
+	
 	if(isStartingRecord(*record))
 	{
-		stored_record = record;
+		if (stored_record)
+		{
+			stored_record->appendRawData(record->getData(), record->getDataSize());
+		}
+		else
+		{
+			stored_record = CFRecordPtr(new CFRecord(record->getTypeId(), record->getGlobalWorkbookInfo()));
+
+			stored_record->appendRawData(record->getData(), record->getDataSize());
+		}
 	}
 	else if(stored_record == NULL)
 	{
@@ -34,8 +44,9 @@ const bool BiffRecordSplit::storeRecordAndDecideProceeding(CFRecordPtr record)
 	}
 	else
 	{
-		record->insertDataFromRecordToBeginning(stored_record);
-		stored_record = record;
+		//record->insertDataFromRecordToBeginning(stored_record);
+		//stored_record = record;
+		stored_record->appendRawData(record->getData(), record->getDataSize());
 	}
 	stored_record->resetPointerToBegin();
 	bool is_end = isEndingRecord(*stored_record);

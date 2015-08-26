@@ -23,6 +23,10 @@ void OfficeArtClientData::loadFields(XLS::CFRecord& record)
 	{
 	}
 }
+void OfficeArtSolverContainer::loadFields(XLS::CFRecord& record)
+{
+	//array of OfficeArtSolverContainerFileBlock
+}
 
 void OfficeArtDggContainer::loadFields(XLS::CFRecord& record)
 {

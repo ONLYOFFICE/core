@@ -8,11 +8,6 @@ namespace XLS
 {
 
 
-TEXTOBJECT::TEXTOBJECT()
-{
-}
-
-
 TEXTOBJECT::~TEXTOBJECT()
 {
 }
@@ -27,7 +22,8 @@ BaseObjectPtr TEXTOBJECT::clone()
 // TEXTOBJECT = TxO *Continue
 const bool TEXTOBJECT::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<TxO>())
+	TxO TxO_(mso_drawing_);
+	if(!proc.mandatory(TxO_))
 	{
 		return false;
 	}

@@ -45,6 +45,8 @@ class RootWindowWin : public RootWindow,
   void Hide() OVERRIDE;
   void SetBounds(int x, int y, size_t width, size_t height) OVERRIDE;
   void Close(bool force) OVERRIDE;
+  void SetDeviceScaleFactor(float device_scale_factor) OVERRIDE;
+  float GetDeviceScaleFactor() const OVERRIDE;
   CefRefPtr<CefBrowser> GetBrowser() const OVERRIDE;
   ClientWindowHandle GetWindowHandle() const OVERRIDE;
 
@@ -111,6 +113,9 @@ class RootWindowWin : public RootWindow,
 
   // Draggable region.
   HRGN draggable_region_;
+
+  // Font for buttons and text fields.
+  HFONT font_;
 
   // Buttons.
   HWND back_hwnd_;

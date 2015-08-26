@@ -9,6 +9,7 @@
 #include "include/cef_app.h"
 #include "cefclient/browser/browser_window_osr_win.h"
 #include "cefclient/browser/browser_window_std_win.h"
+#include "cefclient/browser/geometry_util.h"
 #include "cefclient/browser/main_context.h"
 #include "cefclient/browser/main_message_loop.h"
 #include "cefclient/browser/resource.h"
@@ -43,6 +44,30 @@ INT_PTR CALLBACK AboutWndProc(HWND hDlg, UINT message,
   return FALSE;
 }
 
+int GetButtonWidth() {
+  static int button_width = BUTTON_WIDTH;
+  static bool initialized = false;
+
+  if (!initialized) {
+    button_width = LogicalToDevice(BUTTON_WIDTH, GetDeviceScaleFactor());
+    initialized = true;
+  }
+
+  return button_width;
+}
+
+int GetURLBarHeight() {
+  static int urlbar_height = URLBAR_HEIGHT;
+  static bool initialized = false;
+
+  if (!initialized) {
+    urlbar_height = LogicalToDevice(URLBAR_HEIGHT, GetDeviceScaleFactor());
+    initialized = true;
+  }
+
+  return urlbar_height;
+}
+
 }  // namespace
 
 RootWindowWin::RootWindowWin()
@@ -54,6 +79,7 @@ RootWindowWin::RootWindowWin()
       initialized_(false),
       hwnd_(NULL),
       draggable_region_(NULL),
+      font_(NULL),
       back_hwnd_(NULL),
       forward_hwnd_(NULL),
       reload_hwnd_(NULL),
@@ -78,6 +104,7 @@ RootWindowWin::~RootWindowWin() {
   REQUIRE_MAIN_THREAD();
 
   ::DeleteObject(draggable_region_);
+  ::DeleteObject(font_);
 
   // The window and browser should already have been destroyed.
   DCHECK(window_destroyed_);
@@ -182,8 +209,11 @@ void RootWindowWin::Hide() {
 void RootWindowWin::SetBounds(int x, int y, size_t width, size_t height) {
   REQUIRE_MAIN_THREAD();
 
-  if (hwnd_)
-    SetWindowPos(hwnd_, NULL, 0, 0, 0, 0, SWP_NOZORDER);
+  if (hwnd_) {
+    SetWindowPos(hwnd_, NULL,
+                 x, y, static_cast<int>(width), static_cast<int>(height),
+                 SWP_NOZORDER);
+  }
 }
 
 void RootWindowWin::Close(bool force) {
@@ -195,6 +225,21 @@ void RootWindowWin::Close(bool force) {
     else
       PostMessage(hwnd_, WM_CLOSE, 0, 0);
   }
+}
+
+void RootWindowWin::SetDeviceScaleFactor(float device_scale_factor) {
+  REQUIRE_MAIN_THREAD();
+
+  if (browser_window_)
+    browser_window_->SetDeviceScaleFactor(device_scale_factor);
+}
+
+float RootWindowWin::GetDeviceScaleFactor() const {
+  REQUIRE_MAIN_THREAD();
+
+  if (browser_window_)
+    return browser_window_->GetDeviceScaleFactor();
+  return client::GetDeviceScaleFactor();
 }
 
 CefRefPtr<CefBrowser> RootWindowWin::GetBrowser() const {
@@ -254,7 +299,7 @@ void RootWindowWin::CreateRootWindow(const CefBrowserSettings& settings) {
     RECT window_rect = start_rect_;
     ::AdjustWindowRectEx(&window_rect, dwStyle, with_controls_, 0);
     if (with_controls_)
-      window_rect.bottom += URLBAR_HEIGHT;
+      window_rect.bottom += GetURLBarHeight();
 
     x = start_rect_.left;
     y = start_rect_.top;
@@ -267,8 +312,6 @@ void RootWindowWin::CreateRootWindow(const CefBrowserSettings& settings) {
                        dwStyle,
                        x, y, width, height,
                        NULL, NULL, hInstance, NULL);
-  DWORD dw = GetLastError();
-
   CHECK(hwnd_);
 
   // Associate |this| with the main window.
@@ -279,46 +322,64 @@ void RootWindowWin::CreateRootWindow(const CefBrowserSettings& settings) {
 
   if (with_controls_) {
     // Create the child controls.
-    int x = 0;
+    int x_offset = 0;
+
+    const int button_width = GetButtonWidth();
+    const int urlbar_height = GetURLBarHeight();
+    const int font_height =
+        LogicalToDevice(14, client::GetDeviceScaleFactor());
+
+    // Create a scaled font.
+    font_ = ::CreateFont(
+        -font_height, 0, 0, 0, FW_DONTCARE, FALSE, FALSE, FALSE,
+        DEFAULT_CHARSET, OUT_DEFAULT_PRECIS, CLIP_DEFAULT_PRECIS,
+        DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE, L"Arial");
 
     back_hwnd_ = CreateWindow(
         L"BUTTON", L"Back",
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_DISABLED,
-        x, 0, BUTTON_WIDTH, URLBAR_HEIGHT,
+        x_offset, 0, button_width, urlbar_height,
         hwnd_, reinterpret_cast<HMENU>(IDC_NAV_BACK), hInstance, 0);
     CHECK(back_hwnd_);
-    x += BUTTON_WIDTH;
+    SendMessage(back_hwnd_, WM_SETFONT, reinterpret_cast<WPARAM>(font_), TRUE);
+    x_offset += button_width;
 
     forward_hwnd_ = CreateWindow(
         L"BUTTON", L"Forward",
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_DISABLED,
-        x, 0, BUTTON_WIDTH, URLBAR_HEIGHT,
+        x_offset, 0, button_width, urlbar_height,
         hwnd_, reinterpret_cast<HMENU>(IDC_NAV_FORWARD), hInstance, 0);
     CHECK(forward_hwnd_);
-    x += BUTTON_WIDTH;
+    SendMessage(forward_hwnd_, WM_SETFONT,
+                reinterpret_cast<WPARAM>(font_), TRUE);
+    x_offset += button_width;
 
     reload_hwnd_ = CreateWindow(
         L"BUTTON", L"Reload",
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON| WS_DISABLED,
-        x, 0, BUTTON_WIDTH, URLBAR_HEIGHT,
+        x_offset, 0, button_width, urlbar_height,
         hwnd_, reinterpret_cast<HMENU>(IDC_NAV_RELOAD), hInstance, 0);
     CHECK(reload_hwnd_);
-    x += BUTTON_WIDTH;
+    SendMessage(reload_hwnd_, WM_SETFONT,
+                reinterpret_cast<WPARAM>(font_), TRUE);
+    x_offset += button_width;
 
     stop_hwnd_ = CreateWindow(
         L"BUTTON", L"Stop",
         WS_CHILD | WS_VISIBLE | BS_PUSHBUTTON | WS_DISABLED,
-        x, 0, BUTTON_WIDTH, URLBAR_HEIGHT,
+        x_offset, 0, button_width, urlbar_height,
         hwnd_, reinterpret_cast<HMENU>(IDC_NAV_STOP), hInstance, 0);
     CHECK(stop_hwnd_);
-    x += BUTTON_WIDTH;
+    SendMessage(stop_hwnd_, WM_SETFONT, reinterpret_cast<WPARAM>(font_), TRUE);
+    x_offset += button_width;
 
     edit_hwnd_ = CreateWindow(
         L"EDIT", 0,
         WS_CHILD | WS_VISIBLE | WS_BORDER | ES_LEFT | ES_AUTOVSCROLL |
         ES_AUTOHSCROLL| WS_DISABLED,
-        x, 0, rect.right - BUTTON_WIDTH * 4, URLBAR_HEIGHT,
+        x_offset, 0, rect.right - button_width * 4, urlbar_height,
         hwnd_, 0, hInstance, 0);
+    SendMessage(edit_hwnd_, WM_SETFONT, reinterpret_cast<WPARAM>(font_), TRUE);
     CHECK(edit_hwnd_);
 
     // Override the edit control's window procedure.
@@ -327,7 +388,7 @@ void RootWindowWin::CreateRootWindow(const CefBrowserSettings& settings) {
     // Associate |this| with the edit window.
     SetUserDataPtr(edit_hwnd_, this);
 
-    rect.top += URLBAR_HEIGHT;
+    rect.top += urlbar_height;
 
     if (!with_osr_) {
       // Remove the menu items that are only used with OSR.
@@ -335,9 +396,8 @@ void RootWindowWin::CreateRootWindow(const CefBrowserSettings& settings) {
       if (hMenu) {
         HMENU hTestMenu = ::GetSubMenu(hMenu, 2);
         if (hTestMenu) {
-          ::RemoveMenu(hTestMenu, ID_TESTS_FPS_INCREASE, MF_BYCOMMAND);
-          ::RemoveMenu(hTestMenu, ID_TESTS_FPS_DECREASE, MF_BYCOMMAND);
-          ::RemoveMenu(hTestMenu, ID_TESTS_FPS_RESET, MF_BYCOMMAND);
+          ::RemoveMenu(hTestMenu, ID_TESTS_OSR_FPS, MF_BYCOMMAND);
+          ::RemoveMenu(hTestMenu, ID_TESTS_OSR_DSF, MF_BYCOMMAND);
         }
       }
     }
@@ -575,23 +635,26 @@ void RootWindowWin::OnSize(bool minimized) {
   GetClientRect(hwnd_, &rect);
 
   if (with_controls_) {
-    // Resize the window and address bar to match the new frame size.
-    rect.top += URLBAR_HEIGHT;
+    static int button_width = GetButtonWidth();
+    static int urlbar_height = GetURLBarHeight();
 
-    int urloffset = rect.left + BUTTON_WIDTH * 4;
+    // Resize the window and address bar to match the new frame size.
+    rect.top += urlbar_height;
+
+    int urloffset = rect.left + button_width * 4;
 
     if (browser_window_) {
       HWND browser_hwnd = browser_window_->GetWindowHandle();
       HDWP hdwp = BeginDeferWindowPos(1);
       hdwp = DeferWindowPos(hdwp, edit_hwnd_, NULL, urloffset,
-          0, rect.right - urloffset, URLBAR_HEIGHT, SWP_NOZORDER);
+          0, rect.right - urloffset, urlbar_height, SWP_NOZORDER);
       hdwp = DeferWindowPos(hdwp, browser_hwnd, NULL,
           rect.left, rect.top, rect.right - rect.left,
           rect.bottom - rect.top, SWP_NOZORDER);
       EndDeferWindowPos(hdwp);
     } else {
       SetWindowPos(edit_hwnd_, NULL, urloffset,
-          0, rect.right - urloffset, URLBAR_HEIGHT, SWP_NOZORDER);
+          0, rect.right - urloffset, urlbar_height, SWP_NOZORDER);
     }
   } else if (browser_window_) {
     // Size the browser window to the whole client area.

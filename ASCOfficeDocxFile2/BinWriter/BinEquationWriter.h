@@ -1074,7 +1074,7 @@ namespace MathEquation
 				if (bTop)
 				{
 					chr.Insert(0,0x23DE);
-					vertJc = SimpleTypes::verticaljcBottom;
+					vertJc = SimpleTypes::verticaljcTop;
 					pos = SimpleTypes::tbTop;
 					int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::LimUpp);
 					m_aLimitStack.push(nCurPos);
@@ -1086,7 +1086,7 @@ namespace MathEquation
 				else
 				{
 					chr.Insert(0,0x23DF);
-					vertJc = SimpleTypes::verticaljcTop;
+					vertJc = SimpleTypes::verticaljcBottom;
 					pos = SimpleTypes::tbBot;
 					int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::LimLow);
 					m_aLimitStack.push(nCurPos);
@@ -2079,22 +2079,24 @@ namespace MathEquation
 						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Element);
 					else
 					{
-						WriteEndNode(pWriter);
-						pWriter->PopCommand();
-						
-						int nCurPos = pWriter->m_aLimitStack.top();
-						pWriter->WriteItemEnd(nCurPos); //groupChr
-						pWriter->m_aLimitStack.pop();
+						WriteEndNode(pWriter);						
 
-						
-						nCurPos = pWriter->m_aLimitStack.top();
-						pWriter->WriteItemEnd(nCurPos); //lim element
-						pWriter->m_aLimitStack.pop();
+						if (!bPile)
+						{
+							pWriter->PopCommand();
 
-						
-						pWriter->PushCommand(commandVerticalBraceLim);
-						CBaseCommand* pCommand = pWriter->TopCommand();
-						pCommand->WriteBeginBlock(pWriter);
+							int nCurPos = pWriter->m_aLimitStack.top();
+							pWriter->WriteItemEnd(nCurPos); //groupChr
+							pWriter->m_aLimitStack.pop();
+
+							nCurPos = pWriter->m_aLimitStack.top();
+							pWriter->WriteItemEnd(nCurPos); //lim element
+							pWriter->m_aLimitStack.pop();
+
+							pWriter->PushCommand(commandVerticalBraceLim);
+							CBaseCommand* pCommand = pWriter->TopCommand();
+							pCommand->WriteBeginBlock(pWriter);
+						}
 					}
 				}
 			}

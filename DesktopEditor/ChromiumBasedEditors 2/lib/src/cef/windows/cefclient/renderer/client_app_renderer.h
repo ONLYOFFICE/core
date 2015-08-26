@@ -125,7 +125,7 @@ class ClientAppRenderer : public ClientApp,
       CefProcessId source_process,
       CefRefPtr<CefProcessMessage> message) OVERRIDE;
 
- protected:
+ private:
   // Set of supported Delegates.
   DelegateSet delegates_;
 

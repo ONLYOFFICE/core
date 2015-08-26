@@ -260,7 +260,7 @@ class ClientHandler : public CefClient,
   // Returns true if this handler uses off-screen rendering.
   bool is_osr() const { return is_osr_; }
 
- protected:
+ private:
   // Create a new popup window using the specified information. |is_devtools|
   // will be true if the window will be used for DevTools. Return true to
   // proceed with popup browser creation or false to cancel the popup browser.

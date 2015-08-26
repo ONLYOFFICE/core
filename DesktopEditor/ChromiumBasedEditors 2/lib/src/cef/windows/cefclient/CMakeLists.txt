@@ -26,6 +26,8 @@ set(CEFCLIENT_BROWSER_BROWSER_SRCS
   browser/client_types.h
   browser/dialog_test.cc
   browser/dialog_test.h
+  browser/geometry_util.cc
+  browser/geometry_util.h
   browser/main_context.cc
   browser/main_context.h
   browser/main_context_impl.cc

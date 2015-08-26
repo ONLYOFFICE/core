@@ -5,7 +5,6 @@
 #include "cefclient/browser/util_win.h"
 
 #include "include/base/cef_logging.h"
-#include "include/internal/cef_types.h"
 
 namespace client {
 
@@ -138,6 +137,24 @@ int GetCefKeyboardModifiers(WPARAM wparam, LPARAM lparam) {
 
 bool IsKeyDown(WPARAM wparam) {
   return (GetKeyState(wparam) & 0x8000) != 0;
+}
+
+float GetDeviceScaleFactor() {
+  static float scale_factor = 1.0;
+  static bool initialized = false;
+
+  if (!initialized) {
+    // This value is safe to cache for the life time of the app since the user
+    // must logout to change the DPI setting. This value also applies to all
+    // screens.
+    HDC screen_dc = ::GetDC(NULL);
+    int dpi_x = GetDeviceCaps(screen_dc, LOGPIXELSX);
+    scale_factor = static_cast<float>(dpi_x) / 96.0f;
+    ::ReleaseDC(NULL, screen_dc);
+    initialized = true;
+  }
+
+  return scale_factor;
 }
 
 }  // namespace client

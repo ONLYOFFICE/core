@@ -309,8 +309,6 @@
 		17A764F31B0F39370046BC0B /* tiffio.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763D71B0F39370046BC0B /* tiffio.cpp */; };
 		17A764F41B0F39370046BC0B /* tiffiostub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763D81B0F39370046BC0B /* tiffiostub.cpp */; };
 		17A764F51B0F39370046BC0B /* tiffiostub.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763D81B0F39370046BC0B /* tiffiostub.cpp */; };
-		17A764F61B0F39370046BC0B /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763D91B0F39370046BC0B /* utils.cpp */; };
-		17A764F71B0F39370046BC0B /* utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763D91B0F39370046BC0B /* utils.cpp */; };
 		17A764F81B0F39370046BC0B /* viewfiles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763DA1B0F39370046BC0B /* viewfiles.cpp */; };
 		17A764F91B0F39370046BC0B /* viewfiles.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763DA1B0F39370046BC0B /* viewfiles.cpp */; };
 		17A764FA1B0F39370046BC0B /* warper.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A763DB1B0F39370046BC0B /* warper.cpp */; };
@@ -339,6 +337,8 @@
 		17A7F0291B13154500760AFB /* SvmObjects.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F0201B13154500760AFB /* SvmObjects.cpp */; };
 		17A7F02A1B13154500760AFB /* SvmPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F0221B13154500760AFB /* SvmPlayer.cpp */; };
 		17A7F02B1B13154500760AFB /* SvmPlayer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17A7F0221B13154500760AFB /* SvmPlayer.cpp */; };
+		17DD67B61B7E2778000F800F /* lepton_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17DD67B51B7E2778000F800F /* lepton_utils.cpp */; };
+		17DD67B71B7E2778000F800F /* lepton_utils.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17DD67B51B7E2778000F800F /* lepton_utils.cpp */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -569,7 +569,6 @@
 		17A763D61B0F39370046BC0B /* textops.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = textops.cpp; sourceTree = "<group>"; };
 		17A763D71B0F39370046BC0B /* tiffio.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tiffio.cpp; sourceTree = "<group>"; };
 		17A763D81B0F39370046BC0B /* tiffiostub.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = tiffiostub.cpp; sourceTree = "<group>"; };
-		17A763D91B0F39370046BC0B /* utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = utils.cpp; sourceTree = "<group>"; };
 		17A763DA1B0F39370046BC0B /* viewfiles.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = viewfiles.cpp; sourceTree = "<group>"; };
 		17A763DB1B0F39370046BC0B /* warper.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = warper.cpp; sourceTree = "<group>"; };
 		17A763DC1B0F39370046BC0B /* watershed.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = watershed.cpp; sourceTree = "<group>"; };
@@ -611,6 +610,7 @@
 		17A7F0211B13154500760AFB /* SvmObjects.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SvmObjects.h; sourceTree = "<group>"; };
 		17A7F0221B13154500760AFB /* SvmPlayer.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = SvmPlayer.cpp; sourceTree = "<group>"; };
 		17A7F0231B13154500760AFB /* SvmPlayer.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SvmPlayer.h; sourceTree = "<group>"; };
+		17DD67B51B7E2778000F800F /* lepton_utils.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = lepton_utils.cpp; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -831,6 +831,7 @@
 				17A763871B0F39360046BC0B /* jpegio.cpp */,
 				17A763881B0F39370046BC0B /* jpegiostub.cpp */,
 				17A763891B0F39370046BC0B /* kernel.cpp */,
+				17DD67B51B7E2778000F800F /* lepton_utils.cpp */,
 				17A7638A1B0F39370046BC0B /* list.cpp */,
 				17A7638B1B0F39370046BC0B /* list.h */,
 				17A7638C1B0F39370046BC0B /* maze.cpp */,
@@ -910,7 +911,6 @@
 				17A763D61B0F39370046BC0B /* textops.cpp */,
 				17A763D71B0F39370046BC0B /* tiffio.cpp */,
 				17A763D81B0F39370046BC0B /* tiffiostub.cpp */,
-				17A763D91B0F39370046BC0B /* utils.cpp */,
 				17A763DA1B0F39370046BC0B /* viewfiles.cpp */,
 				17A763DB1B0F39370046BC0B /* warper.cpp */,
 				17A763DC1B0F39370046BC0B /* watershed.cpp */,
@@ -1066,7 +1066,6 @@
 				17A764341B0F39370046BC0B /* edge.cpp in Sources */,
 				17A7648E1B0F39370046BC0B /* pixabasic.cpp in Sources */,
 				17A764561B0F39370046BC0B /* graphics1.cpp in Sources */,
-				17A764F61B0F39370046BC0B /* utils.cpp in Sources */,
 				17A764E01B0F39370046BC0B /* sel1.cpp in Sources */,
 				17A7641A1B0F39370046BC0B /* colormorph.cpp in Sources */,
 				17A7F0261B13154500760AFB /* SvmFile.cpp in Sources */,
@@ -1100,6 +1099,7 @@
 				17A764A61B0F39370046BC0B /* pnmiostub.cpp in Sources */,
 				17A764AA1B0F39370046BC0B /* psio1.cpp in Sources */,
 				17A763F41B0F39370046BC0B /* bilinear.cpp in Sources */,
+				17DD67B61B7E2778000F800F /* lepton_utils.cpp in Sources */,
 				17A764761B0F39370046BC0B /* numabasic.cpp in Sources */,
 				17A763301B0F391B0046BC0B /* jbig2enc.cpp in Sources */,
 				17A764961B0F39370046BC0B /* pixalloc.cpp in Sources */,
@@ -1239,7 +1239,6 @@
 				17A764351B0F39370046BC0B /* edge.cpp in Sources */,
 				17A7648F1B0F39370046BC0B /* pixabasic.cpp in Sources */,
 				17A764571B0F39370046BC0B /* graphics1.cpp in Sources */,
-				17A764F71B0F39370046BC0B /* utils.cpp in Sources */,
 				17A764E11B0F39370046BC0B /* sel1.cpp in Sources */,
 				17A7641B1B0F39370046BC0B /* colormorph.cpp in Sources */,
 				17A7F0271B13154500760AFB /* SvmFile.cpp in Sources */,
@@ -1273,6 +1272,7 @@
 				17A764A71B0F39370046BC0B /* pnmiostub.cpp in Sources */,
 				17A764AB1B0F39370046BC0B /* psio1.cpp in Sources */,
 				17A763F51B0F39370046BC0B /* bilinear.cpp in Sources */,
+				17DD67B71B7E2778000F800F /* lepton_utils.cpp in Sources */,
 				17A764771B0F39370046BC0B /* numabasic.cpp in Sources */,
 				17A763311B0F391B0046BC0B /* jbig2enc.cpp in Sources */,
 				17A764971B0F39370046BC0B /* pixalloc.cpp in Sources */,

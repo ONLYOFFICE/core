@@ -152,11 +152,23 @@ void CFRecord::appendRawData(CFRecordPtr where_from)
 void CFRecord::appendRawData(const char* raw_data, const size_t size)
 {
 	char* data_new = new char[size_ + size];
-	memcpy(data_new, data_, size_);
-	memcpy(data_new + size_, raw_data, size);
+
+	if (data_ && size_ > 0)
+	{
+		memcpy(data_new, data_, size_);
+	}
+	if (raw_data && size > 0)
+	{
+		memcpy(data_new + size_, raw_data, size);
+	}
 	size_ += size;
 	std::swap(data_, data_new);
-	delete[] data_new;
+
+	if (data_new)
+	{
+		delete[] data_new;
+		data_new = NULL;
+	}
 
 }
 

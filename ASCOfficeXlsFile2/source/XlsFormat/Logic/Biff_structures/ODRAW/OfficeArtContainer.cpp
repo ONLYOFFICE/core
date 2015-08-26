@@ -34,8 +34,11 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 
 	while(record.getRdPtr() < container_beginning_ptr + rh_own.recLen - 8)
 	{
+		if (record.getRdPtr() >= record.getDataSize()) break;
+
 		OfficeArtRecordHeader rh_child;
 		record >> rh_child;
+
 		size_t child_beginning_ptr = record.getRdPtr();
 		record.RollRdPtrBack(rh_child.size());
 
@@ -60,6 +63,10 @@ void OfficeArtContainer::loadFields(XLS::CFRecord& record)
 
 			case SpContainer:
 				art_record = OfficeArtRecordPtr(new OfficeArtSpContainer(anchor_type_));
+				break;
+
+			case SolverContainer:
+				art_record = OfficeArtRecordPtr(new OfficeArtSolverContainer);
 				break;
 
 			case FSPGR:

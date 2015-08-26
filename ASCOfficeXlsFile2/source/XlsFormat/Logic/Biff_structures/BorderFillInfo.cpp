@@ -98,7 +98,7 @@ int FillInfo::serialize(std::wostream & stream)
 							case 2://rgb
 								CP_XML_ATTR(L"rgb", STR::toARGB(foreFillInfo_.xclrValue)); break;
 							case 3://theme color
-								CP_XML_ATTR(L"theme", foreFillInfo_.xclrValue + 1); 
+								CP_XML_ATTR(L"theme", foreFillInfo_.xclrValue/* + 1*/); 
 								CP_XML_ATTR(L"tint", foreFillInfo_.nTintShade / 32767.0); break;
 							case 4://not set
 								break;
@@ -120,7 +120,7 @@ int FillInfo::serialize(std::wostream & stream)
 							case 2://rgb
 								CP_XML_ATTR(L"rgb", STR::toARGB(backFillInfo_.xclrValue)); break;
 							case 3://theme color
-								CP_XML_ATTR(L"theme", backFillInfo_.xclrValue + 1); 
+								CP_XML_ATTR(L"theme", backFillInfo_.xclrValue /*+ 1*/); 
 								CP_XML_ATTR(L"tint", backFillInfo_.nTintShade / 32767.0); break;
 							case 4://not set
 								break;

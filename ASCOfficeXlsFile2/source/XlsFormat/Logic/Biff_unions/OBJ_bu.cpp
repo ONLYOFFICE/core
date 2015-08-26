@@ -5,13 +5,6 @@
 
 namespace XLS
 {
-
-
-OBJ::OBJ()
-{
-}
-
-
 OBJ::~OBJ()
 {
 }
@@ -26,7 +19,9 @@ BaseObjectPtr OBJ::clone()
 // OBJ = Obj *Continue
 const bool OBJ::loadContent(BinProcessor& proc)
 {
-	if(!proc.mandatory<Obj>())
+	Obj Obj_(mso_drawing_);
+
+	if(!proc.mandatory(Obj_))
 	{
 		return false;
 	}

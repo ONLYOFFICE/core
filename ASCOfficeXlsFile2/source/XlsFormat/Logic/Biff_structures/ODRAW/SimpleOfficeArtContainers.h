@@ -33,6 +33,17 @@ public:
 	std::vector<OfficeArtContainerPtr>		m_OfficeArtSpgrContainerFileBlock;
 };
 
+class OfficeArtSolverContainer : public OfficeArtRecord
+{
+	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtSolverContainer)
+public:
+	OfficeArtSolverContainer() : OfficeArtRecord(0x0F, SolverContainer) {}
+	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtSolverContainer(*this)); }
+
+	void loadFields(XLS::CFRecord& record);
+	void storeFields(XLS::CFRecord& record) {}
+};
+
 class OfficeArtSpContainer : public OfficeArtContainer
 {
 	BASE_STRUCTURE_DEFINE_CLASS_NAME(OfficeArtSpContainer)

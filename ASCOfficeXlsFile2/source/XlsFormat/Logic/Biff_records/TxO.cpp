@@ -1,7 +1,6 @@
 
 #include "TxO.h"
 
-#include <Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h>
 #include <Logic/Biff_records/Font.h>
 
 #include <simple_xml_writer.h>
@@ -9,12 +8,6 @@
 
 namespace XLS
 {
-
-TxO::TxO():fmla(false)
-{
-	cbRuns = 0;
-}
-
 
 TxO::~TxO()
 {
@@ -56,18 +49,18 @@ void TxO::readFields(CFRecord& record)
 	fmla.load(record);
 	
 	std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
-	if ( recs.size() )
-	{
-		while( !recs.empty() )
-		{
-			record.appendRawData(recs.front());
-			recs.pop_front();
-		}
-
-	}
 
 	if ( cbRuns )
-	{					
+	{	
+		if (record.getRdPtr() >= record.getDataSize())
+		{
+			int sz = recs.size()-1;
+			for(int i = 0; i < sz; i++)
+			{
+				record.appendRawData(recs.front());
+				recs.pop_front();
+			}
+		}
 		commentText.setSize(cchText);
 		record >> commentText;
 
@@ -75,17 +68,10 @@ void TxO::readFields(CFRecord& record)
 		TxOruns.load(record);
 	}
 
-	if (record.getRdPtr() <  record.getDataSize() - 8)
+	while( !recs.empty() )
 	{
-		ODRAW::OfficeArtRecordHeader rh_child;
-		record >> rh_child;
-		record.RollRdPtrBack(rh_child.size());
-
-		if (rh_child.recType == ODRAW::OfficeArtContainer::SpContainer)
-		{
-			m_OfficeArtSpContainer = ODRAW::OfficeArtRecordPtr(new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet));
-			record >> *m_OfficeArtSpContainer;
-		}
+		mso_drawing_->storeRecordAndDecideProceeding(recs.front());
+		recs.pop_front();
 	}
 }
 
@@ -121,6 +107,12 @@ int TxO::serialize (std::wostream & _stream)
 				CP_XML_NODE(L"a:t")
 				{		
 					//CP_XML_ATTR(L"xml:space", L"preserve");
+
+					if (run->formatRun.ich > str_.length())
+					{
+						//ошибка
+						run->formatRun.ich = 0;
+					}
 
 					std::wstring str_part = str_.substr( run->formatRun.ich, end_string - run->formatRun.ich);
 

@@ -241,7 +241,7 @@ namespace oox
         case msosptCan : 						return L"can";
         case msosptDonut : 						return L"donut";
         case msosptStraightConnector1 : 		return L"straightConnector1";
-        case msosptBentConnector2 : 			return L"bentConnector2 ";
+        case msosptBentConnector2 : 			return L"bentConnector2";
         case msosptBentConnector3 : 			return L"bentConnector3";
         case msosptBentConnector4 : 			return L"bentConnector4";
         case msosptBentConnector5 : 			return L"bentConnector5";
@@ -249,9 +249,9 @@ namespace oox
         case msosptCurvedConnector3 : 			return L"curvedConnector3";
         case msosptCurvedConnector4 : 			return L"curvedConnector4";
         case msosptCurvedConnector5 : 			return L"curvedConnector5";
-        case msosptCallout1 : 					return L"callout1 ";
-        case msosptCallout2 : 					return L"callout2 ";
-        case msosptCallout3 : 					return L"callout3 ";
+        case msosptCallout1 : 					return L"callout1";
+        case msosptCallout2 : 					return L"callout2";
+        case msosptCallout3 : 					return L"callout3";
         case msosptAccentCallout1 : 			return L"accentCallout1";
         case msosptAccentCallout2 : 			return L"accentCallout2";
         case msosptAccentCallout3 : 			return L"accentCallout3";
@@ -276,7 +276,7 @@ namespace oox
         case msosptFoldedCorner : 				return L"foldedCorner";
         case msosptLeftArrow : 					return L"leftArrow";
         case msosptDownArrow : 					return L"downArrow";
-        case msosptUpArrow : 					return L"upArrow ";
+        case msosptUpArrow : 					return L"upArrow";
         case msosptLeftRightArrow : 			return L"leftRightArrow";
         case msosptUpDownArrow : 				return L"upDownArrow";
         case msosptIrregularSeal1 : 			return L"irregularSeal1";
@@ -310,7 +310,7 @@ namespace oox
         case msosptCircularArrow : 				return L"circularArrow";
         //case msosptNotchedCircularArrow :		return L"notchedCircularArrow";
         case msosptUturnArrow : 				return L"uturnArrow";
-        case msosptCurvedRightArrow : 			return L"curvedRightArrow ";
+        case msosptCurvedRightArrow : 			return L"curvedRightArrow";
         case msosptCurvedLeftArrow : 			return L"curvedLeftArrow";
         case msosptCurvedUpArrow : 				return L"curvedUpArrow";
         case msosptCurvedDownArrow : 			return L"curvedDownArrow";
@@ -328,12 +328,12 @@ namespace oox
         case msosptFlowChartPreparation : 		return L"flowChartPreparation";
         case msosptFlowChartManualInput : 		return L"flowChartManualInput";
         case msosptFlowChartManualOperation :	return L"flowChartManualOperation";
-        case msosptFlowChartConnector : 		return L"flowChartConnector ";
+        case msosptFlowChartConnector : 		return L"flowChartConnector";
         case msosptFlowChartPunchedCard : 		return L"flowChartPunchedCard";
-        case msosptFlowChartPunchedTape : 		return L"flowChartPunchedTape ";
+        case msosptFlowChartPunchedTape : 		return L"flowChartPunchedTape";
         case msosptFlowChartSummingJunction :	return L"flowChartSummingJunction";
         case msosptFlowChartOr : 				return L"flowChartOr";
-        case msosptFlowChartCollate : 			return L"flowChartCollate ";
+        case msosptFlowChartCollate : 			return L"flowChartCollate";
         case msosptFlowChartSort : 				return L"flowChartSort";
         case msosptFlowChartExtract : 			return L"flowChartExtract";
         case msosptFlowChartMerge : 			return L"flowChartMerge";
@@ -362,7 +362,7 @@ namespace oox
         case msosptActionButtonHelp : 			return L"actionButtonHelp";
         case msosptActionButtonInformation :	return L"actionButtonInformation";
         case msosptActionButtonForwardNext :	return L"actionButtonForwardNext";
-        case msosptActionButtonBackPrevious :	return L"actionButtonBackPrevious ";
+        case msosptActionButtonBackPrevious :	return L"actionButtonBackPrevious";
         case msosptActionButtonEnd : 			return L"actionButtonEnd";
         case msosptActionButtonBeginning : 		return L"actionButtonBeginning";
         case msosptActionButtonReturn : 		return L"actionButtonReturn";
@@ -381,7 +381,7 @@ namespace oox
         case msosptTextHexagon : 				return L"textHexagon";
         case msosptTextCurve : 					return L"textCurve";
         case msosptTextWave : 					return L"textWave";
-        case msosptTextRing : 					return L"textRing ";
+        case msosptTextRing : 					return L"textRing";
         case msosptTextOnCurve : 				return L"textOnCurve";
         case msosptTextOnRing : 				return L"textOnRing";
         case msosptTextPlainText : 				return L"textPlain";
@@ -416,13 +416,13 @@ namespace oox
         case msosptTextDeflateTop : 			return L"textDeflateTop";
         case msosptTextDeflateInflate : 		return L"textDeflateInflate";
         case msosptTextDeflateInflateDeflate :	return L"textDeflateInflateDeflat";
-        case msosptTextFadeRight : 				return L"textFadeRight ";
+        case msosptTextFadeRight : 				return L"textFadeRight";
         case msosptTextFadeLeft : 				return L"textFadeLeft";
         case msosptTextFadeUp : 				return L"textFadeUp";
         case msosptTextFadeDown : 				return L"textFadeDown";
         case msosptTextSlantUp : 				return L"textSlantUp";
         case msosptTextSlantDown : 				return L"textSlantDown";
-        case msosptTextCanUp : 					return L"textCanUp	";
+        case msosptTextCanUp : 					return L"textCanUp";
         case msosptTextCanDown : 				return L"textCanDown";
 		}
         return L"";

@@ -50,6 +50,7 @@ int LabelSst::serialize(std::wostream & stream)
 		{
 			CP_XML_ATTR(L"r", ref);
 
+			int st = (int)cell.ixfe - cellStyleXfs_count;
 			if ((cell.ixfe.value()) && (cell.ixfe > cellStyleXfs_count))
 			{
 				CP_XML_ATTR(L"s", cell.ixfe - cellStyleXfs_count);

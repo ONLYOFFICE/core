@@ -1,15 +1,9 @@
 
 #include "Obj.h"
 #include <Logic/Biff_records/MsoDrawing.h>
-#include <Logic/Biff_structures/ODRAW/SimpleOfficeArtContainers.h>
 
 namespace XLS
 {
-
-Obj::Obj()
-{
-}
-
 
 Obj::~Obj()
 {
@@ -165,7 +159,7 @@ void Obj::readFields(CFRecord& record)
 	{
 		record.skipNunBytes(4); // reserved
 	}
-
+	
 	if (continue_records.size() > 0)
 	{
 		std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
@@ -174,44 +168,12 @@ void Obj::readFields(CFRecord& record)
 		{
 			while( !recs.empty() )
 			{
-				record.appendRawData(recs.front());
+				mso_drawing_->storeRecordAndDecideProceeding(recs.front());
 				recs.pop_front();
 			}
 		}
 	}
 
-	if (record.getRdPtr() <  record.getDataSize() - 8)
-	{
-		ODRAW::OfficeArtRecordHeader rh_child;
-		record >> rh_child;
-		record.RollRdPtrBack(rh_child.size());
-
-		if (rh_child.recType == ODRAW::OfficeArtContainer::SpContainer)
-		{
-			m_OfficeArtSpContainer = ODRAW::OfficeArtRecordPtr(new ODRAW::OfficeArtSpContainer(ODRAW::OfficeArtRecord::CA_Sheet));
-			record >> *m_OfficeArtSpContainer;
-		}
-
-		int sz_skip = record.getDataSize() - record.getRdPtr();
-
-		if (sz_skip > 0)
-		{
-			record.skipNunBytes(sz_skip);
-		}
-	}
- //   unsigned char*	Add		= NULL;
-	//int		size	= 0;
-	//if (record.getRdPtr() <  record.getDataSize())
-	//{
-	//	size = record.getDataSize() - record.getRdPtr();
- //       Add = new unsigned char [size];
-	//	memcpy(Add, record.getData(), size);
-	//	record.skipNunBytes(size);
-	//}
-	//if (Add)
-	//{
-	//	delete []Add;
-	//}	
 
 }
 

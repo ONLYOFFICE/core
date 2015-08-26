@@ -18,23 +18,6 @@ XLS::BiffStructurePtr OfficeArtFRITContainer::clone()
 }
 
 
-//void OfficeArtFRITContainer::setXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	std::for_each(rgfrit.begin(), rgfrit.end(), boost::bind(&OfficeArtFRIT::toXML, _1, xml_tag));
-//}
-
-//
-//void OfficeArtFRITContainer::getXMLAttributes(MSXML2::IXMLDOMElementPtr xml_tag)
-//{
-//	OfficeArtFRIT frit;
-//	size_t number = 0;
-//	while(frit.fromXML(xml_tag, ++number, false))
-//	{
-//		rgfrit.push_back(frit);
-//	}
-//}
-
-
 void OfficeArtFRITContainer::storeFields(XLS::CFRecord& record)
 {
 	record << rgfrit;

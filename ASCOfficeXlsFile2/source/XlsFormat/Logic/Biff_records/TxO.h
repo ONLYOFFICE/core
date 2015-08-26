@@ -5,12 +5,7 @@
 #include <Logic/Biff_structures/FontIndex.h>
 #include <Logic/Biff_structures/ObjFmla.h>
 #include <Logic/Biff_structures/TxORuns.h>
-
-namespace ODRAW
-{
-	class OfficeArtRecord;
-	typedef boost::shared_ptr<OfficeArtRecord> OfficeArtRecordPtr;
-}
+#include <Logic/Biff_records/MsoDrawing.h>
 
 namespace XLS
 {
@@ -22,7 +17,10 @@ class TxO: public BiffRecordContinued
 	BIFF_RECORD_DEFINE_TYPE_INFO(TxO)
 	BASE_OBJECT_DEFINE_CLASS_NAME(TxO)
 public:
-	TxO();
+	TxO(MsoDrawingPtr mso_drawing) : mso_drawing_(mso_drawing), fmla(false)
+	{
+		cbRuns = 0;
+	}
 	~TxO();
 
 	BaseObjectPtr clone();
@@ -51,7 +49,7 @@ public:
 	TxORuns					TxOruns;
 	XLUnicodeStringNoCch	commentText;
 
-	ODRAW::OfficeArtRecordPtr		m_OfficeArtSpContainer; 
+	MsoDrawingPtr			mso_drawing_;
 
 };
 

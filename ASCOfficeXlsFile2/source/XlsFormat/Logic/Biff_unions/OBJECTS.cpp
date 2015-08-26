@@ -6,6 +6,7 @@
 #include <Logic/Biff_unions/OBJ.h>
 #include <Logic/Biff_unions/CHART.h>
 #include <Logic/Biff_records/Continue.h>
+#include <Logic/Biff_records/Obj.h>
 
 namespace XLS
 {
@@ -26,6 +27,9 @@ class Parenthesis_OBJECTS_2: public ABNFParenthesis
 {
 	BASE_OBJECT_DEFINE_CLASS_NAME(Parenthesis_OBJECTS_2)
 public:
+	Parenthesis_OBJECTS_2(MsoDrawingPtr mso_drawing)  : mso_drawing_(mso_drawing)
+	{
+	}
 	BaseObjectPtr clone()
 	{
 		return BaseObjectPtr(new Parenthesis_OBJECTS_2(*this));
@@ -33,12 +37,19 @@ public:
 
 	const bool loadContent(BinProcessor& proc)
 	{
-		bool res =	proc.optional<OBJ>()		||
-					proc.optional<TEXTOBJECT>()	||
-					proc.optional<CHART>()		;
+		OBJ OBJ_(mso_drawing_);
+		bool res1 =	proc.optional(OBJ_);
 
-		return res;
-	};
+		TEXTOBJECT TEXTOBJECT_(mso_drawing_);
+		bool res2 =	proc.optional(TEXTOBJECT_);
+
+		CHART CHART_(mso_drawing_);
+		bool res3 = proc.optional(CHART_);
+
+		return res1 || res2 || res3;
+	}
+	
+	MsoDrawingPtr mso_drawing_;
 };
 
 
@@ -66,10 +77,9 @@ public:
 	{
 		bool res = proc.mandatory(*mso_drawing_);
 
-        Parenthesis_OBJECTS_2 parenthesis_objects_2;
+        Parenthesis_OBJECTS_2 parenthesis_objects_2(mso_drawing_);
         
 		int count			= proc.repeated(parenthesis_objects_2, 0, 0);
-		//int count_continue	= proc.repeated<Continue>(0,0);
 		
 		return res || count>0;
 	}
@@ -110,7 +120,20 @@ const bool OBJECTS::loadContentRead(BinReaderProcessor& proc)
 			elements_.erase(elem);
 			break;
 		}
+	}
 
+	//int count_2 = proc.repeated(parenthesis_objects_1, 0, 0);
+
+	if (m_MsoDrawing->isReading == false)
+	{
+		try
+		{
+			m_MsoDrawing->resetToBegin();
+			m_MsoDrawing->readFields();		
+		}
+		catch(...)
+		{
+		}
 	}
 
 	return count_1 > 0 || count_4 > 0;

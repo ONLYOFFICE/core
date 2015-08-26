@@ -27,11 +27,24 @@ void MsoDrawing::writeFields(CFRecord& record)
 	record << rgChildRec;
 }
 
+void MsoDrawing::resetToBegin()
+{
+	if (stored_record)
+	{
+		stored_record->resetPointerToBegin();
+	}
+}
+
 void MsoDrawing::readFields()
 {
-	rgChildRec.rh_own.recLen = stored_record->getDataSize();
+	if (stored_record)
+	{
+		rgChildRec.rh_own.recLen = stored_record->getDataSize();
 
-	rgChildRec.loadFields(*stored_record);
+		rgChildRec.loadFields(*stored_record);
+	}
+
+	isReading = true;
 }
 
 void MsoDrawing::readFields(CFRecord& record)

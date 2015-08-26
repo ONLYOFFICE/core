@@ -51,6 +51,25 @@ void OfficeArtDgContainer::loadFields(XLS::CFRecord& record)
 	{
 		switch(child_records[i]->rh_own.recType)
 		{
+		case ODRAW::OfficeArtRecord::DgContainer:
+			{
+				OfficeArtDgContainer * dg = dynamic_cast<OfficeArtDgContainer *>(child_records[i].get());
+				if (dg)
+				{
+					for (int i = 0 ; i < dg->child_records.size(); i++)
+					{
+						child_records.push_back(dg->child_records[i]);
+					}
+					dg->child_records.clear();
+
+					if (dg->m_OfficeArtSpgrContainer)	m_OfficeArtSpgrContainer	= dg->m_OfficeArtSpgrContainer;
+					if (dg->m_OfficeArtFDG)				m_OfficeArtFDG				= dg->m_OfficeArtFDG;
+					if (dg->m_OfficeArtSpContainer.size() > 0)	
+						m_OfficeArtSpContainer.insert(m_OfficeArtSpContainer.end(), dg->m_OfficeArtSpContainer.begin(), dg->m_OfficeArtSpContainer.end());
+
+				}
+				child_records.erase(child_records.begin() + i, child_records.begin() + i + 1); i--;
+			}break;
 		case ODRAW::OfficeArtRecord::FDG:
 			{
 				m_OfficeArtFDG = child_records[i];

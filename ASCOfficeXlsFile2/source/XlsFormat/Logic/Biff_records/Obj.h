@@ -15,17 +15,10 @@
 #include <Logic/Biff_structures/FtLbsData.h>
 #include <Logic/Biff_structures/FtGboData.h>
 
-namespace ODRAW
-{
-	class OfficeArtRecord;
-	typedef boost::shared_ptr<OfficeArtRecord> OfficeArtRecordPtr;
-}
+#include <Logic/Biff_records/MsoDrawing.h>
 
 namespace XLS
 {
-
-//class  MsoDrawing;
-//typedef boost::shared_ptr<MsoDrawing> MsoDrawingPtr;
 
 // Logical representation of Obj record in BIFF8
 class Obj : public BiffRecordContinued
@@ -33,7 +26,9 @@ class Obj : public BiffRecordContinued
 	BIFF_RECORD_DEFINE_TYPE_INFO(Obj)
 	BASE_OBJECT_DEFINE_CLASS_NAME(Obj)
 public:
-	Obj();
+	Obj(MsoDrawingPtr mso_drawing)  : mso_drawing_(mso_drawing)
+	{
+	}
 	~Obj();
 
 	BaseObjectPtr clone();
@@ -59,7 +54,8 @@ public:
 	FtLbsData list;
 	FtGboData gbo;
 
-	ODRAW::OfficeArtRecordPtr		m_OfficeArtSpContainer; 
+	MsoDrawingPtr					mso_drawing_;
+
 	//BO_ATTRIB_MARKUP_BEGIN
 		//BO_ATTRIB_MARKUP_COMPLEX(cmo)
 		//if(0x08 == cmo.ot)

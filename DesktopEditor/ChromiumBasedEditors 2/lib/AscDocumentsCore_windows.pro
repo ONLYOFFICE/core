@@ -459,6 +459,7 @@ HEADERS += \
     src/cef/windows/cefclient/browser/urlrequest_test.h \
     src/cef/windows/cefclient/browser/util_win.h \
     src/cef/windows/cefclient/browser/window_test.h \
+    src/cef/windows/cefclient/browser/geometry_util.h \
     src/cef/windows/cefclient/common/client_app.h \
     src/cef/windows/cefclient/common/client_app_other.h \
     src/cef/windows/cefclient/common/client_switches.h \
@@ -614,6 +615,7 @@ SOURCES += \
     src/cef/windows/cefclient/browser/util_win.cc \
     src/cef/windows/cefclient/browser/window_test.cc \
     src/cef/windows/cefclient/browser/window_test_win.cc \
+    src/cef/windows/cefclient/browser/geometry_util.cc \
     src/cef/windows/cefclient/common/client_app.cc \
     src/cef/windows/cefclient/common/client_app_delegates_common.cc \
     src/cef/windows/cefclient/common/client_app_other.cc \

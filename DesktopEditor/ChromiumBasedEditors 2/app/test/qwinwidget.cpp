@@ -1,7 +1,7 @@
 #include <qevent.h>
 #include "qwinwidget.h"
 #include <qt_windows.h>
-#include <QtWidgets/QApplication>
+#include <QApplication>
 
 #include <QWindow>
 #include <qpa/qplatformnativeinterface.h>

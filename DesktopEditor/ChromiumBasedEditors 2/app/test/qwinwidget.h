@@ -1,7 +1,7 @@
 #ifndef QWINWIDGET_H
 #define QWINWIDGET_H
 
-#include <QtWidgets/QWidget>
+#include <QWidget>
 
 class QWinWidget : public QWidget
 {

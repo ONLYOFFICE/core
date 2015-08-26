@@ -1639,90 +1639,37 @@ std::wstring CCefView::GetUrl()
 
 void CCefView::focus(bool value)
 {
-    if (!m_pInternal)
+    if (!m_pInternal || !m_pInternal->m_handler.get())
         return;
-#if 1
-    if (m_pInternal->m_handler.get())
+
+    CefRefPtr<CefBrowser> browser = m_pInternal->m_handler->GetBrowser();
+    if (browser)
     {
-#if 0
-        if (!CefCurrentlyOn(TID_UI))
+        // Give focus to the browser.
+        browser->GetHost()->SetFocus(value);
+
+        if (!m_pInternal->m_bIsMouseHook)
         {
-            return;
-        }
-#endif
-
-        CefRefPtr<CefBrowser> browser = m_pInternal->m_handler->GetBrowser();
-        if (browser)
-        {
-#if 0
-            // TEST
-            if (NULL == m_pInternal->m_pDragAndDropWrapper && false)
+            if (this->GetType() == cvwtSimple)
             {
-                CefWindowHandle nativeHandle = browser->GetHost()->GetWindowHandle();
-                DragAcceptFiles(nativeHandle, TRUE);
-
-                m_pInternal->m_pDragAndDropWrapper = new CDragAndDropWrapper();
-                m_pInternal->m_pDragAndDropWrapper->m_pHandler = m_pInternal->m_handler.get();
-                m_pInternal->m_pDragAndDropWrapper->m_hWnd = nativeHandle;
-                HRESULT hr = RegisterDragDrop(nativeHandle, m_pInternal->m_pDragAndDropWrapper);
-
-                int u = 0;
-                u++;
-            }
-#endif
-
-            // Give focus to the browser.
-            browser->GetHost()->SetFocus(value);
-            
-            if (!m_pInternal->m_bIsMouseHook)
-            {
-                if (this->GetType() == cvwtSimple)
-                {
 #ifdef WIN32
-                    DWORD threadId = GetWindowThreadProcessId(browser->GetHost()->GetWindowHandle(), NULL);
-                    HHOOK hook = SetWindowsHookEx(WH_MOUSE, MyMouseHook, NULL, threadId);
+                DWORD threadId = GetWindowThreadProcessId(browser->GetHost()->GetWindowHandle(), NULL);
+                HHOOK hook = SetWindowsHookEx(WH_MOUSE, MyMouseHook, NULL, threadId);
 #endif
-                }
-
-                m_pInternal->m_bIsMouseHook = true;
             }
+
+            m_pInternal->m_bIsMouseHook = true;
         }
     }
-#endif
 }
 
 bool CCefView::nativeEvent(const char* data, const int& datalen, void *message, long *result)
 {
+#ifdef WIN32
     *result = 0;
     MSG *msg = static_cast<MSG *>(message);
 
-    if(msg->message == WM_CREATE)
-    {
-        HWND hWnd = (HWND)m_pInternal->m_pWidgetImpl->parent_wid();
-
-        RECT rcClient;
-        GetWindowRect(hWnd, &rcClient);
-
-        CCefViewWidgetImpl* pImpl = m_pInternal->m_pWidgetImpl;
-        SetWindowPos(hWnd, NULL, pImpl->parent_x(), pImpl->parent_y(), pImpl->parent_width(), pImpl->parent_height(), SWP_FRAMECHANGED);
-
-        *result = 0;
-        return true;
-    }
-    else if (msg->message == WM_PAINT)
-    {
-        HWND hWnd = (HWND)m_pInternal->m_pWidgetImpl->parent_wid();
-        PAINTSTRUCT ps;
-        BeginPaint(hWnd, &ps);
-        EndPaint(hWnd, &ps);
-        return true;
-    }
-    else if (msg->message == WM_SETFOCUS)
-    {
-        focus();
-        return true;
-    }
-    else if (msg->message == WM_ERASEBKGND)
+    if (msg->message == WM_ERASEBKGND)
     {
         if (m_pInternal->m_handler && m_pInternal->m_handler->GetBrowser() && m_pInternal->m_handler->GetBrowser()->GetHost())
         {
@@ -1743,10 +1690,6 @@ bool CCefView::nativeEvent(const char* data, const int& datalen, void *message, 
         }
         return true;
     }
-    else if (msg->message == WM_SIZE)
-    {
-        this->resizeEvent();
-    }
     else if (msg->message == (WM_USER + 1))
     {
         if (this->GetType() == cvwtSimple)
@@ -1755,6 +1698,7 @@ bool CCefView::nativeEvent(const char* data, const int& datalen, void *message, 
         }
         return true;
     }
+#endif
 
     return false;
 }
@@ -1784,6 +1728,16 @@ void CCefView::resizeEvent(int width, int height)
 #endif
 
     focus();
+}
+
+void CCefView::moveEvent()
+{
+#if defined(_LINUX) && !defined(_MAC)
+    if (m_pInternal && m_pInternal->m_handler && m_pInternal->m_handler->GetBrowser() && m_pInternal->m_handler->GetBrowser()->GetHost())
+    {
+        m_pInternal->m_handler->GetBrowser()->GetHost()->NotifyMoveOrResizeStarted();
+    }
+#endif
 }
 
 void CCefView::Apply(NSEditorApi::CAscMenuEvent* pEvent)

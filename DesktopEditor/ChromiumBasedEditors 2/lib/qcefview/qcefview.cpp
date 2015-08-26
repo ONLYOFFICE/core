@@ -52,6 +52,15 @@ void QCefView::resizeEvent(QResizeEvent* e)
         m_pCefView->resizeEvent();
 }
 
+void QCefView::moveEvent(QMoveEvent* e)
+{
+    if (NULL != e)
+        QWidget::moveEvent(e);
+
+    if (NULL != m_pCefView)
+        m_pCefView->moveEvent();
+}
+
 bool QCefView::nativeEvent(const QByteArray &eventType, void *message, long *result)
 {
     if (m_pCefView)

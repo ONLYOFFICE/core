@@ -21,6 +21,7 @@ QAscMainPanel::QAscMainPanel( QWidget* parent, CAscApplicationManager* pManager,
     QObject::connect(this, SIGNAL( signal_Modified(int,bool)) , this, SLOT( slot_Modified(int,bool)), Qt::QueuedConnection );
     QObject::connect(this, SIGNAL( signal_Print(int,int)) , this, SLOT( slot_Print(int,int)), Qt::QueuedConnection );
     QObject::connect(this, SIGNAL( signal_DialogSave()), this, SLOT( slot_DialogSave()), Qt::QueuedConnection);
+    QObject::connect(this, SIGNAL( signal_CheckKeyboard()), this, SLOT( slot_CheckKeyboard()), Qt::QueuedConnection);
 
     m_pManager = pManager;
 
@@ -438,10 +439,20 @@ void QAscMainPanel::slot_DialogSave()
     m_sDownloadName = L"";
 }
 
+void QAscMainPanel::slot_CheckKeyboard()
+{
+    if (m_pManager)
+        m_pManager->CheckKeyboard();
+}
+
 void QAscMainPanel::OpenDialogSave(std::wstring sName)
 {
     m_sDownloadName = sName;
     emit signal_DialogSave();
+}
+void QAscMainPanel::CheckKeyboard()
+{
+    emit signal_CheckKeyboard();
 }
 
 void QAscMainPanel::resizeEvent(QResizeEvent* event)

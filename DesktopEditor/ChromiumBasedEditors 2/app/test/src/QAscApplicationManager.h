@@ -28,7 +28,12 @@ public:
         // слоты родителю. Т.е. классу CAscApplicationManager.
         // А в либе я не буду затачиваться на QT
 
-        ((QAscMainPanel*)m_pPanel)->OpenDialogSave(sName);
+        m_pPanel->OpenDialogSave(sName);
+    }
+
+    virtual void OnNeedCheckKeyboard()
+    {
+        m_pPanel->CheckKeyboard();
     }
 };
 

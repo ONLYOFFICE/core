@@ -115,6 +115,8 @@ public:
     void StopSpellChecker();
     void SpellCheck(const int& nEditorId, const std::string& sTask, int nId);
 
+    void StartKeyboardChecker();
+    virtual void OnNeedCheckKeyboard();
     void CheckKeyboard();
     void SendKeyboardAttack();
 

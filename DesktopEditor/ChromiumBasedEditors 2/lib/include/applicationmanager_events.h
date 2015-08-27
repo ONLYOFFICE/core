@@ -2,7 +2,6 @@
 #define APPLICATION_MANAGER_EVENTS_H
 
 #include "../../../Word_Api/Editor_Api.h"
-#include "base.h"
 
 #define ASC_MENU_EVENT_TYPE_CEF_CREATETAB       1001
 #define ASC_MENU_EVENT_TYPE_CEF_TABEDITORTYPE   1002
@@ -302,7 +301,7 @@ namespace NSEditorApi
         virtual void GetLogicalDPI(int& nDpiX, int& nDpiY) = 0;
         virtual void GetPhysicalRect(int& nX, int& nY, int& nW, int& nH) = 0;
         virtual void GetPrintAreaSize(int& nW, int& nH) = 0;
-        virtual void BitBlt(BYTE* pBGRA, const int& nRasterX, const int& nRasterY, const int& nRasterW, const int& nRasterH,
+        virtual void BitBlt(unsigned char* pBGRA, const int& nRasterX, const int& nRasterY, const int& nRasterW, const int& nRasterH,
                             const double& x, const double& y, const double& w, const double& h, const double& dAngle) = 0;
     };
 

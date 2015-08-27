@@ -5,7 +5,6 @@
 #include <QDir>
 
 #include "QAscApplicationManager.h"
-#include "QAscMainPanel.h"
 
 #ifdef WIN32
 #include <shlwapi.h>
@@ -13,6 +12,7 @@
 #endif
 
 #include <QStandardPaths>
+#include <QApplication>
 
 static std::wstring GetAppDataPath()
 {
@@ -128,9 +128,6 @@ static int AscEditor_Main( int argc, char *argv[] )
     QFont mainFont = a.font();
     mainFont.setStyleStrategy( QFont::PreferAntialias );
     a.setFont( mainFont );
-
-    // Background color
-    HBRUSH windowBackground = CreateSolidBrush( RGB( 49, 52, 55 ) );
 
     // Create window
     QAscMainWindow w(NULL, pApplicationManager);

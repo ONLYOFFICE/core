@@ -13,8 +13,9 @@
 
 #if defined(_LINUX) && !defined(_MAC)
 
-#include <X11/X.h>
-#define WindowHandleId XID
+//#include <X11/X.h>
+//typedef unsigned long XID;
+#define WindowHandleId unsigned long
 
 #endif
 

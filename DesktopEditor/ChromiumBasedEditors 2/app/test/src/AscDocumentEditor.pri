@@ -50,3 +50,15 @@ LIBS += -lwininet \
 
 QMAKE_LFLAGS_WINDOWS = /SUBSYSTEM:WINDOWS,5.02
 }
+
+linux-g++ {
+    DEFINES += \
+        LINUX \
+        _LINUX \
+        _LINUX_QT
+
+    CONFIG += link_pkgconfig
+    PKGCONFIG += glib-2.0 gdk-2.0 gtkglext-1.0 atk cairo gtk+-unix-print-2.0
+
+    LIBS += -lz
+}

@@ -59,6 +59,4 @@ linux-g++ {
 
     CONFIG += link_pkgconfig
     PKGCONFIG += glib-2.0 gdk-2.0 gtkglext-1.0 atk cairo gtk+-unix-print-2.0
-
-    LIBS += -lz
 }

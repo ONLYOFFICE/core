@@ -122,18 +122,13 @@ const bool OBJECTS::loadContentRead(BinReaderProcessor& proc)
 		}
 	}
 
-	//int count_2 = proc.repeated(parenthesis_objects_1, 0, 0);
-
-	if (m_MsoDrawing->isReading == false)
+	try
 	{
-		try
-		{
-			m_MsoDrawing->resetToBegin();
-			m_MsoDrawing->readFields();		
-		}
-		catch(...)
-		{
-		}
+		m_MsoDrawing->resetToBegin();
+		m_MsoDrawing->readFields();		
+	}
+	catch(...)
+	{
 	}
 
 	return count_1 > 0 || count_4 > 0;

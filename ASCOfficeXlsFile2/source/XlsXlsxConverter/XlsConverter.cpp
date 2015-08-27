@@ -519,6 +519,17 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 
 	bool note = false;
 	int ind = 0;
+
+	if ((spgr) && (ind < spgr->child_records.size()))
+	{
+		ODRAW::OfficeArtSpContainer *s	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind].get());
+		if (s)
+		{
+			ODRAW::OfficeArtFSP *fsp = dynamic_cast<ODRAW::OfficeArtFSP*>(s->m_OfficeArtFSP.get());
+			if ((fsp) && (fsp->fPatriarch)) ind++;
+		}
+	}
+
 	for ( std::list<XLS::BaseObjectPtr>::iterator elem = objects->elements_.begin(); elem != objects->elements_.end(); elem++)
 	{
 		short type_object = -1;
@@ -541,7 +552,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 
 		if (OBJ)		obj			= dynamic_cast<XLS::Obj *>(OBJ->m_Obj.get());		
 		if (TEXTOBJECT) text_obj	= dynamic_cast<XLS::TxO *>(TEXTOBJECT->m_TxO.get());
-		if (CHART)		chart		= dynamic_cast<XLS::ChartSheetSubstream *>(CHART->elements_.back().get());
+		if (CHART)		chart		= dynamic_cast<XLS::ChartSheetSubstream *>(CHART->m_ChartSheetSubstream.get());
 		
 		if (obj)	type_object = obj->cmo.ot;
 		if (chart)	type_object = 0x0005;
@@ -556,10 +567,21 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		ODRAW::OfficeArtSpContainer *sp_text	= NULL;
 		if ( spgr) 
 		{
-			if (ind + 1 < spgr->child_records.size())
-				sp		= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+1].get());
-			if (text_obj && ind + 2 < spgr->child_records.size())
-				sp_text	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind+2].get());	
+			if (ind < spgr->child_records.size())
+			{
+				sp		= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind].get());
+				ind++;
+			}
+			if ((text_obj && ind  < spgr->child_records.size()) && text_obj->sp_enabled)
+			{
+				sp_text	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind].get());	
+				ind++;
+			}
+			if ((chart && ind  < spgr->child_records.size()) && CHART->sp_enabled)
+			{
+				sp_text	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind].get());	
+				ind++;
+			}
 		}
 
 		
@@ -597,16 +619,15 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 				note = true;
 			}
 		}
-		ind++;
 		if ( spgr ) 
 		{
-			while (ind + 1 < spgr->child_records.size()) // бывает что эти элементы не привязаны к sp, а "лежат" сверху - FilterClickColour_2003.xls
+			while (ind < spgr->child_records.size()) // бывает что эти элементы не привязаны к sp, а "лежат" сверху - FilterClickColour_2003.xls
 			{
 				ODRAW::OfficeArtClientData*		client_data = NULL;
 				ODRAW::OfficeArtClientTextbox*	text_client_data = NULL;
 
-				client_data			= dynamic_cast<ODRAW::OfficeArtClientData*>		(spgr->child_records[ind+1].get());
-				text_client_data	= dynamic_cast<ODRAW::OfficeArtClientTextbox*>	(spgr->child_records[ind+1].get());
+				client_data			= dynamic_cast<ODRAW::OfficeArtClientData*>		(spgr->child_records[ind].get());
+				text_client_data	= dynamic_cast<ODRAW::OfficeArtClientTextbox*>	(spgr->child_records[ind].get());
 				
 				if (client_data || text_client_data)
 				{
@@ -617,7 +638,6 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		if (TEXTOBJECT || CHART)
 		{
 			elem++;
-			ind++;
 		}
 	}
 }
@@ -625,6 +645,8 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 void XlsConverter::convert(ODRAW::OfficeArtSpContainer *sp)
 {
 	if (sp == NULL) return;
+
+	convert(sp->m_OfficeArtFSP.get());
 
 	for (int i = 0; i < sp->child_records.size(); i++)
 	{
@@ -670,6 +692,44 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 {
 	for (int i = 0 ; i < props.size() ; i++)
 	{
+		switch(props[i]->opid)
+		{
+			case 0x0181:
+			{
+				ODRAW::fillColor * fill = (ODRAW::fillColor *)(props[i].get());
+				ODRAW::OfficeArtCOLORREF color(fill->op);
+				if (!color.colorRGB.empty())
+					xlsx_context->get_drawing_context().set_fill_color(color.colorRGB);
+				else if (color. fPaletteIndex)
+				{
+					std::map<int,  std::wstring>::iterator it = xls_global_info->colors_palette.find(color.index);
+					if (it != xls_global_info->colors_palette.end())
+					{					
+						xlsx_context->get_drawing_context().set_fill_color(it->second);
+					}
+				}
+				else
+					xlsx_context->get_drawing_context().set_fill_color(color.index, color.fSchemeIndex ? 1 : 3 );
+
+			}break;
+			case 0x0186:
+			{
+				//bool isIternal = false;
+				//std::wstring target;
+				//std::wstring rId = xlsx_context->get_mediaitems().find_image(props[i]->op , target, isIternal);
+				//xlsx_context->get_drawing_context().set_image(target);
+			}break;
+			case 0x01BF:
+			{
+				ODRAW::FillStyleBooleanProperties * fill = (ODRAW::FillStyleBooleanProperties *)(props[i].get());
+				if (fill)
+				{
+					if (fill->fFilled == false) 
+						xlsx_context->get_drawing_context().set_fill_type(0);
+				}
+			}break;
+		
+		}
 	}
 }
 void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & props)
@@ -683,8 +743,16 @@ void XlsConverter::convert_line_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 				ODRAW::OfficeArtCOLORREF color(props[i]->op);
 				if (!color.colorRGB.empty())
 					xlsx_context->get_drawing_context().set_line_color(color.colorRGB);
+				else if (color. fPaletteIndex)
+				{
+					std::map<int,  std::wstring>::iterator it = xls_global_info->colors_palette.find(color.index);
+					if (it != xls_global_info->colors_palette.end())
+					{					
+						xlsx_context->get_drawing_context().set_line_color(it->second);
+					}
+				}
 				else
-					xlsx_context->get_drawing_context().set_line_color(color.index, color.fSchemeIndex ? 1 : (color. fPaletteIndex ? 2 : 3 ));
+					xlsx_context->get_drawing_context().set_line_color(color.index, color.fSchemeIndex ? 1 : 3 );
 			}break;
 			case 0x01C4:
 			{
@@ -801,13 +869,22 @@ void XlsConverter::convert_geometry(std::vector<ODRAW::OfficeArtFOPTEPtr> & prop
 					{
 						for (int j=0 ; j < count_point[command[i].typeSegment]; j ++)
 						{
-							if (ind_point >= points.size())
-								break;
-							CP_XML_NODE(L"a:pt")
+							if (ind_point < points.size())
 							{
-								CP_XML_ATTR(L"x", points[ind_point].x);
-								CP_XML_ATTR(L"y", points[ind_point].y);
-								ind_point++;
+								CP_XML_NODE(L"a:pt")
+								{
+									CP_XML_ATTR(L"x", points[ind_point].x);
+									CP_XML_ATTR(L"y", points[ind_point].y);
+									ind_point++;
+								}
+							}
+							else
+							{
+								CP_XML_NODE(L"a:pt")
+								{
+									CP_XML_ATTR(L"x", 0);
+									CP_XML_ATTR(L"y", 0);
+								}
 							}
 						}
 					}

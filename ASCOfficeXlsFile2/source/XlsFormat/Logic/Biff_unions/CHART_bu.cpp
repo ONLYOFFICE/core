@@ -33,6 +33,9 @@ const bool CHART::loadContent(BinProcessor& proc)
 		return false;
 	}
 
+	m_ChartSheetSubstream = elements_.back();
+	elements_.pop_back();
+
 	int count = proc.repeated<Continue>(0, 0);
 
 	while (count > 0)
@@ -43,8 +46,11 @@ const bool CHART::loadContent(BinProcessor& proc)
 			CFRecordPtr r = CFRecordPtr(new CFRecord(CFRecordType::ANY_TYPE, proc.getGlobalWorkbookInfo()));
 			r->appendRawData(c->m_pData, c->m_iDataSize);
 			mso_drawing_->storeRecordAndDecideProceeding(r);
+
+			sp_enabled = true;
 			
 		}
+		elements_.pop_back();
 		count--;
 	}
 

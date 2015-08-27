@@ -29,11 +29,10 @@ private:
 
 struct _color
 {
-	_color() : index(-1), bScheme(false), bPalette(false){}
+	_color() : index(-1), bScheme(false){}
 	std::wstring	rgb;
 	int				index;
 	bool			bScheme;
-	bool			bPalette;
 };
 
 struct _rect
@@ -98,6 +97,14 @@ public:
         int             width;
 	}line;
 
+	struct _fill
+	{
+		_fill() {opacity = 0; type = 1; }
+		_color			color;
+		_color			color2;
+		int				opacity;
+		int				type;
+	}fill;
 };
 struct _hlink_desc
 {
@@ -134,7 +141,11 @@ public:
 
         void set_rotation	(int val);
 
-        void set_line_color	(const std::wstring & color);
+        void set_fill_color	(const std::wstring & color);
+		void set_fill_color	(int index, int type);
+        void set_fill_type	(int val);
+
+		void set_line_color	(const std::wstring & color);
 		void set_line_color	(int index, int type);
         void set_line_type	(int val);
         void set_line_style	(int val);
@@ -158,6 +169,7 @@ public:
 		void serialize_line			(std::wostream & stream);
 		void serialize_fill			(std::wostream & stream);
 		void serialize_bitmap_fill	(std::wostream & stream, std::wstring rId, const std::wstring ns = L"a:");
+		void serialize_solid_fill	(std::wostream & stream, const _color &color);
 		void serialize_none_fill	(std::wostream & stream);
 		void serialize_xfrm			(std::wostream & stream);
 		void serialize_text			(std::wostream & stream);

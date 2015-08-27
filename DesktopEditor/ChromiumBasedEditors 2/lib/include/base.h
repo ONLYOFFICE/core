@@ -13,6 +13,7 @@
 
 #if defined(_LINUX) && !defined(_MAC)
 
+#include <X11/X.h>
 #define WindowHandleId XID
 
 #endif

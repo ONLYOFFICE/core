@@ -1,4 +1,7 @@
-#include "../include/applicationmanager.h"
+#include "include/cef_menu_model.h"
+
+#include "include/wrapper/cef_stream_resource_handler.h"
+#include "include/wrapper/cef_byte_read_handler.h"
 
 #include "include/cef_browser.h"
 #include "include/base/cef_bind.h"
@@ -22,6 +25,8 @@
 #include "include/wrapper/cef_stream_resource_handler.h"
 #include "include/wrapper/cef_byte_read_handler.h"
 
+#include "../include/applicationmanager.h"
+
 #ifdef WIN32
 LRESULT CALLBACK MyMouseHook(int nCode, WPARAM wp, LPARAM lp)
 {
@@ -37,6 +42,10 @@ LRESULT CALLBACK MyMouseHook(int nCode, WPARAM wp, LPARAM lp)
 
     return CallNextHookEx(NULL, nCode, wp, lp);
 }
+#endif
+
+#if defined(_LINUX) && !defined(_MAC)
+#include <X11/Xlib.h>
 #endif
 
 class CPagePrintData
@@ -243,7 +252,7 @@ public:
         oDownloader.Start( 0 );
         while ( oDownloader.IsRunned() )
         {
-            ::Sleep( 10 );
+            NSThreads::Sleep( 10 );
         }
         std::wstring strFileName;
         if ( oDownloader.IsFileDownloaded() )
@@ -367,6 +376,7 @@ public:
     IMPLEMENT_REFCOUNTING(CCefBinaryFileReaderCounter);
 };
 
+class CAscClientHandler;
 class CCefView_Private : public NSEditorApi::IMenuEventDataBase
 {
 public:
@@ -985,10 +995,12 @@ public:
 
         NotifyBrowserClosing(browser);
 
+#ifdef WIN32
         if (GetBrowserId() == browser->GetIdentifier())
         {
             SetParent(browser->GetHost()->GetWindowHandle(), NULL);
         }
+#endif
 
         // Allow the close. For windowed browsers this will result in the OS close
         // event being sent.
@@ -1259,7 +1271,7 @@ public:
             dwOffset = (DWORD)sHeaderScript.length();
         }
 
-        LPBYTE pBytes = new BYTE[dwOffset + dwSize];
+        BYTE* pBytes = new BYTE[dwOffset + dwSize];
         if (dwOffset != 0)
         {
             memcpy(pBytes, sHeaderScript.c_str(), dwOffset);
@@ -1574,7 +1586,7 @@ void CCefView::load(const std::wstring& url)
     pClientHandler->m_pParent = this;
     m_pInternal->m_handler = pClientHandler;
 
-    ClientWindowHandle hWnd = (ClientWindowHandle)m_pInternal->m_pWidgetImpl->parent_wid();
+    CefWindowHandle hWnd = (CefWindowHandle)m_pInternal->m_pWidgetImpl->parent_wid();
     //m_pInternal->m_handler->SetMainWindowHandle(hWnd);
 
     CefWindowInfo info;
@@ -1597,11 +1609,20 @@ void CCefView::load(const std::wstring& url)
 
     // Initialize window info to the defaults for a child window.
 
+#ifdef WIN32
     RECT rect;
     rect.left = 0;
     rect.top = 0;
     rect.right = m_pInternal->m_pWidgetImpl->parent_width() - 1;
     rect.bottom = m_pInternal->m_pWidgetImpl->parent_height() - 1;
+#else
+    CefRect rect;
+    rect.x = 0;
+    rect.y = 0;
+    rect.width = m_pInternal->m_pWidgetImpl->parent_width();
+    rect.height = m_pInternal->m_pWidgetImpl->parent_height();
+#endif
+
     info.SetAsChild(hWnd, rect);
 
     CefString sUrl = url;
@@ -1710,6 +1731,8 @@ void CCefView::resizeEvent(int width, int height)
 
     CefWindowHandle hwnd = m_pInternal->m_handler->GetBrowser()->GetHost()->GetWindowHandle();
 
+#ifdef WIN32
+
     RECT rect;
     rect.left = 0;
     rect.top = 0;
@@ -1725,6 +1748,18 @@ void CCefView::resizeEvent(int width, int height)
         rect.left, rect.top, rect.right - rect.left + 1,
         rect.bottom - rect.top + 1, SWP_NOZORDER);
     EndDeferWindowPos(hdwp);
+#endif
+#endif
+
+#if defined(_LINUX) && !defined(_MAC)
+    ::Display* xdisplay = cef_get_xdisplay();
+    ::Window xwindow = hwnd;
+    XWindowChanges changes = {0};
+    changes.width = (0 == width) ? (m_pInternal->m_pWidgetImpl->parent_width() - 1) : width;
+    changes.height = (0 == height) ? (m_pInternal->m_pWidgetImpl->parent_height() - 1) : height;
+    changes.y = 0;
+    changes.y = 0;
+    XConfigureWindow(xdisplay, xwindow, CWHeight | CWWidth | CWY, &changes);
 #endif
 
     focus();
@@ -2101,7 +2136,7 @@ namespace NSCommonReader
         {
 #if !defined(_WIN32) && !defined(_WIN64)
             NSFile::CStringUtf16 oData;
-            oData = pData;
+            oData.Data = pData;
             oData.Length = nLen;
 
             wsTempString = NSFile::CUtf8Converter::GetWStringFromUTF16(oData);
@@ -2648,7 +2683,7 @@ std::wstring CPrintData::GetImagePath(const std::wstring& sPath)
             std::wstring sTmpFile = sPath;
             if (bRes)
             {
-                sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPathW(), L"Image64");
+                sTmpFile = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"Image64");
                 NSFile::CFileBinary oFile;
                 if (oFile.CreateFileW(sTmpFile))
                 {
@@ -2694,8 +2729,8 @@ void CPrintData::Print(NSEditorApi::CAscPrinterContextBase* pContext, const CAsc
     double fPageWidth = m_arPages[nPageIndex].Width;
     double fPageHeight = m_arPages[nPageIndex].Height;
 
-    double ONE_INCH = 2.54;
-    double M_PI_2 = agg::pi / 2;
+    double tmp_ONE_INCH = 2.54;
+    double tmp_M_PI_2 = agg::pi / 2;
 
     int nPrintDpiX;
     int nPrintDpiY;
@@ -2730,13 +2765,13 @@ void CPrintData::Print(NSEditorApi::CAscPrinterContextBase* pContext, const CAsc
     }
 
     // подсчитываем размеры страницы в милиметрах
-    fPrintWidthMM   = 10 * ONE_INCH * nPrintWidthPix / nPrintDpiX;
-    fPrintHeightMM  = 10 * ONE_INCH * nPrintHeightPix / nPrintDpiX;
+    fPrintWidthMM   = 10 * tmp_ONE_INCH * nPrintWidthPix / nPrintDpiX;
+    fPrintHeightMM  = 10 * tmp_ONE_INCH * nPrintHeightPix / nPrintDpiX;
 
     if (CAscPrintSettings::pm100  == settings.Mode)
     {
-        dWidthPix   = nPrintDpiX * fPageWidth / ( 10 * ONE_INCH );
-        dHeightPix  = nPrintDpiX * fPageHeight / ( 10 * ONE_INCH );
+        dWidthPix   = nPrintDpiX * fPageWidth / ( 10 * tmp_ONE_INCH );
+        dHeightPix  = nPrintDpiX * fPageHeight / ( 10 * tmp_ONE_INCH );
         if (true == settings.RotateEnable && ( nPrintWidthPix < dWidthPix || nPrintHeightPix < dHeightPix))
         {
             if (nPrintWidthPix < dHeightPix || nPrintHeightPix < dWidthPix)
@@ -2757,7 +2792,7 @@ void CPrintData::Print(NSEditorApi::CAscPrinterContextBase* pContext, const CAsc
                 {
                     dLeftPix = nPrintWidthPix - ( dHeightPix + dWidthPix ) / 2;
                     dTopPix = dWidthPix / 2 - dHeightPix / 2;
-                    dAngle = M_PI_2;    // 90
+                    dAngle = tmp_M_PI_2;    // 90
                 }
             }
             else
@@ -2765,7 +2800,7 @@ void CPrintData::Print(NSEditorApi::CAscPrinterContextBase* pContext, const CAsc
                 //если не вписывается, но вписывается повернутое
                 dLeftPix    = nPrintWidthPix - (dHeightPix + dWidthPix ) / 2;
                 dTopPix     = nPrintHeightPix / 2 - dHeightPix / 2;
-                dAngle      = M_PI_2;   //90
+                dAngle      = tmp_M_PI_2;   //90
             }
         }
         else
@@ -2786,7 +2821,7 @@ void CPrintData::Print(NSEditorApi::CAscPrinterContextBase* pContext, const CAsc
             dHeightPix  = nPrintWidthPix;
             dLeftPix    = nPrintWidthPix / 2 - dWidthPix / 2;
             dTopPix     = nPrintHeightPix / 2 - dHeightPix / 2;
-            dAngle      = M_PI_2;   // 90
+            dAngle      = tmp_M_PI_2;   // 90
         }
         else
         {
@@ -2807,7 +2842,7 @@ void CPrintData::Print(NSEditorApi::CAscPrinterContextBase* pContext, const CAsc
                 double dTemp    = fPrintWidthMM;
                 fPrintWidthMM   = fPrintHeightMM;
                 fPrintHeightMM  = dTemp;
-                dAngle          = M_PI_2;   // 90
+                dAngle          = tmp_M_PI_2;   // 90
                 bRotate         = true;
             }
             float fFitX = 0;
@@ -2816,8 +2851,8 @@ void CPrintData::Print(NSEditorApi::CAscPrinterContextBase* pContext, const CAsc
             float fFitHeight = 0;
             FitToPage(fPageWidth, fPageHeight, fPrintWidthMM, fPrintHeightMM, fFitX, fFitY, fFitWidth, fFitHeight);
 
-            dWidthPix = nPrintDpiX * fFitWidth / (10 * ONE_INCH);
-            dHeightPix = nPrintDpiY * fFitHeight / (10 * ONE_INCH);
+            dWidthPix = nPrintDpiX * fFitWidth / (10 * tmp_ONE_INCH);
+            dHeightPix = nPrintDpiY * fFitHeight / (10 * tmp_ONE_INCH);
             if (true == bRotate)
             {
                 dLeftPix    = nPrintWidthPix / 2 - dWidthPix / 2;
@@ -2825,8 +2860,8 @@ void CPrintData::Print(NSEditorApi::CAscPrinterContextBase* pContext, const CAsc
             }
             else
             {
-                dLeftPix    = nPrintDpiX * fFitX / (10 * ONE_INCH);
-                dTopPix     = nPrintDpiY * fFitY / (10 * ONE_INCH);
+                dLeftPix    = nPrintDpiX * fFitX / (10 * tmp_ONE_INCH);
+                dTopPix     = nPrintDpiY * fFitY / (10 * tmp_ONE_INCH);
             }
         }
         else if (settings.ZoomEnable)
@@ -2836,10 +2871,10 @@ void CPrintData::Print(NSEditorApi::CAscPrinterContextBase* pContext, const CAsc
             float fFitWidth = 0;
             float fFitHeight = 0;
             FitToPage(fPageWidth, fPageHeight, fPrintWidthMM, fPrintHeightMM, fFitX, fFitY, fFitWidth, fFitHeight);
-            dWidthPix   = nPrintDpiX * fFitWidth / (10 * ONE_INCH);
-            dHeightPix  = nPrintDpiY * fFitHeight / (10 * ONE_INCH);
-            dLeftPix    = nPrintDpiX * fFitX / (10 * ONE_INCH);
-            dTopPix     = nPrintDpiY * fFitY / (10 * ONE_INCH);
+            dWidthPix   = nPrintDpiX * fFitWidth / (10 * tmp_ONE_INCH);
+            dHeightPix  = nPrintDpiY * fFitHeight / (10 * tmp_ONE_INCH);
+            dLeftPix    = nPrintDpiX * fFitX / (10 * tmp_ONE_INCH);
+            dTopPix     = nPrintDpiY * fFitY / (10 * tmp_ONE_INCH);
             dAngle      = 0;
         }
         else if (settings.RotateEnable)
@@ -2865,35 +2900,35 @@ void CPrintData::Print(NSEditorApi::CAscPrinterContextBase* pContext, const CAsc
                     if (fFitWidth1 * fFitHeight1 < fFitWidth2 * fFitHeight2)
                     {
                         // поворачиваем
-                        dAngle      = M_PI_2;   // 90
-                        dWidthPix   = nPrintDpiX * fFitWidth2 / (10 * ONE_INCH);
-                        dHeightPix  = nPrintDpiY * fFitHeight2 / (10 * ONE_INCH);
+                        dAngle      = tmp_M_PI_2;   // 90
+                        dWidthPix   = nPrintDpiX * fFitWidth2 / (10 * tmp_ONE_INCH);
+                        dHeightPix  = nPrintDpiY * fFitHeight2 / (10 * tmp_ONE_INCH);
                         dLeftPix    = nPrintWidthPix / 2 - dWidthPix / 2;
                         dTopPix     = nPrintHeightPix / 2 - dHeightPix / 2;
                     }
                     else
                     {
                         dAngle      = 0;
-                        dWidthPix   = nPrintDpiX * fFitWidth1 / (10 * ONE_INCH);
-                        dHeightPix  = nPrintDpiY * fFitHeight1 / (10 * ONE_INCH);
-                        dLeftPix    = nPrintDpiX * fFitX1 / (10 * ONE_INCH);
-                        dTopPix     = nPrintDpiY * fFitY1 / (10 * ONE_INCH);
+                        dWidthPix   = nPrintDpiX * fFitWidth1 / (10 * tmp_ONE_INCH);
+                        dHeightPix  = nPrintDpiY * fFitHeight1 / (10 * tmp_ONE_INCH);
+                        dLeftPix    = nPrintDpiX * fFitX1 / (10 * tmp_ONE_INCH);
+                        dTopPix     = nPrintDpiY * fFitY1 / (10 * tmp_ONE_INCH);
                     }
                 }
                 else
                 {
                     // поворачиваем
-                    dWidthPix   = nPrintDpiX * fPageWidth / (10 * ONE_INCH);
-                    dHeightPix  = nPrintDpiY * fPageHeight / (10 * ONE_INCH);
+                    dWidthPix   = nPrintDpiX * fPageWidth / (10 * tmp_ONE_INCH);
+                    dHeightPix  = nPrintDpiY * fPageHeight / (10 * tmp_ONE_INCH);
                     dLeftPix    = nPrintWidthPix - (dHeightPix + dWidthPix) / 2;
                     dTopPix     = nPrintHeightPix / 2 - dHeightPix / 2;
-                    dAngle      = M_PI_2;   // 90
+                    dAngle      = tmp_M_PI_2;   // 90
                 }
             }
             else
             {
-                dWidthPix = nPrintDpiX * fPageWidth / ( 10 * ONE_INCH );
-                dHeightPix = nPrintDpiY * fPageHeight / ( 10 * ONE_INCH );
+                dWidthPix = nPrintDpiX * fPageWidth / ( 10 * tmp_ONE_INCH );
+                dHeightPix = nPrintDpiY * fPageHeight / ( 10 * tmp_ONE_INCH );
                 dLeftPix = nPrintWidthPix / 2 - dWidthPix / 2; // по центру по горизонтали
                 dTopPix = 0; // сверху по вертикали
                 dAngle = 0;
@@ -2909,15 +2944,15 @@ void CPrintData::Print(NSEditorApi::CAscPrinterContextBase* pContext, const CAsc
                 float fFitWidth = 0;
                 float fFitHeight = 0;
                 FitToPage(fPageWidth, fPageHeight, fPrintWidthMM, fPrintHeightMM, fFitX, fFitY, fFitWidth, fFitHeight);
-                dWidthPix   = nPrintDpiX * fFitWidth / (10 * ONE_INCH);
-                dHeightPix  = nPrintDpiY * fFitHeight / (10 * ONE_INCH);
-                dLeftPix    = nPrintDpiX * fFitX / (10 * ONE_INCH);
-                dTopPix     = nPrintDpiY * fFitY / (10 * ONE_INCH);
+                dWidthPix   = nPrintDpiX * fFitWidth / (10 * tmp_ONE_INCH);
+                dHeightPix  = nPrintDpiY * fFitHeight / (10 * tmp_ONE_INCH);
+                dLeftPix    = nPrintDpiX * fFitX / (10 * tmp_ONE_INCH);
+                dTopPix     = nPrintDpiY * fFitY / (10 * tmp_ONE_INCH);
             }
             else
             {
-                dWidthPix   = nPrintDpiX * fPageWidth / (10 * ONE_INCH);
-                dHeightPix  = nPrintDpiY * fPageHeight / (10 * ONE_INCH);
+                dWidthPix   = nPrintDpiX * fPageWidth / (10 * tmp_ONE_INCH);
+                dHeightPix  = nPrintDpiY * fPageHeight / (10 * tmp_ONE_INCH);
                 dLeftPix    = nPrintWidthPix / 2 - dWidthPix / 2; // по центру по горизонтали
                 dTopPix     = 0; // сверху по вертикали
             }

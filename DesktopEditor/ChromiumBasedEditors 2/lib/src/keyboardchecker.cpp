@@ -211,8 +211,6 @@ void CAscKeyboardChecker::Check(CAscApplicationManager* pManager, int nLangInput
     default:
         break;
     }
-
-    OutputDebugStringA(sLang.c_str());
 #endif
 }
 

@@ -272,11 +272,11 @@ namespace NSCommon
                     oRenderer.put_FontPath(strFontPath);
                     pManager->LoadFontFromFile(strFontPath, lFaceIndex, 14, dDpi, dDpi);
 
-                    BOOL bIsSymbol = FALSE;
+                    bool bIsSymbol = FALSE;
 
                     if (pManager->m_pFont)
                     {
-                        bIsSymbol = (-1 != (pManager->m_pFont->m_nSymbolic)) ? TRUE : FALSE;
+                        bIsSymbol = (-1 != (pManager->m_pFont->m_nSymbolic)) ? true : false;
 
                         if (!bIsSymbol)
                         {
@@ -288,7 +288,7 @@ namespace NSCommon
                             if (NULL != pOS2)
                             {
                                 if (0 == (pOS2->ulCodePageRange1 & 0xF0000000))
-                                    bIsSymbol = TRUE;
+                                    bIsSymbol = true;
                             }
                         }
                     }
@@ -691,7 +691,7 @@ protected:
             oDownloader.Start( 0 );
             while ( oDownloader.IsRunned() )
             {
-                ::Sleep( 10 );
+                NSThreads::Sleep( 10 );
             }
 
             m_bRunThread = FALSE;
@@ -1034,7 +1034,7 @@ void CAscApplicationManager::SendKeyboardAttack()
 void CAscApplicationManager::CheckFonts(bool bAsync)
 {
     if (!NSDirectory::Exists(m_oSettings.fonts_cache_info_path))
-        NSDirectory::CreateDirectoryW(m_oSettings.fonts_cache_info_path);
+        NSDirectory::CreateDirectory(m_oSettings.fonts_cache_info_path);
 
     bool bIsStarted = m_pInternal->IsRunned();
     bool bIsInit = IsInitFonts();

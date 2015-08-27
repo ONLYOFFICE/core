@@ -5,9 +5,9 @@
 #include <QtPrintSupport/QPrintDialog>
 #include <QPainter>
 #include <QPaintEngine>
+#include <qmath.h>
 
 #include "./applicationmanager_events.h"
-#include <qmath.h>
 
 class QAscPrinterContext : public NSEditorApi::CAscPrinterContextBase
 {

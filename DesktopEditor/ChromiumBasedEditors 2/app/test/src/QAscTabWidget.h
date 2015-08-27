@@ -8,7 +8,6 @@
 #include <QStylePainter>
 #include <QStyleOption>
 
-#include "../../../lib/include/applicationmanager.h"
 #include "../../../lib/qcefview/qcefview.h"
 
 class QPushButtonWrapper : public QPushButton
@@ -371,7 +370,7 @@ public slots:
 
 #if 1
         std::string sId = std::to_string(nId);sId += "\n";
-        OutputDebugStringA(sId.c_str());
+        //OutputDebugStringA(sId.c_str());
 #endif
 
         NSEditorApi::CAscMenuEvent* pEvent = new NSEditorApi::CAscMenuEvent();

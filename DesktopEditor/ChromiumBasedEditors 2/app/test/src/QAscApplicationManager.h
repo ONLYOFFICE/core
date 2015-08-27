@@ -1,12 +1,6 @@
 #ifndef QASCAPPLICATIONMANAGER
 #define QASCAPPLICATIONMANAGER
 
-#include "../../../lib/include/cefapplication.h"
-#include "../../../lib/include/applicationmanager.h"
-
-#include <shlwapi.h>
-#include <shlobj.h>
-#include <QFileDialog>
 #include "QAscMainPanel.h"
 
 class QAscApplicationManager : public CAscApplicationManager

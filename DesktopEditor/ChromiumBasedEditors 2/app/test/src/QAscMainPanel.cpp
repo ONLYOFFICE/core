@@ -1,16 +1,14 @@
-#include <windows.h>
-
 #include <QtWidgets/QApplication>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QPushButton>
 #include <QScrollArea>
 #include <QFileDialog>
 
-#include "QAscMainPanel.h"
 #include "QAscTabWidget.h"
 
 #include <QStandardPaths>
 
+#include "QAscMainPanel.h"
 #include "../../../lib/include/qascprinter.h"
 
 QAscMainPanel::QAscMainPanel( QWidget* parent, CAscApplicationManager* pManager, bool bIsCustomWindow ) : QWidget( parent )

@@ -1,11 +1,11 @@
 #ifndef CEFCLIENT_QCEFWEBVIEW_H
 #define CEFCLIENT_QCEFWEBVIEW_H
 
-#include "./../include/cefview.h"
-#include "./../include/applicationmanager.h"
-
 #include <QWidget>
 #include <QStyleOption>
+
+#include "./../include/cefview.h"
+#include "./../include/applicationmanager.h"
 
 class QCefView : public QWidget, public CCefViewWidgetImpl
 {

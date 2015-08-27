@@ -1,7 +1,7 @@
 #ifndef CEFCLIENT_CEFWEBVIEW_H
 #define CEFCLIENT_CEFWEBVIEW_H
 
-#include "base.h"
+#include "./base.h"
 #include "./applicationmanager_events.h"
 
 enum CefViewWrapperType

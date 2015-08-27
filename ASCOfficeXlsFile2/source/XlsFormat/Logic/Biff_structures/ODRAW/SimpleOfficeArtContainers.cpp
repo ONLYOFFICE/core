@@ -87,17 +87,17 @@ void OfficeArtSpContainer::loadFields(XLS::CFRecord& record)
 {
 	OfficeArtContainer::loadFields(record);
 
-    //for (int i = 0 ; i < child_records.size(); i++)
-	//{
-	//	switch(child_records[i]->rh_own.recType)
-	//	{
-	//	case ODRAW::OfficeArtRecord::SpgrContainerFileBlock:
-	//		{
-	//			m_OfficeArtSpgrContainerFileBlock.push_back(child_records[i]);
-	//			child_records.erase(child_records.begin() + i,child_records.begin() + i + 1);
-	//		}break;
-	//	}
-	//}
+    for (int i = 0 ; i < child_records.size(); i++)
+	{
+		switch(child_records[i]->rh_own.recType)
+		{
+			case ODRAW::OfficeArtRecord::FSP:
+			{
+				m_OfficeArtFSP = child_records[i];
+				child_records.erase(child_records.begin() + i,child_records.begin() + i + 1); i--;
+			}break;
+		}
+	}
 
 }
 

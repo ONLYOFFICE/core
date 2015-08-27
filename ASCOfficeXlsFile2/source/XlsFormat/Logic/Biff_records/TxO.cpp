@@ -50,19 +50,18 @@ void TxO::readFields(CFRecord& record)
 	
 	std::list<CFRecordPtr>& recs = continue_records[rt_Continue];
 
+	int sz = cchText;
 	if ( cbRuns )
 	{	
-		if (record.getRdPtr() >= record.getDataSize())
+		while (record.getRdPtr() + cchText > record.getDataSize() && !recs.empty())
 		{
-			int sz = recs.size()-1;
-			for(int i = 0; i < sz; i++)
-			{
-				record.appendRawData(recs.front());
-				recs.pop_front();
-			}
+			record.appendRawData(recs.front());
+			recs.pop_front();
 		}
 		commentText.setSize(cchText);
 		record >> commentText;
+
+		TxOruns.set_records(&recs);
 
 		TxOruns.m_runCount = cbRuns / 8 - 1;
 		TxOruns.load(record);
@@ -70,6 +69,7 @@ void TxO::readFields(CFRecord& record)
 
 	while( !recs.empty() )
 	{
+		sp_enabled	= true;
 		mso_drawing_->storeRecordAndDecideProceeding(recs.front());
 		recs.pop_front();
 	}

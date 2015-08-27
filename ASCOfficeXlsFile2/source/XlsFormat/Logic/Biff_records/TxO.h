@@ -19,7 +19,8 @@ class TxO: public BiffRecordContinued
 public:
 	TxO(MsoDrawingPtr mso_drawing) : mso_drawing_(mso_drawing), fmla(false)
 	{
-		cbRuns = 0;
+		cbRuns		= 0;
+		sp_enabled	= false;
 	}
 	~TxO();
 
@@ -48,6 +49,8 @@ public:
 	ObjFmla					fmla;
 	TxORuns					TxOruns;
 	XLUnicodeStringNoCch	commentText;
+
+	bool					sp_enabled;
 
 	MsoDrawingPtr			mso_drawing_;
 

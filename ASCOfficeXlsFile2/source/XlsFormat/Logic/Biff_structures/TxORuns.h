@@ -25,6 +25,13 @@ public:
 	int m_runCount;
 	std::vector<RunPtr> rgTxoRuns;
 	TxOLastRun lastRun;
+
+	void set_records(std::list<CFRecordPtr>* recs_)
+	{
+		recs = recs_;
+	}
+
+	std::list<CFRecordPtr>* recs;
 };
 
 typedef boost::shared_ptr<TxORuns> TxORunsPtr;

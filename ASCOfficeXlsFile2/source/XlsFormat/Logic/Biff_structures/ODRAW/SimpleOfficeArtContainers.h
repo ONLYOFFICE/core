@@ -52,6 +52,8 @@ public:
 	XLS::BiffStructurePtr clone() { return XLS::BiffStructurePtr(new OfficeArtSpContainer(*this)); }
 
 	void loadFields(XLS::CFRecord& record);
+
+	OfficeArtRecordPtr m_OfficeArtFSP;
 };
 
 class OfficeArtClientData : public OfficeArtRecord

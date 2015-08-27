@@ -14,6 +14,7 @@ class CHART: public CompositeObject
 public:
 	CHART(MsoDrawingPtr mso_drawing) : mso_drawing_(mso_drawing)
 	{
+		sp_enabled = false;
 	}
 	~CHART();
 
@@ -23,7 +24,10 @@ public:
 
 	static const ElementType	type = typeCHART;
 	
-	MsoDrawingPtr mso_drawing_;
+	MsoDrawingPtr		mso_drawing_;
+	BaseObjectPtr		m_ChartSheetSubstream;
+
+	bool				sp_enabled;
 };
 
 } // namespace XLS

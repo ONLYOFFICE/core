@@ -11,6 +11,21 @@
 #endif
 #include "cefclient/browser/main_message_loop_std.h"
 
+#if defined(_LINUX) && !defined(_MAC)
+
+#include <gdk/gdk.h>
+#include <gdk/gdkx.h>
+#include <gtk/gtk.h>
+#include <gtk/gtkgl.h>
+
+#include <X11/Xlib.h>
+
+#undef Status   // Definition conflicts with cef_urlrequest.h
+#undef Success  // Definition conflicts with cef_message_router.h
+
+#include "include/wrapper/cef_helpers.h"
+#endif
+
 class CApplicationCEF_Private
 {
 public:
@@ -18,13 +33,24 @@ public:
     scoped_ptr<client::MainContextImpl> context;
     scoped_ptr<client::MainMessageLoop> message_loop;
 
+#if defined(_LINUX) && !defined(_MAC)
+    CefScopedArgArray* argc_copy;
+#endif
+
     CApplicationCEF_Private()
     {
+#if defined(_LINUX) && !defined(_MAC)
+        argc_copy = NULL;
+#endif
     }
     ~CApplicationCEF_Private()
     {
         message_loop.reset();
         context.reset();
+
+#if defined(_LINUX) && !defined(_MAC)
+        RELEASEOBJECT(argc_copy);
+#endif
     }
 };
 
@@ -37,6 +63,13 @@ void CApplicationCEF::Init_CEF(CAscApplicationManager* pManager, int argc, char*
 {
     // Enable High-DPI support on Windows 7 or newer.
     CefEnableHighDPISupport();
+
+#if defined(_LINUX) && !defined(_MAC)
+    // Create a copy of |argv| on Linux because Chromium mangles the value
+    // internally (see issue #620).
+    m_pInternal->argc_copy = new CefScopedArgArray(argc, argv);
+    char** argv_copy = m_pInternal->argc_copy->array();
+#endif
 
     void* sandbox_info = NULL;
 
@@ -166,6 +199,15 @@ void CApplicationCEF::Init_CEF(CAscApplicationManager* pManager, int argc, char*
     // Initialize CEF.
     bool bInit = CefInitialize(main_args, settings, m_pInternal->m_app.get(), sandbox_info);
     bool bIsInitScheme = asc_scheme::InitScheme();
+
+#if defined(_LINUX) && !defined(_MAC)
+    // The Chromium sandbox requires that there only be a single thread during
+    // initialization. Therefore initialize GTK after CEF.
+    gtk_init(&argc, &argv_copy);
+
+    // Perform gtkglext initialization required by the OSR example.
+    gtk_gl_init(&argc, &argv_copy);
+#endif
 
     pManager->SetApplication(this);
     return;

@@ -7,12 +7,6 @@ CONFIG += c++11
 
 CONFIG -= debug_and_release debug_and_release_target
 
-CONFIG(debug, debug|release) {
-    DESTDIR = $$PWD/build/windows/Debug
-} else {
-    DESTDIR = $$PWD/build/windows/Release
-}
-
 win32:contains(QMAKE_TARGET.arch, x86_64):{
     PLATFORM_BUILD = win64
     message(windows64)
@@ -32,9 +26,12 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
 
 CONFIG(debug, debug|release) {
     PLATFORM_BUILD2 = $$PLATFORM_BUILD/debug
+    DESTDIR = $$PWD/build/$$PLATFORM_BUILD/Debug
     message(debug)
 } else {
     PLATFORM_BUILD2 = $$PLATFORM_BUILD
+    DESTDIR = $$PWD/build/$$PLATFORM_BUILD/Release
+    message(release)
 }
 
 include($$PWD/AscDocumentEditor.pri)

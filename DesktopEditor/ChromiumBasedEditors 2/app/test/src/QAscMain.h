@@ -81,7 +81,7 @@ static int AscEditor_Main( int argc, char *argv[] )
     }
 
 #if 0
-    FILE* f = fopen("E:\\12345.txt", "a+");
+    FILE* f = fopen("/home/oleg/activex/1/12345.txt", "a+");
     fprintf(f, "-----------------------------------------------\n");
     for (int i = 0; i < argc; ++i)
     {
@@ -101,7 +101,7 @@ static int AscEditor_Main( int argc, char *argv[] )
         std::wstring sUserPath = GetAppDataPath();
         oManager.m_oSettings.SetUserDataPath(sUserPath);
 
-        oCef.Init_CEF(&oManager);
+        oCef.Init_CEF(&oManager, argc, argv);
         return aa.exec();
     }
 
@@ -116,7 +116,7 @@ static int AscEditor_Main( int argc, char *argv[] )
     qreal ww = a.primaryScreen()->logicalDotsPerInch();
     qreal hh = a.primaryScreen()->physicalDotsPerInch();
 
-    application_cef->Init_CEF(pApplicationManager);
+    application_cef->Init_CEF(pApplicationManager, argc, argv);
 
     pApplicationManager->CheckFonts();
 

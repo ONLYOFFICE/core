@@ -29,7 +29,7 @@ win32:!contains(QMAKE_TARGET.arch, x86_64):{
 CONFIG(debug, debug|release) {
     DESTINATION_BUILD_OBJ = $$PWD/build/$$PLATFORM_BUILD/Debug/obj
     DESTINATION_BUILD_MOC = $$PWD/build/$$PLATFORM_BUILD/Debug/moc
-    DESTINATION_BUILD_QMAKE = = $$PWD/build/$$PLATFORM_BUILD/Debug
+    DESTINATION_BUILD_QMAKE = $$PWD/build/$$PLATFORM_BUILD/Debug
     DESTINATION_BUILD = $$PWD/../app/corebuilds/$$PLATFORM_BUILD/debug
 
     PLATFORM_BUILD2 = $$PLATFORM_BUILD2/DEBUG
@@ -37,7 +37,7 @@ CONFIG(debug, debug|release) {
 } else {
     DESTINATION_BUILD_OBJ = $$PWD/build/$$PLATFORM_BUILD/Release/obj
     DESTINATION_BUILD_MOC = $$PWD/build/$$PLATFORM_BUILD/Release/moc
-    DESTINATION_BUILD_QMAKE = = $$PWD/build/$$PLATFORM_BUILD/Release
+    DESTINATION_BUILD_QMAKE = $$PWD/build/$$PLATFORM_BUILD/Release
     DESTINATION_BUILD = $$PWD/../app/corebuilds/$$PLATFORM_BUILD
     message(release)
 }

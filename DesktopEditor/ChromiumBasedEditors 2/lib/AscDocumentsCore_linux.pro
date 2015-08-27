@@ -41,16 +41,18 @@ MOC_DIR     = $$DESTINATION_BUILD_MOC
 
 # common projects --------------------------------------
 #zlib
-#CONFIG += build_all_zlib build_zlib_as_sources
-#include($$PWD/../../../OfficeUtils/OfficeUtils.pri)
+CONFIG += build_all_zlib build_zlib_as_sources
+include($$PWD/../../../OfficeUtils/OfficeUtils.pri)
 #hunspell
-#include($$PWD/../../hunspell-1.3.3/src/qt/hunspell.pri)
+
+DEFINES += HUNSPELL_STATIC
+CONFIG += building_hunspell
+include($$PWD/../../hunspell-1.3.3/src/qt/hunspell.pri)
+
 #graphics
 #include($$PWD/../../Qt_build/graphics/project/graphics.pri)
 
-DEFINES += HUNSPELL_STATIC
-
-LIBS += -L$$PWD/../../../SDK/lib/$$PLATFORM_BUILD2 -lOfficeUtils -lgraphics -lhunspell
+LIBS += -L$$PWD/../../../SDK/lib/$$PLATFORM_BUILD2 -lgraphics
 # ------------------------------------------------------
 
 CONFIG += link_pkgconfig c++11

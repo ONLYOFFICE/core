@@ -5,7 +5,10 @@
 #include "cefwrapper/client_scheme.h"
 
 #include "cefclient/browser/main_context_impl.h"
+
+#ifdef WIN32
 #include "cefclient/browser/main_message_loop_multithreaded_win.h"
+#endif
 #include "cefclient/browser/main_message_loop_std.h"
 
 class CApplicationCEF_Private

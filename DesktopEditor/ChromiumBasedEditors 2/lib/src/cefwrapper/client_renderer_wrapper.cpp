@@ -167,10 +167,10 @@ public:
             std::wstring strAppPathEditors = strAppPath + L"/" + NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)m_sVersion.c_str(), (LONG)m_sVersion.length());
             if (!NSDirectory::Exists(strAppPathEditors))
             {
-                NSDirectory::CreateDirectoryW(strAppPathEditors);
-                NSDirectory::CreateDirectoryW(strAppPathEditors + L"/word");
-                NSDirectory::CreateDirectoryW(strAppPathEditors + L"/excel");
-                NSDirectory::CreateDirectoryW(strAppPathEditors + L"/powerpoint");
+                NSDirectory::CreateDirectory(strAppPathEditors);
+                NSDirectory::CreateDirectory(strAppPathEditors + L"/word");
+                NSDirectory::CreateDirectory(strAppPathEditors + L"/excel");
+                NSDirectory::CreateDirectory(strAppPathEditors + L"/powerpoint");
             }
 
             CefRefPtr<CefV8Value> val = *arguments.begin();
@@ -850,7 +850,7 @@ public:
         oDownloader.Start( 0 );
         while ( oDownloader.IsRunned() )
         {
-            ::Sleep( 10 );
+            NSThreads::Sleep(10);
         }
         return oDownloader.IsFileDownloaded();
     }

@@ -95,4 +95,25 @@ public:
     AscEditorType GetEditorType();
 };
 
+class IFileDownloaderEvents
+{
+public:
+    virtual void OnProgress(int nProgress) = 0;
+    virtual void OnDownload(bool bIsSuccess) = 0;
+};
+
+class CCefFileDownloader_Private;
+class Q_DECL_EXPORT CCefFileDownloader
+{
+protected:
+    CCefFileDownloader_Private* m_pInternal;
+
+public:
+    CCefFileDownloader(IFileDownloaderEvents* pEvents);
+    ~CCefFileDownloader();
+
+    void DownloadFile(CAscApplicationManager* pManager, const std::wstring& sUrl, const std::wstring& sDstFile);
+};
+
+
 #endif  // CEFCLIENT_CEFWEBVIEW_H

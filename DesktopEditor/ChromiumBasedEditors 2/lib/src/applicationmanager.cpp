@@ -644,6 +644,69 @@ namespace NSCommon
 
 ///////////////////////////////////////////////////////
 
+
+class CCefFileDownloaderThread : public NSThreads::CBaseThread, public IFileDownloaderEvents
+{
+public :
+    CCefFileDownloaderThread(CAscApplicationManager* pManager, std::wstring sFileUrl, std::wstring sFileDst) : NSThreads::CBaseThread()
+    {
+        m_sFilePath = sFileDst;
+        m_sFileUrl  = sFileUrl;
+        m_bComplete = false;
+        m_bWork = false;
+        m_pManager = pManager;
+        m_pDownloader = NULL;
+    }
+    ~CCefFileDownloaderThread()
+    {
+        RELEASEOBJECT(m_pDownloader);
+    }
+
+    bool IsFileDownloaded()
+    {
+        return m_bComplete;
+    }
+
+    void OnProgress(int nProgress)
+    {
+    }
+
+    void OnDownload(bool bIsSuccess)
+    {
+        m_bComplete = bIsSuccess;
+        m_bWork = false;
+    }
+
+protected :
+
+    virtual DWORD ThreadProc ()
+    {
+        m_bComplete = false;
+        m_bWork = true;
+
+        m_pDownloader = new CCefFileDownloader(this);
+        m_pDownloader->DownloadFile(m_pManager, m_sFileUrl, m_sFilePath);
+
+        while (m_bWork)
+        {
+            NSThreads::Sleep(100);
+        }
+
+        m_bRunThread = FALSE;
+        return 0;
+    }
+
+protected :
+    std::wstring    m_sFilePath;       // Путь к сохраненному файлу на диске
+    std::wstring    m_sFileUrl;        // Ссылка на скачивание файла
+
+    bool            m_bComplete;       // Закачался файл или нет
+    bool            m_bWork;
+
+    CCefFileDownloader* m_pDownloader;
+    CAscApplicationManager* m_pManager;
+};
+
 class CCefScriptLoader : public NSThreads::CBaseThread
 {
 public:
@@ -686,8 +749,12 @@ protected:
         }
         else
         {
+#ifdef WIN32
             CFileDownloader oDownloader(m_sUrl, false);
             oDownloader.SetFilePath(m_sDestination);
+#else
+            CCefFileDownloaderThread oDownloader(m_pManager, m_sUrl, m_sDestination);
+#endif
             oDownloader.Start( 0 );
             while ( oDownloader.IsRunned() )
             {
@@ -1348,6 +1415,14 @@ void CAscApplicationManager::EndSaveDialog(const std::wstring& sPath)
 
         pView->Apply(pEvent);
     }
+}
+
+bool CAscApplicationManager::IsPlatformKeyboardSupport()
+{
+#ifdef WIN32
+    return true;
+#endif
+    return false;
 }
 
 int CAscApplicationManager::GetPlatformKeyboardLayout()

@@ -53,6 +53,17 @@ public:
             mime_type_ = "text/html";
         }
 
+        if (url.find("ascdesktop://emptydownload.html") != std::string::npos)
+        {
+            std::string sPageCrash = "<html><head><meta charset=\"utf-8\"><title>download</title></head><body></body></html>";
+            data_ = sPageCrash;
+
+            handled = true;
+
+            // Set the resulting mime type
+            mime_type_ = "text/html";
+        }
+
 #if 0
     if (strstr(url.c_str(), "handler.html") != NULL) {
       // Build the response html

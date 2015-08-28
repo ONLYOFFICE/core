@@ -471,7 +471,15 @@ protected :
 
         m_bComplete = (CURLE_OK == res);
         if (m_bComplete)
-            m_sFilePath = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sOut.c_str(), (LONG)sOut.length());
+        {
+            if (m_sFilePath.empty())
+                m_sFilePath = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sOut.c_str(), (LONG)sOut.length());
+            else
+            {
+                std::wstring sSrc = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sOut.c_str(), (LONG)sOut.length());
+                NSFile::CFileBinary::Move(sSrc, m_sFilePath);
+            }
+        }
         return 0;
     }
 

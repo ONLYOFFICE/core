@@ -2,6 +2,7 @@
 #define QASCAPPLICATIONMANAGER
 
 #include "QAscMainPanel.h"
+#include <QApplication>
 
 class QAscApplicationManager : public CAscApplicationManager
 {
@@ -28,6 +29,14 @@ public:
     virtual void OnNeedCheckKeyboard()
     {
         m_pPanel->CheckKeyboard();
+    }
+
+    virtual int GetPlatformKeyboardLayout()
+    {
+        if (this->IsPlatformKeyboardSupport())
+            return CAscApplicationManager::GetPlatformKeyboardLayout();
+
+        return -1;
     }
 };
 

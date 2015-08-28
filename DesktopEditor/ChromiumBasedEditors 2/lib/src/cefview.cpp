@@ -426,6 +426,213 @@ public:
     void CloseBrowser(bool _force_close);
 };
 
+class CCefFileDownloader_Private : public client::ClientHandler, public client::ClientHandler::Delegate
+{
+public:
+    IFileDownloaderEvents* m_pEvents;
+    std::wstring m_sFileSrc;
+    std::wstring m_sFileDst;
+
+    CefRefPtr<CefBrowser> browser_;
+    int browser_id_;
+
+    CCefFileDownloader_Private() : client::ClientHandler(this, false, "https://onlyoffice.com/")
+    {
+        m_pEvents = NULL;
+    }
+    virtual ~CCefFileDownloader_Private()
+    {
+    }
+
+public:
+    CefRefPtr<CefBrowser> GetBrowser() const
+    {
+        return browser_;
+    }
+
+    int GetBrowserId() const
+    {
+        return browser_id_;
+    }
+
+    virtual bool OnBeforePopup(
+        CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefFrame> frame,
+        const CefString& target_url,
+        const CefString& target_frame_name,
+        CefLifeSpanHandler::WindowOpenDisposition target_disposition,
+        bool user_gesture,
+        const CefPopupFeatures& popupFeatures,
+        CefWindowInfo& windowInfo,
+        CefRefPtr<CefClient>& client,
+        CefBrowserSettings& settings,
+        bool* no_javascript_access) OVERRIDE
+    {
+        CEF_REQUIRE_IO_THREAD();
+
+        return true;
+    }
+
+    virtual bool OnConsoleMessage(CefRefPtr<CefBrowser> browser,
+                                  const CefString& message,
+                                  const CefString& source,
+                                  int line) OVERRIDE
+    {
+        return false;
+    }
+
+    virtual bool OnPreKeyEvent(CefRefPtr<CefBrowser> browser,
+                               const CefKeyEvent& event,
+                               CefEventHandle os_event,
+                               bool* is_keyboard_shortcut) OVERRIDE
+    {
+        return false;
+    }
+
+    virtual void OnBeforeDownload(CefRefPtr<CefBrowser> browser,
+        CefRefPtr<CefDownloadItem> download_item,
+        const CefString& suggested_name,
+        CefRefPtr<CefBeforeDownloadCallback> callback)
+    {
+        CEF_REQUIRE_UI_THREAD();
+
+        callback->Continue(m_sFileDst, false);
+    }
+
+    void OnDownloadUpdated(CefRefPtr<CefBrowser> browser,
+                                          CefRefPtr<CefDownloadItem> download_item,
+                                          CefRefPtr<CefDownloadItemCallback> callback) OVERRIDE
+    {
+        CEF_REQUIRE_UI_THREAD();
+
+        if (NULL == m_pEvents)
+            return;
+
+        m_pEvents->OnProgress(download_item->GetPercentComplete());
+
+        if (download_item->IsComplete())
+        {
+            m_pEvents->OnDownload(true);
+
+            CloseBrowser(true);
+        }
+        if (download_item->IsCanceled())
+        {
+            m_pEvents->OnDownload(false);
+
+            CloseBrowser(true);
+        }
+    }
+
+    virtual void OnAfterCreated(CefRefPtr<CefBrowser> browser) OVERRIDE
+    {
+        client::ClientHandler::OnAfterCreated(browser);
+        if (!GetBrowser())
+        {
+            // We need to keep the main child window, but not popup windows
+            browser->GetHost()->StartDownload(m_sFileSrc);
+
+            browser_ = browser;
+            browser_id_ = browser->GetIdentifier();
+        }
+    }
+
+    void CloseBrowser(bool _force_close)
+    {
+        if (!CefCurrentlyOn(TID_UI))
+        {
+            CefPostTask(TID_UI,
+                base::Bind(&CCefFileDownloader_Private::CloseBrowser, this, _force_close));
+            return;
+        }
+
+        if (GetBrowser() && GetBrowser()->GetHost())
+            GetBrowser()->GetHost()->CloseBrowser(_force_close);
+    }
+
+    // ClientHandlerDelegate
+    virtual void OnBrowserCreated(CefRefPtr<CefBrowser> browser) OVERRIDE {}
+
+    // Called when the browser is closing.
+    virtual void OnBrowserClosing(CefRefPtr<CefBrowser> browser) OVERRIDE {}
+
+    // Called when the browser has been closed.
+    virtual void OnBrowserClosed(CefRefPtr<CefBrowser> browser) OVERRIDE {}
+
+    // Set the window URL address.
+    virtual void OnSetAddress(const std::string& url) OVERRIDE {}
+
+    // Set the window title.
+    virtual void OnSetTitle(const std::string& title) OVERRIDE {}
+
+    // Set fullscreen mode.
+    virtual void OnSetFullscreen(bool fullscreen) OVERRIDE {}
+
+    // Set the loading state.
+    virtual void OnSetLoadingState(bool isLoading,
+                                     bool canGoBack,
+                                     bool canGoForward) OVERRIDE {}
+
+    // Set the draggable regions.
+    virtual void OnSetDraggableRegions(const std::vector<CefDraggableRegion>& regions) OVERRIDE {}
+
+public:
+    IMPLEMENT_REFCOUNTING(CCefFileDownloader_Private);
+};
+
+CCefFileDownloader::CCefFileDownloader(IFileDownloaderEvents* pEvents)
+{
+    m_pInternal = new CCefFileDownloader_Private();
+    m_pInternal->m_pEvents = pEvents;
+}
+
+CCefFileDownloader::~CCefFileDownloader()
+{
+    m_pInternal->Release();
+    m_pInternal = NULL;
+}
+
+void CCefFileDownloader::DownloadFile(CAscApplicationManager* pManager, const std::wstring& sUrl, const std::wstring& sDstFile)
+{
+    m_pInternal->m_sFileSrc = sUrl;
+    m_pInternal->m_sFileDst = sDstFile;
+
+    CefRefPtr<CefCookieManager> manager = CefCookieManager::GetGlobalManager(NULL);
+    manager->SetStoragePath(pManager->m_oSettings.cookie_path, true, NULL);
+
+    CefWindowHandle hWnd = (CefWindowHandle)0;
+
+    CefWindowInfo info;
+    CefBrowserSettings _settings;
+    _settings.file_access_from_file_urls = STATE_ENABLED;
+    _settings.universal_access_from_file_urls = STATE_ENABLED;
+    _settings.javascript_access_clipboard = STATE_ENABLED;
+
+    _settings.plugins = STATE_DISABLED;
+    _settings.java = STATE_DISABLED;
+
+    // Initialize window info to the defaults for a child window.
+
+#ifdef WIN32
+    RECT rect;
+    rect.left = 0;
+    rect.top = 0;
+    rect.right = 10;
+    rect.bottom = 10;
+#else
+    CefRect rect;
+    rect.x = 0;
+    rect.y = 0;
+    rect.width = 10;
+    rect.height = 10;
+#endif
+
+    info.SetAsChild(hWnd, rect);
+
+    // Creat the new child browser window
+    CefBrowserHost::CreateBrowser(info, m_pInternal, "ascdesktop://emptydownload.html", _settings, NULL);
+}
+
 class CAscClientHandler : public client::ClientHandler, public CCookieFoundCallback, public client::ClientHandler::Delegate
 {
 public:

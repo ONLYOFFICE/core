@@ -141,7 +141,8 @@ static int AscEditor_Main( int argc, char *argv[] )
     a.setStyleSheet("#mainPanel { margin: 0; padding: 0; }\
 #systemPanel { margin: 0; padding: 0; } \
 #centralWidget { background: #313437; } \
-QPushButton:focus{border:none;outline:none;}");
+QPushButton:focus{border:none;outline:none;}\
+QWidget {border:none;outline:none;}");
 
     // Font
     QFont mainFont = a.font();

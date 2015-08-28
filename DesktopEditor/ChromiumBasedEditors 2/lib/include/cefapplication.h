@@ -17,6 +17,9 @@ public:
     void Init_CEF(CAscApplicationManager* , int argc = 0, char* argv[] = NULL);
     virtual ~CApplicationCEF();
     void Close();
+
+    int RunMessageLoop(bool& is_runned);
+    bool ExitMessageLoop();
 };
 
 #endif // APPLICATION_CEF_H

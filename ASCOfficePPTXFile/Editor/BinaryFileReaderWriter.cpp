@@ -1,4 +1,4 @@
-#include "BinaryFileReaderWriter.h"
+﻿#include "BinaryFileReaderWriter.h"
 
 #include "../../Common/DocxFormat/Source/Base/Nullable.h"
 #include "BinReaderWriterDefines.h"
@@ -123,7 +123,7 @@ namespace NSBinPptxRW
 	int CImageManager2::IsDisplayedImage(const CString& strInput)
 	{
 		int nRes = 0;
-		//������ display[N]image.ext
+		//шаблон display[N]image.ext
 		CString sFind1 = _T("display");
 		int nIndex1 = strInput.Find(sFind1);
 		if(-1 != nIndex1)
@@ -214,7 +214,7 @@ namespace NSBinPptxRW
 		if ((_T(".jpg") == strExts) || (_T(".jpeg") == strExts) || (_T(".png") == strExts) || (_T(".emf") == strExts) || (_T(".wmf") == strExts))
 		{
             OOX::CPath pathOutput = m_strDstMedia + FILE_SEPARATOR_STR + strImage + strExts;
-			// ������ ����� ����������� ��������
+			// теперь нужно скопировать картинку
             if (pathOutput.GetPath() != strInput)
                 CDirectory::CopyFile(strInput, pathOutput.GetPath(), NULL, NULL);
 		}
@@ -276,7 +276,9 @@ namespace NSBinPptxRW
 		int n3 = strFile.Find(_T("ftp"));
 		int n4 = strFile.Find(_T("https://"));
 
-		if (((n1 >= 0) && (n1 < 10)) || ((n2 >= 0) && (n2 < 10)) || ((n3 >= 0) && (n3 < 10)) || ((n4 >= 0) && (n4 < 10)))
+        //если nI сранивать не с 0, то будут проблемы
+        //потому что в инсталяции мы кладем файлы в /var/www...
+        if (0 == n1 || 0 == n2 || 0 == n3 || 0 == n4)
 			return true;
 		return false;
 	}
@@ -1089,7 +1091,7 @@ namespace NSBinPptxRW
 
 		StartMainRecord(NSBinPptxRW::NSMainTables::FontsEmbedded);
 
-		// ������� ���� �����
+		// добавим мега шрифт
 		m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckString(_T(".)abcdefghijklmnopqrstuvwxyz"));
 		m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckFont(_T("Wingdings 3"), m_pCommon->m_pNativePicker->m_pFontManager);
 		m_pCommon->m_pNativePicker->m_oEmbeddedFonts.CheckFont(_T("Arial"), m_pCommon->m_pNativePicker->m_pFontManager);

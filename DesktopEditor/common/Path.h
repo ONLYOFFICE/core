@@ -16,12 +16,16 @@ namespace NSSystemPath
 	static std::wstring GetDirectoryName(const std::wstring& strFileName)
 	{
 		std::wstring sRes;
+		//_wsplitpath return directory path, including trailing slash.
+		//dirname() returns the string up to, but not including, the final '/',
 #if defined(_WIN32) || defined (_WIN64)
 		wchar_t tDrive[256];
 		wchar_t tFolder[256];
 		_wsplitpath( strFileName.c_str(), tDrive, tFolder, NULL, NULL );
 		sRes.append(tDrive);
 		sRes.append(tFolder);
+		if(sRes.length() > 0)
+			sRes.erase(sRes.length()-1);
 #elif __linux__ || MAC
 		BYTE* pUtf8 = NULL;
 		LONG lLen = 0;

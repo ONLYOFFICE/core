@@ -1,4 +1,4 @@
-//#include "./stdafx.h"
+﻿//#include "./stdafx.h"
 
 #include "FileFactory.h"
 #include "DocxFormat/File.h"
@@ -86,12 +86,12 @@ namespace PPTX
 			return smart_ptr<PPTX::File>(new PPTX::Video(filename));
 		else if (relation.type() == PPTX::FileTypes::Media)				// FOR NONE OPTIMIZED PPTX FILES
 			return smart_ptr<PPTX::File>(new PPTX::HyperLink(filename));
-		else if (relation.type() == PPTX::FileTypes::Data) // ����� ������ filepath
+		else if (relation.type() == PPTX::FileTypes::Data) // нужен только filepath
 			return smart_ptr<PPTX::File>(new PPTX::Image(filename));
 		else if (relation.type() == PPTX::FileTypes::DrawingDiag)
-			return smart_ptr<PPTX::File>(new PPTX::Image(filename)); // ����� ������ filepath
+			return smart_ptr<PPTX::File>(new PPTX::Image(filename)); // нужен только filepath
 		else if (relation.type() == PPTX::FileTypes::Chart)
-			return smart_ptr<PPTX::File>(new PPTX::Image(filename)); // ����� ������ filepath
+			return smart_ptr<PPTX::File>(new PPTX::Image(filename)); // нужен только filepath
 		else if (relation.type() == PPTX::FileTypes::CommentAuthors)
 			return smart_ptr<PPTX::File>(new PPTX::Authors(filename, map));
 		else if (relation.type() == PPTX::FileTypes::SlideComments)
@@ -111,7 +111,9 @@ namespace PPTX
 		int n3 = strFile.Find(_T("ftp"));
 		int n4 = strFile.Find(_T("https://"));
 
-		if (((n1 >= 0) && (n1 < 10)) || ((n2 >= 0) && (n2 < 10)) || ((n3 >= 0) && (n3 < 10)) || ((n4 >= 0) && (n4 < 10)))
+        //если nI сранивать не с 0, то будут проблемы
+        //потому что в инсталяции мы кладем файлы в /var/www...
+        if (0 == n1 || 0 == n2 || 0 == n3 || 0 == n4)
 			bIsDownload = true;
 		
 		OOX::CPath filename = path / relation.filename();

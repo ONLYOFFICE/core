@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "math.h"
 #include "CalculatorCRC32.h"
 
@@ -268,7 +268,9 @@ namespace NSShapeImageGen
 			int n3 = strFile.Find(_T("ftp"));
 			int n4 = strFile.Find(_T("https"));
 
-			if (((n1 >= 0) && (n1 < 10)) || ((n2 >= 0) && (n2 < 10)) || ((n3 >= 0) && (n3 < 10)) || ((n4 >= 0) && (n4 < 10)))
+            //РµСЃР»Рё nI СЃСЂР°РЅРёРІР°С‚СЊ РЅРµ СЃ 0, С‚Рѕ Р±СѓРґСѓС‚ РїСЂРѕР±Р»РµРјС‹
+            //РїРѕС‚РѕРјСѓ С‡С‚Рѕ РІ РёРЅСЃС‚Р°Р»СЏС†РёРё РјС‹ РєР»Р°РґРµРј С„Р°Р№Р»С‹ РІ /var/www...
+            if (0 == n1 || 0 == n2 || 0 == n3 || 0 == n4)
 				bIsDownload = true;
 
 			if (bIsDownload)
@@ -388,7 +390,7 @@ namespace NSShapeImageGen
 			}
 			else
 			{
-				//конвертация неудачная - берем оригинальный файл
+				//РєРѕРЅРІРµСЂС‚Р°С†РёСЏ РЅРµСѓРґР°С‡РЅР°СЏ - Р±РµСЂРµРј РѕСЂРёРіРёРЅР°Р»СЊРЅС‹Р№ С„Р°Р№Р»
 				OOX::CPath pathOriginal = strFileSrc;
 
 				CString strSaveItem = oInfo.GetPathWithoutExtension();
@@ -462,7 +464,7 @@ namespace NSShapeImageGen
 			std::map<DWORD, CImageInfo>::iterator pPair = m_mapImageData.find(dwSum);
 			if (m_mapImageData.end() == pPair)
 			{
-				// нужно добавить
+				// РЅСѓР¶РЅРѕ РґРѕР±Р°РІРёС‚СЊ
 				++m_lNextIDImage;
 				
 				oInfo.m_lID = m_lNextIDImage;
@@ -536,7 +538,7 @@ namespace NSShapeImageGen
 
 						if (metaFileRaster.LoadFromFile(strFileName))
 						{
-							//случай растрового wmf/emf
+							//СЃР»СѓС‡Р°Р№ СЂР°СЃС‚СЂРѕРІРѕРіРѕ wmf/emf
 							CString strSaveItem = strSaveItemWE + _T(".png");
 							
 							metaFileRaster.ConvertToRaster(strSaveItem, 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);
@@ -569,7 +571,7 @@ namespace NSShapeImageGen
 							oBgraFrame.put_Stride(pImage->GetStride());
 							oBgraFrame.put_Data(pImage->GetData());
 							SaveImage(oBgraFrame, oInfo, lWidth, lHeight);
-							//чтобы в деструкторе не удалялось
+							//С‡С‚РѕР±С‹ РІ РґРµСЃС‚СЂСѓРєС‚РѕСЂРµ РЅРµ СѓРґР°Р»СЏР»РѕСЃСЊ
 							oBgraFrame.put_Data(NULL);
 							
 							m_mapImagesFile.insert(std::pair<CString,CImageInfo>(sMapKey, oInfo));

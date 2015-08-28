@@ -228,3 +228,24 @@ void CApplicationCEF::Close()
         RELEASEOBJECT(m_pInternal);
     }
 }
+
+int CApplicationCEF::RunMessageLoop(bool& is_runned)
+{
+#if defined(_LINUX) && !defined(_MAC)
+    is_runned = true;
+    return m_pInternal->message_loop->Run();
+#else
+    is_runned = false;
+    return 0;
+#endif
+}
+
+bool CApplicationCEF::ExitMessageLoop()
+{
+#if defined(_LINUX) && !defined(_MAC)
+    m_pInternal->message_loop->Quit();
+    return true;
+#else
+    return false;
+#endif
+}

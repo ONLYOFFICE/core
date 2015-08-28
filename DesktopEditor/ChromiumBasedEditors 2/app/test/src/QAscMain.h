@@ -43,20 +43,31 @@ static std::wstring GetAppDataPath()
 class QAscMainWindow : public QMainWindow
 {
     Q_OBJECT
+    QWidget* m_pMainPanel;
 
 public:
     explicit QAscMainWindow(QWidget *parent, CAscApplicationManager* pAppManager) : QMainWindow(parent)
     {
+#if 0
         this->resize(2000, 1000);
-        QWidget* pMainPanel = new QAscMainPanel(this, pAppManager, false);
-        this->setCentralWidget(pMainPanel);
+#else
+        this->resize(1200, 700);
+#endif
+        m_pMainPanel = new QAscMainPanel(this, pAppManager, false);
+        this->setCentralWidget(m_pMainPanel);
 
-        ((QAscApplicationManager*)pAppManager)->m_pPanel = (QAscMainPanel*)pMainPanel;
+        ((QAscApplicationManager*)pAppManager)->m_pPanel = (QAscMainPanel*)m_pMainPanel;
 
         QMetaObject::connectSlotsByName(this);
 
         pAppManager->StartSpellChecker();
         pAppManager->StartKeyboardChecker();
+    }
+
+    void closeEvent(QCloseEvent*)
+    {
+        QAscMainPanel* pPanel = (QAscMainPanel*)m_pMainPanel;
+        pPanel->GetAppManager()->GetApplication()->ExitMessageLoop();
     }
 
     ~QAscMainWindow()
@@ -102,6 +113,13 @@ static int AscEditor_Main( int argc, char *argv[] )
         oManager.m_oSettings.SetUserDataPath(sUserPath);
 
         oCef.Init_CEF(&oManager, argc, argv);
+
+        bool bIsOwnMessageLoop = false;
+        int nResult = oCef.RunMessageLoop(bIsOwnMessageLoop);
+
+        if (bIsOwnMessageLoop)
+            return nResult;
+
         return aa.exec();
     }
 
@@ -122,7 +140,8 @@ static int AscEditor_Main( int argc, char *argv[] )
 
     a.setStyleSheet("#mainPanel { margin: 0; padding: 0; }\
 #systemPanel { margin: 0; padding: 0; } \
-#centralWidget { background: #313437; }");
+#centralWidget { background: #313437; } \
+QPushButton:focus{border:none;outline:none;}");
 
     // Font
     QFont mainFont = a.font();
@@ -133,8 +152,14 @@ static int AscEditor_Main( int argc, char *argv[] )
     QAscMainWindow w(NULL, pApplicationManager);
     w.show();
 
-    // Launch
-    a.exec();
+    bool bIsOwnMessageLoop = false;
+    application_cef->RunMessageLoop(bIsOwnMessageLoop);
+
+    if (!bIsOwnMessageLoop)
+    {
+        // Launch
+        a.exec();
+    }
 
     // release all subprocesses
     pApplicationManager->CloseApplication();

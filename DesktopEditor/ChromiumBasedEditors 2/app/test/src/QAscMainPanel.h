@@ -63,6 +63,8 @@ public:
     void OpenDialogSave(std::wstring sName);
     void CheckKeyboard();
 
+    CAscApplicationManager* GetAppManager() { return m_pManager; }
+
 protected:
     void RecalculatePlaces();
 

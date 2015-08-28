@@ -155,7 +155,11 @@ void CApplicationCEF::Init_CEF(CAscApplicationManager* pManager, int argc, char*
 
     // Populate the settings based on command line arguments.
     //AppGetSettings(settings);
+#if defined(_LINUX) && !defined(_MAC)
+    m_pInternal->context.reset(new client::MainContextImpl(command_line, false));
+#else
     m_pInternal->context.reset(new client::MainContextImpl(command_line, true));
+#endif
     m_pInternal->context->PopulateSettings(&settings);
 
 #ifdef WIN32
@@ -197,7 +201,11 @@ void CApplicationCEF::Init_CEF(CAscApplicationManager* pManager, int argc, char*
     settings.cache_path = _cache;
 
     // Initialize CEF.
+#if defined(_LINUX) && !defined(_MAC)
+    bool bInit = m_pInternal->context->Initialize(main_args, settings, m_pInternal->m_app.get(), sandbox_info);
+#else
     bool bInit = CefInitialize(main_args, settings, m_pInternal->m_app.get(), sandbox_info);
+#endif
     bool bIsInitScheme = asc_scheme::InitScheme();
 
 #if defined(_LINUX) && !defined(_MAC)
@@ -222,8 +230,12 @@ void CApplicationCEF::Close()
 {
     if (NULL != m_pInternal)
     {
+#if defined(_LINUX) && !defined(_MAC)
+        m_pInternal->context->Shutdown();
+#else
         // Shut down CEF.
         CefShutdown();
+#endif
 
         RELEASEOBJECT(m_pInternal);
     }

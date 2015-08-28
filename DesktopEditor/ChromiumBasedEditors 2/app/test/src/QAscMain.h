@@ -152,6 +152,8 @@ QPushButton:focus{border:none;outline:none;}");
     QAscMainWindow w(NULL, pApplicationManager);
     w.show();
 
+    w.setWindowTitle("ASCDesktopEditor");
+
     bool bIsOwnMessageLoop = false;
     application_cef->RunMessageLoop(bIsOwnMessageLoop);
 

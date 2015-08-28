@@ -563,42 +563,26 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 		}
 
 //-----------------------------------------------------------------------------
-		ODRAW::OfficeArtSpContainer *sp			= NULL;
-		ODRAW::OfficeArtSpContainer *sp_text	= NULL;
-		if ( spgr) 
-		{
-			if (ind < spgr->child_records.size())
-			{
-				sp		= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind].get());
-				ind++;
-			}
-			if ((text_obj && ind  < spgr->child_records.size()) && text_obj->sp_enabled)
-			{
-				sp_text	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind].get());	
-				ind++;
-			}
-			if ((chart && ind  < spgr->child_records.size()) && CHART->sp_enabled)
-			{
-				sp_text	= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind].get());	
-				ind++;
-			}
-		}
-
-		
-		if (note && text_obj)
-		{
-			//convert_comment(text_obj/*, note_obj*/);
-			note = false;
-			continue;
-		}
-		note = false;
-
 		if (type_object < 0)continue;
-
+		
+		ODRAW::OfficeArtSpContainer *sp			= NULL;
+		if (( spgr) && (ind < spgr->child_records.size()))
+		{
+			sp		= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind++].get());
+		}	
+		
 		if (xlsx_context->get_drawing_context().start_drawing(type_object))		
 		{
 			convert(sp);
-			convert(sp_text);
+
+			if (!sp->m_OfficeArtAnchor)
+			{
+				if (( spgr) && (ind < spgr->child_records.size()))
+				{
+					sp		= dynamic_cast<ODRAW::OfficeArtSpContainer*>(spgr->child_records[ind++].get());
+				}
+				convert(sp, true);
+			}
 
 			if (text_obj)
 			{
@@ -612,29 +596,7 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 			}
 			xlsx_context->get_drawing_context().end_drawing();
 		}
-		else
-		{
-			if (type_object == 0x19)
-			{
-				note = true;
-			}
-		}
-		if ( spgr ) 
-		{
-			while (ind < spgr->child_records.size()) // бывает что эти элементы не привязаны к sp, а "лежат" сверху - FilterClickColour_2003.xls
-			{
-				ODRAW::OfficeArtClientData*		client_data = NULL;
-				ODRAW::OfficeArtClientTextbox*	text_client_data = NULL;
 
-				client_data			= dynamic_cast<ODRAW::OfficeArtClientData*>		(spgr->child_records[ind].get());
-				text_client_data	= dynamic_cast<ODRAW::OfficeArtClientTextbox*>	(spgr->child_records[ind].get());
-				
-				if (client_data || text_client_data)
-				{
-					ind++;
-				}else break;
-			}
-		}	
 		if (TEXTOBJECT || CHART)
 		{
 			elem++;
@@ -642,16 +604,20 @@ void XlsConverter::convert(XLS::OBJECTS* objects)
 	}
 }
 
-void XlsConverter::convert(ODRAW::OfficeArtSpContainer *sp)
+void XlsConverter::convert(ODRAW::OfficeArtSpContainer *sp, bool anchor_only)
 {
 	if (sp == NULL) return;
 
-	convert(sp->m_OfficeArtFSP.get());
-
-	for (int i = 0; i < sp->child_records.size(); i++)
+	if (!anchor_only)
 	{
-		convert(sp->child_records[i].get());
+		convert(sp->m_OfficeArtFSP.get());
+
+		for (int i = 0; i < sp->child_records.size(); i++)
+		{
+			convert(sp->child_records[i].get());
+		}
 	}
+	convert(sp->m_OfficeArtAnchor.get());
 }
 
 void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
@@ -676,8 +642,8 @@ void XlsConverter::convert(ODRAW::OfficeArtRecord * art)
             xlsx_context->get_drawing_context().set_anchor(strm.str());
 		}break;
 	}
-
 }
+
 void XlsConverter::convert(ODRAW::OfficeArtFSP * fsp)
 {
 	if (fsp == NULL) return;
@@ -714,10 +680,10 @@ void XlsConverter::convert_fill_style(std::vector<ODRAW::OfficeArtFOPTEPtr> & pr
 			}break;
 			case 0x0186:
 			{
-				//bool isIternal = false;
-				//std::wstring target;
-				//std::wstring rId = xlsx_context->get_mediaitems().find_image(props[i]->op , target, isIternal);
-				//xlsx_context->get_drawing_context().set_image(target);
+				bool isIternal = false;
+				std::wstring target;
+				std::wstring rId = xlsx_context->get_mediaitems().find_image(props[i]->op , target, isIternal);
+				xlsx_context->get_drawing_context().set_image(target);
 			}break;
 			case 0x01BF:
 			{

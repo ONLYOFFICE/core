@@ -86,7 +86,7 @@ private:
 
 	void convert(ODRAW::OfficeArtRecord			* art);
 	void convert(ODRAW::OfficeArtBStoreContainer* art_bstore);
-	void convert(ODRAW::OfficeArtSpContainer	* sp);
+	void convert(ODRAW::OfficeArtSpContainer	* sp, bool anchor_only = false);
 	void convert(ODRAW::OfficeArtFOPT 			* fort);
 	void convert(ODRAW::OfficeArtFSP 			* fsp);
 

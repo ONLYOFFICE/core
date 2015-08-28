@@ -156,6 +156,7 @@ public:
     virtual void StartSaveDialog(const std::wstring& sName);
     virtual void EndSaveDialog(const std::wstring& sPath);
 
+    virtual bool IsPlatformKeyboardSupport();
     virtual int GetPlatformKeyboardLayout();
 
 protected:

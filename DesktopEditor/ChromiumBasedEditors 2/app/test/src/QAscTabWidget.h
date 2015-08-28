@@ -81,6 +81,8 @@ public:
                 width:135px; height: 27px;                                                  \
                 margin-left: 0px; margin-right: 1px; margin-top: 0px; margin-bottom: 0px; }";
 
+        strStyleQSS += "QTabBar::tab:focus { border:none;outline:none; }";
+
         strStyleQSS += "QTabBar::tab:hover { \
                 background-color: #DDDDDD; border: 1px solid #DDDDDD; border-radius: 1px; }";
 
@@ -191,6 +193,8 @@ protected:
                 min-width: 41px; max-width: 135px;                                          \
                 width:%1px; height: 27px;                                                  \
                 margin-right: 1px; margin-left: 0px; margin-top: 0px; margin-bottom: 0px; }").arg(nTabWidth);
+
+        strStyleQSS += "QTabBar::tab:focus { border:none;outline:none; }";
 
         strStyleQSS += "QTabBar::tab:hover { \
                 background-color: #DDDDDD; border: 1px solid #DDDDDD; border-radius: 1px; }";

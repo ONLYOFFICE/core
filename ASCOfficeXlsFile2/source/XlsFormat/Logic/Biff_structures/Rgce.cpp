@@ -30,7 +30,7 @@ void Rgce::load(CFRecord& record, const size_t cce_val)
 	
 	while(record.getRdPtr() < where_to_stop)
 	{
-		PtgPtr & ptg = PtgFactory::loadPtg(record, cell_base_ref);
+        PtgPtr ptg = PtgFactory::loadPtg(record, cell_base_ref);
 		if (ptg.get() == NULL)
 			break;
 

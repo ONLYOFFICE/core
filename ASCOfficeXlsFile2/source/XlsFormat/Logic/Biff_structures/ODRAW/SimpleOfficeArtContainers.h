@@ -54,6 +54,7 @@ public:
 	void loadFields(XLS::CFRecord& record);
 
 	OfficeArtRecordPtr m_OfficeArtFSP;
+	OfficeArtRecordPtr m_OfficeArtAnchor;
 };
 
 class OfficeArtClientData : public OfficeArtRecord

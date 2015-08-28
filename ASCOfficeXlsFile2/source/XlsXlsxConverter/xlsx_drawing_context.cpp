@@ -10,8 +10,8 @@
 
 namespace oox {
 
-	const static std::wstring shemeColor[17] = 
-	{L"lt1",L"dk1",L"lt2",L"dk2",L"accent1",L"accent2",L"accent3",L"accent4",L"accent5",L"accent6",L"dk1",L"dk2",L"folHlink",L"hlink",L"tx1",L"tx2",L"phClr"};
+	const static std::wstring shemeColor[18] = 
+	{L"accent1",L"accent2",L"accent3",L"accent4",L"accent5",L"accent6",L"bk1",L"bk2",L"dk1",L"dk2",L"folHlink",L"hlink",L"lt1",L"lt2",L"none", L"tx1",L"tx2",L"phClr"};
 
 	const static std::wstring systemColor[30] = 
 	{L"scrollBar", L"background", L"activeCaption", L"inactiveCaption", L"menu", L"window", L"windowFrame", L"menuText", L"windowText", 
@@ -412,7 +412,7 @@ void xlsx_drawing_context::serialize_color	(std::wostream & stream, const _color
 				CP_XML_ATTR(L"val", color.rgb);		
 			}
 		}
-		else if (color.index >=0 && color.index < 17)
+		else if (color.index >=0 && color.index < 17 && color.bScheme)
 		{
 			CP_XML_NODE(L"a:schemeClr")
 			{
@@ -428,7 +428,7 @@ void xlsx_drawing_context::serialize_color	(std::wostream & stream, const _color
 		}
 		else
 		{
-			CP_XML_NODE(L"a:sysClr")	
+			CP_XML_NODE(L"a:schemeClr")	
 			{	
 				CP_XML_ATTR(L"val", L"lt1");
 			}
@@ -592,6 +592,14 @@ void xlsx_drawing_context::set_anchor(const std::wstring & str)
 	
 	drawing_state.back().anchor = str;
 }
+
+bool xlsx_drawing_context::is_anchor()
+{
+	if (drawing_state.size() < 1 )	return false;
+
+	return !drawing_state.back().anchor.empty();
+}
+
 void xlsx_drawing_context::set_image(const std::wstring & str)
 {
 	if (drawing_state.size() < 1 )return;
@@ -635,8 +643,9 @@ void xlsx_drawing_context::set_line_color (const std::wstring & color)
 void xlsx_drawing_context::set_line_color (int index, int type)
 {
 	if (drawing_state.size() < 1 )return;
-	drawing_state.back().line.color.index = index;
-	
+	drawing_state.back().line.color.index	= index;	
+	drawing_state.back().line.color.rgb		= L"";
+
 	if (type == 1)		drawing_state.back().line.color.bScheme = true;
 }
 void xlsx_drawing_context::set_fill_color (const std::wstring & color)

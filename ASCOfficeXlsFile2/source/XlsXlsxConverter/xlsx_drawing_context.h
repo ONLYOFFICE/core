@@ -89,7 +89,7 @@ public:
 
 	struct _line
 	{
-		_line() {opacity = 0; type = L"solidFill"; style = L"simple"; width = 0;}
+		_line() {opacity = 0; type = L"solidFill"; style = L"simple"; width = 0; color.rgb = L"000000";}
 		_color			color;
 		int				opacity;
 		std::wstring	type;
@@ -152,7 +152,10 @@ public:
         void set_line_width (int val);
 
         void set_image		(const std::wstring & str);
+
         void set_anchor		(const std::wstring & str);
+		bool is_anchor		();
+
         void set_properties	(const std::wstring & str);
         void set_hyperlink	(const std::wstring & str);
 

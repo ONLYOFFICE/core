@@ -96,6 +96,13 @@ void OfficeArtSpContainer::loadFields(XLS::CFRecord& record)
 				m_OfficeArtFSP = child_records[i];
 				child_records.erase(child_records.begin() + i,child_records.begin() + i + 1); i--;
 			}break;
+
+			case ODRAW::OfficeArtRecord::ChildAnchor:
+			case ODRAW::OfficeArtRecord::ClientAnchor:
+			{
+				m_OfficeArtAnchor = child_records[i];
+				child_records.erase(child_records.begin() + i,child_records.begin() + i + 1); i--;
+			}break;
 		}
 	}
 

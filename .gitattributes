@@ -954,6 +954,8 @@ DesktopEditor/ChromiumBasedEditors[!!-~]2/app/test/src/Icons/tabicon_PE_normal.p
 DesktopEditor/ChromiumBasedEditors[!!-~]2/app/test/src/Icons/tabicon_SE_active.png svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors[!!-~]2/app/test/src/Icons/tabicon_SE_normal.png svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors[!!-~]2/lib svnc_tsvn_003alogminsize=5
+DesktopEditor/ChromiumBasedEditors[!!-~]2/lib/COMMON svnc_tsvn_003alogminsize=5
+DesktopEditor/ChromiumBasedEditors[!!-~]2/lib/COMMON/untitled2 svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors[!!-~]2/lib/include svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors[!!-~]2/lib/qcefview svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors[!!-~]2/lib/src svnc_tsvn_003alogminsize=5

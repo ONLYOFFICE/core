@@ -19,6 +19,7 @@ public:
     void Close();
 
     int RunMessageLoop(bool& is_runned);
+    void DoMessageLoopEvent();
     bool ExitMessageLoop();
 };
 

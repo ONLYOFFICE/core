@@ -390,7 +390,7 @@ void QAscMainPanel::slot_Print(int id, int pagesCount)
 
     QPrintDialog *dialog = new QPrintDialog(pContext->getPrinter(), NULL);
     dialog->setWindowTitle(tr("Print Document"));
-    dialog->show();
+    dialog->exec();
 
     CCefView* pView = m_pManager->GetViewById(id);
 

@@ -13,6 +13,10 @@
 
 #include <QStandardPaths>
 #include <QApplication>
+#include <QAbstractEventDispatcher>
+#include <QAbstractNativeEventFilter>
+
+#include <QDebug>
 
 static std::wstring GetAppDataPath()
 {
@@ -76,6 +80,39 @@ public:
     }
 };
 
+class QNativeEventFilter : public QAbstractNativeEventFilter
+{
+public:
+    CAscApplicationManager* m_pManager;
+public:
+    QNativeEventFilter(CAscApplicationManager* pManager) : QAbstractNativeEventFilter()
+    {
+        m_pManager = pManager;
+    }
+    virtual ~QNativeEventFilter() {}
+
+    virtual bool nativeEventFilter(const QByteArray &eventType, void *message, long *result)
+    {
+        //qDebug() << "EventFilter";
+        //qDebug() << rand();
+        m_pManager->GetApplication()->DoMessageLoopEvent();
+        return false;
+    }
+};
+
+class QApplicationEL : public QApplication
+{
+public:
+    QApplicationEL(int &argc, char **argv) : QApplication(argc, argv)
+    {
+    }
+
+public:
+    void InitMessageLoop(CAscApplicationManager* pManager)
+    {
+        this->installNativeEventFilter(new QNativeEventFilter(pManager));
+    }
+};
 
 static int AscEditor_Main( int argc, char *argv[] )
 {
@@ -138,12 +175,6 @@ static int AscEditor_Main( int argc, char *argv[] )
 
     pApplicationManager->CheckFonts();
 
-    a.setStyleSheet("#mainPanel { margin: 0; padding: 0; }\
-#systemPanel { margin: 0; padding: 0; } \
-#centralWidget { background: #313437; } \
-QPushButton:focus{border:none;outline:none;}\
-QWidget {border:none;outline:none;}");
-
     // Font
     QFont mainFont = a.font();
     mainFont.setStyleStrategy( QFont::PreferAntialias );
@@ -151,6 +182,13 @@ QWidget {border:none;outline:none;}");
 
     // Create window
     QAscMainWindow w(NULL, pApplicationManager);
+
+    w.setStyleSheet("#mainPanel { margin: 0; padding: 0; }\
+#systemPanel { margin: 0; padding: 0; } \
+#centralWidget { background: #313437; } \
+QPushButton:focus{border:none;outline:none;}\
+QWidget {border:none;outline:none;}");
+
     w.show();
 
     w.setWindowTitle("ASCDesktopEditor");

@@ -511,11 +511,11 @@ namespace NSFile
 				}
 				else
 				{
-                                        *pWCurrent = (wchar_t)((((pShort[0]) & 0x03FF) << 10) | ((pShort[1]) & 0x03FF));
+					*pWCurrent = (wchar_t)((((pShort[0]) & 0x03FF) << 10) | ((pShort[1]) & 0x03FF));
+					pShort += 2;
+					nCurrent += 2;
 				}
-
-				pShort += 2;
-				nCurrent += 2;
+				++pWCurrent;
 			}
 
 			std::wstring sRet(pWChar, pWCurrent - pWChar);

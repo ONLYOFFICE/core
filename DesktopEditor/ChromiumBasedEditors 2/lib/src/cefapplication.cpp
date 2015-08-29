@@ -252,6 +252,11 @@ int CApplicationCEF::RunMessageLoop(bool& is_runned)
 #endif
 }
 
+void CApplicationCEF::DoMessageLoopEvent()
+{
+    CefDoMessageLoopWork();
+}
+
 bool CApplicationCEF::ExitMessageLoop()
 {
 #if defined(_LINUX) && !defined(_MAC)

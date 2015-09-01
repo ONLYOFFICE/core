@@ -1,7 +1,7 @@
 #ifndef _MATHEQUATION_LESTREAM
 #define _MATHEQUATION_LESTREAM
 
-#include "../CompoundDocument/pole.h"
+#include "../Base/Base.h"
 #include "Types.h"
 
 namespace MathEquation
@@ -16,9 +16,7 @@ public :
 		if (NULL == pStream)
 			return;
 
-		pStream->seek(0, std::ios_base::end);
-		unsigned int unFileSize = (unsigned int)pStream->tellg();
-		pStream->seek(0);
+		unsigned int unFileSize = pStream->size();
 
 		pBuffer = new BYTE[unFileSize];
 		if (!pBuffer)

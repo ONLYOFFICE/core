@@ -1,13 +1,13 @@
-#ifndef _MATH_EQUATION_READER_H
+п»ї#ifndef _MATH_EQUATION_READER_H
 #define _MATH_EQUATION_READER_H
 
-#include "../CompoundDocument/pole.h"
+#include "../../../3dParty/pole/pole.h"
 #include "Types.h"
 #include "LEStream.h"
 #include "String.h"
 #include "OutputDev.h"
 
-using namespace POLE2;
+using namespace POLE;
 
 
 namespace MathEquation
@@ -16,7 +16,7 @@ namespace MathEquation
 	{
 	public:
 
-		CEquationReader(const wchar_t* wsFilePath) : m_oStorage(wsFilePath), pS(NULL), nHAlign(0), nVAlign(0)
+        CEquationReader(const wchar_t* wsFilePath) : m_oStorage(wsFilePath), pStm(NULL), pS(NULL), nHAlign(0), nVAlign(0)
 		{
 			InitSizes();
 		}
@@ -25,13 +25,11 @@ namespace MathEquation
 		{
 			if (NULL != pS)
 				delete pS;
+            if (NULL != pStm)
+                delete pStm;
 		}
 
-		void SetOutputDev(IOutputDev *pOutput)
-		{
-			pOutputDev = pOutput;
-			InitFonts();
-		}
+        void SetOutputDev(IOutputDev *pOutput);
 
 		int Parse();
 
@@ -49,11 +47,11 @@ namespace MathEquation
 			RULER  = 0x07,
 			FONT   = 0x08,
 			SIZE_CUSTOM      = 0x09,
-			SIZE_REGULAR     = 0x0a, // обычный
-			SIZE_BIGSCRIPT   = 0x0b, // крунпый индекс
-			SIZE_SMALLSCRIT  = 0x0c, // мелкий индекс
-			SIZE_BIGSYMBOL   = 0x0d, // большой символ
-			SIZE_SMALLSYMBOL = 0x0e  // мелкий символ
+			SIZE_REGULAR     = 0x0a, // РѕР±С‹С‡РЅС‹Р№
+			SIZE_BIGSCRIPT   = 0x0b, // РєСЂСѓРЅРїС‹Р№ РёРЅРґРµРєСЃ
+			SIZE_SMALLSCRIT  = 0x0c, // РјРµР»РєРёР№ РёРЅРґРµРєСЃ
+			SIZE_BIGSYMBOL   = 0x0d, // Р±РѕР»СЊС€РѕР№ СЃРёРјРІРѕР»
+			SIZE_SMALLSYMBOL = 0x0e  // РјРµР»РєРёР№ СЃРёРјРІРѕР»
 		};
 
 	private:
@@ -107,6 +105,7 @@ namespace MathEquation
 
 		Storage m_oStorage;
 
+        Stream *pStm;
 		CLEStream<Stream> *pS;
 
 		IOutputDev* pOutputDev;

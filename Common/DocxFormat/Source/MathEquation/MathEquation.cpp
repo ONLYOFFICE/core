@@ -1,4 +1,4 @@
-#include "MathEquation.h"
+Ôªø#include "MathEquation.h"
 #include "OutputDev.h"
 
 using namespace MathEquation;
@@ -12,18 +12,24 @@ using namespace MathEquation;
 
 void CEquationReader::InitSizes()
 {
-	// ¬˚ÒÚ‡‚ÎˇÂÏ ‡ÁÏÂ˚ ÚÂÍÒÚ‡ ÔÓ ÛÏÓÎ˜‡ÌË˛ (ÂÒÎË ÓÌË ËÁÏÂÌÂÌ˚, ÚÓ„‰‡ ÌË˜Â„Ó ÌÂ ÔÓ‰ÂÎ‡Â¯¸, Ú.Í. ˝ÚÓ ÌÂ ÒÓı‡ÌˇÂÚÒˇ ‚ Ò‡ÏÓÏ Ù‡ÈÎÂ)
+	//todo –æ–±—Ä–∞–±–æ—Ç–∞—Ç—å open(true/false)
+	m_oStorage.open(false, false);
+	// –í—ã—Å—Ç–∞–≤–ª—è–µ–º —Ä–∞–∑–º–µ—Ä—ã —Ç–µ–∫—Å—Ç–∞ –ø–æ —É–º–æ–ª—á–∞–Ω–∏—é (–µ—Å–ª–∏ –æ–Ω–∏ –∏–∑–º–µ–Ω–µ–Ω—ã, —Ç–æ–≥–¥–∞ –Ω–∏—á–µ–≥–æ –Ω–µ –ø–æ–¥–µ–ª–∞–µ—à—å, —Ç.–∫. —ç—Ç–æ –Ω–µ —Å–æ—Ö—Ä–∞–Ω—è–µ—Ç—Å—è –≤ —Å–∞–º–æ–º —Ñ–∞–π–ª–µ)
 	aSizeTable[0] = 12;
 	aSizeTable[1] = 7;
 	aSizeTable[2] = 5;
 	aSizeTable[3] = 18;
 	aSizeTable[4] = 12;
 }
-
+void CEquationReader::SetOutputDev(IOutputDev *pOutput)
+{
+    pOutputDev = pOutput;
+    InitFonts();
+}
 void CEquationReader::InitFonts()
 {
-	// —Ú‡Ì‰‡ÚÌ˚Â ¯ËÙÚ˚ ‰Îˇ MathEquation ÒÓ ÒÚ‡Ì‰‡ÚÌ˚ÏË Ì‡ÒÚÓÈÍ‡ÏË ÒÚËÎÂÈ. 
-	// (ÂÒÎË ÓÌË ËÁÏÂÌÂÌ˚, ÚÓ„‰‡ ÌË˜Â„Ó ÌÂ ÔÓ‰ÂÎ‡Â¯¸, Ú.Í. ˝ÚÓ ÌÂ ÒÓı‡ÌˇÂÚÒˇ ‚ Ò‡ÏÓÏ Ù‡ÈÎÂ)
+	// –°—Ç–∞–Ω–¥–∞—Ä—Ç–Ω—ã–µ —à—Ä–∏—Ñ—Ç—ã –¥–ª—è MathEquation —Å–æ —Å—Ç–∞–Ω–¥–∞—Ä—Ç–Ω—ã–º–∏ –Ω–∞—Å—Ç—Ä–æ–π–∫–∞–º–∏ —Å—Ç–∏–ª–µ–π. 
+	// (–µ—Å–ª–∏ –æ–Ω–∏ –∏–∑–º–µ–Ω–µ–Ω—ã, —Ç–æ–≥–¥–∞ –Ω–∏—á–µ–≥–æ –Ω–µ –ø–æ–¥–µ–ª–∞–µ—à—å, —Ç.–∫. —ç—Ç–æ –Ω–µ —Å–æ—Ö—Ä–∞–Ω—è–µ—Ç—Å—è –≤ —Å–∞–º–æ–º —Ñ–∞–π–ª–µ)
 
 	if (pOutputDev)
 	{
@@ -31,14 +37,14 @@ void CEquationReader::InitFonts()
 		{
 			switch(i)
 			{
-			case 1: pOutputDev->AddFont(i + 128, "Times New Roman", false, false); break; // ÚÂÍÒÚ
-			case 2: pOutputDev->AddFont(i + 128, "Times New Roman", false, false); break; // ÙÛÌÍˆËˇ
-			case 3: pOutputDev->AddFont(i + 128, "Times New Roman", false, true);  break; // ÔÂÂÏÂÌÌ‡ˇ
-			case 4: pOutputDev->AddFont(i + 128, "Symbol",          false, true);  break; // ÒÚ. „Â˜ÂÒÍËÂ
-			case 5: pOutputDev->AddFont(i + 128, "Symbol",          false, false); break; // Ô. „Â˜ÂÒÍËÂ
-			case 6: pOutputDev->AddFont(i + 128, "Symbol",          false, false); break; // ÒËÏ‚ÓÎ
-			case 7: pOutputDev->AddFont(i + 128, "Times New Roman", true, false);  break; // Ï‡ÚËˆ‡-‚ÂÍÚÓ
-			case 8: pOutputDev->AddFont(i + 128, "Times New Roman", false, false); break; // ˜ËÒÎ‡
+			case 1: pOutputDev->AddFont(i + 128, "Times New Roman", false, false); break; // —Ç–µ–∫—Å—Ç
+			case 2: pOutputDev->AddFont(i + 128, "Times New Roman", false, false); break; // —Ñ—É–Ω–∫—Ü–∏—è
+			case 3: pOutputDev->AddFont(i + 128, "Times New Roman", false, true);  break; // –ø–µ—Ä–µ–º–µ–Ω–Ω–∞—è
+			case 4: pOutputDev->AddFont(i + 128, "Symbol",          false, true);  break; // —Å—Ç. –≥—Ä–µ—á–µ—Å–∫–∏–µ
+			case 5: pOutputDev->AddFont(i + 128, "Symbol",          false, false); break; // –ø—Ä. –≥—Ä–µ—á–µ—Å–∫–∏–µ
+			case 6: pOutputDev->AddFont(i + 128, "Symbol",          false, false); break; // —Å–∏–º–≤–æ–ª
+			case 7: pOutputDev->AddFont(i + 128, "Times New Roman", true, false);  break; // –º–∞—Ç—Ä–∏—Ü–∞-–≤–µ–∫—Ç–æ—Ä
+			case 8: pOutputDev->AddFont(i + 128, "Times New Roman", false, false); break; // —á–∏—Å–ª–∞
 			}
 		}
 	}
@@ -46,7 +52,10 @@ void CEquationReader::InitFonts()
 
 int CEquationReader::Parse()
 {
-	pS = new CLEStream<Stream>(m_oStorage.stream("Equation Native"));
+    //–µ—Å–ª–∏ —Å–º–æ—Ç—Ä–µ—Ç—å —Ä–µ–∞–ª–∏–∑–∞—Ü–∏—é, —Ç–æ pStm –º–æ–∂–Ω–æ —É–¥–∞–ª–∏—Ç—å –ø–æ—Å–ª–µ –∫–æ–Ω—Å—Ç—Ä—É—Ç–æ—Ä–∞ CLEStream,
+    //–Ω–æ –µ—Å–ª–∏ –Ω–µ —Å–º–æ—Ç—Ä–µ—Ç—å —Ä–µ–∞–ª–∏–∑–∞—Ü–∏—é,—Ç–æ –ø—Ä–∞–≤–∏–ª—å–Ω–æ —É–¥–∞–ª–∏—Ç—å pStm –ø–æ—Å–ª–µ pS
+    pStm = new POLE::Stream( &m_oStorage, "Equation Native");
+    pS = new CLEStream<Stream>(pStm);
 	if (!pS->IsValid())
 		return 0;
 
@@ -662,7 +671,7 @@ void CEquationReader::HandleSetSize(MTOKENS eType)
 			}
 		case 100:
 			{
-				// TODO: œÓ‚ÂËÚ¸ ˝ÚÛ ‚ÂÚÍÛ
+				// TODO: –ü—Ä–æ–≤–µ—Ä–∏—Ç—å —ç—Ç—É –≤–µ—Ç–∫—É
 				*pS >> nTemp;
 				nSize = nTemp;
 
@@ -672,7 +681,7 @@ void CEquationReader::HandleSetSize(MTOKENS eType)
 			}
 		default:
 			{
-				// TODO: œÓ‚ÂËÚ¸ ˝ÚÛ ‚ÂÚÍÛ
+				// TODO: –ü—Ä–æ–≤–µ—Ä–∏—Ç—å —ç—Ç—É –≤–µ—Ç–∫—É
 				nSize = nTemp;
 				*pS >> nTemp;
 				uint16_t nTempSize = nTemp - 128;

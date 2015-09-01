@@ -751,6 +751,10 @@ DesktopEditor/ChromiumBasedEditors[!!-~]2/app/cefbuilds/linux64/locales/zh-CN.pa
 DesktopEditor/ChromiumBasedEditors[!!-~]2/app/cefbuilds/linux64/locales/zh-TW.pak svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors[!!-~]2/app/cefbuilds/linux64/snapshot_blob.bin svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors[!!-~]2/app/cefbuilds/mac svnc_tsvn_003alogminsize=5
+DesktopEditor/ChromiumBasedEditors[!!-~]2/app/cefbuilds/mac/ASCDocumentEditor[!!-~]Helper.app svnc_tsvn_003alogminsize=5
+DesktopEditor/ChromiumBasedEditors[!!-~]2/app/cefbuilds/mac/ASCDocumentEditor[!!-~]Helper.app/Contents svnc_tsvn_003alogminsize=5
+DesktopEditor/ChromiumBasedEditors[!!-~]2/app/cefbuilds/mac/ASCDocumentEditor[!!-~]Helper.app/Contents/MacOS svnc_tsvn_003alogminsize=5
+DesktopEditor/ChromiumBasedEditors[!!-~]2/app/cefbuilds/mac/ASCDocumentEditor[!!-~]Helper.app/Contents/MacOS/ASCDocumentEditor[!!-~]Helper svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors[!!-~]2/app/cefbuilds/mac/Chromium[!!-~]Embedded[!!-~]Framework.framework svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors[!!-~]2/app/cefbuilds/mac/Chromium[!!-~]Embedded[!!-~]Framework.framework/Chromium[!!-~]Embedded[!!-~]Framework svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors[!!-~]2/app/cefbuilds/mac/Chromium[!!-~]Embedded[!!-~]Framework.framework/Resources svnc_tsvn_003alogminsize=5

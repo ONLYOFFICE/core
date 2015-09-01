@@ -304,13 +304,6 @@ HEADERS += docxformatlib.h \
     ../Source/XML/XmlSimple.h \
     ../Source/XML/xmlutils.h \
     ../Source/Base/ASCString.h \
-    ../Source/CompoundDocument/detail/alloctable.hpp \
-    ../Source/CompoundDocument/detail/dirtree.hpp \
-    ../Source/CompoundDocument/detail/header.hpp \
-    ../Source/CompoundDocument/detail/storage.hpp \
-    ../Source/CompoundDocument/detail/stream.hpp \
-    ../Source/CompoundDocument/detail/util.hpp \
-    ../Source/CompoundDocument/pole.h \
     ../Source/DocxFormat/Drawing/DrawingShapeElements.h \
     ../Source/DocxFormat/Drawing/DrawingText.h \
     ../Source/DocxFormat/Drawing/DrawingTextProperties.h \

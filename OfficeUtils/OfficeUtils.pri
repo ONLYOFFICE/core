@@ -20,6 +20,9 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
         _LINUX \
         _LINUX_QT
 }
+mac {
+    DEFINES += MAC unix
+}
 #################### LINUX ########################
 
 build_zlib_as_sources {

@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <limits>
 #include <string>
+#include <stdlib.h>
 
 #ifdef __linux__
     #include <string.h>

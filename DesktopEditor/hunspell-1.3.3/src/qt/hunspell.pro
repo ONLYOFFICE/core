@@ -40,4 +40,8 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_32
 }
 
+mac {
+    DESTDIR = $$DESTINATION_SDK_PATH/mac_64
+}
+
 ################################################

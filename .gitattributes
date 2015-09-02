@@ -1036,6 +1036,9 @@ DesktopEditor/ChromiumBasedEditors[!!-~]2/app/corebuilds/win64/debug/ascdocument
 DesktopEditor/ChromiumBasedEditors[!!-~]2/app/test svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors[!!-~]2/app/test/Debug svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors[!!-~]2/app/test/Release svnc_tsvn_003alogminsize=5
+DesktopEditor/ChromiumBasedEditors[!!-~]2/app/test/rc svnc_tsvn_003alogminsize=5
+DesktopEditor/ChromiumBasedEditors[!!-~]2/app/test/rc/webdata svnc_tsvn_003alogminsize=5
+DesktopEditor/ChromiumBasedEditors[!!-~]2/app/test/rc/webdata/cloud svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors[!!-~]2/app/test/src svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors[!!-~]2/app/test/src/Icons svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors[!!-~]2/app/test/src/Icons/Documents_active_hover.png svn_mime_002dtype=application%2Foctet-stream

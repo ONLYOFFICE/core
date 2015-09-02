@@ -201,7 +201,7 @@ void CApplicationCEF::Init_CEF(CAscApplicationManager* pManager, int argc, char*
     settings.cache_path = _cache;
 
     // Initialize CEF.
-#if defined(_LINUX) && !defined(_MAC)
+#if defined(_LINUX)
     bool bInit = m_pInternal->context->Initialize(main_args, settings, m_pInternal->m_app.get(), sandbox_info);
 #else
     bool bInit = CefInitialize(main_args, settings, m_pInternal->m_app.get(), sandbox_info);
@@ -230,7 +230,7 @@ void CApplicationCEF::Close()
 {
     if (NULL != m_pInternal)
     {
-#if defined(_LINUX) && !defined(_MAC)
+#if defined(_LINUX)
         m_pInternal->context->Shutdown();
 #else
         // Shut down CEF.
@@ -243,7 +243,7 @@ void CApplicationCEF::Close()
 
 int CApplicationCEF::RunMessageLoop(bool& is_runned)
 {
-#if defined(_LINUX) && !defined(_MAC)
+#if defined(_LINUX)
     is_runned = true;
     return m_pInternal->message_loop->Run();
 #else
@@ -259,7 +259,7 @@ void CApplicationCEF::DoMessageLoopEvent()
 
 bool CApplicationCEF::ExitMessageLoop()
 {
-#if defined(_LINUX) && !defined(_MAC)
+#if defined(_LINUX)
     m_pInternal->message_loop->Quit();
     return true;
 #else

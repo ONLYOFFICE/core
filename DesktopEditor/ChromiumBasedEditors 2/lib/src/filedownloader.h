@@ -376,7 +376,9 @@ protected :
     bool            m_bDelete;         // Удалять ли файл в деструкторе
 
 };
-#else
+#endif
+
+#if defined(LINUX) && !defined(MAC)
 
 #include <iostream>
 #include <unistd.h>
@@ -529,6 +531,96 @@ protected :
 
 };
 
+
+#endif
+
+#ifdef MAC
+
+class CFileDownloader : public NSThreads::CBaseThread
+{
+public :
+    CFileDownloader(std::wstring sFileUrl, bool bDelete = true) : NSThreads::CBaseThread()
+    {
+        m_sFilePath = L"";
+        m_sFileUrl  = sFileUrl;
+        m_bComplete = false;
+        m_bDelete   = bDelete;
+    }
+    ~CFileDownloader ()
+    {
+        if ( m_sFilePath.length() > 0 && m_bDelete )
+        {
+            NSFile::CFileBinary::Remove(m_sFilePath);
+            m_sFilePath = L"";
+        }
+    }
+
+    void SetFilePath(const std::wstring& sPath)
+    {
+        m_sFilePath = sPath;
+    }
+
+    std::wstring GetFilePath()
+    {
+        return m_sFilePath;
+    }
+    bool IsFileDownloaded()
+    {
+        return m_bComplete;
+    }
+protected :
+
+    virtual      DWORD ThreadProc ()
+    {
+        m_bComplete = false;
+
+        if ( true )
+        {
+            int hrResultAll = DownloadFileAll(m_sFileUrl);
+
+            if (0 != hrResultAll)
+            {
+                m_bRunThread = FALSE;
+                return 0;
+            }
+        }
+
+        m_bComplete = true;
+        m_bRunThread = FALSE;
+        return 0;
+    }
+
+    int DownloadFileAll(std::wstring sFileURL);
+
+public:
+    static bool IsNeedDownload(const std::wstring& FilePath)
+    {
+        int n1 = FilePath.find(L"www.");
+        int n2 = FilePath.find(L"http://");
+        int n3 = FilePath.find(L"ftp://");
+        int n4 = FilePath.find(L"https://");
+
+        if (n1 != std::wstring::npos && n1 < 10)
+            return true;
+        if (n2 != std::wstring::npos && n2 < 10)
+            return true;
+        if (n3 != std::wstring::npos && n3 < 10)
+            return true;
+        if (n4 != std::wstring::npos && n4 < 10)
+            return true;
+
+        return false;
+    }
+
+protected :
+
+    std::wstring    m_sFilePath;       // Путь к сохраненному файлу на диске
+    std::wstring    m_sFileUrl;        // Ссылка на скачивание файла
+
+    bool            m_bComplete;       // Закачался файл или нет
+    bool            m_bDelete;         // Удалять ли файл в деструкторе
+
+};
 
 #endif
 

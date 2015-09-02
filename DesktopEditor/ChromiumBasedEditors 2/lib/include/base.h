@@ -21,7 +21,7 @@
 
 #ifdef _MAC
 
-#define WindowHandleId XID
+#define WindowHandleId void*
 
 #endif
 

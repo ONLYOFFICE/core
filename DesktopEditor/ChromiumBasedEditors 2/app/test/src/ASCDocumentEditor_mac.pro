@@ -7,13 +7,17 @@
 QT       -= core
 QT       -= gui
 
-TARGET = ASCDocumentEditor
+TARGET = $$quote(ASCDocumentEditor Helper)
 TEMPLATE = app
 #CONFIG   += console
 CONFIG   += app_bundle
 
+CONFIG += c++11
+
 INCLUDEPATH += \
     $$PWD/../../../lib/src/cef/mac
+
+LIBS += -L../../../../../../SDK/lib/mac_64 -lgraphics
 
 DEFINES += \
     "V8_DEPRECATION_WARNINGS" \
@@ -72,7 +76,6 @@ DEFINES += \
     "NVALGRIND" \
     "DYNAMIC_ANNOTATIONS_ENABLED=0"
 
-#PROJECT_PATH = /Users/Oleg/Desktop/activex/AVS/Sources/TeamlabOffice/trunk/ServerComponents/DesktopEditor/ChromiumBasedEditors\ 2/app/test/src
 PROJECT_PATH = ../
 
 QMAKE_LFLAGS += -F$${PROJECT_PATH}/../../cefbuilds/mac
@@ -228,7 +231,10 @@ SOURCES += \
     ../../../lib/src/cef/mac/libcef_dll/wrapper/cef_zip_archive.cc \
     ../../../lib/src/cef/mac/libcef_dll/wrapper/libcef_dll_wrapper.cc \
     ../../../lib/src/cef/mac/libcef_dll/wrapper/libcef_dll_wrapper2.cc \
-    ../../../lib/src/cef/mac/libcef_dll/transfer_util.cc
+    ../../../lib/src/cef/mac/libcef_dll/transfer_util.cc \
+    ../../../lib/src/cef/mac/cefclient/process_helper_mac.cc \
+    ../../../lib/src/cefwrapper/client_renderer_wrapper.cpp \
+    ../../../lib/src/cefwrapper/client_scheme_wrapper.cpp
 
 HEADERS += \
     ../../../lib/src/cef/mac/cefclient/browser/binding_test.h \
@@ -544,8 +550,7 @@ OBJECTIVE_SOURCES += \
     ../../../lib/src/cef/mac/cefclient/browser/resource_util_mac.mm \
     ../../../lib/src/cef/mac/cefclient/browser/root_window_mac.mm \
     ../../../lib/src/cef/mac/cefclient/browser/temp_window_mac.mm \
-    ../../../lib/src/cef/mac/cefclient/browser/window_test_mac.mm \
-    ../../../lib/src/cef/mac/cefclient/cefclient_mac.mm
+    ../../../lib/src/cef/mac/cefclient/browser/window_test_mac.mm
 
 BUNDLE_TARGET = $${PROJECT_PATH}/mac_Debug/$${TARGET}.app
 
@@ -555,5 +560,5 @@ cp -R $${PROJECT_PATH}/../../cefbuilds/mac/Chromium\ Embedded\ Framework.framewo
 install_name_tool \
 -change \
 @executable_path/Chromium\ Embedded\ Framework \
-@executable_path/../Frameworks/Chromium\ Embedded\ Framework.framework/Chromium\ Embedded\ Framework \
-ASCDocumentEditor.app/Contents/MacOS/ASCDocumentEditor
+@executable_path/../../../../Frameworks/Chromium\ Embedded\ Framework.framework/Chromium\ Embedded\ Framework \
+ASCDocumentEditor\ Helper.app/Contents/MacOS/ASCDocumentEditor\ Helper

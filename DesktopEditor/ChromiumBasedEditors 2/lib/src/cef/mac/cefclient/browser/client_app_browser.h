@@ -36,7 +36,7 @@ class ClientAppBrowser : public ClientApp,
 
   ClientAppBrowser();
 
- private:
+ protected:
   // Creates all of the Delegate objects. Implemented by cefclient in
   // client_app_delegates_browser.cc
   static void CreateDelegates(DelegateSet& delegates);

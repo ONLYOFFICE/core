@@ -10,7 +10,6 @@
 #include "../../../../common/File.h"
 #include "../../../../common/Directory.h"
 #include "../../../../graphics/BaseThread.h"
-#include "../../src/filedownloader.h"
 #include "../../../../raster/ImageFileFormatChecker.h"
 
 namespace asc_client_renderer
@@ -63,7 +62,7 @@ public:
                        const CefV8ValueList& arguments,
                        CefRefPtr<CefV8Value>& retval,
                        CefString& exception) OVERRIDE
-    {
+    {        
         if (name == "Copy")
         {
             CefV8Context::GetCurrentContext()->GetFrame()->Copy();
@@ -795,10 +794,29 @@ public:
         return false;
     }
 
+    bool IsNeedDownload(const std::wstring& FilePath)
+    {
+        int n1 = FilePath.find(L"www.");
+        int n2 = FilePath.find(L"http://");
+        int n3 = FilePath.find(L"ftp://");
+        int n4 = FilePath.find(L"https://");
+
+        if (n1 != std::wstring::npos && n1 < 10)
+            return true;
+        if (n2 != std::wstring::npos && n2 < 10)
+            return true;
+        if (n3 != std::wstring::npos && n3 < 10)
+            return true;
+        if (n4 != std::wstring::npos && n4 < 10)
+            return true;
+
+        return false;
+    }
+
     std::wstring GetFullUrl(const std::wstring& sUrl, const std::wstring& sBaseUrl)
     {
         std::wstring sUrlSrc = L"";
-        if (CFileDownloader::IsNeedDownload(sUrl))
+        if (IsNeedDownload(sUrl))
         {
             sUrlSrc = sUrl;
         }
@@ -839,20 +857,6 @@ public:
             }
         }
         return sUrlSrc;
-    }
-
-    bool DownloadFile(const std::wstring& sUrl, const std::wstring& sDst, const std::wstring& sBaseUrl)
-    {
-        std::wstring sUrlSrc = GetFullUrl(sUrl, sBaseUrl);
-
-        CFileDownloader oDownloader(sUrlSrc, false);
-        oDownloader.SetFilePath(sDst);
-        oDownloader.Start( 0 );
-        while ( oDownloader.IsRunned() )
-        {
-            NSThreads::Sleep(10);
-        }
-        return oDownloader.IsFileDownloaded();
     }
 
     // Provide the reference counting implementation for this class.

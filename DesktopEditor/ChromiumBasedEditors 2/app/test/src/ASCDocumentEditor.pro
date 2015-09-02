@@ -24,6 +24,11 @@ linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
     message(linux32)
 }
 
+mac {
+    PLATFORM_BUILD = mac
+    message(mac)
+}
+
 CONFIG(debug, debug|release) {
     PLATFORM_BUILD2 = $$PLATFORM_BUILD/debug
     DESTDIR = $$PWD/build/$$PLATFORM_BUILD/Debug
@@ -41,8 +46,47 @@ SOURCES += \
 
 win32 {
     LIBS += -L$$PWD/../../cefbuilds/$$PLATFORM_BUILD -llibcef
-} else {
+}
+
+linux {
     LIBS += -L$$PWD/../../cefbuilds/$$PLATFORM_BUILD -lcef
+}
+
+mac {
+
+DEFINES += _MAC
+
+#PROJECT_PATH = $$PWD
+PROJECT_PATH = ..
+
+QMAKE_LFLAGS += -F$${PROJECT_PATH}/../../cefbuilds/mac
+LIBS += -framework "Chromium Embedded Framework"
+
+BUNDLE_TARGET = $${PROJECT_PATH}/build/mac/Debug/$${TARGET}.app
+
+QMAKE_POST_LINK += mkdir -p $${BUNDLE_TARGET}/Contents/Frameworks;
+QMAKE_POST_LINK += cp -R $${PROJECT_PATH}/../../cefbuilds/mac/ASCDocumentEditor\ Helper.app $${BUNDLE_TARGET}/Contents/Frameworks;
+QMAKE_POST_LINK += cp -R $${PROJECT_PATH}/../../cefbuilds/mac/Chromium\ Embedded\ Framework.framework $${BUNDLE_TARGET}/Contents/Frameworks;
+QMAKE_POST_LINK += cp -R $${PROJECT_PATH}/../../corebuilds/mac/debug/libascdocumentscore.dylib $${BUNDLE_TARGET}/Contents/Frameworks;
+
+QMAKE_POST_LINK += install_name_tool \
+-change \
+@executable_path/Chromium\ Embedded\ Framework \
+@executable_path/../Frameworks/Chromium\ Embedded\ Framework.framework/Chromium\ Embedded\ Framework \
+$${BUNDLE_TARGET}/Contents/MacOS/ASCDocumentEditor;
+
+QMAKE_POST_LINK += install_name_tool \
+-change \
+libascdocumentscore.dylib \
+@executable_path/../Frameworks/libascdocumentscore.dylib \
+$${BUNDLE_TARGET}/Contents/MacOS/ASCDocumentEditor;
+
+QMAKE_POST_LINK += install_name_tool \
+-change \
+@executable_path/Chromium\ Embedded\ Framework \
+@executable_path/../Frameworks/Chromium\ Embedded\ Framework.framework/Chromium\ Embedded\ Framework \
+$${BUNDLE_TARGET}/Contents/Frameworks/libascdocumentscore.dylib
+
 }
 
 LIBS += -L$$PWD/../../corebuilds/$$PLATFORM_BUILD2 -lascdocumentscore

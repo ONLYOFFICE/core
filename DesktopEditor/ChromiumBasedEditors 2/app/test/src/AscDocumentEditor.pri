@@ -60,3 +60,13 @@ linux-g++ {
     CONFIG += link_pkgconfig
     PKGCONFIG += glib-2.0 gdk-2.0 gtkglext-1.0 atk cairo gtk+-unix-print-2.0
 }
+
+mac {
+    DEFINES += \
+        MAC \
+        _MAC \
+        _LINUX
+
+    LIBS += -framework AppKit
+    LIBS += -framework OpenGl
+}

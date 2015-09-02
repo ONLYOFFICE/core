@@ -48,6 +48,10 @@ LRESULT CALLBACK MyMouseHook(int nCode, WPARAM wp, LPARAM lp)
 #include <X11/Xlib.h>
 #endif
 
+#ifdef _MAC
+#include "mac_common.h"
+#endif
+
 class CPagePrintData
 {
 public:
@@ -619,15 +623,21 @@ void CCefFileDownloader::DownloadFile(CAscApplicationManager* pManager, const st
     rect.top = 0;
     rect.right = 10;
     rect.bottom = 10;
-#else
+    info.SetAsChild(hWnd, rect);
+#endif
+
+#if defined(_LINUX) && !defined(_MAC)
     CefRect rect;
     rect.x = 0;
     rect.y = 0;
     rect.width = 10;
     rect.height = 10;
+    info.SetAsChild(hWnd, rect);
 #endif
 
-    info.SetAsChild(hWnd, rect);
+#ifdef _MAC
+    info.SetAsChild(hWnd, 0, 0, 10, 10);
+#endif
 
     // Creat the new child browser window
     CefBrowserHost::CreateBrowser(info, m_pInternal, "ascdesktop://emptydownload.html", _settings, NULL);
@@ -1822,15 +1832,23 @@ void CCefView::load(const std::wstring& url)
     rect.top = 0;
     rect.right = m_pInternal->m_pWidgetImpl->parent_width() - 1;
     rect.bottom = m_pInternal->m_pWidgetImpl->parent_height() - 1;
-#else
+    info.SetAsChild(hWnd, rect);
+#endif
+
+#if defined(_LINUX) && !defined(_MAC)
     CefRect rect;
     rect.x = 0;
     rect.y = 0;
     rect.width = m_pInternal->m_pWidgetImpl->parent_width();
     rect.height = m_pInternal->m_pWidgetImpl->parent_height();
+    info.SetAsChild(hWnd, rect);
 #endif
 
-    info.SetAsChild(hWnd, rect);
+#ifdef _MAC
+    info.SetAsChild(hWnd, 0, 0,
+                    m_pInternal->m_pWidgetImpl->parent_width(),
+                    m_pInternal->m_pWidgetImpl->parent_height());
+#endif
 
     CefString sUrl = url;
 
@@ -1967,6 +1985,12 @@ void CCefView::resizeEvent(int width, int height)
     changes.y = 0;
     changes.y = 0;
     XConfigureWindow(xdisplay, xwindow, CWHeight | CWWidth | CWY, &changes);
+#endif
+
+#ifdef _MAC
+    MAC_COMMON_set_window_handle_sizes(hwnd, 0, 0,
+        (0 == width) ? (m_pInternal->m_pWidgetImpl->parent_width()) : width,
+        (0 == height) ? (m_pInternal->m_pWidgetImpl->parent_height()) : height);
 #endif
 
     focus();

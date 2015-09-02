@@ -7,6 +7,8 @@
 #include "cefclient/common/client_app_other.h"
 #include "cefclient/renderer/client_app_renderer.h"
 
+#include "../../../cefwrapper/client_app.h"
+
 namespace client {
 
 int RunMain(int argc, char* argv[]) {
@@ -20,9 +22,9 @@ int RunMain(int argc, char* argv[]) {
   CefRefPtr<CefApp> app;
   ClientApp::ProcessType process_type = ClientApp::GetProcessType(command_line);
   if (process_type == ClientApp::RendererProcess)
-    app = new ClientAppRenderer();
+    app = new CAscClientAppRenderer();
   else if (process_type == ClientApp::OtherProcess)
-    app = new ClientAppOther();
+    app = new CAscClientAppOther();
 
   // Execute the secondary process.
   return CefExecuteProcess(main_args, app, NULL);

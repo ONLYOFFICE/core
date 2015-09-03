@@ -65,7 +65,6 @@ typedef T_ULONG64   ULONG64;
 typedef T_LONG64    LONG64;
 typedef T_ULONG64   UINT64;
 
-#define BOOL int
 #else
 
 #if (!defined (_MAC) && (!defined(MIDL_PASS) || defined(__midl)) && (!defined(_M_IX86) || (defined(_INTEGRAL_MAX_BITS) && _INTEGRAL_MAX_BITS >= 64)))

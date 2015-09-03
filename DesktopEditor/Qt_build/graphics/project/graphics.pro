@@ -73,6 +73,7 @@ mac {
     _LINUX \
     _LINUX_QT \
     _MAC \
+    MAC \
     QT_MAC
 
     message(mac)

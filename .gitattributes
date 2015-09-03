@@ -6219,6 +6219,8 @@ DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win64/locales/zh-CN.pak svn_mi
 DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win64/locales/zh-TW.pak svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors2/app/cefbuilds/win64/snapshot_blob.bin svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors2/app/corebuilds svnc_tsvn_003alogminsize=5
+DesktopEditor/ChromiumBasedEditors2/app/corebuilds/mac svnc_tsvn_003alogminsize=5
+DesktopEditor/ChromiumBasedEditors2/app/corebuilds/mac/libascdocumentscore.dylib svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors2/app/corebuilds/win32 svnc_tsvn_003alogminsize=5
 DesktopEditor/ChromiumBasedEditors2/app/corebuilds/win32/ascdocumentscore.dll svn_mime_002dtype=application%2Foctet-stream
 DesktopEditor/ChromiumBasedEditors2/app/corebuilds/win32/ascdocumentscore.lib svn_mime_002dtype=application%2Foctet-stream

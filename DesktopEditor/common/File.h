@@ -1010,28 +1010,30 @@ namespace NSFile
     #define NS_FILE_MAX_PATH 32768
     static std::wstring GetProcessPath()
     {
-	#if defined (_WIN64)
+#if defined (_WIN64) || defined(_WIN32)
         wchar_t buf [NS_FILE_MAX_PATH];
         GetModuleFileNameW(GetModuleHandle(NULL), buf, NS_FILE_MAX_PATH);
-		//std::string str(buf);
-        //return std::wstring(str.begin(), str.end());
-       return std::wstring(buf);
-	#elif defined(_WIN32)
-         wchar_t buf[NS_FILE_MAX_PATH];
-        GetModuleFileNameW(GetModuleHandleW(NULL), buf, NS_FILE_MAX_PATH);
-
         return std::wstring(buf);
-	#else
-		#if defined(__linux__) || defined(_MAC) && !defined(_IOS)
-			char buf[NS_FILE_MAX_PATH];
-			if (readlink ("/proc/self/exe", buf, NS_FILE_MAX_PATH) <= 0)
-				return L"";
+#endif
 
-			std::string sUTF8(buf);
-			std::wstring sRet = CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sUTF8.c_str(), sUTF8.length());
-			return sRet;
-		#endif
-    #endif
+#if defined(__linux__) || defined(_MAC) && !defined(_IOS)
+        char buf[NS_FILE_MAX_PATH];
+        if (readlink ("/proc/self/exe", buf, NS_FILE_MAX_PATH) <= 0)
+        {
+#ifdef _MAC
+            getcwd(buf, sizeof(buf));
+            std::string sUTF8(buf);
+            std::wstring sRet = CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sUTF8.c_str(), sUTF8.length());
+            return sRet;
+#endif
+            return L"";
+        }
+
+        std::string sUTF8(buf);
+        std::wstring sRet = CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)sUTF8.c_str(), sUTF8.length());
+        return sRet;
+#endif
+
         return L"";
     }
 

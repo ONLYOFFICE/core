@@ -540,7 +540,11 @@ namespace NSShapeImageGen
 						{
 							//случай растрового wmf/emf
 							CString strSaveItem = strSaveItemWE + _T(".png");
-							
+                            if(lWidth <= 0)
+                                lWidth = -1;
+                            if(lHeight <= 0)
+                                lHeight = -1;
+                            //-1 == lHeight имеет спецальное значение(берет размеры из файла)
 							metaFileRaster.ConvertToRaster(strSaveItem, 4 /*CXIMAGE_FORMAT_PNG*/,  lWidth, lHeight);
 							
 							bIsSuccess = NSFile::CFileBinary::Exists(string2std_string(strSaveItem));

@@ -108,6 +108,7 @@ namespace Joiner
 
                 StringBuilder oBuilder = new StringBuilder();
 
+                List<string> arConcat = new List<string>();
                 for (int i = 0; i < arFiles.Count; i++)
                 {
                     string sFileCandidate = arFiles[i];
@@ -118,8 +119,23 @@ namespace Joiner
                         (sFileCandidate.LastIndexOf(".js") != (sFileCandidate.Length - 3)))
                         continue;
 
+                    if ((sFileCandidate.IndexOf("/api.js") >= 0) ||
+                        (sFileCandidate.IndexOf("/apiCommon.js") >= 0))
+                    {
+                        arConcat.Add(sFileCandidate);
+                        continue;
+                    }
+
 
                     StreamReader oReader2 = new StreamReader(sPathBase + "../.." + arFiles[i]);
+                    oBuilder.Append(oReader2.ReadToEnd());
+
+                    oBuilder.Append("\n\n");
+                }
+
+                for (int i = 0; i < arConcat.Count; i++)
+                {
+                    StreamReader oReader2 = new StreamReader(sPathBase + "../.." + arConcat[i]);
                     oBuilder.Append(oReader2.ReadToEnd());
 
                     oBuilder.Append("\n\n");

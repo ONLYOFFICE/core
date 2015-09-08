@@ -9,6 +9,7 @@
 #endif
 
 #include <string>
+#include "UnicodeConverter_Encodings.h"
 
 namespace NSUnicodeConverter
 {
@@ -20,7 +21,10 @@ namespace NSUnicodeConverter
         ~CUnicodeConverter();
 
     public:
+        std::string fromUnicode(const wchar_t* sInput, const unsigned int& nInputLen, const char* converterName);
         std::string fromUnicode(const std::wstring& sSrc, const char* sCodePage);
+
+        std::wstring toUnicode(const char* sInput, const unsigned int& nInputLen, const char* converterName);
         std::wstring toUnicode(const std::string& sSrc, const char* sCodePage);
 
     private:

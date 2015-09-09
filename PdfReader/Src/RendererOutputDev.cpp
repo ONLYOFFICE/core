@@ -814,8 +814,6 @@ namespace PdfReader
 							}
 							oDictItem.Free();
 						}
-
-						fclose(pFile);
 					}
 				}
 

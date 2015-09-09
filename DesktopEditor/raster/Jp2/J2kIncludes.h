@@ -306,7 +306,6 @@ namespace Jpeg2000
 		}
 		FILE* pFile = oFile.GetFileNative();
 		fwrite(pStream->GetOwner(), 1, nCodeStreamLen, pFile);
-		fclose(pFile);
 
 		delete (pStream);
 		Jp2_DestroyCompress((Jp2Stream*)pCInfo->pJp2);

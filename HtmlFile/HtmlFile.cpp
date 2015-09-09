@@ -462,7 +462,8 @@ int CHtmlFile::ConvertEpub(const std::wstring& sFolder, std::wstring& sMetaInfo,
     if (!NSFile::CFileBinary::ReadAllTextUtf8(sFolderWithSlash + L"mimetype", sMimeType))
         return 1;
 
-    if (sMimeType != L"application/epub+zip")
+    std::wstring::size_type findMime = sMimeType.find(L"application/epub+zip");
+    if (findMime == std::wstring::npos || findMime > 10) // 10 - просто число. Заглушка под мега епабы
         return 1;
 
     std::wstring sContainer = sFolderWithSlash + L"META-INF/container.xml";

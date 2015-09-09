@@ -151,9 +151,7 @@ namespace PdfReader
 		if (m_wsCMapDirectory != L"")
 		{
 			std::wstring wsFilePath = m_wsCMapDirectory + seCMapName->GetWString();
-			NSFile::CFileBinary oFile;
-			oFile.OpenFile(wsFilePath);
-			return oFile.GetFileNative();
+			return NSFile::CFileBinary::OpenFileNative(wsFilePath, L"rb");
 		}
 
 		return NULL;

@@ -637,9 +637,7 @@ namespace PdfReader
 					SpitPathExt(wsFileName, &wsSplitFileName, &wsSplitFileExt);
 					std::wstring wsAfmPath = wsSplitFileName + L".afm";
 					
-					NSFile::CFileBinary oFile;
-					oFile.CreateFileW(wsAfmPath);
-					FILE* pFile = oFile.GetFileNative();
+					FILE* pFile = NSFile::CFileBinary::OpenFileNative(wsAfmPath, L"wb");
 					if (pFile)
 					{
 						Ref *pRef = pFont->GetID();
@@ -815,6 +813,7 @@ namespace PdfReader
 							oDictItem.Free();
 						}
 					}
+					fclose(pFile);
 				}
 
 				// Загрузим сам файл со шрифтом, чтобы точно определить его тип

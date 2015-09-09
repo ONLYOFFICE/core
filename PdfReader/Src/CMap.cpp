@@ -35,11 +35,9 @@ namespace PdfReader
 
 		if (NULL != wsFilePath)
 		{
-			NSFile::CFileBinary oFile;
-			if (!oFile.OpenFile(wsFilePath))
+			pFile = NSFile::CFileBinary::OpenFileNative(wsFilePath, L"rb");
+			if (!pFile)
 				return NULL;
-
-			pFile = oFile.GetFileNative();
 		}
 		else
 		{

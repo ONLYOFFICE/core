@@ -413,13 +413,12 @@ namespace PdfReader
 
 	char *GrFont::ReadExternalFontFile(int *pnLen)
 	{
-		NSFile::CFileBinary oFile;
-		if (!oFile.OpenFile(m_wsExternalFontFilePath))
+		FILE* pFile = NSFile::CFileBinary::OpenFileNative(m_wsExternalFontFilePath, L"rb");
+		if (!pFile)
 		{
 			// TO DO: Error "External font file vanished"
 			return NULL;
 		}
-		FILE* pFile = oFile.GetFileNative();
 
 		fseek(pFile, 0, SEEK_END);
 		*pnLen = (int)ftell(pFile);

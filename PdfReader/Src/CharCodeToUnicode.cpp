@@ -49,15 +49,14 @@ namespace PdfReader
 	{
 		char sBuffer[64];
 		Unicode nUnicode = 0;
-
-		NSFile::CFileBinary oFile;
-		if (!oFile.OpenFile(seFileName->GetWString()))
+		
+		FILE* pFile = NSFile::CFileBinary::OpenFileNative(seFileName->GetWString(), L"rb");
+		if (!pFile)
 		{
 			// TO DO: Error "Couldn't open cidToUnicode file"
 			return NULL;
 		}
 
-		FILE* pFile = oFile.GetFileNative();
 		unsigned int nSize = 32768;
 		Unicode *pMap = (Unicode *)MemUtilsMallocArray(nSize, sizeof(Unicode));
 		unsigned int nMapLen = 0;
@@ -94,14 +93,13 @@ namespace PdfReader
 		Unicode nUnicode0;
 		Unicode arrUnicodeBuffer[MaxUnicodeString];
 
-		NSFile::CFileBinary oFile;
-		if (!oFile.OpenFile(seFileName->GetWString()))
+		FILE* pFile = NSFile::CFileBinary::OpenFileNative(seFileName->GetWString(), L"rb");
+		if (!pFile)
 		{
 			// TO DO: Error ""Couldn't open unicodeToUnicode file"
 			return NULL;
 		}
 
-		FILE* pFile = oFile.GetFileNative();
 		unsigned int nSize = 4096;
 		Unicode *pMap = (Unicode *)MemUtilsMallocArray(nSize, sizeof(Unicode));
 		memset(pMap, 0, nSize * sizeof(Unicode));

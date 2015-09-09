@@ -24,11 +24,9 @@ namespace PdfReader
 
 	char *CFontFileBase::ReadFile(wchar_t *wsFileName, int *pnFileLen)
 	{
-		NSFile::CFileBinary oFile;
-		if (!oFile.OpenFile(wsFileName))
+		FILE* pFile = NSFile::CFileBinary::OpenFileNative(wsFileName, L"rb");
+		if (!pFile)
 			return NULL;
-
-		FILE* pFile = oFile.GetFileNative();
 
 		fseek(pFile, 0, SEEK_END);
 		int nLen = (int)ftell(pFile);
@@ -41,7 +39,7 @@ namespace PdfReader
 			return NULL;
 		}
 
-		oFile.CloseFile();
+		fclose(pFile);
 		*pnFileLen = nLen;
 		return sBuffer;
 	}

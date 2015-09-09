@@ -102,14 +102,12 @@ namespace PdfReader
 
 			sprintf(m_sFileName, "%s\\%04d.jpg", m_sFilePrefix, m_nImageCount);
 
-			NSFile::CFileBinary oFile;
-			if (!oFile.CreateFileW(AStringToWString(m_sFileName)))
+			pFile = NSFile::CFileBinary::OpenFileNative(AStringToWString(m_sFileName), L"wb");
+			if (!pFile)
 			{
 				// TO DO: Error "Couldn't open image file"
 				return;
 			}
-			pFile = oFile.GetFileNative();
-
 			pStream = ((DCTStream *)pStream)->GetRawStream();
 			pStream->Reset();
 
@@ -141,13 +139,12 @@ namespace PdfReader
 
 			sprintf(m_sFileName, "%s\\%04d.bmp", m_sFilePrefix, m_nImageCount);
 
-			NSFile::CFileBinary oFile;
-			if (!oFile.CreateFileW(AStringToWString(m_sFileName)))
+			pFile = NSFile::CFileBinary::OpenFileNative(AStringToWString(m_sFileName), L"wb");
+			if (!pFile)
 			{
 				// TO DO: Error "Couldn't open image file"
 				return;
 			}
-			pFile = oFile.GetFileNative();
 
 			TBitmapFileHeader oFileHeader;
 			oFileHeader.bfType      = 'M' * 256 + 'B';
@@ -237,13 +234,12 @@ namespace PdfReader
 				return;
 			sprintf(m_sFileName, "%s\\%04d.jpg", m_sFilePrefix, m_nImageCount);
 
-			NSFile::CFileBinary oFile;
-			if (!oFile.CreateFileW(AStringToWString(m_sFileName)))
+			pFile = NSFile::CFileBinary::OpenFileNative(AStringToWString(m_sFileName), L"wb");
+			if (!pFile)
 			{
 				// TO DO: Error "Couldn't open image file"
 				return;
 			}
-			pFile = oFile.GetFileNative();
 
 			pStream = ((DCTStream *)pStream)->GetRawStream();
 			pStream->Reset();
@@ -276,14 +272,12 @@ namespace PdfReader
 
 			sprintf(m_sFileName, "%s\\%04d.bmp", m_sFilePrefix, m_nImageCount);
 
-			NSFile::CFileBinary oFile;
-			if (!oFile.CreateFileW(AStringToWString(m_sFileName)))
+			pFile = NSFile::CFileBinary::OpenFileNative(AStringToWString(m_sFileName), L"wb");
+			if (!pFile)
 			{
 				// TO DO: Error "Couldn't open image file"
 				return;
 			}
-			pFile = oFile.GetFileNative();
-
 			TBitmapFileHeader oFileHeader;
 			oFileHeader.bfType      = 'M' * 256 + 'B';
 			oFileHeader.bfSize      = sizeof(TBitmapFileHeader) + sizeof(TBitmapInfoHeader) + 2 * sizeof(ColorTableEntry) + nHeight * ((nWidth + 7) / 8);
@@ -365,14 +359,12 @@ namespace PdfReader
 
 			sprintf(m_sFileName, "%s\\%04d.bmp", m_sFilePrefix, m_nImageCount);
 
-			NSFile::CFileBinary oFile;
-			if (!oFile.CreateFileW(AStringToWString(m_sFileName)))
+			pFile = NSFile::CFileBinary::OpenFileNative(AStringToWString(m_sFileName), L"wb");
+			if (!pFile)
 			{
 				// TO DO: Error "Couldn't open image file"
 				return;
 			}
-			pFile = oFile.GetFileNative();
-
 			TBitmapFileHeader oFileHeader;
 			oFileHeader.bfType      = 'M' * 256 + 'B';
 			oFileHeader.bfSize      = sizeof(TBitmapFileHeader) + sizeof(TBitmapCoreHeader) + nWidth * nHeight * 4;

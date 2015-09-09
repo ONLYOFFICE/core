@@ -371,11 +371,7 @@ namespace PdfReader
 	{
 #ifdef _DEBUG
 		std::wstring wsFileName = L"D:\\Output\\PDF Dump\\DumpPDF_Page" + std::to_wstring(nPageNumber) + L".bin";
-		NSFile::CFileBinary oFile;
-		if (!oFile.CreateFileW(wsFileName))
-			m_pDumpFile = NULL;
-		else
-			m_pDumpFile = oFile.GetFileNative();
+		m_pDumpFile = NSFile::CFileBinary::OpenFileNative(wsFileName, L"wb");
 #endif
 
 		m_pGlobalParams = pGlobalParams;

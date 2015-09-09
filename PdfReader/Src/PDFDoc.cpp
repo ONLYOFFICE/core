@@ -53,9 +53,10 @@ namespace PdfReader
 
 		if (!m_pFileBuffer)
 		{
+			oFile.CloseFile();
 			// Не смогли выделить память под весь файл, тогда работаем непосредственно с самим файлом
 			m_pFileBuffer = NULL;
-			m_pFile = oFile.GetFileNative();
+			m_pFile = NSFile::CFileBinary::OpenFileNative(wsFileName, L"rb");
 
 			// Создаем поток
 			Object oTemp;

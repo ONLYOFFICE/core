@@ -417,7 +417,6 @@ namespace NSHtmlRenderer
                 m_oDocument.AddInt(nPenW);
                 m_oDocument.WriteString(L"px;stroke-opacity:", 18);
                 m_oDocument.AddIntDel100(100 * m_pPen->Alpha / 255);
-                m_oDocument.WriteString(L";\" ", 3);
 
                 if (m_pPen->DashStyle == 0)
                 {
@@ -576,7 +575,15 @@ namespace NSHtmlRenderer
             if (0 == m_oPath.GetCurSize())
                 return;
 
-            m_oClip.m_arPaths.push_back(m_oPath.GetData());
+            std::wstring sNewClip = m_oPath.GetData();
+            int nSizeCurrent = m_oClip.m_arPaths.size();
+            if (nSizeCurrent != 0)
+            {
+                if (m_oClip.m_arTypes[nSizeCurrent - 1] == m_lClipMode && m_oClip.m_arPaths[nSizeCurrent - 1] == sNewClip)
+                    return;
+            }
+
+            m_oClip.m_arPaths.push_back(sNewClip);
             m_oClip.m_arTypes.push_back(m_lClipMode);
         }
         void WritePathResetClip()

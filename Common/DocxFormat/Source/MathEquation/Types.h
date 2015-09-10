@@ -2,6 +2,7 @@
 #define _MATH_EQUATION_TYPES_H
 
 #include <map>
+#include "../../../DesktopEditor/common/Types.h"
 
 namespace MathEquation
 {

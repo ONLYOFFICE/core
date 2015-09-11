@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef PPTX_LOGIC_TRANSITIONBASE_INCLUDE_H_
 #define PPTX_LOGIC_TRANSITIONBASE_INCLUDE_H_
 
@@ -56,7 +56,13 @@ namespace PPTX
 
 			TransitionSerialize& operator =(const TransitionSerialize& src)
 			{
-				// not impl
+				//РїСЂРѕРІРµСЂРєР° РЅР° СЃР°РјРѕРїСЂРёСЃРІР°РёРІР°РЅРёРµ
+				if (this == &src) {
+					return *this;
+				}
+				m_strNodeName = src.m_strNodeName;
+				m_strAttributesNames = src.m_strAttributesNames;
+				m_strAttributesValues = src.m_strAttributesValues;
 				return *this;
 			}
 
@@ -134,7 +140,7 @@ namespace PPTX
 				
 				pWriter->StartAttributes();
 
-				//и нафига тогда листы?? - примем аксиомно что размеры одинаковые
+				//Рё РЅР°С„РёРіР° С‚РѕРіРґР° Р»РёСЃС‚С‹?? - РїСЂРёРјРµРј Р°РєСЃРёРѕРјРЅРѕ С‡С‚Рѕ СЂР°Р·РјРµСЂС‹ РѕРґРёРЅР°РєРѕРІС‹Рµ
 				//size_t c1 = m_strAttributesNames.GetCount();
 				//size_t c2 = m_strAttributesValues.GetCount();
 

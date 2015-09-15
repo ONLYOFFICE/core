@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #ifndef PPTX_LOGIC_BLIPFILL_INCLUDE_H_
 #define PPTX_LOGIC_BLIPFILL_INCLUDE_H_
 
@@ -263,7 +263,7 @@ namespace PPTX
 									}
 									case 3:
 									{
-                                    //todoo ïðîâåðèòü ñ âðåìåííûì ôàéëîì íà ëèíóõå
+                                    //todoo Ð¿Ñ€Ð¾Ð²ÐµÑ€Ð¸Ñ‚ÑŒ Ñ Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ð¼ Ñ„Ð°Ð¹Ð»Ð¾Ð¼ Ð½Ð° Ð»Ð¸Ð½ÑƒÑ…Ðµ
 										pReader->Skip(6); // len + start attributes + type
 
 										// -------------------
@@ -322,7 +322,8 @@ namespace PPTX
 												CImageFileFormatChecker checker;
 												sImageExtension = std_string2string(checker.DetectFormatByData(pDstBuffer, dstLen));								
 											}
-											CString tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media") + FILE_SEPARATOR_STR;
+                                            //Ð¿Ð°Ð¿ÐºÐ¸ media Ð¼Ð¾Ð¶ÐµÑ‚ Ð½Ðµ Ð±Ñ‹Ñ‚ÑŒ Ð² ÑÐ»ÑƒÑ‡Ð°Ðµ, ÐºÐ¾Ð³Ð´Ð° Ð²ÑÐµ ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ¸ base64(Ð¿Ð¾ÑÐºÐ¾Ð»ÑŒÐºÑƒ Ñ„Ð°Ð¹Ð» Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ð¹, Ð¿Ð°Ð¿ÐºÑƒ media Ð½Ðµ ÑÐ¾Ð·Ð´Ð°ÐµÐ¼)
+                                            CString tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;
 											
 											OOX::CPath pathTemp = FileSystem::Directory::CreateTempFileWithUniqueName(tempFilePath, _T("img")) + _T(".") + sImageExtension;
 
@@ -331,7 +332,7 @@ namespace PPTX
 											oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
 											oTempFile.CloseFile();
 											
-											strUrl = strTempFile =pathTemp.GetPath(); // strTempFile äëÿ óäàëåíèÿ
+											strUrl = strTempFile =pathTemp.GetPath(); // strTempFile Ð´Ð»Â¤ ÑƒÐ´Ð°Ð»ÐµÐ½Ð¸Â¤
 											if (bBase64)
 											{
 												RELEASEARRAYOBJECTS(pDstBuffer);
@@ -357,7 +358,7 @@ namespace PPTX
 												bIsUrl = true;
 										}
 										// -------------------													
-										//â ñëó÷àå url íå íàäî íîðìàëèçîâàòü ïóòü
+										//Ð² ÑÐ»ÑƒÑ‡Ð°Ðµ url Ð½Ðµ Ð½Ð°Ð´Ð¾ Ð½Ð¾Ñ€Ð¼Ð°Ð»Ð¸Ð·Ð¾Ð²Ð°Ñ‚ÑŒ Ð¿ÑƒÑ‚ÑŒ
 										if(!bIsUrl)
 										{
 											OOX::CPath pathUrl = strUrl;
@@ -419,7 +420,7 @@ namespace PPTX
 						}
 						default:
 						{
-							// ïîêà íèêàêèõ íàñòðîåê ãðàäèåíòà íåò
+							// Ð¿Ð¾ÐºÐ° Ð½Ð¸ÐºÐ°ÐºÐ¸Ñ… Ð½Ð°ÑÑ‚Ñ€Ð¾ÐµÐº Ð³Ñ€Ð°Ð´Ð¸ÐµÐ½Ñ‚Ð° Ð½ÐµÑ‚
 							pReader->SkipRecord();
 						}
 					}

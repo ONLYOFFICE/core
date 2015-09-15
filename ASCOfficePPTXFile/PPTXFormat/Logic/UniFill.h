@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #ifndef PPTX_LOGIC_UNIFILL_INCLUDE_H_
 #define PPTX_LOGIC_UNIFILL_INCLUDE_H_
 
@@ -307,7 +307,8 @@ namespace PPTX
 															CImageFileFormatChecker checker;
 															sImageExtension = std_string2string(checker.DetectFormatByData(pDstBuffer, dstLen));								
 														}
-														CString tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR + _T("media") + FILE_SEPARATOR_STR;
+                                                        //Ð¿Ð°Ð¿ÐºÐ¸ media Ð¼Ð¾Ð¶ÐµÑ‚ Ð½Ðµ Ð±Ñ‹Ñ‚ÑŒ Ð² ÑÐ»ÑƒÑ‡Ð°Ðµ, ÐºÐ¾Ð³Ð´Ð° Ð²ÑÐµ ÐºÐ°Ñ€Ñ‚Ð¸Ð½ÐºÐ¸ base64(Ð¿Ð¾ÑÐºÐ¾Ð»ÑŒÐºÑƒ Ñ„Ð°Ð¹Ð» Ð²Ñ€ÐµÐ¼ÐµÐ½Ð½Ñ‹Ð¹, Ð¿Ð°Ð¿ÐºÑƒ media Ð½Ðµ ÑÐ¾Ð·Ð´Ð°ÐµÐ¼)
+                                                        CString tempFilePath = pReader->m_strFolder + FILE_SEPARATOR_STR;
 														
 														OOX::CPath pathTemp = FileSystem::Directory::CreateTempFileWithUniqueName(tempFilePath, _T("img")) + _T(".") + sImageExtension;
 
@@ -316,7 +317,7 @@ namespace PPTX
 														oTempFile.WriteFile((void*)pDstBuffer, (DWORD)dstLen);
 														oTempFile.CloseFile();
 														
-														strUrl = strTempFile =pathTemp.GetPath(); // strTempFile äëÿ óäàëåíèÿ
+														strUrl = strTempFile =pathTemp.GetPath(); // strTempFile Ð´Ð»Ñ ÑƒÐ´Ð°Ð»ÐµÐ½Ð¸Ñ
 														if (bBase64)
 														{
 															RELEASEARRAYOBJECTS(pDstBuffer);
@@ -398,7 +399,7 @@ namespace PPTX
 									}
 									default:
 									{
-										// ïîêà íèêàêèõ íàñòðîåê ãðàäèåíòà íåò
+										// Ð¿Ð¾ÐºÐ° Ð½Ð¸ÐºÐ°ÐºÐ¸Ñ… Ð½Ð°ÑÑ‚Ñ€Ð¾ÐµÐº Ð³Ñ€Ð°Ð´Ð¸ÐµÐ½Ñ‚Ð° Ð½ÐµÑ‚
 										pReader->SkipRecord();
 									}
 								}
@@ -490,7 +491,7 @@ namespace PPTX
 									}
 									default:
 									{
-										// ïîêà íèêàêèõ íàñòðîåê ãðàäèåíòà íåò
+										// Ð¿Ð¾ÐºÐ° Ð½Ð¸ÐºÐ°ÐºÐ¸Ñ… Ð½Ð°ÑÑ‚Ñ€Ð¾ÐµÐº Ð³Ñ€Ð°Ð´Ð¸ÐµÐ½Ñ‚Ð° Ð½ÐµÑ‚
 										pReader->SkipRecord();
 										break;
 									}
@@ -541,7 +542,7 @@ namespace PPTX
 									}
 									default:
 									{
-										// ïîêà íèêàêèõ íàñòðîåê ãðàäèåíòà íåò
+										// Ð¿Ð¾ÐºÐ° Ð½Ð¸ÐºÐ°ÐºÐ¸Ñ… Ð½Ð°ÑÑ‚Ñ€Ð¾ÐµÐº Ð³Ñ€Ð°Ð´Ð¸ÐµÐ½Ñ‚Ð° Ð½ÐµÑ‚
 										pReader->SkipRecord();
 									}
 								}
@@ -627,7 +628,7 @@ namespace PPTX
 			smart_ptr<WrapperWritingElement>	Fill;
 			enum Type {notInit, noFill, solidFill, gradFill, blipFill, pattFill, grpFill};
 			Type								m_type;
-//grpFill (Group Fill)  §20.1.8.35 
+//grpFill (Group Fill)  Â§20.1.8.35 
 		protected:
 			virtual void FillParentPointersForChilds()
 			{

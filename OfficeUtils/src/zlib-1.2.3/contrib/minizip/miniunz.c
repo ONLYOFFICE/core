@@ -13,7 +13,7 @@
 #include <errno.h>
 #include <fcntl.h>
 
-#ifdef unix
+#if defined(unix) || defined(_LINUX) 
 # include <unistd.h>
 # include <utime.h>
 #else
@@ -89,13 +89,13 @@ void change_file_date(filename,dosdate,tmu_date)
 
 #ifdef __APPLE__
 
-#ifdef _IOS
+#if defined(_IOS) || defined(_MAC)
 #include <sys/stat.h>
 #endif
 
 int mymkdir(const char*  dirname)
 {
-#ifdef _IOS
+#if defined(_IOS) || defined(_MAC)
     return mkdir (dirname, (mode_t)0775);
 #else
     return sys_mkdir (dirname);

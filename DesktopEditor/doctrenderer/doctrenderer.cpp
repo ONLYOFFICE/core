@@ -8,6 +8,8 @@
 
 #include "../xml/include/xmlutils.h"
 
+#include <iostream>
+
 void CreateNativeObject(const v8::FunctionCallbackInfo<v8::Value>& args)
 {
     v8::Isolate* isolate = v8::Isolate::GetCurrent();
@@ -244,6 +246,7 @@ namespace NSDoctRenderer
 
         void _LOGGING_ERROR_(const std::wstring& strType, const std::wstring& strError)
         {
+#if 0
             if (m_sErrorsLogFile.empty())
                 return;
 
@@ -257,6 +260,11 @@ namespace NSDoctRenderer
             fprintf(f, sE.c_str());
             fprintf(f, "\n");
             fclose(f);
+#endif
+            std::string sT = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strType);
+            std::string sE = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strError);
+
+            std::cerr << sT << ": " << sE << std::endl;
         }
 
         bool Doct_renderer_SaveFile(CExecuteParams* pParams,

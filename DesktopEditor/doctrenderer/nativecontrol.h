@@ -4,6 +4,7 @@
 #include "memorystream.h"
 #include <map>
 #include "../fontengine/ApplicationFonts.h"
+#include <iostream>
 
 // string convert
 static std::wstring to_cstring(v8::Local<v8::Value> v)
@@ -146,6 +147,7 @@ public:
 
     void ConsoleLog(/*UTF8*/const std::string& strVal)
     {
+#if 0
         if (!m_sConsoleLogFile.empty())
         {
             FILE* f = NSFile::CFileBinary::OpenFileNative(m_sConsoleLogFile, L"a+");
@@ -153,6 +155,8 @@ public:
             fprintf(f, "\n");
             fclose(f);
         }
+#endif
+        std::cout << strVal << std::endl;
     }
 
     void CheckFonts()

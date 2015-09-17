@@ -50,9 +50,9 @@ namespace XmlUtils
 		for (p = m_attributes.begin(); p != m_attributes.end(); ++p)
 		{
 			oWriter.WriteString(L" ", 1);
-			oWriter.WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->first.c_str(), p->first.length(), true).c_str());
+			oWriter.WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->first.c_str(), (LONG)p->first.length()).c_str());
 			oWriter.WriteString(L"=\"", 2);
-			oWriter.WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeFromCharPtr(p->second.c_str(), p->second.length(), true).c_str());
+			oWriter.WriteEncodeXmlString(NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)p->second.c_str(), (LONG)p->second.length()).c_str());
 			oWriter.WriteString(L"\"", 1);
 		}
 
@@ -381,7 +381,7 @@ namespace XmlUtils
 		if (pFind == m_pBase->m_attributes.end())
 			return _default;
 
-		return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second);
+		return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pFind->second.c_str(), (LONG)pFind->second.length());
 	}
 	std::wstring CXmlNode::GetAttribute(const std::wstring& sName, const std::wstring& _default)
 	{
@@ -392,7 +392,7 @@ namespace XmlUtils
 		if (pFind == m_pBase->m_attributes.end())
 			return _default;
 
-		return NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second);
+		return NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pFind->second.c_str(), (LONG)pFind->second.length());
 	}
 	std::wstring CXmlNode::GetAttribute(const wchar_t* sName, const std::wstring& _default)
 	{
@@ -412,7 +412,7 @@ namespace XmlUtils
 
 			if (pFind != m_pBase->m_attributes.end())
 			{
-				sOutput = NSFile::CUtf8Converter::GetUnicodeFromCharPtr(pFind->second);
+				sOutput = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8((BYTE*)pFind->second.c_str(), (LONG)pFind->second.length());
 				bRes = true;
 			}
 		}

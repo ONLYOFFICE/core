@@ -1,4 +1,4 @@
-#include "doctrenderer.h"
+﻿#include "doctrenderer.h"
 
 #ifdef BOOL
 #undef BOOL

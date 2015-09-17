@@ -1,4 +1,4 @@
-#ifndef BINARY_WRITER
+п»ї#ifndef BINARY_WRITER
 #define BINARY_WRITER
 
 #include "../../ASCOfficePPTXFile/Editor/BinReaderWriterDefines.h"
@@ -916,7 +916,7 @@ namespace BinXlsxRW {
 			}
 			else
 			{
-				//выбираем один цвет
+				//РІС‹Р±РёСЂР°РµРј РѕРґРёРЅ С†РІРµС‚
 				if(fill.m_oGradientFill.IsInit())
 				{
 					const OOX::Spreadsheet::CGradientFill& gradient = fill.m_oGradientFill.get();
@@ -979,7 +979,7 @@ namespace BinXlsxRW {
 			//RFont
 			if(font.m_oRFont.IsInit() && font.m_oRFont->m_sVal.IsInit())
 			{
-				//подбираем шрифт
+				//РїРѕРґР±РёСЂР°РµРј С€СЂРёС„С‚
 				CString sFont = oFontProcessor.getFont(font.m_oScheme, font.m_oRFont, font.m_oCharset, font.m_oFamily, theme);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerFontTypes::RFont);
 				m_oBcw.m_oStream.WriteBYTE(c_oSerPropLenType::Variable);
@@ -1600,7 +1600,7 @@ namespace BinXlsxRW {
 		void WriteWorksheets(OOX::Spreadsheet::CWorkbook& workbook, std::map<CString, OOX::Spreadsheet::CWorksheet*>& aWorksheets)
 		{
 			int nCurPos;
-			//определяем порядок следования
+			//РѕРїСЂРµРґРµР»СЏРµРј РїРѕСЂСЏРґРѕРє СЃР»РµРґРѕРІР°РЅРёСЏ
 			if(workbook.m_oSheets.IsInit())
 			{
 				std::vector<OOX::Spreadsheet::CSheet*>& aWs = workbook.m_oSheets->m_arrItems;
@@ -1705,7 +1705,7 @@ namespace BinXlsxRW {
 			//Drawing
 			if(oWorksheet.m_oDrawing.IsInit() && oWorksheet.m_oDrawing->m_oId.IsInit())
 			{
-				//из Drawing могут быть ссылки на объекты в VmlDrawing
+				//РёР· Drawing РјРѕРіСѓС‚ Р±С‹С‚СЊ СЃСЃС‹Р»РєРё РЅР° РѕР±СЉРµРєС‚С‹ РІ VmlDrawing
 				OOX::CVmlDrawing *currentVmlDrawing = NULL;
 
 				if (oWorksheet.m_oLegacyDrawingWorksheet.IsInit() && 
@@ -2215,7 +2215,7 @@ namespace BinXlsxRW {
 					nCol--;
 				}
 
-				// Пишем теперь не строку, а 2 числа (чтобы не парсить на JavaScript, т.к. на C++ быстрее парсинг). Ускорение открытия файла.
+				// РџРёС€РµРј С‚РµРїРµСЂСЊ РЅРµ СЃС‚СЂРѕРєСѓ, Р° 2 С‡РёСЃР»Р° (С‡С‚РѕР±С‹ РЅРµ РїР°СЂСЃРёС‚СЊ РЅР° JavaScript, С‚.Рє. РЅР° C++ Р±С‹СЃС‚СЂРµРµ РїР°СЂСЃРёРЅРі). РЈСЃРєРѕСЂРµРЅРёРµ РѕС‚РєСЂС‹С‚РёСЏ С„Р°Р№Р»Р°.
 				nCurPos = m_oBcw.WriteItemStart(c_oSerCellTypes::RefRowCol);
 				m_oBcw.m_oStream.WriteLONG(nRow);
 				m_oBcw.m_oStream.WriteLONG(nCol);
@@ -2559,7 +2559,7 @@ namespace BinXlsxRW {
 					std::vector<SerializeCommon::CommentData*> aCommentDatas;
 					getSavedComment(oComment, aCommentDatas);
 					nCurPos = m_oBcw.WriteItemStart(c_oSerWorksheetsTypes::Comment);
-					//записываем тот обьект, который был в бинарнике, подменяем только текст, который мог быть отредактирован в Excel
+					//Р·Р°РїРёСЃС‹РІР°РµРј С‚РѕС‚ РѕР±СЊРµРєС‚, РєРѕС‚РѕСЂС‹Р№ Р±С‹Р» РІ Р±РёРЅР°СЂРЅРёРєРµ, РїРѕРґРјРµРЅСЏРµРј С‚РѕР»СЊРєРѕ С‚РµРєСЃС‚, РєРѕС‚РѕСЂС‹Р№ РјРѕРі Р±С‹С‚СЊ РѕС‚СЂРµРґР°РєС‚РёСЂРѕРІР°РЅ РІ Excel
 					WriteComment(oComment, aCommentDatas, oComment.m_oText);
 					m_oBcw.WriteItemEnd(nCurPos);
 
@@ -3047,7 +3047,7 @@ namespace BinXlsxRW {
 			OOX::Spreadsheet::CConditionalFormatValueObject* pCFVO = NULL;
 			OOX::Spreadsheet::CColor* pColor = NULL;
 
-			// ToDo более правильно заделать виртуальную функцию, которая будет писать без привидения типов
+			// ToDo Р±РѕР»РµРµ РїСЂР°РІРёР»СЊРЅРѕ Р·Р°РґРµР»Р°С‚СЊ РІРёСЂС‚СѓР°Р»СЊРЅСѓСЋ С„СѓРЅРєС†РёСЋ, РєРѕС‚РѕСЂР°СЏ Р±СѓРґРµС‚ РїРёСЃР°С‚СЊ Р±РµР· РїСЂРёРІРёРґРµРЅРёСЏ С‚РёРїРѕРІ
 			int nCurPos = 0;
 
 			for (int i = 0, length = oColorScale.m_arrItems.size(); i < length; ++i)
@@ -3310,7 +3310,7 @@ namespace BinXlsxRW {
             NSBinPptxRW::CDrawingConverter* pOfficeDrawingConverter, const CString& sXMLOptions)
 		{
 			OOX::CPath path(sFileDst);
-			//создаем папку для media
+			//СЃРѕР·РґР°РµРј РїР°РїРєСѓ РґР»СЏ media
 			CString mediaDir = path.GetDirectory() + gc_sMediaDirName;
 			NSDirectory::CreateDirectory(string2std_string(mediaDir));
 
@@ -3323,7 +3323,7 @@ namespace BinXlsxRW {
 			//oMimeFile.WriteStringUTF8(CString(_T("application/x-asc-spreadsheet")));
 			//oMimeFile.CloseFile();
 
-			long nGrowSize = 1 * 1024 * 1024;//1мб
+			long nGrowSize = 1 * 1024 * 1024;//1РјР±
 			NSBinPptxRW::CBinaryFileWriter& oBufferedStream = *pOfficeDrawingConverter->m_pBinaryWriter;
 
 			m_oBcw = new BinaryCommonWriter(oBufferedStream);
@@ -3351,7 +3351,8 @@ namespace BinXlsxRW {
 
 			if (BinXlsxRW::c_oFileTypes::JSON == saveFileType)
 			{
-                CSVWriter::WriteFromXlsxToCsv(sFileDst, *pXlsx, CP_UTF8, _T(','), true);
+                //todo 46 РІСЂРµРјРµРЅРЅРѕ CP_UTF8
+                CSVWriter::WriteFromXlsxToCsv(sFileDst, *pXlsx, 46, _T(','), true);
 			}
 			else
 			{
@@ -3386,7 +3387,7 @@ namespace BinXlsxRW {
 			if(NULL != pStyle && pStyle->m_oColors.IsInit() && pStyle->m_oColors->m_oIndexedColors.IsInit())
 				pIndexedColors = pStyle->m_oColors->m_oIndexedColors.operator ->();
 
-			//важно в начале записать Theme и ClrMap, потому что они используются при дальнейшей записи для получения rgb цветов
+			//РІР°Р¶РЅРѕ РІ РЅР°С‡Р°Р»Рµ Р·Р°РїРёСЃР°С‚СЊ Theme Рё ClrMap, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РѕРЅРё РёСЃРїРѕР»СЊР·СѓСЋС‚СЃСЏ РїСЂРё РґР°Р»СЊРЅРµР№С€РµР№ Р·Р°РїРёСЃРё РґР»СЏ РїРѕР»СѓС‡РµРЅРёСЏ rgb С†РІРµС‚РѕРІ
 			OOX::CTheme* pTheme = oXlsx.GetTheme();
 			BYTE* pThemeData = NULL;
 			long nThemeDataSize = 0;
@@ -3456,10 +3457,10 @@ namespace BinXlsxRW {
 		}
 		void WriteMainTableStart()
 		{
-			int nTableCount = 128;//Специально ставим большое число, чтобы не увеличивать его при добавлении очередной таблицы.
+			int nTableCount = 128;//РЎРїРµС†РёР°Р»СЊРЅРѕ СЃС‚Р°РІРёРј Р±РѕР»СЊС€РѕРµ С‡РёСЃР»Рѕ, С‡С‚РѕР±С‹ РЅРµ СѓРІРµР»РёС‡РёРІР°С‚СЊ РµРіРѕ РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё РѕС‡РµСЂРµРґРЅРѕР№ С‚Р°Р±Р»РёС†С‹.
 			m_nRealTableCount = 0;
 			m_nMainTableStart = m_oBcw->m_oStream.GetPosition();
-			//вычисляем с какой позиции можно писать таблицы
+			//РІС‹С‡РёСЃР»СЏРµРј СЃ РєР°РєРѕР№ РїРѕР·РёС†РёРё РјРѕР¶РЅРѕ РїРёСЃР°С‚СЊ С‚Р°Р±Р»РёС†С‹
 			int nmtItemSize = 5;//5 byte
 			m_nLastFilePos = m_nMainTableStart + nTableCount * nmtItemSize;
 			//Write mtLen 
@@ -3467,11 +3468,11 @@ namespace BinXlsxRW {
 		}
 		void WriteMainTableEnd()
 		{
-			//Количество таблиц
+			//РљРѕР»РёС‡РµСЃС‚РІРѕ С‚Р°Р±Р»РёС†
 			m_oBcw->m_oStream.SetPosition(m_nMainTableStart);
 			m_oBcw->m_oStream.WriteBYTE(m_nRealTableCount);
 
-			//Seek в конец
+			//Seek РІ РєРѕРЅРµС†
 			m_oBcw->m_oStream.SetPosition(m_nLastFilePos);
 		}
 		int WriteTableStart(BYTE type, int nStartPos = -1)
@@ -3485,18 +3486,18 @@ namespace BinXlsxRW {
 			m_oBcw->m_oStream.WriteLONG(m_nLastFilePos);
 
 			//Write table
-			//Запоминаем позицию в MainTable
+			//Р—Р°РїРѕРјРёРЅР°РµРј РїРѕР·РёС†РёСЋ РІ MainTable
 			int nCurPos = m_oBcw->m_oStream.GetPosition();
-			//Seek в свободную область
+			//Seek РІ СЃРІРѕР±РѕРґРЅСѓСЋ РѕР±Р»Р°СЃС‚СЊ
 			m_oBcw->m_oStream.SetPosition(m_nLastFilePos);
 			return nCurPos;
 		}
 		void WriteTableEnd(int nCurPos)
 		{
-			//сдвигаем позицию куда можно следующую таблицу
+			//СЃРґРІРёРіР°РµРј РїРѕР·РёС†РёСЋ РєСѓРґР° РјРѕР¶РЅРѕ СЃР»РµРґСѓСЋС‰СѓСЋ С‚Р°Р±Р»РёС†Сѓ
 			m_nLastFilePos = m_oBcw->m_oStream.GetPosition();
 			m_nRealTableCount++;
-			//Seek вобратно в MainTable
+			//Seek РІРѕР±СЂР°С‚РЅРѕ РІ MainTable
 			m_oBcw->m_oStream.SetPosition(nCurPos);
 		}
 #ifdef DEFAULT_TABLE_STYLES

@@ -1,4 +1,4 @@
-#include "File.h"
+п»ї#include "File.h"
 #include "../Common/Utility.h"
 #include "TxtFile.h"
 
@@ -15,7 +15,7 @@ namespace Txt
 	{
 			m_listContent.clear();
 	}
-    void File::read(const std::wstring& filename, int code_page) // насильственное чтение в кодировке
+    void File::read(const std::wstring& filename, int code_page) // РЅР°СЃРёР»СЊСЃС‚РІРµРЅРЅРѕРµ С‡С‚РµРЅРёРµ РІ РєРѕРґРёСЂРѕРІРєРµ
 	{
 		m_listContent.clear();
 
@@ -42,7 +42,7 @@ namespace Txt
 
         TxtFile file(filename);
 		
-		//читаем юникод чтобы можно было выкинуть невалидные символы
+		//С‡РёС‚Р°РµРј СЋРЅРёРєРѕРґ С‡С‚РѕР±С‹ РјРѕР¶РЅРѕ Р±С‹Р»Рѕ РІС‹РєРёРЅСѓС‚СЊ РЅРµРІР°Р»РёРґРЅС‹Рµ СЃРёРјРІРѕР»С‹
 
 		if (file.isUtf8())
 		{
@@ -56,19 +56,22 @@ namespace Txt
 		{
 			m_listContent = file.readBigEndian();
 		}
-		//проверка убрана, потому что она работает в редких случаюх: если в первой строке есть английские символы
-		//далее не делается проверка BigEndian или LittleEndian
-		//notepad++ открывает такие файлы как ansi и мы будем также.
+		//РїСЂРѕРІРµСЂРєР° СѓР±СЂР°РЅР°, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РѕРЅР° СЂР°Р±РѕС‚Р°РµС‚ РІ СЂРµРґРєРёС… СЃР»СѓС‡Р°СЋС…: РµСЃР»Рё РІ РїРµСЂРІРѕР№ СЃС‚СЂРѕРєРµ РµСЃС‚СЊ Р°РЅРіР»РёР№СЃРєРёРµ СЃРёРјРІРѕР»С‹
+		//РґР°Р»РµРµ РЅРµ РґРµР»Р°РµС‚СЃСЏ РїСЂРѕРІРµСЂРєР° BigEndian РёР»Рё LittleEndian
+		//notepad++ РѕС‚РєСЂС‹РІР°РµС‚ С‚Р°РєРёРµ С„Р°Р№Р»С‹ РєР°Рє ansi Рё РјС‹ Р±СѓРґРµРј С‚Р°РєР¶Рµ.
 		//else if (file.isUnicodeWithOutBOM())
 		//	listContentUnicode = file.readUnicodeWithOutBOM();
 		else
 		{
-			m_listContent = _transform(file.readAnsiOrCodePage(), Encoding::utf82unicode);
+            if(-1 == m_nEncoding)
+                m_listContent = _transform(file.readAnsiOrCodePage(), Encoding::utf82unicode);
+            else
+                m_listContent = _transform2(file.readAnsiOrCodePage(), m_nEncoding, Encoding::cp2unicode);
 		}
 		
 		m_listContentSize = file.getLinesCount();
 		
-		//correctUnicode(listContentUnicode); - ВЫТИРАЕТ ПРОБЕЛЫ  в конце строки (
+		//correctUnicode(listContentUnicode); - Р’Р«РўРР РђР•Рў РџР РћР‘Р•Р›Р«  РІ РєРѕРЅС†Рµ СЃС‚СЂРѕРєРё (
 	}
 
 

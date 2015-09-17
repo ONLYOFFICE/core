@@ -2,6 +2,8 @@
 
 #include <map>
 #include "../../DesktopEditor/common/File.h"
+#include "../../UnicodeConverter/UnicodeConverter.h"
+#include "../../UnicodeConverter/UnicodeConverter_Encodings.h"
 
 namespace CSVReader
 {
@@ -115,17 +117,12 @@ namespace CSVReader
 			BYTE* pFileData = new BYTE[oFile.GetFileSize()];
 			oFile.ReadFile(pFileData, oFile.GetFileSize(), nFileSize);
 			oFile.CloseFile();
-//todo
-#if defined(_WIN32) || defined (_WIN64)
-			INT nSize = MultiByteToWideChar(nCodePage, 0, (LPCSTR)pFileData, nFileSize, NULL, 0);
-			WCHAR *pTemp = new WCHAR [nSize];
-			memset(pTemp, 0, sizeof(WCHAR) * nSize);
-			MultiByteToWideChar (nCodePage, 0, (LPCSTR)pFileData, nFileSize, pTemp, nSize);
-#else
-			std::wstring sFileDataW = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pFileData, nFileSize);
-			INT nSize = sFileDataW.length();
-			const WCHAR *pTemp = sFileDataW.c_str();
-#endif
+
+            const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[nCodePage];
+            NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
+            std::wstring sFileDataW = oUnicodeConverter.toUnicode((const char*)pFileData, nFileSize, oEncodindId.Name);
+            INT nSize = sFileDataW.length();
+            const WCHAR *pTemp =sFileDataW.c_str();
 
             const WCHAR wcNewLineN = _T('\n');
             const WCHAR wcNewLineR = _T('\r');
@@ -231,9 +228,6 @@ namespace CSVReader
 			{
 				RELEASEOBJECT(pRow);
 			}
-#if defined(_WIN32) || defined (_WIN64)
-			RELEASEARRAYOBJECTS(pTemp);
-#endif
 		}
 
 		std::map<CString, OOX::Spreadsheet::CWorksheet*> &arrWorksheets = oXlsx.GetWorksheets();

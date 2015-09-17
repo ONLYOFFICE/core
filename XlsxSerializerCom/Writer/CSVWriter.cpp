@@ -1,4 +1,6 @@
 ﻿#include "CSVWriter.h"
+#include "../../UnicodeConverter/UnicodeConverter.h"
+#include "../../UnicodeConverter/UnicodeConverter_Encodings.h"
 
 namespace CSVWriter
 {
@@ -28,21 +30,10 @@ namespace CSVWriter
 			}
 			else
 			{
-//todo
-#if defined(_WIN32) || defined (_WIN64)
-				INT nSize = WideCharToMultiByte(nCodePage, 0, *pWriteBuffer, nCurrentIndex, NULL, NULL, NULL, NULL);
-				CHAR *pString = new CHAR [nSize];
-				memset(pString, 0, sizeof (CHAR) * nSize);
-				WideCharToMultiByte (nCodePage, 0, *pWriteBuffer, -1, pString, nSize, NULL, NULL);
-				pFile->WriteFile((BYTE*)pString, sizeof (CHAR) * nSize);
-				RELEASEARRAYOBJECTS(pString);
-#else
-				BYTE* pUtf8 = NULL;
-				long nUtf8Size;
-				NSFile::CUtf8Converter::GetUtf8StringFromUnicode(*pWriteBuffer, nCurrentIndex, pUtf8, nUtf8Size);
-				pFile->WriteFile(pUtf8, nUtf8Size);
-				RELEASEARRAYOBJECTS(pUtf8);
-#endif
+                const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[nCodePage];
+                NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
+                std::string sFileDataA = oUnicodeConverter.fromUnicode(*pWriteBuffer, nCurrentIndex, oEncodindId.Name);
+                pFile->WriteFile((BYTE*)sFileDataA.c_str(), sizeof (CHAR) * sFileDataA.length());
 			}	
 			
 			memset(*pWriteBuffer, 0, nSizeWchar * c_nSize);

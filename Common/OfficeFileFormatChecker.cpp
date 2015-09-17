@@ -113,6 +113,16 @@ bool COfficeFileFormatChecker::isPptFormatFile	(POLE::Storage * storage)
 
 	return false;
 }
+bool COfficeFileFormatChecker::isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage)
+{
+    if (storage == false) return false;
+
+    std::list<std::string> entries = storage->entries("DataSpaces");
+    if (entries.size() > 0)
+        return true;
+
+    return false;
+}
 bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
 {
     //приоритет как оказывается важен
@@ -133,6 +143,11 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
         else if ( isPptFormatFile(&storage) )
         {
             nFileType = AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT;
+            return true;
+        }
+        else if ( isMS_OFFCRYPTOFormatFile(&storage) )
+        {
+            nFileType = AVS_OFFICESTUDIO_FILE_OTHER_MS_OFFCRYPTO;
             return true;
         }
     }
@@ -405,25 +420,65 @@ bool COfficeFileFormatChecker::isOpenOfficeFormatFile(const std::wstring & fileN
 
 std::wstring COfficeFileFormatChecker::GetExtensionByType(int type)
 {
-	switch (type)
-	{
-	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:		return _T(".docx");
-	case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:		return _T(".doc");
-	case AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF:		return _T(".rtf");
-	case AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT:		return _T(".txt");
-	case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:		return _T(".html");
-	case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT:		return _T(".odt");
-	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:	return _T(".xlsx");
-	case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS:		return _T(".ods");
-	case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:	return _T(".pptx");
-	case AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP:	return _T(".odp");
-	case AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY:		return _T(".doct");
-	case AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY:		return _T(".xlst");
-	case AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY:		return _T(".pptt");
+    switch (type)
+    {
+    case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOCX:		return _T(".docx");
+    case AVS_OFFICESTUDIO_FILE_DOCUMENT_DOC:		return _T(".doc");
+    case AVS_OFFICESTUDIO_FILE_DOCUMENT_ODT:		return _T(".odt");
+    case AVS_OFFICESTUDIO_FILE_DOCUMENT_RTF:		return _T(".rtf");
+    case AVS_OFFICESTUDIO_FILE_DOCUMENT_TXT:		return _T(".txt");
+    case AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML:		return _T(".html");
+    case AVS_OFFICESTUDIO_FILE_DOCUMENT_MHT:		return _T(".mht");
+    case AVS_OFFICESTUDIO_FILE_DOCUMENT_EPUB:		return _T(".epub");
+    case AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2:		return _T(".fb2");
+    case AVS_OFFICESTUDIO_FILE_DOCUMENT_MOBI:		return _T(".mobi");
 
-	}
-	
-	return _T("");
+    case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPTX:	return _T(".pptx");
+    case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPT:	return _T(".ppt");
+    case AVS_OFFICESTUDIO_FILE_PRESENTATION_ODP:	return _T(".odp");
+    case AVS_OFFICESTUDIO_FILE_PRESENTATION_PPSX:	return _T(".ppsx");
+
+    case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLSX:	return _T(".xlsx");
+    case AVS_OFFICESTUDIO_FILE_SPREADSHEET_XLS:		return _T(".xls");
+    case AVS_OFFICESTUDIO_FILE_SPREADSHEET_ODS:		return _T(".ods");
+    case AVS_OFFICESTUDIO_FILE_SPREADSHEET_CSV:		return _T(".csv");
+
+    case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_PDF:	return _T(".pdf");
+    case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_SWF:	return _T(".swf");
+    case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_DJVU:	return _T(".djvu");
+    case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_XPS:	return _T(".xps");
+    case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_SVG:	return _T(".svg");
+    case AVS_OFFICESTUDIO_FILE_CROSSPLATFORM_HTMLR:	return _T(".htmlr");
+
+    case AVS_OFFICESTUDIO_FILE_OTHER_HTMLZIP:       return _T(".zip");
+    case AVS_OFFICESTUDIO_FILE_OTHER_JSON:          return _T(".json");
+
+    case AVS_OFFICESTUDIO_FILE_IMAGE:
+    case AVS_OFFICESTUDIO_FILE_IMAGE_JPG:           return _T(".json");
+    case AVS_OFFICESTUDIO_FILE_IMAGE_TIFF:          return _T(".tiff");
+    case AVS_OFFICESTUDIO_FILE_IMAGE_TGA:           return _T(".tga");
+    case AVS_OFFICESTUDIO_FILE_IMAGE_GIF:           return _T(".gif");
+    case AVS_OFFICESTUDIO_FILE_IMAGE_PNG:           return _T(".png");
+    case AVS_OFFICESTUDIO_FILE_IMAGE_EMF:           return _T(".emf");
+    case AVS_OFFICESTUDIO_FILE_IMAGE_WMF:           return _T(".wmf");
+    case AVS_OFFICESTUDIO_FILE_IMAGE_BMP:           return _T(".bmp");
+    case AVS_OFFICESTUDIO_FILE_IMAGE_CR2:           return _T(".cr2");
+    case AVS_OFFICESTUDIO_FILE_IMAGE_PCX:           return _T(".pcx");
+    case AVS_OFFICESTUDIO_FILE_IMAGE_RAS:           return _T(".ras");
+    case AVS_OFFICESTUDIO_FILE_IMAGE_PSD:           return _T(".psd");
+    case AVS_OFFICESTUDIO_FILE_IMAGE_ICO:           return _T(".ico");
+
+    case AVS_OFFICESTUDIO_FILE_CANVAS_WORD:
+    case AVS_OFFICESTUDIO_FILE_CANVAS_SPREADSHEET:
+    case AVS_OFFICESTUDIO_FILE_CANVAS_PRESENTATION:	return _T(".bin");
+    case AVS_OFFICESTUDIO_FILE_OTHER_OLD_DOCUMENT:
+    case AVS_OFFICESTUDIO_FILE_TEAMLAB_DOCY:        return _T(".doct");
+    case AVS_OFFICESTUDIO_FILE_TEAMLAB_XLSY:        return _T(".xlst");
+    case AVS_OFFICESTUDIO_FILE_OTHER_OLD_PRESENTATION:
+    case AVS_OFFICESTUDIO_FILE_OTHER_OLD_DRAWING:
+    case AVS_OFFICESTUDIO_FILE_TEAMLAB_PPTY:        return _T(".pptt");
+    }
+    return _T("");
 }
 
 std::wstring COfficeFileFormatChecker::GetFormatExtension(const std::wstring & fileName)

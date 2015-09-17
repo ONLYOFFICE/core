@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #include "../../Common/DocxFormat/Source/SystemUtility/File.h"
 #include "./BinReaderWriterDefines.h"
 #include "../../DesktopEditor/graphics/IRenderer.h"
@@ -66,7 +66,7 @@ namespace NSBinPptxRW
 			{
 				while ((m_lSizeCur + nSize) > m_lSize)
 				{
-                    //m_lSize *= 2; - бесконтрольно ..
+                    //m_lSize *= 2; - Р±РµСЃРєРѕРЅС‚СЂРѕР»СЊРЅРѕ ..
                     m_lSize += (std::max)(nSize, (size_t) 1024);
 				}
                 int size_alloc = m_lSize * sizeof(wchar_t);
@@ -74,7 +74,7 @@ namespace NSBinPptxRW
                 wchar_t* pRealloc = (wchar_t*)realloc(m_pData, size_alloc );
 				if (NULL != pRealloc)
 				{
-					// реаллок сработал
+					// СЂРµР°Р»Р»РѕРє СЃСЂР°Р±РѕС‚Р°Р»
 					m_pData		= pRealloc;
 					m_pDataCur	= m_pData + m_lSizeCur;
 				}
@@ -130,7 +130,7 @@ namespace NSBinPptxRW
 		}
         AVSINLINE void WriteStringXML(const CString& strValue)
 		{
-			// можно ускорить (см. как сделано в шейпах)
+			// РјРѕР¶РЅРѕ СѓСЃРєРѕСЂРёС‚СЊ (СЃРј. РєР°Рє СЃРґРµР»Р°РЅРѕ РІ С€РµР№РїР°С…)
 			CString s = strValue;
 			s.Replace(_T("&"),	_T("&amp;"));
 			s.Replace(_T("'"),	_T("&apos;"));
@@ -302,7 +302,7 @@ namespace NSBinPptxRW
 		}
 		AVSINLINE void WriteStringXML(CString strValue)
 		{
-			// можно ускорить (см. как сделано в шейпах)
+			// РјРѕР¶РЅРѕ СѓСЃРєРѕСЂРёС‚СЊ (СЃРј. РєР°Рє СЃРґРµР»Р°РЅРѕ РІ С€РµР№РїР°С…)
 			CString s = strValue;
 			s.Replace(_T("&"),	_T("&amp;"));
 			s.Replace(_T("'"),	_T("&apos;"));
@@ -557,43 +557,12 @@ namespace NSBinPptxRW
 			else
 			{
 				CDirectory::SaveToFile(strFilePath, strData);
-
-				int nLength = strData.GetLength();
-
-				CStringA saStr;
-#if defined(_WIN32) || defined (_WIN64)
-    #ifdef UNICODE
-                    // Encoding Unicode to UTF-8
-                    WideCharToMultiByte(CP_UTF8, 0, strData.GetBuffer(), nLength + 1, saStr.GetBuffer(nLength*3 + 1), nLength*3, NULL, NULL);
-                    saStr.ReleaseBuffer();
-    #else
-                    wchar_t* pWStr = new wchar_t[nLength + 1];
-                    if (!pWStr)
-                        return;
-
-                    // set end string
-                    pWStr[nLength] = 0;
-
-                    // Encoding ASCII to Unicode
-                    MultiByteToWideChar(CP_ACP, 0, strData, nLength, pWStr, nLength);
-
-                    int nLengthW = (int)wcslen(pWStr);
-
-                    // Encoding Unicode to UTF-8
-                    WideCharToMultiByte(CP_UTF8, 0, pWStr, nLengthW + 1, saStr.GetBuffer(nLengthW*3 + 1), nLengthW*3, NULL, NULL);
-                    saStr.ReleaseBuffer();
-
-                    delete[] pWStr;
-    #endif
-#else
-                saStr = stringWstingToUtf8String(strData);
-#endif
 				
 				CFile oFile;
 				oFile.CreateFile(strFilePath);
 				CString strHead = _T("<?xml version=\"1.0\" encoding=\"UTF-8\" standalone=\"yes\"?>");
 				oFile.WriteStringUTF8(strHead);
-				oFile.WriteFile((void*)saStr.GetBuffer(), saStr.GetLength());
+				oFile.WriteStringUTF8(strData);
 				oFile.CloseFile();
 			}
 
@@ -750,7 +719,7 @@ namespace NSBinPptxRW
 
 		void ReplaceString(CString str1, CString str2)
 		{
-			// ужасная функция. вызывать ее не надо. не для этого класс писался.
+			// СѓР¶Р°СЃРЅР°СЏ С„СѓРЅРєС†РёСЏ. РІС‹Р·С‹РІР°С‚СЊ РµРµ РЅРµ РЅР°РґРѕ. РЅРµ РґР»СЏ СЌС‚РѕРіРѕ РєР»Р°СЃСЃ РїРёСЃР°Р»СЃСЏ.
 			CString sCur = m_oWriter.GetData();
 			sCur.Replace(str1, str2);
 			ClearNoAttack();

@@ -1,4 +1,4 @@
-#ifndef MEMORYSTREAM
+﻿#ifndef MEMORYSTREAM
 #define MEMORYSTREAM
 
 #include <string>

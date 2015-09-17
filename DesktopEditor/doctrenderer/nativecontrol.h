@@ -1,4 +1,4 @@
-#ifndef NATIVECONTROL
+﻿#ifndef NATIVECONTROL
 #define NATIVECONTROL
 
 #include "memorystream.h"

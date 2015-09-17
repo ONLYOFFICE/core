@@ -38,6 +38,7 @@ private:
 	bool isDocFormatFile	(POLE::Storage *storage);
 	bool isXlsFormatFile	(POLE::Storage *storage);
 	bool isPptFormatFile	(POLE::Storage *storage);
+    bool isMS_OFFCRYPTOFormatFile	(POLE::Storage * storage);
 
 	bool isRtfFormatFile	(unsigned char* pBuffer,int dwBytes);
 	bool isHtmlFormatFile	(unsigned char* pBuffer,int dwBytes);

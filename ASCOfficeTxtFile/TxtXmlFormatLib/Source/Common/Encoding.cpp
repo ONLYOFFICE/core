@@ -11,6 +11,8 @@
 #endif
 
 #include "../../../Common/DocxFormat/Source/Base/unicode_util.h"
+#include "../../../UnicodeConverter/UnicodeConverter.h"
+#include "../../../UnicodeConverter/UnicodeConverter_Encodings.h"
 
 
 const std::wstring Encoding::ansi2unicode(const std::string& line)
@@ -20,56 +22,9 @@ const std::wstring Encoding::ansi2unicode(const std::string& line)
 
 const std::wstring Encoding::cp2unicode(const std::string& sline, const unsigned int nCodepage)
 {
-#if defined (_WIN32) || defined (_WIN64)
-	const int nSize = MultiByteToWideChar(nCodepage, 0, sline.c_str(), sline.size(), NULL, 0);
-
-	wchar_t *sTemp = new wchar_t[nSize];
-	if (!sTemp)
-		return std::wstring();
-
-    int size = MultiByteToWideChar(nCodepage, 0, sline.c_str(), sline.size(), sTemp, nSize);
-
-	std::wstring sResult(sTemp, size);
-	delete []sTemp;
-
-	return sResult;
-#else
-    bool ansi = true;
-
-    size_t insize = sline.length();
-    std::wstring w_out;
-
-    char *inptr = (char*)sline.c_str();
-
-    if (nCodepage >= 0)
-    {
-        std::string sCodepage =  "CP" + std::to_string(nCodepage);
-
-        iconv_t ic= iconv_open("WCHAR_T", sCodepage.c_str());
-        if (ic != (iconv_t) -1)
-        {
-            size_t nconv = 0, avail = (insize + 1) * sizeof(wchar_t);
-
-            char* out_str   = new char[avail];
-            char* outptr    = out_str;
-
-            nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
-            if (nconv == 0)
-            {
-                insize = sline.length();
-                ((wchar_t*)out_str)[insize] = 0;
-                w_out = std::wstring((wchar_t*)out_str, insize);
-                ansi = false;
-            }
-            iconv_close(ic);
-            delete []out_str;
-        }
-    }
-    if (ansi)
-        w_out = std::wstring(sline.begin(), sline.end());
-
-    return w_out;
-#endif
+    const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[nCodepage];
+    NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
+    return oUnicodeConverter.toUnicode(sline, oEncodindId.Name);
 }
 
 
@@ -201,47 +156,7 @@ const std::string Encoding::unicode2utf8(const std::wstring& line)
 
 const std::string Encoding::unicode2cp(const std::wstring& sLine, const unsigned int nCodepage)
 {
-#if defined (_WIN32) || defined (_WIN64)
-	const int nSize = WideCharToMultiByte(nCodepage, 0, sLine.c_str(), sLine.length(), NULL, 0, NULL, NULL);
-	char *sTemp = new char[nSize];
-	if (!sTemp)
-		return std::string();
-
-    int size = WideCharToMultiByte(nCodepage, 0, sLine.c_str(), sLine.length(), sTemp, nSize, NULL, NULL);
-
-	std::string sResult(sTemp, size);
-	delete []sTemp;
-
-	return sResult;
-#else
-    std::string out;
-    bool ansi = true;
-
-    size_t insize = sLine.length();
-    out.reserve(insize);
-
-    char *inptr = (char*)sLine.c_str();
-    char* outptr = (char*)out.c_str();
-
-    if (nCodepage >= 0)
-    {
-        std::string sCodepage =  "CP" + std::to_string(nCodepage);
-
-        iconv_t ic= iconv_open(sCodepage.c_str(), "WCHAR_T");
-        if (ic != (iconv_t) -1)
-        {
-            size_t nconv = 0, avail = insize * sizeof(wchar_t);
-
-            nconv = iconv (ic, &inptr, &insize, &outptr, &avail);
-            if (nconv == 0) ansi = false;
-            iconv_close(ic);
-        }
-    }
-
-    if (ansi)
-        out = std::string(sLine.begin(), sLine.end());
-
-    return out;
-
-#endif
+    const NSUnicodeConverter::EncodindId& oEncodindId = NSUnicodeConverter::Encodings[nCodepage];
+    NSUnicodeConverter::CUnicodeConverter oUnicodeConverter;
+    return oUnicodeConverter.fromUnicode(sLine, oEncodindId.Name);
 }

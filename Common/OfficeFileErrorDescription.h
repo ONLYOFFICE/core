@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 
 #ifdef MAKE_HRESULT
 #define AVS_ERROR_FIRST					MAKE_HRESULT(SEVERITY_ERROR, FACILITY_ITF, 0x0300)
@@ -16,36 +16,36 @@
 
 // AVSOfficeUniversalConverter 0x0050 - 0x0075
 #define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST						(AVS_ERROR_FIRST + 0x0050) 
-#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_XML_FORMAT					(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0001) //Входная XML имеет неправильный формат
-#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_CREATE_TEMP_DIR			(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0002) //Ошибка при создании темповой директории
-#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_REMOVE_TEMP_DIR			(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0003) //Ошибка при удалении темповой директории
-#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_CONVERT_THIS_FORMATS		(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0004) //Не поддерживается конвертация данных типов файлов
-#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_LOAD_FILE					(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0004) //Не поддерживается конвертация данных типов файлов
-#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_SAVE_FILE					(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0004) //Не поддерживается конвертация данных типов файлов
-#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_ADVERTISE					(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0005) //при добавлении рекламы
-#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_COPY						(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0006) //ошибка при копировании source в destination( копируются когда их тип совпадает )
-#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_CREATE_EXTR_DIR			(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0007) //ошибка при копировании source в destination( копируются когда их тип совпадает )
+#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_XML_FORMAT					(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0001) //Р’С…РѕРґРЅР°СЏ XML РёРјРµРµС‚ РЅРµРїСЂР°РІРёР»СЊРЅС‹Р№ С„РѕСЂРјР°С‚
+#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_CREATE_TEMP_DIR			(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0002) //РћС€РёР±РєР° РїСЂРё СЃРѕР·РґР°РЅРёРё С‚РµРјРїРѕРІРѕР№ РґРёСЂРµРєС‚РѕСЂРёРё
+#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_REMOVE_TEMP_DIR			(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0003) //РћС€РёР±РєР° РїСЂРё СѓРґР°Р»РµРЅРёРё С‚РµРјРїРѕРІРѕР№ РґРёСЂРµРєС‚РѕСЂРёРё
+#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_CONVERT_THIS_FORMATS		(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0004) //РќРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ РєРѕРЅРІРµСЂС‚Р°С†РёСЏ РґР°РЅРЅС‹С… С‚РёРїРѕРІ С„Р°Р№Р»РѕРІ
+#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_LOAD_FILE					(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0004) //РќРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ РєРѕРЅРІРµСЂС‚Р°С†РёСЏ РґР°РЅРЅС‹С… С‚РёРїРѕРІ С„Р°Р№Р»РѕРІ
+#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_SAVE_FILE					(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0004) //РќРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ РєРѕРЅРІРµСЂС‚Р°С†РёСЏ РґР°РЅРЅС‹С… С‚РёРїРѕРІ С„Р°Р№Р»РѕРІ
+#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_ADVERTISE					(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0005) //РїСЂРё РґРѕР±Р°РІР»РµРЅРёРё СЂРµРєР»Р°РјС‹
+#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_COPY						(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0006) //РѕС€РёР±РєР° РїСЂРё РєРѕРїРёСЂРѕРІР°РЅРёРё source РІ destination( РєРѕРїРёСЂСѓСЋС‚СЃСЏ РєРѕРіРґР° РёС… С‚РёРї СЃРѕРІРїР°РґР°РµС‚ )
+#define AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_CREATE_EXTR_DIR			(AVS_UNIVERSALDOCUMENTCONVERTER_ERROR_FIRST + 0x0007) //РѕС€РёР±РєР° РїСЂРё РєРѕРїРёСЂРѕРІР°РЅРёРё source РІ destination( РєРѕРїРёСЂСѓСЋС‚СЃСЏ РєРѕРіРґР° РёС… С‚РёРї СЃРѕРІРїР°РґР°РµС‚ )
 
 
 // AVSOfficeFile 0x0075 - 0x00100
 #define AVS_OFFICEFILE_ERROR_FIRST										(AVS_ERROR_FIRST + 0x0075) 
-#define AVS_OFFICEFILE_ERROR_CREATE_TEMP								(AVS_OFFICEFILE_ERROR_FIRST + 0x0001) //Ошибка при создании темповой директории или файла
-#define AVS_OFFICEFILE_ERROR_UNSUPPORTED_LOAD_FORMAT					(AVS_OFFICEFILE_ERROR_FIRST + 0x0002) //Формат файла не поддерживается
-#define AVS_OFFICEFILE_ERROR_UNSUPPORTED_SAVE_FORMAT					(AVS_OFFICEFILE_ERROR_FIRST + 0x0003) //Формат файла не поддерживается
-#define AVS_OFFICEFILE_ERROR_SAVE_EMPTY									(AVS_OFFICEFILE_ERROR_FIRST + 0x0004) //Формат файла не поддерживается
-#define AVS_OFFICEFILE_ERROR_PRINT_OUT_OF_AREA							(AVS_OFFICEFILE_ERROR_FIRST + 0x0005) //печать за границами области печати
+#define AVS_OFFICEFILE_ERROR_CREATE_TEMP								(AVS_OFFICEFILE_ERROR_FIRST + 0x0001) //РћС€РёР±РєР° РїСЂРё СЃРѕР·РґР°РЅРёРё С‚РµРјРїРѕРІРѕР№ РґРёСЂРµРєС‚РѕСЂРёРё РёР»Рё С„Р°Р№Р»Р°
+#define AVS_OFFICEFILE_ERROR_UNSUPPORTED_LOAD_FORMAT					(AVS_OFFICEFILE_ERROR_FIRST + 0x0002) //Р¤РѕСЂРјР°С‚ С„Р°Р№Р»Р° РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ
+#define AVS_OFFICEFILE_ERROR_UNSUPPORTED_SAVE_FORMAT					(AVS_OFFICEFILE_ERROR_FIRST + 0x0003) //Р¤РѕСЂРјР°С‚ С„Р°Р№Р»Р° РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ
+#define AVS_OFFICEFILE_ERROR_SAVE_EMPTY									(AVS_OFFICEFILE_ERROR_FIRST + 0x0004) //Р¤РѕСЂРјР°С‚ С„Р°Р№Р»Р° РЅРµ РїРѕРґРґРµСЂР¶РёРІР°РµС‚СЃСЏ
+#define AVS_OFFICEFILE_ERROR_PRINT_OUT_OF_AREA							(AVS_OFFICEFILE_ERROR_FIRST + 0x0005) //РїРµС‡Р°С‚СЊ Р·Р° РіСЂР°РЅРёС†Р°РјРё РѕР±Р»Р°СЃС‚Рё РїРµС‡Р°С‚Рё
 
 
 // AVSOdtFile	0x0100 - 0x0200
-#define AVS_ODTFILE_ERROR_INPUT_FILE	(AVS_ERROR_FIRST + 0x0100)	// Ошибка в входном файле
-#define AVS_ODTFILE_ERROR_ORIGIN_FILE	(AVS_ERROR_FIRST + 0x0101)	// Ошибка в шаблоном файле
-#define AVS_ODTFILE_ERROR_CONVERT		(AVS_ERROR_FIRST + 0x0102)	// Ошибка при конвертации
+#define AVS_ODTFILE_ERROR_INPUT_FILE	(AVS_ERROR_FIRST + 0x0100)	// РћС€РёР±РєР° РІ РІС…РѕРґРЅРѕРј С„Р°Р№Р»Рµ
+#define AVS_ODTFILE_ERROR_ORIGIN_FILE	(AVS_ERROR_FIRST + 0x0101)	// РћС€РёР±РєР° РІ С€Р°Р±Р»РѕРЅРѕРј С„Р°Р№Р»Рµ
+#define AVS_ODTFILE_ERROR_CONVERT		(AVS_ERROR_FIRST + 0x0102)	// РћС€РёР±РєР° РїСЂРё РєРѕРЅРІРµСЂС‚Р°С†РёРё
 
 
 // AVSTxtFile 0x0200 - 0x0300
-#define AVS_TXTFILE_ERROR_INPUT_FILE	(AVS_ERROR_FIRST + 0x0200)	// Ошибка в входном файле
-#define AVS_TXTFILE_ERROR_ORIGIN_FILE	(AVS_ERROR_FIRST + 0x0201)	// Ошибка в шаблоном файле
-#define AVS_TXTFILE_ERROR_CONVERT		(AVS_ERROR_FIRST + 0x0202)	// Ошибка при конвертации
+#define AVS_TXTFILE_ERROR_INPUT_FILE	(AVS_ERROR_FIRST + 0x0200)	// РћС€РёР±РєР° РІ РІС…РѕРґРЅРѕРј С„Р°Р№Р»Рµ
+#define AVS_TXTFILE_ERROR_ORIGIN_FILE	(AVS_ERROR_FIRST + 0x0201)	// РћС€РёР±РєР° РІ С€Р°Р±Р»РѕРЅРѕРј С„Р°Р№Р»Рµ
+#define AVS_TXTFILE_ERROR_CONVERT		(AVS_ERROR_FIRST + 0x0202)	// РћС€РёР±РєР° РїСЂРё РєРѕРЅРІРµСЂС‚Р°С†РёРё
 
 // AVSOfficePDFWriter 0x0300 - 0x0400
 
@@ -194,6 +194,12 @@
 #define AVS_FILEUTILS_ERROR_FIRST 0x1000
 #define AVS_FILEUTILS_ERROR_UNKNOWN                                     (AVS_ERROR_FIRST + AVS_FILEUTILS_ERROR_FIRST + 0x0001)
 #define AVS_FILEUTILS_ERROR_CONVERT                                     (AVS_ERROR_FIRST + AVS_FILEUTILS_ERROR_FIRST + 0x0050)
+#define AVS_FILEUTILS_ERROR_CONVERT_DOWNLOAD                            (AVS_ERROR_FIRST + AVS_FILEUTILS_ERROR_FIRST + 0x0051)
+#define AVS_FILEUTILS_ERROR_CONVERT_UNKNOWN_FORMAT                      (AVS_ERROR_FIRST + AVS_FILEUTILS_ERROR_FIRST + 0x0052)
+#define AVS_FILEUTILS_ERROR_CONVERT_TIMEOUT                             (AVS_ERROR_FIRST + AVS_FILEUTILS_ERROR_FIRST + 0x0053)
 #define AVS_FILEUTILS_ERROR_CONVERT_READ_FILE                           (AVS_ERROR_FIRST + AVS_FILEUTILS_ERROR_FIRST + 0x0054)
+#define AVS_FILEUTILS_ERROR_CONVERT_MS_OFFCRYPTO                        (AVS_ERROR_FIRST + AVS_FILEUTILS_ERROR_FIRST + 0x0055)
 #define AVS_FILEUTILS_ERROR_CONVERT_CORRUPTED                           (AVS_ERROR_FIRST + AVS_FILEUTILS_ERROR_FIRST + 0x0056)
+#define AVS_FILEUTILS_ERROR_CONVERT_LIBREOFFICE                         (AVS_ERROR_FIRST + AVS_FILEUTILS_ERROR_FIRST + 0x0057)
 #define AVS_FILEUTILS_ERROR_CONVERT_PARAMS                              (AVS_ERROR_FIRST + AVS_FILEUTILS_ERROR_FIRST + 0x0058)
+#define AVS_FILEUTILS_ERROR_CONVERT_NEED_PARAMS                         (AVS_ERROR_FIRST + AVS_FILEUTILS_ERROR_FIRST + 0x0059)

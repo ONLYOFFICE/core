@@ -1745,7 +1745,7 @@ namespace SVG
 
 		if ((strClassName.GetLength () > 1) && (-1 == lLongAttribute ) && (alpha > 0.0))
 		{
-			m_render->put_BrushColor1 (0);
+			m_render->put_BrushColor1 (0xffffff);
 			m_render->put_BrushAlpha1 ((LONG)( dAlplaFill * 255.0 * alpha));
 
             return true;

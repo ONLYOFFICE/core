@@ -273,15 +273,15 @@ namespace NSPresentationEditor
 	class CVideoElement : public IElement
 	{
 	public:
-		CString		m_strFileName;
-		double		m_dVideoDuration;
-		BYTE		m_nAlpha;
-		LONG		m_lAngle;
+		std::wstring	m_strFileName;
+		double			m_dVideoDuration;
+		BYTE			m_nAlpha;
+		LONG			m_lAngle;
 
-		double		m_dClipStartTime;
-		double		m_dClipEndTime;
+		double			m_dClipStartTime;
+		double			m_dClipEndTime;
 
-                bool		m_bLoop;
+		bool			m_bLoop;
 
 	public:
 		CVideoElement() : IElement()
@@ -353,14 +353,14 @@ namespace NSPresentationEditor
 
 		inline CString GetVideoStream ()
 		{
-			int lIndex = m_strFileName.Find(L"file:///");
+			int lIndex = m_strFileName.find(L"file:///");
 			if (0 == lIndex)
 			{
-				m_strFileName = m_strFileName.Mid(8);
-				m_strFileName.Replace('/', '\\');
+				m_strFileName = m_strFileName.substr(8);
+				/*m_strFileName.Replace('/', '\\');*/
 			}
 			
-			CString strFileName = m_strFileName;
+			CString strFileName = std_string2string(m_strFileName);
 			CorrectXmlString(strFileName);
 
 			CString element;
@@ -395,15 +395,15 @@ namespace NSPresentationEditor
 			CString element = _T("");
 			element.Format(_T("<AudioSource StartTime='%lf' Duration='%lf' Amplify='%lf' loop='%d' >"), m_dStartTime, m_dEndTime - m_dStartTime, 100.0, m_bLoop);
 
-			int lIndex = m_strFileName.Find(L"file:///");
+			int lIndex = m_strFileName.find(L"file:///");
 			if (0 == lIndex)
 			{
-				m_strFileName = m_strFileName.Mid(8);
-				m_strFileName.Replace('/', '\\');
-				m_strFileName.Replace(L"%20", L" ");
+				m_strFileName = m_strFileName.substr(8);
+				//m_strFileName.Replace('/', '\\');
+				//m_strFileName.Replace(L"%20", L" ");
 			}
 
-			CString strFileName = m_strFileName;
+			CString strFileName = std_string2string(m_strFileName);
 			CorrectXmlString(strFileName);
 
 			CString source;
@@ -433,26 +433,39 @@ namespace NSPresentationEditor
 	class CImageElement : public IElement
 	{
 	public:
-		CString		m_strFileName;
+		std::wstring	m_strFileName;
 
-		BYTE		m_nAlpha;
-		bool		m_bApplyBounds;
-		CDoubleRect m_rcImageBounds;
+		BYTE			m_nAlpha;
+
+		bool			m_bCropEnabled;
+
+		long			m_lcropFromRight;
+		long			m_lcropFromLeft;
+		long			m_lcropFromTop;
+		long			m_lcropFromBottom;
+
+		bool			m_bStretch;
+		bool			m_bTile;
 
 	public:
 		CImageElement() : IElement()
 		{
 			m_etType = etPicture;
 			
-			m_strFileName = _T("");
+			m_strFileName			= _T("");
 
-			m_nAlpha = 0xFF;
+			m_nAlpha				= 0xFF;
 
-			m_bApplyBounds = false;
-			m_rcImageBounds.top = 0.0;
-			m_rcImageBounds.left = 0.0;
-			m_rcImageBounds.right = 0.0;
-			m_rcImageBounds.bottom = 0.0;
+			m_bCropEnabled			= false;
+			
+			m_lcropFromRight		= 0;
+			m_lcropFromLeft			= 0;
+			m_lcropFromTop			= 0;
+			m_lcropFromBottom		= 0;
+
+			m_bStretch				= true;
+			m_bTile					= false;
+
 		}
 
 		virtual ~CImageElement()
@@ -526,15 +539,18 @@ namespace NSPresentationEditor
 			
 			SetProperiesToDublicate((IElement*)pImageElement);
 
-			pImageElement->m_strFileName = m_strFileName;
-			pImageElement->m_nAlpha = m_nAlpha;
+			pImageElement->m_strFileName			= m_strFileName;
+			pImageElement->m_nAlpha					= m_nAlpha;
 
-			pImageElement->m_bApplyBounds = m_bApplyBounds;
-			pImageElement->m_rcImageBounds.top = m_rcImageBounds.top;
-			pImageElement->m_rcImageBounds.left = m_rcImageBounds.left;
-			pImageElement->m_rcImageBounds.right = m_rcImageBounds.right;
-			pImageElement->m_rcImageBounds.bottom = m_rcImageBounds.bottom;
+			pImageElement->m_bCropEnabled			= m_bCropEnabled;
 
+			pImageElement->m_lcropFromRight			= m_lcropFromRight;
+			pImageElement->m_lcropFromLeft			= m_lcropFromLeft;
+			pImageElement->m_lcropFromTop			= m_lcropFromTop;
+			pImageElement->m_lcropFromBottom		= m_lcropFromBottom;
+
+			pImageElement->m_bStretch				= m_bStretch;
+			pImageElement->m_bTile					= m_bTile;
 			return (IElement*)pImageElement;
 		}
 
@@ -557,9 +573,9 @@ namespace NSPresentationEditor
 			//if (m_oShape.m_pShape != NULL)
 			//	eShapeType = m_oShape.m_pShape->GetClassType();
 
-//#ifdef ENABLE_PPT_TO_PPTX_CONVERT
-//			strPPTXShape = ConvertPPTShapeToPPTX();
-//#endif
+#ifdef ENABLE_PPT_TO_PPTX_CONVERT
+			strPPTXShape = ConvertPPTShapeToPPTX();
+#endif
 
 			NSHtmlRenderer::CASCSVGRenderer* pSVG = new NSHtmlRenderer::CASCSVGRenderer();
 			//todo FontManager
@@ -569,7 +585,7 @@ namespace NSPresentationEditor
 			
 			pSVG->CreateOfficeFile(L"", 0);
 
-			pSVG->DrawImageFromFile(std::wstring(m_strFileName.GetString()), m_rcBounds.left, m_rcBounds.top, m_rcBounds.right - m_rcBounds.left, m_rcBounds.bottom - m_rcBounds.top, 255);
+			pSVG->DrawImageFromFile(m_strFileName, m_rcBounds.left, m_rcBounds.top, m_rcBounds.right - m_rcBounds.left, m_rcBounds.bottom - m_rcBounds.top, 255);
 
 			pSVG->CloseFile(0);
 
@@ -599,7 +615,7 @@ namespace NSPresentationEditor
 			double _dWidth	= (m_rcBounds.right - m_rcBounds.left) * 96 / 25.4;
 			double _dHeight	= (m_rcBounds.bottom - m_rcBounds.top) * 96 / 25.4;
 
-			CString strTxPath = m_strFileName;
+			CString strTxPath = std_string2string(m_strFileName);
 			
 			if (_T("") != strTxPath)
 				CorrectXmlString(strTxPath);
@@ -607,13 +623,13 @@ namespace NSPresentationEditor
 				CorrectXmlString(strPPTXShape);
 
 			CString strElement = _T("");
-            strElement.Format(_T("<shape background='%d' changeable='%d' left='%d' top='%d' width='%d' height='%d'"),
+            strElement.Format(_T("<shape type='75' background='%d' changeable='%d' left='%d' top='%d' width='%d' height='%d'"),
                 (int)(m_bIsBackground ? 1 : 0), (int)(m_bIsChangeable ? 1 : 0), (LONG)_dLeft, (LONG)_dTop, (LONG)_dWidth, (LONG)_dHeight);
 
             strElement +=  _T(" txpath=\"") + strTxPath + _T("\"");
 			
-			//if (strPPTXShape.GetLength() >0)
-			//	strElement += _T(" pptx_shape=\"") + strPPTXShape + _T("\"");
+			if (strPPTXShape.GetLength() >0)
+				strElement += _T(" pptx_shape=\"") + strPPTXShape + _T("\"");
 
 			strElement += _T(">");
 			strXml = strElement + strXml + _T("</shape>");
@@ -664,10 +680,10 @@ namespace NSPresentationEditor
 #endif
 
 #endif
-		AVSINLINE CString DownloadImage(const CString& strFile)
+		AVSINLINE std::wstring DownloadImage(const std::wstring& strFile)
 		{
 #ifndef DISABLE_FILE_DOWNLOADER
-                        CFileDownloader oDownloader(strFile, true);
+			CFileDownloader oDownloader(strFile, true);
 			oDownloader.Start( 1 );
 			while ( oDownloader.IsRunned() )
 			{
@@ -715,7 +731,18 @@ namespace NSPresentationEditor
 			m_oShape.LoadFromXML(str);
 			m_ClassType = m_oShape.m_pShape->GetClassType();
 		}
+		virtual void NormalizeCoordsByMetric()
+		{
+			IElement::NormalizeCoordsByMetric();
 
+			double dScaleX				= (double)m_oMetric.m_lUnitsHor / m_oMetric.m_lMillimetresHor;
+			double dScaleY				= (double)m_oMetric.m_lUnitsVer	/ m_oMetric.m_lMillimetresVer;
+
+			m_oShape.m_oText.m_oBounds.left		*= dScaleX;
+			m_oShape.m_oText.m_oBounds.right	*= dScaleX;
+			m_oShape.m_oText.m_oBounds.top		*= dScaleY;
+			m_oShape.m_oText.m_oBounds.bottom	*= dScaleY;
+		}
 		virtual ~CShapeElement()
 		{
 		}
@@ -816,9 +843,9 @@ namespace NSPresentationEditor
 
 			SetupTextProperties(pSlide, pTheme, pLayout);
 
-			CalculateColor(m_oShape.m_oPen.Color, pSlide, pTheme, pLayout);
-			CalculateColor(m_oShape.m_oBrush.Color1, pSlide, pTheme, pLayout);
-			CalculateColor(m_oShape.m_oBrush.Color2, pSlide, pTheme, pLayout);
+			CalculateColor(m_oShape.m_oPen.Color	, pSlide, pTheme, pLayout);
+			CalculateColor(m_oShape.m_oBrush.Color1	, pSlide, pTheme, pLayout);
+			CalculateColor(m_oShape.m_oBrush.Color2	, pSlide, pTheme, pLayout);
 		}
 
 		virtual void SetupTextProperties(CSlide* pSlide, CTheme* pTheme, CLayout* pLayout);
@@ -998,17 +1025,12 @@ namespace NSPresentationEditor
 #ifdef BUILD_CONFIG_OPENSOURCE_VERSION
 			return _T("");
 #else
-			CString strPPTXShape = _T("");
 			
 			NSBaseShape::ClassType eShapeType = NSBaseShape::unknown;
 			if (m_oShape.m_pShape != NULL)
 				eShapeType = m_oShape.m_pShape->GetClassType();
 
-#ifdef ENABLE_PPT_TO_PPTX_CONVERT
-			if (eShapeType == NSBaseShape::ppt)
-				strPPTXShape = ConvertPPTShapeToPPTX();
-#endif
-
+			CString strPPTXShape = _T("");
 		
 			CGeomShapeInfo oInfo;
 			oInfo.SetBounds(m_rcBounds);
@@ -1073,11 +1095,9 @@ namespace NSPresentationEditor
 
 				CString strTxPath = _T("");
 				if (c_BrushTypeTexture == m_oShape.m_oBrush.Type)
-					strTxPath = m_oShape.m_oBrush.TexturePath;
+					strTxPath = std_string2string(m_oShape.m_oBrush.TexturePath);
 
 				CorrectXmlString(strTxPath);
-				if (_T("") != strPPTXShape)
-					CorrectXmlString(strPPTXShape);
 
 				CString strElement = _T("");
 
@@ -1086,8 +1106,15 @@ namespace NSPresentationEditor
 
                 strElement += _T(" txpath=\"") + strTxPath + _T("\"");
 
+#ifdef ENABLE_PPT_TO_PPTX_CONVERT
+				if (eShapeType == NSBaseShape::ppt)
+					strPPTXShape = ConvertPPTShapeToPPTX();
+#endif
 				if (strPPTXShape.GetLength() >0)
+				{
+					CorrectXmlString(strPPTXShape);
 					strElement += _T(" pptx_shape=\"") + strPPTXShape + _T("\"");
+				}
 
 				strElement += _T(">");
 				strXml = strElement + strXml + _T("</shape>");
@@ -1109,10 +1136,7 @@ namespace NSPresentationEditor
 
 				CString strTxPath = _T("");
 				if (c_BrushTypeTexture == m_oShape.m_oBrush.Type)
-					strTxPath = m_oShape.m_oBrush.TexturePath;
-
-				if (_T("") != strPPTXShape)
-					CorrectXmlString(strPPTXShape);
+					strTxPath = std_string2string(m_oShape.m_oBrush.TexturePath);
 
 				CorrectXmlString(strTxPath);
 
@@ -1122,8 +1146,15 @@ namespace NSPresentationEditor
 
                 strElement += _T(" txpath=\"") + strTxPath + _T("\"");
 
-                if (strPPTXShape.GetLength() >0)
+ #ifdef ENABLE_PPT_TO_PPTX_CONVERT
+				if (eShapeType == NSBaseShape::ppt)
+					strPPTXShape = ConvertPPTShapeToPPTX();
+#endif
+				if (strPPTXShape.GetLength() >0)
+				{
+					CorrectXmlString(strPPTXShape);
 					strElement += _T(" pptx_shape=\"") + strPPTXShape + _T("\"");
+				}
 
 				strElement += _T(">");
 
@@ -1555,15 +1586,15 @@ namespace NSPresentationEditor
 	class CAudioElement : public IElement
 	{
 	public:
-		CString		m_strFileName;
+		std::wstring	m_strFileName;
 		
-		BYTE		m_nAmplify;
-		bool		m_bWithVideo;
-		double		m_dAudioDuration;
+		BYTE			m_nAmplify;
+		bool			m_bWithVideo;
+		double			m_dAudioDuration;
 
-		double		m_dClipStartTime;
-		double		m_dClipEndTime;
-                bool		m_bLoop;
+		double			m_dClipStartTime;
+		double			m_dClipEndTime;
+        bool			m_bLoop;
 
 	public:
 		CAudioElement() : IElement()
@@ -1591,15 +1622,15 @@ namespace NSPresentationEditor
 			CString element = _T("");
 			element.Format(_T("<AudioSource StartTime='%lf' Duration='%lf' Amplify='%lf'>"), m_dStartTime, m_dEndTime-m_dStartTime, (double)m_nAmplify);
 
-			int lIndex = m_strFileName.Find(L"file:///");
+			int lIndex = m_strFileName.find(L"file:///");
 			if (0 == lIndex)
 			{
-				m_strFileName = m_strFileName.Mid(8);
-				m_strFileName.Replace('/', '\\');
-				m_strFileName.Replace(L"%20", L" ");
+				m_strFileName = m_strFileName.substr(8);
+				//m_strFileName.Replace('/', '\\');
+				//m_strFileName.Replace(L"%20", L" ");
 			}
 
-			CString strFileName = m_strFileName;
+			CString strFileName = std_string2string(m_strFileName);
 			CorrectXmlString(strFileName);
 
 			CString source;

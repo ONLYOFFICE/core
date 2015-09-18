@@ -30,15 +30,15 @@ namespace NSPresentationEditor
 			eftAudio	= 2
 		};
 	public:
-		DWORD		m_dwID;		
-		CString		m_strFilePath;
+		DWORD			m_dwID;		
+		std::wstring	m_strFilePath;
 
 		// clip
-		double		m_dStartTime;
-		double		m_dEndTime;
+		double			m_dStartTime;
+		double			m_dEndTime;
 
 		// loop
-		bool		m_bLoop;
+		bool			m_bLoop;
 
 	public:
 		CExFilesInfo()
@@ -72,8 +72,8 @@ namespace NSPresentationEditor
 	class CExMedia
 	{
 	public:
-		CString m_strPresentationDirectory;
-		CString m_strSourceDirectory;
+		std::wstring			m_strPresentationDirectory;
+		std::wstring			m_strSourceDirectory;
 
 		std::vector<CExFilesInfo> m_arVideos;
 		std::vector<CExFilesInfo> m_arImages;
@@ -626,14 +626,15 @@ namespace NSPresentationEditor
 		
 		CColor Color1;
 		CColor Color2;
+
 		long Alpha1;
 		long Alpha2;
 		
-		CString TexturePath;
+		std::wstring TexturePath;
 		long TextureAlpha;
 		long TextureMode;
 		
-                bool	Rectable;
+		bool	Rectable;
 		Gdiplus::RectF	Rect;
 
 		double LinearAngle;
@@ -817,7 +818,7 @@ namespace NSPresentationEditor
 			else if (IsTexture())
 			{
                 //BSTR bstrTexturePath = TexturePath.AllocSysString();
-                pRenderer->put_BrushTexturePath(string2std_string(TexturePath));
+                pRenderer->put_BrushTexturePath(TexturePath);
                 //SysFreeString(bstrTexturePath);
 				pRenderer->put_BrushTextureMode(TextureMode);
 				pRenderer->put_BrushTextureAlpha(TextureAlpha);
@@ -845,27 +846,27 @@ namespace NSPresentationEditor
 	public:
 		inline CString ToString()
 		{
-			return _T("<brush brush-type='") + NSPresentationEditor::ToString(Type)
-				+ _T("' brush-color1='") + Color1.ToString() + _T("' brush-color2='") + Color2.ToString()
-				+ _T("' brush-alpha1='") + NSPresentationEditor::ToString(Alpha1) + _T("' brush-alpha2='") + NSPresentationEditor::ToString(Alpha2) 
-				+ _T("' brush-texturepath='") + TexturePath + _T("' brush-texturealpha='") + NSPresentationEditor::ToString(TextureAlpha)  
-				+ _T("' brush-texturemode='") + NSPresentationEditor::ToString(TextureMode)  + _T("' />");
+			return _T("<brush brush-type='")	+ NSPresentationEditor::ToString(Type)
+				+ _T("' brush-color1='")		+ Color1.ToString() + _T("' brush-color2='") + Color2.ToString()
+				+ _T("' brush-alpha1='")		+ NSPresentationEditor::ToString(Alpha1) + _T("' brush-alpha2='") + NSPresentationEditor::ToString(Alpha2) 
+				+ _T("' brush-texturepath='")	+ std_string2string(TexturePath) + _T("' brush-texturealpha='") + NSPresentationEditor::ToString(TextureAlpha)  
+				+ _T("' brush-texturemode='")	+ NSPresentationEditor::ToString(TextureMode)  + _T("' />");
 		}
 		inline CString ToXmlWriter(NSPresentationEditor::CXmlWriter* pWriter)
 		{
-                        pWriter->WriteNodeBegin(_T("brush"), true);
+			pWriter->WriteNodeBegin(_T("brush"), true);
 			pWriter->WriteAttributeLONG(_T("brush-type"), Type);
 			pWriter->WriteAttributeString(_T("brush-color1"), Color1.ToString());
 			pWriter->WriteAttributeString(_T("brush-color2"), Color2.ToString());
 			pWriter->WriteAttributeLONG(_T("brush-alpha1"), Alpha1);
 			pWriter->WriteAttributeLONG(_T("brush-alpha2"), Alpha2);
 
-			pWriter->WriteAttributeString(_T("brush-texturepath"), TexturePath);
+			pWriter->WriteAttributeString(_T("brush-texturepath"), std_string2string(TexturePath));
 
 			pWriter->WriteAttributeDouble(_T("brush-texturealpha"), TextureAlpha);
 			pWriter->WriteAttributeDouble(_T("brush-texturemode"), TextureMode);
 
-                        pWriter->WriteNodeEnd(_T("brush"), true);
+			pWriter->WriteNodeEnd(_T("brush"), true);
            
             return CString(_T(""));
 		}
@@ -875,25 +876,25 @@ namespace NSPresentationEditor
 	{
 	public:
 
-		CString Path;
-		CString Name;
-		double Size;
-                bool Bold;
-                bool Italic;
-        BYTE Underline;
-        BYTE Strikeout;
+		std::wstring	Path;
+		std::wstring	Name;
+		double			Size;
+		bool			Bold;
+		bool			Italic;
+        BYTE			Underline;
+        BYTE			Strikeout;
 
-                bool StringGID;
-		double CharSpace;
+		bool			StringGID;
+		double			CharSpace;
 
-		CString PitchFamily;
-		BYTE	Charset;
-		CString Panose;
-                bool	Monospace;
+		std::wstring	PitchFamily;
+		BYTE			Charset;
+		std::wstring	Panose;
+		bool			Monospace;
 	
 	public:
 
-                bool IsEqual(CFont* pFont)
+		bool IsEqual(CFont* pFont)
 		{
 			if (NULL == pFont)
                                 return false;
@@ -902,7 +903,7 @@ namespace NSPresentationEditor
 				(Bold == pFont->Bold) && (Italic == pFont->Italic) &&
 				(Underline == pFont->Underline) && (Strikeout == pFont->Strikeout));
 		}
-                bool IsEqual2(CFont* pFont)
+		bool IsEqual2(CFont* pFont)
 		{
 			if (NULL == pFont)
                                 return false;
@@ -924,15 +925,15 @@ namespace NSPresentationEditor
 		}
 		void SetStyle(LONG const& lStyle)
 		{
-			Bold	= (0x01 == (0x01 & lStyle));
-			Italic	= (0x02 == (0x02 & lStyle));
-            Underline = (BYTE)(0x7C & lStyle) >> 2;
-            Strikeout = (BYTE)(0x0180 & lStyle) >> 7;
+			Bold		= (0x01 == (0x01 & lStyle));
+			Italic		= (0x02 == (0x02 & lStyle));
+            Underline	= (BYTE)(0x7C & lStyle) >> 2;
+            Strikeout	= (BYTE)(0x0180 & lStyle) >> 7;
 		}
 		void SetToRenderer(IRenderer *pRenderer)
 		{		
-            pRenderer->put_FontName(string2std_string(Name));
-            pRenderer->put_FontPath(string2std_string(Path));
+            pRenderer->put_FontName(Name);
+            pRenderer->put_FontPath(Path);
 
 
 			pRenderer->put_FontSize(Size);
@@ -946,18 +947,18 @@ namespace NSPresentationEditor
 			Path = _T("");
 			
 			Size      = 0;
-                        Bold      = false;
-                        Italic    = false;
+			Bold      = false;
+			Italic    = false;
 			Underline = 0;
 			Strikeout = 0;
 
-                        StringGID = false;
+			StringGID = false;
 			CharSpace = 0.0;
 
 			PitchFamily	= _T("");
 			Charset		= 0;
 			Panose		= _T("");
-                        Monospace	= false;
+			Monospace	= false;
 		}
 		
 	public:
@@ -1000,7 +1001,7 @@ namespace NSPresentationEditor
 			CString strFont = _T("");
 
 			strFont.Format(_T("font-name='%s' font-size='%d' font-bold='%s' font-italic='%s' font-underline='%s' font-strikeout='%s' "),
-				Name, (int)Size, NSPresentationEditor::ToString(Bold), NSPresentationEditor::ToString(Italic),
+				std_string2string(Name), (int)Size, NSPresentationEditor::ToString(Bold), NSPresentationEditor::ToString(Italic),
 				NSPresentationEditor::ToString(Underline), NSPresentationEditor::ToString(Strikeout));
 			
 			return strFont;
@@ -1011,7 +1012,7 @@ namespace NSPresentationEditor
 	{
 	public:
 	
-                bool Visible;
+		bool Visible;
 		double DistanceX;
 		double DistanceY;
 		double BlurSize;
@@ -1159,7 +1160,7 @@ namespace NSPresentationEditor
 			m_oTextBrush.Color1 = 0xFF;
 
 			m_nTextAlignHorizontal	= 0;
-			m_nTextAlignVertical	= 0;
+			m_nTextAlignVertical	= 1; //middle
 			m_dTextRotate			= 0;
 		}
 		CTextAttributes& operator =(const CTextAttributes& oSrc)
@@ -1180,14 +1181,14 @@ namespace NSPresentationEditor
 			CString strText = _T("<Attributes ");
 
 			// add Brush Param
-			strText += (_T("brush-type='") + NSPresentationEditor::ToString(m_oTextBrush.Type) + _T("' "));
-			strText += (_T("brush-color1='") + m_oTextBrush.Color1.ToString() + _T("' "));
-			strText += (_T("brush-color2='") + m_oTextBrush.Color2.ToString() + _T("' "));
-			strText += (_T("brush-alpha1='") + NSPresentationEditor::ToString(m_oTextBrush.Alpha1) + _T("' "));
-			strText += (_T("brush-alpha2='") + NSPresentationEditor::ToString(m_oTextBrush.Alpha2) + _T("' "));
-			strText += (_T("brush-texturepath='") + m_oTextBrush.TexturePath + _T("' "));
-			strText += (_T("brush-texturealpha='") + NSPresentationEditor::ToString(m_oTextBrush.TextureAlpha) + _T("' "));
-			strText += (_T("brush-texturemode='") + NSPresentationEditor::ToString(m_oTextBrush.TextureMode) + _T("' "));
+			strText += (_T("brush-type='")			+ NSPresentationEditor::ToString(m_oTextBrush.Type) + _T("' "));
+			strText += (_T("brush-color1='")		+ m_oTextBrush.Color1.ToString() + _T("' "));
+			strText += (_T("brush-color2='")		+ m_oTextBrush.Color2.ToString() + _T("' "));
+			strText += (_T("brush-alpha1='")		+ NSPresentationEditor::ToString(m_oTextBrush.Alpha1) + _T("' "));
+			strText += (_T("brush-alpha2='")		+ NSPresentationEditor::ToString(m_oTextBrush.Alpha2) + _T("' "));
+			strText += (_T("brush-texturepath='")	+ std_string2string(m_oTextBrush.TexturePath) + _T("' "));
+			strText += (_T("brush-texturealpha='")	+ NSPresentationEditor::ToString(m_oTextBrush.TextureAlpha) + _T("' "));
+			strText += (_T("brush-texturemode='")	+ NSPresentationEditor::ToString(m_oTextBrush.TextureMode) + _T("' "));
 			strText += (_T("brush-rectable='0' "));
 
 			// add Font Param
@@ -1217,15 +1218,15 @@ namespace NSPresentationEditor
                         pWriter->WriteNodeBegin(_T("Attributes"), true);
 
 			// add Brush Param
-			pWriter->WriteAttributeLONG(_T("brush-type"), m_oTextBrush.Type);
-			pWriter->WriteAttributeString(_T("brush-color1"), m_oTextBrush.Color1.ToString());
-			pWriter->WriteAttributeString(_T("brush-color2"), m_oTextBrush.Color2.ToString());
-			pWriter->WriteAttributeLONG(_T("brush-alpha1"), m_oTextBrush.Alpha1);
-			pWriter->WriteAttributeLONG(_T("brush-alpha2"), m_oTextBrush.Alpha2);
-			pWriter->WriteAttributeString(_T("brush-texturepath"), m_oTextBrush.TexturePath);
-			pWriter->WriteAttributeLONG(_T("brush-texturealpha"), m_oTextBrush.TextureAlpha);
-			pWriter->WriteAttributeLONG(_T("brush-texturemode"), m_oTextBrush.TextureMode);
-			pWriter->WriteAttributeLONG(_T("brush-rectable"), 0);
+			pWriter->WriteAttributeLONG(_T("brush-type")			, m_oTextBrush.Type);
+			pWriter->WriteAttributeString(_T("brush-color1")		, m_oTextBrush.Color1.ToString());
+			pWriter->WriteAttributeString(_T("brush-color2")		, m_oTextBrush.Color2.ToString());
+			pWriter->WriteAttributeLONG(_T("brush-alpha1")			, m_oTextBrush.Alpha1);
+			pWriter->WriteAttributeLONG(_T("brush-alpha2")			, m_oTextBrush.Alpha2);
+			pWriter->WriteAttributeString(_T("brush-texturepath")	, std_string2string(m_oTextBrush.TexturePath));
+			pWriter->WriteAttributeLONG(_T("brush-texturealpha")	, m_oTextBrush.TextureAlpha);
+			pWriter->WriteAttributeLONG(_T("brush-texturemode")		, m_oTextBrush.TextureMode);
+			pWriter->WriteAttributeLONG(_T("brush-rectable")		, 0);
 
 			// add Font Param
 			pWriter->WriteString(m_oFont.ToString());

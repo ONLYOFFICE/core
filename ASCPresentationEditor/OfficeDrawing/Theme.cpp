@@ -6,10 +6,12 @@ namespace NSPresentationEditor
 	{
 		NSPresentationEditor::CStringWriter oWriter;
 
-		oWriter.WriteString(_T("<Theme>"));
+		oWriter.WriteString(std::wstring(L"<Theme name=\""));
+		oWriter.WriteString(m_sThemeName);
+		oWriter.WriteString(std::wstring(L"\">"));
 
 		// colors ----
-		oWriter.WriteString(_T("<Colors>"));
+		oWriter.WriteString(std::wstring(L"<Colors>"));
 		
 		size_t nCountColors = m_arColorScheme.size();
 		for (size_t i = 0; i < nCountColors; ++i)
@@ -21,11 +23,11 @@ namespace NSPresentationEditor
 			oWriter.WriteString(strFormat);
 		}
 
-		oWriter.WriteString(_T("</Colors>"));
+		oWriter.WriteString(std::wstring(L"</Colors>"));
 		// -----------
 		
 		// fonts -----
-		oWriter.WriteString(_T("<Fonts>"));
+		oWriter.WriteString(std::wstring(L"<Fonts>"));
 		
 		size_t nCountFonts = m_arFonts.size();
 		//if (nCountFonts > 1)
@@ -40,12 +42,12 @@ namespace NSPresentationEditor
 			oWriter.WriteString(strFormat);
 		}
 
-		oWriter.WriteString(_T("</Fonts>"));
+		oWriter.WriteString(std::wstring(L"</Fonts>"));
 
 		// -----------
 		
 		// fonts dublicate
-		oWriter.WriteString(_T("<FontsDublicate>"));
+		oWriter.WriteString(std::wstring(L"<FontsDublicate>"));
 		for (size_t i = 0; i < nCountFonts; ++i)
 		{
 			CString strFormat = _T("");
@@ -54,18 +56,18 @@ namespace NSPresentationEditor
 
 			oWriter.WriteString(strFormat);
 		}
-		oWriter.WriteString(_T("</FontsDublicate>"));
+		oWriter.WriteString(std::wstring(L"</FontsDublicate>"));
 		// -----------
 
 		// textstyles ------
-		oWriter.WriteString(_T("<TextStyles>"));
+		oWriter.WriteString(std::wstring(L"<TextStyles>"));
 		
 		for (long i = 0; i < g_ThemeTextStylesCount; ++i)
 		{
 			oWriter.WriteString(m_pStyles[i].ToXmlEditor(oInfo, false, i, -1));
 		}
 		
-		oWriter.WriteString(_T("</TextStyles>"));
+		oWriter.WriteString(std::wstring(L"</TextStyles>"));
 		// -----------------
 
 		// background
@@ -94,13 +96,13 @@ namespace NSPresentationEditor
 		oElem.NormalizeCoords(dScaleX, dScaleY);
 		oElem.m_oShape.m_oBrush = m_oBackground;
 
-		oWriter.WriteString(_T("<Background>"));
+		oWriter.WriteString(std::wstring(L"<Background>"));
 		oElem.SetupProperties(NULL, this, NULL);
 		oWriter.WriteString(oElem.ToXmlEditor());
-		oWriter.WriteString(_T("</Background>"));
+		oWriter.WriteString(std::wstring(L"</Background>"));
 		// -----------
 		// elements
-		oWriter.WriteString(_T("<Elements>"));
+		oWriter.WriteString(std::wstring(L"<Elements>"));
 
 		size_t nCountElems = m_arElements.size();
 		for (size_t i = 0; i < nCountElems; ++i)
@@ -111,10 +113,10 @@ namespace NSPresentationEditor
 			oWriter.WriteString(m_arElements[i]->ToXmlEditor());
 		}
 
-		oWriter.WriteString(_T("</Elements>"));
+		oWriter.WriteString(std::wstring(L"</Elements>"));
 		// ----------------
 		// layouts
-		oWriter.WriteString(_T("<Layouts>"));
+		oWriter.WriteString(std::wstring(L"<Layouts>"));
 
 		size_t nCountLayouts = m_arLayouts.size();
 		for (size_t i = 0; i < nCountLayouts; ++i)
@@ -122,9 +124,9 @@ namespace NSPresentationEditor
 			oWriter.WriteString(m_arLayouts[i].ToXmlEditor(this, oInfo));
 		}
 
-		oWriter.WriteString(_T("</Layouts>"));
+		oWriter.WriteString(std::wstring(L"</Layouts>"));
 
-		oWriter.WriteString(_T("</Theme>"));
+		oWriter.WriteString(std::wstring(L"</Theme>"));
 
 		return oWriter.GetData();
 	}
@@ -133,6 +135,8 @@ namespace NSPresentationEditor
 	{
 #ifdef _PRESENTATION_WRITER_
 		//colors
+		m_sThemeName = oNode.GetAttribute(L"name", L"default");
+	
 		m_arColorScheme.clear();
 		XmlUtils::CXmlNode oNodeColors;
 		if (oNode.GetNode(_T("Colors"), oNodeColors))

@@ -6,22 +6,22 @@ namespace NSPresentationEditor
 	class CAudioPart
 	{
 	public:
-		CString m_strFile;
+		std::wstring	m_strFile;
 
-		double m_dStartTime;
-		double m_dEndTime;
+		double			m_dStartTime;
+		double			m_dEndTime;
 
-		double m_dClipStartTime;
-		double m_dClipEndTime;
+		double			m_dClipStartTime;
+		double			m_dClipEndTime;
 
-		double m_dAudioDuration;
+		double			m_dAudioDuration;
 		
-		bool m_bLoop;
-		bool m_bStop;
+		bool			m_bLoop;
+		bool			m_bStop;
 
-		bool m_bIsTransition;
+		bool			m_bIsTransition;
 
-		double m_dAmplify;
+		double			m_dAmplify;
 
 	public:
 		CAudioPart()
@@ -244,15 +244,15 @@ namespace NSPresentationEditor
 				strOverlay1.Format(_T("<AudioSource StartTime='%lf' Duration='%lf' Amplify='%lf'>"), 
 					pPart->m_dStartTime, pPart->m_dEndTime - pPart->m_dStartTime, pPart->m_dAmplify);
 
-				int lIndex = pPart->m_strFile.Find(L"file:///");
+				int lIndex = pPart->m_strFile.find(L"file:///");
 				if (0 == lIndex)
 				{
-					pPart->m_strFile = pPart->m_strFile.Mid(8);
-					pPart->m_strFile.Replace('/', '\\');
-					pPart->m_strFile.Replace(L"%20", L" ");
+					pPart->m_strFile = pPart->m_strFile.substr(8);
+					//pPart->m_strFile.Replace('/', '\\');
+					//pPart->m_strFile.Replace(L"%20", L" ");
 				}
 
-				CString strFile_ = pPart->m_strFile;
+				CString strFile_ = std_string2string(pPart->m_strFile);
 				CorrectXmlString(strFile_);
 
 				strOverlay2.Format(_T("<Source StartTime='%lf' EndTime='%lf' FilePath='%s'/></AudioSource>"), 

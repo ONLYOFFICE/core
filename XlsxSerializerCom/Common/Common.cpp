@@ -18,7 +18,7 @@ namespace SerializeCommon
 	CString DownloadImage(const CString& strFile)
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
-        CFileDownloader oDownloader(strFile, false);
+        CFileDownloader oDownloader(string2std_string(strFile), false);
 		oDownloader.Start( 1 );
 		while ( oDownloader.IsRunned() )
 		{
@@ -27,7 +27,7 @@ namespace SerializeCommon
 		CString strFileName;
 		if ( oDownloader.IsFileDownloaded() )
 		{
-			strFileName = oDownloader.GetFilePath();
+			strFileName = std_string2string(oDownloader.GetFilePath());
 		}
 		return strFileName;
 #else

@@ -81,7 +81,6 @@ namespace NSPresentationEditor
 		{
 			m_ID			= type;
 			m_dwValue		= 0;
-			m_strAdvanced	= NULL;
 		}
 		CElementProperty(const CElementProperty& oSrc)
 		{
@@ -91,26 +90,16 @@ namespace NSPresentationEditor
 		{
 			m_ID			= oSrc.m_ID;
 			m_dwValue		= oSrc.m_dwValue;
-			m_strAdvanced	= NULL;
+			m_strAdvanced	= oSrc.m_strAdvanced;
 
-			if (NULL != oSrc.m_strAdvanced)
-			{
-				m_strAdvanced = new WCHAR[m_dwValue];
-				memcpy(m_strAdvanced, oSrc.m_strAdvanced, m_dwValue * sizeof(WCHAR));
-			}
 			return *this;
 		}
-		inline bool IsAdvanced()
-		{
-			return (NULL != m_strAdvanced);
-		}
-
 	public:
 		
-		Type		m_ID;
-		DWORD		m_dwValue;
+		Type			m_ID;
+		DWORD			m_dwValue;
 
-		LPWSTR		m_strAdvanced;
+		std::wstring	m_strAdvanced;
 	};
 
 	class CElementProperties
@@ -173,15 +162,12 @@ namespace NSPresentationEditor
 
 			m_arProperties[eType] = oProp;
 		}
-		inline void SetAt(const CElementProperty::Type& eType, CString strValue)
+		inline void SetAt(const CElementProperty::Type& eType, std::wstring strValue)
 		{
 			CElementProperty oProp(eType);
-			oProp.m_dwValue = strValue.GetLength() + 1;
+			oProp.m_dwValue = strValue.length() + 1;
 
-			oProp.m_strAdvanced = new WCHAR[oProp.m_dwValue];
-			memcpy(oProp.m_strAdvanced, strValue.GetBuffer(), strValue.GetLength() * sizeof(WCHAR));
-
-			oProp.m_strAdvanced[oProp.m_dwValue - 1] = 0;
+			oProp.m_strAdvanced = strValue;
 
 			m_arProperties[eType] = oProp;
 		}

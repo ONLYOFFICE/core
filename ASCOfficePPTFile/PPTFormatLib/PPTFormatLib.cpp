@@ -72,30 +72,14 @@ HRESULT COfficePPTFile::LoadFromFile(std::wstring sSrcFileName, std::wstring sDs
 
 	if (0 < ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers.size())
 	{
-		m_strEditorXml = ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers[0]->ToXmlEditor2();
-	}
-//////////////////////////////////////
-
-	if (m_strEditorXml.GetLength() <1) return S_FALSE;
-
-    if (sDstPath.length() > 0)
-	{	
-
-		NSPresentationEditor::CDocument		oPresentationEditor;
 		NSPresentationEditor::CPPTXWriter	oPPTXWriter;
-		
-		oPresentationEditor.LoadFromXML(m_strEditorXml);
-		
         oPPTXWriter.m_strTempDirectory = std_string2string(sDstPath);
 		
 		
-		oPPTXWriter.CreateFile(&oPresentationEditor);	
+		oPPTXWriter.CreateFile(((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers[0]);	
 		oPPTXWriter.CloseFile();
-		
+
 	}
-
-	//CloseFile();	нельзя тута- поскольку в Win32 используется PresentationEditor для конвертации xml -> pptx
-
 	return S_OK;
 }
 
@@ -107,6 +91,11 @@ HRESULT COfficePPTFile::GetAdditionalParam (CString sParamName, VARIANT* ParamVa
 	if (_T("EditorXml") == sParamName)
 	{		
 #if defined(_WIN32) || defined (_WIN64)
+		if (m_strEditorXml.IsEmpty())
+		{
+			m_strEditorXml = ((CPPTFileReader*)m_pReader)->m_oDocumentInfo.m_arUsers[0]->ToXmlEditor2();
+		}
+
         ParamValue->bstrVal = m_strEditorXml.AllocSysString();
 #else
         ParamValue->bstrVal = m_strEditorXml;

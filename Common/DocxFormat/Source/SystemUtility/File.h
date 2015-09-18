@@ -269,7 +269,17 @@ public:
 
 		RELEASEARRAYOBJECTS(pData);
 	}
+	void WriteStringUTF8(const std::wstring& strXml)
+	{
+		BYTE* pData = NULL;
+		LONG lLen = 0;
 
+		NSFile::CUtf8Converter::GetUtf8StringFromUnicode(strXml.c_str(), strXml.length(), pData, lLen, false);
+
+		WriteFile(pData, lLen);
+
+		RELEASEARRAYOBJECTS(pData);
+	}
 protected:
 	FILE* m_pFile;
 

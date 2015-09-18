@@ -102,7 +102,7 @@ namespace NSPresentationEditor
 						}
 						else
 						{
-							pLayout->m_arElements[nElem]->SetupProperties(NULL, &m_arThemes[i], NULL);
+							//pLayout->m_arElements[nElem]->SetupProperties(NULL, &m_arThemes[i], NULL);
 						}
 					}
 				}
@@ -934,17 +934,18 @@ namespace NSPresentationEditor
 			strMetric.Format(_T(" hor_mm=\"%d\" ver_mm=\"%d\" hor_uni=\"%d\" ver_uni=\"%d\">"),
 				m_oInfo.m_lMillimetresHor, m_oInfo.m_lMillimetresVer, m_oInfo.m_lUnitsHor, m_oInfo.m_lUnitsVer);
 
-			oWriter.WriteString(_T("<Presentation xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\"") + strMetric);
+			oWriter.WriteString(std::wstring(L"<Presentation xmlns=\"http://www.w3.org/2000/svg\" xmlns:xlink=\"http://www.w3.org/1999/xlink\""));
+			oWriter.WriteString(strMetric);
 
-			oWriter.WriteString(_T("<Themes>"));
+			oWriter.WriteString(std::wstring(L"<Themes>"));
 			size_t nCount = m_arThemes.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
 				oWriter.WriteString(m_arThemes[i].ToXmlEditor(m_oInfo));
 			}
-			oWriter.WriteString(_T("</Themes>"));
+			oWriter.WriteString(std::wstring(L"</Themes>"));
 
-			oWriter.WriteString(_T("<Slides>"));
+			oWriter.WriteString(std::wstring(L"<Slides>"));
 			nCount = m_arSlides.size();
 			for (size_t i = 0; i < nCount; ++i)
 			{
@@ -964,9 +965,9 @@ namespace NSPresentationEditor
 
 				oWriter.WriteString(m_arSlides[i].ToXmlEditor(pThemeSlide, pLayoutSlide, m_oInfo));
 			}
-			oWriter.WriteString(_T("</Slides>"));
+			oWriter.WriteString(std::wstring(L"</Slides>"));
 
-			oWriter.WriteString(_T("</Presentation>"));
+			oWriter.WriteString(std::wstring(L"</Presentation>"));
 
 			oWriter.CorrectUnicodeString();
 			return oWriter.GetData();

@@ -56,6 +56,9 @@ namespace NSPresentationEditor
 		CTheme*				m_pTheme;
 		CLayout*			m_pLayout;
 
+		std::wstring		m_sName;
+		std::wstring		m_sDescription;
+
 	protected:
 		ULONG m_lCountRef;
 
@@ -129,8 +132,9 @@ namespace NSPresentationEditor
 		}
 		virtual void NormalizeCoordsByMetric()
 		{
-			double dScaleX				= m_oMetric.m_lUnitsHor / m_oMetric.m_lMillimetresHor;
-			double dScaleY				= m_oMetric.m_lUnitsVer	/ m_oMetric.m_lMillimetresVer;
+			double dScaleX				= (double)m_oMetric.m_lUnitsHor / m_oMetric.m_lMillimetresHor;
+			double dScaleY				= (double)m_oMetric.m_lUnitsVer	/ m_oMetric.m_lMillimetresVer;
+			
 			m_rcBoundsOriginal.left		= dScaleX * m_rcBounds.left;
 			m_rcBoundsOriginal.right	= dScaleX * m_rcBounds.right;
 			m_rcBoundsOriginal.top		= dScaleY * m_rcBounds.top;

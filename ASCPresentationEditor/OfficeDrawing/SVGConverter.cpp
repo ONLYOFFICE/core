@@ -33,16 +33,12 @@ void NSPresentationEditor::CSVGConverter::_SetFont()
 
 	if (_T("") == m_oFont.Path)
 	{
-        std::wstring bsName = string2std_string(m_oFont.Name);
-
-		m_pFontManager->LoadFontByName(bsName, (float)m_oFont.Size, m_oFont.GetStyle(), m_dDpiX, m_dDpiY);
+		m_pFontManager->LoadFontByName(m_oFont.Name, (float)m_oFont.Size, m_oFont.GetStyle(), m_dDpiX, m_dDpiY);
 
     }
 	else
 	{
-        std::wstring bsName = string2std_string(m_oFont.Path);
-
-        m_pFontManager->LoadFontFromFile(bsName, (float)m_oFont.Size, m_dDpiX, m_dDpiY, 0);
+        m_pFontManager->LoadFontFromFile(m_oFont.Path, (float)m_oFont.Size, m_dDpiX, m_dDpiY, 0);
     }
 
 	m_oInstalledFont = m_oFont;
@@ -292,12 +288,12 @@ HRESULT NSPresentationEditor::CSVGConverter::put_BrushAlpha2(const LONG& lAlpha)
 HRESULT NSPresentationEditor::CSVGConverter::get_BrushTexturePath(std::wstring* bsPath)
 {
     if (bsPath == NULL) return S_FALSE;
-	*bsPath = string2std_string(m_oBrush.TexturePath);
+	*bsPath = m_oBrush.TexturePath;
 	return S_OK;
 }
 HRESULT NSPresentationEditor::CSVGConverter::put_BrushTexturePath(const std::wstring& bsPath)
 {
-	m_oBrush.TexturePath = std_string2string(bsPath);
+	m_oBrush.TexturePath = bsPath;
 	return S_OK;
 }
 HRESULT NSPresentationEditor::CSVGConverter::get_BrushTextureMode(LONG* lMode)
@@ -344,22 +340,22 @@ HRESULT NSPresentationEditor::CSVGConverter::BrushRect(const INT& val, const dou
 
 HRESULT NSPresentationEditor::CSVGConverter::get_FontName(std::wstring* bsName)
 {
-	*bsName = string2std_string(m_oFont.Name);
+	*bsName = m_oFont.Name;
 	return S_OK;
 }
 HRESULT NSPresentationEditor::CSVGConverter::put_FontName(const std::wstring& bsName)
 {
-	m_oFont.Name = std_string2string(bsName);
+	m_oFont.Name = bsName;
 	return S_OK;
 }
 HRESULT NSPresentationEditor::CSVGConverter::get_FontPath(std::wstring* bsName)
 {
-	*bsName = string2std_string(m_oFont.Path);
+	*bsName = m_oFont.Path;
 	return S_OK;
 }
 HRESULT NSPresentationEditor::CSVGConverter::put_FontPath(const std::wstring& bsName)
 {
-	m_oFont.Path = std_string2string(bsName);
+	m_oFont.Path = bsName;
 	return S_OK;
 }
 HRESULT NSPresentationEditor::CSVGConverter::get_FontSize(double* dSize)

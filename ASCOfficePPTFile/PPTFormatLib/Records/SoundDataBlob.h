@@ -40,15 +40,15 @@ public:
 		RELEASEARRAYOBJECTS(m_pData);
 	}
 
-	void SaveToFile(CString strFile)
+	void SaveToFile(std::wstring strFile)
 	{
 		if ((NULL == m_pData) || (0 >= m_lSize))
 			return;
 
-		CFile oFile;
-		oFile.CreateFile(strFile);
+		NSFile::CFileBinary oFile;
+		oFile.CreateFileW(strFile);
 
-		oFile.WriteFile((void*)m_pData, (DWORD)m_lSize);
+		oFile.WriteFile((BYTE*)m_pData, (DWORD)m_lSize);
 		oFile.CloseFile();
 
 		ReleaseData();

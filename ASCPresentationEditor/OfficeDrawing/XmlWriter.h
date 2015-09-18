@@ -106,12 +106,12 @@ namespace NSPresentationEditor
 			WriteString(bsString.GetBSTR(), nLen);
 		}
 #endif // #if defined(_WIN32) || defined(_WIN64)
-        AVSINLINE void WriteString(std::wstring& wString)
+        AVSINLINE void WriteString(const std::wstring & wString)
 		{
 			size_t nLen = wString.length();
 			WriteString(wString.c_str(), nLen);
 		}
-        AVSINLINE void WriteString(const CString& sString)
+        AVSINLINE void WriteString(const CString & sString)
 		{
 			size_t nLen = (size_t)sString.GetLength();
 			

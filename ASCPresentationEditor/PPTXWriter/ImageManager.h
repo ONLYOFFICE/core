@@ -9,9 +9,9 @@ namespace NSPresentationEditor
 	class CImageManager
 	{
 	private:
-		std::map<CString, CString>	m_mapImages;
-		LONG						m_lIndexNextImage;
-		CString						m_strDstMedia;
+		std::map<std::wstring, std::wstring>	m_mapImages;
+		LONG									m_lIndexNextImage;
+		std::wstring							m_strDstMedia;
 
 	public:
 		CImageManager() : m_mapImages(), m_lIndexNextImage(0)
@@ -31,19 +31,21 @@ namespace NSPresentationEditor
 		}
 
 	public:
-		AVSINLINE CString GenerateImage(const CString& strInput)
+		AVSINLINE std::wstring GenerateImage(const std::wstring& strInput)
 		{
-			std::map<CString, CString>::iterator pPair = m_mapImages.find(strInput);
+			std::map<std::wstring, std::wstring>::iterator pPair = m_mapImages.find(strInput);
 			if (m_mapImages.end() != pPair)
+			{
 				return pPair->second;
+			}
 
 			if (IsNeedDownload(strInput))
 				return DownloadImage(strInput);
 
-			CString strExts = _T(".jpg");
-			int nIndexExt = strInput.ReverseFind(TCHAR('.'));
+			std::wstring strExts = _T(".jpg");
+			int nIndexExt = strInput.rfind(TCHAR('.'));
 			if (-1 != nIndexExt)
-				strExts = strInput.Mid(nIndexExt);
+				strExts = strInput.substr(nIndexExt);
 
 			if (strExts == _T(".tmp"))
 				strExts = _T(".png");
@@ -51,27 +53,27 @@ namespace NSPresentationEditor
 			CString strImage = _T("");
 			strImage.Format(_T("image%d"), m_lIndexNextImage++);
 
-			CString strOutput = m_strDstMedia + strImage + strExts;		
-			strImage  = _T("../media/") + strImage + strExts;
-			m_mapImages[strInput] = strImage;
+			std::wstring strOutput = m_strDstMedia + string2std_string(strImage) + strExts;		
+			strImage  = _T("../media/") + strImage + std_string2string(strExts);
+			m_mapImages[strInput] = string2std_string(strImage);
 
 			// теперь нужно скопировать картинку
 			if (strOutput != strInput)
-				CDirectory::CopyFile(strInput, strOutput, NULL, NULL);
+				CDirectory::CopyFile(std_string2string(strInput), std_string2string(strOutput), NULL, NULL);
 			return strImage;
 		}
 
-		AVSINLINE bool IsNeedDownload(const CString& strFile)
+		AVSINLINE bool IsNeedDownload(const std::wstring& strFile)
 		{
-			int n1 = strFile.Find(_T("www"));
-			int n2 = strFile.Find(_T("http"));
-			int n3 = strFile.Find(_T("ftp"));
+			int n1 = strFile.find(_T("www"));
+			int n2 = strFile.find(_T("http"));
+			int n3 = strFile.find(_T("ftp"));
 
 			if (((n1 >= 0) && (n1 < 10)) || ((n2 >= 0) && (n2 < 10)) || ((n3 >= 0) && (n3 < 10)))
 				return true;
 			return false;
 		}
-		AVSINLINE CString DownloadImage(const CString& strFile)
+		AVSINLINE std::wstring DownloadImage(const std::wstring& strFile)
 		{
 #ifndef DISABLE_FILE_DOWNLOADER
             CFileDownloader oDownloader(strFile, TRUE);
@@ -95,7 +97,7 @@ namespace NSPresentationEditor
 	private:
 		NSPresentationEditor::CStringWriter m_oWriter;
 		int									m_lNextRelsID;
-		std::map<CString, int>				m_mapImages;
+		std::map<std::wstring, int>			m_mapImages;
 		CImageManager*						m_pManager;
 
 	public:
@@ -218,10 +220,10 @@ namespace NSPresentationEditor
 			oFile.CloseFile();
 		}
 
-		AVSINLINE CString WriteImage(const CString& strImagePath)
+		AVSINLINE CString WriteImage(const std::wstring& strImagePath)
 		{
-			CString strImage = m_pManager->GenerateImage(strImagePath);
-			std::map<CString, int>::iterator pPair = m_mapImages.find(strImage);
+			std::wstring strImage = m_pManager->GenerateImage(strImagePath);
+			std::map<std::wstring, int>::iterator pPair = m_mapImages.find(strImage);
 
 			if (m_mapImages.end() != pPair)
 			{
@@ -235,9 +237,9 @@ namespace NSPresentationEditor
 			CString strRid = _T("");
 			strRid.Format(_T("rId%d"), m_lNextRelsID++);
 
-            CString strRels = _T("<Relationship Id=\"") ;
+			std::wstring strRels = _T("<Relationship Id=\"") ;
 
-            strRels += strRid + _T("\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"");
+            strRels += string2std_string(strRid) + _T("\" Type=\"http://schemas.openxmlformats.org/officeDocument/2006/relationships/image\" Target=\"");
             strRels += strImage + _T("\"/>");
 
 			m_oWriter.WriteString(strRels);

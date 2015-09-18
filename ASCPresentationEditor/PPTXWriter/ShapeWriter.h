@@ -43,6 +43,7 @@ namespace NSPresentationEditor
 		NSPresentationEditor::CMetricInfo		m_oMetricInfo;
 
 		NSPresentationEditor::CShapeElement*	m_pShapeElement;
+		NSPresentationEditor::CImageElement*	m_pImageElement;
 		
 		NSPresentationEditor::CRelsGenerator*	m_pRels;
 
@@ -62,7 +63,21 @@ namespace NSPresentationEditor
 		{
 			m_lNextShapeID = 1000;
 		}
+		AVSINLINE void SetShape(CImageElement* pShapeElem)
+		{
+			m_pSimpleGraphicsConverter->PathCommandEnd();
+			m_pImageElement = pShapeElem;
 
+			m_oMetricInfo	= m_pImageElement->m_oMetric;
+			m_oBounds		= m_pImageElement->m_rcBounds;
+			m_oTextRect		= m_oBounds;
+
+			m_bIsWriteGeom	= true;
+
+			m_oWriter.ClearNoAttack();
+			m_oWriterPath.ClearNoAttack();
+			m_oWriterVML.ClearNoAttack();	
+		}
 		AVSINLINE void SetShape(CShapeElement* pShapeElem)
 		{
 			m_pSimpleGraphicsConverter->PathCommandEnd();
@@ -87,178 +102,8 @@ namespace NSPresentationEditor
 		{
 			m_bIsWriteGeom = bIsWrite;
 		}
-		AVSINLINE CString ConvertShape()
-		{
-			m_oWriter.WriteString(_T("<p:sp>"));
-
-			WriteShapeInfo();
-
-			CGeomShapeInfo oInfo;
-			oInfo.SetBounds(m_oBounds);
-
-			oInfo.m_dRotate = m_pShapeElement->m_dRotate;
-			oInfo.m_bFlipH	= m_pShapeElement->m_bFlipH;
-			oInfo.m_bFlipV	= m_pShapeElement->m_bFlipV;
-
-			oInfo.m_lOriginalWidth	= (LONG)m_pShapeElement->m_rcBoundsOriginal.GetWidth();
-			oInfo.m_lOriginalHeight	= (LONG)m_pShapeElement->m_rcBoundsOriginal.GetHeight();
-
-			m_oWriter.WriteString(_T("<p:spPr>"));
-
-			if (m_bIsWriteGeom)
-			{
-				CString strPosition = _T("");
-				if (0 == m_pShapeElement->m_dRotate)
-				{
-					strPosition.Format(_T("<a:xfrm><a:off x=\"%d\" y=\"%d\"/><a:ext cx=\"%d\" cy=\"%d\"/></a:xfrm>"), (size_t)m_pShapeElement->m_rcBoundsOriginal.left, (size_t)m_pShapeElement->m_rcBoundsOriginal.top,
-						(size_t)(m_pShapeElement->m_rcBoundsOriginal.right - m_pShapeElement->m_rcBoundsOriginal.left),
-						(size_t)(m_pShapeElement->m_rcBoundsOriginal.bottom - m_pShapeElement->m_rcBoundsOriginal.top));
-				}
-				else
-				{
-					strPosition.Format(_T("<a:xfrm rot=\"%d\" flipH=\"%d\" flipV=\"%d\"><a:off x=\"%d\" y=\"%d\"/><a:ext cx=\"%d\" cy=\"%d\"/></a:xfrm>"),
-						(int)(m_pShapeElement->m_dRotate * 60000), m_pShapeElement->m_bFlipH ? 1 : 0, m_pShapeElement->m_bFlipV ? 1 : 0,
-						(int)m_pShapeElement->m_rcBoundsOriginal.left, (int)m_pShapeElement->m_rcBoundsOriginal.top,
-						(int)(m_pShapeElement->m_rcBoundsOriginal.right - m_pShapeElement->m_rcBoundsOriginal.left),
-						(int)(m_pShapeElement->m_rcBoundsOriginal.bottom - m_pShapeElement->m_rcBoundsOriginal.top));
-				}
-				m_oWriter.WriteString(strPosition);
-			}
-
-			if (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Graphic)
-			{
-				m_pShapeElement->m_oShape.ToRenderer(dynamic_cast<IRenderer*>(this), oInfo, m_oMetricInfo, 0.0, 1.0);
-			}
-
-			if (m_oWriterVML.GetCurSize() >= 10)
-			{
-				if (_T("") == m_pShapeElement->m_oShape.m_strPPTXShape)
-				{
-					m_oWriter.WriteString(_T("<a:custGeom>"));
-
-                    double dW = (std::max)(m_oBounds.GetWidth(), 0.1);
-                    double dH = (std::max)(m_oBounds.GetHeight(), 0.1);
-
-					int __l = (int)((m_oTextRect.left	 - m_oBounds.left)	* 100000 / dW);
-					int __t = (int)((m_oTextRect.top	 - m_oBounds.top)	* 100000 / dH);
-					int __r = (int)((m_oTextRect.right	 - m_oBounds.left)	* 100000 / dW);
-					int __b = (int)((m_oTextRect.bottom - m_oBounds.top)	* 100000 / dH);
-
-					size_t __nCount = m_pShapeElement->m_oShape.m_oText.m_arParagraphs.size();
-					if (0 == __nCount || (0x00 == (m_pShapeElement->m_oShape.m_lDrawType & c_ShapeDrawType_Text)))
-					{
-						m_oWriter.WriteString(_T("<a:rect l=\"l\" t=\"t\" r=\"r\" b=\"b\"/>"));
-					}
-					else
-					{
-						CString strGuides = _T("");
-						strGuides.Format(_T("<a:gdLst><a:gd name=\"_l\" fmla=\"*/ w %d 100000\"/><a:gd name=\"_t\" fmla=\"*/ h %d 100000\"/>\
-											<a:gd name=\"_r\" fmla=\"*/ w %d 100000\"/><a:gd name=\"_b\" fmla=\"*/ h %d 100000\"/></a:gdLst>"), __l, __t, __r, __b);
-						m_oWriter.WriteString(strGuides);
-
-						m_oWriter.WriteString(_T("<a:rect l=\"_l\" t=\"_t\" r=\"_r\" b=\"_b\"/>"));
-					}
-					m_oWriter.WriteString(_T("<a:pathLst>"));
-						m_oWriter.Write(m_oWriterVML);
-					m_oWriter.WriteString(_T("</a:pathLst>"));
-
-					m_oWriter.WriteString(_T("</a:custGeom>"));
-				}
-				else
-				{
-					m_oWriter.WriteString(m_pShapeElement->m_oShape.m_strPPTXShape);
-				}
-
-				CBrush* pBrush = &m_pShapeElement->m_oShape.m_oBrush;
-				
-				if (pBrush->Type == c_BrushTypeTexture)
-				{
-					CString strRid = m_pRels->WriteImage(pBrush->TexturePath);
-
-					CString strWrite = _T("<a:blipFill dpi=\"0\" rotWithShape=\"1\"><a:blip r:embed=\"") + strRid + 
-						_T("\"/><a:srcRect/><a:stretch><a:fillRect/></a:stretch></a:blipFill>");
-
-					m_oWriter.WriteString(strWrite);
-				}
-				else if (pBrush->Color1.m_lSchemeIndex == -1)
-				{
-					if (255 == pBrush->Alpha1)
-					{
-						CString str = _T("");
-						str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"/></a:solidFill>"), pBrush->Color1.GetLONG_RGB());
-						m_oWriter.WriteString(str);
-					}
-					else
-					{
-						CString str = _T("");
-						str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"><a:alpha val=\"%d\"/></a:srgbClr></a:solidFill>"), pBrush->Color1.GetLONG_RGB(), (int)(pBrush->Alpha1 * 100000 / 255));
-						m_oWriter.WriteString(str);
-					}
-				}
-				else
-				{
-					if (255 == pBrush->Alpha1)
-					{
-                        CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pBrush->Color1.m_lSchemeIndex) + _T("\"/></a:solidFill>");
-						m_oWriter.WriteString(str);
-					}
-					else
-					{
-                        CString strAlpha; strAlpha.Format(_T("%d"), (int)(pBrush->Alpha1 * 100000 / 255));
-
-                        CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pBrush->Color1.m_lSchemeIndex) + _T("\"><a:alpha val=\"") + strAlpha + _T("\"/></a:schemeClr></a:solidFill>");
-
-						m_oWriter.WriteString(str);
-					}
-				}
-				//m_oWriter.WriteString(_T("<a:effectLst/>"));
-
-				CPen* pPen = &m_pShapeElement->m_oShape.m_oPen;
-				CString strLine = _T("");
-				strLine.Format(_T("<a:ln w=\"%d\">"), (int)(pPen->Size * 36000));
-				m_oWriter.WriteString(strLine);
-
-				if (pPen->Color.m_lSchemeIndex == -1)
-				{
-					if (255 == pPen->Alpha)
-					{
-						CString str = _T("");
-						str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"/></a:solidFill>"), pPen->Color.GetLONG_RGB());
-						m_oWriter.WriteString(str);
-					}
-					else
-					{
-						CString str = _T("");
-						str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"><a:alpha val=\"%d\"/></a:srgbClr></a:solidFill>"), pPen->Color.GetLONG_RGB(), (int)(pPen->Alpha * 100000 / 255));
-						m_oWriter.WriteString(str);
-					}
-				}
-				else
-				{
-					if (255 == pPen->Alpha)
-					{
-                        CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pPen->Color.m_lSchemeIndex) + _T("\"/></a:solidFill>");
-						m_oWriter.WriteString(str);
-					}
-					else
-					{
-                        CString strAlpha; strAlpha.Format(_T("%d"), (int)(pPen->Alpha * 100000 / 255));
-
-                        CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pPen->Color.m_lSchemeIndex) + _T("\"><a:alpha val=\"") + strAlpha + _T("\"/></a:schemeClr></a:solidFill>");
-						m_oWriter.WriteString(str);
-					}
-				}
-
-				m_oWriter.WriteString(_T("<a:round/><a:headEnd/><a:tailEnd/></a:ln>"));
-			}
-
-			m_oWriter.WriteString(_T("</p:spPr>"));			
-
-			WriteTextInfo();
-			m_oWriter.WriteString(_T("</p:sp>"));
-			return m_oWriter.GetData();
-		}
-
+		CString ConvertShape();
+		CString ConvertImage();
 // тип рендерера-----------------------------------------------------------------------------
 	virtual HRESULT get_Type(LONG* lType)	;
 //-------- Функции для работы со страницей --------------------------------------------------
@@ -441,13 +286,11 @@ namespace NSPresentationEditor
 
 			if (_T("") == m_oFont.Path)
 			{
-                std::wstring  bsName = string2std_string(m_oFont.Name);
-				m_pFontManager->LoadFontByName(bsName, (float)m_oFont.Size, m_oFont.GetStyle(), m_dDpiX, m_dDpiY);
+				m_pFontManager->LoadFontByName(m_oFont.Name, (float)m_oFont.Size, m_oFont.GetStyle(), m_dDpiX, m_dDpiY);
 			}
 			else
 			{
-                std::wstring  bsName = string2std_string(m_oFont.Path);
-				m_pFontManager->LoadFontFromFile(bsName, (float)m_oFont.Size, m_dDpiX, m_dDpiY, 0);
+				m_pFontManager->LoadFontFromFile(m_oFont.Path, (float)m_oFont.Size, m_dDpiX, m_dDpiY, 0);
             }
 
 			m_oInstalledFont = m_oFont;
@@ -539,13 +382,18 @@ namespace NSPresentationEditor
 
 		void WriteShapeInfo()
 		{
-			CString str1 = _T("<p:nvSpPr>");
-			m_oWriter.WriteString(str1);
+			m_oWriter.WriteString(std::wstring(L"<p:nvSpPr>"));
 
 			CString strShapeID = _T("");
-			strShapeID.Format(_T("<p:cNvPr id=\"%d\" name=\"Shape %d\"/><p:cNvSpPr><a:spLocks noGrp=\"1\" noChangeArrowheads=\"1\"/></p:cNvSpPr>"),
-				m_lNextShapeID, m_lNextShapeID);
-			m_oWriter.WriteString(strShapeID);
+			strShapeID.Format(_T("%d", m_lNextShapeID));
+
+			m_oWriter.WriteString(std::wstring(L"<p:cNvPr id=\"") + string2std_string(strShapeID) + L"\"");
+
+			if (m_pShapeElement->m_sName.empty()) m_pShapeElement->m_sName = std::wstring(L"Shape ") +  string2std_string(strShapeID);
+
+			m_oWriter.WriteString(std::wstring(L" name=\"") + m_pShapeElement->m_sName + L"\"");
+
+			m_oWriter.WriteString(std::wstring(L"></p:cNvPr><p:cNvSpPr><a:spLocks noGrp=\"1\" noChangeArrowheads=\"1\"/></p:cNvSpPr>"));
 
 			++m_lNextShapeID;
 
@@ -572,10 +420,57 @@ namespace NSPresentationEditor
 			}
 			else
 			{
-				m_oWriter.WriteString(_T("<p:nvPr/>"));
+				m_oWriter.WriteString(std::wstring(L"<p:nvPr/>"));
 			}
 			
 			CString str2 = _T("</p:nvSpPr>");
+			m_oWriter.WriteString(str2);
+		}
+
+		void WriteImageInfo()
+		{
+			m_oWriter.WriteString(std::wstring(L"<p:nvPicPr>"));
+
+			CString strShapeID;
+			strShapeID.Format(_T("%d"),	m_lNextShapeID);			
+			
+			m_oWriter.WriteString(std::wstring(L"<p:cNvPr id=\"") +string2std_string(strShapeID) + L"\"" );
+			
+			if (m_pImageElement->m_sName.empty()) m_pImageElement->m_sName = std::wstring(L"Image ") +  string2std_string(strShapeID);
+			
+			m_oWriter.WriteString(std::wstring(L" name=\"") + m_pImageElement->m_sName + L"\"");
+
+			m_oWriter.WriteString(std::wstring(L"></p:cNvPr><p:cNvPicPr><a:spLocks noGrp=\"1\" noChangeAspect=\"1\"/></p:cNvPicPr>"));
+
+			++m_lNextShapeID;
+
+			if (-1 != m_pImageElement->m_lPlaceholderType)
+			{
+				if (15 == m_pImageElement->m_lPlaceholderType)
+					m_pImageElement->m_lPlaceholderID = -1;
+				if (0 == m_pImageElement->m_lPlaceholderType)
+					m_pImageElement->m_lPlaceholderID = 1;
+
+				if (-1 == m_pImageElement->m_lPlaceholderID)
+				{
+                    CString strPlaceholder = _T("<p:nvPr><p:ph type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) +_T("\"/></p:nvPr>");
+
+                    m_oWriter.WriteString(strPlaceholder);
+				}
+				else
+				{
+                    CString strIdx; strIdx.Format(_T("%d"), m_pImageElement->m_lPlaceholderID);
+                    CString strPlaceholder = _T("<p:nvPr><p:ph type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) + _T("\" idx=\"") + strIdx + _T("\"/></p:nvPr>");
+
+					m_oWriter.WriteString(strPlaceholder);
+				}
+			}
+			else
+			{
+				m_oWriter.WriteString(std::wstring(L"<p:nvPr/>"));
+			}
+			
+			CString str2 = _T("</p:nvPicPr>");
 			m_oWriter.WriteString(str2);
 		}
 
@@ -592,11 +487,13 @@ namespace NSPresentationEditor
 				return;
 			}
 
-			CString str1 = _T("<p:txBody>");
-			m_oWriter.WriteString(str1);
+			m_oWriter.WriteString(std::wstring(L"<p:txBody>"));
 
-			CString str2 = _T("<a:bodyPr lIns=\"0\" tIns=\"0\" rIns=\"0\" bIns=\"0\"/>");
-			m_oWriter.WriteString(str2);
+			m_oWriter.WriteString(std::wstring(L"<a:bodyPr lIns=\"0\" tIns=\"0\" rIns=\"0\" bIns=\"0\""));
+
+			if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 0 ) m_oWriter.WriteString(" anchor=\"t\"");
+			if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 2 ) m_oWriter.WriteString(" anchor=\"b\"");
+			m_oWriter.WriteString(std::wstring(L"/>"));
 
 			CString str3 = _T("<a:lstStyle>");
 			m_oWriter.WriteString(str3);
@@ -619,7 +516,7 @@ namespace NSPresentationEditor
 				if (pPF->fontAlign.is_init())
 				{
 					CString strProp = CStylesWriter::GetFontAlign(pPF->fontAlign.get());
-					m_oWriter.WriteString(_T(" fontAlgn=\"") + strProp + _T("\""));
+					m_oWriter.WriteString(std::wstring(L" fontAlgn=\"") + string2std_string(strProp) + _T("\""));
 				}
 				if (pPF->leftMargin.is_init())
 				{
@@ -636,7 +533,7 @@ namespace NSPresentationEditor
 				if (pPF->textAlignment.is_init())
 				{
 					CString strProp = CStylesWriter::GetTextAlign(pPF->textAlignment.get());
-					m_oWriter.WriteString(_T(" algn=\"") + strProp + _T("\""));
+					m_oWriter.WriteString(std::wstring(L" algn=\"") + string2std_string(strProp) + _T("\""));
 				}
 				if (pPF->defaultTabSize.is_init())
 				{
@@ -701,17 +598,22 @@ namespace NSPresentationEditor
 				{
 					if (pPF->hasBullet.get())
 					{
-                        m_oWriter.WriteString(_T("<a:buChar char=\""));
-                        m_oWriter.WriteString(_T("-"));                  //todooo !!!!! кружочек
-                        m_oWriter.WriteString(_T("\"/>"));
+ 						wchar_t bu = 0x2022;
+						m_oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
+						if (pPF->bulletChar.is_init())
+						{
+							bu = pPF->bulletChar.get();
+						}
+						m_oWriter.WriteString(bu); 
+                        m_oWriter.WriteString(std::wstring(L"\"/>"));
 					}
 					else
 					{
-						m_oWriter.WriteString(_T("<a:buNone/>"));
+						m_oWriter.WriteString(std::wstring(L"<a:buNone/>"));
 					}
 				}
 
-				m_oWriter.WriteString(_T("</a:pPr>"));
+				m_oWriter.WriteString(std::wstring(L"</a:pPr>"));
 
 				size_t nCountSpans = pParagraph->m_arSpans.size();
 				for (size_t nSpan = 0; nSpan < nCountSpans; ++nSpan)
@@ -729,7 +631,7 @@ namespace NSPresentationEditor
 							}
 							else
 							{
-								m_oWriter.WriteString(_T("<a:endParaRPr lang=\"en-US\"/>"));
+								m_oWriter.WriteString(std::wstring(L"<a:endParaRPr lang=\"en-US\"/>"));
 							}
 							continue;
 						}
@@ -764,18 +666,18 @@ namespace NSPresentationEditor
 					if (pCF->FontBold.is_init())
 					{
 						if (pCF->FontBold.get())
-							m_oWriter.WriteString(_T(" b=\"1\""));
+							m_oWriter.WriteString(std::wstring(L" b=\"1\""));
 						else
-							m_oWriter.WriteString(_T(" b=\"0\""));
+							m_oWriter.WriteString(std::wstring(L" b=\"0\""));
 					}
 					if (pCF->FontItalic.is_init())
 					{
 						if (pCF->FontItalic.get())
-							m_oWriter.WriteString(_T(" i=\"1\""));
+							m_oWriter.WriteString(std::wstring(L" i=\"1\""));
 						else
-							m_oWriter.WriteString(_T(" i=\"0\""));
+							m_oWriter.WriteString(std::wstring(L" i=\"0\""));
 					}
-					m_oWriter.WriteString(_T(">"));
+					m_oWriter.WriteString(std::wstring(L">"));
 
 					if (pCF->Color.is_init())
 					{
@@ -809,10 +711,10 @@ namespace NSPresentationEditor
 					}
 					else if (pCF->FontProperties.is_init())
 					{
-						m_oWriter.WriteString(_T("<a:latin typeface=\"") + pCF->FontProperties->strFontName + _T("\"/>"));
+						m_oWriter.WriteString(std::wstring(L"<a:latin typeface=\"") + pCF->FontProperties->strFontName + _T("\"/>"));
 					}
 
-					m_oWriter.WriteString(_T("</a:rPr>"));
+					m_oWriter.WriteString(std::wstring(L"</a:rPr>"));
 
 					if (!bIsBr)
 					{
@@ -826,11 +728,11 @@ namespace NSPresentationEditor
 						CString strT2 = _T("</a:t>");
 						m_oWriter.WriteString(strT2);
 
-						m_oWriter.WriteString(_T("</a:r>"));
+						m_oWriter.WriteString(std::wstring(L"</a:r>"));
 					}
 					else
 					{
-						m_oWriter.WriteString(_T("</a:br>"));
+						m_oWriter.WriteString(std::wstring(L"</a:br>"));
 					}
 				}
 

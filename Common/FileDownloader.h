@@ -29,7 +29,7 @@ class CFileDownloader : public CBaseThread
 {
 public :
 
-    CFileDownloader (CString sFileUrl, bool bDelete = true) : CBaseThread(0)
+	CFileDownloader (std::wstring sFileUrl, bool bDelete = true) : CBaseThread(0)
 	{
 		m_pFile     = NULL;
 		m_sFilePath = _T("");
@@ -44,16 +44,16 @@ public :
 			::fclose( m_pFile );
 			m_pFile = NULL;
 		}
-		if ( m_sFilePath.GetLength() > 0 && m_bDelete )
+		if ( m_sFilePath.length() > 0 && m_bDelete )
 		{
-			DeleteFileW( m_sFilePath.GetBuffer() );
+			DeleteFileW( m_sFilePath.c_str() );
 			m_sFilePath = _T("");
 		}
 
 	}
 
 
-	CString GetFilePath()
+	std::wstring GetFilePath()
 	{
 		return m_sFilePath;
 	}
@@ -63,7 +63,7 @@ public :
 	}
 protected :
 
-	unsigned int DownloadFile(CString sFileUrl)
+	unsigned int DownloadFile(std::wstring sFileUrl)
 	{
 		// Проверяем состояние соединения
 		if ( FALSE == InternetGetConnectedState ( 0, 0 ) )
@@ -90,7 +90,7 @@ protected :
 		// Заголовок запроса ( пока содержит 0 байт ( необходимо для проверки ) )
 		CString sHTTPHdr = _T ("Range: bytes=0-0");
 		// Открываем ссылку для проверки на ее существование, а также на возможность чтения частями
-		HINTERNET hInternetOpenURL = InternetOpenUrl ( hInternetSession, sFileUrl, sHTTPHdr, -1, INTERNET_FLAG_RESYNCHRONIZE, 0 );
+		HINTERNET hInternetOpenURL = InternetOpenUrl ( hInternetSession, sFileUrl.c_str(), sHTTPHdr, -1, INTERNET_FLAG_RESYNCHRONIZE, 0 );
 		if ( NULL != hInternetOpenURL )
 		{
 			// Открытие произошло, проверяем ответ
@@ -173,7 +173,7 @@ protected :
 
 		return S_OK;
 	}
-	DWORD DownloadFilePath ( HINTERNET hInternet, LPBYTE pBuffer, LONGLONG nStartByte, LONGLONG nEndByte, CString sFileURL )
+	DWORD DownloadFilePath ( HINTERNET hInternet, LPBYTE pBuffer, LONGLONG nStartByte, LONGLONG nEndByte, std::wstring sFileURL )
 	{
 		// Неоткрытая сессия
 		if ( NULL == hInternet )
@@ -186,7 +186,7 @@ protected :
 		// Заголовок запроса ( содержит nEndByte - nStartByte байт )
 		CString sHTTPHdr = _T (""); sHTTPHdr.Format ( _T ("Range: bytes=%lld-%lld"), nStartByte, nEndByte );
 		// Открываем ссылку для закачки
-		HINTERNET hInternetOpenURL = InternetOpenUrl ( hInternet, sFileURL, sHTTPHdr, -1, INTERNET_FLAG_RESYNCHRONIZE, 0 );
+		HINTERNET hInternetOpenURL = InternetOpenUrl ( hInternet, sFileURL.c_str(), sHTTPHdr, -1, INTERNET_FLAG_RESYNCHRONIZE, 0 );
 		if ( NULL == hInternetOpenURL )
 			return -1;
 		// Открытие произошло, проверяем ответ
@@ -329,7 +329,7 @@ protected :
 		return nFileSize;
 	}
 
-	HRESULT DownloadFileAll(CString sFileURL, CString strFileOutput)
+	HRESULT DownloadFileAll(std::wstring sFileURL, std::wstring strFileOutput)
 	{
 		if ( m_pFile )
 		{
@@ -337,7 +337,7 @@ protected :
 			m_pFile = NULL;
 		}
 		// Скачиваем файл
-		return URLDownloadToFile (NULL, sFileURL, strFileOutput, NULL, NULL);
+		return URLDownloadToFile (NULL, sFileURL.c_str(), strFileOutput.c_str(), NULL, NULL);
 	}
 
 public:
@@ -357,12 +357,12 @@ public:
 
 protected :
 
-	FILE    *m_pFile;           // Хэндл на временный файл
-	CString  m_sFilePath;       // Путь к сохраненному файлу на диске
-	CString  m_sFileUrl;        // Ссылка на скачивание файла
+	FILE			*m_pFile;           // Хэндл на временный файл
+	std::wstring	m_sFilePath;       // Путь к сохраненному файлу на диске
+	std::wstring	m_sFileUrl;        // Ссылка на скачивание файла
 
-    bool     m_bComplete;       // Закачался файл или нет
-    bool     m_bDelete;         // Удалять ли файл в деструкторе
+    bool			m_bComplete;       // Закачался файл или нет
+    bool			m_bDelete;         // Удалять ли файл в деструкторе
 
 };
 #else

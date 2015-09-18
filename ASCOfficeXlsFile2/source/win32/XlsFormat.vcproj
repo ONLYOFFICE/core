@@ -6057,47 +6057,11 @@
 						>
 					</File>
 					<File
-						RelativePath="..\XlsFormat\Logic\SummaryInformationStream\Structures\Property.cpp"
+						RelativePath="..\XlsFormat\Logic\SummaryInformationStream\Structures\Property.h"
 						>
-						<FileConfiguration
-							Name="Debug|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Debug|x64"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|Win32"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
-						<FileConfiguration
-							Name="Release|x64"
-							>
-							<Tool
-								Name="VCCLCompilerTool"
-								ObjectFile="$(IntDir)\$(InputName)1.obj"
-								XMLDocumentationFileName="$(IntDir)\$(InputName)1.xdc"
-							/>
-						</FileConfiguration>
 					</File>
 					<File
-						RelativePath="..\XlsFormat\Logic\SummaryInformationStream\Structures\Property.h"
+						RelativePath="..\XlsFormat\Logic\SummaryInformationStream\Structures\Property_Structures.cpp"
 						>
 					</File>
 					<File
@@ -6130,14 +6094,6 @@
 		<Filter
 			Name="Auxiliary"
 			>
-			<File
-				RelativePath="..\XlsFormat\Auxiliary\BetterVariantT.cpp"
-				>
-			</File>
-			<File
-				RelativePath="..\XlsFormat\Auxiliary\BetterVariantT.h"
-				>
-			</File>
 			<File
 				RelativePath="..\XlsFormat\Auxiliary\HelpersTagsGenerator.cpp"
 				>

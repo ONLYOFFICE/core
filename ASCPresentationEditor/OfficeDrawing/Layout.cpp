@@ -15,7 +15,7 @@ namespace NSPresentationEditor
 		if (!m_bUseThemeColorScheme)
 		{
 			// colors ----
-			oWriter.WriteString(_T("<Colors>"));
+			oWriter.WriteString(std::wstring(L"<Colors>"));
 			
 			size_t nCountColors = m_arColorScheme.size();
 			for (size_t i = 0; i < nCountColors; ++i)
@@ -27,7 +27,7 @@ namespace NSPresentationEditor
 				oWriter.WriteString(strFormat);
 			}
 
-			oWriter.WriteString(_T("</Colors>"));
+			oWriter.WriteString(std::wstring(L"</Colors>"));
 			// -----------
 		}
 
@@ -59,14 +59,14 @@ namespace NSPresentationEditor
 			oElem.m_bIsBackground = true;
 			oElem.m_bIsChangeable = false;
 
-			oWriter.WriteString(_T("<Background>"));
+			oWriter.WriteString(std::wstring(L"<Background>"));
 			oElem.SetupProperties(NULL, pTheme, this);
 			oWriter.WriteString(oElem.ToXmlEditor());
-			oWriter.WriteString(_T("</Background>"));
+			oWriter.WriteString(std::wstring(L"</Background>"));
 		}
 		// -----------
 		// elements (no placeholders)
-		oWriter.WriteString(_T("<Elements>"));
+		oWriter.WriteString(std::wstring(L"<Elements>"));
 
 		size_t nCountElems = m_arElements.size();
 		for (size_t i = 0; i < nCountElems; ++i)
@@ -80,13 +80,13 @@ namespace NSPresentationEditor
 			}
 		}
 
-		oWriter.WriteString(_T("</Elements>"));
+		oWriter.WriteString(std::wstring(L"</Elements>"));
 		// ----------------
 		// placeholders
-		oWriter.WriteString(_T("<Placeholders>"));
+		oWriter.WriteString(std::wstring(L"<Placeholders>"));
 
-		CString strStylesPh = _T("");
-		CString strFontRefs = _T("");
+		std::wstring strStylesPh = _T("");
+		std::wstring strFontRefs = _T("");
 
 		for (size_t i = 0; i < nCountElems; ++i)
 		{
@@ -133,12 +133,12 @@ namespace NSPresentationEditor
 			}
 		}
 
-		oWriter.WriteString(_T("</Placeholders>"));
+		oWriter.WriteString(std::wstring(L"</Placeholders>"));
 
-		oWriter.WriteString(_T("<Styles>") + strStylesPh + _T("</Styles>"));
-		oWriter.WriteString(_T("<StylesFontRef>") + strFontRefs + _T("</StylesFontRef>"));
+		oWriter.WriteString(std::wstring(L"<Styles>") + strStylesPh + _T("</Styles>"));
+		oWriter.WriteString(std::wstring(L"<StylesFontRef>") + strFontRefs + _T("</StylesFontRef>"));
 
-		oWriter.WriteString(_T("</Layout>"));
+		oWriter.WriteString(std::wstring(L"</Layout>"));
 
 		return oWriter.GetData();
 	}

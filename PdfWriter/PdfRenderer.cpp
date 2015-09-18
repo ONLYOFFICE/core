@@ -512,7 +512,7 @@ HRESULT CPdfRenderer::NewPage()
 
 	m_lClipDepth = 0;
 
-	printf("Page %d\n", m_nPagesCount++);
+    m_nPagesCount++;//printf("Page %d\n", m_nPagesCount++);
 
 	return S_OK;
 }

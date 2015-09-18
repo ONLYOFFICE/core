@@ -13,6 +13,7 @@
 
 #include <string>
 #include <algorithm>
+#include <math.h>
 
 #ifdef __linux__
 #include <string.h>

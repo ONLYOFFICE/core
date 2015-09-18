@@ -24,7 +24,7 @@
 
 namespace agg
 {
-#if !defined(_LINUX) && !(defined(_WIN32) || defined (_WIN64))
+#if !defined(_LINUX) && !(defined(_WIN32) || defined (_WIN64)) && !defined(__APPLE__)
     double _hypot(double x, double y)
     {
         return sqrt(x*x + y*y);

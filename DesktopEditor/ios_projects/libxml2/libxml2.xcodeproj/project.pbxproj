@@ -81,6 +81,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		170F06D61BAADD78002CB937 /* config.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = config.h; path = ../../../Common/DocxFormat/Source/XML/libxml2/mac_build/libxml2/libxml2/config.h; sourceTree = "<group>"; };
 		7C8C2B401AA6FEB800A6495B /* liblibxml2.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = liblibxml2.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		7C8C2B5A1AA700A500A6495B /* buf.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = buf.c; path = ../../../Common/DocxFormat/Source/XML/libxml2/XML/buf.c; sourceTree = "<group>"; };
 		7C8C2B5B1AA700A500A6495B /* c14n.c */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.c; name = c14n.c; path = ../../../Common/DocxFormat/Source/XML/libxml2/XML/c14n.c; sourceTree = "<group>"; };
@@ -140,9 +141,10 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		7C8C2B371AA6FEB800A6495B = {
+		1791A21A1BAC2CA600FC9C28 /* libxml */ = {
 			isa = PBXGroup;
 			children = (
+				170F06D61BAADD78002CB937 /* config.h */,
 				7C8C2B5A1AA700A500A6495B /* buf.c */,
 				7C8C2B5B1AA700A500A6495B /* c14n.c */,
 				7C8C2B5C1AA700A500A6495B /* catalog.c */,
@@ -188,6 +190,14 @@
 				7C8C2B841AA700A500A6495B /* xmlwriter.c */,
 				7C8C2B851AA700A500A6495B /* xpath.c */,
 				7C8C2B861AA700A500A6495B /* xpointer.c */,
+			);
+			name = libxml;
+			sourceTree = "<group>";
+		};
+		7C8C2B371AA6FEB800A6495B = {
+			isa = PBXGroup;
+			children = (
+				1791A21A1BAC2CA600FC9C28 /* libxml */,
 				7C8C2B411AA6FEB800A6495B /* Products */,
 			);
 			sourceTree = "<group>";
@@ -419,6 +429,7 @@
 		7C8C2B551AA6FEB800A6495B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,
@@ -459,6 +470,7 @@
 		7C8C2B561AA6FEB800A6495B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					UNICODE,
 					_UNICODE,

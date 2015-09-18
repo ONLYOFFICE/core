@@ -5,6 +5,13 @@
 #include "../DesktopEditor/common/Base64.h"
 #include "../DesktopEditor/common/String.h"
 
+#ifdef _ARM_ALIGN_
+#if !defined(_WIN32) && !defined(_WIN64)
+#include "../../../Common/DocxFormat/Source/Base/unicode_util.h"
+#include "../../../Common/DocxFormat/Source/Base/ASCString.h"
+#endif
+#endif
+
 #ifndef _INT32
 typedef int _INT32;
 #endif
@@ -160,6 +167,7 @@ namespace NSOnlineOfficeBinToPdf
 		return ret;
 #endif
 	}
+    
 	static inline std::wstring ReadString16(BYTE*& pData, int& nOffset, int nLen)
 	{
 		std::wstring wsTempString;
@@ -202,10 +210,11 @@ namespace NSOnlineOfficeBinToPdf
 		nOffset += nLen;
 		return wsTempString;
 	}
-	static std::wstring        ReadImagePath(CPdfRenderer* pPdf, const std::wstring& wsHtmlPlace, BYTE*& pData, int& nOffset)
+    
+	static std::wstring        ReadImagePath(CPdfRenderer* pPdf, const std::wstring& wsHtmlPlace, BYTE*& pData, int& nOffset, bool isString32 = false)
 	{
-		int _sLen = 2 * ReadUSHORT(pData, nOffset);
-		std::wstring wsTempString = ReadString16(pData, nOffset, _sLen);
+        int _sLen = (isString32 ? ReadInt(pData, nOffset) : 2 * ReadUSHORT(pData, nOffset));
+        std::wstring wsTempString = ReadString16(pData, nOffset, _sLen);
 
 		if (0 == wsTempString.find(L"data:"))
 		{
@@ -253,7 +262,7 @@ namespace NSOnlineOfficeBinToPdf
 				{
 					if (wsHtmlPlace.length() > 0)
                     {
-                        if (0 == wsTempString.find(L"media") || NSFile::CFileBinary::Exists(wsTempString = wsHtmlPlace + L"/" + wsTempString))
+                        if (0 == wsTempString.find(L"media") || NSFile::CFileBinary::Exists(wsHtmlPlace + L"/" + wsTempString))
                             wsTempString = wsHtmlPlace + L"/" + wsTempString;
                         else
                             wsTempString = wsHtmlPlace + L"/media/" + wsTempString;
@@ -571,8 +580,8 @@ namespace NSOnlineOfficeBinToPdf
 				}
 				case ctDrawImageFromFile:
 				{
-					std::wstring wsTempString = ReadImagePath(pPdf, wsHtmlPlace, current, curindex);
-					double m1 = ReadInt(current, curindex) / 100000.0;
+                    std::wstring wsTempString = ReadImagePath(pPdf, wsHtmlPlace, current, curindex, true);
+                    double m1 = ReadInt(current, curindex) / 100000.0;
 					double m2 = ReadInt(current, curindex) / 100000.0;
 					double m3 = ReadInt(current, curindex) / 100000.0;
 					double m4 = ReadInt(current, curindex) / 100000.0;

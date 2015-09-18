@@ -8,6 +8,14 @@
 
 #ifndef PdfWriter_AscEditorPDFPrinter_h
 #define PdfWriter_AscEditorPDFPrinter_h
+
+#ifdef __OBJC__
+#import <CoreFoundation/CoreFoundation.h>
+#else
+#include <objc/objc.h>
+#endif
+#import <Foundation/Foundation.h>
+
 #include <string>
 #include <vector>
 

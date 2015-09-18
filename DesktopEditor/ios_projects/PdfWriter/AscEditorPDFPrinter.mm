@@ -6,85 +6,76 @@
 //  Copyright (c) 2015 Ascensio System. All rights reserved.
 //
 
-#include <stdio.h>
-#include "./AscEditorPDFPrinter.h"
+#include "AscEditorPDFPrinter.h"
 
-#include "../../../ASCOfficePDFWriter/PdfWriterLib/PdfWriterLib.h"
+#include <stdio.h>
+#include <math.h>
+
 #include "../../common/File.h"
+#include "../../common/Directory.h"
+#include "../../fontengine/ApplicationFonts.h"
+#include "../../../PdfWriter/PdfRenderer.h"
+
+static std::wstring GetTempPath()
+{
+    NSString* sTempPath = NSTemporaryDirectory();
+    NSStringEncoding encode = CFStringConvertEncodingToNSStringEncoding(kCFStringEncodingUTF32LE);
+    NSData* data = [sTempPath dataUsingEncoding:encode];
+    return std::wstring((wchar_t*)data.bytes, data.length / sizeof(wchar_t));
+}
 
 bool CAscEditorPDFPrinter::Print(std::string strBase64, std::wstring strDstFile)
 {
-    CPdfWriterLib oWriter;
+    std::wstring sTempPath = GetTempPath();
     
-    if (m_bUseFontsDirectory)
+    CApplicationFonts oFonts;
+    CFontManager* pFontManager = NULL;
+    
+    CArray<std::wstring> fonts;
+    if (m_bUseSystemFonts)
     {
-        CString sFonts(m_strFontsDirectory.c_str());
-        oWriter.SetFontDir(sFonts);
-    }
-    else
-    {
-        oWriter.InitializeFonts(m_bUseSystemFonts, m_arFontsDirectory);
+        fonts = oFonts.GetSetupFontFiles();
     }
     
-    HRESULT hRes = S_OK;
-    try
+    for (std::vector<std::wstring>::iterator iter = m_arFontsDirectory.begin(); iter != m_arFontsDirectory.end(); ++iter)
     {
-        hRes = oWriter.CreatePDF();
-        if (S_OK != (hRes))
-            throw "CreatePDF failed!";
+        NSDirectory::GetFiles2(*iter, fonts);
+    }
+    
+    oFonts.InitializeFromArrayFiles(fonts);
+    pFontManager = oFonts.GenerateFontManager();
+    
+    oFonts.InitializeFromFolder(m_strFontsDirectory);
+    pFontManager = oFonts.GenerateFontManager();
+    
+    CPdfRenderer oRender(&oFonts);
+    oRender.SetTempFolder(GetTempPath());
+    
+    bool status = false;
+    int	len = NSBase64::Base64DecodeGetRequiredLength((int)strBase64.length());
+    BYTE* dstArray	= new BYTE[len];
+    if (NSBase64::Base64Decode(strBase64.c_str(), (int)strBase64.length(), dstArray, &len))
+    {
+        std::wstring sFile = m_strImagesPath + L"/________PDF________";
         
-        hRes = oWriter.SetPDFCompressionMode(15);
-        if (S_OK != (hRes))
-            throw "SetPDFCompressionMode(15) failed!";
-        
-        int nCountPages = 0;
-        
-        std::wstring sHypers = L"";
-        
-        int	len			= NSBase64::Base64DecodeGetRequiredLength(strBase64.length());
-        BYTE* dstArray	= new BYTE[len];
-        
-        if (NSBase64::Base64Decode(strBase64.c_str(), strBase64.length(), dstArray, &len))
-        {
-            oWriter.OnlineWordToPdfInternal(dstArray, len, m_strImagesPath, sHypers, nCountPages, L"", 1);
-            oWriter.SaveToFile(strDstFile);
+        NSFile::CFileBinary oFile;
+        if (!oFile.CreateFileW(sFile))
+        {            
+            RELEASEARRAYOBJECTS(dstArray);
+            RELEASEOBJECT(pFontManager);
+            return false;
         }
         
+        oFile.WriteFile(dstArray, len);
+        oFile.CloseFile();
+        
+        status = oRender.OnlineWordToPdfFromBinary(sFile, strDstFile);
+        
+        NSFile::CFileBinary::Remove(sFile);
+        
         RELEASEARRAYOBJECTS(dstArray);
-    }
-    catch (char *pcError)
-    {
-        //ATLTRACE2 (pcError);
+        RELEASEOBJECT(pFontManager);
     }
     
-    return (hRes == S_OK) ? true : false;
-}
-
-// file downloader realize
-#ifdef BOOL
-#undef BOOL
-#endif
-#include "../../../Common/FileDownloader.h"
-#import <Foundation/Foundation.h>
-
-HRESULT CFileDownloader::DownloadFileAll(std::wstring sFileURL, std::wstring strFileOutput)
-{
-    NSString* pStringUrl = [ [ NSString alloc ]
-                         initWithBytes : (char*)sFileURL.data()
-                         length : sFileURL.length() * sizeof(wchar_t)
-                         encoding : CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingUTF32LE ) ];
-    
-    NSString* pStringOutput = [ [ NSString alloc ]
-                            initWithBytes : (char*)strFileOutput.data()
-                            length : strFileOutput.length() * sizeof(wchar_t)
-                            encoding : CFStringConvertEncodingToNSStringEncoding ( kCFStringEncodingUTF32LE ) ];
-    
-    NSURL  *url = [NSURL URLWithString:pStringUrl];
-    NSData *urlData = [NSData dataWithContentsOfURL:url];
-    if ( urlData )
-    {
-        [urlData writeToFile:pStringOutput atomically:YES];
-        return S_OK;
-    }
-    return S_FALSE;
+    return status;
 }

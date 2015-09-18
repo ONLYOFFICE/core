@@ -599,7 +599,19 @@ public:
 		}
 
 		if (bulletChar_)
-			m_oRun.bulletChar		= (WCHAR)StreamUtils::ReadWORD(pStream);
+		{
+			if (sizeof(wchar_t) == 2)
+			{
+				m_oRun.bulletChar		= (WCHAR)StreamUtils::ReadWORD(pStream);
+			}
+			else
+			{
+				unsigned short	utf16	= (unsigned short)StreamUtils::ReadWORD(pStream);
+				std::wstring	utf32	= NSFile::CUtf8Converter::GetWStringFromUTF16(&utf16, 1);
+				if (!utf32.empty())
+					m_oRun.bulletChar = utf32.c_str()[0];
+			}
+		}
 		if (bulletFontRef_)
 			m_oRun.bulletFontRef	= StreamUtils::ReadWORD(pStream);
 		if (bulletSize_)
@@ -788,10 +800,13 @@ public:
 			oColor.A = 255;
 			oColor.m_lSchemeIndex = -1;
 
-			if (oColorAtom.Index < 10)
+			if (oColorAtom.Index < 10/* && oColorAtom.bSchemeIndex*/)
 			{
 				oColor.m_lSchemeIndex = oColorAtom.Index;
 				NSPresentationEditor::CorrectColorPPT(oColor.m_lSchemeIndex);
+			}
+			else
+			{
 			}
 
 			m_oRun.Color = oColor;

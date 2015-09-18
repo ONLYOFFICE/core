@@ -13,6 +13,25 @@ namespace NSPresentationEditor
 //0x05 //Accent 1 color
 //0x06 //Accent 2 color
 //0x07 //Accent 3 color
+
+// [0]);//0
+// [1]);//1
+// [2]);//2
+// [3]);//3
+// [0]);//4
+// [4]);//5 //accent1
+// [5]);//6 //accent2
+// [0]);//7 //accent3
+// [5]);//8 //accent4
+// [4]);//9 //accent5
+// [7]);//10 //accent6
+// [6]);//11 //hlink
+// [7]);//12 //folHlink
+// [0]);//13 //lt1
+// [1]);//14 //dk1
+// [2]);//15 //lt2
+// [3]);//16 //dk2
+
 		switch (lSchemeIndex)
 		{
 		case 0:
@@ -22,22 +41,22 @@ namespace NSPresentationEditor
 			lSchemeIndex = 14;
 			break;
 		case 2:
-			lSchemeIndex = 16;
+			lSchemeIndex = 15;
 			break;
 		case 3:
-			lSchemeIndex = 15;
+			lSchemeIndex = 16;
 			break;
 		case 4:
 			lSchemeIndex = 5;
 			break;
 		case 5:
-			lSchemeIndex = 5;//6
+			lSchemeIndex = 6;
 			break;
 		case 6:
-			lSchemeIndex = 6;//11
+			lSchemeIndex = 11;
 			break;
 		case 7:
-			lSchemeIndex = 7;//12
+			lSchemeIndex = 12;
 			break;
 		default:
 			lSchemeIndex = -1;

@@ -34,7 +34,23 @@ public:
 			return _T("justLow");
 		return _T("l");
 	}
-
+		//oArrayMem.push_back(oScheme[0]);//0
+		//oArrayMem.push_back(oScheme[1]);//1
+		//oArrayMem.push_back(oScheme[2]);//2
+		//oArrayMem.push_back(oScheme[3]);//3
+		//oArrayMem.push_back(oScheme[0]);//4
+		//oArrayMem.push_back(oScheme[4]);//5 //accent1
+		//oArrayMem.push_back(oScheme[5]);//6 //accent2
+		//oArrayMem.push_back(oScheme[0]);//7 //accent3
+		//oArrayMem.push_back(oScheme[5]);//8 //accent4
+		//oArrayMem.push_back(oScheme[4]);//9 //accent5
+		//oArrayMem.push_back(oScheme[7]);//10 //accent6
+		//oArrayMem.push_back(oScheme[6]);//11 //hlink
+		//oArrayMem.push_back(oScheme[7]);//12 //folHlink
+		//oArrayMem.push_back(oScheme[0]);//13 //lt1
+		//oArrayMem.push_back(oScheme[1]);//14 //dk1
+		//oArrayMem.push_back(oScheme[2]);//15 //lt2
+		//oArrayMem.push_back(oScheme[3]);//16 //dk2
 	AVSINLINE static CString GetColorInScheme(const LONG& lIndex)
 	{
 		switch (lIndex)
@@ -112,7 +128,7 @@ public:
 		if (pPF->fontAlign.is_init())
 		{
 			CString strProp = GetFontAlign(pPF->fontAlign.get());
-			oWriter.WriteString(_T(" fontAlgn=\"") + strProp + _T("\""));
+			oWriter.WriteString(std::wstring(L" fontAlgn=\"") + string2std_string(strProp) + _T("\""));
 		}
 		if (pPF->leftMargin.is_init())
 		{
@@ -129,7 +145,7 @@ public:
 		if (pPF->textAlignment.is_init())
 		{
 			CString strProp = GetTextAlign(pPF->textAlignment.get());
-			oWriter.WriteString(_T(" algn=\"") + strProp + _T("\""));
+			oWriter.WriteString(std::wstring(L" algn=\"") + string2std_string(strProp) + _T("\""));
 		}
 		if (pPF->defaultTabSize.is_init())
 		{
@@ -144,8 +160,14 @@ public:
 		{
 			if (pPF->hasBullet.get())
 			{
-                CString strB = _T("<a:buChar char=\"AAAAA\"/>"); //todooo кружочек
-				oWriter.WriteString(strB);
+				wchar_t bu = 0x2022;
+				if (pPF->bulletChar.is_init())
+				{
+					bu = pPF->bulletChar.get();
+				}
+				oWriter.WriteString(std::wstring(L"<a:buChar char=\""));
+				oWriter.WriteString(std::wstring(&bu, 1));
+				oWriter.WriteString(std::wstring(L"\"/>"));
 			}
 			else
 			{
@@ -218,18 +240,18 @@ public:
 		if (pCF->FontBold.is_init())
 		{
 			if (pCF->FontBold.get())
-				oWriter.WriteString(_T(" b=\"1\""));
+				oWriter.WriteString(std::wstring(L" b=\"1\""));
 			else
-				oWriter.WriteString(_T(" b=\"0\""));
+				oWriter.WriteString(std::wstring(L" b=\"0\""));
 		}
 		if (pCF->FontItalic.is_init())
 		{
 			if (pCF->FontItalic.get())
-				oWriter.WriteString(_T(" i=\"1\""));
+				oWriter.WriteString(std::wstring(L" i=\"1\""));
 			else
-				oWriter.WriteString(_T(" i=\"0\""));
+				oWriter.WriteString(std::wstring(L" i=\"0\""));
 		}
-		oWriter.WriteString(_T(">"));
+		oWriter.WriteString(std::wstring(L">"));
 
 		if (pCF->Color.is_init())
 		{
@@ -263,7 +285,7 @@ public:
 		}
 		else if (pCF->FontProperties.is_init())
 		{
-			oWriter.WriteString(_T("<a:latin typeface=\"") + pCF->FontProperties->strFontName + _T("\"/>"));
+			oWriter.WriteString(std::wstring(L"<a:latin typeface=\"") + pCF->FontProperties->strFontName + _T("\"/>"));
 		}
 
 		CString strCF2 = _T("</a:defRPr>");

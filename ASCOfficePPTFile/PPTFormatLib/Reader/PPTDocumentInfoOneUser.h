@@ -137,20 +137,22 @@ public:
 
 	void CorrectColorScheme(std::vector<CColor>& oScheme)
 	{
+		if (oScheme.size() < 1) return;
+
 		std::vector<CColor> oArrayMem;
 		oArrayMem.push_back(oScheme[0]);//0
 		oArrayMem.push_back(oScheme[1]);//1
 		oArrayMem.push_back(oScheme[2]);//2
 		oArrayMem.push_back(oScheme[3]);//3
 		oArrayMem.push_back(oScheme[0]);//4
-		oArrayMem.push_back(oScheme[5]);//5 //accent1
-		oArrayMem.push_back(oScheme[6]);//6 //accent2
-		oArrayMem.push_back(oScheme[7]);//7 //accent3
+		oArrayMem.push_back(oScheme[4]);//5 //accent1
+		oArrayMem.push_back(oScheme[5]);//6 //accent2
+		oArrayMem.push_back(oScheme[0]);//7 //accent3
 		oArrayMem.push_back(oScheme[5]);//8 //accent4
-		oArrayMem.push_back(oScheme[6]);//9 //accent5
+		oArrayMem.push_back(oScheme[4]);//9 //accent5
 		oArrayMem.push_back(oScheme[7]);//10 //accent6
-		oArrayMem.push_back(oScheme[5]);//11 //hlink
-		oArrayMem.push_back(oScheme[6]);//12 //folHlink
+		oArrayMem.push_back(oScheme[6]);//11 //hlink
+		oArrayMem.push_back(oScheme[7]);//12 //folHlink
 		oArrayMem.push_back(oScheme[0]);//13 //lt1
 		oArrayMem.push_back(oScheme[1]);//14 //dk1
 		oArrayMem.push_back(oScheme[2]);//15 //lt2
@@ -279,6 +281,6 @@ public:
 		return _T("obj");
 	}
 
-	void AddAnimation (DWORD dwSlideID, double Width, double Height, IElement* pElement);
-	void AddAudioTransition (DWORD dwSlideID, CTransition* pTransition, const CString& strFilePath);
+	void AddAnimation		(DWORD dwSlideID, double Width, double Height, IElement* pElement);
+	void AddAudioTransition (DWORD dwSlideID, CTransition* pTransition, const std::wstring& strFilePath);
 };

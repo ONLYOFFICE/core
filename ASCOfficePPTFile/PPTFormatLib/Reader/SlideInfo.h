@@ -98,9 +98,9 @@ public:
 		size_t nCount = m_parEmptyPictures->size();
 
 		if (lIndex > nCount)
-			return 0;
+			return lIndex;
 
-		for (size_t nIndex = 0; nIndex < lIndex; ++nIndex)
+		for (size_t nIndex = 0; nIndex < min(lIndex, nCount); ++nIndex)
 		{
 			if ((*m_parEmptyPictures)[nIndex])
 				++lResult;

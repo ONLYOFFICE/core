@@ -4,7 +4,7 @@
 class CRecordCString : public CUnknownRecord
 {
 public:
-	CStringW m_strText;
+	std::wstring m_strText;
 
 public:
 	
@@ -32,7 +32,7 @@ public:
 		oWriter.WriteAttribute(_T("instance"), CDirectory::ToString(m_oHeader.RecInstance));
 		oWriter.WriteNodeEnd(strName, TRUE, FALSE);
 		
-		CDirectory::WriteValueToNode(_T("String"), (CString)m_strText, &oWriter);
+		CDirectory::WriteValueToNode(_T("String"), std_string2string(m_strText), &oWriter);
 
 		oWriter.WriteNodeEnd(strName);
 

@@ -65,12 +65,12 @@ namespace NSPresentationEditor
 	class CFontProperties
 	{
 	public:
-		BYTE			FontNameProp;
-		CString			strFontName;
-		CString			strPanose;
-		CString			strPitchFamily;
-		LONG			lFontFixed;
-		std::vector<BYTE> arFontCharsets;
+		BYTE					FontNameProp;
+		std::wstring			strFontName;
+		std::wstring			strPanose;
+		std::wstring			strPitchFamily;
+		LONG					lFontFixed;
+		std::vector<BYTE>		arFontCharsets;
 
 	public:
 		CFontProperties() : FontNameProp(0), strFontName(_T("")), strPanose(_T("")), strPitchFamily(_T("")), lFontFixed(0), arFontCharsets()
@@ -112,11 +112,11 @@ namespace NSPresentationEditor
 	{
 	public:
 
-                NSCommon::nullable_base<bool>			FontBold;
-                NSCommon::nullable_base<bool>			FontItalic;
-                NSCommon::nullable_base<bool>			FontUnderline;
-                NSCommon::nullable_base<bool>			FontStrikeout;
-                NSCommon::nullable_base<bool>			FontShadow;
+        NSCommon::nullable_base<bool>			FontBold;
+        NSCommon::nullable_base<bool>			FontItalic;
+        NSCommon::nullable_base<bool>			FontUnderline;
+        NSCommon::nullable_base<bool>			FontStrikeout;
+        NSCommon::nullable_base<bool>			FontShadow;
 		
 		NSCommon::nullable_base<WORD>			Typeface;			// fontRef
 		NSCommon::nullable_base<WORD>			EAFontRef;			// eaFontRef
@@ -313,26 +313,26 @@ namespace NSPresentationEditor
 
 			if (FontProperties.is_init())
 			{
-				strXml += (_T("<font-name>") + FontProperties->strFontName + _T("</font-name>"));
+				strXml += (_T("<font-name>") + std_string2string(FontProperties->strFontName) + _T("</font-name>"));
 
 				oWriter.WriteString(strXml);
 				oWriter.WriteNodeEnd(_T("Attributes"));
 
 				// font properties
 				strXml = _T("<FontProperties>");
-				strXml += (_T("<Name value='") + FontProperties->strFontName + _T("' />"));
+				strXml += (_T("<Name value='") + std_string2string(FontProperties->strFontName) + _T("' />"));
 
 				if (0 < FontProperties->arFontCharsets.size())
 					strXml += (_T("<Charset value='") + XmlUtils::IntToString((int)FontProperties->arFontCharsets[0]) + _T("' />"));
 
 				if (_T("unknown") != FontProperties->strPitchFamily)
-					strXml += (_T("<FamilyClass name='") + FontProperties->strPitchFamily + _T("' />"));
+					strXml += (_T("<FamilyClass name='") + std_string2string(FontProperties->strPitchFamily) + _T("' />"));
 
 				if (-1 != FontProperties->lFontFixed)
 					strXml += (_T("<FixedWidth value='") + XmlUtils::IntToString(FontProperties->lFontFixed) + _T("' />"));
 
 				if (_T("") != FontProperties->strPanose)
-					strXml += (_T("<Panose value='") + FontProperties->strPanose + _T("' />"));
+					strXml += (_T("<Panose value='") + std_string2string(FontProperties->strPanose) + _T("' />"));
 
 				strXml += (_T("<Style bold='") + XmlUtils::IntToString(nBold) + _T("' italic='") + XmlUtils::IntToString(nItalic) + _T("' />"));
 
@@ -456,7 +456,7 @@ namespace NSPresentationEditor
 			else if (bIsFontNamPres)
 			{
 				strStyle += _T("font-family: ");
-				strStyle += FontProperties->strFontName;
+				strStyle += std_string2string(FontProperties->strFontName);
 				strStyle += _T(";");
 			}
 
@@ -1236,13 +1236,13 @@ namespace NSPresentationEditor
 				int nAlign = (int)m_oPFRun.textAlignment.get();
 
 				if (0 == nAlign)
-					oWriter.WriteString(_T("text-align:left;"));
+					oWriter.WriteString(std::wstring(L"text-align:left;"));
 				else if (2 == nAlign)
-					oWriter.WriteString(_T("text-align:right;"));
+					oWriter.WriteString(std::wstring(L"text-align:right;"));
 				else if (3 == nAlign)
-					oWriter.WriteString(_T("text-align:justify;"));
+					oWriter.WriteString(std::wstring(L"text-align:justify;"));
 				else
-					oWriter.WriteString(_T("text-align:center;"));
+					oWriter.WriteString(std::wstring(L"text-align:center;"));
 			}
 
 			int nMargin = 0;
@@ -1352,55 +1352,55 @@ namespace NSPresentationEditor
 			{
 				if (m_oCFRun.FontBold.get())
 				{
-					oWriter.WriteString(_T("font-weight: bold;"));
+					oWriter.WriteString(std::wstring(L"font-weight: bold;"));
 				}
 				else
 				{
-					oWriter.WriteString(_T("font-weight: normal;"));
+					oWriter.WriteString(std::wstring(L"font-weight: normal;"));
 				}
 			}
 			if (m_oCFRun.FontItalic.is_init())
 			{
 				if (m_oCFRun.FontItalic.get())
 				{
-					oWriter.WriteString(_T("font-style: italic;"));
+					oWriter.WriteString(std::wstring(L"font-style: italic;"));
 				}
 				else
 				{
-					oWriter.WriteString(_T("font-style: normal;"));
+					oWriter.WriteString(std::wstring(L"font-style: normal;"));
 				}
 			}
 			if (m_oCFRun.FontUnderline.is_init())
 			{
 				if (m_oCFRun.FontUnderline.get())
 				{
-					oWriter.WriteString(_T("text-decoration: underline;"));
+					oWriter.WriteString(std::wstring(L"text-decoration: underline;"));
 				}
 				else
 				{
-					oWriter.WriteString(_T("text-decoration: none;"));
+					oWriter.WriteString(std::wstring(L"text-decoration: none;"));
 				}
 			}
 			/*if (m_oCFRun.FontStrikeout.is_init())
 			{
 				if (m_oCFRun.FontStrikeout.get())
 				{
-					oWriter.WriteString(_T("text-decoration: line-through;"));
+					oWriter.WriteString(std::wstring(L"text-decoration: line-through;"));
 				}
 				else
 				{
-					oWriter.WriteString(_T("text-decoration: normal;"));
+					oWriter.WriteString(std::wstring(L"text-decoration: normal;"));
 				}
 			}*/
 			if (m_oCFRun.FontShadow.is_init())
 			{
 				if (m_oCFRun.FontShadow.get())
 				{
-					oWriter.WriteString(_T("text-shadow: black 1px 1px 2px;"));
+					oWriter.WriteString(std::wstring(L"text-shadow: black 1px 1px 2px;"));
 				}
 				else
 				{
-					oWriter.WriteString(_T("text-shadow: none;"));
+					oWriter.WriteString(std::wstring(L"text-shadow: none;"));
 				}
 			}
 			
@@ -1433,13 +1433,13 @@ namespace NSPresentationEditor
 			
 			if (m_oCFRun.FontProperties.is_init())
 			{
-				oWriter.WriteString(_T("font-family: "));
+				oWriter.WriteString(std::wstring(L"font-family: "));
 				oWriter.WriteString(m_oCFRun.FontProperties->strFontName);
-				oWriter.WriteString(_T("; }\n"));
+				oWriter.WriteString(std::wstring(L"; }\n"));
 			}
 			else
 			{
-				oWriter.WriteString(_T(" }\n"));
+				oWriter.WriteString(std::wstring(L" }\n"));
 			}
 			return oWriter.GetData();
 		}
@@ -1541,7 +1541,7 @@ namespace NSPresentationEditor
 					oWriter.WriteString(m_pLevels[i]->ToXmlEditor(oInfo, bIsLayout, lTextOrPlaceholderType, lID, (LONG)i));
 			}
 
-			oWriter.WriteString(_T("</Style>"));
+			oWriter.WriteString(std::wstring(L"</Style>"));
 			return oWriter.GetData();
 		}
 	};

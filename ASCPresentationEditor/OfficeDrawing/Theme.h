@@ -26,10 +26,15 @@ namespace NSPresentationEditor
 
 		CMetricInfo						m_oInfo;
 
-	public:
+		std::wstring					m_sThemeName;
+		
+		std::vector<std::vector<CColor>>m_arExtraColorScheme;
+
+//------------------------------------------------------------------------------------
 		CTheme() : m_arColorScheme(), m_arFonts(), m_arBrushes(),
 			m_arPens(), m_arEffects(), m_arLayouts()
 		{
+			m_sThemeName = L"Default";
 		}
 
 		CTheme(const CTheme& oSrc)
@@ -44,6 +49,8 @@ namespace NSPresentationEditor
 			m_arBrushes			=	oSrc.m_arBrushes;
 			m_arPens			=	oSrc.m_arPens;
 			m_arEffects			=	oSrc.m_arEffects;
+			
+			m_sThemeName		=	oSrc.m_sThemeName;
 
 			for (int i = 0; i < g_ThemeTextStylesCount; ++i)
 				m_pStyles[i] = oSrc.m_pStyles[i];

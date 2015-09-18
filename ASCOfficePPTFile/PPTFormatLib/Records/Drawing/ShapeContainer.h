@@ -28,47 +28,64 @@ public:
 	{
 		switch (lType)
 		{
-		case 0x01:
-		case 0x0D:
-		case 0x11:
-			return 15; // title
-		case 0x02:
-		case 0x0E:
-		case 0x06:
-		case 0x12:
-		case 0x0C:
-			return 0; // body
-		case 0x03:
-		case 0x0F:
-			return 15; // centerTitle
-		case 0x04:
-		case 0x10:
-			return 0; // subtitle
-		case 0x13:
-		case 0x19:
-			return 9; // object
-		case 0x05:
-		case 0x14:
-		case 0x0B:
-			return 11; // slideImg
-		case 0x15:
-			return 14; // table
-		case 0x16:
-			return 2; // clipArt
-		case 0x17:
-			return 1; // chart
-		case 0x18:
-			return 8; // media
-		case 0x1A:
-			return 10; // picture
-		case 0x07:
-			return 5; // date
-		case 0x08:
-			return 12; // sldNum
-		case 0x09:
-			return 6; // footer
-		case 0x0A:
-			return 7; // header
+		case 0x00:		//PT_None
+			break;
+
+		case 0x01:		//PT_MasterTitle
+		case 0x0D:		//PT_Title
+		case 0x11:		//PT_VerticalTitle
+			return 15;	// title
+
+		case 0x02:		//PT_MasterBody
+		case 0x0E:		//PT_Body
+		case 0x06:		//PT_MasterNotesBody
+		case 0x12:		//PT_VerticalBody
+		case 0x0C:		//PT_NotesBody
+			return 0;	// body
+
+		case 0x03:		//PT_MasterCenterTitle
+		case 0x0F:		//PT_CenterTitle
+			return 3;	// ctrTitle
+
+		case 0x04:		//PT_MasterSubTitle
+		case 0x10:		//PT_SubTitle
+			return 13;	// subtitle
+
+		case 0x13:		//PT_Object
+		case 0x19:		//PT_VerticalObject
+			return 9;	// object
+
+		case 0x05:		//PT_MasterNotesSlideImage
+		case 0x14:		//PT_Graph //????
+		case 0x0B:		//PT_NotesSlideImage
+			return 11;	// slideImg
+
+		case 0x15:		//PT_Table
+			return 14;	// table
+
+		case 0x16:		//PT_ClipArt
+			return 2;	// clipArt
+
+		case 0x17:		//PT_OrgChart
+			return 1;	// chart
+
+		case 0x18:		//PT_Media
+			return 8;	// media
+
+		case 0x1A:		//PT_Picture
+			return 10;	// picture
+
+		case 0x07:		//PT_MasterDate
+			return 5;	// date
+
+		case 0x08:		//PT_MasterSlideNumber
+			return 12;	// sldNum
+
+		case 0x09:		//PT_MasterFooter
+			return 6;	// footer
+
+		case 0x0A:		//PT_MasterHeader
+			return 7;	// header
 		default:
 			break;
 		}
@@ -136,6 +153,16 @@ public:
 	{
 		switch (pProperty->m_ePID)
 		{
+		case wzName:
+			{
+				pElement->m_sName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2 - 1); 
+				return true;
+			}
+		case wzDescription:
+			{
+				pElement->m_sDescription = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2 - 1); 
+				return true;
+			}
 		case hspMaster:
 			{
 				pElement->m_lLayoutID = (LONG)pProperty->m_lValue; 
@@ -181,15 +208,44 @@ public:
 	}
 	inline void SetUpPropertyImage(CImageElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
 	{
-		if (SetUpProperty((IElement*)pElement, pTheme, pInfo, pSlide, pProperty))
-			return;
+		SetUpProperty((IElement*)pElement, pTheme, pInfo, pSlide, pProperty);
 
-		if (Pib == pProperty->m_ePID)
+		switch(pProperty->m_ePID)
 		{
-			DWORD dwIndex = pInfo->GetIndexPicture(pProperty->m_lValue);
+		case Pib:
+			{
+				DWORD dwIndex = pInfo->GetIndexPicture(pProperty->m_lValue);
 
-			CString strVal = CDirectory::ToString(dwIndex);
-			pElement->m_strFileName = pElement->m_strFileName + strVal + L".jpg";
+				CString strVal = CDirectory::ToString(dwIndex);
+				pElement->m_strFileName = pElement->m_strFileName + strVal.GetBuffer() + L".jpg";
+			}break;
+		case pibName:
+			{
+				pElement->m_sName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2); 
+			}break;
+		case cropFromTop:
+			{
+				pElement->m_lcropFromTop = pProperty->m_lValue; 
+				pElement->m_bCropEnabled = true;
+			}break;
+		case cropFromBottom:
+			{
+				pElement->m_lcropFromBottom = pProperty->m_lValue; 
+				pElement->m_bCropEnabled = true;
+			}break;
+		case cropFromLeft:
+			{
+				pElement->m_lcropFromLeft = pProperty->m_lValue; 
+				pElement->m_bCropEnabled = true;
+			}break;
+		case cropFromRight:
+			{
+				pElement->m_lcropFromRight = pProperty->m_lValue; 
+				pElement->m_bCropEnabled = true;
+			}break;
+		case pibFlags:
+			{
+			}break;
 		}
 	}
 	inline void SetUpPropertyShape(CShapeElement* pElement, CTheme* pTheme, CSlideInfo* pInfo, CSlide* pSlide, CProperty* pProperty)
@@ -279,8 +335,8 @@ public:
 			}
 		case NSOfficeDrawing::dyTextTop:
 			{
-				//pParentShape->m_dTextMarginY = (double)pProperty->m_lValue / EMU_MM;
-				pElemProps->SetAt(CElementProperty::epTextMarginTop, pProperty->m_lValue);
+				pParentShape->m_dTextMarginY = (double)pProperty->m_lValue / EMU_MM;
+				//pElemProps->SetAt(CElementProperty::epTextMarginTop, pProperty->m_lValue);
 				break;
 			}
 		case NSOfficeDrawing::dyTextBottom:
@@ -358,15 +414,15 @@ public:
 
 				CString strVal = CDirectory::ToString(dwIndex);
 
-                int nIndex	= pParentShape->m_oBrush.TexturePath.ReverseFind(FILE_SEPARATOR_CHAR);
-				int nLen	= pParentShape->m_oBrush.TexturePath.GetLength() - 1;
+                int nIndex	= pParentShape->m_oBrush.TexturePath.rfind(FILE_SEPARATOR_CHAR);
+				int nLen	= pParentShape->m_oBrush.TexturePath.length() - 1;
 				if (nLen != nIndex)
 				{
-					pParentShape->m_oBrush.TexturePath.Delete(nIndex + 1, nLen - nIndex);
+					pParentShape->m_oBrush.TexturePath.erase(nIndex + 1, nLen - nIndex);
 				}
 
 				//pElemProps->SetAt(CElementProperty::epBrushTxPath, pParentShape->m_oBrush.TexturePath + strVal + L".jpg");
-				pParentShape->m_oBrush.TexturePath = pParentShape->m_oBrush.TexturePath + strVal + L".jpg";
+				pParentShape->m_oBrush.TexturePath = pParentShape->m_oBrush.TexturePath + strVal.GetBuffer() + L".jpg";
 				break;
 			}
 		case NSOfficeDrawing::fillColor:
@@ -621,7 +677,7 @@ public:
 			{
 				if (pProperty->m_bComplex && 0 < pProperty->m_lValue)
 				{
-					CStringW str = CDirectory::BYTEArrayToStringW(pProperty->m_pOptions, pProperty->m_lValue);
+					std::wstring str = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue/2);
 					//pParentShape->m_oText.m_sText = str;
 				}
 				break;
@@ -631,8 +687,8 @@ public:
 			{
 				if (pProperty->m_bComplex && 0 < pProperty->m_lValue)
 				{
-					CStringW str = CDirectory::BYTEArrayToStringW(pProperty->m_pOptions, pProperty->m_lValue);
-					pParentShape->m_oText.m_oAttributes.m_oFont.Name = (CString)str;
+					std::wstring str = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue/2);
+					pParentShape->m_oText.m_oAttributes.m_oFont.Name = std_string2string(str);
 					//pElemProps->SetAt(CElementProperty::epFontName, (CString)str);
 				}
 				break;
@@ -994,7 +1050,7 @@ public:
 
 					CExFilesInfo oInfo;
 
-					CString strPathPicture = _T("");
+					std::wstring strPathPicture = _T("");
 
 					// по умолчанию картинка (или оле объект)
 					CExFilesInfo::ExFilesType exType = CExFilesInfo::eftNone;

@@ -9,14 +9,14 @@
 #include "../Records/SoundCollectionContainer.h"
 #include "../Records/SoundContainer.h"
 
-CPPTUserInfo::CPPTUserInfo() : CDocument(),
-m_oUser(),
-m_mapOffsetInPIDs(), 
-m_oDocument(),
-m_mapMasters(),
-m_mapNotes(),
-m_mapSlides(),
-m_arEmptyPictures()
+CPPTUserInfo::CPPTUserInfo() :	CDocument(),
+								m_oUser(),
+								m_mapOffsetInPIDs(), 
+								m_oDocument(),
+								m_mapMasters(),
+								m_mapNotes(),
+								m_mapSlides(),
+								m_arEmptyPictures()
 {
 	m_pDocumentInfo = NULL;
 	m_lIndexThisUser = -1;
@@ -235,7 +235,7 @@ bool CPPTUserInfo::ReadFromStream(CRecordUserEditAtom* pUser, POLE::Stream* pStr
 	for (int nIndex = 0; nIndex < oArrayFonts.size(); ++nIndex)
 	{
 		CFont oFont;
-		oFont.Name = (CString)oArrayFonts[nIndex]->m_strFaceName;
+		oFont.Name = oArrayFonts[nIndex]->m_strFaceName;
 		oFont.Charset	= oArrayFonts[nIndex]->m_lfCharSet;
 
 		switch (oArrayFonts[nIndex]->m_lfPitchAndFamily / 0x10)
@@ -305,7 +305,6 @@ void CPPTUserInfo::FromDocument()
 
 	double DurationSlide	=	PPT_DEFAULT_SLIDE_DURATION;
 
-	//for (std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapSlides.begin(); pPair != m_mapSlides.end(); ++pPair)
 	for (int i=0; i< m_arrSlidesOrder.size(); i++)
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapSlides.find(m_arrSlidesOrder[i]);
@@ -537,7 +536,7 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 
 	pRecordSlide->GetRecordsByType(&oArrayShapes, true);
 
-	pSlide->m_bShowMasterShapes = (TRUE == oArrayAtoms[0]->m_bMasterObjects);
+	pSlide->m_bShowMasterShapes = oArrayAtoms[0]->m_bMasterObjects;
 	pSlide->m_bIsBackground		= false;
 
 	for (int nShape = 0; nShape < oArrayShapes.size(); ++nShape)
@@ -586,18 +585,18 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 
 	if (m_mapMasters.end() == pPairMaster)
 		return;
-	std::vector<CRecordSlideAtom*> oArraySlideAtoms;
 
 	CRecordSlide* pMaster = pPairMaster->second;
 
     if (pMaster == NULL)
         return; //todooo 20080720.ppt
+
+	std::vector<CRecordSlideAtom*> oArraySlideAtoms;
 	pMaster->GetRecordsByType(&oArraySlideAtoms, true);
 	if (0 == oArraySlideAtoms.size())
 		return;
 
-	DWORD dwID = (DWORD)oArraySlideAtoms[0]->m_nMasterIDRef;
-
+	DWORD dwID				= (DWORD)oArraySlideAtoms[0]->m_nMasterIDRef;
 	if (0 != dwID)
 	{
 		// этот мастер - не main!!!
@@ -605,13 +604,6 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 		// title нужно грузить как обычный слайд.
 		return;
 	}
-
-	std::vector<CRecordTripOriginalMasterId12Atom*> oArrayOrigId;
-	pMaster->GetRecordsByType(&oArrayOrigId, false, true);
-	
-	if (0 != oArrayOrigId.size())
-		m_mapMasterOriginalIds.insert(std::pair<DWORD, DWORD>(oArrayOrigId[0]->m_dwID, dwMasterID));
-
 	std::vector<CRecordTripCompositeMasterId12Atom*> oArrayCompId;
 	pMaster->GetRecordsByType(&oArrayCompId, false, true);
 	if (0 != oArrayCompId.size())
@@ -620,7 +612,18 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 		// сначала загрузим все main, а потом - title
 		// title нужно грузить как обычный слайд.
 		return;
-	}
+	}    
+	
+	bool bMasterColorScheme = oArraySlideAtoms[0]->m_bMasterScheme;
+    bool bMasterBackGround	= oArraySlideAtoms[0]->m_bMasterBackground;
+    bool bMasterObjects		= oArraySlideAtoms[0]->m_bMasterObjects;
+
+	std::vector<CRecordTripOriginalMasterId12Atom*> oArrayOrigId;
+	pMaster->GetRecordsByType(&oArrayOrigId, false, true);
+	
+	if (0 != oArrayOrigId.size())
+		m_mapMasterOriginalIds.insert(std::pair<DWORD, DWORD>(oArrayOrigId[0]->m_dwID, dwMasterID));
+
 
 	LONG lIndexTheme = (LONG)m_arThemes.size();
 	
@@ -630,6 +633,16 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	CTheme theme;
 	m_arThemes.push_back(theme);
 	CTheme* pTheme = &m_arThemes[lIndexTheme];
+
+	std::vector<CRecordCString*> oArrayStrings;
+	pMaster->GetRecordsByType(&oArrayStrings, false, false);
+	for (int i=0; i < oArrayStrings.size(); i++)
+	{
+		if (oArrayStrings[i]->m_oHeader.RecType == 0x0fba)
+		{
+			pTheme->m_sThemeName = oArrayStrings[i]->m_strText;
+		}
+	}
 
 	CLayout layout;
 	pTheme->m_arLayouts.push_back(layout);
@@ -654,14 +667,24 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	int nColorCount = oArrayColors.size();
 	for (int i = 0; i < nColorCount; ++i)
 	{
-		if (0x01 == oArrayColors[i]->m_oHeader.RecInstance)
+		if (0x01 == oArrayColors[i]->m_oHeader.RecInstance && m_oSchemeColors.size() < 1)
 		{
 			oArrayColors[i]->ToArray(&pTheme->m_arColorScheme);
 			oArrayColors[i]->ToArray(&m_oSchemeColors);
 		}
+		if (0x06 == oArrayColors[i]->m_oHeader.RecInstance)
+		{
+			std::vector<CColor> extra;
+			oArrayColors[i]->ToArray(&extra);
+
+			CorrectColorScheme(extra);
+			pTheme->m_arExtraColorScheme.push_back(extra);
+		}
+
 	}
 
 	CorrectColorScheme(pTheme->m_arColorScheme);
+	//CorrectColorScheme(m_oSchemeColors);//??
 
 	// ---------------------------------------------------------------------------------
 
@@ -713,7 +736,6 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 		pTheme->m_pStyles[3].ApplyAfter(pMasterWrapper->m_pStyles[3].get());
 
 	// ---------------------------------------------------------------------------------
-
 	pLayout->m_lOriginalWidth	= lOriginWidth;
 	pLayout->m_lOriginalHeight	= lOriginHeight;
 
@@ -721,8 +743,8 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 	pLayout->m_lHeight			= (LONG)(c_dMasterUnitsToMillimetreKoef * lOriginHeight);
 
 	pLayout->m_bUseThemeColorScheme = true;
-	pLayout->m_bShowMasterShapes	= true;
-	pLayout->m_strLayoutType = ConvertLayoutType(oArraySlideAtoms[0]->m_oLayout.m_nGeom, oArraySlideAtoms[0]->m_oLayout.m_pPlaceHolderID);
+	pLayout->m_bShowMasterShapes	= bMasterObjects;
+	pLayout->m_strLayoutType		= ConvertLayoutType(oArraySlideAtoms[0]->m_oLayout.m_nGeom, oArraySlideAtoms[0]->m_oLayout.m_pPlaceHolderID);
 
 	// читаем все элементы...-----------------------------------------------------------
 	std::vector<CRecordShapeContainer*> oArrayShapes;
@@ -739,32 +761,51 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 		{
 			AddAnimation ( dwMasterID, lOriginWidth, lOriginHeight, pElem );
 
-			if (pElem->m_bIsBackground)
-			{
-				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElem);
-				if (NULL != pShape)
-				{
-					pShape->SetupProperties(NULL, pTheme, pLayout);
-
-					pTheme->m_bIsBackground = true;
-					pTheme->m_oBackground = pShape->m_oShape.m_oBrush;
-				}
-
-				RELEASEINTERFACE(pElem);
-				continue;
-			}
-
 			if (-1 == pElem->m_lPlaceholderType)
+			{
+				if (pElem->m_bIsBackground)
+				{
+					CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElem);
+					if (NULL != pShape)
+					{
+						pShape->SetupProperties(NULL, pTheme, pLayout);
+
+						pTheme->m_bIsBackground = true;
+						pTheme->m_oBackground = pShape->m_oShape.m_oBrush;
+					}
+
+					RELEASEINTERFACE(pElem);
+					continue;
+				}
 				pTheme->m_arElements.push_back(pElem);
+			}
 			else
+			{
+				if (pElem->m_bIsBackground)
+				{
+					if (!bMasterBackGround)
+					{
+						CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElem);
+
+						if (NULL != pShape)
+						{
+							pShape->SetupProperties(NULL, pTheme, pLayout);
+
+							pLayout->m_bIsBackground = true;
+							pLayout->m_oBackground	= pShape->m_oShape.m_oBrush;
+						}
+					}
+					RELEASEINTERFACE(pElem);
+					continue;
+				}
 				pLayout->m_arElements.push_back(pElem);
+			}
 		}
 	}
 }
 
 void CPPTUserInfo::LoadMasters(const LONG& lOriginWidth, const LONG& lOriginHeight)
 {
-	//for (std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapMasters.begin(); pPair != m_mapMasters.end(); ++pPair)
 	for (long i=0; i< m_arrMastersOrder.size(); i++)
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapMasters.find(m_arrMastersOrder[i]);
@@ -773,7 +814,6 @@ void CPPTUserInfo::LoadMasters(const LONG& lOriginWidth, const LONG& lOriginHeig
 		LoadMainMaster(pPair->first, lOriginWidth, lOriginHeight);
 	}
 
-	//for (std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapMasters.begin(); pPair != m_mapMasters.end(); ++pPair)
 	for (long i=0; i< m_arrMastersOrder.size(); i++)
 	{
 		std::map<DWORD, CRecordSlide*>::iterator pPair = m_mapMasters.find(m_arrMastersOrder[i]);
@@ -857,8 +897,8 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 	pMasterWrapper->m_parEmptyPictures = &m_arEmptyPictures;
 
 	pLayout->m_bUseThemeColorScheme = true;
-	pLayout->m_bShowMasterShapes	= (bMasterObjects == TRUE) ? true : false;
-	pLayout->m_strLayoutType = ConvertLayoutType(oArraySlideAtoms[0]->m_oLayout.m_nGeom, oArraySlideAtoms[0]->m_oLayout.m_pPlaceHolderID);
+	pLayout->m_bShowMasterShapes	= bMasterObjects;
+	pLayout->m_strLayoutType		= ConvertLayoutType(oArraySlideAtoms[0]->m_oLayout.m_nGeom, oArraySlideAtoms[0]->m_oLayout.m_pPlaceHolderID);
 
 	std::vector<NSPresentationEditor::CColor>* pArrayColorScheme = &pTheme->m_arColorScheme;
 	// читаем цветовую схему -----------------------------------------------------------
@@ -903,9 +943,6 @@ void CPPTUserInfo::LoadNoMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, 
 	pLayout->m_lOriginalHeight	= lOriginHeight;
 
 	pLayout->Clear();
-
-	//if (!bMasterObjects)
-	//	pTheme->m_arElements.clear();
 
 	// ---------------------------------------------------------------------------------
 
@@ -1163,7 +1200,7 @@ void CPPTUserInfo::LoadExternal(CRecordExObjListContainer* pExObjects)
 				NSPresentationEditor::CExFilesInfo oInfo;
 
 				oInfo.m_strFilePath = m_oExMedia.m_strPresentationDirectory + FILE_SEPARATOR_STR + oArrayStrings[0]->m_strText + _T(".audio");
-				oInfo.m_dwID		= (DWORD)XmlUtils::GetInteger(oArrayStrings[2]->m_strText);
+				oInfo.m_dwID		= (DWORD)XmlUtils::GetInteger(oArrayStrings[2]->m_strText.c_str());
 
 				oArrayData[0]->SaveToFile(oInfo.m_strFilePath);
 
@@ -1338,7 +1375,7 @@ void CPPTUserInfo::AddAnimation ( DWORD dwSlideID, double Width, double Height, 
 	}
 }
 
-void CPPTUserInfo::AddAudioTransition (DWORD dwSlideID, CTransition* pTransition, const CString& strFilePath)
+void CPPTUserInfo::AddAudioTransition (DWORD dwSlideID, CTransition* pTransition, const std::wstring& strFilePath)
 {
 	if (NULL==pTransition) 
 		return;

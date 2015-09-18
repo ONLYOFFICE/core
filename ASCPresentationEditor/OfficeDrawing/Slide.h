@@ -53,6 +53,7 @@ namespace NSPresentationEditor
 				IElement* pElem = m_arElements[nIndex];
 				RELEASEINTERFACE(pElem);
 			}
+			m_arColorScheme.clear();
 			m_arElements.clear();
 			
 			m_lThemeID		= -1;
@@ -82,6 +83,8 @@ namespace NSPresentationEditor
 			{
 				m_arElements.push_back(oSrc.m_arElements[nIndex]->CreateDublicate());
 			}
+
+			m_arColorScheme		= oSrc.m_arColorScheme;
 
 			m_oSlideShow		= oSrc.m_oSlideShow;
 
@@ -116,6 +119,8 @@ namespace NSPresentationEditor
 			{
 				m_arElements.push_back(oSrc.m_arElements[nIndex]->CreateDublicate());
 			}
+
+			m_arColorScheme		= oSrc.m_arColorScheme;
 
 			m_oSlideShow		= oSrc.m_oSlideShow;
 
@@ -391,13 +396,13 @@ namespace NSPresentationEditor
 				oElem.m_bIsBackground = true;
 				oElem.m_bIsChangeable = false;
 
-				oWriter.WriteString(_T("<Background>"));
+				oWriter.WriteString(std::wstring(L"<Background>"));
 				oElem.SetupProperties(this, pTheme, pLayout);
 				oWriter.WriteString(oElem.ToXmlEditor());
-				oWriter.WriteString(_T("</Background>"));
+				oWriter.WriteString(std::wstring(L"</Background>"));
 			}
 
-			CString strFontRefs = _T("");
+			std::wstring strFontRefs = _T("");
 
 			// elements
 			size_t nCount = m_arElements.size();
@@ -415,7 +420,7 @@ namespace NSPresentationEditor
 
 				oWriter.WriteString(strElement);
 				oWriter.WriteString(pElement->ToXmlEditor());
-				oWriter.WriteString(_T("</Element>"));
+				oWriter.WriteString(std::wstring(L"</Element>"));
 
 				if (etShape == pElement->m_etType)
 				{
@@ -428,15 +433,15 @@ namespace NSPresentationEditor
 							CString strRef = _T("");
                             strRef.Format(_T("s_font%d { font-index:%d;font-family:%ls; }\n"),
 								pTextElement->m_lID, lFontRef, pTheme->m_arFonts[lFontRef].Name);
-							strFontRefs += strRef;
+							strFontRefs += string2std_string(strRef);
 						}
 					}
 				}
 			}
 
-			oWriter.WriteString(_T("<StylesFontRef>") + strFontRefs + _T("</StylesFontRef>"));
+			oWriter.WriteString(std::wstring(L"<StylesFontRef>") + strFontRefs + _T("</StylesFontRef>"));
 
-			oWriter.WriteString(_T("</Slide>"));
+			oWriter.WriteString(std::wstring(L"</Slide>"));
 
 			return oWriter.GetData();
 		}

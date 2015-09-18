@@ -1610,6 +1610,15 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 
 		if (pPPTShape->IsWordArt())
 		{
+			enum EFilltype
+			{
+				etBlipFill = 0,
+				etGradFill = 1,
+				etNoFill = 2,
+				etPattFill = 3,
+				etSolidFill = 4
+			};
+
 			PPTShapes::ShapeType eShapeType = pPPTShape->m_eType;
 			SimpleTypes::ETextShapeType eTextShapeType;
 			switch (eShapeType)
@@ -1663,20 +1672,50 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 			oPrstTxWarpNode.FromXmlString(strPrstTxWarp);
 
 			pShape->TextBoxBodyPr->prstTxWarp = oPrstTxWarpNode;
+			//pShape->TextBoxBodyPr->wrap = new PPTX::Limit::TextWrap();
+			//pShape->TextBoxBodyPr->wrap->set(_T("none"));
 
-			//convert text
 			XmlUtils::CXmlNodes oChilds;
 			if (oNodeShape.GetNodes(_T("*"), oChilds))
 			{
-				CString sTxbxContent = _T("<w:txbxContent><w:p><w:r>");
+				EFilltype eFillType = etSolidFill;
+				CString sTxbxContent = _T("<w:txbxContent><w:p>");
+				CString sParaRun = _T("<w:r>");
 				CString srPr;
 				CString sFont = (_T("Arial Black"));
+				//CString sDashStyle;
 				int nFontSize = 36;
 				LONG lChildsCount = oChilds.GetCount();
 				CString strString = _T("");
 				BYTE lAlpha;
 				bool bOpacity = false;
-				PPTX::Logic::ColorModifier oMod;				
+				bool bOpacity2 = false;
+				PPTX::Logic::ColorModifier oMod;
+				PPTX::Logic::ColorModifier oMod2;
+				std::vector<PPTX::Logic::UniColor*> arColors;
+				std::vector<PPTX::Logic::UniColor*> arColorsNew;
+				std::vector<int> arPos;
+				std::vector<int> arPosNew;
+				std::map<PPTX::Logic::UniColor*, int> arGradMap;
+				double nFocus = 0;
+				int nAngle = 90;
+				bool bColors = false;
+
+				nullable_string sFillColor;
+				oNodeShape.ReadAttributeBase(L"fillcolor", sFillColor);
+				if (sFillColor.is_init())
+				{
+					eFillType = etSolidFill;
+					NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
+					PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
+					pSolid->m_namespace = _T("a");
+					pSolid->Color.Color = new PPTX::Logic::SrgbClr();
+					pSolid->Color.Color->SetRGB(color.R, color.G, color.B);					
+					arColors.push_back(&pSolid->Color);
+					arPos.push_back(0);
+				}
+				else
+					eFillType = etNoFill;
 
 				for (LONG k = 0; k < lChildsCount; k++)
 				{
@@ -1687,7 +1726,6 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 					if (_T("textpath") == strNameP)
 					{
 						strString = oNodeP.GetAttribute(_T("string"));
-						//strString.Replace(_T("\n"), _T("&#xA;"));
 
 						CString strStyle = oNodeP.GetAttribute(_T("style"));
 						PPTX::CCSS oCSSParser;
@@ -1701,7 +1739,6 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 						pPair = oCSSParser.m_mapSettings.find(_T("font-size"));
 						if (pPair != oCSSParser.m_mapSettings.end())
 						{
-							//nFontSize = _wtoi(pPair->second.GetBuffer());
 							nFontSize = _wtoi(pPair->second.GetBuffer()) * 2;
 						}
 						
@@ -1710,7 +1747,25 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 					else if (_T("fill") == strNameP)
 					{						
 						nullable_string sOpacity;
+						nullable_string sOpacity2;
+						nullable_string sColor2;
+						nullable_string sType;
+						nullable_string sFocus;
+						nullable_string sAngle;
+						nullable_string sColors;
+
 						oNodeP.ReadAttributeBase(L"opacity", sOpacity);
+						oNodeP.ReadAttributeBase(L"opacity2", sOpacity2);
+						oNodeP.ReadAttributeBase(L"color2", sColor2);
+						oNodeP.ReadAttributeBase(L"type", sType);
+						oNodeP.ReadAttributeBase(L"focus", sFocus);
+						oNodeP.ReadAttributeBase(L"angle", sAngle);
+						oNodeP.ReadAttributeBase(L"colors", sColors);
+
+						if (sFocus.is_init())
+						{
+							nFocus = _wtoi(sFocus->GetBuffer())/100.0;
+						}
 						if (sOpacity.is_init())
 						{
 							bOpacity = true;
@@ -1718,40 +1773,261 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 							oMod.name = _T("alpha");
 							int nA = (int)(lAlpha * 100000.0 / 255.0);
 							oMod.val = nA;
+							if (arColors.at(0)->is_init())
+								arColors.at(0)->Color->Modifiers.push_back(oMod);
 						}
+						if (sOpacity2.is_init())
+						{
+							bOpacity2 = true;
+							lAlpha = NS_DWC_Common::getOpacityFromString(*sOpacity2);
+							oMod.name = _T("alpha");
+							int nA = (int)(lAlpha * 100000.0 / 255.0);
+							oMod2.val = nA;
+							if (arColors.at(1)->is_init())
+								arColors.at(1)->Color->Modifiers.push_back(oMod2);
+						}
+						if (sColor2.is_init())
+						{
+							if (etSolidFill == eFillType)
+								eFillType = etGradFill;
+
+							NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sColor2);
+							PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();
+							oColor->Color = new PPTX::Logic::SrgbClr();
+							oColor->Color->SetRGB(color.R, color.G, color.B);
+							if (bOpacity2)
+								oColor->Color->Modifiers.push_back(oMod2);
+
+							if (arColors.size() > 0)
+								arColors.push_back(oColor);
+							else
+							{
+								NSPresentationEditor::CColor color1 = NS_DWC_Common::getColorFromString(_T("white"));
+								PPTX::Logic::UniColor *oColor1 = new PPTX::Logic::UniColor();
+								oColor1->Color = new PPTX::Logic::SrgbClr();
+								oColor1->Color->SetRGB(color1.R, color1.G, color1.B);
+
+								arColors.push_back(oColor1);
+								arPos.push_back(0);
+								arColors.push_back(oColor);
+							}
+							arPos.push_back(100000);
+						}
+						if (sType.is_init())
+						{
+							if (*sType == _T("gradient"))
+							{
+								eFillType = etGradFill;
+							}
+							else if (*sType == _T("gradientradial"))
+							{
+
+							}
+						}
+						if (sAngle.is_init())
+						{
+							nAngle =  _wtoi(sAngle->GetBuffer());
+							nAngle =  (-1)*nAngle + 90;
+						}
+						if (sColors.is_init())
+						{
+							bColors = true;
+							CString strColors = sColors.get();
+							CString resToken;
+							int curPos = 0;
+
+							arColors.clear();
+							arPos.clear();
+
+							resToken = strColors.Tokenize(_T(";"), curPos);
+							while (resToken != _T(""))
+							{
+								
+								CString strPos = resToken.Left(resToken.Find(_T(" ")));
+								CString strColor = resToken.Right(resToken.GetLength() - resToken.Find(_T(" ")) - 1);
+								double pos;
+								pos = _wtof(strPos.GetBuffer());
+								NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(strColor);
+								PPTX::Logic::UniColor *oColor = new PPTX::Logic::UniColor();
+								oColor->Color = new PPTX::Logic::SrgbClr();
+								oColor->Color->SetRGB(color.R, color.G, color.B);
+
+								if (pos <= 1)
+									pos = 100000 * pos;
+								else
+									pos = pos / 65536 * 100000;
+								arColors.push_back(oColor);
+								arPos.push_back((int)pos);
+
+								arGradMap.insert(std::pair<PPTX::Logic::UniColor*, int>(oColor, (int)pos) );
+
+								resToken = strColors.Tokenize(_T(";"), curPos);
+							};
+						}
+
 					}
+					/*else if (_T("dashstyle") == strNameP)
+					{
+						nullable_string sStrokeDashStyle;
+						oNodeP.ReadAttributeBase(L"dashstyle", sStrokeDashStyle);
+						if (sStrokeDashStyle.is_init())
+						{
+							if (*sStrokeDashStyle == _T("solid"))
+								sDashStyle = _T("solid");
+							else if (*sStrokeDashStyle == _T("shortdash"))
+								sDashStyle = _T("sysDash");
+							else if (*sStrokeDashStyle == _T("shortdot"))
+								sDashStyle = _T("sysDot");
+							else if (*sStrokeDashStyle == _T("shortdashdot"))
+								sDashStyle = _T("sysDashDot");
+							else if (*sStrokeDashStyle == _T("shortdashdotdot"))
+								sDashStyle = _T("sysDashDotDot");
+							else if (*sStrokeDashStyle == _T("dot"))
+								sDashStyle = _T("dot");
+							else if (*sStrokeDashStyle == _T("dash"))
+								sDashStyle = _T("dash");
+							else if (*sStrokeDashStyle == _T("longdash"))
+								sDashStyle = _T("lgDash");
+							else if (*sStrokeDashStyle == _T("dashdot"))
+								sDashStyle = _T("dashDot");
+							else if (*sStrokeDashStyle == _T("longdashdot"))
+								sDashStyle = _T("lgDashDot");
+							else if (*sStrokeDashStyle == _T("longdashdotdot"))
+								sDashStyle = _T("lgDashDotDot");
+							else
+								sDashStyle = _T("solid");
+						}
+					}*/
 				}
 
-				srPr += _T("<w:rPr>");
+				//srPr += _T("<w:rPr>");
 				srPr += _T("<w:rFonts w:ascii=\"") + sFont + _T("\" w:hAnsi=\"") + sFont + _T("\"/>");
 				CString strSize;
 				strSize.Format(_T("%d"), nFontSize);
 				srPr += _T("<w:sz w:val=\"") + strSize + _T("\"/><w:szCs w:val=\"") + strSize + _T("\"/>");
 
-				nullable_string sFillColor; 
+				 
 				nullable_string sStrokeColor;
 				nullable_string sStrokeWeight;
-				nullable_string sStroked;
-				oNodeShape.ReadAttributeBase(L"fillcolor", sFillColor);
+				nullable_string sStroked;				
 				oNodeShape.ReadAttributeBase(L"strokecolor", sStrokeColor);
 				oNodeShape.ReadAttributeBase(L"strokeweight", sStrokeWeight);
 				oNodeShape.ReadAttributeBase(L"stroked", sStroked);
 
 				//textFill
-				srPr += _T("<w14:textFill>");							
-				if (sFillColor.is_init())
+				srPr += _T("<w14:textFill>");			
+				
+					
+				if (eFillType == etSolidFill)
 				{
-					NSPresentationEditor::CColor color = NS_DWC_Common::getColorFromString(*sFillColor);
-					PPTX::Logic::SolidFill* pSolid = new PPTX::Logic::SolidFill();
-					pSolid->m_namespace = _T("a");
-					pSolid->Color.Color = new PPTX::Logic::SrgbClr();
-					pSolid->Color.Color->SetRGB(color.R, color.G, color.B);
-					if (bOpacity)
-						pSolid->Color.Color->Modifiers.push_back(oMod);
-					srPr += pSolid->toXML();
+					srPr += _T("<w14:solidFill>");
+					srPr += arColors.at(0)->toXML();
+					srPr += _T("</w14:solidFill>");
 				}
-				else
+				else if (eFillType == etGradFill)
+				{					
+					srPr += _T("<w14:gradFill><w14:gsLst>");
+					int nSize = arColors.size();
+					bool bRevert = false;
+					int nColorsLen = arColors.size();
+
+					int nDiff = nSize - 1;
+					if (nFocus != 1 && nFocus != 0)
+						nSize = nSize + nDiff;
+
+					double nShift = 100000 / nSize;
+					double dNewZero = 100000 * nFocus;
+
+					//(0 < nFocus &&  nFocus < 1)
+					if (((nAngle == 90) && (-1 < nFocus &&  nFocus < 0)) || ((nAngle != 90) && (0 < nFocus &&  nFocus < 1)))
+					{
+						if (nAngle == 90)
+							dNewZero *= -1;
+
+						arColorsNew.push_back(arColors.at(nColorsLen - 1));
+						arPosNew.push_back(0);
+
+						for (int i = nColorsLen - 2; i > 0; i--)
+						{
+							arColorsNew.push_back(arColors.at(i));
+
+							double dPosNew = dNewZero * arPos.at(i) / 100000;
+							arPosNew.push_back((int)dPosNew);
+						}
+
+						for (int i = 0; i < nColorsLen; i++)
+						{
+							arColorsNew.push_back(arColors.at(i));
+
+							double dPosNew = dNewZero * arPos.at(i) / 100000 + dNewZero;
+							arPosNew.push_back((int)dPosNew);
+						}
+					}
+					//else if (-1 < nFocus &&  nFocus < 0)
+					else if (((nAngle != 90) && (-1 < nFocus &&  nFocus < 0)) || ((nAngle == 90) && (0 < nFocus &&  nFocus < 1)))
+					{
+						
+						if (nAngle != 90)
+							dNewZero *= -1;
+
+						for (int i = 0; i < nColorsLen-1; i++)
+						{
+							arColorsNew.push_back(arColors.at(i));
+
+							double dPosNew = dNewZero * arPos.at(i) / 100000 ;
+							arPosNew.push_back((int)dPosNew);
+						}
+
+						arColorsNew.push_back(arColors.at(nColorsLen - 1));
+						arPosNew.push_back(dNewZero);
+
+						for (int i = nColorsLen-2; i >= 0; i--)
+						{
+							arColorsNew.push_back(arColors.at(i));
+
+							double n1 = 1 - (double)arPos.at(i) / 100000;
+							double dPosNew = dNewZero * n1 + dNewZero;
+							arPosNew.push_back((int)dPosNew);
+						}							
+					}
+					//nFocus == 0
+					else if ((nAngle != 90 && nFocus == 0) || (nAngle == 90 && nFocus == 1))
+					{
+						for (int i = 0; i < nColorsLen; i++)
+						{
+							arColorsNew.push_back(arColors.at(i));
+							arPosNew.push_back(arPos.at(i));
+						}
+					}
+					//nFocus == 1
+					else if ((nAngle != 90 && nFocus == 1) || (nAngle == 90 && nFocus == 0))
+					{
+						for (int i = nColorsLen - 1; i >= 0; i--)
+						{
+							arColorsNew.push_back(arColors.at(i));
+							arPosNew.push_back(arPos.at(nColorsLen - i - 1));
+						}
+					}
+
+					for (int i = 0; i < arColorsNew.size(); i++)
+					{
+						int pos = arPosNew.at(i);
+						CString color = arColorsNew.at(i)->toXML();
+
+						CString strPos;
+						strPos.Format(_T("%d"), pos);
+						srPr += _T("<w14:gs w14:pos = \"") + strPos + _T("\">");
+						srPr += color;
+						srPr += _T("</w14:gs>");
+					}
+					
+					CString strAngle;
+					strAngle.Format(_T("%d"), nAngle * 60000);
+					srPr += _T("</w14:gsLst><w14:lin w14:ang=\"") + strAngle + _T("\" w14:scaled=\"0\"/></w14:gradFill>");
+				}
+				else if (eFillType == etNoFill)
 					srPr += _T("<w14:noFill/>");
+
 				srPr += _T("</w14:textFill>");
 
 				//textOutline
@@ -1796,8 +2072,9 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 
 				srPr += _T("</w14:textOutline>");			
 
-				srPr += _T("</w:rPr>");
-				sTxbxContent += srPr + _T("<w:t>") + strString + _T("</w:t></w:r></w:p></w:txbxContent>");
+				//srPr += _T("</w:rPr>");
+				sParaRun += _T("<w:rPr>") + srPr + _T("</w:rPr>") + _T("<w:t>") + strString + _T("</w:t></w:r>");
+				sTxbxContent += _T("<w:pPr><w:rPr>") + srPr + _T("</w:rPr></w:pPr>") + sParaRun + _T("</w:p></w:txbxContent>");
 				pShape->TextBoxShape = sTxbxContent;
 			}
 			strXmlPPTX = _T("<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>");
@@ -1922,7 +2199,9 @@ PPTX::Logic::SpTreeElem CDrawingConverter::doc_LoadShape(XmlUtils::CXmlNode& oNo
 					pShape->TextBoxBodyPr->wrap = _T("none");
 				else
 					pShape->TextBoxBodyPr->wrap = _T("wrap");
-			}else pShape->TextBoxBodyPr->wrap = _T("wrap");
+			}
+			else if (!pPPTShape->IsWordArt())
+				pShape->TextBoxBodyPr->wrap = _T("wrap");
 		}
 ////////////////////////////////////////////////////////////////////////////////////
 		if (bIsTop)
@@ -2961,7 +3240,7 @@ void CDrawingConverter::CheckBrushShape(PPTX::Logic::SpTreeElem& oElem, XmlUtils
 	}
 
 	XmlUtils::CXmlNode oNodeFill = oNode.ReadNode(_T("v:fill"));
-	if (oNodeFill.IsValid())
+	if (oNodeFill.IsValid() && !pPPTShape->IsWordArt())
 	{
 		nullable_string sType;
 		oNodeFill.ReadAttributeBase(L"type", sType);

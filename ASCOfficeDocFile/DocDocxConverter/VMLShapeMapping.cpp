@@ -533,6 +533,11 @@ namespace DocFileFormat
 							appendValueAttribute(&m_fill, _T( "opacity" ), ( FormatUtils::IntToWideString( iter->op ) + _T( "f" ) ).c_str());
 						}
 						break;
+					case fillBackOpacity:
+						{
+							appendValueAttribute(&m_fill, _T("opacity2"), (FormatUtils::IntToWideString(iter->op) + _T("f")).c_str());
+						}
+						break;
 
 						// SHADOW
 
@@ -711,6 +716,11 @@ namespace DocFileFormat
 					{
 						std::wstring fontSize = FormatUtils::IntToWideString(iter->op/65535);
 						appendStyleProperty(&m_textPathStyle, L"font-size", fontSize + L"pt");
+					}break;
+					case gtextSpacing:
+					{
+						std::wstring spacing = FormatUtils::IntToWideString(iter->op);
+						appendStyleProperty(&m_textPathStyle, L"v-text-spacing", spacing + L"f");
 					}break;
 					case geometryTextBooleanProperties:
 					{

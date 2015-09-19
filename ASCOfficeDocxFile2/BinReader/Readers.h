@@ -568,7 +568,7 @@ public:
 			{
 				Spacing oSpacing;
 				res = Read2(length, &Binary_pPrReader::ReadSpacing, this, &oSpacing);
-				if(oSpacing.bLine || oSpacing.bAfter || oSpacing.bBefore)
+				if(oSpacing.bLine || oSpacing.bAfter || oSpacing.bAfterAuto || oSpacing.bBefore || oSpacing.bBeforeAuto)
 				{
 					pCStringWriter->WriteString(CString(_T("<w:spacing")));
 					BYTE bLineRule = linerule_Auto;

@@ -100,7 +100,7 @@ public:
 		if (lIndex > nCount)
 			return lIndex;
 
-		for (size_t nIndex = 0; nIndex < min(lIndex, nCount); ++nIndex)
+        for (size_t nIndex = 0; nIndex < std::min(lIndex, nCount); ++nIndex)
 		{
 			if ((*m_parEmptyPictures)[nIndex])
 				++lResult;

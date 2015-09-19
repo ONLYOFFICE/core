@@ -385,7 +385,7 @@ namespace NSPresentationEditor
 			m_oWriter.WriteString(std::wstring(L"<p:nvSpPr>"));
 
 			CString strShapeID = _T("");
-			strShapeID.Format(_T("%d", m_lNextShapeID));
+            strShapeID.Format(L"%d", m_lNextShapeID);
 
 			m_oWriter.WriteString(std::wstring(L"<p:cNvPr id=\"") + string2std_string(strShapeID) + L"\"");
 
@@ -604,7 +604,7 @@ namespace NSPresentationEditor
 						{
 							bu = pPF->bulletChar.get();
 						}
-						m_oWriter.WriteString(bu); 
+                        m_oWriter.WriteString(std::wstring(&bu, 1));
                         m_oWriter.WriteString(std::wstring(L"\"/>"));
 					}
 					else

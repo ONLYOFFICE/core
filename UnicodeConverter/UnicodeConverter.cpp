@@ -65,8 +65,10 @@ namespace NSUnicodeConverter
                     const UChar* pUCharLimit = pUCharStart + nUCharLength;
                     sRes.resize(nUCharLength * ucnv_getMaxCharSize(conv));// UTF-16 uses 2 code-points per char
                     char *sResStart = &sRes[0];
-                    const char *sResLimit = sResStart + sRes.size();
-                    ucnv_fromUnicode(conv, &sResStart, sResLimit, &pUCharStart, pUCharLimit, NULL, TRUE, &status);
+                    char *sResCur = sResStart;
+                    const char *sResLimit = sResCur + sRes.size();
+                    ucnv_fromUnicode(conv, &sResCur, sResLimit, &pUCharStart, pUCharLimit, NULL, TRUE, &status);
+                    sRes.resize(sResCur - sResStart);
                 }
                 ucnv_close(conv);
             }

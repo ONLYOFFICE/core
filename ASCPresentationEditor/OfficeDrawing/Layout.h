@@ -9,6 +9,8 @@ namespace NSPresentationEditor
 	public:
 		std::vector<IElement*>	m_arElements;
 		std::vector<CColor>		m_arColorScheme;
+
+		std::map<LONG, LONG>	m_mapPlaceholders;
 		
 		bool					m_bUseThemeColorScheme;
 
@@ -92,7 +94,7 @@ namespace NSPresentationEditor
 			
 			m_bUseThemeColorScheme	= true;
 			m_bShowMasterShapes		= true;
-			m_strLayoutType			= _T("title");
+			m_strLayoutType			= _T("obj");
 			m_bIsBackground			= false;
 
 			m_lWidth = m_lHeight = m_lOriginalWidth = m_lOriginalHeight = 0;

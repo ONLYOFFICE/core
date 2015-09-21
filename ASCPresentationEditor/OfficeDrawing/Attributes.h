@@ -694,7 +694,7 @@ namespace NSPresentationEditor
 		}
 
 		
-                bool IsEqual(CBrush* pBrush)
+		bool IsEqual(CBrush* pBrush)
 		{
 			if (NULL == pBrush)
                                 return false;
@@ -712,7 +712,7 @@ namespace NSPresentationEditor
 
 		void SetDefaultParams()
 		{
-			Type = c_BrushTypeSolid;
+			Type = c_BrushTypeNoFill;
 
 			Color1 = 0xFFFFFFFF;
 			Alpha1 = 255;
@@ -726,7 +726,7 @@ namespace NSPresentationEditor
 
 			TexturePath = _T("");
 
-                        Rectable = false;
+			Rectable = false;
 
 			Rect.X      = 0.0F;
 			Rect.Y      = 0.0F;
@@ -1160,7 +1160,7 @@ namespace NSPresentationEditor
 			m_oTextBrush.Color1 = 0xFF;
 
 			m_nTextAlignHorizontal	= 0;
-			m_nTextAlignVertical	= 1; //middle
+			m_nTextAlignVertical	= -1; //not set
 			m_dTextRotate			= 0;
 		}
 		CTextAttributes& operator =(const CTextAttributes& oSrc)

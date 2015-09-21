@@ -1,6 +1,9 @@
 #pragma once
 #include "Attributes.h"
 
+#define GETBIT(from, num) ((from & (1 << num)) != 0)
+#define GETBITS(from, numL, numH) ((from & (((1 << (numH - numL + 1)) - 1) << numL)) >> numL)
+
 namespace NSPresentationEditor
 {
 	static void CorrectColorPPT(LONG& lSchemeIndex)
@@ -125,13 +128,13 @@ namespace NSPresentationEditor
 			R = 0;
 			G = 0;
 			B = 0; 
-			Index = 0;
+			Index = -1;
 
-			bPaletteIndex = false;
-			bPaletteRGB = false;
-			bSystemRGB = false;
-			bSchemeIndex = false;
-			bSysIndex = false;
+			bPaletteIndex	= false;
+			bPaletteRGB		= false;
+			bSystemRGB		= false;
+			bSchemeIndex	= false;
+			bSysIndex		= false;
 		}
 
 		SColorAtom(const SColorAtom& oSrc)
@@ -147,11 +150,11 @@ namespace NSPresentationEditor
 
 			Index = oSrc.Index;
 
-			bPaletteIndex = oSrc.bPaletteIndex;
-			bPaletteRGB = oSrc.bPaletteRGB;
-			bSystemRGB = oSrc.bSystemRGB;
-			bSchemeIndex = oSrc.bSchemeIndex;
-			bSysIndex = oSrc.bSysIndex;
+			bPaletteIndex	= oSrc.bPaletteIndex;
+			bPaletteRGB		= oSrc.bPaletteRGB;
+			bSystemRGB		= oSrc.bSystemRGB;
+			bSchemeIndex	= oSrc.bSchemeIndex;
+			bSysIndex		= oSrc.bSysIndex;
 
 			return *this;
 		}
@@ -209,21 +212,51 @@ namespace NSPresentationEditor
 			R = _R;
 			G = _G;
 			B = _B;
-			Index = 0x00;
+			Index = -1;
 		}
 
 		void FromValue(DWORD dwValue)
 		{
-			R = (BYTE)(dwValue);
-			G = (BYTE)(dwValue >> 8);
-			B = (BYTE)(dwValue >> 16);
-			Index = (BYTE)(dwValue >> 24);
+			//R = (BYTE)(dwValue);
+			//G = (BYTE)(dwValue >> 8);
+			//B = (BYTE)(dwValue >> 16);
+			//Index = (BYTE)(dwValue >> 24);
 
-			bPaletteIndex = (0x01 == (Index & 0x01));
-			bPaletteRGB = (0x02 == (Index & 0x02));
-			bSystemRGB = (0x04 == (Index & 0x04));
-			bSchemeIndex = (0x08 == (Index & 0x08));
-			bSysIndex = (0x10 == (Index & 0x10));
+			//bPaletteIndex = (0x01 == (Index & 0x01));
+			//bPaletteRGB = (0x02 == (Index & 0x02));
+			//bSystemRGB = (0x04 == (Index & 0x04));
+			//bSchemeIndex = (0x08 == (Index & 0x08));
+			//bSysIndex = (0x10 == (Index & 0x10));
+
+			R	= static_cast<unsigned char>(GETBITS(dwValue, 0, 7));
+			G	= static_cast<unsigned char>(GETBITS(dwValue, 8, 15));
+			B	= static_cast<unsigned char>(GETBITS(dwValue, 16, 23));
+
+			Index = -1;
+
+			bPaletteIndex	= GETBIT(dwValue, 24);
+			bPaletteRGB		= GETBIT(dwValue, 25);
+			bSystemRGB		= GETBIT(dwValue, 26);
+			bSchemeIndex	= GETBIT(dwValue, 27);
+			bSysIndex		= GETBIT(dwValue, 28);
+
+			/*if(!bSchemeIndex && !bPaletteIndex && !bSysIndex)
+			{
+				colorRGB = STR::toRGB(red, green, blue);
+			}
+			else */
+			if(bSchemeIndex)
+			{
+				Index = R;
+			}
+			else if(bPaletteIndex)
+			{
+				Index = ((G) << 8) + R;
+			}
+			else if(bSysIndex)
+			{
+				Index = ((G) << 8) + R;
+			}
 		}
 
 		void ToColor(CColor* pColor)
@@ -231,6 +264,8 @@ namespace NSPresentationEditor
 			pColor->R = R;
 			pColor->G = G;
 			pColor->B = B;
+
+			pColor->m_lSchemeIndex = -1;
 
 			if (bSchemeIndex)
 			{

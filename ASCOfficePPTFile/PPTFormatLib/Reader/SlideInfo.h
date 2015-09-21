@@ -95,12 +95,12 @@ public:
 			return lIndex;
 		
 		LONG lResult = 0;
-		size_t nCount = m_parEmptyPictures->size();
+		DWORD nCount = m_parEmptyPictures->size();
 
 		if (lIndex > nCount)
 			return lIndex;
 
-        for (size_t nIndex = 0; nIndex < (std::min)(lIndex, (DWORD)nCount); ++nIndex)
+        for (DWORD nIndex = 0; nIndex < (std::min)(lIndex, nCount); ++nIndex)
 		{
 			if ((*m_parEmptyPictures)[nIndex])
 				++lResult;

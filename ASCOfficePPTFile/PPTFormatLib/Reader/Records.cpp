@@ -106,10 +106,10 @@ IRecord* CreateByType(SRecordHeader oHeader)
 	CREATE_BY_TYPE(RECORD_TYPE_COMPOSITEMASTERID			, CRecordTripCompositeMasterId12Atom)
 	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPCONTENTMASTERINFO12	, CRecordRoundTripContentMasterInfo12Atom)			// ECMA-376 дубль
 	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPSHAPEID12			, CRecordRoundTripShapeId12Atom)
-	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPHFPLACEHOLDER12	, CRecordRoundTripHFPlaceholder12Atom)
+	CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPHFPLACEHOLDER12		, CRecordRoundTripHFPlaceholder12Atom)
 	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPCONTENTMASTERID	, CRecordRoundTripContentMasterId12Atom)
 	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPOARTTEXTSTYLES12	, CRecordRoundTripOArtTextStyles12Atom)
-	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPHEADERFOOTERDEFAULTS12ATOM		, CRecordRoundTripHeaderFooterDefaults12Atom)
+	CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPHEADERFOOTERDEFAULTS12ATOM		, CRecordRoundTripHeaderFooterDefaults12Atom)
 	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPDOCFLAGS12						, CRecordRoundTripDocFlags12Atom)
 	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPSHAPECHECKSUMFORCUSTOMLAYOUTS12	, CRecordRoundTripShapeCheckSumForCustomLayouts12Atom)
 	//CREATE_BY_TYPE(RECORD_TYPE_ROUNDTRIPNOTESMASTERTEXTSTYLES12			, CRecordRoundTripNotesMasterTextStyles12Atom)
@@ -193,7 +193,7 @@ IRecord* CreateByType(SRecordHeader oHeader)
 	CREATE_BY_TYPE(RECORD_TYPE_TXINTERACTIVEINFO_ATOM		, CRecordTextInteractiveInfoAtom)
 
 	// читаем для анимации
-	CREATE_BY_TYPE ( RECORD_PROG_TAGS						,	SlideProgTagsContainer )
+	CREATE_BY_TYPE ( RECORD_PROG_TAGS						, SlideProgTagsContainer )
 
 	CREATE_BY_TYPE(RECORD_TYPE_SOUNDCOLLECTION				, CRecordSoundCollectionContainer)
 	CREATE_BY_TYPE(RECORD_TYPE_EXOBJLIST					, CRecordExObjListContainer)
@@ -202,14 +202,13 @@ IRecord* CreateByType(SRecordHeader oHeader)
 	CREATE_BY_TYPE(RECORD_TYPE_SOUNDDATA					, CRecordSoundDataBlob)
 
 	default: 
-	{
-#ifdef _DEBUG
-		char str[1024]={};
-		sprintf(str, "Unknown record type: %xd\n" , oHeader.RecType);
-		std::cout << str;
-#endif
-	}
-		break;
+		{
+//#ifdef _DEBUG
+//			char str[1024]={};
+//			sprintf(str, "Unknown record type: %xd\n" , oHeader.RecType);
+//			std::cout << str;
+//#endif
+		}break;		
 	};
 
 	if (NULL == pRecord)
@@ -223,5 +222,10 @@ IRecord* CreateByType(SRecordHeader oHeader)
 			pRecord = new CUnknownRecord();
 		}
 	}
+#ifdef _DEBUG
+		wchar_t str[1024]={};
+		swprintf(str, L"%s record type: %xd\n" , GetRecordName((DWORD)oHeader.RecType).GetBuffer(), oHeader.RecType);
+		std::wcout << str;
+#endif
 	return pRecord;
 }

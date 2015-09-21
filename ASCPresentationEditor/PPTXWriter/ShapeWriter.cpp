@@ -115,89 +115,91 @@ CString NSPresentationEditor::CShapeWriter::ConvertShape()
 		{
 			m_oWriter.WriteString(m_pShapeElement->m_oShape.m_strPPTXShape);
 		}
+	}/*else
+		m_oWriter.WriteString(std::wstring(L"<a:prstGeom prst=\"rect\"><a:avLst/></a:prstGeom>"));*/
 
-		CBrush* pBrush = &m_pShapeElement->m_oShape.m_oBrush;
-		
-		if (pBrush->Type == c_BrushTypeTexture)
-		{
-			CString strRid = m_pRels->WriteImage(pBrush->TexturePath);
+	CBrush* pBrush = &m_pShapeElement->m_oShape.m_oBrush;
+	
+	if (pBrush->Type == c_BrushTypeTexture)
+	{
+		CString strRid = m_pRels->WriteImage(pBrush->TexturePath);
 
-			CString strWrite = _T("<a:blipFill dpi=\"0\" rotWithShape=\"1\"><a:blip r:embed=\"") + strRid + 
-				_T("\"/><a:srcRect/><a:stretch><a:fillRect/></a:stretch></a:blipFill>");
-
-			m_oWriter.WriteString(strWrite);
-		}
-		else if (pBrush->Color1.m_lSchemeIndex == -1)
-		{
-			if (255 == pBrush->Alpha1)
-			{
-				CString str = _T("");
-				str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"/></a:solidFill>"), pBrush->Color1.GetLONG_RGB());
-				m_oWriter.WriteString(str);
-			}
-			else
-			{
-				CString str = _T("");
-				str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"><a:alpha val=\"%d\"/></a:srgbClr></a:solidFill>"), pBrush->Color1.GetLONG_RGB(), (int)(pBrush->Alpha1 * 100000 / 255));
-				m_oWriter.WriteString(str);
-			}
-		}
-		else
-		{
-			if (255 == pBrush->Alpha1)
-			{
-                CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pBrush->Color1.m_lSchemeIndex) + _T("\"/></a:solidFill>");
-				m_oWriter.WriteString(str);
-			}
-			else
-			{
-                CString strAlpha; strAlpha.Format(_T("%d"), (int)(pBrush->Alpha1 * 100000 / 255));
-
-                CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pBrush->Color1.m_lSchemeIndex) + _T("\"><a:alpha val=\"") + strAlpha + _T("\"/></a:schemeClr></a:solidFill>");
-
-				m_oWriter.WriteString(str);
-			}
-		}
-		//m_oWriter.WriteString(std::wstring(L"<a:effectLst/>"));
-
-		CPen* pPen = &m_pShapeElement->m_oShape.m_oPen;
-		CString strLine = _T("");
-		strLine.Format(_T("<a:ln w=\"%d\">"), (int)(pPen->Size * 36000));
-		m_oWriter.WriteString(strLine);
-
-		if (pPen->Color.m_lSchemeIndex == -1)
-		{
-			if (255 == pPen->Alpha)
-			{
-				CString str = _T("");
-				str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"/></a:solidFill>"), pPen->Color.GetLONG_RGB());
-				m_oWriter.WriteString(str);
-			}
-			else
-			{
-				CString str = _T("");
-				str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"><a:alpha val=\"%d\"/></a:srgbClr></a:solidFill>"), pPen->Color.GetLONG_RGB(), (int)(pPen->Alpha * 100000 / 255));
-				m_oWriter.WriteString(str);
-			}
-		}
-		else
-		{
-			if (255 == pPen->Alpha)
-			{
-                CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pPen->Color.m_lSchemeIndex) + _T("\"/></a:solidFill>");
-				m_oWriter.WriteString(str);
-			}
-			else
-			{
-                CString strAlpha; strAlpha.Format(_T("%d"), (int)(pPen->Alpha * 100000 / 255));
-
-                CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pPen->Color.m_lSchemeIndex) + _T("\"><a:alpha val=\"") + strAlpha + _T("\"/></a:schemeClr></a:solidFill>");
-				m_oWriter.WriteString(str);
-			}
-		}
-
-		m_oWriter.WriteString(std::wstring(L"<a:round/><a:headEnd/><a:tailEnd/></a:ln>"));
+		m_oWriter.WriteString(std::wstring(L"<a:blipFill dpi=\"0\" rotWithShape=\"1\"><a:blip r:embed=\"") + string2std_string(strRid) + 
+			_T("\"/><a:srcRect/><a:stretch><a:fillRect/></a:stretch></a:blipFill>"));
 	}
+	else if (pBrush->Type == c_BrushTypeNoFill) 
+	{
+		m_oWriter.WriteString(std::wstring(L"<a:noFill/>"));
+	}
+	else if (pBrush->Color1.m_lSchemeIndex == -1)
+	{
+		if (255 == pBrush->Alpha1)
+		{
+			CString str = _T("");
+			str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"/></a:solidFill>"), pBrush->Color1.GetLONG_RGB());
+			m_oWriter.WriteString(str);
+		}
+		else
+		{
+			CString str = _T("");
+			str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"><a:alpha val=\"%d\"/></a:srgbClr></a:solidFill>"), pBrush->Color1.GetLONG_RGB(), (int)(pBrush->Alpha1 * 100000 / 255));
+			m_oWriter.WriteString(str);
+		}
+	}
+	else
+	{
+		if (255 == pBrush->Alpha1)
+		{
+            CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pBrush->Color1.m_lSchemeIndex) + _T("\"/></a:solidFill>");
+			m_oWriter.WriteString(str);
+		}
+		else
+		{
+            CString strAlpha; strAlpha.Format(_T("%d"), (int)(pBrush->Alpha1 * 100000 / 255));
+
+            CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pBrush->Color1.m_lSchemeIndex) + _T("\"><a:alpha val=\"") + strAlpha + _T("\"/></a:schemeClr></a:solidFill>");
+
+			m_oWriter.WriteString(str);
+		}
+	}
+	//m_oWriter.WriteString(std::wstring(L"<a:effectLst/>"));
+
+	CPen* pPen = &m_pShapeElement->m_oShape.m_oPen;
+	CString strLine = _T("");
+	strLine.Format(_T("<a:ln w=\"%d\">"), (int)(pPen->Size * 36000));
+	m_oWriter.WriteString(strLine);
+
+	if (pPen->Color.m_lSchemeIndex == -1)
+	{
+		if (255 == pPen->Alpha)
+		{
+			CString str = _T("");
+			str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"/></a:solidFill>"), pPen->Color.GetLONG_RGB());
+			m_oWriter.WriteString(str);
+		}
+		else
+		{
+			CString str = _T("");
+			str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"><a:alpha val=\"%d\"/></a:srgbClr></a:solidFill>"), pPen->Color.GetLONG_RGB(), (int)(pPen->Alpha * 100000 / 255));
+			m_oWriter.WriteString(str);
+		}
+	}
+	else
+	{
+		if (255 == pPen->Alpha)
+		{
+            CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pPen->Color.m_lSchemeIndex) + _T("\"/></a:solidFill>");
+			m_oWriter.WriteString(str);
+		}
+		else
+		{
+            CString strAlpha; strAlpha.Format(_T("%d"), (int)(pPen->Alpha * 100000 / 255));
+
+            CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(pPen->Color.m_lSchemeIndex) + _T("\"><a:alpha val=\"") + strAlpha + _T("\"/></a:schemeClr></a:solidFill>");
+			m_oWriter.WriteString(str);
+		}
+	}
+	m_oWriter.WriteString(std::wstring(L"<a:round/><a:headEnd/><a:tailEnd/></a:ln>"));
 
 	m_oWriter.WriteString(std::wstring(L"</p:spPr>"));			
 

@@ -270,7 +270,11 @@ public:
 			}
 		}
 
-		if (pCF->Typeface.is_init())
+		if ((pCF->FontProperties.is_init()) && (!pCF->FontProperties->strFontName.empty()))
+		{
+			oWriter.WriteString(std::wstring(L"<a:latin typeface=\"") + pCF->FontProperties->strFontName + _T("\"/>"));
+		}
+		else if (pCF->Typeface.is_init())
 		{
 			if (0 == pCF->Typeface.get())
 			{
@@ -283,10 +287,7 @@ public:
 				oWriter.WriteString(strProp);
 			}
 		}
-		else if (pCF->FontProperties.is_init())
-		{
-			oWriter.WriteString(std::wstring(L"<a:latin typeface=\"") + pCF->FontProperties->strFontName + _T("\"/>"));
-		}
+
 
 		CString strCF2 = _T("</a:defRPr>");
 		oWriter.WriteString(strCF2);		

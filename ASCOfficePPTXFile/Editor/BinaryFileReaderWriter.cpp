@@ -350,7 +350,7 @@ namespace NSBinPptxRW
 
 		if ( oDownloader.IsFileDownloaded() )
 		{
-            return std_string2string(oDownloader.GetFilePath());
+			return std_string2string(oDownloader.GetFilePath());
 		}
 #endif
 		return _T("");

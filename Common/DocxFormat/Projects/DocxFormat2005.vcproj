@@ -65,7 +65,7 @@
 				Name="VCLibrarianTool"
 				AdditionalDependencies="urlmon.lib"
 				AdditionalLibraryDirectories=""
-				IgnoreAllDefaultLibraries="false"
+				IgnoreAllDefaultLibraries="true"
 			/>
 			<Tool
 				Name="VCALinkTool"

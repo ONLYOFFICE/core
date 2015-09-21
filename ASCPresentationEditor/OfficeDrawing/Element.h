@@ -46,7 +46,8 @@ namespace NSPresentationEditor
 		bool				m_bFlipH;			// симметричное отражение относительно горизонтальной оси
 		bool				m_bFlipV;			// симметричное отражение относительно вертикальной оси
 
-		bool				m_bIsBackground;	// background??
+		bool				m_bIsBackground;	
+		bool				m_bHaveAnchor;	
 
 		bool				m_bIsChangeable;	// можно ли редактировать элемент
 		bool				m_bIsLayoutElement;	// был ли элемент вставлен из шаблона, чтобы можно было менять шаблон
@@ -85,6 +86,7 @@ namespace NSPresentationEditor
 		IElement()
 		{
 			m_bIsBackground				= false;
+			m_bHaveAnchor				= true;
 
 			m_bIsChangeable				= true;
 			m_bIsLayoutElement			= false;
@@ -148,6 +150,7 @@ namespace NSPresentationEditor
 				return;
 
 			pDublicate->m_bIsBackground				= m_bIsBackground;	
+			pDublicate->m_bHaveAnchor				= m_bHaveAnchor;
 			
 			pDublicate->m_bIsChangeable				= m_bIsChangeable;
 			pDublicate->m_bIsLayoutElement			= m_bIsLayoutElement;

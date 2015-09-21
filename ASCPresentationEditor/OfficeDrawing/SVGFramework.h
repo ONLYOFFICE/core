@@ -82,6 +82,7 @@ namespace SVG
 	const long c_BrushTypePattern			= 3009;
 	const long c_BrushTypeHatch1			= 4009;
 	const long c_BrushTypeHatch53			= 4061;
+	const long c_BrushTypeNoFill			= 5000;
 }
 
 namespace StringHelpers

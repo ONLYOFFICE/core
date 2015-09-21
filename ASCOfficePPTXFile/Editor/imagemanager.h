@@ -260,7 +260,7 @@ namespace NSShapeImageGen
 			
             return GenerateImageID(punkImage, (std::max)(1.0, width), (std::max)(1.0, height));
 		}
-        CImageInfo WriteImage(const CString& strFile, COleInfo* pOle, double& x, double& y, double& width, double& height)
+		CImageInfo WriteImage(const CString& strFile, COleInfo* pOle, double& x, double& y, double& width, double& height)
 		{
 			bool bIsDownload = false;
 			int n1 = strFile.Find(_T("www"));
@@ -301,7 +301,7 @@ namespace NSShapeImageGen
 				}
 
 				if ( oDownloader.IsFileDownloaded() )
-                    strDownload = std_string2string(oDownloader.GetFilePath());
+					strDownload = std_string2string(oDownloader.GetFilePath());
 
 #endif
 
@@ -599,7 +599,7 @@ namespace NSShapeImageGen
 			return oInfo;
 		}
 
-		CImageInfo GenerateImageID_2(CString& strFileName, CString& strUrl, double dWidth, double dHeight)
+		CImageInfo GenerateImageID_2(const CString & strFileName, const CString & strUrl, double dWidth, double dHeight)
 		{
 			CImageInfo oInfo;
 			LONG lWidth		= (LONG)(dWidth * 96 / 25.4);

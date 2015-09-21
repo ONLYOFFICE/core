@@ -65,6 +65,7 @@ const long c_BrushTypeTexture				= 3008;
 const long c_BrushTypePattern				= 3009;
 const long c_BrushTypeHatch1				= 4009;
 const long c_BrushTypeHatch53				= 4061;
+const long c_BrushTypeNoFill				= 5000;
 
 const long c_BrushTextureModeStretch		= 0;
 const long c_BrushTextureModeTile			= 1;

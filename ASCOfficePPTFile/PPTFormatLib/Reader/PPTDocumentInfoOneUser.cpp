@@ -542,29 +542,29 @@ void CPPTUserInfo::LoadSlide(DWORD dwSlideID, CSlide* pSlide)
 	for (int nShape = 0; nShape < oArrayShapes.size(); ++nShape)
 	{
 		IElement* pElem = NULL;
+		
 		oArrayShapes[nShape]->GetElement(&pElem, &m_oExMedia, pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight,
 			pTheme, pLayout, pThemeWrapper, pSlideWrapper, pSlide);
 
 		if (NULL != pElem)
 		{
-			AddAnimation ( dwSlideID, pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight, pElem );
-
-			if (pElem->m_bIsBackground)
+			if (pElem->m_bIsBackground && !pElem->m_bHaveAnchor)
 			{
-				if (!oArrayAtoms[0]->m_bMasterBackground)
-				{
-					CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElem);
-					if (NULL != pShape)
-					{
-						pShape->SetupProperties(pSlide, pTheme, pLayout);
+				//if (!oArrayAtoms[0]->m_bMasterBackground)
 
-						pSlide->m_bIsBackground = true;
-						pSlide->m_oBackground	= pShape->m_oShape.m_oBrush;
-					}
+				CShapeElement* pShape = dynamic_cast<CShapeElement*>(pElem);
+				if (NULL != pShape)
+				{
+					pShape->SetupProperties(pSlide, pTheme, pLayout);
+
+					pSlide->m_bIsBackground = true;
+					pSlide->m_oBackground	= pShape->m_oShape.m_oBrush;
 				}
-				RELEASEINTERFACE(pElem);
-				continue;
-			}
+				RELEASEOBJECT(pElem);
+				continue;			
+
+			}else
+				AddAnimation ( dwSlideID, pSlide->m_lOriginalWidth, pSlide->m_lOriginalHeight, pElem );
 
 			pSlide->m_arElements.push_back(pElem);
 		}
@@ -744,6 +744,8 @@ void CPPTUserInfo::LoadMainMaster(DWORD dwMasterID, const LONG& lOriginWidth, co
 
 	pLayout->m_bUseThemeColorScheme = true;
 	pLayout->m_bShowMasterShapes	= bMasterObjects;
+
+	if (oArraySlideAtoms[0]->m_oLayout.m_nGeom == 1) oArraySlideAtoms[0]->m_oLayout.m_nGeom = 15;
 	pLayout->m_strLayoutType		= ConvertLayoutType(oArraySlideAtoms[0]->m_oLayout.m_nGeom, oArraySlideAtoms[0]->m_oLayout.m_pPlaceHolderID);
 
 	// читаем все элементы...-----------------------------------------------------------

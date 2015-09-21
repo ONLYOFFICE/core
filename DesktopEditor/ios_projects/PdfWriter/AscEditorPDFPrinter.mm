@@ -51,7 +51,7 @@ bool CAscEditorPDFPrinter::Print(std::string strBase64, std::wstring strDstFile)
     CPdfRenderer oRender(&oFonts);
     oRender.SetTempFolder(GetTempPath());
     
-    bool status = false;
+    HRESULT hr = S_FALSE;
     int	len = NSBase64::Base64DecodeGetRequiredLength((int)strBase64.length());
     BYTE* dstArray	= new BYTE[len];
     if (NSBase64::Base64Decode(strBase64.c_str(), (int)strBase64.length(), dstArray, &len))
@@ -69,13 +69,13 @@ bool CAscEditorPDFPrinter::Print(std::string strBase64, std::wstring strDstFile)
         oFile.WriteFile(dstArray, len);
         oFile.CloseFile();
         
-        status = oRender.OnlineWordToPdfFromBinary(sFile, strDstFile);
+        hr = oRender.OnlineWordToPdfFromBinary(sFile, strDstFile);
         
         NSFile::CFileBinary::Remove(sFile);
-        
-        RELEASEARRAYOBJECTS(dstArray);
-        RELEASEOBJECT(pFontManager);
     }
+   
+    RELEASEARRAYOBJECTS(dstArray);
+    RELEASEOBJECT(pFontManager);
     
-    return status;
+    return (hr == S_OK);
 }

@@ -341,7 +341,7 @@ namespace NSBinPptxRW
 	CString CImageManager2::DownloadImageExec(const CString& strFile)
 	{
 #ifndef DISABLE_FILE_DOWNLOADER
-        CFileDownloader oDownloader(strFile, false);
+        CFileDownloader oDownloader(string2std_string(strFile), false);
 		oDownloader.Start( 1 );
 		while ( oDownloader.IsRunned() )
 		{
@@ -350,7 +350,7 @@ namespace NSBinPptxRW
 
 		if ( oDownloader.IsFileDownloaded() )
 		{
-			return oDownloader.GetFilePath();
+            return std_string2string(oDownloader.GetFilePath());
 		}
 #endif
 		return _T("");

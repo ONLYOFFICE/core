@@ -7,7 +7,7 @@
 
 namespace NSPresentationEditor
 {
-	AVSINLINE CString GetPhType(const LONG& lType)
+	AVSINLINE std::wstring GetPhType(const LONG& lType)
 	{
 		switch (lType)
 		{
@@ -385,7 +385,8 @@ namespace NSPresentationEditor
 			m_oWriter.WriteString(std::wstring(L"<p:nvSpPr>"));
 
 			CString strShapeID = _T("");
-            strShapeID.Format(L"%d", m_lNextShapeID);
+
+			strShapeID.Format(L"%d", m_pShapeElement->m_lID);
 
 			m_oWriter.WriteString(std::wstring(L"<p:cNvPr id=\"") + string2std_string(strShapeID) + L"\"");
 
@@ -406,16 +407,18 @@ namespace NSPresentationEditor
 
 				if (-1 == m_pShapeElement->m_lPlaceholderID)
 				{
-                    CString strPlaceholder = _T("<p:nvPr><p:ph type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) +_T("\"/></p:nvPr>");
-
-                    m_oWriter.WriteString(strPlaceholder);
+                    m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) +_T("\"/></p:nvPr>"));
 				}
 				else
 				{
                     CString strIdx; strIdx.Format(_T("%d"), m_pShapeElement->m_lPlaceholderID);
-                    CString strPlaceholder = _T("<p:nvPr><p:ph type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) + _T("\" idx=\"") + strIdx + _T("\"/></p:nvPr>");
-
-					m_oWriter.WriteString(strPlaceholder);
+					 m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph type=\"") + GetPhType(m_pShapeElement->m_lPlaceholderType) + _T("\" idx=\"") + string2std_string(strIdx) + _T("\""));
+					 if (5 == m_pShapeElement->m_lPlaceholderType)
+						 m_oWriter.WriteString(std::wstring(L" size=\"half\""));
+					 if (12 == m_pShapeElement->m_lPlaceholderType)
+						 m_oWriter.WriteString(std::wstring(L" size=\"quarter\""));
+						 
+					m_oWriter.WriteString(std::wstring(L"/></p:nvPr>"));
 				}
 			}
 			else
@@ -453,16 +456,13 @@ namespace NSPresentationEditor
 
 				if (-1 == m_pImageElement->m_lPlaceholderID)
 				{
-                    CString strPlaceholder = _T("<p:nvPr><p:ph type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) +_T("\"/></p:nvPr>");
-
-                    m_oWriter.WriteString(strPlaceholder);
+                    m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) +_T("\"/></p:nvPr>"));
 				}
 				else
 				{
                     CString strIdx; strIdx.Format(_T("%d"), m_pImageElement->m_lPlaceholderID);
-                    CString strPlaceholder = _T("<p:nvPr><p:ph type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) + _T("\" idx=\"") + strIdx + _T("\"/></p:nvPr>");
+                    m_oWriter.WriteString(std::wstring(L"<p:nvPr><p:ph type=\"") + GetPhType(m_pImageElement->m_lPlaceholderType) + _T("\" idx=\"") + string2std_string(strIdx) + _T("\"/></p:nvPr>"));
 
-					m_oWriter.WriteString(strPlaceholder);
 				}
 			}
 			else
@@ -491,8 +491,12 @@ namespace NSPresentationEditor
 
 			m_oWriter.WriteString(std::wstring(L"<a:bodyPr lIns=\"0\" tIns=\"0\" rIns=\"0\" bIns=\"0\""));
 
-			if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 0 ) m_oWriter.WriteString(" anchor=\"t\"");
-			if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 2 ) m_oWriter.WriteString(" anchor=\"b\"");
+			if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 0 )			
+				m_oWriter.WriteString(" anchor=\"t\"");
+			else if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 2 )	
+				m_oWriter.WriteString(" anchor=\"b\"");
+			else if (m_pShapeElement->m_oShape.m_oText.m_oAttributes.m_nTextAlignVertical == 1 )					
+				m_oWriter.WriteString(" anchor=\"ctr\"");
 			m_oWriter.WriteString(std::wstring(L"/>"));
 
 			CString str3 = _T("<a:lstStyle>");
@@ -615,6 +619,15 @@ namespace NSPresentationEditor
 
 				m_oWriter.WriteString(std::wstring(L"</a:pPr>"));
 
+				std::wstring typeRun = L"a:r";
+
+				//if (m_pShapeElement->m_lPlaceholderType == 12)
+				//{
+				//	m_oWriter.WriteString(std::wstring(L"<a:fld id=\"{D038279B-FC19-497E-A7D1-5ADD9CAF016F}\" type=\"slidenum\">"));
+				//	m_oWriter.WriteString(std::wstring(L"<a:rPr/><a:t>‹#›</a:t></a:fld>"));
+				//}
+				//else
+
 				size_t nCountSpans = pParagraph->m_arSpans.size();
 				for (size_t nSpan = 0; nSpan < nCountSpans; ++nSpan)
 				{
@@ -637,6 +650,8 @@ namespace NSPresentationEditor
 						}
 					}
 
+					if (pParagraph->m_arSpans[nSpan].m_strText.IsEmpty()) continue;
+
 					NSPresentationEditor::CTextCFRun* pCF = &pParagraph->m_arSpans[nSpan].m_oRun;
 
 					bool bIsBr = false;
@@ -653,8 +668,14 @@ namespace NSPresentationEditor
 					}
 					else
 					{
-						CString strRun1 = _T("<a:r><a:rPr");
-						m_oWriter.WriteString(strRun1);
+						if (m_pShapeElement->m_lPlaceholderType == 12)//todooo + date
+						{
+							m_oWriter.WriteString(std::wstring(L"<a:fld id=\"{D038279B-FC19-497E-A7D1-5ADD9CAF016F}\" type=\"slidenum\"><a:rPr"));
+						}
+						else
+						{						
+							m_oWriter.WriteString(std::wstring(L"<a:r><a:rPr"));
+						}
 					}					
 					
 					if (pCF->Size.is_init())
@@ -728,7 +749,11 @@ namespace NSPresentationEditor
 						CString strT2 = _T("</a:t>");
 						m_oWriter.WriteString(strT2);
 
-						m_oWriter.WriteString(std::wstring(L"</a:r>"));
+						if (m_pShapeElement->m_lPlaceholderType == 12)
+							m_oWriter.WriteString(std::wstring(L"</a:fld>"));
+						else
+							m_oWriter.WriteString(std::wstring(L"</a:r>"));
+
 					}
 					else
 					{

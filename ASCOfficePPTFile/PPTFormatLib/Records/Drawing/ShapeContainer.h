@@ -221,7 +221,7 @@ public:
 			}break;
 		case pibName:
 			{
-				pElement->m_sName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2); 
+				pElement->m_sName = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue /2-1); 
 			}break;
 		case cropFromTop:
 			{
@@ -431,6 +431,9 @@ public:
 				oAtom.FromValue(pProperty->m_lValue);
 				//pElemProps->SetAt(CElementProperty::epBrushColor1, oAtom.ToValueProperty());
 				oAtom.ToColor(&pParentShape->m_oBrush.Color1);
+
+				pParentShape->m_oBrush.Type = c_BrushTypeSolid;
+
 				break;
 			}
 		case NSOfficeDrawing::fillBackColor:
@@ -677,7 +680,7 @@ public:
 			{
 				if (pProperty->m_bComplex && 0 < pProperty->m_lValue)
 				{
-					std::wstring str = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue/2);
+					std::wstring str = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue/2-1);
 					//pParentShape->m_oText.m_sText = str;
 				}
 				break;
@@ -687,7 +690,7 @@ public:
 			{
 				if (pProperty->m_bComplex && 0 < pProperty->m_lValue)
 				{
-					std::wstring str = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue/2);
+					std::wstring str = NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)pProperty->m_pOptions, pProperty->m_lValue/2-1);
 					pParentShape->m_oText.m_oAttributes.m_oFont.Name = std_string2string(str);
 					//pElemProps->SetAt(CElementProperty::epFontName, (CString)str);
 				}
@@ -756,7 +759,7 @@ public:
 				default:
 					{
 						pParentShape->m_oText.m_oAttributes.m_nTextAlignHorizontal = 1;
-						pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = 0;
+						pParentShape->m_oText.m_oAttributes.m_nTextAlignVertical = -1; // not set
 						//pElemProps->SetAt(CElementProperty::epFontHorAlign, (DWORD)1);
 						//pElemProps->SetAt(CElementProperty::epFontVertAlign, (DWORD)0);
 						break;
@@ -923,9 +926,9 @@ public:
 
 		if (!bIsFilled)
 		{
-			pParentShape->m_oBrush.Type = (int)c_BrushTypeSolid;
-			pParentShape->m_oBrush.Alpha1 = 0;
-			pParentShape->m_oBrush.Alpha2 = 0;
+			pParentShape->m_oBrush.Type = c_BrushTypeNoFill;//(int)c_BrushTypeSolid;
+			/*pParentShape->m_oBrush.Alpha1 = 0;
+			pParentShape->m_oBrush.Alpha2 = 0;*/
 			//pElemProps->SetAt(CElementProperty::epFilled, (DWORD)0);
 		}
 	}
@@ -1220,13 +1223,13 @@ public:
 			{
 				pShapeElem->m_oShape.m_oText.m_lTextType		= oArrayTextHeader[0]->m_nTextType;
 				pShapeElem->m_oShape.m_oText.m_lTextMasterType	= oArrayTextHeader[0]->m_nTextType;
-				oElementInfo.m_lMasterTextType							= oArrayTextHeader[0]->m_nTextType;
+				oElementInfo.m_lMasterTextType					= oArrayTextHeader[0]->m_nTextType;
 			}
 			else
 			{
 				pShapeElem->m_oShape.m_oText.m_lTextType		= NSOfficePPT::NoPresent;
 				pShapeElem->m_oShape.m_oText.m_lTextMasterType	= NSOfficePPT::NoPresent;
-				oElementInfo.m_lMasterTextType							= NSOfficePPT::NoPresent;
+				oElementInfo.m_lMasterTextType					= NSOfficePPT::NoPresent;
 			}
 
 			// проверка на ссылку в персист
@@ -1250,8 +1253,22 @@ public:
 
 				if (0 == pElem->m_lPlaceholderType)
 					pElem->m_lPlaceholderID = 1;
-				else if (15 == pElem->m_lPlaceholderType)
+				else if (15 == pElem->m_lPlaceholderType)//??
 					pElem->m_lPlaceholderID = -1;
+
+				pElem->m_lPlaceholderType	= CPPTElement::CorrectPlaceHolderType(pElem->m_lPlaceholderType);
+
+				if (pElem->m_lPlaceholderID != -1)
+				{
+					pLayout->m_mapPlaceholders.insert(std::pair<LONG, LONG>(pElem->m_lPlaceholderID, pElem->m_lPlaceholderType));
+				}
+			}
+
+			std::vector<CRecordRoundTripHFPlaceholder12Atom*> oArrayHFPlaceholder;
+			this->GetRecordsByType(&oArrayHFPlaceholder, true, true);
+			if (0 < oArrayHFPlaceholder.size())
+			{
+				pElem->m_lPlaceholderType= oArrayHFPlaceholder[0]->m_nPlacementID;//PT_MasterDate, PT_MasterSlideNumber, PT_MasterFooter, or PT_MasterHeader
 
 				pElem->m_lPlaceholderType	= CPPTElement::CorrectPlaceHolderType(pElem->m_lPlaceholderType);
 			}
@@ -1326,31 +1343,31 @@ public:
 
 			// теперь смотрим какой угол поворота. если он ближе к 90 и 270 чем 0 и 180 - то 
 			// его надо повернуть обратно на 90 градусов.
-			double dAngle = pShapeElem->m_dRotate;
-			if (0 <= dAngle)
-			{
-				LONG lCount = (LONG)dAngle / 360;
-				dAngle -= (lCount * 360.0);
-			}
-			else
-			{
-				LONG lCount = (LONG)dAngle / 360;
-				dAngle += ((-lCount + 1) * 360.0);
-			}
-			if (((dAngle > 45) && (dAngle < 135)) || ((dAngle > 225) && (dAngle < 315)))
-			{
-				double dW = pShapeElem->m_rcBounds.GetWidth();
-				double dH = pShapeElem->m_rcBounds.GetHeight();
+			//double dAngle = pShapeElem->m_dRotate;
+			//if (0 <= dAngle)
+			//{
+			//	LONG lCount = (LONG)dAngle / 360;
+			//	dAngle -= (lCount * 360.0);
+			//}
+			//else
+			//{
+			//	LONG lCount = (LONG)dAngle / 360;
+			//	dAngle += ((-lCount + 1) * 360.0);
+			//}
+			//if (((dAngle > 45) && (dAngle < 135)) || ((dAngle > 225) && (dAngle < 315)))
+			//{
+			//	double dW = pShapeElem->m_rcBounds.GetWidth();
+			//	double dH = pShapeElem->m_rcBounds.GetHeight();
 
-				double dCx = (pShapeElem->m_rcBounds.left + pShapeElem->m_rcBounds.right) / 2.0;
-				double dCy = (pShapeElem->m_rcBounds.top + pShapeElem->m_rcBounds.bottom) / 2.0;
+			//	double dCx = (pShapeElem->m_rcBounds.left + pShapeElem->m_rcBounds.right) / 2.0;
+			//	double dCy = (pShapeElem->m_rcBounds.top + pShapeElem->m_rcBounds.bottom) / 2.0;
 
-				pShapeElem->m_rcBounds.left		= dCx - dH / 2.0;
-				pShapeElem->m_rcBounds.right	= dCx + dH / 2.0;
+			//	pShapeElem->m_rcBounds.left		= dCx - dH / 2.0;
+			//	pShapeElem->m_rcBounds.right	= dCx + dH / 2.0;
 
-				pShapeElem->m_rcBounds.top		= dCy - dW / 2.0;
-				pShapeElem->m_rcBounds.bottom	= dCy + dW / 2.0;
-			}
+			//	pShapeElem->m_rcBounds.top		= dCy - dW / 2.0;
+			//	pShapeElem->m_rcBounds.bottom	= dCy + dW / 2.0;
+			//}
 
 			pSlideWrapper->m_mapElements.insert(std::pair<LONG, CElementInfo>(pShapeElem->m_lID, oElementInfo));
 			SetUpTextStyle(strText, pTheme, pLayout, pElem, pThemeWrapper, pSlideWrapper, pSlide);
@@ -1381,7 +1398,9 @@ public:
 			pElem->m_oMetric.SetUnitsContainerSize(lSlideWidth, lSlideHeight);
 		}
 
-		pElem->m_bIsBackground = (true == oArrayShape[0]->m_bBackground);
+		pElem->m_bIsBackground	=	(true == oArrayShape[0]->m_bBackground);
+		pElem->m_bHaveAnchor	=	(true == oArrayShape[0]->m_bHaveAnchor);
+
 
 		*ppElement = pElem;
 	}

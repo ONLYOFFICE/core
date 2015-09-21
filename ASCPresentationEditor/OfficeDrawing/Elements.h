@@ -997,12 +997,12 @@ namespace NSPresentationEditor
 				}
 			case CElementProperty::epFontBold:
 				{
-                                        m_oShape.m_oText.m_oAttributes.m_oFont.Bold			= (bool)pProperty->m_dwValue;
+					m_oShape.m_oText.m_oAttributes.m_oFont.Bold			= (bool)pProperty->m_dwValue;
 					break;
 				}
 			case CElementProperty::epFontItalic:
 				{
-                                        m_oShape.m_oText.m_oAttributes.m_oFont.Italic		= (bool)pProperty->m_dwValue;
+					m_oShape.m_oText.m_oAttributes.m_oFont.Italic		= (bool)pProperty->m_dwValue;
 					break;
 				}
 			case CElementProperty::epFontStrikeout:

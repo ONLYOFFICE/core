@@ -182,6 +182,8 @@ public:
 				NSOfficePPT::PlaceholderEnum phbody = (NSOfficePPT::PlaceholderEnum)pPlaceholders[0];
 				switch (phbody)
 				{
+				case NSOfficePPT::MasterTitle:
+					return _T("title");
 				case NSOfficePPT::Table:
 					return _T("tbl");
 				case NSOfficePPT::OrganizationChart:

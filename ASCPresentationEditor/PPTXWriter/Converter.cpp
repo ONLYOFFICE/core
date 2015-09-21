@@ -58,6 +58,8 @@ void NSPresentationEditor::CPPTXWriter::CreateFile(CPPTUserInfo* pUserInfo	)
 
 	m_pDocument = dynamic_cast<CDocument*>(pUserInfo);
 
+	//m_pDocument->Calculate();
+
 	m_pDocument->m_oInfo.m_lUnitsHor			= 36000 * m_pDocument->m_oInfo.m_lMillimetresHor;
 	m_pDocument->m_oInfo.m_lUnitsVer			= 36000 * m_pDocument->m_oInfo.m_lMillimetresVer;
 
@@ -483,9 +485,15 @@ void NSPresentationEditor::CPPTXWriter::WriteThemes()
 
 		oStringWriter.WriteString(std::wstring(L"<a:fontScheme name=\"default\"><a:majorFont><a:latin typeface=\""));
 		oStringWriter.WriteString(pTheme->m_arFonts[0].Name);
-		oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:majorFont><a:minorFont><a:latin typeface=\""));
-		oStringWriter.WriteString(pTheme->m_arFonts[1].Name);
-        oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:minorFont></a:fontScheme>"));
+		oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:majorFont>"));
+
+		oStringWriter.WriteString(std::wstring(L"<a:minorFont><a:latin typeface=\""));
+		
+		if (pTheme->m_arFonts.size() >1 )	oStringWriter.WriteString(pTheme->m_arFonts[1].Name);
+		else oStringWriter.WriteString(pTheme->m_arFonts[0].Name);
+
+		oStringWriter.WriteString(std::wstring(L"\"/><a:ea typeface=\"\"/><a:cs typeface=\"\"/></a:minorFont>"));
+		oStringWriter.WriteString(std::wstring(L"</a:fontScheme>"));
  
 		oStringWriter.WriteString(std::wstring(L"<a:fmtScheme name=\"Default\">\
 <a:fillStyleLst><a:solidFill><a:schemeClr val=\"phClr\"/></a:solidFill><a:gradFill rotWithShape=\"1\"><a:gsLst><a:gs pos=\"0\"><a:schemeClr val=\"phClr\">\
@@ -670,29 +678,60 @@ accent2=\"accent2\" accent3=\"accent3\" accent4=\"accent4\" accent5=\"accent5\" 
 
 void NSPresentationEditor::CPPTXWriter::WriteBackground(CStringWriter& oWriter, CRelsGenerator& oRels, CBrush& oBackground)
 {
+	oWriter.WriteString(std::wstring(L"<p:bg><p:bgPr>"));
 	if (oBackground.Type == c_BrushTypeTexture)
 	{
 		CString strRid = oRels.WriteImage(oBackground.TexturePath);
 
-		CString strWrite = _T("<p:bg><p:bgPr><a:blipFill dpi=\"0\" rotWithShape=\"0\"><a:blip r:embed=\"") + strRid + 
-			_T("\"/><a:srcRect/><a:stretch><a:fillRect/></a:stretch></a:blipFill><a:effectLst/></p:bgPr></p:bg>");
+		oWriter.WriteString(std::wstring(L"<a:blipFill dpi=\"0\" rotWithShape=\"0\"><a:blip r:embed=\""));
+		oWriter.WriteString(strRid + _T("\">"));
 
-		oWriter.WriteString(strWrite);
+		if (oBackground.TextureAlpha != 255)
+		{
+			CString strAlpha;
+			strAlpha.Format(L"%d", (int)(oBackground.TextureAlpha * 100000. / 255));
+			oWriter.WriteString(std::wstring(L"<a:alphaModFix amt=\"") + string2std_string(strAlpha) + L"\"/>");
+		}
+
+		oWriter.WriteString(std::wstring(L"</a:blip><a:srcRect/>"));
+
+		if (oBackground.TextureMode == 1)
+			oWriter.WriteString(std::wstring(L"<a:tile algn=\"tl\"/>"));
+		else
+			oWriter.WriteString(std::wstring(L"<a:stretch><a:fillRect/></a:stretch>"));
+		
+		oWriter.WriteString(std::wstring(L"</a:blipFill><a:effectLst/>"));
+	
+		oWriter.WriteString(std::wstring(L"</p:bgPr></p:bg>"));
 		return;
 	}
 	if (oBackground.Color1.m_lSchemeIndex == -1)
 	{
-		CString str = _T("");
-		str.Format(_T("<a:solidFill><a:srgbClr val=\"%06x\"/></a:solidFill>"), oBackground.Color1.GetLONG_RGB());
-		str = _T("<p:bg><p:bgPr>") + str + _T("</p:bgPr></p:bg>");
-		oWriter.WriteString(str);
+		CString strColor;
+		strColor.Format(L"%06x", oBackground.Color1.GetLONG_RGB());
+		
+		oWriter.WriteString(std::wstring(L"<a:solidFill><a:srgbClr val=\"") + string2std_string(strColor) + _T("\">"));
+		if (oBackground.Alpha1 != 255)
+		{
+			CString strAlpha;
+			strAlpha.Format(L"%d", (int)(oBackground.Alpha1 * 100000. / 255));
+			oWriter.WriteString(std::wstring(L"<a:alpha val=\"") + string2std_string(strAlpha) + _T("\"/>"));
+		}
+		oWriter.WriteString(std::wstring(L"</a:srgbClr></a:solidFill>"));
 	}
 	else
 	{
-        CString str = _T("<a:solidFill><a:schemeClr val=\"") + CStylesWriter::GetColorInScheme(oBackground.Color1.m_lSchemeIndex) + _T("\"/></a:solidFill>");
-		str = _T("<p:bg><p:bgPr>") + str + _T("</p:bgPr></p:bg>");
-		oWriter.WriteString(str);
+        oWriter.WriteString(std::wstring(L"<a:solidFill><a:schemeClr val=\""));
+		oWriter.WriteString(CStylesWriter::GetColorInScheme(oBackground.Color1.m_lSchemeIndex) + _T("\"/>"));			
+		if (oBackground.Alpha1 != 255)
+		{
+			CString strAlpha;
+			strAlpha.Format(L"%d", (int)(oBackground.Alpha1 * 100000 / 255));
+			oWriter.WriteString(std::wstring(L"<a:alpha val=\"") + string2std_string(strAlpha) + _T("\"/>"));
+		}
+		oWriter.WriteString(std::wstring(L"</a:solidFill>"));
 	}
+	oWriter.WriteString(std::wstring(L"</p:bgPr></p:bg>"));
 }
 
 void NSPresentationEditor::CPPTXWriter::WriteElement(CStringWriter& oWriter, CRelsGenerator& oRels, IElement* pElement, CLayout* pLayout)

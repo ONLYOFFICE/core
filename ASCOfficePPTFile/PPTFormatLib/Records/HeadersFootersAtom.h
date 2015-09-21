@@ -28,13 +28,13 @@ public:
 
 		m_nFormatID = StreamUtils::ReadWORD(pStream);
 
-		USHORT nFlag = StreamUtils::ReadWORD(pStream);
-		m_bHasDate = ((nFlag & 0x01) == 0x01);
-		m_bHasTodayDate = ((nFlag & 0x02) == 0x02);
-		m_bHasUserDate = ((nFlag & 0x04) == 0x04);
-		m_bHasSlideNumber = ((nFlag & 0x08) == 0x08);
-		m_bHasHeader = ((nFlag & 0x10) == 0x10);
-		m_bHasFooter = ((nFlag & 0x20) == 0x20);
+		USHORT nFlag		= StreamUtils::ReadWORD(pStream);
+		m_bHasDate			= ((nFlag & 0x01) == 0x01);
+		m_bHasTodayDate		= ((nFlag & 0x02) == 0x02);
+		m_bHasUserDate		= ((nFlag & 0x04) == 0x04);
+		m_bHasSlideNumber	= ((nFlag & 0x08) == 0x08);
+		m_bHasHeader		= ((nFlag & 0x10) == 0x10);
+		m_bHasFooter		= ((nFlag & 0x20) == 0x20);
 	}
 	virtual CString ToString()
 	{
@@ -62,3 +62,41 @@ public:
 		return oWriter.GetXmlString();
 	}
 };
+
+
+class CRecordRoundTripHeaderFooterDefaults12Atom : public CUnknownRecord
+{
+	WORD m_nFormatID;
+	
+	bool m_bIncludeDate;
+	bool m_bIncludeFooter;
+	bool m_bIncludeHeader;
+	bool m_bIncludeSlideNumber;
+
+public:
+	
+	CRecordRoundTripHeaderFooterDefaults12Atom()
+	{
+	}
+
+	~CRecordRoundTripHeaderFooterDefaults12Atom()
+	{
+	}
+
+	virtual void ReadFromStream(SRecordHeader & oHeader, POLE::Stream* pStream)
+	{
+		m_oHeader = oHeader;
+
+		BYTE nFlag				= StreamUtils::ReadBYTE(pStream);
+
+		m_bIncludeDate			= ((nFlag & 0x04) == 0x04);
+		m_bIncludeFooter		= ((nFlag & 0x08) == 0x08);
+		m_bIncludeHeader		= ((nFlag & 0x10) == 0x10);
+		m_bIncludeSlideNumber	= ((nFlag & 0x20) == 0x20);
+	}
+	virtual CString ToString()
+	{
+		return _T("");
+	}
+};
+

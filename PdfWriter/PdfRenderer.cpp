@@ -1495,7 +1495,7 @@ void CPdfRenderer::UpdateFont()
 			oFontSelect.wsName = new std::wstring(m_oFont.GetName());
 			oFontSelect.bItalic = new INT(m_oFont.IsItalic() ? 1 : 0);
 			oFontSelect.bBold   = new INT(m_oFont.IsBold() ? 1 : 0);
-			CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect);
+			CFontInfo* pFontInfo = m_pFontManager->GetFontInfoByParams(oFontSelect, false);
 
 			wsFontPath = pFontInfo->m_wsFontPath;
 			lFaceIndex = pFontInfo->m_lIndex;

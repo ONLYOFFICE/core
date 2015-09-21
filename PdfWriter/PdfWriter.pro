@@ -65,6 +65,9 @@ shared {
     linux-g++ | linux-g++-64 | linux-g++-32 {
         CONFIG += plugin
         TARGET_EXT = .so
+
+        QMAKE_CXXFLAGS += -fvisibility=hidden
+        QMAKE_CFLAGS += -fvisibility=hidden
     }
 }
 ################################################

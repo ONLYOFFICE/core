@@ -189,7 +189,7 @@ public:
 	void LoadFromFolder(const std::wstring& strDirectory);
 	bool CheckLoadFromFolderBin(const std::wstring& strDirectory);
 	void Add(CFontInfo* pInfo);
-	CFontInfo* GetByParams(CFontSelectFormat& oSelect);
+	CFontInfo* GetByParams(CFontSelectFormat& oSelect, bool bIsDictionaryUse = true);
 	CArray<CFontInfo*> GetAllByName(const std::wstring& strFontName);
 	void SetDefaultFont(std::wstring& sName);
 };

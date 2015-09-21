@@ -1115,16 +1115,17 @@ void CFontList::ToBuffer(BYTE** pDstData, LONG* pLen, std::wstring strDirectory,
     *pLen = lDataSize;
 }
 
-CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect)
+CFontInfo* CFontList::GetByParams(CFontSelectFormat& oSelect, bool bIsDictionaryUse)
 {
 	int nFontsCount = m_pList.GetCount();
 	if (0 == nFontsCount)
 		return NULL;
 
-#if 1
-	// дубликат не делаем!!! Серега создает объект только для подбора и дальше его не использует
-	NSFontDictionary::CorrectParamsFromDictionary(oSelect);
-#endif
+	if (bIsDictionaryUse)
+	{
+		// дубликат не делаем!!! Серега создает объект только для подбора и дальше его не использует
+		NSFontDictionary::CorrectParamsFromDictionary(oSelect);
+	}
 
 	int nMinIndex   = 0; // Номер шрифта в списке с минимальным весом
 	int nMinPenalty = 0; // Минимальный вес

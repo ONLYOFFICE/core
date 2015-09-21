@@ -590,12 +590,12 @@ int CFontManager::Release()
 		delete this;
 	return ret;
 }
-CFontInfo* CFontManager::GetFontInfoByParams(CFontSelectFormat& oFormat)
+CFontInfo* CFontManager::GetFontInfoByParams(CFontSelectFormat& oFormat, bool bIsDictionaryUse)
 {
 	CFontInfo* pRes = NULL;
 	if (NULL != m_pApplication)
 	{
-		pRes = m_pApplication->GetList()->GetByParams(oFormat);
+		pRes = m_pApplication->GetList()->GetByParams(oFormat, bIsDictionaryUse);
 	}
 	return pRes;
 }

@@ -293,7 +293,7 @@ namespace NSShapeImageGen
 
 #ifndef DISABLE_FILE_DOWNLOADER
 
-                CFileDownloader oDownloader(strFile1, true);
+                CFileDownloader oDownloader(string2std_string(strFile1), true);
 				oDownloader.Start( 1 );
 				while ( oDownloader.IsRunned() )
 				{
@@ -301,7 +301,7 @@ namespace NSShapeImageGen
 				}
 
 				if ( oDownloader.IsFileDownloaded() )
-					strDownload = oDownloader.GetFilePath();
+                    strDownload = std_string2string(oDownloader.GetFilePath());
 
 #endif
 

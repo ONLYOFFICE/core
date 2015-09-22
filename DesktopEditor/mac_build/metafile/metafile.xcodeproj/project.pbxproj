@@ -1507,6 +1507,7 @@
 		17A762D91B0F355E0046BC0B /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = _IOS;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",
@@ -1523,6 +1524,7 @@
 		17A762DA1B0F355E0046BC0B /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ENABLE_BITCODE = NO;
 				GCC_PREPROCESSOR_DEFINITIONS = _IOS;
 				HEADER_SEARCH_PATHS = (
 					"$(inherited)",

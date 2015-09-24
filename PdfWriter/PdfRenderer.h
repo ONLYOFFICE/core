@@ -603,18 +603,98 @@ private:
 			if (!pColors || !pPoints || !lCount)
 				return;
 
+			// Проверим вырожденный случай, когда задана либо 1 точка, либо несколько точек с одинковым значением
+			bool bIrregular = false;
 			if (1 == lCount)
 			{
-				m_pShadingPoints = new double[2];
-				m_pShadingColors = new TColor[2];
+				bIrregular = true;
+			}
+			else
+			{
+				bIrregular = true;
+				for (LONG lIndex = 0; lIndex < lCount; lIndex++)
+				{
+					double dPoint1 = pPoints[lIndex];
+					for (LONG lIndex2 = lIndex + 1; lIndex2 < lCount; lIndex2++)
+					{
+						double dPoint2 = pPoints[lIndex2];
+						if (fabs(dPoint2 - dPoint1) > 0.00001)
+						{
+							bIrregular = false;
+							break;
+						}
+					}
 
-				if (!m_pShadingColors || !m_pShadingColors)
-					return;
+					if (!bIrregular)
+						break;
+				}
+			}
 
-				m_pShadingPoints[0] = 0.0;
-				m_pShadingPoints[1] = 1.0;
-				m_pShadingColors[0] = pColors[0];
-				m_pShadingColors[1] = pColors[0];
+			if (bIrregular)
+			{
+				if (1 == lCount)
+				{
+					m_pShadingPoints = new double[2];
+					m_pShadingColors = new TColor[2];
+
+					if (!m_pShadingColors || !m_pShadingColors)
+						return;
+
+					m_pShadingPoints[0] = 0.0;
+					m_pShadingColors[0] = pColors[0];
+					m_pShadingPoints[1] = 1.0;
+					m_pShadingColors[1] = pColors[0];
+					m_lShadingPointsCount = 2;
+				}
+				else
+				{
+					if (pPoints[0] < 0)
+					{
+						m_pShadingPoints = new double[2];
+						m_pShadingColors = new TColor[2];
+
+						if (!m_pShadingColors || !m_pShadingColors)
+							return;
+
+						m_pShadingPoints[0] = 0.0;
+						m_pShadingColors[0] = pColors[lCount - 1];
+						m_pShadingPoints[1] = 1.0;
+						m_pShadingColors[1] = pColors[lCount - 1];
+						m_lShadingPointsCount = 2;
+					}
+					else if (pPoints[0] > 1)
+					{
+						m_pShadingPoints = new double[2];
+						m_pShadingColors = new TColor[2];
+
+						if (!m_pShadingColors || !m_pShadingColors)
+							return;
+
+						m_pShadingPoints[0] = 0.0;
+						m_pShadingColors[0] = pColors[0];
+						m_pShadingPoints[1] = 1.0;
+						m_pShadingColors[1] = pColors[0];
+						m_lShadingPointsCount = 2;
+					}
+					else
+					{
+						m_pShadingPoints = new double[4];
+						m_pShadingColors = new TColor[4];
+
+						if (!m_pShadingColors || !m_pShadingColors)
+							return;
+
+						m_pShadingPoints[0] = 0.0;
+						m_pShadingColors[0] = pColors[0];
+						m_pShadingPoints[1] = pPoints[0];
+						m_pShadingColors[1] = pColors[0];
+						m_pShadingPoints[2] = pPoints[lCount - 1];
+						m_pShadingColors[2] = pColors[lCount - 1];
+						m_pShadingPoints[3] = 1.0;
+						m_pShadingColors[3] = pColors[lCount - 1];
+						m_lShadingPointsCount = 4;
+					}
+				}
 			}
 			else
 			{

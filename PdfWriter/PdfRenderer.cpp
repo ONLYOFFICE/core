@@ -1408,7 +1408,7 @@ PdfWriter::CImageDict* CPdfRenderer::LoadImage(Aggplus::CImage* pImage, const BY
 
 	CImageDict* pPdfImage = m_pDocument->CreateImage();
 	if (bAlpha || nAlpha < 255)
-		pPdfImage->LoadSMask(pData, nImageW, nImageH, nAlpha);
+		pPdfImage->LoadSMask(pData, nImageW, nImageH, nAlpha, (pImage->GetStride() >= 0) ? false : true);
 
 	if (bJpeg)
 		pPdfImage->LoadJpeg(pBuffer, nBufferSize, nImageW, nImageH);

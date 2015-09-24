@@ -920,8 +920,8 @@ void TestMetafile()
 }
 void TestOnlineBin()
 {
-	//std::wstring wsFolderPath = L"D://Test Files//Txt//";
-	std::wstring wsFolderPath = L"D://Test Files//Txt//IvanovaVeronica//";
+	std::wstring wsFolderPath = L"D://Test Files//Txt//Gradient//";
+	//std::wstring wsFolderPath = L"D://Test Files//Txt//Text//";
 	std::wstring wsTempFolder = L"D://Test Files//Temp//";
 
 	CApplicationFonts oFonts;
@@ -988,7 +988,7 @@ void TestDouble()
 			int nResLen = 0;
 			double dValue = pDoubles[nIndex];
 			int nIVal = (int)dValue;
-			int nFVal = (int)(abs(dValue - nIVal) * 10000);
+			int nFVal = (int)(fabs(dValue - nIVal) * 10000);
 
 			int nLen = 0;
 			const char* sString = NSFastIntToString::GetString(abs(nIVal), nLen);

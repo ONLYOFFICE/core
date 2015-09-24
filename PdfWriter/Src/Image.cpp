@@ -156,7 +156,7 @@ namespace PdfWriter
 		Add("BitsPerComponent", 8);
 		SetFilter(STREAM_FILTER_FLATE_DECODE);
 	}
-	void CImageDict::LoadSMask(const BYTE* pBgra, unsigned int unWidth, unsigned int unHeight, unsigned char unAlpha)
+	void CImageDict::LoadSMask(const BYTE* pBgra, unsigned int unWidth, unsigned int unHeight, unsigned char unAlpha, bool bVerFlip)
 	{
 		CMemoryStream* pStream = new CMemoryStream(unWidth * unHeight);
 		if (!pStream)
@@ -165,17 +165,51 @@ namespace PdfWriter
 		if (255 != unAlpha)
 		{
 			double dKoef = unAlpha / 255.0;
-			for (unsigned int unIndex = 0, unSize = 4 * unWidth * unHeight; unIndex < unSize; unIndex += 4)
+
+			if (!bVerFlip)
 			{
-				BYTE nChar = *(pBgra + unIndex + 3) * dKoef;
-				pStream->Write(&nChar, 1);
+				for (unsigned int unIndex = 0, unSize = 4 * unWidth * unHeight; unIndex < unSize; unIndex += 4)
+				{
+					BYTE nChar = *(pBgra + unIndex + 3) * dKoef;
+					pStream->Write(&nChar, 1);
+				}
+			}
+			else
+			{
+				int nWidth  = (int)unWidth;
+				int nHeight = (int)unHeight;
+				for (int nY = nHeight - 1; nY >= 0; nY--)
+				{
+					for (int nX = 0; nX < nWidth; nX++)
+					{
+						int unIndex = 4 * (nX + nY * nWidth);
+						BYTE nChar = *(pBgra + unIndex + 3) * dKoef;
+						pStream->Write(&nChar, 1);
+					}
+				}
 			}
 		}
 		else
 		{
-			for (unsigned int unIndex = 0, unSize = 4 * unWidth * unHeight; unIndex < unSize; unIndex += 4)
+			if (!bVerFlip)
 			{
-				pStream->Write(pBgra + unIndex + 3, 1);
+				for (unsigned int unIndex = 0, unSize = 4 * unWidth * unHeight; unIndex < unSize; unIndex += 4)
+				{
+					pStream->Write(pBgra + unIndex + 3, 1);
+				}
+			}
+			else
+			{
+				int nWidth  = (int)unWidth;
+				int nHeight = (int)unHeight;
+				for (int nY = nHeight - 1; nY >= 0; nY--)
+				{
+					for (int nX = 0; nX < nWidth; nX++)
+					{
+						int unIndex = 4 * (nX + nY * nWidth);
+						pStream->Write(pBgra + unIndex + 3, 1);
+					}
+				}
 			}
 		}
 

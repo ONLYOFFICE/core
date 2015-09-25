@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef UTILITY_TXT_FILE_INCLUDE_H_
 #define UTILITY_TXT_FILE_INCLUDE_H_
 
@@ -13,8 +13,9 @@ public:
 	TxtFile(const std::wstring & path);
 
 	const std::list<std::string>	readAnsiOrCodePage();
+    const std::list<std::wstring>	readUnicodeFromBytes(char *file_data, long file_size);
 	const std::list<std::wstring>	readUnicode();
-	//const std::list<std::wstring>	readUnicodeWithOutBOM(); /// не используем
+	//const std::list<std::wstring>	readUnicodeWithOutBOM(); /// РЅРµ РёСЃРїРѕР»СЊР·СѓРµРј
 	const std::list<std::wstring>	readBigEndian();
 	const std::list<std::string>	readUtf8();
 

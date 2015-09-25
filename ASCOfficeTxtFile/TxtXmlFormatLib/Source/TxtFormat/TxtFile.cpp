@@ -1,40 +1,12 @@
-
+ï»¿
 #include "TxtFile.h"
 
 #include "../Common/Encoding.h"
 #include "../../../../Common/DocxFormat/Source/SystemUtility/File.h"
+#include "../../../../DesktopEditor/common/File.h"
 
 
 static const std::string BadSymbols = "\x0A\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19";
-
-
-static std::wstring convertUtf16ToWString(UTF16 * Data, int nLength)
-{
-    UTF32 *pStrUtf32 = new UTF32 [nLength + 1];
-    memset ((void *) pStrUtf32, 0, sizeof (UTF32) * (nLength + 1));
-
-    // this values will be modificated
-    const UTF16 *pStrUtf16_Conv = Data;
-    UTF32 *pStrUtf32_Conv = pStrUtf32;
-
-    ConversionResult eUnicodeConversionResult =
-            ConvertUTF16toUTF32 (&pStrUtf16_Conv,
-                                 &Data[nLength]
-            , &pStrUtf32_Conv
-            , &pStrUtf32 [nLength]
-            , strictConversion);
-
-    if (conversionOK != eUnicodeConversionResult)
-    {
-        delete [] pStrUtf32;
-		return std::wstring();
-    }
-
-    std::wstring wstr ((wchar_t *) pStrUtf32);
-
-    delete [] pStrUtf32;
-    return wstr;
-}
 
 TxtFile::TxtFile(const std::wstring & path) : m_path(path), m_linesCount(0)
 {
@@ -43,7 +15,7 @@ const int TxtFile::getLinesCount()
 {
 	return m_linesCount;
 }
-const std::list<std::string> TxtFile::readAnsiOrCodePage() // == readUtf8withoutPref òàêæå
+const std::list<std::string> TxtFile::readAnsiOrCodePage() // == readUtf8withoutPref Ñ‚Ð°ÐºÐ¶Ðµ
 {
 	std::list<std::string> result;
 	CFile file_binary;
@@ -61,12 +33,18 @@ const std::list<std::string> TxtFile::readAnsiOrCodePage() // == readUtf8without
 
 	for (long end_pos = 0; end_pos < file_size; end_pos++)
 	{
-		if (file_data[end_pos] == 0x0a)
+		BYTE cCurChar = file_data[end_pos];
+		if (0x0a == cCurChar || 0x0d == cCurChar)
 		{
 			//string from start_pos to end_pos
 			std::string str(file_data + start_pos, file_data + end_pos);
 			
 			start_pos = end_pos + 1;
+			if(0x0d == cCurChar && start_pos < file_size && 0x0a == file_data[start_pos])
+			{
+				end_pos++;
+				start_pos++;
+			}
 
 			result.push_back(str);
 			m_linesCount++;
@@ -78,10 +56,35 @@ const std::list<std::string> TxtFile::readAnsiOrCodePage() // == readUtf8without
 	return result;
 }
 
+const std::list<std::wstring> TxtFile::readUnicodeFromBytes(char *file_data, long file_size)
+{
+    std::list<std::wstring> result;
+    long start_pos = 2;	// skip Header
+
+    for (long end_pos = start_pos; end_pos + 1 < file_size; end_pos += 2)
+    {
+        BYTE cCurChar = file_data[end_pos];
+        if (0x00 == file_data[end_pos + 1] && (0x0a == cCurChar || 0x0d == cCurChar))
+        {
+            result.push_back(NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(file_data + start_pos), (end_pos - start_pos) / 2));
+            start_pos = end_pos + 2;
+            if(0x0d == cCurChar && start_pos + 1 < file_size && 0x00 == file_data[start_pos + 1] && 0x0a == file_data[start_pos])
+            {
+                end_pos += 2;
+                start_pos += 2;
+            }
+            m_linesCount++;
+        }
+    }
+    //last
+    result.push_back(NSFile::CUtf8Converter::GetWStringFromUTF16((unsigned short*)(file_data + start_pos), (file_size - start_pos) / 2));
+    m_linesCount++;
+    return result;
+}
 
 const std::list<std::wstring> TxtFile::readUnicode()
 {
-	std::list<std::wstring> result;
+    std::list<std::wstring> result;
 	CFile file_binary;
 
 	if (file_binary.OpenFile(std_string2string(m_path)) != S_OK) return result;
@@ -93,44 +96,12 @@ const std::list<std::wstring> TxtFile::readUnicode()
 
 	file_binary.ReadFile((BYTE*)file_data, file_size);
 
-	long start_pos = 2;	// skip Header
-
-	for (long end_pos = 2; end_pos < file_size; end_pos+=2)
-	{
-		if ((((UTF16*)(file_data+end_pos))[0] == 0x000a) &&
-			((UTF16*)(file_data+end_pos))[1] == 0x000d)
-		{
-			if (sizeof(wchar_t) == 4)
-			{
-				result.push_back(convertUtf16ToWString((UTF16*)(file_data + start_pos), (end_pos-start_pos) /2));
-			}
-			else
-			{
-				std::wstring wstr((wchar_t*)(file_data + start_pos), (wchar_t*)(file_data + end_pos));
-				result.push_back(wstr);
-			}
-			start_pos = end_pos + 4;
-			m_linesCount++;
-
-		}
-	}
-//last
-	if (sizeof(wchar_t) == 4)
-	{
-		result.push_back(convertUtf16ToWString((UTF16*)(file_data + start_pos), (file_size-start_pos) /2));
-	}
-	else
-	{
-		std::wstring wstr(file_data + start_pos, file_data + file_size);
-		result.push_back(wstr);
-	}
-	m_linesCount++;
-	return result;
+    return readUnicodeFromBytes(file_data, file_size);
 }
 
 const std::list<std::wstring> TxtFile::readBigEndian()
 {
-	std::list<std::wstring> result;
+    std::list<std::wstring> result;
 	CFile file_binary;
 
 	if (file_binary.OpenFile(std_string2string(m_path)) != S_OK) return result;
@@ -142,54 +113,14 @@ const std::list<std::wstring> TxtFile::readBigEndian()
 
 	file_binary.ReadFile((BYTE*)file_data, file_size);
 
-	long start_pos = 2;	// skip Header
-
-	for (long end_pos = 2; end_pos < file_size; end_pos+=2)
-	{
-		if (((UTF16*)(file_data+end_pos))[0] == 0x000d &&
-			((UTF16*)(file_data+end_pos))[1] == 0x000a)
-		{
-			//swap bytes
-			for (long i = start_pos; i < end_pos; i+=2)
-			{
-				char v			= file_data[i];
-				file_data[i]	= file_data[i+1];
-				file_data[i+1]	= v;
-			}
-
-			if (sizeof(wchar_t) == 4)
-			{
-				result.push_back(convertUtf16ToWString((UTF16*)(file_data + start_pos), (end_pos-start_pos) /2));
-			}
-			else
-			{
-				std::wstring wstr((wchar_t*)(file_data + start_pos), (wchar_t*)(file_data + end_pos));
-				result.push_back(wstr);
-			}
-			start_pos = end_pos + 4;
-			m_linesCount++;
-
-		}
-	}
-//last
-	//swap bytes
-	for (long i = start_pos; i < file_size; i+=2)
-	{
-		char v			= file_data[i];
-		file_data[i]	= file_data[i+1];
-		file_data[i+1]	= v;
-	}
-	if (sizeof(wchar_t) == 4)
-	{
-		result.push_back(convertUtf16ToWString((UTF16*)(file_data + start_pos), (file_size-start_pos) /2));
-	}
-	else
-	{
-		std::wstring wstr(file_data + start_pos, file_data + file_size);
-		result.push_back(wstr);
-	}
-	m_linesCount++;
-	return result;
+    //swap bytes
+    for (long i = 0; i < file_size; i+=2)
+    {
+        char v			= file_data[i];
+        file_data[i]	= file_data[i+1];
+        file_data[i+1]	= v;
+    }
+    return readUnicodeFromBytes(file_data, file_size);
 }
 
 
@@ -209,15 +140,20 @@ const std::list<std::string> TxtFile::readUtf8()
 
 	long start_pos = 3; //skip header
 
-	for (long end_pos = 3; end_pos < file_size; end_pos++)
+    for (long end_pos = start_pos; end_pos < file_size; end_pos++)
 	{
-		if (file_data[end_pos] == 0x0a)
+		BYTE cCurChar = file_data[end_pos];
+		if (0x0a == cCurChar || 0x0d == cCurChar)
 		{
 			//string from start_pos to end_pos
 			std::string str(file_data + start_pos, file_data + end_pos);
 			
 			start_pos = end_pos + 1;
-
+			if(0x0d == cCurChar && start_pos < file_size && 0x0a == file_data[start_pos])
+			{
+				end_pos++;
+				start_pos++;
+			}
 			result.push_back(str);
 			m_linesCount++;
 		}
@@ -228,7 +164,7 @@ const std::list<std::string> TxtFile::readUtf8()
 	return result;
 }
 
-void TxtFile::writeAnsiOrCodePage(const std::list<std::string>& content) // === writeUtf8withoutPref òàêæå
+void TxtFile::writeAnsiOrCodePage(const std::list<std::string>& content) // === writeUtf8withoutPref Ñ‚Ð°ÐºÐ¶Ðµ
 {
 	CFile file;
     if (file.CreateFile(std_string2string(m_path)) == S_OK)

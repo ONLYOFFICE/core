@@ -1,4 +1,4 @@
-#include "XlsxSerializer.h"
+п»ї#include "XlsxSerializer.h"
 
 #include "../../DesktopEditor/common/Directory.h"
 #include "../../DesktopEditor/common/File.h"
@@ -25,35 +25,26 @@ namespace BinXlsxRW{
         OOX::CPath pathMediaDir = sDstPath + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + _T("media");
 		OOX::CPath pathEmbedDir = sDstPath + FILE_SEPARATOR_STR + _T("xl") + FILE_SEPARATOR_STR + _T("embeddings");
 		
-		// File Type (Можно парсить не два раза, а один, если передавать в ReadFile не опции, а параметры)
-		BYTE fileType;
-		UINT nCodePage;
-		WCHAR wcDelimiter;
-		BYTE saveFileType;
-		SerializeCommon::ReadFileType(sXmlOptions, fileType, nCodePage, wcDelimiter, saveFileType);
+        //СЃРѕР·РґР°РІР°С‚СЊ РїР°РїРєСѓ РЅР°РґРѕ РґР°Р¶Рµ РїСЂРё СЃРѕС…СЂР°РЅРµРЅРёРё РІ csv, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РєРѕРіРґР° С‡РёС‚Р°РµРј РёР· Р±РёРЅР°СЂРЅРёРєР° С‚РµРјСѓ, РѕРЅР° Р·Р°РїРёСЃС‹РІР°РµС‚СЃСЏ РІ С„Р°Р№Р».
+        OOX::CPath pathXlDir = sDstPath + FILE_SEPARATOR_STR + _T("xl");
 
-		if (c_oFileTypes::CSV != fileType)
-		{
-            OOX::CPath pathXlDir = sDstPath + FILE_SEPARATOR_STR + _T("xl");
+        OOX::CPath pathThemeDir = pathXlDir + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
 
-			OOX::CPath pathThemeDir = pathXlDir + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath();
-			
-			OOX::CPath pathThemeFile = pathThemeDir + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultFileName().GetPath();
-			
-            OOX::CPath pathThemeThemeRelsDir = pathThemeDir + FILE_SEPARATOR_STR + _T("_rels");
+        OOX::CPath pathThemeFile = pathThemeDir + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultFileName().GetPath();
 
-			NSDirectory::CreateDirectory(string2std_string(pathXlDir.GetPath()));
-			NSDirectory::CreateDirectory(string2std_string(pathThemeDir.GetPath()));
-			NSDirectory::CreateDirectory(string2std_string(pathThemeThemeRelsDir.GetPath()));
-			NSDirectory::CreateDirectory(string2std_string(pathMediaDir.GetPath()));
-			NSDirectory::CreateDirectory(string2std_string(pathEmbedDir.GetPath()));
+        OOX::CPath pathThemeThemeRelsDir = pathThemeDir + FILE_SEPARATOR_STR + _T("_rels");
 
-			//Create Default Theme
-			{
-				Writers::DefaultThemeWriter oDefaultThemeWriter;
-				oDefaultThemeWriter.Write(pathThemeFile.GetPath());
-			}
-		}
+        NSDirectory::CreateDirectory(string2std_string(pathXlDir.GetPath()));
+        NSDirectory::CreateDirectory(string2std_string(pathThemeDir.GetPath()));
+        NSDirectory::CreateDirectory(string2std_string(pathThemeThemeRelsDir.GetPath()));
+        NSDirectory::CreateDirectory(string2std_string(pathMediaDir.GetPath()));
+        NSDirectory::CreateDirectory(string2std_string(pathEmbedDir.GetPath()));
+
+        //Create Default Theme
+        {
+            Writers::DefaultThemeWriter oDefaultThemeWriter;
+            oDefaultThemeWriter.Write(pathThemeFile.GetPath());
+        }
 
 		sMediaPath = pathMediaDir.GetPath();
 		sEmbedPath = pathEmbedDir.GetPath();
@@ -64,7 +55,7 @@ namespace BinXlsxRW{
 		oOfficeDrawingConverter.SetMediaDstPath(sMediaDir);
 		oOfficeDrawingConverter.SetEmbedDstPath(sEmbedDir);
 
-		//папка с бинарников
+		//РїР°РїРєР° СЃ Р±РёРЅР°СЂРЅРёРєРѕРІ
 		std::wstring strFileInDir = NSSystemPath::GetDirectoryName(string2std_string(sSrcFileName));
 		CString sFileInDir = strFileInDir.c_str();
 
@@ -99,17 +90,17 @@ namespace BinXlsxRW{
 			pFontPicker->SetEmbeddedFontsDirectory(m_sEmbeddedFontsDir);
 			pEmbeddedFontsManager = pFontPicker->GetNativeCutter();
 
-			//добавим мега шрифт
+			//РґРѕР±Р°РІРёРј РјРµРіР° С€СЂРёС„С‚
 			pEmbeddedFontsManager->CheckFont(_T("Wingdings 3"), pFontManager);
 			pEmbeddedFontsManager->CheckFont(_T("Arial"), pFontManager);
-			//pEmbeddedFontsManager добавляются все цифры
-			//для заголовков
+			//pEmbeddedFontsManager РґРѕР±Р°РІР»СЏСЋС‚СЃСЏ РІСЃРµ С†РёС„СЂС‹
+			//РґР»СЏ Р·Р°РіРѕР»РѕРІРєРѕРІ
 			pEmbeddedFontsManager->CheckFont(_T("Calibri"), pFontManager);
 			pEmbeddedFontsManager->CheckString(CString(_T("ABCDEFGHIJKLMNOPQRSTUVWXYZ")));
 
-			//дополнение для ошибок "#NULL!", "#DIV/0!"...
+			//РґРѕРїРѕР»РЅРµРЅРёРµ РґР»СЏ РѕС€РёР±РѕРє "#NULL!", "#DIV/0!"...
 			pEmbeddedFontsManager->CheckString(CString(_T("#!/?")));
-			//дополнение для num форматов по умолчанию с id от 0 до 49
+			//РґРѕРїРѕР»РЅРµРЅРёРµ РґР»СЏ num С„РѕСЂРјР°С‚РѕРІ РїРѕ СѓРјРѕР»С‡Р°РЅРёСЋ СЃ id РѕС‚ 0 РґРѕ 49
 			pEmbeddedFontsManager->CheckString(CString(_T(".%E+-():")));
 		}
 
@@ -127,7 +118,7 @@ namespace BinXlsxRW{
 	bool CXlsxSerializer::loadChart(CString& sChartPath, NSBinPptxRW::CBinaryFileWriter& oBufferedStream, long& lDataSize)
 	{
 		bool bRes = false;
-		//todo передать нормальный oRootPath
+		//todo РїРµСЂРµРґР°С‚СЊ РЅРѕСЂРјР°Р»СЊРЅС‹Р№ oRootPath
 		OOX::CPath oRootPath;
 		OOX::Spreadsheet::CChartSpace oChart(oRootPath, sChartPath);
 		if(NULL != m_pExternalDrawingConverter)
@@ -157,7 +148,7 @@ namespace BinXlsxRW{
 		{
 			m_pExternalDrawingConverter->SetDstContentRels();
 
-			//получаем sThemePath из bsFilename предполагая что папка theme находится на уровень выше bsFilename
+			//РїРѕР»СѓС‡Р°РµРј sThemePath РёР· bsFilename РїСЂРµРґРїРѕР»Р°РіР°СЏ С‡С‚Рѕ РїР°РїРєР° theme РЅР°С…РѕРґРёС‚СЃСЏ РЅР° СѓСЂРѕРІРµРЅСЊ РІС‹С€Рµ bsFilename
 			CString sThemePath;
 			CString sFilenameReverse = sFilepath;sFilenameReverse.MakeReverse();
 			

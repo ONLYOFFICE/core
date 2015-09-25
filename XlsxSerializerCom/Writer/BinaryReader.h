@@ -1,4 +1,4 @@
-#ifndef BINARY_READER
+п»ї#ifndef BINARY_READER
 #define BINARY_READER
 
 #include "../../Common/Base64.h"
@@ -1633,7 +1633,7 @@ namespace BinXlsxRW {
 					sSignature.ReleaseBuffer();
 					memcpy(pWriteBuffer + nSignatureSize, &length, nDataLengthSize);
 					memcpy(pWriteBuffer + nSignatureSize + nDataLengthSize, pSourceBuffer, length);
-					//пишем в конце 0, потому что при редактировании Excel меняет посление байты.
+					//РїРёС€РµРј РІ РєРѕРЅС†Рµ 0, РїРѕС‚РѕРјСѓ С‡С‚Рѕ РїСЂРё СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРё Excel РјРµРЅСЏРµС‚ РїРѕСЃР»РµРЅРёРµ Р±Р°Р№С‚С‹.
 					memset(pWriteBuffer + nSignatureSize + nDataLengthSize + length, 0, nJunkSize);
 
 					int nBase64BufferLen = Base64::Base64EncodeGetRequiredLength(nWriteBufferLength, Base64::B64_BASE64_FLAG_NONE);
@@ -1644,7 +1644,7 @@ namespace BinXlsxRW {
                     {
 						std::wstring strGfxdata = NSFile::CUtf8Converter::GetUnicodeStringFromUTF8(pbBase64Buffer, nBase64BufferLen);
 						sGfxdata = CString(strGfxdata.c_str());
-						//важно иначе при редактировании и сохранении в Excel перетирается
+						//РІР°Р¶РЅРѕ РёРЅР°С‡Рµ РїСЂРё СЂРµРґР°РєС‚РёСЂРѕРІР°РЅРёРё Рё СЃРѕС…СЂР°РЅРµРЅРёРё РІ Excel РїРµСЂРµС‚РёСЂР°РµС‚СЃСЏ
 						sGfxdata.Append(_T("\r\n"));
 					}
 					RELEASEARRAYOBJECTS(pbBase64Buffer);
@@ -2473,7 +2473,7 @@ namespace BinXlsxRW {
 			int res = c_oSerConstants::ReadOk;
 			if(c_oSer_DrawingType::Chart2 == type)
 			{
-				//создаем папку для rels
+				//СЃРѕР·РґР°РµРј РїР°РїРєСѓ РґР»СЏ rels
                 OOX::CPath pathChartsDir = m_sDestinationDir + FILE_SEPARATOR_STR  + _T("xl")  + FILE_SEPARATOR_STR + _T("charts");
 				OOX::CSystemUtility::CreateDirectories(pathChartsDir.GetPath());
 
@@ -2693,7 +2693,7 @@ namespace BinXlsxRW {
 			{
 				OOX::Spreadsheet::CCell* pCell = new OOX::Spreadsheet::CCell();
 				res = Read1(length, &BinaryWorksheetsTableReader::ReadCell, this, pCell);
-				//текст error и формул пишем
+				//С‚РµРєСЃС‚ error Рё С„РѕСЂРјСѓР» РїРёС€РµРј
 				if(NULL != m_pSharedStrings && pCell->m_oType.IsInit() && pCell->m_oValue.IsInit())
 				{
 					SimpleTypes::Spreadsheet::ECellTypeType eCellType = pCell->m_oType->GetValue();
@@ -2900,7 +2900,7 @@ namespace BinXlsxRW {
 				res = Read1(length, &BinaryOtherTableReader::ReadMediaContent, this, poResult);
 			else if(c_oSer_OtherType::Theme == type)
 			{
-                CString sThemePath;sThemePath.Format(_T("%ls/%ls"), m_oSaveParams.sThemePath, OOX::FileTypes::Theme.DefaultFileName().GetPath());
+				CString sThemePath = m_oSaveParams.sThemePath + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultFileName().GetPath();
 				long nCurPos = m_oBufferedStream.GetPos();
 				m_pOfficeDrawingConverter->SaveThemeXml(nCurPos, length, sThemePath);
 				m_oBufferedStream.Seek(nCurPos + length);
@@ -2963,7 +2963,7 @@ namespace BinXlsxRW {
                         sImageSrc = m_sFileInDir + _T("media/") + sImage;
 					}
 				}
-				//Проверяем что файл существует
+				//РџСЂРѕРІРµСЂСЏРµРј С‡С‚Рѕ С„Р°Р№Р» СЃСѓС‰РµСЃС‚РІСѓРµС‚
 				FILE* pFileNative = oFile.GetFileNative();
 				if(NULL != pFileNative)
 				{
@@ -3039,7 +3039,7 @@ namespace BinXlsxRW {
 					oFile.ReadFile(pBase64Data, oFile.GetFileSize(), nBase64DataSize);
 					oFile.CloseFile();
 
-					//проверяем формат
+					//РїСЂРѕРІРµСЂСЏРµРј С„РѕСЂРјР°С‚
 					bool bValidFormat = false;
 					CString sSignature(g_sFormatSignature);
 					int nSigLength = sSignature.GetLength();
@@ -3053,7 +3053,7 @@ namespace BinXlsxRW {
 					}
 					if(bValidFormat)
 					{
-						//Читаем из файла версию и длину base64
+						//Р§РёС‚Р°РµРј РёР· С„Р°Р№Р»Р° РІРµСЂСЃРёСЋ Рё РґР»РёРЅСѓ base64
 						int nIndex = nSigLength;
 						int nType = 0;
 						CStringA version = "";
@@ -3105,9 +3105,9 @@ namespace BinXlsxRW {
 							WCHAR wcDelimiter;
 							BYTE saveFileType;
 							SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, wcDelimiter, saveFileType);
-							// Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
+							// Р”РµР»Р°РµРј РґР»СЏ CSV РїРµСЂРµР±РёРІРєСѓ РїСѓС‚Рё, РёРЅР°С‡Рµ СЃРѕР·РґР°РµС‚СЃСЏ РїР°РїРєР° СЃ РѕРґРёРЅР°РєРѕРІС‹Рј РёРјРµРµРј (РґР»СЏ rels) Рё С„Р°Р№Р» РЅРµ СЃРѕР·РґР°РµС‚СЃСЏ.
 							if (BinXlsxRW::c_oFileTypes::CSV == fileType)
-								sDstPath += _T("Temp");
+								sDstPath = NSSystemPath::GetDirectoryName(sDstPath);
 
 							OOX::Spreadsheet::CXlsx oXlsx;
                             SaveParams oSaveParams(sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath());

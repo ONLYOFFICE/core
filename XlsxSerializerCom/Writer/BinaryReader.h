@@ -3107,7 +3107,7 @@ namespace BinXlsxRW {
 							SerializeCommon::ReadFileType(sXMLOptions, fileType, nCodePage, wcDelimiter, saveFileType);
 							// Делаем для CSV перебивку пути, иначе создается папка с одинаковым имеем (для rels) и файл не создается.
 							if (BinXlsxRW::c_oFileTypes::CSV == fileType)
-								sDstPath = NSSystemPath::GetDirectoryName(sDstPath);
+                                sDstPath = std_string2string(NSSystemPath::GetDirectoryName(string2std_string(sDstPath)));
 
 							OOX::Spreadsheet::CXlsx oXlsx;
                             SaveParams oSaveParams(sDstPath + FILE_SEPARATOR_STR + OOX::Spreadsheet::FileTypes::Workbook.DefaultDirectory().GetPath() + FILE_SEPARATOR_STR + OOX::FileTypes::Theme.DefaultDirectory().GetPath());

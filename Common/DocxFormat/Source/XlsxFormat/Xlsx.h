@@ -1,4 +1,4 @@
-#pragma once
+п»ї#pragma once
 #ifndef OOX_XLSX_INCLUDE_H_
 #define OOX_XLSX_INCLUDE_H_
 
@@ -62,13 +62,13 @@ namespace OOX
 
                         bool Read(const CPath& oFilePath)
 			{
-                            // Ищем "/_rels/.rels" и читаем все файлы по рельсам
+                            // РС‰РµРј "/_rels/.rels" Рё С‡РёС‚Р°РµРј РІСЃРµ С„Р°Р№Р»С‹ РїРѕ СЂРµР»СЊСЃР°Рј
                             OOX::CRels oRels( oFilePath / FILE_SEPARATOR_STR );
                             IFileContainer::Read( oRels, oFilePath, oFilePath );
 
-                            // Выполняем дополнительные действия для более удобной работы с файлом
+                            // Р’С‹РїРѕР»РЅСЏРµРј РґРѕРїРѕР»РЅРёС‚РµР»СЊРЅС‹Рµ РґРµР№СЃС‚РІРёСЏ РґР»СЏ Р±РѕР»РµРµ СѓРґРѕР±РЅРѕР№ СЂР°Р±РѕС‚С‹ СЃ С„Р°Р№Р»РѕРј
 
-                            // Ищем основной документ
+                            // РС‰РµРј РѕСЃРЅРѕРІРЅРѕР№ РґРѕРєСѓРјРµРЅС‚
                             smart_ptr<OOX::File> pFile = Find(OOX::Spreadsheet::FileTypes::Workbook);
                             if (pFile.IsInit() && OOX::Spreadsheet::FileTypes::Workbook == pFile->type())
                                 m_pWorkbook = (OOX::Spreadsheet::CWorkbook*)pFile.operator->();
@@ -287,7 +287,7 @@ namespace OOX
 					pWorkbookView->m_oWindowHeight->SetValue(12585);
 					m_pWorkbook->m_oBookViews->m_arrItems.push_back(pWorkbookView);
 				}
-				//добавляем sheet, если нет ни одного
+				//РґРѕР±Р°РІР»СЏРµРј sheet, РµСЃР»Рё РЅРµС‚ РЅРё РѕРґРЅРѕРіРѕ
 				if (m_aWorksheets.empty())
 				{
 					OOX::Spreadsheet::CWorksheet* pWorksheet = new OOX::Spreadsheet::CWorksheet();
@@ -330,7 +330,7 @@ namespace OOX
 					pSheet->m_oRid->SetValue(oRId.ToString());
 					m_pWorkbook->m_oSheets->m_arrItems.push_back(pSheet);
 				}
-				//делаем так чтобы всегда были нулевые стили и первый font всегда имел шрифт и размер
+				//РґРµР»Р°РµРј С‚Р°Рє С‡С‚РѕР±С‹ РІСЃРµРіРґР° Р±С‹Р»Рё РЅСѓР»РµРІС‹Рµ СЃС‚РёР»Рё Рё РїРµСЂРІС‹Р№ font РІСЃРµРіРґР° РёРјРµР» С€СЂРёС„С‚ Рё СЂР°Р·РјРµСЂ
 				if(NULL != m_pStyles )
 				{
 					//Fonts
@@ -397,12 +397,12 @@ namespace OOX
 						pXfs->m_oNumFmtId->SetValue(0);
 					}
 				}
-				//переносим теги <is> и ячейки с типом str в sharedString
+				//РїРµСЂРµРЅРѕСЃРёРј С‚РµРіРё <is> Рё СЏС‡РµР№РєРё СЃ С‚РёРїРѕРј str РІ sharedString
 				for (std::map<CString, CWorksheet*>::const_iterator it = m_aWorksheets.begin(); it != m_aWorksheets.end(); ++it)
 				{
 					PrepareWorksheet(it->second);
 				}
-				//todo парсим даты в формате iso 8601
+				//todo РїР°СЂСЃРёРј РґР°С‚С‹ РІ С„РѕСЂРјР°С‚Рµ iso 8601
 			}
 		private:
 			void PrepareWorksheet(CWorksheet* pWorksheet)
@@ -428,10 +428,10 @@ namespace OOX
 									if(NULL != pSi)
 									{
 										int nIndex = pSharedStrings->AddSi(pSi);
-										//меняем значение ячейки
+										//РјРµРЅСЏРµРј Р·РЅР°С‡РµРЅРёРµ СЏС‡РµР№РєРё
 										pCell->m_oValue.Init();
 										pCell->m_oValue->m_sText.Format(_T("%d"), nIndex);
-										//меняем тип ячейки
+										//РјРµРЅСЏРµРј С‚РёРї СЏС‡РµР№РєРё
 										pCell->m_oType.Init();
 										pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
 									}
@@ -444,20 +444,34 @@ namespace OOX
 									CString sValue;
 									if(pCell->m_oValue.IsInit())
 										sValue = pCell->m_oValue->ToString();
-									//добавляем в SharedStrings
+									//РґРѕР±Р°РІР»СЏРµРј РІ SharedStrings
 									CSi* pSi = new CSi();
 									CText* pText =  new CText();
 									pText->m_sText = sValue;
 									pSi->m_arrItems.push_back(pText);
 									int nIndex = pSharedStrings->AddSi(pSi);
-									//меняем значение ячейки
+									//РјРµРЅСЏРµРј Р·РЅР°С‡РµРЅРёРµ СЏС‡РµР№РєРё
 									pCell->m_oValue.Init();
 									pCell->m_oValue->m_sText.Format(_T("%d"), nIndex);
-									//меняем тип ячейки
+									//РјРµРЅСЏРµРј С‚РёРї СЏС‡РµР№РєРё
 									if(SimpleTypes::Spreadsheet::celltypeStr == pCell->m_oType->GetValue())
 									{
 										pCell->m_oType.Init();
 										pCell->m_oType->SetValue(SimpleTypes::Spreadsheet::celltypeSharedString);
+									}
+								}
+								else if(SimpleTypes::Spreadsheet::celltypeBool == pCell->m_oType->GetValue())
+								{
+									//РѕР±С‹С‡РЅРѕ РїРёС€РµС‚СЃСЏ 1/0, РЅРѕ РІСЃС‚СЂРµС‡Р°РµС‚СЃСЏ, С‡С‚Рѕ РїРёС€СѓС‚ true/false
+									if(pCell->m_oValue.IsInit())
+									{
+										SimpleTypes::COnOff<> oOnOff;
+										oOnOff.FromString(pCell->m_oValue->ToString());
+										pCell->m_oValue.Init();
+										if(oOnOff.ToBool())
+											pCell->m_oValue->m_sText = _T("1");
+										else
+											pCell->m_oValue->m_sText = _T("0");
 									}
 								}
 							}

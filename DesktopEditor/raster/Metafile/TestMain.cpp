@@ -65,7 +65,7 @@ void ConvertFolder(CMetaFile &oMetaFile, std::wstring wsFolderPath, const int nT
 
 			double w, h, x, y;
 			oMetaFile.GetBounds(&x, &y, &w, &h);
-			oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 4, w);
+			oMetaFile.ConvertToRaster(wsDstFilePath.c_str(), 4, 500);
 			oMetaFile.Close();
 		}
 
@@ -79,7 +79,8 @@ void main()
 	oFonts.Initialize();
 
 	CMetaFile oMetaFile(&oFonts);
-	ConvertFolder(oMetaFile, L"D://test//_svm//", c_lMetaSvm);
+	//ConvertFolder(oMetaFile, L"D://Test Files//Wmf//Test//", c_lMetaWmf);
+	ConvertFolder(oMetaFile, L"D://Test Files//Emf//Temp//", c_lMetaEmf);
 
 	//_CrtSetDbgFlag(_CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF);
 	//_CrtDumpMemoryLeaks();

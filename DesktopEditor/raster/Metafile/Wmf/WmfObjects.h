@@ -97,7 +97,7 @@ namespace MetaFile
 		}
 		std::wstring GetFaceName()
 		{
-			return NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)Facename, 32);
+			return std::wstring(NSStringExt::CConverter::GetUnicodeFromSingleByteString((const unsigned char*)Facename, 32).c_str());
 		}
 		int          GetWeight()
 		{

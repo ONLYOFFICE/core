@@ -63,6 +63,7 @@ namespace MetaFile
 				if (0 == ulRecordIndex && EMR_HEADER != ulType)
 					return SetError();
 
+
 				switch (ulType)
 				{
 					//-----------------------------------------------------------
@@ -547,7 +548,7 @@ namespace MetaFile
 				return SetError();
 
 			IFont* pFont = GetFont();
-			NSStringExt::CConverter::ESingleByteEncoding eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_DEFAULT;
+			NSStringExt::CConverter::ESingleByteEncoding eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT;
 			if (pFont)
 			{
 				// Соответствие Charset -> Codepage: http://support.microsoft.com/kb/165478
@@ -577,23 +578,23 @@ namespace MetaFile
 				switch (pFont->GetCharSet())
 				{
 					default:
-					case DEFAULT_CHARSET:       eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_DEFAULT; break;
-					case SYMBOL_CHARSET:        eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_DEFAULT; break;
-					case ANSI_CHARSET:          eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1252; break;
-					case RUSSIAN_CHARSET:       eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1251; break;
-					case EASTEUROPE_CHARSET:    eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1250; break;
-					case GREEK_CHARSET:         eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1253; break;
-					case TURKISH_CHARSET:       eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1254; break;
-					case BALTIC_CHARSET:        eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1257; break;
-					case HEBREW_CHARSET:        eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1255; break;
-					case ARABIC_CHARSET:        eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1256; break;
-					case SHIFTJIS_CHARSET:      eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP932; break;
-					case HANGEUL_CHARSET:       eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP949; break;
-					case 134/*GB2313_CHARSET*/: eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP936; break;
-					case CHINESEBIG5_CHARSET:   eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP950; break;
-					case THAI_CHARSET:          eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP874; break;
-					case JOHAB_CHARSET:         eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1361; break;
-					case VIETNAMESE_CHARSET:    eCharSet = NSStringExt::CConverter::SINGLE_BYTE_ENCODING_CP1258; break;
+					case DEFAULT_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
+					case SYMBOL_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_DEFAULT; break;
+					case ANSI_CHARSET:          eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1252; break;
+					case RUSSIAN_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1251; break;
+					case EASTEUROPE_CHARSET:    eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1250; break;
+					case GREEK_CHARSET:         eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1253; break;
+					case TURKISH_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1254; break;
+					case BALTIC_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1257; break;
+					case HEBREW_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1255; break;
+					case ARABIC_CHARSET:        eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1256; break;
+					case SHIFTJIS_CHARSET:      eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP932; break;
+					case HANGEUL_CHARSET:       eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP949; break;
+					case 134/*GB2313_CHARSET*/: eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP936; break;
+					case CHINESEBIG5_CHARSET:   eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP950; break;
+					case THAI_CHARSET:          eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP874; break;
+					case JOHAB_CHARSET:         eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1361; break;
+					case VIETNAMESE_CHARSET:    eCharSet = NSStringExt::CConverter::ESingleByteEncoding::SINGLE_BYTE_ENCODING_CP1258; break;
 				}
 			}
 
@@ -628,24 +629,64 @@ namespace MetaFile
 
 			std::wstring wsText = NSStringExt::CConverter::GetUnicodeFromUTF16((unsigned short*)oText.OutputString, oText.Chars);
 
+			unsigned int unLen = 0;
 			int* pDx = NULL;
-			if (oText.OutputDx)
+			if (oText.OutputDx && oText.Chars)
 			{
+				// Здесь мы эмулируем конвертацию Utf16 в Utf32, чтобы правильно получить массив pDx
 				pDx = new int[oText.Chars];
-				if (pDx)
+				unLen = 0;
+
+				unsigned short* pUtf16 = (unsigned short*)oText.OutputString;
+				wchar_t wLeading, wTrailing;
+				unsigned int unCode;
+				unsigned int unPos = 0;
+				while (unPos < oText.Chars)
 				{
-					for (unsigned int unIndex = 0; unIndex < oText.Chars; unIndex++)
+					wLeading = pUtf16[unPos++];
+					if (wLeading < 0xD800 || wLeading > 0xDFFF)
 					{
-						pDx[unIndex] = oText.OutputDx[unIndex];
+						pDx[unLen++] = oText.OutputDx[unPos - 1];
+					}
+					else if (wLeading >= 0xDC00)
+					{
+						// Такого не должно быть
+						continue;
+					}
+					else
+					{
+						unCode = (wLeading & 0x3FF) << 10;
+						wTrailing = pUtf16[unPos++];
+						if (wTrailing < 0xDC00 || wTrailing > 0xDFFF)
+						{
+							// Такого не должно быть
+							continue;
+						}
+						else
+						{
+							pDx[unLen++] = oText.OutputDx[unPos - 2] + oText.OutputDx[unPos - 1];
+						}
 
 						// Пропускаем сдвиги по Y если они есть
 						if (oText.Options & ETO_PDY)
-							unIndex++;
+							unPos++;
 					}
+
+					// Пропускаем сдвиги по Y если они есть
+					if (oText.Options & ETO_PDY)
+						unPos++;
 				}
 			}
+			else
+			{
+				unLen = 0;
+				unsigned int* pUnicodes = NSStringExt::CConverter::GetUtf32FromUnicode(wsText, unLen);
+				if (pUnicodes)
+					delete[] pUnicodes;
+			}
 
-			DrawText(wsText, oText.Chars, oText.Reference.x, oText.Reference.y, pDx);
+			if (unLen)
+				DrawText(wsText, unLen, oText.Reference.x, oText.Reference.y, pDx);
 
 			if (pDx)
 				delete[] pDx;

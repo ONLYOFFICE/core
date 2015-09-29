@@ -2,13 +2,8 @@
 
 #include "Record.h"
 #include "../../../ASCOfficeUtils/ASCOfficeUtilsLib/OfficeUtils.h"
+#include "../../../Common/DocxFormat/Source/Base/Types_32.h"
 
-//#if defined(_WIN32) || defined(_WIN64)
-//	#include <atlcoll.h>
-//	#include <gdiplus.h>
-//#else
-//    #include "../../../ASCOfficePPTXFile/PPTXLib/Linux/PPTXFormatLib/linux_gdiplus.h"
-//#endif
 
 namespace DocFileFormat
 {
@@ -22,11 +17,11 @@ typedef struct
 
 typedef struct
 {
-    DWORD           Key;            // GDIP_WMF_PLACEABLEKEY
+    _UINT32         Key;            // GDIP_WMF_PLACEABLEKEY
     short           Hmf;            // Metafile HANDLE number (always 0)
     PWMFRect16      BoundingBox;    // Coordinates in metafile units
     short           Inch;           // Number of metafile units per inch
-    DWORD           Reserved;       // Reserved (always 0)
+    _UINT32         Reserved;       // Reserved (always 0)
     short           Checksum;       // Checksum value for previous 10 WORDs
 } WmfPlaceableFileHeader;
 

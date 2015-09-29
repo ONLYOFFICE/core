@@ -14,20 +14,20 @@ namespace DocFileFormat
 {
 typedef struct
 {
-    INT16           Left;
-    INT16           Top;
-    INT16           Right;
-    INT16           Bottom;
+    short           Left;
+    short           Top;
+    short           Right;
+    short           Bottom;
 } PWMFRect16;
 
 typedef struct
 {
-    UINT32          Key;            // GDIP_WMF_PLACEABLEKEY
-    INT16           Hmf;            // Metafile HANDLE number (always 0)
+    DWORD           Key;            // GDIP_WMF_PLACEABLEKEY
+    short           Hmf;            // Metafile HANDLE number (always 0)
     PWMFRect16      BoundingBox;    // Coordinates in metafile units
-    INT16           Inch;           // Number of metafile units per inch
-    UINT32          Reserved;       // Reserved (always 0)
-    INT16           Checksum;       // Checksum value for previous 10 WORDs
+    short           Inch;           // Number of metafile units per inch
+    DWORD           Reserved;       // Reserved (always 0)
+    short           Checksum;       // Checksum value for previous 10 WORDs
 } WmfPlaceableFileHeader;
 
 class CMetaHeader

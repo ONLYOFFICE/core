@@ -196,7 +196,7 @@ bool COfficeFileFormatChecker::isOfficeFile(const std::wstring & fileName)
         }
         else if (isFB2FormatFile(buffer,sizeRead) )
         {
-            nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_HTML;
+            nFileType = AVS_OFFICESTUDIO_FILE_DOCUMENT_FB2;
         }
         else if (isPdfFormatFile(buffer,sizeRead) )
         {

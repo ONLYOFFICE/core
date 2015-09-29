@@ -28,6 +28,7 @@ namespace MetaFile
 };
 
 class CFontManager;
+class CApplicationFonts;
 
 namespace Aggplus
 {
@@ -79,7 +80,7 @@ namespace NSHtmlRenderer
 
 	public:
 
-		CASCImage();
+		CASCImage(CApplicationFonts *pAppFonts);
 		~CASCImage();
 
 	private:

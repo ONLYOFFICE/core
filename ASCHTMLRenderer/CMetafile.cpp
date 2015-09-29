@@ -143,10 +143,9 @@ namespace NSHtmlRenderer
 			pRenderer->get_PenAlpha( &oPen.Alpha );
 			pRenderer->get_PenColor( &oPen.Color );
 
-
-			NSHtmlRenderer::CASCImage oImage;
-			//todo font manager
-			oImage.put_FontManager(NULL);
+            //todo font manager
+            CApplicationFonts *pAppFonts = NULL;
+            NSHtmlRenderer::CASCImage oImage(pAppFonts);
 
 			oImage.LoadFromFile( strFile );
 			oImage.DrawOnRenderer( pRenderer, dX, dY, dW, dH );

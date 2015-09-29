@@ -325,6 +325,7 @@ HRESULT CPPTXFile::OpenDirectoryToPPTY(BSTR bsInput, BSTR bsOutput)
 	oBinaryWriter.m_strMainFolder = pathDstFileOutput.GetDirectory();
 
  	oBinaryWriter.m_pCommon->m_pImageManager->m_strDstMedia = m_strMediaDirectory;
+	oBinaryWriter.m_pCommon->m_pImageManager->SetFontManager(oBinaryWriter.m_pCommon->m_pNativePicker->m_pFontManager);
 
     FileSystem::Directory::CreateDirectory(m_strMediaDirectory);
 

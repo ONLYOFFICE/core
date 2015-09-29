@@ -11,9 +11,9 @@
 
 namespace NSHtmlRenderer
 {
-	CASCImage::CASCImage()
+    CASCImage::CASCImage(CApplicationFonts *pAppFonts)
 	{
-		m_pMetafile		= new MetaFile::CMetaFile(NULL);
+        m_pMetafile		= new MetaFile::CMetaFile(pAppFonts);
 		m_pMediaData	= NULL;
 
         m_bLoadOnlyMeta = false;
@@ -225,13 +225,6 @@ namespace NSHtmlRenderer
 	CFontManager* CASCImage::get_FontManager()
 	{
 		return m_pMetafile->get_FontManager();
-	}
-	void CASCImage::put_FontManager(CFontManager* pManager)
-	{
-		if (pManager == NULL) return;
-
-		RELEASEOBJECT(m_pMetafile);
-		m_pMetafile = new MetaFile::CMetaFile(pManager->m_pApplication);
 	}
 
 	Aggplus::CImage* CASCImage::get_BitmapImage()

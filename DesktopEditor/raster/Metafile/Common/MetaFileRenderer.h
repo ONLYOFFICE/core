@@ -304,14 +304,20 @@ namespace MetaFile
 			}
 			else
 			{
-				double dOffset = 0;
-				double dKoefX = m_dScaleX;
-				for (unsigned int unCharIndex = 0; unCharIndex < unCharsCount; unCharIndex++)
+				unsigned int unUnicodeLen = 0;
+				unsigned int* pUnicode = NSStringExt::CConverter::GetUtf32FromUnicode(wsText, unUnicodeLen);
+				if (pUnicode && unUnicodeLen)
 				{
-					std::wstring wsChar;
-					wsChar += wsText.at(unCharIndex);
-                    m_pRenderer->CommandDrawText(wsChar, dX + dOffset, dY, 0, 0);
-					dOffset += (pDx[unCharIndex] * dKoefX);
+					double dOffset = 0;
+					double dKoefX = m_dScaleX;
+					for (unsigned int unCharIndex = 0; unCharIndex < unUnicodeLen; unCharIndex++)
+					{
+						std::wstring wsChar = NSStringExt::CConverter::GetUnicodeFromUTF32(&*(pUnicode + unCharIndex), 1);
+						m_pRenderer->CommandDrawText(wsChar, dX + dOffset, dY, 0, 0);
+						dOffset += (pDx[unCharIndex] * dKoefX);
+					}
+
+					delete[] pUnicode;
 				}
 			}
 			

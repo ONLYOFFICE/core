@@ -107,7 +107,7 @@ namespace MetaFile
 		}
 		std::wstring GetFaceName()
 		{
-			return NSFile::CUtf8Converter::GetWStringFromUTF16(LogFontEx.LogFont.FaceName, 32);
+			return std::wstring(NSFile::CUtf8Converter::GetWStringFromUTF16(LogFontEx.LogFont.FaceName, 32).c_str());
 		}
 		int          GetWeight()
 		{

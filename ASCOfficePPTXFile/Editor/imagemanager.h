@@ -561,8 +561,8 @@ namespace NSShapeImageGen
 					}
 					if (bIsSuccess == false)
 					{
-						NSHtmlRenderer::CASCImage oImage;
-						oImage.put_FontManager(m_pFontManager);
+						CApplicationFonts *pAppFonts = (NULL != m_pFontManager) ? m_pFontManager->m_pApplication : NULL;
+						NSHtmlRenderer::CASCImage oImage(pAppFonts);
 
 						oImage.LoadFromFile(std::wstring(strFileName.GetString()));
 

@@ -149,8 +149,8 @@ namespace NSWMFToImageConverter
 			pRenderer->get_PenAlpha( &pen_Alpha );
 			pRenderer->get_PenColor( &pen_Color );
 
-			NSHtmlRenderer::CASCImage oASCImage;
-			oASCImage.put_FontManager(m_pFontManager);
+			CApplicationFonts *pAppFonts = (NULL != m_pFontManager) ? m_pFontManager->m_pApplication : NULL;
+			NSHtmlRenderer::CASCImage oASCImage(pAppFonts);
 
 			oASCImage.LoadFromFile( strFile );
 

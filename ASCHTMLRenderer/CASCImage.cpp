@@ -226,6 +226,10 @@ namespace NSHtmlRenderer
 	{
 		return m_pMetafile->get_FontManager();
 	}
+	void CASCImage::put_FontManager(CFontManager* pManager)
+	{
+		//ничего не делаем, потому что CFontManager пришел в конструкторе.
+	}
 
 	Aggplus::CImage* CASCImage::get_BitmapImage()
 	{

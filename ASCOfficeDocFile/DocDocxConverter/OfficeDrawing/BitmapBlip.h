@@ -12,6 +12,8 @@ namespace DocFileFormat
 		static const unsigned short TYPE_CODE_0xF01F = 0xF01F;
 		static const unsigned short TYPE_CODE_0xF020 = 0xF020;
 		static const unsigned short TYPE_CODE_0xF021 = 0xF021;
+		static const unsigned short TYPE_CODE_0xF02A = 0xF02A;
+		static const unsigned short TYPE_CODE_0xF029 = 0xF029;
 
 	public:
 		BitmapBlip() : Record(), m_rgbUid(NULL), m_rgbUidPrimary(NULL), m_bTag(0), m_pvBits(NULL)

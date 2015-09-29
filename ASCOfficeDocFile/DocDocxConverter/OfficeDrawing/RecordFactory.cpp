@@ -83,17 +83,20 @@ namespace DocFileFormat
 			return new BlipStoreEntry();
 			break;
 
-		case BitmapBlip::TYPE_CODE_0xF01D:
-		case BitmapBlip::TYPE_CODE_0xF01E:
-		case BitmapBlip::TYPE_CODE_0xF01F:
-		case BitmapBlip::TYPE_CODE_0xF020:
-		case BitmapBlip::TYPE_CODE_0xF021:
+		case BitmapBlip::TYPE_CODE_0xF01D:				//OfficeArtBlipJPEG
+		case BitmapBlip::TYPE_CODE_0xF01E:				//OfficeArtBlipPNG
+		case BitmapBlip::TYPE_CODE_0xF01F:				//OfficeArtBlipDIB
+		case BitmapBlip::TYPE_CODE_0xF020:				//??
+		case BitmapBlip::TYPE_CODE_0xF021:				//??
+		case BitmapBlip::TYPE_CODE_0xF029:				//OfficeArtBlipTIFF
+		case BitmapBlip::TYPE_CODE_0xF02A:				//OfficeArtBlipJPEG
 			return new BitmapBlip();
 			break;
 
-		case MetafilePictBlip::TYPE_CODE_0xF01A:
-		case MetafilePictBlip::TYPE_CODE_0xF01B:
-		case MetafilePictBlip::TYPE_CODE_0xF01C			:	return new MetafilePictBlip();				break;
+		case MetafilePictBlip::TYPE_CODE_0xF01A:			//OfficeArtBlipEMF
+		case MetafilePictBlip::TYPE_CODE_0xF01B:			//OfficeArtBlipWMF
+		case MetafilePictBlip::TYPE_CODE_0xF01C			:	//OfficeArtBlipPICT
+															return new MetafilePictBlip();				break;
 
 		case DrawingGroup::TYPE_CODE_0xF000				:	return new DrawingGroup();					break;
 		case DrawingGroupRecord::TYPE_CODE_0xF006		:	return new DrawingGroupRecord();			break;

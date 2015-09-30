@@ -37,6 +37,8 @@ namespace DocFileFormat
 
 			bool isContainer				=	( version == 0xF );
 
+			if (typeCode == 0x01f6) return NULL;	//орг диаграмм
+
 			Record* pRecord					=	NewRecord (typeCode);
 			if (pRecord)
 			{

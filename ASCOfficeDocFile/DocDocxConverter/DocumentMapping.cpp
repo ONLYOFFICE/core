@@ -471,9 +471,11 @@ namespace DocFileFormat
 					int cpFieldEnd = searchNextTextMark( m_document->Text, cpFieldStart, TextMark::FieldEndMark );
 					
 					std::wstring f( ( m_document->Text->begin() + cpFieldStart ), ( m_document->Text->begin() + cpFieldEnd + 1 ) );
-					std::wstring embed( _T( " EMBED" ) );
-					std::wstring link( _T( " LINK" ) );
-					std::wstring form( _T( " FORM" ) );
+					std::wstring embed	( _T( " EMBED" ) );
+					std::wstring link	( _T( " LINK" ) );
+					std::wstring form	( _T( " FORM" ) );
+					std::wstring excel	( _T( " Excel" ) );
+					std::wstring mergeformat	( _T( " MERGEFORMAT" ) );
 
 					if ( search( f.begin(), f.end(), form.begin(), form.end() ) != f.end() )
 					{
@@ -498,7 +500,8 @@ namespace DocFileFormat
 
 						this->_fldCharCounter++;
 					}
-					else if ((search(f.begin(), f.end(), embed.begin(), embed.end()) != f.end()) || (search( f.begin(), f.end(), link.begin(), link.end() ) != f.end()))
+					else if ((search(f.begin(), f.end(), mergeformat.begin(), mergeformat.end()) != f.end()) ||
+						(search(f.begin(), f.end(), excel.begin(), excel.end()) != f.end()))
 					{
 						int cpPic		=	searchNextTextMark(m_document->Text, cpFieldStart, TextMark::Picture);
 						int cpFieldSep	=	searchNextTextMark(m_document->Text, cpFieldStart, TextMark::FieldSeparator);
@@ -508,7 +511,57 @@ namespace DocFileFormat
 							int fcPic = m_document->m_PieceTable->FileCharacterPositions->operator []( cpPic );
 							list<CharacterPropertyExceptions*>* chpxs	=	m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
 							CharacterPropertyExceptions* chpxPic		=	chpxs->front();
-							PictureDescriptor pic(chpxPic, m_document->DataStream);
+							//PictureDescriptor pic(chpxPic, m_document->DataStream, cpFieldEnd - cpPic );
+
+							RevisionData oData = RevisionData(chpxPic);
+
+							/// <w:rPr>
+							CharacterPropertiesMapping* rPr = new CharacterPropertiesMapping(m_pXmlWriter, m_document, &oData, _lastValidPapx, false);
+							if(rPr)
+							{
+								chpxPic->Convert(rPr);
+								RELEASEOBJECT(rPr);
+							}
+
+							m_pXmlWriter->WriteNodeBegin (_T( "w:object" ), TRUE);
+
+							//append the origin attributes
+							m_pXmlWriter->WriteAttribute( _T( "w:dxaOrig" ), FormatUtils::IntToWideString( 0 ).c_str() ); 
+							m_pXmlWriter->WriteAttribute( _T( "w:dyaOrig" ), FormatUtils::IntToWideString( 0 ).c_str() ); 
+							m_pXmlWriter->WriteNodeEnd( _T( "" ), TRUE, FALSE );
+
+							VMLPictureMapping oVmlMapper (m_context, m_pXmlWriter, true, _caller);
+							//pic.Convert(&oVmlMapper);
+							RELEASEOBJECT(chpxs);
+
+							if ( cpFieldSep < cpFieldEnd )
+							{
+								int fcFieldSep = m_document->m_PieceTable->FileCharacterPositions->operator []( cpFieldSep );
+								list<CharacterPropertyExceptions*>* chpxs = m_document->GetCharacterPropertyExceptions( fcFieldSep, ( fcFieldSep + 1 ) ); 
+								CharacterPropertyExceptions* chpxSep = chpxs->front();
+								OleObject ole ( chpxSep, m_document->GetStorage() );
+								OleObjectMapping oleObjectMapping( m_pXmlWriter, m_context, NULL, _caller, oVmlMapper.GetShapeId() );
+								ole.Convert( &oleObjectMapping );
+								RELEASEOBJECT( chpxs );
+							}
+
+							m_pXmlWriter->WriteNodeEnd( _T( "w:object" ) );	
+						}
+
+						this->_skipRuns = 5;
+					}
+					else if ((search(f.begin(), f.end(), embed.begin(), embed.end()) != f.end()) || (search( f.begin(), f.end(), link.begin(), link.end() ) != f.end()))
+						
+					{
+						int cpPic		=	searchNextTextMark(m_document->Text, cpFieldStart, TextMark::Picture);
+						int cpFieldSep	=	searchNextTextMark(m_document->Text, cpFieldStart, TextMark::FieldSeparator);
+
+						if (cpPic < cpFieldEnd)
+						{
+							int fcPic = m_document->m_PieceTable->FileCharacterPositions->operator []( cpPic );
+							list<CharacterPropertyExceptions*>* chpxs	=	m_document->GetCharacterPropertyExceptions(fcPic, fcPic + 1); 
+							CharacterPropertyExceptions* chpxPic		=	chpxs->front();
+							PictureDescriptor pic(chpxPic, m_document->DataStream, cpFieldEnd - cpPic );
 
 							RevisionData oData = RevisionData(chpxPic);
 
@@ -622,7 +675,7 @@ namespace DocFileFormat
 				}
 				else if ((TextMark::Picture == c) && fSpec)
 				{
-					PictureDescriptor oPicture (chpx, m_document->DataStream);
+					PictureDescriptor oPicture (chpx, m_document->DataStream, 0x7fffffff);
 
 					if ((oPicture.mfp.mm > 98) && (NULL != oPicture.shapeContainer))
 					{

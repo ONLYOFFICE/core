@@ -740,6 +740,27 @@ namespace NSFile
 			}
 			return bRes;
 		}
+		static bool ReadAllTextUtf8A(const std::wstring&  strFileName, std::string& sData)
+		{
+			bool bRes = false;
+			BYTE* pData = NULL;
+			DWORD nDataSize;
+			if (CFileBinary::ReadAllBytes(strFileName, &pData, nDataSize))
+			{
+				//remove BOM if exist
+				BYTE* pDataStart = pData;
+				int nBOMSize = 3;
+				if (nDataSize > nBOMSize && 0xef == pDataStart[0] && 0xbb == pDataStart[1] && 0xbf == pDataStart[2])
+				{
+					pDataStart += nBOMSize;
+					nDataSize -= nBOMSize;
+				}
+				sData = std::string((char*)pDataStart, nDataSize);
+				RELEASEARRAYOBJECTS(pData);
+				bRes = true;
+			}
+			return bRes;
+		}
 		static bool SaveToFile(const std::wstring&  strFileName, const std::wstring& strXml, bool bIsBOM = false)
 		{
 			CFileBinary oFile;

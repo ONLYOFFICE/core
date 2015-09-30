@@ -54,7 +54,7 @@ namespace DocFileFormat
 	{
 		PictureDescriptor* pict = static_cast<PictureDescriptor*>(visited);
 
-		if (pict->shapeContainer || pict->blipStoreEntry)
+		if ((pict->shapeContainer || pict->blipStoreEntry) && pict->shapeContainer->Children.size() > 0)
 		{
 			Shape* shape				=	static_cast<Shape*>(*(pict->shapeContainer->Children.begin()));
 			list<OptionEntry> options	=	pict->shapeContainer->ExtractOptions();

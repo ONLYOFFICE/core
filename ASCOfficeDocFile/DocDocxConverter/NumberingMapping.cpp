@@ -446,7 +446,7 @@ namespace DocFileFormat
 
 			if ((chpxs != NULL) && (!chpxs->empty()))
 			{
-				PictureDescriptor pict(chpxs->front(), m_document->DataStream);
+				PictureDescriptor pict(chpxs->front(), m_document->DataStream, fcEnd - fc);
 
 				if ((pict.mfp.mm > 98) && (pict.shapeContainer != NULL))
 				{

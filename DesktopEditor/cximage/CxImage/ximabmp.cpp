@@ -218,7 +218,15 @@ bool CxImageBMP::Decode(CxFile * hFile)
 		case 8 :
 		case 4 :
 		case 1 :
-		if (bf.bfOffBits != 0L) hFile->Seek(off + bf.bfOffBits,SEEK_SET);
+			if (off + bf.bfOffBits < bmpHeader.biSize)
+			{
+				// ОШИБКА
+				// файлы паттерных заливок автофигур в ppt файлах !!!
+			}
+			else
+			{
+				if (bf.bfOffBits != 0L) hFile->Seek(off + bf.bfOffBits,SEEK_SET);
+			}
 		switch (dwCompression) {
 			case BI_RGB :
 				hFile->Read(info.pImage, head.biSizeImage,1); // read in the pixels

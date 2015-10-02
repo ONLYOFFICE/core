@@ -3814,6 +3814,7 @@
 					"$(PROJECT_DIR)/../../../Common/ASCDocxFormat/Source/XML",
 					"$(PROJECT_DIR)/../../../Common/ASCDocxFormat/Source",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = PPTXFormatLib_ios;
 				SDKROOT = iphoneos;
 			};
@@ -3852,6 +3853,7 @@
 					"$(PROJECT_DIR)/../../../Common/ASCDocxFormat/Source/XML",
 					"$(PROJECT_DIR)/../../../Common/ASCDocxFormat/Source",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = PPTXFormatLib_ios;
 				SDKROOT = iphoneos;
 			};

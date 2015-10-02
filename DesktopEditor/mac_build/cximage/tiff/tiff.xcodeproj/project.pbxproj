@@ -585,6 +585,7 @@
 					_LINUX,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = tiff_ios;
 				SDKROOT = iphoneos;
 			};
@@ -602,6 +603,7 @@
 					_LINUX,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = tiff_ios;
 				SDKROOT = iphoneos;
 			};

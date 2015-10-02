@@ -762,6 +762,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(PROJECT_DIR)/../../freetype-2.5.2/include",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = freetype_ios;
 				SDKROOT = iphoneos;
 			};
@@ -781,6 +782,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(PROJECT_DIR)/../../freetype-2.5.2/include",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = freetype_ios;
 				SDKROOT = iphoneos;
 			};

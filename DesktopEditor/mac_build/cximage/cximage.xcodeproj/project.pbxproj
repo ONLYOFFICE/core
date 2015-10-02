@@ -1123,6 +1123,7 @@
 					"$(PROJECT_DIR)/../../cximage/zlib",
 					"$(PROJECT_DIR)/../../cximage/jasper/include",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = cximage_ios;
 				SDKROOT = iphoneos;
 			};
@@ -1145,6 +1146,7 @@
 					"$(PROJECT_DIR)/../../cximage/zlib",
 					"$(PROJECT_DIR)/../../cximage/jasper/include",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = cximage_ios;
 				SDKROOT = iphoneos;
 			};

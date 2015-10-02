@@ -654,6 +654,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(PROJECT_DIR)/../../../cximage/zlib/",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = libpsd_ios;
 				SDKROOT = iphoneos;
 			};
@@ -672,6 +673,7 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					"$(PROJECT_DIR)/../../../cximage/zlib/",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = libpsd_ios;
 				SDKROOT = iphoneos;
 			};

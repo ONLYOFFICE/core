@@ -1515,6 +1515,7 @@
 					"$(PROJECT_DIR)/../../agg-2.4/include",
 					"$(PROJECT_DIR)/../../freetype-2.5.2/include",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = metafile_ios;
 				SKIP_INSTALL = YES;
@@ -1532,6 +1533,7 @@
 					"$(PROJECT_DIR)/../../agg-2.4/include",
 					"$(PROJECT_DIR)/../../freetype-2.5.2/include",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = metafile_ios;
 				SKIP_INSTALL = YES;

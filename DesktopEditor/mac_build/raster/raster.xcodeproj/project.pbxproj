@@ -196,6 +196,7 @@
 					CXIMAGE_DONT_USE_LOAD_SAVE,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = raster_ios;
 				SDKROOT = iphoneos;
 			};
@@ -213,6 +214,7 @@
 					CXIMAGE_DONT_USE_LOAD_SAVE,
 				);
 				GCC_SYMBOLS_PRIVATE_EXTERN = NO;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = raster_ios;
 				SDKROOT = iphoneos;
 			};

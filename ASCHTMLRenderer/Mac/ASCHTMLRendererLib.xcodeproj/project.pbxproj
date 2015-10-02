@@ -377,6 +377,7 @@
 					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
 					"$(PROJECT_DIR)/../../DesktopEditor/agg-2.4/include",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = ASCHTMLRendererLib_ios;
 				SDKROOT = iphoneos;
 			};
@@ -401,6 +402,7 @@
 					"$(PROJECT_DIR)/../../DesktopEditor/freetype-2.5.2/include",
 					"$(PROJECT_DIR)/../../DesktopEditor/agg-2.4/include",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = ASCHTMLRendererLib_ios;
 				SDKROOT = iphoneos;
 			};

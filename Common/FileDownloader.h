@@ -379,13 +379,8 @@ protected :
 
 #include <stdio.h>
 
-#if defined(__APPLE__)
-#include "/usr/include/curl/curl.h"
-#include "/usr/include/curl/easy.h"
-#else
 #include "3dParty/curl/include/curl/curl.h"
 #include "3dParty/curl/include/curl/easy.h"
-#endif
 
 static void Sleep (unsigned int mSec)
 {

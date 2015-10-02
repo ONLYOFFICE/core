@@ -1317,10 +1317,18 @@ namespace MathEquation
 			{
 				if (!oRManager.IsEmpty())
 					WriteRun();
-				//PushCommand(commandLongDivision);
 				if (eType == longdivisionWithResult)
 				{
-					BeginFraction(fractionRegular, true);
+					PushCommand(commandLongDivision);
+
+					int nCurPos = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::Fraction);
+					m_aFractionStack.push(nCurPos);
+
+					int nCurPos1 = WriteItemStart(BinDocxRW::c_oSer_OMathContentType::FPr);
+					BYTE fType = SimpleTypes::fTypeBar;
+					WriteItemVal(BinDocxRW::c_oSer_OMathBottomNodesType::Type, fType);
+
+					WriteItemEnd(nCurPos1);
 				}
 				else if (eType == longdivisionRegular)
 				{
@@ -1329,10 +1337,11 @@ namespace MathEquation
 			}
 			virtual void EndLongDivision  ()
 			{
+				
 				ECommandType eType;
 				CBaseCommand* pCommand = TopCommand();
 				eType = pCommand->GetCommand();
-				if (eType == commandFraction)
+				if (eType == commandLongDivision)
 				{
 					EndFraction();
 				}
@@ -1452,7 +1461,7 @@ namespace MathEquation
 			commandIntegral			 = 0x07,
 			commandVerticalBrace	 = 0x08,
 			commandNArray			 = 0x09,
-			//commandLongDivision		 = 0x0a,
+			commandLongDivision		 = 0x0a,
 			commandBracketsSep		 = 0x0b,
 			commandVerticalBraceLim	 = 0x0c,
 			commandEqArray			 = 0x0d
@@ -2193,31 +2202,41 @@ namespace MathEquation
 			MNARRAYTYPE eType;
 		};
 
-		/*class CLongDivisionCommand : public CBaseCommand
+		class CLongDivisionCommand : public CBaseCommand
 		{
 		public:
 			CLongDivisionCommand() {}
 			virtual ~CLongDivisionCommand() {}
-			virtual ECommandType GetCommand(){return commandLongDivision;}
+			virtual ECommandType GetCommand(){ return commandLongDivision; }
 
 			virtual void WriteBeginBlock(BinaryEquationWriter* pWriter)
 			{
-				if (0 == nBlockNum)
-					pWriter->WriteNodeBegin("base");
-				else
-					pWriter->WriteNodeBegin("result");
+				Write(pWriter, true);
 			}
-
 			virtual void WriteEndBlock(BinaryEquationWriter* pWriter)
 			{
-				if (0 == nBlockNum)
-					pWriter->WriteNodeEnd("base");
-				else
-					pWriter->WriteNodeEnd("result");
+				Write(pWriter, false);
 			}
-		private:
-            bool bPile;
-		};*/
+			void Write(BinaryEquationWriter* pWriter, bool bBeginNode)
+			{
+				bOpenNode = bBeginNode;
+				if (1 == nBlockNum)
+				{
+					if (bBeginNode)
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Num);
+					else
+						WriteEndNode(pWriter);
+				}
+				else if (0 == nBlockNum)
+				{
+					if (bBeginNode)
+						WriteBeginNode(pWriter, BinDocxRW::c_oSer_OMathContentType::Den);
+					else
+						WriteEndNode(pWriter);
+				}
+			}
+		};
+
 		class CBracketsWithSeparatorCommand : public CBaseCommand
 		{
 		public:
@@ -2280,7 +2299,7 @@ namespace MathEquation
 			case commandVerticalBrace:		pCommand = new CVerticalBraceCommand(); break;
 			case commandVerticalBraceLim:	pCommand = new CVerticalBraceLimCommand(); break;
 			case commandNArray:				pCommand = new CNArrayCommand(); break;
-			//case commandLongDivision:		pCommand = new CLongDivisionCommand(); break;
+			case commandLongDivision:		pCommand = new CLongDivisionCommand(); break;
 			case commandBracketsSep:		pCommand = new CBracketsWithSeparatorCommand(); break;
 			case commandEqArray:			pCommand = new CEqArrayCommand(); break;
 			}

@@ -329,7 +329,7 @@ void DocxConverter::convert(OOX::Logic::CSdt *oox_sdt)
 }
 void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 {
-	if (oox_paragraph == NULL) return;
+	if (oox_paragraph == NULL) return; 
 
 	bool bStyled = false;
 
@@ -357,6 +357,12 @@ void DocxConverter::convert(OOX::Logic::CParagraph *oox_paragraph)
 		}
 		if (oox_paragraph->m_oParagraphProperty->m_oNumPr.IsInit())
 		{
+			if (bStartNewParagraph == false)//demo.docx
+			{
+				odt_context->end_paragraph();
+				odt_context->text_context()->set_KeepNextParagraph(false);
+				bStartNewParagraph = true; 
+			}
 			list_present = true;
 		
 			if (oox_paragraph->m_oParagraphProperty->m_oNumPr->m_oIlvl.IsInit() && oox_paragraph->m_oParagraphProperty->m_oNumPr->m_oIlvl->m_oVal.IsInit())
@@ -644,7 +650,11 @@ void DocxConverter::convert(OOX::Logic::CParagraphProperty	*oox_paragraph_pr, cp
 			if (length && rule == SimpleTypes::linespacingruleExact)
 				paragraph_properties->content().fo_line_height_ = odf_types::line_width(*length);
 			else if (length)
-				paragraph_properties->content().style_line_height_at_least_= length;
+			{
+				odf_types::percent percent(100);
+				paragraph_properties->content().fo_line_height_ = percent;
+				//paragraph_properties->content().style_line_height_at_least_= length;
+			}
 		}
 		if (oox_paragraph_pr->m_oSpacing->m_oAfter.IsInit())
 		{

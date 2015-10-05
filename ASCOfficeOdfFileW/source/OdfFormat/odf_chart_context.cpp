@@ -92,7 +92,7 @@ public:
     {	
 		styles_context_ = NULL;
 		current_series_count_= 0;
-		local_table_enabled_ = false;
+		local_table_enabled_ = true;// false; - пока тока КЭШ .. demo.docx
 		
 	} 
 
@@ -164,7 +164,7 @@ void odf_chart_context::Impl::clear_current()
 	cash_.clear();
 
 	current_series_count_ = 0;
-	local_table_enabled_ = false;
+	local_table_enabled_ = true; //false; пока тока кэш - demo.docx
 }
 void odf_chart_context::Impl::set_default_series_color()
 {
@@ -1428,8 +1428,10 @@ void odf_chart_context::Impl::create_local_table_rows(ods_table_state * table_st
 
     office_element_ptr style_null;
 
+	bool add = false;
     for (long i = 0; i< cells.size(); i++)
     {
+		add = false;
 		if (cells[i].row  > curr_row+1)
 		{	
 			office_element_ptr row_elm;
@@ -1437,10 +1439,11 @@ void odf_chart_context::Impl::create_local_table_rows(ods_table_state * table_st
             create_element(L"table", L"table-row",row_elm, odf_context_);
             table_state->add_row(row_elm,cells[i].row - curr_row -2, style_null);
 			curr_row =  cells[i].row-1;
+			add = true;
 		}
 		if (cells[i].row == curr_row+1)
 		{
-			if (cells[i].label == header)
+			if (cells[i].label == header && !add)
 			{
 				office_element_ptr row_elm;
 

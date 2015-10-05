@@ -1847,7 +1847,7 @@ void odf_drawing_context::end_text_box()
 	{
 		draw->draw_text_box_attlist_.fo_min_height_= impl_->current_drawing_state_.svg_height_;
 	}
-	impl_->current_drawing_state_.svg_height_ = boost::none;///????
+	//impl_->current_drawing_state_.svg_height_ = boost::none;///??? demo.docx
 	
 	end_element();
 

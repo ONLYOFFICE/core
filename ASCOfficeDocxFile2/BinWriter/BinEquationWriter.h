@@ -583,8 +583,8 @@ namespace MathEquation
 						case bracketsSquare:			strOpen.Insert(0, 0x005B); break;
 						case bracketsLine:				strOpen.Insert(0, 0x007C); break;
 						case bracketsDLine:				strOpen.Insert(0, 0x2016); break;
-						case bracketsFloor:				strOpen.Insert(0, 0x23A3); break;
-						case bracketsCeil:				strOpen.Insert(0, 0x23A1); break;
+						case bracketsFloor:				strOpen.Insert(0, 0x230A); break;
+						case bracketsCeil:				strOpen.Insert(0, 0x2308); break;
 						case bracketsSquareOpenOpen:	strOpen.Insert(0, 0x005B); break;
 						case bracketsSquareCloseClose:	strOpen.Insert(0, 0x005D); break;
 						case bracketsSquareCloseOpen:	strOpen.Insert(0, 0x005D); break;
@@ -607,8 +607,8 @@ namespace MathEquation
 						case bracketsSquare:			strEnd.Insert(0, 0x005D); break;
 						case bracketsLine:				strEnd.Insert(0, 0x007C); break;
 						case bracketsDLine:				strEnd.Insert(0, 0x2016); break;
-						case bracketsFloor:				strEnd.Insert(0, 0x23A6); break;
-						case bracketsCeil:				strEnd.Insert(0, 0x23A4); break;
+						case bracketsFloor:				strEnd.Insert(0, 0x230B); break;
+						case bracketsCeil:				strEnd.Insert(0, 0x2309); break;
 						case bracketsSquareOpenOpen:	strEnd.Insert(0, 0x005B); break;
 						case bracketsSquareCloseClose:	strEnd.Insert(0, 0x005D); break;
 						case bracketsSquareCloseOpen:	strEnd.Insert(0, 0x005B); break;

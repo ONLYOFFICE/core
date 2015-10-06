@@ -1193,7 +1193,7 @@ namespace PdfReader
 				case fontCIDType0:
 				case fontCIDType0C:
 				{
-					// TODO: Проверить, почему получение данной кодировки было отключено
+					//// TODO: Проверить, почему получение данной кодировки было отключено
 					//if ((pT1CFontFile = CFontFileType1C::LoadFromFile((wchar_t*)wsFileName.c_str())))
 					//{
 					//	pCodeToGID = pT1CFontFile->GetCIDToGIDMap(&nLen);
@@ -2732,9 +2732,8 @@ namespace PdfReader
 
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(pMatrix, &dShiftX, &dShiftY, true);
-
 		m_pRenderer->BeginCommand(c_nClipType);
-		m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionUnion);
+		m_pRenderer->put_ClipMode(c_nClipRegionTypeWinding | c_nClipRegionUnion);	
 		m_pRenderer->PathCommandEnd();
 		m_pRenderer->put_FontStringGID(true);
 		m_pRenderer->PathCommandText(wsText, PDFCoordsToMM(dX), PDFCoordsToMM(dY), PDFCoordsToMM(dWidth), PDFCoordsToMM(dHeight));
@@ -2929,6 +2928,20 @@ namespace PdfReader
 		//arrMatrix[4] += dAscentShiftX;
 		//arrMatrix[5] += dAscentShiftY;
 
+
+		if (true)
+		{
+			double dDet = sqrt(arrMatrix[0] * arrMatrix[3] - arrMatrix[1] * arrMatrix[2]);
+			arrMatrix[0] /= dDet;
+			arrMatrix[1] /= dDet;
+			arrMatrix[2] /= dDet;
+			arrMatrix[3] /= dDet;
+
+			double dSize = 1;
+			m_pRenderer->get_FontSize(&dSize);
+			m_pRenderer->put_FontSize(dSize * dDet);
+		}
+
 		double dShiftX = 0, dShiftY = 0;
 		DoTransform(arrMatrix, &dShiftX, &dShiftY, true);
 
@@ -3016,7 +3029,7 @@ namespace PdfReader
 		{
 			m_pRenderer->BeginCommand(c_nStrokeTextType);
 
-			m_pRenderer->PathCommandEnd();
+			//m_pRenderer->PathCommandEnd();
 			//m_pRenderer->PathCommandText( bsText, PDFCoordsToMM( 0 + dShiftX ), PDFCoordsToMM( /*-fabs(pFont->GetFontBBox()[3]) * dTfs*/ + dShiftY ), PDFCoordsToMM( 0 ), PDFCoordsToMM( 0 ), PDFCoordsToMM( 0 ) );
 
 
@@ -3301,8 +3314,7 @@ namespace PdfReader
 			{
 				ImageStream *pSMaskStream = new ImageStream(pMaskStream, nMaskWidth, pMaskColorMap->GetComponentsCount(), pMaskColorMap->GetBitsPerComponent());
 				unsigned char *pAlpha = new unsigned char[nMaskWidth * nMaskHeight];
-
-				if (pMaskStream && pAlpha)
+				if (pSMaskStream && pAlpha)
 				{
 					pSMaskStream->Reset();
 
@@ -3320,30 +3332,73 @@ namespace PdfReader
 					}
 					delete pSMaskStream;
 
-					double dScaleWidth  = (double)nMaskWidth / (double)nWidth;
-					double dScaleHeight = (double)nMaskHeight / (double)nHeight;
-
-					for (int nY = nHeight - 1; nY >= 0; nY--)
+					int nMaxW = std::max(nWidth, nMaskWidth);
+					int nMaxH = std::max(nHeight, nMaskHeight);
+					if (nWidth != nMaxW || nHeight != nMaxH)
 					{
-						for (int nX = 0; nX < nWidth; nX++)
+						unsigned char* pImageBuffer = pBufferPtr;
+						int nNewBufferSize = 4 * nMaxW * nMaxH;
+						pBufferPtr = new unsigned char[nNewBufferSize];
+						if (!pBufferPtr)
 						{
-							int nIndex = 4 * (nY * nWidth + nX);
+							delete[] pImageBuffer;
+							delete[] pAlpha;
+							return;
+						}
 
-							int nNearestMatch =  (((int)((nHeight - 1 - nY) * dScaleHeight) * nMaskWidth) + ((int)(nX * dScaleWidth)));
+						oImage.Create(pBufferPtr, nMaxW, nMaxH, -4 * nMaxW);
 
-							pBufferPtr[nIndex + 3] = (unsigned char)(pAlpha[nNearestMatch] * dAlphaKoef);
+						double dImageScaleWidth  = (double)nWidth / (double)nMaxW;
+						double dImageScaleHeight = (double)nHeight / (double)nMaxH;
+
+						double dAlphaScaleWidth  = (double)nMaskWidth / (double)nMaxW;
+						double dAlphaScaleHeight = (double)nMaskHeight / (double)nMaxH;
+
+						for (int nY = nMaxH - 1; nY >= 0; nY--)
+						{
+							for (int nX = 0; nX < nMaxW; nX++)
+							{
+								int nIndex = 4 * (nY * nMaxW + nX);
+
+								int nNearestAlphaMatch =  (((int)((nMaxH - 1 - nY) * dAlphaScaleHeight) * nMaskWidth) + ((int)(nX * dAlphaScaleWidth)));
+								int nNearestImageMatch =  4 * (((int)((nMaxH - 1 - nY) * dImageScaleHeight) * nWidth) + ((int)(nX * dImageScaleWidth)));
+
+								pBufferPtr[nIndex + 0] = pImageBuffer[nNearestImageMatch + 0];
+								pBufferPtr[nIndex + 1] = pImageBuffer[nNearestImageMatch + 1];
+								pBufferPtr[nIndex + 2] = pImageBuffer[nNearestImageMatch + 2];
+								pBufferPtr[nIndex + 3] = (unsigned char)(pAlpha[nNearestAlphaMatch] * dAlphaKoef);
+							}
+						}
+
+						delete[] pImageBuffer;
+					}
+					else
+					{
+						double dAlphaScaleWidth  = (double)nMaskWidth / (double)nWidth;
+						double dAlphaScaleHeight = (double)nMaskHeight / (double)nHeight;
+
+						for (int nY = nHeight - 1; nY >= 0; nY--)
+						{
+							for (int nX = 0; nX < nWidth; nX++)
+							{
+								int nIndex = 4 * (nY * nWidth + nX);
+
+								int nNearestAlphaMatch =  (((int)((nHeight - 1 - nY) * dAlphaScaleHeight) * nMaskWidth) + ((int)(nX * dAlphaScaleWidth)));
+
+								pBufferPtr[nIndex + 3] = (unsigned char)(pAlpha[nNearestAlphaMatch] * dAlphaKoef);
+							}
 						}
 					}
 
-					delete pAlpha;
+					delete[] pAlpha;
 				}
 				else
 				{
 					if (pAlpha)
-						delete pAlpha;
+						delete[] pAlpha;
 
-					if (pMaskStream)
-						delete pMaskStream;
+					if (pSMaskStream)
+						delete pSMaskStream;
 
 					bResize = false;
 				}

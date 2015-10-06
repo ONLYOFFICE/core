@@ -7,6 +7,16 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		173241491BBEC90000E67992 /* pole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 173241431BBEC90000E67992 /* pole.cpp */; settings = {ASSET_TAGS = (); }; };
+		1732414A1BBEC90000E67992 /* pole.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 173241431BBEC90000E67992 /* pole.cpp */; settings = {ASSET_TAGS = (); }; };
+		1732414B1BBEC90000E67992 /* pole.h in Headers */ = {isa = PBXBuildFile; fileRef = 173241441BBEC90000E67992 /* pole.h */; settings = {ASSET_TAGS = (); }; };
+		1732414C1BBEC90000E67992 /* pole.h in Headers */ = {isa = PBXBuildFile; fileRef = 173241441BBEC90000E67992 /* pole.h */; settings = {ASSET_TAGS = (); }; };
+		1732463C1BBEDC2C00E67992 /* UnicodeConverter_Encodings.h in Headers */ = {isa = PBXBuildFile; fileRef = 173246391BBEDC2C00E67992 /* UnicodeConverter_Encodings.h */; settings = {ASSET_TAGS = (); }; };
+		1732463D1BBEDC2C00E67992 /* UnicodeConverter_Encodings.h in Headers */ = {isa = PBXBuildFile; fileRef = 173246391BBEDC2C00E67992 /* UnicodeConverter_Encodings.h */; settings = {ASSET_TAGS = (); }; };
+		1732463E1BBEDC2C00E67992 /* UnicodeConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1732463A1BBEDC2C00E67992 /* UnicodeConverter.cpp */; settings = {ASSET_TAGS = (); }; };
+		1732463F1BBEDC2C00E67992 /* UnicodeConverter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1732463A1BBEDC2C00E67992 /* UnicodeConverter.cpp */; settings = {ASSET_TAGS = (); }; };
+		173246401BBEDC2C00E67992 /* UnicodeConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1732463B1BBEDC2C00E67992 /* UnicodeConverter.h */; settings = {ASSET_TAGS = (); }; };
+		173246411BBEDC2C00E67992 /* UnicodeConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 1732463B1BBEDC2C00E67992 /* UnicodeConverter.h */; settings = {ASSET_TAGS = (); }; };
 		17C102621ACC5114006B99B3 /* libPPTXFormatLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17C1FE8E1ACC42B1006B99B3 /* libPPTXFormatLib_ios.a */; };
 		17C102631ACC511A006B99B3 /* libASCOfficeUtilsLib_ios.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 17C1FC9F1ACC4251006B99B3 /* libASCOfficeUtilsLib_ios.a */; };
 		17C1FB941ACC4250006B99B3 /* Hyperlink.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0621AC4262700F28F8B /* Hyperlink.cpp */; };
@@ -70,7 +80,6 @@
 		17C1FBD31ACC4250006B99B3 /* rPr.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1781AC4262800F28F8B /* rPr.h */; };
 		17C1FBD41ACC4250006B99B3 /* OutputDev.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A11F1AC4262800F28F8B /* OutputDev.h */; };
 		17C1FBD51ACC4250006B99B3 /* AbstractConverter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E69FF61AC4262700F28F8B /* AbstractConverter.h */; };
-		17C1FBD61ACC4250006B99B3 /* stream.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A01A1AC4262700F28F8B /* stream.hpp */; };
 		17C1FBD71ACC4250006B99B3 /* DrawingParagraph.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0341AC4262700F28F8B /* DrawingParagraph.h */; };
 		17C1FBD81ACC4250006B99B3 /* Drawing.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1591AC4262800F28F8B /* Drawing.h */; };
 		17C1FBD91ACC4250006B99B3 /* ParagraphProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0671AC4262700F28F8B /* ParagraphProperty.h */; };
@@ -81,10 +90,8 @@
 		17C1FBDE1ACC4250006B99B3 /* SimpleTypes_Word.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A00B1AC4262700F28F8B /* SimpleTypes_Word.h */; };
 		17C1FBDF1ACC4250006B99B3 /* DrawingShared.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A03A1AC4262700F28F8B /* DrawingShared.h */; };
 		17C1FBE01ACC4250006B99B3 /* OleObject.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0881AC4262700F28F8B /* OleObject.h */; };
-		17C1FBE11ACC4250006B99B3 /* header.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0181AC4262700F28F8B /* header.hpp */; };
 		17C1FBE21ACC4250006B99B3 /* SimpleTypes_Drawing.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0061AC4262700F28F8B /* SimpleTypes_Drawing.h */; };
 		17C1FBE31ACC4250006B99B3 /* Types_32.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E69FF21AC4262700F28F8B /* Types_32.h */; };
-		17C1FBE41ACC4250006B99B3 /* pole.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A01C1AC4262700F28F8B /* pole.h */; };
 		17C1FBE51ACC4250006B99B3 /* DrawingTables.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A03D1AC4262700F28F8B /* DrawingTables.h */; };
 		17C1FBE61ACC4250006B99B3 /* ComplexTypes_Spreadsheet.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1561AC4262800F28F8B /* ComplexTypes_Spreadsheet.h */; };
 		17C1FBE71ACC4250006B99B3 /* Workbook.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1841AC4262800F28F8B /* Workbook.h */; };
@@ -145,7 +152,6 @@
 		17C1FC1F1ACC4250006B99B3 /* Xfs.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A17B1AC4262800F28F8B /* Xfs.h */; };
 		17C1FC201ACC4250006B99B3 /* FldChar.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A05F1AC4262700F28F8B /* FldChar.h */; };
 		17C1FC211ACC4250006B99B3 /* TableProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0771AC4262700F28F8B /* TableProperty.h */; };
-		17C1FC221ACC4250006B99B3 /* dirtree.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0171AC4262700F28F8B /* dirtree.hpp */; };
 		17C1FC231ACC4250006B99B3 /* VmlOfficeDrawing.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A07A1AC4262700F28F8B /* VmlOfficeDrawing.h */; };
 		17C1FC241ACC4250006B99B3 /* Point.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0021AC4262700F28F8B /* Point.h */; };
 		17C1FC251ACC4250006B99B3 /* Bibliography.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A01F1AC4262700F28F8B /* Bibliography.h */; };
@@ -164,17 +170,14 @@
 		17C1FC321ACC4250006B99B3 /* Run.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0691AC4262700F28F8B /* Run.h */; };
 		17C1FC331ACC4250006B99B3 /* BaseLogicSettings.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A05A1AC4262700F28F8B /* BaseLogicSettings.h */; };
 		17C1FC341ACC4250006B99B3 /* Hyperlink.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0631AC4262700F28F8B /* Hyperlink.h */; };
-		17C1FC351ACC4250006B99B3 /* MathString.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B3C41AC43E6A00F28F8B /* MathString.h */; };
 		17C1FC361ACC4250006B99B3 /* Chart.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A14E1AC4262800F28F8B /* Chart.h */; };
 		17C1FC371ACC4250006B99B3 /* SheetData.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A18C1AC4262800F28F8B /* SheetData.h */; };
 		17C1FC381ACC4250006B99B3 /* HeaderFooter.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0511AC4262700F28F8B /* HeaderFooter.h */; };
 		17C1FC391ACC4250006B99B3 /* SmartTag.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0731AC4262700F28F8B /* SmartTag.h */; };
 		17C1FC3A1ACC4250006B99B3 /* Numbering.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A08C1AC4262700F28F8B /* Numbering.h */; };
 		17C1FC3B1ACC4250006B99B3 /* FldSimple.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0611AC4262700F28F8B /* FldSimple.h */; };
-		17C1FC3C1ACC4250006B99B3 /* alloctable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0161AC4262700F28F8B /* alloctable.hpp */; };
 		17C1FC3D1ACC4250006B99B3 /* Unit.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A00D1AC4262700F28F8B /* Unit.h */; };
 		17C1FC3E1ACC4250006B99B3 /* UnknowTypeFile.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0971AC4262700F28F8B /* UnknowTypeFile.h */; };
-		17C1FC3F1ACC4250006B99B3 /* util.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A01B1AC4262700F28F8B /* util.hpp */; };
 		17C1FC401ACC4250006B99B3 /* Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A00F1AC4262700F28F8B /* Utils.h */; };
 		17C1FC411ACC4250006B99B3 /* Align.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E69FF81AC4262700F28F8B /* Align.h */; };
 		17C1FC421ACC4250006B99B3 /* Drawing.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A02A1AC4262700F28F8B /* Drawing.h */; };
@@ -192,7 +195,6 @@
 		17C1FC4E1ACC4250006B99B3 /* Utils.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B1EF1AC4263900F28F8B /* Utils.h */; };
 		17C1FC4F1ACC4250006B99B3 /* SmartPtr.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E69FF11AC4262700F28F8B /* SmartPtr.h */; };
 		17C1FC501ACC4250006B99B3 /* Utility.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A1491AC4262800F28F8B /* Utility.h */; };
-		17C1FC511ACC4250006B99B3 /* storage.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0191AC4262700F28F8B /* storage.hpp */; };
 		17C1FC521ACC4250006B99B3 /* SectionProperty.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0701AC4262700F28F8B /* SectionProperty.h */; };
 		17C1FC531ACC4250006B99B3 /* FromTo.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A15A1AC4262800F28F8B /* FromTo.h */; };
 		17C1FC541ACC4250006B99B3 /* DrawingGraphic.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0331AC4262700F28F8B /* DrawingGraphic.h */; };
@@ -304,13 +306,6 @@
 		17E6B2151AC4263900F28F8B /* Wrap.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0111AC4262700F28F8B /* Wrap.h */; };
 		17E6B2161AC4263900F28F8B /* ZIndex.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6A0121AC4262700F28F8B /* ZIndex.cpp */; };
 		17E6B2171AC4263900F28F8B /* ZIndex.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0131AC4262700F28F8B /* ZIndex.h */; };
-		17E6B2181AC4263900F28F8B /* alloctable.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0161AC4262700F28F8B /* alloctable.hpp */; };
-		17E6B2191AC4263900F28F8B /* dirtree.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0171AC4262700F28F8B /* dirtree.hpp */; };
-		17E6B21A1AC4263900F28F8B /* header.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0181AC4262700F28F8B /* header.hpp */; };
-		17E6B21B1AC4263900F28F8B /* storage.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0191AC4262700F28F8B /* storage.hpp */; };
-		17E6B21C1AC4263900F28F8B /* stream.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A01A1AC4262700F28F8B /* stream.hpp */; };
-		17E6B21D1AC4263900F28F8B /* util.hpp in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A01B1AC4262700F28F8B /* util.hpp */; };
-		17E6B21E1AC4263900F28F8B /* pole.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A01C1AC4262700F28F8B /* pole.h */; };
 		17E6B21F1AC4263900F28F8B /* App.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A01E1AC4262700F28F8B /* App.h */; };
 		17E6B2201AC4263900F28F8B /* Bibliography.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A01F1AC4262700F28F8B /* Bibliography.h */; };
 		17E6B2211AC4263900F28F8B /* Comments.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6A0201AC4262700F28F8B /* Comments.h */; };
@@ -520,7 +515,6 @@
 		17E6B3B01AC4263A00F28F8B /* xmlutils.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B1F11AC4263900F28F8B /* xmlutils.h */; };
 		17E6B3B31AC4279400F28F8B /* docxformatlib.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 17E6B3B11AC4279400F28F8B /* docxformatlib.cpp */; };
 		17E6B3B41AC4279400F28F8B /* docxformatlib.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B3B21AC4279400F28F8B /* docxformatlib.h */; };
-		17E6B3C51AC43E6A00F28F8B /* MathString.h in Headers */ = {isa = PBXBuildFile; fileRef = 17E6B3C41AC43E6A00F28F8B /* MathString.h */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -583,6 +577,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		173241431BBEC90000E67992 /* pole.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = pole.cpp; sourceTree = "<group>"; };
+		173241441BBEC90000E67992 /* pole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pole.h; sourceTree = "<group>"; };
+		173246391BBEDC2C00E67992 /* UnicodeConverter_Encodings.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnicodeConverter_Encodings.h; path = ../../../UnicodeConverter/UnicodeConverter_Encodings.h; sourceTree = "<group>"; };
+		1732463A1BBEDC2C00E67992 /* UnicodeConverter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = UnicodeConverter.cpp; path = ../../../UnicodeConverter/UnicodeConverter.cpp; sourceTree = "<group>"; };
+		1732463B1BBEDC2C00E67992 /* UnicodeConverter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = UnicodeConverter.h; path = ../../../UnicodeConverter/UnicodeConverter.h; sourceTree = "<group>"; };
 		17C1FC9C1ACC4250006B99B3 /* libDocxFormatLib_ios.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = libDocxFormatLib_ios.a; sourceTree = BUILT_PRODUCTS_DIR; };
 		17D913B21AC5963A0096D788 /* ASCOfficeUtilsLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = ASCOfficeUtilsLib.xcodeproj; path = ../../../ASCOfficeUtils/ASCOfficeUtilsLib/Mac/ASCOfficeUtilsLib.xcodeproj; sourceTree = "<group>"; };
 		17D913B81AC5964A0096D788 /* PPTXFormatLib.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = PPTXFormatLib.xcodeproj; path = ../../../ASCOfficePPTXFile/PPTXLib/Mac/PPTXFormatLib.xcodeproj; sourceTree = "<group>"; };
@@ -625,13 +624,6 @@
 		17E6A0111AC4262700F28F8B /* Wrap.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Wrap.h; sourceTree = "<group>"; };
 		17E6A0121AC4262700F28F8B /* ZIndex.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = ZIndex.cpp; sourceTree = "<group>"; };
 		17E6A0131AC4262700F28F8B /* ZIndex.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = ZIndex.h; sourceTree = "<group>"; };
-		17E6A0161AC4262700F28F8B /* alloctable.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = alloctable.hpp; sourceTree = "<group>"; };
-		17E6A0171AC4262700F28F8B /* dirtree.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = dirtree.hpp; sourceTree = "<group>"; };
-		17E6A0181AC4262700F28F8B /* header.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = header.hpp; sourceTree = "<group>"; };
-		17E6A0191AC4262700F28F8B /* storage.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = storage.hpp; sourceTree = "<group>"; };
-		17E6A01A1AC4262700F28F8B /* stream.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = stream.hpp; sourceTree = "<group>"; };
-		17E6A01B1AC4262700F28F8B /* util.hpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.h; path = util.hpp; sourceTree = "<group>"; };
-		17E6A01C1AC4262700F28F8B /* pole.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = pole.h; sourceTree = "<group>"; };
 		17E6A01E1AC4262700F28F8B /* App.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = App.h; sourceTree = "<group>"; };
 		17E6A01F1AC4262700F28F8B /* Bibliography.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Bibliography.h; sourceTree = "<group>"; };
 		17E6A0201AC4262700F28F8B /* Comments.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Comments.h; sourceTree = "<group>"; };
@@ -848,7 +840,6 @@
 		17E6B3BF1AC4298500F28F8B /* File.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = File.h; sourceTree = "<group>"; };
 		17E6B3C01AC4298500F28F8B /* Path.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Path.h; sourceTree = "<group>"; };
 		17E6B3C11AC4298500F28F8B /* Types.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Types.h; sourceTree = "<group>"; };
-		17E6B3C41AC43E6A00F28F8B /* MathString.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = MathString.h; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -873,6 +864,26 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		173241401BBEC90000E67992 /* pole */ = {
+			isa = PBXGroup;
+			children = (
+				173241431BBEC90000E67992 /* pole.cpp */,
+				173241441BBEC90000E67992 /* pole.h */,
+			);
+			name = pole;
+			path = ../../3dParty/pole;
+			sourceTree = "<group>";
+		};
+		173246361BBEDC2300E67992 /* UnicodeConverter */ = {
+			isa = PBXGroup;
+			children = (
+				173246391BBEDC2C00E67992 /* UnicodeConverter_Encodings.h */,
+				1732463A1BBEDC2C00E67992 /* UnicodeConverter.cpp */,
+				1732463B1BBEDC2C00E67992 /* UnicodeConverter.h */,
+			);
+			name = UnicodeConverter;
+			sourceTree = "<group>";
+		};
 		17D913B31AC5963A0096D788 /* Products */ = {
 			isa = PBXGroup;
 			children = (
@@ -924,9 +935,10 @@
 		17E69FEB1AC4262700F28F8B /* Source */ = {
 			isa = PBXGroup;
 			children = (
+				173246361BBEDC2300E67992 /* UnicodeConverter */,
+				173241401BBEC90000E67992 /* pole */,
 				17E69FEC1AC4262700F28F8B /* Base */,
 				17E69FF51AC4262700F28F8B /* Common */,
-				17E6A0141AC4262700F28F8B /* CompoundDocument */,
 				17E6A01D1AC4262700F28F8B /* DocxFormat */,
 				17E6A09A1AC4262700F28F8B /* MathEquation */,
 				17E6A1231AC4262800F28F8B /* SystemUtility */,
@@ -988,28 +1000,6 @@
 				17E6A0131AC4262700F28F8B /* ZIndex.h */,
 			);
 			path = Common;
-			sourceTree = "<group>";
-		};
-		17E6A0141AC4262700F28F8B /* CompoundDocument */ = {
-			isa = PBXGroup;
-			children = (
-				17E6A0151AC4262700F28F8B /* detail */,
-				17E6A01C1AC4262700F28F8B /* pole.h */,
-			);
-			path = CompoundDocument;
-			sourceTree = "<group>";
-		};
-		17E6A0151AC4262700F28F8B /* detail */ = {
-			isa = PBXGroup;
-			children = (
-				17E6A0161AC4262700F28F8B /* alloctable.hpp */,
-				17E6A0171AC4262700F28F8B /* dirtree.hpp */,
-				17E6A0181AC4262700F28F8B /* header.hpp */,
-				17E6A0191AC4262700F28F8B /* storage.hpp */,
-				17E6A01A1AC4262700F28F8B /* stream.hpp */,
-				17E6A01B1AC4262700F28F8B /* util.hpp */,
-			);
-			path = detail;
 			sourceTree = "<group>";
 		};
 		17E6A01D1AC4262700F28F8B /* DocxFormat */ = {
@@ -1207,7 +1197,6 @@
 				17E6A1171AC4262800F28F8B /* MathEquation.h */,
 				17E6A11F1AC4262800F28F8B /* OutputDev.h */,
 				17E6A1211AC4262800F28F8B /* StringOutput.h */,
-				17E6B3C41AC43E6A00F28F8B /* MathString.h */,
 				17E6A1221AC4262800F28F8B /* Types.h */,
 			);
 			path = MathEquation;
@@ -1458,7 +1447,6 @@
 				17C1FBD31ACC4250006B99B3 /* rPr.h in Headers */,
 				17C1FBD41ACC4250006B99B3 /* OutputDev.h in Headers */,
 				17C1FBD51ACC4250006B99B3 /* AbstractConverter.h in Headers */,
-				17C1FBD61ACC4250006B99B3 /* stream.hpp in Headers */,
 				17C1FBD71ACC4250006B99B3 /* DrawingParagraph.h in Headers */,
 				17C1FBD81ACC4250006B99B3 /* Drawing.h in Headers */,
 				17C1FBD91ACC4250006B99B3 /* ParagraphProperty.h in Headers */,
@@ -1469,10 +1457,8 @@
 				17C1FBDE1ACC4250006B99B3 /* SimpleTypes_Word.h in Headers */,
 				17C1FBDF1ACC4250006B99B3 /* DrawingShared.h in Headers */,
 				17C1FBE01ACC4250006B99B3 /* OleObject.h in Headers */,
-				17C1FBE11ACC4250006B99B3 /* header.hpp in Headers */,
 				17C1FBE21ACC4250006B99B3 /* SimpleTypes_Drawing.h in Headers */,
 				17C1FBE31ACC4250006B99B3 /* Types_32.h in Headers */,
-				17C1FBE41ACC4250006B99B3 /* pole.h in Headers */,
 				17C1FBE51ACC4250006B99B3 /* DrawingTables.h in Headers */,
 				17C1FBE61ACC4250006B99B3 /* ComplexTypes_Spreadsheet.h in Headers */,
 				17C1FBE71ACC4250006B99B3 /* Workbook.h in Headers */,
@@ -1499,6 +1485,7 @@
 				17C1FBFC1ACC4250006B99B3 /* SimpleTypes_Shared.h in Headers */,
 				17C1FBFD1ACC4250006B99B3 /* DefinedNames.h in Headers */,
 				17C1FBFE1ACC4250006B99B3 /* File.h in Headers */,
+				1732463D1BBEDC2C00E67992 /* UnicodeConverter_Encodings.h in Headers */,
 				17C1FBFF1ACC4250006B99B3 /* Pic.h in Headers */,
 				17C1FC001ACC4250006B99B3 /* Worksheet.h in Headers */,
 				17C1FC011ACC4250006B99B3 /* Audio.h in Headers */,
@@ -1533,7 +1520,6 @@
 				17C1FC1F1ACC4250006B99B3 /* Xfs.h in Headers */,
 				17C1FC201ACC4250006B99B3 /* FldChar.h in Headers */,
 				17C1FC211ACC4250006B99B3 /* TableProperty.h in Headers */,
-				17C1FC221ACC4250006B99B3 /* dirtree.hpp in Headers */,
 				17C1FC231ACC4250006B99B3 /* VmlOfficeDrawing.h in Headers */,
 				17C1FC241ACC4250006B99B3 /* Point.h in Headers */,
 				17C1FC251ACC4250006B99B3 /* Bibliography.h in Headers */,
@@ -1552,17 +1538,14 @@
 				17C1FC321ACC4250006B99B3 /* Run.h in Headers */,
 				17C1FC331ACC4250006B99B3 /* BaseLogicSettings.h in Headers */,
 				17C1FC341ACC4250006B99B3 /* Hyperlink.h in Headers */,
-				17C1FC351ACC4250006B99B3 /* MathString.h in Headers */,
 				17C1FC361ACC4250006B99B3 /* Chart.h in Headers */,
 				17C1FC371ACC4250006B99B3 /* SheetData.h in Headers */,
 				17C1FC381ACC4250006B99B3 /* HeaderFooter.h in Headers */,
 				17C1FC391ACC4250006B99B3 /* SmartTag.h in Headers */,
 				17C1FC3A1ACC4250006B99B3 /* Numbering.h in Headers */,
 				17C1FC3B1ACC4250006B99B3 /* FldSimple.h in Headers */,
-				17C1FC3C1ACC4250006B99B3 /* alloctable.hpp in Headers */,
 				17C1FC3D1ACC4250006B99B3 /* Unit.h in Headers */,
 				17C1FC3E1ACC4250006B99B3 /* UnknowTypeFile.h in Headers */,
-				17C1FC3F1ACC4250006B99B3 /* util.hpp in Headers */,
 				17C1FC401ACC4250006B99B3 /* Utils.h in Headers */,
 				17C1FC411ACC4250006B99B3 /* Align.h in Headers */,
 				17C1FC421ACC4250006B99B3 /* Drawing.h in Headers */,
@@ -1580,7 +1563,6 @@
 				17C1FC4E1ACC4250006B99B3 /* Utils.h in Headers */,
 				17C1FC4F1ACC4250006B99B3 /* SmartPtr.h in Headers */,
 				17C1FC501ACC4250006B99B3 /* Utility.h in Headers */,
-				17C1FC511ACC4250006B99B3 /* storage.hpp in Headers */,
 				17C1FC521ACC4250006B99B3 /* SectionProperty.h in Headers */,
 				17C1FC531ACC4250006B99B3 /* FromTo.h in Headers */,
 				17C1FC541ACC4250006B99B3 /* DrawingGraphic.h in Headers */,
@@ -1588,6 +1570,7 @@
 				17C1FC561ACC4250006B99B3 /* Endnote.h in Headers */,
 				17C1FC571ACC4250006B99B3 /* VmlWord.h in Headers */,
 				17C1FC581ACC4250006B99B3 /* File.h in Headers */,
+				1732414C1BBEC90000E67992 /* pole.h in Headers */,
 				17C1FC591ACC4250006B99B3 /* Si.h in Headers */,
 				17C1FC5A1ACC4250006B99B3 /* SystemUtility.h in Headers */,
 				17C1FC5B1ACC4250006B99B3 /* Namespaces.h in Headers */,
@@ -1605,6 +1588,7 @@
 				17C1FC671ACC4250006B99B3 /* ExternalReferences.h in Headers */,
 				17C1FC681ACC4250006B99B3 /* Fonts.h in Headers */,
 				17C1FC691ACC4250006B99B3 /* Footnote.h in Headers */,
+				173246411BBEDC2C00E67992 /* UnicodeConverter.h in Headers */,
 				17C1FC6A1ACC4250006B99B3 /* ComplexTypes.h in Headers */,
 				17C1FC6B1ACC4250006B99B3 /* DrawingParagraphElements.h in Headers */,
 				17C1FC6C1ACC4250006B99B3 /* RunContent.h in Headers */,
@@ -1673,7 +1657,6 @@
 				17E6B2DD1AC4263900F28F8B /* rPr.h in Headers */,
 				17E6B2991AC4263900F28F8B /* OutputDev.h in Headers */,
 				17E6B1FA1AC4263900F28F8B /* AbstractConverter.h in Headers */,
-				17E6B21C1AC4263900F28F8B /* stream.hpp in Headers */,
 				17E6B2331AC4263900F28F8B /* DrawingParagraph.h in Headers */,
 				17E6B2C11AC4263900F28F8B /* Drawing.h in Headers */,
 				17E6B2641AC4263900F28F8B /* ParagraphProperty.h in Headers */,
@@ -1684,10 +1667,8 @@
 				17E6B20F1AC4263900F28F8B /* SimpleTypes_Word.h in Headers */,
 				17E6B2391AC4263900F28F8B /* DrawingShared.h in Headers */,
 				17E6B2831AC4263900F28F8B /* OleObject.h in Headers */,
-				17E6B21A1AC4263900F28F8B /* header.hpp in Headers */,
 				17E6B20A1AC4263900F28F8B /* SimpleTypes_Drawing.h in Headers */,
 				17E6B1F71AC4263900F28F8B /* Types_32.h in Headers */,
-				17E6B21E1AC4263900F28F8B /* pole.h in Headers */,
 				17E6B23C1AC4263900F28F8B /* DrawingTables.h in Headers */,
 				17E6B2BF1AC4263900F28F8B /* ComplexTypes_Spreadsheet.h in Headers */,
 				17E6B2E71AC4263900F28F8B /* Workbook.h in Headers */,
@@ -1714,6 +1695,7 @@
 				17E6B20C1AC4263900F28F8B /* SimpleTypes_Shared.h in Headers */,
 				17E6B2E41AC4263900F28F8B /* DefinedNames.h in Headers */,
 				17E6B2461AC4263900F28F8B /* File.h in Headers */,
+				1732463C1BBEDC2C00E67992 /* UnicodeConverter_Encodings.h in Headers */,
 				17E6B2C51AC4263900F28F8B /* Pic.h in Headers */,
 				17E6B2EF1AC4263900F28F8B /* Worksheet.h in Headers */,
 				17E6B2801AC4263900F28F8B /* Audio.h in Headers */,
@@ -1748,7 +1730,6 @@
 				17E6B2E01AC4263900F28F8B /* Xfs.h in Headers */,
 				17E6B25C1AC4263900F28F8B /* FldChar.h in Headers */,
 				17E6B2741AC4263900F28F8B /* TableProperty.h in Headers */,
-				17E6B2191AC4263900F28F8B /* dirtree.hpp in Headers */,
 				17E6B2771AC4263900F28F8B /* VmlOfficeDrawing.h in Headers */,
 				17E6B2061AC4263900F28F8B /* Point.h in Headers */,
 				17E6B2201AC4263900F28F8B /* Bibliography.h in Headers */,
@@ -1767,17 +1748,14 @@
 				17E6B2661AC4263900F28F8B /* Run.h in Headers */,
 				17E6B2571AC4263900F28F8B /* BaseLogicSettings.h in Headers */,
 				17E6B2601AC4263900F28F8B /* Hyperlink.h in Headers */,
-				17E6B3C51AC43E6A00F28F8B /* MathString.h in Headers */,
 				17E6B2B81AC4263900F28F8B /* Chart.h in Headers */,
 				17E6B2EE1AC4263900F28F8B /* SheetData.h in Headers */,
 				17E6B24F1AC4263900F28F8B /* HeaderFooter.h in Headers */,
 				17E6B2701AC4263900F28F8B /* SmartTag.h in Headers */,
 				17E6B2871AC4263900F28F8B /* Numbering.h in Headers */,
 				17E6B25E1AC4263900F28F8B /* FldSimple.h in Headers */,
-				17E6B2181AC4263900F28F8B /* alloctable.hpp in Headers */,
 				17E6B2111AC4263900F28F8B /* Unit.h in Headers */,
 				17E6B2901AC4263900F28F8B /* UnknowTypeFile.h in Headers */,
-				17E6B21D1AC4263900F28F8B /* util.hpp in Headers */,
 				17E6B2131AC4263900F28F8B /* Utils.h in Headers */,
 				17E6B1FC1AC4263900F28F8B /* Align.h in Headers */,
 				17E6B2291AC4263900F28F8B /* Drawing.h in Headers */,
@@ -1795,7 +1773,6 @@
 				17E6B3AE1AC4263A00F28F8B /* Utils.h in Headers */,
 				17E6B1F61AC4263900F28F8B /* SmartPtr.h in Headers */,
 				17E6B2B61AC4263900F28F8B /* Utility.h in Headers */,
-				17E6B21B1AC4263900F28F8B /* storage.hpp in Headers */,
 				17E6B26D1AC4263900F28F8B /* SectionProperty.h in Headers */,
 				17E6B2C21AC4263900F28F8B /* FromTo.h in Headers */,
 				17E6B2321AC4263900F28F8B /* DrawingGraphic.h in Headers */,
@@ -1803,6 +1780,7 @@
 				17E6B2401AC4263900F28F8B /* Endnote.h in Headers */,
 				17E6B2781AC4263900F28F8B /* VmlWord.h in Headers */,
 				17E6B2A21AC4263900F28F8B /* File.h in Headers */,
+				1732414B1BBEC90000E67992 /* pole.h in Headers */,
 				17E6B2D31AC4263900F28F8B /* Si.h in Headers */,
 				17E6B2AC1AC4263900F28F8B /* SystemUtility.h in Headers */,
 				17E6B2861AC4263900F28F8B /* Namespaces.h in Headers */,
@@ -1820,6 +1798,7 @@
 				17E6B2E51AC4263900F28F8B /* ExternalReferences.h in Headers */,
 				17E6B2DB1AC4263900F28F8B /* Fonts.h in Headers */,
 				17E6B24D1AC4263900F28F8B /* Footnote.h in Headers */,
+				173246401BBEDC2C00E67992 /* UnicodeConverter.h in Headers */,
 				17E6B2001AC4263900F28F8B /* ComplexTypes.h in Headers */,
 				17E6B2341AC4263900F28F8B /* DrawingParagraphElements.h in Headers */,
 				17E6B2671AC4263900F28F8B /* RunContent.h in Headers */,
@@ -2014,6 +1993,7 @@
 				17C1FBAB1ACC4250006B99B3 /* FileFactory_Spreadsheet.cpp in Sources */,
 				17C1FBAC1ACC4250006B99B3 /* AlternateContent.cpp in Sources */,
 				17C1FBAD1ACC4250006B99B3 /* SmartTag.cpp in Sources */,
+				1732463F1BBEDC2C00E67992 /* UnicodeConverter.cpp in Sources */,
 				17C1FBAE1ACC4250006B99B3 /* oMath.cpp in Sources */,
 				17C1FBAF1ACC4250006B99B3 /* ChartSerialize.cpp in Sources */,
 				17C1FBB01ACC4250006B99B3 /* IFileContainer_Spreadsheet.cpp in Sources */,
@@ -2030,6 +2010,7 @@
 				17C1FBBB1ACC4250006B99B3 /* MathEquation.cpp in Sources */,
 				17C1FBBC1ACC4250006B99B3 /* Wrap.cpp in Sources */,
 				17C1FBBD1ACC4250006B99B3 /* Common.cpp in Sources */,
+				1732414A1BBEC90000E67992 /* pole.cpp in Sources */,
 				17C1FBBE1ACC4250006B99B3 /* IFileContainer.cpp in Sources */,
 				17C1FBBF1ACC4250006B99B3 /* RunProperty.cpp in Sources */,
 				17C1FBC01ACC4250006B99B3 /* codecvt.cpp in Sources */,
@@ -2068,6 +2049,7 @@
 				17E6B2CA1AC4263900F28F8B /* FileFactory_Spreadsheet.cpp in Sources */,
 				17E6B2531AC4263900F28F8B /* AlternateContent.cpp in Sources */,
 				17E6B26F1AC4263900F28F8B /* SmartTag.cpp in Sources */,
+				1732463E1BBEDC2C00E67992 /* UnicodeConverter.cpp in Sources */,
 				17E6B2791AC4263900F28F8B /* oMath.cpp in Sources */,
 				17E6B2B91AC4263900F28F8B /* ChartSerialize.cpp in Sources */,
 				17E6B2CD1AC4263900F28F8B /* IFileContainer_Spreadsheet.cpp in Sources */,
@@ -2084,6 +2066,7 @@
 				17E6B2941AC4263900F28F8B /* MathEquation.cpp in Sources */,
 				17E6B2141AC4263900F28F8B /* Wrap.cpp in Sources */,
 				17E6B2BC1AC4263900F28F8B /* Common.cpp in Sources */,
+				173241491BBEC90000E67992 /* pole.cpp in Sources */,
 				17E6B2511AC4263900F28F8B /* IFileContainer.cpp in Sources */,
 				17E6B2681AC4263900F28F8B /* RunProperty.cpp in Sources */,
 				17E6B2AD1AC4263900F28F8B /* codecvt.cpp in Sources */,
@@ -2124,6 +2107,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				ENABLE_BITCODE = NO;
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
@@ -2142,7 +2126,11 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/include/,
 					/usr/include/libxml2/,
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/source/common",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/source/i18n",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/source/io",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = DocxFormatLib_ios;
 				SDKROOT = iphoneos;
 			};
@@ -2153,6 +2141,7 @@
 			buildSettings = {
 				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
 				CLANG_CXX_LIBRARY = "libc++";
+				ENABLE_BITCODE = NO;
 				EXECUTABLE_PREFIX = lib;
 				GCC_ENABLE_CPP_EXCEPTIONS = YES;
 				GCC_ENABLE_CPP_RTTI = YES;
@@ -2171,7 +2160,11 @@
 					/Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/include,
 					/usr/include/,
 					/usr/include/libxml2/,
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/source/common",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/source/i18n",
+					"$(PROJECT_DIR)/../../../UnicodeConverter/icubuilds/mac/icu/icu/source/io",
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				PRODUCT_NAME = DocxFormatLib_ios;
 				SDKROOT = iphoneos;
 			};

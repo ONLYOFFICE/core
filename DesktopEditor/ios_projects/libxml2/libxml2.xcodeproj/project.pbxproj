@@ -461,6 +461,7 @@
 					../../../Common/DocxFormat/Source/XML/libxml2/XML/include,
 					../../../Common/DocxFormat/Source/XML/libxml2/XML/include/libxml,
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;
@@ -502,6 +503,7 @@
 					../../../Common/DocxFormat/Source/XML/libxml2/XML/include,
 					../../../Common/DocxFormat/Source/XML/libxml2/XML/include/libxml,
 				);
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				OTHER_LDFLAGS = "-ObjC";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SKIP_INSTALL = YES;

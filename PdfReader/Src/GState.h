@@ -1478,9 +1478,9 @@ namespace PdfReader
 		{
 			for (int nIndex = 0; nIndex < m_nTextsCount; ++nIndex)
 			{
-				FreeWString(m_pTexts->wsText);
-				FreeWString(m_pTexts->wsFontName);
-				FreeWString(m_pTexts->wsFontPath);
+				FreeWString(m_pTexts[nIndex].wsText);
+				FreeWString(m_pTexts[nIndex].wsFontName);
+				FreeWString(m_pTexts[nIndex].wsFontPath);
 			}
 			MemUtilsFree(m_pTexts);
 			MemUtilsFree(m_pMatrix);
@@ -1490,7 +1490,9 @@ namespace PdfReader
 		{
 			for (int nIndex = 0; nIndex < m_nTextsCount; ++nIndex)
 			{
-				FreeWString(m_pTexts->wsText);
+				FreeWString(m_pTexts[nIndex].wsText);
+				FreeWString(m_pTexts[nIndex].wsFontName);
+				FreeWString(m_pTexts[nIndex].wsFontPath);
 			}
 			MemUtilsFree(m_pTexts);
 			MemUtilsFree(m_pMatrix);

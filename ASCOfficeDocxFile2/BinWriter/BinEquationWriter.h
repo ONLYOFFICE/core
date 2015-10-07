@@ -298,17 +298,17 @@ namespace MathEquation
 										case embelDDot:      str.Insert(0, 0x0308); break;
 										case embelDDDot:     str.Insert(0, 0x20DB); break;
 										case embelTilde:     str.Insert(0, 0x0303); break;
-										case embelHat:       str.Insert(0, 0x005E); break;
+										case embelHat:       str.Insert(0, 0x0302); break;
 										case embelSlash:     str.Insert(0, 0x002F); break;
-										case embelLArrow:    str.Insert(0, 0x2190); break;
-										case embelRArrow:    str.Insert(0, 0x2192); break;
-										case embelDArrow:    str.Insert(0, 0x2194); break;
-										case embelLHarpoon:  str.Insert(0, 0x21BC); break;
-										case embelRHarpoon:  str.Insert(0, 0x21C0); break;
+										case embelLArrow:    str.Insert(0, 0x20D6); break;
+										case embelRArrow:    str.Insert(0, 0x20D7); break;
+										case embelDArrow:    str.Insert(0, 0x20E1); break;
+										case embelLHarpoon:  str.Insert(0, 0x20D0); break;
+										case embelRHarpoon:  str.Insert(0, 0x20D1); break;
 										case embelStrikeout: str.Insert(0, 0x0336); break;
 										case embelBar:       str.Insert(0, 0x0305); break;
-										case embelFrown:     str.Insert(0, 0x23DD); break;
-										case embelSmile:     str.Insert(0, 0x23DC); break;
+										case embelFrown:     str.Insert(0, 0x0311); break;
+										case embelSmile:     str.Insert(0, 0x0306); break;
 									}
 									WriteItemValStr(BinDocxRW::c_oSer_OMathBottomNodesType::Chr, str);
 									WriteItemEnd(nCurPos1);

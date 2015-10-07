@@ -93,9 +93,7 @@ namespace PdfReader
 
 		if (!m_pPDFDocument || !m_pPDFDocument->CheckValidation())
 		{
-			if (m_pPDFDocument)
-				delete m_pPDFDocument;
-
+			RELEASEOBJECT(m_pPDFDocument);
 			return false;
 		}
 
@@ -109,6 +107,9 @@ namespace PdfReader
 	}
 	EError       CPdfReader::GetError()
 	{
+		if (!m_pPDFDocument)
+			return errorOpenFile;
+
 		return m_pPDFDocument->GetErrorCode();
 	}
 	int          CPdfReader::GetPagesCount()

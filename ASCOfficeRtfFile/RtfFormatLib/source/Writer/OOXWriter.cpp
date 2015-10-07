@@ -25,13 +25,13 @@ OOXWriter::OOXWriter( RtfDocument& oDocument, std::wstring sPath ) :
 	m_poFootnoteWriter	= NULL;
 	m_poEndnoteWriter	= NULL;
 
-	m_poDocumentWriter	= new OOXDocumentWriter( *this, m_oDocument );
-	m_poFootnoteWriter	= new OOXFootnoteWriter( *this, m_oDocument );
-	m_poEndnoteWriter	= new OOXEndnoteWriter( *this, m_oDocument );
+	m_poDocumentWriter	= new OOXDocumentWriter	( *this, m_oDocument );
+	m_poFootnoteWriter	= new OOXFootnoteWriter	( *this, m_oDocument );
+	m_poEndnoteWriter	= new OOXEndnoteWriter	( *this, m_oDocument );
 	m_poFontTableWriter = new OOXFontTableWriter( *this, m_oDocument );
 	m_poNumberingWriter = new OOXNumberingWriter( *this, m_oDocument );
-	m_poSettingsWriter	= new OOXSettingsWriter( *this, m_oDocument );
-	m_poStylesWriter	= new OOXStylesWriter( *this, m_oDocument );
+	m_poSettingsWriter	= new OOXSettingsWriter	( *this, m_oDocument );
+	m_poStylesWriter	= new OOXStylesWriter	( *this, m_oDocument );
 
 	m_poDocPropsApp		= new OOX::CApp();
 	m_poDocPropsCore	= new OOX::CCore();
@@ -97,13 +97,13 @@ bool OOXWriter::SaveByItemEnd()
 	m_oDocRels.AddRelationship( _T("http://schemas.openxmlformats.org/officeDocument/2006/relationships/theme"), _T("theme/theme1.xml") );
 	m_oContentTypes.AddContent( _T("application/vnd.openxmlformats-officedocument.theme+xml"), _T("/word/theme/theme1.xml") );
 //-----------------------------------------------------------------------------------------------------
-	((OOXDocumentWriter*)m_poDocumentWriter)->SaveByItemEnd();
+	((OOXDocumentWriter*)	m_poDocumentWriter)->SaveByItemEnd();
 
-	((OOXFootnoteWriter*)m_poFootnoteWriter)->Save(pathWord.GetPath());
-	((OOXEndnoteWriter*)m_poEndnoteWriter)->Save(pathWord.GetPath());
-	((OOXNumberingWriter*)m_poNumberingWriter)->Save(m_sTargetFolder);
-	((OOXStylesWriter*)m_poStylesWriter)->Save(m_sTargetFolder);
-	((OOXFontTableWriter*)m_poFontTableWriter)->Save(m_sTargetFolder);
+	((OOXFootnoteWriter*)	m_poFootnoteWriter)->Save(pathWord.GetPath());
+	((OOXEndnoteWriter*)	m_poEndnoteWriter)->Save(pathWord.GetPath());
+	((OOXNumberingWriter*)	m_poNumberingWriter)->Save(m_sTargetFolder);
+	((OOXStylesWriter*)		m_poStylesWriter)->Save(m_sTargetFolder);
+	((OOXFontTableWriter*)	m_poFontTableWriter)->Save(m_sTargetFolder);
 	
 	((OOXSettingsWriter*)m_poSettingsWriter)->Save(m_sTargetFolder); //setting в последнюю очередь
 

@@ -608,8 +608,15 @@ namespace NSHtmlRenderer
 	}
 	HRESULT CASCSVGWriter::PathCommandTextCHAR(const LONG& c, const double& x, const double& y, const double& w, const double& h)
 	{
-		//todo new command
-		return S_OK;
+        if (m_bIsRaster)
+            return S_OK;
+
+        int _c = (int)c;
+
+        _SetFont();
+        m_pSimpleGraphicsConverter->PathCommandText2(&_c, NULL, 0, m_pFontManager, x, y, w, h);
+
+        return S_OK;
 	}
 	HRESULT CASCSVGWriter::PathCommandText(const std::wstring& bsText, const double& fX, const double& fY, const double& fWidth, const double& fHeight)
 	{
@@ -622,7 +629,16 @@ namespace NSHtmlRenderer
 	}
 	HRESULT CASCSVGWriter::PathCommandTextExCHAR(const LONG& c, const LONG& gid, const double& x, const double& y, const double& w, const double& h)
 	{
-		//todo new command
+        if (m_bIsRaster)
+            return S_OK;
+
+        _SetFont();
+
+        int _c = (int)c;
+        int _g = (int)gid;
+
+        m_pSimpleGraphicsConverter->PathCommandText2(&_c, &_g, 1, m_pFontManager, x, y, w, h);
+
 		return S_OK;
 	}
 	HRESULT CASCSVGWriter::PathCommandTextEx(const std::wstring& sText, const unsigned int* pGids, const unsigned int nGidsCount, const double& x, const double& y, const double& w, const double& h)
@@ -630,20 +646,10 @@ namespace NSHtmlRenderer
 		if (m_bIsRaster)
 			return S_OK;
 
-        bool bGid = m_pFont->StringGID != 0 ? true : false;
+        _SetFont();
+        m_pSimpleGraphicsConverter->PathCommandText2(sText, (const int*)pGids, nGidsCount, m_pFontManager, x, y, w, h);
 
-		//TODOOO
-		//if (bsGidText.empty())
-		//{
-  //          m_pFont->StringGID = 1;
-		//	PathCommandText(bsGidText, x, y, w, h, baselineOffset);
-		//}
-
-        m_pFont->StringGID = 0;
-		PathCommandText(sText, x, y, w, h);
-
-        m_pFont->StringGID = bGid ? 1 : 0;
-		return S_OK;
+        return S_OK;
 	}
 	//-------- Функции для вывода изображений ---------------------------------------------------
 	HRESULT CASCSVGWriter::DrawImage(IGrObject* pImage, const double& fX, const double& fY, const double& fWidth, const double& fHeight)

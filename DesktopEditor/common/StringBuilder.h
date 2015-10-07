@@ -7,6 +7,150 @@
 namespace NSStringUtils
 {
 	const wchar_t g_hex_values[16] = { '0', '1', '2', '3', '4', '5', '6', '7', '8', '9', 'A', 'B', 'C', 'D', 'E', 'F' };
+
+	class CStringBuilderA
+	{
+	private:
+		char*		m_pData;
+		size_t		m_lSize;
+
+		char*		m_pDataCur;
+		size_t		m_lSizeCur;
+
+	public:
+                CStringBuilderA()
+		{
+			m_pData = NULL;
+			m_lSize = 0;
+
+			m_pDataCur = m_pData;
+			m_lSizeCur = m_lSize;
+		}
+                ~CStringBuilderA()
+		{
+			if (NULL != m_pData)
+				free(m_pData);
+			m_pData = NULL;
+		}
+
+		inline void AddSize(size_t nSize)
+		{
+			if (NULL == m_pData)
+			{
+				m_lSize = (std::max)((int)nSize, 1000);
+				m_pData = (char*)malloc(m_lSize * sizeof(char));
+
+				m_lSizeCur = 0;
+				m_pDataCur = m_pData;
+				return;
+			}
+
+			if ((m_lSizeCur + nSize) > m_lSize)
+			{
+				while ((m_lSizeCur + nSize) > m_lSize)
+				{
+					m_lSize *= 2;
+				}
+
+				char* pRealloc = (char*)realloc(m_pData, m_lSize * sizeof(char));
+				if (NULL != pRealloc)
+				{
+					// реаллок сработал
+					m_pData = pRealloc;
+					m_pDataCur = m_pData + m_lSizeCur;
+				}
+				else
+				{
+					char* pMalloc = (char*)malloc(m_lSize * sizeof(char));
+					memcpy(pMalloc, m_pData, m_lSizeCur * sizeof(char));
+
+					free(m_pData);
+					m_pData = pMalloc;
+					m_pDataCur = m_pData + m_lSizeCur;
+				}
+			}
+		}
+
+	public:
+
+		inline void SetText(const std::string& sText)
+		{
+			ClearNoAttack();
+			WriteString(sText);
+		}
+		inline void WriteString(const std::string& str)
+		{
+			WriteString(str.c_str(), str.length());
+		}
+
+		inline void WriteStringNoSafe(const char* pString, size_t nLen)
+		{
+			memcpy(m_pDataCur, pString, nLen * sizeof(char));
+
+			m_pDataCur += nLen;
+			m_lSizeCur += nLen;
+		}
+		inline void WriteString(const char* pString, size_t nLen)
+		{
+			AddSize(nLen);
+			WriteStringNoSafe(pString, nLen);
+		}	
+
+		inline void AddCharNoSafe(const char& _c)
+		{			
+			*m_pDataCur++ = _c;
+			++m_lSizeCur;
+		}		
+		inline void AddCharSafe(const char& _c)
+		{
+			AddSize(1);
+			*m_pDataCur++ = _c;
+			++m_lSizeCur;
+		}		
+
+		inline size_t GetCurSize()
+		{
+			return m_lSizeCur;
+		}
+		inline void SetCurSize(size_t lCurSize)
+		{
+			m_lSizeCur = lCurSize;
+			m_pDataCur = m_pData + m_lSizeCur;
+		}
+		inline size_t GetSize()
+		{
+			return m_lSize;
+		}
+
+		inline void Clear()
+		{
+			if (NULL != m_pData)
+				free(m_pData);
+			m_pData = NULL;
+
+			m_pData = NULL;
+			m_lSize = 0;
+
+			m_pDataCur = m_pData;
+			m_lSizeCur = 0;
+		}
+		inline void ClearNoAttack()
+		{
+			m_pDataCur = m_pData;
+			m_lSizeCur = 0;
+		}
+
+		std::string GetData()
+		{
+			std::string str(m_pData, (int)m_lSizeCur);
+			return str;
+		}
+		char* GetBuffer()
+		{
+			return m_pData;
+		}		
+	};
+
 	class CStringBuilder
 	{
 	private:

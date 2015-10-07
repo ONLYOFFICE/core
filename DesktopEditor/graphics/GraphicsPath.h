@@ -129,6 +129,8 @@ public:
 
     bool PathCommandText2(const int* pUnicodes, const int* pGids, const int& nCount, CFontManager* pManager,
                           const double& x, const double& y, const double& w, const double& h);
+    bool PathCommandText2(const std::wstring& sUnicodes, const int* pGids, const int& nCount, CFontManager* pManager,
+                          const double& x, const double& y, const double& w, const double& h);
 
 	bool PathCommandGetBounds(double& left, double& top, double& width, double &height);
 	

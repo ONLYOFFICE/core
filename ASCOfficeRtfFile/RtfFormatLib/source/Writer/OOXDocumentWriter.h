@@ -96,7 +96,15 @@ public:
 				m_oDocument[0]->RemoveItem( 0 );
                 std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
 
-                m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+				if (m_oFileWriter)
+				{
+					m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+				}
+				else
+				{
+					//!!!!
+					m_oFileWriter = NULL;
+				}
             }
 		}
 		return true;
@@ -121,7 +129,10 @@ public:
 		CString sXml = CreateXmlEnd( );
         std::string sXmlUTF = NSFile::CUtf8Converter::GetUtf8StringFromUnicode(sXml.GetBuffer());
 
-        m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+		if (m_oFileWriter)
+		{
+			m_oFileWriter->Write((BYTE*)sXmlUTF.c_str(), sXmlUTF.length());
+		}
         RELEASEOBJECT( m_oFileWriter );
 		return true;
 	}

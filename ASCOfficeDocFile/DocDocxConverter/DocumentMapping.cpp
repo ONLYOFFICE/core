@@ -475,6 +475,7 @@ namespace DocFileFormat
 					std::wstring link	( _T( " LINK" ) );
 					std::wstring form	( _T( " FORM" ) );
 					std::wstring excel	( _T( " Excel" ) );
+					std::wstring word	( _T( " Word" ) );
 					std::wstring mergeformat	( _T( " MERGEFORMAT" ) );
 
 					if ( search( f.begin(), f.end(), form.begin(), form.end() ) != f.end() )
@@ -501,7 +502,9 @@ namespace DocFileFormat
 						this->_fldCharCounter++;
 					}
 					else if ((search(f.begin(), f.end(), mergeformat.begin(), mergeformat.end()) != f.end()) ||
-						(search(f.begin(), f.end(), excel.begin(), excel.end()) != f.end()))
+							((search(f.begin(), f.end(), excel.begin(), excel.end()) != f.end() ||
+							search(f.begin(), f.end(), word.begin(), word.end()) != f.end()) && 
+							search(f.begin(), f.end(), embed.begin(), embed.end()) != f.end()))
 					{
 						int cpPic		=	searchNextTextMark(m_document->Text, cpFieldStart, TextMark::Picture);
 						int cpFieldSep	=	searchNextTextMark(m_document->Text, cpFieldStart, TextMark::FieldSeparator);

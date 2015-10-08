@@ -54,8 +54,8 @@ bool is_default(const xlsx_alignment & rVal)
     return rVal == defaultAlignment;
 }
 
-xlsx_alignment OdfProperties2XlsxAlignment(const odf_reader::text_format_properties_content * textProp, 
-                                           const odf_reader::paragraph_format_properties * parProp,
+xlsx_alignment OdfProperties2XlsxAlignment(const odf_reader::text_format_properties_content		 * textProp, 
+                                           const odf_reader::paragraph_format_properties		 * parProp,
                                            const odf_reader::style_table_cell_properties_attlist * cellProp)
 {
     xlsx_alignment alignment;
@@ -92,14 +92,22 @@ xlsx_alignment OdfProperties2XlsxAlignment(const odf_reader::text_format_propert
 
     if (textProp && textProp->style_text_rotation_angle_)
     {
-        alignment.textRotation = textProp->style_text_rotation_angle_.get();
+        int angle = textProp->style_text_rotation_angle_.get();
+
+		alignment.textRotation = angle;
     }
 
     if (cellProp && cellProp->common_rotation_angle_attlist_.style_rotation_angle_)
     {
-        alignment.textRotation = cellProp->common_rotation_angle_attlist_.style_rotation_angle_.get();        
-    }
+         int angle = cellProp->common_rotation_angle_attlist_.style_rotation_angle_.get(); 
 
+		if (angle > 90)
+			angle = angle - 90;
+		if (angle < -90)
+			angle = 90 + angle;
+
+		alignment.textRotation = angle;       
+    }
 
     _CP_OPT(odf_types::vertical_align) v_align;
     

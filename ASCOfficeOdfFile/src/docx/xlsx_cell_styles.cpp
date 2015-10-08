@@ -43,15 +43,6 @@ void xlsx_cell_styles::xlsx_serialize(std::wostream & _Wostream) const
             }
         }
     }
-
-    //_Wostream << L"<cellStyles count=\"" << impl_->cell_styles_.size() << L"\">";    
-    //
-    //BOOST_FOREACH(const xlsx_cell_style & s, impl_->cell_styles_)
-    //{
-    //    ::cpdoccore::oox::xlsx_serialize(_Wostream, s);                    
-    //}
-
-    //_Wostream << L"</cellStyles>";
 }
 
 

@@ -36,10 +36,10 @@ CONFIG(debug, debug|release) {
 }
 }
 
-linux-g++:contains(QMAKE_HOST.arch, x86_64):{
+linux-g++ | linux-g++-64 | linux-g++-32:contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_64
 }
-linux-g++:!contains(QMAKE_HOST.arch, x86_64):{
+linux-g++ | linux-g++-64 | linux-g++-32:!contains(QMAKE_HOST.arch, x86_64):{
     DESTDIR = $$DESTINATION_SDK_PATH/linux_32
 }
 ############### destination path ###############
@@ -74,9 +74,10 @@ linux-g++ | linux-g++-64 | linux-g++-32 {
     DEFINES += \
         LINUX \
         _LINUX \
-        _LINUX_QT
+        _LINUX_QT \
+        LIBXML_READER_ENABLED
 
-INCLUDEPATH += /usr/include/libxml2
+INCLUDEPATH += /usr/include/libxml2/libxml
 }
 #################### LINUX ########################
 
@@ -90,7 +91,6 @@ INCLUDEPATH += \
 SOURCES += pptxformatlib.cpp \
     ../../../ASCOfficeDrawingConverter.cpp \
     ../../../ASCOfficePPTXFileRealization.cpp \
-    ../../../../Common/DocxFormat/Source/XML/libxml2/libxml2.cpp \
     ../../../../Common/DocxFormat/Source/XML/stringcommon.cpp \
     ../../../PPTXFormat/DocxFormat/IFileContainer.cpp \
     ../../../PPTXFormat/Logic/Colors/SchemeClr.cpp \
@@ -139,7 +139,6 @@ SOURCES += pptxformatlib.cpp \
 HEADERS += pptxformatlib.h \
 ../../../ASCOfficeDrawingConverter.h \
 ../../../ASCOfficePPTXFile.h \
-../../../../Common/DocxFormat/Source/XML/libxml2/libxml2.h \
 ../../../../Common/DocxFormat/Source/XML/stringcommon.h \
     ../../../PPTXFormat/DocxFormat/ContentTypes/Default.h \
     ../../../PPTXFormat/DocxFormat/ContentTypes/DefaultTable.h \
@@ -557,7 +556,9 @@ HEADERS += pptxformatlib.h \
     ../../../Editor/DefaultNotesTheme.h \
     ../../../PPTXFormat/DocxFormat/Drawing/LegacyDiagramText.h \
     ../../../PPTXFormat/DocxFormat/Drawing/VmlDrawing.h \
-    ../../../PPTXFormat/Logic/Controls.h
+    ../../../PPTXFormat/Logic/Controls.h \
+    ../../../../Common/DocxFormat/Source/Base/Nullable.h \
+    ../../../../Common/DocxFormat/Source/XML/xmlutils.h
 unix {
     target.path = /usr/lib
     INSTALLS += target

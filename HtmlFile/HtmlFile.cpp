@@ -1,5 +1,6 @@
 ﻿#include "HtmlFile.h"
 #include "../DesktopEditor/common/File.h"
+#include "../DesktopEditor/common/Directory.h"
 #include "../DesktopEditor/common/StringBuilder.h"
 #include "../DesktopEditor/common/String.h"
 #include "../DesktopEditor/xml/include/xmlutils.h"
@@ -502,4 +503,553 @@ int CHtmlFile::ConvertEpub(const std::wstring& sFolder, std::wstring& sMetaInfo,
         return 1;
 
     return this->Convert(arHtmls, sDstfolder, sPathInternal);
+}
+
+/////////////////////////////////////////////////////////////////
+// MHT
+/////////////////////////////////////////////////////////////////
+
+#include <list>
+#include <algorithm>
+#include "../UnicodeConverter/UnicodeConverter.h"
+
+namespace NSMht
+{
+    char easytolower(char in)
+    {
+        if (in<='Z' && in>='A')
+            return in-('Z'-'z');
+        return in;
+    }
+    wchar_t easytolower_w(wchar_t in)
+    {
+        if (in<='Z' && in>='A')
+            return in-('Z'-'z');
+        return in;
+    }
+
+    namespace Names
+    {
+        const std::string boundary_str                  = "boundary=";
+        const std::string contentType_str               = "content-type:";
+        const std::string contentTransferEncoding_str   = "content-transfer-encoding:";
+        const std::string contentLocation_str           = "content-location:";
+        const std::string contentCharset_str            = "charset=";
+        const std::string contentID_str                 = "content-id:";
+
+        const std::string htmlFileType                  = "text/html";
+        const std::string xmlFileType                   = "text/xml";
+        const std::string cssFileType                   = "text/css";
+        const std::string imageFileType                 = "image/";
+
+        const std::string code_7bit                     = "7bit";
+        const std::string code_8bit                     = "8bit";
+        const std::string code_QuotedPrintable          = "quoted-printable";
+        const std::string code_Base64                   = "base64";
+    }
+
+    class CInnerFile
+    {
+    public:
+        std::string     m_sContentType;
+        std::wstring    m_sContentLocation;
+        std::wstring    m_sContentID;
+
+        std::string     m_sEncoding;
+        std::string     m_sContentEncoding;
+
+        std::string     m_sData;
+        std::wstring    m_sDstFilePath;
+
+    public:
+        void Save(const std::map<std::wstring, std::wstring>& sMap)
+        {
+            if (m_sContentType.find(Names::cssFileType) != std::wstring::npos ||
+                m_sContentType.find(Names::htmlFileType) != std::wstring::npos ||
+                m_sContentType.find(Names::xmlFileType) != std::wstring::npos)
+            {
+                std::wstring sUnicodeData;
+                std::string sDstEncoding = m_sEncoding;
+
+                if (m_sContentEncoding.find(Names::code_Base64) != std::string::npos)
+                {
+                    BYTE* pData = NULL;
+                    int nLen = 0;
+                    NSFile::CBase64Converter::Decode(m_sData.c_str(), m_sData.length(), pData, nLen);
+
+                    m_sData = std::string((char*)pData, nLen);
+
+                    RELEASEARRAYOBJECTS(pData);
+                }
+
+                std::string sEnc = m_sEncoding;
+                if (sEnc.empty())
+                {
+                    if (m_sContentEncoding.find(Names::code_7bit) != std::string::npos)
+                    {
+                        sEnc = "US-ASCII";
+                    }
+                    else
+                    {
+                        sEnc = "latin1";
+                    }
+                }
+                NSUnicodeConverter::CUnicodeConverter oConverter;
+                std::wstring sRes = oConverter.toUnicode(m_sData, sEnc.c_str());
+
+                // дальше конвертим обратно в нужную кодировку, меняя пути
+                // TODO:
+                NSFile::CFileBinary::SaveToFile(m_sDstFilePath, sRes, true);
+            }
+            else
+            {
+                if (m_sContentEncoding.find(Names::code_Base64) != std::string::npos)
+                {
+                    BYTE* pData = NULL;
+                    int nLen = 0;
+                    NSFile::CBase64Converter::Decode(m_sData.c_str(), m_sData.length(), pData, nLen);
+
+                    NSFile::CFileBinary oFile;
+                    oFile.CreateFileW(m_sDstFilePath);
+                    oFile.WriteFile(pData, nLen);
+                    oFile.CloseFile();
+
+                    RELEASEARRAYOBJECTS(pData);
+                }
+                else
+                {
+                    std::string sEnc = m_sEncoding;
+                    if (sEnc.empty())
+                    {
+                        if (m_sContentEncoding.find(Names::code_7bit) != std::string::npos)
+                        {
+                            sEnc = "US-ASCII";
+                        }
+                        else
+                        {
+                            sEnc = "latin1";
+                        }
+                    }
+                    NSUnicodeConverter::CUnicodeConverter oConverter;
+                    std::wstring sRes = oConverter.toUnicode(m_sData, sEnc.c_str());
+                    NSFile::CFileBinary::SaveToFile(m_sDstFilePath, sRes, true);
+                }
+            }
+        }
+    };
+
+    class CMhtFile
+    {
+    public:
+        CInnerFile              m_oFile;
+        std::list<CInnerFile>   m_arFiles;
+
+        std::wstring                            m_sFolder;
+        std::map<std::wstring, std::wstring>    m_sUrlMap;
+
+        NSStringUtils::CStringBuilder           m_oBuilder; // temp builder
+        NSUnicodeConverter::CUnicodeConverter   m_oUnicodeConverter;
+
+        std::string             m_sEncoding;
+
+    public:
+        CMhtFile()
+        {
+            m_sFolder = NSFile::CFileBinary::CreateTempFileWithUniqueName(NSFile::CFileBinary::GetTempPath(), L"MHT");
+
+#if 1
+            m_sFolder = L"D:\\test\\Document\\MHT";
+#endif
+
+            NSDirectory::CreateDirectory(m_sFolder);
+
+            m_sEncoding = "latin1";
+        }
+        ~CMhtFile()
+        {
+            NSDirectory::DeleteDirectory(m_sFolder);
+        }
+
+        std::string ReadFile(const std::wstring& sFileSrc)
+        {
+            BYTE* pData = NULL;
+            DWORD dwSize = 0;
+            NSFile::CFileBinary::ReadAllBytes(sFileSrc, &pData, dwSize);
+
+            DWORD nBomSize = 0;
+
+            if (dwSize >= 4)
+            {
+                DWORD dwBOM = 0;
+                dwBOM |= pData[0];
+                dwBOM |= (pData[1] << 8);
+                dwBOM |= (pData[2] << 16);
+                dwBOM |= (pData[3] << 24);
+
+                if (0x00BFBBEF == (dwBOM & 0x00FFFFFF))
+                {
+                    m_sEncoding = "UTF-8";
+                    nBomSize = 3;
+                }
+                else if (0x0000FFFE == (dwBOM & 0x0000FFFF))
+                {
+                    m_sEncoding = "UTF-16BE";
+                    nBomSize = 2;
+                }
+                else if (0x0000FEFF == (dwBOM & 0x0000FFFF))
+                {
+                    m_sEncoding = "UTF-16LE";
+                    nBomSize = 2;
+                }
+            }
+
+            return std::string((char*)(pData + nBomSize), (dwSize - nBomSize));
+        }
+
+        int	charFromHex ( const char& _char)
+        {
+            int p = 0;
+            if (_char >= '0' && _char <= '9')
+                p = _char - '0';
+            else if (_char >= 'A' && _char <= 'F')
+                p = _char - 'A' + 10;
+
+            return p;
+        }
+        std::string decodingQuotedPrintable(const std::string& line)
+        {
+            int nLength = (int)line.length();
+            if (0 == nLength)
+                return "";
+
+            const char* pSrcData = line.c_str();
+            char* pDstData = new char[nLength + 1];
+
+            int j = 0;
+            for (int i = 0; i < nLength; i++)
+            {
+                if (pSrcData[i] != '=')
+                {
+                    pDstData[j++] = line[i];
+                }
+                else
+                {
+                    if ((i + 2) < nLength)
+                        pDstData[j++] = 16 * charFromHex(pSrcData[i + 1]) + charFromHex(pSrcData[i + 2]);
+
+                    i += 2;
+                }
+            }
+            pDstData[j] = '\0';
+
+            std::string result(pDstData);
+            delete [] pDstData;
+
+            return result;
+        }
+
+        void Convert()
+        {
+            // сначала делаем мап файлов
+            int nNumber = 0;
+            for (std::list<CInnerFile>::iterator i = m_arFiles.begin(); i != m_arFiles.end(); i++)
+            {
+                nNumber++;
+                CInnerFile* pFile = i.operator ->();
+                std::wstring sFileExt = L".bin";
+                if (pFile->m_sContentType.find(Names::cssFileType) != std::wstring::npos)
+                {
+                    sFileExt = L".css";
+                }
+                else if (pFile->m_sContentType.find(Names::imageFileType) != std::wstring::npos)
+                {
+                    if (pFile->m_sContentType.find("png") != std::wstring::npos)
+                        sFileExt = L".png";
+                    else
+                        sFileExt = L".jpg";
+                }
+                else if (pFile->m_sContentType.find("xml") != std::wstring::npos)
+                {
+                    sFileExt = L".xml";
+                }
+                else if (pFile->m_sContentType.find("html") != std::wstring::npos)
+                {
+                    sFileExt = L".html";
+                }
+                std::wstring sUrl = L"/" + std::to_wstring(nNumber) + sFileExt;
+                pFile->m_sDstFilePath = m_sFolder + sUrl;
+                m_sUrlMap.insert(std::pair<std::wstring, std::wstring>(pFile->m_sContentLocation, L"." + sUrl));
+            }
+
+            for (std::list<CInnerFile>::iterator i = m_arFiles.begin(); i != m_arFiles.end(); i++)
+            {
+                i->Save(m_sUrlMap);
+            }
+
+            m_oFile.m_sDstFilePath = m_sFolder + L"/index.html";
+            m_oFile.Save(m_sUrlMap);
+        }
+
+        inline std::string GetLower(const std::string& sSrc)
+        {
+            std::string sRet = sSrc;
+            std::transform(sRet.begin(), sRet.end(), sRet.begin(), easytolower);
+            return sRet;
+        }
+        inline std::wstring GetLower(const std::wstring& sSrc)
+        {
+            std::wstring sRet = sSrc;
+            std::transform(sRet.begin(), sRet.end(), sRet.begin(), easytolower_w);
+            return sRet;
+        }
+
+        std::string ParseFilePropertyA(const std::string& line, std::string::size_type pos)
+        {
+            std::string::size_type _first = pos;
+
+            std::string::size_type _last = line.length();
+            const char* pData = line.c_str();
+            while ((pData[_first] == ' ' || pData[_first] == '\"') && _first < _last)
+                ++_first;
+
+            std::string::size_type _last1 = line.find(';', _first);
+            std::string::size_type _last2 = line.find('\"', _first);
+            if (_last1 != std::string::npos && _last > _last1)
+                _last = _last1;
+            if (_last2 != std::string::npos && _last > _last2)
+                _last = _last2;
+
+            return line.substr(_first, _last - _first);
+        }
+        std::wstring ParseFileProperty(const std::wstring& line, std::wstring::size_type pos)
+        {
+            std::wstring::size_type _first = pos;
+
+            std::wstring::size_type _last = line.length();
+            const wchar_t* pData = line.c_str();
+            while ((pData[_first] == ' ' || pData[_first] == '\"') && _first < _last)
+                ++_first;
+
+            std::wstring::size_type _last1 = line.find(';', _first);
+            std::wstring::size_type _last2 = line.find('\"', _first);
+            if (_last1 != std::wstring::npos && _last > _last1)
+                _last = _last1;
+            if (_last2 != std::wstring::npos && _last > _last2)
+                _last = _last2;
+
+            return line.substr(_first, _last - _first);
+        }
+
+        bool CheckProperty(const std::string& sSrcLower, const std::string& sSrcNatural, const std::string& sProperty, std::string& sValue)
+        {
+            std::string::size_type posFindHeader = sSrcLower.find(sProperty);
+            if (std::string::npos != posFindHeader)
+            {
+                sValue = this->ParseFilePropertyA(sSrcNatural, posFindHeader + sProperty.length());
+                return true;
+            }
+            return false;
+        }
+        bool CheckPropertyW(const std::string& sSrcLower, const std::string& sSrcNatural, const std::string& sProperty, std::wstring& sValue)
+        {
+            std::string::size_type posFindHeader = sSrcLower.find(sProperty);
+            if (std::string::npos != posFindHeader)
+            {
+                sValue = m_oUnicodeConverter.toUnicode(this->ParseFilePropertyA(sSrcNatural, posFindHeader + sProperty.length()), m_sEncoding.c_str());
+                return true;
+            }
+            return false;
+        }
+
+        void Parse(const std::wstring& sFileSrc)
+        {
+            std::string sFileData = this->ReadFile(sFileSrc);
+            if (sFileData.empty())
+                return;
+
+            std::list<std::string> content;
+            char* pChars = (char*)sFileData.c_str();
+            int nLenSrc = (int)sFileData.length();
+            int nPrevNewLine = 0;
+
+            NSStringUtils::CStringBuilderA oBuilderA;
+            for (int i = 0; i < nLenSrc; ++i)
+            {
+                oBuilderA.ClearNoAttack();
+                while (i < nLenSrc)
+                {
+                    if (pChars[i] == '\r')
+                    {
+                        content.push_back(oBuilderA.GetData());
+                        ++i;
+                        nPrevNewLine = i;
+                        break;
+                    }
+                    // BAD symbols \x0A\x0B\x0C\x0D\x0E\x0F\x10\x11\x12\x13\x14\x15\x16\x17\x18\x19
+                    if (pChars[i] >= 0x0A && pChars[i] <= 0x19)
+                    {
+                        ++i;
+                        continue;
+                    }
+                    oBuilderA.AddCharSafe(pChars[i]);
+                    ++i;
+                }
+            }
+            content.push_back(oBuilderA.GetData());
+
+            std::string boundary;
+            std::wstring doc_location;
+
+            //пробегаемся по строкам файла MHT
+            for (std::list<std::string>::iterator i = content.begin(); i != content.end();)
+            {
+                // конвертируем строку с кодировкой файла
+                std::string sLowerLine = GetLower(*i);
+
+                //Ищем инициализацию boundary в шапке документа MHT(boundary - разделитель внутренних файлов) - обязательный параметр
+                if (CheckProperty(sLowerLine, *i, Names::boundary_str, boundary))
+                {
+                    boundary = "--" + boundary;
+                    i++;
+                }
+                //Ищем инициализацию contentLocation в шапке(наименование главного внутренний файла) - может отсутствовать
+                else if (CheckPropertyW(sLowerLine, *i, Names::contentLocation_str, doc_location))
+                {
+                    i++;
+                }
+                //если встретили разделитель, то начинаем считывать новый внутренний файл
+                else if (*i == boundary && !boundary.empty())
+                {
+                    CInnerFile oInnerFile;
+
+                    //сначала считывается шапка внутреннего файла, которая отделяется от основного текста файлом как минимум одной пустой строкой
+                    while ( i->length() != 0 )
+                    {
+                        sLowerLine = GetLower(*i);
+
+                        // Проверяем, возможно разделитель поменялся с данного места
+                        if (CheckProperty(sLowerLine, *i, Names::boundary_str, boundary))
+                        {
+                            boundary = "--" + boundary;
+                        }
+                        //тип файла (image/, text/html, text/css)
+                        else if (CheckProperty(sLowerLine, sLowerLine, Names::contentType_str, oInnerFile.m_sContentType)) {}
+                        //наименование файла
+                        else if (CheckPropertyW(sLowerLine, *i, Names::contentLocation_str, oInnerFile.m_sContentLocation)) {}
+                        else if (CheckPropertyW(sLowerLine, *i, Names::contentID_str, oInnerFile.m_sContentID)) {}
+                        //кодировка (base64, 8bit, quoted-printable)
+                        else if (CheckProperty(sLowerLine, sLowerLine, Names::contentTransferEncoding_str, oInnerFile.m_sContentEncoding)) {}
+                        else if (CheckProperty(sLowerLine, sLowerLine, Names::contentCharset_str, oInnerFile.m_sEncoding)) {}
+                        i++;
+                    }
+                    while ( i->length() == 0)
+                        i++;
+
+                    oBuilderA.ClearNoAttack();
+                    bool bIs16 = (oInnerFile.m_sContentEncoding.find(Names::code_QuotedPrintable) != std::string::npos) ? true : false;
+
+                    while (i != content.end() && i->find(boundary) == std::string::npos)
+                    {
+                        if (bIs16)
+                        {
+                            oBuilderA.WriteString(decodingQuotedPrintable(*i++));
+                        }
+                        else
+                        {
+                            oBuilderA.WriteString(*i++);
+                        }
+                    }
+                    oInnerFile.m_sData = oBuilderA.GetData();
+
+                    if (m_oFile.m_sData.empty() && oInnerFile.m_sContentType.find(Names::htmlFileType) != std::wstring::npos)
+                    {
+                        m_oFile = oInnerFile;
+                    }
+                    else if (m_oFile.m_sData.empty() && oInnerFile.m_sContentType.find(Names::xmlFileType) != std::wstring::npos)
+                    {
+                        m_oFile = oInnerFile;
+                    }
+                    else
+                    {
+                        m_arFiles.push_back(oInnerFile);
+                    }
+                }
+                else
+                    i++;
+            }
+
+            //встречаются такие документы, где отсутсвует boundary
+            if (boundary == "")
+            {
+                for(std::list<std::string>::iterator i = content.begin(); i != content.end();)
+                {
+                    CInnerFile oInnerFile;
+
+                    //сначала считывается шапка внутреннего файла, которая отделяется от основного текста файлом как минимум одной пустой строкой
+                    while ( i->length() != 0 )
+                    {
+                        std::string sLowerLine = GetLower(*i);
+
+                        if (CheckProperty(sLowerLine, sLowerLine, Names::contentType_str, oInnerFile.m_sContentType)) {}
+                        //наименование файла
+                        else if (CheckPropertyW(sLowerLine, *i, Names::contentLocation_str, oInnerFile.m_sContentLocation)) {}
+                        else if (CheckPropertyW(sLowerLine, *i, Names::contentID_str, oInnerFile.m_sContentID)) {}
+                        //кодировка (base64, 8bit, quoted-printable)
+                        else if (CheckProperty(sLowerLine, sLowerLine, Names::contentTransferEncoding_str, oInnerFile.m_sContentEncoding)) {}
+                        else if (CheckProperty(sLowerLine, sLowerLine, Names::contentCharset_str, oInnerFile.m_sEncoding)) {}
+                        i++;
+                    }
+
+                    if (oInnerFile.m_sContentType.empty())
+                        oInnerFile.m_sContentType = Names::htmlFileType;
+                    if (oInnerFile.m_sContentEncoding.empty())
+                        oInnerFile.m_sContentEncoding = Names::code_QuotedPrintable;
+
+                    while ( i->length() == 0)
+                        i++;
+
+                    oBuilderA.ClearNoAttack();
+                    bool bIs16 = (oInnerFile.m_sContentEncoding.find(Names::code_QuotedPrintable) != std::string::npos) ? true : false;
+
+                    while (i != content.end() && i->find(boundary) == std::string::npos)
+                    {
+                        if (bIs16)
+                        {
+                            oBuilderA.WriteString(decodingQuotedPrintable(*i++));
+                        }
+                        else
+                        {
+                            oBuilderA.WriteString(*i++);
+                        }
+                    }
+                    oInnerFile.m_sData = oBuilderA.GetData();
+
+                    if (m_oFile.m_sData.empty() && oInnerFile.m_sContentType.find(Names::htmlFileType) != std::wstring::npos)
+                    {
+                        m_oFile = oInnerFile;
+                    }
+                    else if (m_oFile.m_sData.empty() && oInnerFile.m_sContentType.find(Names::xmlFileType) != std::wstring::npos)
+                    {
+                        m_oFile = oInnerFile;
+                    }
+                    else
+                    {
+                        m_arFiles.push_back(oInnerFile);
+                    }
+                }
+            }
+        }
+    };
+}
+
+int CHtmlFile::ConvertMht(const std::wstring& sFile, const std::wstring& sDstfolder, const std::wstring& sPathInternal)
+{
+    NSMht::CMhtFile oFile;
+    oFile.Parse(sFile);
+    oFile.Convert();
+    std::wstring sFileMht = oFile.m_sFolder + L"/index.html";
+
+    std::vector<std::wstring> arFiles;
+    arFiles.push_back(sFileMht);
+    return this->Convert(arFiles, sDstfolder, sPathInternal);
 }

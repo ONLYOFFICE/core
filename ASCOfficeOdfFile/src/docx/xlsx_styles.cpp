@@ -37,17 +37,18 @@ public:
     void xlsx_serialize_xf(std::wostream & _Wostream, const xlsx_xf_array & xfArray, const std::wstring & nodeName);
 
 private:
-    xlsx_fonts fonts_;
-    xlsx_borders borders_;
-    xlsx_fills fills_;
-    xlsx_xf_array cellXfs_;
+    xlsx_fonts			fonts_;
+    xlsx_borders		borders_;
+    xlsx_fills			fills_;
+    xlsx_xf_array		cellXfs_;
 
-    xlsx_cell_styles cellStyles_;
-    xlsx_xf_array cellStyleXfs_;
-    xlsx_num_fmts numFmts_;
+    xlsx_cell_styles	cellStyles_;
+    xlsx_xf_array		cellStyleXfs_;
+    xlsx_num_fmts		numFmts_;
 
 private:
     size_t next_index_;
+
     void insert(xlsx_xf const & xf)
     {
         xf.index = next_index_++;
@@ -95,26 +96,11 @@ xlsx_style_manager::~xlsx_style_manager()
 
 xlsx_style_manager::Impl::Impl() : next_index_(0)
 {
-    //{
-    //    xlsx_xf xfRecord;
-    //    xfRecord.xfId = 0;
-    //    xfRecord.borderId = 0;
-    //    xfRecord.numFmtId = 0;
-    //    xfRecord.fillId = 0;
-    //    xfRecord.fontId = 0;
-    //    insert(xfRecord);
-    //    //cellXfs_.insert(xfRecord);
-    //    //cellXfs_.push_back(xfRecord); // default
-    //}
-
-    {
-        xlsx_xf xfRecord;
-        xfRecord.applyNumberForm = true;
-		xfRecord.numFmtId = 0;
-        
-		cellStyleXfs_.insert(xfRecord);
-        //cellStyleXfs_.push_back(xfRecord);
-    }
+    xlsx_xf xfRecord;
+    xfRecord.applyNumberForm = true;
+	xfRecord.numFmtId = 0;
+    
+	cellStyleXfs_.insert(xfRecord);
 }
 
 size_t xlsx_style_manager::Impl::size() const
@@ -125,7 +111,8 @@ size_t xlsx_style_manager::Impl::size() const
 size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_content		* textProp,
                                       const odf_reader::paragraph_format_properties			* parProp,
                                       const odf_reader::style_table_cell_properties_attlist * cellProp,
-                                      const xlsx_cell_format * xlxsCellFormat,
+                                      const xlsx_cell_format								* xlxsCellFormat,
+
                                       const std::wstring &num_format, bool  default_set, bool & is_visible )
 {
 	bool is_visible_set = is_visible;
@@ -175,18 +162,15 @@ size_t xlsx_style_manager::Impl::xfId(const odf_reader::text_format_properties_c
     xfRecord.xfId = 0;
     xfRecord.alignment = alignment;
 
-    //xlsx_xf_array::const_iterator i = std::find(cellXfs_.begin(), cellXfs_.end(), xfRecord);
     xlsx_xf_array::const_iterator i = cellXfs_.find(xfRecord);
     if (i != cellXfs_.end())
     {
         const std::size_t dbgId = i->index;
-        //const unsigned int dbgId = i - cellXfs_.begin();
         return dbgId;
     }
     else
     {
         insert(xfRecord);
-        //cellXfs_.push_back(xfRecord);
     }
     
     return id;

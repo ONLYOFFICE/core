@@ -173,14 +173,27 @@ void table_table_row::xlsx_convert(oox::xlsx_conversion_context & Context)
                     BOOST_FOREACH(const office_element_ptr & elm, content_)
                     {
                         elm->xlsx_convert(Context);
-                    }                                                        
+                    }              
+
                 }
             }
         }
         Context.end_table_row();        
 
-        if (Context.is_empty_row())
+		if (Context.is_empty_row())
+		{
             skip_next_row = true;  
+			if (table_table_row_attlist_.table_number_rows_repeated_ > 65400)
+				break;//Уведомление_о_вручении.ods (1 лист)
+		}
+		if (content_.size() > 0 && table_table_row_attlist_.table_number_rows_repeated_ > 65400)
+		{
+			table_table_cell * table_cell = dynamic_cast<table_table_cell *>(content_[0].get());
+			if ((table_cell) && (table_cell->table_table_cell_attlist_.table_number_columns_repeated_ > 1000))
+			{
+				break;//Уведомление_о_вручении.ods  (2 лист)
+			}
+		}
     }
 
     Context.get_table_metrics().add_rows(table_table_row_attlist_.table_number_rows_repeated_, !hidden ? row_height : 0.0);
@@ -778,7 +791,8 @@ void table_table_cell::xlsx_convert(oox::xlsx_conversion_context & Context)
 				else
 				{
 					empty_cell++;
-					if ((empty_cell > 4 && table_table_cell_attlist_.table_number_columns_repeated_>299) || (cellStyle == NULL)) 
+					//Уведомление_о_вручении.ods - 13 повторов пустых с cellStyle=NULL - нужные !!!
+					if (empty_cell > 19 && (table_table_cell_attlist_.table_number_columns_repeated_>299 || cellStyle == NULL)) 
 					{//пишем простыню только если задан стиль тока для этих ячеек
 						skip_next_cell = true;
 					}

@@ -22,17 +22,7 @@ void xlsx_serialize(std::wostream & _Wostream, const xlsx_cell_style & cell_styl
                 CP_XML_ATTR(L"builtinId", cell_style.builtinId.get());        
         }
     }
-
-    //_Wostream << L"<cellStyle ";
-
-    //if (cell_style.name)
-    //    _Wostream << L"name=\"" << cell_style.name.get() << L"\" ";
-    //if (cell_style.xfId)
-    //    _Wostream << L"xfId=\"" << cell_style.xfId.get() << L"\" ";
-    //if (cell_style.builtinId)
-    //    _Wostream << L"builtinId=\"" << cell_style.builtinId.get() << L"\" ";
-
-    //_Wostream << L"/>";    
+ 
 }
 
 }

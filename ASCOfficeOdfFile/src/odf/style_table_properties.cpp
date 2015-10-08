@@ -239,30 +239,31 @@ void style_table_column_properties::xlsx_convert(oox::xlsx_conversion_context & 
 
 void style_table_cell_properties_attlist::add_attributes( const xml::attributes_wc_ptr & Attributes )
 {
-    CP_APPLY_ATTR(L"style:vertical-align", style_vertical_align_);
-    CP_APPLY_ATTR(L"style:text-align-source", style_text_align_source_);
-    CP_APPLY_ATTR(L"style:direction", style_direction_);
-    CP_APPLY_ATTR(L"style:glyph-orientation-vertical", style_glyph_orientation_vertical_);
+    CP_APPLY_ATTR(L"style:vertical-align"				, style_vertical_align_);
+    CP_APPLY_ATTR(L"style:text-align-source"			, style_text_align_source_);
+    CP_APPLY_ATTR(L"style:direction"					, style_direction_);
+    CP_APPLY_ATTR(L"style:glyph-orientation-vertical"	, style_glyph_orientation_vertical_);
     
 	common_shadow_attlist_.add_attributes(Attributes);
     common_background_color_attlist_.add_attributes(Attributes);
     common_border_attlist_.add_attributes(Attributes);
     common_border_line_width_attlist_.add_attributes(Attributes);
     
-	CP_APPLY_ATTR(L"style:diagonal-tl-br", style_diagonal_tl_br_);
-    CP_APPLY_ATTR(L"style:diagonal-tl-br-widths", style_diagonal_tl_br_widths_);
-    CP_APPLY_ATTR(L"style:diagonal-bl-tr", style_diagonal_bl_tr_);
-    CP_APPLY_ATTR(L"style:diagonal-bl-tr-widths", style_diagonal_bl_tr_widths_);
-    common_padding_attlist_.add_attributes(Attributes);
+	CP_APPLY_ATTR(L"style:diagonal-tl-br"			, style_diagonal_tl_br_);
+    CP_APPLY_ATTR(L"style:diagonal-tl-br-widths"	, style_diagonal_tl_br_widths_);
+    CP_APPLY_ATTR(L"style:diagonal-bl-tr"			, style_diagonal_bl_tr_);
+    CP_APPLY_ATTR(L"style:diagonal-bl-tr-widths"	, style_diagonal_bl_tr_widths_);
+    
+	common_padding_attlist_.add_attributes(Attributes);
     common_rotation_angle_attlist_.add_attributes(Attributes);
    
-	CP_APPLY_ATTR(L"fo:wrap-option", fo_wrap_option_);
-    CP_APPLY_ATTR(L"style:rotation-align", style_rotation_align_);    
-    CP_APPLY_ATTR(L"style:cell-protect", style_cell_protect_);
-    CP_APPLY_ATTR(L"style:print-content", style_print_content_);
-    CP_APPLY_ATTR(L"style:decimal-places", style_decimal_places_);
-    CP_APPLY_ATTR(L"style:repeat-content", style_repeat_content_);
-    CP_APPLY_ATTR(L"style:shrink-to-fit", style_shrink_to_fit_);
+	CP_APPLY_ATTR(L"fo:wrap-option"			, fo_wrap_option_);
+    CP_APPLY_ATTR(L"style:rotation-align"	, style_rotation_align_);    
+    CP_APPLY_ATTR(L"style:cell-protect"		, style_cell_protect_);
+    CP_APPLY_ATTR(L"style:print-content"	, style_print_content_);
+    CP_APPLY_ATTR(L"style:decimal-places"	, style_decimal_places_);
+    CP_APPLY_ATTR(L"style:repeat-content"	, style_repeat_content_);
+    CP_APPLY_ATTR(L"style:shrink-to-fit"	, style_shrink_to_fit_);
 }
 
 
@@ -364,6 +365,7 @@ void insert_cell_margin(oox::docx_conversion_context & Context,
     std::wostream & strm = Context.output_stream();
     strm<< L"<w:" << Side << L" w:type=\"dxa\" w:w=\"" <<  (int)(0.5 + 20.0 * Length.get_value_unit(length::pt)) << L"\" />";
 }
+
 void insert_cell_border(oox::docx_conversion_context & Context, 
                         const std::wstring & Side,
                         const _CP_OPT(border_style) & BorderStyle,
@@ -642,31 +644,31 @@ void style_table_cell_properties::docx_convert(oox::docx_conversion_context & Co
 
 void style_table_cell_properties_attlist::apply_from(const style_table_cell_properties_attlist & Other)
 {
-     _CP_APPLY_PROP(style_vertical_align_, Other.style_vertical_align_);
-     _CP_APPLY_PROP(style_text_align_source_, Other.style_text_align_source_);
-     _CP_APPLY_PROP(style_direction_, Other.style_direction_);
-     _CP_APPLY_PROP(style_glyph_orientation_vertical_, Other.style_glyph_orientation_vertical_);
+     _CP_APPLY_PROP(style_vertical_align_				, Other.style_vertical_align_);
+     _CP_APPLY_PROP(style_text_align_source_			, Other.style_text_align_source_);
+     _CP_APPLY_PROP(style_direction_					, Other.style_direction_);
+     _CP_APPLY_PROP(style_glyph_orientation_vertical_	, Other.style_glyph_orientation_vertical_);
     
-    common_shadow_attlist_.apply_from(Other.common_shadow_attlist_);
-    common_background_color_attlist_.apply_from(Other.common_background_color_attlist_);
-    common_border_attlist_.apply_from(Other.common_border_attlist_);
+    common_shadow_attlist_.apply_from			(Other.common_shadow_attlist_);
+    common_background_color_attlist_.apply_from	(Other.common_background_color_attlist_);
+    common_border_attlist_.apply_from			(Other.common_border_attlist_);
 
-    _CP_APPLY_PROP(style_diagonal_tl_br_, Other.style_diagonal_tl_br_);
-    _CP_APPLY_PROP(style_diagonal_tl_br_widths_, Other.style_diagonal_tl_br_widths_);
-    _CP_APPLY_PROP(style_diagonal_bl_tr_, Other.style_diagonal_bl_tr_);
-    _CP_APPLY_PROP(style_diagonal_bl_tr_widths_, Other.style_diagonal_bl_tr_widths_);
+    _CP_APPLY_PROP(style_diagonal_tl_br_			, Other.style_diagonal_tl_br_);
+    _CP_APPLY_PROP(style_diagonal_tl_br_widths_		, Other.style_diagonal_tl_br_widths_);
+    _CP_APPLY_PROP(style_diagonal_bl_tr_			, Other.style_diagonal_bl_tr_);
+    _CP_APPLY_PROP(style_diagonal_bl_tr_widths_		, Other.style_diagonal_bl_tr_widths_);
 
     common_border_line_width_attlist_.apply_from(Other.common_border_line_width_attlist_);
-    common_padding_attlist_.apply_from(Other.common_padding_attlist_);
-    _CP_APPLY_PROP(fo_wrap_option_, Other.fo_wrap_option_);
-    common_rotation_angle_attlist_.apply_from(Other.common_rotation_angle_attlist_);
+    common_padding_attlist_.apply_from			(Other.common_padding_attlist_);
+    common_rotation_angle_attlist_.apply_from	(Other.common_rotation_angle_attlist_);
     
-    _CP_APPLY_PROP(style_rotation_align_, Other.style_rotation_align_);    
-    _CP_APPLY_PROP(style_cell_protect_, Other.style_cell_protect_);
-    _CP_APPLY_PROP(style_print_content_, Other.style_print_content_);
-    _CP_APPLY_PROP(style_decimal_places_, Other.style_decimal_places_);
-    _CP_APPLY_PROP(style_repeat_content_, Other.style_repeat_content_);
-    _CP_APPLY_PROP(style_shrink_to_fit_, Other.style_shrink_to_fit_);    
+	_CP_APPLY_PROP(fo_wrap_option_			, Other.fo_wrap_option_);
+	_CP_APPLY_PROP(style_rotation_align_	, Other.style_rotation_align_);    
+    _CP_APPLY_PROP(style_cell_protect_		, Other.style_cell_protect_);
+    _CP_APPLY_PROP(style_print_content_		, Other.style_print_content_);
+    _CP_APPLY_PROP(style_decimal_places_	, Other.style_decimal_places_);
+    _CP_APPLY_PROP(style_repeat_content_	, Other.style_repeat_content_);
+    _CP_APPLY_PROP(style_shrink_to_fit_		, Other.style_shrink_to_fit_);    
 }
 
 }
